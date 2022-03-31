@@ -2,553 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 165EBC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 16:24:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD3E3C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 16:25:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239932AbiCaQ0l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 12:26:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42264 "EHLO
+        id S239917AbiCaQ1B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 12:27:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239882AbiCaQ0a (ORCPT
+        with ESMTP id S239934AbiCaQ0z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 12:26:30 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5431E5F8D8;
-        Thu, 31 Mar 2022 09:24:42 -0700 (PDT)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id E48D52224E;
-        Thu, 31 Mar 2022 18:24:39 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1648743880;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=SAPB1gS7dHTHn7beI39RSSLfhYREegv7Xx937rIVeC0=;
-        b=v/3q+N5p1hKP8h87Eif+FXqQDzslPB5UsdiHb0SUdz8yHkD1fmFKZK5d0m38OwV1q1bbQf
-        UAexPVmpJGHYQpT/wR/1+FaiR+Y512c+efLHOo1RYtnkwkmNfbqghpXvrbSIgYN0+cCzT9
-        nqGgnBAAmv8lXCCJ4GDu5RZT1ytHEPY=
-From:   Michael Walle <michael@walle.cc>
-To:     Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>
-Cc:     linux-hwmon@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Michael Walle <michael@walle.cc>
-Subject: [PATCH v3 4/4] hwmon: add driver for the Microchip LAN966x SoC
-Date:   Thu, 31 Mar 2022 18:24:31 +0200
-Message-Id: <20220331162431.3648535-5-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220331162431.3648535-1-michael@walle.cc>
-References: <20220331162431.3648535-1-michael@walle.cc>
+        Thu, 31 Mar 2022 12:26:55 -0400
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B93A62A1C;
+        Thu, 31 Mar 2022 09:25:00 -0700 (PDT)
+Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22VEx5gv007047;
+        Thu, 31 Mar 2022 16:24:46 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=corp-2021-07-09;
+ bh=Yq8+2qRMKeLRoqN/aZe1kpvfpI6vhl22zU0q135oV90=;
+ b=BLOuylkPkEHSaE/A2/pC7h6HifchkYOe/IvcGMDRvLpnQ3cvrNKNX8hY4xsCJy/FK2yu
+ vrnhdcV4qUF67bGxQVIXyHJ3T71FnAxVe7nsaZJ7LmlfDNzn9IWXl4Hq1daZA6SXv9V7
+ x2V2OjYFVn7y2KbCEFM3yDRTP28GHQZorXZqptuFM4FfFlqk3D446JbMAthoLSRHjM0J
+ MqwYm8l6CJ/dq1iCQGf2mGmZm0bjHNhbhHdHCkdgfxJjPmZ6k3TK6tWMoS/m7QQRLWj8
+ 06/sHI5sEruyNImVwVSTFEdqk7fe1/TCFvfxENyR6zZQJAW2HyFYS1Cg5PT0YAT0T66/ Mg== 
+Received: from phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta03.appoci.oracle.com [138.1.37.129])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3f1tes4tgp-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 31 Mar 2022 16:24:46 +0000
+Received: from pps.filterd (phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+        by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 22VGHKcd010056;
+        Thu, 31 Mar 2022 16:24:45 GMT
+Received: from nam10-mw2-obe.outbound.protection.outlook.com (mail-mw2nam10lp2100.outbound.protection.outlook.com [104.47.55.100])
+        by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3f1s951pc1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 31 Mar 2022 16:24:45 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=SkwqXA03soDgxnQbkLU40gv9WePXWAxuV7uZQDXpAzNPEPTbokCwW5j0Ttf2YlPj9j2KO2n1bBPO27QRfDHw2vtC9J/L90/MFWgRMAwMLd3Z/z+pkPQ0OGRkVT09o76+px49EPLjb6NIDG6T8QnD2+ILMewigh5Pp2sh24OtmDdzdfcLfTs2V1LhNcyWBsgNhm/Y3/EKOSQZeAJV9Ov0+0nCsXIardKvpYRGQaO3Umv1I1jG0sL5Ree2qBUmNxCR1+k5rRbsq+Pm0iEXwvNQuzK7eGSvwvvimkmK1M5TLL37UGP7f+BldORlCQ0S8lSwn06SDmMnxd0PyzvXRe8gLw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Yq8+2qRMKeLRoqN/aZe1kpvfpI6vhl22zU0q135oV90=;
+ b=fpeGNmyyspsKl1vR5c5RJ5NJkG4HMP9NiiXckWvQSUQiFidMZAEKvbz6hACpiQQf9HRl8Cb7VdkBtQq21UhtOyZJSX5djYcQwiKNjTox2QF2bqEeFIKFsYg7MEDDCfuY9kEdgytR9Wm1DOTpXW/TJ1dnnI8YwF0BaZr1tMrPgFXkNtrDVhZUBZtbk/7IuRHwTWUnrWLgofq/mGBWor/z04KYbLoZ7COOmj+EDbZquxfuRI+E5rHGrJYSGTgH7XQUIcMjUO+8ui9sYxVBLF7c1/AVoiKa7kuJpup7azL83reICxJbzpQU6Gme+8Ry/BYHinA4dogfxz6rSohjP6kuDQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Yq8+2qRMKeLRoqN/aZe1kpvfpI6vhl22zU0q135oV90=;
+ b=EWQlIZvTJukdE1uoAt3hES52m2ExIdXdcB/+ITD6/MJ6GEbFaJlC6ak6HZWclNfRk1Ls6tCw8O2/T6su2PwwIVweydyvPJaO+Hnc8vmDfMzr173KlKCoYwIktoDvQji0aYGV0mzpzrZU9GA2MFuiGWGpj4XL2HwYHn4lmow5l1E=
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ (2603:10b6:301:2d::28) by PH0PR10MB5870.namprd10.prod.outlook.com
+ (2603:10b6:510:146::12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.21; Thu, 31 Mar
+ 2022 16:24:43 +0000
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::d4e7:ee60:f060:e20c]) by MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::d4e7:ee60:f060:e20c%7]) with mapi id 15.20.5081.025; Thu, 31 Mar 2022
+ 16:24:43 +0000
+Date:   Thu, 31 Mar 2022 19:24:16 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+Cc:     Wenchao Hao <haowenchao@huawei.com>,
+        syzkaller-bugs@googlegroups.com, axboe@kernel.dk,
+        jejb@linux.ibm.com, linux-block@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
+        martin.petersen@oracle.com,
+        syzbot+f08c77040fa163a75a46@syzkaller.appspotmail.com,
+        linfeilong@huawei.com
+Subject: Re: [PATCH] scsi: sd: call device_del() if device_add_disk() fails
+Message-ID: <20220331162416.GI12805@kadam>
+References: <20220329154948.10350-1-fmdefrancesco@gmail.com>
+ <fdebdbd3-575b-b30e-d37f-dcc6d53a4f53@huawei.com>
+ <20220331134210.GF12805@kadam>
+ <1787706.atdPhlSkOF@leap>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1787706.atdPhlSkOF@leap>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: JNAP275CA0023.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:4d::16)
+ To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 6ac9266e-f168-4390-ad3c-08da1332f614
+X-MS-TrafficTypeDiagnostic: PH0PR10MB5870:EE_
+X-Microsoft-Antispam-PRVS: <PH0PR10MB5870AB050225AF32B56441178EE19@PH0PR10MB5870.namprd10.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: BiUNm0o/5zDXNANA5rxTbo9yJjGbqF75BprVe7IZSjiDmfqxAV6mS1Ugw0KC7IKwKooye2uGk0cO4cdAyhOj5W+JLPUetQIsNiTVVMQu0yDRWS2woBaLUVoPqWIWD8EwiGNBnUv0N9IkMPJesIAeuO4jcpgTtAEvicKru+S7Lk0niIVrEg96nWXvYY/pv2apvztZ9rVZ9rNfsYmSZllwEHfMIeOhcMIuSAz+biyDWhux88wUxuQOcmxAPOfuWlfSCBT60GrwsFJIoNmVzX9a+SeGpil3KqiUsHOak1jfq+zcwFLnMnGa9uSdF69BTBvTrkh93TddNAMMHdB3pmyQbatTt4IRrV+7G22oSf00NFHpKcKM4gywOv/GvbctfSzTG6oAd876lCwdmn+U08CoCL/kG3onwWhYapw1Gt/cK529Zxv3/V7x9gIbUm49ihiT93nKtvijPgYsOHhUUR6Kw3bZjN7g1oAPh+sGba2N2dgLI+AOqtRMBGJjIUaG6luC9KzIF5vz7Q8QligB4IsioM3kdKT+Y0OreZdw3We7U27J512Sc+20xn4O3l7zCkK9I9G3cRGarn/F1KMu/xVgG+tjAcAQmdydI0vsl+BqAubaFDjSH3nI1J+NVRYU/bK8YLI7lhvKKAkixDlXAgCSbOLXG1dYFk3KU0zIJM1lks62Mj5Pm75o+wnI6bgNshTuNCPpx1f+hZcWIXMO5UNc3w==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(508600001)(38350700002)(38100700002)(7416002)(33716001)(6512007)(86362001)(33656002)(2906002)(6486002)(9686003)(6506007)(52116002)(316002)(6666004)(4744005)(5660300002)(8676002)(44832011)(4326008)(26005)(1076003)(66476007)(66556008)(186003)(8936002)(6916009)(66946007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?iM2eOEd2BZ2UeUDvbJFYY86sstJ/sNEVN5dfU6tU+E+obINabc7d9bV1IIzY?=
+ =?us-ascii?Q?v6fuzSc0x+LZlK+XZkWx7lvaV8FOk6eJLDCQEDe78cQvndwrp3FEdpDiaDgN?=
+ =?us-ascii?Q?zQsB6JCh7nXwNKw7CYTnqaH+Xl1irUXqxTJ7r/POzDrBtmKzj1WKy03srAj/?=
+ =?us-ascii?Q?d5pgqUssdZjSWnUcS1lcybqdwKV2TIUSF0Cio1kVq3PZVSGp2N0RrjXU2GUy?=
+ =?us-ascii?Q?mKskQIB+Pp5S6Mz/ASdGP4KAsAVWijBpLNkq3HLhM/NjXHsfVYeUNhuKNKOv?=
+ =?us-ascii?Q?jS2b5AQDMLTDqN1vN8LO3JxuAb9Gs1Y7Ll/lkg9X0KBjGL7UgtvzEqJ0OhMM?=
+ =?us-ascii?Q?Dywg30Di/TXQ49w/joolLVZDHR4FjOX1zsyeMvHXArdP6tDv47kitrPWDaOF?=
+ =?us-ascii?Q?/xb+f6DNGcKf73jgN8q1pfxfQVrsIb4UBURXp0iMYHlzDgIRfnMtDdR9iEt6?=
+ =?us-ascii?Q?ecafZ1BnNvqFFy1rvkSlB7hSywoN22mrBjJu4ZEDZlRzk77M5BcrA6CfYbc+?=
+ =?us-ascii?Q?SQIaWQ/eeMgbTifowmg5n7Y7Mcm6CjdQ7iAWQ1jqvV1pEjaWkTxUkl4ix69W?=
+ =?us-ascii?Q?LbLl3LBpHbcW6z/67YPQCkQ9sWIXgXVR+i7ATlhsKbCudfHF+H5v9+Lecjco?=
+ =?us-ascii?Q?L+GS/TDCIDHILt8k7LTV9ZZnjC4Z4tTvXVR1Y0TP3uIwQ4x+fgHZ4zhLaUR+?=
+ =?us-ascii?Q?7Y2iGRIsPwxpHfMJwXmaXHg9URQCBg7csIxHAE0appISEpmVrkMYza0bcYAC?=
+ =?us-ascii?Q?PgEnCCqRxv4bjockm7VU5Pzl+1/srdZu2FqoIosP/lrPFHtaLH3Fjv6C0qQv?=
+ =?us-ascii?Q?8/LjyIqNUut3Et5EIoYnU2B1ZrsnVxEorRK8G6RbD46tAmRoM8m4s27MOr6L?=
+ =?us-ascii?Q?rOcJf0e3qekXlvaIbsvpXZKKZSO90S0UHKwH/f3ineWRysvVCu6UuyPMhP1v?=
+ =?us-ascii?Q?7OxSfr2CUBQIG3flPS4ZWk6D+LG7T6xqRwFhLH73e6TvbBkcisPIINQZ2lQp?=
+ =?us-ascii?Q?fnzwcovpMcQyBLziMEIZKwpItCw3K6S978aUEGHfM8zHZ5oSoyGfctn19TJ9?=
+ =?us-ascii?Q?DQhX76TlOnoYXoQFOdj+htJs04RvMBB3J1dp+9yJalw9aLJTWjZB4yJgUbjf?=
+ =?us-ascii?Q?/BN6KJHlpkt8pMXdNFUD0PcjuaTJuRWIDN9i/ymy71hSZfAIUC7k+e0c2eIa?=
+ =?us-ascii?Q?1kPZtxibZi5FxcZVDnGt/72c12+Gh/w86URg63Yzft4SXoOYGiCyeS+I6MIP?=
+ =?us-ascii?Q?mYHw4jnF1vJtSdwsS/00QFwTBhp/ERnRnTnfRuiTPiCJoddeafxoa8+s5rDT?=
+ =?us-ascii?Q?lGsyDcXRzDHS0Gg2+yS8YiTKYWnGMNqUu8xqJY42UjmWl65ulisftZoCYM0l?=
+ =?us-ascii?Q?AeTqvi6QU3TgSQCsd7yqzERJKDEbG7GhzCnY5WCOh6BF5VGhOW5j7NnUfP1O?=
+ =?us-ascii?Q?Fmmyz5u6dnp1ArWn9/NUKtIoBJm3DfgNQY5fkA+xBty/YBxnPA3+UUQll74j?=
+ =?us-ascii?Q?4crRFqqwHWxnbQvC9Q4itQAFw0vRIRC2OtYCvDcAqyJwOgw2LxC/6d+Hz8Kc?=
+ =?us-ascii?Q?zR9Q+R87UPPVAY0YCta1Wqr8Xpq4FdB85ccm/RV2h04NQADozWFsGwRZ4CQQ?=
+ =?us-ascii?Q?8wjZlpeXfbX69s/+28tpvjuu0NmkSz4gZC5j3WjA9kysYNYgSS2XI6QW0/M6?=
+ =?us-ascii?Q?9NmLBFbZxD9VDyccz2oj8qn+AzwWV992LDYvVHCBv16Vb+7Y0hVS96IttzEG?=
+ =?us-ascii?Q?eJZ9IE/dT/kvXvPdkCN944njYIInMXM=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6ac9266e-f168-4390-ad3c-08da1332f614
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Mar 2022 16:24:42.9657
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: c9VWKN9ggo+HbWnGZp2zUazhcc36W2YNBPk35Fk6Ax8R0Np0KXh3EJ4GjiLWFO95q9yO3Zd4OwUrU7hVyOWTOPPxAi6H4uVWMzwwBTuuKrE=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR10MB5870
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.425,18.0.850
+ definitions=2022-03-31_05:2022-03-30,2022-03-31 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 mlxlogscore=999
+ phishscore=0 malwarescore=0 bulkscore=0 suspectscore=0 adultscore=0
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2203310090
+X-Proofpoint-GUID: EP6NiaObFWaMerlAqXFDaT492otoLsy4
+X-Proofpoint-ORIG-GUID: EP6NiaObFWaMerlAqXFDaT492otoLsy4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for the temperatur sensor and the fan controller on the
-Microchip LAN966x SoC. Apparently, an Analog Bits PVT sensor is used
-which can measure temperature and process voltages. But only a forumlae
-for the temperature sensor is known. Additionally, the SoC support a fan
-tacho input as well as a PWM signal to control the fan.
+On Thu, Mar 31, 2022 at 06:14:27PM +0200, Fabio M. De Francesco wrote:
+> On gioved? 31 marzo 2022 15:42:10 CEST Dan Carpenter wrote:
+> > Wenchao Hao, what you're saying makes a lot of sense but it raises a lot
+> > of questions in turn.
+> > 
+> > Fabio, did you test your patch?
+> 
+> Yes, I did, Dan. I tested it the usual way with the "#syz test:" command.
+> Obviously I have not the hardware to test code on it.
+> 
 
-Signed-off-by: Michael Walle <michael@walle.cc>
----
-Just in case someone is curious why the I state the datasheet is wrong
-on the PWM frequency: The actual PWM frequency was verified by measuring
-the output with an oscilloscope. Also you can write a '0' as the PWM
-frequency which would result in div-by-zero; but what happens is that
-the output frequency will be half the frequency of a setting of '1'.
+Yeah.  What a nightmare.  You posted a link to the first test.  It said
+passed but definitely introduced some use after frees but how was anyone
+supposed to know?
 
- Documentation/hwmon/lan966x.rst |  40 ++++
- drivers/hwmon/Kconfig           |  12 +
- drivers/hwmon/Makefile          |   1 +
- drivers/hwmon/lan966x-hwmon.c   | 390 ++++++++++++++++++++++++++++++++
- 4 files changed, 443 insertions(+)
- create mode 100644 Documentation/hwmon/lan966x.rst
- create mode 100644 drivers/hwmon/lan966x-hwmon.c
+No way we would have figured this out.  I'm working to make Smatch
+understand device_put() better but this one is way difficult.
 
-diff --git a/Documentation/hwmon/lan966x.rst b/Documentation/hwmon/lan966x.rst
-new file mode 100644
-index 000000000000..1d1724afa5d2
---- /dev/null
-+++ b/Documentation/hwmon/lan966x.rst
-@@ -0,0 +1,40 @@
-+.. SPDX-License-Identifier: GPL-2.0
-+
-+Kernel driver lan966x-hwmon
-+===========================
-+
-+Supported chips:
-+
-+  * Microchip LAN9668 (sensor in SoC)
-+
-+    Prefix: 'lan9668-hwmon'
-+
-+    Datasheet: https://microchip-ung.github.io/lan9668_reginfo
-+
-+Authors:
-+
-+	Michael Walle <michael@walle.cc>
-+
-+Description
-+-----------
-+
-+This driver implements support for the Microchip LAN9668 on-chip
-+temperature sensor as well as its fan controller. It provides one
-+temperature sensor and one fan controller. The temperature range
-+of the sensor is specified from -40 to +125 degrees Celsius and
-+its accuracy is +/- 5 degrees Celsius. The fan controller has a
-+tacho input and a PWM output with a customizable PWM output
-+frequency ranging from ~20Hz to ~650kHz.
-+
-+No alarms are supported by the SoC.
-+
-+The driver exports temperature values, fan tacho input and PWM
-+settings via the following sysfs files:
-+
-+**temp1_input**
-+
-+**fan1_input**
-+
-+**pwm1**
-+
-+**pwm1_freq**
-diff --git a/drivers/hwmon/Kconfig b/drivers/hwmon/Kconfig
-index be9773270e53..052b37b78919 100644
---- a/drivers/hwmon/Kconfig
-+++ b/drivers/hwmon/Kconfig
-@@ -815,6 +815,18 @@ config SENSORS_POWR1220
- 	  This driver can also be built as a module. If so, the module
- 	  will be called powr1220.
- 
-+config SENSORS_LAN966X
-+	tristate "Microchip LAN966x Hardware Monitoring"
-+	depends on SOC_LAN966 || COMPILE_TEST
-+	select REGMAP
-+	select POLYNOMIAL
-+	help
-+	  If you say yes here you get support for temperature monitoring
-+	  on the Microchip LAN966x SoC.
-+
-+	  This driver can also be built as a module. If so, the module
-+	  will be called lan966x-hwmon.
-+
- config SENSORS_LINEAGE
- 	tristate "Lineage Compact Power Line Power Entry Module"
- 	depends on I2C
-diff --git a/drivers/hwmon/Makefile b/drivers/hwmon/Makefile
-index 8a03289e2aa4..51ca6956f8b7 100644
---- a/drivers/hwmon/Makefile
-+++ b/drivers/hwmon/Makefile
-@@ -100,6 +100,7 @@ obj-$(CONFIG_SENSORS_IT87)	+= it87.o
- obj-$(CONFIG_SENSORS_JC42)	+= jc42.o
- obj-$(CONFIG_SENSORS_K8TEMP)	+= k8temp.o
- obj-$(CONFIG_SENSORS_K10TEMP)	+= k10temp.o
-+obj-$(CONFIG_SENSORS_LAN966X)	+= lan966x-hwmon.o
- obj-$(CONFIG_SENSORS_LINEAGE)	+= lineage-pem.o
- obj-$(CONFIG_SENSORS_LOCHNAGAR)	+= lochnagar-hwmon.o
- obj-$(CONFIG_SENSORS_LM63)	+= lm63.o
-diff --git a/drivers/hwmon/lan966x-hwmon.c b/drivers/hwmon/lan966x-hwmon.c
-new file mode 100644
-index 000000000000..d0db2de6c7e8
---- /dev/null
-+++ b/drivers/hwmon/lan966x-hwmon.c
-@@ -0,0 +1,390 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+
-+#include <linux/bitfield.h>
-+#include <linux/clk.h>
-+#include <linux/hwmon.h>
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/mod_devicetable.h>
-+#include <linux/platform_device.h>
-+#include <linux/polynomial.h>
-+#include <linux/regmap.h>
-+
-+/*
-+ * The original translation formulae of the temperature (in degrees of Celsius)
-+ * are as follows:
-+ *
-+ *   T = -3.4627e-11*(N^4) + 1.1023e-7*(N^3) + -1.9165e-4*(N^2) +
-+ *       3.0604e-1*(N^1) + -5.6197e1
-+ *
-+ * where [-56.197, 136.402]C and N = [0, 1023].
-+ *
-+ * They must be accordingly altered to be suitable for the integer arithmetics.
-+ * The technique is called 'factor redistribution', which just makes sure the
-+ * multiplications and divisions are made so to have a result of the operations
-+ * within the integer numbers limit. In addition we need to translate the
-+ * formulae to accept millidegrees of Celsius. Here what it looks like after
-+ * the alterations:
-+ *
-+ *   T = -34627e-12*(N^4) + 110230e-9*(N^3) + -191650e-6*(N^2) +
-+ *       306040e-3*(N^1) + -56197
-+ *
-+ * where T = [-56197, 136402]mC and N = [0, 1023].
-+ */
-+
-+static const struct polynomial poly_N_to_temp = {
-+	.terms = {
-+		{4,  -34627, 1000, 1},
-+		{3,  110230, 1000, 1},
-+		{2, -191650, 1000, 1},
-+		{1,  306040, 1000, 1},
-+		{0,  -56197,    1, 1}
-+	}
-+};
-+
-+#define PVT_SENSOR_CTRL		0x0 /* unused */
-+#define PVT_SENSOR_CFG		0x4
-+#define   SENSOR_CFG_CLK_CFG		GENMASK(27, 20)
-+#define   SENSOR_CFG_TRIM_VAL		GENMASK(13, 9)
-+#define   SENSOR_CFG_SAMPLE_ENA		BIT(8)
-+#define   SENSOR_CFG_START_CAPTURE	BIT(7)
-+#define   SENSOR_CFG_CONTINIOUS_MODE	BIT(6)
-+#define   SENSOR_CFG_PSAMPLE_ENA	GENMASK(1, 0)
-+#define PVT_SENSOR_STAT		0x8
-+#define   SENSOR_STAT_DATA_VALID	BIT(10)
-+#define   SENSOR_STAT_DATA		GENMASK(9, 0)
-+
-+#define FAN_CFG			0x0
-+#define   FAN_CFG_DUTY_CYCLE		GENMASK(23, 16)
-+#define   INV_POL			BIT(3)
-+#define   GATE_ENA			BIT(2)
-+#define   PWM_OPEN_COL_ENA		BIT(1)
-+#define   FAN_STAT_CFG			BIT(0)
-+#define FAN_PWM_FREQ		0x4
-+#define   FAN_PWM_CYC_10US		GENMASK(25, 15)
-+#define   FAN_PWM_FREQ_FREQ		GENMASK(14, 0)
-+#define FAN_CNT			0xc
-+#define   FAN_CNT_DATA			GENMASK(15, 0)
-+
-+struct lan966x_hwmon {
-+	struct regmap *regmap_pvt;
-+	struct regmap *regmap_fan;
-+	struct clk *clk;
-+	unsigned long clk_rate;
-+};
-+
-+static int lan966x_hwmon_read_temp(struct device *dev, long *val)
-+{
-+	struct lan966x_hwmon *hwmon = dev_get_drvdata(dev);
-+	unsigned int data;
-+	int ret;
-+
-+	ret = regmap_read(hwmon->regmap_pvt, PVT_SENSOR_STAT, &data);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (!(data & SENSOR_STAT_DATA_VALID))
-+		return -ENODATA;
-+
-+	*val = polynomial_calc(&poly_N_to_temp,
-+			       FIELD_GET(SENSOR_STAT_DATA, data));
-+
-+	return 0;
-+}
-+
-+static int lan966x_hwmon_read_fan(struct device *dev, long *val)
-+{
-+	struct lan966x_hwmon *hwmon = dev_get_drvdata(dev);
-+	unsigned int data;
-+	int ret;
-+
-+	ret = regmap_read(hwmon->regmap_fan, FAN_CNT, &data);
-+	if (ret < 0)
-+		return ret;
-+
-+	/*
-+	 * Data is given in pulses per second. Assume two pulses
-+	 * per revolution.
-+	 */
-+	*val = FIELD_GET(FAN_CNT_DATA, data) * 60 / 2;
-+
-+	return 0;
-+}
-+
-+static int lan966x_hwmon_read_pwm(struct device *dev, long *val)
-+{
-+	struct lan966x_hwmon *hwmon = dev_get_drvdata(dev);
-+	unsigned int data;
-+	int ret;
-+
-+	ret = regmap_read(hwmon->regmap_fan, FAN_CFG, &data);
-+	if (ret < 0)
-+		return ret;
-+
-+	*val = FIELD_GET(FAN_CFG_DUTY_CYCLE, data);
-+
-+	return 0;
-+}
-+
-+static int lan966x_hwmon_read_pwm_freq(struct device *dev, long *val)
-+{
-+	struct lan966x_hwmon *hwmon = dev_get_drvdata(dev);
-+	unsigned long tmp;
-+	unsigned int data;
-+	int ret;
-+
-+	ret = regmap_read(hwmon->regmap_fan, FAN_PWM_FREQ, &data);
-+	if (ret < 0)
-+		return ret;
-+
-+	/*
-+	 * Datasheet says it is sys_clk / 256 / pwm_freq. But in reality
-+	 * it is sys_clk / 256 / (pwm_freq + 1).
-+	 */
-+	data = FIELD_GET(FAN_PWM_FREQ_FREQ, data) + 1;
-+	tmp = DIV_ROUND_CLOSEST(hwmon->clk_rate, 256);
-+	*val = DIV_ROUND_CLOSEST(tmp, data);
-+
-+	return 0;
-+}
-+
-+static int lan966x_hwmon_read(struct device *dev, enum hwmon_sensor_types type,
-+			      u32 attr, int channel, long *val)
-+{
-+
-+	switch (type) {
-+	case hwmon_temp:
-+		return lan966x_hwmon_read_temp(dev, val);
-+	case hwmon_fan:
-+		return lan966x_hwmon_read_fan(dev, val);
-+	case hwmon_pwm:
-+		switch (attr) {
-+		case hwmon_pwm_input:
-+			return lan966x_hwmon_read_pwm(dev, val);
-+		case hwmon_pwm_freq:
-+			return lan966x_hwmon_read_pwm_freq(dev, val);
-+		default:
-+			return -EOPNOTSUPP;
-+		}
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+}
-+
-+static int lan966x_hwmon_write_pwm(struct device *dev, long val)
-+{
-+	struct lan966x_hwmon *hwmon = dev_get_drvdata(dev);
-+
-+	if (val < 0 || val > 255)
-+		return -EINVAL;
-+
-+	return regmap_update_bits(hwmon->regmap_fan, FAN_CFG,
-+				  FAN_CFG_DUTY_CYCLE,
-+				  FIELD_PREP(FAN_CFG_DUTY_CYCLE, val));
-+}
-+
-+static int lan966x_hwmon_write_pwm_freq(struct device *dev, long val)
-+{
-+	struct lan966x_hwmon *hwmon = dev_get_drvdata(dev);
-+
-+	val = DIV_ROUND_CLOSEST(hwmon->clk_rate, val);
-+	val = DIV_ROUND_CLOSEST(val, 256) - 1;
-+	val = clamp_val(val, 0, FAN_PWM_FREQ_FREQ);
-+
-+	return regmap_update_bits(hwmon->regmap_fan, FAN_PWM_FREQ,
-+				  FAN_PWM_FREQ_FREQ,
-+				  FIELD_PREP(FAN_PWM_FREQ_FREQ, val));
-+}
-+
-+static int lan966x_hwmon_write(struct device *dev, enum hwmon_sensor_types type,
-+			       u32 attr, int channel, long val)
-+{
-+	switch (type) {
-+	case hwmon_pwm:
-+		switch (attr) {
-+		case hwmon_pwm_input:
-+			return lan966x_hwmon_write_pwm(dev, val);
-+		case hwmon_pwm_freq:
-+			return lan966x_hwmon_write_pwm_freq(dev, val);
-+		default:
-+			return -EOPNOTSUPP;
-+		}
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+}
-+
-+static umode_t lan966x_hwmon_is_visible(const void *data,
-+					enum hwmon_sensor_types type,
-+					u32 attr, int channel)
-+{
-+	umode_t mode = 0;
-+
-+	switch (type) {
-+	case hwmon_temp:
-+		switch (attr) {
-+		case hwmon_temp_input:
-+			mode = 0444;
-+			break;
-+		default:
-+			break;
-+		}
-+		break;
-+	case hwmon_fan:
-+		switch (attr) {
-+		case hwmon_fan_input:
-+			mode = 0444;
-+			break;
-+		default:
-+			break;
-+		}
-+		break;
-+	case hwmon_pwm:
-+		switch (attr) {
-+		case hwmon_pwm_input:
-+		case hwmon_pwm_freq:
-+			mode = 0644;
-+			break;
-+		default:
-+			break;
-+		}
-+		break;
-+	default:
-+		break;
-+	}
-+
-+	return mode;
-+}
-+
-+
-+static const struct hwmon_channel_info *lan966x_hwmon_info[] = {
-+	HWMON_CHANNEL_INFO(chip, HWMON_C_REGISTER_TZ),
-+	HWMON_CHANNEL_INFO(temp, HWMON_T_INPUT),
-+	HWMON_CHANNEL_INFO(fan, HWMON_F_INPUT),
-+	HWMON_CHANNEL_INFO(pwm, HWMON_PWM_INPUT | HWMON_PWM_FREQ),
-+	NULL
-+};
-+
-+static const struct hwmon_ops lan966x_hwmon_ops = {
-+	.is_visible = lan966x_hwmon_is_visible,
-+	.read = lan966x_hwmon_read,
-+	.write = lan966x_hwmon_write,
-+};
-+
-+static const struct hwmon_chip_info lan966x_hwmon_chip_info = {
-+	.ops = &lan966x_hwmon_ops,
-+	.info = lan966x_hwmon_info,
-+};
-+
-+static int lan966x_hwmon_enable(struct lan966x_hwmon *hwmon)
-+{
-+	unsigned int mask = SENSOR_CFG_SAMPLE_ENA |
-+			    SENSOR_CFG_START_CAPTURE |
-+			    SENSOR_CFG_CONTINIOUS_MODE |
-+			    SENSOR_CFG_PSAMPLE_ENA;
-+	unsigned int val;
-+
-+	/* enable continuous mode */
-+	val = SENSOR_CFG_SAMPLE_ENA | SENSOR_CFG_CONTINIOUS_MODE;
-+
-+	return regmap_update_bits(hwmon->regmap_pvt, PVT_SENSOR_CFG,
-+				  mask, val);
-+}
-+
-+static struct regmap *lan966x_init_regmap(struct platform_device *pdev,
-+					  const char *name)
-+{
-+	struct regmap_config regmap_config = {
-+		.reg_bits = 32,
-+		.reg_stride = 4,
-+		.val_bits = 32,
-+	};
-+	void __iomem *base;
-+
-+	base = devm_platform_ioremap_resource_byname(pdev, name);
-+	if (IS_ERR(base))
-+		return ERR_CAST(base);
-+
-+	regmap_config.name = name;
-+
-+	return devm_regmap_init_mmio(&pdev->dev, base, &regmap_config);
-+}
-+
-+static void lan966x_clk_disable(void *data)
-+{
-+	struct lan966x_hwmon *hwmon = data;
-+
-+	clk_disable_unprepare(hwmon->clk);
-+}
-+
-+static int lan966x_clk_enable(struct device *dev, struct lan966x_hwmon *hwmon)
-+{
-+	int ret;
-+
-+	ret = clk_prepare_enable(hwmon->clk);
-+	if (ret)
-+		return ret;
-+
-+	return devm_add_action_or_reset(dev, lan966x_clk_disable, hwmon);
-+}
-+
-+static int lan966x_hwmon_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct lan966x_hwmon *hwmon;
-+	struct device *hwmon_dev;
-+	int ret;
-+
-+	hwmon = devm_kzalloc(dev, sizeof(*hwmon), GFP_KERNEL);
-+	if (!hwmon)
-+		return -ENOMEM;
-+
-+	hwmon->clk = devm_clk_get(dev, NULL);
-+	if (IS_ERR(hwmon->clk))
-+		return dev_err_probe(dev, PTR_ERR(hwmon->clk),
-+				     "failed to get clock\n");
-+
-+	ret = lan966x_clk_enable(dev, hwmon);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "failed to enable clock\n");
-+
-+	hwmon->clk_rate = clk_get_rate(hwmon->clk);
-+
-+	hwmon->regmap_pvt = lan966x_init_regmap(pdev, "pvt");
-+	if (IS_ERR(hwmon->regmap_pvt))
-+		return dev_err_probe(dev, PTR_ERR(hwmon->regmap_pvt),
-+				     "failed to get regmap for PVT registers\n");
-+
-+	hwmon->regmap_fan = lan966x_init_regmap(pdev, "fan");
-+	if (IS_ERR(hwmon->regmap_fan))
-+		return dev_err_probe(dev, PTR_ERR(hwmon->regmap_fan),
-+				     "failed to get regmap for fan registers\n");
-+
-+	hwmon_dev = devm_hwmon_device_register_with_info(&pdev->dev,
-+				"lan966x_hwmon", hwmon,
-+				&lan966x_hwmon_chip_info, NULL);
-+	if (IS_ERR(hwmon_dev))
-+		return dev_err_probe(dev, PTR_ERR(hwmon_dev),
-+				     "failed to register hwmon device\n");
-+
-+	return lan966x_hwmon_enable(hwmon);
-+}
-+
-+static const struct of_device_id lan966x_hwmon_of_match[] = {
-+	{ .compatible = "microchip,lan9668-hwmon" },
-+	{}
-+};
-+MODULE_DEVICE_TABLE(of, lan966x_hwmon_of_match);
-+
-+static struct platform_driver lan966x_hwmon_driver = {
-+	.probe = lan966x_hwmon_probe,
-+	.driver = {
-+		.name = "lan966x-hwmon",
-+		.of_match_table = lan966x_hwmon_of_match,
-+	},
-+};
-+module_platform_driver(lan966x_hwmon_driver);
-+
-+MODULE_DESCRIPTION("LAN966x Hardware Monitoring Driver");
-+MODULE_AUTHOR("Michael Walle <michael@walle.cc>");
-+MODULE_LICENSE("GPL");
--- 
-2.30.2
+Sorry that you went through this.
+
+regards,
+dan carpenter
 
