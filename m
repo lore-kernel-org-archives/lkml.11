@@ -2,62 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A97DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 22:38:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 731EAC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 22:40:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242627AbiCaWkc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 18:40:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36402 "EHLO
+        id S242509AbiCaWmT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 18:42:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242619AbiCaWk3 (ORCPT
+        with ESMTP id S242462AbiCaWmR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 18:40:29 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F233A1B60AD
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 15:38:40 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id i16so2152030ejk.12
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 15:38:40 -0700 (PDT)
+        Thu, 31 Mar 2022 18:42:17 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AA731C406A
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 15:40:28 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id p15so2216981ejc.7
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 15:40:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=loXqWj4uMAO1VS+XUp0ej1qAVC5SGwAOzlph5uEBBt4=;
-        b=hIccM7ZvBux6z+dq7fyIKt7MvqW+/OkCehMLxmaHiwsH9PFNPN0U0r8IaB6tY9Af+4
-         hu+j7N6urB6UvJznyqg2YWE8Ix3cE1oaqwCyq0nRHMORw4lfOdmUpStAlmKDegPL8XEU
-         8f9mHPDOzUlx3bSKFn/tb0N1k0Rfs4+1uvMl8xrkxoxstwpYhCLlNtZ/2MmSQ3Om25GW
-         TOqz7HWO1RWraerbG61S5W4eQ23+rBJ+CrNT8saz/gNWXEl4dWXL0hxzcH7ZFaXpkQAQ
-         XAaAnRyrvXbmw6wf4MlmMGvec2SOXWK4x1Xz77r5dROr5W0uyVVB1aQaW4pZ+v5/pVRT
-         4gWQ==
+        bh=OAF79ixH7XO8/kHbUATTBHFnSkL/nkVXYK4Bx07Es9M=;
+        b=UIHknE8/0aEaHT5OU1wimWGQYJ5o31cxftZWanbrU5Brir065xFzKQOI5vADS0tzO8
+         h//1/dAWPEaeRdGL9/XpgnqDgcWVczQ4vD0W57XPVFF3Hkilqx5w4A8XOpBs9ZMVFAIU
+         kOoHD+Wjf66cMpSUXEd21tMYlwQvBjyJ+k4MxREj+OfWpL6rndZLIE2EGLbLSvx+ssqy
+         KkiGMhQ4T0lCmKOnc/2J5woXOFNfMAWx9f5mU4EJYamjULdZNMONj68J8okbFkhUfhhA
+         go48snyAgXnLinYYkYYsmJVUMVuh4u/EbbXtu3l2nUbYHsqmhUuC+/B8Ew6eEQvDHJqq
+         B8xQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=loXqWj4uMAO1VS+XUp0ej1qAVC5SGwAOzlph5uEBBt4=;
-        b=dLRzI3+5WCubZcmaoQyGnhefrLRC9IYYiKugWj+gs8rhadtTExPGhnVrdv6uE52EZ9
-         PlTYgTELTFv+MuZIjo4A/jj2LZ78S2GP/QEB/Xcbow2/jA0cbv6KKFEOnsLnXGMYetm6
-         0wBk4XBctya8SHfMY8hTAq/NzvNDCL7FU/tPZkaImGvrEXe+7rltkop6Bwsin0KDJZ80
-         riclHNxXt04Caa7/+bxr46v+GB9Ok8eMDiNEc0zPauq9CGUx3dvvEN/xXZb9PMMmEIOO
-         fiW6JdAAaE77AOwH9unDyyNf4LhYNkqwa0sRhCHgtuPOciw9vo8RqdAjVIn3BiaVDz2x
-         pNEQ==
-X-Gm-Message-State: AOAM533CPa0GJd+BGeFqm24DLpHc0micLnAZMORqvrY2ZklHIwR8TTNK
-        TQ1Iwvezsx0jSdbdTZhWogzT0nPJQ5WpaWkq
-X-Google-Smtp-Source: ABdhPJyZkEzSA2Op6EKd061v/sPJhRCXYGfrbTfRC0pWtNdKWfRojCEIsX6kGnjC6XtltnFKR74YTg==
-X-Received: by 2002:a17:907:72cc:b0:6e0:2d3:bcba with SMTP id du12-20020a17090772cc00b006e002d3bcbamr6851260ejc.642.1648766319450;
-        Thu, 31 Mar 2022 15:38:39 -0700 (PDT)
+        bh=OAF79ixH7XO8/kHbUATTBHFnSkL/nkVXYK4Bx07Es9M=;
+        b=JaysUJsnLVq3EE2oMRsoo7dq40oKg1vvCCATE3ER8QLQy8rcydlDgcjNEUSojaipqb
+         2UH43eNRiKGvCO8dMOvO1i98sDoXmWT0Sz/ZsBXBLSGbRuNIDiPsuwgaruFCtO7xnBkd
+         +VANCwYMH16Sgi43dOfFxH7ZS2C6tVo3S9Rr04HAWT/00AOC8e1aSc44ql0BrtOhhXCy
+         YbzPV/0DJ76XTBZCwrj6ErbzL4gv81cBsumkeLCLmCLuQJ35wR4exRvmsVWxFCnYCPIw
+         suDgDQaTrgJZNRjGogduiI7YnrXeW32BtfXB13i4loExGO4CtXwkjURFePZr3bQW+vnK
+         gCzA==
+X-Gm-Message-State: AOAM533u9b20CdH6w4UzVoFrD9SUHU8rOUXkqkB89rFLOt+mY2xy2wkj
+        rUeUFlwE1GBVGPWoaol/ct4=
+X-Google-Smtp-Source: ABdhPJwRUYP4bzLKrhGs345u5NZhGKemPeZq835ij8gf8hKkMzb4rrnRyuAUb3KfXn8Zw9FS/8Ri+g==
+X-Received: by 2002:a17:907:3e16:b0:6df:b4f0:5cc2 with SMTP id hp22-20020a1709073e1600b006dfb4f05cc2mr6849525ejc.285.1648766427340;
+        Thu, 31 Mar 2022 15:40:27 -0700 (PDT)
 Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
-        by smtp.googlemail.com with ESMTPSA id q2-20020a170906144200b006ceb8723de9sm280321ejc.120.2022.03.31.15.38.38
+        by smtp.googlemail.com with ESMTPSA id j21-20020a170906255500b006e08c4862ccsm278505ejb.96.2022.03.31.15.40.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 31 Mar 2022 15:38:39 -0700 (PDT)
+        Thu, 31 Mar 2022 15:40:27 -0700 (PDT)
 From:   Jakob Koschel <jakobkoschel@gmail.com>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Ingo Molnar <mingo@redhat.com>, linux-kernel@vger.kernel.org,
+To:     Bob Peterson <rpeterso@redhat.com>
+Cc:     Andreas Gruenbacher <agruenba@redhat.com>,
+        cluster-devel@redhat.com, linux-kernel@vger.kernel.org,
         Mike Rapoport <rppt@kernel.org>,
         "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
         Cristiano Giuffrida <c.giuffrida@vu.nl>,
         "Bos, H.J." <h.j.bos@vu.nl>, Jakob Koschel <jakobkoschel@gmail.com>
-Subject: [PATCH] ftrace: remove check of list iterator against head past the loop body
-Date:   Fri,  1 Apr 2022 00:37:52 +0200
-Message-Id: <20220331223752.902726-1-jakobkoschel@gmail.com>
+Subject: [PATCH 1/2] gfs2: remove usage of list iterator variable for list_for_each_entry_continue()
+Date:   Fri,  1 Apr 2022 00:38:56 +0200
+Message-Id: <20220331223857.902911-1-jakobkoschel@gmail.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -65,150 +66,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When list_for_each_entry() completes the iteration over the whole list
-without breaking the loop, the iterator value will be a bogus pointer
-computed based on the head element.
+In preparation to limiting the scope of a list iterator to the list
+traversal loop, use a dedicated pointer to iterate through the list [1].
 
-While it is safe to use the pointer to determine if it was computed
-based on the head element, either with list_entry_is_head() or
-&pos->member == head, using the iterator variable after the loop should
-be avoided.
+Since that variable should not be used past the loop iteration, a
+separate variable is used to 'remember the current location within the
+loop'.
 
-In preparation to limit the scope of a list iterator to the list
-traversal loop, use a dedicated pointer to point to the found element [1].
+To either continue iterating from that position or start a new
+iteration (if the previous iteration was complete) list_prepare_entry()
+is used.
 
 Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/ [1]
 Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
 ---
- kernel/trace/ftrace.c       | 20 ++++++++++++--------
- kernel/trace/trace_eprobe.c | 14 ++++++++------
- kernel/trace/trace_events.c | 12 ++++++------
- 3 files changed, 26 insertions(+), 20 deletions(-)
+ fs/gfs2/lops.c | 16 ++++++++++++----
+ 1 file changed, 12 insertions(+), 4 deletions(-)
 
-diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
-index 4f1d2f5e7263..096f5a83358d 100644
---- a/kernel/trace/ftrace.c
-+++ b/kernel/trace/ftrace.c
-@@ -4560,8 +4560,8 @@ register_ftrace_function_probe(char *glob, struct trace_array *tr,
- 			       struct ftrace_probe_ops *probe_ops,
- 			       void *data)
+diff --git a/fs/gfs2/lops.c b/fs/gfs2/lops.c
+index 6ba51cbb94cf..74e6d05cee2c 100644
+--- a/fs/gfs2/lops.c
++++ b/fs/gfs2/lops.c
+@@ -653,7 +653,7 @@ static void gfs2_before_commit(struct gfs2_sbd *sdp, unsigned int limit,
+ 				bool is_databuf)
  {
-+	struct ftrace_func_probe *probe = NULL, *iter;
- 	struct ftrace_func_entry *entry;
--	struct ftrace_func_probe *probe;
- 	struct ftrace_hash **orig_hash;
- 	struct ftrace_hash *old_hash;
- 	struct ftrace_hash *hash;
-@@ -4580,11 +4580,13 @@ register_ftrace_function_probe(char *glob, struct trace_array *tr,
+ 	struct gfs2_log_descriptor *ld;
+-	struct gfs2_bufdata *bd1 = NULL, *bd2;
++	struct gfs2_bufdata *bd1 = NULL, *bd2, *tmp1, *tmp2;
+ 	struct page *page;
+ 	unsigned int num;
+ 	unsigned n;
+@@ -661,7 +661,7 @@ static void gfs2_before_commit(struct gfs2_sbd *sdp, unsigned int limit,
  
- 	mutex_lock(&ftrace_lock);
- 	/* Check if the probe_ops is already registered */
--	list_for_each_entry(probe, &tr->func_probes, list) {
--		if (probe->probe_ops == probe_ops)
-+	list_for_each_entry(iter, &tr->func_probes, list) {
-+		if (iter->probe_ops == probe_ops) {
-+			probe = iter;
- 			break;
-+		}
- 	}
--	if (&probe->list == &tr->func_probes) {
-+	if (!probe) {
- 		probe = kzalloc(sizeof(*probe), GFP_KERNEL);
- 		if (!probe) {
- 			mutex_unlock(&ftrace_lock);
-@@ -4704,7 +4706,7 @@ unregister_ftrace_function_probe_func(char *glob, struct trace_array *tr,
- {
- 	struct ftrace_ops_hash old_hash_ops;
- 	struct ftrace_func_entry *entry;
--	struct ftrace_func_probe *probe;
-+	struct ftrace_func_probe *probe = NULL, *iter;
- 	struct ftrace_glob func_g;
- 	struct ftrace_hash **orig_hash;
- 	struct ftrace_hash *old_hash;
-@@ -4732,11 +4734,13 @@ unregister_ftrace_function_probe_func(char *glob, struct trace_array *tr,
+ 	gfs2_log_lock(sdp);
+ 	list_sort(NULL, blist, blocknr_cmp);
+-	bd1 = bd2 = list_prepare_entry(bd1, blist, bd_list);
++	tmp1 = tmp2 = list_prepare_entry(bd1, blist, bd_list);
+ 	while(total) {
+ 		num = total;
+ 		if (total > limit)
+@@ -675,14 +675,18 @@ static void gfs2_before_commit(struct gfs2_sbd *sdp, unsigned int limit,
+ 		ptr = (__be64 *)(ld + 1);
  
- 	mutex_lock(&ftrace_lock);
- 	/* Check if the probe_ops is already registered */
--	list_for_each_entry(probe, &tr->func_probes, list) {
--		if (probe->probe_ops == probe_ops)
-+	list_for_each_entry(iter, &tr->func_probes, list) {
-+		if (iter->probe_ops == probe_ops) {
-+			probe = iter;
- 			break;
-+		}
- 	}
--	if (&probe->list == &tr->func_probes)
-+	if (!probe)
- 		goto err_unlock_ftrace;
+ 		n = 0;
++		bd1 = list_prepare_entry(tmp1, blist, bd_list);
++		tmp1 = NULL;
+ 		list_for_each_entry_continue(bd1, blist, bd_list) {
+ 			*ptr++ = cpu_to_be64(bd1->bd_bh->b_blocknr);
+ 			if (is_databuf) {
+ 				gfs2_check_magic(bd1->bd_bh);
+ 				*ptr++ = cpu_to_be64(buffer_escaped(bd1->bd_bh) ? 1 : 0);
+ 			}
+-			if (++n >= num)
++			if (++n >= num) {
++				tmp1 = bd1;
+ 				break;
++			}
+ 		}
  
- 	ret = -EINVAL;
-diff --git a/kernel/trace/trace_eprobe.c b/kernel/trace/trace_eprobe.c
-index 541aa13581b9..63e901a28425 100644
---- a/kernel/trace/trace_eprobe.c
-+++ b/kernel/trace/trace_eprobe.c
-@@ -650,7 +650,7 @@ static struct trace_event_functions eprobe_funcs = {
- static int disable_eprobe(struct trace_eprobe *ep,
- 			  struct trace_array *tr)
- {
--	struct event_trigger_data *trigger;
-+	struct event_trigger_data *trigger = NULL, *iter;
- 	struct trace_event_file *file;
- 	struct eprobe_data *edata;
+ 		gfs2_log_unlock(sdp);
+@@ -690,6 +694,8 @@ static void gfs2_before_commit(struct gfs2_sbd *sdp, unsigned int limit,
+ 		gfs2_log_lock(sdp);
  
-@@ -658,14 +658,16 @@ static int disable_eprobe(struct trace_eprobe *ep,
- 	if (!file)
- 		return -ENOENT;
+ 		n = 0;
++		bd2 = list_prepare_entry(tmp2, blist, bd_list);
++		tmp2 = NULL;
+ 		list_for_each_entry_continue(bd2, blist, bd_list) {
+ 			get_bh(bd2->bd_bh);
+ 			gfs2_log_unlock(sdp);
+@@ -712,8 +718,10 @@ static void gfs2_before_commit(struct gfs2_sbd *sdp, unsigned int limit,
+ 				gfs2_log_write_bh(sdp, bd2->bd_bh);
+ 			}
+ 			gfs2_log_lock(sdp);
+-			if (++n >= num)
++			if (++n >= num) {
++				tmp2 = bd2;
+ 				break;
++			}
+ 		}
  
--	list_for_each_entry(trigger, &file->triggers, list) {
--		if (!(trigger->flags & EVENT_TRIGGER_FL_PROBE))
-+	list_for_each_entry(iter, &file->triggers, list) {
-+		if (!(iter->flags & EVENT_TRIGGER_FL_PROBE))
- 			continue;
--		edata = trigger->private_data;
--		if (edata->ep == ep)
-+		edata = iter->private_data;
-+		if (edata->ep == ep) {
-+			trigger = iter;
- 			break;
-+		}
- 	}
--	if (list_entry_is_head(trigger, &file->triggers, list))
-+	if (!trigger)
- 		return -ENODEV;
- 
- 	list_del_rcu(&trigger->list);
-diff --git a/kernel/trace/trace_events.c b/kernel/trace/trace_events.c
-index e11e167b7809..fe3dc157e635 100644
---- a/kernel/trace/trace_events.c
-+++ b/kernel/trace/trace_events.c
-@@ -2281,7 +2281,7 @@ event_subsystem_dir(struct trace_array *tr, const char *name,
- 		    struct trace_event_file *file, struct dentry *parent)
- {
- 	struct trace_subsystem_dir *dir;
--	struct event_subsystem *system;
-+	struct event_subsystem *system, *iter;
- 	struct dentry *entry;
- 
- 	/* First see if we did not already create this dir */
-@@ -2295,13 +2295,13 @@ event_subsystem_dir(struct trace_array *tr, const char *name,
- 	}
- 
- 	/* Now see if the system itself exists. */
--	list_for_each_entry(system, &event_subsystems, list) {
--		if (strcmp(system->name, name) == 0)
-+	system = NULL;
-+	list_for_each_entry(iter, &event_subsystems, list) {
-+		if (strcmp(iter->name, name) == 0) {
-+			system = iter;
- 			break;
-+		}
- 	}
--	/* Reset system variable when not found */
--	if (&system->list == &event_subsystems)
--		system = NULL;
- 
- 	dir = kmalloc(sizeof(*dir), GFP_KERNEL);
- 	if (!dir)
+ 		BUG_ON(total < num);
 
 base-commit: f82da161ea75dc4db21b2499e4b1facd36dab275
 -- 
