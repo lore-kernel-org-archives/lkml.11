@@ -2,128 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4DE3C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 22:54:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71236C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 22:56:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242700AbiCaW4G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 18:56:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39970 "EHLO
+        id S242706AbiCaW6Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 18:58:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242684AbiCaW4D (ORCPT
+        with ESMTP id S239309AbiCaW6X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 18:56:03 -0400
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE4F06516F
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 15:54:14 -0700 (PDT)
-Received: by mail-yb1-xb2a.google.com with SMTP id m67so1993949ybm.4
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 15:54:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=H4K1DYo6POxyHa7P+r+PclGm7rs5TWXKiHdrqnC5dzk=;
-        b=l6l3R4RPJBfrQ5v9o/l3WbtqAvsavb7WlXlcj+rdQGaIyoPa45SjS3yqRb58aBIOL4
-         N2CFmZvPSeUEVQeR0I39B+b8LXyBy7s9otM341m/V/LKv75BQU5+824n4leoIwepKTl3
-         6//ffE486OzkiGY/gkrVzLypYftNuGZsdgi4LkBPxqW9spQeY34J57XbRcw2JvP9iyJq
-         7/V+sXc2HD4k7+6fIXv8CUmT1u8uQEk0vKGKRKKwluevG16JV3LJ8Q5KP8DORZZbLpM0
-         rk27Wyj6yL+1utx0TkD2jgMzcVaMy2tkqyVG+osrQgn+X2vmvYUQxO8h2BJlpoY+EFqI
-         W9xQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=H4K1DYo6POxyHa7P+r+PclGm7rs5TWXKiHdrqnC5dzk=;
-        b=oKsoxhFr5eKD2zX2XqmsORbSOw6KOFg5IIwISWCnf9DfNWejAPbQ0Q888qtVX8vb2B
-         U1aexXFZMQuOkAU/rHct2zip3chU/qKDUhE9V7/gRn/sggnnm1sI50Xly9JQb7cxSjKI
-         qzJvfubZ/AHrTsj8EqFyhALEXA1wN7d5Bz9neHRwGD6IDqThau3y3My47jfih5il2/x2
-         W/6k6RvAG4M8KNn5egRPFvMJ497L5ow2R1+H5VH99y4LjPg7220bIjXTl96th2kakglZ
-         MSc9SVbRKrKPMk+ytQoCgHVRqzP64zcgBxp8fT6fpj8NwosztzP3U3yIUBP50Ra75hRC
-         D05w==
-X-Gm-Message-State: AOAM533F5ypSan0G2tpwqQhuOMZVk6KwZkgiBTaXnRF56p6KbdQZzdpV
-        b1H5/A47pALfcdUII9J7BINmER7E7heFy7wxF/N3JQeMlN5LSA==
-X-Google-Smtp-Source: ABdhPJyTi1Dl8DEWCrTYMWNrm45yUrNjTNISCWkuE3ZvvgV+PX4z6oQdN5GJaJ0YEWVm/ZDFWqTWJKfneiAcG5Y4yHI=
-X-Received: by 2002:a5b:7c6:0:b0:60b:a0ce:19b with SMTP id t6-20020a5b07c6000000b0060ba0ce019bmr6042995ybq.407.1648767253585;
- Thu, 31 Mar 2022 15:54:13 -0700 (PDT)
+        Thu, 31 Mar 2022 18:58:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD7A22325D6;
+        Thu, 31 Mar 2022 15:56:35 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5846361660;
+        Thu, 31 Mar 2022 22:56:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B302C340ED;
+        Thu, 31 Mar 2022 22:56:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648767394;
+        bh=QThZI7tHhBglWLB+tvKaUGnhtbdylP2EGYTJaJlJio4=;
+        h=From:To:Cc:Subject:Date:From;
+        b=J8JMzh4VJmddMyni9deTyx+5xAOEZMrVJqRn5OpAGfNxCl25S4PU+kOGwaeP5th7I
+         PFHpGI0Jd7D6poVg7TjGwDlJWbDz/QWr3iQMJiDqK2DFiVth8/hDEhDmh9G9cv5L6q
+         NmDfec+Md9goHnugcNR6kJJHVpzSkwRrdQpIB/KRy/ckIRZx6fCAEao72HgwPJA8fT
+         teOfdU0DxJAN6CFkVm2LAgd4aTEQt4hOI6p4K/zwkQ6FR21EHxnKbkhN8YZ1y42PXG
+         eFHJaXQCZKesogajnbqgTVf3BFmXZM6ZjmIl9U4YFIZeGqZvZhwjiGgYOLxiu1rAKH
+         XdO8bCnUj3d6Q==
+From:   Jeff Layton <jlayton@kernel.org>
+To:     viro@zeniv.linux.org.uk
+Cc:     ceph-devel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] fs: change test in inode_insert5 for adding to the sb list
+Date:   Thu, 31 Mar 2022 18:56:32 -0400
+Message-Id: <20220331225632.247244-1-jlayton@kernel.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-References: <CANn89iKaNEwyNZ=L_PQnkH0LP_XjLYrr_dpyRKNNoDJaWKdrmg@mail.gmail.com>
- <20220331224222.GY4285@paulmck-ThinkPad-P17-Gen-1>
-In-Reply-To: <20220331224222.GY4285@paulmck-ThinkPad-P17-Gen-1>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 31 Mar 2022 15:54:02 -0700
-Message-ID: <CANn89iJjyp7s1fYB6VCqLhUnF+mmEXyw8GMpFC9Vi22usBsgAQ@mail.gmail.com>
-Subject: Re: [BUG] rcu-tasks : should take care of sparse cpu masks
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 31, 2022 at 3:42 PM Paul E. McKenney <paulmck@kernel.org> wrote:
->
-> On Thu, Mar 31, 2022 at 02:45:25PM -0700, Eric Dumazet wrote:
-> > Hi Paul
-> >
-> > It seems you assume per cpu ptr for arbitrary indexes (< nr_cpu_ids) are valid.
->
-> Gah!  I knew I was forgetting something...
->
-> But just to check, is this a theoretical problem or something you hit
-> on real hardware?  (For the rest of this email, I am assuming the latter.)
+The inode_insert5 currently looks at I_CREATING to decide whether to
+insert the inode into the sb list. This test is a bit ambiguous though
+as I_CREATING state is not directly related to that list.
 
-Code review really...
+This test is also problematic for some upcoming ceph changes to add
+fscrypt support. We need to be able to allocate an inode using new_inode
+and insert it into the hash later if we end up using it, and doing that
+now means that we double add it and corrupt the list.
 
->
-> > What do you think of the (untested) following patch ?
->
-> One issue with this patch is that the contention could be unpredictable,
-> or worse, vary among CPU, especially if the cpu_possible_mask was oddly
-> distributed.
->
-> So might it be better to restrict this to all on CPU 0 on the one hand
-> and completely per-CPU on the other?  (Or all on the boot CPU, in case
-> I am forgetting some misbegotten architecture that can run without a
-> CPU 0.)
+What we really want to know in this test is whether the inode is already
+in its superblock list, and then add it if it isn't. Have it test for
+list_empty instead and ensure that we always initialize the list by
+doing it in inode_init_once. It's only ever removed from the list with
+list_del_init, so that should be sufficient.
 
-If I understand correctly, cblist_init_generic() could setup
-percpu_enqueue_shift
-to something smaller than order_base_2(nr_cpu_ids)
+Suggested-by: Al Viro <viro@zeniv.linux.org.uk>
+Signed-off-by: Jeff Layton <jlayton@kernel.org>
+---
+ fs/inode.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
-Meaning that we could reach a non zero idx in (smp_processor_id() >>
-percpu_enqueue_shift)
+This is the alternate approach that Al suggested to me on IRC. I think
+this is likely to be more robust in the long run, and we can avoid
+exporting another symbol.
 
-So even if CPU0 is always present (I am not sure this is guaranteed,
-but this seems reasonable),
-we could still attempt a per_cpu_ptr(PTR,  not_present_cpu), and get garbage.
+Al, if you're ok with this, would you mind taking this in via your tree?
+I'd like to see this in sit in linux-next for a bit so we can see if any
+benchmarks get dinged.
 
+diff --git a/fs/inode.c b/fs/inode.c
+index 63324df6fa27..e10cff5102d4 100644
+--- a/fs/inode.c
++++ b/fs/inode.c
+@@ -422,6 +422,7 @@ void inode_init_once(struct inode *inode)
+ 	INIT_LIST_HEAD(&inode->i_io_list);
+ 	INIT_LIST_HEAD(&inode->i_wb_list);
+ 	INIT_LIST_HEAD(&inode->i_lru);
++	INIT_LIST_HEAD(&inode->i_sb_list);
+ 	__address_space_init_once(&inode->i_data);
+ 	i_size_ordered_init(inode);
+ }
+@@ -1021,7 +1022,6 @@ struct inode *new_inode_pseudo(struct super_block *sb)
+ 		spin_lock(&inode->i_lock);
+ 		inode->i_state = 0;
+ 		spin_unlock(&inode->i_lock);
+-		INIT_LIST_HEAD(&inode->i_sb_list);
+ 	}
+ 	return inode;
+ }
+@@ -1165,7 +1165,6 @@ struct inode *inode_insert5(struct inode *inode, unsigned long hashval,
+ {
+ 	struct hlist_head *head = inode_hashtable + hash(inode->i_sb, hashval);
+ 	struct inode *old;
+-	bool creating = inode->i_state & I_CREATING;
+ 
+ again:
+ 	spin_lock(&inode_hash_lock);
+@@ -1199,7 +1198,13 @@ struct inode *inode_insert5(struct inode *inode, unsigned long hashval,
+ 	inode->i_state |= I_NEW;
+ 	hlist_add_head_rcu(&inode->i_hash, head);
+ 	spin_unlock(&inode->i_lock);
+-	if (!creating)
++
++	/*
++	 * Add it to the list if it wasn't already in,
++	 * e.g. new_inode. We hold I_NEW at this point, so
++	 * we should be safe to test i_sb_list locklessly.
++	 */
++	if (list_empty(&inode->i_sb_list))
+ 		inode_sb_list_add(inode);
+ unlock:
+ 	spin_unlock(&inode_hash_lock);
+-- 
+2.35.1
 
-
-> > Thanks.
-> >
-> > diff --git a/kernel/rcu/tasks.h b/kernel/rcu/tasks.h
-> > index 99cf3a13954cfb17828fbbeeb884f11614a526a9..df3785be4022e903d9682dd403464aa9927aa5c2
-> > 100644
-> > --- a/kernel/rcu/tasks.h
-> > +++ b/kernel/rcu/tasks.h
-> > @@ -273,13 +273,17 @@ static void call_rcu_tasks_generic(struct
-> > rcu_head *rhp, rcu_callback_t func,
-> >         bool needadjust = false;
-> >         bool needwake;
-> >         struct rcu_tasks_percpu *rtpcp;
-> > +       int ideal_cpu, chosen_cpu;
-> >
-> >         rhp->next = NULL;
-> >         rhp->func = func;
-> >         local_irq_save(flags);
-> >         rcu_read_lock();
-> > -       rtpcp = per_cpu_ptr(rtp->rtpcpu,
-> > -                           smp_processor_id() >>
-> > READ_ONCE(rtp->percpu_enqueue_shift));
-> > +
-> > +       ideal_cpu = smp_processor_id() >> READ_ONCE(rtp->percpu_enqueue_shift);
-> > +       chosen_cpu = cpumask_next(ideal_cpu - 1, cpu_online_mask);
-> > +
-> > +       rtpcp = per_cpu_ptr(rtp->rtpcpu, chosen_cpu);
-> >         if (!raw_spin_trylock_rcu_node(rtpcp)) { // irqs already disabled.
-> >                 raw_spin_lock_rcu_node(rtpcp); // irqs already disabled.
-> >                 j = jiffies;
