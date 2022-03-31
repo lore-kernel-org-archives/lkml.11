@@ -2,295 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05418C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 15:54:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54280C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 15:55:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239439AbiCaP4b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 11:56:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36322 "EHLO
+        id S239414AbiCaP4s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 11:56:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239394AbiCaP4W (ORCPT
+        with ESMTP id S239394AbiCaP4p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 11:56:22 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 138348B6DD
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 08:54:35 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id r13so256588ejd.5
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 08:54:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=+0kj1VHuVCuTwIUYn8MksZLIxUzbITlQbSkk6fjy+L8=;
-        b=BI0/elhBlkqq1bXeh98Jmnkak4uRmVNbtBS92xsTZIFEgQeNnvVW/gAU/YtygYOuGG
-         LRmWiqTqhjNb63sA4Q3pXrOuGQFXIpJgZ+BqSV6zQP2gQW8l/kw+5jjmQyj+ZH8wl6gP
-         E4bD8MG+cEKcM7RfnqKOlhvGbNPm5/gemMG5kL7scc9uWrxqaZchZjWgP85bH9wlORVg
-         5WD0xP23siv/bqF4dqgZzeM4JrhlKgv9KnP9i7+KRhfkj8/JKWSJ9twwyPpDaM3QikLs
-         rRCubL85cVCZ3U2MSl1yryN4IMAxjmSv2O9AM3VVhXm4wumRQ71Wo/k42Cy4uX5Wpnqt
-         vryw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=+0kj1VHuVCuTwIUYn8MksZLIxUzbITlQbSkk6fjy+L8=;
-        b=4jQ2ZXLWFekdAjm2XlnFOrdw4g86Z+MXLvxhyZFkjmaf+Rz7U/vsEtA00bXyxsiURw
-         d4wTitPIvW2gUSOXoCoH8m92tzHMICgBhH5TmLY8EvpcmdycDAb04Hmd2bYET1OlKv9w
-         kubtvn9SyUhJoJqV5aTOIvjfB3cu85ghOiYCEZvgp77Vx/xxEiHkzI11hT8+259Ltx9f
-         y465/eE8kakNtFTQWjweJ5mW9CkGZHqA22HlSlzc9YWATUfKPuVyEH457qBnUZAyApSF
-         79xbjUGmjBCIh/bY+IuFtAILqn+oK10feAejk9bC1zedS/oao0zIHC38nh79uozOmLfG
-         OQTw==
-X-Gm-Message-State: AOAM530s34S92RsB7xop3Q0/FMTMWX2kcfBaGyOKPysLyjXMG3W/pRh2
-        0y4kE9rlxF8o3BxnKafkhZYn0g==
-X-Google-Smtp-Source: ABdhPJzbxxi0je/17ReZeqypHNjqLc2e1+penHcUTMbi3GgRqWcyE7J/sUJKHoETqHY+ohqEaTBKEA==
-X-Received: by 2002:a17:907:a0c8:b0:6df:ef3c:5eb6 with SMTP id hw8-20020a170907a0c800b006dfef3c5eb6mr5689683ejc.646.1648742073481;
-        Thu, 31 Mar 2022 08:54:33 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id g10-20020a056402090a00b004196250baeasm11584077edz.95.2022.03.31.08.54.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 31 Mar 2022 08:54:33 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Mark Brown <broonie@kernel.org>, linux-arm-msm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-spi@vger.kernel.org
-Cc:     Kuldeep Singh <singh.kuldeep87k@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v2 4/4] spi: dt-bindings: qcom,spi-qup: convert to dtschema
-Date:   Thu, 31 Mar 2022 17:54:25 +0200
-Message-Id: <20220331155425.714946-4-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220331155320.714754-1-krzysztof.kozlowski@linaro.org>
-References: <20220331155320.714754-1-krzysztof.kozlowski@linaro.org>
+        Thu, 31 Mar 2022 11:56:45 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4937C91566
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 08:54:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648742094; x=1680278094;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=7T7GLlriaF2A5bwKoW5oZoyB9UoM65n6FmNK69DBzGs=;
+  b=lNdigNF0+NKc49B4OeNrWz8yElEKeCKVuDvATi0eA3Vqg13mg170YZGn
+   R+KMBnIwX+mljJc2/DJV3KUvqiQZjfIV1Fl0ImZfm2UJ18l7w0Z1Eumme
+   UVxc5vON+HJmEINkpLLNQMkcAZv2IBCRzuD0YGWmBr9GAlAaPUZZK2hmP
+   JhxROQFX465DZpXB1LNS8RsNKC5d666xUltQys6B4gsbq/uAhYAoo5nwi
+   4iSMMeSgQPV+n54cQdY5gWS6wLHB6J8ACNf08NHUmVs/ad2zeoo6kPSZ/
+   aXqOnCpYkvLhGEzZXRRJp6lGwcfuZ7gcrXBYTs5Q6W4bL+JWgikA47kgP
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="259585744"
+X-IronPort-AV: E=Sophos;i="5.90,225,1643702400"; 
+   d="scan'208";a="259585744"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2022 08:54:53 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,225,1643702400"; 
+   d="scan'208";a="586480733"
+Received: from lkp-server02.sh.intel.com (HELO 3231c491b0e2) ([10.239.97.151])
+  by orsmga001.jf.intel.com with ESMTP; 31 Mar 2022 08:54:51 -0700
+Received: from kbuild by 3231c491b0e2 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nZx8M-0000P4-CT;
+        Thu, 31 Mar 2022 15:54:50 +0000
+Date:   Thu, 31 Mar 2022 23:54:02 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Waiman Long <longman@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     kbuild-all@lists.01.org,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        linux-kernel@vger.kernel.org,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Ingo Molnar <mingo@kernel.org>,
+        Justin Forbes <jforbes@redhat.com>,
+        Rafael Aquini <aquini@redhat.com>,
+        Waiman Long <longman@redhat.com>
+Subject: Re: [PATCH v3] mm/sparsemem: Fix 'mem_section' will never be NULL
+ gcc 12 warning
+Message-ID: <202203312327.XGeCiD5T-lkp@intel.com>
+References: <20220330205919.2713275-1-longman@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220330205919.2713275-1-longman@redhat.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert the Qualcomm Universal Peripheral (QUP) Serial Peripheral
-Interface (SPI) bindings to DT Schema.
+Hi Waiman,
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- .../bindings/soc/qcom/qcom,gsbi.txt           |   2 +-
- .../devicetree/bindings/spi/qcom,spi-qup.txt  | 103 ------------------
- .../devicetree/bindings/spi/qcom,spi-qup.yaml |  81 ++++++++++++++
- 3 files changed, 82 insertions(+), 104 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/spi/qcom,spi-qup.txt
- create mode 100644 Documentation/devicetree/bindings/spi/qcom,spi-qup.yaml
+I love your patch! Perhaps something to improve:
 
-diff --git a/Documentation/devicetree/bindings/soc/qcom/qcom,gsbi.txt b/Documentation/devicetree/bindings/soc/qcom/qcom,gsbi.txt
-index fe1855f09dcc..c443f1416a0a 100644
---- a/Documentation/devicetree/bindings/soc/qcom/qcom,gsbi.txt
-+++ b/Documentation/devicetree/bindings/soc/qcom/qcom,gsbi.txt
-@@ -33,7 +33,7 @@ controller, or some combination of aforementioned devices.
- 
- See the following for child node definitions:
- Documentation/devicetree/bindings/i2c/qcom,i2c-qup.txt
--Documentation/devicetree/bindings/spi/qcom,spi-qup.txt
-+Documentation/devicetree/bindings/spi/qcom,spi-qup.yaml
- Documentation/devicetree/bindings/serial/qcom,msm-uartdm.txt
- 
- Example for APQ8064:
-diff --git a/Documentation/devicetree/bindings/spi/qcom,spi-qup.txt b/Documentation/devicetree/bindings/spi/qcom,spi-qup.txt
-deleted file mode 100644
-index 5c090771c016..000000000000
---- a/Documentation/devicetree/bindings/spi/qcom,spi-qup.txt
-+++ /dev/null
-@@ -1,103 +0,0 @@
--Qualcomm Universal Peripheral (QUP) Serial Peripheral Interface (SPI)
--
--The QUP core is an AHB slave that provides a common data path (an output FIFO
--and an input FIFO) for serial peripheral interface (SPI) mini-core.
--
--SPI in master mode supports up to 50MHz, up to four chip selects, programmable
--data path from 4 bits to 32 bits and numerous protocol variants.
--
--Required properties:
--- compatible:     Should contain:
--		  "qcom,spi-qup-v1.1.1" for 8660, 8960 and 8064.
--		  "qcom,spi-qup-v2.1.1" for 8974 and later
--		  "qcom,spi-qup-v2.2.1" for 8974 v2 and later.
--
--- reg:            Should contain base register location and length
--- interrupts:     Interrupt number used by this controller
--
--- clocks:         Should contain the core clock and the AHB clock.
--- clock-names:    Should be "core" for the core clock and "iface" for the
--                  AHB clock.
--
--- #address-cells: Number of cells required to define a chip select
--                  address on the SPI bus. Should be set to 1.
--- #size-cells:    Should be zero.
--
--Optional properties:
--- spi-max-frequency: Specifies maximum SPI clock frequency,
--                     Units - Hz. Definition as per
--                     Documentation/devicetree/bindings/spi/spi-bus.txt
--- num-cs:	total number of chipselects
--- cs-gpios:	should specify GPIOs used for chipselects.
--		The gpios will be referred to as reg = <index> in the SPI child
--		nodes.  If unspecified, a single SPI device without a chip
--		select can be used.
--
--- dmas:         Two DMA channel specifiers following the convention outlined
--                in bindings/dma/dma.txt
--- dma-names:    Names for the dma channels, if present. There must be at
--                least one channel named "tx" for transmit and named "rx" for
--                receive.
--
--SPI slave nodes must be children of the SPI master node and can contain
--properties described in Documentation/devicetree/bindings/spi/spi-bus.txt
--
--Example:
--
--	spi_8: spi@f9964000 { /* BLSP2 QUP2 */
--
--		compatible = "qcom,spi-qup-v2";
--		#address-cells = <1>;
--		#size-cells = <0>;
--		reg = <0xf9964000 0x1000>;
--		interrupts = <0 102 0>;
--		spi-max-frequency = <19200000>;
--
--		clocks = <&gcc GCC_BLSP2_QUP2_SPI_APPS_CLK>, <&gcc GCC_BLSP2_AHB_CLK>;
--		clock-names = "core", "iface";
--
--		dmas = <&blsp1_bam 13>, <&blsp1_bam 12>;
--		dma-names = "rx", "tx";
--
--		pinctrl-names = "default";
--		pinctrl-0 = <&spi8_default>;
--
--		device@0 {
--			compatible = "arm,pl022-dummy";
--			#address-cells = <1>;
--			#size-cells = <1>;
--			reg = <0>; /* Chip select 0 */
--			spi-max-frequency = <19200000>;
--			spi-cpol;
--		};
--
--		device@1 {
--			compatible = "arm,pl022-dummy";
--			#address-cells = <1>;
--			#size-cells = <1>;
--			reg = <1>; /* Chip select 1 */
--			spi-max-frequency = <9600000>;
--			spi-cpha;
--		};
--
--		device@2 {
--			compatible = "arm,pl022-dummy";
--			#address-cells = <1>;
--			#size-cells = <1>;
--			reg = <2>; /* Chip select 2 */
--			spi-max-frequency = <19200000>;
--			spi-cpol;
--			spi-cpha;
--		};
--
--		device@3 {
--			compatible = "arm,pl022-dummy";
--			#address-cells = <1>;
--			#size-cells = <1>;
--			reg = <3>; /* Chip select 3 */
--			spi-max-frequency = <19200000>;
--			spi-cpol;
--			spi-cpha;
--			spi-cs-high;
--		};
--	};
-diff --git a/Documentation/devicetree/bindings/spi/qcom,spi-qup.yaml b/Documentation/devicetree/bindings/spi/qcom,spi-qup.yaml
-new file mode 100644
-index 000000000000..93f14dd01afc
---- /dev/null
-+++ b/Documentation/devicetree/bindings/spi/qcom,spi-qup.yaml
-@@ -0,0 +1,81 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/spi/qcom,spi-qup.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Qualcomm Universal Peripheral (QUP) Serial Peripheral Interface (SPI)
-+
-+maintainers:
-+  - Andy Gross <agross@kernel.org>
-+  - Bjorn Andersson <bjorn.andersson@linaro.org>
-+  - Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-+
-+description:
-+  The QUP core is an AHB slave that provides a common data path (an output FIFO
-+  and an input FIFO) for serial peripheral interface (SPI) mini-core.
-+
-+  SPI in master mode supports up to 50MHz, up to four chip selects,
-+  programmable data path from 4 bits to 32 bits and numerous protocol variants.
-+
-+allOf:
-+  - $ref: /schemas/spi/spi-controller.yaml#
-+
-+properties:
-+  compatible:
-+    enum:
-+      - qcom,spi-qup-v1.1.1 # for 8660, 8960 and 8064
-+      - qcom,spi-qup-v2.1.1 # for 8974 and later
-+      - qcom,spi-qup-v2.2.1 # for 8974 v2 and later
-+
-+  clocks:
-+    maxItems: 2
-+
-+  clock-names:
-+    items:
-+      - const: core
-+      - const: iface
-+
-+  dmas:
-+    maxItems: 2
-+
-+  dma-names:
-+    items:
-+      - const: tx
-+      - const: rx
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  reg:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - clocks
-+  - clock-names
-+  - interrupts
-+  - reg
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/clock/qcom,gcc-msm8996.h>
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+
-+    spi@7575000 {
-+        compatible = "qcom,spi-qup-v2.2.1";
-+        reg = <0x07575000 0x600>;
-+        interrupts = <GIC_SPI 95 IRQ_TYPE_LEVEL_HIGH>;
-+        clocks = <&gcc GCC_BLSP1_QUP1_SPI_APPS_CLK>,
-+                 <&gcc GCC_BLSP1_AHB_CLK>;
-+        clock-names = "core", "iface";
-+        pinctrl-names = "default", "sleep";
-+        pinctrl-0 = <&blsp1_spi1_default>;
-+        pinctrl-1 = <&blsp1_spi1_sleep>;
-+        dmas = <&blsp1_dma 12>, <&blsp1_dma 13>;
-+        dma-names = "tx", "rx";
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+    };
+[auto build test WARNING on hnaz-mm/master]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Waiman-Long/mm-sparsemem-Fix-mem_section-will-never-be-NULL-gcc-12-warning/20220331-050049
+base:   https://github.com/hnaz/linux-mm master
+config: arm-randconfig-c024-20220330 (https://download.01.org/0day-ci/archive/20220331/202203312327.XGeCiD5T-lkp@intel.com/config)
+compiler: arm-linux-gnueabi-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/2098f1d78cde338e81b3ba596ea39f37824e496e
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Waiman-Long/mm-sparsemem-Fix-mem_section-will-never-be-NULL-gcc-12-warning/20220331-050049
+        git checkout 2098f1d78cde338e81b3ba596ea39f37824e496e
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm SHELL=/bin/bash security/keys/encrypted-keys/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+   In file included from include/linux/gfp.h:6,
+                    from include/linux/umh.h:4,
+                    from include/linux/kmod.h:9,
+                    from include/linux/module.h:17,
+                    from security/keys/encrypted-keys/encrypted.c:15:
+   security/keys/encrypted-keys/encrypted.c: In function 'derived_key_encrypt.constprop':
+>> include/linux/mmzone.h:1432:23: warning: array subscript 32 is outside array bounds of 'struct mem_section[32][1]' [-Warray-bounds]
+    1432 |         unsigned long map = section->section_mem_map;
+         |                       ^~~
+   include/linux/mmzone.h:1390:27: note: while referencing 'mem_section'
+    1390 | extern struct mem_section mem_section[NR_SECTION_ROOTS][SECTIONS_PER_ROOT];
+         |                           ^~~~~~~~~~~
+
+
+vim +1432 include/linux/mmzone.h
+
+29751f6991e845 Andy Whitcroft 2005-06-23  1429  
+29751f6991e845 Andy Whitcroft 2005-06-23  1430  static inline struct page *__section_mem_map_addr(struct mem_section *section)
+29751f6991e845 Andy Whitcroft 2005-06-23  1431  {
+29751f6991e845 Andy Whitcroft 2005-06-23 @1432  	unsigned long map = section->section_mem_map;
+29751f6991e845 Andy Whitcroft 2005-06-23  1433  	map &= SECTION_MAP_MASK;
+29751f6991e845 Andy Whitcroft 2005-06-23  1434  	return (struct page *)map;
+29751f6991e845 Andy Whitcroft 2005-06-23  1435  }
+29751f6991e845 Andy Whitcroft 2005-06-23  1436  
+
 -- 
-2.32.0
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
