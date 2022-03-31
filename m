@@ -2,117 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A2C4C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 08:27:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC1E2C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 08:28:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232785AbiCaI3X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 04:29:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38978 "EHLO
+        id S230516AbiCaI36 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 04:29:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231841AbiCaI3U (ORCPT
+        with ESMTP id S232797AbiCaI3y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 04:29:20 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C194E1C8878;
-        Thu, 31 Mar 2022 01:27:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1648715253; x=1680251253;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Lx3Akt2XgQBGgPwZQOjCdTFVnMM6p3ONMYke/VZbCfA=;
-  b=HR5H6cPT+Kqa1+nVNR7G8b7V4QwWosY+3s95dleERfEpnycYP5NDqgsa
-   RWBJ5PU8R78FlkKnKqdHrJAJYoiH2JE/LtdJ4Nrj/Tk8aQahqLTxWYToH
-   PKhheuuq1zvicq+M+3ACMaIPCuSvPoS2oR189M4fMh+T5BPI7q5pJVyF9
-   WucuSZ8dP0LQ2jKkt0px0LaM+ZEBK19h+1Bj+fwh4ZW63VjwS7wDJHV0H
-   sHHJdtd83x5bowtx9R4yF3HDDbUKYKwK6DTKkXrJ2HShEzXtvoP2z41nM
-   eyneGgbf2S6TWH3lj3YP46fPpO4zdKwAQWzRtDdhn/UXAcvLfJbfzLwXu
-   g==;
-X-IronPort-AV: E=Sophos;i="5.90,224,1643698800"; 
-   d="scan'208";a="158789272"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 31 Mar 2022 01:27:32 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 31 Mar 2022 01:27:31 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
- (10.10.85.144) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Thu, 31 Mar 2022 01:27:31 -0700
-Date:   Thu, 31 Mar 2022 10:30:38 +0200
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Michael Walle <michael@walle.cc>
-CC:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        "Philipp Zabel" <p.zabel@pengutronix.de>,
-        <UNGLinuxDriver@microchip.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH RFC net-next] net: lan966x: make PHY reset support
- optional
-Message-ID: <20220331083038.eorhpmhydadujfft@soft-dev3-1.localhost>
-References: <20220330110210.3374165-1-michael@walle.cc>
+        Thu, 31 Mar 2022 04:29:54 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B5DA1C9B6A;
+        Thu, 31 Mar 2022 01:28:07 -0700 (PDT)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id DC76222246;
+        Thu, 31 Mar 2022 10:28:04 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1648715285;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=xLBmDR105PDmmrWw4p/m3U41pcGdvFhEUw0TeW5bDNE=;
+        b=W1xRlWIqee+MF+MuWb7M1g0mk/kRz4fGc0y59p8rQAEjNFvMXG24hkNHs9nd7/thGGp02q
+        e7RPyvg19Ua1iSeEUneD7nDWwOvFOH4a3pDe5CTnCRxGiUkmvdQdlzkKoJGvomw2HrnpNY
+        mdFwr11MrtNYI0MXUTJ8xXn0t8DOAxw=
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <20220330110210.3374165-1-michael@walle.cc>
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Thu, 31 Mar 2022 10:28:04 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Xu Liang <lxu@maxlinear.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RFC net-next 2/5] net: phy: support indirect c45 access in
+ get_phy_c45_ids()
+In-Reply-To: <YkSC7CJ4OEFH69yU@shell.armlinux.org.uk>
+References: <20220323183419.2278676-1-michael@walle.cc>
+ <20220323183419.2278676-3-michael@walle.cc> <Yjt3hHWt0mW6er8/@lunn.ch>
+ <43227d27d938fad8a2441363d175106e@walle.cc>
+ <YkSC7CJ4OEFH69yU@shell.armlinux.org.uk>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <ed65d0a2e49159a85fc47092d0df6bb6@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The 03/30/2022 13:02, Michael Walle wrote:
+Am 2022-03-30 18:18, schrieb Russell King (Oracle):
+> On Wed, Mar 23, 2022 at 11:14:11PM +0100, Michael Walle wrote:
+>> I actually had that. But mmd_phy_indirect() doesn't check
+>> the return code and neither does the __phy_write_mmd() it
+>> actually deliberatly sets "ret = 0". So I wasn't sure. If you
+>> are fine with a changed code flow in the error case, then sure.
+>> I.e. mmd_phy_indirect() always (try to) do three accesses; with
+>> error checks it might end after the first. If you are fine
+>> with the error checks, should __phy_write_mmd() also check the
+>> last mdiobus_write()?
+> 
+> The reason for that goes back to
+> commit a59a4d1921664da63d801ba477950114c71c88c9
+>     phy: add the EEE support and the way to access to the MMD 
+> registers.
+> 
+> and to maintain compatibility with that; if we start checking for
+> errors now, we might trigger a kernel regression sadly.
 
-Hi Michael,
+I see that this is the commit which introduced the mmd_phy_indirect()
+function, but I don't see why there is no return code checking.
+Unlike now, there is a check for the last read (the one who
+reads MII_MMD_DATA). That read which might return garbage if any
+write has failed before - or if the bus is completely dead,
+return an error. Current code will just return 0.
 
-> 
-> The PHY subsystem as well as the MIIM mdio driver (in case of the
-> integrated PHYs) will already take care of the resets of any external
-> and internal PHY. There is no need for this reset anymore, so mark it
-> optionally to be backwards compatible.
-> 
-> Signed-off-by: Michael Walle <michael@walle.cc>
-> ---
-> 
-> Horatiu, what do you think, should it be removed altogether? 
+In any case, I don't have a strong opinion here. I just don't
+see how that function could be reused while adding error checks
+and without making it ugly, so I've just duplicated it.
 
-I think it is OK to remove it altogether. If you get both [1] and [2]
-in.
+Maybe something like this:
 
-> There is
-> no user for that in mainline and I don't know about downstream but the
-> reset driver doesn't really work (as it also resets the GPIO/SGPIO)
+static int __phy_mmd_indirect_common(struct mii_bus *bus, int prtad,
+                                      int devad, int addr,
+                                      bool check_rc)
+{
+         int ret;
 
-Yes because I didn't manage to send yet those patches. But if your get
-yours in that is fine for me.
-My problem was, if after the probe of the MDIO controller it was probed
-the SGPIO then the PHYs will be in reset because the SGPIO was resetting
-the swich. But you put the reset of the swich on the pinctrl which will
-be probed before the MDIO, so that should be fine.
+         /* Write the desired MMD Devad */
+         ret = __mdiobus_write(bus, phy_addr, MII_MMD_CTRL, devad);
+         if (check_rc && ret)
+                 return ret;
 
-> and conceptionally the property is on the wrong DT node. All of the
-> drawbacks should have been addressed by my patches for the miim [1]
-> and the pinctrl driver [2].
-> 
-> [1] https://lore.kernel.org/netdev/20220318201324.1647416-1-michael@walle.cc/
-> [2] https://lore.kernel.org/linux-gpio/20220313154640.63813-1-michael@walle.cc/
-> 
->  drivers/net/ethernet/microchip/lan966x/lan966x_main.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-> index 1f8c67f0261b..0765064d2845 100644
-> --- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-> +++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-> @@ -916,7 +916,7 @@ static int lan966x_reset_switch(struct lan966x *lan966x)
->                 return dev_err_probe(lan966x->dev, PTR_ERR(switch_reset),
->                                      "Could not obtain switch reset");
-> 
-> -       phy_reset = devm_reset_control_get_shared(lan966x->dev, "phy");
-> +       phy_reset = devm_reset_control_get_optional_shared(lan966x->dev, "phy");
->         if (IS_ERR(phy_reset))
->                 return dev_err_probe(lan966x->dev, PTR_ERR(phy_reset),
->                                      "Could not obtain phy reset\n");
-> --
-> 2.30.2
-> 
+         /* Write the desired MMD register address */
+         ret = __mdiobus_write(bus, phy_addr, MII_MMD_DATA, regnum);
+         if (check_rc && ret)
+                 return ret;
 
--- 
-/Horatiu
+         /* Select the Function : DATA with no post increment */
+         ret = __mdiobus_write(bus, phy_addr, MII_MMD_CTRL,
+                               devad | MII_MMD_CTRL_NOINCR);
+         if (check_rc && ret)
+                 return ret;
+
+         return 0;
+}
+
+int __phy_mmd_indirect(struct mii_bus *bus, int prtad,
+                        int devad, int addr)
+{
+         return __phy_mmd_indirect_common(bus, prtad, devad,
+                                          addr, true);
+}
+
+/* some function doc about deliberatly no error checking.. */
+void __phy_mmd_indirect_legacy(struct mii_bus *bus, int prtad,
+                                int devad, int addr)
+{
+         __phy_mmd_indirect_common(bus, prtad, devad,
+                                   addr, false);
+}
+
+should the last two functions be static inline?
+
+-michael
