@@ -2,157 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A59BEC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 04:15:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B957BC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 04:15:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229778AbiCaERY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 00:17:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42442 "EHLO
+        id S229985AbiCaERh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 00:17:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230176AbiCaERE (ORCPT
+        with ESMTP id S230255AbiCaEQp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 00:17:04 -0400
-Received: from smtprz01.163.net (smtprz01.163.net [106.3.154.234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9EDE216F075
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 21:01:27 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by vip-app02.163.net (Postfix) with ESMTP id 3EF74440119
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 12:01:27 +0800 (CST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tom.com; s=mail;
-        t=1648699287; bh=21CqgYe68EqtmuAUXMw5t7Y6CsanGtFEcTU3Jo5xixQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=V5T6/CZ8iA3uITlo9fpHPU/G3BAcsBHkiI1BPFxQLWx3lzGfRrWxm2TrAMhtqIufw
-         NPYcSjkXQuMOk11GPGbfo+fAIc5mMcqO/vf+W+i1VdZk7EAz8kxovkNR+PfmnA0yMp
-         VGnhMxHzzeLo0dWKknZoi5XNtpHUZQjTXEdgVSsI=
-Received: from localhost (HELO smtprz01.163.net) ([127.0.0.1])
-          by localhost (TOM SMTP Server) with SMTP ID -1693251913
-          for <linux-kernel@vger.kernel.org>;
-          Thu, 31 Mar 2022 12:01:27 +0800 (CST)
-X-Virus-Scanned: Debian amavisd-new at mxtest.tom.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tom.com; s=mail;
-        t=1648699287; bh=21CqgYe68EqtmuAUXMw5t7Y6CsanGtFEcTU3Jo5xixQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=V5T6/CZ8iA3uITlo9fpHPU/G3BAcsBHkiI1BPFxQLWx3lzGfRrWxm2TrAMhtqIufw
-         NPYcSjkXQuMOk11GPGbfo+fAIc5mMcqO/vf+W+i1VdZk7EAz8kxovkNR+PfmnA0yMp
-         VGnhMxHzzeLo0dWKknZoi5XNtpHUZQjTXEdgVSsI=
-Received: from localhost (unknown [101.93.196.13])
-        by antispamvip.163.net (Postfix) with ESMTPA id BB2B61542837;
-        Wed, 30 Mar 2022 18:27:48 +0800 (CST)
-Date:   Wed, 30 Mar 2022 18:27:48 +0800
-From:   Mingbao Sun <sunmingbao@tom.com>
-To:     Sagi Grimberg <sagi@grimberg.me>
-Cc:     Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@fb.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        tyler.sun@dell.com, ping.gan@dell.com, yanxiu.cai@dell.com,
-        libin.zhang@dell.com, ao.sun@dell.com
-Subject: Re: [PATCH v2 2/3] nvme-tcp: support specifying the
- congestion-control
-Message-ID: <20220330182748.00003901@tom.com>
-In-Reply-To: <15f24dcd-9a62-8bab-271c-baa9cc693d8d@grimberg.me>
-References: <20220311103414.8255-1-sunmingbao@tom.com>
- <20220311103414.8255-2-sunmingbao@tom.com>
- <7121e4be-0e25-dd5f-9d29-0fb02cdbe8de@grimberg.me>
- <20220325201123.00002f28@tom.com>
- <b7b5106a-9c0d-db49-00ab-234756955de8@grimberg.me>
- <20220329104806.00000126@tom.com>
- <15f24dcd-9a62-8bab-271c-baa9cc693d8d@grimberg.me>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
+        Thu, 31 Mar 2022 00:16:45 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 566A5B0D09;
+        Wed, 30 Mar 2022 21:01:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648699267; x=1680235267;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=OrABZZQsphOZMKOKeJf4BcfF52I9DRZYnIsBfmD8D2Q=;
+  b=aTX0p1JLPgGoKYLT2dpsiGWsOvFbGbn0C2F4ynn8qBwX7YS7lWUHTRVG
+   8bdIFXfkD9CeXjwBkinBaGXGHi2HYx1sLXZvzqnPCoVMZCbbxUpkVaMz5
+   6xxpcZffsYhSJm0nUxv7VHp3f1XSigE3BHOl6bwFFBVf1q/OTnimIqK6e
+   0Jg8HarnsfKqxS4dhbbdtgjRaKXiEzmj+yV8NKKCE8NN4wqcxo4c39DuR
+   ZKEG3tTAbRUib4giCnJIGeKguFuAB7EvVFBaasBqebAWDwK1KW7jcRJAO
+   MVFk3v7lfX+xyoWqbQmM246I0B2MX0QPAyxOirZJys8F/hKs2d5hMUcAT
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="258539615"
+X-IronPort-AV: E=Sophos;i="5.90,224,1643702400"; 
+   d="scan'208";a="258539615"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 20:07:53 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,224,1643702400"; 
+   d="scan'208";a="547118109"
+Received: from lkp-server02.sh.intel.com (HELO 56431612eabd) ([10.239.97.151])
+  by orsmga007.jf.intel.com with ESMTP; 30 Mar 2022 20:07:51 -0700
+Received: from kbuild by 56431612eabd with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nZlA6-0000nI-O1;
+        Thu, 31 Mar 2022 03:07:50 +0000
+Date:   Thu, 31 Mar 2022 11:07:35 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Yi Wang <wang.yi59@zte.com.cn>, djwong@kernel.org
+Cc:     kbuild-all@lists.01.org, linux-xfs@vger.kernel.org,
+        linux-kernel@vger.kernel.org, xue.zhihong@zte.com.cn,
+        wang.yi59@zte.com.cn, wang.liang82@zte.com.cn,
+        Cheng Lin <cheng.lin130@zte.com.cn>
+Subject: Re: [PATCH] xfs: getattr ignore blocks beyond eof
+Message-ID: <202203311022.9gnVNhj6-lkp@intel.com>
+References: <20220331080256.1874-1-wang.yi59@zte.com.cn>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220331080256.1874-1-wang.yi59@zte.com.cn>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 29 Mar 2022 10:46:08 +0300
-Sagi Grimberg <sagi@grimberg.me> wrote:
+Hi Yi,
 
-> >> As I said, TCP can be tuned in various ways, congestion being just one
-> >> of them. I'm sure you can find a workload where rmem/wmem will make
-> >> a difference. =20
-> >=20
-> > agree.
-> > but the difference for the knob of rmem/wmem is:
-> > we could enlarge rmem/wmem for NVMe/TCP via sysctl,
-> > and it would not bring downside to any other sockets whose
-> > rmem/wmem are not explicitly specified. =20
->=20
-> It can most certainly affect them, positively or negatively, depends
-> on the use-case.
+Thank you for the patch! Yet something to improve:
 
-Agree.
-Your saying is rigorous.
+[auto build test ERROR on xfs-linux/for-next]
+[also build test ERROR on v5.17 next-20220330]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-> >> In addition, based on my knowledge, application specific TCP level
-> >> tuning (like congestion) is not really a common thing to do. So why in
-> >> nvme-tcp?
-> >>
-> >> So to me at least, it is not clear why we should add it to the driver.=
- =20
-> >=20
-> > As mentioned in the commit message, though we can specify the
-> > congestion-control of NVMe_over_TCP via sysctl or writing
-> > '/proc/sys/net/ipv4/tcp_congestion_control', but this also
-> > changes the congestion-control of all the future TCP sockets on
-> > the same host that have not been explicitly assigned the
-> > congestion-control, thus bringing potential impaction on their
-> > performance.
-> >=20
-> > For example:
-> >=20
-> > A server in a data-center with the following 2 NICs:
-> >=20
-> >      - NIC_fron-end, for interacting with clients through WAN
-> >        (high latency, ms-level)
-> >=20
-> >      - NIC_back-end, for interacting with NVMe/TCP target through LAN
-> >        (low latency, ECN-enabled, ideal for dctcp)
-> >=20
-> > This server interacts with clients (handling requests) via the fron-end
-> > network and accesses the NVMe/TCP storage via the back-end network.
-> > This is a normal use case, right?
-> >=20
-> > For the client devices, we can=E2=80=99t determine their congestion-con=
-trol.
-> > But normally it=E2=80=99s cubic by default (per the CONFIG_DEFAULT_TCP_=
-CONG).
-> > So if we change the default congestion control on the server to dctcp
-> > on behalf of the NVMe/TCP traffic of the LAN side, it could at the
-> > same time change the congestion-control of the front-end sockets
-> > to dctcp while the congestion-control of the client-side is cubic.
-> > So this is an unexpected scenario.
-> >=20
-> > In addition, distributed storage products like the following also have
-> > the above problem:
-> >=20
-> >      - The product consists of a cluster of servers.
-> >=20
-> >      - Each server serves clients via its front-end NIC
-> >       (WAN, high latency).
-> >=20
-> >      - All servers interact with each other via NVMe/TCP via back-end N=
-IC
-> >       (LAN, low latency, ECN-enabled, ideal for dctcp). =20
->=20
-> Separate networks are still not application (nvme-tcp) specific and as
-> mentioned, we have a way to control that. IMO, this still does not
-> qualify as solid justification to add this to nvme-tcp.
->=20
-> What do others think?
+url:    https://github.com/intel-lab-lkp/linux/commits/Yi-Wang/xfs-getattr-ignore-blocks-beyond-eof/20220331-082944
+base:   https://git.kernel.org/pub/scm/fs/xfs/xfs-linux.git for-next
+config: sparc-randconfig-r005-20220330 (https://download.01.org/0day-ci/archive/20220331/202203311022.9gnVNhj6-lkp@intel.com/config)
+compiler: sparc-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/e560188227f8fed285a1bd736e5708de984f0596
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Yi-Wang/xfs-getattr-ignore-blocks-beyond-eof/20220331-082944
+        git checkout e560188227f8fed285a1bd736e5708de984f0596
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=sparc SHELL=/bin/bash fs/xfs/
 
-Well, per the fact that the approach (=E2=80=98ip route =E2=80=A6=E2=80=99)=
- proposed
-by Jakub could largely fit the per link requirement on
-congestion-control, so the usefulness of this patchset is really
-not so significant.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-So here I terminate all the threads of this patchset.
+All errors (new ones prefixed by >>):
 
-At last, many thanks to all of you for reviewing this patchset.
+   fs/xfs/xfs_bmap_util.c: In function 'xfs_free_eofblocks':
+>> fs/xfs/xfs_bmap_util.c:756:26: error: 'end_fsb' undeclared (first use in this function)
+     756 |         ip->i_last_fsb = end_fsb;
+         |                          ^~~~~~~
+   fs/xfs/xfs_bmap_util.c:756:26: note: each undeclared identifier is reported only once for each function it appears in
+
+
+vim +/end_fsb +756 fs/xfs/xfs_bmap_util.c
+
+   710	
+   711	/*
+   712	 * This is called to free any blocks beyond eof. The caller must hold
+   713	 * IOLOCK_EXCL unless we are in the inode reclaim path and have the only
+   714	 * reference to the inode.
+   715	 */
+   716	int
+   717	xfs_free_eofblocks(
+   718		struct xfs_inode	*ip)
+   719	{
+   720		struct xfs_trans	*tp;
+   721		struct xfs_mount	*mp = ip->i_mount;
+   722		int			error;
+   723	
+   724		/* Attach the dquots to the inode up front. */
+   725		error = xfs_qm_dqattach(ip);
+   726		if (error)
+   727			return error;
+   728	
+   729		/* Wait on dio to ensure i_size has settled. */
+   730		inode_dio_wait(VFS_I(ip));
+   731	
+   732		error = xfs_trans_alloc(mp, &M_RES(mp)->tr_itruncate, 0, 0, 0, &tp);
+   733		if (error) {
+   734			ASSERT(xfs_is_shutdown(mp));
+   735			return error;
+   736		}
+   737	
+   738		xfs_ilock(ip, XFS_ILOCK_EXCL);
+   739		xfs_trans_ijoin(tp, ip, 0);
+   740	
+   741		/*
+   742		 * Do not update the on-disk file size.  If we update the on-disk file
+   743		 * size and then the system crashes before the contents of the file are
+   744		 * flushed to disk then the files may be full of holes (ie NULL files
+   745		 * bug).
+   746		 */
+   747		error = xfs_itruncate_extents_flags(&tp, ip, XFS_DATA_FORK,
+   748					XFS_ISIZE(ip), XFS_BMAPI_NODISCARD);
+   749		if (error)
+   750			goto err_cancel;
+   751	
+   752		error = xfs_trans_commit(tp);
+   753		if (error)
+   754			goto out_unlock;
+   755	
+ > 756		ip->i_last_fsb = end_fsb;
+   757		xfs_inode_clear_eofblocks_tag(ip);
+   758		goto out_unlock;
+   759	
+   760	err_cancel:
+   761		/*
+   762		 * If we get an error at this point we simply don't
+   763		 * bother truncating the file.
+   764		 */
+   765		xfs_trans_cancel(tp);
+   766	out_unlock:
+   767		xfs_iunlock(ip, XFS_ILOCK_EXCL);
+   768		return error;
+   769	}
+   770	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
