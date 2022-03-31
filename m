@@ -2,80 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD31BC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 05:57:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F2D4C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 05:57:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230288AbiCaF6v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 01:58:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54846 "EHLO
+        id S230321AbiCaF6y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 01:58:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230312AbiCaF6e (ORCPT
+        with ESMTP id S230270AbiCaF6g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 01:58:34 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80EA41AA056
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 22:56:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648706207; x=1680242207;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=FZyFixHTyqkYhNWGDpwi2BoO+1lQkoTiQ3VMdhC0QAg=;
-  b=B7JkgfW4BpIzNcT2BJj36fgvUWVdn1UwlCnuvPih+u81PAKFC1hrfnCA
-   r9yiWsT2qsdxagPDqjuObI4qu7Oxtnej889WqHkD0zXROyb770L20B4UA
-   9OYwQKBr5kU2ZeGsi6dGR3ZE41948f/lS478MRr1MSxgcNc40ARgogiG2
-   BwFNY1A7t7H+Wyi+WcMQ9U/h75KuEBvGIcC0En4f/tMqGq5ZN1XmAd4mJ
-   WoQN3XjbpdqVn5EQSiHBaMAECFtb65sBHLA0PfEliHLBuDMe5BEXJJ1d7
-   D+78ExmgH0D6iErHk7CyKJ3Ch15/ob+k7OpaP1bhZDWfHic853sTLtGpI
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="257307543"
-X-IronPort-AV: E=Sophos;i="5.90,224,1643702400"; 
-   d="scan'208";a="257307543"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 22:56:47 -0700
-X-IronPort-AV: E=Sophos;i="5.90,224,1643702400"; 
-   d="scan'208";a="522196740"
-Received: from zq-optiplex-7090.bj.intel.com ([10.238.156.125])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 22:56:45 -0700
-From:   Zqiang <qiang1.zhang@intel.com>
-To:     jiangshanlai@gmail.com, tj@kernel.org
-Cc:     linux-kernel@vger.kernel.org
-Subject: [PATCH v2] workqueue: Restrict kworker in the offline CPU pool running on housekeeping CPUs
-Date:   Thu, 31 Mar 2022 13:57:17 +0800
-Message-Id: <20220331055717.2659428-1-qiang1.zhang@intel.com>
+        Thu, 31 Mar 2022 01:58:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB7BB1A8C06;
+        Wed, 30 Mar 2022 22:56:48 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1F88361657;
+        Thu, 31 Mar 2022 05:56:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DE1BC340ED;
+        Thu, 31 Mar 2022 05:56:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648706207;
+        bh=0fJAVjmpmWefISZQ/CbYY4ljN8LhkUpwEfBUSoXFz/o=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=oe3jNjmYl/NQlVnpoyt9JVeao3XZookq1ax3MeMDxLz6Kr7KbTQith3SQdOLWydfi
+         9st+Duoi509DMiwXt9Owg90VNJ8Q7FVIux/BCmh5QhEM8ZStEVA06RdAl0pMk+Kw6o
+         I+plAe9TBsVTCRb5hkKO8sJ9vIwpVrBiA/Rc2vdOgKyifwBLRfhT+2CVdM3/QbnMo5
+         w3VtX7vuXi0OcZHDBWNOAw87ghHaHfjcSehPHI0uW/c7o9jWSghxocf/HATZD0zqFp
+         J61yNoermor4RIsWsZisuQ0pkDm7GLXyFQi+hLQkLig/wnA1tklZy0BAVtVXAk37k3
+         leRodwfbO4r2g==
+From:   Masami Hiramatsu <mhiramat@kernel.org>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Masami Hiramatsu <mhiramat@kernel.org>,
+        Padmanabha Srinivasaiah <treasure4paddy@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        Nathan Chancellor <nathan@kernel.org>, llvm@lists.linux.dev,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
+Subject: [PATCH v6 4/4] docs: bootconfig: Add how to embed the bootconfig into kernel
+Date:   Thu, 31 Mar 2022 14:56:42 +0900
+Message-Id: <164870620264.127053.14258877588862671243.stgit@devnote2>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <164870615889.127053.9055569952366814752.stgit@devnote2>
+References: <164870615889.127053.9055569952366814752.stgit@devnote2>
+User-Agent: StGit/0.19
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When CPU going offline, all workers in this CPU pool will lose
-affinity to this CPU, and may run to isolated CPU. like kworker
-in unbound pool, set CPU affinity of these kworker is
-wq_unbound_cpumask.
+Add a description how to embed the bootconfig file into kernel.
 
-Signed-off-by: Zqiang <qiang1.zhang@intel.com>
+Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
 ---
- v1->v2:
- Replace housekeeping_cpumask(HK_TYPE_WQ) with wq_unbound_cpumask.
+ Changes in v5:
+  - Update CONFIG_EMBED_BOOT_CONFIG_FILE which can accept relative path.
+ Changes in v3:
+  - Fix typos.
+ Changes in v2:
+  - Corrected the text accoding to Randy's suggestion.
+  - Do not reccomend to use relative path for CONFIG_EMBED_BOOT_CONFIG_FILE.
+---
+ Documentation/admin-guide/bootconfig.rst |   31 +++++++++++++++++++++++++++---
+ 1 file changed, 28 insertions(+), 3 deletions(-)
 
- kernel/workqueue.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/kernel/workqueue.c b/kernel/workqueue.c
-index abcc9a2ac319..b447012df177 100644
---- a/kernel/workqueue.c
-+++ b/kernel/workqueue.c
-@@ -5023,7 +5023,7 @@ static void unbind_workers(int cpu)
+diff --git a/Documentation/admin-guide/bootconfig.rst b/Documentation/admin-guide/bootconfig.rst
+index a1860fc0ca88..83a2a0cc9afa 100644
+--- a/Documentation/admin-guide/bootconfig.rst
++++ b/Documentation/admin-guide/bootconfig.rst
+@@ -158,9 +158,15 @@ Each key-value pair is shown in each line with following style::
+ Boot Kernel With a Boot Config
+ ==============================
  
- 		for_each_pool_worker(worker, pool) {
- 			kthread_set_per_cpu(worker->task, -1);
--			WARN_ON_ONCE(set_cpus_allowed_ptr(worker->task, cpu_possible_mask) < 0);
-+			WARN_ON_ONCE(set_cpus_allowed_ptr(worker->task, wq_unbound_cpumask) < 0);
- 		}
+-Since the boot configuration file is loaded with initrd, it will be added
+-to the end of the initrd (initramfs) image file with padding, size,
+-checksum and 12-byte magic word as below.
++There are two options to boot the kernel with bootconfig: attaching the
++bootconfig to the initrd image or embedding it in the kernel itself.
++
++Attaching a Boot Config to Initrd
++---------------------------------
++
++Since the boot configuration file is loaded with initrd by default,
++it will be added to the end of the initrd (initramfs) image file with
++padding, size, checksum and 12-byte magic word as below.
  
- 		mutex_unlock(&wq_pool_attach_mutex);
--- 
-2.25.1
+ [initrd][bootconfig][padding][size(le32)][checksum(le32)][#BOOTCONFIG\n]
+ 
+@@ -196,6 +202,25 @@ To remove the config from the image, you can use -d option as below::
+ Then add "bootconfig" on the normal kernel command line to tell the
+ kernel to look for the bootconfig at the end of the initrd file.
+ 
++Embedding a Boot Config into Kernel
++-----------------------------------
++
++If you can not use initrd, you can also embed the bootconfig file in the
++kernel by Kconfig options. In this case, you need to recompile the kernel
++with the following configs::
++
++ CONFIG_EMBED_BOOT_CONFIG=y
++ CONFIG_EMBED_BOOT_CONFIG_FILE="/PATH/TO/BOOTCONFIG/FILE"
++
++``CONFIG_EMBED_BOOT_CONFIG_FILE`` requires an absolute path or a relative
++path to the bootconfig file from source tree or object tree.
++The kernel will embed it as the default bootconfig.
++
++Just as when attaching the bootconfig to the initrd, you need ``bootconfig``
++option on the kernel command line to enable the embedded bootconfig.
++
++Note that even if you set this option, you can override the embedded
++bootconfig by another bootconfig which attached to the initrd.
+ 
+ Kernel parameters via Boot Config
+ =================================
 
