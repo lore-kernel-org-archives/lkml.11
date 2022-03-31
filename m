@@ -2,107 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C7D8C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 17:17:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB455C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 17:17:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230184AbiCaRTC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 13:19:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56914 "EHLO
+        id S229866AbiCaRT3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 13:19:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229574AbiCaRSz (ORCPT
+        with ESMTP id S229449AbiCaRT0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 13:18:55 -0400
-Received: from mail-yw1-f170.google.com (mail-yw1-f170.google.com [209.85.128.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B608E0E2;
-        Thu, 31 Mar 2022 10:17:08 -0700 (PDT)
-Received: by mail-yw1-f170.google.com with SMTP id 00721157ae682-2e5e176e1b6so5319817b3.13;
-        Thu, 31 Mar 2022 10:17:08 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=Bi64VQ+Khg5UK1gSOPf2RqNXb/UgNoMXBN9uv9DgbzQ=;
-        b=wL2XuTZ/ZYrXoHN/ea3tZmKvPyqfNbuwdoWposBHiHm2hq6oWGyebTgV2rzvs2wFco
-         LCbJEMK8DTBYwOFOc73C/8pqJd6MreldVCMzzYrzWjDE1TP80lCSURrwWv4nlaSAzTMo
-         jhx9Tm8flQRq2M1gHm4Scgowjcy19ej+W8YUrxAiwZD55XC8nIHz8Ai/e3P++YEU/uqV
-         fEEmEJ5/O83aCe5gAXmF90rugNN8d+K4yhcV6cJb4XBHQ8TLZvXijkUhQ+dJI3i+GMIl
-         QbBVqdQowVPv/mnWpbzAEc6IxmxOy2tYI0xPvdWILxGS4arJlO/tPtKWnndMq5zZO0gM
-         km7w==
-X-Gm-Message-State: AOAM530BoGO1Nvh4fVCqyqoup2qAncUIkRg/aPCMF/fgtQC9ZCkbAFoG
-        SDoEhJ/pVU84M/eBk8nBDNPx8gjCVNqlSDIy0ciFDNXHsc0=
-X-Google-Smtp-Source: ABdhPJxq3HfUPuua8v/lJf49OO3v7vDilX+C+f+juAjPZ/drrEh/EOFycgrf3bXJvgpitqxN8aCEG3LQeanA44bgQCY=
-X-Received: by 2002:a81:6887:0:b0:2e6:126d:3102 with SMTP id
- d129-20020a816887000000b002e6126d3102mr5995555ywc.7.1648747027545; Thu, 31
- Mar 2022 10:17:07 -0700 (PDT)
+        Thu, 31 Mar 2022 13:19:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E93DFD14;
+        Thu, 31 Mar 2022 10:17:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 51C96B8218F;
+        Thu, 31 Mar 2022 17:17:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C98DC34110;
+        Thu, 31 Mar 2022 17:17:34 +0000 (UTC)
+Date:   Thu, 31 Mar 2022 13:17:32 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Cc:     Masahiro Yamada <masahiroy@kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Beau Belgrave <beaub@linux.microsoft.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        linux-trace-devel <linux-trace-devel@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        ndesaulniers <ndesaulniers@google.com>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
+Subject: Re: [PATCH] tracing: do not export user_events uapi
+Message-ID: <20220331131732.5e2305ee@gandalf.local.home>
+In-Reply-To: <602770698.200731.1648742848915.JavaMail.zimbra@efficios.com>
+References: <20220330201755.29319-1-mathieu.desnoyers@efficios.com>
+        <20220330162152.17b1b660@gandalf.local.home>
+        <CAK7LNATm5FjZsXL6aKUMhXwQAqTuO9+LmAk3LGjpAib7NZBDmg@mail.gmail.com>
+        <20220331081337.07ddf251@gandalf.local.home>
+        <602770698.200731.1648742848915.JavaMail.zimbra@efficios.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Thu, 31 Mar 2022 19:16:56 +0200
-Message-ID: <CAJZ5v0hGTCBsbrFt7xcS_J+X1hG1qOAL=UecfGyHuhAcHjZ0eQ@mail.gmail.com>
-Subject: [GIT PULL] More ACPI updates for v5.18-rc1
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Linus,
+On Thu, 31 Mar 2022 12:07:28 -0400 (EDT)
+Mathieu Desnoyers <mathieu.desnoyers@efficios.com> wrote:
 
-Please pull from the tag
+> diff --git a/kernel/trace/trace_events_user.c b/kernel/trace/trace_events_user.c
+> index 8b3d241a31c2..823d7b09dcba 100644
+> --- a/kernel/trace/trace_events_user.c
+> +++ b/kernel/trace/trace_events_user.c
+> @@ -18,7 +18,7 @@
+>  #include <linux/tracefs.h>
+>  #include <linux/types.h>
+>  #include <linux/uaccess.h>
+> -#include <uapi/linux/user_events.h>
+> +#include <linux/user_events.h>
+>  #include "trace.h"
+>  #include "trace_dynevent.h"
+> 
+> Including <linux/user_events.h> will continue to work even when the header is
+> moved to uapi in the future.
 
- git://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git \
- acpi-5.18-rc1-2
+Actually, when I thought of this, I was thinking more of:
 
-with top-most commit 4a13e559af0b177eb934c39338f100a9f692a37b
+diff --git a/kernel/trace/trace_events_user.c b/kernel/trace/trace_events_user.c
+index 846c27bc7aef..0f3aa855cf72 100644
+--- a/kernel/trace/trace_events_user.c
++++ b/kernel/trace/trace_events_user.c
+@@ -18,7 +18,11 @@
+ #include <linux/tracefs.h>
+ #include <linux/types.h>
+ #include <linux/uaccess.h>
++#ifdef CONFIG_COMPILE_TEST
++#include <linux/user_events.h>
++#else
+ #include <uapi/linux/user_events.h>
++#endif
+ #include "trace.h"
+ #include "trace_dynevent.h"
+ 
+That way, when we take it out of broken state, it will fail to compile, and
+remind us to put it back into the uapi directory.
 
- Merge branches 'acpi-ipmi', 'acpi-tables' and 'acpi-apei'
-
-on top of commit 242ba6656d604aa8dc87451fc08143cb28d5a587
-
- Merge tag 'acpi-5.18-rc1' of
-git://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm
-
-to receive more ACPI updates for 5.18-rc1.
-
-These are fixes and cleanup on top of the previously merged ACPI
-material for 5.18-rc1.
-
-Specifics:
-
- - Avoid out-of-bounds access when parsing _CPC data (Rafael Wysocki).
-
- - Change default error code and clean up debug messages in ACPI CPPC
-   probe (Rafael Wysocki).
-
- - Replace usage of found with a dedicated list iterator variable in
-   the ACPI IPMI driver (Jakob Koschel).
-
- - Clean up variable name confusion in APEI (Jakob Koschel).
-
- - Make LAPIC_ADDR_OVR address readable in a message parsed during
-   MADT parsing (Vasant Hegde).
-
-Thanks!
-
-
----------------
-
-Jakob Koschel (2):
-      ACPI, APEI: Use the correct variable for sizeof()
-      ACPI: IPMI: replace usage of found with dedicated list iterator variable
-
-Rafael J. Wysocki (2):
-      ACPI: CPPC: Avoid out of bounds access when parsing _CPC data
-      ACPI: CPPC: Change default error code and clean up debug messages in probe
-
-Vasant Hegde (1):
-      ACPI: tables: Make LAPIC_ADDR_OVR address readable in message
-
----------------
-
- drivers/acpi/acpi_ipmi.c      | 39 ++++++++++++++++++---------------------
- drivers/acpi/apei/apei-base.c |  2 +-
- drivers/acpi/cppc_acpi.c      | 32 ++++++++++++++++++++------------
- drivers/acpi/tables.c         |  4 ++--
- 4 files changed, 41 insertions(+), 36 deletions(-)
+-- Steve
