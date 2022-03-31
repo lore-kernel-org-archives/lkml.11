@@ -2,104 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2537FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 06:50:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07BEEC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 06:50:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231423AbiCaGwJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 02:52:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41290 "EHLO
+        id S231440AbiCaGw3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 02:52:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230115AbiCaGwF (ORCPT
+        with ESMTP id S231424AbiCaGwZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 02:52:05 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B585345798;
-        Wed, 30 Mar 2022 23:50:18 -0700 (PDT)
-Received: from canpemm500006.china.huawei.com (unknown [172.30.72.56])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KTYny1lD0z1GDHG;
-        Thu, 31 Mar 2022 14:49:58 +0800 (CST)
-Received: from localhost.localdomain (10.175.112.70) by
- canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 31 Mar 2022 14:50:16 +0800
-From:   Ziyang Xuan <william.xuanziyang@huawei.com>
-To:     <borisp@nvidia.com>, <john.fastabend@gmail.com>,
-        <daniel@iogearbox.net>, <kuba@kernel.org>, <davem@davemloft.net>,
-        <pabeni@redhat.com>, <netdev@vger.kernel.org>
-CC:     <vakul.garg@nxp.com>, <davejwatson@fb.com>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH net v2] net/tls: fix slab-out-of-bounds bug in decrypt_internal
-Date:   Thu, 31 Mar 2022 15:04:28 +0800
-Message-ID: <20220331070428.36111-1-william.xuanziyang@huawei.com>
-X-Mailer: git-send-email 2.9.5
+        Thu, 31 Mar 2022 02:52:25 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C462496B9;
+        Wed, 30 Mar 2022 23:50:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:From:References:To:Subject:MIME-Version:Date:Message-ID:Sender:
+        Reply-To:Cc:Content-ID:Content-Description;
+        bh=DRge7l3ttZrXWScsHhhl5X1CTJgtzPSv3mBORS3+N6Q=; b=vd1kfE2Ptip72ppeYspJnEo9a6
+        hhO/7mmfOkA8hH05g2dQ2dNGNl00RBwKtO+WOeclt33lqQc+HRE6duoL3fqqwCPceBE4vZ0Udz2ZL
+        QMTVKj35tNFPDxTxShy6Yewh2CPv+Ki7p24CKrDNdkTJhtq0EfK3drpkNyx6ADGym9gSpS8MakC7d
+        X6ISTNuS3KOumgIE9sp1F34vryrfJ+saqQ6ckNV8UgwRwBuBfrHpg+WrB8JyZDeW/AB85fS26aoOO
+        tWg9PpuXkI+bTl7OO+MOPjUUQHPiiPviKW+cZQgM/0Crb0UsmbkDSJhrdRCNIU1VFWg9xcz2/FyX5
+        SxpxiEjg==;
+Received: from [2601:1c0:6280:3f0::aa0b]
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nZodZ-001zER-BF; Thu, 31 Mar 2022 06:50:29 +0000
+Message-ID: <8d27a9f5-047b-05d5-3594-a51cef06222c@infradead.org>
+Date:   Wed, 30 Mar 2022 23:50:23 -0700
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.112.70]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- canpemm500006.china.huawei.com (7.192.105.130)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: mmotm 2022-03-30-13-01 uploaded (kernel/sched/ and sysctls)
+Content-Language: en-US
+To:     Andrew Morton <akpm@linux-foundation.org>, broonie@kernel.org,
+        mhocko@suse.cz, sfr@canb.auug.org.au, linux-next@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, mm-commits@vger.kernel.org,
+        Luis Chamberlain <mcgrof@kernel.org>
+References: <20220330200158.2F031C340EC@smtp.kernel.org>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <20220330200158.2F031C340EC@smtp.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The memory size of tls_ctx->rx.iv for AES128-CCM is 12 setting in
-tls_set_sw_offload(). The return value of crypto_aead_ivsize()
-for "ccm(aes)" is 16. So memcpy() require 16 bytes from 12 bytes
-memory space will trigger slab-out-of-bounds bug as following:
+Luis-
 
-==================================================================
-BUG: KASAN: slab-out-of-bounds in decrypt_internal+0x385/0xc40 [tls]
-Read of size 16 at addr ffff888114e84e60 by task tls/10911
+On 3/30/22 13:01, Andrew Morton wrote:
+> The mm-of-the-moment snapshot 2022-03-30-13-01 has been uploaded to
+> 
+>    https://www.ozlabs.org/~akpm/mmotm/
+> 
+> mmotm-readme.txt says
+> 
+> README for mm-of-the-moment:
+> 
+> https://www.ozlabs.org/~akpm/mmotm/
+> 
+> This is a snapshot of my -mm patch queue.  Uploaded at random hopefully
+> more than once a week.
+> 
+> You will need quilt to apply these patches to the latest Linus release (5.x
+> or 5.x-rcY).  The series file is in broken-out.tar.gz and is duplicated in
+> https://ozlabs.org/~akpm/mmotm/series
 
-Call Trace:
- <TASK>
- dump_stack_lvl+0x34/0x44
- print_report.cold+0x5e/0x5db
- ? decrypt_internal+0x385/0xc40 [tls]
- kasan_report+0xab/0x120
- ? decrypt_internal+0x385/0xc40 [tls]
- kasan_check_range+0xf9/0x1e0
- memcpy+0x20/0x60
- decrypt_internal+0x385/0xc40 [tls]
- ? tls_get_rec+0x2e0/0x2e0 [tls]
- ? process_rx_list+0x1a5/0x420 [tls]
- ? tls_setup_from_iter.constprop.0+0x2e0/0x2e0 [tls]
- decrypt_skb_update+0x9d/0x400 [tls]
- tls_sw_recvmsg+0x3c8/0xb50 [tls]
 
-Allocated by task 10911:
- kasan_save_stack+0x1e/0x40
- __kasan_kmalloc+0x81/0xa0
- tls_set_sw_offload+0x2eb/0xa20 [tls]
- tls_setsockopt+0x68c/0x700 [tls]
- __sys_setsockopt+0xfe/0x1b0
+# CONFIG_SYSCTL is not set
+# CONFIG_PROC_SYSCTL is not set
 
-Replace the crypto_aead_ivsize() with prot->iv_size + prot->salt_size
-when memcpy() iv value in TLS_1_3_VERSION scenario.
+In file included from ../kernel/sched/build_policy.c:43:0:
+../kernel/sched/rt.c:3017:12: warning: ‘sched_rr_handler’ defined but not used [-Wunused-function]
+ static int sched_rr_handler(struct ctl_table *table, int write, void *buffer,
+            ^~~~~~~~~~~~~~~~
+../kernel/sched/rt.c:2978:12: warning: ‘sched_rt_handler’ defined but not used [-Wunused-function]
+ static int sched_rt_handler(struct ctl_table *table, int write, void *buffer,
+            ^~~~~~~~~~~~~~~~
 
-Fixes: f295b3ae9f59 ("net/tls: Add support of AES128-CCM based ciphers")
-Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
----
 
-v1->v2:
-  - Remove not-required modification.
----
- net/tls/tls_sw.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+This was also reported on Feb.22/2022:
+  https://lore.kernel.org/all/fbfc360c-d68f-d83b-5124-d6d930235b8c@infradead.org/
 
-diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
-index 0024a692f0f8..a8976ef95528 100644
---- a/net/tls/tls_sw.c
-+++ b/net/tls/tls_sw.c
-@@ -1496,7 +1496,7 @@ static int decrypt_internal(struct sock *sk, struct sk_buff *skb,
- 	if (prot->version == TLS_1_3_VERSION ||
- 	    prot->cipher_type == TLS_CIPHER_CHACHA20_POLY1305)
- 		memcpy(iv + iv_offset, tls_ctx->rx.iv,
--		       crypto_aead_ivsize(ctx->aead_recv));
-+		       prot->iv_size + prot->salt_size);
- 	else
- 		memcpy(iv + iv_offset, tls_ctx->rx.iv, prot->salt_size);
- 
+and by Baisong Zhong <zhongbaisong@huawei.com>
+on Mar.17/2022.
+
 -- 
-2.25.1
-
+~Randy
