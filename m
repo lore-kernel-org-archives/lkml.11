@@ -2,170 +2,234 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21211C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 02:00:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 275C0C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 02:03:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352446AbiCaCCT (ORCPT
+        id S1352444AbiCaCFV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 22:02:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57334 "EHLO
+        Wed, 30 Mar 2022 22:05:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352438AbiCaCCP (ORCPT
+        with ESMTP id S230107AbiCaCFS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 22:02:15 -0400
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A965859A55
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 19:00:29 -0700 (PDT)
-Received: by mail-wm1-x32e.google.com with SMTP id bi13-20020a05600c3d8d00b0038c2c33d8f3so891477wmb.4
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 19:00:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=e1Po5qC3Q3c0yObkkm28UonpuS5bMxmyIhuDfuJ6G0k=;
-        b=QxKmQ8c9oUDAwlApZtTOb/QA4YFhjIzje/zHifmcwaxM5qta6cndVn/IcDDKRGOD+2
-         od7/XISAYayz9jsIUiQaw4POXTlRdc6Z2Uzg0K0+vQb6I24RUmFhx8BINqM9VoeekSQ+
-         MdctGQSVe1bhfOXQDk11HzykYxlwUjGgQ4rqmTz5ZvTz8TQzPUMRSNcYeDk+E1GfqEqF
-         cKkZqBeuvg+ZQASZAzvFJP9I39N915bznKdTG0Y1Z61O2H0vkxKZuPg0y4Ef1yyeOi5U
-         JZLmykBb2ltaAF33qrB+lZGEJm8tOuawr72oUjdFPLEyE+JSPI86GWPZZPYPYLAxqkOl
-         oLUg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=e1Po5qC3Q3c0yObkkm28UonpuS5bMxmyIhuDfuJ6G0k=;
-        b=BmcV7PuUcMfb9uCc5+tVgKw/AklG+aCtH1X/VRykfvGPClqrHjVGdfsdWpXeFRSAfe
-         FO5DB4WeP3qEJLACYbyY5ITB8kaLyc4yQW12m0p6ar6WgRXUpSgBAoPLSAi4c6pSm+ax
-         8zALeHQ5bcaFrw7by/M5zHy6XqqluY59U0LtGiha2dJqoSqUS21/PZzjhWtq3uFiI/KI
-         amDqLRnDbmTOU3JrkK4MmgWqcG0UtwFJfrq0d8srgqt2WcryZP8fb35gSCZ1AXWP4OCZ
-         VvWlT+perZD9L5X/7MBHsIN3AiVxXennoohz/qxjQzrX1vlAvWeau1uAN6CecU/1FUzp
-         rQOA==
-X-Gm-Message-State: AOAM531wiSbfIR+ipdWoE2Fuyl+bKWzzIYAQBxpRHyKWqgm0Bu9iwecL
-        Kv4f8MdsUeq7R4Gb0eCnXntXe189AIAK0DiQ+tjBXA==
-X-Google-Smtp-Source: ABdhPJwc7cIZrbcDtT8oN3Uc/i8d7OuUgxfn6/gsSmmOZtKtUns5P8AZUjMI9YJfo8Xv3zrLvlgeH46KQa1wtE9NM+0=
-X-Received: by 2002:a1c:7906:0:b0:38c:8cfa:cbb0 with SMTP id
- l6-20020a1c7906000000b0038c8cfacbb0mr2445694wme.163.1648692028147; Wed, 30
- Mar 2022 19:00:28 -0700 (PDT)
+        Wed, 30 Mar 2022 22:05:18 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51968DEB9;
+        Wed, 30 Mar 2022 19:03:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648692210; x=1680228210;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=2u2jFNf347IkYVOaMmh1M3apgMMCqeUIuAgUnas7vYo=;
+  b=hgG72KIFpeBTg1rgrgzdwGdO8ROxM5UTAepxGEMs0IFVbjXeGSzFc9TW
+   r9ywHDKzNGc4rwlL8oQOR7/wsk6w81MxUuiaMS2R8p++4SPijp3O/ej5r
+   z19ItdSlbMzRbwcFmZtcJwz1cp33/GEo8sCvDml2m7rkgOi3A5YhDDqaN
+   loeA5txfJ/LOtpY2MjUom4BInZ4iyDylS3dJjL+Zn/T1kHg8wLv1kzeUo
+   ouftzdjjJrs0mT9AM1GNJas78ri8mNIH0u930fMI8kYYOnQyooUmqSgZx
+   i+F+M8FgSuYvoKw58H6zlkOR38IgDklc+2zom+o7C7T6peeAOTdW2tTap
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="239618201"
+X-IronPort-AV: E=Sophos;i="5.90,224,1643702400"; 
+   d="scan'208";a="239618201"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 19:03:29 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,224,1643702400"; 
+   d="scan'208";a="586224725"
+Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
+  by orsmga001.jf.intel.com with ESMTP; 30 Mar 2022 19:03:29 -0700
+Received: from orsmsx607.amr.corp.intel.com (10.22.229.20) by
+ ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Wed, 30 Mar 2022 19:03:28 -0700
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX607.amr.corp.intel.com (10.22.229.20) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Wed, 30 Mar 2022 19:03:28 -0700
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27 via Frontend Transport; Wed, 30 Mar 2022 19:03:28 -0700
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.108)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.21; Wed, 30 Mar 2022 19:03:28 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=TO1GGev3k/k4vvCv/KHp5XqXJoxn7zlLNNPLl4/6BtdtcakE6ASwTDedy/KmdlAi3e0gQVVCnRMTBlLodboCaNpBD9z0ZQZTpCCPeEBTR3sk0Wt6M1DDbDIzqXg6A4Vbr7axcOzlsb22FEfbhVBRd/FRU6nufekGSXPpH3w5untruUkokEsZ6doM+MX6I4UBH7y6B0odlK3V2S8MhLIRdYgC9UvG+r7/GiNAqWcTdGrNthjPoZMV+6Cr/cCdmJSm64MogJSZ5chGHbF7K3l8HYwClSc96CRMPlJIb4niMPSv7eL7ILSMOhoZMdtrWlq2m+r0UXKAc3rWgx+eOR5vLw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=u+Rd07/iDKs4WHbTB9OfU+zwcat2pqoYbQ9eb0kBZ6c=;
+ b=hvWNb6tPLAim5GQi/nHkKzcN72/7V4z1A4e4Sy3am8rs/GxcE4fdB4WdwmW1EaDEGnZQeY5xJ5ttYugzFrJ6WnDIku7aMHXg3dtfWb7GQX0dLbJ+5wqwon6N0VNBGdsC/22uofQFKl5/l6ZNVGwM6iJoJmcnNu/sOG77Xjip7JmF5Q5XAaIaNTViY4nKODAlNkRowKGNOeLfgXKYIO+EUVTaoNFTJVkDtVlWIaSz2+InOjmQU0VboEm4JzAFH/Wlqk+MvYD3mK+m3p7S0k1g9JSI2yLWT+7GNmlMLC4S7qFWWXz1adFDcquSmMS+/4KCb0BQMURdMglgfwyIpqTITA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from MW5PR11MB5858.namprd11.prod.outlook.com (2603:10b6:303:193::20)
+ by PH7PR11MB5916.namprd11.prod.outlook.com (2603:10b6:510:13d::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.19; Thu, 31 Mar
+ 2022 02:03:26 +0000
+Received: from MW5PR11MB5858.namprd11.prod.outlook.com
+ ([fe80::99:5f29:6f55:dd7a]) by MW5PR11MB5858.namprd11.prod.outlook.com
+ ([fe80::99:5f29:6f55:dd7a%4]) with mapi id 15.20.5123.017; Thu, 31 Mar 2022
+ 02:03:26 +0000
+From:   "Zhang, Qiang1" <qiang1.zhang@intel.com>
+To:     "paulmck@kernel.org" <paulmck@kernel.org>
+CC:     "frederic@kernel.org" <frederic@kernel.org>,
+        "rcu@vger.kernel.org" <rcu@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH] rcu-tasks: Check the atomic variable
+ trc_n_readers_need_end again when wait timeout
+Thread-Topic: [PATCH] rcu-tasks: Check the atomic variable
+ trc_n_readers_need_end again when wait timeout
+Thread-Index: AQHYRCgbTB0vKm9Y50G6+1/r5OpdTqzYSg4AgAA0FUCAADoYEA==
+Date:   Thu, 31 Mar 2022 02:03:26 +0000
+Message-ID: <MW5PR11MB58585FA7332315F46FA36CD0DAE19@MW5PR11MB5858.namprd11.prod.outlook.com>
+References: <20220330112014.2587148-1-qiang1.zhang@intel.com>
+ <20220330190556.GL4285@paulmck-ThinkPad-P17-Gen-1>
+ <PH0PR11MB5880D6B11469266144C58032DA1F9@PH0PR11MB5880.namprd11.prod.outlook.com>
+In-Reply-To: <PH0PR11MB5880D6B11469266144C58032DA1F9@PH0PR11MB5880.namprd11.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-version: 11.6.401.20
+dlp-reaction: no-action
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 9860910c-7314-4be1-95c8-08da12baa4f5
+x-ms-traffictypediagnostic: PH7PR11MB5916:EE_
+x-microsoft-antispam-prvs: <PH7PR11MB591687F39D4E2690BD15CAABDAE19@PH7PR11MB5916.namprd11.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: Qg8OooihZLZlWC1gRfGyqlQvMpo9vP6S5GLalbohD1BbAapLZxsbe3KY+zNBXXzrhwPzu7A3NtliprkX34eUUu7DNXXY/eZIs8Ts7b2CSS4lSkxtrg8xvddgjXWIMdkUq71DFtD1iI/PRhkqO3wnikX/w2WMWsWdEmpuqSNmnz05R3L/Uhff4RvbeLfcnvtoCzjfqzG7BrAdlgnOl3YSWrDGz2DeET7BaqHP9ca6s7nxDT7SxAHe+iipXObVQEz6WJlBuxIVIjCi8NjBs+bgOrbdql/K3nlLI6sK89ChhlVkkqT0i+RCEumG8/K3MCeKYvtFBOwDeSmkREVc3Hz8BWUEiAa+AK6YGC/OyCKja16/JuQI0xK88BPwIu7u4t3S8jKUH7Q8JpBXFjfoen06vTIPVb6bjALx80XC+K5z6b7wrYgzBdWWpM1K1RpF7MJSe14P6StNiEW9r0e3wNwu+x0Sp9iugiu0hHY206GyUXMLleGmBGCTkj3hseaQmXgY/mvOESNNYMB/3eHc8q/YQWvrpzYdlWgNQJCflEybHLVb/kJ7xnzIijEEn6Z8NS75CaRxijMCr/BAIX6pARnbG3MWRQQsR2VvNAU9oq1p5igrCPEX31mO8VRpcaGPnupNzPQ6Pst2SoMCRmonVpoz3Ppuf0/ScpD89Ie5/OHgteBQh0ulVgWN/9QSUzssdHRhV2W4M+gMDzuQRqrzZxZTyA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW5PR11MB5858.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(7696005)(86362001)(6506007)(76116006)(33656002)(66476007)(26005)(66556008)(52536014)(186003)(508600001)(5660300002)(8676002)(66946007)(66446008)(83380400001)(316002)(71200400001)(38070700005)(54906003)(9686003)(122000001)(82960400001)(8936002)(2906002)(6916009)(64756008)(55016003)(38100700002)(4326008);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?vwhO272z2TuYOfbaqqhaZQBP6rcF7amQvf87x0kkyPg/kqvDklPwbQot9Rqi?=
+ =?us-ascii?Q?y3I12Bri8fmA2TTlm3hKOsk9PcwAPs/USyFL/SjC1B5maDYny3/x15Ugc26d?=
+ =?us-ascii?Q?dyh4OXbSIJi+SM/Guh7KAWMjzbAomchR4knwjKAxzPbRmKOPRUieIZSltpRb?=
+ =?us-ascii?Q?BtQgm67XVqs3ipxjRH4lPIyMQ/NZUDtGPynW8+qixJRp1nvpet0nY/RM2gF3?=
+ =?us-ascii?Q?eGD9g8+82jziWS8ozuYusN0hlcukT6okVeNwCaFHtTsTF7VZXfgyXwan0OTJ?=
+ =?us-ascii?Q?4/2+FOwOAj5kY8/+ptcvOIwJR1AFEytthGpn1lKuXbm8MAJN/JzbhEj22EB3?=
+ =?us-ascii?Q?+TGlrXigCRqLqSILHvB2G/Ah8DTpBqEVQCI/2/JKTY2xTIU5UnCjZ5kgDcMF?=
+ =?us-ascii?Q?RmdHX5SL1/FJ6p1gySeT+2D4aTWD9/QeLWdGph89Cl10GJKawBmgZVzH/vxB?=
+ =?us-ascii?Q?77KR5JKgtURuF/KDN4qG/fGwz/OjuUsxiAMQb9UpWo5vCioSmgETZYxhz9zU?=
+ =?us-ascii?Q?EqCSrlcdkSakLu0C2/ZH8b5K7Ua/G0oR/BvuupbZgEKxTWs+UG9B2qv6VS/O?=
+ =?us-ascii?Q?/ZPTfmizykkyETyQSXP0tX342aBD7Syj49k+XtIfXKb0sXJX1OaoyUxGTpP0?=
+ =?us-ascii?Q?7vXP7oI2exJWad2Uv+jtd54JAmO/ul3NRm8rsHUPkhgFFMFCtB9WkorFymjH?=
+ =?us-ascii?Q?QZVDHfqI8VeZ0jkUbOn/K877LE5FD4Sn1wmAnjPHqvP+kSDIqOcXV+tTzt6e?=
+ =?us-ascii?Q?ns8WGxZ7cWxyhNfDTjzuXeF3TAs5bBHue8sHKIp5+mw2EA7QQ30naLNWWuGW?=
+ =?us-ascii?Q?SY4zt+icAeA+QYgrnrKO9/NfwdguIWogNYEXEK/GIixQ21mA0alcyAZUt/zC?=
+ =?us-ascii?Q?/8cnEMGhaPrFLvUgd2b0KEh4Tm3TwlSvSUybhyoqQkM03CIHwsQG9WPzbMqd?=
+ =?us-ascii?Q?v77khs1ohJjHcFZG8SxJfJgjhTbUf72EJOo5ScXbZaRgAjq+ubJ3J5XFLgvR?=
+ =?us-ascii?Q?0Ris/lCE4gG5WMBPtSkFMh/qjLi1QrKajpUn3sXG9tSmUTWwxDGyETiVfO7l?=
+ =?us-ascii?Q?lVHYH94Q9cMfQXjx3q0fptXl9bc+fX7qdr2BrZvgzBi1FMZ+AdJ+N982Ijgp?=
+ =?us-ascii?Q?pruUN0tCbf4Ne2vKp5lyhEuGzxmh6Wi6iv47xJuY2L/Ra9ZlMM4oQn0UEzZQ?=
+ =?us-ascii?Q?UNI+OecAuWz2rPBDUOrUcmSj1qmPb9EShqo7dKtRBrok3UHDkO+zyQWaNwXy?=
+ =?us-ascii?Q?P9K/miwS+L7YKCpoEi5UYExt7nw0//vNLgh1c+aN9qX7vtQZIgckUxVT5Rkr?=
+ =?us-ascii?Q?ZIBHfG53nRcgdgzjSbeekWlQQLOkyebkuTmnx1PP5O1lftaH3VP/LZgKYIjQ?=
+ =?us-ascii?Q?NikdsAjpJWRzeJ9XjLETZpUZz+xycnjzpGGTXXsZmTD8Owgu/nzpYydQsfvk?=
+ =?us-ascii?Q?MCokAhRt6OQbz13+ykN/8/y4/GHfOWNBI1PJuB0Kvs0kBsbw7bR0MrU98Srs?=
+ =?us-ascii?Q?Ws7mBBPXV2r9qNaVVOD876ftdwnpRKm6YW8UaULHscCl2k/e6URnIXaT0pnG?=
+ =?us-ascii?Q?qJQeNueTnwA/LHuBhl6Sy71Njg82ep25hWWG+/WDf5Uj2EuQ8mn9mqXdFjG/?=
+ =?us-ascii?Q?aeha+PimqAhfl05TL5OuoHbdPI4mkFTcJ4MTBIHzu21Kgcd9NfEH2tPWqvFL?=
+ =?us-ascii?Q?Nix8r6sLBwy1hyTzSHeMgVaPb+/s0jl/XWv9Wi6D0uha6t0CJClKL344hlGu?=
+ =?us-ascii?Q?W+BuYcAXDQ=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <20220330234528.1426991-1-nathan@kernel.org> <20220330234528.1426991-3-nathan@kernel.org>
-In-Reply-To: <20220330234528.1426991-3-nathan@kernel.org>
-From:   David Gow <davidgow@google.com>
-Date:   Thu, 31 Mar 2022 10:00:17 +0800
-Message-ID: <CABVgOSnX+bYKvGeJDeKpM8tCe_fCzYC4=6Eh3EUV54SK2SC7Bg@mail.gmail.com>
-Subject: Re: [PATCH 2/2] Revert "um: clang: Strip out -mno-global-merge from USER_CFLAGS"
-To:     Nathan Chancellor <nathan@kernel.org>
-Cc:     Masahiro Yamada <masahiroy@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Kees Cook <keescook@chromium.org>,
-        linux-kbuild@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-um <linux-um@lists.infradead.org>, llvm@lists.linux.dev,
-        patches@lists.linux.dev
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000b3572005db7a0607"
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MW5PR11MB5858.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9860910c-7314-4be1-95c8-08da12baa4f5
+X-MS-Exchange-CrossTenant-originalarrivaltime: 31 Mar 2022 02:03:26.5967
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: j8K6gbx/rL4zKxI51xWKCQD8ybbRYTVPZPUi9i/PX/6rTsLoNdwK6rnp7HpmEdMA1vVI7GMLdsuYizXw4ZwoJw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR11MB5916
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---000000000000b3572005db7a0607
-Content-Type: text/plain; charset="UTF-8"
 
-On Thu, Mar 31, 2022 at 7:46 AM Nathan Chancellor <nathan@kernel.org> wrote:
+On Wed, Mar 30, 2022 at 07:20:14PM +0800, Zqiang wrote:
+> When the trc_wait waitqueue timeout, the atomic variable=20
+> trc_n_readers_need_end need to be checked again, perhaps the=20
+> conditions have been established at this time, avoid invalid stall=20
+> information output.
 >
-> This reverts commit 6580c5c18fb3df2b11c5e0452372f815deeff895.
+>But are you actually seeing this invalid stall information?  Either way, p=
+lease seem my comments and question below.
 >
-> This patch is buggy, as noted in the patch linked below. The root cause
-> has been solved by removing '-mno-global-merge' for the entire kernel.
+>Please don't get me wrong, we do have similar checks for normal vanilla RC=
+U stall warnings, for example, this statement in print_other_cpu_stall() in=
+ kernel/rcu/tree_stall.h:
 >
-> Link: https://lore.kernel.org/r/20220322173547.677760-1-nathan@kernel.org/
-> Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+>	pr_err("INFO: Stall ended before state dump start\n");
+>
+>However, the approach used there did benefit from significant=20
+>real-world experience with its absence.  ;-)
+>
+>							Thanx, Paul
+>
+> Signed-off-by: Zqiang <qiang1.zhang@intel.com>
 > ---
+>  kernel/rcu/tasks.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff --git a/kernel/rcu/tasks.h b/kernel/rcu/tasks.h index=20
+> 65d6e21a607a..b73a2b362d6b 100644
+> --- a/kernel/rcu/tasks.h
+> +++ b/kernel/rcu/tasks.h
+> @@ -1544,7 +1544,7 @@ static void rcu_tasks_trace_postgp(struct rcu_tasks=
+ *rtp)
+>  				trc_wait,
+>  				atomic_read(&trc_n_readers_need_end) =3D=3D 0,
+>  				READ_ONCE(rcu_task_stall_timeout));
 
-Looks good to me: getting rid of -mno-global-merge entirely is nicer, anyway.
+>If I understand correctly, this patch is intended to handle a situation wh=
+ere the wait_event_idle_exclusive_timeout() timed out, but where the value =
+of trc_n_readers_need_end decreased to zero just at this point.
+>>
+>>Yes,  this patch is intended to handle a situation.
 
-Reviewed-by: David Gow <davidgow@google.com>
+>If so, please see my question below.  If not, please show me the exact seq=
+uence of events leading up to the problem.
 
-Cheers,
--- David
+> -		if (ret)
+> +		if (ret || !atomic_read(&trc_n_readers_need_end))
+>  			break;  // Count reached zero.
 
---000000000000b3572005db7a0607
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
+>Couldn't the value of trc_n_readers_need_end decrease to zero right here, =
+still resulting in invalid stall information?
+>
+>>The value of trc_n_readers_need_end decrease to zero right here, indicate=
+s that the current grace period has been completed.
+>>Even if we go to print some task with condition 't->trc_reader_special.b.=
+need_qs' as true,  and these task  will not affect the current grace period=
+. Is my understanding correct?
+>>
 
-MIIPnwYJKoZIhvcNAQcCoIIPkDCCD4wCAQExDzANBglghkgBZQMEAgEFADALBgkqhkiG9w0BBwGg
-ggz5MIIEtjCCA56gAwIBAgIQeAMYYHb81ngUVR0WyMTzqzANBgkqhkiG9w0BAQsFADBMMSAwHgYD
-VQQLExdHbG9iYWxTaWduIFJvb3QgQ0EgLSBSMzETMBEGA1UEChMKR2xvYmFsU2lnbjETMBEGA1UE
-AxMKR2xvYmFsU2lnbjAeFw0yMDA3MjgwMDAwMDBaFw0yOTAzMTgwMDAwMDBaMFQxCzAJBgNVBAYT
-AkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMSowKAYDVQQDEyFHbG9iYWxTaWduIEF0bGFz
-IFIzIFNNSU1FIENBIDIwMjAwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCvLe9xPU9W
-dpiHLAvX7kFnaFZPuJLey7LYaMO8P/xSngB9IN73mVc7YiLov12Fekdtn5kL8PjmDBEvTYmWsuQS
-6VBo3vdlqqXZ0M9eMkjcKqijrmDRleudEoPDzTumwQ18VB/3I+vbN039HIaRQ5x+NHGiPHVfk6Rx
-c6KAbYceyeqqfuJEcq23vhTdium/Bf5hHqYUhuJwnBQ+dAUcFndUKMJrth6lHeoifkbw2bv81zxJ
-I9cvIy516+oUekqiSFGfzAqByv41OrgLV4fLGCDH3yRh1tj7EtV3l2TngqtrDLUs5R+sWIItPa/4
-AJXB1Q3nGNl2tNjVpcSn0uJ7aFPbAgMBAAGjggGKMIIBhjAOBgNVHQ8BAf8EBAMCAYYwHQYDVR0l
-BBYwFAYIKwYBBQUHAwIGCCsGAQUFBwMEMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFHzM
-CmjXouseLHIb0c1dlW+N+/JjMB8GA1UdIwQYMBaAFI/wS3+oLkUkrk1Q+mOai97i3Ru8MHsGCCsG
-AQUFBwEBBG8wbTAuBggrBgEFBQcwAYYiaHR0cDovL29jc3AyLmdsb2JhbHNpZ24uY29tL3Jvb3Ry
-MzA7BggrBgEFBQcwAoYvaHR0cDovL3NlY3VyZS5nbG9iYWxzaWduLmNvbS9jYWNlcnQvcm9vdC1y
-My5jcnQwNgYDVR0fBC8wLTAroCmgJ4YlaHR0cDovL2NybC5nbG9iYWxzaWduLmNvbS9yb290LXIz
-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
-G7p3AiuB2sgfq6cOpbO5MEwGA1UdIARFMEMwQQYJKwYBBAGgMgEoMDQwMgYIKwYBBQUHAgEWJmh0
-dHBzOi8vd3d3Lmdsb2JhbHNpZ24uY29tL3JlcG9zaXRvcnkvMAwGA1UdEwEB/wQCMAAwgZoGCCsG
-AQUFBwEBBIGNMIGKMD4GCCsGAQUFBzABhjJodHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9jYS9n
-c2F0bGFzcjNzbWltZWNhMjAyMDBIBggrBgEFBQcwAoY8aHR0cDovL3NlY3VyZS5nbG9iYWxzaWdu
-LmNvbS9jYWNlcnQvZ3NhdGxhc3Izc21pbWVjYTIwMjAuY3J0MB8GA1UdIwQYMBaAFHzMCmjXouse
-LHIb0c1dlW+N+/JjMEYGA1UdHwQ/MD0wO6A5oDeGNWh0dHA6Ly9jcmwuZ2xvYmFsc2lnbi5jb20v
-Y2EvZ3NhdGxhc3Izc21pbWVjYTIwMjAuY3JsMA0GCSqGSIb3DQEBCwUAA4IBAQBsL34EJkCtu9Nu
-2+R6l1Qzno5Gl+N2Cm6/YLujukDGYa1JW27txXiilR9dGP7yl60HYyG2Exd5i6fiLDlaNEw0SqzE
-dw9ZSIak3Qvm2UybR8zcnB0deCUiwahqh7ZncEPlhnPpB08ETEUtwBEqCEnndNEkIN67yz4kniCZ
-jZstNF/BUnI3864fATiXSbnNqBwlJS3YkoaCTpbI9qNTrf5VIvnbryT69xJ6f25yfmxrXNJJe5OG
-ncB34Cwnb7xQyk+uRLZ465yUBkbjk9pC/yamL0O7SOGYUclrQl2c5zzGuVBD84YcQGDOK6gSPj6w
-QuBfOooZPOyZZZ8AMih7J980MYICajCCAmYCAQEwaDBUMQswCQYDVQQGEwJCRTEZMBcGA1UEChMQ
-R2xvYmFsU2lnbiBudi1zYTEqMCgGA1UEAxMhR2xvYmFsU2lnbiBBdGxhcyBSMyBTTUlNRSBDQSAy
-MDIwAhABQeVybOOpR4bOOXZYL5T3MA0GCWCGSAFlAwQCAQUAoIHUMC8GCSqGSIb3DQEJBDEiBCD9
-dTJ3C1ML/jXUB2jWCjpYGFbLWDtAavKA8DvwSr7e/TAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcB
-MBwGCSqGSIb3DQEJBTEPFw0yMjAzMzEwMjAwMjhaMGkGCSqGSIb3DQEJDzFcMFowCwYJYIZIAWUD
-BAEqMAsGCWCGSAFlAwQBFjALBglghkgBZQMEAQIwCgYIKoZIhvcNAwcwCwYJKoZIhvcNAQEKMAsG
-CSqGSIb3DQEBBzALBglghkgBZQMEAgEwDQYJKoZIhvcNAQEBBQAEggEAJCySVqF1qIZbPhMhq6+/
-BvcbQuYwUKMwe64ZdWNCNfa8ZM1DhEk/gwp5+lnmAeIYSuDIwql+RplAPAn1+nQPWh2nP7kT5Bpa
-pjACyaLX21TYfsQe4ctBRsdJKikKu1t+TQRRen4a7xOEM+jk7l04bEbSPiyEULQFodzPKYw6Xhd6
-YS2MX0OPOuLS4ACybo1cm8MgAxyVC3O8SrIUPTSVHHFIkhTxjOrto/H2ubz9FEbWzH9gVVKzc56b
-zK46MsKKeULiygPXgY4ta1HTm3NG2hQfhFF/FVu4TOsq4eJpuk0A/8g71GH8OWeBs97pubzKg3Sx
-NBPCKJ7ivys9Vbi1zA==
---000000000000b3572005db7a0607--
+Is my commit  information not clear? Is this description more clearly
+
+When the wait_event_idle_exclusive_timeout() timed out, if the value of
+trc_n_readers_need_end  decrease to zero just at this point
+this indicates that the current grace period is just completed at this poin=
+t,
+direct break  and  avoid printing stall information.
+
+
+>>Thanks
+>>Zqiang
+
+>  		// Stall warning time, so make a list of the offenders.
+>  		rcu_read_lock();
+> --
+> 2.25.1
+>=20
