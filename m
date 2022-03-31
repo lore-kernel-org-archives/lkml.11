@@ -2,141 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CCDAC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 07:35:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F9ACC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 07:35:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232249AbiCaHg5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 03:36:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60976 "EHLO
+        id S232258AbiCaHhd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 03:37:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230313AbiCaHgy (ORCPT
+        with ESMTP id S230313AbiCaHhb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 03:36:54 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CB7837A3D;
-        Thu, 31 Mar 2022 00:35:06 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id t25so39903022lfg.7;
-        Thu, 31 Mar 2022 00:35:05 -0700 (PDT)
+        Thu, 31 Mar 2022 03:37:31 -0400
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 239A036683;
+        Thu, 31 Mar 2022 00:35:45 -0700 (PDT)
+Received: by mail-wm1-x331.google.com with SMTP id r64so13668757wmr.4;
+        Thu, 31 Mar 2022 00:35:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:content-language:from
-         :subject:to:cc:content-transfer-encoding;
-        bh=fygLA6FCziDtx1VVgJ2qLCPIBE2mOveDYVKTX7/lkjk=;
-        b=ABe8/cH+f1dBFRiwJ4AEsV7aww+qn4+vKIMuvvv9tuCNrfepOW/5gy728C9WlHwSGv
-         xpTlfYK6g5vAi28UNiMJOLB1fjXE8sMPi0c/5qZIDlyJgwUvg/klQwe8ZV+ScUudEU4/
-         rRFpNnD//uLJ56Gh4R0F7UBJZVUlsBv8Szbjn5ZojwunVTI+lWkN1gCUYTos7E6Weg3Q
-         +x/OOUhKvsHzQ4dELQVUbORt/wHgyAf+enniNwuPh3ADeEwzUifAIyAs4UOdf9nGJ/jp
-         6K9dDZANzfnqn61QCv9YvEzM51D1mKBmU/pBjLChmdF1r/7EzlLr36TFrtM68CE2nPTv
-         vaYg==
+        h=from:to:cc:subject:date:message-id;
+        bh=koqU8cu5QyLPi0+z0HIFbOQ5tzZprRY+tLyn3bi/RHk=;
+        b=VuzGoDSAZ9gh8+A7JYO1NVZ6xtPt8XVA4u9PNVfQVXSYlohVFz9ESjpAlqiDm2/1FN
+         GxqiazCptVegcK4IOwflHoMxjg5eeFYoJy0VOZ69KQrxO8VmZsiWs2UeJrJSOEpBYg/M
+         zKajtjBxyDgIErUD5qcfdQS6QjsYglvSiRg0iFkRDH6zGmUaiWAeqcUsUc/8Or/9znqu
+         f/6aOS05NBAALBH0I5LFLhe4ujfHAmEvqOzztHSSTt0WScqEIV9slwRuzdej18BEY9so
+         ML3b0fbS8+ar7+rrhSnucCZf1PAcSQXT6H8Q+F5ZW9G1fxvCCXHuLetFY6oFF7zYYN9b
+         CRuw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:from:subject:to:cc:content-transfer-encoding;
-        bh=fygLA6FCziDtx1VVgJ2qLCPIBE2mOveDYVKTX7/lkjk=;
-        b=aUqU5hO9kEP6o3kdyp18laLltoJP8En7wNY5cWxbWMtDIr7yIe+jBR1TsxPPN4LgNZ
-         Hu0OgVWNswOBGyebuIUTsH4KNrX82e5sgrnkOEtl2Hh3rd5ZoobLupeKE2nWVziXzAVG
-         3Y9v6Zrxlb5YwNIsfNrcvWgkhRkkD8jvQCj7ExGONxWLrpCdwsDeKx0MeqJMtQDJjDgN
-         BWzSjh/2KETlAJldEGxmG1v8IPg2ObaMZxpGkvs+0ZOzk3tovnM1fD5xq/E7IhJPOrEt
-         C5MTF+8ZlZUkTGwFmJOv+3b2KFBfvosgddHsyL7QFhIGtp5fBe6uV+Y2/sBuNaWaVcvS
-         mHFg==
-X-Gm-Message-State: AOAM531t7Q+QtgOYnMej3h/LxTlONmi8UWfzCKz9/jGfEg/FnQyxszhr
-        yKmnTP+KqG4Ocvb881StucU=
-X-Google-Smtp-Source: ABdhPJzu3nKlbF6eQZCocWc8zoJnOAKYzLHgkxLeJ6GrZCGdjgOd8T7ZRJ1hHhlVxMensAN3lIWpTg==
-X-Received: by 2002:ac2:5bcb:0:b0:44a:1fd6:6b14 with SMTP id u11-20020ac25bcb000000b0044a1fd66b14mr10099860lfn.186.1648712101124;
-        Thu, 31 Mar 2022 00:35:01 -0700 (PDT)
-Received: from [192.168.1.105] (235.132.246.94.ip4.artcom.pl. [94.246.132.235])
-        by smtp.gmail.com with ESMTPSA id y21-20020a2e9d55000000b0024aa6b3feb3sm1978389ljj.29.2022.03.31.00.35.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 31 Mar 2022 00:35:00 -0700 (PDT)
-Message-ID: <9ccce84f-3573-46bd-0444-e812ea2524a9@gmail.com>
-Date:   Thu, 31 Mar 2022 09:36:36 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Content-Language: en-US
-From:   Piotr Chmura <chmooreck@gmail.com>
-Subject: [PATCH v2] si2157: unknown chip version Si2147-A30 ROM 0x50
-To:     Thorsten Leemhuis <regressions@leemhuis.info>
-Cc:     robert Schlabbach <robert_s@gmx.net>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Linux Media Mailing List <linux-media@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Antti Palosaari <crope@iki.fi>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=koqU8cu5QyLPi0+z0HIFbOQ5tzZprRY+tLyn3bi/RHk=;
+        b=nQRIPMj9hcdISHxxQXiQ5p9AhYCNrKXBZKd0eaAqItlt3QOz1xiZXftVvB3cCt2/cJ
+         m8/M1hrUAySnUShpUFnWlml7uFK1H7CGGYzMa+v6IInvEnOt1HvHAGfmt+UNbwV/fdJL
+         O+ne+e5DZU/3stIAw6tpErIOQDtJSCeXX2PanZeceb9VvWgcot6Fy4U57aRvguCQhomS
+         pa53QADLLf9ZPaqzb/p4BA88c5X6k3N1pt0V/JkN4LCaeOkDmZapUCGm/2FGZYBJ0d18
+         ECDF9Xt3o2GOhDrMcejaqgNOgfOoZCYb51TdIEeyNbOGtqfIwEQrmfibtR5yUHazg2a5
+         3/MQ==
+X-Gm-Message-State: AOAM5313ibzKjYMo+tH+qCR65raFIkst9TIsJSIoVqUGg9zbQdu7g9e4
+        Gb1IdKGaR+q1x+RmbYvADKxOr//+3sIyhg==
+X-Google-Smtp-Source: ABdhPJygszPWaXcF8CiEBOIQiphpT7+c4LdCBXZNh32jHsgC5+2ly8crV5ARMais7x4pF10d/6buaQ==
+X-Received: by 2002:a05:600c:4401:b0:38c:8df8:9797 with SMTP id u1-20020a05600c440100b0038c8df89797mr3548119wmn.13.1648712143212;
+        Thu, 31 Mar 2022 00:35:43 -0700 (PDT)
+Received: from Dev-shlomop.pliops.ent (bzq-219-32-62.isdn.bezeqint.net. [62.219.32.62])
+        by smtp.googlemail.com with ESMTPSA id o17-20020a05600c4fd100b0038cd5074c83sm6947108wmq.34.2022.03.31.00.35.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 31 Mar 2022 00:35:42 -0700 (PDT)
+From:   Shlomo Pongratz <shlomopongratz@gmail.com>
+X-Google-Original-From: Shlomo Pongratz <shlomop@pliops.com>
+To:     linux-pci@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, andrew.maier@eideticom.com,
+        logang@deltatee.com, bhelgaas@google.com, jgg@nvidia.com,
+        helgaas@kernel.org, Shlomo Pongratz <shlomop@pliops.com>
+Subject: [PATCH V5 0/1] Intel Sky Lake-E host root ports check.
+Date:   Thu, 31 Mar 2022 10:35:38 +0300
+Message-Id: <20220331073539.14499-1-shlomop@pliops.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix firmware file names assignment in si2157 tuner, allow for running 
-devices without firmware files needed.
+Changes in v5: 
+
+Address Logan Gunthorpe, Jason Gunthorpe and Bjorn Helgaas comments.
+Fix indentation.
+Update comments.
+
+Changes in v4: 
+
+Address Bjorn Helgaas and Jason Gunthorpe comments.
+Replace the implementation of pci_is_root_port with a simple check
+pci_pcie_type(root) != PCI_EXP_TYPE_ROOT_PORT and remove the added
+IS_ROOT_PORT flag.
+Update patch text.
+
+Changes in v3: 
+
+Use Jason Gunthorpe suggestion, that is add a flag 'IS_ROOT_PORT'
+instead of 'port' and then just ignore the slot number entirely for root ports.
+
+Changes in v2: 
+
+Change comment and description based on Logan Gunthorpe comments.
 
 
-It's regression in kernel 5.17.0, worked fine in 5.16 series.
+v1:
 
-device: 07ca:1871 AVerMedia Technologies, Inc. TD310 DVB-T/T2/C dongle
-modprobe gives error: unknown chip version Si2147-A30 ROM 0x50
-Device initialization is interrupted.
+In commit 7b94b53db34f ("PCI/P2PDMA: Add Intel Sky Lake-E Root Ports B, C, D to
+the whitelist")
+Andrew Maier added the Sky Lake-E additional devices
+2031, 2032 and 2033 root ports to the already existing 2030 device.
 
-caused by:
-1. table si2157_tuners has swapped fields rom_id and required vs struct 
-si2157_tuner_info.
-2. both firmware file names can be null for devices with required == 
-false - device uses build-in firmware in this case
+The Intel devices 2030, 2031, 2032 and 2033 which are root ports A, B, C and D,
+respectively and if all exist they will occupy slots 0 till 3 in that order.
 
-Fix:
-1. Rearrange fields in table si2157_tuners
-2. Allow both firmware file names be NULL for devices defined with 
-required == false
+The original code handled only the case where the devices in the whitelist are 
+host bridges and assumed that they will be found on slot 0.
+
+This assumption doesn't hold for root ports so an explicit test was added to
+cover this case.
 
 
-Fixes: 1c35ba3bf972 ("media: si2157: use a different namespace for 
-firmware")
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215726
-Link: 
-https://lore.kernel.org/lkml/5f660108-8812-383c-83e4-29ee0558d623@leemhuis.info/
-Cc: stable@vger.kernel.org # 5.17.x
-Signed-of-by: Piotr Chmura <chmooreck@poczta.onet.pl>
-Tested-by: Robert Schlabbach <robert_s@gmx.net>
+Shlomo Pongratz (1):
+  Intel Sky Lake-E host root ports check.
 
----
+ drivers/pci/p2pdma.c | 24 +++++++++++++++++-------
+ 1 file changed, 17 insertions(+), 7 deletions(-)
 
---- a/drivers/media/tuners/si2157.c    2022-03-20 21:14:17.000000000 +0100
-+++ b/drivers/media/tuners/si2157.c    2022-03-22 23:48:05.604408331 +0100
-@@ -77,16 +77,16 @@ err_mutex_unlock:
-  }
-
-  static const struct si2157_tuner_info si2157_tuners[] = {
--    { SI2141, false, 0x60, SI2141_60_FIRMWARE, SI2141_A10_FIRMWARE },
--    { SI2141, false, 0x61, SI2141_61_FIRMWARE, SI2141_A10_FIRMWARE },
--    { SI2146, false, 0x11, SI2146_11_FIRMWARE, NULL },
--    { SI2147, false, 0x50, SI2147_50_FIRMWARE, NULL },
--    { SI2148, true,  0x32, SI2148_32_FIRMWARE, SI2158_A20_FIRMWARE },
--    { SI2148, true,  0x33, SI2148_33_FIRMWARE, SI2158_A20_FIRMWARE },
--    { SI2157, false, 0x50, SI2157_50_FIRMWARE, SI2157_A30_FIRMWARE },
--    { SI2158, false, 0x50, SI2158_50_FIRMWARE, SI2158_A20_FIRMWARE },
--    { SI2158, false, 0x51, SI2158_51_FIRMWARE, SI2158_A20_FIRMWARE },
--    { SI2177, false, 0x50, SI2177_50_FIRMWARE, SI2157_A30_FIRMWARE },
-+    { SI2141, 0x60, false, SI2141_60_FIRMWARE, SI2141_A10_FIRMWARE },
-+    { SI2141, 0x61, false, SI2141_61_FIRMWARE, SI2141_A10_FIRMWARE },
-+    { SI2146, 0x11, false, SI2146_11_FIRMWARE, NULL },
-+    { SI2147, 0x50, false, SI2147_50_FIRMWARE, NULL },
-+    { SI2148, 0x32, true,  SI2148_32_FIRMWARE, SI2158_A20_FIRMWARE },
-+    { SI2148, 0x33, true,  SI2148_33_FIRMWARE, SI2158_A20_FIRMWARE },
-+    { SI2157, 0x50, false, SI2157_50_FIRMWARE, SI2157_A30_FIRMWARE },
-+    { SI2158, 0x50, false, SI2158_50_FIRMWARE, SI2158_A20_FIRMWARE },
-+    { SI2158, 0x51, false, SI2158_51_FIRMWARE, SI2158_A20_FIRMWARE },
-+    { SI2177, 0x50, false, SI2177_50_FIRMWARE, SI2157_A30_FIRMWARE },
-  };
-
-  static int si2157_load_firmware(struct dvb_frontend *fe,
-@@ -178,7 +178,7 @@ static int si2157_find_and_load_firmware
-          }
-      }
-
--    if (!fw_name && !fw_alt_name) {
-+    if (required && !fw_name && !fw_alt_name) {
-          dev_err(&client->dev,
-              "unknown chip version Si21%d-%c%c%c ROM 0x%02x\n",
-              part_id, cmd.args[1], cmd.args[3], cmd.args[4], rom_id);
+-- 
+2.17.1
 
