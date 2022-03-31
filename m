@@ -2,174 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFEC3C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 04:15:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72084C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 04:15:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229800AbiCaEQ5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 00:16:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39102 "EHLO
+        id S230302AbiCaERG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 00:17:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230286AbiCaEQh (ORCPT
+        with ESMTP id S230239AbiCaEQn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 00:16:37 -0400
-Received: from mailout4.samsung.com (mailout4.samsung.com [203.254.224.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A3FB16BCED
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 21:00:39 -0700 (PDT)
-Received: from epcas1p4.samsung.com (unknown [182.195.41.48])
-        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20220331030338epoutp04879dc79db3570243e37b008bc366f4ad~hWByXj3ow0472804728epoutp04c
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 03:03:38 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20220331030338epoutp04879dc79db3570243e37b008bc366f4ad~hWByXj3ow0472804728epoutp04c
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1648695818;
-        bh=atNiTbJQ5upQMrld2+SnKpbR/2YzyUNsEH8o2X9kkdI=;
-        h=From:To:Cc:Subject:Date:References:From;
-        b=ufaKw/moSs9+mixMGD/oFuSvGxYT4L2tlWGKQ7nhqy9sHytm3XctKw0g6Fc2bo+n0
-         Jkp8rVYI00tkntrZLTk9bkB0VAOf44eOkBx0E9hZYOp+NegJs1TlxyylShuIq8Vb5e
-         Y0vuA9Jx3g5RqgsuZnm7CSLAI9JEnvBSZ7hZaYHE=
-Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
-        epcas1p2.samsung.com (KnoxPortal) with ESMTP id
-        20220331030338epcas1p2a49e06fe56daf7a2c2c5cf5808323b90~hWBx-LJzN2258122581epcas1p2i;
-        Thu, 31 Mar 2022 03:03:38 +0000 (GMT)
-Received: from epsmges1p5.samsung.com (unknown [182.195.38.241]) by
-        epsnrtp4.localdomain (Postfix) with ESMTP id 4KTSmn1dMtz4x9QC; Thu, 31 Mar
-        2022 03:03:37 +0000 (GMT)
-Received: from epcas1p2.samsung.com ( [182.195.41.46]) by
-        epsmges1p5.samsung.com (Symantec Messaging Gateway) with SMTP id
-        79.18.28648.90A15426; Thu, 31 Mar 2022 12:03:37 +0900 (KST)
-Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
-        epcas1p3.samsung.com (KnoxPortal) with ESMTPA id
-        20220331030336epcas1p3b8bf7b1841d4b246030b57b668312169~hWBw-A0Tw1494514945epcas1p3e;
-        Thu, 31 Mar 2022 03:03:36 +0000 (GMT)
-Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
-        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20220331030336epsmtrp22cb232d9a8967911c4e27a3551b9981c~hWBw_W5jy2738927389epsmtrp2I;
-        Thu, 31 Mar 2022 03:03:36 +0000 (GMT)
-X-AuditID: b6c32a39-ff1ff70000006fe8-e1-62451a09818f
-Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
-        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        57.DE.24342.80A15426; Thu, 31 Mar 2022 12:03:36 +0900 (KST)
-Received: from VDBS1418.vd.sec.samsung.net (unknown [168.219.244.30]) by
-        epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
-        20220331030336epsmtip1b19966f0ede5198d937ae4fd8e29f34b~hWBw3h7N90211802118epsmtip1R;
-        Thu, 31 Mar 2022 03:03:36 +0000 (GMT)
-From:   bumwoo lee <bw365.lee@samsung.com>
-To:     MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        linux-kernel@vger.kernel.org
-Cc:     bumwoo lee <bw365.lee@samsung.com>
-Subject: [PATCH] extcon: modify extcon device to be created after driver
- data is set
-Date:   Thu, 31 Mar 2022 12:03:24 +0900
-Message-Id: <20220331030324.42621-1-bw365.lee@samsung.com>
-X-Mailer: git-send-email 2.35.1
+        Thu, 31 Mar 2022 00:16:43 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAE0525EC88;
+        Wed, 30 Mar 2022 21:01:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648699262; x=1680235262;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=/WJjZChIo8N1c8iyIkTk+sLE9BhLskWf4w/kKr8E+fU=;
+  b=ThgFKeeLfVooXc15RA3hT18hmq+AqapRpEHsw3sACYiVxvWZIx5AnAez
+   JtjQkGbsPUMEc+7e+B7+10p/uIGflJ7NQ8UxJ1TunF3fnxWNWujZi23I+
+   Yx2TOob3LOtfMcJD4GJ5feQN6mye1i+wChz6OryFNWRZfA82t7puznC6U
+   MQ4WHSJqHbwss4ZU+g/K5nIq2vR/aSBpCQAlgOm3YvNld29NvKWdYe8WV
+   cg50gsZPRvCVGhpoo/XXF901h7GhYM9iMzrErli8SRM/8QmFG0w8nZYVx
+   0gCkbEB9hUWruXEx0e8cCgDEhkuR82f+DzOCXo3pXt5DXHMo6jjj4e/n+
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="258538091"
+X-IronPort-AV: E=Sophos;i="5.90,224,1643702400"; 
+   d="scan'208";a="258538091"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 19:57:53 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,224,1643702400"; 
+   d="scan'208";a="520138912"
+Received: from lkp-server02.sh.intel.com (HELO 56431612eabd) ([10.239.97.151])
+  by orsmga002.jf.intel.com with ESMTP; 30 Mar 2022 19:57:50 -0700
+Received: from kbuild by 56431612eabd with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nZl0P-0000mi-SJ;
+        Thu, 31 Mar 2022 02:57:49 +0000
+Date:   Thu, 31 Mar 2022 10:57:16 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Yi Wang <wang.yi59@zte.com.cn>, djwong@kernel.org
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-xfs@vger.kernel.org, linux-kernel@vger.kernel.org,
+        xue.zhihong@zte.com.cn, wang.yi59@zte.com.cn,
+        wang.liang82@zte.com.cn, Cheng Lin <cheng.lin130@zte.com.cn>
+Subject: Re: [PATCH] xfs: getattr ignore blocks beyond eof
+Message-ID: <202203311017.dWBicGOM-lkp@intel.com>
+References: <20220331080256.1874-1-wang.yi59@zte.com.cn>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrPKsWRmVeSWpSXmKPExsWy7bCmni6nlGuSwd8l3BYn1ixisrj+5Tmr
-        xeVdc9gsbjeuYHNg8ejbsorR4/MmuQCmqGybjNTElNQihdS85PyUzLx0WyXv4HjneFMzA0Nd
-        Q0sLcyWFvMTcVFslF58AXbfMHKBFSgpliTmlQKGAxOJiJX07m6L80pJUhYz84hJbpdSClJwC
-        swK94sTc4tK8dL281BIrQwMDI1OgwoTsjO/nGtkKdglUPJy9hbWB8TNvFyMnh4SAicSG1fcY
-        uxi5OIQEdjBKrG34wgzhfGKUmLBrAwuE841R4u+PDvYuRg6wlj+vKiHiexkl/nSfZIJwfjFK
-        3Jp1nQlkLpuAhsTFi9eZQRpEBAolDvdng4SZBdQk/pzpASsRFgiT2NnxjA3EZhFQlWj89wHM
-        5hWwkri7eA0bxHnyEt3//rBAxAUlTs58wgIxR16ieetssEslBJaxSzw6+ZAV4jgXidYVAhC9
-        whKvjm9hh7ClJD6/2ws1M11i5ZU7UPEcidf32xkhbGOJd2/Xgp3MLKApsX6XPkRYUWLn77mM
-        EGv5JN597YHaxCvR0SYEUaIs0f3gBROELSmx+OkdqIkeEp1TFoJdLCQQK3H7w0HGCYzys5A8
-        MwvJM7MQFi9gZF7FKJZaUJybnlpsWGAKj9Lk/NxNjOCUpmW5g3H62w96hxiZOBgPMUpwMCuJ
-        8H486JwkxJuSWFmVWpQfX1Sak1p8iNEUGLwTmaVEk/OBSTWvJN7QxNLAxMzIxMLY0thMSZx3
-        1bTTiUIC6YklqdmpqQWpRTB9TBycUg1Mmw8LWZkeVxJp+PZy59oF/SofOa43HZx1+Himudel
-        7oLVAfoaZo81xC2z1/7YcllUzm/OpiLhh65qbJYSizLvWy368mTagXj9qczJO/4yv1zvMS3j
-        mvac+MVfdpUYdrp0yN+6u9g/wOiL3/X1b0TNu7mLFl7L3m25gnubLcPUNPa2uY53PWb8fj07
-        PW3D9MIZ3xYcOjQzKpWVIX1JwvJVE4IKfVYzSD2XSu9iOz3Jp2jB/NlPJhzZlR3g/9s7eWfN
-        vgOSbqssbkrs3OM98ZJ2uPrTzhnhvmElf/6vsV5YHXdOvv7fyQ/80aunzzvoxb1qwnmFJcu1
-        NvKfyeW2/3FjVq/Y8zWGa8ou7RWrWzjPpkWJpTgj0VCLuag4EQAXBGK08gMAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFupnluLIzCtJLcpLzFFi42LZdlhJTpdDyjXJ4Nl3U4sTaxYxWVz/8pzV
-        4vKuOWwWtxtXsDmwePRtWcXo8XmTXABTFJdNSmpOZllqkb5dAlfG93ONbAW7BCoezt7C2sD4
-        mbeLkYNDQsBE4s+ryi5GLg4hgd2MEnOmvmftYuQEiktKnF3+iB2iRlji8OFiiJofjBIPWj6z
-        g9SwCWhIXLx4nRnEFhEolrhwYDELiM0soCbx50wPE4gtLBAisWTSBbAaFgFVicZ/H9hAbF4B
-        K4m7i9ewQeySl+j+94cFIi4ocXLmE6g58hLNW2czT2Dkm4UkNQtJagEj0ypGydSC4tz03GLD
-        AsO81HK94sTc4tK8dL3k/NxNjOAw09Lcwbh91Qe9Q4xMHIyHGCU4mJVEeD8edE4S4k1JrKxK
-        LcqPLyrNSS0+xCjNwaIkznuh62S8kEB6YklqdmpqQWoRTJaJg1Oqgcn8i8CFvuvRpcE6nNf8
-        9q7VPfPBavrj7/mJjz3eX3deWO3o1Pb1mtJlg8cZXPwCp2dn7VRk453kdU/08uLo4NP7704s
-        NnoovHji0xKjK5+OVXxvtOT0CGcPa++cGfbcpUVEfcPa5S8n3r4ctCfPvOZ249Ee6TT3fcH3
-        1O13vOps05zBtfANX8WN7FyDtwe3yJj+9/hluHDiNruU9tTS+9l7LI2sq/qlQ80eamtof7AJ
-        9Ah74WyV9+kg36f16+wizCKFFL+odZq/v6N/d8HvT1ppr+ZmbJzwge/ozZ0XH1UXCLMKLPQR
-        /+MQbVuxn0O3r03g2CaGydEbt55e03ZUftoyi4Msokf2+K34xur54pASS3FGoqEWc1FxIgBv
-        +6nbogIAAA==
-X-CMS-MailID: 20220331030336epcas1p3b8bf7b1841d4b246030b57b668312169
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: SVC_REQ_APPROVE
-CMS-TYPE: 101P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220331030336epcas1p3b8bf7b1841d4b246030b57b668312169
-References: <CGME20220331030336epcas1p3b8bf7b1841d4b246030b57b668312169@epcas1p3.samsung.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220331080256.1874-1-wang.yi59@zte.com.cn>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently, someone can invoke the sysfs such as state_show()
-intermittently before set_drvdata() is done.
-And it can be a cause of kernel Oops because of edev is Null at that time.
-So modified the driver registration to after setting drviver data.
+Hi Yi,
 
-- Oops's backtrace.
+Thank you for the patch! Yet something to improve:
 
-Backtrace:
-[<c067865c>] (state_show) from [<c05222e8>] (dev_attr_show)
-[<c05222c0>] (dev_attr_show) from [<c02c66e0>] (sysfs_kf_seq_show)
-[<c02c6648>] (sysfs_kf_seq_show) from [<c02c496c>] (kernfs_seq_show)
-[<c02c4938>] (kernfs_seq_show) from [<c025e2a0>] (seq_read)
-[<c025e11c>] (seq_read) from [<c02c50a0>] (kernfs_fop_read)
-[<c02c5064>] (kernfs_fop_read) from [<c0231cac>] (__vfs_read)
-[<c0231c5c>] (__vfs_read) from [<c0231ee0>] (vfs_read)
-[<c0231e34>] (vfs_read) from [<c0232464>] (ksys_read)
-[<c02323f0>] (ksys_read) from [<c02324fc>] (sys_read)
-[<c02324e4>] (sys_read) from [<c00091d0>] (__sys_trace_return)
+[auto build test ERROR on xfs-linux/for-next]
+[also build test ERROR on v5.17 next-20220330]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-Signed-off-by: bumwoo lee <bw365.lee@samsung.com>
----
- drivers/extcon/extcon.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+url:    https://github.com/intel-lab-lkp/linux/commits/Yi-Wang/xfs-getattr-ignore-blocks-beyond-eof/20220331-082944
+base:   https://git.kernel.org/pub/scm/fs/xfs/xfs-linux.git for-next
+config: s390-randconfig-r002-20220330 (https://download.01.org/0day-ci/archive/20220331/202203311017.dWBicGOM-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 0f6d9501cf49ce02937099350d08f20c4af86f3d)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install s390 cross compiling tool for clang build
+        # apt-get install binutils-s390x-linux-gnu
+        # https://github.com/intel-lab-lkp/linux/commit/e560188227f8fed285a1bd736e5708de984f0596
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Yi-Wang/xfs-getattr-ignore-blocks-beyond-eof/20220331-082944
+        git checkout e560188227f8fed285a1bd736e5708de984f0596
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash
 
-diff --git a/drivers/extcon/extcon.c b/drivers/extcon/extcon.c
-index d27cd9f88f86..74fee04bd764 100644
---- a/drivers/extcon/extcon.c
-+++ b/drivers/extcon/extcon.c
-@@ -1224,18 +1224,13 @@ int extcon_dev_register(struct extcon_dev *edev)
- 		edev->dev.type = &edev->extcon_dev_type;
- 	}
- 
--	ret = device_register(&edev->dev);
--	if (ret) {
--		put_device(&edev->dev);
--		goto err_dev;
--	}
-+	device_initialize(&edev->dev);
- 
- 	spin_lock_init(&edev->lock);
- 	edev->nh = devm_kcalloc(&edev->dev, edev->max_supported,
- 				sizeof(*edev->nh), GFP_KERNEL);
- 	if (!edev->nh) {
- 		ret = -ENOMEM;
--		device_unregister(&edev->dev);
- 		goto err_dev;
- 	}
- 
-@@ -1251,9 +1246,14 @@ int extcon_dev_register(struct extcon_dev *edev)
- 	list_add(&edev->entry, &extcon_dev_list);
- 	mutex_unlock(&extcon_dev_list_lock);
- 
-+	ret = device_add(&edev->dev);
-+	if (ret)
-+		goto err_dev;
-+
- 	return 0;
- 
- err_dev:
-+	put_device(&edev->dev);
- 	if (edev->max_supported)
- 		kfree(edev->extcon_dev_type.groups);
- err_alloc_groups:
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+>> fs/xfs/xfs_bmap_util.c:756:19: error: use of undeclared identifier 'end_fsb'
+           ip->i_last_fsb = end_fsb;
+                            ^
+   1 error generated.
+
+
+vim +/end_fsb +756 fs/xfs/xfs_bmap_util.c
+
+   710	
+   711	/*
+   712	 * This is called to free any blocks beyond eof. The caller must hold
+   713	 * IOLOCK_EXCL unless we are in the inode reclaim path and have the only
+   714	 * reference to the inode.
+   715	 */
+   716	int
+   717	xfs_free_eofblocks(
+   718		struct xfs_inode	*ip)
+   719	{
+   720		struct xfs_trans	*tp;
+   721		struct xfs_mount	*mp = ip->i_mount;
+   722		int			error;
+   723	
+   724		/* Attach the dquots to the inode up front. */
+   725		error = xfs_qm_dqattach(ip);
+   726		if (error)
+   727			return error;
+   728	
+   729		/* Wait on dio to ensure i_size has settled. */
+   730		inode_dio_wait(VFS_I(ip));
+   731	
+   732		error = xfs_trans_alloc(mp, &M_RES(mp)->tr_itruncate, 0, 0, 0, &tp);
+   733		if (error) {
+   734			ASSERT(xfs_is_shutdown(mp));
+   735			return error;
+   736		}
+   737	
+   738		xfs_ilock(ip, XFS_ILOCK_EXCL);
+   739		xfs_trans_ijoin(tp, ip, 0);
+   740	
+   741		/*
+   742		 * Do not update the on-disk file size.  If we update the on-disk file
+   743		 * size and then the system crashes before the contents of the file are
+   744		 * flushed to disk then the files may be full of holes (ie NULL files
+   745		 * bug).
+   746		 */
+   747		error = xfs_itruncate_extents_flags(&tp, ip, XFS_DATA_FORK,
+   748					XFS_ISIZE(ip), XFS_BMAPI_NODISCARD);
+   749		if (error)
+   750			goto err_cancel;
+   751	
+   752		error = xfs_trans_commit(tp);
+   753		if (error)
+   754			goto out_unlock;
+   755	
+ > 756		ip->i_last_fsb = end_fsb;
+   757		xfs_inode_clear_eofblocks_tag(ip);
+   758		goto out_unlock;
+   759	
+   760	err_cancel:
+   761		/*
+   762		 * If we get an error at this point we simply don't
+   763		 * bother truncating the file.
+   764		 */
+   765		xfs_trans_cancel(tp);
+   766	out_unlock:
+   767		xfs_iunlock(ip, XFS_ILOCK_EXCL);
+   768		return error;
+   769	}
+   770	
+
 -- 
-2.32.0
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
