@@ -2,174 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4780AC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 14:04:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEAD8C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 14:07:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237275AbiCaOGi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 10:06:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38136 "EHLO
+        id S237206AbiCaOJM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 10:09:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237287AbiCaOGX (ORCPT
+        with ESMTP id S229966AbiCaOJK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 10:06:23 -0400
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2050.outbound.protection.outlook.com [40.107.237.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63904606CF;
-        Thu, 31 Mar 2022 07:04:23 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gNqQ7pGHB2M7juiOyYHBmTZJf4mQ1dVRcbh0T76Z7jPp+VAB4A0jrxes6HaHTjoL3u9saPVE3m5OJNO1Ut2hoUWQg85N4vIQCzZVbh3kASpexyz2NzcsqdYcjJMqUT3FXNbTRwxH7xiK3Mv0OTbkoo6vex8SbMWmiCtQeVjZFYxWwmcdcWwed2BJDEnEEKY+pGx00KPSx6Y3FpICoTZpc6H2bV9RM+6oNf95IHKSuF550bka+k4pg7BQIVT5xE52YI5Vm7fwfqVxUHr2xfYz+HFPN4vNtRi+Z+0kafWRBJvTR6bHLqzeKQbxBC4ptm2xzo44sWtGf63UiiivTVAPNQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=lvBL2G1yjeV6OA5thnvh+CqEDiFd6WmrNsoTXXT5OBw=;
- b=NK2E+Xbnuu5FZ+7vZhMR77w4AbF5MGAhcT6U+aROqzxFvKANy3JGKMn3gy3xMmOFEsc0pMdex1UMvxILFBlKYBzocDuOGHtBODntv4GIQa9I55RBP9oYlkJOmvjH85706IeZtEOel3Dry7fEiyc2WDPQLA3hUuVmbJL0ECTJ9Gz1B5TRaMb2C+/Y/WwkMPCdDZVlbM+3jrYRU5a2DHcwTVPZEEFcuC72Vg4yCRyHB6WLhKkFjH6w4Z/hv0QWoAE13Yz9YuN4sC0gGMao3P6Vo3ePMWOrp9C8RQwBEHxBRYsBeG2K0k2aMfopr/YvkzNsYf9gSUonpx8fWvw+U0f1DA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.235) smtp.rcpttodomain=alsa-project.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lvBL2G1yjeV6OA5thnvh+CqEDiFd6WmrNsoTXXT5OBw=;
- b=uFIRhD1Iyw5AdDKlNaU2D9jnlV4CGB5WdFNZTlgwHReyM4gY5r60QLaO2c0hIHfSL2CQL3GdTBqfOqP+2COZCYSCu7T758QHEMpAegEcuuORttZqmL4NWflD+PMjdcK10jf0ItU1vV3wxXEGdN/0MyuQq8gB8LFpz334Rh0meAG1sDo79Mb3B1lWLd351fqqRhdtG30kTn/EkjCudq4gZFKqjnzHJxAYzSWgq5649+9KAEA5wHmcB5kLHunCM8ReWOIMJ/2xyfW9RQQojjZRQnro83W6ygkyynbUaqYlJ16iuoHpbRiZt5945FuoSXYdmPrW06GmDM+LDy8nn2qDUA==
-Received: from BN9PR03CA0089.namprd03.prod.outlook.com (2603:10b6:408:fc::34)
- by CY4PR12MB1926.namprd12.prod.outlook.com (2603:10b6:903:11b::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.23; Thu, 31 Mar
- 2022 14:04:20 +0000
-Received: from BN8NAM11FT053.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:fc:cafe::79) by BN9PR03CA0089.outlook.office365.com
- (2603:10b6:408:fc::34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.23 via Frontend
- Transport; Thu, 31 Mar 2022 14:04:20 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.235; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.235) by
- BN8NAM11FT053.mail.protection.outlook.com (10.13.177.209) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5123.19 via Frontend Transport; Thu, 31 Mar 2022 14:04:19 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by DRHQMAIL107.nvidia.com
- (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Thu, 31 Mar
- 2022 14:04:08 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail204.nvidia.com
- (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 31 Mar
- 2022 07:04:07 -0700
-Received: from audio.nvidia.com (10.127.8.10) by mail.nvidia.com (10.129.68.8)
- with Microsoft SMTP Server id 15.2.986.22 via Frontend Transport; Thu, 31 Mar
- 2022 07:04:03 -0700
-From:   Sameer Pujar <spujar@nvidia.com>
-To:     <broonie@kernel.org>, <robh+dt@kernel.org>, <krzk+dt@kernel.org>,
-        <thierry.reding@gmail.com>, <lgirdwood@gmail.com>,
-        <perex@perex.cz>, <tiwai@suse.com>
-CC:     <jonathanh@nvidia.com>, <catalin.marinas@arm.com>,
-        <will@kernel.org>, <alsa-devel@alsa-project.org>,
-        <devicetree@vger.kernel.org>, <linux-tegra@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        Sameer Pujar <spujar@nvidia.com>
-Subject: [PATCH v2 5/6] arm64: tegra: Add ASRC device on Tegra186 and later
-Date:   Thu, 31 Mar 2022 19:33:31 +0530
-Message-ID: <1648735412-32220-6-git-send-email-spujar@nvidia.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1648735412-32220-1-git-send-email-spujar@nvidia.com>
-References: <1648735412-32220-1-git-send-email-spujar@nvidia.com>
+        Thu, 31 Mar 2022 10:09:10 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D31917ECE0;
+        Thu, 31 Mar 2022 07:07:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648735641; x=1680271641;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=yifzU5rFm1OtJGITqIk6n5GweD95AgrLZBnlElGXMcU=;
+  b=MQRNxdhfqbN1QY0EmIi9Ydr4yVNSrAq3OEfBqPApMs318YgkqVvAvTgz
+   yyYcMhceLqE5Rr2WIJtkiaP2IcJ6ikryYxUTrI475/1OSGD5FGGw3LIW+
+   /zsdhMFOjU+8Bv2otou6N2f0zmb2LPhJusVaWjnEivlbUFqgAQ0VPjQ4C
+   zbI8wM9Ymq/bwxhAT5ji7iwPUO6hdxG5i6kfs/2buq7rH4/CSoRNvGC2C
+   GxmnsTptzVrW3PVxYeHKw2+DEJv9MxiSuZYN81kNuWq0Hnq94/RDdQnpl
+   hWvFgOqWR7SvC9Sxr0IXiWiUikFfmmYFrF/6Q2EDhMDgkr/cMzTuAoTDH
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="258677650"
+X-IronPort-AV: E=Sophos;i="5.90,225,1643702400"; 
+   d="scan'208";a="258677650"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2022 07:07:12 -0700
+X-IronPort-AV: E=Sophos;i="5.90,225,1643702400"; 
+   d="scan'208";a="720476243"
+Received: from smile.fi.intel.com ([10.237.72.59])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2022 07:07:10 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nZvRd-00A2CN-Ee;
+        Thu, 31 Mar 2022 17:06:37 +0300
+Date:   Thu, 31 Mar 2022 17:06:37 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Christian =?iso-8859-1?Q?L=F6hle?= <CLoehle@hyperstone.com>
+Cc:     Ulf Hansson <ulf.hansson@linaro.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
+        "adrian.hunter@intel.com" <adrian.hunter@intel.com>,
+        "digetx@gmail.com" <digetx@gmail.com>,
+        "avri.altman@wdc.com" <avri.altman@wdc.com>
+Subject: Re: [PATCH 1/2] mmc: mmc_spi: parse speed mode options
+Message-ID: <YkW1beKzd5LfxZgG@smile.fi.intel.com>
+References: <20c6efa9a4c7423bbfb9352705c4a53a@hyperstone.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3bee82ce-5c26-494b-e424-08da131f5982
-X-MS-TrafficTypeDiagnostic: CY4PR12MB1926:EE_
-X-Microsoft-Antispam-PRVS: <CY4PR12MB1926C32A0F6E88A2D8FD9D11A7E19@CY4PR12MB1926.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: vbkJywPlesf1eMtLW/rk/ba9Tu+uqFk5ZZpAWG8rMwNV5AtH3D3sEepFlYzPFIo9l4iQPQmd6QdbgoiiB3FktRwkRDoe+HY5FzoLTtjm617unUV9khJLqG8EbV9Y3h3u//W2GSHLKGTLnbjCny4evLZpBlZS+KphUOoHvn8gr/bG/Ziy3SZJPd0LjKDdavESFTIncG9SCiykBefuBY1yNDenRejAhg73MoPp3gJ3C8lY2j06wd1M7WsHmWdWfHzyx9wxmtWGF4OiAz0Xic7PO07KO7/kbXmXZVQKbAg5TsX8sqrcKGUfehNDuL6yfGAkCx7IoQgcYOO1336RAhiZrWSxjjHA/cylbYTxJmAXfHPeSK1h8oyZkf6OI8KtCz/INTwqKlhnOzG4cK5wc3OWbSk+15IzOtPqeTL8WGSJArlMeIt7kqybkhzv3v1rQGEoyOleaCbC4yj75erhx02KihzTJiz3pMs1uA+EkVI09KRL/OWzjN49NAKS7AOIPZwnSJEIyQ+xz6ehk06LmOoczffqWMGf2oZ/xZcsuX+5fa+1TP3N+87/coz9Cv5Dp8PT+KPiOx7VeI0XatNt1KU/aYY8uSm/32W/tApKG9AONtZMonXwQ38d1lFe5i+68dN2zAOLSJysO+fTKtmKwmxRJDxdpf9QAHmPh53KxCchkR79DWG0+F4LBpWYLCuSHtsvShj2cbqHLjIwvQQUA3gQbw==
-X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(110136005)(356005)(54906003)(86362001)(82310400004)(4326008)(70586007)(70206006)(316002)(8936002)(8676002)(426003)(336012)(107886003)(2616005)(26005)(186003)(47076005)(5660300002)(36860700001)(83380400001)(6666004)(508600001)(40460700003)(81166007)(7696005)(36756003)(7416002)(2906002)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Mar 2022 14:04:19.1136
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3bee82ce-5c26-494b-e424-08da131f5982
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT053.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR12MB1926
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20c6efa9a4c7423bbfb9352705c4a53a@hyperstone.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Asynchronous Sample Rate Converter (ASRC) is a client of AHUB and is
-present on Tegra186 and later generations of Tegra SoC. Add this device
-on the relevant SoC DTSI files.
+On Thu, Mar 31, 2022 at 07:28:47AM +0000, Christian Löhle wrote:
+> Since SD and MMC Highspeed modes are also valid for SPI let's parse
+> them too.
 
-Signed-off-by: Sameer Pujar <spujar@nvidia.com>
----
- arch/arm64/boot/dts/nvidia/tegra186.dtsi | 7 +++++++
- arch/arm64/boot/dts/nvidia/tegra194.dtsi | 8 ++++++++
- arch/arm64/boot/dts/nvidia/tegra234.dtsi | 8 ++++++++
- 3 files changed, 23 insertions(+)
+Makes sense to me.
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-diff --git a/arch/arm64/boot/dts/nvidia/tegra186.dtsi b/arch/arm64/boot/dts/nvidia/tegra186.dtsi
-index e9b40f5..2e7faa1 100644
---- a/arch/arm64/boot/dts/nvidia/tegra186.dtsi
-+++ b/arch/arm64/boot/dts/nvidia/tegra186.dtsi
-@@ -516,6 +516,13 @@
- 				sound-name-prefix = "MIXER1";
- 				status = "disabled";
- 			};
-+
-+			tegra_asrc: asrc@2910000 {
-+				compatible = "nvidia,tegra186-asrc";
-+				reg = <0x2910000 0x2000>;
-+				sound-name-prefix = "ASRC1";
-+				status = "disabled";
-+			};
- 		};
- 	};
- 
-diff --git a/arch/arm64/boot/dts/nvidia/tegra194.dtsi b/arch/arm64/boot/dts/nvidia/tegra194.dtsi
-index 751ebe5..4306181 100644
---- a/arch/arm64/boot/dts/nvidia/tegra194.dtsi
-+++ b/arch/arm64/boot/dts/nvidia/tegra194.dtsi
-@@ -569,6 +569,14 @@
- 					sound-name-prefix = "MIXER1";
- 					status = "disabled";
- 				};
-+
-+				tegra_asrc: asrc@2910000 {
-+					compatible = "nvidia,tegra194-asrc",
-+						     "nvidia,tegra186-asrc";
-+					reg = <0x2910000 0x2000>;
-+					sound-name-prefix = "ASRC1";
-+					status = "disabled";
-+				};
- 			};
- 		};
- 
-diff --git a/arch/arm64/boot/dts/nvidia/tegra234.dtsi b/arch/arm64/boot/dts/nvidia/tegra234.dtsi
-index aaace60..0a6ff6d 100644
---- a/arch/arm64/boot/dts/nvidia/tegra234.dtsi
-+++ b/arch/arm64/boot/dts/nvidia/tegra234.dtsi
-@@ -378,6 +378,14 @@
- 					iommus = <&smmu_niso0 TEGRA234_SID_APE>;
- 					status = "disabled";
- 				};
-+
-+				tegra_asrc: asrc@2910000 {
-+					compatible = "nvidia,tegra234-asrc",
-+						     "nvidia,tegra186-asrc";
-+					reg = <0x2910000 0x2000>;
-+					sound-name-prefix = "ASRC1";
-+					status = "disabled";
-+				};
- 			};
- 
- 			adma: dma-controller@2930000 {
+> Signed-off-by: Christian Loehle <cloehle@hyperstone.com>
+> ---
+>  drivers/mmc/host/of_mmc_spi.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/drivers/mmc/host/of_mmc_spi.c b/drivers/mmc/host/of_mmc_spi.c
+> index 3629550528b6..bf54776fb26c 100644
+> --- a/drivers/mmc/host/of_mmc_spi.c
+> +++ b/drivers/mmc/host/of_mmc_spi.c
+> @@ -70,6 +70,10 @@ struct mmc_spi_platform_data *mmc_spi_get_pdata(struct spi_device *spi)
+>  	} else {
+>  		oms->pdata.caps |= MMC_CAP_NEEDS_POLL;
+>  	}
+> +	if (device_property_read_bool(dev, "cap-sd-highspeed"))
+> +		oms->pdata.caps |= MMC_CAP_SD_HIGHSPEED;
+> +	if (device_property_read_bool(dev, "cap-mmc-highspeed"))
+> +		oms->pdata.caps |= MMC_CAP_MMC_HIGHSPEED;
+> 
+>  	dev->platform_data = &oms->pdata;
+>  	return dev->platform_data;
+> --
+> 2.34.1
+> Hyperstone GmbH | Reichenaustr. 39a  | 78467 Konstanz
+> Managing Director: Dr. Jan Peter Berns.
+> Commercial register of local courts: Freiburg HRB381782
+> 
+
 -- 
-2.7.4
+With Best Regards,
+Andy Shevchenko
+
 
