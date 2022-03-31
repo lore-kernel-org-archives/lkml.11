@@ -2,106 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88EDAC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 08:26:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A2C4C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 08:27:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231221AbiCaI2X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 04:28:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33022 "EHLO
+        id S232785AbiCaI3X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 04:29:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233009AbiCaI15 (ORCPT
+        with ESMTP id S231841AbiCaI3U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 04:27:57 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1B7FC6EFE
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 01:26:10 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id c10so28091238ejs.13
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 01:26:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=wSpQ7kqPRes8y+BZixCtHBBiimor8r8yx7SKBxj6uhY=;
-        b=nWwIJGsTAKrLDuHNXKIXHp9RpvIRgtxeWtzVp+O/Y/A8RzskUgdcBk+Wj+IoIAESe/
-         bmX7I7pRcJ3BYrAXmQtTCAekUuCm2oFpWmHoqAau0q7EGeth5Str74hkdeaLuuv4ERck
-         m/+shJR/zREUNt+oC2zayqP9aR8d322VREq4FU3eRWzdb1KBsEsHtrhjLTB3yWNAFoOl
-         WsldT9mpQf2QyKN9lENzjCaRB+LwNz55KcCuZh0rVc4GqP2KenBKBCZatBVXtKrnQo5O
-         XApijhtU+VtZTFtkXzDzAX4nRnKqWphvpVviT5pHsqoYGw8NWdPFZtBOzKVDFJiYdc6j
-         IR6A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=wSpQ7kqPRes8y+BZixCtHBBiimor8r8yx7SKBxj6uhY=;
-        b=Zz0deWRPVHTNzZ18iRWIjRO4n/g/fj5lArS73z5SumANmXLbW/t7DY5S5R9zJlPnls
-         8btY4KCtk1ZldVYQ+8SPyP130H4qynCfjmCQXe34BCqukzRpgAfJwPY+aaZc5AAmcgYU
-         aUt9D19XYulGZKbDV5CcxHwfZXM9ioiY+dz/XvApNVDF0AufrDqrsd80aOt9gmdJWznQ
-         i30brXowTB2WARP9H1tnYpSRjFx2XIvy5e88MOVr1LuUviZg2Ay9EBadgG0vcTi03Jps
-         GsgUYe4iOUj9eIKBJrINZJv6pjb2FlhW8ADYcwbQjzvVCj64kD3tcj44hO+01cfYbaDC
-         Obdw==
-X-Gm-Message-State: AOAM530nVlCR1InqHUig9+W/Z3im/ODGLW5Ox5mPAexPEfDlNHxkHHZR
-        iGS0nsE+AkW4OqYDCmTHH196OQ==
-X-Google-Smtp-Source: ABdhPJwF+TCl2dlZMkSxyCJJT3DeIcHZ/t9GgyB741Ak637RCd4tSwotlqumdO66bQuGcUviRlGudQ==
-X-Received: by 2002:a17:907:a0c8:b0:6df:ef3c:5eb6 with SMTP id hw8-20020a170907a0c800b006dfef3c5eb6mr4052580ejc.646.1648715168694;
-        Thu, 31 Mar 2022 01:26:08 -0700 (PDT)
-Received: from [192.168.0.165] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id hs12-20020a1709073e8c00b006dfdfdac005sm9233409ejc.174.2022.03.31.01.26.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 31 Mar 2022 01:26:08 -0700 (PDT)
-Message-ID: <224d1d98-5d6f-515e-feef-a1ebf20a90d9@linaro.org>
-Date:   Thu, 31 Mar 2022 10:26:07 +0200
+        Thu, 31 Mar 2022 04:29:20 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C194E1C8878;
+        Thu, 31 Mar 2022 01:27:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1648715253; x=1680251253;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Lx3Akt2XgQBGgPwZQOjCdTFVnMM6p3ONMYke/VZbCfA=;
+  b=HR5H6cPT+Kqa1+nVNR7G8b7V4QwWosY+3s95dleERfEpnycYP5NDqgsa
+   RWBJ5PU8R78FlkKnKqdHrJAJYoiH2JE/LtdJ4Nrj/Tk8aQahqLTxWYToH
+   PKhheuuq1zvicq+M+3ACMaIPCuSvPoS2oR189M4fMh+T5BPI7q5pJVyF9
+   WucuSZ8dP0LQ2jKkt0px0LaM+ZEBK19h+1Bj+fwh4ZW63VjwS7wDJHV0H
+   sHHJdtd83x5bowtx9R4yF3HDDbUKYKwK6DTKkXrJ2HShEzXtvoP2z41nM
+   eyneGgbf2S6TWH3lj3YP46fPpO4zdKwAQWzRtDdhn/UXAcvLfJbfzLwXu
+   g==;
+X-IronPort-AV: E=Sophos;i="5.90,224,1643698800"; 
+   d="scan'208";a="158789272"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 31 Mar 2022 01:27:32 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Thu, 31 Mar 2022 01:27:31 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Thu, 31 Mar 2022 01:27:31 -0700
+Date:   Thu, 31 Mar 2022 10:30:38 +0200
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Michael Walle <michael@walle.cc>
+CC:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        "Philipp Zabel" <p.zabel@pengutronix.de>,
+        <UNGLinuxDriver@microchip.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH RFC net-next] net: lan966x: make PHY reset support
+ optional
+Message-ID: <20220331083038.eorhpmhydadujfft@soft-dev3-1.localhost>
+References: <20220330110210.3374165-1-michael@walle.cc>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [RFC PATCH 1/5] dt-bindings: sound: Add Apple Macs sound system
-Content-Language: en-US
-To:     =?UTF-8?Q?Martin_Povi=c5=a1er?= <povik@cutebit.org>
-Cc:     =?UTF-8?Q?Martin_Povi=c5=a1er?= <povik+lin@cutebit.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Mark Kettenis <kettenis@openbsd.org>,
-        Hector Martin <marcan@marcan.st>,
-        Sven Peter <sven@svenpeter.dev>
-References: <20220331000449.41062-1-povik+lin@cutebit.org>
- <20220331000449.41062-2-povik+lin@cutebit.org>
- <9e3ba11c-d179-c229-fb7c-bf5611a15b1b@linaro.org>
- <DAFA4249-4B0A-4D1F-A36A-4352FE783488@cutebit.org>
- <0f7677ba-bffa-7ec6-7c74-3fad84a1d2c5@linaro.org>
- <E5F73642-DF9A-46ED-B310-7D69CAE22C82@cutebit.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <E5F73642-DF9A-46ED-B310-7D69CAE22C82@cutebit.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <20220330110210.3374165-1-michael@walle.cc>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 31/03/2022 10:23, Martin Povišer wrote:
+The 03/30/2022 13:02, Michael Walle wrote:
+
+Hi Michael,
+
 > 
->> There should be some maximum of supported codecs. Hardware might have
->> such constraints. If really unsure, choose some reasonable (small)
->> amount. It could be later raised, if needed.
+> The PHY subsystem as well as the MIIM mdio driver (in case of the
+> integrated PHYs) will already take care of the resets of any external
+> and internal PHY. There is no need for this reset anymore, so mark it
+> optionally to be backwards compatible.
 > 
-> There are some constraints but technically not in the driver that binds
-> on this binding. I thought no limit is better than an arbitrary one, but
-> if the preference is to have one, I will add it, no problem.
+> Signed-off-by: Michael Walle <michael@walle.cc>
+> ---
+> 
+> Horatiu, what do you think, should it be removed altogether? 
 
-Just to clarify this - bindings are not about the driver, but about the
-hardware. We model here the hardware and its programming model, not the
-driver implementation (although of course it's always somehow related).
-Hardware has some limitations for sure. The question is whether we know
-them. :)
+I think it is OK to remove it altogether. If you get both [1] and [2]
+in.
 
-I prefer even arbitrary limit, because then schema will check DTSes for
-simple mistakes. You can also explain this in commit msg, that maxItems
-are arbitrary, so whoever in the future wants to change it, will know
-the background.
+> There is
+> no user for that in mainline and I don't know about downstream but the
+> reset driver doesn't really work (as it also resets the GPIO/SGPIO)
 
-Best regards,
-Krzysztof
+Yes because I didn't manage to send yet those patches. But if your get
+yours in that is fine for me.
+My problem was, if after the probe of the MDIO controller it was probed
+the SGPIO then the PHYs will be in reset because the SGPIO was resetting
+the swich. But you put the reset of the swich on the pinctrl which will
+be probed before the MDIO, so that should be fine.
+
+> and conceptionally the property is on the wrong DT node. All of the
+> drawbacks should have been addressed by my patches for the miim [1]
+> and the pinctrl driver [2].
+> 
+> [1] https://lore.kernel.org/netdev/20220318201324.1647416-1-michael@walle.cc/
+> [2] https://lore.kernel.org/linux-gpio/20220313154640.63813-1-michael@walle.cc/
+> 
+>  drivers/net/ethernet/microchip/lan966x/lan966x_main.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+> index 1f8c67f0261b..0765064d2845 100644
+> --- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+> +++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+> @@ -916,7 +916,7 @@ static int lan966x_reset_switch(struct lan966x *lan966x)
+>                 return dev_err_probe(lan966x->dev, PTR_ERR(switch_reset),
+>                                      "Could not obtain switch reset");
+> 
+> -       phy_reset = devm_reset_control_get_shared(lan966x->dev, "phy");
+> +       phy_reset = devm_reset_control_get_optional_shared(lan966x->dev, "phy");
+>         if (IS_ERR(phy_reset))
+>                 return dev_err_probe(lan966x->dev, PTR_ERR(phy_reset),
+>                                      "Could not obtain phy reset\n");
+> --
+> 2.30.2
+> 
+
+-- 
+/Horatiu
