@@ -2,88 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80BDDC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 08:10:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C038C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 08:13:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232584AbiCaIM2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 04:12:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56422 "EHLO
+        id S232592AbiCaIP3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 04:15:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232570AbiCaIMV (ORCPT
+        with ESMTP id S229924AbiCaIP1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 04:12:21 -0400
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B2AE16BF98
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 01:10:34 -0700 (PDT)
-Received: by mail-pl1-x641.google.com with SMTP id x2so22707201plm.7
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 01:10:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
-        bh=CU14Grw8x1R6dlLwFTJvdYMaQj7ZrTh/1RqpTDiqx2U=;
-        b=djHfu01mF/YJqvH+sMtK4CrW0fLGkATPWmeyAg61ZiXjyDPJEj89LUbSBex8BOJ5bB
-         GbkPOLgD8yOB6+ByVdCDTmUcN1Mz1w6kV/Bbk08R2ec93gN9POAyCSK9E3n4F/x8OS5q
-         z3Jf0iLSDUev5zgon8LDiTM8Xwc34yyRz4GkEtw5pMjct0cgpN+jNlZxhd6YbgmX6lod
-         IGL8CYqSnRIioQe7Dn/aLGnO6BVF4I3VHt2xNqbdJL8TJAZ0VM2cHeWIFPv3CdUA7OyI
-         a8wzCvrQ04yFWvZyDgb/TqLUvgF4ARpX6pzsg7IgK7nW3hgGA/D0VZ5/PwPO9XseCN1B
-         ja6Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to;
-        bh=CU14Grw8x1R6dlLwFTJvdYMaQj7ZrTh/1RqpTDiqx2U=;
-        b=BNaPyLdIbdPv+5U8baKAE8jD1OtMbHoic5/NACLyGsgpt+A3PUly08bRn8Lgl86OUF
-         yptp/2qgo90PdVwTEhI2ZjpdheYaMhGNqQlry+VwJRoEqg5+1IuH/tvXxlU8QYhBWEX6
-         5K87/WnZD88mdrH8CnwIi/dR2WOIOJoLVSIxatrkH3DgroeBF7vJKxlsAu7XezwQxxYO
-         +9GeilPrQuqqC0Rv8sJAn2s2oZ8V+z2Q/+mFvdsrw1k4cDdYXQLmtV1lBqhSysEhfku9
-         vKeUucXTURbixThrUPNiT6H+QuNpLl9PJGsmqJ1R4QoAqAKV68TrHLdyg7lsEppKHIYP
-         IgpQ==
-X-Gm-Message-State: AOAM530jx+CyBRw8IB2MU8RAzi/D24kganIhcVg8Ybrozs3vQKA+lvP0
-        SUaoEjpVeGjmNjFbCYNkF5IttUnrpY7Oi/qZbE7wuwHktlEvgw4s
-X-Google-Smtp-Source: ABdhPJz/7UhVBaiiJb8qucgYLxXBr2sUkMaDMQH0ZUsBCVhU538J7p3MzuNpAUMJaxX7kvgMGC/r8bRIzwdSePSUtF0=
-X-Received: by 2002:a17:902:d2c7:b0:154:5aa1:a55b with SMTP id
- n7-20020a170902d2c700b001545aa1a55bmr4193241plc.5.1648714233934; Thu, 31 Mar
- 2022 01:10:33 -0700 (PDT)
+        Thu, 31 Mar 2022 04:15:27 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3FA61BF74
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 01:13:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648714416;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=XBSSjR/9FQIi28vZKv97ezZh1yar1AT2JnPj2c6QrxE=;
+        b=hvH3lU3LV8VDnf4mx33dx54TnwaCrURrt0MO7zXFyBsa6DAhdlekOZmNx6DAMxLPkP7KEj
+        brth1vwXCfYIVNaAIk84N43eYJs9itdRZuJMGEOPWJGrUDPosjSEIoo3twtEyP94YEfxfu
+        Y8GUHXVEawNL/ef2d+V8OkiIOH2F46I=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-32-2bVHFnLgO9mOpHl4Sg9Y2w-1; Thu, 31 Mar 2022 04:13:30 -0400
+X-MC-Unique: 2bVHFnLgO9mOpHl4Sg9Y2w-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 15392899ECD;
+        Thu, 31 Mar 2022 08:13:29 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.19])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 987B240D2821;
+        Thu, 31 Mar 2022 08:13:25 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <164859751830.29473.5309689752169286816.stgit@noble.brown>
+References: <164859751830.29473.5309689752169286816.stgit@noble.brown>
+To:     NeilBrown <neilb@suse.de>
+Cc:     dhowells@redhat.com, Andrew Morton <akpm@linux-foundation.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        linux-nfs@vger.kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 00/10] MM changes to improve swap-over-NFS support
 MIME-Version: 1.0
-References: <CAFf+5zgz0R0NO_YXrcsfBWiqP2ctyQt+ZAShBP6N8=1HvOnC7Q@mail.gmail.com>
-In-Reply-To: <CAFf+5zgz0R0NO_YXrcsfBWiqP2ctyQt+ZAShBP6N8=1HvOnC7Q@mail.gmail.com>
-From:   Amit <amitchoudhary0523@gmail.com>
-Date:   Thu, 31 Mar 2022 13:40:24 +0530
-Message-ID: <CAFf+5zieEohX+qs+pRKjuKiVip43ynXDAkuH6P90gRgf0qg8rg@mail.gmail.com>
-Subject: Time travel is not possible.
-To:     linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <3096105.1648714405.1@warthog.procyon.org.uk>
+Date:   Thu, 31 Mar 2022 09:13:25 +0100
+Message-ID: <3096106.1648714405@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I don't think that time travel is possible.
+NeilBrown <neilb@suse.de> wrote:
 
-For time travel to be possible, all the past, and present, and future
-should exist somewhere in material (physical / tangible) form.
+> Assorted improvements for swap-via-filesystem.
+> 
+> This is a resend of these patches, rebased on current HEAD.
+> The only substantial changes is that swap_dirty_folio has replaced
+> swap_set_page_dirty.
+> 
+> Currently swap-via-fs (SWP_FS_OPS) doesn't work for any filesystem.  It
+> has previously worked for NFS but that broke a few releases back.
+> This series changes to use a new ->swap_rw rather than ->readpage and
+> ->direct_IO.  It also makes other improvements.
+> 
+> There is a companion series already in linux-next which fixes various
+> issues with NFS.  Once both series land, a final patch is needed which
+> changes NFS over to use ->swap_rw.
 
-This means that the state of earth 5 seconds ago should be existing
-somewhere in material form. This also means that the state of earth 15
-minutes into the future should also exist somewhere in material form.
+This seems to work by running sufficient copies of the attached program in
+parallel to overwhelm the amount of ordinary RAM.
 
-If we assume the least count of 1 second, then given the age of earth
-as 4.543 billion years, there should exist 143 quadrillion (past)
-earths somewhere in material form.
+Tested-by: David Howells <dhowells@redhat.com>
+---
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/mman.h>
 
-But there is no evidence that another earth exists somewhere in
-material form, forget about 143 quadrillion earths existing
-simultaneously.
+int main()
+{
+	unsigned int pid = getpid(), iterations = 0;
+	size_t i, j, size = 1024 * 1024 * 1024;
+	char *p;
+	bool mismatch;
 
-Same goes for future, if earth will remain around for another 4.543
-billion years, then there should exist 143 quadrillion (future) earths
-somewhere in material form but there is no proof of this also.
+	p = malloc(size);
+	if (!p) {
+		perror("malloc");
+		exit(1);
+	}
 
-Same theory can be applied to universe and it can be said that
-quadrillion of past/future universes should be existing somewhere in
-material form but there is no proof of that.
+	srand(pid);
+	for (i = 0; i < size; i += 4)
+		*(unsigned int *)(p + i) = rand();
+	
+	do {
+		for (j = 0; j < 16; j++) {
+			for (i = 0; i < size; i += 4096)
+				*(unsigned int *)(p + i) += 1;
+			iterations++;
+		}
 
-One theory is that when you start time travel then "that earth" to
-which you are time traveling to will come into existence but there is
-no proof of this.
+		mismatch = false;
+		srand(pid);
+		for (i = 0; i < size; i += 4) {
+			unsigned int r = rand();
+			unsigned int v = *(unsigned int *)(p + i);
 
-So, I think that time travel is not possible.
+			if (i % 4096 == 0)
+				v -= iterations;
+
+			if (v != r) {
+				fprintf(stderr, "mismatch %zx: %x != %x (diff %x)\n",
+					i, v, r, v - r);
+				mismatch = true;
+			}
+		}
+	} while (!mismatch);
+
+	exit(1);
+}
+
