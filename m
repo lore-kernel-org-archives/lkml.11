@@ -2,87 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DFCBC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 12:57:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EC7FC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 12:58:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236454AbiCaM72 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 08:59:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51456 "EHLO
+        id S236485AbiCaNAO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 09:00:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235275AbiCaM70 (ORCPT
+        with ESMTP id S236446AbiCaNAL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 08:59:26 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E92A213517
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 05:57:37 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id pv16so47962849ejb.0
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 05:57:37 -0700 (PDT)
+        Thu, 31 Mar 2022 09:00:11 -0400
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46C1136E1F
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 05:58:23 -0700 (PDT)
+Received: by mail-wm1-x336.google.com with SMTP id h16so14228301wmd.0
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 05:58:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=vjjCyz+vwniwOkMw5eLLtJi73zd7D7wm3C4gUs1By94=;
-        b=ad6aC/6WSULTuiWrxTP8MALNNIFerXEATo3N6mAVVBNbA+bHhrwPzkyl4BeOwgQ2wY
-         e3N43cFB2+Nh1s38Ta8sHjvaNvzY2BAV2tbCr6M7PV7hm8iiYgDm9cYYHayI5Oeqq48d
-         WvGU0j044OjiKUz8CM34REbhz8SsjmPIQrtLkE5lLMuhGBU0i81EpidBlTEkPG0DMfJL
-         2YcvTAIXF1JahAUmMp6p1YsyUCWzQFhW3Jb3G503XBS8Fqhpu7MXvaiWW/lWW2EyF/Cb
-         tmcOp1Tz2BZqdQ4j3/yJo5AbDkB6OwbADjCmb3TeQFD38Ikg72qVcL30nfISF5MXV5qs
-         2xQQ==
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=s6IAiCErtoOnzY3QsYXRtTepvpiVgbrk3mBJAs+Q6vU=;
+        b=bvNNA21ueIlJ6UIxIQIw6Q2a62ptN6bDTK06HUE1vsXd46k2UdcAw+hO3A0upoEgWw
+         TQhZkRxWepuAwYNUMp13le4x9Znra1Dh//Xeljgx4ZKSwSfi8aMfHt4CBTppdp1WeEm0
+         nm8oT4URhjVyqGxfKuB2W4h9yzjB0sTabLFxI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=vjjCyz+vwniwOkMw5eLLtJi73zd7D7wm3C4gUs1By94=;
-        b=dZqPHEXEqwRakMAYxee8ah9y9tSJMl4VrE9CM2Z9vGL3NmIz/Zsqq8QM5D/O91xL/k
-         u2M4GMGfHY0fMZAlturFx+5gH5nVNyAqubUY+M5izwILv+q0TbZrJzUHqMDKdtR6lB3Q
-         DFOThJWkwI7KFvgfihGExNaFM9JXMukq4CXXTTrTbpSQyvBWw68bAH7+YZV7hu8gzQa3
-         11/6DxY07fpJBjWheLUxOt/stsnOj8oYwtEkmnI6u5fQElQ0RQWCb8rAjy//4zF2STNR
-         61mty5HCgPB8ZvFKF8GZBqIiuMjJOzIpF5jD2FG428H1SmoMFI9sjTxJ0P+2gwlRTvhE
-         JVBg==
-X-Gm-Message-State: AOAM530C6ZLxEXZ5c3ff4X+mAcWLw1VvrB6woUx4tQWsrA0abxSFFLsx
-        k+18KatNOtdlkqwP5l6xwovM2g==
-X-Google-Smtp-Source: ABdhPJzbWyCvgiQjYJSq3vyE0B+lYev04T+73+7zeUpH1kB7eMEf+/iXJ5gKv9sjqdz1y+g9AhQoGw==
-X-Received: by 2002:a17:906:7307:b0:6da:92e1:9c83 with SMTP id di7-20020a170906730700b006da92e19c83mr4823842ejc.459.1648731455991;
-        Thu, 31 Mar 2022 05:57:35 -0700 (PDT)
-Received: from [192.168.0.167] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id e26-20020a50ec9a000000b004193fe50151sm11335931edr.9.2022.03.31.05.57.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 31 Mar 2022 05:57:35 -0700 (PDT)
-Message-ID: <68571811-54a7-d4da-8530-5aad663d1d5e@linaro.org>
-Date:   Thu, 31 Mar 2022 14:57:34 +0200
+        bh=s6IAiCErtoOnzY3QsYXRtTepvpiVgbrk3mBJAs+Q6vU=;
+        b=v4FAAT1ApVAc09kJneKLOMhZbkZ9/1b6oE46k3VvDO3riqAYo8eXQ6pg5yQ2ab3R2H
+         BZGXdLIqpY2Kq9yW697zhXpR7LgZNbbLeWWWZ1E+9PiT96ljTs5sRdvOHZK4cmaprP6a
+         O9/bX4f3d15K14m7KxLKE76ZZkcXswak+gBurHgUpw86b2ftfQQ2Siusv1t+79T20+XJ
+         tXSylMRtVhMgBP+f1lim+LEARa5KdLyJqh1y3jHjC0Z25q+d/EdMyP5H0up6YKflQKHv
+         6Y2jkHB1ByollMNRHcRwiImFUPJSko63uM6iS/RrXJDgaNUkG9Y97sCBBtTP4onq6e3q
+         J7ag==
+X-Gm-Message-State: AOAM532sDLoIoQPGyJ/0nxQuEHnWkF4lhPKOb6XSg0jtkMax01tJoEHL
+        Zqh1N9I0H97MDTi+DrbNYPEYNw==
+X-Google-Smtp-Source: ABdhPJzonrrVqK+Oc9T5eRd5302wWGc9jNLdlpnmStxZJpcaRUQhHL7NZubtbnHg8xWPm/0Nvq3LuA==
+X-Received: by 2002:a1c:f705:0:b0:37d:f2e5:d8ec with SMTP id v5-20020a1cf705000000b0037df2e5d8ecmr4780128wmh.21.1648731501845;
+        Thu, 31 Mar 2022 05:58:21 -0700 (PDT)
+Received: from fabiobaltieri-linux.lan ([37.228.205.1])
+        by smtp.gmail.com with ESMTPSA id j16-20020a05600c191000b0038c9249ffdesm8230695wmq.9.2022.03.31.05.58.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 31 Mar 2022 05:58:21 -0700 (PDT)
+From:   Fabio Baltieri <fabiobaltieri@chromium.org>
+To:     Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        chrome-platform@lists.linux.dev, linux-pwm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Fabio Baltieri <fabiobaltieri@chromium.org>
+Subject: [PATCH v2 0/4] Add channel type support to pwm-cros-ec
+Date:   Thu, 31 Mar 2022 12:58:14 +0000
+Message-Id: <20220331125818.3776912-1-fabiobaltieri@chromium.org>
+X-Mailer: git-send-email 2.35.1.1021.g381101b075-goog
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2] ARM: dts: rockchip: use generic node name for dma
- rk3036/rk322x
-Content-Language: en-US
-To:     Johan Jonker <jbx6244@gmail.com>, heiko@sntech.de
-Cc:     robh+dt@kernel.org, krzk+dt@kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220331125644.6841-1-jbx6244@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220331125644.6841-1-jbx6244@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 31/03/2022 14:56, Johan Jonker wrote:
-> The node names should be generic, so fix this for the rk3036 and
-> rk322x dma node and rename it to "dma-controller".
-> 
-> Signed-off-by: Johan Jonker <jbx6244@gmail.com>
-> ---
->  arch/arm/boot/dts/rk3036.dtsi | 2 +-
->  arch/arm/boot/dts/rk322x.dtsi | 2 +-
->  2 files changed, 2 insertions(+), 2 deletions(-)
-> 
+Hi,
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+The ChromiumOS EC PWM host command protocol supports specifying the
+requested PWM by type rather than channel. [1]
 
+This series adds support for specifying PWM by type rather than channel
+number in the pwm-cros-ec driver, which abstracts the node definitions
+from the actual hardware configuration from the kernel perspective,
+aligns the API with the one used by the bootloader, and allows removing
+some dtsi overrides.
 
-Best regards,
-Krzysztof
+Tested on a sc7180-trogdor board, but on a version based on an older
+kernel, so this exact series is build only tested.
+
+Changes from v1:
+(https://patchwork.kernel.org/project/chrome-platform/list/?series=625182)
+- fixed the dt include file license
+- fixed the property name (s/_/-/)
+- rebased on current linus tree (few dts files changed from a soc tree
+  pull, so patch 4 needs a recent base to apply correctly)
+
+[1] https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/ec/common/pwm.c;l=24
+[2] https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/depthcharge/src/drivers/ec/cros/ec.c;l=1271-1273
+
+Fabio Baltieri (4):
+  dt-bindings: add mfd/cros_ec definitions
+  drivers: pwm: pwm-cros-ec: add channel type support
+  dt-bindings: update google,cros-ec-pwm documentation
+  arm64: dts: address cros-ec-pwm channels by type
+
+ .../bindings/pwm/google,cros-ec-pwm.yaml      |  6 ++
+ .../mt8183-kukui-jacuzzi-fennel-sku1.dts      |  4 +-
+ .../dts/mediatek/mt8183-kukui-jacuzzi.dtsi    |  3 +-
+ .../arm64/boot/dts/mediatek/mt8183-kukui.dtsi |  1 +
+ .../boot/dts/qcom/sc7180-trogdor-coachz.dtsi  |  4 -
+ arch/arm64/boot/dts/qcom/sc7180-trogdor.dtsi  |  8 +-
+ .../qcom/sc7280-herobrine-herobrine-r0.dts    |  6 +-
+ .../arm64/boot/dts/qcom/sc7280-herobrine.dtsi |  6 +-
+ .../arm64/boot/dts/qcom/sc7280-idp-ec-h1.dtsi |  3 +-
+ arch/arm64/boot/dts/qcom/sdm845-cheza.dtsi    |  6 +-
+ .../boot/dts/rockchip/rk3399-gru-bob.dts      |  4 -
+ .../dts/rockchip/rk3399-gru-chromebook.dtsi   |  4 +-
+ .../boot/dts/rockchip/rk3399-gru-kevin.dts    |  4 -
+ arch/arm64/boot/dts/rockchip/rk3399-gru.dtsi  |  1 +
+ drivers/pwm/pwm-cros-ec.c                     | 80 +++++++++++++++----
+ include/dt-bindings/mfd/cros_ec.h             | 18 +++++
+ 16 files changed, 117 insertions(+), 41 deletions(-)
+ create mode 100644 include/dt-bindings/mfd/cros_ec.h
+
+-- 
+2.35.1.1021.g381101b075-goog
+
