@@ -2,146 +2,231 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04AB0C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 16:00:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D5B4C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 16:02:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239455AbiCaQCb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 12:02:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58314 "EHLO
+        id S239470AbiCaQED (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 12:04:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233278AbiCaQC3 (ORCPT
+        with ESMTP id S233278AbiCaQEC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 12:02:29 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0AE25F8E;
-        Thu, 31 Mar 2022 09:00:41 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id o10so338033ejd.1;
-        Thu, 31 Mar 2022 09:00:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=OidiiBXTJgEslTgJiyc8AUz+qsXDVRCmee/lmtxGN1g=;
-        b=oj81PkHsUp1MlfSm+RVV9LY8pAkYi26MxT4Tohf6JylmVDOFjJUU6HdfPvVx4Kdukk
-         MB9OGRocsXQ51aY7ks9PvkbxZ3WrlhhL7E1vV+4sb0t7CQ6Keqkg48wZCGFL6XpW4/lR
-         6WSAXIz7tIgUICTMQ1pXmFhtCJC5yU+yngYwWlj5K6TM+xf248y7RS4JQfTLpZxsAD21
-         utCEdMJso2372iPX9O/l2rWoElkgu69GqIDNXIvYsMSmX+f+iltF/ZN5AkAKYnrH1xEf
-         oXi6YM1pSSHrtf58TWyu6UvQPwX7Pzv/oDFbPyiyVZwrT8oX10dWRWtsXjcoMoXdpVUI
-         wsbQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=OidiiBXTJgEslTgJiyc8AUz+qsXDVRCmee/lmtxGN1g=;
-        b=XLz4H1UHI3pbjOqIU8FP57MwHDr1gHAddMHncVug/0ZmkGqX0triDj+PeGjgs3eCP5
-         Q3u8ulqBY1T7S4bXo96n6o0N3sg9VnE/ugbhxMWj98N96hkB/J3hZ3iN+77UaTQFoogh
-         GWb5uGs52e0bcakWlf6y5G7clfWGLSnkZIw4MN25K7a7Jl1RI4qSBYxoTXY3Qf5xpeTn
-         TUCFtVxMoOgT4YNSGMznXx5OwpDnHIykHpwZiYTFAaxXvTyQJJBWZU15kxnyLoYSehfW
-         aQOVzeLgBXSwPDJF2/yVnz09oXIaor5yd4y/vk83kBlFPO4qOyzqnIPUSX61yV5KFgEb
-         40Rw==
-X-Gm-Message-State: AOAM530OOJ+6+Mc8PfMz9AytNcKn7r0r+qcXShVK9wG61q7DCRLsqQlv
-        G42Wf/3E4xU7k6IoygdqmVaaVCa0ECbAk0pSO0c=
-X-Google-Smtp-Source: ABdhPJzDGtVdfItRP/6FSdFNtXDkcyURHCSfqFqb7gMr2MTjH7e93kOf9afmJlP/1d4GHgrjkmciczb2x3gKDHb1KrI=
-X-Received: by 2002:a17:907:7704:b0:6cf:48ac:b4a8 with SMTP id
- kw4-20020a170907770400b006cf48acb4a8mr5566870ejc.305.1648742439886; Thu, 31
- Mar 2022 09:00:39 -0700 (PDT)
+        Thu, 31 Mar 2022 12:04:02 -0400
+Received: from smtp1.de.adit-jv.com (smtp1.de.adit-jv.com [93.241.18.167])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2449660D9E;
+        Thu, 31 Mar 2022 09:02:14 -0700 (PDT)
+Received: from hi2exch02.adit-jv.com (hi2exch02.adit-jv.com [10.72.92.28])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by smtp1.de.adit-jv.com (Postfix) with ESMTPS id 52F603C04C0;
+        Thu, 31 Mar 2022 18:02:12 +0200 (CEST)
+Received: from lxhi-065 (10.72.94.4) by hi2exch02.adit-jv.com (10.72.92.28)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2308.27; Thu, 31 Mar
+ 2022 18:02:11 +0200
+Date:   Thu, 31 Mar 2022 18:02:07 +0200
+From:   Eugeniu Rosca <erosca@de.adit-jv.com>
+To:     Wolfram Sang <wsa+renesas@sang-engineering.com>
+CC:     Andrew Gabbasov <andrew_gabbasov@mentor.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        <linux-renesas-soc@vger.kernel.org>, <linux-i2c@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        Bhuvanesh Surachari <bhuvanesh_surachari@mentor.com>,
+        Eugeniu Rosca <erosca@de.adit-jv.com>,
+        Eugeniu Rosca <roscaeugeniu@gmail.com>
+Subject: Re: [PATCH v2] i2c: rcar: add SMBus block read support
+Message-ID: <20220331160207.GA27757@lxhi-065>
+References: <20210922160649.28449-1-andrew_gabbasov@mentor.com>
+ <CAMuHMdVVDpBAQR+H1TAnpf65aVbAL0Mm0km7Z9L7+1JuF6n1gQ@mail.gmail.com>
+ <000001d7badd$a8512d30$f8f38790$@mentor.com>
+ <20211006182314.10585-1-andrew_gabbasov@mentor.com>
+ <Yg6ls0zyTDe7LQbK@kunai>
+ <20220323215229.GA9403@lxhi-065>
+ <YkQ31VMqj1MXqBd3@shikoro>
+ <YkQ6XRITOFZ7hLXV@shikoro>
 MIME-Version: 1.0
-References: <20220327123835.28329-1-aford173@gmail.com> <CAPDyKFrhiaJHqsB8tVp_SkJwTtfanS5eN8wucntUHLL589Snww@mail.gmail.com>
-In-Reply-To: <CAPDyKFrhiaJHqsB8tVp_SkJwTtfanS5eN8wucntUHLL589Snww@mail.gmail.com>
-From:   Adam Ford <aford173@gmail.com>
-Date:   Thu, 31 Mar 2022 11:00:28 -0500
-Message-ID: <CAHCN7xJPohAzceFuXVF1XkC2mBVA4VDqsqbKvdYPdK7FT=1PaA@mail.gmail.com>
-Subject: Re: [PATCH 1/5] dt-bindings: mmc: imx-esdhc: Update compatible fallbacks
-To:     Ulf Hansson <ulf.hansson@linaro.org>
-Cc:     linux-mmc <linux-mmc@vger.kernel.org>,
-        Haibo Chen <haibo.chen@nxp.com>,
-        Adam Ford-BE <aford@beaconembedded.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <Kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        devicetree <devicetree@vger.kernel.org>,
-        arm-soc <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <YkQ6XRITOFZ7hLXV@shikoro>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-Originating-IP: [10.72.94.4]
+X-ClientProxiedBy: hi2exch02.adit-jv.com (10.72.92.28) To
+ hi2exch02.adit-jv.com (10.72.92.28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 31, 2022 at 8:05 AM Ulf Hansson <ulf.hansson@linaro.org> wrote:
->
-> On Sun, 27 Mar 2022 at 14:39, Adam Ford <aford173@gmail.com> wrote:
-> >
-> > The SDHC controller in the imx8mn and imx8mp have the same controller
-> > as the imx8mm which is slightly different than that of the imx7d.
-> > Using the fallback of the imx8mm enables the controllers to support
-> > HS400-ES which is not available on the imx7d. After discussion with NXP,
-> > it turns out that the imx8qm should fall back to the imx8qxp, because
-> > those have some additional flags not present in the imx8mm.
-> >
-> > Suggested-by: haibo.chen@nxp.com
-> > Signed-off-by: Adam Ford <aford173@gmail.com>
->
-> I didn't quite follow all the discussions on patch3 - and whether that
-> may affect the binding. Anyway, I assume you will send a new version.
-> If not, please tell and will pick this up.
+Hello Wolfram,
 
- I am not sure exactly how the YAML should look, but I'm going to give
-it a try.  I hope to have something this weekend.
+Thanks for your feedback!
 
+On Wed, Mar 30, 2022 at 01:09:17PM +0200, Wolfram Sang wrote:
+> 
+> BTW...
+> 
+> > > ############################################################
+> > > ##################### WOLFRAM'S PATCH ######################
+> > > ############################################################
+> > > root@rcar-gen3:# i2cget -y 4 0x68 0 i 8
+> > > 0x08 0xff 0x06 0xff 0x5f 0xff 0x11 0x08
+> 
+> ... for further tests I think the last parameter should be "i 9" here...
 
-adam
->
-> Kind regards
-> Uffe
->
->
-> > ---
-> > V2:  Added suggested-by note and imx8qxp updates.
-> > ---
-> >  .../devicetree/bindings/mmc/fsl-imx-esdhc.yaml   | 16 +++++++++-------
-> >  1 file changed, 9 insertions(+), 7 deletions(-)
-> >
-> > diff --git a/Documentation/devicetree/bindings/mmc/fsl-imx-esdhc.yaml b/Documentation/devicetree/bindings/mmc/fsl-imx-esdhc.yaml
-> > index 7dbbcae9485c..1427e9b5a6ec 100644
-> > --- a/Documentation/devicetree/bindings/mmc/fsl-imx-esdhc.yaml
-> > +++ b/Documentation/devicetree/bindings/mmc/fsl-imx-esdhc.yaml
-> > @@ -34,23 +34,25 @@ properties:
-> >            - fsl,imx6ull-usdhc
-> >            - fsl,imx7d-usdhc
-> >            - fsl,imx7ulp-usdhc
-> > +          - fsl,imx8mm-usdhc
-> > +          - fsl,imx8qxp-usdhc
-> >            - fsl,imxrt1050-usdhc
-> >            - nxp,s32g2-usdhc
-> >        - items:
-> >            - enum:
-> > -              - fsl,imx8mm-usdhc
-> > -              - fsl,imx8mn-usdhc
-> > -              - fsl,imx8mp-usdhc
-> >                - fsl,imx8mq-usdhc
-> > -              - fsl,imx8qm-usdhc
-> > -              - fsl,imx8qxp-usdhc
-> >            - const: fsl,imx7d-usdhc
-> >        - items:
-> >            - enum:
-> > -              - fsl,imx93-usdhc
-> > +              - fsl,imx8mn-usdhc
-> > +              - fsl,imx8mp-usdhc
-> >                - fsl,imx8ulp-usdhc
-> > +              - fsl,imx93-usdhc
-> >            - const: fsl,imx8mm-usdhc
-> > -
-> > +      - items:
-> > +          - enum:
-> > +              - fsl,imx8qm-usdhc
-> > +          - const: fsl,imx8qxp-usdhc
-> >    reg:
-> >      maxItems: 1
-> >
-> > --
-> > 2.34.1
-> >
+Your patch re-tested on your request (we'll use -i 9 in the future):
+
+root@rcar-gen3:# i2cget -y 4 0x68 0 s
+0xff 0x06 0xff 0x5f 0xff 0x11 0x08 0x08
+root@rcar-gen3:# i2cget -y 4 0x68 0 i 9
+0x08 0xff 0x06 0xff 0x5f 0xff 0x11 0x08 0x08
+root@rcar-gen3:# i2cget -y 4 0x68 0 i
+0x08 0xff 0x06 0xff 0x5f 0xff 0x11 0x08 0x08 0xff 0xff 0x7e 0x99 0x3e 0x00 0x00 0xfb 0xff 0xff 0x87 0x27 0xff 0x04 0xff 0x30 0x03 0xfd 0xff 0xff 0xff 0xff 0xff
+ 
+> > > 
+> > > root@rcar-gen3:# i2cget -y 4 0x68 0 s
+> > > 0xff 0x06 0xff 0x5f 0xff 0x11 0x08 0x08
+> 
+> ... to see if these 8 bytes match the last 8 bytes from above. The first
+> byte from above is returned internally as the length. It is not a data
+> byte.
+> 
+
+BTW, thanks to Bhuvanesh, we've got another patch [*] which tries
+to combine the best of both worlds:
+
+* DMA support in the v1/v2 patches from Andrew/Bhuvanesh
+* Simplicity of your proposal in https://lore.kernel.org/lkml/Yg6ls0zyTDe7LQbK@kunai/
+
+Unfortunately, this patch has a dependency to the rcar_i2c_is_pio()
+in https://github.com/renesas-rcar/linux-bsp/commit/55d2d2fb8b0 
+(which should be resolvable by extracting the function).
+
+Do you think we are on the right track with this new approach or do
+you feel the implementation is still overly complicated?
+
+Appreciate your time/feedback.
+
+Best regards,
+Eugeniu
+
+[*] v3
+
+From: Bhuvanesh Surachari <bhuvanesh_surachari@mentor.com>
+Date: Wed, 26 May 2021 11:36:36 +0530
+Subject: [PATCH v3] i2c: rcar: add SMBus block read support
+
+The SMBus block read is currently not supported for rcar i2c devices.
+
+Add appropriate support to R-Car i2c driver, so that blocks of data
+can be read using SMbus block reads (using i2c_smbus_read_block_data()
+function from i2c-core-smbus.c).
+
+Inspired from:
+ - commit 8e8782c71595a5 ("i2c: imx: add SMBus block read support")
+ - https://lore.kernel.org/lkml/Yg6ls0zyTDe7LQbK@kunai/
+   (proposal/suggestion from Wolfram Sang)
+
+Suggested-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+Signed-off-by: Bhuvanesh Surachari <bhuvanesh_surachari@mentor.com>
+Signed-off-by: Andrew Gabbasov <andrew_gabbasov@mentor.com>
+---
+ drivers/i2c/busses/i2c-rcar.c | 39 ++++++++++++++++++++++++++++++++---
+ 1 file changed, 36 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/i2c/busses/i2c-rcar.c b/drivers/i2c/busses/i2c-rcar.c
+index f71c730f9838..f4f36689464c 100644
+--- a/drivers/i2c/busses/i2c-rcar.c
++++ b/drivers/i2c/busses/i2c-rcar.c
+@@ -105,6 +105,7 @@
+ #define ID_DONE		(1 << 2)
+ #define ID_ARBLOST	(1 << 3)
+ #define ID_NACK		(1 << 4)
++#define ID_EPROTO	(1 << 5)
+ /* persistent flags */
+ #define ID_P_HOST_NOTIFY	BIT(28)
+ #define ID_P_REP_AFTER_RD	BIT(29)
+@@ -522,6 +523,7 @@ static void rcar_i2c_irq_send(struct rcar_i2c_priv *priv, u32 msr)
+ static void rcar_i2c_irq_recv(struct rcar_i2c_priv *priv, u32 msr)
+ {
+ 	struct i2c_msg *msg = priv->msg;
++	bool recv_len_init = priv->pos == 0 && msg->flags & I2C_M_RECV_LEN;
+ 
+ 	/* FIXME: sometimes, unknown interrupt happened. Do nothing */
+ 	if (!(msr & MDR))
+@@ -535,12 +537,37 @@ static void rcar_i2c_irq_recv(struct rcar_i2c_priv *priv, u32 msr)
+ 		rcar_i2c_dma(priv);
+ 	} else if (priv->pos < msg->len) {
+ 		/* get received data */
+-		msg->buf[priv->pos] = rcar_i2c_read(priv, ICRXTX);
++		u8 data = rcar_i2c_read(priv, ICRXTX);
++
++		if (recv_len_init) {
++			/*
++			 * First byte is the length of remaining packet
++			 * in the SMBus block data read. Add it to
++			 * msg->len.
++			 */
++			if (data == 0 || data > I2C_SMBUS_BLOCK_MAX) {
++				priv->flags |= ID_DONE | ID_EPROTO;
++				return;
++			}
++			msg->len += data;
++
++			if (!rcar_i2c_is_pio(priv)) {
++				/*
++				 * Still try to use DMA to receive the rest of
++				 * data
++				 */
++				rcar_i2c_dma(priv);
++				goto next_txn;
++			} else {
++				recv_len_init = false;
++			}
++		}
++		msg->buf[priv->pos] = data;
+ 		priv->pos++;
+ 	}
+ 
+ 	/* If next received data is the _LAST_, go to new phase. */
+-	if (priv->pos + 1 == msg->len) {
++	if (priv->pos + 1 == msg->len && !recv_len_init) {
+ 		if (priv->flags & ID_LAST_MSG) {
+ 			rcar_i2c_write(priv, ICMCR, RCAR_BUS_PHASE_STOP);
+ 		} else {
+@@ -549,6 +576,7 @@ static void rcar_i2c_irq_recv(struct rcar_i2c_priv *priv, u32 msr)
+ 		}
+ 	}
+ 
++next_txn:
+ 	if (priv->pos == msg->len && !(priv->flags & ID_LAST_MSG))
+ 		rcar_i2c_next_msg(priv);
+ 	else
+@@ -847,6 +875,8 @@ static int rcar_i2c_master_xfer(struct i2c_adapter *adap,
+ 		ret = -ENXIO;
+ 	} else if (priv->flags & ID_ARBLOST) {
+ 		ret = -EAGAIN;
++	} else if (priv->flags & ID_EPROTO) {
++		ret = -EPROTO;
+ 	} else {
+ 		ret = num - priv->msgs_left; /* The number of transfer */
+ 	}
+@@ -909,6 +939,8 @@ static int rcar_i2c_master_xfer_atomic(struct i2c_adapter *adap,
+ 		ret = -ENXIO;
+ 	} else if (priv->flags & ID_ARBLOST) {
+ 		ret = -EAGAIN;
++	} else if (priv->flags & ID_EPROTO) {
++		ret = -EPROTO;
+ 	} else {
+ 		ret = num - priv->msgs_left; /* The number of transfer */
+ 	}
+@@ -975,7 +1007,8 @@ static u32 rcar_i2c_func(struct i2c_adapter *adap)
+ 	 * I2C_M_IGNORE_NAK (automatically sends STOP after NAK)
+ 	 */
+ 	u32 func = I2C_FUNC_I2C | I2C_FUNC_SLAVE |
+-		   (I2C_FUNC_SMBUS_EMUL & ~I2C_FUNC_SMBUS_QUICK);
++		   (I2C_FUNC_SMBUS_EMUL & ~I2C_FUNC_SMBUS_QUICK) |
++		   I2C_FUNC_SMBUS_READ_BLOCK_DATA;
+ 
+ 	if (priv->flags & ID_P_HOST_NOTIFY)
+ 		func |= I2C_FUNC_SMBUS_HOST_NOTIFY;
+-- 
+2.35.1
