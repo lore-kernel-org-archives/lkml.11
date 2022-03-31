@@ -2,117 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B13AC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 14:34:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FE90C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 14:36:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237629AbiCaOf4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 10:35:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35160 "EHLO
+        id S237659AbiCaOid (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 10:38:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237581AbiCaOfy (ORCPT
+        with ESMTP id S235940AbiCaOid (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 10:35:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44CE05AEF3;
-        Thu, 31 Mar 2022 07:34:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DAEC561A38;
-        Thu, 31 Mar 2022 14:34:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52949C340F3;
-        Thu, 31 Mar 2022 14:34:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648737246;
-        bh=lq4kFVmBrrELd5KxAUjOFSmUYoJsLhv9w+gM5KI4LGY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=JKUpenpOcz38WkEz0G293nQngR5L34C91OxZPwKHQz2sf4hcWbhvj2nHa1KtBkeQM
-         8wxc55MeZMi9ohX5ou42yb2C5f6NJ+K11ATKWR2Y9ctjvkspCfBfzoZiAVglKy4/DK
-         ozsr4YZehOuHDn2xkeJnrhxEMsgR0H02AXqqDzldoCjzr81uqch7lZaopmR1jswMQf
-         EQ75//raK11lvESnRPX1Kxzy8jjJ5C0GbTmQFNy7q/xR0EJeqoL93JVykyXv2wFHnm
-         g4t9YamB9pGOfzEI7imh3EAjSVSAcjPo50VlyJ033STJMpGZCMEFHJlYOOLWhlwqkr
-         VoaP4vzeB7MnA==
-Date:   Thu, 31 Mar 2022 15:33:58 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Hector Martin <marcan@marcan.st>
-Cc:     Martin =?utf-8?Q?Povi=C5=A1er?= <povik+lin@cutebit.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Mark Kettenis <kettenis@openbsd.org>,
-        Sven Peter <sven@svenpeter.dev>
-Subject: Re: [RFC PATCH 0/5] Apple Macs machine-level ASoC driver
-Message-ID: <YkW71sAktr/U0Kje@sirena.org.uk>
-References: <20220331000449.41062-1-povik+lin@cutebit.org>
- <YkWfziQzprEsWL72@sirena.org.uk>
- <ea0e8079-a184-996f-47ac-3e00b63166c9@marcan.st>
+        Thu, 31 Mar 2022 10:38:33 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3A2D1F2DCE;
+        Thu, 31 Mar 2022 07:36:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=UGRMOLjwh8wFQwrWEciThniTblcQYyyZ5Zuat0kWF2k=; b=vT/Khf0Emk8pujLkmWbN5i3gLt
+        MkldrB9B3A498Acx1KdF5UJpwvpebOOADBSNlvOf284u22s8GpuaHezuOl0/FIfsuzcC49XFVhvaX
+        Ff0lPy4HhpSBegK52jRjPu/kPRtdvUUotQsEUkDxJJMTjfGZlV4J9A0jK2JbrK9ET5wbUmH+LwIB2
+        evrzLI1KRPm0x3jt3Qam9yXxR5KXn8wrAcl15HHA5G5cxU+JBfNZiYPbggH+yiA2D1qngvOdmLYbB
+        x3Wtrr9J9LaoB9UK0APeoe7s3F7JAyGmNntF0tpRVZmq0eFkkK86yaZw8vEGbsDlRfT1W4MI8vhiG
+        zRQEsLfg==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nZvuh-002KH2-9f; Thu, 31 Mar 2022 14:36:39 +0000
+Date:   Thu, 31 Mar 2022 15:36:39 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Baoquan He <bhe@redhat.com>
+Cc:     akpm@linux-foundation.org, linux-kernel@vger.kernel.org,
+        kexec@lists.infradead.org, yangtiezhu@loongson.cn,
+        amit.kachhap@arm.com, hch@lst.de, linux-fsdevel@vger.kernel.org,
+        viro@zeniv.linux.org.uk
+Subject: Re: [PATCH v4 0/4] Convert vmcore to use an iov_iter
+Message-ID: <YkW8d/HuXewjSuXs@casper.infradead.org>
+References: <20220318093706.161534-1-bhe@redhat.com>
+ <YkWPrWOe1hlfqGdy@MiWiFi-R3L-srv>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="5r4Opt+oeZpWRK1s"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ea0e8079-a184-996f-47ac-3e00b63166c9@marcan.st>
-X-Cookie: Reunite Gondwondaland!
+In-Reply-To: <YkWPrWOe1hlfqGdy@MiWiFi-R3L-srv>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, Mar 31, 2022 at 07:25:33PM +0800, Baoquan He wrote:
+> Hi Andrew,
+> 
+> On 03/18/22 at 05:37pm, Baoquan He wrote:
+> > Copy the description of v3 cover letter from Willy:
+> 
+> Could you pick this series into your tree? I reviewed the patches 1~3
+> and tested the whole patchset, no issue found.
 
---5r4Opt+oeZpWRK1s
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-
-On Thu, Mar 31, 2022 at 10:28:56PM +0900, Hector Martin wrote:
-
-> The problem with this model is that, in particular in the case of
-> speaker amps, incorrect settings can cause your speakers to blow up.
-> This has been a longstanding problem with ASoC platforms (I should know,
-> I *melted* the speakers in a Chromebook by toggling the wrong alsamixer
-> control once, it even warped the external case, all without making any
-> audible noise).
-
-Yes, that's why we have platform_max - it was added for use with
-Chromebooks originally, someone else had the same idea you did.  It's
-used less often than I'd like since most embedded systems and even
-things like Chromebooks have a software model where the actual sound
-card isn't accessible to normal users but that's not the case once you
-try to run a general purpose distro on there.
-
-> kiosk-style software with no user control. It is completely unsuitable
-> for a desktop Linux system, since it means users *will* destroy their
-> hardware accidentally. So, some way or another, whatever is exposed has
-> to be sanitized so that it can't go outside the envelope of what is safe
-> for the hardware design. That cannot be known at the level of codec
-> chips and speaker amp chips; it requires platform integration knowledge.
-
-Yes, we should be trying to exclude configurations that could be
-physically destructive but that's not what had been articulated and like
-I said in reply to his last mail it's really not clear to me that what's
-being proposed would actually accomplish the intended goal.  Targeted
-restrictions that protect the system are fine and good, random "why
-would anyone want this?" or "this is how you accomplish use case X" ones
-are not since we do get users turning up with new ideas.
-
-This is one reason why it's important to articulate what the intended
-goal of changes is, what you've written above is perfectly fine and
-reasonable but there was nothing about this in the original changelogs,
-just statements about how silly it would be to configure these controls.
-
---5r4Opt+oeZpWRK1s
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJFu9UACgkQJNaLcl1U
-h9AIAAf/cUel6bE+mDxbI8cbqZccf0srWX39DgijpGGwXFwXVqh7zwNKiGn5lp6y
-zg8du4D9qekF87mySTin4MN/i/t4q4IaDNeHPIHFpc3U37FzDWKs8n05nvIr0lm+
-WHfIlB1zK/CVVBcmK430DGMBmgMwvrgz37+VvH/xdMb0Xrx2dg/ebbt+4wnv9TXa
-zBkH9OBQcqe7GCixvZ3Ijn6duye5COf2LhjW9L8iIyAFn0qGWl7f2an68dvIH9EG
-XNK/i5frYmN+kIlSjAxQ0YKX5Nbsps0GXch5/o7PNn8n94a/rUeT1MAL5YVZ+IcF
-x93x38l8DB6DB5/f9gLhipNOTHsY2w==
-=37zx
------END PGP SIGNATURE-----
-
---5r4Opt+oeZpWRK1s--
+... I'd fold patch 4 into patch 1, but yes, Andrew, please take these
+patches.
