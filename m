@@ -2,95 +2,190 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89954C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 12:26:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C93CBC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 12:26:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236083AbiCaM2J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 08:28:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37766 "EHLO
+        id S236090AbiCaM2N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 08:28:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236067AbiCaM2H (ORCPT
+        with ESMTP id S236069AbiCaM2H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 31 Mar 2022 08:28:07 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCFCC1FB501;
+Received: from mail-qv1-xf31.google.com (mail-qv1-xf31.google.com [IPv6:2607:f8b0:4864:20::f31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77BBC21044B
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 05:26:20 -0700 (PDT)
+Received: by mail-qv1-xf31.google.com with SMTP id kd21so16653878qvb.6
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 05:26:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:subject:message-id:mime-version:content-disposition;
+        bh=inD3SnFltpIfXrHtLPhpTWjxkAMH823Ag7N/71vk5DY=;
+        b=ZQ5xftc/E2Sid0uo09kzQyKlBB6ON4adiW19kxUoGVe0YV3Bu/j3m1+iG4OxgTeqJl
+         Co6n8MGRSKbVGgkPZygeY6XPPXp5Msqi+svw9IIIg4ZQdvTBTOTTbvNWh840Y/lMCxYR
+         nEn+Hf59X9kemMlkf2yQG1fXvSCyMC9YNzhDZgoSwUb8PSzCYavQqqFicwaKIOzroy6H
+         LzxIc3md0auTgehZp1yTp2QkEw0Q0a3uTyODNF503ffm6Y86egF2k+1LdA0XkAKmb7M7
+         QjA6iQA9PpcCDV73ZiTdEnMGYkFttiQyaqeYI84HrN906y5zxUKaD3dNpddY//Onp6lk
+         wRVA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
+         :content-disposition;
+        bh=inD3SnFltpIfXrHtLPhpTWjxkAMH823Ag7N/71vk5DY=;
+        b=Tx0+JfVcBH2gUjODDV3X0tsuLcvemYnD/JrLf73sL1Vbxt3dAxP3DHp+gJUu/GWM0t
+         /hslwfJCOxFoPcGI6G55Vn1z9WlwLgJoZ/oflopm4VC/VzNOkd7OimnZREdqx6CINE/p
+         X6G4cGAjAJGzRB64Mxpf7VyRfm+Li1lA+Z7bf+iXD6Fe1t8GRgsU++2v+3ZndUiTCUtX
+         Ol+Sjox29btyP1W2yeHyHaPPpziRm4C7IXLZp5YTGTBJk6NuIpqSp0iJ/L9IYxqYdw/D
+         yue36ysh4D6Lj16lAb+ab1n7UYb9AdejEYT9dnkBGCBV07v6g2Cs8QPnyMW4cwC6CBme
+         7vUg==
+X-Gm-Message-State: AOAM533UFeYzr3LiFMOI1GWpr28OIw1sIKHJnOqv1kYL7nX3mOqAp9ao
+        ArmR3IMczL8HhrHEGjmKtY7oo0M9/eCWig==
+X-Google-Smtp-Source: ABdhPJyGoRv10oxt0Yxp7IIsoIxrcILPeJWgBV+CPY92jfoubgGlq/8jxJ12WTuQaPkbbS2k7TdwIw==
+X-Received: by 2002:a0c:fbc8:0:b0:440:faa1:880d with SMTP id n8-20020a0cfbc8000000b00440faa1880dmr4008981qvp.66.1648729579481;
         Thu, 31 Mar 2022 05:26:19 -0700 (PDT)
-Received: from mail-lf1-f52.google.com ([209.85.167.52]) by
- mrelayeu.kundenserver.de (mreue109 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1MDQqe-1niBKu0xwk-00AV1U; Thu, 31 Mar 2022 14:26:18 +0200
-Received: by mail-lf1-f52.google.com with SMTP id bq24so25242005lfb.5;
+Received: from euclid ([71.58.109.160])
+        by smtp.gmail.com with ESMTPSA id p17-20020a37a611000000b0067b2b2c41fasm12672654qke.81.2022.03.31.05.26.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Thu, 31 Mar 2022 05:26:18 -0700 (PDT)
-X-Gm-Message-State: AOAM532qX2LJYis2VusYBT65BraBE55hFs19J0CtMtPMsrbcanJj/r5w
-        x5yOrlCC9txH6J6xKDtrtq3aqAyJhu8Qz8nA+Jk=
-X-Google-Smtp-Source: ABdhPJxblHzN8A8TvuiEkXNzMUEBbbuh2/h0a120rBFukLWeh1t2dCBmStJdCyrkTUm6pSHNZoOJL8soa/bMgZk8Rj4=
-X-Received: by 2002:a5d:6505:0:b0:205:9a98:e184 with SMTP id
- x5-20020a5d6505000000b002059a98e184mr3195582wru.317.1648718240005; Thu, 31
- Mar 2022 02:17:20 -0700 (PDT)
+Date:   Thu, 31 Mar 2022 08:26:18 -0400
+From:   Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        outreachy@lists.linux.dev
+Subject: [PATCH v2] staging: rtl8723bs: place constants on the right side of
+ tests
+Message-ID: <20220331122618.GA434796@euclid>
 MIME-Version: 1.0
-References: <cover.1648714851.git.qinjian@cqplus1.com> <c75df921c121c047d48a34de29cd18cf9a631d01.1648714851.git.qinjian@cqplus1.com>
-In-Reply-To: <c75df921c121c047d48a34de29cd18cf9a631d01.1648714851.git.qinjian@cqplus1.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Thu, 31 Mar 2022 11:17:04 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a16M3nv+TQWsC-0Pr5M2vcTttC2WWTzctMBaqdODMFX-A@mail.gmail.com>
-Message-ID: <CAK8P3a16M3nv+TQWsC-0Pr5M2vcTttC2WWTzctMBaqdODMFX-A@mail.gmail.com>
-Subject: Re: [PATCH v12 7/9] irqchip: Add Sunplus SP7021 interrupt controller driver
-To:     Qin Jian <qinjian@cqplus1.com>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        DTML <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:9WfqbbizZrl6Bo03VzQB2usOo4kvLoR3iOej7IjwfhgAKCtgtdM
- q4E9I2PiQ56zhYMleHff2yCybxmJAWRVUCPmuiNaWc1T6sMlyMkG4j2NTST6jI3WE8uzGWk
- A14klJ0ofAURFE6aPFqX8CtTxqm88j3PXwVjVlt6ANiFVcFTpB5S/H8Sd+sUz4CUCbszqov
- 7QRlTKkzs7egNJeGubjpA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:Ob6Y+w0dN6Q=:YsXZB2hvGiJqOsDtl1NhYy
- Dc4iyFsfML8dzyVhswNe4diF5jLkz8C9aUopCk/m9tjDomD76k4/bHFm9u53BKYEOJl/SJNhR
- uKw41aOzFOtG96mBFaq01ZkXHk7mQovv1pdGlvnrRbiM25W5AIVfz3WSNYYM/FvuVyYBgyB3u
- 3qBIfDLYwNrhRtYtazKfJy9OnkT139kAXxRfm4994sIWGEq+YIUc8p9U2OCX2+gvsXD4tGFiN
- u44Pmf6MB8JSd2zSszLc1pV8wCtOb5IjPwyf4ulaufGHXFJeLv6K9vPq7XrZEX0F+IZ/DQlPE
- DCo2RnpR/Imfrsg1slMPccwtV/KA0QuG+c0i1hzcpoe4j9yZ5x36OOXx/zkok8GdfN8mstfxg
- ZclYN8EvKDwsVXND0JHgw84Xh0QwTA0IOV4vrzkqEN3GY5xLAPdJfpZ8Yihqz8yrL5NXlCNpX
- WzMIsS3i0gK/APi4IfxPK7635jIiujzPOTVDVSsPYsr3QTJ8+5VzCbGfPOsDN5xKkRFWNtD0+
- un3HquhO7NSVf4rxQ8iFfOJCWxWb0yxPE/3HcCbwmW94hItiNjmm/PaChTjyh4DnS100K3I4T
- tktjPtbVUwKgnvPo+m3HsfUXulM8vlMr2vQYI641MY+iGsIy/k77fwbkn0iMQUj6Q1+H1rgSz
- Bzryj8IjHtzGO1QdfuAtVYs5pStRlQVUpxg4nPIBnJ2vrCsndKK/d7Ol7TZBiWDXjHdg=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 31, 2022 at 10:29 AM Qin Jian <qinjian@cqplus1.com> wrote:
+Adhere to Linux kernel coding style.
 
-> +#ifdef CONFIG_SMP
-> +static int sp_intc_set_affinity(struct irq_data *d, const struct cpumask *mask, bool force)
-> +{
-> +       return -EINVAL;
-> +}
-> +#endif
-> +
-> +static struct irq_chip sp_intc_chip = {
-> +       .name = "sp_intc",
-> +       .irq_ack = sp_intc_ack_irq,
-> +       .irq_mask = sp_intc_mask_irq,
-> +       .irq_unmask = sp_intc_unmask_irq,
-> +       .irq_set_type = sp_intc_set_type,
-> +#ifdef CONFIG_SMP
-> +       .irq_set_affinity = sp_intc_set_affinity,
-> +#endif
-> +};
+Reported by checkpatch:
 
-I don't think you need to define an irq_set_affinity() callback at all if you
-just return -EINVAL, all the callers should have a check already. Even
-if you do need the function, I think you can remove the #ifdef, as long
-as the function itself can be built that way.
+WARNING: Comparisons should place the constant on the right side of the test
 
-      Arnd
+Signed-off-by: Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
+---
+
+v1 -> v2: Missed one case of constant being placed on the left. Now
+checkpath reports no such warnings for this file.
+
+ drivers/staging/rtl8723bs/core/rtw_mlme_ext.c | 32 +++++++++----------
+ 1 file changed, 16 insertions(+), 16 deletions(-)
+
+diff --git a/drivers/staging/rtl8723bs/core/rtw_mlme_ext.c b/drivers/staging/rtl8723bs/core/rtw_mlme_ext.c
+index 49a3f45cb771..359a67462611 100644
+--- a/drivers/staging/rtl8723bs/core/rtw_mlme_ext.c
++++ b/drivers/staging/rtl8723bs/core/rtw_mlme_ext.c
+@@ -311,11 +311,11 @@ static void init_channel_list(struct adapter *padapter, struct rt_channel_info *
+ 			if (!has_channel(channel_set, chanset_size, ch))
+ 				continue;
+ 
+-			if ((0 == padapter->registrypriv.ht_enable) && (8 == o->inc))
++			if ((padapter->registrypriv.ht_enable == 0) && (o->inc == 8))
+ 				continue;
+ 
+ 			if ((0 < (padapter->registrypriv.bw_mode & 0xf0)) &&
+-				((BW40MINUS == o->bw) || (BW40PLUS == o->bw)))
++				((o->bw == BW40MINUS) || (o->bw == BW40PLUS)))
+ 				continue;
+ 
+ 			if (!reg) {
+@@ -345,7 +345,7 @@ static u8 init_channel_set(struct adapter *padapter, u8 ChannelPlan, struct rt_c
+ 
+ 	if (is_supported_24g(padapter->registrypriv.wireless_mode)) {
+ 		b2_4GBand = true;
+-		if (RT_CHANNEL_DOMAIN_REALTEK_DEFINE == ChannelPlan)
++		if (ChannelPlan == RT_CHANNEL_DOMAIN_REALTEK_DEFINE)
+ 			Index2G = RTW_CHANNEL_PLAN_MAP_REALTEK_DEFINE.Index2G;
+ 		else
+ 			Index2G = RTW_ChannelPlanMap[ChannelPlan].Index2G;
+@@ -355,14 +355,14 @@ static u8 init_channel_set(struct adapter *padapter, u8 ChannelPlan, struct rt_c
+ 		for (index = 0; index < RTW_ChannelPlan2G[Index2G].Len; index++) {
+ 			channel_set[chanset_size].ChannelNum = RTW_ChannelPlan2G[Index2G].Channel[index];
+ 
+-			if ((RT_CHANNEL_DOMAIN_GLOBAL_DOAMIN == ChannelPlan) ||/* Channel 1~11 is active, and 12~14 is passive */
+-				(RT_CHANNEL_DOMAIN_GLOBAL_NULL == ChannelPlan)) {
++			if ((ChannelPlan == RT_CHANNEL_DOMAIN_GLOBAL_DOAMIN) ||/* Channel 1~11 is active, and 12~14 is passive */
++				(ChannelPlan == RT_CHANNEL_DOMAIN_GLOBAL_NULL)) {
+ 				if (channel_set[chanset_size].ChannelNum >= 1 && channel_set[chanset_size].ChannelNum <= 11)
+ 					channel_set[chanset_size].ScanType = SCAN_ACTIVE;
+ 				else if ((channel_set[chanset_size].ChannelNum  >= 12 && channel_set[chanset_size].ChannelNum  <= 14))
+ 					channel_set[chanset_size].ScanType  = SCAN_PASSIVE;
+-			} else if (RT_CHANNEL_DOMAIN_WORLD_WIDE_13 == ChannelPlan ||
+-				RT_CHANNEL_DOMAIN_2G_WORLD == Index2G) { /*  channel 12~13, passive scan */
++			} else if (ChannelPlan == RT_CHANNEL_DOMAIN_WORLD_WIDE_13 ||
++				 Index2G == RT_CHANNEL_DOMAIN_2G_WORLD) { /*  channel 12~13, passive scan */
+ 				if (channel_set[chanset_size].ChannelNum <= 11)
+ 					channel_set[chanset_size].ScanType = SCAN_ACTIVE;
+ 				else
+@@ -1331,7 +1331,7 @@ unsigned int OnAssocReq(struct adapter *padapter, union recv_frame *precv_frame)
+ 	spin_unlock_bh(&pstapriv->asoc_list_lock);
+ 
+ 	/*  now the station is qualified to join our BSS... */
+-	if (pstat && (pstat->state & WIFI_FW_ASSOC_SUCCESS) && (WLAN_STATUS_SUCCESS == status)) {
++	if (pstat && (pstat->state & WIFI_FW_ASSOC_SUCCESS) && (status == WLAN_STATUS_SUCCESS)) {
+ 		/* 1 bss_cap_update & sta_info_update */
+ 		bss_cap_update_on_sta_join(padapter, pstat);
+ 		sta_info_update(padapter, pstat);
+@@ -1520,7 +1520,7 @@ unsigned int OnDeAuth(struct adapter *padapter, union recv_frame *precv_frame)
+ 			(pmlmeinfo->state & WIFI_FW_ASSOC_STATE)) {
+ 			if (reason == WLAN_REASON_CLASS2_FRAME_FROM_NONAUTH_STA) {
+ 				ignore_received_deauth = 1;
+-			} else if (WLAN_REASON_PREV_AUTH_NOT_VALID == reason) {
++			} else if (reason == WLAN_REASON_PREV_AUTH_NOT_VALID) {
+ 				/*  TODO: 802.11r */
+ 				ignore_received_deauth = 1;
+ 			}
+@@ -1531,7 +1531,7 @@ unsigned int OnDeAuth(struct adapter *padapter, union recv_frame *precv_frame)
+ 			   reason, GetAddr3Ptr(pframe),
+ 			   ignore_received_deauth);
+ 
+-		if (0 == ignore_received_deauth) {
++		if (ignore_received_deauth == 0) {
+ 			receive_disconnect(padapter, GetAddr3Ptr(pframe), reason);
+ 		}
+ 	}
+@@ -3552,13 +3552,13 @@ void issue_action_BA(struct adapter *padapter, unsigned char *raddr, unsigned ch
+ 				rtw_hal_get_def_var(padapter,
+ 						    HW_VAR_MAX_RX_AMPDU_FACTOR, &max_rx_ampdu_factor);
+ 
+-			if (IEEE80211_HT_MAX_AMPDU_64K == max_rx_ampdu_factor)
++			if (max_rx_ampdu_factor == IEEE80211_HT_MAX_AMPDU_64K)
+ 				BA_para_set = ((le16_to_cpu(pmlmeinfo->ADDBA_req.BA_para_set) & 0x3f) | 0x1000); /* 64 buffer size */
+-			else if (IEEE80211_HT_MAX_AMPDU_32K == max_rx_ampdu_factor)
++			else if (max_rx_ampdu_factor == IEEE80211_HT_MAX_AMPDU_32K)
+ 				BA_para_set = ((le16_to_cpu(pmlmeinfo->ADDBA_req.BA_para_set) & 0x3f) | 0x0800); /* 32 buffer size */
+-			else if (IEEE80211_HT_MAX_AMPDU_16K == max_rx_ampdu_factor)
++			else if (max_rx_ampdu_factor == IEEE80211_HT_MAX_AMPDU_16K)
+ 				BA_para_set = ((le16_to_cpu(pmlmeinfo->ADDBA_req.BA_para_set) & 0x3f) | 0x0400); /* 16 buffer size */
+-			else if (IEEE80211_HT_MAX_AMPDU_8K == max_rx_ampdu_factor)
++			else if (max_rx_ampdu_factor == IEEE80211_HT_MAX_AMPDU_8K)
+ 				BA_para_set = ((le16_to_cpu(pmlmeinfo->ADDBA_req.BA_para_set) & 0x3f) | 0x0200); /* 8 buffer size */
+ 			else
+ 				BA_para_set = ((le16_to_cpu(pmlmeinfo->ADDBA_req.BA_para_set) & 0x3f) | 0x1000); /* 64 buffer size */
+@@ -5086,7 +5086,7 @@ void linked_status_chk(struct adapter *padapter)
+ 			if (pmlmeinfo->FW_sta_info[i].status == 1) {
+ 				psta = pmlmeinfo->FW_sta_info[i].psta;
+ 
+-				if (NULL == psta)
++				if (psta == NULL)
+ 					continue;
+ 
+ 				if (pmlmeinfo->FW_sta_info[i].rx_pkt == sta_rx_pkts(psta)) {
+@@ -6073,7 +6073,7 @@ u8 run_in_thread_hdl(struct adapter *padapter, u8 *pbuf)
+ 	struct RunInThread_param *p;
+ 
+ 
+-	if (NULL == pbuf)
++	if (pbuf == NULL)
+ 		return H2C_PARAMETERS_ERROR;
+ 	p = (struct RunInThread_param *)pbuf;
+ 
+-- 
+2.25.1
+
