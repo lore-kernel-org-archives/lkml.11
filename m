@@ -2,91 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AB40C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 09:35:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0A1FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 09:36:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234159AbiCaJhO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 05:37:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40872 "EHLO
+        id S232233AbiCaJiL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 05:38:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233210AbiCaJhD (ORCPT
+        with ESMTP id S234206AbiCaJht (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 05:37:03 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47C49B6E67;
-        Thu, 31 Mar 2022 02:35:13 -0700 (PDT)
-Received: from mail-lj1-f182.google.com ([209.85.208.182]) by
- mrelayeu.kundenserver.de (mreue012 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1MQ8OG-1nMZWF0sMa-00LzwN; Thu, 31 Mar 2022 11:35:07 +0200
-Received: by mail-lj1-f182.google.com with SMTP id a30so23743420ljq.13;
-        Thu, 31 Mar 2022 02:34:53 -0700 (PDT)
-X-Gm-Message-State: AOAM530f4YF5XRzdcJZz402Q2dO5W10j2CxRXZsoZgbvCJBBidfnMn6p
-        1/KYMOMILw6hB8QXWn2cZtkHJnXJoUV7wKUaAgk=
-X-Google-Smtp-Source: ABdhPJzlZAknllrYU3sqw0DcJDBqe9QGu2EJFIsGG1Jj93+/mwICYSZMvQMKUcZsQpnc8rRysI1G9CixKr24DtuSHyk=
-X-Received: by 2002:a5d:66ca:0:b0:203:fb72:a223 with SMTP id
- k10-20020a5d66ca000000b00203fb72a223mr3263936wrw.12.1648717194942; Thu, 31
- Mar 2022 01:59:54 -0700 (PDT)
+        Thu, 31 Mar 2022 05:37:49 -0400
+Received: from mg.sunplus.com (unknown [113.196.136.146])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2695DC3374;
+        Thu, 31 Mar 2022 02:36:00 -0700 (PDT)
+X-MailGates: (flag:3,DYNAMIC,RELAY,NOHOST:PASS)(compute_score:DELIVER,40
+        ,3)
+Received: from 172.17.9.202
+        by mg02.sunplus.com with MailGates ESMTP Server V5.0(30220:0:AUTH_RELAY)
+        (envelope-from <tony.huang@sunplus.com>); Thu, 31 Mar 2022 17:35:49 +0800 (CST)
+Received: from sphcmbx02.sunplus.com.tw (172.17.9.112) by
+ sphcmbx01.sunplus.com.tw (172.17.9.202) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.26; Thu, 31 Mar 2022 17:35:48 +0800
+Received: from sphcmbx02.sunplus.com.tw ([fe80::fd3d:ad1a:de2a:18bd]) by
+ sphcmbx02.sunplus.com.tw ([fe80::fd3d:ad1a:de2a:18bd%14]) with mapi id
+ 15.00.1497.026; Thu, 31 Mar 2022 17:35:48 +0800
+From:   =?utf-8?B?VG9ueSBIdWFuZyDpu4Pmh7fljpo=?= <tony.huang@sunplus.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Tony Huang <tonyhuang.sunplus@gmail.com>,
+        "ulf.hansson@linaro.org" <ulf.hansson@linaro.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "lhjeff911@gmail.com" <lhjeff911@gmail.com>,
+        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>
+CC:     =?utf-8?B?V2VsbHMgTHUg5ZGC6Iqz6aiw?= <wells.lu@sunplus.com>,
+        =?utf-8?B?TGggS3VvIOmDreWKm+ixqg==?= <lh.Kuo@sunplus.com>
+Subject: RE: [PATCH v5 1/2] dt-binding: mmc: Add mmc yaml file for Sunplus
+ SP7021
+Thread-Topic: [PATCH v5 1/2] dt-binding: mmc: Add mmc yaml file for Sunplus
+ SP7021
+Thread-Index: AQHYQ3s7AWWAn1pcyEaVCbkq9QRphazWDP+AgAMwGSA=
+Date:   Thu, 31 Mar 2022 09:35:48 +0000
+Message-ID: <cdef40f96f084d17b79d67cf8ed7c5f5@sphcmbx02.sunplus.com.tw>
+References: <cover.1648551070.git.tonyhuang.sunplus@gmail.com>
+ <abd34a74bf56e04050868c63d030552a9af210f4.1648551070.git.tonyhuang.sunplus@gmail.com>
+ <85ed0e5b-0c6f-aea0-ea89-522591d85420@linaro.org>
+In-Reply-To: <85ed0e5b-0c6f-aea0-ea89-522591d85420@linaro.org>
+Accept-Language: zh-TW, en-US
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [172.25.108.54]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <cover.1648714851.git.qinjian@cqplus1.com> <840bf90d4e7ba05fe621cd94101b912162311e41.1648714851.git.qinjian@cqplus1.com>
-In-Reply-To: <840bf90d4e7ba05fe621cd94101b912162311e41.1648714851.git.qinjian@cqplus1.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Thu, 31 Mar 2022 10:59:39 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a3dRs=-XdK-Y3eHFJEkXTaCzRCm-YAdiUw_DRUcqHd02w@mail.gmail.com>
-Message-ID: <CAK8P3a3dRs=-XdK-Y3eHFJEkXTaCzRCm-YAdiUw_DRUcqHd02w@mail.gmail.com>
-Subject: Re: [PATCH v12 3/9] reset: Add Sunplus SP7021 reset driver
-To:     Qin Jian <qinjian@cqplus1.com>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        DTML <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:DfVrS+Ox3XDkFmwPTS20wXa+Ha4o0WcqDgVOIs5eqt6GtEcCbV4
- nVfLllx+NhIBJMi+iAS6nOOJnMJgeRUWFmoA78qsG/2IMxdgB6CLF1H4ThsMyWdah56Ez7o
- xstqnj8bqlfUOm7qLAGIDf4PRPpE38lAGL4LV594mvE9kbDmV2SDoDp548u7bSvM8jutdyG
- VFAtU62bbD8LFqYhadCEg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:FV5ioI8hUa4=:znyj7Kx4BQT2vh6lX9KmcC
- sNW827kSRUWc46nsYmbPySZLiqAWcaUkI+s2Aq6fEkAbQxz4j+nMvz9CMJqUfBSql5zP4DkAt
- GGgr9uOMfD19Ug0nWtRZfVTEwyIhjFTp1GA31VwZH7QVVD4kWNpg9OmNqLsrsnRCKTy3k4/FK
- PVpx1kJOeOjrb9m2k+Rn2Ojv94nlqF9P3x1YXq8pnvVF376OHXp3F/3BVDjwWSLchQ8ueAC2P
- 7qNMsvpmaMk4xgounFDRXZiXIVS2KlGDEi42FT2nCnlQB4Nlfk4upRt/lGxayc9o71pMX4gAH
- FpWbjO7Y7QTqNhX+tqOuN6t0s76uxaQ6L3StFz7BCOMYGtQUj/jBbFdMUH7WIOXjNSDMgxRJE
- 7w50I5+7HJcNvL2ZCOMAZkGb039Z0RfxzYiYmltgDwaBZ6RkG2TJRMg91Gu6Cg81DCNV7LLeU
- j0+1Tj+8hyOEbFa6Rb2C+dwaYSdK5o6L0oN9hll/cPdXmMwM4uPSHJlovHne5SGRaWMvEyV8m
- 0C1TYearppaLDLIKnGcTKUeZQJdR6YjLtuBQmgrVCsFcMgBuL2lluYcEVWkHgCOV7ttmxXxVR
- //Kf/FYPztV7yZzihClLMjTWM8dtCPWABmkRt0MGuLASm5Sdim1EL75NBi67EqUgEdR0wABlv
- yltpRZRFHLA8AvJ/a+E7nMMatzJfDSKUXI0FvaAws23GvxHU22feBZfsOhOkwSS7PUeK6nBH3
- Rx1OWysCLKAxzHqX/rnTbCr/v93JgHRdpyiG4I7T6jgFAdlMWloErUhWGiQ/CE9iDDEjoZ8Nr
- ntDk+5ap+gcdrpy1quaeNo9ZBqgygG4Rtpn0HZeoL8yq4usTjKqMIMAhgez9xSZlnJUrjgw/L
- 8a7bYeruMKWgEFiycr5W1KN94LzzatCkATA4HRO9XjN/3PxTW4aZ03G4MhzFm89tpkgZp95bL
- uVh24r6nz3LzBpTNhi41ZqKvC1KBowA4qgTZYJBzkLTxizR/NtZKImc7SJT5yLxH4G/H5dWmh
- 546zOzkj1zLITvc3jevwBVOK/eVbiIadOXZiMKqkJd8ZHLr6q8dI3EsnXM/G9j6FLv0jFb3N0
- kMWMwFswDzW+iB30qz4j3ev3DpjkZ0IXD0FNjv3jHz5xHMWk5R/SitdSUU8YzBlSIbG3iIKGJ
- klnZ/eIZHEE0crf5RKWtDk9c2HqLSWBQP+m9R5NEoRvRpBECI73Nc+ZrRZejySv5tz7FT9GD9
- b9sajQXc2wbVoKkb6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 31, 2022 at 10:29 AM Qin Jian <qinjian@cqplus1.com> wrote:
-> +
-> +#include <linux/io.h>
-> +#include <linux/init.h>
-> +#include <linux/mod_devicetable.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/reset-controller.h>
-> +#include <linux/reboot.h>
-> +
-
-As commented on the binding header -- it looks again like you are not actually
-relying  on the header here, so it's almost certainly not needed.
-
-         Arnd
+RGVhciBLcnp5c3p0b2Y6DQoNCj4gPiBBZGQgbW1jIHlhbWwgZmlsZSBmb3IgU3VucGx1cyBTUDcw
+MjENCj4gDQo+IHMvbW1jL01NQy8NCj4gcy95YW1sL1lBTUwvDQo+IEFuZCBhIGZ1bGwgc3RvcC4N
+Cj4gDQoNCk9LLCBJIHdpbGwgbW9kaWZ5IGl0Lg0KDQo+IFBsZWFzZSByZWJhc2UgeW91ciBjaGFu
+Z2VzIG9uIHJlY2VudCBMaW51eCBrZXJuZWwsIGJlY2F1c2UgeW91IHNraXAgQ2MtaW5nIG1lDQo+
+IGFsbCB0aGUgdGltZSwgc28gSSBhc3N1bWUgeW91IGhhdmUgc29tZSBvbGQgTWFpbnRhaW5lcnMg
+ZmlsZS4NCj4gDQoNCk9LLCBJIHdpbGwgcGF5IGF0dGVudGlvbi4NCg0KPiA+DQo+ID4gU2lnbmVk
+LW9mZi1ieTogVG9ueSBIdWFuZyA8dG9ueWh1YW5nLnN1bnBsdXNAZ21haWwuY29tPg0KPiA+IC0t
+LQ0KPiA+IENoYW5nZXMgaW4gdjU6DQo+ID4gIC0gQWRkcmVzc2VkIGNvbW1lbnRzIGZyb20gS3J6
+eXN6dG9mLg0KPiA+DQo+ID4gIC4uLi9kZXZpY2V0cmVlL2JpbmRpbmdzL21tYy9zdW5wbHVzLG1t
+Yy55YW1sICAgICAgIHwgNjQNCj4gKysrKysrKysrKysrKysrKysrKysrKw0KPiA+ICBNQUlOVEFJ
+TkVSUyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8ICA2ICsrDQo+ID4g
+IDIgZmlsZXMgY2hhbmdlZCwgNzAgaW5zZXJ0aW9ucygrKQ0KPiA+ICBjcmVhdGUgbW9kZSAxMDA2
+NDQNCj4gPiBEb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvbW1jL3N1bnBsdXMsbW1j
+LnlhbWwNCj4gPg0KPiA+IGRpZmYgLS1naXQgYS9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmlu
+ZGluZ3MvbW1jL3N1bnBsdXMsbW1jLnlhbWwNCj4gPiBiL0RvY3VtZW50YXRpb24vZGV2aWNldHJl
+ZS9iaW5kaW5ncy9tbWMvc3VucGx1cyxtbWMueWFtbA0KPiA+IG5ldyBmaWxlIG1vZGUgMTAwNjQ0
+DQo+ID4gaW5kZXggMDAwMDAwMC4uOTI1MzdkMA0KPiA+IC0tLSAvZGV2L251bGwNCj4gPiArKysg
+Yi9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvbW1jL3N1bnBsdXMsbW1jLnlhbWwN
+Cj4gPiBAQCAtMCwwICsxLDY0IEBADQo+ID4gKyMgU1BEWC1MaWNlbnNlLUlkZW50aWZpZXI6IChH
+UEwtMi4wLW9ubHkgT1IgQlNELTItQ2xhdXNlKSAjIENvcHlyaWdodA0KPiA+ICsoQykgU3VucGx1
+cyBMdGQuIENvLiAyMDIxICVZQU1MIDEuMg0KPiA+ICstLS0NCj4gPiArJGlkOiBodHRwOi8vZGV2
+aWNldHJlZS5vcmcvc2NoZW1hcy9tbWMvc3VucGx1cyxtbWMueWFtbCMNCj4gPiArJHNjaGVtYTog
+aHR0cDovL2RldmljZXRyZWUub3JnL21ldGEtc2NoZW1hcy9jb3JlLnlhbWwjDQo+ID4gKw0KPiA+
+ICt0aXRsZTogU3VucGx1cyBNTUMgQ29udHJvbGxlcg0KPiA+ICsNCj4gPiArbWFpbnRhaW5lcnM6
+DQo+ID4gKyAgLSBUb255IEh1YW5nIDx0b255aHVhbmcuc3VucGx1c0BnbWFpbC5jb20+DQo+ID4g
+KyAgLSBMaS1oYW8gS3VvIDxsaGplZmY5MTFAZ21haWwuY29tPg0KPiA+ICsNCj4gPiArYWxsT2Y6
+DQo+ID4gKyAgLSAkcmVmOiAibW1jLWNvbnRyb2xsZXIueWFtbCINCj4gPiArDQo+ID4gK3Byb3Bl
+cnRpZXM6DQo+ID4gKyAgY29tcGF0aWJsZToNCj4gPiArICAgIGVudW06DQo+ID4gKyAgICAgIC0g
+c3VucGx1cyxzcDcwMjEtbW1jDQo+ID4gKw0KPiA+ICsgIHJlZzoNCj4gPiArICAgIG1heEl0ZW1z
+OiAxDQo+ID4gKw0KPiA+ICsgIGludGVycnVwdHM6DQo+ID4gKyAgICBtYXhJdGVtczogMQ0KPiA+
+ICsNCj4gPiArICBjbG9ja3M6DQo+ID4gKyAgICBtYXhJdGVtczogMQ0KPiA+ICsNCj4gPiArICBy
+ZXNldHM6DQo+ID4gKyAgICBtYXhJdGVtczogMQ0KPiA+ICsNCj4gPiArICBtYXgtZnJlcXVlbmN5
+OiB0cnVlDQo+IA0KPiBJIHRoaW5rIHlvdSBkbyBub3QgbmVlZCB0aGlzLg0KPiANCg0KT0ssIEkg
+d2lsbCBtb2RpZnkgaXQuDQoNCj4gPiArDQo+ID4gK3JlcXVpcmVkOg0KPiA+ICsgIC0gY29tcGF0
+aWJsZQ0KPiA+ICsgIC0gcmVnDQo+ID4gKyAgLSBpbnRlcnJ1cHRzDQo+ID4gKyAgLSBjbG9ja3MN
+Cj4gPiArICAtIHJlc2V0cw0KPiA+ICsNCj4gPiArdW5ldmFsdWF0ZWRQcm9wZXJ0aWVzOiBmYWxz
+ZQ0KPiA+ICsNCj4gPiArZXhhbXBsZXM6DQo+ID4gKyAgLSB8DQo+ID4gKyAgICAjaW5jbHVkZSA8
+ZHQtYmluZGluZ3MvaW50ZXJydXB0LWNvbnRyb2xsZXIvaXJxLmg+DQo+ID4gKyAgICAjaW5jbHVk
+ZSA8ZHQtYmluZGluZ3MvaW50ZXJydXB0LWNvbnRyb2xsZXIvYXJtLWdpYy5oPg0KPiA+ICsgICAg
+bW1jMDogbW1jQDljMDAzYjAwIHsNCj4gPiArICAgICAgICBjb21wYXRpYmxlID0gInN1bnBsdXMs
+bW1jLXYyIjsNCj4gPiArICAgICAgICByZWcgPSA8MHg5YzAwM2IwMCAweDE4MD47DQo+ID4gKyAg
+ICAgICAgaW50ZXJydXB0cyA9IDwyMCBJUlFfVFlQRV9MRVZFTF9ISUdIPjsNCj4gPiArICAgICAg
+ICBjbG9ja3MgPSA8JmNsa2MgMHg0ZT47DQo+ID4gKyAgICAgICAgcmVzZXRzID0gPCZyc3RjIDB4
+M2U+Ow0KPiA+ICsgICAgICAgIGJ1cy13aWR0aCA9IDw4PjsNCj4gPiArICAgICAgICBtYXgtZnJl
+cXVlbmN5ID0gPDUyMDAwMDAwPjsNCj4gPiArICAgICAgICBub24tcmVtb3ZhYmxlOw0KPiA+ICsg
+ICAgICAgIGRpc2FibGUtd3A7DQo+ID4gKyAgICAgICAgY2FwLW1tYy1oaWdoc3BlZWQ7DQo+ID4g
+KyAgICAgICAgbW1jLWRkci0zXzN2Ow0KPiA+ICsgICAgICAgIG5vLXNkaW87DQo+ID4gKyAgICAg
+ICAgbm8tc2Q7DQo+ID4gKyAgICB9Ow0KPiA+ICsNCj4gPiBkaWZmIC0tZ2l0IGEvTUFJTlRBSU5F
+UlMgYi9NQUlOVEFJTkVSUyBpbmRleCBmYjE4Y2U3Li40MjQ5OGIyIDEwMDY0NA0KPiA+IC0tLSBh
+L01BSU5UQUlORVJTDQo+ID4gKysrIGIvTUFJTlRBSU5FUlMNCj4gPiBAQCAtMTgyNDIsNiArMTgy
+NDIsMTIgQEAgTDoJbmV0ZGV2QHZnZXIua2VybmVsLm9yZw0KPiA+ICBTOglNYWludGFpbmVkDQo+
+ID4gIEY6CWRyaXZlcnMvbmV0L2V0aGVybmV0L2RsaW5rL3N1bmRhbmNlLmMNCj4gPg0KPiA+ICtT
+VU5QTFVTIE1NQyBEUklWRVINCj4gPiArTToJVG9ueSBIdWFuZyA8dG9ueWh1YW5nLnN1bnBsdXNA
+Z21haWwuY29tPg0KPiA+ICtNOglMaS1oYW8gS3VvIDxsaGplZmY5MTFAZ21haWwuY29tPg0KPiA+
+ICtTOglNYWludGFpbmVkDQo+ID4gK0Y6CURvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5n
+cy9tbWMvc3VucGx1LG1tYy55YW1sDQo+IA0KPiBJIHBvaW50ZWQgdGhpcyBhbHJlYWR5IGZvciB5
+b3VyIHY0Lg0KPiANCg0KU29ycnksIEkgd2lsbCBtb2RpZnkgaXQuDQoNCg==
