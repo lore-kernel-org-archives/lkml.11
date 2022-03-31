@@ -2,223 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37347C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 20:34:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F334C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 20:35:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241449AbiCaUgh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 16:36:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38710 "EHLO
+        id S241476AbiCaUg5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 16:36:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241360AbiCaUgf (ORCPT
+        with ESMTP id S241456AbiCaUgy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 16:36:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0C2792D28;
-        Thu, 31 Mar 2022 13:34:46 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 74601B82235;
-        Thu, 31 Mar 2022 20:34:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0A59C340ED;
-        Thu, 31 Mar 2022 20:34:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648758884;
-        bh=jmwDHcChvd6o9vgnef1gEpL170XClXlVn3dwuMj7F1k=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=XSa+IR/f6DBLmuEMOVL4n06uZZu+IsodIGNuPhB+EGQZ5GqHUE6ahDO0elkj/jhe3
-         mnI4X5a0SwfiJjIgjSi6HghwixhChIBali3370ZCFsqbcnzg4bav6N3WPtjhmp3vdx
-         bXI5H7T4yase3U1rKjl0kXwLEwZQlmjBwfoqQ8SOc4hZaIcSX6CwHYfuT2K9h5LWoR
-         2coXB6kc4z8Qcrbp6POCflbjvexTX5qQYVqfRUr9MSn6B5IInVAzKMmzhz2ErGBm7z
-         jLxKOGIVx/LX2vzGT2OJtyX/tMDeKOmi2PcBdrnox2auCad6flSL2oFXFJPWjl0GhM
-         FtBffHY9Z1SeQ==
-Date:   Thu, 31 Mar 2022 15:43:24 -0500
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Nick Terrell <terrelln@fb.com>
-Cc:     Kees Cook <keescook@chromium.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "linux-hardening@vger.kernel.org" <linux-hardening@vger.kernel.org>
-Subject: Re: [PATCH][next] lib: zstd: Fix Wstringop-overflow warning
-Message-ID: <20220331204324.GA167652@embeddedor>
-References: <20220330193352.GA119296@embeddedor>
- <202203301416.568595B87@keescook>
- <AC568A96-E2E3-4A56-B993-05ED7B5326AF@fb.com>
+        Thu, 31 Mar 2022 16:36:54 -0400
+Received: from mail-oa1-f45.google.com (mail-oa1-f45.google.com [209.85.160.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F27AD4470;
+        Thu, 31 Mar 2022 13:35:03 -0700 (PDT)
+Received: by mail-oa1-f45.google.com with SMTP id 586e51a60fabf-deb9295679so529437fac.6;
+        Thu, 31 Mar 2022 13:35:03 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=7o8q97xCtSsryTgEf+sdFsnMX0/U036sQhYghPoefl4=;
+        b=iPJMIel6KouTEDry7C1kbBk8yMK/XG0f8n5a/xdpTicgN470n1MAIZqq0O9XIQkTQT
+         1iAELBGJ99xBVFuBGbsK66w77QlYA4Y9z7bSbwe064IL8vRgvZQGNIJOgb8klFDl6yyb
+         mOTYM2AgQPuSVzZ0xUp2PqQIGS2vA9vKOIKyuLChLPNuVD2d6h297HDDKQy/4P+BDFyA
+         VG8AbLUNJK1Nr0BKgwjIuypNESUa7lk7vmMryzHIdlI6sY9ljUtvrxBCA7f+oC07LQSF
+         Qs3PqTOguNnRiVdnhVMTWUcZXWhU8sJ5a5FIKPQCLvWnl3ZMEQG6C0We+GGB/XGJEPWR
+         P2/Q==
+X-Gm-Message-State: AOAM532BTv+JLmhPhYRdJu1nFGVk2U16AQRXbCyCqXhV/q7iFgS1ZSWI
+        WVaDs2lxCAejO6OyUHA4LQ==
+X-Google-Smtp-Source: ABdhPJyOtg9v8M3rgMoWnDenrT80lRaoyYQt7XKsnQHhmcrqEG9E/JNZKDO/sxj1EcCQH8b9oxX0lA==
+X-Received: by 2002:a05:6870:79d:b0:da:56e3:fe99 with SMTP id en29-20020a056870079d00b000da56e3fe99mr3441337oab.95.1648758902507;
+        Thu, 31 Mar 2022 13:35:02 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id r35-20020a056870582300b000df0dc42ff5sm219227oap.0.2022.03.31.13.34.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 31 Mar 2022 13:35:00 -0700 (PDT)
+Received: (nullmailer pid 1446207 invoked by uid 1000);
+        Thu, 31 Mar 2022 20:34:59 -0000
+Date:   Thu, 31 Mar 2022 15:34:59 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>, alsa-devel@alsa-project.org,
+        Georgi Djakov <djakov@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Mark Brown <broonie@kernel.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-tegra@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Olivier Moysan <olivier.moysan@foss.st.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
+Subject: Re: [PATCH] dt-bindings: Fix incomplete if/then/else schemas
+Message-ID: <YkYQc/r8P5LYI6dt@robh.at.kernel.org>
+References: <20220330145741.3044896-1-robh@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <AC568A96-E2E3-4A56-B993-05ED7B5326AF@fb.com>
+In-Reply-To: <20220330145741.3044896-1-robh@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 31, 2022 at 07:55:04PM +0000, Nick Terrell wrote:
+On Wed, 30 Mar 2022 09:57:41 -0500, Rob Herring wrote:
+> A recent review highlighted that the json-schema meta-schema allows any
+> combination of if/then/else schema keywords even though if, then or else
+> by themselves makes little sense. With an added meta-schema to only
+> allow valid combinations, there's a handful of schemas found which need
+> fixing in a variety of ways. Incorrect indentation is the most common
+> issue.
 > 
+> Cc: Lars-Peter Clausen <lars@metafoo.de>
+> Cc: Michael Hennerich <Michael.Hennerich@analog.com>
+> Cc: Jonathan Cameron <jic23@kernel.org>
+> Cc: Krzysztof Kozlowski <krzk+dt@kernel.org>
+> Cc: Olivier Moysan <olivier.moysan@foss.st.com>
+> Cc: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
+> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+> Cc: Georgi Djakov <djakov@kernel.org>
+> Cc: Ulf Hansson <ulf.hansson@linaro.org>
+> Cc: Thierry Reding <thierry.reding@gmail.com>
+> Cc: Jonathan Hunter <jonathanh@nvidia.com>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Paolo Abeni <pabeni@redhat.com>
+> Cc: Kishon Vijay Abraham I <kishon@ti.com>
+> Cc: Vinod Koul <vkoul@kernel.org>
+> Cc: Mark Brown <broonie@kernel.org>
+> Cc: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+> Cc: Grygorii Strashko <grygorii.strashko@ti.com>
+> Cc: Dmitry Osipenko <digetx@gmail.com>
+> Cc: linux-iio@vger.kernel.org
+> Cc: alsa-devel@alsa-project.org
+> Cc: linux-mmc@vger.kernel.org
+> Cc: linux-tegra@vger.kernel.org
+> Cc: netdev@vger.kernel.org
+> Cc: linux-phy@lists.infradead.org
+> Signed-off-by: Rob Herring <robh@kernel.org>
+> ---
+>  .../bindings/iio/adc/adi,ad7476.yaml          |  1 +
+>  .../bindings/iio/adc/st,stm32-dfsdm-adc.yaml  |  8 +-
+>  .../bindings/iio/dac/adi,ad5360.yaml          |  6 +-
+>  .../bindings/interconnect/qcom,rpm.yaml       | 84 +++++++++----------
+>  .../bindings/mmc/nvidia,tegra20-sdhci.yaml    |  2 +
+>  .../bindings/net/ti,davinci-mdio.yaml         |  1 +
+>  .../bindings/phy/nvidia,tegra20-usb-phy.yaml  | 20 ++---
+>  .../bindings/phy/qcom,usb-hs-phy.yaml         | 36 ++++----
+>  .../bindings/regulator/fixed-regulator.yaml   | 34 ++++----
+>  .../bindings/sound/st,stm32-sai.yaml          |  6 +-
+>  .../devicetree/bindings/sram/sram.yaml        | 16 ++--
+>  11 files changed, 108 insertions(+), 106 deletions(-)
 > 
-> > On Mar 30, 2022, at 2:43 PM, Kees Cook <keescook@chromium.org> wrote:
-> > 
-> > On Wed, Mar 30, 2022 at 02:33:52PM -0500, Gustavo A. R. Silva wrote:
-> >> Fix the following -Wstringop-overflow warning when building with GCC-11:
-> >> 
-> >> lib/zstd/decompress/huf_decompress.c: In function ‘HUF_readDTableX2_wksp’:
-> >> lib/zstd/decompress/huf_decompress.c:700:5: warning: ‘HUF_fillDTableX2.constprop’ accessing 624 bytes in a region of size 52 [-Wstringop-overflow=]
-> >>  700 |     HUF_fillDTableX2(dt, maxTableLog,
-> >>      |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> >>  701 |                    wksp->sortedSymbol, sizeOfSort,
-> >>      |                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> >>  702 |                    wksp->rankStart0, wksp->rankVal, maxW,
-> >>      |                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> >>  703 |                    tableLog+1,
-> >>      |                    ~~~~~~~~~~~
-> >>  704 |                    wksp->calleeWksp, sizeof(wksp->calleeWksp) / sizeof(U32));
-> >>      |                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> >> lib/zstd/decompress/huf_decompress.c:700:5: note: referencing argument 6 of type ‘U32 (*)[13]’ {aka ‘unsigned int (*)[13]’}
-> >> lib/zstd/decompress/huf_decompress.c:571:13: note: in a call to function ‘HUF_fillDTableX2.constprop’
-> >>  571 | static void HUF_fillDTableX2(HUF_DEltX2* DTable, const U32 targetLog,
-> >>      |             ^~~~~~~~~~~~~~~~
-> > 
-> > Reviewing this changes would be easier if the reason for the warning
-> > could be explained. i.e. why has GCC decided that the region is 52
-> > bytes, and how did it calculate the 624 bytes?
-> > 
-> > rankVal_t is HUF_TABLELOG_MAX-many rankValCol_t, which itself is
-> > HUF_TABLELOG_MAX + 1 many U32s. So, basically:
-> > 
-> > U32 array[HUF_TABLELOG_MAX + 1][HUF_TABLELOG_MAX]
 
-I think this is U32 array[HUF_TABLELOG_MAX][HUF_TABLELOG_MAX + 1]
-
-> > 
-> > sizeof(rankValCol_t) == 52
-> > sizeof(rankVal_t) == 624
-
-Yep;
-
-> 
-> Yeah, I'm not quite sure what this warning is saying. Clarification would
-> be useful. It seems like a false positive to me, but I could be mistaken.
-> 
-> >> 
-> >> by using pointer notation instead of array notation.
-> >> 
-> >> This helps with the ongoing efforts to globally enable
-> >> -Wstringop-overflow.
-> >> 
-> >> Link: https://github.com/KSPP/linux/issues/181
-> >> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
-> >> ---
-> >> lib/zstd/decompress/huf_decompress.c | 6 +++---
-> >> 1 file changed, 3 insertions(+), 3 deletions(-)
-> >> 
-> >> diff --git a/lib/zstd/decompress/huf_decompress.c b/lib/zstd/decompress/huf_decompress.c
-> >> index 5105e59ac04a..0ea34621253a 100644
-> >> --- a/lib/zstd/decompress/huf_decompress.c
-> >> +++ b/lib/zstd/decompress/huf_decompress.c
-> >> @@ -570,7 +570,7 @@ static void HUF_fillDTableX2Level2(HUF_DEltX2* DTable, U32 sizeLog, const U32 co
-> >> 
-> >> static void HUF_fillDTableX2(HUF_DEltX2* DTable, const U32 targetLog,
-> >>                            const sortedSymbol_t* sortedList, const U32 sortedListSize,
-> >> -                           const U32* rankStart, rankVal_t rankValOrigin, const U32 maxWeight,
-> >> +                           const U32* rankStart, const U32* rankValOrigin, const U32 maxWeight,
-> >>                            const U32 nbBitsBaseline, U32* wksp, size_t wkspSize)
-> > 
-> > This really feels like we're papering over the warning. This removes the
-> > type information and makes it a U32 * instead, and then later makes a
-> > cast?
-> > 
-> > Can this be fixed in a way that retains the type information?
-> > 
-> > On the other hand, all the arguments are also U32 *.
-> > 
-> > I see stuff like:
-> > 
-> >    ZSTD_memcpy(rankVal, rankValOrigin, sizeof(U32) * (HUF_TABLELOG_MAX + 1));
-> > 
-> > That looks like it's ignoring type information as well. i.e. why isn't
-> > this sizeof(rankValOrigin)? (The length above is 52 bytes.)
-> > 
-> > I'm especially curious here since rankValOrigin is rankVal_t, which is
-> > 624 bytes, not 52 bytes (i.e. the above is copying a single rankValCol_t
-> > from rankValOrigin. I'd expect this to be:
-> > 
-> >    ZSTD_memcpy(rankVal, &rankValOrigin[0], sizeof(rankValOrigin[0]));
-> 
-> Yes, this is definitely a better way to write it. But, I think the `&` is unnecessary.
-> Because of the way C arrays work, rankValOrigin == rankValOrigin[0].
-> 
-> Upstream, this memcpy is gone, and this code has been optimized & refactored [1].
-> And that will get pulled in in the next update. But, in the meantime, I'd be happy to
-> accept a refactoring diff.
-> 
-> [0] https://gcc.godbolt.org/z/orodoK818
-> [1] https://github.com/facebook/zstd/blob/3e6bbdd8473a753d2047969ac0053fb2cb4dda23/lib/decompress/huf_decompress.c#L992-L1036
-> 
-> >> {
-> >>     U32* rankVal = wksp;
-> >> @@ -598,7 +598,7 @@ static void HUF_fillDTableX2(HUF_DEltX2* DTable, const U32 targetLog,
-> >>             if (minWeight < 1) minWeight = 1;
-> >>             sortedRank = rankStart[minWeight];
-> >>             HUF_fillDTableX2Level2(DTable+start, targetLog-nbBits, nbBits,
-> >> -                           rankValOrigin[nbBits], minWeight,
-> >> +                           rankValOrigin + nbBits, minWeight,
-> > 
-> > And here I'd expect to pass	&rankValOrigin[nbBits]
-
-In this case &rankValOrigin[nbBits] (array notation) is equivalent to
-rankValOrigin + nbBits (pointer arithmetic notation).
-
-> > since HUF_fillDTableX2Level2 is doing another rankValCol_t-sized copy:
-> > 
-> >    ZSTD_memcpy(rankVal, rankValOrigin, sizeof(U32) * (HUF_TABLELOG_MAX + 1));
-> 
-> In HUF_fillDTableX2Level2, rankValOrigin is a rankValCol_t. It is confusing, and this
-> is improved upstream, though rankVal is passed as a U32 const*, where it should really
-> Be a rankValCol_t. So I'll put up a small PR to improve that upstream.
-> 
-> >>                            sortedList+sortedRank, sortedListSize-sortedRank,
-> >>                            nbBitsBaseline, symbol, wksp, wkspSize);
-> >>         } else {
-> >> @@ -699,7 +699,7 @@ size_t HUF_readDTableX2_wksp(HUF_DTable* DTable,
-> >> 
-> >>     HUF_fillDTableX2(dt, maxTableLog,
-> >>                    wksp->sortedSymbol, sizeOfSort,
-> >> -                   wksp->rankStart0, wksp->rankVal, maxW,
-> >> +                   wksp->rankStart0, (U32 *)wksp->rankVal, maxW,
-> > 
-> > It's possible the problem is with this structure:
-> > 
-> > typedef struct {
-> >    rankValCol_t rankVal[HUF_TABLELOG_MAX];
-> >    U32 rankStats[HUF_TABLELOG_MAX + 1];
-> >    U32 rankStart0[HUF_TABLELOG_MAX + 2];
-> >    sortedSymbol_t sortedSymbol[HUF_SYMBOLVALUE_MAX + 1];
-> >    BYTE weightList[HUF_SYMBOLVALUE_MAX + 1];
-> >    U32 calleeWksp[HUF_READ_STATS_WORKSPACE_SIZE_U32];
-> > } HUF_ReadDTableX2_Workspace;
-> > 
-> > it's not using the rankVal_t type for rankVal for some reason?
-> > 
-> > i.e. what's passed to HUF_fillDTableX2 is a rankValCol_t (52 bytes), but then it
-> > gets passed against later as rankVal_t (624 bytes).
-> > 
-> > Does changing the type definition above solve this more cleanly?
-
-I noticed exactly the same thing. However, changing the type definiton
-required extra refactoring that at that moment I wasn't sure it was
-the correct thing to do. So, this definitely needed some comments from
-the maintainer.
-
-> 
-> It would make sense to refactor it as a `rankVal_t` to me, since that is
-> consistent with the function signature. However, after removing typedefs,
-> `wksp->rankVal` should be exactly the same type as `rankVal_t`. So the
-> warning seems too noisy here.
-> 
-> Not saying that the code can't be improved, it certainly can be, and I will
-> put up a PR upstream by tomorrow, and link it here.
-
-That'd be great, Nick! :)
-
-Thank you both Kees and Nick for the feedback.
---
-Gustavo
+Applied, thanks!
