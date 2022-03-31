@@ -2,230 +2,191 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A24D1C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 19:40:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91A2EC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 19:41:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240768AbiCaTmh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 15:42:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45784 "EHLO
+        id S239629AbiCaTnc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 15:43:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241022AbiCaTm1 (ORCPT
+        with ESMTP id S241218AbiCaTnX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 15:42:27 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 246CC34BAC
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 12:40:11 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id b15so513051edn.4
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 12:40:11 -0700 (PDT)
+        Thu, 31 Mar 2022 15:43:23 -0400
+Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF72C133650
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 12:41:35 -0700 (PDT)
+Received: by mail-io1-xd29.google.com with SMTP id z6so814457iot.0
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 12:41:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=ZJPRDVJ4i3CoCpBpHTerrKP5+xFbRI1ypwTw9ETZHIs=;
-        b=LgUqkPajNt93eXRRHm8ZYg6x6pggOukr4LiPjE9VwNUjKKDtGSvJjZgFrlfDzkrw+Q
-         QxFsSXnRdRhBaafA1/1Qq6UlVwCYpP4kElG90RmPS4EXSFjgR+VACiUY/ppc85f1li4+
-         rYfgVhS9bysVCw47LDUgf9XCn/ozyhNvE7tHCFqQ1bYnHe1b5Yjb9E+eZ5Jr2FxQ44qZ
-         pNHccjpPMS/cxCLk5wPwA4zgFgX2HRZ/6nQBrrh5rnBSm3QCEt04rNshHKbb8DJH63dc
-         afuy0wIMk9vIfmB0CJNnuGSglM4PcpPM3nI2p5y2BxbwlTaaO0dMe9sav9Tn24IpyE6e
-         h66Q==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=Pc/jYTnFP9mAV1+7e43JSOoZseHW1bH2+TqqY9lrlfo=;
+        b=ewHfLWMxsJZKEk520LS5HNZAbZ6cCC8NzmC23l7/cQkxKBXQPs2scHe5O3amIPLxnU
+         GZKu+0ZpKR2RAZ5rzdUsvoYM+i85OmUNY/9FEj3a16+P+TgsUPr/30eWQzK29tu7wp0S
+         Ly/XaRsczyDio3iRzflclWFrTEgJpEqx1Rv2mHZatI92RfR4yliThAdgZ7cpX/Cp7qiP
+         B65GVGh2ear75wvt4XPqetywdc0r4n+tVLjgvHux5xZjxljCQzcBO1hfaORGVOKiz9rS
+         y9gqVQRchINJKJvxCtd4ZxO4l7KjkFSMI8DTfGLV6Sa5KvRQRYYH82dM24U5uGMFxNAT
+         YOMQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=ZJPRDVJ4i3CoCpBpHTerrKP5+xFbRI1ypwTw9ETZHIs=;
-        b=V91tKz4CDllkbhEz0gE7rdTgCqUturUItz0JHNeWd3JeFj8jJOsf2l1lNZiZ7UYKBw
-         QKTtNCUDOL9yqqIDB+qlNlYWVCu1OtLMT7h3kkv17lQq9oN6Z6k6KFJHe9xmquxyMNrx
-         49EoG7mMYXJrHmgjsPaP1zkoXtsA1wGEkVgQrbBAvam7UENeiGBKX4TeQSadWuTyArQ8
-         /PM9nxHKx6fqFjoKOR9tmgqKq1/kH2d87m3ox3GICV8CeVz3eNMxrfbRvzLdEedybD0n
-         aSAWkSNN3GIcWvIFqAoW7aR7Zfk1s/5Z67xcRD8Hff2ZCxp4wqVLawF4xjiFyHZDgIKP
-         hw6w==
-X-Gm-Message-State: AOAM531ZxXj2fTkzewyMO5RKtaU2j0pN38H9ABGY3St6A66sRtDDn/wO
-        6L5HksE7bOamgrcD65OtKpIfIFn1C4k20bp7
-X-Google-Smtp-Source: ABdhPJyyU7vh2YKhs2wXuvlY2VhSEWOYdBjCLkaHIh9iLI8tueZDx8Hr4XOIVJO8fkYZLCfr8/2h5A==
-X-Received: by 2002:a05:6402:2743:b0:419:4edd:c487 with SMTP id z3-20020a056402274300b004194eddc487mr18118161edd.325.1648755609668;
-        Thu, 31 Mar 2022 12:40:09 -0700 (PDT)
-Received: from [192.168.0.167] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id e22-20020a170906505600b006da7d71f25csm137088ejk.41.2022.03.31.12.40.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 31 Mar 2022 12:40:09 -0700 (PDT)
-Message-ID: <ddc12aab-3cff-16a1-9ec9-a246240f9521@linaro.org>
-Date:   Thu, 31 Mar 2022 21:40:08 +0200
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=Pc/jYTnFP9mAV1+7e43JSOoZseHW1bH2+TqqY9lrlfo=;
+        b=D3tMepSvdfUk22Nv3oOcmxPyc+XXPV3X/LE9bo5bl0J2CLDOBw+FUf4OVjXxRLrRAC
+         tuVYvL7WVZ0acSF2xciW8GXNzpdCsIE27fSC5jopmXtuVio2yO4I7akYvGM0hPq/X/KH
+         n6eXC26cgS6x8BnFwFZ9K6GHJ+RtmNOOFtH7TKSUP1TqKz0gNGG/IARl8I1tLLo1Q7mh
+         1k7+5HBTjqmlsakMRwk7Dtlmu4aSHfm8DoeEFqJMEoBisNmAhMmm6Hb8/UTiLzLf3Ez3
+         NGsXHkrmFQC0ro605snrwKOHQ5O6nOhyXNd64osJdKmZ/t3/w7kgv8A9TzreQyM/CvN8
+         ukFA==
+X-Gm-Message-State: AOAM531PzKuKpCzXtUCxR832uTQdLQbdcP+LPIlJ9zcSr3TzYBjIMLKv
+        8+jxjgGT2baccW6NtyXsZbqopjyYBf3ij5fkvC1oKn616hb4Ww==
+X-Google-Smtp-Source: ABdhPJyBpvsqKpmKpdNlGBhsOGe9f7R1AvOyEMHGm+vjWHHZiy9iLNMMx+OoQTefeTTo2JLktOLkbLoX/ek0dwFVB7w=
+X-Received: by 2002:a02:6a60:0:b0:315:4758:1be1 with SMTP id
+ m32-20020a026a60000000b0031547581be1mr3720092jaf.316.1648755694986; Thu, 31
+ Mar 2022 12:41:34 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2 1/2] spi: dt-bindings: qcom,spi-geni-qcom: convert to
- dtschema
-Content-Language: en-US
-To:     Kuldeep Singh <singh.kuldeep87k@gmail.com>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Mark Brown <broonie@kernel.org>, linux-arm-msm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-spi@vger.kernel.org
-References: <20220331160248.716234-1-krzysztof.kozlowski@linaro.org>
- <20220331175817.GA91341@9a2d8922b8f1>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220331175817.GA91341@9a2d8922b8f1>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <202203311842.wFWvHrHn-lkp@intel.com> <CAJuCfpEObhCKuJeHNqxna1=N1+f738dTDnUjGPFST1PqqAqcVQ@mail.gmail.com>
+In-Reply-To: <CAJuCfpEObhCKuJeHNqxna1=N1+f738dTDnUjGPFST1PqqAqcVQ@mail.gmail.com>
+From:   =?UTF-8?B?QXJ2ZSBIasO4bm5ldsOlZw==?= <arve@google.com>
+Date:   Thu, 31 Mar 2022 12:41:22 -0700
+Message-ID: <CAK26GQ3JAzaVDkYzXMD1mEV3kUyp20gqY0vT_4FsQGudbX9HrA@mail.gmail.com>
+Subject: Re: [ammarfaizi2-block:google/android/kernel/common/android12-trusty-5.10
+ 1060/5872] arch/arm64/mm/mmu.c:1499:5: warning: no previous prototype for 'check_range_driver_managed'
+To:     Suren Baghdasaryan <surenb@google.com>
+Cc:     kernel test robot <lkp@intel.com>,
+        Sudarshan Rajagopalan <sudaraja@codeaurora.org>,
+        kbuild-all@lists.01.org,
+        "GNU/Weeb Mailing List" <gwml@vger.gnuweeb.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 31/03/2022 19:58, Kuldeep Singh wrote:
-> On Thu, Mar 31, 2022 at 06:02:47PM +0200, Krzysztof Kozlowski wrote:
->> Convert the GENI based Qualcomm Universal Peripheral (QUP) Serial
->> Peripheral Interface (SPI) bindings to DT Schema.
->>
->> The original bindings in TXT were not complete, so add during conversion
->> properties already used in DTS and/or in the driver: reg-names, dmas,
->> interconnects, operating points and power-domains.
->>
->> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
->>
->> ---
->>
->> Changes since v1:
->> 1. Correct $ref path and remove interconnect minItems (Kuldeep).
->> 2. Remove child tpm device from example.
->> 3. Pad reg hex addresses with 00.
->> ---
->>  .../bindings/spi/qcom,spi-geni-qcom.txt       |  39 ------
->>  .../bindings/spi/qcom,spi-geni-qcom.yaml      | 120 ++++++++++++++++++
->>  2 files changed, 120 insertions(+), 39 deletions(-)
->>  delete mode 100644 Documentation/devicetree/bindings/spi/qcom,spi-geni-qcom.txt
->>  create mode 100644 Documentation/devicetree/bindings/spi/qcom,spi-geni-qcom.yaml
->>
->> diff --git a/Documentation/devicetree/bindings/spi/qcom,spi-geni-qcom.txt b/Documentation/devicetree/bindings/spi/qcom,spi-geni-qcom.txt
->> deleted file mode 100644
->> index c8c1e913f4e7..000000000000
->> --- a/Documentation/devicetree/bindings/spi/qcom,spi-geni-qcom.txt
->> +++ /dev/null
->> @@ -1,39 +0,0 @@
->> -GENI based Qualcomm Universal Peripheral (QUP) Serial Peripheral Interface (SPI)
->> -
->> -The QUP v3 core is a GENI based AHB slave that provides a common data path
->> -(an output FIFO and an input FIFO) for serial peripheral interface (SPI)
->> -mini-core.
->> -
->> -SPI in master mode supports up to 50MHz, up to four chip selects, programmable
->> -data path from 4 bits to 32 bits and numerous protocol variants.
->> -
->> -Required properties:
->> -- compatible:		Must contain "qcom,geni-spi".
->> -- reg:			Must contain SPI register location and length.
->> -- interrupts:		Must contain SPI controller interrupts.
->> -- clock-names:		Must contain "se".
->> -- clocks:		Serial engine core clock needed by the device.
->> -- #address-cells:	Must be <1> to define a chip select address on
->> -			the SPI bus.
->> -- #size-cells:		Must be <0>.
->> -
->> -SPI Controller nodes must be child of GENI based Qualcomm Universal
->> -Peripharal. Please refer GENI based QUP wrapper controller node bindings
->> -described in Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.yaml.
->> -
->> -SPI slave nodes must be children of the SPI master node and conform to SPI bus
->> -binding as described in Documentation/devicetree/bindings/spi/spi-bus.txt.
->> -
->> -Example:
->> -	spi0: spi@a84000 {
->> -		compatible = "qcom,geni-spi";
->> -		reg = <0xa84000 0x4000>;
->> -		interrupts = <GIC_SPI 354 IRQ_TYPE_LEVEL_HIGH>;
->> -		clock-names = "se";
->> -		clocks = <&clock_gcc GCC_QUPV3_WRAP0_S0_CLK>;
->> -		pinctrl-names = "default", "sleep";
->> -		pinctrl-0 = <&qup_1_spi_2_active>;
->> -		pinctrl-1 = <&qup_1_spi_2_sleep>;
->> -		#address-cells = <1>;
->> -		#size-cells = <0>;
->> -	};
->> diff --git a/Documentation/devicetree/bindings/spi/qcom,spi-geni-qcom.yaml b/Documentation/devicetree/bindings/spi/qcom,spi-geni-qcom.yaml
->> new file mode 100644
->> index 000000000000..62c4a9598e16
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/spi/qcom,spi-geni-qcom.yaml
->> @@ -0,0 +1,120 @@
->> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
->> +%YAML 1.2
->> +---
->> +$id: http://devicetree.org/schemas/spi/qcom,spi-geni-qcom.yaml#
->> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->> +
->> +title: GENI based Qualcomm Universal Peripheral (QUP) Serial Peripheral Interface (SPI)
->> +
->> +maintainers:
->> +  - Andy Gross <agross@kernel.org>
->> +  - Bjorn Andersson <bjorn.andersson@linaro.org>
->> +  - Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
->> +
->> +description:
->> +  The QUP v3 core is a GENI based AHB slave that provides a common data path
->> +  (an output FIFO and an input FIFO) for serial peripheral interface (SPI)
->> +  mini-core.
->> +
->> +  SPI in master mode supports up to 50MHz, up to four chip selects,
->> +  programmable data path from 4 bits to 32 bits and numerous protocol variants.
->> +
->> +  SPI Controller nodes must be child of GENI based Qualcomm Universal
->> +  Peripharal. Please refer GENI based QUP wrapper controller node bindings
->> +  described in Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.yaml.
->> +
->> +allOf:
->> +  - $ref: /schemas/spi/spi-controller.yaml#
->> +
->> +properties:
->> +  compatible:
->> +    const: qcom,geni-spi
->> +
->> +  clocks:
->> +    maxItems: 1
->> +
->> +  clock-names:
->> +    const: se
->> +
->> +  dmas:
->> +    maxItems: 2
->> +
->> +  dma-names:
->> +    items:
->> +      - const: tx
->> +      - const: rx
->> +
->> +  interconnects:
->> +    maxItems: 2
->> +
->> +  interconnect-names:
->> +    items:
->> +      - const: qup-core
->> +      - const: qup-config
->> +
->> +  interrupts:
->> +    maxItems: 1
->> +
->> +  operating-points-v2: true
->> +
->> +  power-domains:
->> +    maxItems: 1
->> +
->> +  reg:
->> +    maxItems: 1
->> +
->> +  reg-names:
->> +    const: se
-> 
-> Why reg-names is required?
-> Reg contain max 1 value, we can skip reg-names like other users.
-> 
-> Also, "se" is used as clock name and using it again for reg-names?
-> I think this is wrong and reg-names shouldn't be documented.
+On Thu, Mar 31, 2022 at 12:12 PM Suren Baghdasaryan <surenb@google.com> wro=
+te:
+>
+> On Thu, Mar 31, 2022 at 3:17 AM kernel test robot <lkp@intel.com> wrote:
+> >
+> > Hi Sudarshan,
+> >
+> > FYI, the error/warning still remains.
+>
+> The warnings has been fixed in later patch:
+> https://android-review.googlesource.com/c/kernel/common/+/1668705
+> android12-trusty-5.10 needs to rebase to the latest android12-5.10 to fix=
+ this.
+>
 
-reg-names are not required. If you ask why they are documented? As I
-wrote in commit msg - bindings were not fully updated to DTSes being used.
+This branch is meant to be merged into vendor kernels that need the
+trusty driver. We should not rebase it as that could create merge
+conflicts. We could merge android12-5.10 but we don't have a good
+reason to do so at this time as downstream branches already merge
+android12-5.10 directly. The android12-trusty-5.10 branch itself is
+only used to build the linux kernel for our emulator tests.
 
-Best regards,
-Krzysztof
+Arve Hj=C3=B8nnev=C3=A5g
+
+> >
+> > tree:   https://github.com/ammarfaizi2/linux-block google/android/kerne=
+l/common/android12-trusty-5.10
+> > head:   07055bfd3d810d41a38354693dfaa55a6f8c0025
+> > commit: 1b4aca7d82ae9b40145484fa09ceab38a6a06062 [1060/5872] ANDROID: a=
+rm64/mm: implement {populate/depopulate}_range_driver_managed
+> > config: arm64-buildonly-randconfig-r005-20220331 (https://download.01.o=
+rg/0day-ci/archive/20220331/202203311842.wFWvHrHn-lkp@intel.com/config)
+> > compiler: aarch64-linux-gcc (GCC) 11.2.0
+> > reproduce (this is a W=3D1 build):
+> >         wget https://raw.githubusercontent.com/intel/lkp-tests/master/s=
+bin/make.cross -O ~/bin/make.cross
+> >         chmod +x ~/bin/make.cross
+> >         # https://github.com/ammarfaizi2/linux-block/commit/1b4aca7d82a=
+e9b40145484fa09ceab38a6a06062
+> >         git remote add ammarfaizi2-block https://github.com/ammarfaizi2=
+/linux-block
+> >         git fetch --no-tags ammarfaizi2-block google/android/kernel/com=
+mon/android12-trusty-5.10
+> >         git checkout 1b4aca7d82ae9b40145484fa09ceab38a6a06062
+> >         # save the config file to linux build tree
+> >         mkdir build_dir
+> >         COMPILER_INSTALL_PATH=3D$HOME/0day COMPILER=3Dgcc-11.2.0 make.c=
+ross O=3Dbuild_dir ARCH=3Darm64 SHELL=3D/bin/bash arch/arm64/mm/ drivers/gp=
+u/drm/hisilicon/kirin/
+> >
+> > If you fix the issue, kindly add following tag as appropriate
+> > Reported-by: kernel test robot <lkp@intel.com>
+> >
+> > All warnings (new ones prefixed by >>):
+> >
+> > >> arch/arm64/mm/mmu.c:1499:5: warning: no previous prototype for 'chec=
+k_range_driver_managed' [-Wmissing-prototypes]
+> >     1499 | int check_range_driver_managed(u64 start, u64 size, const ch=
+ar *resource_name)
+> >          |     ^~~~~~~~~~~~~~~~~~~~~~~~~~
+> >    In file included from include/linux/printk.h:7,
+> >                     from include/linux/kernel.h:16,
+> >                     from arch/arm64/mm/mmu.c:11:
+> >    arch/arm64/mm/mmu.c: In function 'check_range_driver_managed':
+> >    include/linux/kern_levels.h:5:25: warning: format '%lx' expects argu=
+ment of type 'long unsigned int', but argument 3 has type 'u64' {aka 'long =
+long unsigned int'} [-Wformat=3D]
+> >        5 | #define KERN_SOH        "\001"          /* ASCII Start Of He=
+ader */
+> >          |                         ^~~~~~
+> >    include/linux/kern_levels.h:11:25: note: in expansion of macro 'KERN=
+_SOH'
+> >       11 | #define KERN_ERR        KERN_SOH "3"    /* error conditions =
+*/
+> >          |                         ^~~~~~~~
+> >    include/linux/printk.h:343:16: note: in expansion of macro 'KERN_ERR=
+'
+> >      343 |         printk(KERN_ERR pr_fmt(fmt), ##__VA_ARGS__)
+> >          |                ^~~~~~~~
+> >    arch/arm64/mm/mmu.c:1509:17: note: in expansion of macro 'pr_err'
+> >     1509 |                 pr_err("%s: couldn't find memory resource fo=
+r start 0x%lx\n",
+> >          |                 ^~~~~~
+> >
+> >
+> > vim +/check_range_driver_managed +1499 arch/arm64/mm/mmu.c
+> >
+> >   1498
+> > > 1499  int check_range_driver_managed(u64 start, u64 size, const char =
+*resource_name)
+> >   1500  {
+> >   1501          struct mem_section *ms;
+> >   1502          unsigned long pfn =3D __phys_to_pfn(start);
+> >   1503          unsigned long end_pfn =3D __phys_to_pfn(start + size);
+> >   1504          struct resource *res;
+> >   1505          unsigned long flags;
+> >   1506
+> >   1507          res =3D lookup_resource(&iomem_resource, start);
+> >   1508          if (!res) {
+> >   1509                  pr_err("%s: couldn't find memory resource for s=
+tart 0x%lx\n",
+> >   1510                             __func__, start);
+> >   1511                  return -EINVAL;
+> >   1512          }
+> >   1513
+> >   1514          flags =3D res->flags;
+> >   1515
+> >   1516          if (!(flags & IORESOURCE_SYSRAM_DRIVER_MANAGED) ||
+> >   1517              strstr(resource_name, "System RAM (") !=3D resource=
+_name)
+> >   1518                  return -EINVAL;
+> >   1519
+> >   1520          for (; pfn < end_pfn; pfn +=3D PAGES_PER_SECTION) {
+> >   1521                  ms =3D __pfn_to_section(pfn);
+> >   1522                  if (early_section(ms))
+> >   1523                          return -EINVAL;
+> >   1524          }
+> >   1525
+> >   1526          return 0;
+> >   1527  }
+> >   1528
+> >
+> > --
+> > 0-DAY CI Kernel Test Service
+> > https://01.org/lkp
