@@ -2,145 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64744C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 00:32:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7913C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 00:34:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352119AbiCaAeZ (ORCPT
+        id S1352125AbiCaAfr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 20:34:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51722 "EHLO
+        Wed, 30 Mar 2022 20:35:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233372AbiCaAeX (ORCPT
+        with ESMTP id S235438AbiCaAfl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 20:34:23 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 496B93525A
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 17:32:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648686757; x=1680222757;
-  h=from:to:cc:subject:references:date:in-reply-to:
-   message-id:mime-version;
-  bh=LoTVhZ4P/qZYHzSeRGGVDsqEb1jnpbThtF8t4ridIaE=;
-  b=X/c+u/aDCGytfBo35d3P2UxioU3hJyjTlc505fN/z5Pd8PAHAC6RKffq
-   RPNQZhwN1UYJRFbnF9RaOK5QlwQeM0K0JXBWNKs53zgFbAtRCOrZlsrHE
-   tmGRldPfv/C3Pt9Kx1xNRY6tnppAjnnAZbMT3ZzvRl4z5YSc6qGgxi2kD
-   LVojWT0gRS+UIoMj9NYUtCw2w9IPhLMwiWJ7todghyrc9CjiPsq68k35K
-   eGUNiaTo7hS8FArIDgnCif4xf1Ty5rFCPiWyeAWZS7QUR2kbUBrmPCKri
-   /t9WdcziYCBKZe8gN3e7ns8P4TF/lj1PpE1oBySpNLyVF1p6dfmdKqfkt
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="241830437"
-X-IronPort-AV: E=Sophos;i="5.90,223,1643702400"; 
-   d="scan'208";a="241830437"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 17:32:36 -0700
-X-IronPort-AV: E=Sophos;i="5.90,223,1643702400"; 
-   d="scan'208";a="565952972"
-Received: from yhuang6-desk2.sh.intel.com (HELO yhuang6-desk2.ccr.corp.intel.com) ([10.239.13.94])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 17:32:35 -0700
-From:   "Huang, Ying" <ying.huang@intel.com>
-To:     "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
-Cc:     Jagdish Gediya <jvgediya@linux.ibm.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
-        baolin.wang@linux.alibaba.com, dave.hansen@linux.intel.com
-Subject: Re: [PATCH] mm: migrate: set demotion targets differently
-References: <20220329115222.8923-1-jvgediya@linux.ibm.com>
-        <87pmm4c4ys.fsf@yhuang6-desk2.ccr.corp.intel.com>
-        <87lewrxsv1.fsf@linux.ibm.com>
-Date:   Thu, 31 Mar 2022 08:32:33 +0800
-In-Reply-To: <87lewrxsv1.fsf@linux.ibm.com> (Aneesh Kumar K. V.'s message of
-        "Wed, 30 Mar 2022 22:47:22 +0530")
-Message-ID: <878rsrc672.fsf@yhuang6-desk2.ccr.corp.intel.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Wed, 30 Mar 2022 20:35:41 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3917744A27
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 17:33:55 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id p15so44749774ejc.7
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 17:33:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=DYujwTSODoLsl28pxL/Kco6cVNKp164PEtJvRGhch7g=;
+        b=LIfdAANbRqTkPOnpxYpODahOeq58jhaQDCbRX0ewZFvKdXZeAW4AkHth/rY399jQeA
+         s29OfqcQ4X/oZAuMTJw1TZ+twD9KjvNly58+Betnq8PEp5NRg2YclK4NhtOUXif3D+OG
+         B9DpasiswvJSuUWGNYlmZLBqNlkOp2jMpijmU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=DYujwTSODoLsl28pxL/Kco6cVNKp164PEtJvRGhch7g=;
+        b=dQpjmiZ/sW+EBOO76QHZa5t29yM8kzPsWcTS/tQluJG3KaJ43x12b6sOJfNe/zLg8d
+         X3dIcKg2YhxR6qow7rZ1znhUhZIi3ojv5ACBYknHYxH/msyJi9q4iSD/0c0ol5LqWAUF
+         xWkyUHnaiM9hKYdjH+EojOLQnMD+NX0uPY7KO/Cd/sUXGiC6EFagVDLebZu7sZw/kA0/
+         YELR9nMBFSfnI5XKUJs5G2y6iZgY6tfJKgvU1mBMvxJ5SQuENx1o+upaSrwfIHc/AEy7
+         t7L6kEdxvFf4+QQ0Ceuy5JrH2WZQQpqTHB69X2uTfDo+ty/8+/Uqx30FIPtp8d9aXhWu
+         76GQ==
+X-Gm-Message-State: AOAM532gKsit59XMzj9c2+y2WgV85vD7R+pp0CrP7oBkuz0Jdeo0M0fe
+        srvp/BWjbOnnjTJ+VoKCnhommpKQZ4GJeTb4
+X-Google-Smtp-Source: ABdhPJwKBBfJ8XAhuEv9/WG0tRfleJFRzSqVEuJ+SmQfXqgKH44+wFroV0Tmm85ICC9bzq1X86bqFQ==
+X-Received: by 2002:a17:906:3101:b0:6d6:5b64:906f with SMTP id 1-20020a170906310100b006d65b64906fmr2460302ejx.513.1648686833849;
+        Wed, 30 Mar 2022 17:33:53 -0700 (PDT)
+Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com. [209.85.128.42])
+        by smtp.gmail.com with ESMTPSA id m21-20020a17090677d500b006df766974basm8968639ejn.3.2022.03.30.17.33.52
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 30 Mar 2022 17:33:53 -0700 (PDT)
+Received: by mail-wm1-f42.google.com with SMTP id n63-20020a1c2742000000b0038d0c31db6eso1037071wmn.1
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 17:33:52 -0700 (PDT)
+X-Received: by 2002:a05:600c:19ca:b0:38c:b84f:421a with SMTP id
+ u10-20020a05600c19ca00b0038cb84f421amr2260341wmq.118.1648686832035; Wed, 30
+ Mar 2022 17:33:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ascii
+References: <1648656179-10347-1-git-send-email-quic_sbillaka@quicinc.com>
+ <1648656179-10347-2-git-send-email-quic_sbillaka@quicinc.com> <daec6ea4-abb1-05e6-ad49-b0a418a1f43e@linaro.org>
+In-Reply-To: <daec6ea4-abb1-05e6-ad49-b0a418a1f43e@linaro.org>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Wed, 30 Mar 2022 17:33:39 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=UTYQXngXmA_civiCMDctZr6tJNjNXynQuCwxvgiJijLg@mail.gmail.com>
+Message-ID: <CAD=FV=UTYQXngXmA_civiCMDctZr6tJNjNXynQuCwxvgiJijLg@mail.gmail.com>
+Subject: Re: [PATCH v6 1/8] drm/msm/dp: Add eDP support via aux_bus
+To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc:     Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        freedreno <freedreno@lists.freedesktop.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, Rob Clark <robdclark@gmail.com>,
+        Sean Paul <seanpaul@chromium.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        quic_kalyant <quic_kalyant@quicinc.com>,
+        "Abhinav Kumar (QUIC)" <quic_abhinavk@quicinc.com>,
+        "Kuogee Hsieh (QUIC)" <quic_khsieh@quicinc.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        quic_vproddut <quic_vproddut@quicinc.com>,
+        quic_aravindh@quicinc.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-"Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com> writes:
+Hi,
 
-> "Huang, Ying" <ying.huang@intel.com> writes:
+On Wed, Mar 30, 2022 at 4:19 PM Dmitry Baryshkov
+<dmitry.baryshkov@linaro.org> wrote:
+> > +             bridge->ops =
+> > +                     DRM_BRIDGE_OP_DETECT |
+> > +                     DRM_BRIDGE_OP_HPD |
+> > +                     DRM_BRIDGE_OP_MODES;
 >
->> Hi, Jagdish,
->>
->> Jagdish Gediya <jvgediya@linux.ibm.com> writes:
->>
->
-> ...
->
->>> e.g. with below NUMA topology, where node 0 & 1 are
->>> cpu + dram nodes, node 2 & 3 are equally slower memory
->>> only nodes, and node 4 is slowest memory only node,
->>>
->>> available: 5 nodes (0-4)
->>> node 0 cpus: 0 1
->>> node 0 size: n MB
->>> node 0 free: n MB
->>> node 1 cpus: 2 3
->>> node 1 size: n MB
->>> node 1 free: n MB
->>> node 2 cpus:
->>> node 2 size: n MB
->>> node 2 free: n MB
->>> node 3 cpus:
->>> node 3 size: n MB
->>> node 3 free: n MB
->>> node 4 cpus:
->>> node 4 size: n MB
->>> node 4 free: n MB
->>> node distances:
->>> node   0   1   2   3   4
->>>   0:  10  20  40  40  80
->>>   1:  20  10  40  40  80
->>>   2:  40  40  10  40  80
->>>   3:  40  40  40  10  80
->>>   4:  80  80  80  80  10
->>>
->>> The existing implementation gives below demotion targets,
->>>
->>> node    demotion_target
->>>  0              3, 2
->>>  1              4
->>>  2              X
->>>  3              X
->>>  4		X
->>>
->>> With this patch applied, below are the demotion targets,
->>>
->>> node    demotion_target
->>>  0              3, 2
->>>  1              3, 2
->>>  2              3
->>>  3              4
->>>  4		X
->>
->> For such machine, I think the perfect demotion order is,
->>
->> node    demotion_target
->>  0              2, 3
->>  1              2, 3
->>  2              4
->>  3              4
->>  4              X
->
-> I guess the "equally slow nodes" is a confusing definition here. Now if the
-> system consists of 2 1GB equally slow memory and the firmware doesn't want to
-> differentiate between them, firmware can present a single NUMA node
-> with 2GB capacity? The fact that we are finding two NUMA nodes is a hint
-> that there is some difference between these two memory devices. This is
-> also captured by the fact that the distance between 2 and 3 is 40 and not 10.
+> I think OP_MODES should be used for eDP, shouldn't it?
 
-Do you have more information about this?
+No. It's confusing, but basically to get the power sequencing correct
+we end up driving the EDID read from the panel driver in the eDP case.
 
-Best Regards,
-Huang, Ying
-
-> For that specific topology where the distance between 2 and 3 is 40 and 2
-> and 4 is 80, the demotion target derived by the new code is better
-> right? 
->
-> ...
->
->
-> -aneesh
+-Doug
