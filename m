@@ -2,31 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D48B2C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B63BEC433EF
 	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 18:38:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239428AbiCaSiD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 14:38:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52956 "EHLO
+        id S238741AbiCaSiA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 14:38:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235356AbiCaSgl (ORCPT
+        with ESMTP id S235153AbiCaSga (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 14:36:41 -0400
+        Thu, 31 Mar 2022 14:36:30 -0400
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9F8CA231AF7;
-        Thu, 31 Mar 2022 11:34:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CE0A520A960;
+        Thu, 31 Mar 2022 11:34:40 -0700 (PDT)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6A3B9139F;
-        Thu, 31 Mar 2022 11:34:51 -0700 (PDT)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id AA54713D5;
+        Thu, 31 Mar 2022 11:34:40 -0700 (PDT)
 Received: from eglon.cambridge.arm.com (eglon.cambridge.arm.com [10.1.196.218])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C0DA33F718;
-        Thu, 31 Mar 2022 11:34:50 -0700 (PDT)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0CDAC3F718;
+        Thu, 31 Mar 2022 11:34:39 -0700 (PDT)
 From:   James Morse <james.morse@arm.com>
 To:     stable@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     james.morse@arm.com, catalin.marinas@arm.com
-Subject: [stable:PATCH v4.14.274 25/27] KVM: arm64: Allow SMCCC_ARCH_WORKAROUND_3 to be discovered and migrated
-Date:   Thu, 31 Mar 2022 19:33:58 +0100
-Message-Id: <20220331183400.73183-26-james.morse@arm.com>
+Subject: [stable:PATCH v4.14.274 13/27] arm64: entry: Allow tramp_alias to access symbols after the 4K boundary
+Date:   Thu, 31 Mar 2022 19:33:46 +0100
+Message-Id: <20220331183400.73183-14-james.morse@arm.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220331183400.73183-1-james.morse@arm.com>
 References: <20220331183400.73183-1-james.morse@arm.com>
@@ -36,83 +36,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-commit a5905d6af492ee6a4a2205f0d550b3f931b03d03 upstream.
+commit 6c5bf79b69f911560fbf82214c0971af6e58e682 upstream.
 
-KVM allows the guest to discover whether the ARCH_WORKAROUND SMCCC are
-implemented, and to preserve that state during migration through its
-firmware register interface.
+Systems using kpti enter and exit the kernel through a trampoline mapping
+that is always mapped, even when the kernel is not. tramp_valias is a macro
+to find the address of a symbol in the trampoline mapping.
 
-Add the necessary boiler plate for SMCCC_ARCH_WORKAROUND_3.
+Adding extra sets of vectors will expand the size of the entry.tramp.text
+section to beyond 4K. tramp_valias will be unable to generate addresses
+for symbols beyond 4K as it uses the 12 bit immediate of the add
+instruction.
+
+As there are now two registers available when tramp_alias is called,
+use the extra register to avoid the 4K limit of the 12 bit immediate.
 
 Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
-[ kvm code moved to virt/kvm/arm, removed fw regs ABI. Added 32bit stub ]
+[ Removed SDEI for backport ]
 Signed-off-by: James Morse <james.morse@arm.com>
 ---
- arch/arm/include/asm/kvm_host.h   |  6 ++++++
- arch/arm64/include/asm/kvm_host.h |  5 +++++
- virt/kvm/arm/psci.c               | 12 ++++++++++++
- 3 files changed, 23 insertions(+)
+ arch/arm64/kernel/entry.S | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
-diff --git a/arch/arm/include/asm/kvm_host.h b/arch/arm/include/asm/kvm_host.h
-index b60232639984..dbd9615b428c 100644
---- a/arch/arm/include/asm/kvm_host.h
-+++ b/arch/arm/include/asm/kvm_host.h
-@@ -26,6 +26,7 @@
- #include <asm/kvm_asm.h>
- #include <asm/kvm_mmio.h>
- #include <asm/fpstate.h>
-+#include <asm/spectre.h>
- #include <kvm/arm_arch_timer.h>
+diff --git a/arch/arm64/kernel/entry.S b/arch/arm64/kernel/entry.S
+index 0669d05bd63c..f455557eaaaa 100644
+--- a/arch/arm64/kernel/entry.S
++++ b/arch/arm64/kernel/entry.S
+@@ -139,9 +139,12 @@
+ .org .Lventry_start\@ + 128	// Did we overflow the ventry slot?
+ 	.endm
  
- #define __KVM_HAVE_ARCH_INTC_INITIALIZED
-@@ -324,4 +325,9 @@ static inline int kvm_arm_have_ssbd(void)
- 	return KVM_SSBD_UNKNOWN;
- }
+-	.macro tramp_alias, dst, sym
++	.macro tramp_alias, dst, sym, tmp
+ 	mov_q	\dst, TRAMP_VALIAS
+-	add	\dst, \dst, #(\sym - .entry.tramp.text)
++	adr_l	\tmp, \sym
++	add	\dst, \dst, \tmp
++	adr_l	\tmp, .entry.tramp.text
++	sub	\dst, \dst, \tmp
+ 	.endm
  
-+static inline int kvm_arm_get_spectre_bhb_state(void)
-+{
-+	/* 32bit guests don't need firmware for this */
-+	return SPECTRE_VULNERABLE; /* aka SMCCC_RET_NOT_SUPPORTED */
-+}
- #endif /* __ARM_KVM_HOST_H__ */
-diff --git a/arch/arm64/include/asm/kvm_host.h b/arch/arm64/include/asm/kvm_host.h
-index 8d94404829f0..be82119ed24a 100644
---- a/arch/arm64/include/asm/kvm_host.h
-+++ b/arch/arm64/include/asm/kvm_host.h
-@@ -450,4 +450,9 @@ static inline int kvm_arm_have_ssbd(void)
- 	}
- }
- 
-+static inline enum mitigation_state kvm_arm_get_spectre_bhb_state(void)
-+{
-+	return arm64_get_spectre_bhb_state();
-+}
-+
- #endif /* __ARM64_KVM_HOST_H__ */
-diff --git a/virt/kvm/arm/psci.c b/virt/kvm/arm/psci.c
-index c95ab4c5a475..129b755824e1 100644
---- a/virt/kvm/arm/psci.c
-+++ b/virt/kvm/arm/psci.c
-@@ -433,6 +433,18 @@ int kvm_hvc_call_handler(struct kvm_vcpu *vcpu)
- 				break;
- 			}
- 			break;
-+		case ARM_SMCCC_ARCH_WORKAROUND_3:
-+			switch (kvm_arm_get_spectre_bhb_state()) {
-+			case SPECTRE_VULNERABLE:
-+				break;
-+			case SPECTRE_MITIGATED:
-+				val = SMCCC_RET_SUCCESS;
-+				break;
-+			case SPECTRE_UNAFFECTED:
-+				val = SMCCC_ARCH_WORKAROUND_RET_UNAFFECTED;
-+				break;
-+			}
-+			break;
- 		}
- 		break;
- 	default:
+ 	// This macro corrupts x0-x3. It is the caller's duty
+@@ -366,10 +369,10 @@ alternative_else_nop_endif
+ #ifdef CONFIG_UNMAP_KERNEL_AT_EL0
+ 	bne	4f
+ 	msr	far_el1, x29
+-	tramp_alias	x30, tramp_exit_native
++	tramp_alias	x30, tramp_exit_native, x29
+ 	br	x30
+ 4:
+-	tramp_alias	x30, tramp_exit_compat
++	tramp_alias	x30, tramp_exit_compat, x29
+ 	br	x30
+ #endif
+ 	.else
 -- 
 2.30.2
 
