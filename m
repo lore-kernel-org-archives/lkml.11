@@ -2,89 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D83C7C43217
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 12:13:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A26CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 12:15:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235908AbiCaMPd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 08:15:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59034 "EHLO
+        id S235927AbiCaMQp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 08:16:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234316AbiCaMPa (ORCPT
+        with ESMTP id S234316AbiCaMQl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 08:15:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40D3F1A3B6;
-        Thu, 31 Mar 2022 05:13:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D3CB9B820C2;
-        Thu, 31 Mar 2022 12:13:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B8CAC340F3;
-        Thu, 31 Mar 2022 12:13:38 +0000 (UTC)
-Date:   Thu, 31 Mar 2022 08:13:37 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Beau Belgrave <beaub@linux.microsoft.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        linux-trace-devel <linux-trace-devel@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
-Subject: Re: [PATCH] tracing: do not export user_events uapi
-Message-ID: <20220331081337.07ddf251@gandalf.local.home>
-In-Reply-To: <CAK7LNATm5FjZsXL6aKUMhXwQAqTuO9+LmAk3LGjpAib7NZBDmg@mail.gmail.com>
-References: <20220330201755.29319-1-mathieu.desnoyers@efficios.com>
-        <20220330162152.17b1b660@gandalf.local.home>
-        <CAK7LNATm5FjZsXL6aKUMhXwQAqTuO9+LmAk3LGjpAib7NZBDmg@mail.gmail.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Thu, 31 Mar 2022 08:16:41 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8751A41629;
+        Thu, 31 Mar 2022 05:14:54 -0700 (PDT)
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KThyG6nltzCr6F;
+        Thu, 31 Mar 2022 20:12:38 +0800 (CST)
+Received: from dggpemm500017.china.huawei.com (7.185.36.178) by
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Thu, 31 Mar 2022 20:14:52 +0800
+Received: from [10.174.178.220] (10.174.178.220) by
+ dggpemm500017.china.huawei.com (7.185.36.178) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Thu, 31 Mar 2022 20:14:52 +0800
+Subject: Re: [PATCH] scsi: sd: call device_del() if device_add_disk() fails
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+CC:     <fmdefrancesco@gmail.com>, <axboe@kernel.dk>, <jejb@linux.ibm.com>,
+        <linux-block@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-scsi@vger.kernel.org>, <martin.petersen@oracle.com>,
+        <syzbot+f08c77040fa163a75a46@syzkaller.appspotmail.com>,
+        <syzkaller-bugs@googlegroups.com>, <linfeilong@huawei.com>
+References: <20220329154948.10350-1-fmdefrancesco@gmail.com>
+ <20220331152622.616534-1-haowenchao@huawei.com> <20220331054156.GI3293@kadam>
+From:   Wenchao Hao <haowenchao@huawei.com>
+Message-ID: <fdebdbd3-575b-b30e-d37f-dcc6d53a4f53@huawei.com>
+Date:   Thu, 31 Mar 2022 20:14:52 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.9.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20220331054156.GI3293@kadam>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.178.220]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm500017.china.huawei.com (7.185.36.178)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 31 Mar 2022 16:29:30 +0900
-Masahiro Yamada <masahiroy@kernel.org> wrote:
-
-> Well, the intended usage of no-export-headers is to
-> cater to the UAPI supported by only some architectures.
-> We have kvm(_para).h here because not all architectures
-> support kvm.
+On 2022/3/31 13:41, Dan Carpenter wrote:
+> On Thu, Mar 31, 2022 at 11:26:22AM -0400, 'Wenchao Hao' via syzkaller-bugs wrote:
+>> I do not think it's necessary to call device_del() on this path. If the device
+>> has been added, put_device() would delete it from sysfs. So the origin error
+>> handle is ok with me.
+>>
 > 
-> If you do not want to export the UAPI,
-> you should not put it in include/uapi/.
+> No.  The original is buggy and it was detected at runtime by syzbot.
+> It's not static analysis, it is an actual bug found in testing.
 > 
-> After the API is finalized, you can move it to
-> include/uapi.
+Yes, it's a bug, but the root reason is not we forget to call 
+device_del(sdkp->disk_dev). It's because we did not cleanup gendisk.
+The leak memory is allocated in elevator_init_mq(), we should clean
+this memory via blk_cleanup_queue().
 
-So a little bit of background. I and a few others thought it was done, and
-pushed it to Linus. Then when it made it into his tree (and mentioned on
-LWN) it got a wider audience that had concerns. After they brought up those
-concerns, we agreed that this needs a bit more work. I was hoping not to do
-a full revert and simply marked the change for broken so that it can be
-worked on upstream with the wider audience. Linus appears to be fine with
-this approach, as he helped me with my "mark for BROKEN" patch.
+I summit a patch which would fix this memory leak:
 
-Mathieu's concern is that this header file could be used in older distros
-with newer kernels that have it implemented and added this to keep out of
-those older distros.
+https://lore.kernel.org/linux-scsi/20220401011018.1026553-1-haowenchao@huawei.com/T/#u
 
-The options to make Mathieu sleep better at night are:
+> The device_put() unwinds device_initialize().  The device_del() unwinds
+> device_add().  Take a look at the comments to device_add() or take a
+> look at how device_register/unregister() work.
+> 
 
-1) this patch
-
-2) move this file out of uapi.
-
-3) revert the entire thing.
-
-I really do not want to do #3 but I am willing to do 1 or 2.
-
--- Steve
+You may read the implement of put_device(), it is based on kobj_xxx.
+If the kobj is still in sysfs, a cleanup would be performed.
+And device_del() seems would not decrease the reference count of kobj,
+the main aim is to make it invisibleto sysfs.
