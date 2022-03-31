@@ -2,122 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C942AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 14:25:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18BF9C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 14:27:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237516AbiCaO1i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 10:27:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34726 "EHLO
+        id S237533AbiCaO2s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 10:28:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237498AbiCaO1e (ORCPT
+        with ESMTP id S237498AbiCaO2r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 10:27:34 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2016E21D7E5
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 07:25:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648736746;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=V/896Bc62YoXIkfH/P8P5pIpMY0pVJz3gsn8/xOqrGU=;
-        b=glRRiVAHhwT5etPw5vbeQl0qzq+aFKDaZEuSNh43eOuadMDi1nvIjMEZOIj/G6qshMsqdY
-        N/6uvwerkvdzNkuSGRh3cC68solc3AcTI97sQAShnwOfq4QG/0lk9kEYar0y4F++Fu8zpt
-        Lx6ceOh0nyRxDyDz2ztfRFdxOOtPJHU=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-73-deuH21x5MSqplXMzx4J-pw-1; Thu, 31 Mar 2022 10:25:44 -0400
-X-MC-Unique: deuH21x5MSqplXMzx4J-pw-1
-Received: by mail-wm1-f71.google.com with SMTP id f19-20020a7bcd13000000b0038c01defd5aso1212969wmj.7
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 07:25:44 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=V/896Bc62YoXIkfH/P8P5pIpMY0pVJz3gsn8/xOqrGU=;
-        b=PtoAa/d+d0EzbgCpokneEV7fUMW/AmAfhdWB+ngeAjXpyTHY6TttTufxkRcPPeeM8t
-         cddxEJkRt/2vLEiR7npW/hQZ5bGbFOfKPfcmuuoZrThGlk6FEv3G2ntTZRCEBEKoADrN
-         ITKPABjLkMK80Bu7tueWE0iMe31D1PAdDV67S7RaNmclSlVRrQZC2w2FX74ORoWNyQyu
-         1CWor5chSMBHtllTnMxWrQEaZtE21BmK2j+ENmNL/uJDdr10YNe/oy7J4TCX1daM4rpM
-         cvpuh0O7Qrp6SkiCSzRWgrLmFAux4lIVglsTTbNELloHHs5mA/lbvoxmU84iQzXe0Kf8
-         NBYA==
-X-Gm-Message-State: AOAM531Qatw1zP4WP5jGM3cXNBobc56CHw8kxXqQu8e/cTWYyMfVIWTD
-        aI9WVD02fC+LGqSVjA9O6rygByCnFm2gStRzkdE9BCxYrvRci1PPNCSMvApSETza52HhaX4YIIO
-        Ap269ZkKkLlKmbacAvTt4wtVs
-X-Received: by 2002:a05:600c:4f10:b0:38c:ae36:d305 with SMTP id l16-20020a05600c4f1000b0038cae36d305mr5062033wmq.34.1648736743462;
-        Thu, 31 Mar 2022 07:25:43 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJz+nCts91Ox2v33cXyUxStj+G8bKWgtO7ypFuFQU85nR93l+pGlLswqWvSuB4F5iAFTSK9ljg==
-X-Received: by 2002:a05:600c:4f10:b0:38c:ae36:d305 with SMTP id l16-20020a05600c4f1000b0038cae36d305mr5062017wmq.34.1648736743225;
-        Thu, 31 Mar 2022 07:25:43 -0700 (PDT)
-Received: from [192.168.1.102] ([92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id j16-20020a05600c191000b0038ca3500494sm12809273wmq.27.2022.03.31.07.25.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 31 Mar 2022 07:25:41 -0700 (PDT)
-Message-ID: <ce8d975e-d9dd-f9b8-793d-234258021169@redhat.com>
-Date:   Thu, 31 Mar 2022 16:25:40 +0200
+        Thu, 31 Mar 2022 10:28:47 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8304521D7DB;
+        Thu, 31 Mar 2022 07:26:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=WKvQhSKFWoLuajjNgA2S2UoVge0oH0PP/Mwfs4RXClE=; b=jzBurfDBkkToDK1iyryqp7VWYE
+        Ob6XrfgyRh4mOaGjCq1TfDZfuQErBgibwFYs/zu03ViVwDFYuysvQBO2Vy9NvFODJjP7XVVsL5I6D
+        XbmhJBOq9qBRqOKPaXwZ7kxb68r0ZJE5v7BYywMWA9etAS2FOIO/mRV0GjNF5nYUfkTk=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nZvl9-00DTZc-5k; Thu, 31 Mar 2022 16:26:47 +0200
+Date:   Thu, 31 Mar 2022 16:26:47 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     "huangguangbin (A)" <huangguangbin2@huawei.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, o.rempel@pengutronix.de,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lipeng321@huawei.com, chenhao288@hisilicon.com
+Subject: Re: [PATCH] net: phy: genphy_loopback: fix loopback failed when
+ speed is unknown
+Message-ID: <YkW6J9rM6O/cb/lv@lunn.ch>
+References: <20220331114819.14929-1-huangguangbin2@huawei.com>
+ <YkWdTpCsO8JhiSaT@lunn.ch>
+ <130bb780-0dc1-3819-8f6d-f2daf4d9ece9@huawei.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] efi: Allow to enable EFI runtime services with PREEMPT_RT
-Content-Language: en-US
-To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc:     linux-kernel@vger.kernel.org, Peter Jones <pjones@redhat.com>,
-        Alexander Larsson <alexl@redhat.com>,
-        Al Stone <ahs3@redhat.com>, linux-efi@vger.kernel.org,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Andrew Halaney <ahalaney@redhat.com>,
-        linux-rt-users@vger.kernel.org, Brian Masney <bmasney@redhat.com>,
-        Robbie Harwood <rharwood@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>
-References: <20220331141038.171204-1-javierm@redhat.com>
- <YkW3EmURxE1+kOu5@linutronix.de>
-From:   Javier Martinez Canillas <javierm@redhat.com>
-In-Reply-To: <YkW3EmURxE1+kOu5@linutronix.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <130bb780-0dc1-3819-8f6d-f2daf4d9ece9@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Sebastian,
-
-On 3/31/22 16:13, Sebastian Andrzej Siewior wrote:
-> On 2022-03-31 16:10:38 [+0200], Javier Martinez Canillas wrote:
->> Commit d9f283ae71af ("efi: Disable runtime services on RT") disabled EFI
->> runtime services when the CONFIG_PREEMPT_RT option is enabled.
->>
->> The rationale for the change is that some EFI calls could take too much
->> time, leading to large latencies which are an issue for RT kernels.
->>
->> But a side effect of that commit is that now is not possible anymore to
->> enable the EFI runtime services by default when CONFIG_PREEMPT_RT is set
->> to y, even for platforms that could guarantee bounded time for EFI calls.
->>
->> Instead, let's add a new EFI_DISABLE_RUNTIME boolean Kconfig option, that
->> would be set to n by default but to y if CONFIG_PREEMPT_RT is enabled.
->>
->> That way, the current behaviour is preserved but gives users a mechanism
->> to enable the EFI runtimes services in their kernels if that is required.
+> In this case, as speed and duplex both are unknown, ctl is just set to 0x4000.
+> However, the follow code sets mask to ~0 for function phy_modify():
+> int genphy_loopback(struct phy_device *phydev, bool enable)
+> {
+> 	if (enable) {
+> 		...
+> 		phy_modify(phydev, MII_BMCR, ~0, ctl);
+> 		...
+> }
+> so all other bits of BMCR will be cleared and just set bit 14, I use phy trace to
+> prove that:
 > 
-> Is the command line switch
-> 	efi=runtime
+> $ cat /sys/kernel/debug/tracing/trace
+> # tracer: nop
+> #
+> # entries-in-buffer/entries-written: 923/923   #P:128
+> #
+> #                                _-----=> irqs-off/BH-disabled
+> #                               / _----=> need-resched
+> #                              | / _---=> hardirq/softirq
+> #                              || / _--=> preempt-depth
+> #                              ||| / _-=> migrate-disable
+> #                              |||| /     delay
+> #           TASK-PID     CPU#  |||||  TIMESTAMP  FUNCTION
+> #              | |         |   |||||     |         |
+>   kworker/u257:2-694     [015] .....   209.263912: mdio_access: mii-0000:bd:00.1 read  phy:0x03 reg:0x00 val:0x1040
+>   kworker/u257:2-694     [015] .....   209.263951: mdio_access: mii-0000:bd:00.1 read  phy:0x03 reg:0x01 val:0x7989
+>   kworker/u257:2-694     [015] .....   209.263990: mdio_access: mii-0000:bd:00.1 read  phy:0x03 reg:0x01 val:0x7989
+>   kworker/u257:2-694     [015] .....   209.264028: mdio_access: mii-0000:bd:00.1 read  phy:0x03 reg:0x09 val:0x0200
+>   kworker/u257:2-694     [015] .....   209.264067: mdio_access: mii-0000:bd:00.1 read  phy:0x03 reg:0x0a val:0x0000
+>          ethtool-1148    [007] .....   209.665693: mdio_access: mii-0000:bd:00.1 read  phy:0x03 reg:0x00 val:0x1040
+>          ethtool-1148    [007] .....   209.665706: mdio_access: mii-0000:bd:00.1 write phy:0x03 reg:0x00 val:0x1840
+>          ethtool-1148    [007] .....   210.588139: mdio_access: mii-0000:bd:00.1 read  phy:0x03 reg:0x00 val:0x1840
+>          ethtool-1148    [007] .....   210.588152: mdio_access: mii-0000:bd:00.1 write phy:0x03 reg:0x00 val:0x1040
+>          ethtool-1148    [007] .....   210.615900: mdio_access: mii-0000:bd:00.1 read  phy:0x03 reg:0x00 val:0x1040
+>          ethtool-1148    [007] .....   210.615912: mdio_access: mii-0000:bd:00.1 write phy:0x03 reg:0x00 val:0x4000 //here just set bit 14
 > 
-> not working?
->
+> So phy speed will be set to 10M in this case, if previous speed of
+> device before going down is 10M, loopback test is pass. Only
+> previous speed is 100M or 1000M, loopback test is failed.
 
-Yes, it is but the motivation is to be able to have EFI runtime services
-by default without the need for any kernel command line parameter.
+O.K. So it should be set into 10M half duplex. But why does this cause
+it not to loopback packets? Does the PHY you are using not actually
+support 10 Half? Why does it need to be the same speed as when the
+link was up? And why does it actually set LSTATUS indicating there is
+link?
 
-In the same vein, I could ask if efi=noruntime wasn't enough instead of
-commit ("efi: Disable runtime services on RT").
+Is this a generic problem, all PHYs are like this, or is this specific
+to the PHY you are using? Maybe this PHY needs its own loopback
+function because it does something odd?
 
--- 
-Best regards,
-
-Javier Martinez Canillas
-Linux Engineering
-Red Hat
+   Andrew
 
