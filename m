@@ -2,49 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0259DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 04:35:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C00FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 04:36:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229457AbiCaEhN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 00:37:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41228 "EHLO
+        id S229510AbiCaEil (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 00:38:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229532AbiCaEhC (ORCPT
+        with ESMTP id S229456AbiCaEig (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 00:37:02 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F7185AA4D;
-        Wed, 30 Mar 2022 21:35:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=mjPo0ALhekam+cKurpmgNPz65ahpCtgaw9wWKXxz9nI=; b=44GVYRfH+UprBVY3J4nWjDcdFC
-        2amAFX2YH/w/AFeCYskg5KZG1YfzoTllYEMMjzreui5CIFI7Y2FmlR/k+41QJKyP+50HCuRiRZ8Av
-        SErvLxnR5H3X3WsITfCyKWyPtYku8rgUyoxxasW2YL4SHWd8IbvLQlZpkUzsXr5w2fRHsU6Gkc22Y
-        bweeehvAFhiKn52Yajy2VoAMsUjnqFSOq9lR3WZ8kuI8Lo8xm9FcXlyalYz7cRdL7gyBILRlv39tS
-        5nlNzqFfkd1XiTOpZh5N2omP03ldvhIQv3iAD9y30woTnij9jrFGbGLdoeqbNXdjh995ogWznzFpB
-        Ok5LVh0A==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nZmWg-000dOB-Le; Thu, 31 Mar 2022 04:35:14 +0000
-Date:   Wed, 30 Mar 2022 21:35:14 -0700
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Michael Marod <michael@michaelmarod.com>
-Cc:     linux-kernel@vger.kernel.org, linux-block@vger.kernel.org
-Subject: Re: NVME performance regression in Linux 5.x due to lack of block
- level IO queueing
-Message-ID: <YkUvgu6VxNORv8M6@infradead.org>
-References: <51E3A396-F68B-496D-AE36-B0457A3B0968@michaelmarod.com>
- <847D3821-1D92-468C-88C3-34284BA7922E@michaelmarod.com>
- <C06B8EF0-BF3B-4F14-994F-F80B5102D538@michaelmarod.com>
+        Thu, 31 Mar 2022 00:38:36 -0400
+X-Greylist: delayed 6820 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 30 Mar 2022 21:36:49 PDT
+Received: from maillog.nuvoton.com (maillog.nuvoton.com [202.39.227.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0C1645C35F;
+        Wed, 30 Mar 2022 21:36:48 -0700 (PDT)
+Received: from NTHCCAS04.nuvoton.com (NTHCCAS04.nuvoton.com [10.1.8.29])
+        by maillog.nuvoton.com (Postfix) with ESMTP id 6BFD11C81053;
+        Thu, 31 Mar 2022 10:43:07 +0800 (CST)
+Received: from NTHCCAS02.nuvoton.com (10.1.9.121) by NTHCCAS04.nuvoton.com
+ (10.1.8.29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Thu, 31
+ Mar 2022 10:43:07 +0800
+Received: from NTHCCAS01.nuvoton.com (10.1.8.28) by NTHCCAS02.nuvoton.com
+ (10.1.9.121) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Thu, 31 Mar
+ 2022 10:43:06 +0800
+Received: from localhost.localdomain (172.19.1.47) by NTHCCAS01.nuvoton.com
+ (10.1.12.25) with Microsoft SMTP Server id 15.1.2375.7 via Frontend
+ Transport; Thu, 31 Mar 2022 10:43:02 +0800
+From:   Jacky Huang <ychuang3@nuvoton.com>
+To:     <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-clk@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>
+CC:     <robh+dt@kernel.org>, <sboyd@kernel.org>, <krzk+dt@kernel.org>,
+        <arnd@arndb.de>, <olof@lixom.net>, <soc@kernel.org>,
+        <cfli0@nuvoton.com>, Jacky Huang <ychuang3@nuvoton.com>
+Subject: [PATCH 0/3] Add initial support for MA35D1 SoC
+Date:   Thu, 31 Mar 2022 10:42:53 +0800
+Message-ID: <20220331024256.14762-1-ychuang3@nuvoton.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <C06B8EF0-BF3B-4F14-994F-F80B5102D538@michaelmarod.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-5.4 is very old.  Do you still have a problem with the latest kernel
-(5.17) ?
+This patch series adds initial support for Nuvoton MA35D1 SoC,
+include initial dts and clock controller binding.
+
+Jacky Huang (3):
+  dt-bindings: clock: add binding for MA35D1 clock controller
+  dt-bindings: clock: Document MA35D1 clock controller bindings
+  arm64: dts: nuvoton: Add initial support for MA35D1
+
+ .../bindings/clock/nuvoton,ma35d1-clk.yaml    |  59 ++++
+ arch/arm64/boot/dts/Makefile                  |   1 +
+ arch/arm64/boot/dts/nuvoton/Makefile          |   2 +
+ arch/arm64/boot/dts/nuvoton/ma35d1-evb.dts    |  23 ++
+ arch/arm64/boot/dts/nuvoton/ma35d1.dtsi       | 106 +++++++
+ .../dt-bindings/clock/nuvoton,ma35d1-clk.h    | 262 ++++++++++++++++++
+ 6 files changed, 453 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/clock/nuvoton,ma35d1-clk.yaml
+ create mode 100644 arch/arm64/boot/dts/nuvoton/Makefile
+ create mode 100644 arch/arm64/boot/dts/nuvoton/ma35d1-evb.dts
+ create mode 100644 arch/arm64/boot/dts/nuvoton/ma35d1.dtsi
+ create mode 100644 include/dt-bindings/clock/nuvoton,ma35d1-clk.h
+
+-- 
+2.30.2
+
