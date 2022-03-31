@@ -2,60 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA7D1C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 13:05:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 864B5C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 13:05:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236621AbiCaNHc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 09:07:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52132 "EHLO
+        id S236626AbiCaNHg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 09:07:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236567AbiCaNHV (ORCPT
+        with ESMTP id S236576AbiCaNHV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 31 Mar 2022 09:07:21 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C73BC49252
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3B5049FAF
         for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 06:05:33 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id bi12so48055947ejb.3
+Received: by mail-ed1-x52e.google.com with SMTP id b24so28072625edu.10
         for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 06:05:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=wLM8ocKt6f0arebieMXLbfikbZM3siH2fLv2W59ipRg=;
-        b=GPYA80S5QnuytLdzBu2lKmTT4pttp+NDMO26zncwgWjfyTTSEE0CmyiOb3xx6xTzGJ
-         4c6Vhz9iYrJgMYSxW6ZxJxyPo7KS+MoV+BD6TvGVU9GU0rWrhlfCR5ac1eupmJAaoPn+
-         b9rWtDUypN8Kv5YWWYUm/hfBLHK4z1wt3lh+SgHiXyBUleZSm280/QZ+DrQG9VSROu9o
-         +F+w+oAwV/DlmjW5if8ZPXJYQAoSqy97PgdjH/TAlqTAie5pJsK+c7Giqm5eWrAOPozZ
-         LMNCeWCu0isId2APvA/BnHca1f7ZtqVtTZDNWv/ZK2Dfnkk4+8eLuxR1j2XghtXQ8IhO
-         FgQQ==
+        bh=2Ctmuw6ZzQ/vE6l7pPQ1kZ77ejeBWjd65IhnZItF+7o=;
+        b=PA9hp7AaOABt/iP+ZiFzFNht0r9TpK6+AtLyRBKegBFMk8C5TTBclQn/3LdhL06PYG
+         vCXEC3ofAdzCzLcx3hkigp/Ez/+ECsVNcAidWqy4ylzm1/IsErOdS0ehjNX4VQCwNWOm
+         Y3rzVugkTNFL7AcqMfXWysAlobQP8jaFe1u1XcqwoILhX/XOMfNyxW3269VcNK6sQbH7
+         5SmqSKrL2hfV8nfOABpzrYgtGWIvmPxsRJ8Re7G8lyhKhhMNytkwb8nAARvaS180+8XK
+         7ZMx+/DyaMLeLSXovfAkrykFPZDw0nTf5HP6IIR4zyrvW998SXgJGwbUuvrcY8iGxu7s
+         UH+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=wLM8ocKt6f0arebieMXLbfikbZM3siH2fLv2W59ipRg=;
-        b=caP04sE7kK2dckZEXlMbsIj3cweZr485ct7xWsnIjhTwPqZjg5MkxT/PT3SflpcpSL
-         tIKeVa3jTBsNELFmc0+YEoEkfA5km1CD28C4PIHXIEGIVZ1eSA55LuX3+M/DCMQVDtyF
-         77XfhcS9xdaBd4hlKZAmtBaLY/ET0H3r4n9pijUY/n0V1snjwmN7wcTYxQU5TFqaq9ai
-         A7gDolWCEyqpNhOWcom4B+NzF1kAbkV8pL1GJQIk7BMLjOTABqcjmrbhbvq5yb1WXO6m
-         zJv+4nAu1HOuOXqN34zaFpUXjdia+X9FHDYqVPqUG+Ijha3Z2+Dxzvwgh+AmobVxB0Pu
-         Gx0g==
-X-Gm-Message-State: AOAM530/WOgLATLzvZAr6PDCnWg2oj0IDwDPWTt/ESdeJIlLWC9DZ0gG
-        MrYxZxUTFLfPePurtQIeGKE=
-X-Google-Smtp-Source: ABdhPJySxYC9VY6GU3cnheaUqRUTgTRtIMdM3cjme2J0sjJokpLC7EyjcXJpEn5RcJALk3PCjETRFA==
-X-Received: by 2002:a17:906:1645:b0:6ce:de9:6eb1 with SMTP id n5-20020a170906164500b006ce0de96eb1mr4972136ejd.616.1648731929952;
-        Thu, 31 Mar 2022 06:05:29 -0700 (PDT)
+        bh=2Ctmuw6ZzQ/vE6l7pPQ1kZ77ejeBWjd65IhnZItF+7o=;
+        b=bGitDZfYVxB/myC8fd1PppxXp3nlkYH6h08OVJAG0xlNrNJEQcW9fYJsFGj4Tttpkm
+         pbHAfR0xHTDtcfVfYJyLiXYAphYaBP/vxmxrIivzoKXIxAHZrIU5jIe9jK4FZdT5/J77
+         BbLJOGLYlIN4/Eq3Il0K3tgls21rNvuwf53NPGY0MODjiuGKz6YLPDo/H2otiPrg25Et
+         oRY9oXjhuK732hBKJwzKAQ8BWRkwxtvIWONzMf0g/+QlOh92HDh5gZfP3NzTcoWf52W3
+         F5Tcz9/ASjnBPlUpDUQDkDarSgAzuwVyUBJA6b5erfoYkOlY46VYsnRmTKSlP73vRxnu
+         pNVA==
+X-Gm-Message-State: AOAM532pnzOzeJmztUMZYHgE6VuD564ryL7CKE3pEql3Vt3AoEV35uls
+        2su07xZnQDWpb00I2Hr8v+E=
+X-Google-Smtp-Source: ABdhPJw1Tgl4jd12QxFtucjF6mXHRFgjMS1MSm3qywNuDoODZr9ywM5BeRbkZWKKjLLztmCcMrcaFg==
+X-Received: by 2002:a05:6402:2681:b0:419:4564:1bd4 with SMTP id w1-20020a056402268100b0041945641bd4mr16634407edd.358.1648731932488;
+        Thu, 31 Mar 2022 06:05:32 -0700 (PDT)
 Received: from localhost.localdomain ([95.90.187.85])
-        by smtp.gmail.com with ESMTPSA id kw3-20020a170907770300b006d2a835ac33sm9333358ejc.197.2022.03.31.06.05.29
+        by smtp.gmail.com with ESMTPSA id kw3-20020a170907770300b006d2a835ac33sm9333358ejc.197.2022.03.31.06.05.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 31 Mar 2022 06:05:29 -0700 (PDT)
+        Thu, 31 Mar 2022 06:05:32 -0700 (PDT)
 From:   Michael Straube <straube.linux@gmail.com>
 To:     gregkh@linuxfoundation.org
 Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Michael Straube <straube.linux@gmail.com>
-Subject: [PATCH 1/5] staging: r8188eu: rename clear_bacon_valid_bit()
-Date:   Thu, 31 Mar 2022 15:05:18 +0200
-Message-Id: <20220331130522.6648-2-straube.linux@gmail.com>
+Subject: [PATCH 4/5] staging: r8188eu: remove HW_VAR_FWLPS_RF_ON from GetHwReg8188EU()
+Date:   Thu, 31 Mar 2022 15:05:21 +0200
+Message-Id: <20220331130522.6648-5-straube.linux@gmail.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220331130522.6648-1-straube.linux@gmail.com>
 References: <20220331130522.6648-1-straube.linux@gmail.com>
@@ -65,73 +65,100 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Rename clear_bacon_valid_bit(). Actually it should be
-clear_beacon_valid_bit().
+Move the functionality of the HW_VAR_FWLPS_RF_ON case in
+GetHwReg8188EU() to a static function in rtw_pwrctrl.c and remove the
+HW_VAR_FWLPS_RF_ON case from GetHwReg8188EU(). This is part of the
+ongoing effort to get rid of the unwanted hal layer.
 
 Signed-off-by: Michael Straube <straube.linux@gmail.com>
 ---
- drivers/staging/r8188eu/core/rtw_mlme_ext.c    | 4 ++--
- drivers/staging/r8188eu/hal/rtl8188e_cmd.c     | 4 ++--
- drivers/staging/r8188eu/include/rtw_mlme_ext.h | 2 +-
- 3 files changed, 5 insertions(+), 5 deletions(-)
+ drivers/staging/r8188eu/core/rtw_pwrctrl.c | 19 ++++++++++++++++---
+ drivers/staging/r8188eu/hal/usb_halinit.c  | 18 ------------------
+ drivers/staging/r8188eu/include/hal_intf.h |  1 -
+ 3 files changed, 16 insertions(+), 22 deletions(-)
 
-diff --git a/drivers/staging/r8188eu/core/rtw_mlme_ext.c b/drivers/staging/r8188eu/core/rtw_mlme_ext.c
-index 643f9f8a7a3d..15a91c5fc852 100644
---- a/drivers/staging/r8188eu/core/rtw_mlme_ext.c
-+++ b/drivers/staging/r8188eu/core/rtw_mlme_ext.c
-@@ -5761,7 +5761,7 @@ unsigned int send_beacon(struct adapter *padapter)
+diff --git a/drivers/staging/r8188eu/core/rtw_pwrctrl.c b/drivers/staging/r8188eu/core/rtw_pwrctrl.c
+index 7beabf82eb92..0141de7ab08c 100644
+--- a/drivers/staging/r8188eu/core/rtw_pwrctrl.c
++++ b/drivers/staging/r8188eu/core/rtw_pwrctrl.c
+@@ -217,6 +217,21 @@ void rtw_set_ps_mode(struct adapter *padapter, u8 ps_mode, u8 smart_ps, u8 bcn_a
  
- 	u32 start = jiffies;
- 
--	clear_bacon_valid_bit(padapter);
-+	clear_beacon_valid_bit(padapter);
- 
- 	do {
- 		issue_beacon(padapter, 100);
-@@ -5784,7 +5784,7 @@ unsigned int send_beacon(struct adapter *padapter)
- 	}
  }
  
--void clear_bacon_valid_bit(struct adapter *adapter)
-+void clear_beacon_valid_bit(struct adapter *adapter)
++static bool lps_rf_on(struct adapter *adapter)
++{
++	/* When we halt NIC, we should check if FW LPS is leave. */
++	if (adapter->pwrctrlpriv.rf_pwrstate == rf_off) {
++		/*  If it is in HW/SW Radio OFF or IPS state, we do not check Fw LPS Leave, */
++		/*  because Fw is unload. */
++		return true;
++	}
++
++	if (rtw_read32(adapter, REG_RCR) & 0x00070000)
++		return false;
++
++	return true;
++}
++
+ /*
+  * Return:
+  *	0:	Leave OK
+@@ -226,13 +241,11 @@ void rtw_set_ps_mode(struct adapter *padapter, u8 ps_mode, u8 smart_ps, u8 bcn_a
+ s32 LPS_RF_ON_check(struct adapter *padapter, u32 delay_ms)
  {
- 	/* BIT(16) of REG_TDECTRL = BIT(0) of REG_TDECTRL+2, write 1 to clear, Clear by sw */
- 	rtw_write8(adapter, REG_TDECTRL + 2, rtw_read8(adapter, REG_TDECTRL + 2) | BIT(0));
-diff --git a/drivers/staging/r8188eu/hal/rtl8188e_cmd.c b/drivers/staging/r8188eu/hal/rtl8188e_cmd.c
-index a7337954891a..2e252562e48c 100644
---- a/drivers/staging/r8188eu/hal/rtl8188e_cmd.c
-+++ b/drivers/staging/r8188eu/hal/rtl8188e_cmd.c
-@@ -557,7 +557,7 @@ void rtl8188e_set_FwJoinBssReport_cmd(struct adapter *adapt, u8 mstatus)
- 		rtw_write8(adapt, REG_FWHW_TXQ_CTRL + 2, (haldata->RegFwHwTxQCtrl & (~BIT(6))));
- 		haldata->RegFwHwTxQCtrl &= (~BIT(6));
+ 	u32 start_time;
+-	u8 bAwake = false;
+ 	s32 err = 0;
  
--		clear_bacon_valid_bit(adapt);
-+		clear_beacon_valid_bit(adapt);
- 		DLBcnCount = 0;
- 		poll = 0;
- 		do {
-@@ -596,7 +596,7 @@ void rtl8188e_set_FwJoinBssReport_cmd(struct adapter *adapt, u8 mstatus)
+ 	start_time = jiffies;
+ 	while (1) {
+-		GetHwReg8188EU(padapter, HW_VAR_FWLPS_RF_ON, &bAwake);
+-		if (bAwake)
++		if (lps_rf_on(padapter))
+ 			break;
  
- 		/*  Update RSVD page location H2C to Fw. */
- 		if (bcn_valid)
--			clear_bacon_valid_bit(adapt);
-+			clear_beacon_valid_bit(adapt);
- 
- 		/*  Do not enable HW DMA BCN or it will cause Pcie interface hang by timing issue. 2011.11.24. by tynli. */
- 		/*  Clear CR[8] or beacon packet will not be send to TxBuf anymore. */
-diff --git a/drivers/staging/r8188eu/include/rtw_mlme_ext.h b/drivers/staging/r8188eu/include/rtw_mlme_ext.h
-index 66f7361e7a19..a00da19c4b88 100644
---- a/drivers/staging/r8188eu/include/rtw_mlme_ext.h
-+++ b/drivers/staging/r8188eu/include/rtw_mlme_ext.h
-@@ -538,7 +538,7 @@ void issue_action_BA(struct adapter *padapter, unsigned char *raddr,
- 		     unsigned char action, unsigned short status);
- unsigned int send_delba(struct adapter *padapter, u8 initiator, u8 *addr);
- unsigned int send_beacon(struct adapter *padapter);
--void clear_bacon_valid_bit(struct adapter *adapter);
-+void clear_beacon_valid_bit(struct adapter *adapter);
- 
- void start_clnt_assoc(struct adapter *padapter);
- void start_clnt_auth(struct adapter *padapter);
+ 		if (padapter->bSurpriseRemoved) {
+diff --git a/drivers/staging/r8188eu/hal/usb_halinit.c b/drivers/staging/r8188eu/hal/usb_halinit.c
+index 611785caa17f..37c56690b13a 100644
+--- a/drivers/staging/r8188eu/hal/usb_halinit.c
++++ b/drivers/staging/r8188eu/hal/usb_halinit.c
+@@ -1292,24 +1292,6 @@ void GetHwReg8188EU(struct adapter *Adapter, u8 variable, u8 *val)
+ 	case HW_VAR_DM_FLAG:
+ 		val[0] = podmpriv->SupportAbility;
+ 		break;
+-	case HW_VAR_FWLPS_RF_ON:
+-		{
+-			/* When we halt NIC, we should check if FW LPS is leave. */
+-			if (Adapter->pwrctrlpriv.rf_pwrstate == rf_off) {
+-				/*  If it is in HW/SW Radio OFF or IPS state, we do not check Fw LPS Leave, */
+-				/*  because Fw is unload. */
+-				val[0] = true;
+-			} else {
+-				u32 valRCR;
+-				valRCR = rtw_read32(Adapter, REG_RCR);
+-				valRCR &= 0x00070000;
+-				if (valRCR)
+-					val[0] = false;
+-				else
+-					val[0] = true;
+-			}
+-		}
+-		break;
+ 	default:
+ 		break;
+ 	}
+diff --git a/drivers/staging/r8188eu/include/hal_intf.h b/drivers/staging/r8188eu/include/hal_intf.h
+index f0a6d697e68b..0033a0aca27b 100644
+--- a/drivers/staging/r8188eu/include/hal_intf.h
++++ b/drivers/staging/r8188eu/include/hal_intf.h
+@@ -26,7 +26,6 @@ enum hw_variables {
+ 	HW_VAR_AMPDU_FACTOR,
+ 	HW_VAR_H2C_FW_PWRMODE,
+ 	HW_VAR_H2C_FW_JOINBSSRPT,
+-	HW_VAR_FWLPS_RF_ON,
+ 	HW_VAR_H2C_FW_P2P_PS_OFFLOAD,
+ 	HW_VAR_INITIAL_GAIN,
+ 	HW_VAR_ANTENNA_DIVERSITY_SELECT,
 -- 
 2.35.1
 
