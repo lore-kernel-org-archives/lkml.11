@@ -2,181 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C56D3C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 09:19:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB743C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 09:19:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233749AbiCaJV2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 05:21:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33916 "EHLO
+        id S233757AbiCaJVn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 05:21:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233723AbiCaJVX (ORCPT
+        with ESMTP id S233737AbiCaJVl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 05:21:23 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E9D1232EC9
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 02:19:35 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9652723A;
-        Thu, 31 Mar 2022 02:19:35 -0700 (PDT)
-Received: from FVFF77S0Q05N (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B74053F718;
-        Thu, 31 Mar 2022 02:19:32 -0700 (PDT)
-Date:   Thu, 31 Mar 2022 10:19:21 +0100
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     andrey.konovalov@linux.dev
-Cc:     Marco Elver <elver@google.com>,
-        Alexander Potapenko <glider@google.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrey Konovalov <andreyknvl@gmail.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        kasan-dev@googlegroups.com,
-        Vincenzo Frascino <vincenzo.frascino@arm.com>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        Peter Collingbourne <pcc@google.com>,
-        Evgenii Stepanov <eugenis@google.com>,
-        Florian Mayer <fmayer@google.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org,
-        Andrey Konovalov <andreyknvl@google.com>
-Subject: Re: [PATCH v2 1/4] stacktrace: add interface based on shadow call
- stack
-Message-ID: <YkVyGdniIBXf4t8/@FVFF77S0Q05N>
-References: <cover.1648049113.git.andreyknvl@google.com>
- <21e3e20ea58e242e3c82c19abbfe65b579e0e4b8.1648049113.git.andreyknvl@google.com>
+        Thu, 31 Mar 2022 05:21:41 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31E3C56403;
+        Thu, 31 Mar 2022 02:19:53 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id lr4so38323370ejb.11;
+        Thu, 31 Mar 2022 02:19:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=iQOjmSQ0eSV4gchEgt9UF9f4o2nvBpEPhFZj2fYWH0A=;
+        b=IeDtWHb984QHc6qRLsggB/1agGXhyC1vdu3aavQJ3fFsSV38P/k6WYRaq6D53BcHxc
+         T8jDAKCJWLGHqFBMFWQBPh5Zvi4ILYj+mFeFeVkTF2R4KCCyu36oCEnFvPJhZuQtJL+N
+         bIvCIOiHCotd/JCLcaL2CU7goAnRHRQU/fLgrFw9k/Oh/sHpbzF6R3muRlDwigqB7Qgt
+         MTuV1Zg1p19bRd1CM+iKEzuwC7RBlJ0DYR6TdT2FuPtjR1oF+k4AopDAI7+cYxq+yl7b
+         bQNMifXhXAIyXnhcbMqK34xuShvRS+1lEzw2dUDE16R4pLaksYiuUrWjtj0WTsdT4KYE
+         SbJw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=iQOjmSQ0eSV4gchEgt9UF9f4o2nvBpEPhFZj2fYWH0A=;
+        b=fCFFNl9x60/jLjJUKy2TX3ZHDyOYJ+mWWFkT7xMgQmf6RKWT140ODuAZbp5c9JeWXf
+         k5JIwZP3yFynu3+8p6msAnfbGuecgFgZku+GOR0uCgpfRxdh8QSz4W7r3db8tAPxJeJy
+         wFi8NnLOM8NIL46kVJNLnt9BPUskWVxaP4TrAjkdHXEy6whPcn3/NEO9sAnZN2gC0Wjq
+         pUT15S74p2NoPZW0WNsKOcfOc1on6sLlwQyjTxzxvPiorkgyqBCir8wRKlBmwLId+T95
+         r/UMdundZp2Z7E+lBfv4/jlKBo2vccVPJKd2SZC0uhfyEOofp8TYdHPLT4N1fbTz3rEo
+         U4/g==
+X-Gm-Message-State: AOAM530msE2VVKWspc9weoI9NsdnTDt+clx5Gh66rUqmIqtyRJX5mEox
+        ZUL4vx7u9N6Lrswm53aycKs=
+X-Google-Smtp-Source: ABdhPJwM/fAUCcxTW3KrXej5NfDPi+P05fTYZhWtVcR/WjHJngYjvLAho28Vse3uRfBVAkDcQwhPCw==
+X-Received: by 2002:a17:907:168a:b0:6da:9177:9fdd with SMTP id hc10-20020a170907168a00b006da91779fddmr4077383ejc.757.1648718392451;
+        Thu, 31 Mar 2022 02:19:52 -0700 (PDT)
+Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
+        by smtp.googlemail.com with ESMTPSA id v26-20020a50955a000000b00418ebdb07ddsm11159642eda.56.2022.03.31.02.19.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 31 Mar 2022 02:19:52 -0700 (PDT)
+From:   Jakob Koschel <jakobkoschel@gmail.com>
+To:     Alexei Starovoitov <ast@kernel.org>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Mike Rapoport <rppt@kernel.org>,
+        "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>, Jakob Koschel <jakobkoschel@gmail.com>
+Subject: [PATCH v2] bpf: replace usage of supported with dedicated list iterator variable
+Date:   Thu, 31 Mar 2022 11:19:29 +0200
+Message-Id: <20220331091929.647057-1-jakobkoschel@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <21e3e20ea58e242e3c82c19abbfe65b579e0e4b8.1648049113.git.andreyknvl@google.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 23, 2022 at 04:32:52PM +0100, andrey.konovalov@linux.dev wrote:
-> From: Andrey Konovalov <andreyknvl@google.com>
-> 
-> Add a new interface stack_trace_save_shadow() for collecting stack traces
-> by copying frames from the Shadow Call Stack.
-> 
-> Collecting stack traces this way is significantly faster: boot time
-> of a defconfig build with KASAN enabled gets descreased by ~30%.
+To move the list iterator variable into the list_for_each_entry_*()
+macro in the future it should be avoided to use the list iterator
+variable after the loop body.
 
-Hmm... just to check, do ou know if that's just because of hte linear copy, or
-because we're skipping other work we have to do in the regular stacktrace?
+To *never* use the list iterator variable after the loop it was
+concluded to use a separate iterator variable instead of a
+found boolean [1].
 
-> The few patches following this one add an implementation of
-> stack_trace_save_shadow() for arm64.
-> 
-> The implementation of the added interface is not meant to use
-> stack_trace_consume_fn to avoid making a function call for each
-> collected frame to further improve performance.
+This removes the need to use the found variable (existed & supported)
+and simply checking if the variable was set, can determine if the
+break/goto was hit.
 
-... because we could easily provide an inline-optimized stack copy *without*
-having to write a distinct unwinder, and I'd *really* like to avoid having a
-bunch of distinct unwinders for arm64, as it really hinders maintenance. We're
-working on fixing/improving the arm64 unwinder for things like
-RELIABLE_STACKTRACE, and I know that some of that work is non-trivial to make
-work with an SCS-based unwind rather than an FP-based unwind, and/or will
-undermine the saving anyway.
+[1] https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/
 
-> 
-> Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
-> ---
->  arch/Kconfig               |  6 ++++++
->  include/linux/stacktrace.h | 15 +++++++++++++++
->  kernel/stacktrace.c        | 21 +++++++++++++++++++++
->  3 files changed, 42 insertions(+)
-> 
-> diff --git a/arch/Kconfig b/arch/Kconfig
-> index e12a4268c01d..207c1679c53a 100644
-> --- a/arch/Kconfig
-> +++ b/arch/Kconfig
-> @@ -1041,6 +1041,12 @@ config HAVE_RELIABLE_STACKTRACE
->  	  arch_stack_walk_reliable() function which only returns a stack trace
->  	  if it can guarantee the trace is reliable.
->  
-> +config HAVE_SHADOW_STACKTRACE
-> +	bool
-> +	help
-> +	  If this is set, the architecture provides the arch_stack_walk_shadow()
-> +	  function, which collects the stack trace from the shadow call stack.
-> +
->  config HAVE_ARCH_HASH
->  	bool
->  	default n
-> diff --git a/include/linux/stacktrace.h b/include/linux/stacktrace.h
-> index 97455880ac41..b74d1e42e157 100644
-> --- a/include/linux/stacktrace.h
-> +++ b/include/linux/stacktrace.h
-> @@ -60,6 +60,9 @@ int arch_stack_walk_reliable(stack_trace_consume_fn consume_entry, void *cookie,
->  
->  void arch_stack_walk_user(stack_trace_consume_fn consume_entry, void *cookie,
->  			  const struct pt_regs *regs);
-> +
-> +int arch_stack_walk_shadow(unsigned long *store, unsigned int size,
-> +			   unsigned int skipnr);
->  #endif /* CONFIG_ARCH_STACKWALK */
->  
->  #ifdef CONFIG_STACKTRACE
-> @@ -108,4 +111,16 @@ static inline int stack_trace_save_tsk_reliable(struct task_struct *tsk,
->  }
->  #endif
->  
-> +#if defined(CONFIG_STACKTRACE) && defined(CONFIG_HAVE_SHADOW_STACKTRACE)
-> +int stack_trace_save_shadow(unsigned long *store, unsigned int size,
-> +			    unsigned int skipnr);
-> +#else
-> +static inline int stack_trace_save_shadow(unsigned long *store,
-> +					  unsigned int size,
-> +					  unsigned int skipnr)
-> +{
-> +	return -ENOSYS;
-> +}
-> +#endif
-> +
->  #endif /* __LINUX_STACKTRACE_H */
-> diff --git a/kernel/stacktrace.c b/kernel/stacktrace.c
-> index 9ed5ce989415..fe305861fd55 100644
-> --- a/kernel/stacktrace.c
-> +++ b/kernel/stacktrace.c
-> @@ -237,6 +237,27 @@ unsigned int stack_trace_save_user(unsigned long *store, unsigned int size)
->  }
->  #endif
->  
-> +#ifdef CONFIG_HAVE_SHADOW_STACKTRACE
-> +/**
-> + * stack_trace_save_shadow - Save a stack trace based on shadow call stack
-> + * @store:	Pointer to the storage array
-> + * @size:	Size of the storage array
-> + * @skipnr:	Number of entries to skip at the start of the stack trace
-> + *
-> + * Return: Number of trace entries stored.
-> + */
-> +int stack_trace_save_shadow(unsigned long *store, unsigned int size,
-> +			    unsigned int skipnr)
-> +{
-> +	/*
-> +	 * Do not use stack_trace_consume_fn to avoid making a function
-> +	 * call for each collected frame to improve performance.
-> +	 * Skip + 1 frame to skip stack_trace_save_shadow.
-> +	 */
-> +	return arch_stack_walk_shadow(store, size, skipnr + 1);
-> +}
-> +#endif
+Acked-by: Yonghong Song <yhs@fb.com>
+Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
+---
 
-If we really need this, can we make it an __always_inline in a header so that
-we can avoid the skip? Generally the skipping is problematic due to
-inlining/outlining and LTO, and I'd like to avoid adding more of it
-unnecessarily.
+v1->v2:
+- add correct [1] reference (Yonghong Song)
 
-Thanks,
-Mark.
+ kernel/bpf/bpf_iter.c | 30 ++++++++++++++----------------
+ 1 file changed, 14 insertions(+), 16 deletions(-)
 
-> +
->  #else /* CONFIG_ARCH_STACKWALK */
->  
->  /*
-> -- 
-> 2.25.1
-> 
+diff --git a/kernel/bpf/bpf_iter.c b/kernel/bpf/bpf_iter.c
+index 110029ede71e..dea920b3b840 100644
+--- a/kernel/bpf/bpf_iter.c
++++ b/kernel/bpf/bpf_iter.c
+@@ -330,35 +330,34 @@ static void cache_btf_id(struct bpf_iter_target_info *tinfo,
+ bool bpf_iter_prog_supported(struct bpf_prog *prog)
+ {
+ 	const char *attach_fname = prog->aux->attach_func_name;
++	struct bpf_iter_target_info *tinfo = NULL, *iter;
+ 	u32 prog_btf_id = prog->aux->attach_btf_id;
+ 	const char *prefix = BPF_ITER_FUNC_PREFIX;
+-	struct bpf_iter_target_info *tinfo;
+ 	int prefix_len = strlen(prefix);
+-	bool supported = false;
+
+ 	if (strncmp(attach_fname, prefix, prefix_len))
+ 		return false;
+
+ 	mutex_lock(&targets_mutex);
+-	list_for_each_entry(tinfo, &targets, list) {
+-		if (tinfo->btf_id && tinfo->btf_id == prog_btf_id) {
+-			supported = true;
++	list_for_each_entry(iter, &targets, list) {
++		if (iter->btf_id && iter->btf_id == prog_btf_id) {
++			tinfo = iter;
+ 			break;
+ 		}
+-		if (!strcmp(attach_fname + prefix_len, tinfo->reg_info->target)) {
+-			cache_btf_id(tinfo, prog);
+-			supported = true;
++		if (!strcmp(attach_fname + prefix_len, iter->reg_info->target)) {
++			cache_btf_id(iter, prog);
++			tinfo = iter;
+ 			break;
+ 		}
+ 	}
+ 	mutex_unlock(&targets_mutex);
+
+-	if (supported) {
++	if (tinfo) {
+ 		prog->aux->ctx_arg_info_size = tinfo->reg_info->ctx_arg_info_size;
+ 		prog->aux->ctx_arg_info = tinfo->reg_info->ctx_arg_info;
+ 	}
+
+-	return supported;
++	return tinfo != NULL;
+ }
+
+ const struct bpf_func_proto *
+@@ -499,12 +498,11 @@ bool bpf_link_is_iter(struct bpf_link *link)
+ int bpf_iter_link_attach(const union bpf_attr *attr, bpfptr_t uattr,
+ 			 struct bpf_prog *prog)
+ {
++	struct bpf_iter_target_info *tinfo = NULL, *iter;
+ 	struct bpf_link_primer link_primer;
+-	struct bpf_iter_target_info *tinfo;
+ 	union bpf_iter_link_info linfo;
+ 	struct bpf_iter_link *link;
+ 	u32 prog_btf_id, linfo_len;
+-	bool existed = false;
+ 	bpfptr_t ulinfo;
+ 	int err;
+
+@@ -530,14 +528,14 @@ int bpf_iter_link_attach(const union bpf_attr *attr, bpfptr_t uattr,
+
+ 	prog_btf_id = prog->aux->attach_btf_id;
+ 	mutex_lock(&targets_mutex);
+-	list_for_each_entry(tinfo, &targets, list) {
+-		if (tinfo->btf_id == prog_btf_id) {
+-			existed = true;
++	list_for_each_entry(iter, &targets, list) {
++		if (iter->btf_id == prog_btf_id) {
++			tinfo = iter;
+ 			break;
+ 		}
+ 	}
+ 	mutex_unlock(&targets_mutex);
+-	if (!existed)
++	if (!tinfo)
+ 		return -ENOENT;
+
+ 	link = kzalloc(sizeof(*link), GFP_USER | __GFP_NOWARN);
+
+base-commit: d888c83fcec75194a8a48ccd283953bdba7b2550
+--
+2.25.1
+
