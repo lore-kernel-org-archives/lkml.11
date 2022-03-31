@@ -2,115 +2,220 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98625C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 17:57:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADD18C43217
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 17:58:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232788AbiCaR7d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 13:59:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41944 "EHLO
+        id S232888AbiCaSAP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 14:00:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232758AbiCaR72 (ORCPT
+        with ESMTP id S232783AbiCaSAM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 13:59:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 763442220E2;
-        Thu, 31 Mar 2022 10:57:40 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 36E93B82055;
-        Thu, 31 Mar 2022 17:57:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA542C3410F;
-        Thu, 31 Mar 2022 17:57:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648749458;
-        bh=Pd8nG9z0Q3DS24pgaW2OH5ERDzXwBcXAArJQBvW+IR8=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=NV8527sSPkm1hnVw6VVnpKW5cabOMI4XoWbMW5iwZUJmlovW9YIOp4qAhthzhvTF3
-         tu5FKaBYkAtUviG2ld1PjnK5HB3/ahc8GiVEpdLHe4StHZ2ZB+k3FeS9pyqY8WpJ4J
-         dhG9X8cOxY7GWjdkLbTWgh04rNDoGP6guaKKANupatLCQumMyxxPkvQh2lof2WuPNu
-         ZdufnC+3CG/gLwQhba8QujopE/O0gWTuj54kvH+hvQlTdEeEtn9zKGDexYm+i2cDf4
-         gvih1fyK+08OknPxpFQrcxUAMFlF5Lz2KQbsx4MmkljFRJ3RJ2Zed7ZrqL8+r7c8eQ
-         aauzDc8dm9aog==
-Received: by mail-qv1-f49.google.com with SMTP id kd21so169207qvb.6;
-        Thu, 31 Mar 2022 10:57:36 -0700 (PDT)
-X-Gm-Message-State: AOAM533aXxSrzEC9ahAm3MEcMitVaxMvTHIYrNuy31HrijgHTGhUeTdm
-        vEqyyzp/R+cr/q4wbe8JbMbcQIH/kZbMYvH8NBc=
-X-Google-Smtp-Source: ABdhPJwEVeLKB7Vs1bxXRXcyvhnkH0USk3DG0DecGzpkX4X6QfinHpsmohMAYHYQCFOhu9OfhkS+0VxRE2hhH54vVbg=
-X-Received: by 2002:ad4:5be9:0:b0:441:651c:2d23 with SMTP id
- k9-20020ad45be9000000b00441651c2d23mr5067459qvc.5.1648749455929; Thu, 31 Mar
- 2022 10:57:35 -0700 (PDT)
+        Thu, 31 Mar 2022 14:00:12 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ABDB58395;
+        Thu, 31 Mar 2022 10:58:24 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id gb19so174697pjb.1;
+        Thu, 31 Mar 2022 10:58:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=dGkOVC70bzVuGq7W5va5FW2YqhPw4t1EaQSF8Oh5XFc=;
+        b=A5n6vOXWM0DhT0+Ngm3q171Z8z9n2EvKxyNFWmEW/QjXgV3iQOMj9uzzIQWuuuI5N+
+         Tclx8N4zuuFp5uY3IFLCezVBWNgQ5MZS6Qx+Mc/5Z48x7Od1o728XaztXg64VYZaB0O0
+         k4N/lcc8+F+sHzgQSDIp8EPtIPq58kZ4uZbZgKVy2uAqKJo6NyxWHnlAqvuubhyT3+je
+         BUpciCdjfg+OQlqA5LwhK071e+cs5MzKyizWY6y1jpVqH6YAEUUeAAWZArLGGn9qQA1M
+         TWUMm3xydS9mWuXhCXSAy0vwd5tRG9Sv4p85knhqDh5Xu4eR0aSR4J6+SUWv3eLVoeyD
+         GqzA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=dGkOVC70bzVuGq7W5va5FW2YqhPw4t1EaQSF8Oh5XFc=;
+        b=3Mx0R/khYcwf9LYPzkZsaRypxuyuV6mVKBOStwuurXTwwc6zDTc6cuHYYNSHCLl4bP
+         CLfs/lKXVzisNG9tyVyXL2QqNc38DH8ocHjwX/SG+xCLvJ8DeXZHqKffA1Gi6WK7mvXw
+         pP9lhiYmf1iUyU61J0TAYM+V17dFaSzcrVxVqMEulaA7UtVKmFccHDYVhY2QnELLy3f1
+         a9lk7Sc5r6VY3J8WeNb67stUlmqWYm32OcO3kCxafM5afsHfob7738QjL869SinZ6zjt
+         uppC4Lo5kYokShR9aTRVcoH4Sv46O+jbO5SskZvFti2ptpuZ1pZBWRcJmHi8REBYn5gR
+         wEQA==
+X-Gm-Message-State: AOAM530JWNth+j1c4vDgMylbV4Se50upDO4tf13XV7snybybFi6Ex940
+        niPklgu8j9O3kerCmbhkWv0=
+X-Google-Smtp-Source: ABdhPJzUq/bCYFJfxLHEcil0Owpt5lmWROIU8bfkVBlOrIcuSkJUYs3LtQReAWDIuE6hBYlfkNzaYQ==
+X-Received: by 2002:a17:90b:3a82:b0:1c7:bc91:a87e with SMTP id om2-20020a17090b3a8200b001c7bc91a87emr7390289pjb.7.1648749503248;
+        Thu, 31 Mar 2022 10:58:23 -0700 (PDT)
+Received: from 9a2d8922b8f1 ([122.161.51.18])
+        by smtp.gmail.com with ESMTPSA id v8-20020a056a00148800b004fa9bd7ddc9sm121741pfu.113.2022.03.31.10.58.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 31 Mar 2022 10:58:23 -0700 (PDT)
+Date:   Thu, 31 Mar 2022 23:28:17 +0530
+From:   Kuldeep Singh <singh.kuldeep87k@gmail.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Mark Brown <broonie@kernel.org>, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-spi@vger.kernel.org
+Subject: Re: [PATCH v2 1/2] spi: dt-bindings: qcom,spi-geni-qcom: convert to
+ dtschema
+Message-ID: <20220331175817.GA91341@9a2d8922b8f1>
+References: <20220331160248.716234-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-References: <20220328194157.1585642-1-sashal@kernel.org> <20220328194157.1585642-17-sashal@kernel.org>
- <YkLYhad7iX2Bv/j1@debian9.Home> <YkXd9UTuFbNDNjo3@sashalap>
-In-Reply-To: <YkXd9UTuFbNDNjo3@sashalap>
-From:   Filipe Manana <fdmanana@kernel.org>
-Date:   Thu, 31 Mar 2022 18:57:00 +0100
-X-Gmail-Original-Message-ID: <CAL3q7H5x0-7w7udtt3qCGLB=OiRY29EBoj=eJWgDVkShmYOogQ@mail.gmail.com>
-Message-ID: <CAL3q7H5x0-7w7udtt3qCGLB=OiRY29EBoj=eJWgDVkShmYOogQ@mail.gmail.com>
-Subject: Re: [PATCH AUTOSEL 5.17 17/21] btrfs: reset last_reflink_trans after
- fsyncing inode
-To:     Sasha Levin <sashal@kernel.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
-        David Sterba <dsterba@suse.com>, Chris Mason <clm@fb.com>,
-        Josef Bacik <jbacik@fb.com>,
-        linux-btrfs <linux-btrfs@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220331160248.716234-1-krzysztof.kozlowski@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 31, 2022 at 5:59 PM Sasha Levin <sashal@kernel.org> wrote:
->
-> On Tue, Mar 29, 2022 at 10:59:33AM +0100, Filipe Manana wrote:
-> >On Mon, Mar 28, 2022 at 03:41:52PM -0400, Sasha Levin wrote:
-> >> From: Filipe Manana <fdmanana@suse.com>
-> >>
-> >> [ Upstream commit 23e3337faf73e5bb2610697977e175313d48acb0 ]
-> >>
-> >> When an inode has a last_reflink_trans matching the current transaction,
-> >> we have to take special care when logging its checksums in order to
-> >> avoid getting checksum items with overlapping ranges in a log tree,
-> >> which could result in missing checksums after log replay (more on that
-> >> in the changelogs of commit 40e046acbd2f36 ("Btrfs: fix missing data
-> >> checksums after replaying a log tree") and commit e289f03ea79bbc ("btrfs:
-> >> fix corrupt log due to concurrent fsync of inodes with shared extents")).
-> >> We also need to make sure a full fsync will copy all old file extent
-> >> items it finds in modified leaves, because they might have been copied
-> >> from some other inode.
-> >>
-> >> However once we fsync an inode, we don't need to keep paying the price of
-> >> that extra special care in future fsyncs done in the same transaction,
-> >> unless the inode is used for another reflink operation or the full sync
-> >> flag is set on it (truncate, failure to allocate extent maps for holes,
-> >> and other exceptional and infrequent cases).
-> >>
-> >> So after we fsync an inode reset its last_unlink_trans to zero. In case
-> >> another reflink happens, we continue to update the last_reflink_trans of
-> >> the inode, just as before. Also set last_reflink_trans to the generation
-> >> of the last transaction that modified the inode whenever we need to set
-> >> the full sync flag on the inode, just like when we need to load an inode
-> >> from disk after eviction.
-> >>
-> >> Signed-off-by: Filipe Manana <fdmanana@suse.com>
-> >> Signed-off-by: David Sterba <dsterba@suse.com>
-> >> Signed-off-by: Sasha Levin <sashal@kernel.org>
-> >
-> >What's the motivation to backport this to stable?
-> >
-> >It doesn't fix a bug or any regression, as far as I know at least.
-> >Or is it to make some other backport easier?
->
-> I wasn't sure if it's needed for completeness for the mentioned fixes,
-> so I took it. Can drop it if it's not needed.
+On Thu, Mar 31, 2022 at 06:02:47PM +0200, Krzysztof Kozlowski wrote:
+> Convert the GENI based Qualcomm Universal Peripheral (QUP) Serial
+> Peripheral Interface (SPI) bindings to DT Schema.
+> 
+> The original bindings in TXT were not complete, so add during conversion
+> properties already used in DTS and/or in the driver: reg-names, dmas,
+> interconnects, operating points and power-domains.
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> 
+> ---
+> 
+> Changes since v1:
+> 1. Correct $ref path and remove interconnect minItems (Kuldeep).
+> 2. Remove child tpm device from example.
+> 3. Pad reg hex addresses with 00.
+> ---
+>  .../bindings/spi/qcom,spi-geni-qcom.txt       |  39 ------
+>  .../bindings/spi/qcom,spi-geni-qcom.yaml      | 120 ++++++++++++++++++
+>  2 files changed, 120 insertions(+), 39 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/spi/qcom,spi-geni-qcom.txt
+>  create mode 100644 Documentation/devicetree/bindings/spi/qcom,spi-geni-qcom.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/spi/qcom,spi-geni-qcom.txt b/Documentation/devicetree/bindings/spi/qcom,spi-geni-qcom.txt
+> deleted file mode 100644
+> index c8c1e913f4e7..000000000000
+> --- a/Documentation/devicetree/bindings/spi/qcom,spi-geni-qcom.txt
+> +++ /dev/null
+> @@ -1,39 +0,0 @@
+> -GENI based Qualcomm Universal Peripheral (QUP) Serial Peripheral Interface (SPI)
+> -
+> -The QUP v3 core is a GENI based AHB slave that provides a common data path
+> -(an output FIFO and an input FIFO) for serial peripheral interface (SPI)
+> -mini-core.
+> -
+> -SPI in master mode supports up to 50MHz, up to four chip selects, programmable
+> -data path from 4 bits to 32 bits and numerous protocol variants.
+> -
+> -Required properties:
+> -- compatible:		Must contain "qcom,geni-spi".
+> -- reg:			Must contain SPI register location and length.
+> -- interrupts:		Must contain SPI controller interrupts.
+> -- clock-names:		Must contain "se".
+> -- clocks:		Serial engine core clock needed by the device.
+> -- #address-cells:	Must be <1> to define a chip select address on
+> -			the SPI bus.
+> -- #size-cells:		Must be <0>.
+> -
+> -SPI Controller nodes must be child of GENI based Qualcomm Universal
+> -Peripharal. Please refer GENI based QUP wrapper controller node bindings
+> -described in Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.yaml.
+> -
+> -SPI slave nodes must be children of the SPI master node and conform to SPI bus
+> -binding as described in Documentation/devicetree/bindings/spi/spi-bus.txt.
+> -
+> -Example:
+> -	spi0: spi@a84000 {
+> -		compatible = "qcom,geni-spi";
+> -		reg = <0xa84000 0x4000>;
+> -		interrupts = <GIC_SPI 354 IRQ_TYPE_LEVEL_HIGH>;
+> -		clock-names = "se";
+> -		clocks = <&clock_gcc GCC_QUPV3_WRAP0_S0_CLK>;
+> -		pinctrl-names = "default", "sleep";
+> -		pinctrl-0 = <&qup_1_spi_2_active>;
+> -		pinctrl-1 = <&qup_1_spi_2_sleep>;
+> -		#address-cells = <1>;
+> -		#size-cells = <0>;
+> -	};
+> diff --git a/Documentation/devicetree/bindings/spi/qcom,spi-geni-qcom.yaml b/Documentation/devicetree/bindings/spi/qcom,spi-geni-qcom.yaml
+> new file mode 100644
+> index 000000000000..62c4a9598e16
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/spi/qcom,spi-geni-qcom.yaml
+> @@ -0,0 +1,120 @@
+> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/spi/qcom,spi-geni-qcom.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: GENI based Qualcomm Universal Peripheral (QUP) Serial Peripheral Interface (SPI)
+> +
+> +maintainers:
+> +  - Andy Gross <agross@kernel.org>
+> +  - Bjorn Andersson <bjorn.andersson@linaro.org>
+> +  - Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> +
+> +description:
+> +  The QUP v3 core is a GENI based AHB slave that provides a common data path
+> +  (an output FIFO and an input FIFO) for serial peripheral interface (SPI)
+> +  mini-core.
+> +
+> +  SPI in master mode supports up to 50MHz, up to four chip selects,
+> +  programmable data path from 4 bits to 32 bits and numerous protocol variants.
+> +
+> +  SPI Controller nodes must be child of GENI based Qualcomm Universal
+> +  Peripharal. Please refer GENI based QUP wrapper controller node bindings
+> +  described in Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.yaml.
+> +
+> +allOf:
+> +  - $ref: /schemas/spi/spi-controller.yaml#
+> +
+> +properties:
+> +  compatible:
+> +    const: qcom,geni-spi
+> +
+> +  clocks:
+> +    maxItems: 1
+> +
+> +  clock-names:
+> +    const: se
+> +
+> +  dmas:
+> +    maxItems: 2
+> +
+> +  dma-names:
+> +    items:
+> +      - const: tx
+> +      - const: rx
+> +
+> +  interconnects:
+> +    maxItems: 2
+> +
+> +  interconnect-names:
+> +    items:
+> +      - const: qup-core
+> +      - const: qup-config
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +  operating-points-v2: true
+> +
+> +  power-domains:
+> +    maxItems: 1
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  reg-names:
+> +    const: se
 
-Yes, please drop it. It's not needed (nor was intended) to go to any
-stable releases.
+Why reg-names is required?
+Reg contain max 1 value, we can skip reg-names like other users.
 
-Thanks.
+Also, "se" is used as clock name and using it again for reg-names?
+I think this is wrong and reg-names shouldn't be documented.
 
->
-> --
-> Thanks,
-> Sasha
+-Kuldeep
