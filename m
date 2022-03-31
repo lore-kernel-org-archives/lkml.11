@@ -2,141 +2,222 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42BC0C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 09:32:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41F8FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 09:32:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234004AbiCaJeT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 05:34:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56058 "EHLO
+        id S234108AbiCaJeV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 05:34:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234084AbiCaJeP (ORCPT
+        with ESMTP id S234075AbiCaJeP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 31 Mar 2022 05:34:15 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC4461BD99C;
-        Thu, 31 Mar 2022 02:32:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648719148; x=1680255148;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ctf/hX3XkJggP7/+ZH5JrIfbFRaHucv2k5aVIYpgwkA=;
-  b=HpkUKfvWAito1y1YpVTscD9KZN5HyjXNV/9dGDXloGZWhLmo5sdnvJXn
-   vgBgE34X6lEqscgN8MLvRJt3gKcuoIS+E6pL4mWiFa3KpwTbD4ojS5OIL
-   okXg5+an+5ORXtteFDfiwNysToGo8v7b7gp9zQK+GqoAZinYLQLRPXDSx
-   olhmoA/xishw5PPOIB0uXeuD0ZUXxqzBFezRyTHTTc/zkJkwWhES6Hovf
-   1Id/LfZc57O/wv9edgnIdGY7IMzoJzka+hpgHRIaJao2KIz+TA7ljsX84
-   u6J167IiCeJfaHXHX/LuZQeKsMjA/5Koy7xcWEyN2awQbVjGS8AUytMvN
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="259758101"
-X-IronPort-AV: E=Sophos;i="5.90,224,1643702400"; 
-   d="scan'208";a="259758101"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2022 02:32:28 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,224,1643702400"; 
-   d="scan'208";a="695424269"
-Received: from kuha.fi.intel.com ([10.237.72.185])
-  by fmsmga001.fm.intel.com with SMTP; 31 Mar 2022 02:32:25 -0700
-Received: by kuha.fi.intel.com (sSMTP sendmail emulation); Thu, 31 Mar 2022 12:32:24 +0300
-Date:   Thu, 31 Mar 2022 12:32:24 +0300
-From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Won Chung <wonchung@google.com>,
-        Tomas Winkler <tomas.winkler@intel.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Benson Leung <bleung@chromium.org>,
-        Prashant Malani <pmalani@chromium.org>,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH v3] misc/mei: Add NULL check to component match callback
- functions
-Message-ID: <YkV1KK8joyDAgf50@kuha.fi.intel.com>
-References: <20220331084918.2592699-1-wonchung@google.com>
- <YkVtvhC0n9B994/A@kroah.com>
+Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE68D1BD994
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 02:32:27 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R541e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0V8iK6V7_1648719143;
+Received: from 30.32.67.149(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0V8iK6V7_1648719143)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Thu, 31 Mar 2022 17:32:24 +0800
+Message-ID: <ef5ab5e9-e503-771f-a141-dffcef886256@linux.alibaba.com>
+Date:   Thu, 31 Mar 2022 17:33:15 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YkVtvhC0n9B994/A@kroah.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] mm: migrate: set demotion targets differently
+To:     "Huang, Ying" <ying.huang@intel.com>,
+        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
+Cc:     Jagdish Gediya <jvgediya@linux.ibm.com>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
+        dave.hansen@linux.intel.com, Fan Du <fan.du@intel.com>
+References: <20220329115222.8923-1-jvgediya@linux.ibm.com>
+ <87pmm4c4ys.fsf@yhuang6-desk2.ccr.corp.intel.com>
+ <87lewrxsv1.fsf@linux.ibm.com>
+ <878rsrc672.fsf@yhuang6-desk2.ccr.corp.intel.com>
+ <87ilruy5zt.fsf@linux.ibm.com>
+ <87h77ebn6j.fsf@yhuang6-desk2.ccr.corp.intel.com>
+ <87fsmyy1a0.fsf@linux.ibm.com>
+ <8735iybisn.fsf@yhuang6-desk2.ccr.corp.intel.com>
+From:   Baolin Wang <baolin.wang@linux.alibaba.com>
+In-Reply-To: <8735iybisn.fsf@yhuang6-desk2.ccr.corp.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 31, 2022 at 11:00:46AM +0200, Greg KH wrote:
-> On Thu, Mar 31, 2022 at 08:49:18AM +0000, Won Chung wrote:
-> > Component match callback functions need to check if expected data is
-> > passed to them. Without this check, it can cause a NULL pointer
-> > dereference when another driver registers a component before i915
-> > drivers have their component master fully bind.
-> 
-> How can that happen in a real system?  Or does this just happen for when
-> you are doing development and testing?
-> 
-> > 
-> > Fixes: 1e8d19d9b0dfc ("mei: hdcp: bind only with i915 on the same PCH")
-> > Fixes: c2004ce99ed73 ("mei: pxp: export pavp client to me client bus")
-> > Suggested-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-> > Suggested-by: Mika Westerberg <mika.westerberg@linux.intel.com>
-> > Signed-off-by: Won Chung <wonchung@google.com>
-> > Cc: stable@vger.kernel.org
-> 
-> Why does this need to go to stable?  How can this be triggered in older
-> kernels?
-> 
-> > ---
-> > Changes from v2:
-> > - Correctly add "Suggested-by" tag
-> > - Add "Cc: stable@vger.kernel.org"
-> > 
-> > Changes from v1:
-> > - Add "Fixes" tag
-> > - Send to stable@vger.kernel.org
-> > 
-> >  drivers/misc/mei/hdcp/mei_hdcp.c | 2 +-
-> >  drivers/misc/mei/pxp/mei_pxp.c   | 2 +-
-> >  2 files changed, 2 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/drivers/misc/mei/hdcp/mei_hdcp.c b/drivers/misc/mei/hdcp/mei_hdcp.c
-> > index ec2a4fce8581..843dbc2b21b1 100644
-> > --- a/drivers/misc/mei/hdcp/mei_hdcp.c
-> > +++ b/drivers/misc/mei/hdcp/mei_hdcp.c
-> > @@ -784,7 +784,7 @@ static int mei_hdcp_component_match(struct device *dev, int subcomponent,
-> >  {
-> >  	struct device *base = data;
-> >  
-> > -	if (strcmp(dev->driver->name, "i915") ||
-> > +	if (!base || !dev->driver || strcmp(dev->driver->name, "i915") ||
-> 
-> How can base be NULL?
-> 
-> 
-> >  	    subcomponent != I915_COMPONENT_HDCP)
-> >  		return 0;
-> >  
-> > diff --git a/drivers/misc/mei/pxp/mei_pxp.c b/drivers/misc/mei/pxp/mei_pxp.c
-> > index f7380d387bab..e32a81da8af6 100644
-> > --- a/drivers/misc/mei/pxp/mei_pxp.c
-> > +++ b/drivers/misc/mei/pxp/mei_pxp.c
-> > @@ -131,7 +131,7 @@ static int mei_pxp_component_match(struct device *dev, int subcomponent,
-> >  {
-> >  	struct device *base = data;
-> >  
-> > -	if (strcmp(dev->driver->name, "i915") ||
-> > +	if (!base || !dev->driver || strcmp(dev->driver->name, "i915") ||
-> 
-> Same here, shouldn't this be caught by the driver core or bus and match
-> should not be called?
-> 
-> Why not fix this in the component/driver core instead?
 
-A component is just a device that is declared to be a "component", and
-the code that declares it as component does not have to be the driver
-of that device. You simply can't assume that it's bind to a driver
-like this function does.
 
-In our case the "components" are USB ports, so devices that are never
-bind to drivers.
+On 3/31/2022 4:58 PM, Huang, Ying wrote:
+> "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com> writes:
+> 
+>> "Huang, Ying" <ying.huang@intel.com> writes:
+>>
+>>> "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com> writes:
+>>>
+>>>> "Huang, Ying" <ying.huang@intel.com> writes:
+>>>>
+>>>>> "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com> writes:
+>>>>>
+>>>>>> "Huang, Ying" <ying.huang@intel.com> writes:
+>>>>>>
+>>>>>>> Hi, Jagdish,
+>>>>>>>
+>>>>>>> Jagdish Gediya <jvgediya@linux.ibm.com> writes:
+>>>>>>>
+>>>>>>
+>>>>>> ...
+>>>>>>
+>>>>>>>> e.g. with below NUMA topology, where node 0 & 1 are
+>>>>>>>> cpu + dram nodes, node 2 & 3 are equally slower memory
+>>>>>>>> only nodes, and node 4 is slowest memory only node,
+>>>>>>>>
+>>>>>>>> available: 5 nodes (0-4)
+>>>>>>>> node 0 cpus: 0 1
+>>>>>>>> node 0 size: n MB
+>>>>>>>> node 0 free: n MB
+>>>>>>>> node 1 cpus: 2 3
+>>>>>>>> node 1 size: n MB
+>>>>>>>> node 1 free: n MB
+>>>>>>>> node 2 cpus:
+>>>>>>>> node 2 size: n MB
+>>>>>>>> node 2 free: n MB
+>>>>>>>> node 3 cpus:
+>>>>>>>> node 3 size: n MB
+>>>>>>>> node 3 free: n MB
+>>>>>>>> node 4 cpus:
+>>>>>>>> node 4 size: n MB
+>>>>>>>> node 4 free: n MB
+>>>>>>>> node distances:
+>>>>>>>> node   0   1   2   3   4
+>>>>>>>>    0:  10  20  40  40  80
+>>>>>>>>    1:  20  10  40  40  80
+>>>>>>>>    2:  40  40  10  40  80
+>>>>>>>>    3:  40  40  40  10  80
+>>>>>>>>    4:  80  80  80  80  10
+>>>>>>>>
+>>>>>>>> The existing implementation gives below demotion targets,
+>>>>>>>>
+>>>>>>>> node    demotion_target
+>>>>>>>>   0              3, 2
+>>>>>>>>   1              4
+>>>>>>>>   2              X
+>>>>>>>>   3              X
+>>>>>>>>   4		X
+>>>>>>>>
+>>>>>>>> With this patch applied, below are the demotion targets,
+>>>>>>>>
+>>>>>>>> node    demotion_target
+>>>>>>>>   0              3, 2
+>>>>>>>>   1              3, 2
+>>>>>>>>   2              3
+>>>>>>>>   3              4
+>>>>>>>>   4		X
+>>>>>>>
+>>>>>>> For such machine, I think the perfect demotion order is,
+>>>>>>>
+>>>>>>> node    demotion_target
+>>>>>>>   0              2, 3
+>>>>>>>   1              2, 3
+>>>>>>>   2              4
+>>>>>>>   3              4
+>>>>>>>   4              X
+>>>>>>
+>>>>>> I guess the "equally slow nodes" is a confusing definition here. Now if the
+>>>>>> system consists of 2 1GB equally slow memory and the firmware doesn't want to
+>>>>>> differentiate between them, firmware can present a single NUMA node
+>>>>>> with 2GB capacity? The fact that we are finding two NUMA nodes is a hint
+>>>>>> that there is some difference between these two memory devices. This is
+>>>>>> also captured by the fact that the distance between 2 and 3 is 40 and not 10.
+>>>>>
+>>>>> Do you have more information about this?
+>>>>
+>>>> Not sure I follow the question there. I was checking shouldn't firmware
+>>>> do a single NUMA node if two memory devices are of the same type? How will
+>>>> optane present such a config? Both the DIMMs will have the same
+>>>> proximity domain value and hence dax kmem will add them to the same NUMA
+>>>> node?
+>>>
+>>> Sorry for confusing.  I just wanted to check whether you have more
+>>> information about the machine configuration above.  The machines in my
+>>> hand have no complex NUMA topology as in the patch description.
+>>
+>>
+>> Even with simple topologies like below
+>>
+>> available: 3 nodes (0-2)
+>> node 0 cpus: 0 1
+>> node 0 size: 4046 MB
+>> node 0 free: 3478 MB
+>> node 1 cpus: 2 3
+>> node 1 size: 4090 MB
+>> node 1 free: 3430 MB
+>> node 2 cpus:
+>> node 2 size: 4074 MB
+>> node 2 free: 4037 MB
+>> node distances:
+>> node   0   1   2
+>>    0:  10  20  40
+>>    1:  20  10  40
+>>    2:  40  40  10
+>>
+>> With current code we get demotion targets assigned as below
+>>
+>> [    0.337307] Demotion nodes for Node 0: 2
+>> [    0.337351] Demotion nodes for Node 1:
+>> [    0.337380] Demotion nodes for Node 2:
+>>
+>> I guess we should fix that to be below?
+>>
+>> [    0.344554] Demotion nodes for Node 0: 2
+>> [    0.344605] Demotion nodes for Node 1: 2
+>> [    0.344638] Demotion nodes for Node 2:
+> 
+> If the cross-socket link has enough bandwidth to accommodate the PMEM
+> throughput, the new one is better.  If it hasn't, the old one may be
+> better.  So, I think we need some kind of user space overridden support
+> here.  Right?
+> 
+>> Most of the tests we are doing are using Qemu to simulate this. We
+>> started looking at this to avoid using demotion completely when slow
+>> memory is not present. ie, we should have a different way to identify
+>> demotion targets other than node_states[N_MEMORY]. Virtualized platforms
+>> can have configs with memory only NUMA nodes with DRAM and we don't
+>> want to consider those as demotion targets.
+> 
+> Even if the demotion targets are set for some node, the demotion will
+> not work before enabling demotion via sysfs
+> (/sys/kernel/mm/numa/demotion_enabled).  So for system without slow
+> memory, just don't enable demotion.
+> 
+>> While we are at it can you let us know how topology will look on a
+>> system with two optane DIMMs? Do both appear with the same
+>> target_node?
+> 
+> In my test system, multiple optane DIMMs in one socket will be
+> represented as one NUMA node.
+> 
+> I remember Baolin has different configuration.
+> 
+> Hi, Baolin,  Can you provide some information about this?
 
-thanks,
+Sure. We have real machines with 2 optane DIMMs, and they are 
+represented as 2 numa nodes. So we want to support the target demotion 
+nodes can be multiple.
 
--- 
-heikki
+available: 3 nodes (0-2)
+node 0 cpus: 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
+node 0 size: 62153 MB
+node 0 free: 447 MB
+node 1 cpus:
+node 1 size: 126969 MB
+node 1 free: 84099 MB
+node 2 cpus:
+node 2 size: 127006 MB
+node 2 free: 126925 MB
+node distances:
+node   0   1   2
+   0:  10  20  20
+   1:  20  10  20
+   2:  20  20  10
+
