@@ -2,313 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F7BAC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 07:43:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D40DDC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 07:44:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232364AbiCaHpb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 03:45:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52264 "EHLO
+        id S232371AbiCaHqD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 03:46:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232358AbiCaHp0 (ORCPT
+        with ESMTP id S232336AbiCaHpz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 03:45:26 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 248D322B17
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 00:43:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648712620; x=1680248620;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=qUXUdIx3W5/Jng1H4E3s8psSKJYBq5/lfpgRd8OZoYE=;
-  b=InqlwMuMQ9pa0XV4VQIQ1oR6lzzyxrPSaNcqNRRM2JKnsAtmsVtn6FFv
-   tIkRMKLkjzZYK2D/EHc4IkGBQuArye3++jVypnI9hg5dQK3lzEO3qseZa
-   1gXk5q3kUl4Loj9055GbmPHjSIumAOeD6tdTl4sVVedudUqLX7L/vMKT3
-   zYlyysN5PzAbFzJDzQbZAMBkJqVzvSP5HSEZ+yacU/l3uRy+R+qs/AYw/
-   Hb+PtoJnBD54TM0N9Upkmg8rMxWGm4E3pADt5tFoFnvLhYBy9ZwuBfVJA
-   /U3y6NU8WDzBrr/qnYSiTmm2p8r4DaDSbzrdBOOkMQz6GDt1m8f80ltSx
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="257326439"
-X-IronPort-AV: E=Sophos;i="5.90,224,1643702400"; 
-   d="scan'208";a="257326439"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2022 00:43:39 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,224,1643702400"; 
-   d="scan'208";a="566240327"
-Received: from unknown (HELO localhost.localdomain) ([10.226.216.87])
-  by orsmga008.jf.intel.com with ESMTP; 31 Mar 2022 00:43:37 -0700
-From:   kah.jing.lee@intel.com
-To:     Dinh Nguyen <dinguyen@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, radu.bacrau@intel.com,
-        tien.sung.ang@intel.com, Kah Jing Lee <kah.jing.lee@intel.com>
-Subject: [PATCH 2/2] firmware: stratix10-rsu: extend RSU driver to get DCMF status
-Date:   Thu, 31 Mar 2022 23:42:39 +0800
-Message-Id: <20220331154237.4158001-3-kah.jing.lee@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <4ab174c2-8772-d543-9784-31b4660efd82@kernel.org>
-References: <4ab174c2-8772-d543-9784-31b4660efd82@kernel.org>
+        Thu, 31 Mar 2022 03:45:55 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88744D7636
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 00:44:06 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KTb0208TjzdZQw;
+        Thu, 31 Mar 2022 15:43:46 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Thu, 31 Mar 2022 15:44:04 +0800
+Subject: Re: [PATCH 1/8] mm/vmscan: remove redundant folio_test_swapbacked
+ check when folio is file lru
+To:     "Huang, Ying" <ying.huang@intel.com>
+CC:     Andrew Morton <akpm@linux-foundation.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Muchun Song <songmuchun@bytedance.com>
+References: <20220329132619.18689-1-linmiaohe@huawei.com>
+ <20220329132619.18689-2-linmiaohe@huawei.com>
+ <CAMZfGtUPQvgaxG_6A0n6HwD9VjqbQUbnF99Ei9WpMZbTbnz4zg@mail.gmail.com>
+ <87lewqbpad.fsf@yhuang6-desk2.ccr.corp.intel.com>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <7c8d06f6-ac41-d3d7-f6b6-20a06e56dc61@huawei.com>
+Date:   Thu, 31 Mar 2022 15:44:03 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <87lewqbpad.fsf@yhuang6-desk2.ccr.corp.intel.com>
+Content-Type: text/plain; charset="windows-1252"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kah Jing Lee <kah.jing.lee@intel.com>
+On 2022/3/31 14:37, Huang, Ying wrote:
+> Muchun Song <songmuchun@bytedance.com> writes:
+> 
+>> On Tue, Mar 29, 2022 at 9:26 PM Miaohe Lin <linmiaohe@huawei.com> wrote:
+>>>
+>>> When folio is file lru, folio_test_swapbacked is guaranteed to be true. So
+>>> it's unnecessary to check it here again. No functional change intended.
+>>>
+>>> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+>>> ---
+>>>  mm/vmscan.c | 3 +--
+>>>  1 file changed, 1 insertion(+), 2 deletions(-)
+>>>
+>>> diff --git a/mm/vmscan.c b/mm/vmscan.c
+>>> index 1678802e03e7..7c1a9713bfc9 100644
+>>> --- a/mm/vmscan.c
+>>> +++ b/mm/vmscan.c
+>>> @@ -1434,8 +1434,7 @@ static void folio_check_dirty_writeback(struct folio *folio,
+>>>          * Anonymous pages are not handled by flushers and must be written
+>>>          * from reclaim context. Do not stall reclaim based on them
+>>>          */
+>>> -       if (!folio_is_file_lru(folio) ||
+>>> -           (folio_test_anon(folio) && !folio_test_swapbacked(folio))) {
+>>> +       if (!folio_is_file_lru(folio) || folio_test_anon(folio)) {
+>>
+>> At least your login is no problem since folio_is_file_lru() is equal to
+>> !folio_test_swapbacked().  But the new code is not clear to me.
+>> The old code is easy to understand, e.g. folio_test_anon(folio) &&
+>> !folio_test_swapbacked(folio) tells us that the anon pages which
+>> do not need to be swapped should be skipped.
+> 
+> That is for MADV_FREE pages.  The code is introduced in commit
+> 802a3a92ad7a ("mm: reclaim MADV_FREE pages").
+> 
+> So I think the original code is better.  It's an implementation detail
+> that folio_is_file_lru() equals !folio_test_swapbacked().  It may be
+> better to add some comments here for MADV_FREE pages.
+> 
 
-Extend RSU driver to get DCMF status.
+Do you tend to drop this patch or adding a comment with the change in this patch or something else?
 
-The status of each DCMF is reported. The currently used DCMF is used as
-reference, while the other three are compared against it to determine if
-they are corrupted.
+Thanks.
 
-DCMF = Decision Configuration Management Firmware.
-RSU = Remote System Update
-
-Signed-off-by: Radu Bacrau <radu.bacrau@intel.com>
-Signed-off-by: Kah Jing Lee <kah.jing.lee@intel.com>
----
- drivers/firmware/stratix10-rsu.c | 131 +++++++++++++++++++++++++++++--
- 1 file changed, 125 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/firmware/stratix10-rsu.c b/drivers/firmware/stratix10-rsu.c
-index 9378075d04e9..856bc03ca07c 100644
---- a/drivers/firmware/stratix10-rsu.c
-+++ b/drivers/firmware/stratix10-rsu.c
-@@ -24,12 +24,16 @@
- #define RSU_DCMF1_MASK			GENMASK_ULL(63, 32)
- #define RSU_DCMF2_MASK			GENMASK_ULL(31, 0)
- #define RSU_DCMF3_MASK			GENMASK_ULL(63, 32)
-+#define RSU_DCMF0_STATUS_MASK		GENMASK_ULL(15, 0)
-+#define RSU_DCMF1_STATUS_MASK		GENMASK_ULL(31, 16)
-+#define RSU_DCMF2_STATUS_MASK		GENMASK_ULL(47, 32)
-+#define RSU_DCMF3_STATUS_MASK		GENMASK_ULL(63, 48)
- 
- #define RSU_TIMEOUT	(msecs_to_jiffies(SVC_RSU_REQUEST_TIMEOUT_MS))
- 
- #define INVALID_RETRY_COUNTER		0xFF
- #define INVALID_DCMF_VERSION		0xFF
--
-+#define INVALID_DCMF_STATUS		0xFFFFFFFF
- 
- typedef void (*rsu_callback)(struct stratix10_svc_client *client,
- 			     struct stratix10_svc_cb_data *data);
-@@ -49,6 +53,10 @@ typedef void (*rsu_callback)(struct stratix10_svc_client *client,
-  * @dcmf_version.dcmf1: Quartus dcmf1 version
-  * @dcmf_version.dcmf2: Quartus dcmf2 version
-  * @dcmf_version.dcmf3: Quartus dcmf3 version
-+ * @dcmf_status.dcmf0: dcmf0 status
-+ * @dcmf_status.dcmf1: dcmf1 status
-+ * @dcmf_status.dcmf2: dcmf2 status
-+ * @dcmf_status.dcmf3: dcmf3 status
-  * @retry_counter: the current image's retry counter
-  * @max_retry: the preset max retry value
-  */
-@@ -73,6 +81,13 @@ struct stratix10_rsu_priv {
- 		unsigned int dcmf3;
- 	} dcmf_version;
- 
-+	struct {
-+		unsigned int dcmf0;
-+		unsigned int dcmf1;
-+		unsigned int dcmf2;
-+		unsigned int dcmf3;
-+	} dcmf_status;
-+
- 	unsigned int retry_counter;
- 	unsigned int max_retry;
- };
-@@ -129,7 +144,7 @@ static void rsu_command_callback(struct stratix10_svc_client *client,
- 	struct stratix10_rsu_priv *priv = client->priv;
- 
- 	if (data->status == BIT(SVC_STATUS_NO_SUPPORT))
--		dev_warn(client->dev, "FW doesn't support notify\n");
-+		dev_warn(client->dev, "Secure FW doesn't support notify\n");
- 	else if (data->status == BIT(SVC_STATUS_ERROR))
- 		dev_err(client->dev, "Failure, returned status is %lu\n",
- 			BIT(data->status));
-@@ -139,7 +154,7 @@ static void rsu_command_callback(struct stratix10_svc_client *client,
- 
- /**
-  * rsu_retry_callback() - Callback from Intel service layer for getting
-- * the current image's retry counter from the firmware
-+ * the current image's retry counter from firmware
-  * @client: pointer to client
-  * @data: pointer to callback data structure
-  *
-@@ -156,7 +171,7 @@ static void rsu_retry_callback(struct stratix10_svc_client *client,
- 	if (data->status == BIT(SVC_STATUS_OK))
- 		priv->retry_counter = *counter;
- 	else if (data->status == BIT(SVC_STATUS_NO_SUPPORT))
--		dev_warn(client->dev, "FW doesn't support retry\n");
-+		dev_warn(client->dev, "Secure FW doesn't support retry\n");
- 	else
- 		dev_err(client->dev, "Failed to get retry counter %lu\n",
- 			BIT(data->status));
-@@ -181,7 +196,7 @@ static void rsu_max_retry_callback(struct stratix10_svc_client *client,
- 	if (data->status == BIT(SVC_STATUS_OK))
- 		priv->max_retry = *max_retry;
- 	else if (data->status == BIT(SVC_STATUS_NO_SUPPORT))
--		dev_warn(client->dev, "FW doesn't support max retry\n");
-+		dev_warn(client->dev, "Secure FW doesn't support max retry\n");
- 	else
- 		dev_err(client->dev, "Failed to get max retry %lu\n",
- 			BIT(data->status));
-@@ -215,6 +230,35 @@ static void rsu_dcmf_version_callback(struct stratix10_svc_client *client,
- 	complete(&priv->completion);
- }
- 
-+/**
-+ * rsu_dcmf_status_callback() - Callback from Intel service layer for getting
-+ * the DCMF status
-+ * @client: pointer to client
-+ * @data: pointer to callback data structure
-+ *
-+ * Callback from Intel service layer for DCMF status
-+ */
-+static void rsu_dcmf_status_callback(struct stratix10_svc_client *client,
-+				     struct stratix10_svc_cb_data *data)
-+{
-+	struct stratix10_rsu_priv *priv = client->priv;
-+	unsigned long long *value = (unsigned long long *)data->kaddr1;
-+
-+	if (data->status == BIT(SVC_STATUS_OK)) {
-+		priv->dcmf_status.dcmf0 = FIELD_GET(RSU_DCMF0_STATUS_MASK,
-+						    *value);
-+		priv->dcmf_status.dcmf1 = FIELD_GET(RSU_DCMF1_STATUS_MASK,
-+						    *value);
-+		priv->dcmf_status.dcmf2 = FIELD_GET(RSU_DCMF2_STATUS_MASK,
-+						    *value);
-+		priv->dcmf_status.dcmf3 = FIELD_GET(RSU_DCMF3_STATUS_MASK,
-+						    *value);
-+	} else
-+		dev_err(client->dev, "failed to get DCMF status\n");
-+
-+	complete(&priv->completion);
-+}
-+
- /**
-  * rsu_send_msg() - send a message to Intel service layer
-  * @priv: pointer to rsu private data
-@@ -361,7 +405,8 @@ static ssize_t max_retry_show(struct device *dev,
- 	if (!priv)
- 		return -ENODEV;
- 
--	return sprintf(buf, "0x%08x\n", priv->max_retry);
-+	return scnprintf(buf, sizeof(priv->max_retry),
-+			 "0x%08x\n", priv->max_retry);
- }
- 
- static ssize_t dcmf0_show(struct device *dev,
-@@ -408,6 +453,61 @@ static ssize_t dcmf3_show(struct device *dev,
- 	return sprintf(buf, "0x%08x\n", priv->dcmf_version.dcmf3);
- }
- 
-+static ssize_t dcmf0_status_show(struct device *dev,
-+				 struct device_attribute *attr, char *buf)
-+{
-+	struct stratix10_rsu_priv *priv = dev_get_drvdata(dev);
-+
-+	if (!priv)
-+		return -ENODEV;
-+
-+	if (priv->dcmf_status.dcmf0 == INVALID_DCMF_STATUS)
-+		return -EIO;
-+
-+	return sprintf(buf, "0x%08x\n", priv->dcmf_status.dcmf0);
-+}
-+
-+static ssize_t dcmf1_status_show(struct device *dev,
-+				 struct device_attribute *attr, char *buf)
-+{
-+	struct stratix10_rsu_priv *priv = dev_get_drvdata(dev);
-+
-+	if (!priv)
-+		return -ENODEV;
-+
-+	if (priv->dcmf_status.dcmf1 == INVALID_DCMF_STATUS)
-+		return -EIO;
-+
-+	return sprintf(buf, "0x%08x\n", priv->dcmf_status.dcmf1);
-+}
-+
-+static ssize_t dcmf2_status_show(struct device *dev,
-+				struct device_attribute *attr, char *buf)
-+{
-+	struct stratix10_rsu_priv *priv = dev_get_drvdata(dev);
-+
-+	if (!priv)
-+		return -ENODEV;
-+
-+	if (priv->dcmf_status.dcmf2 == INVALID_DCMF_STATUS)
-+		return -EIO;
-+
-+	return sprintf(buf, "0x%08x\n", priv->dcmf_status.dcmf2);
-+}
-+
-+static ssize_t dcmf3_status_show(struct device *dev,
-+				 struct device_attribute *attr, char *buf)
-+{
-+	struct stratix10_rsu_priv *priv = dev_get_drvdata(dev);
-+
-+	if (!priv)
-+		return -ENODEV;
-+
-+	if (priv->dcmf_status.dcmf3 == INVALID_DCMF_STATUS)
-+		return -EIO;
-+
-+	return sprintf(buf, "0x%08x\n", priv->dcmf_status.dcmf3);
-+}
- static ssize_t reboot_image_store(struct device *dev,
- 				  struct device_attribute *attr,
- 				  const char *buf, size_t count)
-@@ -484,6 +584,10 @@ static DEVICE_ATTR_RO(dcmf0);
- static DEVICE_ATTR_RO(dcmf1);
- static DEVICE_ATTR_RO(dcmf2);
- static DEVICE_ATTR_RO(dcmf3);
-+static DEVICE_ATTR_RO(dcmf0_status);
-+static DEVICE_ATTR_RO(dcmf1_status);
-+static DEVICE_ATTR_RO(dcmf2_status);
-+static DEVICE_ATTR_RO(dcmf3_status);
- static DEVICE_ATTR_WO(reboot_image);
- static DEVICE_ATTR_WO(notify);
- 
-@@ -500,6 +604,10 @@ static struct attribute *rsu_attrs[] = {
- 	&dev_attr_dcmf1.attr,
- 	&dev_attr_dcmf2.attr,
- 	&dev_attr_dcmf3.attr,
-+	&dev_attr_dcmf0_status.attr,
-+	&dev_attr_dcmf1_status.attr,
-+	&dev_attr_dcmf2_status.attr,
-+	&dev_attr_dcmf3_status.attr,
- 	&dev_attr_reboot_image.attr,
- 	&dev_attr_notify.attr,
- 	NULL
-@@ -532,6 +640,10 @@ static int stratix10_rsu_probe(struct platform_device *pdev)
- 	priv->dcmf_version.dcmf2 = INVALID_DCMF_VERSION;
- 	priv->dcmf_version.dcmf3 = INVALID_DCMF_VERSION;
- 	priv->max_retry = INVALID_RETRY_COUNTER;
-+	priv->dcmf_status.dcmf0 = INVALID_DCMF_STATUS;
-+	priv->dcmf_status.dcmf1 = INVALID_DCMF_STATUS;
-+	priv->dcmf_status.dcmf2 = INVALID_DCMF_STATUS;
-+	priv->dcmf_status.dcmf3 = INVALID_DCMF_STATUS;
- 
- 	mutex_init(&priv->lock);
- 	priv->chan = stratix10_svc_request_channel_byname(&priv->client,
-@@ -561,6 +673,13 @@ static int stratix10_rsu_probe(struct platform_device *pdev)
- 		stratix10_svc_free_channel(priv->chan);
- 	}
- 
-+	ret = rsu_send_msg(priv, COMMAND_RSU_DCMF_STATUS,
-+			   0, rsu_dcmf_status_callback);
-+	if (ret) {
-+		dev_err(dev, "Error, getting DCMF status %i\n", ret);
-+		stratix10_svc_free_channel(priv->chan);
-+	}
-+
- 	ret = rsu_send_msg(priv, COMMAND_RSU_RETRY, 0, rsu_retry_callback);
- 	if (ret) {
- 		dev_err(dev, "Error, getting RSU retry %i\n", ret);
--- 
-2.25.1
+>> So I'm neutral on the patch.
+> 
+> Best Regards,
+> Huang, Ying
+> .
+> 
 
