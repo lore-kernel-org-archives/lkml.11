@@ -2,175 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E34DAC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 04:08:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFFF0C43217
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 04:08:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229692AbiCaEKE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 00:10:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51066 "EHLO
+        id S229577AbiCaEKa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 00:10:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229610AbiCaEJU (ORCPT
+        with ESMTP id S229713AbiCaEJu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 00:09:20 -0400
-Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C53C170084;
-        Wed, 30 Mar 2022 20:56:59 -0700 (PDT)
-Received: by mail-qk1-x731.google.com with SMTP id g8so18827481qke.2;
-        Wed, 30 Mar 2022 20:56:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=tYlHPxM0iDi5VXE98hgeozahqYJk78JaFFeV+qzNw5U=;
-        b=mTmT7+N63PXuIwB75+CKvFI6cw/jzFICsKFlmrX98DCY4KgVobDxkUkLrPbILjWEVd
-         zOpsJzohasYTU2cri3mhczLOHO+85IFJWAcIzlnZ8sYbVwKoGAyN3ZrI0vtWoa7Qu3eu
-         CsqMCtZFWjlutPRNC7lKg6mZUe8Sh5MDsmm5GAacxLBCKifK/EA4n2cFQBko12jzZ9sS
-         WKQUNIcMTTE9y9FtrLpqhMIlKbYvWdq1U+ww/1au0hwzkHBamg7+Phf1Jd5WuYcisENx
-         lCO2kL34hCyKaR+8Rf8wpTYtiFvSRdvzMZ6EfRXAZk+xbijJO3mI2cpMPxQ0aZw2TTYf
-         kybg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=tYlHPxM0iDi5VXE98hgeozahqYJk78JaFFeV+qzNw5U=;
-        b=STUmnVhXh3Sl9XglOkQc0q42kfRim7WNYEzUWi3rEpWsak8Bo6/GdGb0uFif48+39l
-         MDu5uiw2YHoHws3uWmyTOkkceq6y3WAr8IPjocqb1k/rJXFV9Z7RH3T4eylr/ke3QcjJ
-         XK4AmlGHGuqjb/+YfFGBCVh5z9MjAdpe5+SE17gIZyiZEnfqxJ35AYpVBnacvZPzq1Om
-         IY8P6NLbrP/GEH/X/6fh1xel6nG34idP+lZDZBQrAmfPZ/OG/YzwO6lG3mxybkTgXqGk
-         AfhCaNbvBUJvVi8UqZPPH/yVDw1kXCkGnxNN8f2quvDKfJ+F5A+BMkkittxpkhMtKVIB
-         B1xQ==
-X-Gm-Message-State: AOAM5317i4sAHqNIthshm6txwNYl0SRLQpYDUY9za6OmGu3zO+ivoggd
-        bUXnHg0JH+c2n+y8Qwb3nQGP/gc3O/o=
-X-Google-Smtp-Source: ABdhPJzyPrz0p+L/ALJneQJkAZo6ZUHwvs4kf6iDO0DACiqXPcs8bbEYZ5Igo5IyJWR4z4os6/CMDA==
-X-Received: by 2002:a37:9503:0:b0:67e:977:9ff6 with SMTP id x3-20020a379503000000b0067e09779ff6mr2101575qkd.10.1648699018774;
-        Wed, 30 Mar 2022 20:56:58 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id f17-20020ac87f11000000b002e1e831366asm18698404qtk.77.2022.03.30.20.56.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Mar 2022 20:56:57 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: yang.yang29@zte.com.cn
-To:     akpm@linux-foundation.org, david@redhat.com, willy@infradead.org
-Cc:     corbet@lwn.net, yang.yang29@zte.com.cn, yang.shi@linux.alibaba.com,
-        dave.hansen@linux.intel.com, saravanand@fb.com, minchan@kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, jhubbard@nvidia.com,
-        xu xin <xu.xin16@zte.com.cn>,
-        Ran Xiaokai <ran.xiaokai@zte.com.cn>
-Subject: [PATCH v5] mm/vmstat: add events for ksm cow
-Date:   Thu, 31 Mar 2022 03:56:17 +0000
-Message-Id: <20220331035616.2390805-1-yang.yang29@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        Thu, 31 Mar 2022 00:09:50 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09956EBBB6;
+        Wed, 30 Mar 2022 20:55:17 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KTT6d4YTjz4xLb;
+        Thu, 31 Mar 2022 14:19:05 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1648696745;
+        bh=E3hYx8szoYaLX1XgIgbRGhSpGe8jJggQuqTYlJ9XJW0=;
+        h=Date:From:To:Cc:Subject:From;
+        b=OCk8XCWrDROjJq4J0uswxT8wtI+Fxmf73nc1R04Z4W8XNkQsAIQVug+nNsv6/6vO6
+         T3kzGUgw1WGblmDmUr2YWHZIobv+jigEjdObxq/7oj8jhSPQczcQWpQ8tiqxF+o05o
+         FuRX0iG3Sx+ZcGqdaZcsgF3SZ7Yj83hPa1No0960WUpBI1tcElAhw0mQ3q1XoxSPXD
+         xPcfoixEJ/fwo4dNMzwWSeCDETLXHmbYB5xxFBanxM7RqOuqfZm2LYtZdAL/IV9nbZ
+         p4JakN7n8Pppeiir3FgrDe/dKDMDsOZVa7tXyWHGKFWkXJ0Y03CI5oYKw8nnJ0dZCR
+         3diRQ8w6u7+pA==
+Date:   Thu, 31 Mar 2022 14:18:58 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
+        Andrey Konovalov <andreyknvl@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: build failure after merge of the akpm-current tree
+Message-ID: <20220331141858.46b4df12@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_/iJq6z=2XZ=qKPYISgRewnQq";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yang <yang.yang29@zte.com.cn>
+--Sig_/iJq6z=2XZ=qKPYISgRewnQq
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Users may use ksm by calling madvise(, , MADV_MERGEABLE) when they want
-to save memory, it's a tradeoff by suffering delay on ksm cow. Users can
-get to know how much memory ksm saved by reading
-/sys/kernel/mm/ksm/pages_sharing, but they don't know what's the costs
-of ksm cow, and this is important of some delay sensitive tasks.
+Hi all,
 
-So add ksm cow events to help users evaluate whether or how to use ksm.
-Also update Documentation/admin-guide/mm/ksm.rst with new added events.
+After merging the akpm-current tree, today's linux-next build (arm64
+defconfig) failed like this:
 
-Signed-off-by: Yang Yang <yang.yang29@zte.com.cn>
-Reviewed-by: David Hildenbrand <david@redhat.com>
-Reviewed-by: xu xin <xu.xin16@zte.com.cn>
-Reviewed-by: Ran Xiaokai <ran.xiaokai@zte.com.cn>
+In file included from include/asm-generic/percpu.h:7,
+                 from arch/arm64/include/asm/percpu.h:248,
+                 from include/linux/irqflags.h:17,
+                 from include/linux/spinlock.h:58,
+                 from include/linux/irq.h:14,
+                 from arch/arm64/kernel/irq.c:13:
+arch/arm64/kernel/irq.c: In function 'init_irq_scs':
+arch/arm64/kernel/irq.c:44:25: error: 'irq_shadow_call_stack_ptr' undeclare=
+d (first use in this function)
+   44 |                 per_cpu(irq_shadow_call_stack_ptr, cpu) =3D
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~
+include/linux/percpu-defs.h:219:54: note: in definition of macro '__verify_=
+pcpu_ptr'
+  219 |         const void __percpu *__vpp_verify =3D (typeof((ptr) + 0))NU=
+LL;    \
+      |                                                      ^~~
+include/linux/percpu-defs.h:269:35: note: in expansion of macro 'per_cpu_pt=
+r'
+  269 | #define per_cpu(var, cpu)       (*per_cpu_ptr(&(var), cpu))
+      |                                   ^~~~~~~~~~~
+arch/arm64/kernel/irq.c:44:17: note: in expansion of macro 'per_cpu'
+   44 |                 per_cpu(irq_shadow_call_stack_ptr, cpu) =3D
+      |                 ^~~~~~~
+arch/arm64/kernel/irq.c:44:25: note: each undeclared identifier is reported=
+ only once for each function it appears in
+   44 |                 per_cpu(irq_shadow_call_stack_ptr, cpu) =3D
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~
+include/linux/percpu-defs.h:219:54: note: in definition of macro '__verify_=
+pcpu_ptr'
+  219 |         const void __percpu *__vpp_verify =3D (typeof((ptr) + 0))NU=
+LL;    \
+      |                                                      ^~~
+include/linux/percpu-defs.h:269:35: note: in expansion of macro 'per_cpu_pt=
+r'
+  269 | #define per_cpu(var, cpu)       (*per_cpu_ptr(&(var), cpu))
+      |                                   ^~~~~~~~~~~
+arch/arm64/kernel/irq.c:44:17: note: in expansion of macro 'per_cpu'
+   44 |                 per_cpu(irq_shadow_call_stack_ptr, cpu) =3D
+      |                 ^~~~~~~
+
+Caused by commit
+
+  aa0120feb340 ("arm64, scs: save scs_sp values per-cpu when switching stac=
+ks")
+
+I have applied the following patch for today.
+
+From: Stephen Rothwell <sfr@canb.auug.org.au>
+Date: Thu, 31 Mar 2022 13:33:55 +1100
+Subject: [PATCH] fix up for "arm64, scs: save scs_sp values per-cpu when sw=
+itching stacks"
+
+Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
 ---
-v2:
-- fix compile error when CONFIG_KSM is not set
-v3:
-- delete KSM_COW_FAIL event
-v4:
-- modify /Documentation/admin-guide/mm/ksm.rst. And let cow_ksm before
-- ksm_swpin_copy, so if new cow_* event could add before cow_ksm.
-v5:
-- fix compile error when CONFIG_SWAP is not set
----
- Documentation/admin-guide/mm/ksm.rst | 18 ++++++++++++++++++
- include/linux/vm_event_item.h        |  3 +++
- mm/memory.c                          |  4 ++++
- mm/vmstat.c                          |  3 +++
- 4 files changed, 28 insertions(+)
+ arch/arm64/kernel/irq.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/admin-guide/mm/ksm.rst b/Documentation/admin-guide/mm/ksm.rst
-index 97d816791aca..b244f0202a03 100644
---- a/Documentation/admin-guide/mm/ksm.rst
-+++ b/Documentation/admin-guide/mm/ksm.rst
-@@ -184,6 +184,24 @@ The maximum possible ``pages_sharing/pages_shared`` ratio is limited by the
- ``max_page_sharing`` tunable. To increase the ratio ``max_page_sharing`` must
- be increased accordingly.
- 
-+Monitoring KSM events
-+=====================
-+
-+There are some counters in /proc/vmstat that may be used to monitor KSM events.
-+KSM might help save memory, it's a tradeoff by may suffering delay on KSM COW
-+or on swapping in copy. Those events could help users evaluate whether or how
-+to use KSM. For example, if cow_ksm increases too fast, user may decrease the
-+range of madvise(, , MADV_MERGEABLE).
-+
-+cow_ksm
-+	is incremented every time a KSM page triggers copy on write (COW)
-+	when users try to write to a KSM page, we have to make a copy.
-+
-+ksm_swpin_copy
-+	is incremented every time a KSM page is copied when swapping in
-+	note that KSM page might be copied when swapping in because do_swap_page()
-+	cannot do all the locking needed to reconstitute a cross-anon_vma KSM page.
-+
- --
- Izik Eidus,
- Hugh Dickins, 17 Nov 2009
-diff --git a/include/linux/vm_event_item.h b/include/linux/vm_event_item.h
-index 16a0a4fd000b..e83967e4c20e 100644
---- a/include/linux/vm_event_item.h
-+++ b/include/linux/vm_event_item.h
-@@ -133,6 +133,9 @@ enum vm_event_item { PGPGIN, PGPGOUT, PSWPIN, PSWPOUT,
- 		KSM_SWPIN_COPY,
- #endif
- #endif
-+#ifdef CONFIG_KSM
-+		COW_KSM,
-+#endif
- #ifdef CONFIG_X86
- 		DIRECT_MAP_LEVEL2_SPLIT,
- 		DIRECT_MAP_LEVEL3_SPLIT,
-diff --git a/mm/memory.c b/mm/memory.c
-index 4111f97c91a0..12925ceaf745 100644
---- a/mm/memory.c
-+++ b/mm/memory.c
-@@ -3339,6 +3339,10 @@ static vm_fault_t do_wp_page(struct vm_fault *vmf)
- 	get_page(vmf->page);
- 
- 	pte_unmap_unlock(vmf->pte, vmf->ptl);
-+#ifdef CONFIG_KSM
-+	if (PageKsm(vmf->page))
-+		count_vm_event(COW_KSM);
-+#endif
- 	return wp_page_copy(vmf);
- }
- 
-diff --git a/mm/vmstat.c b/mm/vmstat.c
-index d5cc8d739fac..79015f144b15 100644
---- a/mm/vmstat.c
-+++ b/mm/vmstat.c
-@@ -1392,6 +1392,9 @@ const char * const vmstat_text[] = {
- 	"ksm_swpin_copy",
- #endif
- #endif
-+#ifdef CONFIG_KSM
-+	"cow_ksm",
-+#endif
- #ifdef CONFIG_X86
- 	"direct_map_level2_splits",
- 	"direct_map_level3_splits",
--- 
-2.25.1
+diff --git a/arch/arm64/kernel/irq.c b/arch/arm64/kernel/irq.c
+index 4199f900714a..5a15e6a42cbf 100644
+--- a/arch/arm64/kernel/irq.c
++++ b/arch/arm64/kernel/irq.c
+@@ -22,6 +22,7 @@
+ #include <linux/vmalloc.h>
+ #include <asm/daifflags.h>
+ #include <asm/vmap_stack.h>
++#include <asm/scs.h>
+=20
+ /* Only access this in an NMI enter/exit */
+ DEFINE_PER_CPU(struct nmi_ctx, nmi_contexts);
+--=20
+2.35.1
 
+This then produced the following:
+
+arch/arm64/kernel/stacktrace.c: In function 'arch_stack_walk_shadow':
+arch/arm64/kernel/stacktrace.c:289:20: error: implicit declaration of funct=
+ion 'task_scs'; did you mean 'task_lock'? [-Werror=3Dimplicit-function-decl=
+aration]
+  289 |         scs_base =3D task_scs(current);
+      |                    ^~~~~~~~
+      |                    task_lock
+arch/arm64/kernel/stacktrace.c:289:18: warning: assignment to 'long unsigne=
+d int *' from 'int' makes pointer from integer without a cast [-Wint-conver=
+sion]
+  289 |         scs_base =3D task_scs(current);
+      |                  ^
+
+I assume this has never been compiled with CONFIG_SHADOW_CALL_STACK not
+set :-(
+
+I have reverted these commits for today:
+
+5c6df774c321 kasan: use stack_trace_save_shadow
+0f63d30c44d6 arm64: implement stack_trace_save_shadow
+aa0120feb340 arm64, scs: save scs_sp values per-cpu when switching stacks
+636fecb8f05e stacktrace: add interface based on shadow call stack
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/iJq6z=2XZ=qKPYISgRewnQq
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJFHaIACgkQAVBC80lX
+0GzpXgf/ZmjlKQ6npWRw9eBljYrq6M4ZI9Yrr4Cq1J6tyEjlJf6I4FcO2gBQEK1X
+fnGj3SmIv7MkHUz+wacWQn5ROkDqdCsyqEabNzNgw0omSlrep1G/F0Bt8jlNI1tz
+qYa6M2janX36AL3GGIAP4+Csc1G9Qsp9IMSrn6WImxDidzkrMVVq2V+IB4tSf7Xt
+BkAvz0RuIpI0CE0jyfsE+9YuCWVngxmm7OZio9bS6aewz9WIe82lkdaqKEDVcnfF
+xN06/F/ecg9m/dcBFf30ma24EXlhFAZTYrPDdK0Rr2RQAvkrOwbtfIbwZebBlV0z
+hcxBrdBVabvms6mbLB2pRlnjB6VwNA==
+=GCb6
+-----END PGP SIGNATURE-----
+
+--Sig_/iJq6z=2XZ=qKPYISgRewnQq--
