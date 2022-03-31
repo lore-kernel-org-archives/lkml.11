@@ -2,139 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29562C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 11:38:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 509ADC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 11:40:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235243AbiCaLj6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 07:39:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34236 "EHLO
+        id S235251AbiCaLlp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 07:41:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232097AbiCaLjz (ORCPT
+        with ESMTP id S230433AbiCaLlo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 07:39:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E52B0208247;
-        Thu, 31 Mar 2022 04:38:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8015961534;
-        Thu, 31 Mar 2022 11:38:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A86DC340ED;
-        Thu, 31 Mar 2022 11:38:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648726686;
-        bh=/jI8Y2KnjFMiq0vz5kPkp3upN5zf40lZ63WmlzK4JIg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=QmbXyl3x9opWS5I5HuQOfmYLg/S2gTYFf+btlwjkEb6OYK9x2eOjky/1VGHzeV3Yg
-         5Mht1VcgA+iUjho9ZlpOTynkhLoXqf2kWZAGWR1VZkMW4XqbdC9P5yRYlodsLrzAye
-         +yGquo1sdj/0AF0xWrDn/7acj7s1L23ljSAYStSM=
-Date:   Thu, 31 Mar 2022 13:38:02 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Cc:     Won Chung <wonchung@google.com>,
-        Tomas Winkler <tomas.winkler@intel.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Benson Leung <bleung@chromium.org>,
-        Prashant Malani <pmalani@chromium.org>,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH v3] misc/mei: Add NULL check to component match callback
- functions
-Message-ID: <YkWSmvrEevLsyDH5@kroah.com>
-References: <20220331084918.2592699-1-wonchung@google.com>
- <YkVtvhC0n9B994/A@kroah.com>
- <YkV1KK8joyDAgf50@kuha.fi.intel.com>
+        Thu, 31 Mar 2022 07:41:44 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A816D9B;
+        Thu, 31 Mar 2022 04:39:57 -0700 (PDT)
+Received: from mail-ej1-f41.google.com ([209.85.218.41]) by
+ mrelayeu.kundenserver.de (mreue012 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1MODeL-1nOfpa3AYD-00OTx0; Thu, 31 Mar 2022 13:39:55 +0200
+Received: by mail-ej1-f41.google.com with SMTP id bi12so47569244ejb.3;
+        Thu, 31 Mar 2022 04:39:55 -0700 (PDT)
+X-Gm-Message-State: AOAM530QE4AKPtAC0vv54I4CEfehPscaI4Z1aHLtE+4r40BpAL0ce+de
+        y4xd33Ut/gnOdbOuqPtAEFBjhbIVOXkWECFoEV0=
+X-Google-Smtp-Source: ABdhPJwfRFXUt4OqOk81tKu7LM5gxC4c3u5ZlWSR5HmES53I0aChYbGQncx+2OGAT9B1zXjl61ywA7U1ZfgbuUggEKw=
+X-Received: by 2002:adf:e54e:0:b0:205:a9be:c66e with SMTP id
+ z14-20020adfe54e000000b00205a9bec66emr3308561wrm.192.1648717132578; Thu, 31
+ Mar 2022 01:58:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YkV1KK8joyDAgf50@kuha.fi.intel.com>
+References: <cover.1648714851.git.qinjian@cqplus1.com> <6abf8de01fa2f24e13e9b78b3dc3b206ea551c9c.1648714851.git.qinjian@cqplus1.com>
+In-Reply-To: <6abf8de01fa2f24e13e9b78b3dc3b206ea551c9c.1648714851.git.qinjian@cqplus1.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Thu, 31 Mar 2022 10:58:36 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a1APzs74YTcZ=m43G3zrmwJZKcYSTvV5eDDQX-37UY7Tw@mail.gmail.com>
+Message-ID: <CAK8P3a1APzs74YTcZ=m43G3zrmwJZKcYSTvV5eDDQX-37UY7Tw@mail.gmail.com>
+Subject: Re: [PATCH v12 2/9] dt-bindings: reset: Add bindings for SP7021 reset driver
+To:     Qin Jian <qinjian@cqplus1.com>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        DTML <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:xb1nwe6pZUMj7SqipxY2qwYa302nWoQUEarEMdwC9tLY7AUD4YA
+ pzxTeNO9EH5MEJjlsdLObXI4TlhiF6159X+058Z5ChoaVq3AstNIYxEoyS2hr5V2QOjx6kl
+ Vowdo1QgrJl2MIggFw4Sr5uMIC5LZF9uztTYYOpRNmDEOcy1KdbUEvEVHnjHeHi8hcenNUa
+ DUVKDYYcfXBAE0TC1DYGA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:Yh7e+nE09wQ=:ITjTAe7s+PDrwX8B7qWaLz
+ JoaAbrov4WBAt4xlN/tlggRqmCRguIsVyNgj+zaLd6D0Zvf7gzlEauKxLqF2d3wYrLracTbyj
+ jIUxz8ASS2LBjwyP9DPZrK157LvEA5SqapdN5qjmSyakkRtiBXIVTeewueiEE6++VVAtrJO/u
+ KMap1i2mhWjwhb+7W3nBXFkhZP1D1pWiFhk0YRR1kS11Nj2SXyECG0ZrNX9Q4ix0e1OR0Ta+8
+ X9ty2qzTZILwhqU2rRz/7aJwf38JhxXpUvtLkSV5ORNuPbH9Ly40aKxR4v/V9+2BtpKme4uRF
+ 3zcv5u3ffj2aLckXMSaF8+PSyyZ1enIaWgs/MGbQWzKiy6V5Q5AAPc7xFIcplkFyT4oHxn5xh
+ jFSfq6EF4TpS3BLVUx/dPuKw3Xgfi1mUV3odFWYcMqDhHG97Hg2EJIR7UAIaVJjmKB76PKE/T
+ YHgxyWPtEyunmWnKR+BFtW5tBtSK9VqceryRdv88u0jHizr3zKFbImee0RI745z93Q8Niuc8L
+ jzYpke4DaMllXMdlGfR6yKwz47Yw5uhhyfb4yswaD76PDT8t3OLjcSEki7Pn2Pq2K/iXoGNsK
+ FxMwOWDgPzC7PMWGEjU7Yf00SUo/EO6iTpKf9av2H9cH3XHRd6cd6FsvwzGLL91nxnkOX8Mxx
+ mbOUfpu2N7jJs2ThCvb08ImVyOokeCYP3qkxJAo6dHhI2bK0PGjpUiEi1yCsb1gn1JZeOoHbf
+ rdReOnaqjhVG7hml26a6pi4UabQj9TNiYJ5HdpoU2qlkwlz6QewmaN6oQ34IJfRf/a7NZJ47m
+ 5uIglpyMxYjTQ4PXl2uP8s7gHpnN1FvQpXFjxCkUkhLF8SASDA=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 31, 2022 at 12:32:24PM +0300, Heikki Krogerus wrote:
-> On Thu, Mar 31, 2022 at 11:00:46AM +0200, Greg KH wrote:
-> > On Thu, Mar 31, 2022 at 08:49:18AM +0000, Won Chung wrote:
-> > > Component match callback functions need to check if expected data is
-> > > passed to them. Without this check, it can cause a NULL pointer
-> > > dereference when another driver registers a component before i915
-> > > drivers have their component master fully bind.
-> > 
-> > How can that happen in a real system?  Or does this just happen for when
-> > you are doing development and testing?
-> > 
-> > > 
-> > > Fixes: 1e8d19d9b0dfc ("mei: hdcp: bind only with i915 on the same PCH")
-> > > Fixes: c2004ce99ed73 ("mei: pxp: export pavp client to me client bus")
-> > > Suggested-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-> > > Suggested-by: Mika Westerberg <mika.westerberg@linux.intel.com>
-> > > Signed-off-by: Won Chung <wonchung@google.com>
-> > > Cc: stable@vger.kernel.org
-> > 
-> > Why does this need to go to stable?  How can this be triggered in older
-> > kernels?
-> > 
-> > > ---
-> > > Changes from v2:
-> > > - Correctly add "Suggested-by" tag
-> > > - Add "Cc: stable@vger.kernel.org"
-> > > 
-> > > Changes from v1:
-> > > - Add "Fixes" tag
-> > > - Send to stable@vger.kernel.org
-> > > 
-> > >  drivers/misc/mei/hdcp/mei_hdcp.c | 2 +-
-> > >  drivers/misc/mei/pxp/mei_pxp.c   | 2 +-
-> > >  2 files changed, 2 insertions(+), 2 deletions(-)
-> > > 
-> > > diff --git a/drivers/misc/mei/hdcp/mei_hdcp.c b/drivers/misc/mei/hdcp/mei_hdcp.c
-> > > index ec2a4fce8581..843dbc2b21b1 100644
-> > > --- a/drivers/misc/mei/hdcp/mei_hdcp.c
-> > > +++ b/drivers/misc/mei/hdcp/mei_hdcp.c
-> > > @@ -784,7 +784,7 @@ static int mei_hdcp_component_match(struct device *dev, int subcomponent,
-> > >  {
-> > >  	struct device *base = data;
-> > >  
-> > > -	if (strcmp(dev->driver->name, "i915") ||
-> > > +	if (!base || !dev->driver || strcmp(dev->driver->name, "i915") ||
-> > 
-> > How can base be NULL?
-> > 
-> > 
-> > >  	    subcomponent != I915_COMPONENT_HDCP)
-> > >  		return 0;
-> > >  
-> > > diff --git a/drivers/misc/mei/pxp/mei_pxp.c b/drivers/misc/mei/pxp/mei_pxp.c
-> > > index f7380d387bab..e32a81da8af6 100644
-> > > --- a/drivers/misc/mei/pxp/mei_pxp.c
-> > > +++ b/drivers/misc/mei/pxp/mei_pxp.c
-> > > @@ -131,7 +131,7 @@ static int mei_pxp_component_match(struct device *dev, int subcomponent,
-> > >  {
-> > >  	struct device *base = data;
-> > >  
-> > > -	if (strcmp(dev->driver->name, "i915") ||
-> > > +	if (!base || !dev->driver || strcmp(dev->driver->name, "i915") ||
-> > 
-> > Same here, shouldn't this be caught by the driver core or bus and match
-> > should not be called?
-> > 
-> > Why not fix this in the component/driver core instead?
-> 
-> A component is just a device that is declared to be a "component", and
-> the code that declares it as component does not have to be the driver
-> of that device. You simply can't assume that it's bind to a driver
-> like this function does.
-> 
-> In our case the "components" are USB ports, so devices that are never
-> bind to drivers.
+On Thu, Mar 31, 2022 at 10:29 AM Qin Jian <qinjian@cqplus1.com> wrote:
 
-And going off of the driver name is sane?  That feels ripe for bugs and
-problems in the future, but hey, I don't understand the need for this
-driver to care about another driver at all.
+> +/* mo_reset0 ~ mo_reset9 */
+> +#define RST_SYSTEM             0x00
+> +#define RST_RTC                        0x02
+> +#define RST_IOCTL              0x03
+> +#define RST_IOP                        0x04
+> +#define RST_OTPRX              0x05
+> +#define RST_NOC                        0x06
+> +#define RST_BR                 0x07
+> +#define RST_RBUS_L00           0x08
+> +#define RST_SPIFL              0x09
+> +#define RST_SDCTRL0            0x0a
+> +#define RST_PERI0              0x0b
+> +#define RST_A926               0x0d
+> +#define RST_UMCTL2             0x0e
+> +#define RST_PERI1              0x0f
+> +
+> +#define RST_DDR_PHY0           0x10
+> +#define RST_ACHIP              0x12
+> +#define RST_STC0               0x14
+> +#define RST_STC_AV0            0x15
+> +#define RST_STC_AV1            0x16
+> +#define RST_STC_AV2            0x17
 
-And why is a USB device being passed to something that it thinks is a
-PCI device?  That too feels really wrong and ripe for problems.
+The list looks like these definitions just match the hardware, which means you
+don't have to define them as a binding at all, just use the hardware numbers
+directly in the dt, as you do for interrupts or gpio numbers.
 
-thanks,
+If the hardware does not have a sane way of mapping reset lines to a particular
+hardware number, then you may have to define a binding, but in that case just
+use consecutive integer numbers, not hexadecimal numbers.
 
-greg k-h
+       Arnd
