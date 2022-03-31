@@ -2,105 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F881C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 04:14:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02C24C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 04:14:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230083AbiCaEQF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 00:16:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39414 "EHLO
+        id S230306AbiCaEQi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 00:16:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230138AbiCaEPS (ORCPT
+        with ESMTP id S229882AbiCaEQ1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 00:15:18 -0400
-Received: from mxct.zte.com.cn (mxct.zte.com.cn [58.251.27.85])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A80044A19;
-        Wed, 30 Mar 2022 20:47:48 -0700 (PDT)
-Received: from mxde.zte.com.cn (unknown [10.35.8.64])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mxct.zte.com.cn (FangMail) with ESMTPS id 4KTTNP59wXzXq2m;
-        Thu, 31 Mar 2022 11:31:01 +0800 (CST)
-Received: from mxus.zte.com.cn (unknown [10.207.168.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mxde.zte.com.cn (FangMail) with ESMTPS id 4KTTMb2Zk4zB5lqQ;
-        Thu, 31 Mar 2022 11:30:19 +0800 (CST)
-Received: from mxhk.zte.com.cn (unknown [192.168.250.138])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mxus.zte.com.cn (FangMail) with ESMTPS id 4KTTLy24h1zdmX8j;
-        Thu, 31 Mar 2022 11:29:46 +0800 (CST)
-Received: from mse-fl2.zte.com.cn (unknown [10.30.14.239])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mxhk.zte.com.cn (FangMail) with ESMTPS id 4KTTLL3NNKz7jZxb;
-        Thu, 31 Mar 2022 11:29:14 +0800 (CST)
-Received: from szxlzmapp04.zte.com.cn ([10.5.231.166])
-        by mse-fl2.zte.com.cn with SMTP id 22V3SxJ5037956;
-        Thu, 31 Mar 2022 11:28:59 +0800 (GMT-8)
-        (envelope-from wang.yi59@zte.com.cn)
-Received: from mapi (szxlzmapp02[null])
-        by mapi (Zmail) with MAPI id mid14;
-        Thu, 31 Mar 2022 11:28:59 +0800 (CST)
-Date:   Thu, 31 Mar 2022 11:28:59 +0800 (CST)
-X-Zmail-TransId: 2b0462451ffbffffffffa16-b94ad
-X-Mailer: Zmail v1.0
-Message-ID: <202203311128598207170@zte.com.cn>
-In-Reply-To: <20220331003826.GL27690@magnolia>
-References: 20220331080256.1874-1-wang.yi59@zte.com.cn,20220331003826.GL27690@magnolia
-Mime-Version: 1.0
-From:   <wang.yi59@zte.com.cn>
-To:     <djwong@kernel.org>
-Cc:     <linux-xfs@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <xue.zhihong@zte.com.cn>, <wang.liang82@zte.com.cn>,
-        <cheng.lin130@zte.com.cn>
-Subject: =?UTF-8?B?UmU6W1BBVENIXSB4ZnM6IGdldGF0dHIgaWdub3JlIGJsb2NrcyBiZXlvbmQgZW9m?=
-Content-Type: text/plain;
-        charset="UTF-8"
-X-MAIL: mse-fl2.zte.com.cn 22V3SxJ5037956
-X-Fangmail-Gw-Spam-Type: 0
-X-FangMail-Miltered: at cgslv5.04-192.168.251.14.novalocal with ID 62452074.000 by FangMail milter!
-X-FangMail-Envelope: 1648697461/4KTTNP59wXzXq2m/62452074.000/10.35.8.64/[10.35.8.64]/mxde.zte.com.cn/<wang.yi59@zte.com.cn>
-X-Fangmail-Anti-Spam-Filtered: true
-X-Fangmail-MID-QID: 62452074.000/4KTTNP59wXzXq2m
+        Thu, 31 Mar 2022 00:16:27 -0400
+Received: from fornost.hmeau.com (helcar.hmeau.com [216.24.177.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A35C3B82CA;
+        Wed, 30 Mar 2022 20:59:24 -0700 (PDT)
+Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
+        by fornost.hmeau.com with smtp (Exim 4.92 #5 (Debian))
+        id 1nZlIw-0003JX-6d; Thu, 31 Mar 2022 14:16:59 +1100
+Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Thu, 31 Mar 2022 15:16:58 +1200
+Date:   Thu, 31 Mar 2022 15:16:58 +1200
+From:   Herbert Xu <herbert@gondor.apana.org.au>
+To:     Linus Torvalds <torvalds@linux-foundation.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>
+Subject: [GIT PULL] Crypto Fixes for 5.18
+Message-ID: <YkUdKiJflWqxBmx5@gondor.apana.org.au>
+References: <20201227113221.GA28744@gondor.apana.org.au>
+ <20210108035450.GA6191@gondor.apana.org.au>
+ <20210708030913.GA32097@gondor.apana.org.au>
+ <20210817013601.GA14148@gondor.apana.org.au>
+ <20210929023843.GA28594@gondor.apana.org.au>
+ <20211029041408.GA3192@gondor.apana.org.au>
+ <20211112104815.GA14105@gondor.apana.org.au>
+ <YcKz4wHYTe3qlW7L@gondor.apana.org.au>
+ <YgMn+1qQPQId50hO@gondor.apana.org.au>
+ <YjE5yThYIzih2kM6@gondor.apana.org.au>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YjE5yThYIzih2kM6@gondor.apana.org.au>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
->> From: Cheng Lin <cheng.lin130@zte.com.cn>
->>
->> Blocks beyond EOF, which preallocated, will be reclaimed at some time.
->> These blocks can be ignored when getattr.
->>
->> This patch will optimize query accuracy for getattr blocks.
->Huh? This subtracts posteof blocks from the query results, which makes
->the results *less accurate*. Those blocks are mapped to the file, hence
->they are supposed to be counted in nblocks.
->--D
-Yes, those blocks are mapped to the file. And the results including them are
-absolutely real for xfs, at the moment of query.
+Hi Linus:
 
-But, those blocks are like the credit without consumption, are unstalbe, and
-will be reclaimed at some time. This may cause trouble for the application.
-e.g. in a case,
-1. Firstly, write 100k data to file;
-2. query the result;
-3. close the file;
-4. query the result.
+The following changes since commit 0e03b8fd29363f2df44e2a7a176d486de550757a:
 
-fd stat wrt[96 @ 393216]: blks[896], size[397312].
-fd stat wrt[97 @ 397312]: blks[896], size[401408].
-fd stat wrt[98 @ 401408]: blks[896], size[405504].
-fd stat wrt[99 @ 405504]: blks[896], size[409600].
-lstat open: blks[896], size[409600].
-lstat close: blks[800], size[409600].
+  crypto: xilinx - Turn SHA into a tristate and allow COMPILE_TEST (2022-03-14 14:45:45 +1200)
 
-Here two problems:
-1. why the result different before between after file close?
-2. why the result not change after writing data, or a big change?
+are available in the Git repository at:
 
-The above problems can be explained by fs preallocation.
-If the impact of preallocation are closed in fs, not visible to the outside, the result is stable and real for the application.
+  git://git.kernel.org/pub/scm/linux/kernel/git/herbert/crypto-2.6.git tags/v5.18-p1
 
-That is the reason for this patch.
-Thanks very much.
+for you to fetch changes up to aa8e73eed7d3084c18dd16d195748661c7e881b5:
+
+  crypto: x86/sm3 - Fixup SLS (2022-03-30 16:33:11 +1200)
+
+----------------------------------------------------------------
+This push fixes the following issues:
+
+- Missing Kconfig dependency on arm that leads to boot failure.
+- x86 SLS fixes.
+- Reference leak in the stm32 driver.
+
+----------------------------------------------------------------
+Herbert Xu (1):
+      crypto: arm/aes-neonbs-cbc - Select generic cbc and aes
+
+Peter Zijlstra (3):
+      crypto: x86/chacha20 - Avoid spurious jumps to other functions
+      crypto: x86/poly1305 - Fixup SLS
+      crypto: x86/sm3 - Fixup SLS
+
+Zheng Yongjun (1):
+      crypto: stm32 - fix reference leak in stm32_crc_remove
+
+ arch/arm/crypto/Kconfig                       |  2 ++
+ arch/x86/crypto/chacha-avx512vl-x86_64.S      |  4 +--
+ arch/x86/crypto/poly1305-x86_64-cryptogams.pl | 38 +++++++++++++--------------
+ arch/x86/crypto/sm3-avx-asm_64.S              |  2 +-
+ drivers/crypto/stm32/stm32-crc32.c            |  4 ++-
+ 5 files changed, 27 insertions(+), 23 deletions(-)
+
+Thanks,
+-- 
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
