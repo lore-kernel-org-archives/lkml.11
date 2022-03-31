@@ -2,197 +2,357 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73056C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 00:16:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2311CC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 00:27:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352072AbiCaASe (ORCPT
+        id S1352090AbiCaA3N (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 20:18:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33710 "EHLO
+        Wed, 30 Mar 2022 20:29:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229567AbiCaASc (ORCPT
+        with ESMTP id S229567AbiCaA3M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 20:18:32 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21D144550F
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 17:16:46 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id a16-20020a17090a6d9000b001c7d6c1bb13so1904204pjk.4
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 17:16:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=dabbelt-com.20210112.gappssmtp.com; s=20210112;
-        h=date:subject:in-reply-to:cc:from:to:message-id:mime-version
-         :content-transfer-encoding;
-        bh=hV5Vaha8m52Fl/sbC+q84uMk9aQkw6LUqtUCcgndF8M=;
-        b=CV+r1o6zChs5P5InM9X1qElR7wUi9znFVzk+BTEw9wbkC5GpnAL32a0JlFZ5IDVGEs
-         VX2dMQ+caneEvjqT0ygPK6CJf2NcwPcVFDb9GtiAYvNrHg1ZDhFz72fD34Y1a8hbQ6RI
-         nL2QkUrZrHGMidBFNqIBJdRoKs0Zy261sw1wIyJ9CJngYZCqaX+WVLtzebLvwAe2pHYw
-         5Y5mAuJGZPm6WtoZzG7mpZahhtAS8MS8TSND9TArgR+796jXSrne0Lh6wgDOmPulJYNl
-         ozTTy8BOxKZ1SSj/if+fYPGeZhmUpBi7gD2PZF1hx9FQk6uFLTkDrLwRMEv3o1Ggo8gH
-         JDAw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:subject:in-reply-to:cc:from:to:message-id
-         :mime-version:content-transfer-encoding;
-        bh=hV5Vaha8m52Fl/sbC+q84uMk9aQkw6LUqtUCcgndF8M=;
-        b=b2ATFeBj693iZzM6SaUqrON9IaBTivTgbn2Ofq3vVQjLDvoAl4vpzkRhxFv5LH5+OK
-         x1bPDgeTPJV5n7/kYHlPzSbB38RiMzM4r9WEHsapewu5Xhvzp15GO9hTaSop60QgmrNd
-         btfImBqcGBlh/tHetY1l/89TzqZqjJAspKRgtnI9JhQi9tkvw/54gmi8l2WcH7/Ng0JI
-         9lEnyzWst+xaAbS/GpdA47WEfe101TOsVsf2AlciyQfrKgIOYOBP8/8zhRC5mEBtlG7y
-         UwkQmP0FF7gU13yEuYqSE5wuMm8g7gjVDD6DP6F8nJfB7PHR+t+XulG57cs0Zj6P3A9a
-         IzfA==
-X-Gm-Message-State: AOAM533t+tDIC9vaY0Pa7SHAVmHGPN8JygeQ0mUdmXIEgCW/3GD0x4CK
-        fCrw0JyftMd7vbE4f5Q759w16w==
-X-Google-Smtp-Source: ABdhPJz3Vbz6dsNGCNsUCpmIHgTM0rvC4Z04UHGBv/6dn0xozsPKDxJlOJ9mtUs2fY8yqbbfl4uTuQ==
-X-Received: by 2002:a17:903:206:b0:153:ebab:a52f with SMTP id r6-20020a170903020600b00153ebaba52fmr2479213plh.118.1648685805530;
-        Wed, 30 Mar 2022 17:16:45 -0700 (PDT)
-Received: from localhost ([12.3.194.138])
-        by smtp.gmail.com with ESMTPSA id b2-20020a056a000a8200b004f1111c66afsm27292172pfl.148.2022.03.30.17.16.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Mar 2022 17:16:44 -0700 (PDT)
-Date:   Wed, 30 Mar 2022 17:16:44 -0700 (PDT)
-X-Google-Original-Date: Wed, 30 Mar 2022 17:16:33 PDT (-0700)
-Subject:     Re: [PATCH v11 0/8] RISC-V CPU Idle Support
-In-Reply-To: <20220210054947.170134-1-apatel@ventanamicro.com>
-CC:     Paul Walmsley <paul.walmsley@sifive.com>, aou@eecs.berkeley.edu,
-        daniel.lezcano@linaro.org, ulf.hansson@linaro.org,
-        rjw@rjwysocki.net, pavel@ucw.cz, robh+dt@kernel.org,
-        milun.tripathy@gmail.com, atishp@atishpatra.org,
-        Alistair Francis <Alistair.Francis@wdc.com>,
-        liush@allwinnertech.com, anup@brainfault.org,
-        devicetree@vger.kernel.org, linux-riscv@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, kvm-riscv@lists.infradead.org
-From:   Palmer Dabbelt <palmer@dabbelt.com>
-To:     apatel@ventanamicro.com
-Message-ID: <mhng-ed3c61a2-45a5-4cc4-b1ec-26e25f92c0a3@palmer-ri-x1c9>
-Mime-Version: 1.0 (MHng)
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+        Wed, 30 Mar 2022 20:29:12 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEB2A4927D
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 17:27:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648686445; x=1680222445;
+  h=from:to:cc:subject:references:date:in-reply-to:
+   message-id:mime-version;
+  bh=05NZE5gF3aTueVeP9ER6btTWaup1CWxlGpWSxDG8Dpk=;
+  b=NmrDNpF2co1a7/frge7qhDgtRBzvfwWHDV3wigT+AqxF3gONTBjt3bCO
+   ck24wNmjV5W0wQKYUmRBa1KThV5Zw2uNrCzHSi2QXE6x1R6XuMeFXo1vm
+   0+ylBkM+Io7Y/yF0nE+Vf18nbx+4JsAdBTERur4r4SgZXNVVBddxnriRu
+   9zggzCdP3hNWi8Ff0q76qD6PMSu5Hdeh8G5+xs/31rzCxmhxEly7JeezM
+   aXJYt4lTy6o2xGMYnMKxn1qgXy24IVD6E0gihKZMAs9FZSDJyjYHGQABa
+   PBgWn/qfsoXDxlGpD4ZMbVCz2FpZloSi1Q3DG/NwXCzNOTBWWy7akA2d9
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="241829840"
+X-IronPort-AV: E=Sophos;i="5.90,223,1643702400"; 
+   d="scan'208";a="241829840"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 17:27:25 -0700
+X-IronPort-AV: E=Sophos;i="5.90,223,1643702400"; 
+   d="scan'208";a="547066885"
+Received: from yhuang6-desk2.sh.intel.com (HELO yhuang6-desk2.ccr.corp.intel.com) ([10.239.13.94])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 17:27:23 -0700
+From:   "Huang, Ying" <ying.huang@intel.com>
+To:     Jagdish Gediya <jvgediya@linux.ibm.com>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        akpm@linux-foundation.org, aneesh.kumar@linux.ibm.com,
+        baolin.wang@linux.alibaba.com, dave.hansen@linux.intel.com
+Subject: Re: [PATCH] mm: migrate: set demotion targets differently
+References: <20220329115222.8923-1-jvgediya@linux.ibm.com>
+        <87pmm4c4ys.fsf@yhuang6-desk2.ccr.corp.intel.com>
+        <YkSHJMsHMtKzCPhS@li-6e1fa1cc-351b-11b2-a85c-b897023bb5f3.ibm.com>
+Date:   Thu, 31 Mar 2022 08:27:21 +0800
+In-Reply-To: <YkSHJMsHMtKzCPhS@li-6e1fa1cc-351b-11b2-a85c-b897023bb5f3.ibm.com>
+        (Jagdish Gediya's message of "Wed, 30 Mar 2022 22:06:52 +0530")
+Message-ID: <87czi3c6fq.fsf@yhuang6-desk2.ccr.corp.intel.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ascii
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 09 Feb 2022 21:49:39 PST (-0800), apatel@ventanamicro.com wrote:
-> From: Anup Patel <anup.patel@wdc.com>
->
-> This series adds RISC-V CPU Idle support using SBI HSM suspend function.
-> The RISC-V SBI CPU idle driver added by this series is highly inspired
-> from the ARM PSCI CPU idle driver.
->
-> At high-level, this series includes the following changes:
-> 1) Preparatory arch/riscv patches (Patches 1 to 3)
-> 2) Defines for RISC-V SBI HSM suspend (Patch 4)
-> 3) Preparatory patch to share code between RISC-V SBI CPU idle driver
->    and ARM PSCI CPU idle driver (Patch 5)
-> 4) RISC-V SBI CPU idle driver and related DT bindings (Patches 6 to 7)
->
-> These patches can be found in riscv_sbi_hsm_suspend_v11 branch of
-> https://github.com/avpatel/linux.git
->
-> Special thanks Sandeep Tripathy for providing early feeback on SBI HSM
-> support in all above projects (RISC-V SBI specification, OpenSBI, and
-> Linux RISC-V).
->
-> Changes since v10:
->  - Rebased on Linux-5.17-rc3
->  - Typo fix in commit description of PATCH6
->
-> Changes since v9:
->  - Rebased on Linux-5.17-rc1
->
-> Changes since v8:
->  - Rebased on Linux-5.15-rc5
->  - Fixed DT schema check errors in PATCH7
->
-> Changes since v7:
->  - Rebased on Linux-5.15-rc3
->  - Renamed cpuidle-sbi.c to cpuidle-riscv-sbi.c in PATCH6
->
-> Changes since v6:
->  - Fixed error reported by "make DT_CHECKER_FLAGS=-m dt_binding_check"
->
-> Changes since v5:
->  - Rebased on Linux-5.13-rc5
->  - Removed unnecessary exports from PATCH5
->  - Removed stray ";" from PATCH5
->  - Moved sbi_cpuidle_pd_power_off() under "#ifdef CONFIG_DT_IDLE_GENPD"
->    in PATCH6
->
-> Changes since v4:
->  - Rebased on Linux-5.13-rc2
->  - Renamed all dt_idle_genpd functions to have "dt_idle_" prefix
->  - Added MAINTAINERS file entry for dt_idle_genpd
->
-> Changes since v3:
->  - Rebased on Linux-5.13-rc2
->  - Fixed __cpu_resume_enter() which was broken due to XIP kernel support
->  - Removed "struct dt_idle_genpd_ops" abstraction which simplifies code
->    sharing between ARM PSCI and RISC-V SBI drivers in PATCH5
->
-> Changes since v2:
->  - Rebased on Linux-5.12-rc3
->  - Updated PATCH7 to add common DT bindings for both ARM and RISC-V
->    idle states
->  - Added "additionalProperties = false" for both idle-states node and
->    child nodes in PATCH7
->
-> Changes since v1:
->  - Fixex minor typo in PATCH1
->  - Use just "idle-states" as DT node name for CPU idle states
->  - Added documentation for "cpu-idle-states" DT property in
->    devicetree/bindings/riscv/cpus.yaml
->  - Added documentation for "riscv,sbi-suspend-param" DT property in
->    devicetree/bindings/riscv/idle-states.yaml
->
-> Anup Patel (8):
->   RISC-V: Enable CPU_IDLE drivers
->   RISC-V: Rename relocate() and make it global
->   RISC-V: Add arch functions for non-retentive suspend entry/exit
->   RISC-V: Add SBI HSM suspend related defines
->   cpuidle: Factor-out power domain related code from PSCI domain driver
->   cpuidle: Add RISC-V SBI CPU idle driver
->   dt-bindings: Add common bindings for ARM and RISC-V idle states
->   RISC-V: Enable RISC-V SBI CPU Idle driver for QEMU virt machine
->
->  .../bindings/arm/msm/qcom,idle-state.txt      |   2 +-
->  .../devicetree/bindings/arm/psci.yaml         |   2 +-
->  .../bindings/{arm => cpu}/idle-states.yaml    | 228 ++++++-
->  .../devicetree/bindings/riscv/cpus.yaml       |   6 +
->  MAINTAINERS                                   |  14 +
->  arch/riscv/Kconfig                            |   7 +
->  arch/riscv/Kconfig.socs                       |   3 +
->  arch/riscv/configs/defconfig                  |   2 +
->  arch/riscv/configs/rv32_defconfig             |   2 +
->  arch/riscv/include/asm/asm.h                  |  27 +
->  arch/riscv/include/asm/cpuidle.h              |  24 +
->  arch/riscv/include/asm/sbi.h                  |  27 +-
->  arch/riscv/include/asm/suspend.h              |  36 +
->  arch/riscv/kernel/Makefile                    |   2 +
->  arch/riscv/kernel/asm-offsets.c               |   3 +
->  arch/riscv/kernel/cpu_ops_sbi.c               |   2 +-
->  arch/riscv/kernel/head.S                      |  28 +-
->  arch/riscv/kernel/process.c                   |   3 +-
->  arch/riscv/kernel/suspend.c                   |  87 +++
->  arch/riscv/kernel/suspend_entry.S             | 124 ++++
->  arch/riscv/kvm/vcpu_sbi_hsm.c                 |   4 +-
->  drivers/cpuidle/Kconfig                       |   9 +
->  drivers/cpuidle/Kconfig.arm                   |   1 +
->  drivers/cpuidle/Kconfig.riscv                 |  15 +
->  drivers/cpuidle/Makefile                      |   5 +
->  drivers/cpuidle/cpuidle-psci-domain.c         | 138 +---
->  drivers/cpuidle/cpuidle-psci.h                |  15 +-
->  drivers/cpuidle/cpuidle-riscv-sbi.c           | 627 ++++++++++++++++++
->  drivers/cpuidle/dt_idle_genpd.c               | 178 +++++
->  drivers/cpuidle/dt_idle_genpd.h               |  50 ++
->  30 files changed, 1484 insertions(+), 187 deletions(-)
->  rename Documentation/devicetree/bindings/{arm => cpu}/idle-states.yaml (74%)
->  create mode 100644 arch/riscv/include/asm/cpuidle.h
->  create mode 100644 arch/riscv/include/asm/suspend.h
->  create mode 100644 arch/riscv/kernel/suspend.c
->  create mode 100644 arch/riscv/kernel/suspend_entry.S
->  create mode 100644 drivers/cpuidle/Kconfig.riscv
->  create mode 100644 drivers/cpuidle/cpuidle-riscv-sbi.c
->  create mode 100644 drivers/cpuidle/dt_idle_genpd.c
->  create mode 100644 drivers/cpuidle/dt_idle_genpd.h
+Jagdish Gediya <jvgediya@linux.ibm.com> writes:
 
-Thanks, these are on for-next.
+> Hi Huang,
+>
+> On Wed, Mar 30, 2022 at 02:46:51PM +0800, Huang, Ying wrote:
+>> Hi, Jagdish,
+>> 
+>> Jagdish Gediya <jvgediya@linux.ibm.com> writes:
+>> 
+>> > The current implementation to identify the demotion
+>> > targets limits some of the opportunities to share
+>> > the demotion targets between multiple source nodes.
+>> 
+>> Yes.  It sounds reasonable to share demotion targets among multiple
+>> source nodes.
+>> 
+>> One question, are example machines below are real hardware now or in
+>> near future?  Or you just think they are possible?
+>
+> They are not real hardware right now, they are the future possibilities.
+>
+>> And, before going into the implementation details, I think that we can
+>> discuss the perfect demotion order firstly.
+>> 
+>> > Implement a logic to identify the loop in the demotion
+>> > targets such that all the possibilities of demotion can
+>> > be utilized. Don't share the used targets between all
+>> > the nodes, instead create the used targets from scratch
+>> > for each individual node based on for what all node this
+>> > node is a demotion target. This helps to share the demotion
+>> > targets without missing any possible way of demotion.
+>> >
+>> > e.g. with below NUMA topology, where node 0 & 1 are
+>> > cpu + dram nodes, node 2 & 3 are equally slower memory
+>> > only nodes, and node 4 is slowest memory only node,
+>> >
+>> > available: 5 nodes (0-4)
+>> > node 0 cpus: 0 1
+>> > node 0 size: n MB
+>> > node 0 free: n MB
+>> > node 1 cpus: 2 3
+>> > node 1 size: n MB
+>> > node 1 free: n MB
+>> > node 2 cpus:
+>> > node 2 size: n MB
+>> > node 2 free: n MB
+>> > node 3 cpus:
+>> > node 3 size: n MB
+>> > node 3 free: n MB
+>> > node 4 cpus:
+>> > node 4 size: n MB
+>> > node 4 free: n MB
+>> > node distances:
+>> > node   0   1   2   3   4
+>> >   0:  10  20  40  40  80
+>> >   1:  20  10  40  40  80
+>> >   2:  40  40  10  40  80
+>> >   3:  40  40  40  10  80
+>> >   4:  80  80  80  80  10
+>> >
+>> > The existing implementation gives below demotion targets,
+>> >
+>> > node    demotion_target
+>> >  0              3, 2
+>> >  1              4
+>> >  2              X
+>> >  3              X
+>> >  4		X
+>> >
+>> > With this patch applied, below are the demotion targets,
+>> >
+>> > node    demotion_target
+>> >  0              3, 2
+>> >  1              3, 2
+>> >  2              3
+>> >  3              4
+>> >  4		X
+>> 
+>> For such machine, I think the perfect demotion order is,
+>> 
+>> node    demotion_target
+>>  0              2, 3
+>>  1              2, 3
+>>  2              4
+>>  3              4
+>>  4              X
+>
+> Current implementation works based on the best distance algorithm,
+> this patch doesn't change it either, so based on the distance, the
+> demotion list is what I have mentioned. I understand 4 is better
+> target for 2 but as per the mentioned numa distances and current
+> algorithm, it doesn't get configured like that in the kernel.
+
+If we agree on the perfect demotion order, can we revise the current
+algorithm a little to make it happen?
+
+Is the following solution possible?
+
+1st round:
+  sources: 0, 1
+  exclude targets: 0, 1
+  result: 0 - > 2,3; 1 -> 2,3
+
+2nd round:
+  sources: 2, 3
+  exclude targets: 0, 1, 2, 3
+  result: 2 -> 4; 3 -> 4
+
+3rd round:
+  sources: 4
+  exclude targets: 0, 1, 2, 3, 4
+  result: 4 -> X
+
+That is, in each round, we exclude the sources and targets in the
+previous rounds as demotion targets.  Compared with the original
+algorithm, we don't exclude targets used in the current round,
+but we will exclude them in the next round.
+
+If this doesn't work, can you think about whether it is possible to find
+some way?
+
+>> > e.g. with below NUMA topology, where node 0, 1 & 2 are
+>> > cpu + dram nodes and node 3 is slow memory node,
+>> >
+>> > available: 4 nodes (0-3)
+>> > node 0 cpus: 0 1
+>> > node 0 size: n MB
+>> > node 0 free: n MB
+>> > node 1 cpus: 2 3
+>> > node 1 size: n MB
+>> > node 1 free: n MB
+>> > node 2 cpus: 4 5
+>> > node 2 size: n MB
+>> > node 2 free: n MB
+>> > node 3 cpus:
+>> > node 3 size: n MB
+>> > node 3 free: n MB
+>> > node distances:
+>> > node   0   1   2   3
+>> >   0:  10  20  20  40
+>> >   1:  20  10  20  40
+>> >   2:  20  20  10  40
+>> >   3:  40  40  40  10
+>> >
+>> > The existing implementation gives below demotion targets,
+>> >
+>> > node    demotion_target
+>> >  0              3
+>> >  1              X
+>> >  2              X
+>> >  3              X
+>> >
+>> > With this patch applied, below are the demotion targets,
+>> >
+>> > node    demotion_target
+>> >  0              3
+>> >  1              3
+>> >  2              3
+>> >  3              X
+>> 
+>> I think this is perfect already.
+>> 
+>> > with below NUMA topology, where node 0 & 2 are cpu + dram
+>> > nodes and node 1 & 3 are slow memory nodes,
+>> >
+>> > available: 4 nodes (0-3)
+>> > node 0 cpus: 0 1
+>> > node 0 size: n MB
+>> > node 0 free: n MB
+>> > node 1 cpus:
+>> > node 1 size: n MB
+>> > node 1 free: n MB
+>> > node 2 cpus: 2 3
+>> > node 2 size: n MB
+>> > node 2 free: n MB
+>> > node 3 cpus:
+>> > node 3 size: n MB
+>> > node 3 free: n MB
+>> > node distances:
+>> > node   0   1   2   3
+>> >   0:  10  40  20  80
+>> >   1:  40  10  80  80
+>> >   2:  20  80  10  40
+>> >   3:  80  80  40  10
+>> >
+>> > The existing implementation gives below demotion targets,
+>> >
+>> > node    demotion_target
+>> >  0              3
+>> >  1              X
+>> >  2              3
+>> >  3              X
+>> 
+>> Should be as below as you said in another email of the thread.
+>> 
+>> node    demotion_target
+>>  0              1
+>>  1              X
+>>  2              3
+>>  3              X
+>> 
+>> > With this patch applied, below are the demotion targets,
+>> >
+>> > node    demotion_target
+>> >  0              1
+>> >  1              3
+>> >  2              3
+>> >  3              X
+>> 
+>> The original demotion order looks better for me.  1 and 3 are at the
+>> same level from the perspective of the whole system.
+>> 
+>> Another example, node 0 & 2 are cpu + dram nodes and node 1 are slow
+>> memory node near node 0,
+>> 
+>> available: 3 nodes (0-2)
+>> node 0 cpus: 0 1
+>> node 0 size: n MB
+>> node 0 free: n MB
+>> node 1 cpus:
+>> node 1 size: n MB
+>> node 1 free: n MB
+>> node 2 cpus: 2 3
+>> node 2 size: n MB
+>> node 2 free: n MB
+>> node distances:
+>> node   0   1   2
+>>   0:  10  40  20
+>>   1:  40  10  80
+>>   2:  20  80  10
+>> 
+>> 
+>> Demotion order 1:
+>> 
+>> node    demotion_target
+>>  0              1
+>>  1              X
+>>  2              X
+>> 
+>> Demotion order 2:
+>> 
+>> node    demotion_target
+>>  0              1
+>>  1              X
+>>  2              1
+>> 
+>> Demotion order 2 looks better.  But I think that demotion order 1 makes
+>> some sense too (like node reclaim mode).
+>> 
+>> It seems that,
+>> 
+>> If a demotion target has same distance to several current demotion
+>> sources, the demotion target should be shared among the demotion
+>> sources.
+>
+> Yes, and that is where this patch is useful.
+>
+>> And as Dave pointed out, we may eventually need a mechanism to override
+>> the default demotion order generated automatically.  So we can just use
+>> some simple mechanism that makes sense in most cases in kernel
+>> automatically.  And leave the best demotion for users to some
+>> customization mechanism.
+>
+> Yes, We need a mechanism to override the default demotion list prepared
+> by the current implementation. PowerVM can have a cpu less dram node
+> as well, which infact are not the right target for demotion because
+> it is the fast memory. We need to distinguish between memory tiers
+> so that slow memory can be utilized for the demotion even when there
+> are fast memory only numa nodes.
+>
+> I think we may see implementations in future to override the default
+> behavior e.g. when systems have both fast only and slow only memory
+> nodes and in that case it will make sense to demote to slow memory
+> only node even if it is far, but this patch is to put the current
+> implementation to its intended design 'best distance based demotion
+> targets'.
+
+If this is a real problem for you already.  How about implement it after
+this work has been done?
+
+Best Regards,
+Huang, Ying
+
+>> > As it can be seen above, node 3 can be demotion target for node
+>> > 1 but existing implementation doesn't configure it that way. It
+>> > is better to move pages from node 1 to node 3 instead of moving
+>> > it from node 1 to swap.
+>> >
+>> > Signed-off-by: Jagdish Gediya <jvgediya@linux.ibm.com>
+>> > Signed-off-by: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
+>> 
+>> Best Regards,
+>> Huang, Ying
+>> 
+>> [snip]
+>> 
+> Best Regards,
+> Jagdish
