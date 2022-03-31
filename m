@@ -2,103 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D85DC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 04:13:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 812A7C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 04:13:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229958AbiCaEPZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 00:15:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39484 "EHLO
+        id S229872AbiCaEP2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 00:15:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229874AbiCaEOz (ORCPT
+        with ESMTP id S230145AbiCaEPG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 00:14:55 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6141249244;
-        Wed, 30 Mar 2022 20:46:31 -0700 (PDT)
-X-UUID: 327ad06104a2478d94b90fc6038c0e2d-20220331
-X-UUID: 327ad06104a2478d94b90fc6038c0e2d-20220331
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
-        (envelope-from <yunfei.dong@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1646053287; Thu, 31 Mar 2022 10:48:48 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Thu, 31 Mar 2022 10:48:45 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 31 Mar 2022 10:48:44 +0800
-From:   Yunfei Dong <yunfei.dong@mediatek.com>
-To:     Yunfei Dong <yunfei.dong@mediatek.com>,
-        Alexandre Courbot <acourbot@chromium.org>,
-        Nicolas Dufresne <nicolas@ndufresne.ca>,
-        "Hans Verkuil" <hverkuil-cisco@xs4all.nl>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        Tiffany Lin <tiffany.lin@mediatek.com>,
-        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Tomasz Figa <tfiga@google.com>
-CC:     George Sun <george.sun@mediatek.com>,
-        Xiaoyong Lu <xiaoyong.lu@mediatek.com>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Fritz Koenig <frkoenig@chromium.org>,
-        Dafna Hirschfeld <dafna.hirschfeld@collabora.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Irui Wang <irui.wang@mediatek.com>,
-        Steve Cho <stevecho@chromium.org>,
-        <linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <srv_heupstream@mediatek.com>,
-        <linux-mediatek@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Subject: [PATCH v8, 11/17] media: mediatek: vcodec: Fix v4l2-compliance fail
-Date:   Thu, 31 Mar 2022 10:47:55 +0800
-Message-ID: <20220331024801.29229-12-yunfei.dong@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220331024801.29229-1-yunfei.dong@mediatek.com>
-References: <20220331024801.29229-1-yunfei.dong@mediatek.com>
+        Thu, 31 Mar 2022 00:15:06 -0400
+X-Greylist: delayed 247 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 30 Mar 2022 20:48:12 PDT
+Received: from condef-05.nifty.com (condef-05.nifty.com [202.248.20.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06D352976F0;
+        Wed, 30 Mar 2022 20:48:11 -0700 (PDT)
+Received: from conssluserg-04.nifty.com ([10.126.8.83])by condef-05.nifty.com with ESMTP id 22V3TdnN022336;
+        Thu, 31 Mar 2022 12:29:39 +0900
+Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174]) (authenticated)
+        by conssluserg-04.nifty.com with ESMTP id 22V3SnTf021405;
+        Thu, 31 Mar 2022 12:28:49 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-04.nifty.com 22V3SnTf021405
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1648697329;
+        bh=ebHiMyRXav+yYbj4YhCL/RfqMUHBooyu6ftffopVXqQ=;
+        h=From:Date:Subject:To:Cc:From;
+        b=ZGlny3DA71k8ikJLnGyRECTgQyO7xB3etGAcHL4IWMO2Ll4b1J0pvlKnJM6AWNI/S
+         vehegfWxV6DWJKljebu7hHx/yBy9HapwmdQFKVXH1vMK1S1tG7vvjNshvcQ3MV01dZ
+         sgeWR0KJJfkyuqGs5cIduOFXEjYAScCNprr0D9KZJ+t84TRxO6vcayUiX7EFvKskrZ
+         el+I+pNisq47KJy//MUN31nF4DYYOAoYdfPbJG4DCoazZMpyTv9PPXToP0kI0IrFiM
+         Jp9qzvuPHejQroq+g7vy2v5GWh18a1Gb/0ojfp5VA6Jmaq+hsu078C2rqfsQC2sJ3/
+         5dyf7fD8EwWMA==
+X-Nifty-SrcIP: [209.85.214.174]
+Received: by mail-pl1-f174.google.com with SMTP id x2so22249710plm.7;
+        Wed, 30 Mar 2022 20:28:49 -0700 (PDT)
+X-Gm-Message-State: AOAM531+3HbmcqDSOE5+ATyjEQKbPeMoGSO27dzEpnosi7tjKWvLt/+a
+        ma2aPaSiZb0eUCQ9cfe+Pc3yYBjHSJ121+6EbKM=
+X-Google-Smtp-Source: ABdhPJy9ZE47MB+xD259EDGtBKxUDhqoi9uMl1Rs9lqYW9wobU0i+Q3DHJM1+HZ9gz0lLLrx7ELC6Su6RTCswDVVQZ8=
+X-Received: by 2002:a17:902:9887:b0:151:6e1c:7082 with SMTP id
+ s7-20020a170902988700b001516e1c7082mr3171203plp.162.1648697328481; Wed, 30
+ Mar 2022 20:28:48 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Thu, 31 Mar 2022 12:28:03 +0900
+X-Gmail-Original-Message-ID: <CAK7LNAQ1OPH-WFLyUfmVMUE4in7tbcdNME-Cp=OvJfUAJAPZ9g@mail.gmail.com>
+Message-ID: <CAK7LNAQ1OPH-WFLyUfmVMUE4in7tbcdNME-Cp=OvJfUAJAPZ9g@mail.gmail.com>
+Subject: [GIT PULL v2] Kbuild updates for v5.18-rc1
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Need to use default pic info when get pic info fail.
+Hi Linus,
 
-Signed-off-by: Yunfei Dong <yunfei.dong@mediatek.com>
-Reviewed-by: Steve Cho <stevecho@chromium.org>
----
- drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+This is v2 for the remaining Kbuild changes.
 
-diff --git a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c
-index dab6acb3158c..0d9007339faf 100644
---- a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c
-+++ b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c
-@@ -485,11 +485,14 @@ static int vidioc_vdec_s_fmt(struct file *file, void *priv,
- 		ctx->picinfo.pic_w = pix_mp->width;
- 		ctx->picinfo.pic_h = pix_mp->height;
- 
-+		/*
-+		 * If get pic info fail, need to use the default pic info params, or
-+		 * v4l2-compliance will fail
-+		 */
- 		ret = vdec_if_get_param(ctx, GET_PARAM_PIC_INFO, &ctx->picinfo);
- 		if (ret) {
- 			mtk_v4l2_err("[%d]Error!! Get GET_PARAM_PICTURE_INFO Fail",
- 				     ctx->id);
--			return -EINVAL;
- 		}
- 
- 		ctx->last_decoded_picinfo = ctx->picinfo;
--- 
-2.18.0
+I dropped the
+"# CONFIG_FOO is not set"   to CONFIG_FOO=n
+change in Kconfig.
 
+Thank you.
+
+
+
+
+The following changes since commit 754e0b0e35608ed5206d6a67a791563c631cec07:
+
+  Linux 5.17-rc4 (2022-02-13 12:13:30 -0800)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/masahiroy/linux-kbuild.git
+tags/kbuild-v5.18-v2
+
+for you to fetch changes up to e9c281928c24dfeb86b11c31b53757b6a127f8aa:
+
+  kbuild: Make $(LLVM) more flexible (2022-03-31 12:03:46 +0900)
+
+----------------------------------------------------------------
+Kbuild updates for v5.18
+
+ - Add new environment variables, USERCFLAGS and USERLDFLAGS to allow
+   additional flags to be passed to user-space programs.
+
+ - Fix missing fflush() bugs in Kconfig and fixdep
+
+ - Fix a minor bug in the comment format of the .config file
+
+ - Make kallsyms ignore llvm's local labels, .L*
+
+ - Fix UAPI compile-test for cross-compiling with Clang
+
+ - Extend the LLVM= syntax to support LLVM=<suffix> form for using a
+   particular version of LLVm, and LLVM=<prefix> form for using custom
+   LLVM in a particular directory path.
+
+ - Clean up Makefiles
+
+----------------------------------------------------------------
+Changbin Du (1):
+      kallsyms: ignore all local labels prefixed by '.L'
+
+Elliot Berman (1):
+      kbuild: Add environment variables for userprogs flags
+
+Masahiro Yamada (10):
+      kbuild: unify cmd_copy and cmd_shipped
+      kbuild: replace $(if A,A,B) with $(or A,B)
+      kconfig: add fflush() before ferror() check
+      kconfig: fix missing '# end of' for empty menu
+      certs: include certs/signing_key.x509 unconditionally
+      certs: simplify empty certs creation in certs/Makefile
+      usr/include: replace extra-y with always-y
+      arch: syscalls: simplify uapi/kapi directory creation
+      fixdep: use fflush() and ferror() to ensure successful write to files
+      kbuild: add --target to correctly cross-compile UAPI headers with Clang
+
+Nathan Chancellor (1):
+      kbuild: Make $(LLVM) more flexible
+
+ Documentation/kbuild/kbuild.rst             | 11 +++++++++++
+ Documentation/kbuild/llvm.rst               | 31
++++++++++++++++++++++++++------
+ Documentation/kbuild/makefiles.rst          |  2 ++
+ Makefile                                    | 44
+++++++++++++++++++++++++++------------------
+ arch/alpha/kernel/syscalls/Makefile         |  3 +--
+ arch/arm/tools/Makefile                     |  3 +--
+ arch/ia64/kernel/syscalls/Makefile          |  3 +--
+ arch/m68k/kernel/syscalls/Makefile          |  3 +--
+ arch/microblaze/boot/Makefile               |  2 +-
+ arch/microblaze/boot/dts/Makefile           |  2 +-
+ arch/microblaze/kernel/syscalls/Makefile    |  3 +--
+ arch/mips/kernel/syscalls/Makefile          |  3 +--
+ arch/parisc/kernel/syscalls/Makefile        |  3 +--
+ arch/powerpc/kernel/syscalls/Makefile       |  3 +--
+ arch/s390/kernel/syscalls/Makefile          |  3 +--
+ arch/sh/kernel/syscalls/Makefile            |  3 +--
+ arch/sparc/kernel/syscalls/Makefile         |  3 +--
+ arch/x86/entry/syscalls/Makefile            |  3 +--
+ arch/xtensa/kernel/syscalls/Makefile        |  3 +--
+ certs/Makefile                              | 37
++++++++++++--------------------------
+ certs/system_certificates.S                 |  3 ---
+ fs/unicode/Makefile                         |  2 +-
+ init/Kconfig                                |  8 ++++----
+ scripts/Makefile.build                      |  3 +--
+ scripts/Makefile.clean                      |  2 +-
+ scripts/Makefile.lib                        | 16 ++++++----------
+ scripts/basic/fixdep.c                      | 46
++++++++++++++++++++---------------------------
+ scripts/kallsyms.c                          |  2 +-
+ scripts/kconfig/confdata.c                  | 27 +++++++++++++++------------
+ tools/bpf/bpftool/Makefile                  |  4 ++--
+ tools/build/Makefile                        |  2 +-
+ tools/counter/Makefile                      |  2 +-
+ tools/gpio/Makefile                         |  2 +-
+ tools/hv/Makefile                           |  2 +-
+ tools/iio/Makefile                          |  2 +-
+ tools/lib/api/Makefile                      |  2 +-
+ tools/lib/bpf/Makefile                      |  2 +-
+ tools/lib/perf/Makefile                     |  2 +-
+ tools/lib/subcmd/Makefile                   |  2 +-
+ tools/objtool/Makefile                      |  2 +-
+ tools/pci/Makefile                          |  2 +-
+ tools/perf/Makefile.perf                    |  4 ++--
+ tools/power/x86/intel-speed-select/Makefile |  2 +-
+ tools/scripts/Makefile.include              | 22 ++++++++++++++--------
+ tools/scripts/utilities.mak                 |  2 +-
+ tools/spi/Makefile                          |  6 +++---
+ tools/testing/selftests/lib.mk              |  8 +++++++-
+ tools/tracing/rtla/Makefile                 |  2 +-
+ tools/usb/Makefile                          |  2 +-
+ usr/Makefile                                |  4 ++--
+ usr/include/Makefile                        |  7 +++++--
+ 51 files changed, 188 insertions(+), 174 deletions(-)
+
+
+--
+Best Regards
+Masahiro Yamada
