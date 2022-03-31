@@ -2,173 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E8E6C43217
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 22:08:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BD45C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 22:11:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242285AbiCaWKk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 18:10:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60964 "EHLO
+        id S242304AbiCaWNa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 18:13:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242094AbiCaWKi (ORCPT
+        with ESMTP id S242294AbiCaWN2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 18:10:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 422C7488A6;
-        Thu, 31 Mar 2022 15:08:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D4415B82056;
-        Thu, 31 Mar 2022 22:08:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99132C340F0;
-        Thu, 31 Mar 2022 22:08:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648764526;
-        bh=qUwqbyrT79WFFwJHFexh9R65/YdUtP4GEs6ZjNLnytc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ivHaOR3SU+xG0hlCfmksPSwx6cgrL0akm2HENyGok/ev8xYDzfQ0Ephky0FBwjRG5
-         H9chOBfH6+fIGiJQ3vqu1kZ23Zi5mHhb6eWMOLwNnW1C09oHZyAJmAUSGdWEwOOxI6
-         /AeVkZo69AoczAQzIcnAjWTKOKnzM6+V985WalYEHcSmbDndNeI6ozaYGPniLDhOVZ
-         85Ch+3rnf1eDx4hKh/iHeiI+RVXT6kOZ08Fb28Sg6X5BGQw/crtVn4HSbdp7jqlM92
-         RPOWCH5z16O47nr3CSKISPlDhg/4MhqNBT5/Pb2zfJgWn1eoXPcIs/UOmawOuLA/BR
-         oJscVqyBeLYYQ==
-Date:   Thu, 31 Mar 2022 15:08:43 -0700
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Grigory Vasilyev <h0tc0d3@gmail.com>
-Cc:     Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Yury Norov <yury.norov@gmail.com>, Yonghong Song <yhs@fb.com>,
-        Adrian Ratiu <adrian.ratiu@collabora.com>,
-        linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, llvm@lists.linux.dev
-Subject: Re: [PATCH] Fix kernel build with LLVM=1
-Message-ID: <YkYma7wwps8LZJnH@dev-arch.thelio-3990X>
-References: <20220331215659.3800-1-h0tc0d3@gmail.com>
+        Thu, 31 Mar 2022 18:13:28 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 611A32467D5;
+        Thu, 31 Mar 2022 15:11:40 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id dr20so2108365ejc.6;
+        Thu, 31 Mar 2022 15:11:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=rSHqaeCwi2QD3QGRa2HT7kH4AFnUyMZ52I3NV95q5GM=;
+        b=Pan4DsKz/3eGh99T01l3+pjIWjhQWcMXgqhP6g3wWts1Nc3tuD/v8nE9cIUShX+1+6
+         N/uT3WyhLdhLZgH7p1Pmpp7rn/jgGyhrMzyPT7FomwdA68v5BrmFhiFhngsP0zuxLk19
+         EblbpXz3Mb5bfjrFqtCdvFNawCYr5KizCrMMS3hgv0WApHIRzMTyao8DS6ByGRnz7adF
+         Ijlmoivly5IS86Mrg9+YuixMXgwVSq9t8x76CtIBcf5iH8bMmuXRN/Igzua63es8gYG0
+         F3J+KX0GoAKD5VFYOCaX6YYnjj63XR5AsJemXHpmRPaozh18Sr+D232fxWKoQx2ofHni
+         tKKA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=rSHqaeCwi2QD3QGRa2HT7kH4AFnUyMZ52I3NV95q5GM=;
+        b=XwssCdNT02qwbQJr0A46qrddAbJ5hJPs8tVhkBsJFfx31+PQwGLxJvHymrmLRCAeZK
+         K81Pi/9/+xvx3qPqSkZKJpApSktq+6UaYm2SvwyTdKrzLaF1/1BqoC6cSx57LoqBDEoj
+         bVLeJaQq7STa4c/5pybztgOVrlUuDYR+cve23ZpIoN/S19GYVsFZzP7My9FXKqtaTM+0
+         WE1JFDe2TZK3oimDFzI0QCoTo4svLb040sdc3V34EKNr6ZQPXPaHp4s2lGDzn5zq2MGH
+         Mnrnunsg80rYpufiCM3f35Lk4uSd1/1QwVh0es4HDgtqw0q8W9dLUO0bzlv/pq0ZAmp0
+         fXFw==
+X-Gm-Message-State: AOAM531/UekHJAYii0el7Ebqd9ll+54xiHTlMbESeuzFzIXxZRRvZf8H
+        bDtZYMbrv1MIdY3YfYA195M8tVe7TfS8Cg==
+X-Google-Smtp-Source: ABdhPJyqWITxbnsFHIxvaXumnsP+t28c0RZ1VaYZy5bhDwV+SEVUTXvlHQUE7rUmWP+CXDa5mLgmrw==
+X-Received: by 2002:a17:906:3ec7:b0:6d6:e52b:b with SMTP id d7-20020a1709063ec700b006d6e52b000bmr6931528ejj.521.1648764698980;
+        Thu, 31 Mar 2022 15:11:38 -0700 (PDT)
+Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
+        by smtp.googlemail.com with ESMTPSA id z6-20020a056402274600b004194fc1b7casm321322edd.48.2022.03.31.15.11.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 31 Mar 2022 15:11:38 -0700 (PDT)
+From:   Jakob Koschel <jakobkoschel@gmail.com>
+To:     Ard Biesheuvel <ardb@kernel.org>
+Cc:     linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Mike Rapoport <rppt@kernel.org>,
+        "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>, Jakob Koschel <jakobkoschel@gmail.com>
+Subject: [PATCH 2/2] efi: replace usage of found with dedicated list iterator variable
+Date:   Fri,  1 Apr 2022 00:10:30 +0200
+Message-Id: <20220331221030.889718-2-jakobkoschel@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220331221030.889718-1-jakobkoschel@gmail.com>
+References: <20220331221030.889718-1-jakobkoschel@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220331215659.3800-1-h0tc0d3@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Grigory,
+To move the list iterator variable into the list_for_each_entry_*()
+macro in the future it should be avoided to use the list iterator
+variable after the loop body.
 
-On Fri, Apr 01, 2022 at 12:56:58AM +0300, Grigory Vasilyev wrote:
-> The wrong logic is using 1 as a suffix instead of -1.
-> So the build script tries to find clang1 file instead of clang.
-> 
-> GEN     Makefile
-> HOSTCC  scripts/basic/fixdep
-> /bin/sh: line 1: clang1: command not found
-> make[2]: *** [/build/linux/scripts/Makefile.host:95: scripts/basic/fixdep] Error 127
-> make[1]: *** [/build/linux/Makefile:564: scripts_basic] Error 2
-> make: *** [Makefile:219: __sub-make] Error 2
+To *never* use the list iterator variable after the loop it was
+concluded to use a separate iterator variable instead of a
+found boolean [1].
 
-I am confused by this error, what is your build command? The supported
-uses of LLVM= are:
+This removes the need to use a found variable and simply checking if
+the variable was set, can determine if the break/goto was hit.
 
-$ make LLVM=1
+Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/
+Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
+---
+ drivers/firmware/efi/vars.c | 15 +++++++--------
+ 1 file changed, 7 insertions(+), 8 deletions(-)
 
-to use clang, ld.lld, etc.
+diff --git a/drivers/firmware/efi/vars.c b/drivers/firmware/efi/vars.c
+index 3994aad38661..e4e1cc593441 100644
+--- a/drivers/firmware/efi/vars.c
++++ b/drivers/firmware/efi/vars.c
+@@ -809,22 +809,21 @@ EXPORT_SYMBOL_GPL(efivar_entry_set_safe);
+ struct efivar_entry *efivar_entry_find(efi_char16_t *name, efi_guid_t guid,
+ 				       struct list_head *head, bool remove)
+ {
+-	struct efivar_entry *entry, *n;
++	struct efivar_entry *entry = NULL, *iter, *n;
+ 	int strsize1, strsize2;
+-	bool found = false;
+ 
+-	list_for_each_entry_safe(entry, n, head, list) {
++	list_for_each_entry_safe(iter, n, head, list) {
+ 		strsize1 = ucs2_strsize(name, 1024);
+-		strsize2 = ucs2_strsize(entry->var.VariableName, 1024);
++		strsize2 = ucs2_strsize(iter->var.VariableName, 1024);
+ 		if (strsize1 == strsize2 &&
+-		    !memcmp(name, &(entry->var.VariableName), strsize1) &&
+-		    !efi_guidcmp(guid, entry->var.VendorGuid)) {
+-			found = true;
++		    !memcmp(name, &(iter->var.VariableName), strsize1) &&
++		    !efi_guidcmp(guid, iter->var.VendorGuid)) {
++			entry = iter;
+ 			break;
+ 		}
+ 	}
+ 
+-	if (!found)
++	if (!entry)
+ 		return NULL;
+ 
+ 	if (remove) {
+-- 
+2.25.1
 
-$ make LLVM=-1
-
-to use clang-1, ld.lld-1, etc.
-
-$ make LLVM=/path/to/
-
-to use /path/to/clang, /path/to/ld.lld, etc.
-
-I do not really understand how based on the current logic you are ending
-up with clang1.
-
-$ make -skj"$(nproc)" LLVM=1 distclean defconfig all
-
-works for me here:
-
-$ git show -s --format='%h ("%s")'
-478f74a3d808 ("Merge tag 'random-5.18-rc1-for-linus' of git://git.kernel.org/pub/scm/linux/kernel/git/crng/random")
-
-$ head -1 init/.main.o.cmd
-cmd_init/main.o := clang -Wp,-MMD,init/.main.o.d ...
-
-Please provide more information, as this change should not be necessary.
-
-It could be GNU make related?
-
-$ make --version
-GNU Make 4.3
-Built for x86_64-pc-linux-gnu
-Copyright (C) 1988-2020 Free Software Foundation, Inc.
-License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
-This is free software: you are free to change and redistribute it.
-There is NO WARRANTY, to the extent permitted by law.
-
-> Fixes: b8321ed4a40c("Merge tag 'kbuild-v5.18-v2'")
-> 
-> Signed-off-by: Grigory Vasilyev <h0tc0d3@gmail.com>
-> Reported-by: Grigory Vasilyev <h0tc0d3@gmail.com>
-
-Normally, you do not add a "Reported-by" for a patch you send, just for
-the future.
-
-> ---
->  Makefile                       | 4 ++--
->  tools/scripts/Makefile.include | 4 ++--
->  tools/testing/selftests/lib.mk | 4 ++--
->  3 files changed, 6 insertions(+), 6 deletions(-)
-> 
-> diff --git a/Makefile b/Makefile
-> index 18ecb49f1af6..efca890d4ea3 100644
-> --- a/Makefile
-> +++ b/Makefile
-> @@ -426,8 +426,8 @@ HOST_LFS_LIBS := $(shell getconf LFS_LIBS 2>/dev/null)
->  ifneq ($(LLVM),)
->  ifneq ($(filter %/,$(LLVM)),)
->  LLVM_PREFIX := $(LLVM)
-> -else ifneq ($(filter -%,$(LLVM)),)
-> -LLVM_SUFFIX := $(LLVM)
-> +else ifneq (,$(findstring -, $(LLVM)))
-> +LLVM_SUFFIX := $(filter -%, $(LLVM))
->  endif
->  
->  HOSTCC	= $(LLVM_PREFIX)clang$(LLVM_SUFFIX)
-> diff --git a/tools/scripts/Makefile.include b/tools/scripts/Makefile.include
-> index 0efb8f2b33ce..c7a56d7f0bad 100644
-> --- a/tools/scripts/Makefile.include
-> +++ b/tools/scripts/Makefile.include
-> @@ -54,8 +54,8 @@ endef
->  ifneq ($(LLVM),)
->  ifneq ($(filter %/,$(LLVM)),)
->  LLVM_PREFIX := $(LLVM)
-> -else ifneq ($(filter -%,$(LLVM)),)
-> -LLVM_SUFFIX := $(LLVM)
-> +else ifneq (,$(findstring -, $(LLVM)))
-> +LLVM_SUFFIX := $(filter -%, $(LLVM))
->  endif
->  
->  $(call allow-override,CC,$(LLVM_PREFIX)clang$(LLVM_SUFFIX))
-> diff --git a/tools/testing/selftests/lib.mk b/tools/testing/selftests/lib.mk
-> index 2a2d240cdc1b..42af066cf39e 100644
-> --- a/tools/testing/selftests/lib.mk
-> +++ b/tools/testing/selftests/lib.mk
-> @@ -3,8 +3,8 @@
->  ifneq ($(LLVM),)
->  ifneq ($(filter %/,$(LLVM)),)
->  LLVM_PREFIX := $(LLVM)
-> -else ifneq ($(filter -%,$(LLVM)),)
-> -LLVM_SUFFIX := $(LLVM)
-> +else ifneq (,$(findstring -, $(LLVM)))
-> +LLVM_SUFFIX := $(filter -%, $(LLVM))
->  endif
->  
->  CC := $(LLVM_PREFIX)clang$(LLVM_SUFFIX)
-> -- 
-> 2.35.1
-> 
