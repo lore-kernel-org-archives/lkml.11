@@ -2,160 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32256C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 23:06:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 989E0C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 23:06:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242728AbiCaXIe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 19:08:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54868 "EHLO
+        id S242761AbiCaXIm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 19:08:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236367AbiCaXIc (ORCPT
+        with ESMTP id S242742AbiCaXIh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 19:08:32 -0400
-Received: from uriel.iewc.co.za (uriel.iewc.co.za [IPv6:2c0f:f720:0:3:d6ae:52ff:feb8:f27b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76C8623FF33;
-        Thu, 31 Mar 2022 16:06:41 -0700 (PDT)
-Received: from [2c0f:f720:fe16:c400::1] (helo=tauri.local.uls.co.za)
-        by uriel.iewc.co.za with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <jaco@uls.co.za>)
-        id 1na3s4-0003TG-Lp; Fri, 01 Apr 2022 01:06:28 +0200
-Received: from [192.168.42.210]
-        by tauri.local.uls.co.za with esmtp (Exim 4.94.2)
-        (envelope-from <jaco@uls.co.za>)
-        id 1na3s3-00077U-Hx; Fri, 01 Apr 2022 01:06:27 +0200
-Message-ID: <5f1bbeb2-efe4-0b10-bc76-37eff30ea905@uls.co.za>
-Date:   Fri, 1 Apr 2022 01:06:26 +0200
+        Thu, 31 Mar 2022 19:08:37 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDF6D24059B;
+        Thu, 31 Mar 2022 16:06:45 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id p4-20020a17090ad30400b001c7ca87c05bso3708594pju.1;
+        Thu, 31 Mar 2022 16:06:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=XKAht4Ion1OwdeqcTBFrhBWqALLlFWaAgtCdJ5b2OjM=;
+        b=OTfvqdRGYGDDRHHSL9p5mQ3TGnr83D4JSyL4V/16PTVahbtrE6Rx3ye+EnQQmCiG9i
+         YKX7am+hrJKLcOx4b4aKrUdT/4U/1teMbUkkevVnUlUsteXDzGxYJESr8Lb2nHGzT5kA
+         g4laf36lJMCCmbcVQmFz0BHISFFb14paBQXejkgWengXMv7GSAK5jkIX5J1SODI+mSQr
+         Lfoy4N9h2WlzzBBHCINHIbDa7vaxEOJkDh+DagHucoYCuCL9bjaxaJePcPxAGexz1LFp
+         vRoVnCBsHG5VS40h3k0yEyZsg+QVU3SerZSh/ljAPDrZk10nKhpBbVr2rvppvAluRRal
+         0ExA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=XKAht4Ion1OwdeqcTBFrhBWqALLlFWaAgtCdJ5b2OjM=;
+        b=fqORu4OtRHMHXVu1TRv/cIA/dzR0LRHS8M3O2b4QHWSwiRMLBp0OI1fFrodlpuV+8T
+         h80z9uoBakbdUdVFqqrNS1o/xksXd6O0xA1Oh72XBnLCdNwToJyAdlGyuFd2cIXVJhsN
+         zl2HMfMEpRVoD0me3qWbjf8dUP4qg6xUYpF9rFPNBaDxaGn8/BsFd5QC37w0e9Nn6OHJ
+         S7DKrcQK1tjgASEngQSeYZjYdpWQvAz2tcAoBxmVWHDSWyhkhkNzGXGrwYk5Kx8ZMbxl
+         gtbjPygkkH37yR5UAHkoxavjgiVWhOJxsLgf/oMokrR0zrvvu+gDWYZ2caUVmC7cAtKp
+         X6zQ==
+X-Gm-Message-State: AOAM532G65pBjLRKy5DLuRBp1Vt748PMCdL6guIqDvXqUqgHGvghVej3
+        WIpHTuozRpdemJSjsbD++fNJ11l3eki74oORUjc=
+X-Google-Smtp-Source: ABdhPJwKXQcAeSWoX0tt14yODiYUowjG2VohAaY9IghVE+sFbIEwAOPtkr/z8rylASimvoDiaGTPkvhc6QhuOUsAmAM=
+X-Received: by 2002:a17:90b:4f43:b0:1c7:552b:7553 with SMTP id
+ pj3-20020a17090b4f4300b001c7552b7553mr8458767pjb.117.1648768005058; Thu, 31
+ Mar 2022 16:06:45 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: linux 5.17.1 disregarding ACK values resulting in stalled TCP
- connections
-Content-Language: en-GB
-To:     Neal Cardwell <ncardwell@google.com>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Yuchung Cheng <ycheng@google.com>
-References: <E1nZMdl-0006nG-0J@plastiekpoot>
- <CADVnQyn=A9EuTwxe-Bd9qgD24PLQ02YQy0_b7YWZj4_rqhWRVA@mail.gmail.com>
- <eaf54cab-f852-1499-95e2-958af8be7085@uls.co.za>
- <CANn89iKHbmVYoBdo2pCQWTzB4eFBjqAMdFbqL5EKSFqgg3uAJQ@mail.gmail.com>
- <10c1e561-8f01-784f-c4f4-a7c551de0644@uls.co.za>
- <CADVnQynf8f7SUtZ8iQi-fACYLpAyLqDKQVYKN-mkEgVtFUTVXQ@mail.gmail.com>
- <e0bc0c7f-5e47-ddb7-8e24-ad5fb750e876@uls.co.za>
- <CANn89i+Dqtrm-7oW+D6EY+nVPhRH07GXzDXt93WgzxZ1y9_tJA@mail.gmail.com>
- <CADVnQyn=VfcqGgWXO_9h6QTkMn5ZxPbNRTnMFAxwQzKpMRvH3A@mail.gmail.com>
-From:   Jaco Kroon <jaco@uls.co.za>
-Organization: Ultimate Linux Solutions (Pty) Ltd
-In-Reply-To: <CADVnQyn=VfcqGgWXO_9h6QTkMn5ZxPbNRTnMFAxwQzKpMRvH3A@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220324234123.1608337-1-haoluo@google.com> <9cdf860d-8370-95b5-1688-af03265cc874@fb.com>
+ <CA+khW7g3hy61qnvtqUizaW+qB6wk=Y9cjivhORshOk=ZzTXJ-A@mail.gmail.com>
+ <CA+khW7iq+UKsfQxdT3QpSqPUFN8gQWWDLoQ9zxB=uWTs63AZEA@mail.gmail.com>
+ <20220329093753.26wc3noelqrwlrcj@apollo.legion> <CA+khW7jW47SALTfxMKfQoA0Qwqd22GC0z4S5juFTbxLfTSbFEQ@mail.gmail.com>
+ <20220329232956.gbsr65jdbe4lw2m6@ast-mbp> <CA+khW7jyvp4PKGu5GS8GDf=Lr4EdRUz8kraaTfiZ2oGm704Cpw@mail.gmail.com>
+ <CAADnVQLTBhCTAx1a_nev7CgMZxv1Bb7ecz1AFRin8tHmjPREJA@mail.gmail.com>
+ <CA+khW7iqiKTLi75oSPe+ibV8afR_SPgtg7Q+nEswmMOFZaAebA@mail.gmail.com> <CACYkzJ6-csGkdMQiGYYr5_DgShPWrUFfs92sUOhwzQt=T13+SA@mail.gmail.com>
+In-Reply-To: <CACYkzJ6-csGkdMQiGYYr5_DgShPWrUFfs92sUOhwzQt=T13+SA@mail.gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 31 Mar 2022 16:06:34 -0700
+Message-ID: <CAADnVQJtBFuJxCfawdaK=ce2PfeS23SeYb0i_9dnEm1j5BpUiw@mail.gmail.com>
+Subject: Re: [PATCH RFC bpf-next 0/2] Mmapable task local storage.
+To:     KP Singh <kpsingh@kernel.org>
+Cc:     Hao Luo <haoluo@google.com>, Jann Horn <jannh@google.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Yonghong Song <yhs@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, bpf <bpf@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Neal,
-
-This sniff was grabbed ON THE CLIENT HOST.  There is no middlebox or
-anything between the sniffer and the client.  Only the firewall on the
-host itself, where we've already establish the traffic is NOT DISCARDED
-(at least not in filter/INPUT).
-
-Setup on our end:
-
-2 x routers, usually each with a direct peering with Google (which is
-being ignored at the moment so instead traffic is incoming via IPT over DD).
-
-Connected via switch to
-
-2 x firewalls, of which ONE is active (they have different networks
-behind them, and could be active / standby for different networks behind
-them - avoiding active-active because conntrackd is causing more trouble
-than it's worth), Linux hosts, using netfilter, has been operating for
-years, no recent kernel upgrades.
-
-4 x hosts in mail cluster, one of which you're looking at here.
-
-On 2022/03/31 17:41, Neal Cardwell wrote:
-> On Wed, Mar 30, 2022 at 9:04 AM Jaco Kroon <jaco@uls.co.za> wrote:
-> ...
->> When you state sane/normal, do you mean there is fault with the other
->> frames that could not be explained by packet loss in one or both of the
->> directions?
-> Yes.
+On Thu, Mar 31, 2022 at 3:32 PM KP Singh <kpsingh@kernel.org> wrote:
 >
-> (1) If you look at the attached trace time/sequence plots (from
-> tcptrace and xplot.org) there are several behaviors that do not look
-> like normal congestive packet loss:
-OK.  I'm not 100% sure how these plots of yours work, but let's see if I
-can follow your logic here - they mostly make sense.  A legend would
-probably help.  As I understand the white dots are original transmits,
-green is what has been ACKED.  R is retransmits ... what's the S? 
-What's the yellow line (I'm guessing receive window as advertised by the
-server)?
+> On Wed, Mar 30, 2022 at 8:26 PM Hao Luo <haoluo@google.com> wrote:
+> >
+> > On Wed, Mar 30, 2022 at 11:16 AM Alexei Starovoitov
+> > <alexei.starovoitov@gmail.com> wrote:
+> > >
+> > > On Wed, Mar 30, 2022 at 11:06 AM Hao Luo <haoluo@google.com> wrote:
+> > > >
+> > > > On Tue, Mar 29, 2022 at 4:30 PM Alexei Starovoitov
+> > > > <alexei.starovoitov@gmail.com> wrote:
+> > > > >
+> > > > > On Tue, Mar 29, 2022 at 10:43:42AM -0700, Hao Luo wrote:
+> > > > > > On Tue, Mar 29, 2022 at 2:37 AM Kumar Kartikeya Dwivedi
+> > > > > > <memxor@gmail.com> wrote:
+> > > > > > >
+> > > > > > > On Mon, Mar 28, 2022 at 11:16:15PM IST, Hao Luo wrote:
+> > > > > > > > On Mon, Mar 28, 2022 at 10:39 AM Hao Luo <haoluo@google.com> wrote:
+> > > > > > > > >
+> > > > > > > > > Hi Yonghong,
+> > > > > > > > >
+> > > > > > > > > On Fri, Mar 25, 2022 at 12:16 PM Yonghong Song <yhs@fb.com> wrote:
+> > > > > > > > > >
+> > > > > > > > > > On 3/24/22 4:41 PM, Hao Luo wrote:
+> > > > > > > > > > > Some map types support mmap operation, which allows userspace to
+> > > > > > > > > > > communicate with BPF programs directly. Currently only arraymap
+> > > > > > > > > > > and ringbuf have mmap implemented.
+> > > > > > > > > > >
+> > > > > > > > > > > However, in some use cases, when multiple program instances can
+> > > > > > > > > > > run concurrently, global mmapable memory can cause race. In that
+> > > > > > > > > > > case, userspace needs to provide necessary synchronizations to
+> > > > > > > > > > > coordinate the usage of mapped global data. This can be a source
+> > > > > > > > > > > of bottleneck.
+> > > > > > > > > >
+> > > > > > > > > > I can see your use case here. Each calling process can get the
+> > > > > > > > > > corresponding bpf program task local storage data through
+> > > > > > > > > > mmap interface. As you mentioned, there is a tradeoff
+> > > > > > > > > > between more memory vs. non-global synchronization.
+> > > > > > > > > >
+> > > > > > > > > > I am thinking that another bpf_iter approach can retrieve
+> > > > > > > > > > the similar result. We could implement a bpf_iter
+> > > > > > > > > > for task local storage map, optionally it can provide
+> > > > > > > > > > a tid to retrieve the data for that particular tid.
+> > > > > > > > > > This way, user space needs an explicit syscall, but
+> > > > > > > > > > does not need to allocate more memory than necessary.
+> > > > > > > > > >
+> > > > > > > > > > WDYT?
+> > > > > > > > > >
+> > > > > > > > >
+> > > > > > > > > Thanks for the suggestion. I have two thoughts about bpf_iter + tid and mmap:
+> > > > > > > > >
+> > > > > > > > > - mmap prevents the calling task from reading other task's value.
+> > > > > > > > > Using bpf_iter, one can pass other task's tid to get their values. I
+> > > > > > > > > assume there are two potential ways of passing tid to bpf_iter: one is
+> > > > > > > > > to use global data in bpf prog, the other is adding tid parameterized
+> > > > > > > > > iter_link. For the first, it's not easy for unpriv tasks to use. For
+> > > > > > > > > the second, we need to create one iter_link object for each interested
+> > > > > > > > > tid. It may not be easy to use either.
+> > > > > > > > >
+> > > > > > > > > - Regarding adding an explicit syscall. I thought about adding
+> > > > > > > > > write/read syscalls for task local storage maps, just like reading
+> > > > > > > > > values from iter_link. Writing or reading task local storage map
+> > > > > > > > > updates/reads the current task's value. I think this could achieve the
+> > > > > > > > > same effect as mmap.
+> > > > > > > > >
+> > > > > > > >
+> > > > > > > > Actually, my use case of using mmap on task local storage is to allow
+> > > > > > > > userspace to pass FDs into bpf prog. Some of the helpers I want to add
+> > > > > > > > need to take an FD as parameter and the bpf progs can run
+> > > > > > > > concurrently, thus using global data is racy. Mmapable task local
+> > > > > > > > storage is the best solution I can find for this purpose.
+> > > > > > > >
+> > > > > > > > Song also mentioned to me offline, that mmapable task local storage
+> > > > > > > > may be useful for his use case.
+> > > > > > > >
+> > > > > > > > I am actually open to other proposals.
+> > > > > > > >
+> > > > > > >
+> > > > > > > You could also use a syscall prog, and use bpf_prog_test_run to update local
+> > > > > > > storage for current. Data can be passed for that specific prog invocation using
+> > > > > > > ctx. You might have to enable bpf_task_storage helpers in it though, since they
+> > > > > > > are not allowed to be called right now.
+> > > > > > >
+> > > > > >
+> > > > > > The loading process needs CAP_BPF to load bpf_prog_test_run. I'm
+> > > > > > thinking of allowing any thread including unpriv ones to be able to
+> > > > > > pass data to the prog and update their own storage.
+> > > > >
+> > > > > If I understand the use case correctly all of this mmap-ing is only to
+> > > > > allow unpriv userspace to access a priv map via unpriv mmap() syscall.
+> > > > > But the map can be accessed as unpriv already.
+> > > > > Pin it with the world read creds and do map_lookup sys_bpf cmd on it.
+> > > >
+> > > > Right, but, if I understand correctly, with
+> > > > sysctl_unprivileged_bpf_disabled, unpriv tasks are not able to make
+> > > > use of __sys_bpf(). Is there anything I missed?
+> > >
+> > > That sysctl is a heavy hammer. Let's fix it instead.
+> > > map lookup/update/delete can be allowed for unpriv for certain map types.
+> > > There are permissions checks in corresponding lookup/update calls already.
+> >
 >
->   (a) Literally *all* original transmissions (white segments in the
-> plot) of packets after client sequence 66263 appear lost (are not
-> ACKed). Congestion generally does not behave like that. But broken
-> firewalls/middleboxes do.
->        (See netdev-2022-03-29-tcp-disregarded-acks-zoomed-out.png )
-
-Agreed.  So could it be that something in the transit path towards
-Google is actually dropping all of that?
-
-As stated - I highly doubt this is on our network unless newer kernel
-(on mail cluster) is doing stuff which is causing older netfilter to
-drop perhaps?  But this doesn't explain why newer kernel retransmits
-data for which it received an ACK.
-
+> (Adding Jann)
 >
->   (b) When the client is retransmitting packets, only packets at
-> exactly snd_una are ACKed. The packets beyond that point are always
-> un-ACKed. Again sounds like a broken firewall/middlebox.
->        (See netdev-2022-03-29-tcp-disregarded-acks-zoomed-in.png )
-No middlebox between packet sniffer and client ... client here is linux
-5.17.1.  Brings me back to the only thing that could be dropping the
-traffic is netfilter on the host, or the kernel doesn't like something
-about the ACK, or kernel is doing something else wrong as a result of
-TFO.  I'm not sure which option I like less.  Unfortunately I also use
-netfilter for redirecting traffic into haproxy here so can't exactly
-just switch off netfilter.
->
->   (c) After the client receives the server's "ack 73403", the client
-> ignores/drops all other incoming packets that show up in the trace.
+> I wonder if we can tag a map as BPF_F_UNPRIVILEGED and allow the writes to
+> only maps that are explicitly marked as writable by unprivileged processes.
 
-Agreed.  However, if I read your graph correctly, it gets an ACK for
-frame X at ~3.8s into the connection, then for X+2 at 4s, but it keeps
-retransmitting X+2, not X+1?
+I think it's overkill for existing unpriv maps like hash and array.
+These maps by themself don't pose a security threat.
+The sysctl was/is in the wrong place.
 
+> We will have task local storage in LSM programs that we
+> won't like unprivileged processes to write to as well.
+>
+> struct {
+>         __uint(type, BPF_MAP_TYPE_TASK_STORAGE);
+>         __uint(map_flags, BPF_F_NO_PREALLOC | BPF_F_UNPRIVILEGED);
+>         __type(key, int);
+>         __type(value, struct fd_storage);
+> } task_fd_storage_map SEC(".maps");
 
->
->        As Eric notes, this doesn't look like a PAWS issue. And it
-> doesn't look like a checksum or sequence/ACK validation issue. The
-> client starts ignoring ACKs between two ACKs that have correct
-> checksums, valid ACK numbers, and valid (identical) sequence numbers
-> and TS val and ecr values (here showing absolute sequence/ACK
-> numbers):
-I'm not familiar with PAWS here.  Assuming that the green line is ACKs,
-then at around 4s we get an ACK that basically ACKs two frames in one
-(which is fine from my understanding of TCP), and then the second of
-these frames keeps getting retransmitted going forward, so it's almost
-like the kernel ACKs the *first* of these two frames but not the second.
->
->     (i) The client processes this ACK and uses it to advance snd_una:
->     17:46:49.889911 IP6 (flowlabel 0x97427, hlim 61, next-header TCP
-> (6) payload length: 32) 2a00:1450:4013:c16::1a.25 >
-> 2c0f:f720:0:3:d6ae:52ff:feb8:f27b.48590: . cksum 0x7005 (correct)
-> 2699968514:2699968514(0) ack 3451415932 win 830 <nop,nop,TS val
-> 1206546583 ecr 331191428>
-
->
->     (ii) The client ignores this ACK and all later ACKs:
->     17:46:49.889912 IP6 (flowlabel 0x97427, hlim 61, next-header TCP
-> (6) payload length: 32) 2a00:1450:4013:c16::1a.25 >
-> 2c0f:f720:0:3:d6ae:52ff:feb8:f27b.48590: . cksum 0x6a66 (correct)
-> 2699968514:2699968514(0) ack 3451417360 win 841 <nop,nop,TS val
-> 1206546583 ecr 331191428>
->
-> neal
+local storage map was not exposed to unpriv before.
+This would be a different consideration.
+But even in such a case the extra flag looks unnecessary.
