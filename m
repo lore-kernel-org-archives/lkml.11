@@ -2,90 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CEE6C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 09:28:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F37F1C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 09:29:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233999AbiCaJaW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 05:30:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37648 "EHLO
+        id S234060AbiCaJa4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 05:30:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234003AbiCaJ3Z (ORCPT
+        with ESMTP id S234103AbiCaJak (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 05:29:25 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE3E91FF422;
-        Thu, 31 Mar 2022 02:27:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648718846; x=1680254846;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=mPcmSRFysKdQJULNHMdsCcsem8XlXgWIUxePX6FqmbU=;
-  b=e66tOk8W/E0fWH/7ffuke1+vLmGKS753EjTf+Sd7H3LTwjwjfFeP1Sdk
-   YPpDOxKDp9J3lm6ztf4Y2sZyok/q7i/5Mh27rz2dDbeibrWRSnxJfQEnQ
-   ybUq5UXSGsve3t1spi7ROQJmFLUpMPUMzAuvl24/6xG++3wUVwdB+YMe1
-   o8kjdbK31UAN0JFkzz13QVzhs/Bxi6pFzGr4V0qK0PCixxICLJo+ws0CT
-   qlKHibwceo1P53bs2hMoY0KKXPvuv/t6+fbjXs2aBnr2mY68zRo7LwQoE
-   HfRxHo6Wozc1ANd14UWLSntZEK+tRDYBWSNoFmKFBhhrQyxlS+tlgxhvo
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="239705897"
-X-IronPort-AV: E=Sophos;i="5.90,224,1643702400"; 
-   d="scan'208";a="239705897"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2022 02:27:26 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,224,1643702400"; 
-   d="scan'208";a="695423344"
-Received: from kuha.fi.intel.com ([10.237.72.185])
-  by fmsmga001.fm.intel.com with SMTP; 31 Mar 2022 02:27:23 -0700
-Received: by kuha.fi.intel.com (sSMTP sendmail emulation); Thu, 31 Mar 2022 12:27:23 +0300
-Date:   Thu, 31 Mar 2022 12:27:23 +0300
-From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
-To:     Won Chung <wonchung@google.com>
-Cc:     Tomas Winkler <tomas.winkler@intel.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Benson Leung <bleung@chromium.org>,
-        Prashant Malani <pmalani@chromium.org>,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH v3] misc/mei: Add NULL check to component match callback
- functions
-Message-ID: <YkVz+1HkSeXcIux2@kuha.fi.intel.com>
-References: <20220331084918.2592699-1-wonchung@google.com>
+        Thu, 31 Mar 2022 05:30:40 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79F18204A85
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 02:28:14 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[IPv6:::1])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <l.stach@pengutronix.de>)
+        id 1nZr67-00066h-2h; Thu, 31 Mar 2022 11:28:07 +0200
+Message-ID: <319e976acb0a686e596b88520dbcda59c78afe9e.camel@pengutronix.de>
+Subject: Re: [PATCH] soc: imx: gpcv2: keep i.MX8MM VPU-H1 bus clock active
+From:   Lucas Stach <l.stach@pengutronix.de>
+To:     Adam Ford <aford173@gmail.com>,
+        linux-arm-kernel@lists.infradead.org
+Cc:     tharvey@gateworks.com, aford@beaconembedded.com,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Peng Fan <peng.fan@nxp.com>, linux-kernel@vger.kernel.org
+Date:   Thu, 31 Mar 2022 11:28:05 +0200
+In-Reply-To: <20211120193916.1309236-1-aford173@gmail.com>
+References: <20211120193916.1309236-1-aford173@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.4 (3.40.4-1.fc34) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220331084918.2592699-1-wonchung@google.com>
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: l.stach@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Won,
+Hi Adam, hi Shawn,
 
-On Thu, Mar 31, 2022 at 08:49:18AM +0000, Won Chung wrote:
-> Component match callback functions need to check if expected data is
-> passed to them. Without this check, it can cause a NULL pointer
-> dereference when another driver registers a component before i915
-> drivers have their component master fully bind.
+Am Samstag, dem 20.11.2021 um 13:39 -0600 schrieb Adam Ford:
+> Enable the vpu-h1 clock when the domain is active because reading
+> or writing to the VPU-H1 IP block cause the system to hang.
 > 
-> Fixes: 1e8d19d9b0dfc ("mei: hdcp: bind only with i915 on the same PCH")
-> Fixes: c2004ce99ed73 ("mei: pxp: export pavp client to me client bus")
-> Suggested-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-> Suggested-by: Mika Westerberg <mika.westerberg@linux.intel.com>
-> Signed-off-by: Won Chung <wonchung@google.com>
-> Cc: stable@vger.kernel.org
-> ---
-> Changes from v2:
-> - Correctly add "Suggested-by" tag
-> - Add "Cc: stable@vger.kernel.org"
+> Fixes: 656ade7aa42a ("soc: imx: gpcv2: keep i.MX8M* bus clocks enabled")
+> Signed-off-by: Adam Ford <aford173@gmail.com>
 > 
-> Changes from v1:
-> - Add "Fixes" tag
-> - Send to stable@vger.kernel.org
+> diff --git a/drivers/soc/imx/gpcv2.c b/drivers/soc/imx/gpcv2.c
+> index b8d52d8d29db..7b6dfa33dcb9 100644
+> --- a/drivers/soc/imx/gpcv2.c
+> +++ b/drivers/soc/imx/gpcv2.c
+> @@ -734,6 +734,7 @@ static const struct imx_pgc_domain imx8mm_pgc_domains[] = {
+>  			.map = IMX8MM_VPUH1_A53_DOMAIN,
+>  		},
+>  		.pgc   = BIT(IMX8MM_PGC_VPUH1),
+> +		.keep_clocks = true,
+>  	},
+> 
+I missed this patch and just stumbled across it when looking at the git
+history. I don't think this patch is correct. The H1 GPC domain does
+not even have clocks assigned in the DT, so there is nothing to keep
+active. Also H1 is not a MIX domain, so it should not keep any bus
+clocks active, that is the job of the VPUMIX domain.
 
-You are sending these really fast. Before you send the next one,
-please wait for at least one day.
+While this patch is a no-op, as far as I can see, it still seems wrong
+and I think it should be reverted.
 
-thanks,
+Regards,
+Lucas
 
--- 
-heikki
