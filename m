@@ -2,31 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA0F8C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 18:35:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3FC3C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 18:36:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236291AbiCaShl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 14:37:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53606 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235801AbiCaSgh (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
+        id S235731AbiCaSgh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
         Thu, 31 Mar 2022 14:36:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51838 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234799AbiCaSgV (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 31 Mar 2022 14:36:21 -0400
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E858D21DF2E;
-        Thu, 31 Mar 2022 11:34:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C30F063BD2;
+        Thu, 31 Mar 2022 11:34:33 -0700 (PDT)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A9641139F;
-        Thu, 31 Mar 2022 11:34:48 -0700 (PDT)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A67C613D5;
+        Thu, 31 Mar 2022 11:34:33 -0700 (PDT)
 Received: from eglon.cambridge.arm.com (eglon.cambridge.arm.com [10.1.196.218])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0BC193F718;
-        Thu, 31 Mar 2022 11:34:47 -0700 (PDT)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 091493F718;
+        Thu, 31 Mar 2022 11:34:32 -0700 (PDT)
 From:   James Morse <james.morse@arm.com>
 To:     stable@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     james.morse@arm.com, catalin.marinas@arm.com
-Subject: [stable:PATCH v4.14.274 22/27] arm64: proton-pack: Report Spectre-BHB vulnerabilities as part of Spectre-v2
-Date:   Thu, 31 Mar 2022 19:33:55 +0100
-Message-Id: <20220331183400.73183-23-james.morse@arm.com>
+Subject: [stable:PATCH v4.14.274 05/27] arm64: Add part number for Neoverse N1
+Date:   Thu, 31 Mar 2022 19:33:38 +0100
+Message-Id: <20220331183400.73183-6-james.morse@arm.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220331183400.73183-1-james.morse@arm.com>
 References: <20220331183400.73183-1-james.morse@arm.com>
@@ -36,101 +36,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-commit dee435be76f4117410bbd90573a881fd33488f37 upstream.
+From: Marc Zyngier <marc.zyngier@arm.com>
 
-Speculation attacks against some high-performance processors can
-make use of branch history to influence future speculation as part of
-a spectre-v2 attack. This is not mitigated by CSV2, meaning CPUs that
-previously reported 'Not affected' are now moderately mitigated by CSV2.
+commit 0cf57b86859c49381addb3ce47be70aadf5fd2c0 upstream.
 
-Update the value in /sys/devices/system/cpu/vulnerabilities/spectre_v2
-to also show the state of the BHB mitigation.
+New CPU, new part number. You know the drill.
 
-Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
-[ code move to cpu_errata.c for backport ]
+Signed-off-by: Marc Zyngier <marc.zyngier@arm.com>
+Signed-off-by: Will Deacon <will.deacon@arm.com>
 Signed-off-by: James Morse <james.morse@arm.com>
 ---
- arch/arm64/include/asm/cpufeature.h |  8 ++++++
- arch/arm64/kernel/cpu_errata.c      | 38 ++++++++++++++++++++++++++---
- 2 files changed, 43 insertions(+), 3 deletions(-)
+ arch/arm64/include/asm/cputype.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/arm64/include/asm/cpufeature.h b/arch/arm64/include/asm/cpufeature.h
-index 166f81b7afee..5f9f40a02784 100644
---- a/arch/arm64/include/asm/cpufeature.h
-+++ b/arch/arm64/include/asm/cpufeature.h
-@@ -495,6 +495,14 @@ static inline int arm64_get_ssbd_state(void)
+diff --git a/arch/arm64/include/asm/cputype.h b/arch/arm64/include/asm/cputype.h
+index e862f1f56ad7..35a116577e62 100644
+--- a/arch/arm64/include/asm/cputype.h
++++ b/arch/arm64/include/asm/cputype.h
+@@ -88,6 +88,7 @@
+ #define ARM_CPU_PART_CORTEX_A35		0xD04
+ #define ARM_CPU_PART_CORTEX_A55		0xD05
+ #define ARM_CPU_PART_CORTEX_A76		0xD0B
++#define ARM_CPU_PART_NEOVERSE_N1	0xD0C
  
- void arm64_set_ssbd_mitigation(bool state);
+ #define APM_CPU_PART_POTENZA		0x000
  
-+/* Watch out, ordering is important here. */
-+enum mitigation_state {
-+	SPECTRE_UNAFFECTED,
-+	SPECTRE_MITIGATED,
-+	SPECTRE_VULNERABLE,
-+};
-+
-+enum mitigation_state arm64_get_spectre_bhb_state(void);
- #endif /* __ASSEMBLY__ */
- 
- #endif
-diff --git a/arch/arm64/kernel/cpu_errata.c b/arch/arm64/kernel/cpu_errata.c
-index d75c4f4144f4..41caf2f01814 100644
---- a/arch/arm64/kernel/cpu_errata.c
-+++ b/arch/arm64/kernel/cpu_errata.c
-@@ -730,14 +730,39 @@ ssize_t cpu_show_spectre_v1(struct device *dev, struct device_attribute *attr,
- 	return sprintf(buf, "Mitigation: __user pointer sanitization\n");
- }
- 
-+static const char *get_bhb_affected_string(enum mitigation_state bhb_state)
-+{
-+	switch (bhb_state) {
-+	case SPECTRE_UNAFFECTED:
-+		return "";
-+	default:
-+	case SPECTRE_VULNERABLE:
-+		return ", but not BHB";
-+	case SPECTRE_MITIGATED:
-+		return ", BHB";
-+	}
-+}
-+
- ssize_t cpu_show_spectre_v2(struct device *dev, struct device_attribute *attr,
- 		char *buf)
- {
--	if (__spectrev2_safe)
--		return sprintf(buf, "Not affected\n");
-+	enum mitigation_state bhb_state = arm64_get_spectre_bhb_state();
-+	const char *bhb_str = get_bhb_affected_string(bhb_state);
-+	const char *v2_str = "Branch predictor hardening";
-+
-+	if (__spectrev2_safe) {
-+		if (bhb_state == SPECTRE_UNAFFECTED)
-+			return sprintf(buf, "Not affected\n");
-+
-+		/*
-+		 * Platforms affected by Spectre-BHB can't report
-+		 * "Not affected" for Spectre-v2.
-+		 */
-+		v2_str = "CSV2";
-+	}
- 
- 	if (__hardenbp_enab)
--		return sprintf(buf, "Mitigation: Branch predictor hardening\n");
-+		return sprintf(buf, "Mitigation: %s%s\n", v2_str, bhb_str);
- 
- 	return sprintf(buf, "Vulnerable\n");
- }
-@@ -758,3 +783,10 @@ ssize_t cpu_show_spec_store_bypass(struct device *dev,
- 
- 	return sprintf(buf, "Vulnerable\n");
- }
-+
-+static enum mitigation_state spectre_bhb_state;
-+
-+enum mitigation_state arm64_get_spectre_bhb_state(void)
-+{
-+	return spectre_bhb_state;
-+}
+@@ -114,6 +115,7 @@
+ #define MIDR_CORTEX_A35 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A35)
+ #define MIDR_CORTEX_A55 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A55)
+ #define MIDR_CORTEX_A76	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A76)
++#define MIDR_NEOVERSE_N1 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_NEOVERSE_N1)
+ #define MIDR_THUNDERX	MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX)
+ #define MIDR_THUNDERX_81XX MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX_81XX)
+ #define MIDR_THUNDERX_83XX MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX_83XX)
 -- 
 2.30.2
 
