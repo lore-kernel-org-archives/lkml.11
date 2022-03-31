@@ -2,127 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 708D8C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 23:28:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9980FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 23:29:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239775AbiCaXaH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 19:30:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38362 "EHLO
+        id S242897AbiCaXbS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 19:31:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229576AbiCaXaF (ORCPT
+        with ESMTP id S229576AbiCaXbP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 19:30:05 -0400
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A038E166E03
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 16:28:17 -0700 (PDT)
-Received: by mail-yb1-xb35.google.com with SMTP id g9so2142268ybf.1
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 16:28:17 -0700 (PDT)
+        Thu, 31 Mar 2022 19:31:15 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36B8B154496
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 16:29:26 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id w25so1011458edi.11
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 16:29:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=chromium.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=MTu8jH0ZShl2CbVldPiTWqvXgwnANlKULqsotYtFTRg=;
-        b=ZR1If5nH/6ecvRCB/Dav9NrdwPSqpECdbXYkcoNbO6nYnNb3JKRwMo0TpWhs3uRhlM
-         xOWz8nBIIObsDZM7tTgHW3eE3STOckaybFbDLyQWtP1K3MTkuhaDjFTdclCB7LEFa7uJ
-         53kJsxcMJ8EWGr1KlNwOaZXGZ5qXCJ6/Wm7dhX0Pb9GtfGIXQSkTBa8vEckJwuQXeoW5
-         16XDwpYtZQqgn1h0ZCosj9nroMrtfdJDk7VLU9eDVnVRyNgcg9vPA1TUCJ6oCqOZyp5F
-         /nnSN3cZVQi5xfsx+MV+3KCEJu5xBSSsCMtAW9OdvU9EUy2sJuz3ZsKF8RqyQQJ4eAiI
-         D/ig==
+        bh=avSGMtSz4ymacyl7GdMhd9/3YRX9NuWMZI8WC7CMKV0=;
+        b=RB7qN+1nHYmA5Ki3RYQ5cOwMq+8+ec2V05lMPrIjOE0+2UCFYYM2uKN8wEUMfprHJd
+         ber657p1Z3CwyukZldarn6sF9qZcZhzTh9Y/Nr6kgjdUGxUXyW3xmTRVYJOBuVfSKLTL
+         qWjEu993x0lx2WpR1RPuyTpar5XfsrMV/EV58=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=MTu8jH0ZShl2CbVldPiTWqvXgwnANlKULqsotYtFTRg=;
-        b=IJd4oWk4Pn0uCTtRAMr/RPyuVRFhLo0TQoNBrgGLNvEOpygb7ElA8HP0AblOu3r5f6
-         LA9wDZRNIpG70JNgge/wupMOh1KCQn+iB+eD+UX0G7p9kdn9u1kMJVXsEXweICJOrLvw
-         xegcvzP4qPUyk5gGiNsqotkdsqt557uCjOfwcJ5OlyrtEMBwbobGF8sEicg6hDsj6sVi
-         HjQTLvnEbu/B1RECptrfWBsmzp3ObeMjFJkErJCutGV69z+ymrgTkAxeWkbKY92F4OE9
-         y7BW2Wsk3V/XTIdV/hGFxcbCigPTATUGj/7RpiWknP9yxQPUqhJOgb8PAIFsQMV4B0k1
-         Kxrw==
-X-Gm-Message-State: AOAM5325cCOg1SEVCaZpsYXwpNjpz/0D9KM+IVQNhEO4ApfvI9p0aFzh
-        fZqvYJ/zlKkEVi2MHutHWsYslckZSS5ZFDbo2RsicYDG6/p5gw==
-X-Google-Smtp-Source: ABdhPJwIy7YhCQoa9iPfx9WGTlvbSCUXb1qUKLREuDTI4+R3RDjbQuJROzx+XBMXHt73o/6H0ztrr17MSdy4TwUeIZo=
-X-Received: by 2002:a5b:7c6:0:b0:60b:a0ce:19b with SMTP id t6-20020a5b07c6000000b0060ba0ce019bmr6161731ybq.407.1648769295831;
- Thu, 31 Mar 2022 16:28:15 -0700 (PDT)
+        bh=avSGMtSz4ymacyl7GdMhd9/3YRX9NuWMZI8WC7CMKV0=;
+        b=UsgXDGxfFrdBgfFGKTjws3SgxavrvFc3V1tB+nuZVRuGJ4oUAf9d2Y2QYoldXDO5w2
+         5UqyJels4vvuXWZ6SmYO3x0YNH/JLXqLI6wFZhXCM96+GUpvE4smkmI9JWSqhiCF1cqt
+         vMlG+kHSQlKcKhVKVbp7T7Cogv1krlIjdssFD5fp+uJtxRT3u+DC9a3cejdukBOpc2St
+         bEIF4oh8MVUxKdmoQ/H1GsJcxAu6SSOXyHW7UFN7dxZgzXfDP3xZiSGNGSR9/ruITlhG
+         4vhwwksuGVe/Z/tO38aFkMs7ENgvZs07EcXgTm1ZJFomeNKhMTUgqtjU8gXGb3jUI3Hl
+         ca9A==
+X-Gm-Message-State: AOAM5332ZUZ+3Sr3E2Lrt9CEaAx9Y74aJmY2nxeKyXPqty+nBco+LjDX
+        Y5lQwJgVNJMUpzm6H15XWx/xnDC8zCiA/Gs8bX0=
+X-Google-Smtp-Source: ABdhPJzqzlWhIPtyuMGXAqIOnzNSY2V6NNL2BS6IXYbilLo9JjqfW0DrHWwL803ueMv9syqj66fqTA==
+X-Received: by 2002:aa7:cd81:0:b0:410:d64e:aa31 with SMTP id x1-20020aa7cd81000000b00410d64eaa31mr18763298edv.167.1648769364473;
+        Thu, 31 Mar 2022 16:29:24 -0700 (PDT)
+Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com. [209.85.128.45])
+        by smtp.gmail.com with ESMTPSA id i11-20020a50fd0b000000b0041936bc0f7esm389398eds.52.2022.03.31.16.29.23
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 31 Mar 2022 16:29:24 -0700 (PDT)
+Received: by mail-wm1-f45.google.com with SMTP id l7-20020a05600c1d0700b0038c99618859so2541773wms.2
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 16:29:23 -0700 (PDT)
+X-Received: by 2002:a05:600c:2e02:b0:38c:8390:d8ca with SMTP id
+ o2-20020a05600c2e0200b0038c8390d8camr6452311wmf.15.1648768957118; Thu, 31 Mar
+ 2022 16:22:37 -0700 (PDT)
 MIME-Version: 1.0
-References: <CANn89iKaNEwyNZ=L_PQnkH0LP_XjLYrr_dpyRKNNoDJaWKdrmg@mail.gmail.com>
- <20220331224222.GY4285@paulmck-ThinkPad-P17-Gen-1> <CANn89iJjyp7s1fYB6VCqLhUnF+mmEXyw8GMpFC9Vi22usBsgAQ@mail.gmail.com>
- <CANn89iJaeBneeqiDBUh_ppEQGne_eyPp-BCVYjEyvoYkUxrDxg@mail.gmail.com> <20220331231312.GA4285@paulmck-ThinkPad-P17-Gen-1>
-In-Reply-To: <20220331231312.GA4285@paulmck-ThinkPad-P17-Gen-1>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 31 Mar 2022 16:28:04 -0700
-Message-ID: <CANn89i+rfrkRrdYAq8Baq04n_ACq+VdB+UcsMoq7U-dB-2hKJA@mail.gmail.com>
-Subject: Re: [BUG] rcu-tasks : should take care of sparse cpu masks
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>
+References: <1648656179-10347-1-git-send-email-quic_sbillaka@quicinc.com> <1648656179-10347-3-git-send-email-quic_sbillaka@quicinc.com>
+In-Reply-To: <1648656179-10347-3-git-send-email-quic_sbillaka@quicinc.com>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Thu, 31 Mar 2022 16:22:24 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=UtnNTWmMPYPkSJ5qceWspXtZ+hL6UTgSn=rHzd39Y42g@mail.gmail.com>
+Message-ID: <CAD=FV=UtnNTWmMPYPkSJ5qceWspXtZ+hL6UTgSn=rHzd39Y42g@mail.gmail.com>
+Subject: Re: [PATCH v6 2/8] drm/msm/dp: wait for hpd high before aux transaction
+To:     Sankeerth Billakanti <quic_sbillaka@quicinc.com>
+Cc:     dri-devel <dri-devel@lists.freedesktop.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        freedreno <freedreno@lists.freedesktop.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, Rob Clark <robdclark@gmail.com>,
+        Sean Paul <seanpaul@chromium.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        quic_kalyant <quic_kalyant@quicinc.com>,
+        "Abhinav Kumar (QUIC)" <quic_abhinavk@quicinc.com>,
+        "Kuogee Hsieh (QUIC)" <quic_khsieh@quicinc.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        quic_vproddut <quic_vproddut@quicinc.com>,
+        quic_aravindh@quicinc.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 31, 2022 at 4:13 PM Paul E. McKenney <paulmck@kernel.org> wrote:
+Hi,
+
+On Wed, Mar 30, 2022 at 9:03 AM Sankeerth Billakanti
+<quic_sbillaka@quicinc.com> wrote:
 >
-> The initial setting of ->percpu_enqueue_shift forces all in-range CPU
-> IDs to shift down to zero.  The grace-period kthread is allowed to run
-> where it likes.  The callback lists are protected by locking, even in
-> the case of local access, so this should be safe.
+> The source device should ensure the sink is ready before proceeding to
+> read the sink capability or performing any aux transactions. The sink
+
+s/performing/perform
+
+> will indicate its readiness by asserting the HPD line. The controller
+> driver needs to wait for the hpd line to be asserted by the sink before
+> performing any aux transactions.
 >
-> Or am I missing your point?
+> The eDP sink is assumed to be always connected. It needs power from the
+> source and its HPD line will be asserted only after the panel is powered
+> on. The panel power will be enabled from the panel-edp driver and only
+> after that, the hpd line will be asserted.
 >
+> Whereas for DP, the sink can be hotplugged and unplugged anytime. The hpd
+> line gets asserted to indicate the sink is connected and ready. Hence
+> there is no need to wait for the hpd line to be asserted for a DP sink.
+>
+> Signed-off-by: Sankeerth Billakanti <quic_sbillaka@quicinc.com>
+> ---
+>
+> Changes in v6:
+>   - Wait for hpd high only for eDP
+>   - Split into smaller patches
+>
+>  drivers/gpu/drm/msm/dp/dp_aux.c     | 13 ++++++++++++-
+>  drivers/gpu/drm/msm/dp/dp_aux.h     |  3 ++-
+>  drivers/gpu/drm/msm/dp/dp_catalog.c | 13 +++++++++++++
+>  drivers/gpu/drm/msm/dp/dp_catalog.h |  1 +
+>  drivers/gpu/drm/msm/dp/dp_display.c |  3 ++-
+>  5 files changed, 30 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/gpu/drm/msm/dp/dp_aux.c b/drivers/gpu/drm/msm/dp/dp_aux.c
+> index 6d36f63..a217c80 100644
+> --- a/drivers/gpu/drm/msm/dp/dp_aux.c
+> +++ b/drivers/gpu/drm/msm/dp/dp_aux.c
+> @@ -36,6 +36,7 @@ struct dp_aux_private {
+>         bool initted;
+>         u32 offset;
+>         u32 segment;
+> +       bool is_edp;
+>
+>         struct drm_dp_aux dp_aux;
+>  };
+> @@ -337,6 +338,14 @@ static ssize_t dp_aux_transfer(struct drm_dp_aux *dp_aux,
+>                 goto exit;
+>         }
+>
+> +       if (aux->is_edp) {
 
-In fact I have been looking at this code, because we bisected a
-regression back to this patch:
+Adding a comment about _why_ you're doing this just for eDP would
+probably be a good idea. Like maybe:
 
-4fe192dfbe5ba9780df699d411aa4f25ba24cf61 rcu-tasks: Shorten
-per-grace-period sleep for RCU Tasks Trace
+/*
+ * For eDP it's important to give a reasonably long wait here for HPD
+ * to be asserted. This is because the panel driver may have _just_
+ * turned on the panel and then tried to do an AUX transfer. The panel
+ * driver has no way of knowing when the panel is ready, so it's up
+ * to us to wait. For DP we never get into this situation so let's
+ * avoid ever doing the extra long wait for DP.
+ */
 
-It is very possible the regression comes because the RCU task thread
-is using more cpu cycles, from 'CPU 0'  where our system daemons are
-pinned.
 
-But I could not spot where the RCU task kthread is forced to run on CPU 0.
+> @@ -491,7 +500,8 @@ void dp_aux_unregister(struct drm_dp_aux *dp_aux)
+>         drm_dp_aux_unregister(dp_aux);
+>  }
+>
+> -struct drm_dp_aux *dp_aux_get(struct device *dev, struct dp_catalog *catalog)
+> +struct drm_dp_aux *dp_aux_get(struct device *dev, struct dp_catalog *catalog,
+> +                               bool is_edp)
 
-I attempted to backport to our kernel all related patches that were
-not yet backported,
-and we still see a regression in our tests.
+nit: I think your indentation of the 2nd line isn't quite right.
 
-Please ignore the sha1 in this current patch series, this is only to
-show my current attempt to fix the regression in our tree.
 
-450b3244f29b rcu-tasks: Don't remove tasks with pending IPIs from holdout list
-5f88f7e9cc36 rcu-tasks: Create per-CPU callback lists
-1a943d0041dc rcu-tasks: Introduce ->percpu_enqueue_shift for dynamic
-queue selection
-ea5289f12fce rcu-tasks: Convert grace-period counter to grace-period
-sequence number
-22efd5093c3b rcu/segcblist: Prevent useless GP start if no CBs to accelerate
-16dee1b3babf rcu: Implement rcu_segcblist_is_offloaded() config dependent
-8cafaadb6144 rcu: Add callbacks-invoked counters
-323234685765 rcu/tree: Make rcu_do_batch count how many callbacks were executed
-f48f3386a1cc rcu/segcblist: Add additional comments to explain smp_mb()
-4408105116de rcu/segcblist: Add counters to segcblist datastructure
-4a0b89a918d6 rcu/tree: segcblist: Remove redundant smp_mb()s
-38c0d18e8740 rcu: Add READ_ONCE() to rcu_do_batch() access to rcu_divisor
-0b5d1031b509 rcu/segcblist: Add debug checks for segment lengths
-8a82886fbf02 rcu_tasks: Convert bespoke callback list to rcu_segcblist structure
-cbd452a5c01f rcu-tasks: Use spin_lock_rcu_node() and friends
-073222be51f3 rcu-tasks: Add a ->percpu_enqueue_lim to the rcu_tasks structure
-5af10fb0f8fb rcu-tasks: Abstract checking of callback lists
-d3e8be598546 rcu-tasks: Abstract invocations of callbacks
-65784460a392 rcu-tasks: Use workqueues for multiple
-rcu_tasks_invoke_cbs() invocations
-dd6413e355f1 rcu-tasks: Make rcu_barrier_tasks*() handle multiple
-callback queues
-2499cb3c438e rcu-tasks: Add rcupdate.rcu_task_enqueue_lim to set
-initial queueing
-a859f409a503 rcu-tasks: Count trylocks to estimate call_rcu_tasks() contention
-4ab253ca056e rcu-tasks: Avoid raw-spinlocked wakeups from
-call_rcu_tasks_generic()
-e9a3563fe76e rcu-tasks: Use more callback queues if contention encountered
-4023187fe31d rcu-tasks: Use separate ->percpu_dequeue_lim for callback
-dequeueing
-533be3bd47c3 rcu: Provide polling interfaces for Tree RCU grace periods
-f7e5a81d7953 rcu-tasks: Use fewer callbacks queues if callback flood ends
-bb7ad9078e1b rcu-tasks: Fix computation of CPU-to-list shift counts
-d9cebde55539 rcu-tasks: Use order_base_2() instead of ilog2()
-95606f1248f5 rcu-tasks: Set ->percpu_enqueue_shift to zero upon contention
+> diff --git a/drivers/gpu/drm/msm/dp/dp_aux.h b/drivers/gpu/drm/msm/dp/dp_aux.h
+> index 82afc8d..c99aeec 100644
+> --- a/drivers/gpu/drm/msm/dp/dp_aux.h
+> +++ b/drivers/gpu/drm/msm/dp/dp_aux.h
+> @@ -16,7 +16,8 @@ void dp_aux_init(struct drm_dp_aux *dp_aux);
+>  void dp_aux_deinit(struct drm_dp_aux *dp_aux);
+>  void dp_aux_reconfig(struct drm_dp_aux *dp_aux);
+>
+> -struct drm_dp_aux *dp_aux_get(struct device *dev, struct dp_catalog *catalog);
+> +struct drm_dp_aux *dp_aux_get(struct device *dev, struct dp_catalog *catalog,
+> +                               bool is_edp);
+
+nit: I think your indentation of the 2nd line isn't quite right.
+
+
+Things are pretty much nits, so FWIW:
+
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
