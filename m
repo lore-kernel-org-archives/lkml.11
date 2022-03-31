@@ -2,85 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 123C3C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 06:51:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 707A4C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 06:52:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231478AbiCaGwr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 02:52:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44022 "EHLO
+        id S231467AbiCaGxo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 02:53:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231439AbiCaGwn (ORCPT
+        with ESMTP id S229815AbiCaGxn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 02:52:43 -0400
-Received: from hutie.ust.cz (unknown [IPv6:2a03:3b40:fe:f0::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 846C24E399;
-        Wed, 30 Mar 2022 23:50:52 -0700 (PDT)
-Content-Type: text/plain;
-        charset=utf-8
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cutebit.org; s=mail;
-        t=1648709449; bh=tbTLjhDtA27Ei4tnqxDxsAxJnPR7aMZnIG1OFwICCmM=;
-        h=Subject:From:In-Reply-To:Date:Cc:References:To;
-        b=Jvz6KZ18Rl5LMvyEw4xhUWabaSxNNSTSIwayr2upFtq1bQMqyGaWUb4N5Uq/SD3aS
-         S2hNghUDl8ossPitQ7vNp5tYI9s7WoQSiTnjKqL9YH956/rnyoWCeKR9L2OLBoFDOD
-         htD+K9shQEAaI3lK3+IUayjYsqL0tkZhK4pHiTa4=
-Mime-Version: 1.0 (Mac OS X Mail 15.0 \(3693.40.0.1.81\))
-Subject: Re: [PATCH 1/2] dt-bindings: dma: Add Apple ADMAC
-From:   =?utf-8?Q?Martin_Povi=C5=A1er?= <povik@cutebit.org>
-In-Reply-To: <YkU6yvUQ6v4VdXiJ@matsya>
-Date:   Thu, 31 Mar 2022 08:50:48 +0200
-Cc:     =?utf-8?Q?Martin_Povi=C5=A1er?= <povik+lin@cutebit.org>,
-        Hector Martin <marcan@marcan.st>,
-        Sven Peter <sven@svenpeter.dev>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        linux-arm-kernel@lists.infradead.org, dmaengine@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Mark Kettenis <kettenis@openbsd.org>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <C2D8BDAF-0ACF-4756-B10F-B5097BC93670@cutebit.org>
-References: <20220330164458.93055-1-povik+lin@cutebit.org>
- <20220330164458.93055-2-povik+lin@cutebit.org> <YkU6yvUQ6v4VdXiJ@matsya>
-To:     Vinod Koul <vkoul@kernel.org>
+        Thu, 31 Mar 2022 02:53:43 -0400
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ADEF4B423
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 23:51:57 -0700 (PDT)
+Received: from ip4d144895.dynamic.kabel-deutschland.de ([77.20.72.149] helo=[192.168.66.200]); authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1nZoeu-00019N-LQ; Thu, 31 Mar 2022 08:51:53 +0200
+Message-ID: <9e3c47e0-6807-081d-feb7-ed7c5fe1d1f1@leemhuis.info>
+Date:   Thu, 31 Mar 2022 08:51:51 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Content-Language: en-US
+To:     regressions@lists.linux.dev
+Cc:     linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
+References: <1648659326.eabkokyuym.none.ref@localhost>
+ <1648659326.eabkokyuym.none@localhost>
+From:   Thorsten Leemhuis <linux@leemhuis.info>
+Subject: Re: "dma-mapping: remove CONFIG_DMA_REMAP" causes AMD SME boot fail
+In-Reply-To: <1648659326.eabkokyuym.none@localhost>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;linux@leemhuis.info;1648709517;23acf2d0;
+X-HE-SMSGID: 1nZoeu-00019N-LQ
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+[TLDR: I'm adding the regression report below to regzbot, the Linux
+kernel regression tracking bot; all text you find below is compiled from
+a few templates paragraphs you might have encountered already already
+from similar mails.]
 
-> On 31. 3. 2022, at 7:23, Vinod Koul <vkoul@kernel.org> wrote:
->=20
-> On 30-03-22, 18:44, Martin Povi=C5=A1er wrote:
->> Apple's Audio DMA Controller (ADMAC) is used to fetch and store audio
->> samples on Apple SoCs from the "Apple Silicon" family.
->>=20
->> Signed-off-by: Martin Povi=C5=A1er <povik+lin@cutebit.org>
->> ---
->> .../devicetree/bindings/dma/apple,admac.yaml  | 73 =
-+++++++++++++++++++
->> 1 file changed, 73 insertions(+)
->> create mode 100644 =
-Documentation/devicetree/bindings/dma/apple,admac.yaml
->>=20
->> diff --git a/Documentation/devicetree/bindings/dma/apple,admac.yaml =
-b/Documentation/devicetree/bindings/dma/apple,admac.yaml
->> new file mode 100644
->> index 000000000000..34f76a9a2983
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/dma/apple,admac.yaml
+Hi, this is your Linux kernel regression tracker. Sending this just to
+the lists, as it's already handled.
 
->> +  apple,internal-irq-destination:
->> +    $ref: /schemas/types.yaml#/definitions/uint32
->> +    description: Index influencing internal routing of the IRQs
->> +      within the peripheral.
->=20
-> do you have more details for this, is this for peripheral and if so
-> suited to be in dam-cells?
+On 30.03.22 19:51, Alex Xu (Hello71) wrote:
+> 
+> After a recent kernel update, booting one of my machines causes it to 
+> hang on a black screen. Pressing Lock keys on the USB keyboard does not 
+> turn on the indicators, and the machine does not appear on the Ethernet 
+> network. I don't have a serial port on this machine. I didn't try 
+> netconsole, but I suspect it won't work.
+> 
+> Setting mem_encrypt=0 seems to resolve the issue. Reverting f5ff79fddf0e 
+> ("dma-mapping: remove CONFIG_DMA_REMAP") also appears to resolve the 
+> issue.
+> 
+> The machine in question has an AMD Ryzen 5 1600 and ASRock B450 Pro4.
 
-By peripheral I meant the DMA controller itself here.=20
+To be sure below issue doesn't fall through the cracks unnoticed, I'm
+adding it to regzbot, my Linux kernel regression tracking bot:
 
-Effectively the controller has four independent IRQ outputs and the =
-driver
-needs to know which one we are using. (It need to be the same output =
-even
-for different ADMAC instances on one die.)
+#regzbot ^introduced f5ff79fddf0e
+#regzbot title dma: "dma-mapping: remove CONFIG_DMA_REMAP" causes AMD
+SME boot fail
+#regzbot ignore-activity
 
+If it turns out this isn't a regression, free free to remove it from the
+tracking by sending a reply to this thread containing a paragraph like
+"#regzbot invalid: reason why this is invalid" (without the quotes).
+
+Ciao, Thorsten
