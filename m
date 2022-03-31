@@ -2,327 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1704C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 19:36:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33ED6C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 19:37:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240757AbiCaTiD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 15:38:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37714 "EHLO
+        id S240761AbiCaTjE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 15:39:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230138AbiCaTiB (ORCPT
+        with ESMTP id S234059AbiCaTjB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 15:38:01 -0400
-Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::225])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D54951E5310;
-        Thu, 31 Mar 2022 12:36:11 -0700 (PDT)
-Received: (Authenticated sender: alexandre.belloni@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id F20531C0002;
-        Thu, 31 Mar 2022 19:36:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1648755369;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=V8fHwSd70iFB+ISHP69lKJKpu/hepzr7wzhuGq/slrA=;
-        b=T8FpwH1M9y04NkMIbM/MSxBGCYDgiJWha5qWF7sIDPHoh5jC1MfDCMtjKnilMEV2fVGupU
-        lYkJxQmbZRjJtg6eqPH1+Tt8picFwnY2D5tYFv5g5SeuGEbgkSq4RxlM+3j0YIOwDSYI9X
-        tosRqteU+usTABUV6A0ozBm4gjW3cdk6p/NrtZ5Y8Szlh4KgP58eNvzj6YR3zmEJjP2WpT
-        SBgnj+FaIPUJdk//TpJ6eHFGHBhL0pscuxq+3cQwESTc9lah3Vd7DRdpo/PFLrGTi9fS4k
-        6CXdgn8qAp8qrag1coPu3vXWqfkX7LIb14H5T4ajWoPIS7Ln4PbYJ1ZIvrYNjg==
-Date:   Thu, 31 Mar 2022 21:36:08 +0200
-From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
-To:     Mateusz =?utf-8?Q?Jo=C5=84czyk?= <mat.jonczyk@o2.pl>
-Cc:     linux-kernel@vger.kernel.org, linux-rtc@vger.kernel.org,
-        linux-kselftest@vger.kernel.org,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Shuah Khan <shuah@kernel.org>
-Subject: Re: [PATCH 1/2] [RFC] rtc: expose direct access to hardware alarm
- time in debugfs
-Message-ID: <YkYCqI0HEJvi2VjV@piout.net>
-References: <20220331190612.22162-1-mat.jonczyk@o2.pl>
+        Thu, 31 Mar 2022 15:39:01 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A8E41EDA34
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 12:37:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1648755384;
+        bh=t+pd5nnN/BLBgcMhZewfIZ7V3cZOxT7El4ZWjnd4n0U=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
+        b=jRYGbR0owV1jNj1qyjlIPjaWwx8o93GKJV5Euwg8RQwlrcLNMmytydH5yCzXWSkr7
+         PBpqA7cMt/oGMVQ2boLgZAfBnYs6pGutpe6SueuvC8dyXc2KKhrdBnqdtmViviEXah
+         7heE6OC7wooBFNUImc4maHiD2DwUyckwM/vsPhZA=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from genesis.localnet ([80.187.80.35]) by mail.gmx.net (mrgmx005
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MbRfv-1oBpNr0XSz-00boXP; Thu, 31
+ Mar 2022 21:36:24 +0200
+From:   Alois Wohlschlager <alois1@gmx-topmail.de>
+To:     Christian Brauner <brauner@kernel.org>
+Cc:     "Eric W. Biederman" <ebiederm@xmission.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Alexey Gladkov <legion@kernel.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        David Hildenbrand <david@redhat.com>,
+        Rolf Eike Beer <eb@emlix.com>,
+        Ran Xiaokai <ran.xiaokai@zte.com.cn>,
+        Matthew Bobrowski <repnop@google.com>, Jan Kara <jack@suse.cz>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] pid: Allow creation of pidfds to threads
+Date:   Thu, 31 Mar 2022 21:02:32 +0200
+Message-ID: <3412128.IC5jYiYEAv@genesis>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220331190612.22162-1-mat.jonczyk@o2.pl>
+Content-Type: multipart/signed; boundary="nextPart2296693.3NxCkoLgkh"; micalg="pgp-sha256"; protocol="application/pgp-signature"
+X-Provags-ID: V03:K1:pIqMjOucgodaMzVDBkS7oW22Bg7lNsPkkSahvuKflG6rcVRBV93
+ JvF/m1LoS28i05au1HFQ9FTr4r2I8KJn0rSAxNSr7RReIn9zjlMVRLrcUSQkvVNba4kK0SI
+ 6lRUHJAWvUGkx6OrJvxU/RCJYcu3f2St/3VURpEAqTfeLjFI2ktGqtvQNsSLt3P8HA0k4Tt
+ x1Ph3ez8CHwQO6F4ibP5A==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:zexKTJhElVI=:oncBVUu6y3PEOAbwqzNWzH
+ ld8OPM8zgxqbKUOGpnxubxR3eeNT61nSNnj8TvVwyixq6LFEeF3P8MefKANs9A6FcvQo6KgBX
+ P1vWDcKeXqvVomTuzX3EeKU7NyYdOS+3qtk8Rm5pioL83c2iHGpUA4AcQ9gA06AmtRhEeoRwZ
+ tvqAHSW/IndxBvVZZghtlnqJDQEc3mN005BAE0ZiIaJuw/5CJMBkWowly4s+YOQ9HLJIHISM7
+ Sz3W5602UhgQDH5x9x+kVfGNFIY+tOy1RapMapdnmOK+1vYl3gIf3izctjr7+KvccQwwiasBB
+ Y3fcgDVbwV5D4mRC1zIhNX+w3OgqGQthch/DKQ3XjkUc9ws2BUfSwkdnGXqL9R0MpxpqXW6NA
+ C0zBWKTAffwH2RpGEvRWzGWPcYB+/H5ZqDcgp5azWytK8zReoZABtwHv3QqaBZtTNoB9+RylT
+ oaz5xGO5dOqpJA0HFx2C988irQzSlByY7GO/HzhmJenhc6OgJLPjvBg3N5o4+Prkhn65nwQtj
+ /od6AiF2brSKZh9MUY/JwzKDrY05jef6+3Sryn9PfcPHr23ODLWM0L0LOKn+/SedB1o01Yn9P
+ lfI5XDLvP5Y8M/kGQP4WK/1Apd1P8++053ljFvGcP+DXQDNhmQhEuP7VodpZX8nMZK7ALMFZV
+ gMXDGvXaEX52v9OS6Vlm4OK4r9VwlCZCB+2TTpcA7ixOyi/9JybhO4fsKFqiqyzvHBE2k3TP/
+ RKrzj9W2w6COAsvsM1bQMEoPeCgzux0WVg88ZgCYtlkvVwWnpK7X/3i56rWbsEAEPYoxc1zjc
+ SydZvuSy1gz+1oomxUIIMIMAdWJYrTqqkvmjnLebXbaGquLK4ze+OshKZrmrg2Eo+S9ahz2xM
+ wOX1fXh2HnKPObDetQ62mvyAz0bE+V+PkIcL3v7R2dv9zmIdhvDeROEuAQemmVKTTzBG/gJW9
+ TcOncNJ4AGT2kt+wRqiDp16Q1FvEQmnCKnWKvgXToJhy1joMQx/gWI53KaQIUq6hYNAvtqGlq
+ D0qc9VuP4+UPzaZ9W03WzR7iObdwZMHlyB6ZZNsCaDz4QZQzpFPaC/5Hi+5sKphEZACWbyBN+
+ +vwWuZxUwWKjok=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+--nextPart2296693.3NxCkoLgkh
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="us-ascii"; protected-headers="v1"
+From: Alois Wohlschlager <alois1@gmx-topmail.de>
+To: Christian Brauner <brauner@kernel.org>
+Subject: [PATCH] pid: Allow creation of pidfds to threads
+Date: Thu, 31 Mar 2022 21:02:32 +0200
+Message-ID: <3412128.IC5jYiYEAv@genesis>
 
-On 31/03/2022 21:06:11+0200, Mateusz Jończyk wrote:
-> Before Linux 5.17, there was a problem with the CMOS RTC driver:
-> cmos_read_alarm() and cmos_set_alarm() did not check for the UIP (Update
-> in progress) bit, which could have caused it to sometimes fail silently
-> and read bogus values or do not set the alarm correctly.
-> Luckily, this issue was masked by cmos_read_time() invocations in core
-> RTC code - see https://marc.info/?l=linux-rtc&m=164858416511425&w=4
-> 
-> To avoid such a problem in the future in some other driver, I wrote a
-> test unit that reads the alarm time many times in a row. As the alarm
-> time is usually read once and cached by the RTC core, this requires a
-> way for userspace to trigger direct alarm time read from hardware. I
-> think that debugfs is the natural choice for this.
-> 
-> So, introduce /sys/kernel/debug/rtc/rtcX/wakealarm_raw. This interface
-> as implemented here does not seem to be that useful to userspace, so
-> there is little risk that it will become kernel ABI.
-> 
-> Is this approach correct and worth it?
-> 
+The pidfd_open() syscall now allows retrieving pidfds to processes which
+are not thread group leaders. Like standard pidfds so far, these may be
+used to retrieve file descriptors from the target thread using
+pidfd_getfd(), as well as for killing the target thread group using
+pidfd_send_signal().
+However, unlike pidfds referencing thread group leaders, they do not
+support polling for process exit. Attempts to do so signal an error
+condition instead of blocking indefinitely.
 
-I'm not really in favor of adding another interface for very little
-gain, you want to use this interface to exercise the API in a way that
-will never happen in the real world, especially since __rtc_read_alarm
-is only called once, at registration time.
+Since the semantics of pidfd_getfd() and pidfd_send_signal() are not
+very useful within a thread group, these thread pidfds can only be
+created using pidfd_open(), not via clone().
 
-I'm not sure the selftest is worth it then. You should better improve
-the existing unit tests by exercising the ioctls a bit more. syzbot did
-report interesting race conditions that were more severe.
+Signed-off-by: Alois Wohlschlager <alois1@gmx-topmail.de>
+=2D--
+ kernel/fork.c |  3 +++
+ kernel/pid.c  | 15 +++------------
+ 2 files changed, 6 insertions(+), 12 deletions(-)
 
-> TODO:
-> - should I add a new Kconfig option (like CONFIG_RTC_INTF_DEBUGFS), or
->   just use CONFIG_DEBUG_FS here? I wouldn't like to create unnecessary
->   config options in the kernel.
-> 
-> Signed-off-by: Mateusz Jończyk <mat.jonczyk@o2.pl>
-> Cc: Alessandro Zummo <a.zummo@towertech.it>
-> Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
-> Cc: Shuah Khan <shuah@kernel.org>
-> ---
->  drivers/rtc/Makefile    |   1 +
->  drivers/rtc/class.c     |   3 ++
->  drivers/rtc/debugfs.c   | 112 ++++++++++++++++++++++++++++++++++++++++
->  drivers/rtc/interface.c |   3 +-
->  include/linux/rtc.h     |  16 ++++++
->  5 files changed, 133 insertions(+), 2 deletions(-)
->  create mode 100644 drivers/rtc/debugfs.c
-> 
-> diff --git a/drivers/rtc/Makefile b/drivers/rtc/Makefile
-> index 678a8ef4abae..50e166a97f54 100644
-> --- a/drivers/rtc/Makefile
-> +++ b/drivers/rtc/Makefile
-> @@ -14,6 +14,7 @@ rtc-core-$(CONFIG_RTC_NVMEM)		+= nvmem.o
->  rtc-core-$(CONFIG_RTC_INTF_DEV)		+= dev.o
->  rtc-core-$(CONFIG_RTC_INTF_PROC)	+= proc.o
->  rtc-core-$(CONFIG_RTC_INTF_SYSFS)	+= sysfs.o
-> +rtc-core-$(CONFIG_DEBUG_FS)		+= debugfs.o
->  
->  obj-$(CONFIG_RTC_LIB_KUNIT_TEST)	+= lib_test.o
->  
-> diff --git a/drivers/rtc/class.c b/drivers/rtc/class.c
-> index 4b460c61f1d8..5673b7b26c0d 100644
-> --- a/drivers/rtc/class.c
-> +++ b/drivers/rtc/class.c
-> @@ -334,6 +334,7 @@ static void devm_rtc_unregister_device(void *data)
->  	 * Remove innards of this RTC, then disable it, before
->  	 * letting any rtc_class_open() users access it again
->  	 */
-> +	rtc_debugfs_del_device(rtc);
->  	rtc_proc_del_device(rtc);
->  	if (!test_bit(RTC_NO_CDEV, &rtc->flags))
->  		cdev_device_del(&rtc->char_dev, &rtc->dev);
-> @@ -417,6 +418,7 @@ int __devm_rtc_register_device(struct module *owner, struct rtc_device *rtc)
->  	}
->  
->  	rtc_proc_add_device(rtc);
-> +	rtc_debugfs_add_device(rtc);
->  
->  	dev_info(rtc->dev.parent, "registered as %s\n",
->  		 dev_name(&rtc->dev));
-> @@ -476,6 +478,7 @@ static int __init rtc_init(void)
->  	}
->  	rtc_class->pm = RTC_CLASS_DEV_PM_OPS;
->  	rtc_dev_init();
-> +	rtc_debugfs_init();
->  	return 0;
->  }
->  subsys_initcall(rtc_init);
-> diff --git a/drivers/rtc/debugfs.c b/drivers/rtc/debugfs.c
-> new file mode 100644
-> index 000000000000..5ceed5504033
-> --- /dev/null
-> +++ b/drivers/rtc/debugfs.c
-> @@ -0,0 +1,112 @@
-> +// SPDX-License-Identifier: GPL-2.0-or-later
-> +
-> +/*
-> + * Debugfs interface for testing RTC alarms.
-> + */
-> +#include <linux/debugfs.h>
-> +#include <linux/err.h>
-> +#include <linux/rtc.h>
-> +
-> +static struct dentry *rtc_main_debugfs_dir;
-> +
-> +void rtc_debugfs_init(void)
-> +{
-> +	struct dentry *ret = debugfs_create_dir("rtc", NULL);
-> +
-> +	// No error is critical here
-> +	if (!IS_ERR(ret))
-> +		rtc_main_debugfs_dir = ret;
-> +}
-> +
-> +/*
-> + * Handler for /sys/kernel/debug/rtc/rtcX/wakealarm_raw .
-> + * This function reads the RTC alarm time directly from hardware. If the RTC
-> + * alarm is enabled, this function returns the alarm time modulo 24h in seconds
-> + * since midnight.
-> + *
-> + * Should be only used for testing of the RTC alarm read functionality in
-> + * drivers - to make sure that the driver returns consistent values.
-> + *
-> + * Used in tools/testing/selftests/rtc/rtctest.c .
-> + */
-> +static int rtc_debugfs_alarm_read(void *p, u64 *out)
-> +{
-> +	int ret;
-> +	struct rtc_device *rtc = p;
-> +	struct rtc_wkalrm alm;
-> +
-> +	/* Using rtc_read_alarm_internal() instead of __rtc_read_alarm() will
-> +	 * allow us to avoid any interaction with rtc_read_time() and possibly
-> +	 * see more issues.
-> +	 */
-> +	ret = rtc_read_alarm_internal(rtc, &alm);
-> +	if (ret != 0)
-> +		return ret;
-> +
-> +	if (!alm.enabled) {
-> +		*out = -1;
-> +		return 0;
-> +	}
-> +
-> +	/* It does not matter if the device does not support seconds resolution
-> +	 * of the RTC alarm.
-> +	 */
-> +	if (test_bit(RTC_FEATURE_ALARM_RES_MINUTE, rtc->features))
-> +		alm.time.tm_sec = 0;
-> +
-> +	/* The selftest code works with fully defined alarms only.
-> +	 */
-> +	if (alm.time.tm_sec == -1 || alm.time.tm_min == -1 || alm.time.tm_hour == -1) {
-> +		*out = -2;
-> +		return 0;
-> +	}
-> +
-> +	/* Check if the alarm time is correct.
-> +	 * rtc_valid_tm() does not allow fields containing "-1", so put in
-> +	 * something to satisfy it.
-> +	 */
-> +	if (alm.time.tm_year == -1)
-> +		alm.time.tm_year = 100;
-> +	if (alm.time.tm_mon == -1)
-> +		alm.time.tm_mon = 0;
-> +	if (alm.time.tm_mday == -1)
-> +		alm.time.tm_mday = 1;
-> +	if (rtc_valid_tm(&alm.time))
-> +		return -EINVAL;
-> +
-> +	/* We do not duplicate the logic in __rtc_read_alarm() and instead only
-> +	 * return the alarm time modulo 24h, which all devices should support.
-> +	 * This should be enough for testing purposes.
-> +	 */
-> +	*out = alm.time.tm_hour * 3600 + alm.time.tm_min * 60 + alm.time.tm_sec;
-> +
-> +	return 0;
-> +}
-> +DEFINE_DEBUGFS_ATTRIBUTE(rtc_alarm_raw, rtc_debugfs_alarm_read, NULL, "%lld\n");
-> +
-> +void rtc_debugfs_add_device(struct rtc_device *rtc)
-> +{
-> +	struct dentry *dev_dir;
-> +
-> +	if (!rtc_main_debugfs_dir)
-> +		return;
-> +
-> +	dev_dir = debugfs_create_dir(dev_name(&rtc->dev), rtc_main_debugfs_dir);
-> +
-> +	if (IS_ERR(dev_dir)) {
-> +		rtc->debugfs_dir = NULL;
-> +		return;
-> +	}
-> +	rtc->debugfs_dir = dev_dir;
-> +
-> +	if (test_bit(RTC_FEATURE_ALARM, rtc->features) && rtc->ops->read_alarm) {
-> +		debugfs_create_file("wakealarm_raw", 0444, dev_dir,
-> +				    rtc, &rtc_alarm_raw);
-> +	}
-> +}
-> +
-> +void rtc_debugfs_del_device(struct rtc_device *rtc)
-> +{
-> +	debugfs_remove_recursive(rtc->debugfs_dir);
-> +	rtc->debugfs_dir = NULL;
-> +}
-> diff --git a/drivers/rtc/interface.c b/drivers/rtc/interface.c
-> index d8e835798153..51c801c82472 100644
-> --- a/drivers/rtc/interface.c
-> +++ b/drivers/rtc/interface.c
-> @@ -175,8 +175,7 @@ int rtc_set_time(struct rtc_device *rtc, struct rtc_time *tm)
->  }
->  EXPORT_SYMBOL_GPL(rtc_set_time);
->  
-> -static int rtc_read_alarm_internal(struct rtc_device *rtc,
-> -				   struct rtc_wkalrm *alarm)
-> +int rtc_read_alarm_internal(struct rtc_device *rtc, struct rtc_wkalrm *alarm)
->  {
->  	int err;
->  
-> diff --git a/include/linux/rtc.h b/include/linux/rtc.h
-> index 47fd1c2d3a57..4665bc238a94 100644
-> --- a/include/linux/rtc.h
-> +++ b/include/linux/rtc.h
-> @@ -41,6 +41,7 @@ static inline time64_t rtc_tm_sub(struct rtc_time *lhs, struct rtc_time *rhs)
->  #include <linux/mutex.h>
->  #include <linux/timerqueue.h>
->  #include <linux/workqueue.h>
-> +#include <linux/debugfs.h>
->  
->  extern struct class *rtc_class;
->  
-> @@ -152,6 +153,10 @@ struct rtc_device {
->  	time64_t offset_secs;
->  	bool set_start_time;
->  
-> +#ifdef CONFIG_DEBUG_FS
-> +	struct dentry *debugfs_dir;
-> +#endif
-> +
->  #ifdef CONFIG_RTC_INTF_DEV_UIE_EMUL
->  	struct work_struct uie_task;
->  	struct timer_list uie_timer;
-> @@ -190,6 +195,7 @@ extern int rtc_set_time(struct rtc_device *rtc, struct rtc_time *tm);
->  int __rtc_read_alarm(struct rtc_device *rtc, struct rtc_wkalrm *alarm);
->  extern int rtc_read_alarm(struct rtc_device *rtc,
->  			struct rtc_wkalrm *alrm);
-> +int rtc_read_alarm_internal(struct rtc_device *rtc, struct rtc_wkalrm *alarm);
->  extern int rtc_set_alarm(struct rtc_device *rtc,
->  				struct rtc_wkalrm *alrm);
->  extern int rtc_initialize_alarm(struct rtc_device *rtc,
-> @@ -262,4 +268,14 @@ int rtc_add_groups(struct rtc_device *rtc, const struct attribute_group **grps)
->  	return 0;
->  }
->  #endif
-> +
-> +#ifdef CONFIG_DEBUG_FS
-> +void rtc_debugfs_init(void);
-> +void rtc_debugfs_add_device(struct rtc_device *rtc);
-> +void rtc_debugfs_del_device(struct rtc_device *rtc);
-> +#else /* CONFIG_DEBUG_FS */
-> +static inline void rtc_debugfs_init(void) {}
-> +static inline void rtc_debugfs_add_device(struct rtc_device *rtc) {}
-> +static inline void rtc_debugfs_del_device(struct rtc_device *rtc) {}
-> +#endif /* CONFIG_DEBUG_FS */
->  #endif /* _LINUX_RTC_H_ */
-> -- 
-> 2.25.1
-> 
+diff --git a/kernel/fork.c b/kernel/fork.c
+index f1e89007f228..f98230630a57 100644
+=2D-- a/kernel/fork.c
++++ b/kernel/fork.c
+@@ -1836,6 +1836,9 @@ static __poll_t pidfd_poll(struct file *file, struct
+poll_table_struct *pts)
+        struct pid *pid =3D file->private_data;
+        __poll_t poll_flags =3D 0;
 
--- 
-Alexandre Belloni, co-owner and COO, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
++       if (!pid_has_task(pid, PIDTYPE_TGID))
++               return EPOLLERR;
++
+        poll_wait(file, &pid->wait_pidfd, pts);
+
+        /*
+diff --git a/kernel/pid.c b/kernel/pid.c
+index 2fc0a16ec77b..6be745c7399c 100644
+=2D-- a/kernel/pid.c
++++ b/kernel/pid.c
+@@ -548,11 +548,6 @@ struct pid *pidfd_get_pid(unsigned int fd, unsigned i=
+nt
+*flags)
+  * Return the task associated with @pidfd. The function takes a reference=
+ on
+  * the returned task. The caller is responsible for releasing that refere=
+nce.
+  *
+- * Currently, the process identified by @pidfd is always a thread-group
+leader.
+- * This restriction currently exists for all aspects of pidfds including
+pidfd
+- * creation (CLONE_PIDFD cannot be used with CLONE_THREAD) and pidfd poll=
+ing
+- * (only supports thread group leaders).
+- *
+  * Return: On success, the task_struct associated with the pidfd.
+  *        On error, a negative errno number will be returned.
+  */
+@@ -566,7 +561,7 @@ struct task_struct *pidfd_get_task(int pidfd, unsigned=
+ int
+*flags)
+        if (IS_ERR(pid))
+                return ERR_CAST(pid);
+
+-       task =3D get_pid_task(pid, PIDTYPE_TGID);
++       task =3D get_pid_task(pid, PIDTYPE_PID);
+        put_pid(pid);
+        if (!task)
+                return ERR_PTR(-ESRCH);
+@@ -595,7 +590,7 @@ int pidfd_create(struct pid *pid, unsigned int flags)
+ {
+        int fd;
+
+-       if (!pid || !pid_has_task(pid, PIDTYPE_TGID))
++       if (!pid)
+                return -EINVAL;
+
+        if (flags & ~(O_NONBLOCK | O_RDWR | O_CLOEXEC))
+@@ -616,11 +611,7 @@ int pidfd_create(struct pid *pid, unsigned int flags)
+  * @flags: flags to pass
+  *
+  * This creates a new pid file descriptor with the O_CLOEXEC flag set for
+- * the process identified by @pid. Currently, the process identified by
+- * @pid must be a thread-group leader. This restriction currently exists
+- * for all aspects of pidfds including pidfd creation (CLONE_PIDFD cannot
+- * be used with CLONE_THREAD) and pidfd polling (only supports thread gro=
+up
+- * leaders).
++ * the process identified by @pid.
+  *
+  * Return: On success, a cloexec pidfd is returned.
+  *         On error, a negative errno number will be returned.
+=2D-
+2.35.1
+
+--nextPart2296693.3NxCkoLgkh
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part.
+Content-Transfer-Encoding: 7Bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEypeoIv8kJdR0rz5L4PWepeUhaRQFAmJF+sgACgkQ4PWepeUh
+aRQ7yg//Q2dmkkaR2O8Ze1ZUC62HOismnJntR5jFn1DTAOg8tRsLPyAooPKso6zY
+I6TS1TanCd2I2QFAjZXQ3jz6FKI/yR5pfFbRtHySylIigpqAEpK/NqPnAfqHDmCX
+XYgS0+iSvHCJZUejANJDLwBleQOjvWmnYKnIbVGRSITYYzg7//IS2BlKWt6k90Ov
+dxi5tdACAeQHCN8yJ8KKbtBhJe7A89NkTueD6Gp0q07FtK9mPmWaR5rmdApVdupe
+5g3u+kxxBhaLexwrtT+Z2YZsO/0rHsJbCXOmOcQN7VlyL7eZ5Q8rg3nGpDXX1wrw
+oAj6y8UmRWufXbPKbd3/yLAO+u5U7DYXKEIV1TcLJpL7sw2Fsv6WAdYQjxxflW5z
+hawEfIPQ3nDs3WijSt6tr+7BNUgv4jgtuTx5gm3FO8A2I8RL6pGwVPPJhtUURswU
+9QxDJj5opPoUzFisD5qakbm0nXiZlMBcS2PUESkp7KKOeV3gXspsujR4VDZ/H3KJ
+tsGsXmQpyNWhO4MHQf8wI/tvdgGxRf3BHRidEC44TB2C9gt73ME1TdGl26MPbxF3
+sTJ5d78bqlTt1wrkW4BOolup3d6r4exT33jxu5VMyyVYyzqwD/Oo8H0+bi8C53i4
+Flbl95HfFEtN6iaHhG2l2NAi15uPjwQ3hZTKRlFSpzvcbqCPFec=
+=F1tC
+-----END PGP SIGNATURE-----
+
+--nextPart2296693.3NxCkoLgkh--
+
+
+
