@@ -2,120 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 747BDC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 14:11:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AFB8C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 14:13:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237369AbiCaONn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 10:13:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40422 "EHLO
+        id S237388AbiCaOPS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 10:15:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233212AbiCaONl (ORCPT
+        with ESMTP id S233212AbiCaOPO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 10:13:41 -0400
-Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBD9F214043
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 07:11:52 -0700 (PDT)
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 22VEBVBK020022;
-        Thu, 31 Mar 2022 09:11:31 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1648735891;
-        bh=ZDdSKsPCwWPCWqcIz0i8RFY6FrZTU5tHLq0iTroiyhg=;
-        h=From:To:CC:Subject:Date;
-        b=bGqElQVSJtbwIzkzitM96B3StQlVSVMx2R+YBnvUzw2Wy2qwzXQGiaWF4oCeKHxIt
-         cz1VTA659gAR3+mns/hIs7xBYkGsFtNftmrRjCdSAAb3g85SGgS/+i2L5w22oWvIRA
-         afmcDPyKeoYRjc38fuXwfkLufnARhVrSoT1MU1WI=
-Received: from DLEE100.ent.ti.com (dlee100.ent.ti.com [157.170.170.30])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 22VEBV61004507
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 31 Mar 2022 09:11:31 -0500
-Received: from DLEE102.ent.ti.com (157.170.170.32) by DLEE100.ent.ti.com
- (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Thu, 31
- Mar 2022 09:11:30 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE102.ent.ti.com
- (157.170.170.32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Thu, 31 Mar 2022 09:11:30 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 22VEBTru097691;
-        Thu, 31 Mar 2022 09:11:30 -0500
-From:   Rahul T R <r-ravikumar@ti.com>
-To:     <bjorn.andersson@linaro.org>, <catalin.marinas@arm.com>,
-        <will@kernel.org>, <shawnguo@kernel.org>, <krzk@kernel.org>,
-        <geert+renesas@glider.be>, <marcel.ziswiler@toradex.com>
-CC:     <biju.das.jz@bp.renesas.com>, <vkoul@kernel.org>,
-        <enric.balletbo@collabora.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <tomi.valkeinen@ideasonboard.com>,
-        <laurent.pinchart@ideasonboard.com>, <nm@ti.com>,
-        <r-ravikumar@ti.com>
-Subject: [PATCH v3] arm64: defconfig: Enable configs for DisplayPort on J721e
-Date:   Thu, 31 Mar 2022 19:41:13 +0530
-Message-ID: <20220331141113.15747-1-r-ravikumar@ti.com>
-X-Mailer: git-send-email 2.17.1
+        Thu, 31 Mar 2022 10:15:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D6A74199E;
+        Thu, 31 Mar 2022 07:13:26 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3A9F06199F;
+        Thu, 31 Mar 2022 14:13:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33B82C340ED;
+        Thu, 31 Mar 2022 14:13:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648736005;
+        bh=60nh5Gko10VkTAze7+WzVDlod2DwO5XxCr0jcHueyIA=;
+        h=Date:Subject:To:References:From:In-Reply-To:From;
+        b=cGVhPcelSRgTfKEi88H+4LFdWxgOvwOae9LJUZd1Nw1eqOUloO0f039JlKesxSGks
+         0dEy0N1ZzsMgg6M+oyE/lrrR8GUM/Y/vf3g/GrRFR4CEQMeITu0gyjGW+X14LXLMos
+         GqdKpQFXA40UlYNEJpceO5gfGsNeLRzNalNB4vKTcPBGAGetT/2AN/M2h0qCsC0uHz
+         Y84uPXzndSvJjtWCwfVzNCDgDXDqMKy9PIK7zMeUzOeuEDntugA4KEB8yVzcXEev1K
+         0EpMGqtzqD23VCvety8Ljos6J4/xJjUCXz8WJUCvxVOU4PR/W1dZxbr3yFxz2sfDkz
+         EWiOI8uzvvLHw==
+Message-ID: <47987a0e-0626-04f8-b181-ff3bc257a269@kernel.org>
+Date:   Thu, 31 Mar 2022 08:13:24 -0600
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.7.0
+Subject: Re: This counter "ip6InNoRoutes" does not follow the RFC4293
+ specification implementation
+Content-Language: en-US
+To:     "Pudak, Filip" <Filip.Pudak@windriver.com>,
+        "Xiao, Jiguang" <Jiguang.Xiao@windriver.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "yoshfuji@linux-ipv6.org" <yoshfuji@linux-ipv6.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <SJ0PR11MB51207CBDB5145A89B8A0A15393359@SJ0PR11MB5120.namprd11.prod.outlook.com>
+ <SJ0PR11MB51202FA2365341740048A64593359@SJ0PR11MB5120.namprd11.prod.outlook.com>
+ <SJ0PR11MB51209200786235187572EE0D93359@SJ0PR11MB5120.namprd11.prod.outlook.com>
+ <SJ0PR11MB5120426D474963E08936DD2493359@SJ0PR11MB5120.namprd11.prod.outlook.com>
+ <bcc98227-b99f-5b2f-1745-922c13fe6089@kernel.org>
+ <SJ0PR11MB5120EBCF140B940C8FF712B9933D9@SJ0PR11MB5120.namprd11.prod.outlook.com>
+ <SJ0PR11MB51209DA3F7CAAB45A609633A930A9@SJ0PR11MB5120.namprd11.prod.outlook.com>
+ <3f6540b8-aeab-02f8-27bc-d78c9eba588c@kernel.org>
+ <PH0PR11MB5096F84F64CF00C996F219DAE4E19@PH0PR11MB5096.namprd11.prod.outlook.com>
+From:   David Ahern <dsahern@kernel.org>
+In-Reply-To: <PH0PR11MB5096F84F64CF00C996F219DAE4E19@PH0PR11MB5096.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Enable DRM and PHY configs required for supporting
-DisplayPort on J721e
+On 3/31/22 3:13 AM, Pudak, Filip wrote:
+> Hi David,
+> 
+> So we end up in ip6_pkt_discard -> ip6_pkt_drop :
+> 
+> ---
+> if (netif_is_l3_master(skb->dev) &&
+> 	    dst->dev == net->loopback_dev)
 
-Signed-off-by: Rahul T R <r-ravikumar@ti.com>
-Reviewed-by: Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>
----
+That's a bug. I can not think of a case where those 2 conditions will
+ever be true at the same time. I think that should '||'
 
-Notes:
-    v2:
-        Fixed the places using savedefconfig
-        Added more info in notes
 
-    v3:
-        rebased to next-20220330
-
-    No change in vmlinux:
-
-        add/remove: 0/0 grow/shrink: 0/0 up/down: 0/0 (0)
-        Function                                     old     new   delta
-        Total: Before=24042991, After=24042991, chg +0.00%
-
-    boot logs:
-        https://gist.githubusercontent.com/ravi-rahul/1bdbc3f77ab381e486c8394650c2e85d/raw/f04584c30181821c4ee83aee7781a9ba143cd3f3/j7_DP_upstream.log
-
- arch/arm64/configs/defconfig | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
-index 813e644b6af1..b5f9fbb054fa 100644
---- a/arch/arm64/configs/defconfig
-+++ b/arch/arm64/configs/defconfig
-@@ -742,6 +742,7 @@ CONFIG_DRM_THINE_THC63LVD1024=m
- CONFIG_DRM_TI_SN65DSI86=m
- CONFIG_DRM_I2C_ADV7511=m
- CONFIG_DRM_I2C_ADV7511_AUDIO=y
-+CONFIG_DRM_CDNS_MHDP8546=m
- CONFIG_DRM_DW_HDMI_AHB_AUDIO=m
- CONFIG_DRM_DW_HDMI_CEC=m
- CONFIG_DRM_IMX_DCSS=m
-@@ -756,6 +757,7 @@ CONFIG_DRM_MESON=m
- CONFIG_DRM_PL111=m
- CONFIG_DRM_LIMA=m
- CONFIG_DRM_PANFROST=m
-+CONFIG_DRM_TIDSS=m
- CONFIG_FB=y
- CONFIG_FB_MODE_HELPERS=y
- CONFIG_FB_EFI=y
-@@ -1162,6 +1164,7 @@ CONFIG_RESET_RZG2L_USBPHY_CTRL=y
- CONFIG_RESET_TI_SCI=y
- CONFIG_PHY_XGENE=y
- CONFIG_PHY_SUN4I_USB=y
-+CONFIG_PHY_CADENCE_TORRENT=m
- CONFIG_PHY_CADENCE_SIERRA=m
- CONFIG_PHY_MIXEL_MIPI_DPHY=m
- CONFIG_PHY_FSL_IMX8M_PCIE=y
--- 
-2.17.1
+> 		idev = __in6_dev_get_safely(dev_get_by_index_rcu(net, IP6CB(skb)->iif));
+> 	else
+> 		idev = ip6_dst_idev(dst);
+> 
+> 	switch (ipstats_mib_noroutes) {
+> 	case IPSTATS_MIB_INNOROUTES:
+> 		type = ipv6_addr_type(&ipv6_hdr(skb)->daddr);
+> 		if (type == IPV6_ADDR_ANY) {
+> 			IP6_INC_STATS(net, idev, IPSTATS_MIB_INADDRERRORS);
+> 			break;
+> 		}
+> 		fallthrough;
+> 	case IPSTATS_MIB_OUTNOROUTES:
+> 		IP6_INC_STATS(net, idev, ipstats_mib_noroutes);
+> 		break;
+> 	}
+> 
+> ---
+> What happens in the case where the l3mdev is not used, is that we go into the else branch(idev = ip6_dst_idev(dst);) and then we can see that the counter is incremented on the loopback IF.
+> 
+> So is the only option that l3mdev should be used or is it strange to expect that the idev where the INNOROUTES should increment is the ingress device by default in this case?
+> 
 
