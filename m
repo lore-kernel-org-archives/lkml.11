@@ -2,138 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0171DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 02:56:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9E17C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 02:57:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230042AbiCaC6E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 22:58:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58732 "EHLO
+        id S229847AbiCaC6s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 22:58:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229911AbiCaC5x (ORCPT
+        with ESMTP id S229877AbiCaC6p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 22:57:53 -0400
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 071EFD7627
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 19:56:00 -0700 (PDT)
-Received: by mail-yb1-xb35.google.com with SMTP id x20so39908485ybi.5
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 19:55:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=LDGcIKDDCWfntxIrDwg9NeEeCU9Lt3ZtVZJtgLcXbjo=;
-        b=ehvnGf0k3aAoq9MC2JYKyRY0i4dKaTVRiQuSZTvJKKIQkMCypskYgzN4Xm/JZ52RC/
-         vK4R4fZ/MtrdkHepjo7BcnI12BnCd+kS2eiqIJB2uoKfcoKGfxcSryGLZzFQXRB/SSqA
-         WxQDRxBwkq47q9kYArRurS3/a/bs9pEhxJ4HWxa/v1mvrJrPsrZgUm21pX5NOE+NCmYP
-         NTDa4hYvbaVQvfUj7MoHdxT+X99VAM/tHihgKAzlBkVVtDaqc9MOOPAHACpZtT83gCk9
-         cRehK8HZzQ+ywONbDwHF9mFr7g1MEi3Q4cFY7IJOnk+VwX8lXE1NdbVVHaR6WIZUAUdT
-         nC0w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=LDGcIKDDCWfntxIrDwg9NeEeCU9Lt3ZtVZJtgLcXbjo=;
-        b=EQKvnsx0ArgtGm9rgmVkaeBqPLunNeVijZN83vSqW6XYfLDJ6jDWqBs2aijKRYIhPJ
-         bBKt0n1RCNFYxNXF/XYGdG2Dpv34Mou55UFEyrMWIIB3M5qn4/Ey3RXDQszdwRubyiK0
-         CCpkbeQA/6muoE/bq03/DnW0oatvGhqdy9cLCVnkkcG79Hc9O7Rt+XZAedGvwhcHSuVY
-         xW8naBiypk21W0AVn8G3fRgjkjdKUyzhRLh56S3sMm24nUGeioeyomBEXQZsSOekmXK9
-         TvjQKSftxeL+IlEk7DJynod06q9R4n9OrJuKeQXADn6w5oWTvhVnlfBKbc/85JkVgts3
-         r73A==
-X-Gm-Message-State: AOAM533Dqy3A/Nx4RvdBCQAyVziJyV1JJ7SVVnxFbnefXzKuuFlBjpr6
-        XKyY5brzx55CepvRUvT3L1Pl3lHyJpZ0cOI7O5RMYQ==
-X-Google-Smtp-Source: ABdhPJxAoUYq0gy2PYb5dAIdtttQkFTZaQDjRFIKDP9yxDhDCV22s3LsslKjxvT4uh0wdtnGs1uY4ySHCJU1/VDmZh8=
-X-Received: by 2002:a25:e70e:0:b0:634:1a47:4ff2 with SMTP id
- e14-20020a25e70e000000b006341a474ff2mr2484276ybh.89.1648695213764; Wed, 30
- Mar 2022 19:53:33 -0700 (PDT)
+        Wed, 30 Mar 2022 22:58:45 -0400
+Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A25E31255B4
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 19:56:52 -0700 (PDT)
+Content-Type: text/plain; charset=utf-8
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1648694928;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=GMH0mPyygzee1kjfgYk2myFSoN2Dy3HPVOSEklSnjvE=;
+        b=wU49G/J70KRunQNmNOTSvdD4e0DvXrXgr1MKUM3Va7O5PWrvx1QxUMswDNikDQyxRpBhH8
+        Yr9ISTWnKaHFfTqAG2l8sJWb5B9f82wBlqPVdPq6ySt5TSgnDotA9Int2/OGuQGrwc34gP
+        l28o3MkNE3sX2oydsHYVJ56arAYsIjM=
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <20220330153745.20465-1-songmuchun@bytedance.com>
- <20220330153745.20465-2-songmuchun@bytedance.com> <20220330192827.4b95e3d7fb149ef9cc687ccb@linux-foundation.org>
-In-Reply-To: <20220330192827.4b95e3d7fb149ef9cc687ccb@linux-foundation.org>
-From:   Muchun Song <songmuchun@bytedance.com>
-Date:   Thu, 31 Mar 2022 10:52:58 +0800
-Message-ID: <CAMZfGtXsMZ7ZwAzV5yZ39TB-=Q7Lw8oyjq2m65SXqHGwHQfj9w@mail.gmail.com>
-Subject: Re: [PATCH v6 1/4] mm: hugetlb_vmemmap: introduce STRUCT_PAGE_SIZE_IS_POWER_OF_2
+Subject: Re: [PATCH v2] mm/list_lru: Fix possible race in memcg_reparent_list_lru_node()
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Roman Gushchin <roman.gushchin@linux.dev>
+In-Reply-To: <20220330191440.1cc1b2de2b849d1ba93d2ba7@linux-foundation.org>
+Date:   Wed, 30 Mar 2022 19:48:45 -0700
+Cc:     Waiman Long <longman@redhat.com>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org,
+        Muchun Song <songmuchun@bytedance.com>
+Message-Id: <89B53D3A-FCC5-4107-8D49-81D5B9AE5172@linux.dev>
+References: <20220330191440.1cc1b2de2b849d1ba93d2ba7@linux-foundation.org>
 To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Jonathan Corbet <corbet@lwn.net>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Iurii Zaikin <yzaikin@google.com>,
-        Oscar Salvador <osalvador@suse.de>,
-        David Hildenbrand <david@redhat.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Xiongchun duan <duanxiongchun@bytedance.com>,
-        Muchun Song <smuchun@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 31, 2022 at 10:28 AM Andrew Morton
-<akpm@linux-foundation.org> wrote:
->
-> On Wed, 30 Mar 2022 23:37:42 +0800 Muchun Song <songmuchun@bytedance.com> wrote:
->
-> > If the size of "struct page" is not the power of two and this
-> > feature is enabled,
->
-> What is "this feature"?   Let's spell it out?
 
-Will do.
 
->
-> > then the vmemmap pages of HugeTLB will be
-> > corrupted after remapping (panic is about to happen in theory).
-> > But this only exists when !CONFIG_MEMCG && !CONFIG_SLUB on
-> > x86_64.  However, it is not a conventional configuration nowadays.
-> > So it is not a real word issue, just the result of a code review.
-> > But we have to prevent anyone from configuring that combined
-> > configuration.  In order to avoid many checks like "is_power_of_2
-> > (sizeof(struct page))" through mm/hugetlb_vmemmap.c.  Introduce
-> > STRUCT_PAGE_SIZE_IS_POWER_OF_2 to detect if the size of struct
-> > page is power of 2 and make this feature depends on this new
-> > macro.  Then we could prevent anyone do any unexpected
-> > configuration.
-> >
-> > ...
-> >
-> > --- /dev/null
-> > +++ b/mm/struct_page_size.c
-> > @@ -0,0 +1,20 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +/*
-> > + * Generate definitions needed by the preprocessor.
-> > + * This code generates raw asm output which is post-processed
-> > + * to extract and format the required data.
-> > + */
-> > +
-> > +#define __GENERATING_STRUCT_PAGE_SIZE_IS_POWER_OF_2_H
-> > +/* Include headers that define the enum constants of interest */
-> > +#include <linux/mm_types.h>
-> > +#include <linux/kbuild.h>
-> > +#include <linux/log2.h>
-> > +
-> > +int main(void)
-> > +{
-> > +     if (is_power_of_2(sizeof(struct page)))
-> > +             DEFINE(STRUCT_PAGE_SIZE_IS_POWER_OF_2, is_power_of_2(sizeof(struct page)));
->
-> Why not
->
->         DEFINE(STRUCT_PAGE_SIZE_IS_POWER_OF_2, 1);
->
+> On Mar 30, 2022, at 7:14 PM, Andrew Morton <akpm@linux-foundation.org> wro=
+te:
+>=20
+> =EF=BB=BFOn Wed, 30 Mar 2022 13:26:46 -0400 Waiman Long <longman@redhat.co=
+m> wrote:
+>=20
+>> Muchun Song found out there could be a race between list_lru_add()
+>> and memcg_reparent_list_lru_node() causing the later function to miss
+>> reparenting of a lru entry as shown below:
+>>=20
+>> CPU0:                           CPU1:
+>> list_lru_add()
+>>    spin_lock(&nlru->lock)
+>>    l =3D list_lru_from_kmem(memcg)
+>>                                memcg_reparent_objcgs(memcg)
+>>                                memcg_reparent_list_lrus(memcg)
+>>                                    memcg_reparent_list_lru()
+>>                                        memcg_reparent_list_lru_node()
+>>                                            if (!READ_ONCE(nlru->nr_items)=
+)
+>>                                                // Miss reparenting
+>>                                                return
+>>    // Assume 0->1
+>>    l->nr_items++
+>>    // Assume 0->1
+>>    nlru->nr_items++
+>>=20
+>> Though it is not likely that a list_lru_node that has 0 item suddenly
+>> has a newly added lru entry at the end of its life. The race is still
+>> theoretically possible.
+>>=20
+>> With the lock/unlock pair used within the percpu_ref_kill() which is
+>> the last function call of memcg_reparent_objcgs(), any read issued
+>> in memcg_reparent_list_lru_node() will not be reordered before the
+>> reparenting of objcgs.
+>>=20
+>> Adding a !spin_is_locked()/smp_rmb()/!READ_ONCE(nlru->nr_items) check
+>> to ensure that either the reading of nr_items is valid or the racing
+>> list_lru_add() will see the reparented objcg.
+>>=20
+>> ...
+>>=20
+>> --- a/mm/list_lru.c
+>> +++ b/mm/list_lru.c
+>> @@ -395,10 +395,33 @@ static void memcg_reparent_list_lru_node(struct lis=
+t_lru *lru, int nid,
+>>    struct list_lru_one *src, *dst;
+>>=20
+>>    /*
+>> -     * If there is no lru entry in this nlru, we can skip it immediately=
+.
+>> +     * With the lock/unlock pair used within the percpu_ref_kill()
+>> +     * which is the last function call of memcg_reparent_objcgs(), any
+>> +     * read issued here will not be reordered before the reparenting
+>> +     * of objcgs.
+>> +     *
+>> +     * Assuming a racing list_lru_add():
+>> +     * list_lru_add()
+>> +     *                <- memcg_reparent_list_lru_node()
+>> +     *   spin_lock(&nlru->lock)
+>> +     *   l =3D list_lru_from_kmem(memcg)
+>> +     *   nlru->nr_items++
+>> +     *   spin_unlock(&nlru->lock)
+>> +     *                <- memcg_reparent_list_lru_node()
+>> +     *
+>> +     * The !spin_is_locked(&nlru->lock) check is true means it is
+>> +     * either before the spin_lock() or after the spin_unlock(). In the
+>> +     * former case, list_lru_add() will see the reparented objcg and so
+>> +     * won't touch the lru to be reparented. In the later case, it will
+>> +     * see the updated nr_items. So we can use the optimization that if
+>> +     * there is no lru entry in this nlru, skip it immediately.
+>>     */
+>> -    if (!READ_ONCE(nlru->nr_items))
+>> -        return;
+>> +    if (!spin_is_locked(&nlru->lock)) {
+>=20
+> ick.
+>=20
+>> +        /* nr_items read must be ordered after nlru->lock */
+>> +        smp_rmb();
+>> +        if (!READ_ONCE(nlru->nr_items))
+>> +            return;
+>> +    }
+>=20
+> include/linux/spinlock_up.h has
+>=20
+> #define arch_spin_is_locked(lock)    ((void)(lock), 0)
+>=20
+> so this `if' will always be true on CONFIG_SMP=3Dn.  Will the kernel
+> still work?
 
-Yep, this is more simple.  But the 2nd parameter of DEFINE() will
-go into the comments.  I want to make it more clear when someone
-reads the code of this macro.  The two different sentences will
-generate the following two different comments.  Which one do
-you think is better?
+I guess yes, because this race is not possible on a !smp machine.
 
-#define STRUCT_PAGE_SIZE_IS_POWER_OF_2 1 /*
-is_power_of_2(sizeof(struct page)) */
-#define STRUCT_PAGE_SIZE_IS_POWER_OF_2 1 /* 1 */
+>=20
+> At the very least let's have changelogging and commenting explaining
+> that we've actually thought about this.
+>=20
+> Preferably, can we fix this hole properly and avoid this hack?  There is
+> a reason for this:
+>=20
+> hp2:/usr/src/25> grep spin_is_locked mm/*.c
+> hp2:/usr/src/25>=20
 
-Thanks.
+
+But honestly, I=E2=80=99d drop the original optimization together with the f=
+ix, if only there is no _real world_ data on the problem and the improvement=
+. It seems like it has started as a nice simple improvement, but the race ma=
+kes it complex and probably not worth the added complexity and fragility.
+
+Thanks!=
