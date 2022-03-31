@@ -2,137 +2,223 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7657C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 20:30:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37347C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 20:34:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241437AbiCaUc0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 16:32:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52320 "EHLO
+        id S241449AbiCaUgh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 16:36:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241434AbiCaUcV (ORCPT
+        with ESMTP id S241360AbiCaUgf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 16:32:21 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89F4B5577F
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 13:30:33 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id yy13so1731803ejb.2
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 13:30:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=WnVDLK0fuVXet24goRyLeC09oaPRTS1cEiuOv9qpnzg=;
-        b=xz4HmeCzQcf0bKScHWhvla+V2E7vgHeOrWNrab8oEGJzRpkOogwYZLg8l4nYxn7PGI
-         DnSi7BcukvWTBLE1pQB9Al6zKPKetCxY1DMQ6jIlZNyQGsZlA+3jLPbZ97e20sb/L6k/
-         jru7po9wvWWn2ZtoPjQoAkNlyURKBUV9JRU8R9qubnXxwjbbhkLVg0YUUl3VhKebG4zg
-         5WLG1S4pyKhOY9Z/wRIFD0gr/ZGaoLsYa1JAF8LgBG4Xe7folO0xkJoq+BXzt9gX4zd+
-         j7HgDQSgbhnStRnEGu26upop8BWlyGxOqyLzZNdKPTqj/un11jX7rsTJM6d2WH1MtZkD
-         X7UQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=WnVDLK0fuVXet24goRyLeC09oaPRTS1cEiuOv9qpnzg=;
-        b=saS/ZvGV1J5UB1gqUzrjg9/Ih2lrRJccK2SrlW5du5a5HfrQS9Z3COVwhFk0YKz/Wr
-         M8Tz65lqFVxQQ44Muy7oWFgXsrN+acFuAG+eubpBhwvEjvncsl97tVuyNez9JE68xRu4
-         bxHExU8GtUSB0JWiCzBBHANGXMPjLoH/SE0nXz1zoySV2FFFDJVYrtaXcJI4rR8DAsnw
-         BKklyCU1cO7dvqgos494+HzCm1Bjvk5tVDlUlfROHkxStF78km72A1egSNKRPDPmjCqR
-         9aIMXXUarTn9k9qTcVldtuZCJw1rI7LoZdeOledxUP301usFtqdRlJWSVv/AhKLEnlZr
-         I6rQ==
-X-Gm-Message-State: AOAM530S7r0T1yjoDQvwH7eVF9qhpF2bPACEfmM5ObzKjWfK34TpxvZr
-        vk2+SX6n0rR1JNmg0/KprfEr1w==
-X-Google-Smtp-Source: ABdhPJzk1sADuDWf1mqltBlOA78Rm21xqsC7es/F5+4JjOUvGFm54/gqgEdhlOupkBs1Tk1QLX6phg==
-X-Received: by 2002:a17:907:3e82:b0:6e1:3fe3:9b14 with SMTP id hs2-20020a1709073e8200b006e13fe39b14mr6437585ejc.561.1648758632084;
-        Thu, 31 Mar 2022 13:30:32 -0700 (PDT)
-Received: from [192.168.0.168] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id tc19-20020a1709078d1300b006e0649189b0sm169808ejc.68.2022.03.31.13.30.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 31 Mar 2022 13:30:31 -0700 (PDT)
-Message-ID: <3d4159d6-112a-7818-8192-7197dcfca894@linaro.org>
-Date:   Thu, 31 Mar 2022 22:30:30 +0200
+        Thu, 31 Mar 2022 16:36:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0C2792D28;
+        Thu, 31 Mar 2022 13:34:46 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 74601B82235;
+        Thu, 31 Mar 2022 20:34:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0A59C340ED;
+        Thu, 31 Mar 2022 20:34:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648758884;
+        bh=jmwDHcChvd6o9vgnef1gEpL170XClXlVn3dwuMj7F1k=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=XSa+IR/f6DBLmuEMOVL4n06uZZu+IsodIGNuPhB+EGQZ5GqHUE6ahDO0elkj/jhe3
+         mnI4X5a0SwfiJjIgjSi6HghwixhChIBali3370ZCFsqbcnzg4bav6N3WPtjhmp3vdx
+         bXI5H7T4yase3U1rKjl0kXwLEwZQlmjBwfoqQ8SOc4hZaIcSX6CwHYfuT2K9h5LWoR
+         2coXB6kc4z8Qcrbp6POCflbjvexTX5qQYVqfRUr9MSn6B5IInVAzKMmzhz2ErGBm7z
+         jLxKOGIVx/LX2vzGT2OJtyX/tMDeKOmi2PcBdrnox2auCad6flSL2oFXFJPWjl0GhM
+         FtBffHY9Z1SeQ==
+Date:   Thu, 31 Mar 2022 15:43:24 -0500
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Nick Terrell <terrelln@fb.com>
+Cc:     Kees Cook <keescook@chromium.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "linux-hardening@vger.kernel.org" <linux-hardening@vger.kernel.org>
+Subject: Re: [PATCH][next] lib: zstd: Fix Wstringop-overflow warning
+Message-ID: <20220331204324.GA167652@embeddedor>
+References: <20220330193352.GA119296@embeddedor>
+ <202203301416.568595B87@keescook>
+ <AC568A96-E2E3-4A56-B993-05ED7B5326AF@fb.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH RFC net-next 2/3] dt-bindings: net: mscc-miim: add clock
- and clock-frequency
-Content-Language: en-US
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Michael Walle <michael@walle.cc>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220331151440.3643482-1-michael@walle.cc>
- <20220331151440.3643482-2-michael@walle.cc>
- <dfb10165-1987-84ae-d48a-dfb6b897e0a3@linaro.org> <YkYMIequbfAsELnf@lunn.ch>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <YkYMIequbfAsELnf@lunn.ch>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <AC568A96-E2E3-4A56-B993-05ED7B5326AF@fb.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 31/03/2022 22:16, Andrew Lunn wrote:
-> On Thu, Mar 31, 2022 at 10:05:48PM +0200, Krzysztof Kozlowski wrote:
->> On 31/03/2022 17:14, Michael Walle wrote:
->>> Add the (optional) clock input of the MDIO controller and indicate that
->>> the common clock-frequency property is supported. The driver can use it
->>> to set the desired MDIO bus frequency.
->>>
->>> Signed-off-by: Michael Walle <michael@walle.cc>
->>> ---
->>>  Documentation/devicetree/bindings/net/mscc,miim.yaml | 5 +++++
->>>  1 file changed, 5 insertions(+)
->>>
->>> diff --git a/Documentation/devicetree/bindings/net/mscc,miim.yaml b/Documentation/devicetree/bindings/net/mscc,miim.yaml
->>> index b52bf1732755..e9e8ddcdade9 100644
->>> --- a/Documentation/devicetree/bindings/net/mscc,miim.yaml
->>> +++ b/Documentation/devicetree/bindings/net/mscc,miim.yaml
->>> @@ -32,6 +32,11 @@ properties:
->>>  
->>>    interrupts: true
->>>  
->>> +  clocks:
->>> +    maxItems: 1
->>> +
->>> +  clock-frequency: true
->>
->> This looks unusual clock-frequency is usually for clock providers but
->> this is a consumer, so it is not a common frequency here. You mention
->> that "driver can use it", so it's not a hardware description but some
->> feature for the driver. We have this already - use assigned-clock* in
->> your DTS.
+On Thu, Mar 31, 2022 at 07:55:04PM +0000, Nick Terrell wrote:
 > 
-> Please see
 > 
-> Documentation/devicetree/bindings/net/mdio.yaml
-> 
->   clock-frequency:
->     description:
->       Desired MDIO bus clock frequency in Hz. Values greater than IEEE 802.3
->       defined 2.5MHz should only be used when all devices on the bus support
->       the given clock speed.
-> 
-> The MDIO bus master provides the MDIO bus clock, so in a sense, the
-> device is a provider. although it does also make use of the clock
-> itself. It is a hardware description, because the users of the bus
-> make use of the clock, i.e. the PHY devices on the bus.
-> 
-> It is also identical to i2c bus masters
-> Documentation/devicetree/bindings/i2c/i2c.txt says:
-> 
+> > On Mar 30, 2022, at 2:43 PM, Kees Cook <keescook@chromium.org> wrote:
+> > 
+> > On Wed, Mar 30, 2022 at 02:33:52PM -0500, Gustavo A. R. Silva wrote:
+> >> Fix the following -Wstringop-overflow warning when building with GCC-11:
+> >> 
+> >> lib/zstd/decompress/huf_decompress.c: In function ‘HUF_readDTableX2_wksp’:
+> >> lib/zstd/decompress/huf_decompress.c:700:5: warning: ‘HUF_fillDTableX2.constprop’ accessing 624 bytes in a region of size 52 [-Wstringop-overflow=]
+> >>  700 |     HUF_fillDTableX2(dt, maxTableLog,
+> >>      |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> >>  701 |                    wksp->sortedSymbol, sizeOfSort,
+> >>      |                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> >>  702 |                    wksp->rankStart0, wksp->rankVal, maxW,
+> >>      |                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> >>  703 |                    tableLog+1,
+> >>      |                    ~~~~~~~~~~~
+> >>  704 |                    wksp->calleeWksp, sizeof(wksp->calleeWksp) / sizeof(U32));
+> >>      |                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> >> lib/zstd/decompress/huf_decompress.c:700:5: note: referencing argument 6 of type ‘U32 (*)[13]’ {aka ‘unsigned int (*)[13]’}
+> >> lib/zstd/decompress/huf_decompress.c:571:13: note: in a call to function ‘HUF_fillDTableX2.constprop’
+> >>  571 | static void HUF_fillDTableX2(HUF_DEltX2* DTable, const U32 targetLog,
+> >>      |             ^~~~~~~~~~~~~~~~
+> > 
+> > Reviewing this changes would be easier if the reason for the warning
+> > could be explained. i.e. why has GCC decided that the region is 52
+> > bytes, and how did it calculate the 624 bytes?
+> > 
+> > rankVal_t is HUF_TABLELOG_MAX-many rankValCol_t, which itself is
+> > HUF_TABLELOG_MAX + 1 many U32s. So, basically:
+> > 
+> > U32 array[HUF_TABLELOG_MAX + 1][HUF_TABLELOG_MAX]
 
-Thanks, it's good. Indeed buses also use this property.
+I think this is U32 array[HUF_TABLELOG_MAX][HUF_TABLELOG_MAX + 1]
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> > 
+> > sizeof(rankValCol_t) == 52
+> > sizeof(rankVal_t) == 624
 
-Best regards,
-Krzysztof
+Yep;
+
+> 
+> Yeah, I'm not quite sure what this warning is saying. Clarification would
+> be useful. It seems like a false positive to me, but I could be mistaken.
+> 
+> >> 
+> >> by using pointer notation instead of array notation.
+> >> 
+> >> This helps with the ongoing efforts to globally enable
+> >> -Wstringop-overflow.
+> >> 
+> >> Link: https://github.com/KSPP/linux/issues/181
+> >> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+> >> ---
+> >> lib/zstd/decompress/huf_decompress.c | 6 +++---
+> >> 1 file changed, 3 insertions(+), 3 deletions(-)
+> >> 
+> >> diff --git a/lib/zstd/decompress/huf_decompress.c b/lib/zstd/decompress/huf_decompress.c
+> >> index 5105e59ac04a..0ea34621253a 100644
+> >> --- a/lib/zstd/decompress/huf_decompress.c
+> >> +++ b/lib/zstd/decompress/huf_decompress.c
+> >> @@ -570,7 +570,7 @@ static void HUF_fillDTableX2Level2(HUF_DEltX2* DTable, U32 sizeLog, const U32 co
+> >> 
+> >> static void HUF_fillDTableX2(HUF_DEltX2* DTable, const U32 targetLog,
+> >>                            const sortedSymbol_t* sortedList, const U32 sortedListSize,
+> >> -                           const U32* rankStart, rankVal_t rankValOrigin, const U32 maxWeight,
+> >> +                           const U32* rankStart, const U32* rankValOrigin, const U32 maxWeight,
+> >>                            const U32 nbBitsBaseline, U32* wksp, size_t wkspSize)
+> > 
+> > This really feels like we're papering over the warning. This removes the
+> > type information and makes it a U32 * instead, and then later makes a
+> > cast?
+> > 
+> > Can this be fixed in a way that retains the type information?
+> > 
+> > On the other hand, all the arguments are also U32 *.
+> > 
+> > I see stuff like:
+> > 
+> >    ZSTD_memcpy(rankVal, rankValOrigin, sizeof(U32) * (HUF_TABLELOG_MAX + 1));
+> > 
+> > That looks like it's ignoring type information as well. i.e. why isn't
+> > this sizeof(rankValOrigin)? (The length above is 52 bytes.)
+> > 
+> > I'm especially curious here since rankValOrigin is rankVal_t, which is
+> > 624 bytes, not 52 bytes (i.e. the above is copying a single rankValCol_t
+> > from rankValOrigin. I'd expect this to be:
+> > 
+> >    ZSTD_memcpy(rankVal, &rankValOrigin[0], sizeof(rankValOrigin[0]));
+> 
+> Yes, this is definitely a better way to write it. But, I think the `&` is unnecessary.
+> Because of the way C arrays work, rankValOrigin == rankValOrigin[0].
+> 
+> Upstream, this memcpy is gone, and this code has been optimized & refactored [1].
+> And that will get pulled in in the next update. But, in the meantime, I'd be happy to
+> accept a refactoring diff.
+> 
+> [0] https://gcc.godbolt.org/z/orodoK818
+> [1] https://github.com/facebook/zstd/blob/3e6bbdd8473a753d2047969ac0053fb2cb4dda23/lib/decompress/huf_decompress.c#L992-L1036
+> 
+> >> {
+> >>     U32* rankVal = wksp;
+> >> @@ -598,7 +598,7 @@ static void HUF_fillDTableX2(HUF_DEltX2* DTable, const U32 targetLog,
+> >>             if (minWeight < 1) minWeight = 1;
+> >>             sortedRank = rankStart[minWeight];
+> >>             HUF_fillDTableX2Level2(DTable+start, targetLog-nbBits, nbBits,
+> >> -                           rankValOrigin[nbBits], minWeight,
+> >> +                           rankValOrigin + nbBits, minWeight,
+> > 
+> > And here I'd expect to pass	&rankValOrigin[nbBits]
+
+In this case &rankValOrigin[nbBits] (array notation) is equivalent to
+rankValOrigin + nbBits (pointer arithmetic notation).
+
+> > since HUF_fillDTableX2Level2 is doing another rankValCol_t-sized copy:
+> > 
+> >    ZSTD_memcpy(rankVal, rankValOrigin, sizeof(U32) * (HUF_TABLELOG_MAX + 1));
+> 
+> In HUF_fillDTableX2Level2, rankValOrigin is a rankValCol_t. It is confusing, and this
+> is improved upstream, though rankVal is passed as a U32 const*, where it should really
+> Be a rankValCol_t. So I'll put up a small PR to improve that upstream.
+> 
+> >>                            sortedList+sortedRank, sortedListSize-sortedRank,
+> >>                            nbBitsBaseline, symbol, wksp, wkspSize);
+> >>         } else {
+> >> @@ -699,7 +699,7 @@ size_t HUF_readDTableX2_wksp(HUF_DTable* DTable,
+> >> 
+> >>     HUF_fillDTableX2(dt, maxTableLog,
+> >>                    wksp->sortedSymbol, sizeOfSort,
+> >> -                   wksp->rankStart0, wksp->rankVal, maxW,
+> >> +                   wksp->rankStart0, (U32 *)wksp->rankVal, maxW,
+> > 
+> > It's possible the problem is with this structure:
+> > 
+> > typedef struct {
+> >    rankValCol_t rankVal[HUF_TABLELOG_MAX];
+> >    U32 rankStats[HUF_TABLELOG_MAX + 1];
+> >    U32 rankStart0[HUF_TABLELOG_MAX + 2];
+> >    sortedSymbol_t sortedSymbol[HUF_SYMBOLVALUE_MAX + 1];
+> >    BYTE weightList[HUF_SYMBOLVALUE_MAX + 1];
+> >    U32 calleeWksp[HUF_READ_STATS_WORKSPACE_SIZE_U32];
+> > } HUF_ReadDTableX2_Workspace;
+> > 
+> > it's not using the rankVal_t type for rankVal for some reason?
+> > 
+> > i.e. what's passed to HUF_fillDTableX2 is a rankValCol_t (52 bytes), but then it
+> > gets passed against later as rankVal_t (624 bytes).
+> > 
+> > Does changing the type definition above solve this more cleanly?
+
+I noticed exactly the same thing. However, changing the type definiton
+required extra refactoring that at that moment I wasn't sure it was
+the correct thing to do. So, this definitely needed some comments from
+the maintainer.
+
+> 
+> It would make sense to refactor it as a `rankVal_t` to me, since that is
+> consistent with the function signature. However, after removing typedefs,
+> `wksp->rankVal` should be exactly the same type as `rankVal_t`. So the
+> warning seems too noisy here.
+> 
+> Not saying that the code can't be improved, it certainly can be, and I will
+> put up a PR upstream by tomorrow, and link it here.
+
+That'd be great, Nick! :)
+
+Thank you both Kees and Nick for the feedback.
+--
+Gustavo
