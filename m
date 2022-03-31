@@ -2,131 +2,227 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88BEDC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 07:35:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79F7AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 07:36:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232283AbiCaHhg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 03:37:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33632 "EHLO
+        id S232263AbiCaHiX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 03:38:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230313AbiCaHhd (ORCPT
+        with ESMTP id S232457AbiCaHiQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 03:37:33 -0400
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 665C536683;
-        Thu, 31 Mar 2022 00:35:46 -0700 (PDT)
-Received: by mail-wm1-x336.google.com with SMTP id n63-20020a1c2742000000b0038d0c31db6eso1444414wmn.1;
-        Thu, 31 Mar 2022 00:35:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=ONmMTWjwSUqraFi8W4kEMWh1P85vP4XkVwxc2sGEVho=;
-        b=lbje+9+gc3xrG6okJX1wpH5HxRuxoqmwxyGVA4N5L2zRjliQHyVf9z7Bx7HQB2si/t
-         sGjHaKkVmop5cBri+7unpveSyKh7Ezpz619Umm+xhsboKbljVGAdGPc9DVrwSQUyMaAL
-         hDAXtoChZEa/L4D9MsHS4VfKv+rASOffsVcQlDgEEe2rlpz76sPHwVwT9LjPXoYoWe9A
-         hoXevcyPNs/cD621Xy9EgTm/M86D5UEHtoHtrHCZvU0CEdg8mrknYl1AgIgBxCKRnFBy
-         3IOpXanfc/J1ZMEDqb32612Bsh648KG+EWRLtSjiDkOcVzPzw42dwtmYkCAyWmjKQ5je
-         0OXg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=ONmMTWjwSUqraFi8W4kEMWh1P85vP4XkVwxc2sGEVho=;
-        b=N6jnHjNEW0nzNEBY9twnG36F6YimrXXi0kFwA2SYe59zLtkBJmidZ6nK+0yjI/v4Lm
-         6E+FCmuq+zkrn0RtGP1PdzG1fEz6faWaSCZGBajQT2EHLp4bPR5NXPjrk48tP+Q9GKjK
-         Zb3Ryb1hjzorxQmtmWdYwNoiLN/Ud8CsUh0Z0jjzOp7jRQgsZ0sj+NygHhbMlKAhmJHl
-         ExRA7yg9dgVuwctI1G2CEaTrfW8B9lxgV4v+OT6FgE3GNV06Cpwe/kisrRrN6XpvwyeB
-         If3/7e+wa8cu5+2ZN06tH627zQuUc0TBxt4a4YTqGlRDVSOHbJtvhDmsomtw8HHlRV5u
-         eHlQ==
-X-Gm-Message-State: AOAM531qBK0Blk8leq38xM4yQ8pPXIPaIvyGjxQQ0WPGdW637Giun/kH
-        /8crLkDZSt4MnyPB8bdnVylnczLI31RN7Q==
-X-Google-Smtp-Source: ABdhPJxsvy5o1KeOx2Ju8ASmB4+B6wkPw2Sl5yJLtswda6ay7sAg3vJvogesdMfM9ImTK9rhvVCSRA==
-X-Received: by 2002:a05:600c:4f0f:b0:38c:c8f5:73e7 with SMTP id l15-20020a05600c4f0f00b0038cc8f573e7mr3449115wmq.201.1648712144613;
-        Thu, 31 Mar 2022 00:35:44 -0700 (PDT)
-Received: from Dev-shlomop.pliops.ent (bzq-219-32-62.isdn.bezeqint.net. [62.219.32.62])
-        by smtp.googlemail.com with ESMTPSA id o17-20020a05600c4fd100b0038cd5074c83sm6947108wmq.34.2022.03.31.00.35.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 31 Mar 2022 00:35:44 -0700 (PDT)
-From:   Shlomo Pongratz <shlomopongratz@gmail.com>
-X-Google-Original-From: Shlomo Pongratz <shlomop@pliops.com>
-To:     linux-pci@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, andrew.maier@eideticom.com,
-        logang@deltatee.com, bhelgaas@google.com, jgg@nvidia.com,
-        helgaas@kernel.org, Shlomo Pongratz <shlomop@pliops.com>
-Subject: [PATCH V5 1/1] Intel Sky Lake-E host root ports check.
-Date:   Thu, 31 Mar 2022 10:35:39 +0300
-Message-Id: <20220331073539.14499-2-shlomop@pliops.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220331073539.14499-1-shlomop@pliops.com>
-References: <20220331073539.14499-1-shlomop@pliops.com>
+        Thu, 31 Mar 2022 03:38:16 -0400
+Received: from 9.mo548.mail-out.ovh.net (9.mo548.mail-out.ovh.net [46.105.48.137])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F328436683
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 00:36:27 -0700 (PDT)
+Received: from mxplan5.mail.ovh.net (unknown [10.109.146.27])
+        by mo548.mail-out.ovh.net (Postfix) with ESMTPS id EB566222D0;
+        Thu, 31 Mar 2022 07:36:25 +0000 (UTC)
+Received: from kaod.org (37.59.142.106) by DAG4EX1.mxp5.local (172.16.2.31)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 31 Mar
+ 2022 09:36:25 +0200
+Authentication-Results: garm.ovh; auth=pass (GARM-106R0063e6c707f-2c73-4ce7-b171-35deabf783d6,
+                    FC9088D273F6636B0CAAD4892A2C3D02B7ACC8E0) smtp.auth=clg@kaod.org
+X-OVh-ClientIp: 82.64.250.170
+Message-ID: <2a411a3e-4b7f-c116-b595-f33bffccb4e7@kaod.org>
+Date:   Thu, 31 Mar 2022 09:36:24 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v4 02/11] dt-bindings: spi: Add Aspeed SMC controllers
+ device tree binding
+Content-Language: en-US
+To:     Pratyush Yadav <p.yadav@ti.com>
+CC:     <linux-spi@vger.kernel.org>, <linux-mtd@lists.infradead.org>,
+        Mark Brown <broonie@kernel.org>,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        <linux-aspeed@lists.ozlabs.org>, Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Chin-Ting Kuo <chin-ting_kuo@aspeedtech.com>,
+        <devicetree@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, Tao Ren <rentao.bupt@gmail.com>,
+        Rob Herring <robh@kernel.org>
+References: <20220325100849.2019209-1-clg@kaod.org>
+ <20220325100849.2019209-3-clg@kaod.org>
+ <20220330191908.nhg52a5ayzczpzai@ti.com>
+From:   =?UTF-8?Q?C=c3=a9dric_Le_Goater?= <clg@kaod.org>
+In-Reply-To: <20220330191908.nhg52a5ayzczpzai@ti.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [37.59.142.106]
+X-ClientProxiedBy: DAG3EX1.mxp5.local (172.16.2.21) To DAG4EX1.mxp5.local
+ (172.16.2.31)
+X-Ovh-Tracer-GUID: 42cf838e-2d6c-452a-9ac1-8df5f67bb224
+X-Ovh-Tracer-Id: 6483213140691618762
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudeifedgudduiecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefkffggfgfuvfhfhfgjtgfgihesthekredttdefjeenucfhrhhomhepveorughrihgtpgfnvggpifhorghtvghruceotghlgheskhgrohgurdhorhhgqeenucggtffrrghtthgvrhhnpeduuedtgedugeehfedvfefhieetieefhfeiudeutefhffekieduueeuheegudegfeenucffohhmrghinhepuggvvhhitggvthhrvggvrdhorhhgnecukfhppedtrddtrddtrddtpdefjedrheelrddugedvrddutdeinecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehmgihplhgrnhehrdhmrghilhdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomheptghlgheskhgrohgurdhorhhgpdhnsggprhgtphhtthhopedupdhrtghpthhtoheprhhosghhsehkvghrnhgvlhdrohhrgh
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In commit 7b94b53db34f ("PCI/P2PDMA: Add Intel Sky Lake-E Root Ports B, C, D to
-the whitelist")
-Andrew Maier added the Sky Lake-E additional devices
-2031, 2032 and 2033 root ports to the already existing 2030 device.
+Hello Pratyush,
 
-The Intel devices 2030, 2031, 2032 and 2033 which are root ports A, B, C and D,
-respectively and if all exist they will occupy slots 0 till 3 in that order.
+On 3/30/22 21:19, Pratyush Yadav wrote:
+> On 25/03/22 11:08AM, Cédric Le Goater wrote:
+>> The "interrupt" property is optional because it is only necessary for
+>> controllers supporting DMAs (Not implemented yet in the new driver).
+>>
+>> Cc: Chin-Ting Kuo <chin-ting_kuo@aspeedtech.com>
+>> Tested-by: Joel Stanley <joel@jms.id.au>
+>> Tested-by: Tao Ren <rentao.bupt@gmail.com>
+>> Reviewed-by: Joel Stanley <joel@jms.id.au>
+>> Reviewed-by: Rob Herring <robh@kernel.org>
+>> Signed-off-by: Cédric Le Goater <clg@kaod.org>
+>> ---
+>>   .../bindings/spi/aspeed,ast2600-fmc.yaml      | 87 +++++++++++++++++++
+>>   MAINTAINERS                                   |  9 ++
+>>   2 files changed, 96 insertions(+)
+>>   create mode 100644 Documentation/devicetree/bindings/spi/aspeed,ast2600-fmc.yaml
+>>
+>> diff --git a/Documentation/devicetree/bindings/spi/aspeed,ast2600-fmc.yaml b/Documentation/devicetree/bindings/spi/aspeed,ast2600-fmc.yaml
+>> new file mode 100644
+>> index 000000000000..e16bbcd38560
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/spi/aspeed,ast2600-fmc.yaml
+>> @@ -0,0 +1,87 @@
+>> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+>> +%YAML 1.2
+>> +---
+>> +$id: http://devicetree.org/schemas/spi/aspeed,ast2600-fmc.yaml#
+>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>> +
+>> +title: Aspeed SMC controllers bindings
+>> +
+>> +maintainers:
+>> +  - Chin-Ting Kuo <chin-ting_kuo@aspeedtech.com>
+>> +  - Cédric Le Goater <clg@kaod.org>
+>> +
+>> +description: |
+>> +  This binding describes the Aspeed Static Memory Controllers (FMC and
+>> +  SPI) of the AST2400, AST2500 and AST2600 SOCs.
+>> +
+>> +allOf:
+>> +  - $ref: "spi-controller.yaml#"
+>> +
+>> +properties:
+>> +  compatible:
+>> +    enum:
+>> +      - aspeed,ast2600-fmc
+>> +      - aspeed,ast2600-spi
+>> +      - aspeed,ast2500-fmc
+>> +      - aspeed,ast2500-spi
+>> +      - aspeed,ast2400-fmc
+>> +      - aspeed,ast2400-spi
+>> +
+>> +  reg:
+>> +    items:
+>> +      - description: registers
+>> +      - description: memory mapping
+>> +
+>> +  clocks:
+>> +    maxItems: 1
+>> +
+>> +  interrupts:
+>> +    maxItems: 1
+>> +
+>> +patternProperties:
+>> +  "@[0-9a-f]+":
+>> +    type: object
+>> +
+>> +    properties:
+>> +      spi-rx-bus-width:
+>> +        enum: [1, 2, 4]
+> 
+> No need for this. It should already be taken care of by
+> spi-peripheral-props.yaml
 
-The original code handled only the case where the devices in the whitelist are
-host bridges and assumed that they will be found on slot 0.
+So we could drop the whole 'patternProperties' section ?
 
-This assumption doesn't hold for root ports so an explicit test was added to
-cover this case.
+> 
+>> +
+>> +required:
+>> +  - compatible
+>> +  - reg
+>> +  - clocks
+>> +
+>> +unevaluatedProperties: false
+>> +
+>> +examples:
+>> +  - |
+>> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
+>> +    #include <dt-bindings/interrupt-controller/aspeed-scu-ic.h>
+>> +    #include <dt-bindings/clock/ast2600-clock.h>
+>> +
+>> +    spi@1e620000 {
+>> +        reg = <0x1e620000 0xc4>, <0x20000000 0x10000000>;
+>> +        #address-cells = <1>;
+>> +        #size-cells = <0>;
+>> +        compatible = "aspeed,ast2600-fmc";
+>> +        clocks = <&syscon ASPEED_CLK_AHB>;
+>> +        interrupts = <GIC_SPI 39 IRQ_TYPE_LEVEL_HIGH>;
+> 
+> Nitpick: Add a blank line here
+> 
+>> +        flash@0 {
+>> +                reg = < 0 >;
+>> +                compatible = "jedec,spi-nor";
+>> +                spi-max-frequency = <50000000>;
+>> +                spi-rx-bus-width = <2>;
+>> +        };
+> 
+> and here
+> 
+>> +        flash@1 {
+>> +                reg = < 1 >;
+>> +                compatible = "jedec,spi-nor";
+>> +                spi-max-frequency = <50000000>;
+>> +                spi-rx-bus-width = <2>;
+>> +        };
+> 
+> and here. Looks a bit nicer.
 
-Signed-off-by: Shlomo Pongratz <shlomop@pliops.com>
----
- drivers/pci/p2pdma.c | 24 +++++++++++++++++-------
- 1 file changed, 17 insertions(+), 7 deletions(-)
+Thanks for the comments, I will provide the cleanups in v5.
 
-diff --git a/drivers/pci/p2pdma.c b/drivers/pci/p2pdma.c
-index 30b1df3c9d2f..87c62ca0976d 100644
---- a/drivers/pci/p2pdma.c
-+++ b/drivers/pci/p2pdma.c
-@@ -327,15 +327,18 @@ static const struct pci_p2pdma_whitelist_entry {
- 
- /*
-  * This lookup function tries to find the PCI device corresponding to a given
-- * host bridge.
-+ * host bridge or a root port.
-  *
-  * It assumes the host bridge device is the first PCI device in the
-- * bus->devices list and that the devfn is 00.0. These assumptions should hold
-- * for all the devices in the whitelist above.
-+ * bus->devices list and that the devfn is 00.0. The first assumption should
-+ * hold for all the devices in the whitelist above, however the second one
-+ * doesn't always holds for root ports, for example Intel SkyLake-E devices
-+ * 2030, 2031, 2032 and 2033 which are root ports (A, B, C and D respectively).
-+ * So being a root port is checked explicitly.
-  *
-- * This function is equivalent to pci_get_slot(host->bus, 0), however it does
-- * not take the pci_bus_sem lock seeing __host_bridge_whitelist() must not
-- * sleep.
-+ * This function is equivalent to pci_get_slot(host->bus, 0) (except for
-+ * the root port test), however it does not take the pci_bus_sem lock seeing
-+ * __host_bridge_whitelist() must not sleep.
-  *
-  * For this to be safe, the caller should hold a reference to a device on the
-  * bridge, which should ensure the host_bridge device will not be freed
-@@ -350,7 +353,14 @@ static struct pci_dev *pci_host_bridge_dev(struct pci_host_bridge *host)
- 
- 	if (!root)
- 		return NULL;
--	if (root->devfn != PCI_DEVFN(0, 0))
-+
-+	/* Verify that the device is a host bridge or a root port
-+	 * It is assumed that host bridges have a 0 devfn, (common practice)
-+	 * but some of the entries in the whitelist are root ports that can
-+	 * have any devfn
-+	 */
-+	if (root->devfn != PCI_DEVFN(0, 0) &&
-+	    pci_pcie_type(root) != PCI_EXP_TYPE_ROOT_PORT)
- 		return NULL;
- 
- 	return root;
--- 
-2.17.1
+C.
+
+
+
+> 
+>> +        flash@2 {
+>> +                reg = < 2 >;
+>> +                compatible = "jedec,spi-nor";
+>> +                spi-max-frequency = <50000000>;
+>> +                spi-rx-bus-width = <2>;
+>> +        };
+>> +    };
+>> diff --git a/MAINTAINERS b/MAINTAINERS
+>> index ea9d74b6236f..7d5f81dcd837 100644
+>> --- a/MAINTAINERS
+>> +++ b/MAINTAINERS
+>> @@ -3021,6 +3021,15 @@ S:	Maintained
+>>   F:	Documentation/devicetree/bindings/mmc/aspeed,sdhci.yaml
+>>   F:	drivers/mmc/host/sdhci-of-aspeed*
+>>   
+>> +ASPEED SMC SPI DRIVER
+>> +M:	Chin-Ting Kuo <chin-ting_kuo@aspeedtech.com>
+>> +M:	Cédric Le Goater <clg@kaod.org>
+>> +L:	linux-aspeed@lists.ozlabs.org (moderated for non-subscribers)
+>> +L:	openbmc@lists.ozlabs.org (moderated for non-subscribers)
+>> +L:	linux-spi@vger.kernel.org
+>> +S:	Maintained
+>> +F:	Documentation/devicetree/bindings/spi/aspeed,ast2600-fmc.yaml
+>> +
+>>   ASPEED VIDEO ENGINE DRIVER
+>>   M:	Eddie James <eajames@linux.ibm.com>
+>>   L:	linux-media@vger.kernel.org
+>> -- 
+>> 2.34.1
+>>
+> 
 
