@@ -2,102 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49A05C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 12:48:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98EDCC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 12:48:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236292AbiCaMu0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 08:50:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40488 "EHLO
+        id S236329AbiCaMuc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 08:50:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236314AbiCaMuU (ORCPT
+        with ESMTP id S236307AbiCaMuX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 08:50:20 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0829C69
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 05:48:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648730911; x=1680266911;
-  h=subject:to:cc:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=U2ruxUQf1EnUWQl9Jspq/DeB3V4q9a9nqLBu8xipvOI=;
-  b=SdvpTlKxm1OVXMQOmK4bGLHkWVQgF/f4iSsCsTETpZBysDHY3vmIEOVU
-   7PMFpGZ+Hm/oJmC2NT0P797Do6EaUcCnF4DZIrEvzZtXkvofFRkKWnUyU
-   Ypx2kLGbtCdDURhIVPwWulnbO0+3lkmBk0Ys9DNGvrqsEqsFfXTCLE/hl
-   Z2Jwchmsmgb32Zz9Cr+HdMTo03RBRcuoKQDFTWV/xF+n2fmLngXKe8nDg
-   3HH5vAG+Ydl9SaKvy/y9h4qh4kFKTAMJsboaKERnIz/dLyE8bbac1S1i7
-   8b+nvd/KAHC7yRMJwLEKeXfIxJbYh2/0k82J6fUlZRZKZXQ6eNze8TjNM
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="257407624"
-X-IronPort-AV: E=Sophos;i="5.90,225,1643702400"; 
-   d="scan'208";a="257407624"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2022 05:48:27 -0700
-X-IronPort-AV: E=Sophos;i="5.90,225,1643702400"; 
-   d="scan'208";a="566453621"
-Received: from rongch2-mobl.ccr.corp.intel.com (HELO [10.255.30.238]) ([10.255.30.238])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2022 05:48:25 -0700
-Subject: Re: [kbuild-all] Re: arch/x86/kernel/cpu/mce/amd.c:552:6: warning: no
- previous prototype for 'disable_err_thresholding'
-To:     Borislav Petkov <bp@suse.de>, kernel test robot <lkp@intel.com>
-Cc:     Shirish S <Shirish.S@amd.com>, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-References: <202203301632.RmI9R5aU-lkp@intel.com> <YkRLUixkF7OEICBL@zn.tnic>
-From:   "Chen, Rong A" <rong.a.chen@intel.com>
-Message-ID: <a6617c2d-5bb7-8265-d587-83104f9420d7@intel.com>
-Date:   Thu, 31 Mar 2022 20:48:23 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.12.0
+        Thu, 31 Mar 2022 08:50:23 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BBBB2F025;
+        Thu, 31 Mar 2022 05:48:35 -0700 (PDT)
+X-UUID: 2a9f8398dd6947f3b0ec6a5ab81d1da4-20220331
+X-UUID: 2a9f8398dd6947f3b0ec6a5ab81d1da4-20220331
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
+        (envelope-from <xinlei.lee@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 422116984; Thu, 31 Mar 2022 20:48:28 +0800
+Received: from MTKMBS34N1.mediatek.inc (172.27.4.172) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Thu, 31 Mar 2022 20:48:26 +0800
+Received: from MTKCAS36.mediatek.inc (172.27.4.186) by MTKMBS34N1.mediatek.inc
+ (172.27.4.172) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 31 Mar
+ 2022 20:48:25 +0800
+Received: from mszsdaap41.gcn.mediatek.inc (10.16.6.141) by
+ MTKCAS36.mediatek.inc (172.27.4.170) with Microsoft SMTP Server id
+ 15.0.1497.2 via Frontend Transport; Thu, 31 Mar 2022 20:48:17 +0800
+From:   <xinlei.lee@mediatek.com>
+To:     <thierry.reding@gmail.com>, <u.kleine-koenig@pengutronix.de>,
+        <lee.jones@linaro.org>, <robh+dt@kernel.org>,
+        <matthias.bgg@gmail.com>
+CC:     <linux-pwm@vger.kernel.org>, <linux-mediatek@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        <rex-bc.chen@mediatek.com>, <jitao.shi@mediatek.com>,
+        Xinlei Lee <xinlei.lee@mediatek.com>
+Subject: [PATCH v5,2/4] dt-bindings: pwm: Add compatible for MediaTek MT8192
+Date:   Thu, 31 Mar 2022 20:47:51 +0800
+Message-ID: <1648730873-18505-3-git-send-email-xinlei.lee@mediatek.com>
+X-Mailer: git-send-email 2.6.4
+In-Reply-To: <1648730873-18505-1-git-send-email-xinlei.lee@mediatek.com>
+References: <1648730873-18505-1-git-send-email-xinlei.lee@mediatek.com>
 MIME-Version: 1.0
-In-Reply-To: <YkRLUixkF7OEICBL@zn.tnic>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Xinlei Lee <xinlei.lee@mediatek.com>
 
+Add dt-binding documentation of pwm for MediaTek MT8192 SoC.
 
-On 3/30/2022 8:21 PM, Borislav Petkov wrote:
-> On Wed, Mar 30, 2022 at 04:45:25PM +0800, kernel test robot wrote:
->> Hi Shirish,
->>
->> FYI, the error/warning still remains.
->>
->> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
->> head:   965181d7ef7e1a863477536dc328c23a7ebc8a1d
->> commit: 30aa3d26edb0f3d7992757287eec0ca588a5c259 x86/MCE/AMD: Carve out the MC4_MISC thresholding quirk
->> date:   3 years, 2 months ago
->> config: x86_64-defconfig (https://download.01.org/0day-ci/archive/20220330/202203301632.RmI9R5aU-lkp@intel.com/config)
->> compiler: gcc-9 (Ubuntu 9.4.0-1ubuntu1~20.04.1) 9.4.0
->> reproduce (this is a W=1 build):
->>          # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=30aa3d26edb0f3d7992757287eec0ca588a5c259
->>          git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
->>          git fetch --no-tags linus master
->>          git checkout 30aa3d26edb0f3d7992757287eec0ca588a5c259
->>          # save the config file to linux build tree
->>          mkdir build_dir
->>          make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash arch/x86/kernel/cpu/mce/ drivers/gpu/drm/i915/
->>
->> If you fix the issue, kindly add following tag as appropriate
->> Reported-by: kernel test robot <lkp@intel.com>
->>
->> All warnings (new ones prefixed by >>):
->>
->>>> arch/x86/kernel/cpu/mce/amd.c:552:6: warning: no previous prototype for 'disable_err_thresholding' [-Wmissing-prototypes]
->>       552 | void disable_err_thresholding(struct cpuinfo_x86 *c)
->>           |      ^~~~~~~~~~~~~~~~~~~~~~~~
-> 
-> I can't trigger this with gcc-9 (Debian 9.3.0-22) 9.3.0 on that commit
-> with your .config.
-> 
-> Please drop this.
-> 
+Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
+---
+ Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-Hi Boris,
+diff --git a/Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml b/Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml
+index 36f877f819fa..4bfa8eb42186 100644
+--- a/Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml
++++ b/Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml
+@@ -24,6 +24,10 @@ properties:
+       - items:
+           - const: mediatek,mt8167-disp-pwm
+           - const: mediatek,mt8173-disp-pwm
++      - items:
++          - enum:
++              - mediatek,mt8192-disp-pwm
++          - const: mediatek,mt8183-disp-pwm
+ 
+   reg:
+     maxItems: 1
+-- 
+2.18.0
 
-Sorry about it, something goes wrong, we'll add it to the ignore list.
-
-Best Regards,
-Rong Chen
