@@ -2,181 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76FFCC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 09:35:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AB40C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 09:35:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234162AbiCaJhB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 05:37:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40638 "EHLO
+        id S234159AbiCaJhO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 05:37:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233210AbiCaJg6 (ORCPT
+        with ESMTP id S233210AbiCaJhD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 05:36:58 -0400
-Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03D76AF1F6
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 02:35:10 -0700 (PDT)
-Received: by mail-qt1-x834.google.com with SMTP id b18so20887304qtk.13
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 02:35:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=lsN5p6Zbb92CWY0fCQlSnWVHSmMIpn5JDGM4v10NtKE=;
-        b=ZunWdYGe8+BLAfVsPhIKSdgfp/G02w2RPLviviav8MFDJAF80hz+gYJdoOGSo34tqv
-         +GOt1h6oPls11MbrXMWncQOXZmfdT+lhqoeeAdjHnzcDo7Y+ls+43qjcKa4FnDUZBr8g
-         sfb8w/YhyQ+I+txxTbyARU1xScgG75osTxNrQd/eW37hUwLOqmWqtNTAMgYkd6Ktg+8v
-         SISvG4vs6TaDZYpzkTU2u3b1ge4YO9UUK1QU+l3rIQdKqsBt2Cv/PAH7mIcmQDs8WgY7
-         CqOd27nG1iOkKCVqS+VcVciIKPjF7ot65oGt3h7/40D3BucYPbivC79Gb3PETsi4mdBl
-         9MPg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=lsN5p6Zbb92CWY0fCQlSnWVHSmMIpn5JDGM4v10NtKE=;
-        b=T31iwqHTrHFzuTsPmq+VuQn4fZpqqE/YPOXmMrNFUoDmv7d92RWMcwfcOzhGLjePd+
-         MSN/OjaE01VeATrOfx1YZVDwD1mD7E/7c0l32svYK/ty97gwpbeFbWUJ1NN3s9ejrSXQ
-         22bYMn9LE4aii5hosbwd4qwaFfXUK5Q0JOj42PNhwMGdC76hnAaskxAVoTwYijWuDgq9
-         jg9eNX2iDDK3dZuC8irJNZ36GliUgtwBnWYEpy6EJcd+oYCYOfGBQ+MlxqZ4XK/mKZhK
-         +XynwC7ovj6K8a7lkKnot6bt/eKGbgUZwv8+NXE4X9osyXGB5cyCg/16ekMQj/pmM3WG
-         YX8w==
-X-Gm-Message-State: AOAM532PflFVBx8ysfov56vxidweg5iBR/8Q1u2pwuDnGShJ+xpnGH7P
-        ID3Mx3Fs/+TzpOVSFcuB+Qvu6iie3ytXRvI8YknSwg==
-X-Google-Smtp-Source: ABdhPJzGd4rqpbpprVxRT58SQ0mWkivwbwlishXbW/R3KM5sUWLDKwn+nH2fugALpTWwKgteKCnQM+TuY1AtSd9ZY20=
-X-Received: by 2002:ac8:5702:0:b0:2e1:ec8a:917a with SMTP id
- 2-20020ac85702000000b002e1ec8a917amr3318464qtw.682.1648719309154; Thu, 31 Mar
- 2022 02:35:09 -0700 (PDT)
+        Thu, 31 Mar 2022 05:37:03 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47C49B6E67;
+        Thu, 31 Mar 2022 02:35:13 -0700 (PDT)
+Received: from mail-lj1-f182.google.com ([209.85.208.182]) by
+ mrelayeu.kundenserver.de (mreue012 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1MQ8OG-1nMZWF0sMa-00LzwN; Thu, 31 Mar 2022 11:35:07 +0200
+Received: by mail-lj1-f182.google.com with SMTP id a30so23743420ljq.13;
+        Thu, 31 Mar 2022 02:34:53 -0700 (PDT)
+X-Gm-Message-State: AOAM530f4YF5XRzdcJZz402Q2dO5W10j2CxRXZsoZgbvCJBBidfnMn6p
+        1/KYMOMILw6hB8QXWn2cZtkHJnXJoUV7wKUaAgk=
+X-Google-Smtp-Source: ABdhPJzlZAknllrYU3sqw0DcJDBqe9QGu2EJFIsGG1Jj93+/mwICYSZMvQMKUcZsQpnc8rRysI1G9CixKr24DtuSHyk=
+X-Received: by 2002:a5d:66ca:0:b0:203:fb72:a223 with SMTP id
+ k10-20020a5d66ca000000b00203fb72a223mr3263936wrw.12.1648717194942; Thu, 31
+ Mar 2022 01:59:54 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220328152923.90623-1-krzysztof.kozlowski@linaro.org>
- <CAA8EJprWoxWwk5EWEfWdLquPR+2=u6V0-v1-+wHMHOk8HiEyNw@mail.gmail.com>
- <YkHtY9absUjmqmW7@matsya> <12b0056b-8032-452b-f325-6f36037b5a80@linaro.org>
- <CAL_Jsq+6rx0UU6ryH+z_8KLQqKKuhTCnh=Oft2F03bcze+EV0Q@mail.gmail.com>
- <YkKmPSesQfS6RLCD@matsya> <YkMrPnRbsl3FBig8@robh.at.kernel.org> <YkVEsqiRamfTmNi0@matsya>
-In-Reply-To: <YkVEsqiRamfTmNi0@matsya>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date:   Thu, 31 Mar 2022 12:34:58 +0300
-Message-ID: <CAA8EJpqTqB10JkmK4GfbO6uP4wAUtqPzY+N4f+=Lt6Vy3a+g4Q@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: display: msm: dsi: remove address/size cells
-To:     Vinod Koul <vkoul@kernel.org>
-Cc:     Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        freedreno <freedreno@lists.freedesktop.org>,
-        devicetree@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <cover.1648714851.git.qinjian@cqplus1.com> <840bf90d4e7ba05fe621cd94101b912162311e41.1648714851.git.qinjian@cqplus1.com>
+In-Reply-To: <840bf90d4e7ba05fe621cd94101b912162311e41.1648714851.git.qinjian@cqplus1.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Thu, 31 Mar 2022 10:59:39 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a3dRs=-XdK-Y3eHFJEkXTaCzRCm-YAdiUw_DRUcqHd02w@mail.gmail.com>
+Message-ID: <CAK8P3a3dRs=-XdK-Y3eHFJEkXTaCzRCm-YAdiUw_DRUcqHd02w@mail.gmail.com>
+Subject: Re: [PATCH v12 3/9] reset: Add Sunplus SP7021 reset driver
+To:     Qin Jian <qinjian@cqplus1.com>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        DTML <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:DfVrS+Ox3XDkFmwPTS20wXa+Ha4o0WcqDgVOIs5eqt6GtEcCbV4
+ nVfLllx+NhIBJMi+iAS6nOOJnMJgeRUWFmoA78qsG/2IMxdgB6CLF1H4ThsMyWdah56Ez7o
+ xstqnj8bqlfUOm7qLAGIDf4PRPpE38lAGL4LV594mvE9kbDmV2SDoDp548u7bSvM8jutdyG
+ VFAtU62bbD8LFqYhadCEg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:FV5ioI8hUa4=:znyj7Kx4BQT2vh6lX9KmcC
+ sNW827kSRUWc46nsYmbPySZLiqAWcaUkI+s2Aq6fEkAbQxz4j+nMvz9CMJqUfBSql5zP4DkAt
+ GGgr9uOMfD19Ug0nWtRZfVTEwyIhjFTp1GA31VwZH7QVVD4kWNpg9OmNqLsrsnRCKTy3k4/FK
+ PVpx1kJOeOjrb9m2k+Rn2Ojv94nlqF9P3x1YXq8pnvVF376OHXp3F/3BVDjwWSLchQ8ueAC2P
+ 7qNMsvpmaMk4xgounFDRXZiXIVS2KlGDEi42FT2nCnlQB4Nlfk4upRt/lGxayc9o71pMX4gAH
+ FpWbjO7Y7QTqNhX+tqOuN6t0s76uxaQ6L3StFz7BCOMYGtQUj/jBbFdMUH7WIOXjNSDMgxRJE
+ 7w50I5+7HJcNvL2ZCOMAZkGb039Z0RfxzYiYmltgDwaBZ6RkG2TJRMg91Gu6Cg81DCNV7LLeU
+ j0+1Tj+8hyOEbFa6Rb2C+dwaYSdK5o6L0oN9hll/cPdXmMwM4uPSHJlovHne5SGRaWMvEyV8m
+ 0C1TYearppaLDLIKnGcTKUeZQJdR6YjLtuBQmgrVCsFcMgBuL2lluYcEVWkHgCOV7ttmxXxVR
+ //Kf/FYPztV7yZzihClLMjTWM8dtCPWABmkRt0MGuLASm5Sdim1EL75NBi67EqUgEdR0wABlv
+ yltpRZRFHLA8AvJ/a+E7nMMatzJfDSKUXI0FvaAws23GvxHU22feBZfsOhOkwSS7PUeK6nBH3
+ Rx1OWysCLKAxzHqX/rnTbCr/v93JgHRdpyiG4I7T6jgFAdlMWloErUhWGiQ/CE9iDDEjoZ8Nr
+ ntDk+5ap+gcdrpy1quaeNo9ZBqgygG4Rtpn0HZeoL8yq4usTjKqMIMAhgez9xSZlnJUrjgw/L
+ 8a7bYeruMKWgEFiycr5W1KN94LzzatCkATA4HRO9XjN/3PxTW4aZ03G4MhzFm89tpkgZp95bL
+ uVh24r6nz3LzBpTNhi41ZqKvC1KBowA4qgTZYJBzkLTxizR/NtZKImc7SJT5yLxH4G/H5dWmh
+ 546zOzkj1zLITvc3jevwBVOK/eVbiIadOXZiMKqkJd8ZHLr6q8dI3EsnXM/G9j6FLv0jFb3N0
+ kMWMwFswDzW+iB30qz4j3ev3DpjkZ0IXD0FNjv3jHz5xHMWk5R/SitdSUU8YzBlSIbG3iIKGJ
+ klnZ/eIZHEE0crf5RKWtDk9c2HqLSWBQP+m9R5NEoRvRpBECI73Nc+ZrRZejySv5tz7FT9GD9
+ b9sajQXc2wbVoKkb6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 31 Mar 2022 at 09:05, Vinod Koul <vkoul@kernel.org> wrote:
->
-> On 29-03-22, 10:52, Rob Herring wrote:
-> > On Tue, Mar 29, 2022 at 12:01:52PM +0530, Vinod Koul wrote:
-> > > On 28-03-22, 13:21, Rob Herring wrote:
-> > > > On Mon, Mar 28, 2022 at 12:18 PM Krzysztof Kozlowski
-> > > > <krzysztof.kozlowski@linaro.org> wrote:
-> > > > >
-> > > > > On 28/03/2022 19:16, Vinod Koul wrote:
-> > > > > > On 28-03-22, 19:43, Dmitry Baryshkov wrote:
-> > > > > >> On Mon, 28 Mar 2022 at 18:30, Krzysztof Kozlowski
-> > > > > >> <krzysztof.kozlowski@linaro.org> wrote:
-> > > > > >>>
-> > > > > >>> The DSI node is not a bus and the children do not have unit addresses.
-> > > > > >>>
-> > > > > >>> Reported-by: Vinod Koul <vkoul@kernel.org>
-> > > > > >>> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> > > > > >>
-> > > > > >> NAK.
-> > > > > >> DSI panels are children of the DSI device tree node with the reg = <0>; address.
-> > > > > >> This is the convention used by other platforms too (see e.g.
-> > > > > >> arch/arm64/boot/dts/freescale/imx8mq-evk.dts).
-> > > > > >
-> > > > > > So we should add reg = 0, i will update my dtsi fix
-> > > > > >
-> > > > >
-> > > > > To "ports" node? No. The reg=0 is for children of the bus, so the
-> > > > > panels. How to combine both without warnings - ports and panel@0 - I
-> > > > > don't know yet...
-> > > >
-> > > > I don't think that should case a warning. Or at least it's one we turn off.
-> > >
-> > > Well in this case I think we might need a fix:
-> > > Here is the example quoted in the binding. We have ports{} and then the
-> > > two port@0 and port@1 underneath.
-> >
-> > It's the #address-cells/#size-cells under 'ports' that applies to 'port'
-> > nodes. As 'ports' has no address (reg) itself, it doesn't need
-> > #address-cells/#size-cells in its parent node.
-> >
-> > >
-> > > So it should be okay to drop #address-cells/#size-cells from dsi node
-> > > but keep in ports node...
-> >
-> > Yes.
-> >
-> > > Thoughts...?
-> >
-> > But I thought a panel@0 node was being added? If so then you need to add
-> > them back.
->
-> I guess we should make this optional, keep it when adding panel@0 node
-> and skip for rest where not applicable..? Dmitry is that fine with you?
+On Thu, Mar 31, 2022 at 10:29 AM Qin Jian <qinjian@cqplus1.com> wrote:
+> +
+> +#include <linux/io.h>
+> +#include <linux/init.h>
+> +#include <linux/mod_devicetable.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/reset-controller.h>
+> +#include <linux/reboot.h>
+> +
 
-This sounds like a workaround. When a panel node is added together
-with the '#address-cells' / '#size-cells' properties, we will get
-warnings for the 'ports' node.
-I'd prefer to leave things to pinpoint that the problem is generic
-rather than being specific to several device trees with the DSI panel
-nodes.
-How do other platforms solve the issue?
+As commented on the binding header -- it looks again like you are not actually
+relying  on the header here, so it's almost certainly not needed.
 
-In fact we can try shifting to the following dts schema:
-
-dsi@ae940000 {
-   compatible = "qcom,mdss-dsi-ctrl";
-
-   ports {
-      #adress-cells = <1>;
-      #size-cells = <0>;
-      port@0 {
-         reg = <0>;
-         dsi0_in: endpoint {};
-      };
-      port@1 {
-         reg = <1>;
-         dsi0_out: endpoint {
-               remote-endpoint = <&panel_in>;
-         };
-      };
-
-   /* dsi-bus is a generic part */
-   dsi-bus {
-      #adress-cells = <1>;
-      #size-cells = <0>;
-      /* panel@0 goes to the board file */
-      panel@0 {
-          compatible = "vendor,some-panel";
-          ports {
-             #adress-cells = <1>;
-             #size-cells = <0>;
-             port@0 {
-               reg = <0>;
-                panel_in: endpoint {
-                   remote-endpoint = <&dsi0_out>;
-                };
-             };
-        };
-   };
-};
-
-WDYT?
-
--- 
-With best wishes
-Dmitry
+         Arnd
