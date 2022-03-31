@@ -2,121 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B880C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 17:03:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AD3FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 17:06:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240470AbiCaREz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 13:04:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33452 "EHLO
+        id S233857AbiCaRIE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 13:08:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233801AbiCaREy (ORCPT
+        with ESMTP id S240491AbiCaRH7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 13:04:54 -0400
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E73A813D3E;
-        Thu, 31 Mar 2022 10:03:06 -0700 (PDT)
-Received: by mail-pg1-x52a.google.com with SMTP id c2so264271pga.10;
-        Thu, 31 Mar 2022 10:03:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=wp4EJkzvjqFPvNMlPc3SR+839jqbE97y6QA0y3+c+dg=;
-        b=CrtfCCrS7dIMHPXEJA32ZXUO6VZAAPWW6CP2YeRrEfRrU5nq9rjdw4Sb9Q3Waqfn6N
-         7J3nJd2NOwX6Rq1f3J5yCcJKPq7A84BRm+q1aKFs1fopI5iEgv8XrjpCUS79JNM6iBIy
-         bSsQ+wBeH7u8EJV/yhHEOQC5cdgXukPNO99NWvosTz3qKZP+utzw08BO4zQQWljn73wE
-         RokkNrXu2ObzFqOSPzpjXXdteJ6f9ycj7ZmjkJPtvTOzgYfCXG2XjpvGhk5BsWT8XJp+
-         +XWK1aA3mheC+8MHJcb/Nu0JES+kN59u8BmPnHTsaJ8NvxBN2zgAWbsYfk/wvkb6BO5l
-         RNBw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=wp4EJkzvjqFPvNMlPc3SR+839jqbE97y6QA0y3+c+dg=;
-        b=PxWwgZfu3VHLy7frskjFJGoBqr1jwO9DO7cCkUtexx8D91D4OmM4mo1SHxmB8Znp3o
-         29aZAy96N7NhpiIpVYg+c4T0i8e3LmfLx6Yocy0aNxmTmQ77C+ca6H5UiyutwduqIhAJ
-         F2SqdskFsc6oJ6TcP8kONNgNd5bRnLLS8Hpop3E5u9ln8hDy3uJZzDnib1NnCZOMUEiX
-         D4HaP/uSsbMSpYetPF0WOK+gRuY+fzWEvaSlbNiXGl30V2vcXxWU8uZ1u/H2A/J/vN/a
-         51LIMPeYLYpJ/S577Tt7EY9w9ZL1pUsXjp2+OjRSdjGONG3/UI4dJUFOqpiEYbMWuRd8
-         Qm5w==
-X-Gm-Message-State: AOAM532/KLPXXkR8jao2e5o27uNHxlLqUgWloIzTq715mTHP+ct0kww4
-        io+YTb8B3i9XWioRSjY3FhS3h0swZzE=
-X-Google-Smtp-Source: ABdhPJz4DPS7JiovUk81i6+FD75E76f7WSeerexiHUmOISNjKATg1LWv/sUdEQRPx2CFbna93jc0CA==
-X-Received: by 2002:a65:6d8b:0:b0:376:bfb9:1f3b with SMTP id bc11-20020a656d8b000000b00376bfb91f3bmr11449638pgb.427.1648746186014;
-        Thu, 31 Mar 2022 10:03:06 -0700 (PDT)
-Received: from localhost ([192.55.54.52])
-        by smtp.gmail.com with ESMTPSA id k18-20020a056a00135200b004fb18fc6c78sm40158pfu.31.2022.03.31.10.03.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 31 Mar 2022 10:03:05 -0700 (PDT)
-Date:   Thu, 31 Mar 2022 10:03:03 -0700
-From:   Isaku Yamahata <isaku.yamahata@gmail.com>
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Isaku Yamahata <isaku.yamahata@gmail.com>,
-        Paolo Bonzini <pbonzini@redhat.com>, isaku.yamahata@intel.com,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jim Mattson <jmattson@google.com>, erdemaktas@google.com,
-        Connor Kuehl <ckuehl@redhat.com>
-Subject: Re: [RFC PATCH v5 008/104] KVM: TDX: Add a function to initialize
- TDX module
-Message-ID: <20220331170303.GA2179440@ls.amr.corp.intel.com>
-References: <cover.1646422845.git.isaku.yamahata@intel.com>
- <b92217283fa96b85e9a683ca3fcf1b368cf8d1c4.1646422845.git.isaku.yamahata@intel.com>
- <05aecc5a-e8d2-b357-3bf1-3d0cb247c28d@redhat.com>
- <20220314194513.GD1964605@ls.amr.corp.intel.com>
- <YkTvw5OXTTFf7j4y@google.com>
+        Thu, 31 Mar 2022 13:07:59 -0400
+Received: from hall.aurel32.net (hall.aurel32.net [IPv6:2001:bc8:30d7:100::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ABC71E3749;
+        Thu, 31 Mar 2022 10:06:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=aurel32.net
+        ; s=202004.hall; h=In-Reply-To:Content-Type:MIME-Version:References:
+        Message-ID:Subject:Cc:To:From:Date:Content-Transfer-Encoding:From:Reply-To:
+        Subject:Content-ID:Content-Description:X-Debbugs-Cc;
+        bh=3f2eMNjxuItbWlnls7ORiJd9i6hYLVgkXpyx1xRUb2w=; b=ASbLG4Ldhwj8OC8VYiMxB+fAOJ
+        0zPi2gq2b8M/dPFp6bnhHhws3EeV4kFx716cPnkDuyvS7jeSJJa3wxV1Xx0e6RoiourFdP659/OJ/
+        j9csR+WdDyzCIKnbtQ1e2wVrRgEhgnH8PV0qTdFcTb0YOoPP6wLXZeLUlNuKHpc6LTVMMi2pOgsJ7
+        3s1N9Ejdm+2cEnfjiQxiUVchj0RCVW0xQs33M89ORD64m737Pe1Quw4ttaSAXsxcdxr91+PmsxDwH
+        gNH71MoCQmfx7Pn/X+J+XeV0DxeP4IJlkftDg9f50VVJp0ledKFABE0MIFFbM1kFqTyMPhg6Pcm+o
+        jSTHJwvw==;
+Received: from [2a01:e34:ec5d:a741:527b:9dff:fe6e:1e10] (helo=ohm.rr44.fr)
+        by hall.aurel32.net with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <aurelien@aurel32.net>)
+        id 1nZyFF-003XcN-Jo; Thu, 31 Mar 2022 19:06:01 +0200
+Received: from aurel32 by ohm.rr44.fr with local (Exim 4.95)
+        (envelope-from <aurelien@aurel32.net>)
+        id 1nZyFD-000mux-8S;
+        Thu, 31 Mar 2022 19:05:59 +0200
+Date:   Thu, 31 Mar 2022 19:05:59 +0200
+From:   Aurelien Jarno <aurelien@aurel32.net>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Kito Cheng <kito.cheng@gmail.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        "open list:RISC-V ARCHITECTURE" <linux-riscv@lists.infradead.org>,
+        linux-sparse@vger.kernel.org, ukl@pengutronix.de,
+        Luc Van Oostenryck <luc.vanoostenryck@gmail.com>
+Subject: Re: [PATCH] riscv: fix build with binutils 2.38
+Message-ID: <YkXfdyDISV6S6+kY@aurel32.net>
+Mail-Followup-To: Marc Kleine-Budde <mkl@pengutronix.de>,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Kito Cheng <kito.cheng@gmail.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        "open list:RISC-V ARCHITECTURE" <linux-riscv@lists.infradead.org>,
+        linux-sparse@vger.kernel.org, ukl@pengutronix.de,
+        Luc Van Oostenryck <luc.vanoostenryck@gmail.com>
+References: <20220126171442.1338740-1-aurelien@aurel32.net>
+ <20220331103247.y33wvkxk5vfbqohf@pengutronix.de>
+ <20220331103913.2vlneq6clnheuty6@pengutronix.de>
+ <20220331105112.7t3qgtilhortkiq4@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="skiiiUAPxBLzLTT4"
 Content-Disposition: inline
-In-Reply-To: <YkTvw5OXTTFf7j4y@google.com>
+In-Reply-To: <20220331105112.7t3qgtilhortkiq4@pengutronix.de>
+User-Agent: Mutt/2.1.4 (2021-12-11)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 31, 2022 at 12:03:15AM +0000,
-Sean Christopherson <seanjc@google.com> wrote:
 
-> On Mon, Mar 14, 2022, Isaku Yamahata wrote:
-> > On Sun, Mar 13, 2022 at 03:03:40PM +0100,
-> > Paolo Bonzini <pbonzini@redhat.com> wrote:
-> > 
-> > > On 3/4/22 20:48, isaku.yamahata@intel.com wrote:
+--skiiiUAPxBLzLTT4
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+Hi,
+
+On 2022-03-31 12:51, Marc Kleine-Budde wrote:
+> Cc +=3D linux-sparse, Uwe, Luc Van Oostenryck
+>=20
+> tl;dr:
+>=20
+> A recent change in the kernel regarding the riscv -march handling breaks
+> current sparse.
+>=20
+> On 31.03.2022 12:39:14, Marc Kleine-Budde wrote:
+> > On 31.03.2022 12:32:47, Marc Kleine-Budde wrote:
+> > > On 26.01.2022 18:14:42, Aurelien Jarno wrote:
+> > > > From version 2.38, binutils default to ISA spec version 20191213. T=
+his
+> > > > means that the csr read/write (csrr*/csrw*) instructions and fence.i
+> > > > instruction has separated from the `I` extension, become two standa=
+lone
+> > > > extensions: Zicsr and Zifencei. As the kernel uses those instructio=
+n,
+> > > > this causes the following build failure:
+> > > >=20
+> > > >   CC      arch/riscv/kernel/vdso/vgettimeofday.o
+> > > >   <<BUILDDIR>>/arch/riscv/include/asm/vdso/gettimeofday.h: Assemble=
+r messages:
+> > > >   <<BUILDDIR>>/arch/riscv/include/asm/vdso/gettimeofday.h:71: Error=
+: unrecognized opcode `csrr a5,0xc01'
+> > > >   <<BUILDDIR>>/arch/riscv/include/asm/vdso/gettimeofday.h:71: Error=
+: unrecognized opcode `csrr a5,0xc01'
+> > > >   <<BUILDDIR>>/arch/riscv/include/asm/vdso/gettimeofday.h:71: Error=
+: unrecognized opcode `csrr a5,0xc01'
+> > > >   <<BUILDDIR>>/arch/riscv/include/asm/vdso/gettimeofday.h:71: Error=
+: unrecognized opcode `csrr a5,0xc01'
+> > > >=20
+> > > > The fix is to specify those extensions explicitely in -march. Howev=
+er as
+> > > > older binutils version do not support this, we first need to detect
+> > > > that.
+> > > >=20
+> > > > Cc: stable@vger.kernel.org # 4.15+
+> > > > Cc: Kito Cheng <kito.cheng@gmail.com>
+> > > > Signed-off-by: Aurelien Jarno <aurelien@aurel32.net>
+> > > > ---
+> > > >  arch/riscv/Makefile | 6 ++++++
+> > > >  1 file changed, 6 insertions(+)
+> > > >=20
+> > > > diff --git a/arch/riscv/Makefile b/arch/riscv/Makefile
+> > > > index 8a107ed18b0d..7d81102cffd4 100644
+> > > > --- a/arch/riscv/Makefile
+> > > > +++ b/arch/riscv/Makefile
+> > > > @@ -50,6 +50,12 @@ riscv-march-$(CONFIG_ARCH_RV32I)	:=3D rv32ima
+> > > >  riscv-march-$(CONFIG_ARCH_RV64I)	:=3D rv64ima
+> > > >  riscv-march-$(CONFIG_FPU)		:=3D $(riscv-march-y)fd
+> > > >  riscv-march-$(CONFIG_RISCV_ISA_C)	:=3D $(riscv-march-y)c
 > > > > +
-> > > > +	if (!tdx_module_initialized) {
-> > > > +		if (enable_tdx) {
-> > > > +			ret = __tdx_module_setup();
-> > > > +			if (ret)
-> > > > +				enable_tdx = false;
-> > > 
-> > > "enable_tdx = false" isn't great to do only when a VM is created.  Does it
-> > > make sense to anticipate this to the point when the kvm_intel.ko module is
-> > > loaded?
-> > 
-> > It's possible.  I have the following two reasons to chose to defer TDX module
-> > initialization until creating first TD.  Given those reasons, do you still want
-> > the initialization at loading kvm_intel.ko module?  If yes, I'll change it.
-> 
-> Yes, TDX module setup needs to be done at load time.  The loss of memory is
-> unfortunate, e.g. if the host is part of a pool that _might_ run TDX guests, but
-> the alternatives are worse.  If TDX fails to initialize, e.g. due to low mem,
-> then the host will be unable to run TDX guests despite saying "I support TDX".
-> Or this gem :-)
+> > > > +# Newer binutils versions default to ISA spec version 20191213 whi=
+ch moves some
+> > > > +# instructions from the I extension to the Zicsr and Zifencei exte=
+nsions.
+> > > > +toolchain-need-zicsr-zifencei :=3D $(call cc-option-yn, -march=3D$=
+(riscv-march-y)_zicsr_zifencei)
+> > > > +riscv-march-$(toolchain-need-zicsr-zifencei) :=3D $(riscv-march-y)=
+_zicsr_zifencei
+> > > > +
+> > > >  KBUILD_CFLAGS +=3D -march=3D$(subst fd,,$(riscv-march-y))
+> > > >  KBUILD_AFLAGS +=3D -march=3D$(riscv-march-y)
+> > >=20
+> > > I'm on current linus/master, this change breaks on current Debian
+> > > testing with:
+> > >=20
+> > > | make: Leaving directory 'linux'
+> > > |   SYNC    include/config/auto.conf.cmd
+> > > |   GEN     Makefile
+> > > |   GEN     Makefile
+> > > |   CC      scripts/mod/empty.o
+> > > |   CHECK   linux/scripts/mod/empty.c
+> >       ^^^^^
+> > It's actually "sparse" that breaks
+> >      =20
+> > > | invalid argument to '-march': '_zicsr_zifencei'
+> >=20
+> > | $ sparse --version
+> > | 0.6.4 (Debian: 0.6.4-2)
 
-Ok.
+I confirm the issue. To make things clear, it's not a Makefile issue,
+sparse get passed the correct -march=3Drv64ima_zicsr_zifencei value, and
+only display the part it can't parse.
 
+On the medium/long term, sparse should get fixed to support those
+extensions. On the short term, we need to find a way to get different
+flags for sparse than for as/gcc.
 
-> > - memory over head: The initialization of TDX module requires to allocate
-> > physically contiguous memory whose size is about 0.43% of the system memory.
-> > If user don't use TD, it will be wasted.
-> > 
-> > - VMXON on all pCPUs: The TDX module initialization requires to enable VMX
-> > (VMXON) on all present pCPUs.  vmx_hardware_enable() which is called on creating
-> > guest does it.  It naturally fits with the TDX module initialization at creating
-> > first TD.  I wanted to avoid code to enable VMXON on loading the kvm_intel.ko.
-> 
-> That's a solvable problem, though making it work without exporting hardware_enable_all()
-> could get messy.
+--=20
+Aurelien Jarno                          GPG: 4096R/1DDD8C9B
+aurelien@aurel32.net                 http://www.aurel32.net
 
-Could you please explain any reason why it's bad idea to export it?
+--skiiiUAPxBLzLTT4
+Content-Type: application/pgp-signature; name="signature.asc"
 
--- 
-Isaku Yamahata <isaku.yamahata@gmail.com>
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCgAdFiEEUryGlb40+QrX1Ay4E4jA+JnoM2sFAmJF33QACgkQE4jA+Jno
+M2sqXA/+JZFawgBGA44DcdLHwmYpdemBwyO0wcocBTWOPT8gxXVkONxfrYiWfB6e
+BF6P7Iesr+8u7qMNyurMcJTDx4XfHQIpQJ8SGQ5/jW/UU6I1JDctvortsmqcgNEq
+LqAJ2tlkPhhoMcXzp+QjqsGxDMMqfsPiLBaQk2wL5VuFRCbYV+kZUk4puF1x1NV9
+K5fnMzYD+A0KwsUmKnmcrfWrKep9bbuXtPo2shBuqaeW+pe/0NlAp/+BQUc21aJ4
+L0f29kzQq2c789WEAhkjpRA7QAZF/3M0msd7PC+I5pDbKJuHSxtXGSkf7tTn8Hyh
+VdWu7wyg+vCOvc/9IA6WLi05ipYIHKZpUkqRDz/4MuH5S19FoVr/0Gdjoq2Ck1mG
+NcYeJgvnTOBJyOUQ7in60EDiWDigzuCVKWvFdkXePfwR50Hj4EH+oCoN1IFlgzkd
+PDq67/pMmun2YzkAagswesdwDQ5DiZ7rPQZ4RiICdR5GWKhs/GZcpI8u0I9ozUXK
+LtYLik/d12pFWjLYZ+s+OP0oigT2F40BuvF/Aua5WIaZ+fx7w0wp2HSYj9S0n9rT
+IRB7npjqqjluMMsr7TQyRZHala38YN4arptBK49pDbvu3IBDiVXGeVxGq89cHhsv
+QAobzMtiKzTIaZrfxvPfK31w33gBq2nz5fboIaRHefS+49FycjY=
+=On2l
+-----END PGP SIGNATURE-----
+
+--skiiiUAPxBLzLTT4--
