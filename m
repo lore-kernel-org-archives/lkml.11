@@ -2,223 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3217EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 07:13:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92D4BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 07:13:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231860AbiCaHOv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 03:14:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43210 "EHLO
+        id S232133AbiCaHPH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 03:15:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232014AbiCaHOH (ORCPT
+        with ESMTP id S231970AbiCaHOh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 03:14:07 -0400
-Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9758E1B6099;
-        Thu, 31 Mar 2022 00:11:43 -0700 (PDT)
-Received: by angie.orcam.me.uk (Postfix, from userid 500)
-        id F384992009D; Thu, 31 Mar 2022 09:11:42 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by angie.orcam.me.uk (Postfix) with ESMTP id EFAA692009B;
-        Thu, 31 Mar 2022 08:11:42 +0100 (BST)
-Date:   Thu, 31 Mar 2022 08:11:42 +0100 (BST)
-From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [RESEND][PATCH v3 1/2] serial: 8250: Fold EndRun device support into
- OxSemi Tornado code
-In-Reply-To: <alpine.DEB.2.21.2203310114210.44113@angie.orcam.me.uk>
-Message-ID: <alpine.DEB.2.21.2203310121211.44113@angie.orcam.me.uk>
-References: <alpine.DEB.2.21.2203310114210.44113@angie.orcam.me.uk>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+        Thu, 31 Mar 2022 03:14:37 -0400
+Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC9311B7634;
+        Thu, 31 Mar 2022 00:11:48 -0700 (PDT)
+Received: by mail-io1-xd2a.google.com with SMTP id e22so27569531ioe.11;
+        Thu, 31 Mar 2022 00:11:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
+         :subject:to:cc;
+        bh=7x1fdU6pqjAZLbP5PtFUo2vUl+jZ2Pw0oZiQRelFaww=;
+        b=jRJHzTJIP2ij7OoBi7EoxZn8Lv/F8ANuafSpdYYtHY2l0iu/EIhW6Axb/Eb4/ShbYj
+         VvshYHke/Ek54uH1G11HOJy1G+0Rc3oIoKRZeclydKZDkl2AekzZsTswfJQ9QRleZWk5
+         SY/3t+X+O2w2D4/xcBKR7FqhT5M0rE40lBf1Vxs5aRZxhUl5HwjPFilFZCa6b4+ahx4r
+         CuzJ+Lu12dZOuSHnUKSwR5zOhNuyRtrLrca6ZTb7GPUwFm7nUUmts/9trsBecdsVzGf0
+         SRKh08VlvGUX+JPPMwaAAdRYDaObjySTNuwrtI5YrORrfo2ADUHknLxWX2fNteipk+HI
+         wRKw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
+         :from:date:message-id:subject:to:cc;
+        bh=7x1fdU6pqjAZLbP5PtFUo2vUl+jZ2Pw0oZiQRelFaww=;
+        b=D9TZCbzxxaLPRtVWAoyo782Xdhdcb9JXPar4CfqnbnwnI/LD+0si7bFFq+eO+10rFn
+         nHkJo80hMZqXqaUGvCSW0cImWN62FtJnlEDstbWEusGvmP+66fMh/4uMkTbTyegZIATl
+         5FWkZ4PGKFz1DYbgk+3K4oHQ17nSyzOMw6yv9V59sNKqnLDedwtYpCRvBap1w7qOGZ+f
+         +K91fIkrff71G+rT1biog+Pu/tvvVBkBN7yWSwcfcuFal/6mF5I2gZaYHwIH5xdDq574
+         reF4f862WtoIOFOKZee7j9nhywPc6LojzA3JTyAYlBokF6WzRpiDFtToAigsOUgcMzyU
+         Ji+g==
+X-Gm-Message-State: AOAM533sMxz6/bHiJWB2wNEqHzFhnjnbaYXfNeGd5x5xClzKl88LWM1v
+        GpPGnrTW1LAous61K1DOjnftJcS6O23Bnv3l14I=
+X-Google-Smtp-Source: ABdhPJwWy7Y4cOJDc9jZYpOHaZTQZy2emksvzTY5Pr5LwDRkTPWRmcVZAivt62hqNW+lswewqcf1Qrku/kUk4nI5bDQ=
+X-Received: by 2002:a05:6638:a3a:b0:323:5c6d:ae20 with SMTP id
+ 26-20020a0566380a3a00b003235c6dae20mr2323427jao.80.1648710708247; Thu, 31 Mar
+ 2022 00:11:48 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+References: <20220330234528.1426991-1-nathan@kernel.org> <20220330234528.1426991-2-nathan@kernel.org>
+In-Reply-To: <20220330234528.1426991-2-nathan@kernel.org>
+Reply-To: sedat.dilek@gmail.com
+From:   Sedat Dilek <sedat.dilek@gmail.com>
+Date:   Thu, 31 Mar 2022 09:11:12 +0200
+Message-ID: <CA+icZUXrVgGyaujA1iQEw5P3nJHVwMtbFxpE2gKktaxW0Xg-wg@mail.gmail.com>
+Subject: Re: [PATCH 1/2] kbuild: Remove '-mno-global-merge'
+To:     Nathan Chancellor <nathan@kernel.org>
+Cc:     Masahiro Yamada <masahiroy@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Kees Cook <keescook@chromium.org>,
+        linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-um@lists.infradead.org, llvm@lists.linux.dev,
+        patches@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The EndRun PTP/1588 dual serial port device is based on the Oxford
-Semiconductor OXPCIe952 UART device with the PCI vendor:device ID set
-for EndRun Technologies and uses the same sequence to determine the
-number of ports available.  Despite that we have duplicate code
-specific to the EndRun device.
+On Thu, Mar 31, 2022 at 5:27 AM Nathan Chancellor <nathan@kernel.org> wrote:
+>
+> This flag is specific to clang, where it is only used by the 32-bit and
+> 64-bit ARM backends. In certain situations, the presence of this flag
+> will cause a warning, as shown by commit 6580c5c18fb3 ("um: clang: Strip
+> out -mno-global-merge from USER_CFLAGS").
+>
+> Since commit 61163efae020 ("kbuild: LLVMLinux: Add Kbuild support for
+> building kernel with Clang") that added this flag back in 2014, there
+> have been quite a few changes to the GlobalMerge pass in LLVM. Building
+> several different ARCH=arm and ARCH=arm64 configurations with LLVM 11
+> (minimum) and 15 (current main version) with this flag removed (i.e.,
+> with the default of '-mglobal-merge') reveals no modpost warnings, so it
+> is likely that the issue noted in the comment is no longer relevant due
+> to changes in LLVM or modpost, meaning this flag can be removed.
+>
+> If any new warnings show up that are a result of the removal of this
+> flag, it can be added back under arch/arm{,64}/Makefile to avoid
+> warnings on other architectures.
+>
+> Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+> ---
+>  Makefile | 4 ----
+>  1 file changed, 4 deletions(-)
+>
+> diff --git a/Makefile b/Makefile
+> index daeb5c88b50b..f2723d9bfca4 100644
+> --- a/Makefile
+> +++ b/Makefile
+> @@ -784,10 +784,6 @@ ifdef CONFIG_CC_IS_CLANG
+>  KBUILD_CPPFLAGS += -Qunused-arguments
+>  # The kernel builds with '-std=gnu89' so use of GNU extensions is acceptable.
+>  KBUILD_CFLAGS += -Wno-gnu
+> -# CLANG uses a _MergedGlobals as optimization, but this breaks modpost, as the
+> -# source of a reference will be _MergedGlobals and not on of the whitelisted names.
+> -# See modpost pattern 2
+> -KBUILD_CFLAGS += -mno-global-merge
+>  else
+>
+>  # gcc inanely warns about local variables called 'main'
+> --
+> 2.35.1
+>
 
-Remove redundant code then and factor out OxSemi Tornado device
-detection.  Also correct the baud base like with commit 6cbe45d8ac93
-("serial: 8250: Correct the clock for OxSemi PCIe devices") for the
-value of 3906250 rather than 4000000, obtained by dividing the 62.5MHz
-clock input by the default oversampling rate of 16.  Finally move the
-EndRun vendor:device ID to <linux/pci_ids.h>.
+I have tested this several times and was able to boot into bar metal -
+no problems with building and/or booting my kernel-modules.
 
-Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
-Fixes: 1bc8cde46a159 ("8250_pci: Added driver for Endrun Technologies PTP PCIe card.")
----
-New change in v3.
----
- drivers/tty/serial/8250/8250_pci.c |   79 +++++++++++--------------------------
- include/linux/pci_ids.h            |    3 +
- 2 files changed, 28 insertions(+), 54 deletions(-)
+Tested-by: Sedat Dilek <sedat.dilek@gmail.com>
+Reviewed-by: Sedat Dilek <sedat.dilek@gmail.com>
 
-linux-serial-8250-oxsemi-endrun.diff
-Index: linux-macro/drivers/tty/serial/8250/8250_pci.c
-===================================================================
---- linux-macro.orig/drivers/tty/serial/8250/8250_pci.c
-+++ linux-macro/drivers/tty/serial/8250/8250_pci.c
-@@ -994,41 +994,26 @@ static void pci_ite887x_exit(struct pci_
- }
- 
- /*
-- * EndRun Technologies.
-- * Determine the number of ports available on the device.
-+ * Oxford Semiconductor Inc.
-+ * Check if an OxSemi device is part of the Tornado range of devices.
-  */
--#define PCI_VENDOR_ID_ENDRUN			0x7401
--#define PCI_DEVICE_ID_ENDRUN_1588	0xe100
--
--static int pci_endrun_init(struct pci_dev *dev)
-+static bool pci_oxsemi_tornado_p(struct pci_dev *dev)
- {
--	u8 __iomem *p;
--	unsigned long deviceID;
--	unsigned int  number_uarts = 0;
-+	/* OxSemi Tornado devices are all 0xCxxx */
-+	if (dev->vendor == PCI_VENDOR_ID_OXSEMI &&
-+	    (dev->device & 0xf000) != 0xc000)
-+		return false;
- 
--	/* EndRun device is all 0xexxx */
-+	/* EndRun devices are all 0xExxx */
- 	if (dev->vendor == PCI_VENDOR_ID_ENDRUN &&
--		(dev->device & 0xf000) != 0xe000)
--		return 0;
--
--	p = pci_iomap(dev, 0, 5);
--	if (p == NULL)
--		return -ENOMEM;
-+	    (dev->device & 0xf000) != 0xe000)
-+		return false;
- 
--	deviceID = ioread32(p);
--	/* EndRun device */
--	if (deviceID == 0x07000200) {
--		number_uarts = ioread8(p + 4);
--		pci_dbg(dev, "%d ports detected on EndRun PCI Express device\n", number_uarts);
--	}
--	pci_iounmap(dev, p);
--	return number_uarts;
-+	return true;
- }
- 
- /*
-- * Oxford Semiconductor Inc.
-- * Check that device is part of the Tornado range of devices, then determine
-- * the number of ports available on the device.
-+ * Determine the number of ports available on a Tornado device.
-  */
- static int pci_oxsemi_tornado_init(struct pci_dev *dev)
- {
-@@ -1036,9 +1021,7 @@ static int pci_oxsemi_tornado_init(struc
- 	unsigned long deviceID;
- 	unsigned int  number_uarts = 0;
- 
--	/* OxSemi Tornado devices are all 0xCxxx */
--	if (dev->vendor == PCI_VENDOR_ID_OXSEMI &&
--	    (dev->device & 0xF000) != 0xC000)
-+	if (!pci_oxsemi_tornado_p(dev))
- 		return 0;
- 
- 	p = pci_iomap(dev, 0, 5);
-@@ -1049,7 +1032,10 @@ static int pci_oxsemi_tornado_init(struc
- 	/* Tornado device */
- 	if (deviceID == 0x07000200) {
- 		number_uarts = ioread8(p + 4);
--		pci_dbg(dev, "%d ports detected on Oxford PCI Express device\n", number_uarts);
-+		pci_dbg(dev, "%d ports detected on %s PCI Express device\n",
-+			number_uarts,
-+			dev->vendor == PCI_VENDOR_ID_ENDRUN ?
-+			"EndRun" : "Oxford");
- 	}
- 	pci_iounmap(dev, p);
- 	return number_uarts;
-@@ -2244,7 +2230,7 @@ static struct pci_serial_quirk pci_seria
- 		.device		= PCI_ANY_ID,
- 		.subvendor	= PCI_ANY_ID,
- 		.subdevice	= PCI_ANY_ID,
--		.init		= pci_endrun_init,
-+		.init		= pci_oxsemi_tornado_init,
- 		.setup		= pci_default_setup,
- 	},
- 	/*
-@@ -2667,7 +2653,6 @@ enum pci_board_num_t {
- 	pbn_panacom2,
- 	pbn_panacom4,
- 	pbn_plx_romulus,
--	pbn_endrun_2_4000000,
- 	pbn_oxsemi,
- 	pbn_oxsemi_1_3906250,
- 	pbn_oxsemi_2_3906250,
-@@ -3190,20 +3175,6 @@ static struct pciserial_board pci_boards
- 	},
- 
- 	/*
--	 * EndRun Technologies
--	* Uses the size of PCI Base region 0 to
--	* signal now many ports are available
--	* 2 port 952 Uart support
--	*/
--	[pbn_endrun_2_4000000] = {
--		.flags		= FL_BASE0,
--		.num_ports	= 2,
--		.base_baud	= 4000000,
--		.uart_offset	= 0x200,
--		.first_offset	= 0x1000,
--	},
--
--	/*
- 	 * This board uses the size of PCI Base region 0 to
- 	 * signal now many ports are available
- 	 */
-@@ -4123,13 +4094,6 @@ static const struct pci_device_id serial
- 		0x10b5, 0x106a, 0, 0,
- 		pbn_plx_romulus },
- 	/*
--	* EndRun Technologies. PCI express device range.
--	*    EndRun PTP/1588 has 2 Native UARTs.
--	*/
--	{	PCI_VENDOR_ID_ENDRUN, PCI_DEVICE_ID_ENDRUN_1588,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_endrun_2_4000000 },
--	/*
- 	 * Quatech cards. These actually have configurable clocks but for
- 	 * now we just use the default.
- 	 *
-@@ -4390,6 +4354,13 @@ static const struct pci_device_id serial
- 	{	PCI_VENDOR_ID_DIGI, PCIE_DEVICE_ID_NEO_2_OX_IBM,
- 		PCI_SUBVENDOR_ID_IBM, PCI_ANY_ID, 0, 0,
- 		pbn_oxsemi_2_3906250 },
-+	/*
-+	 * EndRun Technologies. PCI express device range.
-+	 * EndRun PTP/1588 has 2 Native UARTs utilizing OxSemi 952.
-+	 */
-+	{	PCI_VENDOR_ID_ENDRUN, PCI_DEVICE_ID_ENDRUN_1588,
-+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-+		pbn_oxsemi_2_3906250 },
- 
- 	/*
- 	 * SBS Technologies, Inc. P-Octal and PMC-OCTPRO cards,
-Index: linux-macro/include/linux/pci_ids.h
-===================================================================
---- linux-macro.orig/include/linux/pci_ids.h
-+++ linux-macro/include/linux/pci_ids.h
-@@ -2622,6 +2622,9 @@
- #define PCI_DEVICE_ID_DCI_PCCOM8	0x0002
- #define PCI_DEVICE_ID_DCI_PCCOM2	0x0004
- 
-+#define PCI_VENDOR_ID_ENDRUN		0x7401
-+#define PCI_DEVICE_ID_ENDRUN_1588	0xe100
-+
- #define PCI_VENDOR_ID_INTEL		0x8086
- #define PCI_DEVICE_ID_INTEL_EESSC	0x0008
- #define PCI_DEVICE_ID_INTEL_PXHD_0	0x0320
+Just as a side-note:
+As with Linux v5.18-rc1 and -std=gnu11 we change the above comment ...?
+
+# The kernel builds with '-std=gnu89' so use of GNU extensions is acceptable.
+KBUILD_CFLAGS += -Wno-gnu
+
+- Sedat -
