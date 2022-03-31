@@ -2,278 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8C87C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 10:34:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85D6FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 10:35:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234645AbiCaKgJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 06:36:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57904 "EHLO
+        id S234651AbiCaKhc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 06:37:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234633AbiCaKgG (ORCPT
+        with ESMTP id S232683AbiCaKha (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 06:36:06 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2D6E12042A5
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 03:34:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648722857;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ozBz5xX3/M+McvlsixTHsMYnNatIyrKEH4e0NxR73NM=;
-        b=SClIeyHg4DYmfnGFE5ZVavYqWPxJV1Or0GPGlZ2QX1ZfCqZcLiM73L/5FMZ1gO0N5G0vVH
-        688a5Sfo6hfHN5tL8CTEpcj2dGdEunWFco4XdKTvU8J2K29PLGAyY/NyWJqomDjZrcmLmW
-        ob3lZ8QpfAEU7Y6U6TotHhw4zeFDCx8=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-600-DYmwmN4pNKWxFbzr-7pX7A-1; Thu, 31 Mar 2022 06:34:15 -0400
-X-MC-Unique: DYmwmN4pNKWxFbzr-7pX7A-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C57BC811E78;
-        Thu, 31 Mar 2022 10:34:14 +0000 (UTC)
-Received: from localhost (ovpn-13-26.pek2.redhat.com [10.72.13.26])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id BB0DA41136E0;
-        Thu, 31 Mar 2022 10:34:13 +0000 (UTC)
-Date:   Thu, 31 Mar 2022 18:34:07 +0800
-From:   Baoquan He <bhe@redhat.com>
-To:     Eric DeVolder <eric.devolder@oracle.com>
-Cc:     linux-kernel@vger.kernel.org, x86@kernel.org,
-        kexec@lists.infradead.org, ebiederm@xmission.com,
-        dyoung@redhat.com, vgoyal@redhat.com, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        hpa@zytor.com, nramas@linux.microsoft.com, thomas.lendacky@amd.com,
-        robh@kernel.org, efault@gmx.de, rppt@kernel.org, david@redhat.com,
-        konrad.wilk@oracle.com, boris.ostrovsky@oracle.com
-Subject: Re: [PATCH v5 7/8] x86/crash: Add x86 crash hotplug support for
- kexec_file_load
-Message-ID: <YkWDnzQoR0CI2zc8@MiWiFi-R3L-srv>
-References: <20220303162725.49640-1-eric.devolder@oracle.com>
- <20220303162725.49640-8-eric.devolder@oracle.com>
+        Thu, 31 Mar 2022 06:37:30 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBC6318023E
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 03:35:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=jLzRFqL/t5POvysK4DG5ydOswhwMgCsJK5hg+X7TMEQ=; b=XlOPqhxhWlwBvktNnKEKYKRJtm
+        jszIY35PqTZzLqy2qlCbxB7dkFZ2RiJbVjRWH3+m+StkjM0uDs39KjPFnBquIgIuNhbKRs7mVasVt
+        Pqh962VKR0ffi3kmVuFD66q0oO6pMoOgKml0IGqfQ4LuNyrxBqX0bvvMhByUVZkyBNmTli/cZ/NJC
+        QEOQU0wPmrqscDJJyFFCQphRcQZ+Hm6S8UJ/LVDN5UnAgaboiFWFhoGPn9fTpN8YkYPo9GVCuQgQu
+        iJWdTiFj4eKQ8twXtin1V5oN04UGURQtks/Ev5L3uzS5ikvsbSVlRv1Fwe/CW+Z9LsKBpLBSRIGWQ
+        yhZ1+5qQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58044)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1nZs9N-0004dn-1Q; Thu, 31 Mar 2022 11:35:32 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1nZs9J-0007XH-1g; Thu, 31 Mar 2022 11:35:29 +0100
+Date:   Thu, 31 Mar 2022 11:35:29 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Chen Zhongjin <chenzhongjin@huawei.com>
+Cc:     alexander.sverdlin@nokia.com, ardb@kernel.org,
+        linus.walleij@linaro.org, nico@fluxnic.net,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ARM: module: Add all unwind tables when load module
+Message-ID: <YkWD8bV8wSFUobrs@shell.armlinux.org.uk>
+References: <20220325011252.55844-1-chenzhongjin@huawei.com>
+ <YkVQXPYkae41B7Z2@shell.armlinux.org.uk>
+ <c5a918fd-5700-267d-3159-6a034cce0a73@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220303162725.49640-8-eric.devolder@oracle.com>
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
+In-Reply-To: <c5a918fd-5700-267d-3159-6a034cce0a73@huawei.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 03/03/22 at 11:27am, Eric DeVolder wrote:
-> For x86_64, when CPU or memory is hot un/plugged, the crash
-> elfcorehdr, which describes the CPUs and memory in the system,
-> must also be updated.
+On Thu, Mar 31, 2022 at 06:15:09PM +0800, Chen Zhongjin wrote:
+> Hi Russell,
 > 
-> To update the elfcorehdr for x86_64, a new elfcorehdr must be
-> generated from the available CPUs and memory. The new elfcorehdr
-> is prepared into a buffer, and if no errors occur, it is
-> installed over the top of the existing elfcorehdr.
+> Thanks for comment! I've pushed v2 patch with your advises.
 > 
-> In the patch 'crash hp: exclude elfcorehdr from the segment digest'
-> the need to update purgatory due to the change in elfcorehdr was
-> eliminated.  As a result, no changes to purgatory or boot_params
-> (as the elfcorehdr= kernel command line parameter pointer
-> remains unchanged and correct) are needed, just elfcorehdr.
+> > > -	memset(maps, 0, sizeof(maps));
+> > > +	INIT_LIST_HEAD(&table_list->mod_list);
+> > > +	mod->arch.init_table = NULL;
+> > >   	for (s = sechdrs; s < sechdrs_end; s++) {
+> > > -		const char *secname = secstrs + s->sh_name;
+> > > +		const unsigned int sectype = s->sh_type;
+> > Please loose this local variable.
 > 
-> To accommodate a growing number of resources via hotplug, the
-> elfcorehdr segment must be sufficiently large enough to accommodate
-> changes, see the CRASH_HOTPLUG_ELFCOREHDR_SZ configure item.
+> Also I moved "txtname" inside func params.
 > 
-> With this change, the kexec_file_load syscall (not kexec_load)
-> is supported. When loading the crash kernel via kexec_file_load,
-> the elfcorehdr is identified at load time in crash_load_segments().
-
-I tune the log a little, please check:
-
-[PATCH v5 7/8] x86/crash: Add x86 crash hotplug support for kexec_file_load
-
-For x86_64, when CPU or memory is hot un/plugged, the crash
-elfcorehdr, which describes the CPUs and memory in the system,
-must also be updated.
-
-To update the elfcorehdr for x86_64, a new elfcorehdr need be
-generated from the available CPUs and memory. The new elfcorehdr
-is prepared into a buffer, then installed over the top of the
-existing elfcorehdr.
-
-In the patch 'kexec: exclude elfcorehdr from the segment digest',
-the need to update purgatory due to the change in elfcorehdr was
-eliminated.  As a result, no changes to purgatory or boot_params
-(as the elfcorehdr= kernel command line parameter pointer
-remains unchanged and correct) are needed, just elfcorehdr.
-
-To accommodate a growing number of resources via hotplug, the
-elfcorehdr segment must be sufficiently large enough to accommodate
-changes, see the CRASH_HOTPLUG_ELFCOREHDR_SZ configure item.
-
-With this change, crash hotplug for kexec_file_load syscall 
-is supported. When loading kdump kernel via kexec_file_load,
-the elfcorehdr is identified at load time in crash_load_segments().
-
->
-
+> +		const char *txtname = strcmp(".ARM.exidx", secname) == 0 ?
+> +				".text" : secname + strlen(".ARM.exidx");
+> +		const Elf_Shdr *txt_sec = find_mod_section(hdr, sechdrs, txtname);
 > 
-> Signed-off-by: Eric DeVolder <eric.devolder@oracle.com>
-> ---
->  arch/x86/kernel/crash.c | 120 ++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 120 insertions(+)
+> >>>
 > 
-> diff --git a/arch/x86/kernel/crash.c b/arch/x86/kernel/crash.c
-> index 9db41cce8d97..5da30e2bc780 100644
-> --- a/arch/x86/kernel/crash.c
-> +++ b/arch/x86/kernel/crash.c
-> @@ -25,6 +25,7 @@
->  #include <linux/slab.h>
->  #include <linux/vmalloc.h>
->  #include <linux/memblock.h>
-> +#include <linux/highmem.h>
->  
->  #include <asm/processor.h>
->  #include <asm/hardirq.h>
-> @@ -398,7 +399,17 @@ int crash_load_segments(struct kimage *image)
->  	image->elf_headers = kbuf.buffer;
->  	image->elf_headers_sz = kbuf.bufsz;
->  
-> +#ifdef CONFIG_CRASH_HOTPLUG
-> +	/* Ensure elfcorehdr segment large enough for hotplug changes */
-> +	kbuf.memsz = CONFIG_CRASH_HOTPLUG_ELFCOREHDR_SZ;
-> +	/* For marking as usable to crash kernel */
-> +	image->elf_headers_sz = kbuf.memsz;
-> +	/* Record the index of the elfcorehdr segment */
-> +	image->elf_index = image->nr_segments;
-> +	image->elf_index_valid = true;
-> +#else
->  	kbuf.memsz = kbuf.bufsz;
-> +#endif
->  	kbuf.buf_align = ELF_CORE_HEADER_ALIGN;
->  	kbuf.mem = KEXEC_BUF_MEM_UNKNOWN;
->  	ret = kexec_add_buffer(&kbuf);
-> @@ -413,3 +424,112 @@ int crash_load_segments(struct kimage *image)
->  	return ret;
->  }
->  #endif /* CONFIG_KEXEC_FILE */
-> +
-> +#ifdef CONFIG_CRASH_HOTPLUG
-> +static void *map_crash_pages(unsigned long paddr, unsigned long size)
-> +{
-> +	/*
-> +	 * NOTE: The addresses and sizes passed to this routine have
-> +	 * already been fully aligned on page boundaries. There is no
-> +	 * need for massaging the address or size.
-> +	 */
-> +	void *ptr = NULL;
-> +
-> +	/* NOTE: requires arch_kexec_[un]protect_crashkres() for write access */
-> +	if (size > 0) {
-> +		struct page *page = pfn_to_page(paddr >> PAGE_SHIFT);
-> +
-> +		ptr = kmap(page);
-> +	}
-> +
-> +	return ptr;
-> +}
-> +
-> +static void unmap_crash_pages(void **ptr)
-> +{
-> +	if (ptr) {
-> +		if (*ptr)
-> +			kunmap(*ptr);
-> +		*ptr = NULL;
-> +	}
-> +}
-> +
-> +/**
-> + * arch_crash_hotplug_handler() - Handle hotplug elfcorehdr changes
-> + * @image: the active struct kimage
-> + * @hp_action: the hot un/plug action being handled
-> + * @a: first parameter dependent upon hp_action
-> + * @b: first parameter dependent upon hp_action
-> + *
-> + * To accurately reflect hot un/plug changes, the elfcorehdr (which
-> + * is passed to the crash kernel via the elfcorehdr= parameter)
-> + * must be updated with the new list of CPUs and memories. The new
-> + * elfcorehdr is prepared in a kernel buffer, and if no errors,
-                                                 ~~~~~~~~~~~~~~~~~~
-                                                 can be removed.
-> + * then it is written on top of the existing/old elfcorehdr.
-> + *
-> + * For hotplug changes to elfcorehdr to work, two conditions are
-> + * needed:
-> + * First, the segment containing the elfcorehdr must be large enough
-> + * to permit a growing number of resources. See
-> + * CONFIG_CRASH_HOTPLUG_ELFCOREHDR_SZ.
-> + * Second, purgatory must explicitly exclude the elfcorehdr from the
-> + * list of segments it checks (since the elfcorehdr changes and thus
-> + * would require an update to purgatory itself to update the digest).
-> + *
-> + */
-> +void arch_crash_hotplug_handler(struct kimage *image,
-> +	unsigned int hp_action, unsigned long a, unsigned long b)
-> +{
-> +	struct kexec_segment *ksegment;
-> +	unsigned char *ptr = NULL;
-> +	unsigned long elfsz = 0;
-> +	void *elfbuf = NULL;
-> +	unsigned long mem, memsz;
-> +
-> +	/* Must have valid elfcorehdr index */
-        Redundant code comment can be removed.
-
-> +	if (!image->elf_index_valid) {
-> +		pr_err("crash hp: unable to locate elfcorehdr segment");
-> +		goto out;
-> +	}
-> +
-> +	ksegment = &image->segment[image->elf_index];
-> +	mem = ksegment->mem;
-> +	memsz = ksegment->memsz;
-> +
-> +	/*
-> +	 * Create the new elfcorehdr reflecting the changes to CPU and/or
-> +	 * memory resources. The elfcorehdr segment memsz must be
-> +	 * sufficiently large to accommodate increases due to hotplug
-> +	 * activity. See CRASH_HOTPLUG_ELFCOREHDR_SZ.
-> +	 */
-        This paragraph could be duplicated with the part in kernel-doc.
-        Considering to drop one?
-> +	if (prepare_elf_headers(image, &elfbuf, &elfsz)) {
-> +		pr_err("crash hp: unable to prepare elfcore headers");
-> +		goto out;
-> +	}
-> +	if (elfsz > memsz) {
-> +		pr_err("crash hp: update elfcorehdr elfsz %lu > memsz %lu",
-> +			elfsz, memsz);
-> +		goto out;
-> +	}
-> +
-> +	/*
-> +	 * At this point, we are all but assured of success.
-> +	 * Copy new elfcorehdr into destination.
-> +	 */
-> +	ptr = map_crash_pages(mem, memsz);
-> +	if (ptr) {
-> +		/* Temporarily invalidate the crash image while it is replaced */
-> +		xchg(&kexec_crash_image, NULL);
-> +		/* Write the new elfcorehdr into memory */
-                No need, the code is self explanatory.
-> +		memcpy_flushcache((void *)ptr, elfbuf, elfsz);
-> +		/* The crash image is now valid once again */
-
-                ditto. Sometime over commenting is not suggested.
-
-> +		xchg(&kexec_crash_image, image);
-> +	}
-> +	unmap_crash_pages((void **)&ptr);
-> +	pr_debug("crash hp: re-loaded elfcorehdr at 0x%lx\n", mem);
-> +
-> +out:
-> +	if (elfbuf)
-> +		vfree(elfbuf);
-> +}
-> +#endif /* CONFIG_CRASH_HOTPLUG */
-> -- 
-> 2.27.0
+> +		const Elf_Shdr *txt_sec = find_mod_section(hdr, sechdrs,
+> +				strcmp(".ARM.exidx", secname) ?
+> +				secname + strlen(".ARM.exidx") : ".text");
 > 
 
+Hmm. I wonder whether it should be:
+
+		const Elf_Shdr *txt_sec;
+		const char *txtname;
+
+		if (!strcmp(".ARM.exidx", secname))
+			txtname = ".text";
+		else
+			txtname = secname + strlen(".ARM.exidx");
+
+		txt_sec = find_mod_section(hdr, sechdrs, txtname);
+
+which looks cleaner to me.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
