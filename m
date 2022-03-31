@@ -2,120 +2,195 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B72DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 08:40:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B8E5C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 08:40:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233092AbiCaIlz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 04:41:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60166 "EHLO
+        id S233142AbiCaImP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 04:42:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232656AbiCaIls (ORCPT
+        with ESMTP id S233061AbiCaImO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 04:41:48 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FA971F6868
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 01:40:01 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id r13so46562056ejd.5
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 01:40:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0vypsesrFVw05o/okqipuSd+z+xTlFbPotfvsFH4ViQ=;
-        b=WprbdhTnLfNYovVIDzsSprkIwWdD7R15mI7FcSmMYAyznIhiq+tNGAsX+wwb4+6Q5Y
-         CvoJ5Irs0Ge7mLOibysBjG2CMmciRlPjCLohh9ja9ILTC5zECMNm4ffBPFLInQOP/Va0
-         axf5QdSliHO82iU5w08m5VtF9xY9HJsZXPJQOkIn7uOz29kSxD+lmd0hRiM2zH6s7dJV
-         p5u3OWriLxe3b43EoldZ3zrq9MSo0eLHoKQPwNyQf7/V80YC2YbmimuCewzOlbbgERVm
-         wDDmL1iMTlbmxxYZ8xCKh4RUdEltFREUue38Afhl1+yZ3qMYTkgwj9R1VSgrBYB987rD
-         ZrGA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0vypsesrFVw05o/okqipuSd+z+xTlFbPotfvsFH4ViQ=;
-        b=qTv7vqmszGcscysBRJrv755dzEdjyI+FHjA7ywsZfWUD1FwpraEuG7wDGDYIJtrVMS
-         iV+tH7coLHVwOrqZdGeDuxSxpya6iG6AUDR/P7kwj5mItqK1nve0IY+yCeBNfhxBvUX2
-         M7j0Zq4V/7IlO9y+/0T2/BQ2/+MbDFjY1dQgjh8GQw6kStSZSAQuqIowvEQVaMCPXDG1
-         p2LEd2bNpgn54bI1fo0KW49/xcJVHeNgC7Hu/rzJNizsFy6X+uFXw2x95Wki9FryoCeI
-         u0F+oZTJMLNptTEVBOSj4KTkhTnQ53cUiezdg270v7JqGSfpwOLOqRp5mDBuitArlGQH
-         6bGA==
-X-Gm-Message-State: AOAM533CKegu0JG6zcdzW/+oLdl8bed+OqeqUVAuB6yb0NGFU+er7gyj
-        3yCsEf1pg0U+LWTS0Y0rAd4dbLpaFO8x4189YEa8wQ==
-X-Google-Smtp-Source: ABdhPJycwRpdT8DwvNwZzsriAA9fKXV0997Hib2d4YqGN0rP7WNwy/zT2CRQf03nfWzvO5PPV5GJbtmHERlHr5JVw2k=
-X-Received: by 2002:a17:907:97c5:b0:6da:c285:44f5 with SMTP id
- js5-20020a17090797c500b006dac28544f5mr4070851ejc.208.1648715999821; Thu, 31
- Mar 2022 01:39:59 -0700 (PDT)
+        Thu, 31 Mar 2022 04:42:14 -0400
+Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CE371F6F1A;
+        Thu, 31 Mar 2022 01:40:26 -0700 (PDT)
+Message-ID: <e730480d-9396-6486-ab98-67ecb683e819@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1648716024;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Gjd+dbhFmrBLNB/9TKNS+UOHcvb+YXKxRkGJlSXZ+Tw=;
+        b=SNknQRMaIDmyxd6oN5iXxs3eXvXhPLSnioo7N0kQXqV0Phb5RdHweKFC3vVD0tGSuBn0Kv
+        xPvS31sPQoh0yuaDJYF9FieeW9zCvVucER8X3/M01ojzNDzDcf2MiKIE3bOPCpo7DXwROu
+        OGCS/uQs3oo50FkVzKLSKxC//Vs/pLg=
+Date:   Thu, 31 Mar 2022 11:40:23 +0300
 MIME-Version: 1.0
-References: <20220330211712.2067044-1-wonchung@google.com>
-In-Reply-To: <20220330211712.2067044-1-wonchung@google.com>
-From:   Won Chung <wonchung@google.com>
-Date:   Thu, 31 Mar 2022 01:39:47 -0700
-Message-ID: <CAOvb9yi2sobmM6AvAmEVPAYO_aZN4ph5yuHv5tHhUj3msYovkw@mail.gmail.com>
-Subject: Re: [PATCH v2] misc/mei: Add NULL check to component match callback functions
-To:     Tomas Winkler <tomas.winkler@intel.com>
-Cc:     Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Benson Leung <bleung@chromium.org>,
-        Prashant Malani <pmalani@chromium.org>,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Vasily Averin <vasily.averin@linux.dev>
+Subject: [PATCH nft] nft: memcg accounting for dynamically allocated objects
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     kernel@openvz.org, Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        netfilter-devel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Roman Gushchin <roman.gushchin@linux.dev>
+References: <bf4b8fe3-6dd6-4f3a-12f4-1b5bf2e45783@linux.dev>
+Content-Language: en-US
+In-Reply-To: <bf4b8fe3-6dd6-4f3a-12f4-1b5bf2e45783@linux.dev>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+nft_*.c files whose NFT_EXPR_STATEFUL flag is set on need to
+use __GFP_ACCOUNT flag for objects that are dynamically
+allocated from the packet path.
 
-I need to resend v3 with flags corrected. Sorry for confusion.
+Such objects are allocated inside .init() or .clone() callbacks
+of struct nft_expr_ops executed in task context while processing
+netlink messages.
 
-Won
+In addition, this patch adds accounting to nft_set_elem_expr_clone()
+used for the same purposes.
 
-On Wed, Mar 30, 2022 at 2:17 PM Won Chung <wonchung@google.com> wrote:
->
-> Component match callback functions need to check if expected data is
-> passed to them. Without this check, it can cause a NULL pointer
-> dereference when another driver registers a component before i915
-> drivers have their component master fully bind.
->
-> Fixes: 1e8d19d9b0dfc ("mei: hdcp: bind only with i915 on the same PCH")
-> Fixes: c2004ce99ed73 ("mei: pxp: export pavp client to me client bus")
-> Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-> Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
-> Signed-off-by: Won Chung <wonchung@google.com>
-> ---
-> Changes from v1:
-> - Add "Fixes" tag
-> - Send to stable@vger.kernel.org
->
->  drivers/misc/mei/hdcp/mei_hdcp.c | 2 +-
->  drivers/misc/mei/pxp/mei_pxp.c   | 2 +-
->  2 files changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/misc/mei/hdcp/mei_hdcp.c b/drivers/misc/mei/hdcp/mei_hdcp.c
-> index ec2a4fce8581..843dbc2b21b1 100644
-> --- a/drivers/misc/mei/hdcp/mei_hdcp.c
-> +++ b/drivers/misc/mei/hdcp/mei_hdcp.c
-> @@ -784,7 +784,7 @@ static int mei_hdcp_component_match(struct device *dev, int subcomponent,
->  {
->         struct device *base = data;
->
-> -       if (strcmp(dev->driver->name, "i915") ||
-> +       if (!base || !dev->driver || strcmp(dev->driver->name, "i915") ||
->             subcomponent != I915_COMPONENT_HDCP)
->                 return 0;
->
-> diff --git a/drivers/misc/mei/pxp/mei_pxp.c b/drivers/misc/mei/pxp/mei_pxp.c
-> index f7380d387bab..e32a81da8af6 100644
-> --- a/drivers/misc/mei/pxp/mei_pxp.c
-> +++ b/drivers/misc/mei/pxp/mei_pxp.c
-> @@ -131,7 +131,7 @@ static int mei_pxp_component_match(struct device *dev, int subcomponent,
->  {
->         struct device *base = data;
->
-> -       if (strcmp(dev->driver->name, "i915") ||
-> +       if (!base || !dev->driver || strcmp(dev->driver->name, "i915") ||
->             subcomponent != I915_COMPONENT_PXP)
->                 return 0;
->
-> --
-> 2.35.1.1021.g381101b075-goog
->
+Signed-off-by: Vasily Averin <vvs@openvz.org>
+---
+ net/netfilter/nf_tables_api.c | 2 +-
+ net/netfilter/nft_connlimit.c | 4 ++--
+ net/netfilter/nft_counter.c   | 4 ++--
+ net/netfilter/nft_last.c      | 4 ++--
+ net/netfilter/nft_limit.c     | 4 ++--
+ net/netfilter/nft_quota.c     | 4 ++--
+ 6 files changed, 11 insertions(+), 11 deletions(-)
+
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index 04be94236a34..e01241151ef7 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -5447,7 +5447,7 @@ int nft_set_elem_expr_clone(const struct nft_ctx *ctx, struct nft_set *set,
+ 	int err, i, k;
+ 
+ 	for (i = 0; i < set->num_exprs; i++) {
+-		expr = kzalloc(set->exprs[i]->ops->size, GFP_KERNEL);
++		expr = kzalloc(set->exprs[i]->ops->size, GFP_KERNEL_ACCOUNT);
+ 		if (!expr)
+ 			goto err_expr;
+ 
+diff --git a/net/netfilter/nft_connlimit.c b/net/netfilter/nft_connlimit.c
+index 3362417ebfdb..9c2146aac59e 100644
+--- a/net/netfilter/nft_connlimit.c
++++ b/net/netfilter/nft_connlimit.c
+@@ -77,7 +77,7 @@ static int nft_connlimit_do_init(const struct nft_ctx *ctx,
+ 			invert = true;
+ 	}
+ 
+-	priv->list = kmalloc(sizeof(*priv->list), GFP_KERNEL);
++	priv->list = kmalloc(sizeof(*priv->list), GFP_KERNEL_ACCOUNT);
+ 	if (!priv->list)
+ 		return -ENOMEM;
+ 
+@@ -214,7 +214,7 @@ static int nft_connlimit_clone(struct nft_expr *dst, const struct nft_expr *src)
+ 	struct nft_connlimit *priv_dst = nft_expr_priv(dst);
+ 	struct nft_connlimit *priv_src = nft_expr_priv(src);
+ 
+-	priv_dst->list = kmalloc(sizeof(*priv_dst->list), GFP_ATOMIC);
++	priv_dst->list = kmalloc(sizeof(*priv_dst->list), GFP_ATOMIC | __GFP_ACCOUNT);
+ 	if (!priv_dst->list)
+ 		return -ENOMEM;
+ 
+diff --git a/net/netfilter/nft_counter.c b/net/netfilter/nft_counter.c
+index f179e8c3b0ca..040a697d96b3 100644
+--- a/net/netfilter/nft_counter.c
++++ b/net/netfilter/nft_counter.c
+@@ -62,7 +62,7 @@ static int nft_counter_do_init(const struct nlattr * const tb[],
+ 	struct nft_counter __percpu *cpu_stats;
+ 	struct nft_counter *this_cpu;
+ 
+-	cpu_stats = alloc_percpu(struct nft_counter);
++	cpu_stats = alloc_percpu_gfp(struct nft_counter, GFP_KERNEL_ACCOUNT);
+ 	if (cpu_stats == NULL)
+ 		return -ENOMEM;
+ 
+@@ -235,7 +235,7 @@ static int nft_counter_clone(struct nft_expr *dst, const struct nft_expr *src)
+ 
+ 	nft_counter_fetch(priv, &total);
+ 
+-	cpu_stats = alloc_percpu_gfp(struct nft_counter, GFP_ATOMIC);
++	cpu_stats = alloc_percpu_gfp(struct nft_counter, GFP_ATOMIC | __GFP_ACCOUNT);
+ 	if (cpu_stats == NULL)
+ 		return -ENOMEM;
+ 
+diff --git a/net/netfilter/nft_last.c b/net/netfilter/nft_last.c
+index 4f745a409d34..4cf4f6349855 100644
+--- a/net/netfilter/nft_last.c
++++ b/net/netfilter/nft_last.c
+@@ -30,7 +30,7 @@ static int nft_last_init(const struct nft_ctx *ctx, const struct nft_expr *expr,
+ 	u64 last_jiffies;
+ 	int err;
+ 
+-	last = kzalloc(sizeof(*last), GFP_KERNEL);
++	last = kzalloc(sizeof(*last), GFP_KERNEL_ACCOUNT);
+ 	if (!last)
+ 		return -ENOMEM;
+ 
+@@ -105,7 +105,7 @@ static int nft_last_clone(struct nft_expr *dst, const struct nft_expr *src)
+ {
+ 	struct nft_last_priv *priv_dst = nft_expr_priv(dst);
+ 
+-	priv_dst->last = kzalloc(sizeof(*priv_dst->last), GFP_ATOMIC);
++	priv_dst->last = kzalloc(sizeof(*priv_dst->last), GFP_ATOMIC | __GFP_ACCOUNT);
+ 	if (!priv_dst->last)
+ 		return -ENOMEM;
+ 
+diff --git a/net/netfilter/nft_limit.c b/net/netfilter/nft_limit.c
+index a726b623963d..d7779d5f3cbb 100644
+--- a/net/netfilter/nft_limit.c
++++ b/net/netfilter/nft_limit.c
+@@ -90,7 +90,7 @@ static int nft_limit_init(struct nft_limit_priv *priv,
+ 				 priv->rate);
+ 	}
+ 
+-	priv->limit = kmalloc(sizeof(*priv->limit), GFP_KERNEL);
++	priv->limit = kmalloc(sizeof(*priv->limit), GFP_KERNEL_ACCOUNT);
+ 	if (!priv->limit)
+ 		return -ENOMEM;
+ 
+@@ -144,7 +144,7 @@ static int nft_limit_clone(struct nft_limit_priv *priv_dst,
+ 	priv_dst->burst = priv_src->burst;
+ 	priv_dst->invert = priv_src->invert;
+ 
+-	priv_dst->limit = kmalloc(sizeof(*priv_dst->limit), GFP_ATOMIC);
++	priv_dst->limit = kmalloc(sizeof(*priv_dst->limit), GFP_ATOMIC | __GFP_ACCOUNT);
+ 	if (!priv_dst->limit)
+ 		return -ENOMEM;
+ 
+diff --git a/net/netfilter/nft_quota.c b/net/netfilter/nft_quota.c
+index f394a0b562f6..2def4d92a170 100644
+--- a/net/netfilter/nft_quota.c
++++ b/net/netfilter/nft_quota.c
+@@ -90,7 +90,7 @@ static int nft_quota_do_init(const struct nlattr * const tb[],
+ 			return -EOPNOTSUPP;
+ 	}
+ 
+-	priv->consumed = kmalloc(sizeof(*priv->consumed), GFP_KERNEL);
++	priv->consumed = kmalloc(sizeof(*priv->consumed), GFP_KERNEL_ACCOUNT);
+ 	if (!priv->consumed)
+ 		return -ENOMEM;
+ 
+@@ -236,7 +236,7 @@ static int nft_quota_clone(struct nft_expr *dst, const struct nft_expr *src)
+ {
+ 	struct nft_quota *priv_dst = nft_expr_priv(dst);
+ 
+-	priv_dst->consumed = kmalloc(sizeof(*priv_dst->consumed), GFP_ATOMIC);
++	priv_dst->consumed = kmalloc(sizeof(*priv_dst->consumed), GFP_ATOMIC | __GFP_ACCOUNT);
+ 	if (!priv_dst->consumed)
+ 		return -ENOMEM;
+ 
+-- 
+2.31.1
+
