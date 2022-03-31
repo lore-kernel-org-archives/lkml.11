@@ -2,208 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F730C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 18:58:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0AA8C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 18:59:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237717AbiCaTAF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 15:00:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41544 "EHLO
+        id S237813AbiCaTBb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 15:01:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235959AbiCaTAC (ORCPT
+        with ESMTP id S234070AbiCaTB0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 15:00:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B37032364D4;
-        Thu, 31 Mar 2022 11:58:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4F6436187F;
-        Thu, 31 Mar 2022 18:58:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95009C340ED;
-        Thu, 31 Mar 2022 18:58:12 +0000 (UTC)
-From:   Clark Williams <williams@redhat.com>
-Subject: [ANNOUNCE] 5.15.32-rt39
-Date:   Thu, 31 Mar 2022 18:57:24 -0000
-Message-ID: <164875304500.974121.18336996246209199283@puck.lan>
-To:     LKML <linux-kernel@vger.kernel.org>,
-        linux-rt-users <linux-rt-users@vger.kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Carsten Emde <C.Emde@osadl.org>,
-        John Kacur <jkacur@redhat.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Daniel Wagner <daniel.wagner@suse.com>,
-        Tom Zanussi <tom.zanussi@linux.intel.com>,
-        Clark Williams <williams@redhat.com>,
-        Pavel Machek <pavel@denx.de>
+        Thu, 31 Mar 2022 15:01:26 -0400
+Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9374B1BD81B
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 11:59:35 -0700 (PDT)
+Received: by mail-io1-xd2d.google.com with SMTP id r2so580955iod.9
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 11:59:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language
+         :from:to:cc:references:in-reply-to:content-transfer-encoding;
+        bh=ipWbtJSeprD8JL4tVlpN/eHHk6XD/ZYq3pFkTa23DvI=;
+        b=0NCpjxVB+dWiGumo7ptXb4R+kBSxYBNzlCJFoDrHXxMhxhiJ7O9oSjUf0kWfVvPXU2
+         Iw7RbnCyEwoUpRdps/IqkgOI7S7zAvlB4c2Ilf0ineQzPljDMed49SveLcA6OnHXNvyG
+         pZRUlwrD2qij4FhEi31qbqqHauJFPmC86FMXtUewd0TTtc4LBOl9JKTdmkJdzQmm208C
+         /gFBPQ8N+Tw1eNKpzi8as9VQ7YmiuknuQnbC02CXvuezL9WprAS+yni6cZ3tgjGH9v9r
+         Ppmnr2mQrBOL09VHBQRAeyt3T8s1YMviEV4xQL/PogQRtjEOQ/mZ6sWwP3C/cekUE5k9
+         WyLQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:from:to:cc:references:in-reply-to
+         :content-transfer-encoding;
+        bh=ipWbtJSeprD8JL4tVlpN/eHHk6XD/ZYq3pFkTa23DvI=;
+        b=iP4Kv0b8Xmito47NlM0dse82c3742TRHpyrA3bJGBNLgE3CRoH5X/ZSTQ7BGu1ustQ
+         bFRjDI5Z/2xkthGb3oJYWWt0WkP5UKfuNCD13FBxkYmC4Vn4H0FgiXItZGMfwKcQQToE
+         KAvSXSF9uWrx3FwUIP6bP/YvUe7aLLLfv1PbIwN+1Bxsu7DDJDeeRL+qUIbGvPRRNqk3
+         efkti26/Fw7WvDi5vSfnxbgit0tVgDpf0EVUKJRVIlM4IGEo1ck2F/Ov9FS8cYk9wad1
+         /5Jv43hFy9XRDj9oWuTPJKiOkF8T/DyjRmCqNhVQk2FEqO/XnNNBowCVQE3f7xsUE/aT
+         iQqQ==
+X-Gm-Message-State: AOAM532SZba4GB0eZw0rCCg7I3jDHdJAQfzJAbSJGa3VXgO1nyPnLMC6
+        Y4S0pUKWmxn7LAaisbprbusOFQ==
+X-Google-Smtp-Source: ABdhPJxqYmk0HBczgGNml6Bhr/D+kTxlL2S5eCyqjBCIddKnbs6kQquos6zAL4FTpHQLkjpoaouaTw==
+X-Received: by 2002:a6b:e20a:0:b0:648:b6aa:6615 with SMTP id z10-20020a6be20a000000b00648b6aa6615mr15018715ioc.209.1648753174927;
+        Thu, 31 Mar 2022 11:59:34 -0700 (PDT)
+Received: from [192.168.1.172] ([207.135.234.126])
+        by smtp.gmail.com with ESMTPSA id v3-20020a92ab03000000b002c9d9d896eesm118783ilh.68.2022.03.31.11.59.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 31 Mar 2022 11:59:34 -0700 (PDT)
+Message-ID: <93d0879e-4dac-01db-b29b-d53721076d45@kernel.dk>
+Date:   Thu, 31 Mar 2022 12:59:33 -0600
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] blk-wbt: remove wbt_track stub
+Content-Language: en-US
+From:   Jens Axboe <axboe@kernel.dk>
+To:     trix@redhat.com
+Cc:     linux-block@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220331185458.3427454-1-trix@redhat.com>
+ <d5bb15f0-6531-383f-8e78-0dad58828689@kernel.dk>
+In-Reply-To: <d5bb15f0-6531-383f-8e78-0dad58828689@kernel.dk>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello RT-list!
+On 3/31/22 12:56 PM, Jens Axboe wrote:
+> On 3/31/22 12:54 PM, trix@redhat.com wrote:
+> 
+> Not sure how you sent this patch, but there's no body, just an
+> attachment. Regular tooling doesn't like that.
 
-I'm pleased to announce the 5.15.32-rt39 stable release.
-
-You can get this release via the git tree at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
-
-  branch: v5.15-rt
-  Head SHA1: 40291aa6846edc6813885b33bcc837c61a58bf3b
-
-Or to build 5.15.32-rt39 directly, the following patches should be applied:
-
-  https://www.kernel.org/pub/linux/kernel/v5.x/linux-5.15.tar.xz
-
-  https://www.kernel.org/pub/linux/kernel/v5.x/patch-5.15.32.xz
-
-  https://www.kernel.org/pub/linux/kernel/projects/rt/5.15/patch-5.15.32-rt39.patch.xz
+Actually b4 likes it just fine, it just wasn't on lore yet. But
+for future patches, please do send with git send-email or similar.
+I could not view the patch without first saving the attachment
+and opening it separately.
 
 
-Enjoy!
-Clark
+-- 
+Jens Axboe
 
-Changes from v5.15.31-rt38:
----
-
-Arnd Bergmann (3):
-      uaccess: fix integer overflow on access_ok()
-      m68k: fix access_ok for coldfire
-      nds32: fix access_ok() checks in get/put_user
-
-Brian Norris (1):
-      Revert "ath: add support for special 0x0 regulatory domain"
-
-Bryan O'Donoghue (1):
-      wcn36xx: Differentiate wcn3660 from wcn3620
-
-Clark Williams (2):
-      Merge tag 'v5.15.32' into v5.15-rt
-      Linux 5.15.32-rt39
-
-Eric Dumazet (2):
-      llc: fix netdevice reference leaks in llc_ui_bind()
-      llc: only change llc->dev when bind() succeeds
-
-Giacomo Guiduzzi (1):
-      ALSA: pci: fix reading of swapped values from pcmreg in AC97 codec
-
-Giovanni Cabiddu (1):
-      crypto: qat - disable registration of algorithms
-
-Greg Kroah-Hartman (1):
-      Linux 5.15.32
-
-Helmut Grohne (1):
-      Bluetooth: btusb: Add another Realtek 8761BU
-
-James Bottomley (1):
-      tpm: use try_get_ops() in tpm-space.c
-
-Jason Zheng (1):
-      ALSA: hda/realtek: Add quirk for ASUS GA402
-
-Jonathan Teh (1):
-      ALSA: cmipci: Restore aux vol on suspend/resume
-
-Jordy Zomer (1):
-      nfc: st21nfca: Fix potential buffer overflows in EVT_TRANSACTION
-
-Larry Finger (1):
-      Bluetooth: btusb: Add one more Bluetooth part for the Realtek RTL8852AE
-
-Lars-Peter Clausen (1):
-      ALSA: usb-audio: Add mute TLV for playback volumes on RODE NT-USB
-
-Linus Lüssing (1):
-      mac80211: fix potential double free on mesh join
-
-Mark Cilissen (1):
-      ACPI / x86: Work around broken XSDT on Advantech DAC-BJ01 board
-
-Maximilian Luz (1):
-      ACPI: battery: Add device HID and quirk for Microsoft Surface Go 3
-
-Pablo Neira Ayuso (2):
-      netfilter: nf_tables: initialize registers in nft_do_chain()
-      netfilter: nf_tables: validate registers coming from userspace.
-
-Paul E. McKenney (1):
-      rcu: Don't deboost before reporting expedited quiescent state
-
-Reza Jahanbakhshi (1):
-      ALSA: usb-audio: add mapping for new Corsair Virtuoso SE
-
-Roberto Sassu (1):
-      drm/virtio: Ensure that objs is not NULL in virtio_gpu_array_put_free()
-
-Stephane Graber (1):
-      drivers: net: xgene: Fix regression in CRC stripping
-
-Tadeusz Struk (2):
-      net: ipv6: fix skb_over_panic in __ip6_append_data
-      tpm: Fix error handling in async work
-
-Takashi Iwai (7):
-      ASoC: sti: Fix deadlock via snd_pcm_stop_xrun() call
-      ALSA: oss: Fix PCM OSS buffer allocation overflow
-      ALSA: pcm: Fix races among concurrent hw_params and hw_free calls
-      ALSA: pcm: Fix races among concurrent read/write and buffer changes
-      ALSA: pcm: Fix races among concurrent prepare and hw_params/hw_free calls
-      ALSA: pcm: Fix races among concurrent prealloc proc writes
-      ALSA: pcm: Add stream lock during PCM reset ioctl operations
-
-Tim Crawford (2):
-      ALSA: hda/realtek: Add quirk for Clevo NP70PNJ
-      ALSA: hda/realtek: Add quirk for Clevo NP50PNJ
-
-Werner Sembach (1):
-      ACPI: video: Force backlight native for Clevo NL5xRU and NL5xNU
-
-huangwenhui (1):
-      ALSA: hda/realtek - Fix headset mic problem for a HP machine with alc671
----
-Makefile                                         |  2 +-
- arch/csky/include/asm/uaccess.h                  |  7 +-
- arch/hexagon/include/asm/uaccess.h               | 18 ++---
- arch/m68k/include/asm/uaccess.h                  | 15 ++--
- arch/microblaze/include/asm/uaccess.h            | 19 +----
- arch/nds32/include/asm/uaccess.h                 | 22 ++++--
- arch/x86/kernel/acpi/boot.c                      | 24 ++++++
- drivers/acpi/battery.c                           | 12 +++
- drivers/acpi/video_detect.c                      | 75 ++++++++++++++++++
- drivers/bluetooth/btusb.c                        |  4 +
- drivers/char/tpm/tpm-dev-common.c                |  8 +-
- drivers/char/tpm/tpm2-space.c                    |  8 +-
- drivers/crypto/qat/qat_4xxx/adf_drv.c            |  7 ++
- drivers/crypto/qat/qat_common/qat_crypto.c       |  7 ++
- drivers/gpu/drm/virtio/virtgpu_gem.c             |  3 +
- drivers/net/ethernet/apm/xgene/xgene_enet_main.c | 12 +--
- drivers/net/wireless/ath/regd.c                  | 10 +--
- drivers/net/wireless/ath/wcn36xx/main.c          |  3 +
- drivers/net/wireless/ath/wcn36xx/wcn36xx.h       |  1 +
- drivers/nfc/st21nfca/se.c                        | 10 +++
- include/sound/pcm.h                              |  1 +
- kernel/rcu/tree_plugin.h                         |  8 +-
- localversion-rt                                  |  2 +-
- net/ipv6/ip6_output.c                            |  4 +-
- net/llc/af_llc.c                                 | 48 ++++++++----
- net/mac80211/cfg.c                               |  3 -
- net/netfilter/nf_tables_api.c                    | 22 ++++--
- net/netfilter/nf_tables_core.c                   |  2 +-
- sound/core/oss/pcm_oss.c                         | 12 ++-
- sound/core/oss/pcm_plugin.c                      |  5 +-
- sound/core/pcm.c                                 |  2 +
- sound/core/pcm_lib.c                             |  4 +
- sound/core/pcm_memory.c                          | 11 ++-
- sound/core/pcm_native.c                          | 97 +++++++++++++++---------
- sound/pci/ac97/ac97_codec.c                      |  4 +-
- sound/pci/cmipci.c                               |  3 +-
- sound/pci/hda/patch_realtek.c                    |  4 +
- sound/soc/sti/uniperif_player.c                  |  6 +-
- sound/soc/sti/uniperif_reader.c                  |  2 +-
- sound/usb/mixer_maps.c                           | 10 +++
- sound/usb/mixer_quirks.c                         |  7 +-
- 41 files changed, 381 insertions(+), 143 deletions(-)
----
