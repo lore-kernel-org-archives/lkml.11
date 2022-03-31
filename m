@@ -2,299 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A92FEC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 06:39:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C583C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 06:39:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231296AbiCaGky (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 02:40:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56298 "EHLO
+        id S231310AbiCaGlc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 02:41:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230477AbiCaGku (ORCPT
+        with ESMTP id S231231AbiCaGlW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 02:40:50 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 138802AC7E
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 23:39:00 -0700 (PDT)
+        Thu, 31 Mar 2022 02:41:22 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4B0451E58
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 23:39:33 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id p17so22542355plo.9
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 23:39:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1648708743; x=1680244743;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=xzhkit7bOO4oM/SKt+t2PrFYwNhsqpEtTn7uM3kb0b0=;
-  b=SM99ppOY3Tt2YE9wnc/vy8NH0twnKf8U9lFjLiwHQ/lwyc17Pc4EW5or
-   cpBgml4UueBJTK/BJwVKRl2aiwvLiSrTgpoQ7R8YVfwqiAXru3ZL7pU+C
-   s6PadnS52bWShU6NPmxd5QJfULWHm8ccoYSztSmBemFMv5Wtv0t37N/Mb
-   Y=;
-Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 30 Mar 2022 23:39:00 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 23:38:59 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 30 Mar 2022 23:38:59 -0700
-Received: from hu-charante-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 30 Mar 2022 23:38:55 -0700
-From:   Charan Teja Kalla <quic_charante@quicinc.com>
-To:     <akpm@linux-foundation.org>, <willy@infradead.org>,
-        <markhemm@googlemail.com>, <hughd@google.com>,
-        <rientjes@google.com>, <surenb@google.com>, <shakeelb@google.com>
-CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-        Charan Teja Reddy <quic_charante@quicinc.com>
-Subject: [PATCH RESEND V5,2/2] mm: shmem: implement POSIX_FADV_[WILL|DONT]NEED for shmem
-Date:   Thu, 31 Mar 2022 12:08:21 +0530
-Message-ID: <c2f7242faffd41f46120f82079256ece26b92bf0.1648706231.git.quic_charante@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <cover.1648706231.git.quic_charante@quicinc.com>
-References: <cover.1648706231.git.quic_charante@quicinc.com>
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ssMn3LgcqyUmnx75/iLOLIWP4zeXASia6Tnjq8mIfrE=;
+        b=NpXDVqGKFymC1XLJQ7htr7fWp09/zeOVf2qamz4txb2GoFA8suoKmqOmvqGS0c4ddL
+         n5y2p0W9VGETLvZ1DeAKeXRUtpKzWheOE9gR/+iqV7bWME+zwexmsyaPEeJJVU6Y7sOx
+         42X9aPuUnFn1cyzVJQu1YcO87Ksg5lhmpP+ldNO6tZPdW9SXMGQhhLCctUT/HC79/YnW
+         Y9AthoXOozNyu0OfDH6rOH1m4P4uMszaaORnqwm9k73BvhjI9CxTpfisiWbgw8hGF59u
+         qZuwu3dLUQ4Z0zr4RYZBvPQznZ26FxuUs6soLQucuj0chwCUYDAVC7+njK8vrbizVXMw
+         L8Vg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ssMn3LgcqyUmnx75/iLOLIWP4zeXASia6Tnjq8mIfrE=;
+        b=gBJGHO5/UQQVnqaPjCZClDrM5mYz9gwtZjj+sRiY2pSEcQTMKroar2spL2DyzSwlpK
+         2/JlKHpeQ9Y96n96LPRmyvlTnzp3yVnzg808g07wdw5PdxddRaPWTL8QZzJT0BbeHnXw
+         SjLons5t5zJ6CLIi/8le6zBgVKlT1umGD5+Ndglf3HJRKte2wuJV3ioWN6f9v7a8UqEb
+         blBy4kvVX4OVtVnXjoJXUSQUSvtzTp2kSWkNfyHFi6mgOvnC5tOzTwt3daPatlM91WdQ
+         sZ/5b5bOqVjKq9VEVFuWz9x5KfIgYsfLxrliy6sL3syiRDpMV7fsGHXEbEaUqh6XlIfJ
+         orrQ==
+X-Gm-Message-State: AOAM532bKEdPN777SLg7d6FPN3Y7icolcvZgg/fe20zrdy8aCSNyVBER
+        4USsWwvoynPpcaMO2MnBptYQEA==
+X-Google-Smtp-Source: ABdhPJxg8Jd/wIlfmFWYs83KmW+WvyXG2lBhmNylpzP+JkKECZPF1xUHOZgVBSQLSA9OugBSKYFxhw==
+X-Received: by 2002:a17:90b:250f:b0:1b8:f257:c39 with SMTP id ns15-20020a17090b250f00b001b8f2570c39mr4384147pjb.135.1648708772867;
+        Wed, 30 Mar 2022 23:39:32 -0700 (PDT)
+Received: from x1 ([2601:1c2:1001:7090:feed:61b1:ff4a:b7d5])
+        by smtp.gmail.com with ESMTPSA id u62-20020a638541000000b00382791c89efsm21306861pgd.13.2022.03.30.23.39.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 30 Mar 2022 23:39:32 -0700 (PDT)
+Date:   Wed, 30 Mar 2022 23:40:19 -0700
+From:   Drew Fustini <dfustini@baylibre.com>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Tony Lindgren <tony@atomide.com>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        Liu Yi L <yi.l.liu@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+        Christoph Hellwig <hch@lst.de>, linux-omap@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, regressions@lists.linux.dev
+Subject: Re: [PATCH v4 8/9] iommu: Remove unused argument in
+ is_attach_deferred
+Message-ID: <YkVM05q2/fBbq51E@x1>
+References: <20220216025249.3459465-1-baolu.lu@linux.intel.com>
+ <20220216025249.3459465-9-baolu.lu@linux.intel.com>
+ <YkRiawC2T9g+CHSJ@atomide.com>
+ <20220330142340.GA2111031@nvidia.com>
+ <YkSRKZcJO0q3v5WL@atomide.com>
+ <20220330173323.GA2120790@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220330173323.GA2120790@nvidia.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charan Teja Reddy <quic_charante@quicinc.com>
+On Wed, Mar 30, 2022 at 02:33:23PM -0300, Jason Gunthorpe wrote:
+> On Wed, Mar 30, 2022 at 08:19:37PM +0300, Tony Lindgren wrote:
+> 
+> > > > __iommu_probe_device from probe_iommu_group+0x2c/0x38
+> > > > probe_iommu_group from bus_for_each_dev+0x74/0xbc
+> > > > bus_for_each_dev from bus_iommu_probe+0x34/0x2e8
+> > > > bus_iommu_probe from bus_set_iommu+0x80/0xc8
+> > > > bus_set_iommu from omap_iommu_init+0x88/0xcc
+> > > > omap_iommu_init from do_one_initcall+0x44/0x24c
+> > > > 
+> > > > Any ideas for a fix?
+> > > > 
+> > > > It would be good to fix this quickly so we don't end up with a broken
+> > > > v5.18-rc1..
+> > > > 
+> > > > For reference, this is mainline commit 41bb23e70b50 ("iommu: Remove unused
+> > > > argument in is_attach_deferred").
+> > > 
+> > > Are you confident in the bisection? I don't see how that commit could
+> > > NULL deref..
+> > 
+> > Oops sorry you're right, the breaking commit is a different patch, it's
+> > 3f6634d997db ("iommu: Use right way to retrieve iommu_ops") instead. I must
+> > have picked the wrong commit while testing.
+> 
+> That makes alot more sense
+>  
+> > > Can you find the code that is the NULL deref?
+> > 
+> > I can debug a bit more tomorrow.
+> 
+> Looks like omap's omap_iommu_probe_device() is buggy, it returns 0 on
+> error paths:
+> 
+> 	num_iommus = of_property_count_elems_of_size(dev->of_node, "iommus",
+> 						     sizeof(phandle));
+> 	if (num_iommus < 0)
+> 		return 0;
+> 
+> This function needs to return an errno -ENODEV
+> 
+> Otherwise it causes a NULL dev->iommu->iommu_dev and dev_iommu_ops() will
+> crash.
+> 
+> Jason
 
-Currently fadvise(2) is supported only for the files that doesn't
-associated with noop_backing_dev_info thus for the files, like shmem,
-fadvise results into NOP. But then there is file_operations->fadvise()
-that lets the file systems to implement their own fadvise
-implementation. Use this support to implement some of the POSIX_FADV_XXX
-functionality for shmem files.
+I tried to boot current mainline (787af64d05cd) on am57xx-evm and it
+failed to boot. I made the change you suggested and it boots okay now:
+https://gist.github.com/pdp7/918eefe03b5c5db3b5d28d819f6a27f6
 
-This patch aims to implement POSIX_FADV_WILLNEED and POSIX_FADV_DONTNEED
-advices to shmem files which can be helpful for the drivers who may want
-to manage the shmem pages of the files that are created through
-shmem_file_setup[_with_mnt]().  An example usecase may be like, driver
-can create the shmem file of the size equal to its requirements and
-map the pages for DMA and then pass the fd to user. The user who knows
-well about the usage of these pages can now decide when these pages are
-not required push them to swap through DONTNEED thus free up memory well
-in advance rather than relying on the reclaim and use WILLNEED when it
-decide that they are useful in the near future. IOW, it lets the clients
-to free up/read the memory when it wants to. Another usecase is that GEM
-objects which are currently allocated and managed through shmem files
-can use vfs_fadvise(DONT|WILLNEED) on shmem fd when the driver comes to
-know(like through some hints from user space) that GEM objects are not
-going to use/will need in the near future.
+thanks,
+drew
 
-Some questions asked while reviewing this patch:
+diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+index 4aab631ef517..d9cf2820c02e 100644
+--- a/drivers/iommu/omap-iommu.c
++++ b/drivers/iommu/omap-iommu.c
+@@ -1661,7 +1661,7 @@ static struct iommu_device *omap_iommu_probe_device(struct device *dev)
+        num_iommus = of_property_count_elems_of_size(dev->of_node, "iommus",
+                                                     sizeof(phandle));
+        if (num_iommus < 0)
+-               return 0;
++               return ERR_PTR(-ENODEV);
 
-Q) Can the same thing be achieved with FD mapped to user and use
-madvise?
-A) All drivers are not mapping all the shmem fd's to user space and want
-to manage them with in the kernel. Ex: shmem memory can be mapped to the
-other subsystems and they fill in the data and then give it to other
-subsystem for further processing, where, the user mapping is not at all
-required.  A simple example, memory that is given for gpu subsystem
-which can be filled directly and give to display subsystem. And the
-respective drivers know well about when to keep that memory in ram or
-swap based on may be a user activity.
-
-Q) Should we add the documentation section in Manual pages?
-A) The man[1] pages for the fadvise() whatever says is also applicable
-for shmem files. so couldn't feel it correct to add specific to shmem
-files separately.
-[1] https://linux.die.net/man/2/fadvise
-
-Q) The proposed semantics of POSIX_FADV_DONTNEED is actually similar to
-MADV_PAGEOUT and different from MADV_DONTNEED. This is a user facing API
-and this difference will cause confusion?
-A) man pages [1] says that "POSIX_FADV_DONTNEED attempts to free cached
-pages associated with the specified region." This means on issuing this
-FADV, it is expected to free the file cache pages. And it is
-implementation defined If the dirty pages may be attempted to writeback.
-And the unwritten dirty pages will not be freed. So, FADV_DONTNEED also
-covers the semantics of MADV_PAGEOUT for file pages and there is no
-purpose of PAGEOUT for file pages.
-[1] https://man7.org/linux/man-pages/man2/posix_fadvise.2.html
-
-Signed-off-by: Charan Teja Reddy <quic_charante@quicinc.com>
----
-Changes in V5:
-  -- Moved the 'endbyte' calculations to a helper function which is also needed for shmem_fadvise.
-  -- Addressed comments from Suren.
-
-Changes in V4:
-  -- Changed the code to use reclaim_pages() to writeout the shmem pages to swap and then reclaim.
-  -- Addressed comments from Mark Hemment and Matthew.
-  -- fadvise() on shmem file may even unmap a page.
-  -- https://patchwork.kernel.org/project/linux-mm/patch/1644572051-24091-1-git-send-email-quic_charante@quicinc.com/
-
-Changes in V3:
-  -- Considered THP pages while doing FADVISE_[DONT|WILL]NEED, identified by Matthew.
-  -- xarray used properly, as identified by Matthew.
-  -- Excluded mapped pages as it requires unmapping and the man pages of fadvise don't talk about them.
-  -- RESEND: Fixed the compilation issue when CONFIG_TMPFS is not defined.
-  -- https://patchwork.kernel.org/project/linux-mm/patch/1641488717-13865-1-git-send-email-quic_charante@quicinc.com/
-
-Changes in V2:
-  -- Rearranged the code to not to sleep with rcu_lock while using xas_() functionality.
-  -- Addressed the comments from Suren.
-  -- https://patchwork.kernel.org/project/linux-mm/patch/1638442253-1591-1-git-send-email-quic_charante@quicinc.com/
-
-changes in V1:
-  -- Created the interface for fadvise(2) to work on shmem files.
-  -- https://patchwork.kernel.org/project/linux-mm/patch/1633701982-22302-1-git-send-email-charante@codeaurora.org/
-
-
- mm/shmem.c | 123 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 123 insertions(+)
-
-diff --git a/mm/shmem.c b/mm/shmem.c
-index 529c9ad..3be800c 100644
---- a/mm/shmem.c
-+++ b/mm/shmem.c
-@@ -38,6 +38,9 @@
- #include <linux/hugetlb.h>
- #include <linux/fs_parser.h>
- #include <linux/swapfile.h>
-+#include <linux/mm_inline.h>
-+#include <linux/fadvise.h>
-+#include <linux/page_idle.h>
- 
- static struct vfsmount *shm_mnt;
- 
-@@ -2247,6 +2250,125 @@ static int shmem_mmap(struct file *file, struct vm_area_struct *vma)
- 	return 0;
- }
- 
-+static void shmem_isolate_pages_range(struct address_space *mapping, loff_t start,
-+				loff_t end, struct list_head *list)
-+{
-+	XA_STATE(xas, &mapping->i_pages, start);
-+	struct page *page;
-+
-+	rcu_read_lock();
-+	xas_for_each(&xas, page, end) {
-+		if (xas_retry(&xas, page))
-+			continue;
-+		if (xa_is_value(page))
-+			continue;
-+
-+		if (!get_page_unless_zero(page))
-+			continue;
-+		if (isolate_lru_page(page)) {
-+			put_page(page);
-+			continue;
-+		}
-+		put_page(page);
-+
-+		if (PageUnevictable(page) || page_mapcount(page) > 1) {
-+			putback_lru_page(page);
-+			continue;
-+		}
-+
-+		/*
-+		 * Prepare the page to be passed to the reclaim_pages().
-+		 * VM couldn't reclaim the page unless we clear PG_young.
-+		 * Also, to ensure that the pages are written before
-+		 * reclaiming, page is set to dirty.
-+		 * Since we are not clearing the pte_young in the mapped
-+		 * page pte's, its reclaim may not be attempted.
-+		 */
-+		ClearPageReferenced(page);
-+		test_and_clear_page_young(page);
-+		list_add(&page->lru, list);
-+		if (need_resched()) {
-+			xas_pause(&xas);
-+			cond_resched_rcu();
-+		}
-+	}
-+	rcu_read_unlock();
-+}
-+
-+static int shmem_fadvise_dontneed(struct address_space *mapping, loff_t start,
-+				loff_t end)
-+{
-+	LIST_HEAD(list);
-+
-+	if (!shmem_mapping(mapping))
-+		return -EINVAL;
-+
-+	if (!total_swap_pages)
-+		return 0;
-+
-+	lru_add_drain();
-+	shmem_isolate_pages_range(mapping, start, end, &list);
-+	reclaim_pages(&list);
-+
-+	return 0;
-+}
-+
-+static int shmem_fadvise_willneed(struct address_space *mapping,
-+				 pgoff_t start, pgoff_t long end)
-+{
-+	struct page *page;
-+	pgoff_t index;
-+
-+	xa_for_each_range(&mapping->i_pages, index, page, start, end) {
-+		if (!xa_is_value(page))
-+			continue;
-+		page = shmem_read_mapping_page(mapping, index);
-+		if (!IS_ERR(page))
-+			put_page(page);
-+	}
-+
-+	return 0;
-+}
-+
-+static int shmem_fadvise(struct file *file, loff_t offset, loff_t len, int advice)
-+{
-+	loff_t endbyte;
-+	pgoff_t start_index;
-+	pgoff_t end_index;
-+	struct address_space *mapping;
-+	int ret = 0;
-+
-+	mapping = file->f_mapping;
-+	if (!mapping || len < 0)
-+		return -EINVAL;
-+
-+	endbyte = fadvise_calc_endbyte(offset, len);
-+
-+	start_index = offset >> PAGE_SHIFT;
-+	end_index   = endbyte >> PAGE_SHIFT;
-+	switch (advice) {
-+	case POSIX_FADV_DONTNEED:
-+		ret = shmem_fadvise_dontneed(mapping, start_index, end_index);
-+		break;
-+	case POSIX_FADV_WILLNEED:
-+		ret = shmem_fadvise_willneed(mapping, start_index, end_index);
-+		break;
-+	case POSIX_FADV_NORMAL:
-+	case POSIX_FADV_RANDOM:
-+	case POSIX_FADV_SEQUENTIAL:
-+	case POSIX_FADV_NOREUSE:
-+		/*
-+		 * No bad return value, but ignore advice. May have to
-+		 * implement in future.
-+		 */
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	return ret;
-+}
-+
- static struct inode *shmem_get_inode(struct super_block *sb, const struct inode *dir,
- 				     umode_t mode, dev_t dev, unsigned long flags)
- {
-@@ -3780,6 +3902,7 @@ static const struct file_operations shmem_file_operations = {
- 	.splice_write	= iter_file_splice_write,
- 	.fallocate	= shmem_fallocate,
- #endif
-+	.fadvise	= shmem_fadvise,
- };
- 
- static const struct inode_operations shmem_inode_operations = {
--- 
-2.7.4
+        arch_data = kcalloc(num_iommus + 1, sizeof(*arch_data), GFP_KERNEL);
+        if (!arch_data)
 
