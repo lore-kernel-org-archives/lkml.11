@@ -2,88 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2597BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 16:56:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CE32C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 16:57:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237510AbiCaQ6B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 12:58:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39202 "EHLO
+        id S240330AbiCaQ7E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 12:59:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240313AbiCaQ5r (ORCPT
+        with ESMTP id S232806AbiCaQ7B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 12:57:47 -0400
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56794232137
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 09:55:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648745760; x=1680281760;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=+fBoWZB3yyJ+TT7fPXolFigfgvKVX7lBHwZvtgtgHWc=;
-  b=PuMlRapJrZhMaeGiHc0Yrn6lpfsGLEgrKHq3a4zKQqtNliqrcnNU0zeF
-   yG2JMLwcJhWv+8DFMV5iRHdkL+6eDp6/0JruH++xH8vH1R6h0v2FoAiFG
-   nHOAPqkr58piYV2wVHzpau2X8+qdOPJ6W25XCqMww6Q3qteluYCV0J24a
-   6iv6gYeZ/rL/t1pWVIeAurmVM7XCvMuTnR5ThXFIC5U20EI2NxJh43AiI
-   tyq599PXpwpIyIMiNWaF7CrDBZpT9ze4PPXzce50t3RHsPYnp5SZLPV0E
-   J3Sf7Ip6K64B2PodLxa//FMB2iT7wzjgHvjxpCypexBziJ+mtAX7v+bwv
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="320587127"
-X-IronPort-AV: E=Sophos;i="5.90,225,1643702400"; 
-   d="scan'208";a="320587127"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2022 09:55:58 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,225,1643702400"; 
-   d="scan'208";a="503824395"
-Received: from lkp-server02.sh.intel.com (HELO 3231c491b0e2) ([10.239.97.151])
-  by orsmga003.jf.intel.com with ESMTP; 31 Mar 2022 09:55:57 -0700
-Received: from kbuild by 3231c491b0e2 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nZy5U-0000SW-KR;
-        Thu, 31 Mar 2022 16:55:56 +0000
-Date:   Fri, 1 Apr 2022 00:55:05 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Axel Rasmussen <axelrasmussen@google.com>
-Cc:     kbuild-all@lists.01.org,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org
-Subject: [linux-next:master 14693/14948] mm/secretmem.c:173:31: sparse:
- sparse: symbol 'secretmem_iops' was not declared. Should it be static?
-Message-ID: <202204010033.oeIla4qb-lkp@intel.com>
+        Thu, 31 Mar 2022 12:59:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AF6F232128;
+        Thu, 31 Mar 2022 09:57:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E73726142F;
+        Thu, 31 Mar 2022 16:57:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DFC5C340ED;
+        Thu, 31 Mar 2022 16:57:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648745833;
+        bh=yA9+KO3O1jARWOMC2omd2MhcSPzFCNmSUyJCd+gNn5k=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=YyrGUdd2nxSYfhkeKX3ilGPHF0K/NKNqDhtBxYKuTvilMs+v4PDJHBHdS70CpkWAA
+         LkzOitfAYtjD0P6FyA+SRCf+cRx66nvFwcIsHTpU+lwfsuelaEx7x80Kz/aKD6q4Ed
+         7PVFdJwnBgoMxzSOo0Tnz4h9VmyQXV91vankcSQHeOq03QdyKnU37NNgfO1srcFWzC
+         90B31pN3MovVSXMEukmzMvSRnDAcS1UIarVp8+avBU701s45i93Me7EqA0+3G74v1o
+         pHDdVKGi4iPGy50KExpkCgm2oUrcfUHvsw32vawjO1ROvlrIgzn7pWRyThe4jcCpOb
+         M5afp23LU6VLw==
+Date:   Thu, 31 Mar 2022 12:57:12 -0400
+From:   Sasha Levin <sashal@kernel.org>
+To:     Mark Brown <broonie@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>, lgirdwood@gmail.com,
+        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
+Subject: Re: [PATCH AUTOSEL 5.17 64/66] ASoC: ak4642: Use
+ of_device_get_match_data()
+Message-ID: <YkXdaOOHd7w5OPG0@sashalap>
+References: <20220330114646.1669334-1-sashal@kernel.org>
+ <20220330114646.1669334-64-sashal@kernel.org>
+ <YkRHhksDIqDpHoCz@sirena.org.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <YkRHhksDIqDpHoCz@sirena.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
-head:   fdcbcd1348f4ef713668bae1b0fa9774e1811205
-commit: 24209f2f4d623891c9a7541a24bcdeab22670821 [14693/14948] mm/secretmem: fix panic when growing a memfd_secret
-config: i386-randconfig-s002 (https://download.01.org/0day-ci/archive/20220401/202204010033.oeIla4qb-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.2.0-19) 11.2.0
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?id=24209f2f4d623891c9a7541a24bcdeab22670821
-        git remote add linux-next https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
-        git fetch --no-tags linux-next master
-        git checkout 24209f2f4d623891c9a7541a24bcdeab22670821
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=i386 SHELL=/bin/bash
+On Wed, Mar 30, 2022 at 01:05:26PM +0100, Mark Brown wrote:
+>On Wed, Mar 30, 2022 at 07:46:43AM -0400, Sasha Levin wrote:
+>> From: Minghao Chi <chi.minghao@zte.com.cn>
+>>
+>> [ Upstream commit 835ca59799f5c60b4b54bdc7aa785c99552f63e4 ]
+>>
+>> Use of_device_get_match_data() to simplify the code.
+>
+>This is just a random code style improvement, I can't see why we'd
+>backport it to stable?
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-
-sparse warnings: (new ones prefixed by >>)
->> mm/secretmem.c:173:31: sparse: sparse: symbol 'secretmem_iops' was not declared. Should it be static?
-
-Please review and possibly fold the followup patch.
+Yup, I'll drop it.
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Thanks,
+Sasha
