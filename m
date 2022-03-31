@@ -2,288 +2,252 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4319CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 08:28:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EA70C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 08:29:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232819AbiCaIaG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 04:30:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41682 "EHLO
+        id S232836AbiCaIbl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 04:31:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232796AbiCaI3x (ORCPT
+        with ESMTP id S231276AbiCaIbk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 04:29:53 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CE381C4040
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 01:28:06 -0700 (PDT)
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22V5Kc4Z020599;
-        Thu, 31 Mar 2022 08:28:00 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : in-reply-to : references : date : message-id : mime-version :
- content-type; s=pp1; bh=GGGJaE00gOrjgZdabfyYCJtDb6BGSQgQEH3k88tIlRo=;
- b=Qeh2JP6NyRdcaqHDZK3uo488MlysllwIVoN0I8cQnmO/yQMESXH0GFuakgVfXVVehDyD
- RF2YoOGnsfqA6/PjsJyh0emvU5Z/oAQYi1Ee9wxDZPWzh0RfjABqM7/gFz7IBXhqLwa7
- jm+IxredLRZd7TwYMwUDs7LztXp/YnQUvcxoCv/zWJfKi2zQSfMsVi0ZTrODVuLzLi/r
- XUxUWzDTLkBvEgt8dOLhq8TYn2tESuZ6+QxsPiHmVFHVjMSLAZ5fCjKgkpHAxGH2VIGT
- iI9hPxXjk+oGhWFGnnQRANqMlCjcYnS3auJwl1mPaiVWBef32IGGO4FC7HHuHvuk6KeK 7Q== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3f562rke7c-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 31 Mar 2022 08:27:59 +0000
-Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22V7vugE029229;
-        Thu, 31 Mar 2022 08:27:59 GMT
-Received: from ppma04wdc.us.ibm.com (1a.90.2fa9.ip4.static.sl-reverse.com [169.47.144.26])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3f562rke6y-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 31 Mar 2022 08:27:59 +0000
-Received: from pps.filterd (ppma04wdc.us.ibm.com [127.0.0.1])
-        by ppma04wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22V8KIwg027941;
-        Thu, 31 Mar 2022 08:27:58 GMT
-Received: from b01cxnp23033.gho.pok.ibm.com (b01cxnp23033.gho.pok.ibm.com [9.57.198.28])
-        by ppma04wdc.us.ibm.com with ESMTP id 3f1tfa335c-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 31 Mar 2022 08:27:58 +0000
-Received: from b01ledav004.gho.pok.ibm.com (b01ledav004.gho.pok.ibm.com [9.57.199.109])
-        by b01cxnp23033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22V8Rvi833489386
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 31 Mar 2022 08:27:57 GMT
-Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 697D2112064;
-        Thu, 31 Mar 2022 08:27:57 +0000 (GMT)
-Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 53E5611206B;
-        Thu, 31 Mar 2022 08:27:54 +0000 (GMT)
-Received: from skywalker.linux.ibm.com (unknown [9.43.54.171])
-        by b01ledav004.gho.pok.ibm.com (Postfix) with ESMTP;
-        Thu, 31 Mar 2022 08:27:54 +0000 (GMT)
-X-Mailer: emacs 29.0.50 (via feedmail 11-beta-1 I)
-From:   "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
-To:     "Huang, Ying" <ying.huang@intel.com>,
-        Jagdish Gediya <jvgediya@linux.ibm.com>
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        akpm@linux-foundation.org, baolin.wang@linux.alibaba.com,
-        dave.hansen@linux.intel.com, Fan Du <fan.du@intel.com>
-Subject: Re: [PATCH] mm: migrate: set demotion targets differently
-In-Reply-To: <87h77ebn6j.fsf@yhuang6-desk2.ccr.corp.intel.com>
-References: <20220329115222.8923-1-jvgediya@linux.ibm.com>
- <87pmm4c4ys.fsf@yhuang6-desk2.ccr.corp.intel.com>
- <87lewrxsv1.fsf@linux.ibm.com>
- <878rsrc672.fsf@yhuang6-desk2.ccr.corp.intel.com>
- <87ilruy5zt.fsf@linux.ibm.com>
- <87h77ebn6j.fsf@yhuang6-desk2.ccr.corp.intel.com>
-Date:   Thu, 31 Mar 2022 13:57:51 +0530
-Message-ID: <87fsmyy1a0.fsf@linux.ibm.com>
+        Thu, 31 Mar 2022 04:31:40 -0400
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3235437028
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 01:29:50 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id w4so32575104wrg.12
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 01:29:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=vrull.eu; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=wVr/pwaQ//OyUW/xlrrZtzwk/VHF+xv/hJ0hbn99xUA=;
+        b=bHBOFrGbyK6usdxVtb26YnVzA+j2UPUGlRCj9+EpHRwmAwewC8N7LzjM2J+BPcRBke
+         u2mwI2K8Q+wAi8EG6onSjLV9ap272GU6SCA0LbcZ9hhaVeCWvr1aNc7BJzVQxgxI5j2/
+         mILloB1kj6BQSVTPYLbXN131r75ruT9an6y2k1XQZ4Az4BHGKKPpEaUIJoZOZf6OAFa8
+         NBRfg2OufDrqJC0SHFkJr2fpvYfa+IFyDmwFpnzJKI59HiX1dbrl0YhdjUHgXCyCJeHt
+         XDlVjx1eDj72hN37AvJSnLEqDXd4DMyuO8+G0j8NIfJ/lBRCKGFhRILSo0mXIwWhaz70
+         MZ4A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=wVr/pwaQ//OyUW/xlrrZtzwk/VHF+xv/hJ0hbn99xUA=;
+        b=NC333coIxSfkr5utbKZ2LK6x8yz6B7ssYteXfZDSk2yt13X9fzqa1WpWbJExU67Hbf
+         3H4KJoQttUxdMmBM5KpuaGenx9gJB4VMyY6TJ4/1m15OcfFcWLgoIJug4DYiLxL5HZow
+         WsOFsrLeM/aC6pScdet8yFoTv08ndLfUjPAC/VqYkeo7rBHmJoMEcvKwmWIqRNf0vsTE
+         xrTc4ST50iHZhcXpMgnCTL7FemTf8jCB5S+a3V28BWbfOhxv0Aixz8VwNdnEenO34X5H
+         M0B2Gh2sxhL6iFBUIl0wPXI/p2NIjok6Hjg5V1xp0BqjKF4ippjsgPYjn5dknOkgrJq1
+         UOeg==
+X-Gm-Message-State: AOAM5336BVreX/OeVelC61mc2e70RvyXNmwiUXd0T2Mo6w/fgdQSn0Xt
+        UtTMMst8482e+hNTDMkNZZ7gYeWtv4tIhM6eOMe+pg==
+X-Google-Smtp-Source: ABdhPJzgXIZU2HUiAQFAb5W6LxBHCRo1D/DGebIXHrg++RnO0NOxbwpwd5dxp6c3hmZ0B7KvdvLQ3wPePh/yzFlxcxk=
+X-Received: by 2002:adf:ebc7:0:b0:1ee:945a:ffb4 with SMTP id
+ v7-20020adfebc7000000b001ee945affb4mr3181602wrn.641.1648715388617; Thu, 31
+ Mar 2022 01:29:48 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: A5R0MY7PzIBAFlNfYwZfb7priRXUNdV1
-X-Proofpoint-ORIG-GUID: kf_gPHTzIg8Y555QBZhbCe4l2QCmKu4g
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-31_03,2022-03-30_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- phishscore=0 adultscore=0 mlxlogscore=999 impostorscore=0 malwarescore=0
- priorityscore=1501 clxscore=1011 mlxscore=0 spamscore=0 suspectscore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2203310044
+References: <mhng-3c71e6fc-cd1c-4796-8b50-6768485b8f4a@palmer-ri-x1c9> <5787392.alqRGMn8q6@diego>
+In-Reply-To: <5787392.alqRGMn8q6@diego>
+From:   Philipp Tomsich <philipp.tomsich@vrull.eu>
+Date:   Thu, 31 Mar 2022 10:29:37 +0200
+Message-ID: <CAAeLtUCVs96DW8rFDi84WB2r8BFz9tFwyX_548HNZxZJjQqO3g@mail.gmail.com>
+Subject: Re: [PATCH 2/2] riscv: implement cache-management errata for T-Head SoCs
+To:     =?UTF-8?Q?Heiko_St=C3=BCbner?= <heiko@sntech.de>
+Cc:     Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        wefu@redhat.com, guoren@kernel.org, atishp@atishpatra.org,
+        anup@brainfault.org, mick@ics.forth.gr, samuel@sholland.org,
+        cmuellner@linux.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-"Huang, Ying" <ying.huang@intel.com> writes:
+Palmer,
 
-> "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com> writes:
+Could you confirm that I correctly understood what you require: is it
+that a patch is on the binutils list?
+
+Philipp.
+
+
+On Thu, 31 Mar 2022 at 10:22, Heiko St=C3=BCbner <heiko@sntech.de> wrote:
 >
->> "Huang, Ying" <ying.huang@intel.com> writes:
->>
->>> "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com> writes:
->>>
->>>> "Huang, Ying" <ying.huang@intel.com> writes:
->>>>
->>>>> Hi, Jagdish,
->>>>>
->>>>> Jagdish Gediya <jvgediya@linux.ibm.com> writes:
->>>>>
->>>>
->>>> ...
->>>>
->>>>>> e.g. with below NUMA topology, where node 0 & 1 are
->>>>>> cpu + dram nodes, node 2 & 3 are equally slower memory
->>>>>> only nodes, and node 4 is slowest memory only node,
->>>>>>
->>>>>> available: 5 nodes (0-4)
->>>>>> node 0 cpus: 0 1
->>>>>> node 0 size: n MB
->>>>>> node 0 free: n MB
->>>>>> node 1 cpus: 2 3
->>>>>> node 1 size: n MB
->>>>>> node 1 free: n MB
->>>>>> node 2 cpus:
->>>>>> node 2 size: n MB
->>>>>> node 2 free: n MB
->>>>>> node 3 cpus:
->>>>>> node 3 size: n MB
->>>>>> node 3 free: n MB
->>>>>> node 4 cpus:
->>>>>> node 4 size: n MB
->>>>>> node 4 free: n MB
->>>>>> node distances:
->>>>>> node   0   1   2   3   4
->>>>>>   0:  10  20  40  40  80
->>>>>>   1:  20  10  40  40  80
->>>>>>   2:  40  40  10  40  80
->>>>>>   3:  40  40  40  10  80
->>>>>>   4:  80  80  80  80  10
->>>>>>
->>>>>> The existing implementation gives below demotion targets,
->>>>>>
->>>>>> node    demotion_target
->>>>>>  0              3, 2
->>>>>>  1              4
->>>>>>  2              X
->>>>>>  3              X
->>>>>>  4		X
->>>>>>
->>>>>> With this patch applied, below are the demotion targets,
->>>>>>
->>>>>> node    demotion_target
->>>>>>  0              3, 2
->>>>>>  1              3, 2
->>>>>>  2              3
->>>>>>  3              4
->>>>>>  4		X
->>>>>
->>>>> For such machine, I think the perfect demotion order is,
->>>>>
->>>>> node    demotion_target
->>>>>  0              2, 3
->>>>>  1              2, 3
->>>>>  2              4
->>>>>  3              4
->>>>>  4              X
->>>>
->>>> I guess the "equally slow nodes" is a confusing definition here. Now if the
->>>> system consists of 2 1GB equally slow memory and the firmware doesn't want to
->>>> differentiate between them, firmware can present a single NUMA node
->>>> with 2GB capacity? The fact that we are finding two NUMA nodes is a hint
->>>> that there is some difference between these two memory devices. This is
->>>> also captured by the fact that the distance between 2 and 3 is 40 and not 10.
->>>
->>> Do you have more information about this?
->>
->> Not sure I follow the question there. I was checking shouldn't firmware
->> do a single NUMA node if two memory devices are of the same type? How will
->> optane present such a config? Both the DIMMs will have the same
->> proximity domain value and hence dax kmem will add them to the same NUMA
->> node?
+> Hi Palmer,
 >
-> Sorry for confusing.  I just wanted to check whether you have more
-> information about the machine configuration above.  The machines in my
-> hand have no complex NUMA topology as in the patch description.
-
-
-Even with simple topologies like below
-
-available: 3 nodes (0-2)
-node 0 cpus: 0 1
-node 0 size: 4046 MB
-node 0 free: 3478 MB
-node 1 cpus: 2 3
-node 1 size: 4090 MB
-node 1 free: 3430 MB
-node 2 cpus:
-node 2 size: 4074 MB
-node 2 free: 4037 MB
-node distances:
-node   0   1   2 
-  0:  10  20  40 
-  1:  20  10  40 
-  2:  40  40  10 
-
-With current code we get demotion targets assigned as below
-
-[    0.337307] Demotion nodes for Node 0: 2
-[    0.337351] Demotion nodes for Node 1: 
-[    0.337380] Demotion nodes for Node 2: 
-
-I guess we should fix that to be below?
-
-[    0.344554] Demotion nodes for Node 0: 2
-[    0.344605] Demotion nodes for Node 1: 2
-[    0.344638] Demotion nodes for Node 2: 
-
-
-Most of the tests we are doing are using Qemu to simulate this. We
-started looking at this to avoid using demotion completely when slow
-memory is not present. ie, we should have a different way to identify
-demotion targets other than node_states[N_MEMORY]. Virtualized platforms
-can have configs with memory only NUMA nodes with DRAM and we don't
-want to consider those as demotion targets. 
-
-While we are at it can you let us know how topology will look on a
-system with two optane DIMMs? Do both appear with the same
-target_node? 
-
+> Am Donnerstag, 31. M=C3=A4rz 2022, 04:30:36 CEST schrieb Palmer Dabbelt:
+> > On Mon, 07 Mar 2022 14:46:20 PST (-0800), heiko@sntech.de wrote:
+> > > The T-Head C906 and C910 implement a scheme for handling
+> > > cache operations different from the generic Zicbom extension.
+> > >
+> > > Add an errata for it next to the generic dma coherency ops.
+> > >
+> > > Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+> > > ---
+> > >  arch/riscv/Kconfig.erratas           | 10 +++++++
+> > >  arch/riscv/errata/thead/errata.c     |  5 ++++
+> > >  arch/riscv/include/asm/errata_list.h | 45 ++++++++++++++++++++++++++=
+--
+> > >  3 files changed, 57 insertions(+), 3 deletions(-)
+> > >
+> > > diff --git a/arch/riscv/Kconfig.erratas b/arch/riscv/Kconfig.erratas
+> > > index de4002baa1d0..89a6dcb8ac2a 100644
+> > > --- a/arch/riscv/Kconfig.erratas
+> > > +++ b/arch/riscv/Kconfig.erratas
+> > > @@ -50,4 +50,14 @@ config ERRATA_THEAD_PBMT
+> > >
+> > >       If you don't know what to do here, say "Y".
+> > >
+> > > +config ERRATA_THEAD_CMO
+> > > +   bool "Apply T-Head cache management errata"
+> > > +   depends on ERRATA_THEAD && RISCV_DMA_NONCOHERENT
+> > > +   default y
+> > > +   help
+> > > +     This will apply the cache management errata to handle the
+> > > +     non-standard handling on non-coherent operations on T-Head SoCs=
+.
+> > > +
+> > > +     If you don't know what to do here, say "Y".
+> > > +
+> > >  endmenu
+> > > diff --git a/arch/riscv/errata/thead/errata.c b/arch/riscv/errata/the=
+ad/errata.c
+> > > index fd8e0538a3f0..11c26c37425f 100644
+> > > --- a/arch/riscv/errata/thead/errata.c
+> > > +++ b/arch/riscv/errata/thead/errata.c
+> > > @@ -33,6 +33,11 @@ static const struct errata_info errata_list[ERRATA=
+_THEAD_NUMBER] =3D {
+> > >             .stage =3D RISCV_ALTERNATIVES_EARLY_BOOT,
+> > >             .check_func =3D errata_mt_check_func
+> > >     },
+> > > +   {
+> > > +           .name =3D "cache-management",
+> > > +           .stage =3D RISCV_ALTERNATIVES_BOOT,
+> > > +           .check_func =3D errata_mt_check_func
+> > > +   },
+> > >  };
+> > >
+> > >  static u32 thead_errata_probe(unsigned int stage, unsigned long arch=
+id, unsigned long impid)
+> > > diff --git a/arch/riscv/include/asm/errata_list.h b/arch/riscv/includ=
+e/asm/errata_list.h
+> > > index 7a2dd61af24d..f7c6805daeab 100644
+> > > --- a/arch/riscv/include/asm/errata_list.h
+> > > +++ b/arch/riscv/include/asm/errata_list.h
+> > > @@ -16,7 +16,8 @@
+> > >
+> > >  #ifdef CONFIG_ERRATA_THEAD
+> > >  #define    ERRATA_THEAD_PBMT 0
+> > > -#define    ERRATA_THEAD_NUMBER 1
+> > > +#define    ERRATA_THEAD_CMO 1
+> > > +#define    ERRATA_THEAD_NUMBER 2
+> > >  #endif
+> > >
+> > >  #define    CPUFEATURE_SVPBMT 0
+> > > @@ -104,8 +105,37 @@ asm volatile(ALTERNATIVE(                       =
+                                       \
+> > >  #define CBO_CLEAN_A0       ".long 0x25200F"
+> > >  #define CBO_FLUSH_A0       ".long 0x05200F"
+> > >
+> > > +/*
+> > > + * dcache.ipa rs1 (invalidate, physical address)
+> > > + * | 31 - 25 | 24 - 20 | 19 - 15 | 14 - 12 | 11 - 7 | 6 - 0 |
+> > > + *   0000001    01010      rs1       000      00000  0001011
+> > > + * dache.iva rs1 (invalida, virtual address)
+> > > + *   0000001    00110      rs1       000      00000  0001011
+> > > + *
+> > > + * dcache.cpa rs1 (clean, physical address)
+> > > + * | 31 - 25 | 24 - 20 | 19 - 15 | 14 - 12 | 11 - 7 | 6 - 0 |
+> > > + *   0000001    01001      rs1       000      00000  0001011
+> > > + * dcache.cva rs1 (clean, virtual address)
+> > > + *   0000001    00100      rs1       000      00000  0001011
+> > > + *
+> > > + * dcache.cipa rs1 (clean then invalidate, physical address)
+> > > + * | 31 - 25 | 24 - 20 | 19 - 15 | 14 - 12 | 11 - 7 | 6 - 0 |
+> > > + *   0000001    01011      rs1       000      00000  0001011
+> > > + * dcache.civa rs1 (... virtual address)
+> > > + *   0000001    00111      rs1       000      00000  0001011
+> > > + *
+> > > + * sync.s (make sure all cache operations finished)
+> > > + * | 31 - 25 | 24 - 20 | 19 - 15 | 14 - 12 | 11 - 7 | 6 - 0 |
+> > > + *   0000000    11001     00000      000      00000  0001011
+> > > + */
+> > > +#define THEAD_INVAL_A0     ".long 0x0265000b"
+> > > +#define THEAD_CLEAN_A0     ".long 0x0245000b"
+> > > +#define THEAD_FLUSH_A0     ".long 0x0275000b"
+> > > +#define THEAD_SYNC_S       ".long 0x0190000b"
+> >
+> > IIRC this came up before, but these really need to get into the
+> > assembler as actual instructions.
 >
->> If you are suggesting that firmware doesn't do that, then I agree with you
->> that a demotion target like the below is good. 
->>
->>  node    demotion_target
->>   0              2, 3
->>   1              2, 3
->>   2              4
->>   3              4
->>   4              X
->>
->> We can also achieve that with a smiple change as below.
+> okay :-) .
 >
-> Glad to see the demotion order can be implemented in a simple way.
+> But just for my understanding which of the two ways going forward:
+> - keep this in the waiting area _until_ a suitable binutils is released
+> - use the coded instructions now and convert later once binutils is relea=
+sed
 >
-> My concern is that is it necessary to do this?  If there are real
-> machines with the NUMA topology, then I think it's good to add the
-> support.  But if not, why do we make the code complex unnecessarily?
+> The reason I ask is, that any chip with a t-head core like the Allwinner-=
+D1
+> will need this for things like basic networking, so with the binutils
+> release schedule, I guess we'd be looking at autumn 2022 at the earliest.
 >
-> I don't have these kind of machines, do you have and will have?
 >
-
-
-Based on the above, we still need to get the simpler fix merged right?
-
-
->> @@ -3120,7 +3120,7 @@ static void __set_migration_target_nodes(void)
->>  {
->>  	nodemask_t next_pass	= NODE_MASK_NONE;
->>  	nodemask_t this_pass	= NODE_MASK_NONE;
->> -	nodemask_t used_targets = NODE_MASK_NONE;
->> +	nodemask_t this_pass_used_targets = NODE_MASK_NONE;
->>  	int node, best_distance;
->>  
->>  	/*
->> @@ -3141,17 +3141,20 @@ static void __set_migration_target_nodes(void)
->>  	/*
->>  	 * To avoid cycles in the migration "graph", ensure
->>  	 * that migration sources are not future targets by
->> -	 * setting them in 'used_targets'.  Do this only
->> +	 * setting them in 'this_pass_used_targets'.  Do this only
->>  	 * once per pass so that multiple source nodes can
->>  	 * share a target node.
->>  	 *
->> -	 * 'used_targets' will become unavailable in future
->> +	 * 'this_pass_used_targets' will become unavailable in future
->>  	 * passes.  This limits some opportunities for
->>  	 * multiple source nodes to share a destination.
->>  	 */
->> -	nodes_or(used_targets, used_targets, this_pass);
->> +	nodes_or(this_pass_used_targets, this_pass_used_targets, this_pass);
->>  
->>  	for_each_node_mask(node, this_pass) {
->> +
->> +		nodemask_t used_targets = this_pass_used_targets;
->> +
->>  		best_distance = -1;
->>  
->>  		/*
+> Thanks
+> Heiko
 >
-> Best Regards,
-> Huang, Ying
+> > > +
+> > >  #define ALT_CMO_OP(_op, _start, _size)                              =
+                       \
+> > > -asm volatile(ALTERNATIVE(                                           =
+               \
+> > > +asm volatile(ALTERNATIVE_2(                                         =
+                       \
+> > > +   "nop\n\t"                                                        =
+               \
+> > >     "nop\n\t"                                                        =
+               \
+> > >     "nop\n\t"                                                        =
+               \
+> > >     "nop\n\t"                                                        =
+               \
+> > > @@ -117,7 +147,16 @@ asm volatile(ALTERNATIVE(                       =
+                                       \
+> > >     CBO_##_op##_A0 "\n\t"                                            =
+               \
+> > >     "addi a0, a0, %0\n\t"                                            =
+               \
+> > >     "2:\n\t"                                                         =
+               \
+> > > -   "bltu a0, %2, 3b\n\t", 0, CPUFEATURE_CMO, CONFIG_RISCV_DMA_NONCOH=
+ERENT)         \
+> > > +   "bltu a0, %2, 3b\n\t"                                            =
+               \
+> > > +   "nop", 0, CPUFEATURE_CMO, CONFIG_RISCV_DMA_NONCOHERENT,          =
+               \
+> > > +   "mv a0, %1\n\t"                                                  =
+               \
+> > > +   "j 2f\n\t"                                                       =
+               \
+> > > +   "3:\n\t"                                                         =
+               \
+> > > +   THEAD_##_op##_A0 "\n\t"                                          =
+               \
+> > > +   "addi a0, a0, %0\n\t"                                            =
+               \
+> > > +   "2:\n\t"                                                         =
+               \
+> > > +   "bltu a0, %2, 3b\n\t"                                            =
+               \
+> > > +   THEAD_SYNC_S, THEAD_VENDOR_ID, ERRATA_THEAD_CMO, CONFIG_ERRATA_TH=
+EAD_CMO)       \
+> > >     : : "I"(L1_CACHE_BYTES), "r"((_start) & ~(L1_CACHE_BYTES - 1)),  =
+               \
+> > >         "r"(ALIGN((_start) + (_size), L1_CACHE_BYTES)))
+> >
+>
+>
+>
+>
