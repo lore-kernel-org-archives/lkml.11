@@ -2,135 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 793D3C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 12:08:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 197BDC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 12:09:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235804AbiCaMKi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 08:10:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38922 "EHLO
+        id S235836AbiCaMKt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 08:10:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235797AbiCaMKg (ORCPT
+        with ESMTP id S235797AbiCaMKq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 08:10:36 -0400
-Received: from APC01-PSA-obe.outbound.protection.outlook.com (mail-psaapc01on2137.outbound.protection.outlook.com [40.107.255.137])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7517D31513
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 05:08:49 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KTE1h4y8fGaOZw1xaMXA+7Gn9bCG7jw+ko6CpVJ7aUb/kznNuNzte1PMuSSxfpaIlAysKPM59VDcVpd4UzGl7h1qSc1niQFj1yNwYsnF7q89h/+7TOr1Tq+DKytI5V7uYmHfAboBZ5vqUi1RM0yEDrWEoxFIVfet7y5doid7BYkRsERDCj+RF2jDl2dl8nO5PU8ehQgXd81OXbAWmunubq6hP1ZQCtUGdujRJRfG4zvCsc7s00dV2JiSv8+n5WCfhGfnGwV2c/9fHpsHDsqZ93rsExlck0cM/dzZqw2zsN7pnmosugpHMc024Kksys1QpFyBgx+79iUgPjxetpAAdw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=D+0wcEHDFaSjHIBW4mg57qHIxShqM19A4XovI/5fakw=;
- b=LRGRNuSCrrTedOrfP/ezMbhEtgYt6gGiaAQWwcnoKPUUcjevZFKw1g9wf+QBSJUZ9eSr0FFtyxa36qAEvNyikOjKy97M9gnK9d5By2ChlZqBkzMzPaEipoE6+/pKuAcqaCcMbzvUSqcB/I2s43+7fJoXO49xJT2Cu6fCWbJ9yLKlQoF6zhnHn0aH6nCwTlnFjudAAvbEFHOoqsu02foy0izJBHt9X/+9SWZvYul3LArQnulrZfnf/scjhWidHaRTyCS269VllLqfVNG0GvAHIaNSG76HL5rf7OHwSz+Y81PRHQF7FGp5AAv7IJKyOy251xtc2nkoW9lUfN8wzBJITw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
- dkim=pass header.d=vivo.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
- s=selector2-vivo0-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=D+0wcEHDFaSjHIBW4mg57qHIxShqM19A4XovI/5fakw=;
- b=fkdOuLvU3RFYwuyLJAYelOQdLLL6EL8aGkhJuppne9FZjUXZH9HuCrS7iWr7Wpdui7oMWcNQ5nmHGTBnVVHpkxuIk/aLYenZq3u6mwadHtb0Ip6ZJsGQ7qbIG3q18uugD8Ar0WWDuBRJH50p7w412z7T7OmSoPiacFDYivlV97I=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=vivo.com;
-Received: from SL2PR06MB3082.apcprd06.prod.outlook.com (2603:1096:100:37::17)
- by SI2PR06MB3882.apcprd06.prod.outlook.com (2603:1096:4:ea::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.23; Thu, 31 Mar
- 2022 12:08:47 +0000
-Received: from SL2PR06MB3082.apcprd06.prod.outlook.com
- ([fe80::6c6e:d8af:2d3c:3507]) by SL2PR06MB3082.apcprd06.prod.outlook.com
- ([fe80::6c6e:d8af:2d3c:3507%7]) with mapi id 15.20.5123.021; Thu, 31 Mar 2022
- 12:08:47 +0000
-From:   Qing Wang <wangqing@vivo.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Cc:     Wang Qing <wangqing@vivo.com>
-Subject: [PATCH] staging: r8188eu: remove duplicate assignment
-Date:   Thu, 31 Mar 2022 05:08:34 -0700
-Message-Id: <1648728514-37390-1-git-send-email-wangqing@vivo.com>
-X-Mailer: git-send-email 2.7.4
-Content-Type: text/plain
-X-ClientProxiedBy: HK2PR04CA0047.apcprd04.prod.outlook.com
- (2603:1096:202:14::15) To SL2PR06MB3082.apcprd06.prod.outlook.com
- (2603:1096:100:37::17)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ef10fb5c-c499-4804-126a-08da130f3598
-X-MS-TrafficTypeDiagnostic: SI2PR06MB3882:EE_
-X-Microsoft-Antispam-PRVS: <SI2PR06MB3882DD350EBCB440AA44C73CBDE19@SI2PR06MB3882.apcprd06.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: k3zkNMlPZhyV8J+44J58vtx9RCHcQgyHixKfhfFJ7ax7g5z6cjxg2+PiFYkDmU5liI2VzQI49LPwzSq/Ijfwnj7/ztr8Ae22hz7RN49Bo99p261OZ3zZK2KVHcR9moLi11sH91oGGXiSrq8uYFxOa5pQ+hEdN/50j4BW3nGRxE6xrVig/Pi8z9uf/X0wNhvShoHqcNTuS7eWpOni6xLXGTiO8W2bHSuoIsxtSK9l+PA9gOm7ZN3UqfyeJAq4A2rWUtfwzKk77u83K7EqYGdodkO9WcGECf4PztgHg6uleqLUPdoKqcs4whzBm/9xMqhfM+42CA40rlfaM40jskpjHQTM71l7i+Nrt9M8Lqn/jIN24l6OlIWP/rK0HmpNko4t6GsykfG6dbTTmkLNi/nHHlKN5GI+wT+yXS4TfPo6kEvhBsMWhwiOnShhRhWEJp2yRWGerO6vUFAFX49gQ8Uz/uCgPRq/gJlpN1lkbCnquwGeczywI/NS6HCaQZx7xLQOg/P/lvn/fIC0HfD4IrWYXLnzmVKoETjRdfR9npYiwfQBpqls2IpseVRGc5P8BoLc18sNUlCyneBZIlZ42DE7ahM3iwwo7PxGI8sMs9/KvXd4icl6whMnzlkWzaB9+WwRl98pOJknkuqtkCohSM28w4jP+uzO9iNAyESesyyzvkB1CxxUeBiDYCkHa0TXE40gzZPNqvXxEcY+TK1m5LYOuw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SL2PR06MB3082.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(38350700002)(38100700002)(86362001)(316002)(8936002)(4326008)(66946007)(66556008)(66476007)(8676002)(107886003)(2616005)(26005)(186003)(83380400001)(6666004)(508600001)(6486002)(6512007)(52116002)(6506007)(36756003)(4744005)(2906002)(5660300002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?NWazgiXjUlGgOV2+RU4RtyEG3y8zjgyVh7QrIkfdc72hXAvNA+zeMBvrqZRR?=
- =?us-ascii?Q?P9JYhHAIpJaMDe99jqBR4nLzaY/Eo70Vn9d2iDjteMVRZguZzqb/QK9ug/vN?=
- =?us-ascii?Q?t+5oovgYL4ScrogCWO6mM/81OuhqdheUAd4NADjtOkkb4qy++18ncYFeZQpY?=
- =?us-ascii?Q?uaeugeGuDqEzDNaebCWgimqUcY4LPErWVj5q52vJ3CdtYTtwUkkw4TS+jPaf?=
- =?us-ascii?Q?jJLgnWLQutYxRJzVjIK8lMNHj9A+4LZfuPQutIsMff/g6lwD0Sqxdk1zY2Dy?=
- =?us-ascii?Q?pxFhYctEkvjA2d5J5Sk94BjHJGqc3l+d6OrL1LkJ31DEajaUEWHq7HHhzonE?=
- =?us-ascii?Q?VwZLPuCfafMDiGHkfxCItbVi8wxxTa96Fxgj3RKWkMCoYq9OQN9/8PP0bDW3?=
- =?us-ascii?Q?gzfWBW/0jAsnRGgT5HVDbx3dtCZfC5uEi/W5wqRjLVO/6G3o2dJ1A2a4Dat5?=
- =?us-ascii?Q?sVb30TIqofyn9HL+ptDcZhFgKacshyqWtKGOV5+5KefEYnEzR1GQMceLWhfC?=
- =?us-ascii?Q?PbHHA4l9d8SFZS2qZtP92X75o4Fv8Oebsa5E17BMKRnmlcmQIjovNDprLKUE?=
- =?us-ascii?Q?YFoX+VHe9gyebjlQe+sQrTU7xfPtcLeYolhIYV7RWe1inPlFPGs2O5slLuMn?=
- =?us-ascii?Q?wlxLSdZf5d/TRvJpHZ/+Hy/5rLsRg3e8GIPvzWSuyPLorovE3tu2cvm0OhQF?=
- =?us-ascii?Q?EAj1QHl40FJYekfsPfWAZpLHxQKRsmMMJCIgXl38SZuYpTNUckxcDh0jAV53?=
- =?us-ascii?Q?S1b3q34dhJndZt1tBrBGzqIdO+z0sVUn2t+Uh58KDg+OzGYrypSzXbWAp2CS?=
- =?us-ascii?Q?zDcflcencu1eodsuzLvBleZQQM8WAi1SZ1Mg4ipKfvo/RGXR1PnWtP8hOBrp?=
- =?us-ascii?Q?1+ikNDssWNn9v7dJ4p4ERVt4tyFiowpV0nAtlqz6R7FNtX04d1Jjw9dnuzbe?=
- =?us-ascii?Q?BO/WiMebN/AAC653PhX8784eZDR4Xj1CF7QMmlhOn5hkcwzZDuHj4HDZvZma?=
- =?us-ascii?Q?SAWiYKnQ34n16C0/qxOdCqVLsjQ9zmQDL0xp1Fj/sH/Swlq3WsL4JORjCPFX?=
- =?us-ascii?Q?Xho5SoHV/+ejhgQfKBK54cY/Gx08uy5gKFe1SQiXVCaUuv1QT5xnyX3pPCyC?=
- =?us-ascii?Q?kQffc6Hesnu/kX/91D91vFmgprBOSxGCbQeDS0cn0RB1UxPSqx8Y9E++EHq7?=
- =?us-ascii?Q?cssb0B0XtVZXAz0WU1mx4/XKDfrpgpghQDiwcc2GdaYkHaehIq5A56V1DVpy?=
- =?us-ascii?Q?21bXh17KmtoCSak14q3r/I1xuToKBV5rlgO1e5zeBSQ8ovdm2OPXmOpWWUpM?=
- =?us-ascii?Q?ZaZdaz3UiMJBxBEdyqliqHHJn5Zt80Y1Xlw+QfIpoiwtF6SCWmkH+vFvFD4j?=
- =?us-ascii?Q?S314mD/NWtfFGIjbPpIN6n4iZYBAbRcblZ8WDagSz06m88mi9b4ZR7nP06Ej?=
- =?us-ascii?Q?7/vTXURVdhQv66rgXnZoqS3uwi8fmzPwGeH2KjFjDyjI4u6m9T0MoTKWO3ka?=
- =?us-ascii?Q?OWZ9EZcvEppMgbxZ1THhvUa0IMnnyPfHUA28VqOn3jPJFgDI4RLkTQfDoOJ3?=
- =?us-ascii?Q?QBrl4cwB/L7QkiiYK5piAuHtGyt6ppB1D0Y1r9mdSPmtbqLg/pQgtlV3tGfP?=
- =?us-ascii?Q?mflyUgcB75LUaKR8hOwe8k082alraSgAHqeceMHoJBwtZmnsNI6RUCc9LebD?=
- =?us-ascii?Q?h+YWUegeRNWzxjKFaNtSD8lIydJjRdspt0Xeu31LmJ8yntdZbHJk9Gdj1HNW?=
- =?us-ascii?Q?UEPlyQ6pHA=3D=3D?=
-X-OriginatorOrg: vivo.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ef10fb5c-c499-4804-126a-08da130f3598
-X-MS-Exchange-CrossTenant-AuthSource: SL2PR06MB3082.apcprd06.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Mar 2022 12:08:47.2660
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: pY34/54Txwbb4W+zG0M+0ukNqI5YOF5wB66r6byt/iGp4SkljeXQOzkbX48LhatCI7mqf4bIYAGKrwBxDfXUpw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SI2PR06MB3882
+        Thu, 31 Mar 2022 08:10:46 -0400
+Received: from hutie.ust.cz (unknown [IPv6:2a03:3b40:fe:f0::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B2CC457B7;
+        Thu, 31 Mar 2022 05:08:55 -0700 (PDT)
+Content-Type: text/plain;
+        charset=utf-8
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cutebit.org; s=mail;
+        t=1648728531; bh=o0s8+g9O9ptEUPJSHpyizR5cnYWekpbCjfSIKFYgW5M=;
+        h=Subject:From:In-Reply-To:Date:Cc:References:To;
+        b=K3eA+hrvPQ7rnRY1xefkH25uA65TIlMtFlXRqItvNKPSb3gNDMCXKWCcU5KIow4zd
+         PfxtaOk4qkcLF9IRD56uT6aamjWVop9XUyQMBd3EAUJcL3Etc+DHrF6uZzi/3mvFAw
+         7uqF+SxBQG/o7hiwzQ6wVjEZH4pP+DD78fucp6Ss=
+Mime-Version: 1.0 (Mac OS X Mail 15.0 \(3693.40.0.1.81\))
+Subject: Re: [RFC PATCH 5/5] ASoC: Add macaudio machine driver
+From:   =?utf-8?Q?Martin_Povi=C5=A1er?= <povik@cutebit.org>
+In-Reply-To: <YkWXs/f7edZwg1+W@sirena.org.uk>
+Date:   Thu, 31 Mar 2022 14:08:51 +0200
+Cc:     =?utf-8?Q?Martin_Povi=C5=A1er?= <povik+lin@cutebit.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Mark Kettenis <kettenis@openbsd.org>,
+        Hector Martin <marcan@marcan.st>,
+        Sven Peter <sven@svenpeter.dev>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <4651D426-BA1A-418F-90E5-278C705DA984@cutebit.org>
+References: <20220331000449.41062-1-povik+lin@cutebit.org>
+ <20220331000449.41062-6-povik+lin@cutebit.org>
+ <YkWXs/f7edZwg1+W@sirena.org.uk>
+To:     Mark Brown <broonie@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wang Qing <wangqing@vivo.com>
 
-netdev_alloc_skb() has assigned ssi->netdev to skb->dev if successed,
-no need to repeat assignment.
+> On 31. 3. 2022, at 13:59, Mark Brown <broonie@kernel.org> wrote:
+>=20
+> On Thu, Mar 31, 2022 at 02:04:49AM +0200, Martin Povi=C5=A1er wrote:
+>=20
+>> --- /dev/null
+>> +++ b/sound/soc/apple/macaudio.c
+>> @@ -0,0 +1,597 @@
+>> +// SPDX-License-Identifier: GPL-2.0-only
+>> +/*
+>> + * ASoC machine driver for Apple Silicon Macs
+>> + *
+>=20
+> Please make the entire comment a C++ one so things look more
+> intentional.
+>=20
+>> +		/* CPU side is bit and frame clock master, I2S with both =
+clocks inverted */
+>=20
+> Please refer to clock providers here.
+>=20
+>> +		ret =3D of_property_read_string(np, "link-name", =
+&link->name);
+>> +		if (ret) {
+>> +			dev_err(card->dev, "Missing link name\n");
+>> +			goto err_put_np;
+>> +		}
+>=20
+> This doesn't look like it's mandatory in the binding.
 
-Signed-off-by: Wang Qing <wangqing@vivo.com>
----
- drivers/staging/r8188eu/hal/usb_ops_linux.c | 1 -
- 1 file changed, 1 deletion(-)
+Good catch!
 
-diff --git a/drivers/staging/r8188eu/hal/usb_ops_linux.c b/drivers/staging/r8188eu/hal/usb_ops_linux.c
-index 673c30e..e5d6cd6
---- a/drivers/staging/r8188eu/hal/usb_ops_linux.c
-+++ b/drivers/staging/r8188eu/hal/usb_ops_linux.c
-@@ -260,7 +260,6 @@ static int recvbuf2recvframe(struct adapter *adapt, struct sk_buff *pskb)
- 
- 		pkt_copy = netdev_alloc_skb(adapt->pnetdev, alloc_sz);
- 		if (pkt_copy) {
--			pkt_copy->dev = adapt->pnetdev;
- 			precvframe->pkt = pkt_copy;
- 			precvframe->rx_head = pkt_copy->data;
- 			precvframe->rx_end = pkt_copy->data + alloc_sz;
--- 
-2.7.4
+>> +static int macaudio_init(struct snd_soc_pcm_runtime *rtd)
+>> +{
+>> +	struct snd_soc_card *card =3D rtd->card;
+>> +	struct macaudio_snd_data *ma =3D snd_soc_card_get_drvdata(card);
+>> +	struct snd_soc_component *component;
+>> +	int ret, i;
+>> +
+>> +	if (rtd->num_codecs > 1) {
+>> +		ret =3D macaudio_assign_tdm(rtd);
+>> +		if (ret < 0)
+>> +			return ret;
+>> +	}
+>> +
+>> +	for_each_rtd_components(rtd, i, component)
+>> +		snd_soc_component_set_jack(component, &ma->jack, NULL);
+>=20
+> What is the jack configuration this is attempting to describe?  It =
+looks
+> like you have some dedicated speaker driver devices which are going to
+> get attached to jacks here for example.
+
+We know the speakers will ignore the set_jack call. There=E2=80=99s one =
+jack and
+this way we know the jack codec will attach to it, for speakers it=E2=80=99=
+s a no-op.
+(If you prefer I will special-case it to the jack codec.)
+
+>> +} macaudio_kctlfixes[] =3D {
+>> +	{"* ASI1 Sel", "Left"},
+>> +	{"* ISENSE Switch", "Off"},
+>> +	{"* VSENSE Switch", "Off"},
+>> +	{ }
+>> +};
+>> +
+>> +static bool macaudio_kctlfix_matches(const char *pattern, const char =
+*name)
+>> +{
+>> +	if (pattern[0] =3D=3D '*') {
+>> +		int namelen, patternlen;
+>> +
+>> +		pattern++;
+>> +		if (pattern[0] =3D=3D ' ')
+>> +			pattern++;
+>> +
+>> +		namelen =3D strlen(name);
+>> +		patternlen =3D strlen(pattern);
+>> +
+>> +		if (namelen > patternlen)
+>> +			name +=3D (namelen - patternlen);
+>> +	}
+>> +
+>> +	return !strcmp(name, pattern);
+>> +}
+>=20
+> This looks worryingly like use case configuration.
+
+I go over this in the cover letter! This is fixing the TDM slot =
+selection
+and disabling voltage/current sensing on the speaker amp codecs, which =
+have
+no business being exposed to userspace as options. This is not use case,
+this not letting people blow their speakers from userspace.
+
+>=20
+>> +/*
+>> + * Maybe this could be a general ASoC function?
+>> + */
+>> +static void snd_soc_kcontrol_set_strval(struct snd_soc_card *card,
+>> +				struct snd_kcontrol *kcontrol, const =
+char *strvalue)
+>=20
+> No, we should not be setting user visible control values from the
+> kernel.  This shouldn't be a machine driver function either.  What are
+> you trying to accomplish here?
+
+See above.
+
+Martin
 
