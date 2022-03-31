@@ -2,95 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE940C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 09:28:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CEE6C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 09:28:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234082AbiCaJaK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 05:30:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37586 "EHLO
+        id S233999AbiCaJaW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 05:30:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232580AbiCaJ3X (ORCPT
+        with ESMTP id S234003AbiCaJ3Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 05:29:23 -0400
-Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::224])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D9D51FF205;
-        Thu, 31 Mar 2022 02:27:16 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id CB1E7E000F;
-        Thu, 31 Mar 2022 09:27:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1648718834;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=kVAzqr5qEkiVW+zEGfSJDKuaqlr/tvNfR2dtI854pn4=;
-        b=EVi6FWuzBV7PFfbMzBkBpd7Ebu7+qVF5BInbfb9Pm1pgsRpcyFDoiS/fjEo7BCC/iWjsnJ
-        h+4wbf2OsPzKyELKwpOg0vDG2gzVQ3gQKv037dgLxpqCmSLpb1/lowCn9ZhiM315IrTb3Y
-        J9gVGxIcnKeQnaH1LqoIb4xzSoWZeQHJWXKgkmiT57t78sY30m8vhBwNxxQsyJXFvS46GD
-        NNV3flj69eYotlUQJ523MAYZrM8chMYQ5Q5HknOdBCSwrs4iW7TTZFnMKsQeC7+M6RmpQ1
-        q2TvNoP1EycW4K5B+IqF4uWT5c2/LklpG1PO0chw1iPHpovv/6nXgB+ypubCLw==
-From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Allan Nielsen <allan.nielsen@microchip.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
-Subject: [RFC PATCH net-next v2 11/11] net: mdio: mscc-miim: use fwnode_mdiobus_register()
-Date:   Thu, 31 Mar 2022 11:25:33 +0200
-Message-Id: <20220331092533.348626-12-clement.leger@bootlin.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220331092533.348626-1-clement.leger@bootlin.com>
-References: <20220331092533.348626-1-clement.leger@bootlin.com>
+        Thu, 31 Mar 2022 05:29:25 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE3E91FF422;
+        Thu, 31 Mar 2022 02:27:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648718846; x=1680254846;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=mPcmSRFysKdQJULNHMdsCcsem8XlXgWIUxePX6FqmbU=;
+  b=e66tOk8W/E0fWH/7ffuke1+vLmGKS753EjTf+Sd7H3LTwjwjfFeP1Sdk
+   YPpDOxKDp9J3lm6ztf4Y2sZyok/q7i/5Mh27rz2dDbeibrWRSnxJfQEnQ
+   ybUq5UXSGsve3t1spi7ROQJmFLUpMPUMzAuvl24/6xG++3wUVwdB+YMe1
+   o8kjdbK31UAN0JFkzz13QVzhs/Bxi6pFzGr4V0qK0PCixxICLJo+ws0CT
+   qlKHibwceo1P53bs2hMoY0KKXPvuv/t6+fbjXs2aBnr2mY68zRo7LwQoE
+   HfRxHo6Wozc1ANd14UWLSntZEK+tRDYBWSNoFmKFBhhrQyxlS+tlgxhvo
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="239705897"
+X-IronPort-AV: E=Sophos;i="5.90,224,1643702400"; 
+   d="scan'208";a="239705897"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2022 02:27:26 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,224,1643702400"; 
+   d="scan'208";a="695423344"
+Received: from kuha.fi.intel.com ([10.237.72.185])
+  by fmsmga001.fm.intel.com with SMTP; 31 Mar 2022 02:27:23 -0700
+Received: by kuha.fi.intel.com (sSMTP sendmail emulation); Thu, 31 Mar 2022 12:27:23 +0300
+Date:   Thu, 31 Mar 2022 12:27:23 +0300
+From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
+To:     Won Chung <wonchung@google.com>
+Cc:     Tomas Winkler <tomas.winkler@intel.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Benson Leung <bleung@chromium.org>,
+        Prashant Malani <pmalani@chromium.org>,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH v3] misc/mei: Add NULL check to component match callback
+ functions
+Message-ID: <YkVz+1HkSeXcIux2@kuha.fi.intel.com>
+References: <20220331084918.2592699-1-wonchung@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220331084918.2592699-1-wonchung@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use fwnode_mdiobus_register() to be compatible with devices described
-with device-tree and software nodes.
+Hi Won,
 
-Signed-off-by: Clément Léger <clement.leger@bootlin.com>
----
- drivers/net/mdio/mdio-mscc-miim.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+On Thu, Mar 31, 2022 at 08:49:18AM +0000, Won Chung wrote:
+> Component match callback functions need to check if expected data is
+> passed to them. Without this check, it can cause a NULL pointer
+> dereference when another driver registers a component before i915
+> drivers have their component master fully bind.
+> 
+> Fixes: 1e8d19d9b0dfc ("mei: hdcp: bind only with i915 on the same PCH")
+> Fixes: c2004ce99ed73 ("mei: pxp: export pavp client to me client bus")
+> Suggested-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+> Suggested-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+> Signed-off-by: Won Chung <wonchung@google.com>
+> Cc: stable@vger.kernel.org
+> ---
+> Changes from v2:
+> - Correctly add "Suggested-by" tag
+> - Add "Cc: stable@vger.kernel.org"
+> 
+> Changes from v1:
+> - Add "Fixes" tag
+> - Send to stable@vger.kernel.org
 
-diff --git a/drivers/net/mdio/mdio-mscc-miim.c b/drivers/net/mdio/mdio-mscc-miim.c
-index c483ba67c21f..ea79421fcfd4 100644
---- a/drivers/net/mdio/mdio-mscc-miim.c
-+++ b/drivers/net/mdio/mdio-mscc-miim.c
-@@ -7,12 +7,12 @@
-  */
- 
- #include <linux/bitops.h>
-+#include <linux/fwnode_mdio.h>
- #include <linux/io.h>
- #include <linux/iopoll.h>
- #include <linux/kernel.h>
- #include <linux/mdio/mdio-mscc-miim.h>
- #include <linux/module.h>
--#include <linux/of_mdio.h>
- #include <linux/phy.h>
- #include <linux/platform_device.h>
- #include <linux/property.h>
-@@ -288,7 +288,7 @@ static int mscc_miim_probe(struct platform_device *pdev)
- 	if (!miim->info)
- 		return -EINVAL;
- 
--	ret = of_mdiobus_register(bus, pdev->dev.of_node);
-+	ret = fwnode_mdiobus_register(bus, dev_fwnode(&pdev->dev));
- 	if (ret < 0) {
- 		dev_err(&pdev->dev, "Cannot register MDIO bus (%d)\n", ret);
- 		return ret;
+You are sending these really fast. Before you send the next one,
+please wait for at least one day.
+
+thanks,
+
 -- 
-2.34.1
-
+heikki
