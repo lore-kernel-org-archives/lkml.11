@@ -2,115 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D122C43217
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 14:42:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8653C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 14:42:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237720AbiCaOoX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 10:44:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38594 "EHLO
+        id S237745AbiCaOoe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 10:44:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232975AbiCaOoW (ORCPT
+        with ESMTP id S232975AbiCaOoc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 10:44:22 -0400
-X-Greylist: delayed 25921 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 31 Mar 2022 07:42:35 PDT
-Received: from conssluserg-02.nifty.com (conssluserg-02.nifty.com [210.131.2.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F049A215928;
-        Thu, 31 Mar 2022 07:42:34 -0700 (PDT)
-Received: from mail-pj1-f47.google.com (mail-pj1-f47.google.com [209.85.216.47]) (authenticated)
-        by conssluserg-02.nifty.com with ESMTP id 22VEgKPq012732;
-        Thu, 31 Mar 2022 23:42:21 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-02.nifty.com 22VEgKPq012732
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1648737741;
-        bh=Xj3diVC51HHwyTudn/M0r5QOTayxxsIWMzaIO802Bg8=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=NyzpaqttJpO4J1ZzydrjZpqd7D6RtCp9gc5ZaryOukEkB2uEhrhOZEzPKBiiH2Pvm
-         ZAwp5rRZQ0v65p+oEbs8aetqGWncchcIk52/GtRWJNVLw1w2Do4znproVBs1S63MqO
-         yPsX+oBzeMWa9c16wyGQ2FV5tMZivMUpr1Xj20sy/ShX/mC0hNPApxe1k10qh9PiJc
-         erfRD+SlxyM3c1E5rxBvQ4iTP8pMDqn2rOskJbLjRRzAOoXwcXi9n7aVCIj+7z95l3
-         D4rLCYt3eKmlsDUIrYNGo2Pk6kZkFlHsuT5YPi2YPvduwmEaPpnxAzZoyNFguNhp35
-         XfOFKgOjyZrtw==
-X-Nifty-SrcIP: [209.85.216.47]
-Received: by mail-pj1-f47.google.com with SMTP id cm17so4232941pjb.2;
-        Thu, 31 Mar 2022 07:42:21 -0700 (PDT)
-X-Gm-Message-State: AOAM533trCg/nd7R+M3YlhFoafo/RiL3iywrKLFI7hIQAGqinfZ4h4k+
-        f4zbs/+Rn9Bl7g1Lms5L9OFthAxwkuyp17udE7g=
-X-Google-Smtp-Source: ABdhPJw3WCo3kJvlA+76iJNgjzue4kyy/jp0r5U7gt1FnPdlPSe1ov+p7LZDiUmtV9rQyHMr9Pj2WbAZ4WWKFJRTA3o=
-X-Received: by 2002:a17:90a:8405:b0:1bc:d521:b2c9 with SMTP id
- j5-20020a17090a840500b001bcd521b2c9mr6488510pjn.119.1648737740242; Thu, 31
- Mar 2022 07:42:20 -0700 (PDT)
+        Thu, 31 Mar 2022 10:44:32 -0400
+Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4CFA21FC7C;
+        Thu, 31 Mar 2022 07:42:43 -0700 (PDT)
+Received: from [192.168.0.4] (ip5f5ae900.dynamic.kabel-deutschland.de [95.90.233.0])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id BC2D661EA1923;
+        Thu, 31 Mar 2022 16:42:40 +0200 (CEST)
+Message-ID: <f6c78650-f22f-fcaf-a660-b1fc4ea7f641@molgen.mpg.de>
+Date:   Thu, 31 Mar 2022 16:42:40 +0200
 MIME-Version: 1.0
-References: <20220330201755.29319-1-mathieu.desnoyers@efficios.com>
- <20220330162152.17b1b660@gandalf.local.home> <CAK7LNATm5FjZsXL6aKUMhXwQAqTuO9+LmAk3LGjpAib7NZBDmg@mail.gmail.com>
- <20220331081337.07ddf251@gandalf.local.home>
-In-Reply-To: <20220331081337.07ddf251@gandalf.local.home>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Thu, 31 Mar 2022 23:41:34 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAR_2jJWJbaUfLDaDJOuJTx_RHj_Ow5coK1k4Y5HGLRQrA@mail.gmail.com>
-Message-ID: <CAK7LNAR_2jJWJbaUfLDaDJOuJTx_RHj_Ow5coK1k4Y5HGLRQrA@mail.gmail.com>
-Subject: Re: [PATCH] tracing: do not export user_events uapi
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Beau Belgrave <beaub@linux.microsoft.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        linux-trace-devel <linux-trace-devel@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v2 3/3] ata: ahci: Skip 200 ms debounce delay for AMD 300
+ Series Chipset SATA Controller
+Content-Language: en-US
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Cc:     Mario Limonciello <Mario.Limonciello@amd.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        linux-ide@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        Nehal-bakulchandra Shah <Nehal-bakulchandra.Shah@amd.com>
+References: <20220321212431.13717-1-pmenzel@molgen.mpg.de>
+ <20220321212431.13717-3-pmenzel@molgen.mpg.de>
+ <BL1PR12MB5157DDFD5E75360F032346D3E2169@BL1PR12MB5157.namprd12.prod.outlook.com>
+ <cc7b4426-f6a6-e6b1-4aaf-0a713ee3d388@opensource.wdc.com>
+ <5fb6af7b-d84f-cbae-7eb1-543f3a7e53e4@molgen.mpg.de>
+ <d9837420-1cbb-ed5e-7043-985d9eb9d065@opensource.wdc.com>
+ <b3e4435d-335c-1aba-1920-c225b46d09e7@molgen.mpg.de>
+In-Reply-To: <b3e4435d-335c-1aba-1920-c225b46d09e7@molgen.mpg.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 31, 2022 at 9:13 PM Steven Rostedt <rostedt@goodmis.org> wrote:
->
-> On Thu, 31 Mar 2022 16:29:30 +0900
-> Masahiro Yamada <masahiroy@kernel.org> wrote:
->
-> > Well, the intended usage of no-export-headers is to
-> > cater to the UAPI supported by only some architectures.
-> > We have kvm(_para).h here because not all architectures
-> > support kvm.
-> >
-> > If you do not want to export the UAPI,
-> > you should not put it in include/uapi/.
-> >
-> > After the API is finalized, you can move it to
-> > include/uapi.
->
-> So a little bit of background. I and a few others thought it was done, and
-> pushed it to Linus. Then when it made it into his tree (and mentioned on
-> LWN) it got a wider audience that had concerns. After they brought up those
-> concerns, we agreed that this needs a bit more work. I was hoping not to do
-> a full revert and simply marked the change for broken so that it can be
-> worked on upstream with the wider audience. Linus appears to be fine with
-> this approach, as he helped me with my "mark for BROKEN" patch.
->
-> Mathieu's concern is that this header file could be used in older distros
-> with newer kernels that have it implemented and added this to keep out of
-> those older distros.
->
-> The options to make Mathieu sleep better at night are:
->
-> 1) this patch
->
-> 2) move this file out of uapi.
->
-> 3) revert the entire thing.
->
-> I really do not want to do #3 but I am willing to do 1 or 2.
-
-I see.
-
-Either 1 or 2 is OK
-if  you are sure this will be fixed sooner or later.
+Dear Damien,
 
 
--- 
-Best Regards
-Masahiro Yamada
+Am 23.03.22 um 09:36 schrieb Paul Menzel:
+
+> Am 23.03.22 um 09:24 schrieb Damien Le Moal:
+>> On 3/23/22 15:55, Paul Menzel wrote:
+> 
+>>> Am 23.03.22 um 06:01 schrieb Damien Le Moal:
+>>>> On 3/22/22 06:51, Limonciello, Mario wrote:
+> 
+>>>>>> -----Original Message-----
+>>>>>> From: Paul Menzel <pmenzel@molgen.mpg.de>
+>>>>>> Sent: Monday, March 21, 2022 16:25
+>>>
+>>> […]
+>>>
+>>>>> I seem to recall that we were talking about trying to drop the 
+>>>>> debounce delay for everything, weren't we?
+>>>>>
+>>>>> So perhaps it would be right to add a 4th patch in the series to do
+>>>>> just that.  Then If this turns out to be problematic for
+>>>>> anything other than the controllers in the series that you
+>>>>> identified as not problematic then that 4th patch can
+>>>>> potentially be reverted alone?
+>>>>
+>>>> Not quite everything :) But you are right, let's try to switch the 
+>>>> default to no delay. I will be posting patches today for that.
+>>>> With these patches, your patches are not necessary anymore as the AMD
+>>>> chipset falls under the default no-delay.
+>>>
+>>> I am all for improving the situation for all devices, but I am unable to
+>>> judge the regression potential of changing this, as it affects a lot of
+>>> devices. I guess it’d would go through the next tree, and hopefully the
+>>> company QA teams can give it a good spin. I hoped that my patches, as I
+>>> have tested them, and AMD will hopefully too, could go into the current
+>>> merge window.
+>>
+>> Yes, correct, the plan is to get the generic series queued as soon
+>> as rc1 so that it can spend plenty of time in linux-next for people
+>> to test. That will hopefully reduce the risk of breaking things in
+>> the field. Same for  the default LPM change.
+> 
+> But 5.18 or 5.19? If 5.18, sounds good to me, if 5.19, I’d be great if 
+> my patches go into 5.18 cycle, as they have been tested, and it would 
+> mean the whole change gets tested more widely already.
+> 
+>> With the default removal of the debounce delay, your patches addressing
+>> only the AMD adapter are not needed anymore: this adapter will not have a
+>> debounce delay unless the ATA_LFLAG_DEBOUNCE_DELAY flag is set.
+> 
+> Yes, I understand.
+
+The merge window for Linux 5.18 is going to close in three days this 
+Sunday. It’d be really great if my patches, tested on hardware, could go 
+into that.
+
+>>>> It would be nice if you can test though.
+>>>
+>>> Of course, I am going to that either way.
+>>
+>> Series posted with you on CC. Please test !
+> 
+> Thank you. I am going to test it in the coming days, and report back.
+> 
+> Maybe more people should be put in Cc (Dell, Lenovo, IBM, x86 subsystem) 
+> with a request to test this?
+Thank you for the patches, which are a big improvement. Let’s hope, you 
+can re-roll them, so they get into Linux very soon for everyone’s benefit.
+
+
+Kind regards,
+
+Paul
