@@ -2,141 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F4C8C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 04:23:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35482C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 04:26:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229541AbiCaEZg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 00:25:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41448 "EHLO
+        id S230409AbiCaE1r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 00:27:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229882AbiCaEZY (ORCPT
+        with ESMTP id S230289AbiCaE1j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 00:25:24 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC6EB18021D;
-        Wed, 30 Mar 2022 21:14:47 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id o10so45505399ejd.1;
-        Wed, 30 Mar 2022 21:14:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=cHLGkaQYu4o1VuLVe04VP5C9UOK2Y5HybQ/7vFAycP4=;
-        b=IejV0elzv/fR5v4FKPqWNBF8faVRUyD4+g73zFNzDj84EhCzmnV+cYKflwLA4Otjfi
-         VtFOlbHiTPkKvxrwAoDgW53yCHYhQKLJktKQclamHJcHFen5tWhCTdc51fR0fCQxbv92
-         dNAYMM275Is6y+5unL7BXYt5RP4MunPV3xMDYp9cgc/vOJGyWud0IsknBQVLOpbSnUHV
-         5dDeGZ1Dn3kb/K8CpwisW5DiEaBGUJGNpTwjy3oha1/ImqmlAhyrc6TRaDNh+YEBxHbc
-         K7QrSfpP6hKCiv4ttnd7bzOLXob/N2aHt1fzc4xSEcz3LTqwedqPL6O1ONAEBwPc7HGl
-         p42g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cHLGkaQYu4o1VuLVe04VP5C9UOK2Y5HybQ/7vFAycP4=;
-        b=DPqxpStyk9JVTOPZD7PH8tDWhe8Jsku9lOlxybpnU/M98blfsxMh4tNAEViV6vCgGe
-         sk6Wdnl0L6rR66lRxV4p09BzhfmA081itM5aehB+DdMIsj5aiv09AJ5z7QHH56Ifw02o
-         5c4iNaJQ+0yGOynWkEGtVeH8gdeEjJ28WyHMmP2nfSV6ZdN5DqketmLXc0LUS6PcPKMP
-         26NwA8eo6HkoTKJHPOIAyQtcb9zwKhh0wIo8WmDkySzq3h0hW/BjJgtRWFQEzrUtjNl+
-         vCoxu42E9zpRhTp0D67Wd0SUkujMd08HUo0hkHCRXRxCVMbCzdaMTpqCSAqwUb1jWKr5
-         5ZTg==
-X-Gm-Message-State: AOAM533tX99T+v1RMAsMNNfaLutZnQBl9ZdZ87Gg9FC2l0Sy4Iivgki7
-        +/R12+9Pcr62wjEFoMZgS5E2uoG9kIyZ90i8gRw=
-X-Google-Smtp-Source: ABdhPJylV+qIHEhgIiC8pc2ZyVs4dIvULSo9dP3vfdc/QTV15d7mrqgXEUvxiupeD7GQsWsqPD8b71wB8duOxbnPqTU=
-X-Received: by 2002:a17:906:3a15:b0:6cf:ea4e:a1cc with SMTP id
- z21-20020a1709063a1500b006cfea4ea1ccmr3304474eje.753.1648700086306; Wed, 30
- Mar 2022 21:14:46 -0700 (PDT)
+        Thu, 31 Mar 2022 00:27:39 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22F54175853
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 21:20:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648700400; x=1680236400;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=50sNcqzUuA+uRaq38aLqLEgiiWhWq47ZuN3yHz7b8J0=;
+  b=WsjzJ3qA0gKzV38NoajvKurhxy2iEV8Jzu+C4IOUkErWLZQe4TImNDvc
+   /11IXAAcQGTSBMpMBN6SaFMrPE/kEfvyJMKD3/ukJjGRBZmsWQHeXZaNM
+   6vpvcXBO20oiX8QltCFR6ANJGAbS1ScNKLtLxy6tB9J/sMYCAWg+2dUoH
+   iUAbEaW8E4bTGLFPzWorUbJUYFpSELAMhhBBIKGHMDsVi8xAITTWuctXt
+   nYIBZfIPf3qpx6JpGKhIL6UHU8yLk08U4HdEkWwwinSMYZJRSJoikO+cD
+   1t/rKIY0EKqTE+Nrac+JSe+eXEaDTFAQ2gX4DgbkI8rtgF+FAXetDxuOV
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="239644009"
+X-IronPort-AV: E=Sophos;i="5.90,224,1643702400"; 
+   d="scan'208";a="239644009"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 21:19:59 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,224,1643702400"; 
+   d="scan'208";a="720289041"
+Received: from lkp-server02.sh.intel.com (HELO 56431612eabd) ([10.239.97.151])
+  by orsmga005.jf.intel.com with ESMTP; 30 Mar 2022 21:19:58 -0700
+Received: from kbuild by 56431612eabd with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nZmHt-0000sI-LG;
+        Thu, 31 Mar 2022 04:19:57 +0000
+Date:   Thu, 31 Mar 2022 12:19:29 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: drivers/firmware/meson/meson_sm.c:206:9: sparse: sparse: incorrect
+ type in argument 1 (different address spaces)
+Message-ID: <202203311231.qRJRy6tp-lkp@intel.com>
 MIME-Version: 1.0
-References: <cover.1648674305.git.marcelo.schmitt1@gmail.com> <7d793c1b9f87d9cb8ac0e858e561e108c2bf0176.1648674305.git.marcelo.schmitt1@gmail.com>
-In-Reply-To: <7d793c1b9f87d9cb8ac0e858e561e108c2bf0176.1648674305.git.marcelo.schmitt1@gmail.com>
-From:   Dongliang Mu <mudongliangabcd@gmail.com>
-Date:   Thu, 31 Mar 2022 12:14:19 +0800
-Message-ID: <CAD-N9QVvgCqbwiebjVX2_81pH_YhK+j4hhJPG3fbWbAtzFVJTQ@mail.gmail.com>
-Subject: Re: [PATCH v3 1/2] Documentation: dev-tools: Add a section for static
- analysis tools
-To:     Marcelo Schmitt <marcelo.schmitt1@gmail.com>
-Cc:     Jonathan Corbet <corbet@lwn.net>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        dlatypov@google.com, davidgow@google.com,
-        linux-doc@vger.kernel.org, linux-sparse@vger.kernel.org,
-        cocci@inria.fr, smatch@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        skhan@linuxfoundation.org,
-        Dan Carpenter <dan.carpenter@oracle.com>, julia.lawall@inria.fr
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 31, 2022 at 12:07 PM Marcelo Schmitt
-<marcelo.schmitt1@gmail.com> wrote:
->
-> Complement the Kernel Testing Guide documentation page by adding a
-> section about static analysis tools.
->
-> Signed-off-by: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
-> Acked-by: Daniel Latypov <dlatypov@google.com>
-> Acked-by: Dan Carpenter <dan.carpenter@oracle.com>
-> Acked-by: Julia Lawall <julia.lawall@inria.fr>
-> Reviewed-by: David Gow <davidgow@google.com>
-> Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
-> ---
-> Change log v2 -> v3:
-> - Added Julia's acknowledgment tag
->
-> Change log v1 -> v2:
-> - Brought generic tool characteristics to the intro paragraph
-> - Made explicit that these tools run at compile time
-> - Added a note of caution about false positives
-> - Updated Coccinelle info to make it sound better and be more skimmable
->
->  Documentation/dev-tools/testing-overview.rst | 31 ++++++++++++++++++++
->  1 file changed, 31 insertions(+)
->
-> diff --git a/Documentation/dev-tools/testing-overview.rst b/Documentation/dev-tools/testing-overview.rst
-> index 65feb81edb14..b5e02dd3fd94 100644
-> --- a/Documentation/dev-tools/testing-overview.rst
-> +++ b/Documentation/dev-tools/testing-overview.rst
-> @@ -115,3 +115,34 @@ that none of these errors are occurring during the test.
->  Some of these tools integrate with KUnit or kselftest and will
->  automatically fail tests if an issue is detected.
->
-> +Static Analysis Tools
-> +=====================
-> +
-> +In addition to testing a running kernel, one can also analyze kernel source code
-> +directly (**at compile time**) using **static analysis** tools. The tools
-> +commonly used in the kernel allow one to inspect the whole source tree or just
-> +specific files within it. They make it easier to detect and fix problems during
-> +the development process.
-> +
-> +Sparse can help test the kernel by performing type-checking, lock checking,
-> +value range checking, in addition to reporting various errors and warnings while
-> +examining the code. See the Documentation/dev-tools/sparse.rst documentation
-> +page for details on how to use it.
-> +
-> +Smatch extends Sparse and provides additional checks for programming logic
-> +mistakes such as missing breaks in switch statements, unused return values on
-> +error checking, forgetting to set an error code in the return of an error path,
-> +etc. Smatch also has tests against more serious issues such as integer
-> +overflows, null pointer dereferences, and memory leaks. See the project page at
-> +http://smatch.sourceforge.net/.
-> +
-> +Coccinelle is another static analyzer at our disposal. Coccinelle is often used
-> +to aid refactoring and collateral evolution of source code, but it can also help
-> +to avoid certain bugs that occur in common code patterns. The types of tests
-> +available include API tests, tests for correct usage of kernel iterators, checks
-> +for the soundness of free operations, analysis of locking behavior, and further
-> +tests known to help keep consistent kernel usage. See the
-> +Documentation/dev-tools/coccinelle.rst documentation page for details.
-> +
-> +Beware, though, that static analysis tools suffer from **false positives**.
-> +Errors and warns need to be evaluated carefully before attempting to fix them.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   74164d284b2909de0ba13518cc063e9ea9334749
+commit: f68f2ff91512c199ec24883001245912afc17873 fortify: Detect struct member overflows in memcpy() at compile-time
+date:   6 weeks ago
+config: arm64-randconfig-s031-20220330 (https://download.01.org/0day-ci/archive/20220331/202203311231.qRJRy6tp-lkp@intel.com/config)
+compiler: aarch64-linux-gcc (GCC) 11.2.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=f68f2ff91512c199ec24883001245912afc17873
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout f68f2ff91512c199ec24883001245912afc17873
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/firmware/meson/
 
-Hi Marcelo,
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Should we include static analysis tools based on LLVM? For example,
-Clang static analysis.
 
-> --
-> 2.35.1
->
+sparse warnings: (new ones prefixed by >>)
+   drivers/firmware/meson/meson_sm.c:85:24: sparse: sparse: Using plain integer as NULL pointer
+   drivers/firmware/meson/meson_sm.c:170:17: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem *sm_shmem_out_base @@
+   drivers/firmware/meson/meson_sm.c:170:17: sparse:     expected void const *
+   drivers/firmware/meson/meson_sm.c:170:17: sparse:     got void [noderef] __iomem *sm_shmem_out_base
+   drivers/firmware/meson/meson_sm.c:170:17: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem *sm_shmem_out_base @@
+   drivers/firmware/meson/meson_sm.c:170:17: sparse:     expected void const *
+   drivers/firmware/meson/meson_sm.c:170:17: sparse:     got void [noderef] __iomem *sm_shmem_out_base
+   drivers/firmware/meson/meson_sm.c:170:17: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem *sm_shmem_out_base @@
+   drivers/firmware/meson/meson_sm.c:170:17: sparse:     expected void const *
+   drivers/firmware/meson/meson_sm.c:170:17: sparse:     got void [noderef] __iomem *sm_shmem_out_base
+>> drivers/firmware/meson/meson_sm.c:206:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem *sm_shmem_in_base @@
+   drivers/firmware/meson/meson_sm.c:206:9: sparse:     expected void const *
+   drivers/firmware/meson/meson_sm.c:206:9: sparse:     got void [noderef] __iomem *sm_shmem_in_base
+>> drivers/firmware/meson/meson_sm.c:206:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem *sm_shmem_in_base @@
+   drivers/firmware/meson/meson_sm.c:206:9: sparse:     expected void const *
+   drivers/firmware/meson/meson_sm.c:206:9: sparse:     got void [noderef] __iomem *sm_shmem_in_base
+   drivers/firmware/meson/meson_sm.c:206:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void * @@     got void [noderef] __iomem *sm_shmem_in_base @@
+   drivers/firmware/meson/meson_sm.c:206:9: sparse:     expected void *
+   drivers/firmware/meson/meson_sm.c:206:9: sparse:     got void [noderef] __iomem *sm_shmem_in_base
+
+vim +206 drivers/firmware/meson/meson_sm.c
+
+2c4ddb215521d5 Carlo Caione 2016-08-27  175  
+2c4ddb215521d5 Carlo Caione 2016-08-27  176  /**
+2c4ddb215521d5 Carlo Caione 2016-08-27  177   * meson_sm_call_write - send data to secure-monitor
+2c4ddb215521d5 Carlo Caione 2016-08-27  178   *
+8cde3c2153e8f5 Carlo Caione 2019-07-31  179   * @fw:		Pointer to secure-monitor firmware
+2c4ddb215521d5 Carlo Caione 2016-08-27  180   * @buffer:	Buffer containing data to send
+2c4ddb215521d5 Carlo Caione 2016-08-27  181   * @size:	Size of the data to send
+2c4ddb215521d5 Carlo Caione 2016-08-27  182   * @cmd_index:	Index of the SMC32 function ID
+2c4ddb215521d5 Carlo Caione 2016-08-27  183   * @arg0:	SMC32 Argument 0
+2c4ddb215521d5 Carlo Caione 2016-08-27  184   * @arg1:	SMC32 Argument 1
+2c4ddb215521d5 Carlo Caione 2016-08-27  185   * @arg2:	SMC32 Argument 2
+2c4ddb215521d5 Carlo Caione 2016-08-27  186   * @arg3:	SMC32 Argument 3
+2c4ddb215521d5 Carlo Caione 2016-08-27  187   * @arg4:	SMC32 Argument 4
+2c4ddb215521d5 Carlo Caione 2016-08-27  188   *
+2c4ddb215521d5 Carlo Caione 2016-08-27  189   * Return:	size of sent data on success, a negative value on error
+2c4ddb215521d5 Carlo Caione 2016-08-27  190   */
+8cde3c2153e8f5 Carlo Caione 2019-07-31  191  int meson_sm_call_write(struct meson_sm_firmware *fw, void *buffer,
+8cde3c2153e8f5 Carlo Caione 2019-07-31  192  			unsigned int size, unsigned int cmd_index, u32 arg0,
+8cde3c2153e8f5 Carlo Caione 2019-07-31  193  			u32 arg1, u32 arg2, u32 arg3, u32 arg4)
+2c4ddb215521d5 Carlo Caione 2016-08-27  194  {
+2c4ddb215521d5 Carlo Caione 2016-08-27  195  	u32 written;
+2c4ddb215521d5 Carlo Caione 2016-08-27  196  
+8cde3c2153e8f5 Carlo Caione 2019-07-31  197  	if (!fw->chip)
+2c4ddb215521d5 Carlo Caione 2016-08-27  198  		return -ENOENT;
+2c4ddb215521d5 Carlo Caione 2016-08-27  199  
+8cde3c2153e8f5 Carlo Caione 2019-07-31  200  	if (size > fw->chip->shmem_size)
+2c4ddb215521d5 Carlo Caione 2016-08-27  201  		return -EINVAL;
+2c4ddb215521d5 Carlo Caione 2016-08-27  202  
+8cde3c2153e8f5 Carlo Caione 2019-07-31  203  	if (!fw->chip->cmd_shmem_in_base)
+2c4ddb215521d5 Carlo Caione 2016-08-27  204  		return -EINVAL;
+2c4ddb215521d5 Carlo Caione 2016-08-27  205  
+8cde3c2153e8f5 Carlo Caione 2019-07-31 @206  	memcpy(fw->sm_shmem_in_base, buffer, size);
+2c4ddb215521d5 Carlo Caione 2016-08-27  207  
+8cde3c2153e8f5 Carlo Caione 2019-07-31  208  	if (meson_sm_call(fw, cmd_index, &written, arg0, arg1, arg2, arg3, arg4) < 0)
+2c4ddb215521d5 Carlo Caione 2016-08-27  209  		return -EINVAL;
+2c4ddb215521d5 Carlo Caione 2016-08-27  210  
+2c4ddb215521d5 Carlo Caione 2016-08-27  211  	if (!written)
+2c4ddb215521d5 Carlo Caione 2016-08-27  212  		return -EINVAL;
+2c4ddb215521d5 Carlo Caione 2016-08-27  213  
+2c4ddb215521d5 Carlo Caione 2016-08-27  214  	return written;
+2c4ddb215521d5 Carlo Caione 2016-08-27  215  }
+2c4ddb215521d5 Carlo Caione 2016-08-27  216  EXPORT_SYMBOL(meson_sm_call_write);
+2c4ddb215521d5 Carlo Caione 2016-08-27  217  
+
+:::::: The code at line 206 was first introduced by commit
+:::::: 8cde3c2153e8f57be884c0e73f18bc4de150e870 firmware: meson_sm: Rework driver as a proper platform driver
+
+:::::: TO: Carlo Caione <ccaione@baylibre.com>
+:::::: CC: Kevin Hilman <khilman@baylibre.com>
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
