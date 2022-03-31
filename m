@@ -2,23 +2,23 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9355C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 11:59:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17391C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 11:59:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235371AbiCaMBB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 08:01:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45576 "EHLO
+        id S235566AbiCaMBE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 08:01:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235427AbiCaMAV (ORCPT
+        with ESMTP id S235482AbiCaMAZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 08:00:21 -0400
-Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFDE8D67;
-        Thu, 31 Mar 2022 04:58:15 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R491e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=18;SR=0;TI=SMTPD_---0V8imT9M_1648727890;
-Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V8imT9M_1648727890)
+        Thu, 31 Mar 2022 08:00:25 -0400
+Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC330AE59;
+        Thu, 31 Mar 2022 04:58:18 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R381e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=18;SR=0;TI=SMTPD_---0V8imruN_1648727893;
+Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V8imruN_1648727893)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Thu, 31 Mar 2022 19:58:11 +0800
+          Thu, 31 Mar 2022 19:58:14 +0800
 From:   Jeffle Xu <jefflexu@linux.alibaba.com>
 To:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
         chao@kernel.org, linux-erofs@lists.ozlabs.org
@@ -29,9 +29,9 @@ Cc:     torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
         eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
         luodaowen.backend@bytedance.com, tianzichen@kuaishou.com,
         fannaihao@baidu.com
-Subject: [PATCH v7 11/19] erofs: add anonymous inode managing page cache for data blob
-Date:   Thu, 31 Mar 2022 19:57:45 +0800
-Message-Id: <20220331115753.89431-12-jefflexu@linux.alibaba.com>
+Subject: [PATCH v7 13/19] erofs: register fscache context for primary data blob
+Date:   Thu, 31 Mar 2022 19:57:47 +0800
+Message-Id: <20220331115753.89431-14-jefflexu@linux.alibaba.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220331115753.89431-1-jefflexu@linux.alibaba.com>
 References: <20220331115753.89431-1-jefflexu@linux.alibaba.com>
@@ -41,128 +41,95 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Introduce one anonymous inode managing page cache for data blob. Then
-erofs could read directly from the address space of the anonymous inode
-when cache hit.
+Registers fscache context for primary data blob. Also move the
+initialization of s_op and related fields forward, since anonymous
+inode will be allocated under the super block when registering the
+fscache context.
+
+Something worth mentioning about the cleanup routine.
+
+1. The fscache context will instantiate anonymous inodes under the super
+block. Release these anonymous inodes when .put_super() is called, or
+we'll get "VFS: Busy inodes after unmount." warning.
+
+2. The fscache context is initialized prior to the root inode. If
+.kill_sb() is called when mount failed, .put_super() won't be called
+when root inode has not been initialized yet. Thus .kill_sb() shall
+also contain the cleanup routine.
 
 Signed-off-by: Jeffle Xu <jefflexu@linux.alibaba.com>
 ---
- fs/erofs/fscache.c  | 39 ++++++++++++++++++++++++++++++++++++---
- fs/erofs/internal.h |  6 ++++--
- 2 files changed, 40 insertions(+), 5 deletions(-)
+ fs/erofs/internal.h |  1 +
+ fs/erofs/super.c    | 15 +++++++++++----
+ 2 files changed, 12 insertions(+), 4 deletions(-)
 
-diff --git a/fs/erofs/fscache.c b/fs/erofs/fscache.c
-index 67a3c4935245..1c88614203d2 100644
---- a/fs/erofs/fscache.c
-+++ b/fs/erofs/fscache.c
-@@ -5,17 +5,22 @@
- #include <linux/fscache.h>
- #include "internal.h"
- 
-+static const struct address_space_operations erofs_fscache_meta_aops = {
-+};
-+
- /*
-  * Create an fscache context for data blob.
-  * Return: 0 on success and allocated fscache context is assigned to @fscache,
-  *	   negative error number on failure.
-  */
- int erofs_fscache_register_cookie(struct super_block *sb,
--				  struct erofs_fscache **fscache, char *name)
-+				  struct erofs_fscache **fscache,
-+				  char *name, bool need_inode)
- {
- 	struct fscache_volume *volume = EROFS_SB(sb)->volume;
- 	struct erofs_fscache *ctx;
- 	struct fscache_cookie *cookie;
-+	int ret;
- 
- 	ctx = kzalloc(sizeof(*ctx), GFP_KERNEL);
- 	if (!ctx)
-@@ -25,15 +30,40 @@ int erofs_fscache_register_cookie(struct super_block *sb,
- 					name, strlen(name), NULL, 0, 0);
- 	if (!cookie) {
- 		erofs_err(sb, "failed to get cookie for %s", name);
--		kfree(name);
--		return -EINVAL;
-+		ret = -EINVAL;
-+		goto err;
- 	}
- 
- 	fscache_use_cookie(cookie, false);
- 	ctx->cookie = cookie;
- 
-+	if (need_inode) {
-+		struct inode *const inode = new_inode(sb);
-+
-+		if (!inode) {
-+			erofs_err(sb, "failed to get anon inode for %s", name);
-+			ret = -ENOMEM;
-+			goto err_cookie;
-+		}
-+
-+		set_nlink(inode, 1);
-+		inode->i_size = OFFSET_MAX;
-+		inode->i_mapping->a_ops = &erofs_fscache_meta_aops;
-+		mapping_set_gfp_mask(inode->i_mapping, GFP_NOFS);
-+
-+		ctx->inode = inode;
-+	}
-+
- 	*fscache = ctx;
- 	return 0;
-+
-+err_cookie:
-+	fscache_unuse_cookie(ctx->cookie, NULL, NULL);
-+	fscache_relinquish_cookie(ctx->cookie, false);
-+	ctx->cookie = NULL;
-+err:
-+	kfree(ctx);
-+	return ret;
- }
- 
- void erofs_fscache_unregister_cookie(struct erofs_fscache **fscache)
-@@ -47,6 +77,9 @@ void erofs_fscache_unregister_cookie(struct erofs_fscache **fscache)
- 	fscache_relinquish_cookie(ctx->cookie, false);
- 	ctx->cookie = NULL;
- 
-+	iput(ctx->inode);
-+	ctx->inode = NULL;
-+
- 	kfree(ctx);
- 	*fscache = NULL;
- }
 diff --git a/fs/erofs/internal.h b/fs/erofs/internal.h
-index c6a3351a4d7d..3a4a344cfed3 100644
+index 3a4a344cfed3..eb37b33bce37 100644
 --- a/fs/erofs/internal.h
 +++ b/fs/erofs/internal.h
-@@ -99,6 +99,7 @@ struct erofs_sb_lz4_info {
+@@ -155,6 +155,7 @@ struct erofs_sb_info {
  
- struct erofs_fscache {
- 	struct fscache_cookie *cookie;
-+	struct inode *inode;
+ 	/* fscache support */
+ 	struct fscache_volume *volume;
++	struct erofs_fscache *s_fscache;
  };
  
- struct erofs_sb_info {
-@@ -632,7 +633,8 @@ int erofs_fscache_register_fs(struct super_block *sb);
- void erofs_fscache_unregister_fs(struct super_block *sb);
+ #define EROFS_SB(sb) ((struct erofs_sb_info *)(sb)->s_fs_info)
+diff --git a/fs/erofs/super.c b/fs/erofs/super.c
+index 6590ed1b7d3b..9498b899b73b 100644
+--- a/fs/erofs/super.c
++++ b/fs/erofs/super.c
+@@ -585,6 +585,9 @@ static int erofs_fc_fill_super(struct super_block *sb, struct fs_context *fc)
+ 	int err;
  
- int erofs_fscache_register_cookie(struct super_block *sb,
--				  struct erofs_fscache **fscache, char *name);
-+				  struct erofs_fscache **fscache,
-+				  char *name, bool need_inode);
- void erofs_fscache_unregister_cookie(struct erofs_fscache **fscache);
- #else
- static inline int erofs_fscache_register_fs(struct super_block *sb) { return 0; }
-@@ -640,7 +642,7 @@ static inline void erofs_fscache_unregister_fs(struct super_block *sb) {}
+ 	sb->s_magic = EROFS_SUPER_MAGIC;
++	sb->s_flags |= SB_RDONLY | SB_NOATIME;
++	sb->s_maxbytes = MAX_LFS_FILESIZE;
++	sb->s_op = &erofs_sops;
  
- static inline int erofs_fscache_register_cookie(struct super_block *sb,
- 						struct erofs_fscache **fscache,
--						char *name)
-+						char *name, bool need_inode)
- {
- 	return -EOPNOTSUPP;
+ 	if (!sb_set_blocksize(sb, EROFS_BLKSIZ)) {
+ 		erofs_err(sb, "failed to set erofs blksize");
+@@ -605,6 +608,11 @@ static int erofs_fc_fill_super(struct super_block *sb, struct fs_context *fc)
+ 		err = erofs_fscache_register_fs(sb);
+ 		if (err)
+ 			return err;
++
++		err = erofs_fscache_register_cookie(sb, &sbi->s_fscache,
++						    sbi->opt.fsid, true);
++		if (err)
++			return err;
+ 	}
+ 
+ 	err = erofs_read_superblock(sb);
+@@ -619,11 +627,8 @@ static int erofs_fc_fill_super(struct super_block *sb, struct fs_context *fc)
+ 			clear_opt(&sbi->opt, DAX_ALWAYS);
+ 		}
+ 	}
+-	sb->s_flags |= SB_RDONLY | SB_NOATIME;
+-	sb->s_maxbytes = MAX_LFS_FILESIZE;
+-	sb->s_time_gran = 1;
+ 
+-	sb->s_op = &erofs_sops;
++	sb->s_time_gran = 1;
+ 	sb->s_xattr = erofs_xattr_handlers;
+ 
+ 	if (test_opt(&sbi->opt, POSIX_ACL))
+@@ -763,6 +768,7 @@ static void erofs_kill_sb(struct super_block *sb)
+ 
+ 	erofs_free_dev_context(sbi->devs);
+ 	fs_put_dax(sbi->dax_dev);
++	erofs_fscache_unregister_cookie(&sbi->s_fscache);
+ 	erofs_fscache_unregister_fs(sb);
+ 	kfree(sbi);
+ 	sb->s_fs_info = NULL;
+@@ -781,6 +787,7 @@ static void erofs_put_super(struct super_block *sb)
+ 	iput(sbi->managed_cache);
+ 	sbi->managed_cache = NULL;
+ #endif
++	erofs_fscache_unregister_cookie(&sbi->s_fscache);
  }
+ 
+ static struct file_system_type erofs_fs_type = {
 -- 
 2.27.0
 
