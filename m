@@ -2,166 +2,195 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78C4DC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 13:21:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E18A6C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 13:24:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236776AbiCaNXF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 09:23:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51764 "EHLO
+        id S236797AbiCaN0c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 09:26:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236769AbiCaNXB (ORCPT
+        with ESMTP id S235041AbiCaN0a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 09:23:01 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB16F1EA2BE
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 06:21:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648732874; x=1680268874;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=YphCyCDyYB++FjBDTmWfkqYVyu71VV0RtubYJYXU9co=;
-  b=hTMKSKZD3NbIuR6+xuPR6O73Iaut50aTuYhYntCVBzBrA5wIBlgr7XXo
-   5G96yacIz46XXALqjvOud/TxWmmR1sOh2hO0DimTBucDXhRQ7BCfC2gkp
-   R++9KnSVliupu5pKwTtPEQjuj7H2Fk9+18KKqdlAXeZZYpHr5OUOE2Qz/
-   n6L2OIj56sjc/47e+4vgSNz5Jt4GHGwbr0j5mcO/juZT5Wupadots6Dwd
-   yWKBFcCIMPI0t96dUHyMHXxQ0Pr7Y5ZVy8PDzA8B+TIZXvXskfx4NUcRw
-   1mXTp0+lBBUXnkiqHMOoAwCPqxlzSdqqWTevAXiU8boZjsxWPkUZFHN6g
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="247335448"
-X-IronPort-AV: E=Sophos;i="5.90,225,1643702400"; 
-   d="scan'208";a="247335448"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2022 06:21:14 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,225,1643702400"; 
-   d="scan'208";a="654742857"
-Received: from lkp-server02.sh.intel.com (HELO 3231c491b0e2) ([10.239.97.151])
-  by orsmga004.jf.intel.com with ESMTP; 31 Mar 2022 06:21:12 -0700
-Received: from kbuild by 3231c491b0e2 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nZujf-0000Hg-UM;
-        Thu, 31 Mar 2022 13:21:11 +0000
-Date:   Thu, 31 Mar 2022 21:20:15 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [jgunthorpe:vfio_v5.18 16/25]
- drivers/vfio/pci/vfio_pci_zdev.c:112:5: warning: no previous prototype for
- function 'vfio_pci_info_zdev_add_caps'
-Message-ID: <202203312150.HOgKwSSc-lkp@intel.com>
+        Thu, 31 Mar 2022 09:26:30 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BD771F6856;
+        Thu, 31 Mar 2022 06:24:43 -0700 (PDT)
+Received: from zn.tnic (p2e55dff8.dip0.t-ipconnect.de [46.85.223.248])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id A89BA1EC04C1;
+        Thu, 31 Mar 2022 15:24:37 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1648733077;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=4UNTCP4E6u/c+TqhEnjUuSPSJD4oKFcEuXmrS1RGbf0=;
+        b=OMRr8n4oC0Ego10M8thwPdE/z+EvjZU86JIUR8frheC+VZEpjQnTzrpYaTPieL5n8OAVgu
+        FtIxo0jr3F/cK0LbwepuOWrMYborpo5astg7yJd5YiCGM1b5HYC2fE+kM8DMUCZ44nbGQH
+        rlVYKBKMGVNYlDMEH8pcE7G6mso0zyI=
+Date:   Thu, 31 Mar 2022 15:24:37 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Smita Koralahalli <Smita.KoralahalliChannabasappa@amd.com>
+Cc:     x86@kernel.org, linux-edac@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        James Morse <james.morse@arm.com>,
+        Robert Richter <rric@kernel.org>,
+        Yazen Ghannam <yazen.ghannam@amd.com>
+Subject: Re: [PATCH v4 2/3] x86/mce: Define function to extract ErrorAddr
+ from MCA_ADDR
+Message-ID: <YkWrlTIK/ZxsQekX@zn.tnic>
+References: <20220225193342.215780-1-Smita.KoralahalliChannabasappa@amd.com>
+ <20220225193342.215780-3-Smita.KoralahalliChannabasappa@amd.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220225193342.215780-3-Smita.KoralahalliChannabasappa@amd.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/jgunthorpe/linux vfio_v5.18
-head:   2af6f07c2b38e8b37c41347ff9bd2b2e8b32a8d6
-commit: cbf96a0bc2aeb156e3bedee832c2c336953d8df2 [16/25] vfio/pci: Split linux/vfio_pci_core.h
-config: s390-randconfig-r025-20220331 (https://download.01.org/0day-ci/archive/20220331/202203312150.HOgKwSSc-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 881350a92d821d4f8e4fa648443ed1d17e251188)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install s390 cross compiling tool for clang build
-        # apt-get install binutils-s390x-linux-gnu
-        # https://github.com/jgunthorpe/linux/commit/cbf96a0bc2aeb156e3bedee832c2c336953d8df2
-        git remote add jgunthorpe https://github.com/jgunthorpe/linux
-        git fetch --no-tags jgunthorpe vfio_v5.18
-        git checkout cbf96a0bc2aeb156e3bedee832c2c336953d8df2
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash arch/s390/kernel/ arch/s390/lib/ drivers/vfio/pci/ kernel/locking/ kernel/trace/
+On Fri, Feb 25, 2022 at 01:33:41PM -0600, Smita Koralahalli wrote:
+> Move MCA_ADDR[ErrorAddr] extraction into a separate helper function. This
+> will be further refactored to support extended ErrorAddr bits in MCA_ADDR
+> in newer AMD processors such as AMD 'Milan'.
+> 
+> Signed-off-by: Smita Koralahalli <Smita.KoralahalliChannabasappa@amd.com>
+> Reviewed-by: Yazen Ghannam <yazen.ghannam@amd.com>
+> ---
+> Link:
+> https://lkml.kernel.org/r/20220211223442.254489-2-Smita.KoralahalliChannabasappa@amd.com
+> 
+> v2:
+> 	No change.
+> v3:
+> 	Rebased on the latest tip tree. No functional changes.
+> v4:
+> 	Commit description change to be void of the patch linearity.
+> ---
+>  arch/x86/include/asm/mce.h     |  2 ++
+>  arch/x86/kernel/cpu/mce/amd.c  | 14 +++++++++-----
+>  arch/x86/kernel/cpu/mce/core.c |  7 ++-----
+>  3 files changed, 13 insertions(+), 10 deletions(-)
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+So if you're going to extract functionality, make sure you extract it
+all and keep it all encapsulated in a single function, see below.
 
-All warnings (new ones prefixed by >>):
+Now take this one pls and do your patch 3 ontop by extending the comment
+over smca_extract_err_addr() with the new functionality.
 
-   In file included from drivers/vfio/pci/vfio_pci_zdev.c:9:
-   In file included from include/linux/io.h:13:
-   In file included from arch/s390/include/asm/io.h:75:
-   include/asm-generic/io.h:464:31: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           val = __raw_readb(PCI_IOBASE + addr);
-                             ~~~~~~~~~~ ^
-   include/asm-generic/io.h:477:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           val = __le16_to_cpu((__le16 __force)__raw_readw(PCI_IOBASE + addr));
-                                                           ~~~~~~~~~~ ^
-   include/uapi/linux/byteorder/big_endian.h:37:59: note: expanded from macro '__le16_to_cpu'
-   #define __le16_to_cpu(x) __swab16((__force __u16)(__le16)(x))
-                                                             ^
-   include/uapi/linux/swab.h:102:54: note: expanded from macro '__swab16'
-   #define __swab16(x) (__u16)__builtin_bswap16((__u16)(x))
-                                                        ^
-   In file included from drivers/vfio/pci/vfio_pci_zdev.c:9:
-   In file included from include/linux/io.h:13:
-   In file included from arch/s390/include/asm/io.h:75:
-   include/asm-generic/io.h:490:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
-                                                           ~~~~~~~~~~ ^
-   include/uapi/linux/byteorder/big_endian.h:35:59: note: expanded from macro '__le32_to_cpu'
-   #define __le32_to_cpu(x) __swab32((__force __u32)(__le32)(x))
-                                                             ^
-   include/uapi/linux/swab.h:115:54: note: expanded from macro '__swab32'
-   #define __swab32(x) (__u32)__builtin_bswap32((__u32)(x))
-                                                        ^
-   In file included from drivers/vfio/pci/vfio_pci_zdev.c:9:
-   In file included from include/linux/io.h:13:
-   In file included from arch/s390/include/asm/io.h:75:
-   include/asm-generic/io.h:501:33: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           __raw_writeb(value, PCI_IOBASE + addr);
-                               ~~~~~~~~~~ ^
-   include/asm-generic/io.h:511:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           __raw_writew((u16 __force)cpu_to_le16(value), PCI_IOBASE + addr);
-                                                         ~~~~~~~~~~ ^
-   include/asm-generic/io.h:521:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           __raw_writel((u32 __force)cpu_to_le32(value), PCI_IOBASE + addr);
-                                                         ~~~~~~~~~~ ^
-   include/asm-generic/io.h:609:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           readsb(PCI_IOBASE + addr, buffer, count);
-                  ~~~~~~~~~~ ^
-   include/asm-generic/io.h:617:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           readsw(PCI_IOBASE + addr, buffer, count);
-                  ~~~~~~~~~~ ^
-   include/asm-generic/io.h:625:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           readsl(PCI_IOBASE + addr, buffer, count);
-                  ~~~~~~~~~~ ^
-   include/asm-generic/io.h:634:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           writesb(PCI_IOBASE + addr, buffer, count);
-                   ~~~~~~~~~~ ^
-   include/asm-generic/io.h:643:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           writesw(PCI_IOBASE + addr, buffer, count);
-                   ~~~~~~~~~~ ^
-   include/asm-generic/io.h:652:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           writesl(PCI_IOBASE + addr, buffer, count);
-                   ~~~~~~~~~~ ^
->> drivers/vfio/pci/vfio_pci_zdev.c:112:5: warning: no previous prototype for function 'vfio_pci_info_zdev_add_caps' [-Wmissing-prototypes]
-   int vfio_pci_info_zdev_add_caps(struct vfio_pci_core_device *vdev,
-       ^
-   drivers/vfio/pci/vfio_pci_zdev.c:112:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   int vfio_pci_info_zdev_add_caps(struct vfio_pci_core_device *vdev,
-   ^
-   static 
-   13 warnings generated.
+Thx.
 
+---
+From: Smita Koralahalli <Smita.KoralahalliChannabasappa@amd.com>
+Date: Fri, 25 Feb 2022 13:33:41 -0600
+Subject: [PATCH] x86/mce: Define a function to extract ErrorAddr from MCA_ADDR
 
-vim +/vfio_pci_info_zdev_add_caps +112 drivers/vfio/pci/vfio_pci_zdev.c
+Move MCA_ADDR[ErrorAddr] extraction into a separate helper function. This
+will be further refactored to support extended ErrorAddr bits in MCA_ADDR
+in newer AMD CPUs.
 
-e6b817d4b8217a Matthew Rosato 2020-10-07  108  
-e6b817d4b8217a Matthew Rosato 2020-10-07  109  /*
-e6b817d4b8217a Matthew Rosato 2020-10-07  110   * Add all supported capabilities to the VFIO_DEVICE_GET_INFO capability chain.
-e6b817d4b8217a Matthew Rosato 2020-10-07  111   */
-536475109c8284 Max Gurtovoy   2021-08-26 @112  int vfio_pci_info_zdev_add_caps(struct vfio_pci_core_device *vdev,
+  [ bp: Massage. ]
 
-:::::: The code at line 112 was first introduced by commit
-:::::: 536475109c82841126ca341ef0f138e7298880c1 vfio/pci: Rename vfio_pci_device to vfio_pci_core_device
+Signed-off-by: Smita Koralahalli <Smita.KoralahalliChannabasappa@amd.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Yazen Ghannam <yazen.ghannam@amd.com>
+Link: https://lore.kernel.org/r/20220225193342.215780-3-Smita.KoralahalliChannabasappa@amd.com
+---
+ arch/x86/include/asm/mce.h     |  2 ++
+ arch/x86/kernel/cpu/mce/amd.c  | 23 ++++++++++++++---------
+ arch/x86/kernel/cpu/mce/core.c | 11 +----------
+ 3 files changed, 17 insertions(+), 19 deletions(-)
 
-:::::: TO: Max Gurtovoy <mgurtovoy@nvidia.com>
-:::::: CC: Alex Williamson <alex.williamson@redhat.com>
+diff --git a/arch/x86/include/asm/mce.h b/arch/x86/include/asm/mce.h
+index cc73061e7255..a1da72941f4e 100644
+--- a/arch/x86/include/asm/mce.h
++++ b/arch/x86/include/asm/mce.h
+@@ -337,12 +337,14 @@ extern int mce_threshold_remove_device(unsigned int cpu);
+ 
+ void mce_amd_feature_init(struct cpuinfo_x86 *c);
+ enum smca_bank_types smca_get_bank_type(unsigned int cpu, unsigned int bank);
++void smca_extract_err_addr(struct mce *m);
+ #else
+ 
+ static inline int mce_threshold_create_device(unsigned int cpu)		{ return 0; };
+ static inline int mce_threshold_remove_device(unsigned int cpu)		{ return 0; };
+ static inline bool amd_mce_is_memory_error(struct mce *m)		{ return false; };
+ static inline void mce_amd_feature_init(struct cpuinfo_x86 *c)		{ }
++static inline void smca_extract_err_addr(struct mce *m)			{ }
+ #endif
+ 
+ static inline void mce_hygon_feature_init(struct cpuinfo_x86 *c)	{ return mce_amd_feature_init(c); }
+diff --git a/arch/x86/kernel/cpu/mce/amd.c b/arch/x86/kernel/cpu/mce/amd.c
+index 1940d305db1c..a1a4a5dc53e8 100644
+--- a/arch/x86/kernel/cpu/mce/amd.c
++++ b/arch/x86/kernel/cpu/mce/amd.c
+@@ -722,6 +722,19 @@ bool amd_mce_is_memory_error(struct mce *m)
+ 	return m->bank == 4 && xec == 0x8;
+ }
+ 
++/* Extract [55:<lsb>] where lsb is the LS-*valid* bit of the address bits. */
++void smca_extract_err_addr(struct mce *m)
++{
++	u8 lsb;
++
++	if (!mce_flags.smca)
++		return;
++
++	lsb = (m->addr >> 56) & 0x3f;
++
++	m->addr &= GENMASK_ULL(55, lsb);
++}
++
+ static void __log_error(unsigned int bank, u64 status, u64 addr, u64 misc)
+ {
+ 	struct mce m;
+@@ -736,15 +749,7 @@ static void __log_error(unsigned int bank, u64 status, u64 addr, u64 misc)
+ 	if (m.status & MCI_STATUS_ADDRV) {
+ 		m.addr = addr;
+ 
+-		/*
+-		 * Extract [55:<lsb>] where lsb is the least significant
+-		 * *valid* bit of the address bits.
+-		 */
+-		if (mce_flags.smca) {
+-			u8 lsb = (m.addr >> 56) & 0x3f;
+-
+-			m.addr &= GENMASK_ULL(55, lsb);
+-		}
++		smca_extract_err_addr(&m);
+ 	}
+ 
+ 	if (mce_flags.smca) {
+diff --git a/arch/x86/kernel/cpu/mce/core.c b/arch/x86/kernel/cpu/mce/core.c
+index d775fcd74e98..5ba2df911d19 100644
+--- a/arch/x86/kernel/cpu/mce/core.c
++++ b/arch/x86/kernel/cpu/mce/core.c
+@@ -632,16 +632,7 @@ static noinstr void mce_read_aux(struct mce *m, int i)
+ 			m->addr >>= shift;
+ 			m->addr <<= shift;
+ 		}
+-
+-		/*
+-		 * Extract [55:<lsb>] where lsb is the least significant
+-		 * *valid* bit of the address bits.
+-		 */
+-		if (mce_flags.smca) {
+-			u8 lsb = (m->addr >> 56) & 0x3f;
+-
+-			m->addr &= GENMASK_ULL(55, lsb);
+-		}
++		smca_extract_err_addr(m);
+ 	}
+ 
+ 	if (mce_flags.smca) {
+-- 
+2.35.1
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
