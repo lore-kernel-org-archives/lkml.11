@@ -2,155 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 957DFC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 19:13:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2ABEC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 19:13:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240621AbiCaTOz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 15:14:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44948 "EHLO
+        id S240265AbiCaTPB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 15:15:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240520AbiCaTOm (ORCPT
+        with ESMTP id S240578AbiCaTOn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 15:14:42 -0400
-Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B66223B3CA
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 12:12:54 -0700 (PDT)
-Received: by mail-yb1-xb2f.google.com with SMTP id f38so1151971ybi.3
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 12:12:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=XIQLufNb37SCfOzkOCArPbhqd4DOihH6/n5qO8AwDXA=;
-        b=R6I0ltOcDsZE6TO42XqLU2pi6aXqi+axzt6tZ9WuRhnhuxPDo1JlBgaiUiR+ry/fUZ
-         z7cFv/K0drAop+xXPPRstFPeHGpQX0I6MxK1zt4zCc88oCflCsWodPCJMUUZ8xOsztDO
-         UDd7ulS9tN1vEdzhjIk5RjB13wFcMOZkSDOVPCuKDau6HommqV3hbo88nhqujXLFvnwt
-         w/r4MqFDxq0wMDjtqSAiCAnivUbkQQ6Xa/oFbN1rg9w5Oz4CF535vdZx0m81y7/8fVf7
-         A3RCvBMoYUtuJA2LhR3ed7A4QOvKZ+B61zCsk8gW5eeGW0zQBi+B90qNLbCj1wIkfzt1
-         5Low==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=XIQLufNb37SCfOzkOCArPbhqd4DOihH6/n5qO8AwDXA=;
-        b=My6bXAIpfYuJaNjsDnNkBwnhmkvcdyqtM5MnQ1F+Eh4ytw0Sxx08lUz+KYHBMzi8zc
-         MMqy3tqAmJrKn9B2FApCBvO8o/lMZnza6kIWLPy6ORS0RS/jat/CrTsp/uv3oGngJ18A
-         O6feV9xP7g9GyOUmdoPpjgAzy5nbNMfpOoRaSXag/QQ0z58VSxM3m6PI4p1ovaPh6UyK
-         go22Xd4n5XCOmWWs6Xzn80TDP4zlZjWS4K9gfiM6asmTb9xtUKJU71IiIE6mXNOO70Hd
-         g0NUx2fW2TL7R6n7yu+zWWmVkuXvk51A245qfmI67qX8Gt64wsVZX9VWUx0KpFCTBfX7
-         SLEQ==
-X-Gm-Message-State: AOAM533MX8UDIeFbW/bEsoArP1bw3teg7c8GhtLK5NLXNO2V16C+ybAc
-        Wof9eWRwxWpy/OabX/ZPwoXERvtJ9acNSaLUn4xDWQ==
-X-Google-Smtp-Source: ABdhPJy3BzUmaImydhy+NihrdMz3H2/nNTM0A39THzkTz6E06FD9WgG+878ejt/YRoBL1zcjCZHBODNNUeHDpoeDEbU=
-X-Received: by 2002:a25:b6c6:0:b0:63c:923b:c02a with SMTP id
- f6-20020a25b6c6000000b0063c923bc02amr5569490ybm.441.1648753973511; Thu, 31
- Mar 2022 12:12:53 -0700 (PDT)
-MIME-Version: 1.0
-References: <202203311842.wFWvHrHn-lkp@intel.com>
-In-Reply-To: <202203311842.wFWvHrHn-lkp@intel.com>
-From:   Suren Baghdasaryan <surenb@google.com>
-Date:   Thu, 31 Mar 2022 12:12:42 -0700
-Message-ID: <CAJuCfpEObhCKuJeHNqxna1=N1+f738dTDnUjGPFST1PqqAqcVQ@mail.gmail.com>
-Subject: Re: [ammarfaizi2-block:google/android/kernel/common/android12-trusty-5.10
- 1060/5872] arch/arm64/mm/mmu.c:1499:5: warning: no previous prototype for 'check_range_driver_managed'
-To:     kernel test robot <lkp@intel.com>
-Cc:     Sudarshan Rajagopalan <sudaraja@codeaurora.org>,
-        kbuild-all@lists.01.org,
-        "GNU/Weeb Mailing List" <gwml@vger.gnuweeb.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        =?UTF-8?B?QXJ2ZSBIasO4bm5ldsOlZw==?= <arve@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Thu, 31 Mar 2022 15:14:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50FE423B3E0;
+        Thu, 31 Mar 2022 12:12:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BA019619A6;
+        Thu, 31 Mar 2022 19:12:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 20397C340EE;
+        Thu, 31 Mar 2022 19:12:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648753975;
+        bh=sBcvNGbvK2cYhzTho1GUag2cDtC1NXuLurwPtXH9B8U=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=rR4rZ9glYna+23LMW4uL5gcyylCnPHz7O04ssenWus7kEZJUOfARiUC5hJyZL7NNA
+         ExON1Nia+it9BeBvhRS5xqRi2z3bhi3Ecs02lEUQcGK+tJcyT/CUiH45Y6i+V8urKT
+         r80oTEUNhsMXSqTsQ5Y3fEJ4GszQ4gR4uLi0zXw9rBGlXn5YUaJ/TlKktzXorWVS7z
+         hgHdsZq8zSXEMj5Vmh8eU0+8yCSSTcJkAa2IFTR9prw+NUCbpkcSSFcoc8z8iEmSok
+         IUTOlqqzX1H/JbAbhNeaHJUiEp183aI6mew/0dEGekFA8qTNNePanBGX99b1//VIyz
+         DeWMnrosQnxkw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0DA80E7BB0B;
+        Thu, 31 Mar 2022 19:12:55 +0000 (UTC)
+Subject: Re: [GIT PULL] Networking for 5.18-rc1
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20220331172423.3669039-1-kuba@kernel.org>
+References: <20220331172423.3669039-1-kuba@kernel.org>
+X-PR-Tracked-List-Id: <netdev.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20220331172423.3669039-1-kuba@kernel.org>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.18-rc1
+X-PR-Tracked-Commit-Id: 9d570741aec1e1ebd37823b34a2958f24809ff24
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 2975dbdc3989cd66a4cb5a7c5510de2de8ee4d14
+Message-Id: <164875397505.22373.9429859030593611119.pr-tracker-bot@kernel.org>
+Date:   Thu, 31 Mar 2022 19:12:55 +0000
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     torvalds@linux-foundation.org, kuba@kernel.org,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 31, 2022 at 3:17 AM kernel test robot <lkp@intel.com> wrote:
->
-> Hi Sudarshan,
->
-> FYI, the error/warning still remains.
+The pull request you sent on Thu, 31 Mar 2022 10:24:23 -0700:
 
-The warnings has been fixed in later patch:
-https://android-review.googlesource.com/c/kernel/common/+/1668705
-android12-trusty-5.10 needs to rebase to the latest android12-5.10 to fix this.
+> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.18-rc1
 
->
-> tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android12-trusty-5.10
-> head:   07055bfd3d810d41a38354693dfaa55a6f8c0025
-> commit: 1b4aca7d82ae9b40145484fa09ceab38a6a06062 [1060/5872] ANDROID: arm64/mm: implement {populate/depopulate}_range_driver_managed
-> config: arm64-buildonly-randconfig-r005-20220331 (https://download.01.org/0day-ci/archive/20220331/202203311842.wFWvHrHn-lkp@intel.com/config)
-> compiler: aarch64-linux-gcc (GCC) 11.2.0
-> reproduce (this is a W=1 build):
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # https://github.com/ammarfaizi2/linux-block/commit/1b4aca7d82ae9b40145484fa09ceab38a6a06062
->         git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
->         git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android12-trusty-5.10
->         git checkout 1b4aca7d82ae9b40145484fa09ceab38a6a06062
->         # save the config file to linux build tree
->         mkdir build_dir
->         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm64 SHELL=/bin/bash arch/arm64/mm/ drivers/gpu/drm/hisilicon/kirin/
->
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
->
-> All warnings (new ones prefixed by >>):
->
-> >> arch/arm64/mm/mmu.c:1499:5: warning: no previous prototype for 'check_range_driver_managed' [-Wmissing-prototypes]
->     1499 | int check_range_driver_managed(u64 start, u64 size, const char *resource_name)
->          |     ^~~~~~~~~~~~~~~~~~~~~~~~~~
->    In file included from include/linux/printk.h:7,
->                     from include/linux/kernel.h:16,
->                     from arch/arm64/mm/mmu.c:11:
->    arch/arm64/mm/mmu.c: In function 'check_range_driver_managed':
->    include/linux/kern_levels.h:5:25: warning: format '%lx' expects argument of type 'long unsigned int', but argument 3 has type 'u64' {aka 'long long unsigned int'} [-Wformat=]
->        5 | #define KERN_SOH        "\001"          /* ASCII Start Of Header */
->          |                         ^~~~~~
->    include/linux/kern_levels.h:11:25: note: in expansion of macro 'KERN_SOH'
->       11 | #define KERN_ERR        KERN_SOH "3"    /* error conditions */
->          |                         ^~~~~~~~
->    include/linux/printk.h:343:16: note: in expansion of macro 'KERN_ERR'
->      343 |         printk(KERN_ERR pr_fmt(fmt), ##__VA_ARGS__)
->          |                ^~~~~~~~
->    arch/arm64/mm/mmu.c:1509:17: note: in expansion of macro 'pr_err'
->     1509 |                 pr_err("%s: couldn't find memory resource for start 0x%lx\n",
->          |                 ^~~~~~
->
->
-> vim +/check_range_driver_managed +1499 arch/arm64/mm/mmu.c
->
->   1498
-> > 1499  int check_range_driver_managed(u64 start, u64 size, const char *resource_name)
->   1500  {
->   1501          struct mem_section *ms;
->   1502          unsigned long pfn = __phys_to_pfn(start);
->   1503          unsigned long end_pfn = __phys_to_pfn(start + size);
->   1504          struct resource *res;
->   1505          unsigned long flags;
->   1506
->   1507          res = lookup_resource(&iomem_resource, start);
->   1508          if (!res) {
->   1509                  pr_err("%s: couldn't find memory resource for start 0x%lx\n",
->   1510                             __func__, start);
->   1511                  return -EINVAL;
->   1512          }
->   1513
->   1514          flags = res->flags;
->   1515
->   1516          if (!(flags & IORESOURCE_SYSRAM_DRIVER_MANAGED) ||
->   1517              strstr(resource_name, "System RAM (") != resource_name)
->   1518                  return -EINVAL;
->   1519
->   1520          for (; pfn < end_pfn; pfn += PAGES_PER_SECTION) {
->   1521                  ms = __pfn_to_section(pfn);
->   1522                  if (early_section(ms))
->   1523                          return -EINVAL;
->   1524          }
->   1525
->   1526          return 0;
->   1527  }
->   1528
->
-> --
-> 0-DAY CI Kernel Test Service
-> https://01.org/lkp
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/2975dbdc3989cd66a4cb5a7c5510de2de8ee4d14
+
+Thank you!
+
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
