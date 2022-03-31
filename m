@@ -2,286 +2,297 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 606CAC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 09:27:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E37B5C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 09:27:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233890AbiCaJ24 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 05:28:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36892 "EHLO
+        id S233913AbiCaJ27 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 05:28:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233872AbiCaJ2w (ORCPT
+        with ESMTP id S233867AbiCaJ2t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 05:28:52 -0400
-Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [217.70.183.196])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 868211FDFF0;
-        Thu, 31 Mar 2022 02:27:03 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id EB727E0004;
-        Thu, 31 Mar 2022 09:27:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1648718822;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=nRN8rAoSulvBgbxXwy3jJyKItub0BlzV5SCreqaglg8=;
-        b=TGBtJqjSaZbGSLLF2cTEmZtPnb7adUzM9yyG3Ii/aztqT7y3//d3bRp2fW/a5MKW1gWvJ/
-        Pses9BikYicUPSwkDbCnZwyLeHO1tfKYGqya+6k7XXt40o45v07CtkEQSbqi6Z6G9ryUix
-        b2w/2SFiqosscTMMN1/SxXorQMKHCT4/LaiOJHmree1JDzkK4hOybnpDX9f56bxeqC3d8/
-        ucrukzyKPXH66AaNd2xr15TnpQDnXIp9gEJo2pn+ZBIr8HviGv7fxxmLcDrPeGLxpF0er8
-        o84mpRscTF032uKwQG2U7iza0CbuUQ5pj2YL0nWSVj/3uX1C9Ls5O0/hQ84zwQ==
-From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Allan Nielsen <allan.nielsen@microchip.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
-Subject: [RFC PATCH net-next v2 01/11] net: mdio: fwnode: import of_mdiobus_register() and needed functions
-Date:   Thu, 31 Mar 2022 11:25:23 +0200
-Message-Id: <20220331092533.348626-2-clement.leger@bootlin.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220331092533.348626-1-clement.leger@bootlin.com>
-References: <20220331092533.348626-1-clement.leger@bootlin.com>
+        Thu, 31 Mar 2022 05:28:49 -0400
+X-Greylist: delayed 64 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 31 Mar 2022 02:27:01 PDT
+Received: from esa7.hc1455-7.c3s2.iphmx.com (esa7.hc1455-7.c3s2.iphmx.com [139.138.61.252])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99CBF1FDFEE;
+        Thu, 31 Mar 2022 02:27:00 -0700 (PDT)
+X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="46896822"
+X-IronPort-AV: E=Sophos;i="5.90,224,1643641200"; 
+   d="scan'208";a="46896822"
+Received: from unknown (HELO yto-r2.gw.nic.fujitsu.com) ([218.44.52.218])
+  by esa7.hc1455-7.c3s2.iphmx.com with ESMTP; 31 Mar 2022 18:25:54 +0900
+Received: from yto-m4.gw.nic.fujitsu.com (yto-nat-yto-m4.gw.nic.fujitsu.com [192.168.83.67])
+        by yto-r2.gw.nic.fujitsu.com (Postfix) with ESMTP id E7E6AC68A4;
+        Thu, 31 Mar 2022 18:25:53 +0900 (JST)
+Received: from yto-om3.fujitsu.com (yto-om3.o.css.fujitsu.com [10.128.89.164])
+        by yto-m4.gw.nic.fujitsu.com (Postfix) with ESMTP id 2A4BA30147;
+        Thu, 31 Mar 2022 18:25:53 +0900 (JST)
+Received: from cn-r05-10.example.com (n3235113.np.ts.nmh.cs.fujitsu.co.jp [10.123.235.113])
+        by yto-om3.fujitsu.com (Postfix) with ESMTP id CB929400C07B8;
+        Thu, 31 Mar 2022 18:25:52 +0900 (JST)
+From:   Hitomi Hasegawa <hasegawa-hitomi@fujitsu.com>
+To:     linux-arm-kernel@lists.infradead.org, soc@kernel.org,
+        linux-serial@vger.kernel.org, sumit.garg@linaro.org
+Cc:     arnd@arndb.de, olof@lixom.net, catalin.marinas@arm.com,
+        will@kernel.org, gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        jason.wessel@windriver.com, daniel.thompson@linaro.org,
+        dianders@chromium.org, linux-kernel@vger.kernel.org,
+        kgdb-bugreport@lists.sourceforge.net, peterz@infradead.org,
+        hasegawa-hitomi@fujitsu.com
+Subject: [PATCH v3 1/1] soc: fujitsu: Add A64FX diagnostic interrupt driver
+Date:   Thu, 31 Mar 2022 18:22:35 +0900
+Message-Id: <20220331092235.3000787-2-hasegawa-hitomi@fujitsu.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220331092235.3000787-1-hasegawa-hitomi@fujitsu.com>
+References: <20220331092235.3000787-1-hasegawa-hitomi@fujitsu.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Import of_mdiobus_register and needed functions to allow visualizing a
-pretty diff of the modifications that are going to be done for fwnode
-support. While importing, did a few modifications to ensure it compiles
-correctly:
-- Renamed of_mdiobus_register() to fwnode_mdiobus_register()
-- Renamed of_mdiobus_child_is_phy() to fwnode_mdiobus_child_is_phy()
-- Call fwnode_get_phy_id() instead of of_get_phy_id() which is already
-  a wrapper ended up calling fwnode_get_phy_id().
+Enable diagnostic interrupts for the A64FX.
+This is done using a pseudo-NMI.
 
-Signed-off-by: Clément Léger <clement.leger@bootlin.com>
+Signed-off-by: Hitomi Hasegawa <hasegawa-hitomi@fujitsu.com>
 ---
- drivers/net/mdio/fwnode_mdio.c | 195 +++++++++++++++++++++++++++++++++
- 1 file changed, 195 insertions(+)
+ MAINTAINERS                      |   5 +
+ drivers/soc/Kconfig              |   1 +
+ drivers/soc/Makefile             |   1 +
+ drivers/soc/fujitsu/Kconfig      |  13 +++
+ drivers/soc/fujitsu/Makefile     |   3 +
+ drivers/soc/fujitsu/a64fx-diag.c | 151 +++++++++++++++++++++++++++++++
+ 6 files changed, 174 insertions(+)
+ create mode 100644 drivers/soc/fujitsu/Kconfig
+ create mode 100644 drivers/soc/fujitsu/Makefile
+ create mode 100644 drivers/soc/fujitsu/a64fx-diag.c
 
-diff --git a/drivers/net/mdio/fwnode_mdio.c b/drivers/net/mdio/fwnode_mdio.c
-index 1becb1a731f6..a5a6fd9ebd94 100644
---- a/drivers/net/mdio/fwnode_mdio.c
-+++ b/drivers/net/mdio/fwnode_mdio.c
-@@ -9,8 +9,11 @@
- #include <linux/acpi.h>
- #include <linux/fwnode_mdio.h>
- #include <linux/of.h>
-+#include <linux/of_mdio.h>
- #include <linux/phy.h>
+diff --git a/MAINTAINERS b/MAINTAINERS
+index cd0f68d4a34a..dc35c81ba917 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -241,6 +241,11 @@ F:	include/trace/events/9p.h
+ F:	include/uapi/linux/virtio_9p.h
+ F:	net/9p/
  
-+#define DEFAULT_GPIO_RESET_DELAY	10	/* in microseconds */
++A64FX DIAG DRIVER
++M:	Hitomi Hasegawa <hasegawa-hitomi@fujitsu.com>
++S:	Supported
++F:	drivers/soc/fujitsu/a64fx-diag.c
 +
- MODULE_AUTHOR("Calvin Johnson <calvin.johnson@oss.nxp.com>");
- MODULE_LICENSE("GPL");
- 
-@@ -142,3 +145,195 @@ int fwnode_mdiobus_register_phy(struct mii_bus *bus,
- 	return 0;
- }
- EXPORT_SYMBOL(fwnode_mdiobus_register_phy);
+ A8293 MEDIA DRIVER
+ M:	Antti Palosaari <crope@iki.fi>
+ L:	linux-media@vger.kernel.org
+diff --git a/drivers/soc/Kconfig b/drivers/soc/Kconfig
+index a8562678c437..e10eb27e1e7e 100644
+--- a/drivers/soc/Kconfig
++++ b/drivers/soc/Kconfig
+@@ -9,6 +9,7 @@ source "drivers/soc/atmel/Kconfig"
+ source "drivers/soc/bcm/Kconfig"
+ source "drivers/soc/canaan/Kconfig"
+ source "drivers/soc/fsl/Kconfig"
++source "drivers/soc/fujitsu/Kconfig"
+ source "drivers/soc/imx/Kconfig"
+ source "drivers/soc/ixp4xx/Kconfig"
+ source "drivers/soc/litex/Kconfig"
+diff --git a/drivers/soc/Makefile b/drivers/soc/Makefile
+index adb30c2d4fea..b12b0b03ad47 100644
+--- a/drivers/soc/Makefile
++++ b/drivers/soc/Makefile
+@@ -12,6 +12,7 @@ obj-$(CONFIG_SOC_CANAAN)	+= canaan/
+ obj-$(CONFIG_ARCH_DOVE)		+= dove/
+ obj-$(CONFIG_MACH_DOVE)		+= dove/
+ obj-y				+= fsl/
++obj-y				+= fujitsu/
+ obj-$(CONFIG_ARCH_GEMINI)	+= gemini/
+ obj-y				+= imx/
+ obj-y				+= ixp4xx/
+diff --git a/drivers/soc/fujitsu/Kconfig b/drivers/soc/fujitsu/Kconfig
+new file mode 100644
+index 000000000000..b41cdac67637
+--- /dev/null
++++ b/drivers/soc/fujitsu/Kconfig
+@@ -0,0 +1,13 @@
++# SPDX-License-Identifier: GPL-2.0-only
++menu "fujitsu SoC drivers"
 +
-+static int of_mdiobus_register_device(struct mii_bus *mdio,
-+				      struct device_node *child, u32 addr)
-+{
-+	struct fwnode_handle *fwnode = of_fwnode_handle(child);
-+	struct mdio_device *mdiodev;
-+	int rc;
++config A64FX_DIAG
++	bool "A64FX diag driver"
++	depends on ARM64
++	help
++	  Say Y here if you want to enable diag interrupt on A64FX.
++	  This driver uses pseudo-NMI if available.
 +
-+	mdiodev = mdio_device_create(mdio, addr);
-+	if (IS_ERR(mdiodev))
-+		return PTR_ERR(mdiodev);
++	  If unsure, say N.
 +
-+	/* Associate the OF node with the device structure so it
-+	 * can be looked up later.
-+	 */
-+	fwnode_handle_get(fwnode);
-+	device_set_node(&mdiodev->dev, fwnode);
++endmenu
+diff --git a/drivers/soc/fujitsu/Makefile b/drivers/soc/fujitsu/Makefile
+new file mode 100644
+index 000000000000..945bc1c14ad0
+--- /dev/null
++++ b/drivers/soc/fujitsu/Makefile
+@@ -0,0 +1,3 @@
++# SPDX-License-Identifier: GPL-2.0
 +
-+	/* All data is now stored in the mdiodev struct; register it. */
-+	rc = mdio_device_register(mdiodev);
-+	if (rc) {
-+		mdio_device_free(mdiodev);
-+		of_node_put(child);
-+		return rc;
-+	}
-+
-+	dev_dbg(&mdio->dev, "registered mdio device %pOFn at address %i\n",
-+		child, addr);
-+	return 0;
-+}
-+
-+/* The following is a list of PHY compatible strings which appear in
-+ * some DTBs. The compatible string is never matched against a PHY
-+ * driver, so is pointless. We only expect devices which are not PHYs
-+ * to have a compatible string, so they can be matched to an MDIO
-+ * driver.  Encourage users to upgrade their DT blobs to remove these.
++obj-$(CONFIG_A64FX_DIAG)	+= a64fx-diag.o
+diff --git a/drivers/soc/fujitsu/a64fx-diag.c b/drivers/soc/fujitsu/a64fx-diag.c
+new file mode 100644
+index 000000000000..c6f895cf8912
+--- /dev/null
++++ b/drivers/soc/fujitsu/a64fx-diag.c
+@@ -0,0 +1,151 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * A64FX diag driver.
 + */
-+static const struct of_device_id whitelist_phys[] = {
-+	{ .compatible = "brcm,40nm-ephy" },
-+	{ .compatible = "broadcom,bcm5241" },
-+	{ .compatible = "marvell,88E1111", },
-+	{ .compatible = "marvell,88e1116", },
-+	{ .compatible = "marvell,88e1118", },
-+	{ .compatible = "marvell,88e1145", },
-+	{ .compatible = "marvell,88e1149r", },
-+	{ .compatible = "marvell,88e1310", },
-+	{ .compatible = "marvell,88E1510", },
-+	{ .compatible = "marvell,88E1514", },
-+	{ .compatible = "moxa,moxart-rtl8201cp", },
-+	{}
++
++#include <linux/acpi.h>
++#include <linux/interrupt.h>
++#include <linux/irq.h>
++#include <linux/module.h>
++#include <linux/platform_device.h>
++#include <linux/sysrq.h>
++
++#define A64FX_DIAG_IRQ 1
++#define BMC_DIAG_INTERRUPT_STATUS_OFFSET (0x0044)
++#define BMC_INTERRUPT_STATUS_MASK ((1U) << 31)
++#define BMC_DIAG_INTERRUPT_ENABLE_OFFSET (0x0040)
++#define BMC_INTERRUPT_ENABLE_MASK ((1U) << 31)
++
++struct a64fx_diag_priv {
++	int irq;
++	void __iomem *mmsc_reg_base;
++	bool has_nmi;
 +};
 +
-+/*
-+ * Return true if the child node is for a phy. It must either:
-+ * o Compatible string of "ethernet-phy-idX.X"
-+ * o Compatible string of "ethernet-phy-ieee802.3-c45"
-+ * o Compatible string of "ethernet-phy-ieee802.3-c22"
-+ * o In the white list above (and issue a warning)
-+ * o No compatibility string
-+ *
-+ * A device which is not a phy is expected to have a compatible string
-+ * indicating what sort of device it is.
-+ */
-+bool fwnode_mdiobus_child_is_phy(struct device_node *child)
++static irqreturn_t a64fx_diag_handler(int irq, void *dev_id)
 +{
-+	u32 phy_id;
++	handle_sysrq('c');
 +
-+	if (of_get_phy_id(child, &phy_id) != -EINVAL)
-+		return true;
-+
-+	if (of_device_is_compatible(child, "ethernet-phy-ieee802.3-c45"))
-+		return true;
-+
-+	if (of_device_is_compatible(child, "ethernet-phy-ieee802.3-c22"))
-+		return true;
-+
-+	if (of_match_node(whitelist_phys, child)) {
-+		pr_warn(FW_WARN
-+			"%pOF: Whitelisted compatible string. Please remove\n",
-+			child);
-+		return true;
-+	}
-+
-+	if (!of_find_property(child, "compatible", NULL))
-+		return true;
-+
-+	return false;
++	return IRQ_HANDLED;
 +}
-+EXPORT_SYMBOL(fwnode_mdiobus_child_is_phy);
 +
-+/**
-+ * of_mdiobus_register - Register mii_bus and create PHYs from the device tree
-+ * @mdio: pointer to mii_bus structure
-+ * @np: pointer to device_node of MDIO bus.
-+ *
-+ * This function registers the mii_bus structure and registers a phy_device
-+ * for each child node of @np.
-+ */
-+int fwnode_mdiobus_register(struct mii_bus *mdio, struct device_node *np)
++static void a64fx_diag_interrupt_clear(struct a64fx_diag_priv *priv)
 +{
-+	struct device_node *child;
-+	bool scanphys = false;
-+	int addr, rc;
++	u32 mmsc;
++	const void __iomem *diag_status_reg_addr;
 +
-+	if (!np)
-+		return mdiobus_register(mdio);
++	diag_status_reg_addr = priv->mmsc_reg_base + BMC_DIAG_INTERRUPT_STATUS_OFFSET;
++	mmsc = readl(diag_status_reg_addr);
++	if (mmsc & BMC_INTERRUPT_STATUS_MASK)
++		writel(BMC_INTERRUPT_STATUS_MASK, (void *)diag_status_reg_addr);
++}
 +
-+	/* Do not continue if the node is disabled */
-+	if (!of_device_is_available(np))
-+		return -ENODEV;
++static void a64fx_diag_interrupt_enable(struct a64fx_diag_priv *priv)
++{
++	u32 mmsc;
++	const void __iomem *diag_enable_reg_addr;
 +
-+	/* Mask out all PHYs from auto probing.  Instead the PHYs listed in
-+	 * the device tree are populated after the bus has been registered */
-+	mdio->phy_mask = ~0;
-+
-+	device_set_node(&mdio->dev, of_fwnode_handle(np));
-+
-+	/* Get bus level PHY reset GPIO details */
-+	mdio->reset_delay_us = DEFAULT_GPIO_RESET_DELAY;
-+	of_property_read_u32(np, "reset-delay-us", &mdio->reset_delay_us);
-+	mdio->reset_post_delay_us = 0;
-+	of_property_read_u32(np, "reset-post-delay-us", &mdio->reset_post_delay_us);
-+
-+	/* Register the MDIO bus */
-+	rc = mdiobus_register(mdio);
-+	if (rc)
-+		return rc;
-+
-+	/* Loop over the child nodes and register a phy_device for each phy */
-+	for_each_available_child_of_node(np, child) {
-+		addr = of_mdio_parse_addr(&mdio->dev, child);
-+		if (addr < 0) {
-+			scanphys = true;
-+			continue;
-+		}
-+
-+		if (of_mdiobus_child_is_phy(child))
-+			rc = fwnode_mdiobus_register_phy(mdio,
-+							 of_fwnode_handle(child),
-+							 addr);
-+		else
-+			rc = of_mdiobus_register_device(mdio, child, addr);
-+
-+		if (rc == -ENODEV)
-+			dev_err(&mdio->dev,
-+				"MDIO device at address %d is missing.\n",
-+				addr);
-+		else if (rc)
-+			goto unregister;
++	diag_enable_reg_addr = priv->mmsc_reg_base + BMC_DIAG_INTERRUPT_ENABLE_OFFSET;
++	mmsc = readl(diag_enable_reg_addr);
++	if (!(mmsc & BMC_INTERRUPT_ENABLE_MASK)) {
++		mmsc |= BMC_INTERRUPT_STATUS_MASK;
++		writel(mmsc, (void *)diag_enable_reg_addr);
 +	}
++}
 +
-+	if (!scanphys)
-+		return 0;
++static void a64fx_diag_interrupt_disable(struct a64fx_diag_priv *priv)
++{
++	u32 mmsc;
++	const void __iomem *diag_enable_reg_addr;
 +
-+	/* auto scan for PHYs with empty reg property */
-+	for_each_available_child_of_node(np, child) {
-+		/* Skip PHYs with reg property set */
-+		if (of_find_property(child, "reg", NULL))
-+			continue;
++	diag_enable_reg_addr = priv->mmsc_reg_base + BMC_DIAG_INTERRUPT_ENABLE_OFFSET;
++	mmsc = readl(diag_enable_reg_addr);
++	if (mmsc & BMC_INTERRUPT_ENABLE_MASK) {
++		mmsc &= ~BMC_INTERRUPT_ENABLE_MASK;
++		writel(mmsc, (void *)diag_enable_reg_addr);
++	}
++}
 +
-+		for (addr = 0; addr < PHY_MAX_ADDR; addr++) {
-+			/* skip already registered PHYs */
-+			if (mdiobus_is_registered_device(mdio, addr))
-+				continue;
++static int a64fx_diag_probe(struct platform_device *pdev)
++{
++	int ret;
++	unsigned long irq_flags;
++	struct device *dev = &pdev->dev;
++	struct a64fx_diag_priv *priv;
 +
-+			/* be noisy to encourage people to set reg property */
-+			dev_info(&mdio->dev, "scan phy %pOFn at address %i\n",
-+				 child, addr);
++	priv = devm_kzalloc(dev, sizeof(struct a64fx_diag_priv), GFP_KERNEL);
++	if (priv == NULL)
++		return -ENOMEM;
 +
-+			if (of_mdiobus_child_is_phy(child)) {
-+				/* -ENODEV is the return code that PHYLIB has
-+				 * standardized on to indicate that bus
-+				 * scanning should continue.
-+				 */
-+				rc = fwnode_mdiobus_register_phy(mdio,
-+								 of_fwnode_handle(child),
-+								 addr);
-+				if (!rc)
-+					break;
-+				if (rc != -ENODEV)
-+					goto unregister;
-+			}
++	priv->mmsc_reg_base = devm_platform_ioremap_resource(pdev, 0);
++	if (IS_ERR(priv->mmsc_reg_base))
++		return PTR_ERR(priv->mmsc_reg_base);
++
++	priv->irq = platform_get_irq(pdev, A64FX_DIAG_IRQ);
++	if (priv->irq < 0)
++		return priv->irq;
++
++	platform_set_drvdata(pdev, priv);
++
++	a64fx_diag_interrupt_clear(priv);
++	a64fx_diag_interrupt_enable(priv);
++
++	irq_flags = IRQF_PERCPU | IRQF_NOBALANCING | IRQF_NO_AUTOEN |
++		   IRQF_NO_THREAD;
++	ret = request_nmi(priv->irq, &a64fx_diag_handler, irq_flags,
++			"a64fx_diag_nmi", NULL);
++	if (ret) {
++		ret = request_irq(priv->irq, &a64fx_diag_handler,
++				irq_flags, "a64fx_diag_irq", NULL);
++		if (ret) {
++			dev_err(dev, "cannot register IRQ %d\n", ret);
++			return ret;
 +		}
++		enable_irq(priv->irq);
++		priv->has_nmi = false;
++		dev_info(dev, "registered for IRQ %d\n", priv->irq);
++	} else {
++		enable_nmi(priv->irq);
++		priv->has_nmi = true;
++		dev_info(dev, "registered for NMI %d\n", priv->irq);
 +	}
 +
 +	return 0;
-+
-+unregister:
-+	mdiobus_unregister(mdio);
-+	return rc;
 +}
-+EXPORT_SYMBOL(fwnode_mdiobus_register);
++
++static int __exit a64fx_diag_remove(struct platform_device *pdev)
++{
++	struct a64fx_diag_priv *priv = platform_get_drvdata(pdev);
++
++	a64fx_diag_interrupt_disable(priv);
++	a64fx_diag_interrupt_clear(priv);
++
++	if (priv->has_nmi)
++		free_nmi(priv->irq, NULL);
++	else
++		free_irq(priv->irq, NULL);
++
++	return 0;
++}
++
++static const struct acpi_device_id a64fx_diag_acpi_match[] = {
++	{ "FUJI2007", 0 },
++	{ },
++};
++MODULE_DEVICE_TABLE(acpi, a64fx_diag_acpi_match);
++
++
++static struct platform_driver a64fx_diag_driver = {
++	.driver = {
++		.name = "a64fx_diag_driver",
++		.acpi_match_table = ACPI_PTR(a64fx_diag_acpi_match),
++	},
++	.probe = a64fx_diag_probe,
++	.remove = a64fx_diag_remove,
++};
++
++module_platform_driver(a64fx_diag_driver);
++
++MODULE_LICENSE("GPL v2");
++MODULE_AUTHOR("Hitomi Hasegawa <hasegawa-hitomi@fujitsu.com>");
++MODULE_DESCRIPTION("A64FX diag driver");
 -- 
-2.34.1
+2.27.0
 
