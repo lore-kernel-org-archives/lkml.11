@@ -2,129 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2657BC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 10:44:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80F6DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 10:44:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234704AbiCaKpy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 06:45:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57142 "EHLO
+        id S234722AbiCaKp7 convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 06:45:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232615AbiCaKpt (ORCPT
+        with ESMTP id S234703AbiCaKpy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 06:45:49 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 40C313BA49
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 03:44:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648723441;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=vj6g3gUSYO2QDZVoTiKffZeF2Z9UD7UuSg72XYT1ggQ=;
-        b=NzBtD4h96L6EXnGvhrk5mc7Dj3UboDVuhaAQ6CPBwWbGRI18Wv7bFlmSkNE/KqNtyJbbNt
-        g2wZkjM6cadzHmqJ7GAel8CeG6+hRV3JGlJqDJjoo0QHNTCbf4I9Dwp8M+2r1Dj0D1MtPk
-        FNRsr2bKs5IEZNJGK95+ekQBMv9wzCs=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-449-WwfGybJ3MvaYdm50-TH6eQ-1; Thu, 31 Mar 2022 06:43:59 -0400
-X-MC-Unique: WwfGybJ3MvaYdm50-TH6eQ-1
-Received: by mail-wm1-f71.google.com with SMTP id r64-20020a1c2b43000000b0038b59eb1940so1529000wmr.0
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 03:43:59 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=vj6g3gUSYO2QDZVoTiKffZeF2Z9UD7UuSg72XYT1ggQ=;
-        b=FnXYwlYvb4WNnFmE/AbUp4AL4mLzwIBcVgb97KVV0GSInd8P4RJ9pLOgWWS10evK//
-         pBi0oet9/ha9baQszM7fcsJdJ8zEQs6sHn0oJAZLr6boSwuOuNbl6DxXd0Bh9Ky5T02Q
-         0kH40+YyA1rz3cqGO+8Dap1/JL7E8jP8rXg1WV/g96qtinJvpz/zcLgtIMPCes/qV8q/
-         vUfI1aMQ343gpUHqnagBLCWO0rX9lV4IIqmbhVbO1l44Y8IZDx2g8KPDb5awjZn1kUZx
-         8jsV1/MSghy1biRtChZypqxPGEgqJrVBZJg6fElvNk7GHGEXTjwLoy9IxnKRzCPo06ME
-         APng==
-X-Gm-Message-State: AOAM533M4KZwstYXAc03/f7+vbyyT/gEisTRWd0VBXa7y/c8jZlMliXB
-        NnzTLvoU1kMSAQ1DQLrRhxjjGiUXpaYoaborwJGORupVQFQ2aZB1kXBxFjxH5quDomtJzoTcXWr
-        37tQl2QYHh0dLnpimZoClNszk
-X-Received: by 2002:adf:ef11:0:b0:205:b266:68eb with SMTP id e17-20020adfef11000000b00205b26668ebmr3781279wro.310.1648723438636;
-        Thu, 31 Mar 2022 03:43:58 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwVmlsJ78MuJ48AMUdhjhN4QW1Ues+U0LGGCks+vl01aUMeGLtKbA7PrMxkj70FCxZI6jczrA==
-X-Received: by 2002:adf:ef11:0:b0:205:b266:68eb with SMTP id e17-20020adfef11000000b00205b26668ebmr3781266wro.310.1648723438388;
-        Thu, 31 Mar 2022 03:43:58 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-243-142.dyn.eolo.it. [146.241.243.142])
-        by smtp.gmail.com with ESMTPSA id o14-20020a5d47ce000000b00203e0a21c16sm23333978wrc.3.2022.03.31.03.43.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 31 Mar 2022 03:43:57 -0700 (PDT)
-Message-ID: <4de651adc35341c5fa99db54b9295d4845648563.camel@redhat.com>
-Subject: Re: [PATCH net] rxrpc: fix some null-ptr-deref bugs in server_key.c
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     David Howells <dhowells@redhat.com>, netdev@vger.kernel.org
-Cc:     Xiaolong Huang <butterflyhuangxx@gmail.com>,
-        Marc Dionne <marc.dionne@auristor.com>,
-        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org
-Date:   Thu, 31 Mar 2022 12:43:56 +0200
-In-Reply-To: <164865013439.2941502.8966285221215590921.stgit@warthog.procyon.org.uk>
-References: <164865013439.2941502.8966285221215590921.stgit@warthog.procyon.org.uk>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
+        Thu, 31 Mar 2022 06:45:54 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E0A03DDD3;
+        Thu, 31 Mar 2022 03:44:04 -0700 (PDT)
+Received: from mail-lj1-f173.google.com ([209.85.208.173]) by
+ mrelayeu.kundenserver.de (mreue109 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1M9WqY-1ndBfK2fES-005WBS; Thu, 31 Mar 2022 12:44:02 +0200
+Received: by mail-lj1-f173.google.com with SMTP id q5so31416863ljb.11;
+        Thu, 31 Mar 2022 03:44:02 -0700 (PDT)
+X-Gm-Message-State: AOAM5323KREuaVHS2c7IL/So/5JqmC4FfoC8xn5v6/9DcCl67dMXy9r/
+        5xMJCBbMTxxtWaCmRkAbJafU6oj1vRoiYNGUiOw=
+X-Google-Smtp-Source: ABdhPJxSLzSPG469rbBjqUgenc7GqtDg1G59o6eI2kBV31nJzx0w1XbePWgcX9pqw/Nc6/av9pIeO+axzqEg7/x2jpQ=
+X-Received: by 2002:a5d:66ca:0:b0:203:fb72:a223 with SMTP id
+ k10-20020a5d66ca000000b00203fb72a223mr3507386wrw.12.1648721862625; Thu, 31
+ Mar 2022 03:17:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+References: <cover.1648551070.git.tonyhuang.sunplus@gmail.com>
+ <46aad49867912fc57b669fc54fdb28638cccfcd9.1648551070.git.tonyhuang.sunplus@gmail.com>
+ <CAK8P3a0CLA33CTerXJ=bK+myhyHp_utoLnTX-NzMgjeb7icAGg@mail.gmail.com> <7c4b66f7fe4940cba1b0158803767f6e@sphcmbx02.sunplus.com.tw>
+In-Reply-To: <7c4b66f7fe4940cba1b0158803767f6e@sphcmbx02.sunplus.com.tw>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Thu, 31 Mar 2022 12:17:26 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a3edkGMyypwchiJjHDvO4ro6RsOvrhUbEDmP1Obs94mXw@mail.gmail.com>
+Message-ID: <CAK8P3a3edkGMyypwchiJjHDvO4ro6RsOvrhUbEDmP1Obs94mXw@mail.gmail.com>
+Subject: Re: [PATCH v5 2/2] mmc: Add mmc driver for Sunplus SP7021
+To:     =?UTF-8?B?VG9ueSBIdWFuZyDpu4Pmh7fljpo=?= <tony.huang@sunplus.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Tony Huang <tonyhuang.sunplus@gmail.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "lhjeff911@gmail.com" <lhjeff911@gmail.com>,
+        linux-mmc <linux-mmc@vger.kernel.org>,
+        DTML <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        =?UTF-8?B?V2VsbHMgTHUg5ZGC6Iqz6aiw?= <wells.lu@sunplus.com>,
+        =?UTF-8?B?TGggS3VvIOmDreWKm+ixqg==?= <lh.Kuo@sunplus.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+X-Provags-ID: V03:K1:xpTDZlbZOwasZwLrLnRYa79iGksGPPPYKzdPgLjVKaYMjt/vsPC
+ oyEIPYjVRFcQyA4PNZJX/xnG+oJDhVU702bzgqxl3euj/jeXIfmG35z5+RqQjAUD1N6BA14
+ RLirJQdaGCss6LkjeGsHKBdoFFnUUwdd5MD3AQ1YSn+QY4wqIDYO4X8KAFUpU1WVZYzQVrs
+ 37JuybXcKR6lNq6ADMJVQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:b5BZ0dW7EXs=:8DuCFhVrpT8d+PbDr/wvOp
+ PZWDHl1XQCObIZ6FlNwQua/oX9HSOrI6HZhcmyYxgsvx8w0KBV6atFGff9Np2qfM2QJfaLLWj
+ h9lOC8FgrugUr9IaA9GuelIdkRlY4RvElr59c33Yc0dSrKx5/MggDSjFXEqxW4L2uAorw+y/y
+ KGebJt1F5nYspINknuufq9pRqX6DE7M1Lo7GLTLJPgTgasZphjgL0sNpkQ9uSZTbdYrZ1wafZ
+ 33fqm/6UFfRMRspdWshZ629nHXAWSJSW5M5mwYVWGpWj5rQuNLk0vhcqCnJcMztsI+TlKaf/3
+ /3749RSKzSFYYMLfQa7Cmha4HEdMSMH9FUzOOvxowTECv+VbGNMEqmsZyLbaYL57efMUtNKpY
+ AwzN0UyMtEwXyoE4CcAVU/Je02d4EZRRTHqY+mC97k6geEPbwidGyCHm4M/CU6UHGWWZxSeYE
+ i4vZtd1kSb2gyVjws216tl+5ibZLyb6aKq2swCPgLm2ebDPXR8193TCz3Bck7kOwlXBZOkBy6
+ FBU7c+JRvxFeoR9HpQHfr/IcY8LwtkQf6ymGvQLEbHcdWh3flmu9YtjiV8xc/aGZbkgVQCpld
+ mt0rzgY6o40rKeklPFCoNwVZIy3+gpdZBmlBXn5G9MzN1Y41ztahzpgyXZFDPxSlhFvF52wMm
+ jfPZNGXAyIYgMWsp5NLUdz3JmliK5g2dT0kcfykJ9Xbiq4KFhIom3Y0Xw4zFFFuWXIXKzFy5h
+ PErpGfMG8DgyjscU9WQpdrq+tpm7X/Hi0UhWLcFa6zC9OvFTDT1y7iZNnH29xDQ7L1qoyP8cS
+ /ureQvGAcdTPhlNMVuI8AOS7YnivdZDj5h9Nym4r1Tqqu94Ve0=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-03-30 at 15:22 +0100, David Howells wrote:
-> From: Xiaolong Huang <butterflyhuangxx@gmail.com>
-> 
-> Some function calls are not implemented in rxrpc_no_security, there are
-> preparse_server_key, free_preparse_server_key and destroy_server_key.
-> When rxrpc security type is rxrpc_no_security, user can easily trigger a
-> null-ptr-deref bug via ioctl. So judgment should be added to prevent it
-> 
-> The crash log:
-> user@syzkaller:~$ ./rxrpc_preparse_s
-> [   37.956878][T15626] BUG: kernel NULL pointer dereference, address: 0000000000000000
-> [   37.957645][T15626] #PF: supervisor instruction fetch in kernel mode
-> [   37.958229][T15626] #PF: error_code(0x0010) - not-present page
-> [   37.958762][T15626] PGD 4aadf067 P4D 4aadf067 PUD 4aade067 PMD 0
-> [   37.959321][T15626] Oops: 0010 [#1] PREEMPT SMP
-> [   37.959739][T15626] CPU: 0 PID: 15626 Comm: rxrpc_preparse_ Not tainted 5.17.0-01442-gb47d5a4f6b8d #43
-> [   37.960588][T15626] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.13.0-1ubuntu1 04/01/2014
-> [   37.961474][T15626] RIP: 0010:0x0
-> [   37.961787][T15626] Code: Unable to access opcode bytes at RIP 0xffffffffffffffd6.
-> [   37.962480][T15626] RSP: 0018:ffffc9000d9abdc0 EFLAGS: 00010286
-> [   37.963018][T15626] RAX: ffffffff84335200 RBX: ffff888012a1ce80 RCX: 0000000000000000
-> [   37.963727][T15626] RDX: 0000000000000000 RSI: ffffffff84a736dc RDI: ffffc9000d9abe48
-> [   37.964425][T15626] RBP: ffffc9000d9abe48 R08: 0000000000000000 R09: 0000000000000002
-> [   37.965118][T15626] R10: 000000000000000a R11: f000000000000000 R12: ffff888013145680
-> [   37.965836][T15626] R13: 0000000000000000 R14: ffffffffffffffec R15: ffff8880432aba80
-> [   37.966441][T15626] FS:  00007f2177907700(0000) GS:ffff88803ec00000(0000) knlGS:0000000000000000
-> [   37.966979][T15626] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [   37.967384][T15626] CR2: ffffffffffffffd6 CR3: 000000004aaf1000 CR4: 00000000000006f0
-> [   37.967864][T15626] Call Trace:
-> [   37.968062][T15626]  <TASK>
-> [   37.968240][T15626]  rxrpc_preparse_s+0x59/0x90
-> [   37.968541][T15626]  key_create_or_update+0x174/0x510
-> [   37.968863][T15626]  __x64_sys_add_key+0x139/0x1d0
-> [   37.969165][T15626]  do_syscall_64+0x35/0xb0
-> [   37.969451][T15626]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-> [   37.969824][T15626] RIP: 0033:0x43a1f9
-> 
-> Signed-off-by: Xiaolong Huang <butterflyhuangxx@gmail.com>
-> Tested-by: Xiaolong Huang <butterflyhuangxx@gmail.com>
-> Signed-off-by: David Howells <dhowells@redhat.com>
-> Acked-by: Marc Dionne <marc.dionne@auristor.com>
-> cc: linux-afs@lists.infradead.org
-> Link: http://lists.infradead.org/pipermail/linux-afs/2022-March/005069.html
+On Thu, Mar 31, 2022 at 11:27 AM Tony Huang 黃懷厚 <tony.huang@sunplus.com> wrote:
+> > > +static void spmmc_request(struct mmc_host *mmc, struct mmc_request
+> > > +*mrq) {
+> > > +       struct spmmc_host *host = mmc_priv(mmc);
+> > > +       struct mmc_data *data;
+> > > +       struct mmc_command *cmd;
+> > > +       int ret;
+> > > +
+> > > +       ret = mutex_lock_interruptible(&host->mrq_lock);
+> > > +       if (ret)
+> > > +               return;
+> >
+> > I don't think it's valid to just return here when you get a signal. If nothing can
+> > handle the signal, doesn't it just hang?
+> >
+> > It also appears that you don't release the mutex until the tasklet runs, but it is
+> > not valid to release a mutex from a different context.
+> >
+> > You should get a warning about this when running a kernel with lockdep
+> > enabled at compile time. Please rework the locking to make this work.
+> >
+>         Reomve code:
+>     ret = mutex_lock_interruptible(&host->mrq_lock);
+>     if (ret)
+>          return;
+>
+>         Below is my modification:
+> .    mutex_lock(&host->mrq_lock);
 
-It looks like we can add a couple of fixes tag to help stable teams:
+That addresses the problem with the signal handling, but not the lock
+imbalance. Please fix that as well.
+> >
+> > It's better to use SYSTEM_SLEEP_PM_OPS/RUNTIME_PM_OPS instead of the
+> > SET_ version, then you can remove all the #ifdef checks.
+> >
+>
+>         I use SYSTEM_SLEEP_PM_OPS/RUNTIME_PM_OPS.
+>         Compile shows error. Error: implicit declaration of function ? ? SYSTEM_SLEEP_PM_OPS? ? Did you mean ? ? SET_SYSTEM_SLEEP_PM_OPS? ?             [-Werror=implicit-function-declaration]
 
-Fixes: d5953f6543b5 ("rxrpc: Allow security classes to give more info on server keys")
-Fixes: 12da59fcab5a ("xrpc: Hand server key parsing off to the security class")
+Maybe you are on an old kernel release?
 
-Does the above looks good to you?
+>         I reference other mmc driver.
+>         Below is my modification:
+>     Compiler is pass.
+>
+>         #ifdef CONFIG_PM_SLEEP
+>         static int spmmc_pm_suspend(struct device *dev)
+>         {
+>                 pm_runtime_force_suspend(dev);
+>
+>                 return 0;
+>         }
 
-Thanks!
+We should fix the other drivers as well. For the moment, just do it
+the right way now
+instead of copying the #ifdefs.
 
-Paolo
-
+        Arnd
