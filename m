@@ -2,165 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36084C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 06:53:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F991C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 06:54:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231515AbiCaGzn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 02:55:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55778 "EHLO
+        id S231527AbiCaG4i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 02:56:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231504AbiCaGzk (ORCPT
+        with ESMTP id S230527AbiCaG4g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 02:55:40 -0400
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DB17AE56
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 23:53:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648709633; x=1680245633;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=WB64PwkyHlQUKysJVCgvUlIvhHf1QUAGXu7mKFwUKzM=;
-  b=IKDWBKoM9xSH9A3e1CEU+QLL82wEbu9JjMuG2tqzggZ9Jc0oL6P94QJO
-   G8PCwJdhAd/35aR2tmDddIAMI0sJ24cxQ9T4Y1akDVhOtxgL7ix1dyrLD
-   plckn0krr+s04aEH/aAk80ccGb7UzS3VDDvXMpETn7I8OzKZDzVDK/z1I
-   N+2PzmKeVNfXUlmsOb3vkZMgaVavzPjoT5DWZnaUQ4I5/8P+sU57bdHCt
-   hRsVBP77EUBoatE3Vs71G5ZTKX98LGH7EIS3C2I5Npq6yk0GXb5mWNutN
-   DXRqEABBDnM/sFIaCkys5Vc+S+qgUeqh0xn5kxYtaBts16BvF25UQIgnu
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="320431804"
-X-IronPort-AV: E=Sophos;i="5.90,224,1643702400"; 
-   d="scan'208";a="320431804"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 23:53:52 -0700
-X-IronPort-AV: E=Sophos;i="5.90,224,1643702400"; 
-   d="scan'208";a="650163722"
-Received: from obbruno-mobl.amr.corp.intel.com (HELO guptapa-desk) ([10.252.136.207])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 23:53:52 -0700
-Date:   Wed, 30 Mar 2022 23:53:50 -0700
-From:   Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-To:     Ricardo =?utf-8?Q?Ca=C3=B1uelo?= <ricardo.canuelo@collabora.com>
-Cc:     linux-kernel@vger.kernel.org, Borislav Petkov <bp@alien8.de>,
-        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
-        Mark Gross <mgross@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        John Johansen <john.johansen@canonical.com>,
-        Steve Beattie <sbeattie@ubuntu.com>, kernel@collabora.com
-Subject: Re: [PATCH v2] x86/speculation/srbds: do not try to turn mitigation
- off when not supported
-Message-ID: <20220331065350.nuii3ue4fagdsp52@guptapa-desk>
-References: <20220330082026.1549073-1-ricardo.canuelo@collabora.com>
+        Thu, 31 Mar 2022 02:56:36 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DA7D46670;
+        Wed, 30 Mar 2022 23:54:48 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2a02:3030:b:6fe0:6d70:c72d:f4de:8728])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: sebastianfricke)
+        by bhuna.collabora.co.uk (Postfix) with ESMTPSA id CFA811F4610C;
+        Thu, 31 Mar 2022 07:54:46 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1648709687;
+        bh=xD4boKK9gVCQQWY5steTwuNN1dn/iTguW59Me1H/zwQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=cn3JpCKuj+8546mjWEIrfVd7/YQqR0Vd1pJjrn134l/UQlsjXZ8DiTFIpIJfaBaiL
+         h6MB7Wip/x3ag0BzF5kt1mLmzdGL3kckM/Xk9hfGlI84tn9RCLLyv2aEmcTLqDniFK
+         Q7RMQs9kBl6BO1LTRFwdAM66kQGLA5YnKSQwc2AzLv/g0PASfD6EaOGEhXns+T7+Pb
+         a118lcY0QiiVx6N+Pj/0YOLTN778obnMoZ+b6L0x1jYVcERv3Ri7hEJIoUH8j0F4to
+         qB188rHkYyEG08GdlYLcUKxwhmpCwpwUsbTUcLR4wldgapFhUJYNN+kc4NDEy9DSb9
+         RueZw6vAOVdjQ==
+Date:   Thu, 31 Mar 2022 08:54:43 +0200
+From:   Sebastian Fricke <sebastian.fricke@collabora.com>
+To:     Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
+Cc:     Nicolas Dufresne <nicolas.dufresne@collabora.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Collabora Kernel ML <kernel@collabora.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        linux-media <linux-media@vger.kernel.org>,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
+        "open list:STAGING SUBSYSTEM" <linux-staging@lists.linux.dev>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v1 22/24] media: hantro: h264: Make dpb entry management
+ more robust
+Message-ID: <20220331065443.ek4p4wqhoaulml2j@basti-XPS-13-9310>
+References: <20220328195936.82552-1-nicolas.dufresne@collabora.com>
+ <20220328195936.82552-23-nicolas.dufresne@collabora.com>
+ <20220330075913.wfl3prsyw5fvsv4t@basti-XPS-13-9310>
+ <4740735d92c0dac3708aa922b3d73db7a61fbdda.camel@collabora.com>
+ <CAAEAJfCH+m7mzU2EHkyxdKiNs7p=qfSfnvDzS+hLOftFE=n9CA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220330082026.1549073-1-ricardo.canuelo@collabora.com>
+In-Reply-To: <CAAEAJfCH+m7mzU2EHkyxdKiNs7p=qfSfnvDzS+hLOftFE=n9CA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 30, 2022 at 10:20:26AM +0200, Ricardo Cañuelo wrote:
->When SRBDS is mitigated by TSX OFF, update_srbds_msr will still read and
->write to MSR_IA32_MCU_OPT_CTRL even when that is not supported by the
->microcode.
->
->Checking for X86_FEATURE_SRBDS_CTRL as a CPU feature available makes more
->sense than checking for SRBDS_MITIGATION_UCODE_NEEDED as the found
->"mitigation".
->
->Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
->Signed-off-by: Borislav Petkov <bp@alien8.de>
->Signed-off-by: Ricardo Cañuelo <ricardo.canuelo@collabora.com>
->Tested-by: Ricardo Cañuelo <ricardo.canuelo@collabora.com>
->---
->Hi all,
->
->This patch was originally posted here:
->
->https://lore.kernel.org/all/20200609174313.2600320-1-cascardo@canonical.com/#t
->
->by Boris, based on the original patch by Cascardo, I didn't make any
->changes to it. I didn't see it merged or discussed further and I can
->still reproduce the issue on a Samsung Galaxy Chromebook 2 (Intel
->Cometlake-U). When booted without the proper CPU u-codes, TSX is
->disabled (so the CPU isn't vulnerable to SRDBS) but this code still
->tries to access an unavailable MSR register so I get these two warning
->messages:
->
->unchecked MSR access error: RDMSR from 0x123 at rIP: 0xffffffff8203707e (update_srbds_msr+0x2e/0xa0)
->Call Trace:
-> <TASK>
-> check_bugs+0x994/0xa6e
-> ? __get_locked_pte+0x8f/0x100
-> start_kernel+0x630/0x664
-> secondary_startup_64_no_verify+0xd5/0xdb
-> </TASK>
->unchecked MSR access error: WRMSR to 0x123 (tried to write 0x0000000000000001) at rIP: 0xffffffff820370a9 (update_srbds_msr+0x59/0xa0)
->Call Trace:
-> <TASK>
-> check_bugs+0x994/0xa6e
-> ? __get_locked_pte+0x8f/0x100
-> start_kernel+0x630/0x664
-> secondary_startup_64_no_verify+0xd5/0xdb
-> </TASK>
->
->This patch avoids them.
->
-> arch/x86/kernel/cpu/bugs.c | 4 ++--
-> 1 file changed, 2 insertions(+), 2 deletions(-)
->
->diff --git a/arch/x86/kernel/cpu/bugs.c b/arch/x86/kernel/cpu/bugs.c
->index 6296e1ebed1d..9b14cb2ec693 100644
->--- a/arch/x86/kernel/cpu/bugs.c
->+++ b/arch/x86/kernel/cpu/bugs.c
->@@ -443,14 +443,14 @@ void update_srbds_msr(void)
-> 	if (boot_cpu_has(X86_FEATURE_HYPERVISOR))
-> 		return;
->
->-	if (srbds_mitigation == SRBDS_MITIGATION_UCODE_NEEDED)
->+	if (srbds_mitigation == SRBDS_MITIGATION_UCODE_NEEDED ||
->+	    srbds_mitigation == SRBDS_MITIGATION_TSX_OFF)
-> 		return;
+Hey Nicolas & Ezequiel,
 
-Returning for TSX OFF case doesn't seem right. System is mitigated
-already and there is no need to incur performance loss due to microcode
-mitigation. So we need to write to the MSR for TSX OFF case to disable
-the microcode mitigation.
+On 30.03.2022 20:43, Ezequiel Garcia wrote:
+>On Wed, Mar 30, 2022 at 12:16 PM Nicolas Dufresne
+><nicolas.dufresne@collabora.com> wrote:
+>>
+>> Le mercredi 30 mars 2022 à 09:59 +0200, Sebastian Fricke a écrit :
+>> > Hey Nicolas,
+>> >
+>> > On 28.03.2022 15:59, Nicolas Dufresne wrote:
+>> > > From: Jonas Karlman <jonas@kwiboo.se>
+>> > >
+>> > > The driver maintains stable slot location for reference pictures. This
+>> >
+>> > s/slot location/slot locations/
+>> >
+>> > > change makes the code more robust by using the reference_ts as key and
+>> > > by marking all entries invalid right from the start.
+>> > >
+>> > > Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
+>> > > Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
+>> > > ---
+>> > > drivers/staging/media/hantro/hantro_h264.c | 10 ++++------
+>> > > 1 file changed, 4 insertions(+), 6 deletions(-)
+>> > >
+>> > > diff --git a/drivers/staging/media/hantro/hantro_h264.c b/drivers/staging/media/hantro/hantro_h264.c
+>> > > index 228629fb3cdf..7377fc26f780 100644
+>> > > --- a/drivers/staging/media/hantro/hantro_h264.c
+>> > > +++ b/drivers/staging/media/hantro/hantro_h264.c
+>> > > @@ -258,8 +258,7 @@ static void prepare_table(struct hantro_ctx *ctx)
+>> > > static bool dpb_entry_match(const struct v4l2_h264_dpb_entry *a,
+>> > >                         const struct v4l2_h264_dpb_entry *b)
+>> > > {
+>> > > -   return a->top_field_order_cnt == b->top_field_order_cnt &&
+>> > > -          a->bottom_field_order_cnt == b->bottom_field_order_cnt;
+>> > > +   return a->reference_ts == b->reference_ts;
+>> > > }
+>> > >
+>> > > static void update_dpb(struct hantro_ctx *ctx)
+>> > > @@ -273,13 +272,13 @@ static void update_dpb(struct hantro_ctx *ctx)
+>> > >
+>> > >     /* Disable all entries by default. */
+>> > >     for (i = 0; i < ARRAY_SIZE(ctx->h264_dec.dpb); i++)
+>> > > -           ctx->h264_dec.dpb[i].flags &= ~V4L2_H264_DPB_ENTRY_FLAG_ACTIVE;
+>> > > +           ctx->h264_dec.dpb[i].flags = 0;
+>> >
+>> > Ehm ... we just remove all flags? Can't this have any unwanted side
+>> > effects like removing a flag that we actually wanted to keep?
+>> > (Like long term or the field flags?)
+>>
+>> This is a local copy of the dpb, the DPB is fully passed for every decode. So
+>> these flags will be fully restored lower when we copy the found entry. In fact,
+>> holding a state here would not represent well the userland intention and can
+>> have negative side effect on the decoding. Flags are not immutable between
+>> decode and can change. This simplify the code, and make things less error prone.
+>> This part of the code is already a bit complex, no need for an extra layer.
+>>
+>> > If we just want to set the DPB entry inactive, then removing the ACTIVE
+>> > flag seems like the correct approach to me.
+>> > If we want to get rid of the VALID flag as well, then we could just do:
+>> >               ctx->h264_dec.dpb[i].flags &=
+>> >        ~(V4L2_H264_DPB_ENTRY_FLAG_ACTIVE | V4L2_H264_DPB_ENTRY_FLAG_VALID);
+>> >
+>> > In case we really want to reset all flags, I'd say adjust the comment
+>> > above it:
+>> > ```
+>> > -     /* Disable all entries by default. */
+>> > +     /* Reset the flags for all entries by default. */
+>> > ```
+>>
+>> This reads the same to me, but I can do that yes. understand that VALID means
+>> the reference exist and the TS should point to some existing past reference
+>> (unless there was some decode error, which the userland may not be aware yet as
+>> this is asynchronous). While ACTIVE means that it is used as a reference. FFMPEG
+>> is known not to filter inactive references. ACTIVE is just a flag without bunch
+>> of other flags that can change for every decode. So none of this make sense
+>> between 2 decodes.
+>>
+>
+>Please leave the comment as-is, 'Disable all entries' is readable.
+>
+>As much as I'd love to have very clear comments everywhere,
+>we have to accept that only people with insight on codec details
+>are expected to make sense of driver details :-)
 
-IIUC root of the issue is the logic in srbds_select_mitigation() that
-gives precedence to TSX_OFF over UCODE_NEEDED:
+Fair enough, I just feel like the code should try his best to have as
+few hidden details as possible. And in this case our intention is to
+disable the entries (removing the active and valid flag) but what we do
+is that we remove all flags.
 
-   srbds_select_mitigation()
-   {
-   [...]
-   	if ((ia32_cap & ARCH_CAP_MDS_NO) && !boot_cpu_has(X86_FEATURE_RTM))
-   		srbds_mitigation = SRBDS_MITIGATION_TSX_OFF;
-   	else if (boot_cpu_has(X86_FEATURE_HYPERVISOR))
-   		srbds_mitigation = SRBDS_MITIGATION_HYPERVISOR;
-   	else if (!boot_cpu_has(X86_FEATURE_SRBDS_CTRL))
-   		srbds_mitigation = SRBDS_MITIGATION_UCODE_NEEDED;
-   	else if (cpu_mitigations_off() || srbds_off)
-		srbds_mitigation = SRBDS_MITIGATION_OFF;
+The hidden details at this point are:
+- flags will be restored automatically later on and we do not want to
+hold the state here
+- flags are not immutable between decodes
+- this was a decision by the programmer to simplify the code and not a rule in the specification.
 
-If we don't want to touch this logic, below can be a simple fix:
+All of these things are not obvious from the code (from my POV) and
+there are no pointers to the specification, which means the reader is
+seemingly expected to know the specification on an expert level. I think
+really understanding the H264 specification is hard enough on its own.
+And as we do that change right now, I think we might as well take some
+time to document as much hidden details as possible and I really think
+that it will not lower the code quality when we add another 20-40 lines
+of comments.
 
----
-diff --git a/arch/x86/kernel/cpu/bugs.c b/arch/x86/kernel/cpu/bugs.c
-index 6296e1ebed1d..575817163354 100644
---- a/arch/x86/kernel/cpu/bugs.c
-+++ b/arch/x86/kernel/cpu/bugs.c
-@@ -437,7 +437,8 @@ void update_srbds_msr(void)
-  {
-  	u64 mcu_ctrl;
-  
--	if (!boot_cpu_has_bug(X86_BUG_SRBDS))
-+	if (!boot_cpu_has_bug(X86_BUG_SRBDS) ||
-+	    !boot_cpu_has(X86_FEATURE_SRBDS_CTRL))
-  		return;
-  
-  	if (boot_cpu_has(X86_FEATURE_HYPERVISOR))
+I might be wrong (as I still learn about H264) but I would love if we
+can write code (especially open-source code) in a manner that enables
+others to learn quickly.
 
----
-Thanks,
-Pawan
+>
+>Thanks,
+>Ezequiel
+
+Greetings,
+Sebastian
