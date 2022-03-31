@@ -2,217 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16A5CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 06:47:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FB9CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 06:48:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231391AbiCaGtE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 02:49:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59916 "EHLO
+        id S231400AbiCaGtq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 02:49:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230483AbiCaGtB (ORCPT
+        with ESMTP id S229708AbiCaGto (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 02:49:01 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A99CE1EDA1E
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 23:47:13 -0700 (PDT)
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22V3KCCT005044;
-        Thu, 31 Mar 2022 06:46:06 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : in-reply-to : references : date : message-id : mime-version :
- content-type; s=pp1; bh=4eLD8KWF+L403FOuygfdbWAfVw/1kOiQHwIP8k2QeXQ=;
- b=S5surkqnbx1XOKj24ec7z8+6dz2uDmu6X2Z9qnX41lGcfvKOhxqKRn5FDDlgBmnTpIfk
- w56/zVEUOBVBYCYZVF9kDz7YfEm2l3dLAuIz14wF6mt2iGD8N7XdVwpCdcUw6BcdIWT8
- hwFFlephx63oDVSPTWJwPdFEfxuOKp+1hDt3ugyyHdrM71yIW38do5r5GuqSOtyOUj2+
- CpKcl9ffLM6Vv6hwtoRqRhFv9ow0Gg+kXvKB0XgsAqZe72lXM7TZihVnX1xgyGTTyEhA
- RHBcsujKkXK8hGgLSoFgZzpMpDdhWnBpgJM0ucDxSvQ7FufkBOw0hNaLpbqci0FOVUOi Zw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3f50smpre4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 31 Mar 2022 06:46:05 +0000
-Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22V6eDYk002072;
-        Thu, 31 Mar 2022 06:46:05 GMT
-Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3f50smprdr-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 31 Mar 2022 06:46:05 +0000
-Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
-        by ppma04dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22V6ddcd027459;
-        Thu, 31 Mar 2022 06:46:04 GMT
-Received: from b01cxnp22036.gho.pok.ibm.com (b01cxnp22036.gho.pok.ibm.com [9.57.198.26])
-        by ppma04dal.us.ibm.com with ESMTP id 3f1tfab7a4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 31 Mar 2022 06:46:04 +0000
-Received: from b01ledav006.gho.pok.ibm.com (b01ledav006.gho.pok.ibm.com [9.57.199.111])
-        by b01cxnp22036.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22V6k3B57537438
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 31 Mar 2022 06:46:03 GMT
-Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 9EA10AC062;
-        Thu, 31 Mar 2022 06:46:03 +0000 (GMT)
-Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id EECCBAC05E;
-        Thu, 31 Mar 2022 06:46:00 +0000 (GMT)
-Received: from skywalker.linux.ibm.com (unknown [9.43.54.171])
-        by b01ledav006.gho.pok.ibm.com (Postfix) with ESMTP;
-        Thu, 31 Mar 2022 06:46:00 +0000 (GMT)
-X-Mailer: emacs 29.0.50 (via feedmail 11-beta-1 I)
-From:   "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
-To:     "Huang, Ying" <ying.huang@intel.com>
-Cc:     Jagdish Gediya <jvgediya@linux.ibm.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
-        baolin.wang@linux.alibaba.com, dave.hansen@linux.intel.com
-Subject: Re: [PATCH] mm: migrate: set demotion targets differently
-In-Reply-To: <878rsrc672.fsf@yhuang6-desk2.ccr.corp.intel.com>
-References: <20220329115222.8923-1-jvgediya@linux.ibm.com>
- <87pmm4c4ys.fsf@yhuang6-desk2.ccr.corp.intel.com>
- <87lewrxsv1.fsf@linux.ibm.com>
- <878rsrc672.fsf@yhuang6-desk2.ccr.corp.intel.com>
-Date:   Thu, 31 Mar 2022 12:15:58 +0530
-Message-ID: <87ilruy5zt.fsf@linux.ibm.com>
+        Thu, 31 Mar 2022 02:49:44 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 338AA1EDA21
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 23:47:57 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id b24so26993410edu.10
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 23:47:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=g1JtTmDSsjT/JKwoohwXjZdpIO33MVT5jjl60V1LMmQ=;
+        b=OjcqCymz2Jqp4RIWZLuiV+tt/V0bIVyJjrGu5ftViQNgUXxcvp3sUA4kO2/Mwvpz0M
+         CXUBXzmAn5bheg10sMnrIT+uG3DrIcjlUVUsBwXNXNsMNCHMpzFpiZ4oK+bkPqnBp7ZV
+         g+9hyZJs88czgFL/PaKATyOq5FAj9B0O+25nvegHiNTIoRe+M44UtQtfk2wP63197LwV
+         3j/CpZR/4E5qaXJTi9oAKlwF9muoaxQs2ls7ERTieUNPsil2f9vG31fdBuVCacxdNh/A
+         MDpPAcstfrZRI2aEV/ypbq3LVopfMT5Y/ADtkbJENaKssUFhbGkvMEA12wSCkuSlHfGN
+         5Oiw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=g1JtTmDSsjT/JKwoohwXjZdpIO33MVT5jjl60V1LMmQ=;
+        b=KMgWrqyDKnWJkWZN8TE/3hL8a295tv/6eAT9JlMeAxj/XYFVdVmqc7ekVqtD7ViARJ
+         1A8B4/DuG9xDqS4fWgWQILOHpIZ7zfcBLzXsqcTpwNuxLB9p5a4nwpFwvKOyLzVWil+b
+         kJ9ZuuA5bWr8aUmW0KkeseJiPlMvOBeK98GhWlD85FkJ7NDSxpv6iAswUC80qpT2mlz8
+         bmJlUknE14/4slLPRgXfGFllmJpKIMh9sgKbZ/7qBXS6ZcGHOQ2X/B66mokqcRUQTfug
+         KP06P6vkvg+zsl0QrnUxm0PMGLqW/OTrhhwV3kSR6HbBfKD2DlCT2EtTx0sOdkrsxTRt
+         BBSg==
+X-Gm-Message-State: AOAM531dQvVDkNr7nmzituo6cOoj9E4807SZ+MEiJ4VKPary/8cSFgQn
+        DsVxuaFt8xREvojqYNjBxl0gPPeADLk=
+X-Google-Smtp-Source: ABdhPJyvFOEjtIdxk3uQZ18fXFu/x90nFX3NmRWstUZSdw682pcmaa975KRBGhinfixwhwoeHO5C/g==
+X-Received: by 2002:a05:6402:1107:b0:416:439a:6a9e with SMTP id u7-20020a056402110700b00416439a6a9emr14948578edv.382.1648709275569;
+        Wed, 30 Mar 2022 23:47:55 -0700 (PDT)
+Received: from localhost.localdomain (host-95-249-145-232.retail.telecomitalia.it. [95.249.145.232])
+        by smtp.gmail.com with ESMTPSA id b11-20020a170906728b00b006df8494d384sm9227155ejl.122.2022.03.30.23.47.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 30 Mar 2022 23:47:54 -0700 (PDT)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     David Kershner <david.kershner@unisys.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        sparmaintainer@unisys.com, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org, outreachy@lists.linux.dev
+Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>
+Subject: [PATCH v2] staging: unisys: Remove "struct dentry *eth_debugfs_dir"
+Date:   Thu, 31 Mar 2022 08:47:51 +0200
+Message-Id: <20220331064751.29634-1-fmdefrancesco@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 6ZHlFeB3Pcq-RuwWM0nJDbId8skoDD-M
-X-Proofpoint-ORIG-GUID: 2SBiwj-h58iXE_tHH3HZBIQ6UeJyIviF
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-31_02,2022-03-30_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 malwarescore=0
- adultscore=0 bulkscore=0 suspectscore=0 mlxlogscore=999 spamscore=0
- priorityscore=1501 impostorscore=0 mlxscore=0 phishscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2203310037
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-"Huang, Ying" <ying.huang@intel.com> writes:
+There is no need for "struct dentry *eth_debugfs_dir" which is used for
+debug / sysfs directories. Therefore, remove this "struct dentry" and
+everything related (i.e., creation and removal).
 
-> "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com> writes:
->
->> "Huang, Ying" <ying.huang@intel.com> writes:
->>
->>> Hi, Jagdish,
->>>
->>> Jagdish Gediya <jvgediya@linux.ibm.com> writes:
->>>
->>
->> ...
->>
->>>> e.g. with below NUMA topology, where node 0 & 1 are
->>>> cpu + dram nodes, node 2 & 3 are equally slower memory
->>>> only nodes, and node 4 is slowest memory only node,
->>>>
->>>> available: 5 nodes (0-4)
->>>> node 0 cpus: 0 1
->>>> node 0 size: n MB
->>>> node 0 free: n MB
->>>> node 1 cpus: 2 3
->>>> node 1 size: n MB
->>>> node 1 free: n MB
->>>> node 2 cpus:
->>>> node 2 size: n MB
->>>> node 2 free: n MB
->>>> node 3 cpus:
->>>> node 3 size: n MB
->>>> node 3 free: n MB
->>>> node 4 cpus:
->>>> node 4 size: n MB
->>>> node 4 free: n MB
->>>> node distances:
->>>> node   0   1   2   3   4
->>>>   0:  10  20  40  40  80
->>>>   1:  20  10  40  40  80
->>>>   2:  40  40  10  40  80
->>>>   3:  40  40  40  10  80
->>>>   4:  80  80  80  80  10
->>>>
->>>> The existing implementation gives below demotion targets,
->>>>
->>>> node    demotion_target
->>>>  0              3, 2
->>>>  1              4
->>>>  2              X
->>>>  3              X
->>>>  4		X
->>>>
->>>> With this patch applied, below are the demotion targets,
->>>>
->>>> node    demotion_target
->>>>  0              3, 2
->>>>  1              3, 2
->>>>  2              3
->>>>  3              4
->>>>  4		X
->>>
->>> For such machine, I think the perfect demotion order is,
->>>
->>> node    demotion_target
->>>  0              2, 3
->>>  1              2, 3
->>>  2              4
->>>  3              4
->>>  4              X
->>
->> I guess the "equally slow nodes" is a confusing definition here. Now if the
->> system consists of 2 1GB equally slow memory and the firmware doesn't want to
->> differentiate between them, firmware can present a single NUMA node
->> with 2GB capacity? The fact that we are finding two NUMA nodes is a hint
->> that there is some difference between these two memory devices. This is
->> also captured by the fact that the distance between 2 and 3 is 40 and not 10.
->
-> Do you have more information about this?
+As a side effect of this change, the code has no more need of the
+"cleanup_register_netdev" label, which can also be removed.
 
-Not sure I follow the question there. I was checking shouldn't firmware
-do a single NUMA node if two memory devices are of the same type? How will
-optane present such a config? Both the DIMMs will have the same
-proximity domain value and hence dax kmem will add them to the same NUMA
-node?
+Suggested-by: Dan Carpenter <dan.carpenter@oracle.com>
+Suggested-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+---
 
-If you are suggesting that firmware doesn't do that, then I agree with you
-that a demotion target like the below is good. 
+v1 - v2: Add a couple of "Suggested-by" tags which were forgotten. 
+Thanks to Dan Carpenter and Greg Kroah-Hartman.
 
- node    demotion_target
-  0              2, 3
-  1              2, 3
-  2              4
-  3              4
-  4              X
+ drivers/staging/unisys/visornic/visornic_main.c | 17 -----------------
+ 1 file changed, 17 deletions(-)
 
-We can also achieve that with a smiple change as below.
-
-@@ -3120,7 +3120,7 @@ static void __set_migration_target_nodes(void)
- {
- 	nodemask_t next_pass	= NODE_MASK_NONE;
- 	nodemask_t this_pass	= NODE_MASK_NONE;
--	nodemask_t used_targets = NODE_MASK_NONE;
-+	nodemask_t this_pass_used_targets = NODE_MASK_NONE;
- 	int node, best_distance;
+diff --git a/drivers/staging/unisys/visornic/visornic_main.c b/drivers/staging/unisys/visornic/visornic_main.c
+index 643432458105..bb7ec492503e 100644
+--- a/drivers/staging/unisys/visornic/visornic_main.c
++++ b/drivers/staging/unisys/visornic/visornic_main.c
+@@ -103,7 +103,6 @@ struct chanstat {
+  * @server_down:                    IOPART is down.
+  * @server_change_state:            Processing SERVER_CHANGESTATE msg.
+  * @going_away:                     device is being torn down.
+- * @struct *eth_debugfs_dir:
+  * @interrupts_rcvd:
+  * @interrupts_notme:
+  * @interrupts_disabled:
+@@ -157,7 +156,6 @@ struct visornic_devdata {
+ 	bool server_down;
+ 	bool server_change_state;
+ 	bool going_away;
+-	struct dentry *eth_debugfs_dir;
+ 	u64 interrupts_rcvd;
+ 	u64 interrupts_notme;
+ 	u64 interrupts_disabled;
+@@ -1919,24 +1917,10 @@ static int visornic_probe(struct visor_device *dev)
+ 		goto cleanup_napi_add;
+ 	}
  
- 	/*
-@@ -3141,17 +3141,20 @@ static void __set_migration_target_nodes(void)
- 	/*
- 	 * To avoid cycles in the migration "graph", ensure
- 	 * that migration sources are not future targets by
--	 * setting them in 'used_targets'.  Do this only
-+	 * setting them in 'this_pass_used_targets'.  Do this only
- 	 * once per pass so that multiple source nodes can
- 	 * share a target node.
- 	 *
--	 * 'used_targets' will become unavailable in future
-+	 * 'this_pass_used_targets' will become unavailable in future
- 	 * passes.  This limits some opportunities for
- 	 * multiple source nodes to share a destination.
- 	 */
--	nodes_or(used_targets, used_targets, this_pass);
-+	nodes_or(this_pass_used_targets, this_pass_used_targets, this_pass);
+-	/* create debug/sysfs directories */
+-	devdata->eth_debugfs_dir = debugfs_create_dir(netdev->name,
+-						      visornic_debugfs_dir);
+-	if (!devdata->eth_debugfs_dir) {
+-		dev_err(&dev->device,
+-			"%s debugfs_create_dir %s failed\n",
+-			__func__, netdev->name);
+-		err = -ENOMEM;
+-		goto cleanup_register_netdev;
+-	}
+-
+ 	dev_info(&dev->device, "%s success netdev=%s\n",
+ 		 __func__, netdev->name);
+ 	return 0;
  
- 	for_each_node_mask(node, this_pass) {
-+
-+		nodemask_t used_targets = this_pass_used_targets;
-+
- 		best_distance = -1;
+-cleanup_register_netdev:
+-	unregister_netdev(netdev);
+-
+ cleanup_napi_add:
+ 	visorbus_disable_channel_interrupts(dev);
+ 	netif_napi_del(&devdata->napi);
+@@ -2002,7 +1986,6 @@ static void visornic_remove(struct visor_device *dev)
+ 	/* going_away prevents new items being added to the workqueues */
+ 	cancel_work_sync(&devdata->timeout_reset);
  
- 		/*
+-	debugfs_remove_recursive(devdata->eth_debugfs_dir);
+ 	/* this will call visornic_close() */
+ 	unregister_netdev(netdev);
+ 
+-- 
+2.34.1
+
