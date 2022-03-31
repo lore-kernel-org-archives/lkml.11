@@ -2,87 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB0D0C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 11:52:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45514C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 11:53:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235341AbiCaLyD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 07:54:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56064 "EHLO
+        id S235349AbiCaLzn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 07:55:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234501AbiCaLyC (ORCPT
+        with ESMTP id S232730AbiCaLzm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 07:54:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AAB720826F;
-        Thu, 31 Mar 2022 04:52:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D1177B81BE2;
-        Thu, 31 Mar 2022 11:52:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B859CC340ED;
-        Thu, 31 Mar 2022 11:52:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648727532;
-        bh=a9mOGUgdT7iAt7EJjQ3oddc3bHbgvXVhoDNeftyXSOE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=g1WjV00TzByu4odN/Jd/wbIsLJYni8j06eg/1pLy691kCqk1pKR+81SFXT90QA5c9
-         oOO4qprKkNn4qnzzmGB7GIIT09rX3qEQdDQ3alsFRQ2D4Xr9ysZqcm/tu1QV2TeQv0
-         0T3UUlJx0wJNoUOBvlnh56UBEeox6oMGhXAgme78=
-Date:   Thu, 31 Mar 2022 13:52:08 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Daniel Palmer <daniel@0x0f.com>
-Cc:     Nas Chung <nas.chung@chipsnmedia.com>,
-        "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>,
-        Dafna Hirschfeld <dafna.hirschfeld@collabora.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        "open list:STAGING SUBSYSTEM" <linux-staging@lists.linux.dev>,
-        open list <linux-kernel@vger.kernel.org>,
-        "laurent.pinchart@ideasonboard.com" 
-        <laurent.pinchart@ideasonboard.com>,
-        "hverkuil@xs4all.nl" <hverkuil@xs4all.nl>,
-        "kernel@collabora.com" <kernel@collabora.com>,
-        "dafna3@gmail.com" <dafna3@gmail.com>,
-        "bob.beckett@collabora.com" <bob.beckett@collabora.com>,
-        "kiril.bicevski@collabora.com" <kiril.bicevski@collabora.com>,
-        "lafley.kim" <lafley.kim@chipsnmedia.com>,
-        Scott Woo <scott.woo@chipsnmedia.com>,
-        "olivier.crete@collabora.com" <olivier.crete@collabora.com>,
-        "dan.carpenter@oracle.com" <dan.carpenter@oracle.com>,
-        "rdunlap@infradead.org" <rdunlap@infradead.org>
-Subject: Re: [PATCH v6 4/6] staging: media: wave5: Add TODO file
-Message-ID: <YkWV6HGkGHvgSwCj@kroah.com>
-References: <SL2P216MB12463DE2E1E100E2498A5C33FBE19@SL2P216MB1246.KORP216.PROD.OUTLOOK.COM>
- <SL2P216MB1246D7900A0B9620F1E1A038FBE19@SL2P216MB1246.KORP216.PROD.OUTLOOK.COM>
- <YkWRN4ac0ivRn4aB@kroah.com>
- <CAFr9PXm3Mvr0guGoPDKmashMhFG6OQMvXHxwX-SD5ZHPi_sw4g@mail.gmail.com>
+        Thu, 31 Mar 2022 07:55:42 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 936814199E;
+        Thu, 31 Mar 2022 04:53:54 -0700 (PDT)
+Received: from kwepemi500022.china.huawei.com (unknown [172.30.72.54])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KThRv59lXzBrtJ;
+        Thu, 31 Mar 2022 19:49:47 +0800 (CST)
+Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
+ kwepemi500022.china.huawei.com (7.221.188.64) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 31 Mar 2022 19:53:52 +0800
+Received: from localhost.localdomain (10.67.165.24) by
+ kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Thu, 31 Mar 2022 19:53:51 +0800
+From:   Guangbin Huang <huangguangbin2@huawei.com>
+To:     <andrew@lunn.ch>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <o.rempel@pengutronix.de>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <lipeng321@huawei.com>, <huangguangbin2@huawei.com>,
+        <chenhao288@hisilicon.com>
+Subject: [PATCH] net: phy: genphy_loopback: fix loopback failed when speed is unknown
+Date:   Thu, 31 Mar 2022 19:48:19 +0800
+Message-ID: <20220331114819.14929-1-huangguangbin2@huawei.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAFr9PXm3Mvr0guGoPDKmashMhFG6OQMvXHxwX-SD5ZHPi_sw4g@mail.gmail.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemm600016.china.huawei.com (7.193.23.20)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 31, 2022 at 08:42:40PM +0900, Daniel Palmer wrote:
-> Hi Greg,
-> 
-> On Thu, 31 Mar 2022 at 20:32, Greg Kroah-Hartman
-> <gregkh@linuxfoundation.org> wrote:
-> > > +  Until we can test and resolve any issues on final silicon (due 2H 2021)
-> > > +  this driver should remain in staging.
-> >
-> > Then why not just wait?  Why merge this now?  What is the benifit of us
-> > taking this code at this point in time for hardware that is no one has
-> > as it is not even created?
-> 
-> FWIW there is an SoC that is supported (if console from initramfs on
-> uart counts..) in mainline, Sigmastar ssd202d, that has this IP so it
-> exists in the wild.
-> I have tried to get this driver running on it and it did something but
-> didn't get far enough to actually decode video.
+If phy link status is down because link partner goes down, the phy speed
+will be updated to SPEED_UNKNOWN when autoneg on with general phy driver.
+If test loopback in this case, the phy speed will be set to 10M. However,
+the speed of mac may not be 10M, it causes loopback test failed.
 
-According to the text in this driver, it will not work on these hardware
-as it is broken.  Unless that text is incorrect?
+To fix this problem, if speed is SPEED_UNKNOWN, don't configure link speed.
 
-greg k-h
+Fixes: 014068dcb5b1 ("net: phy: genphy_loopback: add link speed configuration")
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+---
+ drivers/net/phy/phy_device.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 8406ac739def..5001bb1a019c 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -2618,6 +2618,9 @@ int genphy_loopback(struct phy_device *phydev, bool enable)
+ 			ctl |= BMCR_SPEED1000;
+ 		else if (phydev->speed == SPEED_100)
+ 			ctl |= BMCR_SPEED100;
++		else if (phydev->speed == SPEED_UNKNOWN)
++			return phy_modify(phydev, MII_BMCR, BMCR_LOOPBACK,
++					  BMCR_LOOPBACK);
+ 
+ 		if (phydev->duplex == DUPLEX_FULL)
+ 			ctl |= BMCR_FULLDPLX;
+-- 
+2.33.0
+
