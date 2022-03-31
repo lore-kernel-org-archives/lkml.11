@@ -2,119 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BB4BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 15:50:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 530B4C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 15:51:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239263AbiCaPwN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 11:52:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45656 "EHLO
+        id S239265AbiCaPwz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 11:52:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239097AbiCaPwE (ORCPT
+        with ESMTP id S239323AbiCaPwr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 11:52:04 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C0C45EBD1;
-        Thu, 31 Mar 2022 08:50:16 -0700 (PDT)
-Received: from mail-wr1-f42.google.com ([209.85.221.42]) by
- mrelayeu.kundenserver.de (mreue011 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1M4rkF-1nZ7lg3xXr-00208u; Thu, 31 Mar 2022 17:45:11 +0200
-Received: by mail-wr1-f42.google.com with SMTP id h23so341057wrb.8;
-        Thu, 31 Mar 2022 08:45:11 -0700 (PDT)
-X-Gm-Message-State: AOAM531vONq4YljMzzg4lpYoPH0G7AIFTXF8x2q34N+BssxIH7OS/ASN
-        d1rpbebSZK9epEeXVdurRY7LIGtroKu09OIahGI=
-X-Google-Smtp-Source: ABdhPJyINqj20BgrqMVql8P0dLX86b0MRGwI7ZaFK1fyvU3QQ0XJBE7cU28CP6wHHSEMpvM8IDEW2Jl0QfL2BRdivwU=
-X-Received: by 2002:a5d:6505:0:b0:205:9a98:e184 with SMTP id
- x5-20020a5d6505000000b002059a98e184mr4338853wru.317.1648741511582; Thu, 31
- Mar 2022 08:45:11 -0700 (PDT)
+        Thu, 31 Mar 2022 11:52:47 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A7E45BE44;
+        Thu, 31 Mar 2022 08:51:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
+        :In-Reply-To:From:References:To:Subject:MIME-Version:Date:Message-ID:Sender:
+        Reply-To:Cc:Content-ID:Content-Description;
+        bh=EW47Oov3HTfA9FlJ1gMHnPyF8JciNSm/LuKu+cor2cc=; b=VqI+KEmHJ4N7pGmsFNG74XYwow
+        Tto7JaFe/yuhtcnlPNe5Oq2Ks3afKgvj09Stjrpj8VTa5a/NC+/jcJCcopbJMWntu2NU9JsnkCGdQ
+        JXMCuAlgVGfEL9vBuHJ2kNrYla+GQOS+3xH+x/T2AIx1b8nxAuTK65Ey2wR30dycO0xlMs2TmnACD
+        9Sf7bv86ukOTk0mLjsEkif1BzEvJaOPyR9NmflZyV2+A+zO95WHMp/jzCPaTlKArs81wZGwZEdU/4
+        yB7h5gXHuENJ/77eGJCmkLvqQm1R6P2xijcFV0nkLVg/2Z0mDPJAUblTN/WOrWgKtQB+MqaOEYuO3
+        zEj2/0+w==;
+Received: from [2601:1c0:6280:3f0::aa0b]
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nZx4R-0005HN-4u; Thu, 31 Mar 2022 15:50:47 +0000
+Message-ID: <5a0b94c3-406e-463e-d93e-d1dc2a260b47@infradead.org>
+Date:   Thu, 31 Mar 2022 08:50:41 -0700
 MIME-Version: 1.0
-References: <20220331092235.3000787-1-hasegawa-hitomi@fujitsu.com>
- <20220331092235.3000787-2-hasegawa-hitomi@fujitsu.com> <YkWVTEG5oFO82GPL@kroah.com>
-In-Reply-To: <YkWVTEG5oFO82GPL@kroah.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Thu, 31 Mar 2022 17:44:55 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a0jnzse4sG58taO5+Yd5vCgh1uddqbtAuim_z9r15Q3BA@mail.gmail.com>
-Message-ID: <CAK8P3a0jnzse4sG58taO5+Yd5vCgh1uddqbtAuim_z9r15Q3BA@mail.gmail.com>
-Subject: Re: [PATCH v3 1/1] soc: fujitsu: Add A64FX diagnostic interrupt driver
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Hitomi Hasegawa <hasegawa-hitomi@fujitsu.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        SoC Team <soc@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Sumit Garg <sumit.garg@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Jason Wessel <jason.wessel@windriver.com>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Doug Anderson <dianders@chromium.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        kgdb-bugreport@lists.sourceforge.net,
-        Peter Zijlstra <peterz@infradead.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:kXY2uz+9T3skG3/rQcpWLGZV/wmu9mwnbrEErlu2X5LOl7QcaTT
- LPDDapDBHZn06WODoqpZUW0RO2MsD2bQt6Xr/35LwBOEyinlwc1SF/49dcvUBpewMQnoIci
- NBtzeBbMcytU/nrAQ9EPo01QzsnpisZy5TKLjvbSJUFWeI1lC2Ozrt0TUoTh0MGLRq3f0Qx
- wucjN2gro/MlvLRfWWbUQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:8/ixu57X/F0=:D7nw2WCUnDEYMcmc0d8TcP
- Xj+tteEiznHSY2WADjFLxTF4m1kLKXfjmGE8i0IfZPNBuNfv/6/aGaRz7T9lSv0qeoxsRt/Zw
- xPLBk737n2QlgdD5UAErbVLeE8uRZbkJ1LIMuO6KjugibpE6SPS8GSPfpNkAZdiApPWLbWrG7
- 0NQseEkwFT2nRH1pFjqLfMbq9XeM7tAvQHJmJQ7pT6NjT8nqfLGpju6bgOW+MUABrV5HRh9Gp
- 42RHGUQQfmLfjdU7uP8FeSvP8ArhGOxk+2eqg/cgUUYrlHWxc12kJK6coa3h1UkU0lSeH4Lat
- XC7X/NiqdBrCEA94x8q/CtXItiQ1S7jIxFy47drnwCjfKpno5FCGUJzbq8IIPcZBhSpx1AWWa
- W6bNBFQsXx0wq2+6cWfWxFvRt1kgDxktMK3swH1GIcq1aV1u0JIPkZY4sQAjuQiVp3KLHpLf6
- POd50MMfwItMC8Wo5REw7b6t0WB+/E/mUg5gOMFvbmOjj2W98jBloeE4AWVHanVy8dsIyBKaL
- 4H3hvV2qJEDdZZUqapNpAVS81xzhzT7/bohsTK0ArU38d3ZA9VWXL4NV0ldLMx6e1W8n0A9Ah
- vv9+Yya/hNdfKV+PDbeNhrVVW+s0F5oiVilmg3jb3zECV6dJSNvjXDF/i5jpR5EZFiER9f0jS
- 9/Er9A+EX+NvTS8D1vzbnM65TsjfR1FOF4nABgr9OCwPMivAY9CRlWr+MAFXYjRnbBeRyqy3D
- FGUPfw9Sa8mfIMsISlqgKKpGpk8/hk2kPl+EBxVptcWCpu1UxIb70w5gYGMdj3/fi8OfYwXLb
- PZLYCFxpLyVmndjbvwhzGihlanHq+A5dGpgiclFYixTXRkyN+g=
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: mmotm 2022-03-30-13-01 uploaded (drivers/platform/x86/amd-pmc.o)
+Content-Language: en-US
+To:     Andrew Morton <akpm@linux-foundation.org>, broonie@kernel.org,
+        mhocko@suse.cz, sfr@canb.auug.org.au, linux-next@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, mm-commits@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org,
+        Mario Limonciello <mario.limonciello@amd.com>
+References: <20220330200158.2F031C340EC@smtp.kernel.org>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <20220330200158.2F031C340EC@smtp.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 31, 2022 at 1:49 PM Greg KH <gregkh@linuxfoundation.org> wrote:
-> > +
-> > +static irqreturn_t a64fx_diag_handler(int irq, void *dev_id)
-> > +{
-> > +     handle_sysrq('c');
->
->
-> Why is this calling this sysrq call?  From an interrupt?  Why?
->
-> And you are hard-coding "c", are you sure?
 
-This is an actual sysrq driver in the traditional sense, where you can send
-a single interrupt to the machine from the outside over a side channel.
 
-I suggested sysrq instead of just panic() to make it a bit more flexible.
-Unfortunately there is no additional data, so it comes down to always
-sending the same character.
+On 3/30/22 13:01, Andrew Morton wrote:
+> The mm-of-the-moment snapshot 2022-03-30-13-01 has been uploaded to
+> 
+>    https://www.ozlabs.org/~akpm/mmotm/
+> 
+> mmotm-readme.txt says
+> 
+> README for mm-of-the-moment:
+> 
+> https://www.ozlabs.org/~akpm/mmotm/
+> 
+> This is a snapshot of my -mm patch queue.  Uploaded at random hopefully
+> more than once a week.
+> 
+> You will need quilt to apply these patches to the latest Linus release (5.x
+> or 5.x-rcY).  The series file is in broken-out.tar.gz and is duplicated in
+> https://ozlabs.org/~akpm/mmotm/series
+> 
 
-It would be possible to make that character configurable with a module
-parameter or something like that, but I'm not sure that is an improvement.
-Maybe you have another idea for this.
+on x86_64:
+when CONFIG_SUSPEND is not set:
 
-> > +static void a64fx_diag_interrupt_clear(struct a64fx_diag_priv *priv)
-> > +{
-> > +     u32 mmsc;
-> > +     const void __iomem *diag_status_reg_addr;
-> > +
-> > +     diag_status_reg_addr = priv->mmsc_reg_base + BMC_DIAG_INTERRUPT_STATUS_OFFSET;
-> > +     mmsc = readl(diag_status_reg_addr);
-> > +     if (mmsc & BMC_INTERRUPT_STATUS_MASK)
-> > +             writel(BMC_INTERRUPT_STATUS_MASK, (void *)diag_status_reg_addr);
->
-> No need to wait for the write to complete?
->
-> You shouldn't have to cast diag_status_reg_addr, right?
+drivers/platform/x86/amd-pmc.o: in function `amd_pmc_remove':
+amd-pmc.c:(.text+0x11d): undefined reference to `acpi_unregister_lps0_dev'
+ld: drivers/platform/x86/amd-pmc.o: in function `amd_pmc_probe':
+amd-pmc.c:(.text+0x20be): undefined reference to `acpi_register_lps0_dev'
 
-I think the cast is needed because the declaration of
-'diag_status_reg_addr' incorrectly
-marks it as 'const'. However, this should still trigger a 'make C=1'
-warning with sparse
-because it is now missing the __iomem annotation.
 
-The correct solution of course is to remove both the cast and the 'const'.
 
-       Arnd
+-- 
+~Randy
