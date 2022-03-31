@@ -2,365 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37A2DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 06:49:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2537FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 06:50:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231407AbiCaGvV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 02:51:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37494 "EHLO
+        id S231423AbiCaGwJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 02:52:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230168AbiCaGvQ (ORCPT
+        with ESMTP id S230115AbiCaGwF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 02:51:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83DDC2899C;
-        Wed, 30 Mar 2022 23:49:26 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0DFA0B81FAE;
-        Thu, 31 Mar 2022 06:49:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28BA4C340F0;
-        Thu, 31 Mar 2022 06:49:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648709363;
-        bh=gP2Y/dZ6x9AiafQZgKuYH5r0nCQNjl66tqcUcUTt/gU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=uedDmAy5eYGvzGlCdRgatEhpI58iNBd0VtLB7sQcXBngsSGEWd/VMThEtXqayxtGb
-         XhnNbbbRDFrsytCBKzE/v2FbadpIH0Il1Emz/BgMKuPRsfg3vpmw6I3QULMr3MHk/p
-         NMCuCrYj7qS6orZHgRA+yDt5M+CIv9FyZIFtzL9T939MPwCtLYy0z0rZ0Kmzwl5cBC
-         1DolOknK5maJD4OHeegCWFPKAuNWwLuILlKQHdfw9nu7eZAQWoc4zInTLv6z2kWbmL
-         tXbFRBTouZnxCFtD3pcP7KICMmud18z+xwpmnxaDbN6ReCA4jBXn5vnPgHkjE8nXsh
-         3CcZGwIIifuyA==
-Date:   Thu, 31 Mar 2022 15:49:18 +0900
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     Steven Rostedt <rostedt@goodmis.org>,
-        Padmanabha Srinivasaiah <treasure4paddy@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        Nathan Chancellor <nathan@kernel.org>, llvm@lists.linux.dev,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
-Subject: Re: [PATCH v6 3/4] bootconfig: Support embedding a bootconfig file
- in kernel
-Message-Id: <20220331154918.67fdd2b2c18262631588e07c@kernel.org>
-In-Reply-To: <CAK7LNARfcVt9L=BBmB7N8GNBHHU_LZx7mjMF9zW0ozfW3WNfeg@mail.gmail.com>
-References: <164870615889.127053.9055569952366814752.stgit@devnote2>
-        <164870619150.127053.3677457860116913262.stgit@devnote2>
-        <CAK7LNARfcVt9L=BBmB7N8GNBHHU_LZx7mjMF9zW0ozfW3WNfeg@mail.gmail.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Thu, 31 Mar 2022 02:52:05 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B585345798;
+        Wed, 30 Mar 2022 23:50:18 -0700 (PDT)
+Received: from canpemm500006.china.huawei.com (unknown [172.30.72.56])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KTYny1lD0z1GDHG;
+        Thu, 31 Mar 2022 14:49:58 +0800 (CST)
+Received: from localhost.localdomain (10.175.112.70) by
+ canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Thu, 31 Mar 2022 14:50:16 +0800
+From:   Ziyang Xuan <william.xuanziyang@huawei.com>
+To:     <borisp@nvidia.com>, <john.fastabend@gmail.com>,
+        <daniel@iogearbox.net>, <kuba@kernel.org>, <davem@davemloft.net>,
+        <pabeni@redhat.com>, <netdev@vger.kernel.org>
+CC:     <vakul.garg@nxp.com>, <davejwatson@fb.com>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH net v2] net/tls: fix slab-out-of-bounds bug in decrypt_internal
+Date:   Thu, 31 Mar 2022 15:04:28 +0800
+Message-ID: <20220331070428.36111-1-william.xuanziyang@huawei.com>
+X-Mailer: git-send-email 2.9.5
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Originating-IP: [10.175.112.70]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ canpemm500006.china.huawei.com (7.192.105.130)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 31 Mar 2022 15:27:56 +0900
-Masahiro Yamada <masahiroy@kernel.org> wrote:
+The memory size of tls_ctx->rx.iv for AES128-CCM is 12 setting in
+tls_set_sw_offload(). The return value of crypto_aead_ivsize()
+for "ccm(aes)" is 16. So memcpy() require 16 bytes from 12 bytes
+memory space will trigger slab-out-of-bounds bug as following:
 
-> On Thu, Mar 31, 2022 at 2:56 PM Masami Hiramatsu <mhiramat@kernel.org> wrote:
-> >
-> > This allows kernel developer to embed a default bootconfig file in
-> > the kernel instead of embedding it in the initrd. This will be good
-> > for who are using the kernel without initrd, or who needs a default
-> > bootconfigs.
-> > This needs to set two kconfigs: CONFIG_EMBED_BOOT_CONFIG=y and set
-> > the file path to CONFIG_EMBED_BOOT_CONFIG_FILE.
-> >
-> > Note that you still need 'bootconfig' command line option to load the
-> > embedded bootconfig. Also if you boot using an initrd with a different
-> > bootconfig, the kernel will use the bootconfig in the initrd, instead
-> > of the default bootconfig.
-> >
-> > Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
-> > ---
-> >  Changes in v6:
-> >   - Split out the .incbin asm part as bootconfig-data.S according to
-> >     Masahiro's comment.
-> >  Changes in v5:
-> >   - Fix .gitignore to be sorted alphabetically.
-> >   - Make default.bconf is cleaned up correctly.
-> >   - Allow user to specify relative path to CONFIG_EMBED_BOOT_CONFIG_FILE.
-> >     (Thanks Masahiro!)
-> >  Changes in v4:
-> >   - Avoid updating the default.bconf if the file is not changed.
-> > ---
-> >  MAINTAINERS                |    1 +
-> >  include/linux/bootconfig.h |   10 ++++++++++
-> >  init/Kconfig               |   21 +++++++++++++++++++++
-> >  init/main.c                |   13 ++++++++-----
-> >  lib/.gitignore             |    1 +
-> >  lib/Makefile               |    8 ++++++++
-> >  lib/bootconfig-data.S      |   11 +++++++++++
-> >  lib/bootconfig.c           |   13 +++++++++++++
-> >  8 files changed, 73 insertions(+), 5 deletions(-)
-> >  create mode 100644 lib/bootconfig-data.S
-> >
-> > diff --git a/MAINTAINERS b/MAINTAINERS
-> > index b555a5e8704f..9b4910685412 100644
-> > --- a/MAINTAINERS
-> > +++ b/MAINTAINERS
-> > @@ -7350,6 +7350,7 @@ S:        Maintained
-> >  F:     Documentation/admin-guide/bootconfig.rst
-> >  F:     fs/proc/bootconfig.c
-> >  F:     include/linux/bootconfig.h
-> > +F:     lib/bootconfig-data.S
-> >  F:     lib/bootconfig.c
-> >  F:     tools/bootconfig/*
-> >  F:     tools/bootconfig/scripts/*
-> > diff --git a/include/linux/bootconfig.h b/include/linux/bootconfig.h
-> > index a4665c7ab07c..5dbda5e3e9bb 100644
-> > --- a/include/linux/bootconfig.h
-> > +++ b/include/linux/bootconfig.h
-> > @@ -289,4 +289,14 @@ int __init xbc_get_info(int *node_size, size_t *data_size);
-> >  /* XBC cleanup data structures */
-> >  void __init xbc_exit(void);
-> >
-> > +/* XBC embedded bootconfig data in kernel */
-> > +#ifdef CONFIG_EMBED_BOOT_CONFIG
-> > +char * __init xbc_get_embedded_bootconfig(size_t *size);
-> > +#else
-> > +static inline char *xbc_get_embedded_bootconfig(size_t *size)
-> > +{
-> > +       return NULL;
-> > +}
-> > +#endif
-> > +
-> >  #endif
-> > diff --git a/init/Kconfig b/init/Kconfig
-> > index 97463a33baa7..f5d14a78cfce 100644
-> > --- a/init/Kconfig
-> > +++ b/init/Kconfig
-> > @@ -1361,6 +1361,27 @@ config BOOT_CONFIG
-> >
-> >           If unsure, say Y.
-> >
-> > +config EMBED_BOOT_CONFIG
-> > +       bool "Embed bootconfig file in the kernel"
-> > +       depends on BOOT_CONFIG
-> > +       default n
-> > +       help
-> > +         Embed a bootconfig file given by EMBED_BOOT_CONFIG_FILE in the
-> > +         kernel. Usually, the bootconfig file is loaded with the initrd
-> > +         image. But if the system doesn't support initrd, this option will
-> > +         help you by embedding a bootconfig file while building the kernel.
-> > +
-> > +         If unsure, say N.
-> > +
-> > +config EMBED_BOOT_CONFIG_FILE
-> > +       string "Embedded bootconfig file path"
-> > +       default ""
-> > +       depends on EMBED_BOOT_CONFIG
-> > +       help
-> > +         Specify a bootconfig file which will be embedded to the kernel.
-> > +         This bootconfig will be used if there is no initrd or no other
-> > +         bootconfig in the initrd.
-> > +
-> >  choice
-> >         prompt "Compiler optimization level"
-> >         default CC_OPTIMIZE_FOR_PERFORMANCE
-> > diff --git a/init/main.c b/init/main.c
-> > index 266d61bc67b0..a5db3e36b809 100644
-> > --- a/init/main.c
-> > +++ b/init/main.c
-> > @@ -266,7 +266,7 @@ static int __init loglevel(char *str)
-> >  early_param("loglevel", loglevel);
-> >
-> >  #ifdef CONFIG_BLK_DEV_INITRD
-> > -static void * __init get_boot_config_from_initrd(u32 *_size)
-> > +static void * __init get_boot_config_from_initrd(size_t *_size)
-> >  {
-> >         u32 size, csum;
-> >         char *data;
-> > @@ -412,12 +412,15 @@ static void __init setup_boot_config(void)
-> >         static char tmp_cmdline[COMMAND_LINE_SIZE] __initdata;
-> >         const char *msg;
-> >         int pos;
-> > -       u32 size;
-> > +       size_t size;
-> >         char *data, *err;
-> >         int ret;
-> >
-> >         /* Cut out the bootconfig data even if we have no bootconfig option */
-> >         data = get_boot_config_from_initrd(&size);
-> > +       /* If there is no bootconfig in initrd, try embedded one. */
-> > +       if (!data)
-> > +               data = xbc_get_embedded_bootconfig(&size);
-> >
-> >         strlcpy(tmp_cmdline, boot_command_line, COMMAND_LINE_SIZE);
-> >         err = parse_args("bootconfig", tmp_cmdline, NULL, 0, 0, 0, NULL,
-> > @@ -436,8 +439,8 @@ static void __init setup_boot_config(void)
-> >         }
-> >
-> >         if (size >= XBC_DATA_MAX) {
-> > -               pr_err("bootconfig size %d greater than max size %d\n",
-> > -                       size, XBC_DATA_MAX);
-> > +               pr_err("bootconfig size %ld greater than max size %d\n",
-> > +                       (long)size, XBC_DATA_MAX);
-> >                 return;
-> >         }
-> >
-> > @@ -450,7 +453,7 @@ static void __init setup_boot_config(void)
-> >                                 msg, pos);
-> >         } else {
-> >                 xbc_get_info(&ret, NULL);
-> > -               pr_info("Load bootconfig: %d bytes %d nodes\n", size, ret);
-> > +               pr_info("Load bootconfig: %ld bytes %d nodes\n", (long)size, ret);
-> >                 /* keys starting with "kernel." are passed via cmdline */
-> >                 extra_command_line = xbc_make_cmdline("kernel");
-> >                 /* Also, "init." keys are init arguments */
-> > diff --git a/lib/.gitignore b/lib/.gitignore
-> > index e5e217b8307b..54596b634ecb 100644
-> > --- a/lib/.gitignore
-> > +++ b/lib/.gitignore
-> > @@ -1,6 +1,7 @@
-> >  # SPDX-License-Identifier: GPL-2.0-only
-> >  /crc32table.h
-> >  /crc64table.h
-> > +/default.bconf
-> >  /gen_crc32table
-> >  /gen_crc64table
-> >  /oid_registry_data.c
-> > diff --git a/lib/Makefile b/lib/Makefile
-> > index 08053df16c7c..2a82cc324f91 100644
-> > --- a/lib/Makefile
-> > +++ b/lib/Makefile
-> > @@ -280,6 +280,14 @@ $(foreach file, $(libfdt_files), \
-> >  lib-$(CONFIG_LIBFDT) += $(libfdt_files)
-> >
-> >  obj-$(CONFIG_BOOT_CONFIG) += bootconfig.o
-> > +obj-$(CONFIG_EMBED_BOOT_CONFIG) += bootconfig-data.o
-> > +
-> > +$(obj)/bootconfig-data.o: $(obj)/default.bconf
-> > +
-> > +targets += default.bconf
-> > +filechk_defbconf = cat $(or $(real-prereqs), /dev/null)
-> > +$(obj)/default.bconf: $(CONFIG_EMBED_BOOT_CONFIG_FILE) FORCE
-> > +       $(call filechk,defbconf)
-> >
-> >  obj-$(CONFIG_RBTREE_TEST) += rbtree_test.o
-> >  obj-$(CONFIG_INTERVAL_TREE_TEST) += interval_tree_test.o
-> > diff --git a/lib/bootconfig-data.S b/lib/bootconfig-data.S
-> > new file mode 100644
-> > index 000000000000..df674ea7d8be
-> > --- /dev/null
-> > +++ b/lib/bootconfig-data.S
-> > @@ -0,0 +1,11 @@
-> > +/* SPDX-License-Identifier: GPL-2.0 */
-> > +/*
-> > + * Embed default bootconfig in the kernel.
-> > + */
-> > +       .pushsection .init.data, "aw"
-> > +       .global embedded_bootconfig_data
-> > +embedded_bootconfig_data:
-> > +       .incbin "lib/default.bconf"
-> > +       .global embedded_bootconfig_data_end
-> > +embedded_bootconfig_data_end:
-> > +       .popsection
-> 
-> 
-> 
-> You used  .pushsection / .popsection because it was
-> previously located in bootconfig.c, where there are
-> functions, which should go to the ".text" section.
+==================================================================
+BUG: KASAN: slab-out-of-bounds in decrypt_internal+0x385/0xc40 [tls]
+Read of size 16 at addr ffff888114e84e60 by task tls/10911
 
-Oops, yes. I have made a dumb copy from the inline asm...
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0x34/0x44
+ print_report.cold+0x5e/0x5db
+ ? decrypt_internal+0x385/0xc40 [tls]
+ kasan_report+0xab/0x120
+ ? decrypt_internal+0x385/0xc40 [tls]
+ kasan_check_range+0xf9/0x1e0
+ memcpy+0x20/0x60
+ decrypt_internal+0x385/0xc40 [tls]
+ ? tls_get_rec+0x2e0/0x2e0 [tls]
+ ? process_rx_list+0x1a5/0x420 [tls]
+ ? tls_setup_from_iter.constprop.0+0x2e0/0x2e0 [tls]
+ decrypt_skb_update+0x9d/0x400 [tls]
+ tls_sw_recvmsg+0x3c8/0xb50 [tls]
 
-> Now that you split this into a separate compilation unit,
-> there is only one ".init.data" section in the file.
-> 
-> 
->      .section  .init.data, "aw"
-> 
-> should be enough.
+Allocated by task 10911:
+ kasan_save_stack+0x1e/0x40
+ __kasan_kmalloc+0x81/0xa0
+ tls_set_sw_offload+0x2eb/0xa20 [tls]
+ tls_setsockopt+0x68c/0x700 [tls]
+ __sys_setsockopt+0xfe/0x1b0
 
-OK.
+Replace the crypto_aead_ivsize() with prot->iv_size + prot->salt_size
+when memcpy() iv value in TLS_1_3_VERSION scenario.
 
-> BTW, is it reasonable/possible to make it explicitly read-only?
-> 
-> I have not tested this patch at all. Nor do I have enough insight.
-> 
->      .section  .init.rodata, "a"
-> 
-> I am not sure whether this is possible or not.
+Fixes: f295b3ae9f59 ("net/tls: Add support of AES128-CCM based ciphers")
+Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
+---
 
-Yes, it can be. The data is passed via 'const char *'.
+v1->v2:
+  - Remove not-required modification.
+---
+ net/tls/tls_sw.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> 
-> 
-> 
-> Some more nits:
-> 
->     default n
-> 
->     default ""
-> 
-> are the redundant defaults in Kconfig.
-
-Thanks for that information. Let me remove those lines. :)
-
-> 
-> 
-> 
-> 
-> Personally, I prefer seeing the common prefix
-> for options that belong to the same group,
-> for example,
-> 
->    CONFIG_BOOT_CONFIG
->    CONFIG_BOOT_CONFIG_EMBED
->    CONFIG_BOOT_CONFIG_EMBEDDED_FILE
-> 
-> 
-> But, this is something like "up to you" things.
-
-Good comment. OK, I'll change it next version.
-
-Thank you!
-
-> 
-> 
-> 
-> 
-> 
-> 
-> 
-> > diff --git a/lib/bootconfig.c b/lib/bootconfig.c
-> > index 74f3201ab8e5..6d30aee85ebe 100644
-> > --- a/lib/bootconfig.c
-> > +++ b/lib/bootconfig.c
-> > @@ -12,6 +12,19 @@
-> >  #include <linux/kernel.h>
-> >  #include <linux/memblock.h>
-> >  #include <linux/string.h>
-> > +
-> > +#ifdef CONFIG_EMBED_BOOT_CONFIG
-> > +/* embedded_bootconfig_data is defined in bootconfig-data.S */
-> > +extern __visible char embedded_bootconfig_data[];
-> > +extern __visible char embedded_bootconfig_data_end[];
-> > +
-> > +char * __init xbc_get_embedded_bootconfig(size_t *size)
-> > +{
-> > +       *size = embedded_bootconfig_data_end - embedded_bootconfig_data;
-> > +       return (*size) ? embedded_bootconfig_data : NULL;
-> > +}
-> > +#endif
-> > +
-> >  #else /* !__KERNEL__ */
-> >  /*
-> >   * NOTE: This is only for tools/bootconfig, because tools/bootconfig will
-> >
-> 
-> 
-> -- 
-> Best Regards
-> Masahiro Yamada
-
-
+diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
+index 0024a692f0f8..a8976ef95528 100644
+--- a/net/tls/tls_sw.c
++++ b/net/tls/tls_sw.c
+@@ -1496,7 +1496,7 @@ static int decrypt_internal(struct sock *sk, struct sk_buff *skb,
+ 	if (prot->version == TLS_1_3_VERSION ||
+ 	    prot->cipher_type == TLS_CIPHER_CHACHA20_POLY1305)
+ 		memcpy(iv + iv_offset, tls_ctx->rx.iv,
+-		       crypto_aead_ivsize(ctx->aead_recv));
++		       prot->iv_size + prot->salt_size);
+ 	else
+ 		memcpy(iv + iv_offset, tls_ctx->rx.iv, prot->salt_size);
+ 
 -- 
-Masami Hiramatsu <mhiramat@kernel.org>
+2.25.1
+
