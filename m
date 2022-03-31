@@ -2,63 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9980FC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 23:29:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C680C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 23:30:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242897AbiCaXbS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 19:31:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42182 "EHLO
+        id S243029AbiCaXb7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 19:31:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229576AbiCaXbP (ORCPT
+        with ESMTP id S242948AbiCaXb4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 19:31:15 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36B8B154496
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 16:29:26 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id w25so1011458edi.11
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 16:29:26 -0700 (PDT)
+        Thu, 31 Mar 2022 19:31:56 -0400
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7897416CE65
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 16:30:08 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id e16so1790436lfc.13
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 16:30:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=avSGMtSz4ymacyl7GdMhd9/3YRX9NuWMZI8WC7CMKV0=;
-        b=RB7qN+1nHYmA5Ki3RYQ5cOwMq+8+ec2V05lMPrIjOE0+2UCFYYM2uKN8wEUMfprHJd
-         ber657p1Z3CwyukZldarn6sF9qZcZhzTh9Y/Nr6kgjdUGxUXyW3xmTRVYJOBuVfSKLTL
-         qWjEu993x0lx2WpR1RPuyTpar5XfsrMV/EV58=
+        bh=7juVurgjLt3GvUzI9U9c+xp5sahJ/Uk+aOlgugxy0EM=;
+        b=RtJix/BsoQj0ELH2OMFl7dwsORWQLL0UBqSXWJr5KoYLICZZbVFRb/zdCkHwWWysN5
+         3b5vtLz0FaF+JGho0PKGYaYoz18U0Fy53xtgtIwoMITco5McP4KTTF/FQkbhfbr91SR4
+         pxJraAJYBLjynqhNcmQ0n9QTPBRiLktURUGCg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=avSGMtSz4ymacyl7GdMhd9/3YRX9NuWMZI8WC7CMKV0=;
-        b=UsgXDGxfFrdBgfFGKTjws3SgxavrvFc3V1tB+nuZVRuGJ4oUAf9d2Y2QYoldXDO5w2
-         5UqyJels4vvuXWZ6SmYO3x0YNH/JLXqLI6wFZhXCM96+GUpvE4smkmI9JWSqhiCF1cqt
-         vMlG+kHSQlKcKhVKVbp7T7Cogv1krlIjdssFD5fp+uJtxRT3u+DC9a3cejdukBOpc2St
-         bEIF4oh8MVUxKdmoQ/H1GsJcxAu6SSOXyHW7UFN7dxZgzXfDP3xZiSGNGSR9/ruITlhG
-         4vhwwksuGVe/Z/tO38aFkMs7ENgvZs07EcXgTm1ZJFomeNKhMTUgqtjU8gXGb3jUI3Hl
-         ca9A==
-X-Gm-Message-State: AOAM5332ZUZ+3Sr3E2Lrt9CEaAx9Y74aJmY2nxeKyXPqty+nBco+LjDX
-        Y5lQwJgVNJMUpzm6H15XWx/xnDC8zCiA/Gs8bX0=
-X-Google-Smtp-Source: ABdhPJzqzlWhIPtyuMGXAqIOnzNSY2V6NNL2BS6IXYbilLo9JjqfW0DrHWwL803ueMv9syqj66fqTA==
-X-Received: by 2002:aa7:cd81:0:b0:410:d64e:aa31 with SMTP id x1-20020aa7cd81000000b00410d64eaa31mr18763298edv.167.1648769364473;
-        Thu, 31 Mar 2022 16:29:24 -0700 (PDT)
-Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com. [209.85.128.45])
-        by smtp.gmail.com with ESMTPSA id i11-20020a50fd0b000000b0041936bc0f7esm389398eds.52.2022.03.31.16.29.23
+        bh=7juVurgjLt3GvUzI9U9c+xp5sahJ/Uk+aOlgugxy0EM=;
+        b=4J7ZVH9nF9hTBf2mP/3YizlVXuQO7oadCkP8+OutSs48DSoW6JRAhRO44vvp/gDBwQ
+         Ex97swb++ua8AC97QLZu1J2mYo4JhOIvvz2A8+0CIOdoEp3f9L7RlSO4jOdI1sj5477d
+         mMhPhVts3QL4E3gdTjmy8CQN3dyL88lJqn79sW8a2LvlY5aLmSq/y4z4jVI2mfbwp4/L
+         PazuM3F1iyuMEjAHm2HszVa1wKS0XFgTVw2B9kB1A8p61TxEjmPy/yc3BN6zvMCKzaMW
+         NqvTg8oYv4xf1cVGHXSTmal4F8MMv36pHypUWxOZ+6uLfkVBR+dgTFJRuV937PIx7aoa
+         AQhg==
+X-Gm-Message-State: AOAM533cC3iDqylK38SnEOvwUcnDmY9QWi2vximckPIGl3PJCt0JfDwU
+        IDVK7HXKtXGMBpNGPkQqsSRueFVU8CKpQAAdFvY=
+X-Google-Smtp-Source: ABdhPJynqZrSyKsK5laJpRuOcQX5iDukR6dmBXk9JBaHlbv3tpdDhrojZ82Yo5MDDBb/2H1fWoMaLg==
+X-Received: by 2002:a05:6512:39c5:b0:44a:646c:48c6 with SMTP id k5-20020a05651239c500b0044a646c48c6mr11979129lfu.596.1648769406289;
+        Thu, 31 Mar 2022 16:30:06 -0700 (PDT)
+Received: from mail-lf1-f54.google.com (mail-lf1-f54.google.com. [209.85.167.54])
+        by smtp.gmail.com with ESMTPSA id m22-20020a0565120a9600b0044a93d21093sm68748lfu.279.2022.03.31.16.30.05
         for <linux-kernel@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 31 Mar 2022 16:29:24 -0700 (PDT)
-Received: by mail-wm1-f45.google.com with SMTP id l7-20020a05600c1d0700b0038c99618859so2541773wms.2
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 16:29:23 -0700 (PDT)
-X-Received: by 2002:a05:600c:2e02:b0:38c:8390:d8ca with SMTP id
- o2-20020a05600c2e0200b0038c8390d8camr6452311wmf.15.1648768957118; Thu, 31 Mar
- 2022 16:22:37 -0700 (PDT)
+        Thu, 31 Mar 2022 16:30:05 -0700 (PDT)
+Received: by mail-lf1-f54.google.com with SMTP id w7so1860311lfd.6
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 16:30:05 -0700 (PDT)
+X-Received: by 2002:adf:e7cd:0:b0:204:ba2:b106 with SMTP id
+ e13-20020adfe7cd000000b002040ba2b106mr5551021wrn.679.1648768998053; Thu, 31
+ Mar 2022 16:23:18 -0700 (PDT)
 MIME-Version: 1.0
-References: <1648656179-10347-1-git-send-email-quic_sbillaka@quicinc.com> <1648656179-10347-3-git-send-email-quic_sbillaka@quicinc.com>
-In-Reply-To: <1648656179-10347-3-git-send-email-quic_sbillaka@quicinc.com>
+References: <1648656179-10347-1-git-send-email-quic_sbillaka@quicinc.com> <1648656179-10347-6-git-send-email-quic_sbillaka@quicinc.com>
+In-Reply-To: <1648656179-10347-6-git-send-email-quic_sbillaka@quicinc.com>
 From:   Doug Anderson <dianders@chromium.org>
-Date:   Thu, 31 Mar 2022 16:22:24 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=UtnNTWmMPYPkSJ5qceWspXtZ+hL6UTgSn=rHzd39Y42g@mail.gmail.com>
-Message-ID: <CAD=FV=UtnNTWmMPYPkSJ5qceWspXtZ+hL6UTgSn=rHzd39Y42g@mail.gmail.com>
-Subject: Re: [PATCH v6 2/8] drm/msm/dp: wait for hpd high before aux transaction
+Date:   Thu, 31 Mar 2022 16:23:05 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=Wn-XypjRcw-D0VtBHZbuTz=RHiMq6RCHCa=CWmZM42nQ@mail.gmail.com>
+Message-ID: <CAD=FV=Wn-XypjRcw-D0VtBHZbuTz=RHiMq6RCHCa=CWmZM42nQ@mail.gmail.com>
+Subject: Re: [PATCH v6 5/8] drm/msm/dp: prevent multiple votes for dp resources
 To:     Sankeerth Billakanti <quic_sbillaka@quicinc.com>
 Cc:     dri-devel <dri-devel@lists.freedesktop.org>,
         linux-arm-msm <linux-arm-msm@vger.kernel.org>,
@@ -84,98 +84,29 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 Hi,
 
-On Wed, Mar 30, 2022 at 9:03 AM Sankeerth Billakanti
+On Wed, Mar 30, 2022 at 9:04 AM Sankeerth Billakanti
 <quic_sbillaka@quicinc.com> wrote:
 >
-> The source device should ensure the sink is ready before proceeding to
-> read the sink capability or performing any aux transactions. The sink
-
-s/performing/perform
-
-> will indicate its readiness by asserting the HPD line. The controller
-> driver needs to wait for the hpd line to be asserted by the sink before
-> performing any aux transactions.
->
-> The eDP sink is assumed to be always connected. It needs power from the
-> source and its HPD line will be asserted only after the panel is powered
-> on. The panel power will be enabled from the panel-edp driver and only
-> after that, the hpd line will be asserted.
->
-> Whereas for DP, the sink can be hotplugged and unplugged anytime. The hpd
-> line gets asserted to indicate the sink is connected and ready. Hence
-> there is no need to wait for the hpd line to be asserted for a DP sink.
+> The aux_bus support with the dp_display driver will enable the dp
+> resources during msm_dp_modeset_init. The host_init has to return early
+> if the core is already initialized to prevent putting an additional vote
+> for the dp controller resources.
 >
 > Signed-off-by: Sankeerth Billakanti <quic_sbillaka@quicinc.com>
 > ---
->
-> Changes in v6:
->   - Wait for hpd high only for eDP
->   - Split into smaller patches
->
->  drivers/gpu/drm/msm/dp/dp_aux.c     | 13 ++++++++++++-
->  drivers/gpu/drm/msm/dp/dp_aux.h     |  3 ++-
->  drivers/gpu/drm/msm/dp/dp_catalog.c | 13 +++++++++++++
->  drivers/gpu/drm/msm/dp/dp_catalog.h |  1 +
->  drivers/gpu/drm/msm/dp/dp_display.c |  3 ++-
->  5 files changed, 30 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/gpu/drm/msm/dp/dp_aux.c b/drivers/gpu/drm/msm/dp/dp_aux.c
-> index 6d36f63..a217c80 100644
-> --- a/drivers/gpu/drm/msm/dp/dp_aux.c
-> +++ b/drivers/gpu/drm/msm/dp/dp_aux.c
-> @@ -36,6 +36,7 @@ struct dp_aux_private {
->         bool initted;
->         u32 offset;
->         u32 segment;
-> +       bool is_edp;
->
->         struct drm_dp_aux dp_aux;
->  };
-> @@ -337,6 +338,14 @@ static ssize_t dp_aux_transfer(struct drm_dp_aux *dp_aux,
->                 goto exit;
->         }
->
-> +       if (aux->is_edp) {
+>  drivers/gpu/drm/msm/dp/dp_display.c | 10 ++++++++++
+>  1 file changed, 10 insertions(+)
 
-Adding a comment about _why_ you're doing this just for eDP would
-probably be a good idea. Like maybe:
+I'm not a huge fan of this but I'll leave it up to Dmitry. In general
+it feels like there should be _a_ place that enables these resources.
+Checks like this make it feel like we just scattershot enabling
+resources in a bunch of random places instead of coming up with the
+design for enabling them in the right place.
 
-/*
- * For eDP it's important to give a reasonably long wait here for HPD
- * to be asserted. This is because the panel driver may have _just_
- * turned on the panel and then tried to do an AUX transfer. The panel
- * driver has no way of knowing when the panel is ready, so it's up
- * to us to wait. For DP we never get into this situation so let's
- * avoid ever doing the extra long wait for DP.
- */
+In any case, if we do end up landing this patch, it sure feels like it
+needs to move earlier in the patch series, right? This patch shouldn't
+hurt even without the other patches in the series but if you apply the
+earlier patches in the series without this one then you'll have a bug,
+right? That means this needs to come earlier.
 
-
-> @@ -491,7 +500,8 @@ void dp_aux_unregister(struct drm_dp_aux *dp_aux)
->         drm_dp_aux_unregister(dp_aux);
->  }
->
-> -struct drm_dp_aux *dp_aux_get(struct device *dev, struct dp_catalog *catalog)
-> +struct drm_dp_aux *dp_aux_get(struct device *dev, struct dp_catalog *catalog,
-> +                               bool is_edp)
-
-nit: I think your indentation of the 2nd line isn't quite right.
-
-
-> diff --git a/drivers/gpu/drm/msm/dp/dp_aux.h b/drivers/gpu/drm/msm/dp/dp_aux.h
-> index 82afc8d..c99aeec 100644
-> --- a/drivers/gpu/drm/msm/dp/dp_aux.h
-> +++ b/drivers/gpu/drm/msm/dp/dp_aux.h
-> @@ -16,7 +16,8 @@ void dp_aux_init(struct drm_dp_aux *dp_aux);
->  void dp_aux_deinit(struct drm_dp_aux *dp_aux);
->  void dp_aux_reconfig(struct drm_dp_aux *dp_aux);
->
-> -struct drm_dp_aux *dp_aux_get(struct device *dev, struct dp_catalog *catalog);
-> +struct drm_dp_aux *dp_aux_get(struct device *dev, struct dp_catalog *catalog,
-> +                               bool is_edp);
-
-nit: I think your indentation of the 2nd line isn't quite right.
-
-
-Things are pretty much nits, so FWIW:
-
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
+-Doug
