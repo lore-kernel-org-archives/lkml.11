@@ -2,75 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFE59C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 21:33:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABE60C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 21:39:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241884AbiCaVfB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 17:35:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48354 "EHLO
+        id S241900AbiCaVks (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 17:40:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237941AbiCaVe7 (ORCPT
+        with ESMTP id S230027AbiCaVkq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 17:34:59 -0400
-X-Greylist: delayed 1798 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 31 Mar 2022 14:33:10 PDT
-Received: from 17.mo583.mail-out.ovh.net (17.mo583.mail-out.ovh.net [46.105.56.132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB9D023F3BD
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 14:33:10 -0700 (PDT)
-Received: from player772.ha.ovh.net (unknown [10.111.208.240])
-        by mo583.mail-out.ovh.net (Postfix) with ESMTP id 11CF3231FB
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 20:56:14 +0000 (UTC)
-Received: from RCM-web5.webmail.mail.ovh.net (ip-194-187-74-233.konfederacka.maverick.com.pl [194.187.74.233])
-        (Authenticated sender: rafal@milecki.pl)
-        by player772.ha.ovh.net (Postfix) with ESMTPSA id D54FC291025F7;
-        Thu, 31 Mar 2022 20:55:59 +0000 (UTC)
+        Thu, 31 Mar 2022 17:40:46 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ACD539BAF;
+        Thu, 31 Mar 2022 14:38:58 -0700 (PDT)
+Date:   Thu, 31 Mar 2022 21:38:54 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1648762736;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=xc1uXLGItTqU4LQHNlRfzQPvnTHvOKHdejsArw8o2qk=;
+        b=sb0+mIgRSokQOWwf1RlXhzfNGPPRs4lo5EC/jJsvFwy9Q0MP+k2t5yDGIDndL6UbfkryEt
+        tts8mgUplTMgsxtE32moDBMTfISPgIlnqD5bazMAoD35hY3ECo7h6aSMEzIodsLWmKNrxi
+        Fnpeku6C5ocALS75uhHd2tiMX7fQPJbw/zkLxIsIkZpQt9XakuUvwvcssWWWLdylqvsYCo
+        8JwjyoNV9Cc72UoRqEaYu6Su26Th+lF4BDcPCbiwjXlvBxMlhKxdDQhDNEnee5I+I1bB1p
+        NBimD5rWGcs31G36asbyeAMoKdXOFDkt0bVakIcHoFiwe9TKrZ8dfuaXVs8QHA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1648762736;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=xc1uXLGItTqU4LQHNlRfzQPvnTHvOKHdejsArw8o2qk=;
+        b=XsZC+V4+g/EWjrKYKMlx4ji+QE/lnJ0gSqZCM7ZMpsBGlTG5Tu86TtLvNWCBsdYNjZvd+W
+        rq8jtumD6U35QOCg==
+From:   "tip-bot2 for Dave Hansen" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: x86/mm] x86/mm/tlb: Revert retpoline avoidance approach
+Cc:     kernel test robot <oliver.sang@intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Nadav Amit <namit@vmware.com>, Ingo Molnar <mingo@kernel.org>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <164874672286.389.7021457716635788197.tip-bot2@tip-bot2>
+References: <164874672286.389.7021457716635788197.tip-bot2@tip-bot2>
 MIME-Version: 1.0
-Date:   Thu, 31 Mar 2022 22:55:59 +0200
-From:   =?UTF-8?Q?Rafa=C5=82_Mi=C5=82ecki?= <rafal@milecki.pl>
-To:     Wim Van Sebroeck <wim@linux-watchdog.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux Watchdog Mailing List <linux-watchdog@vger.kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Alistair Francis <alistair@alistair23.me>,
-        Chris Packham <chris.packham@alliedtelesis.co.nz>,
-        Daniel Bristot de Oliveira <bristot@kernel.org>,
-        Eduardo Valentin <eduval@amazon.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Miaoqian Lin <linmq006@gmail.com>,
-        Terry Bowman <terry.bowman@amd.com>,
-        Thanh Quan <thanh.quan.xn@renesas.com>
-Subject: Re: [GIT PULL REQUEST] watchdog - v5.18 Merge window
-In-Reply-To: <20220331182454.GA14072@www.linux-watchdog.org>
-References: <20220331182454.GA14072@www.linux-watchdog.org>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <174471c557f778c0c5e55ca7f9bc02fc@milecki.pl>
-X-Sender: rafal@milecki.pl
-X-Originating-IP: 194.187.74.233
-X-Webmail-UserID: rafal@milecki.pl
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
+Message-ID: <164876273469.389.4814502480228230952.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Ovh-Tracer-Id: 1543890248961010630
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudeigedgudehhecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpeggfffhvffujghffgfkgihitgfgsehtjehjtddtredvnecuhfhrohhmpeftrghfrghlpgfoihhlvggtkhhiuceorhgrfhgrlhesmhhilhgvtghkihdrphhlqeenucggtffrrghtthgvrhhnpeevfedvteejffeufeekueeuvdeghfeggeejgfevvdegieetudeuiedvleettdfhteenucfkpheptddrtddrtddrtddpudelgedrudekjedrjeegrddvfeefnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejjedvrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomheprhgrfhgrlhesmhhilhgvtghkihdrphhlpdhnsggprhgtphhtthhopedupdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhg
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Wim,
+The following commit has been merged into the x86/mm branch of tip:
 
-On 2022-03-31 20:24, Wim Van Sebroeck wrote:
-> This series contains:
-> * Add support for BCM4908
+Commit-ID:     e1300d97cbc347d319adfa0976be723ada4b582c
+Gitweb:        https://git.kernel.org/tip/e1300d97cbc347d319adfa0976be723ada4b582c
+Author:        Dave Hansen <dave.hansen@linux.intel.com>
+AuthorDate:    Fri, 18 Mar 2022 06:52:59 -07:00
+Committer:     Dave Hansen <dave.hansen@linux.intel.com>
+CommitterDate: Thu, 31 Mar 2022 14:31:43 -07:00
 
-It indeed includes
-[PATCH] watchdog: allow building BCM7038_WDT for BCM4908
+x86/mm/tlb: Revert retpoline avoidance approach
 
-but somehow misses
-[PATCH] watchdog: bcm7038_wdt: Support BCM6345 compatible string
-(which is Patchwork marked as Accepted).
+0day reported a regression on a microbenchmark which is intended to
+stress the TLB flushing path:
 
-This is NOT pull blocker, just sth I'd like to ask you to look at for
-the next release :)
+	https://lore.kernel.org/all/20220317090415.GE735@xsang-OptiPlex-9020/
+
+It pointed at a commit from Nadav which intended to remove retpoline
+overhead in the TLB flushing path by taking the 'cond'-ition in
+on_each_cpu_cond_mask(), pre-calculating it, and incorporating it into
+'cpumask'.  That allowed the code to use a bunch of earlier direct
+calls instead of later indirect calls that need a retpoline.
+
+But, in practice, threads can go idle (and into lazy TLB mode where
+they don't need to flush their TLB) between the early and late calls.
+It works in this direction and not in the other because TLB-flushing
+threads tend to hold mmap_lock for write.  Contention on that lock
+causes threads to _go_ idle right in this early/late window.
+
+There was not any performance data in the original commit specific
+to the retpoline overhead.  I did a few tests on a system with
+retpolines:
+
+	https://lore.kernel.org/all/dd8be93c-ded6-b962-50d4-96b1c3afb2b7@intel.com/
+
+which showed a possible small win.  But, that small win pales in
+comparison with the bigger loss induced on non-retpoline systems.
+
+Revert the patch that removed the retpolines.  This was not a
+clean revert, but it was self-contained enough not to be too painful.
+
+Fixes: 6035152d8eeb ("x86/mm/tlb: Open-code on_each_cpu_cond_mask() for tlb_is_not_lazy()")
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
+Acked-by: Nadav Amit <namit@vmware.com>
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: Andy Lutomirski <luto@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: x86@kernel.org
+Link: https://lkml.kernel.org/r/164874672286.389.7021457716635788197.tip-bot2@tip-bot2
+---
+ arch/x86/mm/tlb.c | 37 +++++--------------------------------
+ 1 file changed, 5 insertions(+), 32 deletions(-)
+
+diff --git a/arch/x86/mm/tlb.c b/arch/x86/mm/tlb.c
+index 1e6513f..161984b 100644
+--- a/arch/x86/mm/tlb.c
++++ b/arch/x86/mm/tlb.c
+@@ -854,13 +854,11 @@ done:
+ 			nr_invalidate);
+ }
+ 
+-static bool tlb_is_not_lazy(int cpu)
++static bool tlb_is_not_lazy(int cpu, void *data)
+ {
+ 	return !per_cpu(cpu_tlbstate_shared.is_lazy, cpu);
+ }
+ 
+-static DEFINE_PER_CPU(cpumask_t, flush_tlb_mask);
+-
+ DEFINE_PER_CPU_SHARED_ALIGNED(struct tlb_state_shared, cpu_tlbstate_shared);
+ EXPORT_PER_CPU_SYMBOL(cpu_tlbstate_shared);
+ 
+@@ -889,36 +887,11 @@ STATIC_NOPV void native_flush_tlb_multi(const struct cpumask *cpumask,
+ 	 * up on the new contents of what used to be page tables, while
+ 	 * doing a speculative memory access.
+ 	 */
+-	if (info->freed_tables) {
++	if (info->freed_tables)
+ 		on_each_cpu_mask(cpumask, flush_tlb_func, (void *)info, true);
+-	} else {
+-		/*
+-		 * Although we could have used on_each_cpu_cond_mask(),
+-		 * open-coding it has performance advantages, as it eliminates
+-		 * the need for indirect calls or retpolines. In addition, it
+-		 * allows to use a designated cpumask for evaluating the
+-		 * condition, instead of allocating one.
+-		 *
+-		 * This code works under the assumption that there are no nested
+-		 * TLB flushes, an assumption that is already made in
+-		 * flush_tlb_mm_range().
+-		 *
+-		 * cond_cpumask is logically a stack-local variable, but it is
+-		 * more efficient to have it off the stack and not to allocate
+-		 * it on demand. Preemption is disabled and this code is
+-		 * non-reentrant.
+-		 */
+-		struct cpumask *cond_cpumask = this_cpu_ptr(&flush_tlb_mask);
+-		int cpu;
+-
+-		cpumask_clear(cond_cpumask);
+-
+-		for_each_cpu(cpu, cpumask) {
+-			if (tlb_is_not_lazy(cpu))
+-				__cpumask_set_cpu(cpu, cond_cpumask);
+-		}
+-		on_each_cpu_mask(cond_cpumask, flush_tlb_func, (void *)info, true);
+-	}
++	else
++		on_each_cpu_cond_mask(tlb_is_not_lazy, flush_tlb_func,
++				(void *)info, 1, cpumask);
+ }
+ 
+ void flush_tlb_multi(const struct cpumask *cpumask,
