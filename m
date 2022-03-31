@@ -2,311 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19D9EC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 06:55:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FF43C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 06:57:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231542AbiCaG5j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 02:57:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34898 "EHLO
+        id S231559AbiCaG7G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 02:59:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231539AbiCaG5g (ORCPT
+        with ESMTP id S229666AbiCaG7E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 02:57:36 -0400
-Received: from conssluserg-02.nifty.com (conssluserg-02.nifty.com [210.131.2.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E41BBCBD;
-        Wed, 30 Mar 2022 23:55:46 -0700 (PDT)
-Received: from mail-pj1-f51.google.com (mail-pj1-f51.google.com [209.85.216.51]) (authenticated)
-        by conssluserg-02.nifty.com with ESMTP id 22V6tRcj004529;
-        Thu, 31 Mar 2022 15:55:27 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-02.nifty.com 22V6tRcj004529
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1648709727;
-        bh=L9kZOKHWhsgjEmJ2R6+mrbuMRxdSlCSQGK98H4ZVo9I=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=YfTSMeNvw/ruxmXXFZ9QNFY67/n54RPdp/gZ0a27GWZlfKgcSwZ9OK+ZlkJUQBFNg
-         ZZNbdEntatoATiEydGQB2nbao318zUAvHhf0EkKyjphSj7EUfsjElyWjFkdDKlT4yl
-         VAOKYrjqo3Fj1W/2ALxs7+iivh5Gv5U2o/NEVZ8NRPr5T6hI50rZ24ojUMi8pygxrR
-         F02rmGZ+aZG0Y+PzB1TZQX6pvmc/uoX/4nwyTC18qU9nRaGku9ZxefImJpbWYdVYMq
-         0/SJFIO+g8CSBLtoBKQYRa13yeklUCs7QlZNtiemBvQw3PDpQa/I1ZFu8zZ9So8tBd
-         eyjkGlktcO8fQ==
-X-Nifty-SrcIP: [209.85.216.51]
-Received: by mail-pj1-f51.google.com with SMTP id cm17so3182683pjb.2;
-        Wed, 30 Mar 2022 23:55:27 -0700 (PDT)
-X-Gm-Message-State: AOAM531NF2nJy8rBxEjvMBSDpdAONjlfLFFXFfib3Fc/fOgq8r17CbFL
-        SiwNkNgRbDtgH1J3z8fPb838HaAwOcYxNLtpG/I=
-X-Google-Smtp-Source: ABdhPJxsaGNhoSEJTEpheUYWiqhafrHfxnSoM0vUmaP7qyboo7NjwIbHvtlP7G0UtQOUPG2tIQLpBH78IrV3Knmf58s=
-X-Received: by 2002:a17:90a:8041:b0:1c9:fc3a:f6ee with SMTP id
- e1-20020a17090a804100b001c9fc3af6eemr4470147pjw.144.1648709726539; Wed, 30
- Mar 2022 23:55:26 -0700 (PDT)
-MIME-Version: 1.0
-References: <164870615889.127053.9055569952366814752.stgit@devnote2>
- <164870619150.127053.3677457860116913262.stgit@devnote2> <CAK7LNARfcVt9L=BBmB7N8GNBHHU_LZx7mjMF9zW0ozfW3WNfeg@mail.gmail.com>
- <20220331154918.67fdd2b2c18262631588e07c@kernel.org>
-In-Reply-To: <20220331154918.67fdd2b2c18262631588e07c@kernel.org>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Thu, 31 Mar 2022 15:54:40 +0900
-X-Gmail-Original-Message-ID: <CAK7LNARvO2i7k7bSgCiE944yUXvK=J3bo_=MiDa6TZuqY87p_A@mail.gmail.com>
-Message-ID: <CAK7LNARvO2i7k7bSgCiE944yUXvK=J3bo_=MiDa6TZuqY87p_A@mail.gmail.com>
-Subject: Re: [PATCH v6 3/4] bootconfig: Support embedding a bootconfig file in kernel
-To:     Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     Steven Rostedt <rostedt@goodmis.org>,
-        Padmanabha Srinivasaiah <treasure4paddy@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        Nathan Chancellor <nathan@kernel.org>, llvm@lists.linux.dev,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Thu, 31 Mar 2022 02:59:04 -0400
+Received: from hutie.ust.cz (unknown [IPv6:2a03:3b40:fe:f0::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEDB9EEA60;
+        Wed, 30 Mar 2022 23:57:16 -0700 (PDT)
+Content-Type: text/plain;
+        charset=utf-8
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cutebit.org; s=mail;
+        t=1648709834; bh=wqSNyfEr0PfR7Nu/cSpCkDEbnShaRb16tT3cIjzE5ao=;
+        h=Subject:From:In-Reply-To:Date:Cc:References:To;
+        b=TATcwcWpwUO2ICDeG8JnL+mjIkFKf0kVPvJtq6SNKT6Y9/7X4oJUs/pKN3KWt8+Gb
+         Yd/7vSwwE+SVM3LvsqOrPQA4tQ5ao5SpPzqFkOUkTStWkXUKTUHsD9ctdLNe4gd+0l
+         33GpeYp5U99JbjYQJ/vGNNnuTbQKqojErUmmnzZA=
+Mime-Version: 1.0 (Mac OS X Mail 15.0 \(3693.40.0.1.81\))
+Subject: Re: [RFC PATCH 1/5] dt-bindings: sound: Add Apple Macs sound system
+From:   =?utf-8?Q?Martin_Povi=C5=A1er?= <povik@cutebit.org>
+In-Reply-To: <9e3ba11c-d179-c229-fb7c-bf5611a15b1b@linaro.org>
+Date:   Thu, 31 Mar 2022 08:57:12 +0200
+Cc:     =?utf-8?Q?Martin_Povi=C5=A1er?= <povik+lin@cutebit.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Mark Kettenis <kettenis@openbsd.org>,
+        Hector Martin <marcan@marcan.st>,
+        Sven Peter <sven@svenpeter.dev>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <DAFA4249-4B0A-4D1F-A36A-4352FE783488@cutebit.org>
+References: <20220331000449.41062-1-povik+lin@cutebit.org>
+ <20220331000449.41062-2-povik+lin@cutebit.org>
+ <9e3ba11c-d179-c229-fb7c-bf5611a15b1b@linaro.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 31, 2022 at 3:49 PM Masami Hiramatsu <mhiramat@kernel.org> wrote:
->
-> On Thu, 31 Mar 2022 15:27:56 +0900
-> Masahiro Yamada <masahiroy@kernel.org> wrote:
->
-> > On Thu, Mar 31, 2022 at 2:56 PM Masami Hiramatsu <mhiramat@kernel.org> wrote:
-> > >
-> > > This allows kernel developer to embed a default bootconfig file in
-> > > the kernel instead of embedding it in the initrd. This will be good
-> > > for who are using the kernel without initrd, or who needs a default
-> > > bootconfigs.
-> > > This needs to set two kconfigs: CONFIG_EMBED_BOOT_CONFIG=y and set
-> > > the file path to CONFIG_EMBED_BOOT_CONFIG_FILE.
-> > >
-> > > Note that you still need 'bootconfig' command line option to load the
-> > > embedded bootconfig. Also if you boot using an initrd with a different
-> > > bootconfig, the kernel will use the bootconfig in the initrd, instead
-> > > of the default bootconfig.
-> > >
-> > > Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
-> > > ---
-> > >  Changes in v6:
-> > >   - Split out the .incbin asm part as bootconfig-data.S according to
-> > >     Masahiro's comment.
-> > >  Changes in v5:
-> > >   - Fix .gitignore to be sorted alphabetically.
-> > >   - Make default.bconf is cleaned up correctly.
-> > >   - Allow user to specify relative path to CONFIG_EMBED_BOOT_CONFIG_FILE.
-> > >     (Thanks Masahiro!)
-> > >  Changes in v4:
-> > >   - Avoid updating the default.bconf if the file is not changed.
-> > > ---
-> > >  MAINTAINERS                |    1 +
-> > >  include/linux/bootconfig.h |   10 ++++++++++
-> > >  init/Kconfig               |   21 +++++++++++++++++++++
-> > >  init/main.c                |   13 ++++++++-----
-> > >  lib/.gitignore             |    1 +
-> > >  lib/Makefile               |    8 ++++++++
-> > >  lib/bootconfig-data.S      |   11 +++++++++++
-> > >  lib/bootconfig.c           |   13 +++++++++++++
-> > >  8 files changed, 73 insertions(+), 5 deletions(-)
-> > >  create mode 100644 lib/bootconfig-data.S
-> > >
-> > > diff --git a/MAINTAINERS b/MAINTAINERS
-> > > index b555a5e8704f..9b4910685412 100644
-> > > --- a/MAINTAINERS
-> > > +++ b/MAINTAINERS
-> > > @@ -7350,6 +7350,7 @@ S:        Maintained
-> > >  F:     Documentation/admin-guide/bootconfig.rst
-> > >  F:     fs/proc/bootconfig.c
-> > >  F:     include/linux/bootconfig.h
-> > > +F:     lib/bootconfig-data.S
-> > >  F:     lib/bootconfig.c
-> > >  F:     tools/bootconfig/*
-> > >  F:     tools/bootconfig/scripts/*
-> > > diff --git a/include/linux/bootconfig.h b/include/linux/bootconfig.h
-> > > index a4665c7ab07c..5dbda5e3e9bb 100644
-> > > --- a/include/linux/bootconfig.h
-> > > +++ b/include/linux/bootconfig.h
-> > > @@ -289,4 +289,14 @@ int __init xbc_get_info(int *node_size, size_t *data_size);
-> > >  /* XBC cleanup data structures */
-> > >  void __init xbc_exit(void);
-> > >
-> > > +/* XBC embedded bootconfig data in kernel */
-> > > +#ifdef CONFIG_EMBED_BOOT_CONFIG
-> > > +char * __init xbc_get_embedded_bootconfig(size_t *size);
-> > > +#else
-> > > +static inline char *xbc_get_embedded_bootconfig(size_t *size)
-> > > +{
-> > > +       return NULL;
-> > > +}
-> > > +#endif
-> > > +
-> > >  #endif
-> > > diff --git a/init/Kconfig b/init/Kconfig
-> > > index 97463a33baa7..f5d14a78cfce 100644
-> > > --- a/init/Kconfig
-> > > +++ b/init/Kconfig
-> > > @@ -1361,6 +1361,27 @@ config BOOT_CONFIG
-> > >
-> > >           If unsure, say Y.
-> > >
-> > > +config EMBED_BOOT_CONFIG
-> > > +       bool "Embed bootconfig file in the kernel"
-> > > +       depends on BOOT_CONFIG
-> > > +       default n
-> > > +       help
-> > > +         Embed a bootconfig file given by EMBED_BOOT_CONFIG_FILE in the
-> > > +         kernel. Usually, the bootconfig file is loaded with the initrd
-> > > +         image. But if the system doesn't support initrd, this option will
-> > > +         help you by embedding a bootconfig file while building the kernel.
-> > > +
-> > > +         If unsure, say N.
-> > > +
-> > > +config EMBED_BOOT_CONFIG_FILE
-> > > +       string "Embedded bootconfig file path"
-> > > +       default ""
-> > > +       depends on EMBED_BOOT_CONFIG
-> > > +       help
-> > > +         Specify a bootconfig file which will be embedded to the kernel.
-> > > +         This bootconfig will be used if there is no initrd or no other
-> > > +         bootconfig in the initrd.
-> > > +
-> > >  choice
-> > >         prompt "Compiler optimization level"
-> > >         default CC_OPTIMIZE_FOR_PERFORMANCE
-> > > diff --git a/init/main.c b/init/main.c
-> > > index 266d61bc67b0..a5db3e36b809 100644
-> > > --- a/init/main.c
-> > > +++ b/init/main.c
-> > > @@ -266,7 +266,7 @@ static int __init loglevel(char *str)
-> > >  early_param("loglevel", loglevel);
-> > >
-> > >  #ifdef CONFIG_BLK_DEV_INITRD
-> > > -static void * __init get_boot_config_from_initrd(u32 *_size)
-> > > +static void * __init get_boot_config_from_initrd(size_t *_size)
-> > >  {
-> > >         u32 size, csum;
-> > >         char *data;
-> > > @@ -412,12 +412,15 @@ static void __init setup_boot_config(void)
-> > >         static char tmp_cmdline[COMMAND_LINE_SIZE] __initdata;
-> > >         const char *msg;
-> > >         int pos;
-> > > -       u32 size;
-> > > +       size_t size;
-> > >         char *data, *err;
-> > >         int ret;
-> > >
-> > >         /* Cut out the bootconfig data even if we have no bootconfig option */
-> > >         data = get_boot_config_from_initrd(&size);
-> > > +       /* If there is no bootconfig in initrd, try embedded one. */
-> > > +       if (!data)
-> > > +               data = xbc_get_embedded_bootconfig(&size);
-> > >
-> > >         strlcpy(tmp_cmdline, boot_command_line, COMMAND_LINE_SIZE);
-> > >         err = parse_args("bootconfig", tmp_cmdline, NULL, 0, 0, 0, NULL,
-> > > @@ -436,8 +439,8 @@ static void __init setup_boot_config(void)
-> > >         }
-> > >
-> > >         if (size >= XBC_DATA_MAX) {
-> > > -               pr_err("bootconfig size %d greater than max size %d\n",
-> > > -                       size, XBC_DATA_MAX);
-> > > +               pr_err("bootconfig size %ld greater than max size %d\n",
-> > > +                       (long)size, XBC_DATA_MAX);
-> > >                 return;
-> > >         }
-> > >
-> > > @@ -450,7 +453,7 @@ static void __init setup_boot_config(void)
-> > >                                 msg, pos);
-> > >         } else {
-> > >                 xbc_get_info(&ret, NULL);
-> > > -               pr_info("Load bootconfig: %d bytes %d nodes\n", size, ret);
-> > > +               pr_info("Load bootconfig: %ld bytes %d nodes\n", (long)size, ret);
-> > >                 /* keys starting with "kernel." are passed via cmdline */
-> > >                 extra_command_line = xbc_make_cmdline("kernel");
-> > >                 /* Also, "init." keys are init arguments */
-> > > diff --git a/lib/.gitignore b/lib/.gitignore
-> > > index e5e217b8307b..54596b634ecb 100644
-> > > --- a/lib/.gitignore
-> > > +++ b/lib/.gitignore
-> > > @@ -1,6 +1,7 @@
-> > >  # SPDX-License-Identifier: GPL-2.0-only
-> > >  /crc32table.h
-> > >  /crc64table.h
-> > > +/default.bconf
-> > >  /gen_crc32table
-> > >  /gen_crc64table
-> > >  /oid_registry_data.c
-> > > diff --git a/lib/Makefile b/lib/Makefile
-> > > index 08053df16c7c..2a82cc324f91 100644
-> > > --- a/lib/Makefile
-> > > +++ b/lib/Makefile
-> > > @@ -280,6 +280,14 @@ $(foreach file, $(libfdt_files), \
-> > >  lib-$(CONFIG_LIBFDT) += $(libfdt_files)
-> > >
-> > >  obj-$(CONFIG_BOOT_CONFIG) += bootconfig.o
-> > > +obj-$(CONFIG_EMBED_BOOT_CONFIG) += bootconfig-data.o
-> > > +
-> > > +$(obj)/bootconfig-data.o: $(obj)/default.bconf
-> > > +
-> > > +targets += default.bconf
-> > > +filechk_defbconf = cat $(or $(real-prereqs), /dev/null)
-> > > +$(obj)/default.bconf: $(CONFIG_EMBED_BOOT_CONFIG_FILE) FORCE
-> > > +       $(call filechk,defbconf)
-> > >
-> > >  obj-$(CONFIG_RBTREE_TEST) += rbtree_test.o
-> > >  obj-$(CONFIG_INTERVAL_TREE_TEST) += interval_tree_test.o
-> > > diff --git a/lib/bootconfig-data.S b/lib/bootconfig-data.S
-> > > new file mode 100644
-> > > index 000000000000..df674ea7d8be
-> > > --- /dev/null
-> > > +++ b/lib/bootconfig-data.S
-> > > @@ -0,0 +1,11 @@
-> > > +/* SPDX-License-Identifier: GPL-2.0 */
-> > > +/*
-> > > + * Embed default bootconfig in the kernel.
-> > > + */
-> > > +       .pushsection .init.data, "aw"
-> > > +       .global embedded_bootconfig_data
-> > > +embedded_bootconfig_data:
-> > > +       .incbin "lib/default.bconf"
-> > > +       .global embedded_bootconfig_data_end
-> > > +embedded_bootconfig_data_end:
-> > > +       .popsection
-> >
-> >
-> >
-> > You used  .pushsection / .popsection because it was
-> > previously located in bootconfig.c, where there are
-> > functions, which should go to the ".text" section.
->
-> Oops, yes. I have made a dumb copy from the inline asm...
->
-> > Now that you split this into a separate compilation unit,
-> > there is only one ".init.data" section in the file.
-> >
-> >
-> >      .section  .init.data, "aw"
-> >
-> > should be enough.
->
-> OK.
->
-> > BTW, is it reasonable/possible to make it explicitly read-only?
-> >
-> > I have not tested this patch at all. Nor do I have enough insight.
-> >
-> >      .section  .init.rodata, "a"
-> >
-> > I am not sure whether this is possible or not.
->
-> Yes, it can be. The data is passed via 'const char *'.
 
-But, you didn't add "const" in the C code:
+> On 31. 3. 2022, at 8:43, Krzysztof Kozlowski =
+<krzysztof.kozlowski@linaro.org> wrote:
+>=20
+> On 31/03/2022 02:04, Martin Povi=C5=A1er wrote:
+>> Add binding for Apple Silicon Macs' machine-level sound system.
+>>=20
+>> Signed-off-by: Martin Povi=C5=A1er <povik+lin@cutebit.org>
+>> ---
+>> .../bindings/sound/apple,macaudio.yaml        | 103 =
+++++++++++++++++++
+>> 1 file changed, 103 insertions(+)
+>> create mode 100644 =
+Documentation/devicetree/bindings/sound/apple,macaudio.yaml
+>>=20
+>=20
+> Commit title does not match subsystem.
 
-extern __visible char embedded_bootconfig_data[];
-extern __visible char embedded_bootconfig_data_end[];
+Tell more please. I don=E2=80=99t see it.
 
+>=20
+>> diff --git =
+a/Documentation/devicetree/bindings/sound/apple,macaudio.yaml =
+b/Documentation/devicetree/bindings/sound/apple,macaudio.yaml
+>> new file mode 100644
+>> index 000000000000..a6380e4bdd1a
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/sound/apple,macaudio.yaml
+>> @@ -0,0 +1,103 @@
+>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+>> +%YAML 1.2
+>> +---
+>> +$id: http://devicetree.org/schemas/sound/apple,macaudio.yaml#
+>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>> +
+>> +title: Apple Silicon Macs integrated sound system
+>> +
+>> +maintainers:
+>> +  - Martin Povi=C5=A1er <povik+lin@cutebit.org>
+>> +
+>=20
+> Add description.
+>=20
+>> +definitions:
+>=20
+> This does not make code more readable.
 
-Is it possible to use "const char" ?
+Are you sure? It prevents duplication later on for =E2=80=98codec' and =
+=E2=80=98cpu=E2=80=99.
 
+>=20
+>> +  dai:
+>> +    type: object
+>> +    properties:
+>> +      sound-dai: true
+>> +    required:
+>> +      - sound-dai
+>> +
+>> +properties:
+>> +  compatible:
+>> +    items:
+>> +      - enum:
+>> +          - apple,j274-macaudio
+>> +          - apple,j293-macaudio
+>> +          - apple,j314-macaudio
+>> +      - const: apple,macaudio
+>=20
+> Open example-schema.yaml and look at formatting plus general coding
+> style. You miss line breaks making it unreadable.
+>=20
+>> +  "#address-cells":
+>> +    const: 1
+>> +  "#size-cells":
+>> +    const: 0
+>> +  model:
+>> +    description: |
+>> +      Model name to use when the sound system is presented to users =
+as a sound card.
+>> +    $ref: /schemas/types.yaml#/definitions/string
+>> +
+>> +patternProperties:
+>> +  "^dai-link(@[0-9a-f]+)?$":
+>> +    description: |
+>> +      A DAI link comprising of CPU and CODEC DAI specifiers and =
+supplemental properties.
+>> +    type: object
+>> +    properties:
+>> +      reg:
+>> +        maxItems: 1
+>> +      mclk-fs:
+>> +        description: |
+>> +          Forced MCLK/samplerate factor (optional).
+>=20
+> Optional is obvious from !required.
+>=20
+> Description is different than existing field in simple card. Is this =
+the
+> same field or not?
 
+It is the same. I didn=E2=80=99t want to copy the simple card text =
+because this is optionally BSD,
+simple card wasn=E2=80=99t.
 
--- 
-Best Regards
-Masahiro Yamada
+>=20
+>> +        $ref: /schemas/types.yaml#/definitions/uint32
+>> +      link-name:
+>> +        description: Name for the DAI link to present to users.
+>> +        $ref: /schemas/types.yaml#/definitions/string
+>> +      cpu:
+>> +        $ref: "#/definitions/dai"
+>> +      codec:
+>> +        $ref: "#/definitions/dai"
+>=20
+> missing maxItems for DAI phandles.
+
+Well there=E2=80=99s not a maximum.
+
+>=20
+> Best regards,
+> Krzysztof
+
+Martin
+
