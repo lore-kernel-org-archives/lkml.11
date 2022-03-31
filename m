@@ -2,101 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 983DDC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 16:04:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BFD3C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 16:05:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239585AbiCaQFy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 12:05:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38898 "EHLO
+        id S239553AbiCaQG7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 12:06:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239564AbiCaQFu (ORCPT
+        with ESMTP id S234903AbiCaQG5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 12:05:50 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED7414E390
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 09:04:02 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id j15so265415eje.9
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 09:04:02 -0700 (PDT)
+        Thu, 31 Mar 2022 12:06:57 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5F6B53E02
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 09:05:08 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id x2so20767plm.7
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 09:05:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=i8exGV0bEfz7fockPDZIKH4DGjNDQmL1A2DdSanaA7k=;
-        b=IhU2wwo68dPixujjFS6hH/gAYbuctadDiy/If18pSZUCMCNprATz0oYCXVL5pSvVAG
-         bhDMnPn5qkBHVe8jw2TCF2PXVjYKf+ieCgLJFAK6XGGN2nQFld+ECzvY/SIPJYcK9gar
-         LISOK+NThskRi1GE4JJnYnqto41X30GBteiG5ZwKxGoXY8/tim9YCiR3yi5dQhOOL/M5
-         95UR5fxHjsJ1VVqVnffDD40i8cbp2LyeElS1YoxqN1KS5PdwyUb/8vJ+OQMuuSSRixW3
-         EZUrjFuKmD2ALNe0zmGdJdq/2/wIlD0BaWp7f89F18JUF4/hWybszVCMB3SaCCqcNn8x
-         iJhw==
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=MO0/ty9ybQF1qACMJmOXTuFnMpYGfOx5VnnNgcY+e9Q=;
+        b=TmQH9EEn6+KSh1gBo8PqXnFrR7M3fjlk1YhRq6HsA1u9WvYK1E/h1V6YCew7342jmj
+         CgVyhbV83B0o4tUCUHKpJmY8bXMXyjAgKLsJdLXS/yopQCK7g+p5sEeXSJMGSa4LGEQd
+         8Xv2GF8ym+8pf5c0sqO+3XMuAGtenvpNLSsqJzzI4CsvTU5X8wDRkeYnHbJUyQohIBbR
+         IC3lnA3ilTdmPzUTunNgMAr87OdYYR1+QC5yJqjoFt5hbCAAzizA59rokh5AmQ9R7kxi
+         4le4sh0HP8lOv7uRLJxF4QfvEG/moBzF3VTPq0rbbwCtsvWe+EfeFnfpS+FdfKu2Wdty
+         uQvg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=i8exGV0bEfz7fockPDZIKH4DGjNDQmL1A2DdSanaA7k=;
-        b=CeZmeM686tN42YFUMYiOPJ0d82Af/SgaCaMYHChFH4xEx9uFUAj8JxsHb0VgtDc8wM
-         4LxeGVN66oxEvUnXQRNYjuNctCvXlPoL9FB27LH+WAygEJlIKvSFFwuRxLu+h/DZBa5b
-         agPDw+j9eIJBPCJAPIGMHCA2tOeK59zLbnTwXrWb0ohPVdmkYfbjjhWvt2F04GhckUQd
-         e1lsVWNKlNV0Dde4XaHvBJPa2LzQZ9zv8wp5mSzNGTSUy0PPqVix3ayu9c2n5vFhwGhk
-         ExP3tjy5eJvTtu3T668Mt1UAkpgg9qk8bXOs36UzOLrE8ecTxByYVnJ8vsoCzPB1JZ7h
-         xtsg==
-X-Gm-Message-State: AOAM530clVH4MaQVZDeFWewB3wky0y8q7VxM8I4ASkkLQC1D6/Lvz0oA
-        msdIpwd4kOaKaFVy816qx4C8iw==
-X-Google-Smtp-Source: ABdhPJy69ag8KVOrx4BRxgGGK2T7r/5GAGO/MSehpQqn+sTUWTGcI/9ZWNOTYQpCVeKhWbd54mQOjw==
-X-Received: by 2002:a17:907:1b07:b0:6e4:b202:db8f with SMTP id mp7-20020a1709071b0700b006e4b202db8fmr2701516ejc.76.1648742641536;
-        Thu, 31 Mar 2022 09:04:01 -0700 (PDT)
-Received: from [192.168.0.167] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id b25-20020a056402139900b0041904036ab1sm11452823edv.5.2022.03.31.09.04.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 31 Mar 2022 09:04:01 -0700 (PDT)
-Message-ID: <1e2a48f8-e6b5-abf9-0996-3b8d2d97b4de@linaro.org>
-Date:   Thu, 31 Mar 2022 18:04:00 +0200
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=MO0/ty9ybQF1qACMJmOXTuFnMpYGfOx5VnnNgcY+e9Q=;
+        b=WHPdwFGlvVAb5bSykX4f359GU8kycYAipjPyuXODnyarWBjmiWHkzVj9tNnv5QagU+
+         GImgmiwdFLl3/cxx5LFXsi6olC+Qy4doP8G7vJJ4Ek7zG1yh/s3EFH2jDzwK+ZXCGSf7
+         U1jmaxlzsEvwPh9wkmB+WEBleSYjtqRlDVF5j2ynxYGtHPJcOFiZzA2H9YsFVoN70Fpu
+         sWHChzDljsIV2shmFNewXhUEjLh6ksYToz71/r2d9e4bHe+CyNPe4N8KkQ2NzwTVXG0i
+         Qa/OyOBpNlkmPGA1BfpnT3SjIN5vmIh8/1WYWNLf/yr3LCcGbG9nRj9aFwTyTwOuvMYG
+         wNqg==
+X-Gm-Message-State: AOAM530mVdsr0tpxsvkVJMbFMNzTbzUf/6c2qDfGsiU8d2ltXT54dC1c
+        oicBJ7sdnqa80947OZ2QF7EBMQ==
+X-Google-Smtp-Source: ABdhPJxXHt5eM3Gd+WSSK+aqeVHamWPZ4Zv6Gk7D55KL27cI99WtCtis/TevAmnfEEspbny2+M6SpA==
+X-Received: by 2002:a17:902:f787:b0:152:157:eb7 with SMTP id q7-20020a170902f78700b0015201570eb7mr5798057pln.109.1648742707715;
+        Thu, 31 Mar 2022 09:05:07 -0700 (PDT)
+Received: from google.com ([2620:15c:202:201:a082:a097:a7d8:d309])
+        by smtp.gmail.com with ESMTPSA id m18-20020a639412000000b003820bd9f2f2sm23368141pge.53.2022.03.31.09.05.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 31 Mar 2022 09:05:06 -0700 (PDT)
+Date:   Thu, 31 Mar 2022 09:04:59 -0700
+From:   Benson Leung <bleung@google.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Won Chung <wonchung@google.com>,
+        Tomas Winkler <tomas.winkler@intel.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Benson Leung <bleung@chromium.org>,
+        Prashant Malani <pmalani@chromium.org>,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH v3] misc/mei: Add NULL check to component match callback
+ functions
+Message-ID: <YkXRKyfoWTXqLi1L@google.com>
+References: <20220331084918.2592699-1-wonchung@google.com>
+ <YkVtvhC0n9B994/A@kroah.com>
+ <YkV1KK8joyDAgf50@kuha.fi.intel.com>
+ <YkWSmvrEevLsyDH5@kroah.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2 0/4] spi: dt-bindings: qcom: convert qcom,spi-qup to DT
- schema
-Content-Language: en-US
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Mark Brown <broonie@kernel.org>, linux-arm-msm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-spi@vger.kernel.org
-Cc:     Kuldeep Singh <singh.kuldeep87k@gmail.com>
-References: <20220331155320.714754-1-krzysztof.kozlowski@linaro.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220331155320.714754-1-krzysztof.kozlowski@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="gxrVt/ITKp3EpEr0"
+Content-Disposition: inline
+In-Reply-To: <YkWSmvrEevLsyDH5@kroah.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 31/03/2022 17:53, Krzysztof Kozlowski wrote:
-> Hi,
-> 
-> Changes since v1
-> ================
-> 1. Fix path in com/qcom,gsbi.txt.
-> 2. Merge clock-names in example, correct $ref path (Kuldeep).
-> 
-> Merging
-> =======
-> The DTS patches are independent and silence warnings pointed
-> out by schema.
-> 
-> Best regards,
-> Krzysztof
-> 
-> Cc: Kuldeep Singh <singh.kuldeep87k@gmail.com>
-> 
 
-I forgot to add the ack from Kuldeep:
+--gxrVt/ITKp3EpEr0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Acked-by: Kuldeep Singh <singh.kuldeep87k@gmail.com>
+Hi Greg,
 
+On Thu, Mar 31, 2022 at 01:38:02PM +0200, Greg KH wrote:
+> > > >  		return 0;
+> > > > =20
+> > > > diff --git a/drivers/misc/mei/pxp/mei_pxp.c b/drivers/misc/mei/pxp/=
+mei_pxp.c
+> > > > index f7380d387bab..e32a81da8af6 100644
+> > > > --- a/drivers/misc/mei/pxp/mei_pxp.c
+> > > > +++ b/drivers/misc/mei/pxp/mei_pxp.c
+> > > > @@ -131,7 +131,7 @@ static int mei_pxp_component_match(struct devic=
+e *dev, int subcomponent,
+> > > >  {
+> > > >  	struct device *base =3D data;
+> > > > =20
+> > > > -	if (strcmp(dev->driver->name, "i915") ||
+> > > > +	if (!base || !dev->driver || strcmp(dev->driver->name, "i915") ||
+> > >=20
+> > > Same here, shouldn't this be caught by the driver core or bus and mat=
+ch
+> > > should not be called?
+> > >=20
+> > > Why not fix this in the component/driver core instead?
+> >=20
+> > A component is just a device that is declared to be a "component", and
+> > the code that declares it as component does not have to be the driver
+> > of that device. You simply can't assume that it's bind to a driver
+> > like this function does.
+> >=20
+> > In our case the "components" are USB ports, so devices that are never
+> > bind to drivers.
+>=20
+> And going off of the driver name is sane?  That feels ripe for bugs and
+> problems in the future, but hey, I don't understand the need for this
+> driver to care about another driver at all.
 
-Best regards,
-Krzysztof
+I think the component framework is meant to be this loose confederation of
+devices, so going into component match, you don't know what the other device
+is yet.
+
+The USB drivers and the i915 drivers 100% don't care about each other,
+but the framework doesn't know that yet until all the drivers try to match.
+
+>=20
+> And why is a USB device being passed to something that it thinks is a
+> PCI device?  That too feels really wrong and ripe for problems.
+>=20
+
+The problematic device that's being passed through here is actually the
+usb4_port, not a usb device. My guess would be that's why it's getting past=
+ any
+checks for whether it's a PCI device.
+
+The component framework currently being used by (hdac_i915, mei_hdcp, mei_p=
+xp)
+to connect those three devices together, and completely separately, the
+component framework is being used by the typec connector class's port mappe=
+r.
+
+These two clusters of devices are using the same component framework, but a=
+re
+not supposed to interact with each other. When we attempted to add the usb4=
+_port
+and its retimer in order to link tbt/usb4 to the typec connector, we discov=
+ered
+this interaction because we happened to build the usb4_port built-in in our
+configs, so it does its component_add earlier.
+
+I agree, by the way. This is all a bit ugly.
+
+Thanks,
+Benson
+
+> thanks,
+>=20
+> greg k-h
+
+--=20
+Benson Leung
+Staff Software Engineer
+Chrome OS Kernel
+Google Inc.
+bleung@google.com
+Chromium OS Project
+bleung@chromium.org
+
+--gxrVt/ITKp3EpEr0
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQQCtZK6p/AktxXfkOlzbaomhzOwwgUCYkXRKwAKCRBzbaomhzOw
+wp7KAQD1kYuyRtUS/SBx+UJYpHjwkC8OCBsHLMHIg76Lrn/3FgD/eok7/ReIldES
+tWDUXAOXk48rymifKK6Ivj79qlDU0As=
+=cMT0
+-----END PGP SIGNATURE-----
+
+--gxrVt/ITKp3EpEr0--
