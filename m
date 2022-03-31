@@ -2,71 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA74EC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 07:10:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 288AEC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 07:11:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231844AbiCaHMn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 03:12:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39738 "EHLO
+        id S231954AbiCaHM7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 03:12:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231757AbiCaHMW (ORCPT
+        with ESMTP id S231761AbiCaHMb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 03:12:22 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC2F65B3D0
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 00:10:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=VtSyhCBRl6DDd411G5kv1lVJwnclO4BJfyyDJEiIIQQ=; b=r44vCvmN1Q4mZOvdEid41+bbQ5
-        VKde0jyZ1PAJJAX0DQvXUNXjYSbMR1O5y/GpPW12E/zBP4Ou/3pxCBLCxNGgEagFfeZZKdrYbAvAK
-        ElofHY/yYSPxonnlV2KM5fTIjQ2+rvQoVtrymkk0xUq8gX6TW5utiHtovTWK4jzin952Psuu6hRKh
-        7XhKlR1bR4UQ5Y74um1Q+1n2mTwtQr6cdP50g3hD7RHVsQB3J8jJfAIuBGcTtClXl+iNWZrfzScZ3
-        YN52iT+ZbYPjxUAHzZiKDZToAUJtGC+XPCl/vloKT8jPTEFjb5Tt+uPvmme/N9OFiiVv4KXbl6ahh
-        1wgxDnqA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58038)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1nZowt-0004L7-2C; Thu, 31 Mar 2022 08:10:26 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1nZowp-0007QG-Sx; Thu, 31 Mar 2022 08:10:23 +0100
-Date:   Thu, 31 Mar 2022 08:10:23 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Austin Kim <austindh.kim@gmail.com>
-Cc:     arnd@arndb.de, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, austin.kim@lge.com,
-        p4ranlee@gmail.com
-Subject: Re: [PATCH] arm: kdump: add invalid value check for 'crashkernel='
-Message-ID: <YkVT3z4ksYStau85@shell.armlinux.org.uk>
-References: <20220330110715.GA1534@raspberrypi>
+        Thu, 31 Mar 2022 03:12:31 -0400
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [IPv6:2001:4190:8020::34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 31D455B3D0;
+        Thu, 31 Mar 2022 00:10:40 -0700 (PDT)
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+        id 8F2FD92009D; Thu, 31 Mar 2022 09:10:39 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by angie.orcam.me.uk (Postfix) with ESMTP id 88B6192009B;
+        Thu, 31 Mar 2022 08:10:39 +0100 (BST)
+Date:   Thu, 31 Mar 2022 08:10:39 +0100 (BST)
+From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
+To:     Nikolai Zhubr <zhubr.2@gmail.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>
+cc:     Arnd Bergmann <arnd@kernel.org>, x86@kernel.org,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [RESEND][PATCH v2 1/2] x86/PCI: Disambiguate SiS85C503 PIRQ router
+ code entities
+In-Reply-To: <alpine.DEB.2.21.2203301608140.22465@angie.orcam.me.uk>
+Message-ID: <alpine.DEB.2.21.2203301610000.22465@angie.orcam.me.uk>
+References: <alpine.DEB.2.21.2203301608140.22465@angie.orcam.me.uk>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220330110715.GA1534@raspberrypi>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 30, 2022 at 12:07:15PM +0100, Austin Kim wrote:
-> From: Austin Kim <austin.kim@lge.com>
-> 
-> Add invalid value check expression when no crashkernel= or invalid value 
-> specified using kdump.
+In preparation to adding support for the SiS85C497 PIRQ router add `503' 
+to the names of SiS85C503 PIRQ router code entities so that they clearly 
+indicate which device they refer to.
 
-Hi,
+Also restructure `sis_router_probe' such that new device IDs will be 
+just new switch cases.
 
-I think you mean when "crashkernel=0" is specified, as other invalid
-input should result in -EINVAL being returned. Please update the
-patch description and comment.
+No functional change.
 
-Thanks.
+Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
+---
+No change from v1.
+---
+ arch/x86/pci/irq.c |   33 ++++++++++++++++++---------------
+ 1 file changed, 18 insertions(+), 15 deletions(-)
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+linux-x86-pirq-router-sis85c503.diff
+Index: linux-macro/arch/x86/pci/irq.c
+===================================================================
+--- linux-macro.orig/arch/x86/pci/irq.c
++++ linux-macro/arch/x86/pci/irq.c
+@@ -641,11 +641,12 @@ static int pirq_cyrix_set(struct pci_dev
+  *				bit 6-4 are probably unused, not like 5595
+  */
+ 
+-#define PIRQ_SIS_IRQ_MASK	0x0f
+-#define PIRQ_SIS_IRQ_DISABLE	0x80
+-#define PIRQ_SIS_USB_ENABLE	0x40
++#define PIRQ_SIS503_IRQ_MASK	0x0f
++#define PIRQ_SIS503_IRQ_DISABLE	0x80
++#define PIRQ_SIS503_USB_ENABLE	0x40
+ 
+-static int pirq_sis_get(struct pci_dev *router, struct pci_dev *dev, int pirq)
++static int pirq_sis503_get(struct pci_dev *router, struct pci_dev *dev,
++			   int pirq)
+ {
+ 	u8 x;
+ 	int reg;
+@@ -654,10 +655,11 @@ static int pirq_sis_get(struct pci_dev *
+ 	if (reg >= 0x01 && reg <= 0x04)
+ 		reg += 0x40;
+ 	pci_read_config_byte(router, reg, &x);
+-	return (x & PIRQ_SIS_IRQ_DISABLE) ? 0 : (x & PIRQ_SIS_IRQ_MASK);
++	return (x & PIRQ_SIS503_IRQ_DISABLE) ? 0 : (x & PIRQ_SIS503_IRQ_MASK);
+ }
+ 
+-static int pirq_sis_set(struct pci_dev *router, struct pci_dev *dev, int pirq, int irq)
++static int pirq_sis503_set(struct pci_dev *router, struct pci_dev *dev,
++			   int pirq, int irq)
+ {
+ 	u8 x;
+ 	int reg;
+@@ -666,8 +668,8 @@ static int pirq_sis_set(struct pci_dev *
+ 	if (reg >= 0x01 && reg <= 0x04)
+ 		reg += 0x40;
+ 	pci_read_config_byte(router, reg, &x);
+-	x &= ~(PIRQ_SIS_IRQ_MASK | PIRQ_SIS_IRQ_DISABLE);
+-	x |= irq ? irq: PIRQ_SIS_IRQ_DISABLE;
++	x &= ~(PIRQ_SIS503_IRQ_MASK | PIRQ_SIS503_IRQ_DISABLE);
++	x |= irq ? irq : PIRQ_SIS503_IRQ_DISABLE;
+ 	pci_write_config_byte(router, reg, x);
+ 	return 1;
+ }
+@@ -966,13 +968,14 @@ static __init int serverworks_router_pro
+ 
+ static __init int sis_router_probe(struct irq_router *r, struct pci_dev *router, u16 device)
+ {
+-	if (device != PCI_DEVICE_ID_SI_503)
+-		return 0;
+-
+-	r->name = "SIS";
+-	r->get = pirq_sis_get;
+-	r->set = pirq_sis_set;
+-	return 1;
++	switch (device) {
++	case PCI_DEVICE_ID_SI_503:
++		r->name = "SiS85C503";
++		r->get = pirq_sis503_get;
++		r->set = pirq_sis503_set;
++		return 1;
++	}
++	return 0;
+ }
+ 
+ static __init int cyrix_router_probe(struct irq_router *r, struct pci_dev *router, u16 device)
