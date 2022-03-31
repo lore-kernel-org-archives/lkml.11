@@ -2,126 +2,223 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01E6DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 08:25:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37BF2C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 08:25:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232773AbiCaI1W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 04:27:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56634 "EHLO
+        id S232859AbiCaI1l convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 04:27:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232785AbiCaI07 (ORCPT
+        with ESMTP id S232819AbiCaI1V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 04:26:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 999E81BB794;
-        Thu, 31 Mar 2022 01:25:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4B01DB82005;
-        Thu, 31 Mar 2022 08:25:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C1E4C340ED;
-        Thu, 31 Mar 2022 08:25:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648715109;
-        bh=2MxGsdREcZcC5dPhVe4pegMYaaOwE0pzgrqWpuXtrGc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A1lgvRIuimSfgiCzSsPqrqzPyqJ/Ts6QNUpz89s8ANThoeoFMFD3+ixQA727+HWOq
-         REuBOInQOtfZoLxQGzi1HT1fAoN63Fcit+so0ojLvQ3R/HUlvNitTG8lnnYQ8h2VG4
-         EVguk8Nk4AnfSV4RKvcwqVp0qg56pDWvHDwKSIT3eIDgeMUjmC5fCwLuZEc4gc6MgE
-         Lt/ifHthtHVcalu9xui4rO+kozd/ZER98FqzuTcfHNdUWqxMtGAc7FeE8lOeakOegP
-         /N2iVe/5PHy066XlyX+NS5o2NF2W9CsvPYLQpvsCKCMdKTcKDTxgdT4v5D0pm0YP/V
-         /8ayKrr16WUaw==
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Masami Hiramatsu <mhiramat@kernel.org>,
-        Padmanabha Srinivasaiah <treasure4paddy@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        Nathan Chancellor <nathan@kernel.org>, llvm@lists.linux.dev,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
-Subject: [PATCH v7 4/4] docs: bootconfig: Add how to embed the bootconfig into kernel
-Date:   Thu, 31 Mar 2022 17:25:03 +0900
-Message-Id: <164871510350.178991.10848731777317835399.stgit@devnote2>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <164871505771.178991.7870442736805590948.stgit@devnote2>
-References: <164871505771.178991.7870442736805590948.stgit@devnote2>
-User-Agent: StGit/0.19
+        Thu, 31 Mar 2022 04:27:21 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D9C41C391A;
+        Thu, 31 Mar 2022 01:25:25 -0700 (PDT)
+Received: from fraeml714-chm.china.huawei.com (unknown [172.18.147.207])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KTbtK51ctz67KsG;
+        Thu, 31 Mar 2022 16:23:53 +0800 (CST)
+Received: from fraeml714-chm.china.huawei.com (10.206.15.33) by
+ fraeml714-chm.china.huawei.com (10.206.15.33) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 31 Mar 2022 10:25:23 +0200
+Received: from fraeml714-chm.china.huawei.com ([10.206.15.33]) by
+ fraeml714-chm.china.huawei.com ([10.206.15.33]) with mapi id 15.01.2375.024;
+ Thu, 31 Mar 2022 10:25:23 +0200
+From:   Roberto Sassu <roberto.sassu@huawei.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+CC:     "corbet@lwn.net" <corbet@lwn.net>,
+        "viro@zeniv.linux.org.uk" <viro@zeniv.linux.org.uk>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "andrii@kernel.org" <andrii@kernel.org>,
+        "kpsingh@kernel.org" <kpsingh@kernel.org>,
+        "shuah@kernel.org" <shuah@kernel.org>,
+        "mcoquelin.stm32@gmail.com" <mcoquelin.stm32@gmail.com>,
+        "alexandre.torgue@foss.st.com" <alexandre.torgue@foss.st.com>,
+        "zohar@linux.ibm.com" <zohar@linux.ibm.com>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+        "linux-stm32@st-md-mailman.stormreply.com" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
+        "linux-security-module@vger.kernel.org" 
+        <linux-security-module@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH 00/18] bpf: Secure and authenticated preloading of eBPF
+ programs
+Thread-Topic: [PATCH 00/18] bpf: Secure and authenticated preloading of eBPF
+ programs
+Thread-Index: AQHYQsxoL5kXhl8+JE6PJPNWV+NOTqzYppqAgABrSsA=
+Date:   Thu, 31 Mar 2022 08:25:22 +0000
+Message-ID: <b9f5995f96da447c851f7c9db8232a9b@huawei.com>
+References: <20220328175033.2437312-1-roberto.sassu@huawei.com>
+ <20220331022727.ybj4rui4raxmsdpu@MBP-98dd607d3435.dhcp.thefacebook.com>
+In-Reply-To: <20220331022727.ybj4rui4raxmsdpu@MBP-98dd607d3435.dhcp.thefacebook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.81.200.158]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a description how to embed the bootconfig file into kernel.
+> From: Alexei Starovoitov [mailto:alexei.starovoitov@gmail.com]
+> Sent: Thursday, March 31, 2022 4:27 AM
+> On Mon, Mar 28, 2022 at 07:50:15PM +0200, Roberto Sassu wrote:
+> > eBPF already allows programs to be preloaded and kept running without
+> > intervention from user space. There is a dedicated kernel module called
+> > bpf_preload, which contains the light skeleton of the iterators_bpf eBPF
+> > program. If this module is enabled in the kernel configuration, its loading
+> > will be triggered when the bpf filesystem is mounted (unless the module is
+> > built-in), and the links of iterators_bpf are pinned in that filesystem
+> > (they will appear as the progs.debug and maps.debug files).
+> >
+> > However, the current mechanism, if used to preload an LSM, would not
+> offer
+> > the same security guarantees of LSMs integrated in the security
+> subsystem.
+> > Also, it is not generic enough to be used for preloading arbitrary eBPF
+> > programs, unless the bpf_preload code is heavily modified.
+> >
+> > More specifically, the security problems are:
+> > - any program can be pinned to the bpf filesystem without limitations
+> >   (unless a MAC mechanism enforces some restrictions);
+> > - programs being executed can be terminated at any time by deleting the
+> >   pinned objects or unmounting the bpf filesystem.
+> 
+> So many things to untangle here.
 
-Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
----
- Changes in v7:
-  - Rename CONFIG_EMBED_BOOT_CONFIG* to CONFIG_BOOT_CONFIG_EMBED*.
- Changes in v5:
-  - Update CONFIG_EMBED_BOOT_CONFIG_FILE which can accept relative path.
- Changes in v3:
-  - Fix typos.
- Changes in v2:
-  - Corrected the text accoding to Randy's suggestion.
-  - Do not reccomend to use relative path for CONFIG_EMBED_BOOT_CONFIG_FILE.
----
- Documentation/admin-guide/bootconfig.rst |   31 +++++++++++++++++++++++++++---
- 1 file changed, 28 insertions(+), 3 deletions(-)
+Hi Alexei
 
-diff --git a/Documentation/admin-guide/bootconfig.rst b/Documentation/admin-guide/bootconfig.rst
-index a1860fc0ca88..d99994345d41 100644
---- a/Documentation/admin-guide/bootconfig.rst
-+++ b/Documentation/admin-guide/bootconfig.rst
-@@ -158,9 +158,15 @@ Each key-value pair is shown in each line with following style::
- Boot Kernel With a Boot Config
- ==============================
- 
--Since the boot configuration file is loaded with initrd, it will be added
--to the end of the initrd (initramfs) image file with padding, size,
--checksum and 12-byte magic word as below.
-+There are two options to boot the kernel with bootconfig: attaching the
-+bootconfig to the initrd image or embedding it in the kernel itself.
-+
-+Attaching a Boot Config to Initrd
-+---------------------------------
-+
-+Since the boot configuration file is loaded with initrd by default,
-+it will be added to the end of the initrd (initramfs) image file with
-+padding, size, checksum and 12-byte magic word as below.
- 
- [initrd][bootconfig][padding][size(le32)][checksum(le32)][#BOOTCONFIG\n]
- 
-@@ -196,6 +202,25 @@ To remove the config from the image, you can use -d option as below::
- Then add "bootconfig" on the normal kernel command line to tell the
- kernel to look for the bootconfig at the end of the initrd file.
- 
-+Embedding a Boot Config into Kernel
-+-----------------------------------
-+
-+If you can not use initrd, you can also embed the bootconfig file in the
-+kernel by Kconfig options. In this case, you need to recompile the kernel
-+with the following configs::
-+
-+ CONFIG_BOOT_CONFIG_EMBED=y
-+ CONFIG_BOOT_CONFIG_EMBED_FILE="/PATH/TO/BOOTCONFIG/FILE"
-+
-+``CONFIG_BOOT_CONFIG_EMBED_FILE`` requires an absolute path or a relative
-+path to the bootconfig file from source tree or object tree.
-+The kernel will embed it as the default bootconfig.
-+
-+Just as when attaching the bootconfig to the initrd, you need ``bootconfig``
-+option on the kernel command line to enable the embedded bootconfig.
-+
-+Note that even if you set this option, you can override the embedded
-+bootconfig by another bootconfig which attached to the initrd.
- 
- Kernel parameters via Boot Config
- =================================
+thanks for taking the time to provide such detailed
+explanation.
 
+> The above paragraphs are misleading and incorrect.
+> The commit log sounds like there are security issues that this
+> patch set is fixing.
+> This is not true.
+
+I reiterate the goal: enforce a mandatory policy with
+an out-of-tree LSM (a kernel module is fine), with the
+same guarantees of LSMs integrated in the security
+subsystem.
+
+The root user is not part of the TCB (i.e. is untrusted),
+all the changes that user wants to make must be subject
+of decision by the LSM enforcing the mandatory policy.
+
+I thought about adding support for LSMs from kernel
+modules via a new built-in LSM (called LoadLSM), but
+to me it looks that the bpf LSM is closer to achieve the
+same goal. And in addition, eBPF significantly simplifies
+with its helpers writing an LSM.
+
+> Looks like there is a massive misunderstanding on what bpffs is.
+> It's a file system to pin and get bpf objects with normal
+> file access permissions. Nothing else.
+> Do NOT use it to pin LSM or any other security sensitive bpf programs
+> and then complain that root can unpin them.
+> Yes. Root can and should be able to 'rm -rf' anything in bpffs instance.
+> 
+> > The usability problems are:
+> > - only a fixed amount of links can be pinned;
+> 
+> where do you see this limit?
+
+static int populate_bpffs(struct dentry *parent)
+{
+        struct bpf_preload_info objs[BPF_PRELOAD_LINKS] = {};
+
+#define BPF_PRELOAD_LINKS 2
+
+> > - only links can be pinned, other object types are not supported;
+> 
+> really? progs, maps can be pinned as well.
+
+struct bpf_preload_info {
+        char link_name[16];
+        struct bpf_link *link;
+};
+
+> > - code to pin objects has to be written manually;
+> 
+> huh?
+
+I meant if you want to extend the bpf_preload kernel
+module.
+
+> > Solve the security problems by mounting the bpf filesystem from the
+> kernel,
+> > by preloading authenticated kernel modules (e.g. with
+> module.sig_enforce)
+> > and by pinning objects to that filesystem. This particular filesystem
+> > instance guarantees that desired eBPF programs run until the very end of
+> > the kernel lifecycle, since even root cannot interfere with it.
+> 
+> No.
+
+Ok. How can the goal I stated above be achieved properly?
+
+> I suspect there is huge confusion on what these two "progs.debug"
+> and "maps.debug" files are in a bpffs instance.
+> They are debug files to pretty pring loaded maps and progs for folks who
+> like to use 'cat' to examine the state of the system instead of 'bpftool'.
+> The root can remove these files from bpffs.
+> 
+> There is no reason for kernel module to pin its bpf progs.
+> If you want to develop DIGLIM as a kernel module that uses light skeleton
+> just do:
+> #include <linux/init.h>
+> #include <linux/module.h>
+> #include "diglim.lskel.h"
+> 
+> static struct diglim_bpf *skel;
+> 
+> static int __init load(void)
+> {
+>         skel = diglim_bpf__open_and_load();
+>         err = diglim_bpf__attach(skel);
+> }
+> /* detach skel in __fini */
+> 
+> It's really that short.
+> 
+> Then you will be able to
+> - insmod diglim.ko -> will load and attach bpf progs.
+> - rmmod diglim -> will detach them.
+
+root can stop the LSM without consulting the security
+policy. The goal of having root untrusted is not achieved.
+
+Maybe there is another way to prevent unloading
+the kernel module. I didn't find it yet. If there was an
+LSM hook called when kernel modules are unloaded,
+that would be sufficient, I guess.
+
+My point was that pinning progs seems to be the
+recommended way of keeping them running. Pinning
+them to unreachable inodes intuitively looked the
+way to go for achieving the stated goal. Or maybe I
+should just increment the reference count of links
+and don't decrement during an rmmod?
+
+If there is something I'm missing, please let me know.
+
+Thanks
+
+Roberto
+
+HUAWEI TECHNOLOGIES Duesseldorf GmbH, HRB 56063
+Managing Director: Li Peng, Zhong Ronghua
