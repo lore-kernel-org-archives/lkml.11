@@ -2,71 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 593A2C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 19:10:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B773EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 19:12:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239975AbiCaTMK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 15:12:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33268 "EHLO
+        id S240562AbiCaTOg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 15:14:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239649AbiCaTMG (ORCPT
+        with ESMTP id S240350AbiCaTOe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 15:12:06 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C10CFB7C6D
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 12:10:17 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id h7so913375lfl.2
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 12:10:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Sb1sT+u6ablw0kksF/Yt0iartvSesMxCgmS0SrVksdo=;
-        b=gDKF+dLjcOnSjIMebIXzaYQ9ONdWOzkNZ/cID6yTOYxKaldboAWktm2qja3fELJ9PU
-         TjHcNgP08lEeTDZHQ7OKr6SVVmRh7MwPo1wJ6Y8MYZsX1wdM9elp5+fGEkw54gzK277b
-         NZ96HzwJhZsWSX5Se7NprNoZWquf3xWcqI/lc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Sb1sT+u6ablw0kksF/Yt0iartvSesMxCgmS0SrVksdo=;
-        b=xiApi+LG4JBQSWVyJSBJcZm5be1R9O6A6T872xJGVhn1LzKWUvXufPiF/IX1CplBcw
-         vOtYQgmkPwyeaIOf9yYMmPN1jB1xeHQRDYQo/ivYqdlDX2KPx2sF9CHGd90rnN59+5lH
-         LWt8nytw5G5Dfi0tOid1QnXfUN+XpHvEbAGiGCd/av7s6Tft5r98s7NIf61a5qT6S5wc
-         QfP1QRlY4gVlRM4ACH7bKE4BvpgNj77WspMSCH5Q4RPBP6BbvGpz/mYDMGfZFa0wF1XZ
-         MIKYRjG3FPRPapuNdfs5GinGO/IsJTA/4GFdTqPOQoFZ1FPqmHQ091IDmONQKGymusgA
-         wLqA==
-X-Gm-Message-State: AOAM530vS7T2fs5hU5dvVHOBmoxWTU6AGRV9KH/TgJrM1ToH7iYXAN4r
-        W0gDm82TD5CWjjDvea0a8SF3cZT1qG25OLzSpo0=
-X-Google-Smtp-Source: ABdhPJxrNFmK9Ug63y+PHlyEbRFGbbigyl5F1M9ynIB4VnK2UA14AnUOtR1fdrCDQ63Lqw1nIsBK0w==
-X-Received: by 2002:a05:6512:2245:b0:44a:9971:de44 with SMTP id i5-20020a056512224500b0044a9971de44mr11871220lfu.564.1648753815552;
-        Thu, 31 Mar 2022 12:10:15 -0700 (PDT)
-Received: from mail-lj1-f175.google.com (mail-lj1-f175.google.com. [209.85.208.175])
-        by smtp.gmail.com with ESMTPSA id p2-20020a056512328200b0044a2d3f889fsm20846lfe.293.2022.03.31.12.10.14
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 31 Mar 2022 12:10:14 -0700 (PDT)
-Received: by mail-lj1-f175.google.com with SMTP id 17so1079858lji.1
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 12:10:14 -0700 (PDT)
-X-Received: by 2002:a2e:a790:0:b0:249:906a:c6f1 with SMTP id
- c16-20020a2ea790000000b00249906ac6f1mr11347514ljf.164.1648753814138; Thu, 31
- Mar 2022 12:10:14 -0700 (PDT)
-MIME-Version: 1.0
-References: <202203311127.503A3110@keescook> <CAHk-=wjQ0+9jBy6bm850h1jms1tja8xnon4X5v0LSO4biLhFGg@mail.gmail.com>
- <202203311157.F7FA779@keescook>
-In-Reply-To: <202203311157.F7FA779@keescook>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Thu, 31 Mar 2022 12:09:58 -0700
-X-Gmail-Original-Message-ID: <CAHk-=whPctCni+b7SDLtqnqW5qtiMnVqXQLZRA2iaQNStN7wXw@mail.gmail.com>
-Message-ID: <CAHk-=whPctCni+b7SDLtqnqW5qtiMnVqXQLZRA2iaQNStN7wXw@mail.gmail.com>
+        Thu, 31 Mar 2022 15:14:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD6AD239324
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 12:12:46 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 82C1EB821C0
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 19:12:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 215E6C340EE;
+        Thu, 31 Mar 2022 19:12:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648753964;
+        bh=Q+rR/0hP2RoJVEQBcWMctDTZ15UahEMPjDz0YVbKDh4=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=DPFWt/4WRfmT9kbiLqM5HUbnzfreuQkV6p9FSABe/dUQYYw2Xno13hU2ZYTDDc/i0
+         Ht4ZK9aYeWDHLnXFKcFZrmqivnlZtmurHyQ22Xr/IYDbOgjezkp54pP2RxBo7LpF81
+         z+nlL8jdZr0MY3HGQut2c2oRTWfcJaXAyvxuR1M7GhO7jSKGugsZFlk3S7R+or+cDZ
+         0EgIZgb7mEE/46e6HqECNzVXF3Fw/ZSt5J+JfhG8b+VQhE7V4YP53DdiIXudoWpIGQ
+         zgZmFvg8oM0x4JuS7ncu9o6sAnDZ+O9Sc9qQN4ldru18mXZ61jpXOZXYaX5x4oSzQL
+         qcL8B5jspgB3g==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0E300EAC09B;
+        Thu, 31 Mar 2022 19:12:44 +0000 (UTC)
 Subject: Re: [GIT PULL] hardening fixes for v5.18-rc1
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <202203311127.503A3110@keescook>
+References: <202203311127.503A3110@keescook>
+X-PR-Tracked-List-Id: <linux-arm-kernel.lists.infradead.org>
+X-PR-Tracked-Message-Id: <202203311127.503A3110@keescook>
+X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git tags/hardening-v5.18-rc1-fix1
+X-PR-Tracked-Commit-Id: 229a08a4f4e4f9949801cc39b6480ddc9c487183
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: f87cbd0565eb7e2fa15296c74210658db1346431
+Message-Id: <164875396405.22373.4543629917803159331.pr-tracker-bot@kernel.org>
+Date:   Thu, 31 Mar 2022 19:12:44 +0000
 To:     Kees Cook <keescook@chromium.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-kernel@vger.kernel.org,
         Andrew Morton <akpm@linux-foundation.org>,
         Christoph Hellwig <hch@lst.de>,
         David Hildenbrand <david@redhat.com>,
         Hari Bathini <hbathini@linux.ibm.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Kees Cook <keescook@chromium.org>,
+        linux-arm-kernel@lists.infradead.org,
         Logan Gunthorpe <logang@deltatee.com>,
         Martin Oliveira <martin.oliveira@eideticom.com>,
         "Matthew Wilcox (Oracle)" <willy@infradead.org>,
@@ -75,23 +65,19 @@ Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         Russell King <linux@armlinux.org.uk>,
         Stephen Rothwell <sfr@canb.auug.org.au>,
         Zi Yan <ziy@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 31, 2022 at 12:00 PM Kees Cook <keescook@chromium.org> wrote:
->
-> I can do that, but it seemed like more work for folks: a larger diff to
-> look at, and a rebase for Matthew or me. It's not MUCH more work, but
-> given the timing of the merge window, I wanted to have a minimal diff.
+The pull request you sent on Thu, 31 Mar 2022 11:35:40 -0700:
 
-Stuff that just does obvious code removal may _look_ big, but I
-actually think it's conceptually a smaller patch than the subtle one
-that just made the code impossible to enable.
+> https://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git tags/hardening-v5.18-rc1-fix1
 
-Marking something broken implies that maybe we'll be able to fix it.
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/f87cbd0565eb7e2fa15296c74210658db1346431
 
-This seems to be more of a "let's just get rid of it".
+Thank you!
 
-               Linus
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
