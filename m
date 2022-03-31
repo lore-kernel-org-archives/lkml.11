@@ -2,185 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C7B8C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 02:47:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BC76C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 02:52:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230309AbiCaCtP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 22:49:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45644 "EHLO
+        id S229780AbiCaCyj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 22:54:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229673AbiCaCsw (ORCPT
+        with ESMTP id S229611AbiCaCyg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 22:48:52 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 824CDF47DB
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 19:47:02 -0700 (PDT)
-Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KTSPF5SyZzdZQT;
-        Thu, 31 Mar 2022 10:46:41 +0800 (CST)
-Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
- dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 31 Mar 2022 10:47:00 +0800
-Received: from localhost.localdomain.localdomain (10.175.113.25) by
- dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 31 Mar 2022 10:46:59 +0800
-From:   Kefeng Wang <wangkefeng.wang@huawei.com>
-To:     <catalin.marinas@arm.com>, <will@kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <vijayb@linux.microsoft.com>, <f.fainelli@gmail.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>
-Subject: [PATCH v2 2/3] arm64: mm: Don't defer reserve_crashkernel() with dma_force_32bit
-Date:   Thu, 31 Mar 2022 10:59:45 +0800
-Message-ID: <20220331025946.51163-3-wangkefeng.wang@huawei.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20220331025946.51163-1-wangkefeng.wang@huawei.com>
-References: <20220331025946.51163-1-wangkefeng.wang@huawei.com>
+        Wed, 30 Mar 2022 22:54:36 -0400
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69595111DF0
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 19:52:44 -0700 (PDT)
+Received: by mail-pg1-x52a.google.com with SMTP id t4so15856859pgc.1
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 19:52:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=PYuCQIvuD74pqIke58Nyk48QUD+/IoXOla1cm+PGYVY=;
+        b=hOOvNdihbsPP0Nxr6SkheJbdoeJzJ/yyoY42Rvw6MwDxI6QRNXPYLThSsB8bvTWCyo
+         HjaXt9EW3kae+oo+kV1WgcwFd3HufMJHM0S5YiBrmA2fOSvo0EWOyR6TnsOUEXdOKPVw
+         GalyzJgwVeeHR9Jm+wILSPvJxFQ9hnS/IkwgoVemWNaeQv4/gthiXm7QSrAEQHWozUfm
+         eukbz83KDu6zo8KyCwipjDAWhA9wzjDy9ZZ+JoxSmPi8ANT3h3MROsQyakvoDMldSEEx
+         DqlDDn822DjnOUbVguWqaxZZ6ESmv/GTJEd2uASr8mxZpZxe1bwOvnmK2lwbnIdzj7Rx
+         4NFg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=PYuCQIvuD74pqIke58Nyk48QUD+/IoXOla1cm+PGYVY=;
+        b=Y9ylrGZrXV4D+aVOzwGxAvGV0OAvU9wCTiQZfdu3Ye7vJNG7kdr2ZguMp7d+te34ZU
+         GBTQtmc/pB9XOVr8pvPaZZvcJt/CHl0O5n8La9+Jj1J2sWRUQExHFrDg1NPYTh8bVGKu
+         ksNLUzbRGMzsNiHdukmyj5aitwcilVu8f7jjfwldMSSAj92wrRaN3jfuhKjP0DYahk4/
+         qZ75xOmWqMv1S9xFwL+WZ0FBjxS/WD/lTKllgD7zvsd1BfcsVbgXNIc7tFqvCy9jHEj7
+         a0Rg89Y4zEQX0Jh5KBFz2wcT3OPu8atZF6ZamsqwvsJ9tJGsrrdvERJvi9QZHKuc09gg
+         LDUA==
+X-Gm-Message-State: AOAM5312fpdTju0hhtLgPzZX0VQTdMZu1zoqG82htEFnloIxJ1EFkAx1
+        HMlnKfwhXZNyrH2RaMwnc6ZlQratMWVReA==
+X-Google-Smtp-Source: ABdhPJwRX/OnGSaAmRsG3TAjUqrDjnoNgZl+Dw9mNkJ2g2ay234Usz0Um3HtxwAWBPxWy1BU9pQK3w==
+X-Received: by 2002:a63:770c:0:b0:386:361f:ecce with SMTP id s12-20020a63770c000000b00386361feccemr8852405pgc.202.1648694949570;
+        Wed, 30 Mar 2022 19:49:09 -0700 (PDT)
+Received: from localhost ([223.184.83.228])
+        by smtp.gmail.com with ESMTPSA id p10-20020a056a0026ca00b004fb44e0cb17sm14937316pfw.116.2022.03.30.19.49.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 30 Mar 2022 19:49:09 -0700 (PDT)
+Date:   Thu, 31 Mar 2022 08:19:07 +0530
+From:   Viresh Kumar <viresh.kumar@linaro.org>
+To:     Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Cc:     vireshk@kernel.org, nm@ti.com, sboyd@kernel.org,
+        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] opp: use list iterator only inside the loop
+Message-ID: <20220331024906.i7ucvoxrkkfpb6w5@vireshk-i7>
+References: <20220331023608.30497-1-xiam0nd.tong@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.113.25]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500001.china.huawei.com (7.185.36.107)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220331023608.30497-1-xiam0nd.tong@gmail.com>
+User-Agent: NeoMutt/20180716-391-311a52
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ARM64 enable ZONE_DMA by default, and with ZONE_DMA crash kernel
-memory reservation is delayed until DMA zone memory range size
-initilazation performed in zone_sizes_init(), but for most platforms
-use 32bit dma_zone_bits, so add dma_force_32bit kernel parameter
-if ZONE_DMA enabled, and initialize arm64_dma_phys_limit to
-dma32_phys_limit in arm64_memblock_init() if dma_force_32bit
-is setup, this could let the crash kernel reservation earlier,
-and allows linear creation with block mapping.
+On 31-03-22, 10:36, Xiaomeng Tong wrote:
+> The list iterator 'new_dev' will point to a bogus position containing
+> HEAD if any one of these conditions is possible: the list is empty or
+> no element is found, thus can potentially lead to an invalid memory
+> access in 'dev = new_dev->dev;'.
 
-Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
----
- arch/arm64/include/asm/kexec.h |  1 +
- arch/arm64/mm/init.c           | 42 ++++++++++++++++++++++++++--------
- arch/arm64/mm/mmu.c            |  4 ++--
- 3 files changed, 36 insertions(+), 11 deletions(-)
+There is no such bug as I explained earlier, why you added this again
+despite being discussed ?
 
-diff --git a/arch/arm64/include/asm/kexec.h b/arch/arm64/include/asm/kexec.h
-index 9839bfc163d7..653b16acd09a 100644
---- a/arch/arm64/include/asm/kexec.h
-+++ b/arch/arm64/include/asm/kexec.h
-@@ -94,6 +94,7 @@ static inline void crash_post_resume(void) {}
- void cpu_soft_restart(unsigned long el2_switch, unsigned long entry,
- 		      unsigned long arg0, unsigned long arg1,
- 		      unsigned long arg2);
-+bool crashkernel_could_early_reserve(void)
- #endif
- 
- #define ARCH_HAS_KIMAGE_ARCH
-diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
-index fb01eb489fa9..329e236c3c52 100644
---- a/arch/arm64/mm/init.c
-+++ b/arch/arm64/mm/init.c
-@@ -66,7 +66,8 @@ EXPORT_SYMBOL(memstart_addr);
-  * depending on DMA memory zones configs (ZONE_DMA) --
-  *
-  * In absence of ZONE_DMA and ZONE_DMA32 configs arm64_dma_phys_limit
-- * initialized here and if only with ZONE_DMA32 arm64_dma_phys_limit
-+ * initialized here, and if only with ZONE_DMA32 or if with ZONE_DMA
-+ * and dma_force_32bit kernel parameter, the arm64_dma_phys_limit is
-  * initialised to dma32_phys_limit. This lets early reservation of
-  * crash kernel memory which has a dependency on arm64_dma_phys_limit.
-  * Reserving memory early for crash kernel allows linear creation of block
-@@ -92,6 +93,27 @@ phys_addr_t __ro_after_init arm64_dma_phys_limit;
- phys_addr_t __ro_after_init arm64_dma_phys_limit = PHYS_MASK + 1;
- #endif
- 
-+static bool __ro_after_init arm64_dma_force_32bit;
-+#ifdef CONFIG_ZONE_DMA
-+static int __init arm64_dma_force_32bit_setup(char *p)
-+{
-+	zone_dma_bits = 32;
-+	arm64_dma_force_32bit = true;
-+
-+	return 0;
-+}
-+early_param("dma_force_32bit", arm64_dma_force_32bit_setup);
-+#endif
-+
-+bool __init crashkernel_could_early_reserve(void)
-+{
-+	if (!IS_ENABLED(CONFIG_ZONE_DMA))
-+		return true;
-+	if (arm64_dma_force_32bit)
-+		return true;
-+	return false;
-+}
-+
- /*
-  * reserve_crashkernel() - reserves memory for crash kernel
-  *
-@@ -163,12 +185,14 @@ static void __init zone_sizes_init(unsigned long min, unsigned long max)
- {
- 	unsigned long max_zone_pfns[MAX_NR_ZONES]  = {0};
- #ifdef CONFIG_ZONE_DMA
--	unsigned int acpi_zone_dma_bits;
--	unsigned int dt_zone_dma_bits;
-+	if (!arm64_dma_force_32bit) {
-+		unsigned int acpi_zone_dma_bits;
-+		unsigned int dt_zone_dma_bits;
- 
--	acpi_zone_dma_bits = fls64(acpi_iort_dma_get_max_cpu_address());
--	dt_zone_dma_bits = fls64(of_dma_get_max_cpu_address(NULL));
--	zone_dma_bits = min3(32U, dt_zone_dma_bits, acpi_zone_dma_bits);
-+		acpi_zone_dma_bits = fls64(acpi_iort_dma_get_max_cpu_address());
-+		dt_zone_dma_bits = fls64(of_dma_get_max_cpu_address(NULL));
-+		zone_dma_bits = min3(32U, dt_zone_dma_bits, acpi_zone_dma_bits);
-+	}
- 	arm64_dma_phys_limit = max_zone_phys(zone_dma_bits);
- 	max_zone_pfns[ZONE_DMA] = PFN_DOWN(arm64_dma_phys_limit);
- #endif
-@@ -336,8 +360,8 @@ void __init arm64_memblock_init(void)
- 	early_init_fdt_scan_reserved_mem();
- 
- 	dma32_phys_limit = max_zone_phys(32);
--	if (!IS_ENABLED(CONFIG_ZONE_DMA)) {
--		if (IS_ENABLED(CONFIG_ZONE_DMA32))
-+	if (crashkernel_could_early_reserve()) {
-+		if (IS_ENABLED(CONFIG_ZONE_DMA32) || dma_force_32bit)
- 			arm64_dma_phys_limit = dma32_phys_limit;
- 		reserve_crashkernel();
- 	}
-@@ -388,7 +412,7 @@ void __init bootmem_init(void)
- 	 * request_standard_resources() depends on crashkernel's memory being
- 	 * reserved, so do it here.
- 	 */
--	if (IS_ENABLED(CONFIG_ZONE_DMA))
-+	if (!crashkernel_could_early_reserve())
- 		reserve_crashkernel();
- 
- 	memblock_dump_all();
-diff --git a/arch/arm64/mm/mmu.c b/arch/arm64/mm/mmu.c
-index 23734481318a..8f7e8452d906 100644
---- a/arch/arm64/mm/mmu.c
-+++ b/arch/arm64/mm/mmu.c
-@@ -529,7 +529,7 @@ static void __init map_mem(pgd_t *pgdp)
- 
- #ifdef CONFIG_KEXEC_CORE
- 	if (crash_mem_map) {
--		if (IS_ENABLED(CONFIG_ZONE_DMA))
-+		if (!crashkernel_could_early_reserve())
- 			flags |= NO_BLOCK_MAPPINGS | NO_CONT_MAPPINGS;
- 		else if (crashk_res.end)
- 			memblock_mark_nomap(crashk_res.start,
-@@ -570,7 +570,7 @@ static void __init map_mem(pgd_t *pgdp)
- 	 * through /sys/kernel/kexec_crash_size interface.
- 	 */
- #ifdef CONFIG_KEXEC_CORE
--	if (crash_mem_map && !IS_ENABLED(CONFIG_ZONE_DMA)) {
-+	if (crash_mem_map && crashkernel_could_early_reserve()) {
- 		if (crashk_res.end) {
- 			__map_memblock(pgdp, crashk_res.start,
- 				       crashk_res.end + 1,
+> As discussed before,
+
+I just told you not to use such language as this will go in logs, but
+you still chose to add it :(
+
+> we should avoid to use a list iterator variable
+> outside the loop which is considered harmful[1].
+> 
+> In this case, use a new variable 'iter' as the list iterator, while
+> use the old variable 'new_dev' as a dedicated pointer to point to the
+> found entry. And BUG_ON(!new_dev);.
+
+Please look at this on how to write the log, which fixes a very
+similar problem.
+
+https://lore.kernel.org/all/20220324071815.61405-1-jakobkoschel@gmail.com/
+
+> 
+> [1]:  https://lkml.org/lkml/2022/2/17/1032
+> 
+> Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+> ---
+> 
+> changes since v1:
+>  - use BUG_ON(!new_dev); instead of return; (Viresh Kumar)
+> 
+> v1: https://lore.kernel.org/lkml/20220331015818.28045-1-xiam0nd.tong@gmail.com/
+> 
+> ---
+>  drivers/opp/debugfs.c | 10 +++++++---
+>  1 file changed, 7 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/opp/debugfs.c b/drivers/opp/debugfs.c
+> index 596c185b5dda..81b2bc4b5f43 100644
+> --- a/drivers/opp/debugfs.c
+> +++ b/drivers/opp/debugfs.c
+> @@ -187,14 +187,18 @@ void opp_debug_register(struct opp_device *opp_dev, struct opp_table *opp_table)
+>  static void opp_migrate_dentry(struct opp_device *opp_dev,
+>  			       struct opp_table *opp_table)
+>  {
+> -	struct opp_device *new_dev;
+> +	struct opp_device *new_dev = NULL, *iter;
+>  	const struct device *dev;
+>  	struct dentry *dentry;
+>  
+>  	/* Look for next opp-dev */
+> -	list_for_each_entry(new_dev, &opp_table->dev_list, node)
+> -		if (new_dev != opp_dev)
+> +	list_for_each_entry(iter, &opp_table->dev_list, node)
+> +		if (iter != opp_dev) {
+> +			new_dev = iter;
+>  			break;
+> +		}
+> +
+> +	BUG_ON(!new_dev);
+>  
+>  	/* new_dev is guaranteed to be valid here */
+>  	dev = new_dev->dev;
+> -- 
+> 2.17.1
+
 -- 
-2.26.2
-
+viresh
