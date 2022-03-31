@@ -2,196 +2,257 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2AFFC43219
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 04:17:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FBE8C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 04:17:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230252AbiCaES4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 00:18:56 -0400
+        id S230342AbiCaETB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 00:19:01 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231357AbiCaESX (ORCPT
+        with ESMTP id S231523AbiCaES2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 00:18:23 -0400
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2073.outbound.protection.outlook.com [40.107.94.73])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F81E1834D4;
-        Wed, 30 Mar 2022 21:04:38 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=IT5ajtSSDaeXvzOD3yiomCD+djGTQtL+unhno8B0R6BY4yBUwJvN050lvKSl2iYVg53DsoDTyDkeg/m6ewLs/dTwo2azH2dxh4OCVPAzdFxcmBstlP5IxgddXS54QShWvTg8rfVI0w3jGNG5vB3WiqwwoN+CwcM2X9Ut9sdVG+jn1pNWr4RVASx3Ra+jba+mXsY/YMFrAa0cB4vjELu6C7k2RXNXocvd6ATiuhfRXCYf9YAyhkSKW2OgYlBwkGbV3Xsd0RLvSB0LuKxzN3/e55B3jWlsARjCo3GjXstjDmbYyaecPXCMiKfjBie7CosEjMX+eaJ9Ti/VH9v4lfAWww==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=IhTNiy/2uLS9UqCtPfASgDRCWOwO+YWCSE8NDLA8QXc=;
- b=WV1tNRvDdDUnUmbSEWSGVnsUHqZ3BsioV+kR9c2jcJEa6OR+Sn/aDGLey3vI/QFjBK+aVXyR/DqD34eBtHqZrF423NFrZqmexD90nck0R27Gmi0yBSg0m89Crv8OeJS4yJJyMW+1E3lLO0Qm2GbFYwuzvjluvaiCP5GYyf93J0XwR2xZUDkvLk4GLsDjlaMqOfeDaqeWpHqrl82vM8GuT2VneA5jTTC5zbWS8KMpooTcm6Yl6VvPHCg+vOwZmBqiWOhJv95UmnvVdeU3X/2dNKt7c/HBVNrKw7FgdWod36r9uO0ggePuxwGLM3kmInlDMJkGV7xB80bhWNDQv0ucSw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=IhTNiy/2uLS9UqCtPfASgDRCWOwO+YWCSE8NDLA8QXc=;
- b=45/QsZn1VBJ0WqW2fMH3SiZin6kE3lyv2bFt4ZXlp88zNhei5oIPzuXZ+skIan1olSqqLskMrqW6L4sA+V/thi21ZZtDSxLelrx52Eh2bQVyD24H2UlwSAmOsZ/gFHcjkJC6pIzo9obDPzMrhuzzjn7v34qLiwD1PXMT26leTLc=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DM8PR12MB5445.namprd12.prod.outlook.com (2603:10b6:8:24::7) by
- BN8PR12MB3460.namprd12.prod.outlook.com (2603:10b6:408:48::16) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5123.19; Thu, 31 Mar 2022 04:04:34 +0000
-Received: from DM8PR12MB5445.namprd12.prod.outlook.com
- ([fe80::e0d3:d505:3bd6:e79]) by DM8PR12MB5445.namprd12.prod.outlook.com
- ([fe80::e0d3:d505:3bd6:e79%5]) with mapi id 15.20.5123.020; Thu, 31 Mar 2022
- 04:04:34 +0000
-Message-ID: <ad4c2a2f-9b9c-23c8-b64a-826943c54459@amd.com>
-Date:   Thu, 31 Mar 2022 11:04:24 +0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.7.0
-Subject: Re: [RFCv2 PATCH 09/12] KVM: SVM: Refresh AVIC settings when changing
- APIC mode
-Content-Language: en-US
-To:     Maxim Levitsky <mlevitsk@redhat.com>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org
-Cc:     pbonzini@redhat.com, seanjc@google.com, joro@8bytes.org,
-        jon.grimm@amd.com, wei.huang2@amd.com, terry.bowman@amd.com
-References: <20220308163926.563994-1-suravee.suthikulpanit@amd.com>
- <20220308163926.563994-10-suravee.suthikulpanit@amd.com>
- <91692f799dfa1d064b8f2839789869aebcaa6c5f.camel@redhat.com>
-From:   Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-In-Reply-To: <91692f799dfa1d064b8f2839789869aebcaa6c5f.camel@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SI2PR02CA0037.apcprd02.prod.outlook.com
- (2603:1096:4:196::8) To DM8PR12MB5445.namprd12.prod.outlook.com
- (2603:10b6:8:24::7)
+        Thu, 31 Mar 2022 00:18:28 -0400
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B279A185958;
+        Wed, 30 Mar 2022 21:05:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648699505; x=1680235505;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=FkLKjF9yc6i0+3dBxoVynuN9myC6clq7eWtCrJIDA2k=;
+  b=YT4XyPCJwdrhWmfoETTC8pisSpDehLNBkiaDu0KWgMNRPvWenCCck20O
+   LuC53Fb9eDFOU3/X8YoF+8FjIH6ffNGtA4LPKOXhzpK+rHBmqf/s85mUl
+   0t7E6T8jr8QecgchALSLb3oQdXSmB6Q41Mlt3aBzAEI5GIfrjNyzF6CL/
+   K1RGafI5eMAWYxAjfdxtsPRfjQDVjdhCs7/7UUAW78iWB8WdZy1Qrro1v
+   A06XWUMtkCG1hemZW/IfM3Pd9T4DpNUTaD7/4bD52y0HARXpkZf+PWaQG
+   3bbj3IpdBf+k4OtmLaJeYygDkxDUqa44Wxd/q4zYU9npY6eF1f7EHUka5
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="320406326"
+X-IronPort-AV: E=Sophos;i="5.90,224,1643702400"; 
+   d="scan'208";a="320406326"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 20:31:14 -0700
+X-IronPort-AV: E=Sophos;i="5.90,224,1643702400"; 
+   d="scan'208";a="650114022"
+Received: from dhathawa-mobl.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.254.53.226])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 20:31:12 -0700
+Message-ID: <36aac3cb7c7447db6454ee396e25eea3bad378e6.camel@intel.com>
+Subject: Re: [RFC PATCH v5 008/104] KVM: TDX: Add a function to initialize
+ TDX module
+From:   Kai Huang <kai.huang@intel.com>
+To:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     isaku.yamahata@gmail.com, Paolo Bonzini <pbonzini@redhat.com>,
+        Jim Mattson <jmattson@google.com>, erdemaktas@google.com,
+        Connor Kuehl <ckuehl@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+Date:   Thu, 31 Mar 2022 16:31:10 +1300
+In-Reply-To: <b92217283fa96b85e9a683ca3fcf1b368cf8d1c4.1646422845.git.isaku.yamahata@intel.com>
+References: <cover.1646422845.git.isaku.yamahata@intel.com>
+         <b92217283fa96b85e9a683ca3fcf1b368cf8d1c4.1646422845.git.isaku.yamahata@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3970fccc-309d-4a98-e1e2-08da12cb90c8
-X-MS-TrafficTypeDiagnostic: BN8PR12MB3460:EE_
-X-Microsoft-Antispam-PRVS: <BN8PR12MB3460325E599101878B85B376F3E19@BN8PR12MB3460.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 5i+9RPwfr3flA9Bj05xTEmjoefajFGR7t4HIvCXuX8FJa/ELiIZbisAMOoydXewTYwVPYcs2vgQ/hmCn3XxOW5tgVSBDHuvAg5Jm6vzulUOPoIH5Ea1QwVXLirYbobtkFLCHR55QiBs83q4IB1W551/SjXgbJfB9WZuJKNbl3Z5BHWCnhkaFBGe+7DLQXxkz1wk93klCsYsCKosbNzelChhKMAuEvsDsM35o0rGiPjrZRqlK3zchohRo0NPCPqRozbuAPzsNMXa5TKMkY3RrRxpM+xj1WK06erv0wePldJ+HTPFTgcCVqDYHjEq6T9g6+rAmSnyVlTXGnmcflPgeZKoTIQErBs6fLeXBjGv87xSya5caewx3Dc5xHevjHX0UYnYs5/Yszel4I/9SZqhoGlxkQIWjUZKZZtoUR0Km674FKT6/IVnWZ1+ffQFpw9ct0nyvitUZjYYtvTcxdFomussN2ipuZ0cszXo6bnfDnxL3msa5QvWsmjRFHONhmpPOmArATTxKr3ZgKLcXvqKNzeioYKTo7HXF4foadpL1vustl1LTx8oatEVEZEoPbkc3gb9r8/lhRBPbln/JqtZ39HNAwbkaPHexIE4mkzLFSmTXgEbrA5hOrDNK9XY3h+sfIUu+27AAIswZcT/mjoRSwIP9jLIJD2CddPb9HtTm45Kc4j0G/k7o4KngL3CvPsJ2LHX6r3e/3zGcCxgxxpT3jwdDBjutfKn3okNZZj7D4RU=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM8PR12MB5445.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6512007)(86362001)(186003)(53546011)(26005)(2616005)(31696002)(6506007)(38100700002)(83380400001)(2906002)(8936002)(36756003)(31686004)(66556008)(66946007)(66476007)(5660300002)(8676002)(4326008)(6486002)(44832011)(508600001)(316002)(6666004)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?VlM4cGdpdnA5NVZyd0JDR1hsSkkxNXlXV2d5RmRSQUZKMG1NRUkvUzBMdVln?=
- =?utf-8?B?OGZxVm1zWDdEVjZ3M3RzM0p2OWIzMlhVRFFPa1RTeGNNMGhCREdITU1jTnUz?=
- =?utf-8?B?STd2dWhpa0lreXgxMjJRUkdRUEtlT3hlRmdMa1drbVZHakIyd21MbFhXaHp4?=
- =?utf-8?B?d2d2R0lNQ1V6Z1ZvczRuN3BoMGtsdllwUFBDa2wxQ0xqTWZqMzBRb2ZvdkdJ?=
- =?utf-8?B?OXpsbGt1QmZTV0VvV3I5RWZ0TU5LQnU4cVpSR2o4d21kdDhDNUluUGJNYy90?=
- =?utf-8?B?ODEvcjRnM0Z2SXp5QjJGRXRNNGRzakp5Vm1EMVhmQmo0RGdwSkd5NlVkTDZN?=
- =?utf-8?B?WWtZaXBPamoweFpsZ2JBd2dYVWR5ekxocG45Vm9SUy9YV0N6UTFuWW5IUEFS?=
- =?utf-8?B?T0JrZzl4Z2I0bUJJS3ZyZ2pOY1JCeHQ2T29QZmkxNy9wS2UydWUvdGw2S0tC?=
- =?utf-8?B?ckdONlNRbElxSytSTXo0YlBpUDNRN3Y3VXpFbHRFUUNHOGwrRDQ0bHpac2N1?=
- =?utf-8?B?TGFIaUdVcWhreTVvOGRDM0xTVmtUSWl5Zi9rRFpCVUJZbkJkRHRCTU5DQWNU?=
- =?utf-8?B?Q2x6SDZsRFpqcElTMnRKc2RjSDRlRk55cnJMbWc2Ykx1bWNNUzdPZlY1Z1Ni?=
- =?utf-8?B?a3ZjaWphQU55Y1VXcUFRdm9XRVlYTVk0Mnl2eVlxdjdFNCtRZk55NFdyYVpp?=
- =?utf-8?B?WVNtVzI4S2pacFltWjRlQlYwc3RmQlZBazJTbHczUDlJaktOWWxYUTdlcWs4?=
- =?utf-8?B?Lytwd0pZdmdpQ3NycExLVXJNWmxLdkVMbHZYcmxaeFJxRlB4ZGlVd3QyNFQr?=
- =?utf-8?B?MG9hQ0tMVGtWWno1U1ozaFQwNFZGWjMwdk9mOEVxSjk5dWZmdlpYL1BuZzZS?=
- =?utf-8?B?enhqcTBXc2p0bm1CRkMwWmxxdkRuay9Pc0puN095MlJxSWQySSsvWlphdWJH?=
- =?utf-8?B?L0JWUlF3ekVsOEVyR29JcFhjaTBuVTV6LzZFazdIa29nYjBkUE1ER3orSUt5?=
- =?utf-8?B?S25DUSs4bnlBNThIOVBNWjJhMEZEckt6VnNpay91SjZTbmU3Wm5LWE9ZeFBr?=
- =?utf-8?B?VU81SE95bDAxQU1pS3RtakxxaWFvTnVIaGttZ2txTmJFUmRpbEpubjJZRmto?=
- =?utf-8?B?cjlWb0xwOFZQUzcwRUNNUDRoZUhDMjkzZHFLWXozSldQcFpwdnlUck9YMWRS?=
- =?utf-8?B?WWhZQmJRWXpkMXVzSERxZGF1d3U5VGhpdTdPTUVGRkdrMGVPZTBWc2ZNRzlF?=
- =?utf-8?B?Y3MrNnBxenlSbDVlcDF1MnNXa0ZWTzdSSkFySS9pNjZCNnJ4WU9SaFRJemhh?=
- =?utf-8?B?SFR4R1huM0UzQkozWmRBZ3RiQldFOUZZdVVDTG9hSUxHbG82dTc5dEdYWVhm?=
- =?utf-8?B?WlJ5QWd5Vm5wSHhDelJXNmJVTHBRYlBKYzBzb2F0Z3VFMlQxMERaczRFNWVa?=
- =?utf-8?B?ZG1qU1djTjhGYldjTzZhT0Mxd09kTzNPR2VzbGtyVlh0S3VPRlZlWUVMSlQy?=
- =?utf-8?B?cEdMa0ZYTWFHQ09FRHZsOW8xL1lNQnZCMjdxSzRlOU9aR1B4bWZpMFZCODFk?=
- =?utf-8?B?RzVCaVdKY0d5dzhHZ0JTOGVNVURhWkJEUUlMRlhzWUZXeFMvSVhOeFFCc3Np?=
- =?utf-8?B?K2EyTG51QW5BQ0Fta2NScWFFa2RDcytmMEpLT21TQkhxUFBZbStjTU11ak9I?=
- =?utf-8?B?eHF1bU9PNnIyNXdzdDlGYXRxMERKZHFyQ0RPSDh3MGVSeXYybEJQZ1FQMkhi?=
- =?utf-8?B?LzRLNDRkaHJkc29MOURaRTRnL05SNVFUdmJtTm81cHJlWTRMWi9sdzFZMDg4?=
- =?utf-8?B?d1JnRHBucjJCUHNIWisyM1JpcWFocHk2R0V2NkRlYWg2SmVTNlRVZnB1Tytw?=
- =?utf-8?B?NE1PSktodzV3SDJaanlpTlhuQUJNYnVOcDRWbDFSdU8xY0ZFRk5HaC91M3JV?=
- =?utf-8?B?S3F6NmZLQ0JFZkFWOC9IL3JXc0kvUGxxR0J4VFlwYW1CNFBNU1hPejM4NHN2?=
- =?utf-8?B?MUNQNnVsVEVVMWlMZGMxMHhXNk9mZ0hGdUJTWmx5OVJISDBXakxBckM1V0Vz?=
- =?utf-8?B?QUdlVXNNVTFpbHFPODB5YXVQL0JnbzhSa05xSFpHcmZOZHV3RUpyc2IwOEhY?=
- =?utf-8?B?VG9YUng1T2hBb0RyOVRBT0pDbjBRZjh1ekg3eS9pcVBtSUtpWmY2SGhNVWls?=
- =?utf-8?B?VHJMUDh1aXVNUnpSY3ozRXk2MHdrUUNDc2wzYU8xVFUwdldhQ3QwN3JDbnhT?=
- =?utf-8?B?Y1M5UkVzQ1JjbFFZbzdwVG9Ic2tWTFJwUlJDdi94K2NyelNuVEkrb3M2TzRs?=
- =?utf-8?B?Q0RyMXRLd0Z1OGk4a0dxNWFEZ3l0K0o1VjMrS2c5SGlXZ1o3OWRCdz09?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3970fccc-309d-4a98-e1e2-08da12cb90c8
-X-MS-Exchange-CrossTenant-AuthSource: DM8PR12MB5445.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Mar 2022 04:04:34.6841
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Arh5EJGEDEo0RPC38iMCg9DPRfpMEhWO4l3gXp96MWXo4f4hl/zziQq2GHRIgKSOHavnRZpi1hk7ILxt7aVPdg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3460
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Maxim,
-
-On 3/24/22 10:35 PM, Maxim Levitsky wrote:
-> On Tue, 2022-03-08 at 10:39 -0600, Suravee Suthikulpanit wrote:
->> When APIC mode is updated (e.g. from xAPIC to x2APIC),
->> KVM needs to update AVIC settings accordingly, whic is
->> handled by svm_refresh_apicv_exec_ctrl().
->>
->> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
->> ---
->>   arch/x86/kvm/svm/avic.c | 19 ++++++++++++++++++-
->>   1 file changed, 18 insertions(+), 1 deletion(-)
->>
->> diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
->> index 7e5a39a8e698..53559b8dfa52 100644
->> --- a/arch/x86/kvm/svm/avic.c
->> +++ b/arch/x86/kvm/svm/avic.c
->> @@ -625,7 +625,24 @@ void avic_post_state_restore(struct kvm_vcpu *vcpu)
->>   
->>   void svm_set_virtual_apic_mode(struct kvm_vcpu *vcpu)
->>   {
->> -	return;
->> +	struct vcpu_svm *svm = to_svm(vcpu);
->> +
->> +	if (!lapic_in_kernel(vcpu) || (avic_mode == AVIC_MODE_NONE))
->> +		return;
->> +
->> +	if (kvm_get_apic_mode(vcpu) == LAPIC_MODE_INVALID)
->> +		WARN_ONCE(true, "Invalid local APIC state");
->> +
->> +	svm->vmcb->control.avic_vapic_bar = svm->vcpu.arch.apic_base &
->> +					    VMCB_AVIC_APIC_BAR_MASK;
+On Fri, 2022-03-04 at 11:48 -0800, isaku.yamahata@intel.com wrote:
+> From: Isaku Yamahata <isaku.yamahata@intel.com>
 > 
-> No need for that - APIC base relocation doesn't work when AVIC is enabled,
-> since the page which contains it has to be marked R/W in NPT, which we
-> only do for the default APIC base.
-> 
-> I recently removed the code from AVIC which still tried to set the
-> 'avic_vapic_bar' like this.
+> Memory used for TDX is encrypted with an encryption key.  An encryption key
+> is assigned to guest TD, and TDX memory is encrypted.  VMM calculates Trust
+> Domain Memory Range (TDMR), a range of memory pages that can hold TDX
+> memory encrypted with an encryption key.  VMM allocates memory regions for
+> Physical Address Metadata Table (PAMT) which the TDX module uses to track
+> page states. Used for TDX memory, assigned to which guest TD, etc.  VMM
+> gives PAMT regions to the TDX module and initializes it which is also
+> encrypted.
 
-Got it. I'll remove this part.
+Not sure why above are related to this patch.  Perhaps you can just say TDX
+module is detected and initialized on demand via tdx_detect() and tdx_init().
 
 > 
->> +	kvm_vcpu_update_apicv(&svm->vcpu);
->> +
->> +	/*
->> +	 * The VM could be running w/ AVIC activated switching from APIC
->> +	 * to x2APIC mode. We need to all refresh to make sure that all
->> +	 * x2AVIC configuration are being done.
+> TDX requires more initialization steps in addition to VMX.  As a
+> preparation step, check if the CPU feature is available and enable VMX
+> because the TDX module API requires VMX to be enabled to be functional.
+
+Those are not reflected in this patch either.
+
+> The next step is basic platform initialization.  Check if TDX module API is
+> available, call system-wide initialization API (TDH.SYS.INIT), and call LP
+> initialization API (TDH.SYS.LP.INIT).  Lastly, get system-wide
+> parameters (TDH.SYS.INFO), allocate PAMT for TDX module to track page
+> states (TDH.SYS.CONFIG), configure encryption key (TDH.SYS.KEY.CONFIG), and
+> initialize PAMT (TDH.SYS.TDMR.INIT).
+
+Again, not sure why those are related.
+
 > 
-> Why? When AVIC is un-inhibited later then the svm_refresh_apicv_exec_ctrl will be called
-> again and switch to x2avic mode I think.
+> A TDX host patch series implements those details and it provides APIs,
+> seamrr_enabled() to check if CPU feature is available, init_tdx() to
+> initialize the TDX module, tdx_get_tdsysinfo() to get TDX system
+> parameters.
 
-Current version does not disable AVIC when APIC is disabled, which happens during
-APIC mode switching (i.e. xAPIC -> disabled -> x2APIC). This needs to be fixed.
-Then we can remove the force refresh.
+init_tdx() -> tdx_init().
 
-> When AVIC is inhibited, then regardless of x2apic mode, VMCB must not have
-> any avic bits set, and all x2apic msrs should be read/write intercepted.,
-> thus I don't think that svm_refresh_apicv_exec_ctrl should be force called.
+"A TDX host patch series" should not be in the formal commit message, I suppose.
 
-The refresh is normally called only when there is APICV update request (e.g. 
-kvm_request_apicv_update(APICV_INHIBIT_REASON_IRQWIN)), which could happen or not.
+> 
+> Add a wrapper function to initialize the TDX module and get system-wide
+> parameters via those APIs.  Because TDX requires VMX enabled, It will be
+> called on-demand when the first guest TD is created via x86 KVM init_vm
+> callback.
 
+Why not just merge this patch with the change where you implement the init_vm
+callback?  Then you can just declare this patch as "detect and initialize TDX
+module when first VM is created", or something like that..
 
-However, I have reworked this part. The svm_refresh_apicv_exec_ctrl()
-force is no longer needed.
+> 
+> Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
+> ---
+>  arch/x86/kvm/vmx/tdx.c | 89 ++++++++++++++++++++++++++++++++++++++++++
+>  arch/x86/kvm/vmx/tdx.h |  4 ++
+>  2 files changed, 93 insertions(+)
+> 
+> diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
+> index 8ed3ec342e28..8adc87ad1807 100644
+> --- a/arch/x86/kvm/vmx/tdx.c
+> +++ b/arch/x86/kvm/vmx/tdx.c
+> @@ -13,9 +13,98 @@
+>  static bool __read_mostly enable_tdx = true;
+>  module_param_named(tdx, enable_tdx, bool, 0644);
+>  
+> +#define TDX_MAX_NR_CPUID_CONFIGS					\
+> +	((sizeof(struct tdsysinfo_struct) -				\
+> +		offsetof(struct tdsysinfo_struct, cpuid_configs))	\
+> +		/ sizeof(struct tdx_cpuid_config))
+> +
+> +struct tdx_capabilities {
+> +	u8 tdcs_nr_pages;
+> +	u8 tdvpx_nr_pages;
+> +
+> +	u64 attrs_fixed0;
+> +	u64 attrs_fixed1;
+> +	u64 xfam_fixed0;
+> +	u64 xfam_fixed1;
+> +
+> +	u32 nr_cpuid_configs;
+> +	struct tdx_cpuid_config cpuid_configs[TDX_MAX_NR_CPUID_CONFIGS];
+> +};
+> +
+> +/* Capabilities of KVM + the TDX module. */
+> +struct tdx_capabilities tdx_caps;
+> +
+>  static u64 hkid_mask __ro_after_init;
+>  static u8 hkid_start_pos __ro_after_init;
 
-Regards,
-Suravee
+The two seems are not used in this patch.
+
+Please make sure each patch can compile w/o warning.
+
+>  
+> +static int __tdx_module_setup(void)
+> +{
+> +	const struct tdsysinfo_struct *tdsysinfo;
+> +	int ret = 0;
+> +
+> +	BUILD_BUG_ON(sizeof(*tdsysinfo) != 1024);
+> +	BUILD_BUG_ON(TDX_MAX_NR_CPUID_CONFIGS != 37);
+> +
+> +	ret = tdx_detect();
+> +	if (ret) {
+> +		pr_info("Failed to detect TDX module.\n");
+> +		return ret;
+> +	}
+> +
+> +	ret = tdx_init();
+> +	if (ret) {
+> +		pr_info("Failed to initialize TDX module.\n");
+> +		return ret;
+> +	}
+> +
+> +	tdsysinfo = tdx_get_sysinfo();
+> +	if (tdx_caps.nr_cpuid_configs > TDX_MAX_NR_CPUID_CONFIGS)
+> +		return -EIO;
+> +
+> +	tdx_caps = (struct tdx_capabilities) {
+> +		.tdcs_nr_pages = tdsysinfo->tdcs_base_size / PAGE_SIZE,
+> +		/*
+> +		 * TDVPS = TDVPR(4K page) + TDVPX(multiple 4K pages).
+> +		 * -1 for TDVPR.
+> +		 */
+> +		.tdvpx_nr_pages = tdsysinfo->tdvps_base_size / PAGE_SIZE - 1,
+> +		.attrs_fixed0 = tdsysinfo->attributes_fixed0,
+> +		.attrs_fixed1 = tdsysinfo->attributes_fixed1,
+> +		.xfam_fixed0 =	tdsysinfo->xfam_fixed0,
+> +		.xfam_fixed1 = tdsysinfo->xfam_fixed1,
+> +		.nr_cpuid_configs = tdsysinfo->num_cpuid_config,
+> +	};
+> +	if (!memcpy(tdx_caps.cpuid_configs, tdsysinfo->cpuid_configs,
+> +			tdsysinfo->num_cpuid_config *
+> +			sizeof(struct tdx_cpuid_config)))
+> +		return -EIO;
+> +
+> +	return 0;
+> +}
+> +
+> +int tdx_module_setup(void)
+> +{
+> +	static DEFINE_MUTEX(tdx_init_lock);
+> +	static bool __read_mostly tdx_module_initialized;
+> +	int ret = 0;
+> +
+> +	mutex_lock(&tdx_init_lock);
+
+It took me a while to figure out why this mutex is needed.  Please see my above
+suggestion to merge this patch to the change that implements init_vm() callback.
+
+> +
+> +	if (!tdx_module_initialized) {
+> +		if (enable_tdx) {
+> +			ret = __tdx_module_setup();
+
+I think you can move tdx_detect() and tdx_init() out of your mutex.  They are
+internally protected by mutex.
+
+> +			if (ret)
+> +				enable_tdx = false;
+> +			else
+> +				tdx_module_initialized = true;
+> +		} else
+> +			ret = -EOPNOTSUPP;
+> +	}
+> +
+> +	mutex_unlock(&tdx_init_lock);
+> +	return ret;
+> +}
+> +
+>  static int __init __tdx_hardware_setup(struct kvm_x86_ops *x86_ops)
+>  {
+>  	u32 max_pa;
+> diff --git a/arch/x86/kvm/vmx/tdx.h b/arch/x86/kvm/vmx/tdx.h
+> index daf6bfc6502a..d448e019602c 100644
+> --- a/arch/x86/kvm/vmx/tdx.h
+> +++ b/arch/x86/kvm/vmx/tdx.h
+> @@ -3,6 +3,8 @@
+>  #define __KVM_X86_TDX_H
+>  
+>  #ifdef CONFIG_INTEL_TDX_HOST
+> +int tdx_module_setup(void);
+> +
+>  struct kvm_tdx {
+>  	struct kvm kvm;
+>  };
+> @@ -35,6 +37,8 @@ static inline struct vcpu_tdx *to_tdx(struct kvm_vcpu *vcpu)
+>  	return container_of(vcpu, struct vcpu_tdx, vcpu);
+>  }
+>  #else
+> +static inline int tdx_module_setup(void) { return -ENODEV; };
+> +
+>  struct kvm_tdx;
+>  struct vcpu_tdx;
+>  
+
