@@ -2,134 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C985FC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 22:37:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3B38C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 22:38:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242582AbiCaWja (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 18:39:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34358 "EHLO
+        id S242608AbiCaWjx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 18:39:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236405AbiCaWj1 (ORCPT
+        with ESMTP id S242560AbiCaWjv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 18:39:27 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1ECF1B988D;
-        Thu, 31 Mar 2022 15:37:39 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id j15so2180348eje.9;
-        Thu, 31 Mar 2022 15:37:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=6jDnG0yED3EhVSGuEGJ6HJ38ZUXJXmhtdLq7M8giSgc=;
-        b=W0kezZZDpxUVh7G7zSovCKYPK1WXt0WmzwjyrbEqA0GSQHjYkz+dF5+fba9kyHn1DK
-         T5sqGXJlGGnCAob1TDToNlAsD04v26GKy6JutrYr49hDKNVuLxXRYhCk2cyJT7ECw3nS
-         9vdjtd2PXTnxjRQPR1V5yTglGlYOFG78duMdaLqdbh7KaOU9C6lLjpq+oWThFyaJFdGr
-         eiwpIkivMk72OVUvQXIIZMKLCap6+kCmmE9bjC/vcnnE5O4A86l6PFKWtXHvAtNyGfDG
-         yxRGHw0A2eyVB1qAkY4TcGhomOK7AfFb7eDHimPOxgYxbxLASqz1rwih/PIGtYiH9zdY
-         KY8A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=6jDnG0yED3EhVSGuEGJ6HJ38ZUXJXmhtdLq7M8giSgc=;
-        b=BCcmcXn3UpbBME45U2Q46mjMhjPvqOBe2Pr9ezQjGvNuo4j3k8o4FYHymKuFVC35R9
-         RrCTLU63WvqdgOu7mMNoSHtr/bLCGxGdi+O2H+zaCiKS+8aMnxhNgGixkspZtoKk5X6Y
-         EGWVlaNtyWUKbhgX3g6ZfPVNJUxAG438+479jtbNiqJxSMVJ7Wwo7prHGBa0Ma+dCOdw
-         TUioug3F8RIyBQ4q8Lh4PiwbrDV/BP9ObI+P3Fw0N7kDqPHEm2SvO9u+C0vgAAXnqPIV
-         7Ftpitk/23o6xcAucDwz2JUwHZmPVNJONZQVl8EK4iKhkFUwXLBO85u47ravDR/Hpo2G
-         2ZoQ==
-X-Gm-Message-State: AOAM532pc28QteBxF92gSjFSF+0fOtdt1lCM46sgBcXX/p5se4MDmOGn
-        75DdPigf1Ama1kR3RrjfutV8oSEUdqV8aikF
-X-Google-Smtp-Source: ABdhPJyfkrQJ1xqFDwsnCg57JhFsU+Agm0hss3ZlmWM7GlCyuZapiXPU5jqAty4sNZbUsz1ioaNc0w==
-X-Received: by 2002:a17:907:3e94:b0:6d1:d64e:3141 with SMTP id hs20-20020a1709073e9400b006d1d64e3141mr6557600ejc.213.1648766258419;
-        Thu, 31 Mar 2022 15:37:38 -0700 (PDT)
-Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
-        by smtp.googlemail.com with ESMTPSA id u5-20020a170906b10500b006ce6fa4f510sm276709ejy.165.2022.03.31.15.37.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 31 Mar 2022 15:37:38 -0700 (PDT)
-From:   Jakob Koschel <jakobkoschel@gmail.com>
-To:     Mike Rapoport <rppt@kernel.org>
-Cc:     David Hildenbrand <david@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Oscar Salvador <osalvador@suse.de>,
-        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>, Jakob Koschel <jakobkoschel@gmail.com>
-Subject: [PATCH] fs/proc/kcore.c: remove check of list iterator against head past the loop body
-Date:   Fri,  1 Apr 2022 00:37:00 +0200
-Message-Id: <20220331223700.902556-1-jakobkoschel@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 31 Mar 2022 18:39:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EC301FF406;
+        Thu, 31 Mar 2022 15:38:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1C4F5B8225B;
+        Thu, 31 Mar 2022 22:38:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8B12C340ED;
+        Thu, 31 Mar 2022 22:37:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648766279;
+        bh=0+cqxY3wgXl1ZxgBlYb2Pw1E+eA45qGlrrGxGV6BP4Q=;
+        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+        b=KVubnGXunMJIF0ThNkEy70N0q5PMBLlBFHZtwDDlcF/LEM30o5NILdXywFFrb8Mfc
+         ky7xDb6uCD4Uq5P+YIK0JXy/82QVa7PNArud3iXwsD5Iau9k1s91+EARvK9nB8dHpe
+         4vBaeI10JPTgNi+n1jcuDoQHMUkhMO1DNZQG5u/KveYKZBPKI+qcrYKLHXt7clQOH3
+         heENiVEo2e3zffwSV2wtufCT5wlmCKwc6wlvxoJs23Fa1vvMgHgyNR1B4RXf8/Z+St
+         9/W6lO1dTqMP7gpPu7WhKM5soFhWTd+O3lsNeubAc0SwUOkZnQsP57x/LmzTDPgsww
+         ohHY7YDlIt5UA==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <bf438af8-5969-73e4-009d-cb7d93095a5e@kernel.org>
+References: <20220324133229.24035-1-jbx6244@gmail.com> <f7493d93-6c8a-efa9-1f2c-a0003a6d43b2@kernel.org> <bf62ad40-6bcf-62ae-f56a-cdc8d17456ec@gmail.com> <20220325005130.C45A3C340EC@smtp.kernel.org> <bf438af8-5969-73e4-009d-cb7d93095a5e@kernel.org>
+Subject: Re: [PATCH v1] dt-bindings: clock: convert rockchip,rk3188-cru.txt to YAML
+From:   Stephen Boyd <sboyd@kernel.org>
+Cc:     robh+dt@kernel.org, krzk+dt@kernel.org, mturquette@baylibre.com,
+        linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
+To:     Johan Jonker <jbx6244@gmail.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>, heiko@sntech.de
+Date:   Thu, 31 Mar 2022 15:37:57 -0700
+User-Agent: alot/0.10
+Message-Id: <20220331223759.B8B12C340ED@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When list_for_each_entry() completes the iteration over the whole list
-without breaking the loop, the iterator value will be a bogus pointer
-computed based on the head element.
+Quoting Krzysztof Kozlowski (2022-03-25 00:31:25)
+> On 25/03/2022 01:51, Stephen Boyd wrote:
+> > Quoting Johan Jonker (2022-03-24 12:51:36)
+> >> Hi Heiko, Krzysztof,
+> >>
+> >> Question for the Rockchip clock maintainer:
+> >> What clock should be used here and other SoCs with several clock paren=
+ts
+> >> in the tree?
+> >>
+> >> The clock.yaml produces a lot off notifications like:
+> >>
+> >> /arch/arm/boot/dts/rk3036-evb.dtb: clock-controller@20000000: 'clocks'
+> >> is a dependency of 'assigned-clocks'
+> >=20
+> > 'clocks' is not a dependency of 'assigned-clocks'. The dt-schema should
+> > be fixed to remove that requirement.
+>=20
+> If the driver does not have any clock inputs ("clocks" property), why
+> does it care about some clock frequencies and parents?
 
-While it is safe to use the pointer to determine if it was computed
-based on the head element, either with list_entry_is_head() or
-&pos->member == head, using the iterator variable after the loop should
-be avoided.
+Because it's a clock provider itself. In this case I suspect because
+this is a clock-controller node it was skipping describing some crystal
+input though. Maybe it wants to configure the various PLLs in the
+clock-controller for a particular board. I can imagine some node with
+#clock-cells may want to configure the frequency of the clock outputs or
+configure the clk parents for a certain board/SoC. In that case there
+may not be any clocks property, but we still want to configure things.
 
-In preparation to limit the scope of a list iterator to the list
-traversal loop, use a dedicated pointer to point to the found element [1].
+>=20
+> The clocks is the logical dependency of assigned-clocks, because
+> otherwise hardware description is not complete.
 
-Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/ [1]
-Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
----
- fs/proc/kcore.c | 13 ++++++++-----
- 1 file changed, 8 insertions(+), 5 deletions(-)
+Sure, but also #clock-cells indicating that this is a clock-controller
+itself means something. The existing bindings are what they are so
+forcing bindings to be updated to comply with having a 'clocks' property
+doesn't seem very nice.
 
-diff --git a/fs/proc/kcore.c b/fs/proc/kcore.c
-index 982e694aae77..344edcb2addd 100644
---- a/fs/proc/kcore.c
-+++ b/fs/proc/kcore.c
-@@ -316,6 +316,7 @@ read_kcore(struct file *file, char __user *buffer, size_t buflen, loff_t *fpos)
- 	size_t page_offline_frozen = 1;
- 	size_t phdrs_len, notes_len;
- 	struct kcore_list *m;
-+	struct kcore_list *iter;
- 	size_t tsz;
- 	int nphdr;
- 	unsigned long start;
-@@ -479,10 +480,13 @@ read_kcore(struct file *file, char __user *buffer, size_t buflen, loff_t *fpos)
- 		 * the previous entry, search for a matching entry.
- 		 */
- 		if (!m || start < m->addr || start >= m->addr + m->size) {
--			list_for_each_entry(m, &kclist_head, list) {
--				if (start >= m->addr &&
--				    start < m->addr + m->size)
-+			m = NULL;
-+			list_for_each_entry(iter, &kclist_head, list) {
-+				if (start >= iter->addr &&
-+				    start < iter->addr + iter->size) {
-+					m = iter;
- 					break;
-+				}
- 			}
- 		}
- 
-@@ -492,12 +496,11 @@ read_kcore(struct file *file, char __user *buffer, size_t buflen, loff_t *fpos)
- 			page_offline_freeze();
- 		}
- 
--		if (&m->list == &kclist_head) {
-+		if (!m) {
- 			if (clear_user(buffer, tsz)) {
- 				ret = -EFAULT;
- 				goto out;
- 			}
--			m = NULL;	/* skip the list anchor */
- 			goto skip;
- 		}
- 
+>=20
+> What should be here for Rockhip? We had similar cases like this for many
+> drivers, I was fixing some of Exynos as well. In my case usually the
+> root/external clock was missing, so I supplied is as input clock to the
+> clock controller.
+>=20
 
-base-commit: f82da161ea75dc4db21b2499e4b1facd36dab275
--- 
-2.25.1
-
+Can the schema consider either #clock-cells or clocks? I think that will
+work for most cases. It would also be good to have a comment in the
+schema or more detail around the definition of assigned-clocks in
+bindings/clock/clock-bindings.txt that clocks or #clock-cells are
+required. It would be super cool if assigned-clocks only applied if
+#clock-cells was present, otherwise clocks property applies, but I doubt
+we can do that anymore given how long the binding has been around.
