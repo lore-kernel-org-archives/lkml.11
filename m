@@ -2,145 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EEB0C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 23:10:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3C6EC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 23:10:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242857AbiCaXMJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 19:12:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34558 "EHLO
+        id S242849AbiCaXMZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 19:12:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231898AbiCaXMD (ORCPT
+        with ESMTP id S231898AbiCaXMR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 19:12:03 -0400
-Received: from vps-vb.mhejs.net (vps-vb.mhejs.net [37.28.154.113])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3A3DEA76C;
-        Thu, 31 Mar 2022 16:10:13 -0700 (PDT)
-Received: from MUA
-        by vps-vb.mhejs.net with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <mail@maciej.szmigiero.name>)
-        id 1na3vO-000676-Nb; Fri, 01 Apr 2022 01:09:54 +0200
-Message-ID: <f4cdaf45-c869-f3bb-2ba2-3c0a4da12a6d@maciej.szmigiero.name>
-Date:   Fri, 1 Apr 2022 01:09:48 +0200
+        Thu, 31 Mar 2022 19:12:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61BB0105AB3
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 16:10:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F26A461667
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 23:10:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CE2CC340ED;
+        Thu, 31 Mar 2022 23:10:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648768228;
+        bh=ayML8RaUBnTdmf9yaj5JTyemKW/LWEmylZyis/jy1qs=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=et7LVT6cqkFFJE1LiTtUjV6Ct58X+Blk10UZVTxQPugeXH5+LV2yk6/t1Qs3vlaDO
+         aT051BFezb7g3ItIzqxX/+Tw74CQQMDiUPxR9ieguv2wpCPF0leo/9LpyUDZF4ld9Y
+         9TR67sDAEoW37xxaH/t9Cy/2afPSmR1grHAb1Q/wu+y4wKh5CXkzBBzBDwA+t0PZFS
+         tXY1RSI+A+CgLK8Z0m+e43o94CVIKggUkL1u3a7xWamBt4q/9In8YEVG1jPQ30KH4S
+         J92R2FBPOxP6tiaR6cYbt+x7bFdJkiPXaN/tiSlJa4BPHcgjUAY2swSZJ7Be5J7rlV
+         Jh0ezqfehqqlg==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 0A04C5C0A0E; Thu, 31 Mar 2022 16:10:27 -0700 (PDT)
+Date:   Thu, 31 Mar 2022 16:10:27 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [BUG] rcu-tasks : should take care of sparse cpu masks
+Message-ID: <20220331231027.GZ4285@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <CANn89iKaNEwyNZ=L_PQnkH0LP_XjLYrr_dpyRKNNoDJaWKdrmg@mail.gmail.com>
+ <20220331224222.GY4285@paulmck-ThinkPad-P17-Gen-1>
+ <CANn89iJjyp7s1fYB6VCqLhUnF+mmEXyw8GMpFC9Vi22usBsgAQ@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Content-Language: en-US
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        Jon Grimm <Jon.Grimm@amd.com>,
-        David Kaplan <David.Kaplan@amd.com>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Liam Merwick <liam.merwick@oracle.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <cover.1646944472.git.maciej.szmigiero@oracle.com>
- <a28577564a7583c32f0029f2307f63ca8869cf22.1646944472.git.maciej.szmigiero@oracle.com>
- <YkTSul0CbYi/ae0t@google.com>
- <8f9ae64a-dc64-6f46-8cd4-ffd2648a9372@maciej.szmigiero.name>
- <YkTlxCV9wmA3fTlN@google.com>
-From:   "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
-Subject: Re: [PATCH 3/5] KVM: nSVM: Don't forget about L1-injected events
-In-Reply-To: <YkTlxCV9wmA3fTlN@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CANn89iJjyp7s1fYB6VCqLhUnF+mmEXyw8GMpFC9Vi22usBsgAQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 31.03.2022 01:20, Sean Christopherson wrote:
-> On Thu, Mar 31, 2022, Maciej S. Szmigiero wrote:
->> On 30.03.2022 23:59, Sean Christopherson wrote:
->>> On Thu, Mar 10, 2022, Maciej S. Szmigiero wrote:
->>>> @@ -3627,6 +3632,14 @@ static void svm_complete_interrupts(struct kvm_vcpu *vcpu)
->>>>    	if (!(exitintinfo & SVM_EXITINTINFO_VALID))
->>>>    		return;
->>>> +	/* L1 -> L2 event re-injection needs a different handling */
->>>> +	if (is_guest_mode(vcpu) &&
->>>> +	    exit_during_event_injection(svm, svm->nested.ctl.event_inj,
->>>> +					svm->nested.ctl.event_inj_err)) {
->>>> +		nested_svm_maybe_reinject(vcpu);
->>>
->>> Why is this manually re-injecting?  More specifically, why does the below (out of
->>> sight in the diff) code that re-queues the exception/interrupt not work?  The
->>> re-queued event should be picked up by nested_save_pending_event_to_vmcb12() and
->>> propagatred to vmcb12.
->>
->> A L1 -> L2 injected event should either be re-injected until successfully
->> injected into L2 or propagated to VMCB12 if there is a nested VMEXIT
->> during its delivery.
->>
->> svm_complete_interrupts() does not do such re-injection in some cases
->> (soft interrupts, soft exceptions, #VC) - it is trying to resort to
->> emulation instead, which is incorrect in this case.
->>
->> I think it's better to split out this L1 -> L2 nested case to a
->> separate function in nested.c rather than to fill
->> svm_complete_interrupts() in already very large svm.c with "if" blocks
->> here and there.
+On Thu, Mar 31, 2022 at 03:54:02PM -0700, Eric Dumazet wrote:
+> On Thu, Mar 31, 2022 at 3:42 PM Paul E. McKenney <paulmck@kernel.org> wrote:
+> >
+> > On Thu, Mar 31, 2022 at 02:45:25PM -0700, Eric Dumazet wrote:
+> > > Hi Paul
+> > >
+> > > It seems you assume per cpu ptr for arbitrary indexes (< nr_cpu_ids) are valid.
+> >
+> > Gah!  I knew I was forgetting something...
+> >
+> > But just to check, is this a theoretical problem or something you hit
+> > on real hardware?  (For the rest of this email, I am assuming the latter.)
 > 
-> Ah, I see it now.  WTF.
+> Code review really...
+
+OK, not yet an emergency, then.  ;-)
+
+If it does become an emergency, one workaround is to set the
+rcupdate.rcu_task_enqueue_lim kernel boot parameter to the number of CPUs.
+
+> > > What do you think of the (untested) following patch ?
+> >
+> > One issue with this patch is that the contention could be unpredictable,
+> > or worse, vary among CPU, especially if the cpu_possible_mask was oddly
+> > distributed.
+> >
+> > So might it be better to restrict this to all on CPU 0 on the one hand
+> > and completely per-CPU on the other?  (Or all on the boot CPU, in case
+> > I am forgetting some misbegotten architecture that can run without a
+> > CPU 0.)
 > 
-> Ugh, commit 66fd3f7f901f ("KVM: Do not re-execute INTn instruction.") fixed VMX,
-> but left SVM broken.
+> If I understand correctly, cblist_init_generic() could setup
+> percpu_enqueue_shift
+> to something smaller than order_base_2(nr_cpu_ids)
 > 
-> Re-executing the INTn is wrong, the instruction has already completed decode and
-> execution.  E.g. if there's there's a code breakpoint on the INTn, rewinding will
-> cause a spurious #DB.
+> Meaning that we could reach a non zero idx in (smp_processor_id() >>
+> percpu_enqueue_shift)
 > 
-> KVM's INT3 shenanigans are bonkers, but I guess there's no better option given
-> that the APM says "Software interrupts cannot be properly injected if the processor
-> does not support the NextRIP field.".  What a mess.
+> So even if CPU0 is always present (I am not sure this is guaranteed,
+> but this seems reasonable),
+> we could still attempt a per_cpu_ptr(PTR,  not_present_cpu), and get garbage.
 
-Note that KVM currently always tries to re-execute the current instruction
-when asked to re-inject a #BP or a #OF, even when nrips are enabled.
+My thought is to replace the shift with a boolean.  One setting just
+always uses CPU 0's cblist (or that of the boot CPU, if there is some
+architecture that is completely innocent of CPU 0), and the other setting
+always uses that of the currently running CPU.  This does rule out the
+current possibility of using (say) 16 cblists on a 64-CPU system, but
+I suspect that this would be just fine.
 
-Also, #BP (and #OF, too) is returned as type SVM_EXITINTINFO_TYPE_EXEPT,
-not as SVM_EXITINTINFO_TYPE_SOFT (soft interrupt), so it should be
-re-injected accordingly.
+Neeraj's and my proposed memory-diet patches for SRCU do something like
+this.  These are on branch srcu.2022.03.29a on -rcu.
 
-> Anyways, for the common nrips=true case, I strongly prefer that we properly fix
-> the non-nested case and re-inject software interrupts, which should in turn
-> naturally fix this nested case.  
+Thoughts?
 
-This would also need making the #BP or #OF current instruction
-re-execution conditional on (at least) nrips support.
+							Thanx, Paul
 
-I am not sure, however, whether this won't introduce any regressions.
-That's why this patch set changed the behavior here only for the
-L1 -> L2 case.
-
-Another issue is whether a L1 hypervisor can legally inject a #VC
-into its L2 (since these are never re-injected).
-
-We still need L1 -> L2 event injection detection to restore the NextRIP
-field when re-injecting an event that uses it.
-
-> And for nrips=false, my vote is to either punt
-> and document it as a "KVM erratum", or straight up make nested require nrips.
-
-A quick Internet search shows that the first CPUs with NextRIP were the
-second-generation Family 10h CPUs (Phenom II, Athlon II, etc.).
-They started being released in early 2009, so we probably don't need to
-worry about the non-nrips case too much.
-
-For the nested case, orthodox reading of the aforementioned APM sentence
-would mean that a L1 hypervisor is not allowed either to make use of such
-event injection in the non-nrips case.
-
-> Note, that also requires updating svm_queue_exception(), which assumes it will
-> only be handed hardware exceptions, i.e. hardcodes type EXEPT.  That's blatantly
-> wrong, e.g. if userspace injects a software exception via KVM_SET_VCPU_EVENTS.
-
-svm_queue_exception() uses SVM_EVTINJ_TYPE_EXEPT, which is correct even
-for software exceptions (#BP or #OF).
-It does work indeed, as the self test included in this patch set
-demonstrates.
-
-Thanks,
-Maciej
+> > > Thanks.
+> > >
+> > > diff --git a/kernel/rcu/tasks.h b/kernel/rcu/tasks.h
+> > > index 99cf3a13954cfb17828fbbeeb884f11614a526a9..df3785be4022e903d9682dd403464aa9927aa5c2
+> > > 100644
+> > > --- a/kernel/rcu/tasks.h
+> > > +++ b/kernel/rcu/tasks.h
+> > > @@ -273,13 +273,17 @@ static void call_rcu_tasks_generic(struct
+> > > rcu_head *rhp, rcu_callback_t func,
+> > >         bool needadjust = false;
+> > >         bool needwake;
+> > >         struct rcu_tasks_percpu *rtpcp;
+> > > +       int ideal_cpu, chosen_cpu;
+> > >
+> > >         rhp->next = NULL;
+> > >         rhp->func = func;
+> > >         local_irq_save(flags);
+> > >         rcu_read_lock();
+> > > -       rtpcp = per_cpu_ptr(rtp->rtpcpu,
+> > > -                           smp_processor_id() >>
+> > > READ_ONCE(rtp->percpu_enqueue_shift));
+> > > +
+> > > +       ideal_cpu = smp_processor_id() >> READ_ONCE(rtp->percpu_enqueue_shift);
+> > > +       chosen_cpu = cpumask_next(ideal_cpu - 1, cpu_online_mask);
+> > > +
+> > > +       rtpcp = per_cpu_ptr(rtp->rtpcpu, chosen_cpu);
+> > >         if (!raw_spin_trylock_rcu_node(rtpcp)) { // irqs already disabled.
+> > >                 raw_spin_lock_rcu_node(rtpcp); // irqs already disabled.
+> > >                 j = jiffies;
