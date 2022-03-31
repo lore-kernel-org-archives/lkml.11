@@ -2,140 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EBE1C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 21:57:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36EC2C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 21:57:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242149AbiCaV7A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 17:59:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48330 "EHLO
+        id S235105AbiCaV7Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 17:59:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242163AbiCaV6t (ORCPT
+        with ESMTP id S242150AbiCaV7Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 17:58:49 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 199E62467DB;
-        Thu, 31 Mar 2022 14:56:58 -0700 (PDT)
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22VJ7m5X005564;
-        Thu, 31 Mar 2022 21:56:24 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=XGvzhVEl74eoR/4mrdPztcUKpDHPEVfW12Hzpz1Ea9A=;
- b=qQgjAT3WnT4iHc9gj5SGxz1pG3bnn/1y7V1fRjM9/6PSPtw0UDx+Woo1m5gCNxsCceqG
- 6nI0p0NFpeD4oI3LxCiA2Uy1IpezYyooyVm/FGBI5AsPuQ3MdaKGhsMlwZDk7aa7HNo1
- vWUbOOYJzwO82waIRyjnRUox5wxxVYEwU1oXQFh/0lEg/Qw4pOS+tesQyXMxQtqdjVbd
- cX4ofJn7NioRKhaz9M5ty0DVi2BAOJaFJUhtCuzzbD7LZ7m4lE4GBvy42RFQkTiN8a96
- P+TDvcYCKizev1NU9PWdJ1cuJx3u5luvh3LqSFfMAwPIxp/0f9zEU/ZLPbLpAApxWR+N 2Q== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3f54c35kwe-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 31 Mar 2022 21:56:24 +0000
-Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22VLsNhS004144;
-        Thu, 31 Mar 2022 21:56:24 GMT
-Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3f54c35kvq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 31 Mar 2022 21:56:23 +0000
-Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
-        by ppma04dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22VLppGd001723;
-        Thu, 31 Mar 2022 21:56:22 GMT
-Received: from b03cxnp07029.gho.boulder.ibm.com (b03cxnp07029.gho.boulder.ibm.com [9.17.130.16])
-        by ppma04dal.us.ibm.com with ESMTP id 3f1tfahkjj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 31 Mar 2022 21:56:21 +0000
-Received: from b03ledav002.gho.boulder.ibm.com (b03ledav002.gho.boulder.ibm.com [9.17.130.233])
-        by b03cxnp07029.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22VLuKos32702920
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 31 Mar 2022 21:56:20 GMT
-Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 818D0136053;
-        Thu, 31 Mar 2022 21:56:20 +0000 (GMT)
-Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E6975136055;
-        Thu, 31 Mar 2022 21:56:18 +0000 (GMT)
-Received: from amdrome3.watson.ibm.com (unknown [9.2.130.16])
-        by b03ledav002.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Thu, 31 Mar 2022 21:56:18 +0000 (GMT)
-From:   Dov Murik <dovmurik@linux.ibm.com>
-To:     linux-efi@vger.kernel.org
-Cc:     Dov Murik <dovmurik@linux.ibm.com>, Borislav Petkov <bp@suse.de>,
-        Ashish Kalra <ashish.kalra@amd.com>,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Andrew Scull <ascull@google.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        "Dr. David Alan Gilbert" <dgilbert@redhat.com>,
-        Gerd Hoffmann <kraxel@redhat.com>,
-        Lenny Szubowicz <lszubowi@redhat.com>,
-        Peter Gonda <pgonda@google.com>,
-        Matthew Garrett <mjg59@srcf.ucam.org>,
-        James Bottomley <jejb@linux.ibm.com>,
-        Tobin Feldman-Fitzthum <tobin@linux.ibm.com>,
-        Jim Cadden <jcadden@ibm.com>,
-        Daniele Buono <dbuono@linux.vnet.ibm.com>,
-        linux-coco@lists.linux.dev, linux-security-module@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v9 3/4] efi: Register efi_secret platform device if EFI secret area is declared
-Date:   Thu, 31 Mar 2022 21:56:06 +0000
-Message-Id: <20220331215607.3182232-4-dovmurik@linux.ibm.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220331215607.3182232-1-dovmurik@linux.ibm.com>
-References: <20220331215607.3182232-1-dovmurik@linux.ibm.com>
+        Thu, 31 Mar 2022 17:59:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E66A243702;
+        Thu, 31 Mar 2022 14:57:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 05445B82256;
+        Thu, 31 Mar 2022 21:57:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D07CC340ED;
+        Thu, 31 Mar 2022 21:57:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648763840;
+        bh=Zb+U9RFZbesFveucEGN5xYerY69ut491T1TB9y+Q8tI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=Z6ztIPgXXwcsdnKhOzupVpmZejIJQRW6H7Maubf+hIQILhUQrPMqXy6yn0BUW4YEs
+         LJ6jx5NzgN44PuiQirfYBs7vkz3slGoqFPIZfuBEPdeATx7zqacrPTJhjg9EgvPqN1
+         27oKqvOtnQWIR0yRpGRKatOfuUADpjLNh81TA24wu8EJ4TDWd+M/4ss8FKPDSlExis
+         QXAqkkSdGPrjxuFJ3Nmg09szZmsJDa9x3HH29AxbToLJKkclSCHAw7cN830LsH62/I
+         N/rJUIYas8GZgWe283X9B2xB7WqQ46e0wWA4efcoXUfx+/3mtaRApSoAqC/qKgE/27
+         +i5IpG19CfegA==
+Date:   Thu, 31 Mar 2022 16:57:16 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     "Rafael J. Wysocki" <rjw@rjwysocki.net>
+Cc:     Linux PCI <linux-pci@vger.kernel.org>,
+        Stefan Gottwald <gottwald@igel.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] PCI: PM: Quirk bridge D3 on Elo i2
+Message-ID: <20220331215716.GA27368@bhelgaas>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: DhzlTFtT5Fhr2mIdAVEJBoZ0H7EUZe5u
-X-Proofpoint-GUID: qF8l_RnRAwOE53y2dOR7wGvTuJn2UzMo
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-31_06,2022-03-31_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 phishscore=0
- lowpriorityscore=0 impostorscore=0 spamscore=0 adultscore=0
- mlxlogscore=999 malwarescore=0 mlxscore=0 priorityscore=1501 clxscore=1015
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2203310112
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <11980172.O9o76ZdvQC@kreacher>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-During efi initialization, check if coco_secret is defined in the EFI
-configuration table; in such case, register platform device
-"efi_secret".  This allows udev to automatically load the efi_secret
-module (platform driver), which in turn will populate the
-<securityfs>/secrets/coco directory in guests into which secrets were
-injected.
+Hi Rafael,
 
-Note that a declared address of an EFI secret area doesn't mean that
-secrets where indeed injected to that area; if the secret area is not
-populated, the driver will not load (but the platform device will still
-be registered).
+On Thu, Mar 31, 2022 at 07:38:51PM +0200, Rafael J. Wysocki wrote:
+> From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+> 
+> If one of the PCIe root ports on Elo i2 is put into D3cold and then
+> back into D0, the downstream device becomes permanently inaccessible,
+> so add a bridge D3 DMI quirk for that system.
+> 
+> This was exposed by commit 14858dcc3b35 ("PCI: Use
+> pci_update_current_state() in pci_enable_device_flags()"), but before
+> that commit the root port in question had never been put into D3cold
+> for real due to a mismatch between its power state retrieved from the
+> PCI_PM_CTRL register (which was accessible even though the platform
+> firmware indicated that the port was in D3cold) and the state of an
+> ACPI power resource involved in its power management.
 
-Signed-off-by: Dov Murik <dovmurik@linux.ibm.com>
----
- drivers/firmware/efi/efi.c | 3 +++
- 1 file changed, 3 insertions(+)
+In the bug report you suspect a firmware issue.  Any idea what that
+might be?  It looks like a Gemini Lake Root Port, so I wouldn't think
+it would be a hardware issue.
 
-diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
-index 378d044b2463..b92eabc554e6 100644
---- a/drivers/firmware/efi/efi.c
-+++ b/drivers/firmware/efi/efi.c
-@@ -425,6 +425,9 @@ static int __init efisubsys_init(void)
- 	if (efi_enabled(EFI_DBG) && efi_enabled(EFI_PRESERVE_BS_REGIONS))
- 		efi_debugfs_init();
- 
-+	if (efi.coco_secret != EFI_INVALID_TABLE_ADDR)
-+		platform_device_register_simple("efi_secret", 0, NULL, 0);
-+
- 	return 0;
- 
- err_remove_group:
--- 
-2.25.1
+Weird how things come in clumps.  Was just looking at Mario's patch,
+which also has to do with bridges and D3.
 
+Do we need a Fixes line?  E.g.,
+
+  Fixes: 14858dcc3b35 ("PCI: Use pci_update_current_state() in pci_enable_device_flags()")
+
+> BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=215715
+> Reported-by: Stefan Gottwald <gottwald@igel.com>
+> Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+> ---
+>  drivers/pci/pci.c |   10 ++++++++++
+>  1 file changed, 10 insertions(+)
+> 
+> Index: linux-pm/drivers/pci/pci.c
+> ===================================================================
+> --- linux-pm.orig/drivers/pci/pci.c
+> +++ linux-pm/drivers/pci/pci.c
+> @@ -2920,6 +2920,16 @@ static const struct dmi_system_id bridge
+>  			DMI_MATCH(DMI_BOARD_VENDOR, "Gigabyte Technology Co., Ltd."),
+>  			DMI_MATCH(DMI_BOARD_NAME, "X299 DESIGNARE EX-CF"),
+>  		},
+> +		/*
+> +		 * Downstream device is not accessible after putting a root port
+> +		 * into D3cold and back into D0 on Elo i2.
+> +		 */
+> +		.ident = "Elo i2",
+> +		.matches = {
+> +			DMI_MATCH(DMI_SYS_VENDOR, "Elo Touch Solutions"),
+> +			DMI_MATCH(DMI_PRODUCT_NAME, "Elo i2"),
+> +			DMI_MATCH(DMI_PRODUCT_VERSION, "RevB"),
+> +		},
+
+Is this bridge_d3_blacklist[] similar to the PCI_DEV_FLAGS_NO_D3 bit?
+Could they be folded together?  We have a lot of bits that seem
+similar but maybe not exactly the same (dev->bridge_d3,
+dev->no_d3cold, dev->d3cold_allowed, dev->runtime_d3cold,
+PCI_DEV_FLAGS_NO_D3, pci_bridge_d3_force, etc.)  Ugh.
+
+bridge_d3_blacklist[] itself was added by 85b0cae89d52 ("PCI:
+Blacklist power management of Gigabyte X299 DESIGNARE EX PCIe ports"),
+which honestly looks kind of random, i.e., it doesn't seem to be
+working around a hardware or even a firmware defect.
+
+Apparently the X299 issue is that 00:1c.4 is connected to a
+Thunderbolt controller, and the BIOS keeps the Thunderbolt controller
+powered off unless something is attached to it?  At least, 00:1c.4
+leads to bus 05, and in the dmesg log attached to [1] shows no devices
+on bus 05.
+
+It also says the platform doesn't support PCIe native hotplug, which
+matches what Mika said about it using ACPI hotplug.  If a system is
+using ACPI hotplug, it seems like maybe *that* should prevent us from
+putting things in D3cold?  How can we know whether ACPI hotplug
+depends on a certain power state?
+
+Bjorn
+
+[1] https://bugzilla.kernel.org/show_bug.cgi?id=202031
+
+>  	},
+>  #endif
+>  	{ }
+> 
+> 
+> 
