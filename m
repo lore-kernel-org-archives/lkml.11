@@ -2,139 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC6B2C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 05:45:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62B08C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 05:45:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229942AbiCaFrA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 01:47:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58578 "EHLO
+        id S229978AbiCaFrM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 01:47:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229721AbiCaFq5 (ORCPT
+        with ESMTP id S229939AbiCaFrJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 01:46:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22E601005
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 22:45:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BD55EB81E0A
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 05:45:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1BDAC340F0;
-        Thu, 31 Mar 2022 05:45:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648705508;
-        bh=typN6HaBunrT3sm6KGyaPW9XCKoGbVVwCGjp0mnJLcA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=C8EelGk+foqMrqM9tqxQUYQK54WLMsdObwXzqXxBYss9g0Lh1HlXZWydeVBAZnLg+
-         8UKii0KPD9pEzRkfoprtAWWjzBQUNPiV1AqECccSRqXg1fvQ61T3a8DghCvKEHlg/G
-         x+3R6I9Pt2R+WWU5NR3hIX5hDAiUCiGz56yPPqXQ=
-Date:   Thu, 31 Mar 2022 07:45:05 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
-Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        outreachy@lists.linux.dev
-Subject: Re: [PATCH v2] staging: rtl8723bs: remove redundant braces in if
- statements
-Message-ID: <YkU/4YYz53VHVzoj@kroah.com>
-References: <20220330005229.GA318642@euclid>
+        Thu, 31 Mar 2022 01:47:09 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48A4D1005;
+        Wed, 30 Mar 2022 22:45:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=KYbf7HSV24jrzW2ZtVUEOaLTWz6JVZPXyL3Rs7bbWM0=; b=GVzk+N3zwXy8smg2a0hAxoFSWr
+        vlNPRnTm7Z1CH/5DWiTzx54r2Z32DfZQnywgD+6RYOrjqOiE6OWIF0mMOSzZxJKJnd4V3DuyFP/oH
+        jBsg3NpArwXOP8hqFhedNGhb9Zq9QxvatG/Fk8heHlBrfZnyjViW1u0oITuS7+1YfI0bPNEqI/t+e
+        1lOFGwO0wkNjGz3VMgHT70prYy7YNAXXFRnSj5eby/FVwOtGty/t1J3IGGvuEaEyt9HwodJYRbWI+
+        LI45kP425fWQ90+/mjRbGuBpqXtNxJblFkvpnW3iaxPi9p5WjUG6fQ2jz7CYmT+hKJC1RFfaC3soB
+        S0Jobl1Q==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nZncO-000jlX-Jw; Thu, 31 Mar 2022 05:45:12 +0000
+Date:   Wed, 30 Mar 2022 22:45:12 -0700
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     Wenchao Hao <haowenchao@huawei.com>, fmdefrancesco@gmail.com,
+        axboe@kernel.dk, jejb@linux.ibm.com, linux-block@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
+        martin.petersen@oracle.com,
+        syzbot+f08c77040fa163a75a46@syzkaller.appspotmail.com,
+        syzkaller-bugs@googlegroups.com, linfeilong@huawei.com
+Subject: Re: [PATCH] scsi: sd: call device_del() if device_add_disk() fails
+Message-ID: <YkU/6KB+0fPU5Hie@infradead.org>
+References: <20220329154948.10350-1-fmdefrancesco@gmail.com>
+ <20220331152622.616534-1-haowenchao@huawei.com>
+ <20220331054156.GI3293@kadam>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220330005229.GA318642@euclid>
+In-Reply-To: <20220331054156.GI3293@kadam>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 29, 2022 at 08:52:29PM -0400, Sevinj Aghayeva wrote:
-> Adhere to Linux kernel coding style.
-> 
-> Reported by checkpatch:
-> 
-> WARNING: braces {} are not necessary for single statement blocks
-> 
-> Signed-off-by: Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
-> ---
->  drivers/staging/rtl8723bs/core/rtw_ieee80211.c | 12 ++++--------
->  1 file changed, 4 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/staging/rtl8723bs/core/rtw_ieee80211.c b/drivers/staging/rtl8723bs/core/rtw_ieee80211.c
-> index 27de086903e2..68e41d99679d 100644
-> --- a/drivers/staging/rtl8723bs/core/rtw_ieee80211.c
-> +++ b/drivers/staging/rtl8723bs/core/rtw_ieee80211.c
-> @@ -335,9 +335,8 @@ int rtw_generate_ie(struct registry_priv *pregistrypriv)
->  
->  	ie = rtw_set_ie(ie, WLAN_EID_IBSS_PARAMS, 2, (u8 *)&(pdev_network->configuration.atim_window), &sz);
->  
-> -	if (rateLen > 8) {
-> +	if (rateLen > 8)
->  		ie = rtw_set_ie(ie, WLAN_EID_EXT_SUPP_RATES, (rateLen - 8), (pdev_network->supported_rates + 8), &sz);
-> -	}
->  
->  	/* HT Cap. */
->  	if ((pregistrypriv->wireless_mode & WIRELESS_11_24N) &&
-> @@ -366,9 +365,8 @@ unsigned char *rtw_get_wpa_ie(unsigned char *pie, int *wpa_ie_len, int limit)
->  
->  		if (pbuf) {
->  			/* check if oui matches... */
-> -			if (memcmp((pbuf + 2), wpa_oui_type, sizeof(wpa_oui_type))) {
-> +			if (memcmp((pbuf + 2), wpa_oui_type, sizeof(wpa_oui_type)))
->  				goto check_next_ie;
-> -			}
->  
->  			/* check version... */
->  			memcpy((u8 *)&le_tmp, (pbuf + 6), sizeof(val16));
-> @@ -493,9 +491,8 @@ int rtw_parse_wpa_ie(u8 *wpa_ie, int wpa_ie_len, int *group_cipher, int *pairwis
->  	if (is_8021x) {
->  		if (left >= 6) {
->  			pos += 2;
-> -			if (!memcmp(pos, SUITE_1X, 4)) {
-> +			if (!memcmp(pos, SUITE_1X, 4))
->  				*is_8021x = 1;
-> -			}
->  		}
->  	}
->  
-> @@ -514,9 +511,8 @@ int rtw_parse_wpa2_ie(u8 *rsn_ie, int rsn_ie_len, int *group_cipher, int *pairwi
->  		return _FAIL;
->  	}
->  
-> -	if ((*rsn_ie != WLAN_EID_RSN) || (*(rsn_ie+1) != (u8)(rsn_ie_len - 2))) {
-> +	if ((*rsn_ie != WLAN_EID_RSN) || (*(rsn_ie+1) != (u8)(rsn_ie_len - 2)))
->  		return _FAIL;
-> -	}
->  
->  	pos = rsn_ie;
->  	pos += 4;
-> -- 
-> 2.25.1
-> 
-> 
+> The temptation was to call device_unregister() which is a combined
+> device_del(); device_put(); but when the device_initialize() and
+> device_add() are called separately, then I think it is more readable to
+> call del and put separately as well.
 
-Hi,
-
-This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-a patch that has triggered this response.  He used to manually respond
-to these common problems, but in order to save his sanity (he kept
-writing the same thing over and over, yet to different people), I was
-created.  Hopefully you will not take offence and will fix the problem
-in your patch and resubmit it so that it can be accepted into the Linux
-kernel tree.
-
-You are receiving this message because of the following common error(s)
-as indicated below:
-
-- This looks like a new version of a previously submitted patch, but you
-  did not list below the --- line any changes from the previous version.
-  Please read the section entitled "The canonical patch format" in the
-  kernel file, Documentation/SubmittingPatches for what needs to be done
-  here to properly describe this.
-
-If you wish to discuss this problem further, or you have questions about
-how to resolve this issue, please feel free to respond to this email and
-Greg will reply once he has dug out from the pending patches received
-from other developers.
-
-thanks,
-
-greg k-h's patch email bot
+I think we should also consolidate the initialization side.  Using
+device_register and device_unregister would have prevented this bug
+and I should have switched to that before refactoring the code.
