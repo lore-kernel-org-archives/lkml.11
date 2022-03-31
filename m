@@ -2,80 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BCB1C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 16:45:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54904C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 16:47:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240231AbiCaQqz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 12:46:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57442 "EHLO
+        id S240239AbiCaQtj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 12:49:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239667AbiCaQqv (ORCPT
+        with ESMTP id S239098AbiCaQth (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 12:46:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 417722220D1
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 09:45:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CA35661657
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 16:45:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28082C340ED;
-        Thu, 31 Mar 2022 16:45:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648745103;
-        bh=hOb992+h2SlUSt/m6xZIwnr0FGQrgWY1gKUG/M01AEQ=;
-        h=Date:From:To:Cc:Subject:From;
-        b=dU31FwxRDs0UJ+5EGXmtJmAIvzOaD70esyPYQ3IOcpVgSGFzs4Esy/qx2Cwl1/GD4
-         dSxMKbEJEo8bGx9nPG4vLy6T/4gpVksONpc9OhMPQRYcKtwBUxJa0nxjyHfUqoZRwj
-         hXpf3CUrxV0ae6UVHGIrai3cfxGyVG9jGaF+AbPJFYTdmE6v7ASDP0ld9cWK6onTcQ
-         uk0srN+ZPJHxI3pBa8riHwJ4QWnc1HIuA5fjLjdeZV4eBulrGyMhPP8N/+0Q8bbfFi
-         fXO2xBw1hXOauabgGdTgNIfDXpTmtD0nXfoweKBrDKn2mSz404qcmOXL0BYURecPAf
-         pGy0pye9SEv7w==
-Date:   Thu, 31 Mar 2022 18:44:46 +0200
-From:   Miguel Ojeda <ojeda@kernel.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Miguel Ojeda <ojeda@kernel.org>, linux-kernel@vger.kernel.org
-Subject: [GIT PULL] auxdisplay for v5.18-rc1
-Message-ID: <20220331164446.GA21062@kernel.org>
+        Thu, 31 Mar 2022 12:49:37 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 762D0209A46;
+        Thu, 31 Mar 2022 09:47:49 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id EE8F01F7AC;
+        Thu, 31 Mar 2022 16:47:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1648745267;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=lSbtcaTG9qrfonhYRVCF3uDE8HndJaKQfH9efOo3Yco=;
+        b=TO/kYKTtowcBXNd2xBWc5Z+KBwXS78oK9BPBbkFByaDZtPUWnOffTdDJ8Jst+ADMjhZWoM
+        66vvIVUgm+AxGiE7neGTnTsengOZDiIALyp9i1GcwGrRbeRwtSjAfqwpNdhHGINWYiALRc
+        AwfBy8gR7+H1mxhrdplU6KAO/F1oXOM=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1648745267;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=lSbtcaTG9qrfonhYRVCF3uDE8HndJaKQfH9efOo3Yco=;
+        b=5xxHU4X4nIjFDuGYV2WJGPKwOSdVlz4G0xSGHc+hcHRxO4BB/YlwmxpGR95J5J7vW6yyGa
+        9ciwwiAIspnDo1Cw==
+Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
+        by relay2.suse.de (Postfix) with ESMTP id DCDFBA3B82;
+        Thu, 31 Mar 2022 16:47:47 +0000 (UTC)
+Received: by ds.suse.cz (Postfix, from userid 10065)
+        id 45870DA7F3; Thu, 31 Mar 2022 18:43:49 +0200 (CEST)
+Date:   Thu, 31 Mar 2022 18:43:49 +0200
+From:   David Sterba <dsterba@suse.cz>
+To:     Sweet Tea Dorminy <sweettea-kernel@dorminy.me>
+Cc:     dsterba@suse.cz, Chris Mason <clm@fb.com>,
+        Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>,
+        Nick Terrell <terrelln@fb.com>, linux-kernel@vger.kernel.org,
+        linux-btrfs@vger.kernel.org, kernel-team@fb.com
+Subject: Re: [PATCH v2 0/2] btrfs: allocate page arrays more efficiently
+Message-ID: <20220331164349.GC15609@twin.jikos.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz,
+        Sweet Tea Dorminy <sweettea-kernel@dorminy.me>,
+        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>, Nick Terrell <terrelln@fb.com>,
+        linux-kernel@vger.kernel.org, linux-btrfs@vger.kernel.org,
+        kernel-team@fb.com
+References: <cover.1648658235.git.sweettea-kernel@dorminy.me>
+ <20220330165837.GH2237@twin.jikos.cz>
+ <b9a6ee3d-0744-1a28-65f1-22c1402e2d48@dorminy.me>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: elm/2
+In-Reply-To: <b9a6ee3d-0744-1a28-65f1-22c1402e2d48@dorminy.me>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Linus,
+On Wed, Mar 30, 2022 at 02:08:11PM -0400, Sweet Tea Dorminy wrote:
+> 
+> 
+> On 3/30/22 12:58, David Sterba wrote:
+> > On Wed, Mar 30, 2022 at 12:44:05PM -0400, Sweet Tea Dorminy wrote:
+> >> In several places, btrfs allocates an array of pages, one at a time.  In
+> >> addition to duplicating code, the mm subsystem provides a helper to
+> >> allocate multiple pages at once into an array which is suited for our
+> >> usecase. In the fast path, the batching can result in better allocation
+> >> decisions and less locking. This changeset first adjusts the users to
+> >> call a common array-of-pages allocation function, then adjusts that
+> >> common function to use the batch page allocator.
+> >>
+> >> v2: moved new helper to extent_io.[ch]. Fixed title format.
+> > 
+> > It does not address comments from
+> > https://lore.kernel.org/linux-btrfs/20220328230909.GW2237@twin.jikos.cz
+> I apologize, I completely missed the inline comments even though I 
+> thought something was missing and reread it a couple times... v3 soon.
 
-A late but non-urgent PR for auxdisplay. It has been ~10 days in -next.
+Yeah it's common to not trim a patch and write comments right next to
+the code, trimming to just a piece of code is also done if it's just the
+one thing to comment, but for example I go through the patch several
+times so trimming would not work very well.
 
-Cheers,
-Miguel
-
-The following changes since commit 09688c0166e76ce2fb85e86b9d99be8b0084cdf9:
-
-  Linux 5.17-rc8 (2022-03-13 13:23:37 -0700)
-
-are available in the Git repository at:
-
-  https://github.com/ojeda/linux.git tags/auxdisplay-for-linus-v5.18-rc1
-
-for you to fetch changes up to 13de23494f387315c6cfab6fe78fbed7d1b25586:
-
-  auxdisplay: lcd2s: Use array size explicitly in lcd2s_gotoxy() (2022-03-18 20:31:14 +0100)
-
-----------------------------------------------------------------
-A few auxdisplay's lcd2s improvements from Andy Shevchenko.
-
-----------------------------------------------------------------
-Andy Shevchenko (5):
-      auxdisplay: lcd2s: Fix multi-line comment style
-      auxdisplay: lcd2s: make use of device property API
-      auxdisplay: lcd2s: use module_i2c_driver to simplify the code
-      auxdisplay: lcd2s: Switch to i2c ->probe_new()
-      auxdisplay: lcd2s: Use array size explicitly in lcd2s_gotoxy()
-
- drivers/auxdisplay/lcd2s.c | 55 ++++++++++++++--------------------------------
- 1 file changed, 17 insertions(+), 38 deletions(-)
+If you're using mutt, there's a command (bound to T by default) that
+hides any quoted text.
