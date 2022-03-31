@@ -2,83 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61A19C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 08:50:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFD7EC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 08:50:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233353AbiCaIwK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 04:52:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49214 "EHLO
+        id S233390AbiCaIwV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 04:52:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233309AbiCaIvp (ORCPT
+        with ESMTP id S233367AbiCaIwL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 04:51:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 288EF47547
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 01:49:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3215BB82005
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 08:49:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61C72C340F3;
-        Thu, 31 Mar 2022 08:49:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648716594;
-        bh=mhNQddazJ57El0uDfD+vnjahyTMel63pDkcF/sZlYJE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lUKrG6KbH+d6+/fi/GJcPOEQ04Us+14PmaAuJ1LOSr/dR/AX2stY96oA5srZE7fjC
-         M/2JDAssLyDltKcpn+PoFYajJz9u1p6h3ttCjJfTEnkfr6qIojs7SIE0yzY9KVzcB0
-         s6cGHyKL80oBdtysj05KGEPVUOjOVAWes8uq5W6ldByvKKBFCZgFwzh4ewPp+ztoqu
-         YAfX9on6rUCX1Bmy77iQb1HjToi3XrzCcxQPnyzcxTIJ3dMZSbRRJUnIS83nYcUSd3
-         U5vSD29IRUPUHDeNC6N/EW4Y9kN6BAtxhsXH+jy6gHaL62RoVqzVERkeH2G993Vrly
-         8rz5OQePku/nQ==
-From:   SeongJae Park <sj@kernel.org>
-To:     akpm@linux-foundation.org
-Cc:     andreyknvl@google.com, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, SeongJae Park <sj@kernel.org>
-Subject: [PATCH for-mm 2/3] arch/arm64/kernel/irq: Include missed header file
-Date:   Thu, 31 Mar 2022 08:49:38 +0000
-Message-Id: <20220331084939.26749-3-sj@kernel.org>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220331084939.26749-1-sj@kernel.org>
-References: <20220331084939.26749-1-sj@kernel.org>
+        Thu, 31 Mar 2022 04:52:11 -0400
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C28A251E48
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 01:50:24 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id s11so21310165pfu.13
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 01:50:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zmETTELnRIWESWzCmxyQQPXgzdSMTuocRhFOdMSDk/Q=;
+        b=N8UOq4XlKC6Pvq9feS8cvlwsJcFO5abBAV5xcECxDuiHt5s+Gj1PcCQ3PjJDL9c8Kk
+         kRYAzJpSgUl0i26Jzj/sFD1b4bHr2eepw61jY4y6Qp2QsfifedVZrns/OBIK/URkP0K0
+         xzSEMHgHKkn0b/fgw5wBW5yYURTArA+PiMRao=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zmETTELnRIWESWzCmxyQQPXgzdSMTuocRhFOdMSDk/Q=;
+        b=dmnzToGpmIHo6Cglnq8v2FB00DjMPUCWNSI16SRBx8s9PP4XjKQvVNxFM2gFGFTwbM
+         vEh5I+v24XlZoAooq3fsZVO6A1WTUTooeEWuxVcmq8mxb94eHzxcU3930LbkWxxeaP6t
+         YhwpN/NDwQOQX9QG9EVsBE1BOrpl5qs9aOzXGqXhviQL69YMcCUfzl0YnlS8VYG0ifnn
+         wqGp/XWbujn2sjC1rHOqvDSCIxqErhPAPO5ThrX8lVM/PpXUJ+5Ld1UMCvS1VJ3R4ORJ
+         /B5ftU2aQQPAtyG5XBBIYFnqHpR+Tx8DWcTdkGWkdyb7m6FWyI5StasVXAKl9Z4abqro
+         xyQA==
+X-Gm-Message-State: AOAM533i1IxfNwKWIC7wxCrAGZiJ0PYxEV4yUAyg4pwP2V3cHjCyxExU
+        8smzjxliUXGl8ohl8N2pPrjEFnGB1iI7iw==
+X-Google-Smtp-Source: ABdhPJwVwXUoO431BcVLb0tOHXefIHgUz2q1IMYqU7sepGupqBF46XjO+9lO8BjZPbciQz1sj0837w==
+X-Received: by 2002:aa7:8b14:0:b0:4f7:83b1:2e0b with SMTP id f20-20020aa78b14000000b004f783b12e0bmr4358912pfd.37.1648716624212;
+        Thu, 31 Mar 2022 01:50:24 -0700 (PDT)
+Received: from wenstp920.tpe.corp.google.com ([2401:fa00:1:10:deb3:b2d3:c33d:e877])
+        by smtp.gmail.com with ESMTPSA id b13-20020a056a00114d00b004c122b90703sm26805921pfm.27.2022.03.31.01.50.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 31 Mar 2022 01:50:24 -0700 (PDT)
+From:   Chen-Yu Tsai <wenst@chromium.org>
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Cc:     Chen-Yu Tsai <wenst@chromium.org>,
+        Nicolas Dufresne <nicolas.dufresne@collabora.com>,
+        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH RFT] media: vicodec: Fix encoder has stopped condition check in encoder_cmd
+Date:   Thu, 31 Mar 2022 16:50:16 +0800
+Message-Id: <20220331085016.628747-1-wenst@chromium.org>
+X-Mailer: git-send-email 2.35.1.1021.g381101b075-goog
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit da4561bd9c6b ("arm64, scs: save scs_sp values per-cpu when
-switching stacks") of -mm is moving declaration of
-irq_shadow_call_stack_ptr to scs.h of arm64 for !SHADOW_CALL_STACK, but
-didn't include it in irq.c of arm64.  As a result, we show below build
-error when SHADOW_CALL_STACK is unset.
+Before commit d4d137de5f31 ("media: vicodec: use v4l2-mem2mem draining,
+stopped and next-buf-is-last states handling"), the vicoded tracked the
+"has stopped" condition itself, and only updated it after checks and
+actions were done.
 
-    linux/arch/arm64/kernel/irq.c: In function 'init_irq_scs':
-    linux/arch/arm64/kernel/irq.c:44:11: error: 'irq_shadow_call_stack_ptr' undeclared (first use in this function)
-       44 |   per_cpu(irq_shadow_call_stack_ptr, cpu) =
-          |           ^~~~~~~~~~~~~~~~~~~~~~~~~
+With the move to v4l2-mem2mem helpers, the state tracking moved into
+the mem2mem context, and was updated by v4l2_m2m_ioctl_encoder_cmd()
+before checks and actions were done in vicodec. As a result, the
+has_stopped condition is now always false.
 
-This commit fixes the build error by including the header file.
+In the original code, vb2_clear_last_buffer_dequeued() is called if
+the stream is successfully started. Since this is now always the case
+if the callback did not error out at v4l2_m2m_ioctl_encoder_cmd(),
+we can drop the "has stopped" condition check. This restores the
+original behavior.
 
-[1] https://lore.kernel.org/all/f75c58b17bfaa419f84286cd174e3a08f971b779.1648049113.git.andreyknvl@google.com/
-
-Fixes: da4561bd9c6b ("arm64, scs: save scs_sp values per-cpu when switching stacks") of -mm
-Signed-off-by: SeongJae Park <sj@kernel.org>
+Fixes: d4d137de5f31 ("media: vicodec: use v4l2-mem2mem draining, stopped and next-buf-is-last states handling")
+Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
 ---
- arch/arm64/kernel/irq.c | 1 +
- 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm64/kernel/irq.c b/arch/arm64/kernel/irq.c
-index 4199f900714a..9f7de9d5ee9b 100644
---- a/arch/arm64/kernel/irq.c
-+++ b/arch/arm64/kernel/irq.c
-@@ -20,6 +20,7 @@
- #include <linux/scs.h>
- #include <linux/seq_file.h>
- #include <linux/vmalloc.h>
-+#include <asm/scs.h>
- #include <asm/daifflags.h>
- #include <asm/vmap_stack.h>
+This arose from the review of my Hantro encoder cmd support patch [1].
+
+I haven't used vicodec before, so this is only compile tested. Actual
+testing requested.
+
+[1] https://lore.kernel.org/linux-media/YjcbnmTUaWDtkIb%2F@eze-laptop/
+
+ drivers/media/test-drivers/vicodec/vicodec-core.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/drivers/media/test-drivers/vicodec/vicodec-core.c b/drivers/media/test-drivers/vicodec/vicodec-core.c
+index be43f7d32df9..898fa8e284f7 100644
+--- a/drivers/media/test-drivers/vicodec/vicodec-core.c
++++ b/drivers/media/test-drivers/vicodec/vicodec-core.c
+@@ -1231,8 +1231,7 @@ static int vicodec_encoder_cmd(struct file *file, void *fh,
+ 	    v4l2_m2m_has_stopped(ctx->fh.m2m_ctx))
+ 		v4l2_event_queue_fh(&ctx->fh, &vicodec_eos_event);
  
+-	if (ec->cmd == V4L2_ENC_CMD_START &&
+-	    v4l2_m2m_has_stopped(ctx->fh.m2m_ctx))
++	if (ec->cmd == V4L2_ENC_CMD_START)
+ 		vb2_clear_last_buffer_dequeued(&ctx->fh.m2m_ctx->cap_q_ctx.q);
+ 
+ 	return 0;
 -- 
-2.17.1
+2.35.1.1021.g381101b075-goog
 
