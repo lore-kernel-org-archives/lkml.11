@@ -2,200 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 481DBC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35AF4C433EF
 	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 00:27:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352098AbiCaA3l (ORCPT
+        id S1352083AbiCaA2l (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 20:29:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45468 "EHLO
+        Wed, 30 Mar 2022 20:28:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352091AbiCaA3g (ORCPT
+        with ESMTP id S229567AbiCaA2k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 20:29:36 -0400
-X-Greylist: delayed 416 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 30 Mar 2022 17:27:48 PDT
-Received: from mxct.zte.com.cn (mxct.zte.com.cn [58.251.27.85])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BABE4C429;
-        Wed, 30 Mar 2022 17:27:48 -0700 (PDT)
-Received: from mxde.zte.com.cn (unknown [10.35.8.63])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mxct.zte.com.cn (FangMail) with ESMTPS id 4KTP8y6gtgzvgMn;
-        Thu, 31 Mar 2022 08:20:50 +0800 (CST)
-Received: from mxus.zte.com.cn (unknown [10.207.168.7])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mxde.zte.com.cn (FangMail) with ESMTPS id 4KTP8g3ctzzCTpfd;
-        Thu, 31 Mar 2022 08:20:35 +0800 (CST)
-Received: from mxhk.zte.com.cn (unknown [192.168.250.138])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mxus.zte.com.cn (FangMail) with ESMTPS id 4KTP8b5vvrz9wMSh;
-        Thu, 31 Mar 2022 08:20:31 +0800 (CST)
-Received: from mse-fl1.zte.com.cn (unknown [10.30.14.238])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mxhk.zte.com.cn (FangMail) with ESMTPS id 4KTP8X1fycz7jZxQ;
-        Thu, 31 Mar 2022 08:20:28 +0800 (CST)
-Received: from szxlzmapp03.zte.com.cn ([10.5.231.207])
-        by mse-fl1.zte.com.cn with SMTP id 22V0KOVe048101;
-        Thu, 31 Mar 2022 08:20:24 +0800 (GMT-8)
-        (envelope-from wang.yi59@zte.com.cn)
-Received: from fox-cloudhost8.localdomain (unknown [10.234.72.110])
-        by smtp (Zmail) with SMTP;
-        Thu, 31 Mar 2022 08:20:24 +0800
-X-Zmail-TransId: 3e816244f3c7004-b9eba
-From:   Yi Wang <wang.yi59@zte.com.cn>
-To:     djwong@kernel.org
-Cc:     linux-xfs@vger.kernel.org, linux-kernel@vger.kernel.org,
-        xue.zhihong@zte.com.cn, wang.yi59@zte.com.cn,
-        wang.liang82@zte.com.cn, Cheng Lin <cheng.lin130@zte.com.cn>
-Subject: [PATCH] xfs: getattr ignore blocks beyond eof
-Date:   Thu, 31 Mar 2022 16:02:56 +0800
-Message-Id: <20220331080256.1874-1-wang.yi59@zte.com.cn>
-X-Mailer: git-send-email 2.33.0.rc0.dirty
+        Wed, 30 Mar 2022 20:28:40 -0400
+Received: from esa2.hgst.iphmx.com (esa2.hgst.iphmx.com [68.232.143.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BECA4924D
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 17:26:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
+  t=1648686411; x=1680222411;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=MAEmACm8JL0agnrolT58m2LejPScBLQM6qttzu2LRgs=;
+  b=nzvHa8hhZe9WIZrm5TlHysIrGHekMVTdx+sDv6gQHdUDI55A0DpAYTBD
+   CahojdvgrvlFgQsseWOLBlwisCvljF/DT49tY753Kqsnm0HI+Eww+oAFb
+   ETnrpls4H6y5+FLbXhrn+0HjvxC3qgBo4biXZvKXz1oLxHVi0cNzLcTTy
+   XI7w9hrjAjVFwIAtBxfjFdoNg15TmXFYODsTYyqUD7VEfzI9ww2gRiPpP
+   9dRSATxODNjZQGNnEW20g8lbYk3/HZo+1U5qR8pv5sBC7SqaFX79edmv8
+   gzKTIuA7BMwOjDgWCsu3OhDlxNvYgYepAOfUdOhST0nNZpvbv5Jqt3kRD
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.90,223,1643644800"; 
+   d="scan'208";a="300837321"
+Received: from uls-op-cesaip01.wdc.com (HELO uls-op-cesaep01.wdc.com) ([199.255.45.14])
+  by ob1.hgst.iphmx.com with ESMTP; 31 Mar 2022 08:26:50 +0800
+IronPort-SDR: t+c/7tc89PAMYOTirKCmzN6xT22w4/5WAHrhJBon/yNX2IxnYAXpaPDdYWXGwo+VgLBpp8cgxc
+ /QYYy7N2n9zXf+3LqQKGRgjsm8Zs9OPg9obwAPgpsUV9CXxOEzGqSLBKc5J11MxdR5VDnTufdm
+ KRMDVHqUDMzFgmNWCeJ2jgnj5MzG3q7tHXiJSldnzPNgGZB5z44tX/DHJ4uQ+tlMSTJvjP4ycC
+ RguT2T2u9HlGYiiuPFB0WvlPk3t+0rYEjh6MYc8pzLW2BPELGBI1cyFie2uUvwdQmPCSx6pFM7
+ A452a0CnjOUKUguBGZ4rIMoA
+Received: from uls-op-cesaip01.wdc.com ([10.248.3.36])
+  by uls-op-cesaep01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 30 Mar 2022 16:58:31 -0700
+IronPort-SDR: 78wzCWGi71Rks5AYX2JLUzDO9l3Yb00daox0xx3BSRGzr2KLpFO/zNN1kip1dz7BRznUYIyD5M
+ 6FNW3Ky62hBtucPsF6gvv/IZt+5CXEE/+m5wdtUKBvuA+nksMG6hVXTKYrWgl/mvzJj8o/8pir
+ nMwf/FzqvnA/4bFA+JE7vGdfjzhsQWc1mapTQkuvVJ26zAN4wEN+J/51VPgUaVfnFKn8wMUDYY
+ v0F8olQKF7IiX1fsgNIKZo0/rS8N/XS+SJWZRkTm4mIMZRYRkhHCezMDQ10Id7WF8i03LzeUXF
+ rLA=
+WDCIronportException: Internal
+Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
+  by uls-op-cesaip01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 30 Mar 2022 17:26:50 -0700
+Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4KTPHs6QvCz1SVp2
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 17:26:49 -0700 (PDT)
+Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
+        reason="pass (just generated, assumed good)"
+        header.d=opensource.wdc.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
+        opensource.wdc.com; h=content-transfer-encoding:content-type
+        :in-reply-to:organization:from:references:to:content-language
+        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
+        1648686409; x=1651278410; bh=MAEmACm8JL0agnrolT58m2LejPScBLQM6qt
+        tzu2LRgs=; b=qxj2JM1oqz6ef2yg3vL9qh1vgfRq6qU0Di8N8SBh1TcBte6a++U
+        ZpHWB4ue5q9sorZiD0QV/xA0QJhQFI1PBrGLF6w9gvBARO3ZTfDktkrA2KlEMc36
+        8lFNT17fn5TbSOEiIo6DFExIUQ+SXrOnEMTkCdxTgBT1rWvgB0CU3/VtuwtHyLEp
+        WZ3sFad7gbszGMoySo5S9xqlscKX9u0AWrbY2CKfuNWmYROhVRITYiNvNAFnGJEB
+        +a6vwYKZmmU48PBIFYYc+9rDUqaoLSsV8HkXl04m70aaC+G8r84sj5Be43AVn8vP
+        tFgpawLFR/EIlSx0sGB3VpfBDCJkQDG/6SQ==
+X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
+Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
+        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id UTWwcb1g4D-3 for <linux-kernel@vger.kernel.org>;
+        Wed, 30 Mar 2022 17:26:49 -0700 (PDT)
+Received: from [10.225.163.121] (unknown [10.225.163.121])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4KTPHp5RGLz1Rvlx;
+        Wed, 30 Mar 2022 17:26:46 -0700 (PDT)
+Message-ID: <d8a35bea-f4a0-b54d-9d2a-d1cc9b3d3e53@opensource.wdc.com>
+Date:   Thu, 31 Mar 2022 09:26:45 +0900
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain;
-        charset="UTF-8"
-X-MAIL: mse-fl1.zte.com.cn 22V0KOVe048101
-X-Fangmail-Gw-Spam-Type: 0
-X-FangMail-Miltered: at cgslv5.04-192.168.251.14.novalocal with ID 6244F3E1.000 by FangMail milter!
-X-FangMail-Envelope: 1648686051/4KTP8y6gtgzvgMn/6244F3E1.000/10.35.8.63/[10.35.8.63]/mxde.zte.com.cn/<wang.yi59@zte.com.cn>
-X-Fangmail-Anti-Spam-Filtered: true
-X-Fangmail-MID-QID: 6244F3E1.000/4KTP8y6gtgzvgMn
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 2/3] RISC-V: K210 defconfigs: Drop redundant MEMBARRIER=n
+Content-Language: en-US
+To:     Palmer Dabbelt <palmer@rivosinc.com>,
+        linux-riscv@lists.infradead.org,
+        Niklas Cassel <Niklas.Cassel@wdc.com>
+Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>, aou@eecs.berkeley.edu,
+        anup@brainfault.org, heinrich.schuchardt@canonical.com,
+        atishp@atishpatra.org, mchitale@ventanamicro.com,
+        alexandre.ghiti@canonical.com, axboe@kernel.dk,
+        linux-kernel@vger.kernel.org
+References: <20220330234739.1956-1-palmer@rivosinc.com>
+ <20220330234739.1956-2-palmer@rivosinc.com>
+From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Organization: Western Digital Research
+In-Reply-To: <20220330234739.1956-2-palmer@rivosinc.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Cheng Lin <cheng.lin130@zte.com.cn>
+On 3/31/22 08:47, Palmer Dabbelt wrote:
+> From: Palmer Dabbelt <palmer@rivosinc.com>
+> 
+> As of 93917ad50972 ("RISC-V: Add support for restartable sequence") we
+> have support for restartable sequences, which default to enabled.  These
+> select MEMBARRIER, so disabling it is now redundant.
+> 
+> Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+> 
+> ---
+> 
+> I'm not actually sure this is the right way to go: presumably the K210
+> defconfigs had MEMBARRIER=n for a reason (maybe just size?), so we might
+> actually want to move to RSEQ=n instead?  As usual: I don't test on the
+> K210, so I'm not exactly sure what the constraints are.
 
-Blocks beyond EOF, which preallocated, will be reclaimed at some time.
-These blocks can be ignored when getattr.
+Not sure either. It is like this now because I think this was the default
+at the time the config was created.
 
-This patch will optimize query accuracy for getattr blocks.
+Niklas,
 
-Signed-off-by: Cheng Lin <cheng.lin130@zte.com.cn>
-Signed-off-by: Yi Wang <wang.yi59@zte.com.cn>
----
- fs/xfs/xfs_bmap_util.c |  1 +
- fs/xfs/xfs_icache.c    |  1 +
- fs/xfs/xfs_inode.h     |  1 +
- fs/xfs/xfs_iomap.c     |  5 +++++
- fs/xfs/xfs_iops.c      | 19 ++++++++++++++++++-
- 5 files changed, 26 insertions(+), 1 deletion(-)
+Can you test this please ?
 
-diff --git a/fs/xfs/xfs_bmap_util.c b/fs/xfs/xfs_bmap_util.c
-index eb2e387..9f4081d 100644
---- a/fs/xfs/xfs_bmap_util.c
-+++ b/fs/xfs/xfs_bmap_util.c
-@@ -753,6 +753,7 @@
- 	if (error)
- 		goto out_unlock;
- 
-+	ip->i_last_fsb = end_fsb;
- 	xfs_inode_clear_eofblocks_tag(ip);
- 	goto out_unlock;
- 
-diff --git a/fs/xfs/xfs_icache.c b/fs/xfs/xfs_icache.c
-index 9644f93..43ffb9e 100644
---- a/fs/xfs/xfs_icache.c
-+++ b/fs/xfs/xfs_icache.c
-@@ -102,6 +102,7 @@ struct xfs_inode *
- 	memset(&ip->i_df, 0, sizeof(ip->i_df));
- 	ip->i_flags = 0;
- 	ip->i_delayed_blks = 0;
-+	ip->i_last_fsb = 0;
- 	ip->i_diflags2 = mp->m_ino_geo.new_diflags2;
- 	ip->i_nblocks = 0;
- 	ip->i_forkoff = 0;
-diff --git a/fs/xfs/xfs_inode.h b/fs/xfs/xfs_inode.h
-index b7e8f14..56fc41b 100644
---- a/fs/xfs/xfs_inode.h
-+++ b/fs/xfs/xfs_inode.h
-@@ -55,6 +55,7 @@
- 	unsigned long		i_flags;	/* see defined flags below */
- 	uint64_t		i_delayed_blks;	/* count of delay alloc blks */
- 	xfs_fsize_t		i_disk_size;	/* number of bytes in file */
-+	xfs_fileoff_t		i_last_fsb;	/* last fsb preallocated */
- 	xfs_rfsblock_t		i_nblocks;	/* # of direct & btree blocks */
- 	prid_t			i_projid;	/* owner's project id */
- 	xfs_extlen_t		i_extsize;	/* basic/minimum extent size */
-diff --git a/fs/xfs/xfs_iomap.c b/fs/xfs/xfs_iomap.c
-index e552ce5..bd9266e 100644
---- a/fs/xfs/xfs_iomap.c
-+++ b/fs/xfs/xfs_iomap.c
-@@ -881,6 +881,7 @@
- 	bool			eof = false, cow_eof = false, shared = false;
- 	int			allocfork = XFS_DATA_FORK;
- 	int			error = 0;
-+	xfs_fileoff_t		prealloc_last_fsb = 0;
- 
- 	if (xfs_is_shutdown(mp))
- 		return -EIO;
-@@ -1024,6 +1025,7 @@
- 				XFS_B_TO_FSB(mp, mp->m_super->s_maxbytes));
- 			ASSERT(p_end_fsb > offset_fsb);
- 			prealloc_blocks = p_end_fsb - end_fsb;
-+			prealloc_last_fsb = p_end_fsb;
- 		}
- 	}
- 
-@@ -1049,6 +1051,9 @@
- 		goto out_unlock;
- 	}
- 
-+	if (prealloc_last_fsb && prealloc_blocks)
-+		ip->i_last_fsb = prealloc_last_fsb;
-+
- 	if (allocfork == XFS_COW_FORK) {
- 		trace_xfs_iomap_alloc(ip, offset, count, allocfork, &cmap);
- 		goto found_cow;
-diff --git a/fs/xfs/xfs_iops.c b/fs/xfs/xfs_iops.c
-index b79b384..ca0372c 100644
---- a/fs/xfs/xfs_iops.c
-+++ b/fs/xfs/xfs_iops.c
-@@ -559,8 +559,14 @@
- 	struct xfs_inode	*ip = XFS_I(inode);
- 	struct xfs_mount	*mp = ip->i_mount;
- 
-+	xfs_off_t		fsb_beyond_eof;
-+	xfs_fileoff_t		end_fsb;
-+
- 	trace_xfs_getattr(ip);
- 
-+	end_fsb = XFS_B_TO_FSB(mp, (xfs_ufsize_t)XFS_ISIZE(ip));
-+	fsb_beyond_eof = ip->i_last_fsb - end_fsb;
-+
- 	if (xfs_is_shutdown(mp))
- 		return -EIO;
- 
-@@ -574,7 +580,15 @@
- 	stat->atime = inode->i_atime;
- 	stat->mtime = inode->i_mtime;
- 	stat->ctime = inode->i_ctime;
--	stat->blocks = XFS_FSB_TO_BB(mp, ip->i_nblocks + ip->i_delayed_blks);
-+
-+	if (fsb_beyond_eof > 0) {
-+		stat->blocks =
-+		XFS_FSB_TO_BB(mp, ip->i_nblocks + ip->i_delayed_blks)
-+				  - fsb_beyond_eof;
-+	} else {
-+		stat->blocks =
-+		XFS_FSB_TO_BB(mp, ip->i_nblocks + ip->i_delayed_blks);
-+	}
- 
- 	if (xfs_has_v3inodes(mp)) {
- 		if (request_mask & STATX_BTIME) {
-@@ -988,6 +1002,9 @@
- 	ip->i_disk_size = newsize;
- 	xfs_trans_log_inode(tp, ip, XFS_ILOG_CORE);
- 
-+	/* update i_last_fsb to newsize when truncate.*/
-+	ip->i_last_fsb = XFS_B_TO_FSB(mp, newsize);
-+
- 	if (newsize <= oldsize) {
- 		error = xfs_itruncate_extents(&tp, ip, XFS_DATA_FORK, newsize);
- 		if (error)
+> ---
+>  arch/riscv/configs/nommu_k210_defconfig        | 1 -
+>  arch/riscv/configs/nommu_k210_sdcard_defconfig | 1 -
+>  arch/riscv/configs/nommu_virt_defconfig        | 1 -
+>  3 files changed, 3 deletions(-)
+> 
+> diff --git a/arch/riscv/configs/nommu_k210_defconfig b/arch/riscv/configs/nommu_k210_defconfig
+> index 3f42ed87dde8..2438fa39f8ae 100644
+> --- a/arch/riscv/configs/nommu_k210_defconfig
+> +++ b/arch/riscv/configs/nommu_k210_defconfig
+> @@ -21,7 +21,6 @@ CONFIG_CC_OPTIMIZE_FOR_SIZE=y
+>  # CONFIG_AIO is not set
+>  # CONFIG_IO_URING is not set
+>  # CONFIG_ADVISE_SYSCALLS is not set
+> -# CONFIG_MEMBARRIER is not set
+>  # CONFIG_KALLSYMS is not set
+>  CONFIG_EMBEDDED=y
+>  # CONFIG_VM_EVENT_COUNTERS is not set
+> diff --git a/arch/riscv/configs/nommu_k210_sdcard_defconfig b/arch/riscv/configs/nommu_k210_sdcard_defconfig
+> index af64b95e88cc..9a133e63ae5b 100644
+> --- a/arch/riscv/configs/nommu_k210_sdcard_defconfig
+> +++ b/arch/riscv/configs/nommu_k210_sdcard_defconfig
+> @@ -13,7 +13,6 @@ CONFIG_CC_OPTIMIZE_FOR_SIZE=y
+>  # CONFIG_AIO is not set
+>  # CONFIG_IO_URING is not set
+>  # CONFIG_ADVISE_SYSCALLS is not set
+> -# CONFIG_MEMBARRIER is not set
+>  # CONFIG_KALLSYMS is not set
+>  CONFIG_EMBEDDED=y
+>  # CONFIG_VM_EVENT_COUNTERS is not set
+> diff --git a/arch/riscv/configs/nommu_virt_defconfig b/arch/riscv/configs/nommu_virt_defconfig
+> index e1c9864b6237..5269fbb6b4fc 100644
+> --- a/arch/riscv/configs/nommu_virt_defconfig
+> +++ b/arch/riscv/configs/nommu_virt_defconfig
+> @@ -19,7 +19,6 @@ CONFIG_EXPERT=y
+>  # CONFIG_AIO is not set
+>  # CONFIG_IO_URING is not set
+>  # CONFIG_ADVISE_SYSCALLS is not set
+> -# CONFIG_MEMBARRIER is not set
+>  # CONFIG_KALLSYMS is not set
+>  # CONFIG_VM_EVENT_COUNTERS is not set
+>  # CONFIG_COMPAT_BRK is not set
+
+
 -- 
-1.8.3.1
+Damien Le Moal
+Western Digital Research
