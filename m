@@ -2,119 +2,201 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD3DBC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 18:15:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2B8CC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 18:17:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233904AbiCaSRj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 14:17:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44628 "EHLO
+        id S233947AbiCaSS6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 14:18:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231908AbiCaSRh (ORCPT
+        with ESMTP id S231908AbiCaSS5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 14:17:37 -0400
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 426FCFFFAF
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 11:15:50 -0700 (PDT)
-Received: by mail-pf1-x432.google.com with SMTP id s11so298639pfu.13
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 11:15:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=06hKDOCgXqFCyZ353BYB4YZzW90RzyhwrczTGoEeb5k=;
-        b=X7hkkbemNW6OzffrTh46zjMmYQZI5lZm0Ub38jqEkGCEE/cpixyjVrrmsoF3FsnXsN
-         anaSPa36HB0w2TpJV9+XLL1tMIE/J4Zi1HL/jk74EkeTEqgjPJfyuCfwY64DRYF6tIgX
-         d5vOcuA3p5KSB/7lfwJ7KcvmWtY1vgZtqW3YkUwipx/BjtjwtBJX7HTUvSEy0PIoUBap
-         E3PY2m/FrvDJih/t20UMR1eubD1keGuWy8n5o4x77mSvVhrg6gIMa+9RzmK5nRWKFavg
-         AcrCORsky538H7CrhBQXWZwfyUUs5HorGL2D68LY1PEbAmCvdbzSEXv2DxMSiVqRhoyN
-         2K1Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=06hKDOCgXqFCyZ353BYB4YZzW90RzyhwrczTGoEeb5k=;
-        b=7V2PxmSzmoZowj7n8s5Egi6KNYHdX2xjy2UQb31P8RxAUlbZfUxVfu1cgy3u5Bzyf7
-         LNQ86i6ZHP7m1aqHtXArZE/ZJ09iHHO3nB0/sxEHVbv3Au8yCgLRPCXp2lWjhzwjCUzQ
-         yh3zrBQGDoQ9fiPLUIbMQJP881Eoh+5xESAJ4Oe4WFNTXLdSaXkjJAH+rJNoLkB1Sakl
-         PWI00VQUj9c0YxkW8TVff0tOM4wA4Ig2+8yfYcRYZ62Uf2QKAhYBtwsTfz1xjTcdcImg
-         ZK/pJvKAzPOV0eFaM7iyPAxur9n6pW3Zw1VWGGwILAWpEqiIrfL872jVk8BQqQet09/Z
-         Z2jg==
-X-Gm-Message-State: AOAM531NrGhyilqYDnv6OKGRRToWL2bklMpvoGXLhWa7LhV8dXXX6Cfk
-        T/zyU+WunHemK5t5TuZh1hXeYw==
-X-Google-Smtp-Source: ABdhPJxpYpzweixzMbimC/hTnt9mzpF6my3KPDIYHhBu+3h8EzzvnErDnW+dIYybbHm0ctC5iPfDoQ==
-X-Received: by 2002:a63:443:0:b0:383:f97d:a16b with SMTP id 64-20020a630443000000b00383f97da16bmr11829665pge.297.1648750549267;
-        Thu, 31 Mar 2022 11:15:49 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id j8-20020a17090a060800b001c7936791d1sm56045pjj.7.2022.03.31.11.15.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 31 Mar 2022 11:15:48 -0700 (PDT)
-Date:   Thu, 31 Mar 2022 18:15:44 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Jan Stancek <jstancek@redhat.com>
-Cc:     Bruno Goncalves <bgoncalv@redhat.com>, kvm <kvm@vger.kernel.org>,
-        "Bonzini, Paolo" <pbonzini@redhat.com>,
-        lkml <linux-kernel@vger.kernel.org>,
-        CKI Project <cki-project@redhat.com>,
-        Li Wang <liwang@redhat.com>
-Subject: Re: RIP: 0010:param_get_bool.cold+0x0/0x2 - LTP read_all_sys - 5.17.0
-Message-ID: <YkXv0NoBjLBYBzX8@google.com>
-References: <CA+QYu4q7K-pkAbMt3br_7O-Lu2OWyieLfyiju0PNEiy5YdKYzg@mail.gmail.com>
- <CAASaF6yhTpXcWhTyg5VSU6czPPws5+sQ3vR7AWC8xxM7Xm_BGg@mail.gmail.com>
+        Thu, 31 Mar 2022 14:18:57 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D3C31E5335
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 11:17:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648750630; x=1680286630;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=1SE7jLV0+FdCsMsMBLhWyxNQxzqrHc7fO3VKKkTB9jw=;
+  b=mQEHTbZXJbB1rzLhUAvrvHs9Yjg9dfZtTcKQZZ2m9sy7IzQw7OAZ2sO0
+   YzcW0TNORLpj5IPEgPKhlzlLi9V7RLqV6X4UrdZjKEsqNdK8fwcagj6U7
+   LxpoqGylawfmEFOzBvTBX7qzLURyOipQmTyjSqV64GChk7rZISOiUvbHn
+   smbbwItAUeT3maZ1jLwfLxl+YV+ZBP/CQlQ09bxhmgCcZ2vRm4Tt2cMM1
+   baYQS4zGImZkvwY47wzqQN2OYG2tNQE/ztWsC3Uw8Vl8UUtDc30+O/P9S
+   MvhK2burQ5e/LnWv8vuECrhnJG8ZrgUiPjrnbHeZ5fNs/1pIBi6IrB+eD
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="247414549"
+X-IronPort-AV: E=Sophos;i="5.90,225,1643702400"; 
+   d="scan'208";a="247414549"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2022 11:17:09 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,225,1643702400"; 
+   d="scan'208";a="606227574"
+Received: from lkp-server02.sh.intel.com (HELO 3231c491b0e2) ([10.239.97.151])
+  by fmsmga008.fm.intel.com with ESMTP; 31 Mar 2022 11:17:07 -0700
+Received: from kbuild by 3231c491b0e2 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nZzM2-0000XV-Ku;
+        Thu, 31 Mar 2022 18:17:06 +0000
+Date:   Fri, 1 Apr 2022 02:16:25 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Wei Fu <wefu@redhat.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, Palmer Dabbelt <palmer@rivosinc.com>,
+        Liu Shaohua <liush@allwinnertech.com>,
+        Guo Ren <guoren@kernel.org>, Heiko Stuebner <heiko@sntech.de>
+Subject: [palmer:riscv-d1 11/14] arch/riscv/include/asm/pgtable-64.h:109:2:
+ error: expected assembly-time absolute expression
+Message-ID: <202204010256.mroJYOIf-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAASaF6yhTpXcWhTyg5VSU6czPPws5+sQ3vR7AWC8xxM7Xm_BGg@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 30, 2022, Jan Stancek wrote:
-> +CC kvm
-> 
-> Issue seems to be that nx_huge_pages is not initialized (-1) and
-> attempted to be used as boolean when reading
-> /sys/module/kvm/parameters/nx_huge_pages
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/palmer/linux.git riscv-d1
+head:   f705a2550d38971a0ad596ebe02c083ec163722f
+commit: 0d3244d2ebd54130bb80c0e27394f57d30e7364f [11/14] riscv: add RISC-V Svpbmt extension support
+config: riscv-randconfig-r042-20220331 (https://download.01.org/0day-ci/archive/20220401/202204010256.mroJYOIf-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 22a95dd3e6c911c2854dd75f42ba32d34840a61a)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install riscv cross compiling tool for clang build
+        # apt-get install binutils-riscv64-linux-gnu
+        # https://git.kernel.org/pub/scm/linux/kernel/git/palmer/linux.git/commit/?id=0d3244d2ebd54130bb80c0e27394f57d30e7364f
+        git remote add palmer https://git.kernel.org/pub/scm/linux/kernel/git/palmer/linux.git
+        git fetch --no-tags palmer riscv-d1
+        git checkout 0d3244d2ebd54130bb80c0e27394f57d30e7364f
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash drivers/staging/sm750fb/
 
-Ugh, CONFIG_UBSAN_BOOL=y complains about a bool not being 0 or 1.  What a pain.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-> CONFIG_KVM=Y,  CONFIG_UBSAN=y, but kvm_mmu_module_init() doesn't
-> appear to run, since kvm detects no HW support:
-> # dmesg |grep kvm
-> [    0.000000] kvm-clock: Using msrs 4b564d01 and 4b564d00
-> [    0.000003] kvm-clock: using sched offset of 1155425753112 cycles
-> [    0.000007] clocksource: kvm-clock: mask: 0xffffffffffffffff
-> max_cycles: 0x1cd42e4dffb, max_idle_ns: 881590591483 ns
-> [    0.045066] kvm-guest: PV spinlocks enabled
-> [    0.705370] clocksource: Switched to clocksource kvm-clock
-> [    0.913593] kvm: no hardware support for 'kvm_intel'
-> [    0.915574] kvm: no hardware support for 'kvm_amd'
-> [    2.284925] systemd[1]: Detected virtualization kvm.
-> [    4.158909] Stack Depot allocating hash table with kvmalloc
-> [    8.120446] systemd[1]: Detected virtualization kvm.
-> 
-> Initializing 'nx_huge_pages' to 0 (in out branch) or write to
-> /sys/module/kvm/parameters/nx_huge_pages before read makes it go away
-> too:
-> 
-> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-> index 02cf0a7e1d14..b3b8b9a22e20 100644
-> --- a/arch/x86/kvm/x86.c
-> +++ b/arch/x86/kvm/x86.c
-> @@ -8921,6 +8921,7 @@ int kvm_arch_init(void *opaque)
->  out_free_x86_emulator_cache:
->         kmem_cache_destroy(x86_emulator_cache);
->  out:
-> +       nx_huge_pages = 0;
+All errors (new ones prefixed by >>):
 
-This won't help, because nx_huge_pages is deliberately left as -1 if the vendor
-module isn't loaded, in which case kvm_arch_init() won't be reached.  This would
-also incorrectly disable the mitigation.
+   In file included from drivers/staging/sm750fb/sm750_hw.c:6:
+   In file included from include/linux/mm.h:29:
+   In file included from include/linux/pgtable.h:6:
+   In file included from arch/riscv/include/asm/pgtable.h:112:
+>> arch/riscv/include/asm/pgtable-64.h:109:2: error: expected assembly-time absolute expression
+           ALT_SVPBMT(val, _PAGE_IO);
+           ^
+   arch/riscv/include/asm/errata_list.h:46:5: note: expanded from macro 'ALT_SVPBMT'
+   asm(ALTERNATIVE("li %0, 0\t\nnop", "li %0, %1\t\nslli %0,%0,%2", 0,     \
+       ^
+   arch/riscv/include/asm/alternative-macros.h:173:2: note: expanded from macro 'ALTERNATIVE'
+           _ALTERNATIVE_CFG(old_content, new_content, vendor_id, errata_id, CONFIG_k)
+           ^
+   arch/riscv/include/asm/alternative-macros.h:109:2: note: expanded from macro '_ALTERNATIVE_CFG'
+           __ALTERNATIVE_CFG(old_c, new_c, vendor_id, errata_id, IS_ENABLED(CONFIG_k))
+           ^
+   arch/riscv/include/asm/alternative-macros.h:106:2: note: expanded from macro '__ALTERNATIVE_CFG'
+           ALT_NEW_CONTENT(vendor_id, errata_id, enable, new_c)
+           ^
+   arch/riscv/include/asm/alternative-macros.h:94:3: note: expanded from macro 'ALT_NEW_CONTENT'
+           ".org   . - (887b - 886b) + (889b - 888b)\n"                    \
+            ^
+   <inline asm>:27:6: note: instantiated into assembly here
+   .org    . - (887b - 886b) + (889b - 888b)
+           ^
+   In file included from drivers/staging/sm750fb/sm750_hw.c:6:
+   In file included from include/linux/mm.h:29:
+   In file included from include/linux/pgtable.h:6:
+   In file included from arch/riscv/include/asm/pgtable.h:112:
+>> arch/riscv/include/asm/pgtable-64.h:109:2: error: expected assembly-time absolute expression
+           ALT_SVPBMT(val, _PAGE_IO);
+           ^
+   arch/riscv/include/asm/errata_list.h:46:5: note: expanded from macro 'ALT_SVPBMT'
+   asm(ALTERNATIVE("li %0, 0\t\nnop", "li %0, %1\t\nslli %0,%0,%2", 0,     \
+       ^
+   arch/riscv/include/asm/alternative-macros.h:173:2: note: expanded from macro 'ALTERNATIVE'
+           _ALTERNATIVE_CFG(old_content, new_content, vendor_id, errata_id, CONFIG_k)
+           ^
+   arch/riscv/include/asm/alternative-macros.h:109:2: note: expanded from macro '_ALTERNATIVE_CFG'
+           __ALTERNATIVE_CFG(old_c, new_c, vendor_id, errata_id, IS_ENABLED(CONFIG_k))
+           ^
+   arch/riscv/include/asm/alternative-macros.h:106:2: note: expanded from macro '__ALTERNATIVE_CFG'
+           ALT_NEW_CONTENT(vendor_id, errata_id, enable, new_c)
+           ^
+   arch/riscv/include/asm/alternative-macros.h:95:3: note: expanded from macro 'ALT_NEW_CONTENT'
+           ".org   . - (889b - 888b) + (887b - 886b)\n"                    \
+            ^
+   <inline asm>:28:6: note: instantiated into assembly here
+   .org    . - (889b - 888b) + (887b - 886b)
+           ^
+   In file included from drivers/staging/sm750fb/sm750_hw.c:6:
+   In file included from include/linux/mm.h:29:
+   In file included from include/linux/pgtable.h:6:
+   In file included from arch/riscv/include/asm/pgtable.h:112:
+>> arch/riscv/include/asm/pgtable-64.h:109:2: error: expected assembly-time absolute expression
+           ALT_SVPBMT(val, _PAGE_IO);
+           ^
+   arch/riscv/include/asm/errata_list.h:46:5: note: expanded from macro 'ALT_SVPBMT'
+   asm(ALTERNATIVE("li %0, 0\t\nnop", "li %0, %1\t\nslli %0,%0,%2", 0,     \
+       ^
+   arch/riscv/include/asm/alternative-macros.h:173:2: note: expanded from macro 'ALTERNATIVE'
+           _ALTERNATIVE_CFG(old_content, new_content, vendor_id, errata_id, CONFIG_k)
+           ^
+   arch/riscv/include/asm/alternative-macros.h:109:2: note: expanded from macro '_ALTERNATIVE_CFG'
+           __ALTERNATIVE_CFG(old_c, new_c, vendor_id, errata_id, IS_ENABLED(CONFIG_k))
+           ^
+   arch/riscv/include/asm/alternative-macros.h:106:2: note: expanded from macro '__ALTERNATIVE_CFG'
+           ALT_NEW_CONTENT(vendor_id, errata_id, enable, new_c)
+           ^
+   arch/riscv/include/asm/alternative-macros.h:94:3: note: expanded from macro 'ALT_NEW_CONTENT'
+           ".org   . - (887b - 886b) + (889b - 888b)\n"                    \
+            ^
+   <inline asm>:27:6: note: instantiated into assembly here
+   .org    . - (887b - 886b) + (889b - 888b)
+           ^
+   In file included from drivers/staging/sm750fb/sm750_hw.c:6:
+   In file included from include/linux/mm.h:29:
+   In file included from include/linux/pgtable.h:6:
+   In file included from arch/riscv/include/asm/pgtable.h:112:
+>> arch/riscv/include/asm/pgtable-64.h:109:2: error: expected assembly-time absolute expression
+           ALT_SVPBMT(val, _PAGE_IO);
+           ^
+   arch/riscv/include/asm/errata_list.h:46:5: note: expanded from macro 'ALT_SVPBMT'
+   asm(ALTERNATIVE("li %0, 0\t\nnop", "li %0, %1\t\nslli %0,%0,%2", 0,     \
+       ^
+   arch/riscv/include/asm/alternative-macros.h:173:2: note: expanded from macro 'ALTERNATIVE'
+           _ALTERNATIVE_CFG(old_content, new_content, vendor_id, errata_id, CONFIG_k)
+           ^
+   arch/riscv/include/asm/alternative-macros.h:109:2: note: expanded from macro '_ALTERNATIVE_CFG'
+           __ALTERNATIVE_CFG(old_c, new_c, vendor_id, errata_id, IS_ENABLED(CONFIG_k))
+           ^
+   arch/riscv/include/asm/alternative-macros.h:106:2: note: expanded from macro '__ALTERNATIVE_CFG'
+           ALT_NEW_CONTENT(vendor_id, errata_id, enable, new_c)
+           ^
+   arch/riscv/include/asm/alternative-macros.h:95:3: note: expanded from macro 'ALT_NEW_CONTENT'
+           ".org   . - (889b - 888b) + (887b - 886b)\n"                    \
+            ^
+   <inline asm>:28:6: note: instantiated into assembly here
+   .org    . - (889b - 888b) + (887b - 886b)
+           ^
+   4 errors generated.
 
-We could fix it by adding a proper accessor, but that's rather silly because KVM
-doesn't actually need to wait until a vendor module is loaded to finalize its
-value (-1 means "auto").  kvm.ko doesn't have its own module_init() hook on x86,
-but that's easily solved and I think less gross than having Schrödinger's param.
 
-I'll test and send a patch.
+vim +109 arch/riscv/include/asm/pgtable-64.h
+
+   104	
+   105	static inline u64 riscv_page_io(void)
+   106	{
+   107		u64 val;
+   108	
+ > 109		ALT_SVPBMT(val, _PAGE_IO);
+   110		return val;
+   111	}
+   112	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
