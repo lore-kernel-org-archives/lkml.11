@@ -2,140 +2,336 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 790CCC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 04:12:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6261C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 04:13:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229652AbiCaEOh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 00:14:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39070 "EHLO
+        id S229641AbiCaEOq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 00:14:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230183AbiCaEOT (ORCPT
+        with ESMTP id S230228AbiCaEOW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 00:14:19 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DE912A046D
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 20:50:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648698658; x=1680234658;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=ywsd5TczOlk5hhmei9XyZgtcABww4n4fQ4XaXobWeWo=;
-  b=aGBYqhvoaGdPS4TraHHsP2/goKeWuBUBx8OfoMXvtKz34VQ84G5Kfvhw
-   E1RQq+nr/INtny15AbTe+aXbrKBUSgRvWIpaOzUhNd0owskNwc9YWwMZd
-   e7fL+7Q9TD3Ld/OcgdQpMneUux0EumVC7tGo0Qk3BKWQqFC8Q6SVj0/yN
-   sf74LKaipE+Mso7idpghoSacEo0mHbAnxm9/koSpSOhOZCdSphePCHxL/
-   mFHTZV0vXWJKIighMPS52DWkUnFtSVFgzFQ7uCOlUT8T5VNh6kOQhkiR8
-   RxkdSfW+9kI7cwZRJNWiUvGLDrwm+9N3nA5k/p4RY9B7N7oDOQLIp1WsN
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="257291100"
-X-IronPort-AV: E=Sophos;i="5.90,224,1643702400"; 
-   d="scan'208";a="257291100"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 20:28:55 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,224,1643702400"; 
-   d="scan'208";a="503570632"
-Received: from lkp-server02.sh.intel.com (HELO 56431612eabd) ([10.239.97.151])
-  by orsmga003.jf.intel.com with ESMTP; 30 Mar 2022 20:28:53 -0700
-Received: from kbuild by 56431612eabd with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nZlUS-0000oS-IN;
-        Thu, 31 Mar 2022 03:28:52 +0000
-Date:   Thu, 31 Mar 2022 11:28:00 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Armelle Laine <armellel@google.com>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org
-Subject: [ammarfaizi2-block:google/android/kernel/common/android12-trusty-5.10
- 5860/5872] drivers/trusty/trusty-log.c:354:21: warning: left shift count >=
- width of type
-Message-ID: <202203311133.4BHUMmsV-lkp@intel.com>
+        Thu, 31 Mar 2022 00:14:22 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 610AC27AD64;
+        Wed, 30 Mar 2022 20:46:22 -0700 (PDT)
+X-UUID: 0be1dc210c80407199f822f61748f7fb-20220331
+X-UUID: 0be1dc210c80407199f822f61748f7fb-20220331
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
+        (envelope-from <yunfei.dong@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1762808605; Thu, 31 Mar 2022 10:48:39 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Thu, 31 Mar 2022 10:48:37 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 31 Mar 2022 10:48:34 +0800
+From:   Yunfei Dong <yunfei.dong@mediatek.com>
+To:     Yunfei Dong <yunfei.dong@mediatek.com>,
+        Alexandre Courbot <acourbot@chromium.org>,
+        Nicolas Dufresne <nicolas@ndufresne.ca>,
+        "Hans Verkuil" <hverkuil-cisco@xs4all.nl>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+        Tiffany Lin <tiffany.lin@mediatek.com>,
+        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Tomasz Figa <tfiga@google.com>
+CC:     George Sun <george.sun@mediatek.com>,
+        Xiaoyong Lu <xiaoyong.lu@mediatek.com>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Fritz Koenig <frkoenig@chromium.org>,
+        Dafna Hirschfeld <dafna.hirschfeld@collabora.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Irui Wang <irui.wang@mediatek.com>,
+        Steve Cho <stevecho@chromium.org>,
+        <linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <srv_heupstream@mediatek.com>,
+        <linux-mediatek@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Subject: [PATCH v8, 06/17] media: mediatek: vcodec: Refactor get and put capture buffer flow
+Date:   Thu, 31 Mar 2022 10:47:50 +0800
+Message-ID: <20220331024801.29229-7-yunfei.dong@mediatek.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220331024801.29229-1-yunfei.dong@mediatek.com>
+References: <20220331024801.29229-1-yunfei.dong@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Armelle,
+For lat and core decode in parallel, need to get capture buffer
+when core start to decode and put capture buffer to display
+list when core decode done.
 
-FYI, the error/warning still remains.
+Signed-off-by: Yunfei Dong <yunfei.dong@mediatek.com>
+---
+changed compare with v7:
+In order to adjust GStreamer, need to separate src buffer done with
+v4l2_ctrl_request_complete.
+---
+ .../vcodec/mtk_vcodec_dec_stateless.c         | 88 +++++++++++++------
+ .../platform/mediatek/vcodec/mtk_vcodec_drv.h |  6 +-
+ .../mediatek/vcodec/vdec/vdec_h264_req_if.c   | 11 ++-
+ .../platform/mediatek/vcodec/vdec_msg_queue.h |  2 +
+ 4 files changed, 80 insertions(+), 27 deletions(-)
 
-tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android12-trusty-5.10
-head:   07055bfd3d810d41a38354693dfaa55a6f8c0025
-commit: bf9d994a65a2941d96b58769d79c256f7d8862c0 [5860/5872] ANDROID: trusty-log: Complement logging sink with unthrottled virtual file
-config: arm-allmodconfig (https://download.01.org/0day-ci/archive/20220331/202203311133.4BHUMmsV-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/bf9d994a65a2941d96b58769d79c256f7d8862c0
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android12-trusty-5.10
-        git checkout bf9d994a65a2941d96b58769d79c256f7d8862c0
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   drivers/trusty/trusty-log.c: In function 'trusty_log_seq_next':
->> drivers/trusty/trusty-log.c:354:21: warning: left shift count >= width of type [-Wshift-count-overflow]
-     354 |         *pos = (1UL << 32) + log_sfile_sink->get;
-         |                     ^~
-
-
-vim +354 drivers/trusty/trusty-log.c
-
-   323	
-   324	static void *trusty_log_seq_next(struct seq_file *sfile, void *v, loff_t *pos)
-   325	{
-   326		struct trusty_log_sfile *lb;
-   327		struct trusty_log_state *s;
-   328		struct trusty_log_sink_state *log_sfile_sink = v;
-   329		int rc = 0;
-   330	
-   331		if (WARN_ON(!log_sfile_sink))
-   332			return ERR_PTR(-EINVAL);
-   333	
-   334		lb = sfile->private;
-   335		if (WARN_ON(!lb)) {
-   336			rc = -EINVAL;
-   337			goto end_of_iter;
-   338		}
-   339		s = container_of(lb, struct trusty_log_state, log_sfile);
-   340	
-   341		if (WARN_ON(!pos)) {
-   342			rc = -EINVAL;
-   343			goto end_of_iter;
-   344		}
-   345		/*
-   346		 * When starting a virtual file sink, the start function is invoked
-   347		 * with a pos argument which value is set to zero.
-   348		 * Subsequent starts are invoked with pos being set to
-   349		 * the unwrapped read index (get).
-   350		 * Upon u32 wraparound, the get index could be reset to zero.
-   351		 * Thus a msb is used to distinguish the `get` zero value
-   352		 * from the `start of file` zero value.
-   353		 */
- > 354		*pos = (1UL << 32) + log_sfile_sink->get;
-   355		if (!trusty_log_has_data(s, log_sfile_sink))
-   356			goto end_of_iter;
-   357	
-   358		return log_sfile_sink;
-   359	
-   360	end_of_iter:
-   361		pr_debug("%s kfree\n", __func__);
-   362		kfree(log_sfile_sink);
-   363		return rc < 0 ? ERR_PTR(rc) : NULL;
-   364	}
-   365	
-
+diff --git a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_stateless.c b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_stateless.c
+index 4df7b158ec5e..727a128de18b 100644
+--- a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_stateless.c
++++ b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_stateless.c
+@@ -108,20 +108,50 @@ static const struct mtk_codec_framesizes mtk_vdec_framesizes[] = {
+ 
+ #define NUM_SUPPORTED_FRAMESIZE ARRAY_SIZE(mtk_vdec_framesizes)
+ 
+-static struct vdec_fb *vdec_get_cap_buffer(struct mtk_vcodec_ctx *ctx,
+-					   struct vb2_v4l2_buffer *vb2_v4l2)
++static void mtk_vdec_stateless_cap_to_disp(struct mtk_vcodec_ctx *ctx, int error,
++					   struct media_request *src_buf_req)
+ {
+-	struct mtk_video_dec_buf *framebuf =
+-		container_of(vb2_v4l2, struct mtk_video_dec_buf, m2m_buf.vb);
+-	struct vdec_fb *pfb = &framebuf->frame_buffer;
+-	struct vb2_buffer *dst_buf = &vb2_v4l2->vb2_buf;
++	struct vb2_v4l2_buffer *vb2_dst;
++	enum vb2_buffer_state state;
+ 
+-	pfb->base_y.va = NULL;
++	if (error)
++		state = VB2_BUF_STATE_ERROR;
++	else
++		state = VB2_BUF_STATE_DONE;
++
++	vb2_dst = v4l2_m2m_dst_buf_remove(ctx->m2m_ctx);
++	v4l2_m2m_buf_done(vb2_dst, state);
++
++	mtk_v4l2_debug(2, "free frame buffer id:%d to done list",
++		       vb2_dst->vb2_buf.index);
++
++	if (src_buf_req)
++		v4l2_ctrl_request_complete(src_buf_req, &ctx->ctrl_hdl);
++}
++
++static struct vdec_fb *vdec_get_cap_buffer(struct mtk_vcodec_ctx *ctx)
++{
++	struct mtk_video_dec_buf *framebuf;
++	struct vb2_v4l2_buffer *vb2_v4l2;
++	struct vb2_buffer *dst_buf;
++	struct vdec_fb *pfb;
++
++	vb2_v4l2 = v4l2_m2m_next_dst_buf(ctx->m2m_ctx);
++	if (!vb2_v4l2) {
++		mtk_v4l2_debug(1, "[%d] dst_buf empty!!", ctx->id);
++		return NULL;
++	}
++
++	dst_buf = &vb2_v4l2->vb2_buf;
++	framebuf = container_of(vb2_v4l2, struct mtk_video_dec_buf, m2m_buf.vb);
++
++	pfb = &framebuf->frame_buffer;
++	pfb->base_y.va = vb2_plane_vaddr(dst_buf, 0);
+ 	pfb->base_y.dma_addr = vb2_dma_contig_plane_dma_addr(dst_buf, 0);
+ 	pfb->base_y.size = ctx->q_data[MTK_Q_DATA_DST].sizeimage[0];
+ 
+ 	if (ctx->q_data[MTK_Q_DATA_DST].fmt->num_planes == 2) {
+-		pfb->base_c.va = NULL;
++		pfb->base_c.va = vb2_plane_vaddr(dst_buf, 1);
+ 		pfb->base_c.dma_addr =
+ 			vb2_dma_contig_plane_dma_addr(dst_buf, 1);
+ 		pfb->base_c.size = ctx->q_data[MTK_Q_DATA_DST].sizeimage[1];
+@@ -145,12 +175,12 @@ static void mtk_vdec_worker(struct work_struct *work)
+ 	struct mtk_vcodec_ctx *ctx =
+ 		container_of(work, struct mtk_vcodec_ctx, decode_work);
+ 	struct mtk_vcodec_dev *dev = ctx->dev;
+-	struct vb2_v4l2_buffer *vb2_v4l2_src, *vb2_v4l2_dst;
++	struct vb2_v4l2_buffer *vb2_v4l2_src;
+ 	struct vb2_buffer *vb2_src;
+ 	struct mtk_vcodec_mem *bs_src;
+ 	struct mtk_video_dec_buf *dec_buf_src;
+ 	struct media_request *src_buf_req;
+-	struct vdec_fb *dst_buf;
++	enum vb2_buffer_state state;
+ 	bool res_chg = false;
+ 	int ret;
+ 
+@@ -161,13 +191,6 @@ static void mtk_vdec_worker(struct work_struct *work)
+ 		return;
+ 	}
+ 
+-	vb2_v4l2_dst = v4l2_m2m_next_dst_buf(ctx->m2m_ctx);
+-	if (!vb2_v4l2_dst) {
+-		v4l2_m2m_job_finish(dev->m2m_dev_dec, ctx->m2m_ctx);
+-		mtk_v4l2_debug(1, "[%d] no available destination buffer", ctx->id);
+-		return;
+-	}
+-
+ 	vb2_src = &vb2_v4l2_src->vb2_buf;
+ 	dec_buf_src = container_of(vb2_v4l2_src, struct mtk_video_dec_buf,
+ 				   m2m_buf.vb);
+@@ -176,9 +199,15 @@ static void mtk_vdec_worker(struct work_struct *work)
+ 	mtk_v4l2_debug(3, "[%d] (%d) id=%d, vb=%p", ctx->id,
+ 		       vb2_src->vb2_queue->type, vb2_src->index, vb2_src);
+ 
+-	bs_src->va = NULL;
++	bs_src->va = vb2_plane_vaddr(vb2_src, 0);
+ 	bs_src->dma_addr = vb2_dma_contig_plane_dma_addr(vb2_src, 0);
+ 	bs_src->size = (size_t)vb2_src->planes[0].bytesused;
++	if (!bs_src->va) {
++		v4l2_m2m_job_finish(dev->m2m_dev_dec, ctx->m2m_ctx);
++		mtk_v4l2_err("[%d] id=%d source buffer is NULL", ctx->id,
++			     vb2_src->index);
++		return;
++	}
+ 
+ 	mtk_v4l2_debug(3, "[%d] Bitstream VA=%p DMA=%pad Size=%zx vb=%p",
+ 		       ctx->id, bs_src->va, &bs_src->dma_addr, bs_src->size, vb2_src);
+@@ -189,9 +218,7 @@ static void mtk_vdec_worker(struct work_struct *work)
+ 	else
+ 		mtk_v4l2_err("vb2 buffer media request is NULL");
+ 
+-	dst_buf = vdec_get_cap_buffer(ctx, vb2_v4l2_dst);
+-	v4l2_m2m_buf_copy_metadata(vb2_v4l2_src, vb2_v4l2_dst, true);
+-	ret = vdec_if_decode(ctx, bs_src, dst_buf, &res_chg);
++	ret = vdec_if_decode(ctx, bs_src, NULL, &res_chg);
+ 	if (ret) {
+ 		mtk_v4l2_err(" <===[%d], src_buf[%d] sz=0x%zx pts=%llu vdec_if_decode() ret=%d res_chg=%d===>",
+ 			     ctx->id, vb2_src->index, bs_src->size,
+@@ -203,10 +230,17 @@ static void mtk_vdec_worker(struct work_struct *work)
+ 		}
+ 	}
+ 
+-	v4l2_m2m_buf_done_and_job_finish(dev->m2m_dev_dec, ctx->m2m_ctx,
+-					 ret ? VB2_BUF_STATE_ERROR : VB2_BUF_STATE_DONE);
+-
+-	v4l2_ctrl_request_complete(src_buf_req, &ctx->ctrl_hdl);
++	state = ret ? VB2_BUF_STATE_ERROR : VB2_BUF_STATE_DONE;
++	if (!IS_VDEC_LAT_ARCH(dev->vdec_pdata->hw_arch) ||
++	    ctx->current_codec == V4L2_PIX_FMT_VP8_FRAME) {
++		v4l2_m2m_buf_done_and_job_finish(dev->m2m_dev_dec, ctx->m2m_ctx, state);
++		if (src_buf_req)
++			v4l2_ctrl_request_complete(src_buf_req, &ctx->ctrl_hdl);
++	} else {
++		v4l2_m2m_src_buf_remove(ctx->m2m_ctx);
++		v4l2_m2m_buf_done(vb2_v4l2_src, state);
++		v4l2_m2m_job_finish(dev->m2m_dev_dec, ctx->m2m_ctx);
++	}
+ }
+ 
+ static void vb2ops_vdec_stateless_buf_queue(struct vb2_buffer *vb)
+@@ -336,6 +370,8 @@ const struct mtk_vcodec_dec_pdata mtk_vdec_8183_pdata = {
+ 	.uses_stateless_api = true,
+ 	.worker = mtk_vdec_worker,
+ 	.flush_decoder = mtk_vdec_flush_decoder,
++	.cap_to_disp = mtk_vdec_stateless_cap_to_disp,
++	.get_cap_buffer = vdec_get_cap_buffer,
+ 	.is_subdev_supported = false,
+ 	.hw_arch = MTK_VDEC_PURE_SINGLE_CORE,
+ };
+@@ -354,6 +390,8 @@ const struct mtk_vcodec_dec_pdata mtk_lat_sig_core_pdata = {
+ 	.uses_stateless_api = true,
+ 	.worker = mtk_vdec_worker,
+ 	.flush_decoder = mtk_vdec_flush_decoder,
++	.cap_to_disp = mtk_vdec_stateless_cap_to_disp,
++	.get_cap_buffer = vdec_get_cap_buffer,
+ 	.is_subdev_supported = true,
+ 	.hw_arch = MTK_VDEC_LAT_SINGLE_CORE,
+ };
+diff --git a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_drv.h b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_drv.h
+index 6d27e4d41ede..c06463142182 100644
+--- a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_drv.h
++++ b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_drv.h
+@@ -350,7 +350,8 @@ enum mtk_vdec_hw_arch {
+  * @ctrls_setup: init vcodec dec ctrls
+  * @worker: worker to start a decode job
+  * @flush_decoder: function that flushes the decoder
+- *
++ * @get_cap_buffer: get capture buffer from capture queue
++ * @cap_to_disp: put capture buffer to disp list for lat and core arch
+  * @vdec_vb2_ops: struct vb2_ops
+  *
+  * @vdec_formats: supported video decoder formats
+@@ -372,6 +373,9 @@ struct mtk_vcodec_dec_pdata {
+ 	int (*ctrls_setup)(struct mtk_vcodec_ctx *ctx);
+ 	void (*worker)(struct work_struct *work);
+ 	int (*flush_decoder)(struct mtk_vcodec_ctx *ctx);
++	struct vdec_fb *(*get_cap_buffer)(struct mtk_vcodec_ctx *ctx);
++	void (*cap_to_disp)(struct mtk_vcodec_ctx *ctx, int error,
++			    struct media_request *src_buf_req);
+ 
+ 	struct vb2_ops *vdec_vb2_ops;
+ 
+diff --git a/drivers/media/platform/mediatek/vcodec/vdec/vdec_h264_req_if.c b/drivers/media/platform/mediatek/vcodec/vdec/vdec_h264_req_if.c
+index 43542de11e9c..27119aa31dd9 100644
+--- a/drivers/media/platform/mediatek/vcodec/vdec/vdec_h264_req_if.c
++++ b/drivers/media/platform/mediatek/vcodec/vdec/vdec_h264_req_if.c
+@@ -670,12 +670,15 @@ static void vdec_h264_slice_deinit(void *h_vdec)
+ }
+ 
+ static int vdec_h264_slice_decode(void *h_vdec, struct mtk_vcodec_mem *bs,
+-				  struct vdec_fb *fb, bool *res_chg)
++				  struct vdec_fb *unused, bool *res_chg)
+ {
+ 	struct vdec_h264_slice_inst *inst = h_vdec;
+ 	const struct v4l2_ctrl_h264_decode_params *dec_params =
+ 		get_ctrl_ptr(inst->ctx, V4L2_CID_STATELESS_H264_DECODE_PARAMS);
+ 	struct vdec_vpu_inst *vpu = &inst->vpu;
++	struct mtk_video_dec_buf *src_buf_info;
++	struct mtk_video_dec_buf *dst_buf_info;
++	struct vdec_fb *fb;
+ 	u32 data[2];
+ 	u64 y_fb_dma;
+ 	u64 c_fb_dma;
+@@ -685,6 +688,10 @@ static int vdec_h264_slice_decode(void *h_vdec, struct mtk_vcodec_mem *bs,
+ 	if (!bs)
+ 		return vpu_dec_reset(vpu);
+ 
++	fb = inst->ctx->dev->vdec_pdata->get_cap_buffer(inst->ctx);
++	src_buf_info = container_of(bs, struct mtk_video_dec_buf, bs_buffer);
++	dst_buf_info = container_of(fb, struct mtk_video_dec_buf, frame_buffer);
++
+ 	y_fb_dma = fb ? (u64)fb->base_y.dma_addr : 0;
+ 	c_fb_dma = fb ? (u64)fb->base_c.dma_addr : 0;
+ 
+@@ -696,6 +703,8 @@ static int vdec_h264_slice_decode(void *h_vdec, struct mtk_vcodec_mem *bs,
+ 	inst->vsi_ctx.dec.c_fb_dma = c_fb_dma;
+ 	inst->vsi_ctx.dec.vdec_fb_va = (u64)(uintptr_t)fb;
+ 
++	v4l2_m2m_buf_copy_metadata(&src_buf_info->m2m_buf.vb,
++				   &dst_buf_info->m2m_buf.vb, true);
+ 	get_vdec_decode_parameters(inst);
+ 	data[0] = bs->size;
+ 	/*
+diff --git a/drivers/media/platform/mediatek/vcodec/vdec_msg_queue.h b/drivers/media/platform/mediatek/vcodec/vdec_msg_queue.h
+index b6ba66d3e026..c43d427f5f54 100644
+--- a/drivers/media/platform/mediatek/vcodec/vdec_msg_queue.h
++++ b/drivers/media/platform/mediatek/vcodec/vdec_msg_queue.h
+@@ -43,6 +43,7 @@ struct vdec_msg_queue_ctx {
+  * @wdma_err_addr: wdma error address used for lat hardware
+  * @slice_bc_addr: slice bc address used for lat hardware
+  * @ts_info: need to set timestamp from output to capture
++ * @src_buf_req: output buffer media request object
+  *
+  * @private_data: shared information used to lat and core hardware
+  * @ctx: mtk vcodec context information
+@@ -54,6 +55,7 @@ struct vdec_lat_buf {
+ 	struct mtk_vcodec_mem wdma_err_addr;
+ 	struct mtk_vcodec_mem slice_bc_addr;
+ 	struct vb2_v4l2_buffer ts_info;
++	struct media_request *src_buf_req;
+ 
+ 	void *private_data;
+ 	struct mtk_vcodec_ctx *ctx;
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.18.0
+
