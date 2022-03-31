@@ -2,165 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF140C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 08:46:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22A35C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 08:49:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233217AbiCaIsP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 04:48:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42042 "EHLO
+        id S232748AbiCaIvC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 04:51:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233273AbiCaIr7 (ORCPT
+        with ESMTP id S231282AbiCaIu6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 04:47:59 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06BF115470B
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 01:46:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648716373; x=1680252373;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=IGYEIDqtBzv8VGesC88J5H0DizbH6fzEQs1AQAbgMVI=;
-  b=BFEclP51yI9YkCGOh6plNbJU35/tuxG0ZOSnLb9MA0m6Cbvz88PTobNO
-   B4Ol3k/h1BDkz2BMDiI2wWHT4CzRsUd18mL4lmLM42PAzlRJdayaEpB9/
-   cyZT2RtoagyHcvQ7X0g2TPkycfuiPr9nBS2jlDGggDlAd+mAy3W1QCxUD
-   l9w6Oj7Rj4YwRRtmpUcowyNkTwe+8dEqM7Y7srb9D7jTDquMd3c4WCrAV
-   jI4+3RJE1wNrKa0hxMZVLAC0VN/ifIUC39GEh0LRbeSHy3m89k3FTfk79
-   LCxy9eKi3Izg1xCfnaCKFa3t1TlmXEOUoiTZKNEkF4nu9M0lBh/JAV98G
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="322942192"
-X-IronPort-AV: E=Sophos;i="5.90,224,1643702400"; 
-   d="scan'208";a="322942192"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2022 01:46:12 -0700
-X-IronPort-AV: E=Sophos;i="5.90,224,1643702400"; 
-   d="scan'208";a="503652552"
-Received: from mshakoox-mobl1.amr.corp.intel.com (HELO guptapa-desk) ([10.251.2.3])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2022 01:46:12 -0700
-Date:   Thu, 31 Mar 2022 01:46:10 -0700
-From:   Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-To:     Ricardo =?utf-8?Q?Ca=C3=B1uelo?= <ricardo.canuelo@collabora.com>
-Cc:     Borislav Petkov <bp@alien8.de>, linux-kernel@vger.kernel.org,
-        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
-        Mark Gross <mgross@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        John Johansen <john.johansen@canonical.com>,
-        Steve Beattie <sbeattie@ubuntu.com>, kernel@collabora.com
-Subject: Re: [PATCH v2] x86/speculation/srbds: do not try to turn mitigation
- off when not supported
-Message-ID: <20220331084536.y4sl7qcfzltsnnew@guptapa-desk>
-References: <20220330082026.1549073-1-ricardo.canuelo@collabora.com>
- <YkS3OKLS1Cixs9up@zn.tnic>
- <87o81mzhoh.fsf@rcn-XPS-13-9305.i-did-not-set--mail-host-address--so-tickle-me>
+        Thu, 31 Mar 2022 04:50:58 -0400
+Received: from mail-yw1-x1136.google.com (mail-yw1-x1136.google.com [IPv6:2607:f8b0:4864:20::1136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 414463B007
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 01:49:10 -0700 (PDT)
+Received: by mail-yw1-x1136.google.com with SMTP id 00721157ae682-2e5827a76f4so246270237b3.6
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 01:49:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=wZXg0Wk9U3eMPQQ4UazcTOVg50FT5PR+ms1Rv/O8uCA=;
+        b=hF8NFikAHise1/tYewXzZvTJNTN9TjGoI3aMW6OzvdRwNeEZei9fo2XJCfe+N+eV5J
+         QYyirxTyzU/AHFDAB2oXhusj7nlJeC9WtbOY0E5WwWtN35FrEmd2wZl3JkfxaBSvqC9E
+         yS+dM4NKYp57Srqgrf507Y+NfpGcIJHrwHDf+IVXPnWD/xCrJ/gucYOSY9tqNcm5oAks
+         Z3dD2MFzKoWjExJo1bGI/gwSW9jxwmrBjEfyf2k3m0aEvTDawuYPOtyB/9c0Es6SHc/X
+         0EqGP3kd7m4gLOqnmz2l/Ji/090Dh9eDQIZ5Cat40Pjg140u18LgOjAx75AyavvkKUAg
+         7anw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=wZXg0Wk9U3eMPQQ4UazcTOVg50FT5PR+ms1Rv/O8uCA=;
+        b=p3VOxUSU+1yyHfNRrPE3rWe5Gi7pUcaQG6U5xAj5Ok20cCAffRturIlNmSzVJPWFEz
+         TCmyn3d623Mo3CIj3pBu7tV1FCiL+S3Dw/jjOeQzJz7oPXb7kgDxr56HjNItUz4AB653
+         3krJTcy5PVodlTiBmyME7K3h4iz+ptC2R0SyY4455I4zijR+GBaay+jlZ4V3jfPgjKwE
+         SW2L9DQCv7hGtO5T4rYQRq51LLsEJCoqGQNxaoba5x6nRvf9/1kPMciJ3HFGVj0bh6pp
+         ka60P64sVZ094Ds+p3f5CQMf3H5VQG3Dvtq27dw1zmrRnyxH4k7Ckr8KpkYkdQ5aXIm9
+         qt9w==
+X-Gm-Message-State: AOAM532uECozZxslFvvce1o84NdBnti+/o4kLiuJUDon26kcYBtk5MRo
+        XvM9G/FvxyNDKJVEbi2FNn5bGUdpJYVGyZIJ731Txg==
+X-Google-Smtp-Source: ABdhPJyvfTSa45LVThNTL1ozkOHEy9or+BjMwghda/8khUheyPrr89Rwl6DGXpWdcL77w/7pBLQ0L5ZwByBn8dKTGwk=
+X-Received: by 2002:a0d:ccca:0:b0:2e6:2b53:3f16 with SMTP id
+ o193-20020a0dccca000000b002e62b533f16mr4098014ywd.35.1648716549512; Thu, 31
+ Mar 2022 01:49:09 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <87o81mzhoh.fsf@rcn-XPS-13-9305.i-did-not-set--mail-host-address--so-tickle-me>
+References: <20220331065640.5777-1-songmuchun@bytedance.com> <6c774e27-26d2-6c45-65f9-8a5b8acd6433@redhat.com>
+In-Reply-To: <6c774e27-26d2-6c45-65f9-8a5b8acd6433@redhat.com>
+From:   Muchun Song <songmuchun@bytedance.com>
+Date:   Thu, 31 Mar 2022 16:48:33 +0800
+Message-ID: <CAMZfGtV6=n60f2cEWWtFk8Ci1c_JzeNJCmzAs2X6EHZkaXfP6Q@mail.gmail.com>
+Subject: Re: [PATCH v4 1/2] mm: hugetlb_vmemmap: introduce ARCH_WANT_HUGETLB_PAGE_FREE_VMEMMAP
+To:     David Hildenbrand <david@redhat.com>
+Cc:     Will Deacon <will@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Bodeddula, Balasubramaniam" <bodeddub@amazon.com>,
+        Oscar Salvador <osalvador@suse.de>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        David Rientjes <rientjes@google.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>, james.morse@arm.com,
+        Barry Song <21cnbao@gmail.com>,
+        LAK <linux-arm-kernel@lists.infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Xiongchun duan <duanxiongchun@bytedance.com>,
+        Fam Zheng <fam.zheng@bytedance.com>,
+        Muchun Song <smuchun@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 31, 2022 at 09:48:14AM +0200, Ricardo Cañuelo wrote:
->Borislav Petkov <bp@alien8.de> writes:
->> So we could also do the below to denote what the situation is and
->> therefore clear the bug flag for such CPUs.
->>
->> The thing is: I want this to be as clear as possible because bugs.c is
->> already a nightmare and just slapping more logic to it without properly
->> thinking it through is going to be a serious pain to deal with later...
+On Thu, Mar 31, 2022 at 4:42 PM David Hildenbrand <david@redhat.com> wrote:
 >
->Thanks Boris,
+> On 31.03.22 08:56, Muchun Song wrote:
+> > The feature of minimizing overhead of struct page associated with each
+> > HugeTLB page is implemented on x86_64, however, the infrastructure of
+> > this feature is already there, we could easily enable it for other
+> > architectures.  Introduce ARCH_WANT_HUGETLB_PAGE_FREE_VMEMMAP for other
+> > architectures to be easily enabled.  Just select this config if they
+> > want to enable this feature.
+> >
+> > Suggested-by: Andrew Morton <akpm@linux-foundation.org>
+> > Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+> > ---
+> >  arch/x86/Kconfig |  1 +
+> >  fs/Kconfig       | 10 +++++++++-
+> >  2 files changed, 10 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+> > index 9f5bd41bf660..e69d42528542 100644
+> > --- a/arch/x86/Kconfig
+> > +++ b/arch/x86/Kconfig
+> > @@ -119,6 +119,7 @@ config X86
+> >       select ARCH_WANTS_DYNAMIC_TASK_STRUCT
+> >       select ARCH_WANTS_NO_INSTR
+> >       select ARCH_WANT_HUGE_PMD_SHARE
+> > +     select ARCH_WANT_HUGETLB_PAGE_FREE_VMEMMAP      if X86_64
+> >       select ARCH_WANT_LD_ORPHAN_WARN
+> >       select ARCH_WANTS_THP_SWAP              if X86_64
+> >       select ARCH_HAS_PARANOID_L1D_FLUSH
+> > diff --git a/fs/Kconfig b/fs/Kconfig
+> > index 6c7dc1387beb..f6db2af33738 100644
+> > --- a/fs/Kconfig
+> > +++ b/fs/Kconfig
+> > @@ -245,9 +245,17 @@ config HUGETLBFS
+> >  config HUGETLB_PAGE
+> >       def_bool HUGETLBFS
+> >
+> > +#
+> > +# Select this config option from the architecture Kconfig, if it is preferred
+> > +# to enable the feature of minimizing overhead of struct page associated with
+> > +# each HugeTLB page.
+> > +#
+> > +config ARCH_WANT_HUGETLB_PAGE_FREE_VMEMMAP
+> > +     bool
+> > +
+> >  config HUGETLB_PAGE_FREE_VMEMMAP
+> >       def_bool HUGETLB_PAGE
+> > -     depends on X86_64
+> > +     depends on ARCH_WANT_HUGETLB_PAGE_FREE_VMEMMAP
+> >       depends on SPARSEMEM_VMEMMAP
+> >
+> >  config HUGETLB_PAGE_FREE_VMEMMAP_DEFAULT_ON
 >
->I agree that the more explicit the better, I'll give this a try. I saw
->Pawan's suggestion as well but that one is similar to the originally
->proposed patch in that the logic/checks are split between two functions,
->this solution based on clearing the bug flag seems clearer considering
->the comment just before the code block:
 >
->	/*
->	 * Check to see if this is one of the MDS_NO systems supporting
->	 * TSX that are only exposed to SRBDS when TSX is enabled.
->	 */
+> I think something like "HUGETLB_OPTIMIZE_VMEMMAP" might be more
+> expressive, but that would imply renaming the existing config knob.
+>
 
-If we clear the bug flag and not write to the MSR to disable the
-microcode mitigation, there will be unnecessary performance loss due to
-microcode mitigation. Specifically RDRAND/RDSEED/EGET_KEY will run
-slower.
-
-Yes, the logic/checks between two functions is messy.
-
-Does this simplify things a bit?
-
----
-diff --git a/arch/x86/kernel/cpu/bugs.c b/arch/x86/kernel/cpu/bugs.c
-index 6296e1ebed1d..0be6c0eabb71 100644
---- a/arch/x86/kernel/cpu/bugs.c
-+++ b/arch/x86/kernel/cpu/bugs.c
-@@ -431,34 +431,22 @@ static const char * const srbds_strings[] = {
-  	[SRBDS_MITIGATION_HYPERVISOR]	= "Unknown: Dependent on hypervisor status",
-  };
-  
--static bool srbds_off;
-+static bool srbds_dis_ucode_mitigation;
-  
-  void update_srbds_msr(void)
-  {
-  	u64 mcu_ctrl;
-  
--	if (!boot_cpu_has_bug(X86_BUG_SRBDS))
--		return;
--
--	if (boot_cpu_has(X86_FEATURE_HYPERVISOR))
--		return;
--
--	if (srbds_mitigation == SRBDS_MITIGATION_UCODE_NEEDED)
-+	if (!boot_cpu_has_bug(X86_BUG_SRBDS) ||
-+	    !boot_cpu_has(X86_FEATURE_SRBDS_CTRL))
-  		return;
-  
-  	rdmsrl(MSR_IA32_MCU_OPT_CTRL, mcu_ctrl);
-  
--	switch (srbds_mitigation) {
--	case SRBDS_MITIGATION_OFF:
--	case SRBDS_MITIGATION_TSX_OFF:
-+	if (srbds_dis_ucode_mitigation)
-  		mcu_ctrl |= RNGDS_MITG_DIS;
--		break;
--	case SRBDS_MITIGATION_FULL:
-+	else
-  		mcu_ctrl &= ~RNGDS_MITG_DIS;
--		break;
--	default:
--		break;
--	}
-  
-  	wrmsrl(MSR_IA32_MCU_OPT_CTRL, mcu_ctrl);
-  }
-@@ -481,9 +469,13 @@ static void __init srbds_select_mitigation(void)
-  		srbds_mitigation = SRBDS_MITIGATION_HYPERVISOR;
-  	else if (!boot_cpu_has(X86_FEATURE_SRBDS_CTRL))
-  		srbds_mitigation = SRBDS_MITIGATION_UCODE_NEEDED;
--	else if (cpu_mitigations_off() || srbds_off)
-+	else if (cpu_mitigations_off())
-  		srbds_mitigation = SRBDS_MITIGATION_OFF;
-  
-+	if (srbds_mitigation == SRBDS_MITIGATION_OFF ||
-+	    srbds_mitigation == SRBDS_MITIGATION_TSX_OFF)
-+		srbds_dis_ucode_mitigation = true;
-+
-  	update_srbds_msr();
-  	pr_info("%s\n", srbds_strings[srbds_mitigation]);
-  }
-@@ -496,7 +488,9 @@ static int __init srbds_parse_cmdline(char *str)
-  	if (!boot_cpu_has_bug(X86_BUG_SRBDS))
-  		return 0;
-  
--	srbds_off = !strcmp(str, "off");
-+	if (!strcmp(str, "off"))
-+		srbds_mitigation = SRBDS_MITIGATION_OFF;
-+
-  	return 0;
-  }
-  early_param("srbds", srbds_parse_cmdline);
+How about doing a full code cleanup in a separate series in the future?
