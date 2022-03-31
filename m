@@ -2,162 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01712C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 00:00:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1040AC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 00:03:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348740AbiCaACA (ORCPT
+        id S1350316AbiCaAFO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 20:02:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56514 "EHLO
+        Wed, 30 Mar 2022 20:05:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351933AbiCaABS (ORCPT
+        with ESMTP id S239470AbiCaAFK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 20:01:18 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4822665497;
-        Wed, 30 Mar 2022 16:59:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648684772; x=1680220772;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=3aXhpLXCvCCvNR3pAgcULgqkJ5JSx3pe9KBXPA5ttYQ=;
-  b=fc1VGWIF3Cd9js/7ddjiJUyXypvCggIQevUvhTuyrud77G6mcC1euHpj
-   8lsDS8GeiFG/8RPrHNK98+xk67g5lvwprjsvyiEcyfGPdhxJ2heuI33V3
-   Wxd8dm+be8+xkB5KHEGtvwxEJOQ7d5JGtmBWABCOOm5mkS7TcnmG4Sj6w
-   GVZEpW0JUyH+qiw0cIqZuxmRPCw7H4qI77RhR8mroyR3wX7ND6MUn1QXm
-   Mkshp4wKuzb5lvNH5jXNd65qTVAq3OZ06PQkQzsYoBaOctqeaZqIOB+0O
-   7STTKtcmrB9ZA2qbSU18MnODAR2sxpEx44Kgsuyn4hYaLym7mSCPKSRDC
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="258504755"
-X-IronPort-AV: E=Sophos;i="5.90,223,1643702400"; 
-   d="scan'208";a="258504755"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 16:59:32 -0700
-X-IronPort-AV: E=Sophos;i="5.90,223,1643702400"; 
-   d="scan'208";a="788192195"
-Received: from npeper-mobl1.amr.corp.intel.com (HELO localhost) ([10.212.16.15])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 16:59:31 -0700
-From:   ira.weiny@intel.com
-To:     Dan Williams <dan.j.williams@intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc:     Alison Schofield <alison.schofield@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Ben Widawsky <ben.widawsky@intel.com>,
-        linux-kernel@vger.kernel.org, linux-cxl@vger.kernel.org,
-        linux-pci@vger.kernel.org
-Subject: [PATCH V7 08/10] cxl/cdat: Introduce cxl_cdat_valid()
-Date:   Wed, 30 Mar 2022 16:59:18 -0700
-Message-Id: <20220330235920.2800929-9-ira.weiny@intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220330235920.2800929-1-ira.weiny@intel.com>
-References: <20220330235920.2800929-1-ira.weiny@intel.com>
+        Wed, 30 Mar 2022 20:05:10 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95793B23
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 17:03:20 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id h23-20020a17090a051700b001c9c1dd3acbso1880225pjh.3
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 17:03:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=eK3xgJsSbOj4248lrzJGbFEJ5CxyDIG0aIJkQ/5Fx3I=;
+        b=hjmOY7ws3z6W+WChFER7xW75B/O15SGRzs2GdsWRKER/RGDhs2J3uNG0K+gFINWJ0u
+         9eLaS7137Hc12CYSRt2eD0A+htyallhS2P+eh7M7C8a396pvzpEZYKqD9R6+9cvHNcCj
+         LG1wyJp288R7FfwIJsgdlrVSFKb1yk6ydvElVx+O/e/x4DTV8Q3yg76CG1qYzc95mlA4
+         YpTONsqY9K4aDKA8aKYIxaJ6cmKiX6qm9GnPQPCwRHya1xvVrxTtCpYtUxZIutHRf9Nc
+         B31bT/0tDe2j1rx7JLP43kUtpg68prkawVNJomrpgChAhndEv7sGJNrcm9KbrBo/ogjn
+         4CHg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=eK3xgJsSbOj4248lrzJGbFEJ5CxyDIG0aIJkQ/5Fx3I=;
+        b=3xLa1z73Qv7NZZDg9hwphaZa7awVyQ3CLKhKefvHLEoMRO4vApXuEAnpC94aEAXxIq
+         Op+pF+VL1/vFU/ExKAuJ2rMBL71loojCkNkn9zNnCZjnMq5C2FqsUf6+d93RtiZ+3HiI
+         KYmb1HwVDM3hnO9yZuglYYPewPXGwGwUpCKiP+dJMj3v7RGDyzhGKzY9GEElmNE3UX7T
+         LVuWiK0sipG1CKa7yUQCY4h1+76ZXDDp1fVKAkvWCmH3EjVfFnblN1B2tMJl/5RCXdTK
+         APS25NdF6GA4p9WXDvaW/YGsLPfm360xuQNKPnA1d/7RWGw0yuPO5KQ4juvvIIPp+8/y
+         KtPw==
+X-Gm-Message-State: AOAM530P5t8frPXmL1ytS/SPOD3lSYtcJQD+lABkhdkHPrNLMWsqB81i
+        UeL9lyWAxs2i0Ja4+Mqg7eHe5w==
+X-Google-Smtp-Source: ABdhPJwN8lzxcvtEVo0aBOLKhLyP+tIh/WZx3bv4PUw2Mm70wcCv0Dsb3UEsLqtSfYT+U4DQx5bBcQ==
+X-Received: by 2002:a17:902:d88a:b0:156:1609:1e62 with SMTP id b10-20020a170902d88a00b0015616091e62mr16346514plz.143.1648684999806;
+        Wed, 30 Mar 2022 17:03:19 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id g3-20020a056a001a0300b004fa65cbbf4esm25563516pfv.63.2022.03.30.17.03.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 30 Mar 2022 17:03:19 -0700 (PDT)
+Date:   Thu, 31 Mar 2022 00:03:15 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Isaku Yamahata <isaku.yamahata@gmail.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>, isaku.yamahata@intel.com,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jim Mattson <jmattson@google.com>, erdemaktas@google.com,
+        Connor Kuehl <ckuehl@redhat.com>
+Subject: Re: [RFC PATCH v5 008/104] KVM: TDX: Add a function to initialize
+ TDX module
+Message-ID: <YkTvw5OXTTFf7j4y@google.com>
+References: <cover.1646422845.git.isaku.yamahata@intel.com>
+ <b92217283fa96b85e9a683ca3fcf1b368cf8d1c4.1646422845.git.isaku.yamahata@intel.com>
+ <05aecc5a-e8d2-b357-3bf1-3d0cb247c28d@redhat.com>
+ <20220314194513.GD1964605@ls.amr.corp.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220314194513.GD1964605@ls.amr.corp.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ira Weiny <ira.weiny@intel.com>
+On Mon, Mar 14, 2022, Isaku Yamahata wrote:
+> On Sun, Mar 13, 2022 at 03:03:40PM +0100,
+> Paolo Bonzini <pbonzini@redhat.com> wrote:
+> 
+> > On 3/4/22 20:48, isaku.yamahata@intel.com wrote:
+> > > +
+> > > +	if (!tdx_module_initialized) {
+> > > +		if (enable_tdx) {
+> > > +			ret = __tdx_module_setup();
+> > > +			if (ret)
+> > > +				enable_tdx = false;
+> > 
+> > "enable_tdx = false" isn't great to do only when a VM is created.  Does it
+> > make sense to anticipate this to the point when the kvm_intel.ko module is
+> > loaded?
+> 
+> It's possible.  I have the following two reasons to chose to defer TDX module
+> initialization until creating first TD.  Given those reasons, do you still want
+> the initialization at loading kvm_intel.ko module?  If yes, I'll change it.
 
-The CDAT data is protected by a checksum and should be the proper
-length.
+Yes, TDX module setup needs to be done at load time.  The loss of memory is
+unfortunate, e.g. if the host is part of a pool that _might_ run TDX guests, but
+the alternatives are worse.  If TDX fails to initialize, e.g. due to low mem,
+then the host will be unable to run TDX guests despite saying "I support TDX".
+Or this gem :-)
 
-Introduce cxl_cdat_valid() to validate the data.  While at it check and
-store the sequence number.
+	/*
+	 * TDH.SYS.KEY.CONFIG may fail with entropy error (which is
+	 * a recoverable error).  Assume this is exceedingly rare and
+	 * just return error if encountered instead of retrying.
+	 */
 
-Signed-off-by: Ira Weiny <ira.weiny@intel.com>
+The CPU overhead of initializing the TDX module is also non-trivial, and it
+doesn't affect just this CPU, e.g. all CPUs need to do certain SEAMCALLs and at
+least one WBINVD.  The can cause noisy neighbor problems.
 
----
-Changes from V6
-	Change name to cxl_cdat_valid() as this validates all the CDAT
-		data not just the header
-	Add error and debug prints
+> - memory over head: The initialization of TDX module requires to allocate
+> physically contiguous memory whose size is about 0.43% of the system memory.
+> If user don't use TD, it will be wasted.
+> 
+> - VMXON on all pCPUs: The TDX module initialization requires to enable VMX
+> (VMXON) on all present pCPUs.  vmx_hardware_enable() which is called on creating
+> guest does it.  It naturally fits with the TDX module initialization at creating
+> first TD.  I wanted to avoid code to enable VMXON on loading the kvm_intel.ko.
 
-Changes from V5
-	New patch, split out
-	Update cdat_hdr_valid()
-		Remove revision and cs field parsing
-			There is no point in these
-		Add seq check and debug print.
----
- drivers/cxl/cdat.h |  2 ++
- drivers/cxl/pci.c  | 36 ++++++++++++++++++++++++++++++++++++
- 2 files changed, 38 insertions(+)
-
-diff --git a/drivers/cxl/cdat.h b/drivers/cxl/cdat.h
-index 4722b6bbbaf0..a7725d26f2d2 100644
---- a/drivers/cxl/cdat.h
-+++ b/drivers/cxl/cdat.h
-@@ -88,10 +88,12 @@
-  *
-  * @table: cache of CDAT table
-  * @length: length of cached CDAT table
-+ * @seq: Last read Sequence number of the CDAT table
-  */
- struct cxl_cdat {
- 	void *table;
- 	size_t length;
-+	u32 seq;
- };
- 
- #endif /* !__CXL_CDAT_H__ */
-diff --git a/drivers/cxl/pci.c b/drivers/cxl/pci.c
-index a1d500381438..ddd6b705fd67 100644
---- a/drivers/cxl/pci.c
-+++ b/drivers/cxl/pci.c
-@@ -762,6 +762,40 @@ static int cxl_setup_doe_devices(struct cxl_dev_state *cxlds)
- 	return 0;
- }
- 
-+static bool cxl_cdat_valid(struct device *dev, struct cxl_cdat *cdat)
-+{
-+	u32 *table = cdat->table;
-+	u8 *data8 = cdat->table;
-+	u32 length, seq;
-+	u8 check;
-+	int i;
-+
-+	length = FIELD_GET(CDAT_HEADER_DW0_LENGTH, table[0]);
-+	if ((length < CDAT_HEADER_LENGTH_BYTES) || (length > cdat->length)) {
-+		dev_err(dev, "Invalid length %u (%lu-%lu)\n", length,
-+			CDAT_HEADER_LENGTH_BYTES, cdat->length);
-+		return false;
-+	}
-+
-+	for (check = 0, i = 0; i < length; i++)
-+		check += data8[i];
-+
-+	dev_dbg(dev, "CDAT length %u CS %u\n", length, check);
-+	if (check != 0) {
-+		dev_err(dev, "Invalid checksum %u\n", check);
-+		return false;
-+	}
-+
-+	seq = FIELD_GET(CDAT_HEADER_DW3_SEQUENCE, table[3]);
-+	/* Store the sequence for now. */
-+	if (cdat->seq != seq) {
-+		dev_info(dev, "CDAT seq change %x -> %x\n", cdat->seq, seq);
-+		cdat->seq = seq;
-+	}
-+
-+	return true;
-+}
-+
- #define CDAT_DOE_REQ(entry_handle)					\
- 	(FIELD_PREP(CXL_DOE_TABLE_ACCESS_REQ_CODE,			\
- 		    CXL_DOE_TABLE_ACCESS_REQ_CODE_READ) |		\
-@@ -873,6 +907,8 @@ static int cxl_cdat_read_table(struct cxl_dev_state *cxlds,
- 
- release_driver:
- 	cxl_pci_doe_put_drv(doe_dev);
-+	if (!rc && !cxl_cdat_valid(cxlds->dev, cdat))
-+		return -EIO;
- 	return rc;
- }
- 
--- 
-2.35.1
-
+That's a solvable problem, though making it work without exporting hardware_enable_all()
+could get messy.
