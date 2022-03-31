@@ -2,220 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A3D4C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 23:10:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EEB0C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 23:10:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242836AbiCaXME (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 19:12:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34424 "EHLO
+        id S242857AbiCaXMJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 19:12:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242824AbiCaXMA (ORCPT
+        with ESMTP id S231898AbiCaXMD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 19:12:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9998E09A1
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 16:10:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8BD44B82207
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 23:10:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5079FC340ED;
-        Thu, 31 Mar 2022 23:10:07 +0000 (UTC)
-Date:   Thu, 31 Mar 2022 19:10:05 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Jakob Koschel <jakobkoschel@gmail.com>
-Cc:     Ingo Molnar <mingo@redhat.com>, linux-kernel@vger.kernel.org,
-        Mike Rapoport <rppt@kernel.org>,
-        "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>
-Subject: Re: [PATCH] ftrace: remove check of list iterator against head past
- the loop body
-Message-ID: <20220331191005.2954969f@gandalf.local.home>
-In-Reply-To: <20220331223752.902726-1-jakobkoschel@gmail.com>
-References: <20220331223752.902726-1-jakobkoschel@gmail.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Thu, 31 Mar 2022 19:12:03 -0400
+Received: from vps-vb.mhejs.net (vps-vb.mhejs.net [37.28.154.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3A3DEA76C;
+        Thu, 31 Mar 2022 16:10:13 -0700 (PDT)
+Received: from MUA
+        by vps-vb.mhejs.net with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <mail@maciej.szmigiero.name>)
+        id 1na3vO-000676-Nb; Fri, 01 Apr 2022 01:09:54 +0200
+Message-ID: <f4cdaf45-c869-f3bb-2ba2-3c0a4da12a6d@maciej.szmigiero.name>
+Date:   Fri, 1 Apr 2022 01:09:48 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Content-Language: en-US
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Jon Grimm <Jon.Grimm@amd.com>,
+        David Kaplan <David.Kaplan@amd.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Liam Merwick <liam.merwick@oracle.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <cover.1646944472.git.maciej.szmigiero@oracle.com>
+ <a28577564a7583c32f0029f2307f63ca8869cf22.1646944472.git.maciej.szmigiero@oracle.com>
+ <YkTSul0CbYi/ae0t@google.com>
+ <8f9ae64a-dc64-6f46-8cd4-ffd2648a9372@maciej.szmigiero.name>
+ <YkTlxCV9wmA3fTlN@google.com>
+From:   "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
+Subject: Re: [PATCH 3/5] KVM: nSVM: Don't forget about L1-injected events
+In-Reply-To: <YkTlxCV9wmA3fTlN@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri,  1 Apr 2022 00:37:52 +0200
-Jakob Koschel <jakobkoschel@gmail.com> wrote:
-
-Hi Jakob,
-
-The patch looks fine, I have some small nits though.
-
-First, the subject should actually be:
-
-Subject: [PATCH] tracing: Remove check of list iterator against head past the loop body
-
-Changes that only deal specifically with the function probes are labeled as
-"ftrace:", but the more generic changes that touches files outside of
-ftrace.c and fgraph.c should be "tracing:". Also, Linus prefers to have the
-next part of the subject start with a capital letter: "Remove" instead of
-"remove".
-
-> When list_for_each_entry() completes the iteration over the whole list
-> without breaking the loop, the iterator value will be a bogus pointer
-> computed based on the head element.
+On 31.03.2022 01:20, Sean Christopherson wrote:
+> On Thu, Mar 31, 2022, Maciej S. Szmigiero wrote:
+>> On 30.03.2022 23:59, Sean Christopherson wrote:
+>>> On Thu, Mar 10, 2022, Maciej S. Szmigiero wrote:
+>>>> @@ -3627,6 +3632,14 @@ static void svm_complete_interrupts(struct kvm_vcpu *vcpu)
+>>>>    	if (!(exitintinfo & SVM_EXITINTINFO_VALID))
+>>>>    		return;
+>>>> +	/* L1 -> L2 event re-injection needs a different handling */
+>>>> +	if (is_guest_mode(vcpu) &&
+>>>> +	    exit_during_event_injection(svm, svm->nested.ctl.event_inj,
+>>>> +					svm->nested.ctl.event_inj_err)) {
+>>>> +		nested_svm_maybe_reinject(vcpu);
+>>>
+>>> Why is this manually re-injecting?  More specifically, why does the below (out of
+>>> sight in the diff) code that re-queues the exception/interrupt not work?  The
+>>> re-queued event should be picked up by nested_save_pending_event_to_vmcb12() and
+>>> propagatred to vmcb12.
+>>
+>> A L1 -> L2 injected event should either be re-injected until successfully
+>> injected into L2 or propagated to VMCB12 if there is a nested VMEXIT
+>> during its delivery.
+>>
+>> svm_complete_interrupts() does not do such re-injection in some cases
+>> (soft interrupts, soft exceptions, #VC) - it is trying to resort to
+>> emulation instead, which is incorrect in this case.
+>>
+>> I think it's better to split out this L1 -> L2 nested case to a
+>> separate function in nested.c rather than to fill
+>> svm_complete_interrupts() in already very large svm.c with "if" blocks
+>> here and there.
 > 
-> While it is safe to use the pointer to determine if it was computed
-> based on the head element, either with list_entry_is_head() or
-> &pos->member == head, using the iterator variable after the loop should
-> be avoided.
+> Ah, I see it now.  WTF.
 > 
-> In preparation to limit the scope of a list iterator to the list
-> traversal loop, use a dedicated pointer to point to the found element [1].
+> Ugh, commit 66fd3f7f901f ("KVM: Do not re-execute INTn instruction.") fixed VMX,
+> but left SVM broken.
 > 
-> Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/ [1]
-> Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
-> ---
->  kernel/trace/ftrace.c       | 20 ++++++++++++--------
->  kernel/trace/trace_eprobe.c | 14 ++++++++------
->  kernel/trace/trace_events.c | 12 ++++++------
->  3 files changed, 26 insertions(+), 20 deletions(-)
+> Re-executing the INTn is wrong, the instruction has already completed decode and
+> execution.  E.g. if there's there's a code breakpoint on the INTn, rewinding will
+> cause a spurious #DB.
 > 
-> diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
-> index 4f1d2f5e7263..096f5a83358d 100644
-> --- a/kernel/trace/ftrace.c
-> +++ b/kernel/trace/ftrace.c
-> @@ -4560,8 +4560,8 @@ register_ftrace_function_probe(char *glob, struct trace_array *tr,
->  			       struct ftrace_probe_ops *probe_ops,
->  			       void *data)
->  {
-> +	struct ftrace_func_probe *probe = NULL, *iter;
->  	struct ftrace_func_entry *entry;
-> -	struct ftrace_func_probe *probe;
->  	struct ftrace_hash **orig_hash;
->  	struct ftrace_hash *old_hash;
->  	struct ftrace_hash *hash;
-> @@ -4580,11 +4580,13 @@ register_ftrace_function_probe(char *glob, struct trace_array *tr,
->  
->  	mutex_lock(&ftrace_lock);
->  	/* Check if the probe_ops is already registered */
-> -	list_for_each_entry(probe, &tr->func_probes, list) {
-> -		if (probe->probe_ops == probe_ops)
-> +	list_for_each_entry(iter, &tr->func_probes, list) {
-> +		if (iter->probe_ops == probe_ops) {
-> +			probe = iter;
->  			break;
-> +		}
->  	}
-> -	if (&probe->list == &tr->func_probes) {
-> +	if (!probe) {
->  		probe = kzalloc(sizeof(*probe), GFP_KERNEL);
->  		if (!probe) {
->  			mutex_unlock(&ftrace_lock);
-> @@ -4704,7 +4706,7 @@ unregister_ftrace_function_probe_func(char *glob, struct trace_array *tr,
->  {
->  	struct ftrace_ops_hash old_hash_ops;
->  	struct ftrace_func_entry *entry;
-> -	struct ftrace_func_probe *probe;
-> +	struct ftrace_func_probe *probe = NULL, *iter;
+> KVM's INT3 shenanigans are bonkers, but I guess there's no better option given
+> that the APM says "Software interrupts cannot be properly injected if the processor
+> does not support the NextRIP field.".  What a mess.
 
-Can you move this to the first declaration to keep the nice "upside-down
-x-mas tree" look.
+Note that KVM currently always tries to re-execute the current instruction
+when asked to re-inject a #BP or a #OF, even when nrips are enabled.
 
->  	struct ftrace_glob func_g;
->  	struct ftrace_hash **orig_hash;
->  	struct ftrace_hash *old_hash;
-> @@ -4732,11 +4734,13 @@ unregister_ftrace_function_probe_func(char *glob, struct trace_array *tr,
->  
->  	mutex_lock(&ftrace_lock);
->  	/* Check if the probe_ops is already registered */
-> -	list_for_each_entry(probe, &tr->func_probes, list) {
-> -		if (probe->probe_ops == probe_ops)
-> +	list_for_each_entry(iter, &tr->func_probes, list) {
-> +		if (iter->probe_ops == probe_ops) {
-> +			probe = iter;
->  			break;
-> +		}
->  	}
-> -	if (&probe->list == &tr->func_probes)
-> +	if (!probe)
->  		goto err_unlock_ftrace;
->  
->  	ret = -EINVAL;
-> diff --git a/kernel/trace/trace_eprobe.c b/kernel/trace/trace_eprobe.c
-> index 541aa13581b9..63e901a28425 100644
-> --- a/kernel/trace/trace_eprobe.c
-> +++ b/kernel/trace/trace_eprobe.c
-> @@ -650,7 +650,7 @@ static struct trace_event_functions eprobe_funcs = {
->  static int disable_eprobe(struct trace_eprobe *ep,
->  			  struct trace_array *tr)
->  {
-> -	struct event_trigger_data *trigger;
-> +	struct event_trigger_data *trigger = NULL, *iter;
->  	struct trace_event_file *file;
->  	struct eprobe_data *edata;
->  
-> @@ -658,14 +658,16 @@ static int disable_eprobe(struct trace_eprobe *ep,
->  	if (!file)
->  		return -ENOENT;
->  
-> -	list_for_each_entry(trigger, &file->triggers, list) {
-> -		if (!(trigger->flags & EVENT_TRIGGER_FL_PROBE))
-> +	list_for_each_entry(iter, &file->triggers, list) {
-> +		if (!(iter->flags & EVENT_TRIGGER_FL_PROBE))
->  			continue;
-> -		edata = trigger->private_data;
-> -		if (edata->ep == ep)
-> +		edata = iter->private_data;
-> +		if (edata->ep == ep) {
-> +			trigger = iter;
->  			break;
-> +		}
->  	}
-> -	if (list_entry_is_head(trigger, &file->triggers, list))
-> +	if (!trigger)
->  		return -ENODEV;
->  
->  	list_del_rcu(&trigger->list);
-> diff --git a/kernel/trace/trace_events.c b/kernel/trace/trace_events.c
-> index e11e167b7809..fe3dc157e635 100644
-> --- a/kernel/trace/trace_events.c
-> +++ b/kernel/trace/trace_events.c
-> @@ -2281,7 +2281,7 @@ event_subsystem_dir(struct trace_array *tr, const char *name,
->  		    struct trace_event_file *file, struct dentry *parent)
->  {
->  	struct trace_subsystem_dir *dir;
-> -	struct event_subsystem *system;
-> +	struct event_subsystem *system, *iter;
+Also, #BP (and #OF, too) is returned as type SVM_EXITINTINFO_TYPE_EXEPT,
+not as SVM_EXITINTINFO_TYPE_SOFT (soft interrupt), so it should be
+re-injected accordingly.
 
-And move this above dir as well, for the same reason.
+> Anyways, for the common nrips=true case, I strongly prefer that we properly fix
+> the non-nested case and re-inject software interrupts, which should in turn
+> naturally fix this nested case.  
+
+This would also need making the #BP or #OF current instruction
+re-execution conditional on (at least) nrips support.
+
+I am not sure, however, whether this won't introduce any regressions.
+That's why this patch set changed the behavior here only for the
+L1 -> L2 case.
+
+Another issue is whether a L1 hypervisor can legally inject a #VC
+into its L2 (since these are never re-injected).
+
+We still need L1 -> L2 event injection detection to restore the NextRIP
+field when re-injecting an event that uses it.
+
+> And for nrips=false, my vote is to either punt
+> and document it as a "KVM erratum", or straight up make nested require nrips.
+
+A quick Internet search shows that the first CPUs with NextRIP were the
+second-generation Family 10h CPUs (Phenom II, Athlon II, etc.).
+They started being released in early 2009, so we probably don't need to
+worry about the non-nrips case too much.
+
+For the nested case, orthodox reading of the aforementioned APM sentence
+would mean that a L1 hypervisor is not allowed either to make use of such
+event injection in the non-nrips case.
+
+> Note, that also requires updating svm_queue_exception(), which assumes it will
+> only be handed hardware exceptions, i.e. hardcodes type EXEPT.  That's blatantly
+> wrong, e.g. if userspace injects a software exception via KVM_SET_VCPU_EVENTS.
+
+svm_queue_exception() uses SVM_EVTINJ_TYPE_EXEPT, which is correct even
+for software exceptions (#BP or #OF).
+It does work indeed, as the self test included in this patch set
+demonstrates.
 
 Thanks,
-
--- Steve
-
-
->  	struct dentry *entry;
->  
->  	/* First see if we did not already create this dir */
-> @@ -2295,13 +2295,13 @@ event_subsystem_dir(struct trace_array *tr, const char *name,
->  	}
->  
->  	/* Now see if the system itself exists. */
-> -	list_for_each_entry(system, &event_subsystems, list) {
-> -		if (strcmp(system->name, name) == 0)
-> +	system = NULL;
-> +	list_for_each_entry(iter, &event_subsystems, list) {
-> +		if (strcmp(iter->name, name) == 0) {
-> +			system = iter;
->  			break;
-> +		}
->  	}
-> -	/* Reset system variable when not found */
-> -	if (&system->list == &event_subsystems)
-> -		system = NULL;
->  
->  	dir = kmalloc(sizeof(*dir), GFP_KERNEL);
->  	if (!dir)
-> 
-> base-commit: f82da161ea75dc4db21b2499e4b1facd36dab275
-
+Maciej
