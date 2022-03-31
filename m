@@ -2,142 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26E40C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 14:11:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 294DEC43217
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 14:11:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237338AbiCaOM5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 10:12:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36196 "EHLO
+        id S237360AbiCaONE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 10:13:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237333AbiCaOMr (ORCPT
+        with ESMTP id S237333AbiCaONC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 10:12:47 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F296F1A5D4D
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 07:10:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648735859;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=+4so6aFuDRRvDSwPLBC1SYqRreDKMfHkuu+cZnQ7gCc=;
-        b=PyvFjTBHo0fvKm57DAHEQe3WiD2sObNt++MdaV8QwGU9w49HuvtZZwHsMP7YWaoqDrnn0Q
-        48HY0LEsgw6b5mm4a9QSP+uLZKNDuvNYyjAgMF7f9JHDHByjOjhE6MVz0a4Bksp/gsLuDA
-        PPwKNOj1IXiJpMANYgoCwISpZ2ei/CA=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-526-BYIqwxrhNRu9CGhhjptmAw-1; Thu, 31 Mar 2022 10:10:57 -0400
-X-MC-Unique: BYIqwxrhNRu9CGhhjptmAw-1
-Received: by mail-wm1-f70.google.com with SMTP id q186-20020a1c43c3000000b0038ce534d9e2so7754712wma.0
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 07:10:57 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=+4so6aFuDRRvDSwPLBC1SYqRreDKMfHkuu+cZnQ7gCc=;
-        b=ACXKUKu+GgKby80c41XA/l3J6c/Ibcv4uDyySc8YuqCIRrfwNTAo/vPdZosoO8VhO4
-         KqIa32q/Cq+Z5i86ZQcW2OAy/i4i4OnU9a6YZ9d21u03TZSmhnCY8s8a2gBZ0EguaHnm
-         V0IVG4Un9xI+wQD/J6aFBpvHXNpglLO3gXqQZ1qwYTWcAuJLPzQkn6caJc8l9DvqSHda
-         sWfliAUZIsGgVD1YEvAPZijHI5/Nqa7L/jywNDr7VY2Mg8yj0D/XuivCyBJHsyXsOFFd
-         MdNbmMF2gu2yhylhE7YOVPuoWlwL87yQ4Q5exO0SkgN86Nu8q6QIc0tXRif5TP9JZR/J
-         tUzQ==
-X-Gm-Message-State: AOAM5302m5y/wyoejR6yh0Auj70IBzzG1I4Kv53c475ltkZB3PmYF5jD
-        8aj+8S/7J/tuUOA/qtSsBOlzT4wq3WAx9fO0Tbd9VGBQOk5SSijDNYs+N0S8Rc8r5RAj7QOTbqh
-        s34sdbReHOGCMaU/Wr0bFk0HSg/2qFL/gFZuU/ZeQnaLkyFuO4dsFQta4wz0KfoOrv335ODWg/t
-        Y=
-X-Received: by 2002:a5d:6041:0:b0:204:1c96:c04d with SMTP id j1-20020a5d6041000000b002041c96c04dmr4302141wrt.541.1648735856259;
-        Thu, 31 Mar 2022 07:10:56 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJysM97+fkPHW/+UC3JXm8yYSTlzHvNluGBBf4OE1SLeaKKiEhxH6c0r2GhUn3IXB8B2cvSV5A==
-X-Received: by 2002:a5d:6041:0:b0:204:1c96:c04d with SMTP id j1-20020a5d6041000000b002041c96c04dmr4302113wrt.541.1648735855979;
-        Thu, 31 Mar 2022 07:10:55 -0700 (PDT)
-Received: from minerva.home ([92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id t4-20020a05600001c400b00203fb5dcf29sm19537626wrx.40.2022.03.31.07.10.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 31 Mar 2022 07:10:55 -0700 (PDT)
-From:   Javier Martinez Canillas <javierm@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Peter Jones <pjones@redhat.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Alexander Larsson <alexl@redhat.com>,
-        Al Stone <ahs3@redhat.com>, linux-efi@vger.kernel.org,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Andrew Halaney <ahalaney@redhat.com>,
-        linux-rt-users@vger.kernel.org, Brian Masney <bmasney@redhat.com>,
-        Robbie Harwood <rharwood@redhat.com>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>
-Subject: [PATCH] efi: Allow to enable EFI runtime services with PREEMPT_RT
-Date:   Thu, 31 Mar 2022 16:10:38 +0200
-Message-Id: <20220331141038.171204-1-javierm@redhat.com>
-X-Mailer: git-send-email 2.35.1
+        Thu, 31 Mar 2022 10:13:02 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEB851A9C9E;
+        Thu, 31 Mar 2022 07:11:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1648735873; x=1680271873;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=DTlZMPyBAjhVeiotBWdlFP85K8A9aL9sjqg7w9Ombhs=;
+  b=snxaDYqsGX/AJvok1qc/qb5WZ4D3yRKHa22xxJq9eT3OPiXEafBFVjux
+   ZfypAtJGxJMjSuvzGWDpT3ISZA4QiKiMSKYYbJ8gOJtdxtGqimlT39Jog
+   18Ce/ZASuLXzx9iXETR2cLuOfzw8GjZVG3zwc3X2cJzgkBJmqXy4bf6qY
+   uktZtjQsPWGZpdTeDrnWpLDaT2Ucr1bGKSMANNutWd9EaCZfyAswESzCu
+   Ltk44lQgS89e5f2C9rm6lM8Nk0eduGhF53rApGI/SN01xDao/cT48uUnx
+   /XaVHv5xBgjModJ1zk2X2BDFK1p/++EJbZIvQw9H7pQNlW44dH5hYjzA7
+   A==;
+X-IronPort-AV: E=Sophos;i="5.90,225,1643698800"; 
+   d="scan'208";a="158386498"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 31 Mar 2022 07:11:12 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Thu, 31 Mar 2022 07:11:11 -0700
+Received: from localhost.localdomain (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Thu, 31 Mar 2022 07:11:10 -0700
+From:   Claudiu Beznea <claudiu.beznea@microchip.com>
+To:     <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
+        <robh+dt@kernel.org>
+CC:     <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>
+Subject: [PATCH 1/2] ARM: dts: at91: sama5d4_xplained: fix pinctrl phandle name
+Date:   Thu, 31 Mar 2022 17:13:22 +0300
+Message-ID: <20220331141323.194355-1-claudiu.beznea@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit d9f283ae71af ("efi: Disable runtime services on RT") disabled EFI
-runtime services when the CONFIG_PREEMPT_RT option is enabled.
+Pinctrl phandle is for spi1 so rename it to reflect this.
 
-The rationale for the change is that some EFI calls could take too much
-time, leading to large latencies which are an issue for RT kernels.
-
-But a side effect of that commit is that now is not possible anymore to
-enable the EFI runtime services by default when CONFIG_PREEMPT_RT is set
-to y, even for platforms that could guarantee bounded time for EFI calls.
-
-Instead, let's add a new EFI_DISABLE_RUNTIME boolean Kconfig option, that
-would be set to n by default but to y if CONFIG_PREEMPT_RT is enabled.
-
-That way, the current behaviour is preserved but gives users a mechanism
-to enable the EFI runtimes services in their kernels if that is required.
-
-Reported-by: Alexander Larsson <alexl@redhat.com>
-Fixes: d9f283ae71af ("efi: Disable runtime services on RT")
-Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
 ---
+ arch/arm/boot/dts/at91-sama5d4_xplained.dts | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
- drivers/firmware/efi/Kconfig | 15 +++++++++++++++
- drivers/firmware/efi/efi.c   |  2 +-
- 2 files changed, 16 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/firmware/efi/Kconfig b/drivers/firmware/efi/Kconfig
-index 2c3dac5ecb36..3c5373de86fc 100644
---- a/drivers/firmware/efi/Kconfig
-+++ b/drivers/firmware/efi/Kconfig
-@@ -284,3 +284,18 @@ config EFI_CUSTOM_SSDT_OVERLAYS
+diff --git a/arch/arm/boot/dts/at91-sama5d4_xplained.dts b/arch/arm/boot/dts/at91-sama5d4_xplained.dts
+index d241c24f0d83..accb92cfac44 100644
+--- a/arch/arm/boot/dts/at91-sama5d4_xplained.dts
++++ b/arch/arm/boot/dts/at91-sama5d4_xplained.dts
+@@ -82,7 +82,7 @@ usart4: serial@fc010000 {
  
- 	  See Documentation/admin-guide/acpi/ssdt-overlays.rst for more
- 	  information.
-+
-+config EFI_DISABLE_RUNTIME
-+	bool "Disable EFI runtime services support by default"
-+	default y if PREEMPT_RT
-+	help
-+	  Allow to disable the EFI runtime services support by default. This can
-+	  already be achieved by using the efi=noruntime option, but it could be
-+	  useful to have this default without any kernel command line parameter.
-+
-+	  The EFI runtime services are disabled by default when PREEMPT_RT is
-+	  enabled, because measurements have shown that some EFI functions calls
-+	  might take too much time to complete, causing large latencies which are
-+	  an issue for RT.
-+
-+	  This default can be overridden by using the efi=runtime option.
-diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
-index 5502e176d51b..ff57db8f8d05 100644
---- a/drivers/firmware/efi/efi.c
-+++ b/drivers/firmware/efi/efi.c
-@@ -66,7 +66,7 @@ struct mm_struct efi_mm = {
- 
- struct workqueue_struct *efi_rts_wq;
- 
--static bool disable_runtime = IS_ENABLED(CONFIG_PREEMPT_RT);
-+static bool disable_runtime = IS_ENABLED(CONFIG_EFI_DISABLE_RUNTIME);
- static int __init setup_noefi(char *arg)
- {
- 	disable_runtime = true;
+ 			spi1: spi@fc018000 {
+ 				pinctrl-names = "default";
+-				pinctrl-0 = <&pinctrl_spi0_cs>;
++				pinctrl-0 = <&pinctrl_spi1_cs>;
+ 				cs-gpios = <&pioB 21 0>;
+ 				status = "okay";
+ 			};
+@@ -140,7 +140,7 @@ pinctrl_macb0_phy_irq: macb0_phy_irq_0 {
+ 						atmel,pins =
+ 							<AT91_PIOE 1 AT91_PERIPH_GPIO AT91_PINCTRL_PULL_UP_DEGLITCH>;
+ 					};
+-					pinctrl_spi0_cs: spi0_cs_default {
++					pinctrl_spi1_cs: spi1_cs_default {
+ 						atmel,pins =
+ 							<AT91_PIOB 21 AT91_PERIPH_GPIO AT91_PINCTRL_NONE>;
+ 					};
 -- 
-2.35.1
+2.32.0
 
