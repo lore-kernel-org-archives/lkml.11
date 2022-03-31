@@ -2,69 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC6BBC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 08:52:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0485CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 08:54:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233408AbiCaIx7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 04:53:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59472 "EHLO
+        id S233392AbiCaI4X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 04:56:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233396AbiCaIxy (ORCPT
+        with ESMTP id S230375AbiCaI4P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 04:53:54 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55B006A078;
-        Thu, 31 Mar 2022 01:52:02 -0700 (PDT)
-Received: from kwepemi100002.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KTcVP524SzdZPx;
-        Thu, 31 Mar 2022 16:51:41 +0800 (CST)
-Received: from kwepeml500002.china.huawei.com (7.221.188.128) by
- kwepemi100002.china.huawei.com (7.221.188.188) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 31 Mar 2022 16:52:00 +0800
-Received: from huawei.com (10.175.104.82) by kwepeml500002.china.huawei.com
- (7.221.188.128) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Thu, 31 Mar
- 2022 16:52:00 +0800
-From:   Huang Guobin <huangguobin4@huawei.com>
-To:     <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>
-CC:     <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH] tty: Fix a possible resource leak in icom_probe
-Date:   Thu, 31 Mar 2022 17:10:05 +0800
-Message-ID: <20220331091005.3290753-1-huangguobin4@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 31 Mar 2022 04:56:15 -0400
+Received: from mail-yw1-x1132.google.com (mail-yw1-x1132.google.com [IPv6:2607:f8b0:4864:20::1132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EF04CFB99
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 01:54:25 -0700 (PDT)
+Received: by mail-yw1-x1132.google.com with SMTP id 00721157ae682-2eafabbc80aso30728017b3.11
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 01:54:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Xn8azzFhzPhyLx+cU3W3Fc2v8I4Cjd0IkMQ9uqr47o8=;
+        b=5vtJ2thFavd9cLivjIt3UYcmVVHdyG8sUhR6t4y9k09OG/HquF9FJUQEWh12OMpeCd
+         8QZWJP2cIWOpXHZVjwUAWn3b+rZNye1bM3f3hsfjxx/HwsdrZEk7ZSFeSHZPBsFYiPBF
+         V5q91UAat/yBLYIr5qLMFKO7RrzV1PcOW57tDQS7GangAFjkcqnqv3RXl6Z1Hcxw1R0g
+         SXpZDRNAaIRvtNg4RFoA7lbpVwLoZjZmkZg36nea/VMZa4MytSYGtolbRSukFadOMslq
+         WtyF+R19LohMwn2b4IPdNNojqBiELaXz8cfmxjhUfkUVgHkZEztwtTjiYdQ3rxOGEDi8
+         ctNA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Xn8azzFhzPhyLx+cU3W3Fc2v8I4Cjd0IkMQ9uqr47o8=;
+        b=Df7QaWXlHH2A+O1OpUyB9nHcnuYq5n/GOuyvda/99dV37/ocqknh9bX2IUHX/FzNMi
+         06mAYJFl9SuKZfldKf7xFy/9R1kjOOqI2mtyb++2quQbmUWQam4w2dFZjfdqosWtQ1+c
+         besMUisX9HKAO2lpWg4FGhdScO05mwLiL/1ENyxLsG5Ii4CBBJrUs/kjrbJbNGwKBF+F
+         lBhzP1Y2wkoHBCtzfMsLWVcNV77ruj/3Rum7m5fjwAH2QDv5Qb6353PLfNwvAr/gFWNJ
+         9FlfiELzk35Vp7gJ9Fzi/0N3ijGkbx8CFltH9Xhu6YOspPiWh4c9JH9NbTf+RcFvt5XL
+         lLhw==
+X-Gm-Message-State: AOAM530r7YS33waDCQYl7PQ3M782pa+Fh+Pi9jDTy5ZQ221YAujcGuQq
+        MRG0F7JYAgbGGMF+CXLJ2C1zG689QzRRL1cdimkMVA==
+X-Google-Smtp-Source: ABdhPJxw6+paO/ULlF+r7RmJCKQmMCdHrJH4j9IS297GY/P3ppySDM2E+Tmp5keTQENtNboxL9+OZGX99Bm3WL+EJSk=
+X-Received: by 2002:a81:1c4f:0:b0:2e5:9db3:7a8e with SMTP id
+ c76-20020a811c4f000000b002e59db37a8emr3679214ywc.319.1648716864751; Thu, 31
+ Mar 2022 01:54:24 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.82]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- kwepeml500002.china.huawei.com (7.221.188.128)
-X-CFilter-Loop: Reflected
+References: <20220331065640.5777-1-songmuchun@bytedance.com>
+ <6c774e27-26d2-6c45-65f9-8a5b8acd6433@redhat.com> <CAMZfGtV6=n60f2cEWWtFk8Ci1c_JzeNJCmzAs2X6EHZkaXfP6Q@mail.gmail.com>
+ <445c5426-cfb6-0232-6ea5-41cf8aaa264e@redhat.com>
+In-Reply-To: <445c5426-cfb6-0232-6ea5-41cf8aaa264e@redhat.com>
+From:   Muchun Song <songmuchun@bytedance.com>
+Date:   Thu, 31 Mar 2022 16:53:48 +0800
+Message-ID: <CAMZfGtVsSJWT6Fojr5FcN26=MPnjp79usQXF+xRGXHLUvwYU_Q@mail.gmail.com>
+Subject: Re: [PATCH v4 1/2] mm: hugetlb_vmemmap: introduce ARCH_WANT_HUGETLB_PAGE_FREE_VMEMMAP
+To:     David Hildenbrand <david@redhat.com>
+Cc:     Will Deacon <will@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Oscar Salvador <osalvador@suse.de>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        David Rientjes <rientjes@google.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>, james.morse@arm.com,
+        Barry Song <21cnbao@gmail.com>,
+        LAK <linux-arm-kernel@lists.infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Xiongchun duan <duanxiongchun@bytedance.com>,
+        Fam Zheng <fam.zheng@bytedance.com>,
+        Muchun Song <smuchun@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When pci_read_config_dword failed, call pci_release_regions() and
-pci_disable_device() to recycle the resource previously allocated.
+On Thu, Mar 31, 2022 at 4:51 PM David Hildenbrand <david@redhat.com> wrote:
+>
+> On 31.03.22 10:48, Muchun Song wrote:
+> > On Thu, Mar 31, 2022 at 4:42 PM David Hildenbrand <david@redhat.com> wrote:
+> >>
+> >> On 31.03.22 08:56, Muchun Song wrote:
+> >>> The feature of minimizing overhead of struct page associated with each
+> >>> HugeTLB page is implemented on x86_64, however, the infrastructure of
+> >>> this feature is already there, we could easily enable it for other
+> >>> architectures.  Introduce ARCH_WANT_HUGETLB_PAGE_FREE_VMEMMAP for other
+> >>> architectures to be easily enabled.  Just select this config if they
+> >>> want to enable this feature.
+> >>>
+> >>> Suggested-by: Andrew Morton <akpm@linux-foundation.org>
+> >>> Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+> >>> ---
+> >>>  arch/x86/Kconfig |  1 +
+> >>>  fs/Kconfig       | 10 +++++++++-
+> >>>  2 files changed, 10 insertions(+), 1 deletion(-)
+> >>>
+> >>> diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+> >>> index 9f5bd41bf660..e69d42528542 100644
+> >>> --- a/arch/x86/Kconfig
+> >>> +++ b/arch/x86/Kconfig
+> >>> @@ -119,6 +119,7 @@ config X86
+> >>>       select ARCH_WANTS_DYNAMIC_TASK_STRUCT
+> >>>       select ARCH_WANTS_NO_INSTR
+> >>>       select ARCH_WANT_HUGE_PMD_SHARE
+> >>> +     select ARCH_WANT_HUGETLB_PAGE_FREE_VMEMMAP      if X86_64
+> >>>       select ARCH_WANT_LD_ORPHAN_WARN
+> >>>       select ARCH_WANTS_THP_SWAP              if X86_64
+> >>>       select ARCH_HAS_PARANOID_L1D_FLUSH
+> >>> diff --git a/fs/Kconfig b/fs/Kconfig
+> >>> index 6c7dc1387beb..f6db2af33738 100644
+> >>> --- a/fs/Kconfig
+> >>> +++ b/fs/Kconfig
+> >>> @@ -245,9 +245,17 @@ config HUGETLBFS
+> >>>  config HUGETLB_PAGE
+> >>>       def_bool HUGETLBFS
+> >>>
+> >>> +#
+> >>> +# Select this config option from the architecture Kconfig, if it is preferred
+> >>> +# to enable the feature of minimizing overhead of struct page associated with
+> >>> +# each HugeTLB page.
+> >>> +#
+> >>> +config ARCH_WANT_HUGETLB_PAGE_FREE_VMEMMAP
+> >>> +     bool
+> >>> +
+> >>>  config HUGETLB_PAGE_FREE_VMEMMAP
+> >>>       def_bool HUGETLB_PAGE
+> >>> -     depends on X86_64
+> >>> +     depends on ARCH_WANT_HUGETLB_PAGE_FREE_VMEMMAP
+> >>>       depends on SPARSEMEM_VMEMMAP
+> >>>
+> >>>  config HUGETLB_PAGE_FREE_VMEMMAP_DEFAULT_ON
+> >>
+> >>
+> >> I think something like "HUGETLB_OPTIMIZE_VMEMMAP" might be more
+> >> expressive, but that would imply renaming the existing config knob.
+> >>
+> >
+> > How about doing a full code cleanup in a separate series in the future?
+> >
+>
+> Yeah.
+>
 
-Signed-off-by: Huang Guobin <huangguobin4@huawei.com>
----
- drivers/tty/serial/icom.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+OK. Have Added it into my To-do list.
 
-diff --git a/drivers/tty/serial/icom.c b/drivers/tty/serial/icom.c
-index 03a2fe9f4c9a..02b375ba2f07 100644
---- a/drivers/tty/serial/icom.c
-+++ b/drivers/tty/serial/icom.c
-@@ -1501,7 +1501,7 @@ static int icom_probe(struct pci_dev *dev,
- 	retval = pci_read_config_dword(dev, PCI_COMMAND, &command_reg);
- 	if (retval) {
- 		dev_err(&dev->dev, "PCI Config read FAILED\n");
--		return retval;
-+		goto probe_exit0;
- 	}
- 
- 	pci_write_config_dword(dev, PCI_COMMAND,
--- 
-2.25.1
-
+Thanks.
