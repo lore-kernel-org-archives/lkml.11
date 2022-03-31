@@ -2,144 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E810FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 16:07:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B9F0C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 16:11:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239664AbiCaQJV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 12:09:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52010 "EHLO
+        id S238658AbiCaQNm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 12:13:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233760AbiCaQJS (ORCPT
+        with ESMTP id S238340AbiCaQNl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 12:09:18 -0400
-Received: from mail.efficios.com (mail.efficios.com [167.114.26.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EC7A1F0CB9;
-        Thu, 31 Mar 2022 09:07:30 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.efficios.com (Postfix) with ESMTP id 6DF133D4E12;
-        Thu, 31 Mar 2022 12:07:29 -0400 (EDT)
-Received: from mail.efficios.com ([127.0.0.1])
-        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id JRYGslxfhPRR; Thu, 31 Mar 2022 12:07:29 -0400 (EDT)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.efficios.com (Postfix) with ESMTP id 18AAA3D4E11;
-        Thu, 31 Mar 2022 12:07:29 -0400 (EDT)
-DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com 18AAA3D4E11
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=efficios.com;
-        s=default; t=1648742849;
-        bh=jx6gZg83afo7MOp42wOlJpwj/Jm9YIc4UWICwF/Z2j0=;
-        h=Date:From:To:Message-ID:MIME-Version;
-        b=MxoPp8bKKDLmzIwiElUJrkDBFIkC/Tr0HvvD/oqo2jBdk4bEwG8EXtSenwTDFjJnn
-         SOPpEU3sM57D0c1BOOeqkYki945UhL/vwX6bo8ovSg2g9M6HHA+yzOBFktuPqXiA0Q
-         ahD2cyihm7uLzv9aQrAgu+MGPgF/lJ3UcxlVgAcVYSh9sRRVVQwvvI55Yspx+kxZUx
-         C8oWwwpyDltHmDupteLWI4LIkO7VCDtHeL7X0goq1o9D39Hx1DM5Fhu+ovdF/EUtih
-         hYhofjbzJ6Bi6Lmwl2d4BAhA/EOJz28Z9Mu/OufavmNCTE3rcLZ+2yEX/Ro0AUZmSS
-         7CP/ZgMXQ1J6w==
-X-Virus-Scanned: amavisd-new at efficios.com
-Received: from mail.efficios.com ([127.0.0.1])
-        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id NP21fSpX9mGH; Thu, 31 Mar 2022 12:07:29 -0400 (EDT)
-Received: from mail03.efficios.com (mail03.efficios.com [167.114.26.124])
-        by mail.efficios.com (Postfix) with ESMTP id 0588F3D4AEE;
-        Thu, 31 Mar 2022 12:07:29 -0400 (EDT)
-Date:   Thu, 31 Mar 2022 12:07:28 -0400 (EDT)
-From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-To:     rostedt <rostedt@goodmis.org>
-Cc:     Masahiro Yamada <masahiroy@kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Beau Belgrave <beaub@linux.microsoft.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        linux-trace-devel <linux-trace-devel@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        ndesaulniers <ndesaulniers@google.com>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
-Message-ID: <602770698.200731.1648742848915.JavaMail.zimbra@efficios.com>
-In-Reply-To: <20220331081337.07ddf251@gandalf.local.home>
-References: <20220330201755.29319-1-mathieu.desnoyers@efficios.com> <20220330162152.17b1b660@gandalf.local.home> <CAK7LNATm5FjZsXL6aKUMhXwQAqTuO9+LmAk3LGjpAib7NZBDmg@mail.gmail.com> <20220331081337.07ddf251@gandalf.local.home>
-Subject: Re: [PATCH] tracing: do not export user_events uapi
+        Thu, 31 Mar 2022 12:13:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 964481C9B5F
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 09:11:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 49632B82055
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 16:11:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CA79C340ED;
+        Thu, 31 Mar 2022 16:11:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648743111;
+        bh=N3LF6qL3b+AkuR6hIqMLAR3Jr6PiseXe5qT4PBdX+mk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=cHfUUa5H1XS1LBoFh5E8Jikj/qoyrYRNDxg4FxjCbK9VCt2f+nL+GLh8YFk5BoDhi
+         xp6K6VaXd4V/JL1ql466k8YK825gx23O8sqGKj2tyD+FnNrOnjsV17IcLs7ntVMaHJ
+         8/9k9DK7S3+1bqsM4V/XAqNUp8qc0JIHcAIW5Mlz9wykzwBj3DaG+R/0LDqWCAwQx6
+         BBYcWChgmbjyOEFD8DalFTFexLrYv/9tYLnpLNdt6DySthBFcbrzM8LDK4Cp78TiU7
+         c8pWDc9PzUsduolTp74jYtn8fYfFGoSR9wKjta9pJJOLLAMJbTcdGye7Qi0Cw692vZ
+         LZOA9egyyLrrw==
+Date:   Thu, 31 Mar 2022 09:11:43 -0700
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Mike Rapoport <rppt@linux.ibm.com>
+Cc:     Roman Gushchin <roman.gushchin@linux.dev>,
+        kernel test robot <lkp@intel.com>,
+        Roman Gushchin <guro@fb.com>, llvm@lists.linux.dev,
+        kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org,
+        Suren Baghdasaryan <surenb@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Minchan Kim <minchan@google.com>,
+        Nick Desaulniers <ndesaulniers@google.com>
+Subject: Re:
+ [ammarfaizi2-block:google/android/kernel/common/android12-trusty-5.10
+ 4036/5872] WARNING: modpost: vmlinux.o(.text+0x4111c4): Section mismatch in
+ reference from the function memblock_bottom_up() to the variable
+ .meminit.data:memblock
+Message-ID: <YkXSv8exRRUbT/oM@dev-arch.thelio-3990X>
+References: <202203301412.MZ7wQvQz-lkp@intel.com>
+ <YkTP/+jhhAX6xlAQ@carbon.dhcp.thefacebook.com>
+ <YkV3bCqtLaVH+mC7@linux.ibm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [167.114.26.124]
-X-Mailer: Zimbra 8.8.15_GA_4203 (ZimbraWebClient - FF98 (Linux)/8.8.15_GA_4232)
-Thread-Topic: tracing: do not export user_events uapi
-Thread-Index: soUfjk+gMtJ4HZ3jFxLYOaG8qofUxg==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YkV3bCqtLaVH+mC7@linux.ibm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
------ On Mar 31, 2022, at 8:13 AM, rostedt rostedt@goodmis.org wrote:
-
-> On Thu, 31 Mar 2022 16:29:30 +0900
-> Masahiro Yamada <masahiroy@kernel.org> wrote:
+On Thu, Mar 31, 2022 at 12:42:04PM +0300, Mike Rapoport wrote:
+> (added llvm folks)
 > 
->> Well, the intended usage of no-export-headers is to
->> cater to the UAPI supported by only some architectures.
->> We have kvm(_para).h here because not all architectures
->> support kvm.
->> 
->> If you do not want to export the UAPI,
->> you should not put it in include/uapi/.
->> 
->> After the API is finalized, you can move it to
->> include/uapi.
+> Hi,
 > 
-> So a little bit of background. I and a few others thought it was done, and
-> pushed it to Linus. Then when it made it into his tree (and mentioned on
-> LWN) it got a wider audience that had concerns. After they brought up those
-> concerns, we agreed that this needs a bit more work. I was hoping not to do
-> a full revert and simply marked the change for broken so that it can be
-> worked on upstream with the wider audience. Linus appears to be fine with
-> this approach, as he helped me with my "mark for BROKEN" patch.
+> On Wed, Mar 30, 2022 at 02:47:43PM -0700, Roman Gushchin wrote:
+> > On Wed, Mar 30, 2022 at 02:53:14PM +0800, kbuild test robot wrote:
+> > > Hi Roman,
+> > > 
+> > > FYI, the error/warning still remains.
+> > > 
+> > > tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android12-trusty-5.10
+> > > head:   07055bfd3d810d41a38354693dfaa55a6f8c0025
+> > > commit: 0e0bfc41fdf4d79d39ebe929844cdee44f97366d [4036/5872] UPSTREAM: mm: cma: allocate cma areas bottom-up
+> > > config: x86_64-randconfig-a005 (https://download.01.org/0day-ci/archive/20220330/202203301412.MZ7wQvQz-lkp@intel.com/config)
+> > > compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 0f6d9501cf49ce02937099350d08f20c4af86f3d)
+> > > reproduce (this is a W=1 build):
+> > >         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+> > >         chmod +x ~/bin/make.cross
+> > >         # https://github.com/ammarfaizi2/linux-block/commit/0e0bfc41fdf4d79d39ebe929844cdee44f97366d
+> > >         git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+> > >         git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android12-trusty-5.10
+> > >         git checkout 0e0bfc41fdf4d79d39ebe929844cdee44f97366d
+> > >         # save the config file to linux build tree
+> > >         mkdir build_dir
+> > >         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+> > > 
+> > > If you fix the issue, kindly add following tag as appropriate
+> > > Reported-by: kernel test robot <lkp@intel.com>
+> > > 
+> > > All warnings (new ones prefixed by >>, old ones prefixed by <<):
+> > > 
+> > > >> WARNING: modpost: vmlinux.o(.text+0x4111c4): Section mismatch in reference from the function memblock_bottom_up() to the variable .meminit.data:memblock
+> > > The function memblock_bottom_up() references
+> > > the variable __meminitdata memblock.
+> > > This is often because memblock_bottom_up lacks a __meminitdata
+> > > annotation or the annotation of memblock is wrong.
+> > 
+> > I guess this patch should fix it, however I fail to reproduce the original issue.
+> > Maybe it's up to the specific compiler version.
+> > 
+> > --
+> > 
+> > From b55a8dd19f4156d7e24ec39b18ede06965ce1c4f Mon Sep 17 00:00:00 2001
+> > From: Roman Gushchin <roman.gushchin@linux.dev>
+> > Date: Wed, 30 Mar 2022 14:42:12 -0700
+> > Subject: [PATCH] memblock: fix memblock_bottom_up() and
+> >  memblock_set_bottom_up() annotations
+> > 
+> > memblock_bottom_up() and memblock_set_bottom_up() lack __meminitdata
+> > annotations causing compiler warnings like:
+> >   WARNING: modpost: vmlinux.o(.text+0x4111c4): Section mismatch in reference from the function memblock_bottom_up() to the
+> >   variable .meminit.data:memblock
+> > 
+> > Fix it by adding the missing annotation and removing the wrong
+> > __meminit annotation.
+> > 
+> > Reported-by: kernel test robot <lkp@intel.com>
+> > Signed-off-by: Roman Gushchin <roman.gushchin@linux.dev>
+> > ---
+> >  include/linux/memblock.h | 4 ++--
+> >  1 file changed, 2 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/include/linux/memblock.h b/include/linux/memblock.h
+> > index 50ad19662a32..536bc2fc31e6 100644
+> > --- a/include/linux/memblock.h
+> > +++ b/include/linux/memblock.h
+> > @@ -460,7 +460,7 @@ static inline void *memblock_alloc_node(phys_addr_t size,
+> >  /*
+> >   * Set the allocation direction to bottom-up or top-down.
+> >   */
+> > -static inline __init_memblock void memblock_set_bottom_up(bool enable)
+> > +static inline __initdata_memblock void memblock_set_bottom_up(bool enable)
 > 
-> Mathieu's concern is that this header file could be used in older distros
-> with newer kernels that have it implemented and added this to keep out of
-> those older distros.
+> I think putting __initdata_memlock won't help here, because there should be
+> nothing wrong with __meminit function accessing __meminitdata data.
 > 
-> The options to make Mathieu sleep better at night are:
+> My guesstimate would be that the compiler decided not to inline this and
+> still dropped section attribute because of 'inline'.
 > 
-> 1) this patch
+> If this is the case we I think we should 
 > 
-> 2) move this file out of uapi.
-
-I would be fine with this approach as well. This is simple enough:
-
-git mv include/uapi/linux/user_events.h include/linux/
-
-and:
-
-diff --git a/kernel/trace/trace_events_user.c b/kernel/trace/trace_events_user.c
-index 8b3d241a31c2..823d7b09dcba 100644
---- a/kernel/trace/trace_events_user.c
-+++ b/kernel/trace/trace_events_user.c
-@@ -18,7 +18,7 @@
- #include <linux/tracefs.h>
- #include <linux/types.h>
- #include <linux/uaccess.h>
--#include <uapi/linux/user_events.h>
-+#include <linux/user_events.h>
- #include "trace.h"
- #include "trace_dynevent.h"
-
-Including <linux/user_events.h> will continue to work even when the header is
-moved to uapi in the future.
-
-Thanks,
-
-Mathieu
-
-
+> 	s/inline __init_memblock/__always_inline/
 > 
-> 3) revert the entire thing.
+> >  {
+> >  	memblock.bottom_up = enable;
+> >  }
+> > @@ -470,7 +470,7 @@ static inline __init_memblock void memblock_set_bottom_up(bool enable)
+> >   * if this is true, that said, memblock will allocate memory
+> >   * in bottom-up direction.
+> >   */
+> > -static inline __init_memblock bool memblock_bottom_up(void)
+> > +static inline __initdata_memblock bool memblock_bottom_up(void)
+> >  {
+> >  	return memblock.bottom_up;
+> >  }
+> > -- 
+> > 2.30.2
+> > 
 > 
-> I really do not want to do #3 but I am willing to do 1 or 2.
-> 
-> -- Steve
 
--- 
-Mathieu Desnoyers
-EfficiOS Inc.
-http://www.efficios.com
+For the record, I cannot reproduce this on mainline, which has commits
+34dc2efb39a2 ("memblock: fix section mismatch warning") and a024b7c2850d
+("mm: memblock: fix section mismatch warning again"). That first commit
+has the same exact warning as this report, which is against an Android
+tree (android12-trusty-5.10).
+
+While I do not see the commit that 34dc2efb39a2 claims to fix in
+android12-trusty-5.10, I do see the three commits in android12-5.10:
+
+a46e3fa13968 ("UPSTREAM: mm: memblock: drop __init from memblock functions to make it inline")
+5f7ec0f4c383 ("UPSTREAM: memblock: fix section mismatch warning")
+8cf5bb6946a2 ("UPSTREAM: mm: memblock: fix section mismatch warning again")
+
+I think we can just discard this report for now, unless someone from
+Google's trusty team wants to address it in that branch.
+
+Cheers,
+Nathan
