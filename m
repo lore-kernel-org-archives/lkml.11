@@ -2,127 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C5B9C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 12:40:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB493C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 12:42:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236251AbiCaMmI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 08:42:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47174 "EHLO
+        id S236246AbiCaMoY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 08:44:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236220AbiCaMmA (ORCPT
+        with ESMTP id S229966AbiCaMoW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 08:42:00 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49D8B144B6D;
-        Thu, 31 Mar 2022 05:40:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648730413; x=1680266413;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=CJqdXwNo9v6/Qr4UTWxir9h956p2ApzEQvHPOUPXUPE=;
-  b=hWEzodKAlB9VT8StNQVTdF55thwdxJ1fPjsG/YTLXgPqL1vfGkunAeWU
-   0Zdc0OF0jJCIO81n5nfyxUzE941rjK24kbnEIb4WRLj2Ozglr2coEYfx7
-   2X8djIBi9QjC2xDv1zLrQI0xf2XiSmCo7jJtsQzc5iH2VlJfjL8nF9FBK
-   8C9b8HSHy4AgLjPFaXZ4kEmDk6kA+REpQwtWGk1WZ/d7uFce5ghjbU3Y0
-   0Gg+QAAX9m9my4sctf638zibqdYBKmRIkIFv1UW4zzrnNoocdpFRLd/Sn
-   T/XOUa6CVDo7oaTFJP9Wv4YQEbfA5j93nX1EghjA0besme3e0Tpof8tgv
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="259535728"
-X-IronPort-AV: E=Sophos;i="5.90,225,1643702400"; 
-   d="scan'208";a="259535728"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2022 05:40:12 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,225,1643702400"; 
-   d="scan'208";a="840157894"
-Received: from lkp-server02.sh.intel.com (HELO 3231c491b0e2) ([10.239.97.151])
-  by fmsmga005.fm.intel.com with ESMTP; 31 Mar 2022 05:40:09 -0700
-Received: from kbuild by 3231c491b0e2 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nZu5w-0000G4-Cy;
-        Thu, 31 Mar 2022 12:40:08 +0000
-Date:   Thu, 31 Mar 2022 20:39:20 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Muchun Song <songmuchun@bytedance.com>, corbet@lwn.net,
-        mike.kravetz@oracle.com, akpm@linux-foundation.org,
-        mcgrof@kernel.org, keescook@chromium.org, yzaikin@google.com,
-        osalvador@suse.de, david@redhat.com, masahiroy@kernel.org
-Cc:     kbuild-all@lists.01.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        duanxiongchun@bytedance.com, smuchun@gmail.com,
-        Muchun Song <songmuchun@bytedance.com>
-Subject: Re: [PATCH v6 1/4] mm: hugetlb_vmemmap: introduce
- STRUCT_PAGE_SIZE_IS_POWER_OF_2
-Message-ID: <202203312010.ct30oFE6-lkp@intel.com>
-References: <20220330153745.20465-2-songmuchun@bytedance.com>
+        Thu, 31 Mar 2022 08:44:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEEBB1480CE;
+        Thu, 31 Mar 2022 05:42:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5EFD3B8211D;
+        Thu, 31 Mar 2022 12:42:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D969C340F2;
+        Thu, 31 Mar 2022 12:42:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1648730551;
+        bh=jAIyaTwyj1j8wmQlC12/XbUSwBTVGLUZWKMUFMR6Ekk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=fArRSMKtjQ/S+3oe4X61SF2THyPDES4UTJbZDnDbQY7xGAy6Fn+ysMtXW5bqBxXod
+         U4fIbryJOIebBK7npOhbc9iTl6B3vFHBrPJd8DH3vbwUsxRCZ08Rt8qF7Cg1kvAMhk
+         H2VZUeFyCluIlAqsDiQhCaUofZZJ8WHCcLQUamtU=
+Date:   Thu, 31 Mar 2022 14:42:27 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Miguel Ojeda <ojeda@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Alex Gaynor <alex.gaynor@gmail.com>,
+        Wedson Almeida Filho <wedsonaf@google.com>,
+        Gary Guo <gary@garyguo.net>, Matthew Bakhtiari <dev@mtbk.me>
+Subject: Re: [PATCH v5 06/20] rust: add `alloc` crate
+Message-ID: <YkWhs1GffuUmZ4SC@kroah.com>
+References: <20220317181032.15436-1-ojeda@kernel.org>
+ <20220317181032.15436-7-ojeda@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220330153745.20465-2-songmuchun@bytedance.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220317181032.15436-7-ojeda@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Muchun,
-
-Thank you for the patch! Yet something to improve:
-
-[auto build test ERROR on hnaz-mm/master]
-[also build test ERROR on mcgrof/sysctl-next linus/master next-20220331]
-[cannot apply to v5.17]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Muchun-Song/add-hugetlb_free_vmemmap-sysctl/20220330-234018
-base:   https://github.com/hnaz/linux-mm master
-config: ia64-randconfig-s031-20220331 (https://download.01.org/0day-ci/archive/20220331/202203312010.ct30oFE6-lkp@intel.com/config)
-compiler: ia64-linux-gcc (GCC) 11.2.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://github.com/intel-lab-lkp/linux/commit/5164c566d4fbdb808689ee4552ed95eab421522e
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Muchun-Song/add-hugetlb_free_vmemmap-sysctl/20220330-234018
-        git checkout 5164c566d4fbdb808689ee4552ed95eab421522e
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=ia64 prepare
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   In file included from arch/ia64/include/asm/thread_info.h:10,
-                    from include/linux/thread_info.h:60,
-                    from include/asm-generic/preempt.h:5,
-                    from ./arch/ia64/include/generated/asm/preempt.h:1,
-                    from include/linux/preempt.h:78,
-                    from include/linux/spinlock.h:55,
-                    from include/linux/kref.h:16,
-                    from include/linux/mm_types.h:8,
-                    from mm/struct_page_size.c:10:
->> arch/ia64/include/asm/asm-offsets.h:1:10: fatal error: generated/asm-offsets.h: No such file or directory
-       1 | #include <generated/asm-offsets.h>
-         |          ^~~~~~~~~~~~~~~~~~~~~~~~~
-   compilation terminated.
-   make[2]: *** [scripts/Makefile.build:127: mm/struct_page_size.s] Error 1
-   make[2]: Target '__build' not remade because of errors.
-   make[1]: *** [Makefile:1261: prepare0] Error 2
-   make[1]: Target 'prepare' not remade because of errors.
-   make: *** [Makefile:226: __sub-make] Error 2
-   make: Target 'prepare' not remade because of errors.
+On Thu, Mar 17, 2022 at 07:09:54PM +0100, Miguel Ojeda wrote:
+> This crate is a subset of the Rust standard library `alloc`, with some
+> additions on top.
+> 
+> This is needed because upstream support for fallible allocations
+> is a work in progress (i.e. the `try_*` versions of methods which
+> return a `Result` instead of panicking).
+> 
+> Having the library in-tree also gives us a bit more freedom to
+> experiment with new interfaces and allows us to iterate quickly.
+> 
+> Eventually, the goal is to have everything the kernel needs in
+> upstream `alloc` and drop it from the kernel tree.
+> 
+> Co-developed-by: Alex Gaynor <alex.gaynor@gmail.com>
+> Signed-off-by: Alex Gaynor <alex.gaynor@gmail.com>
+> Co-developed-by: Wedson Almeida Filho <wedsonaf@google.com>
+> Signed-off-by: Wedson Almeida Filho <wedsonaf@google.com>
+> Co-developed-by: Gary Guo <gary@garyguo.net>
+> Signed-off-by: Gary Guo <gary@garyguo.net>
+> Co-developed-by: Matthew Bakhtiari <dev@mtbk.me>
+> Signed-off-by: Matthew Bakhtiari <dev@mtbk.me>
+> Signed-off-by: Miguel Ojeda <ojeda@kernel.org>
+> ---
+>  rust/alloc/README.md              |   32 +
+>  rust/alloc/alloc.rs               |  440 ++++
+>  rust/alloc/borrow.rs              |  498 +++++
+>  rust/alloc/boxed.rs               | 2008 +++++++++++++++++
+>  rust/alloc/collections/mod.rs     |  156 ++
+>  rust/alloc/fmt.rs                 |  601 ++++++
+>  rust/alloc/lib.rs                 |  231 ++
+>  rust/alloc/macros.rs              |  126 ++
+>  rust/alloc/raw_vec.rs             |  561 +++++
+>  rust/alloc/slice.rs               | 1279 +++++++++++
+>  rust/alloc/str.rs                 |  632 ++++++
+>  rust/alloc/string.rs              | 2862 ++++++++++++++++++++++++
+>  rust/alloc/vec/drain.rs           |  186 ++
+>  rust/alloc/vec/drain_filter.rs    |  145 ++
+>  rust/alloc/vec/into_iter.rs       |  356 +++
+>  rust/alloc/vec/is_zero.rs         |  106 +
+>  rust/alloc/vec/mod.rs             | 3353 +++++++++++++++++++++++++++++
+>  rust/alloc/vec/partial_eq.rs      |   49 +
+>  rust/alloc/vec/set_len_on_drop.rs |   30 +
+>  rust/alloc/vec/spec_extend.rs     |  174 ++
+>  20 files changed, 13825 insertions(+)
 
 
-vim +1 arch/ia64/include/asm/asm-offsets.h
+This is a huge patch.  Why not break it into 2, one that adds what is
+upstream, and then the second adds the "stuff on top" that you need for
+the kernel.  Otherwise it's hard to know what is, and is not, upstream
+for us to be able to review from a kernel point of view.
 
-559df2e0210352f Sam Ravnborg 2009-04-19 @1  #include <generated/asm-offsets.h>
+I think you are trying to do this with the "kernel" keyword, but if so,
+why are you picking a "since" of 1.0?  None of that is described in the
+changelog :(
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+thanks,
+
+greg k-h
