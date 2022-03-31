@@ -2,127 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71574C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 15:40:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06313C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 15:42:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238394AbiCaPmb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 11:42:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51536 "EHLO
+        id S238491AbiCaPo2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 11:44:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239073AbiCaPmJ (ORCPT
+        with ESMTP id S239655AbiCaPnH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 11:42:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5E8B4C402;
-        Thu, 31 Mar 2022 08:37:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F9C361B6C;
-        Thu, 31 Mar 2022 15:37:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01886C340ED;
-        Thu, 31 Mar 2022 15:37:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648741028;
-        bh=1WPwzaVch64w0jPi0NN43I4/H8/WTq+VtwzIW+KkQKA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=RNmWiGT+crMQsM0b3tQ+NN/NzxNDX8/ABeNcRPmBNkdmXt7kmIb3hVQ0nHMHWfWku
-         9/l2fK1sHy2Elc7UGMtooY/262uX9gkPe2CLYRb1T5z5pfjHi+L0R2Sok2wSRI+4KN
-         xiGlR3mUDFoYPoY0uH6ttuz0i19W5JoJGKAD7XV5RT6lzlKEafCkzoKcOkqzcGhZ7b
-         OfRl/2UvC3QgSmYnSrjhdfvfiMTuCv0O3wj5VlqlXEK61YjhnCQ5jw9AXee1W/nMqO
-         N91d5dq9OkpWt2sQahIYVpKw/gHr48+8zOlpB0wh0ysz9+XjG/KI4Fbu5u0qKb7hvx
-         zZuxrPq+apX9Q==
-Date:   Thu, 31 Mar 2022 08:37:01 -0700
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Sedat Dilek <sedat.dilek@gmail.com>
-Cc:     Masahiro Yamada <masahiroy@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Kees Cook <keescook@chromium.org>,
-        linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-um@lists.infradead.org, llvm@lists.linux.dev,
-        patches@lists.linux.dev
-Subject: Re: [PATCH 1/2] kbuild: Remove '-mno-global-merge'
-Message-ID: <YkXKnRwvbMdvOtlJ@thelio-3990X>
-References: <20220330234528.1426991-1-nathan@kernel.org>
- <20220330234528.1426991-2-nathan@kernel.org>
- <CA+icZUXrVgGyaujA1iQEw5P3nJHVwMtbFxpE2gKktaxW0Xg-wg@mail.gmail.com>
+        Thu, 31 Mar 2022 11:43:07 -0400
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-eopbgr80077.outbound.protection.outlook.com [40.107.8.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5CF0223238;
+        Thu, 31 Mar 2022 08:37:56 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dgks6YmlwhIqw3wFXXW68eg+JjER0957SzWbFjfj7h1I+eJXo/J5s40pyKy6Xw5x1A21XC8HZteOEFM7uAk9MRgm8cDQYlkk7j/1ZSizNJQkUDLHM3If8kkYzOBsOMxZbblOX17UETWFUNBIEGNetWhTNWKNzTuN7NeVhG2C7H+JImkxuqltVSLfAl4e3A84Ror4EtGwQuVZcosJrl6b1wzlKJDMVBhcUX/xOA4gIkFGzSWgCmS+8Q/pAedh6yoev/NoNx0aMz0Iw63oRMkzt00vx/dGiN2qeI4kbaLnGrPMfp1fRNESNc4NCpG7meYyyRsDEPNwvA3ucHBKqRSPUw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=6lyDuyVoAvf+/86SexwFAd2vOBHEwWq9HonE+mAwlro=;
+ b=gmQ88W7wiQkA1dc7zhn3XuPS8XUhNpXMIwASH3l1dx5rY31yZ3eARJDdSVA5zIDlC0OUm2DvpiHDjfr7Ralie569ohIAmmCpzb6THkWJiocqmSziQ0Tf3sw11oKGMHokaGsm2YK+ZLa0nYeH6tYnTalCYYlQiwNLJA2ltrc+/2noDOXD32cFJBi0go+kDgNxL3JxKrN++Tkdy33lN+C3VtDuPQLu/VSZSj7Fl1cPr47ry8b68EL888Gf/kNk9J/RJPXcloPkDO9Yf6L5yEjZq7n52XBtCMTr1942srHJ1A9C8a8LTQAna3fiEQUgi3o7/9WzU5kXGSw75kp5EUow9A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6lyDuyVoAvf+/86SexwFAd2vOBHEwWq9HonE+mAwlro=;
+ b=E5IAcFthd3jw44axYoVBOrjPpZoaLCqJhhdeL3w+5lcXo+i9Tax9ac9EVZcPhmNSEZHP6rKDBnuWIm4aMFensmgWen68WF2/O0ncx+0nu7MZmQhnSUXAqHR67ZUAERJ18CC5Ga7sbBKT4XRvtnCkOGnrLa5nWqFTDmUCgHHB5Xc=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by AM0PR0402MB3746.eurprd04.prod.outlook.com (2603:10a6:208:e::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.19; Thu, 31 Mar
+ 2022 15:37:49 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::f090:8a7e:c1e1:3d8e]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::f090:8a7e:c1e1:3d8e%3]) with mapi id 15.20.5102.022; Thu, 31 Mar 2022
+ 15:37:49 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Michael Walle <michael@walle.cc>
+CC:     Shawn Guo <shawnguo@kernel.org>, Leo Li <leoyang.li@nxp.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH] arm64: dts: ls1028a: sl28: use ocelot-8021q tagging by
+ default
+Thread-Topic: [PATCH] arm64: dts: ls1028a: sl28: use ocelot-8021q tagging by
+ default
+Thread-Index: AQHYRCoAL8rMZDh2bU+SVqWLbFGm0azZojgA
+Date:   Thu, 31 Mar 2022 15:37:49 +0000
+Message-ID: <20220331153748.pkzqops4h2orgpu2@skbuf>
+References: <20220330113329.3402438-1-michael@walle.cc>
+In-Reply-To: <20220330113329.3402438-1-michael@walle.cc>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 478e8efb-a3e7-4443-9cf8-08da132c693f
+x-ms-traffictypediagnostic: AM0PR0402MB3746:EE_
+x-microsoft-antispam-prvs: <AM0PR0402MB37467AC82DCBF3FE63D28150E0E19@AM0PR0402MB3746.eurprd04.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 67WVb0C5YMQMYw8jvELTe69sQxo9jjmCRQ6ag/m0UFJMDzyOwg76l9zCkyuX7u6jBdLB2y2Yfmk4vdkqWKFk3PCNiKAXHfVpsQj4Dk8p5pyRhkzhwCOdNYoCmOaBIFlR+BTEqPnUoldbXm/rYd45ewPsvsKa7Epa5urNbIIrOldl3XqwBKY12gO6VWj6L/bx67cPMbFmMNUz6nBQ2UEZU/cEQYP2sE58tLOHKYveBocI9nQdKa4GnRlXhuYjqG4zFgtVlRtN8ugD0tU0ahVV0fSTEQh0DB/gpUPE56LPNQjRQTdmbi0Ej7cPDhKWdmybAoHkP5aK4YoN800Xq+FsgjzGYD9mpKXBEIrqtGX5mZi+XRkihNZA2GgHgy025Kv2mVB01BlnqdBetRIeoYMEWHj7pZLEUwW4hQ55gvMLaF4gg88zMZPjm9FA7B+f2m6p3MV2Ok71RJQO6prKVhr70ZqcaySAJ+r6Qiw0oushzt9FWGKJZQ9czH0Mjfve1e4idpFilTEmW2MkjFL/ynaiMV4cDNu+37xxWrRhnXEBBffAksiUiDtNImi0v6LNkFgZwR9K8NOGf3ERXmqYFdQj0xLX9R/K/1b9ofAE6bAprtv4+MCfAjjRkJS+u9JhW3fFjwEiePHsXewaO9KmFAVnO0V0KEBbJ8eC8q5Ck9rT7d1q9fKLSfplhbdOea0gNeQ7Bx+X+yCHT6ZBs/VXjCKvew==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(4636009)(366004)(6506007)(66946007)(76116006)(8676002)(66446008)(66476007)(66556008)(2906002)(122000001)(64756008)(508600001)(6512007)(9686003)(6486002)(71200400001)(4326008)(33716001)(6916009)(54906003)(186003)(1076003)(26005)(38100700002)(8936002)(38070700005)(86362001)(316002)(5660300002)(44832011);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?bDMeOwUa8uKVGNCLiXiesA2NOV/TBWb+nKQ3DBGksKvzUa4bodl20NEv/+bu?=
+ =?us-ascii?Q?guIQNBvZaSJWtRSifsmkTF0tB+bYI+8XpAqqQUAQsdZfvQb3GVZRZlY/G93w?=
+ =?us-ascii?Q?hVVeYAyOvWnQmWXcBhs4oG4f3sULorvKE9UjnVzHGIz0dQpBXicNswrAWjLR?=
+ =?us-ascii?Q?SKWXATpIWCrhjsEWpRBR5dMGxuDEUxHJ0vrNZs8wY/gBDNZPd0/yBhDai4q9?=
+ =?us-ascii?Q?4HlBZXKNW7PAmoigJ67i7WeXPCxzZygoc+PPG+fqKrmjzYeIioj6beAnqPM1?=
+ =?us-ascii?Q?QwFWg2ykws3UBN2xsP+hZ/UgKDMZKWb/4tkAiU75TPUU9mef3GqJN+sfNsSj?=
+ =?us-ascii?Q?XMX3/tDWbeDgHkVAkBY2KH313PtIIW4ruYHvKAtbNwzKqlXI5cornv01sDQN?=
+ =?us-ascii?Q?KdnS3GpvHDIYD8GAl9TeVmcXaJFxHxXOyjgY5Z6e3T6TgnaUjXbVNMIJk92H?=
+ =?us-ascii?Q?kQJ2XPU/SDeD0eMUASM238RjXM7XJfZOoHnK6enAluQ234AfIuwdr1ss47Fm?=
+ =?us-ascii?Q?+dSbb/7roZ4YdjvWtaDp+TD86FLjCmBsOt3k83YkZHEfp+f2eOYuGP43P7vi?=
+ =?us-ascii?Q?Hyy+WRdubxMOJKz2qzFOwEPod98lXqmMDkwP0RHT74I2BW64EsRMd8hWVSYb?=
+ =?us-ascii?Q?Q5Dwb72cwCWtufUrhenS4lPqfBPFHW6eJO8AiveZzI3mTSdPurooTlLqCLmS?=
+ =?us-ascii?Q?ZlfNLi43l9+RR1pqN+o1gnF6hRFBg0PSqGCO2BwHiaF/TKCwUX/BJyZgeDT6?=
+ =?us-ascii?Q?hiIdxi16XtbpqXvZ0PNrdOXBkDxHTtznigPtYlh0ATH/wowNQiseXrJFpmwd?=
+ =?us-ascii?Q?gbEKA3zoWvtDz2DGIrEss/6K44bqtev+AoYleSeqNPAcTFjjGpaCn48HtK6J?=
+ =?us-ascii?Q?z/VkUxhFMjSDzbmhCukfovEHPNbdwFu0eEXAe1UHr5gcehJtlQpoCpZLRUHU?=
+ =?us-ascii?Q?EEAWHHV17ZrgFl1Io7ECJtlVq7l6+weS4/A7IDxzv2m81M9xvlL3RUv9rGmd?=
+ =?us-ascii?Q?3B+cmDTL6FZrG+f8DUfs1NUJiUheysP0GA+wnQM254JXe9LhrxaJM5nTwOkp?=
+ =?us-ascii?Q?6SE/iPcwuuSjKDDAKIn91VwaxjBiBTXe4yQuONyZ9sYFMCXl3Q1940fc3y9R?=
+ =?us-ascii?Q?0RviK8J8Ix7ARYKEzUHUsAoy6wf7qFu+Ghu5fQzVIVHZRyIXY8C+4Oc1lwe9?=
+ =?us-ascii?Q?0qmssHFnYB8IWcvH9dvKg+qNyZtWZ/1x4cZCg6dJD6QmThnB+FtCQhbiawSm?=
+ =?us-ascii?Q?TcO7f/dW7ffeyqaQCuIOuHqLdQTFVaS8NOg/Mo5rKrfNtpGAW5NcYEwGn7lR?=
+ =?us-ascii?Q?AlPawHmGQkfn1CQoai51kzKUnLFBTfwUoFTi4p0l2DAV4jRQK7VjMlbs8eGB?=
+ =?us-ascii?Q?z4hinZWG3efCaDpSjVSP1FT9xTI5a91n73Ga5DQezlb03YdfLerd4W/UVYvT?=
+ =?us-ascii?Q?oGA/dniwLQZ+NUM/b+mQMroSpHb6S/hbBPvnlm9VdrP3QEK4ln7LjTV+fc+J?=
+ =?us-ascii?Q?M5ql6Bdzobu904+QgCaR7daPD581/J3s0mfBUBRkqr2JjGzqsKmrEDtbEGK9?=
+ =?us-ascii?Q?13f28/TjQHR09zzGL8uvUTHkIiH/6WqUUugYMajnTwd6sGExyeE/bGEPmnYD?=
+ =?us-ascii?Q?dZ09dipwqxVGa42xP9W2vGxs6T8oy4DUTPa5BVd5oTulvAvkzO4UUKJuqUVz?=
+ =?us-ascii?Q?NMBtswPKrNUoKMWLF2Oti87K9G46P/+ZeUbA768wWufmcfRtkAnvOWHFo0BS?=
+ =?us-ascii?Q?1wXW+XZVBshk+jOEkuoY8XEThTQK7sw=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <476A80644D170B4C88D34C855D84F80B@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+icZUXrVgGyaujA1iQEw5P3nJHVwMtbFxpE2gKktaxW0Xg-wg@mail.gmail.com>
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 478e8efb-a3e7-4443-9cf8-08da132c693f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 31 Mar 2022 15:37:49.0830
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: tMrBu5h0x6o4alTKqXMOeSGcSacW7FmOx37EfyOJhBbToSO0sN8F9W+SkCGWh4QHrLKyF23VPnsr4UeeC5AURw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR0402MB3746
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 31, 2022 at 09:11:12AM +0200, Sedat Dilek wrote:
-> On Thu, Mar 31, 2022 at 5:27 AM Nathan Chancellor <nathan@kernel.org> wrote:
-> >
-> > This flag is specific to clang, where it is only used by the 32-bit and
-> > 64-bit ARM backends. In certain situations, the presence of this flag
-> > will cause a warning, as shown by commit 6580c5c18fb3 ("um: clang: Strip
-> > out -mno-global-merge from USER_CFLAGS").
-> >
-> > Since commit 61163efae020 ("kbuild: LLVMLinux: Add Kbuild support for
-> > building kernel with Clang") that added this flag back in 2014, there
-> > have been quite a few changes to the GlobalMerge pass in LLVM. Building
-> > several different ARCH=arm and ARCH=arm64 configurations with LLVM 11
-> > (minimum) and 15 (current main version) with this flag removed (i.e.,
-> > with the default of '-mglobal-merge') reveals no modpost warnings, so it
-> > is likely that the issue noted in the comment is no longer relevant due
-> > to changes in LLVM or modpost, meaning this flag can be removed.
-> >
-> > If any new warnings show up that are a result of the removal of this
-> > flag, it can be added back under arch/arm{,64}/Makefile to avoid
-> > warnings on other architectures.
-> >
-> > Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-> > ---
-> >  Makefile | 4 ----
-> >  1 file changed, 4 deletions(-)
-> >
-> > diff --git a/Makefile b/Makefile
-> > index daeb5c88b50b..f2723d9bfca4 100644
-> > --- a/Makefile
-> > +++ b/Makefile
-> > @@ -784,10 +784,6 @@ ifdef CONFIG_CC_IS_CLANG
-> >  KBUILD_CPPFLAGS += -Qunused-arguments
-> >  # The kernel builds with '-std=gnu89' so use of GNU extensions is acceptable.
-> >  KBUILD_CFLAGS += -Wno-gnu
-> > -# CLANG uses a _MergedGlobals as optimization, but this breaks modpost, as the
-> > -# source of a reference will be _MergedGlobals and not on of the whitelisted names.
-> > -# See modpost pattern 2
-> > -KBUILD_CFLAGS += -mno-global-merge
-> >  else
-> >
-> >  # gcc inanely warns about local variables called 'main'
-> > --
-> > 2.35.1
-> >
-> 
-> I have tested this several times and was able to boot into bar metal -
-> no problems with building and/or booting my kernel-modules.
-> 
-> Tested-by: Sedat Dilek <sedat.dilek@gmail.com>
-> Reviewed-by: Sedat Dilek <sedat.dilek@gmail.com>
+On Wed, Mar 30, 2022 at 01:33:29PM +0200, Michael Walle wrote:
+> Enable the ocelot-8021q tagger by default which supports ethernet flow
+> control.
+>=20
+> The new default is set in the common board dtsi. The actual switch
+> node is enabled on a per board variant basis. Because of this we
+> set the new tagger default for both internal ports and a particular
+> variant is free to choose among the two port.
+>=20
+> Signed-off-by: Michael Walle <michael@walle.cc>
+> ---
 
-I would be very concerned if you did see any impact, given this flag is
-ARM specific :) thanks as always for verifying!
+Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-> Just as a side-note:
-> As with Linux v5.18-rc1 and -std=gnu11 we change the above comment ...?
-> 
-> # The kernel builds with '-std=gnu89' so use of GNU extensions is acceptable.
-> KBUILD_CFLAGS += -Wno-gnu
-
-It was updated as part of the shift to '-std=gnu11':
-
-https://git.kernel.org/linus/e8c07082a810fbb9db303a2b66b66b8d7e588b53
-
-The UML tree is based on 5.17-rc6, which does not have that change.
-There should not be a merge conflict though.
-
-Cheers,
-Nathan
+>  .../arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28.dts | 8 ++++++++
+>  1 file changed, 8 insertions(+)
+>=20
+> diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28.dts b=
+/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28.dts
+> index 7ef47b80e343..68d11a9c67f3 100644
+> --- a/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28.dts
+> +++ b/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28.dts
+> @@ -328,6 +328,14 @@ &lpuart1 {
+>  	status =3D "okay";
+>  };
+> =20
+> +&mscc_felix_port4 {
+> +	dsa-tag-protocol =3D "ocelot-8021q";
+> +};
+> +
+> +&mscc_felix_port5 {
+> +	dsa-tag-protocol =3D "ocelot-8021q";
+> +};
+> +
+>  &usb0 {
+>  	status =3D "okay";
+>  };
+> --=20
+> 2.30.2
+>=
