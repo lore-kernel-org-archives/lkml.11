@@ -2,196 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C94BC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 11:08:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDB25C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 11:09:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234933AbiCaLKl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 07:10:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58146 "EHLO
+        id S234948AbiCaLLg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 07:11:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234928AbiCaLKk (ORCPT
+        with ESMTP id S233340AbiCaLLd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 07:10:40 -0400
-Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 526711CFE3;
-        Thu, 31 Mar 2022 04:08:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1648724932; x=1680260932;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=02Kh2G2tw1qOTPyK+LDa8jdNbMtL/fx3qG1NfJSeKik=;
-  b=C+MSWkbDRQIFHYsHi8HHf7bWZ/W2J+R/cZCGJ1udCzC5P3D+gduqlzcl
-   rhs0ExPfmz/Kn2D7R7T8diu556l4AadhI7TJNzCcnS0iHudKPhQjoDAu2
-   ZbVdo2yj/Lbdo70Mam/nRJA482EjBAGfvFkfZCarUXSFvtN15vMau2C8/
-   488g/cvNtQCAiuFHaaTwecZupsO9oxVnt5/ehY2UofGqWi0LV+WkO9082
-   EdrITuD49/zIH35mmGsoIUdMtdkEF8zGkl951gG/0Fad1ewalOSwu4PiU
-   KphoPxzCgQ+laM6HEkFsYp4tafGj8bYSUHeQyvxWpS5PjOlB7o6VsJaLA
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.90,225,1643670000"; 
-   d="scan'208";a="23014419"
-Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
-  by mx1-pgp.tq-group.com with ESMTP; 31 Mar 2022 13:08:49 +0200
-Received: from mx1.tq-group.com ([192.168.6.7])
-  by tq-pgp-pr1.tq-net.de (PGP Universal service);
-  Thu, 31 Mar 2022 13:08:49 +0200
-X-PGP-Universal: processed;
-        by tq-pgp-pr1.tq-net.de on Thu, 31 Mar 2022 13:08:49 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1648724929; x=1680260929;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=02Kh2G2tw1qOTPyK+LDa8jdNbMtL/fx3qG1NfJSeKik=;
-  b=fmGDfhDW0ykWnC7EMETyE0ONjdB22ZxXonzMJubQHsqbMHpk/5+KGEjs
-   ias1KCg4lel6V2JyEFjjBQo8zp6J2d6un/gCav8QR3thg0wszxYikDcit
-   ikBSk2liQSWDtfqfX7C+gHycepq0aigDXduiGPGxv13LMl/lpsEZjSUCA
-   2mi+QnzG77wBXsU0aDsUn+ULyJX2RwJeepBgf22tvjtoBNaKlY9R5ktK3
-   qpFEBL4PtM2/W7OVFNL52QmUXQvoBYQYIW2Ulm9PrXICwCc5vzoNffHkt
-   0ip+ZITy+AW3/CsllFW6MH3zkw833S4oS6iWaDVrZCsXy50gS7dqpQLsL
-   A==;
-X-IronPort-AV: E=Sophos;i="5.90,225,1643670000"; 
-   d="scan'208";a="23014418"
-Received: from vtuxmail01.tq-net.de ([10.115.0.20])
-  by mx1.tq-group.com with ESMTP; 31 Mar 2022 13:08:49 +0200
-Received: from localhost.localdomain (SCHIFFERM-M2.tq-net.de [10.121.49.14])
-        by vtuxmail01.tq-net.de (Postfix) with ESMTPA id 0D494280065;
-        Thu, 31 Mar 2022 13:08:49 +0200 (CEST)
-From:   Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-To:     Mark Brown <broonie@kernel.org>
-Cc:     Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Ramuthevar Vadivel Murugan 
-        <vadivel.muruganx.ramuthevar@linux.intel.com>,
-        linux-spi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Subject: [PATCH] spi: cadence-quadspi: fix protocol setup for non-1-1-X operations
-Date:   Thu, 31 Mar 2022 13:08:19 +0200
-Message-Id: <20220331110819.133392-1-matthias.schiffer@ew.tq-group.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 31 Mar 2022 07:11:33 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9202C33884;
+        Thu, 31 Mar 2022 04:09:46 -0700 (PDT)
+Received: from mail-wm1-f47.google.com ([209.85.128.47]) by
+ mrelayeu.kundenserver.de (mreue010 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1MmDVA-1oHm4e41eC-00iCg9; Thu, 31 Mar 2022 13:09:45 +0200
+Received: by mail-wm1-f47.google.com with SMTP id n63-20020a1c2742000000b0038d0c31db6eso1795830wmn.1;
+        Thu, 31 Mar 2022 04:09:44 -0700 (PDT)
+X-Gm-Message-State: AOAM530INeJhUyv5hTt1xlNCMP/TyN4P4MdYtbgp3t0YnqZOIslYlVKg
+        Rl4p27tp/QYUl7zF9X660PPR6EEfdc+Xu894ZDQ=
+X-Google-Smtp-Source: ABdhPJwswRRqbDwMtkp76KOHqIEK5fi1EuTDxnoFxe5vzZsgSg3vLorXuscXGtdUiF56ngc1yrWuHFdJZZOovE9Zm/8=
+X-Received: by 2002:a05:600c:1e0b:b0:38c:9ac5:b486 with SMTP id
+ ay11-20020a05600c1e0b00b0038c9ac5b486mr3913978wmb.71.1648718552480; Thu, 31
+ Mar 2022 02:22:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <cover.1648714851.git.qinjian@cqplus1.com> <fe4f4c3b0c768d1cd66fb648d74fa302e86787c0.1648714851.git.qinjian@cqplus1.com>
+In-Reply-To: <fe4f4c3b0c768d1cd66fb648d74fa302e86787c0.1648714851.git.qinjian@cqplus1.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Thu, 31 Mar 2022 11:22:16 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a0OGM4aiaE2Nfc=7XGkGwAbnB99-j3PhVUmuA1z2FWeKg@mail.gmail.com>
+Message-ID: <CAK8P3a0OGM4aiaE2Nfc=7XGkGwAbnB99-j3PhVUmuA1z2FWeKg@mail.gmail.com>
+Subject: Re: [PATCH v12 5/9] clk: Add Sunplus SP7021 clock driver
+To:     Qin Jian <qinjian@cqplus1.com>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        DTML <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:EZyyEWyEMOU9SLsFVTSJz5+xXPGenqIY6YVzxSAVJPwSyeitGdv
+ tP3jJeb1oqHB4ap9WCt8EMPp4V7dIAtHV7oPtiADTIOndc56vVfxwGbIDb2A/VGmJvlbUQf
+ tklCGkC8EFdJmjLhWYNPCfRcGHDRBtb90pem18oEplQmb3jwqIFh91776xK+Uq+fFK6QPTU
+ Ci1Gxl45DHzAkUfPj2KZw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:YkAHc5UKE0I=:yiFaEkbErLxW5htSyxiAuo
+ XpVqbSp97TMKGxcdgtgjlaNMx4qu5wPIlTAPLHe4zBjFSvVWOYdCm7w+vPocf5VAH8aE0WvLN
+ Ri5NOmcfzUhb5JhO8rRGWaThiI/h5IDvUptyI4Xwg5kEKALoZsqzl9acKTJsb/MeZF1WsbY0N
+ PCtbqDOLUS3zKQayZt4rR/IspX9Eyqp6/fh2ZQKKlspwsMTQuI3e2CshnQTZm4TM/maMYPS30
+ 6BOFcJBSedTx1ilj9JO/4426nl+yanqogLgqKRTpP069EO2CxipR+fPStixazzJaK3/eA/cWn
+ XYeiwiMyuP762BGbLx2/R4Bvo71C0nIgxQsC4hZ4hw93OBTyL8hFT0OQ1A3zNWyBYAsdWnqKv
+ G9PTzuhyEMh4eMW42D/rkPwcBM+dxWe8QHBVoZ/zXUO5Ee/8ea7UPx0m94OkQBWw/FG2uZNFS
+ hOZppkpxyHXNzsx/SlXGYH+hf64dW5pOyP83Cv8v4Amj1H0AARNgvIbqDiszfOhOK1Zx/I/5B
+ 15WEY7Swao4lnEldLot+wlR4HztobZk4jTRZyyxnCzlX+khGojf9wJ3trerJS6MPACE58azyW
+ r5iXXgf0jf8R4RnH7q/WDRCQEpKoW1EnMiYkHmXj8n/dNePyocXenXS+MVwBPDHx9NdFHub4z
+ Z6/6FIGlyHiTjNIrkZWilcuT28I0S1nuCDgNv/N+lODPwf1NO6dn7f2wZeTRTeIvGLTMK1SGO
+ VuIFID5UBWY+3aaQa4fcDfEy8W3WF+HQg9XXIqSF9lpJsn3rAfeQBBGIzrkv7MgJT7gA0UNOw
+ v30omITtNA52kqHi4G49kCniQVXfmfphD+pXVrFlVvkswk9mSE=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-cqspi_set_protocol() only set the data width, but ignored the command
-and address width (except for 8-8-8 DTR ops), leading to corruption of
-all transfers using 1-X-X or X-X-X ops. Fix by setting the other two
-widths as well.
+On Thu, Mar 31, 2022 at 10:29 AM Qin Jian <qinjian@cqplus1.com> wrote:
 
-While we're at it, simplify the code a bit by replacing the
-CQSPI_INST_TYPE_* constants with ilog2().
+> +static int sp_pll_enable(struct clk_hw *hw)
+> +{
+> +       struct sp_pll *clk = to_sp_pll(hw);
+> +       unsigned long flags;
+> +
+> +       spin_lock_irqsave(clk->lock, flags);
+> +       writel(BIT(clk->pd_bit + 16) | BIT(clk->pd_bit), clk->reg); /* power up */
+> +       spin_unlock_irqrestore(clk->lock, flags);
+> +
+> +       return 0;
+> +}
+> +
+> +static void sp_pll_disable(struct clk_hw *hw)
+> +{
+> +       struct sp_pll *clk = to_sp_pll(hw);
+> +       unsigned long flags;
+> +
+> +       spin_lock_irqsave(clk->lock, flags);
+> +       writel(BIT(clk->pd_bit + 16), clk->reg); /* power down */
+> +       spin_unlock_irqrestore(clk->lock, flags);
+> +}
 
-Tested on a TI AM64x with a Macronix MX25U51245G QSPI flash with 1-4-4
-read and write operations.
+What does the spinlock actually protect here? As writel() is posted, it
+can already leak of of the lock, and the inputs would appear to be
+constant.
 
-Fixes: a314f6367787 ("mtd: spi-nor: Convert cadence-quadspi to use spi-mem framework")
-Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
----
- drivers/spi/spi-cadence-quadspi.c | 46 ++++++++-----------------------
- 1 file changed, 12 insertions(+), 34 deletions(-)
+> +       /* This memory region include multi HW regs in discontinuous order.
+> +        * clk driver used some discontinuous areas in the memory region.
+> +        * Using devm_platform_ioremap_resource() would conflicted with other drivers.
+> +        */
+> +       res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +       sp_clk_base = devm_ioremap(dev, res->start, resource_size(res));
+> +       if (!sp_clk_base)
+> +               return -ENXIO;
 
-diff --git a/drivers/spi/spi-cadence-quadspi.c b/drivers/spi/spi-cadence-quadspi.c
-index b0c9f62ccefb..616ada891974 100644
---- a/drivers/spi/spi-cadence-quadspi.c
-+++ b/drivers/spi/spi-cadence-quadspi.c
-@@ -19,6 +19,7 @@
- #include <linux/iopoll.h>
- #include <linux/jiffies.h>
- #include <linux/kernel.h>
-+#include <linux/log2.h>
- #include <linux/module.h>
- #include <linux/of_device.h>
- #include <linux/of.h>
-@@ -102,12 +103,6 @@ struct cqspi_driver_platdata {
- #define CQSPI_TIMEOUT_MS			500
- #define CQSPI_READ_TIMEOUT_MS			10
- 
--/* Instruction type */
--#define CQSPI_INST_TYPE_SINGLE			0
--#define CQSPI_INST_TYPE_DUAL			1
--#define CQSPI_INST_TYPE_QUAD			2
--#define CQSPI_INST_TYPE_OCTAL			3
--
- #define CQSPI_DUMMY_CLKS_PER_BYTE		8
- #define CQSPI_DUMMY_BYTES_MAX			4
- #define CQSPI_DUMMY_CLKS_MAX			31
-@@ -376,10 +371,6 @@ static unsigned int cqspi_calc_dummy(const struct spi_mem_op *op, bool dtr)
- static int cqspi_set_protocol(struct cqspi_flash_pdata *f_pdata,
- 			      const struct spi_mem_op *op)
- {
--	f_pdata->inst_width = CQSPI_INST_TYPE_SINGLE;
--	f_pdata->addr_width = CQSPI_INST_TYPE_SINGLE;
--	f_pdata->data_width = CQSPI_INST_TYPE_SINGLE;
--
- 	/*
- 	 * For an op to be DTR, cmd phase along with every other non-empty
- 	 * phase should have dtr field set to 1. If an op phase has zero
-@@ -389,32 +380,23 @@ static int cqspi_set_protocol(struct cqspi_flash_pdata *f_pdata,
- 		       (!op->addr.nbytes || op->addr.dtr) &&
- 		       (!op->data.nbytes || op->data.dtr);
- 
--	switch (op->data.buswidth) {
--	case 0:
--		break;
--	case 1:
--		f_pdata->data_width = CQSPI_INST_TYPE_SINGLE;
--		break;
--	case 2:
--		f_pdata->data_width = CQSPI_INST_TYPE_DUAL;
--		break;
--	case 4:
--		f_pdata->data_width = CQSPI_INST_TYPE_QUAD;
--		break;
--	case 8:
--		f_pdata->data_width = CQSPI_INST_TYPE_OCTAL;
--		break;
--	default:
--		return -EINVAL;
--	}
-+	f_pdata->inst_width = 0;
-+	if (op->cmd.buswidth)
-+		f_pdata->inst_width = ilog2(op->cmd.buswidth);
-+
-+	f_pdata->addr_width = 0;
-+	if (op->addr.buswidth)
-+		f_pdata->addr_width = ilog2(op->addr.buswidth);
-+
-+	f_pdata->data_width = 0;
-+	if (op->data.buswidth)
-+		f_pdata->data_width = ilog2(op->data.buswidth);
- 
- 	/* Right now we only support 8-8-8 DTR mode. */
- 	if (f_pdata->dtr) {
- 		switch (op->cmd.buswidth) {
- 		case 0:
--			break;
- 		case 8:
--			f_pdata->inst_width = CQSPI_INST_TYPE_OCTAL;
- 			break;
- 		default:
- 			return -EINVAL;
-@@ -422,9 +404,7 @@ static int cqspi_set_protocol(struct cqspi_flash_pdata *f_pdata,
- 
- 		switch (op->addr.buswidth) {
- 		case 0:
--			break;
- 		case 8:
--			f_pdata->addr_width = CQSPI_INST_TYPE_OCTAL;
- 			break;
- 		default:
- 			return -EINVAL;
-@@ -432,9 +412,7 @@ static int cqspi_set_protocol(struct cqspi_flash_pdata *f_pdata,
- 
- 		switch (op->data.buswidth) {
- 		case 0:
--			break;
- 		case 8:
--			f_pdata->data_width = CQSPI_INST_TYPE_OCTAL;
- 			break;
- 		default:
- 			return -EINVAL;
--- 
-2.25.1
+Can you explain this comment in more detail? Generally, the 'reg' properties
+of drivers should not overlap, so it is supposed to be safe to call
+devm_platform_ioremap_resource() here.
 
+We discussed this in the context of the iop driver that did have overlapping
+registers with this driver, and that was incorrect. Are there any other drivers
+that conflict with the clk driver?
+
+      Arnd
