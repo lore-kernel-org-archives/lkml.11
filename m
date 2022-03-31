@@ -2,113 +2,207 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3D6AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 11:06:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A505BC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 11:07:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234896AbiCaLIn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 07:08:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55602 "EHLO
+        id S234909AbiCaLIz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 07:08:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232452AbiCaLIl (ORCPT
+        with ESMTP id S234900AbiCaLIx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 07:08:41 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.73])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 174F71F42DF;
-        Thu, 31 Mar 2022 04:06:53 -0700 (PDT)
-Received: from mail-lf1-f54.google.com ([209.85.167.54]) by
- mrelayeu.kundenserver.de (mreue109 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1M8ysi-1ndkWg0Zle-0065B1; Thu, 31 Mar 2022 13:06:52 +0200
-Received: by mail-lf1-f54.google.com with SMTP id 5so40832298lfp.1;
-        Thu, 31 Mar 2022 04:06:51 -0700 (PDT)
-X-Gm-Message-State: AOAM533bTn7O7a11LnD4LBzLwpr8imLMTdfFqwRtGO9j/dD6jGxgn29N
-        Bk7dTw89SdYYprRoFXYSxHk4FidIZHqvl2i5TfY=
-X-Google-Smtp-Source: ABdhPJwGAKwpvIMNsQM9nFO11Su4f6CfBdGu0DMcmygJKo9OCuKECCNyCiW9rLz7dH/8XUmg1E8wSHe238gGnDMMuwI=
-X-Received: by 2002:a5d:6505:0:b0:205:9a98:e184 with SMTP id
- x5-20020a5d6505000000b002059a98e184mr3173055wru.317.1648717802947; Thu, 31
- Mar 2022 02:10:02 -0700 (PDT)
+        Thu, 31 Mar 2022 07:08:53 -0400
+Received: from mail-qv1-xf34.google.com (mail-qv1-xf34.google.com [IPv6:2607:f8b0:4864:20::f34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD7CB20596A
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 04:07:06 -0700 (PDT)
+Received: by mail-qv1-xf34.google.com with SMTP id gh15so19426579qvb.8
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 04:07:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Ldzs2F+pKkHk9BDqjLFNwahVpE2pkUr1lDp8VpHB0F0=;
+        b=sxpAq4RyE4MDaDjOhTdULxpJkKhIpld+2IKOfgYrFTJsv161z0NLODgT5cziftMAL/
+         34sJikLyLgMJ2yVfrv6jUQYyNt1R8809q8HZUt0PUglCQ5qDQzLjSawn6yBAxe6/pTRd
+         uqUXXb5CYlJ3NJlKba1MHQgtqCcrII6M2lRngbtk9mgLNm1SDnNf96ZL1tXLAD1uebqL
+         7QfsCF93n58zMXrcICooqJODwjL6pdUVwd3sE5oZL1DbL2Ga172uYdNZ/vBQUb4k0Ro8
+         pNUM3ttK9nsS14DaqubkSx2aJVrpihNCt5NgjHUXKhbNmXkHCac3P8SzkuDwGmjcD17z
+         3Mhg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Ldzs2F+pKkHk9BDqjLFNwahVpE2pkUr1lDp8VpHB0F0=;
+        b=p8D+KAqhKzcVmc1q5rVgMom/GCWgWBbvXfjUqfUiQ9nRm7gtEzrShmhqq//5Wl33Tw
+         di1iu+3aPNFYGEwNehyccpRhhqtyoQm8f28n8PVbc8JNHOKskQsUoM92Y+vFye6Or8iX
+         zt5jLMeuNj3vfFo5BauTrRJxLSfEBIoXgPB9qRKUZhHQARuLmpavom1wKkeOoJhw0qVa
+         yM10dlO+S8L6QsyiMZamtQWu2xBdCw4eiyNMrr0rNfCg8GlM1WZ9y8vHWkuBsfTQUmGo
+         sF4mLFKKdk7lziLCcm6gLpomIROiJxehbreZKbyNEQo8bnwfL2T7p5T3GOw87E6vPwlA
+         YCWQ==
+X-Gm-Message-State: AOAM531x8GUyPp3QVxaJ/kMALlSsIzTacM+qGqUVmQxTFbli8nAGTVOQ
+        hkro0qZwb1sGo6zKpAaUuJJd2SFKR8CBp6DNTvm1pA==
+X-Google-Smtp-Source: ABdhPJysJW04r/FtfLF+DfHPjBtKXZZz0wvOwBbCbh0AUcpnQjKZqUj63zSb3lGB5W34YZecDd6lon6RfoauABQcy+c=
+X-Received: by 2002:a05:6214:20e4:b0:441:7bed:5ccd with SMTP id
+ 4-20020a05621420e400b004417bed5ccdmr30970783qvk.119.1648724825924; Thu, 31
+ Mar 2022 04:07:05 -0700 (PDT)
 MIME-Version: 1.0
-References: <cover.1648714851.git.qinjian@cqplus1.com> <84a0839e7724fa39dd07fef491cf6bb357db2e7d.1648714851.git.qinjian@cqplus1.com>
-In-Reply-To: <84a0839e7724fa39dd07fef491cf6bb357db2e7d.1648714851.git.qinjian@cqplus1.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Thu, 31 Mar 2022 11:09:47 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a2SQCj8pqyJvS+TpgqQu51+YyB4SOi2cd_WU9ObgAjZOw@mail.gmail.com>
-Message-ID: <CAK8P3a2SQCj8pqyJvS+TpgqQu51+YyB4SOi2cd_WU9ObgAjZOw@mail.gmail.com>
-Subject: Re: [PATCH v12 9/9] ARM: sp7021_defconfig: Add Sunplus SP7021 defconfig
-To:     Qin Jian <qinjian@cqplus1.com>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        DTML <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>
+References: <1648656179-10347-1-git-send-email-quic_sbillaka@quicinc.com>
+ <1648656179-10347-5-git-send-email-quic_sbillaka@quicinc.com>
+ <CAA8EJprMvik_6xmGt2oZGpDG9FoMtC_ojuw+oTjPLTck4Hu3WA@mail.gmail.com>
+ <MW4PR02MB7186669BA1B19FA4F184B558E1E19@MW4PR02MB7186.namprd02.prod.outlook.com>
+ <d9ac1cee-d4fc-09ae-b2df-82ae2ecd57fb@linaro.org> <MW4PR02MB71864413E9E3624D2F48F046E1E19@MW4PR02MB7186.namprd02.prod.outlook.com>
+In-Reply-To: <MW4PR02MB71864413E9E3624D2F48F046E1E19@MW4PR02MB7186.namprd02.prod.outlook.com>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Date:   Thu, 31 Mar 2022 14:06:54 +0300
+Message-ID: <CAA8EJpooNVxOUa20fACGf3rTVcHBvLKP2=7Eb0x8oxxE7f2iGg@mail.gmail.com>
+Subject: Re: [PATCH v6 4/8] drm/msm/dp: avoid handling masked interrupts
+To:     Sankeerth Billakanti <sbillaka@qti.qualcomm.com>
+Cc:     "Sankeerth Billakanti (QUIC)" <quic_sbillaka@quicinc.com>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>,
+        "freedreno@lists.freedesktop.org" <freedreno@lists.freedesktop.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "robdclark@gmail.com" <robdclark@gmail.com>,
+        "seanpaul@chromium.org" <seanpaul@chromium.org>,
+        "swboyd@chromium.org" <swboyd@chromium.org>,
+        quic_kalyant <quic_kalyant@quicinc.com>,
+        "Abhinav Kumar (QUIC)" <quic_abhinavk@quicinc.com>,
+        "dianders@chromium.org" <dianders@chromium.org>,
+        "Kuogee Hsieh (QUIC)" <quic_khsieh@quicinc.com>,
+        "bjorn.andersson@linaro.org" <bjorn.andersson@linaro.org>,
+        "sean@poorly.run" <sean@poorly.run>,
+        "airlied@linux.ie" <airlied@linux.ie>,
+        "daniel@ffwll.ch" <daniel@ffwll.ch>,
+        quic_vproddut <quic_vproddut@quicinc.com>,
+        "Aravind Venkateswaran (QUIC)" <quic_aravindh@quicinc.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:z/4tzUqmZYGQZ24spxksEyOysVr2PtahhN9T25NYZZ8BcxpPVMr
- 7f0+JFCQTAp6cESgArBXyjsnxp2HR+EBu8UPfgzj4IXgFZlfvqB7RfFHhSU91nDYWmAMn0s
- UgOI3VfA50GGzeQd4uK/Ykpco/lJvUf8beq/MtMtFGXrfaPljzWiiqrOGNQZ8/gMr4pDlw2
- S5kaIkofDm98f5Tq87h4Q==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:xVcAQc2Awu4=:hwb6QFIeCg4f7N1+6qDCFw
- II8nUS/pwqqjYfLzOCKul2jVXf2QzxTig08IcFquWGBR5HMPS9SFSEA6AtPMBqTTR/2hLPJrd
- 6/FoYlkTXX1+dOkb9KMfMMg/XwSPDU2KJCKKbc2RqYnCDs2JvzyDWcZZYCoD9qn1+EDhmnS4z
- ed5qC2Llc6tJSy6dWc6lEwzTqR2wDsi6dSYmAlR830wmow02+MG8XhHAHY2xUmc79Bf1vqvDX
- O5EWgV3F73maFjP0Yde9mnNn//yZpZCzdXIhW2rtYTys4lTHSwOKJfRuo+bcrMBpKfVd2Ho+H
- d5x5ndkG3kuacL9RcY2BQzq7NK+7lhTMHZ7MUBCYdqKxo6x9QNYUJHq5SlK39uOhzleDT2bRk
- uoSq/Aged+O8whfZaYRC/9LC3lDdbvLDofCf0MpDrGQwTCzL7MZVaA8RtEaF4P1oOIgmtqXNE
- mqqj+G+T65Y4jC/zmtd841dhs6VXofcOdrUhNqvWTAPLn6zna9zljK9pq/b4q2Ht6ka2sr7QI
- qRp6UJKXw/wVsQQidaGMkZQpKgAQc0cYVUgS6o8NpJt1a5fj/Eh15JOkx+dmCwSLOn/iOrSI0
- vG14Me2fh/r5vzAcygtG2/+OhZbM9+Rj4MUFnPw/VGOix4/ciTO21LUQJoKIIsA9rJ5+/PXfG
- qy7onI0hMRPB1Wb6xn6Ldj/zBzRLAAsKLs2d0SVkgIMSZNlE61UXGtfs+W7riRvGrj0gjjHn9
- tMhcU21Scw1rF9VzJpaYlmsIa62QynohvBW70av2ECfozL+0ua5Ck34D/C3zastqXYUp1mWe9
- y15D7q9t6U/Mii0uBCLTq5Dvu+JUspoUuV7VPg7hbu1sMEailI9iVB444iauZ2aMgfccLtL
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 31, 2022 at 10:29 AM Qin Jian <qinjian@cqplus1.com> wrote:
-> Add generic Sunplus SP7021 based board defconfig
+On Thu, 31 Mar 2022 at 14:05, Sankeerth Billakanti
+<sbillaka@qti.qualcomm.com> wrote:
+>
+> Hi Dmitry,
+>
+> > On 31/03/2022 08:53, Sankeerth Billakanti (QUIC) wrote:
+> > > Hi Dmitry,
+> > >
+> > >> On Wed, 30 Mar 2022 at 19:03, Sankeerth Billakanti
+> > >> <quic_sbillaka@quicinc.com> wrote:
+> > >>>
+> > >>> The interrupt register will still reflect the connect and disconnect
+> > >>> interrupt status without generating an actual HW interrupt.
+> > >>> The controller driver should not handle those masked interrupts.
+> > >>>
+> > >>> Signed-off-by: Sankeerth Billakanti <quic_sbillaka@quicinc.com>
+> > >>> ---
+> > >>>   drivers/gpu/drm/msm/dp/dp_catalog.c | 5 +++--
+> > >>>   1 file changed, 3 insertions(+), 2 deletions(-)
+> > >>>
+> > >>> diff --git a/drivers/gpu/drm/msm/dp/dp_catalog.c
+> > >>> b/drivers/gpu/drm/msm/dp/dp_catalog.c
+> > >>> index 3c16f95..1809ce2 100644
+> > >>> --- a/drivers/gpu/drm/msm/dp/dp_catalog.c
+> > >>> +++ b/drivers/gpu/drm/msm/dp/dp_catalog.c
+> > >>> @@ -608,13 +608,14 @@ u32 dp_catalog_hpd_get_intr_status(struct
+> > >>> dp_catalog *dp_catalog)  {
+> > >>>          struct dp_catalog_private *catalog = container_of(dp_catalog,
+> > >>>                                  struct dp_catalog_private, dp_catalog);
+> > >>> -       int isr = 0;
+> > >>> +       int isr, mask;
+> > >>>
+> > >>>          isr = dp_read_aux(catalog, REG_DP_DP_HPD_INT_STATUS);
+> > >>>          dp_write_aux(catalog, REG_DP_DP_HPD_INT_ACK,
+> > >>>                                   (isr & DP_DP_HPD_INT_MASK));
+> > >>> +       mask = dp_read_aux(catalog, REG_DP_DP_HPD_INT_MASK);
+> > >>>
+> > >>> -       return isr;
+> > >>> +       return isr & (DP_DP_HPD_STATE_STATUS_MASK | mask);
+> > >>
+> > >> I suspect that the logic is inverted here. Shouldn't it be:
+> > >>
+> > >> return isr & DP_DP_HPD_STATE_STATUS_MASK & mask;
+> > >>
+> > >> ?
+> > >>
+> > >
+> > > The value of DP_DP_HPD_STATE_STATUS_MASK is 0xE0000000 and the
+> > value
+> > > of the read interrupt mask variable could be is 0xF.
+> > >
+> > > The mask value is indicated via the register, REG_DP_DP_HPD_INT_MASK,
+> > bits 3:0.
+> > > The HPD status is indicated via a different read-only register
+> > REG_DP_DP_HPD_INT_STATUS, bits 31:29.
+> >
+> > I see. Maybe the following expression would be better?
+> >
+> > return isr & (mask & ~DP_DP_HPD_INT_MASK);
 
-Here, you should explain why you need a custom defconfig for this SoC, as
-most platforms are fine just using the generic one. Are you too memory
-constrained,
-or are there other problems?
+Ugh, excuse me please. I meant:
 
-> diff --git a/arch/arm/configs/multi_v7_defconfig b/arch/arm/configs/multi_v7_defconfig
-> index 8863fa969..a3bd9dbd8 100644
-> --- a/arch/arm/configs/multi_v7_defconfig
-> +++ b/arch/arm/configs/multi_v7_defconfig
-> @@ -86,6 +86,7 @@ CONFIG_MACH_SPEAR1310=y
->  CONFIG_MACH_SPEAR1340=y
->  CONFIG_ARCH_STI=y
->  CONFIG_ARCH_STM32=y
-> +CONFIG_ARCH_SUNPLUS=y
->  CONFIG_ARCH_SUNXI=y
->  CONFIG_ARCH_TEGRA=y
->  CONFIG_ARCH_UNIPHIER=y
+return isr & (mask | ~DP_DP_HPD_INT_MASK);
 
-Don't you need any drivers here?
+> >
+>
+> I believe the confusion occurred because the DP_DP_HPD_STATE_STATUS_CONNECTED and others were defined under the same register definition as REG_DP_DP_HPD_INT_MASK
+> I will rearrange the definitions below.
+>
+> #define REG_DP_DP_HPD_INT_MASK          (0x0000000C)
+> #define DP_DP_HPD_PLUG_INT_MASK         (0x00000001)
+> #define DP_DP_IRQ_HPD_INT_MASK          (0x00000002)
+> #define DP_DP_HPD_REPLUG_INT_MASK       (0x00000004)
+> #define DP_DP_HPD_UNPLUG_INT_MASK       (0x00000008)
+> #define DP_DP_HPD_INT_MASK              (DP_DP_HPD_PLUG_INT_MASK | \
+>                                                 DP_DP_IRQ_HPD_INT_MASK | \
+>                                                 DP_DP_HPD_REPLUG_INT_MASK | \
+>                                                 DP_DP_HPD_UNPLUG_INT_MASK)
+>
+> Below are status bits from register REG_DP_DP_HPD_INT_STATUS
+>
+> #define DP_DP_HPD_STATE_STATUS_CONNECTED        (0x40000000)
+> #define DP_DP_HPD_STATE_STATUS_PENDING          (0x20000000)
+> #define DP_DP_HPD_STATE_STATUS_DISCONNECTED     (0x00000000)
+> #define DP_DP_HPD_STATE_STATUS_MASK             (0xE0000000)
+>
+> DP_DP_HPD_INT_MASK is 0xF and scope of mask variable is also 0xF (bits 3:0), mask & ~DP_DP_HPD_INT_MASK is 0 always.
+>
+> For DP, we want to enable all interrupts.
+> So the programmed mask value is 0xF. We want to return 0x40000001 for connect and 8 for disconnect
+>
+> For eDP, we want to disable the connect and disconnect interrupts. So, the mask will be 0x6 (i.e. DP_DP_IRQ_HPD_INT_MASK | DP_DP_HPD_REPLUG_INT_MASK)
+> We want to return 0x40000000 (or 0x20000000 based on hpd line status) and 0 for eDP connect and disconnect respectively.
+>
+> > >
+> > > isr & DP_DP_HPD_STATE_STATUS_MASK & mask, will return 0 always.
+> > >
+> > >>>   }
+> > >>>
+> > >>>   int dp_catalog_ctrl_get_interrupt(struct dp_catalog *dp_catalog)
+> > >>> --
+> > >>> 2.7.4
+> > >>>
+> > >>
+> > >>
+> > >> --
+> > >> With best wishes
+> > >> Dmitry
+> > >
+> > > Thank you,
+> > > Sankeerth
+> >
+> >
+> > --
+> > With best wishes
+> > Dmitry
+>
+> Thank you,
+> Sankeerth
 
-> diff --git a/arch/arm/configs/sp7021_defconfig b/arch/arm/configs/sp7021_defconfig
-> new file mode 100644
-> index 000000000..cda16d33a
-> --- /dev/null
-> +++ b/arch/arm/configs/sp7021_defconfig
-...
-> +CONFIG_HAVE_ARM_ARCH_TIMER=y
 
-I checked this one again, as most others don't enable it in the defconfig.
 
-I don't remember if I recommended removing the 'select' from Kconfig
-in a previous round, but as that is where other platforms have it, I'd add
-it there as well.
-
-> +CONFIG_STAGING=y
-
-Do you actually enable any staging drivers here? If not, I'd drop that bit.
-
-          Arnd
+-- 
+With best wishes
+Dmitry
