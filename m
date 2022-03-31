@@ -2,86 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D3B6C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 09:38:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E131BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 09:41:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234196AbiCaJka (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 05:40:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55262 "EHLO
+        id S234225AbiCaJn0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 05:43:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229680AbiCaJk1 (ORCPT
+        with ESMTP id S233957AbiCaJnW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 05:40:27 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B57D91704A;
-        Thu, 31 Mar 2022 02:38:40 -0700 (PDT)
-Received: from mail-lf1-f49.google.com ([209.85.167.49]) by
- mrelayeu.kundenserver.de (mreue107 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1MPXQi-1nN7XR34t8-00Mdvn; Thu, 31 Mar 2022 11:37:03 +0200
-Received: by mail-lf1-f49.google.com with SMTP id d5so40435274lfj.9;
-        Thu, 31 Mar 2022 02:36:50 -0700 (PDT)
-X-Gm-Message-State: AOAM530XhI3aUDLE7WrTxLraYv8W2xQYM+4LWqCGYs1FijtafLVn5hjA
-        A03rFeTLMRbHbCPGVj9E2emEdf1PsQiuAiCk11Q=
-X-Google-Smtp-Source: ABdhPJyx6uQXMBvORHeb8NOlqEaHCi9NLjE3UiFEIE0bvdtwMjjaxo+soHSe4zhQsJUkrp9pp2oFUj5K/neYvZqbvSc=
-X-Received: by 2002:adf:e54e:0:b0:205:a9be:c66e with SMTP id
- z14-20020adfe54e000000b00205a9bec66emr3326498wrm.192.1648717430754; Thu, 31
- Mar 2022 02:03:50 -0700 (PDT)
-MIME-Version: 1.0
-References: <cover.1648714851.git.qinjian@cqplus1.com> <fdd371ceb896ea17dde0e398a136fa9c895a521c.1648714851.git.qinjian@cqplus1.com>
-In-Reply-To: <fdd371ceb896ea17dde0e398a136fa9c895a521c.1648714851.git.qinjian@cqplus1.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Thu, 31 Mar 2022 11:03:34 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a0oTTLp8BB4uMMw2gdPnkMYutmrndLaQtp9g5GBom=aog@mail.gmail.com>
-Message-ID: <CAK8P3a0oTTLp8BB4uMMw2gdPnkMYutmrndLaQtp9g5GBom=aog@mail.gmail.com>
-Subject: Re: [PATCH v12 8/9] ARM: sunplus: Add initial support for Sunplus
- SP7021 SoC
-To:     Qin Jian <qinjian@cqplus1.com>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Thu, 31 Mar 2022 05:43:22 -0400
+Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [217.70.183.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D6191D207A;
+        Thu, 31 Mar 2022 02:41:33 -0700 (PDT)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 4B0E02000D;
+        Thu, 31 Mar 2022 09:41:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1648719692;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=VbsxCOa9JzqELpaQ9PziPailes9HwLBLI2gZIQcLonI=;
+        b=JRMitclP+ldhl0KYInG2ZqCFOIsMhLfD1uad+8wNS9RwXCiRH8wLk/xKp6TXafoFiCJxkk
+        H+A0pU5Gf65OGTQS3GDo8a8lDlhTm1EXpj/8CU6AfBstfbD69/HKIZ3Pbd4CKBA8BresO3
+        l9hYLR/ZDPGNRVLE0qn7NTthWAxu34+YOTudhVtC7U/AW6M1KfVgGNZaPWTzTihwhZtTeV
+        jkKCw4yo9G4kgpFH8OFBBJA9WespPxe15OMAbjubVUafBti2s7ND10NbfvXZbogyzlyxa4
+        C6RPmbiEBw0opSDNx504roXkNUCXLBdRsGFAEd7IPlUL5tNG5/rmVO54KMXaWw==
+Date:   Thu, 31 Mar 2022 11:40:06 +0200
+From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+To:     Peter Rosin <peda@axentia.se>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Wolfram Sang <wsa@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        DTML <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:F/C6lkDrYOWhZjOjlOcFkGI+hNdyGHe5L/uI/zMKgAzYNEF9ns2
- hCT0eleYvEA/CwvkTzqJS1EbMo6/rpBrXyECjqFdoKP1R8T8oS0qxescGO0m2xt9eN35G8V
- sFVQiqGxUcY3bT/qomD3WGDMuMVaqoPFgsbQ86zRv5DChzTL37cQFFl9Te71jJ5OJHznSlR
- /OQj/RKOAuCgIpsuj0oHQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:yJ1DIZJB1jo=:O8Y0M/XsHAkk5xWkBrq7uS
- ldVsqPu60swmOTaHXvdEd54IKSdvt6EI9wDGqs6AyrRa0K8QPPf8ub/ot1vjoQI9YRslWIHNw
- myDNj3Ztq1jFNjBcKbPOotok3YiBVF/LoFjoXk0E0k0MCleL5TFXYqepBNiuDeVNnfuv54Bfi
- hepAjDvk3A5v5CX+pdIIT79MHhvAW6qSAIEQid2N5/HVOD81qZkQgE7gMS7hNF57D74rn3Saw
- BwJyyc8/VTi09cvTK9prhhpfAPxzUUOVX2mqmEnfkaWUu69tmYvpIt06daUyjtPuzZzINZQPq
- bCh384f6Gy6jafXzHvOmgmt/fU04VElSGFwQJfpCsADpGhZhaTg6Lj86lPwWr9R4cjxIs67lr
- EBTTT88qhD2D5nBhMGm4H6MtVIEStzyEerdtKEOUUbEWDLB6CPH7J+0NdwOOs1upC5Sn50vgY
- Lk+Q9EHzrSryLaJ3gjdbtb5jxWqSob+eqJ02AK/PTTJePyIAhTs6sKR4Cr6paK/TjRj8Es5UX
- WBbsjw9MmaIyP0ssD9Jar4trKG2X8ZilWXWUx1zAH3qNg8mGeD5uEKJQD++EKFKqLyptCP4KV
- Hz9XtasvVRYTXgynYznzogeuwR2XkIkKBBvFLwjIgzJ/wQJ5Q+UzDhNLM+mImvqaWJiydFPTI
- M6Og1+X2IOiOFowgnkXCd3mJ2glfkYYCSUFOqBfRi7D8mcgBNzP/7BZh7TPJlPEkiC2fYIFPL
- hRVHYpR8Ecj7YoP9Tc/tYp5kFmKWllbwb6d7J8DESM7HIqgRL+mlAxp6QKPD1kq8pApOkaxai
- uIzRg3wZufucHKH3Zxoh2n7YPICaxwdRZR9F/jJCEkF7/IVE3LFjw4WKMoas1wms/TSejhWnE
- VLpERja1lJxA+qTrk5jnEBQTeuAgwr/2SV231PKfpIQrTGzSYF66fsT0mjrM/Kjd4LRL2EA+e
- QH9sXrstyFhHFaonAxLdwakNi7dJjnAE5padaFjzltk2FpGl2jaBUbk5WA+TiETbla83o5EqG
- KD9xYRvy/c/bxZz5/BwpzjuukAN7MyEELFzy9oUj8lSInnMKjhw8C5y4f8k/DNsdfTxd8t3Yj
- vSAU1/JoO7CqdejT9elARFDHSaCc8U2FEoO5inAa9xsMWt06WTauMKmRaAKLRb8FOi4buOVjo
- FOMXExDZyTJyxzR1M8fmhTFTJNpzsxIbSsLJRBRG49iE9ltddKKFwBKFmliO6fc25pwClOfB7
- 5BRNz/0JCTMD1ubNL
+        Frank Rowand <frowand.list@gmail.com>,
+        Len Brown <lenb@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Allan Nielsen <allan.nielsen@microchip.com>,
+        linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
+        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH v3 8/9] i2c: mux: pinctrl: remove CONFIG_OF dependency
+ and use fwnode API
+Message-ID: <20220331114006.0c7bc47a@fixe.home>
+In-Reply-To: <6f519f94-9185-a29b-2eff-fd6c9a36cfaf@axentia.se>
+References: <20220325113148.588163-1-clement.leger@bootlin.com>
+        <20220325113148.588163-9-clement.leger@bootlin.com>
+        <6f519f94-9185-a29b-2eff-fd6c9a36cfaf@axentia.se>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 31, 2022 at 10:29 AM Qin Jian <qinjian@cqplus1.com> wrote:
->
-> This patch aims to add an initial support for Sunplus SP7021 SoC.
->
-> Signed-off-by: Qin Jian <qinjian@cqplus1.com>
+Le Fri, 25 Mar 2022 17:48:19 +0100,
+Peter Rosin <peda@axentia.se> a =C3=A9crit :
 
+> > =20
+> > -	parent_np =3D of_parse_phandle(np, "i2c-parent", 0);
+> > -	if (!parent_np) {
+> > +	parent_fwnode =3D fwnode_find_reference(fwnode, "i2c-parent", 0);
+> > +	if (!parent_fwnode) {
+> >  		dev_err(dev, "Cannot parse i2c-parent\n");
+> >  		return ERR_PTR(-ENODEV);
+> >  	}
+> > -	parent =3D of_find_i2c_adapter_by_node(parent_np);
+> > -	of_node_put(parent_np);
+> > -	if (!parent)
+> > +	parent =3D fwnode_find_i2c_adapter_by_node(parent_fwnode);
+> > +	if (!parent) {
+> > +		dev_err(dev, "Cannot find i2c-parent\n"); =20
+>=20
+> Why do we need to log this as an error?
 
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+Hi Peter, sorry for the late answer, your mail ended up in my SPAM
+folder.
+
+Regarding the error logging, you are right, this is not needed. I'll
+remove it.
+
+Thanks,
+
+Cl=C3=A9ment=20
+
+--=20
+Cl=C3=A9ment L=C3=A9ger,
+Embedded Linux and Kernel engineer at Bootlin
+https://bootlin.com
