@@ -2,27 +2,27 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5130AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 00:05:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4A38C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 00:05:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352042AbiCaAHi (ORCPT
+        id S1352048AbiCaAHm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 20:07:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41688 "EHLO
+        Wed, 30 Mar 2022 20:07:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229606AbiCaAHV (ORCPT
+        with ESMTP id S1351957AbiCaAHY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 20:07:21 -0400
+        Wed, 30 Mar 2022 20:07:24 -0400
 Received: from hutie.ust.cz (hutie.ust.cz [185.8.165.127])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 688622B1B6;
-        Wed, 30 Mar 2022 17:05:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56C8C13CF0;
+        Wed, 30 Mar 2022 17:05:37 -0700 (PDT)
 From:   =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cutebit.org; s=mail;
-        t=1648685130; bh=vNAuOBEbxoca294MRvbJQo3FQJuHQNSkCGQ2YVXzgTs=;
+        t=1648685135; bh=5DCUaIsE4Uppw5JzTbkl1FjLIhH+WKKv/Ni/67xWdW0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=QCK9u2U6MJT4PWy9Qe6btEbbolw5xt6EHdkL9DoSrAieQ0zCSYIXXtWbxiyAU78/n
-         Mbkx0pcPFKwPWzSJPpP/C/dO4TjL3rdw72rss1RtR6LKROyfE+kNcTZn6zX0WxwSXo
-         wSeWd9SXuI3BKym2mmg9ajUy4GWtEXxJ2HfBypN8=
+        b=d5r9jICimWOs8p7Oy+m+XL72g7YZXttPeUcxnRr1XBuSHJ4haxfbForiglmmAQ+t6
+         cPx/1kMxQHZ8jHB1ZOF+BKXGZwkYe2PMsDs28telVEtkKs8iKVMxHWIZsF0K8Nc20s
+         4hcRrP0376RGe/3Wqr9b0vyq6/qrPP4YijTdVQsQ=
 To:     Liam Girdwood <lgirdwood@gmail.com>,
         Mark Brown <broonie@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
@@ -33,9 +33,9 @@ Cc:     =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>,
         linux-kernel@vger.kernel.org, Mark Kettenis <kettenis@openbsd.org>,
         Hector Martin <marcan@marcan.st>,
         Sven Peter <sven@svenpeter.dev>
-Subject: [RFC PATCH 1/5] dt-bindings: sound: Add Apple Macs sound system
-Date:   Thu, 31 Mar 2022 02:04:45 +0200
-Message-Id: <20220331000449.41062-2-povik+lin@cutebit.org>
+Subject: [RFC PATCH 5/5] ASoC: Add macaudio machine driver
+Date:   Thu, 31 Mar 2022 02:04:49 +0200
+Message-Id: <20220331000449.41062-6-povik+lin@cutebit.org>
 In-Reply-To: <20220331000449.41062-1-povik+lin@cutebit.org>
 References: <20220331000449.41062-1-povik+lin@cutebit.org>
 MIME-Version: 1.0
@@ -45,123 +45,646 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add binding for Apple Silicon Macs' machine-level sound system.
+Add ASoC machine driver for Apple Silicon Macs.
 
 Signed-off-by: Martin Povišer <povik+lin@cutebit.org>
 ---
- .../bindings/sound/apple,macaudio.yaml        | 103 ++++++++++++++++++
- 1 file changed, 103 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/sound/apple,macaudio.yaml
+ sound/soc/apple/Kconfig    |  10 +
+ sound/soc/apple/Makefile   |   3 +
+ sound/soc/apple/macaudio.c | 597 +++++++++++++++++++++++++++++++++++++
+ 3 files changed, 610 insertions(+)
+ create mode 100644 sound/soc/apple/Kconfig
+ create mode 100644 sound/soc/apple/Makefile
+ create mode 100644 sound/soc/apple/macaudio.c
 
-diff --git a/Documentation/devicetree/bindings/sound/apple,macaudio.yaml b/Documentation/devicetree/bindings/sound/apple,macaudio.yaml
+diff --git a/sound/soc/apple/Kconfig b/sound/soc/apple/Kconfig
 new file mode 100644
-index 000000000000..a6380e4bdd1a
+index 000000000000..afc0243b9309
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/sound/apple,macaudio.yaml
-@@ -0,0 +1,103 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/sound/apple,macaudio.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
++++ b/sound/soc/apple/Kconfig
+@@ -0,0 +1,10 @@
++config SND_SOC_APPLE_MACAUDIO
++	tristate "ASoC machine driver for Apple Silicon Macs"
++	depends on ARCH_APPLE || COMPILE_TEST
++	select SND_SOC_APPLE_MCA
++	select SND_SIMPLE_CARD_UTILS
++	select APPLE_ADMAC
++	select COMMON_CLK_APPLE_NCO
++	default ARCH_APPLE
++	help
++	  This option enables an ASoC machine driver for Apple Silicon Macs.
+diff --git a/sound/soc/apple/Makefile b/sound/soc/apple/Makefile
+new file mode 100644
+index 000000000000..d7a2df6311b5
+--- /dev/null
++++ b/sound/soc/apple/Makefile
+@@ -0,0 +1,3 @@
++snd-soc-macaudio-objs	:= macaudio.o
 +
-+title: Apple Silicon Macs integrated sound system
++obj-$(CONFIG_SND_SOC_APPLE_MACAUDIO)	+= snd-soc-macaudio.o
+diff --git a/sound/soc/apple/macaudio.c b/sound/soc/apple/macaudio.c
+new file mode 100644
+index 000000000000..3e80f97a9b75
+--- /dev/null
++++ b/sound/soc/apple/macaudio.c
+@@ -0,0 +1,597 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * ASoC machine driver for Apple Silicon Macs
++ *
++ * Copyright (C) The Asahi Linux Contributors
++ *
++ * Based on sound/soc/qcom/{sc7180.c|common.c}
++ *
++ * Copyright (c) 2018, Linaro Limited.
++ * Copyright (c) 2020, The Linux Foundation. All rights reserved.
++ */
 +
-+maintainers:
-+  - Martin Povišer <povik+lin@cutebit.org>
++#include <linux/module.h>
++#include <linux/of_device.h>
++#include <linux/platform_device.h>
++#include <sound/core.h>
++#include <sound/jack.h>
++#include <sound/pcm.h>
++#include <sound/simple_card_utils.h>
++#include <sound/soc.h>
++#include <uapi/linux/input-event-codes.h>
 +
-+definitions:
-+  dai:
-+    type: object
-+    properties:
-+      sound-dai: true
-+    required:
-+      - sound-dai
++#define DRIVER_NAME "snd-soc-macaudio"
 +
-+properties:
-+  compatible:
-+    items:
-+      - enum:
-+          - apple,j274-macaudio
-+          - apple,j293-macaudio
-+          - apple,j314-macaudio
-+      - const: apple,macaudio
-+  "#address-cells":
-+    const: 1
-+  "#size-cells":
-+    const: 0
-+  model:
-+    description: |
-+      Model name to use when the sound system is presented to users as a sound card.
-+    $ref: /schemas/types.yaml#/definitions/string
++struct macaudio_snd_data {
++	struct snd_soc_card card;
++	struct snd_soc_jack_pin pin;
++	struct snd_soc_jack jack;
 +
-+patternProperties:
-+  "^dai-link(@[0-9a-f]+)?$":
-+    description: |
-+      A DAI link comprising of CPU and CODEC DAI specifiers and supplemental properties.
-+    type: object
-+    properties:
-+      reg:
-+        maxItems: 1
-+      mclk-fs:
-+        description: |
-+          Forced MCLK/samplerate factor (optional).
-+        $ref: /schemas/types.yaml#/definitions/uint32
-+      link-name:
-+        description: Name for the DAI link to present to users.
-+        $ref: /schemas/types.yaml#/definitions/string
-+      cpu:
-+        $ref: "#/definitions/dai"
-+      codec:
-+        $ref: "#/definitions/dai"
-+    required:
-+      - reg
-+      - cpu
-+      - codec
-+    additionalProperties: false
++	struct macaudio_link_props {
++		unsigned int mclk_fs;
++	} *link_props;
 +
-+required:
-+  - compatible
-+  - model
++	const struct snd_pcm_chmap_elem *speaker_chmap;
 +
-+additionalProperties: false
++	unsigned int speaker_nchans_array[2];
++	struct snd_pcm_hw_constraint_list speaker_nchans_list;
 +
-+examples:
-+  - |
-+    sound {
-+      compatible = "apple,j293-macaudio", "apple,macaudio";
-+      model = "MacBook Pro J293 integrated audio";
++	struct list_head hidden_kcontrols;
++};
 +
-+      #address-cells = <1>;
-+      #size-cells = <0>;
++static int macaudio_parse_of(struct macaudio_snd_data *ma, struct snd_soc_card *card)
++{
++	struct device_node *np;
++	struct device_node *codec = NULL;
++	struct device_node *cpu = NULL;
++	struct device *dev = card->dev;
++	struct snd_soc_dai_link *link;
++	struct macaudio_link_props *link_props;
++	int ret, num_links;
++	int i = 0;
 +
-+      dai-link@0 {
-+        reg = <0>;
-+        link-name = "Speakers";
-+        mclk-fs = <64>;
++	ret = snd_soc_of_parse_card_name(card, "model");
++	if (ret) {
++		dev_err(dev, "Error parsing card name: %d\n", ret);
++		return ret;
++	}
 +
-+        cpu {
-+          sound-dai = <&mca 0>, <&mca 1>;
-+        };
-+        codec {
-+          sound-dai = <&speaker_left_front>, <&speaker_right_front>,
-+            <&speaker_left_rear>, <&speaker_right_rear>;
-+        };
-+      };
++	ret = asoc_simple_parse_routing(card, NULL);
++	if (ret)
++		return ret;
 +
-+      dai-link@1 {
-+        reg = <1>;
-+        link-name = "Headphones Jack";
-+        mclk-fs = <64>;
++	/* Populate links */
++	num_links = of_get_available_child_count(dev->of_node);
 +
-+        cpu {
-+          sound-dai = <&mca 2>;
-+        };
-+        codec {
-+          sound-dai = <&jack_codec>;
-+        };
-+      };
-+    };
++	/* Allocate the DAI link array */
++	card->dai_link = devm_kcalloc(dev, num_links, sizeof(*link), GFP_KERNEL);
++	ma->link_props = devm_kcalloc(dev, num_links, sizeof(*ma->link_props), GFP_KERNEL);
++	if (!card->dai_link || !ma->link_props)
++		return -ENOMEM;
++
++	card->num_links = num_links;
++	link = card->dai_link;
++	link_props = ma->link_props;
++
++	for_each_available_child_of_node(dev->of_node, np) {
++		link->id = i++;
++
++		/* CPU side is bit and frame clock master, I2S with both clocks inverted */
++		link->dai_fmt = SND_SOC_DAIFMT_I2S |
++			SND_SOC_DAIFMT_CBC_CFC |
++			SND_SOC_DAIFMT_GATED |
++			SND_SOC_DAIFMT_IB_IF;
++
++		ret = of_property_read_string(np, "link-name", &link->name);
++		if (ret) {
++			dev_err(card->dev, "Missing link name\n");
++			goto err_put_np;
++		}
++
++		cpu = of_get_child_by_name(np, "cpu");
++		codec = of_get_child_by_name(np, "codec");
++
++		if (!codec || !cpu) {
++			dev_err(dev, "Missing DAI specifications for '%s'\n", link->name);
++			ret = -EINVAL;
++			goto err;
++		}
++
++		ret = snd_soc_of_get_dai_link_codecs(dev, codec, link);
++		if (ret < 0) {
++			if (ret != -EPROBE_DEFER)
++				dev_err(card->dev, "%s: codec dai not found: %d\n",
++					link->name, ret);
++			goto err;
++		}
++
++		ret = snd_soc_of_get_dai_link_cpus(dev, cpu, link);
++		if (ret < 0) {
++			if (ret != -EPROBE_DEFER)
++				dev_err(card->dev, "%s: cpu dai not found: %d\n",
++					link->name, ret);
++			goto err;
++		}
++
++		link->num_platforms = 1;
++		link->platforms	= devm_kzalloc(dev, sizeof(*link->platforms),
++						GFP_KERNEL);
++		if (!link->platforms) {
++			ret = -ENOMEM;
++			goto err;
++		}
++		link->platforms->of_node = link->cpus->of_node;
++
++		of_property_read_u32(np, "mclk-fs", &link_props->mclk_fs);
++
++		link->stream_name = link->name;
++		link++;
++		link_props++;
++
++		of_node_put(cpu);
++		of_node_put(codec);
++	}
++
++	/*
++	 * TODO: Not sure I shouldn't do something about the ->of_node component
++	 * references I leave in dai_link (if successful here).
++	 */
++
++	return 0;
++err:
++	of_node_put(cpu);
++	of_node_put(codec);
++err_put_np:
++	for (i = 0; i < num_links; i++) {
++		snd_soc_of_put_dai_link_codecs(&card->dai_link[i]);
++		snd_soc_of_put_dai_link_cpus(&card->dai_link[i]);
++	}
++	of_node_put(np);
++	return ret;
++}
++
++static int macaudio_hw_params(struct snd_pcm_substream *substream,
++				struct snd_pcm_hw_params *params)
++{
++	struct snd_soc_pcm_runtime *rtd = asoc_substream_to_rtd(substream);
++	struct macaudio_snd_data *ma = snd_soc_card_get_drvdata(rtd->card);
++	struct macaudio_link_props *props = &ma->link_props[rtd->num];
++	struct snd_soc_dai *cpu_dai = asoc_rtd_to_cpu(rtd, 0);
++	struct snd_soc_dai *dai;
++	int i, mclk;
++
++	if (props->mclk_fs) {
++		mclk = params_rate(params) * props->mclk_fs;
++
++		for_each_rtd_codec_dais(rtd, i, dai)
++			snd_soc_dai_set_sysclk(dai, 0, mclk, SND_SOC_CLOCK_IN);
++
++		snd_soc_dai_set_sysclk(cpu_dai, 0, mclk, SND_SOC_CLOCK_OUT);
++	}
++
++	return 0;
++}
++
++static void macaudio_shutdown(struct snd_pcm_substream *substream)
++{
++	struct snd_soc_pcm_runtime *rtd = asoc_substream_to_rtd(substream);
++	struct macaudio_snd_data *ma = snd_soc_card_get_drvdata(rtd->card);
++	struct macaudio_link_props *props = &ma->link_props[rtd->num];
++	struct snd_soc_dai *cpu_dai = asoc_rtd_to_cpu(rtd, 0);
++	struct snd_soc_dai *dai;
++	int i;
++
++	if (props->mclk_fs) {
++		for_each_rtd_codec_dais(rtd, i, dai)
++			snd_soc_dai_set_sysclk(dai, 0, 0, SND_SOC_CLOCK_IN);
++
++		snd_soc_dai_set_sysclk(cpu_dai, 0, 0, SND_SOC_CLOCK_OUT);
++	}
++}
++
++static bool macaudio_is_speakers(struct snd_soc_dai_link *dai_link)
++{
++	return !strcmp(rtd->dai_link->name, "Speaker")
++		|| !strcmp(rtd->dai_link->name, "Speakers");
++}
++
++static int macaudio_startup(struct snd_pcm_substream *substream)
++{
++	struct snd_soc_pcm_runtime *rtd = asoc_substream_to_rtd(substream);
++	struct snd_soc_card *card = rtd->card;
++	struct macaudio_snd_data *ma = snd_soc_card_get_drvdata(card);
++	struct snd_pcm_hw_constraint_list *nchans_list = &ma->speaker_nchans_list;
++	unsigned int *nchans_array = ma->speaker_nchans_array;
++	int ret;
++
++	if (macaudio_is_speakers(rtd->dai_link)) {
++		if (rtd->num_codecs > 2) {
++			nchans_list->count = 2;
++			nchans_list->list = nchans_array;
++			nchans_array[0] = 2;
++			nchans_array[1] = rtd->num_codecs;
++
++			ret = snd_pcm_hw_constraint_list(substream->runtime, 0,
++					SNDRV_PCM_HW_PARAM_CHANNELS, nchans_list);
++			if (ret < 0)
++				return ret;
++		} else if (rtd->num_codecs == 2) {
++			ret = snd_pcm_hw_constraint_single(substream->runtime,
++					SNDRV_PCM_HW_PARAM_CHANNELS, 2);
++			if (ret < 0)
++				return ret;
++		}
++	}
++
++	return 0;
++}
++
++static int macaudio_assign_tdm(struct snd_soc_pcm_runtime *rtd)
++{
++	struct snd_soc_card *card = rtd->card;
++	struct snd_soc_dai *dai, *cpu_dai;
++	int ret, i;
++	int nchans = 0, nslots = 0, slot_width = 32;
++
++	nslots = rtd->num_codecs;
++
++	for_each_rtd_codec_dais(rtd, i, dai) {
++		int codec_nchans = 1;
++		int mask = ((1 << codec_nchans) - 1) << nchans;
++
++		ret = snd_soc_dai_set_tdm_slot(dai, mask,
++					mask, nslots, slot_width);
++		if (ret == -EINVAL)
++			/* Try without the RX mask */
++			ret = snd_soc_dai_set_tdm_slot(dai, mask,
++					0, nslots, slot_width);
++
++		if (ret < 0) {
++			dev_err(card->dev, "DAI %s refuses TDM settings: %d",
++					dai->name, ret);
++			return ret;
++		}
++
++		nchans += codec_nchans;
++	}
++
++	cpu_dai = asoc_rtd_to_cpu(rtd, 0);
++	ret = snd_soc_dai_set_tdm_slot(cpu_dai, (1 << nslots) - 1,
++			(1 << nslots) - 1, nslots, slot_width);
++	if (ret < 0) {
++		dev_err(card->dev, "CPU DAI %s refuses TDM settings: %d",
++				cpu_dai->name, ret);
++		return ret;
++	}
++
++	return 0;
++}
++
++static int macaudio_init(struct snd_soc_pcm_runtime *rtd)
++{
++	struct snd_soc_card *card = rtd->card;
++	struct macaudio_snd_data *ma = snd_soc_card_get_drvdata(card);
++	struct snd_soc_component *component;
++	int ret, i;
++
++	if (rtd->num_codecs > 1) {
++		ret = macaudio_assign_tdm(rtd);
++		if (ret < 0)
++			return ret;
++	}
++
++	for_each_rtd_components(rtd, i, component)
++		snd_soc_component_set_jack(component, &ma->jack, NULL);
++
++	return 0;
++}
++
++static void macaudio_exit(struct snd_soc_pcm_runtime *rtd)
++{
++	struct snd_soc_component *component;
++	int i;
++
++	for_each_rtd_components(rtd, i, component)
++		snd_soc_component_set_jack(component, NULL, NULL);
++}
++
++struct macaudio_kctlfix {
++	char *name;
++	char *value;
++} macaudio_kctlfixes[] = {
++	{"* ASI1 Sel", "Left"},
++	{"* ISENSE Switch", "Off"},
++	{"* VSENSE Switch", "Off"},
++	{ }
++};
++
++static bool macaudio_kctlfix_matches(const char *pattern, const char *name)
++{
++	if (pattern[0] == '*') {
++		int namelen, patternlen;
++
++		pattern++;
++		if (pattern[0] == ' ')
++			pattern++;
++
++		namelen = strlen(name);
++		patternlen = strlen(pattern);
++
++		if (namelen > patternlen)
++			name += (namelen - patternlen);
++	}
++
++	return !strcmp(name, pattern);
++}
++
++static struct macaudio_kctlfix *macaudio_find_kctlfix(const char *name)
++{
++	struct macaudio_kctlfix *fctl;
++
++	for (fctl = macaudio_kctlfixes; fctl->name != NULL; fctl++)
++		if (macaudio_kctlfix_matches(fctl->name, name))
++			return fctl;
++
++	return NULL;
++}
++
++static int macaudio_probe(struct snd_soc_card *card)
++{
++	struct macaudio_snd_data *ma = snd_soc_card_get_drvdata(card);
++	int ret;
++
++	INIT_LIST_HEAD(&ma->hidden_kcontrols);
++
++	ma->pin.pin = "Headphones";
++	ma->pin.mask = SND_JACK_HEADSET | SND_JACK_HEADPHONE;
++	ret = snd_soc_card_jack_new(card, ma->pin.pin,
++			SND_JACK_HEADSET |
++			SND_JACK_HEADPHONE |
++			SND_JACK_BTN_0 | SND_JACK_BTN_1 |
++			SND_JACK_BTN_2 | SND_JACK_BTN_3,
++			&ma->jack, &ma->pin, 1);
++
++	if (ret < 0)
++		dev_err(card->dev, "jack creation failed: %d\n", ret);
++
++	return ret;
++}
++
++/*
++ * Maybe this could be a general ASoC function?
++ */
++static void snd_soc_kcontrol_set_strval(struct snd_soc_card *card,
++				struct snd_kcontrol *kcontrol, const char *strvalue)
++{
++	struct snd_ctl_elem_value value;
++	struct snd_ctl_elem_info info;
++	int sel, i, ret;
++
++	ret = kcontrol->info(kcontrol, &info);
++	if (ret < 0) {
++		dev_err(card->dev, "can't obtain info on control '%s': %d",
++			kcontrol->id.name, ret);
++		return;
++	}
++
++	switch (info.type) {
++	case SNDRV_CTL_ELEM_TYPE_ENUMERATED:
++		for (sel = 0; sel < info.value.enumerated.items; sel++) {
++			info.value.enumerated.item = sel;
++			kcontrol->info(kcontrol, &info);
++
++			if (!strcmp(strvalue, info.value.enumerated.name))
++				break;
++		}
++
++		if (sel == info.value.enumerated.items)
++			goto not_avail;
++
++		for (i = 0; i < info.count; i++)
++			value.value.enumerated.item[i] = sel;
++		break;
++
++	case SNDRV_CTL_ELEM_TYPE_BOOLEAN:
++		sel = !strcmp(strvalue, "On");
++
++		if (!sel && strcmp(strvalue, "Off"))
++			goto not_avail;
++
++		for (i = 0; i < info.count; i++)
++			value.value.integer.value[i] = sel;
++		break;
++
++	case SNDRV_CTL_ELEM_TYPE_INTEGER:
++		if (kstrtoint(strvalue, 10, &sel))
++			goto not_avail;
++
++		for (i = 0; i < info.count; i++)
++			value.value.integer.value[i] = sel;
++		break;
++
++	default:
++		dev_err(card->dev, "%s: control '%s' has unsupported type %d",
++			__func__, kcontrol->id.name, info.type);
++		return;
++	}
++
++	ret = kcontrol->put(kcontrol, &value);
++	if (ret < 0) {
++		dev_err(card->dev, "can't set control '%s' to '%s': %d",
++			kcontrol->id.name, strvalue, ret);
++		return;
++	}
++
++	dev_dbg(card->dev, "set '%s' to '%s'",
++			kcontrol->id.name, strvalue);
++	return;
++
++not_avail:
++	dev_err(card->dev, "option '%s' on control '%s' not available",
++			strvalue, kcontrol->id.name);
++	return;
++
++}
++
++static int macaudio_filter_controls(struct snd_soc_card *card,
++			 struct snd_kcontrol *kcontrol)
++{
++	struct macaudio_kctlfix *fctl = macaudio_find_kctlfix(kcontrol->id.name);
++	struct macaudio_snd_data *ma = snd_soc_card_get_drvdata(card);
++
++	dev_dbg(card->dev, "visiting control %s, have match %d\n",
++		kcontrol->id.name, !!fctl);
++
++	if (!fctl)
++		return 0;
++
++	list_add_tail(&kcontrol->list, &ma->hidden_kcontrols);
++	return 1;
++}
++
++static int macaudio_late_probe(struct snd_soc_card *card)
++{
++	struct macaudio_snd_data *ma = snd_soc_card_get_drvdata(card);
++	struct snd_kcontrol *kcontrol;
++	struct snd_soc_pcm_runtime *rtd;
++	int ret;
++
++	/*
++	 * Here we take it to be okay to fiddle with the kcontrols
++	 * we caught for ourselves.
++	 */
++	list_for_each_entry(kcontrol, &ma->hidden_kcontrols, list) {
++		struct macaudio_kctlfix *fctl = macaudio_find_kctlfix(kcontrol->id.name);
++
++		if (fctl)
++			snd_soc_kcontrol_set_strval(card, kcontrol, fctl->value);
++	}
++
++	for_each_card_rtds(card, rtd) {
++		if (macaudio_is_speakers(rtd->dai_link) && ma->speaker_chmap) {
++			ret = snd_pcm_add_chmap_ctls(rtd->pcm,
++				SNDRV_PCM_STREAM_PLAYBACK, ma->speaker_chmap,
++				rtd->num_codecs, 0, NULL);
++			if (ret < 0)
++				dev_err(card->dev, "failed to add channel map on '%s': %d\n",
++					rtd->dai_link->name, ret);
++		}
++	}
++
++	return 0;
++}
++
++static int macaudio_remove(struct snd_soc_card *card)
++{
++	struct macaudio_snd_data *ma = snd_soc_card_get_drvdata(card);
++	struct snd_kcontrol *kcontrol;
++
++	list_for_each_entry(kcontrol, &ma->hidden_kcontrols, list)
++		snd_ctl_free_one(kcontrol);
++
++	return 0;
++}
++
++static const struct snd_soc_ops macaudio_ops = {
++	.startup	= macaudio_startup,
++	.shutdown	= macaudio_shutdown,
++	.hw_params	= macaudio_hw_params,
++};
++
++static const struct snd_soc_dapm_widget macaudio_snd_widgets[] = {
++	SND_SOC_DAPM_HP("Headphones", NULL),
++};
++
++static const struct snd_pcm_chmap_elem macaudio_j274_chmaps[] = {
++	{ .channels = 1,
++	  .map = { SNDRV_CHMAP_MONO } },
++	{ }
++};
++
++static const struct snd_pcm_chmap_elem macaudio_j293_chmaps[] = {
++	{ .channels = 2,
++	  .map = { SNDRV_CHMAP_FL, SNDRV_CHMAP_FR } },
++	{ .channels = 4,
++	  .map = { SNDRV_CHMAP_FL, SNDRV_CHMAP_FR,
++		   SNDRV_CHMAP_RL, SNDRV_CHMAP_RR } },
++	{ }
++};
++
++static const struct snd_pcm_chmap_elem macaudio_j314_chmaps[] = {
++	{ .channels = 2,
++	  .map = { SNDRV_CHMAP_FL, SNDRV_CHMAP_FR } },
++	{ .channels = 6,
++	  .map = { SNDRV_CHMAP_SL, SNDRV_CHMAP_SR,
++		   SNDRV_CHMAP_FL, SNDRV_CHMAP_FR,
++		   SNDRV_CHMAP_RL, SNDRV_CHMAP_RR } },
++	{ }
++};
++
++static const struct of_device_id macaudio_snd_device_id[]  = {
++	{ .compatible = "apple,j274-macaudio", .data = macaudio_j274_chmaps },
++	{ .compatible = "apple,j293-macaudio", .data = macaudio_j293_chmaps },
++	{ .compatible = "apple,j314-macaudio", .data = macaudio_j314_chmaps },
++	{ .compatible = "apple,macaudio", },
++	{ }
++};
++MODULE_DEVICE_TABLE(of, macaudio_snd_device_id);
++
++static int macaudio_snd_platform_probe(struct platform_device *pdev)
++{
++	struct snd_soc_card *card;
++	struct macaudio_snd_data *data;
++	struct device *dev = &pdev->dev;
++	struct snd_soc_dai_link *link;
++	const struct of_device_id *of_id;
++	int ret;
++	int i;
++
++	of_id = of_match_device(macaudio_snd_device_id, dev);
++	if (!of_id)
++		return -EINVAL;
++
++	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
++	if (!data)
++		return -ENOMEM;
++
++	data->speaker_chmap = of_id->data;
++	card = &data->card;
++	snd_soc_card_set_drvdata(card, data);
++
++	card->owner = THIS_MODULE;
++	card->driver_name = DRIVER_NAME;
++	card->dev = dev;
++	card->dapm_widgets = macaudio_snd_widgets;
++	card->num_dapm_widgets = ARRAY_SIZE(macaudio_snd_widgets);
++	card->probe = macaudio_probe;
++	card->late_probe = macaudio_late_probe;
++	card->remove = macaudio_remove;
++	card->filter_controls = macaudio_filter_controls;
++	card->remove = macaudio_remove;
++
++	ret = macaudio_parse_of(data, card);
++	if (ret)
++		return ret;
++
++	for_each_card_prelinks(card, i, link) {
++		link->ops = &macaudio_ops;
++		link->init = macaudio_init;
++		link->exit = macaudio_exit;
++	}
++
++	return devm_snd_soc_register_card(dev, card);
++}
++
++static struct platform_driver macaudio_snd_driver = {
++	.probe = macaudio_snd_platform_probe,
++	.driver = {
++		.name = DRIVER_NAME,
++		.of_match_table = macaudio_snd_device_id,
++		.pm = &snd_soc_pm_ops,
++	},
++};
++module_platform_driver(macaudio_snd_driver);
++
++MODULE_AUTHOR("Martin Povišer <povik+lin@cutebit.org>");
++MODULE_DESCRIPTION("Apple Silicon Macs machine-level sound driver");
++MODULE_LICENSE("GPL");
 -- 
 2.33.0
 
