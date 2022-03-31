@@ -2,141 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BCD9C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 04:23:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F4C8C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 04:23:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230104AbiCaEZK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 00:25:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36818 "EHLO
+        id S229541AbiCaEZg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 00:25:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229919AbiCaEYt (ORCPT
+        with ESMTP id S229882AbiCaEZY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 00:24:49 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2606C10DA6C;
-        Wed, 30 Mar 2022 21:14:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648700047; x=1680236047;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Lrf29M1FoQwZkT3rwYPlkkdAMRzetcMAr56weDYEJfw=;
-  b=VXoqaOWaJ+Z1bw2UKOkAMqNjGsOabwgJL1IiFSU2wF9PRWFp6QizkD/2
-   s6lflT3f4QrNWky5ej8bcUYVo/R6CPknQfvdRJpiQQ6EnGRR+qd2LPBxT
-   HRC2lT7MV6ftfDu/ZQF7dSruS7V5MGOLIWb6VE2KMbAhTw6nKlXyJu41x
-   kxpZrv7oKYWXVHPe+cN/0Z76fKBhSydGOC6fOs1iMTMp1MMlKqYn8tcUL
-   Jnz+CCBekyQWLw4TVVDj1RYVp+WrfCeSYG7FLkZTNXU3exTzB3gwNMblY
-   ATQFLhovh2sN2sry8Y5TcWyKeHsV641XTQnz1OGjG0jSpQl9uHmHtWN+N
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="240301454"
-X-IronPort-AV: E=Sophos;i="5.90,224,1643702400"; 
-   d="scan'208";a="240301454"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 20:02:28 -0700
-X-IronPort-AV: E=Sophos;i="5.90,224,1643702400"; 
-   d="scan'208";a="838892137"
-Received: from dhathawa-mobl.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.254.53.226])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 20:02:26 -0700
-Message-ID: <03d3c1ac92cee3b0e8e325da0f703d1dd9657b4b.camel@intel.com>
-Subject: Re: [RFC PATCH v5 021/104] KVM: x86: Introduce hooks to free VM
- callback prezap and vm_free
-From:   Kai Huang <kai.huang@intel.com>
-To:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     isaku.yamahata@gmail.com, Paolo Bonzini <pbonzini@redhat.com>,
-        Jim Mattson <jmattson@google.com>, erdemaktas@google.com,
-        Connor Kuehl <ckuehl@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-Date:   Thu, 31 Mar 2022 16:02:24 +1300
-In-Reply-To: <af18a5c763a78af2b7de6e6e0841d9e61a571dc4.1646422845.git.isaku.yamahata@intel.com>
-References: <cover.1646422845.git.isaku.yamahata@intel.com>
-         <af18a5c763a78af2b7de6e6e0841d9e61a571dc4.1646422845.git.isaku.yamahata@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
+        Thu, 31 Mar 2022 00:25:24 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC6EB18021D;
+        Wed, 30 Mar 2022 21:14:47 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id o10so45505399ejd.1;
+        Wed, 30 Mar 2022 21:14:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cHLGkaQYu4o1VuLVe04VP5C9UOK2Y5HybQ/7vFAycP4=;
+        b=IejV0elzv/fR5v4FKPqWNBF8faVRUyD4+g73zFNzDj84EhCzmnV+cYKflwLA4Otjfi
+         VtFOlbHiTPkKvxrwAoDgW53yCHYhQKLJktKQclamHJcHFen5tWhCTdc51fR0fCQxbv92
+         dNAYMM275Is6y+5unL7BXYt5RP4MunPV3xMDYp9cgc/vOJGyWud0IsknBQVLOpbSnUHV
+         5dDeGZ1Dn3kb/K8CpwisW5DiEaBGUJGNpTwjy3oha1/ImqmlAhyrc6TRaDNh+YEBxHbc
+         K7QrSfpP6hKCiv4ttnd7bzOLXob/N2aHt1fzc4xSEcz3LTqwedqPL6O1ONAEBwPc7HGl
+         p42g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cHLGkaQYu4o1VuLVe04VP5C9UOK2Y5HybQ/7vFAycP4=;
+        b=DPqxpStyk9JVTOPZD7PH8tDWhe8Jsku9lOlxybpnU/M98blfsxMh4tNAEViV6vCgGe
+         sk6Wdnl0L6rR66lRxV4p09BzhfmA081itM5aehB+DdMIsj5aiv09AJ5z7QHH56Ifw02o
+         5c4iNaJQ+0yGOynWkEGtVeH8gdeEjJ28WyHMmP2nfSV6ZdN5DqketmLXc0LUS6PcPKMP
+         26NwA8eo6HkoTKJHPOIAyQtcb9zwKhh0wIo8WmDkySzq3h0hW/BjJgtRWFQEzrUtjNl+
+         vCoxu42E9zpRhTp0D67Wd0SUkujMd08HUo0hkHCRXRxCVMbCzdaMTpqCSAqwUb1jWKr5
+         5ZTg==
+X-Gm-Message-State: AOAM533tX99T+v1RMAsMNNfaLutZnQBl9ZdZ87Gg9FC2l0Sy4Iivgki7
+        +/R12+9Pcr62wjEFoMZgS5E2uoG9kIyZ90i8gRw=
+X-Google-Smtp-Source: ABdhPJylV+qIHEhgIiC8pc2ZyVs4dIvULSo9dP3vfdc/QTV15d7mrqgXEUvxiupeD7GQsWsqPD8b71wB8duOxbnPqTU=
+X-Received: by 2002:a17:906:3a15:b0:6cf:ea4e:a1cc with SMTP id
+ z21-20020a1709063a1500b006cfea4ea1ccmr3304474eje.753.1648700086306; Wed, 30
+ Mar 2022 21:14:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+References: <cover.1648674305.git.marcelo.schmitt1@gmail.com> <7d793c1b9f87d9cb8ac0e858e561e108c2bf0176.1648674305.git.marcelo.schmitt1@gmail.com>
+In-Reply-To: <7d793c1b9f87d9cb8ac0e858e561e108c2bf0176.1648674305.git.marcelo.schmitt1@gmail.com>
+From:   Dongliang Mu <mudongliangabcd@gmail.com>
+Date:   Thu, 31 Mar 2022 12:14:19 +0800
+Message-ID: <CAD-N9QVvgCqbwiebjVX2_81pH_YhK+j4hhJPG3fbWbAtzFVJTQ@mail.gmail.com>
+Subject: Re: [PATCH v3 1/2] Documentation: dev-tools: Add a section for static
+ analysis tools
+To:     Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+Cc:     Jonathan Corbet <corbet@lwn.net>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        dlatypov@google.com, davidgow@google.com,
+        linux-doc@vger.kernel.org, linux-sparse@vger.kernel.org,
+        cocci@inria.fr, smatch@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        skhan@linuxfoundation.org,
+        Dan Carpenter <dan.carpenter@oracle.com>, julia.lawall@inria.fr
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-03-04 at 11:48 -0800, isaku.yamahata@intel.com wrote:
-> From: Kai Huang <kai.huang@intel.com>
-> 
-> Before tearing down private page tables, TDX requires some resources of the
-> guest TD to be destroyed (i.e. keyID must have been reclaimed, etc).  Add
-> prezap callback before tearing down private page tables for it.
-> 
-> TDX needs to free some resources after other resources (i.e. vcpu related
-> resources).  Add vm_free callback at the end of kvm_arch_destroy_vm().
-> 
-> Signed-off-by: Kai Huang <kai.huang@intel.com>
-> Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
+On Thu, Mar 31, 2022 at 12:07 PM Marcelo Schmitt
+<marcelo.schmitt1@gmail.com> wrote:
+>
+> Complement the Kernel Testing Guide documentation page by adding a
+> section about static analysis tools.
+>
+> Signed-off-by: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+> Acked-by: Daniel Latypov <dlatypov@google.com>
+> Acked-by: Dan Carpenter <dan.carpenter@oracle.com>
+> Acked-by: Julia Lawall <julia.lawall@inria.fr>
+> Reviewed-by: David Gow <davidgow@google.com>
+> Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
 > ---
->  arch/x86/include/asm/kvm-x86-ops.h | 2 ++
->  arch/x86/include/asm/kvm_host.h    | 2 ++
->  arch/x86/kvm/x86.c                 | 8 ++++++++
->  3 files changed, 12 insertions(+)
-> 
-> diff --git a/arch/x86/include/asm/kvm-x86-ops.h b/arch/x86/include/asm/kvm-x86-ops.h
-> index 8125d43d3566..ef48dcc98cfc 100644
-> --- a/arch/x86/include/asm/kvm-x86-ops.h
-> +++ b/arch/x86/include/asm/kvm-x86-ops.h
-> @@ -20,7 +20,9 @@ KVM_X86_OP(has_emulated_msr)
->  KVM_X86_OP(vcpu_after_set_cpuid)
->  KVM_X86_OP(is_vm_type_supported)
->  KVM_X86_OP(vm_init)
-> +KVM_X86_OP_NULL(mmu_prezap)
->  KVM_X86_OP_NULL(vm_destroy)
-> +KVM_X86_OP_NULL(vm_free)
->  KVM_X86_OP(vcpu_create)
->  KVM_X86_OP(vcpu_free)
->  KVM_X86_OP(vcpu_reset)
-> diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-> index 8de357a9ad30..5ff7a0fba311 100644
-> --- a/arch/x86/include/asm/kvm_host.h
-> +++ b/arch/x86/include/asm/kvm_host.h
-> @@ -1326,7 +1326,9 @@ struct kvm_x86_ops {
->  	bool (*is_vm_type_supported)(unsigned long vm_type);
->  	unsigned int vm_size;
->  	int (*vm_init)(struct kvm *kvm);
-> +	void (*mmu_prezap)(struct kvm *kvm);
->  	void (*vm_destroy)(struct kvm *kvm);
-> +	void (*vm_free)(struct kvm *kvm);
->  
->  	/* Create, but do not attach this VCPU */
->  	int (*vcpu_create)(struct kvm_vcpu *vcpu);
-> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-> index f6438750d190..a48f5c69fadb 100644
-> --- a/arch/x86/kvm/x86.c
-> +++ b/arch/x86/kvm/x86.c
-> @@ -11779,6 +11779,7 @@ void kvm_arch_destroy_vm(struct kvm *kvm)
->  	kvm_page_track_cleanup(kvm);
->  	kvm_xen_destroy_vm(kvm);
->  	kvm_hv_destroy_vm(kvm);
-> +	static_call_cond(kvm_x86_vm_free)(kvm);
->  }
->  
->  static void memslot_rmap_free(struct kvm_memory_slot *slot)
-> @@ -12036,6 +12037,13 @@ void kvm_arch_commit_memory_region(struct kvm *kvm,
->  
->  void kvm_arch_flush_shadow_all(struct kvm *kvm)
->  {
-> +	/*
-> +	 * kvm_mmu_zap_all() zaps both private and shared page tables.  Before
-> +	 * tearing down private page tables, TDX requires some TD resources to
-> +	 * be destroyed (i.e. keyID must have been reclaimed, etc).  Invoke
-> +	 * kvm_x86_mmu_prezap() for this.
-> +	 */
-> +	static_call_cond(kvm_x86_mmu_prezap)(kvm);
->  	kvm_mmu_zap_all(kvm);
->  }
->  
+> Change log v2 -> v3:
+> - Added Julia's acknowledgment tag
+>
+> Change log v1 -> v2:
+> - Brought generic tool characteristics to the intro paragraph
+> - Made explicit that these tools run at compile time
+> - Added a note of caution about false positives
+> - Updated Coccinelle info to make it sound better and be more skimmable
+>
+>  Documentation/dev-tools/testing-overview.rst | 31 ++++++++++++++++++++
+>  1 file changed, 31 insertions(+)
+>
+> diff --git a/Documentation/dev-tools/testing-overview.rst b/Documentation/dev-tools/testing-overview.rst
+> index 65feb81edb14..b5e02dd3fd94 100644
+> --- a/Documentation/dev-tools/testing-overview.rst
+> +++ b/Documentation/dev-tools/testing-overview.rst
+> @@ -115,3 +115,34 @@ that none of these errors are occurring during the test.
+>  Some of these tools integrate with KUnit or kselftest and will
+>  automatically fail tests if an issue is detected.
+>
+> +Static Analysis Tools
+> +=====================
+> +
+> +In addition to testing a running kernel, one can also analyze kernel source code
+> +directly (**at compile time**) using **static analysis** tools. The tools
+> +commonly used in the kernel allow one to inspect the whole source tree or just
+> +specific files within it. They make it easier to detect and fix problems during
+> +the development process.
+> +
+> +Sparse can help test the kernel by performing type-checking, lock checking,
+> +value range checking, in addition to reporting various errors and warnings while
+> +examining the code. See the Documentation/dev-tools/sparse.rst documentation
+> +page for details on how to use it.
+> +
+> +Smatch extends Sparse and provides additional checks for programming logic
+> +mistakes such as missing breaks in switch statements, unused return values on
+> +error checking, forgetting to set an error code in the return of an error path,
+> +etc. Smatch also has tests against more serious issues such as integer
+> +overflows, null pointer dereferences, and memory leaks. See the project page at
+> +http://smatch.sourceforge.net/.
+> +
+> +Coccinelle is another static analyzer at our disposal. Coccinelle is often used
+> +to aid refactoring and collateral evolution of source code, but it can also help
+> +to avoid certain bugs that occur in common code patterns. The types of tests
+> +available include API tests, tests for correct usage of kernel iterators, checks
+> +for the soundness of free operations, analysis of locking behavior, and further
+> +tests known to help keep consistent kernel usage. See the
+> +Documentation/dev-tools/coccinelle.rst documentation page for details.
+> +
+> +Beware, though, that static analysis tools suffer from **false positives**.
+> +Errors and warns need to be evaluated carefully before attempting to fix them.
 
-The two callbacks are introduced here but they are actually implemented in 2
-patches later (patch 24 KVM: TDX: create/destroy VM structure).  Why not just
-squash this patch to patch 24?  Or at least you can put this patch right before
-patch 24.
+Hi Marcelo,
 
-Please feel free to remove my SoB and From if this bothers you to squash.
+Should we include static analysis tools based on LLVM? For example,
+Clang static analysis.
 
-
+> --
+> 2.35.1
+>
