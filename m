@@ -2,139 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74DAFC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 18:42:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36145C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 18:44:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236327AbiCaSoe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 14:44:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53232 "EHLO
+        id S236479AbiCaSqV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 14:46:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236024AbiCaSo0 (ORCPT
+        with ESMTP id S234572AbiCaSqN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 14:44:26 -0400
-Received: from mail1.bemta31.messagelabs.com (mail1.bemta31.messagelabs.com [67.219.246.2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51404235771;
-        Thu, 31 Mar 2022 11:42:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=motorola.com;
-        s=Selector; t=1648752157; i=@motorola.com;
-        bh=I0ILUk5Y0W7A0emDc9iHMdTkNtmNc0vpgg9nFCU/qeE=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:
-         Content-Transfer-Encoding;
-        b=rjHnYntgkh0QMw8W/7WG/tuxNt2MgjW/hiXKdpFVPlo5STwmwikah1n3SQ8TaySb6
-         siJddTotE2VHpNEoWcIm/1LSSckbWhhX5lNTKgVhq1I58lAuIle0ZW6kSsgFJ/OePp
-         +PqCrCDQOsqdStkTk/XV1uZTqr6Lp5VIgg+Eh17KdDolkBzgcFKBgue66k4V56xzuF
-         8nhWcRx8jDBdiSFOWkTKoZZp1J3wVglbM1YRxFtkpy6YjeUVG84q9MKGwYHPRav+Gh
-         5EkD3ivBgwpl69EDt3wj/Vq3MlO7KXG81eSz/LelrXTL3YN1cxeciotSKiAcNRhIFR
-         /ftjy06ksuMNg==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrDIsWRWlGSWpSXmKPExsWS8eKJhK7MN9c
-  kg6ttkhbH2p6wW6xefJXJonnxejaLzolL2C0u75rDZrFoWSuzxYKNjxgd2D1md8xk9di0qpPN
-  Y//cNeweT3/sZfb4vEkugDWKNTMvKb8igTVj9+3dzAWrBCteX/nG1MDYyd/FyMkhJDCVSeL6V
-  JYuRi4gewmTxKLvLewgCTYBNYkFr1cxg9giArISh6/8BrOZBSYwSXzckwJiCwsESRxY+w+snk
-  VAVeJs5zwmEJtXwELizpIlYPUSAvISp5YdhIoLSpyc+YQFYo68RPPW2cwTGLlnIUnNQpJawMi
-  0itEiqSgzPaMkNzEzR9fQwEDX0NBE10TXXC+xSjdRr7RYNzWxuETXUC+xvFgvtbhYr7gyNzkn
-  RS8vtWQTIzAgU4pY2Hcwru35qXeIUZKDSUmU1+GQa5IQX1J+SmVGYnFGfFFpTmrxIUYZDg4lC
-  V7ez0A5waLU9NSKtMwcYHTApCU4eJREeK+9BkrzFhck5hZnpkOkTjHqcjy9emUvsxBLXn5eqp
-  Q4r/VXoCIBkKKM0jy4EbBIvcQoKyXMy8jAwCDEU5BalJtZgir/ilGcg1FJmNcbZApPZl4J3KZ
-  XQEcwAR2hfwPsiJJEhJRUA5Nqqby9MHtgvv+hOy5l4bYNdYd+swj8WbKSZ/oC4wDH5Hnq3I1H
-  Np60vnLn5LOn5ofEDgo0vHueECW+roahJ3OjUEysStrTe7oXDjbdM0t2VPqVpsF2o/DUeo/1b
-  cknfRVY23QOy1+wuXlcknnnTJOzu70YPot88llwc/lOEZu7MVeet7lMXxW911t/03eH6Xf6OL
-  66a1tcn3D98e3Ag5+uzHM6I7ev7uXNAwzO6044ZCcYcX5t5Pv2SNsl5avWy1hH1jCJmP1xOxy
-  SLvNVPr0QXP4i4q2zKGOVQvXxisq7T79e5BP/uDJw+lOhx8xslV5cobM33WKVXWip9WrX5YTC
-  x2/mJegXt+2uFz0f3qTEUpyRaKjFXFScCABxs+hITwMAAA==
-X-Env-Sender: w36195@motorola.com
-X-Msg-Ref: server-15.tower-706.messagelabs.com!1648752156!5014!1
-X-Originating-IP: [104.232.228.24]
-X-SYMC-ESS-Client-Auth: outbound-route-from=pass
-X-StarScan-Received: 
-X-StarScan-Version: 9.85.5; banners=-,-,-
-X-VirusChecked: Checked
-Received: (qmail 2705 invoked from network); 31 Mar 2022 18:42:36 -0000
-Received: from unknown (HELO va32lpfpp04.lenovo.com) (104.232.228.24)
-  by server-15.tower-706.messagelabs.com with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP; 31 Mar 2022 18:42:36 -0000
-Received: from ilclmmrp01.lenovo.com (ilclmmrp01.mot.com [100.65.83.165])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by va32lpfpp04.lenovo.com (Postfix) with ESMTPS id 4KTscD0zcyzbbbK;
-        Thu, 31 Mar 2022 18:42:36 +0000 (UTC)
-Received: from p1g3.. (unknown [10.45.4.253])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: w36195)
-        by ilclmmrp01.lenovo.com (Postfix) with ESMTPSA id 4KTscC65fkzbvDd;
-        Thu, 31 Mar 2022 18:42:35 +0000 (UTC)
-From:   Dan Vacura <w36195@motorola.com>
-To:     linux-usb@vger.kernel.org
-Cc:     Dan Vacura <w36195@motorola.com>, stable@vger.kernel.org,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Felipe Balbi <balbi@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Bhupesh Sharma <bhupesh.sharma@st.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v3] usb: gadget: uvc: Fix crash when encoding data for usb request
-Date:   Thu, 31 Mar 2022 13:40:23 -0500
-Message-Id: <20220331184024.23918-1-w36195@motorola.com>
-X-Mailer: git-send-email 2.32.0
+        Thu, 31 Mar 2022 14:46:13 -0400
+Received: from sonic313-15.consmr.mail.ne1.yahoo.com (sonic313-15.consmr.mail.ne1.yahoo.com [66.163.185.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 755FA62A2B
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 11:44:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1648752264; bh=S0ikuEGsksL6QEKgy7sSSBTRKMTS3ahAMlEJon0Rvvg=; h=Date:Subject:To:Cc:References:From:In-Reply-To:From:Subject:Reply-To; b=VS245s8fIy5iEQmFdShsxEg6S3szR/3SbAyYw8uyJTs09aQlPxBMYATVzvoXhhUXNf2Yk8ehLfaXzyG6QcW0zfjhqbEt045qegTly8wqpS8CvpUpuvB/baBYw4tN72BAESW837pPylxiQfYWRdkJ6uWtrf3Uac50a59PD+PC8XWGOkQno3mMpwnjSDqf0S1fgY4KVF78Qc5iU1UpTHl/Yif3lBzNXprJKERRtwdiTBzYbN3UOlZFbIjTm6PRNa9+S5pZQMiRDqaT35esjQxzcFikxYjMqcbjgPZBYTPDDdOkKXXWqjmrxY1nTgov4lYTEgCrPN0aax4PT7Iymvhu/w==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1648752264; bh=ZQ7jenPmEAfPsjdQbdIA6ipzzy6g4DVPxeWJY3I6AlY=; h=X-Sonic-MF:Date:Subject:To:From:From:Subject; b=layue1XgrBZhXQEvqX7wQY7/zO1xGnHjNaQ3OuuzJagIT1rsp0fRjFVwYVGzUWI4cteWbK2g7/sYN54M3LyhPduLZpMjjUTqf+4/VcAN//SYxdKJUMUmnfdmKuxuLe4Mh2h3ipeLfuqHpIZZh24Zio0nVyg1ofOJY9c9DhqhOT5zE825wGMYiCrgrXGQRTf0GKPotAooS+LsKrU3HfnrPsJhnXo/9KkKlfrkBHsNaAlg5IdA0Qs9CtuJj6YmY2AATOwwavzWLQb7jNKz280jUrvq7xo78sYYRCCIPPr4G92jncUZGzU+xaRNSMzO/0JHhv2CqJclRDhMU4senwQiog==
+X-YMail-OSG: bejsCwQVM1lTTK.NjCoKG2fU0t.Hs4sSJEGFgswbFk1Scos27ld1BbbcS7lTL6v
+ eba7XIDhoqZh2PEz2pvut7RBt0triZMp3l3eIUEI_7vkUOtjhrMEvclVOQB3jBiitJa5Scg7uxpA
+ cPycnu.7uWgWZferQkqDKCbexMjiMw6snPuDqH3mredIPMu9nEkFhz6tV2Ri83LV6qX..sf65rNx
+ ycW7KG.fLLysuU7s7KMMYW3unizaRc1cGTTmcf9Ve4gAp97HPkNzTzwIp_Rj2hxgMHMhaPlMnGpA
+ FRFWoQO6NTaKwva85XXmu8xP31nKtMlPbxdzaD_Tf4LKYDgGtLfxXg5LE_Znzz4sAlNCKocXOT8K
+ 7i1kcAovFHqHOSm9ccNKy1VM9JmaYD_84n7rCLSraCJjpXzfwFj7Sl2IecIN8TGz2gKfJ7fWEvdB
+ 3_FV4b0OFQc_mNBb2LMAzNIwiSNGY3Isf4LrFX87CRZI5TyJG_cPEp7IUxcqx3fvQ81QikWIhZcx
+ dge.f_BdPDaDoUZ4ixDoCJo.LDVW2WaR20ONQmBtFQkVeWsNHFtgKyA3RBtguZyUF2HlRUDPi6bP
+ AZHfXb81va.IruSrcQAXw.uIBgAdeneC_vbFOaG0wBTCqLQGdrqwFkP6IKwI8vSIzb3qojkjSzA2
+ Zc3wTQ6bDvGqgmbBBlmOljfPFfLdcc6ccdn5TSKti6VJzUYnOeu3ITn3mIy8PxQl_j_ytENdxmva
+ YxuhZi2ZyJ372SV.8NBfCQCN3Nh0K93PFHGW2.EhBv10gXU.eT38ElzlCG6cW75KvmRmaRYk0zgU
+ a01EUvrwyuEG0dFmwKFEBmnkQtu8gBXHRGMnZJANoUnxAZnWadCa78TnIUh951EFKdR3Ud4CAwep
+ SJM3p1N6DBb8AzDZGehUyKu__.5XXIZEMFb.K85Ewg8Lajfm9pfV2ZS_muP41KmxPvwZMQ9wvIO.
+ o_yvXBlpzYYYAUGkM72RkSQpFM8QNDhmB770_DDuDYAfcYgdMcYzdltTNXbbcuwk2wrg4.52Ou8C
+ RCOf2Vh94F0.wOW31vh5KeJUeXYiocqKxxV3rcXxkkzJWAfRR8A2fFsk4HHGWMMH3KaM_JEUqhpv
+ hf8k5QwtGRwzWofQomuvqa5qfA3GDkz7AayeARQB9Yl20LEjGslVkPw5D4W_0bKa3MRtl0tGQ9Ka
+ _Iqwh55G9lJbdWs6QjdzJn3JwyZ_c.QcgEE71.f3hTLgrg3sCUul.FM2pFeKQaPigJFUV8Sx.S8b
+ radjMyRC7aF4hA19mE1BBq_jS0G6ablI2fnNOAxwV18zTPr7qq12kSKuTp_h1sGyIROdzsCDEDKO
+ aC.HImdR9FQ4S6MfPzXNtFmmNHk_ycutFuxB8TYBGRI4h.o3ASbC4OMFsnxkx9mLjxDKX2lDGZfi
+ 1LOeKjAkabrT4oqeYJjAb59TwLWEbM7Rkp5reYQSgQ6hU0B8sS5XIniCVvM9CzrH07jijgeh4vKo
+ q115kl28U979oL0e.UU11BPmdBdrDdzlHhBzjfZ4Uyn_HyUsfT79wWyUGXeeyEandCkfOhyV1Azq
+ BHLqaET9RgIOVgsr2MkBnTBEzrJdZMsf4Gsf4lclIa_Kn8McfWsioFuQvo4rAPmC3BXfym7iAJxS
+ hRyklPZ5F1D1VkaaXrvO4126Z1ph3QMi_KU8vdblLKWNrQlPyyG4fd6gg_vmYhuBuqZIseT8wVyc
+ Rm8bFmodWa31zr8N0L3VEFHu.MiboJK4YUwBnRQYuV3cYGto5WzzvQpr1fINisrAcce2T1uX90ZZ
+ Ue25qpBNct4UaDv7GG5KwjL_3MNkGAyme6Tt5kx.ViEpl3E0QyJ7loSwxC9R5UbjCRhl4r78ZfHU
+ yGy8Ce9KRd93Ws0NcMwjKK0ikymwekFK_aXeUkg0SX68gZ8jJs7wJE9tqefVay_7LdypJmY4LOvr
+ VIDxlMvS2iDjeGAQ86xtXMYIa_iqw9dIv4tAzx6KTC0SKqUuwBCPMa2JHFKahTOK7Fsp.rzDJwGs
+ D2A20NT3lDVO4yZF_BlqoSaBJ68buy4sOLLRguPHRVVgDMZLF9P1LrMnyJzoB9LPm6AMJdhGD3Ld
+ qkmpbW6ypzDfikOYMtCIQfGLYL6o9FBE05xq5_UoUjgNu3mORo4mrxBg.g9k20BeeTH1FmPPMA1C
+ Jv9AwX.WJj89c5qzv85vHXq0qLq2BpU5EC53SrjuwgRncLrF3uLSIorfXWkhuRKjXBQ11vb5iS5r
+ s_tafD5L4IaQnhbzSU0qJPBZPCOxlkcmlOPJ1t1RMaVfQLMGg1U_CoyXfixASkKPCNxGiVR0vgF_
+ ztEk-
+X-Sonic-MF: <casey@schaufler-ca.com>
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic313.consmr.mail.ne1.yahoo.com with HTTP; Thu, 31 Mar 2022 18:44:24 +0000
+Received: by hermes--canary-production-bf1-665cdb9985-85ftg (VZM Hermes SMTP Server) with ESMTPA ID a52cdcf988e0124571774a6608f154ea;
+          Thu, 31 Mar 2022 18:44:22 +0000 (UTC)
+Message-ID: <9b521078-5809-7c59-9c58-b71ee406ee29@schaufler-ca.com>
+Date:   Thu, 31 Mar 2022 11:44:19 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 5/5] smack: Remove redundant assignments
+Content-Language: en-US
+To:     Michal Orzel <michalorzel.eng@gmail.com>,
+        James Morris <jmorris@namei.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>
+Cc:     linux-security-module@vger.kernel.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
+        Casey Schaufler <casey@schaufler-ca.com>
+References: <20220331173358.40939-1-michalorzel.eng@gmail.com>
+ <20220331173358.40939-5-michalorzel.eng@gmail.com>
+From:   Casey Schaufler <casey@schaufler-ca.com>
+In-Reply-To: <20220331173358.40939-5-michalorzel.eng@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Mailer: WebService/1.1.20001 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.yahoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-During the uvcg_video_pump() process, if an error occurs and
-uvcg_queue_cancel() is called, the buffer queue will be cleared out, but
-the current marker (queue->buf_used) of the active buffer (no longer
-active) is not reset. On the next iteration of uvcg_video_pump() the
-stale buf_used count will be used and the logic of min((unsigned
-int)len, buf->bytesused - queue->buf_used) may incorrectly calculate a
-nbytes size, causing an invalid memory access.
+On 3/31/2022 10:33 AM, Michal Orzel wrote:
+> Get rid of redundant assignments which end up in values not being
+> read either because they are overwritten or the function ends.
+>
+> Reported by clang-tidy [deadcode.DeadStores]
+>
+> Signed-off-by: Michal Orzel <michalorzel.eng@gmail.com>
 
-[80802.185460][  T315] configfs-gadget gadget: uvc: VS request completed
-with status -18.
-[80802.185519][  T315] configfs-gadget gadget: uvc: VS request completed
-with status -18.
-...
-uvcg_queue_cancel() is called and the queue is cleared out, but the
-marker queue->buf_used is not reset.
-...
-[80802.262328][ T8682] Unable to handle kernel paging request at virtual
-address ffffffc03af9f000
-...
-...
-[80802.263138][ T8682] Call trace:
-[80802.263146][ T8682]  __memcpy+0x12c/0x180
-[80802.263155][ T8682]  uvcg_video_pump+0xcc/0x1e0
-[80802.263165][ T8682]  process_one_work+0x2cc/0x568
-[80802.263173][ T8682]  worker_thread+0x28c/0x518
-[80802.263181][ T8682]  kthread+0x160/0x170
-[80802.263188][ T8682]  ret_from_fork+0x10/0x18
-[80802.263198][ T8682] Code: a8c12829 a88130cb a8c130
+Thank you. I will take this via the Smack tree.
 
-Fixes: d692522577c0 ("usb: gadget/uvc: Port UVC webcam gadget to use videobuf2 framework")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Dan Vacura <w36195@motorola.com>
-
----
-Changes in v3:
-- Cc stable
-Changes in v2:
-- Add Fixes tag
-
- drivers/usb/gadget/function/uvc_queue.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/usb/gadget/function/uvc_queue.c b/drivers/usb/gadget/function/uvc_queue.c
-index d852ac9e47e7..2cda982f3765 100644
---- a/drivers/usb/gadget/function/uvc_queue.c
-+++ b/drivers/usb/gadget/function/uvc_queue.c
-@@ -264,6 +264,8 @@ void uvcg_queue_cancel(struct uvc_video_queue *queue, int disconnect)
- 		buf->state = UVC_BUF_STATE_ERROR;
- 		vb2_buffer_done(&buf->buf.vb2_buf, VB2_BUF_STATE_ERROR);
- 	}
-+	queue->buf_used = 0;
-+
- 	/* This must be protected by the irqlock spinlock to avoid race
- 	 * conditions between uvc_queue_buffer and the disconnection event that
- 	 * could result in an interruptible wait in uvc_dequeue_buffer. Do not
--- 
-2.32.0
-
+> ---
+>   security/smack/smackfs.c | 1 -
+>   1 file changed, 1 deletion(-)
+>
+> diff --git a/security/smack/smackfs.c b/security/smack/smackfs.c
+> index 658eab05599e..9e61014073cc 100644
+> --- a/security/smack/smackfs.c
+> +++ b/security/smack/smackfs.c
+> @@ -1192,7 +1192,6 @@ static ssize_t smk_write_net4addr(struct file *file, const char __user *buf,
+>   			rc = -EINVAL;
+>   			goto free_out;
+>   		}
+> -		m = BEBITS;
+>   		masks = 32;
+>   	}
+>   	if (masks > BEBITS) {
