@@ -2,144 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A16F5C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 10:17:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88FE2C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 10:19:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234571AbiCaKSw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 06:18:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57626 "EHLO
+        id S234581AbiCaKUp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 06:20:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229569AbiCaKSv (ORCPT
+        with ESMTP id S229569AbiCaKUn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 06:18:51 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AD1511A9B6
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 03:17:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648721824; x=1680257824;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=RbQW+n/+6PJw9BWCQAk1SdFbKP5uCEhi+CcdW4GzQ9s=;
-  b=Y5fO/yGZ5aX3RlZa43qhgpQrYjNU98BTuZkmLDsSB1mHiC5wz3uYat7Q
-   oQkBj67GyZ+ewhj/Dwhio5Pg/fUDaZ2nhIzmkRL0atuFdzsROwMEiY9F8
-   jtcvmU0wCzMwo7G37MC7bWn4Vi8yv2p5VtWiFMPU0ds/wzJZk0/tyDsCJ
-   fCfZ64JvlOedw5XixKTRCXhIoZySd8BPAWrPPkjY/LuVrHX03t0IGhnEl
-   Sc7haS3zh2mc1zfxr+tiSoJh3H60/enCOQpmqatNkMfXO/LzQ1rRRH6pr
-   B4yT84MH4pjAq66PZmTq60s5/nUiB2MFjMHMYU/TpNVxVyccKWWF7lkjy
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="259969468"
-X-IronPort-AV: E=Sophos;i="5.90,225,1643702400"; 
-   d="scan'208";a="259969468"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2022 03:17:04 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,225,1643702400"; 
-   d="scan'208";a="503683920"
-Received: from lkp-server02.sh.intel.com (HELO 3231c491b0e2) ([10.239.97.151])
-  by orsmga003.jf.intel.com with ESMTP; 31 Mar 2022 03:17:02 -0700
-Received: from kbuild by 3231c491b0e2 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nZrrR-00009g-LK;
-        Thu, 31 Mar 2022 10:17:01 +0000
-Date:   Thu, 31 Mar 2022 18:16:07 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Sudarshan Rajagopalan <sudaraja@codeaurora.org>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org,
-        Suren Baghdasaryan <surenb@google.com>
-Subject: [ammarfaizi2-block:google/android/kernel/common/android12-trusty-5.10
- 1060/5872] arch/arm64/mm/mmu.c:1499:5: warning: no previous prototype for
- 'check_range_driver_managed'
-Message-ID: <202203311842.wFWvHrHn-lkp@intel.com>
+        Thu, 31 Mar 2022 06:20:43 -0400
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4614ADA0
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 03:18:54 -0700 (PDT)
+Received: by mail-wr1-x433.google.com with SMTP id h23so33055610wrb.8
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 03:18:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3njw3DxCJMK/qaimqo+JqUFpsDvCToqYT0qLJezFT7Y=;
+        b=lrHRCCq6CmPr1waA9nNdRhHP/C3MSiSrMwO9Kz1WUD0himOpEGemhN7eODcBs80FJg
+         18Z0cvz0zsNOJVJGlN7gaeGMblsVl0/QvqxUt0nfpgxMg8QO6+rs8grhU0FNLDed853I
+         TXXVgTjH5KUEgeRYlpuVZ8a93weTgxF+ksHAKNxxREsvKdDtTHx1AFWbQVY1GasDXA4W
+         SeUahsj61KGflwqDyi+lhQLfoI0mc8YLYhl5XXxuLvuwWGPagFtKJ67MNQra46kLko2i
+         2siYBD7mKypQiCvkzKjjnaOYz11YcWAMaRWiLx+aEj2QfLRMkwlGxVfmE6n7t7bWGLWM
+         +btQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3njw3DxCJMK/qaimqo+JqUFpsDvCToqYT0qLJezFT7Y=;
+        b=1Wybp0MWAd27DXc1IP9qlmJe/Z9isVchfQTJQVGnx6Cfid6/YMnTbBzNDn7glCwTpr
+         U+3kb8OonZMNaHnBEVJ4z9VTAh+yl8nev5POM1whuo4JBx4azGM1EVCyaEVUtdUectUE
+         014j097ODIo9eIl1XiweC7xxVkv+bU9k32iV4iiCxXIwj4kKD7bwDDVeBMN2RNUM7kqX
+         ChLLyziTEPI5yBOWQF4RTZsC5UCJeBZNSl6gZkAIRa+pbbMpTvIM/RDyFPUkl9Ys/Zqi
+         QCkQ/JuoeX10G5vbSXjCyecOgL8KvJEUcsITFimH217HUQDt9mnqKfhps+ASrG7AQ3tZ
+         2+1Q==
+X-Gm-Message-State: AOAM531Dwhu+IOBfSq6+bP/EcrHeech+cyTm9Zn8lbzF5sy9yQeB+rSd
+        Wg+2F8QlXwH6opYpg4I0xGE=
+X-Google-Smtp-Source: ABdhPJwa3P6kCNuNRFst5jYLMm/9v2WOB5lOwPTpEWLX8v7cZefkN3P0qPBEtsqm+RvuRANfCZK24g==
+X-Received: by 2002:adf:ebc1:0:b0:1e6:1109:5a1c with SMTP id v1-20020adfebc1000000b001e611095a1cmr3545977wrn.228.1648721933165;
+        Thu, 31 Mar 2022 03:18:53 -0700 (PDT)
+Received: from alaa-emad ([41.37.132.115])
+        by smtp.gmail.com with ESMTPSA id m20-20020a05600c4f5400b0038b5162260csm10336271wmq.23.2022.03.31.03.18.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 31 Mar 2022 03:18:52 -0700 (PDT)
+From:   Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
+To:     outreachy@lists.linux.dev
+Cc:     gregkh@linuxfoundation.org, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org, eng.alaamohamedsoliman.am@gmail.com
+Subject: [PATCH] staging: gdm724x: Fix Duplication of Side Effects
+Date:   Thu, 31 Mar 2022 12:18:49 +0200
+Message-Id: <20220331101849.71046-1-eng.alaamohamedsoliman.am@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Sudarshan,
+Fix Duplication of Side Effects for GDM_TTY_READY(gdm) macro
+reported by checkpatch
+"CHECK: Macro argument reuse 'gdm' - possible side-effects?"
 
-FYI, the error/warning still remains.
+Signed-off-by: Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
+---
+ drivers/staging/gdm724x/gdm_tty.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android12-trusty-5.10
-head:   07055bfd3d810d41a38354693dfaa55a6f8c0025
-commit: 1b4aca7d82ae9b40145484fa09ceab38a6a06062 [1060/5872] ANDROID: arm64/mm: implement {populate/depopulate}_range_driver_managed
-config: arm64-buildonly-randconfig-r005-20220331 (https://download.01.org/0day-ci/archive/20220331/202203311842.wFWvHrHn-lkp@intel.com/config)
-compiler: aarch64-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/1b4aca7d82ae9b40145484fa09ceab38a6a06062
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android12-trusty-5.10
-        git checkout 1b4aca7d82ae9b40145484fa09ceab38a6a06062
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm64 SHELL=/bin/bash arch/arm64/mm/ drivers/gpu/drm/hisilicon/kirin/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> arch/arm64/mm/mmu.c:1499:5: warning: no previous prototype for 'check_range_driver_managed' [-Wmissing-prototypes]
-    1499 | int check_range_driver_managed(u64 start, u64 size, const char *resource_name)
-         |     ^~~~~~~~~~~~~~~~~~~~~~~~~~
-   In file included from include/linux/printk.h:7,
-                    from include/linux/kernel.h:16,
-                    from arch/arm64/mm/mmu.c:11:
-   arch/arm64/mm/mmu.c: In function 'check_range_driver_managed':
-   include/linux/kern_levels.h:5:25: warning: format '%lx' expects argument of type 'long unsigned int', but argument 3 has type 'u64' {aka 'long long unsigned int'} [-Wformat=]
-       5 | #define KERN_SOH        "\001"          /* ASCII Start Of Header */
-         |                         ^~~~~~
-   include/linux/kern_levels.h:11:25: note: in expansion of macro 'KERN_SOH'
-      11 | #define KERN_ERR        KERN_SOH "3"    /* error conditions */
-         |                         ^~~~~~~~
-   include/linux/printk.h:343:16: note: in expansion of macro 'KERN_ERR'
-     343 |         printk(KERN_ERR pr_fmt(fmt), ##__VA_ARGS__)
-         |                ^~~~~~~~
-   arch/arm64/mm/mmu.c:1509:17: note: in expansion of macro 'pr_err'
-    1509 |                 pr_err("%s: couldn't find memory resource for start 0x%lx\n",
-         |                 ^~~~~~
-
-
-vim +/check_range_driver_managed +1499 arch/arm64/mm/mmu.c
-
-  1498	
-> 1499	int check_range_driver_managed(u64 start, u64 size, const char *resource_name)
-  1500	{
-  1501		struct mem_section *ms;
-  1502		unsigned long pfn = __phys_to_pfn(start);
-  1503		unsigned long end_pfn = __phys_to_pfn(start + size);
-  1504		struct resource *res;
-  1505		unsigned long flags;
-  1506	
-  1507		res = lookup_resource(&iomem_resource, start);
-  1508		if (!res) {
-  1509			pr_err("%s: couldn't find memory resource for start 0x%lx\n",
-  1510				   __func__, start);
-  1511			return -EINVAL;
-  1512		}
-  1513	
-  1514		flags = res->flags;
-  1515	
-  1516		if (!(flags & IORESOURCE_SYSRAM_DRIVER_MANAGED) ||
-  1517		    strstr(resource_name, "System RAM (") != resource_name)
-  1518			return -EINVAL;
-  1519	
-  1520		for (; pfn < end_pfn; pfn += PAGES_PER_SECTION) {
-  1521			ms = __pfn_to_section(pfn);
-  1522			if (early_section(ms))
-  1523				return -EINVAL;
-  1524		}
-  1525	
-  1526		return 0;
-  1527	}
-  1528	
-
+diff --git a/drivers/staging/gdm724x/gdm_tty.c b/drivers/staging/gdm724x/gdm_tty.c
+index 04df6f9f5403..6f0274470e69 100644
+--- a/drivers/staging/gdm724x/gdm_tty.c
++++ b/drivers/staging/gdm724x/gdm_tty.c
+@@ -27,7 +27,9 @@
+ 
+ #define MUX_TX_MAX_SIZE 2048
+ 
+-#define GDM_TTY_READY(gdm) (gdm && gdm->tty_dev && gdm->port.count)
++#define GDM_TTY_READY(_gdm) \
++	({ typeof(_gdm) (gdm) = (_gdm); \
++	(gdm && gdm->tty_dev && gdm->port.count); })
+ 
+ static struct tty_driver *gdm_driver[TTY_MAX_COUNT];
+ static struct gdm *gdm_table[TTY_MAX_COUNT][GDM_TTY_MINOR];
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.35.1
+
