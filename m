@@ -2,109 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D3B5C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 21:55:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66DD0C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 21:55:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242048AbiCaV5S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 17:57:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42222 "EHLO
+        id S242067AbiCaV5W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 17:57:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242027AbiCaV5Q (ORCPT
+        with ESMTP id S242029AbiCaV5Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 31 Mar 2022 17:57:16 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFA071DFDFD;
-        Thu, 31 Mar 2022 14:55:27 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id x34so834960ede.8;
-        Thu, 31 Mar 2022 14:55:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=340G7DDlJvxfnruHeGXTFxEtC53hXW3frN9N7jMbYMo=;
-        b=pqa1CDnLEUEUIbaKrQKpfnlyqz9Wf9ivrcPZx4GweI+V3rxNnyGYtErdnkFl0KZWPy
-         aVQOM1sjDXASbi84kEzqN1bkF5mEznJlonLoaL0lJQauqFA7/NR22vzkm4ZmzUTXOghP
-         XLeXUiEI5Ya1ggWcU34UmZIXQ/Dv24iQjhn3X8hWnRsNlXsLvpsm6tcfoqQJTXlkR7iH
-         L27DYCyr5wnD+BIK4wIsRbw34owX4oYQXE7K0Ccqn7RKHHQACNQ7NucVRrynQRtg7/tB
-         riygE186FI3tDxlvdnK2G/Axi8AoQypB49XyAkclnzkoxG/WUO7/vxh+z5er3Y0w2QDX
-         ZT3w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=340G7DDlJvxfnruHeGXTFxEtC53hXW3frN9N7jMbYMo=;
-        b=1GMHJkGahrL6uA80Mq199Z2eX821EAsWQNxtXlrv/f55NEK16iiDo/dZcwnNp08t+h
-         iLtBfGCMglv7mYMoAnWptcgpI3aJqzaRNtZPa1SY7xzrupFgVgZK/AGFBvID+43SJ+Da
-         VKlXRPj+rxvydDvcdJBesNnsgw2g7z27FjFrG5FFjb+HgAUvX1xLnQ17cHWnXwkYh8aY
-         jS1ZkKVJmTwF4UYHPcoQDc2tmOTse5p5+o52cY6HdpnogvV1P0V+N54lHM7WVE/fLznr
-         ZgP6wRA24kqzC/HXX8Z2NB5af9swLcP507MnkDu6+5IwTqfg1L3QI9xxPVatkQAdSWti
-         gOjw==
-X-Gm-Message-State: AOAM53369f540v3VqzDTJDoGTYIjyFwpLPUjQ+qxq+PGooMwK3boD72l
-        1F9WC8Vy7GMXEVWHCI2cpJM=
-X-Google-Smtp-Source: ABdhPJz2iC+c3oAylzaewgDKd9bjHplvo2CImrsZPyv6lnBH4ueew5wYDmb+r1VTQEpAO+qB10tjkQ==
-X-Received: by 2002:a05:6402:4250:b0:419:5e89:a40f with SMTP id g16-20020a056402425000b004195e89a40fmr18515273edb.319.1648763726247;
-        Thu, 31 Mar 2022 14:55:26 -0700 (PDT)
-Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
-        by smtp.googlemail.com with ESMTPSA id r11-20020aa7cfcb000000b0041902ac4c6asm307950edy.1.2022.03.31.14.55.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 31 Mar 2022 14:55:25 -0700 (PDT)
-From:   Jakob Koschel <jakobkoschel@gmail.com>
-To:     Jeff Layton <jlayton@kernel.org>
-Cc:     Ilya Dryomov <idryomov@gmail.com>, ceph-devel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Mike Rapoport <rppt@kernel.org>,
-        "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>, Jakob Koschel <jakobkoschel@gmail.com>
-Subject: [PATCH 1/2] ceph: use dedicated list iterator variable
-Date:   Thu, 31 Mar 2022 23:53:28 +0200
-Message-Id: <20220331215329.882411-1-jakobkoschel@gmail.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A233192343
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 14:55:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0249760B61
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 21:55:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 6B6AEC340ED;
+        Thu, 31 Mar 2022 21:55:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648763727;
+        bh=Mj3bVRE/teSyMVdvsyFkwisnLjTi4d+JgRKP+l5l7Io=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=CRJrDQyKRatvb1pJkwD3IXbZvmzT6qeQRO/SE7KoEdwHhhTNxyx2QQFVp05OfOZok
+         hIC+vi5GTV2uyUQ6w1Tg2Es2IKd+zENXRGQe1sbLtXIvwfLok1jNCSkezTVBnSBq0B
+         KpuXCHpsxHn8xq9r5oX8NPKgrYbuxNx1ujyAuB2jpUsVL0dvHaLooKV+V3eRVnUDzn
+         mJH15Oa4CHId2q3lKKplMlVZy58KkXsM9zVFI8e7LtaUXmlmUwaYhcPn9+E1biNzM8
+         s9/w025X6PQeDO3adbOa+25tMWKyVSoJWXeoiL47xPC5x5QYz1pEHK6NH5iG58mZ6w
+         KfKgmQIP6kHBg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 56E05EAC09B;
+        Thu, 31 Mar 2022 21:55:27 +0000 (UTC)
+Subject: Re: [GIT PULL] random number generator fixes for 5.18-rc1
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20220331212352.182168-1-Jason@zx2c4.com>
+References: <20220331212352.182168-1-Jason@zx2c4.com>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20220331212352.182168-1-Jason@zx2c4.com>
+X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/linux/kernel/git/crng/random.git tags/random-5.18-rc1-for-linus
+X-PR-Tracked-Commit-Id: 1754abb3e7583c570666fa1e1ee5b317e88c89a0
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 478f74a3d8085076dfcb481aa9361b808a6aae94
+Message-Id: <164876372734.13969.12200971032270189655.pr-tracker-bot@kernel.org>
+Date:   Thu, 31 Mar 2022 21:55:27 +0000
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To move the list iterator variable into the list_for_each_entry_*()
-macro in the future it should be avoided to use the list iterator
-variable after the loop body.
+The pull request you sent on Thu, 31 Mar 2022 17:23:52 -0400:
 
-To *never* use the list iterator variable after the loop it was
-concluded to use a separate iterator variable [1].
+> https://git.kernel.org/pub/scm/linux/kernel/git/crng/random.git tags/random-5.18-rc1-for-linus
 
-Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/ [1]
-Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
----
- fs/ceph/caps.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/478f74a3d8085076dfcb481aa9361b808a6aae94
 
-diff --git a/fs/ceph/caps.c b/fs/ceph/caps.c
-index f1ad6884d4da..519750bc5a1a 100644
---- a/fs/ceph/caps.c
-+++ b/fs/ceph/caps.c
-@@ -1577,7 +1577,7 @@ static void __ceph_flush_snaps(struct ceph_inode_info *ci,
- 
- 	while (first_tid <= last_tid) {
- 		struct ceph_cap *cap = ci->i_auth_cap;
--		struct ceph_cap_flush *cf;
-+		struct ceph_cap_flush *cf = NULL, *iter;
- 		int ret;
- 
- 		if (!(cap && cap->session == session)) {
-@@ -1587,8 +1587,9 @@ static void __ceph_flush_snaps(struct ceph_inode_info *ci,
- 		}
- 
- 		ret = -ENOENT;
--		list_for_each_entry(cf, &ci->i_cap_flush_list, i_list) {
--			if (cf->tid >= first_tid) {
-+		list_for_each_entry(iter, &ci->i_cap_flush_list, i_list) {
-+			if (iter->tid >= first_tid) {
-+				cf = iter;
- 				ret = 0;
- 				break;
- 			}
+Thank you!
 
-base-commit: f82da161ea75dc4db21b2499e4b1facd36dab275
 -- 
-2.25.1
-
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
