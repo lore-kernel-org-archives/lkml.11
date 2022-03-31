@@ -2,142 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFE77C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 08:24:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49308C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 08:25:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232746AbiCaI0j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 04:26:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55184 "EHLO
+        id S232763AbiCaI0s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 04:26:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232719AbiCaI0g (ORCPT
+        with ESMTP id S232747AbiCaI0k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 04:26:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CD313E5EB;
-        Thu, 31 Mar 2022 01:24:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B5060B81FBA;
-        Thu, 31 Mar 2022 08:24:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61CDEC340ED;
-        Thu, 31 Mar 2022 08:24:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648715086;
-        bh=/pcY0qB26eKeKCiib1+H0TY1vZCA9lmqTBCYWM/MIgg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ogLXPlhY4XW7CMerWzh0rUwxDEgncjsl1QInpH9dkPtmDBufm47Kige5mh61RDZld
-         Lbv2VhtKem5ER3iPzbZzOIS5Tbwie8Ju5Z4DGoD35zo+rzOZoDKVJbjA8FO3qcuSfT
-         SvOk1uG5qQ6t3Mv8bnhr74lTqYP3J7vzI1Lelzm409fgwPqmeKac7VwG7zHIxNoZ6r
-         XCXJ8cZTRFuHjbC3ttsma5cIgcG8kJ/EKLHQFUy3k7/P+aFQkt1Vq/p8dZX07r1GGb
-         k1yk1upH+2D/4/LRQVlWGRr12EukHcFiIUnzbgrUVEE0yw94jNL20UgAk6l4zZItFe
-         gKzg62ilLbsig==
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Masami Hiramatsu <mhiramat@kernel.org>,
-        Padmanabha Srinivasaiah <treasure4paddy@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        Nathan Chancellor <nathan@kernel.org>, llvm@lists.linux.dev,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
-Subject: [PATCH v7 2/4] bootconfig: Check the checksum before removing the bootconfig from initrd
-Date:   Thu, 31 Mar 2022 17:24:40 +0900
-Message-Id: <164871508057.178991.1275961945357225120.stgit@devnote2>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <164871505771.178991.7870442736805590948.stgit@devnote2>
-References: <164871505771.178991.7870442736805590948.stgit@devnote2>
-User-Agent: StGit/0.19
+        Thu, 31 Mar 2022 04:26:40 -0400
+Received: from m12-12.163.com (m12-12.163.com [220.181.12.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F412625C8;
+        Thu, 31 Mar 2022 01:24:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=YDQlZ
+        qcen5qVjN/uH7qP6dIID2tLa9CyPJjJm8Xi+1A=; b=ebUbVQi4xNCkOw1ANGJtZ
+        rdYzLq1jwrWfGDMKBzv5aX0l87dwQ1ZYK3x0PrJeIO10xnJHhi81d27M08F+4kty
+        ujIWfQIhx8dCJpfGxITrAx6VPkyNlApHYZwg9im6lzogoCaUptnJy03RejkhJff+
+        Rhs4Iz6itDwJrIGw4Bzad4=
+Received: from localhost.localdomain (unknown [101.86.107.106])
+        by smtp8 (Coremail) with SMTP id DMCowADH+lr1ZEVilGI2AQ--.25548S2;
+        Thu, 31 Mar 2022 16:23:18 +0800 (CST)
+From:   jackygam2001 <jacky_gam_2001@163.com>
+To:     dkirjanov@suse.de
+Cc:     edumazet@google.com, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, rostedt@goodmis.org, mingo@redhat.com,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org, yhs@fb.com,
+        ping.gan@dell.com, Ping Gan <jacky_gam_2001@163.com>
+Subject: [PATCH v2 net-next] tcp: Add tracepoint for tcp_set_ca_state
+Date:   Thu, 31 Mar 2022 16:21:49 +0800
+Message-Id: <20220331082149.15910-1-jacky_gam_2001@163.com>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <9f7a92f5-5674-5c9f-e5ec-4a68ec8cb0d1@suse.de>
+References: <9f7a92f5-5674-5c9f-e5ec-4a68ec8cb0d1@suse.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: DMCowADH+lr1ZEVilGI2AQ--.25548S2
+X-Coremail-Antispam: 1Uf129KBjvJXoWxAw48WF4fWF1ftF4kZrWfuFg_yoWrAw1rpF
+        1DAr1Sg3y5JryagF93Ary8t3sxW348Wr1a9ry7Ww1ak3ZFqF1rtF4ktryjyayYvrZYk39x
+        Wa129r1rGanrZr7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0pi66wJUUUUU=
+X-Originating-IP: [101.86.107.106]
+X-CM-SenderInfo: 5mdfy55bjdzsisqqiqqrwthudrp/xtbBbADUKVc7O4We1wAAsK
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Check the bootconfig's checksum before removing the bootcinfig data
-from initrd to avoid modifying initrd by mistake.
-This will also simplifies the get_boot_config_from_initrd() interface.
+From: Ping Gan <jacky_gam_2001@163.com>
 
-Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
+The congestion status of a tcp flow may be updated since there
+is congestion between tcp sender and receiver. It makes sense to
+add tracepoint for congestion status set function to summate cc
+status duration and evaluate the performance of network
+and congestion algorithm. The backgound of this patch is below.
+
+Link: https://github.com/iovisor/bcc/pull/3899
+
+Signed-off-by: Ping Gan <jacky_gam_2001@163.com>
 ---
- init/main.c |   22 ++++++++++------------
- 1 file changed, 10 insertions(+), 12 deletions(-)
+ include/net/tcp.h          | 12 +++---------
+ include/trace/events/tcp.h | 45 +++++++++++++++++++++++++++++++++++++++++++++
+ net/ipv4/tcp_cong.c        | 12 ++++++++++++
+ 3 files changed, 60 insertions(+), 9 deletions(-)
 
-diff --git a/init/main.c b/init/main.c
-index 98182c3c2c4b..266d61bc67b0 100644
---- a/init/main.c
-+++ b/init/main.c
-@@ -266,7 +266,7 @@ static int __init loglevel(char *str)
- early_param("loglevel", loglevel);
- 
- #ifdef CONFIG_BLK_DEV_INITRD
--static void * __init get_boot_config_from_initrd(u32 *_size, u32 *_csum)
-+static void * __init get_boot_config_from_initrd(u32 *_size)
- {
- 	u32 size, csum;
- 	char *data;
-@@ -300,17 +300,20 @@ static void * __init get_boot_config_from_initrd(u32 *_size, u32 *_csum)
- 		return NULL;
- 	}
- 
-+	if (xbc_calc_checksum(data, size) != csum) {
-+		pr_err("bootconfig checksum failed\n");
-+		return NULL;
-+	}
-+
- 	/* Remove bootconfig from initramfs/initrd */
- 	initrd_end = (unsigned long)data;
- 	if (_size)
- 		*_size = size;
--	if (_csum)
--		*_csum = csum;
- 
- 	return data;
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index 70ca4a5e330a..9a3786f33798 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -1139,15 +1139,6 @@ static inline bool tcp_ca_needs_ecn(const struct sock *sk)
+ 	return icsk->icsk_ca_ops->flags & TCP_CONG_NEEDS_ECN;
  }
- #else
--static void * __init get_boot_config_from_initrd(u32 *_size, u32 *_csum)
-+static void * __init get_boot_config_from_initrd(u32 *_size)
+ 
+-static inline void tcp_set_ca_state(struct sock *sk, const u8 ca_state)
+-{
+-	struct inet_connection_sock *icsk = inet_csk(sk);
+-
+-	if (icsk->icsk_ca_ops->set_state)
+-		icsk->icsk_ca_ops->set_state(sk, ca_state);
+-	icsk->icsk_ca_state = ca_state;
+-}
+-
+ static inline void tcp_ca_event(struct sock *sk, const enum tcp_ca_event event)
  {
+ 	const struct inet_connection_sock *icsk = inet_csk(sk);
+@@ -1156,6 +1147,9 @@ static inline void tcp_ca_event(struct sock *sk, const enum tcp_ca_event event)
+ 		icsk->icsk_ca_ops->cwnd_event(sk, event);
+ }
+ 
++/* From tcp_cong.c */
++void tcp_set_ca_state(struct sock *sk, const u8 ca_state);
++
+ /* From tcp_rate.c */
+ void tcp_rate_skb_sent(struct sock *sk, struct sk_buff *skb);
+ void tcp_rate_skb_delivered(struct sock *sk, struct sk_buff *skb,
+diff --git a/include/trace/events/tcp.h b/include/trace/events/tcp.h
+index 521059d8dc0a..69a68b01c1de 100644
+--- a/include/trace/events/tcp.h
++++ b/include/trace/events/tcp.h
+@@ -371,6 +371,51 @@ DEFINE_EVENT(tcp_event_skb, tcp_bad_csum,
+ 	TP_ARGS(skb)
+ );
+ 
++TRACE_EVENT(tcp_cong_state_set,
++
++	TP_PROTO(struct sock *sk, const u8 ca_state),
++
++	TP_ARGS(sk, ca_state),
++
++	TP_STRUCT__entry(
++		__field(const void *, skaddr)
++		__field(__u16, sport)
++		__field(__u16, dport)
++		__array(__u8, saddr, 4)
++		__array(__u8, daddr, 4)
++		__array(__u8, saddr_v6, 16)
++		__array(__u8, daddr_v6, 16)
++		__field(__u8, cong_state)
++	),
++
++	TP_fast_assign(
++		struct inet_sock *inet = inet_sk(sk);
++		__be32 *p32;
++
++		__entry->skaddr = sk;
++
++		__entry->sport = ntohs(inet->inet_sport);
++		__entry->dport = ntohs(inet->inet_dport);
++
++		p32 = (__be32 *) __entry->saddr;
++		*p32 = inet->inet_saddr;
++
++		p32 = (__be32 *) __entry->daddr;
++		*p32 =  inet->inet_daddr;
++
++		TP_STORE_ADDRS(__entry, inet->inet_saddr, inet->inet_daddr,
++			   sk->sk_v6_rcv_saddr, sk->sk_v6_daddr);
++
++		__entry->cong_state = ca_state;
++	),
++
++	TP_printk("sport=%hu dport=%hu saddr=%pI4 daddr=%pI4 saddrv6=%pI6c daddrv6=%pI6c cong_state=%u",
++		  __entry->sport, __entry->dport,
++		  __entry->saddr, __entry->daddr,
++		  __entry->saddr_v6, __entry->daddr_v6,
++		  __entry->cong_state)
++);
++
+ #endif /* _TRACE_TCP_H */
+ 
+ /* This part must be outside protection */
+diff --git a/net/ipv4/tcp_cong.c b/net/ipv4/tcp_cong.c
+index dc95572163df..98b48bdb8be7 100644
+--- a/net/ipv4/tcp_cong.c
++++ b/net/ipv4/tcp_cong.c
+@@ -16,6 +16,7 @@
+ #include <linux/gfp.h>
+ #include <linux/jhash.h>
+ #include <net/tcp.h>
++#include <trace/events/tcp.h>
+ 
+ static DEFINE_SPINLOCK(tcp_cong_list_lock);
+ static LIST_HEAD(tcp_cong_list);
+@@ -33,6 +34,17 @@ struct tcp_congestion_ops *tcp_ca_find(const char *name)
  	return NULL;
  }
-@@ -409,12 +412,12 @@ static void __init setup_boot_config(void)
- 	static char tmp_cmdline[COMMAND_LINE_SIZE] __initdata;
- 	const char *msg;
- 	int pos;
--	u32 size, csum;
-+	u32 size;
- 	char *data, *err;
- 	int ret;
  
- 	/* Cut out the bootconfig data even if we have no bootconfig option */
--	data = get_boot_config_from_initrd(&size, &csum);
-+	data = get_boot_config_from_initrd(&size);
- 
- 	strlcpy(tmp_cmdline, boot_command_line, COMMAND_LINE_SIZE);
- 	err = parse_args("bootconfig", tmp_cmdline, NULL, 0, 0, 0, NULL,
-@@ -438,11 +441,6 @@ static void __init setup_boot_config(void)
- 		return;
- 	}
- 
--	if (xbc_calc_checksum(data, size) != csum) {
--		pr_err("bootconfig checksum failed\n");
--		return;
--	}
--
- 	ret = xbc_init(data, size, &msg, &pos);
- 	if (ret < 0) {
- 		if (pos < 0)
-@@ -471,7 +469,7 @@ static void __init exit_boot_config(void)
- static void __init setup_boot_config(void)
- {
- 	/* Remove bootconfig data from initrd */
--	get_boot_config_from_initrd(NULL, NULL);
-+	get_boot_config_from_initrd(NULL);
- }
- 
- static int __init warn_bootconfig(char *str)
++void tcp_set_ca_state(struct sock *sk, const u8 ca_state)
++{
++	struct inet_connection_sock *icsk = inet_csk(sk);
++
++	trace_tcp_cong_state_set(sk, ca_state);
++
++	if (icsk->icsk_ca_ops->set_state)
++		icsk->icsk_ca_ops->set_state(sk, ca_state);
++	icsk->icsk_ca_state = ca_state;
++}
++
+ /* Must be called with rcu lock held */
+ static struct tcp_congestion_ops *tcp_ca_find_autoload(struct net *net,
+ 						       const char *name)
+-- 
+2.15.0
 
