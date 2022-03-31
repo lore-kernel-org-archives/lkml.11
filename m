@@ -2,253 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3B35C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 06:09:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3119AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 06:09:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230417AbiCaGKp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 02:10:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52768 "EHLO
+        id S230440AbiCaGKv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 02:10:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230203AbiCaGKk (ORCPT
+        with ESMTP id S230413AbiCaGKm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 02:10:40 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ECE137BDC;
-        Wed, 30 Mar 2022 23:08:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648706933; x=1680242933;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=/ge1MLpUpTSzccOgc9ys/TIcqiCk7bYjVPKcxqO0AKU=;
-  b=kjIs7w8MhB7PZ02MQOwvVU05S0eyq1l24efcU89rkIcLXTAroh24S488
-   o5lJxWxQasFRvbgnl9yB4aBctNnOEMjP8pg9JSqa8u/E1mQ9oJLcKANmb
-   ReeAdT3mkAc+5vrDtb/79/cBWuRbi79zPq9GhsQ6Uax0BblBKl8Nherm6
-   MIzbtLN/54lG+oweyWQbtQf/ieU+ZhlQ9gjmO2WuJ7WWctLGC7bC4+ALi
-   qpUHAOZ2s2xDa3ACcOt9ujExmXE1rUTbc2Z3eJuI3fobZK5GP6rOFGcRA
-   8v4CEaUgarL7dl0b1Y7emN5mjnFTarswNeNNGeew8Viwe8olybpQn8hOb
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="239657254"
-X-IronPort-AV: E=Sophos;i="5.90,224,1643702400"; 
-   d="scan'208";a="239657254"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 23:08:52 -0700
-X-IronPort-AV: E=Sophos;i="5.90,224,1643702400"; 
-   d="scan'208";a="566176320"
-Received: from cqiang-mobl.ccr.corp.intel.com (HELO [10.249.172.223]) ([10.249.172.223])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 23:08:48 -0700
-Message-ID: <086558b3-2dc4-9126-8d3f-7c2cfec917cb@intel.com>
-Date:   Thu, 31 Mar 2022 14:08:44 +0800
+        Thu, 31 Mar 2022 02:10:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 041F038D90;
+        Wed, 30 Mar 2022 23:08:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 93A276167F;
+        Thu, 31 Mar 2022 06:08:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70875C340F0;
+        Thu, 31 Mar 2022 06:08:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648706934;
+        bh=pgB4jTziZhebTrn8JVBVdaOH2FmDFsYbZ9Mh1b/KUQc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=sG1tSuJFevehjqzpmojcnru0IbEdYN3e9pxUrAOZKBPHTsIAyL4Avm3hyb74jlAXW
+         NyTp9UXFJe0tSQB57iOX34o8kBqmiy6OA6nVgD4iFCbNeBA7aUnmAJNHw7+ZVH8OdP
+         FWHrWlIcoJDhjGILTWkvyP8n34MaAixTpIAXTsf8fN2QcvxoBKUA90e8pufpyTqwnY
+         m98S7CyDTOyXu7GszhA1Zs6OBFl2UhBUbyMWtBFHQRMiU6P4JgK5hTl2iz+KsmDIB+
+         RzUf/uVAb+4BKK0nphmRHy6v9LhW0dDaw89+Nt/Xc62c8FVc9O5HWbMPx961Msnhb3
+         ZjUV27ZqX/WJg==
+Date:   Thu, 31 Mar 2022 14:08:51 +0800
+From:   Tzung-Bi Shih <tzungbi@kernel.org>
+To:     Jean-Jacques Hiblot <jjhiblot@traphandler.com>
+Cc:     wim@linux-watchdog.org, linux@roeck-us.net,
+        geert+renesas@glider.be, linux-watchdog@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Phil Edworthy <phil.edworthy@renesas.com>
+Subject: Re: [PATCH v4 2/2] watchdog: Add Renesas RZ/N1 Watchdog driver
+Message-ID: <YkVFc6Q6/6rxSw89@google.com>
+References: <20220330100829.1000679-1-jjhiblot@traphandler.com>
+ <20220330100829.1000679-3-jjhiblot@traphandler.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.7.0
-Subject: Re: [PATCH v6 7/7] KVM: VMX: Enable PKS for nested VM
-Content-Language: en-US
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Xiaoyao Li <xiaoyao.li@intel.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220221080840.7369-1-chenyi.qiang@intel.com>
- <20220221080840.7369-8-chenyi.qiang@intel.com> <YkTP7uztERLwynAN@google.com>
-From:   Chenyi Qiang <chenyi.qiang@intel.com>
-In-Reply-To: <YkTP7uztERLwynAN@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220330100829.1000679-3-jjhiblot@traphandler.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, Mar 30, 2022 at 12:08:29PM +0200, Jean-Jacques Hiblot wrote:
+> diff --git a/drivers/watchdog/rzn1_wdt.c b/drivers/watchdog/rzn1_wdt.c
+[...]
+> +/*
+> + * Renesas RZ/N1 Watchdog timer.
+> + * This is a 12-bit timer driver from a (62.5/16384) MHz clock. It can't even
+> + * cope with 2 seconds.
+> + *
+> + * Copyright 2018 Renesas Electronics Europe Ltd.
 
+s/2018/2022/ ?
 
-On 3/31/2022 5:47 AM, Sean Christopherson wrote:
-> On Mon, Feb 21, 2022, Chenyi Qiang wrote:
->> PKS MSR passes through guest directly. Configure the MSR to match the
->> L0/L1 settings so that nested VM runs PKS properly.
->>
->> Signed-off-by: Chenyi Qiang <chenyi.qiang@intel.com>
->> ---
->>   arch/x86/kvm/vmx/nested.c | 38 ++++++++++++++++++++++++++++++++++++--
->>   arch/x86/kvm/vmx/vmcs12.c |  2 ++
->>   arch/x86/kvm/vmx/vmcs12.h |  4 ++++
->>   arch/x86/kvm/vmx/vmx.c    |  1 +
->>   arch/x86/kvm/vmx/vmx.h    |  2 ++
->>   5 files changed, 45 insertions(+), 2 deletions(-)
->>
->> diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
->> index f235f77cbc03..c42a1df385ef 100644
->> --- a/arch/x86/kvm/vmx/nested.c
->> +++ b/arch/x86/kvm/vmx/nested.c
->> @@ -252,6 +252,10 @@ static void vmx_sync_vmcs_host_state(struct vcpu_vmx *vmx,
->>   	dest->ds_sel = src->ds_sel;
->>   	dest->es_sel = src->es_sel;
->>   #endif
->> +	if (unlikely(src->pkrs != dest->pkrs)) {
->> +		vmcs_write64(HOST_IA32_PKRS, src->pkrs);
->> +		dest->pkrs = src->pkrs;
->> +	}
-> 
-> It's worth adding a helper for this, a la vmx_set_host_fs_gs(), though this one
-> can probably be an inline in vmx.h.  E.g. to yield
-> 
-> diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
-> index bfa37c7665a5..906a2913a886 100644
-> --- a/arch/x86/kvm/vmx/nested.c
-> +++ b/arch/x86/kvm/vmx/nested.c
-> @@ -252,10 +252,7 @@ static void vmx_sync_vmcs_host_state(struct vcpu_vmx *vmx,
->          dest->ds_sel = src->ds_sel;
->          dest->es_sel = src->es_sel;
->   #endif
-> -       if (unlikely(src->pkrs != dest->pkrs)) {
-> -               vmcs_write64(HOST_IA32_PKRS, src->pkrs);
-> -               dest->pkrs = src->pkrs;
-> -       }
-> +       vmx_set_host_pkrs(dest, src->pkrs);
->   }
-> 
->   static void vmx_switch_vmcs(struct kvm_vcpu *vcpu, struct loaded_vmcs *vmcs)
-> diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-> index 35fee600fae7..b6b5f1a46544 100644
-> --- a/arch/x86/kvm/vmx/vmx.c
-> +++ b/arch/x86/kvm/vmx/vmx.c
-> @@ -1157,10 +1157,7 @@ void vmx_prepare_switch_to_guest(struct kvm_vcpu *vcpu)
->           */
->          if (vm_exit_controls_get(vmx) & VM_EXIT_LOAD_IA32_PKRS) {
->                  host_pkrs = get_current_pkrs();
-> -               if (unlikely(host_pkrs != host_state->pkrs)) {
-> -                       vmcs_write64(HOST_IA32_PKRS, host_pkrs);
-> -                       host_state->pkrs = host_pkrs;
-> -               }
-> +               vmx_set_host_pkrs(host_state, host_pkrs);
->          }
-> 
->   #ifdef CONFIG_X86_64
-> 
-> 
+> +#define RZN1_WDT_RETRIGGER			0x0
+> +#define RZN1_WDT_RETRIGGER_RELOAD_VAL		0
+> +#define RZN1_WDT_RETRIGGER_RELOAD_VAL_MASK	0xfff
+> +#define RZN1_WDT_RETRIGGER_PRESCALE		BIT(12)
+> +#define RZN1_WDT_RETRIGGER_ENABLE		BIT(13)
+> +#define RZN1_WDT_RETRIGGER_WDSI			(0x2 << 14)
 
-Will do.
+Do RZN1_WDT_RETRIGGER_RELOAD_VAL and RZN1_WDT_RETRIGGER_WDSI get 1 more tab
+indent intentionally?
 
->>   }
->>   
->>   static void vmx_switch_vmcs(struct kvm_vcpu *vcpu, struct loaded_vmcs *vmcs)
->> @@ -685,6 +689,9 @@ static inline bool nested_vmx_prepare_msr_bitmap(struct kvm_vcpu *vcpu,
->>   	nested_vmx_set_intercept_for_msr(vmx, msr_bitmap_l1, msr_bitmap_l0,
->>   					 MSR_IA32_PRED_CMD, MSR_TYPE_W);
->>   
->> +	nested_vmx_set_intercept_for_msr(vmx, msr_bitmap_l1, msr_bitmap_l0,
->> +					 MSR_IA32_PKRS, MSR_TYPE_RW);
->> +
->>   	kvm_vcpu_unmap(vcpu, &vmx->nested.msr_bitmap_map, false);
->>   
->>   	vmx->nested.force_msr_bitmap_recalc = false;
->> @@ -2433,6 +2440,10 @@ static void prepare_vmcs02_rare(struct vcpu_vmx *vmx, struct vmcs12 *vmcs12)
->>   		if (kvm_mpx_supported() && vmx->nested.nested_run_pending &&
->>   		    (vmcs12->vm_entry_controls & VM_ENTRY_LOAD_BNDCFGS))
->>   			vmcs_write64(GUEST_BNDCFGS, vmcs12->guest_bndcfgs);
->> +
->> +		if (vmx->nested.nested_run_pending &&
->> +		    (vmcs12->vm_entry_controls & VM_ENTRY_LOAD_IA32_PKRS))
->> +			vmcs_write64(GUEST_IA32_PKRS, vmcs12->guest_ia32_pkrs);
->>   	}
->>   
->>   	if (nested_cpu_has_xsaves(vmcs12))
->> @@ -2521,6 +2532,11 @@ static int prepare_vmcs02(struct kvm_vcpu *vcpu, struct vmcs12 *vmcs12,
->>   	if (kvm_mpx_supported() && (!vmx->nested.nested_run_pending ||
->>   	    !(vmcs12->vm_entry_controls & VM_ENTRY_LOAD_BNDCFGS)))
->>   		vmcs_write64(GUEST_BNDCFGS, vmx->nested.vmcs01_guest_bndcfgs);
->> +	if (kvm_cpu_cap_has(X86_FEATURE_PKS) &&
->> +	    (!vmx->nested.nested_run_pending ||
->> +	     !(vmcs12->vm_entry_controls & VM_ENTRY_LOAD_IA32_PKRS)))
->> +		vmcs_write64(GUEST_IA32_PKRS, vmx->nested.vmcs01_guest_pkrs);
->> +
->>   	vmx_set_rflags(vcpu, vmcs12->guest_rflags);
->>   
->>   	/* EXCEPTION_BITMAP and CR0_GUEST_HOST_MASK should basically be the
->> @@ -2897,6 +2913,10 @@ static int nested_vmx_check_host_state(struct kvm_vcpu *vcpu,
->>   					   vmcs12->host_ia32_perf_global_ctrl)))
->>   		return -EINVAL;
->>   
->> +	if ((vmcs12->vm_exit_controls & VM_EXIT_LOAD_IA32_PKRS) &&
->> +		CC(!kvm_pkrs_valid(vmcs12->host_ia32_pkrs)))
-> 
-> Please align the indentation:
-> 
-> 	if ((vmcs12->vm_exit_controls & VM_EXIT_LOAD_IA32_PKRS) &&
-> 	    CC(!kvm_pkrs_valid(vmcs12->host_ia32_pkrs)))
-> 		return -EINVAL;
-> 
+> +static const struct watchdog_device rzn1_wdt = {
+> +	.info = &rzn1_wdt_info,
+> +	.ops = &rzn1_wdt_ops,
+> +	.status = WATCHDOG_NOWAYOUT_INIT_STATUS,
+> +};
+[...]
+> +static int rzn1_wdt_probe(struct platform_device *pdev)
+> +{
+[...]
+> +	wdt->wdt = rzn1_wdt;
 
-Fixed.
+Does it really need to copy the memory?  For example,
 
->> +		return -EINVAL;
->> +
->>   #ifdef CONFIG_X86_64
->>   	ia32e = !!(vmcs12->vm_exit_controls & VM_EXIT_HOST_ADDR_SPACE_SIZE);
->>   #else
->> @@ -3049,6 +3069,10 @@ static int nested_vmx_check_guest_state(struct kvm_vcpu *vcpu,
->>   	if (nested_check_guest_non_reg_state(vmcs12))
->>   		return -EINVAL;
->>   
->> +	if ((vmcs12->vm_entry_controls & VM_ENTRY_LOAD_IA32_PKRS) &&
->> +	    CC(!kvm_pkrs_valid(vmcs12->guest_ia32_pkrs)))
->> +		return -EINVAL;
->> +
->>   	return 0;
->>   }
->>   
->> @@ -3377,6 +3401,9 @@ enum nvmx_vmentry_status nested_vmx_enter_non_root_mode(struct kvm_vcpu *vcpu,
->>   	if (kvm_mpx_supported() &&
->>   		!(vmcs12->vm_entry_controls & VM_ENTRY_LOAD_BNDCFGS))
->>   		vmx->nested.vmcs01_guest_bndcfgs = vmcs_read64(GUEST_BNDCFGS);
->> +	if (kvm_cpu_cap_has(X86_FEATURE_PKS) &&
->> +	    !(vmcs12->vm_entry_controls & VM_ENTRY_LOAD_IA32_PKRS))
-> 
-> This needs read the current PKRS if from_vmentry == false, e.g.
-> 
-> 	if (kvm_cpu_cap_has(X86_FEATURE_PKS) &&
-> 	    (!from_vmentry ||
-> 	     !(vmcs12->vm_entry_controls & VM_ENTRY_LOAD_IA32_PKRS)))
-> 
-> because in the migration case, if nested state is set after MSR state, the value
-> needs to come from the current MSR value, which was propagated to vmc02 (which
-> this calls vmcs01, but whatever).
-> 
-> Note, I'm pretty sure the GUEST_BNDCFGS code is broken, surprise surprise.
-> 
+1. Use the memory in `wdt` directly and fill the `wdd`.
 
-Yes, I miss the migration case and know your point here. Will fix it and 
-also the GUEST_BNDCFGS code in a separate patch.
+struct watchdog_device *wdd = &wdt->wdt;
+wdd->info = &rzn1_wdt_info;
+wdd->ops = &rzn1_wdt_ops;
+...
 
->> +		vmx->nested.vmcs01_guest_pkrs = vmcs_read64(GUEST_IA32_PKRS);
->>   
->>   	/*
->>   	 * Overwrite vmcs01.GUEST_CR3 with L1's CR3 if EPT is disabled *and*
->> @@ -4022,6 +4049,7 @@ static bool is_vmcs12_ext_field(unsigned long field)
->>   	case GUEST_IDTR_BASE:
->>   	case GUEST_PENDING_DBG_EXCEPTIONS:
->>   	case GUEST_BNDCFGS:
->> +	case GUEST_IA32_PKRS:
->>   		return true;
->>   	default:
->>   		break;
->> @@ -4073,6 +4101,8 @@ static void sync_vmcs02_to_vmcs12_rare(struct kvm_vcpu *vcpu,
->>   		vmcs_readl(GUEST_PENDING_DBG_EXCEPTIONS);
->>   	if (kvm_mpx_supported())
->>   		vmcs12->guest_bndcfgs = vmcs_read64(GUEST_BNDCFGS);
->> +	if (guest_cpuid_has(vcpu, X86_FEATURE_PKS))
-> 
-> This needs to check vmx->nested.msrs.entry_ctls_* (I can never remember if it's
-> the high or low part...).  The SDM states PKRS is saved "if the processor supports
-> the 1-setting of the 'load PKRS' VM-entry control", which is different than PKRS
-> being supported in CPUID.  Also, guest CPUID is userspace controlled, e.g. userspace
-> could induce a failed VMREAD by giving a garbage CPUID model, where vmx->nested.msrs
-> can only be restricted by userspace, i.e. is trusted.
-> 
-> Happyily, checking vmx->nested.msrs is also a performance win, as guest_cpuid_has()
-> can require walking a large array.
+2. Use drvdata instead of container_of().
 
-Make sense. Checking vmx->nested.msrs.entry_ctls_high is more accurate.
+Use watchdog_set_drvdata() in _probe and watchdog_get_drvdata() in the
+watchdog ops to get struct rzn1_watchdog.
 
+> +static const struct of_device_id rzn1_wdt_match[] = {
+> +	{ .compatible = "renesas,rzn1-wdt" },
+> +	{},
+> +};
+> +MODULE_DEVICE_TABLE(of, rzn1_wdt_match);
+
+Doesn't it need to guard by CONFIG_OF?
+
+> +static struct platform_driver rzn1_wdt_driver = {
+> +	.probe		= rzn1_wdt_probe,
+> +	.driver		= {
+> +		.name		= KBUILD_MODNAME,
+> +		.of_match_table	= rzn1_wdt_match,
+
+Does it makes more sense to use of_match_ptr()?
+
+> +	},
+> +};
+> +
+> +module_platform_driver(rzn1_wdt_driver);
+
+To make it look like a whole thing, I prefer to remove the extra blank line
+in between struct platform_driver and module_platform_driver().
