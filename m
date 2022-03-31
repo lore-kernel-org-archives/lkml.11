@@ -2,64 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 734B9C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 23:23:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5181AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 23:23:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243078AbiCaXZA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 19:25:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52000 "EHLO
+        id S242117AbiCaXZm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 19:25:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243050AbiCaXYx (ORCPT
+        with ESMTP id S243153AbiCaXZc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 19:24:53 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CE2E24D9BE
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 16:23:03 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id g22so1049101edz.2
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 16:23:02 -0700 (PDT)
+        Thu, 31 Mar 2022 19:25:32 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4552E5715F
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 16:23:40 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id p15so2373153ejc.7
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 16:23:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=VA4OmUlBn+h032QaRrbwfz0ENP/lgrthHNuo2cDc9zs=;
-        b=nYjHIf8uflbZHObYpxif9B5oD9Wtb4t5AI1eCWohJX41q9UAn/abH6xMu9omxNFwsr
-         7qUSDGsPXh0wIhNznI1YcZUJupDndJZzHhIHEE8hHppvHxSa6v170I7xv/CDtTfwhCpF
-         kzEWwkEZCviEfCOEDQ+sa6YJGh6+XAWttUpDc=
+        bh=LLB/4ErH2KmNX4icsPtz8gcVd91Ba8xsooM5WCEu/To=;
+        b=nO2IsBJyBf/P3KA7s8QuuGM6xFZSrWZovU/MfhkXj0KUNNuFJ3JGAq+Rs/3rX52qsY
+         7P5N2AMJME5FGhl9OxAp3JLusS1z1TEB+mUKXGDbBLppxe902V/8Zo5Zc7k50FYB1oxq
+         GxXAOnEIWO1JRgUrPmufk1e5oNiZETTlMRBzM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=VA4OmUlBn+h032QaRrbwfz0ENP/lgrthHNuo2cDc9zs=;
-        b=nB7dmW+vO6L2fAGzJE3roF+vpnkQMDq/sRHq3K8aS+M+b27wta7pQb+1ntBsFzQGDu
-         p2AzaLv8SfhJWLfdXx0TyntbKUN2XvFXPaT9jU8VyPJp4CvBwJD7Bn5jIVAdHNDf1LEb
-         QOc5JcQgVAp+P616/7RZc4Zp8aNR6a+cIAt6I8vjmTQ0vEDZaBdCL0sC/BbgE/3leFKe
-         vUqkdabU2leHnZef3qYiJloL8OURLkTKxCXdWzHjdr4UltEyknwNOerOvLouro0uplDW
-         yi5xliuR5Bj5cDRNNaDwoGS1p6wdYPrrEoK7X1/xqT09Q1de+NHKCI63lKytWOPIh3tz
-         ygDQ==
-X-Gm-Message-State: AOAM533azyXY20N7CzU+HqmbzITZ/5XgtUSZhxClkRHXmx85pDDYzTju
-        25QFGT/S3CnoiyjBcz2ZF8VwPD7Wo+iILVjh
-X-Google-Smtp-Source: ABdhPJzXMgZilbw8HT6aoE3hYf/pV6qd0Cnizp3xMTvu1jWfx7IhUstDe3roFvaNx28UfeaNTJ1pjg==
-X-Received: by 2002:a05:6402:35ca:b0:419:5a2d:9b87 with SMTP id z10-20020a05640235ca00b004195a2d9b87mr18304694edc.174.1648768981256;
-        Thu, 31 Mar 2022 16:23:01 -0700 (PDT)
-Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com. [209.85.221.52])
-        by smtp.gmail.com with ESMTPSA id gn33-20020a1709070d2100b006dfcce8be86sm302318ejc.225.2022.03.31.16.22.58
+        bh=LLB/4ErH2KmNX4icsPtz8gcVd91Ba8xsooM5WCEu/To=;
+        b=ckYWGEu8qrRnRnRDfr2cfy+9hN3fg37MoS8+3bJKHBC/YgvRb6XfkSZcN/QoD9vI3Z
+         DMmrw66kLTtaw39tAkPsLNIMCJwyKmT9gIQL/XyObRgMutZq3Vaiwt9hNk4TvU3xD+MQ
+         CtYNKIW6E2OHKYhbS5ZeSYySVnsGshpTIPzRoUck9QQ87NyCqsIN8kOT1VQWEPoQnUQ1
+         3ASnmEE4HE39/svmHvR82QfiRsBuG7h3KTCT8QQHWnOIRJgDfp2KVd1TNRZ+4l6g4Pal
+         zPL2iSVuMW/PGp77/uxZQ7YDhM5jTMn2d9OlEpQ1RbZECY9P0Fi5SBps1rOUeXIXIYSp
+         hxTA==
+X-Gm-Message-State: AOAM532ml0T2LmOfisXbuUpy7abG6GdAxzB6qx24mvaCzEWxNPG+at+X
+        q/Qdys7OApIlmB4WRaoXXk/nIl6e0FYa8HXS
+X-Google-Smtp-Source: ABdhPJygIneMkmc2CZM2L5KX7O4RcrubT/BTvXrpG95bg8rZOpedisbovymx7QZuwJjU7+4euZC6TA==
+X-Received: by 2002:a17:906:8555:b0:6df:8b7b:49a3 with SMTP id h21-20020a170906855500b006df8b7b49a3mr6881557ejy.704.1648769018399;
+        Thu, 31 Mar 2022 16:23:38 -0700 (PDT)
+Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com. [209.85.128.45])
+        by smtp.gmail.com with ESMTPSA id bm5-20020a170906c04500b006ce6f8892a5sm322317ejb.7.2022.03.31.16.23.36
         for <linux-kernel@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 31 Mar 2022 16:22:59 -0700 (PDT)
-Received: by mail-wr1-f52.google.com with SMTP id h4so1749755wrc.13
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 16:22:58 -0700 (PDT)
-X-Received: by 2002:adf:fc47:0:b0:203:dda1:4311 with SMTP id
- e7-20020adffc47000000b00203dda14311mr5685367wrs.301.1648768978217; Thu, 31
- Mar 2022 16:22:58 -0700 (PDT)
+        Thu, 31 Mar 2022 16:23:37 -0700 (PDT)
+Received: by mail-wm1-f45.google.com with SMTP id q20so706653wmq.1
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 16:23:36 -0700 (PDT)
+X-Received: by 2002:a1c:7518:0:b0:37c:7eb:f255 with SMTP id
+ o24-20020a1c7518000000b0037c07ebf255mr6394707wmc.29.1648769016448; Thu, 31
+ Mar 2022 16:23:36 -0700 (PDT)
 MIME-Version: 1.0
-References: <1648656179-10347-1-git-send-email-quic_sbillaka@quicinc.com> <1648656179-10347-4-git-send-email-quic_sbillaka@quicinc.com>
-In-Reply-To: <1648656179-10347-4-git-send-email-quic_sbillaka@quicinc.com>
+References: <1648656179-10347-1-git-send-email-quic_sbillaka@quicinc.com> <1648656179-10347-7-git-send-email-quic_sbillaka@quicinc.com>
+In-Reply-To: <1648656179-10347-7-git-send-email-quic_sbillaka@quicinc.com>
 From:   Doug Anderson <dianders@chromium.org>
-Date:   Thu, 31 Mar 2022 16:22:46 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=X_ULva3J-Y7EF+0VPRRoFXSmtuKcXG9H=041Kmwa=W4A@mail.gmail.com>
-Message-ID: <CAD=FV=X_ULva3J-Y7EF+0VPRRoFXSmtuKcXG9H=041Kmwa=W4A@mail.gmail.com>
-Subject: Re: [PATCH v6 3/8] drm/msm/dp: Support only IRQ_HPD and REPLUG
- interrupts for eDP
+Date:   Thu, 31 Mar 2022 16:23:23 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=UX9Mg71EKvgNp_wNG5q7_ugBgVPbcFWFX5XBG+cQCi8Q@mail.gmail.com>
+Message-ID: <CAD=FV=UX9Mg71EKvgNp_wNG5q7_ugBgVPbcFWFX5XBG+cQCi8Q@mail.gmail.com>
+Subject: Re: [PATCH v6 6/8] drm/msm/dp: remove unnecessary delay during boot
 To:     Sankeerth Billakanti <quic_sbillaka@quicinc.com>
 Cc:     dri-devel <dri-devel@lists.freedesktop.org>,
         linux-arm-msm <linux-arm-msm@vger.kernel.org>,
@@ -85,38 +84,13 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 Hi,
 
-On Wed, Mar 30, 2022 at 9:03 AM Sankeerth Billakanti
+On Wed, Mar 30, 2022 at 9:04 AM Sankeerth Billakanti
 <quic_sbillaka@quicinc.com> wrote:
 >
-> @@ -1374,6 +1382,12 @@ static int dp_pm_resume(struct device *dev)
->         dp_catalog_ctrl_hpd_config(dp->catalog);
->
->
-> +       if (dp->dp_display.connector_type == DRM_MODE_CONNECTOR_DisplayPort)
-> +               dp_catalog_hpd_config_intr(dp->catalog,
-> +                               DP_DP_HPD_PLUG_INT_MASK |
-> +                               DP_DP_HPD_UNPLUG_INT_MASK,
-> +                               true);
-> +
+> Remove the unnecessary delay in executing the EV_HPD_INIT_SETUP event.
 
-nit: why are there two blank lines above?
-
-
-> @@ -1639,6 +1653,9 @@ void dp_bridge_enable(struct drm_bridge *drm_bridge)
->                 return;
->         }
->
-> +       if (dp->connector_type == DRM_MODE_CONNECTOR_eDP)
-> +               dp_hpd_plug_handle(dp_display, 0);
-> +
-
-Should you add a "pre_enable" and do it there? That would make it more
-symmetric with the fact that you have the countertpart in
-"post_disable".
-
-
-Overall: I'm probably not familiar enough with this code to give it a
-full review. I'm hoping that Dmitry knows it well enough... ;-)
-
+Tell me more and put it in the commit message! Why did it used to be
+necessary and why is it no longer necessary? Inquiring minds want to
+know.
 
 -Doug
