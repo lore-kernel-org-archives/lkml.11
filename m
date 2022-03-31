@@ -2,96 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99B9EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 15:47:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49118C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 15:48:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236444AbiCaPt3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 11:49:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46000 "EHLO
+        id S238867AbiCaPu3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 11:50:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239893AbiCaPsc (ORCPT
+        with ESMTP id S237419AbiCaPu0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 11:48:32 -0400
-Received: from mail-qv1-xf43.google.com (mail-qv1-xf43.google.com [IPv6:2607:f8b0:4864:20::f43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFA233A9
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 08:46:44 -0700 (PDT)
-Received: by mail-qv1-xf43.google.com with SMTP id kl29so20033839qvb.2
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 08:46:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mdaverde-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=7ONl/rjPY44Su63M5PgvxVFFtmWipaKmt8kt7MQsENI=;
-        b=mGrwJh3X216JDDAJexHUgbVihbd1M5jxhlvHDrMYkBCOtxLkgPJeLCO5zpWEz8aCPO
-         XNmTn/D89/CuONk1ktJRG3sanpLHfp550pJGgbwx+TZIj1A2TsfPVT3FQtFKUsOzJnF2
-         QVPHkQshtQdcss9A14aF7LNRAK88E+d1GnDhVAmLTsN4dQzL5y2WN92iKWPy141bwRCr
-         K6+dC2e18C7JXVr6lcHLAmfevotBXZbzHTvJoeAFu0prlJ74+WaGdMgntZIIKb0GRBhb
-         uaFJ1HTKlnkMLbg7tIODHKj8sUGo5USENlketHsqgOlLejvzbGUOYSLcu6DDQqpBgeW/
-         +ikA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=7ONl/rjPY44Su63M5PgvxVFFtmWipaKmt8kt7MQsENI=;
-        b=voqwEkQ9lgpKEPTLlp0rYIZmB8zpreMcM7df9EqlCCTspNR+0RRE0gE+qRLMxVZevC
-         aQPmZTSxCD48RBbTtTSWu0fCxR1Xbsvz70MK5fcNubOEXyPoysLvF89XOYz7jMAcBmJ8
-         bi4FrqGs4Qr+W7Itgy52BUyNnWuCryF9znlNWj+DhooB5syb0c6W9vja4SzRKt2WI5xb
-         f1zEqJvOkefj//lmjCvuqkzzFL6ShCsJ0wY9ph+VCtU6XwvlBVVKyPiFJ8qcI8tjE3Ip
-         49mttqd6KihpHCZ6JXwIIp7JebsPqq7NFcfP/M8/zCZN57qoEGDJBec6pO+uXy+60e5K
-         DyZA==
-X-Gm-Message-State: AOAM531WMLQoad0PgkSoDRr31aGgvTFuvOLl9fZUTzQl+QKE17NqVgxC
-        34xmhJMQUReUenAfrcgH+1oHZw==
-X-Google-Smtp-Source: ABdhPJxa13kl0P1optMF0WTHmFCEXJZd83UC4G9/VHnydUdYRdzj6BS2cS1m2i4Zen8bt/Yjr4R1Pg==
-X-Received: by 2002:ad4:5caf:0:b0:441:5879:5e62 with SMTP id q15-20020ad45caf000000b0044158795e62mr4324894qvh.95.1648741603866;
-        Thu, 31 Mar 2022 08:46:43 -0700 (PDT)
-Received: from pop-os.attlocal.net ([2600:1700:1d10:5830:565c:ffc5:fa04:b353])
-        by smtp.gmail.com with ESMTPSA id j12-20020ae9c20c000000b0067ec380b320sm13126797qkg.64.2022.03.31.08.46.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 31 Mar 2022 08:46:43 -0700 (PDT)
-From:   Milan Landaverde <milan@mdaverde.com>
-To:     bpf@vger.kernel.org
-Cc:     milan@mdaverde.com, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        quentin@isovalent.com, davemarchevsky@fb.com, sdf@google.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH bpf-next 3/3] bpf/bpftool: handle libbpf_probe_prog_type errors
-Date:   Thu, 31 Mar 2022 11:45:55 -0400
-Message-Id: <20220331154555.422506-4-milan@mdaverde.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220331154555.422506-1-milan@mdaverde.com>
-References: <20220331154555.422506-1-milan@mdaverde.com>
+        Thu, 31 Mar 2022 11:50:26 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F07661116C
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 08:48:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648741718;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=4AfbyPy4SWzRXPVjHP0oBQj2Lh8yjlIRr7X3xHwYmlQ=;
+        b=Um1furVD0vZqiV4iFx/qgSZ/beSsnVXi+iwtbIJC6BMZ2QWWbqFHSLFP5xuF4ILKDhcx+2
+        TJTuLjf1tE83loAuBO8pIt0PxmDyasKMoVjxoNtwIBMbwo5GjxQB7NdZ/w66OsAW74FhZt
+        Sov8YQi/+VN7eFYT4a1uWtqNWHfvq+k=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-640-M8hUdgw9N_e9gs5xMqi0OA-1; Thu, 31 Mar 2022 11:48:36 -0400
+X-MC-Unique: M8hUdgw9N_e9gs5xMqi0OA-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id E4FC9185A79C;
+        Thu, 31 Mar 2022 15:48:35 +0000 (UTC)
+Received: from ceranb (unknown [10.40.192.65])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 680862157F29;
+        Thu, 31 Mar 2022 15:48:33 +0000 (UTC)
+Date:   Thu, 31 Mar 2022 17:48:32 +0200
+From:   Ivan Vecera <ivecera@redhat.com>
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Cc:     netdev@vger.kernel.org,
+        "moderated list:INTEL ETHERNET DRIVERS" 
+        <intel-wired-lan@lists.osuosl.org>, mschmidt@redhat.com,
+        Brett Creeley <brett.creeley@intel.com>,
+        open list <linux-kernel@vger.kernel.org>, poros@redhat.com,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [Intel-wired-lan] [PATCH net] ice: Fix incorrect locking in
+ ice_vc_process_vf_msg()
+Message-ID: <20220331174832.68e17c4a@ceranb>
+In-Reply-To: <YkWpNVXYEBo/u3dm@boxer>
+References: <20220331105005.2580771-1-ivecera@redhat.com>
+        <YkWpNVXYEBo/u3dm@boxer>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Previously [1], we were using bpf_probe_prog_type which returned a
-bool, but the new libbpf_probe_bpf_prog_type can return a negative
-error code on failure. This change decides for bpftool to declare
-a program type is not available on probe failure.
+On Thu, 31 Mar 2022 15:14:29 +0200
+Maciej Fijalkowski <maciej.fijalkowski@intel.com> wrote:
 
-[1] https://lore.kernel.org/bpf/20220202225916.3313522-3-andrii@kernel.org/
+> On Thu, Mar 31, 2022 at 12:50:04PM +0200, Ivan Vecera wrote:
+> > Usage of mutex_trylock() in ice_vc_process_vf_msg() is incorrect
+> > because message sent from VF is ignored and never processed.
+> >=20
+> > Use mutex_lock() instead to fix the issue. It is safe because this =20
+>=20
+> We need to know what is *the* issue in the first place.
+> Could you please provide more context what is being fixed to the readers
+> that don't have an access to bugzilla?
+>=20
+> Specifically, what is the case that ignoring a particular message when
+> mutex is already held is a broken behavior?
 
-Signed-off-by: Milan Landaverde <milan@mdaverde.com>
----
- tools/bpf/bpftool/feature.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Reproducer:
 
-diff --git a/tools/bpf/bpftool/feature.c b/tools/bpf/bpftool/feature.c
-index c2f43a5d38e0..b2fbaa7a6b15 100644
---- a/tools/bpf/bpftool/feature.c
-+++ b/tools/bpf/bpftool/feature.c
-@@ -564,7 +564,7 @@ probe_prog_type(enum bpf_prog_type prog_type, bool *supported_types,
- 
- 		res = probe_prog_type_ifindex(prog_type, ifindex);
- 	} else {
--		res = libbpf_probe_bpf_prog_type(prog_type, NULL);
-+		res = libbpf_probe_bpf_prog_type(prog_type, NULL) > 0;
- 	}
- 
- #ifdef USE_LIBCAP
--- 
-2.32.0
+<code>
+#!/bin/sh
+
+set -xe
+
+PF=3D"ens7f0"
+VF=3D"${PF}v0"
+
+echo 1 > /sys/class/net/${PF}/device/sriov_numvfs
+sleep 2
+
+ip link set ${VF} up
+ip addr add 172.30.29.11/24 dev ${VF}
+
+while true; do
+
+# Set VF to be trusted
+ip link set ${PF} vf 0 trust on
+
+# Ping server again
+ping -c5 172.30.29.2 || {
+        echo Ping failed
+        ip link show dev ${VF} # <- No carrier here
+        break
+}
+
+ip link set ${PF} vf 0 trust off
+sleep 1
+
+done
+
+echo 0 > /sys/class/net/${PF}/device/sriov_numvfs
+</code>
+
+<sample>
+[root@wsfd-advnetlab150 ~]# uname -r
+5.17.0+ # Current net.git HEAD
+[root@wsfd-advnetlab150 ~]# ./repro_simple.sh=20
++ PF=3Dens7f0
++ VF=3Dens7f0v0
++ echo 1
++ sleep 2
++ ip link set ens7f0v0 up
++ ip addr add 172.30.29.11/24 dev ens7f0v0
++ true
++ ip link set ens7f0 vf 0 trust on
++ ping -c5 172.30.29.2
+PING 172.30.29.2 (172.30.29.2) 56(84) bytes of data.
+64 bytes from 172.30.29.2: icmp_seq=3D2 ttl=3D64 time=3D0.820 ms
+64 bytes from 172.30.29.2: icmp_seq=3D3 ttl=3D64 time=3D0.142 ms
+64 bytes from 172.30.29.2: icmp_seq=3D4 ttl=3D64 time=3D0.128 ms
+64 bytes from 172.30.29.2: icmp_seq=3D5 ttl=3D64 time=3D0.129 ms
+
+--- 172.30.29.2 ping statistics ---
+5 packets transmitted, 4 received, 20% packet loss, time 4110ms
+rtt min/avg/max/mdev =3D 0.128/0.304/0.820/0.298 ms
++ ip link set ens7f0 vf 0 trust off
++ sleep 1
++ true
++ ip link set ens7f0 vf 0 trust on
++ ping -c5 172.30.29.2
+PING 172.30.29.2 (172.30.29.2) 56(84) bytes of data.
+=46rom 172.30.29.11 icmp_seq=3D1 Destination Host Unreachable
+=46rom 172.30.29.11 icmp_seq=3D2 Destination Host Unreachable
+=46rom 172.30.29.11 icmp_seq=3D3 Destination Host Unreachable
+
+--- 172.30.29.2 ping statistics ---
+5 packets transmitted, 0 received, +3 errors, 100% packet loss, time 4125ms
+pipe 3
++ echo Ping failed
+Ping failed
++ ip link show dev ens7f0v0
+20: ens7f0v0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state D=
+OWN mode DEFAULT group default qlen 1000
+    link/ether de:69:e3:a5:68:b6 brd ff:ff:ff:ff:ff:ff
+    altname enp202s0f0v0
++ break
++ echo 0
+
+[root@wsfd-advnetlab150 ~]# dmesg | tail -8
+[  220.265891] iavf 0000:ca:01.0: Reset indication received from the PF
+[  220.272250] iavf 0000:ca:01.0: Scheduling reset task
+[  220.277217] iavf 0000:ca:01.0: Hardware reset detected
+[  220.292854] ice 0000:ca:00.0: VF 0 is now trusted
+[  220.295027] ice 0000:ca:00.0: VF 0 is being configured in another contex=
+t that will trigger a VFR, so there is no need to handle this message
+[  234.445819] iavf 0000:ca:01.0: PF returned error -64 (IAVF_NOT_SUPPORTED=
+) to our request 9
+[  234.466827] iavf 0000:ca:01.0: Failed to delete MAC filter, error IAVF_N=
+OT_SUPPORTED
+[  234.474574] iavf 0000:ca:01.0: Remove device
+</sample>
+
+User set VF to be trusted so .ndo_set_vf_trust (ice_set_vf_trust) is called.
+Function ice_set_vf_trust() takes vf->cfg_lock and calls ice_vc_reset_vf() =
+that
+sends message to iavf that initiates reset task. During this reset task iav=
+f sends
+config messages to ice. These messages are handled in ice_service_task() co=
+ntext
+via ice_clean_adminq_subtask() -> __ice_clean_ctrlq() -> ice_vc_process_vf_=
+msg().
+
+Function ice_vc_process_vf_msg() tries to take vf->cfg_lock but this can be=
+ locked
+from ice_set_vf_trust() yet (as in sample above). The lock attempt failed s=
+o the function
+returns, message is not processed.
+
+Thanks,
+Ivan
 
