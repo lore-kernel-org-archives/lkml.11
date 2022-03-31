@@ -2,62 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D04BC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 22:37:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C985FC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 22:37:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242416AbiCaWiw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 18:38:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33560 "EHLO
+        id S242582AbiCaWja (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 18:39:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242564AbiCaWig (ORCPT
+        with ESMTP id S236405AbiCaWj1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 18:38:36 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E2C32013E7
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 15:36:45 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id c62so940768edf.5
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 15:36:45 -0700 (PDT)
+        Thu, 31 Mar 2022 18:39:27 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1ECF1B988D;
+        Thu, 31 Mar 2022 15:37:39 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id j15so2180348eje.9;
+        Thu, 31 Mar 2022 15:37:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=YRq4/uptx89Q5dmt54exn9uvNfFHwJcIQ3/3peS2CLQ=;
-        b=A3TTwbL2mbf52k1uMntKOT0GqhYED7GliqL6lrajQvLNr4hOrCye+dTh2ed7JT0aG6
-         vrTMT2OQ1C0VCOYtZE/cHdXjuJUpgPCYjfiVi6lSEh0hKBsVNhF49nT5L6mr6ZP6t7mt
-         9xd7jDeg/O/tuYWvqQPMYNLrqZIeSBq17DfOGLVIkR6a3G48WrMdMn/R43P6dAPWhy4c
-         kul9emkG3sd/2B4zYYU+kpczP968aWHyKE2jH7yCwgrrOqFW4YA9rkOmVYQ12KAKsuFo
-         KjvgTrcmPhfQBD0xx1Nasekq0/U5MXc8rYarSqvGxGEyZEwjCkT+PTKxfy0SpRO55shZ
-         oFHQ==
+        bh=6jDnG0yED3EhVSGuEGJ6HJ38ZUXJXmhtdLq7M8giSgc=;
+        b=W0kezZZDpxUVh7G7zSovCKYPK1WXt0WmzwjyrbEqA0GSQHjYkz+dF5+fba9kyHn1DK
+         T5sqGXJlGGnCAob1TDToNlAsD04v26GKy6JutrYr49hDKNVuLxXRYhCk2cyJT7ECw3nS
+         9vdjtd2PXTnxjRQPR1V5yTglGlYOFG78duMdaLqdbh7KaOU9C6lLjpq+oWThFyaJFdGr
+         eiwpIkivMk72OVUvQXIIZMKLCap6+kCmmE9bjC/vcnnE5O4A86l6PFKWtXHvAtNyGfDG
+         yxRGHw0A2eyVB1qAkY4TcGhomOK7AfFb7eDHimPOxgYxbxLASqz1rwih/PIGtYiH9zdY
+         KY8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=YRq4/uptx89Q5dmt54exn9uvNfFHwJcIQ3/3peS2CLQ=;
-        b=5inZTRSSTp9bajjn/E6YEhD0Xz4RqjS5ayW01mx7F0WVcFadiCMmFhTDdjRrfidZU5
-         og/168rlwH5c4urT3HhDnoEUf9zHJcGonxNJE1x/+yIwrHmqpR+GipxL4nkSQsRt2VDD
-         I7FvQwnXlkrhj2GVJKXkzcB9WGLQFzrLJr4BuQTb4gttTN2ejSphiQB52SlxXlK3N4M4
-         X7G/YyCdVXmNIZgKNrFN6ESI7CaQ88u9uIo7JRrHSDuqh1UhCJ5sXM3Niepq4EVPVjc7
-         TtDDi3baVp6GS9sLL/rrcNbN0eDh/jYVfIuLZKgEJ/mim62cvhUncA/utAsodngCvC+W
-         wWtg==
-X-Gm-Message-State: AOAM533P0EWVEd/ESM4rxYUP38laq6tihWM9GvGq5RHg7BKsAhI8YAOJ
-        IxKp3j4AY+1taApjszitIcigvr3elgx+WxN4
-X-Google-Smtp-Source: ABdhPJyzp13/L7RKQKymoX51n4Tgo8NLL/jJ1JPDMkSvf9NAhw7IY9gMOJxfb1BRi9hvEP4BKvOyyw==
-X-Received: by 2002:a05:6402:27d0:b0:419:5184:58ae with SMTP id c16-20020a05640227d000b00419518458aemr18600878ede.314.1648766203762;
-        Thu, 31 Mar 2022 15:36:43 -0700 (PDT)
+        bh=6jDnG0yED3EhVSGuEGJ6HJ38ZUXJXmhtdLq7M8giSgc=;
+        b=BCcmcXn3UpbBME45U2Q46mjMhjPvqOBe2Pr9ezQjGvNuo4j3k8o4FYHymKuFVC35R9
+         RrCTLU63WvqdgOu7mMNoSHtr/bLCGxGdi+O2H+zaCiKS+8aMnxhNgGixkspZtoKk5X6Y
+         EGWVlaNtyWUKbhgX3g6ZfPVNJUxAG438+479jtbNiqJxSMVJ7Wwo7prHGBa0Ma+dCOdw
+         TUioug3F8RIyBQ4q8Lh4PiwbrDV/BP9ObI+P3Fw0N7kDqPHEm2SvO9u+C0vgAAXnqPIV
+         7Ftpitk/23o6xcAucDwz2JUwHZmPVNJONZQVl8EK4iKhkFUwXLBO85u47ravDR/Hpo2G
+         2ZoQ==
+X-Gm-Message-State: AOAM532pc28QteBxF92gSjFSF+0fOtdt1lCM46sgBcXX/p5se4MDmOGn
+        75DdPigf1Ama1kR3RrjfutV8oSEUdqV8aikF
+X-Google-Smtp-Source: ABdhPJyfkrQJ1xqFDwsnCg57JhFsU+Agm0hss3ZlmWM7GlCyuZapiXPU5jqAty4sNZbUsz1ioaNc0w==
+X-Received: by 2002:a17:907:3e94:b0:6d1:d64e:3141 with SMTP id hs20-20020a1709073e9400b006d1d64e3141mr6557600ejc.213.1648766258419;
+        Thu, 31 Mar 2022 15:37:38 -0700 (PDT)
 Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
-        by smtp.googlemail.com with ESMTPSA id k19-20020a1709062a5300b006c75a94c587sm282872eje.65.2022.03.31.15.36.43
+        by smtp.googlemail.com with ESMTPSA id u5-20020a170906b10500b006ce6fa4f510sm276709ejy.165.2022.03.31.15.37.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 31 Mar 2022 15:36:43 -0700 (PDT)
+        Thu, 31 Mar 2022 15:37:38 -0700 (PDT)
 From:   Jakob Koschel <jakobkoschel@gmail.com>
-To:     Stefan Richter <stefanr@s5r6.in-berlin.de>
-Cc:     linux1394-devel@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org, Mike Rapoport <rppt@kernel.org>,
+To:     Mike Rapoport <rppt@kernel.org>
+Cc:     David Hildenbrand <david@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Oscar Salvador <osalvador@suse.de>,
+        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
         "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
         Cristiano Giuffrida <c.giuffrida@vu.nl>,
         "Bos, H.J." <h.j.bos@vu.nl>, Jakob Koschel <jakobkoschel@gmail.com>
-Subject: [PATCH] firewire: remove check of list iterator against head past the loop body
-Date:   Fri,  1 Apr 2022 00:36:01 +0200
-Message-Id: <20220331223601.902329-1-jakobkoschel@gmail.com>
+Subject: [PATCH] fs/proc/kcore.c: remove check of list iterator against head past the loop body
+Date:   Fri,  1 Apr 2022 00:37:00 +0200
+Message-Id: <20220331223700.902556-1-jakobkoschel@gmail.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -80,121 +82,52 @@ traversal loop, use a dedicated pointer to point to the found element [1].
 Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/ [1]
 Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
 ---
- drivers/firewire/core-transaction.c | 30 +++++++++++++++--------------
- drivers/firewire/sbp2.c             | 13 +++++++------
- 2 files changed, 23 insertions(+), 20 deletions(-)
+ fs/proc/kcore.c | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/firewire/core-transaction.c b/drivers/firewire/core-transaction.c
-index ac487c96bb71..6c20815cc8d1 100644
---- a/drivers/firewire/core-transaction.c
-+++ b/drivers/firewire/core-transaction.c
-@@ -73,24 +73,25 @@ static int try_cancel_split_timeout(struct fw_transaction *t)
- static int close_transaction(struct fw_transaction *transaction,
- 			     struct fw_card *card, int rcode)
- {
--	struct fw_transaction *t;
-+	struct fw_transaction *t = NULL, *iter;
- 	unsigned long flags;
- 
- 	spin_lock_irqsave(&card->lock, flags);
--	list_for_each_entry(t, &card->transaction_list, link) {
--		if (t == transaction) {
--			if (!try_cancel_split_timeout(t)) {
-+	list_for_each_entry(iter, &card->transaction_list, link) {
-+		if (iter == transaction) {
-+			if (!try_cancel_split_timeout(iter)) {
- 				spin_unlock_irqrestore(&card->lock, flags);
- 				goto timed_out;
+diff --git a/fs/proc/kcore.c b/fs/proc/kcore.c
+index 982e694aae77..344edcb2addd 100644
+--- a/fs/proc/kcore.c
++++ b/fs/proc/kcore.c
+@@ -316,6 +316,7 @@ read_kcore(struct file *file, char __user *buffer, size_t buflen, loff_t *fpos)
+ 	size_t page_offline_frozen = 1;
+ 	size_t phdrs_len, notes_len;
+ 	struct kcore_list *m;
++	struct kcore_list *iter;
+ 	size_t tsz;
+ 	int nphdr;
+ 	unsigned long start;
+@@ -479,10 +480,13 @@ read_kcore(struct file *file, char __user *buffer, size_t buflen, loff_t *fpos)
+ 		 * the previous entry, search for a matching entry.
+ 		 */
+ 		if (!m || start < m->addr || start >= m->addr + m->size) {
+-			list_for_each_entry(m, &kclist_head, list) {
+-				if (start >= m->addr &&
+-				    start < m->addr + m->size)
++			m = NULL;
++			list_for_each_entry(iter, &kclist_head, list) {
++				if (start >= iter->addr &&
++				    start < iter->addr + iter->size) {
++					m = iter;
+ 					break;
++				}
  			}
--			list_del_init(&t->link);
--			card->tlabel_mask &= ~(1ULL << t->tlabel);
-+			list_del_init(&iter->link);
-+			card->tlabel_mask &= ~(1ULL << iter->tlabel);
-+			t = iter;
- 			break;
  		}
- 	}
- 	spin_unlock_irqrestore(&card->lock, flags);
  
--	if (&t->link != &card->transaction_list) {
-+	if (t) {
- 		t->callback(card, rcode, NULL, 0, t->callback_data);
- 		return 0;
- 	}
-@@ -935,7 +936,7 @@ EXPORT_SYMBOL(fw_core_handle_request);
+@@ -492,12 +496,11 @@ read_kcore(struct file *file, char __user *buffer, size_t buflen, loff_t *fpos)
+ 			page_offline_freeze();
+ 		}
  
- void fw_core_handle_response(struct fw_card *card, struct fw_packet *p)
- {
--	struct fw_transaction *t;
-+	struct fw_transaction *t = NULL, *iter;
- 	unsigned long flags;
- 	u32 *data;
- 	size_t data_length;
-@@ -947,20 +948,21 @@ void fw_core_handle_response(struct fw_card *card, struct fw_packet *p)
- 	rcode	= HEADER_GET_RCODE(p->header[1]);
- 
- 	spin_lock_irqsave(&card->lock, flags);
--	list_for_each_entry(t, &card->transaction_list, link) {
--		if (t->node_id == source && t->tlabel == tlabel) {
--			if (!try_cancel_split_timeout(t)) {
-+	list_for_each_entry(iter, &card->transaction_list, link) {
-+		if (iter->node_id == source && iter->tlabel == tlabel) {
-+			if (!try_cancel_split_timeout(iter)) {
- 				spin_unlock_irqrestore(&card->lock, flags);
- 				goto timed_out;
+-		if (&m->list == &kclist_head) {
++		if (!m) {
+ 			if (clear_user(buffer, tsz)) {
+ 				ret = -EFAULT;
+ 				goto out;
  			}
--			list_del_init(&t->link);
--			card->tlabel_mask &= ~(1ULL << t->tlabel);
-+			list_del_init(&iter->link);
-+			card->tlabel_mask &= ~(1ULL << iter->tlabel);
-+			t = iter;
- 			break;
+-			m = NULL;	/* skip the list anchor */
+ 			goto skip;
  		}
- 	}
- 	spin_unlock_irqrestore(&card->lock, flags);
  
--	if (&t->link == &card->transaction_list) {
-+	if (!t) {
-  timed_out:
- 		fw_notice(card, "unsolicited response (source %x, tlabel %x)\n",
- 			  source, tlabel);
-diff --git a/drivers/firewire/sbp2.c b/drivers/firewire/sbp2.c
-index 85cd379fd383..60051c0cabea 100644
---- a/drivers/firewire/sbp2.c
-+++ b/drivers/firewire/sbp2.c
-@@ -408,7 +408,7 @@ static void sbp2_status_write(struct fw_card *card, struct fw_request *request,
- 			      void *payload, size_t length, void *callback_data)
- {
- 	struct sbp2_logical_unit *lu = callback_data;
--	struct sbp2_orb *orb;
-+	struct sbp2_orb *orb = NULL, *iter;
- 	struct sbp2_status status;
- 	unsigned long flags;
- 
-@@ -433,17 +433,18 @@ static void sbp2_status_write(struct fw_card *card, struct fw_request *request,
- 
- 	/* Lookup the orb corresponding to this status write. */
- 	spin_lock_irqsave(&lu->tgt->lock, flags);
--	list_for_each_entry(orb, &lu->orb_list, link) {
-+	list_for_each_entry(iter, &lu->orb_list, link) {
- 		if (STATUS_GET_ORB_HIGH(status) == 0 &&
--		    STATUS_GET_ORB_LOW(status) == orb->request_bus) {
--			orb->rcode = RCODE_COMPLETE;
--			list_del(&orb->link);
-+		    STATUS_GET_ORB_LOW(status) == iter->request_bus) {
-+			iter->rcode = RCODE_COMPLETE;
-+			list_del(&iter->link);
-+			orb = iter;
- 			break;
- 		}
- 	}
- 	spin_unlock_irqrestore(&lu->tgt->lock, flags);
- 
--	if (&orb->link != &lu->orb_list) {
-+	if (orb) {
- 		orb->callback(orb, &status);
- 		kref_put(&orb->kref, free_orb); /* orb callback reference */
- 	} else {
 
 base-commit: f82da161ea75dc4db21b2499e4b1facd36dab275
 -- 
