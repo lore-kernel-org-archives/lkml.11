@@ -2,139 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39220C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 17:34:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AA99C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 17:34:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231394AbiCaRf6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 13:35:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47374 "EHLO
+        id S231485AbiCaRgU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 13:36:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231389AbiCaRfy (ORCPT
+        with ESMTP id S231389AbiCaRgR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 13:35:54 -0400
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4724A5D194
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 10:34:06 -0700 (PDT)
-Received: by mail-pf1-x42d.google.com with SMTP id s11so198395pfu.13
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 10:34:06 -0700 (PDT)
+        Thu, 31 Mar 2022 13:36:17 -0400
+Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 113C460CC9;
+        Thu, 31 Mar 2022 10:34:29 -0700 (PDT)
+Received: by mail-lj1-x233.google.com with SMTP id o16so737584ljp.4;
+        Thu, 31 Mar 2022 10:34:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=hMbErTT0SxAINAqq83ORsuba/wRxrUfn7/5Ck997gZc=;
-        b=ib9rm2xQ6VaHyjBZRYv4+UFo00Ssflig3UjDSZ0C/YAZRNE48SDoQ6ndG1DpY5Ttao
-         vDCQwLtE+FeGi1XMytJZhcsh8B6tNKtwsyR2slliUxRIwSRKEY1XE/cqI67GO+g0lWAx
-         dRz3gRqqtGh/bNEM0tmXHfl5ZgKairNR+LGWX2VrIwWDe++U7h1iga0AIrtBsgNkEqEx
-         b6Di4+/mG1+/64xga3Ot/lbEE7q30LzavUHUNHjRfZaWTMnrO0GhUoNASFyYRmcFJp++
-         DyqtAMYJJ+d+Oz4+62clhUGLrz49KIzR48npw8B5DDithQchgb8PkBPT2M4F4vvFRpj1
-         cMwA==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=tYr4+A2I2sUXVhAjEZBjGiVViPde2R3/QXl/MeRC92k=;
+        b=nFEALaQDRJK+KYEsH461dOhzve4fxNfkmMgo2fIBhtDhWjGq0/3pAHjjbmI72dHdKd
+         E57CD6qP4N+xshQ6kiTp0V++2vdUEE6yPY+Lwfte6OlmKHuxAP0q4xR8onHZKKbRjnyP
+         1X4KLDGOxDAYU8dswNf3x1cXwqYWocH9gPc1Hvgl1js90EDGvkt97oi23edz7BpbetBc
+         sBWMo38844VINbgHx5UjWdVta1PoZujZiteBXWSTNYc/+tZW4hFV21oX9M56nu4AhLrX
+         ZrAsBxU+N+9XQcFK+nJ8pFa0AIAxNdNlpljSex+gsfl34KTktL8AqKESMI4eXWvY9WEv
+         /vdg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=hMbErTT0SxAINAqq83ORsuba/wRxrUfn7/5Ck997gZc=;
-        b=Wv2MJ15NPuptSpWfCZaulrRrTv0CZCnzEXRFH+mg9JgAXQQkaYPo/fxJWPM9tFzWg+
-         nHMM+GkDFvZewBv9cqlhOl2z9lvsreN/Ea2faud+gClNH8JK2tDtYRm1r+SnsQ3Kkfor
-         c6KNMz2YiZFNphwnvgosDjIxrZD4/zVRsOB+Z2dYgCJfq/0P14uV7fG0k2yeFQ9Vi9qT
-         8wij9sHKAy1EUvDFYbe9gIaa8xoaCcOW8KfhG43mARhVd8pR+iUxqcmMigljgMh0DMdo
-         eK03rtTNdrJt+ie7Kipxniqyizcl8wRprYUKBFPkZ7dB7l8I9n2QZ9EoCNeAqN7DdKO2
-         C4vA==
-X-Gm-Message-State: AOAM5331wXj2GCuZ12F1EqKP1FOQfQiyaeTxb+sSsuUPmSNjy9Wqn+J8
-        wNdHsRRMuyxBky2kc+ANdz7/dQ==
-X-Google-Smtp-Source: ABdhPJyUCpExZImsOuZvYr/O3DuYD1F6zdr1CtuiwhEu74Fj+fiS02OVpvuGidJ+x5cAtUGyIaoaHg==
-X-Received: by 2002:a62:84d3:0:b0:4fa:72e2:1c64 with SMTP id k202-20020a6284d3000000b004fa72e21c64mr40622735pfd.29.1648748045365;
-        Thu, 31 Mar 2022 10:34:05 -0700 (PDT)
-Received: from google.com ([2620:15c:202:201:a082:a097:a7d8:d309])
-        by smtp.gmail.com with ESMTPSA id j7-20020a056a00130700b004b9f7cd94a4sm89021pfu.56.2022.03.31.10.34.03
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=tYr4+A2I2sUXVhAjEZBjGiVViPde2R3/QXl/MeRC92k=;
+        b=urf3vcc8Ad+Mky+G1N4IF2msOYIup0M7R6SNKl668Jl1fp9PmlJqmApcw52JpQfoSm
+         JwCQc4sJFvNjpLKZ72DCx/1Nu4Rkh7yXySJJkwLf415lx+GGBcANjEfecRxROlFflBdc
+         fuOfs6RMTSfL93TZ4CYS9ggfxIybGtnMoOPWq4KDV1pAG3jNNVnkUl3xxQ0RHmLGzsd+
+         aXuGMdjm3ac+1tYq0ixMpNm8R3HJ7paXTlbEDBTC69/hAVSVuW/ahlsaBz9FH7/pTy9i
+         uzWWBIffFtniOMBd8NKnmIkTsq0THotYhdSff4/KOwmfjlL5INf7ijOiOiuGApelX1PX
+         70Bg==
+X-Gm-Message-State: AOAM533z8cvoxfwywriNtVV6O7SskMMNtyAnkgEiFgWG+6bvGF0Oh+wA
+        13eeoJrvHuOCNOPTSrDdzgc=
+X-Google-Smtp-Source: ABdhPJzWR7AdVufxiLU93gc6byk6FCl+NoBdPVzob1NRulTJGAMUnxBz1CXzXgQEFQo/gHGjPZU+cg==
+X-Received: by 2002:a2e:9003:0:b0:24a:c3a5:849c with SMTP id h3-20020a2e9003000000b0024ac3a5849cmr11159595ljg.68.1648748061620;
+        Thu, 31 Mar 2022 10:34:21 -0700 (PDT)
+Received: from morzel-asus.lan (static-91-225-135-18.devs.futuro.pl. [91.225.135.18])
+        by smtp.gmail.com with ESMTPSA id bd10-20020a05651c168a00b00247fe29d83csm2746992ljb.73.2022.03.31.10.34.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 31 Mar 2022 10:34:03 -0700 (PDT)
-Date:   Thu, 31 Mar 2022 10:33:57 -0700
-From:   Benson Leung <bleung@google.com>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Won Chung <wonchung@google.com>, Takashi Iwai <tiwai@suse.de>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Benson Leung <bleung@chromium.org>,
-        Prashant Malani <pmalani@chromium.org>,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH v2] sound/hda: Add NULL check to component match callback
- function
-Message-ID: <YkXmBQ5TJ4JNnuQG@google.com>
-References: <YkVzl4NEzwDAp/Zq@kuha.fi.intel.com>
- <s5hmth6eaiz.wl-tiwai@suse.de>
- <YkV1rsq1SeTNd8Ud@kuha.fi.intel.com>
- <s5hk0cae9pw.wl-tiwai@suse.de>
- <s5h7d8adzdl.wl-tiwai@suse.de>
- <s5hzgl6ciho.wl-tiwai@suse.de>
- <YkXJr2KhSzHJHxRF@google.com>
- <YkXY730wWhgJkRUy@kroah.com>
- <CAOvb9yiHXAWMn2_GcOnx5FYzfbp-2TmtN-OH90r31OqgbXQ3yQ@mail.gmail.com>
- <YkXiSEyfl9vkIG2w@kroah.com>
+        Thu, 31 Mar 2022 10:34:21 -0700 (PDT)
+From:   Michal Orzel <michalorzel.eng@gmail.com>
+To:     John Johansen <john.johansen@canonical.com>,
+        James Morris <jmorris@namei.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Michal Orzel <michalorzel.eng@gmail.com>,
+        linux-security-module@vger.kernel.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
+Subject: [PATCH 1/5] apparmor: Remove redundant assignments
+Date:   Thu, 31 Mar 2022 19:33:54 +0200
+Message-Id: <20220331173358.40939-1-michalorzel.eng@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="E1fquEHOhb7T5Oxo"
-Content-Disposition: inline
-In-Reply-To: <YkXiSEyfl9vkIG2w@kroah.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Get rid of redundant assignments which end up in values not being
+read either because they are overwritten or the function ends.
 
---E1fquEHOhb7T5Oxo
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Reported by clang-tidy [deadcode.DeadStores]
 
-Hi Greg,
+Signed-off-by: Michal Orzel <michalorzel.eng@gmail.com>
+---
+ security/apparmor/domain.c | 3 +--
+ security/apparmor/label.c  | 2 +-
+ 2 files changed, 2 insertions(+), 3 deletions(-)
 
-On Thu, Mar 31, 2022 at 07:18:00PM +0200, Greg KH wrote:
-> On Thu, Mar 31, 2022 at 09:58:43AM -0700, Won Chung wrote:
-> > > So is this actually triggering on 5.17 right now?  Or is it due to so=
-me
-> > > other not-applied changes you are testing at the moment?
-> > >
-> > > confused,
-> > >
-> > > greg k-h
-> >=20
-> > Hi Greg,
-> >=20
-> > I believe it is not causing an issue in 5.17 at the moment. It is
-> > triggered when we try to apply new changes and test it locally.
-> > (registering a component for usb4_port)
->=20
-> Then why would it ever be needed to be backported to a stable kernel?
->=20
-> Please be more careful.
->=20
-> greg k-h
+diff --git a/security/apparmor/domain.c b/security/apparmor/domain.c
+index a29e69d2c300..77724acd9d8a 100644
+--- a/security/apparmor/domain.c
++++ b/security/apparmor/domain.c
+@@ -627,7 +627,6 @@ static struct aa_label *profile_transition(struct aa_profile *profile,
+ {
+ 	struct aa_label *new = NULL;
+ 	const char *info = NULL, *name = NULL, *target = NULL;
+-	unsigned int state = profile->file.start;
+ 	struct aa_perms perms = {};
+ 	bool nonewprivs = false;
+ 	int error = 0;
+@@ -661,7 +660,7 @@ static struct aa_label *profile_transition(struct aa_profile *profile,
+ 	}
+ 
+ 	/* find exec permissions for name */
+-	state = aa_str_perms(profile->file.dfa, state, name, cond, &perms);
++	aa_str_perms(profile->file.dfa, profile->file.start, name, cond, &perms);
+ 	if (perms.allow & MAY_EXEC) {
+ 		/* exec permission determine how to transition */
+ 		new = x_to_label(profile, bprm, name, perms.xindex, &target,
+diff --git a/security/apparmor/label.c b/security/apparmor/label.c
+index 0b0265da1926..ce9ae9b6b303 100644
+--- a/security/apparmor/label.c
++++ b/security/apparmor/label.c
+@@ -807,7 +807,7 @@ bool aa_label_replace(struct aa_label *old, struct aa_label *new)
+ 		struct aa_labelset *ls = labels_set(old);
+ 
+ 		write_lock_irqsave(&ls->lock, flags);
+-		res = __label_remove(old, new);
++		__label_remove(old, new);
+ 		if (labels_ns(old) != labels_ns(new)) {
+ 			write_unlock_irqrestore(&ls->lock, flags);
+ 			ls = labels_set(new);
+-- 
+2.25.1
 
-Sorry about that. I gave Won bad advice to cc stable. You're right, it will
-only be relevant when a future patch lands in usb4.
-
-Thanks,
-Benson
-
---=20
-Benson Leung
-Staff Software Engineer
-Chrome OS Kernel
-Google Inc.
-bleung@google.com
-Chromium OS Project
-bleung@chromium.org
-
---E1fquEHOhb7T5Oxo
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQQCtZK6p/AktxXfkOlzbaomhzOwwgUCYkXmBQAKCRBzbaomhzOw
-whPdAP4zpYThE+DOUyuAKUnnT6U3XkFRur72pnTiMNLwrfkKrAD/RCFAUHUKGoHB
-8xryjhUyyXm+VZc/T1ItQdTq+pbaMw8=
-=X8T3
------END PGP SIGNATURE-----
-
---E1fquEHOhb7T5Oxo--
