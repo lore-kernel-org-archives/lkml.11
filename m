@@ -2,116 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0883C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 11:47:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F192C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 11:51:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235309AbiCaLtT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 07:49:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42496 "EHLO
+        id S235321AbiCaLwn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 07:52:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231276AbiCaLtS (ORCPT
+        with ESMTP id S231276AbiCaLwl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 07:49:18 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C926F20826F
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 04:47:30 -0700 (PDT)
+        Thu, 31 Mar 2022 07:52:41 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F31A3204A87;
+        Thu, 31 Mar 2022 04:50:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=B/zRduQvtiaKtm4fp81K8YIkVw/D3P2vKnzcPBQVppg=; b=n9O7D5VkAfDLSOuzTQhQL79hvu
-        NthO6bLDZ08uHcmP0igXjwk4xwMskc9ZrkbR/HJCf+Viyz4MEdZ5gcXpgijEFaskfv2oBFZS6z1sU
-        9j+uu2u+dEqUm0FtSmGf54DGK25/AF4LYw7J+OlWV8S5wW9akHZkMFTteaco+GwYuuvz1ZWBR5Ppy
-        kZm1up92Nndozycb4X86NKLhJDY6/2ar811JPCASmq99TrEkQGsVAQbTfNJ2pX3zyEjMcRBPwCZsx
-        HXcnMvlNIhnWbXtrT1xUhYZbBR+t/HZOnMRPbmAlM3J/2Mx1UXBWhUWcc5LNFojcktWk9tCRJ9vFn
-        f8c3JT1A==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nZtGi-0002pI-4C; Thu, 31 Mar 2022 11:47:13 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id CE9B89861D6; Thu, 31 Mar 2022 13:47:09 +0200 (CEST)
-Date:   Thu, 31 Mar 2022 13:47:09 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Vincent Guittot <vincent.guittot@linaro.org>
-Cc:     Tim Chen <tim.c.chen@linux.intel.com>, Ingo Molnar <mingo@elte.hu>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Yu Chen <yu.c.chen@intel.com>,
-        Walter Mack <walter.mack@intel.com>,
-        Mel Gorman <mgorman@suse.de>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] sched/fair: Simple runqueue order on migrate
-Message-ID: <20220331114709.GS8939@worktop.programming.kicks-ass.net>
-References: <cover.1648228023.git.tim.c.chen@linux.intel.com>
- <f59f1dfeec4692e7a373cc810168912a2d2f8f3c.1648228023.git.tim.c.chen@linux.intel.com>
- <CAKfTPtBDA1uZ1xvo_uhqnNVg69DPXXJBeo0+aQdVJiosB_qgrw@mail.gmail.com>
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=Z81mBq9n6F6GvxliPO/Y2+LeA5qWcREr5/0B8kb5LaM=; b=nLSSZPWZkz+/pIAbjaTTubmC5s
+        UMD2QOgYnp424zA+TSDhHgSRqD6hpcqFaH66YXcK/JY0FLkARmWVQfELouFvHEem0r5l+ZnTnEb+U
+        QonJkg9Xnq8GvC2hi3Xui9EshyWZrLLrB0jOWzw6oQGxHlXXpGMcbOfJ34Uv1/DwT+Jr9oxtePZUz
+        vle1jDo4biTcHchlI8UmhJo6AIpJ9dgWzLEw2ctTOq95wiEB7eiyX/BllHuDPqY2Qbiu9QmxTMVwl
+        axMwulNbVnIbSEp335NZf5rvTXAzi3phwoXvn0Ypb52yoAtvIBUmZMvDBmS4A1cT2vpBXE1CoSK4d
+        8cr5tLEA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58052)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1nZtK8-0004kC-4n; Thu, 31 Mar 2022 12:50:43 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1nZtK6-0007ao-IH; Thu, 31 Mar 2022 12:50:42 +0100
+Date:   Thu, 31 Mar 2022 12:50:42 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Michael Walle <michael@walle.cc>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Xu Liang <lxu@maxlinear.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RFC net-next 4/5] net: phy: introduce is_c45_over_c22 flag
+Message-ID: <YkWVku32gbaBAdEH@shell.armlinux.org.uk>
+References: <20220323183419.2278676-1-michael@walle.cc>
+ <20220323183419.2278676-5-michael@walle.cc>
+ <Yjt99k57mM5PQ8bT@lunn.ch>
+ <8304fb3578ee38525a158af768691e75@walle.cc>
+ <Yju+SGuZ9aB52ARi@lunn.ch>
+ <30012bd8256be3be9977bd15d1486c84@walle.cc>
+ <YjybB/fseibDU4dT@lunn.ch>
+ <0d4a2654acd2cc56f7b17981bf14474e@walle.cc>
+ <Yjy+oCLdnu3FrNp+@lunn.ch>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAKfTPtBDA1uZ1xvo_uhqnNVg69DPXXJBeo0+aQdVJiosB_qgrw@mail.gmail.com>
+In-Reply-To: <Yjy+oCLdnu3FrNp+@lunn.ch>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-It's been 3 months since I wrote these patches, so memory is vague at
-best :/
-
-On Tue, Mar 29, 2022 at 11:03:44AM +0200, Vincent Guittot wrote:
-
-> > +static void place_entity_migrate(struct cfs_rq *cfs_rq, struct sched_entity *se)
-> > +{
-> > +       if (!sched_feat(PLACE_MIGRATE))
-> > +               return;
-> > +
-> > +       if (cfs_rq->nr_running < se->migrated) {
-> > +               /*
-> > +                * Migrated to a shorter runqueue, go first because
-> > +                * we were under-served on the old runqueue.
-> > +                */
-> > +               se->vruntime = cfs_rq->min_vruntime;
-> > +               return;
-> > +       }
-> > +
-> > +       /*
-> > +        * Migrated to a longer runqueue, go last because
-> > +        * we got over-served on the old runqueue.
-> > +        */
-> > +       se->vruntime = cfs_rq->min_vruntime + sched_vslice(cfs_rq, se);
-> > +}
-> > +
-> >  static void check_enqueue_throttle(struct cfs_rq *cfs_rq);
-> >
-> >  static inline bool cfs_bandwidth_used(void);
-> > @@ -4296,6 +4317,8 @@ enqueue_entity(struct cfs_rq *cfs_rq, struct sched_entity *se, int flags)
-> >
-> >         if (flags & ENQUEUE_WAKEUP)
-> >                 place_entity(cfs_rq, se, 0);
-> > +       else if (se->migrated)
-> > +               place_entity_migrate(cfs_rq, se);
-> >
-> >         check_schedstat_required();
-> >         update_stats_enqueue_fair(cfs_rq, se, flags);
-
-> > @@ -6973,14 +6997,15 @@ static void migrate_task_rq_fair(struct task_struct *p, int new_cpu)
-> >                  * wakee task is less decayed, but giving the wakee more load
-> >                  * sounds not bad.
-> >                  */
-> > -               remove_entity_load_avg(&p->se);
-> > +               remove_entity_load_avg(se);
-> >         }
-> >
-> >         /* Tell new CPU we are migrated */
-> > -       p->se.avg.last_update_time = 0;
-> > +       se->avg.last_update_time = 0;
-> >
-> >         /* We have migrated, no longer consider this task hot */
-> > -       p->se.migrated = 1;
-> > +       for_each_sched_entity(se)
-> > +               se->migrated = READ_ONCE(cfs_rq_of(se)->nr_running) + !se->on_rq;
+On Thu, Mar 24, 2022 at 07:55:28PM +0100, Andrew Lunn wrote:
+> > The
+> > > only valid case i can think of is for a very oddball PHY which has C45
+> > > register space, but cannot actually do C45 transfers, and so C45 over
+> > > C22 is the only option.
+> > 
+> > And how would you know that the PHY has the needed registers in c22
+> > space? Or do we assume that every C45 PHY has these registers?
 > 
-> Why do we need to loop on se ? Isn't p->se enough ?
+> I think it is a reasonable assumption at the moment. We have around
+> 170 MDIO bus masters in Linux. All but one can do C22.
 
-Yeah; I really don't recall why I did that. And looking at it now, it
-doesn't really make much sense. I suppose it will trigger
-place_entity_migrate() for the group entries, but on the old CPU.
+I don't think that is correct. I'm aware of the Marvell XMDIO driver
+that is C45 only, and also xgene's non-rgmii "xfi" variant which is
+also C45 only. Note that the xfi variant doesn't reject C22 and makes
+no distinction between a C22 and C45 access (so a C22 access to
+phy_id = 0 reg = 0 hits C45 phy_id = 0 mmd 0 reg 0.
 
+MDIO drivers are IMHO an utter mess and are in dire need of fixing...
+and I'm coming to the conclusion that the bodge of passing both C22
+and C45 accesses through the same read/write functions is a huge
+mistake, one that is crying out for fixing to prevent more prolification
+of this kind of mess.
 
+Yes, it's a lot of work, but I think it needs to be done. Retrofitting
+the MDIO drivers with checks etc sounds nice, but if we assume that
+patches will continue to be applied to net-next with little review,
+we have a losing battle - it would be better to have interfaces designed
+to make this kind of mistake impossible.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
