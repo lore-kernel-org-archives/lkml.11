@@ -2,209 +2,536 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2536FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 13:48:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FCAFC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 13:49:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237045AbiCaNuZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 09:50:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47466 "EHLO
+        id S237038AbiCaNve (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 09:51:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237031AbiCaNuQ (ORCPT
+        with ESMTP id S233285AbiCaNvc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 09:50:16 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DE750BD9
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 06:48:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648734504;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=bBNe6ZwO14A+VdUorhiFqNd6kC6eQKqel5DMkynNcGs=;
-        b=VbR1c/K5sWI0GUF+QalZecm/8I/aB+wJUjO0JlBrqlI9lHzWSF5oC+Dtw/qL3ys8O1MUyn
-        8s47P0mCD4Rmb0OAFjkdxaaepVeTscoVqevuBtGrr/SWMPjSei8cPAf9eCtwk3yFzfhFTX
-        +4kU7xKjEbX5/7FAkSpBuUyhKVjpHD4=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-220-JDCqiR1aPU6hokPmH5V6VA-1; Thu, 31 Mar 2022 09:48:23 -0400
-X-MC-Unique: JDCqiR1aPU6hokPmH5V6VA-1
-Received: by mail-ed1-f70.google.com with SMTP id z22-20020a50cd16000000b0041960ea8555so14979043edi.2
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 06:48:22 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=bBNe6ZwO14A+VdUorhiFqNd6kC6eQKqel5DMkynNcGs=;
-        b=Kx17ch9l4pbxopX2WiNDArRnJHWMjV2CzVXRTpruMEd8RG8p168GDADEZru77YpFPb
-         WJEduK5CtHFEEpM6N1WnubLOR/0ANgG7Ihg+Gn/Jru67fqcgAQSZ6WLtAKat8OQLsep5
-         Tw8ALMI6Uowx6C7D5bBSOHLdgcot1bXC0oS9cQ8qgvnmGTRMYx7mnaz5wb6Wvs/DfSVh
-         uVRYJz5/yCTExgrwL6/rncDkxd0x5wmCUjxXcNfRaZ9k+4xYYmrgjF382kPa5fw1CTmG
-         E34xnKX0ewGR5PtSCp9t+pnwVsyn1QDehV3qB5nQ8XFTm4+I+zfHLiMOf5z6/5zsCUA3
-         tJIw==
-X-Gm-Message-State: AOAM532hQuw6nW1mPGu5aVxfiJgDp4Ahh5Hlzdsk5c3znEwSpSVbG9rp
-        kKZPCMW5N1tuvRJTm8xH/VPxtR7NJe/HL8HkXTgwqDNQvmI0+ZZ+NcXAupH6hMrCno8hY37NGHZ
-        gi+WnnJ9rgGSnZfp6eqv5TrxI
-X-Received: by 2002:a17:906:69d1:b0:6ce:7201:ec26 with SMTP id g17-20020a17090669d100b006ce7201ec26mr5115664ejs.105.1648734501767;
-        Thu, 31 Mar 2022 06:48:21 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzaOztpuiraqUm6TPegDkLmbLYAkWCcmmS2jBymLmYa/zJNRyuCbXtPFJnMPQ//0YMBauubEw==
-X-Received: by 2002:a17:906:69d1:b0:6ce:7201:ec26 with SMTP id g17-20020a17090669d100b006ce7201ec26mr5115639ejs.105.1648734501541;
-        Thu, 31 Mar 2022 06:48:21 -0700 (PDT)
-Received: from redhat.com ([2.53.153.13])
-        by smtp.gmail.com with ESMTPSA id h8-20020a1709066d8800b006e09a49a713sm8018933ejt.159.2022.03.31.06.48.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 31 Mar 2022 06:48:21 -0700 (PDT)
-Date:   Thu, 31 Mar 2022 09:48:16 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        andrew@daynix.com, david@redhat.com, elic@nvidia.com,
-        gautam.dawar@xilinx.com, gdawar@xilinx.com, gshan@redhat.com,
-        helei.sig11@bytedance.com, jasowang@redhat.com,
-        Jonathan.Cameron@huawei.com, keirf@google.com,
-        lingshan.zhu@intel.com, linmiaohe@huawei.com, lkp@intel.com,
-        longpeng2@huawei.com, mail@anirudhrb.com, maz@kernel.org,
-        mst@redhat.com, nathan@kernel.org, pizhenwei@bytedance.com,
-        qiudayu@archeros.com, sgarzare@redhat.com, trix@redhat.com,
-        willy@infradead.org, xuanzhuo@linux.alibaba.com
-Subject: [GIT PULL] virtio: features, fixes
-Message-ID: <20220331094816-mutt-send-email-mst@kernel.org>
+        Thu, 31 Mar 2022 09:51:32 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 011E61265AF;
+        Thu, 31 Mar 2022 06:49:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648734584; x=1680270584;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=DyFxmCqIU/Oiz/h/BQvLdkumAnffMA/mxV0wwMBOt+I=;
+  b=NbfbgF69LCV6b7VEi2V897jHll5ZfUnwW3Vm5VS4uql6gOOUrDUo97hd
+   GNwMu5bO+mj2fZDHs0xMzAFLIe5qPC6WbSJrWPlRojC8HXyCNToYk/oMa
+   XFioVYg5i93jaw8ZmkxlPgQXf4YXXbQdH3VwlsKclvmtIg9KzPUwMOxfW
+   P0olI6StHe6Y3LbAPNaW2SAlty2vz1uo4eR7zUItWIzWVzSgrmCaH+jUD
+   pucVvo1UXzIlSSe+s/rS1wqTo0PFqmAznPFD8LWh4QNIJC+Hg7N+cySl/
+   T+NpxDBzhXbYKAyPtI5bRXVOResIwCaILPZ6w3dUYr+wLZZfaDlme32fb
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="259820605"
+X-IronPort-AV: E=Sophos;i="5.90,225,1643702400"; 
+   d="scan'208";a="259820605"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2022 06:49:43 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,225,1643702400"; 
+   d="scan'208";a="520543355"
+Received: from unknown (HELO localhost.localdomain) ([10.226.216.87])
+  by orsmga002.jf.intel.com with ESMTP; 31 Mar 2022 06:49:41 -0700
+From:   niravkumar.l.rabara@intel.com
+To:     Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Derek Kiernan <derek.kiernan@xilinx.com>,
+        Dragan Cvetic <dragan.cvetic@xilinx.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Niravkumar L Rabara <niravkumar.l.rabara@intel.com>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] Add Altera hardware mutex driver
+Date:   Fri,  1 Apr 2022 05:49:11 +0800
+Message-Id: <20220331214911.27194-1-niravkumar.l.rabara@intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mutt-Fcc: =sent
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following changes since commit f443e374ae131c168a065ea1748feac6b2e76613:
+From: Niravkumar L Rabara <niravkumar.l.rabara@intel.com>
 
-  Linux 5.17 (2022-03-20 13:14:17 -0700)
+Altera hardware mutex soft IP provides hardware assistance for
+synchronization and mutual exclusion between processors in
+asymmetric/symmetric multiprocessing (AMP/SMP) system or
+multi processes/threads in uniprocessor system.
 
-are available in the Git repository at:
+Signed-off-by: Niravkumar L Rabara <niravkumar.l.rabara@intel.com>
+---
+ .../bindings/misc/altera-hwmutex.yaml         |  47 +++
+ drivers/misc/Kconfig                          |   6 +
+ drivers/misc/Makefile                         |   1 +
+ drivers/misc/altera_hwmutex.c                 | 321 ++++++++++++++++++
+ include/linux/altera_hwmutex.h                |  42 +++
+ 5 files changed, 417 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/misc/altera-hwmutex.yaml
+ create mode 100644 drivers/misc/altera_hwmutex.c
+ create mode 100644 include/linux/altera_hwmutex.h
 
-  https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
-
-for you to fetch changes up to ad6dc1daaf29f97f23cc810d60ee01c0e83f4c6b:
-
-  vdpa/mlx5: Avoid processing works if workqueue was destroyed (2022-03-28 16:54:30 -0400)
-
-----------------------------------------------------------------
-virtio: features, fixes
-
-vdpa generic device type support
-More virtio hardening for broken devices
-On the same theme, revert some virtio hotplug hardening patches -
-they were misusing some interrupt flags, will have to be reverted.
-RSS support in virtio-net
-max device MTU support in mlx5 vdpa
-akcipher support in virtio-crypto
-shared IRQ support in ifcvf vdpa
-a minor performance improvement in vhost
-Enable virtio mem for ARM64
-beginnings of advance dma support
-
-Cleanups, fixes all over the place.
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-----------------------------------------------------------------
-Andrew Melnychenko (4):
-      drivers/net/virtio_net: Fixed padded vheader to use v1 with hash.
-      drivers/net/virtio_net: Added basic RSS support.
-      drivers/net/virtio_net: Added RSS hash report.
-      drivers/net/virtio_net: Added RSS hash report control.
-
-Anirudh Rayabharam (1):
-      vhost: handle error while adding split ranges to iotlb
-
-Eli Cohen (2):
-      net/mlx5: Add support for configuring max device MTU
-      vdpa/mlx5: Avoid processing works if workqueue was destroyed
-
-Gautam Dawar (1):
-      Add definition of VIRTIO_F_IN_ORDER feature bit
-
-Gavin Shan (1):
-      drivers/virtio: Enable virtio mem for ARM64
-
-Jason Wang (2):
-      Revert "virtio-pci: harden INTX interrupts"
-      Revert "virtio_pci: harden MSI-X interrupts"
-
-Keir Fraser (1):
-      virtio: pci: check bar values read from virtio config space
-
-Longpeng (3):
-      vdpa: support exposing the config size to userspace
-      vdpa: change the type of nvqs to u32
-      vdpa: support exposing the count of vqs to userspace
-
-Miaohe Lin (1):
-      mm/balloon_compaction: make balloon page compaction callbacks static
-
-Michael Qiu (1):
-      vdpa/mlx5: re-create forwarding rules after mac modified
-
-Michael S. Tsirkin (2):
-      tools/virtio: fix after premapped buf support
-      tools/virtio: compile with -pthread
-
-Stefano Garzarella (2):
-      vhost: cache avail index in vhost_enable_notify()
-      virtio: use virtio_device_ready() in virtio_device_restore()
-
-Xuan Zhuo (3):
-      virtio_ring: rename vring_unmap_state_packed() to vring_unmap_extra_packed()
-      virtio_ring: remove flags check for unmap split indirect desc
-      virtio_ring: remove flags check for unmap packed indirect desc
-
-Zhu Lingshan (5):
-      vDPA/ifcvf: make use of virtio pci modern IO helpers in ifcvf
-      vhost_vdpa: don't setup irq offloading when irq_num < 0
-      vDPA/ifcvf: implement device MSIX vector allocator
-      vDPA/ifcvf: implement shared IRQ feature
-      vDPA/ifcvf: cacheline alignment for ifcvf_hw
-
-zhenwei pi (4):
-      virtio_crypto: Introduce VIRTIO_CRYPTO_NOSPC
-      virtio-crypto: introduce akcipher service
-      virtio-crypto: implement RSA algorithm
-      virtio-crypto: rename skcipher algs
-
- drivers/crypto/virtio/Kconfig                      |   3 +
- drivers/crypto/virtio/Makefile                     |   3 +-
- .../crypto/virtio/virtio_crypto_akcipher_algs.c    | 585 +++++++++++++++++++++
- drivers/crypto/virtio/virtio_crypto_common.h       |   7 +-
- drivers/crypto/virtio/virtio_crypto_core.c         |   6 +-
- drivers/crypto/virtio/virtio_crypto_mgr.c          |  17 +-
- ...crypto_algs.c => virtio_crypto_skcipher_algs.c} |   4 +-
- drivers/net/virtio_net.c                           | 389 +++++++++++++-
- drivers/vdpa/ifcvf/ifcvf_base.c                    | 140 ++---
- drivers/vdpa/ifcvf/ifcvf_base.h                    |  24 +-
- drivers/vdpa/ifcvf/ifcvf_main.c                    | 323 ++++++++++--
- drivers/vdpa/mlx5/net/mlx5_vnet.c                  |  84 ++-
- drivers/vdpa/vdpa.c                                |   6 +-
- drivers/vhost/iotlb.c                              |   6 +-
- drivers/vhost/vdpa.c                               |  45 +-
- drivers/vhost/vhost.c                              |   3 +-
- drivers/virtio/Kconfig                             |   7 +-
- drivers/virtio/virtio.c                            |   5 +-
- drivers/virtio/virtio_pci_common.c                 |  48 +-
- drivers/virtio/virtio_pci_common.h                 |   7 +-
- drivers/virtio/virtio_pci_legacy.c                 |   5 +-
- drivers/virtio/virtio_pci_modern.c                 |  18 +-
- drivers/virtio/virtio_pci_modern_dev.c             |   9 +-
- drivers/virtio/virtio_ring.c                       |  53 +-
- include/linux/balloon_compaction.h                 |  22 -
- include/linux/vdpa.h                               |   9 +-
- include/uapi/linux/vhost.h                         |   7 +
- include/uapi/linux/virtio_config.h                 |   6 +
- include/uapi/linux/virtio_crypto.h                 |  82 ++-
- mm/balloon_compaction.c                            |   6 +-
- tools/virtio/Makefile                              |   3 +-
- tools/virtio/linux/dma-mapping.h                   |   4 +-
- 32 files changed, 1639 insertions(+), 297 deletions(-)
- create mode 100644 drivers/crypto/virtio/virtio_crypto_akcipher_algs.c
- rename drivers/crypto/virtio/{virtio_crypto_algs.c => virtio_crypto_skcipher_algs.c} (99%)
+diff --git a/Documentation/devicetree/bindings/misc/altera-hwmutex.yaml b/Documentation/devicetree/bindings/misc/altera-hwmutex.yaml
+new file mode 100644
+index 000000000000..57a9ea19c563
+--- /dev/null
++++ b/Documentation/devicetree/bindings/misc/altera-hwmutex.yaml
+@@ -0,0 +1,47 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/misc/altera-hwmutex.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Altera hardware mutex
++
++maintainers:
++  - Niravkumar L Rabara <niravkumar.l.rabara@intel.com>
++
++description:
++  Altera hardware mutex can provide hardware assistance for synchronization
++  and mutual exclusion between processors in asymmetric/symmetric multiprocessing
++  (AMP/SMP) system or multi processes/threads in uniprocessor system.
++
++properties:
++  compatible:
++    enum:
++      - altr,hwmutex-1.0
++      - client-1.0
++
++  reg:
++    items:
++      - description: physical address of hw mutex and length of memory mapped
++         region
++
++additionalProperties: false
++
++required:
++  - compatible
++  - reg
++
++examples:
++  - |
++    mutex0: mutex0@100 {
++        compatible = "altr,hwmutex-1.0";
++        reg = <0x100 0x8>;
++    };
++
++
++   #Example of mutex's client node that includes mutex phandle    
++   #mclient0: mclient0@200 {
++   #     compatible = "client-1.0";
++   # 	reg = <0x200 0x10>;
++   #	mutex = <&mutex0>;
++   # };
+diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
+index 0f5a49fc7c9e..707acf740c6f 100644
+--- a/drivers/misc/Kconfig
++++ b/drivers/misc/Kconfig
+@@ -435,6 +435,12 @@ config DW_XDATA_PCIE
+ 
+ 	  If unsure, say N.
+ 
++config ALTERA_HWMUTEX
++       tristate "Altera Hardware Mutex"
++       help
++         This option enables device driver support for Altera Hardware Mutex.
++         Say Y here if you want to use the Altera hardware mutex support.
++
+ config PCI_ENDPOINT_TEST
+ 	depends on PCI
+ 	select CRC32
+diff --git a/drivers/misc/Makefile b/drivers/misc/Makefile
+index a086197af544..6fcbbd36b3cf 100644
+--- a/drivers/misc/Makefile
++++ b/drivers/misc/Makefile
+@@ -40,6 +40,7 @@ obj-$(CONFIG_PCH_PHUB)		+= pch_phub.o
+ obj-y				+= ti-st/
+ obj-y				+= lis3lv02d/
+ obj-$(CONFIG_ALTERA_STAPL)	+=altera-stapl/
++obj-$(CONFIG_ALTERA_HWMUTEX)   += altera_hwmutex.o
+ obj-$(CONFIG_INTEL_MEI)		+= mei/
+ obj-$(CONFIG_VMWARE_VMCI)	+= vmw_vmci/
+ obj-$(CONFIG_LATTICE_ECP3_CONFIG)	+= lattice-ecp3-config.o
+diff --git a/drivers/misc/altera_hwmutex.c b/drivers/misc/altera_hwmutex.c
+new file mode 100644
+index 000000000000..45f98e4b13d0
+--- /dev/null
++++ b/drivers/misc/altera_hwmutex.c
+@@ -0,0 +1,321 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright Intel Corporation (C) 2022. All rights reserved
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms and conditions of the GNU General Public License,
++ * version 2, as published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
++ * more details.
++ *
++ * You should have received a copy of the GNU General Public License along with
++ * this program.  If not, see <http://www.gnu.org/licenses/>.
++ */
++
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/device.h>
++#include <linux/platform_device.h>
++#include <linux/io.h>
++#include <linux/of.h>
++#include <linux/altera_hwmutex.h>
++
++#define DRV_NAME	"altera_hwmutex"
++
++
++static DEFINE_SPINLOCK(list_lock);	/* protect mutex_list */
++static LIST_HEAD(mutex_list);
++
++/* Mutex Registers */
++#define MUTEX_REG			0x0
++
++#define MUTEX_REG_VALUE_MASK		0xFFFF
++#define MUTEX_REG_OWNER_OFFSET		16
++#define MUTEX_REG_OWNER_MASK		0xFFFF
++#define MUTEX_GET_OWNER(reg)			\
++	((reg >> MUTEX_REG_OWNER_OFFSET) & MUTEX_REG_OWNER_MASK)
++
++/**
++ *	altera_mutex_request - Retrieves a pointer to an acquired mutex device
++ *			       structure
++ *	@mutex_np:	The pointer to mutex device node
++ *
++ *	Returns a pointer to the mutex device structure associated with the
++ *	supplied device node, or NULL if no corresponding mutex device was
++ *	found.
++ */
++struct altera_mutex *altera_mutex_request(struct device_node *mutex_np)
++{
++	struct altera_mutex *mutex;
++
++	spin_lock(&list_lock);
++	list_for_each_entry(mutex, &mutex_list, list) {
++		if (mutex_np == mutex->pdev->dev.of_node) {
++			if (!mutex->requested) {
++				mutex->requested = true;
++				spin_unlock(&list_lock);
++				return mutex;
++			} else {
++				pr_info("Mutex device is in use.\n");
++				spin_unlock(&list_lock);
++				return NULL;
++			}
++		}
++	}
++	spin_unlock(&list_lock);
++	pr_info("Mutex device not found!\n");
++	return NULL;
++}
++EXPORT_SYMBOL(altera_mutex_request);
++
++/**
++ *	altera_mutex_free - Free the mutex
++ *	@mutex:	the mutex
++ *
++ *	Return 0 if success. Otherwise, returns non-zero.
++ */
++int altera_mutex_free(struct altera_mutex *mutex)
++{
++	if (!mutex || !mutex->requested)
++		return -EINVAL;
++
++	spin_lock(&list_lock);
++	mutex->requested = false;
++	spin_unlock(&list_lock);
++
++	return 0;
++}
++EXPORT_SYMBOL(altera_mutex_free);
++
++static int __mutex_trylock(struct altera_mutex *mutex, u16 owner, u16 value)
++{
++	u32 read;
++	int ret = 0;
++	u32 data = (owner << MUTEX_REG_OWNER_OFFSET) | value;
++
++	mutex_lock(&mutex->lock);
++	__raw_writel(data, mutex->regs + MUTEX_REG);
++	read = __raw_readl(mutex->regs + MUTEX_REG);
++	if (read != data)
++		ret = -1;
++
++	mutex_unlock(&mutex->lock);
++	return ret;
++}
++
++/**
++ *	altera_mutex_lock - Acquires a hardware mutex, wait until it can get it.
++ *	@mutex:	the mutex to be acquired
++ *	@owner:	owner ID
++ *	@value:	the new non-zero value to write to mutex
++ *
++ *	Returns 0 if mutex was successfully locked. Otherwise, returns non-zero.
++ *
++ *	The mutex must later on be released by the same owner that acquired it.
++ *	This function is not ISR callable.
++ */
++int altera_mutex_lock(struct altera_mutex *mutex, u16 owner, u16 value)
++{
++	if (!mutex || !mutex->requested)
++		return -EINVAL;
++
++	while (__mutex_trylock(mutex, owner, value) != 0)
++		;
++
++	return 0;
++}
++EXPORT_SYMBOL(altera_mutex_lock);
++
++/**
++ *	altera_mutex_trylock - Tries once to lock the hardware mutex and returns
++ *				immediately
++ *	@mutex:	the mutex to be acquired
++ *	@owner:	owner ID
++ *	@value:	the new non-zero value to write to mutex
++ *
++ *	Returns 0 if mutex was successfully locked. Otherwise, returns non-zero.
++ *
++ *	The mutex must later on be released by the same owner that acquired it.
++ *	This function is not ISR callable.
++ */
++int altera_mutex_trylock(struct altera_mutex *mutex, u16 owner, u16 value)
++{
++	if (!mutex || !mutex->requested)
++		return -EINVAL;
++
++	return __mutex_trylock(mutex, owner, value);
++}
++EXPORT_SYMBOL(altera_mutex_trylock);
++
++/**
++ *	altera_mutex_unlock - Unlock a mutex that has been locked by this owner
++ *			      previously that was locked on the
++ *			      altera_mutex_lock. Upon release, the value stored
++ *			      in the mutex is set to zero.
++ *	@mutex:	the mutex to be released
++ *	@owner:	Owner ID
++ *
++ *	Returns 0 if mutex was successfully unlocked. Otherwise, returns
++ *	non-zero.
++ *
++ *	This function is not ISR callable.
++ */
++int altera_mutex_unlock(struct altera_mutex *mutex, u16 owner)
++{
++	u32 reg;
++
++	if (!mutex || !mutex->requested)
++		return -EINVAL;
++
++	mutex_lock(&mutex->lock);
++
++	__raw_writel(owner << MUTEX_REG_OWNER_OFFSET,
++		mutex->regs + MUTEX_REG);
++
++	reg = __raw_readl(mutex->regs + MUTEX_REG);
++	if (reg & MUTEX_REG_VALUE_MASK) {
++		/* Unlock failed */
++		dev_dbg(&mutex->pdev->dev,
++			"Unlock mutex failed, owner %d and expected owner %d\n",
++			owner, MUTEX_GET_OWNER(reg));
++		mutex_unlock(&mutex->lock);
++		return -EINVAL;
++	}
++
++	mutex_unlock(&mutex->lock);
++	return 0;
++}
++EXPORT_SYMBOL(altera_mutex_unlock);
++
++/**
++ *	altera_mutex_owned - Determines if this owner owns the mutex
++ *	@mutex:	the mutex to be queried
++ *	@owner:	Owner ID
++ *
++ *	Returns 1 if the owner owns the mutex. Otherwise, returns zero.
++ */
++int altera_mutex_owned(struct altera_mutex *mutex, u16 owner)
++{
++	u32 reg;
++	u16 actual_owner;
++	int ret = 0;
++
++	if (!mutex || !mutex->requested)
++		return ret;
++
++	mutex_lock(&mutex->lock);
++	reg = __raw_readl(mutex->regs + MUTEX_REG);
++	actual_owner = MUTEX_GET_OWNER(reg);
++	if (actual_owner == owner)
++		ret = 1;
++
++	mutex_unlock(&mutex->lock);
++	return ret;
++}
++EXPORT_SYMBOL(altera_mutex_owned);
++
++/**
++ *	altera_mutex_is_locked - Determines if the mutex is locked
++ *	@mutex:	the mutex to be queried
++ *
++ *	Returns 1 if the mutex is locked, 0 if unlocked.
++ */
++int altera_mutex_is_locked(struct altera_mutex *mutex)
++{
++	u32 reg;
++	int ret = 0;
++
++	if (!mutex || !mutex->requested)
++		return ret;
++
++	mutex_lock(&mutex->lock);
++	reg = __raw_readl(mutex->regs + MUTEX_REG);
++	reg &= MUTEX_REG_VALUE_MASK;
++	if (reg)
++		ret = 1;
++
++	mutex_unlock(&mutex->lock);
++	return ret;
++}
++EXPORT_SYMBOL(altera_mutex_is_locked);
++
++static int altera_mutex_probe(struct platform_device *pdev)
++{
++	struct altera_mutex *mutex;
++	struct resource	*regs;
++
++	mutex = devm_kzalloc(&pdev->dev, sizeof(struct altera_mutex),
++		GFP_KERNEL);
++	if (!mutex)
++		return -ENOMEM;
++
++	mutex->pdev = pdev;
++
++	regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	if (!regs)
++		return -ENXIO;
++
++	mutex->regs = devm_ioremap_resource(&pdev->dev, regs);
++	if (IS_ERR(mutex->regs))
++		return PTR_ERR(mutex->regs);
++
++	mutex_init(&mutex->lock);
++
++	spin_lock(&list_lock);
++	list_add_tail(&mutex->list, &mutex_list);
++	spin_unlock(&list_lock);
++
++	platform_set_drvdata(pdev, mutex);
++
++	return 0;
++}
++
++static int altera_mutex_remove(struct platform_device *pdev)
++{
++	struct altera_mutex *mutex = platform_get_drvdata(pdev);
++
++	spin_lock(&list_lock);
++	if (mutex)
++		list_del(&mutex->list);
++	spin_unlock(&list_lock);
++
++	platform_set_drvdata(pdev, NULL);
++	return 0;
++}
++
++static const struct of_device_id altera_mutex_match[] = {
++	{ .compatible = "altr,hwmutex-1.0" },
++	{ /* Sentinel */ }
++};
++
++MODULE_DEVICE_TABLE(of, altera_mutex_match);
++
++static struct platform_driver altera_mutex_platform_driver = {
++	.driver = {
++		.name		= DRV_NAME,
++		.of_match_table	= altera_mutex_match,
++	},
++	.remove			= altera_mutex_remove,
++};
++
++static int __init altera_mutex_init(void)
++{
++	return platform_driver_probe(&altera_mutex_platform_driver,
++		altera_mutex_probe);
++}
++
++static void __exit altera_mutex_exit(void)
++{
++	platform_driver_unregister(&altera_mutex_platform_driver);
++}
++
++module_init(altera_mutex_init);
++module_exit(altera_mutex_exit);
++
++MODULE_AUTHOR("Niravkumar L Rabara <niravkumar.l.rabara@intel.com>");
++MODULE_LICENSE("GPL v2");
++MODULE_DESCRIPTION("Altera Hardware Mutex driver");
++MODULE_ALIAS("platform:" DRV_NAME);
+diff --git a/include/linux/altera_hwmutex.h b/include/linux/altera_hwmutex.h
+new file mode 100644
+index 000000000000..18b73e9120bc
+--- /dev/null
++++ b/include/linux/altera_hwmutex.h
+@@ -0,0 +1,42 @@
++// SPDX-License-Identifier: GPL-2.0 
++/*
++ * Copyright Intel Corporation (C) 2022. All rights reserved
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms and conditions of the GNU General Public License,
++ * version 2, as published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
++ * more details.
++ *
++ * You should have received a copy of the GNU General Public License along with
++ * this program.  If not, see <http://www.gnu.org/licenses/>.
++ */
++#ifndef _ALTERA_MUTEX_H
++#define _ALTERA_MUTEX_H
++
++#include <linux/device.h>
++#include <linux/platform_device.h>
++
++struct altera_mutex {
++	struct list_head	list;
++	struct platform_device	*pdev;
++	struct mutex		lock;
++	void __iomem		*regs;
++	bool			requested;
++};
++
++extern struct altera_mutex *altera_mutex_request(struct device_node *mutex_np);
++extern int altera_mutex_free(struct altera_mutex *mutex);
++
++extern int altera_mutex_lock(struct altera_mutex *mutex, u16 owner, u16 value);
++
++extern int altera_mutex_trylock(struct altera_mutex *mutex, u16 owner,
++	u16 value);
++extern int altera_mutex_unlock(struct altera_mutex *mutex, u16 owner);
++extern int altera_mutex_owned(struct altera_mutex *mutex, u16 owner);
++extern int altera_mutex_is_locked(struct altera_mutex *mutex);
++
++#endif /* _ALTERA_MUTEX_H */
+-- 
+2.25.1
 
