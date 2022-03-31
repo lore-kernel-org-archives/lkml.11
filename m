@@ -2,83 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2E74C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 12:02:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29887C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 12:02:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235632AbiCaMDx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 08:03:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45372 "EHLO
+        id S235648AbiCaMDz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 08:03:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235837AbiCaMCu (ORCPT
+        with ESMTP id S235880AbiCaMC5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 08:02:50 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC223C6EC4;
-        Thu, 31 Mar 2022 04:59:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=gjM65KpA0vNRhkW6BTOes5PJMxyCJQiBa6LAwzsgitM=; b=uUq3v8mnX6pXflbOjhitICD/xV
-        d8r5C/KCuIzUYw8FhcBWsUPwgldnBwPL3CHfsVMWVYB70Jx1ztDyCBKpKJEuA7OPD2IGjMnbxMJRf
-        9R2LzYIGcYGq603xH2fM7tR4IYabi97VGkfCsIfGMqM2HusnveGsd28cz7gvnTTO/VppMLwO5csyk
-        VCtef3RLpxaW0CGal/jOxe8yd8Xvm1NmFaX9AkfqZzgYmVm04qJpqvG5sDGhnXOT0dnFIBeiHUMSD
-        2wZscNNT6Cb2S6mo8NziBzdRDgN3J1bXCiir1W7WGfBBjQEmaxx/M337uzbPW6/G14HbG4Puv/TfS
-        DaxpgOKg==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nZtSQ-002BMA-1C; Thu, 31 Mar 2022 11:59:18 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 52D3B9861D6; Thu, 31 Mar 2022 13:59:16 +0200 (CEST)
-Date:   Thu, 31 Mar 2022 13:59:16 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Namhyung Kim <namhyung@kernel.org>
-Cc:     Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
-        Waiman Long <longman@redhat.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Byungchul Park <byungchul.park@lge.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Radoslaw Burny <rburny@google.com>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Hyeonggon Yoo <42.hyeyoo@gmail.com>
-Subject: Re: [PATCH 2/2] locking: Apply contention tracepoints in the slow
- path
-Message-ID: <20220331115916.GU8939@worktop.programming.kicks-ass.net>
-References: <20220322185709.141236-1-namhyung@kernel.org>
- <20220322185709.141236-3-namhyung@kernel.org>
- <20220328113946.GA8939@worktop.programming.kicks-ass.net>
- <CAM9d7ciQQEypvv2a2zQLHNc7p3NNxF59kASxHoFMCqiQicKwBA@mail.gmail.com>
- <20220330110853.GK8939@worktop.programming.kicks-ass.net>
- <CAM9d7cjQnThKgsUfnqJDcmBFseSTk-56a6f0sefo1x8D7LWSZw@mail.gmail.com>
+        Thu, 31 Mar 2022 08:02:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C11CC6EED;
+        Thu, 31 Mar 2022 04:59:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8CF00616BF;
+        Thu, 31 Mar 2022 11:59:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67C23C340EE;
+        Thu, 31 Mar 2022 11:59:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648727994;
+        bh=adnfpVD7oqXHj4mfPH8O1DTjb8aRLseC4Dvlx5i6vF0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=swJP9pqiZw1PBslMi6kbCZdmGGEiPUICuHiBfiDTo4t2rDC46yANqiK8ahb1iwCkX
+         DUKLDUtfxGiKLaeh1DnLq0GkGDygdI+QfwlZG51KvYHQzsyJ6ZQr1rB+RRYqmz62aH
+         xxAoeYM0TzoLffX/gwbxmZUy80qqN92o7WT69od3BeuS7D6GHl9mDzFz4hto9EWKsN
+         rk3i8v7+tcoCKMWomAkTTUtSqgCzrxXiXFtQwE32YwMtNtwcWuJAeDSogo2RTVCSKX
+         1/DffffixgiTFrqYd0HJ3aGu4c6IHkp47snP0VeE1Iahf9juWMpgZK5qkX/ZMSNpZN
+         cBvqxDx9+y6qQ==
+Date:   Thu, 31 Mar 2022 12:59:47 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Martin =?utf-8?Q?Povi=C5=A1er?= <povik+lin@cutebit.org>
+Cc:     Liam Girdwood <lgirdwood@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Mark Kettenis <kettenis@openbsd.org>,
+        Hector Martin <marcan@marcan.st>,
+        Sven Peter <sven@svenpeter.dev>
+Subject: Re: [RFC PATCH 5/5] ASoC: Add macaudio machine driver
+Message-ID: <YkWXs/f7edZwg1+W@sirena.org.uk>
+References: <20220331000449.41062-1-povik+lin@cutebit.org>
+ <20220331000449.41062-6-povik+lin@cutebit.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="+MLBZhiivx60M6iZ"
 Content-Disposition: inline
-In-Reply-To: <CAM9d7cjQnThKgsUfnqJDcmBFseSTk-56a6f0sefo1x8D7LWSZw@mail.gmail.com>
+In-Reply-To: <20220331000449.41062-6-povik+lin@cutebit.org>
+X-Cookie: Reunite Gondwondaland!
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 30, 2022 at 12:03:06PM -0700, Namhyung Kim wrote:
-> On Wed, Mar 30, 2022 at 4:09 AM Peter Zijlstra <peterz@infradead.org> wrote:
-> >
-> > On Mon, Mar 28, 2022 at 10:48:59AM -0700, Namhyung Kim wrote:
-> > > > Also, if you were to add LCB_F_MUTEX then you could have something like:
-> > >
-> > > Yep, I'm ok with having the mutex flag.  Do you want me to send
-> > > v5 with this change or would you like to do it by yourself?
-> >
-> > I'll frob my thing on top. No need to repost.
-> 
-> Cool, thanks for doing this!
 
-I've since pushed out the lot to:
+--+MLBZhiivx60M6iZ
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git locking/core
+On Thu, Mar 31, 2022 at 02:04:49AM +0200, Martin Povi=C5=A1er wrote:
 
-It builds, but I've not actually used it. Much appreciated if you could
-test.
+> --- /dev/null
+> +++ b/sound/soc/apple/macaudio.c
+> @@ -0,0 +1,597 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * ASoC machine driver for Apple Silicon Macs
+> + *
+
+Please make the entire comment a C++ one so things look more
+intentional.
+
+> +		/* CPU side is bit and frame clock master, I2S with both clocks invert=
+ed */
+
+Please refer to clock providers here.
+
+> +		ret =3D of_property_read_string(np, "link-name", &link->name);
+> +		if (ret) {
+> +			dev_err(card->dev, "Missing link name\n");
+> +			goto err_put_np;
+> +		}
+
+This doesn't look like it's mandatory in the binding.
+
+> +static int macaudio_init(struct snd_soc_pcm_runtime *rtd)
+> +{
+> +	struct snd_soc_card *card =3D rtd->card;
+> +	struct macaudio_snd_data *ma =3D snd_soc_card_get_drvdata(card);
+> +	struct snd_soc_component *component;
+> +	int ret, i;
+> +
+> +	if (rtd->num_codecs > 1) {
+> +		ret =3D macaudio_assign_tdm(rtd);
+> +		if (ret < 0)
+> +			return ret;
+> +	}
+> +
+> +	for_each_rtd_components(rtd, i, component)
+> +		snd_soc_component_set_jack(component, &ma->jack, NULL);
+
+What is the jack configuration this is attempting to describe?  It looks
+like you have some dedicated speaker driver devices which are going to
+get attached to jacks here for example.
+
+> +} macaudio_kctlfixes[] =3D {
+> +	{"* ASI1 Sel", "Left"},
+> +	{"* ISENSE Switch", "Off"},
+> +	{"* VSENSE Switch", "Off"},
+> +	{ }
+> +};
+> +
+> +static bool macaudio_kctlfix_matches(const char *pattern, const char *na=
+me)
+> +{
+> +	if (pattern[0] =3D=3D '*') {
+> +		int namelen, patternlen;
+> +
+> +		pattern++;
+> +		if (pattern[0] =3D=3D ' ')
+> +			pattern++;
+> +
+> +		namelen =3D strlen(name);
+> +		patternlen =3D strlen(pattern);
+> +
+> +		if (namelen > patternlen)
+> +			name +=3D (namelen - patternlen);
+> +	}
+> +
+> +	return !strcmp(name, pattern);
+> +}
+
+This looks worryingly like use case configuration.
+
+> +/*
+> + * Maybe this could be a general ASoC function?
+> + */
+> +static void snd_soc_kcontrol_set_strval(struct snd_soc_card *card,
+> +				struct snd_kcontrol *kcontrol, const char *strvalue)
+
+No, we should not be setting user visible control values from the
+kernel.  This shouldn't be a machine driver function either.  What are
+you trying to accomplish here?
+
+--+MLBZhiivx60M6iZ
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJFl7MACgkQJNaLcl1U
+h9AvpQf+NQTe35sa2gGAL6J5r3unBmmRuUI+0Lmize/e9oyklq/3LgUI3zy2In6m
+gWr5laQlG/Eq41KJZecdtZ5BrY+BENGZ4PzCtR06uc8hM7KJV17O6hdRXrK3VSWZ
+9Tl8uSSh2xNqw6bwflA6XyfULttxC6NLsKP1RxCOaHJGG4cU1G5GkvT9sTpcQH9/
+bi7Y9TzxUi6Q7zgK6vVHXygqusZ4UTHdt5fyxX4ou1tV2V1fYAO64eMJ4pA+8jUA
+0ZafQA1BVTbkHK7JZjbc2ILGcu5NBR1eJK/hbv9X0OknpKrRsafaQQTRywE1hWb5
+NM2xv163DU7RQTC8vqYC+rKBiQ/ypQ==
+=dyOa
+-----END PGP SIGNATURE-----
+
+--+MLBZhiivx60M6iZ--
