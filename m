@@ -2,100 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0CEBC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 17:30:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A918C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 17:31:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230452AbiCaRbu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 13:31:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37180 "EHLO
+        id S231210AbiCaRdH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 13:33:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230455AbiCaRbs (ORCPT
+        with ESMTP id S229513AbiCaRdE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 13:31:48 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 762FA16F6E3;
-        Thu, 31 Mar 2022 10:30:00 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 3074A210FC;
-        Thu, 31 Mar 2022 17:29:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1648747799;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=pPs7BScwn3Gb8H8NTJQGKbvPx9S/Gi0731uzRmABSCY=;
-        b=y8uvKwYoylti0qC/RmSlDN7zerCQLiLvaPXL7Hc+AZ0OsgPnywn8UpiyTB5RfWRKAyv7dr
-        YPcPzNOkmEF1+BN2en8M0Zd9hAJpCqaoc85FrQ1GvuvCBQOkyw4x3ex9gO0EjCD9y7qwDI
-        XWjOPKAEJv6N1Gw7kMTb8WYjya28xFI=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1648747799;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=pPs7BScwn3Gb8H8NTJQGKbvPx9S/Gi0731uzRmABSCY=;
-        b=4Pr7CWms7CFD3QZwqTbsGnC5lIB4d4CTJzmgcn/SMhA3IhsLZJEMiSv+kywgGJiZlSKlRv
-        mczrRCbZqcY7duCg==
-Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
-        by relay2.suse.de (Postfix) with ESMTP id 255E0A3B92;
-        Thu, 31 Mar 2022 17:29:59 +0000 (UTC)
-Received: by ds.suse.cz (Postfix, from userid 10065)
-        id 8E11DDA7F3; Thu, 31 Mar 2022 19:26:00 +0200 (CEST)
-Date:   Thu, 31 Mar 2022 19:26:00 +0200
-From:   David Sterba <dsterba@suse.cz>
-To:     Sweet Tea Dorminy <sweettea-kernel@dorminy.me>
-Cc:     Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>,
-        Nick Terrell <terrelln@fb.com>, linux-kernel@vger.kernel.org,
-        linux-btrfs@vger.kernel.org, kernel-team@fb.com,
-        Nikolay Borisov <nborisov@suse.com>
-Subject: Re: [PATCH v3 1/2] btrfs: factor out allocating an array of pages
-Message-ID: <20220331172600.GE15609@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz,
-        Sweet Tea Dorminy <sweettea-kernel@dorminy.me>,
-        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>, Nick Terrell <terrelln@fb.com>,
-        linux-kernel@vger.kernel.org, linux-btrfs@vger.kernel.org,
-        kernel-team@fb.com, Nikolay Borisov <nborisov@suse.com>
-References: <cover.1648669832.git.sweettea-kernel@dorminy.me>
- <3feb62bb8e605e708a0f839136a7354ec66b7b6b.1648669832.git.sweettea-kernel@dorminy.me>
+        Thu, 31 Mar 2022 13:33:04 -0400
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E0325E14E
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 10:31:16 -0700 (PDT)
+Received: by mail-lj1-x22f.google.com with SMTP id b43so683540ljr.10
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 10:31:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=37DeCDWlzdqkrXbAxfAuhXVMiTsGHz0hz+oO3LlsSAk=;
+        b=OpXbfuoWXGtoVCxlYREjKa12nC/ZS5c6WIcrnkI8eccbmu5/uLBWGYimttqpYS8VW3
+         +7YGiaqEFrS3FpnuX2EDtUfr5SLVwwJS16vOz9O1xs7VQoRsqwXQVyTm2DHS+HBbUKJW
+         JcnKmGiKnrrFpcQsKy0swpAqSluMvhVusfDjp7x4US+WiiiWR7htYGSSYN9BMjK+PNzB
+         3bDKkdDzBq8iD1v2ploXFNsOGBgurGnmJmFODojEuOx7h5IJv9a3ZyGps5XW+zm3ZwP3
+         IyNp8IubOAJdKp98Y8byqVMwum46U2PVLc0kWpI3Dx2X+rTq5WlWvdzZTZ10/09brYbh
+         5/SQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=37DeCDWlzdqkrXbAxfAuhXVMiTsGHz0hz+oO3LlsSAk=;
+        b=arJf+iIc6g6pzu/LR24x0Dk3HYn+N3yRqttxPWVO0AOQzaO4RRmpLZJEPWRubvvqIW
+         Vj5Hfqm6Z11G/Ih2fWhikjsBlxgZIpa1s7I3W2OLAehNr8+Y7lS1Hpigj16q5okGuk8J
+         sD/ak0JehM96SlYAnLJK03APwvKNHjIFdm7EI0UcA+uY9MWlIoBjamKreKAcfX+Nknmt
+         6c4Utxpgr6X82ShVSHRZntZi3Jf5dM/CsFNlig/v46WGOjjBnO4c2YyxVj8cIQQTT4jP
+         PaYmXS8BVKhPZ/jpVtVRxXC+AT7cUoEPj7G18ertqn5/Z8eG1tl8wfbXGs/CZqmr9o8C
+         wLgQ==
+X-Gm-Message-State: AOAM532GLWcMuaQpDXUyIct1yiUzYqCzyKlshQ+/sZxps2zxwvx4bI1g
+        LO87SAe9qAIEg29+fbpMYgGJFAhrGA6LM9xm1c9SaRwF97GJwQ==
+X-Google-Smtp-Source: ABdhPJyIrADojlxnjoJbjHABCl+RY1oRMepIxM5nb9mo2vXqxPk9ksIqJg+9gS8ogRsiwQgdyPv54GWhmXZP85nX5oI=
+X-Received: by 2002:a05:651c:1508:b0:249:b843:208f with SMTP id
+ e8-20020a05651c150800b00249b843208fmr11115015ljf.239.1648747874376; Thu, 31
+ Mar 2022 10:31:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3feb62bb8e605e708a0f839136a7354ec66b7b6b.1648669832.git.sweettea-kernel@dorminy.me>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+References: <164847778869.3060675.8115416881394543419.stgit@devnote2>
+ <CAKwvOdmAYQZtzGudBjmiRZNjT+VixTdNbJmYmxc7-gQNCsHfrA@mail.gmail.com> <20220331104531.81d0edf9a85a4f69020a9f13@kernel.org>
+In-Reply-To: <20220331104531.81d0edf9a85a4f69020a9f13@kernel.org>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Thu, 31 Mar 2022 10:31:02 -0700
+Message-ID: <CAKwvOdmbMPBOGvcZNURK6qMx8gm7dGFiWmtX_yXheEqQ8CNLsA@mail.gmail.com>
+Subject: Re: [PATCH v5 0/3] bootconfig: Support embedding a bootconfig in
+ kernel for non initrd boot
+To:     Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     Steven Rostedt <rostedt@goodmis.org>,
+        Padmanabha Srinivasaiah <treasure4paddy@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        Nathan Chancellor <nathan@kernel.org>, llvm@lists.linux.dev,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 30, 2022 at 04:11:22PM -0400, Sweet Tea Dorminy wrote:
-> +/**
-> + * Populate every slot in a provided array with pages.
-> + *
-> + * @nr_pages:	the number of pages to request
-> + * @page_array: the array to fill with pages; any existing non-null entries in
-> + * 		the array will be skipped
-> + *
-> + * Return: 0 if all pages were able to be allocated; -ENOMEM otherwise, and the
-> + * caller is responsible for freeing all non-null page pointers in the array.
-> + */
-> +int btrfs_alloc_page_array(unsigned long nr_pages, struct page **page_array)
+On Wed, Mar 30, 2022 at 6:45 PM Masami Hiramatsu <mhiramat@kernel.org> wrote:
+>
+> Hi Nick,
+>
+> On Wed, 30 Mar 2022 11:04:50 -0700
+> Nick Desaulniers <ndesaulniers@google.com> wrote:
+>
+> >
+> > Any chance we can use
+> >
+> > CFLAGS_REMOVE_<file>.o := $(CC_FLAGS_LTO)
+> >
+> > a la
+> > commit d2dcd3e37475 ("x86, cpu: disable LTO for cpu.c")
+>
+> Hm, this looks good to me. Let me confirm that works.
+> (Does this mean the bootconfig.o will be compiled to elf binary?)
 
-I've switched nr_pages to 'unsigned int', that's what all callers use
-and I don't see a reason for long.
-
-> +{
-> +	int i;
-> +
-> +	for (i = 0; i < nr_pages; i++) {
-> +		struct page *page;
-> +
-> +		if (page_array[i])
-> +			continue;
-> +		page = alloc_page(GFP_NOFS);
-> +		if (!page)
-> +			return -ENOMEM;
-> +		page_array[i] = page;
-> +	}
-> +	return 0;
-> +}
+I know we went with Masahiro's suggestion, which is clever and better,
+but to answer this question; yes, under LTO, the linker can link
+together inputs that are a mix of ELF object files (basically, no LTO
+optimizations) with LLVM IR (w/ LTO optimizations between such files).
+-- 
+Thanks,
+~Nick Desaulniers
