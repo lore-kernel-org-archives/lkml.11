@@ -2,111 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 679DEC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 19:28:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DB08C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 19:28:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240689AbiCaT3x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 15:29:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35664 "EHLO
+        id S240699AbiCaTa2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 15:30:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236456AbiCaT3u (ORCPT
+        with ESMTP id S240696AbiCaTaY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 15:29:50 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EA4A51E016E
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 12:28:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648754882;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=UI8qEHAbkpwLvW7bt2Ub22ogltHl59gfjOTw6tTvytQ=;
-        b=QuScXhTzdgeHIIzadvz40MMJhZJ0CLv4JxIgbdJDpAt0YcX8cYNLcvINwZce4asLZ6b0L5
-        jM9a+5f7mL2nGu1CEcX0y9XrDAmuCWic7MAwZmzJwxdg7uFBp1Nhq50yEPaB9PXsWOt1z/
-        y0WAypzO9zrjNR27gEIqHLIdGLeokJM=
-Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com
- [209.85.167.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-83-s7c0ki8lMBa3fSC2gMYsKg-1; Thu, 31 Mar 2022 15:28:00 -0400
-X-MC-Unique: s7c0ki8lMBa3fSC2gMYsKg-1
-Received: by mail-lf1-f69.google.com with SMTP id e15-20020ac24e0f000000b0044a8b775985so159994lfr.19
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 12:28:00 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=UI8qEHAbkpwLvW7bt2Ub22ogltHl59gfjOTw6tTvytQ=;
-        b=aT0XnlrkM50ygvPOk7JBsWzA9q/BfOwEB1O8icJv3Q8fZ2QcTYWqIpLOzoznoGQESm
-         OkFz80HHRPlHO+GFJwclzYVvMu7bfufP/TH/wFRJWGNzzCaBo+2hAkt0z/9S48JVDNj+
-         bBAIVMfUC7h7ZDFGj1QKlcZa/mYhTjydhY4shArYKAs1ByiXORAv9AghwakbYiU9YK9c
-         RW20d2AxtBt0voyXsgpowJt+5Wy3KDizbmxvg19mvYrQcZAVyGEKUinsNBy80tJe7s9F
-         2n9syXysSbF9z/8vexAHxfv5b8dUukFiUF2+OVwouzHoGsijAZBnGJ94DpNYD1Ma4ldV
-         qvxg==
-X-Gm-Message-State: AOAM530309lRPtK8Kbhgjac3qCS5sh50CXHzyR8lMnzAdMUCcITF4iOj
-        eJDThU+X8yVL4EDpJyDYvAd1aLsrGUEIudqCpMTz53rrcRrdMcE9RZOIdWO1+sPgbwcapMwmuD8
-        uqYTK2QnQRKD3xzb11B0XBClBxkQdTiNGaKvdJx+O
-X-Received: by 2002:a2e:1546:0:b0:24a:c194:ba39 with SMTP id 6-20020a2e1546000000b0024ac194ba39mr11236995ljv.65.1648754879217;
-        Thu, 31 Mar 2022 12:27:59 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwag+5InsydWAKAYNXSgt39wabMKxHIRvyZYQqUozjzTMie0M2/x5p5RcXPPjKScZOWzCpZnkanZi3QF7SnJuQ=
-X-Received: by 2002:a2e:1546:0:b0:24a:c194:ba39 with SMTP id
- 6-20020a2e1546000000b0024ac194ba39mr11236988ljv.65.1648754878993; Thu, 31 Mar
- 2022 12:27:58 -0700 (PDT)
+        Thu, 31 Mar 2022 15:30:24 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3643351586
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 12:28:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648754916; x=1680290916;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=RVAbYwRGd01Y+ARF8ixUcvPNeMUJ+DUVVbLHPMeTvPw=;
+  b=HGw+vhSue5uks3j/yuewzJzxoGtMKGmtPaX3f4RPdR739hc19SlgWqPu
+   BYvNzDKBNf81faS9Mo541fDGxJtbh2VKigjlIYPe6mvPZgYAtYNBB67E4
+   28AiC8kCpmLgs28H+dPESW/pBPVKxhYNPvgwtLTh52+hWssQq62dLzkeU
+   GBhw38Nt2Ba6zhMmQZlC6ZB18FyQ33iWaeyrwRaT26x4Jh49VYQ6xMiSA
+   Y1dw+VC+NwA+MBAiMQCvaEhGTWRYpmbDjN/0UjoD52cBMl4fCOTEAuUxf
+   oQdkpiK/L6bOnNIDJKBBEDcGbCLn/7iTrjxh5oYm6d/khFGPuHPdR5v3Q
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="259643100"
+X-IronPort-AV: E=Sophos;i="5.90,225,1643702400"; 
+   d="scan'208";a="259643100"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2022 12:28:14 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,225,1643702400"; 
+   d="scan'208";a="655015500"
+Received: from lkp-server02.sh.intel.com (HELO 3231c491b0e2) ([10.239.97.151])
+  by orsmga004.jf.intel.com with ESMTP; 31 Mar 2022 12:28:13 -0700
+Received: from kbuild by 3231c491b0e2 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1na0Sq-0000ag-ML;
+        Thu, 31 Mar 2022 19:28:12 +0000
+Date:   Fri, 1 Apr 2022 03:27:15 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Alim Akhtar <alim.akhtar@samsung.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Ajay Kumar <ajaykumar.rs@samsung.com>
+Subject: drivers/pinctrl/samsung/pinctrl-exynos-arm64.c:773:31: sparse:
+ sparse: symbol 'fsd_pin_ctrl' was not declared. Should it be static?
+Message-ID: <202204010337.mR35sknO-lkp@intel.com>
 MIME-Version: 1.0
-References: <CA+QYu4q7K-pkAbMt3br_7O-Lu2OWyieLfyiju0PNEiy5YdKYzg@mail.gmail.com>
- <CAASaF6yhTpXcWhTyg5VSU6czPPws5+sQ3vR7AWC8xxM7Xm_BGg@mail.gmail.com>
- <YkXv0NoBjLBYBzX8@google.com> <YkX20LtaENdOOYxi@google.com>
-In-Reply-To: <YkX20LtaENdOOYxi@google.com>
-From:   Jan Stancek <jstancek@redhat.com>
-Date:   Thu, 31 Mar 2022 21:27:42 +0200
-Message-ID: <CAASaF6xxscL+Zd1dqsykGOEvKwTJ5nDFvv6tOmWN5Mt-GH1QuA@mail.gmail.com>
-Subject: Re: RIP: 0010:param_get_bool.cold+0x0/0x2 - LTP read_all_sys - 5.17.0
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Bruno Goncalves <bgoncalv@redhat.com>, kvm <kvm@vger.kernel.org>,
-        "Bonzini, Paolo" <pbonzini@redhat.com>,
-        lkml <linux-kernel@vger.kernel.org>,
-        CKI Project <cki-project@redhat.com>,
-        Li Wang <liwang@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 31, 2022 at 8:46 PM Sean Christopherson <seanjc@google.com> wrote:
->
-> On Thu, Mar 31, 2022, Sean Christopherson wrote:
-> > On Wed, Mar 30, 2022, Jan Stancek wrote:
-> > > +CC kvm
-> > >
-> > > Issue seems to be that nx_huge_pages is not initialized (-1) and
-> > > attempted to be used as boolean when reading
-> > > /sys/module/kvm/parameters/nx_huge_pages
-> >
-> > Ugh, CONFIG_UBSAN_BOOL=y complains about a bool not being 0 or 1.  What a pain.
->
-> Side topic, any idea why your traces don't have the UBSAN output?  I verified
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   787af64d05cd528aac9ad16752d11bb1c6061bb9
+commit: 0d1b662c374c54bcf68bbcff3b71e6d6e945a7cf pinctrl: samsung: add FSD SoC specific data
+date:   9 weeks ago
+config: nios2-randconfig-s032-20220330 (https://download.01.org/0day-ci/archive/20220401/202204010337.mR35sknO-lkp@intel.com/config)
+compiler: nios2-linux-gcc (GCC) 11.2.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=0d1b662c374c54bcf68bbcff3b71e6d6e945a7cf
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 0d1b662c374c54bcf68bbcff3b71e6d6e945a7cf
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=nios2 SHELL=/bin/bash arch/nios2/ drivers/
 
-I guess that's because CONFIG_UBSAN_TRAP=y is also set.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-# grep UBSAN -r .config
-CONFIG_ARCH_HAS_UBSAN_SANITIZE_ALL=y
-CONFIG_UBSAN=y
-CONFIG_UBSAN_TRAP=y
-CONFIG_CC_HAS_UBSAN_BOUNDS=y
-CONFIG_UBSAN_BOUNDS=y
-CONFIG_UBSAN_ONLY_BOUNDS=y
-CONFIG_UBSAN_SHIFT=y
-# CONFIG_UBSAN_DIV_ZERO is not set
-CONFIG_UBSAN_BOOL=y
-CONFIG_UBSAN_ENUM=y
-CONFIG_UBSAN_SANITIZE_ALL=y
-# CONFIG_TEST_UBSAN is not set
 
-> that it's not a panic_on_warn thing.  Having the UBSAN output in future bug reports
-> would be very helpful.
->
-> [   13.150244] ================================================================================
-> [   13.150780] UBSAN: invalid-load in kernel/params.c:320:33
-> [   13.151192] load of value 255 is not a valid value for type '_Bool'
-> [   13.152079] ================================================================================
->
+sparse warnings: (new ones prefixed by >>)
+>> drivers/pinctrl/samsung/pinctrl-exynos-arm64.c:773:31: sparse: sparse: symbol 'fsd_pin_ctrl' was not declared. Should it be static?
 
+vim +/fsd_pin_ctrl +773 drivers/pinctrl/samsung/pinctrl-exynos-arm64.c
+
+   772	
+ > 773	const struct samsung_pin_ctrl fsd_pin_ctrl[] __initconst = {
+   774		{
+   775			/* pin-controller instance 0 FSYS0 data */
+   776			.pin_banks	= fsd_pin_banks0,
+   777			.nr_banks	= ARRAY_SIZE(fsd_pin_banks0),
+   778			.eint_gpio_init = exynos_eint_gpio_init,
+   779			.suspend	= exynos_pinctrl_suspend,
+   780			.resume		= exynos_pinctrl_resume,
+   781		}, {
+   782			/* pin-controller instance 1 PERIC data */
+   783			.pin_banks	= fsd_pin_banks1,
+   784			.nr_banks	= ARRAY_SIZE(fsd_pin_banks1),
+   785			.eint_gpio_init = exynos_eint_gpio_init,
+   786			.suspend	= exynos_pinctrl_suspend,
+   787			.resume		= exynos_pinctrl_resume,
+   788		}, {
+   789			/* pin-controller instance 2 PMU data */
+   790			.pin_banks	= fsd_pin_banks2,
+   791			.nr_banks	= ARRAY_SIZE(fsd_pin_banks2),
+   792		},
+   793	};
+   794	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
