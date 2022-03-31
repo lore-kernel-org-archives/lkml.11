@@ -2,84 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23A6EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 08:32:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05A2CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 08:33:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232877AbiCaIeN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 04:34:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56896 "EHLO
+        id S232892AbiCaIey (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 04:34:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232710AbiCaIeL (ORCPT
+        with ESMTP id S231303AbiCaIew (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 04:34:11 -0400
-X-Greylist: delayed 29513 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 31 Mar 2022 01:32:23 PDT
-Received: from mxhk.zte.com.cn (mxhk.zte.com.cn [63.216.63.35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3F5311A09;
-        Thu, 31 Mar 2022 01:32:22 -0700 (PDT)
-Received: from mse-fl1.zte.com.cn (unknown [10.30.14.238])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mxhk.zte.com.cn (FangMail) with ESMTPS id 4KTc4450k8zBCBjq;
-        Thu, 31 Mar 2022 16:32:20 +0800 (CST)
-Received: from szxlzmapp07.zte.com.cn ([10.5.230.251])
-        by mse-fl1.zte.com.cn with SMTP id 22V8W7XO084002;
-        Thu, 31 Mar 2022 16:32:07 +0800 (GMT-8)
-        (envelope-from wang.yi59@zte.com.cn)
-Received: from mapi (szxlzmapp02[null])
-        by mapi (Zmail) with MAPI id mid14;
-        Thu, 31 Mar 2022 16:32:07 +0800 (CST)
-Date:   Thu, 31 Mar 2022 16:32:07 +0800 (CST)
-X-Zmail-TransId: 2b0462456707ffffffff8d1-79fab
-X-Mailer: Zmail v1.0
-Message-ID: <202203311632074775168@zte.com.cn>
-In-Reply-To: <20220331053340.GE1544202@dread.disaster.area>
-References: 20220331003826.GL27690@magnolia,202203311128598207170@zte.com.cn,20220331053340.GE1544202@dread.disaster.area
-Mime-Version: 1.0
-From:   <wang.yi59@zte.com.cn>
-To:     <david@fromorbit.com>
-Cc:     <djwong@kernel.org>, <linux-xfs@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <xue.zhihong@zte.com.cn>,
-        <wang.liang82@zte.com.cn>, <cheng.lin130@zte.com.cn>
-Subject: =?UTF-8?B?UmU6W1BBVENIXSB4ZnM6IGdldGF0dHIgaWdub3JlIGJsb2NrcyBiZXlvbmQgZW9m?=
-Content-Type: text/plain;
-        charset="UTF-8"
-X-MAIL: mse-fl1.zte.com.cn 22V8W7XO084002
-X-Fangmail-Gw-Spam-Type: 0
-X-FangMail-Miltered: at cgslv5.04-192.168.250.138.novalocal with ID 62456714.003 by FangMail milter!
-X-FangMail-Envelope: 1648715540/4KTc4450k8zBCBjq/62456714.003/10.30.14.238/[10.30.14.238]/mse-fl1.zte.com.cn/<wang.yi59@zte.com.cn>
-X-Fangmail-Anti-Spam-Filtered: true
-X-Fangmail-MID-QID: 62456714.003/4KTc4450k8zBCBjq
+        Thu, 31 Mar 2022 04:34:52 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2CA8C265E
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 01:33:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648715584;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=yWnBV75IVBvHsDRdv1eIvwYgM5PPl5byFU3eX43vCM0=;
+        b=dKpxAF/TYVoCPAVfA7PhOwgEfpDOnpWMQBEiZshiIV068JFsIdztDtXX0DghpOn0rBs+EQ
+        PrEdYn9Xzt85I+DUFR+3usY/Wzh0iuX9s/XDsY+N9zn34TFal1YrZUxAO5Rf3XwOb8I2Q0
+        LIl4EVBXIXMssAcMcFkIQtT4q0Ks/Z8=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-630-zgRe40l3OdqqfHx5_b0hXA-1; Thu, 31 Mar 2022 04:28:16 -0400
+X-MC-Unique: zgRe40l3OdqqfHx5_b0hXA-1
+Received: by mail-ed1-f72.google.com with SMTP id u17-20020a05640207d100b00418f00014f8so9262984edy.18
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 01:28:16 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=yWnBV75IVBvHsDRdv1eIvwYgM5PPl5byFU3eX43vCM0=;
+        b=qSFvg+wbjYa14wCxJUhlKh85YQKmECXEv1KLnYLQS6fhYT3lwIpaiZ9CWl4PDIUN6Q
+         wVR9OFpM62YySX5XUMVijvN9BrRw/zBT2uqkEuyGo3CO/OijvJ7StO5SmwlPlrtRlv1u
+         DEIopdzp+z0+wU5IiFOFOA5Y3O4EN+9l/PWZ/u92umraiylfwECNw0L9mXirIMPv2fUG
+         dPL7991s5doWYeQDZ0NDKIkvtwplwB8TsXB7S5RXXn4KjzCuN/rlqXP01h/YxcEq/Zej
+         jLZI3TSFOEwe8sE/Uw6gMNUwhQWfBzCMQTAJSLO3zuJoSU/caieUwWVdGpLpVc4ZK7cZ
+         bQlQ==
+X-Gm-Message-State: AOAM530T90Up/XvwvYh8OwJ2iPeXMeKixdCN7wEDIsbpDXR/0iXmc1nw
+        Fw7D2kd9AFbQCrSmNACyRyHdwArnno1a4GzstwUHpTb908hZKRcLXN1WD96hiJqN/unBJbTtv5V
+        NJuwLKel788YggM3jmq4HhbHO
+X-Received: by 2002:a17:907:6e04:b0:6e0:736b:d786 with SMTP id sd4-20020a1709076e0400b006e0736bd786mr3896927ejc.667.1648715295232;
+        Thu, 31 Mar 2022 01:28:15 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwaCi4x7tompAGyNTLCxoxrJWXg1Zwm7R8yDmM3eFPIPwcZfzA65avpZMuaetGN0CCUHQ+R0w==
+X-Received: by 2002:a17:907:6e04:b0:6e0:736b:d786 with SMTP id sd4-20020a1709076e0400b006e0736bd786mr3896908ejc.667.1648715294991;
+        Thu, 31 Mar 2022 01:28:14 -0700 (PDT)
+Received: from [10.39.192.162] (5920ab7b.static.cust.trined.nl. [89.32.171.123])
+        by smtp.gmail.com with ESMTPSA id s24-20020a1709066c9800b006e490a8cf71sm1421208ejr.4.2022.03.31.01.28.14
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 31 Mar 2022 01:28:14 -0700 (PDT)
+From:   Eelco Chaudron <echaudro@redhat.com>
+To:     =?utf-8?q?St=C3=A9phane?= Graber <stgraber@ubuntu.com>
+Cc:     netdev@vger.kernel.org, Pravin B Shelar <pshelar@ovn.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, dev@openvswitch.org,
+        linux-kernel@vger.kernel.org,
+        Frode Nordahl <frode.nordahl@canonical.com>
+Subject: Re: [PATCH] openvswitch: Add recirc_id to recirc warning
+Date:   Thu, 31 Mar 2022 10:28:13 +0200
+X-Mailer: MailMate (1.14r5882)
+Message-ID: <1D0EA638-3067-4F74-8E94-3D766D262B39@redhat.com>
+In-Reply-To: <20220330194244.3476544-1-stgraber@ubuntu.com>
+References: <20220330194244.3476544-1-stgraber@ubuntu.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> We do not, and have not ever tried to, hide allocation or block
-> usage artifacts from userspace because any application that depends
-> on specific block allocation patterns or accounting from the
-> filesystem is broken by design.
->
-> Every filesystem accounts blocks differently, and more often than
-> not the block count exposed to userspace also includes metadata
-> blocks (extent maps, xattr blocks, etc) and it might multiple count
-> other blocks (e.g. shared extents). Hence so you can't actually
-> use it for anything useful in userspace except reporting how many
-> blocks this file *might* use.
->
-> If your application is dependent on block counts exactly matching
-> the file data space for waht ever reason, then what speculative
-> preallocation does is the least of your problems.
->
 
-Thanks for your explaination.
 
-Unfortunately, the app I'm using evaluates diskusage by querying
-the changes of the backend filesystem (XFS) file before and after
-the operation. Without giving up the benefits of preallocation, the
-app's statistics will become obsolete and no chance to correct it
-at a small cost, because of the silence reclaim of posteof blocks.
-That is the app's problem.
+On 30 Mar 2022, at 21:42, St=C3=A9phane Graber wrote:
 
-Posteof blocks will be reclaimed sooner or later, it seems reasonable
-to ignore them directly during query. This is my humble opinion in
-this patch. At the query moment, it's not real, but it will become so
-eventually. It's a speculative result for query.
+> When hitting the recirculation limit, the kernel would currently log
+> something like this:
+>
+> [   58.586597] openvswitch: ovs-system: deferred action limit reached, =
+drop recirc action
+>
+> Which isn't all that useful to debug as we only have the interface name=
+
+> to go on but can't track it down to a specific flow.
+>
+> With this change, we now instead get:
+>
+> [   58.586597] openvswitch: ovs-system: deferred action limit reached, =
+drop recirc action (recirc_id=3D0x9e)
+>
+> Which can now be correlated with the flow entries from OVS.
+>
+> Suggested-by: Frode Nordahl <frode.nordahl@canonical.com>
+> Signed-off-by: St=C3=A9phane Graber <stgraber@ubuntu.com>
+> Tested-by: Stephane Graber <stgraber@ubuntu.com>
+> ---
+
+This change looks good to me, and it makes debugging easier.
+
+Acked-by: Eelco Chaudron <echaudro@redhat.com>
+
+>  net/openvswitch/actions.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/net/openvswitch/actions.c b/net/openvswitch/actions.c
+> index 780d9e2246f3..7056cb1b8ba0 100644
+> --- a/net/openvswitch/actions.c
+> +++ b/net/openvswitch/actions.c
+> @@ -1539,8 +1539,8 @@ static int clone_execute(struct datapath *dp, str=
+uct sk_buff *skb,
+>  				pr_warn("%s: deferred action limit reached, drop sample action\n",=
+
+>  					ovs_dp_name(dp));
+>  			} else {  /* Recirc action */
+> -				pr_warn("%s: deferred action limit reached, drop recirc action\n",=
+
+> -					ovs_dp_name(dp));
+> +				pr_warn("%s: deferred action limit reached, drop recirc action (re=
+circ_id=3D%#x)\n",
+> +					ovs_dp_name(dp), recirc_id);
+>  			}
+>  		}
+>  	}
+> -- =
+
+> 2.34.1
+
