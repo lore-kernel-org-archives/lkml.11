@@ -2,117 +2,319 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18AE7C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 22:35:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3589CC43217
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 22:36:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242524AbiCaWhj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 18:37:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57100 "EHLO
+        id S242550AbiCaWiN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 18:38:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240705AbiCaWhf (ORCPT
+        with ESMTP id S242673AbiCaWiI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 18:37:35 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D61E71C8A8E;
-        Thu, 31 Mar 2022 15:35:47 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id p15so2199679ejc.7;
-        Thu, 31 Mar 2022 15:35:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=nik1iTbxoUWnG6UF8WspcQRjvneqvZ965qd0fvy6u0Q=;
-        b=onwlNXEfsXY5267AxROmbVgwPHyozyAkfW/eFrSTJ29X2muD4OpT4LcAzhalPbQd/b
-         CKKvVbnuI0cwUFkWWUdzbnGsJSK/fRV89XUWiC/WnV/yncPvIhtMQLgUICGaLathnPov
-         SQyfqPvBUDIKdjR1LnGVk9ymAD/jMYdQ11bhYyZ6DboyOFk2Q51P/4WpDFx66Om+IUPr
-         oLc4SWKuRN472tKQAwpou0cQPzrxZnWOpoX0P8iqr85CgjGt3djEDjxAQwAcR9K779Qe
-         brkBa++inBLdnrRA2nDX/4m88mHASicccPQr2P8VaqCzfDtNDb6I/AVh+jqSYcSwCVvh
-         1sfQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=nik1iTbxoUWnG6UF8WspcQRjvneqvZ965qd0fvy6u0Q=;
-        b=k0Sk+aWfmTpdSHV5Fl8BjCF9aAhkfiHjwn7gpm0EITMz9pMBEbP7v/DSK68T/3UzBg
-         htSUJWqVtblriVSv72bct7MjRbTz2xlICoq8uqsyen3bHQULkKTIIOUKxHn3sw/wrKYx
-         ux7pieF0pm6LoXv2sRsbVOJzgOa0f4TEg8DfCWV3PysuXRx9P+B9qh8dy9Z0G8jywMr4
-         R0HT2I/abgakujS1xJRMiaJq+pXpmW6P47eIm9XhCTvm/hFu1U4N1c9sp6xeKWLL3tPU
-         pEIibWl5kjxG7xEDuGLf7DjqHRFXmmg/iAln0szg/otOAoVRywUq46RMbgw63Wy2Zj+S
-         ifww==
-X-Gm-Message-State: AOAM5304QjDr8rHJAu+kAULSImKhHqVV499TKpRBfk1Cmt3X8ks0ZCxO
-        Ba9E68NtNPWXajvHQYTQ+RzbHS9rEP1uJSpS
-X-Google-Smtp-Source: ABdhPJwvadEyXeLejHBvKE54rjB5jVViHNh1B2AJIl0ecn//oet1U6QeTVIECiwaHI2D6i+E5n0PVw==
-X-Received: by 2002:a17:907:9725:b0:6e0:b274:aa4c with SMTP id jg37-20020a170907972500b006e0b274aa4cmr6900584ejc.565.1648766146417;
-        Thu, 31 Mar 2022 15:35:46 -0700 (PDT)
-Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
-        by smtp.googlemail.com with ESMTPSA id p14-20020a05640210ce00b00413211746d4sm337761edu.51.2022.03.31.15.35.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 31 Mar 2022 15:35:46 -0700 (PDT)
-From:   Jakob Koschel <jakobkoschel@gmail.com>
-To:     Helge Deller <deller@gmx.de>
-Cc:     linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, Mike Rapoport <rppt@kernel.org>,
-        "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>, Jakob Koschel <jakobkoschel@gmail.com>
-Subject: [PATCH] video: fbdev-MMP: replace usage of found with dedicated list iterator variable
-Date:   Fri,  1 Apr 2022 00:35:03 +0200
-Message-Id: <20220331223503.902142-1-jakobkoschel@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 31 Mar 2022 18:38:08 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 906B71C8A8E;
+        Thu, 31 Mar 2022 15:36:19 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id E7E7D21A91;
+        Thu, 31 Mar 2022 22:36:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1648766177; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=9oThGHhXzDbS58RdqWrTyTXsG5EK5i9whLg1NGJqU1k=;
+        b=z7uUZhNT/wczrRmd53Lke7NQ6cWdwtqRLDWxlWN54/CBZMVMUqW7Aelv9lL7z/tS9qKNV1
+        AQ3GgPs/DaP0ywJbEXl3RjGCqae908MBlUoU02q6r1W1Wqs8CiH+D9zTKCtjrDLmi47h+K
+        t9FVSNFyl5X1EBW0XQKv0nLE959j7Lo=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1648766177;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=9oThGHhXzDbS58RdqWrTyTXsG5EK5i9whLg1NGJqU1k=;
+        b=y/NoMJ/0G2E0UptWi9Tfx0kQWjpesoBNpLUzYTMDLjAI+DjC+N7YRyQ1P6LXAZVY4s6k+E
+        kmvOMW1DS+8f12Dw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 662B5133D4;
+        Thu, 31 Mar 2022 22:36:10 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id Zc5nCNosRmJ1GQAAMHmgww
+        (envelope-from <neilb@suse.de>); Thu, 31 Mar 2022 22:36:10 +0000
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+From:   "NeilBrown" <neilb@suse.de>
+To:     "Muchun Song" <songmuchun@bytedance.com>
+Cc:     "Andrew Morton" <akpm@linux-foundation.org>,
+        "Matthew Wilcox" <willy@infradead.org>,
+        "Johannes Weiner" <hannes@cmpxchg.org>,
+        "Michal Hocko" <mhocko@kernel.org>,
+        "Vladimir Davydov" <vdavydov.dev@gmail.com>,
+        "Shakeel Butt" <shakeelb@google.com>,
+        "Roman Gushchin" <roman.gushchin@linux.dev>,
+        "Yang Shi" <shy828301@gmail.com>, "Alex Shi" <alexs@kernel.org>,
+        "Wei Yang" <richard.weiyang@gmail.com>,
+        "Dave Chinner" <david@fromorbit.com>,
+        trond.myklebust@hammerspace.com, anna.schumaker@netapp.com,
+        jaegeuk@kernel.org, chao@kernel.org,
+        "Kari Argillander" <kari.argillander@gmail.com>,
+        "Vlastimil Babka" <vbabka@suse.cz>,
+        "linux-fsdevel" <linux-fsdevel@vger.kernel.org>,
+        "LKML" <linux-kernel@vger.kernel.org>,
+        "Linux Memory Management List" <linux-mm@kvack.org>,
+        linux-nfs@vger.kernel.org, "Qi Zheng" <zhengqi.arch@bytedance.com>,
+        "Xiongchun duan" <duanxiongchun@bytedance.com>,
+        "Fam Zheng" <fam.zheng@bytedance.com>,
+        "Muchun Song" <smuchun@gmail.com>
+Subject: Re: [PATCH v6 12/16] mm: list_lru: replace linear array with xarray
+In-reply-to: <CAMZfGtX9pkWYf40RwDALZLKGDc+Dt2UJA7wZFjTagf0AyWyCiw@mail.gmail.com>
+References: <20220228122126.37293-1-songmuchun@bytedance.com>,
+ <20220228122126.37293-13-songmuchun@bytedance.com>,
+ <164869718565.25542.15818719940772238394@noble.neil.brown.name>,
+ <CAMZfGtUSA9f3k9jF5U-y+NVt8cpmB9_mk1F9-vmm4JOuWFF_Bw@mail.gmail.com>,
+ <164870069595.25542.17292003658915487357@noble.neil.brown.name>,
+ <CAMZfGtX9pkWYf40RwDALZLKGDc+Dt2UJA7wZFjTagf0AyWyCiw@mail.gmail.com>
+Date:   Fri, 01 Apr 2022 09:36:06 +1100
+Message-id: <164876616694.25542.14010655277238655246@noble.neil.brown.name>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To move the list iterator variable into the list_for_each_entry_*()
-macro in the future it should be avoided to use the list iterator
-variable after the loop body.
+On Thu, 31 Mar 2022, Muchun Song wrote:
+>=20
+> Thanks for your report.  I knew the reason. It is because the following
+> patch in this series was missed upstream.  Could you help me test if it
+> works properly?
+>=20
+> [v6,06/16] nfs42: use a specific kmem_cache to allocate nfs4_xattr_entry
+>=20
 
-To *never* use the list iterator variable after the loop it was
-concluded to use a separate iterator variable instead of a
-found boolean [1].
+Thanks for the quick response!  That patch helps, but has a bug.  My
+testing resulted in refcount underflow errors.
 
-This removes the need to use a found variable and simply checking if
-the variable was set, can determine if the break/goto was hit.
-
-Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/ [1]
-Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
----
- drivers/video/fbdev/mmp/core.c | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/video/fbdev/mmp/core.c b/drivers/video/fbdev/mmp/core.c
-index 154127256a2c..03707461eced 100644
---- a/drivers/video/fbdev/mmp/core.c
-+++ b/drivers/video/fbdev/mmp/core.c
-@@ -127,19 +127,18 @@ EXPORT_SYMBOL_GPL(mmp_unregister_panel);
-  */
- struct mmp_path *mmp_get_path(const char *name)
+Problem is that kref_init() is called in nfs4_xattr_entry_init_once().
+This means that it is initialised to '1' the first time an entry is
+allocated, but it is left as zero the second time.
+I applied:
+--- a/fs/nfs/nfs42xattr.c
++++ b/fs/nfs/nfs42xattr.c
+@@ -191,6 +191,7 @@ nfs4_xattr_alloc_entry(const char *name, const void *valu=
+e,
+ 	entry =3D kmem_cache_alloc_lru(nfs4_xattr_entry_cachep, lru, gfp);
+ 	if (!entry)
+ 		return NULL;
++	kref_init(&entry->ref);
+ 	namep =3D kstrdup_const(name, gfp);
+ 	if (!namep && name)
+ 		goto free_buf;
+@@ -974,7 +975,6 @@ static void nfs4_xattr_entry_init_once(void *p)
  {
--	struct mmp_path *path;
--	int found = 0;
-+	struct mmp_path *path = NULL, *iter;
- 
- 	mutex_lock(&disp_lock);
--	list_for_each_entry(path, &path_list, node) {
--		if (!strcmp(name, path->name)) {
--			found = 1;
-+	list_for_each_entry(iter, &path_list, node) {
-+		if (!strcmp(name, iter->name)) {
-+			path = iter;
- 			break;
- 		}
- 	}
- 	mutex_unlock(&disp_lock);
- 
--	return found ? path : NULL;
-+	return path;
- }
- EXPORT_SYMBOL_GPL(mmp_get_path);
- 
+ 	struct nfs4_xattr_entry *entry =3D p;
+=20
+-	kref_init(&entry->ref);
+ 	entry->bucket =3D NULL;
+ 	INIT_LIST_HEAD(&entry->lru);
+ 	INIT_LIST_HEAD(&entry->dispose);
 
-base-commit: f82da161ea75dc4db21b2499e4b1facd36dab275
--- 
-2.25.1
+and now it seems to work.
+
+The complete patch that I applied is below.  I haven't reviewed it, just
+tested it.
+  Tested-by: NeilBrown <neilb@suse.de>
+
+Thanks,
+NeilBrown
+
+
+From: Muchun Song <songmuchun@bytedance.com>
+Date: Mon, 28 Feb 2022 20:21:16 +0800
+Subject: [PATCH] nfs42: use a specific kmem_cache to allocate nfs4_xattr_entry
+
+If we want to add the allocated objects to its list_lru, we should use
+kmem_cache_alloc_lru() to allocate objects. So intruduce
+nfs4_xattr_entry_cachep which is used to allocate nfs4_xattr_entry.
+
+Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+
+diff --git a/fs/nfs/nfs42xattr.c b/fs/nfs/nfs42xattr.c
+index ad3405c64b9e..d4163c46acf1 100644
+--- a/fs/nfs/nfs42xattr.c
++++ b/fs/nfs/nfs42xattr.c
+@@ -81,7 +81,7 @@ struct nfs4_xattr_entry {
+ 	struct hlist_node hnode;
+ 	struct list_head lru;
+ 	struct list_head dispose;
+-	char *xattr_name;
++	const char *xattr_name;
+ 	void *xattr_value;
+ 	size_t xattr_size;
+ 	struct nfs4_xattr_bucket *bucket;
+@@ -98,6 +98,7 @@ static struct list_lru nfs4_xattr_entry_lru;
+ static struct list_lru nfs4_xattr_large_entry_lru;
+=20
+ static struct kmem_cache *nfs4_xattr_cache_cachep;
++static struct kmem_cache *nfs4_xattr_entry_cachep;
+=20
+ /*
+  * Hashing helper functions.
+@@ -177,49 +178,28 @@ nfs4_xattr_alloc_entry(const char *name, const void *va=
+lue,
+ {
+ 	struct nfs4_xattr_entry *entry;
+ 	void *valp;
+-	char *namep;
+-	size_t alloclen, slen;
+-	char *buf;
+-	uint32_t flags;
++	const char *namep;
++	uint32_t flags =3D len > PAGE_SIZE ? NFS4_XATTR_ENTRY_EXTVAL : 0;
++	gfp_t gfp =3D GFP_KERNEL;
++	struct list_lru *lru;
+=20
+ 	BUILD_BUG_ON(sizeof(struct nfs4_xattr_entry) +
+ 	    XATTR_NAME_MAX + 1 > PAGE_SIZE);
+=20
+-	alloclen =3D sizeof(struct nfs4_xattr_entry);
+-	if (name !=3D NULL) {
+-		slen =3D strlen(name) + 1;
+-		alloclen +=3D slen;
+-	} else
+-		slen =3D 0;
+-
+-	if (alloclen + len <=3D PAGE_SIZE) {
+-		alloclen +=3D len;
+-		flags =3D 0;
+-	} else {
+-		flags =3D NFS4_XATTR_ENTRY_EXTVAL;
+-	}
+-
+-	buf =3D kmalloc(alloclen, GFP_KERNEL);
+-	if (buf =3D=3D NULL)
++	lru =3D flags & NFS4_XATTR_ENTRY_EXTVAL ? &nfs4_xattr_large_entry_lru :
++	      &nfs4_xattr_entry_lru;
++	entry =3D kmem_cache_alloc_lru(nfs4_xattr_entry_cachep, lru, gfp);
++	if (!entry)
+ 		return NULL;
+-	entry =3D (struct nfs4_xattr_entry *)buf;
+-
+-	if (name !=3D NULL) {
+-		namep =3D buf + sizeof(struct nfs4_xattr_entry);
+-		memcpy(namep, name, slen);
+-	} else {
+-		namep =3D NULL;
+-	}
+-
+-
+-	if (flags & NFS4_XATTR_ENTRY_EXTVAL) {
+-		valp =3D kvmalloc(len, GFP_KERNEL);
+-		if (valp =3D=3D NULL) {
+-			kfree(buf);
+-			return NULL;
+-		}
+-	} else if (len !=3D 0) {
+-		valp =3D buf + sizeof(struct nfs4_xattr_entry) + slen;
++	kref_init(&entry->ref);
++	namep =3D kstrdup_const(name, gfp);
++	if (!namep && name)
++		goto free_buf;
++
++	if (len !=3D 0) {
++		valp =3D kvmalloc(len, gfp);
++		if (!valp)
++			goto free_name;
+ 	} else
+ 		valp =3D NULL;
+=20
+@@ -232,23 +212,23 @@ nfs4_xattr_alloc_entry(const char *name, const void *va=
+lue,
+=20
+ 	entry->flags =3D flags;
+ 	entry->xattr_value =3D valp;
+-	kref_init(&entry->ref);
+ 	entry->xattr_name =3D namep;
+ 	entry->xattr_size =3D len;
+-	entry->bucket =3D NULL;
+-	INIT_LIST_HEAD(&entry->lru);
+-	INIT_LIST_HEAD(&entry->dispose);
+-	INIT_HLIST_NODE(&entry->hnode);
+=20
+ 	return entry;
++free_name:
++	kfree_const(namep);
++free_buf:
++	kmem_cache_free(nfs4_xattr_entry_cachep, entry);
++	return NULL;
+ }
+=20
+ static void
+ nfs4_xattr_free_entry(struct nfs4_xattr_entry *entry)
+ {
+-	if (entry->flags & NFS4_XATTR_ENTRY_EXTVAL)
+-		kvfree(entry->xattr_value);
+-	kfree(entry);
++	kvfree(entry->xattr_value);
++	kfree_const(entry->xattr_name);
++	kmem_cache_free(nfs4_xattr_entry_cachep, entry);
+ }
+=20
+ static void
+@@ -289,7 +269,7 @@ nfs4_xattr_alloc_cache(void)
+ {
+ 	struct nfs4_xattr_cache *cache;
+=20
+-	cache =3D kmem_cache_alloc(nfs4_xattr_cache_cachep, GFP_KERNEL);
++	cache =3D kmem_cache_alloc_lru(nfs4_xattr_cache_cachep, &nfs4_xattr_cache_l=
+ru, GFP_KERNEL);
+ 	if (cache =3D=3D NULL)
+ 		return NULL;
+=20
+@@ -991,6 +971,16 @@ static void nfs4_xattr_cache_init_once(void *p)
+ 	INIT_LIST_HEAD(&cache->dispose);
+ }
+=20
++static void nfs4_xattr_entry_init_once(void *p)
++{
++	struct nfs4_xattr_entry *entry =3D p;
++
++	entry->bucket =3D NULL;
++	INIT_LIST_HEAD(&entry->lru);
++	INIT_LIST_HEAD(&entry->dispose);
++	INIT_HLIST_NODE(&entry->hnode);
++}
++
+ int __init nfs4_xattr_cache_init(void)
+ {
+ 	int ret =3D 0;
+@@ -1002,6 +992,13 @@ int __init nfs4_xattr_cache_init(void)
+ 	if (nfs4_xattr_cache_cachep =3D=3D NULL)
+ 		return -ENOMEM;
+=20
++	nfs4_xattr_entry_cachep =3D kmem_cache_create("nfs4_xattr_entry",
++			sizeof(struct nfs4_xattr_entry), 0,
++			(SLAB_RECLAIM_ACCOUNT | SLAB_MEM_SPREAD | SLAB_ACCOUNT),
++			nfs4_xattr_entry_init_once);
++	if (!nfs4_xattr_entry_cachep)
++		goto out5;
++
+ 	ret =3D list_lru_init_memcg(&nfs4_xattr_large_entry_lru,
+ 	    &nfs4_xattr_large_entry_shrinker);
+ 	if (ret)
+@@ -1039,6 +1036,8 @@ int __init nfs4_xattr_cache_init(void)
+ out3:
+ 	list_lru_destroy(&nfs4_xattr_large_entry_lru);
+ out4:
++	kmem_cache_destroy(nfs4_xattr_entry_cachep);
++out5:
+ 	kmem_cache_destroy(nfs4_xattr_cache_cachep);
+=20
+ 	return ret;
 
