@@ -2,241 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49438C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 15:39:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71574C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 15:40:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239199AbiCaPlD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 11:41:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53178 "EHLO
+        id S238394AbiCaPmb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 11:42:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239667AbiCaPik (ORCPT
+        with ESMTP id S239073AbiCaPmJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 11:38:40 -0400
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 462E422E960
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 08:33:13 -0700 (PDT)
-Received: by mail-pf1-x431.google.com with SMTP id b15so22413434pfm.5
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 08:33:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=yEmz/8cQT/z4or8puaY3Kz/sgiUXMKjLnb73DP8zXB4=;
-        b=EUaUZPcfweDaGz+UYp+NStA0BmInTkma7npoGLJMmcEUZ2iZGKPVT0+1BPCXfIV/O8
-         GHiyc4aFGoWyoq2lqSIwPwUDFYVXIcSY2xPOR5kLVOO0Nw/3hOD+cFlTZ3OSV9p7Z6/e
-         VKNu4WxdQMhT7e56+GQ03nSGh5F2m6eQY0twspHOfdqpr70xwKPF+Qx/z00v+9m02tek
-         T30KRjehWG7I+iyZa4TP8flH5HEiXZViIehPikpfDcxXxtUW8xeWmelVkRCIrXo9YZ5f
-         qPrKlIet7jM6gLIXNY0RvIyNrR8ZOJWRcbN9ZR7H74+0VbHub/iVtv77tu8OwrAN0ek+
-         FFNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=yEmz/8cQT/z4or8puaY3Kz/sgiUXMKjLnb73DP8zXB4=;
-        b=JUD+W1o1zUrd6lYvUPdQ/Ds/82pxb++hAexV8dpQgCdcXWK7cJP4OZfXmjqzNBAfL1
-         AugvfukoZo7rq2EsnMkf9k9DJcINo+odsr76isdVE+wM2ujJMA6slU3Yf/UduNmMEyKY
-         LnQqusqduCFsjq5ZYZSmm1ahUyx9WmuYBJugz8F7BUPZHywvmTX12fOBUhPrdaryoYcX
-         6d8BsKIawfj8O1MgfkosKtJn+VwysvvLXHri4HV85DSwy9G274P0bpNaZEyA/yj90EoD
-         LLNeJqT79OHHlAGHSYGhcJRtsNN2Fr8KbsQ5KM86b3LTvAVi6zu7t/G935F2e/Jz+E4h
-         jSYQ==
-X-Gm-Message-State: AOAM532Mp1iqXvZ1Dx8sbfzAL5W2HBrseL15VamuavuPyr4qTliNLvsK
-        LcpUODCaFvx5bY3NJjSB+vK7lw==
-X-Google-Smtp-Source: ABdhPJw0VfksheIzQpwF1rgGRvosu0Ldg1XtQsVA5AYA5VbOz1eqJHbzzU9YuQ5DQU5VooERtMGbMA==
-X-Received: by 2002:a05:6a02:193:b0:375:65a5:2fcd with SMTP id bj19-20020a056a02019300b0037565a52fcdmr10929563pgb.288.1648740791608;
-        Thu, 31 Mar 2022 08:33:11 -0700 (PDT)
-Received: from google.com ([2620:15c:202:201:a082:a097:a7d8:d309])
-        by smtp.gmail.com with ESMTPSA id z23-20020a056a001d9700b004fa8f24702csm24543241pfw.85.2022.03.31.08.33.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 31 Mar 2022 08:33:10 -0700 (PDT)
-Date:   Thu, 31 Mar 2022 08:33:03 -0700
-From:   Benson Leung <bleung@google.com>
-To:     Takashi Iwai <tiwai@suse.de>
-Cc:     Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Won Chung <wonchung@google.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Benson Leung <bleung@chromium.org>,
-        Prashant Malani <pmalani@chromium.org>,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH v2] sound/hda: Add NULL check to component match callback
- function
-Message-ID: <YkXJr2KhSzHJHxRF@google.com>
-References: <20220330211913.2068108-1-wonchung@google.com>
- <s5hzgl6eg48.wl-tiwai@suse.de>
- <CAOvb9yiO_n48JPZ3f0+y-fQ_YoOmuWF5c692Jt5_SKbxdA4yAw@mail.gmail.com>
- <s5hr16ieb8o.wl-tiwai@suse.de>
- <YkVzl4NEzwDAp/Zq@kuha.fi.intel.com>
- <s5hmth6eaiz.wl-tiwai@suse.de>
- <YkV1rsq1SeTNd8Ud@kuha.fi.intel.com>
- <s5hk0cae9pw.wl-tiwai@suse.de>
- <s5h7d8adzdl.wl-tiwai@suse.de>
- <s5hzgl6ciho.wl-tiwai@suse.de>
+        Thu, 31 Mar 2022 11:42:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5E8B4C402;
+        Thu, 31 Mar 2022 08:37:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F9C361B6C;
+        Thu, 31 Mar 2022 15:37:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01886C340ED;
+        Thu, 31 Mar 2022 15:37:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648741028;
+        bh=1WPwzaVch64w0jPi0NN43I4/H8/WTq+VtwzIW+KkQKA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=RNmWiGT+crMQsM0b3tQ+NN/NzxNDX8/ABeNcRPmBNkdmXt7kmIb3hVQ0nHMHWfWku
+         9/l2fK1sHy2Elc7UGMtooY/262uX9gkPe2CLYRb1T5z5pfjHi+L0R2Sok2wSRI+4KN
+         xiGlR3mUDFoYPoY0uH6ttuz0i19W5JoJGKAD7XV5RT6lzlKEafCkzoKcOkqzcGhZ7b
+         OfRl/2UvC3QgSmYnSrjhdfvfiMTuCv0O3wj5VlqlXEK61YjhnCQ5jw9AXee1W/nMqO
+         N91d5dq9OkpWt2sQahIYVpKw/gHr48+8zOlpB0wh0ysz9+XjG/KI4Fbu5u0qKb7hvx
+         zZuxrPq+apX9Q==
+Date:   Thu, 31 Mar 2022 08:37:01 -0700
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Sedat Dilek <sedat.dilek@gmail.com>
+Cc:     Masahiro Yamada <masahiroy@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Kees Cook <keescook@chromium.org>,
+        linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-um@lists.infradead.org, llvm@lists.linux.dev,
+        patches@lists.linux.dev
+Subject: Re: [PATCH 1/2] kbuild: Remove '-mno-global-merge'
+Message-ID: <YkXKnRwvbMdvOtlJ@thelio-3990X>
+References: <20220330234528.1426991-1-nathan@kernel.org>
+ <20220330234528.1426991-2-nathan@kernel.org>
+ <CA+icZUXrVgGyaujA1iQEw5P3nJHVwMtbFxpE2gKktaxW0Xg-wg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="qZ1ZF7vfmh9I4Bit"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <s5hzgl6ciho.wl-tiwai@suse.de>
+In-Reply-To: <CA+icZUXrVgGyaujA1iQEw5P3nJHVwMtbFxpE2gKktaxW0Xg-wg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, Mar 31, 2022 at 09:11:12AM +0200, Sedat Dilek wrote:
+> On Thu, Mar 31, 2022 at 5:27 AM Nathan Chancellor <nathan@kernel.org> wrote:
+> >
+> > This flag is specific to clang, where it is only used by the 32-bit and
+> > 64-bit ARM backends. In certain situations, the presence of this flag
+> > will cause a warning, as shown by commit 6580c5c18fb3 ("um: clang: Strip
+> > out -mno-global-merge from USER_CFLAGS").
+> >
+> > Since commit 61163efae020 ("kbuild: LLVMLinux: Add Kbuild support for
+> > building kernel with Clang") that added this flag back in 2014, there
+> > have been quite a few changes to the GlobalMerge pass in LLVM. Building
+> > several different ARCH=arm and ARCH=arm64 configurations with LLVM 11
+> > (minimum) and 15 (current main version) with this flag removed (i.e.,
+> > with the default of '-mglobal-merge') reveals no modpost warnings, so it
+> > is likely that the issue noted in the comment is no longer relevant due
+> > to changes in LLVM or modpost, meaning this flag can be removed.
+> >
+> > If any new warnings show up that are a result of the removal of this
+> > flag, it can be added back under arch/arm{,64}/Makefile to avoid
+> > warnings on other architectures.
+> >
+> > Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+> > ---
+> >  Makefile | 4 ----
+> >  1 file changed, 4 deletions(-)
+> >
+> > diff --git a/Makefile b/Makefile
+> > index daeb5c88b50b..f2723d9bfca4 100644
+> > --- a/Makefile
+> > +++ b/Makefile
+> > @@ -784,10 +784,6 @@ ifdef CONFIG_CC_IS_CLANG
+> >  KBUILD_CPPFLAGS += -Qunused-arguments
+> >  # The kernel builds with '-std=gnu89' so use of GNU extensions is acceptable.
+> >  KBUILD_CFLAGS += -Wno-gnu
+> > -# CLANG uses a _MergedGlobals as optimization, but this breaks modpost, as the
+> > -# source of a reference will be _MergedGlobals and not on of the whitelisted names.
+> > -# See modpost pattern 2
+> > -KBUILD_CFLAGS += -mno-global-merge
+> >  else
+> >
+> >  # gcc inanely warns about local variables called 'main'
+> > --
+> > 2.35.1
+> >
+> 
+> I have tested this several times and was able to boot into bar metal -
+> no problems with building and/or booting my kernel-modules.
+> 
+> Tested-by: Sedat Dilek <sedat.dilek@gmail.com>
+> Reviewed-by: Sedat Dilek <sedat.dilek@gmail.com>
 
---qZ1ZF7vfmh9I4Bit
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I would be very concerned if you did see any impact, given this flag is
+ARM specific :) thanks as always for verifying!
 
-Hi Takashi,
+> Just as a side-note:
+> As with Linux v5.18-rc1 and -std=gnu11 we change the above comment ...?
+> 
+> # The kernel builds with '-std=gnu89' so use of GNU extensions is acceptable.
+> KBUILD_CFLAGS += -Wno-gnu
 
-On Thu, Mar 31, 2022 at 04:19:15PM +0200, Takashi Iwai wrote:
-> On Thu, 31 Mar 2022 15:29:10 +0200,
-> Takashi Iwai wrote:
-> >=20
-> > On Thu, 31 Mar 2022 11:45:47 +0200,
-> > Takashi Iwai wrote:
-> > >=20
-> > > On Thu, 31 Mar 2022 11:34:38 +0200,
-> > > Heikki Krogerus wrote:
-> > > >=20
-> > > > On Thu, Mar 31, 2022 at 11:28:20AM +0200, Takashi Iwai wrote:
-> > > > > On Thu, 31 Mar 2022 11:25:43 +0200,
-> > > > > Heikki Krogerus wrote:
-> > > > > >=20
-> > > > > > On Thu, Mar 31, 2022 at 11:12:55AM +0200, Takashi Iwai wrote:
-> > > > > > > > > > -     if (!strcmp(dev->driver->name, "i915") &&
-> > > > > > > > > > +     if (dev->driver && !strcmp(dev->driver->name, "i9=
-15") &&
-> > > > > > > > >
-> > > > > > > > > Can NULL dev->driver be really seen?  I thought the compo=
-nents are
-> > > > > > > > > added by the drivers, hence they ought to have the driver=
- field set.
-> > > > > > > > > But there can be corner cases I overlooked.
-> > > > > > > > >
-> > > > > > > > >
-> > > > > > > > > thanks,
-> > > > > > > > >
-> > > > > > > > > Takashi
-> > > > > > > >=20
-> > > > > > > > Hi Takashi,
-> > > > > > > >=20
-> > > > > > > > When I try using component_add in a different driver (usb4 =
-in my
-> > > > > > > > case), I think dev->driver here is NULL because the i915 dr=
-ivers do
-> > > > > > > > not have their component master fully bound when this new c=
-omponent is
-> > > > > > > > registered. When I test it, it seems to be causing a crash.
-> > > > > > >=20
-> > > > > > > Hm, from where component_add*() is called?  Basically dev->dr=
-iver must
-> > > > > > > be already set before the corresponding driver gets bound at
-> > > > > > > __driver_probe_deviec().  So, if the device is added to compo=
-nent from
-> > > > > > > the corresponding driver's probe, dev->driver must be non-NUL=
-L.
-> > > > > >=20
-> > > > > > The code that declares a device as component does not have to b=
-e the
-> > > > > > driver of that device.
-> > > > > >=20
-> > > > > > In our case the components are USB ports, and they are devices =
-that
-> > > > > > are actually never bind to any drivers: drivers/usb/core/port.c
-> > > > >=20
-> > > > > OK, that's what I wanted to know.  It'd be helpful if it's more
-> > > > > clearly mentioned in the commit log.
-> > > >=20
-> > > > Agree.
-> > > >=20
-> > > > > BTW, the same problem must be seen in MEI drivers, too.
-> > > >=20
-> > > > Wasn't there a patch for those too? I lost track...
-> > >=20
-> > > I don't know, I just checked the latest Linus tree.
-> > >=20
-> > > And, looking at the HD-audio code, I still wonder how NULL dev->driver
-> > > can reach there.  Is there any PCI device that is added to component
-> > > without binding to a driver?  We have dev_is_pci() check at the
-> > > beginning, so non-PCI devices should bail out there...
-> >=20
-> > Further reading on, I'm really confused.  How data=3DNULL can be passed
-> > to this function?  The data argument is the value passed from the
-> > component_match_add_typed() call in HD-audio driver, hence it must be
-> > always the snd_hdac_bus object.
-> >=20
-> > And, I guess the i915 string check can be omitted completely, at
-> > least, for HD-audio driver.  It already have a check of the parent of
-> > the device and that should be enough.
->=20
-> That said, something like below (supposing data NULL check being
-> superfluous), instead.
->=20
->=20
-> Takashi
->=20
-> --- a/sound/hda/hdac_i915.c
-> +++ b/sound/hda/hdac_i915.c
-> @@ -102,18 +102,13 @@ static int i915_component_master_match(struct devic=
-e *dev, int subcomponent,
->  	struct pci_dev *hdac_pci, *i915_pci;
->  	struct hdac_bus *bus =3D data;
-> =20
-> -	if (!dev_is_pci(dev))
-> +	if (subcomponent !=3D I915_COMPONENT_AUDIO || !dev_is_pci(dev))
->  		return 0;
-> =20
+It was updated as part of the shift to '-std=gnu11':
 
-If I recall this bug correctly, it's not the usb port perse that is falling
-through this !dev_is_pci(dev) check, it's actually the usb4-port in a new
-proposed patch by Heikki and Mika to extend the usb type-c component to
-encompass the usb4 specific pieces too. Is it possible usb4 ports are consi=
-dered
-pci devices, and that's how we got into this situation?
+https://git.kernel.org/linus/e8c07082a810fbb9db303a2b66b66b8d7e588b53
 
-Also, a little more background information: This crash happens because in
-our kernel configs, we config'd the usb4 driver as =3Dy (built in) instead =
-of
-=3Dm module, which meant that the usb4 port's driver was adding a component
-likely much earlier than hdac_i915.
+The UML tree is based on 5.17-rc6, which does not have that change.
+There should not be a merge conflict though.
 
-Thanks,
-Benson
-
->  	hdac_pci =3D to_pci_dev(bus->dev);
->  	i915_pci =3D to_pci_dev(dev);
-> =20
-> -	if (!strcmp(dev->driver->name, "i915") &&
-> -	    subcomponent =3D=3D I915_COMPONENT_AUDIO &&
-> -	    connectivity_check(i915_pci, hdac_pci))
-> -		return 1;
-> -
-> -	return 0;
-> +	return connectivity_check(i915_pci, hdac_pci);
->  }
-> =20
->  /* check whether intel graphics is present */
->=20
-
---=20
-Benson Leung
-Staff Software Engineer
-Chrome OS Kernel
-Google Inc.
-bleung@google.com
-Chromium OS Project
-bleung@chromium.org
-
---qZ1ZF7vfmh9I4Bit
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQQCtZK6p/AktxXfkOlzbaomhzOwwgUCYkXJrwAKCRBzbaomhzOw
-wpDWAP4u9qZ1yLO4Vtblx/ZmitMRfRXqpqZ1xkZTr3wjUV3NXgD8DQBQxF/RIz2w
-F727wkBDJO7uAqp8N1cVAtvwIUCSSg4=
-=Nqgb
------END PGP SIGNATURE-----
-
---qZ1ZF7vfmh9I4Bit--
+Cheers,
+Nathan
