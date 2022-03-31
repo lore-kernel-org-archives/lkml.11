@@ -2,254 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D74DFC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 09:24:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE7ACC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 09:25:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233824AbiCaJ00 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 05:26:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53652 "EHLO
+        id S233834AbiCaJ1W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 05:27:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232712AbiCaJ0Z (ORCPT
+        with ESMTP id S232107AbiCaJ1S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 05:26:25 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EF2441FCD00
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 02:24:37 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id ADE1223A;
-        Thu, 31 Mar 2022 02:24:37 -0700 (PDT)
-Received: from FVFF77S0Q05N (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D258A3F718;
-        Thu, 31 Mar 2022 02:24:34 -0700 (PDT)
-Date:   Thu, 31 Mar 2022 10:24:29 +0100
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     andrey.konovalov@linux.dev
-Cc:     Marco Elver <elver@google.com>,
-        Alexander Potapenko <glider@google.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrey Konovalov <andreyknvl@gmail.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        kasan-dev@googlegroups.com,
-        Vincenzo Frascino <vincenzo.frascino@arm.com>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        Peter Collingbourne <pcc@google.com>,
-        Evgenii Stepanov <eugenis@google.com>,
-        Florian Mayer <fmayer@google.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org,
-        Andrey Konovalov <andreyknvl@google.com>
-Subject: Re: [PATCH v2 2/4] arm64, scs: save scs_sp values per-cpu when
- switching stacks
-Message-ID: <YkVzTbafttTHWETU@FVFF77S0Q05N>
-References: <cover.1648049113.git.andreyknvl@google.com>
- <f75c58b17bfaa419f84286cd174e3a08f971b779.1648049113.git.andreyknvl@google.com>
+        Thu, 31 Mar 2022 05:27:18 -0400
+Received: from esa3.hc1455-7.c3s2.iphmx.com (esa3.hc1455-7.c3s2.iphmx.com [207.54.90.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FA5D1FCD36;
+        Thu, 31 Mar 2022 02:25:30 -0700 (PDT)
+X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="68135880"
+X-IronPort-AV: E=Sophos;i="5.90,224,1643641200"; 
+   d="scan'208";a="68135880"
+Received: from unknown (HELO oym-r4.gw.nic.fujitsu.com) ([210.162.30.92])
+  by esa3.hc1455-7.c3s2.iphmx.com with ESMTP; 31 Mar 2022 18:25:28 +0900
+Received: from oym-m1.gw.nic.fujitsu.com (oym-nat-oym-m1.gw.nic.fujitsu.com [192.168.87.58])
+        by oym-r4.gw.nic.fujitsu.com (Postfix) with ESMTP id 7B52AE07EA;
+        Thu, 31 Mar 2022 18:25:27 +0900 (JST)
+Received: from yto-om3.fujitsu.com (yto-om3.o.css.fujitsu.com [10.128.89.164])
+        by oym-m1.gw.nic.fujitsu.com (Postfix) with ESMTP id A192028715D1;
+        Thu, 31 Mar 2022 18:25:26 +0900 (JST)
+Received: from cn-r05-10.example.com (n3235113.np.ts.nmh.cs.fujitsu.co.jp [10.123.235.113])
+        by yto-om3.fujitsu.com (Postfix) with ESMTP id 3B74C400C07B8;
+        Thu, 31 Mar 2022 18:25:26 +0900 (JST)
+From:   Hitomi Hasegawa <hasegawa-hitomi@fujitsu.com>
+To:     linux-arm-kernel@lists.infradead.org, soc@kernel.org,
+        linux-serial@vger.kernel.org, sumit.garg@linaro.org
+Cc:     arnd@arndb.de, olof@lixom.net, catalin.marinas@arm.com,
+        will@kernel.org, gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        jason.wessel@windriver.com, daniel.thompson@linaro.org,
+        dianders@chromium.org, linux-kernel@vger.kernel.org,
+        kgdb-bugreport@lists.sourceforge.net, peterz@infradead.org,
+        hasegawa-hitomi@fujitsu.com
+Subject: [PATCH v3 0/1] soc: fujitsu: Add A64FX diagnostic interrupt driver
+Date:   Thu, 31 Mar 2022 18:22:34 +0900
+Message-Id: <20220331092235.3000787-1-hasegawa-hitomi@fujitsu.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f75c58b17bfaa419f84286cd174e3a08f971b779.1648049113.git.andreyknvl@google.com>
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 23, 2022 at 04:32:53PM +0100, andrey.konovalov@linux.dev wrote:
-> From: Andrey Konovalov <andreyknvl@google.com>
-> 
-> When an interrupt happens, the current Shadow Call Stack (SCS) pointer
-> is switched to a per-interrupt one stored in a per-CPU variable. The old
-> pointer is then saved on the normal stack and restored when the interrupt
-> is handled.
-> 
-> To collect the current stack trace based on SCS when the interrupt is
-> being handled, we need to know the SCS pointers that belonged to the
-> task and potentially other interrupts that were interrupted.
-> 
-> Instead of trying to retrieve the SCS pointers from the stack, change
-> interrupt handlers (for hard IRQ, Normal and Critical SDEI) to save the
-> previous SCS pointer in a per-CPU variable.
+The interrupt is set using pseudo-NMI if it is available. Arm has a
+diagnostic interrupt feature called "Arm Generic Diagnostic Dump and
+Reset device", but the A64FX does not support this feature and instead
+has its own device definition.
 
-I'm *really* not keen on *always* poking this in the entry code for the
-uncommon case of unwind. It complicates the entry code and means we're always
-paying a cost for potentially no benefit. At a high-level, I don't think this
-is the right approach.
+This patch series assumes that Sumit's patch has been patched.[1]
 
-For the regular unwinder, I want to rework things such that we can identify
-exception boundaries and look into the regs (e.g. so that we can recover the
-PC+LR+FP and avoid duplicating part of this in a frame record), and I'd much
-prefer that we did the same here.
+I tested on FX700:
+$ echo 1 > /proc/sys/kernel/sysrq
+$ echo HARDLOCKUP > /sys/kernel/debug/provoke-crash/DIRECT
+[  124.712351] lkdtm: Performing direct entry HARDLOCKUP
+[  147.232096] rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
+:
+:
 
-Thanks,
-Mark.
+Send the "chassis power diag" command from the management server
+using ipmitool, the following message is shown:
+[  206.061770] sysrq: Trigger a crash
+[  206.061779] Kernel panic - not syncing: sysrq triggered crash
+:
+:
 
-> Note that interrupts stack. A task can be interrupted by a hard IRQ,
-> which then can interrupted by a normal SDEI, etc. This is handled by
-> using a separate per-CPU variable for each interrupt type.
-> 
-> Also reset the saved SCS pointer when exiting the interrupt. This allows
-> checking whether we should include any interrupt frames when collecting
-> the stack trace. While we could use in_hardirq(), there seems to be no
-> easy way to check whether we are in an SDEI handler. Directly checking
-> the per-CPU variables for being non-zero is more resilient.
-> 
-> Also expose both the the added saved SCS variables and the existing SCS
-> base variables in arch/arm64/include/asm/scs.h so that the stack trace
-> collection impementation can use them.
-> 
-> Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
-> ---
->  arch/arm64/include/asm/assembler.h | 12 ++++++++++++
->  arch/arm64/include/asm/scs.h       | 13 ++++++++++++-
->  arch/arm64/kernel/entry.S          | 28 ++++++++++++++++++++++++----
->  arch/arm64/kernel/irq.c            |  4 +---
->  arch/arm64/kernel/sdei.c           |  5 ++---
->  5 files changed, 51 insertions(+), 11 deletions(-)
-> 
-> diff --git a/arch/arm64/include/asm/assembler.h b/arch/arm64/include/asm/assembler.h
-> index 8c5a61aeaf8e..ca018e981d13 100644
-> --- a/arch/arm64/include/asm/assembler.h
-> +++ b/arch/arm64/include/asm/assembler.h
-> @@ -270,6 +270,18 @@ alternative_endif
->  	ldr	\dst, [\dst, \tmp]
->  	.endm
->  
-> +	/*
-> +	 * @src: Register whose value gets stored in sym
-> +	 * @sym: The name of the per-cpu variable
-> +	 * @tmp0: Scratch register
-> +	 * @tmp1: Another scratch register
-> +	 */
-> +	.macro str_this_cpu src, sym, tmp0, tmp1
-> +	adr_l	\tmp0, \sym
-> +	get_this_cpu_offset \tmp1
-> +	str	\src, [\tmp0, \tmp1]
-> +	.endm
-> +
->  /*
->   * vma_vm_mm - get mm pointer from vma pointer (vma->vm_mm)
->   */
-> diff --git a/arch/arm64/include/asm/scs.h b/arch/arm64/include/asm/scs.h
-> index 8297bccf0784..2bb2b32f787b 100644
-> --- a/arch/arm64/include/asm/scs.h
-> +++ b/arch/arm64/include/asm/scs.h
-> @@ -24,6 +24,17 @@
->  	.endm
->  #endif /* CONFIG_SHADOW_CALL_STACK */
->  
-> -#endif /* __ASSEMBLY __ */
-> +#else /* __ASSEMBLY__ */
-> +
-> +#include <linux/percpu.h>
-> +
-> +DECLARE_PER_CPU(unsigned long *, irq_shadow_call_stack_ptr);
-> +DECLARE_PER_CPU(unsigned long *, irq_shadow_call_stack_saved_ptr);
-> +DECLARE_PER_CPU(unsigned long *, sdei_shadow_call_stack_normal_ptr);
-> +DECLARE_PER_CPU(unsigned long *, sdei_shadow_call_stack_normal_saved_ptr);
-> +DECLARE_PER_CPU(unsigned long *, sdei_shadow_call_stack_critical_ptr);
-> +DECLARE_PER_CPU(unsigned long *, sdei_shadow_call_stack_critical_saved_ptr);
-> +
-> +#endif /* __ASSEMBLY__ */
->  
->  #endif /* _ASM_SCS_H */
-> diff --git a/arch/arm64/kernel/entry.S b/arch/arm64/kernel/entry.S
-> index ede028dee81b..1c62fecda172 100644
-> --- a/arch/arm64/kernel/entry.S
-> +++ b/arch/arm64/kernel/entry.S
-> @@ -880,7 +880,8 @@ NOKPROBE(ret_from_fork)
->   */
->  SYM_FUNC_START(call_on_irq_stack)
->  #ifdef CONFIG_SHADOW_CALL_STACK
-> -	stp	scs_sp, xzr, [sp, #-16]!
-> +	/* Save the current SCS pointer and load the per-IRQ one. */
-> +	str_this_cpu scs_sp, irq_shadow_call_stack_saved_ptr, x15, x17
->  	ldr_this_cpu scs_sp, irq_shadow_call_stack_ptr, x17
->  #endif
->  	/* Create a frame record to save our LR and SP (implicit in FP) */
-> @@ -902,7 +903,9 @@ SYM_FUNC_START(call_on_irq_stack)
->  	mov	sp, x29
->  	ldp	x29, x30, [sp], #16
->  #ifdef CONFIG_SHADOW_CALL_STACK
-> -	ldp	scs_sp, xzr, [sp], #16
-> +	/* Restore saved SCS pointer and reset the saved value. */
-> +	ldr_this_cpu scs_sp, irq_shadow_call_stack_saved_ptr, x17
-> +	str_this_cpu xzr, irq_shadow_call_stack_saved_ptr, x15, x17
->  #endif
->  	ret
->  SYM_FUNC_END(call_on_irq_stack)
-> @@ -1024,11 +1027,16 @@ SYM_CODE_START(__sdei_asm_handler)
->  #endif
->  
->  #ifdef CONFIG_SHADOW_CALL_STACK
-> -	/* Use a separate shadow call stack for normal and critical events */
-> +	/*
-> +	 * Use a separate shadow call stack for normal and critical events.
-> +	 * Save the current SCS pointer and load the per-SDEI one.
-> +	 */
->  	cbnz	w4, 3f
-> +	str_this_cpu src=scs_sp, sym=sdei_shadow_call_stack_normal_saved_ptr, tmp0=x5, tmp1=x6
->  	ldr_this_cpu dst=scs_sp, sym=sdei_shadow_call_stack_normal_ptr, tmp=x6
->  	b	4f
-> -3:	ldr_this_cpu dst=scs_sp, sym=sdei_shadow_call_stack_critical_ptr, tmp=x6
-> +3:	str_this_cpu src=scs_sp, sym=sdei_shadow_call_stack_critical_saved_ptr, tmp0=x5, tmp1=x6
-> +	ldr_this_cpu dst=scs_sp, sym=sdei_shadow_call_stack_critical_ptr, tmp=x6
->  4:
->  #endif
->  
-> @@ -1062,6 +1070,18 @@ SYM_CODE_START(__sdei_asm_handler)
->  	ldp	lr, x1, [x4, #SDEI_EVENT_INTREGS + S_LR]
->  	mov	sp, x1
->  
-> +#ifdef CONFIG_SHADOW_CALL_STACK
-> +	/* Restore saved SCS pointer and reset the saved value. */
-> +	ldrb	w5, [x4, #SDEI_EVENT_PRIORITY]
-> +	cbnz	w5, 5f
-> +	ldr_this_cpu dst=scs_sp, sym=sdei_shadow_call_stack_normal_saved_ptr, tmp=x6
-> +	str_this_cpu src=xzr, sym=sdei_shadow_call_stack_normal_saved_ptr, tmp0=x5, tmp1=x6
-> +	b	6f
-> +5:	ldr_this_cpu dst=scs_sp, sym=sdei_shadow_call_stack_critical_saved_ptr, tmp=x6
-> +	str_this_cpu src=xzr, sym=sdei_shadow_call_stack_critical_saved_ptr, tmp0=x5, tmp1=x6
-> +6:
-> +#endif
-> +
->  	mov	x1, x0			// address to complete_and_resume
->  	/* x0 = (x0 <= SDEI_EV_FAILED) ?
->  	 * EVENT_COMPLETE:EVENT_COMPLETE_AND_RESUME
-> diff --git a/arch/arm64/kernel/irq.c b/arch/arm64/kernel/irq.c
-> index bda49430c9ea..4199f900714a 100644
-> --- a/arch/arm64/kernel/irq.c
-> +++ b/arch/arm64/kernel/irq.c
-> @@ -28,11 +28,9 @@ DEFINE_PER_CPU(struct nmi_ctx, nmi_contexts);
->  
->  DEFINE_PER_CPU(unsigned long *, irq_stack_ptr);
->  
-> -
-> -DECLARE_PER_CPU(unsigned long *, irq_shadow_call_stack_ptr);
-> -
->  #ifdef CONFIG_SHADOW_CALL_STACK
->  DEFINE_PER_CPU(unsigned long *, irq_shadow_call_stack_ptr);
-> +DEFINE_PER_CPU(unsigned long *, irq_shadow_call_stack_saved_ptr);
->  #endif
->  
->  static void init_irq_scs(void)
-> diff --git a/arch/arm64/kernel/sdei.c b/arch/arm64/kernel/sdei.c
-> index d20620a1c51a..269adcb9e854 100644
-> --- a/arch/arm64/kernel/sdei.c
-> +++ b/arch/arm64/kernel/sdei.c
-> @@ -39,12 +39,11 @@ DEFINE_PER_CPU(unsigned long *, sdei_stack_normal_ptr);
->  DEFINE_PER_CPU(unsigned long *, sdei_stack_critical_ptr);
->  #endif
->  
-> -DECLARE_PER_CPU(unsigned long *, sdei_shadow_call_stack_normal_ptr);
-> -DECLARE_PER_CPU(unsigned long *, sdei_shadow_call_stack_critical_ptr);
-> -
->  #ifdef CONFIG_SHADOW_CALL_STACK
->  DEFINE_PER_CPU(unsigned long *, sdei_shadow_call_stack_normal_ptr);
-> +DEFINE_PER_CPU(unsigned long *, sdei_shadow_call_stack_normal_saved_ptr);
->  DEFINE_PER_CPU(unsigned long *, sdei_shadow_call_stack_critical_ptr);
-> +DEFINE_PER_CPU(unsigned long *, sdei_shadow_call_stack_critical_saved_ptr);
->  #endif
->  
->  static void _free_sdei_stack(unsigned long * __percpu *ptr, int cpu)
-> -- 
-> 2.25.1
-> 
+Changes in V3:
+ - Exclude Sumit's patch.
+ - Retest in v5.17.
+
+Changes in V2:
+ - Include Sumit's patch.
+ - The handler calls handle_sysrq() to use the sysrq feature to cause
+   a panic.
+ - request_nmi() and request_irq() now use the same handler, and
+   the function name of the handler has also changed.
+ - Use readl()/writel() instead of readl_relaxed()/writel_relaxed().
+
+[1] https://lore.kernel.org/all/20220307110328.2557655-1-sumit.garg@linaro.org/
+V2: https://lore.kernel.org/linux-arm-kernel/20220304064324.331217-3-hasegawa-hitomi@fujitsu.com/
+V1: https://lore.kernel.org/linux-arm-kernel/20220218092010.1327309-1-hasegawa-hitomi@fujitsu.com/
+
+
+Hitomi Hasegawa (1):
+  soc: fujitsu: Add A64FX diagnostic interrupt driver
+
+ MAINTAINERS                      |   5 +
+ drivers/soc/Kconfig              |   1 +
+ drivers/soc/Makefile             |   1 +
+ drivers/soc/fujitsu/Kconfig      |  13 +++
+ drivers/soc/fujitsu/Makefile     |   3 +
+ drivers/soc/fujitsu/a64fx-diag.c | 151 +++++++++++++++++++++++++++++++
+ 6 files changed, 174 insertions(+)
+ create mode 100644 drivers/soc/fujitsu/Kconfig
+ create mode 100644 drivers/soc/fujitsu/Makefile
+ create mode 100644 drivers/soc/fujitsu/a64fx-diag.c
+
+-- 
+2.27.0
+
