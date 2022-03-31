@@ -2,114 +2,196 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBD0EC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 16:16:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA06CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 16:17:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239761AbiCaQSN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 12:18:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50168 "EHLO
+        id S239782AbiCaQTc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 12:19:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239892AbiCaQSJ (ORCPT
+        with ESMTP id S239777AbiCaQTa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 12:18:09 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E564C8EB6A
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 09:16:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648743381; x=1680279381;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ZfXnGhOcxSqo1ZnmYemNjeBrcUnq/HVWLE0Cz2++JJs=;
-  b=d0pRNfr5q51v7J4heTn8dryfJEiVqHOOpj7sGIoFPgZtdHnsYxw9ezgZ
-   YLJ2eSOkbalEKqkW3ya1yqPboa57MdIFk1Mnuhh2TSlM5/RpJO3gtO8LC
-   XsPluIsWVZ3EKT9D8lmnpHxkq+gj9MGrPo3t/h7gB3uSAOS8m/jz20CSr
-   MGw6EBTYqs+EKOOR1HdRMGBgbXw41TVHFKxfMR4UXlJe7MsHSP9ptAZy4
-   fduJUKv8CAv1LKRka7aygs8uMn2DerMOMVuy2kBiS5+YLgFYv823GFy06
-   dbz8ee8yJtGVUik/1KY6lCmrgfLN1v9Iu+l20Pqz+MEK5vXHUdK0fXWv6
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="323059132"
-X-IronPort-AV: E=Sophos;i="5.90,225,1643702400"; 
-   d="scan'208";a="323059132"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2022 09:14:55 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,225,1643702400"; 
-   d="scan'208";a="654868468"
-Received: from lkp-server02.sh.intel.com (HELO 3231c491b0e2) ([10.239.97.151])
-  by orsmga004.jf.intel.com with ESMTP; 31 Mar 2022 09:14:53 -0700
-Received: from kbuild by 3231c491b0e2 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nZxRk-0000QW-Db;
-        Thu, 31 Mar 2022 16:14:52 +0000
-Date:   Fri, 1 Apr 2022 00:14:28 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Kefeng Wang <wangkefeng.wang@huawei.com>, catalin.marinas@arm.com,
-        will@kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, vijayb@linux.microsoft.com,
-        f.fainelli@gmail.com, Kefeng Wang <wangkefeng.wang@huawei.com>
-Subject: Re: [PATCH v2 resend 2/3] arm64: mm: Don't defer
- reserve_crashkernel() with dma_force_32bit
-Message-ID: <202204010040.RUk6NuNS-lkp@intel.com>
-References: <20220331074055.125824-3-wangkefeng.wang@huawei.com>
+        Thu, 31 Mar 2022 12:19:30 -0400
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6E9C8EB6A
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 09:17:39 -0700 (PDT)
+Received: by mail-lf1-x12a.google.com with SMTP id d5so34255lfj.9
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 09:17:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=XvOQiTxrSkDE1O7y9Nnnhxp/qhEKorlXOf3Z2Rjc3+Q=;
+        b=CZq9cQspPXzmbUE3s0DkhpzbWQVXdbi4fuiFGL/Rh1tDQAnwJyVsKM9eAOr6KeA1uO
+         aOeP7VLuYzWXOEwFRT0SsN6v8ebYrzVDnNxrMOd01NivrLK1Qj5XvXBjOlC2C6aNYJeJ
+         5MUbI9z6Hq+EQw9f4gGnzjHBBkGhRnKrDhI1ea3iUic6u47BOcIoQu/4pTiLacnwUwSZ
+         J7kyUBgSujvFh9L2V6EHJ+PPMmyFHgwcwwZnwQmYkieJ3+qzdSQGIh8roiTz40uYXhbw
+         YbppkGon0l+pxrP7ET43mtovPVI48DUqTkmnKFQ0hL5RJlenajcti6B2Q7Z8ha6QH3iX
+         UPkQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=XvOQiTxrSkDE1O7y9Nnnhxp/qhEKorlXOf3Z2Rjc3+Q=;
+        b=3Sa4AYG8nSDgbl8PLf8mMZIxh+tYOlRVglC3zqcl1jhAw5Sc5PeJtl88TpKgAtmpw7
+         WJ+o+220geJhhzXO40k3f/Grp/9fm6534wrLTThZUXlihuScVAPj38LlzJqX9C3yMeFX
+         pgkdJTywS5J/hyA7+G07MBGdfwJ/WJZLeC/54flpg/n2/mxXEJKjaTyWb2nhpSwmd6n1
+         +CBkWHHthC3MpG9dzwAo9K+jfD8vhlBtRU9CLFw27eUaeD5ja/G0bBGGDVCJZZMaoXhM
+         rMOeU8kzHStQlwQHij/jtG+BgfCxGKs/+YJvRu57Z9tKBQ4o+5vc48L6qw5/ckhbSwqD
+         MZiA==
+X-Gm-Message-State: AOAM533/+pTtBQDRyuwl85r7+0A/kpyBLZaMi6dFPVjh2uEtB58Pq4pM
+        F6UuYBi7tGTpKwmmvC/TUH4ZnqYlS+PQPm2RlAgJRA==
+X-Google-Smtp-Source: ABdhPJwd4NdUxu5fCQXYydDZqM5jgGL7W8viaSPnRdGR9bff6fLWNRVHPMfv8oQIBMHP2xcRv0IXEfqLNgkt3iwstSc=
+X-Received: by 2002:a05:6512:6cf:b0:44a:25d1:a27 with SMTP id
+ u15-20020a05651206cf00b0044a25d10a27mr11152267lff.18.1648743457998; Thu, 31
+ Mar 2022 09:17:37 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220331074055.125824-3-wangkefeng.wang@huawei.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220204141941.GE4077@xsang-OptiPlex-9020> <CADjb_WT0fcP2QBjYpsCAJEcVYWKNw1rQ6XZNz33i+KCbD8jB-A@mail.gmail.com>
+In-Reply-To: <CADjb_WT0fcP2QBjYpsCAJEcVYWKNw1rQ6XZNz33i+KCbD8jB-A@mail.gmail.com>
+From:   Vincent Guittot <vincent.guittot@linaro.org>
+Date:   Thu, 31 Mar 2022 18:17:26 +0200
+Message-ID: <CAKfTPtDFhORUyOfqr==ZrOSgBd8=vzvYgWMxw87bvq3pQmq7DQ@mail.gmail.com>
+Subject: Re: [sched/pelt] 2d02fa8cc2: stress-ng.pipeherd.ops_per_sec -9.7% regression
+To:     Chen Yu <yu.chen.surf@gmail.com>
+Cc:     kernel test robot <oliver.sang@intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Sachin Sant <sachinp@linux.ibm.com>,
+        LKML <linux-kernel@vger.kernel.org>, lkp@lists.01.org,
+        lkp@intel.com, Huang Ying <ying.huang@intel.com>,
+        feng.tang@intel.com, zhengjun.xing@linux.intel.com,
+        fengwei.yin@intel.com, Aubrey Li <aubrey.li@linux.intel.com>,
+        Chen Yu <yu.c.chen@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Kefeng,
+On Thu, 31 Mar 2022 at 16:19, Chen Yu <yu.chen.surf@gmail.com> wrote:
+>
+> Hi Vincent,
+>
+> On Wed, Feb 9, 2022 at 1:17 PM kernel test robot <oliver.sang@intel.com> =
+wrote:
+> >
+> >
+> >
+> > Greeting,
+> >
+> > FYI, we noticed a -9.7% regression of stress-ng.pipeherd.ops_per_sec du=
+e to commit:
+> >
+> >
+> > commit: 2d02fa8cc21a93da35cfba462bf8ab87bf2db651 ("sched/pelt: Relax th=
+e sync of load_sum with load_avg")
+> > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+> >
+> > in testcase: stress-ng
+> > on test machine: 128 threads 2 sockets Intel(R) Xeon(R) Platinum 8358 C=
+PU @ 2.60GHz with 128G memory
+> > with following parameters:
+> >
+> >         nr_threads: 100%
+> >         testtime: 60s
+> >         class: memory
+> >         test: pipeherd
+> >         cpufreq_governor: performance
+> >         ucode: 0xd000280
+> >
+> This week we have re-run the test result and it seems that this
+> regression is still there.
+> As we are evaluating whether this report is valid or if the
+> downgrading is expected, appreciated
+> if you could give suggestion on further steps:
+>
+> 1.  If I understand correctly,
+> 2d02fa8cc21a93da35cfba462bf8ab87bf2db651 ("sched/pelt: Relax the sync
+> of load_sum with load_avg")
+>      fixed the calculating of  load_sum.  Before this patch  the
+> contribution part would be 'skipped' and caused the load_sum
+>      to be lower than expected.
 
-Thank you for the patch! Perhaps something to improve:
+Yes, you understand it correctly
 
-[auto build test WARNING on next-20220330]
-[cannot apply to arm64/for-next/core v5.17 v5.17-rc8 v5.17-rc7 v5.17]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+> 2. If above is true, after this patch, the load_sum becomes higher. Is
+> there a scenario that higher load_sum added to 1 cfs_rq brings
+>     more imbalance between this group and other sched_group, thus
+> brings more task migration/wake up? (because in below perf result,
+>     it seems that, with this patch applied, there are slightly more
+> take wake up)
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Kefeng-Wang/arm64-mm-Do-not-defer-reserve_crashkernel/20220331-152839
-base:    a67ba3cf9551f8c92d5ec9d7eae1aadbb9127b57
-config: arm64-buildonly-randconfig-r001-20220331 (https://download.01.org/0day-ci/archive/20220401/202204010040.RUk6NuNS-lkp@intel.com/config)
-compiler: aarch64-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/970ec526bd69287a4eb9838600aaf66c46fde350
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Kefeng-Wang/arm64-mm-Do-not-defer-reserve_crashkernel/20220331-152839
-        git checkout 970ec526bd69287a4eb9838600aaf66c46fde350
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm64 SHELL=/bin/bash arch/arm64/mm/
+This change should not impact load balance as it only does comparison
+and I expect the load increase to happen on all cfs rq.
+The only place that could be impacted, would be wake_affine_weight()
+because it removes task load from previous cfs rq load before
+comparing.
+The task's load was not impacted by the underestimate which means that
+the load of prev cfs  might be seen lower than current cfs after
+subtracting the task's load whereas both cfs rqs were similarly
+underestimated.
+Now the load of prev cfs rq is not underestimated and becomes
+comparable or slightly higher than the current cfs and the task
+migrate on current cfs instead of staying on prev one at wakeup
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+One possible test would be to run the test with WA_WEIGHT features
+disable and check if there is still a difference
 
-All warnings (new ones prefixed by >>):
-
->> arch/arm64/mm/init.c:108:13: warning: no previous prototype for 'crashkernel_could_early_reserve' [-Wmissing-prototypes]
-     108 | bool __init crashkernel_could_early_reserve(void)
-         |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-vim +/crashkernel_could_early_reserve +108 arch/arm64/mm/init.c
-
-   107	
- > 108	bool __init crashkernel_could_early_reserve(void)
-   109	{
-   110		if (!IS_ENABLED(CONFIG_ZONE_DMA))
-   111			return true;
-   112		if (arm64_dma_force_32bit)
-   113			return true;
-   114		return false;
-   115	}
-   116	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+> 3.  Consider the 9.7% downgrading is not that high,  do you think if
+> lkp team should continue track this issue or just close it
+>     as documented?
+>
+> Best,
+> Yu
+> >
+> > commit:
+> >   95246d1ec8 ("sched/pelt: Relax the sync of runnable_sum with runnable=
+_avg")
+> >   2d02fa8cc2 ("sched/pelt: Relax the sync of load_sum with load_avg")
+> >
+> > 95246d1ec80b8d19 2d02fa8cc21a93da35cfba462bf
+> > ---------------- ---------------------------
+> >          %stddev     %change         %stddev
+> >              \          |                \
+> >       0.21           +11.0%       0.24 =C4=85  2%  stress-ng.pipeherd.c=
+ontext_switches_per_bogo_op
+> >  3.869e+09            -9.7%  3.494e+09        stress-ng.pipeherd.ops
+> >   64412021            -9.7%   58171101        stress-ng.pipeherd.ops_pe=
+r_sec
+> >     442.37            -7.2%     410.54        stress-ng.time.user_time
+> >       5.49 =C4=85  2%      -0.5        4.94 =C4=85  4%  mpstat.cpu.all.=
+usr%
+> >      80705 =C4=85  7%     +26.7%     102266 =C4=85 17%  numa-meminfo.no=
+de1.Active
+> >      80705 =C4=85  7%     +26.7%     102266 =C4=85 17%  numa-meminfo.no=
+de1.Active(anon)
+> >      12324 =C4=85  3%     -22.1%       9603 =C4=85 25%  softirqs.CPU106=
+.RCU
+> >      12703 =C4=85  4%     -23.1%       9769 =C4=85 24%  softirqs.CPU27.=
+RCU
+> >      15.96            +1.0       16.95        perf-profile.calltrace.cy=
+cles-pp.prepare_to_wait_event.pipe_read.new_sync_read.vfs_read.ksys_read
+> >       6.67            +1.0        7.68 =C4=85  2%  perf-profile.calltra=
+ce.cycles-pp.enqueue_task_fair.ttwu_do_activate.try_to_wake_up.autoremove_w=
+ake_function.__wake_up_common
+> >       6.77            +1.0        7.79 =C4=85  2%  perf-profile.calltra=
+ce.cycles-pp.ttwu_do_activate.try_to_wake_up.autoremove_wake_function.__wak=
+e_up_common.__wake_up_common_lock
+> >      14.46            +1.0       15.48 =C4=85  2%  perf-profile.calltra=
+ce.cycles-pp._raw_spin_lock_irqsave.prepare_to_wait_event.pipe_read.new_syn=
+c_read.vfs_read
+> >      13.73            +1.1       14.79 =C4=85  2%  perf-profile.calltra=
+ce.cycles-pp.native_queued_spin_lock_slowpath._raw_spin_lock_irqsave.prepar=
+e_to_wait_event.pipe_read.new_sync_read
+> >      26.95            +1.4       28.34        perf-profile.calltrace.cy=
+cles-pp.__wake_up_common_lock.pipe_write.new_sync_write.vfs_write.ksys_writ=
+e
+> >      25.85            +1.5       27.32        perf-profile.calltrace.cy=
+cles-pp.__wake_up_common.__wake_up_common_lock.pipe_write.new_sync_write.vf=
+s_write
+> >      25.18            +1.5       26.69        perf-profile.calltrace.cy=
+cles-pp.autoremove_wake_function.__wake_up_common.__wake_up_common_lock.pip=
+e_write.new_sync_write
+> >      24.61            +1.5       26.14        perf-profile.calltrace.cy=
+cles-pp.try_to_wake_up.autoremove_wake_function.__wake_up_common.__wake_up_=
+common_lock.pipe_write
