@@ -2,117 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E32AFC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 09:31:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8EB0C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 09:32:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234090AbiCaJcz convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 05:32:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50126 "EHLO
+        id S234074AbiCaJds (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 05:33:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233978AbiCaJcq (ORCPT
+        with ESMTP id S233450AbiCaJdn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 05:32:46 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11E1462119;
-        Thu, 31 Mar 2022 02:30:57 -0700 (PDT)
-Received: from mail-wr1-f41.google.com ([209.85.221.41]) by
- mrelayeu.kundenserver.de (mreue011 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1MRT6b-1nLC0R17ob-00NOzE; Thu, 31 Mar 2022 11:30:46 +0200
-Received: by mail-wr1-f41.google.com with SMTP id w21so28295765wra.2;
-        Thu, 31 Mar 2022 02:30:46 -0700 (PDT)
-X-Gm-Message-State: AOAM531+p9JRxXWPCupNmjuADuaWohp1e12ArJ8fnMSS4FhA4lA1beKk
-        vw4alRW5T1123ik/lSskb7cXH7ZuJWv8as9h9Os=
-X-Google-Smtp-Source: ABdhPJxWd3RtjDSXkoA7ngdrzuRWb2WjuY33jCnVXB+A1AAH0qJlJE8UE/skE144ENFuB/dx3i4kfZu3MJkNdoi2xmg=
-X-Received: by 2002:a5d:66ca:0:b0:203:fb72:a223 with SMTP id
- k10-20020a5d66ca000000b00203fb72a223mr3364174wrw.12.1648719041888; Thu, 31
- Mar 2022 02:30:41 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220310195229.109477-1-nick.hawkins@hpe.com> <20220310195229.109477-9-nick.hawkins@hpe.com>
- <eb66cc83-2da9-8e19-db69-633e34fef946@canonical.com> <PH0PR84MB1718C31DB71AA2A67FEC5F6E88119@PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM>
- <b1cc2566-cd78-7cb4-f8a5-d6fc8065fe6e@canonical.com> <PH0PR84MB1718292B1C11F4FE83326A5388119@PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM>
- <fb4def96-4b20-604f-d15d-fef87eb2232d@canonical.com> <PH0PR84MB1718A2CFBFC90C9C0CAA5515881E9@PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM>
- <CAK8P3a0fCE_NM=z68d1m9BTfuKixh1pKLw3gn+Sr7SxKb6UJAg@mail.gmail.com>
- <PH0PR84MB17181C316E55073EBC28C386881E9@PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM>
- <PH0PR84MB17185ADBA824F9CC9EB3E022881F9@PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM>
-In-Reply-To: <PH0PR84MB17185ADBA824F9CC9EB3E022881F9@PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Thu, 31 Mar 2022 11:30:25 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a1080yz9jggOrwz2iQ1sAB2Xe2Emh22uCuqRok60BQSiA@mail.gmail.com>
-Message-ID: <CAK8P3a1080yz9jggOrwz2iQ1sAB2Xe2Emh22uCuqRok60BQSiA@mail.gmail.com>
-Subject: Re: [PATCH v3 09/10] arch: arm: boot: dts: Introduce HPE GXP Device tree
-To:     "Hawkins, Nick" <nick.hawkins@hpe.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        "Verdun, Jean-Marie" <verdun@hpe.com>,
-        Olof Johansson <olof@lixom.net>,
-        "soc@kernel.org" <soc@kernel.org>,
+        Thu, 31 Mar 2022 05:33:43 -0400
+Received: from mg.sunplus.com (unknown [113.196.136.146])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BF29D1BBF7C;
+        Thu, 31 Mar 2022 02:31:53 -0700 (PDT)
+X-MailGates: (flag:3,DYNAMIC,RELAY,NOHOST:PASS)(compute_score:DELIVER,40
+        ,3)
+Received: from 172.17.9.112
+        by mg02.sunplus.com with MailGates ESMTP Server V5.0(30201:0:AUTH_RELAY)
+        (envelope-from <tony.huang@sunplus.com>); Thu, 31 Mar 2022 17:27:32 +0800 (CST)
+Received: from sphcmbx02.sunplus.com.tw (172.17.9.112) by
+ sphcmbx02.sunplus.com.tw (172.17.9.112) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.26; Thu, 31 Mar 2022 17:27:27 +0800
+Received: from sphcmbx02.sunplus.com.tw ([fe80::fd3d:ad1a:de2a:18bd]) by
+ sphcmbx02.sunplus.com.tw ([fe80::fd3d:ad1a:de2a:18bd%14]) with mapi id
+ 15.00.1497.026; Thu, 31 Mar 2022 17:27:27 +0800
+From:   =?utf-8?B?VG9ueSBIdWFuZyDpu4Pmh7fljpo=?= <tony.huang@sunplus.com>
+To:     Arnd Bergmann <arnd@arndb.de>,
+        Tony Huang <tonyhuang.sunplus@gmail.com>
+CC:     Ulf Hansson <ulf.hansson@linaro.org>,
         Rob Herring <robh+dt@kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-X-Provags-ID: V03:K1:gyI13vHiir4qvS+gHbaOuk1V7upswNbgvg4akROxuDFv4rlu2CD
- Tf/TBLjJnvOrv/FgpBF8QmJj3v4fBk/oOAswQOczVkA2dEQlCFk9i9hp0Bwow9G6RPEW7yO
- eLut5PvuBccWeLviFvpGGCG0C9I/hCMpctmWPZ3MEcHQjQPOBljZQL2f6eo1gFxs/KTAxjk
- YQmE6//1LbbmziWTyQQDg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:XJ0tSoddKgQ=:4u3TZgp1G4wkofKNDaiD5K
- QPORxCLAqlWP6hpLjLt+iotfOU6I0iAbHBdzgYC2mu/BdL3aSgnGqozjIYLS3wfURgs+TiA+D
- iPOhm21BvBfqcdibpLVPL6zc6gYDsd8PZZSdMefq/5Vp3yrBvCL/Jty3yJ4z9I4VmqgBWtjPk
- 76Lz3VK0Ig+/mIKz1CNcgXco/g5aeMkhc97uSQuVwD1DyUohneJuMGK4HVoReoqTQxt1ktKxo
- 2T0hSiU66O2CNVfAYn197hVdeZ9q7sNi/2aSciMKE0cD6gPJ2FEQX4jZ6VOX5+UF4mlmO6wFg
- 9lAj1MCzWbdayVEVX6KugGmR/kRweyEiWSVDiZT1HS0AaGdIi8kR5sd0b18DBt0+tVRS0c5Lv
- zIxSxToUSN2f7qwe2cCzi346P+BBkVhFkOuTIVZpLb2QYHQVV7Nbxb86pMDZ9VLzkL4ziqkV/
- gp52U0e/4LiEeHn+9t20h2yQ8OM7ixQze6UKCwXJxAFyz5nzwfYCLPtSvl9wm1N08UzeIzAf0
- stMMXKn+rX0/WOOQiXO/dhFuly9Ecj9RsOgG9PbtE/tyyZqjBO8H6ITDec3NZNPi6+1WxorXt
- qVZPbO4vm6sYeGGHfspIwQZuntZar7FFw3qYRu5W40uyWAxOvedp27EPbV3MGAb26LEekkIYd
- aWi6AWQYDitWGQzmMGS9RyLNrxmbmgVpadTolENuuqtG8vVkHDHsnnX4j4Eu5M0D8CoyKVKV+
- Nr3k1/FQ72nL/A8hoaV0hDGHVbrjNsoIRqfp9ZYDQUHAmDUGRR8Um7AhN+eGUtGYSB4HCZ4jG
- NA6Jfjnn3jn3TihoKb1XHjgxolM/VH+Ot+cilSuixRX1lf7bKd26Sbn2F4XBj0HHR4o1x72
+        "lhjeff911@gmail.com" <lhjeff911@gmail.com>,
+        linux-mmc <linux-mmc@vger.kernel.org>,
+        DTML <devicetree@vger.kernel.org>,
+        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        =?utf-8?B?V2VsbHMgTHUg5ZGC6Iqz6aiw?= <wells.lu@sunplus.com>,
+        =?utf-8?B?TGggS3VvIOmDreWKm+ixqg==?= <lh.Kuo@sunplus.com>
+Subject: RE: [PATCH v5 2/2] mmc: Add mmc driver for Sunplus SP7021
+Thread-Topic: [PATCH v5 2/2] mmc: Add mmc driver for Sunplus SP7021
+Thread-Index: AQHYQ3s7ORyaR4vCu0uQF2nts2U94azV8Q6AgAM9naA=
+Date:   Thu, 31 Mar 2022 09:27:27 +0000
+Message-ID: <7c4b66f7fe4940cba1b0158803767f6e@sphcmbx02.sunplus.com.tw>
+References: <cover.1648551070.git.tonyhuang.sunplus@gmail.com>
+ <46aad49867912fc57b669fc54fdb28638cccfcd9.1648551070.git.tonyhuang.sunplus@gmail.com>
+ <CAK8P3a0CLA33CTerXJ=bK+myhyHp_utoLnTX-NzMgjeb7icAGg@mail.gmail.com>
+In-Reply-To: <CAK8P3a0CLA33CTerXJ=bK+myhyHp_utoLnTX-NzMgjeb7icAGg@mail.gmail.com>
+Accept-Language: zh-TW, en-US
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [172.25.108.54]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 31, 2022 at 12:27 AM Hawkins, Nick <nick.hawkins@hpe.com> wrote:
-> On Tue, Mar 29, 2022 at 9:38 PM Hawkins, Nick <nick.hawkins@hpe.com>> wrote:
->
-> >> I am in the process of rewriting the timer driver for Linux but have hit a dilemma and I am looking for some direction. The registers that represent the watchdog timer, and timer all lay in the same register region and they are spread out to the point where there are other controls  in the same area.
-> >
-> >> For instance with our watchdog controls we have:
-> >
-> >> @90 the countdown value
-> >> @96 the configuration
-> >
-> >> And for our timer we have:
-> >> @80 the countdown value
-> >> @94 the configuration
-> >> @88 this is actually our timestamp register but is being included in with the timer driver currently to call clocksource_mmio_init.
-> >
-> >> What would be your recommendation for this? I was considering creating a gxp-clock that specifically points at the timestamp register but I still have the issue with gxp-timer and gxp-wdt being spread across the same area of registers.
->
-> > I think this is most commonly done using a 'syscon' node, have a look at the files listed by
->
-> I found an example and copied it although I have a couple questions when it comes to actually coding it. Can that be here or should I post these questions in the patch that actually concern the file?
->
-> st: timer@80 {
->         compatible = "hpe,gxp-timer","syscon","simple-mfd";
->         reg = <0x80 0x16>;
->         interrupts = <0>;
->         interrupt-parent = <&vic0>;
->         clocks = <&ppuclk>;
->         clock-names = "ppuclk";
->         clock-frequency = <400000000>;
->
->         watchdog {
->                 compatible = "hpe,gxp-wdt";
->         };
->  };
-
-I'd have to study the other examples myself to see what is most common.
-
-My feeling would be that it's better to either have a "hpe,gxp-timer" parent
-device with a watchdog child but no syscon, or to have a syscon/simple-mfd
-parent with both the timer and the watchdog as children.
-
-       Arnd
+RGVhciBBcm5kOg0KDQo+ID4gQWRkIG1tYyBkcml2ZXIgZm9yIFN1bnBsdXMgU1A3MDIxDQo+ID4N
+Cj4gPiBTaWduZWQtb2ZmLWJ5OiBUb255IEh1YW5nIDx0b255aHVhbmcuc3VucGx1c0BnbWFpbC5j
+b20+DQo+IA0KPiBUaGVyZSBzaG91bGQgYmUgYSBkZXNjcmlwdGlvbiBvZiB0aGUgZGV2aWNlIGlu
+IHRoZSBjaGFuZ2Vsb2csIG5vdCBqdXN0IHRoZSBzYW1lDQo+IHRleHQgYXMgdGhlIHN1YmplY3Qu
+DQoNCk9LLCBJIHdpbGwgYWRkIGRlc2NyaXB0aW9uLg0KDQo+ID4gK3N0YXRpYyB2b2lkIHNwbW1j
+X3JlcXVlc3Qoc3RydWN0IG1tY19ob3N0ICptbWMsIHN0cnVjdCBtbWNfcmVxdWVzdA0KPiA+ICsq
+bXJxKSB7DQo+ID4gKyAgICAgICBzdHJ1Y3Qgc3BtbWNfaG9zdCAqaG9zdCA9IG1tY19wcml2KG1t
+Yyk7DQo+ID4gKyAgICAgICBzdHJ1Y3QgbW1jX2RhdGEgKmRhdGE7DQo+ID4gKyAgICAgICBzdHJ1
+Y3QgbW1jX2NvbW1hbmQgKmNtZDsNCj4gPiArICAgICAgIGludCByZXQ7DQo+ID4gKw0KPiA+ICsg
+ICAgICAgcmV0ID0gbXV0ZXhfbG9ja19pbnRlcnJ1cHRpYmxlKCZob3N0LT5tcnFfbG9jayk7DQo+
+ID4gKyAgICAgICBpZiAocmV0KQ0KPiA+ICsgICAgICAgICAgICAgICByZXR1cm47DQo+IA0KPiBJ
+IGRvbid0IHRoaW5rIGl0J3MgdmFsaWQgdG8ganVzdCByZXR1cm4gaGVyZSB3aGVuIHlvdSBnZXQg
+YSBzaWduYWwuIElmIG5vdGhpbmcgY2FuDQo+IGhhbmRsZSB0aGUgc2lnbmFsLCBkb2Vzbid0IGl0
+IGp1c3QgaGFuZz8NCj4gDQo+IEl0IGFsc28gYXBwZWFycyB0aGF0IHlvdSBkb24ndCByZWxlYXNl
+IHRoZSBtdXRleCB1bnRpbCB0aGUgdGFza2xldCBydW5zLCBidXQgaXQgaXMNCj4gbm90IHZhbGlk
+IHRvIHJlbGVhc2UgYSBtdXRleCBmcm9tIGEgZGlmZmVyZW50IGNvbnRleHQuDQo+IA0KPiBZb3Ug
+c2hvdWxkIGdldCBhIHdhcm5pbmcgYWJvdXQgdGhpcyB3aGVuIHJ1bm5pbmcgYSBrZXJuZWwgd2l0
+aCBsb2NrZGVwDQo+IGVuYWJsZWQgYXQgY29tcGlsZSB0aW1lLiBQbGVhc2UgcmV3b3JrIHRoZSBs
+b2NraW5nIHRvIG1ha2UgdGhpcyB3b3JrLg0KPiANCglSZW9tdmUgY29kZToNCiAgICByZXQgPSBt
+dXRleF9sb2NrX2ludGVycnVwdGlibGUoJmhvc3QtPm1ycV9sb2NrKTsNCiAgICBpZiAocmV0KQ0K
+ICAgICAgICAgcmV0dXJuOw0KDQoJQmVsb3cgaXMgbXkgbW9kaWZpY2F0aW9uOg0KLiAgICBtdXRl
+eF9sb2NrKCZob3N0LT5tcnFfbG9jayk7DQoNCg0KPiA+ICsjZW5kaWYgLyogaWZkZWYgQ09ORklH
+X1BNX1JVTlRJTUUgKi8NCj4gPiArDQo+ID4gK3N0YXRpYyBjb25zdCBzdHJ1Y3QgZGV2X3BtX29w
+cyBzcG1tY19wbV9vcHMgPSB7DQo+ID4gKyAgICAgICBTRVRfU1lTVEVNX1NMRUVQX1BNX09QUyhz
+cG1tY19wbV9zdXNwZW5kLA0KPiBzcG1tY19wbV9yZXN1bWUpDQo+ID4gKyNpZmRlZiBDT05GSUdf
+UE1fUlVOVElNRQ0KPiA+ICsgICAgICAgU0VUX1JVTlRJTUVfUE1fT1BTKHNwbW1jX3BtX3J1bnRp
+bWVfc3VzcGVuZCwNCj4gPiArc3BtbWNfcG1fcnVudGltZV9yZXN1bWUsIE5VTEwpICNlbmRpZiB9
+OyAjZW5kaWYgLyogaWZkZWYgQ09ORklHX1BNDQo+ICovDQo+IA0KPiBJdCdzIGJldHRlciB0byB1
+c2UgU1lTVEVNX1NMRUVQX1BNX09QUy9SVU5USU1FX1BNX09QUyBpbnN0ZWFkIG9mIHRoZQ0KPiBT
+RVRfIHZlcnNpb24sIHRoZW4geW91IGNhbiByZW1vdmUgYWxsIHRoZSAjaWZkZWYgY2hlY2tzLg0K
+PiANCg0KCUkgdXNlIFNZU1RFTV9TTEVFUF9QTV9PUFMvUlVOVElNRV9QTV9PUFMuIAkJCQkJCQkJ
+DQoJQ29tcGlsZSBzaG93cyBlcnJvci4gRXJyb3I6IGltcGxpY2l0IGRlY2xhcmF0aW9uIG9mIGZ1
+bmN0aW9uID8gPyBTWVNURU1fU0xFRVBfUE1fT1BTPyA/IERpZCB5b3UgbWVhbiA/ID8gU0VUX1NZ
+U1RFTV9TTEVFUF9QTV9PUFM/ID8JCVstV2Vycm9yPWltcGxpY2l0LWZ1bmN0aW9uLWRlY2xhcmF0
+aW9uXQkJCQkJCQkJDQoJCQkJCQkJCQkNCglJIHJlZmVyZW5jZSBvdGhlciBtbWMgZHJpdmVyLgkJ
+CQkJCQkJDQoJQmVsb3cgaXMgbXkgbW9kaWZpY2F0aW9uOg0KICAgIENvbXBpbGVyIGlzIHBhc3Mu
+CQkJCQkJCQkNCgkJCQkJCQkJCQ0KCSNpZmRlZiBDT05GSUdfUE1fU0xFRVAJCQkJCQkJCQ0KCXN0
+YXRpYyBpbnQgc3BtbWNfcG1fc3VzcGVuZChzdHJ1Y3QgZGV2aWNlICpkZXYpCQkJCQkJCQkNCgl7
+CQkJCQkJCQkNCgkJcG1fcnVudGltZV9mb3JjZV9zdXNwZW5kKGRldik7CQkJCQkJCQ0KCQkJCQkJ
+CQkJDQoJCXJldHVybiAwOwkJCQkJCQkNCgl9CQkJCQkJCQkNCgkJCQkJCQkJCQ0KCXN0YXRpYyBp
+bnQgc3BtbWNfcG1fcmVzdW1lKHN0cnVjdCBkZXZpY2UgKmRldikJCQkJCQkJCQ0KCXsJCQkJCQkJ
+CQ0KCQlwbV9ydW50aW1lX2ZvcmNlX3Jlc3VtZShkZXYpOwkJCQkJCQkNCgkJCQkJCQkJCQ0KCQly
+ZXR1cm4gMDsJCQkJCQkJDQoJfQkJCQkJCQkJDQoJI2VuZGlmCQkJCQkJCQkNCgkJCQkJCQkJCQ0K
+CSNpZmRlZiBDT05GSUdfUE0JCQkJCQkJCQ0KCXN0YXRpYyBpbnQgc3BtbWNfcG1fcnVudGltZV9z
+dXNwZW5kKHN0cnVjdCBkZXZpY2UgKmRldikJCQkJCQkJCQ0KCXsJCQkJCQkJCQ0KCQlzdHJ1Y3Qg
+c3BtbWNfaG9zdCAqaG9zdDsJCQkJCQkJDQoJCQkJCQkJCQkNCgkJaG9zdCA9IGRldl9nZXRfZHJ2
+ZGF0YShkZXYpOwkJCQkJCQkNCgkJY2xrX2Rpc2FibGUoaG9zdC0+Y2xrKTsJCQkJCQkJDQoJCQkJ
+CQkJCQkNCgkJcmV0dXJuIDA7CQkJCQkJCQ0KCX0JCQkJCQkJCQ0KCQkJCQkJCQkJDQoJc3RhdGlj
+IGludCBzcG1tY19wbV9ydW50aW1lX3Jlc3VtZShzdHJ1Y3QgZGV2aWNlICpkZXYpCQkJCQkJCQkN
+Cgl7CQkJCQkJCQkNCgkJc3RydWN0IHNwbW1jX2hvc3QgKmhvc3Q7CQkJCQkJCQ0KCQkJCQkJCQkJ
+DQoJCWhvc3QgPSBkZXZfZ2V0X2RydmRhdGEoZGV2KTsJCQkJCQkJDQoJCQkJCQkJCQkNCgkJcmV0
+dXJuIGNsa19lbmFibGUoaG9zdC0+Y2xrKTsJCQkJCQkJDQoJfQkJCQkJCQkJDQoJI2VuZGlmCQkJ
+CQkJCQkNCgkJCQkJCQkJCQ0KCXN0YXRpYyBjb25zdCBzdHJ1Y3QgZGV2X3BtX29wcyBzcG1tY19w
+bV9vcHMgPSB7CQkJCQkJCQkNCgkJU0VUX1NZU1RFTV9TTEVFUF9QTV9PUFMoc3BtbWNfcG1fc3Vz
+cGVuZCwgc3BtbWNfcG1fcmVzdW1lKQkJCQkJCQkNCgkJU0VUX1JVTlRJTUVfUE1fT1BTKHNwbW1j
+X3BtX3J1bnRpbWVfc3VzcGVuZCwgc3BtbWNfcG1fcnVudGltZV9yZXN1bWUsIE5VTEwpCQkJCQkJ
+CQ0KCX07CQkJCQkJCQkNCg0K
