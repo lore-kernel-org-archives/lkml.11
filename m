@@ -2,70 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01CB6C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 07:10:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C846FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 07:10:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231694AbiCaHL6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 03:11:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38252 "EHLO
+        id S231709AbiCaHME (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 03:12:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230243AbiCaHLz (ORCPT
+        with ESMTP id S231701AbiCaHMC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 03:11:55 -0400
-Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2AA451E3FF;
-        Thu, 31 Mar 2022 00:10:07 -0700 (PDT)
-Received: by angie.orcam.me.uk (Postfix, from userid 500)
-        id 35F8992009C; Thu, 31 Mar 2022 09:10:06 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by angie.orcam.me.uk (Postfix) with ESMTP id 339DB92009B;
-        Thu, 31 Mar 2022 08:10:06 +0100 (BST)
-Date:   Thu, 31 Mar 2022 08:10:06 +0100 (BST)
-From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
-To:     Bjorn Helgaas <bhelgaas@google.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>
-cc:     x86@kernel.org, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [RESEND][PATCH v2 0/4] x86/PCI: Odd generic PIRQ router
- improvements
-Message-ID: <alpine.DEB.2.21.2203301527270.22465@angie.orcam.me.uk>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+        Thu, 31 Mar 2022 03:12:02 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BF7A6A048
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 00:10:14 -0700 (PDT)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KTZCP5XjhzgYBv;
+        Thu, 31 Mar 2022 15:08:33 +0800 (CST)
+Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Thu, 31 Mar 2022 15:10:13 +0800
+Received: from [10.174.177.243] (10.174.177.243) by
+ dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
+ 15.1.2308.21; Thu, 31 Mar 2022 15:10:12 +0800
+Message-ID: <a56955c0-9b15-e70a-9483-e08c97a4c5fd@huawei.com>
+Date:   Thu, 31 Mar 2022 15:10:12 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH v2 2/3] arm64: mm: Don't defer reserve_crashkernel() with
+ dma_force_32bit
+Content-Language: en-US
+To:     kernel test robot <lkp@intel.com>, <catalin.marinas@arm.com>,
+        <will@kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <kbuild-all@lists.01.org>, <vijayb@linux.microsoft.com>,
+        <f.fainelli@gmail.com>
+References: <20220331025946.51163-3-wangkefeng.wang@huawei.com>
+ <202203311421.VENALFHe-lkp@intel.com>
+From:   Kefeng Wang <wangkefeng.wang@huawei.com>
+In-Reply-To: <202203311421.VENALFHe-lkp@intel.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.177.243]
+X-ClientProxiedBy: dggeme701-chm.china.huawei.com (10.1.199.97) To
+ dggpemm500001.china.huawei.com (7.185.36.107)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
 
- This series was dropped from x86/irq due to a bug in a follow-up patch, 
-so resending verbatim after re-verification.
-
- While working on the SiS85C497 PIRQ router I have noticed an odd
-phenomenon with my venerable Tyan Tomcat IV S1564D board, where the PCI 
-INTD# line of the USB host controller included as function 3 of the PIIX3 
-southbridge cannot be routed in the `noapic' mode.  As it turns out the 
-reason for this is the BIOS has two individual entries in its PIRQ table 
-for two of its three functions, and the wrong one is chosen for routing 
-said line.
-
- Strictly speaking this violates the PCI BIOS specification, but it can be 
-easily worked around while preserving the semantics for compliant systems.
-
- Therefore I have come up with this patch series, which addresses this 
-problem with 3/4, adds function reporting to the debug PIRQ table dump 
-with 2/4 and also prints a usable physical memory address of the PIRQ 
-table in a debug message with 1/4.
-
- Then 4/4 follows, addressing the inability to use a PIRQ table to route 
-interrupts for devices placed behind PCI-to-PCI bridges on option cards, 
-and especially where the BIOS has failed to enumerate the whole bus tree 
-in the first place.
-
- See individual change descriptions for further details.
-
- Please apply.
-
-  Maciej
+On 2022/3/31 15:01, kernel test robot wrote:
+> Hi Kefeng,
+>
+> Thank you for the patch! Yet something to improve:
+>
+> [auto build test ERROR on next-20220330]
+> [cannot apply to arm64/for-next/core v5.17 v5.17-rc8 v5.17-rc7 v5.17]
+> [If your patch is applied to the wrong git tree, kindly drop us a note.
+> And when submitting patch, we suggest to use '--base' as documented in
+> https://git-scm.com/docs/git-format-patch]
+Thanks， will resend this patchset.
