@@ -2,136 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E444C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 14:11:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 747BDC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 14:11:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237375AbiCaONG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 10:13:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37258 "EHLO
+        id S237369AbiCaONn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 10:13:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237342AbiCaONC (ORCPT
+        with ESMTP id S233212AbiCaONl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 10:13:02 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 453971AA4A1;
-        Thu, 31 Mar 2022 07:11:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1648735875; x=1680271875;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=s14Q9frxV/DdiV00e2n8rH5uoNNzzoof8snfleEcI58=;
-  b=xD+IVauBKfNNeVcAZt82mhrwq5S8MaiMyYJgD0FuoQ8lGR3DE/D7ckOR
-   M5lDaEjlTwNUJjWtmcHiaDrDxXG7+iRj/aHKQGYS8BkoAJ144djmR7eSF
-   3bmF6Y3SITw+pxRgbxWgRjSYc1G8Jn7MtAN7FGmAmVMueXhdG75ZBvce1
-   9ffkD1ZlwOsiRD7eiKlSuViH7s1TEMF+td7xwy0e2O6thjfsT30Yn6poZ
-   2rHqegfpfZ+jVk0qIjc1UA06TLSMYRvDZSEOAQODb2vcLlJpPhz4rmzwC
-   fv/5Y/H66/HSYWLk4SKzyzkAgECjnkKRwmBAmsSKmwdrqLBB1H0twvqP6
-   w==;
-X-IronPort-AV: E=Sophos;i="5.90,225,1643698800"; 
-   d="scan'208";a="158386519"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 31 Mar 2022 07:11:15 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 31 Mar 2022 07:11:14 -0700
-Received: from localhost.localdomain (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Thu, 31 Mar 2022 07:11:12 -0700
-From:   Claudiu Beznea <claudiu.beznea@microchip.com>
-To:     <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
-        <robh+dt@kernel.org>
-CC:     <devicetree@vger.kernel.org>,
+        Thu, 31 Mar 2022 10:13:41 -0400
+Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBD9F214043
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 07:11:52 -0700 (PDT)
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 22VEBVBK020022;
+        Thu, 31 Mar 2022 09:11:31 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1648735891;
+        bh=ZDdSKsPCwWPCWqcIz0i8RFY6FrZTU5tHLq0iTroiyhg=;
+        h=From:To:CC:Subject:Date;
+        b=bGqElQVSJtbwIzkzitM96B3StQlVSVMx2R+YBnvUzw2Wy2qwzXQGiaWF4oCeKHxIt
+         cz1VTA659gAR3+mns/hIs7xBYkGsFtNftmrRjCdSAAb3g85SGgS/+i2L5w22oWvIRA
+         afmcDPyKeoYRjc38fuXwfkLufnARhVrSoT1MU1WI=
+Received: from DLEE100.ent.ti.com (dlee100.ent.ti.com [157.170.170.30])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 22VEBV61004507
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 31 Mar 2022 09:11:31 -0500
+Received: from DLEE102.ent.ti.com (157.170.170.32) by DLEE100.ent.ti.com
+ (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Thu, 31
+ Mar 2022 09:11:30 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE102.ent.ti.com
+ (157.170.170.32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Thu, 31 Mar 2022 09:11:30 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 22VEBTru097691;
+        Thu, 31 Mar 2022 09:11:30 -0500
+From:   Rahul T R <r-ravikumar@ti.com>
+To:     <bjorn.andersson@linaro.org>, <catalin.marinas@arm.com>,
+        <will@kernel.org>, <shawnguo@kernel.org>, <krzk@kernel.org>,
+        <geert+renesas@glider.be>, <marcel.ziswiler@toradex.com>
+CC:     <biju.das.jz@bp.renesas.com>, <vkoul@kernel.org>,
+        <enric.balletbo@collabora.com>,
         <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Ajay Kathat <ajay.kathat@microchip.com>
-Subject: [PATCH 2/2] ARM: dts: at91: fix pinctrl phandles
-Date:   Thu, 31 Mar 2022 17:13:23 +0300
-Message-ID: <20220331141323.194355-2-claudiu.beznea@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220331141323.194355-1-claudiu.beznea@microchip.com>
-References: <20220331141323.194355-1-claudiu.beznea@microchip.com>
+        <linux-kernel@vger.kernel.org>, <tomi.valkeinen@ideasonboard.com>,
+        <laurent.pinchart@ideasonboard.com>, <nm@ti.com>,
+        <r-ravikumar@ti.com>
+Subject: [PATCH v3] arm64: defconfig: Enable configs for DisplayPort on J721e
+Date:   Thu, 31 Mar 2022 19:41:13 +0530
+Message-ID: <20220331141113.15747-1-r-ravikumar@ti.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit bf781869e5cf ("ARM: dts: at91: add pinctrl-{names, 0} for all
-gpios") introduces pinctrl phandles for pins used by individual
-controllers to avoid failures due to commit 2ab73c6d8323 ("gpio:
-Support GPIO controllers without pin-ranges"). For SPI controllers
-available on SAMA5D4 and SAMA5D3 some of the pins are defined in
-SoC specific dtsi on behalf of pinctrl-0. Adding extra pinctrl phandles
-on board specific dts also on behalf of pinctrl-0 overwrite the pinctrl-0
-phandle specified in SoC specific dtsi. Thus add the board specific
-pinctrl to pinctrl-1.
+Enable DRM and PHY configs required for supporting
+DisplayPort on J721e
 
-Fixes: bf781869e5cf ("ARM: dts: at91: add pinctrl-{names, 0} for all gpios")
-Depends-on: e8042102d11e ("ARM: dts: at91: sama5d4_xplained: fix pinctrl phandle name")
-Reported-by: Ajay Kathat <ajay.kathat@microchip.com>
-Co-developed-by: Ajay Kathat <ajay.kathat@microchip.com>
-Signed-off-by: Ajay Kathat <ajay.kathat@microchip.com>
-Tested-by: Ajay Kathat <ajay.kathat@microchip.com>
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Signed-off-by: Rahul T R <r-ravikumar@ti.com>
+Reviewed-by: Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>
 ---
 
-Hi, Nicolas,
+Notes:
+    v2:
+        Fixed the places using savedefconfig
+        Added more info in notes
 
-If all good with this patches please update the SHA1 on "Depends-on"
-tag.
+    v3:
+        rebased to next-20220330
 
-Thank you,
-Claudiu Beznea
+    No change in vmlinux:
 
- arch/arm/boot/dts/at91-sama5d3_xplained.dts | 8 ++++----
- arch/arm/boot/dts/at91-sama5d4_xplained.dts | 4 ++--
- 2 files changed, 6 insertions(+), 6 deletions(-)
+        add/remove: 0/0 grow/shrink: 0/0 up/down: 0/0 (0)
+        Function                                     old     new   delta
+        Total: Before=24042991, After=24042991, chg +0.00%
 
-diff --git a/arch/arm/boot/dts/at91-sama5d3_xplained.dts b/arch/arm/boot/dts/at91-sama5d3_xplained.dts
-index d72c042f2850..a49c2966b41e 100644
---- a/arch/arm/boot/dts/at91-sama5d3_xplained.dts
-+++ b/arch/arm/boot/dts/at91-sama5d3_xplained.dts
-@@ -57,8 +57,8 @@ slot@0 {
- 			};
- 
- 			spi0: spi@f0004000 {
--				pinctrl-names = "default";
--				pinctrl-0 = <&pinctrl_spi0_cs>;
-+				pinctrl-names = "default", "cs";
-+				pinctrl-1 = <&pinctrl_spi0_cs>;
- 				cs-gpios = <&pioD 13 0>, <0>, <0>, <&pioD 16 0>;
- 				status = "okay";
- 			};
-@@ -171,8 +171,8 @@ slot@0 {
- 			};
- 
- 			spi1: spi@f8008000 {
--				pinctrl-names = "default";
--				pinctrl-0 = <&pinctrl_spi1_cs>;
-+				pinctrl-names = "default", "cs";
-+				pinctrl-1 = <&pinctrl_spi1_cs>;
- 				cs-gpios = <&pioC 25 0>;
- 				status = "okay";
- 			};
-diff --git a/arch/arm/boot/dts/at91-sama5d4_xplained.dts b/arch/arm/boot/dts/at91-sama5d4_xplained.dts
-index accb92cfac44..e519d2747936 100644
---- a/arch/arm/boot/dts/at91-sama5d4_xplained.dts
-+++ b/arch/arm/boot/dts/at91-sama5d4_xplained.dts
-@@ -81,8 +81,8 @@ usart4: serial@fc010000 {
- 			};
- 
- 			spi1: spi@fc018000 {
--				pinctrl-names = "default";
--				pinctrl-0 = <&pinctrl_spi1_cs>;
-+				pinctrl-names = "default", "cs";
-+				pinctrl-1 = <&pinctrl_spi1_cs>;
- 				cs-gpios = <&pioB 21 0>;
- 				status = "okay";
- 			};
+    boot logs:
+        https://gist.githubusercontent.com/ravi-rahul/1bdbc3f77ab381e486c8394650c2e85d/raw/f04584c30181821c4ee83aee7781a9ba143cd3f3/j7_DP_upstream.log
+
+ arch/arm64/configs/defconfig | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
+index 813e644b6af1..b5f9fbb054fa 100644
+--- a/arch/arm64/configs/defconfig
++++ b/arch/arm64/configs/defconfig
+@@ -742,6 +742,7 @@ CONFIG_DRM_THINE_THC63LVD1024=m
+ CONFIG_DRM_TI_SN65DSI86=m
+ CONFIG_DRM_I2C_ADV7511=m
+ CONFIG_DRM_I2C_ADV7511_AUDIO=y
++CONFIG_DRM_CDNS_MHDP8546=m
+ CONFIG_DRM_DW_HDMI_AHB_AUDIO=m
+ CONFIG_DRM_DW_HDMI_CEC=m
+ CONFIG_DRM_IMX_DCSS=m
+@@ -756,6 +757,7 @@ CONFIG_DRM_MESON=m
+ CONFIG_DRM_PL111=m
+ CONFIG_DRM_LIMA=m
+ CONFIG_DRM_PANFROST=m
++CONFIG_DRM_TIDSS=m
+ CONFIG_FB=y
+ CONFIG_FB_MODE_HELPERS=y
+ CONFIG_FB_EFI=y
+@@ -1162,6 +1164,7 @@ CONFIG_RESET_RZG2L_USBPHY_CTRL=y
+ CONFIG_RESET_TI_SCI=y
+ CONFIG_PHY_XGENE=y
+ CONFIG_PHY_SUN4I_USB=y
++CONFIG_PHY_CADENCE_TORRENT=m
+ CONFIG_PHY_CADENCE_SIERRA=m
+ CONFIG_PHY_MIXEL_MIPI_DPHY=m
+ CONFIG_PHY_FSL_IMX8M_PCIE=y
 -- 
-2.32.0
+2.17.1
 
