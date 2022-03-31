@@ -2,97 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4781C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 16:12:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAA2DC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 16:14:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239209AbiCaQOl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 12:14:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36214 "EHLO
+        id S239680AbiCaQPt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 12:15:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236486AbiCaQOk (ORCPT
+        with ESMTP id S236112AbiCaQPs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 12:14:40 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F10521D59D8;
-        Thu, 31 Mar 2022 09:12:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648743173; x=1680279173;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=FZgzdZcxCZ1pvLN2PUSZ0qsm/sXsOBfkSy9XeCnr8gc=;
-  b=cm6xF1dFe8m3rok8k44PBbvsxMZuvT6yp7gc6AZ4z49+VIJ0NWx/LAj8
-   cP3l2W7hpt+Tbd6J8OC7uWD+zECvqP3G/uFqOQIjxy3EwQvKV8hLQMw9t
-   gnLX1QDZ8pYUp4htYY323g5D28pUAL4VS3YCgrVz0a+8zl+cEoPGFSyic
-   tSO+g3gDpfUNcu1WpKsyH6w7+I2587cfiYC9TLO7urJMQ8T4J9tVzXoWt
-   xtDk5w5NLDoxpOXOcUjLQRYGnDR8OlHOxzvVLsLbuFaE0iOevxxnCxc5s
-   3EW6/YFox3BjC3qvmqBlTfbuzuDh6WnYQL8mQRylKDcjo+/9DdYby4u5B
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="258713667"
-X-IronPort-AV: E=Sophos;i="5.90,225,1643702400"; 
-   d="scan'208";a="258713667"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2022 09:12:36 -0700
-X-IronPort-AV: E=Sophos;i="5.90,225,1643702400"; 
-   d="scan'208";a="522403605"
-Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2022 09:12:31 -0700
-Received: by lahna (sSMTP sendmail emulation); Thu, 31 Mar 2022 19:10:20 +0300
-Date:   Thu, 31 Mar 2022 19:10:20 +0300
-From:   Mika Westerberg <mika.westerberg@linux.intel.com>
-To:     Benson Leung <bleung@google.com>
-Cc:     Takashi Iwai <tiwai@suse.de>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Won Chung <wonchung@google.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Benson Leung <bleung@chromium.org>,
-        Prashant Malani <pmalani@chromium.org>,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH v2] sound/hda: Add NULL check to component match callback
- function
-Message-ID: <YkXSbPG+PuyGub2V@lahna>
-References: <s5hzgl6eg48.wl-tiwai@suse.de>
- <CAOvb9yiO_n48JPZ3f0+y-fQ_YoOmuWF5c692Jt5_SKbxdA4yAw@mail.gmail.com>
- <s5hr16ieb8o.wl-tiwai@suse.de>
- <YkVzl4NEzwDAp/Zq@kuha.fi.intel.com>
- <s5hmth6eaiz.wl-tiwai@suse.de>
- <YkV1rsq1SeTNd8Ud@kuha.fi.intel.com>
- <s5hk0cae9pw.wl-tiwai@suse.de>
- <s5h7d8adzdl.wl-tiwai@suse.de>
- <s5hzgl6ciho.wl-tiwai@suse.de>
- <YkXJr2KhSzHJHxRF@google.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YkXJr2KhSzHJHxRF@google.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+        Thu, 31 Mar 2022 12:15:48 -0400
+Received: from hutie.ust.cz (unknown [IPv6:2a03:3b40:fe:f0::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5A319FF8;
+        Thu, 31 Mar 2022 09:13:58 -0700 (PDT)
+Content-Type: text/plain;
+        charset=utf-8
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cutebit.org; s=mail;
+        t=1648743234; bh=BxE8wIN6zo6oZw87Bp/sf89zaabaM2ryoJcy+5lANO8=;
+        h=Subject:From:In-Reply-To:Date:Cc:References:To;
+        b=S4LvguHX5OQUd+3hqCus3jymE1UDI9kMSUb0WNJ8hP64BQ2FzC5y7QCNO2BK0ySIJ
+         T4k1A4IfwBXRH4IKEGwSWwfXpsgEog/XCLRvbmsjie1ZIuRYukWI6RCN009VeZicjU
+         MhIXhFIuYBpAoZnX/abRjc6QzzesEMFoW+LUMqZQ=
+Mime-Version: 1.0 (Mac OS X Mail 15.0 \(3693.40.0.1.81\))
+Subject: Re: [PATCH 1/2] dt-bindings: dma: Add Apple ADMAC
+From:   =?utf-8?Q?Martin_Povi=C5=A1er?= <povik@cutebit.org>
+In-Reply-To: <YkW2OG3dU4YFYJEZ@matsya>
+Date:   Thu, 31 Mar 2022 18:13:53 +0200
+Cc:     =?utf-8?Q?Martin_Povi=C5=A1er?= <povik+lin@cutebit.org>,
+        Hector Martin <marcan@marcan.st>,
+        Sven Peter <sven@svenpeter.dev>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        linux-arm-kernel@lists.infradead.org, dmaengine@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Mark Kettenis <kettenis@openbsd.org>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <B75EEC8B-FE88-47EA-8F56-0DD7EDE0DB77@cutebit.org>
+References: <20220330164458.93055-1-povik+lin@cutebit.org>
+ <20220330164458.93055-2-povik+lin@cutebit.org> <YkU6yvUQ6v4VdXiJ@matsya>
+ <C2D8BDAF-0ACF-4756-B10F-B5097BC93670@cutebit.org>
+ <265B2992-06E5-4E45-A971-B170A385EFD4@cutebit.org> <YkW2OG3dU4YFYJEZ@matsya>
+To:     Vinod Koul <vkoul@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
 
-On Thu, Mar 31, 2022 at 08:33:03AM -0700, Benson Leung wrote:
-> > --- a/sound/hda/hdac_i915.c
-> > +++ b/sound/hda/hdac_i915.c
-> > @@ -102,18 +102,13 @@ static int i915_component_master_match(struct device *dev, int subcomponent,
-> >  	struct pci_dev *hdac_pci, *i915_pci;
-> >  	struct hdac_bus *bus = data;
-> >  
-> > -	if (!dev_is_pci(dev))
-> > +	if (subcomponent != I915_COMPONENT_AUDIO || !dev_is_pci(dev))
-> >  		return 0;
-> >  
-> 
-> If I recall this bug correctly, it's not the usb port perse that is falling
-> through this !dev_is_pci(dev) check, it's actually the usb4-port in a new
-> proposed patch by Heikki and Mika to extend the usb type-c component to
-> encompass the usb4 specific pieces too. Is it possible usb4 ports are considered
-> pci devices, and that's how we got into this situation?
+> On 31. 3. 2022, at 16:10, Vinod Koul <vkoul@kernel.org> wrote:
+>=20
+> On 31-03-22, 09:06, Martin Povi=C5=A1er wrote:
+>>=20
+>>> On 31. 3. 2022, at 8:50, Martin Povi=C5=A1er <povik@cutebit.org> =
+wrote:
+>>>>=20
+>>>> On 31. 3. 2022, at 7:23, Vinod Koul <vkoul@kernel.org> wrote:
+>>>>=20
+>>>> On 30-03-22, 18:44, Martin Povi=C5=A1er wrote:
+>>>>> Apple's Audio DMA Controller (ADMAC) is used to fetch and store =
+audio
+>>>>> samples on Apple SoCs from the "Apple Silicon" family.
+>>>>>=20
+>>>>> Signed-off-by: Martin Povi=C5=A1er <povik+lin@cutebit.org>
+>>>>> ---
+>>>>> .../devicetree/bindings/dma/apple,admac.yaml  | 73 =
++++++++++++++++++++
+>>>>> 1 file changed, 73 insertions(+)
+>>>>> create mode 100644 =
+Documentation/devicetree/bindings/dma/apple,admac.yaml
+>>>>>=20
+>>>>> diff --git =
+a/Documentation/devicetree/bindings/dma/apple,admac.yaml =
+b/Documentation/devicetree/bindings/dma/apple,admac.yaml
+>>>>> new file mode 100644
+>>>>> index 000000000000..34f76a9a2983
+>>>>> --- /dev/null
+>>>>> +++ b/Documentation/devicetree/bindings/dma/apple,admac.yaml
+>>>=20
+>>>>> +  apple,internal-irq-destination:
+>>>>> +    $ref: /schemas/types.yaml#/definitions/uint32
+>>>>> +    description: Index influencing internal routing of the IRQs
+>>>>> +      within the peripheral.
+>>>>=20
+>>>> do you have more details for this, is this for peripheral and if so
+>>>> suited to be in dam-cells?
+>>>=20
+>>> By peripheral I meant the DMA controller itself here.=20
+>=20
+> Dmaengine convention is that peripheral is device which we are doing =
+dma
+> to/from, like audio controller/fifo here
+>=20
+>>> Effectively the controller has four independent IRQ outputs and the =
+driver
+>>> needs to know which one we are using. (It need not be the same =
+output even
+>>> for different ADMAC instances on one die.)
+>=20
+> That smells like a mux to me.. why not use dma-requests for this?
 
-For usb4_port the dev_ic_pci(dev) returns false:
+I am not sure that=E2=80=99s right. Reading the dmaengine docs, DMA =
+requests seem to have
+to do with the DMA-controller-to-peripheral connection, but the proposed =
+property
+tells us which of four independent IRQ outputs of the DMA controller we =
+actually
+have in the interrupts=3D property. That is, it has to do with the =
+DMA-controller-to-CPU
+connection.
 
-  #define dev_is_pci(d) ((d)->bus == &pci_bus_type)
+(I took the liberty of correcting my typo in the quotation.)
 
-We don't attach them to PCI bus (well they are not PCI devices).
+>=20
+> --=20
+> ~Vinod
+
