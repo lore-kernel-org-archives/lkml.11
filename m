@@ -2,94 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA6C1C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA3E3C433FE
 	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 11:32:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235189AbiCaLeU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 07:34:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40862 "EHLO
+        id S235184AbiCaLeD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 07:34:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235164AbiCaLeO (ORCPT
+        with ESMTP id S235158AbiCaLeB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 07:34:14 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7EC2D2028A0
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 04:32:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648726345;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=SAu/4xzDajMNjep6aDEEiUFGX6R0FRcoSt433wu4cDw=;
-        b=bHkkY+2EEsJQt1mXnZeVJtEo+sRboiwfzOKZJIuzrBVJg/UTAZbT8Ri7zadv6mFVE/BUcc
-        Uyl9V0xk8V7503KLUvrHSXzHh2GtQWvlhB1YO9Wm4jcQAWSRJZx5NPVQeH4CPYid818kNq
-        AMhKmjJf71JeOlvCr7GtlfihWOJ8bKU=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-331-tOc7I50TPx-Lde9yQz4wNg-1; Thu, 31 Mar 2022 07:32:21 -0400
-X-MC-Unique: tOc7I50TPx-Lde9yQz4wNg-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Thu, 31 Mar 2022 07:34:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED3BE182DAE;
+        Thu, 31 Mar 2022 04:32:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 80F54188B2BE;
-        Thu, 31 Mar 2022 11:32:21 +0000 (UTC)
-Received: from localhost (ovpn-13-26.pek2.redhat.com [10.72.13.26])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id C50C3C15D42;
-        Thu, 31 Mar 2022 11:32:20 +0000 (UTC)
-Date:   Thu, 31 Mar 2022 19:32:17 +0800
-From:   Baoquan He <bhe@redhat.com>
-To:     akpm@linux-foundation.org, x86@kernel.org
-Cc:     linux-kernel@vger.kernel.org, kexec@lists.infradead.org,
-        dyoung@redhat.com, linux-mm@kvack.org
-Subject: Re: [PATCH v2 0/2] x86/kexec: fix memory leak of elf header buffer
-Message-ID: <YkWRQdp7TxV22ygO@MiWiFi-R3L-srv>
-References: <20220223113225.63106-1-bhe@redhat.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 875ED615DB;
+        Thu, 31 Mar 2022 11:32:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27D67C340F3;
+        Thu, 31 Mar 2022 11:32:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1648726331;
+        bh=t0lC1RQIMJQ9wmY9jq+yTfW7RjoXXGVpdb/3uZ0FJ0Y=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=fNHj4AGDpAZrOi7HiVrnjfUu7pjzWkaPko+JNLbcKZCq1IcQNPbnZI3QbEQF8yvRD
+         Rvk9BPTAwt7es2EjGzdbFqgtTVi8dudTKL5PzhagULHwH7Fd7NF7hUGYl/TkAaJfQP
+         HfvLROs/ZB3GYsvWt/+ImhAkzMugwhVX4fBop67k=
+Date:   Thu, 31 Mar 2022 13:32:07 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Nas Chung <nas.chung@chipsnmedia.com>
+Cc:     "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>,
+        Dafna Hirschfeld <dafna.hirschfeld@collabora.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        "open list:STAGING SUBSYSTEM" <linux-staging@lists.linux.dev>,
+        open list <linux-kernel@vger.kernel.org>,
+        "laurent.pinchart@ideasonboard.com" 
+        <laurent.pinchart@ideasonboard.com>,
+        "hverkuil@xs4all.nl" <hverkuil@xs4all.nl>,
+        "kernel@collabora.com" <kernel@collabora.com>,
+        "dafna3@gmail.com" <dafna3@gmail.com>,
+        "bob.beckett@collabora.com" <bob.beckett@collabora.com>,
+        "kiril.bicevski@collabora.com" <kiril.bicevski@collabora.com>,
+        "lafley.kim" <lafley.kim@chipsnmedia.com>,
+        Scott Woo <scott.woo@chipsnmedia.com>,
+        "olivier.crete@collabora.com" <olivier.crete@collabora.com>,
+        "dan.carpenter@oracle.com" <dan.carpenter@oracle.com>,
+        "rdunlap@infradead.org" <rdunlap@infradead.org>,
+        "daniel@0x0f.com" <daniel@0x0f.com>
+Subject: Re: [PATCH v6 4/6] staging: media: wave5: Add TODO file
+Message-ID: <YkWRN4ac0ivRn4aB@kroah.com>
+References: <SL2P216MB12463DE2E1E100E2498A5C33FBE19@SL2P216MB1246.KORP216.PROD.OUTLOOK.COM>
+ <SL2P216MB1246D7900A0B9620F1E1A038FBE19@SL2P216MB1246.KORP216.PROD.OUTLOOK.COM>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220223113225.63106-1-bhe@redhat.com>
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
+In-Reply-To: <SL2P216MB1246D7900A0B9620F1E1A038FBE19@SL2P216MB1246.KORP216.PROD.OUTLOOK.COM>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Andrew,
+On Thu, Mar 31, 2022 at 09:55:10AM +0000, Nas Chung wrote:
+> From: Dafna Hirschfeld <dafna.hirschfeld@collabora.com>
+> 
+> Add a TODO file listing all that is need for destaging.
+> 
+> Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
+> Signed-off-by: Dafna Hirschfeld <dafna.hirschfeld@collabora.com>
+> ---
+>  drivers/staging/media/wave5/TODO | 64 ++++++++++++++++++++++++++++++++
+>  1 file changed, 64 insertions(+)
+>  create mode 100644 drivers/staging/media/wave5/TODO
+> 
+> diff --git a/drivers/staging/media/wave5/TODO b/drivers/staging/media/wave5/TODO
+> new file mode 100644
+> index 000000000000..425ed42a234c
+> --- /dev/null
+> +++ b/drivers/staging/media/wave5/TODO
+> @@ -0,0 +1,64 @@
+> +* Test on real silicon once available
+> +
+> +  This driver has so far been tested on pre-silicon FPGA and on the beta BeagleV
+> +  board which uses the StarFive JH7100 beta SoC.
+> +
+> +  Testing on FPGA shows it working fine, though the FPGA uses polled interrupts
+> +  and copied buffers between the host and it's on board RAM.
+> +
+> +  Testing on BeagleV shows buffer corruption that is currently attributed to a
+> +  known silicon issue in the SoC that makes the cache coherent interconnect not
+> +  so coherent.
+> +  This can likely be solved when the riscv non-coherent dma support lands and
+> +  provide optional v4l2 non-contiguous allocator, though it remains to be seen
+> +  whether support non-coherent use cases will be useful in real world hw.
+> +
+> +  Until we can test and resolve any issues on final silicon (due 2H 2021)
+> +  this driver should remain in staging.
 
-On 02/23/22 at 07:32pm, Baoquan He wrote:
-> The memory leak is reported by kmemleak detector, has been existing
-> for very long time. It casue much memory loss on large machine
-> with huge memory hotplug which will trigger kdump kernel reloading
-> many times, with kexec_file_load interface.
+Then why not just wait?  Why merge this now?  What is the benifit of us
+taking this code at this point in time for hardware that is no one has
+as it is not even created?
 
-Could you merge these two patches? Or should I ping x86 maintainers to
-take them? 
+thanks,
 
-Thanks
-Baoquan
-
-> 
-> And in patch 2, clean up is done to remove unneeded
-> arch_kexec_kernel_image_load() and rename functions.
-> 
-> V1 post can be found here:
-> https://lore.kernel.org/all/20211029072424.9109-1-bhe@redhat.com/T/#u
-> 
-> v1->v2:
->  No code change. The v1 post has been acked by Dave Young but not
-> merged. In v2, just merging the old patch 1 and 2 as per Dave's concern
-> in v1 post.
-> 
-> Baoquan He (2):
->   x86/kexec: fix memory leak of elf header buffer
->   kexec_file: clean up arch_kexec_kernel_image_load
-> 
->  arch/x86/kernel/machine_kexec_64.c | 23 +++++++++--------------
->  include/linux/kexec.h              |  1 -
->  kernel/kexec_file.c                |  9 ++-------
->  3 files changed, 11 insertions(+), 22 deletions(-)
-> 
-> -- 
-> 2.31.1
-> 
-
+greg k-h
