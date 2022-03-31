@@ -2,82 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 678EDC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 06:40:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F504C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 06:41:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231316AbiCaGlv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 02:41:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59766 "EHLO
+        id S231319AbiCaGnK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 02:43:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230375AbiCaGlr (ORCPT
+        with ESMTP id S230375AbiCaGnI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 02:41:47 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AEF3656F
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 23:40:00 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id x9-20020a5b0809000000b00631d9edfb96so17185699ybp.22
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 23:40:00 -0700 (PDT)
+        Thu, 31 Mar 2022 02:43:08 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 311F8ABF5A
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 23:41:22 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id b15so27020267edn.4
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 23:41:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc:content-transfer-encoding;
-        bh=2EO1zCBkMeInrvtUm5zFLSJgdsvUYdhYvGrInIQEHn8=;
-        b=BuraXhTICGesUuAWshpPBGws+qpwfbbToioiwotOHb/5C7i4EF/ANXjMpswRm2Amcy
-         NzVB9MrpgHzoXUX4+6yujhXOdX4S1tUk9vWlZGm39O2Mikz+KUApMWDYtFXEqkYh7Luw
-         zyh+TARfdaiF3PszRIMmm/mzUHOeGUT/0fWReMG5Fyj9dn/LjNoGbC1OWvFCT2tk06ge
-         aQfZPXeGJ4grNqItzGlUsH0WFjVwzTPu2I1HyXPDW/RnZlPBtSUJ3984lac5I3jwsNvD
-         srATOlGPmkvXo3TEQ3WQ4pHZ55OCSFX93ec/0vMwhOd5xmRlCWLOoolX/XTXpiNH9uyq
-         AqIg==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=vRVZfZhek/ld27PxqrvAQx7maxQWJQLXz5r4N00GOvw=;
+        b=Xi15f2aQFwUqwT9TRfxb1qLZvAF/UDB1Tt0O9qg5coX6j0xbBItJGn1yVFfRp2bGWs
+         CyISIlUzkJxbvKCdz+xyfNlp4GXb9ZaA2NELq4JW91qbOeZTPzWd4iZY6XL9JPC9P+1t
+         +TIQoHlEn5SxgLYrk4/UK4irrscHYYlOJOv5Fjm61PDQyTpJfOLjJ3VcMc2kAxBwETUO
+         xa8EE6m9WBm2PqMFCF6SMxNdalTNQzljyMoUOC/4BLfWqfeqjmyvoKfgHh2MtKAbJH9N
+         UWRqJLBk+Nvrn8+5LValSaXCvoxz9R0Usfvuhx3gKu9XNZI/16lDqDAdL6APKiLxTOZF
+         V9yQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc:content-transfer-encoding;
-        bh=2EO1zCBkMeInrvtUm5zFLSJgdsvUYdhYvGrInIQEHn8=;
-        b=HUrrRQ0HKuqq+puaOMjJIp9YdnOFfECLcXk6bnP2MITyzHN6jm3fB6F/6p+269jLzv
-         WPcMw6ar9zeR1cBr8kBj99QhyRBa36xHBWsWnaTXP5itv3kw+KMOfsZ+Co3FbWMZeRQV
-         wXXr6kmIpv+Fthr6cPDWZ2u5/qRwlUJPdQzqz3YfTiw1wiw4Lbp+XIZ5i2d/9nv3tk9c
-         nnPR2suxtv1sV4f+XjaSuhh96VWDjcha//dOMJyxXD17h+15xIat9xoVn89DgLDUwEdm
-         bjEA0BfryisXulO7qxC5DZ6bVVpaUS3+kjrUcOa6mjKUw3auB0usy9WaIqNsqaM0eU2S
-         0w/w==
-X-Gm-Message-State: AOAM531qzDZSnfrOguyxVaBmCAIVsj3XgDFGSrZmS1B496WktNZT2/Os
-        kNa2wZxjVg1LgONOIy3QjClo3P1PbcS6vw==
-X-Google-Smtp-Source: ABdhPJyt7GDJgAVqiqYMHwpK4PthMSnXQEN6sLNCWOjUDvSjiidXMxyP21GtktoorZ34FUmloIhvrzRQBKD8QA==
-X-Received: from shakeelb.c.googlers.com ([fda3:e722:ac3:cc00:20:ed76:c0a8:28b])
- (user=shakeelb job=sendgmr) by 2002:a25:b889:0:b0:633:c93e:3e18 with SMTP id
- w9-20020a25b889000000b00633c93e3e18mr3141444ybj.263.1648708799467; Wed, 30
- Mar 2022 23:39:59 -0700 (PDT)
-Date:   Thu, 31 Mar 2022 06:39:56 +0000
-In-Reply-To: <89B53D3A-FCC5-4107-8D49-81D5B9AE5172@linux.dev>
-Message-Id: <20220331063956.5uqnab64cqnmcwyr@google.com>
-Mime-Version: 1.0
-References: <20220330191440.1cc1b2de2b849d1ba93d2ba7@linux-foundation.org> <89B53D3A-FCC5-4107-8D49-81D5B9AE5172@linux.dev>
-Subject: Re: [PATCH v2] mm/list_lru: Fix possible race in memcg_reparent_list_lru_node()
-From:   Shakeel Butt <shakeelb@google.com>
-To:     Roman Gushchin <roman.gushchin@linux.dev>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Waiman Long <longman@redhat.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org,
-        Muchun Song <songmuchun@bytedance.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=vRVZfZhek/ld27PxqrvAQx7maxQWJQLXz5r4N00GOvw=;
+        b=BkHagszybgYgWHeRvdL4XJmnnxhaTSOqMPjZ3P+dmR0QRQMTAZxIfmVnE/XbU8599C
+         E8gHYmIvWrmXXohMy5+K4tYG3P7fJx69cvu+Mktkuqq0PJjztD4Yll0NA2p/FkngTqPN
+         c7l/9CXLudmv8zXeHz2+nJCLUa5NVZZcwJ71la17HMpn8jjyjbu+F4tIHLr3JBsFFYc8
+         llWhGilu3LCS4P+aUIppb7OeQUl+bLUd/D6ijLPluyxqH6h7VIIcEeTiiqXvNnPLcpHj
+         twMOxPh6z+s5lABzZZGCqGiEco4FDz8IErc4cjPtaQN8PbjF4CPzn3y6vfrFhvVHKjHZ
+         CYSg==
+X-Gm-Message-State: AOAM531s5xlJ60duiwsISubx7mPMTfPzyhH8npQ/iYr6veOvIMIXacVq
+        rrtEWlPxmWcMJNQhExXeHBY=
+X-Google-Smtp-Source: ABdhPJzhFtKO5Fs8WACAacp4q9R9a24cKA+TW99SvZ81BfLY1EtflbXpMX6JRr/ibKETH7Zt2DpGMw==
+X-Received: by 2002:aa7:d58e:0:b0:419:c121:ea33 with SMTP id r14-20020aa7d58e000000b00419c121ea33mr14939013edq.256.1648708880560;
+        Wed, 30 Mar 2022 23:41:20 -0700 (PDT)
+Received: from localhost.localdomain (host-95-249-145-232.retail.telecomitalia.it. [95.249.145.232])
+        by smtp.gmail.com with ESMTPSA id eq7-20020a056402298700b00419d8d46a8asm5368593edb.39.2022.03.30.23.41.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 30 Mar 2022 23:41:18 -0700 (PDT)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     David Kershner <david.kershner@unisys.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        sparmaintainer@unisys.com, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org, outreachy@lists.linux.dev
+Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+Subject: [PATCH] staging: unisys: Remove "struct dentry *eth_debugfs_dir"
+Date:   Thu, 31 Mar 2022 08:41:15 +0200
+Message-Id: <20220331064115.29345-1-fmdefrancesco@gmail.com>
+X-Mailer: git-send-email 2.34.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 30, 2022 at 07:48:45PM -0700, Roman Gushchin wrote:
->=20
->=20
-[...]
->=20
->=20
-> But honestly, I=E2=80=99d drop the original optimization together with th=
-e fix, if only there is no _real world_ data on the problem and the improve=
-ment. It seems like it has started as a nice simple improvement, but the ra=
-ce makes it complex and probably not worth the added complexity and fragili=
-ty.
+There is no need for "struct dentry *eth_debugfs_dir" which is used for
+debug / sysfs directories. Therefore, remove this "struct dentry" and
+everything related (i.e., creation, test, removal).
 
-I agree with dropping the original optimization as it is not really
-fixing an observed issue which may justify adding some complexity.
+As a side effect of this change, the code has no more need of the
+"cleanup_register_netdev" label, which can also be removed.
 
-thanks,
-Shakeel
+Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+---
+ drivers/staging/unisys/visornic/visornic_main.c | 17 -----------------
+ 1 file changed, 17 deletions(-)
+
+diff --git a/drivers/staging/unisys/visornic/visornic_main.c b/drivers/staging/unisys/visornic/visornic_main.c
+index 643432458105..bb7ec492503e 100644
+--- a/drivers/staging/unisys/visornic/visornic_main.c
++++ b/drivers/staging/unisys/visornic/visornic_main.c
+@@ -103,7 +103,6 @@ struct chanstat {
+  * @server_down:                    IOPART is down.
+  * @server_change_state:            Processing SERVER_CHANGESTATE msg.
+  * @going_away:                     device is being torn down.
+- * @struct *eth_debugfs_dir:
+  * @interrupts_rcvd:
+  * @interrupts_notme:
+  * @interrupts_disabled:
+@@ -157,7 +156,6 @@ struct visornic_devdata {
+ 	bool server_down;
+ 	bool server_change_state;
+ 	bool going_away;
+-	struct dentry *eth_debugfs_dir;
+ 	u64 interrupts_rcvd;
+ 	u64 interrupts_notme;
+ 	u64 interrupts_disabled;
+@@ -1919,24 +1917,10 @@ static int visornic_probe(struct visor_device *dev)
+ 		goto cleanup_napi_add;
+ 	}
+ 
+-	/* create debug/sysfs directories */
+-	devdata->eth_debugfs_dir = debugfs_create_dir(netdev->name,
+-						      visornic_debugfs_dir);
+-	if (!devdata->eth_debugfs_dir) {
+-		dev_err(&dev->device,
+-			"%s debugfs_create_dir %s failed\n",
+-			__func__, netdev->name);
+-		err = -ENOMEM;
+-		goto cleanup_register_netdev;
+-	}
+-
+ 	dev_info(&dev->device, "%s success netdev=%s\n",
+ 		 __func__, netdev->name);
+ 	return 0;
+ 
+-cleanup_register_netdev:
+-	unregister_netdev(netdev);
+-
+ cleanup_napi_add:
+ 	visorbus_disable_channel_interrupts(dev);
+ 	netif_napi_del(&devdata->napi);
+@@ -2002,7 +1986,6 @@ static void visornic_remove(struct visor_device *dev)
+ 	/* going_away prevents new items being added to the workqueues */
+ 	cancel_work_sync(&devdata->timeout_reset);
+ 
+-	debugfs_remove_recursive(devdata->eth_debugfs_dir);
+ 	/* this will call visornic_close() */
+ 	unregister_netdev(netdev);
+ 
+-- 
+2.34.1
+
