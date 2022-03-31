@@ -2,271 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85DC5C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 16:15:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B352C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 16:15:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239772AbiCaQRK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 12:17:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44784 "EHLO
+        id S239715AbiCaQRo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 12:17:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239681AbiCaQRA (ORCPT
+        with ESMTP id S234630AbiCaQRn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 12:17:00 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E667D1F1254;
-        Thu, 31 Mar 2022 09:15:11 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id b15so28767145edn.4;
-        Thu, 31 Mar 2022 09:15:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=xjEyY3Y7idT2/xjZtTf3oO9KclkwZrkmMKAiZwZLsWQ=;
-        b=dqaf3H8pyJfqFWTnZGb7f7uCrEARjp8BxDSW24tcsT69J+NlH/EcQMF91tT7hBRJW7
-         eqOrkAsYEweGdXeAIcvlGVBV2u37BFdjYlQsY4yBwK5QhNsv9NkPLWP8QDMop+ZgxYy4
-         gU1+pIzf7ed7vK3EDnG4+g1eheaFKEK4k6heGdZWhaiLDVNwnxw1rxzQuWpY4mCXrI3v
-         ZlTaJHudv1Jliq5ZkQz8Tacroum5bOq4VxglFzzePVXvNG95n8T4uDSnxygD7dySVCPw
-         D5hz+ICtMJYyxUFhb7jMBqq5/WceTNE2/a3G2oYFfr6DSiMTL9qk3aF1oIRw10EfMPcb
-         fF5Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=xjEyY3Y7idT2/xjZtTf3oO9KclkwZrkmMKAiZwZLsWQ=;
-        b=KKRlDovbaB8lIhRRstMtoZlrCxneI6xmQQz+DEAE9iOCMc4ssYkjkOdnf/fTRn4uDy
-         KajIOf/XEpEVoOQIFz8Bo5tOpuvZGYRLlyHjwUcJURgffoXe7hFt2a3JcJcJWz6KmNtQ
-         +l8P3LyuMECqndsnuEDT+us93+FNOfh4dorSQPQbGq2oiqHqZMtTY+U/C7vmIabSvMoV
-         gptpjTf/iSZ2yHWQwOiiB/xJr6F83l5UYoPKA7fYFF54V6cITUAl7DYdzOwXs9+s9OmG
-         iAA64niLYYV6M6vpXwVP6ucm/mHMHTJeObI1Rkdb8nE3Uq27LNuUh0WcUvpANK9wNc8O
-         t8hw==
-X-Gm-Message-State: AOAM531C8KEITN5ni9ITDVbvkrF5FqBKq7xz24Tq76gztmh7xrJVUmdM
-        yHLq7HVi4glZtBL+3vSzWFk=
-X-Google-Smtp-Source: ABdhPJzXn3NJfsGVHSbXv3mgVWGnaMYgEFt6COE/RUp0EjdFoSNUhzEGELqshVrSMgw/HosvsoiNHg==
-X-Received: by 2002:a05:6402:270b:b0:419:3383:7a9f with SMTP id y11-20020a056402270b00b0041933837a9fmr17248675edd.191.1648743310371;
-        Thu, 31 Mar 2022 09:15:10 -0700 (PDT)
-Received: from debian.home (81-204-249-205.fixed.kpn.net. [81.204.249.205])
-        by smtp.gmail.com with ESMTPSA id g4-20020a170906520400b006e0b798a0b8sm7600302ejm.94.2022.03.31.09.15.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 31 Mar 2022 09:15:09 -0700 (PDT)
-From:   Johan Jonker <jbx6244@gmail.com>
-To:     heiko@sntech.de
-Cc:     robh+dt@kernel.org, krzk+dt@kernel.org, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v1 3/3] ARM: dts: rockchip: restyle emac nodes
-Date:   Thu, 31 Mar 2022 18:14:59 +0200
-Message-Id: <20220331161459.16499-3-jbx6244@gmail.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220331161459.16499-1-jbx6244@gmail.com>
-References: <20220331161459.16499-1-jbx6244@gmail.com>
+        Thu, 31 Mar 2022 12:17:43 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A87B5FDE0E
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 09:15:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648743355; x=1680279355;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=BMNEgDNkwYYpQ+JgHSAi2O3cg08e/KgVF2OwNkQYFSo=;
+  b=OdnPrNfirvowb9KvQ6qgM0i5ljSJOE21YH5hihKPG8EPMTu+vwUIr5uy
+   4H7FIBephE0NVJc9+g9uFCHxz2PN+GVb6yAuBqw+DewhgXzpJYu0EaGCy
+   siPH0Utcwx/MqU8QS3xct0m8n95FT0XBjUtsJtZNds7gGkZ1wuyzwV8nF
+   qYjuuF9Wnuj0q0kchwa8ic7p9lsfolE1jiqRGTJQl04sKbZfYzusqjXEj
+   41dlQANaed1Gaqz3g9CqFwg7cVtdEICnAeWe5KIKI0z0TiazvzQtTi8WQ
+   SjkVYq0NM7xdscbmqoYd1cEhHeBcn09nnyz/IPi6ueHvi+gR5y4xsPW6o
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="260065875"
+X-IronPort-AV: E=Sophos;i="5.90,225,1643702400"; 
+   d="scan'208";a="260065875"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2022 09:14:55 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,225,1643702400"; 
+   d="scan'208";a="503807517"
+Received: from lkp-server02.sh.intel.com (HELO 3231c491b0e2) ([10.239.97.151])
+  by orsmga003.jf.intel.com with ESMTP; 31 Mar 2022 09:14:53 -0700
+Received: from kbuild by 3231c491b0e2 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nZxRk-0000Qc-Lb;
+        Thu, 31 Mar 2022 16:14:52 +0000
+Date:   Fri, 1 Apr 2022 00:14:31 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Johannes Berg <johannes.berg@intel.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Richard Weinberger <richard@nod.at>
+Subject: drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_crat.c:924:14: error:
+ invalid use of undefined type 'struct cpuinfo_x86'
+Message-ID: <202204010015.xWpO2OCt-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The emac_rockchip.txt file is converted to YAML.
-Phy nodes are now a subnode of mdio, so restyle
-the emac nodes of rk3036/rk3066/rk3188.
+Hi Johannes,
 
-Signed-off-by: Johan Jonker <jbx6244@gmail.com>
----
- arch/arm/boot/dts/rk3036-evb.dts        | 16 ++++++++++------
- arch/arm/boot/dts/rk3036-kylin.dts      | 16 ++++++++++------
- arch/arm/boot/dts/rk3036.dtsi           |  2 --
- arch/arm/boot/dts/rk3066a-marsboard.dts | 19 +++++++++++--------
- arch/arm/boot/dts/rk3066a-rayeager.dts  | 15 ++++++++++-----
- arch/arm/boot/dts/rk3188-radxarock.dts  | 19 +++++++++++--------
- arch/arm/boot/dts/rk3xxx.dtsi           |  2 --
- 7 files changed, 52 insertions(+), 37 deletions(-)
+First bad commit (maybe != root cause):
 
-diff --git a/arch/arm/boot/dts/rk3036-evb.dts b/arch/arm/boot/dts/rk3036-evb.dts
-index 2a7e6624e..095e0821a 100644
---- a/arch/arm/boot/dts/rk3036-evb.dts
-+++ b/arch/arm/boot/dts/rk3036-evb.dts
-@@ -15,16 +15,20 @@
- };
- 
- &emac {
-+	phy-handle = <&phy0>;
-+	phy-reset-duration = <10>; /* millisecond */
-+	phy-reset-gpios = <&gpio2 RK_PC6 GPIO_ACTIVE_LOW>; /* PHY_RST */
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&emac_xfer>, <&emac_mdio>;
--	phy = <&phy0>;
--	phy-reset-gpios = <&gpio2 RK_PC6 GPIO_ACTIVE_LOW>; /* PHY_RST */
--	phy-reset-duration = <10>; /* millisecond */
--
- 	status = "okay";
- 
--	phy0: ethernet-phy@0 {
--		reg = <0>;
-+	mdio {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		phy0: ethernet-phy@0 {
-+			reg = <0>;
-+		};
- 	};
- };
- 
-diff --git a/arch/arm/boot/dts/rk3036-kylin.dts b/arch/arm/boot/dts/rk3036-kylin.dts
-index e817eba8c..24c70e925 100644
---- a/arch/arm/boot/dts/rk3036-kylin.dts
-+++ b/arch/arm/boot/dts/rk3036-kylin.dts
-@@ -80,16 +80,20 @@
- };
- 
- &emac {
-+	phy-handle = <&phy0>;
-+	phy-reset-duration = <10>; /* millisecond */
-+	phy-reset-gpios = <&gpio2 RK_PC6 GPIO_ACTIVE_LOW>; /* PHY_RST */
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&emac_xfer>, <&emac_mdio>;
--	phy = <&phy0>;
--	phy-reset-gpios = <&gpio2 RK_PC6 GPIO_ACTIVE_LOW>; /* PHY_RST */
--	phy-reset-duration = <10>; /* millisecond */
--
- 	status = "okay";
- 
--	phy0: ethernet-phy@0 {
--		reg = <0>;
-+	mdio {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		phy0: ethernet-phy@0 {
-+			reg = <0>;
-+		};
- 	};
- };
- 
-diff --git a/arch/arm/boot/dts/rk3036.dtsi b/arch/arm/boot/dts/rk3036.dtsi
-index e240b89b0..78686fc72 100644
---- a/arch/arm/boot/dts/rk3036.dtsi
-+++ b/arch/arm/boot/dts/rk3036.dtsi
-@@ -228,8 +228,6 @@
- 		compatible = "rockchip,rk3036-emac";
- 		reg = <0x10200000 0x4000>;
- 		interrupts = <GIC_SPI 8 IRQ_TYPE_LEVEL_HIGH>;
--		#address-cells = <1>;
--		#size-cells = <0>;
- 		rockchip,grf = <&grf>;
- 		clocks = <&cru HCLK_MAC>, <&cru SCLK_MACREF>, <&cru SCLK_MAC>;
- 		clock-names = "hclk", "macref", "macclk";
-diff --git a/arch/arm/boot/dts/rk3066a-marsboard.dts b/arch/arm/boot/dts/rk3066a-marsboard.dts
-index a66d915aa..e70ba3ccf 100644
---- a/arch/arm/boot/dts/rk3066a-marsboard.dts
-+++ b/arch/arm/boot/dts/rk3066a-marsboard.dts
-@@ -150,18 +150,21 @@
- #include "tps65910.dtsi"
- 
- &emac {
--	status = "okay";
--
--	phy = <&phy0>;
-+	phy-handle = <&phy0>;
- 	phy-supply = <&vcc_rmii>;
--
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&emac_xfer>, <&emac_mdio>, <&phy_int>;
-+	status = "okay";
-+
-+	mdio {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
- 
--	phy0: ethernet-phy@0 {
--		reg = <0>;
--		interrupt-parent = <&gpio1>;
--		interrupts = <RK_PD2 IRQ_TYPE_LEVEL_LOW>;
-+		phy0: ethernet-phy@0 {
-+			reg = <0>;
-+			interrupt-parent = <&gpio1>;
-+			interrupts = <RK_PD2 IRQ_TYPE_LEVEL_LOW>;
-+		};
- 	};
- };
- 
-diff --git a/arch/arm/boot/dts/rk3066a-rayeager.dts b/arch/arm/boot/dts/rk3066a-rayeager.dts
-index 12b2e59ae..600ada0d8 100644
---- a/arch/arm/boot/dts/rk3066a-rayeager.dts
-+++ b/arch/arm/boot/dts/rk3066a-rayeager.dts
-@@ -142,15 +142,20 @@
- };
- 
- &emac {
-+	phy-handle = <&phy0>;
-+	phy-supply = <&vcc_rmii>;
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&emac_xfer>, <&emac_mdio>, <&rmii_rst>;
--	phy = <&phy0>;
--	phy-supply = <&vcc_rmii>;
- 	status = "okay";
- 
--	phy0: ethernet-phy@0 {
--		reg = <0>;
--		reset-gpios = <&gpio1 RK_PD6 GPIO_ACTIVE_LOW>;
-+	mdio {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		phy0: ethernet-phy@0 {
-+			reg = <0>;
-+			reset-gpios = <&gpio1 RK_PD6 GPIO_ACTIVE_LOW>;
-+		};
- 	};
- };
- 
-diff --git a/arch/arm/boot/dts/rk3188-radxarock.dts b/arch/arm/boot/dts/rk3188-radxarock.dts
-index 36c0945f4..e5ed0642d 100644
---- a/arch/arm/boot/dts/rk3188-radxarock.dts
-+++ b/arch/arm/boot/dts/rk3188-radxarock.dts
-@@ -126,18 +126,21 @@
- };
- 
- &emac {
--	status = "okay";
--
-+	phy-handle = <&phy0>;
-+	phy-supply = <&vcc_rmii>;
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&emac_xfer>, <&emac_mdio>, <&phy_int>;
-+	status = "okay";
- 
--	phy = <&phy0>;
--	phy-supply = <&vcc_rmii>;
-+	mdio {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
- 
--	phy0: ethernet-phy@0 {
--		reg = <0>;
--		interrupt-parent = <&gpio3>;
--		interrupts = <RK_PD2 IRQ_TYPE_LEVEL_LOW>;
-+		phy0: ethernet-phy@0 {
-+			reg = <0>;
-+			interrupt-parent = <&gpio3>;
-+			interrupts = <RK_PD2 IRQ_TYPE_LEVEL_LOW>;
-+		};
- 	};
- };
- 
-diff --git a/arch/arm/boot/dts/rk3xxx.dtsi b/arch/arm/boot/dts/rk3xxx.dtsi
-index 616a828e0..bf285091a 100644
---- a/arch/arm/boot/dts/rk3xxx.dtsi
-+++ b/arch/arm/boot/dts/rk3xxx.dtsi
-@@ -186,8 +186,6 @@
- 		compatible = "snps,arc-emac";
- 		reg = <0x10204000 0x3c>;
- 		interrupts = <GIC_SPI 19 IRQ_TYPE_LEVEL_HIGH>;
--		#address-cells = <1>;
--		#size-cells = <0>;
- 
- 		rockchip,grf = <&grf>;
- 
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   787af64d05cd528aac9ad16752d11bb1c6061bb9
+commit: 68f5d3f3b6543266b29e047cfaf9842333019b4c um: add PCI over virtio emulation driver
+date:   10 months ago
+config: um-allyesconfig (https://download.01.org/0day-ci/archive/20220401/202204010015.xWpO2OCt-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.2.0-19) 11.2.0
+reproduce (this is a W=1 build):
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=68f5d3f3b6543266b29e047cfaf9842333019b4c
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 68f5d3f3b6543266b29e047cfaf9842333019b4c
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 O=build_dir ARCH=um SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   In file included from arch/x86/um/asm/processor.h:41,
+                    from include/linux/mutex.h:19,
+                    from include/linux/kernfs.h:12,
+                    from include/linux/sysfs.h:16,
+                    from include/linux/kobject.h:20,
+                    from include/linux/pci.h:35,
+                    from drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_crat.c:23:
+   drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_crat.c: In function 'kfd_fill_iolink_info_for_cpu':
+   arch/um/include/asm/processor-generic.h:97:19: error: called object is not a function or function pointer
+      97 | #define cpu_data (&boot_cpu_data)
+         |                  ~^~~~~~~~~~~~~~~
+   drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_crat.c:921:34: note: in expansion of macro 'cpu_data'
+     921 |         struct cpuinfo_x86 *c = &cpu_data(0);
+         |                                  ^~~~~~~~
+>> drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_crat.c:924:14: error: invalid use of undefined type 'struct cpuinfo_x86'
+     924 |         if (c->x86_vendor == X86_VENDOR_AMD)
+         |              ^~
+   drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_crat.c:924:30: error: 'X86_VENDOR_AMD' undeclared (first use in this function); did you mean 'X86_VENDOR_ANY'?
+     924 |         if (c->x86_vendor == X86_VENDOR_AMD)
+         |                              ^~~~~~~~~~~~~~
+         |                              X86_VENDOR_ANY
+   drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_crat.c:924:30: note: each undeclared identifier is reported only once for each function it appears in
+
+
+vim +924 drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_crat.c
+
+520b8fb755ccfb Felix Kuehling    2017-12-08  914  
+6d3d8065bb14dc Nathan Chancellor 2019-01-21  915  #ifdef CONFIG_X86_64
+520b8fb755ccfb Felix Kuehling    2017-12-08  916  static int kfd_fill_iolink_info_for_cpu(int numa_node_id, int *avail_size,
+520b8fb755ccfb Felix Kuehling    2017-12-08  917  				uint32_t *num_entries,
+520b8fb755ccfb Felix Kuehling    2017-12-08  918  				struct crat_subtype_iolink *sub_type_hdr)
+520b8fb755ccfb Felix Kuehling    2017-12-08  919  {
+520b8fb755ccfb Felix Kuehling    2017-12-08  920  	int nid;
+520b8fb755ccfb Felix Kuehling    2017-12-08  921  	struct cpuinfo_x86 *c = &cpu_data(0);
+520b8fb755ccfb Felix Kuehling    2017-12-08  922  	uint8_t link_type;
+520b8fb755ccfb Felix Kuehling    2017-12-08  923  
+520b8fb755ccfb Felix Kuehling    2017-12-08 @924  	if (c->x86_vendor == X86_VENDOR_AMD)
+520b8fb755ccfb Felix Kuehling    2017-12-08  925  		link_type = CRAT_IOLINK_TYPE_HYPERTRANSPORT;
+520b8fb755ccfb Felix Kuehling    2017-12-08  926  	else
+520b8fb755ccfb Felix Kuehling    2017-12-08  927  		link_type = CRAT_IOLINK_TYPE_QPI_1_1;
+520b8fb755ccfb Felix Kuehling    2017-12-08  928  
+520b8fb755ccfb Felix Kuehling    2017-12-08  929  	*num_entries = 0;
+520b8fb755ccfb Felix Kuehling    2017-12-08  930  
+520b8fb755ccfb Felix Kuehling    2017-12-08  931  	/* Create IO links from this node to other CPU nodes */
+520b8fb755ccfb Felix Kuehling    2017-12-08  932  	for_each_online_node(nid) {
+520b8fb755ccfb Felix Kuehling    2017-12-08  933  		if (nid == numa_node_id) /* node itself */
+520b8fb755ccfb Felix Kuehling    2017-12-08  934  			continue;
+520b8fb755ccfb Felix Kuehling    2017-12-08  935  
+520b8fb755ccfb Felix Kuehling    2017-12-08  936  		*avail_size -= sizeof(struct crat_subtype_iolink);
+520b8fb755ccfb Felix Kuehling    2017-12-08  937  		if (*avail_size < 0)
+520b8fb755ccfb Felix Kuehling    2017-12-08  938  			return -ENOMEM;
+520b8fb755ccfb Felix Kuehling    2017-12-08  939  
+520b8fb755ccfb Felix Kuehling    2017-12-08  940  		memset(sub_type_hdr, 0, sizeof(struct crat_subtype_iolink));
+520b8fb755ccfb Felix Kuehling    2017-12-08  941  
+520b8fb755ccfb Felix Kuehling    2017-12-08  942  		/* Fill in subtype header data */
+520b8fb755ccfb Felix Kuehling    2017-12-08  943  		sub_type_hdr->type = CRAT_SUBTYPE_IOLINK_AFFINITY;
+520b8fb755ccfb Felix Kuehling    2017-12-08  944  		sub_type_hdr->length = sizeof(struct crat_subtype_iolink);
+520b8fb755ccfb Felix Kuehling    2017-12-08  945  		sub_type_hdr->flags = CRAT_SUBTYPE_FLAGS_ENABLED;
+520b8fb755ccfb Felix Kuehling    2017-12-08  946  
+520b8fb755ccfb Felix Kuehling    2017-12-08  947  		/* Fill in IO link data */
+520b8fb755ccfb Felix Kuehling    2017-12-08  948  		sub_type_hdr->proximity_domain_from = numa_node_id;
+520b8fb755ccfb Felix Kuehling    2017-12-08  949  		sub_type_hdr->proximity_domain_to = nid;
+520b8fb755ccfb Felix Kuehling    2017-12-08  950  		sub_type_hdr->io_interface_type = link_type;
+520b8fb755ccfb Felix Kuehling    2017-12-08  951  
+520b8fb755ccfb Felix Kuehling    2017-12-08  952  		(*num_entries)++;
+520b8fb755ccfb Felix Kuehling    2017-12-08  953  		sub_type_hdr++;
+520b8fb755ccfb Felix Kuehling    2017-12-08  954  	}
+520b8fb755ccfb Felix Kuehling    2017-12-08  955  
+520b8fb755ccfb Felix Kuehling    2017-12-08  956  	return 0;
+520b8fb755ccfb Felix Kuehling    2017-12-08  957  }
+d1c234e2cd1091 Felix Kuehling    2019-01-02  958  #endif
+520b8fb755ccfb Felix Kuehling    2017-12-08  959  
+
+:::::: The code at line 924 was first introduced by commit
+:::::: 520b8fb755ccfb07d8d743da5753cff1fcb74b9f drm/amdkfd: Add topology support for CPUs
+
+:::::: TO: Felix Kuehling <Felix.Kuehling@amd.com>
+:::::: CC: Oded Gabbay <oded.gabbay@gmail.com>
+
 -- 
-2.20.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
