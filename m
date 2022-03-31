@@ -2,78 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6402CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 17:00:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED12EC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 17:01:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240421AbiCaRBr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 13:01:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49800 "EHLO
+        id S240455AbiCaRD2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 13:03:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239019AbiCaRBp (ORCPT
+        with ESMTP id S233801AbiCaRDZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 13:01:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3819B58812;
-        Thu, 31 Mar 2022 09:59:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C4E1061671;
-        Thu, 31 Mar 2022 16:59:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AA7EC340ED;
-        Thu, 31 Mar 2022 16:59:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648745997;
-        bh=3Lxk2SqXdNDNt8zS+/WdEpo8t64Mjrw+i7gcdbSgCPU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=GFYEepWNblLhO6r+X6AUc424pdogl5JoMA2gMuUcl8+1Yi1GKTJPE+7GFFhezPuYl
-         JznySsebkHi/iU4Lxbe9MmmEvs59xnmMvu8m6sc8/ahEqR4IcZ+Uox89L+terIQPg2
-         WjaFgN0N8u3tJjUSR/lfLJ3GtZpQ05YnJ9V9Iv56s1IZTXpYf06Ir7gqZqKxkN7JKD
-         XHEelOSSUQrzNMSIimO6WUsc7bsgi3voV7/iqPLwmcuvqPAQqWmZV1R3fpPIC5VHO/
-         cmFlnDtEK9EY/h6m1Z2sNoVePRxrDCqLNQD9IANQD6d240bCin+asz4SS/gVvgOVl4
-         ZGMzTPqqCpkwA==
-Date:   Thu, 31 Mar 2022 12:59:55 -0400
-From:   Sasha Levin <sashal@kernel.org>
-To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc:     "Eric W. Biederman" <ebiederm@xmission.com>,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Oleg Nesterov <oleg@redhat.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>, mingo@redhat.com,
-        bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
-        peterz@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, luto@kernel.org, frederic@kernel.org,
-        mark.rutland@arm.com, valentin.schneider@arm.com,
-        keescook@chromium.org, elver@google.com, legion@kernel.org
-Subject: Re: [PATCH AUTOSEL 5.17 29/43] signal, x86: Delay calling signals in
- atomic on RT enabled kernels
-Message-ID: <YkXeC3LUeWkQmwWs@sashalap>
-References: <20220328111828.1554086-1-sashal@kernel.org>
- <20220328111828.1554086-29-sashal@kernel.org>
- <87r16mw3l4.fsf@email.froward.int.ebiederm.org>
- <YkHjtMX9s/bA83OT@linutronix.de>
+        Thu, 31 Mar 2022 13:03:25 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D12C1D917E;
+        Thu, 31 Mar 2022 10:01:35 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 72EF1210F4;
+        Thu, 31 Mar 2022 17:01:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1648746094;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=mrLcQqsOy2MMUv2jAhQzXmgiWR004Vcrgnce+Xhb8M8=;
+        b=oJK10tQpFLGonXUBEZyMymAupUoVt4BgLQEui7nPJ10Q7+eeBbJq9UOaNOs+rtt0owHUvB
+        HDYjloPQ/Zh29PVxCrCdJ3ctEjAWiUXVlkUYxOoGPUVFze6shxgsWjuNTaODMWSyKoICPn
+        lLt+LE8kj+1w6SZQqZVztvlHZ6vPcNo=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1648746094;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=mrLcQqsOy2MMUv2jAhQzXmgiWR004Vcrgnce+Xhb8M8=;
+        b=LIWaiB8F2zs83JhxtpHY0OzG/Nahi0anq74xIwoCUK2HNbfDCzXxyW7n9p1fskiMDXtRFt
+        ULezZvPAeUGOm3CA==
+Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
+        by relay2.suse.de (Postfix) with ESMTP id 35A65A3B82;
+        Thu, 31 Mar 2022 17:01:34 +0000 (UTC)
+Received: by ds.suse.cz (Postfix, from userid 10065)
+        id AB1B1DA7F3; Thu, 31 Mar 2022 18:57:35 +0200 (CEST)
+Date:   Thu, 31 Mar 2022 18:57:35 +0200
+From:   David Sterba <dsterba@suse.cz>
+To:     Yu Zhe <yuzhe@nfschina.com>
+Cc:     clm@fb.com, josef@toxicpanda.com, dsterba@suse.com,
+        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, liqiong@nfschina.com
+Subject: Re: [PATCH] btrfs: remove unnecessary type castings
+Message-ID: <20220331165735.GD15609@twin.jikos.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz, Yu Zhe <yuzhe@nfschina.com>, clm@fb.com,
+        josef@toxicpanda.com, dsterba@suse.com, linux-btrfs@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        liqiong@nfschina.com
+References: <20220331103408.31867-1-yuzhe@nfschina.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YkHjtMX9s/bA83OT@linutronix.de>
+In-Reply-To: <20220331103408.31867-1-yuzhe@nfschina.com>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 28, 2022 at 06:35:00PM +0200, Sebastian Andrzej Siewior wrote:
->On 2022-03-28 09:31:51 [-0500], Eric W. Biederman wrote:
->>
->> Thank you for cc'ing me.  You probably want to hold off on back-porting
->> this patch.  The appropriate fix requires some more conversation.
->>
->> At a mininum this patch should not be using TIF_NOTIFY_RESUME.
->
->Sasha,
->
->could you please drop this patch from the stable backports (5.15, 5.16, 5.17).
+On Thu, Mar 31, 2022 at 03:34:08AM -0700, Yu Zhe wrote:
+> remove unnecessary void* type castings.
+> 
+> Signed-off-by: Yu Zhe <yuzhe@nfschina.com>
 
-Will do, thanks.
-
--- 
-Thanks,
-Sasha
+Added to misc-next, thanks.
