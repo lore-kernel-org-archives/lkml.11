@@ -2,148 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53DD7C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 20:03:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21205C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 20:04:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241196AbiCaUFf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 16:05:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35904 "EHLO
+        id S241217AbiCaUFv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 16:05:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241171AbiCaUF2 (ORCPT
+        with ESMTP id S241182AbiCaUFt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 16:05:28 -0400
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2081.outbound.protection.outlook.com [40.107.223.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 734C5103DB6;
-        Thu, 31 Mar 2022 13:03:39 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Htk2ALw68mltlzRRNoPa+xSYXCPFtvonnYjmRncK0WaZJ7yk3HMNfdVGZLfxdgL4soTAp50vkVJmiY+RJL8qwMfaFXLOcL7GPZdPHYspxqVfr/ovrbh/mcDAPBSg3+P+DRQ/FsfDanmkfQnNxGTDi1YsSiH4uxADM8txvaD9yAXL0fXEvwB2HVI3njN+k6kdchDbp8q8u4+aPreCz/jUa2YTdol1+/nCy3Xev5Kf6GUL6DJkmN/k/9bB5eOqG5ijpbqfj3eMQYz/C6NwJiO7cc4EEVgMUXp8t+DzZlxdnJbX0QMdJWt843wJ7u+re2n28o24HKmfTb4If5oRsoEBsA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=L4tj/P/782czuAkoSC/WELMV6t9tDB3+oSmSqKxWlMM=;
- b=TQ9wui9eFuIk/m1F7wMigTdxMcvCWe/JT++fWc4NWdgVnOIBbzNVK9pB+MU+Y1W9rIxPN2mPTnvFucvGfypxJGx9Yv+d13Z30hY1tKnE2vNMv+YDvJJG+d5DUXajzQUs4pmQJQmScanOXvlarDnypRY8o1hctih6b75zFEu2sRYRhbJIt9DIQQDzuuUoA1hspmrNQEpweyMoK3aLxp5Um1F9y/L60v8Le2DEwMGquY+0d4EG9xFREocgsJrtUJ+RjKxBjPBwt25CESRmfr3h3ocGoafTG9/MP+PJqjbbiomPryPt/IrYAqpFHIYPyvUGEznjOvORpwDpGeZF8oGVzw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=L4tj/P/782czuAkoSC/WELMV6t9tDB3+oSmSqKxWlMM=;
- b=kyfq0lnKYvBzDhpXZucQpX7Wkpj+KLQQ6Q2mmnsyMHhoqM8bjkyjPEmkGTxTM6ys7o72/PiPvZFcXvKfFugJP2zcfwxGdigzYSaJOSv8lxTXDFyHIgvdGWxe5v+s8YcdfUn4E+gsyNPs5boY7bM9i/YSlxmw5g2d3jMV7BebfPA=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DM4PR12MB5229.namprd12.prod.outlook.com (2603:10b6:5:398::12)
- by DM6PR12MB4633.namprd12.prod.outlook.com (2603:10b6:5:16f::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.21; Thu, 31 Mar
- 2022 20:03:37 +0000
-Received: from DM4PR12MB5229.namprd12.prod.outlook.com
- ([fe80::1946:2337:6656:ae2e]) by DM4PR12MB5229.namprd12.prod.outlook.com
- ([fe80::1946:2337:6656:ae2e%9]) with mapi id 15.20.5123.021; Thu, 31 Mar 2022
- 20:03:37 +0000
-Message-ID: <1c2e7840-23c2-a0ff-abd8-ab216ad3480a@amd.com>
-Date:   Thu, 31 Mar 2022 15:03:35 -0500
+        Thu, 31 Mar 2022 16:05:49 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B46C1905B0
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 13:04:01 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id bh17so1536064ejb.8
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 13:04:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=Z2EGtbaUSdZqJdfHjTh9+r3ua+pSh9uHmfL1sOZD5QM=;
+        b=HKF4UdRl+O0WSsymoX6w2BXJfg7HGXHE6hHgkyPszGlcZXlymHI3mC7nt7d91lCR13
+         qqm1RjMspBXVqwPlQ+ZdMSuXRrI7vrNeLp8lWx7kwbBmceRfk8Is0n7eAEgvzJ2o0p45
+         9Og1U9P0y+aYJV6v2RIg1ZSFmGI/1qXdEK9mTKvdVVtINthUR+8UW4NmNJHPScCltRug
+         isQjTz9oZvGEmZdlE//NMg1bDmmkZ03Htu8wqpxoA6rFPzOIo/8A6m50jAAHsaSxAH4Y
+         o4NnTzNNu4sx/lpn7FhhoDaufYAoDYsOM0XoCVG9rst2AWLsXqD0z0kYQaUcIw3o2ZbW
+         n25g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Z2EGtbaUSdZqJdfHjTh9+r3ua+pSh9uHmfL1sOZD5QM=;
+        b=j1BPFlAMINxh0lWjXDevfzbG3nrdaXJb5wz6wDAoLqe8CsCmZGaUB7L/2MysVP9t7E
+         117o6e7xNwXAlODq5/3Jj8dYWPfDRYQs7b/2s/0mFc8elhvENlCa+W7gtlQSKMGnmMyA
+         Ro1dUULe+tG8yoIiXdxaa7yMQhuE9dQ/6cwxt9plLN1AdPpt2Wwj8ll0pLIVangg/GEZ
+         L37BBnJsx/HRizBppl/xaLJJseV94YeFOE+Oph9ohH0AHtMFMEgdEaSWro4pYKS/WHgo
+         pXPnVE51sUpSGOp+CI8pYxpMzANry+/Z9t/ta+ytemFqQYN7tkak+eYd4D/G2TeZflKz
+         yUVQ==
+X-Gm-Message-State: AOAM530qp1Cb04A9HVhvKL2q0Yh0YutwecAdCoDJHIrplI8N2aixIvE+
+        MTCfQNVp1TEwyWJPjwlb1bqvnQ==
+X-Google-Smtp-Source: ABdhPJzZ1JZCjRL24uzjb3wZLU0ZX28TmA+40iLJYWlpIPLhIfzvlPJ4Rv8WnVcGGMisztOOrsRCxw==
+X-Received: by 2002:a17:907:d89:b0:6df:e54d:2462 with SMTP id go9-20020a1709070d8900b006dfe54d2462mr6492434ejc.97.1648757039749;
+        Thu, 31 Mar 2022 13:03:59 -0700 (PDT)
+Received: from [192.168.0.167] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id jv19-20020a170907769300b006e095c047d6sm150889ejc.109.2022.03.31.13.03.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 31 Mar 2022 13:03:59 -0700 (PDT)
+Message-ID: <6de0f1f6-2096-28fa-e213-907aeea4f703@linaro.org>
+Date:   Thu, 31 Mar 2022 22:03:58 +0200
+MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
-Subject: Re: [PATCH v2 2/4] crypto: ccp: Export PSP security bits to userspace
+Subject: Re: [PATCH RFC net-next 1/3] dt-bindings: net: convert mscc-miim to
+ YAML format
 Content-Language: en-US
-To:     Mario Limonciello <mario.limonciello@amd.com>,
-        John Allen <john.allen@amd.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     open list <linux-kernel@vger.kernel.org>,
-        "open list:AMD CRYPTOGRAPHIC COPROCESSOR (CCP) DRIVER" 
-        <linux-crypto@vger.kernel.org>,
-        Kerneis Gabriel <Gabriel.Kerneis@ssi.gouv.fr>,
-        Richard Hughes <hughsient@gmail.com>
-References: <20220329164117.1449-1-mario.limonciello@amd.com>
- <20220329164117.1449-3-mario.limonciello@amd.com>
-From:   Tom Lendacky <thomas.lendacky@amd.com>
-In-Reply-To: <20220329164117.1449-3-mario.limonciello@amd.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Michael Walle <michael@walle.cc>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220331151440.3643482-1-michael@walle.cc>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220331151440.3643482-1-michael@walle.cc>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MN2PR04CA0032.namprd04.prod.outlook.com
- (2603:10b6:208:d4::45) To DM4PR12MB5229.namprd12.prod.outlook.com
- (2603:10b6:5:398::12)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a9faa891-3de6-466b-ead1-08da13518b48
-X-MS-TrafficTypeDiagnostic: DM6PR12MB4633:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR12MB4633A8B61B677E50F7713F25ECE19@DM6PR12MB4633.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: rYXaTg301BPxdOyRz0Jzxanb2tfxQhlq+uM0ZzJKnTXR/K1YoKr9AoxsD2y8YCin+462DEhh/XfeBEhQ551ZufykzGtKx+/MX1ZU7p58DUn02d2Vaf945VnDIrpyMqIQj1r4/vSn/9MHXITkc2y8a+oge/uDv9fK3j7zBBtDFo4Vt6vt+F1N7a4PRTYC2GXmaMxIsrY6XHYgKj59JGvm3TfK/oZm5Vcpk5vPEZ8EZnW5F/96ZIKQaS8YNVeWpcGVpB0buQE11Bt0pYyhuuGG0UB9vPaQ4zm/UB9otDivdVLuPJrLynH832YUsvzs45oUtOMAwcpz6lPhPYDnkYOpff+qL0mCMfegP3sfS23wYYAjZpWW5Ysp86z+zFqfFKGYAgFus5vyJonEo79IRIvXg3r4R9oJCdDDQzjOxQMORg0ZcmfMsSDD9i/NmsU2lejr/DcCdi/WMe9U0Gd5coMTx5UlzQ70zXRCNOGFfRpmMVvJ7vMvYnlnn2vw7F+3vOQd9jV1yErTzlBinRH3JSNjUJg6eWXQ7azriXhsHASP6kgl0GM4upizu6W8aqrp3YbX/qhyDQLOn0HzYz1gurD9Fp//psNhXtq7HajkhThT1lpVjPi5ht/I0BIKp47UAGnwjxBLs4Smi9ga43dAVf15JYKwKvlFmczNlWqMZPAqzT9E5SJ/Ah5CgbFFL9yNidPw2ct/DImku8Ei0uNQqpxUWPanUqEoGlsKsxowZhmzWew=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5229.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6512007)(6506007)(36756003)(5660300002)(508600001)(31686004)(53546011)(15650500001)(110136005)(8936002)(2616005)(2906002)(4744005)(6486002)(54906003)(66476007)(66556008)(38100700002)(4326008)(31696002)(8676002)(86362001)(26005)(186003)(316002)(83380400001)(66946007)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Q1JKMEhWcWE4TENCMEl4OTBoV1hqOVhPMTNxVTN4aVhjcjQ2T2ozQjNoNnhD?=
- =?utf-8?B?bldwQmhLbmhmaDRlS2xwT1VIa1B5WHlKY2VWYUs1bVBDNDc1ckt1VHBrQ2FB?=
- =?utf-8?B?cjg4S2ZUMFUvOFpwV0Npa3MxQVcvRjdrcWliVzhGclRxUkoxaWJpNDljNVBB?=
- =?utf-8?B?RXdhVGUzOTl6b0lZc2wxNTlVd1FIOTIyRU4wT1VKQzVXMXJxWTBmVlRUU0hK?=
- =?utf-8?B?RFBSWDBBMUJWUHo2Q1Nyd1JFdFJGRUtGMnVvaWRBTXVLNUVOT0taZ0QrWG5E?=
- =?utf-8?B?ak5LU2JSOUgrZFFBSFlEUDB3Z284L1NocFViZWhhRW5qQnpsRmQ0Q2d6TjBy?=
- =?utf-8?B?M1pvTm44NVFTTUJWNnBHcTdRa20ra2hTMjZRQ3l0VU5iRWJyUi9yb2ZrK1ZG?=
- =?utf-8?B?SFlzbVYvMVQ3VWsvYlNna0U2M0xoMTB0QWRlSEVnS2pGR2NLc2hqTWd6N1lF?=
- =?utf-8?B?YXhPQjBHRjYzMjZLMjJOMldSU3ZhNjduRDVCUHFjeDV3ZjlSYjNPZ1dhY2dj?=
- =?utf-8?B?ejBjazdVWHVqNWYvOWJsWVRsNWI3M3JLaEkyQllhWkRZNFI4R0M4czlVdDNL?=
- =?utf-8?B?Q05xb1NrZm81NWxraVlhNGNUOXFVTVMvL0FZQTRsVEZPL3orWFZ1aXNzWlIx?=
- =?utf-8?B?c1R5c0t1Y1MwdHl6dHhxcVVCdjRybjB0TEQyYTNRamVDRTVJZUNBbzJLdS90?=
- =?utf-8?B?cS9KU2todGNoa3lwdVVBNzFOb1NMZWs4K0ZEKzA3bXNYaFN2TGdzWVZuUk5z?=
- =?utf-8?B?ZVhya25mWVFOY2g1cDZJbXZmZVpkaG9zaEdxQW4zVDhwL2psdld3aWpaQ1A2?=
- =?utf-8?B?Y2N3S1pVS2lXSTBqWVZWajdoOW5PM3RyRHRqQTd6K0RVbStiK0tMYTNRYjRy?=
- =?utf-8?B?QjgvYjh2NzNhb3RqWExqaEZpeFBTQzE3OUJKZVBQRzhNeVg0Sis3dmRYdHJZ?=
- =?utf-8?B?dGtiZ0VFaWZDcGdIZjZpdWNWN1ZudWZvZXgvNzFYUUJ3SmNOdng2MVArelFH?=
- =?utf-8?B?T1JCTWxrdkl3QmM2WnZHYTE4V0hXMkx4RnFpbktkMTRZUkhQOWh3S1ZYcGNF?=
- =?utf-8?B?Nm00Ynd5OEZCR28rOXdmZjBjZ0pIcTh1bzVNVGdnWlJ5UWZYbmZQS1NzNXNZ?=
- =?utf-8?B?N3QyUE1qT3NUYmFjeEZaWmFEbHpLTkpJQkRQQWJSTSs0bG1hZWJzaTMzWm8y?=
- =?utf-8?B?dnA3TkhZaEhtaERKN1l5ekFvdTFDdkFSUTZzaENOUVlORGJJSFBKZTFGdGFG?=
- =?utf-8?B?SzgyYzN0Q0NSMVlXNCtzSXZLUXpjaHhhRjMxLzM2bzA4Z2RIZ24wd3loeXFX?=
- =?utf-8?B?dmdsczl0SDFKR2R5bGc4OVh2UVNjMXBMNEdzNHkrWmxnSUsxUUpLVEZScVhz?=
- =?utf-8?B?cE9qZ0ZsYVljOTl4MWI0elh4OUNRTXRIQnI3eklmeHBsM28yclhJTkhnMkUz?=
- =?utf-8?B?a2VFcGpQUEJhMm95djJaMFFVdHUvdXE1bW9zbmFTb3pqVUd4UVRFSStaVjIx?=
- =?utf-8?B?S2U4VTdRejBVblA2RnkrcE9wMEtxcEo0MUtQTjErTTVJYkpSby91VlEwR3F5?=
- =?utf-8?B?dGRJVnZzM1YrVTVNVTVoOWZ3aTNmSkRGaGdzMnhpcjhML3lRQzZRZE45TVg5?=
- =?utf-8?B?aHZaUkpvTGFJTDhWcmJCcFlEZGdOaU0xbmIrNERTWHJQUEpjQVRnc3ROOGxP?=
- =?utf-8?B?S1BMb2VZY2pEUHhqSTJ6eGVxZ0Q5S0hBVEw3d25XWGJ6eUZwRGQ3b1lGVmo5?=
- =?utf-8?B?QytnTnVCNnRKVnpWTEFMRjZESDcvd0diVzZYSW04a3VTQlJydVVpdW5QbmNm?=
- =?utf-8?B?dWRCdVFPVS9CSkMwZGxBTktRZHhDTmFSYm1EZDVjandaaGhBOUFuUWZFaWE5?=
- =?utf-8?B?MEZFSjJvNS9PTGV6cWZ0cXc3YWVtT2Y5NjBIQVMvNFpnQXI5Rm95KzJuOVho?=
- =?utf-8?B?alltU04xUEdYcElRazVUeHpYVnZ4NkdFUXNwclBLSlEzZUFEK2ppSnBhRk41?=
- =?utf-8?B?bHRhK1Vrand5VUtCYXNnL1ZJMUs2U0Jlcy92bmpFeUtBZG5Qd25TQ2xkV1VV?=
- =?utf-8?B?MU1Sa0YwS0tRRm9zQ2x3a2NEdGZidUxmd2tWQmNJWmNRT2hRaE1GMC8ya3JY?=
- =?utf-8?B?Q1JBWkV0UzdJRjFNcEZLVVJHaWtGdWVVOWdTdDFxSWh5dGd6Q1l0VDJKZFJJ?=
- =?utf-8?B?NmxuWm1VVWFNdC95dkxYR1BCN0JIUno1dWxHTjFLMTFhQTN4UmszUndEZW9r?=
- =?utf-8?B?Q2hrRkx2MmpDS0ZOQkhEaVdiaEMyMDhDeTdoUnA1WGROdU0xcnhReEhNNzFo?=
- =?utf-8?B?SnNOKzA0RVdQOW1pZFNjQVV0ZFFyZitHR1Bod2gxSTQrNklQTFAyZz09?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a9faa891-3de6-466b-ead1-08da13518b48
-X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5229.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Mar 2022 20:03:37.7530
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: qJOfYiYBxNRCBlqtA4a5x84NTd2ASnGaTTTDVl7lhkfez3tc4ets+IU0buRhN2Lx75ER+F2D5dBLVY+zhrDsIg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4633
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/29/22 11:41, Mario Limonciello wrote:
-> The PSP sets several pre-defined bits in the capabilities
-> register to indicate that security attributes of the platform.
+On 31/03/2022 17:14, Michael Walle wrote:
+> Convert the mscc-miim device tree binding to the new YAML format.
 > 
-> Export these attributes into userspace for administrators to
-> confirm platform is properly locked down.
+> The original binding don't mention if the interrupt property is optional
+> or not. But on the SparX-5 SoC, for example, the interrupt property isn't
+> used, thus in the new binding that property is optional. FWIW the driver
+> doesn't use interrupts at all.
 > 
-> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
-
-Acked-by: Tom Lendacky <thomas.lendacky@amd.com>
-
+> Signed-off-by: Michael Walle <michael@walle.cc>
 > ---
->   Documentation/ABI/testing/sysfs-driver-ccp | 87 ++++++++++++++++++++++
->   drivers/crypto/ccp/psp-dev.h               | 17 +++++
->   drivers/crypto/ccp/sp-pci.c                | 62 +++++++++++++++
->   3 files changed, 166 insertions(+)
->   create mode 100644 Documentation/ABI/testing/sysfs-driver-ccp
+>  .../devicetree/bindings/net/mscc,miim.yaml    | 55 +++++++++++++++++++
+>  .../devicetree/bindings/net/mscc-miim.txt     | 26 ---------
+>  2 files changed, 55 insertions(+), 26 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/net/mscc,miim.yaml
+>  delete mode 100644 Documentation/devicetree/bindings/net/mscc-miim.txt
 > 
+> diff --git a/Documentation/devicetree/bindings/net/mscc,miim.yaml b/Documentation/devicetree/bindings/net/mscc,miim.yaml
+> new file mode 100644
+> index 000000000000..b52bf1732755
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/mscc,miim.yaml
+> @@ -0,0 +1,55 @@
+> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/net/mscc,miim.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Microsemi MII Management Controller (MIIM)
+> +
+> +maintainers:
+> +  - Alexandre Belloni <alexandre.belloni@bootlin.com>
+> +
+> +allOf:
+> +  - $ref: "mdio.yaml#"
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - mscc,ocelot-miim
+> +      - microchip,lan966x-miim
+> +
+> +  "#address-cells":
+> +    const: 1
+> +
+> +  "#size-cells":
+> +    const: 0
+> +
+> +  reg:
+> +    items:
+> +      - description: base address
+> +      - description: associated reset register for internal PHYs
+> +    minItems: 1
+> +
+> +  interrupts: true
+
+how many? maxItems
+
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - "#address-cells"
+> +  - "#size-cells"
+> +
+> +unevaluatedProperties: false
+> +
+> +examples:
+> +  - |
+> +    mdio@107009c {
+> +      #address-cells = <1>;
+> +      #size-cells = <0>;
+> +      compatible = "mscc,ocelot-miim";
+> +      reg = <0x107009c 0x36>, <0x10700f0 0x8>;
+
+Please put the compatible followed by reg at the beginning (first
+properties).
+
+Best regards,
+Krzysztof
