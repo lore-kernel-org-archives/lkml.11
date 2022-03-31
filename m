@@ -2,131 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58B57C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 02:12:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EA21C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 02:14:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348426AbiCaCO0 (ORCPT
+        id S1352493AbiCaCQa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 22:14:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55026 "EHLO
+        Wed, 30 Mar 2022 22:16:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231567AbiCaCOX (ORCPT
+        with ESMTP id S231567AbiCaCQ2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 22:14:23 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0B7A66625
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 19:12:37 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id l4-20020a17090a49c400b001c6840df4a3so2217400pjm.0
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 19:12:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=23XfkAHDqNFtL26bKDov8Qbam5dCiK7y19fMRZBdXt4=;
-        b=qm67aC678igD9cDL/UrGvx7xNWfMGdlcX6eDKXldXuN9aExMlgo1sI9rARaUib4H6D
-         0f1Zgv0E2nMHMYwOy8Rd34T6IHiVubFzpPzNipSggMDDmDvN9FYHLu8TCeyMooewNklG
-         BDYcTh5Blw9PJdZ8DMO4orLOpxYFckL+ZN/vPMzEpp3AM/3Y7bFP/h3eN4XwLFY3c9pR
-         Xl+8wmV7U9V7JSWGwcK67PHf6TgGUAvWJGQ1BmQeyEi0+LzMWzkc3sKhqYGBi6rAvKVn
-         56Co8QllBFAv48GN4E8Vl85AQKC8rdQb/2Vz0TVAtIEBQmJjmF1U7afzRhri234sZ83r
-         SVLg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=23XfkAHDqNFtL26bKDov8Qbam5dCiK7y19fMRZBdXt4=;
-        b=iUOGmNblyC5zKQRIZfiw/iRxSpQIxmeoYCO3XTFN8Y4YF7Rl7mKqGXaOeAGNCLCq7l
-         ij7fUKFl9I61YZvduKG0qSLYCXJ7boeR5BZF98WW6fL8eB6k1U0m8SyU39QZsuQTXjL8
-         JVyiwjvX1BsWZBjILcDFPzUe0ftgiXsI6LZpkEvmApgHIn+MQVd41yge5d6AagMeGw1/
-         s4D06y8vyMXmc8jMgQJLOy0W32qza8L/d5eJK8Rqv7uznthfVV6wm2Ofsss7RWtrWgyS
-         sNEbKsB72Q9DmkOvd8Oyc8GSAnG88x6RgXux5BqnIG7NXIIbU83VwMneVoaHLoBbmpUZ
-         G0aA==
-X-Gm-Message-State: AOAM532pU9dFjshy5OraTaiMZ+E0n1mPm6RCPoHNT6B3lc56ADLo8FM7
-        ZC6DrHrFfDMpzVwYVEPPvQVVRw==
-X-Google-Smtp-Source: ABdhPJy9CjLfyqEnfds3s+9ym0N2LGlzWw/ZN+JoBZJV9H6hqL+LC4pVIxa3u/7cj8q6KKt7N2940A==
-X-Received: by 2002:a17:90b:4b88:b0:1c7:666e:7edb with SMTP id lr8-20020a17090b4b8800b001c7666e7edbmr3251434pjb.41.1648692757155;
-        Wed, 30 Mar 2022 19:12:37 -0700 (PDT)
-Received: from localhost ([223.184.83.228])
-        by smtp.gmail.com with ESMTPSA id v8-20020a056a00148800b004fa9bd7ddc9sm25067522pfu.113.2022.03.30.19.12.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Mar 2022 19:12:36 -0700 (PDT)
-Date:   Thu, 31 Mar 2022 07:42:35 +0530
-From:   Viresh Kumar <viresh.kumar@linaro.org>
-To:     Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Cc:     vireshk@kernel.org, nm@ti.com, sboyd@kernel.org,
-        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] opp: use list iterator only inside the loop
-Message-ID: <20220331021235.bhb4t2g43eva3c3s@vireshk-i7>
-References: <20220331015818.28045-1-xiam0nd.tong@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220331015818.28045-1-xiam0nd.tong@gmail.com>
-User-Agent: NeoMutt/20180716-391-311a52
+        Wed, 30 Mar 2022 22:16:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D6543D1E1
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 19:14:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DBAC461964
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 02:14:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F497C340EE;
+        Thu, 31 Mar 2022 02:14:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1648692881;
+        bh=l1qjXlV910SQvhBABrcXr3WHKwXfDb6DJqrt+F179IU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Y7q7P79T6brRykBtLstI9JRhnXkdDRsxcDTObnE6HicO9gaZ8FLo/f4lc7lT0ecMf
+         AKPTOLxMjR7KzODRCQBXtr7eztYD53LQsnGjNAaFtFM8xCzfPqFxPj65irh2UDy3mi
+         RyXgoMf6w1UIFKOojDOFg4XlukfmKFJO10RHYEPg=
+Date:   Wed, 30 Mar 2022 19:14:40 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Waiman Long <longman@redhat.com>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Muchun Song <songmuchun@bytedance.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>
+Subject: Re: [PATCH v2] mm/list_lru: Fix possible race in
+ memcg_reparent_list_lru_node()
+Message-Id: <20220330191440.1cc1b2de2b849d1ba93d2ba7@linux-foundation.org>
+In-Reply-To: <20220330172646.2687555-1-longman@redhat.com>
+References: <20220330172646.2687555-1-longman@redhat.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Xiaomeng,
+On Wed, 30 Mar 2022 13:26:46 -0400 Waiman Long <longman@redhat.com> wrote:
 
-On 31-03-22, 09:58, Xiaomeng Tong wrote:
->     dev = new_dev->dev;
-
-Why is this added here ?
-
+> Muchun Song found out there could be a race between list_lru_add()
+> and memcg_reparent_list_lru_node() causing the later function to miss
+> reparenting of a lru entry as shown below:
 > 
-> As discussed before,
-
-Please remember that whatever you write here will go in the commit
-logs for ever and no one will ever know what you discussed and with
-whom.
-
-This area should describe the problem at hand.
-
-> we should avoid to use a list iterator variable
-> outside the loop which is considered harmful[1].
+> CPU0:                           CPU1:
+> list_lru_add()
+>     spin_lock(&nlru->lock)
+>     l = list_lru_from_kmem(memcg)
+>                                 memcg_reparent_objcgs(memcg)
+>                                 memcg_reparent_list_lrus(memcg)
+>                                     memcg_reparent_list_lru()
+>                                         memcg_reparent_list_lru_node()
+>                                             if (!READ_ONCE(nlru->nr_items))
+>                                                 // Miss reparenting
+>                                                 return
+>     // Assume 0->1
+>     l->nr_items++
+>     // Assume 0->1
+>     nlru->nr_items++
 > 
-> In this case, use a new variable 'iter' as the list iterator, while
-> use the old variable 'new_dev' as a dedicated pointer to point to the
-> found entry.
+> Though it is not likely that a list_lru_node that has 0 item suddenly
+> has a newly added lru entry at the end of its life. The race is still
+> theoretically possible.
 > 
-> [1]:  https://lkml.org/lkml/2022/2/17/1032
+> With the lock/unlock pair used within the percpu_ref_kill() which is
+> the last function call of memcg_reparent_objcgs(), any read issued
+> in memcg_reparent_list_lru_node() will not be reordered before the
+> reparenting of objcgs.
 > 
-> Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-> ---
->  drivers/opp/debugfs.c | 11 ++++++++---
->  1 file changed, 8 insertions(+), 3 deletions(-)
+> Adding a !spin_is_locked()/smp_rmb()/!READ_ONCE(nlru->nr_items) check
+> to ensure that either the reading of nr_items is valid or the racing
+> list_lru_add() will see the reparented objcg.
 > 
-> diff --git a/drivers/opp/debugfs.c b/drivers/opp/debugfs.c
-> index 596c185b5dda..a4476985e4ce 100644
-> --- a/drivers/opp/debugfs.c
-> +++ b/drivers/opp/debugfs.c
-> @@ -187,14 +187,19 @@ void opp_debug_register(struct opp_device *opp_dev, struct opp_table *opp_table)
->  static void opp_migrate_dentry(struct opp_device *opp_dev,
->  			       struct opp_table *opp_table)
->  {
-> -	struct opp_device *new_dev;
-> +	struct opp_device *new_dev = NULL, *iter;
->  	const struct device *dev;
->  	struct dentry *dentry;
+> ...
+>
+> --- a/mm/list_lru.c
+> +++ b/mm/list_lru.c
+> @@ -395,10 +395,33 @@ static void memcg_reparent_list_lru_node(struct list_lru *lru, int nid,
+>  	struct list_lru_one *src, *dst;
 >  
->  	/* Look for next opp-dev */
-> -	list_for_each_entry(new_dev, &opp_table->dev_list, node)
-> -		if (new_dev != opp_dev)
-> +	list_for_each_entry(iter, &opp_table->dev_list, node)
-> +		if (iter != opp_dev) {
-> +			new_dev = iter;
->  			break;
-> +		}
-> +
-> +	if (!new_dev)
+>  	/*
+> -	 * If there is no lru entry in this nlru, we can skip it immediately.
+> +	 * With the lock/unlock pair used within the percpu_ref_kill()
+> +	 * which is the last function call of memcg_reparent_objcgs(), any
+> +	 * read issued here will not be reordered before the reparenting
+> +	 * of objcgs.
+> +	 *
+> +	 * Assuming a racing list_lru_add():
+> +	 * list_lru_add()
+> +	 *				<- memcg_reparent_list_lru_node()
+> +	 *   spin_lock(&nlru->lock)
+> +	 *   l = list_lru_from_kmem(memcg)
+> +	 *   nlru->nr_items++
+> +	 *   spin_unlock(&nlru->lock)
+> +	 *				<- memcg_reparent_list_lru_node()
+> +	 *
+> +	 * The !spin_is_locked(&nlru->lock) check is true means it is
+> +	 * either before the spin_lock() or after the spin_unlock(). In the
+> +	 * former case, list_lru_add() will see the reparented objcg and so
+> +	 * won't touch the lru to be reparented. In the later case, it will
+> +	 * see the updated nr_items. So we can use the optimization that if
+> +	 * there is no lru entry in this nlru, skip it immediately.
+>  	 */
+> -	if (!READ_ONCE(nlru->nr_items))
+> -		return;
+> +	if (!spin_is_locked(&nlru->lock)) {
 
-I will rather make this BUG_ON(!new_dev);
+ick.
 
-> +		return;
->  
->  	/* new_dev is guaranteed to be valid here */
->  	dev = new_dev->dev;
+> +		/* nr_items read must be ordered after nlru->lock */
+> +		smp_rmb();
+> +		if (!READ_ONCE(nlru->nr_items))
+> +			return;
+> +	}
+
+include/linux/spinlock_up.h has
+
+#define arch_spin_is_locked(lock)	((void)(lock), 0)
+
+so this `if' will always be true on CONFIG_SMP=n.  Will the kernel
+still work?
+
+At the very least let's have changelogging and commenting explaining
+that we've actually thought about this.
+
+Preferably, can we fix this hole properly and avoid this hack?  There is
+a reason for this:
+
+hp2:/usr/src/25> grep spin_is_locked mm/*.c
+hp2:/usr/src/25> 
 
 
--- 
-viresh
