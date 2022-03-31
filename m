@@ -2,127 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA34BC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 15:43:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF98DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 15:43:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239009AbiCaPom (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 11:44:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52584 "EHLO
+        id S237185AbiCaPo5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 11:44:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239448AbiCaPnA (ORCPT
+        with ESMTP id S240127AbiCaPng (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 11:43:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 797D11C349C;
-        Thu, 31 Mar 2022 08:37:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9E22461B69;
-        Thu, 31 Mar 2022 15:37:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CFA0C340F3;
-        Thu, 31 Mar 2022 15:37:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648741026;
-        bh=A3+v8YN4rZULqKlHdCnvknCSKLUBvOtgJ5S9ze+1pS4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=MPYVFwpro7nv+TrxY/Ol74fPO7Kpia4LPytfCElQLa5f+AGA1Ay4j3uZsLGsmMzHN
-         vDVc7PuOwjuXTxw6vvgKnuXRpxVZu7NhcCfsrXY5tgcQdSyRzGitbd9oM2ZWatCkGe
-         2pCtvn+05nk8OSk3uHZEvqcAg/SQ460mhWL94UcHDGfggJJZ/pXp4dlvbhfUKmGzE7
-         b8XXVBnO2o1VMLtLOD5NYLnd3DSUjYfpEQYVxknDOp2bapAymuFpW2yRz6EIwxFqqd
-         Nn47dg6HJ/RM6GvC3JnL+k08j9ZuLIO1yD8OodZNO250xNefMYKKrpy2dini9C5DRH
-         4S8bqLA0G17dw==
-Date:   Thu, 31 Mar 2022 16:36:59 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Martin =?utf-8?Q?Povi=C5=A1er?= <povik@cutebit.org>
-Cc:     Martin =?utf-8?Q?Povi=C5=A1er?= <povik+lin@cutebit.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Mark Kettenis <kettenis@openbsd.org>,
-        Hector Martin <marcan@marcan.st>,
-        Sven Peter <sven@svenpeter.dev>
-Subject: Re: [RFC PATCH 0/5] Apple Macs machine-level ASoC driver
-Message-ID: <YkXKmxJ0R3qpUoH4@sirena.org.uk>
-References: <20220331000449.41062-1-povik+lin@cutebit.org>
- <YkWfziQzprEsWL72@sirena.org.uk>
- <CCE4A06E-6D6F-457D-B3C5-C36209BF38D3@cutebit.org>
- <YkW4MPh8VWc8eSGg@sirena.org.uk>
- <6D199EAB-FE14-4030-96A7-2E0E89D25FAB@cutebit.org>
+        Thu, 31 Mar 2022 11:43:36 -0400
+Received: from wout4-smtp.messagingengine.com (wout4-smtp.messagingengine.com [64.147.123.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 963981D59DB;
+        Thu, 31 Mar 2022 08:39:10 -0700 (PDT)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.west.internal (Postfix) with ESMTP id 75C9732020A4;
+        Thu, 31 Mar 2022 11:39:09 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute5.internal (MEProxy); Thu, 31 Mar 2022 11:39:09 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stwcx.xyz; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm2; bh=KyI/j72y7JMpL9/xQjQ4csJ00FkyYP4CjB3zQa
+        JiteE=; b=mARUd3dNVIoDY0WW0hYsVKA7Lf7fwcTN1tIxFE0N5OsckZ9r1XG0u3
+        rh+EwDIuYSc04rnvx+EpdmoNEh1BMgVhXtQs//tm3pfwOXjkKr3x3QqkXyPsPjG7
+        r7xOj6X4G4U5YL3FGJcPT+zvCJtcfFyf/z05yw2/vQitVf9RUu6h+SKEL7hTFwrz
+        /aS4Lh4sHQUH52VifqB/1c3R+e2/PAXA5yjrjy8RNjBAxXD9BRssZkDI6BD1pXvV
+        4lOTe19Ojm/lQWRUbij7EyaloFTqagm6LTduNrHagnBzIsAtWJ5JtxgeyWOiPmBY
+        QhM++cH5Y59JCtRatWzPhvJgZLRQXIKg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=KyI/j72y7JMpL9/xQ
+        jQ4csJ00FkyYP4CjB3zQaJiteE=; b=g7TRrmzHPVgg6DgXsHjsO2eLrgorP9PeA
+        65z6ZvPimmANl/Em/yRPNDLtQAJ3wHMzU8TALdLnHvIP5DLyN/W5s7QKjSSutXr3
+        wj3+lFIfZX3g7hqBxOlAqGnaJ5Tiq4KkCuuk8yEZKIIh0uvnCGP0Zw/NLRxuXVGD
+        B61ydk1puY1cHyJuz0hrflXXWuqT4m+UT9fRMbE0G6/dMa6OP61iog1cAvtRQPXQ
+        7MbdjAs6a3DxKkpKjFcxB284MnwmNJx/WYsoEB+BzXcrh73NQqJP5Mw/Rdi4GOtU
+        tMavjh9FeLonmfVEwamGlj0nzg5WYyV7lAFLPWC7yXx2rRKlDzjHg==
+X-ME-Sender: <xms:HMtFYutS58m5Ij6Wi8vsGO72pwiJWmfS1WBYWAgDFLBU-clNqfI2MA>
+    <xme:HMtFYjeMl07xJgh2l68Sm1qEeTWcesplu6SRXIeOsmy5UmNdZEvNlMNb9rK5rIWAk
+    5p80QghJQzIQ7aRcQQ>
+X-ME-Received: <xmr:HMtFYpx1lIr-nr7Mnu10rZKvqllsndpYpYsNU44kSKTS3g0eryj14uaXNjT9mXCVcrWK9xPrTwlx6O8gwmmQQZB5eOFFMUqW1ec>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudeigedgledvucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    gfrhhlucfvnfffucdljedtmdenucfjughrpeffhffvuffkfhggtggujgesghdtreertddt
+    vdenucfhrhhomheprfgrthhrihgtkhcuhghilhhlihgrmhhsuceophgrthhrihgtkhessh
+    htfigtgidrgiihiieqnecuggftrfgrthhtvghrnhepgeehheefffegkeevhedthffgudfh
+    geefgfdthefhkedtleffveekgfeuffehtdeinecuvehluhhsthgvrhfuihiivgeptdenuc
+    frrghrrghmpehmrghilhhfrhhomhepphgrthhrihgtkhesshhtfigtgidrgiihii
+X-ME-Proxy: <xmx:HMtFYpOnk1vt45w1o4EXRYp03Ka6a6wGOW5tPa63xfniHzdSpg-kUg>
+    <xmx:HMtFYu8vNNgduVDpKYLfeU0J3h8rMbQFObgEr539NyGjFb7pfzb7Yw>
+    <xmx:HMtFYhW_g-T88mSS5127T0sbJSclHOzBmXDf99C883YoL-MgWATmBw>
+    <xmx:HctFYiayG9iwCsGHWT7GAIMkc02fOSWggrYoYRG9ARGt6MmeF7F2Sg>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 31 Mar 2022 11:39:08 -0400 (EDT)
+Date:   Thu, 31 Mar 2022 10:39:07 -0500
+From:   Patrick Williams <patrick@stwcx.xyz>
+To:     Eddie James <eajames@linux.ibm.com>
+Cc:     linux-leds@vger.kernel.org, openbmc@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org, pavel@ucw.cz, joel@jms.id.au
+Subject: Re: [PATCH] leds: pca955x: Add HW blink support
+Message-ID: <YkXLG++LWdQWCxQF@heinlein>
+References: <20220330203318.19225-1-eajames@linux.ibm.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="X2ThHCiFHNtahL7d"
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="1Owk7bxpetCwLmTk"
 Content-Disposition: inline
-In-Reply-To: <6D199EAB-FE14-4030-96A7-2E0E89D25FAB@cutebit.org>
-X-Cookie: Reunite Gondwondaland!
+In-Reply-To: <20220330203318.19225-1-eajames@linux.ibm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
---X2ThHCiFHNtahL7d
-Content-Type: text/plain; charset=utf-8
+--1Owk7bxpetCwLmTk
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Mar 31, 2022 at 05:04:32PM +0200, Martin Povi=C5=A1er wrote:
-> > On 31. 3. 2022, at 16:18, Mark Brown <broonie@kernel.org> wrote:
+On Wed, Mar 30, 2022 at 03:33:18PM -0500, Eddie James wrote:
+> Support blinking using the PCA955x chip. Use PWM0 for blinking
+> instead of LED_HALF brightness. Since there is only one frequency
+> and brightness register for any blinking LED, all blinked LEDs on
+> the chip will have the same frequency and brightness.
 
-> > Yes, having two devices driving the bus at the same time wouldn't be
-> > great.  How is the TDM slot selection for the signals done in the
-> > hardware, I'm not seeing anything immediately obvious in the driver?
-> > I'd have thought that things would be implemented such that you could
-> > implement speaker protection on all speakers simultaneously but perhaps
-> > not.
+The current implementation uses the PWM to control the "brightness"
+with PWM0 being assigned 50% and PWM1 being configured as a single value
+that isn't ON, OFF, or 50%.  I suspect that most users of these 955x
+chips care either about brightness or blinking but not both, but it is
+possible I am wrong.  It would be nice if we could use PWM1 as another
+hardware blink control when it hasn't been used for brightness, but that
+would require some additional state tracking I think.
 
-> I don=E2=80=99t know. I would have to go study the details of this. Shoul=
-d I see
-> if I can find a combination of =E2=80=98ASI1 Sel=E2=80=99 =E2=80=98VSENSE=
-=E2=80=99 =E2=80=98ISENSE=E2=80=99 settings
-> that would lead to driver conflict on one of the models, or is there
-> a chance we could hide those controls just on the basis of =E2=80=98it do=
-esn=E2=80=99t
-> do anything usable and is possibly dangerous=E2=80=99?
+I like that we can now use the hardware to control blink rate, rather
+than doing it in software, and, I really like that in theory if N LEDs on
+the device are all blinking at the same rate they will actually turn on and
+off at the same exact moment because it is done in hardware.  I am really
+concerned about this proposed change and the way it will change current
+behavior though.
 
-If ISENSE and VSENSE output are controlled by the same mux as routing
-then we should lock one of the controls out for at least stereo devices
-(it might be a good idea to check if the output is actually high Z when
-ISENSE and VSENSE are off rather than just driving zeros, if not it
-definitely has to be the routing control).  My instinct is that it's
-better to preserve the ability to implement speaker protection in future
-since that is something that'd be broadly useful, especially if someone
-comes up with a generic speaker protection implementation in which case
-there should be an awful lot of systems out there which could benefit.=20
+It is not uncommon in a BMC design to use one of these 955x chips to control
+8 or 16 different LEDs reflecting the state of the system and at
+different blink rates.  An example LED policy might be that you have 1 LED
+for "power status" and another LED for "system identify + health status".
+When the system is powered off the "power status" LED flashes at a slow rate
+and when the system is powered on it goes on solid.  When the system is hea=
+lthy
+the "health status" is on, when it is unhealthy it blinks slowly, and when =
+the
+system is "identified" it blinks fast.
 
-> >> That=E2=80=99s the reasoning anyway. To reiterate, seems to me the con=
-trols
-> >> are useless/confusing at best and dangerous at worst.
+My point of the above is that there are certainly system policies where
+you'd want to flash two different LEDs at two different rates.  In
+today's implementation of this driver those both turn into
+software-emulated blinking by the kernel.  With your proposal we lose
+this ability and instead whichever LED is configured second will affect
+all other blinking LEDs.
 
-> > I'm just not seeing an issue for the slot selection.
+It looks like in led-core.c led_blink_setup that if the device
+`blink_set` returns an error then software blinking is the fallback.  Is
+it possible for us to have this driver keep track of how many LEDs are
+in blink state (and which speeds are allocated) and get led-core to
+fallback to software blinking if we are unable to satisfy the new blink
+rate without affecting an existing LED blink rate?
 
-> Yeah, agreed there=E2=80=99s no (damage) issue as we should to proper vol=
-ume
-> caps anyway.
+Looking at the tree it seems bcm6328 does what I am suggesting already
+but I don't see any other drivers that obviously do.  The PCA955x is
+pretty widely used in BMC implementations:
 
-Though see above about how ISENSE/VSENSE output slot is controlled I guess =
-:/
+    $ git grep -l pca955 arch/arm/boot/dts/aspeed* | wc -l
+    13
 
---X2ThHCiFHNtahL7d
+--=20
+Patrick Williams
+
+--1Owk7bxpetCwLmTk
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJFypoACgkQJNaLcl1U
-h9BYrAf8C7WJfY+2miJ9ldjr+FjB/DEti4NLZQsx4VaqpU/qCJnw+5ZKmLLu00y9
-4EfS72t3bFJMYm0MuqUrCnlQmZRAJIeQ3Lu2JU5fYm2AbvsSdWSv5zvXLJuWuJG5
-FlRz9lUIRdLoAXWtI1QyHjG3WvW7JtGMulEVhj9AVEa+9SMpRmEmajmbxCoDyQ8i
-Kr6TAeKpIvhKxty0x4n+oDQBMjs3uYxNwu28h4wqeiVwb4KSO9DAr1/zOA6R1M9C
-dlLJxBBTakNkp3UnQhDPJBjhIyDy3kb1ceQAuCanMbmo+veWMTWstNmqF8FCXXLQ
-d3r8Z8ZAaeSy/6DXESctad+u9DDtYA==
-=SUgL
+iQIzBAABCAAdFiEEBGD9ii4LE9cNbqJBqwNHzC0AwRkFAmJFyxkACgkQqwNHzC0A
+wRkAaBAAjBfOY0GBJZfL3KuD59+0bFzyNMbkCbK0EmE4VU3YlONWgxXTLwTDir9/
+Ctb2a86QdZglRQzoof7/jyEmAJ1/tFFA+Kps5Z1FGPczZbGxJ9Obel7J8SNo3aiy
+sP3gBz2pbZtprpOo2w0Yc1ReZFiJe/kH7z3a1H/2Xl/lq9TPEDg22wVQnzkccNJp
+4X+1p0rwAqOqxGjBeOjaGAj1y7PvqXUICZVw0rkkXaI80Gjg+IikrUB8/FDSaCDT
+WHV3i4QfocIEUD62v5bSnzKijyaixo2e16fOUNqCTv1hWA5U2ZvoH+LhRm+91I0+
+otF6Hf9TUhcLFQkAKcoBOTXcmOJ2IZ06bUZ/sklWhdLWHmc0jL0t0LmcJk8s4eJb
+PJz+bP81sjTaB18sFkQu1KCXOaRkDf4/32csLZd2Tqq1HEXc24uFzhGdhirNgKpw
+55Bxs8H4Bp0OyqvIW+TYWutWDbP96vULv6xkaGNtJM4Nc0gJECh82yp/QQEBd9bS
+JjjwLbjl1W58SOfhtrzrwLd52RqKuBYUSzWSBoTP1RFOhHeTcCisE8XgL2hT/JZB
+DKl4ER8AQJDuqmjK6PilTPEM0c4gSupmJFqLnMC61StQ75pmpoxDqlE3bvqJ2GSd
+p1Xpy3S5LhJqY+TEo65UIst6nWhAF4XRsBjy+hf0uqzib9ykpxw=
+=/hef
 -----END PGP SIGNATURE-----
 
---X2ThHCiFHNtahL7d--
+--1Owk7bxpetCwLmTk--
