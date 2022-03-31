@@ -2,185 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C0C4C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 19:06:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAC6DC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 19:08:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239551AbiCaTIp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 15:08:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44658 "EHLO
+        id S239589AbiCaTJx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 15:09:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240467AbiCaTIW (ORCPT
+        with ESMTP id S234157AbiCaTJt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 15:08:22 -0400
-Received: from mx-out.tlen.pl (mx-out.tlen.pl [193.222.135.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A208721F742
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 12:06:33 -0700 (PDT)
-Received: (wp-smtpd smtp.tlen.pl 14437 invoked from network); 31 Mar 2022 21:06:30 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=o2.pl; s=1024a;
-          t=1648753590; bh=8gd/34zfJ5U82zEaxAl8m9q+P0p7nBbi0dKh2gtx344=;
-          h=From:To:Cc:Subject;
-          b=fXgSZIqaSNsYEzNdIwhYkWtbjnDzH/vS2JWvQoeJ+23gGBc/2ffwo9YdlpU3zXpVB
-           VFLzFDD5+g02xbGlF8+jv/vh/Yb2TnRea30ssykBkKoGsw2JtXkwtOswF9B7uWJT4u
-           EFKmc6I5Q3YDenVuyEoSaHu3WVlvglPMOSJ0V/kk=
-Received: from aaew62.neoplus.adsl.tpnet.pl (HELO localhost.localdomain) (mat.jonczyk@o2.pl@[83.4.126.62])
-          (envelope-sender <mat.jonczyk@o2.pl>)
-          by smtp.tlen.pl (WP-SMTPD) with SMTP
-          for <linux-kernel@vger.kernel.org>; 31 Mar 2022 21:06:30 +0200
-From:   =?UTF-8?q?Mateusz=20Jo=C5=84czyk?= <mat.jonczyk@o2.pl>
-To:     linux-kernel@vger.kernel.org, linux-rtc@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Cc:     =?UTF-8?q?Mateusz=20Jo=C5=84czyk?= <mat.jonczyk@o2.pl>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Shuah Khan <shuah@kernel.org>
-Subject: [PATCH 2/2] [RFC] selftests/rtc: read RTC alarm time many times in a row
-Date:   Thu, 31 Mar 2022 21:06:12 +0200
-Message-Id: <20220331190612.22162-2-mat.jonczyk@o2.pl>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220331190612.22162-1-mat.jonczyk@o2.pl>
-References: <20220331190612.22162-1-mat.jonczyk@o2.pl>
+        Thu, 31 Mar 2022 15:09:49 -0400
+Received: from mail-qv1-xf33.google.com (mail-qv1-xf33.google.com [IPv6:2607:f8b0:4864:20::f33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B709821C727
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 12:08:00 -0700 (PDT)
+Received: by mail-qv1-xf33.google.com with SMTP id ke15so303401qvb.11
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 12:08:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cmpxchg-org.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=3OVG7rRs2TdxNhin07a4J/J4tSbwW3zVKWCQEqpy4T0=;
+        b=RG4lduE77Jx8ZvyFt0EEudaFQPE1BG1QemD1WbZ9kW59cgVUqy0SCXMOSppS+G6cVf
+         cxktuXi0BZS0Tx2g7D5YSybqxaGh43sibMhPHWEp+pI1F9ZrBxIKh8ykoQvHOKyatXvi
+         O83/FHYqSuuR0U8E17Cc4cdXkpTR6pEf2jFCoCT7d88iTIOd+dNKFkCcAYW9QHVsQFtZ
+         K7yZlpPoEdc/+L/xsgIOY3A4kPPItFYk+hrCwGpVsIebdDQErh3Bi962ANb6E/rDZx2o
+         Rp+I8NRtEKfZAPWAMQpiN91TqH2SD1pTEFUNOiyi1jSOg0G78Ifnrn76h8iD1lTxDKk2
+         ZFDw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=3OVG7rRs2TdxNhin07a4J/J4tSbwW3zVKWCQEqpy4T0=;
+        b=0OQjeMls1ZMPIsQQ8DeqQQxXhm+7PnHCOPSXDYKijfhIt23+hSFscPzvNGvsXkIvON
+         fZUEM3QkEcGSmwrrP7X65His9TETeCWT4PzA/yfT1DylNBVglNYUAdf3SB2f+qKo11y+
+         7U5yw+QJKBcikpM6tvCFgZpMrkvzCsO7aO76ya7pooko09NEBYMizyQ4F5EhTGqbL6l8
+         qaprcao1M3MtinAmKryKLHxMwtQR8la3WYNtzdWDz/W/wvGrwMfSpJzULsl/rn2X+oNa
+         3snAdDpQ9ck2K/G2dFS3D0wCB14gUAvajt4/4P1CVwi89c9MbB+3Mmfh1/BfMjBTz085
+         b6rg==
+X-Gm-Message-State: AOAM530Qgwt6KVziIKDD8wL0Vj4rVQpt6kAkTegtHnkuflGLD4TJ3Rok
+        fZ8K3BdoPy+lvy4JlXuRgTvV8A==
+X-Google-Smtp-Source: ABdhPJyZsiZ6vcPqXb9JIU/bdKv1RqimR5mlcEfT2c6Phpz4SDQIQ6ZLZZoYSIFpXtcU9pAJJXVoNg==
+X-Received: by 2002:a05:6214:766:b0:441:a5df:8ace with SMTP id f6-20020a056214076600b00441a5df8acemr5388121qvz.87.1648753679514;
+        Thu, 31 Mar 2022 12:07:59 -0700 (PDT)
+Received: from localhost (cpe-98-15-154-102.hvc.res.rr.com. [98.15.154.102])
+        by smtp.gmail.com with ESMTPSA id b29-20020a05620a271d00b0067e0c273331sm78539qkp.111.2022.03.31.12.07.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 31 Mar 2022 12:07:58 -0700 (PDT)
+Date:   Thu, 31 Mar 2022 15:07:58 -0400
+From:   Johannes Weiner <hannes@cmpxchg.org>
+To:     Christoph Hellwig <hch@infradead.org>
+Cc:     CGEL <cgel.zte@gmail.com>, axboe@kernel.dk,
+        viro@zeniv.linux.org.uk, linux-block@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        akpm@linux-foundation.org, Yang Yang <yang.yang29@zte.com.cn>,
+        Ran Xiaokai <ran.xiaokai@zte.com.cn>
+Subject: Re: [PATCH] block/psi: make PSI annotations of submit_bio only work
+ for file pages
+Message-ID: <YkX8DvWkYhBoSv+m@cmpxchg.org>
+References: <623938d1.1c69fb81.52716.030f@mx.google.com>
+ <YjnO3p6vvAjeMCFC@cmpxchg.org>
+ <20220323061058.GA2343452@cgel.zte@gmail.com>
+ <62441603.1c69fb81.4b06b.5a29@mx.google.com>
+ <YkRUfuT3jGcqSw1Q@cmpxchg.org>
+ <YkRVSIG6QKfDK/ES@infradead.org>
+ <YkR7NPFIQ9h2AK9h@cmpxchg.org>
+ <YkR9IW1scr2EDBpa@infradead.org>
+ <YkSChWxuBzEB3Fqn@cmpxchg.org>
+ <YkU49BQ4rPheOG0f@infradead.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-WP-MailID: f8495556d919ce4d1335d5cdb7666e94
-X-WP-AV: skaner antywirusowy Poczty o2
-X-WP-SPAM: NO 0000000 [QcO0]                               
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YkU49BQ4rPheOG0f@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is the userspace part of the test unit.
+On Wed, Mar 30, 2022 at 10:15:32PM -0700, Christoph Hellwig wrote:
+> On Wed, Mar 30, 2022 at 12:17:09PM -0400, Johannes Weiner wrote:
+> > It's add_to_page_cache_lru() that sets the flag.
+> > 
+> > Basically, when a PageWorkingset (hot) page gets reclaimed, the bit is
+> > stored in the vacated tree slot. When the entry is brought back in,
+> > add_to_page_cache_lru() transfers it to the newly allocated page.
+> 
+> Ok.  In this case my patch didn't quite do the right thing for readahead
+> either.  But that does leave a question for the btrfs compressed
+> case, which only adds extra pages to a read to readahad a bigger
+> cluster size - that is these pages are not read at the request of the
+> VM.  Does it really make sense to do PSI accounting for them in that
+> case?
 
-This patch depends on
-commit 2aaa36e95ea5 ("selftests/rtc: continuously read RTC in a loop for 30s")
+I think it does.
 
-Existing code casts "struct rtc_time *" to "struct tm *", like so:
+I suppose it's an argument about readahead pages in general, which
+technically the workload itself doesn't commission explicitly. But
+those pages are still triggered by a nearby access, their reads
+contribute to device utilization, and if they're PageWorkingset it
+means they're only being read because there is a lack of memory.
 
-	gmtime_r(&secs, (struct tm *)&tm);
-
-This is incorrect, because sizeof(struct tm) > sizeof(struct rtc_time)
-(on Ubuntu 20.04 at least) and gmtime_r overwrites part of the stack.
-I'll submit a fix for this in mainline soon, but for now I'm defining
-timestamp_to_rtc_time() here.
-
-TODO:
-- some logic improvements, without much impact on the core algorithm.
-
-Signed-off-by: Mateusz Jończyk <mat.jonczyk@o2.pl>
-Cc: Alessandro Zummo <a.zummo@towertech.it>
-Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc: Shuah Khan <shuah@kernel.org>
----
- tools/testing/selftests/rtc/rtctest.c | 81 ++++++++++++++++++++++++++-
- tools/testing/selftests/rtc/settings  |  2 +-
- 2 files changed, 81 insertions(+), 2 deletions(-)
-
-diff --git a/tools/testing/selftests/rtc/rtctest.c b/tools/testing/selftests/rtc/rtctest.c
-index 2b9d929a24ed..7e5f2f1c00ef 100644
---- a/tools/testing/selftests/rtc/rtctest.c
-+++ b/tools/testing/selftests/rtc/rtctest.c
-@@ -62,7 +62,21 @@ static time_t rtc_time_to_timestamp(struct rtc_time *rtc_time)
- 	       .tm_year = rtc_time->tm_year,
- 	};
- 
--	return mktime(&tm_time);
-+	return timegm(&tm_time);
-+}
-+
-+static void timestamp_to_rtc_time(time_t timestamp, struct rtc_time *rtc_time)
-+{
-+	struct tm tm_time;
-+
-+	gmtime_r(&timestamp, &tm_time);
-+
-+	rtc_time->tm_sec = tm_time.tm_sec;
-+	rtc_time->tm_min = tm_time.tm_min;
-+	rtc_time->tm_hour = tm_time.tm_hour;
-+	rtc_time->tm_mday = tm_time.tm_mday;
-+	rtc_time->tm_mon = tm_time.tm_mon;
-+	rtc_time->tm_year = tm_time.tm_year;
- }
- 
- static void nanosleep_with_retries(long ns)
-@@ -228,6 +242,71 @@ TEST_F(rtc, alarm_alm_set) {
- 	ASSERT_EQ(new, secs);
- }
- 
-+TEST_F_TIMEOUT(rtc, alarm_read_loop, READ_LOOP_DURATION_SEC + 2) {
-+	int rc;
-+	long iter_count = 0;
-+	struct rtc_time tm;
-+	struct timeval start, curr;
-+	time_t secs;
-+
-+	rc = ioctl(self->fd, RTC_RD_TIME, &tm);
-+	ASSERT_NE(-1, rc);
-+
-+	// 60s is for clocks that only support minute resolution of RTC alarm
-+	secs = rtc_time_to_timestamp(&tm) + READ_LOOP_DURATION_SEC + 60 + 2;
-+	timestamp_to_rtc_time(secs, &tm);
-+
-+	rc = ioctl(self->fd, RTC_ALM_SET, &tm);
-+	if (rc == -1) {
-+		ASSERT_EQ(EINVAL, errno);
-+		TH_LOG("skip alarms are not supported.");
-+		return;
-+	}
-+
-+	rc = ioctl(self->fd, RTC_AIE_ON, NULL);
-+	ASSERT_NE(-1, rc);
-+
-+	TH_LOG("Continuously reading RTC alarm time for %ds (with %dms breaks after every read).",
-+	       READ_LOOP_DURATION_SEC, READ_LOOP_SLEEP_MS);
-+
-+	gettimeofday(&start, NULL);
-+
-+	secs = 0;
-+
-+	do {
-+		// TODO: use appropriate directory
-+		// TODO: fail gracefully if the kernel support does not exist
-+		FILE *wkalarm_file = fopen("/sys/kernel/debug/rtc/rtc0/wakealarm_raw", "r");
-+		long long wkalarm_time;
-+
-+		ASSERT_NE(wkalarm_file, NULL);
-+
-+		rc = fscanf(wkalarm_file, "%lld", &wkalarm_time);
-+		fclose(wkalarm_file);
-+
-+		ASSERT_EQ(rc, 1);
-+		ASSERT_NE(secs, -1);
-+		// TODO: use another value as placeholder,
-+		// TODO: check if wkalarm_time matches alarm time we set
-+		// previously
-+		if (secs == 0)
-+			secs = wkalarm_time;
-+
-+		ASSERT_EQ(wkalarm_time, secs);
-+
-+		// Sleep 11ms to avoid killing / overheating the RTC
-+		nanosleep_with_retries(READ_LOOP_SLEEP_MS * 1000000);
-+
-+		gettimeofday(&curr, NULL);
-+		iter_count++;
-+	} while (curr.tv_sec <= start.tv_sec + READ_LOOP_DURATION_SEC);
-+
-+	TH_LOG("Performed %ld RTC alarm time reads.", iter_count);
-+
-+	rc = ioctl(self->fd, RTC_AIE_OFF, NULL);
-+	ASSERT_NE(-1, rc);
-+}
-+
- TEST_F(rtc, alarm_wkalm_set) {
- 	struct timeval tv = { .tv_sec = ALARM_DELTA + 2 };
- 	struct rtc_wkalrm alarm = { 0 };
-diff --git a/tools/testing/selftests/rtc/settings b/tools/testing/selftests/rtc/settings
-index 0c1a2075d5f3..b478e684846a 100644
---- a/tools/testing/selftests/rtc/settings
-+++ b/tools/testing/selftests/rtc/settings
-@@ -1 +1 @@
--timeout=210
-+timeout=240
--- 
-2.25.1
-
+In a perfect world, readahead would stop when memory or IO are
+contended. But it doesn't, and the stalls it can inject into the
+workload are as real as stalls from directly requested reads.
