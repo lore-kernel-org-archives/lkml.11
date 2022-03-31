@@ -2,141 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82F29C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 17:29:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0CEBC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 17:30:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230439AbiCaRbf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 13:31:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36204 "EHLO
+        id S230452AbiCaRbu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 13:31:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230220AbiCaRbe (ORCPT
+        with ESMTP id S230455AbiCaRbs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 13:31:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61AA342A02;
-        Thu, 31 Mar 2022 10:29:46 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0FADAB8218F;
-        Thu, 31 Mar 2022 17:29:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A66F5C340ED;
-        Thu, 31 Mar 2022 17:29:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648747783;
-        bh=h1XiuSYIgdAIxUaaBOhGB1kjwsbePEAFlHK5pZHYeHg=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=Jb3C3btk8HoND9C9FXrW7dJkMaAFpA96M6WhPjMQxob+JlxbgOHgLd1zZJ7HqxlSo
-         7jN24x5AU2Rd7mS/+7FHMmRGWodqpBeOR6xJdWQCV506kPxJ5HB44IG4xid44kCew9
-         ROgz2b2IGQrOrFVYg6pVKrYhezemTUopl6sPCESpBtm6Vg3F2x9pxvM9OC6jd7J5bP
-         N515B3kEKYtjS5oTYYMgPU+lyywZD7Xkov914XW3mcNOeyNv7NPMZR9kyan0Msx4uq
-         UG57iq5hJHpTS5KP8UziwgaOotIty7nkzGEl4tGyFFs0D1LJ7M+qIUAU3fjbPlfWsu
-         ZMUqSN2FmZsZg==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 458EC5C0A0E; Thu, 31 Mar 2022 10:29:43 -0700 (PDT)
-Date:   Thu, 31 Mar 2022 10:29:43 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     "Zhang, Qiang1" <qiang1.zhang@intel.com>
-Cc:     "frederic@kernel.org" <frederic@kernel.org>,
-        "rcu@vger.kernel.org" <rcu@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] rcu: Put the irq work into hard interrupt context for
- execution
-Message-ID: <20220331172943.GV4285@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
-References: <20220330060012.2470054-1-qiang1.zhang@intel.com>
- <20220330201620.GM4285@paulmck-ThinkPad-P17-Gen-1>
- <PH0PR11MB58802C1246C6F4FB895BDDA9DA1F9@PH0PR11MB5880.namprd11.prod.outlook.com>
+        Thu, 31 Mar 2022 13:31:48 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 762FA16F6E3;
+        Thu, 31 Mar 2022 10:30:00 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 3074A210FC;
+        Thu, 31 Mar 2022 17:29:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1648747799;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=pPs7BScwn3Gb8H8NTJQGKbvPx9S/Gi0731uzRmABSCY=;
+        b=y8uvKwYoylti0qC/RmSlDN7zerCQLiLvaPXL7Hc+AZ0OsgPnywn8UpiyTB5RfWRKAyv7dr
+        YPcPzNOkmEF1+BN2en8M0Zd9hAJpCqaoc85FrQ1GvuvCBQOkyw4x3ex9gO0EjCD9y7qwDI
+        XWjOPKAEJv6N1Gw7kMTb8WYjya28xFI=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1648747799;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=pPs7BScwn3Gb8H8NTJQGKbvPx9S/Gi0731uzRmABSCY=;
+        b=4Pr7CWms7CFD3QZwqTbsGnC5lIB4d4CTJzmgcn/SMhA3IhsLZJEMiSv+kywgGJiZlSKlRv
+        mczrRCbZqcY7duCg==
+Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
+        by relay2.suse.de (Postfix) with ESMTP id 255E0A3B92;
+        Thu, 31 Mar 2022 17:29:59 +0000 (UTC)
+Received: by ds.suse.cz (Postfix, from userid 10065)
+        id 8E11DDA7F3; Thu, 31 Mar 2022 19:26:00 +0200 (CEST)
+Date:   Thu, 31 Mar 2022 19:26:00 +0200
+From:   David Sterba <dsterba@suse.cz>
+To:     Sweet Tea Dorminy <sweettea-kernel@dorminy.me>
+Cc:     Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>,
+        Nick Terrell <terrelln@fb.com>, linux-kernel@vger.kernel.org,
+        linux-btrfs@vger.kernel.org, kernel-team@fb.com,
+        Nikolay Borisov <nborisov@suse.com>
+Subject: Re: [PATCH v3 1/2] btrfs: factor out allocating an array of pages
+Message-ID: <20220331172600.GE15609@twin.jikos.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz,
+        Sweet Tea Dorminy <sweettea-kernel@dorminy.me>,
+        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>, Nick Terrell <terrelln@fb.com>,
+        linux-kernel@vger.kernel.org, linux-btrfs@vger.kernel.org,
+        kernel-team@fb.com, Nikolay Borisov <nborisov@suse.com>
+References: <cover.1648669832.git.sweettea-kernel@dorminy.me>
+ <3feb62bb8e605e708a0f839136a7354ec66b7b6b.1648669832.git.sweettea-kernel@dorminy.me>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <PH0PR11MB58802C1246C6F4FB895BDDA9DA1F9@PH0PR11MB5880.namprd11.prod.outlook.com>
+In-Reply-To: <3feb62bb8e605e708a0f839136a7354ec66b7b6b.1648669832.git.sweettea-kernel@dorminy.me>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 30, 2022 at 10:47:05PM +0000, Zhang, Qiang1 wrote:
-> On Wed, Mar 30, 2022 at 02:00:12PM +0800, Zqiang wrote:
-> > In PREEMPT_RT kernel, if irq work flags is not set, it will be 
-> > executed in per-CPU irq_work kthreads. set IRQ_WORK_HARD_IRQ flags to 
-> > irq work, put it in the context of hard interrupt execution, 
-> > accelerate scheduler to re-evaluate.
-> > 
-> > Signed-off-by: Zqiang <qiang1.zhang@intel.com>
-> > ---
-> >  kernel/rcu/tree.c        | 2 +-
-> >  kernel/rcu/tree_plugin.h | 2 +-
-> >  2 files changed, 2 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c index 
-> > e2ffbeceba69..a69587773a85 100644
-> > --- a/kernel/rcu/tree.c
-> > +++ b/kernel/rcu/tree.c
-> > @@ -678,7 +678,7 @@ static void late_wakeup_func(struct irq_work 
-> > *work)  }
-> >  
-> >  static DEFINE_PER_CPU(struct irq_work, late_wakeup_work) =
-> > -	IRQ_WORK_INIT(late_wakeup_func);
-> > +	IRQ_WORK_INIT_HARD(late_wakeup_func);
-> 
-> >This is used only by rcu_irq_work_resched(), which is invoked only by rcu_user_enter(), which is never invoked until userspace is enabled, by which time all of the various kthreads will have been spawned, correct?
-> >
-> >Either way, please show me the exact sequence of events that lead to a problem with the current IRQ_WORK_INIT().
-> >
-> >  /*
-> >   * If either:
-> > diff --git a/kernel/rcu/tree_plugin.h b/kernel/rcu/tree_plugin.h index 
-> > 3037c2536e1f..cf7bd28af8ef 100644
-> > --- a/kernel/rcu/tree_plugin.h
-> > +++ b/kernel/rcu/tree_plugin.h
-> > @@ -661,7 +661,7 @@ static void rcu_read_unlock_special(struct task_struct *t)
-> >  			    expboost && !rdp->defer_qs_iw_pending && cpu_online(rdp->cpu)) {
-> >  				// Get scheduler to re-evaluate and call hooks.
-> >  				// If !IRQ_WORK, FQS scan will eventually IPI.
-> > -				init_irq_work(&rdp->defer_qs_iw, rcu_preempt_deferred_qs_handler);
-> > +				rdp->defer_qs_iw = 
-> > +IRQ_WORK_INIT_HARD(rcu_preempt_deferred_qs_handler);
-> >  				rdp->defer_qs_iw_pending = true;
-> >  				irq_work_queue_on(&rdp->defer_qs_iw, rdp->cpu);
-> >  			}
-> >
-> >OK, in theory, rcu_read_unlock() could get to this point before all of the various kthreads were spawned.  In practice, the next time that the boot CPU went idle, the end of the quiescent state would be noticed.
-> 
-> Through my understanding, use irq_work in order to make the quiescent state be noticed earlier,
-> Because the irq_work execute in interrupt, this irq_work can be executed in time, but In RT kernel
-> The irq_work  is put into the kthread for execution, when it is executed, it is affected by the scheduling delay.
-> Is there anything I missed?
+On Wed, Mar 30, 2022 at 04:11:22PM -0400, Sweet Tea Dorminy wrote:
+> +/**
+> + * Populate every slot in a provided array with pages.
+> + *
+> + * @nr_pages:	the number of pages to request
+> + * @page_array: the array to fill with pages; any existing non-null entries in
+> + * 		the array will be skipped
+> + *
+> + * Return: 0 if all pages were able to be allocated; -ENOMEM otherwise, and the
+> + * caller is responsible for freeing all non-null page pointers in the array.
+> + */
+> +int btrfs_alloc_page_array(unsigned long nr_pages, struct page **page_array)
 
-Yes, in that I am not seeing any actual data showing that this fix really
-makes things better.  Please in mind that IRQ_WORK_INIT_HARD does have
-performance disadvantages of its own.  So although I agree with your
-words saying that IRQ_WORK_INIT_HARD -might- be helpful, those words
-are not sufficient.
+I've switched nr_pages to 'unsigned int', that's what all callers use
+and I don't see a reason for long.
 
-So, can you show a statistically significant benefit on a real system?
-For example, by measuring the time required for a expedited grace period
-to complete?  That would argue for this change, though it would need to be
-conditional, so that systems that don't care that much about the latency
-of expedited RCU grace periods don't need to pay the IRQ_WORK_INIT_HARD
-performance penalties.  Or you would need to demonstrate that these
-performance penalties don't cause problems.  (But such a demonstration
-is not easy given the wide variety of systems that Linux supports.)
-
-Now, I could imagine that the current code could cause problems during
-boot on CONFIG_PREEMPT_RT kernels.  But, believe me, I can imagine all
-sorts of horrible problems.  But we should fix those that happen not
-just in my imagination, but also in the real world.  ;-)
-
-So if you can make such a problem happen in real life, then I would be
-happy to take a patch that fixed this on CONFIG_PREEMPT_RT but kept the
-current code otherwise.
-
-							Thanx, Paul
-
-> Thanks
-> Zqiang	
-> 
-> >
-> >Or has this been failing in some other manner?  If so, please let me know the exact sequence of events.
-> >
-> >							Thanx, Paul
+> +{
+> +	int i;
+> +
+> +	for (i = 0; i < nr_pages; i++) {
+> +		struct page *page;
+> +
+> +		if (page_array[i])
+> +			continue;
+> +		page = alloc_page(GFP_NOFS);
+> +		if (!page)
+> +			return -ENOMEM;
+> +		page_array[i] = page;
+> +	}
+> +	return 0;
+> +}
