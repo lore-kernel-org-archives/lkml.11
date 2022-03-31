@@ -2,208 +2,311 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C48DC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 06:55:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19D9EC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 06:55:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231532AbiCaG5a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 02:57:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34332 "EHLO
+        id S231542AbiCaG5j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 02:57:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230527AbiCaG52 (ORCPT
+        with ESMTP id S231539AbiCaG5g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 02:57:28 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8200263DA
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 23:55:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=1P99cbgcKyenMIXAIS8yhOnAiro5GgvjDpUxTeyc0Go=; b=K++RLGxMkxvPSlyZKD7HePjIBL
-        QcOMSQPQfXME0LgeabX+vb6UkMHq5+jQZdZyDbUVRvs631e0AM/nHYmsGz2icdNbBcwNog/1D01KL
-        HQ9AYRV0O3lTylIPdvc6EpEiMkNKrqsQ5GFMV7y7Kk+dL+khXMgue59kDftZ39DFeaL6KwnkLEa3i
-        cDxzA9+dc8V0g2oZEwewdDbEl3PRFt1B0oSm9+aq7iFn5DHK9XzYO4k6orRdnB6h9kLlmzkuYZY9v
-        sghN7Stmnt53h8jb5428gpHZHGyblhqUpkA5xkg25zAoiQ+2wt75EluWY/TfAkkAiH5c4ldN3ifd2
-        eU6/8tDg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58036)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1nZoiP-0004JW-I7; Thu, 31 Mar 2022 07:55:29 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1nZoiK-0007On-Ax; Thu, 31 Mar 2022 07:55:24 +0100
-Date:   Thu, 31 Mar 2022 07:55:24 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Chen Zhongjin <chenzhongjin@huawei.com>
-Cc:     alexander.sverdlin@nokia.com, ardb@kernel.org,
-        linus.walleij@linaro.org, nico@fluxnic.net,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] ARM: module: Add all unwind tables when load module
-Message-ID: <YkVQXPYkae41B7Z2@shell.armlinux.org.uk>
-References: <20220325011252.55844-1-chenzhongjin@huawei.com>
+        Thu, 31 Mar 2022 02:57:36 -0400
+Received: from conssluserg-02.nifty.com (conssluserg-02.nifty.com [210.131.2.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E41BBCBD;
+        Wed, 30 Mar 2022 23:55:46 -0700 (PDT)
+Received: from mail-pj1-f51.google.com (mail-pj1-f51.google.com [209.85.216.51]) (authenticated)
+        by conssluserg-02.nifty.com with ESMTP id 22V6tRcj004529;
+        Thu, 31 Mar 2022 15:55:27 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-02.nifty.com 22V6tRcj004529
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1648709727;
+        bh=L9kZOKHWhsgjEmJ2R6+mrbuMRxdSlCSQGK98H4ZVo9I=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=YfTSMeNvw/ruxmXXFZ9QNFY67/n54RPdp/gZ0a27GWZlfKgcSwZ9OK+ZlkJUQBFNg
+         ZZNbdEntatoATiEydGQB2nbao318zUAvHhf0EkKyjphSj7EUfsjElyWjFkdDKlT4yl
+         VAOKYrjqo3Fj1W/2ALxs7+iivh5Gv5U2o/NEVZ8NRPr5T6hI50rZ24ojUMi8pygxrR
+         F02rmGZ+aZG0Y+PzB1TZQX6pvmc/uoX/4nwyTC18qU9nRaGku9ZxefImJpbWYdVYMq
+         0/SJFIO+g8CSBLtoBKQYRa13yeklUCs7QlZNtiemBvQw3PDpQa/I1ZFu8zZ9So8tBd
+         eyjkGlktcO8fQ==
+X-Nifty-SrcIP: [209.85.216.51]
+Received: by mail-pj1-f51.google.com with SMTP id cm17so3182683pjb.2;
+        Wed, 30 Mar 2022 23:55:27 -0700 (PDT)
+X-Gm-Message-State: AOAM531NF2nJy8rBxEjvMBSDpdAONjlfLFFXFfib3Fc/fOgq8r17CbFL
+        SiwNkNgRbDtgH1J3z8fPb838HaAwOcYxNLtpG/I=
+X-Google-Smtp-Source: ABdhPJxsaGNhoSEJTEpheUYWiqhafrHfxnSoM0vUmaP7qyboo7NjwIbHvtlP7G0UtQOUPG2tIQLpBH78IrV3Knmf58s=
+X-Received: by 2002:a17:90a:8041:b0:1c9:fc3a:f6ee with SMTP id
+ e1-20020a17090a804100b001c9fc3af6eemr4470147pjw.144.1648709726539; Wed, 30
+ Mar 2022 23:55:26 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220325011252.55844-1-chenzhongjin@huawei.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+References: <164870615889.127053.9055569952366814752.stgit@devnote2>
+ <164870619150.127053.3677457860116913262.stgit@devnote2> <CAK7LNARfcVt9L=BBmB7N8GNBHHU_LZx7mjMF9zW0ozfW3WNfeg@mail.gmail.com>
+ <20220331154918.67fdd2b2c18262631588e07c@kernel.org>
+In-Reply-To: <20220331154918.67fdd2b2c18262631588e07c@kernel.org>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Thu, 31 Mar 2022 15:54:40 +0900
+X-Gmail-Original-Message-ID: <CAK7LNARvO2i7k7bSgCiE944yUXvK=J3bo_=MiDa6TZuqY87p_A@mail.gmail.com>
+Message-ID: <CAK7LNARvO2i7k7bSgCiE944yUXvK=J3bo_=MiDa6TZuqY87p_A@mail.gmail.com>
+Subject: Re: [PATCH v6 3/4] bootconfig: Support embedding a bootconfig file in kernel
+To:     Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     Steven Rostedt <rostedt@goodmis.org>,
+        Padmanabha Srinivasaiah <treasure4paddy@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        Nathan Chancellor <nathan@kernel.org>, llvm@lists.linux.dev,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Thu, Mar 31, 2022 at 3:49 PM Masami Hiramatsu <mhiramat@kernel.org> wrote:
+>
+> On Thu, 31 Mar 2022 15:27:56 +0900
+> Masahiro Yamada <masahiroy@kernel.org> wrote:
+>
+> > On Thu, Mar 31, 2022 at 2:56 PM Masami Hiramatsu <mhiramat@kernel.org> wrote:
+> > >
+> > > This allows kernel developer to embed a default bootconfig file in
+> > > the kernel instead of embedding it in the initrd. This will be good
+> > > for who are using the kernel without initrd, or who needs a default
+> > > bootconfigs.
+> > > This needs to set two kconfigs: CONFIG_EMBED_BOOT_CONFIG=y and set
+> > > the file path to CONFIG_EMBED_BOOT_CONFIG_FILE.
+> > >
+> > > Note that you still need 'bootconfig' command line option to load the
+> > > embedded bootconfig. Also if you boot using an initrd with a different
+> > > bootconfig, the kernel will use the bootconfig in the initrd, instead
+> > > of the default bootconfig.
+> > >
+> > > Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
+> > > ---
+> > >  Changes in v6:
+> > >   - Split out the .incbin asm part as bootconfig-data.S according to
+> > >     Masahiro's comment.
+> > >  Changes in v5:
+> > >   - Fix .gitignore to be sorted alphabetically.
+> > >   - Make default.bconf is cleaned up correctly.
+> > >   - Allow user to specify relative path to CONFIG_EMBED_BOOT_CONFIG_FILE.
+> > >     (Thanks Masahiro!)
+> > >  Changes in v4:
+> > >   - Avoid updating the default.bconf if the file is not changed.
+> > > ---
+> > >  MAINTAINERS                |    1 +
+> > >  include/linux/bootconfig.h |   10 ++++++++++
+> > >  init/Kconfig               |   21 +++++++++++++++++++++
+> > >  init/main.c                |   13 ++++++++-----
+> > >  lib/.gitignore             |    1 +
+> > >  lib/Makefile               |    8 ++++++++
+> > >  lib/bootconfig-data.S      |   11 +++++++++++
+> > >  lib/bootconfig.c           |   13 +++++++++++++
+> > >  8 files changed, 73 insertions(+), 5 deletions(-)
+> > >  create mode 100644 lib/bootconfig-data.S
+> > >
+> > > diff --git a/MAINTAINERS b/MAINTAINERS
+> > > index b555a5e8704f..9b4910685412 100644
+> > > --- a/MAINTAINERS
+> > > +++ b/MAINTAINERS
+> > > @@ -7350,6 +7350,7 @@ S:        Maintained
+> > >  F:     Documentation/admin-guide/bootconfig.rst
+> > >  F:     fs/proc/bootconfig.c
+> > >  F:     include/linux/bootconfig.h
+> > > +F:     lib/bootconfig-data.S
+> > >  F:     lib/bootconfig.c
+> > >  F:     tools/bootconfig/*
+> > >  F:     tools/bootconfig/scripts/*
+> > > diff --git a/include/linux/bootconfig.h b/include/linux/bootconfig.h
+> > > index a4665c7ab07c..5dbda5e3e9bb 100644
+> > > --- a/include/linux/bootconfig.h
+> > > +++ b/include/linux/bootconfig.h
+> > > @@ -289,4 +289,14 @@ int __init xbc_get_info(int *node_size, size_t *data_size);
+> > >  /* XBC cleanup data structures */
+> > >  void __init xbc_exit(void);
+> > >
+> > > +/* XBC embedded bootconfig data in kernel */
+> > > +#ifdef CONFIG_EMBED_BOOT_CONFIG
+> > > +char * __init xbc_get_embedded_bootconfig(size_t *size);
+> > > +#else
+> > > +static inline char *xbc_get_embedded_bootconfig(size_t *size)
+> > > +{
+> > > +       return NULL;
+> > > +}
+> > > +#endif
+> > > +
+> > >  #endif
+> > > diff --git a/init/Kconfig b/init/Kconfig
+> > > index 97463a33baa7..f5d14a78cfce 100644
+> > > --- a/init/Kconfig
+> > > +++ b/init/Kconfig
+> > > @@ -1361,6 +1361,27 @@ config BOOT_CONFIG
+> > >
+> > >           If unsure, say Y.
+> > >
+> > > +config EMBED_BOOT_CONFIG
+> > > +       bool "Embed bootconfig file in the kernel"
+> > > +       depends on BOOT_CONFIG
+> > > +       default n
+> > > +       help
+> > > +         Embed a bootconfig file given by EMBED_BOOT_CONFIG_FILE in the
+> > > +         kernel. Usually, the bootconfig file is loaded with the initrd
+> > > +         image. But if the system doesn't support initrd, this option will
+> > > +         help you by embedding a bootconfig file while building the kernel.
+> > > +
+> > > +         If unsure, say N.
+> > > +
+> > > +config EMBED_BOOT_CONFIG_FILE
+> > > +       string "Embedded bootconfig file path"
+> > > +       default ""
+> > > +       depends on EMBED_BOOT_CONFIG
+> > > +       help
+> > > +         Specify a bootconfig file which will be embedded to the kernel.
+> > > +         This bootconfig will be used if there is no initrd or no other
+> > > +         bootconfig in the initrd.
+> > > +
+> > >  choice
+> > >         prompt "Compiler optimization level"
+> > >         default CC_OPTIMIZE_FOR_PERFORMANCE
+> > > diff --git a/init/main.c b/init/main.c
+> > > index 266d61bc67b0..a5db3e36b809 100644
+> > > --- a/init/main.c
+> > > +++ b/init/main.c
+> > > @@ -266,7 +266,7 @@ static int __init loglevel(char *str)
+> > >  early_param("loglevel", loglevel);
+> > >
+> > >  #ifdef CONFIG_BLK_DEV_INITRD
+> > > -static void * __init get_boot_config_from_initrd(u32 *_size)
+> > > +static void * __init get_boot_config_from_initrd(size_t *_size)
+> > >  {
+> > >         u32 size, csum;
+> > >         char *data;
+> > > @@ -412,12 +412,15 @@ static void __init setup_boot_config(void)
+> > >         static char tmp_cmdline[COMMAND_LINE_SIZE] __initdata;
+> > >         const char *msg;
+> > >         int pos;
+> > > -       u32 size;
+> > > +       size_t size;
+> > >         char *data, *err;
+> > >         int ret;
+> > >
+> > >         /* Cut out the bootconfig data even if we have no bootconfig option */
+> > >         data = get_boot_config_from_initrd(&size);
+> > > +       /* If there is no bootconfig in initrd, try embedded one. */
+> > > +       if (!data)
+> > > +               data = xbc_get_embedded_bootconfig(&size);
+> > >
+> > >         strlcpy(tmp_cmdline, boot_command_line, COMMAND_LINE_SIZE);
+> > >         err = parse_args("bootconfig", tmp_cmdline, NULL, 0, 0, 0, NULL,
+> > > @@ -436,8 +439,8 @@ static void __init setup_boot_config(void)
+> > >         }
+> > >
+> > >         if (size >= XBC_DATA_MAX) {
+> > > -               pr_err("bootconfig size %d greater than max size %d\n",
+> > > -                       size, XBC_DATA_MAX);
+> > > +               pr_err("bootconfig size %ld greater than max size %d\n",
+> > > +                       (long)size, XBC_DATA_MAX);
+> > >                 return;
+> > >         }
+> > >
+> > > @@ -450,7 +453,7 @@ static void __init setup_boot_config(void)
+> > >                                 msg, pos);
+> > >         } else {
+> > >                 xbc_get_info(&ret, NULL);
+> > > -               pr_info("Load bootconfig: %d bytes %d nodes\n", size, ret);
+> > > +               pr_info("Load bootconfig: %ld bytes %d nodes\n", (long)size, ret);
+> > >                 /* keys starting with "kernel." are passed via cmdline */
+> > >                 extra_command_line = xbc_make_cmdline("kernel");
+> > >                 /* Also, "init." keys are init arguments */
+> > > diff --git a/lib/.gitignore b/lib/.gitignore
+> > > index e5e217b8307b..54596b634ecb 100644
+> > > --- a/lib/.gitignore
+> > > +++ b/lib/.gitignore
+> > > @@ -1,6 +1,7 @@
+> > >  # SPDX-License-Identifier: GPL-2.0-only
+> > >  /crc32table.h
+> > >  /crc64table.h
+> > > +/default.bconf
+> > >  /gen_crc32table
+> > >  /gen_crc64table
+> > >  /oid_registry_data.c
+> > > diff --git a/lib/Makefile b/lib/Makefile
+> > > index 08053df16c7c..2a82cc324f91 100644
+> > > --- a/lib/Makefile
+> > > +++ b/lib/Makefile
+> > > @@ -280,6 +280,14 @@ $(foreach file, $(libfdt_files), \
+> > >  lib-$(CONFIG_LIBFDT) += $(libfdt_files)
+> > >
+> > >  obj-$(CONFIG_BOOT_CONFIG) += bootconfig.o
+> > > +obj-$(CONFIG_EMBED_BOOT_CONFIG) += bootconfig-data.o
+> > > +
+> > > +$(obj)/bootconfig-data.o: $(obj)/default.bconf
+> > > +
+> > > +targets += default.bconf
+> > > +filechk_defbconf = cat $(or $(real-prereqs), /dev/null)
+> > > +$(obj)/default.bconf: $(CONFIG_EMBED_BOOT_CONFIG_FILE) FORCE
+> > > +       $(call filechk,defbconf)
+> > >
+> > >  obj-$(CONFIG_RBTREE_TEST) += rbtree_test.o
+> > >  obj-$(CONFIG_INTERVAL_TREE_TEST) += interval_tree_test.o
+> > > diff --git a/lib/bootconfig-data.S b/lib/bootconfig-data.S
+> > > new file mode 100644
+> > > index 000000000000..df674ea7d8be
+> > > --- /dev/null
+> > > +++ b/lib/bootconfig-data.S
+> > > @@ -0,0 +1,11 @@
+> > > +/* SPDX-License-Identifier: GPL-2.0 */
+> > > +/*
+> > > + * Embed default bootconfig in the kernel.
+> > > + */
+> > > +       .pushsection .init.data, "aw"
+> > > +       .global embedded_bootconfig_data
+> > > +embedded_bootconfig_data:
+> > > +       .incbin "lib/default.bconf"
+> > > +       .global embedded_bootconfig_data_end
+> > > +embedded_bootconfig_data_end:
+> > > +       .popsection
+> >
+> >
+> >
+> > You used  .pushsection / .popsection because it was
+> > previously located in bootconfig.c, where there are
+> > functions, which should go to the ".text" section.
+>
+> Oops, yes. I have made a dumb copy from the inline asm...
+>
+> > Now that you split this into a separate compilation unit,
+> > there is only one ".init.data" section in the file.
+> >
+> >
+> >      .section  .init.data, "aw"
+> >
+> > should be enough.
+>
+> OK.
+>
+> > BTW, is it reasonable/possible to make it explicitly read-only?
+> >
+> > I have not tested this patch at all. Nor do I have enough insight.
+> >
+> >      .section  .init.rodata, "a"
+> >
+> > I am not sure whether this is possible or not.
+>
+> Yes, it can be. The data is passed via 'const char *'.
 
-On Fri, Mar 25, 2022 at 09:12:52AM +0800, Chen Zhongjin wrote:
-> For EABI stack unwinding, when loading .ko module
-> the EXIDX sections will be added to a unwind_table list.
-> 
-> However not all EXIDX sections are added because EXIDX
-> sections are searched by hardcoded section names.
-> 
-> For functions in other sections such as .ref.text
-> or .kprobes.text, gcc generates seprated EXIDX sections
-> (such as .ARM.exidx.ref.text or .ARM.exidx.kprobes.text).
-> 
-> These extra EXIDX sections are not loaded, so when unwinding
-> functions in these sections, we will failed with:
-> 
-> 	unwind: Index not found xxx
-> 
-> To fix that, I refactor the code for searching and adding
-> EXIDX sections:
-> 
-> - Check section type to search EXIDX tables (0x70000001)
-> instead of strcmp() the hardcoded names. Then find the
-> corresponding text sections by their section names.
-> 
-> - Add a unwind_table list in module->arch to save their own
-> unwind_table instead of the fixed-lenth array.
-> 
-> - Save .ARM.exidx.init.text section ptr, because it should
-> be cleaned after module init.
-> 
-> Now all EXIDX sections of .ko can be added correctly.
-> 
-> Signed-off-by: Chen Zhongjin <chenzhongjin@huawei.com>
-> ---
->  arch/arm/include/asm/module.h | 17 ++------
->  arch/arm/include/asm/unwind.h |  1 +
->  arch/arm/kernel/module.c      | 73 +++++++++++++++++------------------
->  3 files changed, 40 insertions(+), 51 deletions(-)
-> 
-> diff --git a/arch/arm/include/asm/module.h b/arch/arm/include/asm/module.h
-> index cfffae67c04e..8139b6a33a22 100644
-> --- a/arch/arm/include/asm/module.h
-> +++ b/arch/arm/include/asm/module.h
-> @@ -3,20 +3,10 @@
->  #define _ASM_ARM_MODULE_H
->  
->  #include <asm-generic/module.h>
-> -
-> -struct unwind_table;
-> +#include <asm/unwind.h>
->  
->  #ifdef CONFIG_ARM_UNWIND
-> -enum {
-> -	ARM_SEC_INIT,
-> -	ARM_SEC_DEVINIT,
-> -	ARM_SEC_CORE,
-> -	ARM_SEC_EXIT,
-> -	ARM_SEC_DEVEXIT,
-> -	ARM_SEC_HOT,
-> -	ARM_SEC_UNLIKELY,
-> -	ARM_SEC_MAX,
-> -};
-> +#define ELF_SECTION_UNWIND 0x70000001
->  #endif
->  
->  #define PLT_ENT_STRIDE		L1_CACHE_BYTES
-> @@ -36,7 +26,8 @@ struct mod_plt_sec {
->  
->  struct mod_arch_specific {
->  #ifdef CONFIG_ARM_UNWIND
-> -	struct unwind_table *unwind[ARM_SEC_MAX];
-> +	struct unwind_table unwind_list;
-> +	struct unwind_table *init_table;
->  #endif
->  #ifdef CONFIG_ARM_MODULE_PLTS
->  	struct mod_plt_sec	core;
-> diff --git a/arch/arm/include/asm/unwind.h b/arch/arm/include/asm/unwind.h
-> index 0f8a3439902d..b51f85417f58 100644
-> --- a/arch/arm/include/asm/unwind.h
-> +++ b/arch/arm/include/asm/unwind.h
-> @@ -24,6 +24,7 @@ struct unwind_idx {
->  
->  struct unwind_table {
->  	struct list_head list;
-> +	struct list_head mod_list;
->  	const struct unwind_idx *start;
->  	const struct unwind_idx *origin;
->  	const struct unwind_idx *stop;
-> diff --git a/arch/arm/kernel/module.c b/arch/arm/kernel/module.c
-> index 549abcedf795..272f9bdeb1ed 100644
-> --- a/arch/arm/kernel/module.c
-> +++ b/arch/arm/kernel/module.c
-> @@ -459,46 +459,36 @@ int module_finalize(const Elf32_Ehdr *hdr, const Elf_Shdr *sechdrs,
->  #ifdef CONFIG_ARM_UNWIND
->  	const char *secstrs = (void *)hdr + sechdrs[hdr->e_shstrndx].sh_offset;
->  	const Elf_Shdr *sechdrs_end = sechdrs + hdr->e_shnum;
-> -	struct mod_unwind_map maps[ARM_SEC_MAX];
-> -	int i;
-> +	struct unwind_table *table_list = &mod->arch.unwind_list;
+But, you didn't add "const" in the C code:
 
-Please rename "table_list" to "unwind_list" so we use a consistent name
-for this.
+extern __visible char embedded_bootconfig_data[];
+extern __visible char embedded_bootconfig_data_end[];
 
->  
-> -	memset(maps, 0, sizeof(maps));
-> +	INIT_LIST_HEAD(&table_list->mod_list);
-> +	mod->arch.init_table = NULL;
->  
->  	for (s = sechdrs; s < sechdrs_end; s++) {
-> -		const char *secname = secstrs + s->sh_name;
-> +		const unsigned int sectype = s->sh_type;
 
-Please loose this local variable.
+Is it possible to use "const char" ?
 
->  
->  		if (!(s->sh_flags & SHF_ALLOC))
->  			continue;
->  
-> -		if (strcmp(".ARM.exidx.init.text", secname) == 0)
-> -			maps[ARM_SEC_INIT].unw_sec = s;
-> -		else if (strcmp(".ARM.exidx", secname) == 0)
-> -			maps[ARM_SEC_CORE].unw_sec = s;
-> -		else if (strcmp(".ARM.exidx.exit.text", secname) == 0)
-> -			maps[ARM_SEC_EXIT].unw_sec = s;
-> -		else if (strcmp(".ARM.exidx.text.unlikely", secname) == 0)
-> -			maps[ARM_SEC_UNLIKELY].unw_sec = s;
-> -		else if (strcmp(".ARM.exidx.text.hot", secname) == 0)
-> -			maps[ARM_SEC_HOT].unw_sec = s;
-> -		else if (strcmp(".init.text", secname) == 0)
-> -			maps[ARM_SEC_INIT].txt_sec = s;
-> -		else if (strcmp(".text", secname) == 0)
-> -			maps[ARM_SEC_CORE].txt_sec = s;
-> -		else if (strcmp(".exit.text", secname) == 0)
-> -			maps[ARM_SEC_EXIT].txt_sec = s;
-> -		else if (strcmp(".text.unlikely", secname) == 0)
-> -			maps[ARM_SEC_UNLIKELY].txt_sec = s;
-> -		else if (strcmp(".text.hot", secname) == 0)
-> -			maps[ARM_SEC_HOT].txt_sec = s;
-> +		if (sectype == ELF_SECTION_UNWIND) {
 
-I think given the amouont of indentation this causes, that:
-
-		if (!(s->sh_flags & SHF_ALLOC)) ||
-		    s->sh_type != ELF_SECTION_UNWIND)
-			continue;
-
-would be preferred here.
-
-Other than that, patch looks fine, thanks.
 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Best Regards
+Masahiro Yamada
