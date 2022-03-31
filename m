@@ -2,106 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 717D3C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 19:41:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A289AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 19:41:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240960AbiCaTnf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 15:43:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60142 "EHLO
+        id S232565AbiCaTnn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 15:43:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241156AbiCaTnJ (ORCPT
+        with ESMTP id S240934AbiCaTnf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 15:43:09 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B1CC127589;
-        Thu, 31 Mar 2022 12:41:22 -0700 (PDT)
-Received: from [IPV6:2a00:5f00:102:0:10b3:10ff:fe5d:4ec1] (unknown [IPv6:2a00:5f00:102:0:10b3:10ff:fe5d:4ec1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: dmitry.osipenko)
-        by bhuna.collabora.co.uk (Postfix) with ESMTPSA id AD5941F46A5D;
-        Thu, 31 Mar 2022 20:41:19 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1648755680;
-        bh=XyZcQg6pqR159jgtxwGtbmonYgk2JzV10bPGOcjl0Qc=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=DE4VWC1bnVsxalr1+sXEPphCLUZNPnQ1i5KR46hOq9wpUWFkfxPTdYNwayv5PeJMy
-         x1usxrG78HxHgRkrg80QEw4tYf9RiS2VsRKfx4c//GaCzdwCB134eYNMsU1X/Am5PZ
-         CHMG8SEJbZRSQozYR+iQMjJ5aTBptRVxwbuCqS+5WoiwEuHs+PYVimXUgW6hIIW+0q
-         JTspnl+6ZAsyyUGvZJl4MEjp2Gdx7k35YQiEeqnhVlJ76iikG1BaLgGjDc5dRxQ8Fj
-         JKaP1em6qv0X5Nh8PQwTuJymfxQiVRhRauJ1KZVi3CiwsRah4g89P4jCPW3xXpeBWe
-         SDDqSfoz/jJSQ==
-Message-ID: <22d9a9ff-1c44-ed41-6ae1-59a1f965ab6c@collabora.com>
-Date:   Thu, 31 Mar 2022 22:41:16 +0300
+        Thu, 31 Mar 2022 15:43:35 -0400
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D24CC13CA02;
+        Thu, 31 Mar 2022 12:41:46 -0700 (PDT)
+Received: by mail-pg1-x52d.google.com with SMTP id w21so594420pgm.7;
+        Thu, 31 Mar 2022 12:41:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=qsGcrQBwGTi+5NyS4qf8vP5dYOxF5bqb0qAb2tXdERc=;
+        b=MStKuYmsLi0xX9P60xtA4qXl1aL+4rnXErAvTDwSewkBhFWiHmgzo3dl7EZPvmo+k5
+         QbL6C+JeUvrHGryk6qn3yyWAX/3HTQIGe0tiFp6eqqRM9zZOkNaIgfGmkcEDDXVoYX33
+         oA6vxV14x+fYrf4hSYdYgLysEoUu/AY2mpCMcljU6XwrZuDDLtBwXZJgm3kmemHnhyLk
+         rWyPWjyF/zfIgyOV3n1Z7pMy7e3gX3tfHKMG9JHAd+Vl8q6K0J0uA7EH8WucRSPLRuEN
+         Yk/Mfm/txzFS9uo5/2vOiDcgm33TN/Zxl3HyjwF9w/OF+Ycy+PDs6a1/s+ADfO13Q70D
+         TH5A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=qsGcrQBwGTi+5NyS4qf8vP5dYOxF5bqb0qAb2tXdERc=;
+        b=2wCiv+Eyw5n2MojPblpEDWYiGQyg5ISkj/hTyrgsl1jn38s9DBvt6i3t6hlWp2HwRP
+         NaOrpD4wGlf3WhRlzZrJjC6u8ZxbStSh2Mu0Wm510/0uh6JTEHlg3Jznp2OEVNqBQOlb
+         4nZvLVxbfFzqM5SPh020082hRSDMEiQRY6QbbOzz9irrmB7bm8MdIojur1vDyipcnfIv
+         IyFQLypcRp0eZ64r3tN4QUVCBVkrl9AXvNd1pjRhdRv1HgQY2w0FdYNbqzCnnN2HHqH2
+         gTFRFD5nLsyxUoVeLxEpboApTKMeHLdAZE+wy2te2eLPn+rxe+HdSwyvwjkSGOuZ9g3Q
+         rGQw==
+X-Gm-Message-State: AOAM531JVXdXd4Uxlv9YPa04FQaPpaP85nOaYVg7AAfafFhpI/6Oe6EW
+        MGTMnY+hFE9HSlpERcCKS8I=
+X-Google-Smtp-Source: ABdhPJxeaZ3jtyAxJe4EcbTylaLFD7g+Wd8z0WzP82DRl7tI7JsL5M55iZIIweIke4/eFcpKqgaFow==
+X-Received: by 2002:a63:bf0e:0:b0:386:361f:e97a with SMTP id v14-20020a63bf0e000000b00386361fe97amr11961114pgf.552.1648755706247;
+        Thu, 31 Mar 2022 12:41:46 -0700 (PDT)
+Received: from localhost ([192.55.54.52])
+        by smtp.gmail.com with ESMTPSA id h20-20020a056a001a5400b004fb1b4b010asm267163pfv.162.2022.03.31.12.41.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 31 Mar 2022 12:41:45 -0700 (PDT)
+Date:   Thu, 31 Mar 2022 12:41:44 -0700
+From:   Isaku Yamahata <isaku.yamahata@gmail.com>
+To:     Kai Huang <kai.huang@intel.com>
+Cc:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, isaku.yamahata@gmail.com,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Jim Mattson <jmattson@google.com>, erdemaktas@google.com,
+        Connor Kuehl <ckuehl@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+Subject: Re: [RFC PATCH v5 008/104] KVM: TDX: Add a function to initialize
+ TDX module
+Message-ID: <20220331194144.GA2084469@ls.amr.corp.intel.com>
+References: <cover.1646422845.git.isaku.yamahata@intel.com>
+ <b92217283fa96b85e9a683ca3fcf1b368cf8d1c4.1646422845.git.isaku.yamahata@intel.com>
+ <36aac3cb7c7447db6454ee396e25eea3bad378e6.camel@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2 10/10] drm/msm: Add a way for userspace to allocate GPU
- iova
-Content-Language: en-US
-To:     Rob Clark <robdclark@gmail.com>
-Cc:     dri-devel <dri-devel@lists.freedesktop.org>,
-        freedreno <freedreno@lists.freedesktop.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Rob Clark <robdclark@chromium.org>,
-        Sean Paul <sean@poorly.run>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Akhil P Oommen <quic_akhilpo@quicinc.com>,
-        Jonathan Marek <jonathan@marek.ca>,
-        Jordan Crouse <jordan@cosmicpenguin.net>,
-        Emma Anholt <emma@anholt.net>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        open list <linux-kernel@vger.kernel.org>
-References: <20220330204804.660819-1-robdclark@gmail.com>
- <20220330204804.660819-11-robdclark@gmail.com>
- <ad97096f-cc90-4f20-0f73-f33e9b275f1a@collabora.com>
- <CAF6AEGvZqM1OT_n1C+x+C1GTd4PbFkH4c7P-BseDOUGj7yj3Eg@mail.gmail.com>
-From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
-In-Reply-To: <CAF6AEGvZqM1OT_n1C+x+C1GTd4PbFkH4c7P-BseDOUGj7yj3Eg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <36aac3cb7c7447db6454ee396e25eea3bad378e6.camel@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/31/22 22:02, Rob Clark wrote:
-> On Thu, Mar 31, 2022 at 11:52 AM Dmitry Osipenko
-> <dmitry.osipenko@collabora.com> wrote:
->>
->> ...
->>> +/*
->>> + * Get the requested iova but don't pin it.  Fails if the requested iova is
->>> + * not available.  Doesn't need a put because iovas are currently valid for
->>> + * the life of the object.
->>> + *
->>> + * Setting an iova of zero will clear the vma.
->>> + */
->>> +int msm_gem_set_iova(struct drm_gem_object *obj,
->>> +                  struct msm_gem_address_space *aspace, uint64_t iova)
->>> +{
->>> +     int ret = 0;
->>
->> nit: No need to initialize the ret
-> 
-> actually, we do
+On Thu, Mar 31, 2022 at 04:31:10PM +1300,
+Kai Huang <kai.huang@intel.com> wrote:
 
-Indeed, sorry :)
+> On Fri, 2022-03-04 at 11:48 -0800, isaku.yamahata@intel.com wrote:
+> > From: Isaku Yamahata <isaku.yamahata@intel.com>
 
-...
->>>  int msm_gem_get_and_pin_iova_range(struct drm_gem_object *obj,
->>>               struct msm_gem_address_space *aspace, uint64_t *iova,
->>>               u64 range_start, u64 range_end);
->> nit: There is an odd mix of uint64_t and u64 (and alike) in the MSM code
->> :) The uint64_t variant shouldn't be used by kernel code in general and
->> checkpatch should want about it.
+> > Add a wrapper function to initialize the TDX module and get system-wide
+> > parameters via those APIs.  Because TDX requires VMX enabled, It will be
+> > called on-demand when the first guest TD is created via x86 KVM init_vm
+> > callback.
 > 
-> one of many things that I disagree with checkpatch about ;-)
-> 
-> I prefer standard types to custom ones.  I _kinda_ get the argument in
-> case of uapi (but IMHO that doesn't apply to how drm uapi headers are
-> used)
+> Why not just merge this patch with the change where you implement the init_vm
+> callback?  Then you can just declare this patch as "detect and initialize TDX
+> module when first VM is created", or something like that..
 
-I'd understand if it was all either uint64_t or u64, but the mix.. hm.
+Ok. Anyway in the next respoin, tdx module initialization will be done when
+loading kvm_intel.ko.  So the whole part will be changed and will be a part
+of module loading.
+-- 
+Isaku Yamahata <isaku.yamahata@gmail.com>
