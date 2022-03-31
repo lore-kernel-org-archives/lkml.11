@@ -2,129 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8BDFC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 23:32:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9198FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 23:33:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243080AbiCaXd7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 19:33:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50680 "EHLO
+        id S243093AbiCaXfa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 19:35:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242886AbiCaXd5 (ORCPT
+        with ESMTP id S240168AbiCaXf1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 19:33:57 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1CF824F291
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 16:32:08 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id i16so2343179ejk.12
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 16:32:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=UvSSaxHQfu4KzKOKApPWWxQRgS6ya5jprTe140uOq38=;
-        b=kRhrubUDhwfjRpRcH2joioz8ltkxfJNbJymSnvaltF2wfQaBrE1Vt07IDBgRkdEHXE
-         oyt/cLr6MOTdSRSYEb/qZXgAbgWmYV8v91sSnENZIrXOCOvtBY6eMgGQehbIw9f54vHH
-         Liv7tiuP7y9hjW7LHsjGWLQo+Eqrwsqz2awtg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=UvSSaxHQfu4KzKOKApPWWxQRgS6ya5jprTe140uOq38=;
-        b=HXh9RTKjo51Yoj2uITkrahgP7s5JeEg5LwXSkM1SDsr6x12UhP9KdTiP7TylnXNd3x
-         thVnMw0uP0afBzjFUB89W2MRz9Y3DdrAUoEhxoYi2CVrx9EWytCDENB65QWLdwucFZ05
-         Pojo9Q1oYOp1WRVRMDeb1a6ZXURgrWAoRDX3dJPMp9KE8YpOBvDTbRvSsrYYftRI/dsU
-         XyvvzZppplwRjbx2AY2iljq2oksPAcrSW5/strrbDQISJB+EVuGd11CTQ43c9yk+PEUD
-         K9cdXFBuU/70+gbJnPaFy7Gw9bTUSgzevWRPCjSwxh0JI3/brbyFgnLBQfWTgxbMe6qq
-         Di/A==
-X-Gm-Message-State: AOAM531OiVeoqkLwwX6DEymPy46BK+BKLVxqMqktivI7Sk6lTzNQGmUB
-        M6LPF/1M22xFA2DJ2V+0URmQqGmuNRsUqOurDTI=
-X-Google-Smtp-Source: ABdhPJxbnLGJjBLaDjHyvT8SwYx+6O8+ESl07QrmAEDP/qFHe5p/sOKNJ8wXsKQuUcnf/O7EauPX5w==
-X-Received: by 2002:a17:906:68c2:b0:6b4:9f26:c099 with SMTP id y2-20020a17090668c200b006b49f26c099mr7057499ejr.41.1648769527251;
-        Thu, 31 Mar 2022 16:32:07 -0700 (PDT)
-Received: from mail-ed1-f46.google.com (mail-ed1-f46.google.com. [209.85.208.46])
-        by smtp.gmail.com with ESMTPSA id do8-20020a170906c10800b006dfe4d1edc6sm323119ejc.61.2022.03.31.16.32.06
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 31 Mar 2022 16:32:06 -0700 (PDT)
-Received: by mail-ed1-f46.google.com with SMTP id a17so1024985edm.9
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 16:32:06 -0700 (PDT)
-X-Received: by 2002:a5d:5551:0:b0:203:f916:e319 with SMTP id
- g17-20020a5d5551000000b00203f916e319mr5707669wrw.422.1648769060253; Thu, 31
- Mar 2022 16:24:20 -0700 (PDT)
+        Thu, 31 Mar 2022 19:35:27 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 505F81903C6
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 16:33:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648769618; x=1680305618;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=9Dr5EsPbdamJdDCvHeSKKp4r3DAHf14EoM5Xx8tkhak=;
+  b=Mi6m6wNk5iDfwOCttTwSPmNHX1+httQ0EYGCayM6PSA5KQfwN1QY7d+h
+   m/GG0M/yz2Gc+mKfi8MjOzhiNOlbd7JkIzAXw17GzfubSRbsm23P5h9HG
+   6I++Y5gYjz1PWPiJtXXNEFCHd+wk8dIHqX7LgmE2fAvUzZuC2N5OugxG0
+   pVK/WTDEfDKHoZZNuJHeLxlmuABl2VKxCg3wFPo9p7fAUBIma7NHqklnz
+   OOEYFV13CDcbySbPWGdfwlyokjxGDD29P1n0fH0Ech8VYlotk5k8EWGCu
+   gp3fh0/WSftTh11hLxVU/cwIpkRCUJ+7n6e6LVTTGzLfx9/rxHLphdU+z
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10303"; a="239924108"
+X-IronPort-AV: E=Sophos;i="5.90,225,1643702400"; 
+   d="scan'208";a="239924108"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2022 16:33:36 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,225,1643702400"; 
+   d="scan'208";a="566928715"
+Received: from lkp-server02.sh.intel.com (HELO 3231c491b0e2) ([10.239.97.151])
+  by orsmga008.jf.intel.com with ESMTP; 31 Mar 2022 16:33:34 -0700
+Received: from kbuild by 3231c491b0e2 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1na4II-0000km-8x;
+        Thu, 31 Mar 2022 23:33:34 +0000
+Date:   Fri, 1 Apr 2022 07:33:03 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jens Axboe <axboe@kernel.dk>
+Cc:     kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] net: fix err_cast.cocci warnings
+Message-ID: <YkY6L0HKkmfYONdl@71276691420c>
+References: <202204010757.kWpiiHMi-lkp@intel.com>
 MIME-Version: 1.0
-References: <1648656179-10347-1-git-send-email-quic_sbillaka@quicinc.com>
- <1648656179-10347-9-git-send-email-quic_sbillaka@quicinc.com>
- <CAA8EJprvE31ex3fCQHZ-=x+EWHK4UZ0qqHRh+rH4dk5TPhmVyw@mail.gmail.com> <MW4PR02MB71867220A90FCFED295830D0E1E19@MW4PR02MB7186.namprd02.prod.outlook.com>
-In-Reply-To: <MW4PR02MB71867220A90FCFED295830D0E1E19@MW4PR02MB7186.namprd02.prod.outlook.com>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Thu, 31 Mar 2022 16:24:07 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=VK0D_GzYBv+u+o6-ks-UAsw97__0mWsSn9OycX72LJFg@mail.gmail.com>
-Message-ID: <CAD=FV=VK0D_GzYBv+u+o6-ks-UAsw97__0mWsSn9OycX72LJFg@mail.gmail.com>
-Subject: Re: [PATCH v6 8/8] drm/msm/dp: Handle eDP mode_valid differently from dp
-To:     "Sankeerth Billakanti (QUIC)" <quic_sbillaka@quicinc.com>
-Cc:     "dmitry.baryshkov@linaro.org" <dmitry.baryshkov@linaro.org>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>,
-        "freedreno@lists.freedesktop.org" <freedreno@lists.freedesktop.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "robdclark@gmail.com" <robdclark@gmail.com>,
-        "seanpaul@chromium.org" <seanpaul@chromium.org>,
-        "swboyd@chromium.org" <swboyd@chromium.org>,
-        quic_kalyant <quic_kalyant@quicinc.com>,
-        "Abhinav Kumar (QUIC)" <quic_abhinavk@quicinc.com>,
-        "Kuogee Hsieh (QUIC)" <quic_khsieh@quicinc.com>,
-        "bjorn.andersson@linaro.org" <bjorn.andersson@linaro.org>,
-        "sean@poorly.run" <sean@poorly.run>,
-        "airlied@linux.ie" <airlied@linux.ie>,
-        "daniel@ffwll.ch" <daniel@ffwll.ch>,
-        quic_vproddut <quic_vproddut@quicinc.com>,
-        "Aravind Venkateswaran (QUIC)" <quic_aravindh@quicinc.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202204010757.kWpiiHMi-lkp@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+From: kernel test robot <lkp@intel.com>
 
-On Wed, Mar 30, 2022 at 11:02 PM Sankeerth Billakanti (QUIC)
-<quic_sbillaka@quicinc.com> wrote:
->
-> Hi Dmitry,
->
-> > On Wed, 30 Mar 2022 at 19:04, Sankeerth Billakanti
-> > <quic_sbillaka@quicinc.com> wrote:
-> > >
-> > > The panel-edp driver modes needs to be validated differently from DP
-> > > because the link capabilities are not available for EDP by that time.
-> > >
-> > > Signed-off-by: Sankeerth Billakanti <quic_sbillaka@quicinc.com>
-> >
-> > This should not be necessary after
-> > https://patchwork.freedesktop.org/patch/479261/?series=101682&rev=1.
-> > Could you please check?
-> >
->
-> The check for DP_MAX_PIXEL_CLK_KHZ is not necessary anymore but we need
-> to return early for eDP because unlike DP, eDP context will not have the information
-> about the number of lanes and link clock.
->
-> So, I will modify the patch to return after the DP_MAX_PIXEL_CLK_KHZ check if is_eDP is set.
-
-I haven't walked through all the relevant code but something you said
-above sounds strange. You say that for eDP we don't have info about
-the number of lanes? We _should_.
-
-It's certainly possible to have a panel that supports _either_ 1 or 2
-lanes but then only physically connect 1 lane to it. ...or you could
-have a panel that supports 2 or 4 lanes and you only connect 1 lane.
-See, for instance, ti_sn_bridge_parse_lanes. There we assume 4 lanes
-but if a "data-lanes" property is present then we can use that to know
-that fewer lanes are physically connected.
-
-It's also possible to connect more lanes to a panel than it supports.
-You could connect 2 lanes to it but then it only supports 1. This case
-needs to be handled as well...
+net/socket.c:1571:9-16: WARNING: ERR_CAST can be used with sock
 
 
--Doug
+ Use ERR_CAST inlined function instead of ERR_PTR(PTR_ERR(...))
+
+Generated by: scripts/coccinelle/api/err_cast.cocci
+
+Fixes: 3af464ccde38 ("net: add __sys_socket_file()")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: kernel test robot <lkp@intel.com>
+---
+
+tree:   https://github.com/ammarfaizi2/linux-block axboe/linux-block/sock-nolock
+head:   8698873371093e22f708c2cf3a31f4dc2caab84f
+commit: 3af464ccde389a5df95af3e221d098ac34d4606f [7/9] net: add __sys_socket_file()
+:::::: branch date: 4 hours ago
+:::::: commit date: 4 hours ago
+
+ net/socket.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/net/socket.c
++++ b/net/socket.c
+@@ -1568,7 +1568,7 @@ struct file *__sys_socket_direct(int fam
+ 
+ 	sock = __sys_socket_create(family, type, protocol);
+ 	if (IS_ERR(sock))
+-		return ERR_PTR(PTR_ERR(sock));
++		return ERR_CAST(sock);
+ 
+ 	flags = type & ~SOCK_TYPE_MASK;
+ 	if (SOCK_NONBLOCK != O_NONBLOCK && (flags & SOCK_NONBLOCK))
