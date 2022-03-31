@@ -2,86 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41B37C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 14:31:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43286C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 14:31:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237639AbiCaOcy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 10:32:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50050 "EHLO
+        id S237603AbiCaOdN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 10:33:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237581AbiCaOcm (ORCPT
+        with ESMTP id S237694AbiCaOc7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 10:32:42 -0400
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB6491DA8D7;
-        Thu, 31 Mar 2022 07:30:54 -0700 (PDT)
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 22VEUelF081474;
-        Thu, 31 Mar 2022 09:30:40 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1648737040;
-        bh=QvBBVCUYloyVm3Uwun8UUPb3BBfl9VEhJHX7V9TsLXY=;
-        h=From:To:CC:Subject:Date;
-        b=yNFTwG7UtF3PUzRVsXbpV4zAyJFFPxyI9zWZn6m5ZH+XI7o+cfLA2PBAd/GkWDcIw
-         ItAtkBI9xwTiOeS4d8Kra6y9NgHxmRl5DRNQMWfo3ILVmCCIrdIu4O1PR2/9sYmIv+
-         /MBWJb6g4nyVV5wQiB04zUNOzHC3hHk2n+GHy7zw=
-Received: from DFLE105.ent.ti.com (dfle105.ent.ti.com [10.64.6.26])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 22VEUe3f058084
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 31 Mar 2022 09:30:40 -0500
-Received: from DFLE107.ent.ti.com (10.64.6.28) by DFLE105.ent.ti.com
- (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Thu, 31
- Mar 2022 09:30:40 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE107.ent.ti.com
- (10.64.6.28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Thu, 31 Mar 2022 09:30:40 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 22VEUdN1008328;
-        Thu, 31 Mar 2022 09:30:39 -0500
-From:   Rahul T R <r-ravikumar@ti.com>
-To:     <nm@ti.com>
-CC:     <vigneshr@ti.com>, <kristo@kernel.org>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski@canonical.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <tomi.valkeinen@ideasonboard.com>,
-        <laurent.pinchart@ideasonboard.com>, <kishon@ti.com>,
-        <r-ravikumar@ti.com>
-Subject: [PATCH v2 0/2] DSS: Add support for DisplayPort
-Date:   Thu, 31 Mar 2022 20:00:33 +0530
-Message-ID: <20220331143035.16210-1-r-ravikumar@ti.com>
-X-Mailer: git-send-email 2.17.1
+        Thu, 31 Mar 2022 10:32:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22FE01DE6F4;
+        Thu, 31 Mar 2022 07:31:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 708ACB8213B;
+        Thu, 31 Mar 2022 14:31:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F523C340ED;
+        Thu, 31 Mar 2022 14:31:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648737063;
+        bh=SNXLMin1yPeR9fXtTHf11aJlFW1shy9T5oOySNUqpRo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=a0bOq58j3m4sHXGsLJmOPypzaAgKs84C42qg4qA36vdMaWONZibKL1en9U1/x9KlD
+         iMK05xfh1Z23snWcdLcA2CE5Ovh2dJuRkdUOZjRoQryGbkrJqgid/mjAXbn9nb++TM
+         n5f1OXbK41b+d1FrJbPuMjoU9O2fjvJkQihkQaQ6WEwPWjyZ3fk4hV9dFcUICEoED7
+         yR/R5heDVsInICR6Acx9IfZJONGWhv06Zvy3PSXIBEhVGmxideMm20oW7nhFdL3oHN
+         FlwjltplWRc35ISFSoK/zcTq6oPyTSoZasgyxBzu01u4w2h2Vk72YkVMb/ALzfGiPX
+         ONuN3aumuqDoA==
+Date:   Thu, 31 Mar 2022 09:31:01 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Shlomo Pongratz <shlomopongratz@gmail.com>
+Cc:     linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+        andrew.maier@eideticom.com, logang@deltatee.com,
+        bhelgaas@google.com, jgg@nvidia.com,
+        Shlomo Pongratz <shlomop@pliops.com>
+Subject: Re: [PATCH V5 1/1] Intel Sky Lake-E host root ports check.
+Message-ID: <20220331143101.GA4846@bhelgaas>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220331073539.14499-2-shlomop@pliops.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following series of patches enables DisplayPort on
-j721e-evm
+On Thu, Mar 31, 2022 at 10:35:39AM +0300, Shlomo Pongratz wrote:
+> In commit 7b94b53db34f ("PCI/P2PDMA: Add Intel Sky Lake-E Root Ports B, C, D to
+> the whitelist")
+> Andrew Maier added the Sky Lake-E additional devices
+> 2031, 2032 and 2033 root ports to the already existing 2030 device.
+> 
+> The Intel devices 2030, 2031, 2032 and 2033 which are root ports A, B, C and D,
+> respectively and if all exist they will occupy slots 0 till 3 in that order.
 
-Tomi Valkeinen (2):
-  arm64: dts: ti: k3-j721e-main: add DP & DP PHY
-  arm64: dts: ti: k3-j721e-common-proc-board: add DP to j7 evm
+Please make this a sentence.
 
-v2:
-   - use phandle with a parameter to refer clocks insted of
-     sub nodes in serdes_wiz node
-   - move phy link node to board DTS file
+> The original code handled only the case where the devices in the whitelist are
+> host bridges and assumed that they will be found on slot 0.
+> 
+> This assumption doesn't hold for root ports so an explicit test was added to
+> cover this case.
 
-boot logs:
-   https://gist.githubusercontent.com/ravi-rahul/1bdbc3f77ab381e486c8394650c2e85d/raw/f04584c30181821c4ee83aee7781a9ba143cd3f3/j7_DP_upstream.log
+Please update the subject line to match the style of previous ones.
 
-kernel patch verify report:
-   https://gist.githubusercontent.com/ravi-rahul/a982fef3fae03ec0dbdd5cb475a4cb25/raw/c8230370746e9878daf9527c3aa9d82eed7aa33c/report-kernel-patch-verify.txt
+Please wrap the commit log to fit in 80 columns (including the 4
+spaces added by "git log") like previous commits.
 
- .../dts/ti/k3-j721e-common-proc-board.dts     | 78 ++++++++++++++++++-
- arch/arm64/boot/dts/ti/k3-j721e-main.dtsi     | 65 ++++++++++++++++
- 2 files changed, 139 insertions(+), 4 deletions(-)
+Please figure out whether you want "Sky Lake-E" or "SkyLake-E" and use
+it consistently in commit log and code comments.  It seems to be
+"Skylake" on intel.com, so I suggest using that.
 
--- 
-2.17.1
+Please use imperative mood, e.g., instead of "an explicit test was
+added ...," write "add a test to cover this case."  Do the same in
+code comments.
 
+Bjorn
