@@ -2,173 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FF43C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 06:57:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEAEDC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 06:57:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231559AbiCaG7G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 02:59:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42480 "EHLO
+        id S231575AbiCaG7T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 02:59:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229666AbiCaG7E (ORCPT
+        with ESMTP id S230158AbiCaG7P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 02:59:04 -0400
-Received: from hutie.ust.cz (unknown [IPv6:2a03:3b40:fe:f0::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEDB9EEA60;
-        Wed, 30 Mar 2022 23:57:16 -0700 (PDT)
-Content-Type: text/plain;
-        charset=utf-8
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cutebit.org; s=mail;
-        t=1648709834; bh=wqSNyfEr0PfR7Nu/cSpCkDEbnShaRb16tT3cIjzE5ao=;
-        h=Subject:From:In-Reply-To:Date:Cc:References:To;
-        b=TATcwcWpwUO2ICDeG8JnL+mjIkFKf0kVPvJtq6SNKT6Y9/7X4oJUs/pKN3KWt8+Gb
-         Yd/7vSwwE+SVM3LvsqOrPQA4tQ5ao5SpPzqFkOUkTStWkXUKTUHsD9ctdLNe4gd+0l
-         33GpeYp5U99JbjYQJ/vGNNnuTbQKqojErUmmnzZA=
-Mime-Version: 1.0 (Mac OS X Mail 15.0 \(3693.40.0.1.81\))
-Subject: Re: [RFC PATCH 1/5] dt-bindings: sound: Add Apple Macs sound system
-From:   =?utf-8?Q?Martin_Povi=C5=A1er?= <povik@cutebit.org>
-In-Reply-To: <9e3ba11c-d179-c229-fb7c-bf5611a15b1b@linaro.org>
-Date:   Thu, 31 Mar 2022 08:57:12 +0200
-Cc:     =?utf-8?Q?Martin_Povi=C5=A1er?= <povik+lin@cutebit.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Mark Kettenis <kettenis@openbsd.org>,
-        Hector Martin <marcan@marcan.st>,
-        Sven Peter <sven@svenpeter.dev>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <DAFA4249-4B0A-4D1F-A36A-4352FE783488@cutebit.org>
-References: <20220331000449.41062-1-povik+lin@cutebit.org>
- <20220331000449.41062-2-povik+lin@cutebit.org>
- <9e3ba11c-d179-c229-fb7c-bf5611a15b1b@linaro.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+        Thu, 31 Mar 2022 02:59:15 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F12AC108547
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 23:57:27 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id bx5so23159760pjb.3
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 23:57:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=I5exx/RB+d0Ig7pXuqKbMzRv7rQoprfE6EMWAxPn3vk=;
+        b=VxsWEIotkC2VYiWWzOCyD1h39EI03hJn4gYoUq5zL+es6eKEi/fQPJEpTFiQhX51V9
+         eikNF5Q4nJX9kTCRRilvUSCkBYeRXTclsDYJrtTV3K7xEbiRG2R9cRz5ththfznMM3XC
+         66QKDnh3Cj3JDimXFfT7EUKNWhHjsObnnQynBYRDAdMdFdKt8UOEDbHAWZejxE0xs4rx
+         snTFc7AtACXs3vBUkU+J5RON6gZUTOjKnm6p9ZnUqRBfbWaVAiLtTSaP8GfA32r9OqOS
+         f7tm7oIJpihmrGFTzDO6n6HNvqTowM06YPD5GLVOL5OO1WiLcWlYeA+WAx20Xiu72BDc
+         B/jw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=I5exx/RB+d0Ig7pXuqKbMzRv7rQoprfE6EMWAxPn3vk=;
+        b=jhyDjfeBK6xfFuMXPFnhWSn7R8Lmt5XEqOzcArNqKhYCmkP87y9Zo/ujcNKIyLo3Io
+         5z2EeQpDeBvjX/B1xAto1DvSc8zhKgjsX2tqh5GLmKknPTze8gEL7ZQH0v0weDc8LTCm
+         oLvupIefcwqfw/A1aDiPC4P6pavKb4/BFLYkJ/fP9HHEwKK9sWnvDU0SlOoIJ7Vr/L5J
+         1OqKrCTPvfmhPl6d55aTrah+NeSbIYzy3os8Pu6qYNPHPS5gvT0c+mQa96O08a16z3v3
+         U+2xKKwl9d5lSvWcGQnEkrDAMqGiNZz5c+vEInmgWGIWPREvi1dmGLPPjNoLhPjidqbV
+         eEvg==
+X-Gm-Message-State: AOAM533dGzURFgUBsq32iYMaCtV8+S5N0B1eahidriepK7J7/XGx6Dyj
+        pYGHZwLrN8bDWB8E/FXBp0y2GA==
+X-Google-Smtp-Source: ABdhPJxVeMek9ygr1gEJ2F2+WMGJOZmPNv0PKkIoA3/xhuB910rYtwVdeKFiPVghs/O8sDNlYZOp5w==
+X-Received: by 2002:a17:90b:17c7:b0:1c7:c616:6eb0 with SMTP id me7-20020a17090b17c700b001c7c6166eb0mr4632866pjb.144.1648709847477;
+        Wed, 30 Mar 2022 23:57:27 -0700 (PDT)
+Received: from FVFYT0MHHV2J.bytedance.net ([139.177.225.239])
+        by smtp.gmail.com with ESMTPSA id d8-20020a056a00198800b004fab740dbe6sm26169846pfl.15.2022.03.30.23.57.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 30 Mar 2022 23:57:27 -0700 (PDT)
+From:   Muchun Song <songmuchun@bytedance.com>
+To:     will@kernel.org, akpm@linux-foundation.org, david@redhat.com,
+        bodeddub@amazon.com, osalvador@suse.de, mike.kravetz@oracle.com,
+        rientjes@google.com, mark.rutland@arm.com, catalin.marinas@arm.com,
+        james.morse@arm.com, 21cnbao@gmail.com
+Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, duanxiongchun@bytedance.com,
+        fam.zheng@bytedance.com, smuchun@gmail.com,
+        Muchun Song <songmuchun@bytedance.com>
+Subject: [PATCH v4 1/2] mm: hugetlb_vmemmap: introduce ARCH_WANT_HUGETLB_PAGE_FREE_VMEMMAP
+Date:   Thu, 31 Mar 2022 14:56:39 +0800
+Message-Id: <20220331065640.5777-1-songmuchun@bytedance.com>
+X-Mailer: git-send-email 2.32.0 (Apple Git-132)
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+The feature of minimizing overhead of struct page associated with each
+HugeTLB page is implemented on x86_64, however, the infrastructure of
+this feature is already there, we could easily enable it for other
+architectures.  Introduce ARCH_WANT_HUGETLB_PAGE_FREE_VMEMMAP for other
+architectures to be easily enabled.  Just select this config if they
+want to enable this feature.
 
-> On 31. 3. 2022, at 8:43, Krzysztof Kozlowski =
-<krzysztof.kozlowski@linaro.org> wrote:
->=20
-> On 31/03/2022 02:04, Martin Povi=C5=A1er wrote:
->> Add binding for Apple Silicon Macs' machine-level sound system.
->>=20
->> Signed-off-by: Martin Povi=C5=A1er <povik+lin@cutebit.org>
->> ---
->> .../bindings/sound/apple,macaudio.yaml        | 103 =
-++++++++++++++++++
->> 1 file changed, 103 insertions(+)
->> create mode 100644 =
-Documentation/devicetree/bindings/sound/apple,macaudio.yaml
->>=20
->=20
-> Commit title does not match subsystem.
+Suggested-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+---
+ arch/x86/Kconfig |  1 +
+ fs/Kconfig       | 10 +++++++++-
+ 2 files changed, 10 insertions(+), 1 deletion(-)
 
-Tell more please. I don=E2=80=99t see it.
-
->=20
->> diff --git =
-a/Documentation/devicetree/bindings/sound/apple,macaudio.yaml =
-b/Documentation/devicetree/bindings/sound/apple,macaudio.yaml
->> new file mode 100644
->> index 000000000000..a6380e4bdd1a
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/sound/apple,macaudio.yaml
->> @@ -0,0 +1,103 @@
->> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
->> +%YAML 1.2
->> +---
->> +$id: http://devicetree.org/schemas/sound/apple,macaudio.yaml#
->> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->> +
->> +title: Apple Silicon Macs integrated sound system
->> +
->> +maintainers:
->> +  - Martin Povi=C5=A1er <povik+lin@cutebit.org>
->> +
->=20
-> Add description.
->=20
->> +definitions:
->=20
-> This does not make code more readable.
-
-Are you sure? It prevents duplication later on for =E2=80=98codec' and =
-=E2=80=98cpu=E2=80=99.
-
->=20
->> +  dai:
->> +    type: object
->> +    properties:
->> +      sound-dai: true
->> +    required:
->> +      - sound-dai
->> +
->> +properties:
->> +  compatible:
->> +    items:
->> +      - enum:
->> +          - apple,j274-macaudio
->> +          - apple,j293-macaudio
->> +          - apple,j314-macaudio
->> +      - const: apple,macaudio
->=20
-> Open example-schema.yaml and look at formatting plus general coding
-> style. You miss line breaks making it unreadable.
->=20
->> +  "#address-cells":
->> +    const: 1
->> +  "#size-cells":
->> +    const: 0
->> +  model:
->> +    description: |
->> +      Model name to use when the sound system is presented to users =
-as a sound card.
->> +    $ref: /schemas/types.yaml#/definitions/string
->> +
->> +patternProperties:
->> +  "^dai-link(@[0-9a-f]+)?$":
->> +    description: |
->> +      A DAI link comprising of CPU and CODEC DAI specifiers and =
-supplemental properties.
->> +    type: object
->> +    properties:
->> +      reg:
->> +        maxItems: 1
->> +      mclk-fs:
->> +        description: |
->> +          Forced MCLK/samplerate factor (optional).
->=20
-> Optional is obvious from !required.
->=20
-> Description is different than existing field in simple card. Is this =
-the
-> same field or not?
-
-It is the same. I didn=E2=80=99t want to copy the simple card text =
-because this is optionally BSD,
-simple card wasn=E2=80=99t.
-
->=20
->> +        $ref: /schemas/types.yaml#/definitions/uint32
->> +      link-name:
->> +        description: Name for the DAI link to present to users.
->> +        $ref: /schemas/types.yaml#/definitions/string
->> +      cpu:
->> +        $ref: "#/definitions/dai"
->> +      codec:
->> +        $ref: "#/definitions/dai"
->=20
-> missing maxItems for DAI phandles.
-
-Well there=E2=80=99s not a maximum.
-
->=20
-> Best regards,
-> Krzysztof
-
-Martin
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index 9f5bd41bf660..e69d42528542 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -119,6 +119,7 @@ config X86
+ 	select ARCH_WANTS_DYNAMIC_TASK_STRUCT
+ 	select ARCH_WANTS_NO_INSTR
+ 	select ARCH_WANT_HUGE_PMD_SHARE
++	select ARCH_WANT_HUGETLB_PAGE_FREE_VMEMMAP	if X86_64
+ 	select ARCH_WANT_LD_ORPHAN_WARN
+ 	select ARCH_WANTS_THP_SWAP		if X86_64
+ 	select ARCH_HAS_PARANOID_L1D_FLUSH
+diff --git a/fs/Kconfig b/fs/Kconfig
+index 6c7dc1387beb..f6db2af33738 100644
+--- a/fs/Kconfig
++++ b/fs/Kconfig
+@@ -245,9 +245,17 @@ config HUGETLBFS
+ config HUGETLB_PAGE
+ 	def_bool HUGETLBFS
+ 
++#
++# Select this config option from the architecture Kconfig, if it is preferred
++# to enable the feature of minimizing overhead of struct page associated with
++# each HugeTLB page.
++#
++config ARCH_WANT_HUGETLB_PAGE_FREE_VMEMMAP
++	bool
++
+ config HUGETLB_PAGE_FREE_VMEMMAP
+ 	def_bool HUGETLB_PAGE
+-	depends on X86_64
++	depends on ARCH_WANT_HUGETLB_PAGE_FREE_VMEMMAP
+ 	depends on SPARSEMEM_VMEMMAP
+ 
+ config HUGETLB_PAGE_FREE_VMEMMAP_DEFAULT_ON
+-- 
+2.11.0
 
