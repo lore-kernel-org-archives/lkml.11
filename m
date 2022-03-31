@@ -2,283 +2,218 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE2A5C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 22:31:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B40E0C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 22:31:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242473AbiCaWdM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 18:33:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43844 "EHLO
+        id S242467AbiCaWd3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 18:33:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242490AbiCaWdG (ORCPT
+        with ESMTP id S242474AbiCaWd1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 18:33:06 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73EA41AF7F7
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 15:31:15 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id x34so913732ede.8
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 15:31:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/xgVcu9j5c2ItfbLp0oKIvhzdP016kYM1iF4XEnr1tk=;
-        b=UZzTpRaYuECj8W5XZEbEkRhUIePMuieS2Iy+/a2a+Z2AeM5s+mWJz4H8YO2iVvU2OS
-         dzH6Jy32s0T08bhpyrgH7XyCGPGwRsYfoKjEghsD5gYaIfvmQYzBT710fUnT7mHLAdS5
-         GZGPvZ2VeuIcv4ROLzAw+vWbRYbY3plaTIPxyi46LnA5P0EZRNyu9aQu14j5V8A9wvaA
-         u7bkw0G7xv3SurTjYOXW5WWqG6e1HFsp1Chw0j+4ua8z7H7BhexF8ScWVVFsHRQ5vJ8b
-         AHu4RlnqR4TglnvtecenrqwTUgYo+JbGi3Us/pzqssZIRQnOwA9yWZ3YpJXZtihw+jpM
-         S1Tg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/xgVcu9j5c2ItfbLp0oKIvhzdP016kYM1iF4XEnr1tk=;
-        b=gxi3woYHiEaxr+hNVeEmDpBhLjutZYkQpdGN6CQpF9UY3q3OFrjN8M3PMoEBRfWzRp
-         Y8r0b3EkVjshk/eNDXqtfeAloXXqN21eaoLdnOgFfFZRUWTZymzcujKL2QEJEEQMDF2n
-         W3YEoXGhJa9Mlz9NfWpovSGy4PPZiLCAWtsyZU/qr6Ppu16o/QNA1X6jYax1ZPMUtwfe
-         8vU/fAJgGxGAW6mcADOeT4HZx9pEKY1RZ7yqkOBj5uqqHvhs+l3QDYE1QdsGeGXhszao
-         WDkh/XoMjQ1WHCJcfsQNF1kAe0DC5xGs3TrqDIr03lPHWqSyWtVkd7DYMurNnH24R6+L
-         6y1g==
-X-Gm-Message-State: AOAM532hMH5KiLqtKA3wN/ZyDhFrpWmBGVScQdzD/xL3zQIXo1TheTVb
-        wjQTIIaT85QcCHiTX3cPA5RB/j977I5k7hzuZqC40ti2GzM=
-X-Google-Smtp-Source: ABdhPJwHmWk47Dbw9DUANoQIAHmZNV3T2NzF1RWhimAuRBiw8AKSUYv8ofXmaFIj8k8ZQ/W38Ugtam1k6xRv8dTsidM=
-X-Received: by 2002:a50:f689:0:b0:418:f7bc:e8e with SMTP id
- d9-20020a50f689000000b00418f7bc0e8emr18546624edn.251.1648765873864; Thu, 31
- Mar 2022 15:31:13 -0700 (PDT)
+        Thu, 31 Mar 2022 18:33:27 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7AF01B48C4;
+        Thu, 31 Mar 2022 15:31:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648765896; x=1680301896;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Du3Yko/lSEUNo3cG46eNYy30enIR53P83TYGdnVfgUA=;
+  b=HKd4UU9y1LjL0Bns9kRctC070rfo9IhWnVpdykRv+Q5a3JTfEVZpMufG
+   oQeZxRZhRuA1lqQf1TwgKLIeinQ+LkAeAar3ktLJg71c6xsgd22sCMvyz
+   72di3+bU72r9rP7KDTUeE2g+fkGNHdPjPjh07ssLgKolwJz2dm32+/VIN
+   Fl4ANweGk4H8mT8GXNhXrtPJgoBwBRx2NUVOqM+yturJ0QSIM+CjLdBYJ
+   oQUcYgn1BcHl2nDv1HlHntF2lGUAkCcxOtekVjfSFY77HEL4uaB5g+EH5
+   TqBD5pAAJBPhI+6TSKOMaFJazJPGRqcm8KjlGFnNp64B9caScFhZV3m3u
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10303"; a="240570017"
+X-IronPort-AV: E=Sophos;i="5.90,225,1643702400"; 
+   d="scan'208";a="240570017"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2022 15:31:36 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,225,1643702400"; 
+   d="scan'208";a="841487322"
+Received: from lkp-server02.sh.intel.com (HELO 3231c491b0e2) ([10.239.97.151])
+  by fmsmga005.fm.intel.com with ESMTP; 31 Mar 2022 15:31:29 -0700
+Received: from kbuild by 3231c491b0e2 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1na3KC-0000i0-J5;
+        Thu, 31 Mar 2022 22:31:28 +0000
+Date:   Fri, 1 Apr 2022 06:31:10 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Qianggui Song <qianggui.song@amlogic.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Fabien Dessenne <fabien.dessenne@foss.st.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
+        openbmc@lists.ozlabs.org, linux-renesas-soc@vger.kernel.org,
+        linux-samsung-soc@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Avi Fishman <avifishman70@gmail.com>,
+        Tomer Maimon <tmaimon77@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        Tomasz Figa <tomasz.figa@gmail.com>,
+        Sylwester Nawrocki <s.nawrocki@samsung.com>,
+        Alim Akhtar <alim.akhtar@samsung.com>
+Subject: Re: [PATCH v3 05/13] pinctrl: samsung: Switch to use
+ for_each_gpiochip_node() helper
+Message-ID: <202204010610.Wk5CAkQ7-lkp@intel.com>
+References: <20220330145030.1562-6-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-References: <20220331065640.5777-1-songmuchun@bytedance.com> <20220331065640.5777-2-songmuchun@bytedance.com>
-In-Reply-To: <20220331065640.5777-2-songmuchun@bytedance.com>
-From:   Barry Song <21cnbao@gmail.com>
-Date:   Fri, 1 Apr 2022 11:31:02 +1300
-Message-ID: <CAGsJ_4z96yj-z+d704_FQ==BXXN5wCvQnBtj+Az-nAxTKAbwfw@mail.gmail.com>
-Subject: Re: [PATCH v4 2/2] arm64: mm: hugetlb: Enable HUGETLB_PAGE_FREE_VMEMMAP
- for arm64
-To:     Muchun Song <songmuchun@bytedance.com>
-Cc:     Will Deacon <will@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Hildenbrand <david@redhat.com>,
-        "Bodeddula, Balasubramaniam" <bodeddub@amazon.com>,
-        Oscar Salvador <osalvador@suse.de>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        David Rientjes <rientjes@google.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>, james.morse@arm.com,
-        LAK <linux-arm-kernel@lists.infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Xiongchun duan <duanxiongchun@bytedance.com>,
-        Fam Zheng <fam.zheng@bytedance.com>,
-        Muchun Song <smuchun@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220330145030.1562-6-andriy.shevchenko@linux.intel.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 31, 2022 at 7:57 PM Muchun Song <songmuchun@bytedance.com> wrote:
->
-> The feature of minimizing overhead of struct page associated with each
-> HugeTLB page aims to free its vmemmap pages (used as struct page) to
-> save memory, where is ~14GB/16GB per 1TB HugeTLB pages (2MB/1GB type).
-> In short, when a HugeTLB page is allocated or freed, the vmemmap array
-> representing the range associated with the page will need to be remapped.
-> When a page is allocated, vmemmap pages are freed after remapping.
-> When a page is freed, previously discarded vmemmap pages must be
-> allocated before remapping.  More implementations and details can be
-> found here [1].
->
-> The infrastructure of freeing vmemmap pages associated with each HugeTLB
-> page is already there, we can easily enable HUGETLB_PAGE_FREE_VMEMMAP
-> for arm64, the only thing to be fixed is flush_dcache_page() .
->
-> flush_dcache_page() need to be adapted to operate on the head page's
-> flags since the tail vmemmap pages are mapped with read-only after the
-> feature is enabled (clear operation is not permitted).
->
-> There was some discussions about this in the thread [2], but there was
-> no conclusion in the end.  And I copied the concern proposed by Anshuman
-> to here and explain why those concern is superfluous.  It is safe to
-> enable it for x86_64 as well as arm64.
->
-> 1st concern:
-> '''
-> But what happens when a hot remove section's vmemmap area (which is
-> being teared down) is nearby another vmemmap area which is either created
-> or being destroyed for HugeTLB alloc/free purpose. As you mentioned
-> HugeTLB pages inside the hot remove section might be safe. But what about
-> other HugeTLB areas whose vmemmap area shares page table entries with
-> vmemmap entries for a section being hot removed ? Massive HugeTLB alloc
-> /use/free test cycle using memory just adjacent to a memory hotplug area,
-> which is always added and removed periodically, should be able to expose
-> this problem.
-> '''
->
-> Answer: At the time memory is removed, all HugeTLB pages either have been
-> migrated away or dissolved.  So there is no race between memory hot remove
-> and free_huge_page_vmemmap().  Therefore, HugeTLB pages inside the hot
-> remove section is safe.  Let's talk your question "what about other
-> HugeTLB areas whose vmemmap area shares page table entries with vmemmap
-> entries for a section being hot removed ?", the question is not
-> established.  The minimal granularity size of hotplug memory 128MB (on
-> arm64, 4k base page), any HugeTLB smaller than 128MB is within a section,
-> then, there is no share PTE page tables between HugeTLB in this section
-> and ones in other sections and a HugeTLB page could not cross two
-> sections.  In this case, the section cannot be freed.  Any HugeTLB bigger
-> than 128MB (section size) whose vmemmap pages is an integer multiple of
-> 2MB (PMD-mapped).  As long as:
->
->   1) HugeTLBs are naturally aligned, power-of-two sizes
->   2) The HugeTLB size >= the section size
->   3) The HugeTLB size >= the vmemmap leaf mapping size
->
-> Then a HugeTLB will not share any leaf page table entries with *anything
-> else*, but will share intermediate entries.  In this case, at the time memory
-> is removed, all HugeTLB pages either have been migrated away or dissolved.
-> So there is also no race between memory hot remove and
-> free_huge_page_vmemmap().
->
-> 2nd concern:
-> '''
-> differently, not sure if ptdump would require any synchronization.
->
-> Dumping an wrong value is probably okay but crashing because a page table
-> entry is being freed after ptdump acquired the pointer is bad. On arm64,
-> ptdump() is protected against hotremove via [get|put]_online_mems().
-> '''
->
-> Answer: The ptdump should be fine since vmemmap_remap_free() only exchanges
-> PTEs or splits the PMD entry (which means allocating a PTE page table).  Both
-> operations do not free any page tables (PTE), so ptdump cannot run into a
-> UAF on any page tables.  The worst case is just dumping an wrong value.
->
-> [1] https://lore.kernel.org/all/20210510030027.56044-1-songmuchun@bytedance.com/
-> [2] https://lore.kernel.org/all/20210518091826.36937-1-songmuchun@bytedance.com/
->
-> Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+Hi Andy,
 
-Reviewed-by: Barry Song <baohua@kernel.org>
+I love your patch! Yet something to improve:
 
-I ran some testing on this patchset. On a machine with 4GB memory
-and I set 2GB hugepages by "hugepagesz=2m hugepages=1024",
-I was seeing:
+[auto build test ERROR on a67ba3cf9551f8c92d5ec9d7eae1aadbb9127b57]
 
-Before the patch,
-/sys# cat kernel/debug/kernel_page_tables
----[ vmemmap start ]---
-0xfffffc0000000000-0xfffffc1180000000          70G PUD
-0xfffffc1180000000-0xfffffc1181000000          16M PMD
-0xfffffc1181000000-0xfffffc1185000000          64M PMD       RW NX SHD
-AF NG     BLK UXN    MEM/NORMAL
-0xfffffc1185000000-0xfffffc11c0000000         944M PMD
-0xfffffc11c0000000-0xfffffc8000000000         441G PUD
-0xfffffc8000000000-0xfffffe0000000000        1536G PGD
----[ vmemmap end ]---
+url:    https://github.com/intel-lab-lkp/linux/commits/Andy-Shevchenko/gpiolib-Two-new-helpers-and-way-toward-fwnode/20220330-225341
+base:   a67ba3cf9551f8c92d5ec9d7eae1aadbb9127b57
+config: arm-randconfig-c002-20220331 (https://download.01.org/0day-ci/archive/20220401/202204010610.Wk5CAkQ7-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 881350a92d821d4f8e4fa648443ed1d17e251188)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm cross compiling tool for clang build
+        # apt-get install binutils-arm-linux-gnueabi
+        # https://github.com/intel-lab-lkp/linux/commit/3539d23dd289ca77a85d66fe8721e4febfc50ea4
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Andy-Shevchenko/gpiolib-Two-new-helpers-and-way-toward-fwnode/20220330-225341
+        git checkout 3539d23dd289ca77a85d66fe8721e4febfc50ea4
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
 
-After the patch:
----[ vmemmap start ]---
-...
-0xfffffc27e8090000-0xfffffc27e8091000           4K PTE       RW NX SHD
-AF NG         UXN    MEM/NORMAL
-0xfffffc27e8091000-0xfffffc27e8098000          28K PTE       ro NX SHD
-AF NG         UXN    MEM/NORMAL
-0xfffffc27e8098000-0xfffffc27e8099000           4K PTE       RW NX SHD
-AF NG         UXN    MEM/NORMAL
-0xfffffc27e8099000-0xfffffc27e80a0000          28K PTE       ro NX SHD
-AF NG         UXN    MEM/NORMAL
-0xfffffc27e80a0000-0xfffffc27e80a1000           4K PTE       RW NX SHD
-AF NG         UXN    MEM/NORMAL
-0xfffffc27e80a1000-0xfffffc27e80a8000          28K PTE       ro NX SHD
-AF NG         UXN    MEM/NORMAL
-0xfffffc27e80a8000-0xfffffc27e80a9000           4K PTE       RW NX SHD
-AF NG         UXN    MEM/NORMAL
-0xfffffc27e80a9000-0xfffffc27e80b0000          28K PTE       ro NX SHD
-AF NG         UXN    MEM/NORMAL
-0xfffffc27e80b0000-0xfffffc27e80b1000           4K PTE       RW NX SHD
-AF NG         UXN    MEM/NORMAL
-0xfffffc27e80b1000-0xfffffc27e80b8000          28K PTE       ro NX SHD
-AF NG         UXN    MEM/NORMAL
-0xfffffc27e80b8000-0xfffffc27e80b9000           4K PTE       RW NX SHD
-AF NG         UXN    MEM/NORMAL
-0xfffffc27e80b9000-0xfffffc27e80c0000          28K PTE       ro NX SHD
-AF NG         UXN    MEM/NORMAL
-...
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-So it works as expected. we are seeing 7 read-only mapping after 1 RW mapping.
+All errors (new ones prefixed by >>):
 
-Then I tried to check if the patch would break 64KB hugepages by setting
-"hugepagesz=64k hugepages=32768", i got:
+>> drivers/pinctrl/samsung/pinctrl-exynos.c:310:50: error: no member named 'of_node' in 'struct samsung_pin_bank'; did you mean 'fwnode'?
+                   bank->irq_domain = irq_domain_add_linear(bank->of_node,
+                                                                  ^~~~~~~
+                                                                  fwnode
+   drivers/pinctrl/samsung/pinctrl-samsung.h:168:24: note: 'fwnode' declared here
+           struct fwnode_handle *fwnode;
+                                 ^
+   drivers/pinctrl/samsung/pinctrl-exynos.c:568:50: error: no member named 'of_node' in 'struct samsung_pin_bank'; did you mean 'fwnode'?
+                   bank->irq_domain = irq_domain_add_linear(bank->of_node,
+                                                                  ^~~~~~~
+                                                                  fwnode
+   drivers/pinctrl/samsung/pinctrl-samsung.h:168:24: note: 'fwnode' declared here
+           struct fwnode_handle *fwnode;
+                                 ^
+   drivers/pinctrl/samsung/pinctrl-exynos.c:576:31: error: no member named 'of_node' in 'struct samsung_pin_bank'; did you mean 'fwnode'?
+                   if (!of_find_property(bank->of_node, "interrupts", NULL)) {
+                                               ^~~~~~~
+                                               fwnode
+   drivers/pinctrl/samsung/pinctrl-samsung.h:168:24: note: 'fwnode' declared here
+           struct fwnode_handle *fwnode;
+                                 ^
+   drivers/pinctrl/samsung/pinctrl-exynos.c:591:37: error: no member named 'of_node' in 'struct samsung_pin_bank'; did you mean 'fwnode'?
+                           irq = irq_of_parse_and_map(bank->of_node, idx);
+                                                            ^~~~~~~
+                                                            fwnode
+   drivers/pinctrl/samsung/pinctrl-samsung.h:168:24: note: 'fwnode' declared here
+           struct fwnode_handle *fwnode;
+                                 ^
+   4 errors generated.
 
----[ vmemmap start ]---
-0xfffffc0000000000-0xfffffd8000000000        1536G PGD
-0xfffffd8000000000-0xfffffd82c0000000          11G PUD
-0xfffffd82c0000000-0xfffffd82c3000000          48M PMD
-0xfffffd82c3000000-0xfffffd82c7000000          64M PMD       RW NX SHD
-AF NG     BLK UXN    MEM/NORMAL
-0xfffffd82c7000000-0xfffffd8300000000         912M PMD
-0xfffffd8300000000-0xfffffe0000000000         500G PUD
----[ vmemmap end ]---
 
-Obviously it doesn't break this corner case in which we don't need VMEMMAP_FREE.
+vim +310 drivers/pinctrl/samsung/pinctrl-exynos.c
 
-> ---
-> v4:
->  - Introduce ARCH_WANT_HUGETLB_PAGE_FREE_VMEMMAP (implemented in the previous
->    patch) to enable this feature for arm64.
->
-> v3:
->  - Rework patch's subject.
->  - Clarify the feature of HUGETLB_PAGE_FREE_VMEMMAP is already there in the
->    current code and easyly be enabled for arm64 into commit log.
->  - Add hugetlb_free_vmemmap_enabled() check into flush_dcache_page().
->
->  Thanks for Barry's suggestions.
->
-> v2:
->  - Update commit message (Mark Rutland).
->  - Fix flush_dcache_page().
->
->  arch/arm64/Kconfig    |  1 +
->  arch/arm64/mm/flush.c | 13 +++++++++++++
->  2 files changed, 14 insertions(+)
->
-> diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-> index c842878f8133..37f72e3a75d0 100644
-> --- a/arch/arm64/Kconfig
-> +++ b/arch/arm64/Kconfig
-> @@ -94,6 +94,7 @@ config ARM64
->         select ARCH_WANT_DEFAULT_TOPDOWN_MMAP_LAYOUT
->         select ARCH_WANT_FRAME_POINTERS
->         select ARCH_WANT_HUGE_PMD_SHARE if ARM64_4K_PAGES || (ARM64_16K_PAGES && !ARM64_VA_BITS_36)
-> +       select ARCH_WANT_HUGETLB_PAGE_FREE_VMEMMAP
->         select ARCH_WANT_LD_ORPHAN_WARN
->         select ARCH_WANTS_NO_INSTR
->         select ARCH_HAS_UBSAN_SANITIZE_ALL
-> diff --git a/arch/arm64/mm/flush.c b/arch/arm64/mm/flush.c
-> index 2aaf950b906c..c67c1ca856c2 100644
-> --- a/arch/arm64/mm/flush.c
-> +++ b/arch/arm64/mm/flush.c
-> @@ -68,6 +68,19 @@ EXPORT_SYMBOL_GPL(__sync_icache_dcache);
->   */
->  void flush_dcache_page(struct page *page)
->  {
-> +       /*
-> +        * Only the head page's flags of HugeTLB can be cleared since the tail
-> +        * vmemmap pages associated with each HugeTLB page are mapped with
-> +        * read-only when CONFIG_HUGETLB_PAGE_FREE_VMEMMAP is enabled (more
-> +        * details can refer to vmemmap_remap_pte()).  Although
-> +        * __sync_icache_dcache() only set PG_dcache_clean flag on the head
-> +        * page struct, some tail page structs still can be seen the flag is
-> +        * set since the head vmemmap page frame is reused (more details can
-> +        * refer to the comments above page_fixed_fake_head()).
-> +        */
-> +       if (hugetlb_free_vmemmap_enabled() && PageHuge(page))
-> +               page = compound_head(page);
-> +
->         if (test_bit(PG_dcache_clean, &page->flags))
->                 clear_bit(PG_dcache_clean, &page->flags);
->  }
-> --
-> 2.11.0
->
+7ccbc60cd9c293 drivers/pinctrl/pinctrl-exynos.c         Tomasz Figa      2013-05-22  273  
+43b169db184184 drivers/pinctrl/pinctrl-exynos.c         Thomas Abraham   2012-09-07  274  /*
+43b169db184184 drivers/pinctrl/pinctrl-exynos.c         Thomas Abraham   2012-09-07  275   * exynos_eint_gpio_init() - setup handling of external gpio interrupts.
+43b169db184184 drivers/pinctrl/pinctrl-exynos.c         Thomas Abraham   2012-09-07  276   * @d: driver data of samsung pinctrl driver.
+43b169db184184 drivers/pinctrl/pinctrl-exynos.c         Thomas Abraham   2012-09-07  277   */
+85745c870a757c drivers/pinctrl/samsung/pinctrl-exynos.c Marek Szyprowski 2020-07-20  278  __init int exynos_eint_gpio_init(struct samsung_pinctrl_drv_data *d)
+43b169db184184 drivers/pinctrl/pinctrl-exynos.c         Thomas Abraham   2012-09-07  279  {
+595be7268a8573 drivers/pinctrl/pinctrl-exynos.c         Tomasz Figa      2012-10-11  280  	struct samsung_pin_bank *bank;
+43b169db184184 drivers/pinctrl/pinctrl-exynos.c         Thomas Abraham   2012-09-07  281  	struct device *dev = d->dev;
+7ccbc60cd9c293 drivers/pinctrl/pinctrl-exynos.c         Tomasz Figa      2013-05-22  282  	int ret;
+7ccbc60cd9c293 drivers/pinctrl/pinctrl-exynos.c         Tomasz Figa      2013-05-22  283  	int i;
+43b169db184184 drivers/pinctrl/pinctrl-exynos.c         Thomas Abraham   2012-09-07  284  
+43b169db184184 drivers/pinctrl/pinctrl-exynos.c         Thomas Abraham   2012-09-07  285  	if (!d->irq) {
+43b169db184184 drivers/pinctrl/pinctrl-exynos.c         Thomas Abraham   2012-09-07  286  		dev_err(dev, "irq number not available\n");
+43b169db184184 drivers/pinctrl/pinctrl-exynos.c         Thomas Abraham   2012-09-07  287  		return -EINVAL;
+43b169db184184 drivers/pinctrl/pinctrl-exynos.c         Thomas Abraham   2012-09-07  288  	}
+43b169db184184 drivers/pinctrl/pinctrl-exynos.c         Thomas Abraham   2012-09-07  289  
+43b169db184184 drivers/pinctrl/pinctrl-exynos.c         Thomas Abraham   2012-09-07  290  	ret = devm_request_irq(dev, d->irq, exynos_eint_gpio_irq,
+43b169db184184 drivers/pinctrl/pinctrl-exynos.c         Thomas Abraham   2012-09-07  291  					0, dev_name(dev), d);
+43b169db184184 drivers/pinctrl/pinctrl-exynos.c         Thomas Abraham   2012-09-07  292  	if (ret) {
+43b169db184184 drivers/pinctrl/pinctrl-exynos.c         Thomas Abraham   2012-09-07  293  		dev_err(dev, "irq request failed\n");
+43b169db184184 drivers/pinctrl/pinctrl-exynos.c         Thomas Abraham   2012-09-07  294  		return -ENXIO;
+43b169db184184 drivers/pinctrl/pinctrl-exynos.c         Thomas Abraham   2012-09-07  295  	}
+43b169db184184 drivers/pinctrl/pinctrl-exynos.c         Thomas Abraham   2012-09-07  296  
+1bf00d7a6dbff0 drivers/pinctrl/samsung/pinctrl-exynos.c Tomasz Figa      2014-09-23  297  	bank = d->pin_banks;
+1bf00d7a6dbff0 drivers/pinctrl/samsung/pinctrl-exynos.c Tomasz Figa      2014-09-23  298  	for (i = 0; i < d->nr_banks; ++i, ++bank) {
+595be7268a8573 drivers/pinctrl/pinctrl-exynos.c         Tomasz Figa      2012-10-11  299  		if (bank->eint_type != EINT_TYPE_GPIO)
+595be7268a8573 drivers/pinctrl/pinctrl-exynos.c         Tomasz Figa      2012-10-11  300  			continue;
+85745c870a757c drivers/pinctrl/samsung/pinctrl-exynos.c Marek Szyprowski 2020-07-20  301  
+85745c870a757c drivers/pinctrl/samsung/pinctrl-exynos.c Marek Szyprowski 2020-07-20  302  		bank->irq_chip = devm_kmemdup(dev, &exynos_gpio_irq_chip,
+85745c870a757c drivers/pinctrl/samsung/pinctrl-exynos.c Marek Szyprowski 2020-07-20  303  					   sizeof(*bank->irq_chip), GFP_KERNEL);
+85745c870a757c drivers/pinctrl/samsung/pinctrl-exynos.c Marek Szyprowski 2020-07-20  304  		if (!bank->irq_chip) {
+85745c870a757c drivers/pinctrl/samsung/pinctrl-exynos.c Marek Szyprowski 2020-07-20  305  			ret = -ENOMEM;
+85745c870a757c drivers/pinctrl/samsung/pinctrl-exynos.c Marek Szyprowski 2020-07-20  306  			goto err_domains;
+85745c870a757c drivers/pinctrl/samsung/pinctrl-exynos.c Marek Szyprowski 2020-07-20  307  		}
+85745c870a757c drivers/pinctrl/samsung/pinctrl-exynos.c Marek Szyprowski 2020-07-20  308  		bank->irq_chip->chip.name = bank->name;
+85745c870a757c drivers/pinctrl/samsung/pinctrl-exynos.c Marek Szyprowski 2020-07-20  309  
+595be7268a8573 drivers/pinctrl/pinctrl-exynos.c         Tomasz Figa      2012-10-11 @310  		bank->irq_domain = irq_domain_add_linear(bank->of_node,
+6f5e41bd8fc6d3 drivers/pinctrl/samsung/pinctrl-exynos.c Abhilash Kesavan 2014-10-09  311  				bank->nr_pins, &exynos_eint_irqd_ops, bank);
+595be7268a8573 drivers/pinctrl/pinctrl-exynos.c         Tomasz Figa      2012-10-11  312  		if (!bank->irq_domain) {
+595be7268a8573 drivers/pinctrl/pinctrl-exynos.c         Tomasz Figa      2012-10-11  313  			dev_err(dev, "gpio irq domain add failed\n");
+7ccbc60cd9c293 drivers/pinctrl/pinctrl-exynos.c         Tomasz Figa      2013-05-22  314  			ret = -ENXIO;
+7ccbc60cd9c293 drivers/pinctrl/pinctrl-exynos.c         Tomasz Figa      2013-05-22  315  			goto err_domains;
+7ccbc60cd9c293 drivers/pinctrl/pinctrl-exynos.c         Tomasz Figa      2013-05-22  316  		}
+7ccbc60cd9c293 drivers/pinctrl/pinctrl-exynos.c         Tomasz Figa      2013-05-22  317  
+7ccbc60cd9c293 drivers/pinctrl/pinctrl-exynos.c         Tomasz Figa      2013-05-22  318  		bank->soc_priv = devm_kzalloc(d->dev,
+7ccbc60cd9c293 drivers/pinctrl/pinctrl-exynos.c         Tomasz Figa      2013-05-22  319  			sizeof(struct exynos_eint_gpio_save), GFP_KERNEL);
+7ccbc60cd9c293 drivers/pinctrl/pinctrl-exynos.c         Tomasz Figa      2013-05-22  320  		if (!bank->soc_priv) {
+7ccbc60cd9c293 drivers/pinctrl/pinctrl-exynos.c         Tomasz Figa      2013-05-22  321  			irq_domain_remove(bank->irq_domain);
+7ccbc60cd9c293 drivers/pinctrl/pinctrl-exynos.c         Tomasz Figa      2013-05-22  322  			ret = -ENOMEM;
+7ccbc60cd9c293 drivers/pinctrl/pinctrl-exynos.c         Tomasz Figa      2013-05-22  323  			goto err_domains;
+43b169db184184 drivers/pinctrl/pinctrl-exynos.c         Thomas Abraham   2012-09-07  324  		}
+0d3d30db936359 drivers/pinctrl/samsung/pinctrl-exynos.c Abhilash Kesavan 2014-10-09  325  
+595be7268a8573 drivers/pinctrl/pinctrl-exynos.c         Tomasz Figa      2012-10-11  326  	}
+43b169db184184 drivers/pinctrl/pinctrl-exynos.c         Thomas Abraham   2012-09-07  327  
+43b169db184184 drivers/pinctrl/pinctrl-exynos.c         Thomas Abraham   2012-09-07  328  	return 0;
+7ccbc60cd9c293 drivers/pinctrl/pinctrl-exynos.c         Tomasz Figa      2013-05-22  329  
+7ccbc60cd9c293 drivers/pinctrl/pinctrl-exynos.c         Tomasz Figa      2013-05-22  330  err_domains:
+7ccbc60cd9c293 drivers/pinctrl/pinctrl-exynos.c         Tomasz Figa      2013-05-22  331  	for (--i, --bank; i >= 0; --i, --bank) {
+7ccbc60cd9c293 drivers/pinctrl/pinctrl-exynos.c         Tomasz Figa      2013-05-22  332  		if (bank->eint_type != EINT_TYPE_GPIO)
+7ccbc60cd9c293 drivers/pinctrl/pinctrl-exynos.c         Tomasz Figa      2013-05-22  333  			continue;
+7ccbc60cd9c293 drivers/pinctrl/pinctrl-exynos.c         Tomasz Figa      2013-05-22  334  		irq_domain_remove(bank->irq_domain);
+7ccbc60cd9c293 drivers/pinctrl/pinctrl-exynos.c         Tomasz Figa      2013-05-22  335  	}
+7ccbc60cd9c293 drivers/pinctrl/pinctrl-exynos.c         Tomasz Figa      2013-05-22  336  
+7ccbc60cd9c293 drivers/pinctrl/pinctrl-exynos.c         Tomasz Figa      2013-05-22  337  	return ret;
+43b169db184184 drivers/pinctrl/pinctrl-exynos.c         Thomas Abraham   2012-09-07  338  }
+43b169db184184 drivers/pinctrl/pinctrl-exynos.c         Thomas Abraham   2012-09-07  339  
 
-Thanks
-Barry
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
