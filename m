@@ -2,153 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0B18C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 17:39:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C106C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 17:40:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231917AbiCaRlT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 13:41:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58806 "EHLO
+        id S232007AbiCaRmn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 13:42:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229718AbiCaRlN (ORCPT
+        with ESMTP id S229718AbiCaRml (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 13:41:13 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E79FF15280A;
-        Thu, 31 Mar 2022 10:39:25 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id A5E201F7AC;
-        Thu, 31 Mar 2022 17:39:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1648748364;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=UNcgLh6DoJ9DDbDIFiiw9A3K3hiKEzb8GtkO14hUjeY=;
-        b=EV3xXJjoDGHZ28OkkQp9sGfXg5wy7n0OaVmEqkhYgaC2CTkunPsB6KyFMyXCVafNYGUg4W
-        CSvtIKY5Q69+vH4SWH1S6zBsdm3aA51AlwlEBckIlbOPi37lqnxUJzAHyaZcOkhnr5uijP
-        RXy4Ie629fUKCjoUNeUw7Lu7pMq74lM=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1648748364;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=UNcgLh6DoJ9DDbDIFiiw9A3K3hiKEzb8GtkO14hUjeY=;
-        b=sWxHHqfJb1nrDnuP02nLZPtpfBAE77ZyOnC22F2O32YZzIvxyekpvs6yogd+ZVGmDpXCtJ
-        VqtI3dkCsP5aGYBw==
-Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
-        by relay2.suse.de (Postfix) with ESMTP id 9A0F9A3B83;
-        Thu, 31 Mar 2022 17:39:24 +0000 (UTC)
-Received: by ds.suse.cz (Postfix, from userid 10065)
-        id 0F8D7DA7F3; Thu, 31 Mar 2022 19:35:25 +0200 (CEST)
-Date:   Thu, 31 Mar 2022 19:35:25 +0200
-From:   David Sterba <dsterba@suse.cz>
-To:     Sweet Tea Dorminy <sweettea-kernel@dorminy.me>
-Cc:     Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>,
-        Nick Terrell <terrelln@fb.com>, linux-kernel@vger.kernel.org,
-        linux-btrfs@vger.kernel.org, kernel-team@fb.com,
-        Nikolay Borisov <nborisov@suse.com>
-Subject: Re: [PATCH v3 2/2] btrfs: allocate page arrays using bulk page
- allocator
-Message-ID: <20220331173525.GF15609@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz,
-        Sweet Tea Dorminy <sweettea-kernel@dorminy.me>,
-        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>, Nick Terrell <terrelln@fb.com>,
-        linux-kernel@vger.kernel.org, linux-btrfs@vger.kernel.org,
-        kernel-team@fb.com, Nikolay Borisov <nborisov@suse.com>
-References: <cover.1648669832.git.sweettea-kernel@dorminy.me>
- <ede1d39f7878ee2ed12c1526cc2ec358a2d862cf.1648669832.git.sweettea-kernel@dorminy.me>
+        Thu, 31 Mar 2022 13:42:41 -0400
+Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ED2B17A594
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 10:40:54 -0700 (PDT)
+Received: by mail-il1-x12e.google.com with SMTP id x9so309803ilc.3
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 10:40:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=HyGHrtWUT2Fics+gVqtcmwsLpUDfu48pACTmB8yx1t8=;
+        b=Y+2Qeep8CJL31pD+UDsvHcRdkZq5dTqoTzcYBK/kU0l2pOVe0yIkOd0zkAOBmIEdvz
+         YsJDI6i9EMPHBuTRI8FxIs33CMn1p4HJHc0riKdHCx0KhRn/Dwqd337YJuEvy4MALqHB
+         Ca/LQgSe0wG6FkliXJ/fPDP0ynsKazQSGW4pWz3lL6PAJkBPqlwd4R98p/OuUDgyOA3i
+         0JzMPlXl0496qMdpSHUf+OxEWLq71TrhzYsj4XWo0778uS4oVQ6vNDTwS60QoeqIItix
+         FvH9x1fef/D5QK+6isICwKQLRIkNMiN3zqmz5Ih3LHTG141PCMmQx1IOeWyNJ1kGDAvs
+         6GmA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=HyGHrtWUT2Fics+gVqtcmwsLpUDfu48pACTmB8yx1t8=;
+        b=IpGuiSiYWtSQp0bO3ptj3T8LzMBYdMTbTaAqgWqj4AsfwUNwSSXVQCiHA77PcwmNAZ
+         A4k2m7ePC+sDPygNFChqLElwDBtQPgMtgc23qTKPLN0L61zZhAVY9B1igSWXA5aPqb+J
+         KeRIB0Dif7joOUMd3z6j/IBAew+LyQr2M1dxneF4Xd/0ewQbpGM0IUnL23PkkRudskmP
+         Qiy2bexRHWaLqIRrscTClOn0CgNZ83CE/6de7e6WbiAAs0qsiJ315RJz2XfvYC9tlE2P
+         C5GTmvvwcDYgIvGwNM4LA6nW5+A85exO7VxuzbWM6tAbpzXLoST72sUfNqfKSDr4C8y2
+         G9/g==
+X-Gm-Message-State: AOAM531VtuqQ0B/+8PdvOx+CMjXPswn9aOlQpJdn2DSybeRyHrHx6kUS
+        LiKpyvMnVSCiiy1BsGATN3++x6uMZdc2ksIdzRGE7A==
+X-Google-Smtp-Source: ABdhPJxYhTs4+s1jh5yCfY9ZXSqoPOeAI+WRsxV81sHUy8RK+dwLIGYcYEXBl53Khry6sclnu4sUkwNABtaJalzXlqw=
+X-Received: by 2002:a05:6e02:20c6:b0:2c9:d552:20de with SMTP id
+ 6-20020a056e0220c600b002c9d55220demr6870949ilq.137.1648748453774; Thu, 31 Mar
+ 2022 10:40:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ede1d39f7878ee2ed12c1526cc2ec358a2d862cf.1648669832.git.sweettea-kernel@dorminy.me>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+References: <202204010033.oeIla4qb-lkp@intel.com> <YkXc0RjJYQoGZZ8A@57de4820519d>
+In-Reply-To: <YkXc0RjJYQoGZZ8A@57de4820519d>
+From:   Axel Rasmussen <axelrasmussen@google.com>
+Date:   Thu, 31 Mar 2022 10:40:18 -0700
+Message-ID: <CAJHvVchTGDbr0dUhDOs8iJHcNCmp8V_LYfLoVcBWYQmvJBPQMQ@mail.gmail.com>
+Subject: Re: [RFC PATCH linux-next] mm/secretmem: secretmem_iops can be static
+To:     kernel test robot <lkp@intel.com>
+Cc:     kbuild-all@lists.01.org,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 30, 2022 at 04:11:23PM -0400, Sweet Tea Dorminy wrote:
-> While calling alloc_page() in a loop is an effective way to populate an
-> array of pages, the kernel provides a method to allocate pages in bulk.
-> alloc_pages_bulk_array() populates the NULL slots in a page array, trying to
-> grab more than one page at a time.
-> 
-> Unfortunately, it doesn't guarantee allocating all slots in the array,
-> but it's easy to call it in a loop and return an error if no progress
-> occurs. Similar code can be found in xfs/xfs_buf.c:xfs_buf_alloc_pages().
-> 
-> Signed-off-by: Sweet Tea Dorminy <sweettea-kernel@dorminy.me>
-> Reviewed-by: Nikolay Borisov <nborisov@suse.com>
+Thanks kernel test robot, it should indeed be static. I'll send a v2
+with this fix.
+
+On Thu, Mar 31, 2022 at 9:55 AM kernel test robot <lkp@intel.com> wrote:
+>
+> mm/secretmem.c:173:31: warning: symbol 'secretmem_iops' was not declared. Should it be static?
+>
+> Fixes: 24209f2f4d62 ("mm/secretmem: fix panic when growing a memfd_secret")
+> Reported-by: kernel test robot <lkp@intel.com>
+> Signed-off-by: kernel test robot <lkp@intel.com>
 > ---
-> Changes in v3:
->  - Added a newline after variable declaration
-> Changes in v2:
->  - Moved from ctree.c to extent_io.c
-> ---
->  fs/btrfs/extent_io.c | 24 +++++++++++++++---------
->  1 file changed, 15 insertions(+), 9 deletions(-)
-> 
-> diff --git a/fs/btrfs/extent_io.c b/fs/btrfs/extent_io.c
-> index ab4c1c4d1b59..b268e47aa2b7 100644
-> --- a/fs/btrfs/extent_io.c
-> +++ b/fs/btrfs/extent_io.c
-> @@ -3144,19 +3144,25 @@ static void end_bio_extent_readpage(struct bio *bio)
->   */
->  int btrfs_alloc_page_array(unsigned long nr_pages, struct page **page_array)
->  {
-> -	int i;
-> +	long allocated = 0;
-> +
-> +	for (;;) {
-> +		long last = allocated;
->  
-> -	for (i = 0; i < nr_pages; i++) {
-> -		struct page *page;
-> +		allocated = alloc_pages_bulk_array(GFP_NOFS, nr_pages,
-> +						   page_array);
-> +		if (allocated == nr_pages)
-> +			return 0;
->  
-> -		if (page_array[i])
-> +		if (allocated != last)
->  			continue;
-> -		page = alloc_page(GFP_NOFS);
-> -		if (!page)
-> -			return -ENOMEM;
-> -		page_array[i] = page;
-> +		/*
-> +		 * During this iteration, no page could be allocated, even
-> +		 * though alloc_pages_bulk_array() falls back to alloc_page()
-> +		 * if  it could not bulk-allocate. So we must be out of memory.
-> +		 */
-> +		return -ENOMEM;
->  	}
-
-I find the way the loop is structured a bit cumbersome so I'd suggest to
-rewrite it as:
-
-int btrfs_alloc_page_array(unsigned int nr_pages, struct page **page_array)
-{
-        unsigned int allocated;
-
-        for (allocated = 0; allocated < nr_pages;) {
-                unsigned int last = allocated;
-
-                allocated = alloc_pages_bulk_array(GFP_NOFS, nr_pages, page_array);
-
-                /*
-                 * During this iteration, no page could be allocated, even
-                 * though alloc_pages_bulk_array() falls back to alloc_page()
-                 * if  it could not bulk-allocate. So we must be out of memory.
-                 */
-                if (allocated == last)
-                        return -ENOMEM;
-        }
-        return 0;
-}
-
-Also in the xfs code there's memalloc_retry_wait() which is supposed to be
-called when repeated memory allocation is retried. What was the reason
-you removed it?
+>  mm/secretmem.c |    2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/mm/secretmem.c b/mm/secretmem.c
+> index a83e98aa3a7b3..ddf45c0435be7 100644
+> --- a/mm/secretmem.c
+> +++ b/mm/secretmem.c
+> @@ -170,7 +170,7 @@ static int secretmem_setattr(struct user_namespace *mnt_userns,
+>         return simple_setattr(mnt_userns, dentry, iattr);
+>  }
+>
+> -const struct inode_operations secretmem_iops = {
+> +static const struct inode_operations secretmem_iops = {
+>         .setattr = secretmem_setattr,
+>  };
+>
