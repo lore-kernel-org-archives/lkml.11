@@ -2,113 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BD13C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 08:30:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23A6EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 08:32:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232862AbiCaIcW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 04:32:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49518 "EHLO
+        id S232877AbiCaIeN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 04:34:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232847AbiCaIcS (ORCPT
+        with ESMTP id S232710AbiCaIeL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 04:32:18 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7023A3983A;
-        Thu, 31 Mar 2022 01:30:31 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id m18so17862841plx.3;
-        Thu, 31 Mar 2022 01:30:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=ivXMvvbs5/EJ/cA1YNvCsYZ5GhYYP7s+w/OiMvQ9vdM=;
-        b=dmMQkLUbRxIWiMemllk8m4UN5qUqRLS4xMLW3zx/IMoev0AfAe/IRmrzEsLeT52WpK
-         u6hvbrMY9LBPWcExkvT7L6xVN7G313RRkCpyCvKij0TeehtUKT9WxFWRzSg8uIe0RsLX
-         vmDAlz8RBpAbFcvtABS+KkCsG+rxt6YPDuk1qw0F6KmGr/tFBc+wa8rfgY2HbaCftkoq
-         YzdeHZL6bMmGEeWraSOrQEsPVaQ/m/8TsHJT2h5omb8lYnUdZTQn3yJF+J8M4zsJzlWG
-         4dpPtfFBCsyE/15rZmbFjoQ4q0C59+QraJ2NelKF7xBwH/is8h6+l9IgWAFhUeDBN+DO
-         gZ/A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=ivXMvvbs5/EJ/cA1YNvCsYZ5GhYYP7s+w/OiMvQ9vdM=;
-        b=DGFVjN/WjVnmCJT5tWrD5XWi4X7WTtiagIm41oD6aWuufNw0bKXhKEVcDPpZuYILqP
-         WwP3KiQPS4gA8vGMEW26YH271/S7KJ+Qr6zAqiJtQkdaUdR/FJUsyqiRCuhsLOp7AW/s
-         7eYs+kZ4BGkMLnbvWH54Qla+0zV+fnTfL/pKFDZUmjSHSlqBe5UDG6W8Xccd0wxfK4qX
-         MQgl3cWQprTgb7A/mLsaGhT9gsmBPF0OHvomsf0y3T/hK+ps3k+22Tubz26XRyIVoqL+
-         DSHz+l7RSBQ0HY4JGl0eOnVjDo5gEEVYqo8lQ7FwJKoDGd7pJeKqssOQqvVYIt1jqvVE
-         Vo7Q==
-X-Gm-Message-State: AOAM530OrrtnHMTXNd1DOGG7bRkaXfaJzEdLOgk2v/Nm3Pa/bDQ77Yc+
-        pZ9A2bD/FibhaK/nZoXTA3A=
-X-Google-Smtp-Source: ABdhPJwyXgHtVxQarjOg5ftr1g/409/SafG6TRxjZhAqQaz8fVpUoKM+MSv+EvwnfibqtJWpqfIlkQ==
-X-Received: by 2002:a17:90a:b307:b0:1bd:37f3:f0fc with SMTP id d7-20020a17090ab30700b001bd37f3f0fcmr4946733pjr.132.1648715430845;
-        Thu, 31 Mar 2022 01:30:30 -0700 (PDT)
-Received: from ubuntu.huawei.com ([119.3.119.18])
-        by smtp.googlemail.com with ESMTPSA id j70-20020a638b49000000b003985b5ddaa1sm10950655pge.49.2022.03.31.01.30.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 31 Mar 2022 01:30:30 -0700 (PDT)
-From:   Xiaomeng Tong <xiam0nd.tong@gmail.com>
-To:     vireshk@kernel.org, nm@ti.com, sboyd@kernel.org
-Cc:     linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Subject: [PATCH v2] opp: use list iterator only inside the loop
-Date:   Thu, 31 Mar 2022 16:30:18 +0800
-Message-Id: <20220331083018.31995-1-xiam0nd.tong@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Thu, 31 Mar 2022 04:34:11 -0400
+X-Greylist: delayed 29513 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 31 Mar 2022 01:32:23 PDT
+Received: from mxhk.zte.com.cn (mxhk.zte.com.cn [63.216.63.35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3F5311A09;
+        Thu, 31 Mar 2022 01:32:22 -0700 (PDT)
+Received: from mse-fl1.zte.com.cn (unknown [10.30.14.238])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mxhk.zte.com.cn (FangMail) with ESMTPS id 4KTc4450k8zBCBjq;
+        Thu, 31 Mar 2022 16:32:20 +0800 (CST)
+Received: from szxlzmapp07.zte.com.cn ([10.5.230.251])
+        by mse-fl1.zte.com.cn with SMTP id 22V8W7XO084002;
+        Thu, 31 Mar 2022 16:32:07 +0800 (GMT-8)
+        (envelope-from wang.yi59@zte.com.cn)
+Received: from mapi (szxlzmapp02[null])
+        by mapi (Zmail) with MAPI id mid14;
+        Thu, 31 Mar 2022 16:32:07 +0800 (CST)
+Date:   Thu, 31 Mar 2022 16:32:07 +0800 (CST)
+X-Zmail-TransId: 2b0462456707ffffffff8d1-79fab
+X-Mailer: Zmail v1.0
+Message-ID: <202203311632074775168@zte.com.cn>
+In-Reply-To: <20220331053340.GE1544202@dread.disaster.area>
+References: 20220331003826.GL27690@magnolia,202203311128598207170@zte.com.cn,20220331053340.GE1544202@dread.disaster.area
+Mime-Version: 1.0
+From:   <wang.yi59@zte.com.cn>
+To:     <david@fromorbit.com>
+Cc:     <djwong@kernel.org>, <linux-xfs@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <xue.zhihong@zte.com.cn>,
+        <wang.liang82@zte.com.cn>, <cheng.lin130@zte.com.cn>
+Subject: =?UTF-8?B?UmU6W1BBVENIXSB4ZnM6IGdldGF0dHIgaWdub3JlIGJsb2NrcyBiZXlvbmQgZW9m?=
+Content-Type: text/plain;
+        charset="UTF-8"
+X-MAIL: mse-fl1.zte.com.cn 22V8W7XO084002
+X-Fangmail-Gw-Spam-Type: 0
+X-FangMail-Miltered: at cgslv5.04-192.168.250.138.novalocal with ID 62456714.003 by FangMail milter!
+X-FangMail-Envelope: 1648715540/4KTc4450k8zBCBjq/62456714.003/10.30.14.238/[10.30.14.238]/mse-fl1.zte.com.cn/<wang.yi59@zte.com.cn>
+X-Fangmail-Anti-Spam-Filtered: true
+X-Fangmail-MID-QID: 62456714.003/4KTc4450k8zBCBjq
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To move the list iterator variable into the list_for_each_entry_*()
-macro in the future it should be avoided to use the list iterator
-variable after the loop body.
+> We do not, and have not ever tried to, hide allocation or block
+> usage artifacts from userspace because any application that depends
+> on specific block allocation patterns or accounting from the
+> filesystem is broken by design.
+>
+> Every filesystem accounts blocks differently, and more often than
+> not the block count exposed to userspace also includes metadata
+> blocks (extent maps, xattr blocks, etc) and it might multiple count
+> other blocks (e.g. shared extents). Hence so you can't actually
+> use it for anything useful in userspace except reporting how many
+> blocks this file *might* use.
+>
+> If your application is dependent on block counts exactly matching
+> the file data space for waht ever reason, then what speculative
+> preallocation does is the least of your problems.
+>
 
-To *never* use the list iterator variable after the loop it was
-concluded to use a separate dedicated pointer variable [1].
+Thanks for your explaination.
 
-In this case, use a new variable 'iter' as the list iterator, while
-use the old variable 'new_dev' as a dedicated pointer to point to the
-found entry. And BUG_ON(!new_dev);.
+Unfortunately, the app I'm using evaluates diskusage by querying
+the changes of the backend filesystem (XFS) file before and after
+the operation. Without giving up the benefits of preallocation, the
+app's statistics will become obsolete and no chance to correct it
+at a small cost, because of the silence reclaim of posteof blocks.
+That is the app's problem.
 
-[1]: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/
-
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
----
-
-changes since v1:
- - use BUG_ON(!new_dev); instead of return; (Viresh Kumar)
-
-v1: https://lore.kernel.org/lkml/20220331015818.28045-1-xiam0nd.tong@gmail.com/
-
----
- drivers/opp/debugfs.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/opp/debugfs.c b/drivers/opp/debugfs.c
-index 596c185b5dda..81b2bc4b5f43 100644
---- a/drivers/opp/debugfs.c
-+++ b/drivers/opp/debugfs.c
-@@ -187,14 +187,18 @@ void opp_debug_register(struct opp_device *opp_dev, struct opp_table *opp_table)
- static void opp_migrate_dentry(struct opp_device *opp_dev,
- 			       struct opp_table *opp_table)
- {
--	struct opp_device *new_dev;
-+	struct opp_device *new_dev = NULL, *iter;
- 	const struct device *dev;
- 	struct dentry *dentry;
- 
- 	/* Look for next opp-dev */
--	list_for_each_entry(new_dev, &opp_table->dev_list, node)
--		if (new_dev != opp_dev)
-+	list_for_each_entry(iter, &opp_table->dev_list, node)
-+		if (iter != opp_dev) {
-+			new_dev = iter;
- 			break;
-+		}
-+
-+	BUG_ON(!new_dev);
- 
- 	/* new_dev is guaranteed to be valid here */
- 	dev = new_dev->dev;
--- 
-2.17.1
-
+Posteof blocks will be reclaimed sooner or later, it seems reasonable
+to ignore them directly during query. This is my humble opinion in
+this patch. At the query moment, it's not real, but it will become so
+eventually. It's a speculative result for query.
