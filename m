@@ -2,174 +2,195 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD18CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 10:33:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2164C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 10:34:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234603AbiCaKey (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 06:34:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53924 "EHLO
+        id S234637AbiCaKgG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 06:36:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232547AbiCaKeu (ORCPT
+        with ESMTP id S234605AbiCaKgD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 06:34:50 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72CF0204282
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 03:33:02 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1nZs6k-000591-1J; Thu, 31 Mar 2022 12:32:50 +0200
-Received: from pengutronix.de (2a03-f580-87bc-d400-ffcf-bd2e-518f-8dbf.ip6.dokom21.de [IPv6:2a03:f580:87bc:d400:ffcf:bd2e:518f:8dbf])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id A858C57B54;
-        Thu, 31 Mar 2022 10:32:47 +0000 (UTC)
-Date:   Thu, 31 Mar 2022 12:32:47 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Aurelien Jarno <aurelien@aurel32.net>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Kito Cheng <kito.cheng@gmail.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        "open list:RISC-V ARCHITECTURE" <linux-riscv@lists.infradead.org>
-Subject: Re: [PATCH] riscv: fix build with binutils 2.38
-Message-ID: <20220331103247.y33wvkxk5vfbqohf@pengutronix.de>
-References: <20220126171442.1338740-1-aurelien@aurel32.net>
+        Thu, 31 Mar 2022 06:36:03 -0400
+Received: from ha.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7AF9C60040;
+        Thu, 31 Mar 2022 03:34:14 -0700 (PDT)
+Received: from localhost (unknown [127.0.0.1])
+        by ha.nfschina.com (Postfix) with ESMTP id 6A9131E80D79;
+        Thu, 31 Mar 2022 18:33:43 +0800 (CST)
+X-Virus-Scanned: amavisd-new at test.com
+Received: from ha.nfschina.com ([127.0.0.1])
+        by localhost (ha.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id x1R5h9nOxo0c; Thu, 31 Mar 2022 18:33:40 +0800 (CST)
+Received: from ubuntu.localdomain (unknown [101.228.248.165])
+        (Authenticated sender: yuzhe@nfschina.com)
+        by ha.nfschina.com (Postfix) with ESMTPA id E8F911E80D77;
+        Thu, 31 Mar 2022 18:33:39 +0800 (CST)
+From:   Yu Zhe <yuzhe@nfschina.com>
+To:     clm@fb.com, josef@toxicpanda.com, dsterba@suse.com
+Cc:     linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, liqiong@nfschina.com,
+        Yu Zhe <yuzhe@nfschina.com>
+Subject: [PATCH] btrfs: remove unnecessary type castings
+Date:   Thu, 31 Mar 2022 03:34:08 -0700
+Message-Id: <20220331103408.31867-1-yuzhe@nfschina.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="vglrjwx3za2fhczz"
-Content-Disposition: inline
-In-Reply-To: <20220126171442.1338740-1-aurelien@aurel32.net>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+remove unnecessary void* type castings.
 
---vglrjwx3za2fhczz
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Yu Zhe <yuzhe@nfschina.com>
+---
+ fs/btrfs/check-integrity.c | 2 +-
+ fs/btrfs/disk-io.c         | 4 ++--
+ fs/btrfs/inode.c           | 2 +-
+ fs/btrfs/ioctl.c           | 4 ++--
+ fs/btrfs/relocation.c      | 2 +-
+ fs/btrfs/scrub.c           | 2 +-
+ fs/btrfs/space-info.c      | 2 +-
+ fs/btrfs/subpage.c         | 2 +-
+ fs/btrfs/volumes.c         | 2 +-
+ 9 files changed, 11 insertions(+), 11 deletions(-)
 
-On 26.01.2022 18:14:42, Aurelien Jarno wrote:
-> From version 2.38, binutils default to ISA spec version 20191213. This
-> means that the csr read/write (csrr*/csrw*) instructions and fence.i
-> instruction has separated from the `I` extension, become two standalone
-> extensions: Zicsr and Zifencei. As the kernel uses those instruction,
-> this causes the following build failure:
->=20
->   CC      arch/riscv/kernel/vdso/vgettimeofday.o
->   <<BUILDDIR>>/arch/riscv/include/asm/vdso/gettimeofday.h: Assembler mess=
-ages:
->   <<BUILDDIR>>/arch/riscv/include/asm/vdso/gettimeofday.h:71: Error: unre=
-cognized opcode `csrr a5,0xc01'
->   <<BUILDDIR>>/arch/riscv/include/asm/vdso/gettimeofday.h:71: Error: unre=
-cognized opcode `csrr a5,0xc01'
->   <<BUILDDIR>>/arch/riscv/include/asm/vdso/gettimeofday.h:71: Error: unre=
-cognized opcode `csrr a5,0xc01'
->   <<BUILDDIR>>/arch/riscv/include/asm/vdso/gettimeofday.h:71: Error: unre=
-cognized opcode `csrr a5,0xc01'
->=20
-> The fix is to specify those extensions explicitely in -march. However as
-> older binutils version do not support this, we first need to detect
-> that.
->=20
-> Cc: stable@vger.kernel.org # 4.15+
-> Cc: Kito Cheng <kito.cheng@gmail.com>
-> Signed-off-by: Aurelien Jarno <aurelien@aurel32.net>
-> ---
->  arch/riscv/Makefile | 6 ++++++
->  1 file changed, 6 insertions(+)
->=20
-> diff --git a/arch/riscv/Makefile b/arch/riscv/Makefile
-> index 8a107ed18b0d..7d81102cffd4 100644
-> --- a/arch/riscv/Makefile
-> +++ b/arch/riscv/Makefile
-> @@ -50,6 +50,12 @@ riscv-march-$(CONFIG_ARCH_RV32I)	:=3D rv32ima
->  riscv-march-$(CONFIG_ARCH_RV64I)	:=3D rv64ima
->  riscv-march-$(CONFIG_FPU)		:=3D $(riscv-march-y)fd
->  riscv-march-$(CONFIG_RISCV_ISA_C)	:=3D $(riscv-march-y)c
-> +
-> +# Newer binutils versions default to ISA spec version 20191213 which mov=
-es some
-> +# instructions from the I extension to the Zicsr and Zifencei extensions.
-> +toolchain-need-zicsr-zifencei :=3D $(call cc-option-yn, -march=3D$(riscv=
--march-y)_zicsr_zifencei)
-> +riscv-march-$(toolchain-need-zicsr-zifencei) :=3D $(riscv-march-y)_zicsr=
-_zifencei
-> +
->  KBUILD_CFLAGS +=3D -march=3D$(subst fd,,$(riscv-march-y))
->  KBUILD_AFLAGS +=3D -march=3D$(riscv-march-y)
+diff --git a/fs/btrfs/check-integrity.c b/fs/btrfs/check-integrity.c
+index abac86a75840..62eb149aac98 100644
+--- a/fs/btrfs/check-integrity.c
++++ b/fs/btrfs/check-integrity.c
+@@ -2033,7 +2033,7 @@ static void btrfsic_process_written_block(struct btrfsic_dev_state *dev_state,
+ 
+ static void btrfsic_bio_end_io(struct bio *bp)
+ {
+-	struct btrfsic_block *block = (struct btrfsic_block *)bp->bi_private;
++	struct btrfsic_block *block = bp->bi_private;
+ 	int iodone_w_error;
+ 
+ 	/* mutex is not held! This is not save if IO is not yet completed
+diff --git a/fs/btrfs/disk-io.c b/fs/btrfs/disk-io.c
+index b30309f187cf..51f7ad6cadce 100644
+--- a/fs/btrfs/disk-io.c
++++ b/fs/btrfs/disk-io.c
+@@ -1963,7 +1963,7 @@ static void end_workqueue_fn(struct btrfs_work *work)
+ 
+ static int cleaner_kthread(void *arg)
+ {
+-	struct btrfs_fs_info *fs_info = (struct btrfs_fs_info *)arg;
++	struct btrfs_fs_info *fs_info = arg;
+ 	int again;
+ 
+ 	while (1) {
+@@ -3293,7 +3293,7 @@ static int init_mount_fs_info(struct btrfs_fs_info *fs_info, struct super_block
+ 
+ static int btrfs_uuid_rescan_kthread(void *data)
+ {
+-	struct btrfs_fs_info *fs_info = (struct btrfs_fs_info *)data;
++	struct btrfs_fs_info *fs_info = data;
+ 	int ret;
+ 
+ 	/*
+diff --git a/fs/btrfs/inode.c b/fs/btrfs/inode.c
+index aa0a60ee26cb..6eafb46eadae 100644
+--- a/fs/btrfs/inode.c
++++ b/fs/btrfs/inode.c
+@@ -8951,7 +8951,7 @@ int btrfs_drop_inode(struct inode *inode)
+ 
+ static void init_once(void *foo)
+ {
+-	struct btrfs_inode *ei = (struct btrfs_inode *) foo;
++	struct btrfs_inode *ei = foo;
+ 
+ 	inode_init_once(&ei->vfs_inode);
+ }
+diff --git a/fs/btrfs/ioctl.c b/fs/btrfs/ioctl.c
+index 238cee5b5254..c05a2afb74a7 100644
+--- a/fs/btrfs/ioctl.c
++++ b/fs/btrfs/ioctl.c
+@@ -2593,7 +2593,7 @@ static noinline int btrfs_ioctl_tree_search(struct inode *inode,
+ 	if (!capable(CAP_SYS_ADMIN))
+ 		return -EPERM;
+ 
+-	uargs = (struct btrfs_ioctl_search_args __user *)argp;
++	uargs = argp;
+ 
+ 	if (copy_from_user(&sk, &uargs->key, sizeof(sk)))
+ 		return -EFAULT;
+@@ -2627,7 +2627,7 @@ static noinline int btrfs_ioctl_tree_search_v2(struct inode *inode,
+ 		return -EPERM;
+ 
+ 	/* copy search header and buffer size */
+-	uarg = (struct btrfs_ioctl_search_args_v2 __user *)argp;
++	uarg = argp;
+ 	if (copy_from_user(&args, uarg, sizeof(args)))
+ 		return -EFAULT;
+ 
+diff --git a/fs/btrfs/relocation.c b/fs/btrfs/relocation.c
+index fdc2c4b411f0..13befafab3b4 100644
+--- a/fs/btrfs/relocation.c
++++ b/fs/btrfs/relocation.c
+@@ -362,7 +362,7 @@ struct btrfs_root *find_reloc_root(struct btrfs_fs_info *fs_info, u64 bytenr)
+ 	rb_node = rb_simple_search(&rc->reloc_root_tree.rb_root, bytenr);
+ 	if (rb_node) {
+ 		node = rb_entry(rb_node, struct mapping_node, rb_node);
+-		root = (struct btrfs_root *)node->data;
++		root = node->data;
+ 	}
+ 	spin_unlock(&rc->reloc_root_tree.lock);
+ 	return btrfs_grab_root(root);
+diff --git a/fs/btrfs/scrub.c b/fs/btrfs/scrub.c
+index 11089568b287..e338e3f9a0b5 100644
+--- a/fs/btrfs/scrub.c
++++ b/fs/btrfs/scrub.c
+@@ -2798,7 +2798,7 @@ static void scrub_parity_bio_endio_worker(struct btrfs_work *work)
+ 
+ static void scrub_parity_bio_endio(struct bio *bio)
+ {
+-	struct scrub_parity *sparity = (struct scrub_parity *)bio->bi_private;
++	struct scrub_parity *sparity = bio->bi_private;
+ 	struct btrfs_fs_info *fs_info = sparity->sctx->fs_info;
+ 
+ 	if (bio->bi_status)
+diff --git a/fs/btrfs/space-info.c b/fs/btrfs/space-info.c
+index b87931a458eb..4de2c82051b1 100644
+--- a/fs/btrfs/space-info.c
++++ b/fs/btrfs/space-info.c
+@@ -519,7 +519,7 @@ static void shrink_delalloc(struct btrfs_fs_info *fs_info,
+ 		items = calc_reclaim_items_nr(fs_info, to_reclaim) * 2;
+ 	}
+ 
+-	trans = (struct btrfs_trans_handle *)current->journal_info;
++	trans = current->journal_info;
+ 
+ 	/*
+ 	 * If we are doing more ordered than delalloc we need to just wait on
+diff --git a/fs/btrfs/subpage.c b/fs/btrfs/subpage.c
+index ef7ae20d2b77..45fbc9e20715 100644
+--- a/fs/btrfs/subpage.c
++++ b/fs/btrfs/subpage.c
+@@ -127,7 +127,7 @@ void btrfs_detach_subpage(const struct btrfs_fs_info *fs_info,
+ 	if (fs_info->sectorsize == PAGE_SIZE || !PagePrivate(page))
+ 		return;
+ 
+-	subpage = (struct btrfs_subpage *)detach_page_private(page);
++	subpage = detach_page_private(page);
+ 	ASSERT(subpage);
+ 	btrfs_free_subpage(subpage);
+ }
+diff --git a/fs/btrfs/volumes.c b/fs/btrfs/volumes.c
+index 1be7cb2f955f..c7a6d290e67b 100644
+--- a/fs/btrfs/volumes.c
++++ b/fs/btrfs/volumes.c
+@@ -8295,7 +8295,7 @@ bool btrfs_pinned_by_swapfile(struct btrfs_fs_info *fs_info, void *ptr)
+ 
+ static int relocating_repair_kthread(void *data)
+ {
+-	struct btrfs_block_group *cache = (struct btrfs_block_group *)data;
++	struct btrfs_block_group *cache = data;
+ 	struct btrfs_fs_info *fs_info = cache->fs_info;
+ 	u64 target;
+ 	int ret = 0;
+-- 
+2.25.1
 
-I'm on current linus/master, this change breaks on current Debian
-testing with:
-
-| make: Leaving directory 'linux'
-|   SYNC    include/config/auto.conf.cmd
-|   GEN     Makefile
-|   GEN     Makefile
-|   CC      scripts/mod/empty.o
-|   CHECK   linux/scripts/mod/empty.c
-| invalid argument to '-march': '_zicsr_zifencei'
-
-Used components:
-
-| $ riscv64-linux-gnu-gcc -v
-| Using built-in specs.
-| COLLECT_GCC=3D/usr/bin/riscv64-linux-gnu-gcc
-| COLLECT_LTO_WRAPPER=3D/usr/lib/gcc-cross/riscv64-linux-gnu/11/lto-wrapper
-| Target: riscv64-linux-gnu
-| Configured with: ../src/configure -v --with-pkgversion=3D'Debian 11.2.0-9=
-' --with-bugurl=3Dfile:///usr/share/doc/gcc-11/README.Bugs --enable-languag=
-es=3Dc,ada,c++,go,d,fortran,objc,obj-c++,m2 --prefix=3D/usr --with-gcc-majo=
-r-version-only --program-suffix=3D-11 --enable-shared --enable-linker-build=
--id --libexecdir=3D/usr/lib --without-included-gettext --enable-threads=3Dp=
-osix --libdir=3D/usr/lib --enable-nls --with-sysroot=3D/ --enable-clocale=
-=3Dgnu --enable-libstdcxx-debug --enable-libstdcxx-time=3Dyes --with-defaul=
-t-libstdcxx-abi=3Dnew --enable-gnu-unique-object --disable-libitm --disable=
--libquadmath --disable-libquadmath-support --enable-plugin --enable-default=
--pie --with-system-zlib --enable-libphobos-checking=3Drelease --without-tar=
-get-system-zlib --enable-multiarch --disable-werror --disable-multilib --wi=
-th-arch=3Drv64imafdc --with-abi=3Dlp64d --enable-checking=3Drelease --build=
-=3Dx86_64-linux-gnu --host=3Dx86_64-linux-gnu --target=3Driscv64-linux-gnu =
---program-prefix=3Driscv64-linux-gnu- --includedir=3D/usr/riscv64-linux-gnu=
-/include --with-build-config=3Dbootstrap-lto-lean --enable-link-serializati=
-on=3D2
-| Thread model: posix
-| Supported LTO compression algorithms: zlib zstd
-| gcc version 11.2.0 (Debian 11.2.0-9)=20
-| $ riscv64-linux-gnu-ld -v
-| GNU ld (GNU Binutils for Debian) 2.38
-
-regards,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---vglrjwx3za2fhczz
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmJFg0wACgkQrX5LkNig
-010Pvgf/ZoWGG7K/5FYXrD6DqvRxaZGgXBUeIVFePKiNNRXC82F6VNIytbqSEg09
-9LcT0qzh51lGHAI9n+ur77Hmiit//P0M3GYLxigpabDMtBoYN5iWwZpobYMP42ox
-DCZ4ECYfzj/Hhtm++McTEGMW+EMCaKOf+53R3hS6Z7vmgfltDoT/Y6bmTNs9Vjue
-bvxT9UN8iVhNiPgSwmA4VVaNAHoTyzYS+Axck6ndKq2qWLh6Rbu45MYaNMtWgz7l
-Qfptz5E9TOaGItBnV47952dz2U6tsIvqNZBXdsqgQ501oeZMfk3jTvP+agrekeal
-GDu+6B+/oPYD13DvqdchERnZaYNJLw==
-=Jfvd
------END PGP SIGNATURE-----
-
---vglrjwx3za2fhczz--
