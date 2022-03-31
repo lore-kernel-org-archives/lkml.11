@@ -2,87 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D56A6C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 12:17:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44B51C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 12:19:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235982AbiCaMTC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 08:19:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38112 "EHLO
+        id S235987AbiCaMVB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 08:21:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235973AbiCaMS5 (ORCPT
+        with ESMTP id S235740AbiCaMU7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 08:18:57 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2B9AB210446
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 05:17:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648729029;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=f5/8+4RwHAMD/KHypXq8zvLNL9+H5+MYFtmie7z/yWo=;
-        b=ML3mFkWUAhVX7l1ezPZEfuT6rJu8u3Is8YlayEeqH2h9VDYG+BRZgKjsM23eKtpqbZH6Bz
-        GF2PQKUGNZ3yRQ/KZ4Wd8Zuyf3peQuQrfjt8YT/QCKvjWyJaoCUxBLaELQuELE9ORrUGcL
-        N75yQSdRUaA7z18QxbNPY2PaHNb5W/c=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-290-v7RIh1xtMi-XLByMpu-iUA-1; Thu, 31 Mar 2022 08:17:04 -0400
-X-MC-Unique: v7RIh1xtMi-XLByMpu-iUA-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id D7914801E95;
-        Thu, 31 Mar 2022 12:16:58 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.19])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8AC852026D64;
-        Thu, 31 Mar 2022 12:16:54 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <4de651adc35341c5fa99db54b9295d4845648563.camel@redhat.com>
-References: <4de651adc35341c5fa99db54b9295d4845648563.camel@redhat.com> <164865013439.2941502.8966285221215590921.stgit@warthog.procyon.org.uk>
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     dhowells@redhat.com, netdev@vger.kernel.org,
-        Xiaolong Huang <butterflyhuangxx@gmail.com>,
-        Marc Dionne <marc.dionne@auristor.com>,
-        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] rxrpc: fix some null-ptr-deref bugs in server_key.c
+        Thu, 31 Mar 2022 08:20:59 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25A4F57B1F
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 05:19:12 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id bh17so8221525ejb.8
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 05:19:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=D36Yn+ejM2DXUE0h/u3XBGcr71EqZPBwHQPlqRXqPLQ=;
+        b=QHu5Zs2xUoKvVhqkj6wK2uZrS/6gc4dA8wI5nKJoeTpLAEV7/ZXceJJ221pS1cMg9f
+         JvhK3PvxQVzRv7dq0DjzRKDmxiIw+EO0J69YGnn+qIoSTW0qYvPOkIiBSAJjk8B15a7h
+         P7ccVF8jQhjCPxRXwFsO8r8FAB/0zbZqthGqLAYOSZr602HiSFMaMWl1GbtEFc2nmyMc
+         yLphvLEmxLbJSyyPDwASg3ClI/q/NljTYoFCi0QfI5P9Wgt6oDDqIR/nMMjK/yGEaQ+p
+         CkWT6bniNj9VXnN/M6AkjI99lIp6DPKG/rLIE8cx7v5nPlHvZ7Eh6QC+lVQprxcs5FFI
+         47ZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=D36Yn+ejM2DXUE0h/u3XBGcr71EqZPBwHQPlqRXqPLQ=;
+        b=anaKympLF/sVVibqCM3WHFdR0Y80ESN7u09VbjHfUFiRQ+NN/mE8QZdfcE6NdnvUZ6
+         fBfdtP9lsmYnVw9Has4fByKR7AG33mU8Aodkyhe2blUGifAkQSeqQUQauXH20DQUKXJK
+         KQYP5o0odJKNjeoyqAEApPDPUemj+aE0+KmFl7FTs0DNug4FFmwtiJZy7I94LHZAvgFq
+         o01GI3i+TQik1/35No2SylzlNgKPUHxj+sDI0XoJzIRcanc8ZOA/siY5keXlVTdCxeOk
+         hm7pkM6YtU0ipGtbB97U8LOF1R5S8R+NeP++C5rMIvy5i14J1luK8t4dHGx+cFSbFHaz
+         jrMw==
+X-Gm-Message-State: AOAM530CMKcRP+AeNMZkwYf2/G9NY/QPj26EhcYQZkE6tTf/R1nvO836
+        I993Coi76lUQhKvID++tBqK1IQ==
+X-Google-Smtp-Source: ABdhPJxmJMnsTNRsdqZxrtv4RgtdwiawUFjBrcIQbDJn0VDT4ZfrbQnG4vIteN6+nqduvCgYCN/cYg==
+X-Received: by 2002:a17:907:3e0c:b0:6e0:7d7e:58 with SMTP id hp12-20020a1709073e0c00b006e07d7e0058mr4518430ejc.597.1648729150471;
+        Thu, 31 Mar 2022 05:19:10 -0700 (PDT)
+Received: from leoy-ThinkPad-X240s ([104.245.96.34])
+        by smtp.gmail.com with ESMTPSA id gn1-20020a1709070d0100b006e012aaa918sm9351455ejc.139.2022.03.31.05.19.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 31 Mar 2022 05:19:09 -0700 (PDT)
+Date:   Thu, 31 Mar 2022 20:19:02 +0800
+From:   Leo Yan <leo.yan@linaro.org>
+To:     Ali Saidi <alisaidi@amazon.com>
+Cc:     Nick.Forrington@arm.com, acme@kernel.org,
+        alexander.shishkin@linux.intel.com, andrew.kilroy@arm.com,
+        benh@kernel.crashing.org, german.gomez@arm.com,
+        james.clark@arm.com, john.garry@huawei.com, jolsa@kernel.org,
+        kjain@linux.ibm.com, lihuafei1@huawei.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-perf-users@vger.kernel.org, mark.rutland@arm.com,
+        mathieu.poirier@linaro.org, mingo@redhat.com, namhyung@kernel.org,
+        peterz@infradead.org, will@kernel.org
+Subject: Re: [PATCH v4 2/4] perf arm-spe: Use SPE data source for neoverse
+ cores
+Message-ID: <20220331121902.GA1704284@leoy-ThinkPad-X240s>
+References: <20220328130547.GA360814@leoy-ThinkPad-X240s>
+ <20220329143214.12707-1-alisaidi@amazon.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <3114596.1648729013.1@warthog.procyon.org.uk>
-Content-Transfer-Encoding: quoted-printable
-Date:   Thu, 31 Mar 2022 13:16:53 +0100
-Message-ID: <3114597.1648729013@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.4
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220329143214.12707-1-alisaidi@amazon.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Paolo Abeni <pabeni@redhat.com> wrote:
+Hi Ali,
 
-> It looks like we can add a couple of fixes tag to help stable teams:
-> =
+On Tue, Mar 29, 2022 at 02:32:14PM +0000, Ali Saidi wrote:
 
-> Fixes: d5953f6543b5 ("rxrpc: Allow security classes to give more info on=
- server keys")
+[...]
 
-Not this one.  This includes a check for the one op it adds:
+> > I still think we should consider to extend the memory levels to
+> > demonstrate clear momory hierarchy on Arm archs, I personally like the
+> > definitions for "PEER_CORE", "LCL_CLSTR", "PEER_CLSTR" and "SYS_CACHE",
+> > though these cache levels are not precise like L1/L2/L3 levels, they can
+> > help us to map very well for the cache topology on Arm archs and without
+> > any confusion.  We could take this as an enhancement if you don't want
+> > to bother the current patch set's upstreaming.
+> 
+> I'd like to do this in a separate patch, but I have one other proposal. The
+> Neoverse cores L2 is strictly inclusive of the L1, so even if it's in the L1,
+> it's also in the L2. Given that the Graviton systems and afaik the Ampere
+> systems don't have any cache between the L2 and the SLC, thus anything from
+> PEER_CORE, LCL_CLSTR, or PEER_CLSTR would hit in the L2, perhaps we
+> should just set L2 for these cases? German, are you good with this for now? 
 
-	+       if (sec && sec->describe_server_key)
-	+               sec->describe_server_key(key, m);
+If we use a single cache level (no matterh it's L2 or ANY_CACHE) for
+these data sources, it's hard for users to understand what's the cost
+for the memory operations.  So here I suggested for these new cache
+levels is not only about cache level, it's more about the information
+telling the memory operation's cost.
 
+[...]
 
-> Fixes: 12da59fcab5a ("xrpc: Hand server key parsing off to the security =
-class")
+> > Alternatively, I think it's good to pick up the patch series "perf c2c:
+> > Sort cacheline with all loads" [1], rather than relying on HITM tag, the
+> > patch series extends a new option "-d all" for perf c2c, so it displays
+> > the suspecious false sharing cache lines based on load/store ops and
+> > thread infos.  The main reason for holding on th patch set is due to we
+> > cannot verify it with Arm SPE at that time point, as the time being Arm
+> > SPE trace data was absent both store ops and data source packets.
+> 
+> Looking at examples I don't, at least from my system, data-source isn't set for
+> stores, only for loads.
 
-There's a missing 'r' in "rxrpc:" in the patch subject, but otherwise this=
- one
-looks like the right one.
+Ouch ...  If data source is not set for store operation, then all store
+samples will absent cache level info.  Or should we set ANY_CACHE as
+cache level for store operations?
+
+> > I perfer to set PERF_MEM_SNOOP_HIT flag in this patch set and we can
+> > upstream the patch series "perf c2c: Sort cacheline with all loads"
+> > (only needs upstreaming patches 01, 02, 03, 10, 11, the rest patches
+> > have been merged in the mainline kernel).
+> > 
+> > If this is fine for you, I can respin the patch series for "perf c2c".
+> > Or any other thoughts?
+> 
+> I think this is a nice option to have in the tool-box, but from my point of
+> view, I'd like someone who is familiar with c2c output on x86 to come to an
+> arm64 system and be able to zero in on a ping-ponging line like they would
+> otherwise. Highlighting a line that is moving between cores frequently which is
+> likely in the exclusive state by tagging it an HITM accomplishes this and will
+> make it easier to find these cases.  Your approach also has innaccurancies and
+> wouldn't be able to differentiate between core X accessing a line a lot followed
+> by core Y acessing a line alot vs the cores ping-ponging.  Yes, I agree that we
+> will "overcount" HITM, but I don't think this is particularly bad and it does
+> specifically highlight the core-2-core transfers that are likely a performance
+> issue easily and it will result in easier identification of areas of false or
+> true sharing and improve performance.
+
+I don't want to block this patch set by this part, and either I don't
+want to introduce any confusion for later users, especially I think
+users who in later use this tool but it's hard for them to be aware any
+assumptions in this discussion thread.  So two options would be fine
+for me:
+
+Option 1: if you and Arm mates can confirm that inaccuracy caused by
+setting HITM is low (e.g. 2%-3% inaccuracy that introduced by directly
+set HITM), I think this could be acceptable.  Otherwise, please
+consider option 2.
+
+Option 2: by default we set PERF_MEM_SNOOP_HIT flag since now actually
+we have no info to support HITM.  Then use a new patch to add an extra
+option (say '--coarse-hitm') for 'perf c2c' tool, a user can explictly
+specify this option for 'perf c2c' command; when a user specifies this
+option it means that the user understands and accepts inaccuracy by
+forcing to use PERF_MEM_SNOOP_HITM flag.  I think you could refer to
+the option '--stitch-lbr' for adding an option for 'perf c2c' tool.
 
 Thanks,
-David
-
+Leo
