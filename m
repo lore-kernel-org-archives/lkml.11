@@ -2,119 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D14CEC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 09:38:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D3B6C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 09:38:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232009AbiCaJkQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 05:40:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53698 "EHLO
+        id S234196AbiCaJka (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 05:40:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234164AbiCaJkG (ORCPT
+        with ESMTP id S229680AbiCaJk1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 05:40:06 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ED6D21832
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 02:38:19 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id h4so19691551edr.3
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 02:38:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language
-         :from:to:cc:references:in-reply-to:content-transfer-encoding;
-        bh=UCC75knalYGf1Q05cm9FuhkiW0Xs+WxJ5xH2vJmJaW0=;
-        b=DFNRt3TXZmQA3QwVuMf3QzdsrbODG7CPRt2CDkUf6ZaIn3+avsosj9vJY0ePDiwmzI
-         2VjGFevuXHFaCGP2sWEyPhs4Dax9F6noubihKjTFYfRQrr0uOYr9RdhyXSCtiYz2n/zg
-         vMsTu5fwIeFA39mXgnGgn1xLjEuJqBb7Rzo+DNR8WVqbJO+TrtprG4a1wtKrgYJtVamp
-         ylnGjTDA7b5Mqdn9sncEGDMhHyzSVHGGJQUkb6tUg0r1Fq8BzeF7lslGFveaD/rKSXQk
-         TvkOqIXiCnW17ub/GS+4yGGhSrHrizEk7Q47Epth/3Z5rtnQRy/yCHbaMaTGn04I+U5P
-         mEeg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:from:to:cc:references:in-reply-to
-         :content-transfer-encoding;
-        bh=UCC75knalYGf1Q05cm9FuhkiW0Xs+WxJ5xH2vJmJaW0=;
-        b=rcAwaYma6hpuIi4Xv+jvIxB6aegubxrUeisfKS6Hx15acZYsjAfeoeZpMD7QgywBjK
-         9mB1hz/MF/XJ/K6jNg5Of/lqezkCDhCAW6flihMkED20R8Q5xHHwC0Kn7qbhEycIXGwZ
-         3DpXSVgGlpXiwQ7w4zwXTBMnG7+lAEfH41X/8af/1kC1dh/nWH7ueH1g1IhYzn3eQPd/
-         GYJA+oVtriHsh84fyHVsugHRE98PuGBxDr6g1ucIIK9OEPSq1MsdU+agBuIjqmv/PRn0
-         N+AQH+c/PSZrdMHKBn1mn8MHYglk+gRdU1/WxPMiw4SlRFx6HeI4WDA3C6V6ro4npwHa
-         16lg==
-X-Gm-Message-State: AOAM530ZXXXro2T91UfMRipE3k1Cpp1HtSiWnM8VdsZMEuHa4KGCAgrk
-        nPzmDwmADbAwCCXryIzm+lPIUw==
-X-Google-Smtp-Source: ABdhPJy6mFYew0T0h5pUb+fhZ0Oecmvx8z0GwMXb+IYI5LGeFXXy5EqTpEJ9+txFsFhrL5oZO94rGQ==
-X-Received: by 2002:a05:6402:5215:b0:419:4c82:8f06 with SMTP id s21-20020a056402521500b004194c828f06mr15725638edd.275.1648719498039;
-        Thu, 31 Mar 2022 02:38:18 -0700 (PDT)
-Received: from [192.168.0.166] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id by4-20020a0564021b0400b00418fc410299sm10791232edb.62.2022.03.31.02.38.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 31 Mar 2022 02:38:17 -0700 (PDT)
-Message-ID: <5dea78a0-83ed-c016-35c6-637c8a445005@linaro.org>
-Date:   Thu, 31 Mar 2022 11:38:16 +0200
+        Thu, 31 Mar 2022 05:40:27 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.74])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B57D91704A;
+        Thu, 31 Mar 2022 02:38:40 -0700 (PDT)
+Received: from mail-lf1-f49.google.com ([209.85.167.49]) by
+ mrelayeu.kundenserver.de (mreue107 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1MPXQi-1nN7XR34t8-00Mdvn; Thu, 31 Mar 2022 11:37:03 +0200
+Received: by mail-lf1-f49.google.com with SMTP id d5so40435274lfj.9;
+        Thu, 31 Mar 2022 02:36:50 -0700 (PDT)
+X-Gm-Message-State: AOAM530XhI3aUDLE7WrTxLraYv8W2xQYM+4LWqCGYs1FijtafLVn5hjA
+        A03rFeTLMRbHbCPGVj9E2emEdf1PsQiuAiCk11Q=
+X-Google-Smtp-Source: ABdhPJyx6uQXMBvORHeb8NOlqEaHCi9NLjE3UiFEIE0bvdtwMjjaxo+soHSe4zhQsJUkrp9pp2oFUj5K/neYvZqbvSc=
+X-Received: by 2002:adf:e54e:0:b0:205:a9be:c66e with SMTP id
+ z14-20020adfe54e000000b00205a9bec66emr3326498wrm.192.1648717430754; Thu, 31
+ Mar 2022 02:03:50 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v5 2/2] dt-bindings: mmc: xenon: Convert to JSON schema
-Content-Language: en-US
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Chris Packham <chris.packham@alliedtelesis.co.nz>,
-        ulf.hansson@linaro.org, robh+dt@kernel.org, krzk+dt@kernel.org,
-        huziji@marvell.com, andrew@lunn.ch, gregory.clement@bootlin.com,
-        sebastian.hesselbarth@gmail.com
-Cc:     linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-References: <20220329220544.2132135-1-chris.packham@alliedtelesis.co.nz>
- <20220329220544.2132135-3-chris.packham@alliedtelesis.co.nz>
- <ad213f38-f0a2-6420-cfa0-a9ba7cb362d5@linaro.org>
-In-Reply-To: <ad213f38-f0a2-6420-cfa0-a9ba7cb362d5@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <cover.1648714851.git.qinjian@cqplus1.com> <fdd371ceb896ea17dde0e398a136fa9c895a521c.1648714851.git.qinjian@cqplus1.com>
+In-Reply-To: <fdd371ceb896ea17dde0e398a136fa9c895a521c.1648714851.git.qinjian@cqplus1.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Thu, 31 Mar 2022 11:03:34 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a0oTTLp8BB4uMMw2gdPnkMYutmrndLaQtp9g5GBom=aog@mail.gmail.com>
+Message-ID: <CAK8P3a0oTTLp8BB4uMMw2gdPnkMYutmrndLaQtp9g5GBom=aog@mail.gmail.com>
+Subject: Re: [PATCH v12 8/9] ARM: sunplus: Add initial support for Sunplus
+ SP7021 SoC
+To:     Qin Jian <qinjian@cqplus1.com>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        DTML <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:F/C6lkDrYOWhZjOjlOcFkGI+hNdyGHe5L/uI/zMKgAzYNEF9ns2
+ hCT0eleYvEA/CwvkTzqJS1EbMo6/rpBrXyECjqFdoKP1R8T8oS0qxescGO0m2xt9eN35G8V
+ sFVQiqGxUcY3bT/qomD3WGDMuMVaqoPFgsbQ86zRv5DChzTL37cQFFl9Te71jJ5OJHznSlR
+ /OQj/RKOAuCgIpsuj0oHQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:yJ1DIZJB1jo=:O8Y0M/XsHAkk5xWkBrq7uS
+ ldVsqPu60swmOTaHXvdEd54IKSdvt6EI9wDGqs6AyrRa0K8QPPf8ub/ot1vjoQI9YRslWIHNw
+ myDNj3Ztq1jFNjBcKbPOotok3YiBVF/LoFjoXk0E0k0MCleL5TFXYqepBNiuDeVNnfuv54Bfi
+ hepAjDvk3A5v5CX+pdIIT79MHhvAW6qSAIEQid2N5/HVOD81qZkQgE7gMS7hNF57D74rn3Saw
+ BwJyyc8/VTi09cvTK9prhhpfAPxzUUOVX2mqmEnfkaWUu69tmYvpIt06daUyjtPuzZzINZQPq
+ bCh384f6Gy6jafXzHvOmgmt/fU04VElSGFwQJfpCsADpGhZhaTg6Lj86lPwWr9R4cjxIs67lr
+ EBTTT88qhD2D5nBhMGm4H6MtVIEStzyEerdtKEOUUbEWDLB6CPH7J+0NdwOOs1upC5Sn50vgY
+ Lk+Q9EHzrSryLaJ3gjdbtb5jxWqSob+eqJ02AK/PTTJePyIAhTs6sKR4Cr6paK/TjRj8Es5UX
+ WBbsjw9MmaIyP0ssD9Jar4trKG2X8ZilWXWUx1zAH3qNg8mGeD5uEKJQD++EKFKqLyptCP4KV
+ Hz9XtasvVRYTXgynYznzogeuwR2XkIkKBBvFLwjIgzJ/wQJ5Q+UzDhNLM+mImvqaWJiydFPTI
+ M6Og1+X2IOiOFowgnkXCd3mJ2glfkYYCSUFOqBfRi7D8mcgBNzP/7BZh7TPJlPEkiC2fYIFPL
+ hRVHYpR8Ecj7YoP9Tc/tYp5kFmKWllbwb6d7J8DESM7HIqgRL+mlAxp6QKPD1kq8pApOkaxai
+ uIzRg3wZufucHKH3Zxoh2n7YPICaxwdRZR9F/jJCEkF7/IVE3LFjw4WKMoas1wms/TSejhWnE
+ VLpERja1lJxA+qTrk5jnEBQTeuAgwr/2SV231PKfpIQrTGzSYF66fsT0mjrM/Kjd4LRL2EA+e
+ QH9sXrstyFhHFaonAxLdwakNi7dJjnAE5padaFjzltk2FpGl2jaBUbk5WA+TiETbla83o5EqG
+ KD9xYRvy/c/bxZz5/BwpzjuukAN7MyEELFzy9oUj8lSInnMKjhw8C5y4f8k/DNsdfTxd8t3Yj
+ vSAU1/JoO7CqdejT9elARFDHSaCc8U2FEoO5inAa9xsMWt06WTauMKmRaAKLRb8FOi4buOVjo
+ FOMXExDZyTJyxzR1M8fmhTFTJNpzsxIbSsLJRBRG49iE9ltddKKFwBKFmliO6fc25pwClOfB7
+ 5BRNz/0JCTMD1ubNL
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 30/03/2022 09:20, Krzysztof Kozlowski wrote:
-> On 30/03/2022 00:05, Chris Packham wrote:
->> Convert the marvell,xenon-sdhci binding to JSON schema. Currently the
->> in-tree dts files don't validate because they use sdhci@ instead of mmc@
->> as required by the generic mmc-controller schema.
->>
->> The compatible "marvell,sdhci-xenon" was not documented in the old
->> binding but it accompanies the of "marvell,armada-3700-sdhci" in the
->> armada-37xx SoC dtsi so this combination is added to the new binding
->> document.
->>
->> Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
->> Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
->> ---
->>
->> Notes:
->>     Changes in v5:
->>     - Fix silly error in examples
->>     Changes in v4:
->>     - Add review from Krzysztof
->>     - Squash in addition of marvell,sdhci-xenon with an explanation in the
->>       commit message
->>     Changes in v3:
->>     - Don't accept ap807 without ap806
->>     - Add ref: string for pad-type
->>     Changes in v2:
->>     - Update MAINTAINERS entry
->>     - Incorporate feedback from Krzysztof
->>
->>  .../bindings/mmc/marvell,xenon-sdhci.txt      | 173 -----------
->>  .../bindings/mmc/marvell,xenon-sdhci.yaml     | 275 ++++++++++++++++++
->>  MAINTAINERS                                   |   2 +-
->>  3 files changed, 276 insertions(+), 174 deletions(-)
->>  delete mode 100644 Documentation/devicetree/bindings/mmc/marvell,xenon-sdhci.txt
->>  create mode 100644 Documentation/devicetree/bindings/mmc/marvell,xenon-sdhci.yaml
->>
-> 
-> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> 
+On Thu, Mar 31, 2022 at 10:29 AM Qin Jian <qinjian@cqplus1.com> wrote:
+>
+> This patch aims to add an initial support for Sunplus SP7021 SoC.
+>
+> Signed-off-by: Qin Jian <qinjian@cqplus1.com>
 
-Oh, this should be only one review tag. Preferably @linaro.org. Sorry
-for the noise.
 
-Best regards,
-Krzysztof
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
