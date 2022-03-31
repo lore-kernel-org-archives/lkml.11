@@ -2,104 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F260C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 16:29:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9802AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 16:32:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239961AbiCaQaq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 12:30:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53068 "EHLO
+        id S239976AbiCaQec (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 12:34:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233616AbiCaQao (ORCPT
+        with ESMTP id S239969AbiCaQe3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 12:30:44 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A383F15E8A6;
-        Thu, 31 Mar 2022 09:28:56 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: nicolas)
-        with ESMTPSA id 6EEDF1F46FA4
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1648744135;
-        bh=9kOol/pk8ITM0N6OoVh7frX+PTCftgS26qbZZUBc6BM=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=jw953xdZhMbAkbZPH6IqmynwoD7Eu2P0zbuD6vaBoXby+hJQWepQZXJLcmaFAWGrC
-         iSbeNcH5m1VND0+q4p5lDJVXRBG6CILyc/Jx+niFK5wasHXCcTD7VjzITY1ORQrobK
-         GN7J+NFezIAFbGf66sexgwcJGz5eVKpCb0vL0j7OPdZ4khBkXUcHF5/qOVBusOB1qb
-         6EI6+WAeXZ7kLVhZbmRfAf5JMY6stxCXd3qBSrvRPIl4vV5PoCI7By9Wb25rW4V6PP
-         F51UB6xPwPT/UMRa0ItGtCJKp+tvoxtY9Xx/PDurMLMlWD9k5Kat5Z4SQPXs3cvMBO
-         oDt+FzQjhjjww==
-Message-ID: <14e0615df2e1f6ccb178558b16b13f0ccdc782f5.camel@collabora.com>
-Subject: Re: [PATCH v1 03/24] media: h264: Avoid wrapping long_term_frame_idx
-From:   Nicolas Dufresne <nicolas.dufresne@collabora.com>
-To:     Sebastian Fricke <sebastian.fricke@collabora.com>
-Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>, kernel@collabora.com,
-        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Thu, 31 Mar 2022 12:28:44 -0400
-In-Reply-To: <20220329083549.2msls7obppsspvgk@basti-XPS-13-9310>
-References: <20220328195936.82552-1-nicolas.dufresne@collabora.com>
-         <20220328195936.82552-4-nicolas.dufresne@collabora.com>
-         <20220329083549.2msls7obppsspvgk@basti-XPS-13-9310>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.0 (3.44.0-1.fc36) 
+        Thu, 31 Mar 2022 12:34:29 -0400
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D57751FF433
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 09:32:41 -0700 (PDT)
+Received: by mail-lf1-x136.google.com with SMTP id t25so127926lfg.7
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 09:32:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pensando.io; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=b5EuL+gbnNFQ87YRYoAKBwPNNldsvEmstfa9tdC1Qjw=;
+        b=sxdbgUE2Kaq4uw7gb73QHsWD6/kz3qaXOp4jtlQQ8zCWOGZchRXoS9h1kgGVgmwHMi
+         0ovyZTnHlEv8jIe/t0cC86uBkO99V4EO8Uz5f6uPSjIGlmCW5dfk1M/WMMgmw59b/Vmr
+         UaAH/7kYp3jq0L4a5oBQkDjGGm033na3bYjkJ0PSfFUGgdKTwJTImQPUAtxcu7+XlXvz
+         2OjxZNPuXaMG+w58a5/U0wluu/5+wyuuUTsalUysgAJrKHCGhlMohRLo/Ao6Rozoy4M7
+         vVa7GkNVeu1ikZU3b0NanTzbgz4haCidvDdbWRXlged7lJSNBHh2Wh1Z5C1S+UV2V2iS
+         oshA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=b5EuL+gbnNFQ87YRYoAKBwPNNldsvEmstfa9tdC1Qjw=;
+        b=qG9eUuNW6djChbqPB37lcqmFR4CQ8c/J86VmtXpw/74iVFR+4mkIpeCEzXdokHKoE/
+         LKm8ajjFyAMgQEwn745M+8+PqlnmCg4z1VgdwQjqHBoaKZdaZARJsRGWBusDLNDFa0Ij
+         cS/xeA4LpoyS6dAPNi44IZit1E3gkTyyNsDLUDNszkZHDVICzQ/UvVjtDDt8ZtZgsQa+
+         RP7QWAW2MryMAlsNpMQNnfkGvW5EtJxrguTpJm5Pjk1nLch3Ce8ly/sfC4gp4I/V/sEP
+         Ceh9qF5hiT2npuvHNDLUNG0LkPOQB5cAV6oPcHXcs70GNiUC6OGGTbBnkdrMcZDF4lRq
+         CrIA==
+X-Gm-Message-State: AOAM533I60CRv/VDTRCLswCAl0IIPw96hEpiLB1j64oVmcEfE9pfvU4v
+        HJbhLiETSb5C5pf2/oOf7dMymONxGhDTrJZbCg8qfg==
+X-Google-Smtp-Source: ABdhPJzDKroUOn9WqA656ToUno9/DwyrFz+qIKbK639QDjkL6PIrlSnozMRN4BUf4+XJE6GzN91N3kg09SPyqja93/0=
+X-Received: by 2002:ac2:4ed4:0:b0:44a:212e:fa1a with SMTP id
+ p20-20020ac24ed4000000b0044a212efa1amr11109703lfr.372.1648744360087; Thu, 31
+ Mar 2022 09:32:40 -0700 (PDT)
 MIME-Version: 1.0
+References: <20220331105005.2580771-1-ivecera@redhat.com> <YkWpNVXYEBo/u3dm@boxer>
+ <YkWp5JJ9Sp6UCTw7@boxer>
+In-Reply-To: <YkWp5JJ9Sp6UCTw7@boxer>
+From:   Brett Creeley <brett@pensando.io>
+Date:   Thu, 31 Mar 2022 09:32:31 -0700
+Message-ID: <CAFWUkrTzE87bduD431nu11biHi78XFitUWQfiwcU6_4UPU9FBg@mail.gmail.com>
+Subject: Re: [Intel-wired-lan] [PATCH net] ice: Fix incorrect locking in ice_vc_process_vf_msg()
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Cc:     Ivan Vecera <ivecera@redhat.com>, netdev@vger.kernel.org,
+        "moderated list:INTEL ETHERNET DRIVERS" 
+        <intel-wired-lan@lists.osuosl.org>, mschmidt@redhat.com,
+        open list <linux-kernel@vger.kernel.org>, poros@redhat.com,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>, jacob.e.keller@intel.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le mardi 29 mars 2022 =C3=A0 10:35 +0200, Sebastian Fricke a =C3=A9crit=C2=
-=A0:
-> On 28.03.2022 15:59, Nicolas Dufresne wrote:
-> > For long term reference, frame_num is set to long_term_frame_idx which
->=20
-> s/reference/references/
->=20
-> > does not require wrapping. This if fixed by observation, no directly
->=20
-> s/This if/This is/
->=20
-> > related issue have been found yet.
-> >=20
-> > Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
-> Reviewed-by: Sebastian Fricke <sebastian.fricke@collabora.com>
->=20
-> > ---
-> > drivers/media/v4l2-core/v4l2-h264.c | 4 +++-
-> > 1 file changed, 3 insertions(+), 1 deletion(-)
-> >=20
-> > diff --git a/drivers/media/v4l2-core/v4l2-h264.c b/drivers/media/v4l2-c=
-ore/v4l2-h264.c
-> > index 8d750ee69e74..aebed1cbe05a 100644
-> > --- a/drivers/media/v4l2-core/v4l2-h264.c
-> > +++ b/drivers/media/v4l2-core/v4l2-h264.c
-> > @@ -57,8 +57,10 @@ v4l2_h264_init_reflist_builder(struct v4l2_h264_refl=
-ist_builder *b,
-> > 		 * '8.2.4.1 Decoding process for picture numbers' of the spec.
-> > 		 * TODO: This logic will have to be adjusted when we start
-> > 		 * supporting interlaced content.
->=20
-> As you change the logic can't you remove the TODO comment now?
+On Thu, Mar 31, 2022 at 6:17 AM Maciej Fijalkowski
+<maciej.fijalkowski@intel.com> wrote:
+>
+> On Thu, Mar 31, 2022 at 03:14:32PM +0200, Maciej Fijalkowski wrote:
+> > On Thu, Mar 31, 2022 at 12:50:04PM +0200, Ivan Vecera wrote:
+> > > Usage of mutex_trylock() in ice_vc_process_vf_msg() is incorrect
+> > > because message sent from VF is ignored and never processed.
+> > >
+> > > Use mutex_lock() instead to fix the issue. It is safe because this
+> >
+> > We need to know what is *the* issue in the first place.
+> > Could you please provide more context what is being fixed to the readers
+> > that don't have an access to bugzilla?
+> >
+> > Specifically, what is the case that ignoring a particular message when
+> > mutex is already held is a broken behavior?
+>
+> Uh oh, let's
+> CC: Brett Creeley <brett@pensando.io>
 
-Not yet, as I'm not fixing it here. Its removed in:
+My concern here is that we don't want to handle messages
+from the context of the "previous" VF configuration if that
+makes sense.
 
-[PATCH v1 05/24] media: h264: Store all fields into the unordered list
+It might be best to grab the cfg_lock before doing any
+message/VF validating in ice_vc_process_vf_msg() to
+make sure all of the checks are done under the cfg_lock.
 
->=20
-> > +		 * For long term reference, frame_num is set to
->=20
-> s/reference/references/
->=20
-> Greetings,
-> Sebastian
->=20
-> > +		 * long_term_frame_idx which requires no wrapping.
-> > 		 */
-> > -		if (dpb[i].frame_num > cur_frame_num)
-> > +		if (!b->refs[i].longterm && dpb[i].frame_num > cur_frame_num)
-> > 			b->refs[i].frame_num =3D (int)dpb[i].frame_num -
-> > 					       max_frame_num;
-> > 		else
-> > --=20
-> > 2.34.1
-> >=20
+CC'ing Jake so he can provide some input as
+well.
 
+>
+> >
+> > > mutex is used to prevent races between VF related NDOs and
+> > > handlers processing request messages from VF and these handlers
+> > > are running in ice_service_task() context.
+> > >
+> > > Fixes: e6ba5273d4ed ("ice: Fix race conditions between virtchnl handling and VF ndo ops")
+> > > Signed-off-by: Ivan Vecera <ivecera@redhat.com>
+> > > ---
+> > >  drivers/net/ethernet/intel/ice/ice_virtchnl.c | 10 +---------
+> > >  1 file changed, 1 insertion(+), 9 deletions(-)
+> > >
+> > > diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl.c b/drivers/net/ethernet/intel/ice/ice_virtchnl.c
+> > > index 3f1a63815bac..9bf5bb008128 100644
+> > > --- a/drivers/net/ethernet/intel/ice/ice_virtchnl.c
+> > > +++ b/drivers/net/ethernet/intel/ice/ice_virtchnl.c
+> > > @@ -3660,15 +3660,7 @@ void ice_vc_process_vf_msg(struct ice_pf *pf, struct ice_rq_event_info *event)
+> > >             return;
+> > >     }
+> > >
+> > > -   /* VF is being configured in another context that triggers a VFR, so no
+> > > -    * need to process this message
+> > > -    */
+> > > -   if (!mutex_trylock(&vf->cfg_lock)) {
+> > > -           dev_info(dev, "VF %u is being configured in another context that will trigger a VFR, so there is no need to handle this message\n",
+> > > -                    vf->vf_id);
+> > > -           ice_put_vf(vf);
+> > > -           return;
+> > > -   }
+> > > +   mutex_lock(&vf->cfg_lock);
+> > >
+> > >     switch (v_opcode) {
+> > >     case VIRTCHNL_OP_VERSION:
+> > > --
+> > > 2.34.1
+> > >
+> > > _______________________________________________
+> > > Intel-wired-lan mailing list
+> > > Intel-wired-lan@osuosl.org
+> > > https://lists.osuosl.org/mailman/listinfo/intel-wired-lan
