@@ -2,136 +2,286 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3BBFC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 09:26:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 606CAC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 09:27:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233861AbiCaJ23 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 05:28:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34648 "EHLO
+        id S233890AbiCaJ24 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 05:28:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232615AbiCaJ20 (ORCPT
+        with ESMTP id S233872AbiCaJ2w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 05:28:26 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F4E71FDFE7;
-        Thu, 31 Mar 2022 02:26:39 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id p15so46767194ejc.7;
-        Thu, 31 Mar 2022 02:26:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=BQzqug6TtJon58Y75oLbeWdZudSqnMYJcFPXb4iBlFM=;
-        b=RlKkxDZ70JBAkNTyPnOmO2IvQitrUXmpPnHUjAl1X+RgZ2E0E5pAlt37R+CO+yVU6h
-         YuPM/Thd5c9b8PPpMXlIkT4L1vyo2u5dWryt14VnD0U+OpabTSX26POTY5nM0i5iC07t
-         F/dLI6CVKSPNHYQUm8MhnUbeucrduAE2MEp0RYa+UxA5VdPmhbUBrHSc9GowDatGv9na
-         0OIa8gYw6iAvacFzrGFuygF9+R3oVaACUExHX1pdTZQmYYiV9Ii9H+dQHVDDVmySH5P8
-         SAvjinnyqlmdwl9Xt90plyNjgKo3tfFDFdXSJyJuQLPinVVBi+31/X1BIhaMLNFj/UUn
-         0wJQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=BQzqug6TtJon58Y75oLbeWdZudSqnMYJcFPXb4iBlFM=;
-        b=Dy8LUGyOF2Z0adRqBcVT4HK5FCAhjw9ZCY5orFtSHrS2SguZdXVpNyCO0CMn1YX9bb
-         cS4DYmFoDVA0C9/xRths9bp7/pOUkeV5zaEerSViMPnIj7oWrMj4MRTjsFmOMRJDMt0R
-         P1BTnntneJlDKxzuMcJcRHHpqIfru3iwn/SiNm6GsRfXkdbnl+J8it6qtkbUpmPy4LmL
-         vgyP4Y84Cp2JMShTiTK8ZwEfN8P/MSkz/ob1TS4kDDH0kRQZqHWs4MYxSwgg0LYxsUcU
-         lOZpLN8ByhCVuT+ry00NwWpGVvp7/152MlK81GE+P8lSC9dM5BJzj6UW2Ie6D+yYjXde
-         57wQ==
-X-Gm-Message-State: AOAM531NUmDJi7sYqgpoLMuKy5zldV6Xy0Qm8vqFA8aeEQJJsjWgqpK2
-        u625G0oAJzKc2cXw779ymL7/zxO3gyU+3g==
-X-Google-Smtp-Source: ABdhPJwnRuwMDTXeNBMaZuBHYcEVJ1bB/yBLYHXEvwulY4XOI28kspERTlLsQ8Sfr7h8qT1wkVOxSw==
-X-Received: by 2002:a17:906:144e:b0:6ce:6126:6a6d with SMTP id q14-20020a170906144e00b006ce61266a6dmr4070102ejc.662.1648718797808;
-        Thu, 31 Mar 2022 02:26:37 -0700 (PDT)
-Received: from smtpclient.apple (i130160.upc-i.chello.nl. [62.195.130.160])
-        by smtp.gmail.com with ESMTPSA id y26-20020a1709063a9a00b006e0c272e263sm6764346ejd.71.2022.03.31.02.26.36
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 31 Mar 2022 02:26:37 -0700 (PDT)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.80.82.1.1\))
-Subject: Re: [PATCH] taprio: replace usage of found with dedicated list
- iterator variable
-From:   Jakob Koschel <jakobkoschel@gmail.com>
-In-Reply-To: <87fsmz3uc6.fsf@intel.com>
-Date:   Thu, 31 Mar 2022 11:26:36 +0200
-Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
+        Thu, 31 Mar 2022 05:28:52 -0400
+Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [217.70.183.196])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 868211FDFF0;
+        Thu, 31 Mar 2022 02:27:03 -0700 (PDT)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id EB727E0004;
+        Thu, 31 Mar 2022 09:27:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1648718822;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=nRN8rAoSulvBgbxXwy3jJyKItub0BlzV5SCreqaglg8=;
+        b=TGBtJqjSaZbGSLLF2cTEmZtPnb7adUzM9yyG3Ii/aztqT7y3//d3bRp2fW/a5MKW1gWvJ/
+        Pses9BikYicUPSwkDbCnZwyLeHO1tfKYGqya+6k7XXt40o45v07CtkEQSbqi6Z6G9ryUix
+        b2w/2SFiqosscTMMN1/SxXorQMKHCT4/LaiOJHmree1JDzkK4hOybnpDX9f56bxeqC3d8/
+        ucrukzyKPXH66AaNd2xr15TnpQDnXIp9gEJo2pn+ZBIr8HviGv7fxxmLcDrPeGLxpF0er8
+        o84mpRscTF032uKwQG2U7iza0CbuUQ5pj2YL0nWSVj/3uX1C9Ls5O0/hQ84zwQ==
+From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <A19238DC-24F8-4BD9-A6FA-C8019596F4A6@gmail.com>
-References: <20220324072607.63594-1-jakobkoschel@gmail.com>
- <87fsmz3uc6.fsf@intel.com>
-To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>
-X-Mailer: Apple Mail (2.3696.80.82.1.1)
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Allan Nielsen <allan.nielsen@microchip.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
+Subject: [RFC PATCH net-next v2 01/11] net: mdio: fwnode: import of_mdiobus_register() and needed functions
+Date:   Thu, 31 Mar 2022 11:25:23 +0200
+Message-Id: <20220331092533.348626-2-clement.leger@bootlin.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220331092533.348626-1-clement.leger@bootlin.com>
+References: <20220331092533.348626-1-clement.leger@bootlin.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Import of_mdiobus_register and needed functions to allow visualizing a
+pretty diff of the modifications that are going to be done for fwnode
+support. While importing, did a few modifications to ensure it compiles
+correctly:
+- Renamed of_mdiobus_register() to fwnode_mdiobus_register()
+- Renamed of_mdiobus_child_is_phy() to fwnode_mdiobus_child_is_phy()
+- Call fwnode_get_phy_id() instead of of_get_phy_id() which is already
+  a wrapper ended up calling fwnode_get_phy_id().
 
+Signed-off-by: Clément Léger <clement.leger@bootlin.com>
+---
+ drivers/net/mdio/fwnode_mdio.c | 195 +++++++++++++++++++++++++++++++++
+ 1 file changed, 195 insertions(+)
 
-> On 31. Mar 2022, at 01:15, Vinicius Costa Gomes =
-<vinicius.gomes@intel.com> wrote:
->=20
-> Hi,
->=20
-> Jakob Koschel <jakobkoschel@gmail.com> writes:
->=20
->> To move the list iterator variable into the list_for_each_entry_*()
->> macro in the future it should be avoided to use the list iterator
->> variable after the loop body.
->>=20
->> To *never* use the list iterator variable after the loop it was
->> concluded to use a separate iterator variable instead of a
->> found boolean [1].
->>=20
->> This removes the need to use a found variable and simply checking if
->> the variable was set, can determine if the break/goto was hit.
->>=20
->> Link: =
-https://lore.kernel.org/all/CAHk-=3DwgRr_D8CB-D9Kg-c=3DEHreAsk5SqXPwr9Y7k9=
-sA6cWXJ6w@mail.gmail.com/
->> Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
->> ---
->=20
-> Code wise, patch look good.
->=20
-> Just some commit style/meta comments:
-> - I think that it would make more sense that these were two separate
-> patches, but I haven't been following the fallout of the discussion
-> above to know what other folks are doing;
-
-Thanks for the input, I'll split them up.
-
-> - Please use '[PATCH net-next]' in the subject prefix of your =
-patch(es)
-> when you next propose this (net-next is closed for new submissions for
-> now, it should open again in a few days);
-
-I'll include that prefix, thanks.
-
-Paolo Abeni [CC'd] suggested to bundle all net-next patches in one =
-series [1].
-If that's the general desire I'm happy to do that.
-
-
-[1] =
-https://lore.kernel.org/linux-kernel/7393b673c626fd75f2b4f8509faa5459254fb=
-87c.camel@redhat.com/
-
->=20
->=20
-> Cheers,
-> --=20
-> Vinicius
+diff --git a/drivers/net/mdio/fwnode_mdio.c b/drivers/net/mdio/fwnode_mdio.c
+index 1becb1a731f6..a5a6fd9ebd94 100644
+--- a/drivers/net/mdio/fwnode_mdio.c
++++ b/drivers/net/mdio/fwnode_mdio.c
+@@ -9,8 +9,11 @@
+ #include <linux/acpi.h>
+ #include <linux/fwnode_mdio.h>
+ #include <linux/of.h>
++#include <linux/of_mdio.h>
+ #include <linux/phy.h>
+ 
++#define DEFAULT_GPIO_RESET_DELAY	10	/* in microseconds */
++
+ MODULE_AUTHOR("Calvin Johnson <calvin.johnson@oss.nxp.com>");
+ MODULE_LICENSE("GPL");
+ 
+@@ -142,3 +145,195 @@ int fwnode_mdiobus_register_phy(struct mii_bus *bus,
+ 	return 0;
+ }
+ EXPORT_SYMBOL(fwnode_mdiobus_register_phy);
++
++static int of_mdiobus_register_device(struct mii_bus *mdio,
++				      struct device_node *child, u32 addr)
++{
++	struct fwnode_handle *fwnode = of_fwnode_handle(child);
++	struct mdio_device *mdiodev;
++	int rc;
++
++	mdiodev = mdio_device_create(mdio, addr);
++	if (IS_ERR(mdiodev))
++		return PTR_ERR(mdiodev);
++
++	/* Associate the OF node with the device structure so it
++	 * can be looked up later.
++	 */
++	fwnode_handle_get(fwnode);
++	device_set_node(&mdiodev->dev, fwnode);
++
++	/* All data is now stored in the mdiodev struct; register it. */
++	rc = mdio_device_register(mdiodev);
++	if (rc) {
++		mdio_device_free(mdiodev);
++		of_node_put(child);
++		return rc;
++	}
++
++	dev_dbg(&mdio->dev, "registered mdio device %pOFn at address %i\n",
++		child, addr);
++	return 0;
++}
++
++/* The following is a list of PHY compatible strings which appear in
++ * some DTBs. The compatible string is never matched against a PHY
++ * driver, so is pointless. We only expect devices which are not PHYs
++ * to have a compatible string, so they can be matched to an MDIO
++ * driver.  Encourage users to upgrade their DT blobs to remove these.
++ */
++static const struct of_device_id whitelist_phys[] = {
++	{ .compatible = "brcm,40nm-ephy" },
++	{ .compatible = "broadcom,bcm5241" },
++	{ .compatible = "marvell,88E1111", },
++	{ .compatible = "marvell,88e1116", },
++	{ .compatible = "marvell,88e1118", },
++	{ .compatible = "marvell,88e1145", },
++	{ .compatible = "marvell,88e1149r", },
++	{ .compatible = "marvell,88e1310", },
++	{ .compatible = "marvell,88E1510", },
++	{ .compatible = "marvell,88E1514", },
++	{ .compatible = "moxa,moxart-rtl8201cp", },
++	{}
++};
++
++/*
++ * Return true if the child node is for a phy. It must either:
++ * o Compatible string of "ethernet-phy-idX.X"
++ * o Compatible string of "ethernet-phy-ieee802.3-c45"
++ * o Compatible string of "ethernet-phy-ieee802.3-c22"
++ * o In the white list above (and issue a warning)
++ * o No compatibility string
++ *
++ * A device which is not a phy is expected to have a compatible string
++ * indicating what sort of device it is.
++ */
++bool fwnode_mdiobus_child_is_phy(struct device_node *child)
++{
++	u32 phy_id;
++
++	if (of_get_phy_id(child, &phy_id) != -EINVAL)
++		return true;
++
++	if (of_device_is_compatible(child, "ethernet-phy-ieee802.3-c45"))
++		return true;
++
++	if (of_device_is_compatible(child, "ethernet-phy-ieee802.3-c22"))
++		return true;
++
++	if (of_match_node(whitelist_phys, child)) {
++		pr_warn(FW_WARN
++			"%pOF: Whitelisted compatible string. Please remove\n",
++			child);
++		return true;
++	}
++
++	if (!of_find_property(child, "compatible", NULL))
++		return true;
++
++	return false;
++}
++EXPORT_SYMBOL(fwnode_mdiobus_child_is_phy);
++
++/**
++ * of_mdiobus_register - Register mii_bus and create PHYs from the device tree
++ * @mdio: pointer to mii_bus structure
++ * @np: pointer to device_node of MDIO bus.
++ *
++ * This function registers the mii_bus structure and registers a phy_device
++ * for each child node of @np.
++ */
++int fwnode_mdiobus_register(struct mii_bus *mdio, struct device_node *np)
++{
++	struct device_node *child;
++	bool scanphys = false;
++	int addr, rc;
++
++	if (!np)
++		return mdiobus_register(mdio);
++
++	/* Do not continue if the node is disabled */
++	if (!of_device_is_available(np))
++		return -ENODEV;
++
++	/* Mask out all PHYs from auto probing.  Instead the PHYs listed in
++	 * the device tree are populated after the bus has been registered */
++	mdio->phy_mask = ~0;
++
++	device_set_node(&mdio->dev, of_fwnode_handle(np));
++
++	/* Get bus level PHY reset GPIO details */
++	mdio->reset_delay_us = DEFAULT_GPIO_RESET_DELAY;
++	of_property_read_u32(np, "reset-delay-us", &mdio->reset_delay_us);
++	mdio->reset_post_delay_us = 0;
++	of_property_read_u32(np, "reset-post-delay-us", &mdio->reset_post_delay_us);
++
++	/* Register the MDIO bus */
++	rc = mdiobus_register(mdio);
++	if (rc)
++		return rc;
++
++	/* Loop over the child nodes and register a phy_device for each phy */
++	for_each_available_child_of_node(np, child) {
++		addr = of_mdio_parse_addr(&mdio->dev, child);
++		if (addr < 0) {
++			scanphys = true;
++			continue;
++		}
++
++		if (of_mdiobus_child_is_phy(child))
++			rc = fwnode_mdiobus_register_phy(mdio,
++							 of_fwnode_handle(child),
++							 addr);
++		else
++			rc = of_mdiobus_register_device(mdio, child, addr);
++
++		if (rc == -ENODEV)
++			dev_err(&mdio->dev,
++				"MDIO device at address %d is missing.\n",
++				addr);
++		else if (rc)
++			goto unregister;
++	}
++
++	if (!scanphys)
++		return 0;
++
++	/* auto scan for PHYs with empty reg property */
++	for_each_available_child_of_node(np, child) {
++		/* Skip PHYs with reg property set */
++		if (of_find_property(child, "reg", NULL))
++			continue;
++
++		for (addr = 0; addr < PHY_MAX_ADDR; addr++) {
++			/* skip already registered PHYs */
++			if (mdiobus_is_registered_device(mdio, addr))
++				continue;
++
++			/* be noisy to encourage people to set reg property */
++			dev_info(&mdio->dev, "scan phy %pOFn at address %i\n",
++				 child, addr);
++
++			if (of_mdiobus_child_is_phy(child)) {
++				/* -ENODEV is the return code that PHYLIB has
++				 * standardized on to indicate that bus
++				 * scanning should continue.
++				 */
++				rc = fwnode_mdiobus_register_phy(mdio,
++								 of_fwnode_handle(child),
++								 addr);
++				if (!rc)
++					break;
++				if (rc != -ENODEV)
++					goto unregister;
++			}
++		}
++	}
++
++	return 0;
++
++unregister:
++	mdiobus_unregister(mdio);
++	return rc;
++}
++EXPORT_SYMBOL(fwnode_mdiobus_register);
+-- 
+2.34.1
 
