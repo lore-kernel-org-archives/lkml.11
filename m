@@ -2,117 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDB25C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 11:09:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 305AEC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 11:10:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234948AbiCaLLg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 07:11:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34054 "EHLO
+        id S234959AbiCaLLz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 07:11:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233340AbiCaLLd (ORCPT
+        with ESMTP id S233340AbiCaLLy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 07:11:33 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9202C33884;
-        Thu, 31 Mar 2022 04:09:46 -0700 (PDT)
-Received: from mail-wm1-f47.google.com ([209.85.128.47]) by
- mrelayeu.kundenserver.de (mreue010 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1MmDVA-1oHm4e41eC-00iCg9; Thu, 31 Mar 2022 13:09:45 +0200
-Received: by mail-wm1-f47.google.com with SMTP id n63-20020a1c2742000000b0038d0c31db6eso1795830wmn.1;
-        Thu, 31 Mar 2022 04:09:44 -0700 (PDT)
-X-Gm-Message-State: AOAM530INeJhUyv5hTt1xlNCMP/TyN4P4MdYtbgp3t0YnqZOIslYlVKg
-        Rl4p27tp/QYUl7zF9X660PPR6EEfdc+Xu894ZDQ=
-X-Google-Smtp-Source: ABdhPJwswRRqbDwMtkp76KOHqIEK5fi1EuTDxnoFxe5vzZsgSg3vLorXuscXGtdUiF56ngc1yrWuHFdJZZOovE9Zm/8=
-X-Received: by 2002:a05:600c:1e0b:b0:38c:9ac5:b486 with SMTP id
- ay11-20020a05600c1e0b00b0038c9ac5b486mr3913978wmb.71.1648718552480; Thu, 31
- Mar 2022 02:22:32 -0700 (PDT)
+        Thu, 31 Mar 2022 07:11:54 -0400
+Received: from mail-qv1-xf35.google.com (mail-qv1-xf35.google.com [IPv6:2607:f8b0:4864:20::f35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4D9E33884;
+        Thu, 31 Mar 2022 04:10:05 -0700 (PDT)
+Received: by mail-qv1-xf35.google.com with SMTP id hu11so19433319qvb.7;
+        Thu, 31 Mar 2022 04:10:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=LZri1QmIwLg+DYDniyH354wuZz2jQq8wnmWC2f+UvNk=;
+        b=CGA6tXQogr4P9WKRr+lZhqp9py7WDO3T3bGcSQVl7FIa5pnDzCYtWC4wHcwuV2hTV1
+         +ZDKRpFgLDI9okt/43VRNMa5ebU4XgNYZ6jsAPb77ZpH3NPV/reG8xbY/OKpoeqtyiNK
+         TYl69QUr2tU6KLvcA/9p5nU8OXC934lN9frhCpTckQkAJIPnLegbA2D85x/k+qJtdraJ
+         gJyjzUrpbLdIdm1ykbgclDVuFm2dFAiBCHNlyDtKF0Sa6KNrUMk1YwSWIyiY9mk2EMgZ
+         +6vEotV7tobYGVQULCJMTDbelNBDszml1TuvdqJvx7opxStcOyAMWjRijl4ousBWvBc1
+         Dk7w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=LZri1QmIwLg+DYDniyH354wuZz2jQq8wnmWC2f+UvNk=;
+        b=JeKZdcCdv8jdWPMQv7Qx+CBPT1klhoz4fwCzmRfqS90jdYYPtv/E9/km2YHSv5cr5L
+         ll4rRmsTip7DhJBW+T6qTPqpzWTvfLcXMVUDlcakupkGGCDw7/T5oE6oQ+PKJ8cpB891
+         FaEkgzOgV62ttN6J73cg1RWhb84EwLcW8e9rk93FROFV6Uziv6XtdnwRzJTCz150z8sx
+         3llfxMk+Em5tzYatCrWZOtJFSPZNnws4YrZrGW29mSgeEFupXPhX8ijrBX5/QfWyPi5q
+         LPmjRbiWrtg8NCRK4gOGVrUsTruc7LpNThjYueW+zzLC+IMNnewynDAghDD7KFu91R4Z
+         SbWg==
+X-Gm-Message-State: AOAM530GrvSs+50N9wwxYFbClEYyBYPv3CU7S9kpmAZw5RXgHKD+WE6w
+        Zj/nvJn0NXTMf47lOKYjjqo=
+X-Google-Smtp-Source: ABdhPJwbMO7Mb+rcF4NaO4plvZQNRBr0+sy+UcxUK021eXZb5rKWyrXmPYZFiMSqbvKzXOVrKS/fcQ==
+X-Received: by 2002:a05:6214:d4e:b0:441:18d8:8366 with SMTP id 14-20020a0562140d4e00b0044118d88366mr3464915qvr.46.1648725004854;
+        Thu, 31 Mar 2022 04:10:04 -0700 (PDT)
+Received: from [192.168.1.145] ([207.188.167.132])
+        by smtp.gmail.com with ESMTPSA id z203-20020a3765d4000000b0067b48d49c65sm12142999qkb.95.2022.03.31.04.10.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 31 Mar 2022 04:10:03 -0700 (PDT)
+Message-ID: <258d7152-326e-4f0a-859f-5864f01fd212@gmail.com>
+Date:   Thu, 31 Mar 2022 13:09:59 +0200
 MIME-Version: 1.0
-References: <cover.1648714851.git.qinjian@cqplus1.com> <fe4f4c3b0c768d1cd66fb648d74fa302e86787c0.1648714851.git.qinjian@cqplus1.com>
-In-Reply-To: <fe4f4c3b0c768d1cd66fb648d74fa302e86787c0.1648714851.git.qinjian@cqplus1.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Thu, 31 Mar 2022 11:22:16 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a0OGM4aiaE2Nfc=7XGkGwAbnB99-j3PhVUmuA1z2FWeKg@mail.gmail.com>
-Message-ID: <CAK8P3a0OGM4aiaE2Nfc=7XGkGwAbnB99-j3PhVUmuA1z2FWeKg@mail.gmail.com>
-Subject: Re: [PATCH v12 5/9] clk: Add Sunplus SP7021 clock driver
-To:     Qin Jian <qinjian@cqplus1.com>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v16 2/8] dt-bindings: arm: mediatek: mmsys: add power and
+ gce properties
+Content-Language: en-US
+To:     "jason-jh.lin" <jason-jh.lin@mediatek.com>,
         Rob Herring <robh+dt@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
+        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
         Philipp Zabel <p.zabel@pengutronix.de>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        DTML <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:EZyyEWyEMOU9SLsFVTSJz5+xXPGenqIY6YVzxSAVJPwSyeitGdv
- tP3jJeb1oqHB4ap9WCt8EMPp4V7dIAtHV7oPtiADTIOndc56vVfxwGbIDb2A/VGmJvlbUQf
- tklCGkC8EFdJmjLhWYNPCfRcGHDRBtb90pem18oEplQmb3jwqIFh91776xK+Uq+fFK6QPTU
- Ci1Gxl45DHzAkUfPj2KZw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:YkAHc5UKE0I=:yiFaEkbErLxW5htSyxiAuo
- XpVqbSp97TMKGxcdgtgjlaNMx4qu5wPIlTAPLHe4zBjFSvVWOYdCm7w+vPocf5VAH8aE0WvLN
- Ri5NOmcfzUhb5JhO8rRGWaThiI/h5IDvUptyI4Xwg5kEKALoZsqzl9acKTJsb/MeZF1WsbY0N
- PCtbqDOLUS3zKQayZt4rR/IspX9Eyqp6/fh2ZQKKlspwsMTQuI3e2CshnQTZm4TM/maMYPS30
- 6BOFcJBSedTx1ilj9JO/4426nl+yanqogLgqKRTpP069EO2CxipR+fPStixazzJaK3/eA/cWn
- XYeiwiMyuP762BGbLx2/R4Bvo71C0nIgxQsC4hZ4hw93OBTyL8hFT0OQ1A3zNWyBYAsdWnqKv
- G9PTzuhyEMh4eMW42D/rkPwcBM+dxWe8QHBVoZ/zXUO5Ee/8ea7UPx0m94OkQBWw/FG2uZNFS
- hOZppkpxyHXNzsx/SlXGYH+hf64dW5pOyP83Cv8v4Amj1H0AARNgvIbqDiszfOhOK1Zx/I/5B
- 15WEY7Swao4lnEldLot+wlR4HztobZk4jTRZyyxnCzlX+khGojf9wJ3trerJS6MPACE58azyW
- r5iXXgf0jf8R4RnH7q/WDRCQEpKoW1EnMiYkHmXj8n/dNePyocXenXS+MVwBPDHx9NdFHub4z
- Z6/6FIGlyHiTjNIrkZWilcuT28I0S1nuCDgNv/N+lODPwf1NO6dn7f2wZeTRTeIvGLTMK1SGO
- VuIFID5UBWY+3aaQa4fcDfEy8W3WF+HQg9XXIqSF9lpJsn3rAfeQBBGIzrkv7MgJT7gA0UNOw
- v30omITtNA52kqHi4G49kCniQVXfmfphD+pXVrFlVvkswk9mSE=
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Cc:     Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        hsinyi@chromium.org, fshao@chromium.org, moudy.ho@mediatek.com,
+        roy-cw.yeh@mediatek.com, CK Hu <ck.hu@mediatek.com>,
+        Fabien Parent <fparent@baylibre.com>, nancy.lin@mediatek.com,
+        singo.chang@mediatek.com, devicetree@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220307032859.3275-1-jason-jh.lin@mediatek.com>
+ <20220307032859.3275-3-jason-jh.lin@mediatek.com>
+From:   Matthias Brugger <matthias.bgg@gmail.com>
+In-Reply-To: <20220307032859.3275-3-jason-jh.lin@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 31, 2022 at 10:29 AM Qin Jian <qinjian@cqplus1.com> wrote:
 
-> +static int sp_pll_enable(struct clk_hw *hw)
-> +{
-> +       struct sp_pll *clk = to_sp_pll(hw);
-> +       unsigned long flags;
+
+On 07/03/2022 04:28, jason-jh.lin wrote:
+> Power:
+> 1. Add description for power-domains property.
+> 
+> GCE:
+> 1. Add description for mboxes property.
+> 2. Add description for mediatek,gce-client-reg property.
+> 
+
+As you have to resend the series anyway, would you mind to make the commit 
+message more sound with whole phrases? Other then that, the patch looks good.
+
+Thanks,
+Matthias
+
+> Signed-off-by: jason-jh.lin <jason-jh.lin@mediatek.com>
+> ---
+>   .../bindings/arm/mediatek/mediatek,mmsys.yaml | 31 +++++++++++++++++++
+>   1 file changed, 31 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml
+> index b31d90dc9eb4..6c2c3edcd443 100644
+> --- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml
+> +++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml
+> @@ -41,6 +41,30 @@ properties:
+>     reg:
+>       maxItems: 1
+>   
+> +  power-domains:
+> +    description:
+> +      A phandle and PM domain specifier as defined by bindings
+> +      of the power controller specified by phandle. See
+> +      Documentation/devicetree/bindings/power/power-domain.yaml for details.
 > +
-> +       spin_lock_irqsave(clk->lock, flags);
-> +       writel(BIT(clk->pd_bit + 16) | BIT(clk->pd_bit), clk->reg); /* power up */
-> +       spin_unlock_irqrestore(clk->lock, flags);
+> +  mboxes:
+> +    description:
+> +      Using mailbox to communicate with GCE, it should have this
+> +      property and list of phandle, mailbox specifiers. See
+> +      Documentation/devicetree/bindings/mailbox/mtk-gce.txt for details.
+> +    $ref: /schemas/types.yaml#/definitions/phandle-array
 > +
-> +       return 0;
-> +}
+> +  mediatek,gce-client-reg:
+> +    description:
+> +      The register of client driver can be configured by gce with 4 arguments
+> +      defined in this property, such as phandle of gce, subsys id,
+> +      register offset and size.
+> +      Each subsys id is mapping to a base address of display function blocks
+> +      register which is defined in the gce header
+> +      include/dt-bindings/gce/<chip>-gce.h.
+> +    $ref: /schemas/types.yaml#/definitions/phandle-array
+> +    maxItems: 1
 > +
-> +static void sp_pll_disable(struct clk_hw *hw)
-> +{
-> +       struct sp_pll *clk = to_sp_pll(hw);
-> +       unsigned long flags;
+>     "#clock-cells":
+>       const: 1
+>   
+> @@ -56,9 +80,16 @@ additionalProperties: false
+>   
+>   examples:
+>     - |
+> +    #include <dt-bindings/power/mt8173-power.h>
+> +    #include <dt-bindings/gce/mt8173-gce.h>
 > +
-> +       spin_lock_irqsave(clk->lock, flags);
-> +       writel(BIT(clk->pd_bit + 16), clk->reg); /* power down */
-> +       spin_unlock_irqrestore(clk->lock, flags);
-> +}
-
-What does the spinlock actually protect here? As writel() is posted, it
-can already leak of of the lock, and the inputs would appear to be
-constant.
-
-> +       /* This memory region include multi HW regs in discontinuous order.
-> +        * clk driver used some discontinuous areas in the memory region.
-> +        * Using devm_platform_ioremap_resource() would conflicted with other drivers.
-> +        */
-> +       res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> +       sp_clk_base = devm_ioremap(dev, res->start, resource_size(res));
-> +       if (!sp_clk_base)
-> +               return -ENXIO;
-
-Can you explain this comment in more detail? Generally, the 'reg' properties
-of drivers should not overlap, so it is supposed to be safe to call
-devm_platform_ioremap_resource() here.
-
-We discussed this in the context of the iop driver that did have overlapping
-registers with this driver, and that was incorrect. Are there any other drivers
-that conflict with the clk driver?
-
-      Arnd
+>       mmsys: syscon@14000000 {
+>           compatible = "mediatek,mt8173-mmsys", "syscon";
+>           reg = <0x14000000 0x1000>;
+> +        power-domains = <&spm MT8173_POWER_DOMAIN_MM>;
+>           #clock-cells = <1>;
+>           #reset-cells = <1>;
+> +        mboxes = <&gce 0 CMDQ_THR_PRIO_HIGHEST>,
+> +                 <&gce 1 CMDQ_THR_PRIO_HIGHEST>;
+> +        mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0 0x1000>;
+>       };
