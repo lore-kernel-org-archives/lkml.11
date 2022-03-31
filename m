@@ -2,32 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A03BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 07:58:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55F8EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 07:58:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232426AbiCaIAU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 04:00:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41756 "EHLO
+        id S232459AbiCaIAZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 04:00:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229447AbiCaIAM (ORCPT
+        with ESMTP id S232416AbiCaIAQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 04:00:12 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B652013EAE
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 00:58:23 -0700 (PDT)
+        Thu, 31 Mar 2022 04:00:16 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 856D113F41
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 00:58:25 -0700 (PDT)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: kholk11)
-        with ESMTPSA id 119661F463AE
+        with ESMTPSA id 1BF7E1F463B0
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1648713502;
-        bh=q+KkXh4Pi0KibB5c7kl1SmkyDO/TsKJGH9MCkwBZDHU=;
-        h=From:To:Cc:Subject:Date:From;
-        b=GMvRcREW1cy7oMzB9xtXztHtyYLyMopePT1upmpmVdQUDsKoWudWaIdGFyDAN1dps
-         NUcctXekdvSAi2VJf7bc5ElGnw2PneAE1o7ESKBIEIoXvdEeTQj6jiFoozKShnAxHw
-         tmpYfL2vSdSxvyoNJlT8fje7gyXC3VJWqdtxPAKC6+vlY8d1PbSkEOH2TeWPSzaMSD
-         zUGrJCuYgZHS91v6KDZhv2Lln88+fwyKAVR4HgQQ2Yl6n341xcOlYMpUNK0RtljRNF
-         JZHpbvIIKYQyqGFr7GH923Ta0H73SCYH7Wo4kkFY+5QWaN7SD95UuXsA5P1kNcUlii
-         gnu3ptbYxkzHw==
+        s=mail; t=1648713503;
+        bh=QT8DT8RDSeHHXsqt2NV3aXetUMwY0wHmreLUWytxClw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=XM6SE5kIFXvC2H6dUFPE2T69kpIzSAljRHXvK2edJsxdO6VQ5J8jg2lFDTc+u0Lj8
+         CU/8d+xPaP1jeujGYypKNZndtRBzwntKcPxMKYA2y92ISObv7ubamGU5nIldeeVVsB
+         7SuH1o8MuF1buDq3J+JRvlZ6XfYxjwSz40+kWh7E0tWBV1P/TmZWLAxkXrtIXUZM3S
+         9ElylOwFFoeIOPxCEvxUFOXMWK8dfGI+EoncRDE4/5nBAS8wevbw+ERY/GZeZROfQ7
+         h/f/GsFexaN2rSCzZn2mntkUJo5ipW75mbUXFn1xrllEBxXFhWsK2ytz48ESLokZ6v
+         4VXCbPvhgXHEg==
 From:   AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
 To:     matthias.bgg@gmail.com
@@ -36,46 +36,60 @@ Cc:     linux-arm-kernel@lists.infradead.org,
         nfraprado@collabora.com,
         AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
-Subject: [PATCH v2 0/3] MediaTek PMIC Wrap improvements and cleanups
-Date:   Thu, 31 Mar 2022 09:58:14 +0200
-Message-Id: <20220331075817.7122-1-angelogioacchino.delregno@collabora.com>
+Subject: [PATCH v2 2/3] soc: mediatek: pwrap: Switch to devm_platform_ioremap_resource_byname()
+Date:   Thu, 31 Mar 2022 09:58:16 +0200
+Message-Id: <20220331075817.7122-3-angelogioacchino.delregno@collabora.com>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220331075817.7122-1-angelogioacchino.delregno@collabora.com>
+References: <20220331075817.7122-1-angelogioacchino.delregno@collabora.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series is meant to improve the mtk-pmic-wrap driver;
-that's done by removing the custom pwrap_wait_for_state() function
-and correctly using the readx_poll_timeout macro instead, which is
-doing exactly the same as the former.
+In order to simplify ioremapping resources, instead of calling
+platform_get_resource_byname() and then devm_ioremap_resource(),
+simply call devm_platform_ioremap_resource_byname().
 
-As also shown in a patch [1] by Zhiyong Tao (MediaTek), performing
-a tight loop is not desired: because of the operation timing in the
-SPMI PMICs on these platforms, it makes more sense to wait for some
-microseconds before trying to read again, reducing CPU busy time
-around these state waits. For this purpose, a ~10uS delay was chosen.
+Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+---
+ drivers/soc/mediatek/mtk-pmic-wrap.c | 8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
 
-While at it, I also took the occasion to tidy up this driver a
-little by optimizing its probe() function.
-
-[1]: https://patchwork.kernel.org/project/linux-mediatek/patch/20220329115824.13005-2-zhiyong.tao@mediatek.com/
-
-Changes in v2:
- - Fixed a critical typo in patch 1/3. Thanks Nicolas!
-
-AngeloGioacchino Del Regno (3):
-  soc: mediatek: pwrap: Use readx_poll_timeout() instead of custom
-    function
-  soc: mediatek: pwrap: Switch to
-    devm_platform_ioremap_resource_byname()
-  soc: mediatek: pwrap: Move and check return value of
-    platform_get_irq()
-
- drivers/soc/mediatek/mtk-pmic-wrap.c | 73 +++++++++++++++-------------
- 1 file changed, 39 insertions(+), 34 deletions(-)
-
+diff --git a/drivers/soc/mediatek/mtk-pmic-wrap.c b/drivers/soc/mediatek/mtk-pmic-wrap.c
+index 54a5300ab72b..852514366f1f 100644
+--- a/drivers/soc/mediatek/mtk-pmic-wrap.c
++++ b/drivers/soc/mediatek/mtk-pmic-wrap.c
+@@ -2191,7 +2191,6 @@ static int pwrap_probe(struct platform_device *pdev)
+ 	struct pmic_wrapper *wrp;
+ 	struct device_node *np = pdev->dev.of_node;
+ 	const struct of_device_id *of_slave_id = NULL;
+-	struct resource *res;
+ 
+ 	if (np->child)
+ 		of_slave_id = of_match_node(of_slave_match_tbl, np->child);
+@@ -2211,8 +2210,7 @@ static int pwrap_probe(struct platform_device *pdev)
+ 	wrp->slave = of_slave_id->data;
+ 	wrp->dev = &pdev->dev;
+ 
+-	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "pwrap");
+-	wrp->base = devm_ioremap_resource(wrp->dev, res);
++	wrp->base = devm_platform_ioremap_resource_byname(pdev, "pwrap");
+ 	if (IS_ERR(wrp->base))
+ 		return PTR_ERR(wrp->base);
+ 
+@@ -2226,9 +2224,7 @@ static int pwrap_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	if (HAS_CAP(wrp->master->caps, PWRAP_CAP_BRIDGE)) {
+-		res = platform_get_resource_byname(pdev, IORESOURCE_MEM,
+-				"pwrap-bridge");
+-		wrp->bridge_base = devm_ioremap_resource(wrp->dev, res);
++		wrp->bridge_base = devm_platform_ioremap_resource_byname(pdev, "pwrap-bridge");
+ 		if (IS_ERR(wrp->bridge_base))
+ 			return PTR_ERR(wrp->bridge_base);
+ 
 -- 
 2.35.1
 
