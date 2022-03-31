@@ -2,100 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6272DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 13:20:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46A98C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 13:20:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236747AbiCaNVy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 09:21:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45896 "EHLO
+        id S236757AbiCaNWU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 09:22:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232629AbiCaNVu (ORCPT
+        with ESMTP id S232629AbiCaNWR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 09:21:50 -0400
-Received: from mail-il1-x132.google.com (mail-il1-x132.google.com [IPv6:2607:f8b0:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B451184B77;
-        Thu, 31 Mar 2022 06:20:03 -0700 (PDT)
-Received: by mail-il1-x132.google.com with SMTP id x9so16712923ilc.3;
-        Thu, 31 Mar 2022 06:20:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=qI4/BzfKEkPH9iOW5F30cxLQKnAua7M62vUC8CH6ij4=;
-        b=fMkjsiqJXh/HuY2J0jAtlImPMR787h7K/zkt1C+F75EkXR9aVtUN/ydW3qOMTrMe94
-         QwbDNYH4FbH/PJx9ERaKBCxP2CtMmwyclzudSU4E+DNIvVfbNBF3ddDQ6u5GSa69KOma
-         yDWYgo02rNTWRVB5yJKz4Fw7SlLH9DJD/XAxAdkaeS+JjcfjA3pAeWG5vDfEvMn3kfnw
-         PSaT6zH83DYS/cFFP7n3RGWGSMxiVVPSp23ToKQ+QdmkpfCx5JAKDV+fOwg5GU0SvOdM
-         8I2lkvA8EA89VFOilVfJITD7pu5ePj7VLqxw8MEUIur+6yclKO6+kmrvyhAmv8kuKy+w
-         qBmg==
+        Thu, 31 Mar 2022 09:22:17 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2BB441DB894
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 06:20:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648732829;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=WBWds1AFP5e86H9VKQpRJJb3wuQBpqPKJ0Gs8NSPHjo=;
+        b=BbcJEgPKXXfgTnNtW07fjunguV+qUAuHnWAMLxdwLRjFYIQUucw6nEr8SWzRWrnUL7YQ3z
+        L5d0ZDx4svN676pTpPVmJPJJ2t9kLGWo6+S++PEANO3necJZPcFTQZF+da67DmzVT4AAyI
+        AGqFgkmikezqE/zCtj8Tb1O+xKxQkWE=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-669-O1mLqRKuOoaulSLIVcdKrg-1; Thu, 31 Mar 2022 09:20:27 -0400
+X-MC-Unique: O1mLqRKuOoaulSLIVcdKrg-1
+Received: by mail-wr1-f71.google.com with SMTP id k20-20020adfc714000000b001e305cd1597so6472293wrg.19
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 06:20:27 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=qI4/BzfKEkPH9iOW5F30cxLQKnAua7M62vUC8CH6ij4=;
-        b=bx+tbgjKqQ5MgqXAZZTWnCNuYZ8hVjzp+4BTO8AB3VeGRgKTuzuEgMoi+pfP5b0oqE
-         y3RHzzhJR+DADzjxeCQYSX1og/1R7RrLmaJqTm4nNuQbUY61oBZ0ZaKfbKwaG9qU1ER6
-         fBAqogOgtQzEha4iPCZJhktQ1YuysznkipbhuiqVMX3CtrQHJQ/B4hgrN2NeRRF9M2Lj
-         6yNsrt2DXWm8niaOTe08DZ9JI/xEDxJb6dhfMdJw6QkIjuyZlCVQUinNEGvjZSg+hOUg
-         pBiJmvX3TIqAPMWEHJuzq6r5ghBYeqVnIoWYbZhJoDAezJdhPrRV0nNTT+3kpU4iKxGc
-         5muA==
-X-Gm-Message-State: AOAM531g1m+bkjHAVlL2bxVwdKeu694JbluGy72q8YFp0k6/Lt7iAvFC
-        H9bP3SwJrhVnBNKxEeC2cHVgpqUHa/k94UOYIas/lH7Xid0=
-X-Google-Smtp-Source: ABdhPJzqNqNXkQgzmRZAsMPsfvwS4pmR9v2mVghCxjW9pymUlJ6yptmxbtLm4r9BAwf/zUTMKBY7jSh0x1+0ynVYju0=
-X-Received: by 2002:a05:6e02:1609:b0:2ca:4ad:ef09 with SMTP id
- t9-20020a056e02160900b002ca04adef09mr495134ilu.72.1648732802496; Thu, 31 Mar
- 2022 06:20:02 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220317181032.15436-1-ojeda@kernel.org> <20220317181032.15436-7-ojeda@kernel.org>
- <YkWhs1GffuUmZ4SC@kroah.com>
-In-Reply-To: <YkWhs1GffuUmZ4SC@kroah.com>
-From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
-Date:   Thu, 31 Mar 2022 15:19:51 +0200
-Message-ID: <CANiq72mxXY_4wXZPO5VCX76G168X0gynO=n=1xP2shVWBm+yeA@mail.gmail.com>
-Subject: Re: [PATCH v5 06/20] rust: add `alloc` crate
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Miguel Ojeda <ojeda@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        rust-for-linux <rust-for-linux@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Alex Gaynor <alex.gaynor@gmail.com>,
-        Wedson Almeida Filho <wedsonaf@google.com>,
-        Gary Guo <gary@garyguo.net>, Matthew Bakhtiari <dev@mtbk.me>
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=WBWds1AFP5e86H9VKQpRJJb3wuQBpqPKJ0Gs8NSPHjo=;
+        b=oZ4GlrXzvsOhDEYTUusBwWIOo29TWwzCiWZFxAKPa0JXE19/wvokP+KETpPDKQZjGL
+         XiG1dQrF/OuAadYzRdt5kbDhdsdWOyx/CuEXNOa8MUMRHsQESX4RjhTZhDnAvbjPR9rU
+         SzHuoDkq76r/2nH9/tuu6mJ4McVWKLPfLJq0HKw/4rRezfYJlsKz6ENHPC6lgaG6W8V6
+         DZTkGKnct9VpnLY0NkUznlJUQJZU+HJsdZY6Ky57prwXMh5tVzgsF5HKB1m41Ne93iMn
+         k5WQsia/bj+AoLgTOyZhvJWOfGRt5DwGvDgqdAlOEd3FuqZEi9ldEhcml/gpOk2LElSY
+         O5Fw==
+X-Gm-Message-State: AOAM531QLm9KxB+LSqbb3JSY0vqWjXE9a5m3ohaw5IJdRxqxGvdn8kVL
+        n5CzqJqXPBKwiersCfOZJ+9IosxoimxSkx3Vd+OF6x73qpUkv9plmlSiDiZBI3GMccEXQPe5nK/
+        gflzjPQN7SclxcLx6qBjkZErc
+X-Received: by 2002:a1c:7302:0:b0:381:1f9a:a22b with SMTP id d2-20020a1c7302000000b003811f9aa22bmr4643881wmb.78.1648732826546;
+        Thu, 31 Mar 2022 06:20:26 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJw9hovXTozfht/ACofvvbzrXrjDiD1Bgs2ETCfJDxgcy2Qkpd++tzM6xL/tWDeJHCVl32/18Q==
+X-Received: by 2002:a1c:7302:0:b0:381:1f9a:a22b with SMTP id d2-20020a1c7302000000b003811f9aa22bmr4643857wmb.78.1648732826250;
+        Thu, 31 Mar 2022 06:20:26 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-243-142.dyn.eolo.it. [146.241.243.142])
+        by smtp.gmail.com with ESMTPSA id c8-20020a056000184800b002040e925afasm23990873wri.59.2022.03.31.06.20.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 31 Mar 2022 06:20:25 -0700 (PDT)
+Message-ID: <78917523440153533f0b5aad533a96d0f7c27916.camel@redhat.com>
+Subject: Re: [PATCH net] rxrpc: fix some null-ptr-deref bugs in server_key.c
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     David Howells <dhowells@redhat.com>
+Cc:     netdev@vger.kernel.org,
+        Xiaolong Huang <butterflyhuangxx@gmail.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org
+Date:   Thu, 31 Mar 2022 15:20:24 +0200
+In-Reply-To: <3114597.1648729013@warthog.procyon.org.uk>
+References: <4de651adc35341c5fa99db54b9295d4845648563.camel@redhat.com>
+         <164865013439.2941502.8966285221215590921.stgit@warthog.procyon.org.uk>
+         <3114597.1648729013@warthog.procyon.org.uk>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Greg,
+On Thu, 2022-03-31 at 13:16 +0100, David Howells wrote:
+> Paolo Abeni <pabeni@redhat.com> wrote:
+> 
+> > It looks like we can add a couple of fixes tag to help stable teams:
+> > 
+> > Fixes: d5953f6543b5 ("rxrpc: Allow security classes to give more info on server keys")
+> 
+> Not this one.  This includes a check for the one op it adds:
+> 
+> 	+       if (sec && sec->describe_server_key)
+> 	+               sec->describe_server_key(key, m);
+> 
+> 
+> > Fixes: 12da59fcab5a ("xrpc: Hand server key parsing off to the security class")
+> 
+> There's a missing 'r' in "rxrpc:" in the patch subject, but otherwise this one
+> looks like the right one.
 
-On Thu, Mar 31, 2022 at 2:42 PM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> This is a huge patch.  Why not break it into 2, one that adds what is
-> upstream, and then the second adds the "stuff on top" that you need for
-> the kernel.  Otherwise it's hard to know what is, and is not, upstream
-> for us to be able to review from a kernel point of view.
+Thank you for double-checking. No need to repost, I'll add the tag
+while applying it.
 
-That is a good idea, will do.
+Cheeers,
 
-There are some files from upstream that we do not need, so they are
-already deleted here (e.g. collections), thus what I will do is send
-the first patch without those already and then another patch with the
-modifications/additions we did. If you prefer to see the deleted files
-in an intermediate step, I can also do that.
+Paolo
 
-> I think you are trying to do this with the "kernel" keyword, but if so,
-> why are you picking a "since" of 1.0?  None of that is described in the
-> changelog :(
-
-Exactly, I used the "kernel" string to have the additions clearly
-marked. The `stable`/`unstable` attributes are required in the
-standard library -- here the "1.0" is just a placeholder.
-
-I will expand a bit on this in the split patches approach that you
-suggest above.
-
-Thanks for taking a look!
-
-Cheers,
-Miguel
