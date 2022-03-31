@@ -2,114 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DB08C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 19:28:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77408C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 19:28:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240699AbiCaTa2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 15:30:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37334 "EHLO
+        id S240721AbiCaTab (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 15:30:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240696AbiCaTaY (ORCPT
+        with ESMTP id S240706AbiCaTaZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 15:30:24 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3643351586
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 12:28:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648754916; x=1680290916;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=RVAbYwRGd01Y+ARF8ixUcvPNeMUJ+DUVVbLHPMeTvPw=;
-  b=HGw+vhSue5uks3j/yuewzJzxoGtMKGmtPaX3f4RPdR739hc19SlgWqPu
-   BYvNzDKBNf81faS9Mo541fDGxJtbh2VKigjlIYPe6mvPZgYAtYNBB67E4
-   28AiC8kCpmLgs28H+dPESW/pBPVKxhYNPvgwtLTh52+hWssQq62dLzkeU
-   GBhw38Nt2Ba6zhMmQZlC6ZB18FyQ33iWaeyrwRaT26x4Jh49VYQ6xMiSA
-   Y1dw+VC+NwA+MBAiMQCvaEhGTWRYpmbDjN/0UjoD52cBMl4fCOTEAuUxf
-   oQdkpiK/L6bOnNIDJKBBEDcGbCLn/7iTrjxh5oYm6d/khFGPuHPdR5v3Q
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="259643100"
-X-IronPort-AV: E=Sophos;i="5.90,225,1643702400"; 
-   d="scan'208";a="259643100"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2022 12:28:14 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,225,1643702400"; 
-   d="scan'208";a="655015500"
-Received: from lkp-server02.sh.intel.com (HELO 3231c491b0e2) ([10.239.97.151])
-  by orsmga004.jf.intel.com with ESMTP; 31 Mar 2022 12:28:13 -0700
-Received: from kbuild by 3231c491b0e2 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1na0Sq-0000ag-ML;
-        Thu, 31 Mar 2022 19:28:12 +0000
-Date:   Fri, 1 Apr 2022 03:27:15 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Alim Akhtar <alim.akhtar@samsung.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Ajay Kumar <ajaykumar.rs@samsung.com>
-Subject: drivers/pinctrl/samsung/pinctrl-exynos-arm64.c:773:31: sparse:
- sparse: symbol 'fsd_pin_ctrl' was not declared. Should it be static?
-Message-ID: <202204010337.mR35sknO-lkp@intel.com>
+        Thu, 31 Mar 2022 15:30:25 -0400
+Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58043554A6
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 12:28:36 -0700 (PDT)
+Received: by mail-io1-xd29.google.com with SMTP id 9so703576iou.5
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 12:28:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=KDv50hCOMSNm4tqOFej1XxVHswnaiqBQ/Ql5PRaAElM=;
+        b=hr3WMnbNxfXX92/Y0t14FpEIS4pC+09DAI6p4oWqZgWnX03dIRuX74ev7qupnrKxzX
+         n5Cz8IINdInr4rUCepEci1G0mhVdD9KS789z+ALBCwmklBUAZ+nFdcApJvLiaQ6DE1h6
+         gsrrPum6Nsrl58HvbzUvPWVrmzlfcNkgPf0Os=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=KDv50hCOMSNm4tqOFej1XxVHswnaiqBQ/Ql5PRaAElM=;
+        b=CmjlOW6UXyjWhsoz25m8R7H1RH0TKo0HTYMVgmSOC19G51/hUbsgDsq8Mh3xxTZteO
+         8KzPFEDVGh+kKcUB82i9MjNJFLz6FIae/Rn5u7sqXq3vKZByyHUHyQjY4SiJk3VurIi2
+         bv6iFURh2AXWw+Qz8hVYszgYE4TIyWBNGm4an7aEwQU+DULOoYx4JH2uMWhZlilFaNr0
+         O9f3guIQZ0beWo0xyL4vUWjDL7zHpXHile8iM6/jyQyZYunHhgwq6ALLTjn1Ev5FOW3h
+         cVkvu9IOcE3477LaPhilE79pRGYsfpPrLRX7PAIyVip8jKGl3Fu5T4gw0RYHuoWCpUVx
+         190A==
+X-Gm-Message-State: AOAM5339YQpkeoi7uCdRYyjpmuCbj2ca471WZofG0BLrzZXKR53bFA7s
+        zx9Gnzc7DvQVmN3Je6LOx4faFwOTcHKqVg==
+X-Google-Smtp-Source: ABdhPJxfJ3AXDmXIug9uhpRb3ABjQOmyzzRYZ0nfXa4ivrk5be6vqTiSy892fiqB2bYpvFEb5d7u9Q==
+X-Received: by 2002:a02:7fc9:0:b0:323:6239:cfdb with SMTP id r192-20020a027fc9000000b003236239cfdbmr3849890jac.186.1648754915705;
+        Thu, 31 Mar 2022 12:28:35 -0700 (PDT)
+Received: from [192.168.1.128] ([71.205.29.0])
+        by smtp.gmail.com with ESMTPSA id k12-20020a056e02156c00b002c9ad2b3dc4sm168559ilu.74.2022.03.31.12.28.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 31 Mar 2022 12:28:35 -0700 (PDT)
+Subject: Re: [PATCH] selftest/vm: clarify error statement in gup_test
+To:     Sidhartha Kumar <sidhartha.kumar@oracle.com>, shuah@kernel.org,
+        akpm@linux-foundation.org
+Cc:     linux-mm@kvack.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220330215257.112029-1-sidhartha.kumar@oracle.com>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <9a752af3-8e3f-bfc5-eb24-eadcaf800bd5@linuxfoundation.org>
+Date:   Thu, 31 Mar 2022 13:28:34 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220330215257.112029-1-sidhartha.kumar@oracle.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   787af64d05cd528aac9ad16752d11bb1c6061bb9
-commit: 0d1b662c374c54bcf68bbcff3b71e6d6e945a7cf pinctrl: samsung: add FSD SoC specific data
-date:   9 weeks ago
-config: nios2-randconfig-s032-20220330 (https://download.01.org/0day-ci/archive/20220401/202204010337.mR35sknO-lkp@intel.com/config)
-compiler: nios2-linux-gcc (GCC) 11.2.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=0d1b662c374c54bcf68bbcff3b71e6d6e945a7cf
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 0d1b662c374c54bcf68bbcff3b71e6d6e945a7cf
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=nios2 SHELL=/bin/bash arch/nios2/ drivers/
+On 3/30/22 3:52 PM, Sidhartha Kumar wrote:
+> Print two possible reasons /sys/kernel/debug/gup_test
+> cannot be opened to help users of this test diagnose
+> failures.
+> 
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Thank you for the patch to improve rather cryptic error messages.
 
+> Signed-off-by: Sidhartha Kumar <sidhartha.kumar@oracle.com>
+> Cc: stable@vger.kernel.org # 5.15+
+> ---
+>   tools/testing/selftests/vm/gup_test.c | 4 +++-
+>   1 file changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/tools/testing/selftests/vm/gup_test.c b/tools/testing/selftests/vm/gup_test.c
+> index fe043f67798b0..c496bcefa7a0e 100644
+> --- a/tools/testing/selftests/vm/gup_test.c
+> +++ b/tools/testing/selftests/vm/gup_test.c
+> @@ -205,7 +205,9 @@ int main(int argc, char **argv)
+>   
+>   	gup_fd = open("/sys/kernel/debug/gup_test", O_RDWR);
+>   	if (gup_fd == -1) {
+> -		perror("open");
+> +		perror("failed to open /sys/kernel/debug/gup_test");
+> +		printf("check if CONFIG_GUP_TEST is enabled in kernel config\n");
+> +		printf("check if debugfs is mounted at /sys/kernel/debug\n");
 
-sparse warnings: (new ones prefixed by >>)
->> drivers/pinctrl/samsung/pinctrl-exynos-arm64.c:773:31: sparse: sparse: symbol 'fsd_pin_ctrl' was not declared. Should it be static?
+Instead of adding 3 messages in a row, please check the errno to figure
+out why it failed and print an appropriate message.
 
-vim +/fsd_pin_ctrl +773 drivers/pinctrl/samsung/pinctrl-exynos-arm64.c
+If open fails because CONFIG_GUP_TEST is not enabled, the test should skip
+the test instead of fail. Failing will indicate a test failure which is not
+the case. The test couldn't be run due to unmet dependencies.
 
-   772	
- > 773	const struct samsung_pin_ctrl fsd_pin_ctrl[] __initconst = {
-   774		{
-   775			/* pin-controller instance 0 FSYS0 data */
-   776			.pin_banks	= fsd_pin_banks0,
-   777			.nr_banks	= ARRAY_SIZE(fsd_pin_banks0),
-   778			.eint_gpio_init = exynos_eint_gpio_init,
-   779			.suspend	= exynos_pinctrl_suspend,
-   780			.resume		= exynos_pinctrl_resume,
-   781		}, {
-   782			/* pin-controller instance 1 PERIC data */
-   783			.pin_banks	= fsd_pin_banks1,
-   784			.nr_banks	= ARRAY_SIZE(fsd_pin_banks1),
-   785			.eint_gpio_init = exynos_eint_gpio_init,
-   786			.suspend	= exynos_pinctrl_suspend,
-   787			.resume		= exynos_pinctrl_resume,
-   788		}, {
-   789			/* pin-controller instance 2 PMU data */
-   790			.pin_banks	= fsd_pin_banks2,
-   791			.nr_banks	= ARRAY_SIZE(fsd_pin_banks2),
-   792		},
-   793	};
-   794	
+This test requires root access. A check for root privilege and skip the
+test for the same reason stated above.
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+>   		exit(1);
+>   	}
+>   
+> 
+
+Please send v2 with these changes.
+
+thanks,
+-- Shuah
