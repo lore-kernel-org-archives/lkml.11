@@ -2,95 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F81EC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 16:40:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEEACC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 16:42:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240134AbiCaQmT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 12:42:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38454 "EHLO
+        id S240143AbiCaQoC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 12:44:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238497AbiCaQmR (ORCPT
+        with ESMTP id S232615AbiCaQn7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 12:42:17 -0400
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6C061C1EDC;
-        Thu, 31 Mar 2022 09:40:29 -0700 (PDT)
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id 055E168AFE; Thu, 31 Mar 2022 18:40:25 +0200 (CEST)
-Date:   Thu, 31 Mar 2022 18:40:24 +0200
-From:   Christoph Hellwig <hch@lst.de>
-To:     Qian Cai <quic_qiancai@quicinc.com>
-Cc:     Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>,
-        Coly Li <colyli@suse.de>, Mike Snitzer <snitzer@redhat.com>,
-        Song Liu <song@kernel.org>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>,
-        Phillip Lougher <phillip@squashfs.org.uk>,
-        linux-block@vger.kernel.org, dm-devel@redhat.com,
-        linux-kernel@vger.kernel.org, linux-bcache@vger.kernel.org,
-        linux-raid@vger.kernel.org, target-devel@vger.kernel.org,
-        linux-btrfs@vger.kernel.org
-Subject: Re: cleanup bio_kmalloc v2
-Message-ID: <20220331164024.GA30404@lst.de>
-References: <20220308061551.737853-1-hch@lst.de> <YkXYMGGbk/ZTbGaA@qian>
+        Thu, 31 Mar 2022 12:43:59 -0400
+Received: from aposti.net (aposti.net [89.234.176.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F03220E947;
+        Thu, 31 Mar 2022 09:42:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
+        s=mail; t=1648744927; h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:references; bh=IAvMrhVHS/428HmJmNcZO9TFoCp/orv0qlTHSEiIHbc=;
+        b=tznwXdrdiBiRDvepwYYMPhTVr04PPgDcJ7Ruoue3YkWqZRIPmeiLPikWU8YEMJ5g0dPVxw
+        uhZEbSGIUKaYIBnzMtKbwtg6yjuNnEwe4/leZdiigFdXZCK4VDXUDAJ+Hvccc6alH1sGpm
+        y9zc+tiTVNSvZ/cPqcbQEEttqV58WlY=
+From:   Paul Cercueil <paul@crapouillou.net>
+To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Cc:     Nick Desaulniers <ndesaulniers@google.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>,
+        "Maciej W . Rozycki" <macro@orcam.me.uk>,
+        linux-crypto@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
+        Paul Cercueil <paul@crapouillou.net>, stable@vger.kernel.org,
+        kernel test robot <lkp@intel.com>
+Subject: [PATCH] MIPS: crypto: Fix CRC32 code
+Date:   Thu, 31 Mar 2022 17:42:00 +0100
+Message-Id: <20220331164200.177015-1-paul@crapouillou.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YkXYMGGbk/ZTbGaA@qian>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This should fix it:
+Commit 67512a8cf5a7 ("MIPS: Avoid macro redefinitions") changed how the
+MIPS register macros were defined, in order to allow the code to compile
+under LLVM/Clang.
 
-diff --git a/fs/squashfs/block.c b/fs/squashfs/block.c
-index 930eb530fa622..fed99bb3df3be 100644
---- a/fs/squashfs/block.c
-+++ b/fs/squashfs/block.c
-@@ -72,6 +72,13 @@ static int copy_bio_to_actor(struct bio *bio,
- 	return copied_bytes;
- }
+The MIPS CRC32 code however wasn't updated accordingly, causing a build
+bug when using a MIPS32r6 toolchain without CRC support.
+
+Update the CRC32 code to use the macros correctly, to fix the build
+failures.
+
+Fixes: 67512a8cf5a7 ("MIPS: Avoid macro redefinitions")
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+Reported-by: kernel test robot <lkp@intel.com>
+---
+ arch/mips/crypto/crc32-mips.c | 46 ++++++++++++++++++++---------------
+ 1 file changed, 26 insertions(+), 20 deletions(-)
+
+diff --git a/arch/mips/crypto/crc32-mips.c b/arch/mips/crypto/crc32-mips.c
+index 0a03529cf317..3e4f5ba104f8 100644
+--- a/arch/mips/crypto/crc32-mips.c
++++ b/arch/mips/crypto/crc32-mips.c
+@@ -28,7 +28,7 @@ enum crc_type {
+ };
  
-+static void squashfs_bio_free(struct bio *bio)
-+{
-+	bio_free_pages(bio);
-+	bio_uninit(bio);
-+	kfree(bio);
-+}
+ #ifndef TOOLCHAIN_SUPPORTS_CRC
+-#define _ASM_MACRO_CRC32(OP, SZ, TYPE)					  \
++#define _ASM_SET_CRC(OP, SZ, TYPE)					  \
+ _ASM_MACRO_3R(OP, rt, rs, rt2,						  \
+ 	".ifnc	\\rt, \\rt2\n\t"					  \
+ 	".error	\"invalid operands \\\"" #OP " \\rt,\\rs,\\rt2\\\"\"\n\t" \
+@@ -37,30 +37,36 @@ _ASM_MACRO_3R(OP, rt, rs, rt2,						  \
+ 			  ((SZ) <<  6) | ((TYPE) << 8))			  \
+ 	_ASM_INSN32_IF_MM(0x00000030 | (__rs << 16) | (__rt << 21) |	  \
+ 			  ((SZ) << 14) | ((TYPE) << 3)))
+-_ASM_MACRO_CRC32(crc32b,  0, 0);
+-_ASM_MACRO_CRC32(crc32h,  1, 0);
+-_ASM_MACRO_CRC32(crc32w,  2, 0);
+-_ASM_MACRO_CRC32(crc32d,  3, 0);
+-_ASM_MACRO_CRC32(crc32cb, 0, 1);
+-_ASM_MACRO_CRC32(crc32ch, 1, 1);
+-_ASM_MACRO_CRC32(crc32cw, 2, 1);
+-_ASM_MACRO_CRC32(crc32cd, 3, 1);
+-#define _ASM_SET_CRC ""
++#define _ASM_UNSET_CRC(op, SZ, TYPE) ".purgem " #op "\n\t"
+ #else /* !TOOLCHAIN_SUPPORTS_CRC */
+-#define _ASM_SET_CRC ".set\tcrc\n\t"
++#define _ASM_SET_CRC(op, SZ, TYPE) ".set\tcrc\n\t"
++#define _ASM_UNSET_CRC(op, SZ, TYPE)
+ #endif
+ 
+-#define _CRC32(crc, value, size, type)		\
+-do {						\
+-	__asm__ __volatile__(			\
+-		".set	push\n\t"		\
+-		_ASM_SET_CRC			\
+-		#type #size "	%0, %1, %0\n\t"	\
+-		".set	pop"			\
+-		: "+r" (crc)			\
+-		: "r" (value));			\
++#define __CRC32(crc, value, op, SZ, TYPE)		\
++do {							\
++	__asm__ __volatile__(				\
++		".set	push\n\t"			\
++		_ASM_SET_CRC(op, SZ, TYPE)		\
++		#op "	%0, %1, %0\n\t"			\
++		_ASM_UNSET_CRC(op, SZ, TYPE)		\
++		".set	pop"				\
++		: "+r" (crc)				\
++		: "r" (value));				\
+ } while (0)
+ 
++#define _CRC32_crc32b(crc, value)	__CRC32(crc, value, crc32b, 0, 0)
++#define _CRC32_crc32h(crc, value)	__CRC32(crc, value, crc32h, 1, 0)
++#define _CRC32_crc32w(crc, value)	__CRC32(crc, value, crc32w, 2, 0)
++#define _CRC32_crc32d(crc, value)	__CRC32(crc, value, crc32d, 3, 0)
++#define _CRC32_crc32cb(crc, value)	__CRC32(crc, value, crc32cb, 0, 1)
++#define _CRC32_crc32ch(crc, value)	__CRC32(crc, value, crc32ch, 1, 1)
++#define _CRC32_crc32cw(crc, value)	__CRC32(crc, value, crc32cw, 2, 1)
++#define _CRC32_crc32cd(crc, value)	__CRC32(crc, value, crc32cd, 3, 1)
 +
- static int squashfs_bio_read(struct super_block *sb, u64 index, int length,
- 			     struct bio **biop, int *block_offset)
- {
-@@ -118,9 +125,7 @@ static int squashfs_bio_read(struct super_block *sb, u64 index, int length,
- 	return 0;
++#define _CRC32(crc, value, size, op) \
++	_CRC32_##op##size(crc, value)
++
+ #define CRC32(crc, value, size) \
+ 	_CRC32(crc, value, size, crc32)
  
- out_free_bio:
--	bio_free_pages(bio);
--	bio_uninit(bio);
--	kfree(bio);
-+	squashfs_bio_free(bio);
- 	return error;
- }
- 
-@@ -183,8 +188,7 @@ int squashfs_read_data(struct super_block *sb, u64 index, int length,
- 			data = bvec_virt(bvec);
- 			length |= data[0] << 8;
- 		}
--		bio_free_pages(bio);
--		bio_put(bio);
-+		squashfs_bio_free(bio);
- 
- 		compressed = SQUASHFS_COMPRESSED(length);
- 		length = SQUASHFS_COMPRESSED_SIZE(length);
-@@ -217,8 +221,7 @@ int squashfs_read_data(struct super_block *sb, u64 index, int length,
- 	}
- 
- out_free_bio:
--	bio_free_pages(bio);
--	bio_put(bio);
-+	squashfs_bio_free(bio);
- out:
- 	if (res < 0) {
- 		ERROR("Failed to read block 0x%llx: %d\n", index, res);
+-- 
+2.35.1
+
