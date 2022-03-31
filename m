@@ -2,118 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F6B6C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 11:32:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 290CEC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 11:32:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235197AbiCaLeX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 07:34:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40864 "EHLO
+        id S235203AbiCaLeh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 07:34:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235161AbiCaLeO (ORCPT
+        with ESMTP id S235164AbiCaLef (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 07:34:14 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDE252028B5
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 04:32:26 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id yy13so47476183ejb.2
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 04:32:26 -0700 (PDT)
+        Thu, 31 Mar 2022 07:34:35 -0400
+Received: from mail-qv1-xf35.google.com (mail-qv1-xf35.google.com [IPv6:2607:f8b0:4864:20::f35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51F291834C9
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 04:32:48 -0700 (PDT)
+Received: by mail-qv1-xf35.google.com with SMTP id kl29so19480812qvb.2
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 04:32:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=uGbhKLWrsLyCVeSUohrzuJPdjP/ZW8fK03vbsKlcv08=;
-        b=qGaUVMWcT0vp4N0OCt+uDOxnuhZySmo8AQz/1WLHwlH8dYGN4tnd0fPSIZPKUyN8Nr
-         BPlWsblHNX3Uc3bvihlCWTfOcurwdrXQgb6gtXAfzd/FQzC8pU7iiCD8eyZdMz36Qukq
-         l/St2dSTjfoSnKQS1eOoo8kO/RlPYJGibON8ZchfuZbeClHeve8XnJM/oaVR37YQ+JbR
-         EhLIr1SJAtw8zz82AobrABPje94zp/8ntEVjs1wJqjghhLhRGmw2DT34tmJcmP5bt+J/
-         p5rGWXnmCLTi8KWawj62OpayDfumD4pnCt4Of0BkTK3el6kVICjAcVxVL13E8SP13deP
-         2fZQ==
+        h=date:from:to:subject:message-id:mime-version:content-disposition;
+        bh=bc/PXIbfsZzVLQeoRR3CqcpGDJosJWCkO2fVBiONc1Q=;
+        b=IuANEAlikqk+/VwxizAK1a+Ql93DgV1MBbrzqKiKcQ6uMpYb+HW9tBrX71WStTgsQL
+         ark9m1886ou6JooOdEUxV3R+yAlu3Vb3UtEd9HO/E0JexD5S+/GyMPLze5coFzguUS96
+         D2JDmXv/wxVhS4HUcvf+xfRk9PQuNueIOMloGKTZCqlfMs6V8fjpShlajBOue4QV4+nU
+         p7ioBtADZ9jKIrXJDS1POSpS2OtBS/HtXvcsyYY+Fxwn/d7BbERl2L/LesgYFXK9ZkGm
+         NPrGK40P4wq+nxf73GxvyJFRlsULnWgCJ4JNk9MP8FttHmb2awxZoJA/xTocCI6fpecA
+         GHaQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=uGbhKLWrsLyCVeSUohrzuJPdjP/ZW8fK03vbsKlcv08=;
-        b=pmLGgGd2WIEGjcL7Wn6+51+kowlzWX4sXcpelilbiYpCKMJPGm9ZpkZcQxdpV6+b+Z
-         319z9gxiiQYdiZqCyAj/CF9+5m4/koPl06UKviNHm6GLhlSQy5net4HCxJPyutyav2oY
-         UpRoY1nfPJDBjub+VP65SM9cAnbMqcSRl7n+RRsc7bJjPauVjxzTw3pHjtJc4aicT1uP
-         sGKQ1p14pJI1KsIFjX65X0Eiw6JQdRlEaxmvxZmTJGjEoMmSzZNHDI02IwOJ4v/T7ouZ
-         srGoELGlIjUsKLE60U0WIh0DqyKBTqHI3TW8fsV8P8U8GoOFtiNPvblV8dc3d3V4LHMT
-         ABZQ==
-X-Gm-Message-State: AOAM5307FQRYAi2A4QvTd19PfqXzhFYJqbhYhDPiym+TF1kbiE1yy9ri
-        HImwI/+mocm28TUnpG8OD2/0aUXEZD9Sb6N0BCo=
-X-Google-Smtp-Source: ABdhPJzQJHyTfSxlc41M45wefiBioqQDgVHvTzSSMPnk0NiQroU9MUA3GLL8SDM5OmjMD5EXK4I6Pg8uoKiKDod8q08=
-X-Received: by 2002:a17:907:1c9f:b0:6df:eb80:3581 with SMTP id
- nb31-20020a1709071c9f00b006dfeb803581mr4457496ejc.198.1648726345079; Thu, 31
- Mar 2022 04:32:25 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
+         :content-disposition;
+        bh=bc/PXIbfsZzVLQeoRR3CqcpGDJosJWCkO2fVBiONc1Q=;
+        b=GzscHYgReSkHQoLXkE/NjUGpaNCDnQN5eXdxTQiRwqE6x84bcrJXB1aKN46B46TR7q
+         U0T2gVN0KgjfvHKzIF8NSmhzgutxo5amRh/xwzgknyv9fGa7okyjliSczfoVnj/8qM8b
+         1wDStlxdjp+yE5j8lTu6bKZqgrP0B6Sy6akCvJwApJ3Xqiwf3PY5mJgV1/efJYWGJBAA
+         usrmBfg9ROyN0SUuqXqgydi4GinaN9J2z0097YxLb4tK4sNjO/U7RTQsFqyXaBd091Q5
+         YT7pUnna/8Qcp1CH6UlOZ4bhD9G+uqVKIlVHuSX/cCuKQiqjhH8EP6CnZ5xN6IjQPevu
+         7OWg==
+X-Gm-Message-State: AOAM531EFxUpIWXWwVWIXApLR3TsMC+cog454rkg1miE33ZcnRZMO5WT
+        ofM1w6udFWzXUyixW/rizdxxA3CdNsoPKRft
+X-Google-Smtp-Source: ABdhPJwZk6l8e5XgH/f35IcfjChMbG+vK++077j9LhGcXMxWN6sv/fSrQ9EjdnlX0JxKc2zNdYlYaA==
+X-Received: by 2002:a05:6214:528d:b0:441:4702:6263 with SMTP id kj13-20020a056214528d00b0044147026263mr3373484qvb.125.1648726367405;
+        Thu, 31 Mar 2022 04:32:47 -0700 (PDT)
+Received: from euclid ([71.58.109.160])
+        by smtp.gmail.com with ESMTPSA id bs32-20020a05620a472000b0067d4560a516sm12743636qkb.32.2022.03.31.04.32.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 31 Mar 2022 04:32:46 -0700 (PDT)
+Date:   Thu, 31 Mar 2022 07:32:45 -0400
+From:   Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        outreachy@lists.linux.dev
+Subject: [PATCH v2] staging: rtl8723bs: remove redundant braces in if
+ statements
+Message-ID: <20220331113245.GA425141@euclid>
 MIME-Version: 1.0
-References: <20211120193916.1309236-1-aford173@gmail.com> <319e976acb0a686e596b88520dbcda59c78afe9e.camel@pengutronix.de>
-In-Reply-To: <319e976acb0a686e596b88520dbcda59c78afe9e.camel@pengutronix.de>
-From:   Adam Ford <aford173@gmail.com>
-Date:   Thu, 31 Mar 2022 06:32:13 -0500
-Message-ID: <CAHCN7x+5HXJEdRKbm80trpNwxZRAMhX12+FQ0JeVvrqKpKf+BA@mail.gmail.com>
-Subject: Re: [PATCH] soc: imx: gpcv2: keep i.MX8MM VPU-H1 bus clock active
-To:     Lucas Stach <l.stach@pengutronix.de>
-Cc:     arm-soc <linux-arm-kernel@lists.infradead.org>,
-        Tim Harvey <tharvey@gateworks.com>,
-        Adam Ford-BE <aford@beaconembedded.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Peng Fan <peng.fan@nxp.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 31, 2022 at 4:28 AM Lucas Stach <l.stach@pengutronix.de> wrote:
->
-> Hi Adam, hi Shawn,
->
-> Am Samstag, dem 20.11.2021 um 13:39 -0600 schrieb Adam Ford:
-> > Enable the vpu-h1 clock when the domain is active because reading
-> > or writing to the VPU-H1 IP block cause the system to hang.
-> >
-> > Fixes: 656ade7aa42a ("soc: imx: gpcv2: keep i.MX8M* bus clocks enabled")
-> > Signed-off-by: Adam Ford <aford173@gmail.com>
-> >
-> > diff --git a/drivers/soc/imx/gpcv2.c b/drivers/soc/imx/gpcv2.c
-> > index b8d52d8d29db..7b6dfa33dcb9 100644
-> > --- a/drivers/soc/imx/gpcv2.c
-> > +++ b/drivers/soc/imx/gpcv2.c
-> > @@ -734,6 +734,7 @@ static const struct imx_pgc_domain imx8mm_pgc_domains[] = {
-> >                       .map = IMX8MM_VPUH1_A53_DOMAIN,
-> >               },
-> >               .pgc   = BIT(IMX8MM_PGC_VPUH1),
-> > +             .keep_clocks = true,
-> >       },
-> >
-> I missed this patch and just stumbled across it when looking at the git
-> history. I don't think this patch is correct. The H1 GPC domain does
-> not even have clocks assigned in the DT, so there is nothing to keep
-> active. Also H1 is not a MIX domain, so it should not keep any bus
-> clocks active, that is the job of the VPUMIX domain.
->
-> While this patch is a no-op, as far as I can see, it still seems wrong
-> and I think it should be reverted.
+Adhere to Linux kernel coding style.
 
-At the time I sent this, I was working with some people in the media
-group to split the G1 and G2 up in the imx8mq and add G1 and G2
-support in the imx8mm.  I had inquired about the feasibility of using
-the H1 encoder on the imx8mm, but I needed to read some registers from
-the IP block to see which features were fused out.  I tried several
-different options to get the H1 to not hang when reading registers,
-and that was the only solution I found that worked.  I thought it odd
-as well since the G1 and G2 decoders didn't appear to need this.
-However, during the course of my investigation, I learned that the
-JPEG encoder was fused out of the imx8mm, and there wasn't a plan to
-add VP8 or H.264 encodering any time soon.   Since it is, as you put
-it, a no-op, I have no objections to reverting it.
+Reported by checkpatch:
 
-adam
->
-> Regards,
-> Lucas
->
+WARNING: braces {} are not necessary for single statement blocks
+
+Signed-off-by: Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
+---
+
+v1 -> v2: Rewrite the commit message to confirm to the established conventions.(Thanks to Alison Schofield <alison.schofield.com>.) 
+
+ drivers/staging/rtl8723bs/core/rtw_ieee80211.c | 12 ++++--------
+ 1 file changed, 4 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/staging/rtl8723bs/core/rtw_ieee80211.c b/drivers/staging/rtl8723bs/core/rtw_ieee80211.c
+index 27de086903e2..68e41d99679d 100644
+--- a/drivers/staging/rtl8723bs/core/rtw_ieee80211.c
++++ b/drivers/staging/rtl8723bs/core/rtw_ieee80211.c
+@@ -335,9 +335,8 @@ int rtw_generate_ie(struct registry_priv *pregistrypriv)
+ 
+ 	ie = rtw_set_ie(ie, WLAN_EID_IBSS_PARAMS, 2, (u8 *)&(pdev_network->configuration.atim_window), &sz);
+ 
+-	if (rateLen > 8) {
++	if (rateLen > 8)
+ 		ie = rtw_set_ie(ie, WLAN_EID_EXT_SUPP_RATES, (rateLen - 8), (pdev_network->supported_rates + 8), &sz);
+-	}
+ 
+ 	/* HT Cap. */
+ 	if ((pregistrypriv->wireless_mode & WIRELESS_11_24N) &&
+@@ -366,9 +365,8 @@ unsigned char *rtw_get_wpa_ie(unsigned char *pie, int *wpa_ie_len, int limit)
+ 
+ 		if (pbuf) {
+ 			/* check if oui matches... */
+-			if (memcmp((pbuf + 2), wpa_oui_type, sizeof(wpa_oui_type))) {
++			if (memcmp((pbuf + 2), wpa_oui_type, sizeof(wpa_oui_type)))
+ 				goto check_next_ie;
+-			}
+ 
+ 			/* check version... */
+ 			memcpy((u8 *)&le_tmp, (pbuf + 6), sizeof(val16));
+@@ -493,9 +491,8 @@ int rtw_parse_wpa_ie(u8 *wpa_ie, int wpa_ie_len, int *group_cipher, int *pairwis
+ 	if (is_8021x) {
+ 		if (left >= 6) {
+ 			pos += 2;
+-			if (!memcmp(pos, SUITE_1X, 4)) {
++			if (!memcmp(pos, SUITE_1X, 4))
+ 				*is_8021x = 1;
+-			}
+ 		}
+ 	}
+ 
+@@ -514,9 +511,8 @@ int rtw_parse_wpa2_ie(u8 *rsn_ie, int rsn_ie_len, int *group_cipher, int *pairwi
+ 		return _FAIL;
+ 	}
+ 
+-	if ((*rsn_ie != WLAN_EID_RSN) || (*(rsn_ie+1) != (u8)(rsn_ie_len - 2))) {
++	if ((*rsn_ie != WLAN_EID_RSN) || (*(rsn_ie+1) != (u8)(rsn_ie_len - 2)))
+ 		return _FAIL;
+-	}
+ 
+ 	pos = rsn_ie;
+ 	pos += 4;
+-- 
+2.25.1
+
