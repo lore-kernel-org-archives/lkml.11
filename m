@@ -2,94 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A30EAC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 15:28:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0679AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 15:31:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238266AbiCaP3z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 11:29:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36192 "EHLO
+        id S238282AbiCaPdX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 11:33:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233539AbiCaP3v (ORCPT
+        with ESMTP id S233539AbiCaPdW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 11:29:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFC8C21BC64;
-        Thu, 31 Mar 2022 08:28:04 -0700 (PDT)
+        Thu, 31 Mar 2022 11:33:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5A9F21C701;
+        Thu, 31 Mar 2022 08:31:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 523D961ADE;
-        Thu, 31 Mar 2022 15:28:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D921C340ED;
-        Thu, 31 Mar 2022 15:28:03 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="DwM2QVqb"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1648740481;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=gyym09nEXYz1vXWaGFoZImcv0N4xudomjsRouLwVCy4=;
-        b=DwM2QVqbYVkY7XhqfgI0zmYswv37XQd0+mcVx/kkeM9pTOt69bIUto5IDT4l4FWZ8SjmJI
-        bfXjvJ6tZ/GNLay1m6nO0KKiWHtPK+NEQFeJA4j0M4bAX+9StqYV88sRYEGJDSh2d/OTYf
-        xPp4tyIxl8WNEF1jT1K+LUyi3ikv5vQ=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 9011b3a2 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Thu, 31 Mar 2022 15:28:01 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Theodore Ts'o <tytso@mit.edu>
-Subject: [PATCH v2] random: mix build-time latent entropy into pool at init
-Date:   Thu, 31 Mar 2022 11:26:41 -0400
-Message-Id: <20220331152641.169301-1-Jason@zx2c4.com>
-In-Reply-To: <20220331150706.124075-1-Jason@zx2c4.com>
-References: <20220331150706.124075-1-Jason@zx2c4.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 60CA161AE4;
+        Thu, 31 Mar 2022 15:31:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10C4EC340F3;
+        Thu, 31 Mar 2022 15:31:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648740693;
+        bh=ZlzjrhJwihw4PodPL/miGHnNRfWsGW7gPpCGkZ2TtMQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=NMRHPEMaONOOXQBk1kxEbDYqgJgNwaqh0/8/L+Itgg6BiFK6KOZFi70NkAUdNt5/L
+         kI9aj0t9AwtRLeEcpbIXUD+8dJ3gqaarypkdDppBnlYs546tXjrIlAgfRVxzauwGvz
+         hSe0F2mYXc81Tn2+ICopQpyl8zybxyg8Sv1G8tLO03brdFYe1jAYHJxAyn+0oXwrsy
+         k7Z03aTKXOBmixXOzaNsc3oi8pR7pquugA6puOXycDG6EJvXDhPrsGykowpKvkbHms
+         vdhfAJKLvCiXdHBW1EP0zj3ggmOvZ5YcgbpfJJY5xH9ZTrTJdXindmgxGl+Ihfb6GC
+         xkt2U3FvMlWUw==
+From:   Jeff Layton <jlayton@kernel.org>
+To:     ceph-devel@vger.kernel.org
+Cc:     xiubli@redhat.com, idryomov@gmail.com, lhenriques@suse.de,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Al Viro <viro@zeniv.linux.org.uk>
+Subject: [PATCH v12 01/54] vfs: export new_inode_pseudo
+Date:   Thu, 31 Mar 2022 11:30:37 -0400
+Message-Id: <20220331153130.41287-2-jlayton@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220331153130.41287-1-jlayton@kernel.org>
+References: <20220331153130.41287-1-jlayton@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Prior, the "input_pool_data" array needed no real initialization, and so
-it was easy to mark it with __latent_entropy to populate it during
-compile-time. In switching to using a hash function, this required us to
-specifically initialize it to some specific state, which means we
-dropped the __latent_entropy attribute. An unfortunate side effect was
-this meant the pool was no longer seeded using compile-time random data.
-In order to bring this back, we declare an array in rand_initialize()
-with __latent_entropy and call mix_pool_bytes() on that at init, which
-accomplishes the same thing as before. We make this __initconst, so that
-it doesn't take up space at runtime after init.
+Ceph needs to be able to allocate inodes ahead of a create that might
+involve a fscrypt-encrypted inode. new_inode() almost fits the bill,
+but it puts the inode on the sb->s_inodes list and when we go to hash
+it, that might be done again.
 
-Fixes: 6e8ec2552c7d ("random: use computational hash for entropy extraction")
-Cc: Dominik Brodowski <linux@dominikbrodowski.net>
-Cc: Theodore Ts'o <tytso@mit.edu>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+We could work around that by setting I_CREATING on the new inode, but
+that causes ilookup5 to return -ESTALE if something tries to find it
+before I_NEW is cleared. This is desirable behavior for most
+filesystems, but doesn't work for ceph.
+
+To work around all of this, just use new_inode_pseudo which doesn't add
+it to the sb->s_inodes list.
+
+Cc: Al Viro <viro@zeniv.linux.org.uk>
+Signed-off-by: Jeff Layton <jlayton@kernel.org>
 ---
-Changes v1->v2:
-- Use __initconst.
+ fs/inode.c | 1 +
+ 1 file changed, 1 insertion(+)
 
- drivers/char/random.c | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index 40107f8b9e9e..1d8242969751 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -975,6 +975,11 @@ int __init rand_initialize(void)
- 	bool arch_init = true;
- 	unsigned long rv;
+diff --git a/fs/inode.c b/fs/inode.c
+index 63324df6fa27..9ddf7d1a7359 100644
+--- a/fs/inode.c
++++ b/fs/inode.c
+@@ -1025,6 +1025,7 @@ struct inode *new_inode_pseudo(struct super_block *sb)
+ 	}
+ 	return inode;
+ }
++EXPORT_SYMBOL(new_inode_pseudo);
  
-+#if defined(LATENT_ENTROPY_PLUGIN)
-+	static const u8 compiletime_seed[BLAKE2S_BLOCK_SIZE] __initconst __latent_entropy;
-+	_mix_pool_bytes(compiletime_seed, sizeof(compiletime_seed));
-+#endif
-+
- 	for (i = 0; i < BLAKE2S_BLOCK_SIZE; i += sizeof(rv)) {
- 		if (!arch_get_random_seed_long_early(&rv) &&
- 		    !arch_get_random_long_early(&rv)) {
+ /**
+  *	new_inode 	- obtain an inode
 -- 
 2.35.1
 
