@@ -2,49 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4776C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:50:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB965C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:51:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348698AbiDAOwe (ORCPT
+        id S1348357AbiDAOws (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 10:52:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39120 "EHLO
+        Fri, 1 Apr 2022 10:52:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347588AbiDAOdN (ORCPT
+        with ESMTP id S1347583AbiDAOdN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 1 Apr 2022 10:33:13 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66F8F24F291;
-        Fri,  1 Apr 2022 07:30:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD7A521592E;
+        Fri,  1 Apr 2022 07:29:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 26765B8250B;
-        Fri,  1 Apr 2022 14:30:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F89FC340F2;
-        Fri,  1 Apr 2022 14:29:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5E293B82505;
+        Fri,  1 Apr 2022 14:29:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48058C34117;
+        Fri,  1 Apr 2022 14:29:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823399;
-        bh=bQHH1mY6aTg8iDORT8gr9BI0rqtlsMuolgkU5jHa954=;
+        s=k20201202; t=1648823391;
+        bh=BajCV1XP1yu2fNsxTPAu527PA7vDUg5dFLjTlsjP+bE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Yl7PFo9UFC4CVnEkRdx6OkTYmC8fYv7LCFKMqeRWZrZL/CJ3/QAjzsu2EdUG5gOTk
-         Kn8v0LUa2IpVB6bUX2892m5Wr8RJHKYfn9vv41h5/3KR5I2d55C7hTdT9Efe27DaYE
-         hNeQmD7wLB22/ulFTAP3RGju4jkvaPUxcprgmQBA6HYx+hsCoQg85SW3NoP39p/1Gq
-         WDCVhq8XjPyEZ2vUAHgspI74g+jswiqFnmTKoWEpX95RKgqRjyXWcXhxQWs5fvqEk+
-         w93zD1/ufdI5mrtHtqZvliW6Wj24nA1RiwL41YuHH5XX3E4b2aS5PAtpwsNhtiTuGt
-         n2fCbfJ67IE7w==
+        b=MNQBaLi1BDv4m+14KN/FDCEAMPa0bCa6U+nZYM4bSApM8oi0Z8yCSvks3XGKb/6DZ
+         SrCpaiiCa5M/OO9Kb8PhJiRUmkrSowcxPqGxwPGT3jhynscUZpc07W63l3npcEvzgN
+         ljaGI4XxzatQ4JKd3VkWJPuLhqSunmeGhJVsMmq9Dd/xzlfyQpri9AQNwh7Y0h+Wft
+         1PjUNH5MMEuhOyc39Ovmyvoh7FKKtTn2HoN8rxFUOH6iSAfMQM6Yb34uf+icxgKOFN
+         ZIj9UBo4Ax7NAMJuPcgGgoGeH38TfNEsi3xr7sUbrwrQMDxt6aL0g6GeDiJ1bIHcCS
+         3pcia6Fuykupg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ilan Peer <ilan.peer@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        johannes.berg@intel.com, avraham.stern@intel.com,
-        ayala.beker@intel.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 079/149] iwlwifi: mvm: Passively scan non PSC channels only when requested so
-Date:   Fri,  1 Apr 2022 10:24:26 -0400
-Message-Id: <20220401142536.1948161-79-sashal@kernel.org>
+Cc:     Hans de Goede <hdegoede@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, balbi@kernel.org,
+        linux-usb@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 077/149] usb: dwc3: pci: Set the swnode from inside dwc3_pci_quirks()
+Date:   Fri,  1 Apr 2022 10:24:24 -0400
+Message-Id: <20220401142536.1948161-77-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401142536.1948161-1-sashal@kernel.org>
 References: <20220401142536.1948161-1-sashal@kernel.org>
@@ -56,113 +53,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ilan Peer <ilan.peer@intel.com>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit 9966904e9472703a05861f343157cd78f47514fd ]
+[ Upstream commit e285cb403994419e997749c9a52b9370884ae0c8 ]
 
-Non PSC channels should generally be scanned based on information about
-collocated APs obtained during scan on legacy bands, and otherwise
-should not be scanned unless specifically requested so (as there are
-relatively many non PSC channels, scanning them passively is time consuming
-and interferes with regular data traffic).
+The quirk handling may need to set some different properties
+which means using a different swnode, move the setting of the swnode
+to inside dwc3_pci_quirks() so that the quirk handling can choose
+a different swnode.
 
-Thus, modify the scan logic to avoid passively scanning PSC channels
-if there is no information about collocated APs and the scan is not
-a passive scan.
-
-Signed-off-by: Ilan Peer <ilan.peer@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20220204122220.457da4cc95eb.Ic98472bab5f5475f1e102547644caaae89ce4c4a@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Link: https://lore.kernel.org/r/20220213130524.18748-4-hdegoede@redhat.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/mvm/scan.c | 42 ++++++++++++++-----
- 1 file changed, 32 insertions(+), 10 deletions(-)
+ drivers/usb/dwc3/dwc3-pci.c | 11 ++++-------
+ 1 file changed, 4 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/scan.c b/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
-index 4cd507cb412d..630cfb64c6b1 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
-@@ -1735,27 +1735,37 @@ iwl_mvm_umac_scan_fill_6g_chan_list(struct iwl_mvm *mvm,
- }
+diff --git a/drivers/usb/dwc3/dwc3-pci.c b/drivers/usb/dwc3/dwc3-pci.c
+index 06d0e88ec8af..4d9608cc55f7 100644
+--- a/drivers/usb/dwc3/dwc3-pci.c
++++ b/drivers/usb/dwc3/dwc3-pci.c
+@@ -185,7 +185,8 @@ static const struct software_node dwc3_pci_amd_mr_swnode = {
+ 	.properties = dwc3_pci_mr_properties,
+ };
  
- /* TODO: this function can be merged with iwl_mvm_scan_umac_fill_ch_p_v6 */
--static void
--iwl_mvm_umac_scan_cfg_channels_v6_6g(struct iwl_mvm_scan_params *params,
-+static u32
-+iwl_mvm_umac_scan_cfg_channels_v6_6g(struct iwl_mvm *mvm,
-+				     struct iwl_mvm_scan_params *params,
- 				     u32 n_channels,
- 				     struct iwl_scan_probe_params_v4 *pp,
- 				     struct iwl_scan_channel_params_v6 *cp,
- 				     enum nl80211_iftype vif_type)
+-static int dwc3_pci_quirks(struct dwc3_pci *dwc)
++static int dwc3_pci_quirks(struct dwc3_pci *dwc,
++			   const struct software_node *swnode)
  {
--	struct iwl_scan_channel_cfg_umac *channel_cfg = cp->channel_config;
- 	int i;
- 	struct cfg80211_scan_6ghz_params *scan_6ghz_params =
- 		params->scan_6ghz_params;
-+	u32 ch_cnt;
+ 	struct pci_dev			*pdev = dwc->pci;
  
--	for (i = 0; i < params->n_channels; i++) {
-+	for (i = 0, ch_cnt = 0; i < params->n_channels; i++) {
- 		struct iwl_scan_channel_cfg_umac *cfg =
--			&cp->channel_config[i];
-+			&cp->channel_config[ch_cnt];
- 
- 		u32 s_ssid_bitmap = 0, bssid_bitmap = 0, flags = 0;
- 		u8 j, k, s_max = 0, b_max = 0, n_used_bssid_entries;
- 		bool force_passive, found = false, allow_passive = true,
- 		     unsolicited_probe_on_chan = false, psc_no_listen = false;
- 
-+		/*
-+		 * Avoid performing passive scan on non PSC channels unless the
-+		 * scan is specifically a passive scan, i.e., no SSIDs
-+		 * configured in the scan command.
-+		 */
-+		if (!cfg80211_channel_is_psc(params->channels[i]) &&
-+		    !params->n_6ghz_params && params->n_ssids)
-+			continue;
-+
- 		cfg->v1.channel_num = params->channels[i]->hw_value;
- 		cfg->v2.band = 2;
- 		cfg->v2.iter_count = 1;
-@@ -1875,8 +1885,16 @@ iwl_mvm_umac_scan_cfg_channels_v6_6g(struct iwl_mvm_scan_params *params,
- 		else
- 			flags |= bssid_bitmap | (s_ssid_bitmap << 16);
- 
--		channel_cfg[i].flags |= cpu_to_le32(flags);
-+		cfg->flags |= cpu_to_le32(flags);
-+		ch_cnt++;
+@@ -242,7 +243,7 @@ static int dwc3_pci_quirks(struct dwc3_pci *dwc)
+ 		}
  	}
-+
-+	if (params->n_channels > ch_cnt)
-+		IWL_DEBUG_SCAN(mvm,
-+			       "6GHz: reducing number channels: (%u->%u)\n",
-+			       params->n_channels, ch_cnt);
-+
-+	return ch_cnt;
+ 
+-	return 0;
++	return device_add_software_node(&dwc->dwc3->dev, swnode);
  }
  
- static u8 iwl_mvm_scan_umac_chan_flags_v2(struct iwl_mvm *mvm,
-@@ -2424,10 +2442,14 @@ static int iwl_mvm_scan_umac_v14_and_above(struct iwl_mvm *mvm,
- 	if (ret)
- 		return ret;
+ #ifdef CONFIG_PM
+@@ -307,11 +308,7 @@ static int dwc3_pci_probe(struct pci_dev *pci, const struct pci_device_id *id)
+ 	dwc->dwc3->dev.parent = dev;
+ 	ACPI_COMPANION_SET(&dwc->dwc3->dev, ACPI_COMPANION(dev));
  
--	iwl_mvm_umac_scan_cfg_channels_v6_6g(params,
--					     params->n_channels,
--					     pb, cp, vif->type);
--	cp->count = params->n_channels;
-+	cp->count = iwl_mvm_umac_scan_cfg_channels_v6_6g(mvm, params,
-+							 params->n_channels,
-+							 pb, cp, vif->type);
-+	if (!cp->count) {
-+		mvm->scan_uid_status[uid] = 0;
-+		return -EINVAL;
-+	}
-+
- 	if (!params->n_ssids ||
- 	    (params->n_ssids == 1 && !params->ssids[0].ssid_len))
- 		cp->flags |= IWL_SCAN_CHANNEL_FLAG_6G_PSC_NO_FILTER;
+-	ret = device_add_software_node(&dwc->dwc3->dev, (void *)id->driver_data);
+-	if (ret < 0)
+-		goto err;
+-
+-	ret = dwc3_pci_quirks(dwc);
++	ret = dwc3_pci_quirks(dwc, (void *)id->driver_data);
+ 	if (ret)
+ 		goto err;
+ 
 -- 
 2.34.1
 
