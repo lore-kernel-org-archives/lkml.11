@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CF38C38A05
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 346C3C3527D
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:38:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351933AbiDAPfn (ORCPT
+        id S1351784AbiDAPff (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:35:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55860 "EHLO
+        Fri, 1 Apr 2022 11:35:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349961AbiDAO61 (ORCPT
+        with ESMTP id S1350026AbiDAO6p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:58:27 -0400
+        Fri, 1 Apr 2022 10:58:45 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADCE91753BF;
-        Fri,  1 Apr 2022 07:45:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35A2817C438;
+        Fri,  1 Apr 2022 07:45:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 499D760BC2;
-        Fri,  1 Apr 2022 14:45:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B44B8C34111;
-        Fri,  1 Apr 2022 14:45:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C381C60AC0;
+        Fri,  1 Apr 2022 14:45:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68764C34113;
+        Fri,  1 Apr 2022 14:45:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824339;
-        bh=5ctcsf1H1Wj6BrGtRe9obFjz7c8kVAlzBvY/kcXosyU=;
+        s=k20201202; t=1648824357;
+        bh=7+fl+5KI2HLiQc9ZhTDUoUDKUEeoId2FXhuByBCZFuM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=N1/2x+11aQGdDc1dOV03TFV0TgECbGqhDTUeIre86k17ea1C4jjjnTa7EcL/3LBxi
-         gNMLSkD8iI98DfS+E5pZJ+Gi3tqDGjTigDKhsJCFmvoqSf3Mz2LSPpXdqXJyyS5O/j
-         XMp2LwEkaeKjYO0Qit5bzEOsjCODFWDev4tPlbY1V0o9m9dsuRQW6NOWeT76y47jrP
-         ksnOFdVr9I6zLaE9VNcD70oCuY0BdJNwkesvnQsgKZ+mzZ2EsTkNGtWG/9ZJPGC0Yk
-         xixLaYTfsJOLePmaNu7uNd8twWEk0TtIK3xtEqDRsHeOheLcK1QkL4yZ+iKPRWvRL5
-         w9h54Ccj10Sgw==
+        b=K38FbCoMy52gObO/fr4LC1qmAbTvHqbnOUIjZ3BxPIyzXUuPEDgJlpg0EjLXXQqXi
+         ZUDLr95f6WGr/OB7a/UmNklouwLOmVFVM2mV48IUcIcI2uwEpvELPxnmGIVNVkDVug
+         qtmty8bGAFivNmcMUK64MjqRQQxT9NGd62HblfI4SYs+HvfUwdCv3p8DxBJOWjiK2l
+         VuN4EoFIBUZgi+DxVcRhI2nzrwidoBEdTm410fPEnPxRxwvZC1I8OGWK19g4jc52+v
+         xADpXpzl2eibGwHnw/93pC3MijXXp0c2FTXk2+mqHIj6FlqFE5ZT8c5cu28mfK63QS
+         Izhr9ypYRjaNg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Dust Li <dust.li@linux.alibaba.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, kgraul@linux.ibm.com,
-        kuba@kernel.org, pabeni@redhat.com, linux-s390@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 23/37] net/smc: correct settings of RMB window update limit
-Date:   Fri,  1 Apr 2022 10:44:32 -0400
-Message-Id: <20220401144446.1954694-23-sashal@kernel.org>
+Cc:     Jianglei Nie <niejianglei2021@163.com>,
+        Hannes Reinecke <hare@suse.de>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, jejb@linux.ibm.com,
+        linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 31/37] scsi: libfc: Fix use after free in fc_exch_abts_resp()
+Date:   Fri,  1 Apr 2022 10:44:40 -0400
+Message-Id: <20220401144446.1954694-31-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401144446.1954694-1-sashal@kernel.org>
 References: <20220401144446.1954694-1-sashal@kernel.org>
@@ -54,50 +54,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dust Li <dust.li@linux.alibaba.com>
+From: Jianglei Nie <niejianglei2021@163.com>
 
-[ Upstream commit 6bf536eb5c8ca011d1ff57b5c5f7c57ceac06a37 ]
+[ Upstream commit 271add11994ba1a334859069367e04d2be2ebdd4 ]
 
-rmbe_update_limit is used to limit announcing receive
-window updating too frequently. RFC7609 request a minimal
-increase in the window size of 10% of the receive buffer
-space. But current implementation used:
+fc_exch_release(ep) will decrease the ep's reference count. When the
+reference count reaches zero, it is freed. But ep is still used in the
+following code, which will lead to a use after free.
 
-  min_t(int, rmbe_size / 10, SOCK_MIN_SNDBUF / 2)
+Return after the fc_exch_release() call to avoid use after free.
 
-and SOCK_MIN_SNDBUF / 2 == 2304 Bytes, which is almost
-always less then 10% of the receive buffer space.
-
-This causes the receiver always sending CDC message to
-update its consumer cursor when it consumes more then 2K
-of data. And as a result, we may encounter something like
-"TCP silly window syndrome" when sending 2.5~8K message.
-
-This patch fixes this using max(rmbe_size / 10, SOCK_MIN_SNDBUF / 2).
-
-With this patch and SMC autocorking enabled, qperf 2K/4K/8K
-tcp_bw test shows 45%/75%/40% increase in throughput respectively.
-
-Signed-off-by: Dust Li <dust.li@linux.alibaba.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Link: https://lore.kernel.org/r/20220303015115.459778-1-niejianglei2021@163.com
+Reviewed-by: Hannes Reinecke <hare@suse.de>
+Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/smc/smc_core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/scsi/libfc/fc_exch.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
-index 12672019f76c..66cdfd5725ac 100644
---- a/net/smc/smc_core.c
-+++ b/net/smc/smc_core.c
-@@ -734,7 +734,7 @@ static struct smc_buf_desc *smc_buf_get_slot(int compressed_bufsize,
-  */
- static inline int smc_rmb_wnd_update_limit(int rmbe_size)
- {
--	return min_t(int, rmbe_size / 10, SOCK_MIN_SNDBUF / 2);
-+	return max_t(int, rmbe_size / 10, SOCK_MIN_SNDBUF / 2);
- }
+diff --git a/drivers/scsi/libfc/fc_exch.c b/drivers/scsi/libfc/fc_exch.c
+index e5b18e5d46da..6e2a36eeb12a 100644
+--- a/drivers/scsi/libfc/fc_exch.c
++++ b/drivers/scsi/libfc/fc_exch.c
+@@ -1697,6 +1697,7 @@ static void fc_exch_abts_resp(struct fc_exch *ep, struct fc_frame *fp)
+ 	if (cancel_delayed_work_sync(&ep->timeout_work)) {
+ 		FC_EXCH_DBG(ep, "Exchange timer canceled due to ABTS response\n");
+ 		fc_exch_release(ep);	/* release from pending timer hold */
++		return;
+ 	}
  
- static struct smc_buf_desc *smcr_new_buf_create(struct smc_link_group *lgr,
+ 	spin_lock_bh(&ep->ex_lock);
 -- 
 2.34.1
 
