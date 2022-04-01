@@ -2,133 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23798C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 20:08:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63B4AC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 20:08:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351446AbiDAUKD (ORCPT
+        id S1351590AbiDAUK1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 16:10:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39512 "EHLO
+        Fri, 1 Apr 2022 16:10:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236538AbiDAUKC (ORCPT
+        with ESMTP id S1351459AbiDAUKZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 16:10:02 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25AD520A968
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 13:08:11 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id j8so3319158pll.11
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 13:08:11 -0700 (PDT)
+        Fri, 1 Apr 2022 16:10:25 -0400
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A58926E2
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 13:08:35 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id p8so3584912pfh.8
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 13:08:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=rivosinc-com.20210112.gappssmtp.com; s=20210112;
-        h=subject:date:message-id:mime-version:content-transfer-encoding:cc
-         :from:to;
-        bh=oaVvbEqqipwHQTIf3joX3UWU9ygyYcl2y8a8ITVo6tI=;
-        b=k7EeWNdpIH4WVpMJowLLTM4siPOiAyNkMqgjSycH5vsKmBkC7gr9Ro4YhGjd9mW2c5
-         e2uvsu+UIhH/sVriu5walOhuwLGAa6jfbO9wAJA4E9re2XJPSyXAEifJR7JdhtxQSns6
-         jsfrd9ioepD20/E7Tn76cLOHNA7YWqhQ7DQ5Mf9QQzATupE2j7LFeZmP3gT5nBvqIDrN
-         +3VOtAndRkkg36h5zfyWBg2rlKeNlKhaEIn9m5WPFaKwAHGHIH0xj5m/9/L/NFBil44X
-         Hg+zuOAqOcbN5etjgIZ7CNrmHGFBnZ8WS2dsAliwokqgDXCT9wWb/1wvl0rScQpwrv/Z
-         gzQg==
+        h=date:subject:in-reply-to:cc:from:to:message-id:mime-version
+         :content-transfer-encoding;
+        bh=lb/3ljB0Z+nyG5ugSaAJ2btRazfgku/tmL1wo62IQnM=;
+        b=bdsivsEBTI/uPp3I7z2vs5Rdqn3dxYrsYVC1Eezw4DSBAI+Q4VDwVntQrvdr3ec9EP
+         PY9plz3V6Kwr5eTjYSZZc2i0p5khLNi2GCuCVr8o4Mzd56iQlpvtKGBB7OkQIQvQBIeb
+         lCUN8hUW9gXeryM0gYc5jY4HrlYKTzUFlCwDLbvkAs2G9Zf3F6hNKrMuQ6y1nd0FEZj+
+         DUw4+qAxiRfC3+YT1WzpsHbC7bUKDVn8BZHaamNcHuJjUlL7aiJ1HfDu721XW/6TaaIw
+         FvoBsof5GEuELCistCX7f8QpqVexGbOgIeEVpxLyCGNpgObECokQ6yWzqlzczTJNDs3x
+         AwdA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:date:message-id:mime-version
-         :content-transfer-encoding:cc:from:to;
-        bh=oaVvbEqqipwHQTIf3joX3UWU9ygyYcl2y8a8ITVo6tI=;
-        b=zcqwP/auCpmdSLruuNNxXw5o0Lock59p/TfkUvkL74wrzal7aJsOdFd6atKwVDYp2k
-         7xpYE8yA2aZzjVLdUy2fljDMQ1114D8DpOrredLuzEXdZpvKCuqo7mUkm6d2KRqgz9DK
-         zkaSonIrlwDOgJZxdaUlBqUZ82GbWf6YciE1VtlEq1TuQQ9NEd0R3ljawnMFf0xRd3HF
-         FFnTUeelt85xjjmCLqPOFRREw/XM5fOC/7tAccLTvysLjq/RNkt0fO5LpeLYuxXx4b99
-         Wvx/JXeb6EX1pZqyb2l/tYYpyv4LKSeD6obIfyBvAGjZjQ1PK+V4/730ibtdRxKMZ7qZ
-         60CA==
-X-Gm-Message-State: AOAM532vSxQZMnzMvc49IVGU/XQP7jaA7Zi2hs1EdLIXC+JbU6ZaVkkV
-        EecbIoJ83/yt6fUGChS+3XfRMg==
-X-Google-Smtp-Source: ABdhPJwdZOxVp13ruSzXMOCgT6zwk8pQe20NJqecZkfUiDNZjB2McLUszTbrgpXIKCb6iddg5qehtA==
-X-Received: by 2002:a17:90a:448d:b0:1ca:1ff6:da22 with SMTP id t13-20020a17090a448d00b001ca1ff6da22mr10772027pjg.12.1648843690487;
-        Fri, 01 Apr 2022 13:08:10 -0700 (PDT)
+        h=x-gm-message-state:date:subject:in-reply-to:cc:from:to:message-id
+         :mime-version:content-transfer-encoding;
+        bh=lb/3ljB0Z+nyG5ugSaAJ2btRazfgku/tmL1wo62IQnM=;
+        b=uVyZx61tJgzENetb53MMuOKm4qGChh/fO+J/tkLztnbDda0cmplfc+wma3bwtspZqj
+         nin/WMwjmxgvd2Uy6VtazYpnTJLkdHYB5FIY9tpz3lDTIsUrT1uXy74BGBjVgf10g1DF
+         3R2lh3J9MT27p7mpqy4HQDAVgF8ho9OCv1e2VF8/eG3BwSAy3CgirnBWipaAs5OUjEJH
+         +tMZMhDGjxQHSKvM8GOc/T1jxD7l13RdnoiEm5AZLUsC69jJqLYes8RIs2kvHf4L6dyj
+         kS/r/2EZaLTQbFHDSL2g88UVbQdYUEQEl/wbDFlfI4W6gGaM8JdmateacgGTXbONeNEW
+         MU2g==
+X-Gm-Message-State: AOAM530mqe2/FaJ7ddxSm0ZVpbwLM5RXw51kpQz35KXxCDlph01Xm3fY
+        BPFvfHF2cpqwj3Mdyk1giYxU2A==
+X-Google-Smtp-Source: ABdhPJziEmbLprb0blXlYUPOyBkK1XbuSWyCZyHlxDi5Vvh8NROKeXLmHx886EHC2jKAi+UHKs49FQ==
+X-Received: by 2002:a05:6a00:15c6:b0:4fa:aaec:ef42 with SMTP id o6-20020a056a0015c600b004faaaecef42mr12629312pfu.74.1648843714720;
+        Fri, 01 Apr 2022 13:08:34 -0700 (PDT)
 Received: from localhost (76-210-143-223.lightspeed.sntcca.sbcglobal.net. [76.210.143.223])
-        by smtp.gmail.com with ESMTPSA id c69-20020a633548000000b0038554192b91sm3179858pga.38.2022.04.01.13.08.08
+        by smtp.gmail.com with ESMTPSA id p128-20020a625b86000000b004fa666a1327sm3925052pfb.102.2022.04.01.13.08.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Apr 2022 13:08:08 -0700 (PDT)
-Subject: [PATCH v2] dt-bindings: Fix phandle-array issues in the idle-states bindings
-Date:   Fri,  1 Apr 2022 12:59:19 -0700
-Message-Id: <20220401195919.17493-1-palmer@rivosinc.com>
-X-Mailer: git-send-email 2.34.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Cc:     robh+dt@kernel.org, Palmer Dabbelt <palmer@rivosinc.com>,
-        anup@brainfault.org, guoren@kernel.org, lorenzo.pieralisi@arm.com,
+        Fri, 01 Apr 2022 13:08:34 -0700 (PDT)
+Date:   Fri, 01 Apr 2022 13:08:34 -0700 (PDT)
+X-Google-Original-Date: Fri, 01 Apr 2022 13:08:32 PDT (-0700)
+Subject:     Re: [PATCH] dt-bindings: Fix phandle-array issues in the idle-states bindings
+In-Reply-To: <CAL_Jsq+ALvAUR5V4Fv1RohA=-PB0Ry05ETm6OqJ+f=ediGc7HA@mail.gmail.com>
+CC:     anup@brainfault.org, guoren@kernel.org, lorenzo.pieralisi@arm.com,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 From:   Palmer Dabbelt <palmer@rivosinc.com>
 To:     Rob Herring <robh@kernel.org>
+Message-ID: <mhng-40701558-3769-432e-a22e-9a93a270868e@palmer-mbp2014>
+Mime-Version: 1.0 (MHng)
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Palmer Dabbelt <palmer@rivosinc.com>
+On Fri, 01 Apr 2022 12:50:39 PDT (-0700), Rob Herring wrote:
+> On Fri, Apr 1, 2022 at 2:32 PM Palmer Dabbelt <palmer@rivosinc.com> wrote:
+>>
+>> From: Palmer Dabbelt <palmer@rivosinc.com>
+>>
+>> As per 39bd2b6a3783 ("dt-bindings: Improve phandle-array schemas"), the
+>> phandle-array bindings have been disambiguated.  This fixes the new
+>> generic idle-states bindings to comply with the schema.
+>>
+>> Fixes: 1bd524f7e8d8 ("dt-bindings: Add common bindings for ARM and RISC-V idle states")
+>> Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+>> ---
+>>  .../devicetree/bindings/cpu/idle-states.yaml  | 96 +++++++++----------
+>>  1 file changed, 48 insertions(+), 48 deletions(-)
+>>
+>> diff --git a/Documentation/devicetree/bindings/cpu/idle-states.yaml b/Documentation/devicetree/bindings/cpu/idle-states.yaml
+>> index 95506ffb816c..6f5223659950 100644
+>> --- a/Documentation/devicetree/bindings/cpu/idle-states.yaml
+>> +++ b/Documentation/devicetree/bindings/cpu/idle-states.yaml
+>> @@ -385,8 +385,8 @@ examples:
+>>              compatible = "arm,cortex-a57";
+>>              reg = <0x0 0x0>;
+>>              enable-method = "psci";
+>> -            cpu-idle-states = <&CPU_RETENTION_0_0 &CPU_SLEEP_0_0
+>> -                   &CLUSTER_RETENTION_0 &CLUSTER_SLEEP_0>;
+>> +            cpu-idle-states = <&CPU_RETENTION_0_0>, <&CPU_SLEEP_0_0>,
+>> +                   <&CLUSTER_RETENTION_0>, <&CLUSTER_SLEEP_0>;
+>
+> All the Arm examples are already fixed. You need to fix just the RiscV
+> examples added in your branch. Otherwise, it is a bunch of merge
+> conflicts.
 
-As per 39bd2b6a3783 ("dt-bindings: Improve phandle-array schemas"), the
-phandle-array bindings have been disambiguated.  This fixes the new
-RISC-V idle-states bindings to comply with the schema.
-
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
-
----
-
-Changes since v1:
-
-* Only fix the RISC-V bindings, to avoid a merge conflict.
----
- .../devicetree/bindings/cpu/idle-states.yaml     | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
-
-diff --git a/Documentation/devicetree/bindings/cpu/idle-states.yaml b/Documentation/devicetree/bindings/cpu/idle-states.yaml
-index 95506ffb816c..0e89c469d0fc 100644
---- a/Documentation/devicetree/bindings/cpu/idle-states.yaml
-+++ b/Documentation/devicetree/bindings/cpu/idle-states.yaml
-@@ -719,8 +719,8 @@ examples:
-             reg = <0x0>;
-             riscv,isa = "rv64imafdc";
-             mmu-type = "riscv,sv48";
--            cpu-idle-states = <&CPU_RET_0_0 &CPU_NONRET_0_0
--                            &CLUSTER_RET_0 &CLUSTER_NONRET_0>;
-+            cpu-idle-states = <&CPU_RET_0_0>, <&CPU_NONRET_0_0>,
-+                            <&CLUSTER_RET_0>, <&CLUSTER_NONRET_0>;
- 
-             cpu_intc0: interrupt-controller {
-                 #interrupt-cells = <1>;
-@@ -735,8 +735,8 @@ examples:
-             reg = <0x1>;
-             riscv,isa = "rv64imafdc";
-             mmu-type = "riscv,sv48";
--            cpu-idle-states = <&CPU_RET_0_0 &CPU_NONRET_0_0
--                            &CLUSTER_RET_0 &CLUSTER_NONRET_0>;
-+            cpu-idle-states = <&CPU_RET_0_0>, <&CPU_NONRET_0_0>,
-+                            <&CLUSTER_RET_0>, <&CLUSTER_NONRET_0>;
- 
-             cpu_intc1: interrupt-controller {
-                 #interrupt-cells = <1>;
-@@ -751,8 +751,8 @@ examples:
-             reg = <0x10>;
-             riscv,isa = "rv64imafdc";
-             mmu-type = "riscv,sv48";
--            cpu-idle-states = <&CPU_RET_1_0 &CPU_NONRET_1_0
--                            &CLUSTER_RET_1 &CLUSTER_NONRET_1>;
-+            cpu-idle-states = <&CPU_RET_1_0>, <&CPU_NONRET_1_0>,
-+                            <&CLUSTER_RET_1>, <&CLUSTER_NONRET_1>;
- 
-             cpu_intc10: interrupt-controller {
-                 #interrupt-cells = <1>;
-@@ -767,8 +767,8 @@ examples:
-             reg = <0x11>;
-             riscv,isa = "rv64imafdc";
-             mmu-type = "riscv,sv48";
--            cpu-idle-states = <&CPU_RET_1_0 &CPU_NONRET_1_0
--                            &CLUSTER_RET_1 &CLUSTER_NONRET_1>;
-+            cpu-idle-states = <&CPU_RET_1_0>, <&CPU_NONRET_1_0>,
-+                            <&CLUSTER_RET_1>, <&CLUSTER_NONRET_1>;
- 
-             cpu_intc11: interrupt-controller {
-                 #interrupt-cells = <1>;
--- 
-2.34.1
-
+Sorry, I'd missed that.  I sent a v2 (still trying to figure out what's 
+wrong with the checkers locally).
