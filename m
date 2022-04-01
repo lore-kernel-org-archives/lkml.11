@@ -2,109 +2,253 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B573C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 13:37:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE999C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 13:39:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346411AbiDANjp (ORCPT
+        id S1346419AbiDANlR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 09:39:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44126 "EHLO
+        Fri, 1 Apr 2022 09:41:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234797AbiDANjo (ORCPT
+        with ESMTP id S233738AbiDANlQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 09:39:44 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4DB527E84F;
-        Fri,  1 Apr 2022 06:37:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1648820275; x=1680356275;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Qv8FscXyHh5HjbavNwVRDW0UTLUik5p2IFzPgviCoaQ=;
-  b=ambMfjm4f8LbCOW4TSD24QEkLMX0+vdNcYprhLmWq8ts8LNkpn0/3raw
-   Pgvrajj2q9fYu6yEvB0RmQBPpmUyHl/9BAzljHelG8gIfz/qQLpPIopsR
-   eZgXA2xPnPURjiLuEUj7c2SFK1HtXFAtPFkVNZ+dp4Ub0KE6IUGHLUshZ
-   RDip4N//2ydOp/+okjHsllmAcIiXx870KotH56tqLLyT9VuIwG4O4uRld
-   EhvUzg5T0dyBrSIaTuhAgFLCWQFLnpWqYB9IXVqlUBuFe3YlJirssXd/P
-   yYO2RMP/5qwygkzKZx+uQ6E5CmShrC8H3Hg/xmTQhSlWbNy7FNt9fsjT9
-   g==;
-X-IronPort-AV: E=Sophos;i="5.90,227,1643698800"; 
-   d="scan'208";a="158971507"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 01 Apr 2022 06:37:54 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
- chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 1 Apr 2022 06:37:51 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
- (10.10.85.144) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Fri, 1 Apr 2022 06:37:50 -0700
-Date:   Fri, 1 Apr 2022 15:40:59 +0200
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
-        <davem@davemloft.net>, <kuba@kernel.org>,
-        <richardcochran@gmail.com>, <UNGLinuxDriver@microchip.com>
-Subject: Re: [RFC PATCH net-next 1/2] ethtool: Extend to allow to set PHY
- latencies
-Message-ID: <20220401134059.zef4ltvnux66jl2y@soft-dev3-1.localhost>
-References: <20220401093909.3341836-1-horatiu.vultur@microchip.com>
- <20220401093909.3341836-2-horatiu.vultur@microchip.com>
- <YkbxtzE/BRfz0XTW@lunn.ch>
+        Fri, 1 Apr 2022 09:41:16 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36FF3369D0;
+        Fri,  1 Apr 2022 06:39:26 -0700 (PDT)
+X-UUID: 8ab153cf2a174978a12d51ea01efde35-20220401
+X-UUID: 8ab153cf2a174978a12d51ea01efde35-20220401
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
+        (envelope-from <jia-wei.chang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1530467067; Fri, 01 Apr 2022 21:39:20 +0800
+Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Fri, 1 Apr 2022 21:39:16 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb02.mediatek.inc
+ (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 1 Apr
+ 2022 21:39:16 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 1 Apr 2022 21:39:15 +0800
+Message-ID: <126e0905c2eb9f22a0be46dd7aa8ac891622346d.camel@mediatek.com>
+Subject: Re: [PATCH 1/3] dt-bindings: devfreq: mediatek: add mtk cci devfreq
+ dt-bindings
+From:   Jia-Wei Chang <jia-wei.chang@mediatek.com>
+To:     Krzysztof Kozlowski <krzk@kernel.org>,
+        MyungJoo Ham <myungjoo.ham@samsung.com>,
+        Kyungmin Park <kyungmin.park@samsung.com>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+CC:     <linux-pm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <fan.chen@mediatek.com>,
+        <louis.yu@mediatek.com>, <roger.lu@mediatek.com>,
+        <Allen-yy.Lin@mediatek.com>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        <hsinyi@google.com>,
+        Jia-Wei Chang <jia-wei.chang@mediatek.corp-partner.google.com>
+Date:   Fri, 1 Apr 2022 21:39:15 +0800
+In-Reply-To: <aa34eccf-ef08-4a8f-7a6c-7fbd05bd54b6@kernel.org>
+References: <20220307122513.11822-1-jia-wei.chang@mediatek.com>
+         <20220307122513.11822-2-jia-wei.chang@mediatek.com>
+         <bf418e08-2e32-5e61-abd8-abb0d8f5c080@canonical.com>
+         <13482b1b4244df5c0c0a4d6a60cdb2a7ba88500a.camel@mediatek.com>
+         <aa34eccf-ef08-4a8f-7a6c-7fbd05bd54b6@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <YkbxtzE/BRfz0XTW@lunn.ch>
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The 04/01/2022 14:36, Andrew Lunn wrote:
+On Thu, 2022-03-24 at 13:44 +0100, Krzysztof Kozlowski wrote:
+> On 24/03/2022 13:11, Jia-Wei Chang wrote:
+> > > 
+> > > Remove "driver Device Tree Bindings". "Devfreq" is Linuxism, so
+> > > this
+> > > maybe "bus frequency scaling"? Although later you call the device
+> > > node
+> > > as cci.
+> > 
+> > Should I use "Binding for MediaTek's Cache Coherent Interconnect
+> > (CCI)
+> > frequency and voltage scaling" as new title?
 > 
-> On Fri, Apr 01, 2022 at 11:39:08AM +0200, Horatiu Vultur wrote:
-> > Extend ethtool uapi to allow to configure the latencies for the PHY.
-> > Allow to configure the latency per speed and per direction.
-> >
-> > Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-> > ---
-> >  include/uapi/linux/ethtool.h |  6 ++++++
-> >  net/ethtool/common.c         |  6 ++++++
-> >  net/ethtool/ioctl.c          | 10 ++++++++++
-> >  3 files changed, 22 insertions(+)
-> >
-> > diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
-> > index 7bc4b8def12c..f120904a4e43 100644
-> > --- a/include/uapi/linux/ethtool.h
-> > +++ b/include/uapi/linux/ethtool.h
-> > @@ -296,6 +296,12 @@ enum phy_tunable_id {
-> >       ETHTOOL_PHY_DOWNSHIFT,
-> >       ETHTOOL_PHY_FAST_LINK_DOWN,
-> >       ETHTOOL_PHY_EDPD,
-> > +     ETHTOOL_PHY_LATENCY_RX_10MBIT,
-> > +     ETHTOOL_PHY_LATENCY_TX_10MBIT,
-> > +     ETHTOOL_PHY_LATENCY_RX_100MBIT,
-> > +     ETHTOOL_PHY_LATENCY_TX_100MBIT,
-> > +     ETHTOOL_PHY_LATENCY_RX_1000MBIT,
-> > +     ETHTOOL_PHY_LATENCY_TX_1000MBIT,
-> 
-> How does this scale with 2.5G, 5G, 10G, 14G, 40G, etc.
-> 
-> Could half duplex differ to full duplex? What about 1000BaseT vs
-> 1000BaseT1 and 1000BaseT2? The Aquantia/Marvell PHY can do both
-> 1000BaseT and 1000BaseT2 and will downshift from 4 pairs to 2 pairs if
-> you have the correct magic in its firmware blobs.
-> 
-> A more generic API would pass a link mode, a direction and a
-> latency. The driver can then return -EOPNOTSUPP for a mode it does not
-> support.
+> I just suggested to remove word "bindings" so do not add it again.
+> This
+> should be a title for hardware.
 
-Yes, I can see your point, the proposed solution is not scalable.
-I will try implement something like you suggested.
+Sure, I will remove the word "bindings" from title.
 
 > 
->         Andrew
+> Now what exactly is it - you should know better than me. :)
+> "MediaTek's Cache Coherent Interconnect (CCI) frequency and voltage
+> scaling" sounds good to me, assuming that this is the hardware we
+> talk
+> here about. :)
 
--- 
-/Horatiu
+Appreciate your comments.
+It's a bit hard to do upstream at first time, thank you for
+understanding.
+
+> 
+> > 
+> > > 
+> > > > +
+> > > > +maintainers:
+> > > > +  - Jia-Wei Chang <jia-wei.chang@mediatek.com>
+> > > > +
+> > > > +description: |
+> > > > +  This module is used to create CCI DEVFREQ.
+> > > > +  The performance will depend on both CCI frequency and CPU
+> > > > frequency.
+> > > > +  For MT8186, CCI co-buck with Little core.
+> > > > +  Contain CCI opp table for voltage and frequency scaling.
+> > > 
+> > > Half of this description (first and last sentence) does not
+> > > describe
+> > > the
+> > > actual hardware. Please describe hardware, not driver.
+> > 
+> > Sure, I will fix it in the next version.
+> > 
+> > > 
+> > > > +
+> > > > +properties:
+> > > > +  compatible:
+> > > > +    const: "mediatek,mt8186-cci"
+> > > 
+> > > No need for quotes.
+> > 
+> > Sure, I will fix it in the next version.
+> > 
+> > > 
+> > > > +
+> > > > +  clocks:
+> > > > +    items:
+> > > > +      - description:
+> > > > +          The first one is the multiplexer for clock input of
+> > > > CPU
+> > > > cluster.
+> > > > +      - description:
+> > > > +          The other is used as an intermediate clock source
+> > > > when
+> > > > the original
+> > > > +          CPU is under transition and not stable yet.
+> > > > +
+> > > > +  clock-names:
+> > > > +    items:
+> > > > +      - const: "cci"
+> > > > +      - const: "intermediate"
+> > > 
+> > > No need for quotes.
+> > 
+> > Sure, I will fix it in the next version.
+> > 
+> > > 
+> > > > +
+> > > > +  operating-points-v2:
+> > > > +    description:
+> > > > +      For details, please refer to
+> > > > +      Documentation/devicetree/bindings/opp/opp-v2.yaml
+> > > > +
+> > > > +  opp-table: true
+> > > 
+> > > Same comments as your CPU freq bindings apply.
+> > 
+> > mtk-cci-devfreq is a new driver and its arch is same as mediatek-
+> > cpufreq so that the properties of mtk-cci are refer to mediatek-
+> > cpufreq 
+> > bindings.
+> > operating-point-v2 is used to determine the voltage and frequency
+> > of
+> > dvfs which is further utilized by mtk-cci-devfreq.
+> 
+> "operating-point-v2" is understood, but the same as in cpufreq
+> bindings,
+> I am questioning why do you have "opp-table: true". It's a bit
+> confusing, so maybe I miss something?
+
+Yes, you're correct.
+"opp-table: true" should be removed.
+I messed it up.
+
+> 
+> > 
+> > > 
+> > > > +
+> > > > +  proc-supply:
+> > > > +    description:
+> > > > +      Phandle of the regulator for CCI that provides the
+> > > > supply
+> > > > voltage.
+> > > > +
+> > > > +  sram-supply:
+> > > > +    description:
+> > > > +      Phandle of the regulator for sram of CCI that provides
+> > > > the
+> > > > supply
+> > > > +      voltage. When present, the cci devfreq driver needs to
+> > > > do
+> > > > +      "voltage tracking" to step by step scale up/down Vproc
+> > > > and
+> > > > Vsram to fit
+> > > > +      SoC specific needs. When absent, the voltage scaling
+> > > > flow is
+> > > > handled by
+> > > > +      hardware, hence no software "voltage tracking" is
+> > > > needed.
+> > > > +
+> > > > +required:
+> > > > +  - compatible
+> > > > +  - clocks
+> > > > +  - clock-names
+> > > > +  - operating-points-v2
+> > > > +  - proc-supply
+> > > > +
+> > > > +additionalProperties: false
+> > > > +
+> > > > +examples:
+> > > > +  - |
+> > > > +    #include <dt-bindings/clock/mt8186-clk.h>
+> > > > +    cci: cci {
+> > > 
+> > > Node names should be generic and describe type of device. Are you
+> > > sure
+> > > this is a CCI? Maybe "interconnect" suits it better?
+> > 
+> > Yes, this is a CCI and it is generic type of device like CPU in my
+> > opinion.
+> > If my understanding is correct, CCI is more suitable.
+> 
+> OK.
+
+:)
+
+> 
+> > 
+> > > 
+> > > > +      compatible = "mediatek,mt8186-cci";
+> > > > +      clocks = <&mcusys CLK_MCU_ARMPLL_BUS_SEL>, <&apmixedsys
+> > > > CLK_APMIXED_MAINPLL>;
+> > > > +      clock-names = "cci", "intermediate";
+> > > > +      operating-points-v2 = <&cci_opp>;
+> > > > +      proc-supply = <&mt6358_vproc12_reg>;
+> > > > +      sram-supply = <&mt6358_vsram_proc12_reg>;
+> > > > +    };
+> > > 
+> > > 
+> > > Best regards,
+> > > Krzysztof
+> 
+> 
+> Best regards,
+> Krzysztof
+
