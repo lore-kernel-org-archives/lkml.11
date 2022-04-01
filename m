@@ -2,110 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29F33C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F663C4707A
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:44:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353721AbiDAPpS (ORCPT
+        id S1355118AbiDAPpk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:45:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43820 "EHLO
+        Fri, 1 Apr 2022 11:45:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354593AbiDAPML (ORCPT
+        with ESMTP id S1349968AbiDAPQk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 11:12:11 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A2E827857D
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 07:55:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648824924; x=1680360924;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=sRq3aNuvvoADqxpwEnycoxwbNQ9AKtJA/e+GBeJ1okI=;
-  b=KeDGfBz4lkkUn3IzpcW/cRYvTSItzwRDoItJs0Db+ORQfQLCkYsyfbRy
-   OlE/50Xld4/cjvZ1C5QsLcCMQzngfNbqWiRL9MQNzBAAjT3xjj1wei6XH
-   z+hFi7P635E5wSbqe3LNbkrpvsJ9fdmjXkrEPuGntsh366AcSHT74utBY
-   boTMZIewNZWLpzsi2t1CiCxFl9Td1NJwPTGt3eLTkk1zf6EDVQQ4O9w3l
-   sdFRn+msHpUQxQfNHIzuBBOduDVqc0rCwxXQRKf8hk2BuwuoENffyS+GB
-   XM60HGGdYO7anwcmuYAYll9JBdkzwUg5cA+SKdZdnEXvBPqsKYEujmBfx
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10304"; a="257733422"
-X-IronPort-AV: E=Sophos;i="5.90,227,1643702400"; 
-   d="scan'208";a="257733422"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Apr 2022 07:55:16 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,227,1643702400"; 
-   d="scan'208";a="522799890"
-Received: from lkp-server02.sh.intel.com (HELO 3231c491b0e2) ([10.239.97.151])
-  by orsmga006.jf.intel.com with ESMTP; 01 Apr 2022 07:55:14 -0700
-Received: from kbuild by 3231c491b0e2 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1naIgE-0001KK-4h;
-        Fri, 01 Apr 2022 14:55:14 +0000
-Date:   Fri, 1 Apr 2022 22:54:55 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Alistair Francis <alistair.francis@wdc.com>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org, Palmer Dabbelt <palmer@rivosinc.com>,
-        Anup Patel <anup@brainfault.org>, Guo Ren <guoren@kernel.org>
-Subject: [ammarfaizi2-block:palmer/linux/riscv-asidlen 1/1]
- arch/riscv/mm/context.c:308:45: error: 'mm_context_t' has no member named
- 'id'
-Message-ID: <202204012242.MvKAyz37-lkp@intel.com>
+        Fri, 1 Apr 2022 11:16:40 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBC3312607
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 07:58:26 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id i4so4657347wrb.5
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 07:58:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=76a94LQu3rPoYffS/gDEHiTMZGGkCXPKcYRhl1KmpQU=;
+        b=FZ/ZDpkCU0djVj4XyAI7m5UPpa4SlwCKTGlM1Rj9RUWz//rOC9j/LUQYzDk1Gjw4Q0
+         AsbiLQA4Rdmj2qeJkpB70YhhXnTQByZqqayYpCmkxiFCeisjQVVps+92F9430mN7UlMh
+         xtPfJJba20MTPN9enY664ka9wxQ7asaIFKkPUplOdGBGcaY7/TxvF1GPxKW2fTaarqAW
+         +vsxCOnExuctwCF6g/FahFnG7PMBgdqiYknLTWy+HnDAQ6nKZp9UqbEfrJ2NNTxpzSzd
+         DEfo7hOfxl+nOIaXdn3s2mK2aVS6rlfcn07LWUAToobReKpKTZ1xwC5BZ7Qkd2ugAeZs
+         51Ow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=76a94LQu3rPoYffS/gDEHiTMZGGkCXPKcYRhl1KmpQU=;
+        b=tA0Rt5jAFUK30KAxuHIaqWP2M1lmqG8X0cumC9SmEWB/mCL9vcl4/0y5ClxSirp6CU
+         skslkGbJbzNc6Q1p3GU2Baao/J6ktmNy6RIpTVCF++IikQ7G8PsmD7jluppzR6ZpcCgY
+         f9pUnvAxTOsHJhEE6D3sjHG6pLo+b/n8Uwdu0tcg3KDzxeIqjXlozXptFrNWTcAUVxWf
+         2UA/idIQ7iISvyfbq///jIe4BBI4R24FMohpDNwdvk3ZVjPdvyY8M/Ma1RwJShsJogQQ
+         2jQqwmwAgGRhFJEFHXMppgI8yZeDtV4UHrlEgRsxMR1Qg5u6OvDgtYhXTAwH+fdvw40B
+         xRPA==
+X-Gm-Message-State: AOAM530ZuNZPwehIftDfyo2j+nzSjX+hgA0zMNESLeofQiYqnpC27q+P
+        /3XVlFxsjfMGrNEzhdB/JUx7RA==
+X-Google-Smtp-Source: ABdhPJxi8Y6f6lrLshYHx+nvxgkTyKctJN8K3nHCREVNRv1HkEkJFWZspLSclpT12ofkeOYjbKJ8qQ==
+X-Received: by 2002:adf:fb48:0:b0:203:f986:874a with SMTP id c8-20020adffb48000000b00203f986874amr8067141wrs.614.1648825105436;
+        Fri, 01 Apr 2022 07:58:25 -0700 (PDT)
+Received: from localhost.localdomain (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id j8-20020a05600c404800b0038cc9c7670bsm8530722wmm.3.2022.04.01.07.58.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 01 Apr 2022 07:58:25 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Avri Altman <avri.altman@wdc.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Bean Huo <beanhuo@micron.com>,
+        Bart Van Assche <bvanassche@acm.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Taniya Das <tdas@codeaurora.org>,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-scsi@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [RFC PATCH 0/4] ufs: set power domain performance state when scaling gears
+Date:   Fri,  1 Apr 2022 16:58:16 +0200
+Message-Id: <20220401145820.1003826-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block palmer/linux/riscv-asidlen
-head:   bdfae0d4f28854d02d1f78fcb18b41d01ae32832
-commit: bdfae0d4f28854d02d1f78fcb18b41d01ae32832 [1/1] riscv: Ensure only ASIDLEN is used for sfence.vma
-config: riscv-nommu_k210_defconfig (https://download.01.org/0day-ci/archive/20220401/202204012242.MvKAyz37-lkp@intel.com/config)
-compiler: riscv64-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/bdfae0d4f28854d02d1f78fcb18b41d01ae32832
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block palmer/linux/riscv-asidlen
-        git checkout bdfae0d4f28854d02d1f78fcb18b41d01ae32832
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=riscv SHELL=/bin/bash arch/riscv/mm/
+Hi,
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+This is a proof-of-concept/RFC for changing the performance state
+of power rails when scaling gears.
 
-All errors (new ones prefixed by >>):
+So far I added it as a parallel method to scaling clocks, thus
+freq-table-hz stays in DTS, however OPP table should be probably
+replace freq-table-hz entirely.
 
-   arch/riscv/mm/context.c: In function 'get_mm_asid':
->> arch/riscv/mm/context.c:308:45: error: 'mm_context_t' has no member named 'id'
-     308 |         return atomic_long_read(&mm->context.id) & asid_mask;
-         |                                             ^
->> arch/riscv/mm/context.c:308:52: error: 'asid_mask' undeclared (first use in this function); did you mean 'pid_task'?
-     308 |         return atomic_long_read(&mm->context.id) & asid_mask;
-         |                                                    ^~~~~~~~~
-         |                                                    pid_task
-   arch/riscv/mm/context.c:308:52: note: each undeclared identifier is reported only once for each function it appears in
-   arch/riscv/mm/context.c:309:1: error: control reaches end of non-void function [-Werror=return-type]
-     309 | }
-         | ^
-   cc1: some warnings being treated as errors
+Best regards,
+Krzysztof
 
+Krzysztof Kozlowski (4):
+  dt-bindings: clock: qcom,gcc-sdm845: add parent power domain
+  dt-bindings: ufs: common: allow OPP table
+  arm64: dts: qcom: sdm845: control RPMHPD performance states with UFS
+  ufs: set power domain performance state when scaling gears
 
-vim +308 arch/riscv/mm/context.c
-
-   305	
-   306	unsigned long get_mm_asid(struct mm_struct *mm)
-   307	{
- > 308		return atomic_long_read(&mm->context.id) & asid_mask;
-   309	}
-   310	
+ .../bindings/clock/qcom,gcc-sdm845.yaml       |  3 ++
+ .../devicetree/bindings/ufs/ufs-common.yaml   |  4 ++
+ arch/arm64/boot/dts/qcom/sdm845.dtsi          | 17 +++++++-
+ drivers/scsi/ufs/ufshcd-pltfrm.c              |  6 +++
+ drivers/scsi/ufs/ufshcd.c                     | 42 +++++++++++++++----
+ drivers/scsi/ufs/ufshcd.h                     |  3 ++
+ 6 files changed, 65 insertions(+), 10 deletions(-)
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.32.0
+
