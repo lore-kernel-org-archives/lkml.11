@@ -2,134 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBEC7C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B52CAC433FE
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:26:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356012AbiDAP0C (ORCPT
+        id S1355998AbiDAPZ5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:26:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58580 "EHLO
+        Fri, 1 Apr 2022 11:25:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349365AbiDAOzT (ORCPT
+        with ESMTP id S1349377AbiDAOzX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:55:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F6576324;
-        Fri,  1 Apr 2022 07:43:25 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1767C60AD8;
-        Fri,  1 Apr 2022 14:43:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 950D9C34114;
-        Fri,  1 Apr 2022 14:43:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824204;
-        bh=pFl3TaxT9GE0nuzRXdzw53XJrUNW2kKaQ2w1IhHO+dQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O6KReLrl9uM6WtsPKghUHG/IyvSOvxsXCyYQyvwQj8KXnbbpAa8bI7EI9NUyrp6s4
-         iiNj0Nin24MAl7+MD+1GoNCFjc/apdz0ZhrNc8RnHiGpmIQSSxV7rKENZQTEJejaOL
-         A+tT6Y/1sv2V14uiwL8ucemWzX7gNDhdFP3pjMFnhJ00S3SEUH6kyQIoWbFDScb02s
-         APrc3XmPalqcLn12Q0taEJz5+6S/Kh7PXxAgRDvRxGDPIOHL4jbFhAdqfYuuUO/n7C
-         1NoCsk1LBRVC5ghHgoAxuifNW5IJYoCRNjTAA7uSJMlNv9DMlqgThH8q/MsDyZNQf7
-         vFhMjX58ODbvg==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Hans de Goede <hdegoede@redhat.com>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
-        Sasha Levin <sashal@kernel.org>, sre@kernel.org, wens@csie.org,
-        linux-pm@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 27/65] power: supply: axp288-charger: Set Vhold to 4.4V
-Date:   Fri,  1 Apr 2022 10:41:28 -0400
-Message-Id: <20220401144206.1953700-27-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220401144206.1953700-1-sashal@kernel.org>
-References: <20220401144206.1953700-1-sashal@kernel.org>
+        Fri, 1 Apr 2022 10:55:23 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0308E25E9E;
+        Fri,  1 Apr 2022 07:43:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=b2CiO4L5LMsTPjyVGlh+eoZTqAHsqAzbmA0VJTGYz9o=; b=o6BUqL3qcos1U48U8sIZkxD6OH
+        YW8IGXnQorGS207zezKy4MeXATgJB4mmk/Z2/4hON2iGNgaBvIQqnMXHOp5QWoaI6LY8FMnh9fnYk
+        UrCSXHdy7RFQ1wxLt9GGZRWC0vKxHO/5LFF6DsGHA4uAI6pEOZkj4Wf/DDXdFu+JAwbq3GIqpKQIl
+        ul9BhwQ7ZuYl1fYhKTqHQKd9NApdCXPq+HwZU/uL8QdWrt1PImgbni7qrmxbrhdjcp4GuKniKZUnB
+        kAZ2Xb12OAQsWelmi73rYWpDAobSOHKhLItkhIxrRseDl3ygyokyVxhGXuT9nwWKU5db1gm9HjvgE
+        Avu36DhA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58082)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1naIUs-0006GG-6f; Fri, 01 Apr 2022 15:43:29 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1naIUo-0000H1-0J; Fri, 01 Apr 2022 15:43:26 +0100
+Date:   Fri, 1 Apr 2022 15:43:25 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Horatiu Vultur <horatiu.vultur@microchip.com>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, hkallweit1@gmail.com,
+        Divya.Koppera@microchip.com, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, richardcochran@gmail.com,
+        UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH net v2 0/3] net: phy: micrel: Remove latencies support
+ lan8814
+Message-ID: <YkcPja9WxzJ6eU5d@shell.armlinux.org.uk>
+References: <20220401110522.3418258-1-horatiu.vultur@microchip.com>
+ <Ykb2yoXHib6l9gkT@lunn.ch>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Ykb2yoXHib6l9gkT@lunn.ch>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+On Fri, Apr 01, 2022 at 02:57:46PM +0200, Andrew Lunn wrote:
+> On Fri, Apr 01, 2022 at 01:05:19PM +0200, Horatiu Vultur wrote:
+> > Remove the latencies support both from the PHY driver and from the DT.
+> > The IP already has some default latencies values which can be used to get
+> > decent results. It has the following values(defined in ns):
+> > rx-1000mbit: 429
+> > tx-1000mbit: 201
+> > rx-100mbit:  2346
+> > tx-100mbit:  705
+> 
+> So one alternative option here is that ptp4l looks at
+> 
+> /sys/class/net/<ifname>/phydev/phy_id
 
-[ Upstream commit 5ac121b81b4051e7fc83d5b3456a5e499d5bd147 ]
+That doesn't work for Clause 45 PHYs, only Clause 22 PHYs. If we want
+userspace to know which PHY it is, we need a proper interface that
+exports all the 31 Clause 45 IDs (each mmd's registers 2/3) as well, as
+well as the Clause 45 package ID (registers 14/15).
 
-The AXP288's recommended and factory default Vhold value (minimum
-input voltage below which the input current draw will be reduced)
-is 4.4V. This lines up with other charger IC's such as the TI
-bq2419x/bq2429x series which use 4.36V or 4.44V.
-
-For some reason some BIOS-es initialize Vhold to 4.6V or even 4.7V
-which combined with the typical voltage drop over typically low
-wire gauge micro-USB cables leads to the input-current getting
-capped below 1A (with a 2A capable dedicated charger) based on Vhold.
-
-This leads to slow charging, or even to the device slowly discharging
-if the device is in heavy use.
-
-As the Linux AXP288 drivers use the builtin BC1.2 charger detection
-and send the input-current-limit according to the detected charger
-there really is no reason not to use the recommended 4.4V Vhold.
-
-Set Vhold to 4.4V to fix the slow charging issue on various devices.
-
-There is one exception, the special-case of the HP X2 2-in-1s which
-combine this BC1.2 capable PMIC with a Type-C port and a 5V/3A factory
-provided charger with a Type-C plug which does not do BC1.2. These
-have their input-current-limit hardcoded to 3A (like under Windows)
-and use a higher Vhold on purpose to limit the current when used
-with other chargers. To avoid touching Vhold on these HP X2 laptops
-the code setting Vhold is added to an else branch of the if checking
-for these models.
-
-Note this also fixes the sofar unused VBUS_ISPOUT_VHOLD_SET_MASK
-define, which was wrong.
-
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/power/supply/axp288_charger.c | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/power/supply/axp288_charger.c b/drivers/power/supply/axp288_charger.c
-index a4df1ea92386..f65bf7b295c5 100644
---- a/drivers/power/supply/axp288_charger.c
-+++ b/drivers/power/supply/axp288_charger.c
-@@ -41,11 +41,11 @@
- #define VBUS_ISPOUT_CUR_LIM_1500MA	0x1	/* 1500mA */
- #define VBUS_ISPOUT_CUR_LIM_2000MA	0x2	/* 2000mA */
- #define VBUS_ISPOUT_CUR_NO_LIM		0x3	/* 2500mA */
--#define VBUS_ISPOUT_VHOLD_SET_MASK	0x31
-+#define VBUS_ISPOUT_VHOLD_SET_MASK	0x38
- #define VBUS_ISPOUT_VHOLD_SET_BIT_POS	0x3
- #define VBUS_ISPOUT_VHOLD_SET_OFFSET	4000	/* 4000mV */
- #define VBUS_ISPOUT_VHOLD_SET_LSB_RES	100	/* 100mV */
--#define VBUS_ISPOUT_VHOLD_SET_4300MV	0x3	/* 4300mV */
-+#define VBUS_ISPOUT_VHOLD_SET_4400MV	0x4	/* 4400mV */
- #define VBUS_ISPOUT_VBUS_PATH_DIS	BIT(7)
- 
- #define CHRG_CCCV_CC_MASK		0xf		/* 4 bits */
-@@ -744,6 +744,16 @@ static int charger_init_hw_regs(struct axp288_chrg_info *info)
- 		ret = axp288_charger_vbus_path_select(info, true);
- 		if (ret < 0)
- 			return ret;
-+	} else {
-+		/* Set Vhold to the factory default / recommended 4.4V */
-+		val = VBUS_ISPOUT_VHOLD_SET_4400MV << VBUS_ISPOUT_VHOLD_SET_BIT_POS;
-+		ret = regmap_update_bits(info->regmap, AXP20X_VBUS_IPSOUT_MGMT,
-+					 VBUS_ISPOUT_VHOLD_SET_MASK, val);
-+		if (ret < 0) {
-+			dev_err(&info->pdev->dev, "register(%x) write error(%d)\n",
-+				AXP20X_VBUS_IPSOUT_MGMT, ret);
-+			return ret;
-+		}
- 	}
- 
- 	/* Read current charge voltage and current limit */
 -- 
-2.34.1
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
