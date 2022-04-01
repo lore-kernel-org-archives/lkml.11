@@ -2,110 +2,220 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5C95C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 08:11:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB440C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 08:13:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344242AbiDAINp (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 04:13:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50708 "EHLO
+        id S243263AbiDAIPU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Apr 2022 04:15:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344293AbiDAINC (ORCPT
+        with ESMTP id S230344AbiDAIPS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 04:13:02 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD4A920A97A;
-        Fri,  1 Apr 2022 01:11:13 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id y16so1751634pju.4;
-        Fri, 01 Apr 2022 01:11:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=TZ6Va3/+y3V6v2Y3p92U6OT9/1I7oLnm/gWi+nTj8w4=;
-        b=Db0dHl5Nb4Z7FC3ZIPNhial2UQcrkej6YsUpFfjjObjtyj+y2CUtgItUo6IGGRRRpN
-         hX5M6qqZfzzk395bR0i7Xagk4c4yDWx9ZQDGDOizXKd2ykooJxz9L9ZEB4Kr0N2FRCRW
-         XsQzJuohuSgmrzynOyUKMX+RvBp8TzJn5Lo2SX3OjyBF+zwzqqlgg2SpgKUN/OJ28d9Z
-         KbNBKMSbetRcrB9Uh3/3QhvPFvXc8N4alGGDgcBPi1syEcnypaCWX1TzQxNWHJSe25B8
-         gO0bkC47sN/0qjyDO43MIEdcGVvKIlD+rH0TOewjr8Vy5qD3t2zk/9UmfqatBx/FYlZu
-         JJRw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=TZ6Va3/+y3V6v2Y3p92U6OT9/1I7oLnm/gWi+nTj8w4=;
-        b=Bm/XDuy3BaEiLG3VnvRgHyATyV0hxhUTIJafe2p4xGErAVmWBLmY8I8ZLCnRzUzVkT
-         fRXk27oCWRxXwhKLp9yOKCQY/IlZ0xEbmYJOuGz/DJf9HLbaPOQmZzN6L5C1LglFLOga
-         4k0ptM8+L3cpbbmAu//17a231fNIAscNnt6wRZDt7FPxVarqiTH1H1vDyFRf/N609UZs
-         TAnFIE90a+HfwLATIF8GtIjWiukB2GiV5LYnQLwGw/+yOCPK4gccdZoNYJD51zh/D/OM
-         LuMDy6xD1XHbS1BwEYqYJYMraGx9TCG/ZXRYoLbhDK+PzF/dckf8NeUISCS0E5FXkZR/
-         wfZQ==
-X-Gm-Message-State: AOAM533BJwqOuXCsAz/kHKm//KKZs4cgTt4Xm2IIv2QQp3BbYMDUKRWm
-        T2am/6xLMKKXB4OkIZWF96SuYXf2PXk=
-X-Google-Smtp-Source: ABdhPJzh3y4A3uDHCtvJ4AZuJ9uWAuoYQqRzuwbs9cG6/RGOWF6sxK8NxMs/g/TCC1lgSGehcyA0Gw==
-X-Received: by 2002:a17:902:e8d2:b0:156:32bf:b1b9 with SMTP id v18-20020a170902e8d200b0015632bfb1b9mr9162389plg.107.1648800673182;
-        Fri, 01 Apr 2022 01:11:13 -0700 (PDT)
-Received: from localhost.localdomain ([203.205.141.113])
-        by smtp.googlemail.com with ESMTPSA id hg5-20020a17090b300500b001c795eedcffsm11634790pjb.13.2022.04.01.01.11.10
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 01 Apr 2022 01:11:12 -0700 (PDT)
-From:   Wanpeng Li <kernellwp@gmail.com>
-X-Google-Original-From: Wanpeng Li <wanpengli@tencent.com>
-To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH v2 5/5] KVM: X86: Expose PREEMT_COUNT CPUID feature bit to guest
-Date:   Fri,  1 Apr 2022 01:10:05 -0700
-Message-Id: <1648800605-18074-6-git-send-email-wanpengli@tencent.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1648800605-18074-1-git-send-email-wanpengli@tencent.com>
-References: <1648800605-18074-1-git-send-email-wanpengli@tencent.com>
+        Fri, 1 Apr 2022 04:15:18 -0400
+Received: from ha.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 49B4F3D483;
+        Fri,  1 Apr 2022 01:13:27 -0700 (PDT)
+Received: from localhost (unknown [127.0.0.1])
+        by ha.nfschina.com (Postfix) with ESMTP id ADDC31E80CC5;
+        Fri,  1 Apr 2022 16:12:58 +0800 (CST)
+X-Virus-Scanned: amavisd-new at test.com
+Received: from ha.nfschina.com ([127.0.0.1])
+        by localhost (ha.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id EeoxtMlUqkTN; Fri,  1 Apr 2022 16:12:55 +0800 (CST)
+Received: from ubuntu.localdomain (unknown [101.228.248.165])
+        (Authenticated sender: yuzhe@nfschina.com)
+        by ha.nfschina.com (Postfix) with ESMTPA id 6296C1E80C85;
+        Fri,  1 Apr 2022 16:12:55 +0800 (CST)
+From:   Yu Zhe <yuzhe@nfschina.com>
+To:     tytso@mit.edu, adilger.kernel@dilger.ca
+Cc:     linux-ext4@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, liqiong@nfschina.com,
+        Yu Zhe <yuzhe@nfschina.com>
+Subject: [PATCH] ext4: remove unnecessary type castings
+Date:   Fri,  1 Apr 2022 01:13:21 -0700
+Message-Id: <20220401081321.73735-1-yuzhe@nfschina.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wanpeng Li <wanpengli@tencent.com>
+remove unnecessary void* type castings.
 
-Expose the PREEMPT_COUNT feature bit to the guest, the guest can check this
-feature bit before using MSR_KVM_PREEMPT_COUNT.
-
-Signed-off-by: Wanpeng Li <wanpengli@tencent.com>
+Signed-off-by: Yu Zhe <yuzhe@nfschina.com>
 ---
- Documentation/virt/kvm/cpuid.rst | 3 +++
- arch/x86/kvm/cpuid.c             | 3 ++-
- 2 files changed, 5 insertions(+), 1 deletion(-)
+ fs/ext4/dir.c         |  2 +-
+ fs/ext4/fast_commit.c | 10 +++++-----
+ fs/ext4/inline.c      |  6 +++---
+ fs/ext4/mballoc.c     |  2 +-
+ fs/ext4/mmp.c         |  2 +-
+ fs/ext4/namei.c       |  4 ++--
+ fs/ext4/super.c       |  4 ++--
+ 7 files changed, 15 insertions(+), 15 deletions(-)
 
-diff --git a/Documentation/virt/kvm/cpuid.rst b/Documentation/virt/kvm/cpuid.rst
-index bda3e3e737d7..c45158af98a7 100644
---- a/Documentation/virt/kvm/cpuid.rst
-+++ b/Documentation/virt/kvm/cpuid.rst
-@@ -103,6 +103,9 @@ KVM_FEATURE_HC_MAP_GPA_RANGE       16          guest checks this feature bit bef
- KVM_FEATURE_MIGRATION_CONTROL      17          guest checks this feature bit before
-                                                using MSR_KVM_MIGRATION_CONTROL
+diff --git a/fs/ext4/dir.c b/fs/ext4/dir.c
+index a6bb86f52b9a..fc982d2dc071 100644
+--- a/fs/ext4/dir.c
++++ b/fs/ext4/dir.c
+@@ -648,7 +648,7 @@ int ext4_check_all_de(struct inode *dir, struct buffer_head *bh, void *buf,
+ 	unsigned int offset = 0;
+ 	char *top;
  
-+KVM_FEATURE_PREEMPT_COUNT          18          guest checks this feature bit before
-+                                               using MSR_KVM_PREEMPT_COUNT
-+
- KVM_FEATURE_CLOCKSOURCE_STABLE_BIT 24          host will warn if no guest-side
-                                                per-cpu warps are expected in
-                                                kvmclock
-diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
-index a00cd97b2623..c514c0419593 100644
---- a/arch/x86/kvm/cpuid.c
-+++ b/arch/x86/kvm/cpuid.c
-@@ -1072,7 +1072,8 @@ static inline int __do_cpuid_func(struct kvm_cpuid_array *array, u32 function)
- 			     (1 << KVM_FEATURE_PV_SEND_IPI) |
- 			     (1 << KVM_FEATURE_POLL_CONTROL) |
- 			     (1 << KVM_FEATURE_PV_SCHED_YIELD) |
--			     (1 << KVM_FEATURE_ASYNC_PF_INT);
-+			     (1 << KVM_FEATURE_ASYNC_PF_INT) |
-+			     (1 << KVM_FEATURE_PREEMPT_COUNT);
+-	de = (struct ext4_dir_entry_2 *)buf;
++	de = buf;
+ 	top = buf + buf_size;
+ 	while ((char *) de < top) {
+ 		if (ext4_check_dir_entry(dir, NULL, de, bh,
+diff --git a/fs/ext4/fast_commit.c b/fs/ext4/fast_commit.c
+index 3d72565ec6e8..7b0b57be8615 100644
+--- a/fs/ext4/fast_commit.c
++++ b/fs/ext4/fast_commit.c
+@@ -970,7 +970,7 @@ static int ext4_fc_write_inode_data(struct inode *inode, u32 *crc)
+ /* Submit data for all the fast commit inodes */
+ static int ext4_fc_submit_inode_data_all(journal_t *journal)
+ {
+-	struct super_block *sb = (struct super_block *)(journal->j_private);
++	struct super_block *sb = journal->j_private;
+ 	struct ext4_sb_info *sbi = EXT4_SB(sb);
+ 	struct ext4_inode_info *ei;
+ 	int ret = 0;
+@@ -1004,7 +1004,7 @@ static int ext4_fc_submit_inode_data_all(journal_t *journal)
+ /* Wait for completion of data for all the fast commit inodes */
+ static int ext4_fc_wait_inode_data_all(journal_t *journal)
+ {
+-	struct super_block *sb = (struct super_block *)(journal->j_private);
++	struct super_block *sb = journal->j_private;
+ 	struct ext4_sb_info *sbi = EXT4_SB(sb);
+ 	struct ext4_inode_info *pos, *n;
+ 	int ret = 0;
+@@ -1031,7 +1031,7 @@ static int ext4_fc_commit_dentry_updates(journal_t *journal, u32 *crc)
+ __acquires(&sbi->s_fc_lock)
+ __releases(&sbi->s_fc_lock)
+ {
+-	struct super_block *sb = (struct super_block *)(journal->j_private);
++	struct super_block *sb = journal->j_private;
+ 	struct ext4_sb_info *sbi = EXT4_SB(sb);
+ 	struct ext4_fc_dentry_update *fc_dentry, *fc_dentry_n;
+ 	struct inode *inode;
+@@ -1093,7 +1093,7 @@ __releases(&sbi->s_fc_lock)
  
- 		if (sched_info_on())
- 			entry->eax |= (1 << KVM_FEATURE_STEAL_TIME);
+ static int ext4_fc_perform_commit(journal_t *journal)
+ {
+-	struct super_block *sb = (struct super_block *)(journal->j_private);
++	struct super_block *sb = journal->j_private;
+ 	struct ext4_sb_info *sbi = EXT4_SB(sb);
+ 	struct ext4_inode_info *iter;
+ 	struct ext4_fc_head head;
+@@ -1198,7 +1198,7 @@ static void ext4_fc_update_stats(struct super_block *sb, int status,
+  */
+ int ext4_fc_commit(journal_t *journal, tid_t commit_tid)
+ {
+-	struct super_block *sb = (struct super_block *)(journal->j_private);
++	struct super_block *sb = journal->j_private;
+ 	struct ext4_sb_info *sbi = EXT4_SB(sb);
+ 	int nblks = 0, ret, bsize = journal->j_blocksize;
+ 	int subtid = atomic_read(&sbi->s_fc_subtid);
+diff --git a/fs/ext4/inline.c b/fs/ext4/inline.c
+index 9c076262770d..13a63e3639b1 100644
+--- a/fs/ext4/inline.c
++++ b/fs/ext4/inline.c
+@@ -1083,14 +1083,14 @@ static void ext4_update_final_de(void *de_buf, int old_size, int new_size)
+ 	void *limit;
+ 	int de_len;
+ 
+-	de = (struct ext4_dir_entry_2 *)de_buf;
++	de = de_buf;
+ 	if (old_size) {
+ 		limit = de_buf + old_size;
+ 		do {
+ 			prev_de = de;
+ 			de_len = ext4_rec_len_from_disk(de->rec_len, old_size);
+ 			de_buf += de_len;
+-			de = (struct ext4_dir_entry_2 *)de_buf;
++			de = de_buf;
+ 		} while (de_buf < limit);
+ 
+ 		prev_de->rec_len = ext4_rec_len_to_disk(de_len + new_size -
+@@ -1155,7 +1155,7 @@ static int ext4_finish_convert_inline_dir(handle_t *handle,
+ 	 * First create "." and ".." and then copy the dir information
+ 	 * back to the block.
+ 	 */
+-	de = (struct ext4_dir_entry_2 *)target;
++	de = target;
+ 	de = ext4_init_dot_dotdot(inode, de,
+ 		inode->i_sb->s_blocksize, csum_size,
+ 		le32_to_cpu(((struct ext4_dir_entry_2 *)buf)->inode), 1);
+diff --git a/fs/ext4/mballoc.c b/fs/ext4/mballoc.c
+index 252c168454c7..dcb81352b864 100644
+--- a/fs/ext4/mballoc.c
++++ b/fs/ext4/mballoc.c
+@@ -2919,7 +2919,7 @@ const struct seq_operations ext4_mb_seq_groups_ops = {
+ 
+ int ext4_seq_mb_stats_show(struct seq_file *seq, void *offset)
+ {
+-	struct super_block *sb = (struct super_block *)seq->private;
++	struct super_block *sb = seq->private;
+ 	struct ext4_sb_info *sbi = EXT4_SB(sb);
+ 
+ 	seq_puts(seq, "mballoc:\n");
+diff --git a/fs/ext4/mmp.c b/fs/ext4/mmp.c
+index cebea4270817..79d05e464c43 100644
+--- a/fs/ext4/mmp.c
++++ b/fs/ext4/mmp.c
+@@ -127,7 +127,7 @@ void __dump_mmp_msg(struct super_block *sb, struct mmp_struct *mmp,
+  */
+ static int kmmpd(void *data)
+ {
+-	struct super_block *sb = (struct super_block *) data;
++	struct super_block *sb = data;
+ 	struct ext4_super_block *es = EXT4_SB(sb)->s_es;
+ 	struct buffer_head *bh = EXT4_SB(sb)->s_mmp_bh;
+ 	struct mmp_struct *mmp;
+diff --git a/fs/ext4/namei.c b/fs/ext4/namei.c
+index e37da8d5cd0c..b6bbc4dd6d63 100644
+--- a/fs/ext4/namei.c
++++ b/fs/ext4/namei.c
+@@ -2031,7 +2031,7 @@ int ext4_find_dest_de(struct inode *dir, struct inode *inode,
+ 	unsigned int offset = 0;
+ 	char *top;
+ 
+-	de = (struct ext4_dir_entry_2 *)buf;
++	de = buf;
+ 	top = buf + buf_size - reclen;
+ 	while ((char *) de <= top) {
+ 		if (ext4_check_dir_entry(dir, NULL, de, bh,
+@@ -2587,7 +2587,7 @@ int ext4_generic_delete_entry(struct inode *dir,
+ 
+ 	i = 0;
+ 	pde = NULL;
+-	de = (struct ext4_dir_entry_2 *)entry_buf;
++	de = entry_buf;
+ 	while (i < buf_size - csum_size) {
+ 		if (ext4_check_dir_entry(dir, NULL, de, bh,
+ 					 entry_buf, buf_size, i))
+diff --git a/fs/ext4/super.c b/fs/ext4/super.c
+index 81749eaddf4c..56dfa6ab28a6 100644
+--- a/fs/ext4/super.c
++++ b/fs/ext4/super.c
+@@ -1392,7 +1392,7 @@ static void ext4_destroy_inode(struct inode *inode)
+ 
+ static void init_once(void *foo)
+ {
+-	struct ext4_inode_info *ei = (struct ext4_inode_info *) foo;
++	struct ext4_inode_info *ei = foo;
+ 
+ 	INIT_LIST_HEAD(&ei->i_orphan);
+ 	init_rwsem(&ei->xattr_sem);
+@@ -3832,7 +3832,7 @@ static struct task_struct *ext4_lazyinit_task;
+  */
+ static int ext4_lazyinit_thread(void *arg)
+ {
+-	struct ext4_lazy_init *eli = (struct ext4_lazy_init *)arg;
++	struct ext4_lazy_init *eli = arg;
+ 	struct list_head *pos, *n;
+ 	struct ext4_li_request *elr;
+ 	unsigned long next_wakeup, cur;
 -- 
 2.25.1
 
