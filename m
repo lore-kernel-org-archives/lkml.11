@@ -2,431 +2,261 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8486C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 07:16:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E58D3C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 07:16:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343821AbiDAHSb (ORCPT
+        id S1343829AbiDAHSp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 03:18:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41380 "EHLO
+        Fri, 1 Apr 2022 03:18:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343783AbiDAHSV (ORCPT
+        with ESMTP id S1343808AbiDAHSm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 03:18:21 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E937D25CBA9;
-        Fri,  1 Apr 2022 00:16:29 -0700 (PDT)
-X-UUID: 6c403ecac5054eed8585bfb84c5ab9a0-20220401
-X-UUID: 6c403ecac5054eed8585bfb84c5ab9a0-20220401
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
-        (envelope-from <leilk.liu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1293910404; Fri, 01 Apr 2022 15:16:23 +0800
-Received: from mtkexhb01.mediatek.inc (172.21.101.102) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Fri, 1 Apr 2022 15:16:22 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb01.mediatek.inc
- (172.21.101.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 1 Apr
- 2022 15:16:21 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 1 Apr 2022 15:16:21 +0800
-From:   Leilk Liu <leilk.liu@mediatek.com>
-To:     Mark Brown <broonie@kernel.org>
-CC:     Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-spi@vger.kernel.org>, <linux-mediatek@lists.infradead.org>,
-        Leilk Liu <leilk.liu@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Subject: [PATCH V7 1/3] spi: mediatek: add spi memory support for ipm design
-Date:   Fri, 1 Apr 2022 15:16:14 +0800
-Message-ID: <20220401071616.8874-2-leilk.liu@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220401071616.8874-1-leilk.liu@mediatek.com>
-References: <20220401071616.8874-1-leilk.liu@mediatek.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+        Fri, 1 Apr 2022 03:18:42 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF05C25CBB4
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 00:16:51 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id h1so1912476edj.1
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 00:16:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=MoQJAWCb5O8HKuXjQ/8E9dXCWuJaKjECxVHKf1aQxtM=;
+        b=ptI2bnlTSLxejlaqrsccAxhjPJBWqtTQx37/Xejrte2+YFrPHAhgQS3HHSbWub0ZTi
+         GnH24gT/A2bx/cfmYCeJwBEyUuw+r6Xgz1J5lk6iGN6B1/MBIiBFwGnjN7TbFIudVGfk
+         18LOO9nz91Z1MSP76cXXHiKr35d0VEWOfxmBnSDAM3niOomosBZ10n0zwTum0PyHezpY
+         ajoMICOEw9XJbh8buuVNnp6V0kvix6SxBpjjcqb06eZPhhs117+795ZUIIyWPjeWDqsz
+         PpRWg1lpwjk6FQPDJ/XA8K3z9W+9CW3mD0C1sEyK8eSQ5bQmtqJdC+7LD5aE8+3ItLKy
+         MgOg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=MoQJAWCb5O8HKuXjQ/8E9dXCWuJaKjECxVHKf1aQxtM=;
+        b=JAZ1OuWuGuLBn25TdgdxbF1mOJBV9IPsTn26iNSq7Br0SHMeTSjNZfqzId8pPsgxep
+         1rfixjUo+s1aeaha2+jeoyR+i6GPOUw6uprfqz9t8sbaICa7p5z2PqjXM0su+crXoU6Q
+         S1Xfsmmi4ZybepK/eETXPckDqnSj9MX4p6m+hkZ/bUGsrx3vtysxHRDPI/p1FdiBnf2e
+         bCzNluKw2xggz1BqA5SveGku7VVjAafd68B93l9hFa0ncgY/g0Y0vACisCX9PjFOs4eT
+         qAG/I16jCpTuNpiWLjMdUfIxKkU0WRYTmQmd3vmlPQymcehy+wAmPA1aPzQ7myYbAyW0
+         qdKA==
+X-Gm-Message-State: AOAM533OjRnBkQbbV12dg+HbfQg/vMs1qlIojObOAxjtEiVbN8TSx1YE
+        ilFdIbFtKV1t2LWnA3njCU0=
+X-Google-Smtp-Source: ABdhPJx1dYDEnnliev//mBN6VmW9xDfnmAP07hN2MxONU8QwngdpGSTWn6Q6fcthoaMi8aa3jNByUg==
+X-Received: by 2002:aa7:cc82:0:b0:410:d2b0:1a07 with SMTP id p2-20020aa7cc82000000b00410d2b01a07mr19817208edt.359.1648797409996;
+        Fri, 01 Apr 2022 00:16:49 -0700 (PDT)
+Received: from smtpclient.apple (i130160.upc-i.chello.nl. [62.195.130.160])
+        by smtp.gmail.com with ESMTPSA id au22-20020a170907093600b006e4ad0bf8f7sm697549ejc.91.2022.04.01.00.16.49
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 01 Apr 2022 00:16:49 -0700 (PDT)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.80.82.1.1\))
+Subject: Re: [PATCH] virt: acrn: fix invalid check past list iterator
+From:   Jakob Koschel <jakobkoschel@gmail.com>
+In-Reply-To: <20220401035742.GA31162@louislifei-OptiPlex-7050>
+Date:   Fri, 1 Apr 2022 09:16:48 +0200
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        rppt@kernel.org, bjohannesmeyer@gmail.com, c.giuffrida@vu.nl,
+        h.j.bos@vu.nl
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <CE06BFFA-93CA-4E25-AB63-524C3F293556@gmail.com>
+References: <20220319203819.2559993-1-jakobkoschel@gmail.com>
+ <20220330075742.GA22544@louislifei-OptiPlex-7050>
+ <6E68C33F-9CBB-418C-A11D-2AD863C0B19A@gmail.com>
+ <20220401011533.GA29696@louislifei-OptiPlex-7050>
+ <F54F358F-FFBC-4D6D-AB5C-9BC4A617C9BF@gmail.com>
+ <20220401035742.GA31162@louislifei-OptiPlex-7050>
+To:     Li Fei1 <fei1.li@intel.com>
+X-Mailer: Apple Mail (2.3696.80.82.1.1)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-this patch add the support of spi-mem for ipm design.
 
-Signed-off-by: Leilk Liu <leilk.liu@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- drivers/spi/spi-mt65xx.c | 301 ++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 300 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/spi/spi-mt65xx.c b/drivers/spi/spi-mt65xx.c
-index 1a0b3208dfca..0f91c176b878 100644
---- a/drivers/spi/spi-mt65xx.c
-+++ b/drivers/spi/spi-mt65xx.c
-@@ -17,6 +17,7 @@
- #include <linux/platform_data/spi-mt65xx.h>
- #include <linux/pm_runtime.h>
- #include <linux/spi/spi.h>
-+#include <linux/spi/spi-mem.h>
- #include <linux/dma-mapping.h>
- 
- #define SPI_CFG0_REG                      0x0000
-@@ -78,8 +79,20 @@
- #define SPI_CMD_IPM_GET_TICKDLY_OFFSET    22
- 
- #define SPI_CMD_IPM_GET_TICKDLY_MASK	GENMASK(24, 22)
-+
-+#define PIN_MODE_CFG(x)	((x) / 2)
-+
- #define SPI_CFG3_IPM_HALF_DUPLEX_DIR		BIT(2)
- #define SPI_CFG3_IPM_HALF_DUPLEX_EN		BIT(3)
-+#define SPI_CFG3_IPM_XMODE_EN			BIT(4)
-+#define SPI_CFG3_IPM_NODATA_FLAG		BIT(5)
-+#define SPI_CFG3_IPM_CMD_BYTELEN_OFFSET		8
-+#define SPI_CFG3_IPM_ADDR_BYTELEN_OFFSET	12
-+
-+#define SPI_CFG3_IPM_CMD_PIN_MODE_MASK		GENMASK(1, 0)
-+#define SPI_CFG3_IPM_CMD_BYTELEN_MASK		GENMASK(11, 8)
-+#define SPI_CFG3_IPM_ADDR_BYTELEN_MASK		GENMASK(15, 12)
-+
- #define MT8173_SPI_MAX_PAD_SEL 3
- 
- #define MTK_SPI_PAUSE_INT_STATUS 0x2
-@@ -90,6 +103,8 @@
- #define MTK_SPI_MAX_FIFO_SIZE 32U
- #define MTK_SPI_PACKET_SIZE 1024
- #define MTK_SPI_IPM_PACKET_SIZE SZ_64K
-+#define MTK_SPI_IPM_PACKET_LOOP SZ_256
-+
- #define MTK_SPI_32BITS_MASK  (0xffffffff)
- 
- #define DMA_ADDR_EXT_BITS (36)
-@@ -107,7 +122,6 @@ struct mtk_spi_compatible {
- 	bool no_need_unprepare;
- 	/* IPM design adjust and extend register to support more features */
- 	bool ipm_design;
--
- };
- 
- struct mtk_spi {
-@@ -123,6 +137,11 @@ struct mtk_spi {
- 	u32 tx_sgl_len, rx_sgl_len;
- 	const struct mtk_spi_compatible *dev_comp;
- 	u32 spi_clk_hz;
-+	struct completion spimem_done;
-+	bool use_spimem;
-+	struct device *dev;
-+	dma_addr_t tx_dma;
-+	dma_addr_t rx_dma;
- };
- 
- static const struct mtk_spi_compatible mtk_common_compat;
-@@ -704,6 +723,12 @@ static irqreturn_t mtk_spi_interrupt(int irq, void *dev_id)
- 	else
- 		mdata->state = MTK_SPI_IDLE;
- 
-+	/* SPI-MEM ops */
-+	if (mdata->use_spimem) {
-+		complete(&mdata->spimem_done);
-+		return IRQ_HANDLED;
-+	}
-+
- 	if (!master->can_dma(master, NULL, trans)) {
- 		if (trans->rx_buf) {
- 			cnt = mdata->xfer_len / 4;
-@@ -787,6 +812,274 @@ static irqreturn_t mtk_spi_interrupt(int irq, void *dev_id)
- 	return IRQ_HANDLED;
- }
- 
-+static int mtk_spi_mem_adjust_op_size(struct spi_mem *mem,
-+				      struct spi_mem_op *op)
-+{
-+	int opcode_len;
-+
-+	if (op->data.dir != SPI_MEM_NO_DATA) {
-+		opcode_len = 1 + op->addr.nbytes + op->dummy.nbytes;
-+		if (opcode_len + op->data.nbytes > MTK_SPI_IPM_PACKET_SIZE) {
-+			op->data.nbytes = MTK_SPI_IPM_PACKET_SIZE - opcode_len;
-+			/* force data buffer dma-aligned. */
-+			op->data.nbytes -= op->data.nbytes % 4;
-+		}
-+	}
-+
-+	return 0;
-+}
-+
-+static bool mtk_spi_mem_supports_op(struct spi_mem *mem,
-+				    const struct spi_mem_op *op)
-+{
-+	if (!spi_mem_default_supports_op(mem, op))
-+		return false;
-+
-+	if (op->addr.nbytes && op->dummy.nbytes &&
-+	    op->addr.buswidth != op->dummy.buswidth)
-+		return false;
-+
-+	if (op->addr.nbytes + op->dummy.nbytes > 16)
-+		return false;
-+
-+	if (op->data.nbytes > MTK_SPI_IPM_PACKET_SIZE) {
-+		if (op->data.nbytes / MTK_SPI_IPM_PACKET_SIZE >
-+		    MTK_SPI_IPM_PACKET_LOOP ||
-+		    op->data.nbytes % MTK_SPI_IPM_PACKET_SIZE != 0)
-+			return false;
-+	}
-+
-+	return true;
-+}
-+
-+static void mtk_spi_mem_setup_dma_xfer(struct spi_master *master,
-+				       const struct spi_mem_op *op)
-+{
-+	struct mtk_spi *mdata = spi_master_get_devdata(master);
-+
-+	writel((u32)(mdata->tx_dma & MTK_SPI_32BITS_MASK),
-+	       mdata->base + SPI_TX_SRC_REG);
-+#ifdef CONFIG_ARCH_DMA_ADDR_T_64BIT
-+	if (mdata->dev_comp->dma_ext)
-+		writel((u32)(mdata->tx_dma >> 32),
-+		       mdata->base + SPI_TX_SRC_REG_64);
-+#endif
-+
-+	if (op->data.dir == SPI_MEM_DATA_IN) {
-+		writel((u32)(mdata->rx_dma & MTK_SPI_32BITS_MASK),
-+		       mdata->base + SPI_RX_DST_REG);
-+#ifdef CONFIG_ARCH_DMA_ADDR_T_64BIT
-+		if (mdata->dev_comp->dma_ext)
-+			writel((u32)(mdata->rx_dma >> 32),
-+			       mdata->base + SPI_RX_DST_REG_64);
-+#endif
-+	}
-+}
-+
-+static int mtk_spi_transfer_wait(struct spi_mem *mem,
-+				 const struct spi_mem_op *op)
-+{
-+	struct mtk_spi *mdata = spi_master_get_devdata(mem->spi->master);
-+	/*
-+	 * For each byte we wait for 8 cycles of the SPI clock.
-+	 * Since speed is defined in Hz and we want milliseconds,
-+	 * so it should be 8 * 1000.
-+	 */
-+	u64 ms = 8000LL;
-+
-+	if (op->data.dir == SPI_MEM_NO_DATA)
-+		ms *= 32; /* prevent we may get 0 for short transfers. */
-+	else
-+		ms *= op->data.nbytes;
-+	ms = div_u64(ms, mem->spi->max_speed_hz);
-+	ms += ms + 1000; /* 1s tolerance */
-+
-+	if (ms > UINT_MAX)
-+		ms = UINT_MAX;
-+
-+	if (!wait_for_completion_timeout(&mdata->spimem_done,
-+					 msecs_to_jiffies(ms))) {
-+		dev_err(mdata->dev, "spi-mem transfer timeout\n");
-+		return -ETIMEDOUT;
-+	}
-+
-+	return 0;
-+}
-+
-+static int mtk_spi_mem_exec_op(struct spi_mem *mem,
-+			       const struct spi_mem_op *op)
-+{
-+	struct mtk_spi *mdata = spi_master_get_devdata(mem->spi->master);
-+	u32 reg_val, nio, tx_size;
-+	char *tx_tmp_buf, *rx_tmp_buf;
-+	int ret = 0;
-+
-+	mdata->use_spimem = true;
-+	reinit_completion(&mdata->spimem_done);
-+
-+	mtk_spi_reset(mdata);
-+	mtk_spi_hw_init(mem->spi->master, mem->spi);
-+	mtk_spi_prepare_transfer(mem->spi->master, mem->spi->max_speed_hz);
-+
-+	reg_val = readl(mdata->base + SPI_CFG3_IPM_REG);
-+	/* opcode byte len */
-+	reg_val &= ~SPI_CFG3_IPM_CMD_BYTELEN_MASK;
-+	reg_val |= 1 << SPI_CFG3_IPM_CMD_BYTELEN_OFFSET;
-+
-+	/* addr & dummy byte len */
-+	reg_val &= ~SPI_CFG3_IPM_ADDR_BYTELEN_MASK;
-+	if (op->addr.nbytes || op->dummy.nbytes)
-+		reg_val |= (op->addr.nbytes + op->dummy.nbytes) <<
-+			    SPI_CFG3_IPM_ADDR_BYTELEN_OFFSET;
-+
-+	/* data byte len */
-+	if (op->data.dir == SPI_MEM_NO_DATA) {
-+		reg_val |= SPI_CFG3_IPM_NODATA_FLAG;
-+		writel(0, mdata->base + SPI_CFG1_REG);
-+	} else {
-+		reg_val &= ~SPI_CFG3_IPM_NODATA_FLAG;
-+		mdata->xfer_len = op->data.nbytes;
-+		mtk_spi_setup_packet(mem->spi->master);
-+	}
-+
-+	if (op->addr.nbytes || op->dummy.nbytes) {
-+		if (op->addr.buswidth == 1 || op->dummy.buswidth == 1)
-+			reg_val |= SPI_CFG3_IPM_XMODE_EN;
-+		else
-+			reg_val &= ~SPI_CFG3_IPM_XMODE_EN;
-+	}
-+
-+	if (op->addr.buswidth == 2 ||
-+	    op->dummy.buswidth == 2 ||
-+	    op->data.buswidth == 2)
-+		nio = 2;
-+	else if (op->addr.buswidth == 4 ||
-+		 op->dummy.buswidth == 4 ||
-+		 op->data.buswidth == 4)
-+		nio = 4;
-+	else
-+		nio = 1;
-+
-+	reg_val &= ~SPI_CFG3_IPM_CMD_PIN_MODE_MASK;
-+	reg_val |= PIN_MODE_CFG(nio);
-+
-+	reg_val |= SPI_CFG3_IPM_HALF_DUPLEX_EN;
-+	if (op->data.dir == SPI_MEM_DATA_IN)
-+		reg_val |= SPI_CFG3_IPM_HALF_DUPLEX_DIR;
-+	else
-+		reg_val &= ~SPI_CFG3_IPM_HALF_DUPLEX_DIR;
-+	writel(reg_val, mdata->base + SPI_CFG3_IPM_REG);
-+
-+	tx_size = 1 + op->addr.nbytes + op->dummy.nbytes;
-+	if (op->data.dir == SPI_MEM_DATA_OUT)
-+		tx_size += op->data.nbytes;
-+
-+	tx_size = max_t(u32, tx_size, 32);
-+
-+	tx_tmp_buf = kzalloc(tx_size, GFP_KERNEL | GFP_DMA);
-+	if (!tx_tmp_buf) {
-+		mdata->use_spimem = false;
-+		return -ENOMEM;
-+	}
-+
-+	tx_tmp_buf[0] = op->cmd.opcode;
-+
-+	if (op->addr.nbytes) {
-+		int i;
-+
-+		for (i = 0; i < op->addr.nbytes; i++)
-+			tx_tmp_buf[i + 1] = op->addr.val >>
-+					(8 * (op->addr.nbytes - i - 1));
-+	}
-+
-+	if (op->dummy.nbytes)
-+		memset(tx_tmp_buf + op->addr.nbytes + 1,
-+		       0xff,
-+		       op->dummy.nbytes);
-+
-+	if (op->data.nbytes && op->data.dir == SPI_MEM_DATA_OUT)
-+		memcpy(tx_tmp_buf + op->dummy.nbytes + op->addr.nbytes + 1,
-+		       op->data.buf.out,
-+		       op->data.nbytes);
-+
-+	mdata->tx_dma = dma_map_single(mdata->dev, tx_tmp_buf,
-+				       tx_size, DMA_TO_DEVICE);
-+	if (dma_mapping_error(mdata->dev, mdata->tx_dma)) {
-+		ret = -ENOMEM;
-+		goto err_exit;
-+	}
-+
-+	if (op->data.dir == SPI_MEM_DATA_IN) {
-+		if (!IS_ALIGNED((size_t)op->data.buf.in, 4)) {
-+			rx_tmp_buf = kzalloc(op->data.nbytes,
-+					     GFP_KERNEL | GFP_DMA);
-+			if (!rx_tmp_buf) {
-+				ret = -ENOMEM;
-+				goto unmap_tx_dma;
-+			}
-+		} else {
-+			rx_tmp_buf = op->data.buf.in;
-+		}
-+
-+		mdata->rx_dma = dma_map_single(mdata->dev,
-+					       rx_tmp_buf,
-+					       op->data.nbytes,
-+					       DMA_FROM_DEVICE);
-+		if (dma_mapping_error(mdata->dev, mdata->rx_dma)) {
-+			ret = -ENOMEM;
-+			goto kfree_rx_tmp_buf;
-+		}
-+	}
-+
-+	reg_val = readl(mdata->base + SPI_CMD_REG);
-+	reg_val |= SPI_CMD_TX_DMA;
-+	if (op->data.dir == SPI_MEM_DATA_IN)
-+		reg_val |= SPI_CMD_RX_DMA;
-+	writel(reg_val, mdata->base + SPI_CMD_REG);
-+
-+	mtk_spi_mem_setup_dma_xfer(mem->spi->master, op);
-+
-+	mtk_spi_enable_transfer(mem->spi->master);
-+
-+	/* Wait for the interrupt. */
-+	ret = mtk_spi_transfer_wait(mem, op);
-+	if (ret)
-+		goto unmap_rx_dma;
-+
-+	/* spi disable dma */
-+	reg_val = readl(mdata->base + SPI_CMD_REG);
-+	reg_val &= ~SPI_CMD_TX_DMA;
-+	if (op->data.dir == SPI_MEM_DATA_IN)
-+		reg_val &= ~SPI_CMD_RX_DMA;
-+	writel(reg_val, mdata->base + SPI_CMD_REG);
-+
-+unmap_rx_dma:
-+	if (op->data.dir == SPI_MEM_DATA_IN) {
-+		dma_unmap_single(mdata->dev, mdata->rx_dma,
-+				 op->data.nbytes, DMA_FROM_DEVICE);
-+		if (!IS_ALIGNED((size_t)op->data.buf.in, 4))
-+			memcpy(op->data.buf.in, rx_tmp_buf, op->data.nbytes);
-+	}
-+kfree_rx_tmp_buf:
-+	if (op->data.dir == SPI_MEM_DATA_IN &&
-+	    !IS_ALIGNED((size_t)op->data.buf.in, 4))
-+		kfree(rx_tmp_buf);
-+unmap_tx_dma:
-+	dma_unmap_single(mdata->dev, mdata->tx_dma,
-+			 tx_size, DMA_TO_DEVICE);
-+err_exit:
-+	kfree(tx_tmp_buf);
-+	mdata->use_spimem = false;
-+
-+	return ret;
-+}
-+
-+static const struct spi_controller_mem_ops mtk_spi_mem_ops = {
-+	.adjust_op_size = mtk_spi_mem_adjust_op_size,
-+	.supports_op = mtk_spi_mem_supports_op,
-+	.exec_op = mtk_spi_mem_exec_op,
-+};
-+
- static int mtk_spi_probe(struct platform_device *pdev)
- {
- 	struct spi_master *master;
-@@ -830,6 +1123,12 @@ static int mtk_spi_probe(struct platform_device *pdev)
- 	if (mdata->dev_comp->ipm_design)
- 		master->mode_bits |= SPI_LOOP;
- 
-+	if (mdata->dev_comp->ipm_design) {
-+		mdata->dev = &pdev->dev;
-+		master->mem_ops = &mtk_spi_mem_ops;
-+		init_completion(&mdata->spimem_done);
-+	}
-+
- 	if (mdata->dev_comp->need_pad_sel) {
- 		mdata->pad_num = of_property_count_u32_elems(
- 			pdev->dev.of_node,
--- 
-2.25.1
+> On 1. Apr 2022, at 05:57, Li Fei1 <fei1.li@intel.com> wrote:
+>=20
+> On Fri, Apr 01, 2022 at 05:22:36AM +0200, Jakob Koschel wrote:
+>>=20
+>>> On 1. Apr 2022, at 03:15, Li Fei1 <fei1.li@intel.com> wrote:
+>>>=20
+>>> On Thu, Mar 31, 2022 at 01:20:50PM +0200, Jakob Koschel wrote:
+>>>>=20
+>>>>> On 30. Mar 2022, at 09:57, Li Fei1 <fei1.li@intel.com> wrote:
+>>>>>=20
+>>>>> On Sat, Mar 19, 2022 at 09:38:19PM +0100, Jakob Koschel wrote:
+>>>>>> The condition retry =3D=3D 0 is theoretically possible even if =
+'client'
+>>>>>> does not point to a valid element because no break was hit.
+>>>>>>=20
+>>>>>> To only execute the dev_warn if actually a break within the loop =
+was
+>>>>>> hit, a separate variable is used that is only set if it is =
+ensured to
+>>>>>> point to a valid client struct.
+>>>>>>=20
+>>>>> Hi Koschel
+>>>>>=20
+>>>>> Thanks for you to help us to try to improve the code. Maybe you =
+don't get the point.
+>>>>> The dev_warn should only been called when has_pending =3D true && =
+retry =3D=3D 0
+>>>>=20
+>>>> Maybe I don't understand but looking isolated at this function I =
+could see a way to call
+>>>> the dev_warn() with has_pending =3D false && retry =3D=3D 0.
+>>> Yes, even has_pending =3D true && retry =3D=3D 0 at the beginning, =
+we could not make sure
+>>> has_pending is true after schedule_timeout_interruptible and we even =
+didn't check
+>>> there're other pending client on the ioreq_clients (because we can't =
+make sure
+>>> when we dev_warn this clent is still pending). So we just use =
+dev_warn not higher log level.
+>>=20
+>> I'm sorry, I don't quite understand what you mean by that.
+>> Do you agree that has_pending =3D false && retry =3D=3D 0 is possible =
+when calling the dev_warn()
+>> or not?
+>>=20
+> Yes, so what ? It just a hint there may have pending request.
+
+if has_pending =3D=3D false && retry =3D=3D 0 when calling dev_warn() =
+there are very clear
+dependencies met:
+
+* has_pending =3D=3D false means that the list_for_each_entry() macro it =
+*not* exit early.
+* since list_for_each_entry() did *not* exit early, client will not hold =
+a valid list entry
+* using client->name is not safe and will not point to a valid string =
+(perhaps not even an address)
+
+I'm *only* talking about the case where has_pending =3D=3D false, in =
+case that's not clear.
+
+
+> Even retry =3D=3D 0 && has_pending =3D true,
+> When we call dev_warn, the clent may not is pending.
+>=20
+>=20
+>>>>=20
+>>>>> 		list_for_each_entry(client, &vm->ioreq_clients, list) {
+>>>>> 			has_pending =3D has_pending_request(client);
+>>>>> 			if (has_pending)
+>>>>> 		}
+>>>>> 		spin_unlock_bh(&vm->ioreq_clients_lock);
+>>>>=20
+>>>> imagine has_pending =3D=3D false && retry =3D=3D 1 here, then =
+client will not hold a valid list entry.
+>>> What do you mean "client will not hold a valid list entry" ?=20
+>>=20
+>> Imagine a very simple example:
+>>=20
+>> 	struct acrn_ioreq_client *client;
+>> 	list_for_each_entry(client, &vm->ioreq_clients, list) {
+>> 		continue;
+>> 	}
+>>=20
+>> 	dev_warn(acrn_dev.this_device,
+>> 		 "%s cannot flush pending request!\n", client->name); /* =
+NOT GOOD */
+>>=20
+> If there're pending request, we would call schedule to schedule out =
+then schedule back
+> to check the list from the beginning. If there's no pending client, we =
+point to the last
+> client and break out the while loop.
+>=20
+> The code doesn't want to find the pending client and break out the =
+while loop and call
+> dev_warn. Please see the function comment.
+>=20
+>=20
+>>=20
+>> Since there is no break for the list_for_each_entry() iterator to =
+return early,
+>> client *cannot* be a valid entry of the list. In fact if you look at =
+the list_for_each_entry()
+>> macro, it will be an 'bogus' pointer, pointing somewhere into 'vm'.
+>> Essentially before the terminating condition of the list traversal =
+the following code is called:
+>>=20
+>> 	list_entry(&vm->ioreq_clients, struct acrn_ioreq_client *, =
+list);
+>>=20
+>> resulting in a:
+>>=20
+>> 	container_of(&vm->ioreq_clients, struct acrn_ioreq_client *, =
+list);
+>>=20
+>> &vm->ioreq_clients however is not contained in a struct =
+acrn_ioreq_client, making
+>> this call compute an invalid pointer.
+>> Therefore using 'client' as in the example above (e.g. client->name) =
+after the loop is
+>> not safe. Since the loop can never return early in the simple example =
+above it will
+>> always break. On other cases (the one we are discussing here) there =
+might be a chance that
+>> there is one code path (in theory) where the loop did not exit early =
+and 'client'
+>> holds that 'invalid entry'.
+>>=20
+>> This would be the case with has_pending =3D false && retry =3D=3D 0.
+>>=20
+>> I hope this makes sense.
+>>=20
+>>>=20
+>>>>=20
+>>>>>=20
+>>>>> 		if (has_pending)
+>>>>> 			schedule_timeout_interruptible(HZ / 100);
+>>>>> 	} while (has_pending && --retry > 0);
+>>>>=20
+>>>> since has_pending && --retry > 0 is no longer true the loop stops.
+>>>>=20
+>>>>> 	if (retry =3D=3D 0)
+>>>>> 		dev_warn(acrn_dev.this_device,
+>>>>> 			 "%s cannot flush pending request!\n", =
+client->name);
+>>>> client->name is accessed since retry =3D=3D 0 now, but client is =
+not a valid struct ending up
+>>>> in a type confusion.
+>>>>=20
+>>>>>=20
+>>>>> If retry > 0 and has_pending is true, we would call =
+schedule_timeout_interruptible
+>>>>> to schedule out to wait all the pending I/O requests would been =
+completed.
+>>>>>=20
+>>>>> Thanks.
+>>>>=20
+>>>> Again, I'm not sure if this is realistically possible. I'm trying =
+to remove
+>>>> any use of the list iterator after the loop to make such =
+potentially issues detectable
+>>> You may think we still in the loop (could we ?), even that we didn't =
+write the list iterator then.
+>>=20
+>> I'm not exactly sure which loop you are referring to but no, I don't =
+think we are still in
+>> the do while loop.
+>>=20
+>> The only thing we know after the do while loop is that: !has_pending =
+|| retry =3D=3D 0
+>> And iff has_pending && retry =3D=3D 0, then we shouldn't call the =
+dev_warn().
+>>=20
+>>>> at compile time instead of relying on certain (difficult to =
+maintain) conditions to be met
+>>>> to avoid the type confusion.
+>>>>=20
+>>>> Thanks,
+>>>> Jakob
+>>=20
+>> 	Jakob
+
+	Jakob
 
