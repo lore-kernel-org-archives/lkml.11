@@ -2,71 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F229CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 08:02:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD9BDC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 08:03:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344156AbiDAIEc (ORCPT
+        id S1344157AbiDAIFh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 04:04:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50662 "EHLO
+        Fri, 1 Apr 2022 04:05:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344126AbiDAIE0 (ORCPT
+        with ESMTP id S244236AbiDAIFe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 04:04:26 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 009CA1CABCE;
-        Fri,  1 Apr 2022 01:02:35 -0700 (PDT)
-X-UUID: 93d2fd38057740cc9e3ce94c513447b5-20220401
-X-UUID: 93d2fd38057740cc9e3ce94c513447b5-20220401
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
-        (envelope-from <johnson.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 320020926; Fri, 01 Apr 2022 16:02:27 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Fri, 1 Apr 2022 16:02:26 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 1 Apr 2022 16:02:26 +0800
-From:   Johnson Wang <johnson.wang@mediatek.com>
-To:     <broonie@kernel.org>, <robh+dt@kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Johnson Wang <johnson.wang@mediatek.com>
-Subject: [RESEND v2 0/2] Add support for MediaTek PMIC MT6366
-Date:   Fri, 1 Apr 2022 16:02:10 +0800
-Message-ID: <20220401080212.27383-1-johnson.wang@mediatek.com>
-X-Mailer: git-send-email 2.18.0
+        Fri, 1 Apr 2022 04:05:34 -0400
+Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C346862106;
+        Fri,  1 Apr 2022 01:03:44 -0700 (PDT)
+Received: by mail-qv1-xf29.google.com with SMTP id kd21so1463086qvb.6;
+        Fri, 01 Apr 2022 01:03:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=iigF8mZf5i0ikBPqRgdRRkmmEgwTtaij4Ng6hfEOlCQ=;
+        b=ftdTOSnXccEyo1dXXR9tTbQVppJSoN5RXjbIIr/EbrENnzHLuN9lJwfUKrxOrHm3O/
+         QnEXfsZjW+AQ8LPoBsdsiMNqN7FNsNsuyX6s7Ru38zJSlnRqR/L4b9TJ7wjzZdQTYkkC
+         RU5DCf7qm9TPiWkLvjhh1LDCTDQ785zYPc+B1gzilKeBoig2fLqMF61w2qrGyL959ad9
+         iMX7kz3SF3PEviq5DUSfwpo1+DW8AL4Ps72+YeHaXrcAIVDGTLdvg+tJd587rucjqw/q
+         AAkuPAyIclnPyJIAQpXsi8h3N5KNkm/xybiyxRN51HnZ/FPmaboCZCEFImtW3J1AvDqZ
+         G4lg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=iigF8mZf5i0ikBPqRgdRRkmmEgwTtaij4Ng6hfEOlCQ=;
+        b=DJP+gPmjnDzBWLRX2xxwKwabJG7hwjK3FiAehIw5mNeFxQmpycqrfv0XpoxHuNinoA
+         6FaCHp4hfpt7Q5IXulGS0O9qoGFMxkaTI2zo0p7baV1ElVkR7Ean7DD17TdWfsa63FBI
+         n9279B02KptnKLfTuWQ6vlgFutPBdqa+hJqUwIAUfwNt8McaC1aoOd0vKy6RsZL5whkb
+         F7z0ZUmOVTfH8OWgJiyKusuwwsgg2fLb7woylrj03FpYwFxfHOnF86M5Kk9fDTNNg7mU
+         R7wXiSN+Q6gvDJJexeTmmc/5DNAwNT3/jGvkwWF6qsgQI173B70KgRFAMWJ4Hi3lFZQ5
+         WIog==
+X-Gm-Message-State: AOAM532rdJ4geFybaMJFXoK8B9JbfMX8B6ZLlf6c5+J0+CV6VXWW/KN9
+        rjWpnh39NFobVwmivbhXQC0rYdAuCxk=
+X-Google-Smtp-Source: ABdhPJxngn1dIdK7Y2CsTXi9S2CvDhQnSZg9UI6fOapkkkuAr/xkbmo7jHaEEvp22b7sQqFhZN6RHg==
+X-Received: by 2002:a05:6214:c6a:b0:443:6a15:5888 with SMTP id t10-20020a0562140c6a00b004436a155888mr7313538qvj.20.1648800223945;
+        Fri, 01 Apr 2022 01:03:43 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id w3-20020a05622a190300b002e1f084d84bsm1426120qtc.50.2022.04.01.01.03.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 01 Apr 2022 01:03:43 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: lv.ruyi@zte.com.cn
+To:     mailhol.vincent@wanadoo.fr
+Cc:     gregkh@linuxfoundation.org, lv.ruyi@zte.com.cn,
+        cai.huoqing@linux.dev, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] usb: host: replace zero-length array with flexible-array member
+Date:   Fri,  1 Apr 2022 08:03:37 +0000
+Message-Id: <20220401080337.2407622-1-lv.ruyi@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patchset adds support for MediaTek PMIC MT6366.
-MT6366 is the primary PMIC for MT8186 and probably other SOCs.
+From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-Resend v2:
-- rebase on Linux 5.17
+There is a regular need in the kernel to provide a way to declare
+having a dynamically sized set of trailing elements in a structure.
+Kernel code should always use “flexible array members”[1] for these
+cases. The older style of one-element or zero-length arrays should
+no longer be used[2].
 
-Changes in v2:
-- rebase on Linux 5.17-rc8
-- change subject line
+[1] https://en.wikipedia.org/wiki/Flexible_array_member
+[2] https://www.kernel.org/doc/html/v5.16/process/deprecated.html#zero-length-and-one-element-arrays
 
-Johnson Wang (2):
-  regulator: mt6366: Add support for MT6366 regulator
-  dt-bindings: regulator: Add BUCK and LDO document for MT6358 and
-    MT6366
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+---
+ drivers/usb/host/oxu210hp-hcd.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
- .../bindings/regulator/mt6358-regulator.txt   |  22 +-
- drivers/regulator/mt6358-regulator.c          | 213 +++++++++++++++++-
- include/linux/regulator/mt6358-regulator.h    |  45 ++++
- 3 files changed, 270 insertions(+), 10 deletions(-)
-
+diff --git a/drivers/usb/host/oxu210hp-hcd.c b/drivers/usb/host/oxu210hp-hcd.c
+index b741670525e3..86f92aadeb0e 100644
+--- a/drivers/usb/host/oxu210hp-hcd.c
++++ b/drivers/usb/host/oxu210hp-hcd.c
+@@ -169,7 +169,7 @@ struct ehci_regs {
+ #define FLAG_CF		(1<<0)		/* true: we'll support "high speed" */
+ 
+ 	/* PORTSC: offset 0x44 */
+-	u32		port_status[0];	/* up to N_PORTS */
++	u32		port_status[];	/* up to N_PORTS */
+ /* 31:23 reserved */
+ #define PORT_WKOC_E	(1<<22)		/* wake on overcurrent (enable) */
+ #define PORT_WKDISC_E	(1<<21)		/* wake on disconnect (enable) */
 -- 
-2.18.0
+2.25.1
 
