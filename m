@@ -2,182 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 324B6C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 19:07:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33EE5C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 19:09:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242996AbiDATJS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 15:09:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45008 "EHLO
+        id S1351524AbiDATLM (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Apr 2022 15:11:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351497AbiDATJF (ORCPT
+        with ESMTP id S241780AbiDATLJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 15:09:05 -0400
-Received: from mail-qv1-xf32.google.com (mail-qv1-xf32.google.com [IPv6:2607:f8b0:4864:20::f32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EB9C28A028
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 12:07:14 -0700 (PDT)
-Received: by mail-qv1-xf32.google.com with SMTP id hu11so2739357qvb.7
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 12:07:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=7duh5/e6azg6x7M9ZEJraSnYR2xg1p2mo3IgTU2n19I=;
-        b=ixCVpPmT/JlXNt6KzufnyJWEqNtOWAo85HK28S7mlmUNz7+i+Xn2ycK3NtwdyV/3Ws
-         im+/dNS7arlQR3WljVo4QAnmbBbFbEWexnKya1xQXePJMI6X/aeQkvVEsNqaLv8hOedT
-         2pCzBm9lLcNw1XPFNOWd7YHC81/woL+Akco37rWL2xbn/fIsiyemhEveLI5NMLtd1ph0
-         HPvF+IuqC9qQAKpJuFTTm+a9KWHRw+YQd1uiasqUktgDSsxeDzJ9tqoBeP9L8gED8HNX
-         vm0KcOre3UBqdAWaiY04VWpAcV8o1dqVb1ol/Oxpu08qoU2KVPRpwfZ7f9LsR+p8qho4
-         2nHw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=7duh5/e6azg6x7M9ZEJraSnYR2xg1p2mo3IgTU2n19I=;
-        b=aKLkpXPOkiu7Vu9SEG9osqZJr3cdT04lMQ1CqFhjQEuurIcRjmeZcY1/5dJY89nULC
-         Dcaac1TllXXzZczsJrj2zDFZrgA+mLXMY4Kx7Gv9xHodn8y55ttyDosweVed0Sknj5e4
-         e0lHEWmlcxmK6D5QXPHveMvoYan0YPfzJuWyUe2CXHSmQQD1Zet4sYzH4oU8ygIlDLT4
-         ytvV3csDpNgskDW8ThJzSMZFspkiocEehDh15ZNkB/CG2wt5nWk10lepq4AGqw2GGsBG
-         FRAci6RqfASuEzY97eDapbiQAABmYSOIqM9rOoLI8lra2ckFDx6gOnL0dxjxoAQOlc3p
-         DpBQ==
-X-Gm-Message-State: AOAM532wL+unANm20lxtUml/zkaQITL+up4c3uUthdGoYjLu5dRCzNjl
-        jTq4g7TyJB3QW/Xmnmauc6Y=
-X-Google-Smtp-Source: ABdhPJw2mfHY0gOg+ec3qnwP3hWFN+2tbRKgXUdgtDXbIGg/5BcqyaMV0aj88gpDCQmfER129js3Cg==
-X-Received: by 2002:ad4:4874:0:b0:440:f735:2743 with SMTP id u20-20020ad44874000000b00440f7352743mr9362812qvy.0.1648840033574;
-        Fri, 01 Apr 2022 12:07:13 -0700 (PDT)
-Received: from euclid ([71.58.109.160])
-        by smtp.gmail.com with ESMTPSA id h22-20020a05620a245600b0067d6dae634csm2070825qkn.9.2022.04.01.12.07.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Apr 2022 12:07:12 -0700 (PDT)
-From:   Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        outreachy@lists.linux.dev,
-        Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
-Subject: [PATCH 2/2] staging: rtl8723bs: remove redundant else branches
-Date:   Fri,  1 Apr 2022 15:06:59 -0400
-Message-Id: <eb57817c25a90a98d5f1602f6595cae13b2ae7ef.1648839290.git.sevinj.aghayeva@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1648839290.git.sevinj.aghayeva@gmail.com>
-References: <cover.1648839290.git.sevinj.aghayeva@gmail.com>
+        Fri, 1 Apr 2022 15:11:09 -0400
+Received: from vps-vb.mhejs.net (vps-vb.mhejs.net [37.28.154.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AD92617D;
+        Fri,  1 Apr 2022 12:09:17 -0700 (PDT)
+Received: from MUA
+        by vps-vb.mhejs.net with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <mail@maciej.szmigiero.name>)
+        id 1naMdl-00012l-6n; Fri, 01 Apr 2022 21:08:57 +0200
+Message-ID: <ff29e77c-f16d-d9ef-9089-0a929d3c2fbf@maciej.szmigiero.name>
+Date:   Fri, 1 Apr 2022 21:08:51 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Content-Language: en-US
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Jon Grimm <Jon.Grimm@amd.com>,
+        David Kaplan <David.Kaplan@amd.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Liam Merwick <liam.merwick@oracle.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <cover.1646944472.git.maciej.szmigiero@oracle.com>
+ <19c757487eeeff5344ff3684fe9c090235b07d05.1646944472.git.maciej.szmigiero@oracle.com>
+ <YkdFSuezZ1XNTTfx@google.com>
+From:   "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
+Subject: Re: [PATCH 1/5] KVM: nSVM: Sync next_rip field from vmcb12 to vmcb02
+In-Reply-To: <YkdFSuezZ1XNTTfx@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Adhere to Linux kernel coding style.
+On 1.04.2022 20:32, Sean Christopherson wrote:
+> On Thu, Mar 10, 2022, Maciej S. Szmigiero wrote:
+>> From: "Maciej S. Szmigiero" <maciej.szmigiero@oracle.com>
+>>
+>> The next_rip field of a VMCB is *not* an output-only field for a VMRUN.
+>> This field value (instead of the saved guest RIP) in used by the CPU for
+>> the return address pushed on stack when injecting a software interrupt or
+>> INT3 or INTO exception.
+>>
+>> Make sure this field gets synced from vmcb12 to vmcb02 when entering L2 or
+>> loading a nested state.
+>>
+>> Signed-off-by: Maciej S. Szmigiero <maciej.szmigiero@oracle.com>
+>> ---
+>>   arch/x86/kvm/svm/nested.c | 4 ++++
+>>   arch/x86/kvm/svm/svm.h    | 1 +
+>>   2 files changed, 5 insertions(+)
+>>
+>> diff --git a/arch/x86/kvm/svm/nested.c b/arch/x86/kvm/svm/nested.c
+>> index d736ec6514ca..9656f0d6815c 100644
+>> --- a/arch/x86/kvm/svm/nested.c
+>> +++ b/arch/x86/kvm/svm/nested.c
+>> @@ -366,6 +366,7 @@ void __nested_copy_vmcb_control_to_cache(struct kvm_vcpu *vcpu,
+>>   	to->nested_ctl          = from->nested_ctl;
+>>   	to->event_inj           = from->event_inj;
+>>   	to->event_inj_err       = from->event_inj_err;
+>> +	to->next_rip            = from->next_rip;
+>>   	to->nested_cr3          = from->nested_cr3;
+>>   	to->virt_ext            = from->virt_ext;
+>>   	to->pause_filter_count  = from->pause_filter_count;
+>> @@ -638,6 +639,8 @@ static void nested_vmcb02_prepare_control(struct vcpu_svm *svm)
+>>   	svm->vmcb->control.int_state           = svm->nested.ctl.int_state;
+>>   	svm->vmcb->control.event_inj           = svm->nested.ctl.event_inj;
+>>   	svm->vmcb->control.event_inj_err       = svm->nested.ctl.event_inj_err;
+>> +	/* The return address pushed on stack by the CPU for some injected events */
+>> +	svm->vmcb->control.next_rip            = svm->nested.ctl.next_rip;
+> 
+> This needs to be gated by nrips being enabled _and_ exposed to L1, i.e.
+> 
+> 	if (svm->nrips_enabled)
+> 		vmcb02->control.next_rip    = svm->nested.ctl.next_rip;
 
-Reported by checkpatch:
+It can be done, however what if we run on a nrips-capable CPU,
+but don't expose this capability to the L1?
 
-WARNING: else is not generally useful after a break or return
+The CPU will then push whatever value was left in this field as
+the return address for some L1 injected events.
 
-Signed-off-by: Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
----
- drivers/staging/rtl8723bs/core/rtw_mlme_ext.c | 63 +++++++++----------
- 1 file changed, 30 insertions(+), 33 deletions(-)
+Although without nrips feature the L1 shouldn't even attempt event
+injection, copying this field anyway will make it work if L1 just
+expects this capability based on the current CPU model rather than
+by checking specific CPUID feature bits.
 
-diff --git a/drivers/staging/rtl8723bs/core/rtw_mlme_ext.c b/drivers/staging/rtl8723bs/core/rtw_mlme_ext.c
-index 81e4b1bf68f6..7a941832ee34 100644
---- a/drivers/staging/rtl8723bs/core/rtw_mlme_ext.c
-+++ b/drivers/staging/rtl8723bs/core/rtw_mlme_ext.c
-@@ -907,10 +907,9 @@ unsigned int OnAuthClient(struct adapter *padapter, union recv_frame *precv_fram
- 			set_link_timer(pmlmeext, REAUTH_TO);
- 
- 			return _SUCCESS;
--		} else {
--			/*  open system */
--			go2asoc = 1;
- 		}
-+		/*  open system */
-+		go2asoc = 1;
- 	} else if (seq == 4) {
- 		if (pmlmeinfo->auth_algo == dot11AuthAlgrthm_Shared)
- 			go2asoc = 1;
-@@ -1467,6 +1466,7 @@ unsigned int OnDeAuth(struct adapter *padapter, union recv_frame *precv_frame)
- 	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
- 	struct mlme_ext_info *pmlmeinfo = &(pmlmeext->mlmext_info);
- 	u8 *pframe = precv_frame->u.hdr.rx_data;
-+	int ignore_received_deauth = 0;
- 
- 	/* check A3 */
- 	if (memcmp(GetAddr3Ptr(pframe), get_my_bssid(&pmlmeinfo->network), ETH_ALEN))
-@@ -1502,32 +1502,31 @@ unsigned int OnDeAuth(struct adapter *padapter, union recv_frame *precv_frame)
- 
- 
- 		return _SUCCESS;
--	} else {
--		int	ignore_received_deauth = 0;
--
--		/* 	Commented by Albert 20130604 */
--		/* 	Before sending the auth frame to start the STA/GC mode connection with AP/GO, */
--		/* 	we will send the deauth first. */
--		/* 	However, the Win8.1 with BRCM Wi-Fi will send the deauth with reason code 6 to us after receieving our deauth. */
--		/* 	Added the following code to avoid this case. */
--		if ((pmlmeinfo->state & WIFI_FW_AUTH_STATE) ||
--			(pmlmeinfo->state & WIFI_FW_ASSOC_STATE)) {
--			if (reason == WLAN_REASON_CLASS2_FRAME_FROM_NONAUTH_STA) {
--				ignore_received_deauth = 1;
--			} else if (reason == WLAN_REASON_PREV_AUTH_NOT_VALID) {
--				/*  TODO: 802.11r */
--				ignore_received_deauth = 1;
--			}
-+	}
-+
-+	/* 	Commented by Albert 20130604 */
-+	/* 	Before sending the auth frame to start the STA/GC mode connection with AP/GO, */
-+	/* 	we will send the deauth first. */
-+	/* 	However, the Win8.1 with BRCM Wi-Fi will send the deauth with reason code 6 to us after receieving our deauth. */
-+	/* 	Added the following code to avoid this case. */
-+	if ((pmlmeinfo->state & WIFI_FW_AUTH_STATE) ||
-+		(pmlmeinfo->state & WIFI_FW_ASSOC_STATE)) {
-+		if (reason == WLAN_REASON_CLASS2_FRAME_FROM_NONAUTH_STA) {
-+			ignore_received_deauth = 1;
-+		} else if (reason == WLAN_REASON_PREV_AUTH_NOT_VALID) {
-+			/*  TODO: 802.11r */
-+			ignore_received_deauth = 1;
- 		}
-+	}
- 
--		netdev_dbg(padapter->pnetdev,
--			   "sta recv deauth reason code(%d) sta:%pM, ignore = %d\n",
--			   reason, GetAddr3Ptr(pframe),
--			   ignore_received_deauth);
-+	netdev_dbg(padapter->pnetdev,
-+		"sta recv deauth reason code(%d) sta:%pM, ignore = %d\n",
-+		reason, GetAddr3Ptr(pframe),
-+		ignore_received_deauth);
-+
-+	if (ignore_received_deauth == 0)
-+		receive_disconnect(padapter, GetAddr3Ptr(pframe), reason);
- 
--		if (ignore_received_deauth == 0)
--			receive_disconnect(padapter, GetAddr3Ptr(pframe), reason);
--	}
- 	pmlmepriv->LinkDetectInfo.bBusyTraffic = false;
- 	return _SUCCESS;
- 
-@@ -1574,16 +1573,14 @@ unsigned int OnDisassoc(struct adapter *padapter, union recv_frame *precv_frame)
- 		}
- 
- 		return _SUCCESS;
--	} else {
--		netdev_dbg(padapter->pnetdev,
--			   "sta recv disassoc reason code(%d) sta:%pM\n",
--			   reason, GetAddr3Ptr(pframe));
--
--		receive_disconnect(padapter, GetAddr3Ptr(pframe), reason);
- 	}
-+	netdev_dbg(padapter->pnetdev,
-+		"sta recv disassoc reason code(%d) sta:%pM\n",
-+		reason, GetAddr3Ptr(pframe));
-+
-+	receive_disconnect(padapter, GetAddr3Ptr(pframe), reason);
- 	pmlmepriv->LinkDetectInfo.bBusyTraffic = false;
- 	return _SUCCESS;
--
- }
- 
- unsigned int OnAtim(struct adapter *padapter, union recv_frame *precv_frame)
--- 
-2.25.1
+> though I don't see any reason to add the condition to the copy to/from cache flows.
+>
+>>   	if (!nested_vmcb_needs_vls_intercept(svm))
+>>   		svm->vmcb->control.virt_ext |= VIRTUAL_VMLOAD_VMSAVE_ENABLE_MASK;
+>> @@ -1348,6 +1351,7 @@ static void nested_copy_vmcb_cache_to_control(struct vmcb_control_area *dst,
+>>   	dst->nested_ctl           = from->nested_ctl;
+>>   	dst->event_inj            = from->event_inj;
+>>   	dst->event_inj_err        = from->event_inj_err;
+>> +	dst->next_rip             = from->next_rip;
+>>   	dst->nested_cr3           = from->nested_cr3;
+>>   	dst->virt_ext              = from->virt_ext;
+>>   	dst->pause_filter_count   = from->pause_filter_count;
+>> diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
+>> index 93502d2a52ce..f757400fc933 100644
+>> --- a/arch/x86/kvm/svm/svm.h
+>> +++ b/arch/x86/kvm/svm/svm.h
+>> @@ -138,6 +138,7 @@ struct vmcb_ctrl_area_cached {
+>>   	u64 nested_ctl;
+>>   	u32 event_inj;
+>>   	u32 event_inj_err;
+>> +	u64 next_rip;
+>>   	u64 nested_cr3;
+>>   	u64 virt_ext;
+>>   	u32 clean;
+> 
+> I don't know why this struct has
+> 
+> 	u8 reserved_sw[32];
+> 
+> but presumably it's for padding, i.e. probably should be reduced to 24 bytes.
 
+Apparently the "reserved_sw" field stores Hyper-V enlightenments state -
+see commit 66c03a926f18 ("KVM: nSVM: Implement Enlightened MSR-Bitmap feature")
+and nested_svm_vmrun_msrpm() in nested.c.
+
+Thanks,
+Maciej
