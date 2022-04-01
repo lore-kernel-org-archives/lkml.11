@@ -2,113 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81317C3527E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6300FC3527D
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:40:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354388AbiDAPhX (ORCPT
+        id S1353993AbiDAPhN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:37:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49326 "EHLO
+        Fri, 1 Apr 2022 11:37:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350520AbiDAPAH (ORCPT
+        with ESMTP id S1350525AbiDAPAH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 1 Apr 2022 11:00:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51F4D5AEFB;
-        Fri,  1 Apr 2022 07:47:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 02B06B82504;
-        Fri,  1 Apr 2022 14:47:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EE5CC340F2;
-        Fri,  1 Apr 2022 14:47:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824444;
-        bh=0gOMWNOy9/oxZeinjzgUHCpJQMO4vsdQSSvDC4yWQbU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PcP2E1kMSSi0X2FOrav6BvzSXkKBEXpa0AY+X6dxTFibIPLf87Q+Qbeo26CLh9RKw
-         2VBsPxrYVt5mRF9soWLnk8ENASlBwgrFeFZl15DpJ7c0TQKXww1l8tdo0ILB9CsM1x
-         JKsR1xX2lOELcf5Wtxct9k/HnECyfxAw6LKG5FH1R+0KoX0ta8NE6akN7b2CqkWIdJ
-         1DXRH3/g8Os182uzQ04i4PswIMFYCvxGNKs2ZvtkyFg40biFoGGwkZc+/A3uXvk7fJ
-         QdiBGwy5PV/WQuyQT9RvbRcs5SMymzpDItT89q4j2DUDj/J93qyIKf2cm5D1bw45yf
-         Ia0J2mFWcGxww==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        Ingo Molnar <mingo@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>, mhiramat@kernel.org,
-        rostedt@goodmis.org, ahalaney@redhat.com, vbabka@suse.cz,
-        wangkefeng.wang@huawei.com, linux@rasmusvillemoes.dk,
-        keescook@chromium.org, mark-pk.tsai@mediatek.com,
-        valentin.schneider@arm.com, peterz@infradead.org
-Subject: [PATCH AUTOSEL 4.19 28/29] init/main.c: return 1 from handled __setup() functions
-Date:   Fri,  1 Apr 2022 10:46:11 -0400
-Message-Id: <20220401144612.1955177-28-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220401144612.1955177-1-sashal@kernel.org>
-References: <20220401144612.1955177-1-sashal@kernel.org>
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C351F5AEF0
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 07:47:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648824442;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ubFWiDA1LlelDhe80vrrUD2k2vJd+0aq256Lv6ITnp4=;
+        b=RlKYnYhcK5zO29WVZX8cPiqpVW80Grgb/ZH3M4nQDlKMFFzFMinVbzxtltcaoGRepEnUQz
+        Lne5iTGy2ov/MID17JnGax24YGJsY9pj7BdmpY1Q+VNEP2gIZGl4vXnWhRE6w3w8jw0AMp
+        19fLlSCBOquDwepvsl+0QHehnGJnemU=
+Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
+ [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-379-b0y3CB8LOmu9a4TKtzpTiQ-1; Fri, 01 Apr 2022 10:47:20 -0400
+X-MC-Unique: b0y3CB8LOmu9a4TKtzpTiQ-1
+Received: by mail-qt1-f200.google.com with SMTP id g22-20020ac870d6000000b002e20a1508ecso2108341qtp.19
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 07:47:20 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ubFWiDA1LlelDhe80vrrUD2k2vJd+0aq256Lv6ITnp4=;
+        b=DJeA9Z9/mSVZhVjBwgD+jBKjP7WZHW9YqlWMV3Blf5pTe/0ykWMnq6VgCXUSR8HEXj
+         lO2QzJkI6PItvoFBEul8SfXsqpLTv/Qp3hm5EAb26bbAg96pI7CFKW7zcuyy7uCIYc1y
+         zKMb/jxLgsGO6+saEPtNchY+d/ZLc0frqYBUAfAEMurvuGqOdqXY4TISU6WKh7WU1IiU
+         XYoYpZtvvqR52wL/Qj9fxxv2UJM52K+XdhoIKTuJ9Incv39yrzVnBlI2F8rhgVu+Q/QD
+         MLzrNo2xY6N1uc/sNXq6sWMtrp7SbC2U+roSbxoCwjotv29mzFQGWqtr1rAwptfVCohv
+         q+xA==
+X-Gm-Message-State: AOAM531dDJS8rFBhVYiQMA3HcNmq3l+j8uZp9P5hktGpZH9aFCw0S4VL
+        q7b3mGck6tcTMeSKYJseLQrX2JWL+QKUhRTZqdeiv2a/sMqYJPtc+Izyo2GotFTPC5/K/jCI8kr
+        gBQl6E2RQmFbUfhaoL+qui9s=
+X-Received: by 2002:a05:620a:24c7:b0:67f:9270:4b6a with SMTP id m7-20020a05620a24c700b0067f92704b6amr6635673qkn.52.1648824440263;
+        Fri, 01 Apr 2022 07:47:20 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyQRpmdsYnSYXtR8AnJ7zoL6DR0xqqC0MlDkItb7ArARcr3IO6CN0vjf0PcccOnDEIXfYu9qA==
+X-Received: by 2002:a05:620a:24c7:b0:67f:9270:4b6a with SMTP id m7-20020a05620a24c700b0067f92704b6amr6635649qkn.52.1648824439903;
+        Fri, 01 Apr 2022 07:47:19 -0700 (PDT)
+Received: from localhost (pool-68-160-176-52.bstnma.fios.verizon.net. [68.160.176.52])
+        by smtp.gmail.com with ESMTPSA id q204-20020a3743d5000000b0067ece232979sm1374993qka.116.2022.04.01.07.47.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 01 Apr 2022 07:47:19 -0700 (PDT)
+Date:   Fri, 1 Apr 2022 10:47:18 -0400
+From:   Mike Snitzer <snitzer@redhat.com>
+To:     Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Cc:     agk@redhat.com, dm-devel@redhat.com, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Subject: Re: md: fix missing check on list iterator
+Message-ID: <YkcQdjE6uTfScyEy@redhat.com>
+References: <20220327053742.2942-1-xiam0nd.tong@gmail.com>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220327053742.2942-1-xiam0nd.tong@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+On Sun, Mar 27 2022 at  1:37P -0400,
+Xiaomeng Tong <xiam0nd.tong@gmail.com> wrote:
 
-[ Upstream commit f9a40b0890658330c83c95511f9d6b396610defc ]
+> The bug is here:
+>     bypass_pg(m, pg, bypassed);
+> 
+> The list iterator 'pg' will point to a bogus position containing
+> HEAD if the list is empty or no element is found. This case must
+> be checked before any use of the iterator, otherwise it will lead
+> to a invalid memory access.
+> 
+> To fix this bug, run bypass_pg(m, pg, bypassed); and return 0
+> when found, otherwise return -EINVAL.
+> 
+> Cc: stable@vger.kernel.org
+> Fixes: ^1da177e4c3f4 ("Linux-2.6.12-rc2")
+> Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+> ---
+>  drivers/md/dm-mpath.c | 9 +++++----
+>  1 file changed, 5 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/md/dm-mpath.c b/drivers/md/dm-mpath.c
+> index f4719b65e5e3..6ba8f1133564 100644
+> --- a/drivers/md/dm-mpath.c
+> +++ b/drivers/md/dm-mpath.c
+> @@ -1496,12 +1496,13 @@ static int bypass_pg_num(struct multipath *m, const char *pgstr, bool bypassed)
+>  	}
+>  
+>  	list_for_each_entry(pg, &m->priority_groups, list) {
+> -		if (!--pgnum)
+> -			break;
+> +		if (!--pgnum) {
+> +			bypass_pg(m, pg, bypassed);
+> +			return 0;
+> +		}
+>  	}
+>  
+> -	bypass_pg(m, pg, bypassed);
+> -	return 0;
+> +	return -EINVAL;
+>  }
+>  
+>  /*
+> -- 
+> 2.17.1
+> 
 
-initcall_blacklist() should return 1 to indicate that it handled its
-cmdline arguments.
+Did you acually hit a bug (invalid memory access)?
 
-set_debug_rodata() should return 1 to indicate that it handled its
-cmdline arguments.  Print a warning if the option string is invalid.
+I cannot see how given the checks prior to iterating m->priority_groups:
 
-This prevents these strings from being added to the 'init' program's
-environment as they are not init arguments/parameters.
+        if (!pgstr || (sscanf(pgstr, "%u%c", &pgnum, &dummy) != 1) || !pgnum ||
+            !m->nr_priority_groups || (pgnum > m->nr_priority_groups)) {
+                DMWARN("invalid PG number supplied to bypass_pg");
+                return -EINVAL;
+        }
 
-Link: https://lkml.kernel.org/r/20220221050901.23985-1-rdunlap@infradead.org
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Cc: Ingo Molnar <mingo@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- init/main.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
-
-diff --git a/init/main.c b/init/main.c
-index 7baad67c2e93..272ec131211c 100644
---- a/init/main.c
-+++ b/init/main.c
-@@ -774,7 +774,7 @@ static int __init initcall_blacklist(char *str)
- 		}
- 	} while (str_entry);
- 
--	return 0;
-+	return 1;
- }
- 
- static bool __init_or_module initcall_blacklisted(initcall_t fn)
-@@ -1027,7 +1027,9 @@ static noinline void __init kernel_init_freeable(void);
- bool rodata_enabled __ro_after_init = true;
- static int __init set_debug_rodata(char *str)
- {
--	return strtobool(str, &rodata_enabled);
-+	if (strtobool(str, &rodata_enabled))
-+		pr_warn("Invalid option string for rodata: '%s'\n", str);
-+	return 1;
- }
- __setup("rodata=", set_debug_rodata);
- #endif
--- 
-2.34.1
+So I have _not_ taken your "fix".
 
