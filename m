@@ -2,353 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 525BBC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 07:44:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 881B2C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 07:46:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343924AbiDAHqm (ORCPT
+        id S1343934AbiDAHsE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 03:46:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43318 "EHLO
+        Fri, 1 Apr 2022 03:48:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236779AbiDAHqk (ORCPT
+        with ESMTP id S1343926AbiDAHsA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 03:46:40 -0400
-Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E6F11697A8
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 00:44:50 -0700 (PDT)
-Received: (Authenticated sender: paul.kocialkowski@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 34E7D1BF206;
-        Fri,  1 Apr 2022 07:44:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1648799089;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=P2d3No4EDXkEh3l7L1vhz/J82XaNZW1KUTwfTQprtMI=;
-        b=ixhmXyxrKfJTOBUFTFjmcF1pqZICgVBc7T7yeYk0J3ogOABA+iOg5R9Jv5kc1CuUJ6JiPE
-        b9RhyzNa81/eHrJFxaUlsc0+xh/NwDYvAT80C2P3vAf9yK9C0zf9w5bfJPVMNwKmHtIXRS
-        O53OcFtIr8A5HMH+XR8F78LIJXZvgHeHBtq8pYR8zfWI/GsfNxykxZ/BkhwJU+15tqvPKD
-        PIXZGUFV+/bTurtZpxs/G/bHoutebuGKyqOvy9e8S5Qbu8XfW6vGmBQ5KsoD03G1L7qRc9
-        MwCHcYwCGXqpQwUMms27g1bXV+p+KJn6SS6Hko315OpYMr8A3/uQXe2yPh6Wuw==
-Date:   Fri, 1 Apr 2022 09:44:46 +0200
-From:   Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Kuogee Hsieh <quic_khsieh@quicinc.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Jagan Teki <jagan@amarulasolutions.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH v3] drm: of: Properly try all possible cases for
- bridge/panel detection
-Message-ID: <YkatbpubQjwBWOiK@aptenodytes>
-References: <20220329132732.628474-1-paul.kocialkowski@bootlin.com>
- <YkZulslrzeurp43U@ripper>
+        Fri, 1 Apr 2022 03:48:00 -0400
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 394551877C2
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 00:46:11 -0700 (PDT)
+Received: by mail-wr1-x433.google.com with SMTP id u3so2973991wrg.3
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 00:46:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=LCK4dl8vS+URWlqWXwwTuaXKgNuAXF8HAeyZxE1LFL8=;
+        b=BpbnJzDgr4hcsVzm1oW1UkpOJL1mxsvWBqxwP9Pkn+dLZROp8D3MfzEya/xvto6CWr
+         5Hpy51yFe7FUyHZMj+ten4o6iHyYLGOYzGiFVa8ijakXUpvVAtHFLKterEGzz3KKQxlz
+         ETKbdvSE/Hmbzm22TEyc/WygvjyFzFpHmwzsVIN4Dp/uQh1Q2uw9t6rGy1POR0K7WLPh
+         tdLAt39eVc8KbF4Zm1vgyjPDgcyoVfk4wDMpQaiuzMPcSq4CvpRQr/y9jblbSlvajQzw
+         wQoKcnKDtm3F84FSiVXrvhUmevYn2ZnpxpLRmKJS3rANa0ROOBR36YhB11AHzuGMrMep
+         xe1g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=LCK4dl8vS+URWlqWXwwTuaXKgNuAXF8HAeyZxE1LFL8=;
+        b=yKwjCkIhLiJ4jA+U2DLwmoD/dhsx5EcrMvhqmZ8fuucNrCZHHf001mHWhRlVI8k5DJ
+         RZdFr87VXIYKXpJJN4DGDD+y1KXPNwjIkqlT/PshQ+Mg0etGyLaz2HYJFZr6DvEsTfUP
+         OE/QSqBImbSRRfLijo+zYx0cgI1uNx3UBrfNYPdiW8rLm2eEJCOiQSVy0RaKg/yg/Pxe
+         ycQ3ci4OYrf+i3xsPCUicgjSu5yLWzeyrVr84lNJpxIk+0JfVs6+AWSPucG4nvZMOKFK
+         Lj+6GC+ZsrcInrg0XDb0TBHtXn5ssrcaUt4C5pPcUBEo8bIrI/Np0HWhXBmvw5k/Ltvd
+         EcwA==
+X-Gm-Message-State: AOAM530hEvNRTm722btuaeFQQdnl8OwQUmQDrwRBl8C8a2smL6opHwOT
+        606+iYZRIO39HsnLfvsXlxv84hdKnARS5w==
+X-Google-Smtp-Source: ABdhPJx6WEFbSKf1cYZCJRp8RN1ZQmUurhpYge2WRdcRyKlEUox2QLvhk0FjNYGG4Dxt998JIXmRyQ==
+X-Received: by 2002:a5d:4e08:0:b0:205:89b6:1d4d with SMTP id p8-20020a5d4e08000000b0020589b61d4dmr6821818wrt.124.1648799169763;
+        Fri, 01 Apr 2022 00:46:09 -0700 (PDT)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id r4-20020a05600c35c400b0038cbd8c41e9sm9192704wmq.12.2022.04.01.00.46.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 01 Apr 2022 00:46:08 -0700 (PDT)
+Date:   Fri, 1 Apr 2022 08:46:06 +0100
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     Tony Lindgren <tony@atomide.com>, linux-omap@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel@pengutronix.de
+Subject: Re: [PATCH 0/2] mfd: twlx030: i2c remove callback cleanup
+Message-ID: <Ykatvp3RuNA8IXZ7@google.com>
+References: <20220113101430.12869-1-u.kleine-koenig@pengutronix.de>
+ <20220331131722.wt5uik3izzr7kewq@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="RmzJoGyI2gCKxmMX"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <YkZulslrzeurp43U@ripper>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220331131722.wt5uik3izzr7kewq@pengutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, 31 Mar 2022, Uwe Kleine-König wrote:
 
---RmzJoGyI2gCKxmMX
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> On Thu, Jan 13, 2022 at 11:14:28AM +0100, Uwe Kleine-König wrote:
+> > Hello,
+> > 
+> > the remove paths of the twl4030 chip can fail and then returns an error
+> > code in twl_remove() early. This isn't a good thing, because the device
+> > will still go away with some resources not freed.
+> > For the twl6030 this cannot happen, and the first patch is just a small
+> > cleanup. For the twl4030 the situation is improved a bit: When the
+> > failure happens, the dummy slave devices are removed now.
+> > 
+> > Note that twl4030_exit_irq() is incomplete. The irq isn't freed and
+> > maybe some more cleanup is missing which might boom if an irq triggers
+> > after the device is removed. Not sure that twl6030_exit_irq() is better
+> > in this regard.
+> > 
+> > I noticed this issue because I work on making i2c_driver::remove return
+> > void as returning a value != 0 there is almost always an error attached
+> > to wrong expectations.
+> 
+> It's one merge window ago now that I sent these two patches and didn't
+> get any feedback. Did this series fell through the cracks?
 
-Hi Bjorn,
+Yes they did.
 
-On Thu 31 Mar 22, 20:16, Bjorn Andersson wrote:
-> On Tue 29 Mar 06:27 PDT 2022, Paul Kocialkowski wrote:
->=20
-> > While bridge/panel detection was initially relying on the usual
-> > port/ports-based of graph detection, it was recently changed to
-> > perform the lookup on any child node that is not port/ports
-> > instead when such a node is available, with no fallback on the
-> > usual way.
-> >=20
-> > This results in breaking detection when a child node is present
-> > but does not contain any panel or bridge node, even when the
-> > usual port/ports-based of graph is there.
-> >=20
-> > In order to support both situations properly, this commit reworks
-> > the logic to try both options and not just one of the two: it will
-> > only return -EPROBE_DEFER when both have failed.
-> >=20
->=20
-> Thanks for your patch Paul, it fixed a regression on a device where I
-> have a eDP bridge with an of_graph and a aux-bus defined.
->=20
-> But unfortunately it does not resolve the regression I have for the
-> USB based DisplayPort setup described below.
->=20
->=20
-> In the Qualcomm DisplayPort driver We're calling:
->=20
-> 	devm_drm_of_get_bridge(dev, dev->of_node, 1, 0);
->=20
-> and with the following DT snippet the behavior changed:
->=20
-> displayport-controller@ae90000 {
-> 	compatible =3D "qcom,sc8180x-dp";
-> 	...
->=20
-> 	operating-points-v2 =3D <&dp0_opp_table>;
->=20
-> 	ports {
-> 		#address-cells =3D <1>;
-> 		#size-cells =3D <0>;
->=20
-> 		port@0 {
-> 			reg =3D <0>;
-> 			dp0_in: endpoint {
-> 				remote-endpoint =3D <&display_driver>;
-> 			};
-> 		};
-> 	};
->=20
-> 	dp0_opp_table: opp-table {
-> 		...;
-> 	};
-> };
->=20
-> Prior to the introduction of 80253168dbfd ("drm: of: Lookup if child
-> node has panel or bridge") this would return -ENODEV, so we could
-> differentiate the case when we have a statically defined eDP panel from
-> that of a dynamically attached (over USB) DP panel.
->=20
-> Prior to your change, above case without the opp-table node would have
-> still returned -ENODEV.
->=20
-> But now this will just return -EPROBE_DEFER in both cases.
+Feel free to submit [RESEND]s any time after 2 weeks with no reply.
 
-Oh that's right, the -ENODEV case was just completely removed by my change.
-Initially this would happen if !of_graph_is_present or if the remote node
-doesn't exist.
+They are now on my TODO list.
 
-Now that we are also checking for child nodes, we can't just return -ENODEV
-when the graph or remote node is missing: we must also check that there is =
-no
-child node that is a panel/bridge.
-
-For the graph remote case, we can reliabily return -EPROBE_DEFER when
-of_graph_is_present and the remote exists and of_device_is_available.
-Otherwise we can go for -ENODEV. I think getting -EPROBE_DEFER at this point
-should stop the drm_of_find_panel_or_bridge process.
-
-On the other hand for the child panel/bridge node case, I don't see how we
-can reliably distinguish between -EPROBE_DEFER and -ENODEV, because
-of_drm_find_panel and of_drm_find_bridge will behave the same if the child
-node is a not-yet-probed panel/bridge or a totally unrelated node.
-So I think we should always return -EPROBE_DEFER in that case.
-
-As a result you can't get -ENODEV if using the of graph while having any
-(unrelated) child node there, so your issue remains.
-
-Do you see any way we could make this work?
-
-> I thought the appropriate method of referencing the dsi panel was to
-> actually reference that using the of_graph, even though it's a child of
-> the dsi controller - that's at least how we've done it in e.g. [1].
-> I find this to be much nicer than to just blindly define that all
-> children of any sort of display controller must be a bridge or a panel.
-
-Yes I totally agree. Given that using the child node directly apparently
-can't allow us to distinguish between -EPROBE_DEFER/-ENODEV I would be in
-favor of dropping this mechanism and going with explicit of graph in any ca=
-se
-(even if it's a child node). I don't see any downside to this approach.
-
-What do yout think?
-
-Paul
-
-> [1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tr=
-ee/arch/arm64/boot/dts/qcom/sdm845-mtp.dts#n436
->=20
-> Regards,
-> Bjorn
->=20
-> > Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-> > Fixes: 80253168dbfd ("drm: of: Lookup if child node has panel or bridge=
-")
-> > ---
-> >=20
-> > Changes since v2:
-> > - Removed unnecessary else statement and added a comment about
-> >   clearing the panel pointer on error.
-> >=20
-> > Changes since v1:
-> > - Renamed remote to node;
-> > - Renamed helper to find_panel_or_bridge;
-> > - Cleared bridge pointer early;
-> > - Returned early to make the code more concise;
-> >=20
-> > ---
-> >  drivers/gpu/drm/drm_of.c | 99 ++++++++++++++++++++--------------------
-> >  1 file changed, 50 insertions(+), 49 deletions(-)
-> >=20
-> > diff --git a/drivers/gpu/drm/drm_of.c b/drivers/gpu/drm/drm_of.c
-> > index 9d90cd75c457..8716da6369a6 100644
-> > --- a/drivers/gpu/drm/drm_of.c
-> > +++ b/drivers/gpu/drm/drm_of.c
-> > @@ -219,6 +219,29 @@ int drm_of_encoder_active_endpoint(struct device_n=
-ode *node,
-> >  }
-> >  EXPORT_SYMBOL_GPL(drm_of_encoder_active_endpoint);
-> > =20
-> > +static int find_panel_or_bridge(struct device_node *node,
-> > +				struct drm_panel **panel,
-> > +				struct drm_bridge **bridge)
-> > +{
-> > +	if (panel) {
-> > +		*panel =3D of_drm_find_panel(node);
-> > +		if (!IS_ERR(*panel))
-> > +			return 0;
-> > +
-> > +		/* Clear the panel pointer in case of error. */
-> > +		*panel =3D NULL;
-> > +	}
-> > +
-> > +	/* No panel found yet, check for a bridge next. */
-> > +	if (bridge) {
-> > +		*bridge =3D of_drm_find_bridge(node);
-> > +		if (*bridge)
-> > +			return 0;
-> > +	}
-> > +
-> > +	return -EPROBE_DEFER;
-> > +}
-> > +
-> >  /**
-> >   * drm_of_find_panel_or_bridge - return connected panel or bridge devi=
-ce
-> >   * @np: device tree node containing encoder output ports
-> > @@ -241,66 +264,44 @@ int drm_of_find_panel_or_bridge(const struct devi=
-ce_node *np,
-> >  				struct drm_panel **panel,
-> >  				struct drm_bridge **bridge)
-> >  {
-> > -	int ret =3D -EPROBE_DEFER;
-> > -	struct device_node *remote;
-> > +	struct device_node *node;
-> > +	int ret;
-> > =20
-> >  	if (!panel && !bridge)
-> >  		return -EINVAL;
-> > +
-> >  	if (panel)
-> >  		*panel =3D NULL;
-> > -
-> > -	/**
-> > -	 * Devices can also be child nodes when we also control that device
-> > -	 * through the upstream device (ie, MIPI-DCS for a MIPI-DSI device).
-> > -	 *
-> > -	 * Lookup for a child node of the given parent that isn't either port
-> > -	 * or ports.
-> > -	 */
-> > -	for_each_available_child_of_node(np, remote) {
-> > -		if (of_node_name_eq(remote, "port") ||
-> > -		    of_node_name_eq(remote, "ports"))
-> > -			continue;
-> > -
-> > -		goto of_find_panel_or_bridge;
-> > +	if (bridge)
-> > +		*bridge =3D NULL;
-> > +
-> > +	/* Check for a graph on the device node first. */
-> > +	if (of_graph_is_present(np)) {
-> > +		node =3D of_graph_get_remote_node(np, port, endpoint);
-> > +		if (node) {
-> > +			ret =3D find_panel_or_bridge(node, panel, bridge);
-> > +			of_node_put(node);
-> > +
-> > +			if (!ret)
-> > +				return 0;
-> > +		}
-> >  	}
-> > =20
-> > -	/*
-> > -	 * of_graph_get_remote_node() produces a noisy error message if port
-> > -	 * node isn't found and the absence of the port is a legit case here,
-> > -	 * so at first we silently check whether graph presents in the
-> > -	 * device-tree node.
-> > -	 */
-> > -	if (!of_graph_is_present(np))
-> > -		return -ENODEV;
-> > -
-> > -	remote =3D of_graph_get_remote_node(np, port, endpoint);
-> > -
-> > -of_find_panel_or_bridge:
-> > -	if (!remote)
-> > -		return -ENODEV;
-> > +	/* Otherwise check for any child node other than port/ports. */
-> > +	for_each_available_child_of_node(np, node) {
-> > +		if (of_node_name_eq(node, "port") ||
-> > +		    of_node_name_eq(node, "ports"))
-> > +			continue;
-> > =20
-> > -	if (panel) {
-> > -		*panel =3D of_drm_find_panel(remote);
-> > -		if (!IS_ERR(*panel))
-> > -			ret =3D 0;
-> > -		else
-> > -			*panel =3D NULL;
-> > -	}
-> > -
-> > -	/* No panel found yet, check for a bridge next. */
-> > -	if (bridge) {
-> > -		if (ret) {
-> > -			*bridge =3D of_drm_find_bridge(remote);
-> > -			if (*bridge)
-> > -				ret =3D 0;
-> > -		} else {
-> > -			*bridge =3D NULL;
-> > -		}
-> > +		ret =3D find_panel_or_bridge(node, panel, bridge);
-> > +		of_node_put(node);
-> > =20
-> > +		/* Stop at the first found occurrence. */
-> > +		if (!ret)
-> > +			return 0;
-> >  	}
-> > =20
-> > -	of_node_put(remote);
-> > -	return ret;
-> > +	return -EPROBE_DEFER;
-> >  }
-> >  EXPORT_SYMBOL_GPL(drm_of_find_panel_or_bridge);
-> > =20
-> > --=20
-> > 2.35.1
-> >=20
-
---=20
-Paul Kocialkowski, Bootlin
-Embedded Linux and kernel engineering
-https://bootlin.com
-
---RmzJoGyI2gCKxmMX
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEJZpWjZeIetVBefti3cLmz3+fv9EFAmJGrW4ACgkQ3cLmz3+f
-v9E0GAf/TTQSoT8Uptk97ABofCuAwM4f1FkNEk95OXicipadFTC7w9N1dfqBni6f
-pOaAg2X6rotvMUKzFbgLAP6zyyEaGkqhlq0J/K3Wa56Zygi4zlv3DmGhjOuEHliH
-FHbEdOJFEn5DzlGLy3IUjGCO+lsURqB4RE5AOZSYqR2fhIrHzNdbB9yQ7FPydLbJ
-nmH9o0qkrX37bXLgTz4YYT0fuZ8rEHJYZsqfAFw6wakP54IqLx4DEe+IHjqzUo5t
-4zSX/n45GZsJ5BLoelmFeVhewG2/MfRWHQ9PmYo+vYgZ2sG+gTo9wuR1WMstdwba
-utI3/aj0CuyAPUsOOCrBQeRgsYdzpw==
-=Dhbj
------END PGP SIGNATURE-----
-
---RmzJoGyI2gCKxmMX--
+-- 
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
