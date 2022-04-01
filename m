@@ -2,57 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63F3BC35276
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:13:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0FDAC4167B
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:13:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348100AbiDAPPH (ORCPT
+        id S1355433AbiDAPO4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:15:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60630 "EHLO
+        Fri, 1 Apr 2022 11:14:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350678AbiDAOr4 (ORCPT
+        with ESMTP id S1350406AbiDAOr3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:47:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A7952A4BDC;
-        Fri,  1 Apr 2022 07:38:15 -0700 (PDT)
+        Fri, 1 Apr 2022 10:47:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB3B52A3393;
+        Fri,  1 Apr 2022 07:37:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D329660A64;
-        Fri,  1 Apr 2022 14:38:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFAE3C340F2;
-        Fri,  1 Apr 2022 14:38:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 73B71B82515;
+        Fri,  1 Apr 2022 14:37:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EF56C36AE2;
+        Fri,  1 Apr 2022 14:37:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823883;
-        bh=wH3EBbmfckm1JiseCGo6ZDz772vA/Pa8u6+2IRVowgc=;
+        s=k20201202; t=1648823836;
+        bh=BQ+000fsdHVkiRIowF2xgMLddbyFXjMD5fDA8h5TuYY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WVo9+VISM5q+b52ofYzQyE6s5z72M2oEV6dpPkSPDASEUJA8Bua2m/hpBhkIS2fsm
-         x24btFgkj96cGSVTmXvvp9YCT6JDeJvLivI8BCdMpu2MykST5xFbif2LOaXBZA1HZ5
-         KXs7l6CIQalygM1X23uHTjnIqGW8zNy01fU4D9fQEvU6MhbHIKfvg/a62eBZSC+l91
-         YMLzxqf1C80zCUrmw9KlVTr9uq7y0JhUPSQKtEB1bMkUN0ORu2G1G5EwKQOoSUHM22
-         re0LIdw/NQs5hn/SzkeB4tNipoiSViixJatvfMgF8XadpufRvE0Wrl0/acII7Tln0R
-         tJxGrIDEoebMg==
+        b=kczo9mwX1el9axt1gYtWObqVpVzSFxPSsrrQZIoK3tDQ5H82gkvXvw8sRR+DtLzin
+         +JXXYa5uYobM+isEkOeO5WKihvQM5ud6cSDoBVSLSY8dPJ+xUK+K+3mgD++/sR+Rl7
+         Qgishz/+y7YeGjNBNSJg97IsOUEG1aihi2mHeNgWdls5U3tedeHjeUQoOBfHqFDi+X
+         hRMTT+OAOkdBq6AcEtD1Ykd5XeqRmmKLM5fUk7m/YfzU8tvob4OzQ/mMzdvJ5CupKU
+         s2GVsX9LV/IfHJkLZeS6e6wB7qBOLwK4cDVsF+XDorRNMfdg8RSX9euI06zUe3tzIv
+         js1BSKbkScU0w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yongzhi Liu <lyz_cs@pku.edu.cn>,
-        Harry Wentland <harry.wentland@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, sunpeng.li@amd.com,
-        Rodrigo.Siqueira@amd.com, christian.koenig@amd.com,
-        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
-        Wayne.Lin@amd.com, mikita.lipski@amd.com, Jerry.Zuo@amd.com,
-        Anson.Jacob@amd.com, tdwilliamsiv@gmail.com,
-        aurabindo.pillai@amd.com, victorchengchi.lu@amd.com,
-        patrik.r.jakobsson@gmail.com, seanpaul@chromium.org,
-        greenfoo@u92.eu, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.15 05/98] drm/amd/display: Fix memory leak
-Date:   Fri,  1 Apr 2022 10:36:09 -0400
-Message-Id: <20220401143742.1952163-5-sashal@kernel.org>
+Cc:     "H. Nikolaus Schaller" <hns@goldelico.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, balbi@kernel.org,
+        linux-usb@vger.kernel.org, linux-omap@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 098/109] usb: dwc3: omap: fix "unbalanced disables for smps10_out1" on omap5evm
+Date:   Fri,  1 Apr 2022 10:32:45 -0400
+Message-Id: <20220401143256.1950537-98-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220401143742.1952163-1-sashal@kernel.org>
-References: <20220401143742.1952163-1-sashal@kernel.org>
+In-Reply-To: <20220401143256.1950537-1-sashal@kernel.org>
+References: <20220401143256.1950537-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -61,269 +53,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yongzhi Liu <lyz_cs@pku.edu.cn>
+From: "H. Nikolaus Schaller" <hns@goldelico.com>
 
-[ Upstream commit 5d5c6dba2b43e28845d7d7ed32a36802329a5f52 ]
+[ Upstream commit ac01df343e5a6c6bcead2ed421af1fde30f73e7e ]
 
-[why]
-Resource release is needed on the error handling path
-to prevent memory leak.
+Usually, the vbus_regulator (smps10 on omap5evm) boots up disabled.
 
-[how]
-Fix this by adding kfree on the error handling path.
+Hence calling regulator_disable() indirectly through dwc3_omap_set_mailbox()
+during probe leads to:
 
-Reviewed-by: Harry Wentland <harry.wentland@amd.com>
-Signed-off-by: Yongzhi Liu <lyz_cs@pku.edu.cn>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+[   10.332764] WARNING: CPU: 0 PID: 1628 at drivers/regulator/core.c:2853 _regulator_disable+0x40/0x164
+[   10.351919] unbalanced disables for smps10_out1
+[   10.361298] Modules linked in: dwc3_omap(+) clk_twl6040 at24 gpio_twl6040 palmas_gpadc palmas_pwrbutton
+industrialio snd_soc_omap_mcbsp(+) snd_soc_ti_sdma display_connector ti_tpd12s015 drm leds_gpio
+drm_panel_orientation_quirks ip_tables x_tables ipv6 autofs4
+[   10.387818] CPU: 0 PID: 1628 Comm: systemd-udevd Not tainted 5.17.0-rc1-letux-lpae+ #8139
+[   10.405129] Hardware name: Generic OMAP5 (Flattened Device Tree)
+[   10.411455]  unwind_backtrace from show_stack+0x10/0x14
+[   10.416970]  show_stack from dump_stack_lvl+0x40/0x4c
+[   10.422313]  dump_stack_lvl from __warn+0xb8/0x170
+[   10.427377]  __warn from warn_slowpath_fmt+0x70/0x9c
+[   10.432595]  warn_slowpath_fmt from _regulator_disable+0x40/0x164
+[   10.439037]  _regulator_disable from regulator_disable+0x30/0x64
+[   10.445382]  regulator_disable from dwc3_omap_set_mailbox+0x8c/0xf0 [dwc3_omap]
+[   10.453116]  dwc3_omap_set_mailbox [dwc3_omap] from dwc3_omap_probe+0x2b8/0x394 [dwc3_omap]
+[   10.467021]  dwc3_omap_probe [dwc3_omap] from platform_probe+0x58/0xa8
+[   10.481762]  platform_probe from really_probe+0x168/0x2fc
+[   10.481782]  really_probe from __driver_probe_device+0xc4/0xd8
+[   10.481782]  __driver_probe_device from driver_probe_device+0x24/0xa4
+[   10.503762]  driver_probe_device from __driver_attach+0xc4/0xd8
+[   10.510018]  __driver_attach from bus_for_each_dev+0x64/0xa0
+[   10.516001]  bus_for_each_dev from bus_add_driver+0x148/0x1a4
+[   10.524880]  bus_add_driver from driver_register+0xb4/0xf8
+[   10.530678]  driver_register from do_one_initcall+0x90/0x1c4
+[   10.536661]  do_one_initcall from do_init_module+0x4c/0x200
+[   10.536683]  do_init_module from load_module+0x13dc/0x1910
+[   10.551159]  load_module from sys_finit_module+0xc8/0xd8
+[   10.561319]  sys_finit_module from __sys_trace_return+0x0/0x18
+[   10.561336] Exception stack(0xc344bfa8 to 0xc344bff0)
+[   10.561341] bfa0:                   b6fb5778 b6fab8d8 00000007 b6ecfbb8 00000000 b6ed0398
+[   10.561341] bfc0: b6fb5778 b6fab8d8 855c0500 0000017b 00020000 b6f9a3cc 00000000 b6fb5778
+[   10.595500] bfe0: bede18f8 bede18e8 b6ec9aeb b6dda1c2
+[   10.601345] ---[ end trace 0000000000000000 ]---
+
+Fix this unnecessary warning by checking if the regulator is enabled.
+
+Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+Link: https://lore.kernel.org/r/af3b750dc2265d875deaabcf5f80098c9645da45.1646744616.git.hns@goldelico.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../amd/display/amdgpu_dm/amdgpu_dm_debugfs.c | 80 ++++++++++++++-----
- 1 file changed, 60 insertions(+), 20 deletions(-)
+ drivers/usb/dwc3/dwc3-omap.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_debugfs.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_debugfs.c
-index e94ddd5e7b63..5c9f5214bc4e 100644
---- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_debugfs.c
-+++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_debugfs.c
-@@ -229,8 +229,10 @@ static ssize_t dp_link_settings_read(struct file *f, char __user *buf,
- 			break;
+diff --git a/drivers/usb/dwc3/dwc3-omap.c b/drivers/usb/dwc3/dwc3-omap.c
+index e196673f5c64..efaf0db595f4 100644
+--- a/drivers/usb/dwc3/dwc3-omap.c
++++ b/drivers/usb/dwc3/dwc3-omap.c
+@@ -242,7 +242,7 @@ static void dwc3_omap_set_mailbox(struct dwc3_omap *omap,
+ 		break;
  
- 		r = put_user(*(rd_buf + result), buf);
--		if (r)
-+		if (r) {
-+			kfree(rd_buf);
- 			return r; /* r = -EFAULT */
-+		}
- 
- 		buf += 1;
- 		size -= 1;
-@@ -388,8 +390,10 @@ static ssize_t dp_phy_settings_read(struct file *f, char __user *buf,
- 			break;
- 
- 		r = put_user((*(rd_buf + result)), buf);
--		if (r)
-+		if (r) {
-+			kfree(rd_buf);
- 			return r; /* r = -EFAULT */
-+		}
- 
- 		buf += 1;
- 		size -= 1;
-@@ -1316,8 +1320,10 @@ static ssize_t dp_dsc_clock_en_read(struct file *f, char __user *buf,
- 				break;
- 	}
- 
--	if (!pipe_ctx)
-+	if (!pipe_ctx) {
-+		kfree(rd_buf);
- 		return -ENXIO;
-+	}
- 
- 	dsc = pipe_ctx->stream_res.dsc;
- 	if (dsc)
-@@ -1333,8 +1339,10 @@ static ssize_t dp_dsc_clock_en_read(struct file *f, char __user *buf,
- 			break;
- 
- 		r = put_user(*(rd_buf + result), buf);
--		if (r)
-+		if (r) {
-+			kfree(rd_buf);
- 			return r; /* r = -EFAULT */
-+		}
- 
- 		buf += 1;
- 		size -= 1;
-@@ -1503,8 +1511,10 @@ static ssize_t dp_dsc_slice_width_read(struct file *f, char __user *buf,
- 				break;
- 	}
- 
--	if (!pipe_ctx)
-+	if (!pipe_ctx) {
-+		kfree(rd_buf);
- 		return -ENXIO;
-+	}
- 
- 	dsc = pipe_ctx->stream_res.dsc;
- 	if (dsc)
-@@ -1520,8 +1530,10 @@ static ssize_t dp_dsc_slice_width_read(struct file *f, char __user *buf,
- 			break;
- 
- 		r = put_user(*(rd_buf + result), buf);
--		if (r)
-+		if (r) {
-+			kfree(rd_buf);
- 			return r; /* r = -EFAULT */
-+		}
- 
- 		buf += 1;
- 		size -= 1;
-@@ -1688,8 +1700,10 @@ static ssize_t dp_dsc_slice_height_read(struct file *f, char __user *buf,
- 				break;
- 	}
- 
--	if (!pipe_ctx)
-+	if (!pipe_ctx) {
-+		kfree(rd_buf);
- 		return -ENXIO;
-+	}
- 
- 	dsc = pipe_ctx->stream_res.dsc;
- 	if (dsc)
-@@ -1705,8 +1719,10 @@ static ssize_t dp_dsc_slice_height_read(struct file *f, char __user *buf,
- 			break;
- 
- 		r = put_user(*(rd_buf + result), buf);
--		if (r)
-+		if (r) {
-+			kfree(rd_buf);
- 			return r; /* r = -EFAULT */
-+		}
- 
- 		buf += 1;
- 		size -= 1;
-@@ -1869,8 +1885,10 @@ static ssize_t dp_dsc_bits_per_pixel_read(struct file *f, char __user *buf,
- 				break;
- 	}
- 
--	if (!pipe_ctx)
-+	if (!pipe_ctx) {
-+		kfree(rd_buf);
- 		return -ENXIO;
-+	}
- 
- 	dsc = pipe_ctx->stream_res.dsc;
- 	if (dsc)
-@@ -1886,8 +1904,10 @@ static ssize_t dp_dsc_bits_per_pixel_read(struct file *f, char __user *buf,
- 			break;
- 
- 		r = put_user(*(rd_buf + result), buf);
--		if (r)
-+		if (r) {
-+			kfree(rd_buf);
- 			return r; /* r = -EFAULT */
-+		}
- 
- 		buf += 1;
- 		size -= 1;
-@@ -2045,8 +2065,10 @@ static ssize_t dp_dsc_pic_width_read(struct file *f, char __user *buf,
- 				break;
- 	}
- 
--	if (!pipe_ctx)
-+	if (!pipe_ctx) {
-+		kfree(rd_buf);
- 		return -ENXIO;
-+	}
- 
- 	dsc = pipe_ctx->stream_res.dsc;
- 	if (dsc)
-@@ -2062,8 +2084,10 @@ static ssize_t dp_dsc_pic_width_read(struct file *f, char __user *buf,
- 			break;
- 
- 		r = put_user(*(rd_buf + result), buf);
--		if (r)
-+		if (r) {
-+			kfree(rd_buf);
- 			return r; /* r = -EFAULT */
-+		}
- 
- 		buf += 1;
- 		size -= 1;
-@@ -2102,8 +2126,10 @@ static ssize_t dp_dsc_pic_height_read(struct file *f, char __user *buf,
- 				break;
- 	}
- 
--	if (!pipe_ctx)
-+	if (!pipe_ctx) {
-+		kfree(rd_buf);
- 		return -ENXIO;
-+	}
- 
- 	dsc = pipe_ctx->stream_res.dsc;
- 	if (dsc)
-@@ -2119,8 +2145,10 @@ static ssize_t dp_dsc_pic_height_read(struct file *f, char __user *buf,
- 			break;
- 
- 		r = put_user(*(rd_buf + result), buf);
--		if (r)
-+		if (r) {
-+			kfree(rd_buf);
- 			return r; /* r = -EFAULT */
-+		}
- 
- 		buf += 1;
- 		size -= 1;
-@@ -2174,8 +2202,10 @@ static ssize_t dp_dsc_chunk_size_read(struct file *f, char __user *buf,
- 				break;
- 	}
- 
--	if (!pipe_ctx)
-+	if (!pipe_ctx) {
-+		kfree(rd_buf);
- 		return -ENXIO;
-+	}
- 
- 	dsc = pipe_ctx->stream_res.dsc;
- 	if (dsc)
-@@ -2191,8 +2221,10 @@ static ssize_t dp_dsc_chunk_size_read(struct file *f, char __user *buf,
- 			break;
- 
- 		r = put_user(*(rd_buf + result), buf);
--		if (r)
-+		if (r) {
-+			kfree(rd_buf);
- 			return r; /* r = -EFAULT */
-+		}
- 
- 		buf += 1;
- 		size -= 1;
-@@ -2246,8 +2278,10 @@ static ssize_t dp_dsc_slice_bpg_offset_read(struct file *f, char __user *buf,
- 				break;
- 	}
- 
--	if (!pipe_ctx)
-+	if (!pipe_ctx) {
-+		kfree(rd_buf);
- 		return -ENXIO;
-+	}
- 
- 	dsc = pipe_ctx->stream_res.dsc;
- 	if (dsc)
-@@ -2263,8 +2297,10 @@ static ssize_t dp_dsc_slice_bpg_offset_read(struct file *f, char __user *buf,
- 			break;
- 
- 		r = put_user(*(rd_buf + result), buf);
--		if (r)
-+		if (r) {
-+			kfree(rd_buf);
- 			return r; /* r = -EFAULT */
-+		}
- 
- 		buf += 1;
- 		size -= 1;
-@@ -3254,8 +3290,10 @@ static ssize_t dcc_en_bits_read(
- 	dc->hwss.get_dcc_en_bits(dc, dcc_en_bits);
- 
- 	rd_buf = kcalloc(rd_buf_size, sizeof(char), GFP_KERNEL);
--	if (!rd_buf)
-+	if (!rd_buf) {
-+		kfree(dcc_en_bits);
- 		return -ENOMEM;
-+	}
- 
- 	for (i = 0; i < num_pipes; i++)
- 		offset += snprintf(rd_buf + offset, rd_buf_size - offset,
-@@ -3268,8 +3306,10 @@ static ssize_t dcc_en_bits_read(
- 		if (*pos >= rd_buf_size)
- 			break;
- 		r = put_user(*(rd_buf + result), buf);
--		if (r)
-+		if (r) {
-+			kfree(rd_buf);
- 			return r; /* r = -EFAULT */
-+		}
- 		buf += 1;
- 		size -= 1;
- 		*pos += 1;
+ 	case OMAP_DWC3_ID_FLOAT:
+-		if (omap->vbus_reg)
++		if (omap->vbus_reg && regulator_is_enabled(omap->vbus_reg))
+ 			regulator_disable(omap->vbus_reg);
+ 		val = dwc3_omap_read_utmi_ctrl(omap);
+ 		val |= USBOTGSS_UTMI_OTG_CTRL_IDDIG;
 -- 
 2.34.1
 
