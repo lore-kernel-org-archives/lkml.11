@@ -2,60 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A65AC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 13:43:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C6CFC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 13:44:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244388AbiDANpA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 09:45:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59618 "EHLO
+        id S1345183AbiDANqc (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Apr 2022 09:46:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231720AbiDANo5 (ORCPT
+        with ESMTP id S231720AbiDANq2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 09:44:57 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73E2027F4EB
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 06:43:07 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id dr20so5929986ejc.6
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 06:43:07 -0700 (PDT)
+        Fri, 1 Apr 2022 09:46:28 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC07619C5A1
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 06:44:38 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id i16so5891508ejk.12
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 06:44:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=kRGQSHbNrQ56sbIjo0fVlJQ0u1ahcNvK7/rx7vN//fU=;
-        b=POSigfPFudfJz+V4egSDKxGTnB5HpDAVi2PWRCIkSCMe6zHwz+M1g2gVx3gDoH+OfO
-         fU3SrAFaU8TidUv3pLDTkLhlwi1F9PmR2bB0JD5cfPUBRVzdeldYspsi8SrqDWfW+qrf
-         IiWaQ05EIeb4DFNYZr8fd9YxkJw+tHSkl1D4U/suibOuTuJoQ7RXlpBtpMhKCnjXOTKA
-         c3Mjh6YF4Ic3cMf6WxFZ90yY8HmxJwu4dShVCPM3sVrieRAZLtAznwI8CRWzpH8ntGA0
-         jlftKvgtiosy569jtbzNttfcORzAKdvnMHsSIOPWRjeKJN2RbfLZPi2KdPWBLSe0tarE
-         ZkzQ==
+        bh=dXg0BEPoxux+zW0v1jfz5+2BtoCnLEGuBTvWBm9Wyb8=;
+        b=gMQkHynZ9sEfJqF3clbblelIVMJmE4P2GB9CnUpmZVa+05XLiBeyYyG4m4Ke+7TEKj
+         T6tbD0DkZ9M6vNnSoFXGkwTLf66XUlGNjhfT7HTVktWhQ/rxt+oimLhRbxCgIXNaPjZZ
+         w9wA9pr6XnNDAYzD7eROPoL2znvhkzesaYphAkAztT9dg8/TZONcwFloW/RYEQ0Nifs9
+         A7Q9hogCHgGoMeXJuCM3gDHSKibzYq6Ii+eoKQmYrRoMIN0lVFIXJYHVMhUc9p7YMblT
+         XZwpryUSoQ+WHTB4cubOHbDqb29eC3RfWMP//dHhCtPKpp4JUO/pvRQqpNwQBrRE2Io5
+         dMUg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=kRGQSHbNrQ56sbIjo0fVlJQ0u1ahcNvK7/rx7vN//fU=;
-        b=zlvPkq+E6PEWH5UyQFyt8sj+6ahXdmi1y+YivXA4seIOjPq77Vn9XtJ6sQEa0Wqgx6
-         86xm+dqqMRH0JJ11mUM/ODiGFWH/4W+P+eWBYcG98XD898UaxXqlXylZfTDQiSqJq/vS
-         YjtYpuFKWQ4Nf44qRamlYO7Jw2hUphRdcFK8+bduPxOzHYb3K9Jn6h9OhbZ7wMdaAiOh
-         rcjqDUM8CzOdpZvu1VEEF/HaFulU0V+y7VBjolzgknuXUp0kLc/CxmkLN3GcvLIQGIDU
-         1YzfVNHVEHRT3cTxXxU3CD/A1+I3bFCx45zp1LgDHQTBfI3A88hK+OLlnWpc/GKV9K6s
-         xVdg==
-X-Gm-Message-State: AOAM533LKtdKJFiE2VAhwvMLrtqvPAKx8EMUhil9r/1z0nd3URnwPZmw
-        zYjo76H5jpq3OBHl8cGg8sbHoA==
-X-Google-Smtp-Source: ABdhPJwQ1HtREvWS1HonL2xj33ywp4DkIJSz+zdns6tFyQ93YEsSmnal+eYCLtgrddAv08r12QNvTA==
-X-Received: by 2002:a17:907:3f07:b0:6e0:2fa0:2482 with SMTP id hq7-20020a1709073f0700b006e02fa02482mr9289837ejc.766.1648820585959;
-        Fri, 01 Apr 2022 06:43:05 -0700 (PDT)
+        bh=dXg0BEPoxux+zW0v1jfz5+2BtoCnLEGuBTvWBm9Wyb8=;
+        b=ms50NsTGj61UhvlRmFGxHarAYkKElrXChvZWaj+ThCN1TFYg3NbrxaAJm5dOEQ3gV3
+         JBNuDRXYsl0pfBCFi7Yq0/nEdgf+YRUeXB7YHBRGhou5YKcVO6dyUHZNQ8q1Mj7X74mi
+         HlcWiQ+fMHgqi+0mvaNjE6SazidA482KhPgmiFoKms9YAr8y0qpKL17+kZFLgaP/FBYl
+         QXEiKvsQkCA6NH6KkLZc7DNIg2PCcw3Z70VM+RuocQDO4GH25oFnlXOEgteORRQdCmQP
+         vXuu6ub3D/EzqVxol0qIJ3DBUTKFjhc///QsWLsRbsFnI4Q8b2YNBnh9tFsVZu1zC5rB
+         rsLg==
+X-Gm-Message-State: AOAM533T1PDpn3MkOwWS1S+gmn7TOi17Zxrl92gQ1OBkfBNXE2jSHo9d
+        1JdogGpUaBQHReab/qfuWWe/7Q==
+X-Google-Smtp-Source: ABdhPJwihxSeskTAiciGW/SRE57is3wc8uCqoR1NFACh7coD/3vgO5wXAcx2Wk0MvUyPduOGFoVYFA==
+X-Received: by 2002:a17:906:1be1:b0:6ce:b0a8:17d with SMTP id t1-20020a1709061be100b006ceb0a8017dmr9336353ejg.413.1648820677476;
+        Fri, 01 Apr 2022 06:44:37 -0700 (PDT)
 Received: from [192.168.0.170] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id q16-20020a170906145000b006bdaf981589sm1046344ejc.81.2022.04.01.06.43.04
+        by smtp.gmail.com with ESMTPSA id x4-20020a170906b08400b006e493cb583esm1054581ejy.47.2022.04.01.06.44.36
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 01 Apr 2022 06:43:05 -0700 (PDT)
-Message-ID: <3d03bc18-dd42-002d-739b-230b4134b866@linaro.org>
-Date:   Fri, 1 Apr 2022 15:43:03 +0200
+        Fri, 01 Apr 2022 06:44:37 -0700 (PDT)
+Message-ID: <39d74fa6-275b-b2bf-c5ed-7bc3a91e7fba@linaro.org>
+Date:   Fri, 1 Apr 2022 15:44:36 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
-Subject: Re: [PATCH 1/4] dt-bindings: vendor-prefixes: Add prefix for SINO
- WEALTH Eletronics Ltd.
+Subject: Re: [PATCH 2/4] dt-bindings: display: ssd1307fb: Add entry for SINO
+ WEALTH SH1106
 Content-Language: en-US
 To:     Chen-Yu Tsai <wens@kernel.org>,
         Javier Martinez Canillas <javierm@redhat.com>,
@@ -67,9 +68,9 @@ To:     Chen-Yu Tsai <wens@kernel.org>,
 Cc:     Chen-Yu Tsai <wens@csie.org>, dri-devel@lists.freedesktop.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 References: <20220330190846.13997-1-wens@kernel.org>
- <20220330190846.13997-2-wens@kernel.org>
+ <20220330190846.13997-3-wens@kernel.org>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220330190846.13997-2-wens@kernel.org>
+In-Reply-To: <20220330190846.13997-3-wens@kernel.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -79,31 +80,32 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 On 30/03/2022 21:08, Chen-Yu Tsai wrote:
 > From: Chen-Yu Tsai <wens@csie.org>
 > 
-> Add a vendor prefix entry for SINO WEALTH Eletronics Ltd.
-> (http://www.sinowealth.com).
+> The SINO WEALTH SH1106 is an OLED display driver that is somewhat
+> compatible with the SSD1306. It supports a slightly wider display,
+> at 132 instead of 128 pixels. The basic commands are the same, but
+> the SH1106 doesn't support the horizontal or vertical address modes.
+> 
+> Add a compatible string for it.
 > 
 > Signed-off-by: Chen-Yu Tsai <wens@csie.org>
 > ---
->  Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
->  1 file changed, 2 insertions(+)
+>  Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-> index 01430973ecec..bb4ae59a3c89 100644
-> --- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
-> +++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-> @@ -1128,6 +1128,8 @@ patternProperties:
->      description: Cypress Semiconductor Corporation (Simtek Corporation)
->    "^sinlinx,.*":
->      description: Sinlinx Electronics Technology Co., LTD
-> +  "^sinowealth,.*":
+> diff --git a/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml b/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
+> index 9baafd0c42dd..1ac016a2d847 100644
+> --- a/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
+> +++ b/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
+> @@ -13,6 +13,7 @@ maintainers:
+>  properties:
+>    compatible:
+>      enum:
+> +      - sinowealth,sh1106-i2c
+>        - solomon,ssd1305fb-i2c
+>        - solomon,ssd1306fb-i2c
+>        - solomon,ssd1307fb-i2c
 
-Alphabetical order, so after sinovoip
-
-> +    description: SINO WEALTH Electronic Ltd.
->    "^sinovoip,.*":
->      description: SinoVoip Co., Ltd
->    "^sipeed,.*":
-
+Please update the allOf:if: blocks.
 
 Best regards,
 Krzysztof
