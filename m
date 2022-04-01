@@ -2,51 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 975A8C38A06
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:40:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7658C43217
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:40:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357313AbiDAPi3 (ORCPT
+        id S1354680AbiDAPh2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:38:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33064 "EHLO
+        Fri, 1 Apr 2022 11:37:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350677AbiDAPAZ (ORCPT
+        with ESMTP id S1350273AbiDAO7a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 11:00:25 -0400
+        Fri, 1 Apr 2022 10:59:30 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C9D43968C;
-        Fri,  1 Apr 2022 07:48:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E53AF5A160;
+        Fri,  1 Apr 2022 07:46:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 24C5FB8250F;
-        Fri,  1 Apr 2022 14:48:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C236C36AE7;
-        Fri,  1 Apr 2022 14:48:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9A3ADB824FC;
+        Fri,  1 Apr 2022 14:46:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80A2CC34112;
+        Fri,  1 Apr 2022 14:46:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824528;
-        bh=wjXQQTdaflwbzbxWBAyrELlCTqUdnI4ogLiQTlNBoCo=;
+        s=k20201202; t=1648824406;
+        bh=8zov38svY0gHD5WgcdszqQ+5uyKfeSnHiX3UkeZIqpk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JV7gDlcyYZOlRnhhBXdV5WDHxL1M6bLUreAImxifUQplRATNHK9zL9vJaFzn6k/4+
-         e+ZCvhwWuQN2wOiphSqzIGjjSwIr/iE5tBrWPO41N2RK9y4iQTJ945W7GeEyFDEM0+
-         77rdnEA5JDqogUFwSAxbhI5rSxahWcoddbR+P/24LR86blGzEsXNgdG2AmyjZVQO/L
-         oBdWBwy8O5m2eet+WYGDDAQR95J1LyLOAYoHiDchRWq7csVEe2GzLen7VpLj5vCKqf
-         FGKO7eqyLmOHHor6In2ghjOVjv3NGOMKPAOstLnqX5+Uw0YtG47Q6Jw0lP9IFpSY7y
-         yv1TB2tT0pjIw==
+        b=THddZg4AnlKtiPal4l1TtpHqkHu848NPqZJxR/x2t86aw354zD9BZLPVOUejaKCP6
+         fe73gwdTJEtuonlzvJ1LX5/gTiGJ120JZ7/u4bqPdMxW/s4023+yfQrzZO5iQ5cmJC
+         Daiy0QjDdybn37PyxdyUyzSnkzKwSxv+aZjGQ5VVmRacOFhPzG/RP7gIslyy6uOBF8
+         W6O9kv3lubpDQ4tl7sReR6Ui6eSUIvTpQT5SM1FrvrJyTc9x70f0PXOjYlC4CexcZS
+         pPgBKwpP+RcMenJGxPuqtvLx8pIhHSl3VysAQzzfbGFeWQzsHqmFmfDahsnOtHlZRc
+         y+ZDjhGePKqqw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        "Juergen E. Fischer" <fischer@norbit.de>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        Sasha Levin <sashal@kernel.org>, linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 09/16] scsi: aha152x: Fix aha152x_setup() __setup handler return value
-Date:   Fri,  1 Apr 2022 10:48:20 -0400
-Message-Id: <20220401144827.1955845-9-sashal@kernel.org>
+Cc:     Zhou Guanghui <zhouguanghui1@huawei.com>,
+        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        joro@8bytes.org, iommu@lists.linux-foundation.org
+Subject: [PATCH AUTOSEL 4.19 11/29] iommu/arm-smmu-v3: fix event handling soft lockup
+Date:   Fri,  1 Apr 2022 10:45:54 -0400
+Message-Id: <20220401144612.1955177-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220401144827.1955845-1-sashal@kernel.org>
-References: <20220401144827.1955845-1-sashal@kernel.org>
+In-Reply-To: <20220401144612.1955177-1-sashal@kernel.org>
+References: <20220401144612.1955177-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -55,50 +52,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Zhou Guanghui <zhouguanghui1@huawei.com>
 
-[ Upstream commit cc8294ec4738d25e2bb2d71f7d82a9bf7f4a157b ]
+[ Upstream commit 30de2b541af98179780054836b48825fcfba4408 ]
 
-__setup() handlers should return 1 if the command line option is handled
-and 0 if not (or maybe never return 0; doing so just pollutes init's
-environment with strings that are not init arguments/parameters).
+During event processing, events are read from the event queue one
+by one until the queue is empty.If the master device continuously
+requests address access at the same time and the SMMU generates
+events, the cyclic processing of the event takes a long time and
+softlockup warnings may be reported.
 
-Return 1 from aha152x_setup() to indicate that the boot option has been
-handled.
+arm-smmu-v3 arm-smmu-v3.34.auto: event 0x0a received:
+arm-smmu-v3 arm-smmu-v3.34.auto: 	0x00007f220000280a
+arm-smmu-v3 arm-smmu-v3.34.auto: 	0x000010000000007e
+arm-smmu-v3 arm-smmu-v3.34.auto: 	0x00000000034e8670
+watchdog: BUG: soft lockup - CPU#0 stuck for 22s! [irq/268-arm-smm:247]
+Call trace:
+ _dev_info+0x7c/0xa0
+ arm_smmu_evtq_thread+0x1c0/0x230
+ irq_thread_fn+0x30/0x80
+ irq_thread+0x128/0x210
+ kthread+0x134/0x138
+ ret_from_fork+0x10/0x1c
+Kernel panic - not syncing: softlockup: hung tasks
 
-Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Link: https://lore.kernel.org/r/20220223000623.5920-1-rdunlap@infradead.org
-Cc: "Juergen E. Fischer" <fischer@norbit.de>
-Cc: "James E.J. Bottomley" <jejb@linux.ibm.com>
-Cc: "Martin K. Petersen" <martin.petersen@oracle.com>
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Fix this by calling cond_resched() after the event information is
+printed.
+
+Signed-off-by: Zhou Guanghui <zhouguanghui1@huawei.com>
+Link: https://lore.kernel.org/r/20220119070754.26528-1-zhouguanghui1@huawei.com
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/aha152x.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/iommu/arm-smmu-v3.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/scsi/aha152x.c b/drivers/scsi/aha152x.c
-index f44d0487236e..bd850c5faf77 100644
---- a/drivers/scsi/aha152x.c
-+++ b/drivers/scsi/aha152x.c
-@@ -3381,13 +3381,11 @@ static int __init aha152x_setup(char *str)
- 	setup[setup_count].synchronous = ints[0] >= 6 ? ints[6] : 1;
- 	setup[setup_count].delay       = ints[0] >= 7 ? ints[7] : DELAY_DEFAULT;
- 	setup[setup_count].ext_trans   = ints[0] >= 8 ? ints[8] : 0;
--	if (ints[0] > 8) {                                                /*}*/
-+	if (ints[0] > 8)
- 		printk(KERN_NOTICE "aha152x: usage: aha152x=<IOBASE>[,<IRQ>[,<SCSI ID>"
- 		       "[,<RECONNECT>[,<PARITY>[,<SYNCHRONOUS>[,<DELAY>[,<EXT_TRANS>]]]]]]]\n");
--	} else {
-+	else
- 		setup_count++;
--		return 0;
--	}
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 6b7664052b5b..9f16f47e7021 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -1250,6 +1250,7 @@ static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
+ 				dev_info(smmu->dev, "\t0x%016llx\n",
+ 					 (unsigned long long)evt[i]);
  
- 	return 1;
- }
++			cond_resched();
+ 		}
+ 
+ 		/*
 -- 
 2.34.1
 
