@@ -2,234 +2,256 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B52E4C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 10:14:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 937A7C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 10:20:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245084AbiDAKQk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 06:16:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51660 "EHLO
+        id S245358AbiDAKWK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Apr 2022 06:22:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234199AbiDAKQh (ORCPT
+        with ESMTP id S245165AbiDAKWI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 06:16:37 -0400
-Received: from nksmu.kylinos.cn (mailgw.kylinos.cn [123.150.8.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A3591E3FB
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 03:14:46 -0700 (PDT)
-X-UUID: 2b37edf3aa0d4de39f017586e300f8ec-20220401
-X-GW-Reason: 11101
-X-Policy-Incident: 5pS25Lu25Lq66LaF6L+HNeS6uumcgOimgeWuoeaguA==
-X-Content-Feature: ica/max.line-size 118
-        audit/email.address 1
-        meta/cnt.alert 1
-X-UUID: 2b37edf3aa0d4de39f017586e300f8ec-20220401
-Received: from cs2c.com.cn [(172.17.111.24)] by nksmu.kylinos.cn
-        (envelope-from <xieming@kylinos.cn>)
-        (Generic MTA)
-        with ESMTP id 1694784454; Fri, 01 Apr 2022 17:07:47 +0800
-X-ns-mid: postfix-6246C11A-3080797115
-Received: from localhost.localdomain (unknown [172.20.12.223])
-        by cs2c.com.cn (NSMail) with ESMTPA id 0F2E8383C640;
-        Fri,  1 Apr 2022 09:08:42 +0000 (UTC)
-From:   xieming <xieming@kylinos.cn>
-To:     marc.zyngier@arm.com, linux@armlinux.org.uk,
-        catalin.marinas@arm.com, will.deacon@arm.com,
-        alex.williamson@redhat.com, sashal@kernel.org
-Cc:     xieming@kylinos.cn, linux-arm-kernel@lists.infradead.org,
-        kvmarm@lists.cs.columbia.edu, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] kvm/arm64: fixed passthrough gpu into vm on arm64
-Date:   Fri,  1 Apr 2022 17:08:28 +0800
-Message-Id: <20220401090828.614167-1-xieming@kylinos.cn>
-X-Mailer: git-send-email 2.27.0
+        Fri, 1 Apr 2022 06:22:08 -0400
+Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE7B11C233D;
+        Fri,  1 Apr 2022 03:20:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1648808417; x=1680344417;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=+HMwS/vFP2XU2Odir0/lX1+97TApvyx0os8H662f8ts=;
+  b=C/iLwxDpzRh6AgdQWM5fAu8liM8jXGfbj2+S9lD0JaXRlK1h3+ixau4t
+   1I5KbFiCMvDJvlaccyDUxkxVeD+x1zGqwYRVauDSK2FHPk2g1yl63N4qb
+   YV1DgkqR98Q4ndXrjetd7qX6HEziWroU1F6W5h1+i84hptdQ1CVM1Xf10
+   0SsW6cIBjrtw9FLqFEoOFZ+YMgyW9/PqewpG0JyktuVm1lnKAgmkiCurP
+   5tmnMD/xgoyiwyCmTQe/7QaowaHCs4RjCCaiRV0yrXnKL9vk/qNOgbOkJ
+   bOA5PTmyOBiHXJkRN49PJy1EIvGRj4R1D0Acoyjg9lXPrJ2HGEBg7XcIF
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.90,227,1643670000"; 
+   d="scan'208";a="23040343"
+Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
+  by mx1-pgp.tq-group.com with ESMTP; 01 Apr 2022 12:20:14 +0200
+Received: from mx1.tq-group.com ([192.168.6.7])
+  by tq-pgp-pr1.tq-net.de (PGP Universal service);
+  Fri, 01 Apr 2022 12:20:14 +0200
+X-PGP-Universal: processed;
+        by tq-pgp-pr1.tq-net.de on Fri, 01 Apr 2022 12:20:14 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1648808414; x=1680344414;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=+HMwS/vFP2XU2Odir0/lX1+97TApvyx0os8H662f8ts=;
+  b=qDfNONIuZc3yJOhQ/k0nhgP0w95p6EninNXPIfe3Ov7ZosYST1T8ego7
+   Cj9Z/o22uGT6d/oBg4O/zoLAR55N6plJLhRZOlDYBkHlIDdcpEvanCFIq
+   DHneGgpUu4PqSFexqvU1mfNI2AevEBYuueeAvcAhzL0AOugh0iTyYbx68
+   w/JXlqyznwvsT7rjJZKHNiNwhGFA/hAg5h6xm83w5TQRJoeFo5Ei+smAp
+   EzaMK3j3qQyLzIBv2JRgJJoT3ogxvQDVnBHqbIqZRlNBFCAg34jz4JX/7
+   aJ8SAq8rS50Vb5Aa/GwZV5bpfss4+9rjq+u+azxhXJ+DGZJ1naQRSFC2m
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.90,227,1643670000"; 
+   d="scan'208";a="23040342"
+Received: from vtuxmail01.tq-net.de ([10.115.0.20])
+  by mx1.tq-group.com with ESMTP; 01 Apr 2022 12:20:14 +0200
+Received: from schifferm-ubuntu (SCHIFFERM-M2.tq-net.de [10.121.49.14])
+        by vtuxmail01.tq-net.de (Postfix) with ESMTPA id 137FB280065;
+        Fri,  1 Apr 2022 12:20:14 +0200 (CEST)
+Message-ID: <6b2bfa6614fbb9339b94a191ab933a2c25b8b4d7.camel@ew.tq-group.com>
+Subject: Re: [PATCH] spi: cadence-quadspi: fix protocol setup for non-1-1-X
+ operations
+From:   Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+To:     Pratyush Yadav <p.yadav@ti.com>
+Cc:     Mark Brown <broonie@kernel.org>,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Ramuthevar Vadivel Murugan 
+        <vadivel.muruganx.ramuthevar@linux.intel.com>,
+        linux-spi@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Fri, 01 Apr 2022 12:20:11 +0200
+In-Reply-To: <20220401100606.iz52jbrdcz6pd5sg@ti.com>
+References: <20220331110819.133392-1-matthias.schiffer@ew.tq-group.com>
+         <20220401100606.iz52jbrdcz6pd5sg@ti.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5-0ubuntu1 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-when passthrough some pcie device, such as gpus(including
-Nvidia and AMD),kvm will report:"Unsupported FSC: EC=0x24
-xFSC=0x21 ESR_EL2=0x92000061" err.the main reason is vfio
-ioremap vga memory type by DEVICE_nGnRnE, and kvm setting
-memory type to PAGE_S2_DEVICE(DEVICE_nGnRE), but in guestos,
-all of device io memory type when ioremapping (including gpu
-driver TTM memory type) is setting to MT_NORMAL_NC.
+On Fri, 2022-04-01 at 15:36 +0530, Pratyush Yadav wrote:
+> Hi Matthias,
+> 
+> On 31/03/22 01:08PM, Matthias Schiffer wrote:
+> > cqspi_set_protocol() only set the data width, but ignored the
+> > command
+> > and address width (except for 8-8-8 DTR ops), leading to corruption
+> > of
+> > all transfers using 1-X-X or X-X-X ops. Fix by setting the other
+> > two
+> > widths as well.
+> > 
+> > While we're at it, simplify the code a bit by replacing the
+> > CQSPI_INST_TYPE_* constants with ilog2().
+> > 
+> > Tested on a TI AM64x with a Macronix MX25U51245G QSPI flash with 1-
+> > 4-4
+> > read and write operations.
+> > 
+> > Fixes: a314f6367787 ("mtd: spi-nor: Convert cadence-quadspi to use
+> > spi-mem framework")
+> 
+> I think a fixes tag is wrong here. The old driver did not support 1-
+> X-X 
+> modes either. So you are not fixing anything, you are adding a new 
+> feature. I don't think we should backport this patch to stable.
 
-according to ARM64 stage1&stage2 conbining rules.
-memory type attributes combining rules:
-Normal-WB<Normal-WT<NormalNC<Device-GRE<Device-nGRE<
-DevicenGnRE<Device-nGnRnE
-Normal-WB is weakest,Device-nGnRnE is strongest.
 
-refferring to 'Arm Architecture Reference Manual Armv8,
-for Armv8-A architecture profile' pdf, chapter B2.8
-refferring to 'ARM System Memory Management Unit Architecture
-Specification SMMU architecture version 3.0 and version 3.1' pdf,
-chapter 13.1.5
+Giving a precise fixes tag is a bit difficult. The referenced commit
+made the driver (accidentally) accept commands like 1-4-4 without
+handing them correctly, causing data corruption for flashs that support
+these modes. The data corruption is fixed by my patch.
 
-therefore, the I/O memory attribute of the VM is setting to
-DevicenGnRE maybe is a mistake. it causes all device memory
-accessing in the virtual machine must be aligned.
+As the change was unintended, one option would be to split this patch
+into two parts: One fix patch that makes cqspi_set_protocol() -EINVAL
+again for all commands that are not 1-1-X, and one feature patch that
+adds actual support for these commands.
 
-To summarize: stage2 memory type cannot be stronger than stage1
-in arm64 archtechture.
+My thought process was that making these commands work correctly can't
+break anything that is not already broken in current stable kernels.
+But if you prefer the minimal change, I can send a v2 that splits the
+patch.
 
-Signed-off-by: xieming <xieming@kylinos.cn>
----
- arch/arm/include/asm/kvm_mmu.h        |  3 ++-
- arch/arm64/include/asm/kvm_mmu.h      |  3 ++-
- arch/arm64/include/asm/memory.h       |  4 +++-
- arch/arm64/include/asm/pgtable-prot.h |  2 +-
- drivers/vfio/pci/vfio_pci.c           |  7 +++++++
- virt/kvm/arm/mmu.c                    | 19 ++++++++++++++++---
- virt/kvm/arm/vgic/vgic-v2.c           |  2 +-
- 7 files changed, 32 insertions(+), 8 deletions(-)
+Regards,
+Matthias
 
-diff --git a/arch/arm/include/asm/kvm_mmu.h b/arch/arm/include/asm/kvm_mmu.h
-index 523c499e42db..5c7869d25b62 100644
---- a/arch/arm/include/asm/kvm_mmu.h
-+++ b/arch/arm/include/asm/kvm_mmu.h
-@@ -64,7 +64,8 @@ void stage2_unmap_vm(struct kvm *kvm);
- int kvm_alloc_stage2_pgd(struct kvm *kvm);
- void kvm_free_stage2_pgd(struct kvm *kvm);
- int kvm_phys_addr_ioremap(struct kvm *kvm, phys_addr_t guest_ipa,
--			  phys_addr_t pa, unsigned long size, bool writable);
-+			  phys_addr_t pa, unsigned long size,
-+			  bool writable, bool writecombine);
- 
- int kvm_handle_guest_abort(struct kvm_vcpu *vcpu, struct kvm_run *run);
- 
-diff --git a/arch/arm64/include/asm/kvm_mmu.h b/arch/arm64/include/asm/kvm_mmu.h
-index b2558447c67d..3f98286c7498 100644
---- a/arch/arm64/include/asm/kvm_mmu.h
-+++ b/arch/arm64/include/asm/kvm_mmu.h
-@@ -158,7 +158,8 @@ void stage2_unmap_vm(struct kvm *kvm);
- int kvm_alloc_stage2_pgd(struct kvm *kvm);
- void kvm_free_stage2_pgd(struct kvm *kvm);
- int kvm_phys_addr_ioremap(struct kvm *kvm, phys_addr_t guest_ipa,
--			  phys_addr_t pa, unsigned long size, bool writable);
-+			  phys_addr_t pa, unsigned long size,
-+			  bool writable, bool writecombine);
- 
- int kvm_handle_guest_abort(struct kvm_vcpu *vcpu, struct kvm_run *run);
- 
-diff --git a/arch/arm64/include/asm/memory.h b/arch/arm64/include/asm/memory.h
-index 56562ff01076..22565cc8ec20 100644
---- a/arch/arm64/include/asm/memory.h
-+++ b/arch/arm64/include/asm/memory.h
-@@ -158,13 +158,15 @@
-  * Memory types for Stage-2 translation
-  */
- #define MT_S2_NORMAL		0xf
-+#define MT_S2_NORMAL_NC		0x5
- #define MT_S2_DEVICE_nGnRE	0x1
- 
- /*
-  * Memory types for Stage-2 translation when ID_AA64MMFR2_EL1.FWB is 0001
-- * Stage-2 enforces Normal-WB and Device-nGnRE
-+ * Stage-2 enforces Normal-WB and Device-nGnRE and Normal-NC
-  */
- #define MT_S2_FWB_NORMAL	6
-+#define MT_S2_FWB_NORMAL_NC	5
- #define MT_S2_FWB_DEVICE_nGnRE	1
- 
- #ifdef CONFIG_ARM64_4K_PAGES
-diff --git a/arch/arm64/include/asm/pgtable-prot.h b/arch/arm64/include/asm/pgtable-prot.h
-index af547be1779b..b94e93135fea 100644
---- a/arch/arm64/include/asm/pgtable-prot.h
-+++ b/arch/arm64/include/asm/pgtable-prot.h
-@@ -88,8 +88,8 @@
- 	})
- 
- #define PAGE_S2			__pgprot(_PROT_DEFAULT | PAGE_S2_MEMATTR(NORMAL) | PTE_S2_RDONLY | PAGE_S2_XN)
-+#define PAGE_S2_NC		__pgprot(_PROT_DEFAULT | PAGE_S2_MEMATTR(NORMAL_NC) | PTE_S2_RDONLY | PAGE_S2_XN)
- #define PAGE_S2_DEVICE		__pgprot(_PROT_DEFAULT | PAGE_S2_MEMATTR(DEVICE_nGnRE) | PTE_S2_RDONLY | PAGE_S2_XN)
--
- #define PAGE_NONE		__pgprot(((_PAGE_DEFAULT) & ~PTE_VALID) | PTE_PROT_NONE | PTE_RDONLY | PTE_NG | PTE_PXN | PTE_UXN)
- /* shared+writable pages are clean by default, hence PTE_RDONLY|PTE_WRITE */
- #define PAGE_SHARED		__pgprot(_PAGE_DEFAULT | PTE_USER | PTE_RDONLY | PTE_NG | PTE_PXN | PTE_UXN | PTE_WRITE)
-diff --git a/drivers/vfio/pci/vfio_pci.c b/drivers/vfio/pci/vfio_pci.c
-index 51b791c750f1..6f66efb71743 100644
---- a/drivers/vfio/pci/vfio_pci.c
-+++ b/drivers/vfio/pci/vfio_pci.c
-@@ -1452,7 +1452,14 @@ static int vfio_pci_mmap(void *device_data, struct vm_area_struct *vma)
- 	}
- 
- 	vma->vm_private_data = vdev;
-+#ifdef CONFIG_ARM64
-+	if (vfio_pci_is_vga(pdev))
-+		vma->vm_page_prot = pgprot_writecombine(vma->vm_page_prot);
-+	else
-+		vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
-+#else
- 	vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
-+#endif
- 	vma->vm_pgoff = (pci_resource_start(pdev, index) >> PAGE_SHIFT) + pgoff;
- 
- 	/*
-diff --git a/virt/kvm/arm/mmu.c b/virt/kvm/arm/mmu.c
-index 11103b75c596..a46a58696834 100644
---- a/virt/kvm/arm/mmu.c
-+++ b/virt/kvm/arm/mmu.c
-@@ -206,6 +206,17 @@ static inline void kvm_pgd_populate(pgd_t *pgdp, pud_t *pudp)
- 	dsb(ishst);
- }
- 
-+/**
-+ * is_vma_write_combine - check if VMA is mapped with writecombine or not
-+ * Return true if VMA mapped with MT_NORMAL_NC otherwise fasle
-+ */
-+static inline bool is_vma_write_combine(struct vm_area_struct *vma)
-+{
-+	pteval_t pteval = pgprot_val(vma->vm_page_prot);
-+
-+	return ((pteval & PTE_ATTRINDX_MASK) == PTE_ATTRINDX(MT_NORMAL_NC));
-+}
-+
- /*
-  * Unmapping vs dcache management:
-  *
-@@ -1198,7 +1209,8 @@ static int stage2_pmdp_test_and_clear_young(pmd_t *pmd)
-  * @size:	The size of the mapping
-  */
- int kvm_phys_addr_ioremap(struct kvm *kvm, phys_addr_t guest_ipa,
--			  phys_addr_t pa, unsigned long size, bool writable)
-+			  phys_addr_t pa, unsigned long size,
-+			  bool writable, bool writecombine)
- {
- 	phys_addr_t addr, end;
- 	int ret = 0;
-@@ -1209,7 +1221,7 @@ int kvm_phys_addr_ioremap(struct kvm *kvm, phys_addr_t guest_ipa,
- 	pfn = __phys_to_pfn(pa);
- 
- 	for (addr = guest_ipa; addr < end; addr += PAGE_SIZE) {
--		pte_t pte = pfn_pte(pfn, PAGE_S2_DEVICE);
-+		pte_t pte = pfn_pte(pfn, writecombine ? PAGE_S2_NC : PAGE_S2_DEVICE);
- 
- 		if (writable)
- 			pte = kvm_s2pte_mkwrite(pte);
-@@ -2135,7 +2147,8 @@ int kvm_arch_prepare_memory_region(struct kvm *kvm,
- 
- 			ret = kvm_phys_addr_ioremap(kvm, gpa, pa,
- 						    vm_end - vm_start,
--						    writable);
-+						    writable,
-+						    is_vma_write_combine(vma));
- 			if (ret)
- 				break;
- 		}
-diff --git a/virt/kvm/arm/vgic/vgic-v2.c b/virt/kvm/arm/vgic/vgic-v2.c
-index 91b14dfacd1d..bc9f5a9a1fd9 100644
---- a/virt/kvm/arm/vgic/vgic-v2.c
-+++ b/virt/kvm/arm/vgic/vgic-v2.c
-@@ -352,7 +352,7 @@ int vgic_v2_map_resources(struct kvm *kvm)
- 	if (!static_branch_unlikely(&vgic_v2_cpuif_trap)) {
- 		ret = kvm_phys_addr_ioremap(kvm, dist->vgic_cpu_base,
- 					    kvm_vgic_global_state.vcpu_base,
--					    KVM_VGIC_V2_CPU_SIZE, true);
-+					    KVM_VGIC_V2_CPU_SIZE, true, false);
- 		if (ret) {
- 			kvm_err("Unable to remap VGIC CPU to VCPU\n");
- 			goto out;
--- 
-2.27.0
+
+
+> 
+> > Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com
+> > >
+> > ---
+> >  drivers/spi/spi-cadence-quadspi.c | 46 ++++++++-------------------
+> > ----
+> >  1 file changed, 12 insertions(+), 34 deletions(-)
+> > 
+> > diff --git a/drivers/spi/spi-cadence-quadspi.c b/drivers/spi/spi-
+> > cadence-quadspi.c
+> > index b0c9f62ccefb..616ada891974 100644
+> > --- a/drivers/spi/spi-cadence-quadspi.c
+> > +++ b/drivers/spi/spi-cadence-quadspi.c
+> > @@ -19,6 +19,7 @@
+> >  #include <linux/iopoll.h>
+> >  #include <linux/jiffies.h>
+> >  #include <linux/kernel.h>
+> > +#include <linux/log2.h>
+> >  #include <linux/module.h>
+> >  #include <linux/of_device.h>
+> >  #include <linux/of.h>
+> > @@ -102,12 +103,6 @@ struct cqspi_driver_platdata {
+> >  #define CQSPI_TIMEOUT_MS			500
+> >  #define CQSPI_READ_TIMEOUT_MS			10
+> >  
+> > -/* Instruction type */
+> > -#define CQSPI_INST_TYPE_SINGLE			0
+> > -#define CQSPI_INST_TYPE_DUAL			1
+> > -#define CQSPI_INST_TYPE_QUAD			2
+> > -#define CQSPI_INST_TYPE_OCTAL			3
+> > -
+> >  #define CQSPI_DUMMY_CLKS_PER_BYTE		8
+> >  #define CQSPI_DUMMY_BYTES_MAX			4
+> >  #define CQSPI_DUMMY_CLKS_MAX			31
+> > @@ -376,10 +371,6 @@ static unsigned int cqspi_calc_dummy(const
+> > struct spi_mem_op *op, bool dtr)
+> >  static int cqspi_set_protocol(struct cqspi_flash_pdata *f_pdata,
+> >  			      const struct spi_mem_op *op)
+> >  {
+> > -	f_pdata->inst_width = CQSPI_INST_TYPE_SINGLE;
+> > -	f_pdata->addr_width = CQSPI_INST_TYPE_SINGLE;
+> > -	f_pdata->data_width = CQSPI_INST_TYPE_SINGLE;
+> > -
+> >  	/*
+> >  	 * For an op to be DTR, cmd phase along with every other non-
+> > empty
+> >  	 * phase should have dtr field set to 1. If an op phase has
+> > zero
+> > @@ -389,32 +380,23 @@ static int cqspi_set_protocol(struct
+> > cqspi_flash_pdata *f_pdata,
+> >  		       (!op->addr.nbytes || op->addr.dtr) &&
+> >  		       (!op->data.nbytes || op->data.dtr);
+> >  
+> > -	switch (op->data.buswidth) {
+> > -	case 0:
+> > -		break;
+> > -	case 1:
+> > -		f_pdata->data_width = CQSPI_INST_TYPE_SINGLE;
+> > -		break;
+> > -	case 2:
+> > -		f_pdata->data_width = CQSPI_INST_TYPE_DUAL;
+> > -		break;
+> > -	case 4:
+> > -		f_pdata->data_width = CQSPI_INST_TYPE_QUAD;
+> > -		break;
+> > -	case 8:
+> > -		f_pdata->data_width = CQSPI_INST_TYPE_OCTAL;
+> > -		break;
+> > -	default:
+> > -		return -EINVAL;
+> > -	}
+> > +	f_pdata->inst_width = 0;
+> > +	if (op->cmd.buswidth)
+> > +		f_pdata->inst_width = ilog2(op->cmd.buswidth);
+> > +
+> > +	f_pdata->addr_width = 0;
+> > +	if (op->addr.buswidth)
+> > +		f_pdata->addr_width = ilog2(op->addr.buswidth);
+> > +
+> > +	f_pdata->data_width = 0;
+> > +	if (op->data.buswidth)
+> > +		f_pdata->data_width = ilog2(op->data.buswidth);
+> 
+> Honestly, I think we should get rid of cqspi_set_protocol() entirely.
+> I 
+> see no need to store f_pdata->{instr,addr,data}_width since we 
+> recalculate those for each op execution anyway. So why not just use
+> the 
+> spi_mem_op to get those values directly and be rid of all this mess?
+> 
+> >  
+> >  	/* Right now we only support 8-8-8 DTR mode. */
+> >  	if (f_pdata->dtr) {
+> >  		switch (op->cmd.buswidth) {
+> >  		case 0:
+> > -			break;
+> >  		case 8:
+> > -			f_pdata->inst_width = CQSPI_INST_TYPE_OCTAL;
+> >  			break;
+> >  		default:
+> >  			return -EINVAL;
+> > @@ -422,9 +404,7 @@ static int cqspi_set_protocol(struct
+> > cqspi_flash_pdata *f_pdata,
+> >  
+> >  		switch (op->addr.buswidth) {
+> >  		case 0:
+> > -			break;
+> >  		case 8:
+> > -			f_pdata->addr_width = CQSPI_INST_TYPE_OCTAL;
+> >  			break;
+> >  		default:
+> >  			return -EINVAL;
+> > @@ -432,9 +412,7 @@ static int cqspi_set_protocol(struct
+> > cqspi_flash_pdata *f_pdata,
+> >  
+> >  		switch (op->data.buswidth) {
+> >  		case 0:
+> > -			break;
+> >  		case 8:
+> > -			f_pdata->data_width = CQSPI_INST_TYPE_OCTAL;
+> >  			break;
+> >  		default:
+> >  			return -EINVAL;
+> > -- 
+> > 2.25.1
+> > 
 
