@@ -2,131 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6300FC3527D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71B87C4707E
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:40:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353993AbiDAPhN (ORCPT
+        id S1353898AbiDAPhR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:37:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56978 "EHLO
+        Fri, 1 Apr 2022 11:37:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350525AbiDAPAH (ORCPT
+        with ESMTP id S1350521AbiDAPAH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 1 Apr 2022 11:00:07 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C351F5AEF0
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 07:47:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648824442;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ubFWiDA1LlelDhe80vrrUD2k2vJd+0aq256Lv6ITnp4=;
-        b=RlKYnYhcK5zO29WVZX8cPiqpVW80Grgb/ZH3M4nQDlKMFFzFMinVbzxtltcaoGRepEnUQz
-        Lne5iTGy2ov/MID17JnGax24YGJsY9pj7BdmpY1Q+VNEP2gIZGl4vXnWhRE6w3w8jw0AMp
-        19fLlSCBOquDwepvsl+0QHehnGJnemU=
-Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
- [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-379-b0y3CB8LOmu9a4TKtzpTiQ-1; Fri, 01 Apr 2022 10:47:20 -0400
-X-MC-Unique: b0y3CB8LOmu9a4TKtzpTiQ-1
-Received: by mail-qt1-f200.google.com with SMTP id g22-20020ac870d6000000b002e20a1508ecso2108341qtp.19
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 07:47:20 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ubFWiDA1LlelDhe80vrrUD2k2vJd+0aq256Lv6ITnp4=;
-        b=DJeA9Z9/mSVZhVjBwgD+jBKjP7WZHW9YqlWMV3Blf5pTe/0ykWMnq6VgCXUSR8HEXj
-         lO2QzJkI6PItvoFBEul8SfXsqpLTv/Qp3hm5EAb26bbAg96pI7CFKW7zcuyy7uCIYc1y
-         zKMb/jxLgsGO6+saEPtNchY+d/ZLc0frqYBUAfAEMurvuGqOdqXY4TISU6WKh7WU1IiU
-         XYoYpZtvvqR52wL/Qj9fxxv2UJM52K+XdhoIKTuJ9Incv39yrzVnBlI2F8rhgVu+Q/QD
-         MLzrNo2xY6N1uc/sNXq6sWMtrp7SbC2U+roSbxoCwjotv29mzFQGWqtr1rAwptfVCohv
-         q+xA==
-X-Gm-Message-State: AOAM531dDJS8rFBhVYiQMA3HcNmq3l+j8uZp9P5hktGpZH9aFCw0S4VL
-        q7b3mGck6tcTMeSKYJseLQrX2JWL+QKUhRTZqdeiv2a/sMqYJPtc+Izyo2GotFTPC5/K/jCI8kr
-        gBQl6E2RQmFbUfhaoL+qui9s=
-X-Received: by 2002:a05:620a:24c7:b0:67f:9270:4b6a with SMTP id m7-20020a05620a24c700b0067f92704b6amr6635673qkn.52.1648824440263;
-        Fri, 01 Apr 2022 07:47:20 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyQRpmdsYnSYXtR8AnJ7zoL6DR0xqqC0MlDkItb7ArARcr3IO6CN0vjf0PcccOnDEIXfYu9qA==
-X-Received: by 2002:a05:620a:24c7:b0:67f:9270:4b6a with SMTP id m7-20020a05620a24c700b0067f92704b6amr6635649qkn.52.1648824439903;
-        Fri, 01 Apr 2022 07:47:19 -0700 (PDT)
-Received: from localhost (pool-68-160-176-52.bstnma.fios.verizon.net. [68.160.176.52])
-        by smtp.gmail.com with ESMTPSA id q204-20020a3743d5000000b0067ece232979sm1374993qka.116.2022.04.01.07.47.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Apr 2022 07:47:19 -0700 (PDT)
-Date:   Fri, 1 Apr 2022 10:47:18 -0400
-From:   Mike Snitzer <snitzer@redhat.com>
-To:     Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Cc:     agk@redhat.com, dm-devel@redhat.com, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Subject: Re: md: fix missing check on list iterator
-Message-ID: <YkcQdjE6uTfScyEy@redhat.com>
-References: <20220327053742.2942-1-xiam0nd.tong@gmail.com>
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 173665BD14;
+        Fri,  1 Apr 2022 07:47:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 79A2BCE2589;
+        Fri,  1 Apr 2022 14:47:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A610C340F2;
+        Fri,  1 Apr 2022 14:47:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648824453;
+        bh=aDjIbtXpZcKp3KyrL3zGXS1AA90UMCdcBlY1qKml0nA=;
+        h=From:To:Cc:Subject:Date:From;
+        b=PCJgpfNcREqiFvuvIhMKIDs0cu+pR70e8W0s8LQo4i0eARbGuSKqe5UxFVdfJg3+9
+         0N4JuszvFPVe9ZCBfUvZxbq3OFsEBmkagyrey4a+Hm5eTh2QD6Km9DEWuudNsQvTzL
+         NRuxUCB/S8mL3+VgRrSoJLc/fbuIJ1s0/ROlKOqLc7L5rz9ZJXVW5gPSmz83U5oVxe
+         X0c3s9/vRNA+nA0j1j8bASYYbQbbjBl5WJCu19ShfA/qYUTkX5VaL3DsZfOWpSICah
+         SACCaSrMPsw0x10PqEJxRkM16bQUUaeMDKld1XU7Iar9Eav6W8a1DvgasyC2ZXqS2A
+         yVl6tUIqNUR+w==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Zekun Shen <bruceshenzk@gmail.com>,
+        Brendan Dolan-Gavitt <brendandg@nyu.edu>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
+        Sasha Levin <sashal@kernel.org>, jirislaby@kernel.org,
+        mickflemm@gmail.com, mcgrof@kernel.org, kvalo@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 01/22] ath5k: fix OOB in ath5k_eeprom_read_pcal_info_5111
+Date:   Fri,  1 Apr 2022 10:47:08 -0400
+Message-Id: <20220401144729.1955554-1-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220327053742.2942-1-xiam0nd.tong@gmail.com>
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Mar 27 2022 at  1:37P -0400,
-Xiaomeng Tong <xiam0nd.tong@gmail.com> wrote:
+From: Zekun Shen <bruceshenzk@gmail.com>
 
-> The bug is here:
->     bypass_pg(m, pg, bypassed);
-> 
-> The list iterator 'pg' will point to a bogus position containing
-> HEAD if the list is empty or no element is found. This case must
-> be checked before any use of the iterator, otherwise it will lead
-> to a invalid memory access.
-> 
-> To fix this bug, run bypass_pg(m, pg, bypassed); and return 0
-> when found, otherwise return -EINVAL.
-> 
-> Cc: stable@vger.kernel.org
-> Fixes: ^1da177e4c3f4 ("Linux-2.6.12-rc2")
-> Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-> ---
->  drivers/md/dm-mpath.c | 9 +++++----
->  1 file changed, 5 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/md/dm-mpath.c b/drivers/md/dm-mpath.c
-> index f4719b65e5e3..6ba8f1133564 100644
-> --- a/drivers/md/dm-mpath.c
-> +++ b/drivers/md/dm-mpath.c
-> @@ -1496,12 +1496,13 @@ static int bypass_pg_num(struct multipath *m, const char *pgstr, bool bypassed)
->  	}
->  
->  	list_for_each_entry(pg, &m->priority_groups, list) {
-> -		if (!--pgnum)
-> -			break;
-> +		if (!--pgnum) {
-> +			bypass_pg(m, pg, bypassed);
-> +			return 0;
-> +		}
->  	}
->  
-> -	bypass_pg(m, pg, bypassed);
-> -	return 0;
-> +	return -EINVAL;
->  }
->  
->  /*
-> -- 
-> 2.17.1
-> 
+[ Upstream commit 564d4eceb97eaf381dd6ef6470b06377bb50c95a ]
 
-Did you acually hit a bug (invalid memory access)?
+The bug was found during fuzzing. Stacktrace locates it in
+ath5k_eeprom_convert_pcal_info_5111.
+When none of the curve is selected in the loop, idx can go
+up to AR5K_EEPROM_N_PD_CURVES. The line makes pd out of bound.
+pd = &chinfo[pier].pd_curves[idx];
 
-I cannot see how given the checks prior to iterating m->priority_groups:
+There are many OOB writes using pd later in the code. So I
+added a sanity check for idx. Checks for other loops involving
+AR5K_EEPROM_N_PD_CURVES are not needed as the loop index is not
+used outside the loops.
 
-        if (!pgstr || (sscanf(pgstr, "%u%c", &pgnum, &dummy) != 1) || !pgnum ||
-            !m->nr_priority_groups || (pgnum > m->nr_priority_groups)) {
-                DMWARN("invalid PG number supplied to bypass_pg");
-                return -EINVAL;
-        }
+The patch is NOT tested with real device.
 
-So I have _not_ taken your "fix".
+The following is the fuzzing report
+
+BUG: KASAN: slab-out-of-bounds in ath5k_eeprom_read_pcal_info_5111+0x126a/0x1390 [ath5k]
+Write of size 1 at addr ffff8880174a4d60 by task modprobe/214
+
+CPU: 0 PID: 214 Comm: modprobe Not tainted 5.6.0 #1
+Call Trace:
+ dump_stack+0x76/0xa0
+ print_address_description.constprop.0+0x16/0x200
+ ? ath5k_eeprom_read_pcal_info_5111+0x126a/0x1390 [ath5k]
+ ? ath5k_eeprom_read_pcal_info_5111+0x126a/0x1390 [ath5k]
+ __kasan_report.cold+0x37/0x7c
+ ? ath5k_eeprom_read_pcal_info_5111+0x126a/0x1390 [ath5k]
+ kasan_report+0xe/0x20
+ ath5k_eeprom_read_pcal_info_5111+0x126a/0x1390 [ath5k]
+ ? apic_timer_interrupt+0xa/0x20
+ ? ath5k_eeprom_init_11a_pcal_freq+0xbc0/0xbc0 [ath5k]
+ ? ath5k_pci_eeprom_read+0x228/0x3c0 [ath5k]
+ ath5k_eeprom_init+0x2513/0x6290 [ath5k]
+ ? ath5k_eeprom_init_11a_pcal_freq+0xbc0/0xbc0 [ath5k]
+ ? usleep_range+0xb8/0x100
+ ? apic_timer_interrupt+0xa/0x20
+ ? ath5k_eeprom_read_pcal_info_2413+0x2f20/0x2f20 [ath5k]
+ ath5k_hw_init+0xb60/0x1970 [ath5k]
+ ath5k_init_ah+0x6fe/0x2530 [ath5k]
+ ? kasprintf+0xa6/0xe0
+ ? ath5k_stop+0x140/0x140 [ath5k]
+ ? _dev_notice+0xf6/0xf6
+ ? apic_timer_interrupt+0xa/0x20
+ ath5k_pci_probe.cold+0x29a/0x3d6 [ath5k]
+ ? ath5k_pci_eeprom_read+0x3c0/0x3c0 [ath5k]
+ ? mutex_lock+0x89/0xd0
+ ? ath5k_pci_eeprom_read+0x3c0/0x3c0 [ath5k]
+ local_pci_probe+0xd3/0x160
+ pci_device_probe+0x23f/0x3e0
+ ? pci_device_remove+0x280/0x280
+ ? pci_device_remove+0x280/0x280
+ really_probe+0x209/0x5d0
+
+Reported-by: Brendan Dolan-Gavitt <brendandg@nyu.edu>
+Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/YckvDdj3mtCkDRIt@a-10-27-26-18.dynapool.vpn.nyu.edu
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/wireless/ath/ath5k/eeprom.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/net/wireless/ath/ath5k/eeprom.c b/drivers/net/wireless/ath/ath5k/eeprom.c
+index 94d34ee02265..01163b333945 100644
+--- a/drivers/net/wireless/ath/ath5k/eeprom.c
++++ b/drivers/net/wireless/ath/ath5k/eeprom.c
+@@ -746,6 +746,9 @@ ath5k_eeprom_convert_pcal_info_5111(struct ath5k_hw *ah, int mode,
+ 			}
+ 		}
+ 
++		if (idx == AR5K_EEPROM_N_PD_CURVES)
++			goto err_out;
++
+ 		ee->ee_pd_gains[mode] = 1;
+ 
+ 		pd = &chinfo[pier].pd_curves[idx];
+-- 
+2.34.1
 
