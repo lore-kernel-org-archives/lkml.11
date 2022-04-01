@@ -2,156 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 871B9C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 03:29:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D861C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 03:33:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244624AbiDADbi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 23:31:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60170 "EHLO
+        id S242166AbiDADff (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 23:35:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244566AbiDADb1 (ORCPT
+        with ESMTP id S232806AbiDADfT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 23:31:27 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D7A85A09A;
-        Thu, 31 Mar 2022 20:29:35 -0700 (PDT)
-Received: from kwepemi500001.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KV5Fg060KzDqDV;
-        Fri,  1 Apr 2022 11:27:18 +0800 (CST)
-Received: from kwepemm600015.china.huawei.com (7.193.23.52) by
- kwepemi500001.china.huawei.com (7.221.188.114) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Fri, 1 Apr 2022 11:29:33 +0800
-Received: from huawei.com (10.175.127.227) by kwepemm600015.china.huawei.com
- (7.193.23.52) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Fri, 1 Apr
- 2022 11:29:32 +0800
-From:   ChenXiaoSong <chenxiaosong2@huawei.com>
-To:     <trond.myklebust@hammerspace.com>, <anna@kernel.org>,
-        <smayhew@redhat.com>
-CC:     <linux-nfs@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <chenxiaosong2@huawei.com>, <liuyongqiang13@huawei.com>,
-        <yi.zhang@huawei.com>, <zhangxiaoxu5@huawei.com>
-Subject: [PATCH -next,v2 3/3] Revert "nfs: nfs_file_write() should check for writeback errors"
-Date:   Fri, 1 Apr 2022 11:44:09 +0800
-Message-ID: <20220401034409.256770-4-chenxiaosong2@huawei.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220401034409.256770-1-chenxiaosong2@huawei.com>
-References: <20220401034409.256770-1-chenxiaosong2@huawei.com>
+        Thu, 31 Mar 2022 23:35:19 -0400
+Received: from mail-yw1-x112f.google.com (mail-yw1-x112f.google.com [IPv6:2607:f8b0:4864:20::112f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 408C4393E2
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 20:33:28 -0700 (PDT)
+Received: by mail-yw1-x112f.google.com with SMTP id 00721157ae682-2e5e31c34bfso18936397b3.10
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 20:33:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=q1ZlIMdqwaHcVxl5vxdhmKHFJeu6p9U+TnfY5JmQ5dM=;
+        b=cCsLEiaIgCsxr9TWzXMTho+oGCR5boSOsvIae/bdzdTwg7lOuuOdjz3sFy2I6rxLQN
+         8gCPt4vkHPMA3zN5dXdcS14XF0dMbM0/MUleoQHqW7DH5ST/f9RLqI1ieI4tu7otfMXD
+         wlVW9+NT2AU/WoLZB9jxlgcmJ/BA1zJd+J104=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=q1ZlIMdqwaHcVxl5vxdhmKHFJeu6p9U+TnfY5JmQ5dM=;
+        b=BZLz0KNiXRwGOZE24iTLqvdCcLY3sBuTo1T97IVnOaI+DKVJm/y0MMOjDdh55mIJg6
+         eMBoi0PYXsNtXANg2+OsHj0/NAeppON/b4RWQyRR4Z1wKNdPi2cZUiPBFQGAs6vILKcs
+         8EtizelOC/aS+Z21cHGrNM/cyRkBF0P6vBv0MdibLi4ybiVsphOg+nHNTi8yQlqVnAts
+         mS1vWEPDvXD4d09rtdmXNsjAyDNt1jJ/L+ixT1ceAi1Fk/yrprqASuSKonSB33G5dx66
+         oD7usu5b4KJgU1W3jlfmw7KoidnKCG3qVlElGUXNQuM5dxbHAMUEFkEjgGLp+M6BGCxM
+         DWBg==
+X-Gm-Message-State: AOAM5329X0MOnUjWxq+kfgWLxCYGtuW/ilXoG+jc5UlSRdBLPPG6PyNs
+        PIlEe9p9u/9zXN9wRRrPSlPbusiNopfjKwKVKqAfYA==
+X-Google-Smtp-Source: ABdhPJwgwC705No/2HiCCuHkqrpend2/Epyo4yRvnIvyPJ3Ajg9/yTBw5Ox0LS4mT6R08xeM54qpyiyIa+UXx3wCyTM=
+X-Received: by 2002:a05:690c:398:b0:2e6:17c3:44d with SMTP id
+ bh24-20020a05690c039800b002e617c3044dmr8410985ywb.286.1648784007571; Thu, 31
+ Mar 2022 20:33:27 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- kwepemm600015.china.huawei.com (7.193.23.52)
-X-CFilter-Loop: Reflected
+References: <20220331091628.641915-1-wenst@chromium.org> <YkYMo3cU2lqeDBu1@eze-laptop>
+In-Reply-To: <YkYMo3cU2lqeDBu1@eze-laptop>
+From:   Chen-Yu Tsai <wenst@chromium.org>
+Date:   Fri, 1 Apr 2022 11:33:16 +0800
+Message-ID: <CAGXv+5HgK2Er5Ks8J-yj16kY-0q3vQyUJRJVcTQORQY4Rh=zzA@mail.gmail.com>
+Subject: Re: [PATCH v4] media: hantro: Implement support for encoder commands
+To:     Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
+Cc:     Philipp Zabel <p.zabel@pengutronix.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Nicolas Dufresne <nicolas.dufresne@collabora.com>,
+        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+        linux-media@vger.kernel.org, linux-rockchip@lists.infradead.org,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This reverts commit ce368536dd614452407dc31e2449eb84681a06af.
+On Fri, Apr 1, 2022 at 4:18 AM Ezequiel Garcia
+<ezequiel@vanguardiasur.com.ar> wrote:
+>
+> On Thu, Mar 31, 2022 at 05:16:28PM +0800, Chen-Yu Tsai wrote:
+> > The V4L2 stateful encoder uAPI specification requires that drivers
+> > support the ENCODER_CMD ioctl to allow draining of buffers. This
+> > however was not implemented, and causes issues for some userspace
+> > applications.
+> >
+> > Implement support for the ENCODER_CMD ioctl using v4l2-mem2mem helpers.
+> > This is entirely based on existing code found in the vicodec test
+> > driver.
+> >
+> > Fixes: 775fec69008d ("media: add Rockchip VPU JPEG encoder driver")
+> > Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
+>
+> Reviewed-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
+>
+> I believe Nicolas tested the patch before the splitting,
+> so this is probably Tested-by as well.
 
-Second `dd` of the following reproducer will be very very slow.
-filemap_sample_wb_err() always return 0 if old wb error have not been consumed.
-filemap_check_wb_err() will return the old error even if there is no new
-writeback error between filemap_sample_wb_err() and filemap_check_wb_err().
-Then nfs_need_check_write() always return true, nfs_wb_all() will be called
-every time in nfs_file_write().
+The code flow changed, so I believe a re-test is warranted.
 
-Reproducer:
-        nfs server            |       nfs client
- -----------------------------|---------------------------------------------
- # No space left on server    |
- fallocate -l 100G /svr/nospc |
-                              | mount -t nfs $nfs_server_ip:/ /mnt
-                              |
-                              | # Expected error: No space left on device
-                              | dd if=/dev/zero of=/mnt/file count=1 ibs=1M
-                              |
-                              | # Release space on mountpoint
-                              | rm /mnt/nospc
-                              |
-                              | # very very slow
-                              | dd if=/dev/zero of=/mnt/file count=1 ibs=1M
-
-generic_perform_write() detect wb error by calling filemap_check_errors():
-  generic_perform_write
-    nfs_write_end
-      nfs_wb_all
-        filemap_write_and_wait
-          filemap_write_and_wait_range
-            filemap_check_errors
-
-filemap_fdatawait_range() detect wb error by calling filemap_check_errors():
-  filemap_fdatawait_range
-    __filemap_fdatawait_range
-    filemap_check_errors
-
-generic_write_sync() will also detect wb error by calling nfs_file_fsync():
-  generic_write_sync
-    vfs_fsync_range
-      nfs_file_fsync
-        file_write_and_wait_range
-          file_check_and_advance_wb_err
-            errseq_check_and_advance
-
-When writeback error is detected in nfs_file_write(), we just goto label "out",
-will not goto nfs_need_check_write(). So we remove the useless and problematic
-checking.
-
-Signed-off-by: ChenXiaoSong <chenxiaosong2@huawei.com>
----
- fs/nfs/file.c | 12 +++---------
- 1 file changed, 3 insertions(+), 9 deletions(-)
-
-diff --git a/fs/nfs/file.c b/fs/nfs/file.c
-index 353f1f832519..49f1485a30bb 100644
---- a/fs/nfs/file.c
-+++ b/fs/nfs/file.c
-@@ -597,14 +597,12 @@ static const struct vm_operations_struct nfs_file_vm_ops = {
- 	.page_mkwrite = nfs_vm_page_mkwrite,
- };
- 
--static int nfs_need_check_write(struct file *filp, struct inode *inode,
--				int error)
-+static int nfs_need_check_write(struct file *filp, struct inode *inode)
- {
- 	struct nfs_open_context *ctx;
- 
- 	ctx = nfs_file_open_context(filp);
--	if (nfs_error_is_fatal_on_server(error) ||
--	    nfs_ctx_key_to_expire(ctx, inode))
-+	if (nfs_ctx_key_to_expire(ctx, inode))
- 		return 1;
- 	return 0;
- }
-@@ -615,8 +613,6 @@ ssize_t nfs_file_write(struct kiocb *iocb, struct iov_iter *from)
- 	struct inode *inode = file_inode(file);
- 	unsigned int mntflags = NFS_SERVER(inode)->flags;
- 	ssize_t result, written;
--	errseq_t since;
--	int error;
- 
- 	result = nfs_key_timeout_notify(file, inode);
- 	if (result)
-@@ -641,7 +637,6 @@ ssize_t nfs_file_write(struct kiocb *iocb, struct iov_iter *from)
- 
- 	nfs_clear_invalid_mapping(file->f_mapping);
- 
--	since = filemap_sample_wb_err(file->f_mapping);
- 	nfs_start_io_write(inode);
- 	result = generic_write_checks(iocb, from);
- 	if (result > 0) {
-@@ -675,8 +670,7 @@ ssize_t nfs_file_write(struct kiocb *iocb, struct iov_iter *from)
- 		goto out;
- 
- 	/* Return error values */
--	error = filemap_check_wb_err(file->f_mapping, since);
--	if (nfs_need_check_write(file, inode, error)) {
-+	if (nfs_need_check_write(file, inode)) {
- 		int err = nfs_wb_all(inode);
- 		if (err < 0)
- 			result = err;
--- 
-2.31.1
-
+ChenYu
