@@ -2,83 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB6F6C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 07:19:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF209C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 07:20:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343581AbiDAHVE (ORCPT
+        id S1343832AbiDAHVv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 03:21:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47080 "EHLO
+        Fri, 1 Apr 2022 03:21:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241741AbiDAHU7 (ORCPT
+        with ESMTP id S239717AbiDAHVu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 03:20:59 -0400
-Received: from mx1.cqplus1.com (unknown [113.204.237.245])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C6DBFB7C3
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 00:19:00 -0700 (PDT)
-X-MailGates: (flag:1,DYNAMIC,RELAY,NOHOST,LAN:PASS)(compute_score:DELIVE
-        R,40,3)
-Received: from 172.27.96.203
-        by mx1.cqplus1.com with MailGates ESMTP Server V5.0(1166:0:AUTH_RELAY)
-        (envelope-from <qinjian@cqplus1.com>); Fri, 01 Apr 2022 15:16:54 +0800 (CST)
-Received: from CQEXMAIL01.cqplus1.com (172.27.96.203) by
- CQEXMAIL01.cqplus1.com (172.27.96.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.18; Fri, 1 Apr 2022 15:17:53 +0800
-Received: from CQEXMAIL01.cqplus1.com ([::1]) by CQEXMAIL01.cqplus1.com
- ([::1]) with mapi id 15.01.2375.018; Fri, 1 Apr 2022 15:17:53 +0800
-From:   =?utf-8?B?cWluamlhblvopoPlgaVd?= <qinjian@cqplus1.com>
-To:     Arnd Bergmann <arnd@arndb.de>
-CC:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        "Stephen Boyd" <sboyd@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        "Russell King - ARM Linux" <linux@armlinux.org.uk>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        DTML <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>
-Subject: RE: [PATCH v12 7/9] irqchip: Add Sunplus SP7021 interrupt controller
- driver
-Thread-Topic: [PATCH v12 7/9] irqchip: Add Sunplus SP7021 interrupt controller
- driver
-Thread-Index: AQHYRNqOFHiqRDi4BESy0Jgu755hDKzYsFoAgAH1GCA=
-Date:   Fri, 1 Apr 2022 07:17:52 +0000
-Message-ID: <49a391f2636d4bb193b80c301ce0832d@cqplus1.com>
-References: <cover.1648714851.git.qinjian@cqplus1.com>
- <c75df921c121c047d48a34de29cd18cf9a631d01.1648714851.git.qinjian@cqplus1.com>
- <CAK8P3a16M3nv+TQWsC-0Pr5M2vcTttC2WWTzctMBaqdODMFX-A@mail.gmail.com>
-In-Reply-To: <CAK8P3a16M3nv+TQWsC-0Pr5M2vcTttC2WWTzctMBaqdODMFX-A@mail.gmail.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.28.110.18]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
+        Fri, 1 Apr 2022 03:21:50 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DC41E0D8;
+        Fri,  1 Apr 2022 00:20:00 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id w25so1863164edi.11;
+        Fri, 01 Apr 2022 00:20:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=ubG9Vku/N0fiy/2SLaUSFTnlDKcWy9tp5aypQ1g0yR0=;
+        b=qeR+po4xuMTE7NT42VMHjZFG4pDnrmbTx3qLmihDu198PJkosJh+2LD7Gm2agZ/6/n
+         Rh3REosbufMhaAtMz8tJ7FJD9RXIA6FjTXHFkvPf/Z6gNdOZGDbLGLUm6VBhWieFruzF
+         0QICo8ryhdAlaxL4mVBgaFRru05eQXUNP56zdgCWX+jyFvcSR0SqPgu3hwF3OEsvOrfe
+         w8DIfnGKoCj96ldnimavctFqxewc0rMfhOrGP6p7JHQD2kfKL3cyTRZF7nOcGy+O6+fX
+         P96Ni3tAi0wo+RBJkZZ5UDX0J9fYCuJTnFTeUWhOulbpDpF/qiq+qgTNo11gwWz/ZnMS
+         4vXg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=ubG9Vku/N0fiy/2SLaUSFTnlDKcWy9tp5aypQ1g0yR0=;
+        b=EXT9/EFYTXqQCXej9j49Zbx4EEHgRpDaLoWqaPeK3yt2KV1hs9RjNJ0hZtalsz4hYC
+         Wt3he//cwI7Kp+S1ejCjZAkZaFzFbquQCpp5iwp+ejRJp1YlFGuikzrBNFnZg3ItXTAS
+         hGHPr9MOt6NQ3qljauS1pNBqr9PV1BS6KMWO3ELYUYcBnwEyKvYIT79W4Kt9Ea6OHJUx
+         MXcCnOsR1031BfEqHqasdaUqQRnyfmxclSjiVhxjjHeOgHKOKheTZVJxMdggu6x8+oQJ
+         7IVRW8N3xi0nbJKLpqezab12XkyfP6irZxpLHpj/75GZSEF3/sX/RXMb6IgatpJcHc/7
+         HL8Q==
+X-Gm-Message-State: AOAM531qFMZkvBRIescTHStT2fEYtDhE7TcTgUjBrTkiiS+BkQ3PZt5I
+        AOo/uxHJVPxy19AwghKPD3XEwUNkDfD2zKMO
+X-Google-Smtp-Source: ABdhPJwtm0B3S+66CH914jkdPstqClG3Zij5v/glvefk14ehzJXJAgRaWtf3O5lM4sqoI8xhAsEyuA==
+X-Received: by 2002:a05:6402:42d4:b0:412:c26b:789 with SMTP id i20-20020a05640242d400b00412c26b0789mr19840232edc.232.1648797598835;
+        Fri, 01 Apr 2022 00:19:58 -0700 (PDT)
+Received: from smtpclient.apple (i130160.upc-i.chello.nl. [62.195.130.160])
+        by smtp.gmail.com with ESMTPSA id s14-20020aa7cb0e000000b00410bf015567sm782154edt.92.2022.04.01.00.19.57
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 01 Apr 2022 00:19:58 -0700 (PDT)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.80.82.1.1\))
+Subject: Re: [PATCH] fs/proc/kcore.c: remove check of list iterator against
+ head past the loop body
+From:   Jakob Koschel <jakobkoschel@gmail.com>
+In-Reply-To: <20220331164843.b531fbf00d6e7afd6cdfe113@linux-foundation.org>
+Date:   Fri, 1 Apr 2022 09:19:57 +0200
+Cc:     Mike Rapoport <rppt@kernel.org>,
+        David Hildenbrand <david@redhat.com>,
+        Oscar Salvador <osalvador@suse.de>,
+        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <A23914B0-BFD7-48D6-ADCF-42062E1D9887@gmail.com>
+References: <20220331223700.902556-1-jakobkoschel@gmail.com>
+ <20220331164843.b531fbf00d6e7afd6cdfe113@linux-foundation.org>
+To:     Andrew Morton <akpm@linux-foundation.org>
+X-Mailer: Apple Mail (2.3696.80.82.1.1)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-PiANCj4gT24gVGh1LCBNYXIgMzEsIDIwMjIgYXQgMTA6MjkgQU0gUWluIEppYW4gPHFpbmppYW5A
-Y3FwbHVzMS5jb20+IHdyb3RlOg0KPiANCj4gPiArI2lmZGVmIENPTkZJR19TTVANCj4gPiArc3Rh
-dGljIGludCBzcF9pbnRjX3NldF9hZmZpbml0eShzdHJ1Y3QgaXJxX2RhdGEgKmQsIGNvbnN0IHN0
-cnVjdCBjcHVtYXNrICptYXNrLCBib29sIGZvcmNlKQ0KPiA+ICt7DQo+ID4gKyAgICAgICByZXR1
-cm4gLUVJTlZBTDsNCj4gPiArfQ0KPiA+ICsjZW5kaWYNCj4gPiArDQo+ID4gK3N0YXRpYyBzdHJ1
-Y3QgaXJxX2NoaXAgc3BfaW50Y19jaGlwID0gew0KPiA+ICsgICAgICAgLm5hbWUgPSAic3BfaW50
-YyIsDQo+ID4gKyAgICAgICAuaXJxX2FjayA9IHNwX2ludGNfYWNrX2lycSwNCj4gPiArICAgICAg
-IC5pcnFfbWFzayA9IHNwX2ludGNfbWFza19pcnEsDQo+ID4gKyAgICAgICAuaXJxX3VubWFzayA9
-IHNwX2ludGNfdW5tYXNrX2lycSwNCj4gPiArICAgICAgIC5pcnFfc2V0X3R5cGUgPSBzcF9pbnRj
-X3NldF90eXBlLA0KPiA+ICsjaWZkZWYgQ09ORklHX1NNUA0KPiA+ICsgICAgICAgLmlycV9zZXRf
-YWZmaW5pdHkgPSBzcF9pbnRjX3NldF9hZmZpbml0eSwNCj4gPiArI2VuZGlmDQo+ID4gK307DQo+
-IA0KPiBJIGRvbid0IHRoaW5rIHlvdSBuZWVkIHRvIGRlZmluZSBhbiBpcnFfc2V0X2FmZmluaXR5
-KCkgY2FsbGJhY2sgYXQgYWxsIGlmIHlvdQ0KPiBqdXN0IHJldHVybiAtRUlOVkFMLCBhbGwgdGhl
-IGNhbGxlcnMgc2hvdWxkIGhhdmUgYSBjaGVjayBhbHJlYWR5LiBFdmVuDQo+IGlmIHlvdSBkbyBu
-ZWVkIHRoZSBmdW5jdGlvbiwgSSB0aGluayB5b3UgY2FuIHJlbW92ZSB0aGUgI2lmZGVmLCBhcyBs
-b25nDQo+IGFzIHRoZSBmdW5jdGlvbiBpdHNlbGYgY2FuIGJlIGJ1aWx0IHRoYXQgd2F5Lg0KPiAN
-Cj4gICAgICAgQXJuZA0KDQpUaGFua3MgZm9yIHlvdXIgY29tbWVudHMsIEknbGwgcmVtb3ZlIHRo
-aXMgZW1wdHkgZnVuY3Rpb24uDQo=
+
+> On 1. Apr 2022, at 01:48, Andrew Morton <akpm@linux-foundation.org> =
+wrote:
+>=20
+> On Fri,  1 Apr 2022 00:37:00 +0200 Jakob Koschel =
+<jakobkoschel@gmail.com> wrote:
+>=20
+>> When list_for_each_entry() completes the iteration over the whole =
+list
+>> without breaking the loop, the iterator value will be a bogus pointer
+>> computed based on the head element.
+>>=20
+>> While it is safe to use the pointer to determine if it was computed
+>> based on the head element, either with list_entry_is_head() or
+>> &pos->member =3D=3D head, using the iterator variable after the loop =
+should
+>> be avoided.
+>>=20
+>> In preparation to limit the scope of a list iterator to the list
+>> traversal loop, use a dedicated pointer to point to the found element =
+[1].
+>>=20
+>> ...
+>>=20
+>=20
+> Speaking of limiting scope...
+
+Fair point :-)
+
+I see you have applied this already to the -mm tree. Shall I still move =
+the iterator?
+The hope is to remove the 'iter' variable altogether when there are no =
+uses after
+the loop anymore.
+
+>=20
+> --- =
+a/fs/proc/kcore.c~fs-proc-kcorec-remove-check-of-list-iterator-against-hea=
+d-past-the-loop-body-fix
+> +++ a/fs/proc/kcore.c
+> @@ -316,7 +316,6 @@ read_kcore(struct file *file, char __use
+> 	size_t page_offline_frozen =3D 1;
+> 	size_t phdrs_len, notes_len;
+> 	struct kcore_list *m;
+> -	struct kcore_list *iter;
+> 	size_t tsz;
+> 	int nphdr;
+> 	unsigned long start;
+> @@ -480,6 +479,8 @@ read_kcore(struct file *file, char __use
+> 		 * the previous entry, search for a matching entry.
+> 		 */
+> 		if (!m || start < m->addr || start >=3D m->addr + =
+m->size) {
+> +			struct kcore_list *iter;
+> +
+> 			m =3D NULL;
+> 			list_for_each_entry(iter, &kclist_head, list) {
+> 				if (start >=3D iter->addr &&
+> _
+>=20
+
+	Jakob=
