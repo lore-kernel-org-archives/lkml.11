@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE542C35276
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7058AC43219
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:13:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354884AbiDAPMj (ORCPT
+        id S1354583AbiDAPMK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:12:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60350 "EHLO
+        Fri, 1 Apr 2022 11:12:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352322AbiDAOuO (ORCPT
+        with ESMTP id S1352108AbiDAOtz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:50:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 734D0BDB;
-        Fri,  1 Apr 2022 07:41:29 -0700 (PDT)
+        Fri, 1 Apr 2022 10:49:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6A5A292DA2;
+        Fri,  1 Apr 2022 07:41:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5D36DB8250F;
-        Fri,  1 Apr 2022 14:40:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 100A1C36AE2;
-        Fri,  1 Apr 2022 14:40:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 720C460A64;
+        Fri,  1 Apr 2022 14:40:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 050B6C2BBE4;
+        Fri,  1 Apr 2022 14:40:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824021;
-        bh=yys3FuZAsKjuw9TjneIYawpQfCvoBSvxwde0BwzdVGE=;
+        s=k20201202; t=1648824010;
+        bh=ZqjFng1BBWMjrqvsY7fCtSykKyUDEeNJsAGxQ8POOOE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XXKkOG2fYpKntxhKdIlkDY+CVdHCFE+eQbKm8M+gg+oSTHYK5rk8A497Q5OZfcwyi
-         k/7PnoiFac/WemLoKABoRT7Qe5kK0Us9wPNXsqv2z7CKmfkX6VWFSDAJMQ0qeQI7at
-         JtWhiVqkyfv3VVsYhBEoBTV4cxC+5xb4DuhsXX8k0nFDbnqHCtEum9hWVLOvjuInS+
-         6jGwpWEnmyMXLkqKgmqsN0rxA5VpgKjiWKRlD+OkTUpT0cj3pbqPUavtUUUDU5NqXd
-         YY5tdZvzE0MpjUYOnK5Hk/0/Pxh+fRviBcrEEphjyIVONxZcynO7gnzYi67MPkLdrj
-         b55YK2R0Kha9Q==
+        b=CrQz9p7cD88HZZ1YUQrTayFeuBcZVzN+dhmwnV9oEsfNX0j6kPeU4LRC4UhV8Osjl
+         yvn9+/CwDsOGv+aUkdVQTfMrxrl/fY6skf9JhRy/pftShMMpfTRUAWqh0CerfEBQ9o
+         ccbQEouEkNuijlIose5jTlFn+BRCFrcj1p2IkumqckrQBkBdMn0kmGCeOTHNcxD1id
+         Aezu7/Fmh4OshRcz+jUuAbPmXAvFr0/U+uX9JR7xqnfQR6eksuipPQUkpOe6OcJ3iw
+         HoTqfpczPeJIchzuxJukVmIoCNtuSC6s9BqCYYhXSPeeb82qqHMsziek3hjKg+Y5yt
+         PsNktSL35p2dw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        John Garry <john.garry@huawei.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, jinpu.wang@cloud.ionos.com,
-        jejb@linux.ibm.com, linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 55/98] scsi: pm8001: Fix task leak in pm8001_send_abort_all()
-Date:   Fri,  1 Apr 2022 10:36:59 -0400
-Message-Id: <20220401143742.1952163-55-sashal@kernel.org>
+Cc:     Mike Snitzer <snitzer@redhat.com>, Zhang Yi <yi.zhang@huawei.com>,
+        Sasha Levin <sashal@kernel.org>, agk@redhat.com,
+        snitzer@kernel.org, dm-devel@redhat.com
+Subject: [PATCH AUTOSEL 5.15 50/98] dm: requeue IO if mapping table not yet available
+Date:   Fri,  1 Apr 2022 10:36:54 -0400
+Message-Id: <20220401143742.1952163-50-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143742.1952163-1-sashal@kernel.org>
 References: <20220401143742.1952163-1-sashal@kernel.org>
@@ -54,58 +52,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+From: Mike Snitzer <snitzer@redhat.com>
 
-[ Upstream commit f90a74892f3acf0cdec5844e90fc8686ca13e7d7 ]
+[ Upstream commit fa247089de9936a46e290d4724cb5f0b845600f5 ]
 
-In pm8001_send_abort_all(), make sure to free the allocated sas task
-if pm8001_tag_alloc() or pm8001_mpi_build_cmd() fail.
+Update both bio-based and request-based DM to requeue IO if the
+mapping table not available.
 
-Link: https://lore.kernel.org/r/20220220031810.738362-21-damien.lemoal@opensource.wdc.com
-Reviewed-by: John Garry <john.garry@huawei.com>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+This race of IO being submitted before the DM device ready is so
+narrow, yet possible for initial table load given that the DM device's
+request_queue is created prior, that it best to requeue IO to handle
+this unlikely case.
+
+Reported-by: Zhang Yi <yi.zhang@huawei.com>
+Signed-off-by: Mike Snitzer <snitzer@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/pm8001/pm8001_hwi.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/md/dm-rq.c |  7 ++++++-
+ drivers/md/dm.c    | 11 +++--------
+ 2 files changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/scsi/pm8001/pm8001_hwi.c b/drivers/scsi/pm8001/pm8001_hwi.c
-index 03c6fc85bd06..7e8cb377cb65 100644
---- a/drivers/scsi/pm8001/pm8001_hwi.c
-+++ b/drivers/scsi/pm8001/pm8001_hwi.c
-@@ -1767,7 +1767,6 @@ static void pm8001_send_abort_all(struct pm8001_hba_info *pm8001_ha,
+diff --git a/drivers/md/dm-rq.c b/drivers/md/dm-rq.c
+index a896dea9750e..53a9b16c7b2e 100644
+--- a/drivers/md/dm-rq.c
++++ b/drivers/md/dm-rq.c
+@@ -500,8 +500,13 @@ static blk_status_t dm_mq_queue_rq(struct blk_mq_hw_ctx *hctx,
+ 
+ 	if (unlikely(!ti)) {
+ 		int srcu_idx;
+-		struct dm_table *map = dm_get_live_table(md, &srcu_idx);
++		struct dm_table *map;
+ 
++		map = dm_get_live_table(md, &srcu_idx);
++		if (unlikely(!map)) {
++			dm_put_live_table(md, srcu_idx);
++			return BLK_STS_RESOURCE;
++		}
+ 		ti = dm_table_find_target(map, 0);
+ 		dm_put_live_table(md, srcu_idx);
  	}
+diff --git a/drivers/md/dm.c b/drivers/md/dm.c
+index 5f33700d1247..73046fd21e47 100644
+--- a/drivers/md/dm.c
++++ b/drivers/md/dm.c
+@@ -1570,15 +1570,10 @@ static blk_qc_t dm_submit_bio(struct bio *bio)
+ 	struct dm_table *map;
  
- 	task = sas_alloc_slow_task(GFP_ATOMIC);
--
- 	if (!task) {
- 		pm8001_dbg(pm8001_ha, FAIL, "cannot allocate task\n");
- 		return;
-@@ -1776,8 +1775,10 @@ static void pm8001_send_abort_all(struct pm8001_hba_info *pm8001_ha,
- 	task->task_done = pm8001_task_done;
+ 	map = dm_get_live_table(md, &srcu_idx);
+-	if (unlikely(!map)) {
+-		DMERR_LIMIT("%s: mapping table unavailable, erroring io",
+-			    dm_device_name(md));
+-		bio_io_error(bio);
+-		goto out;
+-	}
  
- 	res = pm8001_tag_alloc(pm8001_ha, &ccb_tag);
--	if (res)
-+	if (res) {
-+		sas_free_task(task);
- 		return;
-+	}
- 
- 	ccb = &pm8001_ha->ccb_info[ccb_tag];
- 	ccb->device = pm8001_ha_dev;
-@@ -1793,8 +1794,10 @@ static void pm8001_send_abort_all(struct pm8001_hba_info *pm8001_ha,
- 
- 	ret = pm8001_mpi_build_cmd(pm8001_ha, circularQ, opc, &task_abort,
- 			sizeof(task_abort), 0);
--	if (ret)
-+	if (ret) {
-+		sas_free_task(task);
- 		pm8001_tag_free(pm8001_ha, ccb_tag);
-+	}
- 
- }
- 
+-	/* If suspended, queue this IO for later */
+-	if (unlikely(test_bit(DMF_BLOCK_IO_FOR_SUSPEND, &md->flags))) {
++	/* If suspended, or map not yet available, queue this IO for later */
++	if (unlikely(test_bit(DMF_BLOCK_IO_FOR_SUSPEND, &md->flags)) ||
++	    unlikely(!map)) {
+ 		if (bio->bi_opf & REQ_NOWAIT)
+ 			bio_wouldblock_error(bio);
+ 		else if (bio->bi_opf & REQ_RAHEAD)
 -- 
 2.34.1
 
