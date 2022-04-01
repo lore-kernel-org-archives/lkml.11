@@ -2,51 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FD06C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6D78C4167E
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:26:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353509AbiDAPXf (ORCPT
+        id S1353693AbiDAPXo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:23:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57480 "EHLO
+        Fri, 1 Apr 2022 11:23:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352565AbiDAOu6 (ORCPT
+        with ESMTP id S1349072AbiDAOxN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:50:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFC292B3D66;
-        Fri,  1 Apr 2022 07:42:00 -0700 (PDT)
+        Fri, 1 Apr 2022 10:53:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE1982B5196;
+        Fri,  1 Apr 2022 07:42:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 21656B82519;
-        Fri,  1 Apr 2022 14:41:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D790C34111;
-        Fri,  1 Apr 2022 14:41:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4BA56B82370;
+        Fri,  1 Apr 2022 14:42:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 067A5C340EE;
+        Fri,  1 Apr 2022 14:42:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824096;
-        bh=79s09JmfnRTspuMBLjDF/9qtIeFT50RzlTzUkGad3r4=;
+        s=k20201202; t=1648824156;
+        bh=b51VNEiKO+Fx8+RwLfJTXx0nWoth9Ssof+K5dUkMstw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RrrJEc3+n5gh3IGsMhRwes0/KyLGtVJmB/2sJACAUZ9/5F3w7DV6ANJcAbqo8cvAd
-         NI7PKuC61/6BMsVA6eWn97fZsRO/5PG1mvFAoB/GScR13+nbKz5DCOMdbaU7pWPrCA
-         m2PziGXnoM83zm/KwFVMejPAdzg51aaiZ8O93DwgfI36r8nxrNiXjhskOuR3NI1xWR
-         YnabOnFl4BGDalo5Vh3Eyqztx2Pig6qhELom5gt5tCC7upi/jZVTAGFzRydpMjKmqH
-         12TQXZiiDxuf/8LkX0ULnc0GGU6EbFEV7XrCX5fy8dxkzICUYQ9AcDnQLzuOqpQpfi
-         /NB5Ysr9ozBSg==
+        b=BOm+zdMzDM+YK7VAoMqtg2PjDHuTdFn6l1IcROTjlPLosUjL7B6KLmwAeanQ3MCT8
+         /+3HiGTz0q9yRo87tyK1OkBXieUeuCPDorj4d/fUoIK3BXCRYHMzTwuhX13WRfsAAV
+         HqiWhXTakVekebns+ULBp0pqzaughy2S8eA7PlHdNaUsjWp8VZvh1LywppfhiN1c47
+         rHPCw/hWZff6Iem1JpQ5/9c6s4kPk/UTb5J4WUiI9GKEJkCbnLhMO2EZoEkbCbtsVp
+         wS0mfpzdNT/pyzsRFaMmjX9UH/jo8FBXG+sQ/NU1qKsKA8Jpb8MsTnmXIHHyxbQO22
+         1gMDhL2jJVifw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Gal Pressman <gal@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
-        Maxim Mikityanskiy <maximmi@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 84/98] net/mlx5e: Remove overzealous validations in netlink EEPROM query
-Date:   Fri,  1 Apr 2022 10:37:28 -0400
-Message-Id: <20220401143742.1952163-84-sashal@kernel.org>
+Cc:     Maxim Kiselev <bigunclemax@gmail.com>,
+        Maxim Kochetkov <fido_max@inbox.ru>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
+        krzk+dt@kernel.org, devicetree@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH AUTOSEL 5.10 08/65] powerpc: dts: t104xrdb: fix phy type for FMAN 4/5
+Date:   Fri,  1 Apr 2022 10:41:09 -0400
+Message-Id: <20220401144206.1953700-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220401143742.1952163-1-sashal@kernel.org>
-References: <20220401143742.1952163-1-sashal@kernel.org>
+In-Reply-To: <20220401144206.1953700-1-sashal@kernel.org>
+References: <20220401144206.1953700-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -55,66 +56,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gal Pressman <gal@nvidia.com>
+From: Maxim Kiselev <bigunclemax@gmail.com>
 
-[ Upstream commit 970adfb76095fa719778d70a6b86030d2feb88dd ]
+[ Upstream commit 17846485dff91acce1ad47b508b633dffc32e838 ]
 
-Unlike the legacy EEPROM callbacks, when using the netlink EEPROM query
-(get_module_eeprom_by_page) the driver should not try to validate the
-query parameters, but just perform the read requested by the userspace.
+T1040RDB has two RTL8211E-VB phys which requires setting
+of internal delays for correct work.
 
-Recent discussion in the mailing list:
-https://lore.kernel.org/netdev/20220120093051.70845141@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net/
+Changing the phy-connection-type property to `rgmii-id`
+will fix this issue.
 
-Signed-off-by: Gal Pressman <gal@nvidia.com>
-Reviewed-by: Ido Schimmel <idosch@nvidia.com>
-Reviewed-by: Maxim Mikityanskiy <maximmi@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Signed-off-by: Maxim Kiselev <bigunclemax@gmail.com>
+Reviewed-by: Maxim Kochetkov <fido_max@inbox.ru>
+Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20211230151123.1258321-1-bigunclemax@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/ethernet/mellanox/mlx5/core/port.c    | 23 -------------------
- 1 file changed, 23 deletions(-)
+ arch/powerpc/boot/dts/fsl/t104xrdb.dtsi | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/port.c b/drivers/net/ethernet/mellanox/mlx5/core/port.c
-index 7b16a1188aab..fd79860de723 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/port.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/port.c
-@@ -433,35 +433,12 @@ int mlx5_query_module_eeprom_by_page(struct mlx5_core_dev *dev,
- 				     struct mlx5_module_eeprom_query_params *params,
- 				     u8 *data)
- {
--	u8 module_id;
- 	int err;
+diff --git a/arch/powerpc/boot/dts/fsl/t104xrdb.dtsi b/arch/powerpc/boot/dts/fsl/t104xrdb.dtsi
+index 099a598c74c0..bfe1ed5be337 100644
+--- a/arch/powerpc/boot/dts/fsl/t104xrdb.dtsi
++++ b/arch/powerpc/boot/dts/fsl/t104xrdb.dtsi
+@@ -139,12 +139,12 @@ pca9546@77 {
+ 		fman@400000 {
+ 			ethernet@e6000 {
+ 				phy-handle = <&phy_rgmii_0>;
+-				phy-connection-type = "rgmii";
++				phy-connection-type = "rgmii-id";
+ 			};
  
- 	err = mlx5_query_module_num(dev, &params->module_number);
- 	if (err)
- 		return err;
+ 			ethernet@e8000 {
+ 				phy-handle = <&phy_rgmii_1>;
+-				phy-connection-type = "rgmii";
++				phy-connection-type = "rgmii-id";
+ 			};
  
--	err = mlx5_query_module_id(dev, params->module_number, &module_id);
--	if (err)
--		return err;
--
--	switch (module_id) {
--	case MLX5_MODULE_ID_SFP:
--		if (params->page > 0)
--			return -EINVAL;
--		break;
--	case MLX5_MODULE_ID_QSFP:
--	case MLX5_MODULE_ID_QSFP28:
--	case MLX5_MODULE_ID_QSFP_PLUS:
--		if (params->page > 3)
--			return -EINVAL;
--		break;
--	case MLX5_MODULE_ID_DSFP:
--		break;
--	default:
--		mlx5_core_err(dev, "Module ID not recognized: 0x%x\n", module_id);
--		return -EINVAL;
--	}
--
- 	if (params->i2c_address != MLX5_I2C_ADDR_HIGH &&
- 	    params->i2c_address != MLX5_I2C_ADDR_LOW) {
- 		mlx5_core_err(dev, "I2C address not recognized: 0x%x\n", params->i2c_address);
+ 			mdio0: mdio@fc000 {
 -- 
 2.34.1
 
