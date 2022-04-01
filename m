@@ -2,191 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D34BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 16:50:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A1A1C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 16:51:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349897AbiDAQwo (ORCPT
+        id S1349240AbiDAQxW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 12:52:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56584 "EHLO
+        Fri, 1 Apr 2022 12:53:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350068AbiDAQwd (ORCPT
+        with ESMTP id S1350049AbiDAQwq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 12:52:33 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D535FBB092
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 09:41:50 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id mr5-20020a17090b238500b001c67366ae93so5770702pjb.4
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 09:41:50 -0700 (PDT)
+        Fri, 1 Apr 2022 12:52:46 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A62712BFB1
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 09:42:31 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id h1so3630483edj.1
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 09:42:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rivosinc-com.20210112.gappssmtp.com; s=20210112;
-        h=date:subject:cc:from:to:message-id;
-        bh=7f6j0z1BP2YZI8+G8t2I0PO2IUnoEVp389XAIMLoiBI=;
-        b=B5MLssde5G3aFHKLWrw2bfzfhMbch92H4uyalWdGGwDvxnn6VjCCTrYcJz8K9TljT9
-         9uqV4/v7fPjUUP9dVZXbJtj3JJIsGQO0+819dndJ9iV7yC9M7s32U9e6i++crdEJfbHT
-         e3Gaeet+Ezf5YVxpgpWtvqT0N/U5AqOcVHpxFpx5UR4IWe7061cI0WExmozTbV8FkT9F
-         PC6IfbS8wLaxp7fgLk/EeZVvVMEUJqswxpQEkY6d4oz2nIDDijdB0Aqulgdl+tnUOaPr
-         ihSLtsdeVGolXwA+l2EBKScB72d2U+Vv8T01fe8gAbFUd+Qp9xK75Ub+zCPpkoWUxeOs
-         L9jA==
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=PTqDBZtRO8QnWfL23gP1DRPpXrltO+NA5FczV05jkD4=;
+        b=Rj8zofv7tpaZZsXfSXIPeMTTZecFcaCZtKaXdRKsKSpG1YkDdZe+uGGKP8s3aMdCR2
+         8NXFd3LIiuNIzkQy+kI+QQcbu1s/9Hzw9B2WuysWFOCNiiwPlTBg5Tb5BZuQKxakX8eo
+         jseGFMmGBHZgoK+AXE5Mboi4dv44hMm1UxGAQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:subject:cc:from:to:message-id;
-        bh=7f6j0z1BP2YZI8+G8t2I0PO2IUnoEVp389XAIMLoiBI=;
-        b=JX3UQOBqsG/qwZG0xoMd++JogNJjLOWPUMSv2/s9q86WE5zTR9/O/g/qZLp6ltjmHH
-         bSlCLq5zBkWr7HvsyeWdLqirlHjLDn0pflU3PA1TlNivXxSLZ9OQuTqvC81z6EJPs4sv
-         fr4DBL7J4WntJRp6SBtIxXhtO4Mx1T8pXZqx83RpjJcPTfrrQs4eL6+pHMh9RMOXjS2d
-         7wgL+vlAUbEjGeH7MsLYh9R7HHQTGpZQ0R+WCli9byInWp/PUaNnfQkh1yTXGDXLtQ6v
-         Xv0o6JfIyCHBnvXL6BpaoXJCUcSt3jV/gKaCm0Rmfj0TizXpwAEBomHsba97HI0gY1ap
-         xoPw==
-X-Gm-Message-State: AOAM532QYKh7KzUR8cy2vOM6sKzhcIZD3Yt9npspZVp5LVJoaTk4K5DR
-        6JANg9hM0OVhgBA3r0NUdqjmvlSICw/YHg==
-X-Google-Smtp-Source: ABdhPJxudcPgn55zLsGqr1hRo6Bevhqgl+MiYPI62e8CER1amNlGuSkHdMOGj+0wuEtAiqFtl8MIOQ==
-X-Received: by 2002:a17:90a:205:b0:1c6:5b78:5c5 with SMTP id c5-20020a17090a020500b001c65b7805c5mr12729560pjc.54.1648831310254;
-        Fri, 01 Apr 2022 09:41:50 -0700 (PDT)
-Received: from localhost (76-210-143-223.lightspeed.sntcca.sbcglobal.net. [76.210.143.223])
-        by smtp.gmail.com with ESMTPSA id j16-20020a63e750000000b00373598b8cbfsm2862869pgk.74.2022.04.01.09.41.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Apr 2022 09:41:50 -0700 (PDT)
-Date:   Fri, 01 Apr 2022 09:41:50 -0700 (PDT)
-X-Google-Original-Date: Fri, 01 Apr 2022 09:41:27 PDT (-0700)
-Subject: [GIT PULL] RISC-V Patches for the 5.18 Merge Window, Part 2
-CC:         linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
-From:   Palmer Dabbelt <palmer@rivosinc.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Message-ID: <mhng-e0c01ab7-020f-4264-91da-0852f7e89534@palmer-mbp2014>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=PTqDBZtRO8QnWfL23gP1DRPpXrltO+NA5FczV05jkD4=;
+        b=VsswWG8DcX8OUX2f0DYBL0gB0vA9JxC7qAvpGLZBB1K8fMaTw83FQT/QoIDncnwSbo
+         179Hx7hbLzQtaN9cA62TIXN6DwOOMNgjnwqC05+YvedUFIVmmftEuieAvyZGxZ+T8/Kq
+         WrRreXuw7XP4v8zBgASBhTFrODcXl3jhWgWOP14ez725GG4hO8GVh4Qg6lXJ8tn7gN36
+         V8/GUFSMD6XIub2PQ9y9osNc15dJm9IWIag6B3qgs/zVEGG92G6Ke767Fa9E9FxEcDFt
+         7uw50aJTydoMB5FgrvsEIbBvijgjDqkI1xrOLIKyw+G/drHgfIjdF2m1xEXwY/hIV55v
+         bxsA==
+X-Gm-Message-State: AOAM53306vdCJBSu2XFD/ndEkXuqmYWF5J6qR7ZhrRdKWzExYwRNIHTr
+        sPsEhj9k19sWcvrdwCJKreHjVwQj8EPBCDTMqZI=
+X-Google-Smtp-Source: ABdhPJz26q5OAFl/Fl4L46/DLwM/42OsX2z5hdmoa1ny/tTkGWJDxgwVcQ663+LzzqDkEsDwerVzeQ==
+X-Received: by 2002:aa7:c64c:0:b0:418:ecf7:afaa with SMTP id z12-20020aa7c64c000000b00418ecf7afaamr22188154edr.38.1648831349833;
+        Fri, 01 Apr 2022 09:42:29 -0700 (PDT)
+Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com. [209.85.221.41])
+        by smtp.gmail.com with ESMTPSA id jg15-20020a170907970f00b006e0466dcc42sm1171856ejc.134.2022.04.01.09.42.29
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 01 Apr 2022 09:42:29 -0700 (PDT)
+Received: by mail-wr1-f41.google.com with SMTP id u16so5076349wru.4
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 09:42:29 -0700 (PDT)
+X-Received: by 2002:a05:651c:1213:b0:247:e2d9:cdda with SMTP id
+ i19-20020a05651c121300b00247e2d9cddamr14234891lja.443.1648830941043; Fri, 01
+ Apr 2022 09:35:41 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220401094214.GA8368@xsang-OptiPlex-9020>
+In-Reply-To: <20220401094214.GA8368@xsang-OptiPlex-9020>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Fri, 1 Apr 2022 09:35:24 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wg+mJrTvun6qkdEnkZk9FSyj6vNYU2j7QY-iPn0g_y1nw@mail.gmail.com>
+Message-ID: <CAHk-=wg+mJrTvun6qkdEnkZk9FSyj6vNYU2j7QY-iPn0g_y1nw@mail.gmail.com>
+Subject: Re: [NUMA Balancing] e39bb6be9f: will-it-scale.per_thread_ops 64.4% improvement
+To:     kernel test robot <oliver.sang@intel.com>
+Cc:     Yang Shi <shy828301@gmail.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Oscar Salvador <osalvador@suse.de>,
+        Michal Hocko <mhocko@suse.com>,
+        Rik van Riel <riel@surriel.com>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Zi Yan <ziy@nvidia.com>, Wei Xu <weixugc@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        zhongjiang-ali <zhongjiang-ali@linux.alibaba.com>,
+        Feng Tang <feng.tang@intel.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        LKML <linux-kernel@vger.kernel.org>, lkp@lists.01.org,
+        kernel test robot <lkp@intel.com>,
+        "Huang, Ying" <ying.huang@intel.com>,
+        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
+        fengwei.yin@intel.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-merged tag 'riscv-for-linus-5.18-mw0'
-The following changes since commit aa5b537b0ecc16992577b013f11112d54c7ce869:
+On Fri, Apr 1, 2022 at 2:42 AM kernel test robot <oliver.sang@intel.com> wrote:
+>
+> FYI, we noticed a 64.4% improvement of will-it-scale.per_thread_ops due to commit:
+> e39bb6be9f2b ("NUMA Balancing: add page promotion counter")
 
-  Merge tag 'riscv-for-linus-5.18-mw0' of git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux (2022-03-25 10:11:38 -0700)
+That looks odd and unlikely.
 
-are available in the Git repository at:
+That commit only modifies some page counting statistics. Sure, it
+could be another cache layout thing, and maybe it's due to the subtle
+change in how NUMA_PAGE_MIGRATE gets counted, but it still looks a bit
+odd.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git tags/riscv-for-linus-5.18-mw1
-
-for you to fetch changes up to 1464d00b27b2e29a5556f6a4099cf083886e883f:
-
-  RISC-V: K210 defconfigs: Drop redundant MEMBARRIER=n (2022-03-31 17:19:27 -0700)
-
-----------------------------------------------------------------
-RISC-V Patches for the 5.18 Merge Window, Part 2
-
-This has a handful of new features
-
-* Support for CURRENT_STACK_POINTER, which enables some extra stack
-  debugging for HARDENED_USERCOPY.
-* Support for the new SBI CPU idle extension, via cpuidle and suspend
-  drivers.
-* Profiling has been enabled in the defconfigs.
-
-but is mostly fixes and cleanups.
-
-----------------------------------------------------------------
-There are no merge conflicts.  I'm getting on allyesconfig warning in
-drivers/misc/habanalabs, but that appears to just be a 32-bit problem (it's
-happening on 32-bit x86 as well).  I've sent a patch for that, but I doubt it's
-a RISC-V issue so I'm sending this at the same time.
-
-With that patch I get clean build that boot after my test merge.
-
-----------------------------------------------------------------
-Anup Patel (9):
-      RISC-V: Enable CPU_IDLE drivers
-      RISC-V: Rename relocate() and make it global
-      RISC-V: Add arch functions for non-retentive suspend entry/exit
-      RISC-V: Add SBI HSM suspend related defines
-      cpuidle: Factor-out power domain related code from PSCI domain driver
-      cpuidle: Add RISC-V SBI CPU idle driver
-      dt-bindings: Add common bindings for ARM and RISC-V idle states
-      RISC-V: Enable RISC-V SBI CPU Idle driver for QEMU virt machine
-      RISC-V: Enable profiling by default
-
-Atish Patra (2):
-      RISC-V: Fix a comment typo in riscv_of_parent_hartid()
-      RISC-V: Declare per cpu boot data as static
-
-Bagas Sanjaya (1):
-      Documentation: riscv: remove non-existent directory from table of contents
-
-Dmitry Vyukov (1):
-      riscv: Increase stack size under KASAN
-
-Fangrui Song (1):
-      riscv module: remove (NOLOAD)
-
-Kees Cook (1):
-      riscv: Rename "sp_in_global" to "current_stack_pointer"
-
-Nikita Shubin (1):
-      riscv: Fix fill_callchain return value
-
-Niklas Cassel (1):
-      riscv: dts: canaan: Fix SPI3 bus width
-
-Palmer Dabbelt (3):
-      RISC-V CPU Idle Support
-      RISC-V: defconfig: Drop redundant SBI HVC and earlycon
-      RISC-V: K210 defconfigs: Drop redundant MEMBARRIER=n
-
-Randy Dunlap (1):
-      riscv: cpu.c: don't use kernel-doc markers for comments
-
-Wu Caize (1):
-      RISC-V: module: fix apply_r_riscv_rcv_branch_rela typo
-
- .../bindings/arm/msm/qcom,idle-state.txt           |   2 +-
- Documentation/devicetree/bindings/arm/psci.yaml    |   2 +-
- .../bindings/{arm => cpu}/idle-states.yaml         | 228 +++++++-
- Documentation/devicetree/bindings/riscv/cpus.yaml  |   6 +
- Documentation/riscv/index.rst                      |   1 -
- MAINTAINERS                                        |  14 +
- arch/riscv/Kconfig                                 |   8 +
- arch/riscv/Kconfig.socs                            |   3 +
- arch/riscv/boot/dts/canaan/sipeed_maix_bit.dts     |   2 +
- arch/riscv/boot/dts/canaan/sipeed_maix_dock.dts    |   2 +
- arch/riscv/boot/dts/canaan/sipeed_maix_go.dts      |   2 +
- arch/riscv/boot/dts/canaan/sipeed_maixduino.dts    |   2 +
- arch/riscv/configs/defconfig                       |   5 +-
- arch/riscv/configs/nommu_k210_defconfig            |   1 -
- arch/riscv/configs/nommu_k210_sdcard_defconfig     |   1 -
- arch/riscv/configs/nommu_virt_defconfig            |   1 -
- arch/riscv/configs/rv32_defconfig                  |   5 +-
- arch/riscv/include/asm/asm.h                       |  26 +
- arch/riscv/include/asm/cpuidle.h                   |  24 +
- arch/riscv/include/asm/current.h                   |   2 +
- arch/riscv/include/asm/module.lds.h                |   6 +-
- arch/riscv/include/asm/suspend.h                   |  36 ++
- arch/riscv/include/asm/thread_info.h               |  10 +-
- arch/riscv/kernel/Makefile                         |   2 +
- arch/riscv/kernel/asm-offsets.c                    |   3 +
- arch/riscv/kernel/cpu.c                            |   6 +-
- arch/riscv/kernel/cpu_ops_sbi.c                    |   2 +-
- arch/riscv/kernel/head.S                           |  27 +-
- arch/riscv/kernel/module.c                         |   4 +-
- arch/riscv/kernel/perf_callchain.c                 |   2 +-
- arch/riscv/kernel/process.c                        |   3 +-
- arch/riscv/kernel/stacktrace.c                     |   6 +-
- arch/riscv/kernel/suspend.c                        |  87 +++
- arch/riscv/kernel/suspend_entry.S                  | 124 ++++
- drivers/cpuidle/Kconfig                            |   9 +
- drivers/cpuidle/Kconfig.arm                        |   1 +
- drivers/cpuidle/Kconfig.riscv                      |  15 +
- drivers/cpuidle/Makefile                           |   5 +
- drivers/cpuidle/cpuidle-psci-domain.c              | 138 +----
- drivers/cpuidle/cpuidle-psci.h                     |  15 +-
- drivers/cpuidle/cpuidle-riscv-sbi.c                | 627 +++++++++++++++++++++
- drivers/cpuidle/dt_idle_genpd.c                    | 178 ++++++
- drivers/cpuidle/dt_idle_genpd.h                    |  50 ++
- 43 files changed, 1491 insertions(+), 202 deletions(-)
- rename Documentation/devicetree/bindings/{arm => cpu}/idle-states.yaml (74%)
- create mode 100644 arch/riscv/include/asm/cpuidle.h
- create mode 100644 arch/riscv/include/asm/suspend.h
- create mode 100644 arch/riscv/kernel/suspend.c
- create mode 100644 arch/riscv/kernel/suspend_entry.S
- create mode 100644 drivers/cpuidle/Kconfig.riscv
- create mode 100644 drivers/cpuidle/cpuidle-riscv-sbi.c
- create mode 100644 drivers/cpuidle/dt_idle_genpd.c
- create mode 100644 drivers/cpuidle/dt_idle_genpd.h
+               Linus
