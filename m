@@ -2,51 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19BBEC47091
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C82B3C4743C
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:13:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355214AbiDAPOS (ORCPT
+        id S1355235AbiDAPO0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:14:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60548 "EHLO
+        Fri, 1 Apr 2022 11:14:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350009AbiDAOrF (ORCPT
+        with ESMTP id S1350033AbiDAOrG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:47:05 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AB6E2A03C3;
-        Fri,  1 Apr 2022 07:36:55 -0700 (PDT)
+        Fri, 1 Apr 2022 10:47:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AD572A03E3;
+        Fri,  1 Apr 2022 07:36:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 7A52ACE258A;
-        Fri,  1 Apr 2022 14:36:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3946EC2BBE4;
-        Fri,  1 Apr 2022 14:36:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C8F6EB8240E;
+        Fri,  1 Apr 2022 14:36:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B485FC34111;
+        Fri,  1 Apr 2022 14:36:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823810;
-        bh=36BEvjQhgTtwogplVLYvptZj3ZgbM6dbvLzk2LibxkE=;
+        s=k20201202; t=1648823787;
+        bh=OUyOOl54sxaGvC8uGjPJH5iu0OEiwKvOzm17ZD/Dil8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=by23TCql5jWwrlYUnOBdtsxzgJdbm/sJtIw4vSR7DZC7jdGs3deFobzNHVE4BkD6Y
-         DtyeiD8TwDCqYqgTW87WvtOPQ4jjJ+p/MbBJ6S6YrmVx6J1BENU9GDvfiXd4pg67Ik
-         jWmAehGZimDCUuMnyWV6NLtkbDD7tzJUj2Bd0Cm3Ch3L+Pi+rDDvA/L+kyFA/cgGm7
-         oSuWTO527xLR2OQ2UqXMUfQnHcYHWTiIPY26EDR1Wnm0dqvc2BN5Y659kBMuPSR7ir
-         axHpHFWLr6f48uFVaPwRJmvhf+3cQpaNjmdIrQhP4ykTzvSPu/OQlHYagBJvAjEQua
-         WvF2wEUcNSX+A==
+        b=hOlPEIwjj/lYTe7TLFqAo/PzCng3WpPVdiDH8/c1xmqMg+IRy3l32N2b5sQUjxm33
+         Fq7CGFG5nNqoDhrqMqWVsqiBPftR56u+9FB8bJglhhZ+iZ64dE6SeqFMSsnxRjokJi
+         sIcC7/LVjpbfTlI7GOPEMoRbJJygHDSmaqbPgwsbsA9R8RQpwVA9EIUdGmD3jNQIx8
+         SBazLg8zP7MAiMP1ynrmaM8wz+/SzvPCDa8qlL5SUK5hNMcH7QqYrgR8+vJPPFw9En
+         9orwBumOCKfg0ScVZBpyy2gV7EY3aFWNpOGf8QcbWVFvjU6oxMaWUSEow54Oslwujl
+         R8jirOUEzbUMA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Michael Ellerman <mpe@ellerman.id.au>,
-        kernel test robot <lkp@intel.com>,
-        "Naveen N . Rao" <naveen.n.rao@linux.vnet.ibm.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Sasha Levin <sashal@kernel.org>, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, akpm@linux-foundation.org,
-        catalin.marinas@arm.com, anshuman.khandual@arm.com,
-        npiggin@gmail.com, linuxppc-dev@lists.ozlabs.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 086/109] powerpc/64e: Tie PPC_BOOK3E_64 to PPC_FSL_BOOK3E
-Date:   Fri,  1 Apr 2022 10:32:33 -0400
-Message-Id: <20220401143256.1950537-86-sashal@kernel.org>
+Cc:     Hangyu Hua <hbh25y@gmail.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Sasha Levin <sashal@kernel.org>, john@phrozen.org,
+        linux-mips@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 077/109] mips: ralink: fix a refcount leak in ill_acc_of_setup()
+Date:   Fri,  1 Apr 2022 10:32:24 -0400
+Message-Id: <20220401143256.1950537-77-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143256.1950537-1-sashal@kernel.org>
 References: <20220401143256.1950537-1-sashal@kernel.org>
@@ -58,58 +53,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Ellerman <mpe@ellerman.id.au>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-[ Upstream commit 1a76e520ee1831a81dabf8a9a58c6453f700026e ]
+[ Upstream commit 4a0a1436053b17e50b7c88858fb0824326641793 ]
 
-Since the IBM A2 CPU support was removed, see commit
-fb5a515704d7 ("powerpc: Remove platforms/wsp and associated pieces"),
-the only 64-bit Book3E CPUs we support are Freescale (NXP) ones.
+of_node_put(np) needs to be called when pdev == NULL.
 
-However our Kconfig still allows configurating a kernel that has 64-bit
-Book3E support, but no Freescale CPU support enabled. Such a kernel
-would never boot, it doesn't know about any CPUs.
-
-It also causes build errors, as reported by lkp, because
-PPC_BARRIER_NOSPEC is not enabled in such a configuration:
-
-  powerpc64-linux-ld: arch/powerpc/net/bpf_jit_comp64.o:(.toc+0x0):
-  undefined reference to `powerpc_security_features'
-
-To fix this, force PPC_FSL_BOOK3E to be selected whenever we are
-building a 64-bit Book3E kernel.
-
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
-Suggested-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220304061222.2478720-1-mpe@ellerman.id.au
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/platforms/Kconfig.cputype | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/mips/ralink/ill_acc.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/powerpc/platforms/Kconfig.cputype b/arch/powerpc/platforms/Kconfig.cputype
-index a208997ade88..87a95cbff2f3 100644
---- a/arch/powerpc/platforms/Kconfig.cputype
-+++ b/arch/powerpc/platforms/Kconfig.cputype
-@@ -111,6 +111,7 @@ config PPC_BOOK3S_64
+diff --git a/arch/mips/ralink/ill_acc.c b/arch/mips/ralink/ill_acc.c
+index bdf53807d7c2..bea857c9da8b 100644
+--- a/arch/mips/ralink/ill_acc.c
++++ b/arch/mips/ralink/ill_acc.c
+@@ -61,6 +61,7 @@ static int __init ill_acc_of_setup(void)
+ 	pdev = of_find_device_by_node(np);
+ 	if (!pdev) {
+ 		pr_err("%pOFn: failed to lookup pdev\n", np);
++		of_node_put(np);
+ 		return -EINVAL;
+ 	}
  
- config PPC_BOOK3E_64
- 	bool "Embedded processors"
-+	select PPC_FSL_BOOK3E
- 	select PPC_FPU # Make it a choice ?
- 	select PPC_SMP_MUXED_IPI
- 	select PPC_DOORBELL
-@@ -287,7 +288,7 @@ config FSL_BOOKE
- config PPC_FSL_BOOK3E
- 	bool
- 	select ARCH_SUPPORTS_HUGETLBFS if PHYS_64BIT || PPC64
--	select FSL_EMB_PERFMON
-+	imply FSL_EMB_PERFMON
- 	select PPC_SMP_MUXED_IPI
- 	select PPC_DOORBELL
- 	default y if FSL_BOOKE
 -- 
 2.34.1
 
