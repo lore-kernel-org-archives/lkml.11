@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AE10C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 06:40:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD1F6C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 06:40:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343600AbiDAGlu (ORCPT
+        id S1343527AbiDAGlx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 02:41:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48710 "EHLO
+        Fri, 1 Apr 2022 02:41:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343531AbiDAGkq (ORCPT
+        with ESMTP id S1343579AbiDAGks (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 02:40:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 590C3267585;
-        Thu, 31 Mar 2022 23:37:54 -0700 (PDT)
+        Fri, 1 Apr 2022 02:40:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5161826454E;
+        Thu, 31 Mar 2022 23:38:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E361961256;
-        Fri,  1 Apr 2022 06:37:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBE19C340EE;
-        Fri,  1 Apr 2022 06:37:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CA2E360FA4;
+        Fri,  1 Apr 2022 06:37:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6F17C2BBE4;
+        Fri,  1 Apr 2022 06:37:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648795073;
-        bh=eRSVxQR13bCp0op1+GKAL8rPyFC9gse31CV31I1XawQ=;
+        s=korg; t=1648795079;
+        bh=vKNr51dFJWfkgWhwMAF899yor9QRxmY0tMKSYhadoew=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i79SRVtfolIRJt68wjyQ7rgEqcH9lyOtqhfP/FYOklYgOXgaifEAIlDk4hTVOT9do
-         L6pUZGniuf9HveW6plNObRAlcbALQobcMkF/H0maZUW1omEa4rHLVUai+VJGY25JH3
-         ck8vm2UIPqWXkYheQPl+PAK9q1UA/ryQyPFehlGE=
+        b=UiVyWwKczfcNnEG/h0FvnN0r+HSv1Vx69tK9KRQGgWWHar/+GBq3YbWSv2gl0CSIS
+         Kw0dSuql2KQxcwOyQR6MTSm9dBAKhc0ZmRk45yUU5ga0zOn6poRpFqdNlmcMMp1aJe
+         Jb1Wzo8h9VtnDdsljiMLDBn5HPCRoFrMJYhxWO2c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
+        stable@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>,
+        Will Deacon <will.deacon@arm.com>,
         James Morse <james.morse@arm.com>
-Subject: [PATCH 4.14 13/27] arm64: entry: Allow tramp_alias to access symbols after the 4K boundary
-Date:   Fri,  1 Apr 2022 08:36:23 +0200
-Message-Id: <20220401063624.609077700@linuxfoundation.org>
+Subject: [PATCH 4.14 05/27] arm64: Add part number for Neoverse N1
+Date:   Fri,  1 Apr 2022 08:36:15 +0200
+Message-Id: <20220401063624.386221822@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220401063624.232282121@linuxfoundation.org>
 References: <20220401063624.232282121@linuxfoundation.org>
@@ -51,60 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Morse <james.morse@arm.com>
+From: Marc Zyngier <marc.zyngier@arm.com>
 
-commit 6c5bf79b69f911560fbf82214c0971af6e58e682 upstream.
+commit 0cf57b86859c49381addb3ce47be70aadf5fd2c0 upstream.
 
-Systems using kpti enter and exit the kernel through a trampoline mapping
-that is always mapped, even when the kernel is not. tramp_valias is a macro
-to find the address of a symbol in the trampoline mapping.
+New CPU, new part number. You know the drill.
 
-Adding extra sets of vectors will expand the size of the entry.tramp.text
-section to beyond 4K. tramp_valias will be unable to generate addresses
-for symbols beyond 4K as it uses the 12 bit immediate of the add
-instruction.
-
-As there are now two registers available when tramp_alias is called,
-use the extra register to avoid the 4K limit of the 12 bit immediate.
-
-Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
-[ Removed SDEI for backport ]
+Signed-off-by: Marc Zyngier <marc.zyngier@arm.com>
+Signed-off-by: Will Deacon <will.deacon@arm.com>
 Signed-off-by: James Morse <james.morse@arm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/kernel/entry.S |   11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+ arch/arm64/include/asm/cputype.h |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/arch/arm64/kernel/entry.S
-+++ b/arch/arm64/kernel/entry.S
-@@ -139,9 +139,12 @@
- .org .Lventry_start\@ + 128	// Did we overflow the ventry slot?
- 	.endm
+--- a/arch/arm64/include/asm/cputype.h
++++ b/arch/arm64/include/asm/cputype.h
+@@ -88,6 +88,7 @@
+ #define ARM_CPU_PART_CORTEX_A35		0xD04
+ #define ARM_CPU_PART_CORTEX_A55		0xD05
+ #define ARM_CPU_PART_CORTEX_A76		0xD0B
++#define ARM_CPU_PART_NEOVERSE_N1	0xD0C
  
--	.macro tramp_alias, dst, sym
-+	.macro tramp_alias, dst, sym, tmp
- 	mov_q	\dst, TRAMP_VALIAS
--	add	\dst, \dst, #(\sym - .entry.tramp.text)
-+	adr_l	\tmp, \sym
-+	add	\dst, \dst, \tmp
-+	adr_l	\tmp, .entry.tramp.text
-+	sub	\dst, \dst, \tmp
- 	.endm
+ #define APM_CPU_PART_POTENZA		0x000
  
- 	// This macro corrupts x0-x3. It is the caller's duty
-@@ -366,10 +369,10 @@ alternative_else_nop_endif
- #ifdef CONFIG_UNMAP_KERNEL_AT_EL0
- 	bne	4f
- 	msr	far_el1, x29
--	tramp_alias	x30, tramp_exit_native
-+	tramp_alias	x30, tramp_exit_native, x29
- 	br	x30
- 4:
--	tramp_alias	x30, tramp_exit_compat
-+	tramp_alias	x30, tramp_exit_compat, x29
- 	br	x30
- #endif
- 	.else
+@@ -114,6 +115,7 @@
+ #define MIDR_CORTEX_A35 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A35)
+ #define MIDR_CORTEX_A55 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A55)
+ #define MIDR_CORTEX_A76	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A76)
++#define MIDR_NEOVERSE_N1 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_NEOVERSE_N1)
+ #define MIDR_THUNDERX	MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX)
+ #define MIDR_THUNDERX_81XX MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX_81XX)
+ #define MIDR_THUNDERX_83XX MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX_83XX)
 
 
