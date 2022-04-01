@@ -2,166 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4F99C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 16:19:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B54E6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 16:20:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235950AbiDAQVn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 12:21:43 -0400
+        id S244273AbiDAQVt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Apr 2022 12:21:49 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353963AbiDAQT2 (ORCPT
+        with ESMTP id S1352183AbiDAQSJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 12:19:28 -0400
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2074.outbound.protection.outlook.com [40.107.244.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31F4F28D296;
-        Fri,  1 Apr 2022 08:45:29 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hE7TvC00LCanFrLJBKdtNHPdiWSq2OKNXpOulo/1aM6tW4KLzGY12OpL78EPF2NgJYp02nJFCed6ZahfwuCJ3dsuV7ZRQK5Az10i3+BCqOYL4YPHj4iAkRyy0FGTbKcvCiPxo7OEs9bKWLDq+VdHN5UZVaffNVt/aBAs9O9tBQyuX75CbKd8TK7XjvVwIhJpuD5ftYxFwukVClwY0Vt/A87iDtdc5+rgFTEypnI9gTIvMChBCX56ZdjATlyxMy7UKDINMu5Y3/WoA68itpW+xJ842bcH0Yn8vHr7cCfEnfTS8Rv/ZETYYb/XMWnDKh9IPXPsKpBApIRMxeBEoVej3g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=UQTNZObxQYL18JiKSd00p9ZfSaVHjp1TZCq6TUsaVWY=;
- b=PHLjkZpvqlwNNDen9+jX1Wed2pzR4fdWHa+Q5IFN6pPqU3NmS6cYxHJ5mxSV3m6siKvGlbXsMrYNJKsbnSEDgr1edtWkfexfAbDt+9I6cBdUHFxz/6w5B9GrVeQjvly3UwvBNmmcUGokQe2XrkwnbRK4ULeWO9bz9EIGSjmnDEUFFoR2rHctCmiAS0KxsjZe9gIkcRDl4y4JMvUFoYxhxkcSbfOf2KrXqis2SZC/C69RT8XQwlF66rs8wXpBMlhnD7IpRhJBRO0eOpJLaARXEikKQeR+7FrSwIONsvdkBhDL/yRll+8koaSPW2yXIPUguBjAiyf6X2v2OyC7n9HA/w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=xilinx.com; dmarc=pass action=none header.from=xilinx.com;
- dkim=pass header.d=xilinx.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=UQTNZObxQYL18JiKSd00p9ZfSaVHjp1TZCq6TUsaVWY=;
- b=KHZAAmqvTb4meZoTieLr9pRV5ygeO8grQQHmpnhSqLFF6M3k23TRDtrG6JpyVabCOY2EVklZWcA8Ynd+ZKC5V4mrZD0zLcP+molzh7gMm7piTeez40orNI8KJdSOFXf/4TWcyLqITbtNSQz5zEUM89ZAbPdOBL71ctYyc1wdcEU=
-Received: from SN6PR02MB4576.namprd02.prod.outlook.com (2603:10b6:805:af::17)
- by MW4PR02MB7267.namprd02.prod.outlook.com (2603:10b6:303:7b::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.29; Fri, 1 Apr
- 2022 15:45:27 +0000
-Received: from SN6PR02MB4576.namprd02.prod.outlook.com
- ([fe80::6162:c36f:2c80:b4dd]) by SN6PR02MB4576.namprd02.prod.outlook.com
- ([fe80::6162:c36f:2c80:b4dd%6]) with mapi id 15.20.5123.025; Fri, 1 Apr 2022
- 15:45:27 +0000
-From:   Nava kishore Manne <navam@xilinx.com>
-To:     Tom Rix <trix@redhat.com>, "mdf@kernel.org" <mdf@kernel.org>,
-        "hao.wu@intel.com" <hao.wu@intel.com>,
-        "yilun.xu@intel.com" <yilun.xu@intel.com>,
-        Michal Simek <michals@xilinx.com>,
-        "linux-fpga@vger.kernel.org" <linux-fpga@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>, git <git@xilinx.com>
-Subject: RE: [PATCH v2 1/5] fpga: zynq: Fix incorrect variable type
-Thread-Topic: [PATCH v2 1/5] fpga: zynq: Fix incorrect variable type
-Thread-Index: AQHYPcX3Nmc9ToevmE+FF8KzbjgUfazR6KcAgAlZk9A=
-Date:   Fri, 1 Apr 2022 15:45:27 +0000
-Message-ID: <SN6PR02MB4576BCD14C9760C84FB88737C2E09@SN6PR02MB4576.namprd02.prod.outlook.com>
-References: <20220322082202.2007321-1-nava.manne@xilinx.com>
- <20220322082202.2007321-2-nava.manne@xilinx.com>
- <aa99b73f-0169-0d16-0bce-ac3f3dfffa68@redhat.com>
-In-Reply-To: <aa99b73f-0169-0d16-0bce-ac3f3dfffa68@redhat.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=xilinx.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 54029361-4407-433f-0d9f-08da13f6a4c8
-x-ms-traffictypediagnostic: MW4PR02MB7267:EE_
-x-ld-processed: 657af505-d5df-48d0-8300-c31994686c5c,ExtAddr
-x-microsoft-antispam-prvs: <MW4PR02MB7267BEA3C8B1022E9E7B9460C2E09@MW4PR02MB7267.namprd02.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: qrUqDCbRkixQFSlmAh/K/lZkDz7eKGr1S4bCqScjdF1MAVppudIK5cLa3LH5gBnpFJdaqWgTS/dmJMy5MUkyuYTKjzTxNqQN0m39iwPqcl9Xj9sC8KjW0yUSiFmntHxhQZc6MwqFbTXzDbu8YoYB5K18IeAWb4c1O3JyF3TYiRW5Hfd0Apq9Cm2a4VG6LxuMNGSFDgqAJy4Y2FQM1MvjYC+Jhbdt+2VkozlYSii4y6CarEJAC2aaBbz0bAteKOPju4pIAroHMkZvuhKHbwoUB3PBzwDM4hLtVulpzq416nmdhap8ZJd70V16FBxg2DEXTBlZNGfDIlE1P7an8QrQdueQBg1nCEJRJDd/JlVFisKb6exCSZi8Jr3x0kKJPVMwvG6Z1ilNzRzbLvS9zOQ9a548nzz2o5YbGRYAFH0HbRXBb9BhyzoQpABpAE41F9mnGf4tnY73ZAeMDX5tVh62DODofxRea/iZnTWKpErhBu0ObioaHO6KHKEhfQ36ub0DZnvI2uJ6cIHam/+myxtJ2cJJBS68bNWC1311qO4e7bSep2/DBonXQ2HPNxu2T1biLBZYVMK2m44RebHwyu0M9AVg6eSE+Nq0HAdun3iIYzIPryLVziIE+Fc0DNGBf7q+aHxaDhHc5hbBSe+4I/cE+Q8LldgpF9eO2PGd/SuUVTEv4/ush2wydIJWpVikwQo+ECcNvQAKr3m2it2UCFiTgA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR02MB4576.namprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(71200400001)(122000001)(52536014)(316002)(38070700005)(6636002)(26005)(186003)(508600001)(8936002)(83380400001)(5660300002)(33656002)(66556008)(86362001)(55016003)(38100700002)(110136005)(53546011)(66476007)(7696005)(66946007)(8676002)(64756008)(76116006)(2906002)(66446008)(9686003)(6506007);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?QlFQQzAwc3Ywb3JVbm9IMkt0WCtpZmtFR1JxN2FGQ0wwZUF1MkUrcklJU1M1?=
- =?utf-8?B?NTJ5ckpHZ0hxV0NTNkNna3REOWNLQ25CYXVxbjZBZHZlSGg0c3hGVkZKelBh?=
- =?utf-8?B?RWxDeHJrVWhYbDhEdEp0dzZKV2pkSTUvZFV4U3RJandDd3NmYzJyUTR2aEZ3?=
- =?utf-8?B?ODdIWndLU0dtcUUrRWs5c0tLSnBGbzNuTUUzTHVYS1VLUnc4NWdRWnhnVHR6?=
- =?utf-8?B?dFJBcG9aNjRjY0tkZTJMcEU3aFRweEt1SkNtcmtTcG5URXZ2YXlaSWpEdCtV?=
- =?utf-8?B?UkMrMkc3dXdOL3J3c3cyQjIzTlE3M2hZeVpBS3ZEMWR2K013cGZuKy9IbzNJ?=
- =?utf-8?B?RWsrZG1pVjJQYU5MbTRHUWd2KzJEK0xJbVdvODg4ODlsWVlTOFNoOXN5cUsx?=
- =?utf-8?B?bWVtVnNJK0p2ZzBLcmFBRDQvcEttL3NBSGpCVVY5V0RaUTFReDQ0WnVmczY1?=
- =?utf-8?B?U0wzcyt0bUVvdkJrRi9JUm40cG5TWUxEbUVHS3pXeGFBc29KVWp6ZW5NMUxL?=
- =?utf-8?B?SWhCN3VTeGRFOUZZdzIrMmREUTl2eWlhZ0N0VVBBUHlJUkN4VjM1cmlnN0V0?=
- =?utf-8?B?MjNiTDFiaDFORFZERzhhcTJKMERUZEJybC9PRSt0MEtwYWk3aDlnUnlOMU4y?=
- =?utf-8?B?VEpUVFF2MFFqRlFzVDZJV3l4ZVVmSDREeVlrSkVCdWRucXpsdks2MmFQNHZk?=
- =?utf-8?B?YXlOTU9jZHhrNkRmYTBRTHpTTGlnOUtPNFhKcEp4QUpDUkIwd1gvNUlBZzhi?=
- =?utf-8?B?Ty9QVXdTWW1OMDZCQ2NnMGVJU3FTbUpqeHdKQkVKSjdxY2htYUxpYmpxTlk0?=
- =?utf-8?B?STlaeUdKRkdFMVpNc0Urejh3ZENtZE8zNTJ6V2hBM0duc0RXdnMvL0RNbUtZ?=
- =?utf-8?B?enR5WTgxZFd6RDZMUk0zdGpNUzU0blExU2taYVpkM3VteG1peWxYcm9IVzRw?=
- =?utf-8?B?Snh0SCtFSGNtTUt3WWdUdFVXTHp6S1lrK1FBSHZqZEVrSXc0VHZXK2Y3TFBq?=
- =?utf-8?B?cmcycjZOclZ0QWZHVGp4WjJ0QTEzU1cwQUo2ak5PcE1STEc2dU9reUhvbk9x?=
- =?utf-8?B?SGJocEtDYUhOby9XaXFSS0ZwQWx3a0hoVXVRMmQ5YXBsWEhTa3kvcFZxR2Vt?=
- =?utf-8?B?SER4ZTRyRFRYSEh5UDlYZ1hsQnlBQ1h0Z3BrNjZJeWJMZlZyTTNrUDhnNm9S?=
- =?utf-8?B?L052dmU4a0FsSVpVeW1rZW9qSDIwSklrclFDeHhPK2xaemZCaytKOTBBQXFm?=
- =?utf-8?B?em9wZWcwd0VudktMTGNnMlFJRDVnYnd4UUhDL2g2OGhoYmJMWEM3RmgxV3BR?=
- =?utf-8?B?ZTV3ZU1TVDBpTEdoZkpoTVI2UTdSNHRxeGkrWGNYRjVKV1NsbUNKV1RUUThB?=
- =?utf-8?B?UmYrQVJQUTZXTE8wR1Evbm00ZEFzMGpZSkhCUnB6NWVyUkplamVPQlA4Mkp6?=
- =?utf-8?B?MkVHblYvbzdpU0RZUUZLNnp0bUNSU1Jqb2VXYmNZMERvVGtlY2dXQzJqUm9D?=
- =?utf-8?B?ZTdYUDhWZkl1bENlbG1yWGlKcGIya21PRzNqQlo2bStoY3ZjcEpUeE1YRTdL?=
- =?utf-8?B?TFJWYmRHMkpabnBNOXl6UVdxU3hLc2VSZGJ0ci9rMGZqZ0wzZ2lHYTFwelNy?=
- =?utf-8?B?T0VTSThiRHUzd0RqVmdjZGhqemVvZDhKc1owYnRpbjNMM3RVeU9BQk9taHN4?=
- =?utf-8?B?QVArUWtoNVpXVlNRblFhbUI5SEZxSCtyWHdmNElJQk9acXhtL1lHTDdEZllX?=
- =?utf-8?B?bGRMaXpDUmxoRkVFckNvZGl4cXBWNGFmc0Z0NE15a250bkdENDJnVWwzRnBO?=
- =?utf-8?B?aGNFdEhwdzJkN3dBV1hXOWtpWjZyQlR6ZmVLNTBBcjFNWWYxUFUyYTdYVXdS?=
- =?utf-8?B?eUdIK0x0emhEOWVLUU1NWVhJMGMxWVh3andwdjJuZ0pGT2Z5UllvdnphMTNr?=
- =?utf-8?B?Z3ZkNmE3Nk9YSUtGOU5nKzA0dDRYaHoxbUpyUDBZN3FrUnU3a09XUW04K0Z0?=
- =?utf-8?B?aC9uWG9ZaGJZM1poc3gvMXlHVVVOSS9wdWpSNUVOQlpVMThielJuWGpwQjMy?=
- =?utf-8?B?eHNBbWV1ZWR6MEQ2UC8rRGRlUEM0Q3VIWEh5azluUXVuTFZaYlpZcjdjclgx?=
- =?utf-8?B?SXBrT2VOUmh2SnBkSGZQNU1Vb3ZTd2IwNkJaclY4enFsbTdrdHY0eFVWTmEy?=
- =?utf-8?B?V1Qyc1hMODd5QTlpcDlWbUVxc3J5dy83MXE0dndDS09JU0VuT3FwdzFML3Rv?=
- =?utf-8?B?czdxWmJRNXEwQkN2czAwcys1YmpiRHd5cHBqa2VLVTh6NjQyNGNGOUowN2hp?=
- =?utf-8?B?aW1WMjFpeE1HeS95OFZMekpscnJTK2Mwc3drNklHR0xYQW1OajZ0Zz09?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        Fri, 1 Apr 2022 12:18:09 -0400
+Received: from gateway22.websitewelcome.com (gateway22.websitewelcome.com [192.185.47.79])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAE581E1131
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 08:41:39 -0700 (PDT)
+Received: from cm16.websitewelcome.com (cm16.websitewelcome.com [100.42.49.19])
+        by gateway22.websitewelcome.com (Postfix) with ESMTP id 6C7759D0F
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 10:41:39 -0500 (CDT)
+Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
+        by cmsmtp with SMTP
+        id aJP9nXPupXvvJaJP9neSfj; Fri, 01 Apr 2022 10:41:39 -0500
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=roeck-us.net; s=default; h=Content-Type:MIME-Version:Message-ID:Subject:Cc:
+        To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=jYAFnwL/trWc/tMIlxDuzyohVvM2VKCSHxk9x+Omj0s=; b=XyifY4BY2SuYmYWXVgnx1XKJxW
+        LJZRjk7WxqQw6djH49Dp/OwHHqZoDQy6U74WAiMvQCOKSOeZgCSfv2ZukuF3qihwgFLB0BamUEwAE
+        9s3ecFs3n93DuMTnzLcT/bUoBw/ZXN9s/8X8VfC7nwYvZoKjgV+GXVEMXXOesvXJUTPhAjA3yGYXa
+        /5DDY8vwa1sm902VWVIf3GwXIIvdydbEbN3Xh8ez7BZXG3CIJFgp3GSXN6SFmn0pf28TVEltVclAR
+        cTTO4+jVWc+rhkdr5S9/dxhvfYXtoVf0yukFMphqor6tfl60rxgHO7NUXU/MhdagY81QZbW8yPLFI
+        Lu5y9x4g==;
+Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:57806 helo=localhost)
+        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@roeck-us.net>)
+        id 1naJP9-004BW2-01; Fri, 01 Apr 2022 15:41:39 +0000
+Date:   Fri, 1 Apr 2022 08:41:37 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Helge Deller <deller@gmx.de>
+Cc:     James.Bottomley@HansenPartnership.com,
+        linux-parisc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] parisc: Switch from GENERIC_CPU_DEVICES to
+ GENERIC_ARCH_TOPOLOGY
+Message-ID: <20220401154137.GA3745625@roeck-us.net>
 MIME-Version: 1.0
-X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR02MB4576.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 54029361-4407-433f-0d9f-08da13f6a4c8
-X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Apr 2022 15:45:27.1147
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: gh6Xz490oTQvZSeUWviz4pCcjJGfoju5uc9eidXAzx+FJZ877gBmW+X2sFcig0ccE+aLey4wtSn2IFDF9aJYTQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR02MB7267
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - roeck-us.net
+X-BWhitelist: no
+X-Source-IP: 108.223.40.66
+X-Source-L: No
+X-Exim-ID: 1naJP9-004BW2-01
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net (localhost) [108.223.40.66]:57806
+X-Source-Auth: guenter@roeck-us.net
+X-Email-Count: 22
+X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SGkgVG9tLA0KDQoJVGhhbmtzIGZvciBwcm92aWRpbmcgdGhlIHJldmlldyBjb21tZW50cy4NClBs
-ZWFzZSBmaW5kIG15IHJlc3BvbnNlIGlubGluZS4NCg0KPiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2Ut
-LS0tLQ0KPiBGcm9tOiBUb20gUml4IDx0cml4QHJlZGhhdC5jb20+DQo+IFNlbnQ6IFNhdHVyZGF5
-LCBNYXJjaCAyNiwgMjAyMiAxMDoyNCBQTQ0KPiBUbzogTmF2YSBraXNob3JlIE1hbm5lIDxuYXZh
-bUB4aWxpbnguY29tPjsgbWRmQGtlcm5lbC5vcmc7DQo+IGhhby53dUBpbnRlbC5jb207IHlpbHVu
-Lnh1QGludGVsLmNvbTsgTWljaGFsIFNpbWVrDQo+IDxtaWNoYWxzQHhpbGlueC5jb20+OyBsaW51
-eC1mcGdhQHZnZXIua2VybmVsLm9yZzsgbGludXgtDQo+IGtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc7
-IGxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZzsgZ2l0DQo+IDxnaXRAeGlsaW54
-LmNvbT4NCj4gU3ViamVjdDogUmU6IFtQQVRDSCB2MiAxLzVdIGZwZ2E6IHp5bnE6IEZpeCBpbmNv
-cnJlY3QgdmFyaWFibGUgdHlwZQ0KPiANCj4gDQo+IE9uIDMvMjIvMjIgMToyMSBBTSwgTmF2YSBr
-aXNob3JlIE1hbm5lIHdyb3RlOg0KPiA+IHp5bnFfZnBnYV9oYXNfc3luYyAoKSBBUEkgaXMgZXhw
-ZWN0aW5nICJ1OCAqIiBidXQgdGhlIGZvcm1hbCBwYXJhbWV0ZXINCj4gPiB0aGF0IHdhcyBwYXNz
-ZWQgaXMgb2YgdHlwZSAiY29uc3QgY2hhciAqIi4NCj4gPiBUbyBmaXggdGhpcyBpc3N1ZSBjYXN0
-IHRoZSBjb25zdCBjaGFyIHBvaW50ZXIgdG8gdTggcG9pbnRlci4NCj4gPg0KPiA+IFNpZ25lZC1v
-ZmYtYnk6IE5hdmEga2lzaG9yZSBNYW5uZSA8bmF2YS5tYW5uZUB4aWxpbnguY29tPg0KPiA+IC0t
-LQ0KPiA+IENoYW5nZXMgZm9yIHYyOg0KPiA+IAkJLU5vbmUuDQo+ID4NCj4gPiAgIGRyaXZlcnMv
-ZnBnYS96eW5xLWZwZ2EuYyB8IDIgKy0NCj4gPiAgIDEgZmlsZSBjaGFuZ2VkLCAxIGluc2VydGlv
-bigrKSwgMSBkZWxldGlvbigtKQ0KPiA+DQo+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvZnBnYS96
-eW5xLWZwZ2EuYyBiL2RyaXZlcnMvZnBnYS96eW5xLWZwZ2EuYyBpbmRleA0KPiA+IDQyNmFhMzRj
-NmEwZC4uMTJmNjQ0ZTc5ZTkxIDEwMDY0NA0KPiA+IC0tLSBhL2RyaXZlcnMvZnBnYS96eW5xLWZw
-Z2EuYw0KPiA+ICsrKyBiL2RyaXZlcnMvZnBnYS96eW5xLWZwZ2EuYw0KPiA+IEBAIC0yNzUsNyAr
-Mjc1LDcgQEAgc3RhdGljIGludCB6eW5xX2ZwZ2Ffb3BzX3dyaXRlX2luaXQoc3RydWN0DQo+ID4g
-ZnBnYV9tYW5hZ2VyICptZ3IsDQo+ID4NCj4gPiAgIAkvKiBkb24ndCBnbG9iYWxseSByZXNldCBQ
-TCBpZiB3ZSdyZSBkb2luZyBwYXJ0aWFsIHJlY29uZmlnICovDQo+ID4gICAJaWYgKCEoaW5mby0+
-ZmxhZ3MgJiBGUEdBX01HUl9QQVJUSUFMX1JFQ09ORklHKSkgew0KPiA+IC0JCWlmICghenlucV9m
-cGdhX2hhc19zeW5jKGJ1ZiwgY291bnQpKSB7DQo+ID4gKwkJaWYgKCF6eW5xX2ZwZ2FfaGFzX3N5
-bmMoKHU4ICopYnVmLCBjb3VudCkpIHsNCj4gDQo+IEluc3RlYWQgb2YgY2FzdGluZywgY2hhbmdl
-IHRoZSBzaWduYXR1cmUgb2YgenlucV9mcGdhX2hhc19zeW5jIHRvIHVzZSBjb25zdA0KPiBjaGFy
-ICogb3ZlciBjb25zdCAqdTguDQo+IA0KPiBBbHNvIHBsZWFzZSByZXZpZXcgdGhlIGltcGxlbWVu
-dGF0aW9uIG9mIHp5bnFfZnBnYV9oYXNfc3luYy4NCj4gDQpJIGFncmVlLCB3aWxsIGZpeCBpbiB2
-My4NCj4gVGhlIGNvbW1lbnRzIHNheXMgJ0l0IG11c3Qgc3RhcnQgd2l0aCAuLiAnIGJ1dCB0aGUg
-bG9vcCBsb29rcyBvdmVyIHRoZSB3aG9sZQ0KPiBidWZmZXINCj4gDQpXaWxsIGNvcnJlY3QgdGhl
-IEFQSSBkZXNjcmlwdGlvbiBpbiB2My4NCg0KUmVnYXJkcywNCk5hdmFraXNob3JlLg0K
+Hi,
+
+On Thu, Mar 24, 2022 at 07:46:50PM +0100, Helge Deller wrote:
+> Switch away from the own cpu topology code to common code which is used
+> by ARM64 and RISCV. That will allow us to enable CPU hotplug later on.
+> 
+> Signed-off-by: Helge Deller <deller@gmx.de>
+
+This patch results in the following traceback when
+booting generic-32bit_defconfig - SMP in qemu.
+
+[    9.432811] ------------[ cut here ]------------
+[    9.433305] WARNING: CPU: 0 PID: 1 at fs/sysfs/group.c:115 internal_create_group+0x360/0x394
+[    9.433825] Modules linked in:
+[    9.434267] CPU: 0 PID: 1 Comm: swapper Not tainted 5.17.0-32bit+ #1
+[    9.434621] Hardware name: 9000/778/B160L
+[    9.434889]
+[    9.435014]      YZrvWESTHLNXBCVMcbcbcbcbOGFRQPDI
+[    9.435201] PSW: 00000000000001001011111100001111 Not tainted
+[    9.435392] r00-03  0004bf0f 114305c0 103518bc 11430600
+[    9.435578] r04-07  0000003c 10db3d20 10b27ecc 00000000
+[    9.435725] r08-11  106f6c88 00000001 00000000 00000000
+[    9.435876] r12-15  10c59000 00000000 00000001 00000000
+[    9.436022] r16-19  00000028 00080000 00000000 10db4ad8
+[    9.436168] r20-23  0000012c 10eb0a00 106f6c88 00000000
+[    9.436314] r24-27  10b27ecc 00000000 00000000 10cf00e0
+[    9.436460] r28-31  00000000 ae147af8 114306c0 101a66d8
+[    9.436625] sr00-03  00000000 00000000 00000000 00000000
+[    9.436785] sr04-07  00000000 00000000 00000000 00000000
+[    9.436942]
+[    9.437006] IASQ: 00000000 00000000 IAOQ: 1035186c 10351870
+[    9.437161]  IIR: 03ffe01f    ISR: 00000000  IOR: 10e02d68
+[    9.437307]  CPU:        0   CR30: 1141a010 CR31: 00000000
+[    9.437470]  ORIG_R28: 00000000
+[    9.437579]  IAOQ[0]: internal_create_group+0x360/0x394
+[    9.437753]  IAOQ[1]: internal_create_group+0x364/0x394
+[    9.437913]  RP(r2): sysfs_create_group+0x1c/0x2c
+[    9.438180] Backtrace:
+[    9.438892]  [<103518bc>] sysfs_create_group+0x1c/0x2c
+[    9.439116]  [<106f6cb0>] topology_add_dev+0x28/0x38
+[    9.439407]  [<101a66d8>] cpuhp_invoke_callback.constprop.0+0xcc/0x17c
+[    9.440321]  [<101a68b0>] __cpuhp_setup_state_cpuslocked+0x128/0x210
+[    9.440545]  [<101a69c0>] __cpuhp_setup_state+0x28/0x38
+[    9.440657]  [<10126fa4>] topology_sysfs_init+0x3c/0x4c
+[    9.440795]  [<1018510c>] do_one_initcall+0x68/0x510
+[    9.440918]  [<10101420>] kernel_init_freeable+0x1d4/0x268
+[    9.441040]  [<10aa7bdc>] kernel_init+0x2c/0x150
+[    9.441191]  [<1018201c>] ret_from_kernel_thread+0x1c/0x24
+[    9.441574]
+[    9.441716] ---[ end trace 0000000000000000 ]---
+
+Reverting the offending commit fixes the problem.
+Bisect log is attached.
+
+Guenter
+
+---
+# bad: [e8b767f5e04097aaedcd6e06e2270f9fe5282696] Merge tag 'for-linus-5.18-rc1' of git://git.kernel.org/pub/scm/linux/kernel/git/rw/uml
+# good: [d888c83fcec75194a8a48ccd283953bdba7b2550] fs: fix fd table size alignment properly
+git bisect start 'HEAD' 'd888c83fcec7'
+# good: [2a44cdaa01837355b14b9221e87d75963846296c] Merge tag 'dmaengine-5.18-rc1' of git://git.kernel.org/pub/scm/linux/kernel/git/vkoul/dmaengine
+git bisect good 2a44cdaa01837355b14b9221e87d75963846296c
+# bad: [b8321ed4a40c02054f930ca59d3570caa27bc86c] Merge tag 'kbuild-v5.18-v2' of git://git.kernel.org/pub/scm/linux/kernel/git/masahiroy/linux-kbuild
+git bisect bad b8321ed4a40c02054f930ca59d3570caa27bc86c
+# bad: [93235e3df29c084a37e0daed17801c6adfce4cb6] Merge tag 'v5.18-p1' of git://git.kernel.org/pub/scm/linux/kernel/git/herbert/crypto-2.6
+git bisect bad 93235e3df29c084a37e0daed17801c6adfce4cb6
+# good: [84b3b8df51e26b8bc2c7178b068ef447473d4609] dt-bindings: pwm: renesas,pwm: Include generic PWM schema
+git bisect good 84b3b8df51e26b8bc2c7178b068ef447473d4609
+# bad: [a9fe7fa7d874a536e0540469f314772c054a0323] parisc: Fix patch code locking and flushing
+git bisect bad a9fe7fa7d874a536e0540469f314772c054a0323
+# bad: [95370b4031ec67f9749e5873ae7139a53cc6bf53] parisc: Move store_cpu_topology() into text section
+git bisect bad 95370b4031ec67f9749e5873ae7139a53cc6bf53
+# good: [ed9794812b0a61f62317991c5c3e6c78749a0bdc] parisc: Detect hppa-suse-linux-gcc compiler for cross-building
+git bisect good ed9794812b0a61f62317991c5c3e6c78749a0bdc
+# good: [1e93848a385ed2c2df9cb246b073dc8c66d10793] parisc: Ensure set_firmware_width() is called only once
+git bisect good 1e93848a385ed2c2df9cb246b073dc8c66d10793
+# bad: [62773112acc55d29727465d075fc61ed08a0a532] parisc: Switch from GENERIC_CPU_DEVICES to GENERIC_ARCH_TOPOLOGY
+git bisect bad 62773112acc55d29727465d075fc61ed08a0a532
+# first bad commit: [62773112acc55d29727465d075fc61ed08a0a532] parisc: Switch from GENERIC_CPU_DEVICES to GENERIC_ARCH_TOPOLOGY
