@@ -2,50 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1263C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC07CC433FE
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:41:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358189AbiDAPly (ORCPT
+        id S1354532AbiDAPlr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:41:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47958 "EHLO
+        Fri, 1 Apr 2022 11:41:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349865AbiDAO6L (ORCPT
+        with ESMTP id S1349490AbiDAO5n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:58:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F13216BCCF;
-        Fri,  1 Apr 2022 07:45:23 -0700 (PDT)
+        Fri, 1 Apr 2022 10:57:43 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19AD915405E;
+        Fri,  1 Apr 2022 07:44:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D7612B8251E;
-        Fri,  1 Apr 2022 14:40:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97E0AC36AE5;
-        Fri,  1 Apr 2022 14:40:18 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 84F29CE2589;
+        Fri,  1 Apr 2022 14:44:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36AEAC2BBE4;
+        Fri,  1 Apr 2022 14:44:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824019;
-        bh=474dM7FGw0UjuPO4octXR2ErFhwhs+OfNX1MU3Q3rTw=;
+        s=k20201202; t=1648824277;
+        bh=2SIjq9Xu9eYXN3ivwUc1NyjMjJKaqe9VVdl9oudmKek=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q3Vy3uvrw91k1rtc9NH3oxs3kQnWH8FLLVopmmeEenj5n6Upy3/7O0g6dgBocIgTs
-         4RwiB+bdqTnKrvd2PK9zrqljdkspKMoKEZOq6SNoaTX2NtfERni4Jw4DsNed5d39h4
-         aY1eIK2OmR20SOgX00H2yJXa/GOXK0qDYk1ZSkgO96rUU1YUD0Lf6ALKgGF03rI65m
-         ux6ycv2jJW+mNJeXc30L0oqqK9tfeGu4/V2LdVNECXIT06Ii3ucMh591IuORs5b2PX
-         9R8rtfN7+6StCHRCp6gDowiSmgZrEiIfVzqieK4RXX5O9ip9cFnuCchTtc4dmtzLD+
-         UYK6lnJgR7yMg==
+        b=d8/E7WdUCVmgfOSUDF1DhY1iCcPYvYdYjouuHdhID/M08SPOUgqkmHrHZ+JoHl4nR
+         IfEzezzHT6JizBDl3w3pHxFtcd5hIEIEdz+4dxoUhoIF3jY+h6QKhG0uaFtsnfh9RO
+         9Pg33Fpk/CJ37VOTKMI80/Y5oghHO7nxjdI8dhrEuEJa4nnGpA7t9aSf/NlGY7fbR/
+         KFi8uVNAZ5m4wOIR160gZc4gQGClBW9gN4SiRvYG8k/BjGZAGjNVYcl6d5xRpMlOjp
+         pQiWnEi6k4l9KQPEkBQNJKrwu9miZRW8ZeNhYhN3Ps5G0SFwhivRfPtsX1XsZFRfDO
+         f3xwR8tGiS0PQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Jack Wang <jinpu.wang@ionos.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, jinpu.wang@cloud.ionos.com,
-        jejb@linux.ibm.com, linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 54/98] scsi: pm8001: Fix pm8001_mpi_task_abort_resp()
-Date:   Fri,  1 Apr 2022 10:36:58 -0400
-Message-Id: <20220401143742.1952163-54-sashal@kernel.org>
+Cc:     Xiubo Li <xiubli@redhat.com>, Jeff Layton <jlayton@kernel.org>,
+        Ilya Dryomov <idryomov@gmail.com>,
+        Sasha Levin <sashal@kernel.org>, ceph-devel@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 63/65] ceph: fix memory leak in ceph_readdir when note_last_dentry returns error
+Date:   Fri,  1 Apr 2022 10:42:04 -0400
+Message-Id: <20220401144206.1953700-63-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220401143742.1952163-1-sashal@kernel.org>
-References: <20220401143742.1952163-1-sashal@kernel.org>
+In-Reply-To: <20220401144206.1953700-1-sashal@kernel.org>
+References: <20220401144206.1953700-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,44 +52,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+From: Xiubo Li <xiubli@redhat.com>
 
-[ Upstream commit 7e6b7e740addcea450041b5be8e42f0a4ceece0f ]
+[ Upstream commit f639d9867eea647005dc824e0e24f39ffc50d4e4 ]
 
-The call to pm8001_ccb_task_free() at the end of
-pm8001_mpi_task_abort_resp() already frees the ccb tag. So when the device
-NCQ_ABORT_ALL_FLAG is set, the tag should not be freed again.  Also change
-the hardcoded 0xBFFFFFFF value to ~NCQ_ABORT_ALL_FLAG as it ought to be.
+Reset the last_readdir at the same time, and add a comment explaining
+why we don't free last_readdir when dir_emit returns false.
 
-Link: https://lore.kernel.org/r/20220220031810.738362-19-damien.lemoal@opensource.wdc.com
-Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Xiubo Li <xiubli@redhat.com>
+Reviewed-by: Jeff Layton <jlayton@kernel.org>
+Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/pm8001/pm8001_hwi.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ fs/ceph/dir.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/pm8001/pm8001_hwi.c b/drivers/scsi/pm8001/pm8001_hwi.c
-index 5e6b23da4157..03c6fc85bd06 100644
---- a/drivers/scsi/pm8001/pm8001_hwi.c
-+++ b/drivers/scsi/pm8001/pm8001_hwi.c
-@@ -3710,12 +3710,11 @@ int pm8001_mpi_task_abort_resp(struct pm8001_hba_info *pm8001_ha, void *piomb)
- 	mb();
- 
- 	if (pm8001_dev->id & NCQ_ABORT_ALL_FLAG) {
--		pm8001_tag_free(pm8001_ha, tag);
- 		sas_free_task(t);
--		/* clear the flag */
--		pm8001_dev->id &= 0xBFFFFFFF;
--	} else
-+		pm8001_dev->id &= ~NCQ_ABORT_ALL_FLAG;
-+	} else {
- 		t->task_done(t);
-+	}
- 
- 	return 0;
- }
+diff --git a/fs/ceph/dir.c b/fs/ceph/dir.c
+index f63c1a090139..1fddb9cd3e88 100644
+--- a/fs/ceph/dir.c
++++ b/fs/ceph/dir.c
+@@ -478,8 +478,11 @@ static int ceph_readdir(struct file *file, struct dir_context *ctx)
+ 					2 : (fpos_off(rde->offset) + 1);
+ 			err = note_last_dentry(dfi, rde->name, rde->name_len,
+ 					       next_offset);
+-			if (err)
++			if (err) {
++				ceph_mdsc_put_request(dfi->last_readdir);
++				dfi->last_readdir = NULL;
+ 				return err;
++			}
+ 		} else if (req->r_reply_info.dir_end) {
+ 			dfi->next_offset = 2;
+ 			/* keep last name */
+@@ -520,6 +523,12 @@ static int ceph_readdir(struct file *file, struct dir_context *ctx)
+ 		if (!dir_emit(ctx, rde->name, rde->name_len,
+ 			      ceph_present_ino(inode->i_sb, le64_to_cpu(rde->inode.in->ino)),
+ 			      le32_to_cpu(rde->inode.in->mode) >> 12)) {
++			/*
++			 * NOTE: Here no need to put the 'dfi->last_readdir',
++			 * because when dir_emit stops us it's most likely
++			 * doesn't have enough memory, etc. So for next readdir
++			 * it will continue.
++			 */
+ 			dout("filldir stopping us...\n");
+ 			return 0;
+ 		}
 -- 
 2.34.1
 
