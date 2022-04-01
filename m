@@ -2,47 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EE87C4167D
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:11:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3212C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:11:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352812AbiDAPIB (ORCPT
+        id S1352835AbiDAPIJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:08:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60748 "EHLO
+        Fri, 1 Apr 2022 11:08:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350050AbiDAOrH (ORCPT
+        with ESMTP id S1350082AbiDAOrI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:47:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC9B62A03F0;
-        Fri,  1 Apr 2022 07:37:00 -0700 (PDT)
+        Fri, 1 Apr 2022 10:47:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D5002A044A;
+        Fri,  1 Apr 2022 07:37:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 85CF6B824D8;
-        Fri,  1 Apr 2022 14:36:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F1BBC340F2;
-        Fri,  1 Apr 2022 14:36:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 514B060BAC;
+        Fri,  1 Apr 2022 14:36:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74A0BC2BBE4;
+        Fri,  1 Apr 2022 14:36:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823786;
-        bh=fG9MQxUZVJfuo423h37Uy9a7r2z2UmE9/ApwUfDq85M=;
+        s=k20201202; t=1648823796;
+        bh=xozeWcdYljMbVk8JHkfaL42nAioAU9CGV6Boy5rn2yA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fR24yzge4htB+kf5fKwd5FS/VYM07RxS+JN96C1ApphqoFUt6AsGWUdD5HKotJe2S
-         Od36PFCFVwLN1TKwrwM+LpB4ENjNzcNkH0oS5/FXVH12CFflh8RfNe5XoMQKNwKdmk
-         UiF6/2Z4WWhoGcpReOrFUPGZxzogcmux5A9grRLPdjOzhufgYurXxt9p3YCeRrZ7qh
-         9GPkVBnR0laGdU9VQRjXJ/RCePBPReV0K6UA3XEVpJggxAyFrNZxWdlj2UgDCpB9Vc
-         7QbMgoeY7xawRo1jJVXV0pLNdcv6hAQa4dVfZlGQELZBzN3NXC60OPhACrZpc0jhLG
-         TtfzN0nyGcNow==
+        b=C13BdZElevWcF+Q7/mzZB5NNNk9b4iOQepfNHb4Ds2EUbelmAwpWADLhwdXYD/tep
+         HzNhQpBkz5UnLjw0f+sRGa45F4zWdX7CXla2UaSlY974TahlzNkBcQ7eCRObvgezAA
+         HUW8G3Oh0pq4Q6w0W9Yrc5UuiJsWpFIFOLepAA2TTBg8wkQhl38BzIg0YY0rSejd7K
+         FZ6z+kkKuye3P0ziwYnrdTXV3YzkUvtF9pnxQaIgMDfPp/imSHiFQWLIbonXlC1Ow4
+         p0qzHXFXApYvd8HjHG8UlCu0J6rPXJYjeVGd0b1CCW1iLieqlF+fQyG5JsmYS5iIyd
+         oZF8AzWsq+LxQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Dust Li <dust.li@linux.alibaba.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, kgraul@linux.ibm.com,
-        kuba@kernel.org, pabeni@redhat.com, linux-s390@vger.kernel.org,
+Cc:     "Minghao Chi (CGEL ZTE)" <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>, johan.hedberg@gmail.com,
+        luiz.dentz@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, linux-bluetooth@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 076/109] net/smc: correct settings of RMB window update limit
-Date:   Fri,  1 Apr 2022 10:32:23 -0400
-Message-Id: <20220401143256.1950537-76-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.16 082/109] Bluetooth: use memset avoid memory leaks
+Date:   Fri,  1 Apr 2022 10:32:29 -0400
+Message-Id: <20220401143256.1950537-82-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143256.1950537-1-sashal@kernel.org>
 References: <20220401143256.1950537-1-sashal@kernel.org>
@@ -54,50 +56,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dust Li <dust.li@linux.alibaba.com>
+From: "Minghao Chi (CGEL ZTE)" <chi.minghao@zte.com.cn>
 
-[ Upstream commit 6bf536eb5c8ca011d1ff57b5c5f7c57ceac06a37 ]
+[ Upstream commit d3715b2333e9a21692ba16ef8645eda584a9515d ]
 
-rmbe_update_limit is used to limit announcing receive
-window updating too frequently. RFC7609 request a minimal
-increase in the window size of 10% of the receive buffer
-space. But current implementation used:
+Use memset to initialize structs to prevent memory leaks
+in l2cap_ecred_connect
 
-  min_t(int, rmbe_size / 10, SOCK_MIN_SNDBUF / 2)
-
-and SOCK_MIN_SNDBUF / 2 == 2304 Bytes, which is almost
-always less then 10% of the receive buffer space.
-
-This causes the receiver always sending CDC message to
-update its consumer cursor when it consumes more then 2K
-of data. And as a result, we may encounter something like
-"TCP silly window syndrome" when sending 2.5~8K message.
-
-This patch fixes this using max(rmbe_size / 10, SOCK_MIN_SNDBUF / 2).
-
-With this patch and SMC autocorking enabled, qperf 2K/4K/8K
-tcp_bw test shows 45%/75%/40% increase in throughput respectively.
-
-Signed-off-by: Dust Li <dust.li@linux.alibaba.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/smc/smc_core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/bluetooth/l2cap_core.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
-index d1cdc891c211..f1dc5b914771 100644
---- a/net/smc/smc_core.c
-+++ b/net/smc/smc_core.c
-@@ -1904,7 +1904,7 @@ static struct smc_buf_desc *smc_buf_get_slot(int compressed_bufsize,
-  */
- static inline int smc_rmb_wnd_update_limit(int rmbe_size)
- {
--	return min_t(int, rmbe_size / 10, SOCK_MIN_SNDBUF / 2);
-+	return max_t(int, rmbe_size / 10, SOCK_MIN_SNDBUF / 2);
- }
+diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
+index 4f8f37599962..e06baffc0dc6 100644
+--- a/net/bluetooth/l2cap_core.c
++++ b/net/bluetooth/l2cap_core.c
+@@ -1436,6 +1436,7 @@ static void l2cap_ecred_connect(struct l2cap_chan *chan)
  
- /* map an rmb buf to a link */
+ 	l2cap_ecred_init(chan, 0);
+ 
++	memset(&data, 0, sizeof(data));
+ 	data.pdu.req.psm     = chan->psm;
+ 	data.pdu.req.mtu     = cpu_to_le16(chan->imtu);
+ 	data.pdu.req.mps     = cpu_to_le16(chan->mps);
 -- 
 2.34.1
 
