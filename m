@@ -2,139 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE2EFC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 00:49:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE828C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 00:53:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243609AbiDAAvq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 20:51:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40812 "EHLO
+        id S232110AbiDAAz0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 20:55:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230257AbiDAAvp (ORCPT
+        with ESMTP id S230257AbiDAAzX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 20:51:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BFC219D625;
-        Thu, 31 Mar 2022 17:49:56 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 52C73B82296;
-        Fri,  1 Apr 2022 00:49:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18A7CC340ED;
-        Fri,  1 Apr 2022 00:49:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648774194;
-        bh=k2NWL0oVgQKreKhbC4I/NAVwEIag4IqjGx4i3YT4Y/M=;
-        h=Date:From:To:Cc:Subject:From;
-        b=dEPEV/kaWDJhphxLwbUmMXxTm85wSDZfOyljX0PxPwugbI3V7xCxB/kBGz7ygoeBQ
-         HTtN4qNa8V5I0hGdd3HvKiMGu3bUfBNpCYm9fD/XIYiborxQP23CBmxJqGxxJ55pAE
-         tS8aNWiGBQuBjsaneVa+A2kc+Bl/zY/Gi4WlCtTr71qgzvtxH7i8vQpFaezw1XhyZr
-         xUDR+EhdUBHTuLFPwzT033Jbv60ohBsJ2aaYPYsBtVuhIusHmcnBINQjQH1l/HMv5P
-         WFNiGmYesPIwbzoeWasLm3lirLJe0ydWK0hSfiNBGoBOkFJ2r7eY9rL8+HRNQgweaG
-         Aots0W7XUyytg==
-Date:   Thu, 31 Mar 2022 19:58:34 -0500
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Dave Hansen <dave.hansen@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>
-Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        linux-hardening@vger.kernel.org
-Subject: [PATCH][next] x86/mm/pgtable: Fix Wstringop-overflow warnings
-Message-ID: <20220401005834.GA182932@embeddedor>
+        Thu, 31 Mar 2022 20:55:23 -0400
+Received: from mg.sunplus.com (mswedge1.sunplus.com [60.248.182.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 12DF15131A;
+        Thu, 31 Mar 2022 17:53:29 -0700 (PDT)
+X-MailGates: (flag:3,DYNAMIC,RELAY,NOHOST:PASS)(compute_score:DELIVER,40
+        ,3)
+Received: from 172.17.9.112
+        by mg01.sunplus.com with MailGates ESMTP Server V5.0(8686:0:AUTH_RELAY)
+        (envelope-from <tony.huang@sunplus.com>); Fri, 01 Apr 2022 08:53:05 +0800 (CST)
+Received: from sphcmbx02.sunplus.com.tw (172.17.9.112) by
+ sphcmbx02.sunplus.com.tw (172.17.9.112) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.26; Fri, 1 Apr 2022 08:53:01 +0800
+Received: from sphcmbx02.sunplus.com.tw ([fe80::fd3d:ad1a:de2a:18bd]) by
+ sphcmbx02.sunplus.com.tw ([fe80::fd3d:ad1a:de2a:18bd%14]) with mapi id
+ 15.00.1497.026; Fri, 1 Apr 2022 08:53:01 +0800
+From:   =?utf-8?B?VG9ueSBIdWFuZyDpu4Pmh7fljpo=?= <tony.huang@sunplus.com>
+To:     Arnd Bergmann <arnd@arndb.de>
+CC:     Tony Huang <tonyhuang.sunplus@gmail.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "lhjeff911@gmail.com" <lhjeff911@gmail.com>,
+        linux-mmc <linux-mmc@vger.kernel.org>,
+        DTML <devicetree@vger.kernel.org>,
+        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        =?utf-8?B?V2VsbHMgTHUg5ZGC6Iqz6aiw?= <wells.lu@sunplus.com>,
+        =?utf-8?B?TGggS3VvIOmDreWKm+ixqg==?= <lh.Kuo@sunplus.com>
+Subject: RE: [PATCH v5 2/2] mmc: Add mmc driver for Sunplus SP7021
+Thread-Topic: [PATCH v5 2/2] mmc: Add mmc driver for Sunplus SP7021
+Thread-Index: AQHYQ3s7ORyaR4vCu0uQF2nts2U94azV8Q6AgAM9naD//5VMAIABeSpQ
+Date:   Fri, 1 Apr 2022 00:53:01 +0000
+Message-ID: <b93772c707074f14ae3f2eeaf5e348ab@sphcmbx02.sunplus.com.tw>
+References: <cover.1648551070.git.tonyhuang.sunplus@gmail.com>
+ <46aad49867912fc57b669fc54fdb28638cccfcd9.1648551070.git.tonyhuang.sunplus@gmail.com>
+ <CAK8P3a0CLA33CTerXJ=bK+myhyHp_utoLnTX-NzMgjeb7icAGg@mail.gmail.com>
+ <7c4b66f7fe4940cba1b0158803767f6e@sphcmbx02.sunplus.com.tw>
+ <CAK8P3a3edkGMyypwchiJjHDvO4ro6RsOvrhUbEDmP1Obs94mXw@mail.gmail.com>
+In-Reply-To: <CAK8P3a3edkGMyypwchiJjHDvO4ro6RsOvrhUbEDmP1Obs94mXw@mail.gmail.com>
+Accept-Language: zh-TW, en-US
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [172.25.108.54]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix the following -Wstringop-overflow warnings when building with GCC-11:
-
-.arch/x86/mm/pgtable.c: In function ‘pgd_alloc’:
-arch/x86/mm/pgtable.c:437:13: warning: ‘preallocate_pmds.constprop’ accessing 8 bytes in a region of size 0 [-Wstringop-overflow=]
-  437 |         if (preallocate_pmds(mm, pmds, PREALLOCATED_PMDS) != 0)
-      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-arch/x86/mm/pgtable.c:437:13: note: referencing argument 2 of type ‘pmd_t **’
-arch/x86/mm/pgtable.c:225:12: note: in a call to function ‘preallocate_pmds.constprop’
-  225 | static int preallocate_pmds(struct mm_struct *mm, pmd_t *pmds[], int count)
-      |            ^~~~~~~~~~~~~~~~
-arch/x86/mm/pgtable.c:440:13: warning: ‘preallocate_pmds.constprop’ accessing 8 bytes in a region of size 0 [-Wstringop-overflow=]
-  440 |         if (preallocate_pmds(mm, u_pmds, PREALLOCATED_USER_PMDS) != 0)
-      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-arch/x86/mm/pgtable.c:440:13: note: referencing argument 2 of type ‘pmd_t **’
-arch/x86/mm/pgtable.c:225:12: note: in a call to function ‘preallocate_pmds.constprop’
-  225 | static int preallocate_pmds(struct mm_struct *mm, pmd_t *pmds[], int count)
-      |            ^~~~~~~~~~~~~~~~
-arch/x86/mm/pgtable.c:462:9: warning: ‘free_pmds.constprop’ accessing 8 bytes in a region of size 0 [-Wstringop-overflow=]
-  462 |         free_pmds(mm, u_pmds, PREALLOCATED_USER_PMDS);
-      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-arch/x86/mm/pgtable.c:462:9: note: referencing argument 2 of type ‘pmd_t **’
-arch/x86/mm/pgtable.c:213:13: note: in a call to function ‘free_pmds.constprop’
-  213 | static void free_pmds(struct mm_struct *mm, pmd_t *pmds[], int count)
-      |             ^~~~~~~~~
-arch/x86/mm/pgtable.c:455:9: warning: ‘pgd_prepopulate_user_pmd’ accessing 8 bytes in a region of size 0 [-Wstringop-overflow=]
-  455 |         pgd_prepopulate_user_pmd(mm, pgd, u_pmds);
-      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-arch/x86/mm/pgtable.c:455:9: note: referencing argument 3 of type ‘pmd_t **’
-arch/x86/mm/pgtable.c:320:13: note: in a call to function ‘pgd_prepopulate_user_pmd’
-  320 | static void pgd_prepopulate_user_pmd(struct mm_struct *mm,
-      |             ^~~~~~~~~~~~~~~~~~~~~~~~
-arch/x86/mm/pgtable.c:464:9: warning: ‘free_pmds.constprop’ accessing 8 bytes in a region of size 0 [-Wstringop-overflow=]
-  464 |         free_pmds(mm, pmds, PREALLOCATED_PMDS);
-      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-arch/x86/mm/pgtable.c:464:9: note: referencing argument 2 of type ‘pmd_t **’
-arch/x86/mm/pgtable.c:213:13: note: in a call to function ‘free_pmds.constprop’
-  213 | static void free_pmds(struct mm_struct *mm, pmd_t *pmds[], int count)
-      |             ^~~~~~~~~
-
-by using pointer notation instead of array notation as a workaround for
-the above GCC warnings.
-
-This helps with the ongoing efforts to globally enable
--Wstringop-overflow.
-
-Link: https://github.com/KSPP/linux/issues/181
-Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
----
- arch/x86/mm/pgtable.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/arch/x86/mm/pgtable.c b/arch/x86/mm/pgtable.c
-index 3481b35cb4ec..aecaebf3c3d0 100644
---- a/arch/x86/mm/pgtable.c
-+++ b/arch/x86/mm/pgtable.c
-@@ -210,7 +210,7 @@ void pud_populate(struct mm_struct *mm, pud_t *pudp, pmd_t *pmd)
- #define MAX_PREALLOCATED_USER_PMDS 0
- #endif	/* CONFIG_X86_PAE */
- 
--static void free_pmds(struct mm_struct *mm, pmd_t *pmds[], int count)
-+static void free_pmds(struct mm_struct *mm, pmd_t **pmds, int count)
- {
- 	int i;
- 
-@@ -222,7 +222,7 @@ static void free_pmds(struct mm_struct *mm, pmd_t *pmds[], int count)
- 		}
- }
- 
--static int preallocate_pmds(struct mm_struct *mm, pmd_t *pmds[], int count)
-+static int preallocate_pmds(struct mm_struct *mm, pmd_t **pmds, int count)
- {
- 	int i;
- 	bool failed = false;
-@@ -318,7 +318,7 @@ static void pgd_prepopulate_pmd(struct mm_struct *mm, pgd_t *pgd, pmd_t *pmds[])
- 
- #ifdef CONFIG_PAGE_TABLE_ISOLATION
- static void pgd_prepopulate_user_pmd(struct mm_struct *mm,
--				     pgd_t *k_pgd, pmd_t *pmds[])
-+				     pgd_t *k_pgd, pmd_t **pmds)
- {
- 	pgd_t *s_pgd = kernel_to_user_pgdp(swapper_pg_dir);
- 	pgd_t *u_pgd = kernel_to_user_pgdp(k_pgd);
--- 
-2.27.0
-
+RGVhciBBcm5kOg0KDQo+IDx0b255Lmh1YW5nQHN1bnBsdXMuY29tPiB3cm90ZToNCj4gPiA+ID4g
+K3N0YXRpYyB2b2lkIHNwbW1jX3JlcXVlc3Qoc3RydWN0IG1tY19ob3N0ICptbWMsIHN0cnVjdA0K
+PiA+ID4gPiArbW1jX3JlcXVlc3QNCj4gPiA+ID4gKyptcnEpIHsNCj4gPiA+ID4gKyAgICAgICBz
+dHJ1Y3Qgc3BtbWNfaG9zdCAqaG9zdCA9IG1tY19wcml2KG1tYyk7DQo+ID4gPiA+ICsgICAgICAg
+c3RydWN0IG1tY19kYXRhICpkYXRhOw0KPiA+ID4gPiArICAgICAgIHN0cnVjdCBtbWNfY29tbWFu
+ZCAqY21kOw0KPiA+ID4gPiArICAgICAgIGludCByZXQ7DQo+ID4gPiA+ICsNCj4gPiA+ID4gKyAg
+ICAgICByZXQgPSBtdXRleF9sb2NrX2ludGVycnVwdGlibGUoJmhvc3QtPm1ycV9sb2NrKTsNCj4g
+PiA+ID4gKyAgICAgICBpZiAocmV0KQ0KPiA+ID4gPiArICAgICAgICAgICAgICAgcmV0dXJuOw0K
+PiA+ID4NCj4gPiA+IEkgZG9uJ3QgdGhpbmsgaXQncyB2YWxpZCB0byBqdXN0IHJldHVybiBoZXJl
+IHdoZW4geW91IGdldCBhIHNpZ25hbC4NCj4gPiA+IElmIG5vdGhpbmcgY2FuIGhhbmRsZSB0aGUg
+c2lnbmFsLCBkb2Vzbid0IGl0IGp1c3QgaGFuZz8NCj4gPiA+DQo+ID4gPiBJdCBhbHNvIGFwcGVh
+cnMgdGhhdCB5b3UgZG9uJ3QgcmVsZWFzZSB0aGUgbXV0ZXggdW50aWwgdGhlIHRhc2tsZXQNCj4g
+PiA+IHJ1bnMsIGJ1dCBpdCBpcyBub3QgdmFsaWQgdG8gcmVsZWFzZSBhIG11dGV4IGZyb20gYSBk
+aWZmZXJlbnQgY29udGV4dC4NCj4gPiA+DQo+ID4gPiBZb3Ugc2hvdWxkIGdldCBhIHdhcm5pbmcg
+YWJvdXQgdGhpcyB3aGVuIHJ1bm5pbmcgYSBrZXJuZWwgd2l0aA0KPiA+ID4gbG9ja2RlcCBlbmFi
+bGVkIGF0IGNvbXBpbGUgdGltZS4gUGxlYXNlIHJld29yayB0aGUgbG9ja2luZyB0byBtYWtlIHRo
+aXMNCj4gd29yay4NCj4gPiA+DQo+ID4gICAgICAgICBSZW9tdmUgY29kZToNCj4gPiAgICAgcmV0
+ID0gbXV0ZXhfbG9ja19pbnRlcnJ1cHRpYmxlKCZob3N0LT5tcnFfbG9jayk7DQo+ID4gICAgIGlm
+IChyZXQpDQo+ID4gICAgICAgICAgcmV0dXJuOw0KPiA+DQo+ID4gICAgICAgICBCZWxvdyBpcyBt
+eSBtb2RpZmljYXRpb246DQo+ID4gLiAgICBtdXRleF9sb2NrKCZob3N0LT5tcnFfbG9jayk7DQo+
+IA0KPiBUaGF0IGFkZHJlc3NlcyB0aGUgcHJvYmxlbSB3aXRoIHRoZSBzaWduYWwgaGFuZGxpbmcs
+IGJ1dCBub3QgdGhlIGxvY2sNCj4gaW1iYWxhbmNlLiBQbGVhc2UgZml4IHRoYXQgYXMgd2VsbC4N
+Cg0KT2ssIEkgd2lsbCBtb2RpZnkgbG9jayBpbWJhbGFuY2UgaXNzdWUuDQoNCj4gPiA+DQo+ID4g
+PiBJdCdzIGJldHRlciB0byB1c2UgU1lTVEVNX1NMRUVQX1BNX09QUy9SVU5USU1FX1BNX09QUyBp
+bnN0ZWFkIG9mDQo+IHRoZQ0KPiA+ID4gU0VUXyB2ZXJzaW9uLCB0aGVuIHlvdSBjYW4gcmVtb3Zl
+IGFsbCB0aGUgI2lmZGVmIGNoZWNrcy4NCj4gPiA+DQo+ID4NCj4gPiAgICAgICAgIEkgdXNlIFNZ
+U1RFTV9TTEVFUF9QTV9PUFMvUlVOVElNRV9QTV9PUFMuDQo+ID4gICAgICAgICBDb21waWxlIHNo
+b3dzIGVycm9yLiBFcnJvcjogaW1wbGljaXQgZGVjbGFyYXRpb24gb2YgZnVuY3Rpb24gPyA/DQo+
+IFNZU1RFTV9TTEVFUF9QTV9PUFM/ID8gRGlkIHlvdSBtZWFuID8gPyBTRVRfU1lTVEVNX1NMRUVQ
+X1BNX09QUz8gPw0KPiBbLVdlcnJvcj1pbXBsaWNpdC1mdW5jdGlvbi1kZWNsYXJhdGlvbl0NCj4g
+DQo+IE1heWJlIHlvdSBhcmUgb24gYW4gb2xkIGtlcm5lbCByZWxlYXNlPw0KPiANCg0KT0ssSSB3
+aWxsIHVzZSBuZXcga2VybmVsIHJlbGVhc2UgdG8gY29tcGlsZXIuDQoNCj4gPiAgICAgICAgIEkg
+cmVmZXJlbmNlIG90aGVyIG1tYyBkcml2ZXIuDQo+ID4gICAgICAgICBCZWxvdyBpcyBteSBtb2Rp
+ZmljYXRpb246DQo+ID4gICAgIENvbXBpbGVyIGlzIHBhc3MuDQo+ID4NCj4gPiAgICAgICAgICNp
+ZmRlZiBDT05GSUdfUE1fU0xFRVANCj4gPiAgICAgICAgIHN0YXRpYyBpbnQgc3BtbWNfcG1fc3Vz
+cGVuZChzdHJ1Y3QgZGV2aWNlICpkZXYpDQo+ID4gICAgICAgICB7DQo+ID4gICAgICAgICAgICAg
+ICAgIHBtX3J1bnRpbWVfZm9yY2Vfc3VzcGVuZChkZXYpOw0KPiA+DQo+ID4gICAgICAgICAgICAg
+ICAgIHJldHVybiAwOw0KPiA+ICAgICAgICAgfQ0KPiANCj4gV2Ugc2hvdWxkIGZpeCB0aGUgb3Ro
+ZXIgZHJpdmVycyBhcyB3ZWxsLiBGb3IgdGhlIG1vbWVudCwganVzdCBkbyBpdCB0aGUgcmlnaHQN
+Cj4gd2F5IG5vdyBpbnN0ZWFkIG9mIGNvcHlpbmcgdGhlICNpZmRlZnMuDQo+IA0KT0ssIEkgd2ls
+bCBmb2xsb3cgcmlnaHQgd2F5IHRvIHJlbW92ZSAjaWZkZWYuDQoNCg0KDQo=
