@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0296FC47086
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:40:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1E87C352AA
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:40:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357728AbiDAPjC (ORCPT
+        id S1357602AbiDAPir (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:39:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47698 "EHLO
+        Fri, 1 Apr 2022 11:38:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350632AbiDAPAX (ORCPT
+        with ESMTP id S1350676AbiDAPAZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 11:00:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46A352F1;
-        Fri,  1 Apr 2022 07:48:18 -0700 (PDT)
+        Fri, 1 Apr 2022 11:00:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 383D239140;
+        Fri,  1 Apr 2022 07:48:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D8B8260BC2;
-        Fri,  1 Apr 2022 14:48:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7947FC3410F;
-        Fri,  1 Apr 2022 14:48:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DF2D4B82500;
+        Fri,  1 Apr 2022 14:48:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68BC9C340F2;
+        Fri,  1 Apr 2022 14:48:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824497;
-        bh=mI114Ao+RDfpQC5D6nzgqT0P7mQSo7soZtMayzbFJZU=;
+        s=k20201202; t=1648824525;
+        bh=NrhotgYaEmvmytZ5SsnIyI+yW0k65GrkEjY84+HFvTI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ANcr4N/PDUClvahtY0dmZLZY6B6Dd6SDB1t3DF7ffcUcTa9egF9wW7oAzuO+o1tf4
-         5AP5sXD5ekpml/l5k41KRa0q2hwaxBi71xduAg0RmTKUdWEGQoNkBADkILzozhrWVq
-         xMa/5P5RW1lThWoMwSKh+wlxOrwsuyqqSe0TUUiDgevok3lp+wNBnmUE+J7N5q57uk
-         2+MYmi8YZMqqy3Hz7HadxjOgx2STPmBvJcpAa2GtLHQXyFD/yZEO+jFqxmrfFDLzeO
-         i228vg59tC9kIP2YW7PLAZvmy5uNHZF6RytVynPExleh2lanFpvzN5hDtBBSS2K+hO
-         vihQLBqZ/fHXw==
+        b=ZB/zK2amGa9yqIXvO6ehMNAfVoIojcmYhyGWc0Vy53xWPuTQfxO3bygpV8SPy6PYx
+         gifKrcQgYa9R4ov00CpCdH0/ouLO5Peeb1ZU+ktgdEP4QPaFNxDlk0KiihEKAjtjKn
+         GX0+4W6rJk3mX+5jy/2QWJzvJfpDwid8cCxxhy3Id3yPo969n7nwHNR0owMc43mOB0
+         AMvI7fQEyXn4WcT7hXujyK5k9JFRIIKOGNB3C92RQYqhZDEb9skKRIb+4LnAAEVlvG
+         q7WX6CxOu4dFTSIYDEI8IVIAVJ5/gn97WrHHDPAL8KAxYGLMPbKxbfH5Z/DHi4a/g9
+         FIzKjEExEeIxQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jianglei Nie <niejianglei2021@163.com>,
-        Hannes Reinecke <hare@suse.de>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, jejb@linux.ibm.com,
-        linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 18/22] scsi: libfc: Fix use after free in fc_exch_abts_resp()
-Date:   Fri,  1 Apr 2022 10:47:25 -0400
-Message-Id: <20220401144729.1955554-18-sashal@kernel.org>
+Cc:     Jordy Zomer <jordy@jordyzomer.github.io>,
+        Jordy Zomer <jordy@pwning.systems>,
+        Mike Snitzer <snitzer@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, agk@redhat.com,
+        snitzer@kernel.org, dm-devel@redhat.com
+Subject: [PATCH AUTOSEL 4.9 07/16] dm ioctl: prevent potential spectre v1 gadget
+Date:   Fri,  1 Apr 2022 10:48:18 -0400
+Message-Id: <20220401144827.1955845-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220401144729.1955554-1-sashal@kernel.org>
-References: <20220401144729.1955554-1-sashal@kernel.org>
+In-Reply-To: <20220401144827.1955845-1-sashal@kernel.org>
+References: <20220401144827.1955845-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,37 +54,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jianglei Nie <niejianglei2021@163.com>
+From: Jordy Zomer <jordy@jordyzomer.github.io>
 
-[ Upstream commit 271add11994ba1a334859069367e04d2be2ebdd4 ]
+[ Upstream commit cd9c88da171a62c4b0f1c70e50c75845969fbc18 ]
 
-fc_exch_release(ep) will decrease the ep's reference count. When the
-reference count reaches zero, it is freed. But ep is still used in the
-following code, which will lead to a use after free.
+It appears like cmd could be a Spectre v1 gadget as it's supplied by a
+user and used as an array index. Prevent the contents of kernel memory
+from being leaked to userspace via speculative execution by using
+array_index_nospec.
 
-Return after the fc_exch_release() call to avoid use after free.
-
-Link: https://lore.kernel.org/r/20220303015115.459778-1-niejianglei2021@163.com
-Reviewed-by: Hannes Reinecke <hare@suse.de>
-Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Jordy Zomer <jordy@pwning.systems>
+Signed-off-by: Mike Snitzer <snitzer@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/libfc/fc_exch.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/md/dm-ioctl.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/scsi/libfc/fc_exch.c b/drivers/scsi/libfc/fc_exch.c
-index 384458d1f73c..9fa0aa235cb4 100644
---- a/drivers/scsi/libfc/fc_exch.c
-+++ b/drivers/scsi/libfc/fc_exch.c
-@@ -1709,6 +1709,7 @@ static void fc_exch_abts_resp(struct fc_exch *ep, struct fc_frame *fp)
- 	if (cancel_delayed_work_sync(&ep->timeout_work)) {
- 		FC_EXCH_DBG(ep, "Exchange timer canceled due to ABTS response\n");
- 		fc_exch_release(ep);	/* release from pending timer hold */
-+		return;
- 	}
+diff --git a/drivers/md/dm-ioctl.c b/drivers/md/dm-ioctl.c
+index eb2659a12310..70245782e7f6 100644
+--- a/drivers/md/dm-ioctl.c
++++ b/drivers/md/dm-ioctl.c
+@@ -16,6 +16,7 @@
+ #include <linux/dm-ioctl.h>
+ #include <linux/hdreg.h>
+ #include <linux/compat.h>
++#include <linux/nospec.h>
  
- 	spin_lock_bh(&ep->ex_lock);
+ #include <asm/uaccess.h>
+ 
+@@ -1642,6 +1643,7 @@ static ioctl_fn lookup_ioctl(unsigned int cmd, int *ioctl_flags)
+ 	if (unlikely(cmd >= ARRAY_SIZE(_ioctls)))
+ 		return NULL;
+ 
++	cmd = array_index_nospec(cmd, ARRAY_SIZE(_ioctls));
+ 	*ioctl_flags = _ioctls[cmd].flags;
+ 	return _ioctls[cmd].fn;
+ }
 -- 
 2.34.1
 
