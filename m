@@ -2,176 +2,191 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 561C0C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 16:49:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D34BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 16:50:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349775AbiDAQvR (ORCPT
+        id S1349897AbiDAQwo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 12:51:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54378 "EHLO
+        Fri, 1 Apr 2022 12:52:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349454AbiDAQvD (ORCPT
+        with ESMTP id S1350068AbiDAQwd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 12:51:03 -0400
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2074.outbound.protection.outlook.com [40.107.244.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDE63173B06
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 09:37:15 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DTHekBGw/6vb9ug0o7jdo3DFUJYyxU7uDy80Xppj9NIhicqyanah4R9iQiobOiCxft4DMTK3LIrA5rNV17PtaDrVWQQDZN3ZGEtFkEFGnP6e/GZlEBBMr5VH6CyskxJeGiwKMWmyBdCp7n1AdIR9rAJMfflYN66iOj3I1hyV/AIQoQhHNxgIaT6078u6uKwUvn3CUGGoWvIs7v7Yrqwub4CkmJtnWiPh53SccgbREA8JNyoXpo1tDQug4FVlDaLKECE2s3gCwXgaUEuHeMWqTYpmrhuISAqyTVCosCMJpuPijWtfocH5zcEfWiqoEaQoR5h/5chkDYXj3we9FByOYQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=icwjlne3dtrImUUDAXKu4AtJswelvNl8d8yrbeMcGik=;
- b=apsoX20NWXOTbHUomVVu88HR+Aep5x5CFi4N2TTSrwmkWzcBgfPGwhx7DXTlMGpUjNrrwp10DxNn/rGuDDDLcX+tGhhFN8kXpJ4udFzq8pgcXV8rwkWjIMm/1CFpV3BR//covC6SuTh+kLDRQ/si9BIZyYYQgc2BXB4jSrLLmOTQZ2vrOl77VHH/pWWg7/s4EgCyhf5FDD1jiaAlZaZKE/V1hGhMiw9JNQ3wrWOokSyILPH//xoORHuESWWY0ZcqTfTBcWV1HaX7pn/j6fhFbjEbl5J1ib4xsB+2rks+qaHACI6kyHMoeJOuasy5vb4gmhw/e5T0m96EOZgIIQgJew==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=icwjlne3dtrImUUDAXKu4AtJswelvNl8d8yrbeMcGik=;
- b=PbCDypLaTjXo+VsxLzL2kKZUgqXACX0ri3e1ihhe6jdtS5ipRLM1BBSnIcofYZ2bJLK2CY8dxJLWwPtghmg+5y282w77iQLV3BGGF65aQMjo3dlmTRe9T5F3Tgaxx8gTQPCGhkXG+CFg6a9IWTblxt+NcJSdZJd6sqR5wrioJvhimjD9Yn8iXICgqRTu4kE9/vEHM5TFppmZ9whpf1repxzPKunmJWxgj9x8ojkiVm88CW1hwdTK/PxF838a60b69s4O2aG0m2C3RWDR2x3IIjILeBinC+xODxXJNhv4kNSEfGpMpuTApLk4doOkdek1Hps0lgbk/1WlVMoH3NJKHw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB3823.namprd12.prod.outlook.com (2603:10b6:208:168::26)
- by CY4PR12MB1608.namprd12.prod.outlook.com (2603:10b6:910:d::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.25; Fri, 1 Apr
- 2022 16:37:14 +0000
-Received: from MN2PR12MB3823.namprd12.prod.outlook.com
- ([fe80::69f1:dff6:826b:7d9c]) by MN2PR12MB3823.namprd12.prod.outlook.com
- ([fe80::69f1:dff6:826b:7d9c%5]) with mapi id 15.20.5123.025; Fri, 1 Apr 2022
- 16:37:14 +0000
-From:   Zi Yan <ziy@nvidia.com>
+        Fri, 1 Apr 2022 12:52:33 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D535FBB092
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 09:41:50 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id mr5-20020a17090b238500b001c67366ae93so5770702pjb.4
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 09:41:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=rivosinc-com.20210112.gappssmtp.com; s=20210112;
+        h=date:subject:cc:from:to:message-id;
+        bh=7f6j0z1BP2YZI8+G8t2I0PO2IUnoEVp389XAIMLoiBI=;
+        b=B5MLssde5G3aFHKLWrw2bfzfhMbch92H4uyalWdGGwDvxnn6VjCCTrYcJz8K9TljT9
+         9uqV4/v7fPjUUP9dVZXbJtj3JJIsGQO0+819dndJ9iV7yC9M7s32U9e6i++crdEJfbHT
+         e3Gaeet+Ezf5YVxpgpWtvqT0N/U5AqOcVHpxFpx5UR4IWe7061cI0WExmozTbV8FkT9F
+         PC6IfbS8wLaxp7fgLk/EeZVvVMEUJqswxpQEkY6d4oz2nIDDijdB0Aqulgdl+tnUOaPr
+         ihSLtsdeVGolXwA+l2EBKScB72d2U+Vv8T01fe8gAbFUd+Qp9xK75Ub+zCPpkoWUxeOs
+         L9jA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:subject:cc:from:to:message-id;
+        bh=7f6j0z1BP2YZI8+G8t2I0PO2IUnoEVp389XAIMLoiBI=;
+        b=JX3UQOBqsG/qwZG0xoMd++JogNJjLOWPUMSv2/s9q86WE5zTR9/O/g/qZLp6ltjmHH
+         bSlCLq5zBkWr7HvsyeWdLqirlHjLDn0pflU3PA1TlNivXxSLZ9OQuTqvC81z6EJPs4sv
+         fr4DBL7J4WntJRp6SBtIxXhtO4Mx1T8pXZqx83RpjJcPTfrrQs4eL6+pHMh9RMOXjS2d
+         7wgL+vlAUbEjGeH7MsLYh9R7HHQTGpZQ0R+WCli9byInWp/PUaNnfQkh1yTXGDXLtQ6v
+         Xv0o6JfIyCHBnvXL6BpaoXJCUcSt3jV/gKaCm0Rmfj0TizXpwAEBomHsba97HI0gY1ap
+         xoPw==
+X-Gm-Message-State: AOAM532QYKh7KzUR8cy2vOM6sKzhcIZD3Yt9npspZVp5LVJoaTk4K5DR
+        6JANg9hM0OVhgBA3r0NUdqjmvlSICw/YHg==
+X-Google-Smtp-Source: ABdhPJxudcPgn55zLsGqr1hRo6Bevhqgl+MiYPI62e8CER1amNlGuSkHdMOGj+0wuEtAiqFtl8MIOQ==
+X-Received: by 2002:a17:90a:205:b0:1c6:5b78:5c5 with SMTP id c5-20020a17090a020500b001c65b7805c5mr12729560pjc.54.1648831310254;
+        Fri, 01 Apr 2022 09:41:50 -0700 (PDT)
+Received: from localhost (76-210-143-223.lightspeed.sntcca.sbcglobal.net. [76.210.143.223])
+        by smtp.gmail.com with ESMTPSA id j16-20020a63e750000000b00373598b8cbfsm2862869pgk.74.2022.04.01.09.41.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 01 Apr 2022 09:41:50 -0700 (PDT)
+Date:   Fri, 01 Apr 2022 09:41:50 -0700 (PDT)
+X-Google-Original-Date: Fri, 01 Apr 2022 09:41:27 PDT (-0700)
+Subject: [GIT PULL] RISC-V Patches for the 5.18 Merge Window, Part 2
+CC:         linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
+From:   Palmer Dabbelt <palmer@rivosinc.com>
 To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Linux-MM <linux-mm@kvack.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        David Hildenbrand <david@redhat.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Mike Rapoport <rppt@kernel.org>,
-        Oscar Salvador <osalvador@suse.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 2/2] mm: wrap __find_buddy_pfn() with a necessary buddy page validation.
-Date:   Fri, 01 Apr 2022 12:37:11 -0400
-X-Mailer: MailMate (1.14r5870)
-Message-ID: <31FDAB92-ACE2-4502-9970-77C21D6EBB5D@nvidia.com>
-In-Reply-To: <CAHk-=wjToETfvzxkz_Y=QPt0JQRHF3VZ51xjhbPNAneHFvZofw@mail.gmail.com>
-References: <20220401135820.1453829-1-zi.yan@sent.com>
- <20220401135820.1453829-2-zi.yan@sent.com>
- <CAHk-=wjToETfvzxkz_Y=QPt0JQRHF3VZ51xjhbPNAneHFvZofw@mail.gmail.com>
-Content-Type: multipart/signed;
- boundary="=_MailMate_6A8A4A09-AF3B-422A-9C1A-381F2D7A37C1_=";
- micalg=pgp-sha512; protocol="application/pgp-signature"
-X-ClientProxiedBy: BL0PR02CA0129.namprd02.prod.outlook.com
- (2603:10b6:208:35::34) To MN2PR12MB3823.namprd12.prod.outlook.com
- (2603:10b6:208:168::26)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: c6d5d1d9-b4f7-4748-da53-08da13fde059
-X-MS-TrafficTypeDiagnostic: CY4PR12MB1608:EE_
-X-Microsoft-Antispam-PRVS: <CY4PR12MB160826482D9F51E92268D9F5C2E09@CY4PR12MB1608.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 71sawBSFgJqEJ7bA5C/i+15esPNJzlgpTXd12iOxhO8D4IGOgS8AgLBQqUuIwfVlEfyCTg1XAjaA4qCJpmxOMrJhlps+QBe0yIMEVVbZJCFRdBcdSNuVl6GaqjvOaS1ZpOVmzKIOTngU2ri+Irz7CT5ToVzZC4BdqK80jlmdS8xGxr2JsfwZzmIWJPO6f/wzyO4uC+iHq/TsVLdfPTd6MHNwViiih3AFjDXRZLcEYr4WKg46WWrD30o+MU+RZ/YK1c41dXIvH1mUxp3WhllQOkU4Pr/dMijOrcelWpaa9G2pN5nTWedxWL9y1RTiZvLHb8Gb2bYR4OaEhh+NzW4+YswkUNqijNpa2oHMZE/o6wdhmfVmffois4XVhqP5XNzF0oOX8DN6L5x98RLWDOnTKI6x/Hmw/emhMj/cDOOyg2vku5IM06OhFmXphKBdkRKz/HfBjcFYeH+haJdkA5k1Gp3CZcT1l0Q9VU1mEdaWGu4utAOR2XUQSa3S2pBtK6GOafaGmh6cmPk2dyqWlFezgiH71WFcb6CVnqv3g63ROJIE2vFe5jzmU0ltWbwVWrM451WCZ9GbPwSD/weRL8ocWHWYH3b2bR4E5CCLD0xvGbDrBGB1uWwaMzjQWZArTfBuiekBq06I2HDl3P2WP5kQ9aZeXXLYIf4wPWNi5aFqHMGpGm2v40rzvHfBySHw+6USxeZAVJ1Wrp4cYhfJrpTN5DCCiTmVp8P/RjL89qAyJ3o=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB3823.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(2906002)(2616005)(26005)(21480400003)(7416002)(186003)(6666004)(8936002)(6512007)(6506007)(53546011)(36756003)(83380400001)(4326008)(86362001)(66946007)(508600001)(316002)(235185007)(8676002)(66556008)(66476007)(54906003)(6486002)(33656002)(5660300002)(6916009)(38100700002)(45980500001)(72826004);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?SStQchRtfsJ1m4DPTpj6unNv8brYJY6rmbprqZ+Hhp98ceF/g+eWKSGyGO9f?=
- =?us-ascii?Q?stF67+B01eek8isVaH+cqu3aVGIwBubFNIpptsrARk85PevtkxxlF0FhJDq0?=
- =?us-ascii?Q?rUTuEt7j+6HviwTLxSAfoNv2d1lkiJclA1kkM4D19Ppy+sLRFRY4Nvaxu5r/?=
- =?us-ascii?Q?VIPdj0YtaSMopdhzAiSIPmPsenh4RfxcSLp6pAeiNtZRF8TOcXp3VoCWEgiK?=
- =?us-ascii?Q?BMDYYtOX3ldrHAaNepVuBRNUwvvboNppJQwFtegNmFl9IHsLoOVvDu3eH8EO?=
- =?us-ascii?Q?9C+iMJixikgueSP1wDBpxFlzvFB7GzTcZHIcycYRjhBc0jhA6vjGTQN+GG+b?=
- =?us-ascii?Q?C35ld15L2ktAYYL70lkJdVp6pYkNHR8g4hdLirq9D6QATHbTi6AD5h2QWvII?=
- =?us-ascii?Q?hrUhxgZssx9qAvawsFUX1ozh1bMXFAaVOYbOwYDYpoixP5m2sfA/UmocCaT4?=
- =?us-ascii?Q?StnpwzyeefODYJZqVAlWsZfgB82qNfunO+o8UeyZC5znv0XpKe17n4HIXPq/?=
- =?us-ascii?Q?pdiQR40HVJWmItdsyT26TIrn2T22sDUA7Fal06mxaAxhizC+Syyg8xv+m5W0?=
- =?us-ascii?Q?ixv5lB5boXERCTLjAB2pfETFDExl8KZ9eYc3ceq7TtnbaTnatPM5LonYgSQp?=
- =?us-ascii?Q?5EVNuIlcMzriSwmDsTzMFnn58pW5DHRcD/aCTsUCvko6aw3KxwkidtbmMuTi?=
- =?us-ascii?Q?0JV4C9CsWnE1NBcEDIfGVo1NQgIaKQQFSBW6cuht4j9bBu640tmgeMlt2Xdl?=
- =?us-ascii?Q?sHiwAk0nN2s46dGQczuP0b6HQt0u/mAo4Up3bKSK/rGi1hsFU8BAYSpTdj8v?=
- =?us-ascii?Q?ZXvxiVJviZ7EhgCPTIv1jCzyAIvx6lqllYdAvY5MYAXxl2NaHouRzwCbgS8H?=
- =?us-ascii?Q?eGP+yjPsqtfJvt9+n5FuoCdcVPWbW4WDzMXrRrpSMmCXcEJ4IrXatggYwguW?=
- =?us-ascii?Q?9zpyCB88n34ku8KTThZNs/P1/+IGDugbFnBU6Lr24Ri2EcGAfKbssRVKFD3+?=
- =?us-ascii?Q?HVO/Cuyij+ycZJVIrBp8cZBbJRlgYfmRdirPu2D+eesILFVPcXS+dXQJJ45t?=
- =?us-ascii?Q?jIYP3dIG4SArtfW7NFKz93OjJsWjXp6EHlRpqSqnNVArkOcHafGBUA9phV7Q?=
- =?us-ascii?Q?S9Gv/TdaPsOwDB16AhZqP0W0EOJnhdBrP+u4d9fTGUPpT1BaYcXM0Wdsi3Xt?=
- =?us-ascii?Q?IFqrRhPXZ/BiIAYFdT4JkJe+hnhoEMpSlLb9hC/MRkxqFLZx2gY8nPALXBTe?=
- =?us-ascii?Q?nzbrH1mpa/NJcakL/cFkoXEQ8VKwsi4kvDzD2U2+IQRa2xy+6ZrkUnis4l38?=
- =?us-ascii?Q?Jr3QFVv0RRslLNM3AjtehVwHoePFAnYtJq7E1dMzQ9U1THdIqvgmasN1+MKP?=
- =?us-ascii?Q?abHLww3SeWn/Ck2jKeSf10lmHa0v9IM0iImaUeDOLtuy9mm+7onj0tknitgc?=
- =?us-ascii?Q?3mnIylIysfXEnvBXe+aQ8UfrNQRjcHwO4AgK8urYPE6dO2Cbbr8Me9EO91Cx?=
- =?us-ascii?Q?r/c1Isp8+EBaXrIrM1l0UhjfUHEj0DM4VBiHEXvDrtqmp27oEYcROvaL13xu?=
- =?us-ascii?Q?TWx6hBVXrSZfls9rIaok5w0Hxx0ty/TUH9XJPczeLC8Y8sIKfh7sb/NDBEL4?=
- =?us-ascii?Q?YaFSS3QuOZWoOx0gQJ47HTFK3VSSlw2lPgftWug/Al/3Hc9dAea39AvE1eHo?=
- =?us-ascii?Q?bM7MbLdt+6w9eE31cHmKEOrf6grImjbWKWa/b3asN2M7q1H9iWQHwBrLz4Kz?=
- =?us-ascii?Q?/hM5PRibQQ=3D=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c6d5d1d9-b4f7-4748-da53-08da13fde059
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB3823.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Apr 2022 16:37:13.9391
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Osw6htrnDUT9IMh2/wOvJ8dEJdsbpv+vAixWBPXV3S6pUE/zVB9k9tckUbMkr69U
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR12MB1608
+Message-ID: <mhng-e0c01ab7-020f-4264-91da-0852f7e89534@palmer-mbp2014>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---=_MailMate_6A8A4A09-AF3B-422A-9C1A-381F2D7A37C1_=
-Content-Type: text/plain
+merged tag 'riscv-for-linus-5.18-mw0'
+The following changes since commit aa5b537b0ecc16992577b013f11112d54c7ce869:
 
-On 1 Apr 2022, at 12:31, Linus Torvalds wrote:
+  Merge tag 'riscv-for-linus-5.18-mw0' of git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux (2022-03-25 10:11:38 -0700)
 
-> On Fri, Apr 1, 2022 at 6:58 AM Zi Yan <zi.yan@sent.com> wrote:
->>
->> +extern bool find_buddy_page_pfn(struct page *page, unsigned int order,
->> +                               struct page **buddy, unsigned long *buddy_pfn);
->
-> Wouldn't it make more sense to just return the 'struct page *buddy'
-> here, instead of the 'bool'?
->
-> So a NULL buddy means the obvious "no buddy found".
->
-> I dislike those "pass return value by reference" in general, and the
-> above has _two_ of them.
->
-> We can get rid of at least one very obviously.
+are available in the Git repository at:
 
-Sure. We can get rid of both and calculate buddy_pfn from buddy after
-a successful call.
+  git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git tags/riscv-for-linus-5.18-mw1
 
+for you to fetch changes up to 1464d00b27b2e29a5556f6a4099cf083886e883f:
 
---
-Best Regards,
-Yan, Zi
+  RISC-V: K210 defconfigs: Drop redundant MEMBARRIER=n (2022-03-31 17:19:27 -0700)
 
---=_MailMate_6A8A4A09-AF3B-422A-9C1A-381F2D7A37C1_=
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-Content-Type: application/pgp-signature; name="signature.asc"
+----------------------------------------------------------------
+RISC-V Patches for the 5.18 Merge Window, Part 2
 
------BEGIN PGP SIGNATURE-----
+This has a handful of new features
 
-iQJDBAEBCgAtFiEE6rR4j8RuQ2XmaZol4n+egRQHKFQFAmJHKjcPHHppeUBudmlk
-aWEuY29tAAoJEOJ/noEUByhUZBYP/RCOxdyFoLT0by6iA30va5FJ+AiBGLJ7TOWA
-gz1QAVuiIM2rDbqrL3DrLlsSBe8n+CDnAtDOMNrttKK4WvVHdpS8HnOYWvlmBnh0
-MTK13IyoXzuBR/NPiuiyUm4dUFT0gJPJnzWL3/I83fpwAw1JnDlUlQSlr4NyO+vu
-LzJEG1SaPXiPhug94f2FIvZsBalv5VnD5MTJchJQSOrQs+/k+yRBWmL2MqWz5PT9
-0wR/2vJwvhEwK2TyhdTc9ifmFZrWPTdMyOKYP8nRSA6SgeQgGsdKBG8DUZIK6cC3
-/xPXqPnR4vnY6mC8TcTiYsJOLa2VlnL1Ut9ciUA6EM7gNGaNtZ7mBb7egQyxSaS/
-wxOYRyG7dlb5MyqQN6DChbdNE3t+giJ/hEcbwxYSpsCmkUw6wwccduicZvY1vRX8
-oravYVCpGFaaDSh0iiH3DdLkClPyf46FUZiaQmUAvpXq4TAWx8PO4JahqIDNJJqr
-bZcmcuvH5AVmAoUC/FTr+hjlU588dhdcd08FjmekronX8s7po5OeQdR9YccT/VHn
-W2x7pqdjOV4QVB6KF038qWO7a33yAIyLl0O3/eloX0WVLkTQJWHGf8fDVP4CpL1k
-5Dh74xkrpUl+cge0PQHWhRfi+or3fVCB7+tNEGuKPg3i8IMjoQmg6DX8+dhf6FR1
-qFbDWaf1
-=qNuX
------END PGP SIGNATURE-----
+* Support for CURRENT_STACK_POINTER, which enables some extra stack
+  debugging for HARDENED_USERCOPY.
+* Support for the new SBI CPU idle extension, via cpuidle and suspend
+  drivers.
+* Profiling has been enabled in the defconfigs.
 
---=_MailMate_6A8A4A09-AF3B-422A-9C1A-381F2D7A37C1_=--
+but is mostly fixes and cleanups.
+
+----------------------------------------------------------------
+There are no merge conflicts.  I'm getting on allyesconfig warning in
+drivers/misc/habanalabs, but that appears to just be a 32-bit problem (it's
+happening on 32-bit x86 as well).  I've sent a patch for that, but I doubt it's
+a RISC-V issue so I'm sending this at the same time.
+
+With that patch I get clean build that boot after my test merge.
+
+----------------------------------------------------------------
+Anup Patel (9):
+      RISC-V: Enable CPU_IDLE drivers
+      RISC-V: Rename relocate() and make it global
+      RISC-V: Add arch functions for non-retentive suspend entry/exit
+      RISC-V: Add SBI HSM suspend related defines
+      cpuidle: Factor-out power domain related code from PSCI domain driver
+      cpuidle: Add RISC-V SBI CPU idle driver
+      dt-bindings: Add common bindings for ARM and RISC-V idle states
+      RISC-V: Enable RISC-V SBI CPU Idle driver for QEMU virt machine
+      RISC-V: Enable profiling by default
+
+Atish Patra (2):
+      RISC-V: Fix a comment typo in riscv_of_parent_hartid()
+      RISC-V: Declare per cpu boot data as static
+
+Bagas Sanjaya (1):
+      Documentation: riscv: remove non-existent directory from table of contents
+
+Dmitry Vyukov (1):
+      riscv: Increase stack size under KASAN
+
+Fangrui Song (1):
+      riscv module: remove (NOLOAD)
+
+Kees Cook (1):
+      riscv: Rename "sp_in_global" to "current_stack_pointer"
+
+Nikita Shubin (1):
+      riscv: Fix fill_callchain return value
+
+Niklas Cassel (1):
+      riscv: dts: canaan: Fix SPI3 bus width
+
+Palmer Dabbelt (3):
+      RISC-V CPU Idle Support
+      RISC-V: defconfig: Drop redundant SBI HVC and earlycon
+      RISC-V: K210 defconfigs: Drop redundant MEMBARRIER=n
+
+Randy Dunlap (1):
+      riscv: cpu.c: don't use kernel-doc markers for comments
+
+Wu Caize (1):
+      RISC-V: module: fix apply_r_riscv_rcv_branch_rela typo
+
+ .../bindings/arm/msm/qcom,idle-state.txt           |   2 +-
+ Documentation/devicetree/bindings/arm/psci.yaml    |   2 +-
+ .../bindings/{arm => cpu}/idle-states.yaml         | 228 +++++++-
+ Documentation/devicetree/bindings/riscv/cpus.yaml  |   6 +
+ Documentation/riscv/index.rst                      |   1 -
+ MAINTAINERS                                        |  14 +
+ arch/riscv/Kconfig                                 |   8 +
+ arch/riscv/Kconfig.socs                            |   3 +
+ arch/riscv/boot/dts/canaan/sipeed_maix_bit.dts     |   2 +
+ arch/riscv/boot/dts/canaan/sipeed_maix_dock.dts    |   2 +
+ arch/riscv/boot/dts/canaan/sipeed_maix_go.dts      |   2 +
+ arch/riscv/boot/dts/canaan/sipeed_maixduino.dts    |   2 +
+ arch/riscv/configs/defconfig                       |   5 +-
+ arch/riscv/configs/nommu_k210_defconfig            |   1 -
+ arch/riscv/configs/nommu_k210_sdcard_defconfig     |   1 -
+ arch/riscv/configs/nommu_virt_defconfig            |   1 -
+ arch/riscv/configs/rv32_defconfig                  |   5 +-
+ arch/riscv/include/asm/asm.h                       |  26 +
+ arch/riscv/include/asm/cpuidle.h                   |  24 +
+ arch/riscv/include/asm/current.h                   |   2 +
+ arch/riscv/include/asm/module.lds.h                |   6 +-
+ arch/riscv/include/asm/suspend.h                   |  36 ++
+ arch/riscv/include/asm/thread_info.h               |  10 +-
+ arch/riscv/kernel/Makefile                         |   2 +
+ arch/riscv/kernel/asm-offsets.c                    |   3 +
+ arch/riscv/kernel/cpu.c                            |   6 +-
+ arch/riscv/kernel/cpu_ops_sbi.c                    |   2 +-
+ arch/riscv/kernel/head.S                           |  27 +-
+ arch/riscv/kernel/module.c                         |   4 +-
+ arch/riscv/kernel/perf_callchain.c                 |   2 +-
+ arch/riscv/kernel/process.c                        |   3 +-
+ arch/riscv/kernel/stacktrace.c                     |   6 +-
+ arch/riscv/kernel/suspend.c                        |  87 +++
+ arch/riscv/kernel/suspend_entry.S                  | 124 ++++
+ drivers/cpuidle/Kconfig                            |   9 +
+ drivers/cpuidle/Kconfig.arm                        |   1 +
+ drivers/cpuidle/Kconfig.riscv                      |  15 +
+ drivers/cpuidle/Makefile                           |   5 +
+ drivers/cpuidle/cpuidle-psci-domain.c              | 138 +----
+ drivers/cpuidle/cpuidle-psci.h                     |  15 +-
+ drivers/cpuidle/cpuidle-riscv-sbi.c                | 627 +++++++++++++++++++++
+ drivers/cpuidle/dt_idle_genpd.c                    | 178 ++++++
+ drivers/cpuidle/dt_idle_genpd.h                    |  50 ++
+ 43 files changed, 1491 insertions(+), 202 deletions(-)
+ rename Documentation/devicetree/bindings/{arm => cpu}/idle-states.yaml (74%)
+ create mode 100644 arch/riscv/include/asm/cpuidle.h
+ create mode 100644 arch/riscv/include/asm/suspend.h
+ create mode 100644 arch/riscv/kernel/suspend.c
+ create mode 100644 arch/riscv/kernel/suspend_entry.S
+ create mode 100644 drivers/cpuidle/Kconfig.riscv
+ create mode 100644 drivers/cpuidle/cpuidle-riscv-sbi.c
+ create mode 100644 drivers/cpuidle/dt_idle_genpd.c
+ create mode 100644 drivers/cpuidle/dt_idle_genpd.h
