@@ -2,50 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4347FC3526F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BFBAC433F5
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:49:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348304AbiDAOus (ORCPT
+        id S1352645AbiDAOvG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 10:50:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58074 "EHLO
+        Fri, 1 Apr 2022 10:51:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348599AbiDAOev (ORCPT
+        with ESMTP id S1347391AbiDAOcW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:34:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EF11BC7;
-        Fri,  1 Apr 2022 07:33:02 -0700 (PDT)
+        Fri, 1 Apr 2022 10:32:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A0F35F8F8;
+        Fri,  1 Apr 2022 07:28:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BC09EB8250B;
-        Fri,  1 Apr 2022 14:33:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 409EDC2BBE4;
-        Fri,  1 Apr 2022 14:32:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AA93E61CAE;
+        Fri,  1 Apr 2022 14:28:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86548C34114;
+        Fri,  1 Apr 2022 14:28:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823579;
-        bh=NS4ep+ynH/MO4fqollxIkLZFOHEpGJ6529DTMzlgoz4=;
-        h=From:To:Cc:Subject:Date:From;
-        b=M6cCS9UB7h4Ib5PIRpnXgaaoBrDJ5LuumKLZEcapCmAxalmPjzBu/attW3UoiSj3k
-         L5gE5KmGaB6WPVOLmo65q4PaO3yePOkJ2EBXcIquzj1xh/QoFYTXJ0RblcWOmFge8M
-         oDGMT8DehEwxPdvci/lWPIb5Sqi3PN5zqyMvTWTjYU2egRAm1oUssspXe+JhErW7T6
-         wFSz5u8fpl4BzOmb2np6GEVlwXjEo06b1uKf6r3Uhr4L+++upP5K6y3Djxz21pmiwr
-         AaAQQvvUflGPzKUYdT9AzSQTTzunXZKbboDoVLDnv8SUfJmds2mdIXMAwEhl98ME15
-         riVQjw+F5nUvw==
+        s=k20201202; t=1648823318;
+        bh=qjxQ+TuJJClyKJGiJyDQnjheZO2HcHaN/3KsyeKu5cY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=hGAzgIKSkvZi5K292zCw0hRaxrHSzBc/IyoXcMvSLWPrSCcu1F87ueVE/f7Obrj/H
+         j1mjy4vOI5QShCks9Maf7NGs2FOcXW2n0ZCpeiQGyXiPumqB6P+dN/OrtEBRyREckW
+         JokuByKkfghKwpDwk3ZryDlPx/0YM+2rZgJs0zEkmkwCAjME3PldGLYJBycvrJxqrA
+         EpUIvMdIic8N/qOkc0TwSUbJhlQyJEUBVPGieeOsiYgHaz3/og0JqMFMyjgoY5NH1Z
+         oGlpBZIC97hVgVwhU0thbj9/ynhTTpIsK+kEwnDnbBLb8RKvQ5308/OSg2gQxZ541t
+         XDp7rsaNgMsHQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Anisse Astier <anisse@astier.eu>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Jani Nikula <jani.nikula@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        maarten.lankhorst@linux.intel.com, mripard@kernel.org,
-        tzimmermann@suse.de, airlied@linux.ie, daniel@ffwll.ch,
-        dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.16 001/109] drm: Add orientation quirk for GPD Win Max
-Date:   Fri,  1 Apr 2022 10:31:08 -0400
-Message-Id: <20220401143256.1950537-1-sashal@kernel.org>
+Cc:     Ricardo Koller <ricarkol@google.com>,
+        Reiji Watanabe <reijiw@google.com>,
+        Andrew Jones <drjones@redhat.com>,
+        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        pbonzini@redhat.com, shuah@kernel.org,
+        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
+        kvm@vger.kernel.org, linux-kselftest@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 055/149] kvm: selftests: aarch64: fix some vgic related comments
+Date:   Fri,  1 Apr 2022 10:24:02 -0400
+Message-Id: <20220401142536.1948161-55-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220401142536.1948161-1-sashal@kernel.org>
+References: <20220401142536.1948161-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,38 +56,119 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anisse Astier <anisse@astier.eu>
+From: Ricardo Koller <ricarkol@google.com>
 
-[ Upstream commit 0b464ca3e0dd3cec65f28bc6d396d82f19080f69 ]
+[ Upstream commit a5cd38fd9c47b23abc6df08d6ee6a71b39038185 ]
 
-Panel is 800x1280, but mounted on a laptop form factor, sideways.
+Fix the formatting of some comments and the wording of one of them (in
+gicv3_access_reg).
 
-Signed-off-by: Anisse Astier <anisse@astier.eu>
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Jani Nikula <jani.nikula@intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20211229222200.53128-3-anisse@astier.eu
+Signed-off-by: Ricardo Koller <ricarkol@google.com>
+Reported-by: Reiji Watanabe <reijiw@google.com>
+Cc: Andrew Jones <drjones@redhat.com>
+Reviewed-by: Andrew Jones <drjones@redhat.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220127030858.3269036-5-ricarkol@google.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/drm_panel_orientation_quirks.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ tools/testing/selftests/kvm/aarch64/vgic_irq.c   | 12 ++++++++----
+ tools/testing/selftests/kvm/lib/aarch64/gic_v3.c | 10 ++++++----
+ tools/testing/selftests/kvm/lib/aarch64/vgic.c   |  3 ++-
+ 3 files changed, 16 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/gpu/drm/drm_panel_orientation_quirks.c b/drivers/gpu/drm/drm_panel_orientation_quirks.c
-index b910978d3e48..4e853acfd1e8 100644
---- a/drivers/gpu/drm/drm_panel_orientation_quirks.c
-+++ b/drivers/gpu/drm/drm_panel_orientation_quirks.c
-@@ -180,6 +180,12 @@ static const struct dmi_system_id orientation_data[] = {
- 		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "MicroPC"),
- 		},
- 		.driver_data = (void *)&lcd720x1280_rightside_up,
-+	}, {	/* GPD Win Max */
-+		.matches = {
-+		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "GPD"),
-+		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "G1619-01"),
-+		},
-+		.driver_data = (void *)&lcd800x1280_rightside_up,
- 	}, {	/*
- 		 * GPD Pocket, note that the the DMI data is less generic then
- 		 * it seems, devices with a board-vendor of "AMI Corporation"
+diff --git a/tools/testing/selftests/kvm/aarch64/vgic_irq.c b/tools/testing/selftests/kvm/aarch64/vgic_irq.c
+index 48e43e24d240..554ca649d470 100644
+--- a/tools/testing/selftests/kvm/aarch64/vgic_irq.c
++++ b/tools/testing/selftests/kvm/aarch64/vgic_irq.c
+@@ -306,7 +306,8 @@ static void guest_restore_active(struct test_args *args,
+ 	uint32_t prio, intid, ap1r;
+ 	int i;
+ 
+-	/* Set the priorities of the first (KVM_NUM_PRIOS - 1) IRQs
++	/*
++	 * Set the priorities of the first (KVM_NUM_PRIOS - 1) IRQs
+ 	 * in descending order, so intid+1 can preempt intid.
+ 	 */
+ 	for (i = 0, prio = (num - 1) * 8; i < num; i++, prio -= 8) {
+@@ -315,7 +316,8 @@ static void guest_restore_active(struct test_args *args,
+ 		gic_set_priority(intid, prio);
+ 	}
+ 
+-	/* In a real migration, KVM would restore all GIC state before running
++	/*
++	 * In a real migration, KVM would restore all GIC state before running
+ 	 * guest code.
+ 	 */
+ 	for (i = 0; i < num; i++) {
+@@ -503,7 +505,8 @@ static void guest_code(struct test_args *args)
+ 		test_injection_failure(args, f);
+ 	}
+ 
+-	/* Restore the active state of IRQs. This would happen when live
++	/*
++	 * Restore the active state of IRQs. This would happen when live
+ 	 * migrating IRQs in the middle of being handled.
+ 	 */
+ 	for_each_supported_activate_fn(args, set_active_fns, f)
+@@ -844,7 +847,8 @@ int main(int argc, char **argv)
+ 		}
+ 	}
+ 
+-	/* If the user just specified nr_irqs and/or gic_version, then run all
++	/*
++	 * If the user just specified nr_irqs and/or gic_version, then run all
+ 	 * combinations.
+ 	 */
+ 	if (default_args) {
+diff --git a/tools/testing/selftests/kvm/lib/aarch64/gic_v3.c b/tools/testing/selftests/kvm/lib/aarch64/gic_v3.c
+index e4945fe66620..263bf3ed8fd5 100644
+--- a/tools/testing/selftests/kvm/lib/aarch64/gic_v3.c
++++ b/tools/testing/selftests/kvm/lib/aarch64/gic_v3.c
+@@ -19,7 +19,7 @@ struct gicv3_data {
+ 	unsigned int nr_spis;
+ };
+ 
+-#define sgi_base_from_redist(redist_base) 	(redist_base + SZ_64K)
++#define sgi_base_from_redist(redist_base)	(redist_base + SZ_64K)
+ #define DIST_BIT				(1U << 31)
+ 
+ enum gicv3_intid_range {
+@@ -105,7 +105,8 @@ static void gicv3_set_eoi_split(bool split)
+ {
+ 	uint32_t val;
+ 
+-	/* All other fields are read-only, so no need to read CTLR first. In
++	/*
++	 * All other fields are read-only, so no need to read CTLR first. In
+ 	 * fact, the kernel does the same.
+ 	 */
+ 	val = split ? (1U << 1) : 0;
+@@ -160,8 +161,9 @@ static void gicv3_access_reg(uint32_t intid, uint64_t offset,
+ 
+ 	GUEST_ASSERT(bits_per_field <= reg_bits);
+ 	GUEST_ASSERT(!write || *val < (1U << bits_per_field));
+-	/* Some registers like IROUTER are 64 bit long. Those are currently not
+-	 * supported by readl nor writel, so just asserting here until then.
++	/*
++	 * This function does not support 64 bit accesses. Just asserting here
++	 * until we implement readq/writeq.
+ 	 */
+ 	GUEST_ASSERT(reg_bits == 32);
+ 
+diff --git a/tools/testing/selftests/kvm/lib/aarch64/vgic.c b/tools/testing/selftests/kvm/lib/aarch64/vgic.c
+index f5cd0c536d85..7c876ccf9294 100644
+--- a/tools/testing/selftests/kvm/lib/aarch64/vgic.c
++++ b/tools/testing/selftests/kvm/lib/aarch64/vgic.c
+@@ -152,7 +152,8 @@ static void vgic_poke_irq(int gic_fd, uint32_t intid,
+ 		attr += SZ_64K;
+ 	}
+ 
+-	/* All calls will succeed, even with invalid intid's, as long as the
++	/*
++	 * All calls will succeed, even with invalid intid's, as long as the
+ 	 * addr part of the attr is within 32 bits (checked above). An invalid
+ 	 * intid will just make the read/writes point to above the intended
+ 	 * register space (i.e., ICPENDR after ISPENDR).
 -- 
 2.34.1
 
