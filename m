@@ -2,76 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4F8FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 11:10:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C793C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 11:10:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345343AbiDALLz (ORCPT
+        id S1345354AbiDALMf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 07:11:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39952 "EHLO
+        Fri, 1 Apr 2022 07:12:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229459AbiDALLw (ORCPT
+        with ESMTP id S1345347AbiDALMZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 07:11:52 -0400
-X-Greylist: delayed 433 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 01 Apr 2022 04:10:03 PDT
-Received: from mail.avm.de (mail.avm.de [212.42.244.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D80826F23A
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 04:10:03 -0700 (PDT)
-Received: from mail-auth.avm.de (dovecot-mx-01.avm.de [212.42.244.71])
-        by mail.avm.de (Postfix) with ESMTPS;
-        Fri,  1 Apr 2022 13:02:47 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=avm.de; s=mail;
-        t=1648810968; bh=sFx/9K+fATOwENpzWD0YB1nZDFiZRSMkfrxRTxYpYu4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=uD45acwqIr3Wb7Vmu7traJYV3OYsvls8brN1bP65ys0qZv0AcDgvDvsldQCMYYyL7
-         xhr1K/xW2SjYI9WkKJVqBns7+0E0BbVnNGhUTrTRZNa5yex7IwFuRcJB2U0Two3vC9
-         EJO/1UWFUJ+BdmiGmfMGVU2Ni46LFFYpVy6LCJDk=
-Received: from buildd.core.avm.de (buildd-sv-01.avm.de [172.16.0.225])
-        by mail-auth.avm.de (Postfix) with ESMTPA id 0F546804BC;
-        Fri,  1 Apr 2022 13:02:47 +0200 (CEST)
-Received: by buildd.core.avm.de (Postfix, from userid 1000)
-        id 0378D180FAB; Fri,  1 Apr 2022 13:02:46 +0200 (CEST)
-Date:   Fri, 1 Apr 2022 13:02:46 +0200
-From:   Nicolas Schier <n.schier@avm.de>
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     patches@arm.linux.org.uk, linux-kernel@vger.kernel.org,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Arnd Bergmann <arnd@arndb.de>,
-        David Heidelberg <david@ixit.cz>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH] ARM: decompressor: fix unneeded rebuilds of library
- objects
-Message-ID: <Ykbb1ow2Oya0aXb+@buildd.core.avm.de>
-References: <20220331084709.1079362-1-masahiroy@kernel.org>
+        Fri, 1 Apr 2022 07:12:25 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9587A2742B1
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 04:10:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648811430; x=1680347430;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=p4E+B+WB4n2uTrmipGexvxPJZUAHUcZLMSq08FhPXbo=;
+  b=LglLDZa2Ja3mESSzDTfq2uFl9aLdwD+Azsqioy2mfbXHfrmk16/ZAx9N
+   vUDxvztZxCTf8muquxay/hY85F/PXQuBAAhUWHrsNi2ZJLIBgnkKAfPNf
+   zGySzN7EVi6rBZo+7Kg/miU6TCTSzyIckblig2ckcAX01+ljHgebR1O7x
+   Xcuew2jzWd21BPEOydPEjyjTPnM2+q3eV/3YfyN4lIKzd73mRiLRsVHZr
+   fVef2/vF6vFUxZIxLa59Clb9A8JUsGutr/jQ+j0Ua+MxU/8ACgJFRgWtj
+   mIax4yeHVkuu6ZEGgl89+pKmZiAH80jUctvPXwepdc4RmDaB/0bjnXCaz
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10303"; a="285035284"
+X-IronPort-AV: E=Sophos;i="5.90,227,1643702400"; 
+   d="scan'208";a="285035284"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Apr 2022 04:08:57 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,227,1643702400"; 
+   d="scan'208";a="522735972"
+Received: from lkp-server02.sh.intel.com (HELO 3231c491b0e2) ([10.239.97.151])
+  by orsmga006.jf.intel.com with ESMTP; 01 Apr 2022 04:08:55 -0700
+Received: from kbuild by 3231c491b0e2 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1naF9D-0001CS-4D;
+        Fri, 01 Apr 2022 11:08:55 +0000
+Date:   Fri, 1 Apr 2022 19:07:59 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Marek Vasut <marex@denx.de>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Robert Foss <robert.foss@linaro.org>
+Subject: [PATCH] drm: bridge: icn6211: fix platform_no_drv_owner.cocci
+ warnings
+Message-ID: <YkbdDw8wt/AP+ktu@4f141e9bb993>
+References: <202204011947.10abPzIP-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220331084709.1079362-1-masahiroy@kernel.org>
-X-purgate-ID: 149429::1648810967-00000606-2BD65CB1/0/0
-X-purgate-type: clean
-X-purgate-size: 721
-X-purgate-Ad: Categorized by eleven eXpurgate (R) http://www.eleven.de
-X-purgate: This mail is considered clean (visit http://www.eleven.de for further information)
-X-purgate: clean
+In-Reply-To: <202204011947.10abPzIP-lkp@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
-Message-ID: <20220401110246.3OBqieHQhMZIHG6f2iybIb2x2JC0Ur92wtG-ACx7Pvo@z>
 
-On Thu, Mar 31, 2022 at 05:47:09PM +0900, Masahiro Yamada wrote:
-> Since commit 251cc826be7d ("ARM: 9154/1: decompressor: do not copy source
-> files while building"), the following three are rebuilt every time.
-> 
->   AS      arch/arm/boot/compressed/lib1funcs.o
->   AS      arch/arm/boot/compressed/ashldi3.o
->   AS      arch/arm/boot/compressed/bswapsdi2.o
-> 
-> Move the "OBJS += ..." line up so these objects are added to 'targets'.
-> 
-> Fixes: 251cc826be7d ("ARM: 9154/1: decompressor: do not copy source files while building")
-> Reported-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> ---
+From: kernel test robot <lkp@intel.com>
 
-Tested-by: Nicolas Schier <n.schier@avm.de>
+drivers/gpu/drm/bridge/chipone-icn6211.c:645:3-8: No need to set .owner here. The core will do it.
+
+ Remove .owner field if calls are used which set it automatically
+
+Generated by: scripts/coccinelle/api/platform_no_drv_owner.cocci
+
+Fixes: 8dde6f7452a1 ("drm: bridge: icn6211: Add I2C configuration support")
+CC: Marek Vasut <marex@denx.de>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: kernel test robot <lkp@intel.com>
+---
+
+tree:   git://anongit.freedesktop.org/drm/drm-misc drm-misc-next
+head:   3d7039e1e64980a5eb424373b3a5843b7d7891aa
+commit: 8dde6f7452a198a870f74a38118bb1a63da7632e [28/38] drm: bridge: icn6211: Add I2C configuration support
+:::::: branch date: 19 hours ago
+:::::: commit date: 20 hours ago
+
+ drivers/gpu/drm/bridge/chipone-icn6211.c |    1 -
+ 1 file changed, 1 deletion(-)
+
+--- a/drivers/gpu/drm/bridge/chipone-icn6211.c
++++ b/drivers/gpu/drm/bridge/chipone-icn6211.c
+@@ -642,7 +642,6 @@ static struct i2c_driver chipone_i2c_dri
+ 	.id_table = chipone_i2c_id,
+ 	.driver = {
+ 		.name = "chipone-icn6211-i2c",
+-		.owner = THIS_MODULE,
+ 		.of_match_table = chipone_of_match,
+ 	},
+ };
