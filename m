@@ -2,72 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37E3AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 14:37:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF617C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 14:38:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237667AbiCaOjn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 10:39:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52130 "EHLO
+        id S237686AbiCaOkn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 10:40:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234061AbiCaOjk (ORCPT
+        with ESMTP id S236218AbiCaOkk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 10:39:40 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 793A4209A54
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 07:37:53 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3DCFC13D5;
-        Thu, 31 Mar 2022 07:37:53 -0700 (PDT)
-Received: from [192.168.178.6] (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0E2313F73B;
-        Thu, 31 Mar 2022 07:37:51 -0700 (PDT)
-Message-ID: <e93a7d66-7e43-d2c7-ad85-fb24d50effc5@arm.com>
-Date:   Thu, 31 Mar 2022 16:37:50 +0200
+        Thu, 31 Mar 2022 10:40:40 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9879927CD7;
+        Thu, 31 Mar 2022 07:38:50 -0700 (PDT)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.53])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KTm6B5Gg7zBrdT;
+        Thu, 31 Mar 2022 22:34:42 +0800 (CST)
+Received: from dggpemm500017.china.huawei.com (7.185.36.178) by
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Thu, 31 Mar 2022 22:38:47 +0800
+Received: from huawei.com (10.175.101.6) by dggpemm500017.china.huawei.com
+ (7.185.36.178) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Thu, 31 Mar
+ 2022 22:38:46 +0800
+From:   Wenchao Hao <haowenchao@huawei.com>
+To:     "James E . J . Bottomley" <jejb@linux.ibm.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Hannes Reinecke <hare@suse.de>, <linux-scsi@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <linfeilong@huawei.com>, Wenchao Hao <haowenchao@huawei.com>
+Subject: [PATCH] scsi: core: always finish successfully aborted notry command
+Date:   Thu, 31 Mar 2022 23:50:20 -0400
+Message-ID: <20220401035020.1043239-1-haowenchao@huawei.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2] arch/arm64: Fix topology initialization for core
- scheduling
-Content-Language: en-US
-To:     Phil Auld <pauld@redhat.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        linux-arm-kernel@lists.infradead.org
-References: <20220330155611.30216-1-pauld@redhat.com>
- <66f29bee-e26c-b40e-c3af-79d5297565d8@arm.com>
- <20220331132103.GB17613@pauld.bos.csb>
-From:   Dietmar Eggemann <dietmar.eggemann@arm.com>
-In-Reply-To: <20220331132103.GB17613@pauld.bos.csb>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.101.6]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpemm500017.china.huawei.com (7.185.36.178)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 31/03/2022 15:21, Phil Auld wrote:
-> On Thu, Mar 31, 2022 at 11:04:31AM +0200 Dietmar Eggemann wrote:
->> On 30/03/2022 17:56, Phil Auld wrote:
+If the abort command succeed and it does not need to be retired, do not add
+it to error handle list. 
 
-[...]
+Adding command to error handle list is an annoying flow which would stop I/O
+of all LUNs which shared a same HBA.
 
->> Ah, the reason is that smt_mask is not correctly setup, so we bail on
->> `cpumask_weight(smt_mask) == 1` for !leaders in:
->>
->> notify_cpu_starting()
->>   cpuhp_invoke_callback_range()
->>     sched_cpu_starting()
->>       sched_core_cpu_starting()
->>
->> which leads to rq->core not being correctly set for !leader-rq's.
->>
-> 
-> Exactly, sorry I was not clearer.  smt_mask must be setup correctly 
-> by the time sched_core_cpu_starting() is called. (Maybe I should crib
-> some of the above lines into the commit message?)
+So here if we successfully abort a command, we can finish it via
+scsi_finish_command() which would reduce time spent on scsi_error_handler()
 
-Yeah, maybe, it wouldn't hurt I guess. IMHO mentioning stress-ng's prctl
-needs PR_SCHED_CORE support could also be handy since today's stress-ng
-packages don't seem to have this yet.
+Signed-off-by: Wenchao Hao <haowenchao@huawei.com>
+---
+ drivers/scsi/scsi_error.c | 55 +++++++++++++++++++++------------------
+ 1 file changed, 29 insertions(+), 26 deletions(-)
+
+diff --git a/drivers/scsi/scsi_error.c b/drivers/scsi/scsi_error.c
+index cdaca13ac1f1..15299603b7ee 100644
+--- a/drivers/scsi/scsi_error.c
++++ b/drivers/scsi/scsi_error.c
+@@ -173,41 +173,44 @@ scmd_eh_abort_handler(struct work_struct *work)
+ 		goto out;
+ 	}
+ 	set_host_byte(scmd, DID_TIME_OUT);
+-	if (scsi_host_eh_past_deadline(shost)) {
+-		SCSI_LOG_ERROR_RECOVERY(3,
+-			scmd_printk(KERN_INFO, scmd,
+-				    "eh timeout, not retrying "
+-				    "aborted command\n"));
+-		goto out;
+-	}
+ 
+-	spin_lock_irqsave(shost->host_lock, flags);
+-	list_del_init(&scmd->eh_entry);
++	if (scsi_noretry_cmd(scmd) ||
++	    !scsi_cmd_retry_allowed(scmd) &&
++	    !scsi_eh_should_retry_cmd(scmd)) {
++		spin_lock_irqsave(shost->host_lock, flags);
++		list_del_init(&scmd->eh_entry);
+ 
+-	/*
+-	 * If the abort succeeds, and there is no further
+-	 * EH action, clear the ->last_reset time.
+-	 */
+-	if (list_empty(&shost->eh_abort_list) &&
+-	    list_empty(&shost->eh_cmd_q))
+-		if (shost->eh_deadline != -1)
+-			shost->last_reset = 0;
++		/*
++		 * If the abort succeeds, and there is no further
++		 * EH action, clear the ->last_reset time.
++		 */
++		if (list_empty(&shost->eh_abort_list) &&
++		    list_empty(&shost->eh_cmd_q))
++			if (shost->eh_deadline != -1)
++				shost->last_reset = 0;
+ 
+-	spin_unlock_irqrestore(shost->host_lock, flags);
++		spin_unlock_irqrestore(shost->host_lock, flags);
+ 
+-	if (!scsi_noretry_cmd(scmd) &&
+-	    scsi_cmd_retry_allowed(scmd) &&
+-	    scsi_eh_should_retry_cmd(scmd)) {
+-		SCSI_LOG_ERROR_RECOVERY(3,
+-			scmd_printk(KERN_WARNING, scmd,
+-				    "retry aborted command\n"));
+-		scsi_queue_insert(scmd, SCSI_MLQUEUE_EH_RETRY);
+-	} else {
+ 		SCSI_LOG_ERROR_RECOVERY(3,
+ 			scmd_printk(KERN_WARNING, scmd,
+ 				    "finish aborted command\n"));
+ 		scsi_finish_command(scmd);
++		return;
+ 	}
++
++	if (scsi_host_eh_past_deadline(shost)) {
++		SCSI_LOG_ERROR_RECOVERY(3,
++			scmd_printk(KERN_INFO, scmd,
++				    "eh timeout, not retrying "
++				    "aborted command\n"));
++		goto out;
++	}
++
++	SCSI_LOG_ERROR_RECOVERY(3,
++		scmd_printk(KERN_WARNING, scmd,
++			    "retry aborted command\n"));
++	scsi_queue_insert(scmd, SCSI_MLQUEUE_EH_RETRY);
++
+ 	return;
+ 
+ out:
+-- 
+2.32.0
+
