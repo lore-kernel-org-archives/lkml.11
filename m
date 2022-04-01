@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23177C35295
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:02:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6874C352A8
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:02:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351070AbiDAPBP (ORCPT
+        id S1349996AbiDAO6n (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:01:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60858 "EHLO
+        Fri, 1 Apr 2022 10:58:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349335AbiDAOpt (ORCPT
+        with ESMTP id S1347761AbiDAOk0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:45:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA98C29B115;
-        Fri,  1 Apr 2022 07:35:49 -0700 (PDT)
+        Fri, 1 Apr 2022 10:40:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F57428AC59;
+        Fri,  1 Apr 2022 07:33:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9C61360C00;
-        Fri,  1 Apr 2022 14:35:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B1DBC3410F;
-        Fri,  1 Apr 2022 14:35:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9F705B8251D;
+        Fri,  1 Apr 2022 14:33:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF4A6C36AE2;
+        Fri,  1 Apr 2022 14:33:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823749;
-        bh=U7qmQUdlPuFQX3UPu1XTyBEATJfhjBe3w+EizXfZMvw=;
+        s=k20201202; t=1648823627;
+        bh=h4Y8GhbrW7EbudaAIpKpL6s0aQrBD6+OdBbGGRuK+/E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rDIiOodwQbEPhAXW6qtxTV/EA4GboKkkhZCHRqI1MNhh5TKbjnuy+G8gcppq8xHTY
-         O95N+rQUslSUZdnf/KepyFD69CW8yP66mweRHc/gwGYF3vbcC9s8c5awJM9yrxb92X
-         My1UMKVGEugdesv2KQSOCjL6+eh1sctZ05DLJxVf0OLMZGYF46YSTXnzOD9MaVxDIL
-         wos9lk7jbbAR3Q09a5u2DrF6vWtAiCOeHVIwzz5SiA8PrBaP5/SLwuIn5Iyufr4kWR
-         NzxE71XF9ZNAxyrqL7bO37rDfln29agM/lxNePjhyHqaOVtSbxrX+eVwCQaDdBNCyv
-         XQW3VnlyuTmEg==
+        b=F69YJscgqHxxpIRaGnl8FGqC4KfS2yZ/MDrPpu7p2lPZiII4xOyMoqfo8EI3Z6H9T
+         azu7+4zrGLp8PJqJmbw4ocexUZ1Z6EesvoRbiDsHIEdWVd59hRg+OaHo1ZvDdYFaje
+         etExlQ91dR4vXmUTkl0bvK35I4/Pd6utoqzBwsK2O6r3IPrIMFAKeajZMrUsaISB4B
+         0KihtLOob6KN2brUxd94Lpi9y6oxcqPamsXhGf+435oMFtcu8sYl4RhJYe5EvhYVpw
+         oJUnlSLATpn4sI8Z+ywoDHHvzrhnU83YlOxEDlbuqQhpffn1GesQu5fES3a1KLmIcu
+         VIQsAGggBwzTg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mike Snitzer <snitzer@redhat.com>, Zhang Yi <yi.zhang@huawei.com>,
-        Sasha Levin <sashal@kernel.org>, agk@redhat.com,
-        snitzer@kernel.org, dm-devel@redhat.com
-Subject: [PATCH AUTOSEL 5.16 061/109] dm: requeue IO if mapping table not yet available
-Date:   Fri,  1 Apr 2022 10:32:08 -0400
-Message-Id: <20220401143256.1950537-61-sashal@kernel.org>
+Cc:     Philip Yang <Philip.Yang@amd.com>, Ruili Ji <ruili.ji@amd.com>,
+        Felix Kuehling <Felix.Kuehling@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
+        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.16 017/109] drm/amdkfd: svm range restore work deadlock when process exit
+Date:   Fri,  1 Apr 2022 10:31:24 -0400
+Message-Id: <20220401143256.1950537-17-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143256.1950537-1-sashal@kernel.org>
 References: <20220401143256.1950537-1-sashal@kernel.org>
@@ -52,68 +55,104 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mike Snitzer <snitzer@redhat.com>
+From: Philip Yang <Philip.Yang@amd.com>
 
-[ Upstream commit fa247089de9936a46e290d4724cb5f0b845600f5 ]
+[ Upstream commit 6225bb3a88d22594aacea2485dc28ca12d596721 ]
 
-Update both bio-based and request-based DM to requeue IO if the
-mapping table not available.
+kfd_process_notifier_release flush svm_range_restore_work
+which calls svm_range_list_lock_and_flush_work to flush deferred_list
+work, but if deferred_list work mmput release the last user, it will
+call exit_mmap -> notifier_release, it is deadlock with below backtrace.
 
-This race of IO being submitted before the DM device ready is so
-narrow, yet possible for initial table load given that the DM device's
-request_queue is created prior, that it best to requeue IO to handle
-this unlikely case.
+Move flush svm_range_restore_work to kfd_process_wq_release to avoid
+deadlock. Then svm_range_restore_work take task->mm ref to avoid mm is
+gone while validating and mapping ranges to GPU.
 
-Reported-by: Zhang Yi <yi.zhang@huawei.com>
-Signed-off-by: Mike Snitzer <snitzer@redhat.com>
+Workqueue: events svm_range_deferred_list_work [amdgpu]
+Call Trace:
+ wait_for_completion+0x94/0x100
+ __flush_work+0x12a/0x1e0
+ __cancel_work_timer+0x10e/0x190
+ cancel_delayed_work_sync+0x13/0x20
+ kfd_process_notifier_release+0x98/0x2a0 [amdgpu]
+ __mmu_notifier_release+0x74/0x1f0
+ exit_mmap+0x170/0x200
+ mmput+0x5d/0x130
+ svm_range_deferred_list_work+0x104/0x230 [amdgpu]
+ process_one_work+0x220/0x3c0
+
+Signed-off-by: Philip Yang <Philip.Yang@amd.com>
+Reported-by: Ruili Ji <ruili.ji@amd.com>
+Tested-by: Ruili Ji <ruili.ji@amd.com>
+Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/md/dm-rq.c |  7 ++++++-
- drivers/md/dm.c    | 11 +++--------
- 2 files changed, 9 insertions(+), 9 deletions(-)
+ drivers/gpu/drm/amd/amdkfd/kfd_process.c |  1 -
+ drivers/gpu/drm/amd/amdkfd/kfd_svm.c     | 15 +++++++++------
+ 2 files changed, 9 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/md/dm-rq.c b/drivers/md/dm-rq.c
-index 579ab6183d4d..dffeb47a9efb 100644
---- a/drivers/md/dm-rq.c
-+++ b/drivers/md/dm-rq.c
-@@ -499,8 +499,13 @@ static blk_status_t dm_mq_queue_rq(struct blk_mq_hw_ctx *hctx,
+diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_process.c b/drivers/gpu/drm/amd/amdkfd/kfd_process.c
+index b993011cfa64..990228711108 100644
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_process.c
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_process.c
+@@ -1150,7 +1150,6 @@ static void kfd_process_notifier_release(struct mmu_notifier *mn,
  
- 	if (unlikely(!ti)) {
- 		int srcu_idx;
--		struct dm_table *map = dm_get_live_table(md, &srcu_idx);
-+		struct dm_table *map;
+ 	cancel_delayed_work_sync(&p->eviction_work);
+ 	cancel_delayed_work_sync(&p->restore_work);
+-	cancel_delayed_work_sync(&p->svms.restore_work);
  
-+		map = dm_get_live_table(md, &srcu_idx);
-+		if (unlikely(!map)) {
-+			dm_put_live_table(md, srcu_idx);
-+			return BLK_STS_RESOURCE;
-+		}
- 		ti = dm_table_find_target(map, 0);
- 		dm_put_live_table(md, srcu_idx);
- 	}
-diff --git a/drivers/md/dm.c b/drivers/md/dm.c
-index 356a0183e1ad..5522ea1f18c5 100644
---- a/drivers/md/dm.c
-+++ b/drivers/md/dm.c
-@@ -1563,15 +1563,10 @@ static void dm_submit_bio(struct bio *bio)
- 	struct dm_table *map;
+ 	mutex_lock(&p->mutex);
  
- 	map = dm_get_live_table(md, &srcu_idx);
--	if (unlikely(!map)) {
--		DMERR_LIMIT("%s: mapping table unavailable, erroring io",
--			    dm_device_name(md));
--		bio_io_error(bio);
--		goto out;
--	}
+diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_svm.c b/drivers/gpu/drm/amd/amdkfd/kfd_svm.c
+index ea1c5aaf659a..a1b0c6bda803 100644
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_svm.c
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_svm.c
+@@ -1589,13 +1589,14 @@ static void svm_range_restore_work(struct work_struct *work)
  
--	/* If suspended, queue this IO for later */
--	if (unlikely(test_bit(DMF_BLOCK_IO_FOR_SUSPEND, &md->flags))) {
-+	/* If suspended, or map not yet available, queue this IO for later */
-+	if (unlikely(test_bit(DMF_BLOCK_IO_FOR_SUSPEND, &md->flags)) ||
-+	    unlikely(!map)) {
- 		if (bio->bi_opf & REQ_NOWAIT)
- 			bio_wouldblock_error(bio);
- 		else if (bio->bi_opf & REQ_RAHEAD)
+ 	pr_debug("restore svm ranges\n");
+ 
+-	/* kfd_process_notifier_release destroys this worker thread. So during
+-	 * the lifetime of this thread, kfd_process and mm will be valid.
+-	 */
+ 	p = container_of(svms, struct kfd_process, svms);
+-	mm = p->mm;
+-	if (!mm)
++
++	/* Keep mm reference when svm_range_validate_and_map ranges */
++	mm = get_task_mm(p->lead_thread);
++	if (!mm) {
++		pr_debug("svms 0x%p process mm gone\n", svms);
+ 		return;
++	}
+ 
+ 	svm_range_list_lock_and_flush_work(svms, mm);
+ 	mutex_lock(&svms->lock);
+@@ -1649,6 +1650,7 @@ static void svm_range_restore_work(struct work_struct *work)
+ out_reschedule:
+ 	mutex_unlock(&svms->lock);
+ 	mmap_write_unlock(mm);
++	mmput(mm);
+ 
+ 	/* If validation failed, reschedule another attempt */
+ 	if (evicted_ranges) {
+@@ -2779,6 +2781,8 @@ void svm_range_list_fini(struct kfd_process *p)
+ 
+ 	pr_debug("pasid 0x%x svms 0x%p\n", p->pasid, &p->svms);
+ 
++	cancel_delayed_work_sync(&p->svms.restore_work);
++
+ 	/* Ensure list work is finished before process is destroyed */
+ 	flush_work(&p->svms.deferred_list_work);
+ 
+@@ -2789,7 +2793,6 @@ void svm_range_list_fini(struct kfd_process *p)
+ 	atomic_inc(&p->svms.drain_pagefaults);
+ 	svm_range_drain_retry_fault(&p->svms);
+ 
+-
+ 	list_for_each_entry_safe(prange, next, &p->svms.list, list) {
+ 		svm_range_unlink(prange);
+ 		svm_range_remove_notifier(prange);
 -- 
 2.34.1
 
