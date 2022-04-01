@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81CC4C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:33:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C56E2C4321E
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:33:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347537AbiDAOdH (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 10:33:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38730 "EHLO
+        id S241383AbiDAOfC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Apr 2022 10:35:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347335AbiDAObu (ORCPT
+        with ESMTP id S1347377AbiDAOcI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:31:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C463B287893;
-        Fri,  1 Apr 2022 07:28:07 -0700 (PDT)
+        Fri, 1 Apr 2022 10:32:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CADE36B5F;
+        Fri,  1 Apr 2022 07:28:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6C98CB82500;
-        Fri,  1 Apr 2022 14:28:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2EC6C2BBE4;
-        Fri,  1 Apr 2022 14:28:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 23BDDB8240E;
+        Fri,  1 Apr 2022 14:28:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55CA4C340EE;
+        Fri,  1 Apr 2022 14:28:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823285;
-        bh=/Sls+JHs9TRKXpnZZuBDGI+ZUl+mKBl1/kLNssoBal8=;
+        s=k20201202; t=1648823311;
+        bh=c8TjKPcrOluaxY+tbry9iwgrFV68Q5NpjoOYMtInmwk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tx+GPOY61j4GETIDSFYVv1okP/ygWRUWg3rSa+bMn9c5EvN31wq2rMafpFQTPfWxb
-         3bdjkySPl/eS5ulHmJgoVkz9WtkQju5sdwx98VmEHa9mcDm9YLQPvQhJEcqfL1VnxY
-         AopAitUPzn/OfcTuZA5cdTNBgPQEYVffzxvugSbtSAAYdDfZhDDFuZ690StvWTe/JT
-         LIakwWljCvrIk+/8lHZwitndDFQza+Ch8NPJC+lFaoh8o0ERAQc27L3MqmO5C9zU9m
-         tRguMDh4hzPPFO3+UBJZKRX1qLE0ZJyanbav18SN/e84iE7HyRmYV2dIY/ZIRlV0F/
-         q7iUtbwddZcjQ==
+        b=GqZh6BUbvZ2LKV+wjfWfoxh2gm48W97CS8iT5af1wCn1Z8Hnm+VLW5Bka3X6kBvdx
+         P7U+lt6Gkr/U8AR/tMnEA1CrznHoWfBEh5nIwElC9TdlPmDkAVKQToTww2IW/6qXBb
+         A59TdTMT+MRa+sMdQAYM3kEDUPZXH62J5gYD3jxizebf/+x/qHJjkdW5MYVABoiyCL
+         Qfews+SOZAw5Tbjnm8wNsNavjjJ0Hd2sAve4EyieLVJDqGMNjyOmBOsJmLPLJoBKP/
+         7ID4u94rcYe9MQqkBFq5MtFUyYXCfat5QtXAtdpPxIvMh9JKYSSRErYTnZkpLYsYCq
+         WroAbj9gFgFdg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, vbabka@suse.cz,
-        dvyukov@google.com, colin.king@intel.com, kuba@kernel.org
-Subject: [PATCH AUTOSEL 5.17 045/149] ref_tracker: implement use-after-free detection
-Date:   Fri,  1 Apr 2022 10:23:52 -0400
-Message-Id: <20220401142536.1948161-45-sashal@kernel.org>
+Cc:     Ricardo Koller <ricarkol@google.com>,
+        Reiji Watanabe <reijiw@google.com>,
+        Andrew Jones <drjones@redhat.com>,
+        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        pbonzini@redhat.com, shuah@kernel.org,
+        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
+        kvm@vger.kernel.org, linux-kselftest@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 052/149] kvm: selftests: aarch64: fix assert in gicv3_access_reg
+Date:   Fri,  1 Apr 2022 10:23:59 -0400
+Message-Id: <20220401142536.1948161-52-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401142536.1948161-1-sashal@kernel.org>
 References: <20220401142536.1948161-1-sashal@kernel.org>
@@ -53,76 +55,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Ricardo Koller <ricarkol@google.com>
 
-[ Upstream commit e3ececfe668facd87d920b608349a32607060e66 ]
+[ Upstream commit cc94d47ce16d4147d546e47c8248e8bd12ba5fe5 ]
 
-Whenever ref_tracker_dir_init() is called, mark the struct ref_tracker_dir
-as dead.
+The val argument in gicv3_access_reg can have any value when used for a
+read, not necessarily 0.  Fix the assert by checking val only for
+writes.
 
-Test the dead status from ref_tracker_alloc() and ref_tracker_free()
-
-This should detect buggy dev_put()/dev_hold() happening too late
-in netdevice dismantle process.
-
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Ricardo Koller <ricarkol@google.com>
+Reported-by: Reiji Watanabe <reijiw@google.com>
+Cc: Andrew Jones <drjones@redhat.com>
+Reviewed-by: Andrew Jones <drjones@redhat.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220127030858.3269036-2-ricarkol@google.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/ref_tracker.h | 2 ++
- lib/ref_tracker.c           | 5 +++++
- 2 files changed, 7 insertions(+)
+ tools/testing/selftests/kvm/lib/aarch64/gic_v3.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/linux/ref_tracker.h b/include/linux/ref_tracker.h
-index 60f3453be23e..a443abda937d 100644
---- a/include/linux/ref_tracker.h
-+++ b/include/linux/ref_tracker.h
-@@ -13,6 +13,7 @@ struct ref_tracker_dir {
- 	spinlock_t		lock;
- 	unsigned int		quarantine_avail;
- 	refcount_t		untracked;
-+	bool			dead;
- 	struct list_head	list; /* List of active trackers */
- 	struct list_head	quarantine; /* List of dead trackers */
- #endif
-@@ -26,6 +27,7 @@ static inline void ref_tracker_dir_init(struct ref_tracker_dir *dir,
- 	INIT_LIST_HEAD(&dir->quarantine);
- 	spin_lock_init(&dir->lock);
- 	dir->quarantine_avail = quarantine_count;
-+	dir->dead = false;
- 	refcount_set(&dir->untracked, 1);
- 	stack_depot_init();
- }
-diff --git a/lib/ref_tracker.c b/lib/ref_tracker.c
-index a6789c0c626b..32ff6bd497f8 100644
---- a/lib/ref_tracker.c
-+++ b/lib/ref_tracker.c
-@@ -20,6 +20,7 @@ void ref_tracker_dir_exit(struct ref_tracker_dir *dir)
- 	unsigned long flags;
- 	bool leak = false;
+diff --git a/tools/testing/selftests/kvm/lib/aarch64/gic_v3.c b/tools/testing/selftests/kvm/lib/aarch64/gic_v3.c
+index 00f613c0583c..e4945fe66620 100644
+--- a/tools/testing/selftests/kvm/lib/aarch64/gic_v3.c
++++ b/tools/testing/selftests/kvm/lib/aarch64/gic_v3.c
+@@ -159,7 +159,7 @@ static void gicv3_access_reg(uint32_t intid, uint64_t offset,
+ 	uint32_t cpu_or_dist;
  
-+	dir->dead = true;
- 	spin_lock_irqsave(&dir->lock, flags);
- 	list_for_each_entry_safe(tracker, n, &dir->quarantine, head) {
- 		list_del(&tracker->head);
-@@ -72,6 +73,8 @@ int ref_tracker_alloc(struct ref_tracker_dir *dir,
- 	gfp_t gfp_mask = gfp;
- 	unsigned long flags;
- 
-+	WARN_ON_ONCE(dir->dead);
-+
- 	if (gfp & __GFP_DIRECT_RECLAIM)
- 		gfp_mask |= __GFP_NOFAIL;
- 	*trackerp = tracker = kzalloc(sizeof(*tracker), gfp_mask);
-@@ -100,6 +103,8 @@ int ref_tracker_free(struct ref_tracker_dir *dir,
- 	unsigned int nr_entries;
- 	unsigned long flags;
- 
-+	WARN_ON_ONCE(dir->dead);
-+
- 	if (!tracker) {
- 		refcount_dec(&dir->untracked);
- 		return -EEXIST;
+ 	GUEST_ASSERT(bits_per_field <= reg_bits);
+-	GUEST_ASSERT(*val < (1U << bits_per_field));
++	GUEST_ASSERT(!write || *val < (1U << bits_per_field));
+ 	/* Some registers like IROUTER are 64 bit long. Those are currently not
+ 	 * supported by readl nor writel, so just asserting here until then.
+ 	 */
 -- 
 2.34.1
 
