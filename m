@@ -2,127 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 118C9C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 07:06:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 992DDC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 07:06:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343722AbiDAHHw (ORCPT
+        id S1343702AbiDAHIe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 03:07:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37872 "EHLO
+        Fri, 1 Apr 2022 03:08:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241247AbiDAHHl (ORCPT
+        with ESMTP id S235140AbiDAHIc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 03:07:41 -0400
-Received: from ha.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4FC23FA213;
-        Fri,  1 Apr 2022 00:05:51 -0700 (PDT)
-Received: from localhost (unknown [127.0.0.1])
-        by ha.nfschina.com (Postfix) with ESMTP id EBFCB1E80CC5;
-        Fri,  1 Apr 2022 15:05:21 +0800 (CST)
-X-Virus-Scanned: amavisd-new at test.com
-Received: from ha.nfschina.com ([127.0.0.1])
-        by localhost (ha.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id hKzsnrIxJeEi; Fri,  1 Apr 2022 15:05:19 +0800 (CST)
-Received: from ubuntu.localdomain (unknown [101.228.248.165])
-        (Authenticated sender: yuzhe@nfschina.com)
-        by ha.nfschina.com (Postfix) with ESMTPA id ABEB21E80C85;
-        Fri,  1 Apr 2022 15:05:18 +0800 (CST)
-From:   Yu Zhe <yuzhe@nfschina.com>
-To:     ericvh@gmail.com, lucho@ionkov.net, asmadeus@codewreck.org,
-        linux_oss@crudebyte.com
-Cc:     v9fs-developer@lists.sourceforge.net, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, liqiong@nfschina.com,
-        Yu Zhe <yuzhe@nfschina.com>
-Subject: [PATCH] 9p: remove unnecessary type castings
-Date:   Fri,  1 Apr 2022 00:05:45 -0700
-Message-Id: <20220401070545.50577-1-yuzhe@nfschina.com>
+        Fri, 1 Apr 2022 03:08:32 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 893BD22BD49;
+        Fri,  1 Apr 2022 00:06:43 -0700 (PDT)
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KVB4s3VZdzgYFZ;
+        Fri,  1 Apr 2022 15:05:01 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Fri, 1 Apr 2022 15:06:41 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Fri, 1 Apr
+ 2022 15:06:41 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <kvm@vger.kernel.org>
+CC:     <pbonzini@redhat.com>
+Subject: [PATCH -next] KVM: x86/mmu: Fix return value check in kvm_mmu_init_tdp_mmu()
+Date:   Fri, 1 Apr 2022 15:15:31 +0800
+Message-ID: <20220401071531.1841927-1-yangyingliang@huawei.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-remove unnecessary void* type castings.
+If alloc_workqueue() fails, it returns NULL pointer, replaces
+IS_ERR() check with NULL pointer check.
 
-Signed-off-by: Yu Zhe <yuzhe@nfschina.com>
+Fixes: 1a3320dd2939 ("KVM: MMU: propagate alloc_workqueue failure")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 ---
- fs/9p/fid.c            | 2 +-
- fs/9p/v9fs.c           | 2 +-
- fs/9p/vfs_inode.c      | 4 ++--
- fs/9p/vfs_inode_dotl.c | 4 ++--
- 4 files changed, 6 insertions(+), 6 deletions(-)
+ arch/x86/kvm/mmu/tdp_mmu.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/fs/9p/fid.c b/fs/9p/fid.c
-index 79df61fe0e59..c2b8d7fc9e53 100644
---- a/fs/9p/fid.c
-+++ b/fs/9p/fid.c
-@@ -53,7 +53,7 @@ static struct p9_fid *v9fs_fid_find_inode(struct inode *inode, kuid_t uid)
- 	p9_debug(P9_DEBUG_VFS, " inode: %p\n", inode);
+diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
+index a2f9a34a0168..7bddbb51033a 100644
+--- a/arch/x86/kvm/mmu/tdp_mmu.c
++++ b/arch/x86/kvm/mmu/tdp_mmu.c
+@@ -22,8 +22,8 @@ int kvm_mmu_init_tdp_mmu(struct kvm *kvm)
+ 		return 0;
  
- 	spin_lock(&inode->i_lock);
--	h = (struct hlist_head *)&inode->i_private;
-+	h = &inode->i_private;
- 	hlist_for_each_entry(fid, h, ilist) {
- 		if (uid_eq(fid->uid, uid)) {
- 			refcount_inc(&fid->count);
-diff --git a/fs/9p/v9fs.c b/fs/9p/v9fs.c
-index e28ddf763b3b..51ddc58a7029 100644
---- a/fs/9p/v9fs.c
-+++ b/fs/9p/v9fs.c
-@@ -622,7 +622,7 @@ static void v9fs_sysfs_cleanup(void)
+ 	wq = alloc_workqueue("kvm", WQ_UNBOUND|WQ_MEM_RECLAIM|WQ_CPU_INTENSIVE, 0);
+-	if (IS_ERR(wq))
+-		return PTR_ERR(wq);
++	if (!wq)
++		return -ENOMEM;
  
- static void v9fs_inode_init_once(void *foo)
- {
--	struct v9fs_inode *v9inode = (struct v9fs_inode *)foo;
-+	struct v9fs_inode *v9inode = foo;
- 
- 	memset(&v9inode->qid, 0, sizeof(v9inode->qid));
- 	inode_init_once(&v9inode->vfs_inode);
-diff --git a/fs/9p/vfs_inode.c b/fs/9p/vfs_inode.c
-index 55367ecb9442..f415fd7a1eaf 100644
---- a/fs/9p/vfs_inode.c
-+++ b/fs/9p/vfs_inode.c
-@@ -409,7 +409,7 @@ static int v9fs_test_inode(struct inode *inode, void *data)
- 	int umode;
- 	dev_t rdev;
- 	struct v9fs_inode *v9inode = V9FS_I(inode);
--	struct p9_wstat *st = (struct p9_wstat *)data;
-+	struct p9_wstat *st = data;
- 	struct v9fs_session_info *v9ses = v9fs_inode2v9ses(inode);
- 
- 	umode = p9mode2unixmode(v9ses, st, &rdev);
-@@ -438,7 +438,7 @@ static int v9fs_test_new_inode(struct inode *inode, void *data)
- static int v9fs_set_inode(struct inode *inode,  void *data)
- {
- 	struct v9fs_inode *v9inode = V9FS_I(inode);
--	struct p9_wstat *st = (struct p9_wstat *)data;
-+	struct p9_wstat *st = data;
- 
- 	memcpy(&v9inode->qid, &st->qid, sizeof(st->qid));
- 	return 0;
-diff --git a/fs/9p/vfs_inode_dotl.c b/fs/9p/vfs_inode_dotl.c
-index d17502a738a9..b910fee62e25 100644
---- a/fs/9p/vfs_inode_dotl.c
-+++ b/fs/9p/vfs_inode_dotl.c
-@@ -57,7 +57,7 @@ static kgid_t v9fs_get_fsgid_for_create(struct inode *dir_inode)
- static int v9fs_test_inode_dotl(struct inode *inode, void *data)
- {
- 	struct v9fs_inode *v9inode = V9FS_I(inode);
--	struct p9_stat_dotl *st = (struct p9_stat_dotl *)data;
-+	struct p9_stat_dotl *st = data;
- 
- 	/* don't match inode of different type */
- 	if (inode_wrong_type(inode, st->st_mode))
-@@ -88,7 +88,7 @@ static int v9fs_test_new_inode_dotl(struct inode *inode, void *data)
- static int v9fs_set_inode_dotl(struct inode *inode,  void *data)
- {
- 	struct v9fs_inode *v9inode = V9FS_I(inode);
--	struct p9_stat_dotl *st = (struct p9_stat_dotl *)data;
-+	struct p9_stat_dotl *st = data;
- 
- 	memcpy(&v9inode->qid, &st->qid, sizeof(st->qid));
- 	inode->i_generation = st->st_gen;
+ 	/* This should not be changed for the lifetime of the VM. */
+ 	kvm->arch.tdp_mmu_enabled = true;
 -- 
 2.25.1
 
