@@ -2,116 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C18CC47081
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BCB3C47082
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:40:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356943AbiDAPiE (ORCPT
+        id S1357120AbiDAPiQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:38:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53782 "EHLO
+        Fri, 1 Apr 2022 11:38:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350625AbiDAPAX (ORCPT
+        with ESMTP id S1350581AbiDAPAM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 11:00:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CF62185452;
-        Fri,  1 Apr 2022 07:48:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Fri, 1 Apr 2022 11:00:12 -0400
+Received: from mail1.bemta33.messagelabs.com (mail1.bemta33.messagelabs.com [67.219.247.4])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F359185444;
+        Fri,  1 Apr 2022 07:48:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=motorola.com;
+        s=Selector; t=1648824482; i=@motorola.com;
+        bh=WROaxWWWhA/Ka6VGT9NzyKO1Nh1SHOr11ZyLRrXkfR8=;
+        h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+         Content-Type:In-Reply-To;
+        b=YT9MHsIuTMP2sKtPAnUbU0aitOxqst3UA6DNHLU8FJfIZhJs2z5MLzgJ36d//TE0D
+         Dy9bSmjDl8rJQzHru+mHwo/wtYC6H+jpOW05rfNoS9FtUx6I9VBQujTMrKWykQ6D0N
+         UaiZKF9Omck/NXOkcKnss+ieA6tdETflC9/37mtxr/881LKMNdpb+66GjZBQnCkRD7
+         b5OAniYpPD0ev5qRTg/Bzq5S41jlf8wtF+/9OzhH2L2oUGjOAZVe3qkBqtaVflDO4E
+         0tjqPvHJpHo5gVJAqFwbGDI712b2GHLfeBmJUqvByMIbAgxz4nZmZ5snLvaIc7/I1h
+         KCz6tnMYj/hPg==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrEIsWRWlGSWpSXmKPExsWS8eKJqO5CAfc
+  kgwm7dS2OtT1ht5izOdriyYF2RovmxevZLDonLmG3WNi2hMXi8q45bBaLlrUyWzycfZXR4u2d
+  6SwWCzY+YnTg9pjdMZPVY/MKLY9NqzrZPPbPXcPusbhvMqvH501yHoe2v2ELYI9izcxLyq9IY
+  M248+w1U8F01orOT/+ZGhins3QxcnEICUxnknh4o4sZwlnEJLFrx1Egh5ODRUBF4s7MnywgNp
+  uAmsSC16vA4iICxhL9Z2exg9jMAk+ZJCbO4gOxhQWCJNq6/4LFeQWUJZ58W8YIYgsJhEv8XbC
+  cFSIuKHFy5hMWiF4tiRv/XjJ1MXIA2dISy/9xgIQ5BTQl2hdvY5nAyDsLSccsJB2zEDoWMDKv
+  YrROKspMzyjJTczM0TU0MNA1NDTRNTfUNTI00kus0k3UKy3WTU0sLtEFcsuL9VKLi/WKK3OTc
+  1L08lJLNjECoyKlyP3KDsb7K3/qHWKU5GBSEuW9vMEtSYgvKT+lMiOxOCO+qDQntfgQowwHh5
+  IELx+fe5KQYFFqempFWmYOMEJh0hIcPEoivIasQGne4oLE3OLMdIjUKUZFKXHeIyB9AiCJjNI
+  8uDZYUrjEKCslzMvIwMAgxFOQWpSbWYIq/4pRnINRSZh3Ez/QFJ7MvBK46a+AFjMBLda/4Qqy
+  uCQRISXVwORdufPntCVVDsll+msvc+y9vsjfK4PbbNZirX3zFCsbJxjkGiilrNDWq2334HJ2m
+  2CatKWG5dX9i3UNqQwOOVGPeL01X7sc7fS2Kjgc4nb7/KK1EzTn2zRbr7z6I3C+6SMla9WtlR
+  YvbnoYvZDXSlx+pum74VqtTf338s6GGwQz3n42L8+M+c90/d7oNNFTWzbO2WbYz/BP68/T0B+
+  /X3S+O3xG4/qDSy2eAcVXtvmo3nl9pi972yU5P+uUE8mPs/bnhNa+MggS0pv39MbaRMXbK6Vu
+  V3XpP+D89tyZnyHuynT5gy4u8c4sgfYyZb1Klvdvn3hoJJ/QmrG85SN7Sk74ufXi9gc4mi9yV
+  nwOV2Ipzkg01GIuKk4EALAcgk2FAwAA
+X-Env-Sender: w36195@motorola.com
+X-Msg-Ref: server-8.tower-715.messagelabs.com!1648824481!21610!1
+X-Originating-IP: [104.232.228.21]
+X-SYMC-ESS-Client-Auth: outbound-route-from=pass
+X-StarScan-Received: 
+X-StarScan-Version: 9.85.5; banners=-,-,-
+X-VirusChecked: Checked
+Received: (qmail 20062 invoked from network); 1 Apr 2022 14:48:01 -0000
+Received: from unknown (HELO va32lpfpp01.lenovo.com) (104.232.228.21)
+  by server-8.tower-715.messagelabs.com with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP; 1 Apr 2022 14:48:01 -0000
+Received: from va32lmmrp01.lenovo.com (va32lmmrp01.mot.com [10.62.177.113])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by va32lpfpp01.lenovo.com (Postfix) with ESMTPS id 4KVNM52X3GzgNVf;
+        Fri,  1 Apr 2022 14:48:01 +0000 (UTC)
+Received: from p1g3 (unknown [10.45.5.41])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 28FB060AD8;
-        Fri,  1 Apr 2022 14:48:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 948C5C34114;
-        Fri,  1 Apr 2022 14:48:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824485;
-        bh=2tozWS5tfBdaYLvOOUCaxEOdv61E7cXQz0LV10ZBMtU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HRNvni91x0sDPRG8lAJbYL/HSUVZMa8bGuncghDBfb3vxYeZr1qKccJqluOHeu7SH
-         IVlyR7dUdLyNQcqcvyQYl135Ahwo6P8NFW9ZYVq0QLi5h0a1ZvPKnCwnns/9b69AhN
-         Ten+to2R5RFYGKvkDcRPvDO5qZ2qtDxwrpwJG4FjrmW58S+eCfgUjLLYQyPdWHwnFG
-         U8cvKCb95MVLg+Q8cH7dLUXuvIH1mb4ZmUxcnpucFT0/djLXiVuLH5abLiH9wJo0IS
-         scpb+K17VdmfOfaYpHFxNcjhC9YH/LtmBHcELCZOUU0hHKYmdlW/24DiaHAfdPH4Bk
-         lHLgWiYUDfVCA==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sven Eckelmann <sven@narfation.org>,
-        =?UTF-8?q?Leonardo=20M=C3=B6rlein?= <freifunk@irrelefant.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        pabeni@redhat.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 14/22] macvtap: advertise link netns via netlink
-Date:   Fri,  1 Apr 2022 10:47:21 -0400
-Message-Id: <20220401144729.1955554-14-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220401144729.1955554-1-sashal@kernel.org>
-References: <20220401144729.1955554-1-sashal@kernel.org>
+        (Authenticated sender: w36195)
+        by va32lmmrp01.lenovo.com (Postfix) with ESMTPSA id 4KVNM46W96zf6f8;
+        Fri,  1 Apr 2022 14:48:00 +0000 (UTC)
+Date:   Fri, 1 Apr 2022 09:47:54 -0500
+From:   Dan Vacura <w36195@motorola.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-usb@vger.kernel.org, stable@vger.kernel.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Felipe Balbi <balbi@kernel.org>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Carlos Bilbao <bilbao@vt.edu>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org
+Subject: Re: [PATCH] usb: gadget: uvc: allow changing interface name via
+ configfs
+Message-ID: <YkcQmrm30D7cNPDo@p1g3>
+References: <20220331211155.412906-1-w36195@motorola.com>
+ <YkaZcSsadjHp1yJZ@kroah.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YkaZcSsadjHp1yJZ@kroah.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sven Eckelmann <sven@narfation.org>
+On Fri, Apr 01, 2022 at 08:19:29AM +0200, Greg Kroah-Hartman wrote:
+> On Thu, Mar 31, 2022 at 04:11:50PM -0500, Dan Vacura wrote:
+> > Add a configfs entry, "function_name", to change the iInterface field
+> > for VideoControl. This name is used on host devices for user selection,
+> > useful when multiple cameras are present. The default will remain "UVC
+> > Camera".
+> > 
+> > Cc: <stable@vger.kernel.org> # 5.10+
+> 
+> Why is adding a new feature a stable kernel issue?
+> 
+> confused,
+> 
+> greg k-h
 
-[ Upstream commit a02192151b7dbf855084c38dca380d77c7658353 ]
+The intention is to get this change integrated into the Android GKI 5.10
+and 5.15 release lines.
 
-Assign rtnl_link_ops->get_link_net() callback so that IFLA_LINK_NETNSID is
-added to rtnetlink messages. This fixes iproute2 which otherwise resolved
-the link interface to an interface in the wrong namespace.
+Sorry for the confusion or if I misunderstood the process,
 
-Test commands:
-
-  ip netns add nst
-  ip link add dummy0 type dummy
-  ip link add link macvtap0 link dummy0 type macvtap
-  ip link set macvtap0 netns nst
-  ip -netns nst link show macvtap0
-
-Before:
-
-  10: macvtap0@gre0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 500
-      link/ether 5e:8f:ae:1d:60:50 brd ff:ff:ff:ff:ff:ff
-
-After:
-
-  10: macvtap0@if2: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 500
-      link/ether 5e:8f:ae:1d:60:50 brd ff:ff:ff:ff:ff:ff link-netnsid 0
-
-Reported-by: Leonardo Mörlein <freifunk@irrelefant.net>
-Signed-off-by: Sven Eckelmann <sven@narfation.org>
-Link: https://lore.kernel.org/r/20220228003240.1337426-1-sven@narfation.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/macvtap.c | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/drivers/net/macvtap.c b/drivers/net/macvtap.c
-index cba5cb3b849a..dc89019ca876 100644
---- a/drivers/net/macvtap.c
-+++ b/drivers/net/macvtap.c
-@@ -132,11 +132,17 @@ static void macvtap_setup(struct net_device *dev)
- 	dev->tx_queue_len = TUN_READQ_SIZE;
- }
- 
-+static struct net *macvtap_link_net(const struct net_device *dev)
-+{
-+	return dev_net(macvlan_dev_real_dev(dev));
-+}
-+
- static struct rtnl_link_ops macvtap_link_ops __read_mostly = {
- 	.kind		= "macvtap",
- 	.setup		= macvtap_setup,
- 	.newlink	= macvtap_newlink,
- 	.dellink	= macvtap_dellink,
-+	.get_link_net	= macvtap_link_net,
- 	.priv_size      = sizeof(struct macvtap_dev),
- };
- 
--- 
-2.34.1
+Dan
 
