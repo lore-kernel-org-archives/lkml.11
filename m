@@ -2,47 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 909D7C4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AC2CC3526F
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:13:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354117AbiDAPLf (ORCPT
+        id S1354089AbiDAPLb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:11:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60630 "EHLO
+        Fri, 1 Apr 2022 11:11:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351843AbiDAOth (ORCPT
+        with ESMTP id S1351740AbiDAOtc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:49:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E32082908B1;
-        Fri,  1 Apr 2022 07:40:28 -0700 (PDT)
+        Fri, 1 Apr 2022 10:49:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C477A2AE9EA;
+        Fri,  1 Apr 2022 07:40:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 00DB4B824D8;
-        Fri,  1 Apr 2022 14:39:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0A3EC2BBE4;
-        Fri,  1 Apr 2022 14:39:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8FF7E60AC0;
+        Fri,  1 Apr 2022 14:39:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D52FC2BBE4;
+        Fri,  1 Apr 2022 14:39:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823984;
-        bh=sl/L3IoLhbxSi+8SA2V9tdINBn6+oqofJHpHEInNECk=;
+        s=k20201202; t=1648823949;
+        bh=vBGx33Wn8vdpqlSGsDLQDabP1YY57w7LH92QQ7aujnc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LCKIMbXodDYszSNtvXX6AUSUkwkmqGBjAdtUucBwuIEP6ZfV5fZ0lwK0VqA7sdPYv
-         MN27/XnXOEP8HRC+Fd8RkEY4Yp1lGgplwf5CQ5l4IlsdVTtfbD4QeDNG7XZTCTVaBp
-         9xvBvTiEBsKl3FqafQS2IH2pjJSNnmHl5cGqGQy/CHGEtbm0uFicj925V17NtBzCR7
-         1yOf6ZpYH7Hjf0wWj+MxcOUGiOWKAxKf8Ze2umv/slvfXtnDN0yMGxSOSme+IVBQRY
-         vEWgMcthylV7alOJE7Kh7zIVmRpn+bYdTKZwFWVSObzNiwtO0iFzZx9KA5jxBT+tJm
-         6KaCchpZvaPMg==
+        b=YmoKQflxbLpp9HcRyqdXOXmhCFE77AdmfQp7ANvKjuVJjfbEtvSUcuxb1cD0IdCKU
+         qru/jXOP354X1Rar8swi9uuHm6Ea5y65Veoh92kzx5bupcYNhVCXWq7VvqYTVkGpkD
+         4pS7c0BjQuJF1NOiNhIMg4enG9u9UM1i/ptucimIFiAGYpl9ISzIlBeJOJsgxbqzzc
+         psqghSBkZXutRcK+xDJ90VZ9Z9YmaBAMPw5c+NdU2CsHe2OM2tVgOjMLonoJG+CtRY
+         WhOfYCd2qecM+5meXRuxNzJLuk48M1s/kZugkoLmeRfOYSNUFRaIjKC7Z06npyLYZU
+         HVp5PEiWwMuEg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Maxime Bizon <mbizon@freebox.fr>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>, ruscur@russell.cc,
-        jniethe5@gmail.com, dja@axtens.net, linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH AUTOSEL 5.15 40/98] powerpc/set_memory: Avoid spinlock recursion in change_page_attr()
-Date:   Fri,  1 Apr 2022 10:36:44 -0400
-Message-Id: <20220401143742.1952163-40-sashal@kernel.org>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
+        pabeni@redhat.com, akpm@linux-foundation.org, rostedt@goodmis.org,
+        mhiramat@kernel.org, vbabka@suse.cz, ahalaney@redhat.com,
+        linux@rasmusvillemoes.dk, wangkefeng.wang@huawei.com,
+        keescook@chromium.org, mark-pk.tsai@mediatek.com,
+        valentin.schneider@arm.com, peterz@infradead.org,
+        bigeasy@linutronix.de, toke@redhat.com, imagedong@tencent.com,
+        petrm@nvidia.com, memxor@gmail.com, arnd@arndb.de,
+        changbin.du@intel.com, yajun.deng@linux.dev, brauner@kernel.org,
+        hmukos@yandex-team.ru, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 28/98] net: initialize init_net earlier
+Date:   Fri,  1 Apr 2022 10:36:32 -0400
+Message-Id: <20220401143742.1952163-28-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143742.1952163-1-sashal@kernel.org>
 References: <20220401143742.1952163-1-sashal@kernel.org>
@@ -54,136 +61,150 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe Leroy <christophe.leroy@csgroup.eu>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit a4c182ecf33584b9b2d1aa9dad073014a504c01f ]
+[ Upstream commit 9c1be1935fb68b2413796cdc03d019b8cf35ab51 ]
 
-Commit 1f9ad21c3b38 ("powerpc/mm: Implement set_memory() routines")
-included a spin_lock() to change_page_attr() in order to
-safely perform the three step operations. But then
-commit 9f7853d7609d ("powerpc/mm: Fix set_memory_*() against
-concurrent accesses") modify it to use pte_update() and do
-the operation safely against concurrent access.
+While testing a patch that will follow later
+("net: add netns refcount tracker to struct nsproxy")
+I found that devtmpfs_init() was called before init_net
+was initialized.
 
-In the meantime, Maxime reported some spinlock recursion.
+This is a bug, because devtmpfs_setup() calls
+ksys_unshare(CLONE_NEWNS);
 
-[   15.351649] BUG: spinlock recursion on CPU#0, kworker/0:2/217
-[   15.357540]  lock: init_mm+0x3c/0x420, .magic: dead4ead, .owner: kworker/0:2/217, .owner_cpu: 0
-[   15.366563] CPU: 0 PID: 217 Comm: kworker/0:2 Not tainted 5.15.0+ #523
-[   15.373350] Workqueue: events do_free_init
-[   15.377615] Call Trace:
-[   15.380232] [e4105ac0] [800946a4] do_raw_spin_lock+0xf8/0x120 (unreliable)
-[   15.387340] [e4105ae0] [8001f4ec] change_page_attr+0x40/0x1d4
-[   15.393413] [e4105b10] [801424e0] __apply_to_page_range+0x164/0x310
-[   15.400009] [e4105b60] [80169620] free_pcp_prepare+0x1e4/0x4a0
-[   15.406045] [e4105ba0] [8016c5a0] free_unref_page+0x40/0x2b8
-[   15.411979] [e4105be0] [8018724c] kasan_depopulate_vmalloc_pte+0x6c/0x94
-[   15.418989] [e4105c00] [801424e0] __apply_to_page_range+0x164/0x310
-[   15.425451] [e4105c50] [80187834] kasan_release_vmalloc+0xbc/0x134
-[   15.431898] [e4105c70] [8015f7a8] __purge_vmap_area_lazy+0x4e4/0xdd8
-[   15.438560] [e4105d30] [80160d10] _vm_unmap_aliases.part.0+0x17c/0x24c
-[   15.445283] [e4105d60] [801642d0] __vunmap+0x2f0/0x5c8
-[   15.450684] [e4105db0] [800e32d0] do_free_init+0x68/0x94
-[   15.456181] [e4105dd0] [8005d094] process_one_work+0x4bc/0x7b8
-[   15.462283] [e4105e90] [8005d614] worker_thread+0x284/0x6e8
-[   15.468227] [e4105f00] [8006aaec] kthread+0x1f0/0x210
-[   15.473489] [e4105f40] [80017148] ret_from_kernel_thread+0x14/0x1c
+This has the effect of increasing init_net refcount,
+which will be later overwritten to 1, as part of setup_net(&init_net)
 
-Remove the read / modify / write sequence to make the operation atomic
-and remove the spin_lock() in change_page_attr().
+We had too many prior patches [1] trying to work around the root cause.
 
-To do the operation atomically, we can't use pte modification helpers
-anymore. Because all platforms have different combination of bits, it
-is not easy to use those bits directly. But all have the
-_PAGE_KERNEL_{RO/ROX/RW/RWX} set of flags. All we need it to compare
-two sets to know which bits are set or cleared.
+Really, make sure init_net is in BSS section, and that net_ns_init()
+is called earlier at boot time.
 
-For instance, by comparing _PAGE_KERNEL_ROX and _PAGE_KERNEL_RO you
-know which bit gets cleared and which bit get set when changing exec
-permission.
+Note that another patch ("vfs: add netns refcount tracker
+to struct fs_context") also will need net_ns_init() being called
+before vfs_caches_init()
 
-Reported-by: Maxime Bizon <mbizon@freebox.fr>
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/all/20211212112152.GA27070@sakura/
-Link: https://lore.kernel.org/r/43c3c76a1175ae6dc1a3d3b5c3f7ecb48f683eea.1640344012.git.christophe.leroy@csgroup.eu
+As a bonus, this patch saves around 4KB in .data section.
+
+[1]
+
+f8c46cb39079 ("netns: do not call pernet ops for not yet set up init_net namespace")
+b5082df8019a ("net: Initialise init_net.count to 1")
+734b65417b24 ("net: Statically initialize init_net.dev_base_head")
+
+v2: fixed a build error reported by kernel build bots (CONFIG_NET=n)
+
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/mm/pageattr.c | 32 +++++++++++++-------------------
- 1 file changed, 13 insertions(+), 19 deletions(-)
+ include/net/net_namespace.h |  6 ++++++
+ init/main.c                 |  2 ++
+ net/core/dev.c              |  3 +--
+ net/core/net_namespace.c    | 17 +++++------------
+ 4 files changed, 14 insertions(+), 14 deletions(-)
 
-diff --git a/arch/powerpc/mm/pageattr.c b/arch/powerpc/mm/pageattr.c
-index edea388e9d3f..8812454e70ff 100644
---- a/arch/powerpc/mm/pageattr.c
-+++ b/arch/powerpc/mm/pageattr.c
-@@ -15,12 +15,14 @@
- #include <asm/pgtable.h>
- 
- 
-+static pte_basic_t pte_update_delta(pte_t *ptep, unsigned long addr,
-+				    unsigned long old, unsigned long new)
-+{
-+	return pte_update(&init_mm, addr, ptep, old & ~new, new & ~old, 0);
-+}
-+
- /*
-- * Updates the attributes of a page in three steps:
-- *
-- * 1. take the page_table_lock
-- * 2. install the new entry with the updated attributes
-- * 3. flush the TLB
-+ * Updates the attributes of a page atomically.
-  *
-  * This sequence is safe against concurrent updates, and also allows updating the
-  * attributes of a page currently being executed or accessed.
-@@ -28,41 +30,33 @@
- static int change_page_attr(pte_t *ptep, unsigned long addr, void *data)
- {
- 	long action = (long)data;
--	pte_t pte;
--
--	spin_lock(&init_mm.page_table_lock);
--
--	pte = ptep_get(ptep);
- 
--	/* modify the PTE bits as desired, then apply */
-+	/* modify the PTE bits as desired */
- 	switch (action) {
- 	case SET_MEMORY_RO:
--		pte = pte_wrprotect(pte);
-+		/* Don't clear DIRTY bit */
-+		pte_update_delta(ptep, addr, _PAGE_KERNEL_RW & ~_PAGE_DIRTY, _PAGE_KERNEL_RO);
- 		break;
- 	case SET_MEMORY_RW:
--		pte = pte_mkwrite(pte_mkdirty(pte));
-+		pte_update_delta(ptep, addr, _PAGE_KERNEL_RO, _PAGE_KERNEL_RW);
- 		break;
- 	case SET_MEMORY_NX:
--		pte = pte_exprotect(pte);
-+		pte_update_delta(ptep, addr, _PAGE_KERNEL_ROX, _PAGE_KERNEL_RO);
- 		break;
- 	case SET_MEMORY_X:
--		pte = pte_mkexec(pte);
-+		pte_update_delta(ptep, addr, _PAGE_KERNEL_RO, _PAGE_KERNEL_ROX);
- 		break;
- 	default:
- 		WARN_ON_ONCE(1);
- 		break;
- 	}
- 
--	pte_update(&init_mm, addr, ptep, ~0UL, pte_val(pte), 0);
--
- 	/* See ptesync comment in radix__set_pte_at() */
- 	if (radix_enabled())
- 		asm volatile("ptesync": : :"memory");
- 
- 	flush_tlb_kernel_range(addr, addr + PAGE_SIZE);
- 
--	spin_unlock(&init_mm.page_table_lock);
--
- 	return 0;
+diff --git a/include/net/net_namespace.h b/include/net/net_namespace.h
+index bb5fa5914032..2ba326f9e004 100644
+--- a/include/net/net_namespace.h
++++ b/include/net/net_namespace.h
+@@ -479,4 +479,10 @@ static inline void fnhe_genid_bump(struct net *net)
+ 	atomic_inc(&net->fnhe_genid);
  }
  
++#ifdef CONFIG_NET
++void net_ns_init(void);
++#else
++static inline void net_ns_init(void) {}
++#endif
++
+ #endif /* __NET_NET_NAMESPACE_H */
+diff --git a/init/main.c b/init/main.c
+index bcd132d4e7bd..b340d990d77c 100644
+--- a/init/main.c
++++ b/init/main.c
+@@ -100,6 +100,7 @@
+ #include <linux/kcsan.h>
+ #include <linux/init_syscalls.h>
+ #include <linux/stackdepot.h>
++#include <net/net_namespace.h>
+ 
+ #include <asm/io.h>
+ #include <asm/bugs.h>
+@@ -1122,6 +1123,7 @@ asmlinkage __visible void __init __no_sanitize_address start_kernel(void)
+ 	key_init();
+ 	security_init();
+ 	dbg_late_init();
++	net_ns_init();
+ 	vfs_caches_init();
+ 	pagecache_init();
+ 	signals_init();
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 33dc2a3ff7d7..804aba2228c2 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -11378,8 +11378,7 @@ static int __net_init netdev_init(struct net *net)
+ 	BUILD_BUG_ON(GRO_HASH_BUCKETS >
+ 		     8 * sizeof_field(struct napi_struct, gro_bitmask));
+ 
+-	if (net != &init_net)
+-		INIT_LIST_HEAD(&net->dev_base_head);
++	INIT_LIST_HEAD(&net->dev_base_head);
+ 
+ 	net->dev_name_head = netdev_create_hash();
+ 	if (net->dev_name_head == NULL)
+diff --git a/net/core/net_namespace.c b/net/core/net_namespace.c
+index 9702d2b0d920..9745cb6fdf51 100644
+--- a/net/core/net_namespace.c
++++ b/net/core/net_namespace.c
+@@ -44,13 +44,7 @@ EXPORT_SYMBOL_GPL(net_rwsem);
+ static struct key_tag init_net_key_domain = { .usage = REFCOUNT_INIT(1) };
+ #endif
+ 
+-struct net init_net = {
+-	.ns.count	= REFCOUNT_INIT(1),
+-	.dev_base_head	= LIST_HEAD_INIT(init_net.dev_base_head),
+-#ifdef CONFIG_KEYS
+-	.key_domain	= &init_net_key_domain,
+-#endif
+-};
++struct net init_net;
+ EXPORT_SYMBOL(init_net);
+ 
+ static bool init_net_initialized;
+@@ -1081,7 +1075,7 @@ static void rtnl_net_notifyid(struct net *net, int cmd, int id, u32 portid,
+ 	rtnl_set_sk_err(net, RTNLGRP_NSID, err);
+ }
+ 
+-static int __init net_ns_init(void)
++void __init net_ns_init(void)
+ {
+ 	struct net_generic *ng;
+ 
+@@ -1102,6 +1096,9 @@ static int __init net_ns_init(void)
+ 
+ 	rcu_assign_pointer(init_net.gen, ng);
+ 
++#ifdef CONFIG_KEYS
++	init_net.key_domain = &init_net_key_domain;
++#endif
+ 	down_write(&pernet_ops_rwsem);
+ 	if (setup_net(&init_net, &init_user_ns))
+ 		panic("Could not setup the initial network namespace");
+@@ -1116,12 +1113,8 @@ static int __init net_ns_init(void)
+ 		      RTNL_FLAG_DOIT_UNLOCKED);
+ 	rtnl_register(PF_UNSPEC, RTM_GETNSID, rtnl_net_getid, rtnl_net_dumpid,
+ 		      RTNL_FLAG_DOIT_UNLOCKED);
+-
+-	return 0;
+ }
+ 
+-pure_initcall(net_ns_init);
+-
+ static void free_exit_list(struct pernet_operations *ops, struct list_head *net_exit_list)
+ {
+ 	ops_pre_exit_list(ops, net_exit_list);
 -- 
 2.34.1
 
