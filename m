@@ -2,284 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2348C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:39:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EB2AC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:39:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243605AbiDAOl3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 10:41:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57788 "EHLO
+        id S1347885AbiDAOle (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Apr 2022 10:41:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348334AbiDAOeF (ORCPT
+        with ESMTP id S1348340AbiDAOeH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:34:05 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F855A1AE
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 07:32:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648823535; x=1680359535;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=k7HxpemhrLq5N2ZQgjZ7mmy9HYZQUpqKUE2w6lYdwrk=;
-  b=bilfmuEb92Sx7iVrVG0GTyBsc9xuoezZ63AY6XL+UP1fvr77RdpjIi3X
-   mTnceIUbHRat92lhBCmD6X8/SA3vby319mfwnoiuYy+t7mtTAiKFBlduD
-   UpdskfS2UyH+20JTy+6duv56i6DL1JvsivGwB1nz60b5OdJkUit9gAazk
-   IOZWQXgydz2NOsZfBij5vIOCppWju/aznn2vs+Akav9W25R5uTQIsgWnm
-   eFm/tPY67WcBlAxN7vxwoqxaaWj5gqxUmdQ6Hnfm7WxMmhEaJGSlesn8d
-   aPMqNwiKrgXnqO+abzH/VgYdeWBLPI2ois6E6M5eysGgT0DTtGAQlEBPN
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10304"; a="240741472"
-X-IronPort-AV: E=Sophos;i="5.90,227,1643702400"; 
-   d="scan'208";a="240741472"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Apr 2022 07:32:12 -0700
-X-IronPort-AV: E=Sophos;i="5.90,227,1643702400"; 
-   d="scan'208";a="547818197"
-Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Apr 2022 07:32:10 -0700
-Received: by lahna (sSMTP sendmail emulation); Fri, 01 Apr 2022 17:30:57 +0300
-Date:   Fri, 1 Apr 2022 17:30:57 +0300
-From:   Mika Westerberg <mika.westerberg@linux.intel.com>
-To:     Brad Campbell <lists2009@fnarfbargle.com>
-Cc:     linux-kernel@vger.kernel.org
-Subject: Re: Apple Thunderbolt Display chaining
-Message-ID: <YkcMofXKr/ZmOSwH@lahna>
-References: <YkMC4XnfIZix6kBn@lahna>
- <b8894440-41b1-edef-dd2d-5bafabc6fb62@fnarfbargle.com>
- <YkQuk7E8AbSEiw59@lahna>
- <b35e4054-4f22-72a2-4313-77299697af7b@fnarfbargle.com>
- <YkRebADER3J9ooPM@lahna>
- <d40f02e5-7274-e834-6e13-82b3dbe11284@fnarfbargle.com>
- <YkRtf2HiXBOWGjna@lahna>
- <eacc22dc-e650-a208-9484-62edd98d5778@fnarfbargle.com>
- <YkXYdcUZ1E18ENle@lahna>
- <5dcee6f7-cc8c-e3ce-920c-4ad3f5d77e14@fnarfbargle.com>
+        Fri, 1 Apr 2022 10:34:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E430A1AE;
+        Fri,  1 Apr 2022 07:32:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 19F9D61AFD;
+        Fri,  1 Apr 2022 14:32:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CEA9C2BBE4;
+        Fri,  1 Apr 2022 14:32:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648823537;
+        bh=79s09JmfnRTspuMBLjDF/9qtIeFT50RzlTzUkGad3r4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=aY4oprGc7HUP6zrTsRDODhUtb5T3hklvc3MZnlsB1IEtDDIn/sCA3TLRh2QIefLXQ
+         2hNvdXZmMNSfzWZH4D1GlLbaJZbfUuUvofiiVZRvVpwWX3HdK2Do7vBTn4aj6HhGbD
+         kMoDdQbRhvFcj8whKQJpsKX1wQAOeEPzqJJ+/r++vWLtbGNS+m5SwVoeSPUXVB/UFg
+         16yBjQoZSV95RPfMuPjkTZyJplrLQmlzyHg8zN8BB189REMtyOCGc0/Cy1uKo7wXv1
+         WUpoy4oT8Zf5nE3m5umNxKe/uHKfHcIR2DhWCtJr0dm73SX4SHdXeUnMASNDaca6GA
+         QAMld3XSVcVUQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Gal Pressman <gal@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
+        Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 132/149] net/mlx5e: Remove overzealous validations in netlink EEPROM query
+Date:   Fri,  1 Apr 2022 10:25:19 -0400
+Message-Id: <20220401142536.1948161-132-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220401142536.1948161-1-sashal@kernel.org>
+References: <20220401142536.1948161-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5dcee6f7-cc8c-e3ce-920c-4ad3f5d77e14@fnarfbargle.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+From: Gal Pressman <gal@nvidia.com>
 
-On Fri, Apr 01, 2022 at 01:48:13PM +0800, Brad Campbell wrote:
-> That I can do. I didn't crop or grep as I wasn't sure what might be additionally relevant.
-> 2 machines, 2 ports, 4 cold boots. Each time just the Thnuderbolt displays chained.
+[ Upstream commit 970adfb76095fa719778d70a6b86030d2feb88dd ]
 
-Thanks for the logs! It looks like the Apple EFI CM always uses the lane
-1 adapter.
+Unlike the legacy EEPROM callbacks, when using the netlink EEPROM query
+(get_module_eeprom_by_page) the driver should not try to validate the
+query parameters, but just perform the read requested by the userspace.
 
-Can you try the below patch? Fingers crossed that it solves the
-chaining issue for both ;-) I had to patch the test.c because otherwise
-unit tests fail to compile when enabled.
+Recent discussion in the mailing list:
+https://lore.kernel.org/netdev/20220120093051.70845141@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net/
 
-This should now setup the second tunnel always through the lane 0
-adapter and thus share the bandwidth equally between the two lanes.
+Signed-off-by: Gal Pressman <gal@nvidia.com>
+Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+Reviewed-by: Maxim Mikityanskiy <maximmi@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ .../net/ethernet/mellanox/mlx5/core/port.c    | 23 -------------------
+ 1 file changed, 23 deletions(-)
 
-diff --git a/drivers/thunderbolt/tb.c b/drivers/thunderbolt/tb.c
-index 8c20a50cc9d9..1ca6fe67ba56 100644
---- a/drivers/thunderbolt/tb.c
-+++ b/drivers/thunderbolt/tb.c
-@@ -1065,7 +1065,7 @@ static void tb_recalc_estimated_bandwidth(struct tb *tb)
- 
- static void tb_tunnel_dp(struct tb *tb)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/port.c b/drivers/net/ethernet/mellanox/mlx5/core/port.c
+index 7b16a1188aab..fd79860de723 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/port.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/port.c
+@@ -433,35 +433,12 @@ int mlx5_query_module_eeprom_by_page(struct mlx5_core_dev *dev,
+ 				     struct mlx5_module_eeprom_query_params *params,
+ 				     u8 *data)
  {
--	int available_up, available_down, ret;
-+	int available_up, available_down, ret, link_nr;
- 	struct tb_cm *tcm = tb_priv(tb);
- 	struct tb_port *port, *in, *out;
- 	struct tb_tunnel *tunnel;
-@@ -1110,6 +1110,20 @@ static void tb_tunnel_dp(struct tb *tb)
- 		return;
- 	}
+-	u8 module_id;
+ 	int err;
  
-+	/*
-+	 * This is only applicable to links that are not bonded (so
-+	 * when Thunderbolt 1 hardware is involved somewhere in the
-+	 * topology). For these try to share the DP bandwidth between
-+	 * the two lanes.
-+	 */
-+	link_nr = 1;
-+	list_for_each_entry(tunnel, &tcm->tunnel_list, list) {
-+		if (tb_tunnel_is_dp(tunnel)) {
-+			link_nr = 0;
-+			break;
-+		}
-+	}
-+
- 	/*
- 	 * DP stream needs the domain to be active so runtime resume
- 	 * both ends of the tunnel.
-@@ -1142,7 +1156,8 @@ static void tb_tunnel_dp(struct tb *tb)
+ 	err = mlx5_query_module_num(dev, &params->module_number);
+ 	if (err)
+ 		return err;
  
- 	tb_attach_bandwidth_group(tcm, in, out);
- 
--	tunnel = tb_tunnel_alloc_dp(tb, in, out, available_up, available_down);
-+	tunnel = tb_tunnel_alloc_dp(tb, in, out, link_nr, available_up,
-+				    available_down);
- 	if (!tunnel) {
- 		tb_port_dbg(out, "could not allocate DP tunnel\n");
- 		goto err_detach_group;
-diff --git a/drivers/thunderbolt/test.c b/drivers/thunderbolt/test.c
-index 6f027b3c2efe..5884c616b047 100644
---- a/drivers/thunderbolt/test.c
-+++ b/drivers/thunderbolt/test.c
-@@ -1365,7 +1365,7 @@ static void tb_test_tunnel_dp(struct kunit *test)
- 	in = &host->ports[5];
- 	out = &dev->ports[13];
- 
--	tunnel = tb_tunnel_alloc_dp(NULL, in, out, 0, 0);
-+	tunnel = tb_tunnel_alloc_dp(NULL, in, out, 1, 0, 0);
- 	KUNIT_ASSERT_TRUE(test, tunnel != NULL);
- 	KUNIT_EXPECT_EQ(test, tunnel->type, TB_TUNNEL_DP);
- 	KUNIT_EXPECT_PTR_EQ(test, tunnel->src_port, in);
-@@ -1411,7 +1411,7 @@ static void tb_test_tunnel_dp_chain(struct kunit *test)
- 	in = &host->ports[5];
- 	out = &dev4->ports[14];
- 
--	tunnel = tb_tunnel_alloc_dp(NULL, in, out, 0, 0);
-+	tunnel = tb_tunnel_alloc_dp(NULL, in, out, 1, 0, 0);
- 	KUNIT_ASSERT_TRUE(test, tunnel != NULL);
- 	KUNIT_EXPECT_EQ(test, tunnel->type, TB_TUNNEL_DP);
- 	KUNIT_EXPECT_PTR_EQ(test, tunnel->src_port, in);
-@@ -1461,7 +1461,7 @@ static void tb_test_tunnel_dp_tree(struct kunit *test)
- 	in = &dev2->ports[13];
- 	out = &dev5->ports[13];
- 
--	tunnel = tb_tunnel_alloc_dp(NULL, in, out, 0, 0);
-+	tunnel = tb_tunnel_alloc_dp(NULL, in, out, 1, 0, 0);
- 	KUNIT_ASSERT_TRUE(test, tunnel != NULL);
- 	KUNIT_EXPECT_EQ(test, tunnel->type, TB_TUNNEL_DP);
- 	KUNIT_EXPECT_PTR_EQ(test, tunnel->src_port, in);
-@@ -1526,7 +1526,7 @@ static void tb_test_tunnel_dp_max_length(struct kunit *test)
- 	in = &dev6->ports[13];
- 	out = &dev12->ports[13];
- 
--	tunnel = tb_tunnel_alloc_dp(NULL, in, out, 0, 0);
-+	tunnel = tb_tunnel_alloc_dp(NULL, in, out, 1, 0, 0);
- 	KUNIT_ASSERT_TRUE(test, tunnel != NULL);
- 	KUNIT_EXPECT_EQ(test, tunnel->type, TB_TUNNEL_DP);
- 	KUNIT_EXPECT_PTR_EQ(test, tunnel->src_port, in);
-@@ -1604,7 +1604,7 @@ static void tb_test_tunnel_3dp(struct kunit *test)
- 	KUNIT_ASSERT_EQ(test, tunnel1->npaths, 3);
- 	KUNIT_ASSERT_EQ(test, tunnel1->paths[0]->path_length, 3);
- 
--	tunnel2 = tb_tunnel_alloc_dp(NULL, in2, out2, 0, 0);
-+	tunnel2 = tb_tunnel_alloc_dp(NULL, in2, out2, 1, 0, 0);
- 	KUNIT_ASSERT_TRUE(test, tunnel2 != NULL);
- 	KUNIT_EXPECT_EQ(test, tunnel2->type, TB_TUNNEL_DP);
- 	KUNIT_EXPECT_PTR_EQ(test, tunnel2->src_port, in2);
-@@ -1612,7 +1612,7 @@ static void tb_test_tunnel_3dp(struct kunit *test)
- 	KUNIT_ASSERT_EQ(test, tunnel2->npaths, 3);
- 	KUNIT_ASSERT_EQ(test, tunnel2->paths[0]->path_length, 4);
- 
--	tunnel3 = tb_tunnel_alloc_dp(NULL, in3, out3, 0, 0);
-+	tunnel3 = tb_tunnel_alloc_dp(NULL, in3, out3, 1, 0, 0);
- 	KUNIT_ASSERT_TRUE(test, tunnel3 != NULL);
- 	KUNIT_EXPECT_EQ(test, tunnel3->type, TB_TUNNEL_DP);
- 	KUNIT_EXPECT_PTR_EQ(test, tunnel3->src_port, in3);
-@@ -1709,7 +1709,7 @@ static void tb_test_tunnel_port_on_path(struct kunit *test)
- 	in = &dev2->ports[13];
- 	out = &dev5->ports[13];
- 
--	dp_tunnel = tb_tunnel_alloc_dp(NULL, in, out, 0, 0);
-+	dp_tunnel = tb_tunnel_alloc_dp(NULL, in, out, 1, 0, 0);
- 	KUNIT_ASSERT_TRUE(test, dp_tunnel != NULL);
- 
- 	KUNIT_EXPECT_TRUE(test, tb_tunnel_port_on_path(dp_tunnel, in));
-@@ -2091,7 +2091,7 @@ static void tb_test_credit_alloc_dp(struct kunit *test)
- 	in = &host->ports[5];
- 	out = &dev->ports[14];
- 
--	tunnel = tb_tunnel_alloc_dp(NULL, in, out, 0, 0);
-+	tunnel = tb_tunnel_alloc_dp(NULL, in, out, 1, 0, 0);
- 	KUNIT_ASSERT_TRUE(test, tunnel != NULL);
- 	KUNIT_ASSERT_EQ(test, tunnel->npaths, (size_t)3);
- 
-@@ -2327,7 +2327,7 @@ static struct tb_tunnel *TB_TEST_DP_TUNNEL1(struct kunit *test,
- 
- 	in = &host->ports[5];
- 	out = &dev->ports[13];
--	dp_tunnel1 = tb_tunnel_alloc_dp(NULL, in, out, 0, 0);
-+	dp_tunnel1 = tb_tunnel_alloc_dp(NULL, in, out, 1, 0, 0);
- 	KUNIT_ASSERT_TRUE(test, dp_tunnel1 != NULL);
- 	KUNIT_ASSERT_EQ(test, dp_tunnel1->npaths, (size_t)3);
- 
-@@ -2364,7 +2364,7 @@ static struct tb_tunnel *TB_TEST_DP_TUNNEL2(struct kunit *test,
- 
- 	in = &host->ports[6];
- 	out = &dev->ports[14];
--	dp_tunnel2 = tb_tunnel_alloc_dp(NULL, in, out, 0, 0);
-+	dp_tunnel2 = tb_tunnel_alloc_dp(NULL, in, out, 1, 0, 0);
- 	KUNIT_ASSERT_TRUE(test, dp_tunnel2 != NULL);
- 	KUNIT_ASSERT_EQ(test, dp_tunnel2->npaths, (size_t)3);
- 
-diff --git a/drivers/thunderbolt/tunnel.c b/drivers/thunderbolt/tunnel.c
-index d08441f36e7a..08fddd469ab6 100644
---- a/drivers/thunderbolt/tunnel.c
-+++ b/drivers/thunderbolt/tunnel.c
-@@ -1086,6 +1086,7 @@ struct tb_tunnel *tb_tunnel_discover_dp(struct tb *tb, struct tb_port *in,
-  * @tb: Pointer to the domain structure
-  * @in: DP in adapter port
-  * @out: DP out adapter port
-+ * @link_nr: Preferred lane adapter when the link is not bonded
-  * @max_up: Maximum available upstream bandwidth for the DP tunnel (%0
-  *	    if not limited)
-  * @max_down: Maximum available downstream bandwidth for the DP tunnel
-@@ -1097,8 +1098,8 @@ struct tb_tunnel *tb_tunnel_discover_dp(struct tb *tb, struct tb_port *in,
-  * Return: Returns a tb_tunnel on success or NULL on failure.
-  */
- struct tb_tunnel *tb_tunnel_alloc_dp(struct tb *tb, struct tb_port *in,
--				     struct tb_port *out, int max_up,
--				     int max_down)
-+				     struct tb_port *out, int link_nr,
-+				     int max_up, int max_down)
- {
- 	struct tb_tunnel *tunnel;
- 	struct tb_path **paths;
-@@ -1124,21 +1125,21 @@ struct tb_tunnel *tb_tunnel_alloc_dp(struct tb *tb, struct tb_port *in,
- 	paths = tunnel->paths;
- 
- 	path = tb_path_alloc(tb, in, TB_DP_VIDEO_HOPID, out, TB_DP_VIDEO_HOPID,
--			     1, "Video");
-+			     link_nr, "Video");
- 	if (!path)
- 		goto err_free;
- 	tb_dp_init_video_path(path);
- 	paths[TB_DP_VIDEO_PATH_OUT] = path;
- 
- 	path = tb_path_alloc(tb, in, TB_DP_AUX_TX_HOPID, out,
--			     TB_DP_AUX_TX_HOPID, 1, "AUX TX");
-+			     TB_DP_AUX_TX_HOPID, link_nr, "AUX TX");
- 	if (!path)
- 		goto err_free;
- 	tb_dp_init_aux_path(path);
- 	paths[TB_DP_AUX_PATH_OUT] = path;
- 
- 	path = tb_path_alloc(tb, out, TB_DP_AUX_RX_HOPID, in,
--			     TB_DP_AUX_RX_HOPID, 1, "AUX RX");
-+			     TB_DP_AUX_RX_HOPID, link_nr, "AUX RX");
- 	if (!path)
- 		goto err_free;
- 	tb_dp_init_aux_path(path);
-diff --git a/drivers/thunderbolt/tunnel.h b/drivers/thunderbolt/tunnel.h
-index ea605046d41f..89d6328dd04f 100644
---- a/drivers/thunderbolt/tunnel.h
-+++ b/drivers/thunderbolt/tunnel.h
-@@ -77,8 +77,8 @@ struct tb_tunnel *tb_tunnel_alloc_pci(struct tb *tb, struct tb_port *up,
- struct tb_tunnel *tb_tunnel_discover_dp(struct tb *tb, struct tb_port *in,
- 					bool alloc_hopid);
- struct tb_tunnel *tb_tunnel_alloc_dp(struct tb *tb, struct tb_port *in,
--				     struct tb_port *out, int max_up,
--				     int max_down);
-+				     struct tb_port *out, int link_nr,
-+				     int max_up, int max_down);
- struct tb_tunnel *tb_tunnel_alloc_dma(struct tb *tb, struct tb_port *nhi,
- 				      struct tb_port *dst, int transmit_path,
- 				      int transmit_ring, int receive_path,
+-	err = mlx5_query_module_id(dev, params->module_number, &module_id);
+-	if (err)
+-		return err;
+-
+-	switch (module_id) {
+-	case MLX5_MODULE_ID_SFP:
+-		if (params->page > 0)
+-			return -EINVAL;
+-		break;
+-	case MLX5_MODULE_ID_QSFP:
+-	case MLX5_MODULE_ID_QSFP28:
+-	case MLX5_MODULE_ID_QSFP_PLUS:
+-		if (params->page > 3)
+-			return -EINVAL;
+-		break;
+-	case MLX5_MODULE_ID_DSFP:
+-		break;
+-	default:
+-		mlx5_core_err(dev, "Module ID not recognized: 0x%x\n", module_id);
+-		return -EINVAL;
+-	}
+-
+ 	if (params->i2c_address != MLX5_I2C_ADDR_HIGH &&
+ 	    params->i2c_address != MLX5_I2C_ADDR_LOW) {
+ 		mlx5_core_err(dev, "I2C address not recognized: 0x%x\n", params->i2c_address);
 -- 
-2.32.0
+2.34.1
 
