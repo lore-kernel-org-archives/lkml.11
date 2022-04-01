@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 216BBC4167D
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:05:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6140AC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:05:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351776AbiDAPHQ (ORCPT
+        id S1351972AbiDAPH2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:07:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57420 "EHLO
+        Fri, 1 Apr 2022 11:07:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349836AbiDAOqw (ORCPT
+        with ESMTP id S1350019AbiDAOrG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:46:52 -0400
+        Fri, 1 Apr 2022 10:47:06 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ABBC24ED8D;
-        Fri,  1 Apr 2022 07:36:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C47D22A03E0;
+        Fri,  1 Apr 2022 07:36:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 364CD60B9F;
-        Fri,  1 Apr 2022 14:36:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3178C340F2;
-        Fri,  1 Apr 2022 14:36:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6698C60B8D;
+        Fri,  1 Apr 2022 14:36:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2805C36AE3;
+        Fri,  1 Apr 2022 14:36:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823767;
-        bh=aTDvfyBb6ZFwQUDdatUy1W5KmV+kCGUwHFAYnOu3iOA=;
+        s=k20201202; t=1648823781;
+        bh=fMG8qmMkatb/ALXVaoU86uFYKtdvjs1G7iwQUSKByjo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t/DJqzU3J8GMTr+9Fissfr3gsnc0/vOp+a9Uk7h0h/EJ0ftU2Bb3dkISjjoIl8hOv
-         6t5/UvvG6MIFcu/L7ejBercTn4TCL5K1oON/5ngCDDI2Aj0NctEkh84VSvjhY1cl55
-         xWk0d0QvGK/ASyiCFnebjyZDpPC6ufkEIcBPzGyMUlJZUYk0MlYSIG7cJD3/FaKGrq
-         eKmIwDiJFiQjKHhCSlGSPTZs+g5mBb4Ua8Wug72apKBoLAQkXhymEFnFEw/jvwjnTH
-         0v13aKaT03uiQ2ABxXMCgzlr4C5P636LzDkkD+SsRB7hjA5LRoto8sy47gVDNXiij8
-         64A//kJS80jFQ==
+        b=dUbZc7jm5WOD5CW7m5VLpylWqEWVJGvyM4mlCeKoAHZH4NcjYVYp++qDW9+nVFc9E
+         QaFaaUy8HVVp8r5emZH4Wo94djEWHb4G4mYbPYStSVUCV7MSbF9XaUxVaib0yrfRPv
+         K9Oza6jcHIgp0TpYwt0X7OZY9MoAtyr9429xXx7jUyACGodNbW4U23E1Laf0Vnj9yI
+         gWNhsEJWavkutDnW2QGenmtvUYc7EVcNBsFcQz/Bxq3Egsl9mQ3oeYK/dyZf6iH0Qk
+         e657NtV4MskIejHDlRoGW2StNdyhKVDBqpIUfc46EGC/jKT+bshP/Co4IrsvwaoNE7
+         e4UIBC9TPnC7g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Hans de Goede <hdegoede@redhat.com>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Sasha Levin <sashal@kernel.org>, airlied@linux.ie,
-        daniel@ffwll.ch, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.16 070/109] drm/simpledrm: Add "panel orientation" property on non-upright mounted LCD panels
-Date:   Fri,  1 Apr 2022 10:32:17 -0400
-Message-Id: <20220401143256.1950537-70-sashal@kernel.org>
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        "Juergen E. Fischer" <fischer@norbit.de>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        Sasha Levin <sashal@kernel.org>, linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 073/109] scsi: aha152x: Fix aha152x_setup() __setup handler return value
+Date:   Fri,  1 Apr 2022 10:32:20 -0400
+Message-Id: <20220401143256.1950537-73-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143256.1950537-1-sashal@kernel.org>
 References: <20220401143256.1950537-1-sashal@kernel.org>
@@ -54,45 +55,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit 94fa115f7b28a3f02611499175e134f0a823b686 ]
+[ Upstream commit cc8294ec4738d25e2bb2d71f7d82a9bf7f4a157b ]
 
-Some devices use e.g. a portrait panel in a standard laptop casing made
-for landscape panels. efifb calls drm_get_panel_orientation_quirk() and
-sets fb_info.fbcon_rotate_hint to make fbcon rotate the console so that
-it shows up-right instead of on its side.
+__setup() handlers should return 1 if the command line option is handled
+and 0 if not (or maybe never return 0; doing so just pollutes init's
+environment with strings that are not init arguments/parameters).
 
-When switching to simpledrm the fbcon renders on its side. Call the
-drm_connector_set_panel_orientation_with_quirk() helper to add
-a "panel orientation" property on devices listed in the quirk table,
-to make the fbcon (and aware userspace apps) rotate the image to
-display properly.
+Return 1 from aha152x_setup() to indicate that the boot option has been
+handled.
 
-Cc: Javier Martinez Canillas <javierm@redhat.com>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
-Acked-by: Thomas Zimmermann <tzimmermann@suse.de>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220221220045.11958-1-hdegoede@redhat.com
+Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Link: https://lore.kernel.org/r/20220223000623.5920-1-rdunlap@infradead.org
+Cc: "Juergen E. Fischer" <fischer@norbit.de>
+Cc: "James E.J. Bottomley" <jejb@linux.ibm.com>
+Cc: "Martin K. Petersen" <martin.petersen@oracle.com>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/tiny/simpledrm.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/scsi/aha152x.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/gpu/drm/tiny/simpledrm.c b/drivers/gpu/drm/tiny/simpledrm.c
-index 5a6e89825bc2..3e3f9ba1e885 100644
---- a/drivers/gpu/drm/tiny/simpledrm.c
-+++ b/drivers/gpu/drm/tiny/simpledrm.c
-@@ -779,6 +779,9 @@ static int simpledrm_device_init_modeset(struct simpledrm_device *sdev)
- 	if (ret)
- 		return ret;
- 	drm_connector_helper_add(connector, &simpledrm_connector_helper_funcs);
-+	drm_connector_set_panel_orientation_with_quirk(connector,
-+						       DRM_MODE_PANEL_ORIENTATION_UNKNOWN,
-+						       mode->hdisplay, mode->vdisplay);
+diff --git a/drivers/scsi/aha152x.c b/drivers/scsi/aha152x.c
+index d17880b57d17..2449b4215b32 100644
+--- a/drivers/scsi/aha152x.c
++++ b/drivers/scsi/aha152x.c
+@@ -3375,13 +3375,11 @@ static int __init aha152x_setup(char *str)
+ 	setup[setup_count].synchronous = ints[0] >= 6 ? ints[6] : 1;
+ 	setup[setup_count].delay       = ints[0] >= 7 ? ints[7] : DELAY_DEFAULT;
+ 	setup[setup_count].ext_trans   = ints[0] >= 8 ? ints[8] : 0;
+-	if (ints[0] > 8) {                                                /*}*/
++	if (ints[0] > 8)
+ 		printk(KERN_NOTICE "aha152x: usage: aha152x=<IOBASE>[,<IRQ>[,<SCSI ID>"
+ 		       "[,<RECONNECT>[,<PARITY>[,<SYNCHRONOUS>[,<DELAY>[,<EXT_TRANS>]]]]]]]\n");
+-	} else {
++	else
+ 		setup_count++;
+-		return 0;
+-	}
  
- 	formats = simpledrm_device_formats(sdev, &nformats);
- 
+ 	return 1;
+ }
 -- 
 2.34.1
 
