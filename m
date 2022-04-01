@@ -2,177 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CC02C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 13:58:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31616C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 13:59:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346598AbiDAOA0 (ORCPT
+        id S1346610AbiDAOA6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 10:00:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53606 "EHLO
+        Fri, 1 Apr 2022 10:00:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229719AbiDAOAT (ORCPT
+        with ESMTP id S1345688AbiDAOA4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:00:19 -0400
-Received: from wout2-smtp.messagingengine.com (wout2-smtp.messagingengine.com [64.147.123.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 088E2C79
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 06:58:26 -0700 (PDT)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.west.internal (Postfix) with ESMTP id D9D393200F72;
-        Fri,  1 Apr 2022 09:58:24 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute5.internal (MEProxy); Fri, 01 Apr 2022 09:58:25 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sent.com; h=cc
-        :cc:content-transfer-encoding:date:date:from:from:in-reply-to
-        :message-id:mime-version:reply-to:reply-to:sender:subject
-        :subject:to:to; s=fm3; bh=2nU+VZUHjfRgXw79i6wfh74gnFpHiuHpC7Kwwp
-        V6T0c=; b=OuASuwFKrQxica335ULucZKiokxQcmSt4KrmN5ES0JNIb755nefSlm
-        3edc33v1hLP0t+++hbn32p5/Ak5JDlDw9fmTC/iZuAUYnTwB6nf7znDzlMl/QhfC
-        hTjiJ1ZwmkyEj0yI8q6JfJwyb41KjqQgmAKYLV8gHjXhi9kGXSaCNbgIRvpnoksZ
-        p/CQFKRtvkQQNhHsb0LGhRvnI+G7aYdrDuU0ixKwCusEYB3JQnFvLoWzPUm6ms0h
-        ud/mQsnYX31xUYwtFz7TdiA2b8COWNTKS67w32Y9KHA6njHttK17oQZmMtLKFLTb
-        ApZ1CEF6rnYO9ut+HCHwy6bUSmYJUJxg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :from:from:in-reply-to:message-id:mime-version:reply-to:reply-to
-        :sender:subject:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender
-        :x-me-sender:x-sasl-enc; s=fm3; bh=2nU+VZUHjfRgXw79i6wfh74gnFpHi
-        uHpC7KwwpV6T0c=; b=f35dgA121EFkB1TBtfF78IZ6c6+Bq4ZdaFRMx3RMTaJpK
-        l/9faZdXR6pgZYfw0zY02vrMLoGvVagPt9w9T7BMdI0vf7UCExAT6iZBYwx0TrI3
-        K7Kpn5yCBO7lnElRw+nc+i6rz56DF4c66CAR7gAlhKpKNjQclGsgm9Qf9GhXWutv
-        qNme3Al6fAbwd05wRzCZPhCDchytZLJu7IfCo515Zw+ZqRFqO3VJIoRXyTwB67aZ
-        R8mk58tkqQgGSWvgk7V0AZovlj0rOASRmHhvtPVv525ZUNHXGiLGLYtwuuXgqPlu
-        Y+7TjwVMaCnNkL0iGBFlFzd/JozwX6CuDAPuTWruA==
-X-ME-Sender: <xms:_wRHYvNGqM70L1016mlgyn4N64r7Fo4gWrKuKeLreRVf-ANLm88ILA>
-    <xme:_wRHYp-jXpdYkGyFDlVHUKTXpYRmZEqz4RknYJp-awzlTLeBn7x1fsE5d2qYGLTml
-    8BmP_G4k9Bay_sGbQ>
-X-ME-Received: <xmr:_wRHYuTcQCpnAYLUomeJr4OUqusJk5zatHo5DL805ra1qHH_IK0NjbSxbiKizwvRP3WPcyUxspxNV6FSiA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudeiiedgjeduucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhephffvufffkfforhgggfestdhqredtredttdenucfhrhhomhepkghiucgjrghn
-    uceoiihirdihrghnsehsvghnthdrtghomheqnecuggftrfgrthhtvghrnhepteeiiedtje
-    fghfefueekjedvueeftddvudelhfetudffiefgfeetheeghfdvgedunecuffhomhgrihhn
-    pehkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmh
-    grihhlfhhrohhmpeiiihdrhigrnhesshgvnhhtrdgtohhm
-X-ME-Proxy: <xmx:_wRHYjtRJuPRHJZXfsZJ-GAvc1cOnCF5FujH0B8Q30ZM8D_a1vdrLA>
-    <xmx:_wRHYndc82xGckScSSpi632FMYpH5Uo-BMeDe7HFcg35gfG6PHgllg>
-    <xmx:_wRHYv3kS_lPx50KHR-leB7F1ZdjpYpiiqJlWZZ4xNnI2DlqPQLWXA>
-    <xmx:AAVHYr42LgWsjsjgFAOM0TDK25FSar7JBQ8ym9BQQ2QTYgs84MVEYQ>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 1 Apr 2022 09:58:23 -0400 (EDT)
-From:   Zi Yan <zi.yan@sent.com>
-To:     linux-mm@kvack.org
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        David Hildenbrand <david@redhat.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Mike Rapoport <rppt@kernel.org>,
-        Oscar Salvador <osalvador@suse.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, Zi Yan <ziy@nvidia.com>
-Subject: [PATCH 1/2] mm: page_alloc: simplify pageblock migratetype check in __free_one_page().
-Date:   Fri,  1 Apr 2022 09:58:19 -0400
-Message-Id: <20220401135820.1453829-1-zi.yan@sent.com>
-X-Mailer: git-send-email 2.35.1
-Reply-To: Zi Yan <ziy@nvidia.com>
+        Fri, 1 Apr 2022 10:00:56 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99EEC4C416
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 06:59:06 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id bx5so2486522pjb.3
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 06:59:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=vINCBhX/7V/5MbVjKTcLLNhSCyxfRcucmANL3gsUx+c=;
+        b=kgoUwoh6UHXaBaA6YYZCcgdkNvoc15wi7vSzTTqulnHcMOVeuIFhIf/jCWzNDWRIDW
+         Zp8miYwkjL24BUhdbwxFu7MbiqL2t+lq0iMHCS+J06BNN/nlWQ+NXba27kWz6+vpPKKN
+         +xKDC/38TJb7+1r3HiXiuOrQMqlW/bzUF+RpJQpkCXVmnE+AkgCMZJNzF2dIENsVp1qt
+         51KuvPeZfuGH1CnRfNWH6blMVnA83mgMKm2BA5mvt5kr1nanrlxRCB81uvyHEl+JeFc2
+         LxqmtrNrjqTFqn4keU661u8EK0qc3N0JtZBYSCgczj9IBc2xDprdLRw30raFx21gvKI9
+         TtEA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=vINCBhX/7V/5MbVjKTcLLNhSCyxfRcucmANL3gsUx+c=;
+        b=05l96N7OlHXy2CB20+SVjb4Jlhp41XbZwV+UxYa3j+gAY1jd18WFj4/s2jHp/LZlFo
+         +VarI/BfA1K3YOy0oRQhS6/Vb0Fx+w0W9Nc1Zpib2Bv7T1enAzRFQYiwbsJtXwZz3bqS
+         kumj4fWGd6N51D6RdOaDd4TMAfOBBicamv2xC+cgvnqw0TxmYsngafWpuntaBGBrJlFB
+         fcAlFwKUhuDGXp5s/zRSsIsTw79rQ+F6IgJRRA1WqabUzXj6CVqFTDPRFuyXh6JBjcgn
+         zcvt06Tg52O2MPwSsKgjDwB2EWfah3KozgspwXJQoWtWtU76PeQU9E2JA/UVjUkJI+qd
+         NFpA==
+X-Gm-Message-State: AOAM530BhmoJVl30DhdtIzPd4jWaKCXqoRts7+eg+5oVpV/PSjIbHKdp
+        F/QTMnyxRUAKtavfV5ALwBnXbg==
+X-Google-Smtp-Source: ABdhPJzLqHePrkY/XZw4LtIr0qcnGq2xNXtmMhGv2XKvY6gEsdiOQBz+EHAXrwVP8F0HA3xy02hygg==
+X-Received: by 2002:a17:90b:4c08:b0:1c7:61ce:b707 with SMTP id na8-20020a17090b4c0800b001c761ceb707mr12061015pjb.16.1648821545937;
+        Fri, 01 Apr 2022 06:59:05 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id s3-20020a056a00194300b004f6664d26eesm3308345pfk.88.2022.04.01.06.59.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 01 Apr 2022 06:59:05 -0700 (PDT)
+Date:   Fri, 1 Apr 2022 13:59:01 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     cgel.zte@gmail.com
+Cc:     pbonzini@redhat.com, vkuznets@redhat.com, wanpengli@tencent.com,
+        jmattson@google.com, joro@8bytes.org, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        x86@kernel.org, hpa@zytor.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Lv Ruyi <lv.ruyi@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: Re: [PATCH] KVM: x86/mmu: remove unnecessary flush_workqueue()
+Message-ID: <YkcFJZW0r+OQmQwz@google.com>
+References: <20220401083530.2407703-1-lv.ruyi@zte.com.cn>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220401083530.2407703-1-lv.ruyi@zte.com.cn>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zi Yan <ziy@nvidia.com>
+On Fri, Apr 01, 2022, cgel.zte@gmail.com wrote:
+> From: Lv Ruyi <lv.ruyi@zte.com.cn>
+> 
+> All work currently pending will be done first by calling destroy_workqueue,
+> so there is unnecessary to flush it explicitly.
+> 
+> Reported-by: Zeal Robot <zealci@zte.com.cn>
 
-Move pageblock migratetype check code in the while loop to simplify the
-logic. It also saves redundant buddy page checking code.
+Good bot :-)
 
-Suggested-by: Vlastimil Babka <vbabka@suse.cz>
-Link: https://lore.kernel.org/linux-mm/27ff69f9-60c5-9e59-feb2-295250077551=
-@suse.cz/
-Signed-off-by: Zi Yan <ziy@nvidia.com>
----
- mm/page_alloc.c | 46 +++++++++++++++++-----------------------------
- 1 file changed, 17 insertions(+), 29 deletions(-)
+> Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+> ---
+>  arch/x86/kvm/mmu/tdp_mmu.c | 1 -
+>  1 file changed, 1 deletion(-)
+> 
+> diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
+> index a2f9a34a0168..b822677ee3da 100644
+> --- a/arch/x86/kvm/mmu/tdp_mmu.c
+> +++ b/arch/x86/kvm/mmu/tdp_mmu.c
+> @@ -51,7 +51,6 @@ void kvm_mmu_uninit_tdp_mmu(struct kvm *kvm)
+>  	if (!kvm->arch.tdp_mmu_enabled)
+>  		return;
+>  
+> -	flush_workqueue(kvm->arch.tdp_mmu_zap_wq);
 
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 856473e54155..2ea106146686 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -1054,7 +1054,6 @@ static inline void __free_one_page(struct page *page,
- 		int migratetype, fpi_t fpi_flags)
- {
- 	struct capture_control *capc =3D task_capc(zone);
--	unsigned int max_order =3D pageblock_order;
- 	unsigned long buddy_pfn;
- 	unsigned long combined_pfn;
- 	struct page *buddy;
-@@ -1070,8 +1069,7 @@ static inline void __free_one_page(struct page *page,
- 	VM_BUG_ON_PAGE(pfn & ((1 << order) - 1), page);
- 	VM_BUG_ON_PAGE(bad_range(zone, page), page);
-=20
--continue_merging:
--	while (order < max_order) {
-+	while (order < MAX_ORDER - 1) {
- 		if (compaction_capture(capc, page, order, migratetype)) {
- 			__mod_zone_freepage_state(zone, -(1 << order),
- 								migratetype);
-@@ -1082,6 +1080,22 @@ static inline void __free_one_page(struct page *page,
-=20
- 		if (!page_is_buddy(page, buddy, order))
- 			goto done_merging;
-+
-+		if (unlikely(order >=3D pageblock_order)) {
-+			/*
-+			 * We want to prevent merge between freepages on pageblock
-+			 * without fallbacks and normal pageblock. Without this,
-+			 * pageblock isolation could cause incorrect freepage or CMA
-+			 * accounting or HIGHATOMIC accounting.
-+			 */
-+			int buddy_mt =3D get_pageblock_migratetype(buddy);
-+
-+			if (migratetype !=3D buddy_mt
-+					&& (!migratetype_is_mergeable(migratetype) ||
-+						!migratetype_is_mergeable(buddy_mt)))
-+				goto done_merging;
-+		}
-+
- 		/*
- 		 * Our buddy is free or it is CONFIG_DEBUG_PAGEALLOC guard page,
- 		 * merge with it and move up one order.
-@@ -1095,32 +1109,6 @@ static inline void __free_one_page(struct page *page,
- 		pfn =3D combined_pfn;
- 		order++;
- 	}
--	if (order < MAX_ORDER - 1) {
--		/* If we are here, it means order is >=3D pageblock_order.
--		 * We want to prevent merge between freepages on pageblock
--		 * without fallbacks and normal pageblock. Without this,
--		 * pageblock isolation could cause incorrect freepage or CMA
--		 * accounting or HIGHATOMIC accounting.
--		 *
--		 * We don't want to hit this code for the more frequent
--		 * low-order merging.
--		 */
--		int buddy_mt;
--
--		buddy_pfn =3D __find_buddy_pfn(pfn, order);
--		buddy =3D page + (buddy_pfn - pfn);
--
--		if (!page_is_buddy(page, buddy, order))
--			goto done_merging;
--		buddy_mt =3D get_pageblock_migratetype(buddy);
--
--		if (migratetype !=3D buddy_mt
--				&& (!migratetype_is_mergeable(migratetype) ||
--					!migratetype_is_mergeable(buddy_mt)))
--			goto done_merging;
--		max_order =3D order + 1;
--		goto continue_merging;
--	}
-=20
- done_merging:
- 	set_buddy_order(page, order);
---=20
-2.35.1
+Might be worth adding a comment calling out that this drains the queue.  Either way,
 
+Reviewed-by: Sean Christopherson <seanjc@google.com>
