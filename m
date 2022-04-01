@@ -2,94 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1878BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 20:27:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73F86C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 20:27:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352375AbiDAU3T (ORCPT
+        id S1352423AbiDAU3Y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 16:29:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55630 "EHLO
+        Fri, 1 Apr 2022 16:29:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352718AbiDAU21 (ORCPT
+        with ESMTP id S1352966AbiDAU3D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 16:28:27 -0400
-Received: from mail-oi1-f173.google.com (mail-oi1-f173.google.com [209.85.167.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 569AD58395;
-        Fri,  1 Apr 2022 13:26:36 -0700 (PDT)
-Received: by mail-oi1-f173.google.com with SMTP id e189so3917775oia.8;
-        Fri, 01 Apr 2022 13:26:36 -0700 (PDT)
+        Fri, 1 Apr 2022 16:29:03 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87FD48FE50
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 13:27:11 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id a17so4256961edm.9
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 13:27:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=RQBy6B5GM/EaD3wIc1+Exupyw8if4FeDLlbN9LOSedg=;
+        b=jSbOpI4F89k7KaiKpsGWGdpK82oABZyLeUyJauPVm449biqjgalCHlXsaoQSGjXA5Q
+         fejB/667OqKA+yWpQf1ehM5McLxExgrustmssNboLruqW5NuH0QAvsu21yXNrPB1SbSI
+         NpB5vRlMxmiRSwpgBuJHrSm7DFNXsDHbz4xmBsTd/jcMzlneNcjq1/euVLXwUkQiyUfF
+         9cUpZBLU0dWghQGE3LrqCHHL1vwcXh6Vrh3Q3rDewEhjwazXFiaM78RrzwI+PXVUy8aK
+         ybqAQOMBm6tBrO1TLA7ijbXNxqNbZG56id0nQl9yn+fUB5WUVBkEhU1wR1biaexqVZwD
+         KS1Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=T+0PW5LNkz/Ox7qIIpulz8qqFC9xWysNmc+x8WFttFI=;
-        b=5lsKgLsuYt89sUkh4navtKdOnEt+IFXgqV50aak7qlru0y4CW+sBtVGH1XZ0gxsEcl
-         sxtAzqPlJixT3dL/EYHhWHugeEzr7lDVSs1chJcSYi3+wEIMuaIYCnrIR7bsxsezhadH
-         k8mm5HDPu6B7rrB5M+GusidyWZT+7Qxot3rP+QZd+jROfXVtSAkzYRZjkFRtH+ntHdBI
-         XN4XfVWtfLAY/VEEsGyjgdpzLRe9EZtvkJzpEYdMTDdBq8d9IttSlVRFBkOsfVBN1TIN
-         /aumwUd1OF+hin+Q8aGv7gACja0EX4vgrscGvfIcBvWNkNIIuCyJfhugw4N6BDd989bt
-         p6cg==
-X-Gm-Message-State: AOAM5301GaSTqgwtoPHEgHQuMfvSJ5ph3XaoloyTOxlTyDsXjPZ1ezD4
-        Y9AzFS8S/ERTzPWJGRu4EQ==
-X-Google-Smtp-Source: ABdhPJw+tFR9vw806n3+CZYVqImyHzmW91QrWT8iYynrciq4HEd6xNf3xACCW870T49+LpN9xAOA4Q==
-X-Received: by 2002:a05:6808:238e:b0:2ec:e0ee:abe4 with SMTP id bp14-20020a056808238e00b002ece0eeabe4mr5792022oib.187.1648844796079;
-        Fri, 01 Apr 2022 13:26:36 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id y3-20020a056870e50300b000d9be6436f1sm1415409oag.29.2022.04.01.13.26.33
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=RQBy6B5GM/EaD3wIc1+Exupyw8if4FeDLlbN9LOSedg=;
+        b=5SvwV0KxiXTReyje9MFBi8/0wIvAiDYV73yeIw6A4AkLTbKuls9oBGuW7YVGy42AlD
+         sfGu7WpbYbTDNyi/V6ttg/MbTJNBzBbxaHzoZPI4LAehBWkiayN1+SndCplnxcU7XR/i
+         fMDfHAiegL08cLAmSm+5fuHbh3YQhNAjzDZx9uXYryM8kTXQLgBXDQdGVDuJxawMIvvc
+         fAZ3Ea8St1DUjQGyYojc9HhrdfCQev3qyChsCd5loDW2o4W54WXi4a0EZNxe5RySN0Ra
+         59kDBghgJ0OKKaI+pZSxrkyAUC6rwPPJ0t5CKfBa+RBOKQP6v3qRqSrhqW7It0A88cWe
+         cV4g==
+X-Gm-Message-State: AOAM533o5uQoYKzPVvKjxRkuaa4Si/qSkv+ZESoWDt750dpyAbL+u7/S
+        Z3qUPw637NzxB+u0/UoTHcSVlg==
+X-Google-Smtp-Source: ABdhPJybst4FMUoQiNNa8IFLKRH0nu8beDXkHBVK4LvEdXuUP7yr9PuHQS/CugwyJFlinipY07wKKw==
+X-Received: by 2002:a05:6402:268f:b0:419:56cd:79e2 with SMTP id w15-20020a056402268f00b0041956cd79e2mr22560948edd.18.1648844830403;
+        Fri, 01 Apr 2022 13:27:10 -0700 (PDT)
+Received: from localhost.localdomain (cpc78119-cwma10-2-0-cust590.7-3.cable.virginm.net. [81.96.50.79])
+        by smtp.gmail.com with ESMTPSA id k14-20020a50e18e000000b0041b6f23f7f6sm1619346edl.22.2022.04.01.13.27.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Apr 2022 13:26:34 -0700 (PDT)
-Received: (nullmailer pid 3526180 invoked by uid 1000);
-        Fri, 01 Apr 2022 20:26:33 -0000
-Date:   Fri, 1 Apr 2022 15:26:33 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Richard Zhu <hongxing.zhu@nxp.com>
-Cc:     l.stach@pengutronix.de, bhelgaas@google.com, broonie@kernel.org,
-        lorenzo.pieralisi@arm.com, jingoohan1@gmail.com,
-        festevam@gmail.com, francesco.dolcini@toradex.com,
-        linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
-        linux-imx@nxp.com
-Subject: Re: [PATCH v8 8/8] PCI: imx6: Add compliance tests mode support
-Message-ID: <Ykdf+dQE10fkK3K6@robh.at.kernel.org>
-References: <1645760667-10510-1-git-send-email-hongxing.zhu@nxp.com>
- <1645760667-10510-9-git-send-email-hongxing.zhu@nxp.com>
+        Fri, 01 Apr 2022 13:27:09 -0700 (PDT)
+From:   Caleb Connolly <caleb.connolly@linaro.org>
+To:     caleb.connolly@linaro.org, Sebastian Reichel <sre@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Cc:     Amit Pundir <amit.pundir@linaro.org>,
+        Sumit Semwal <sumit.semwal@linaro.org>
+Subject: [PATCH 5/6] arm64: dts: qcom: sdm845-xiaomi-beryllium enable smb2
+Date:   Fri,  1 Apr 2022 21:26:42 +0100
+Message-Id: <20220401202643.877609-6-caleb.connolly@linaro.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220401202643.877609-1-caleb.connolly@linaro.org>
+References: <20220401202643.877609-1-caleb.connolly@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1645760667-10510-9-git-send-email-hongxing.zhu@nxp.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 25, 2022 at 11:44:27AM +0800, Richard Zhu wrote:
-> Refer to the Chapter 3.2 System Board Signal Quality of PCI Express
-> Architecture PHY Test Specification Revision 2.0.
-> 
-> Signal quality tests (for example: jitter, differential eye opening and
-> so on) can be executed with devices in the polling.compliance state.
-> 
-> To let the device support polling.compliance state, the clocks and powers
-> shouldn't be turned off when the probe of device driver fails.
-> 
-> Based on CLB (Compliance Load Board) Test Fixture and so on test
-> equipments, the PHY link would be down during the compliance tests.
-> Refer to this scenario, add the i.MX PCIe compliance tests mode enable
-> support, and keep the clocks and powers on, and finish the driver probe
-> without error return.
+Enable the smb2 charger driver and add a battery node to report the
+battery stats correctly.
 
-How is this specific to i.MX? If there's a need for compliance test 
-mode, then shouldn't it be common? However, while your usecase is 
-compliance testing, there doesn't seem to be any need for the kernel to 
-know what the usecase is.
+Signed-off-by: Caleb Connolly <caleb.connolly@linaro.org>
+---
+ .../boot/dts/qcom/sdm845-xiaomi-beryllium.dts      | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-In the same series you've argued both ways. You need the driver to probe 
-successfully with no link and you need it to shutdown on no link.
+diff --git a/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts b/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts
+index b3b6aa4e0fa3..e6170b05a73b 100644
+--- a/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts
++++ b/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts
+@@ -109,6 +109,14 @@ rmtfs_mem: memory@f6301000 {
+ 		};
+ 	};
+ 
++	battery: battery {
++		compatible = "simple-battery";
++
++		charge-full-design-microamp-hours = <4000000>;
++		voltage-min-design-microvolt = <3400000>;
++		voltage-max-design-microvolt = <4400000>;
++	};
++
+ 	vreg_s4a_1p8: vreg-s4a-1p8 {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "vreg_s4a_1p8";
+@@ -302,6 +310,12 @@ vol_up_pin_a: vol-up-active {
+ 	};
+ };
+ 
++
++&pmi8998_smb2 {
++	status = "okay";
++	monitored-battery = <&battery>;
++};
++
+ &pm8998_pon {
+ 	resin {
+ 		compatible = "qcom,pm8941-resin";
+-- 
+2.35.1
 
-> 
-> Use the "pci_imx6.compliance=1" in kernel command line to enable the
-> compliance tests mode.
-> 
-> Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
-> ---
->  drivers/pci/controller/dwc/pci-imx6.c | 47 ++++++++++++++++++---------
->  1 file changed, 31 insertions(+), 16 deletions(-)
