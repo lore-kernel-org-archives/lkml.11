@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0ACAC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:26:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30FBCC43217
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:26:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356114AbiDAP0a (ORCPT
+        id S1356141AbiDAP0k (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:26:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58588 "EHLO
+        Fri, 1 Apr 2022 11:26:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349375AbiDAOzT (ORCPT
+        with ESMTP id S1349423AbiDAOzk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:55:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0319F33885;
-        Fri,  1 Apr 2022 07:43:36 -0700 (PDT)
+        Fri, 1 Apr 2022 10:55:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AC0C67D0A;
+        Fri,  1 Apr 2022 07:43:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D4596B8240E;
-        Fri,  1 Apr 2022 14:43:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76F50C34112;
-        Fri,  1 Apr 2022 14:43:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1F638B8240E;
+        Fri,  1 Apr 2022 14:43:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D09C4C34111;
+        Fri,  1 Apr 2022 14:43:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824214;
-        bh=dlVXtdeRIoIyRYccL1Jo1lGFSThaIJ9AiQSZeRGNqE4=;
+        s=k20201202; t=1648824230;
+        bh=fq3ZZtKeifpYd3zu2lmjcZaw60oflSC8z9zx+ybjUGc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V/Jtrqu8R2hfo8nMtdOBdWVJuc6kiiqReGqMxmT2h++OAiBcVCJ7UUHDSZ+hJUPwc
-         xTLy4pt1uXattB2+HT6foRszmxHtCVnzdC7S2Mv+qiUj9X4xkbZ9JilZr6DJDVc4iH
-         0yftB8WtryJGK9IyoGaNuE0rqglPOl01rzdx7LH01SKX/shDWiP6x41r8ssRTZ5lXI
-         vCi283c7zOaJw6bcJeXvV1Sd57zuI3iur/2WDQQVQdjmvDGQkrEFghT2ZFoFGaulIA
-         ah6bHOMSJu0cti/x1L9Nnr0GTbEHFoI5wfcoEikZDk+Z/xfbkXoNlLgILoL1sDOOsy
-         nfbgW7hPxPWDA==
+        b=u0nIrSj8nwZ4nNsnBiIgEmu/oxfzT/OktdllKAP5KvaA9vT/Oo5AtpIbrOJkXkqlI
+         9tNHdSPf5USVT1oz/rNCxdrkTTRz0fbBfb1ZYMPucB3lYr8Zb7OUbmVyp1tglNum2D
+         VwDl1OzWhiyH5mQoQRDQy0/AUB2rzKnBvaX6Ku3rlz9eN8KH0dPmr24SH4/jAepoLV
+         I4GeLaGGL16eJk9RHofk6pgc3av1oPjK9pECCgjcPsZknvOyKYQy/8qro7hPSMZIHh
+         ndWxhlVUHWJr9bLO97IvtodK3vtJsjsucDfDN7Y6lk+Tvhp5Qm1AJa+0eKAOT8zWz7
+         EZr1KSLKEbBOg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alex Deucher <alexander.deucher@amd.com>,
-        Felix Kuehling <Felix.Kuehling@amd.com>,
-        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
-        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.10 32/65] drm/amdkfd: make CRAT table missing message informational only
-Date:   Fri,  1 Apr 2022 10:41:33 -0400
-Message-Id: <20220401144206.1953700-32-sashal@kernel.org>
+Cc:     Dust Li <dust.li@linux.alibaba.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, kgraul@linux.ibm.com,
+        kuba@kernel.org, pabeni@redhat.com, linux-s390@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 41/65] net/smc: correct settings of RMB window update limit
+Date:   Fri,  1 Apr 2022 10:41:42 -0400
+Message-Id: <20220401144206.1953700-41-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401144206.1953700-1-sashal@kernel.org>
 References: <20220401144206.1953700-1-sashal@kernel.org>
@@ -54,36 +54,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alex Deucher <alexander.deucher@amd.com>
+From: Dust Li <dust.li@linux.alibaba.com>
 
-[ Upstream commit 9dff13f9edf755a15f6507874185a3290c1ae8bb ]
+[ Upstream commit 6bf536eb5c8ca011d1ff57b5c5f7c57ceac06a37 ]
 
-The driver has a fallback so make the message informational
-rather than a warning. The driver has a fallback if the
-Component Resource Association Table (CRAT) is missing, so
-make this informational now.
+rmbe_update_limit is used to limit announcing receive
+window updating too frequently. RFC7609 request a minimal
+increase in the window size of 10% of the receive buffer
+space. But current implementation used:
 
-Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/1906
-Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+  min_t(int, rmbe_size / 10, SOCK_MIN_SNDBUF / 2)
+
+and SOCK_MIN_SNDBUF / 2 == 2304 Bytes, which is almost
+always less then 10% of the receive buffer space.
+
+This causes the receiver always sending CDC message to
+update its consumer cursor when it consumes more then 2K
+of data. And as a result, we may encounter something like
+"TCP silly window syndrome" when sending 2.5~8K message.
+
+This patch fixes this using max(rmbe_size / 10, SOCK_MIN_SNDBUF / 2).
+
+With this patch and SMC autocorking enabled, qperf 2K/4K/8K
+tcp_bw test shows 45%/75%/40% increase in throughput respectively.
+
+Signed-off-by: Dust Li <dust.li@linux.alibaba.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdkfd/kfd_crat.c | 2 +-
+ net/smc/smc_core.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_crat.c b/drivers/gpu/drm/amd/amdkfd/kfd_crat.c
-index 31d793ee0836..86b4dadf772e 100644
---- a/drivers/gpu/drm/amd/amdkfd/kfd_crat.c
-+++ b/drivers/gpu/drm/amd/amdkfd/kfd_crat.c
-@@ -784,7 +784,7 @@ int kfd_create_crat_image_acpi(void **crat_image, size_t *size)
- 	/* Fetch the CRAT table from ACPI */
- 	status = acpi_get_table(CRAT_SIGNATURE, 0, &crat_table);
- 	if (status == AE_NOT_FOUND) {
--		pr_warn("CRAT table not found\n");
-+		pr_info("CRAT table not found\n");
- 		return -ENODATA;
- 	} else if (ACPI_FAILURE(status)) {
- 		const char *err = acpi_format_exception(status);
+diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
+index d69aac6c1fce..ef2fd28999ba 100644
+--- a/net/smc/smc_core.c
++++ b/net/smc/smc_core.c
+@@ -1426,7 +1426,7 @@ static struct smc_buf_desc *smc_buf_get_slot(int compressed_bufsize,
+  */
+ static inline int smc_rmb_wnd_update_limit(int rmbe_size)
+ {
+-	return min_t(int, rmbe_size / 10, SOCK_MIN_SNDBUF / 2);
++	return max_t(int, rmbe_size / 10, SOCK_MIN_SNDBUF / 2);
+ }
+ 
+ /* map an rmb buf to a link */
 -- 
 2.34.1
 
