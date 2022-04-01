@@ -2,75 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B17B2C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 20:24:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCF72C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 20:25:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352455AbiDAU0i (ORCPT
+        id S1352246AbiDAU1o (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 16:26:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45848 "EHLO
+        Fri, 1 Apr 2022 16:27:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352624AbiDAU03 (ORCPT
+        with ESMTP id S240467AbiDAU1m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 16:26:29 -0400
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD4CCDB1;
-        Fri,  1 Apr 2022 13:22:57 -0700 (PDT)
-Received: from sslproxy01.your-server.de ([78.46.139.224])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1naNnI-0005fS-ID; Fri, 01 Apr 2022 22:22:52 +0200
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1naNnI-000HUg-57; Fri, 01 Apr 2022 22:22:52 +0200
-Subject: Re: [PATCH bpf-next] bpf, arm64: sign return address for jited code
-To:     Xu Kuohai <xukuohai@huawei.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Zi Shen Lim <zlim.lnx@gmail.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>
-References: <20220318102936.838459-1-xukuohai@huawei.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <da82d26e-8269-5b95-2cbb-1c147e55fcd4@iogearbox.net>
-Date:   Fri, 1 Apr 2022 22:22:51 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        Fri, 1 Apr 2022 16:27:42 -0400
+Received: from mail-oa1-x29.google.com (mail-oa1-x29.google.com [IPv6:2001:4860:4864:20::29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5C5F2A5
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 13:25:51 -0700 (PDT)
+Received: by mail-oa1-x29.google.com with SMTP id 586e51a60fabf-df22f50e0cso3949708fac.3
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 13:25:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=oqLr3CQkeovfFARJlOS29QpiBz7Mv54uvfNsfK21+RE=;
+        b=coOUZSozgph8g3yWCWkQpoEyvEcw2gzPyFFMsn0aOu49d0AOZRLPlt6DB6qkqE/1aa
+         oZP8LkZY7cBvT/pMb0haVysTmw7cesWJ/R2J5jXQ9Nn/cXmlrWyuxxUGPvFed5adi4sB
+         SPk6XCvE/fEhadDXiP5NicXLmDj5B/ofrUB8jORzZGoN3lNh4K4saSCMKh78xTS2u8mf
+         JE5bo/FKjygn/SdX5FALm8Q/QVEw+XLRkF+jsVrhIw0qFKfc7v5PdxM2Cl5M+7ECLwSx
+         messGYWBZpMOrq9ZMDr+IyEvR6gozjPg65suApTedWWcCms1+jjJbxa1jcNun68/RR3G
+         1YWg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=oqLr3CQkeovfFARJlOS29QpiBz7Mv54uvfNsfK21+RE=;
+        b=WI+DvQo+qKnNyB69Kpb0X7Ju4PnIMDlza0RA/l2NgwW6flfIfRU8YoSJcKp4nO8S3W
+         pBcD0KVl9lFcMKlu03iXa8qQgVsZANKsepogRk1xYuPXFqSP4VKnIsEBYjZkuP4fCdAv
+         pIYbe+TSmaOCs480FHtY8yY1uZ0NlUfcUedFYnTkNWno1xoR8Shs67UG0PpkbMtPkESH
+         mN7U+wIQZz5RpUyazZwIn9+LBm+dpsW9m74OU/Tf4FWfztJsMP+uZcbwK5FoANSCiSIJ
+         qxqbBWnXsMMPjmdxqcsbUd7SUJC/mZ6PyuuRh0LdAdahEJeXlrnWqAr+tX+KmIhkQwt0
+         k4kQ==
+X-Gm-Message-State: AOAM530vKecxRbCvSLYAIha+45qTKMjbKsqgAdUUsf5QLpc7UL4rVQmb
+        6JESMPWPw3qP5wl/lHOFIFWWkvjYOt4=
+X-Google-Smtp-Source: ABdhPJzkb0JznTQj7KBrDYpwHJJyzvXVyXaU1Rdk3Hk1yrEsFgwqtafPkNRZupXizjn7fIqrVHbepg==
+X-Received: by 2002:a05:6870:e9a0:b0:e1:c609:74ac with SMTP id r32-20020a056870e9a000b000e1c60974acmr1419358oao.127.1648844751291;
+        Fri, 01 Apr 2022 13:25:51 -0700 (PDT)
+Received: from ?IPV6:2603:8090:2005:39b3::1004? (2603-8090-2005-39b3-0000-0000-0000-1004.res6.spectrum.com. [2603:8090:2005:39b3::1004])
+        by smtp.gmail.com with ESMTPSA id h11-20020a9d6f8b000000b005b230ab0461sm1559019otq.64.2022.04.01.13.25.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 01 Apr 2022 13:25:50 -0700 (PDT)
+Sender: Larry Finger <larry.finger@gmail.com>
+Message-ID: <8e68501c-24fd-cfbc-60f2-ec3e277159ab@lwfinger.net>
+Date:   Fri, 1 Apr 2022 15:25:49 -0500
 MIME-Version: 1.0
-In-Reply-To: <20220318102936.838459-1-xukuohai@huawei.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] staging: r8188eu: Fix PPPoE tag insertion on big endian
+ systems
 Content-Language: en-US
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     Phillip Potter <phil@philpotter.co.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20220401151257.3414576-1-linux@roeck-us.net>
+ <782f0115-e45f-1aff-a152-5d403c990b31@lwfinger.net>
+ <dcba377b-1fce-92e6-680a-77c5567cd06c@roeck-us.net>
+From:   Larry Finger <Larry.Finger@lwfinger.net>
+In-Reply-To: <dcba377b-1fce-92e6-680a-77c5567cd06c@roeck-us.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.5/26499/Fri Apr  1 10:20:48 2022)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/18/22 11:29 AM, Xu Kuohai wrote:
-> Sign return address for jited code when the kernel is built with pointer
-> authentication enabled.
-> 
-> 1. Sign lr with paciasp instruction before lr is pushed to stack. Since
->     paciasp acts like landing pads for function entry, no need to insert
->     bti instruction before paciasp.
-> 
-> 2. Authenticate lr with autiasp instruction after lr is poped from stack.
-> 
-> Signed-off-by: Xu Kuohai <xukuohai@huawei.com>
+On 4/1/22 14:25, Guenter Roeck wrote:
+> The rest of the code uses htons/ntohs, so I prefer to follow that lead.
 
-This would need a rebase, but please also use the commit description to provide
-some more details how this inter-operates wrt BPF infra such as tail calls and
-BPF-2-BPF calls when we look back into this in few months from now.
+You just proved my point. It is hard to get be16_to_cpu() wrong. Sparse will 
+flag the error when you use cpu_to_be16() instead. I expect that your 
+htons/ntohs problem would also have shown up with Sparse.
 
-Thanks,
-Daniel
+Larry
+
+
+
+
