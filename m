@@ -2,50 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8216DC38A06
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A217AC433F5
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:02:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350454AbiDAPAA (ORCPT
+        id S1350478AbiDAPAE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:00:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57084 "EHLO
+        Fri, 1 Apr 2022 11:00:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348391AbiDAOnO (ORCPT
+        with ESMTP id S1348423AbiDAOnR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:43:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8481729524D;
-        Fri,  1 Apr 2022 07:34:47 -0700 (PDT)
+        Fri, 1 Apr 2022 10:43:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C507C295265;
+        Fri,  1 Apr 2022 07:34:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2669E6062B;
-        Fri,  1 Apr 2022 14:34:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47EB1C36AEC;
-        Fri,  1 Apr 2022 14:34:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 60D72B82520;
+        Fri,  1 Apr 2022 14:34:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 450DEC36AE2;
+        Fri,  1 Apr 2022 14:34:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823684;
-        bh=DnxBeLDL/TbMR8vRR9AfYgYySywbj68aFx2ZC6Q6A1Y=;
+        s=k20201202; t=1648823655;
+        bh=jxBC/NZl6SdyvjGxkAjx5Hzor1wxP2AEE/3/XiHN6gw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QIuk94stRijD4LbRkk9VLb7z8uo6mJXGteEu3bQNbFzlmKgAT9Jmy499qrW1PkOEI
-         KRVOT3fUSPVzPWNpSiDMAfzUvYP4Wm+dekberNTSC/5cwndNnpvs7ssDvRTf9Hxnq9
-         EfzsRE/3AU0CXM4iPhrPiLqJEa83g6XTHvkg//VGAAJWG+bHKWqNI32FRtPJ8GANFf
-         GBiT7ATDckjOIKNPTmvpM0dntQPHEHaHea4w4zibrTKUzzxJ9zRbHW4qzXhhykCR5y
-         8rE6U1lNTHIBtfB2Y0JIZ/swZiJ66ICnEVBPnI4Oz69Z36eDIDO0LJ/86EG7ZK19ct
-         9G3PU0MF3/4PQ==
+        b=ub813pWdbvjV7h8WF8PbWh6HJGaeQHeyTltPT/t4YBYKg12QyXdJc6cOjWo20/ofg
+         GW5/8enmlCKQftS91Y1Zy5XtKcowcdgoFM6u3Gb6N9vTMkSZYxLzT2LH//IZcuwkPk
+         ANeE5kOH0xbHd1mS+/jV3Jr9SoRF2WPDCJPEyfsNmsh43OQYZNfhFK6sCKPQLVxHQy
+         2yqFfxVEVXZ/+rfL4iqjBc2PTM/BQUkrqHBh6UNsVyEnK6hLIfIVNcoBKl+bsM0nGX
+         aah2r9OurI0LKptnyp+CJz3pMnbCRKo78ffQyMWVM8w6kFKKUIo5F7omYchl51qLy/
+         YNEkY03RAykww==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mahesh Rajashekhara <mahesh.rajashekhara@microchip.com>,
-        Kevin Barnett <kevin.barnett@microchip.com>,
-        Scott Benesh <scott.benesh@microchip.com>,
-        Scott Teel <scott.teel@microchip.com>,
-        Don Brace <don.brace@microchip.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, jejb@linux.ibm.com,
-        storagedev@microchip.com, linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 038/109] scsi: smartpqi: Fix kdump issue when controller is locked up
-Date:   Fri,  1 Apr 2022 10:31:45 -0400
-Message-Id: <20220401143256.1950537-38-sashal@kernel.org>
+Cc:     Ben Greear <greearb@candelatech.com>, Felix Fietkau <nbd@nbd.name>,
+        Sasha Levin <sashal@kernel.org>, lorenzo.bianconi83@gmail.com,
+        ryder.lee@mediatek.com, kvalo@kernel.org, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com, matthias.bgg@gmail.com,
+        sean.wang@mediatek.com, johannes.berg@intel.com,
+        deren.wu@mediatek.com, YN.Chen@mediatek.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.16 029/109] mt76: mt7921: fix crash when startup fails.
+Date:   Fri,  1 Apr 2022 10:31:36 -0400
+Message-Id: <20220401143256.1950537-29-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143256.1950537-1-sashal@kernel.org>
 References: <20220401143256.1950537-1-sashal@kernel.org>
@@ -57,98 +58,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mahesh Rajashekhara <mahesh.rajashekhara@microchip.com>
+From: Ben Greear <greearb@candelatech.com>
 
-[ Upstream commit 3ada501d602abf02353445c03bb3258146445d90 ]
+[ Upstream commit 827e7799c61b978fbc2cc9dac66cb62401b2b3f0 ]
 
-Avoid dropping into shell if the controller is in locked up state.
+If the nic fails to start, it is possible that the
+reset_work has already been scheduled.  Ensure the
+work item is canceled so we do not have use-after-free
+crash in case cleanup is called before the work item
+is executed.
 
-Driver issues SIS soft reset to bring back the controller to SIS mode while
-OS boots into kdump mode.
+This fixes crash on my x86_64 apu2 when mt7921k radio
+fails to work.  Radio still fails, but OS does not
+crash.
 
-If the controller is in lockup state, SIS soft reset does not work.
-
-Since the controller lockup code has not been cleared, driver considers the
-firmware is no longer up and running. Driver returns back an error code to
-OS and the kdump fails.
-
-Link: https://lore.kernel.org/r/164375212337.440833.11955356190354940369.stgit@brunhilda.pdev.net
-Reviewed-by: Kevin Barnett <kevin.barnett@microchip.com>
-Reviewed-by: Scott Benesh <scott.benesh@microchip.com>
-Reviewed-by: Scott Teel <scott.teel@microchip.com>
-Signed-off-by: Mahesh Rajashekhara <mahesh.rajashekhara@microchip.com>
-Signed-off-by: Don Brace <don.brace@microchip.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Ben Greear <greearb@candelatech.com>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/smartpqi/smartpqi_init.c | 39 ++++++++++++++++-----------
- 1 file changed, 23 insertions(+), 16 deletions(-)
+ drivers/net/wireless/mediatek/mt76/mt7921/main.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/scsi/smartpqi/smartpqi_init.c b/drivers/scsi/smartpqi/smartpqi_init.c
-index 2db9f874cc51..f3749e508673 100644
---- a/drivers/scsi/smartpqi/smartpqi_init.c
-+++ b/drivers/scsi/smartpqi/smartpqi_init.c
-@@ -7855,6 +7855,21 @@ static int pqi_force_sis_mode(struct pqi_ctrl_info *ctrl_info)
- 	return pqi_revert_to_sis_mode(ctrl_info);
- }
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/main.c b/drivers/net/wireless/mediatek/mt76/mt7921/main.c
+index 8c55562c1a8d..b3bd090a13f4 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7921/main.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7921/main.c
+@@ -260,6 +260,7 @@ static void mt7921_stop(struct ieee80211_hw *hw)
  
-+static void pqi_perform_lockup_action(void)
-+{
-+	switch (pqi_lockup_action) {
-+	case PANIC:
-+		panic("FATAL: Smart Family Controller lockup detected");
-+		break;
-+	case REBOOT:
-+		emergency_restart();
-+		break;
-+	case NONE:
-+	default:
-+		break;
-+	}
-+}
-+
- static int pqi_ctrl_init(struct pqi_ctrl_info *ctrl_info)
- {
- 	int rc;
-@@ -7879,8 +7894,15 @@ static int pqi_ctrl_init(struct pqi_ctrl_info *ctrl_info)
- 	 * commands.
- 	 */
- 	rc = sis_wait_for_ctrl_ready(ctrl_info);
--	if (rc)
-+	if (rc) {
-+		if (reset_devices) {
-+			dev_err(&ctrl_info->pci_dev->dev,
-+				"kdump init failed with error %d\n", rc);
-+			pqi_lockup_action = REBOOT;
-+			pqi_perform_lockup_action();
-+		}
- 		return rc;
-+	}
+ 	cancel_delayed_work_sync(&dev->pm.ps_work);
+ 	cancel_work_sync(&dev->pm.wake_work);
++	cancel_work_sync(&dev->reset_work);
+ 	mt76_connac_free_pending_tx_skbs(&dev->pm, NULL);
  
- 	/*
- 	 * Get the controller properties.  This allows us to determine
-@@ -8605,21 +8627,6 @@ static int pqi_ofa_ctrl_restart(struct pqi_ctrl_info *ctrl_info, unsigned int de
- 	return pqi_ctrl_init_resume(ctrl_info);
- }
- 
--static void pqi_perform_lockup_action(void)
--{
--	switch (pqi_lockup_action) {
--	case PANIC:
--		panic("FATAL: Smart Family Controller lockup detected");
--		break;
--	case REBOOT:
--		emergency_restart();
--		break;
--	case NONE:
--	default:
--		break;
--	}
--}
--
- static struct pqi_raid_error_info pqi_ctrl_offline_raid_error_info = {
- 	.data_out_result = PQI_DATA_IN_OUT_HARDWARE_ERROR,
- 	.status = SAM_STAT_CHECK_CONDITION,
+ 	mt7921_mutex_acquire(dev);
 -- 
 2.34.1
 
