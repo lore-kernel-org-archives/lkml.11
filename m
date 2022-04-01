@@ -2,49 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39C3CC38A06
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E14DCC3A589
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:13:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350973AbiDAPNe (ORCPT
+        id S1351602AbiDAPNn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:13:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55258 "EHLO
+        Fri, 1 Apr 2022 11:13:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349513AbiDAOqB (ORCPT
+        with ESMTP id S1349807AbiDAOqu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:46:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3D6329C953;
-        Fri,  1 Apr 2022 07:36:06 -0700 (PDT)
+        Fri, 1 Apr 2022 10:46:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0912929EE0C;
+        Fri,  1 Apr 2022 07:36:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4F352B8251D;
-        Fri,  1 Apr 2022 14:35:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A5DAC2BBE4;
-        Fri,  1 Apr 2022 14:35:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C234360B8A;
+        Fri,  1 Apr 2022 14:36:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29766C2BBE4;
+        Fri,  1 Apr 2022 14:36:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823730;
-        bh=RZ5MzN15iUd+U++gU+5YPigZbBU8LavD9EctC8smRGA=;
+        s=k20201202; t=1648823766;
+        bh=zq+1QPbSekVzYFU/HR9QExlr4oS2/VMpbbXHvi4dsvA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gn32J1xGWXtfIRPq9bUNlhf/l6btv6+gsz6WXga9LysNrKnjWgO8MV8q9rEsp1X7w
-         +H7O7FCiGyP0V93I5EjhM6YlBK1XAXiu/VypF87mxQBZT4rBPdivoLnHN0cscs9wwM
-         Xjx2erV4VVluy/8osjI+icY5GfSi4tJNyVqnm3OXPuU27wg+JMkoNmG8FDoBwPeiSr
-         snBz6GcSySClgo5MUSqUKHV4/LrBFasu1Fs4afT+L2wyMbtdusI8SHf+2GsDBo+m4N
-         NuTEV3txkSKXbPLEz3aJgH7Y5zczKaWY6YgUuk5xGYONYDOB9mza34MoYYn/3hAg60
-         mWHwGE9b9CaWw==
+        b=jKiU8gUVHthbgpLbXtqI8ZH6Mj9hV7x22H1IZNSIs0Tylr2FRT3pyhb9wQeS10+xt
+         EWOEGq5CzRFfRXhrW6MJ6mrvoWzG8EbJcH48aibkmD0eclWg2aG1dZnHcLBCeJ3BR6
+         1tKTqFHxw34ShSdEkopX46rizJfQe7lVLAI5+yCvv8q6P1EjgSj8/n3rRFf/zgWQGR
+         jTZEYFyQV/drRKdK7YMQ8PBICdV/5dLeGEYizRzY2ytJV2JamczOoKC99TE23Oi2Pe
+         uMV5FKGJR4IokUNOQfVgzqle4Ar0iss9JSBf/bWpKXINc/0zE0KLncnYEpHez0CfnP
+         5DgWrCasU3O5A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ilan Peer <ilan.peer@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        johannes.berg@intel.com, ayala.beker@intel.com,
-        avraham.stern@intel.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 054/109] iwlwifi: mvm: Passively scan non PSC channels only when requested so
-Date:   Fri,  1 Apr 2022 10:32:01 -0400
-Message-Id: <20220401143256.1950537-54-sashal@kernel.org>
+Cc:     Johan Almbladh <johan.almbladh@anyfinetworks.com>,
+        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>,
+        lorenzo.bianconi83@gmail.com, ryder.lee@mediatek.com,
+        kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, matthias.bgg@gmail.com, Bo.Jiao@mediatek.com,
+        sujuan.chen@mediatek.com, shayne.chen@mediatek.com,
+        greearb@candelatech.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.16 069/109] mt76: mt7915: fix injected MPDU transmission to not use HW A-MSDU
+Date:   Fri,  1 Apr 2022 10:32:16 -0400
+Message-Id: <20220401143256.1950537-69-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143256.1950537-1-sashal@kernel.org>
 References: <20220401143256.1950537-1-sashal@kernel.org>
@@ -56,113 +58,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ilan Peer <ilan.peer@intel.com>
+From: Johan Almbladh <johan.almbladh@anyfinetworks.com>
 
-[ Upstream commit 9966904e9472703a05861f343157cd78f47514fd ]
+[ Upstream commit 28225a6ef80ebf46c46e5fbd5b1ee231a0b2b5b7 ]
 
-Non PSC channels should generally be scanned based on information about
-collocated APs obtained during scan on legacy bands, and otherwise
-should not be scanned unless specifically requested so (as there are
-relatively many non PSC channels, scanning them passively is time consuming
-and interferes with regular data traffic).
+Before, the hardware would be allowed to transmit injected 802.11 MPDUs
+as A-MSDU. This resulted in corrupted frames being transmitted. Now,
+injected MPDUs are transmitted as-is, without A-MSDU.
 
-Thus, modify the scan logic to avoid passively scanning PSC channels
-if there is no information about collocated APs and the scan is not
-a passive scan.
+The fix was verified with frame injection on MT7915 hardware, both with
+and without the injected frame being encrypted.
 
-Signed-off-by: Ilan Peer <ilan.peer@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20220204122220.457da4cc95eb.Ic98472bab5f5475f1e102547644caaae89ce4c4a@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+If the hardware cannot do A-MSDU aggregation on MPDUs, this problem
+would also be present in the TX path where mac80211 does the 802.11
+encapsulation. However, I have not observed any such problem when
+disabling IEEE80211_HW_SUPPORTS_TX_ENCAP_OFFLOAD to force that mode.
+Therefore this fix is isolated to injected frames only.
+
+The same A-MSDU logic is also present in the mt7921 driver, so it is
+likely that this fix should be applied there too. I do not have access
+to mt7921 hardware so I have not been able to test that.
+
+Signed-off-by: Johan Almbladh <johan.almbladh@anyfinetworks.com>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/mvm/scan.c | 42 ++++++++++++++-----
- 1 file changed, 32 insertions(+), 10 deletions(-)
+ drivers/net/wireless/mediatek/mt76/mt7915/mac.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/scan.c b/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
-index e3eefc55beaf..212e558b9aa0 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
-@@ -1733,27 +1733,37 @@ iwl_mvm_umac_scan_fill_6g_chan_list(struct iwl_mvm *mvm,
- }
- 
- /* TODO: this function can be merged with iwl_mvm_scan_umac_fill_ch_p_v6 */
--static void
--iwl_mvm_umac_scan_cfg_channels_v6_6g(struct iwl_mvm_scan_params *params,
-+static u32
-+iwl_mvm_umac_scan_cfg_channels_v6_6g(struct iwl_mvm *mvm,
-+				     struct iwl_mvm_scan_params *params,
- 				     u32 n_channels,
- 				     struct iwl_scan_probe_params_v4 *pp,
- 				     struct iwl_scan_channel_params_v6 *cp,
- 				     enum nl80211_iftype vif_type)
- {
--	struct iwl_scan_channel_cfg_umac *channel_cfg = cp->channel_config;
- 	int i;
- 	struct cfg80211_scan_6ghz_params *scan_6ghz_params =
- 		params->scan_6ghz_params;
-+	u32 ch_cnt;
- 
--	for (i = 0; i < params->n_channels; i++) {
-+	for (i = 0, ch_cnt = 0; i < params->n_channels; i++) {
- 		struct iwl_scan_channel_cfg_umac *cfg =
--			&cp->channel_config[i];
-+			&cp->channel_config[ch_cnt];
- 
- 		u32 s_ssid_bitmap = 0, bssid_bitmap = 0, flags = 0;
- 		u8 j, k, s_max = 0, b_max = 0, n_used_bssid_entries;
- 		bool force_passive, found = false, allow_passive = true,
- 		     unsolicited_probe_on_chan = false, psc_no_listen = false;
- 
-+		/*
-+		 * Avoid performing passive scan on non PSC channels unless the
-+		 * scan is specifically a passive scan, i.e., no SSIDs
-+		 * configured in the scan command.
-+		 */
-+		if (!cfg80211_channel_is_psc(params->channels[i]) &&
-+		    !params->n_6ghz_params && params->n_ssids)
-+			continue;
-+
- 		cfg->v1.channel_num = params->channels[i]->hw_value;
- 		cfg->v2.band = 2;
- 		cfg->v2.iter_count = 1;
-@@ -1872,8 +1882,16 @@ iwl_mvm_umac_scan_cfg_channels_v6_6g(struct iwl_mvm_scan_params *params,
- 		    (!flags && !cfg80211_channel_is_psc(params->channels[i])))
- 			flags |= IWL_UHB_CHAN_CFG_FLAG_FORCE_PASSIVE;
- 
--		channel_cfg[i].flags |= cpu_to_le32(flags);
-+		cfg->flags |= cpu_to_le32(flags);
-+		ch_cnt++;
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mac.c b/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
+index 38d66411444a..93aa2242c0d9 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
+@@ -982,6 +982,7 @@ mt7915_mac_write_txwi_80211(struct mt7915_dev *dev, __le32 *txwi,
+ 		val = MT_TXD3_SN_VALID |
+ 		      FIELD_PREP(MT_TXD3_SEQ, IEEE80211_SEQ_TO_SN(seqno));
+ 		txwi[3] |= cpu_to_le32(val);
++		txwi[7] &= ~cpu_to_le32(MT_TXD7_HW_AMSDU);
  	}
-+
-+	if (params->n_channels > ch_cnt)
-+		IWL_DEBUG_SCAN(mvm,
-+			       "6GHz: reducing number channels: (%u->%u)\n",
-+			       params->n_channels, ch_cnt);
-+
-+	return ch_cnt;
- }
  
- static u8 iwl_mvm_scan_umac_chan_flags_v2(struct iwl_mvm *mvm,
-@@ -2414,10 +2432,14 @@ static int iwl_mvm_scan_umac_v14(struct iwl_mvm *mvm, struct ieee80211_vif *vif,
- 	if (ret)
- 		return ret;
- 
--	iwl_mvm_umac_scan_cfg_channels_v6_6g(params,
--					     params->n_channels,
--					     pb, cp, vif->type);
--	cp->count = params->n_channels;
-+	cp->count = iwl_mvm_umac_scan_cfg_channels_v6_6g(mvm, params,
-+							 params->n_channels,
-+							 pb, cp, vif->type);
-+	if (!cp->count) {
-+		mvm->scan_uid_status[uid] = 0;
-+		return -EINVAL;
-+	}
-+
- 	if (!params->n_ssids ||
- 	    (params->n_ssids == 1 && !params->ssids[0].ssid_len))
- 		cp->flags |= IWL_SCAN_CHANNEL_FLAG_6G_PSC_NO_FILTER;
+ 	val = FIELD_PREP(MT_TXD7_TYPE, fc_type) |
 -- 
 2.34.1
 
