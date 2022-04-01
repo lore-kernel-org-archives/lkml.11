@@ -2,51 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCF45C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC2D2C433F5
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:26:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354188AbiDAPVB (ORCPT
+        id S1351665AbiDAPTT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:21:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57440 "EHLO
+        Fri, 1 Apr 2022 11:19:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352586AbiDAOvA (ORCPT
+        with ESMTP id S1352451AbiDAOuW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:51:00 -0400
+        Fri, 1 Apr 2022 10:50:22 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A26E62B4482;
-        Fri,  1 Apr 2022 07:42:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AB77292B86;
+        Fri,  1 Apr 2022 07:41:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B3A36612AC;
-        Fri,  1 Apr 2022 14:41:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88701C2BBE4;
-        Fri,  1 Apr 2022 14:41:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DF2A060BAF;
+        Fri,  1 Apr 2022 14:41:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BF00C340F2;
+        Fri,  1 Apr 2022 14:41:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824118;
-        bh=qgFdeG3Vq5khwU4VSpWjW9nkT+Svh4lCeUnEgtUgcHM=;
+        s=k20201202; t=1648824103;
+        bh=E82SV7e6t4GyW9rakvNFtqwmoOj2puq32T+bfxLiQxM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mP2UzSpyrjdwvzQdnq/tlOew6sFirJuosoV7w94VP7R4LB5ho1/l+PE1NSkWBU0Ln
-         ZjLfOQ/D/8LZTUjs/ISCo3hKOcbbUy4mpiaVPVTRGqLkXvn3a/ygmv+tJxRb+hjBh1
-         zEJi0OXPZfXBAks/yQKXTeNM9BSTFRzIQEoN6GbtNKDMkpitfncb+7K58qZ7FWwVmQ
-         VlSJy6Q3PBs/pu3wDGvpEfK7mpL0dFlblXHWxusJruWawcX3G2pc7+Hm925gkS69LG
-         nP5jWty8EsyGhJ/YRdmwWGkoQOj34cCPwcKiulDwlbA049nPjFm0D95Ce/u3T4wwZb
-         yZJrRPGk9XoRg==
+        b=OvAS1AUpfMcN8KGEI4TgxTw2/09RgD0nZbo67TEoAde4EdWv56WCu3+fgsiSgBKJn
+         7dcJQAIuYFczyapXpWifrX8S5qMrMGl/k8DY7fkJuGEtR6s57Nj+C87pLdARX5mxUb
+         N76Lg4TxaRql8eUoJTs5zIrq+UyIWU7ZsI6okd54nYyqO4gPGECvQSNABtepQHU+1o
+         sljaS5VFkI2ogpvHkaLEcyTTI0uG7w5JaBuvjttRQdVScmWr+dx9DsvBYqCKwbk35/
+         9HjwZfuCUZcHOph0uUMgUMna23jGu3xxTCTeyDsDVNX3XmoiAK7YeItfabWVN6dBsB
+         exTWiQ3HaaOpg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Feng Tang <feng.tang@intel.com>, kernel test robot <lkp@intel.com>,
-        Guo Ren <guoren@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>, nathan@kernel.org,
-        peterz@infradead.org, ndesaulniers@google.com,
-        keescook@chromium.org, penguin-kernel@I-love.SAKURA.ne.jp,
-        isabbasso@riseup.net, dan.j.williams@intel.com,
-        linux-csky@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 96/98] lib/Kconfig.debug: add ARCH dependency for FUNCTION_ALIGN option
-Date:   Fri,  1 Apr 2022 10:37:40 -0400
-Message-Id: <20220401143742.1952163-96-sashal@kernel.org>
+Cc:     Deren Wu <deren.wu@mediatek.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>,
+        lorenzo.bianconi83@gmail.com, ryder.lee@mediatek.com,
+        kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, matthias.bgg@gmail.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.15 88/98] mt76: fix monitor mode crash with sdio driver
+Date:   Fri,  1 Apr 2022 10:37:32 -0400
+Message-Id: <20220401143742.1952163-88-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143742.1952163-1-sashal@kernel.org>
 References: <20220401143742.1952163-1-sashal@kernel.org>
@@ -58,50 +59,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Feng Tang <feng.tang@intel.com>
+From: Deren Wu <deren.wu@mediatek.com>
 
-[ Upstream commit 1bf18da62106225dbc47aab41efee2aeb99caccd ]
+[ Upstream commit 123bc712b1de0805f9d683687e17b1ec2aba0b68 ]
 
-0Day robots reported there is compiling issue for 'csky' ARCH when
-CONFIG_DEBUG_FORCE_DATA_SECTION_ALIGNED is enabled [1]:
+mt7921s driver may receive frames with fragment buffers. If there is a
+CTS packet received in monitor mode, the payload is 10 bytes only and
+need 6 bytes header padding after RXD buffer. However, only RXD in the
+first linear buffer, if we pull buffer size RXD-size+6 bytes with
+skb_pull(), that would trigger "BUG_ON(skb->len < skb->data_len)" in
+__skb_pull().
 
-All errors (new ones prefixed by >>):
+To avoid the nonlinear buffer issue, enlarge the RXD size from 128 to
+256 to make sure all MCU operation in linear buffer.
 
-   {standard input}: Assembler messages:
->> {standard input}:2277: Error: pcrel offset for branch to .LS000B too far (0x3c)
+[   52.007562] kernel BUG at include/linux/skbuff.h:2313!
+[   52.007578] Internal error: Oops - BUG: 0 [#1] PREEMPT SMP
+[   52.007987] pc : skb_pull+0x48/0x4c
+[   52.008015] lr : mt7921_queue_rx_skb+0x494/0x890 [mt7921_common]
+[   52.008361] Call trace:
+[   52.008377]  skb_pull+0x48/0x4c
+[   52.008400]  mt76s_net_worker+0x134/0x1b0 [mt76_sdio 35339a92c6eb7d4bbcc806a1d22f56365565135c]
+[   52.008431]  __mt76_worker_fn+0xe8/0x170 [mt76 ef716597d11a77150bc07e3fdd68eeb0f9b56917]
+[   52.008449]  kthread+0x148/0x3ac
+[   52.008466]  ret_from_fork+0x10/0x30
 
-Which was discussed in [2].  And as there is no solution for csky yet, add
-some dependency for this config to limit it to several ARCHs which have no
-compiling issue so far.
-
-[1]. https://lore.kernel.org/lkml/202202271612.W32UJAj2-lkp@intel.com/
-[2]. https://www.spinics.net/lists/linux-kbuild/msg30298.html
-
-Link: https://lkml.kernel.org/r/20220304021100.GN4548@shbuild999.sh.intel.com
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Feng Tang <feng.tang@intel.com>
-Cc: Guo Ren <guoren@kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Signed-off-by: Sean Wang <sean.wang@mediatek.com>
+Signed-off-by: Deren Wu <deren.wu@mediatek.com>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- lib/Kconfig.debug | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/wireless/mediatek/mt76/mt76.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
-index 2a9b6dcdac4f..55e89b237b6f 100644
---- a/lib/Kconfig.debug
-+++ b/lib/Kconfig.debug
-@@ -414,7 +414,8 @@ config SECTION_MISMATCH_WARN_ONLY
- 	  If unsure, say Y.
+diff --git a/drivers/net/wireless/mediatek/mt76/mt76.h b/drivers/net/wireless/mediatek/mt76/mt76.h
+index 4d01fd85283d..6e4d69715927 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt76.h
++++ b/drivers/net/wireless/mediatek/mt76/mt76.h
+@@ -19,7 +19,7 @@
  
- config DEBUG_FORCE_FUNCTION_ALIGN_64B
--	bool "Force all function address 64B aligned" if EXPERT
-+	bool "Force all function address 64B aligned"
-+	depends on EXPERT && (X86_64 || ARM64 || PPC32 || PPC64 || ARC)
- 	help
- 	  There are cases that a commit from one domain changes the function
- 	  address alignment of other domains, and cause magic performance
+ #define MT_MCU_RING_SIZE	32
+ #define MT_RX_BUF_SIZE		2048
+-#define MT_SKB_HEAD_LEN		128
++#define MT_SKB_HEAD_LEN		256
+ 
+ #define MT_MAX_NON_AQL_PKT	16
+ #define MT_TXQ_FREE_THR		32
 -- 
 2.34.1
 
