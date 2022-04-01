@@ -2,51 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A303C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 947FFC43219
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:20:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349517AbiDAPS2 (ORCPT
+        id S1350635AbiDAPSx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:18:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60630 "EHLO
+        Fri, 1 Apr 2022 11:18:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352395AbiDAOuS (ORCPT
+        with ESMTP id S1352301AbiDAOuO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:50:18 -0400
+        Fri, 1 Apr 2022 10:50:14 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66F842B2B70;
-        Fri,  1 Apr 2022 07:41:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 123E12B207B;
+        Fri,  1 Apr 2022 07:41:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1C58FB8251C;
-        Fri,  1 Apr 2022 14:40:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B686C340F2;
-        Fri,  1 Apr 2022 14:40:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E0A04B824D8;
+        Fri,  1 Apr 2022 14:40:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6B9FC340EE;
+        Fri,  1 Apr 2022 14:40:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824056;
-        bh=OvF6t2EGTm+JmxnUQZpM+QgMaTFbq/PD/YPATXWW9b8=;
+        s=k20201202; t=1648824046;
+        bh=fkv3DsJP6QDnF5V9WKUbhc3cbI7Ae3zkZ3dapDGXnZE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P/mxdTS5UU83gWUIFY1vpOsL86G5y/vo7AKaJ+lUA/22Xmb2zMuxve82/3wSk1ovB
-         9KW+Oo0hsMJ2mAO1PzERxZSMp1z5nsLpUi2WGEIGZM6qM2ma2LpiNJOuGrQmQSSXw7
-         zbM2dTJZFsqEs+zUgLuiMw8TzuCfKFMaWIG2jk5jOZW4X4V/bORSkjSvmpdfjiwqT3
-         cFyAnxaiiKAQ63dS/FVAqfTriW/nGLHeEbjp9gHgKFXQ11SsCk8GkEyNj2aOgz6QDb
-         QGV1Ih8Jnj8UKslfxJ6xK2fjy9b23RpuGHS6ye54pXIMRFVVxPHIvQtsLMFsoWvS3J
-         a87WDH2SxFD0g==
+        b=Obn5225KK7dQ9PGlD0WzcFVKYLnilEoHvFzposh9LdBK0Pv3x7gloq18rsEjap2fS
+         nSJv8lBkVJ4PVH71kZ0Hk2lft5+sE0qroUphFIVkPyyymbOIq7XYivLfiDdJJZrpHB
+         kZV2PTOcbHH8HsfhJRaS1NC5/Zv1HrWAjf1UXoyevjBiDhzrCGKNjkD6v5N7DFwRL6
+         bGHTpV6gQ/1+MrUUxVQTJGC6JhJnpzqWvxVUDnsKniWyvXPQcY4Y/2Qu6cbFC3OMEF
+         /4n1GeNNJlORavnazVk9me+SRsq5CxIT7wtwynwbvkoztz8+8FT6ppdRTFKzaG4cyy
+         Uun1/9JH1xgWQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Robin Murphy <robin.murphy@arm.com>,
-        Yunfei Wang <yf.wang@mediatek.com>,
-        Miles Chen <miles.chen@mediatek.com>,
-        Joerg Roedel <jroedel@suse.de>,
-        Sasha Levin <sashal@kernel.org>, joro@8bytes.org,
-        will@kernel.org, matthias.bgg@gmail.com,
-        iommu@lists.linux-foundation.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.15 69/98] iommu/iova: Improve 32-bit free space estimate
-Date:   Fri,  1 Apr 2022 10:37:13 -0400
-Message-Id: <20220401143742.1952163-69-sashal@kernel.org>
+Cc:     Qi Liu <liuqi115@huawei.com>, John Garry <john.garry@huawei.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, jejb@linux.ibm.com,
+        linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 63/98] scsi: hisi_sas: Free irq vectors in order for v3 HW
+Date:   Fri,  1 Apr 2022 10:37:07 -0400
+Message-Id: <20220401143742.1952163-63-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143742.1952163-1-sashal@kernel.org>
 References: <20220401143742.1952163-1-sashal@kernel.org>
@@ -58,54 +53,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robin Murphy <robin.murphy@arm.com>
+From: Qi Liu <liuqi115@huawei.com>
 
-[ Upstream commit 5b61343b50590fb04a3f6be2cdc4868091757262 ]
+[ Upstream commit 554fb72ee34f4732c7f694f56c3c6e67790352a0 ]
 
-For various reasons based on the allocator behaviour and typical
-use-cases at the time, when the max32_alloc_size optimisation was
-introduced it seemed reasonable to couple the reset of the tracked
-size to the update of cached32_node upon freeing a relevant IOVA.
-However, since subsequent optimisations focused on helping genuine
-32-bit devices make best use of even more limited address spaces, it
-is now a lot more likely for cached32_node to be anywhere in a "full"
-32-bit address space, and as such more likely for space to become
-available from IOVAs below that node being freed.
+If the driver probe fails to request the channel IRQ or fatal IRQ, the
+driver will free the IRQ vectors before freeing the IRQs in free_irq(),
+and this will cause a kernel BUG like this:
 
-At this point, the short-cut in __cached_rbnode_delete_update() really
-doesn't hold up any more, and we need to fix the logic to reliably
-provide the expected behaviour. We still want cached32_node to only move
-upwards, but we should reset the allocation size if *any* 32-bit space
-has become available.
+------------[ cut here ]------------
+kernel BUG at drivers/pci/msi.c:369!
+Internal error: Oops - BUG: 0 [#1] PREEMPT SMP
+Call trace:
+   free_msi_irqs+0x118/0x13c
+   pci_disable_msi+0xfc/0x120
+   pci_free_irq_vectors+0x24/0x3c
+   hisi_sas_v3_probe+0x360/0x9d0 [hisi_sas_v3_hw]
+   local_pci_probe+0x44/0xb0
+   work_for_cpu_fn+0x20/0x34
+   process_one_work+0x1d0/0x340
+   worker_thread+0x2e0/0x460
+   kthread+0x180/0x190
+   ret_from_fork+0x10/0x20
+---[ end trace b88990335b610c11 ]---
 
-Reported-by: Yunfei Wang <yf.wang@mediatek.com>
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-Reviewed-by: Miles Chen <miles.chen@mediatek.com>
-Link: https://lore.kernel.org/r/033815732d83ca73b13c11485ac39336f15c3b40.1646318408.git.robin.murphy@arm.com
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
+So we use devm_add_action() to control the order in which we free the
+vectors.
+
+Link: https://lore.kernel.org/r/1645703489-87194-4-git-send-email-john.garry@huawei.com
+Signed-off-by: Qi Liu <liuqi115@huawei.com>
+Signed-off-by: John Garry <john.garry@huawei.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/iova.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/scsi/hisi_sas/hisi_sas_v3_hw.c | 16 +++++++++++-----
+ 1 file changed, 11 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index 920fcc27c9a1..cae5a73ff518 100644
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -154,10 +154,11 @@ __cached_rbnode_delete_update(struct iova_domain *iovad, struct iova *free)
- 	cached_iova = to_iova(iovad->cached32_node);
- 	if (free == cached_iova ||
- 	    (free->pfn_hi < iovad->dma_32bit_pfn &&
--	     free->pfn_lo >= cached_iova->pfn_lo)) {
-+	     free->pfn_lo >= cached_iova->pfn_lo))
- 		iovad->cached32_node = rb_next(&free->node);
-+
-+	if (free->pfn_lo < iovad->dma_32bit_pfn)
- 		iovad->max32_alloc_size = iovad->dma_32bit_pfn;
--	}
+diff --git a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
+index 3ab669dc806f..fd14f66c71df 100644
+--- a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
++++ b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
+@@ -2392,17 +2392,25 @@ static irqreturn_t cq_interrupt_v3_hw(int irq_no, void *p)
+ 	return IRQ_WAKE_THREAD;
+ }
  
- 	cached_iova = to_iova(iovad->cached_node);
- 	if (free->pfn_lo >= cached_iova->pfn_lo)
++static void hisi_sas_v3_free_vectors(void *data)
++{
++	struct pci_dev *pdev = data;
++
++	pci_free_irq_vectors(pdev);
++}
++
+ static int interrupt_preinit_v3_hw(struct hisi_hba *hisi_hba)
+ {
+ 	int vectors;
+ 	int max_msi = HISI_SAS_MSI_COUNT_V3_HW, min_msi;
+ 	struct Scsi_Host *shost = hisi_hba->shost;
++	struct pci_dev *pdev = hisi_hba->pci_dev;
+ 	struct irq_affinity desc = {
+ 		.pre_vectors = BASE_VECTORS_V3_HW,
+ 	};
+ 
+ 	min_msi = MIN_AFFINE_VECTORS_V3_HW;
+-	vectors = pci_alloc_irq_vectors_affinity(hisi_hba->pci_dev,
++	vectors = pci_alloc_irq_vectors_affinity(pdev,
+ 						 min_msi, max_msi,
+ 						 PCI_IRQ_MSI |
+ 						 PCI_IRQ_AFFINITY,
+@@ -2414,6 +2422,7 @@ static int interrupt_preinit_v3_hw(struct hisi_hba *hisi_hba)
+ 	hisi_hba->cq_nvecs = vectors - BASE_VECTORS_V3_HW;
+ 	shost->nr_hw_queues = hisi_hba->cq_nvecs;
+ 
++	devm_add_action(&pdev->dev, hisi_sas_v3_free_vectors, pdev);
+ 	return 0;
+ }
+ 
+@@ -4763,7 +4772,7 @@ hisi_sas_v3_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 	dev_err(dev, "%d hw queues\n", shost->nr_hw_queues);
+ 	rc = scsi_add_host(shost, dev);
+ 	if (rc)
+-		goto err_out_free_irq_vectors;
++		goto err_out_debugfs;
+ 
+ 	rc = sas_register_ha(sha);
+ 	if (rc)
+@@ -4792,8 +4801,6 @@ hisi_sas_v3_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 	sas_unregister_ha(sha);
+ err_out_register_ha:
+ 	scsi_remove_host(shost);
+-err_out_free_irq_vectors:
+-	pci_free_irq_vectors(pdev);
+ err_out_debugfs:
+ 	debugfs_exit_v3_hw(hisi_hba);
+ err_out_ha:
+@@ -4821,7 +4828,6 @@ hisi_sas_v3_destroy_irqs(struct pci_dev *pdev, struct hisi_hba *hisi_hba)
+ 
+ 		devm_free_irq(&pdev->dev, pci_irq_vector(pdev, nr), cq);
+ 	}
+-	pci_free_irq_vectors(pdev);
+ }
+ 
+ static void hisi_sas_v3_remove(struct pci_dev *pdev)
 -- 
 2.34.1
 
