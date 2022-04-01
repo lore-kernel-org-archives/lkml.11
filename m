@@ -2,137 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED5C1C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 10:37:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5EF6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 10:38:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344461AbiDAKjY (ORCPT
+        id S1345019AbiDAKkM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 06:39:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44420 "EHLO
+        Fri, 1 Apr 2022 06:40:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344989AbiDAKiM (ORCPT
+        with ESMTP id S1344987AbiDAKjx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 06:38:12 -0400
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53A14266B6C;
-        Fri,  1 Apr 2022 03:36:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648809383; x=1680345383;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=WOuu6zwMsg2iOvdBnmg8kIG4pCFXH+CIzNQjuQN2qTs=;
-  b=W5VHwjFnGNiMTjT4iQpRJLAx8+W5XNVsmhPjRfomqSNT8iTrPgOiEEOC
-   +PSADAub4w/6C/JoOPfTjiv/9jLtMi8oIbgCsXheCEbDXKjq+75jbmyyC
-   E2ETkMVert/LSfqW+lBEYxl/fzE5+6B1WlmLO8q9vBqik4rliC9eQvxe/
-   YztktppTumi7AAKSvgZ+QufcOUz6QZcubkkqABFMGohpLgm7sqoOhx3Nu
-   qgaQ29WnEIqNC2STcDGVX5a6XXR6D64eSqHANAshqB0Q30nx2fyLhrJWD
-   MJe8Eg1xdtcsXnKn2xAfDVCIcc/Q3TudFtXcHMTXP3GXZDJGYf9ot/qk3
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10303"; a="320790075"
-X-IronPort-AV: E=Sophos;i="5.90,227,1643702400"; 
-   d="scan'208";a="320790075"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Apr 2022 03:36:01 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,227,1643702400"; 
-   d="scan'208";a="695847063"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga001.fm.intel.com with ESMTP; 01 Apr 2022 03:35:52 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id DAA5A5F2; Fri,  1 Apr 2022 13:36:05 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Qianggui Song <qianggui.song@amlogic.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Marc Zyngier <maz@kernel.org>,
-        Fabien Dessenne <fabien.dessenne@foss.st.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
-        openbmc@lists.ozlabs.org, linux-renesas-soc@vger.kernel.org,
-        linux-samsung-soc@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com
-Cc:     Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Avi Fishman <avifishman70@gmail.com>,
-        Tomer Maimon <tmaimon77@gmail.com>,
-        Tali Perry <tali.perry1@gmail.com>,
-        Patrick Venture <venture@google.com>,
-        Nancy Yuen <yuenn@google.com>,
-        Benjamin Fair <benjaminfair@google.com>,
-        Tomasz Figa <tomasz.figa@gmail.com>,
-        Sylwester Nawrocki <s.nawrocki@samsung.com>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Philipp Zabel <p.zabel@pengutronix.de>
-Subject: [PATCH v4 06/13] pinctrl: renesas: rza1: Replace custom code by gpiochip_node_count() call
-Date:   Fri,  1 Apr 2022 13:35:57 +0300
-Message-Id: <20220401103604.8705-7-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220401103604.8705-1-andriy.shevchenko@linux.intel.com>
-References: <20220401103604.8705-1-andriy.shevchenko@linux.intel.com>
+        Fri, 1 Apr 2022 06:39:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D6FC268997;
+        Fri,  1 Apr 2022 03:37:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 14658B8236C;
+        Fri,  1 Apr 2022 10:37:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26268C36AE3;
+        Fri,  1 Apr 2022 10:37:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648809432;
+        bh=20TVD/NU244yhQh2Al7Ojrh7JIT1c6ybtavxE/s//8c=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=D5QyRkeJwSDMZQ6QSt01I5CLBH2/ZIJ4PIYxbRGDVwrjbWV2OUKpSd7/WRvh19/NJ
+         3MbKauIHbTvJKpf1YPiwUKzNxlL7sya68HUjWdlJGTAvmgPQ7dAg68UmmokTIN5z9k
+         7w3xeSa6TDcL/F9FS+/N4JUNMqBBN8MPFGdH2SSthHHO4EOXqpBZ1l6qFLGSyfH+23
+         Sb1PJF8LKgOUArxtmhtkjAsvm6wGQ+DXeEPrg7G5Ee4lD2aa1cLJ/jNpIWKNsxEEzQ
+         RONb2QancCGsXyD99ORDogY1l4dmFA7oNV3yEtZ2l0Xpf4bf7yor5vN38ks2oJXhGK
+         WWLNlWG69nZVw==
+Message-ID: <0d9311b16cae47f7a1eb417d589adc093d9dc5b9.camel@kernel.org>
+Subject: Re: [PATCH v12 08/54] ceph: add a has_stable_inodes operation for
+ ceph
+From:   Jeff Layton <jlayton@kernel.org>
+To:     Eric Biggers <ebiggers@kernel.org>
+Cc:     ceph-devel@vger.kernel.org, xiubli@redhat.com, idryomov@gmail.com,
+        lhenriques@suse.de, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Fri, 01 Apr 2022 06:37:10 -0400
+In-Reply-To: <YkYJF07WdQZoucQ5@gmail.com>
+References: <20220331153130.41287-1-jlayton@kernel.org>
+         <20220331153130.41287-9-jlayton@kernel.org> <YkYJF07WdQZoucQ5@gmail.com>
+Content-Type: text/plain; charset="ISO-8859-15"
+User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since we have generic function to count GPIO controller nodes
-under a given device, there is no need to open code it. Replace
-custom code by gpiochip_node_count() call.
+On Thu, 2022-03-31 at 20:03 +0000, Eric Biggers wrote:
+> On Thu, Mar 31, 2022 at 11:30:44AM -0400, Jeff Layton wrote:
+> >  static struct fscrypt_operations ceph_fscrypt_ops = {
+> >  	.key_prefix		= "ceph:",
+> >  	.get_context		= ceph_crypt_get_context,
+> >  	.set_context		= ceph_crypt_set_context,
+> >  	.empty_dir		= ceph_crypt_empty_dir,
+> > +	.has_stable_inodes	= ceph_crypt_has_stable_inodes,
+> >  };
+> 
+> What is the use case for implementing this?  Note the comment in the struct
+> definition:
+> 
+>        /*
+>          * Check whether the filesystem's inode numbers and UUID are stable,
+>          * meaning that they will never be changed even by offline operations
+>          * such as filesystem shrinking and therefore can be used in the
+>          * encryption without the possibility of files becoming unreadable.
+>          *
+>          * Filesystems only need to implement this function if they want to
+>          * support the FSCRYPT_POLICY_FLAG_IV_INO_LBLK_{32,64} flags.  These
+>          * flags are designed to work around the limitations of UFS and eMMC
+>          * inline crypto hardware, and they shouldn't be used in scenarios where
+>          * such hardware isn't being used.
+>          *
+>          * Leaving this NULL is equivalent to always returning false.
+>          */
+>         bool (*has_stable_inodes)(struct super_block *sb);
+> 
+> I think you should just leave this NULL for now.
+> 
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Acked-by: Geert Uytterhoeven <geert+renesas@glider.be>
----
- drivers/pinctrl/renesas/pinctrl-rza1.c | 17 +----------------
- 1 file changed, 1 insertion(+), 16 deletions(-)
-
-diff --git a/drivers/pinctrl/renesas/pinctrl-rza1.c b/drivers/pinctrl/renesas/pinctrl-rza1.c
-index c1d6e9512c7a..acc00b1a955d 100644
---- a/drivers/pinctrl/renesas/pinctrl-rza1.c
-+++ b/drivers/pinctrl/renesas/pinctrl-rza1.c
-@@ -1154,21 +1154,6 @@ static const struct pinmux_ops rza1_pinmux_ops = {
-  * RZ/A1 pin controller driver operations
-  */
- 
--static unsigned int rza1_count_gpio_chips(struct device_node *np)
--{
--	struct device_node *child;
--	unsigned int count = 0;
+Mostly we were just looking for ways to make all of the -g encrypt
+xfstests pass. I'll plan to drop this patch and 07/54. I don't see any
+need to support legacy modes or stuff that involves special storage hw.
 -
--	for_each_child_of_node(np, child) {
--		if (!of_property_read_bool(child, "gpio-controller"))
--			continue;
--
--		count++;
--	}
--
--	return count;
--}
--
- /**
-  * rza1_parse_gpiochip() - parse and register a gpio chip and pin range
-  *
-@@ -1255,7 +1240,7 @@ static int rza1_gpio_register(struct rza1_pinctrl *rza1_pctl)
- 	unsigned int i;
- 	int ret;
- 
--	ngpiochips = rza1_count_gpio_chips(np);
-+	ngpiochips = gpiochip_node_count(rza1_pctl->dev);
- 	if (ngpiochips == 0) {
- 		dev_dbg(rza1_pctl->dev, "No gpiochip registered\n");
- 		return 0;
--- 
-2.35.1
-
+Jeff Layton <jlayton@kernel.org>
