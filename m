@@ -2,229 +2,227 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83D5EC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:22:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4D9FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:25:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346811AbiDAOY2 (ORCPT
+        id S1346827AbiDAO1P (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 10:24:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51812 "EHLO
+        Fri, 1 Apr 2022 10:27:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233760AbiDAOY1 (ORCPT
+        with ESMTP id S235713AbiDAO1L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:24:27 -0400
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8D5A27BC34
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 07:22:37 -0700 (PDT)
-Received: by mail-pg1-x531.google.com with SMTP id bc27so2526551pgb.4
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 07:22:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=y6NYgD6CmQKrzTR96Y2z4+22G7HGe2HX0/wPly7z848=;
-        b=HA5iffyA3tFUMp6Pxr9Re5GUyp6m4S7asQu/DiHNbPWlTGtD3kbvzQc8KjfiSGhcV/
-         L3MH8J9RPl46+EXVE3u3zNpgtBi3RQ98QM1ptM/G8gRQKiIPjRXy61Mup+Lsk26q9J8E
-         NyXyu9x63QS0DGcp7ouEjo6TOLSh7i0NfUtZhNCKhH4edSCQXunzdRhLPwDwEmN/0bBy
-         KmdF0Ig0R2tsB2P2EletU/Wt0nX8TiMURFjfuARKALF9Vx2M6od/gVsGIy0Zn+ZO41qY
-         sb4Jl7OFc+u/1LlCiwcQKX+gB8afChBs8wkdzB4/BoZQgyfXfaDxe09vGxEZt7+/ex4D
-         /lRw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=y6NYgD6CmQKrzTR96Y2z4+22G7HGe2HX0/wPly7z848=;
-        b=jpDxoGAqaKgJ5PkTPBT12hc+zqblPULr/GY6aT+otyraPuziFWrkls6Tx+LaoU06kX
-         f3pbze/VrtN69aC4YJEV0wn8LTgN0B073GenUEv1V0detiv4seKv5Kx6l/Gj8CikzHQR
-         ZOFgpO7wJS2u7dS1way3kKx8G+OnPN8q+1xL7tjLMBFSvsJz5hApAZoHbyNBTQEPxM1U
-         2CVJu6KSSucFcyw7P4kivXtE7uDRhNDPHIIxPV7Sp+MUn/sL5J8stEGfvCAD94d+PjB3
-         uTtVtsQkflrzoeAGKawnsIO493BgSdBWHwKwkuU/dJDEt+MmYy/1TPKsesdMWyYIFq+B
-         iqTA==
-X-Gm-Message-State: AOAM532l8oLgwfktYMXaHwDQdEV94ALfUYKyK65H74FgA2ySu/5Gxqk4
-        tjgndgnfMrZ61MQ05je2dt/Y4Q==
-X-Google-Smtp-Source: ABdhPJwjSxNwfxF3iYVakNEEEOp1wum2Psbj1Tr4354n4ZHnBsOhz818mClGfh6VMEXcC4dZMwUszA==
-X-Received: by 2002:a62:7b97:0:b0:4fa:7a9a:6523 with SMTP id w145-20020a627b97000000b004fa7a9a6523mr11182028pfc.80.1648822956936;
-        Fri, 01 Apr 2022 07:22:36 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id u18-20020a056a00125200b004fb112ee9b7sm2933175pfi.75.2022.04.01.07.22.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Apr 2022 07:22:36 -0700 (PDT)
-Date:   Fri, 1 Apr 2022 14:22:32 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Mingwei Zhang <mizhang@google.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Yosry Ahmed <yosryahmed@google.com>,
-        Ben Gardon <bgardon@google.com>,
-        David Matlack <dmatlack@google.com>,
-        Jing Zhang <jingzhangos@google.com>,
-        Peter Xu <peterx@redhat.com>
-Subject: Re: [PATCH v3 2/6] KVM: x86/mmu: Track the number of TDP MMU pages,
- but not the actual pages
-Message-ID: <YkcKqAqcKUAS+b7+@google.com>
-References: <20220401063636.2414200-1-mizhang@google.com>
- <20220401063636.2414200-3-mizhang@google.com>
+        Fri, 1 Apr 2022 10:27:11 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDEF613DB4D;
+        Fri,  1 Apr 2022 07:25:21 -0700 (PDT)
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 231DjFGM012995;
+        Fri, 1 Apr 2022 14:25:21 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : in-reply-to : references : mime-version :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=Trnly/bmHwEiMuh5ezmXYQ4lhEA0oOaqXu0QeyR00/k=;
+ b=BvoWF7CS4nwQbPpGerfxa6g5qG3rtWQCyJtPeYZ5pf3zl4ofu5WX9Q3b704sTbJBVGgj
+ 1BcscUrIA6OfClclDnOoBAXMebHSY2GVUqQ/X4WNYyYis9XI/BYXhK+Ue0+kVf/ArH3x
+ hc2TsaTLey9PfYMjEFi5ty7gxApjLANkvKkIKTDPN/OBZr6PZB/r6V6TmAg/NTJCaNDT
+ rcGD9Vwv0fuzn/PKuKiZBqe5EU9C1J3+kHVnRXRyI8bNmwF07Z88JEPMg6PqHscTmDlG
+ im+4w6r89ROPPK3uuF80rkitOjK68KXT2+InIdhYa4K/JOm8MVocAFwmvxWARqDAaL1i Ng== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3f62j58vr8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 01 Apr 2022 14:25:20 +0000
+Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 231DtoYk025695;
+        Fri, 1 Apr 2022 14:25:20 GMT
+Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3f62j58vqs-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 01 Apr 2022 14:25:20 +0000
+Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
+        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 231EF4Oh012635;
+        Fri, 1 Apr 2022 14:25:18 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+        by ppma01fra.de.ibm.com with ESMTP id 3f1tf8u64j-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 01 Apr 2022 14:25:18 +0000
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 231EPFNn48955682
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 1 Apr 2022 14:25:15 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id E4526AE05D;
+        Fri,  1 Apr 2022 14:25:14 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 61BF9AE051;
+        Fri,  1 Apr 2022 14:25:14 +0000 (GMT)
+Received: from p-imbrenda (unknown [9.145.3.73])
+        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Fri,  1 Apr 2022 14:25:14 +0000 (GMT)
+Date:   Fri, 1 Apr 2022 16:25:12 +0200
+From:   Claudio Imbrenda <imbrenda@linux.ibm.com>
+To:     Janosch Frank <frankja@linux.ibm.com>
+Cc:     kvm@vger.kernel.org, borntraeger@de.ibm.com, thuth@redhat.com,
+        pasic@linux.ibm.com, david@redhat.com, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org, scgl@linux.ibm.com,
+        mimu@linux.ibm.com, nrb@linux.ibm.com
+Subject: Re: [PATCH v9 04/18] KVM: s390: pv: refactor s390_reset_acc
+Message-ID: <20220401162512.0fd528cf@p-imbrenda>
+In-Reply-To: <1fe44cd4-4ea9-ad68-2690-54c78dd4f5ad@linux.ibm.com>
+References: <20220330122605.247613-1-imbrenda@linux.ibm.com>
+        <20220330122605.247613-5-imbrenda@linux.ibm.com>
+        <1fe44cd4-4ea9-ad68-2690-54c78dd4f5ad@linux.ibm.com>
+Organization: IBM
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="j3c8VscvnAccrGCY"
-Content-Disposition: inline
-In-Reply-To: <20220401063636.2414200-3-mizhang@google.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: XW4ko057VnKPJuRtt_yM7OvHbaxERUDj
+X-Proofpoint-ORIG-GUID: bHenevKFalBNDPNkgtUBHoKwLA2AC9i9
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-04-01_05,2022-03-31_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ malwarescore=0 clxscore=1015 spamscore=0 bulkscore=0 mlxlogscore=999
+ mlxscore=0 adultscore=0 impostorscore=0 priorityscore=1501 phishscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2204010066
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, 31 Mar 2022 15:25:31 +0200
+Janosch Frank <frankja@linux.ibm.com> wrote:
 
---j3c8VscvnAccrGCY
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+> On 3/30/22 14:25, Claudio Imbrenda wrote:
+> > Refactor s390_reset_acc so that it can be reused in upcoming patches.
+> > 
+> > We don't want to hold all the locks used in a walk_page_range for too
+> > long, and the destroy page UVC does take some time to complete.
+> > Therefore we quickly gather the pages to destroy, and then destroy them
+> > without holding all the locks.
+> > 
+> > The new refactored function optionally allows to return early without
+> > completing if a fatal signal is pending (and return and appropriate
+> > error code). Two wrappers are provided to call the new function.
+> > 
+> > Signed-off-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
+> > (dropping Janosch's Ack because of major changes to the patch)  
+> 
+> Reviewed-by: Janosch Frank <frankja@linux.ibm.com>
+> 
+> [...]
+> > +#define DESTROY_LOOP_THRESHOLD 32  
+> 
+> A question out of curiosity:
+> Is there any particular reason for the number?
+> Have you tested other numbers and experienced a speedup/slowdown?
 
-On Fri, Apr 01, 2022, Mingwei Zhang wrote:
-> diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
-> index f05423545e6d..5ca78a89d8ed 100644
-> --- a/arch/x86/kvm/mmu/tdp_mmu.c
-> +++ b/arch/x86/kvm/mmu/tdp_mmu.c
-> @@ -24,7 +24,6 @@ bool kvm_mmu_init_tdp_mmu(struct kvm *kvm)
->  
->  	INIT_LIST_HEAD(&kvm->arch.tdp_mmu_roots);
->  	spin_lock_init(&kvm->arch.tdp_mmu_pages_lock);
-> -	INIT_LIST_HEAD(&kvm->arch.tdp_mmu_pages);
->  	kvm->arch.tdp_mmu_zap_wq =
->  		alloc_workqueue("kvm", WQ_UNBOUND|WQ_MEM_RECLAIM|WQ_CPU_INTENSIVE, 0);
+to be honest no, it just seemed a good tradeoff between size and
+callback overhead
 
-This has a minor conflict with kvm/next and kvm/queue, attached a new version since
-you'll need a v3 (foreshadowing...).
+> 
+> > +
+> > +struct reset_walk_state {
+> > +	unsigned long next;
+> > +	unsigned long count;
+> > +	unsigned long pfns[DESTROY_LOOP_THRESHOLD];
+> > +};
+> > +
+> > +static int s390_gather_pages(pte_t *ptep, unsigned long addr,
+> > +			     unsigned long next, struct mm_walk *walk)
+> >   {
+> > +	struct reset_walk_state *p = walk->private;
+> >   	pte_t pte = READ_ONCE(*ptep);
+> >   
+> > -	/* There is a reference through the mapping */
+> > -	if (pte_present(pte))
+> > -		WARN_ON_ONCE(uv_destroy_owned_page(pte_val(pte) & PAGE_MASK));
+> > -
+> > -	return 0;
+> > +	if (pte_present(pte)) {
+> > +		/* we have a reference from the mapping, take an extra one */
+> > +		get_page(phys_to_page(pte_val(pte)));
+> > +		p->pfns[p->count] = phys_to_pfn(pte_val(pte));
+> > +		p->next = next;
+> > +		p->count++;
+> > +	}
+> > +	return p->count >= DESTROY_LOOP_THRESHOLD;
+> >   }
+> >   
+> > -static const struct mm_walk_ops reset_acc_walk_ops = {
+> > -	.pte_entry		= __s390_reset_acc,
+> > +static const struct mm_walk_ops gather_pages_ops = {
+> > +	.pte_entry = s390_gather_pages,
+> >   };
+> >   
+> > -#include <linux/sched/mm.h>
+> > -void s390_reset_acc(struct mm_struct *mm)
+> > +/*
+> > + * Call the Destroy secure page UVC on each page in the given array of PFNs.
+> > + * Each page needs to have an extra reference, which will be released here.
+> > + */
+> > +void s390_uv_destroy_pfns(unsigned long count, unsigned long *pfns)
+> >   {
+> > -	if (!mm_is_protected(mm))
+> > -		return;
+> > -	/*
+> > -	 * we might be called during
+> > -	 * reset:                             we walk the pages and clear
+> > -	 * close of all kvm file descriptors: we walk the pages and clear
+> > -	 * exit of process on fd closure:     vma already gone, do nothing
+> > -	 */
+> > -	if (!mmget_not_zero(mm))
+> > -		return;
+> > -	mmap_read_lock(mm);
+> > -	walk_page_range(mm, 0, TASK_SIZE, &reset_acc_walk_ops, NULL);
+> > -	mmap_read_unlock(mm);
+> > -	mmput(mm);
+> > +	unsigned long i;
+> > +
+> > +	for (i = 0; i < count; i++) {
+> > +		/* we always have an extra reference */
+> > +		uv_destroy_owned_page(pfn_to_phys(pfns[i]));
+> > +		/* get rid of the extra reference */
+> > +		put_page(pfn_to_page(pfns[i]));
+> > +		cond_resched();
+> > +	}
+> > +}
+> > +EXPORT_SYMBOL_GPL(s390_uv_destroy_pfns);
+> > +
+> > +/**
+> > + * __s390_uv_destroy_range - Walk the given range of the given address
+> > + * space, and call the destroy secure page UVC on each page.
+> > + * Optionally exit early if a fatal signal is pending.
+> > + * @mm the mm to operate on
+> > + * @start the start of the range
+> > + * @end the end of the range
+> > + * @interruptible if not 0, stop when a fatal signal is received
+> > + * Return: 0 on success, -EINTR if the function stopped before completing
+> > + */
+> > +int __s390_uv_destroy_range(struct mm_struct *mm, unsigned long start,
+> > +			    unsigned long end, bool interruptible)
+> > +{
+> > +	struct reset_walk_state state = { .next = start };
+> > +	int r = 1;
+> > +
+> > +	while (r > 0) {
+> > +		state.count = 0;
+> > +		mmap_read_lock(mm);
+> > +		r = walk_page_range(mm, state.next, end, &gather_pages_ops, &state);
+> > +		mmap_read_unlock(mm);
+> > +		cond_resched();
+> > +		s390_uv_destroy_pfns(state.count, state.pfns);
+> > +		if (interruptible && fatal_signal_pending(current))
+> > +			return -EINTR;
+> > +	}
+> > +	return 0;
+> >   }
+> > -EXPORT_SYMBOL_GPL(s390_reset_acc);
+> > +EXPORT_SYMBOL_GPL(__s390_uv_destroy_range);
+> >   
+> >   /**
+> >    * s390_remove_old_asce - Remove the topmost level of page tables from the  
+> 
 
---j3c8VscvnAccrGCY
-Content-Type: text/x-diff; charset=us-ascii
-Content-Disposition: attachment;
-	filename="0001-KVM-x86-mmu-Track-the-number-of-TDP-MMU-pages-but-no.patch"
-
-From 3d0c2796b22c75e3ab279cbcd3036c44500a6744 Mon Sep 17 00:00:00 2001
-From: Sean Christopherson <seanjc@google.com>
-Date: Fri, 1 Apr 2022 06:36:32 +0000
-Subject: [PATCH] KVM: x86/mmu: Track the number of TDP MMU pages, but not the
- actual pages
-
-Track the number of TDP MMU "shadow" pages instead of tracking the pages
-themselves. With the NX huge page list manipulation moved out of the common
-linking flow, elminating the list-based tracking means the happy path of
-adding a shadow page doesn't need to acquire a spinlock and can instead
-inc/dec an atomic.
-
-Keep the tracking as the WARN during TDP MMU teardown on leaked shadow
-pages is very, very useful for detecting KVM bugs.
-
-Tracking the number of pages will also make it trivial to expose the
-counter to userspace as a stat in the future, which may or may not be
-desirable.
-
-Note, the TDP MMU needs to use a separate counter (and stat if that ever
-comes to be) from the existing n_used_mmu_pages. The TDP MMU doesn't bother
-supporting the shrinker nor does it honor KVM_SET_NR_MMU_PAGES (because the
-TDP MMU consumes so few pages relative to shadow paging), and including TDP
-MMU pages in that counter would break both the shrinker and shadow MMUs,
-e.g. if a VM is using nested TDP.
-
-Cc: Yosry Ahmed <yosryahmed@google.com>
-Reviewed-by: Mingwei Zhang <mizhang@google.com>
-Signed-off-by: Sean Christopherson <seanjc@google.com>
----
- arch/x86/include/asm/kvm_host.h | 11 +++--------
- arch/x86/kvm/mmu/tdp_mmu.c      | 16 ++++++++--------
- 2 files changed, 11 insertions(+), 16 deletions(-)
-
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index 676705ad1e23..8a80056cf841 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -1192,6 +1192,9 @@ struct kvm_arch {
- 	 */
- 	bool tdp_mmu_enabled;
- 
-+	/* The number of TDP MMU pages across all roots. */
-+	atomic64_t tdp_mmu_pages;
-+
- 	/*
- 	 * List of struct kvm_mmu_pages being used as roots.
- 	 * All struct kvm_mmu_pages in the list should have
-@@ -1212,18 +1215,10 @@ struct kvm_arch {
- 	 */
- 	struct list_head tdp_mmu_roots;
- 
--	/*
--	 * List of struct kvmp_mmu_pages not being used as roots.
--	 * All struct kvm_mmu_pages in the list should have
--	 * tdp_mmu_page set and a tdp_mmu_root_count of 0.
--	 */
--	struct list_head tdp_mmu_pages;
--
- 	/*
- 	 * Protects accesses to the following fields when the MMU lock
- 	 * is held in read mode:
- 	 *  - tdp_mmu_roots (above)
--	 *  - tdp_mmu_pages (above)
- 	 *  - the link field of struct kvm_mmu_pages used by the TDP MMU
- 	 *  - lpage_disallowed_mmu_pages
- 	 *  - the lpage_disallowed_link field of struct kvm_mmu_pages used
-diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
-index d6417740646a..1f44826cf794 100644
---- a/arch/x86/kvm/mmu/tdp_mmu.c
-+++ b/arch/x86/kvm/mmu/tdp_mmu.c
-@@ -29,7 +29,6 @@ int kvm_mmu_init_tdp_mmu(struct kvm *kvm)
- 	kvm->arch.tdp_mmu_enabled = true;
- 	INIT_LIST_HEAD(&kvm->arch.tdp_mmu_roots);
- 	spin_lock_init(&kvm->arch.tdp_mmu_pages_lock);
--	INIT_LIST_HEAD(&kvm->arch.tdp_mmu_pages);
- 	kvm->arch.tdp_mmu_zap_wq = wq;
- 	return 1;
- }
-@@ -54,7 +53,7 @@ void kvm_mmu_uninit_tdp_mmu(struct kvm *kvm)
- 	flush_workqueue(kvm->arch.tdp_mmu_zap_wq);
- 	destroy_workqueue(kvm->arch.tdp_mmu_zap_wq);
- 
--	WARN_ON(!list_empty(&kvm->arch.tdp_mmu_pages));
-+	WARN_ON(atomic64_read(&kvm->arch.tdp_mmu_pages));
- 	WARN_ON(!list_empty(&kvm->arch.tdp_mmu_roots));
- 
- 	/*
-@@ -384,14 +383,17 @@ static void handle_changed_spte_dirty_log(struct kvm *kvm, int as_id, gfn_t gfn,
- static void tdp_mmu_unlink_sp(struct kvm *kvm, struct kvm_mmu_page *sp,
- 			      bool shared)
- {
-+	atomic64_dec(&kvm->arch.tdp_mmu_pages);
-+
-+	if (!sp->lpage_disallowed)
-+		return;
-+
- 	if (shared)
- 		spin_lock(&kvm->arch.tdp_mmu_pages_lock);
- 	else
- 		lockdep_assert_held_write(&kvm->mmu_lock);
- 
--	list_del(&sp->link);
--	if (sp->lpage_disallowed)
--		unaccount_huge_nx_page(kvm, sp);
-+	unaccount_huge_nx_page(kvm, sp);
- 
- 	if (shared)
- 		spin_unlock(&kvm->arch.tdp_mmu_pages_lock);
-@@ -1119,9 +1121,7 @@ static int tdp_mmu_link_sp(struct kvm *kvm, struct tdp_iter *iter,
- 		tdp_mmu_set_spte(kvm, iter, spte);
- 	}
- 
--	spin_lock(&kvm->arch.tdp_mmu_pages_lock);
--	list_add(&sp->link, &kvm->arch.tdp_mmu_pages);
--	spin_unlock(&kvm->arch.tdp_mmu_pages_lock);
-+	atomic64_inc(&kvm->arch.tdp_mmu_pages);
- 
- 	return 0;
- }
-
-base-commit: 88d1a6895b71b580b8fc98c23824aafa49d4948e
--- 
-2.35.1.1094.g7c7d902a7c-goog
-
-
---j3c8VscvnAccrGCY--
