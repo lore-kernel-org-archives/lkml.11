@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29B3AC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:34:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6670C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:34:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347782AbiDAOgC (ORCPT
+        id S1347345AbiDAOgK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 10:36:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40188 "EHLO
+        Fri, 1 Apr 2022 10:36:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347403AbiDAOcb (ORCPT
+        with ESMTP id S1347402AbiDAOcb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 1 Apr 2022 10:32:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9BE01EA5F0;
-        Fri,  1 Apr 2022 07:28:46 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 214851EB83E;
+        Fri,  1 Apr 2022 07:28:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6445A61CB1;
-        Fri,  1 Apr 2022 14:28:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D554FC36AE2;
-        Fri,  1 Apr 2022 14:28:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CCA1DB824AF;
+        Fri,  1 Apr 2022 14:28:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B315C34114;
+        Fri,  1 Apr 2022 14:28:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823325;
-        bh=DhyRSmYkqVp0mD9tp8xB/iWyiPaIGIOPXQyeKGIgjq8=;
+        s=k20201202; t=1648823331;
+        bh=zel5AscGqfMdJemGDD3WKGXXWhNB8nDc3/pFoOF9KFg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bnM4mdMXnlUpBnPiv4K5nZ8GfR9kYUrVVRWlTod9ecjVSJAUDV/fOy+EV8a4Ulds2
-         kJ2qIE4uTKQvu+F88zZ4EEXysnoGeJ5pU/m49ccOZ6VKLn4ZsPwyfXvExg7TXEt+kI
-         51/9MoxT9q4HFOErgZ1mdmf67274NlpE2Dpxq5nNVpVG8Vo4xH99T3O4SQ3zEqLm2n
-         FCprEbR9+ybzEcKP0B+nCmqdVeEqWCze1Fcv6vrTTD2WyPGe08+LGpMQyyL0tQc4ll
-         gviXdWrLxNhrUra7Jiu3sPVRmSW1qIgHR8L8JbtVppU2iaYl4BAkVZoO3cLgrtrpek
-         28n28m21CnRKg==
+        b=UQEtTCqR/kxYUcDjplAiz/b6qFKIEjESC4/MBhBM9PsIfs/M4Qj0Jik2F78QxNFqe
+         Nu6YV59YRa95/NpV5rPaMPL6PVwfBUTFf2oau1794QCmMvvnwF0pbms9hzkLvkiDqn
+         bklqrpG+2xTZCblDQUyu4mUBtB0+VrZiX6x94wWFk0RToZmmPa3Ip4ZxFpvo8bSyjx
+         7YoIVWNgZ3yr/FIY1WgoDDI0EP5LuquPZSgoYUujDI7Rxb/td3Gh+aCBjlkatfXtJY
+         lqpiDTszsGYRhrZI7T8hZeRhbnX4uNI+7RojfLuajDlkl+tspz47uZj5TWfa0mP6YC
+         IvkhQY+umW8ug==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Neal Liu <neal_liu@aspeedtech.com>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, linux-usb@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 058/149] usb: ehci: add pci device support for Aspeed platforms
-Date:   Fri,  1 Apr 2022 10:24:05 -0400
-Message-Id: <20220401142536.1948161-58-sashal@kernel.org>
+Cc:     Ilya Leoshkevich <iii@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        "Naveen N . Rao" <naveen.n.rao@linux.vnet.ibm.com>,
+        Sasha Levin <sashal@kernel.org>, ast@kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 060/149] libbpf: Fix accessing syscall arguments on powerpc
+Date:   Fri,  1 Apr 2022 10:24:07 -0400
+Message-Id: <20220401142536.1948161-60-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401142536.1948161-1-sashal@kernel.org>
 References: <20220401142536.1948161-1-sashal@kernel.org>
@@ -53,50 +55,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Neal Liu <neal_liu@aspeedtech.com>
+From: Ilya Leoshkevich <iii@linux.ibm.com>
 
-[ Upstream commit c3c9cee592828528fd228b01d312c7526c584a42 ]
+[ Upstream commit f07f1503469b11b739892d50c836992ffbe026ee ]
 
-Enable Aspeed quirks in commit 7f2d73788d90 ("usb: ehci:
-handshake CMD_RUN instead of STS_HALT") to support Aspeed
-ehci-pci device.
+powerpc does not select ARCH_HAS_SYSCALL_WRAPPER, so its syscall
+handlers take "unpacked" syscall arguments. Indicate this to libbpf
+using PT_REGS_SYSCALL_REGS macro.
 
-Acked-by: Alan Stern <stern@rowland.harvard.edu>
-Signed-off-by: Neal Liu <neal_liu@aspeedtech.com>
-Link: https://lore.kernel.org/r/20220208101657.76459-1-neal_liu@aspeedtech.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Heiko Carstens <hca@linux.ibm.com>
+Signed-off-by: Ilya Leoshkevich <iii@linux.ibm.com>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Tested-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+Link: https://lore.kernel.org/bpf/20220209021745.2215452-5-iii@linux.ibm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/host/ehci-pci.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ tools/lib/bpf/bpf_tracing.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/usb/host/ehci-pci.c b/drivers/usb/host/ehci-pci.c
-index e87cf3a00fa4..638f03b89739 100644
---- a/drivers/usb/host/ehci-pci.c
-+++ b/drivers/usb/host/ehci-pci.c
-@@ -21,6 +21,9 @@ static const char hcd_name[] = "ehci-pci";
- /* defined here to avoid adding to pci_ids.h for single instance use */
- #define PCI_DEVICE_ID_INTEL_CE4100_USB	0x2e70
+diff --git a/tools/lib/bpf/bpf_tracing.h b/tools/lib/bpf/bpf_tracing.h
+index 90f56b0f585f..d40b87c0e4b9 100644
+--- a/tools/lib/bpf/bpf_tracing.h
++++ b/tools/lib/bpf/bpf_tracing.h
+@@ -178,6 +178,8 @@
+ #define __PT_RC_REG gpr[3]
+ #define __PT_SP_REG sp
+ #define __PT_IP_REG nip
++/* powerpc does not select ARCH_HAS_SYSCALL_WRAPPER. */
++#define PT_REGS_SYSCALL_REGS(ctx) ctx
  
-+#define PCI_VENDOR_ID_ASPEED		0x1a03
-+#define PCI_DEVICE_ID_ASPEED_EHCI	0x2603
-+
- /*-------------------------------------------------------------------------*/
- #define PCI_DEVICE_ID_INTEL_QUARK_X1000_SOC		0x0939
- static inline bool is_intel_quark_x1000(struct pci_dev *pdev)
-@@ -222,6 +225,12 @@ static int ehci_pci_setup(struct usb_hcd *hcd)
- 			ehci->has_synopsys_hc_bug = 1;
- 		}
- 		break;
-+	case PCI_VENDOR_ID_ASPEED:
-+		if (pdev->device == PCI_DEVICE_ID_ASPEED_EHCI) {
-+			ehci_info(ehci, "applying Aspeed HC workaround\n");
-+			ehci->is_aspeed = 1;
-+		}
-+		break;
- 	}
+ #elif defined(bpf_target_sparc)
  
- 	/* optional debug port, normally in the first BAR */
 -- 
 2.34.1
 
