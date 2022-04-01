@@ -2,48 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC07CC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:41:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CB8BC4167B
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:41:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354532AbiDAPlr (ORCPT
+        id S1358265AbiDAPmK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:41:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52356 "EHLO
+        Fri, 1 Apr 2022 11:42:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349490AbiDAO5n (ORCPT
+        with ESMTP id S1349839AbiDAO6I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:57:43 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19AD915405E;
-        Fri,  1 Apr 2022 07:44:41 -0700 (PDT)
+        Fri, 1 Apr 2022 10:58:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2789E57B20;
+        Fri,  1 Apr 2022 07:45:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 84F29CE2589;
-        Fri,  1 Apr 2022 14:44:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36AEAC2BBE4;
-        Fri,  1 Apr 2022 14:44:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CB705B823EB;
+        Fri,  1 Apr 2022 14:45:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16D0FC3410F;
+        Fri,  1 Apr 2022 14:45:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824277;
-        bh=2SIjq9Xu9eYXN3ivwUc1NyjMjJKaqe9VVdl9oudmKek=;
+        s=k20201202; t=1648824311;
+        bh=+/6bN99+BTRNPw5iNO5w9jTmtZEEMenDnMzzfb5lyEg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d8/E7WdUCVmgfOSUDF1DhY1iCcPYvYdYjouuHdhID/M08SPOUgqkmHrHZ+JoHl4nR
-         IfEzezzHT6JizBDl3w3pHxFtcd5hIEIEdz+4dxoUhoIF3jY+h6QKhG0uaFtsnfh9RO
-         9Pg33Fpk/CJ37VOTKMI80/Y5oghHO7nxjdI8dhrEuEJa4nnGpA7t9aSf/NlGY7fbR/
-         KFi8uVNAZ5m4wOIR160gZc4gQGClBW9gN4SiRvYG8k/BjGZAGjNVYcl6d5xRpMlOjp
-         pQiWnEi6k4l9KQPEkBQNJKrwu9miZRW8ZeNhYhN3Ps5G0SFwhivRfPtsX1XsZFRfDO
-         f3xwR8tGiS0PQ==
+        b=uC2kNjI1NEmP7a5S3jBVUL5N3+9LxAygMTaKeixhpqcUWSAtdGR2OT6V9/U7K2mMx
+         0uXfteojYpgR2wRKeeQXwOY+vPDiEZIskhWiLpescsXaG3IdwqO39NR0pqUX5BordX
+         YjM0INBOVJs0FjFOwb8fejtUlqh6Y4qtpGdHpyh1KMPv3OmyGe5G3t6DMa+EO86iSv
+         Sthb9mUXoTotKU1zHb2QPEiXe3NzCUKZ6zMSpbUDlcUBtXh+071UGayOcl+p2bHrrm
+         bi0IgLyf7Ft1Dh2z6HV+vlP/xkeqvMOE/A2z9PHuXEUNFOoq5NBEQzTmnetqyZrYR/
+         KzPoI/8G58WnQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Xiubo Li <xiubli@redhat.com>, Jeff Layton <jlayton@kernel.org>,
-        Ilya Dryomov <idryomov@gmail.com>,
-        Sasha Levin <sashal@kernel.org>, ceph-devel@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 63/65] ceph: fix memory leak in ceph_readdir when note_last_dentry returns error
-Date:   Fri,  1 Apr 2022 10:42:04 -0400
-Message-Id: <20220401144206.1953700-63-sashal@kernel.org>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, mareklindner@neomailbox.ch,
+        sw@simonwunderlich.de, a@unstable.cc, sven@narfation.org,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        b.a.t.m.a.n@lists.open-mesh.org
+Subject: [PATCH AUTOSEL 5.4 10/37] ipv6: make mc_forwarding atomic
+Date:   Fri,  1 Apr 2022 10:44:19 -0400
+Message-Id: <20220401144446.1954694-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220401144206.1953700-1-sashal@kernel.org>
-References: <20220401144206.1953700-1-sashal@kernel.org>
+In-Reply-To: <20220401144446.1954694-1-sashal@kernel.org>
+References: <20220401144446.1954694-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,51 +56,125 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiubo Li <xiubli@redhat.com>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit f639d9867eea647005dc824e0e24f39ffc50d4e4 ]
+[ Upstream commit 145c7a793838add5e004e7d49a67654dc7eba147 ]
 
-Reset the last_readdir at the same time, and add a comment explaining
-why we don't free last_readdir when dir_emit returns false.
+This fixes minor data-races in ip6_mc_input() and
+batadv_mcast_mla_rtr_flags_softif_get_ipv6()
 
-Signed-off-by: Xiubo Li <xiubli@redhat.com>
-Reviewed-by: Jeff Layton <jlayton@kernel.org>
-Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ceph/dir.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ include/linux/ipv6.h       | 2 +-
+ net/batman-adv/multicast.c | 2 +-
+ net/ipv6/addrconf.c        | 4 ++--
+ net/ipv6/ip6_input.c       | 2 +-
+ net/ipv6/ip6mr.c           | 8 ++++----
+ 5 files changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/fs/ceph/dir.c b/fs/ceph/dir.c
-index f63c1a090139..1fddb9cd3e88 100644
---- a/fs/ceph/dir.c
-+++ b/fs/ceph/dir.c
-@@ -478,8 +478,11 @@ static int ceph_readdir(struct file *file, struct dir_context *ctx)
- 					2 : (fpos_off(rde->offset) + 1);
- 			err = note_last_dentry(dfi, rde->name, rde->name_len,
- 					       next_offset);
--			if (err)
-+			if (err) {
-+				ceph_mdsc_put_request(dfi->last_readdir);
-+				dfi->last_readdir = NULL;
- 				return err;
-+			}
- 		} else if (req->r_reply_info.dir_end) {
- 			dfi->next_offset = 2;
- 			/* keep last name */
-@@ -520,6 +523,12 @@ static int ceph_readdir(struct file *file, struct dir_context *ctx)
- 		if (!dir_emit(ctx, rde->name, rde->name_len,
- 			      ceph_present_ino(inode->i_sb, le64_to_cpu(rde->inode.in->ino)),
- 			      le32_to_cpu(rde->inode.in->mode) >> 12)) {
-+			/*
-+			 * NOTE: Here no need to put the 'dfi->last_readdir',
-+			 * because when dir_emit stops us it's most likely
-+			 * doesn't have enough memory, etc. So for next readdir
-+			 * it will continue.
-+			 */
- 			dout("filldir stopping us...\n");
- 			return 0;
- 		}
+diff --git a/include/linux/ipv6.h b/include/linux/ipv6.h
+index bbe297bbbca5..d5c507311efb 100644
+--- a/include/linux/ipv6.h
++++ b/include/linux/ipv6.h
+@@ -50,7 +50,7 @@ struct ipv6_devconf {
+ 	__s32		use_optimistic;
+ #endif
+ #ifdef CONFIG_IPV6_MROUTE
+-	__s32		mc_forwarding;
++	atomic_t	mc_forwarding;
+ #endif
+ 	__s32		disable_ipv6;
+ 	__s32		drop_unicast_in_l2_multicast;
+diff --git a/net/batman-adv/multicast.c b/net/batman-adv/multicast.c
+index 09d81f9c2a64..6f0a9f439233 100644
+--- a/net/batman-adv/multicast.c
++++ b/net/batman-adv/multicast.c
+@@ -136,7 +136,7 @@ static u8 batadv_mcast_mla_rtr_flags_softif_get_ipv6(struct net_device *dev)
+ {
+ 	struct inet6_dev *in6_dev = __in6_dev_get(dev);
+ 
+-	if (in6_dev && in6_dev->cnf.mc_forwarding)
++	if (in6_dev && atomic_read(&in6_dev->cnf.mc_forwarding))
+ 		return BATADV_NO_FLAGS;
+ 	else
+ 		return BATADV_MCAST_WANT_NO_RTR6;
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index 60d070b25484..69aef71f32ea 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -542,7 +542,7 @@ static int inet6_netconf_fill_devconf(struct sk_buff *skb, int ifindex,
+ #ifdef CONFIG_IPV6_MROUTE
+ 	if ((all || type == NETCONFA_MC_FORWARDING) &&
+ 	    nla_put_s32(skb, NETCONFA_MC_FORWARDING,
+-			devconf->mc_forwarding) < 0)
++			atomic_read(&devconf->mc_forwarding)) < 0)
+ 		goto nla_put_failure;
+ #endif
+ 	if ((all || type == NETCONFA_PROXY_NEIGH) &&
+@@ -5460,7 +5460,7 @@ static inline void ipv6_store_devconf(struct ipv6_devconf *cnf,
+ 	array[DEVCONF_USE_OPTIMISTIC] = cnf->use_optimistic;
+ #endif
+ #ifdef CONFIG_IPV6_MROUTE
+-	array[DEVCONF_MC_FORWARDING] = cnf->mc_forwarding;
++	array[DEVCONF_MC_FORWARDING] = atomic_read(&cnf->mc_forwarding);
+ #endif
+ 	array[DEVCONF_DISABLE_IPV6] = cnf->disable_ipv6;
+ 	array[DEVCONF_ACCEPT_DAD] = cnf->accept_dad;
+diff --git a/net/ipv6/ip6_input.c b/net/ipv6/ip6_input.c
+index 7e5df23cbe7b..e6c4966aa956 100644
+--- a/net/ipv6/ip6_input.c
++++ b/net/ipv6/ip6_input.c
+@@ -485,7 +485,7 @@ int ip6_mc_input(struct sk_buff *skb)
+ 	/*
+ 	 *      IPv6 multicast router mode is now supported ;)
+ 	 */
+-	if (dev_net(skb->dev)->ipv6.devconf_all->mc_forwarding &&
++	if (atomic_read(&dev_net(skb->dev)->ipv6.devconf_all->mc_forwarding) &&
+ 	    !(ipv6_addr_type(&hdr->daddr) &
+ 	      (IPV6_ADDR_LOOPBACK|IPV6_ADDR_LINKLOCAL)) &&
+ 	    likely(!(IP6CB(skb)->flags & IP6SKB_FORWARDED))) {
+diff --git a/net/ipv6/ip6mr.c b/net/ipv6/ip6mr.c
+index aee1f6bc039a..6248e00c2bf7 100644
+--- a/net/ipv6/ip6mr.c
++++ b/net/ipv6/ip6mr.c
+@@ -736,7 +736,7 @@ static int mif6_delete(struct mr_table *mrt, int vifi, int notify,
+ 
+ 	in6_dev = __in6_dev_get(dev);
+ 	if (in6_dev) {
+-		in6_dev->cnf.mc_forwarding--;
++		atomic_dec(&in6_dev->cnf.mc_forwarding);
+ 		inet6_netconf_notify_devconf(dev_net(dev), RTM_NEWNETCONF,
+ 					     NETCONFA_MC_FORWARDING,
+ 					     dev->ifindex, &in6_dev->cnf);
+@@ -904,7 +904,7 @@ static int mif6_add(struct net *net, struct mr_table *mrt,
+ 
+ 	in6_dev = __in6_dev_get(dev);
+ 	if (in6_dev) {
+-		in6_dev->cnf.mc_forwarding++;
++		atomic_inc(&in6_dev->cnf.mc_forwarding);
+ 		inet6_netconf_notify_devconf(dev_net(dev), RTM_NEWNETCONF,
+ 					     NETCONFA_MC_FORWARDING,
+ 					     dev->ifindex, &in6_dev->cnf);
+@@ -1553,7 +1553,7 @@ static int ip6mr_sk_init(struct mr_table *mrt, struct sock *sk)
+ 	} else {
+ 		rcu_assign_pointer(mrt->mroute_sk, sk);
+ 		sock_set_flag(sk, SOCK_RCU_FREE);
+-		net->ipv6.devconf_all->mc_forwarding++;
++		atomic_inc(&net->ipv6.devconf_all->mc_forwarding);
+ 	}
+ 	write_unlock_bh(&mrt_lock);
+ 
+@@ -1586,7 +1586,7 @@ int ip6mr_sk_done(struct sock *sk)
+ 			 * so the RCU grace period before sk freeing
+ 			 * is guaranteed by sk_destruct()
+ 			 */
+-			net->ipv6.devconf_all->mc_forwarding--;
++			atomic_dec(&net->ipv6.devconf_all->mc_forwarding);
+ 			write_unlock_bh(&mrt_lock);
+ 			inet6_netconf_notify_devconf(net, RTM_NEWNETCONF,
+ 						     NETCONFA_MC_FORWARDING,
 -- 
 2.34.1
 
