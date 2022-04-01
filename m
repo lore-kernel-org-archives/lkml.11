@@ -2,164 +2,316 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E039C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:51:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BA98C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 16:02:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346169AbiDAPxm (ORCPT
+        id S1345968AbiDAQET (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:53:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54744 "EHLO
+        Fri, 1 Apr 2022 12:04:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353896AbiDAPuu (ORCPT
+        with ESMTP id S245247AbiDAP5Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 11:50:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A71F43633E;
-        Fri,  1 Apr 2022 08:23:55 -0700 (PDT)
+        Fri, 1 Apr 2022 11:57:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1757EC8
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 08:28:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 39756612B9;
-        Fri,  1 Apr 2022 15:23:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7308C2BBE4;
-        Fri,  1 Apr 2022 15:23:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7B794B8250B
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 15:28:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A4D9C2BBE4;
+        Fri,  1 Apr 2022 15:28:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648826634;
-        bh=xWcXQye1OTcqa40wP8K9l3+u3eD7fmDLyJj7urdTmaY=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=DPYJcJMLE6W6curQMeYfdDhaZminHTICn5OWo5BncOHEinmeF4/zXesta30bj7pxZ
-         zO20xAP5UYBZEnHZ58FBLnVR0ydYH86GMNtBONqiRPX6SK/7VILcxVinJi4e+hRIUt
-         +POqaO3bvUg9hLZ6paBZC8U8BYeaTGLo7Tc/phLX19KTtUWVWO0rdVUQXY7w0LvT5a
-         aDgTa4vKpuoO1J+WlvvGo2irGtnyjJJ0fgpwpSkcn/FNQqhgn/41YifTVGi6oGkC9f
-         wDryZ+GzLzMoUBBfeu1K727FQsaFP7yCtawOvzqQTUSoFQ+uDXaqqhIy3e+yvnUyUY
-         0UMdFkMJnpsQg==
-Message-ID: <fc02b2d29ecb7e277d48afb340b01cdc684e2e5a.camel@kernel.org>
-Subject: Re: [PATCH 2/2] ceph: replace usage of found with dedicated list
- iterator variable
-From:   Jeff Layton <jlayton@kernel.org>
-To:     Jakob Koschel <jakobkoschel@gmail.com>
-Cc:     Ilya Dryomov <idryomov@gmail.com>, ceph-devel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Mike Rapoport <rppt@kernel.org>,
-        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>
-Date:   Fri, 01 Apr 2022 11:23:52 -0400
-In-Reply-To: <20220331215329.882411-2-jakobkoschel@gmail.com>
-References: <20220331215329.882411-1-jakobkoschel@gmail.com>
-         <20220331215329.882411-2-jakobkoschel@gmail.com>
-Content-Type: text/plain; charset="ISO-8859-15"
-User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
+        s=k20201202; t=1648826895;
+        bh=kNPzXvQ14OalPrFZuhAc7d0lFXX2Z72xOD3qvg8ENXg=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=Ksui8zxvaKOWTDV88uXqoAwqt4peFLiijJziEBMOwlFsMcAWjGlw6qGoWTZCful3k
+         4prdxOgm38KW3FJsr46+Q8GUUTf3i6TJbYtGCp0Lu16vMiWmnO707guUoXJ6dVoZap
+         ESq1iBVZP3VLbisPSyK9psAOUHahhGcVNokWEzrtZvcq5nzZfulqUPZjVUEXGHz8z/
+         GqbdxtIyxU5Vd+unrsJ9ZmRLlAFB6204/q9XL5B09xwYnhYaS9OKrGuZkl5ho1Y/zx
+         tM9z2dd5NNDASWDrISUmNLe6n1jTHY8lfRTpjBW1eV5LZTyfdJUsIpwp44pnHUzP/h
+         A73KFp3QN6ZcQ==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id D18AF5C0A15; Fri,  1 Apr 2022 08:28:14 -0700 (PDT)
+Date:   Fri, 1 Apr 2022 08:28:14 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>, KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>, quic_neeraju@quicinc.com,
+        andrii@kernel.org, ast@kernel.org
+Subject: Re: [BUG] rcu-tasks : should take care of sparse cpu masks
+Message-ID: <20220401152814.GA2841044@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220331224222.GY4285@paulmck-ThinkPad-P17-Gen-1>
+ <CANn89iJjyp7s1fYB6VCqLhUnF+mmEXyw8GMpFC9Vi22usBsgAQ@mail.gmail.com>
+ <CANn89iJaeBneeqiDBUh_ppEQGne_eyPp-BCVYjEyvoYkUxrDxg@mail.gmail.com>
+ <20220331231312.GA4285@paulmck-ThinkPad-P17-Gen-1>
+ <CANn89i+rfrkRrdYAq8Baq04n_ACq+VdB+UcsMoq7U-dB-2hKJA@mail.gmail.com>
+ <20220401000642.GB4285@paulmck-ThinkPad-P17-Gen-1>
+ <CANn89iJtfTiSz4v+L3YW+b_gzNoPLz_wuAmXGrNJXqNs9BU9cA@mail.gmail.com>
+ <20220401130114.GC4285@paulmck-ThinkPad-P17-Gen-1>
+ <CANn89iLicuKS2wDjY1D5qNT4c-ob=D2n1NnRnm5fGg4LFuW1Kg@mail.gmail.com>
+ <20220401152037.GD4285@paulmck-ThinkPad-P17-Gen-1>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220401152037.GD4285@paulmck-ThinkPad-P17-Gen-1>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-03-31 at 23:53 +0200, Jakob Koschel wrote:
-> To move the list iterator variable into the list_for_each_entry_*()
-> macro in the future it should be avoided to use the list iterator
-> variable after the loop body.
-> 
-> To *never* use the list iterator variable after the loop it was
-> concluded to use a separate iterator variable instead of a
-> found boolean [1].
-> 
-> This removes the need to use a found variable and simply checking if
-> the variable was set, can determine if the break/goto was hit.
-> 
-> Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/ [1]
-> Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
-> ---
->  fs/ceph/caps.c | 32 +++++++++++++++-----------------
->  1 file changed, 15 insertions(+), 17 deletions(-)
-> 
-> diff --git a/fs/ceph/caps.c b/fs/ceph/caps.c
-> index 519750bc5a1a..70f9c5ffa9b7 100644
-> --- a/fs/ceph/caps.c
-> +++ b/fs/ceph/caps.c
-> @@ -3179,10 +3179,9 @@ void ceph_put_wrbuffer_cap_refs(struct ceph_inode_info *ci, int nr,
->  				struct ceph_snap_context *snapc)
->  {
->  	struct inode *inode = &ci->vfs_inode;
-> -	struct ceph_cap_snap *capsnap = NULL;
-> +	struct ceph_cap_snap *capsnap = NULL, *iter;
->  	int put = 0;
->  	bool last = false;
-> -	bool found = false;
->  	bool flush_snaps = false;
->  	bool complete_capsnap = false;
->  
-> @@ -3209,14 +3208,14 @@ void ceph_put_wrbuffer_cap_refs(struct ceph_inode_info *ci, int nr,
->  		     ci->i_wrbuffer_ref, ci->i_wrbuffer_ref_head,
->  		     last ? " LAST" : "");
->  	} else {
-> -		list_for_each_entry(capsnap, &ci->i_cap_snaps, ci_item) {
-> -			if (capsnap->context == snapc) {
-> -				found = true;
-> +		list_for_each_entry(iter, &ci->i_cap_snaps, ci_item) {
-> +			if (iter->context == snapc) {
-> +				capsnap = iter;
->  				break;
->  			}
->  		}
->  
-> -		if (!found) {
-> +		if (!capsnap) {
->  			/*
->  			 * The capsnap should already be removed when removing
->  			 * auth cap in the case of a forced unmount.
-> @@ -3766,8 +3765,7 @@ static void handle_cap_flushsnap_ack(struct inode *inode, u64 flush_tid,
->  	struct ceph_inode_info *ci = ceph_inode(inode);
->  	struct ceph_mds_client *mdsc = ceph_sb_to_client(inode->i_sb)->mdsc;
->  	u64 follows = le64_to_cpu(m->snap_follows);
-> -	struct ceph_cap_snap *capsnap;
-> -	bool flushed = false;
-> +	struct ceph_cap_snap *capsnap = NULL, *iter;
->  	bool wake_ci = false;
->  	bool wake_mdsc = false;
->  
-> @@ -3775,26 +3773,26 @@ static void handle_cap_flushsnap_ack(struct inode *inode, u64 flush_tid,
->  	     inode, ci, session->s_mds, follows);
->  
->  	spin_lock(&ci->i_ceph_lock);
-> -	list_for_each_entry(capsnap, &ci->i_cap_snaps, ci_item) {
-> -		if (capsnap->follows == follows) {
-> -			if (capsnap->cap_flush.tid != flush_tid) {
-> +	list_for_each_entry(iter, &ci->i_cap_snaps, ci_item) {
-> +		if (iter->follows == follows) {
-> +			if (iter->cap_flush.tid != flush_tid) {
->  				dout(" cap_snap %p follows %lld tid %lld !="
-> -				     " %lld\n", capsnap, follows,
-> -				     flush_tid, capsnap->cap_flush.tid);
-> +				     " %lld\n", iter, follows,
-> +				     flush_tid, iter->cap_flush.tid);
->  				break;
->  			}
-> -			flushed = true;
-> +			capsnap = iter;
->  			break;
->  		} else {
->  			dout(" skipping cap_snap %p follows %lld\n",
-> -			     capsnap, capsnap->follows);
-> +			     iter, iter->follows);
->  		}
->  	}
-> -	if (flushed)
-> +	if (capsnap)
->  		ceph_remove_capsnap(inode, capsnap, &wake_ci, &wake_mdsc);
->  	spin_unlock(&ci->i_ceph_lock);
->  
-> -	if (flushed) {
-> +	if (capsnap) {
->  		ceph_put_snap_context(capsnap->context);
->  		ceph_put_cap_snap(capsnap);
->  		if (wake_ci)
+[ Adding Andrii and Alexei at Andrii's request. ]
 
-Thanks Jakob,
-
-Both patches look fine. Applied to the ceph-client/testing branch. This
-should make v5.19 if there are no issues.
-
-Thanks!
--- 
-Jeff Layton <jlayton@kernel.org>
+On Fri, Apr 01, 2022 at 08:20:37AM -0700, Paul E. McKenney wrote:
+> On Fri, Apr 01, 2022 at 06:24:13AM -0700, Eric Dumazet wrote:
+> > On Fri, Apr 1, 2022 at 6:01 AM Paul E. McKenney <paulmck@kernel.org> wrote:
+> > >
+> > > On Thu, Mar 31, 2022 at 09:39:02PM -0700, Eric Dumazet wrote:
+> > > > On Thu, Mar 31, 2022 at 5:06 PM Paul E. McKenney <paulmck@kernel.org> wrote:
+> > > > >
+> > > > > On Thu, Mar 31, 2022 at 04:28:04PM -0700, Eric Dumazet wrote:
+> > > > > > On Thu, Mar 31, 2022 at 4:13 PM Paul E. McKenney <paulmck@kernel.org> wrote:
+> > > > > > >
+> > > > > > > The initial setting of ->percpu_enqueue_shift forces all in-range CPU
+> > > > > > > IDs to shift down to zero.  The grace-period kthread is allowed to run
+> > > > > > > where it likes.  The callback lists are protected by locking, even in
+> > > > > > > the case of local access, so this should be safe.
+> > > > > > >
+> > > > > > > Or am I missing your point?
+> > > > > > >
+> > > > > >
+> > > > > > In fact I have been looking at this code, because we bisected a
+> > > > > > regression back to this patch:
+> > > > > >
+> > > > > > 4fe192dfbe5ba9780df699d411aa4f25ba24cf61 rcu-tasks: Shorten
+> > > > > > per-grace-period sleep for RCU Tasks Trace
+> > > > > >
+> > > > > > It is very possible the regression comes because the RCU task thread
+> > > > > > is using more cpu cycles, from 'CPU 0'  where our system daemons are
+> > > > > > pinned.
+> > > > >
+> > > > > Heh!  I did express that concern when creating that patch, but was
+> > > > > assured that the latency was much more important.
+> > > > >
+> > > > > Yes, that patch most definitely increases CPU utilization during RCU Tasks
+> > > > > Trace grace periods.  If you can tolerate longer grace-period latencies,
+> > > > > it might be worth toning it down a bit.  The ask was for about twice
+> > > > > the latency I achieved in my initial attempt, and I made the mistake of
+> > > > > forwarding that attempt out for testing.  They liked the shorter latency
+> > > > > very much, and objected strenuously to the thought that I might detune
+> > > > > it back to the latency that they originally asked for.  ;-)
+> > > > >
+> > > > > But I can easily provide the means to detune it through use of a kernel
+> > > > > boot parameter or some such, if that would help.
+> > > > >
+> > > > > > But I could not spot where the RCU task kthread is forced to run on CPU 0.
+> > > > >
+> > > > > I never did intend this kthread be bound anywhere.  RCU's policy is
+> > > > > that any binding of its kthreads is the responsibility of the sysadm,
+> > > > > be that carbon-based or otherwise.
+> > > > >
+> > > > > But this kthread is spawned early enough that only CPU 0 is online,
+> > > > > so maybe the question is not "what is binding it to CPU 0?" but rather
+> > > > > "why isn't something kicking it off of CPU 0?"
+> > > >
+> > > > I guess the answer to this question can be found in the following
+> > > > piece of code :)
+> > > >
+> > > > rcu_read_lock();
+> > > > for_each_process_thread(g, t)
+> > > >         rtp->pertask_func(t, &holdouts);
+> > > > rcu_read_unlock();
+> > > >
+> > > >
+> > > > With ~150,000 threads on a 256 cpu host, this holds current cpu for
+> > > > very long times:
+> > > >
+> > > >  rcu_tasks_trace    11 [017]  5010.544762:
+> > > > probe:rcu_tasks_wait_gp: (ffffffff963fb4b0)
+> > > >  rcu_tasks_trace    11 [017]  5010.600396:
+> > > > probe:rcu_tasks_trace_postscan: (ffffffff963fb7c0)
+> > >
+> > > So about 55 milliseconds for the tasklist scan, correct?  Or am I
+> > > losing the plot here?
+> > >
+> > > >  rcu_tasks_trace    11 [022]  5010.618783:
+> > > > probe:check_all_holdout_tasks_trace: (ffffffff963fb850)
+> > > >  rcu_tasks_trace    11 [022]  5010.618840:
+> > > > probe:rcu_tasks_trace_postgp: (ffffffff963fba70)
+> > > >
+> > > > In this case, CPU 22 is the victim, not CPU 0 :)
+> > >
+> > > My faith in the scheduler is restored!  ;-)
+> > >
+> > > My position has been that this tasklist scan does not need to be broken
+> > > up because it should happen only when a sleepable BPF program is removed,
+> > > which is a rare event.
+> > 
+> > Hmm... what about  bpf_sk_storage_free() ?
+> > 
+> > Definitely not a rare event.
+> 
+> Hmmm...  Are the BPF guys using call_rcu_tasks_trace() to free things that
+> are not trampolines for sleepable BPF programs?  Kind of looks like it.
+> 
+> Maybe RCU Tasks Trace was too convenient to use?  ;-)
+> 
+> > > In addition, breaking up this scan is not trivial, because as far as I
+> > > know there is no way to force a given task to stay in the list.  I would
+> > > have to instead use something like rcu_lock_break(), and restart the
+> > > scan if either of the nailed-down pair of tasks was removed from the list.
+> > > In a system where tasks were coming and going very frequently, it might
+> > > be that such a broken-up scan would never complete.
+> > >
+> > > I can imagine tricks where the nailed-down tasks are kept on a list,
+> > > and the nailed-downness is moved to the next task when those tasks
+> > > are removed.  I can also imagine a less-than-happy response to such
+> > > a proposal.
+> > >
+> > > So I am not currently thinking in terms of breaking up this scan.
+> > >
+> > > Or is there some trick that I am missing?
+> > >
+> > > In the meantime, a simple patch that reduces the frequency of the scan
+> > > by a factor of two.  But this would not be the scan of the full tasklist,
+> > > but rather the frequency of the calls to check_all_holdout_tasks_trace().
+> > > And the total of these looks to be less than 20 milliseconds, if I am
+> > > correctly interpreting your trace.  And most of that 20 milliseconds
+> > > is sleeping.
+> > >
+> > > Nevertheless, the patch is at the end of this email.
+> > >
+> > > Other than that, I could imagine batching removal of sleepable BPF
+> > > programs and using a single grace period for all of their trampolines.
+> > > But are there enough sleepable BPF programs ever installed to make this
+> > > a useful approach?
+> > >
+> > > Or is the status quo in fact acceptable?  (Hey, I can dream, can't I?)
+> > >
+> > >                                                         Thanx, Paul
+> > >
+> > > > > > I attempted to backport to our kernel all related patches that were
+> > > > > > not yet backported,
+> > > > > > and we still see a regression in our tests.
+> > > > >
+> > > > > The per-grace-period CPU consumption of rcu_tasks_trace was intentionally
+> > > > > increased by the above commit, and I never have done anything to reduce
+> > > > > that CPU consumption.  In part because you are the first to call my
+> > > > > attention to it.
+> > > > >
+> > > > > Oh, and one other issue that I very recently fixed, that has not
+> > > > > yet reached mainline, just in case it matters.  If you are building a
+> > > > > CONFIG_PREEMPT_NONE=y or CONFIG_PREEMPT_VOLUNTARY=y kernel, but also have
+> > > > > CONFIG_RCU_TORTURE_TEST=m (or, for that matter, =y, but please don't in
+> > > > > production!), then your kernel will use RCU Tasks instead of vanilla RCU.
+> > > > > (Note well, RCU Tasks, not RCU Tasks Trace, the latter being necessaary
+> > > > > for sleepable BPF programs regardless of kernel .config).
+> > > > >
+> > > > > > Please ignore the sha1 in this current patch series, this is only to
+> > > > > > show my current attempt to fix the regression in our tree.
+> > > > > >
+> > > > > > 450b3244f29b rcu-tasks: Don't remove tasks with pending IPIs from holdout list
+> > > > > > 5f88f7e9cc36 rcu-tasks: Create per-CPU callback lists
+> > > > > > 1a943d0041dc rcu-tasks: Introduce ->percpu_enqueue_shift for dynamic
+> > > > > > queue selection
+> > > > > > ea5289f12fce rcu-tasks: Convert grace-period counter to grace-period
+> > > > > > sequence number
+> > > > > > 22efd5093c3b rcu/segcblist: Prevent useless GP start if no CBs to accelerate
+> > > > > > 16dee1b3babf rcu: Implement rcu_segcblist_is_offloaded() config dependent
+> > > > > > 8cafaadb6144 rcu: Add callbacks-invoked counters
+> > > > > > 323234685765 rcu/tree: Make rcu_do_batch count how many callbacks were executed
+> > > > > > f48f3386a1cc rcu/segcblist: Add additional comments to explain smp_mb()
+> > > > > > 4408105116de rcu/segcblist: Add counters to segcblist datastructure
+> > > > > > 4a0b89a918d6 rcu/tree: segcblist: Remove redundant smp_mb()s
+> > > > > > 38c0d18e8740 rcu: Add READ_ONCE() to rcu_do_batch() access to rcu_divisor
+> > > > > > 0b5d1031b509 rcu/segcblist: Add debug checks for segment lengths
+> > > > > > 8a82886fbf02 rcu_tasks: Convert bespoke callback list to rcu_segcblist structure
+> > > > > > cbd452a5c01f rcu-tasks: Use spin_lock_rcu_node() and friends
+> > > > > > 073222be51f3 rcu-tasks: Add a ->percpu_enqueue_lim to the rcu_tasks structure
+> > > > > > 5af10fb0f8fb rcu-tasks: Abstract checking of callback lists
+> > > > > > d3e8be598546 rcu-tasks: Abstract invocations of callbacks
+> > > > > > 65784460a392 rcu-tasks: Use workqueues for multiple
+> > > > > > rcu_tasks_invoke_cbs() invocations
+> > > > > > dd6413e355f1 rcu-tasks: Make rcu_barrier_tasks*() handle multiple
+> > > > > > callback queues
+> > > > > > 2499cb3c438e rcu-tasks: Add rcupdate.rcu_task_enqueue_lim to set
+> > > > > > initial queueing
+> > > > > > a859f409a503 rcu-tasks: Count trylocks to estimate call_rcu_tasks() contention
+> > > > > > 4ab253ca056e rcu-tasks: Avoid raw-spinlocked wakeups from
+> > > > > > call_rcu_tasks_generic()
+> > > > > > e9a3563fe76e rcu-tasks: Use more callback queues if contention encountered
+> > > > > > 4023187fe31d rcu-tasks: Use separate ->percpu_dequeue_lim for callback
+> > > > > > dequeueing
+> > > > > > 533be3bd47c3 rcu: Provide polling interfaces for Tree RCU grace periods
+> > > > > > f7e5a81d7953 rcu-tasks: Use fewer callbacks queues if callback flood ends
+> > > > > > bb7ad9078e1b rcu-tasks: Fix computation of CPU-to-list shift counts
+> > > > > > d9cebde55539 rcu-tasks: Use order_base_2() instead of ilog2()
+> > > > > > 95606f1248f5 rcu-tasks: Set ->percpu_enqueue_shift to zero upon contention
+> > >
+> > >
+> > > diff --git a/kernel/rcu/tasks.h b/kernel/rcu/tasks.h
+> > > index 65d6e21a607a..141e2b4c70cc 100644
+> > > --- a/kernel/rcu/tasks.h
+> > > +++ b/kernel/rcu/tasks.h
+> > > @@ -1640,10 +1640,10 @@ static int __init rcu_spawn_tasks_trace_kthread(void)
+> > >                 rcu_tasks_trace.gp_sleep = HZ / 10;
+> > >                 rcu_tasks_trace.init_fract = HZ / 10;
+> > >         } else {
+> > > -               rcu_tasks_trace.gp_sleep = HZ / 200;
+> > > +               rcu_tasks_trace.gp_sleep = HZ / 100;
+> > >                 if (rcu_tasks_trace.gp_sleep <= 0)
+> > >                         rcu_tasks_trace.gp_sleep = 1;
+> > > -               rcu_tasks_trace.init_fract = HZ / 200;
+> > > +               rcu_tasks_trace.init_fract = HZ / 100;
+> > >                 if (rcu_tasks_trace.init_fract <= 0)
+> > >                         rcu_tasks_trace.init_fract = 1;
+> > >         }
+> > 
+> > It seems that if the scan time is > 50ms in some common cases (at
+> > least at Google scale),
+> > the claim of having a latency of 10ms is not reasonable.
+> 
+> But does the above patch make things better?  If it does, I will send
+> you a proper patch with kernel boot parameters.  We can then discuss
+> better autotuning, for example, making the defaults a function of the
+> number of CPUs.
+> 
+> Either way, that certainly is a fair point.  Another fair point is that
+> the offending commit was in response to a bug report from your colleagues.  ;-)
+> 
+> Except that I don't see any uses of synchronize_rcu_tasks_trace(), so
+> I am at a loss as to why latency matters anymore.
+> 
+> Is the issue the overall CPU consumption of the scan (which is my
+> current guess) or the length of time that the scan runs without invoking
+> cond_resched() or similar?
+> 
+> Either way, how frequently is call_rcu_tasks_trace() being invoked in
+> your setup?  If it is being invoked frequently, increasing delays would
+> allow multiple call_rcu_tasks_trace() instances to be served by a single
+> tasklist scan.
+> 
+> > Given that, I do not think bpf_sk_storage_free() can/should use
+> > call_rcu_tasks_trace(),
+> > we probably will have to fix this soon (or revert from our kernels)
+> 
+> Well, you are in luck!!!  This commit added call_rcu_tasks_trace() to
+> bpf_selem_unlink_storage_nolock(), which is invoked in a loop by
+> bpf_sk_storage_free():
+> 
+> 0fe4b381a59e ("bpf: Allow bpf_local_storage to be used by sleepable programs")
+> 
+> This commit was authored by KP Singh, who I am adding on CC.  Or I would
+> have, except that you beat me to it.  Good show!!!  ;-)
+> 
+> If this commit provoked this issue, then the above patch might help.
+> 
+> I am also adding Neeraj Uphadhyay on CC for his thoughts, as he has
+> also been throught this code.
+> 
+> My response time may be a bit slow next week, but I will be checking
+> email.
+> 
+> 							Thanx, Paul
