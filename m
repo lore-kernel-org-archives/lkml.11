@@ -2,160 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BF91C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C1F6C46467
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:44:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352378AbiDAPpG (ORCPT
+        id S1354245AbiDAPp2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:45:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38752 "EHLO
+        Fri, 1 Apr 2022 11:45:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353738AbiDAPKz (ORCPT
+        with ESMTP id S1353336AbiDAPKV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 11:10:55 -0400
-Received: from mail-qv1-xf30.google.com (mail-qv1-xf30.google.com [IPv6:2607:f8b0:4864:20::f30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1998A19315A
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 07:53:56 -0700 (PDT)
-Received: by mail-qv1-xf30.google.com with SMTP id kk12so2159324qvb.13
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 07:53:56 -0700 (PDT)
+        Fri, 1 Apr 2022 11:10:21 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CE0C2A4BE7
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 07:52:44 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id c62so3254909edf.5
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 07:52:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:subject:message-id:mime-version:content-disposition;
-        bh=Qd7+UMiN3Jrll9fNOSYkpHLr2EKG3gIqE6IEorWFPTo=;
-        b=frhnIWwX5xEJfxxbkE/n9nEd6dE/TeDbW4SLwUwBveOv2aw7Dz1nk5aApc1nvf8271
-         pLwhEcIZXPWFnuLMEPuh4Xo+HviPV7y6uyxVowzlLGed/+eMajBWaaoyAAb+HUfQ0A/1
-         rCJ3N9Cn68SJFgAWkQL0H2BKx1CLbjuLYO5NPKkooHJ7k9A4nMNvdPuXkqfGRwpFyJFa
-         akkMzxvvoSPZg0cAUJFX8gwoIm6Ib6peqfsZegtq2NwpLcbySC8S6ttsC5Zq1T0OpB5V
-         GS4fTPDFal55l3KY9ramCBrqwpX61mlvQAkawS6oydb1GnExWqjrJ6y8xFlkhuCpxuSS
-         hxUw==
+        d=amarulasolutions.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=CDTGg7xmd02lguFcPgMwbnDRM6tHMxG1F9pAwbPQoHo=;
+        b=T7W8CN+jz5+aiumWrrsmaS77T+E5scb+pwhmUc7sQ00YF6qeVlR/iuX7nMux/sXgZi
+         aoXbT2oN81ea9wAj+fdmjo3mi8803aMoqN5bRP+HmiPDTOHrxU4/qO8cTYWxf3yOu74k
+         3YTMVUWBBT6ijr8xnLFMnkty+UNhHPWXYJ4yw=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
-         :content-disposition;
-        bh=Qd7+UMiN3Jrll9fNOSYkpHLr2EKG3gIqE6IEorWFPTo=;
-        b=HNpj4HqkpCdey79W1dgKNtZDw+3LPYCPiDUl4YnauSsA5xE8h4wSBC4iUWkAh+bQYH
-         utlOT1g0QYT7PXXvg1nmyHCrWUE0FlJu8H7B9Fxb9QPrXqyt6eqX6lbVEpa+qENzH4EU
-         DtuTz2j+zwfElQC0Kui+CNRwgU8HBUH6APe7Yiv86boU7YoKHoKRrub+udPIMNTuT8c1
-         sW4JLrIDMCr4SnyZq4zHUsp1I/X4S/BkQxvalHqGiDC2pknaKoQ3yHeQUOxo39JLocvS
-         ykqB/fcqzefi+g8TX+C4EALBrZshIbMxKee9rA3du8MSoVYSa7zBE3NbxsmdrF+74req
-         XpiQ==
-X-Gm-Message-State: AOAM532YVEobRYOXT2LHihivtCm3XzwQeIawUbUagaGRmqvOyMj27b2r
-        dygL9SaDccyLuYHI7AJXCBfkAa33kraKvy7S
-X-Google-Smtp-Source: ABdhPJy03H5LmOvAHNjNyWo4gCVB0lYUhUS1sgLswcBnnNIHvMqyZuLbnB1sbi1joMr9KqFX9Idebw==
-X-Received: by 2002:a05:6214:2388:b0:443:865c:5623 with SMTP id fw8-20020a056214238800b00443865c5623mr8396733qvb.72.1648824835916;
-        Fri, 01 Apr 2022 07:53:55 -0700 (PDT)
-Received: from jaehee-ThinkPad-X1-Extreme ([4.34.18.218])
-        by smtp.gmail.com with ESMTPSA id i68-20020a375447000000b006809e0adfffsm1511818qkb.25.2022.04.01.07.53.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Apr 2022 07:53:55 -0700 (PDT)
-Date:   Fri, 1 Apr 2022 10:53:50 -0400
-From:   Jaehee Park <jhpark1013@gmail.com>
-To:     =?iso-8859-1?B?Suly9G1l?= Pouiller <jerome.pouiller@silabs.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        outreachy@lists.linux.dev
-Subject: [PATCH] staging: wfx: change variable name to be consistent
-Message-ID: <20220401145350.GA45053@jaehee-ThinkPad-X1-Extreme>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=CDTGg7xmd02lguFcPgMwbnDRM6tHMxG1F9pAwbPQoHo=;
+        b=x0R5vR2BuYPgJO6i0EVNn6pT6Q4KXYCVc9Y4ZpNGmHzNy9VqTzavvTkzBWm/96hkkn
+         9ffll40wyRP+MLsGz7HysPi2TCSS1022vQFSZCtdwvFHoteXfgu04EAdk54FuxLp1BgW
+         3flEeQ3YiAlhmKGrLLZUZDw7bFlZMUdpzP9B5E2mjy1F4JheXE4EtovleT65jf0nxohc
+         /5REPpOU1gV4Mi9zeTWOvR0WcYjF1YZoD1PO/6rgft1Y7rtnfs/GH0Wuhysd+HHry2yJ
+         mAvGgau0N+ZtleTIzgOJuHC8x+FAYfFxaRjBqpjdAdiElYS2DCXoSK9YSPX9ZHSQR2IV
+         K1ew==
+X-Gm-Message-State: AOAM533HxwZASrNYD7m4vSzP3daVLHOdKRdSCbYBJjknAqrwv9/7hLYz
+        MIiS2FNtsmRj5SSxoxQMu3sbimzFhvMXbip6B54IrQ==
+X-Google-Smtp-Source: ABdhPJwiHgIV7HJawa3rB+bvMNReOkRYBuvb2rbFfBdUHW6q0LcxoVGrpPWP1JWfHYg+Rjf+M7hRjLo0TYW/6FnZzJo=
+X-Received: by 2002:a05:6402:1941:b0:413:2822:9c8 with SMTP id
+ f1-20020a056402194100b00413282209c8mr21428644edz.13.1648824763403; Fri, 01
+ Apr 2022 07:52:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20220401015828.2959505-1-victor.liu@nxp.com>
+In-Reply-To: <20220401015828.2959505-1-victor.liu@nxp.com>
+From:   Jagan Teki <jagan@amarulasolutions.com>
+Date:   Fri, 1 Apr 2022 20:22:32 +0530
+Message-ID: <CAMty3ZC6pLJXP=kxwFeZj6CF87ASvoxz9+8Z-7O+DCNwtcLHcQ@mail.gmail.com>
+Subject: Re: [PATCH] drm/bridge: nwl-dsi: Drop the drm_of_panel_bridge_remove()
+ function call
+To:     Liu Ying <victor.liu@nxp.com>
+Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Robert Foss <robert.foss@linaro.org>,
+        =?UTF-8?Q?Guido_G=C3=BCnther?= <agx@sigxcpu.org>,
+        NXP Linux Team <linux-imx@nxp.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Change variable name to be consistent with the naming conventions.
-ssidlen was changed to ssid_len and ssidie was changed to ssid_ie to be
-consistent. This makes the variables more readable. The other ssid
-names in the code are separated by an underscore. For example,
-bssid_filter and num_of_ssids have the ssid separated from the rest of
-the words with an underscore.
+On Fri, Apr 1, 2022 at 7:26 AM Liu Ying <victor.liu@nxp.com> wrote:
+>
+> Since this driver has been changed to use the resource managed
+> devm_drm_of_get_bridge() to get bridge from ->attach(), it's
+> unnecessary to call drm_of_panel_bridge_remove() to remove the
+> bridge from ->detach().  So, let's drop the drm_of_panel_bridge_remove()
+> function call.  As nwl_dsi_bridge_detach() only calls
+> drm_of_panel_bridge_remove(), it can also be dropped.
+>
+> Cc: Robert Foss <robert.foss@linaro.org>
+> Cc: Guido G=C3=BCnther <agx@sigxcpu.org>
+> Cc: Jagan Teki <jagan@amarulasolutions.com>
+> Cc: NXP Linux Team <linux-imx@nxp.com>
+> Signed-off-by: Liu Ying <victor.liu@nxp.com>
+> ---
 
-Signed-off-by: Jaehee Park <jhpark1013@gmail.com>
----
- drivers/staging/wfx/hif_tx.c | 10 +++++-----
- drivers/staging/wfx/sta.c    | 20 ++++++++++----------
- 2 files changed, 15 insertions(+), 15 deletions(-)
-
-diff --git a/drivers/staging/wfx/hif_tx.c b/drivers/staging/wfx/hif_tx.c
-index ae3cc5919dcd..9c653d0e9034 100644
---- a/drivers/staging/wfx/hif_tx.c
-+++ b/drivers/staging/wfx/hif_tx.c
-@@ -280,7 +280,7 @@ int wfx_hif_stop_scan(struct wfx_vif *wvif)
- }
- 
- int wfx_hif_join(struct wfx_vif *wvif, const struct ieee80211_bss_conf *conf,
--		 struct ieee80211_channel *channel, const u8 *ssid, int ssidlen)
-+		 struct ieee80211_channel *channel, const u8 *ssid, int ssid_len)
- {
- 	int ret;
- 	struct wfx_hif_msg *hif;
-@@ -288,8 +288,8 @@ int wfx_hif_join(struct wfx_vif *wvif, const struct ieee80211_bss_conf *conf,
- 
- 	WARN_ON(!conf->beacon_int);
- 	WARN_ON(!conf->basic_rates);
--	WARN_ON(sizeof(body->ssid) < ssidlen);
--	WARN(!conf->ibss_joined && !ssidlen, "joining an unknown BSS");
-+	WARN_ON(sizeof(body->ssid) < ssid_len);
-+	WARN(!conf->ibss_joined && !ssid_len, "joining an unknown BSS");
- 	if (!hif)
- 		return -ENOMEM;
- 	body->infrastructure_bss_mode = !conf->ibss_joined;
-@@ -300,8 +300,8 @@ int wfx_hif_join(struct wfx_vif *wvif, const struct ieee80211_bss_conf *conf,
- 	body->basic_rate_set = cpu_to_le32(wfx_rate_mask_to_hw(wvif->wdev, conf->basic_rates));
- 	memcpy(body->bssid, conf->bssid, sizeof(body->bssid));
- 	if (ssid) {
--		body->ssid_length = cpu_to_le32(ssidlen);
--		memcpy(body->ssid, ssid, ssidlen);
-+		body->ssid_length = cpu_to_le32(ssid_len);
-+		memcpy(body->ssid, ssid, ssid_len);
- 	}
- 	wfx_fill_header(hif, wvif->id, HIF_REQ_ID_JOIN, sizeof(*body));
- 	ret = wfx_cmd_send(wvif->wdev, hif, NULL, 0, false);
-diff --git a/drivers/staging/wfx/sta.c b/drivers/staging/wfx/sta.c
-index b1e9fb14d2b4..03025ef7f1be 100644
---- a/drivers/staging/wfx/sta.c
-+++ b/drivers/staging/wfx/sta.c
-@@ -392,8 +392,8 @@ static void wfx_join(struct wfx_vif *wvif)
- 	struct ieee80211_bss_conf *conf = &wvif->vif->bss_conf;
- 	struct cfg80211_bss *bss = NULL;
- 	u8 ssid[IEEE80211_MAX_SSID_LEN];
--	const u8 *ssidie = NULL;
--	int ssidlen = 0;
-+	const u8 *ssid_ie = NULL;
-+	int ssid_len = 0;
- 
- 	wfx_tx_lock_flush(wvif->wdev);
- 
-@@ -404,21 +404,21 @@ static void wfx_join(struct wfx_vif *wvif)
- 		return;
- 	}
- 
--	rcu_read_lock(); /* protect ssidie */
-+	rcu_read_lock(); /* protect ssid_ie */
- 	if (bss)
--		ssidie = ieee80211_bss_get_ie(bss, WLAN_EID_SSID);
--	if (ssidie) {
--		ssidlen = ssidie[1];
--		if (ssidlen > IEEE80211_MAX_SSID_LEN)
--			ssidlen = IEEE80211_MAX_SSID_LEN;
--		memcpy(ssid, &ssidie[2], ssidlen);
-+		ssid_ie = ieee80211_bss_get_ie(bss, WLAN_EID_SSID);
-+	if (ssid_ie) {
-+		ssid_len = ssid_ie[1];
-+		if (ssid_len > IEEE80211_MAX_SSID_LEN)
-+			ssid_len = IEEE80211_MAX_SSID_LEN;
-+		memcpy(ssid, &ssid_ie[2], ssid_len);
- 	}
- 	rcu_read_unlock();
- 
- 	cfg80211_put_bss(wvif->wdev->hw->wiphy, bss);
- 
- 	wvif->join_in_progress = true;
--	ret = wfx_hif_join(wvif, conf, wvif->channel, ssid, ssidlen);
-+	ret = wfx_hif_join(wvif, conf, wvif->channel, ssid, ssid_len);
- 	if (ret) {
- 		ieee80211_connection_loss(wvif->vif);
- 		wfx_reset(wvif);
--- 
-2.25.1
-
+Reviewed-by: Jagan Teki <jagan@amarulasolutions.com>
