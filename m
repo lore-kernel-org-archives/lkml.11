@@ -2,93 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC322C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 07:10:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15DD8C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 07:11:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343747AbiDAHLt (ORCPT
+        id S1343748AbiDAHMv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 03:11:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49488 "EHLO
+        Fri, 1 Apr 2022 03:12:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241278AbiDAHLo (ORCPT
+        with ESMTP id S232721AbiDAHMt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 03:11:44 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBDC91D67C8
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 00:09:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648796995; x=1680332995;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=x7JxNYZE4bR2Se13EgnNdI0M8Y2HG+1d7lIDBk7wNqs=;
-  b=k1pJVLwUyoCjHG/1D4A6mFt+94jvX8WcSG0yRUdwHqDu1B3NG1W/V8u4
-   xrZXJFoty7iGXY1j3nHYfcxX4xCK5npHrArjbZDqxkVGdlXaEgVraH5Vq
-   IlZ57mRr7s6R1kLjmEN/frK5Of5eNpgcr8o8w24oN2YfAVVBR06I96Kdb
-   z22Ntk2j4cpz8YDMu6hUjwbNlICodTtrt4oybJ7NxD2uHk38uPfkgd3rn
-   ZMyDTztjV1O6IoQpj0sOyHN4Ct218dMIyPJGRve6E/q/+hAryOluDduy4
-   wAROnzhbZVqWlvGiWMY3oumxpMie+WOCO4v/vfoX+t4F2yS7lPiccWI8j
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10303"; a="242208282"
-X-IronPort-AV: E=Sophos;i="5.90,226,1643702400"; 
-   d="scan'208";a="242208282"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Apr 2022 00:09:55 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,226,1643702400"; 
-   d="scan'208";a="504064753"
-Received: from lkp-server02.sh.intel.com (HELO 3231c491b0e2) ([10.239.97.151])
-  by orsmga003.jf.intel.com with ESMTP; 01 Apr 2022 00:09:31 -0700
-Received: from kbuild by 3231c491b0e2 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1naBPX-00012m-2V;
-        Fri, 01 Apr 2022 07:09:31 +0000
-Date:   Fri, 1 Apr 2022 15:08:46 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Borislav Petkov <bp@suse.de>
-Subject: [intel-tdx:guest-upstream 5/32] arch/x86/coco/tdx/tdcall.o: warning:
- objtool: __tdx_module_call()+0x3a: missing int3 after ret
-Message-ID: <202204011414.sHGf1lWN-lkp@intel.com>
+        Fri, 1 Apr 2022 03:12:49 -0400
+Received: from mail.meizu.com (edge05.meizu.com [157.122.146.251])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED2BE1D66FD;
+        Fri,  1 Apr 2022 00:10:58 -0700 (PDT)
+Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail12.meizu.com
+ (172.16.1.108) with Microsoft SMTP Server (TLS) id 14.3.487.0; Fri, 1 Apr
+ 2022 15:10:59 +0800
+Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
+ (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Fri, 1 Apr
+ 2022 15:10:56 +0800
+From:   Haowen Bai <baihaowen@meizu.com>
+To:     Stanislav Yakovlev <stas.yakovlev@gmail.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+CC:     Haowen Bai <baihaowen@meizu.com>, <linux-wireless@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH] ipw2x00: Fix potential NULL dereference in libipw_xmit()
+Date:   Fri, 1 Apr 2022 15:10:54 +0800
+Message-ID: <1648797055-25730-1-git-send-email-baihaowen@meizu.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain
+X-Originating-IP: [172.16.137.70]
+X-ClientProxiedBy: IT-EXMB-1-124.meizu.com (172.16.1.124) To
+ IT-EXMB-1-125.meizu.com (172.16.1.125)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Kuppuswamy,
+crypt and crypt->ops could be null, so we need to checking null
+before dereference
 
-First bad commit (maybe != root cause):
+Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+---
+ drivers/net/wireless/intel/ipw2x00/libipw_tx.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-tree:   https://github.com/intel/tdx.git guest-upstream
-head:   7d5c8afa0ebaf1731bb7ce8fe34a3248224fe0e9
-commit: c03bec7b2dad416b31b8e5d5d656dfd84430ee09 [5/32] x86/tdx: Add __tdx_module_call() and __tdx_hypercall() helper functions
-config: x86_64-allyesconfig (https://download.01.org/0day-ci/archive/20220401/202204011414.sHGf1lWN-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.2.0-19) 11.2.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel/tdx/commit/c03bec7b2dad416b31b8e5d5d656dfd84430ee09
-        git remote add intel-tdx https://github.com/intel/tdx.git
-        git fetch --no-tags intel-tdx guest-upstream
-        git checkout c03bec7b2dad416b31b8e5d5d656dfd84430ee09
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash arch/x86/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> arch/x86/coco/tdx/tdcall.o: warning: objtool: __tdx_module_call()+0x3a: missing int3 after ret
->> arch/x86/coco/tdx/tdcall.o: warning: objtool: __tdx_hypercall()+0x60: missing int3 after ret
-
+diff --git a/drivers/net/wireless/intel/ipw2x00/libipw_tx.c b/drivers/net/wireless/intel/ipw2x00/libipw_tx.c
+index 36d1e6b2568d..4aec1fce1ae2 100644
+--- a/drivers/net/wireless/intel/ipw2x00/libipw_tx.c
++++ b/drivers/net/wireless/intel/ipw2x00/libipw_tx.c
+@@ -383,7 +383,7 @@ netdev_tx_t libipw_xmit(struct sk_buff *skb, struct net_device *dev)
+ 
+ 		/* Each fragment may need to have room for encryption
+ 		 * pre/postfix */
+-		if (host_encrypt)
++		if (host_encrypt && crypt && crypt->ops)
+ 			bytes_per_frag -= crypt->ops->extra_mpdu_prefix_len +
+ 			    crypt->ops->extra_mpdu_postfix_len;
+ 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.7.4
+
