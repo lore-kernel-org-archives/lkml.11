@@ -2,124 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C98FC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 03:39:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7307C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 03:41:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244712AbiDADks (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 23:40:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60256 "EHLO
+        id S244694AbiDADnS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 23:43:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244681AbiDADkl (ORCPT
+        with ESMTP id S241756AbiDADnP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 23:40:41 -0400
-Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98A2B580C7
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 20:38:49 -0700 (PDT)
-Received: by mail-io1-xd2b.google.com with SMTP id g21so1804173iom.13
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 20:38:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hJ9w0vjGF60hV1jwTCwkmqKMT8MPf1xtJXL++UES4qY=;
-        b=sdZWMtzHnJv1VHTyDpKpYUwNhjIuI9a7tcXI/FgRTIIZ5ukpZ4YE1gzZ4NIwUJ/yLW
-         ontK0twBtMRgMUAuB3XoVPBxkx1u8ljBY3neVZ/ZbKwoxvvOmtITTYduYFewRSwCrzgg
-         9ZgIB9ihjVZADAfyBSTxCQxVJHg0wEwL+QsxHCNc5OYHJcDV1fFk4tAcv81F2UhtPley
-         Hncdj/WWY39C2l70OUJY7Tby2YvHAG4c/hVHDFx4R78Dj60TZX/eDiMRa82AM73wK7wh
-         xP5FKWMZLhlqm3Z4lOn+c0+dLNADzkK1dadFETFvblqC8MQuUarqI4R43OmYEFbg22nl
-         MCwg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hJ9w0vjGF60hV1jwTCwkmqKMT8MPf1xtJXL++UES4qY=;
-        b=DP/b9AB+AZB2z8C9/HkQvwxzW1gWCBu9EypiOG3vMkLCWz1xyLnyhjsPMa2FXGQA0H
-         PcYlihCYHhj8wcO0lCJ5gvoQkBPjfeTxPdBz2jwlG8dQPhVtrk8b22F1NE2rc3b8+3p+
-         ykJW3kEEaKv/+NM0OhSpioI6CkufSS2XyUsL/iJbaIayqb1KW2eKKuu9oLrBGNMaTF46
-         QFp/etWSRgbXytYEIRGXUqi3usxxwK1cqO0fOvBm23QzCMjhs9rYK6YQBik2Z4YDA37n
-         iJU7uS2/auw+ulxa+AzKjENFv9EZ+z2ZigtFxtzJUTQek51HUQ6F2i5y5TTOR2mx46pC
-         DgTA==
-X-Gm-Message-State: AOAM530IWUup7TRHRWgTj1WFHkTSAvqSMO3M7CI8Tn2szS3HrzKueXKO
-        CMrajiZJa2tTnT0iLGOTVO0J2y3GMoN0L6HCCh8t7g==
-X-Google-Smtp-Source: ABdhPJxeYgYAUsseH/rAMZM0rgUWfeHewSkxHQ10KcJClxBVFbO0qRkSJr/2Qjs1IEEJ5i8mMVQVP8aUF3NyPqW/K7E=
-X-Received: by 2002:a05:6638:3012:b0:317:9a63:ecd3 with SMTP id
- r18-20020a056638301200b003179a63ecd3mr4934731jak.210.1648784329202; Thu, 31
- Mar 2022 20:38:49 -0700 (PDT)
+        Thu, 31 Mar 2022 23:43:15 -0400
+Received: from mail.meizu.com (edge05.meizu.com [157.122.146.251])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 882DC53711;
+        Thu, 31 Mar 2022 20:41:25 -0700 (PDT)
+Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail12.meizu.com
+ (172.16.1.108) with Microsoft SMTP Server (TLS) id 14.3.487.0; Fri, 1 Apr
+ 2022 11:41:26 +0800
+Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
+ (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Fri, 1 Apr
+ 2022 11:41:23 +0800
+From:   Haowen Bai <baihaowen@meizu.com>
+To:     Thomas Winischhofer <thomas@winischhofer.net>,
+        Helge Deller <deller@gmx.de>
+CC:     Haowen Bai <baihaowen@meizu.com>, <linux-fbdev@vger.kernel.org>,
+        <dri-devel@lists.freedesktop.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH] video: fbdev: sis: fix potential NULL dereference in sisfb_post_sis300()
+Date:   Fri, 1 Apr 2022 11:41:16 +0800
+Message-ID: <1648784476-20803-1-git-send-email-baihaowen@meizu.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-References: <20220331084151.2600229-1-yosryahmed@google.com> <20220331173350.1fe09370479a4a6f916b477d@linux-foundation.org>
-In-Reply-To: <20220331173350.1fe09370479a4a6f916b477d@linux-foundation.org>
-From:   Wei Xu <weixugc@google.com>
-Date:   Thu, 31 Mar 2022 20:38:38 -0700
-Message-ID: <CAAPL-u-_Da0qe7h_o70HCz4gPtjT8_bjx4rVNdgKZh3KNruzpA@mail.gmail.com>
-Subject: Re: [PATCH resend] memcg: introduce per-memcg reclaim interface
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Yosry Ahmed <yosryahmed@google.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Shakeel Butt <shakeelb@google.com>,
-        David Rientjes <rientjes@google.com>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        cgroups@vger.kernel.org, linux-doc@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux MM <linux-mm@kvack.org>,
-        Jonathan Corbet <corbet@lwn.net>, Yu Zhao <yuzhao@google.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Greg Thelen <gthelen@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Originating-IP: [172.16.137.70]
+X-ClientProxiedBy: IT-EXMB-1-124.meizu.com (172.16.1.124) To
+ IT-EXMB-1-125.meizu.com (172.16.1.125)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 31, 2022 at 5:33 PM Andrew Morton <akpm@linux-foundation.org> wrote:
->
-> On Thu, 31 Mar 2022 08:41:51 +0000 Yosry Ahmed <yosryahmed@google.com> wrote:
->
-> > --- a/mm/memcontrol.c
-> > +++ b/mm/memcontrol.c
-> > @@ -6355,6 +6355,38 @@ static ssize_t memory_oom_group_write(struct kernfs_open_file *of,
-> >       return nbytes;
-> >  }
-> >
-> > +static ssize_t memory_reclaim(struct kernfs_open_file *of, char *buf,
-> > +                           size_t nbytes, loff_t off)
-> > +{
-> > +     struct mem_cgroup *memcg = mem_cgroup_from_css(of_css(of));
-> > +     unsigned int nr_retries = MAX_RECLAIM_RETRIES;
-> > +     unsigned long nr_to_reclaim, nr_reclaimed = 0;
-> > +     int err;
-> > +
-> > +     buf = strstrip(buf);
-> > +     err = page_counter_memparse(buf, "", &nr_to_reclaim);
-> > +     if (err)
-> > +             return err;
-> > +
-> > +     while (nr_reclaimed < nr_to_reclaim) {
-> > +             unsigned long reclaimed;
-> > +
-> > +             if (signal_pending(current))
-> > +                     break;
-> > +
-> > +             reclaimed = try_to_free_mem_cgroup_pages(memcg,
-> > +                                             nr_to_reclaim - nr_reclaimed,
-> > +                                             GFP_KERNEL, true);
-> > +
-> > +             if (!reclaimed && !nr_retries--)
-> > +                     break;
-> > +
-> > +             nr_reclaimed += reclaimed;
-> > +     }
->
-> Is there any way in which this can be provoked into triggering the
-> softlockup detector?
+bios could be null without checking null and return in this function,
+but still dereference bios[0xf5].
 
-memory.reclaim is similar to memory.high w.r.t. reclaiming memory,
-except that memory.reclaim is stateless, while the kernel remembers
-the state set by memory.high.  So memory.reclaim should not bring in
-any new risks of triggering soft lockup, if any.
+Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+---
+ drivers/video/fbdev/sis/sis_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> Is it optimal to do the MAX_RECLAIM_RETRIES loop in the kernel?
-> Would additional flexibility be gained by letting userspace handle
-> retrying?
+diff --git a/drivers/video/fbdev/sis/sis_main.c b/drivers/video/fbdev/sis/sis_main.c
+index 742f629..24a0299 100644
+--- a/drivers/video/fbdev/sis/sis_main.c
++++ b/drivers/video/fbdev/sis/sis_main.c
+@@ -4463,7 +4463,7 @@ static void sisfb_post_sis300(struct pci_dev *pdev)
+ 		SiS_SetReg(SISCR, 0x37, 0x02);
+ 		SiS_SetReg(SISPART2, 0x00, 0x1c);
+ 		v4 = 0x00; v5 = 0x00; v6 = 0x10;
+-		if(ivideo->SiS_Pr.UseROM) {
++		if (ivideo->SiS_Pr.UseROM && bios) {
+ 			v4 = bios[0xf5];
+ 			v5 = bios[0xf6];
+ 			v6 = bios[0xf7];
+-- 
+2.7.4
 
-I agree it is better to retry from the userspace.
