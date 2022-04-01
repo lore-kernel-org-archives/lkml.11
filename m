@@ -2,48 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 669B4C4707F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E815FC4167D
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:11:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352970AbiDAPJD (ORCPT
+        id S1353095AbiDAPJ3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:09:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57424 "EHLO
+        Fri, 1 Apr 2022 11:09:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350269AbiDAOrW (ORCPT
+        with ESMTP id S1350385AbiDAOr2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:47:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C3ED2A1E8D;
-        Fri,  1 Apr 2022 07:37:29 -0700 (PDT)
+        Fri, 1 Apr 2022 10:47:28 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4059B2A3384;
+        Fri,  1 Apr 2022 07:37:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E27EC60915;
-        Fri,  1 Apr 2022 14:37:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B057C34112;
-        Fri,  1 Apr 2022 14:37:26 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 4DF9FCE2585;
+        Fri,  1 Apr 2022 14:37:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5E11C2BBE4;
+        Fri,  1 Apr 2022 14:37:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823847;
-        bh=FuCO+U6N9ZCghCVd1CqTy9TOpm50qfLHeScE/HPLP+o=;
+        s=k20201202; t=1648823857;
+        bh=yRgHfYom5YHDnlg/iUN7dP5kmwL0j5d7gZJG8Z/Gu4c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lCpUII9F5fAFpa7XCdR5BTECFnYBXmAdZxzkcDc7yksgVMcS76gDLbnOqKbCuqQ6p
-         I8gqxM7hsrWwKtGrvngF0DvqydLO7tc+OSszXUL7gE4Vuz8MakjnC8S/bnbTBk54ZP
-         IiEcxhY+iRnaCQqyMEhyRM/gK3GtICuDxD+YKYXgwP3BUMiKHLnB5Ip/bfnlo4tMeb
-         WpHfc4KHlDNbeuSpC7PC8OX/Sm7QVG9xcb6lufFZrv+Rgzf2ZdR4KufRAyQOf5Dqdw
-         8bk7QbZL/eh7PTVH92unhb+w8q/ZTWcfmaQmQ2wrf0e/kHqjpZQueRbiAWIAqzLCgJ
-         ZLthi/RZRz3rw==
+        b=sqj52Y5P53oW0SdVFbGLHjr21Zaa+j1qRabF39ULafvVlFUW7kp1yn1+XSz1egdvq
+         nn/WMY6twVdXSYXHtxNZKGeATGF63B1wfUc9jMXQT1tMiE4QZJzDvLkR50L59d/4/p
+         ZyOzDx1Z4y3WV071AjLUPAyVWzRUcR9sM6WmJNU07AowhZgBRXIb+/dajYqdUYw326
+         uDo0xFolmkMjPR2SlHKe3/GK0HKe30bvxbbAqBaU2hzyUdSV1cshRnUnFJ7EFTMYfe
+         fNPRTOzeAEwjrDLJZsGqKCnb/hnjXJjCrOGpv3g3fH9IMsfD4Glm4pkDsIfHOtislF
+         e3RNn9Bm3g4Yw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Wang Yufen <wangyufen@huawei.com>, Hulk Robot <hulkci@huawei.com>,
-        Paul Moore <paul@paul-moore.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-security-module@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 104/109] netlabel: fix out-of-bounds memory accesses
-Date:   Fri,  1 Apr 2022 10:32:51 -0400
-Message-Id: <20220401143256.1950537-104-sashal@kernel.org>
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        Ingo Molnar <mingo@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>, mhiramat@kernel.org,
+        rostedt@goodmis.org, vbabka@suse.cz, ahalaney@redhat.com,
+        linux@rasmusvillemoes.dk, wangkefeng.wang@huawei.com,
+        keescook@chromium.org, mark-pk.tsai@mediatek.com,
+        peterz@infradead.org, valentin.schneider@arm.com
+Subject: [PATCH AUTOSEL 5.16 108/109] init/main.c: return 1 from handled __setup() functions
+Date:   Fri,  1 Apr 2022 10:32:55 -0400
+Message-Id: <20220401143256.1950537-108-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143256.1950537-1-sashal@kernel.org>
 References: <20220401143256.1950537-1-sashal@kernel.org>
@@ -55,68 +60,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wang Yufen <wangyufen@huawei.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit f22881de730ebd472e15bcc2c0d1d46e36a87b9c ]
+[ Upstream commit f9a40b0890658330c83c95511f9d6b396610defc ]
 
-In calipso_map_cat_ntoh(), in the for loop, if the return value of
-netlbl_bitmap_walk() is equal to (net_clen_bits - 1), when
-netlbl_bitmap_walk() is called next time, out-of-bounds memory accesses
-of bitmap[byte_offset] occurs.
+initcall_blacklist() should return 1 to indicate that it handled its
+cmdline arguments.
 
-The bug was found during fuzzing. The following is the fuzzing report
- BUG: KASAN: slab-out-of-bounds in netlbl_bitmap_walk+0x3c/0xd0
- Read of size 1 at addr ffffff8107bf6f70 by task err_OH/252
+set_debug_rodata() should return 1 to indicate that it handled its
+cmdline arguments.  Print a warning if the option string is invalid.
 
- CPU: 7 PID: 252 Comm: err_OH Not tainted 5.17.0-rc7+ #17
- Hardware name: linux,dummy-virt (DT)
- Call trace:
-  dump_backtrace+0x21c/0x230
-  show_stack+0x1c/0x60
-  dump_stack_lvl+0x64/0x7c
-  print_address_description.constprop.0+0x70/0x2d0
-  __kasan_report+0x158/0x16c
-  kasan_report+0x74/0x120
-  __asan_load1+0x80/0xa0
-  netlbl_bitmap_walk+0x3c/0xd0
-  calipso_opt_getattr+0x1a8/0x230
-  calipso_sock_getattr+0x218/0x340
-  calipso_sock_getattr+0x44/0x60
-  netlbl_sock_getattr+0x44/0x80
-  selinux_netlbl_socket_setsockopt+0x138/0x170
-  selinux_socket_setsockopt+0x4c/0x60
-  security_socket_setsockopt+0x4c/0x90
-  __sys_setsockopt+0xbc/0x2b0
-  __arm64_sys_setsockopt+0x6c/0x84
-  invoke_syscall+0x64/0x190
-  el0_svc_common.constprop.0+0x88/0x200
-  do_el0_svc+0x88/0xa0
-  el0_svc+0x128/0x1b0
-  el0t_64_sync_handler+0x9c/0x120
-  el0t_64_sync+0x16c/0x170
+This prevents these strings from being added to the 'init' program's
+environment as they are not init arguments/parameters.
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Wang Yufen <wangyufen@huawei.com>
-Acked-by: Paul Moore <paul@paul-moore.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Link: https://lkml.kernel.org/r/20220221050901.23985-1-rdunlap@infradead.org
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netlabel/netlabel_kapi.c | 2 ++
- 1 file changed, 2 insertions(+)
+ init/main.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/net/netlabel/netlabel_kapi.c b/net/netlabel/netlabel_kapi.c
-index beb0e573266d..54c083003947 100644
---- a/net/netlabel/netlabel_kapi.c
-+++ b/net/netlabel/netlabel_kapi.c
-@@ -885,6 +885,8 @@ int netlbl_bitmap_walk(const unsigned char *bitmap, u32 bitmap_len,
- 	unsigned char bitmask;
- 	unsigned char byte;
+diff --git a/init/main.c b/init/main.c
+index cb68bc48a682..792a8d9cc560 100644
+--- a/init/main.c
++++ b/init/main.c
+@@ -1189,7 +1189,7 @@ static int __init initcall_blacklist(char *str)
+ 		}
+ 	} while (str_entry);
  
-+	if (offset >= bitmap_len)
-+		return -1;
- 	byte_offset = offset / 8;
- 	byte = bitmap[byte_offset];
- 	bit_spot = offset;
+-	return 0;
++	return 1;
+ }
+ 
+ static bool __init_or_module initcall_blacklisted(initcall_t fn)
+@@ -1451,7 +1451,9 @@ static noinline void __init kernel_init_freeable(void);
+ bool rodata_enabled __ro_after_init = true;
+ static int __init set_debug_rodata(char *str)
+ {
+-	return strtobool(str, &rodata_enabled);
++	if (strtobool(str, &rodata_enabled))
++		pr_warn("Invalid option string for rodata: '%s'\n", str);
++	return 1;
+ }
+ __setup("rodata=", set_debug_rodata);
+ #endif
 -- 
 2.34.1
 
