@@ -2,45 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21F90C38161
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:40:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8AF1C4321E
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:40:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357748AbiDAPjI (ORCPT
+        id S1357916AbiDAPjV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:39:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54302 "EHLO
+        Fri, 1 Apr 2022 11:39:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350646AbiDAPAX (ORCPT
+        with ESMTP id S1350656AbiDAPAX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 1 Apr 2022 11:00:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2904DDDD;
-        Fri,  1 Apr 2022 07:48:23 -0700 (PDT)
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D36EADF0C;
+        Fri,  1 Apr 2022 07:48:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C0C0EB82510;
-        Fri,  1 Apr 2022 14:48:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EB7EC36AE3;
-        Fri,  1 Apr 2022 14:48:19 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 45975CE258F;
+        Fri,  1 Apr 2022 14:48:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBC41C2BBE4;
+        Fri,  1 Apr 2022 14:48:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824500;
-        bh=LhYPBZufSIIUYsYfgK8Zvs0kn4YmUTSXiOrYVvfFpMU=;
+        s=k20201202; t=1648824506;
+        bh=MICxgwXy2CQrPa83r0uiCj8GpEQUlbiVbweW7fCQ4ss=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TBdzoNBPdrXY3QVQd3wCdScSibgRo3JXDBPEJL71CaJdCwA16qPY9LGWdoQo8go7C
-         7FZNqGkhK0gTkYg8CoFGxxVORQTQAnOh36VOcihhfwBPiLObWCE4xDBwkhI4pB3o15
-         dxauaZs5t7k/cgmDQSiOwoWYH3rJzeO6THUuDb8tJl5TeiuKyMaPl22YG9H3ALhv7i
-         4gyx6a4vHJuIToP3YtjTnOGkWChdX8no+pnFGrayoEO4B7MxG2Q1nzGQHKcF8WpFIn
-         3BKc4kiolu87TeM+nuyeWGV7T7IEjKG/5hUqyIpbtzc7syV0c9574UvL8uK4b4wACF
-         AuZgrK44Ji8oQ==
+        b=eeD/1xEdp7xif4ue9xsvh5NUYpoXU6MDRgRBAHADCD81NqhRveEGlIos0CTKlAuso
+         7LGGMYbz63492ZALDn5x3VM68Ff7CAPtUDwy0Galp3Ol/pBr1d2RDJcsbLOcsdUv0v
+         iASIJ36/liG1+sBG0yWTifWvdpC1Vqd+5mTpO0EA1tmeE2Ez4WBXC4yD8XHVb0w1KI
+         yAg5O52OIs+SEhFHdrddqzsLn9EgvT/HDQMcaKKhMiwqysDjbDIdKEFhslTa1vyUtU
+         k50EeuoLRntAg3HZ+2ziy5iC/LLUS20z0mvvP/eKF3sAhE57XcS2TzMNjk2V0yIKlO
+         PL661DVrD7dtA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Max Filippov <jcmvbkbc@gmail.com>, Sasha Levin <sashal@kernel.org>,
-        robh+dt@kernel.org, krzk+dt@kernel.org, chris@zankel.net,
-        devicetree@vger.kernel.org, linux-xtensa@linux-xtensa.org
-Subject: [PATCH AUTOSEL 4.14 20/22] xtensa: fix DTC warning unit_address_format
-Date:   Fri,  1 Apr 2022 10:47:27 -0400
-Message-Id: <20220401144729.1955554-20-sashal@kernel.org>
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        Ingo Molnar <mingo@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>, mhiramat@kernel.org,
+        rostedt@goodmis.org, ahalaney@redhat.com, vbabka@suse.cz,
+        wangkefeng.wang@huawei.com, linux@rasmusvillemoes.dk,
+        keescook@chromium.org, mark-pk.tsai@mediatek.com,
+        peterz@infradead.org, valentin.schneider@arm.com
+Subject: [PATCH AUTOSEL 4.14 22/22] init/main.c: return 1 from handled __setup() functions
+Date:   Fri,  1 Apr 2022 10:47:29 -0400
+Message-Id: <20220401144729.1955554-22-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401144729.1955554-1-sashal@kernel.org>
 References: <20220401144729.1955554-1-sashal@kernel.org>
@@ -52,101 +60,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Max Filippov <jcmvbkbc@gmail.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit e85d29ba4b24f68e7a78cb85c55e754362eeb2de ]
+[ Upstream commit f9a40b0890658330c83c95511f9d6b396610defc ]
 
-DTC issues the following warnings when building xtfpga device trees:
+initcall_blacklist() should return 1 to indicate that it handled its
+cmdline arguments.
 
- /soc/flash@00000000/partition@0x0: unit name should not have leading "0x"
- /soc/flash@00000000/partition@0x6000000: unit name should not have leading "0x"
- /soc/flash@00000000/partition@0x6800000: unit name should not have leading "0x"
- /soc/flash@00000000/partition@0x7fe0000: unit name should not have leading "0x"
+set_debug_rodata() should return 1 to indicate that it handled its
+cmdline arguments.  Print a warning if the option string is invalid.
 
-Drop leading 0x from flash partition unit names.
+This prevents these strings from being added to the 'init' program's
+environment as they are not init arguments/parameters.
 
-Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
+Link: https://lkml.kernel.org/r/20220221050901.23985-1-rdunlap@infradead.org
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/xtensa/boot/dts/xtfpga-flash-128m.dtsi | 8 ++++----
- arch/xtensa/boot/dts/xtfpga-flash-16m.dtsi  | 8 ++++----
- arch/xtensa/boot/dts/xtfpga-flash-4m.dtsi   | 4 ++--
- 3 files changed, 10 insertions(+), 10 deletions(-)
+ init/main.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/arch/xtensa/boot/dts/xtfpga-flash-128m.dtsi b/arch/xtensa/boot/dts/xtfpga-flash-128m.dtsi
-index 9bf8bad1dd18..c33932568aa7 100644
---- a/arch/xtensa/boot/dts/xtfpga-flash-128m.dtsi
-+++ b/arch/xtensa/boot/dts/xtfpga-flash-128m.dtsi
-@@ -8,19 +8,19 @@ flash: flash@00000000 {
- 			reg = <0x00000000 0x08000000>;
- 			bank-width = <2>;
- 			device-width = <2>;
--			partition@0x0 {
-+			partition@0 {
- 				label = "data";
- 				reg = <0x00000000 0x06000000>;
- 			};
--			partition@0x6000000 {
-+			partition@6000000 {
- 				label = "boot loader area";
- 				reg = <0x06000000 0x00800000>;
- 			};
--			partition@0x6800000 {
-+			partition@6800000 {
- 				label = "kernel image";
- 				reg = <0x06800000 0x017e0000>;
- 			};
--			partition@0x7fe0000 {
-+			partition@7fe0000 {
- 				label = "boot environment";
- 				reg = <0x07fe0000 0x00020000>;
- 			};
-diff --git a/arch/xtensa/boot/dts/xtfpga-flash-16m.dtsi b/arch/xtensa/boot/dts/xtfpga-flash-16m.dtsi
-index 40c2f81f7cb6..7bde2ab2d6fb 100644
---- a/arch/xtensa/boot/dts/xtfpga-flash-16m.dtsi
-+++ b/arch/xtensa/boot/dts/xtfpga-flash-16m.dtsi
-@@ -8,19 +8,19 @@ flash: flash@08000000 {
- 			reg = <0x08000000 0x01000000>;
- 			bank-width = <2>;
- 			device-width = <2>;
--			partition@0x0 {
-+			partition@0 {
- 				label = "boot loader area";
- 				reg = <0x00000000 0x00400000>;
- 			};
--			partition@0x400000 {
-+			partition@400000 {
- 				label = "kernel image";
- 				reg = <0x00400000 0x00600000>;
- 			};
--			partition@0xa00000 {
-+			partition@a00000 {
- 				label = "data";
- 				reg = <0x00a00000 0x005e0000>;
- 			};
--			partition@0xfe0000 {
-+			partition@fe0000 {
- 				label = "boot environment";
- 				reg = <0x00fe0000 0x00020000>;
- 			};
-diff --git a/arch/xtensa/boot/dts/xtfpga-flash-4m.dtsi b/arch/xtensa/boot/dts/xtfpga-flash-4m.dtsi
-index fb8d3a9f33c2..0655b868749a 100644
---- a/arch/xtensa/boot/dts/xtfpga-flash-4m.dtsi
-+++ b/arch/xtensa/boot/dts/xtfpga-flash-4m.dtsi
-@@ -8,11 +8,11 @@ flash: flash@08000000 {
- 			reg = <0x08000000 0x00400000>;
- 			bank-width = <2>;
- 			device-width = <2>;
--			partition@0x0 {
-+			partition@0 {
- 				label = "boot loader area";
- 				reg = <0x00000000 0x003f0000>;
- 			};
--			partition@0x3f0000 {
-+			partition@3f0000 {
- 				label = "boot environment";
- 				reg = <0x003f0000 0x00010000>;
- 			};
+diff --git a/init/main.c b/init/main.c
+index f0b2411a5fbf..621cedd9173a 100644
+--- a/init/main.c
++++ b/init/main.c
+@@ -749,7 +749,7 @@ static int __init initcall_blacklist(char *str)
+ 		}
+ 	} while (str_entry);
+ 
+-	return 0;
++	return 1;
+ }
+ 
+ static bool __init_or_module initcall_blacklisted(initcall_t fn)
+@@ -965,7 +965,9 @@ static noinline void __init kernel_init_freeable(void);
+ bool rodata_enabled __ro_after_init = true;
+ static int __init set_debug_rodata(char *str)
+ {
+-	return strtobool(str, &rodata_enabled);
++	if (strtobool(str, &rodata_enabled))
++		pr_warn("Invalid option string for rodata: '%s'\n", str);
++	return 1;
+ }
+ __setup("rodata=", set_debug_rodata);
+ #endif
 -- 
 2.34.1
 
