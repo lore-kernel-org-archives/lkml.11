@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7016FC4743E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DCF3C4321E
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:13:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355375AbiDAPOl (ORCPT
+        id S1355388AbiDAPOp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:14:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54914 "EHLO
+        Fri, 1 Apr 2022 11:14:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350176AbiDAOrR (ORCPT
+        with ESMTP id S1350271AbiDAOrW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:47:17 -0400
+        Fri, 1 Apr 2022 10:47:22 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6707D2A129A;
-        Fri,  1 Apr 2022 07:37:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2F94258FC5;
+        Fri,  1 Apr 2022 07:37:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5F494B82519;
-        Fri,  1 Apr 2022 14:36:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 410DFC340EE;
-        Fri,  1 Apr 2022 14:36:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1D87DB82523;
+        Fri,  1 Apr 2022 14:37:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB50BC36AE7;
+        Fri,  1 Apr 2022 14:37:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823815;
-        bh=3zdgk+amzkz5hnhB65s9Sk8Gho2/tyIKqasTtRUMeCk=;
+        s=k20201202; t=1648823841;
+        bh=ssHw4guXgvrYR0ACr/I+6ESfC4KwLjLyGS7qiomSBgA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BctNgRVSEtxk445FEEonZjxTEkrFaTRSvsc6VmRRFUM9KAnv8RoNRyUnSfwgS7DCx
-         9y9oQ/PtuezvATvJcokVBbUkF3Q1xR8c1G9smDulNBM5QLDrYoMSXyXgZMLNrxfJDp
-         JveV+TQLD9vOI2pjf7+7He7Ua7GAvuqIxcr0LH35gjPqxDEYboXXfGQjXpY9dWER/V
-         AlrQ/5ujqGcXwFBojaiRDsj4e7h/HeavhYDJF/0AHLSnBLtYoSrckcbJ/mZYlhiflk
-         CDevnVMncdBJVCnOlUVLlMDJLTj2BJ00FTyTqHlZPyGLKsSRYpBJo3MXI5kTzovr5H
-         aH6P3VO0fEbeQ==
+        b=K8M02aAN21XWxrRf9TEt5rtlAJDW0mc5E0vBHCZtD6yyPv3iH9R1AThlFCUVEjrBK
+         sas4VHuV+KGFVJKArHoqon9Id452W3Jfj3UXnaK5Vl6x/L7dZBvJHK6G5WRNHxLBC6
+         Kw+HZzxSgZkM3/b7l8TQvDHj+57Sa+BbprEdcqtM9Mi2InKNdHQGBdN/tugmfjwzXH
+         0Rh05kKCTmYTfRIs49VqPonGPo8UFWEGoCgG36COXAYQ0GFe22aEnBQocwOXVj/KgH
+         O0WOQi8u4vMEXCdyQ22h1CkYo4OFXjudvi5dopl6e4GBxPBn8hLw+HJY1G8JhtjVn5
+         lVnd6E+Zt2OAg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jianglei Nie <niejianglei2021@163.com>,
-        Hannes Reinecke <hare@suse.de>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, jejb@linux.ibm.com,
-        linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 088/109] scsi: libfc: Fix use after free in fc_exch_abts_resp()
-Date:   Fri,  1 Apr 2022 10:32:35 -0400
-Message-Id: <20220401143256.1950537-88-sashal@kernel.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
+        krzk+dt@kernel.org, linux-mips@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 101/109] MIPS: ingenic: correct unit node address
+Date:   Fri,  1 Apr 2022 10:32:48 -0400
+Message-Id: <20220401143256.1950537-101-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143256.1950537-1-sashal@kernel.org>
 References: <20220401143256.1950537-1-sashal@kernel.org>
@@ -54,37 +55,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jianglei Nie <niejianglei2021@163.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
-[ Upstream commit 271add11994ba1a334859069367e04d2be2ebdd4 ]
+[ Upstream commit 8931ddd8d6a55fcefb20f44a38ba42bb746f0b62 ]
 
-fc_exch_release(ep) will decrease the ep's reference count. When the
-reference count reaches zero, it is freed. But ep is still used in the
-following code, which will lead to a use after free.
+Unit node addresses should not have leading 0x:
 
-Return after the fc_exch_release() call to avoid use after free.
+  Warning (unit_address_format): /nemc@13410000/efuse@d0/eth-mac-addr@0x22: unit name should not have leading "0x"
 
-Link: https://lore.kernel.org/r/20220303015115.459778-1-niejianglei2021@163.com
-Reviewed-by: Hannes Reinecke <hare@suse.de>
-Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Reviewed-by: Paul Cercueil <paul@crapouillou.net>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/libfc/fc_exch.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/mips/boot/dts/ingenic/jz4780.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/libfc/fc_exch.c b/drivers/scsi/libfc/fc_exch.c
-index 841000445b9a..aa223db4cf53 100644
---- a/drivers/scsi/libfc/fc_exch.c
-+++ b/drivers/scsi/libfc/fc_exch.c
-@@ -1701,6 +1701,7 @@ static void fc_exch_abts_resp(struct fc_exch *ep, struct fc_frame *fp)
- 	if (cancel_delayed_work_sync(&ep->timeout_work)) {
- 		FC_EXCH_DBG(ep, "Exchange timer canceled due to ABTS response\n");
- 		fc_exch_release(ep);	/* release from pending timer hold */
-+		return;
- 	}
+diff --git a/arch/mips/boot/dts/ingenic/jz4780.dtsi b/arch/mips/boot/dts/ingenic/jz4780.dtsi
+index b0a4e2e019c3..af6cd32c706c 100644
+--- a/arch/mips/boot/dts/ingenic/jz4780.dtsi
++++ b/arch/mips/boot/dts/ingenic/jz4780.dtsi
+@@ -470,7 +470,7 @@ efuse: efuse@d0 {
+ 			#address-cells = <1>;
+ 			#size-cells = <1>;
  
- 	spin_lock_bh(&ep->ex_lock);
+-			eth0_addr: eth-mac-addr@0x22 {
++			eth0_addr: eth-mac-addr@22 {
+ 				reg = <0x22 0x6>;
+ 			};
+ 		};
 -- 
 2.34.1
 
