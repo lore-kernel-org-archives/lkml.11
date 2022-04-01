@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ACA8C38161
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02A65C388F3
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:02:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350027AbiDAO6p (ORCPT
+        id S1350169AbiDAO7J (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 10:58:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32948 "EHLO
+        Fri, 1 Apr 2022 10:59:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244516AbiDAOkK (ORCPT
+        with ESMTP id S1347775AbiDAOlZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:40:10 -0400
+        Fri, 1 Apr 2022 10:41:25 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14A1D1EF5F8;
-        Fri,  1 Apr 2022 07:33:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35BC329089A;
+        Fri,  1 Apr 2022 07:34:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A2F58B8250B;
-        Fri,  1 Apr 2022 14:33:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DE36C36AF4;
-        Fri,  1 Apr 2022 14:33:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7406CB82511;
+        Fri,  1 Apr 2022 14:34:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFF12C3410F;
+        Fri,  1 Apr 2022 14:33:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823625;
-        bh=79kk4rKKKH4bZf4gLkl04KEgB6jhlh5M0cMe1/rnz3w=;
+        s=k20201202; t=1648823641;
+        bh=5je8xdC2bPCBaWmhDNpUXYOAhxre1L33fd58POxSqQA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HnU3rnFKXD1l53OJINmkHieM8MxTxi115gaaopO/d71C8IwEY+w1xnGF1z7ECIgK/
-         6ex53qV9l9nEPHxW8Mr/oyllTYSxfYaATr+523hLHvHfW3m7/bicpVHdV//aRUdenI
-         sCQ8Tl2rlN1bSZ9b+Fplnx46xdRnGEMvkq18AfCJB1rJJ3yIXwS5BRUPj+7JfAZray
-         ewDrc2SH2fvD+iGcLvqm6yhZ4y6yUoaGq6pCoiJukwnVeagADtHFUviHE8OIRupdYj
-         GnANWFRIOcFNYaStfDIunc7891CQ+FjeeLBtCJmI00QHFh73I41re0a1XXDIdKSn/o
-         7ESfdFSAVwZDQ==
+        b=o0UqQJ7WPEa4B1uEEZTAlNoDVXYNA42A+u4STjNNx5YNACEksDVRhDAjQSS2Xl3Sy
+         pGNKc/QxpKoBpVqr4qW07a0upmSoDXbJMwfoFZ215Ya8ja4BvnAWvhjDEPVBPp4uYs
+         0qWAHqaVqkmUctpY4JznhPPqlfChWQDhTjoJAik/zEmPJTVbPJNiHRRpNio3YfWALc
+         I6B5D6wExmQ2JsOCoKej5m3QI1H69g/XBSM7/zC7dQLIeqO03weTI5Z60UCE/tapmY
+         9AFjmBdRlrCJY+gclVDA6G5XadhysOSMxTi23wusdOhnbPYmKsaxeyl8Au6ewHwzBp
+         3nzeA4OrPkYBw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Philip Yang <Philip.Yang@amd.com>, Ruili Ji <ruili.ji@amd.com>,
-        Felix Kuehling <Felix.Kuehling@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
-        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.16 016/109] drm/amdkfd: Ensure mm remain valid in svm deferred_list work
-Date:   Fri,  1 Apr 2022 10:31:23 -0400
-Message-Id: <20220401143256.1950537-16-sashal@kernel.org>
+Cc:     Jakub Sitnicki <jakub@cloudflare.com>,
+        Menglong Dong <imagedong@tencent.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, daniel@iogearbox.net,
+        andrii@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 024/109] bpf: Make dst_port field in struct bpf_sock 16-bit wide
+Date:   Fri,  1 Apr 2022 10:31:31 -0400
+Message-Id: <20220401143256.1950537-24-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143256.1950537-1-sashal@kernel.org>
 References: <20220401143256.1950537-1-sashal@kernel.org>
@@ -55,139 +55,92 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Philip Yang <Philip.Yang@amd.com>
+From: Jakub Sitnicki <jakub@cloudflare.com>
 
-[ Upstream commit 367c9b0f1b8750a704070e7ae85234d591290434 ]
+[ Upstream commit 4421a582718ab81608d8486734c18083b822390d ]
 
-svm_deferred_list work should continue to handle deferred_range_list
-which maybe split to child range to avoid child range leak, and remove
-ranges mmu interval notifier to avoid mm mm_count leak. So taking mm
-reference when adding range to deferred list, to ensure mm is valid in
-the scheduled deferred_list_work, and drop the mm referrence after range
-is handled.
+Menglong Dong reports that the documentation for the dst_port field in
+struct bpf_sock is inaccurate and confusing. From the BPF program PoV, the
+field is a zero-padded 16-bit integer in network byte order. The value
+appears to the BPF user as if laid out in memory as so:
 
-Signed-off-by: Philip Yang <Philip.Yang@amd.com>
-Reported-by: Ruili Ji <ruili.ji@amd.com>
-Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+  offsetof(struct bpf_sock, dst_port) + 0  <port MSB>
+                                      + 8  <port LSB>
+                                      +16  0x00
+                                      +24  0x00
+
+32-, 16-, and 8-bit wide loads from the field are all allowed, but only if
+the offset into the field is 0.
+
+32-bit wide loads from dst_port are especially confusing. The loaded value,
+after converting to host byte order with bpf_ntohl(dst_port), contains the
+port number in the upper 16-bits.
+
+Remove the confusion by splitting the field into two 16-bit fields. For
+backward compatibility, allow 32-bit wide loads from offsetof(struct
+bpf_sock, dst_port).
+
+While at it, allow loads 8-bit loads at offset [0] and [1] from dst_port.
+
+Reported-by: Menglong Dong <imagedong@tencent.com>
+Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+Link: https://lore.kernel.org/r/20220130115518.213259-2-jakub@cloudflare.com
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdkfd/kfd_svm.c | 62 ++++++++++++++++------------
- 1 file changed, 36 insertions(+), 26 deletions(-)
+ include/uapi/linux/bpf.h |  3 ++-
+ net/core/filter.c        | 10 +++++++++-
+ 2 files changed, 11 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_svm.c b/drivers/gpu/drm/amd/amdkfd/kfd_svm.c
-index c0b8f4ff80b8..ea1c5aaf659a 100644
---- a/drivers/gpu/drm/amd/amdkfd/kfd_svm.c
-+++ b/drivers/gpu/drm/amd/amdkfd/kfd_svm.c
-@@ -1926,10 +1926,9 @@ svm_range_update_notifier_and_interval_tree(struct mm_struct *mm,
- }
- 
- static void
--svm_range_handle_list_op(struct svm_range_list *svms, struct svm_range *prange)
-+svm_range_handle_list_op(struct svm_range_list *svms, struct svm_range *prange,
-+			 struct mm_struct *mm)
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index b12cfceddb6e..3840308a81ef 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -5414,7 +5414,8 @@ struct bpf_sock {
+ 	__u32 src_ip4;
+ 	__u32 src_ip6[4];
+ 	__u32 src_port;		/* host byte order */
+-	__u32 dst_port;		/* network byte order */
++	__be16 dst_port;	/* network byte order */
++	__u16 :16;		/* zero padding */
+ 	__u32 dst_ip4;
+ 	__u32 dst_ip6[4];
+ 	__u32 state;
+diff --git a/net/core/filter.c b/net/core/filter.c
+index d4cdf11656b3..4721ed65bcc5 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -7975,6 +7975,7 @@ bool bpf_sock_is_valid_access(int off, int size, enum bpf_access_type type,
+ 			      struct bpf_insn_access_aux *info)
  {
--	struct mm_struct *mm = prange->work_item.mm;
--
- 	switch (prange->work_item.op) {
- 	case SVM_OP_NULL:
- 		pr_debug("NULL OP 0x%p prange 0x%p [0x%lx 0x%lx]\n",
-@@ -2013,34 +2012,41 @@ static void svm_range_deferred_list_work(struct work_struct *work)
- 	pr_debug("enter svms 0x%p\n", svms);
+ 	const int size_default = sizeof(__u32);
++	int field_size;
  
- 	p = container_of(svms, struct kfd_process, svms);
--	/* Avoid mm is gone when inserting mmu notifier */
--	mm = get_task_mm(p->lead_thread);
--	if (!mm) {
--		pr_debug("svms 0x%p process mm gone\n", svms);
--		return;
--	}
--retry:
--	mmap_write_lock(mm);
--
--	/* Checking for the need to drain retry faults must be inside
--	 * mmap write lock to serialize with munmap notifiers.
--	 */
--	if (unlikely(atomic_read(&svms->drain_pagefaults))) {
--		mmap_write_unlock(mm);
--		svm_range_drain_retry_fault(svms);
--		goto retry;
--	}
- 
- 	spin_lock(&svms->deferred_list_lock);
- 	while (!list_empty(&svms->deferred_range_list)) {
- 		prange = list_first_entry(&svms->deferred_range_list,
- 					  struct svm_range, deferred_list);
--		list_del_init(&prange->deferred_list);
- 		spin_unlock(&svms->deferred_list_lock);
- 
- 		pr_debug("prange 0x%p [0x%lx 0x%lx] op %d\n", prange,
- 			 prange->start, prange->last, prange->work_item.op);
- 
-+		mm = prange->work_item.mm;
-+retry:
-+		mmap_write_lock(mm);
-+
-+		/* Checking for the need to drain retry faults must be inside
-+		 * mmap write lock to serialize with munmap notifiers.
-+		 */
-+		if (unlikely(atomic_read(&svms->drain_pagefaults))) {
-+			mmap_write_unlock(mm);
-+			svm_range_drain_retry_fault(svms);
-+			goto retry;
-+		}
-+
-+		/* Remove from deferred_list must be inside mmap write lock, for
-+		 * two race cases:
-+		 * 1. unmap_from_cpu may change work_item.op and add the range
-+		 *    to deferred_list again, cause use after free bug.
-+		 * 2. svm_range_list_lock_and_flush_work may hold mmap write
-+		 *    lock and continue because deferred_list is empty, but
-+		 *    deferred_list work is actually waiting for mmap lock.
-+		 */
-+		spin_lock(&svms->deferred_list_lock);
-+		list_del_init(&prange->deferred_list);
-+		spin_unlock(&svms->deferred_list_lock);
-+
- 		mutex_lock(&svms->lock);
- 		mutex_lock(&prange->migrate_mutex);
- 		while (!list_empty(&prange->child_list)) {
-@@ -2051,19 +2057,20 @@ static void svm_range_deferred_list_work(struct work_struct *work)
- 			pr_debug("child prange 0x%p op %d\n", pchild,
- 				 pchild->work_item.op);
- 			list_del_init(&pchild->child_list);
--			svm_range_handle_list_op(svms, pchild);
-+			svm_range_handle_list_op(svms, pchild, mm);
- 		}
- 		mutex_unlock(&prange->migrate_mutex);
- 
--		svm_range_handle_list_op(svms, prange);
-+		svm_range_handle_list_op(svms, prange, mm);
- 		mutex_unlock(&svms->lock);
-+		mmap_write_unlock(mm);
-+
-+		/* Pairs with mmget in svm_range_add_list_work */
-+		mmput(mm);
- 
- 		spin_lock(&svms->deferred_list_lock);
+ 	if (off < 0 || off >= sizeof(struct bpf_sock))
+ 		return false;
+@@ -7986,7 +7987,6 @@ bool bpf_sock_is_valid_access(int off, int size, enum bpf_access_type type,
+ 	case offsetof(struct bpf_sock, family):
+ 	case offsetof(struct bpf_sock, type):
+ 	case offsetof(struct bpf_sock, protocol):
+-	case offsetof(struct bpf_sock, dst_port):
+ 	case offsetof(struct bpf_sock, src_port):
+ 	case offsetof(struct bpf_sock, rx_queue_mapping):
+ 	case bpf_ctx_range(struct bpf_sock, src_ip4):
+@@ -7995,6 +7995,14 @@ bool bpf_sock_is_valid_access(int off, int size, enum bpf_access_type type,
+ 	case bpf_ctx_range_till(struct bpf_sock, dst_ip6[0], dst_ip6[3]):
+ 		bpf_ctx_record_field_size(info, size_default);
+ 		return bpf_ctx_narrow_access_ok(off, size, size_default);
++	case bpf_ctx_range(struct bpf_sock, dst_port):
++		field_size = size == size_default ?
++			size_default : sizeof_field(struct bpf_sock, dst_port);
++		bpf_ctx_record_field_size(info, field_size);
++		return bpf_ctx_narrow_access_ok(off, size, field_size);
++	case offsetofend(struct bpf_sock, dst_port) ...
++	     offsetof(struct bpf_sock, dst_ip4) - 1:
++		return false;
  	}
- 	spin_unlock(&svms->deferred_list_lock);
--
--	mmap_write_unlock(mm);
--	mmput(mm);
- 	pr_debug("exit svms 0x%p\n", svms);
- }
  
-@@ -2081,6 +2088,9 @@ svm_range_add_list_work(struct svm_range_list *svms, struct svm_range *prange,
- 			prange->work_item.op = op;
- 	} else {
- 		prange->work_item.op = op;
-+
-+		/* Pairs with mmput in deferred_list_work */
-+		mmget(mm);
- 		prange->work_item.mm = mm;
- 		list_add_tail(&prange->deferred_list,
- 			      &prange->svms->deferred_range_list);
+ 	return size == size_default;
 -- 
 2.34.1
 
