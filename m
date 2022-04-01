@@ -2,80 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C1F6C46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38093C3526F
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:44:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354245AbiDAPp2 (ORCPT
+        id S1354014AbiDAPpX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:45:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40476 "EHLO
+        Fri, 1 Apr 2022 11:45:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353336AbiDAPKV (ORCPT
+        with ESMTP id S1354649AbiDAPMO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 11:10:21 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CE0C2A4BE7
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 07:52:44 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id c62so3254909edf.5
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 07:52:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=CDTGg7xmd02lguFcPgMwbnDRM6tHMxG1F9pAwbPQoHo=;
-        b=T7W8CN+jz5+aiumWrrsmaS77T+E5scb+pwhmUc7sQ00YF6qeVlR/iuX7nMux/sXgZi
-         aoXbT2oN81ea9wAj+fdmjo3mi8803aMoqN5bRP+HmiPDTOHrxU4/qO8cTYWxf3yOu74k
-         3YTMVUWBBT6ijr8xnLFMnkty+UNhHPWXYJ4yw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=CDTGg7xmd02lguFcPgMwbnDRM6tHMxG1F9pAwbPQoHo=;
-        b=x0R5vR2BuYPgJO6i0EVNn6pT6Q4KXYCVc9Y4ZpNGmHzNy9VqTzavvTkzBWm/96hkkn
-         9ffll40wyRP+MLsGz7HysPi2TCSS1022vQFSZCtdwvFHoteXfgu04EAdk54FuxLp1BgW
-         3flEeQ3YiAlhmKGrLLZUZDw7bFlZMUdpzP9B5E2mjy1F4JheXE4EtovleT65jf0nxohc
-         /5REPpOU1gV4Mi9zeTWOvR0WcYjF1YZoD1PO/6rgft1Y7rtnfs/GH0Wuhysd+HHry2yJ
-         mAvGgau0N+ZtleTIzgOJuHC8x+FAYfFxaRjBqpjdAdiElYS2DCXoSK9YSPX9ZHSQR2IV
-         K1ew==
-X-Gm-Message-State: AOAM533HxwZASrNYD7m4vSzP3daVLHOdKRdSCbYBJjknAqrwv9/7hLYz
-        MIiS2FNtsmRj5SSxoxQMu3sbimzFhvMXbip6B54IrQ==
-X-Google-Smtp-Source: ABdhPJwiHgIV7HJawa3rB+bvMNReOkRYBuvb2rbFfBdUHW6q0LcxoVGrpPWP1JWfHYg+Rjf+M7hRjLo0TYW/6FnZzJo=
-X-Received: by 2002:a05:6402:1941:b0:413:2822:9c8 with SMTP id
- f1-20020a056402194100b00413282209c8mr21428644edz.13.1648824763403; Fri, 01
- Apr 2022 07:52:43 -0700 (PDT)
+        Fri, 1 Apr 2022 11:12:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE5D02AFA0A;
+        Fri,  1 Apr 2022 07:55:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7FD89B824FC;
+        Fri,  1 Apr 2022 14:55:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DF63C2BBE4;
+        Fri,  1 Apr 2022 14:55:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1648824930;
+        bh=XCmTIOXK1YIHSJwxCWXOIB9CkJ+9xoNLRuagr76eCMk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=FoSt0Ah8YdHJpPRyLvrPAhj06RFciymYJmGAJokHpi78ihCu03TNQpUP2zJT/F98S
+         RzfYleFTdNj25DLbaye1kQS5D5OWg9REvqOlgUeTERgOXGzhLBuotyL0PchqnZFH1n
+         /vv+qLfQ3JCsZCmlhbfEydN0HJsMXdAUJtLD4ggM=
+Date:   Fri, 1 Apr 2022 16:55:27 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Dan Vacura <w36195@motorola.com>
+Cc:     linux-usb@vger.kernel.org, stable@vger.kernel.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Felipe Balbi <balbi@kernel.org>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Carlos Bilbao <bilbao@vt.edu>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org
+Subject: Re: [PATCH] usb: gadget: uvc: allow changing interface name via
+ configfs
+Message-ID: <YkcSX5P2KKj9qnWe@kroah.com>
+References: <20220331211155.412906-1-w36195@motorola.com>
+ <YkaZcSsadjHp1yJZ@kroah.com>
+ <YkcQmrm30D7cNPDo@p1g3>
 MIME-Version: 1.0
-References: <20220401015828.2959505-1-victor.liu@nxp.com>
-In-Reply-To: <20220401015828.2959505-1-victor.liu@nxp.com>
-From:   Jagan Teki <jagan@amarulasolutions.com>
-Date:   Fri, 1 Apr 2022 20:22:32 +0530
-Message-ID: <CAMty3ZC6pLJXP=kxwFeZj6CF87ASvoxz9+8Z-7O+DCNwtcLHcQ@mail.gmail.com>
-Subject: Re: [PATCH] drm/bridge: nwl-dsi: Drop the drm_of_panel_bridge_remove()
- function call
-To:     Liu Ying <victor.liu@nxp.com>
-Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Robert Foss <robert.foss@linaro.org>,
-        =?UTF-8?Q?Guido_G=C3=BCnther?= <agx@sigxcpu.org>,
-        NXP Linux Team <linux-imx@nxp.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YkcQmrm30D7cNPDo@p1g3>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 1, 2022 at 7:26 AM Liu Ying <victor.liu@nxp.com> wrote:
->
-> Since this driver has been changed to use the resource managed
-> devm_drm_of_get_bridge() to get bridge from ->attach(), it's
-> unnecessary to call drm_of_panel_bridge_remove() to remove the
-> bridge from ->detach().  So, let's drop the drm_of_panel_bridge_remove()
-> function call.  As nwl_dsi_bridge_detach() only calls
-> drm_of_panel_bridge_remove(), it can also be dropped.
->
-> Cc: Robert Foss <robert.foss@linaro.org>
-> Cc: Guido G=C3=BCnther <agx@sigxcpu.org>
-> Cc: Jagan Teki <jagan@amarulasolutions.com>
-> Cc: NXP Linux Team <linux-imx@nxp.com>
-> Signed-off-by: Liu Ying <victor.liu@nxp.com>
-> ---
+On Fri, Apr 01, 2022 at 09:47:54AM -0500, Dan Vacura wrote:
+> On Fri, Apr 01, 2022 at 08:19:29AM +0200, Greg Kroah-Hartman wrote:
+> > On Thu, Mar 31, 2022 at 04:11:50PM -0500, Dan Vacura wrote:
+> > > Add a configfs entry, "function_name", to change the iInterface field
+> > > for VideoControl. This name is used on host devices for user selection,
+> > > useful when multiple cameras are present. The default will remain "UVC
+> > > Camera".
+> > > 
+> > > Cc: <stable@vger.kernel.org> # 5.10+
+> > 
+> > Why is adding a new feature a stable kernel issue?
+> > 
+> > confused,
+> > 
+> > greg k-h
+> 
+> The intention is to get this change integrated into the Android GKI 5.10
+> and 5.15 release lines.
 
-Reviewed-by: Jagan Teki <jagan@amarulasolutions.com>
+Android and "GKI" has nothing to do with the stable kernel trees or us
+at all.
+
+Please read:
+    https://www.kernel.org/doc/html/latest/process/stable-kernel-rules.html
+for what patches are acceptable to them.
+
+thanks,
+
+greg k-h
