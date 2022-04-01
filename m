@@ -2,157 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BF0EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 03:23:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B726C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 03:26:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244519AbiDADZl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 23:25:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43032 "EHLO
+        id S244535AbiDAD2U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 23:28:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244541AbiDADZ3 (ORCPT
+        with ESMTP id S235001AbiDAD2S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 23:25:29 -0400
-Received: from mail-yw1-x1131.google.com (mail-yw1-x1131.google.com [IPv6:2607:f8b0:4864:20::1131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADC5E218D
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 20:23:37 -0700 (PDT)
-Received: by mail-yw1-x1131.google.com with SMTP id 00721157ae682-2e6ceb45174so18977617b3.8
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 20:23:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=VQmEc11aIbx+ZtNr6xhDNIOvDmC310KGZSAfuh7/n4o=;
-        b=U2sd5IBeDZM9I11jk51mO17fAqz78NJ9AkSAFGNgkLDMHoTwPcuzlCX0EJbmd9bb/H
-         fP4CvGZIHZj4HHO5u90gNLl3WMM6i3r468t2r4byAfmm2eMWDnVBZ/zkIq/aCvYjWtKS
-         71Iw8C3q63aPogvu4Rp2N3lhiYPzCqEOTu3zrLJ0tA/wKS3Pzihb34DdzTTMtGW6wwsm
-         9PvekKjKqPVnHzp2WlDmgVJzU4eP0AKp2zaTKnakYKifBbiVSape10kLEbT6je8VLFOF
-         aaNnqaFeXKLP2wDuS8/I2cRd07mwfhzDgGaOmp1+dsRhNRdzxyl+f1jFuiXITaE384Zr
-         Pygg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VQmEc11aIbx+ZtNr6xhDNIOvDmC310KGZSAfuh7/n4o=;
-        b=ncX0TtZ0Qgi3Gql/mnkCHmj09rC+eW0OxUVADN9sN3Zw6Ebx7TZlUuYmMx//NFy5kq
-         RhIRvQ3BEr1GuQ0zwlv8I/9xuFt5J1tzQtcYlPjUhM2lZZtXos+FCZuLMZQnDMAXlB8c
-         AI79WwUbBTrG7INOZ3FM9HUfS3hnaxTtLiQovkkPwwCknKmAwlG82EikSoM9o+uqtaxA
-         HSrF52qUhF1U0CoBzxSkAv9wCKqnAPAnxMg27k212zk0e4i0qAdby6mJTlaWFGgU18Kx
-         tUXqX/YyA83ZEQXcCp5QoFtPFt3eXT6D7Ki7OkNjxCH9fowxWXqb7x1okip5c8iBvZa8
-         CzvA==
-X-Gm-Message-State: AOAM531e6CJ3XJUVQUHcBGqzWSyapIyzq0c+Xew88BheyFW7CGMk2qO+
-        nQggaAwao+puFM9Ehhj0cbIZDVJUn4fA2RMJKOZSxQ==
-X-Google-Smtp-Source: ABdhPJyfBNiFGOcyCVVnQq3QlsWIGX+YGW+qL+Jm/E/uL9rdKI+a88ky2Pv25kLFMeoOO0k8ts7UGdkHow0gWNpe3hE=
-X-Received: by 2002:a0d:f685:0:b0:2e2:22e6:52d7 with SMTP id
- g127-20020a0df685000000b002e222e652d7mr8046178ywf.418.1648783416948; Thu, 31
- Mar 2022 20:23:36 -0700 (PDT)
+        Thu, 31 Mar 2022 23:28:18 -0400
+Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D91422475B
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 20:26:29 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R151e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=guanghuifeng@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0V8mHSk5_1648783586;
+Received: from 30.225.28.173(mailfrom:guanghuifeng@linux.alibaba.com fp:SMTPD_---0V8mHSk5_1648783586)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 01 Apr 2022 11:26:26 +0800
+Message-ID: <eb284c91-dbcf-d034-dce7-6eedaa055552@linux.alibaba.com>
+Date:   Fri, 1 Apr 2022 11:26:25 +0800
 MIME-Version: 1.0
-References: <20220228122126.37293-1-songmuchun@bytedance.com>
- <20220228122126.37293-13-songmuchun@bytedance.com> <YkXCWW7ru9Gxyy6G@casper.infradead.org>
-In-Reply-To: <YkXCWW7ru9Gxyy6G@casper.infradead.org>
-From:   Muchun Song <songmuchun@bytedance.com>
-Date:   Fri, 1 Apr 2022 11:23:01 +0800
-Message-ID: <CAMZfGtXiVDxO1hqiOChR2a_nwK5kUiWafEXML7=YfuPBy0zH5w@mail.gmail.com>
-Subject: Re: [PATCH v6 12/16] mm: list_lru: replace linear array with xarray
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Vladimir Davydov <vdavydov.dev@gmail.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Yang Shi <shy828301@gmail.com>, Alex Shi <alexs@kernel.org>,
-        Wei Yang <richard.weiyang@gmail.com>,
-        Dave Chinner <david@fromorbit.com>,
-        trond.myklebust@hammerspace.com, anna.schumaker@netapp.com,
-        jaegeuk@kernel.org, chao@kernel.org,
-        Kari Argillander <kari.argillander@gmail.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        linux-nfs@vger.kernel.org, Qi Zheng <zhengqi.arch@bytedance.com>,
-        Xiongchun duan <duanxiongchun@bytedance.com>,
-        Fam Zheng <fam.zheng@bytedance.com>,
-        Muchun Song <smuchun@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH RESEND] uio/uio_pci_generic: Introduce refcnt on
+ open/release
+To:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Yao Hongbo <yaohongbo@linux.alibaba.com>
+Cc:     gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
+        alikernel-developer@linux.alibaba.com, gang.cao@intel.com
+References: <1648693432-129409-1-git-send-email-yaohongbo@linux.alibaba.com>
+ <20220331162952-mutt-send-email-mst@kernel.org>
+From:   "guanghui.fgh" <guanghuifeng@linux.alibaba.com>
+In-Reply-To: <20220331162952-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 31, 2022 at 11:01 PM Matthew Wilcox <willy@infradead.org> wrote:
->
-> On Mon, Feb 28, 2022 at 08:21:22PM +0800, Muchun Song wrote:
-> > @@ -586,27 +508,48 @@ int memcg_list_lru_alloc(struct mem_cgroup *memcg, struct list_lru *lru,
-> >               }
-> >       }
-> >
-> > +     xas_lock_irqsave(&xas, flags);
-> >       while (i--) {
-> > +             int index = READ_ONCE(table[i].memcg->kmemcg_id);
-> >               struct list_lru_per_memcg *mlru = table[i].mlru;
-> >
-> > +             xas_set(&xas, index);
-> > +retry:
-> > +             if (unlikely(index < 0 || xas_error(&xas) || xas_load(&xas))) {
-> >                       kfree(mlru);
-> > +             } else {
-> > +                     xas_store(&xas, mlru);
-> > +                     if (xas_error(&xas) == -ENOMEM) {
-> > +                             xas_unlock_irqrestore(&xas, flags);
-> > +                             if (xas_nomem(&xas, gfp))
-> > +                                     xas_set_err(&xas, 0);
-> > +                             xas_lock_irqsave(&xas, flags);
-> > +                             /*
-> > +                              * The xas lock has been released, this memcg
-> > +                              * can be reparented before us. So reload
-> > +                              * memcg id. More details see the comments
-> > +                              * in memcg_reparent_list_lrus().
-> > +                              */
-> > +                             index = READ_ONCE(table[i].memcg->kmemcg_id);
-> > +                             if (index < 0)
-> > +                                     xas_set_err(&xas, 0);
-> > +                             else if (!xas_error(&xas) && index != xas.xa_index)
-> > +                                     xas_set(&xas, index);
-> > +                             goto retry;
-> > +                     }
-> > +             }
-> >       }
-> > +     /* xas_nomem() is used to free memory instead of memory allocation. */
-> > +     if (xas.xa_alloc)
-> > +             xas_nomem(&xas, gfp);
-> > +     xas_unlock_irqrestore(&xas, flags);
-> >       kfree(table);
-> >
-> > +     return xas_error(&xas);
-> >  }
->
-> This is really unidiomatic.  And so much more complicated than it needs
-> to be.
->
->         while (i--) {
->                 do {
->                         int index = READ_ONCE(table[i].memcg->kmemcg_id);
->                         struct list_lru_per_memcg *mlru = table[i].mlru;
->
->                         xas_set(&xas, index);
->                         xas_lock_irqsave(&xas, flags);
->                         if (index < 0 || xas_load(&xas))
->                                 xas_set_err(&xas, -EBUSY);
->                         xas_store(&xas, mlru);
->                         if (!xas_error(&xas))
->                                 break;
->                         xas_unlock_irqrestore(&xas, flags);
->                 } while (xas_nomem(&xas, gfp));
->
->                 if (xas_error(&xas))
->                         kfree(mlru);
->         }
->
->         kfree(table);
->         return xas_error(&xas);
->
-> (you might want to mask out the EBUSY error here)
->
 
-I'm not familiar with xarray APIs.  I'll dig deeper to see if this code works
-properly.  Thanks for your suggestions.
+在 2022/4/1 4:30, Michael S. Tsirkin 写道:
+> On Thu, Mar 31, 2022 at 10:23:52AM +0800, Yao Hongbo wrote:
+>> If two userspace programs both open the PCI UIO fd, when one
+>> of the program exits uncleanly, the other will cause IO hang
+>> due to bus-mastering disabled.
+> With two programs poking at the same device, how is this ever
+> supposed to work even while both are alive?
+
+When using dpdk/spdk, there may be one primary process with multiple
+secondary processes while they can use same virtual address to access
+the same hugepage memory and device BAR(the primary process mmap hugepge
+and device BAR, record the relation between virtual and physical address,
+then the multi secondary processes will do the MAP_FIXED mmap). With this
+method, we can solve many troublesome problems. So there may be many
+processes own the same deivce at the same time.
+
+The SPDK links:
+https://spdk.io/doc/app_overview.html
+
+"Multi process mode
+When --shm-id is specified, the application is started in multi-process 
+mode.
+
+Applications using the same shm-id share their memory and NVMe devices.
+
+The first app to start with a given id becomes a primary process, with 
+the rest,
+
+called secondary processes, only attaching to it. When the primary 
+process exits,
+
+the secondary ones continue to operate, but no new processes can be 
+attached
+
+at this point. All processes within the same shm-id group must use the 
+same --single-file-segments setting."
+
+>> It's a common usage for spdk/dpdk to use UIO. So, introduce refcnt
+>> to avoid such problems.
+>>
+>> Fixes: 865a11f("uio/uio_pci_generic: Disable bus-mastering on release")
+>> Reported-by: Xiu Yang <yangxiu.yx@alibaba-inc.com>
+>> Signed-off-by: Yao Hongbo <yaohongbo@linux.alibaba.com>
+>> ---
+>>   drivers/uio/uio_pci_generic.c | 16 +++++++++++++++-
+>>   1 file changed, 15 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/uio/uio_pci_generic.c b/drivers/uio/uio_pci_generic.c
+>> index e03f9b5..8add2cf 100644
+>> --- a/drivers/uio/uio_pci_generic.c
+>> +++ b/drivers/uio/uio_pci_generic.c
+>> @@ -31,6 +31,7 @@
+>>   struct uio_pci_generic_dev {
+>>   	struct uio_info info;
+>>   	struct pci_dev *pdev;
+>> +	atomic_t refcnt;
+>>   };
+>>   
+>>   static inline struct uio_pci_generic_dev *
+>> @@ -39,6 +40,14 @@ struct uio_pci_generic_dev {
+>>   	return container_of(info, struct uio_pci_generic_dev, info);
+>>   }
+>>   
+>> +static int open(struct uio_info *info, struct inode *inode)
+>> +{
+>> +	struct uio_pci_generic_dev *gdev = to_uio_pci_generic_dev(info);
+>> +
+>> +	atomic_inc(&gdev->refcnt);
+>> +	return 0;
+>> +}
+>> +
+>>   static int release(struct uio_info *info, struct inode *inode)
+>>   {
+>>   	struct uio_pci_generic_dev *gdev = to_uio_pci_generic_dev(info);
+>> @@ -51,7 +60,9 @@ static int release(struct uio_info *info, struct inode *inode)
+>>   	 * Note that there's a non-zero chance doing this will wedge the device
+>>   	 * at least until reset.
+>>   	 */
+>> -	pci_clear_master(gdev->pdev);
+>> +	if (atomic_dec_and_test(&gdev->refcnt))
+>> +		pci_clear_master(gdev->pdev);
+>> +
+>>   	return 0;
+>>   }
+>>   
+>> @@ -92,8 +103,11 @@ static int probe(struct pci_dev *pdev,
+>>   
+>>   	gdev->info.name = "uio_pci_generic";
+>>   	gdev->info.version = DRIVER_VERSION;
+>> +	gdev->info.open = open;
+>>   	gdev->info.release = release;
+>>   	gdev->pdev = pdev;
+>> +	atomic_set(&gdev->refcnt, 0);
+>> +
+>>   	if (pdev->irq && (pdev->irq != IRQ_NOTCONNECTED)) {
+>>   		gdev->info.irq = pdev->irq;
+>>   		gdev->info.irq_flags = IRQF_SHARED;
+>> -- 
+>> 1.8.3.1
