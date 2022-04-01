@@ -2,254 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98FC9C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD1E1C4332F
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:41:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351168AbiDAPlR (ORCPT
+        id S1351263AbiDAPlc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:41:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54038 "EHLO
+        Fri, 1 Apr 2022 11:41:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351892AbiDAPDA (ORCPT
+        with ESMTP id S1349140AbiDAOxR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 11:03:00 -0400
-Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C8EE24F29A
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 07:50:23 -0700 (PDT)
-Received: by mail-qk1-x72a.google.com with SMTP id 85so2253124qkm.9
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 07:50:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=mebg0QeJQFAke9hx7Dqws17vyFhHRdF0ruAhkxiWa1M=;
-        b=sYxiOPCSK6W2fCmfUF0r1cRZ5v5Z97dlJOO7EeYYiZ5wU001BIl5HTd0lZAgcIJGn2
-         stul4gE6f6qnAo4Ufdrh6ezz9KC4pvSRbmeNxoC9AndIOC0yjRJgGISkDV4xe/PxPKwV
-         5WOHNtezVuzSEbok8BUiREOu1IIRTqRQb61Aj3bYNICDt90DFkjPjGN+WqayhYcrSBZn
-         HEwXEM76FKKSdgsiDpkQafiA5OfLQDQsVuOAAuqFJC4O3Zp14pNISEFucWG9nbIf9cqI
-         FOExxw0Pl4Z7dIet1gRst74mF2uroq2H1q9e8xeFcxInQjbVXpEtazC4vgNyWSVEREPT
-         fmjA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=mebg0QeJQFAke9hx7Dqws17vyFhHRdF0ruAhkxiWa1M=;
-        b=yuEN1vj5KwxWMdwxmHy0A9dNiwx1n6jmG4IHgfXhOyKl6peOP8ENV/oxwakFdo7EPF
-         6h5F9VMdtDDFHNmDwheD7z6MMGeV3F9bHt/Ydz/WkwhQMMVnlm7GJRbKJ8K13z5bZdqA
-         LMJokAEPvcOD4cdi73zs97FH8ot//iyxInR7EWpQKRsq0u0z55H+zra3SWIjXnj/nsGp
-         a5jeuxLWUN5KtP7o9ukNI2W8JKAbOnNDoqlmWT8s0SqvqZurqwIxo4FwyPHxIXR8pknY
-         UvfkePACRktzRuBJlkvrqjEhjuQoUOQexr1/roMERl07SyEYYYmHNrqC4vscT/abjpRL
-         E0Yg==
-X-Gm-Message-State: AOAM532xb59H5oFDLmh+HZESnmDelkRsLZyM8Xd7dnT4dlsXZFrgYFSl
-        7+2/wDekQ63N6JSULuTeOnvjCK3Bo2fPiFKeQ6eRQQ==
-X-Google-Smtp-Source: ABdhPJzWxpFhE6X+BpP5YPcHSooT6gqtulGJ4RS0ZEkk3jge4HuA/xUPnz0mgDmxPA84Ye94uaOinXL2Jt1AepsQ0K0=
-X-Received: by 2002:a05:620a:1424:b0:67d:2bc6:856b with SMTP id
- k4-20020a05620a142400b0067d2bc6856bmr7025217qkj.434.1648824622224; Fri, 01
- Apr 2022 07:50:22 -0700 (PDT)
+        Fri, 1 Apr 2022 10:53:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CAF92B519B;
+        Fri,  1 Apr 2022 07:42:39 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0D076B824D8;
+        Fri,  1 Apr 2022 14:42:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8ED40C3410F;
+        Fri,  1 Apr 2022 14:42:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648824157;
+        bh=655SPyw+7+b05qOtVv9OrDh+FzGI99dWI1geAjap6zY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Fn9FY5D6uMnUVBy0mmoIfkeDESmiMNkiCaBUZA9wYjbstLIctWT/YCeK7Ifz1QH8f
+         dFvkRFNRWdaJ6uXxVBooyAm9WZBceRZfiIthckXqKPhUu5pX1FvgeApxZOyqrSWN4G
+         pV6M43Fc4vRUdCFJGe3x61uBNbN/25Rr8coS12S6YmEMuEoauYiarC3+yryUotVHlA
+         +vZef0UNoQdWIeqBrc6YfT8ciHNRv/OX2gzkkUa4rymG+0ayducckaBlzlVHjnsRcL
+         vQj3YmwQGsb6yOMhyiTGjpYvDSMrNKLjFkTu0JOyGXYEkMVdswluhhGeiUbpJZCgfl
+         xQCPifObhhgyA==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Venkateswara Naralasetty <quic_vnaralas@quicinc.com>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
+        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 09/65] ath11k: fix kernel panic during unload/load ath11k modules
+Date:   Fri,  1 Apr 2022 10:41:10 -0400
+Message-Id: <20220401144206.1953700-9-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220401144206.1953700-1-sashal@kernel.org>
+References: <20220401144206.1953700-1-sashal@kernel.org>
 MIME-Version: 1.0
-References: <E1nZMdl-0006nG-0J@plastiekpoot> <CADVnQyn=A9EuTwxe-Bd9qgD24PLQ02YQy0_b7YWZj4_rqhWRVA@mail.gmail.com>
- <eaf54cab-f852-1499-95e2-958af8be7085@uls.co.za> <CANn89iKHbmVYoBdo2pCQWTzB4eFBjqAMdFbqL5EKSFqgg3uAJQ@mail.gmail.com>
- <10c1e561-8f01-784f-c4f4-a7c551de0644@uls.co.za> <CADVnQynf8f7SUtZ8iQi-fACYLpAyLqDKQVYKN-mkEgVtFUTVXQ@mail.gmail.com>
- <e0bc0c7f-5e47-ddb7-8e24-ad5fb750e876@uls.co.za> <CANn89i+Dqtrm-7oW+D6EY+nVPhRH07GXzDXt93WgzxZ1y9_tJA@mail.gmail.com>
- <CADVnQyn=VfcqGgWXO_9h6QTkMn5ZxPbNRTnMFAxwQzKpMRvH3A@mail.gmail.com> <5f1bbeb2-efe4-0b10-bc76-37eff30ea905@uls.co.za>
-In-Reply-To: <5f1bbeb2-efe4-0b10-bc76-37eff30ea905@uls.co.za>
-From:   Neal Cardwell <ncardwell@google.com>
-Date:   Fri, 1 Apr 2022 10:50:05 -0400
-Message-ID: <CADVnQymPoyY+AX_P7k+NcRWabJZrb7UCJdDZ=FOkvWguiTPVyQ@mail.gmail.com>
-Subject: Re: linux 5.17.1 disregarding ACK values resulting in stalled TCP connections
-To:     Jaco Kroon <jaco@uls.co.za>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Yuchung Cheng <ycheng@google.com>
-Content-Type: text/plain; charset="UTF-8"
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 31, 2022 at 7:06 PM Jaco Kroon <jaco@uls.co.za> wrote:
->
-> Hi Neal,
->
-> This sniff was grabbed ON THE CLIENT HOST.  There is no middlebox or
-> anything between the sniffer and the client.  Only the firewall on the
-> host itself, where we've already establish the traffic is NOT DISCARDED
-> (at least not in filter/INPUT).
+From: Venkateswara Naralasetty <quic_vnaralas@quicinc.com>
 
-Yes, understood. Please excuse my general use of the term
-"firewalls/middleboxes" even where in some contexts it's clear the
-"middleboxes" aspect of that term could not apply. :-)
+[ Upstream commit 22b59cb965f79ee1accf83172441c9ca0ecb632a ]
 
-> Setup on our end:
->
-> 2 x routers, usually each with a direct peering with Google (which is
-> being ignored at the moment so instead traffic is incoming via IPT over DD).
->
-> Connected via switch to
->
-> 2 x firewalls, of which ONE is active (they have different networks
-> behind them, and could be active / standby for different networks behind
-> them - avoiding active-active because conntrackd is causing more trouble
-> than it's worth), Linux hosts, using netfilter, has been operating for
-> years, no recent kernel upgrades.
->
-> 4 x hosts in mail cluster, one of which you're looking at here.
->
-> On 2022/03/31 17:41, Neal Cardwell wrote:
-> > On Wed, Mar 30, 2022 at 9:04 AM Jaco Kroon <jaco@uls.co.za> wrote:
-> > ...
-> >> When you state sane/normal, do you mean there is fault with the other
-> >> frames that could not be explained by packet loss in one or both of the
-> >> directions?
-> > Yes.
-> >
-> > (1) If you look at the attached trace time/sequence plots (from
-> > tcptrace and xplot.org) there are several behaviors that do not look
-> > like normal congestive packet loss:
-> OK.  I'm not 100% sure how these plots of yours work, but let's see if I
-> can follow your logic here - they mostly make sense.  A legend would
-> probably help.  As I understand the white dots are original transmits,
-> green is what has been ACKED.  R is retransmits ... what's the S?
+Call netif_napi_del() from ath11k_ahb_free_ext_irq() to fix
+the following kernel panic when unload/load ath11k modules
+for few iterations.
 
-"S" is "SACKed", or selectively acknowledged. The SACK blocks below
-the green ACK lines are DSACK blocks, for "Duplicate SACKs",
-indicating the receiver has already received that sequence range.
+[  971.201365] Unable to handle kernel paging request at virtual address 6d97a208
+[  971.204227] pgd = 594c2919
+[  971.211478] [6d97a208] *pgd=00000000
+[  971.214120] Internal error: Oops: 5 [#1] PREEMPT SMP ARM
+[  971.412024] CPU: 2 PID: 4435 Comm: insmod Not tainted 5.4.89 #0
+[  971.434256] Hardware name: Generic DT based system
+[  971.440165] PC is at napi_by_id+0x10/0x40
+[  971.445019] LR is at netif_napi_add+0x160/0x1dc
 
-> What's the yellow line (I'm guessing receive window as advertised by the
-> server)?
+[  971.743127] (napi_by_id) from [<807d89a0>] (netif_napi_add+0x160/0x1dc)
+[  971.751295] (netif_napi_add) from [<7f1209ac>] (ath11k_ahb_config_irq+0xf8/0x414 [ath11k_ahb])
+[  971.759164] (ath11k_ahb_config_irq [ath11k_ahb]) from [<7f12135c>] (ath11k_ahb_probe+0x40c/0x51c [ath11k_ahb])
+[  971.768567] (ath11k_ahb_probe [ath11k_ahb]) from [<80666864>] (platform_drv_probe+0x48/0x94)
+[  971.779670] (platform_drv_probe) from [<80664718>] (really_probe+0x1c8/0x450)
+[  971.789389] (really_probe) from [<80664cc4>] (driver_probe_device+0x15c/0x1b8)
+[  971.797547] (driver_probe_device) from [<80664f60>] (device_driver_attach+0x44/0x60)
+[  971.805795] (device_driver_attach) from [<806650a0>] (__driver_attach+0x124/0x140)
+[  971.814822] (__driver_attach) from [<80662adc>] (bus_for_each_dev+0x58/0xa4)
+[  971.823328] (bus_for_each_dev) from [<80663a2c>] (bus_add_driver+0xf0/0x1e8)
+[  971.831662] (bus_add_driver) from [<806658a4>] (driver_register+0xa8/0xf0)
+[  971.839822] (driver_register) from [<8030269c>] (do_one_initcall+0x78/0x1ac)
+[  971.847638] (do_one_initcall) from [<80392524>] (do_init_module+0x54/0x200)
+[  971.855968] (do_init_module) from [<803945b0>] (load_module+0x1e30/0x1ffc)
+[  971.864126] (load_module) from [<803948b0>] (sys_init_module+0x134/0x17c)
+[  971.871852] (sys_init_module) from [<80301000>] (ret_fast_syscall+0x0/0x50)
 
-Yes, the yellow line is the right edge of the receive window of the server.
+Tested-on: IPQ8074 hw2.0 AHB WLAN.HK.2.6.0.1-00760-QCAHKSWPL_SILICONZ-1
 
-> >   (a) Literally *all* original transmissions (white segments in the
-> > plot) of packets after client sequence 66263 appear lost (are not
-> > ACKed). Congestion generally does not behave like that. But broken
-> > firewalls/middleboxes do.
-> >        (See netdev-2022-03-29-tcp-disregarded-acks-zoomed-out.png )
->
-> Agreed.  So could it be that something in the transit path towards
-> Google is actually dropping all of that?
+Signed-off-by: Venkateswara Naralasetty <quic_vnaralas@quicinc.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/1642583973-21599-1-git-send-email-quic_vnaralas@quicinc.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/wireless/ath/ath11k/ahb.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-It could be. Or it could be a firewall/middlebox.
+diff --git a/drivers/net/wireless/ath/ath11k/ahb.c b/drivers/net/wireless/ath/ath11k/ahb.c
+index 9ff6e6853314..190bc5712e96 100644
+--- a/drivers/net/wireless/ath/ath11k/ahb.c
++++ b/drivers/net/wireless/ath/ath11k/ahb.c
+@@ -366,6 +366,8 @@ static void ath11k_ahb_free_ext_irq(struct ath11k_base *ab)
+ 
+ 		for (j = 0; j < irq_grp->num_irq; j++)
+ 			free_irq(ab->irq_num[irq_grp->irqs[j]], irq_grp);
++
++		netif_napi_del(&irq_grp->napi);
+ 	}
+ }
+ 
+-- 
+2.34.1
 
-> As stated - I highly doubt this is on our network unless newer kernel
-> (on mail cluster) is doing stuff which is causing older netfilter to
-> drop perhaps?  But this doesn't explain why newer kernel retransmits
-> data for which it received an ACK.
-
-Yes, I agree that the biggest problem to focus on is the TCP code in
-the kernel retransmitting data for which the NIC is receiving ACKs.
-
-> >
-> >   (b) When the client is retransmitting packets, only packets at
-> > exactly snd_una are ACKed. The packets beyond that point are always
-> > un-ACKed. Again sounds like a broken firewall/middlebox.
-> >        (See netdev-2022-03-29-tcp-disregarded-acks-zoomed-in.png )
-> No middlebox between packet sniffer and client ... client here is linux
-> 5.17.1.  Brings me back to the only thing that could be dropping the
-> traffic is netfilter on the host, or the kernel doesn't like something
-> about the ACK, or kernel is doing something else wrong as a result of
-> TFO.  I'm not sure which option I like less.  Unfortunately I also use
-> netfilter for redirecting traffic into haproxy here so can't exactly
-> just switch off netfilter.
-
-Given the most problematic aspect of the trace, where the client-side
-TCP connection is repeatedly retransmitting packets for which ACKs are
-arriving at the NIC (and captured by tcpdump), it seems some software
-in your kernel is dropping packets between the network device and the
-TCP layer. Given that you mention  "the only thing that could be
-dropping the traffic is netfilter on the host", it seems like the
-netfilter rules or software are buggy.
-
-A guess would be that the netfilter code is getting into a bad state
-due to the TFO behavior where there is a data packet arriving from the
-server immediately after the SYN/ACK and just before the client sends
-its first ACK:
-
-00:00:00.000000 IP6 2c0f:f720:0:3:d6ae:52ff:feb8:f27b.48590 >
-2a00:1450:4013:c16::1a.25: S 3451342529:3451342529(0) win 62580 <mss
-8940,sackOK,TS val 331187616 ecr 0,nop,wscale 7,Unknown Option
-3472da7bfe84[|tcp]>
-
-00:00:00.164295 IP6 2a00:1450:4013:c16::1a.25 >
-2c0f:f720:0:3:d6ae:52ff:feb8:f27b.48590: S. 2699962254:2699962254(0)
-ack 3451342530 win 65535 <mss 1440,sackOK,TS val 1206542770 ecr
-331187616,nop,wscale 8>
-
-# this one is perhaps confusing netfilter?:
-00:00:00.001641 IP6 2a00:1450:4013:c16::1a.25 >
-2c0f:f720:0:3:d6ae:52ff:feb8:f27b.48590: P. 1:89(88) ack 1 win 256
-<nop,nop,TS val 1206542772 ecr 331187616>
-
-00:00:00.000035 IP6 2c0f:f720:0:3:d6ae:52ff:feb8:f27b.48590 >
-2a00:1450:4013:c16::1a.25: . 1:1(0) ack 89 win 489 <nop,nop,TS val
-331187782 ecr 1206542772>
-
-00:00:00.000042 IP6 2c0f:f720:0:3:d6ae:52ff:feb8:f27b.48590 >
-2a00:1450:4013:c16::1a.25: P. 1:24(23) ack 89 win 489 <nop,nop,TS val
-331187782 ecr 1206542772>
-
-Re "so can't exactly just switch off netfilter", are there any other
-counters or logs you can somehow check for netfilter drops?
-
-> >
-> >   (c) After the client receives the server's "ack 73403", the client
-> > ignores/drops all other incoming packets that show up in the trace.
->
-> Agreed.  However, if I read your graph correctly, it gets an ACK for
-> frame X at ~3.8s into the connection, then for X+2 at 4s, but it keeps
-> retransmitting X+2, not X+1?
-
-At t=4s, as I discussed below there are two ACKs that arrive
-back-to-back, where the client TCP apparently processes the first but
-not the second. That's why it keeps retransmitting the packet beyond
-the first ACk but not beyond the second ACK.
-
->
-> >
-> >        As Eric notes, this doesn't look like a PAWS issue. And it
-> > doesn't look like a checksum or sequence/ACK validation issue. The
-> > client starts ignoring ACKs between two ACKs that have correct
-> > checksums, valid ACK numbers, and valid (identical) sequence numbers
-> > and TS val and ecr values (here showing absolute sequence/ACK
-> > numbers):
-> I'm not familiar with PAWS here.  Assuming that the green line is ACKs,
-> then at around 4s we get an ACK that basically ACKs two frames in one
-> (which is fine from my understanding of TCP), and then the second of
-> these frames keeps getting retransmitted going forward, so it's almost
-> like the kernel ACKs the *first* of these two frames but not the second.
-
-Again, there are two ACKs, where the client TCP apparently processes
-the first but not the second, as discussed here:
-
-> >
-> >     (i) The client processes this ACK and uses it to advance snd_una:
-> >     17:46:49.889911 IP6 (flowlabel 0x97427, hlim 61, next-header TCP
-> > (6) payload length: 32) 2a00:1450:4013:c16::1a.25 >
-> > 2c0f:f720:0:3:d6ae:52ff:feb8:f27b.48590: . cksum 0x7005 (correct)
-> > 2699968514:2699968514(0) ack 3451415932 win 830 <nop,nop,TS val
-> > 1206546583 ecr 331191428>
->
-> >
-> >     (ii) The client ignores this ACK and all later ACKs:
-> >     17:46:49.889912 IP6 (flowlabel 0x97427, hlim 61, next-header TCP
-> > (6) payload length: 32) 2a00:1450:4013:c16::1a.25 >
-> > 2c0f:f720:0:3:d6ae:52ff:feb8:f27b.48590: . cksum 0x6a66 (correct)
-> > 2699968514:2699968514(0) ack 3451417360 win 841 <nop,nop,TS val
-> > 1206546583 ecr 331191428>
-> >
-
-Here are those same two ACKs again, shown with absolute time and
-relative sequence numbers, to make them easier to parse:
-
-(i) The client processes this ACK and uses it to advance snd_una:
-17:46:49.889911 IP6 2a00:1450:4013:c16::1a.25 >
-2c0f:f720:0:3:d6ae:52ff:feb8:f27b.48590: . 6260:6260(0) ack 73403 win
-830 <nop,nop,TS val 1206546583 ecr 331191428>
-
- (ii) The client ignores this ACK and all later ACKs:
-17:46:49.889912 IP6 2a00:1450:4013:c16::1a.25 >
-2c0f:f720:0:3:d6ae:52ff:feb8:f27b.48590: . 6260:6260(0) ack 74831 win
-841 <nop,nop,TS val 1206546583 ecr 331191428>
-
-
-neal
