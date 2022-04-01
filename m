@@ -2,84 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE88FC4321E
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:44:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D69DC4167B
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:44:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351368AbiDAPor (ORCPT
+        id S1351721AbiDAPo5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:44:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46748 "EHLO
+        Fri, 1 Apr 2022 11:44:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352776AbiDAPDr (ORCPT
+        with ESMTP id S1353857AbiDAPLI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 11:03:47 -0400
-Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F76B2976C9
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 07:51:38 -0700 (PDT)
-Received: by mail-io1-xd2c.google.com with SMTP id g21so3371558iom.13
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 07:51:38 -0700 (PDT)
+        Fri, 1 Apr 2022 11:11:08 -0400
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAFFA196089
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 07:54:10 -0700 (PDT)
+Received: by mail-pl1-x630.google.com with SMTP id i11so2672120plr.1
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 07:54:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=D14pWmbu4syU7uJkQHRgnmv++dTH97de4155oI8GfsE=;
-        b=EQFT0Jhws+NvlMFDO4cBK8+vf0xZwe0spwHwZaPLSg4VvMLB7O/3/xcGChCgFxwUDT
-         WeDHcSV03eHkg/jH1HOSCi+2geSHjLXmNnPSX/kJkH39OL7XtdYiO5wMnQDkcOePvXVS
-         GkyogTnrt9Ur/DBa7KVq6IJHpHn/Ktp0atNXyZDLmoCV0TMJx6/KFawzKNvzg1YAYKu5
-         TEbVn0a2cGn/HNgWKylLCrvPMh4SqGx6mieBvI4hYr7UtHiMYoGbCsCFPMu0QAKzlRpt
-         udKy5AXiB/YJYg7HbQF5mzHyQok2/LNQiv2Kci7T8vV15xkuTExtph5zrk6goZh+9QoT
-         ia2A==
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=pOFOAOjZHkVIM9Cf5IEXbes0u5Uh/OQeAWWXMddS0Bg=;
+        b=iOsOoSV9OQblL4p1l3OUbmwl/JF8l0v7RCPmXqxWk4Jw8wnbSyNT+BVb9QU8KK/O7S
+         EAHlhqMl9mdfUxz90N4rt8NWEC9EeE2UHAdi47b9XQfmcMgIrx3Bb7PJA9qeWjjGolzJ
+         wk/BjvuXiRgn6TX1CwSGlF36Phq+jBcYdv59dPSjbO0y+6Tg7dcLW6eCJqz7NgFqEzbr
+         7VNiOESgpDBZKYDQkvYlbXD3BoX2hMUvn7/xM0mYTHGhVQT0g5MMEMy97ZdwVwqkqCPX
+         mxMT7CdHBr7N98iviXLuf1gKPvATXJmvPdKo5kt6EjN6u2zGY3eIHf+6RMKqPGNDAmiG
+         uEeg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=D14pWmbu4syU7uJkQHRgnmv++dTH97de4155oI8GfsE=;
-        b=6WoJKFVJGogHydCTGPDAdnYJUJCw2Bu5QVKwfNUAOcVl0jkbAOWJneLzBf6+3o/OuV
-         5ykHoR2etIKstCyocj6Hf49d+4yEqYp6w+e0PTy0q0jtpM7NhBQz5SAmGU5YvyvqyfUS
-         6n/u50OGsybg519KCO3h8NI3eaZeo6QgGVuC5MNLhYfpOFnbMkLHlaIKOCHKWwNnrkxQ
-         AwHhcEnZXD9+5p806CPCl83tWIXFcV6gXVJAWO8KbJVL+M2FbX8wfe8Ixw53suYMK93T
-         wpsVninF/7pTc8gVlb4SyTrawkF1+Z4ZcitNskP6vz7mquREmAdcBKDCoPNix/WawUvE
-         iiYg==
-X-Gm-Message-State: AOAM533mwsDJ+UnyG56OqcqX+/woXsk4a4BE6RrEPcJ49InRxrmkOskU
-        PBN2DAqNkOVKGrg/WQNAjoV0BpyHa12arSdH
-X-Google-Smtp-Source: ABdhPJzYbeqp+kwp8qzmr13henE1FZQIuNtACTLsPIF/1inWLvoPj0gol9ZBEuaZQ3uoKF4MM4aH0A==
-X-Received: by 2002:a6b:5d19:0:b0:645:c7ca:7ca with SMTP id r25-20020a6b5d19000000b00645c7ca07camr68440iob.104.1648824697737;
-        Fri, 01 Apr 2022 07:51:37 -0700 (PDT)
-Received: from [192.168.1.172] ([207.135.234.126])
-        by smtp.gmail.com with ESMTPSA id v2-20020a056e020f8200b002c9a9b96b67sm1445723ilo.23.2022.04.01.07.51.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 01 Apr 2022 07:51:37 -0700 (PDT)
-Message-ID: <d713dcc7-cdae-0834-f10a-c3cdcb6fa301@kernel.dk>
-Date:   Fri, 1 Apr 2022 08:51:36 -0600
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=pOFOAOjZHkVIM9Cf5IEXbes0u5Uh/OQeAWWXMddS0Bg=;
+        b=QyrhTscth8Xik5Zf4PMnl+9YJ02/IhX+BfjJmn1GhBhDZi+rf54yrCnl9b4XWFLxQ/
+         esFmPUfphhG1wXQA4MVDiTXatbB0E11WGxZYtye41gVzVBCOWM8LXBBfZjcMNMniYlDk
+         hrLurzWWNPV4O2AgYEUypNvQpQ4TfCxYfP2TixYKJrIfnVrCihYJ32vwAokHJrBJZbC0
+         hKQw5AvWF2W0AHvfRxmhRcRL1uU0qs5mn1VckdN76ZJX6zh9049P3/t4txBGo5moe0tP
+         yX9joV4ks8vzYOy7mfB1i44Wcg2z1cORhNp7a5tcrivqDXGinud1d0f7zOvGjfXCGDJ6
+         wrpA==
+X-Gm-Message-State: AOAM532QSTUpnee2RY4+JyLp7UUe/VZZidXA/nS9CV808Se/8LsdQ9He
+        zi8SRg7e8PANaOQiS8LBMndpgw==
+X-Google-Smtp-Source: ABdhPJxQYmCfdKoFloacVpLGDsq+pXMzsTYr3YdN943LhaTj99Is7YEwhGgGHX+l57f4aLJsWy1z1g==
+X-Received: by 2002:a17:902:7c0d:b0:155:d507:3cf0 with SMTP id x13-20020a1709027c0d00b00155d5073cf0mr10344247pll.103.1648824849356;
+        Fri, 01 Apr 2022 07:54:09 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id u18-20020a056a00125200b004fb112ee9b7sm3012243pfi.75.2022.04.01.07.54.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 01 Apr 2022 07:54:08 -0700 (PDT)
+Date:   Fri, 1 Apr 2022 14:54:05 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     "Nikunj A. Dadhania" <nikunj@amd.com>
+Cc:     Peter Gonda <pgonda@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Bharata B Rao <bharata@amd.com>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        Mingwei Zhang <mizhang@google.com>,
+        David Hildenbrand <david@redhat.com>,
+        kvm list <kvm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH RFC v1 0/9] KVM: SVM: Defer page pinning for SEV guests
+Message-ID: <YkcSDeJDHOv+MZA7@google.com>
+References: <20220308043857.13652-1-nikunj@amd.com>
+ <YkIh8zM7XfhsFN8L@google.com>
+ <c4b33753-01d7-684e-23ac-1189bd217761@amd.com>
+ <YkSz1R3YuFszcZrY@google.com>
+ <5567f4ec-bbcf-4caf-16c1-3621b77a1779@amd.com>
+ <CAMkAt6px4A0CyuZ8h7zKzTxQUrZMYEkDXbvZ=3v+kphRTRDjNA@mail.gmail.com>
+ <YkX6aKymqZzD0bwb@google.com>
+ <a1fe8fae-6587-e144-3442-93f64fa5263a@amd.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [syzbot] KASAN: use-after-free Read in io_poll_check_events
-Content-Language: en-US
-To:     syzbot <syzbot+edb9c7738ba8cbdbf197@syzkaller.appspotmail.com>,
-        asml.silence@gmail.com, io-uring@vger.kernel.org,
-        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
-References: <00000000000009bb4505db96e211@google.com>
-From:   Jens Axboe <axboe@kernel.dk>
-In-Reply-To: <00000000000009bb4505db96e211@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a1fe8fae-6587-e144-3442-93f64fa5263a@amd.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/1/22 6:26 AM, syzbot wrote:
-> syzbot has bisected this issue to:
+On Fri, Apr 01, 2022, Nikunj A. Dadhania wrote:
 > 
-> commit d570aa1c4f191100f502edfc240e8d49687f62ac
-> Author: Jens Axboe <axboe@kernel.dk>
-> Date:   Thu Mar 31 18:38:46 2022 +0000
+> On 4/1/2022 12:30 AM, Sean Christopherson wrote:
+> > On Thu, Mar 31, 2022, Peter Gonda wrote:
+> >> On Wed, Mar 30, 2022 at 10:48 PM Nikunj A. Dadhania <nikunj@amd.com> wrote:
+> >>> So with guest supporting KVM_FEATURE_HC_MAP_GPA_RANGE and host (KVM) supporting
+> >>> KVM_HC_MAP_GPA_RANGE hypercall, SEV/SEV-ES guest should communicate private/shared
+> >>> pages to the hypervisor, this information can be used to mark page shared/private.
+> >>
+> >> One concern here may be that the VMM doesn't know which guests have
+> >> KVM_FEATURE_HC_MAP_GPA_RANGE support and which don't. Only once the
+> >> guest boots does the guest tell KVM that it supports
+> >> KVM_FEATURE_HC_MAP_GPA_RANGE. If the guest doesn't we need to pin all
+> >> the memory before we run the guest to be safe to be safe.
+> > 
+> > Yep, that's a big reason why I view purging the existing SEV memory management as
+> > a long term goal.  The other being that userspace obviously needs to be updated to
+> > support UPM[*].   I suspect the only feasible way to enable this for SEV/SEV-ES
+> > would be to restrict it to new VM types that have a disclaimer regarding additional
+> > requirements.
 > 
->     io_uring: drop the old style inflight file tracking
+> For SEV/SEV-ES could we base demand pinning on my first RFC[*].
 
-#syz test git://git.kernel.dk/linux-block for-next
+No, because as David pointed out, elevating the refcount is not the same as actually
+pinning the page.  Things like NUMA balancing will still try to migrate the page,
+and even go so far as to zap the PTE, before bailing due to the outstanding reference.
+In other words, not actually pinning makes the mm subsystem less efficient.  Would it
+functionally work?  Yes.  Is it acceptable KVM behavior?  No.
 
--- 
-Jens Axboe
+> Those patches does not touch the core KVM flow.
 
+I don't mind touching core KVM code.  If this goes forward, I actually strongly
+prefer having the x86 MMU code handle the pinning as opposed to burying it in SEV
+via kvm_x86_ops.  The reason I don't think it's worth pursuing this approach is
+because (a) we know that the current SEV/SEV-ES memory management scheme is flawed
+and is a deadend, and (b) this is not so trivial as we (or at least I) originally
+thought/hoped it would be.  In other words, it's not that I think demand pinning
+is a bad idea, nor do I think the issues are unsolvable, it's that I think the
+cost of getting a workable solution, e.g. code churn, ongoing maintenance, reviewer
+time, etc..., far outweighs the benefits.
+
+> Moreover, it does not expect any guest/firmware changes.
+> 
+> [*] https://lore.kernel.org/kvm/20220118110621.62462-1-nikunj@amd.com/
