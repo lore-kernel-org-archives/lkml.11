@@ -2,105 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E31D8C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 00:44:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE2EFC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 00:49:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243592AbiDAAp4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 20:45:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51520 "EHLO
+        id S243609AbiDAAvq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 20:51:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230257AbiDAApz (ORCPT
+        with ESMTP id S230257AbiDAAvp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 20:45:55 -0400
-Received: from mail-oi1-f171.google.com (mail-oi1-f171.google.com [209.85.167.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3E2319322A;
-        Thu, 31 Mar 2022 17:44:06 -0700 (PDT)
-Received: by mail-oi1-f171.google.com with SMTP id q129so1298836oif.4;
-        Thu, 31 Mar 2022 17:44:06 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=RGQN36fupBzgDgpYYq41OYqPsrM7TxMOo2nnd7qf6a8=;
-        b=p8qdyAlGldL8eXf2rGLIzU8pK9tPo67FS9Xg4IUR59I0fs0m6+q+skHM4JKmrLKK2+
-         U4TOzgIkpZBh88b6NV/NYMzfZnjLW6o4Jrph2zhkUUF4MqM+2btD6lfrSwLTU8tdE41A
-         F3izoTIyQR5g2wWDvteZF/lrEpgxzZkQUcLblvGpd54BndBfJS5JHeRTh6+R94qdxLu3
-         5oiBEzAJP8terz3LaXjm735mcUybKYw8dQtxTpZ/5ny94rcLmGayb36A+v6mOluVSPef
-         4waMRLCWEiI/YOBz6bZAYkD73ezgJ+bTKHNHepS7lVLvHBWS7etefX4uxhjYIqKTMWzO
-         hxtQ==
-X-Gm-Message-State: AOAM532ysKTeNJoWWcXeqnmJagTo3KZPlOdM9BRkbBGRcpXTrWjPQhA5
-        Y0QprwHlhibA+Bqu1EByTA==
-X-Google-Smtp-Source: ABdhPJwpD21u4oW/SUSDwMY8sZQu20PgRsvBTHW6LOzRdj1Z6666xBC0UEDvpdjX2iqcai1oRF1siw==
-X-Received: by 2002:aca:905:0:b0:2ee:f62a:e08e with SMTP id 5-20020aca0905000000b002eef62ae08emr3656953oij.54.1648773846080;
-        Thu, 31 Mar 2022 17:44:06 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id m24-20020a9d73d8000000b005c942e2281dsm500962otk.76.2022.03.31.17.44.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 31 Mar 2022 17:44:05 -0700 (PDT)
-Received: (nullmailer pid 1804134 invoked by uid 1000);
-        Fri, 01 Apr 2022 00:44:04 -0000
-Date:   Thu, 31 Mar 2022 19:44:04 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, Keerthy <j-keerthy@ti.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        linux-gpio@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: gpio: davinci: list contents of GPIO hogs
-Message-ID: <YkZK1OzF5Wq2bDma@robh.at.kernel.org>
-References: <20220328191153.171241-1-krzysztof.kozlowski@linaro.org>
+        Thu, 31 Mar 2022 20:51:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BFC219D625;
+        Thu, 31 Mar 2022 17:49:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 52C73B82296;
+        Fri,  1 Apr 2022 00:49:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18A7CC340ED;
+        Fri,  1 Apr 2022 00:49:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648774194;
+        bh=k2NWL0oVgQKreKhbC4I/NAVwEIag4IqjGx4i3YT4Y/M=;
+        h=Date:From:To:Cc:Subject:From;
+        b=dEPEV/kaWDJhphxLwbUmMXxTm85wSDZfOyljX0PxPwugbI3V7xCxB/kBGz7ygoeBQ
+         HTtN4qNa8V5I0hGdd3HvKiMGu3bUfBNpCYm9fD/XIYiborxQP23CBmxJqGxxJ55pAE
+         tS8aNWiGBQuBjsaneVa+A2kc+Bl/zY/Gi4WlCtTr71qgzvtxH7i8vQpFaezw1XhyZr
+         xUDR+EhdUBHTuLFPwzT033Jbv60ohBsJ2aaYPYsBtVuhIusHmcnBINQjQH1l/HMv5P
+         WFNiGmYesPIwbzoeWasLm3lirLJe0ydWK0hSfiNBGoBOkFJ2r7eY9rL8+HRNQgweaG
+         Aots0W7XUyytg==
+Date:   Thu, 31 Mar 2022 19:58:34 -0500
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Dave Hansen <dave.hansen@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH][next] x86/mm/pgtable: Fix Wstringop-overflow warnings
+Message-ID: <20220401005834.GA182932@embeddedor>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220328191153.171241-1-krzysztof.kozlowski@linaro.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 28, 2022 at 09:11:53PM +0200, Krzysztof Kozlowski wrote:
-> The hogs children should list allowed properties, otherwise any property
-> would be accepted.  Simplify also GPIO hog node name pattern.
+Fix the following -Wstringop-overflow warnings when building with GCC-11:
 
-Only if 'gpio-hog' is missing, because the gpio-hog.yaml schema will 
-check every node with that property.
+.arch/x86/mm/pgtable.c: In function ‘pgd_alloc’:
+arch/x86/mm/pgtable.c:437:13: warning: ‘preallocate_pmds.constprop’ accessing 8 bytes in a region of size 0 [-Wstringop-overflow=]
+  437 |         if (preallocate_pmds(mm, pmds, PREALLOCATED_PMDS) != 0)
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+arch/x86/mm/pgtable.c:437:13: note: referencing argument 2 of type ‘pmd_t **’
+arch/x86/mm/pgtable.c:225:12: note: in a call to function ‘preallocate_pmds.constprop’
+  225 | static int preallocate_pmds(struct mm_struct *mm, pmd_t *pmds[], int count)
+      |            ^~~~~~~~~~~~~~~~
+arch/x86/mm/pgtable.c:440:13: warning: ‘preallocate_pmds.constprop’ accessing 8 bytes in a region of size 0 [-Wstringop-overflow=]
+  440 |         if (preallocate_pmds(mm, u_pmds, PREALLOCATED_USER_PMDS) != 0)
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+arch/x86/mm/pgtable.c:440:13: note: referencing argument 2 of type ‘pmd_t **’
+arch/x86/mm/pgtable.c:225:12: note: in a call to function ‘preallocate_pmds.constprop’
+  225 | static int preallocate_pmds(struct mm_struct *mm, pmd_t *pmds[], int count)
+      |            ^~~~~~~~~~~~~~~~
+arch/x86/mm/pgtable.c:462:9: warning: ‘free_pmds.constprop’ accessing 8 bytes in a region of size 0 [-Wstringop-overflow=]
+  462 |         free_pmds(mm, u_pmds, PREALLOCATED_USER_PMDS);
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+arch/x86/mm/pgtable.c:462:9: note: referencing argument 2 of type ‘pmd_t **’
+arch/x86/mm/pgtable.c:213:13: note: in a call to function ‘free_pmds.constprop’
+  213 | static void free_pmds(struct mm_struct *mm, pmd_t *pmds[], int count)
+      |             ^~~~~~~~~
+arch/x86/mm/pgtable.c:455:9: warning: ‘pgd_prepopulate_user_pmd’ accessing 8 bytes in a region of size 0 [-Wstringop-overflow=]
+  455 |         pgd_prepopulate_user_pmd(mm, pgd, u_pmds);
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+arch/x86/mm/pgtable.c:455:9: note: referencing argument 3 of type ‘pmd_t **’
+arch/x86/mm/pgtable.c:320:13: note: in a call to function ‘pgd_prepopulate_user_pmd’
+  320 | static void pgd_prepopulate_user_pmd(struct mm_struct *mm,
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~
+arch/x86/mm/pgtable.c:464:9: warning: ‘free_pmds.constprop’ accessing 8 bytes in a region of size 0 [-Wstringop-overflow=]
+  464 |         free_pmds(mm, pmds, PREALLOCATED_PMDS);
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+arch/x86/mm/pgtable.c:464:9: note: referencing argument 2 of type ‘pmd_t **’
+arch/x86/mm/pgtable.c:213:13: note: in a call to function ‘free_pmds.constprop’
+  213 | static void free_pmds(struct mm_struct *mm, pmd_t *pmds[], int count)
+      |             ^~~~~~~~~
 
-Hogs are allowed on any GPIO controller, but I don't think we to 
-duplicate what's here on every schema.
+by using pointer notation instead of array notation as a workaround for
+the above GCC warnings.
 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> ---
->  .../devicetree/bindings/gpio/gpio-davinci.yaml        | 11 ++++++++++-
->  1 file changed, 10 insertions(+), 1 deletion(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/gpio/gpio-davinci.yaml b/Documentation/devicetree/bindings/gpio/gpio-davinci.yaml
-> index f32e09ef937c..e5b91c65dcb0 100644
-> --- a/Documentation/devicetree/bindings/gpio/gpio-davinci.yaml
-> +++ b/Documentation/devicetree/bindings/gpio/gpio-davinci.yaml
-> @@ -76,12 +76,21 @@ properties:
->      const: 2
->  
->  patternProperties:
-> -  "^(.+-hog(-[0-9]+)?)$":
-> +  "^.+-hog(-[0-9]+)?$":
->      type: object
-> +    properties:
-> +      gpio-hog: true
-> +      gpios: true
-> +      input: true
-> +      output-high: true
-> +      output-low: true
-> +      line-name: true
->  
->      required:
->        - gpio-hog
->  
-> +    additionalProperties: false
-> +
->  required:
->    - compatible
->    - reg
-> -- 
-> 2.32.0
-> 
-> 
+This helps with the ongoing efforts to globally enable
+-Wstringop-overflow.
+
+Link: https://github.com/KSPP/linux/issues/181
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+---
+ arch/x86/mm/pgtable.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/arch/x86/mm/pgtable.c b/arch/x86/mm/pgtable.c
+index 3481b35cb4ec..aecaebf3c3d0 100644
+--- a/arch/x86/mm/pgtable.c
++++ b/arch/x86/mm/pgtable.c
+@@ -210,7 +210,7 @@ void pud_populate(struct mm_struct *mm, pud_t *pudp, pmd_t *pmd)
+ #define MAX_PREALLOCATED_USER_PMDS 0
+ #endif	/* CONFIG_X86_PAE */
+ 
+-static void free_pmds(struct mm_struct *mm, pmd_t *pmds[], int count)
++static void free_pmds(struct mm_struct *mm, pmd_t **pmds, int count)
+ {
+ 	int i;
+ 
+@@ -222,7 +222,7 @@ static void free_pmds(struct mm_struct *mm, pmd_t *pmds[], int count)
+ 		}
+ }
+ 
+-static int preallocate_pmds(struct mm_struct *mm, pmd_t *pmds[], int count)
++static int preallocate_pmds(struct mm_struct *mm, pmd_t **pmds, int count)
+ {
+ 	int i;
+ 	bool failed = false;
+@@ -318,7 +318,7 @@ static void pgd_prepopulate_pmd(struct mm_struct *mm, pgd_t *pgd, pmd_t *pmds[])
+ 
+ #ifdef CONFIG_PAGE_TABLE_ISOLATION
+ static void pgd_prepopulate_user_pmd(struct mm_struct *mm,
+-				     pgd_t *k_pgd, pmd_t *pmds[])
++				     pgd_t *k_pgd, pmd_t **pmds)
+ {
+ 	pgd_t *s_pgd = kernel_to_user_pgdp(swapper_pg_dir);
+ 	pgd_t *u_pgd = kernel_to_user_pgdp(k_pgd);
+-- 
+2.27.0
+
