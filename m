@@ -2,45 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92523C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23527C4167E
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:11:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353025AbiDAPJM (ORCPT
+        id S1352923AbiDAPIv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:09:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60390 "EHLO
+        Fri, 1 Apr 2022 11:08:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350299AbiDAOrX (ORCPT
+        with ESMTP id S1350163AbiDAOrP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:47:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 913FE2A1EAA;
-        Fri,  1 Apr 2022 07:37:31 -0700 (PDT)
+        Fri, 1 Apr 2022 10:47:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED4692A1291;
+        Fri,  1 Apr 2022 07:37:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1907EB8251C;
-        Fri,  1 Apr 2022 14:37:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 192E4C2BBE4;
-        Fri,  1 Apr 2022 14:37:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 19A8EB82511;
+        Fri,  1 Apr 2022 14:37:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B521C36AE9;
+        Fri,  1 Apr 2022 14:37:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823849;
-        bh=WK7tB+5PUmSKJ5UKAfBqMVxWt6Hj85EBkF01L8UeFSU=;
+        s=k20201202; t=1648823828;
+        bh=3FgySLGZd2lZArBcZCCZLr0HckLaDAWd/MmLHujcab0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BSl1IOaTP1yXH3lHlPilWTMLk7cKrQKtoA6a0iyynUaCv3MV4Z5XnQrGldb6YZbOU
-         FzuSU0XmQB4UC/Eq2ar2Y2+SjFD6n6jxnd5FHPCrQsyn5YaC2xZsa4gReso3f6pFQu
-         Yr3/++JbJeb5G7Wyu0XiHYHGScnzfrwu6HWQ8E6kORZcO/Eu4abAuQ3Zmavk2MBO+i
-         tLuX2FrwksK+07Rbf94tOTrnEbCk++sRFfvlk8pI66qWX4a76e1LsnhixwbmH/o7ak
-         Wpm6f53H0UUD5BIM55zg5/ZHWZeAbj5ydm0h9QUU2mydoXMXr6A+Dc3wDa+GYb5U/C
-         QUpfkHIcl21qQ==
+        b=hO6Q6dWV4bw6ovmIrJEpUfdECqIJwaWxsaxeYCitjp6qzosA1ql8Z71P5zNPLiN3B
+         3IZmrD0AEYVjgHrXwUB1p81g7BCisKZdgUAgwae0kkgOa2y2gbHDQe6lzImGaKusjE
+         H/qjVCusLwFaOCYCmPuAWetkEIlnht76n5oKufm+opHHt0fmalYAV7/6sDL2ppr0fk
+         rG9fa9BbfbpP+cpKPm1N9Zp5psHkUuq6FtyMiPwHfK3nHD11VhfKMsMglIaU2p2YYP
+         N4PJOfjGLXKjZFRCc86C6I+xfzP2iG5any5DOlJFJYTkX089ZkfTJtV1Nv/3etWOMC
+         9CguqaGKQSYig==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Xiubo Li <xiubli@redhat.com>, Jeff Layton <jlayton@kernel.org>,
-        Ilya Dryomov <idryomov@gmail.com>,
-        Sasha Levin <sashal@kernel.org>, ceph-devel@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 106/109] ceph: fix memory leak in ceph_readdir when note_last_dentry returns error
-Date:   Fri,  1 Apr 2022 10:32:53 -0400
-Message-Id: <20220401143256.1950537-106-sashal@kernel.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        George Shuklin <george.shuklin@gmail.com>,
+        David Ahern <dsahern@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        pabeni@redhat.com, idosch@nvidia.com, petrm@nvidia.com,
+        edumazet@google.com, yajun.deng@linux.dev, avagin@gmail.com,
+        cong.wang@bytedance.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 093/109] net: limit altnames to 64k total
+Date:   Fri,  1 Apr 2022 10:32:40 -0400
+Message-Id: <20220401143256.1950537-93-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143256.1950537-1-sashal@kernel.org>
 References: <20220401143256.1950537-1-sashal@kernel.org>
@@ -52,51 +56,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiubo Li <xiubli@redhat.com>
+From: Jakub Kicinski <kuba@kernel.org>
 
-[ Upstream commit f639d9867eea647005dc824e0e24f39ffc50d4e4 ]
+[ Upstream commit 155fb43b70b5fce341347a77d1af2765d1e8fbb8 ]
 
-Reset the last_readdir at the same time, and add a comment explaining
-why we don't free last_readdir when dir_emit returns false.
+Property list (altname is a link "property") is wrapped
+in a nlattr. nlattrs length is 16bit so practically
+speaking the list of properties can't be longer than
+that, otherwise user space would have to interpret
+broken netlink messages.
 
-Signed-off-by: Xiubo Li <xiubli@redhat.com>
-Reviewed-by: Jeff Layton <jlayton@kernel.org>
-Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
+Prevent the problem from occurring by checking the length
+of the property list before adding new entries.
+
+Reported-by: George Shuklin <george.shuklin@gmail.com>
+Reviewed-by: David Ahern <dsahern@kernel.org>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ceph/dir.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ net/core/rtnetlink.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/fs/ceph/dir.c b/fs/ceph/dir.c
-index 133dbd9338e7..d91fa53e12b3 100644
---- a/fs/ceph/dir.c
-+++ b/fs/ceph/dir.c
-@@ -478,8 +478,11 @@ static int ceph_readdir(struct file *file, struct dir_context *ctx)
- 					2 : (fpos_off(rde->offset) + 1);
- 			err = note_last_dentry(dfi, rde->name, rde->name_len,
- 					       next_offset);
--			if (err)
-+			if (err) {
-+				ceph_mdsc_put_request(dfi->last_readdir);
-+				dfi->last_readdir = NULL;
- 				return err;
-+			}
- 		} else if (req->r_reply_info.dir_end) {
- 			dfi->next_offset = 2;
- 			/* keep last name */
-@@ -520,6 +523,12 @@ static int ceph_readdir(struct file *file, struct dir_context *ctx)
- 		if (!dir_emit(ctx, rde->name, rde->name_len,
- 			      ceph_present_ino(inode->i_sb, le64_to_cpu(rde->inode.in->ino)),
- 			      le32_to_cpu(rde->inode.in->mode) >> 12)) {
-+			/*
-+			 * NOTE: Here no need to put the 'dfi->last_readdir',
-+			 * because when dir_emit stops us it's most likely
-+			 * doesn't have enough memory, etc. So for next readdir
-+			 * it will continue.
-+			 */
- 			dout("filldir stopping us...\n");
- 			return 0;
- 		}
+diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+index 6a7883ec0489..ef56dc8d7c44 100644
+--- a/net/core/rtnetlink.c
++++ b/net/core/rtnetlink.c
+@@ -3631,12 +3631,23 @@ static int rtnl_alt_ifname(int cmd, struct net_device *dev, struct nlattr *attr,
+ 			   bool *changed, struct netlink_ext_ack *extack)
+ {
+ 	char *alt_ifname;
++	size_t size;
+ 	int err;
+ 
+ 	err = nla_validate(attr, attr->nla_len, IFLA_MAX, ifla_policy, extack);
+ 	if (err)
+ 		return err;
+ 
++	if (cmd == RTM_NEWLINKPROP) {
++		size = rtnl_prop_list_size(dev);
++		size += nla_total_size(ALTIFNAMSIZ);
++		if (size >= U16_MAX) {
++			NL_SET_ERR_MSG(extack,
++				       "effective property list too long");
++			return -EINVAL;
++		}
++	}
++
+ 	alt_ifname = nla_strdup(attr, GFP_KERNEL_ACCOUNT);
+ 	if (!alt_ifname)
+ 		return -ENOMEM;
 -- 
 2.34.1
 
