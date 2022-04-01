@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C82B3C4743C
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:13:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BA49C47096
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:13:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355235AbiDAPO0 (ORCPT
+        id S1355294AbiDAPOe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:14:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60616 "EHLO
+        Fri, 1 Apr 2022 11:14:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350033AbiDAOrG (ORCPT
+        with ESMTP id S1350113AbiDAOrK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:47:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AD572A03E3;
-        Fri,  1 Apr 2022 07:36:59 -0700 (PDT)
+        Fri, 1 Apr 2022 10:47:10 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AD7E2A0472;
+        Fri,  1 Apr 2022 07:37:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C8F6EB8240E;
-        Fri,  1 Apr 2022 14:36:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B485FC34111;
-        Fri,  1 Apr 2022 14:36:26 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 7DD69CE2584;
+        Fri,  1 Apr 2022 14:37:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96981C340EE;
+        Fri,  1 Apr 2022 14:37:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823787;
-        bh=OUyOOl54sxaGvC8uGjPJH5iu0OEiwKvOzm17ZD/Dil8=;
+        s=k20201202; t=1648823825;
+        bh=/WpWUkm8GR2yVRNVos/dmp+UMxi/OItgYE0JKy+pGBY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hOlPEIwjj/lYTe7TLFqAo/PzCng3WpPVdiDH8/c1xmqMg+IRy3l32N2b5sQUjxm33
-         Fq7CGFG5nNqoDhrqMqWVsqiBPftR56u+9FB8bJglhhZ+iZ64dE6SeqFMSsnxRjokJi
-         sIcC7/LVjpbfTlI7GOPEMoRbJJygHDSmaqbPgwsbsA9R8RQpwVA9EIUdGmD3jNQIx8
-         SBazLg8zP7MAiMP1ynrmaM8wz+/SzvPCDa8qlL5SUK5hNMcH7QqYrgR8+vJPPFw9En
-         9orwBumOCKfg0ScVZBpyy2gV7EY3aFWNpOGf8QcbWVFvjU6oxMaWUSEow54Oslwujl
-         R8jirOUEzbUMA==
+        b=fpE5jXInD6S/+zgEhd60nqh16rAgZM68x1I1gWEW9UCNnLT5JyO6UAHzHxLRLyl96
+         XuoJNWnQPogOV8XLFHBQaju9w6+i6XBr15NK/QBTuadHa+9gQP20tjy8C1S8JSQE+b
+         L0edFtWsV6mTAlZPkqYrFK2Ms0nlaZ/aa8rqAfHJ+JJkrUd9mq0YhCZ6CFTE1NrZdw
+         oPoZ6XMVlxGCTDJQzudvSZAEB1/t6GsbE4o3J3KpSEbljnv8yR0xFZ0iASakn6vBmu
+         3SXhDvDzWcSrJzL4J6RGzg1NvMmZn48oBpf5ZGN9IlGqUCPGOastei9kPoeYwRaNVr
+         hE2RJ5bXMPb7Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Hangyu Hua <hbh25y@gmail.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Sasha Levin <sashal@kernel.org>, john@phrozen.org,
-        linux-mips@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 077/109] mips: ralink: fix a refcount leak in ill_acc_of_setup()
-Date:   Fri,  1 Apr 2022 10:32:24 -0400
-Message-Id: <20220401143256.1950537-77-sashal@kernel.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        George Shuklin <george.shuklin@gmail.com>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        pabeni@redhat.com, idosch@nvidia.com, petrm@nvidia.com,
+        edumazet@google.com, yajun.deng@linux.dev, avagin@gmail.com,
+        cong.wang@bytedance.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 092/109] net: account alternate interface name memory
+Date:   Fri,  1 Apr 2022 10:32:39 -0400
+Message-Id: <20220401143256.1950537-92-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143256.1950537-1-sashal@kernel.org>
 References: <20220401143256.1950537-1-sashal@kernel.org>
@@ -53,30 +55,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: Jakub Kicinski <kuba@kernel.org>
 
-[ Upstream commit 4a0a1436053b17e50b7c88858fb0824326641793 ]
+[ Upstream commit 5d26cff5bdbebdf98ba48217c078ff102536f134 ]
 
-of_node_put(np) needs to be called when pdev == NULL.
+George reports that altnames can eat up kernel memory.
+We should charge that memory appropriately.
 
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Reported-by: George Shuklin <george.shuklin@gmail.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/ralink/ill_acc.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/core/rtnetlink.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/mips/ralink/ill_acc.c b/arch/mips/ralink/ill_acc.c
-index bdf53807d7c2..bea857c9da8b 100644
---- a/arch/mips/ralink/ill_acc.c
-+++ b/arch/mips/ralink/ill_acc.c
-@@ -61,6 +61,7 @@ static int __init ill_acc_of_setup(void)
- 	pdev = of_find_device_by_node(np);
- 	if (!pdev) {
- 		pr_err("%pOFn: failed to lookup pdev\n", np);
-+		of_node_put(np);
- 		return -EINVAL;
- 	}
+diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+index 8b5c5703d758..6a7883ec0489 100644
+--- a/net/core/rtnetlink.c
++++ b/net/core/rtnetlink.c
+@@ -3637,7 +3637,7 @@ static int rtnl_alt_ifname(int cmd, struct net_device *dev, struct nlattr *attr,
+ 	if (err)
+ 		return err;
+ 
+-	alt_ifname = nla_strdup(attr, GFP_KERNEL);
++	alt_ifname = nla_strdup(attr, GFP_KERNEL_ACCOUNT);
+ 	if (!alt_ifname)
+ 		return -ENOMEM;
  
 -- 
 2.34.1
