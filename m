@@ -2,163 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19B4FC4321E
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:55:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B597C4167D
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:02:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349713AbiDAO5n (ORCPT
+        id S1349743AbiDAO5u (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 10:57:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59744 "EHLO
+        Fri, 1 Apr 2022 10:57:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347569AbiDAOfV (ORCPT
+        with ESMTP id S1347557AbiDAOjc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:35:21 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EA141EC99D
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 07:33:14 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id mp11-20020a17090b190b00b001c79aa8fac4so5325187pjb.0
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 07:33:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=k4bN/0aTPe4C1wZQvO0SYhx4k2cWLhq656Tv/Tf/44Q=;
-        b=Pdr4qXTrSN6HO6EW00C3G26qTRcxrkqJNfj684zrI3WaeqK9l5ggIwGJ+WkMpJ9SJm
-         nbbzWGGzq1aSkJMclTKolCLJ2d+HDQdMRKBRy7IKNg4t12HYJWMruSkmDiQiSI5IpqGz
-         o4JN1E56/U21WKsUB3fii0cBwaNafgM7Y1Q33+fUUwl0vCDWB0hspps8UAD0yeEp6tRz
-         HvMRcY4zYkAywZde69EE22cMKPLVuJ3jVyLyzqSCg6BYCE1Z9l7Zb+e4xhwwCPKFB9QK
-         DEOdozm+Fr8HJyYtXFo6MnQ1BZdeSozSBp3QZORbgfVezJ2NjdRCh0CpSXJtI1BeYR5h
-         RXyA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=k4bN/0aTPe4C1wZQvO0SYhx4k2cWLhq656Tv/Tf/44Q=;
-        b=U1ODdhcFYWYCuRhPtUdvCrkS3dAx/d5LTCjt55/sCNTur7D36eCFeJHjpdsq2c88aw
-         6bmYf2fO1/sveAW+M3bs2le2nl7naIi5viPSvkAzR/KgsRBcBGpgowi1mcOt9bG7oHlO
-         n+UR/fHTL4sz1vUHhAKulGCN4fOu7E1LByEsl0GH22G9dgysduo6HcKqSPSdiBLmNEG6
-         IsoTVZ1WnXeKo4dsIBWuksDwhTpt6M4yC8AgbRjSAEZLFMqqBs6TOn5ahQAtazo8XS3R
-         L9We9JGM+aO+hv+YrGhvc5ashP6OQd8Dta9ylJnH2bVhwgp0wfF3H8gQOFhkTnHPGOL8
-         dAjw==
-X-Gm-Message-State: AOAM531fgdm1jYP8eoKo5uFyCIQ4tNo8Eg94Ld0MG0LoRKTptzv1cqWE
-        K0EbRUQBIC6qmnkpObWtGAdf/w==
-X-Google-Smtp-Source: ABdhPJyZr/LEQ/N3wCmeTeBzQjGN5hVBv4JdlD3t3GYtrHw2ufdpM/juOTCs0cgXG7LWrG+Szun8Pg==
-X-Received: by 2002:a17:90b:1811:b0:1c7:832a:3388 with SMTP id lw17-20020a17090b181100b001c7832a3388mr12316590pjb.40.1648823593409;
-        Fri, 01 Apr 2022 07:33:13 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id ep2-20020a17090ae64200b001c6a7c22aedsm2700568pjb.37.2022.04.01.07.33.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Apr 2022 07:33:12 -0700 (PDT)
-Date:   Fri, 1 Apr 2022 14:33:08 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Mingwei Zhang <mizhang@google.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Yosry Ahmed <yosryahmed@google.com>,
-        Ben Gardon <bgardon@google.com>,
-        David Matlack <dmatlack@google.com>,
-        Jing Zhang <jingzhangos@google.com>,
-        Peter Xu <peterx@redhat.com>
-Subject: Re: [PATCH v3 3/6] KVM: x86/mmu: explicitly check nx_hugepage in
- disallowed_hugepage_adjust()
-Message-ID: <YkcNJF+ugsdSffpG@google.com>
-References: <20220401063636.2414200-1-mizhang@google.com>
- <20220401063636.2414200-4-mizhang@google.com>
+        Fri, 1 Apr 2022 10:39:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A54F225844F;
+        Fri,  1 Apr 2022 07:33:35 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 29EC0B82500;
+        Fri,  1 Apr 2022 14:33:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C0A1C34115;
+        Fri,  1 Apr 2022 14:33:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648823612;
+        bh=SyTOn7y6nyPh5CZweMHgg1YlsPXWzamM40RkWEELlmY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Z5QGccb5E3hsVxKS+Eohqsem2Iv43rTwOah8k4XrbUzZllYhHWYls8GEqGRfA4/wV
+         bnIkw7BYRyFwXk66KkkWQJ2v0XznfGhCx0Pw3RYH/0Hyrc2S27zZ9ap+88/V3BJD6d
+         cfRrT++vxmpRcjiAXaKu+hf0d9hq81Cj0YSPbeqNcUm8uu/qOzMjVMCdfPz1QoAu53
+         dczaQ4/G+vd4heB8hfjigr6U4IP8iR19287nqqe6AC4bqn/PwM9NJn8ehgVFKJ5O7F
+         6tGE9w0dnHLQDQ6z2AjUg/wHKyAAbGPYZgFOwRhKoNJ4jBGRFRpC3KyZ2rtxM1x6hX
+         vxwMb6AYQoGqw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Wayne Chang <waynec@nvidia.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, balbi@kernel.org,
+        thierry.reding@gmail.com, jonathanh@nvidia.com,
+        rikard.falkeborn@gmail.com, chunfeng.yun@mediatek.com,
+        yangyingliang@huawei.com, jakobkoschel@gmail.com,
+        linux-usb@vger.kernel.org, linux-tegra@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 010/109] usb: gadget: tegra-xudc: Do not program SPARAM
+Date:   Fri,  1 Apr 2022 10:31:17 -0400
+Message-Id: <20220401143256.1950537-10-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220401143256.1950537-1-sashal@kernel.org>
+References: <20220401143256.1950537-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220401063636.2414200-4-mizhang@google.com>
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 01, 2022, Mingwei Zhang wrote:
-> Explicitly check if a NX huge page is disallowed when determining if a page
-> fault needs to be forced to use a smaller sized page. KVM incorrectly
-> assumes that the NX huge page mitigation is the only scenario where KVM
-> will create a shadow page instead of a huge page. Any scenario that causes
-> KVM to zap leaf SPTEs may result in having a SP that can be made huge
-> without violating the NX huge page mitigation. E.g. disabling of dirty
-> logging, zapping from mmu_notifier due to page migration, guest MTRR
-> changes that affect the viability of a huge page, etc...
-> 
-> Fixes: b8e8c8303ff2 ("kvm: mmu: ITLB_MULTIHIT mitigation")
-> 
-> Reviewed-by: Ben Gardon <bgardon@google.com>
+From: Wayne Chang <waynec@nvidia.com>
 
-Reviewed-by (and Acked-by and Tested-by) tags should be dropped when there is a
-non-trivial, functional, and/or semantic change between versions.  It's often a
-judgment call, but in this case I would definitely drop Ben's review.  It's usually
-better to err on the side of caution for this rule/guideline.
+[ Upstream commit 62fb61580eb48fc890b7bc9fb5fd263367baeca8 ]
 
-> Signed-off-by: Mingwei Zhang <mizhang@google.com>
-> ---
->  arch/x86/kvm/mmu/mmu.c | 14 ++++++++++++--
->  1 file changed, 12 insertions(+), 2 deletions(-)
-> 
-> diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-> index 5cb845fae56e..033609e8b332 100644
-> --- a/arch/x86/kvm/mmu/mmu.c
-> +++ b/arch/x86/kvm/mmu/mmu.c
-> @@ -2896,6 +2896,16 @@ void disallowed_hugepage_adjust(struct kvm_page_fault *fault, u64 spte, int cur_
->  	    cur_level == fault->goal_level &&
->  	    is_shadow_present_pte(spte) &&
->  	    !is_large_pte(spte)) {
-> +		struct kvm_mmu_page *sp;
-> +		u64 page_mask;
-> +
-> +		sp = to_shadow_page(spte & PT64_BASE_ADDR_MASK);
-> +
-> +		/* Prevent lpage_disallowed read from moving ahead. */
-> +		smp_rmb();
+According to the Tegra Technical Reference Manual, SPARAM
+is a read-only register and should not be programmed in
+the driver.
 
-smp_rmb() needs to be paired with e.g. smp_wmb(), and the comment is supposed to
-tie the two together (the reason checkpatch warns about comments is to try and
-prevent sprinking bogus barriers everywhere).  These types of barriers always need
-to be paired with something, as both the reader(s) and the writer need to have
-specific, coordinated ordering.  E.g. reading lpage_disallowed after checking for
-a present SPTE is meaningless if the writer doesn't set lpage_disallowed before
-setting the SPTE present (which is the purpose of patch 1).  I didn't add the
-smp_wmb() in patch 1 because it's not necessary as of that patch, it's only when
-the concurrent reader comes along in this patch that the barrier becomes necessary.
+The change removes the wrong SPARAM usage.
 
-diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index 9f73c175845e..041b1ab838f0 100644
---- a/arch/x86/kvm/mmu/mmu.c
-+++ b/arch/x86/kvm/mmu/mmu.c
-@@ -2901,7 +2901,12 @@ void disallowed_hugepage_adjust(struct kvm_page_fault *fault, u64 spte, int cur_
+Signed-off-by: Wayne Chang <waynec@nvidia.com>
+Link: https://lore.kernel.org/r/20220107090443.149021-1-waynec@nvidia.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/usb/gadget/udc/tegra-xudc.c | 8 --------
+ 1 file changed, 8 deletions(-)
 
-                sp = to_shadow_page(spte & PT64_BASE_ADDR_MASK);
-
--               /* Prevent lpage_disallowed read from moving ahead. */
-+               /*
-+                * Ensure lpage_disallowed is read after checking for a present
-+                * SPTE.  A different vCPU may be concurrently installing the
-+                * shadow page if mmu_lock is held for read.  Pairs with the
-+                * smp_wmb() in kvm_tdp_mmu_map().
-+                */
-                smp_rmb();
-
-                if (!sp->lpage_disallowed)
-diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
-index 1f44826cf794..2422684f1dc3 100644
---- a/arch/x86/kvm/mmu/tdp_mmu.c
-+++ b/arch/x86/kvm/mmu/tdp_mmu.c
-@@ -1186,6 +1186,13 @@ int kvm_tdp_mmu_map(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault)
-
-                        sp->lpage_disallowed = account_nx;
-
-+                       /*
-+                        * Ensure lpage_disallowed is visible before the SP is
-+                        * marked present, as mmu_lock is held for read.  Pairs
-+                        * with the smp_rmb() in disallowed_hugepage_adjust().
-+                        */
-+                       smp_wmb();
-+
-                        if (tdp_mmu_link_sp(kvm, &iter, sp, true)) {
-                                tdp_mmu_free_sp(sp);
-                                break;
+diff --git a/drivers/usb/gadget/udc/tegra-xudc.c b/drivers/usb/gadget/udc/tegra-xudc.c
+index 43f1b0d461c1..716d9ab2d2ff 100644
+--- a/drivers/usb/gadget/udc/tegra-xudc.c
++++ b/drivers/usb/gadget/udc/tegra-xudc.c
+@@ -32,9 +32,6 @@
+ #include <linux/workqueue.h>
+ 
+ /* XUSB_DEV registers */
+-#define SPARAM 0x000
+-#define  SPARAM_ERSTMAX_MASK GENMASK(20, 16)
+-#define  SPARAM_ERSTMAX(x) (((x) << 16) & SPARAM_ERSTMAX_MASK)
+ #define DB 0x004
+ #define  DB_TARGET_MASK GENMASK(15, 8)
+ #define  DB_TARGET(x) (((x) << 8) & DB_TARGET_MASK)
+@@ -3295,11 +3292,6 @@ static void tegra_xudc_init_event_ring(struct tegra_xudc *xudc)
+ 	unsigned int i;
+ 	u32 val;
+ 
+-	val = xudc_readl(xudc, SPARAM);
+-	val &= ~(SPARAM_ERSTMAX_MASK);
+-	val |= SPARAM_ERSTMAX(XUDC_NR_EVENT_RINGS);
+-	xudc_writel(xudc, val, SPARAM);
+-
+ 	for (i = 0; i < ARRAY_SIZE(xudc->event_ring); i++) {
+ 		memset(xudc->event_ring[i], 0, XUDC_EVENT_RING_SIZE *
+ 		       sizeof(*xudc->event_ring[i]));
+-- 
+2.34.1
 
