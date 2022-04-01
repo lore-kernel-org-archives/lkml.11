@@ -2,48 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51BD4C352B6
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8811BC43219
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:02:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349954AbiDAO61 (ORCPT
+        id S1350055AbiDAO6x (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 10:58:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36000 "EHLO
+        Fri, 1 Apr 2022 10:58:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347710AbiDAOj5 (ORCPT
+        with ESMTP id S1347398AbiDAOk2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:39:57 -0400
+        Fri, 1 Apr 2022 10:40:28 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B25882856A9;
-        Fri,  1 Apr 2022 07:33:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E22628B10E;
+        Fri,  1 Apr 2022 07:33:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 68C4761C1D;
-        Fri,  1 Apr 2022 14:33:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E91B5C3410F;
-        Fri,  1 Apr 2022 14:33:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6A59261CFB;
+        Fri,  1 Apr 2022 14:33:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A4AEC36AE2;
+        Fri,  1 Apr 2022 14:33:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823619;
-        bh=iJAefKwV0vXB8+ooJfoNg3L+br/xXcmwSH/DsOucH7g=;
+        s=k20201202; t=1648823630;
+        bh=b51VNEiKO+Fx8+RwLfJTXx0nWoth9Ssof+K5dUkMstw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jrQGHas8W2HXllEKJVDv1NLhlbXZ0JWPWKdFrUTRg2qduoDr9+nNxu565E7Y2fhnZ
-         p/6MQQKMWf/QKOXPTiRHiXqJ02xJHpbjKoU60gJbeMATGPOEpALKtBEyyad2sHX8f2
-         TIOUICVQjJR+NmJCu3EffMgeGRV+CyMK7ggttyS2uVP/IH9GocA4jteCgloW0TUqEy
-         pFvpNOxqnjCuLCqgTuvDlHVzNh9kgiQ07xceSH4P7SW0t5+1+1VnOtwC3zQKlUnJlE
-         h3rolIc+kMvlJ3X73A//MhzeAJJi9Ftzo38fV7GNQIoOwZQe/jxwtCk44hIyilIWA1
-         AyVVOaGapuktw==
+        b=YNg0SKnmx+6qETIZ8vX83XlA6GYxu2vCcDNmpoDEihTeT0P13UKF3g30pZksGB2Pp
+         A8O3C+4ha+zNPkP1NZRlA0ZEJ1oaEtr/cJVUQqdXksqkQ6ueF7Vn0q+lM5YwE/OPK2
+         yS2AMk7r0kRLlfg1dQnnWLSEUpNCMd+3kDrRLYkj4R69nfyEUMe1A4U8VydWn8gVS7
+         gILgDlDX1lfzRNsH+Ew5+XKEuLHsnwtGVCRNBliy6nmXEGUpSq4/lewZ6URlqEMMfb
+         FxMn5f0U7uH/BobBtgC3pc1TDzCW3eDX1YFY7afKF3qlRnQKNW1KG13T/IUg58ICS5
+         +xiltyACc9EIQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yang Guang <yang.guang5@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>,
-        David Yang <davidcomponentone@gmail.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 013/109] ptp: replace snprintf with sysfs_emit
-Date:   Fri,  1 Apr 2022 10:31:20 -0400
-Message-Id: <20220401143256.1950537-13-sashal@kernel.org>
+Cc:     Maxim Kiselev <bigunclemax@gmail.com>,
+        Maxim Kochetkov <fido_max@inbox.ru>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
+        krzk+dt@kernel.org, devicetree@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH AUTOSEL 5.16 018/109] powerpc: dts: t104xrdb: fix phy type for FMAN 4/5
+Date:   Fri,  1 Apr 2022 10:31:25 -0400
+Message-Id: <20220401143256.1950537-18-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143256.1950537-1-sashal@kernel.org>
 References: <20220401143256.1950537-1-sashal@kernel.org>
@@ -55,50 +56,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Guang <yang.guang5@zte.com.cn>
+From: Maxim Kiselev <bigunclemax@gmail.com>
 
-[ Upstream commit e2cf07654efb0fd7bbcb475c6f74be7b5755a8fd ]
+[ Upstream commit 17846485dff91acce1ad47b508b633dffc32e838 ]
 
-coccinelle report:
-./drivers/ptp/ptp_sysfs.c:17:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/ptp/ptp_sysfs.c:390:8-16:
-WARNING: use scnprintf or sprintf
+T1040RDB has two RTL8211E-VB phys which requires setting
+of internal delays for correct work.
 
-Use sysfs_emit instead of scnprintf or sprintf makes more sense.
+Changing the phy-connection-type property to `rgmii-id`
+will fix this issue.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Yang Guang <yang.guang5@zte.com.cn>
-Signed-off-by: David Yang <davidcomponentone@gmail.com>
-Acked-by: Richard Cochran <richardcochran@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Maxim Kiselev <bigunclemax@gmail.com>
+Reviewed-by: Maxim Kochetkov <fido_max@inbox.ru>
+Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20211230151123.1258321-1-bigunclemax@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/ptp/ptp_sysfs.c | 4 ++--
+ arch/powerpc/boot/dts/fsl/t104xrdb.dtsi | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/ptp/ptp_sysfs.c b/drivers/ptp/ptp_sysfs.c
-index 41b92dc2f011..9233bfedeb17 100644
---- a/drivers/ptp/ptp_sysfs.c
-+++ b/drivers/ptp/ptp_sysfs.c
-@@ -14,7 +14,7 @@ static ssize_t clock_name_show(struct device *dev,
- 			       struct device_attribute *attr, char *page)
- {
- 	struct ptp_clock *ptp = dev_get_drvdata(dev);
--	return snprintf(page, PAGE_SIZE-1, "%s\n", ptp->info->name);
-+	return sysfs_emit(page, "%s\n", ptp->info->name);
- }
- static DEVICE_ATTR_RO(clock_name);
+diff --git a/arch/powerpc/boot/dts/fsl/t104xrdb.dtsi b/arch/powerpc/boot/dts/fsl/t104xrdb.dtsi
+index 099a598c74c0..bfe1ed5be337 100644
+--- a/arch/powerpc/boot/dts/fsl/t104xrdb.dtsi
++++ b/arch/powerpc/boot/dts/fsl/t104xrdb.dtsi
+@@ -139,12 +139,12 @@ pca9546@77 {
+ 		fman@400000 {
+ 			ethernet@e6000 {
+ 				phy-handle = <&phy_rgmii_0>;
+-				phy-connection-type = "rgmii";
++				phy-connection-type = "rgmii-id";
+ 			};
  
-@@ -387,7 +387,7 @@ static ssize_t ptp_pin_show(struct device *dev, struct device_attribute *attr,
+ 			ethernet@e8000 {
+ 				phy-handle = <&phy_rgmii_1>;
+-				phy-connection-type = "rgmii";
++				phy-connection-type = "rgmii-id";
+ 			};
  
- 	mutex_unlock(&ptp->pincfg_mux);
- 
--	return snprintf(page, PAGE_SIZE, "%u %u\n", func, chan);
-+	return sysfs_emit(page, "%u %u\n", func, chan);
- }
- 
- static ssize_t ptp_pin_store(struct device *dev, struct device_attribute *attr,
+ 			mdio0: mdio@fc000 {
 -- 
 2.34.1
 
