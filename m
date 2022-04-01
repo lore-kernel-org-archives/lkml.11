@@ -2,96 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE8BDC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 11:45:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18DC0C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 11:45:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345576AbiDALq5 (ORCPT
+        id S1345592AbiDALrE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 07:46:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41550 "EHLO
+        Fri, 1 Apr 2022 07:47:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233087AbiDALq4 (ORCPT
+        with ESMTP id S1345577AbiDALrB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 07:46:56 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99B6AE33B0
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 04:45:06 -0700 (PDT)
-Date:   Fri, 1 Apr 2022 13:45:03 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1648813505;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=q7i6/O5ILryekqXQJ6olrqRxKKJfslH08xthB5phvm8=;
-        b=ev8Fs6xjSuQd1unPeFkOUH3G/dtkXgSvoxnrRWpsRb9EeYgvlDnpPVQs2UcY4H40TR7vLb
-        0VfRbH80ItoIE5PYreUX/vtDdPXjKoG6xM3eI5EjcGpJbPwvttbrSsTP7hONK76+EXDLEP
-        NsgA0J3ieABo5tWzGc2qeXnULdF8muI9qUhUyQNCjAYiGy9FjfOUNoCIARFxtF08eqTCGm
-        UyO6TkK0iLlCBLbjuiJYw+8tXKG/sHbuE0EAuQHQWG5lYqLy55m1oLTEkWPZEHrx495UVk
-        9+IGhQ5EgJdQ5Pwgp0Xpofat6H+8/GIhGyo/r/MSa3KmdfOPT5MbOj9ipJ1Jqw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1648813505;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=q7i6/O5ILryekqXQJ6olrqRxKKJfslH08xthB5phvm8=;
-        b=zD26LMBkhitDATDDbfX0hFJu7yVNadjpRBFsqon7/6vBOiynr8fgGGOyVVTtD3IERsSoxc
-        V4kRyQMJevqrg6Ag==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     "Eric W. Biederman" <ebiederm@xmission.com>
-Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
-        Oleg Nesterov <oleg@redhat.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Ben Segall <bsegall@google.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Mel Gorman <mgorman@suse.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vincent Guittot <vincent.guittot@linaro.org>
-Subject: Re: [PATCH] signal/x86: Delay calling signals in atomic
-Message-ID: <Ykblv2aKh3ekqpi4@linutronix.de>
-References: <Ygq5aBB/qMQw6aP5@linutronix.de>
- <8735j2xigt.fsf@email.froward.int.ebiederm.org>
- <YkHfokLO1UGCISGc@linutronix.de>
- <87zgl9pw82.fsf@email.froward.int.ebiederm.org>
- <YkLR3rGTayl/6qIm@linutronix.de>
- <87o81nl3b6.fsf@email.froward.int.ebiederm.org>
+        Fri, 1 Apr 2022 07:47:01 -0400
+Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C4F89EEA72;
+        Fri,  1 Apr 2022 04:45:11 -0700 (PDT)
+Received: from uucp (helo=alpha)
+        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
+        id 1naFiG-0000xJ-00; Fri, 01 Apr 2022 13:45:08 +0200
+Received: by alpha.franken.de (Postfix, from userid 1000)
+        id B9B39C4DEF; Fri,  1 Apr 2022 12:03:09 +0200 (CEST)
+Date:   Fri, 1 Apr 2022 12:03:09 +0200
+From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+To:     Paul Cercueil <paul@crapouillou.net>
+Cc:     Nick Desaulniers <ndesaulniers@google.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>,
+        "Maciej W . Rozycki" <macro@orcam.me.uk>,
+        linux-crypto@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH] MIPS: crypto: Fix CRC32 code
+Message-ID: <20220401100309.GA6670@alpha.franken.de>
+References: <20220331164200.177015-1-paul@crapouillou.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <87o81nl3b6.fsf@email.froward.int.ebiederm.org>
+In-Reply-To: <20220331164200.177015-1-paul@crapouillou.net>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-03-30 13:10:05 [-0500], Eric W. Biederman wrote:
-> But it looks like if we are coming from userspace then we use the same
-> stack as any other time we would come from userspace.  AKA a stack
-> that allows the kernel to sleep.
+On Thu, Mar 31, 2022 at 05:42:00PM +0100, Paul Cercueil wrote:
+> Commit 67512a8cf5a7 ("MIPS: Avoid macro redefinitions") changed how the
+> MIPS register macros were defined, in order to allow the code to compile
+> under LLVM/Clang.
 > 
-> So I don't see what the problem is that is trying to be fixed.
-
-It is not only the stack. In atomic context / disabled interrupts it is
-not possible to acquire a spinlock_t (sighand_struct::siglock) which is
-done later.
-
-> I know that code has been changed over the years, perhaps this is
-> something that was fixed upstream and the real time tree didn't realize
-> there was no longer a need to fix anything?
+> The MIPS CRC32 code however wasn't updated accordingly, causing a build
+> bug when using a MIPS32r6 toolchain without CRC support.
 > 
-> Or am I missing something subtle when reading the idtentry assembly?
+> Update the CRC32 code to use the macros correctly, to fix the build
+> failures.
+> 
+> Fixes: 67512a8cf5a7 ("MIPS: Avoid macro redefinitions")
+> Cc: <stable@vger.kernel.org>
+> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+> Reported-by: kernel test robot <lkp@intel.com>
+> ---
+>  arch/mips/crypto/crc32-mips.c | 46 ++++++++++++++++++++---------------
+>  1 file changed, 26 insertions(+), 20 deletions(-)
 
-It certainly is true that the code changed over the years. The per-CPU
-stack is one problem, the siglock in atomic context is the other one.
-Thank you for the input. Let me digest the informations I have here and
-get back.
+applied to mips-next.
 
-> Eric
+Thomas.
 
-Sebastian
+-- 
+Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
+good idea.                                                [ RFC1925, 2.3 ]
