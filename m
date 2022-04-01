@@ -2,134 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93597C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 17:37:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0FF6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 17:37:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350183AbiDARjO (ORCPT
+        id S1350205AbiDARjT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 13:39:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51498 "EHLO
+        Fri, 1 Apr 2022 13:39:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233152AbiDARjL (ORCPT
+        with ESMTP id S1345175AbiDARjR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 13:39:11 -0400
-Received: from mx0a-002e3701.pphosted.com (mx0a-002e3701.pphosted.com [148.163.147.86])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED82F20A3B6;
-        Fri,  1 Apr 2022 10:37:17 -0700 (PDT)
-Received: from pps.filterd (m0150242.ppops.net [127.0.0.1])
-        by mx0a-002e3701.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 231G9jLc018254;
-        Fri, 1 Apr 2022 17:29:09 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding; s=pps0720;
- bh=IWEKHRJ+fTq1DXKGcxx15f9MF6DQXhL75wZkQHTjY3E=;
- b=R/kzY6m+2ynGFjiCcHxmA9rRLU980gxYvsThUIVNS2Bu6krl1dBR1oZjzO8kea97fnzR
- ibbTe6q2iQ1drncqNb7EcR+niApcWMhFj9SS1zpaPotxbUr4TDraz5SeKaIqikrucG1h
- XRR+awR53mlBgDbNCenSQdB6wUwtbzagG3fQCm5NgGfp2uIMcZV16Y/CYLNMBH72WLSA
- oZq4v59AW2AnopdC8Bpo9mUStiVFkEIf1fs0TSFjZK2qhRuC52C5/9EUmG1YMXiXnADd
- 4VGP4LJjgGLw2KChTb9GXH0FVT7aWdoRCoEW6zNxmmpVHa5Pi1b4b3S2v1wY68StwZQR jA== 
-Received: from g4t3427.houston.hpe.com (g4t3427.houston.hpe.com [15.241.140.73])
-        by mx0a-002e3701.pphosted.com (PPS) with ESMTPS id 3f60uptts7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 01 Apr 2022 17:29:08 +0000
-Received: from g4t3433.houston.hpecorp.net (g4t3433.houston.hpecorp.net [16.208.49.245])
-        by g4t3427.houston.hpe.com (Postfix) with ESMTP id 8898357;
-        Fri,  1 Apr 2022 17:29:07 +0000 (UTC)
-Received: from ubuntu-20.04.3 (unknown [16.116.198.225])
-        by g4t3433.houston.hpecorp.net (Postfix) with ESMTP id 47D994B;
-        Fri,  1 Apr 2022 17:29:05 +0000 (UTC)
-From:   james.liu@hpe.com
-To:     rafael@kernel.org, lenb@kernel.org
-Cc:     linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        rwright@hpe.com, david.chang@hpe.co, clayc@hpe.com,
-        james.liu@hpe.com
-Subject: [PATCH]     ACPI: OSL: Fix the memory mapping of an ACPI GAS that addresses a data structure
-Date:   Fri,  1 Apr 2022 17:28:40 +0000
-Message-Id: <20220401172840.1252-1-james.liu@hpe.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 1 Apr 2022 13:39:17 -0400
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A706C20A96C;
+        Fri,  1 Apr 2022 10:37:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648834647; x=1680370647;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=tWYhwZNDUcxCpd1s+9Q7UujJtONrw/WOyrIwvHKdDq0=;
+  b=ghyk0aulfNpldHMoEBBcmdWScFxssN4aSpyFISPkVuliUKWITYaeiBPT
+   /MdbgdJSG3HvflF61bAc6oG2OQxXseV9nflLfHrYxvws497lW4Lf5wJI6
+   PZFLhyIA5Hxb6N9AwCtuWYXoddo5uaRPaP7qwIUTapHioo/ZfYrPnw2fo
+   wCfZLqxl/QgIrZTA+u/FWhhAr7ENOzWQ4+2E7h0ccOHH1LkDyKlOE46rO
+   EtR6cOqyNugQbpBlOtGv49BL1yZBDbpQ1Y0AfHoMNhgf2m3vFyAbnNMdq
+   2eX0ogxuUFbvn/pYSfqh19GoshqBqQhgbdc0t0aKW7xjw1JMGMmz1GRje
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10304"; a="320891977"
+X-IronPort-AV: E=Sophos;i="5.90,228,1643702400"; 
+   d="scan'208";a="320891977"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Apr 2022 10:37:07 -0700
+X-IronPort-AV: E=Sophos;i="5.90,228,1643702400"; 
+   d="scan'208";a="504243961"
+Received: from smile.fi.intel.com ([10.237.72.59])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Apr 2022 10:37:05 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1naLCL-00Aq8N-A4;
+        Fri, 01 Apr 2022 20:36:33 +0300
+Date:   Fri, 1 Apr 2022 20:36:32 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Sandipan Patra <spatra@nvidia.com>
+Cc:     treding@nvidia.com, jonathanh@nvidia.com, digetx@gmail.com,
+        ulf.hansson@linaro.org, cai.huoqing@linux.dev, bbasu@nvidia.com,
+        linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [Patch V3] soc/tegra: pmc: update Tegra234 reset sources
+Message-ID: <Ykc4IBtQK1voGTGL@smile.fi.intel.com>
+References: <20220401143343.31989-1-spatra@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-GUID: 8n1cIHgXF3AJkwOoNdF5kd7vptPv2_rX
-X-Proofpoint-ORIG-GUID: 8n1cIHgXF3AJkwOoNdF5kd7vptPv2_rX
-X-HPE-SCL: -1
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-04-01_05,2022-03-31_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011 suspectscore=0
- adultscore=0 priorityscore=1501 mlxlogscore=955 mlxscore=0 spamscore=0
- bulkscore=0 phishscore=0 impostorscore=0 malwarescore=0 lowpriorityscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2204010083
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220401143343.31989-1-spatra@nvidia.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Liu <james.liu@hpe.com>
+On Fri, Apr 01, 2022 at 08:03:43PM +0530, Sandipan Patra wrote:
+> Reset_sources list is updated to add all reset sources
+> and removing ones that do not actually exist.
 
-    Modify acpi_os_map_generic_address and acpi_os_unmap_generic_address
-    to handle a case that a GAS table (i.e., Table 5.1 in ACPI 6.4) is used
-    to address a data structure; in this case, the GAS has the field of
-    "Register Bit Width" equal to 0.
+This LGTM, but I am not a maintainer.
+So, if it helps and FWIW,
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-    For example, "Injection Instruction Entry" (Table 18.25 in ACPI 6.4)
-    has a RegisterRegion field that is a GAS that points to a data
-    structure SET_ERROR_TYPE_WITH_ADDRESS (Table 18.30), which is required
-    when using EINJ (Error Injection module).
+> Signed-off-by: Sandipan Patra <spatra@nvidia.com>
+> ---
+> Update on V3 patch:
+>     Added more frequent comments to specify every 8 offsets
+> Update on V2 patch:
+>     space inside comment and
+>     Changed decimal to hexadecimal notation in the comments.
+> 
+>  drivers/soc/tegra/pmc.c | 33 +++++++++++++++++++++++++--------
+>  1 file changed, 25 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/soc/tegra/pmc.c b/drivers/soc/tegra/pmc.c
+> index fdf508e03400..c01db5309b5e 100644
+> --- a/drivers/soc/tegra/pmc.c
+> +++ b/drivers/soc/tegra/pmc.c
+> @@ -3766,7 +3766,7 @@ static const struct tegra_pmc_regs tegra234_pmc_regs = {
+>  };
+>  
+>  static const char * const tegra234_reset_sources[] = {
+> -	"SYS_RESET_N",
+> +	"SYS_RESET_N",	/* 0x0 */
+>  	"AOWDT",
+>  	"BCCPLEXWDT",
+>  	"BPMPWDT",
+> @@ -3774,19 +3774,36 @@ static const char * const tegra234_reset_sources[] = {
+>  	"SPEWDT",
+>  	"APEWDT",
+>  	"LCCPLEXWDT",
+> -	"SENSOR",
+> -	"AOTAG",
+> -	"VFSENSOR",
+> +	"SENSOR",	/* 0x8 */
+> +	NULL,
+> +	NULL,
+>  	"MAINSWRST",
+>  	"SC7",
+>  	"HSM",
+> -	"CSITE",
+> +	NULL,
+>  	"RCEWDT",
+> -	"PVA0WDT",
+> -	"PVA1WDT",
+> -	"L1A_ASYNC",
+> +	NULL,		/* 0x10 */
+> +	NULL,
+> +	NULL,
+>  	"BPMPBOOT",
+>  	"FUSECRC",
+> +	"DCEWDT",
+> +	"PSCWDT",
+> +	"PSC",
+> +	"CSITE_SW",	/* 0x18 */
+> +	"POD",
+> +	"SCPM",
+> +	"VREFRO_POWERBAD",
+> +	"VMON",
+> +	"FMON",
+> +	"FSI_R5WDT",
+> +	"FSI_THERM",
+> +	"FSI_R52C0WDT",	/* 0x20 */
+> +	"FSI_R52C1WDT",
+> +	"FSI_R52C2WDT",
+> +	"FSI_R52C3WDT",
+> +	"FSI_FMON",
+> +	"FSI_VMON",	/* 0x25 */
+>  };
+>  
+>  static const struct tegra_wake_event tegra234_wake_events[] = {
+> -- 
+> 2.17.1
+> 
 
-    This fix preserves a fairly sufficient memory space (i.e., page size)
-    to store the data structure so as to prevent EINJ module from loading
-    failure if platform firmware can support Injection Instruction Entry in
-    an EINJ table.
-
-Signed-off-by: James Liu <james.liu@hpe.com>
----
- drivers/acpi/osl.c | 23 +++++++++++++++++++++--
- 1 file changed, 21 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/acpi/osl.c b/drivers/acpi/osl.c
-index 45c5c0e45..ab2f584b1 100644
---- a/drivers/acpi/osl.c
-+++ b/drivers/acpi/osl.c
-@@ -457,9 +457,15 @@ void __iomem *acpi_os_map_generic_address(struct acpi_generic_address *gas)
- 	if (gas->space_id != ACPI_ADR_SPACE_SYSTEM_MEMORY)
- 		return NULL;
- 
-+	/* Handle a case that GAS is used to address an ACPI data structure */
-+	if (!gas->bit_width) {
-+		pr_info("An ACPI data structure at 0x%llx is mapped\n", addr);
-+		return  acpi_os_map_iomem(addr, PAGE_SIZE);
-+	}
-+
- 	/* Handle possible alignment issues */
- 	memcpy(&addr, &gas->address, sizeof(addr));
--	if (!addr || !gas->bit_width)
-+	if (!addr)
- 		return NULL;
- 
- 	return acpi_os_map_iomem(addr, gas->bit_width / 8);
-@@ -474,9 +480,22 @@ void acpi_os_unmap_generic_address(struct acpi_generic_address *gas)
- 	if (gas->space_id != ACPI_ADR_SPACE_SYSTEM_MEMORY)
- 		return;
- 
-+	/* Handle a case that GAS is used to address an ACPI data structure */
-+	if (!gas->bit_width) {
-+		pr_info("An ACPI data structure at 0x%llx is unmapped\n", addr);
-+		mutex_lock(&acpi_ioremap_lock);
-+		map = acpi_map_lookup(addr, PAGE_SIZE);
-+		if (!map) {
-+			mutex_unlock(&acpi_ioremap_lock);
-+			return;
-+		}
-+		acpi_os_drop_map_ref(map);
-+		mutex_unlock(&acpi_ioremap_lock);
-+	}
-+
- 	/* Handle possible alignment issues */
- 	memcpy(&addr, &gas->address, sizeof(addr));
--	if (!addr || !gas->bit_width)
-+	if (!addr)
- 		return;
- 
- 	mutex_lock(&acpi_ioremap_lock);
 -- 
-2.25.1
+With Best Regards,
+Andy Shevchenko
+
 
