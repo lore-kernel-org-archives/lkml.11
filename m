@@ -2,191 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19997C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 05:04:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4B54C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 05:06:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234616AbiDAFGF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 01:06:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36500 "EHLO
+        id S244948AbiDAFIB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Apr 2022 01:08:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233411AbiDAFGB (ORCPT
+        with ESMTP id S233411AbiDAFH7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 01:06:01 -0400
-Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4627512E77C;
-        Thu, 31 Mar 2022 22:04:11 -0700 (PDT)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 231547da086462;
-        Fri, 1 Apr 2022 00:04:07 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1648789447;
-        bh=pdOte0r4buZls7OnQjcRXzHmqGaFLMm2LPj/7uZYXPs=;
-        h=Date:Subject:To:CC:References:From:In-Reply-To;
-        b=Cy8sIj06UcND2JtGwRgSpICAq45rrQP9fQJxNECIsUwAX6cWsTsrXkUYZOoBs7Qxx
-         kv3EzG+Hl49Bmk8MOzVHahdEd8RGZNbxo+Vm21bZmml3FQ6w2yQN+GyyvubVnFHI1i
-         5Sqd0i6vvcEncprMD2gTHSQBq9vYZmQ5H9RM+33A=
-Received: from DFLE115.ent.ti.com (dfle115.ent.ti.com [10.64.6.36])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 231547ts047177
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 1 Apr 2022 00:04:07 -0500
-Received: from DFLE113.ent.ti.com (10.64.6.34) by DFLE115.ent.ti.com
- (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Fri, 1
- Apr 2022 00:04:06 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE113.ent.ti.com
- (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Fri, 1 Apr 2022 00:04:06 -0500
-Received: from [10.24.69.236] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 231542Bb017599;
-        Fri, 1 Apr 2022 00:04:03 -0500
-Message-ID: <1fcac9c3-4b84-6572-ebc6-4d6a50f0132a@ti.com>
-Date:   Fri, 1 Apr 2022 10:34:02 +0530
+        Fri, 1 Apr 2022 01:07:59 -0400
+X-Greylist: delayed 312 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 31 Mar 2022 22:06:09 PDT
+Received: from m228-13.mailgun.net (m228-13.mailgun.net [159.135.228.13])
+        by lindbergh.monkeyblade.net (Postfix) with UTF8SMTPS id 2616D25F678
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 22:06:08 -0700 (PDT)
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=codeagain.dev; q=dns/txt;
+ s=smtp; t=1648789568; h=Content-Transfer-Encoding: MIME-Version:
+ Message-Id: Date: Subject: Subject: Cc: To: To: From: From: Sender:
+ Sender; bh=l+7Y194RkHEDvlBRUE9dOX8hqW2hHbFhgCzQfGAyZwQ=; b=gRoRH1cLY05CwIS9RZg5qf2Ex3BIQ2c33jMdGISh7sEuJ1UvZzP8LYjPUHvjR9axgsG2UILy
+ T+aNt66L+rnMmWH0SGxJvy1DZDhfKPcIlPwvIR6B1+O4X/zyzNKNHBfZqn/gqHLbdtX/KLRG
+ 97nGNqlKHdGhjwc6n4OjXF9MZ9wYWxUVEcs4xt7K/NiTD4O3QcalqXJ3oylghvixb9s3Xa+q
+ vKr7kOKDBIRBy/lDPjkTUEl/ePnunTYMatmDLq0uynsP5UiKfP7pqgIszbvfrzpev5QY/coI
+ Gm6g+TIsiy8p2UF5Lov+9tjH1oHyAXfZutHy+KptetvUiavcOYo11w==
+X-Mailgun-Sending-Ip: 159.135.228.13
+X-Mailgun-Sid: WyJkNDU4NiIsICJsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWM2ZCJd
+Received: from localhost.localdomain (dynamic-user.170.84.58.28.mhnet.com.br
+ [170.84.58.28]) by smtp-out-n06.prod.us-east-1.postgun.com with SMTP id
+ 624687077afabd0707a01256 (version=TLS1.3, cipher=TLS_AES_128_GCM_SHA256);
+ Fri, 01 Apr 2022 05:00:55 GMT
+Sender: codeagain@codeagain.dev
+From:   Bruno Moreira-Guedes <codeagain@codeagain.dev>
+To:     reg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Martyn Welch <martyn@welchs.me.uk>,
+        Manohar Vanga <manohar.vanga@gmail.com>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        outreachy@lists.linux.dev
+Cc:     Bruno Moreira-Guedes <codeagain@codeagain.dev>
+Subject: [PATCH] staging: vme: Adjusted VME_USER in Kconfig
+Date:   Fri,  1 Apr 2022 02:00:45 -0300
+Message-Id: <20220401050045.3686663-1-codeagain@codeagain.dev>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2 1/2] dt-bindings: usb: Add documentation for AM62 USB
- Wrapper module
-Content-Language: en-US
-To:     Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-usb@vger.kernel.org>, Felipe Balbi <balbi@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Roger Quadros <rogerq@kernel.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>
-References: <20220324073425.18607-1-a-govindraju@ti.com>
- <20220324073425.18607-2-a-govindraju@ti.com>
- <93fe6a41-3b59-2fbc-6f95-833f337815ee@kernel.org>
- <41f79aa5-1e04-53f8-ab21-85fe6039e24e@ti.com>
- <2b33798e-23c2-d4a5-171a-55c28bc40c40@kernel.org>
- <YkZFV4h/vvmKg6iw@robh.at.kernel.org>
-From:   Aswath Govindraju <a-govindraju@ti.com>
-In-Reply-To: <YkZFV4h/vvmKg6iw@robh.at.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Rob,
+Currently, the VME_USER driver is in the staging tree Kconfig, unlike
+other VME drivers already moved to the main portions of the kernel tree.
+Its configuration is, however, nested into the VME_BUS config option,
+which might be misleading.
 
-On 01/04/22 05:50, Rob Herring wrote:
-> On Thu, Mar 24, 2022 at 12:53:08PM +0100, Krzysztof Kozlowski wrote:
->> On 24/03/2022 12:40, Aswath Govindraju wrote:
->>> Hi Krzysztof,
->>>
->>> On 24/03/22 16:37, Krzysztof Kozlowski wrote:
->>>> On 24/03/2022 08:34, Aswath Govindraju wrote:
->>>>> Add bindings for the TI's AM62 wrapper module for the Synopsys USBSS-DRD
->>>>> controller.
->>>>>
->>>>> Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
->>>>> ---
->>>>>
->>>>> Changes since v1:
->>>>> - made correction in grammer of clocks property description
->>>>>   and added maxItems in the interrupts property based on comments
->>>>>   received from Roger
->>>>> - corrected the title, fixed the description of
->>>>>   ti,syscon-phy-pll-refclk, added pattern properties and child node
->>>>>   in the example based on the comments from Krzysztof.
->>>>>
->>>>>  .../devicetree/bindings/usb/ti,am62-usb.yaml  | 117 ++++++++++++++++++
->>>>>  1 file changed, 117 insertions(+)
->>>>>  create mode 100644 Documentation/devicetree/bindings/usb/ti,am62-usb.yaml
->>>>>
->>>>> diff --git a/Documentation/devicetree/bindings/usb/ti,am62-usb.yaml b/Documentation/devicetree/bindings/usb/ti,am62-usb.yaml
->>>>> new file mode 100644
->>>>> index 000000000000..452bfdc6fb09
->>>>> --- /dev/null
->>>>> +++ b/Documentation/devicetree/bindings/usb/ti,am62-usb.yaml
->>>>> @@ -0,0 +1,117 @@
->>>>> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
->>>>> +%YAML 1.2
->>>>> +---
->>>>> +$id: http://devicetree.org/schemas/usb/ti,am62-usb.yaml#
->>>>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->>>>> +
->>>>> +title: TI's AM62 wrapper module for the Synopsys USBSS-DRD controller
->>>>> +
->>>>> +maintainers:
->>>>> +  - Aswath Govindraju <a-govindraju@ti.com>
->>>>> +
->>>>> +properties:
->>>>> +  compatible:
->>>>> +    const: ti,am62-usb
->>>>> +
->>>>> +  reg:
->>>>> +    maxItems: 1
->>>>> +
->>>>> +  ranges: true
->>>>> +
->>>>> +  power-domains:
->>>>> +    description:
->>>>> +      PM domain provider node and an args specifier containing
->>>>> +      the USB ISO device id value. See,
->>>>> +      Documentation/devicetree/bindings/soc/ti/sci-pm-domain.yaml
->>>>> +    maxItems: 1
->>>>> +
->>>>> +  clocks:
->>>>> +    description: Clock phandle to usb2_refclk
->>>>> +    maxItems: 1
->>>>> +
->>>>> +  clock-names:
->>>>> +    items:
->>>>> +      - const: ref
->>>>> +
->>>>> +  id-gpio:
->>>>> +    description:
->>>>> +      GPIO to be used as ID pin
->>>>> +    maxItems: 1
->>>>
->>>> I have doubts about this. If you USB controller handles the ID pin, then
->>>> probably this should be moved to usb-connector.yaml. I did not see
->>>> id-gpio in any other USB controller blocks.
->>>>
->>>
->>> Yes, the USB wrapper handles the ID pin operation only. It also reads
->>> the status of VBUS by reading a register from its MMR and not using a
->>> gpio. After evaluating the role the based on the states if id pin and
->>> VBUS, this role is communicated to the dwc3 core driver using extcon.
->>> There is no way for the dwc3 driver to detect the role on its own.
->>>
->>>
->>> The usb-connector(drivers/usb/common/usb-conn-gpio.c) driver, seems to
->>> be implemented for driving the VBUS, based on ID and VBUS pin status.
->>> However, in case of the above implementation we need to communicate the
->>> detected role to the dwc3 core driver. Also, the wrapper does not
->>> control VBUS but it is the dwc3 core driver that drives the VBUS.
->>> Therefore, I think the usb-connector implementation cannot be used here.
->>
->> I don't think about usb-conn-gpio.c but using the binding generic
->> binding for usb-X-connector and define a connector with ID.
->>
->> Actually Rob could help here.
->>
->> Rob,
->> Should the id-gpio be modeled as a property in this glue/wrapper driver
->> or rather as part of usb-connector child node?
-> 
-> That's a simple question. Where does the ID GPIO signal go to? The 
-> connector, so it goes in the connector node.
-> 
+Since the staging tree "[...] is used to hold stand-alone[1] drivers and
+filesystem that are not ready to be merged into the main portion of the
+Linux kernel tree [...]"[1], IMHO all staging drivers should appear
+nested into the Main Menu -> Device Drivers -> Staging Drivers to make
+sure the user don't pick it without being fully aware of its staging
+status as it could be the case in Menu -> Device Drivers -> VME bridge
+support (the current location).
 
-Thank you for the clarification. Here ID-gpio is directly read by the
-wrapper and hence, I have modeled it as a property in the wrapper dt
-node. May I know if this wrong and should the modelling be looked at
-differently?
+With this change menuconfig users will clearly know this is not a driver
+in the main portion of the kernel tree and decide whether to build it or
+not with that clearly in mind.
 
-Thanks,
-Aswath
+This change goes into the same direction of commit 4b4cdf3979c3
+("STAGING: Move staging drivers back to staging-specific menu")
 
-> If we have a driver for the usb-connector node, that's news to me. Not 
-> that we couldn't, but that has nothing to do with designing the binding.
-> 
-> Rob
+[1] https://lkml.org/lkml/2009/3/18/314
+
+Signed-off-by: Bruno Moreira-Guedes <codeagain@codeagain.dev>
+---
+ drivers/staging/Kconfig | 2 ++
+ drivers/vme/Kconfig     | 2 --
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/staging/Kconfig b/drivers/staging/Kconfig
+index 932acb4e8cbc..0545850eb2ff 100644
+--- a/drivers/staging/Kconfig
++++ b/drivers/staging/Kconfig
+@@ -88,4 +88,6 @@ source "drivers/staging/qlge/Kconfig"
+ 
+ source "drivers/staging/wfx/Kconfig"
+ 
++source "drivers/staging/vme/devices/Kconfig"
++
+ endif # STAGING
+diff --git a/drivers/vme/Kconfig b/drivers/vme/Kconfig
+index 936392ca3c8c..c13dd9d2a604 100644
+--- a/drivers/vme/Kconfig
++++ b/drivers/vme/Kconfig
+@@ -15,6 +15,4 @@ source "drivers/vme/bridges/Kconfig"
+ 
+ source "drivers/vme/boards/Kconfig"
+ 
+-source "drivers/staging/vme/devices/Kconfig"
+-
+ endif # VME
+-- 
+2.35.1
 
