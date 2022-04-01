@@ -2,102 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D5BCC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 07:11:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF4F2C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 07:13:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343742AbiDAHNW (ORCPT
+        id S1343767AbiDAHPL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 03:13:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52766 "EHLO
+        Fri, 1 Apr 2022 03:15:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343773AbiDAHMy (ORCPT
+        with ESMTP id S1343740AbiDAHPJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 03:12:54 -0400
-Received: from mx1.cqplus1.com (unknown [113.204.237.245])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CC79A1D67D2
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 00:10:40 -0700 (PDT)
-X-MailGates: (flag:1,DYNAMIC,RELAY,NOHOST,LAN:PASS)(compute_score:DELIVE
-        R,40,3)
-Received: from 172.27.96.203
-        by mx1.cqplus1.com with MailGates ESMTP Server V5.0(1184:0:AUTH_RELAY)
-        (envelope-from <qinjian@cqplus1.com>); Fri, 01 Apr 2022 15:07:40 +0800 (CST)
-Received: from CQEXMAIL01.cqplus1.com (172.27.96.203) by
- CQEXMAIL01.cqplus1.com (172.27.96.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.18; Fri, 1 Apr 2022 15:08:39 +0800
-Received: from CQEXMAIL01.cqplus1.com ([::1]) by CQEXMAIL01.cqplus1.com
- ([::1]) with mapi id 15.01.2375.018; Fri, 1 Apr 2022 15:08:39 +0800
-From:   =?utf-8?B?cWluamlhblvopoPlgaVd?= <qinjian@cqplus1.com>
-To:     Arnd Bergmann <arnd@arndb.de>
-CC:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        "Stephen Boyd" <sboyd@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        "Russell King - ARM Linux" <linux@armlinux.org.uk>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        DTML <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>
-Subject: RE: [PATCH v12 9/9] ARM: sp7021_defconfig: Add Sunplus SP7021
- defconfig
-Thread-Topic: [PATCH v12 9/9] ARM: sp7021_defconfig: Add Sunplus SP7021
- defconfig
-Thread-Index: AQHYRNqKgpvhY+D7NEGLNwOJ/bBEBKzYrlGAgAGgdnA=
-Date:   Fri, 1 Apr 2022 07:08:39 +0000
-Message-ID: <334463c7f78b4b25a62ddd01bba5fe06@cqplus1.com>
-References: <cover.1648714851.git.qinjian@cqplus1.com>
- <84a0839e7724fa39dd07fef491cf6bb357db2e7d.1648714851.git.qinjian@cqplus1.com>
- <CAK8P3a2SQCj8pqyJvS+TpgqQu51+YyB4SOi2cd_WU9ObgAjZOw@mail.gmail.com>
-In-Reply-To: <CAK8P3a2SQCj8pqyJvS+TpgqQu51+YyB4SOi2cd_WU9ObgAjZOw@mail.gmail.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.28.110.18]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        Fri, 1 Apr 2022 03:15:09 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4D0ABAE;
+        Fri,  1 Apr 2022 00:13:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648797198; x=1680333198;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=v7BxFZS7EqBUMLT0jC44zPK3Hm0zxzgqgjgsmXPUMUw=;
+  b=Ac42CdQetfvW8slyl4NOL6AoLTBR/8A9IIRmo7HIlpSxy16IgCCsMTSo
+   l1IMWjIb28B8RtTdhyi/32Qe4EcZhNUtI2/SuoDd4rJEQ5XdBpDxgbxTb
+   qeChU8nvUfzOOq1lZOLGCFf+T7HXZOnKJ4NbttwIwi+yJteois7xg/tOD
+   qFxxZ61Kyo++AQQuGvT/r7hQle70wahFujccmTadEWRBUoUaUFUm1yr5Y
+   4hzHOC5HEE7RGa+iS5A/Ez0D/lPOwr3csI1b0Ppc6QRmA37f3agEDjfty
+   0Cvi+4ORg2+jloTOCrjpN+XN6GCDeC6xXx8hXX8jwnwDzSKSNPSf1sFrx
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10303"; a="240652800"
+X-IronPort-AV: E=Sophos;i="5.90,226,1643702400"; 
+   d="scan'208";a="240652800"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Apr 2022 00:13:18 -0700
+X-IronPort-AV: E=Sophos;i="5.90,226,1643702400"; 
+   d="scan'208";a="547686744"
+Received: from jamendoz-mobl.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.255.95.128])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Apr 2022 00:13:15 -0700
+Message-ID: <3cfffe9a29e53ae58dc59d0af3d52128babde79f.camel@intel.com>
+Subject: Re: [RFC PATCH v5 037/104] KVM: x86/mmu: Allow non-zero init value
+ for shadow PTE
+From:   Kai Huang <kai.huang@intel.com>
+To:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     isaku.yamahata@gmail.com, Paolo Bonzini <pbonzini@redhat.com>,
+        Jim Mattson <jmattson@google.com>, erdemaktas@google.com,
+        Connor Kuehl <ckuehl@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+Date:   Fri, 01 Apr 2022 20:13:13 +1300
+In-Reply-To: <968de4765e63d8255ae1b3ac7062ffdca64706e4.camel@intel.com>
+References: <cover.1646422845.git.isaku.yamahata@intel.com>
+         <b74b3660f9d16deafe83f2670539a8287bef988f.1646422845.git.isaku.yamahata@intel.com>
+         <968de4765e63d8255ae1b3ac7062ffdca64706e4.camel@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-PiBPbiBUaHUsIE1hciAzMSwgMjAyMiBhdCAxMDoyOSBBTSBRaW4gSmlhbiA8cWluamlhbkBjcXBs
-dXMxLmNvbT4gd3JvdGU6DQo+ID4gQWRkIGdlbmVyaWMgU3VucGx1cyBTUDcwMjEgYmFzZWQgYm9h
-cmQgZGVmY29uZmlnDQo+IA0KPiBIZXJlLCB5b3Ugc2hvdWxkIGV4cGxhaW4gd2h5IHlvdSBuZWVk
-IGEgY3VzdG9tIGRlZmNvbmZpZyBmb3IgdGhpcyBTb0MsIGFzDQo+IG1vc3QgcGxhdGZvcm1zIGFy
-ZSBmaW5lIGp1c3QgdXNpbmcgdGhlIGdlbmVyaWMgb25lLiBBcmUgeW91IHRvbyBtZW1vcnkNCj4g
-Y29uc3RyYWluZWQsDQo+IG9yIGFyZSB0aGVyZSBvdGhlciBwcm9ibGVtcz8NCj4gDQoNCkZvciBt
-ZW1vcnkgY29uc3RyYWluZWQgYm9hcmQgb25seS4NCg0KPiA+IGRpZmYgLS1naXQgYS9hcmNoL2Fy
-bS9jb25maWdzL211bHRpX3Y3X2RlZmNvbmZpZyBiL2FyY2gvYXJtL2NvbmZpZ3MvbXVsdGlfdjdf
-ZGVmY29uZmlnDQo+ID4gaW5kZXggODg2M2ZhOTY5Li5hM2JkOWRiZDggMTAwNjQ0DQo+ID4gLS0t
-IGEvYXJjaC9hcm0vY29uZmlncy9tdWx0aV92N19kZWZjb25maWcNCj4gPiArKysgYi9hcmNoL2Fy
-bS9jb25maWdzL211bHRpX3Y3X2RlZmNvbmZpZw0KPiA+IEBAIC04Niw2ICs4Niw3IEBAIENPTkZJ
-R19NQUNIX1NQRUFSMTMxMD15DQo+ID4gIENPTkZJR19NQUNIX1NQRUFSMTM0MD15DQo+ID4gIENP
-TkZJR19BUkNIX1NUST15DQo+ID4gIENPTkZJR19BUkNIX1NUTTMyPXkNCj4gPiArQ09ORklHX0FS
-Q0hfU1VOUExVUz15DQo+ID4gIENPTkZJR19BUkNIX1NVTlhJPXkNCj4gPiAgQ09ORklHX0FSQ0hf
-VEVHUkE9eQ0KPiA+ICBDT05GSUdfQVJDSF9VTklQSElFUj15DQo+IA0KPiBEb24ndCB5b3UgbmVl
-ZCBhbnkgZHJpdmVycyBoZXJlPw0KPiANCg0KQ3VycmVudGx5LCBhbGwgYmFzaWMgZHJpdmVycyBh
-dXRvIGVuYWJsZWQgYnkgbWFjaC1zdW5wbHVzL0tjb25maWc6DQouLi4NCmNvbmZpZyBTT0NfU1A3
-MDIxDQoJYm9vbCAiU3VucGx1cyBTUDcwMjEgU29DIHN1cHBvcnQiDQoJZGVwZW5kcyBvbiBBUkNI
-X1NVTlBMVVMNCglkZWZhdWx0IEFSQ0hfU1VOUExVUw0KCXNlbGVjdCBBUk1fR0lDDQoJc2VsZWN0
-IEFSTV9QU0NJDQoJc2VsZWN0IFBJTkNUUkwNCglzZWxlY3QgUElOQ1RSTF9TUFBDVEwNCglzZWxl
-Y3QgU0VSSUFMX1NVTlBMVVMNCglzZWxlY3QgU0VSSUFMX1NVTlBMVVNfQ09OU09MRQ0KDQphbmQg
-ZHJpdmVyJ3MgS2NvbmZpZzoNCi4uLg0KY29uZmlnIFJFU0VUX1NVTlBMVVMNCiAgICAgICAgYm9v
-bCAiU3VucGx1cyBTb0NzIFJlc2V0IERyaXZlciIgaWYgQ09NUElMRV9URVNUDQogICAgICAgIGRl
-ZmF1bHQgQVJDSF9TVU5QTFVTDQouLi4NCg0KPiA+IGRpZmYgLS1naXQgYS9hcmNoL2FybS9jb25m
-aWdzL3NwNzAyMV9kZWZjb25maWcgYi9hcmNoL2FybS9jb25maWdzL3NwNzAyMV9kZWZjb25maWcN
-Cj4gPiBuZXcgZmlsZSBtb2RlIDEwMDY0NA0KPiA+IGluZGV4IDAwMDAwMDAwMC4uY2RhMTZkMzNh
-DQo+ID4gLS0tIC9kZXYvbnVsbA0KPiA+ICsrKyBiL2FyY2gvYXJtL2NvbmZpZ3Mvc3A3MDIxX2Rl
-ZmNvbmZpZw0KPiAuLi4NCj4gPiArQ09ORklHX0hBVkVfQVJNX0FSQ0hfVElNRVI9eQ0KPiANCj4g
-SSBjaGVja2VkIHRoaXMgb25lIGFnYWluLCBhcyBtb3N0IG90aGVycyBkb24ndCBlbmFibGUgaXQg
-aW4gdGhlIGRlZmNvbmZpZy4NCj4gDQo+IEkgZG9uJ3QgcmVtZW1iZXIgaWYgSSByZWNvbW1lbmRl
-ZCByZW1vdmluZyB0aGUgJ3NlbGVjdCcgZnJvbSBLY29uZmlnDQo+IGluIGEgcHJldmlvdXMgcm91
-bmQsIGJ1dCBhcyB0aGF0IGlzIHdoZXJlIG90aGVyIHBsYXRmb3JtcyBoYXZlIGl0LCBJJ2QgYWRk
-DQo+IGl0IHRoZXJlIGFzIHdlbGwuDQo+IA0KDQpJJ2xsIG1vdmUgdGhpcyB0byBtYWNoLXN1bnBs
-dXMvS2NvbmZpZy4NCg0KPiA+ICtDT05GSUdfU1RBR0lORz15DQo+IA0KPiBEbyB5b3UgYWN0dWFs
-bHkgZW5hYmxlIGFueSBzdGFnaW5nIGRyaXZlcnMgaGVyZT8gSWYgbm90LCBJJ2QgZHJvcCB0aGF0
-IGJpdC4NCj4gDQoNCknigJlsbCBkcm9wIGl0Lg0KDQoNClRoYW5rcyBhbGwgeW91ciBjb21tZW50
-cy4NCg==
+On Fri, 2022-04-01 at 18:13 +1300, Kai Huang wrote:
+> > --- a/arch/x86/kvm/mmu/mmu.c
+> > +++ b/arch/x86/kvm/mmu/mmu.c
+> > @@ -617,9 +617,9 @@ static int mmu_spte_clear_track_bits(struct kvm *kvm,
+> > u64 *sptep)
+> >   	int level = sptep_to_sp(sptep)->role.level;
+> >   
+> >   	if (!spte_has_volatile_bits(old_spte))
+> > -		__update_clear_spte_fast(sptep, 0ull);
+> > +		__update_clear_spte_fast(sptep, shadow_init_value);
+> >   	else
+> > -		old_spte = __update_clear_spte_slow(sptep, 0ull);
+> > +		old_spte = __update_clear_spte_slow(sptep,
+> > shadow_init_value);
+> 
+> I guess it's better to have some comment here.  Allow non-zero init value for
+> shadow PTE doesn't necessarily mean the initial value should be used when one
+> PTE is zapped.  I think mmu_spte_clear_track_bits() is only called for mapping
+> of normal (shared) memory but not MMIO? Then perhaps it's better to have a
+> comment to explain we want "suppress #VE" set to get a real EPT violation for
+> normal memory access from guest?
+
+Btw, I think the relevant part of TDP MMU change should be included in this
+patch too otherwise TDP MMU is broken with this patch.
+
+Actually in this series legacy MMU is not supported to work with TDX, so above
+change to legacy MMU doesn't matter actually.  Instead, TDP MMU change should be
+here.
+
+-- 
+Thanks,
+-Kai
+
+
