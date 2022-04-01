@@ -2,88 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B66CAC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 17:55:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B730FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 17:58:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350256AbiDAR4z (ORCPT
+        id S1350736AbiDAR7s (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 13:56:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57762 "EHLO
+        Fri, 1 Apr 2022 13:59:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349841AbiDAR4w (ORCPT
+        with ESMTP id S244626AbiDAR7p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 13:56:52 -0400
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C2C158805
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 10:55:02 -0700 (PDT)
-Received: by mail-pf1-x434.google.com with SMTP id t2so3272690pfj.10
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 10:55:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=dabbelt-com.20210112.gappssmtp.com; s=20210112;
-        h=date:subject:in-reply-to:cc:from:to:message-id:mime-version
-         :content-transfer-encoding;
-        bh=iongRgn393jDScHsMFqxrfWy25+LUVsFTFfMXZy7tcs=;
-        b=5DHzn4/4Gak55kwk9hNdkaIdBJXQSuh4T7djtDJzEyVrT2bs/etMzwCF9gb2kfNEul
-         9abqnu9KEtppYl4M+gl+0S68ffL7FliVVzDB1GoFjkYJOSHBLGHXOKZ/PuVRGbUYLTI1
-         T3zkvLghNRE7gM/4+Z7JwQRmRvmMSz+eOqa7Mzrt1vYFEnbdLTa4sdVm9m07qdPQSJ2y
-         KfsGbVlqcsdnpZmkuHYhDzaNI19ybF4dyu7UvVLo5JrOjFBJ11ahz2VKexnPKOps8pAc
-         JH2qWWmgdW80vC1zACuYuPpYPBuAUrx8ZY8Bmq3FiGr0NYigWvONSc/lDx6nh+sPWE5g
-         XrmQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:subject:in-reply-to:cc:from:to:message-id
-         :mime-version:content-transfer-encoding;
-        bh=iongRgn393jDScHsMFqxrfWy25+LUVsFTFfMXZy7tcs=;
-        b=EReC4/Ci6wlLNgVRR4yuX7P1MY7LVIc+J01L/rhQEvy0LQjUh5sliuz7PxcMVJ/l1T
-         VpbcZKpYlI4s3a3ngCZHcnsVwLZIpBdhpG5/0dvH2bm3CjuzDjXmmVU5vDFR8o+73aIz
-         ndl6nxNHnMvhfImHGWjJ86YDiu8ebJ4WhoINTqK5nTm4p5gugmUKCemH0JLa4h1VSFkr
-         4zUO6OdnPoJWC6u5o4Sn8Ih42HI5xbjKuIW9Ba4HZoNcXL3PnjKHi6Z399Jz0mYTqgOR
-         n6KtUo3FqZCupssZTVBW7Cb1r5t81cDGZy9R2jhG4RAWB3TbPniYrdUS8RKuD36IkJLU
-         GA0Q==
-X-Gm-Message-State: AOAM531+pk7mS4JfOZ9B8+lorsY/cb9tWH2tk67pTSJoY0RVw0ezndKu
-        9LqHRjtavy3WSnooEYrNUOJNFg==
-X-Google-Smtp-Source: ABdhPJwppucEmP01bI+aWljh4lysCOjDeGg0qSPNzu3mMPX4N67PpZVKiJX3L9pbyN5EHAHvjjmBRA==
-X-Received: by 2002:a63:e716:0:b0:380:85d1:656c with SMTP id b22-20020a63e716000000b0038085d1656cmr16301723pgi.321.1648835701412;
-        Fri, 01 Apr 2022 10:55:01 -0700 (PDT)
-Received: from localhost (76-210-143-223.lightspeed.sntcca.sbcglobal.net. [76.210.143.223])
-        by smtp.gmail.com with ESMTPSA id hk16-20020a17090b225000b001ca00b81a95sm9533169pjb.22.2022.04.01.10.55.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Apr 2022 10:55:00 -0700 (PDT)
-Date:   Fri, 01 Apr 2022 10:55:00 -0700 (PDT)
-X-Google-Original-Date: Fri, 01 Apr 2022 10:54:57 PDT (-0700)
-Subject:     Re: [PATCH] riscv: fix build with binutils 2.38
-In-Reply-To: <CAHk-=wgv6rXFjTdaumFgDC4ixg6QMOL83sQ2XOqvJC0h5fLX2g@mail.gmail.com>
-CC:     mkl@pengutronix.de, aurelien@aurel32.net,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Kito Cheng <kito.cheng@gmail.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        aou@eecs.berkeley.edu, linux-riscv@lists.infradead.org,
-        linux-sparse@vger.kernel.org, ukl@pengutronix.de,
-        luc.vanoostenryck@gmail.com
-From:   Palmer Dabbelt <palmer@dabbelt.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Message-ID: <mhng-c280d48c-477d-4589-baee-255c774b5a51@palmer-mbp2014>
-Mime-Version: 1.0 (MHng)
-Content-Type: text/plain; charset=utf-8; format=flowed
+        Fri, 1 Apr 2022 13:59:45 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1976220D82A;
+        Fri,  1 Apr 2022 10:57:55 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id C9C9221A90;
+        Fri,  1 Apr 2022 17:57:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1648835873; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=f9SA9jeVPibQzcd8buCsF/7ncM5s4P2vkUi1q8Zs7CY=;
+        b=DxJtlKfGw7I8XKrtf1bX1ayliLJE1/HBoPKnInbfEaYnJcrTcuxIcXni+ZLHUBHHYHkk4E
+        /49/bpeH3DHKUfkY/T7GkPU02w5cKAjZhbSQNNJOSOi9DY6MaCTu8dhEr2KHH3oUcwTLse
+        874pn+g+lYgfyH5/Yb6wzTFGq2Rib+c=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1648835873;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=f9SA9jeVPibQzcd8buCsF/7ncM5s4P2vkUi1q8Zs7CY=;
+        b=4z3k24IAgNOcQY00d6mCG8q35YEwDAyyDBO7c3g+e2U7yNs9S0W0hYwhx6y4TC8AuBl+5t
+        5DLMowwkKmvEy4DA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id BED3A132C1;
+        Fri,  1 Apr 2022 17:57:53 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id SZqJLiE9R2JpWQAAMHmgww
+        (envelope-from <bp@suse.de>); Fri, 01 Apr 2022 17:57:53 +0000
+Date:   Fri, 1 Apr 2022 19:57:51 +0200
+From:   Borislav Petkov <bp@suse.de>
+To:     Dave Hansen <dave.hansen@linux.intel.com>
+Cc:     linux-kernel@vger.kernel.org, patches@lists.linux.dev,
+        corbet@lwn.net, tglx@linutronix.de, x86@kernel.org,
+        linux-doc@vger.kernel.org
+Subject: Re: [PATCH] [v2] x86/configs: Add x86 debugging Kconfig fragment
+ plus docs
+Message-ID: <Ykc9H801hkMRUd8t@zn.tnic>
+References: <20220331175728.299103A0@davehans-spike.ostc.intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220331175728.299103A0@davehans-spike.ostc.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 01 Apr 2022 10:14:03 PDT (-0700), Linus Torvalds wrote:
-> On Thu, Mar 31, 2022 at 11:53 PM Marc Kleine-Budde <mkl@pengutronix.de> wrote:
->>
->> | WARNING: invalid argument to '-march': 'zicsr_zifencei'
->
-> Gaah, it works but still warns because I cut-and-pasted those
-> zicsr/zifencei options from some random source that had them
-> capitalized and I didn't look closely enough at the reports.
->
-> Anyway, hopefully somebody can bother to fix up that. Possibly by
-> changing the strncmp to a strnicmp - but I don't know what the rules
-> for lower-case vs capitals are for the other options. I'm still busy
-> with the kernel merge window, so this gets archived on my side..
+On Thu, Mar 31, 2022 at 10:57:28AM -0700, Dave Hansen wrote:
+> 
+> Changes from v1:
+> 
+>  * Add actual .config fragment instead of just documenting it
+>  * Note that these partially x86-specific, but the rest can be
+>    used to test all tip contributions.
 
-I'm gluing sparse to my build tests now, so I'll sort it out (that'll 
-also make sure a failure doesn't leak again).  Might not be today, but 
-shouldn't take too long.
+Good, that looks nice. I'll queue it next week with this hunk added:
+
+---
+diff --git a/arch/x86/Makefile b/arch/x86/Makefile
+index 63d50f65b828..1abd7cc9d6cd 100644
+--- a/arch/x86/Makefile
++++ b/arch/x86/Makefile
+@@ -313,5 +313,6 @@ define archhelp
+   echo  ''
+   echo  '  kvm_guest.config	- Enable Kconfig items for running this kernel as a KVM guest'
+   echo  '  xen.config		- Enable Kconfig items for running this kernel as a Xen guest'
++  echo  '  x86_debug.config	- Enable tip tree debugging options for testing'
+ 
+ endef
+
+-- 
+Regards/Gruss,
+    Boris.
+
+SUSE Software Solutions Germany GmbH, GF: Ivo Totev, HRB 36809, AG Nürnberg
