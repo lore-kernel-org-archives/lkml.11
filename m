@@ -2,94 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05702C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 03:37:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A334C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 03:37:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244632AbiDADir (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 23:38:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54008 "EHLO
+        id S244651AbiDADjC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 23:39:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244625AbiDADim (ORCPT
+        with ESMTP id S244625AbiDADjA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 23:38:42 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D016718A7BE;
-        Thu, 31 Mar 2022 20:36:52 -0700 (PDT)
-Received: from kwepemi500019.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KV5Qk43hwzgYGg;
-        Fri,  1 Apr 2022 11:35:10 +0800 (CST)
-Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
- kwepemi500019.china.huawei.com (7.221.188.117) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 1 Apr 2022 11:36:50 +0800
-Received: from huawei.com (10.175.127.227) by kwepemm600009.china.huawei.com
- (7.193.23.164) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Fri, 1 Apr
- 2022 11:36:49 +0800
-From:   Yu Kuai <yukuai3@huawei.com>
-To:     <axboe@kernel.dk>
-CC:     <linux-block@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <yukuai3@huawei.com>, <yi.zhang@huawei.co>
-Subject: [PATCH] blk-mq: fix possible creation failure for 'debugfs_dir'
-Date:   Fri, 1 Apr 2022 11:51:39 +0800
-Message-ID: <20220401035139.272897-1-yukuai3@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        Thu, 31 Mar 2022 23:39:00 -0400
+Received: from 189.cn (ptr.189.cn [183.61.185.104])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A1D1D1D66CA;
+        Thu, 31 Mar 2022 20:37:10 -0700 (PDT)
+HMM_SOURCE_IP: 10.64.8.41:56850.577092616
+HMM_ATTACHE_NUM: 0000
+HMM_SOURCE_TYPE: SMTP
+Received: from clientip-123.150.8.42 (unknown [10.64.8.41])
+        by 189.cn (HERMES) with SMTP id 7D5331002AF;
+        Fri,  1 Apr 2022 11:37:08 +0800 (CST)
+Received: from  ([123.150.8.42])
+        by gateway-153622-dep-749df8664c-mvcg4 with ESMTP id a969fd7db226468788809b02151552bc for yhs@fb.com;
+        Fri, 01 Apr 2022 11:37:09 CST
+X-Transaction-ID: a969fd7db226468788809b02151552bc
+X-Real-From: chensong_2000@189.cn
+X-Receive-IP: 123.150.8.42
+X-MEDUSA-Status: 0
+Sender: chensong_2000@189.cn
+Message-ID: <306ab457-9f3d-4d90-bb31-e6fb08b6a5ad@189.cn>
+Date:   Fri, 1 Apr 2022 11:37:07 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- kwepemm600009.china.huawei.com (7.193.23.164)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] sample: bpf: syscall_tp_user: print result of verify_map
+Content-Language: en-US
+To:     Yonghong Song <yhs@fb.com>, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <1648777272-21473-1-git-send-email-chensong_2000@189.cn>
+ <882349c0-123d-3deb-88e8-d400ec702d1f@fb.com>
+From:   Song Chen <chensong_2000@189.cn>
+In-Reply-To: <882349c0-123d-3deb-88e8-d400ec702d1f@fb.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-'q->debugfs_dir' is created in blk_register_queue(), however, it's not
-removed in blk_unregister_queue() and is delayed to blk_release_queue().
-Thus it's possible that del_gendisk() is done and the old 'debugfs_dir'
-is not removed yet, and in the mean time blk_register_queue() is called
-for the new device with the same name. In this case, kernel will
-compalin about creation failure for 'debugfs_dir' like following:
 
-debugfs: Directory 'nullb1' with parent 'block' already present!
 
-Fix the problem by moving forward the removal of 'debgfs_dir' to
-blk_unregister_queue().
+在 2022/4/1 11:01, Yonghong Song 写道:
+> 
+> 
+> On 3/31/22 6:41 PM, Song Chen wrote:
+>> syscall_tp only prints the map id and messages when something goes wrong,
+>> but it doesn't print the value passed from bpf map. I think it's better
+>> to show that value to users.
+>>
+>> What's more, i also added a 2-second sleep before calling verify_map,
+>> to make the value more obvious.
+>>
+>> Signed-off-by: Song Chen <chensong_2000@189.cn>
+>> ---
+>>   samples/bpf/syscall_tp_user.c | 4 ++++
+>>   1 file changed, 4 insertions(+)
+>>
+>> diff --git a/samples/bpf/syscall_tp_user.c 
+>> b/samples/bpf/syscall_tp_user.c
+>> index a0ebf1833ed3..1faa7f08054e 100644
+>> --- a/samples/bpf/syscall_tp_user.c
+>> +++ b/samples/bpf/syscall_tp_user.c
+>> @@ -36,6 +36,9 @@ static void verify_map(int map_id)
+>>           fprintf(stderr, "failed: map #%d returns value 0\n", map_id);
+>>           return;
+>>       }
+>> +
+>> +    printf("verify map:%d val: %d\n", map_id, val);
+> 
+> I am not sure how useful it is or anybody really cares.
+> This is just a sample to demonstrate how bpf tracepoint works.
+> The error path has error print out already.
+> 
+>> +
+>>       val = 0;
+>>       if (bpf_map_update_elem(map_id, &key, &val, BPF_ANY) != 0) {
+>>           fprintf(stderr, "map_update failed: %s\n", strerror(errno));
+>> @@ -98,6 +101,7 @@ static int test(char *filename, int num_progs)
+>>       }
+>>       close(fd);
+>> +    sleep(2);
+> 
+> The commit message mentioned this sleep(2) is
+> to make the value more obvious. I don't know what does this mean.
+> sleep(2) can be added only if it fixed a bug.
 
-Signed-off-by: Yu Kuai <yukuai3@huawei.com>
----
- block/blk-sysfs.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+The value in bpf map means how many times trace_enter_open_at are 
+triggered with tracepoint,sys_enter_openat. Sleep(2) is to enlarge the 
+result, tell the user how many files are opened in the last 2 seconds.
 
-diff --git a/block/blk-sysfs.c b/block/blk-sysfs.c
-index 88bd41d4cb59..15fc3f0786e3 100644
---- a/block/blk-sysfs.c
-+++ b/block/blk-sysfs.c
-@@ -779,11 +779,6 @@ static void blk_release_queue(struct kobject *kobj)
- 	if (queue_is_mq(q))
- 		blk_mq_release(q);
- 
--	blk_trace_shutdown(q);
--	mutex_lock(&q->debugfs_mutex);
--	debugfs_remove_recursive(q->debugfs_dir);
--	mutex_unlock(&q->debugfs_mutex);
--
- 	if (queue_is_mq(q))
- 		blk_mq_debugfs_unregister(q);
- 
-@@ -951,5 +946,11 @@ void blk_unregister_queue(struct gendisk *disk)
- 
- 	mutex_unlock(&q->sysfs_dir_lock);
- 
-+	blk_trace_shutdown(q);
-+	mutex_lock(&q->debugfs_mutex);
-+	blk_mq_debugfs_unregister_hctxs(q);
-+	debugfs_remove_recursive(q->debugfs_dir);
-+	mutex_unlock(&q->debugfs_mutex);
-+
- 	kobject_put(&disk_to_dev(disk)->kobj);
- }
--- 
-2.31.1
+It shows like this:
 
+sudo ./samples/bpf/syscall_tp
+prog #0: map ids 4 5
+verify map:4 val: 253
+verify map:5 val: 252
+
+If we work harder, we can also print those files' name and opened by 
+which process.
+
+It's just an improvement instead of a bug fix, i will drop it if 
+reviewers think it's unnecessary.
+
+Thanks.
+
+BR
+
+chensong
+> 
+>>       /* verify the map */
+>>       for (i = 0; i < num_progs; i++) {
+>>           verify_map(map0_fds[i]);
+> 
