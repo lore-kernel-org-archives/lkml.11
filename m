@@ -2,50 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6728EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:38:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B542C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:39:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241372AbiDAOkq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 10:40:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57008 "EHLO
+        id S1347498AbiDAOku (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Apr 2022 10:40:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348243AbiDAOdv (ORCPT
+        with ESMTP id S1348206AbiDAOdt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:33:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 821041EB83D;
-        Fri,  1 Apr 2022 07:31:28 -0700 (PDT)
+        Fri, 1 Apr 2022 10:33:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A7E257B20;
+        Fri,  1 Apr 2022 07:31:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1EA8061C1D;
-        Fri,  1 Apr 2022 14:31:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7AB95C3410F;
-        Fri,  1 Apr 2022 14:31:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BF29EB8240E;
+        Fri,  1 Apr 2022 14:31:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EF30C340F2;
+        Fri,  1 Apr 2022 14:31:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823487;
-        bh=kcrTbfdM5LBcgXC2gmjAIGHsb9PqftTcUxe7Aqph+Qo=;
+        s=k20201202; t=1648823471;
+        bh=maaGKWuQQ40Y3IWQ2QWKFhbciN+lKyrz47xI7/nwPs4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Sf2sJIPe21r9juNheQ75xb9L5sfnhtiulIs3A+PPSwExoec1c6W2iGV6ijyHUxalW
-         TZamdghhVcmVyg811B8SiZGErAJXo75Ba12NpdSRptdx/3DEH/qz7nh96PqfRUJ703
-         FfwkG8qn8EWxJW1r1SMiEGtRXDG1RxIrN1T+rTTqoyuIoMzwT65ztA4hS82RUe6aj8
-         jfUSRVHUHWa6krxc61ioVw347eNUWt2t+yubUKAfRPc1wtXaHlCCCjbtXs6liN2wDa
-         aodXWsb5BG/lq9x3U8YcEZDDDxXLeBTLMb4jwFhatTu/fIKWNrdSb0SazzLXBnASll
-         f5Z0yfL+lvYsg==
+        b=TWMj/dCJ5zXj0j7JNWexh782in4wgxO4fQJQaPvaEyGmHu27hNiDo+sC+8lZZsk3r
+         D/xDxmocFSO0yW2krNshy5hKh0PTIDqfB+FByGAum6O0hDllpH2eC964wPIsRN6oKE
+         mFFWfI26EuNXyhKSpBWOaljj9D6XltmT56IpvmkqCwRbyLgupg8UX4AmfzOUxe+5Mo
+         6qvBLdCaV1H1K3Ybq10a0BxqEvkCJOo6Z5aAZ4t7Ntv+eZho94H8GRezGLcR9c7l5H
+         ARfDhgzafiFpa399JFCg/pbS6NUXOQ7rbTq2hY1ojfT/kqmDviMzdmvChu5gl93HuC
+         QFSiQaJjM8PyQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Harold Huang <baymaxhuang@gmail.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        pabeni@redhat.com, mst@redhat.com, ast@kernel.org,
-        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
-        netdev@vger.kernel.org, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 114/149] tuntap: add sanity checks about msg_controllen in sendmsg
-Date:   Fri,  1 Apr 2022 10:25:01 -0400
-Message-Id: <20220401142536.1948161-114-sashal@kernel.org>
+Cc:     Hans de Goede <hdegoede@redhat.com>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        Sasha Levin <sashal@kernel.org>, sre@kernel.org, wens@csie.org,
+        linux-pm@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 105/149] power: supply: axp288_fuel_gauge: Use acpi_quirk_skip_acpi_ac_and_battery()
+Date:   Fri,  1 Apr 2022 10:24:52 -0400
+Message-Id: <20220401142536.1948161-105-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401142536.1948161-1-sashal@kernel.org>
 References: <20220401142536.1948161-1-sashal@kernel.org>
@@ -57,69 +53,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Harold Huang <baymaxhuang@gmail.com>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit 74a335a07a17d131b9263bfdbdcb5e40673ca9ca ]
+[ Upstream commit da365db704d290fb4dc4cdbd41f60b0ecec1cc03 ]
 
-In patch [1], tun_msg_ctl was added to allow pass batched xdp buffers to
-tun_sendmsg. Although we donot use msg_controllen in this path, we should
-check msg_controllen to make sure the caller pass a valid msg_ctl.
+Normally the native AXP288 fg/charger drivers are preferred but one some
+devices the ACPI drivers should be used instead.
 
-[1]: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=fe8dd45bb7556246c6b76277b1ba4296c91c2505
+The ACPI battery/ac drivers use the acpi_quirk_skip_acpi_ac_and_battery()
+helper to determine if they should skip loading because native fuel-gauge/
+charger drivers like the AXP288 drivers will be used.
 
-Reported-by: Eric Dumazet <eric.dumazet@gmail.com>
-Suggested-by: Jason Wang <jasowang@redhat.com>
-Signed-off-by: Harold Huang <baymaxhuang@gmail.com>
-Acked-by: Jason Wang <jasowang@redhat.com>
-Link: https://lore.kernel.org/r/20220303022441.383865-1-baymaxhuang@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+The new acpi_quirk_skip_acpi_ac_and_battery() helper includes a list of
+exceptions for boards where the ACPI drivers should be used instead.
+
+Use this new helper to avoid loading on such boards. Note this requires
+adding a Kconfig dependency on ACPI, this is not a problem because ACPI
+should be enabled on all boards with an AXP288 PMIC anyways.
+
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/tap.c   | 3 ++-
- drivers/net/tun.c   | 3 ++-
- drivers/vhost/net.c | 1 +
- 3 files changed, 5 insertions(+), 2 deletions(-)
+ drivers/power/supply/Kconfig             |  2 +-
+ drivers/power/supply/axp288_fuel_gauge.c | 14 ++++++++------
+ 2 files changed, 9 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/tap.c b/drivers/net/tap.c
-index 8e3a28ba6b28..ba2ef5437e16 100644
---- a/drivers/net/tap.c
-+++ b/drivers/net/tap.c
-@@ -1198,7 +1198,8 @@ static int tap_sendmsg(struct socket *sock, struct msghdr *m,
- 	struct xdp_buff *xdp;
- 	int i;
+diff --git a/drivers/power/supply/Kconfig b/drivers/power/supply/Kconfig
+index d7534f12e9ef..5e4a69352811 100644
+--- a/drivers/power/supply/Kconfig
++++ b/drivers/power/supply/Kconfig
+@@ -358,7 +358,7 @@ config AXP288_CHARGER
  
--	if (ctl && (ctl->type == TUN_MSG_PTR)) {
-+	if (m->msg_controllen == sizeof(struct tun_msg_ctl) &&
-+	    ctl && ctl->type == TUN_MSG_PTR) {
- 		for (i = 0; i < ctl->num; i++) {
- 			xdp = &((struct xdp_buff *)ctl->ptr)[i];
- 			tap_get_user_xdp(q, xdp);
-diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-index fed85447701a..de999e0fedbc 100644
---- a/drivers/net/tun.c
-+++ b/drivers/net/tun.c
-@@ -2489,7 +2489,8 @@ static int tun_sendmsg(struct socket *sock, struct msghdr *m, size_t total_len)
- 	if (!tun)
- 		return -EBADFD;
+ config AXP288_FUEL_GAUGE
+ 	tristate "X-Powers AXP288 Fuel Gauge"
+-	depends on MFD_AXP20X && IIO && IOSF_MBI
++	depends on MFD_AXP20X && IIO && IOSF_MBI && ACPI
+ 	help
+ 	  Say yes here to have support for X-Power power management IC (PMIC)
+ 	  Fuel Gauge. The device provides battery statistics and status
+diff --git a/drivers/power/supply/axp288_fuel_gauge.c b/drivers/power/supply/axp288_fuel_gauge.c
+index c1da217fdb0e..ce8ffd0a41b5 100644
+--- a/drivers/power/supply/axp288_fuel_gauge.c
++++ b/drivers/power/supply/axp288_fuel_gauge.c
+@@ -9,6 +9,7 @@
+  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  */
  
--	if (ctl && (ctl->type == TUN_MSG_PTR)) {
-+	if (m->msg_controllen == sizeof(struct tun_msg_ctl) &&
-+	    ctl && ctl->type == TUN_MSG_PTR) {
- 		struct tun_page tpage;
- 		int n = ctl->num;
- 		int flush = 0;
-diff --git a/drivers/vhost/net.c b/drivers/vhost/net.c
-index 28ef323882fb..792ab5f23647 100644
---- a/drivers/vhost/net.c
-+++ b/drivers/vhost/net.c
-@@ -473,6 +473,7 @@ static void vhost_tx_batch(struct vhost_net *net,
- 		goto signal_used;
++#include <linux/acpi.h>
+ #include <linux/dmi.h>
+ #include <linux/module.h>
+ #include <linux/kernel.h>
+@@ -560,12 +561,6 @@ static const struct dmi_system_id axp288_no_battery_list[] = {
+ 			DMI_EXACT_MATCH(DMI_BIOS_VERSION, "1.000"),
+ 		},
+ 	},
+-	{
+-		/* ECS EF20EA */
+-		.matches = {
+-			DMI_MATCH(DMI_PRODUCT_NAME, "EF20EA"),
+-		},
+-	},
+ 	{
+ 		/* Intel Cherry Trail Compute Stick, Windows version */
+ 		.matches = {
+@@ -624,6 +619,13 @@ static int axp288_fuel_gauge_probe(struct platform_device *pdev)
+ 	};
+ 	unsigned int val;
  
- 	msghdr->msg_control = &ctl;
-+	msghdr->msg_controllen = sizeof(ctl);
- 	err = sock->ops->sendmsg(sock, msghdr, 0);
- 	if (unlikely(err < 0)) {
- 		vq_err(&nvq->vq, "Fail to batch sending packets\n");
++	/*
++	 * Normally the native AXP288 fg/charger drivers are preferred but
++	 * on some devices the ACPI drivers should be used instead.
++	 */
++	if (!acpi_quirk_skip_acpi_ac_and_battery())
++		return -ENODEV;
++
+ 	if (dmi_check_system(axp288_no_battery_list))
+ 		return -ENODEV;
+ 
 -- 
 2.34.1
 
