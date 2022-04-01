@@ -2,47 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D0A1C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:40:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDF26C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:40:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345156AbiDAOlr (ORCPT
+        id S1348035AbiDAOl4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 10:41:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38692 "EHLO
+        Fri, 1 Apr 2022 10:41:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347894AbiDAOdg (ORCPT
+        with ESMTP id S1348336AbiDAOeF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:33:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C58228AC63;
-        Fri,  1 Apr 2022 07:30:50 -0700 (PDT)
+        Fri, 1 Apr 2022 10:34:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E3B7B7F6;
+        Fri,  1 Apr 2022 07:32:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7BADB61C1A;
-        Fri,  1 Apr 2022 14:30:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3EBAC36AE3;
-        Fri,  1 Apr 2022 14:30:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2C70C61C1A;
+        Fri,  1 Apr 2022 14:32:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8581C340F2;
+        Fri,  1 Apr 2022 14:32:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823449;
-        bh=BZlOSiKpq1szZjlZR/JstAdi032Er3alcUWB8YT1Ch8=;
+        s=k20201202; t=1648823535;
+        bh=dGEdT/4UWGJMLbUw9a2FEv9E8tfibTs3j7vfva8scJA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OK3CWJekz+4hOGxeGNAEnLF7z7sVXUzprIWiTMaDfyVCgIYUnKfYLPmiubS8j4SLG
-         CO8wpy+2rcHrbGuxvHvD2XJ1CIqwzYLCbl9czeFTRKRy55+FJy0xgsPmcl82jxrz5S
-         5fBjxjT6qFONsaXu5Y+4ZlUomiNunhe/MGXAkZ6g5m2ABXcgsEfb+26knP4GR2EhsS
-         KV6PMCyZk8cuO8nnchipAPApwGACcDVZDpIQXqCt/XtzXRDbjlTaOebyycB7RFYOWN
-         47x90sm5z4bR2XxqIep4FK2GTvyAnKrvmFJe60j6OZVqxkwX71pbNgvSRmvlYi6+jo
-         oScjH9yBbEhiA==
+        b=KYGsJOyPIG0e/wLhrTqkQ9yEBn0WXKzsi11uOzkuXxsfGL8J0TmVlSFr7PZircYWG
+         7IJL8oHV08VPEEave8JB1F+vwNqGjfNXSshMY7umkZyl0LiMDJ0gUmwkKS/+ZGRlAH
+         pyKJph6pKO9RHby5ZimbZ93gERqLg8fU175HGyKX4/Sw1wO10fIJ0EWB+sBPgZWWv2
+         gsXaOtnn3rZqTfay4evHDsXcTZxc+/11TFKwaIxW6bEC0cqhgULEkSocM1Iir0Lf9Z
+         yiniONbPfJNliCwqJ1YxfEKUD4Qr6eqpmSxr/htRGjT5/i71IDilaAqLNMBGS06kKI
+         DJbrXcPiXq8Bw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Hans de Goede <hdegoede@redhat.com>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Sasha Levin <sashal@kernel.org>, airlied@linux.ie,
-        daniel@ffwll.ch, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.17 100/149] drm/simpledrm: Add "panel orientation" property on non-upright mounted LCD panels
-Date:   Fri,  1 Apr 2022 10:24:47 -0400
-Message-Id: <20220401142536.1948161-100-sashal@kernel.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        George Shuklin <george.shuklin@gmail.com>,
+        David Ahern <dsahern@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        pabeni@redhat.com, idosch@nvidia.com, petrm@nvidia.com,
+        edumazet@google.com, yajun.deng@linux.dev, avagin@gmail.com,
+        cong.wang@bytedance.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 131/149] net: limit altnames to 64k total
+Date:   Fri,  1 Apr 2022 10:25:18 -0400
+Message-Id: <20220401142536.1948161-131-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401142536.1948161-1-sashal@kernel.org>
 References: <20220401142536.1948161-1-sashal@kernel.org>
@@ -54,45 +56,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Jakub Kicinski <kuba@kernel.org>
 
-[ Upstream commit 94fa115f7b28a3f02611499175e134f0a823b686 ]
+[ Upstream commit 155fb43b70b5fce341347a77d1af2765d1e8fbb8 ]
 
-Some devices use e.g. a portrait panel in a standard laptop casing made
-for landscape panels. efifb calls drm_get_panel_orientation_quirk() and
-sets fb_info.fbcon_rotate_hint to make fbcon rotate the console so that
-it shows up-right instead of on its side.
+Property list (altname is a link "property") is wrapped
+in a nlattr. nlattrs length is 16bit so practically
+speaking the list of properties can't be longer than
+that, otherwise user space would have to interpret
+broken netlink messages.
 
-When switching to simpledrm the fbcon renders on its side. Call the
-drm_connector_set_panel_orientation_with_quirk() helper to add
-a "panel orientation" property on devices listed in the quirk table,
-to make the fbcon (and aware userspace apps) rotate the image to
-display properly.
+Prevent the problem from occurring by checking the length
+of the property list before adding new entries.
 
-Cc: Javier Martinez Canillas <javierm@redhat.com>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
-Acked-by: Thomas Zimmermann <tzimmermann@suse.de>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220221220045.11958-1-hdegoede@redhat.com
+Reported-by: George Shuklin <george.shuklin@gmail.com>
+Reviewed-by: David Ahern <dsahern@kernel.org>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/tiny/simpledrm.c | 3 +++
- 1 file changed, 3 insertions(+)
+ net/core/rtnetlink.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/drivers/gpu/drm/tiny/simpledrm.c b/drivers/gpu/drm/tiny/simpledrm.c
-index 04146da2d1d8..11576e0297e4 100644
---- a/drivers/gpu/drm/tiny/simpledrm.c
-+++ b/drivers/gpu/drm/tiny/simpledrm.c
-@@ -798,6 +798,9 @@ static int simpledrm_device_init_modeset(struct simpledrm_device *sdev)
- 	if (ret)
- 		return ret;
- 	drm_connector_helper_add(connector, &simpledrm_connector_helper_funcs);
-+	drm_connector_set_panel_orientation_with_quirk(connector,
-+						       DRM_MODE_PANEL_ORIENTATION_UNKNOWN,
-+						       mode->hdisplay, mode->vdisplay);
+diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+index 9c9ad3d4b766..43b995e935cd 100644
+--- a/net/core/rtnetlink.c
++++ b/net/core/rtnetlink.c
+@@ -3652,12 +3652,23 @@ static int rtnl_alt_ifname(int cmd, struct net_device *dev, struct nlattr *attr,
+ 			   bool *changed, struct netlink_ext_ack *extack)
+ {
+ 	char *alt_ifname;
++	size_t size;
+ 	int err;
  
- 	formats = simpledrm_device_formats(sdev, &nformats);
+ 	err = nla_validate(attr, attr->nla_len, IFLA_MAX, ifla_policy, extack);
+ 	if (err)
+ 		return err;
  
++	if (cmd == RTM_NEWLINKPROP) {
++		size = rtnl_prop_list_size(dev);
++		size += nla_total_size(ALTIFNAMSIZ);
++		if (size >= U16_MAX) {
++			NL_SET_ERR_MSG(extack,
++				       "effective property list too long");
++			return -EINVAL;
++		}
++	}
++
+ 	alt_ifname = nla_strdup(attr, GFP_KERNEL_ACCOUNT);
+ 	if (!alt_ifname)
+ 		return -ENOMEM;
 -- 
 2.34.1
 
