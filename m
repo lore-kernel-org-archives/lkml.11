@@ -2,45 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B572CC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0001BC4321E
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:49:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348407AbiDAOnQ (ORCPT
+        id S1348509AbiDAOn3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 10:43:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57968 "EHLO
+        Fri, 1 Apr 2022 10:43:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348471AbiDAOea (ORCPT
+        with ESMTP id S1348552AbiDAOen (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:34:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3639BC7;
-        Fri,  1 Apr 2022 07:32:41 -0700 (PDT)
+        Fri, 1 Apr 2022 10:34:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98179BC7;
+        Fri,  1 Apr 2022 07:32:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3EA9861CA5;
-        Fri,  1 Apr 2022 14:32:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDA71C340F2;
-        Fri,  1 Apr 2022 14:32:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 480E8B82500;
+        Fri,  1 Apr 2022 14:32:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC12EC2BBE4;
+        Fri,  1 Apr 2022 14:32:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823560;
-        bh=sE4+EECy/LIgdSLc+FT42yrSgLpqf3BDjDtRJM+SOLc=;
+        s=k20201202; t=1648823571;
+        bh=JdRrg21BJ0EHLQ2536FbmG5Ex1B666j20GQHsg51580=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=giRe+288fo4xO4dHMGZNCN/U8H6qKbYQflRsF5b/Pihu50X4G2l8PXQxtXwQbBA41
-         6dc/5L2rz6uO7thYTEXNOUZd+tTLYiKjOPL282xCtskdecN22o6JgucmEHZh8YuSJI
-         LRGKsOVmasgjTWmGFJuB2IfgaZF8C9hVfvkIuXtOLMR/3nfXCi/NcGfyjOOvpU89ie
-         VoYoOyAvZsgIFNt7CKt8T448v97MhKovAnWvNTVHu4m/C68o7Asb6gtmrGG/fIdvl+
-         wULLdqoWyiwCne4dqv3fuWoJeWO4n/Bd2VGS6KKLEBYvU33r55REVCNwVzDB6gsN4S
-         r65xCoSGEGZOQ==
+        b=a4zPeB0ahATdWMNmMReTlywbrg1KDMZdkjhAZYoRg/L7YSBOwz3TDJhj4Ustbutzo
+         Mut7Rt1hVLRcHBVigtyiBnBFTyENPL0N0owtkjrEGjy99lQM69UpUgoZ2DAYRPGqEG
+         mJ2UgPgPtZixZfzE7ilnwqYB9wUN9p2pPtZf+1OtUZN+pTHYd/zWXmJdD2VMtdqKM4
+         fYDQLSUuaGQc4caxJZjPx8H5iHPGj5JnpnbPYh6OE6kV76kxhQc8LPt4eHQTQBCvZP
+         lh/k4F+tClaWQIhCl7RqJJ5ZDr9SAPdrgjn53v4pb13dknZ9Ag2zOBpdwZHjsw8aF2
+         nw31Nnyn0DE5w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Xiubo Li <xiubli@redhat.com>, Jeff Layton <jlayton@kernel.org>,
-        Ilya Dryomov <idryomov@gmail.com>,
-        Sasha Levin <sashal@kernel.org>, ceph-devel@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 145/149] ceph: fix inode reference leakage in ceph_get_snapdir()
-Date:   Fri,  1 Apr 2022 10:25:32 -0400
-Message-Id: <20220401142536.1948161-145-sashal@kernel.org>
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        Ingo Molnar <mingo@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>, rostedt@goodmis.org,
+        mhiramat@kernel.org, ahalaney@redhat.com, vbabka@suse.cz,
+        linux@rasmusvillemoes.dk, wangkefeng.wang@huawei.com,
+        keescook@chromium.org, mark-pk.tsai@mediatek.com,
+        peterz@infradead.org, valentin.schneider@arm.com
+Subject: [PATCH AUTOSEL 5.17 148/149] init/main.c: return 1 from handled __setup() functions
+Date:   Fri,  1 Apr 2022 10:25:35 -0400
+Message-Id: <20220401142536.1948161-148-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401142536.1948161-1-sashal@kernel.org>
 References: <20220401142536.1948161-1-sashal@kernel.org>
@@ -52,57 +60,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiubo Li <xiubli@redhat.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit 322794d3355c33adcc4feace0045d85a8e4ed813 ]
+[ Upstream commit f9a40b0890658330c83c95511f9d6b396610defc ]
 
-The ceph_get_inode() will search for or insert a new inode into the
-hash for the given vino, and return a reference to it. If new is
-non-NULL, its reference is consumed.
+initcall_blacklist() should return 1 to indicate that it handled its
+cmdline arguments.
 
-We should release the reference when in error handing cases.
+set_debug_rodata() should return 1 to indicate that it handled its
+cmdline arguments.  Print a warning if the option string is invalid.
 
-Signed-off-by: Xiubo Li <xiubli@redhat.com>
-Reviewed-by: Jeff Layton <jlayton@kernel.org>
-Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
+This prevents these strings from being added to the 'init' program's
+environment as they are not init arguments/parameters.
+
+Link: https://lkml.kernel.org/r/20220221050901.23985-1-rdunlap@infradead.org
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ceph/inode.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ init/main.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/fs/ceph/inode.c b/fs/ceph/inode.c
-index ef4a980a7bf3..c092dce0485c 100644
---- a/fs/ceph/inode.c
-+++ b/fs/ceph/inode.c
-@@ -87,13 +87,13 @@ struct inode *ceph_get_snapdir(struct inode *parent)
- 	if (!S_ISDIR(parent->i_mode)) {
- 		pr_warn_once("bad snapdir parent type (mode=0%o)\n",
- 			     parent->i_mode);
--		return ERR_PTR(-ENOTDIR);
-+		goto err;
- 	}
+diff --git a/init/main.c b/init/main.c
+index ada50f5a15e4..9a5097b2251a 100644
+--- a/init/main.c
++++ b/init/main.c
+@@ -1192,7 +1192,7 @@ static int __init initcall_blacklist(char *str)
+ 		}
+ 	} while (str_entry);
  
- 	if (!(inode->i_state & I_NEW) && !S_ISDIR(inode->i_mode)) {
- 		pr_warn_once("bad snapdir inode type (mode=0%o)\n",
- 			     inode->i_mode);
--		return ERR_PTR(-ENOTDIR);
-+		goto err;
- 	}
- 
- 	inode->i_mode = parent->i_mode;
-@@ -113,6 +113,12 @@ struct inode *ceph_get_snapdir(struct inode *parent)
- 	}
- 
- 	return inode;
-+err:
-+	if ((inode->i_state & I_NEW))
-+		discard_new_inode(inode);
-+	else
-+		iput(inode);
-+	return ERR_PTR(-ENOTDIR);
+-	return 0;
++	return 1;
  }
  
- const struct inode_operations ceph_file_iops = {
+ static bool __init_or_module initcall_blacklisted(initcall_t fn)
+@@ -1454,7 +1454,9 @@ static noinline void __init kernel_init_freeable(void);
+ bool rodata_enabled __ro_after_init = true;
+ static int __init set_debug_rodata(char *str)
+ {
+-	return strtobool(str, &rodata_enabled);
++	if (strtobool(str, &rodata_enabled))
++		pr_warn("Invalid option string for rodata: '%s'\n", str);
++	return 1;
+ }
+ __setup("rodata=", set_debug_rodata);
+ #endif
 -- 
 2.34.1
 
