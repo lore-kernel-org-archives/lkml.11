@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE2BAC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:26:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D86FC43219
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:26:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346882AbiDAO1s (ORCPT
+        id S1346920AbiDAO15 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 10:27:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34432 "EHLO
+        Fri, 1 Apr 2022 10:27:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346863AbiDAO1k (ORCPT
+        with ESMTP id S1346894AbiDAO1v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:27:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D3B719E396;
-        Fri,  1 Apr 2022 07:25:49 -0700 (PDT)
+        Fri, 1 Apr 2022 10:27:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C7401E3189;
+        Fri,  1 Apr 2022 07:25:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F334CB82466;
-        Fri,  1 Apr 2022 14:25:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25E13C34112;
-        Fri,  1 Apr 2022 14:25:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 92FB561C44;
+        Fri,  1 Apr 2022 14:25:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FD80C340EE;
+        Fri,  1 Apr 2022 14:25:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823146;
-        bh=su2KRCwuNBQc7cumBH0i19tL0bZ1Vk8IOtg5gBsMwE8=;
+        s=k20201202; t=1648823156;
+        bh=aZW18FXpZ2MSrqkywvoIoTsrpp1F3Gh4D/xGzne3JdE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B8u2gZZ20ooYEha3m6tIE8lvxp9Xa0PQaJMiweJJqAWQuHO/EnZXFRaQvrJQ+yXvS
-         iJ1rdIqWqGc+4Onxd8JTnvfUS7Z/ookj44cCV92PBnjxjWBMMRA3G0+jy4rqlZsCrF
-         5mHX+nKkwYAWNJcDOo8Vdvi4xC38Mc6zYchB1dXnQLltya4fZatYrIYeW9+Ru3Wr0G
-         fEsgGfOSkZPMKJiGkZAe9RERjyTYSg+qqf13f9f5X0lJphUO+k4ZjCleqLPC7lERKE
-         aXVv5/A93c6Bm0A+K8wS+Bw6UrjpEMZjEs2obs5wBJXNjJivJAhMn/QCY3ylvFda68
-         OaDRk9/kYvjmQ==
+        b=kXWWWUFVYAvNWmunYv5r5Q1QGb5U0UUv8Mj+3UPpcYGIj5v4jhPQHmPKaUktswmzx
+         jk5XthEK4GBWHuJHicVBExJXwEnxNmA01LJdMp1x4LzLNshkTH7HLP6FLVYjlJYXWa
+         C6GdJMZMCDoTlRuGEyNrVbwYyuqzrq+cKfg60IB4f66md8FvlkvNQBP9gI2SEYkv0i
+         BslzjuSxg3dET7lFqyW3/ud5ey13mOvGm/9ShlKDMpe5v4eezlts5gFlt9VkRBKqi5
+         VwSkzppgjGLTc0SxKLz0pSIi0MUGFD/BjoyAoKmv8v+jX+NMSPxU6S2B/9JpSqIWPz
+         rgP869gvL6gHg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Soenke Huster <soenke.huster@eknoes.de>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Sasha Levin <sashal@kernel.org>, marcel@holtmann.org,
-        johan.hedberg@gmail.com, luiz.dentz@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 004/149] Bluetooth: fix null ptr deref on hci_sync_conn_complete_evt
-Date:   Fri,  1 Apr 2022 10:23:11 -0400
-Message-Id: <20220401142536.1948161-4-sashal@kernel.org>
+Cc:     Eric Huang <jinhuieric.huang@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Felix Kuehling <Felix.Kuehling@amd.com>,
+        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
+        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.17 006/149] drm/amdkfd: enable heavy-weight TLB flush on Arcturus
+Date:   Fri,  1 Apr 2022 10:23:13 -0400
+Message-Id: <20220401142536.1948161-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401142536.1948161-1-sashal@kernel.org>
 References: <20220401142536.1948161-1-sashal@kernel.org>
@@ -55,47 +55,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Soenke Huster <soenke.huster@eknoes.de>
+From: Eric Huang <jinhuieric.huang@amd.com>
 
-[ Upstream commit 3afee2118132e93e5f6fa636dfde86201a860ab3 ]
+[ Upstream commit f61c40c0757a79bcf744314df606c2bc8ae6a729 ]
 
-This event is just specified for SCO and eSCO link types.
-On the reception of a HCI_Synchronous_Connection_Complete for a BDADDR
-of an existing LE connection, LE link type and a status that triggers the
-second case of the packet processing a NULL pointer dereference happens,
-as conn->link is NULL.
+SDMA FW fixes the hang issue for adding heavy-weight TLB
+flush on Arcturus, so we can enable it.
 
-Signed-off-by: Soenke Huster <soenke.huster@eknoes.de>
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Signed-off-by: Eric Huang <jinhuieric.huang@amd.com>
+Acked-by: Alex Deucher <alexander.deucher@amd.com>
+Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/hci_event.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c |  6 ------
+ drivers/gpu/drm/amd/amdkfd/kfd_chardev.c         | 10 ++++++++--
+ 2 files changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-index fc30f4c03d29..e47cde778b1c 100644
---- a/net/bluetooth/hci_event.c
-+++ b/net/bluetooth/hci_event.c
-@@ -4661,6 +4661,19 @@ static void hci_sync_conn_complete_evt(struct hci_dev *hdev, void *data,
- 	struct hci_ev_sync_conn_complete *ev = data;
- 	struct hci_conn *conn;
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c
+index f9bab963a948..5df387c4d7fb 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c
+@@ -1813,12 +1813,6 @@ int amdgpu_amdkfd_gpuvm_map_memory_to_gpu(
+ 				true);
+ 	ret = unreserve_bo_and_vms(&ctx, false, false);
  
-+	switch (ev->link_type) {
-+	case SCO_LINK:
-+	case ESCO_LINK:
-+		break;
-+	default:
-+		/* As per Core 5.3 Vol 4 Part E 7.7.35 (p.2219), Link_Type
-+		 * for HCI_Synchronous_Connection_Complete is limited to
-+		 * either SCO or eSCO
-+		 */
-+		bt_dev_err(hdev, "Ignoring connect complete event for invalid link type");
-+		return;
-+	}
+-	/* Only apply no TLB flush on Aldebaran to
+-	 * workaround regressions on other Asics.
+-	 */
+-	if (table_freed && (adev->asic_type != CHIP_ALDEBARAN))
+-		*table_freed = true;
+-
+ 	goto out;
+ 
+ out_unreserve:
+diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_chardev.c b/drivers/gpu/drm/amd/amdkfd/kfd_chardev.c
+index 4bfc0c8ab764..337953af7c2f 100644
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_chardev.c
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_chardev.c
+@@ -1416,6 +1416,12 @@ static int kfd_ioctl_free_memory_of_gpu(struct file *filep,
+ 	return ret;
+ }
+ 
++static bool kfd_flush_tlb_after_unmap(struct kfd_dev *dev) {
++	return KFD_GC_VERSION(dev) == IP_VERSION(9, 4, 2) ||
++	       (KFD_GC_VERSION(dev) == IP_VERSION(9, 4, 1) &&
++	        dev->adev->sdma.instance[0].fw_version >= 18);
++}
 +
- 	bt_dev_dbg(hdev, "status 0x%2.2x", ev->status);
+ static int kfd_ioctl_map_memory_to_gpu(struct file *filep,
+ 					struct kfd_process *p, void *data)
+ {
+@@ -1503,7 +1509,7 @@ static int kfd_ioctl_map_memory_to_gpu(struct file *filep,
+ 	}
  
- 	hci_dev_lock(hdev);
+ 	/* Flush TLBs after waiting for the page table updates to complete */
+-	if (table_freed) {
++	if (table_freed || !kfd_flush_tlb_after_unmap(dev)) {
+ 		for (i = 0; i < args->n_devices; i++) {
+ 			peer = kfd_device_by_id(devices_arr[i]);
+ 			if (WARN_ON_ONCE(!peer))
+@@ -1603,7 +1609,7 @@ static int kfd_ioctl_unmap_memory_from_gpu(struct file *filep,
+ 	}
+ 	mutex_unlock(&p->mutex);
+ 
+-	if (KFD_GC_VERSION(dev) == IP_VERSION(9, 4, 2)) {
++	if (kfd_flush_tlb_after_unmap(dev)) {
+ 		err = amdgpu_amdkfd_gpuvm_sync_memory(dev->adev,
+ 				(struct kgd_mem *) mem, true);
+ 		if (err) {
 -- 
 2.34.1
 
