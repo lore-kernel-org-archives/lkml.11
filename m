@@ -2,127 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A3EDC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 13:39:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A65AC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 13:43:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346460AbiDANli (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 09:41:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49670 "EHLO
+        id S244388AbiDANpA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Apr 2022 09:45:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346450AbiDANle (ORCPT
+        with ESMTP id S231720AbiDANo5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 09:41:34 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B4E53377F8
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 06:39:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648820383;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=h6NQyMqLB58mw6AkprjfrT2eMsB7dX14dgGFHiYBaig=;
-        b=Te19cyqTItTb52oZEDD3sn2FbFExWtyZDX9jMIg6oN91xyskJ2/Gk+Wk6QBgOnzY1wV8N7
-        zeaanDsJx+1n+Ef/2oaD7x2dJ3IfrMOvUcsc52zxzd3CNq7Bu+3Fm6quJnBaZT6zmVGcHy
-        jvYp1wp0R7Iht0hB82Ac2IykXvwBSmM=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-450-nL7KlP4-Pv-1HD6HzTPi4A-1; Fri, 01 Apr 2022 09:39:40 -0400
-X-MC-Unique: nL7KlP4-Pv-1HD6HzTPi4A-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 0E27B101AA64;
-        Fri,  1 Apr 2022 13:39:40 +0000 (UTC)
-Received: from x2.localnet (unknown [10.22.11.39])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 6157342CFE9;
-        Fri,  1 Apr 2022 13:39:39 +0000 (UTC)
-From:   Steve Grubb <sgrubb@redhat.com>
-To:     Paul Moore <paul@paul-moore.com>, linux-audit@redhat.com,
-        CGEL <cgel.zte@gmail.com>
-Cc:     kbuild-all@lists.01.org, Zeal Robot <zealci@zte.com.cn>,
-        linux-kernel@vger.kernel.org, eparis@redhat.com,
-        dai.shixin@zte.com.cn, Yang Yang <yang.yang29@zte.com.cn>,
-        linux-audit@redhat.com, ink@jurassic.park.msu.ru,
-        huang.junhua@zte.com.cn, guo.xiaofeng@zte.com.cn,
-        mattst88@gmail.com
-Subject: Re: [PATCH] audit: do a quick exit when syscall number is invalid
-Date:   Fri, 01 Apr 2022 09:39:38 -0400
-Message-ID: <2777189.mvXUDI8C0e@x2>
-Organization: Red Hat
-In-Reply-To: <62465bf3.1c69fb81.d5424.365e@mx.google.com>
-References: <20220326094654.2361956-1-yang.yang29@zte.com.cn> <CAHC9VhTaCNqfTOi8X5G3AheBFzTYCzGnt_-=fNFc5Z1o8gPm9Q@mail.gmail.com> <62465bf3.1c69fb81.d5424.365e@mx.google.com>
+        Fri, 1 Apr 2022 09:44:57 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73E2027F4EB
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 06:43:07 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id dr20so5929986ejc.6
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 06:43:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=kRGQSHbNrQ56sbIjo0fVlJQ0u1ahcNvK7/rx7vN//fU=;
+        b=POSigfPFudfJz+V4egSDKxGTnB5HpDAVi2PWRCIkSCMe6zHwz+M1g2gVx3gDoH+OfO
+         fU3SrAFaU8TidUv3pLDTkLhlwi1F9PmR2bB0JD5cfPUBRVzdeldYspsi8SrqDWfW+qrf
+         IiWaQ05EIeb4DFNYZr8fd9YxkJw+tHSkl1D4U/suibOuTuJoQ7RXlpBtpMhKCnjXOTKA
+         c3Mjh6YF4Ic3cMf6WxFZ90yY8HmxJwu4dShVCPM3sVrieRAZLtAznwI8CRWzpH8ntGA0
+         jlftKvgtiosy569jtbzNttfcORzAKdvnMHsSIOPWRjeKJN2RbfLZPi2KdPWBLSe0tarE
+         ZkzQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=kRGQSHbNrQ56sbIjo0fVlJQ0u1ahcNvK7/rx7vN//fU=;
+        b=zlvPkq+E6PEWH5UyQFyt8sj+6ahXdmi1y+YivXA4seIOjPq77Vn9XtJ6sQEa0Wqgx6
+         86xm+dqqMRH0JJ11mUM/ODiGFWH/4W+P+eWBYcG98XD898UaxXqlXylZfTDQiSqJq/vS
+         YjtYpuFKWQ4Nf44qRamlYO7Jw2hUphRdcFK8+bduPxOzHYb3K9Jn6h9OhbZ7wMdaAiOh
+         rcjqDUM8CzOdpZvu1VEEF/HaFulU0V+y7VBjolzgknuXUp0kLc/CxmkLN3GcvLIQGIDU
+         1YzfVNHVEHRT3cTxXxU3CD/A1+I3bFCx45zp1LgDHQTBfI3A88hK+OLlnWpc/GKV9K6s
+         xVdg==
+X-Gm-Message-State: AOAM533LKtdKJFiE2VAhwvMLrtqvPAKx8EMUhil9r/1z0nd3URnwPZmw
+        zYjo76H5jpq3OBHl8cGg8sbHoA==
+X-Google-Smtp-Source: ABdhPJwQ1HtREvWS1HonL2xj33ywp4DkIJSz+zdns6tFyQ93YEsSmnal+eYCLtgrddAv08r12QNvTA==
+X-Received: by 2002:a17:907:3f07:b0:6e0:2fa0:2482 with SMTP id hq7-20020a1709073f0700b006e02fa02482mr9289837ejc.766.1648820585959;
+        Fri, 01 Apr 2022 06:43:05 -0700 (PDT)
+Received: from [192.168.0.170] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id q16-20020a170906145000b006bdaf981589sm1046344ejc.81.2022.04.01.06.43.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 01 Apr 2022 06:43:05 -0700 (PDT)
+Message-ID: <3d03bc18-dd42-002d-739b-230b4134b866@linaro.org>
+Date:   Fri, 1 Apr 2022 15:43:03 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 1/4] dt-bindings: vendor-prefixes: Add prefix for SINO
+ WEALTH Eletronics Ltd.
+Content-Language: en-US
+To:     Chen-Yu Tsai <wens@kernel.org>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+Cc:     Chen-Yu Tsai <wens@csie.org>, dri-devel@lists.freedesktop.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220330190846.13997-1-wens@kernel.org>
+ <20220330190846.13997-2-wens@kernel.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220330190846.13997-2-wens@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thursday, March 31, 2022 9:57:05 PM EDT CGEL wrote:
-> On Thu, Mar 31, 2022 at 10:16:23AM -0400, Paul Moore wrote:
-> > On Wed, Mar 30, 2022 at 10:29 PM CGEL <cgel.zte@gmail.com> wrote:
-> > > On Wed, Mar 30, 2022 at 10:48:12AM -0400, Paul Moore wrote:
-> > > > If audit is not generating SYSCALL records, even for invalid/ENOSYS
-> > > > syscalls, I would consider that a bug which should be fixed.
-> > > 
-> > > If we fix this bug, do you think audit invalid/ENOSYS syscalls better
-> > > be forcible or be a rule that can be configure? I think configure is
-> > > better.
-> > 
-> > It isn't clear to me exactly what you are asking, but I would expect
-> > the existing audit syscall filtering mechanism to work regardless if
-> > the syscall is valid or not.
+On 30/03/2022 21:08, Chen-Yu Tsai wrote:
+> From: Chen-Yu Tsai <wens@csie.org>
 > 
-> Thanks, I try to make it more clear. We found that auditctl would only
-> set rule with syscall number (>=0 && <2047). So if userspace using
-> syscall whose number is (<0 || >=2047), there seems no meaning for
-> kernel audit to handle it, since this kind of syscall will never hit
-> any audit rule(this rule could not be set by auditctl).
-
-This limit is imposed by:
-
-/usr/include/linux/audit.h
-
-struct audit_rule_data {
-...
-        __u32           mask[AUDIT_BITMASK_SIZE]; /* syscall(s) affected */
-
-Where   #define AUDIT_BITMASK_SIZE 64
-
-So, 64 * 32 = 2048
-
--Steve
-
-> By the way it's a little strange for auditctl(using libaudit.c) to limit
-> syscall number (>=0 && <2047)(see audit_rule_syscall_data()), especially
-> we know NR_syscalls is the real limit in kernel, you can see how other
-> kernel code to the similar thing in ftrace_syscall_enter():
+> Add a vendor prefix entry for SINO WEALTH Eletronics Ltd.
+> (http://www.sinowealth.com).
 > 
-> 	static void ftrace_syscall_enter(void *data, struct pt_regs
-> 	*regs, long id)
-> 	{
-> 		...
-> 		syscall_nr = trace_get_syscall_nr(current, regs);
-> 		if (syscall_nr < 0 || syscall_nr >= NR_syscalls)
-> 			return;
-> 		...
-> 	}
+> Signed-off-by: Chen-Yu Tsai <wens@csie.org>
+> ---
+>  Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
+>  1 file changed, 2 insertions(+)
 > 
-> Thanks.
-> 
-> > Beware that there are some limitations
-> > to the audit syscall filter, which are unfortunately baked into the
-> > current design/implementation, which may affect this to some extent.
-> 
-> --
-> Linux-audit mailing list
-> Linux-audit@redhat.com
-> https://listman.redhat.com/mailman/listinfo/linux-audit
+> diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+> index 01430973ecec..bb4ae59a3c89 100644
+> --- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
+> +++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+> @@ -1128,6 +1128,8 @@ patternProperties:
+>      description: Cypress Semiconductor Corporation (Simtek Corporation)
+>    "^sinlinx,.*":
+>      description: Sinlinx Electronics Technology Co., LTD
+> +  "^sinowealth,.*":
+
+Alphabetical order, so after sinovoip
+
+> +    description: SINO WEALTH Electronic Ltd.
+>    "^sinovoip,.*":
+>      description: SinoVoip Co., Ltd
+>    "^sipeed,.*":
 
 
-
-
+Best regards,
+Krzysztof
