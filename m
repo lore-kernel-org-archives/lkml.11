@@ -2,110 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3C13C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 12:20:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EEE0C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 12:26:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345836AbiDAMWf (ORCPT
+        id S1345779AbiDAM2T (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 08:22:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43598 "EHLO
+        Fri, 1 Apr 2022 08:28:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345826AbiDAMWU (ORCPT
+        with ESMTP id S240693AbiDAM2C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 08:22:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBFB127855F
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 05:20:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 54238619CF
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 12:20:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19CC7C3410F
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 12:20:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648815630;
-        bh=uk21Dfi1NLedLZlU+WTy5BFw1I7PDgyf8dQtEmHAbs4=;
-        h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=VhmsRcXrqIM4fOgfTIH0PBnFO/lFojwzLa5fMGMaCVsFuKrbQo9JJogKeMIwNoO5S
-         16ANRqrGAgOM5LzciqYLO80KMZDAm0d6de5N6gEOhmM0gJ+jtWGcVrYBE2i6WgGlcQ
-         CV7cYS+La+52SvLB+zSsCwr1gavRmuXHChTcMrzG20qHJ7y0HYkUIblrixtGbffoNn
-         5qxpg42mQZXqhFoeHNyiKqovUOd13F8HGFTHq1NfSRAlH90Z9Jhltp+Kq423nRC5n1
-         nlV6RYokncR151pneTgpAdykm3mySq6HjzAiTivj9J1Juvj+r/91FSDy9deND6+CSu
-         bO8TQ+ucX6FEA==
-From:   Oded Gabbay <ogabbay@kernel.org>
-To:     linux-kernel@vger.kernel.org
-Subject: [PATCH 7/7] habanalabs: change a reset print to debug level
-Date:   Fri,  1 Apr 2022 15:20:17 +0300
-Message-Id: <20220401122017.116205-7-ogabbay@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220401122017.116205-1-ogabbay@kernel.org>
-References: <20220401122017.116205-1-ogabbay@kernel.org>
+        Fri, 1 Apr 2022 08:28:02 -0400
+Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AB14183817
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 05:26:08 -0700 (PDT)
+Received: by mail-io1-f71.google.com with SMTP id b15-20020a05660214cf00b00648a910b964so1613671iow.19
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 05:26:08 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=zIIYng1N/hRX2vcx67wB/yl+OUi4SVRZVFeXJVbE33o=;
+        b=350UBc51qjpLwVzk2B5DlKdtZlSMnzgSMkBp1nvy741O2lmzaAvtTZjonVHwhhKjJs
+         SKPX3Da/lOFkB/Maws5nFCnKuavBes2cSx6lYz65wvE1nw1M8KYqGZI2MKYsEnMybM+L
+         uubEFNfXC9E4iJ21QcniJIcOz1BHVvTic8eLnUUJ6Ur8cwY09WN9pAhggQvxkUuBDrYe
+         XzoCc+HfiCqCdCrxB+lSzpQx8O8HsN46HQTsT8mNhJpa/BPUhd4NA0vNED1CVg8Ryyeb
+         nzlyRfMn4dKcaTtkNVcxLUeMSHLdKXBve6BGMV9rwhZjT0DmjQzheg59qlvLnowFJJne
+         IEEg==
+X-Gm-Message-State: AOAM5332C+wC/kAeD3qbeWhPMuXkm4B27C6bHy5HZ+zieUiQ6sLV6kY7
+        0gNkyFDYjngY4iU3tulX2sYCpzRuBa2LhGjLThtNZJqZ3ffx
+X-Google-Smtp-Source: ABdhPJwDZik/5YqEkLg15L9vjjc+LQ5ps+Q+q9QmEMDLHQCwlUI0ry6SodWxtS8wopvGq3bVeCktQ5JblDhZ01euO8/ydJqzQyUV
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a05:6638:1388:b0:323:78d7:4061 with SMTP id
+ w8-20020a056638138800b0032378d74061mr5561535jad.152.1648815967418; Fri, 01
+ Apr 2022 05:26:07 -0700 (PDT)
+Date:   Fri, 01 Apr 2022 05:26:07 -0700
+In-Reply-To: <00000000000065061a05d85b8262@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000009bb4505db96e211@google.com>
+Subject: Re: [syzbot] KASAN: use-after-free Read in io_poll_check_events
+From:   syzbot <syzbot+edb9c7738ba8cbdbf197@syzkaller.appspotmail.com>
+To:     asml.silence@gmail.com, axboe@kernel.dk, io-uring@vger.kernel.org,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently we have two reset prints per reset. One is in the common
-code and one in each asic-specific file.
+syzbot has bisected this issue to:
 
-We can change the asic-specific message to be debug only as we can
-know the type of reset being done according to the print in the
-common code, which is also easier to maintain.
+commit d570aa1c4f191100f502edfc240e8d49687f62ac
+Author: Jens Axboe <axboe@kernel.dk>
+Date:   Thu Mar 31 18:38:46 2022 +0000
 
-Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
----
- drivers/misc/habanalabs/gaudi/gaudi.c | 6 +++---
- drivers/misc/habanalabs/goya/goya.c   | 4 ++--
- 2 files changed, 5 insertions(+), 5 deletions(-)
+    io_uring: drop the old style inflight file tracking
 
-diff --git a/drivers/misc/habanalabs/gaudi/gaudi.c b/drivers/misc/habanalabs/gaudi/gaudi.c
-index 33f7cfea53ae..b4bd40d47000 100644
---- a/drivers/misc/habanalabs/gaudi/gaudi.c
-+++ b/drivers/misc/habanalabs/gaudi/gaudi.c
-@@ -4212,7 +4212,7 @@ static void gaudi_hw_fini(struct hl_device *hdev, bool hard_reset, bool fw_reset
- 	}
- 
- 	if (fw_reset) {
--		dev_info(hdev->dev,
-+		dev_dbg(hdev->dev,
- 			"Firmware performs HARD reset, going to wait %dms\n",
- 			reset_timeout_ms);
- 
-@@ -4304,11 +4304,11 @@ static void gaudi_hw_fini(struct hl_device *hdev, bool hard_reset, bool fw_reset
- 		WREG32(mmPSOC_GLOBAL_CONF_SW_ALL_RST,
- 			1 << PSOC_GLOBAL_CONF_SW_ALL_RST_IND_SHIFT);
- 
--		dev_info(hdev->dev,
-+		dev_dbg(hdev->dev,
- 			"Issued HARD reset command, going to wait %dms\n",
- 			reset_timeout_ms);
- 	} else {
--		dev_info(hdev->dev,
-+		dev_dbg(hdev->dev,
- 			"Firmware performs HARD reset, going to wait %dms\n",
- 			reset_timeout_ms);
- 	}
-diff --git a/drivers/misc/habanalabs/goya/goya.c b/drivers/misc/habanalabs/goya/goya.c
-index 8572b178ef7d..4d87dbf208f8 100644
---- a/drivers/misc/habanalabs/goya/goya.c
-+++ b/drivers/misc/habanalabs/goya/goya.c
-@@ -2825,12 +2825,12 @@ static void goya_hw_fini(struct hl_device *hdev, bool hard_reset, bool fw_reset)
- 		goya_set_pll_refclk(hdev);
- 
- 		WREG32(mmPSOC_GLOBAL_CONF_SW_ALL_RST_CFG, RESET_ALL);
--		dev_info(hdev->dev,
-+		dev_dbg(hdev->dev,
- 			"Issued HARD reset command, going to wait %dms\n",
- 			reset_timeout_ms);
- 	} else {
- 		WREG32(mmPSOC_GLOBAL_CONF_SW_ALL_RST_CFG, DMA_MME_TPC_RESET);
--		dev_info(hdev->dev,
-+		dev_dbg(hdev->dev,
- 			"Issued SOFT reset command, going to wait %dms\n",
- 			reset_timeout_ms);
- 	}
--- 
-2.25.1
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=11507c5b700000
+start commit:   e5071887cd22 Add linux-next specific files for 20220401
+git tree:       linux-next
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=13507c5b700000
+console output: https://syzkaller.appspot.com/x/log.txt?x=15507c5b700000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=17fed8f59a304eee
+dashboard link: https://syzkaller.appspot.com/bug?extid=edb9c7738ba8cbdbf197
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1016f8f3700000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14907c5b700000
 
+Reported-by: syzbot+edb9c7738ba8cbdbf197@syzkaller.appspotmail.com
+Fixes: d570aa1c4f19 ("io_uring: drop the old style inflight file tracking")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
