@@ -2,65 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 877D8C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 03:27:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 288ADC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 03:29:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244556AbiDAD3l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 23:29:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56906 "EHLO
+        id S244580AbiDADb2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 23:31:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235001AbiDAD3i (ORCPT
+        with ESMTP id S235381AbiDADbZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 23:29:38 -0400
-Received: from mail.meizu.com (edge05.meizu.com [157.122.146.251])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33C2B25EC8C
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 20:27:49 -0700 (PDT)
-Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail12.meizu.com
- (172.16.1.108) with Microsoft SMTP Server (TLS) id 14.3.487.0; Fri, 1 Apr
- 2022 11:27:49 +0800
-Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
- (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Fri, 1 Apr
- 2022 11:27:46 +0800
-From:   Haowen Bai <baihaowen@meizu.com>
-To:     Corey Minyard <minyard@acm.org>
-CC:     Haowen Bai <baihaowen@meizu.com>,
-        <openipmi-developer@lists.sourceforge.net>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH] ipmi: ssif: potential NULL dereference in msg_done_handler()
-Date:   Fri, 1 Apr 2022 11:27:45 +0800
-Message-ID: <1648783665-19237-1-git-send-email-baihaowen@meizu.com>
-X-Mailer: git-send-email 2.7.4
+        Thu, 31 Mar 2022 23:31:25 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B37C58828;
+        Thu, 31 Mar 2022 20:29:34 -0700 (PDT)
+Received: from kwepemi100010.china.huawei.com (unknown [172.30.72.57])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KV5CV5xdyzBrbk;
+        Fri,  1 Apr 2022 11:25:26 +0800 (CST)
+Received: from kwepemm600015.china.huawei.com (7.193.23.52) by
+ kwepemi100010.china.huawei.com (7.221.188.54) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Fri, 1 Apr 2022 11:29:31 +0800
+Received: from huawei.com (10.175.127.227) by kwepemm600015.china.huawei.com
+ (7.193.23.52) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Fri, 1 Apr
+ 2022 11:29:31 +0800
+From:   ChenXiaoSong <chenxiaosong2@huawei.com>
+To:     <trond.myklebust@hammerspace.com>, <anna@kernel.org>,
+        <smayhew@redhat.com>
+CC:     <linux-nfs@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <chenxiaosong2@huawei.com>, <liuyongqiang13@huawei.com>,
+        <yi.zhang@huawei.com>, <zhangxiaoxu5@huawei.com>
+Subject: [PATCH -next,v2 1/3] NFS: return more nuanced writeback errors in nfs_file_write()
+Date:   Fri, 1 Apr 2022 11:44:07 +0800
+Message-ID: <20220401034409.256770-2-chenxiaosong2@huawei.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220401034409.256770-1-chenxiaosong2@huawei.com>
+References: <20220401034409.256770-1-chenxiaosong2@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.16.137.70]
-X-ClientProxiedBy: IT-EXMB-1-124.meizu.com (172.16.1.124) To
- IT-EXMB-1-125.meizu.com (172.16.1.125)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ kwepemm600015.china.huawei.com (7.193.23.52)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-msg could be null without checking null and return, but still dereference
-msg->rsp[2] and will lead to a null pointer trigger.
+Currently, writeback error in address_space flags will not be set in
+nfs_mapping_set_error(), return value of nfs_wb_all() is always 0 even if
+there is new writeback error. And error from filemap_check_wb_err() is just
+used to check, will not be reported to userspace.
 
-Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+Furthermore, filemap_sample_wb_err() always return 0 if old writeback error
+have not been consumed. filemap_check_wb_err() will return the old error
+even if there is no new writeback error between filemap_sample_wb_err() and
+filemap_check_wb_err().
+
+So we still need record writeback error in address_space flags. The writeback
+error in address_space flags is not used to be reported to userspace, it is just
+used to detect if there is new error while writeback.
+
+generic_perform_write() detect wb error by calling filemap_check_errors():
+  generic_perform_write
+    nfs_write_end
+      nfs_wb_all
+        filemap_write_and_wait
+          filemap_write_and_wait_range
+            filemap_check_errors
+
+filemap_fdatawait_range() detect wb error by calling filemap_check_errors():
+  filemap_fdatawait_range
+    __filemap_fdatawait_range
+    filemap_check_errors
+
+As filemap_check_errors() only report -EIO or -ENOSPC, we must use the more nuanced
+writeback error for -EIO by returning -(file->f_mapping->wb_err & MAX_ERRNO).
+
+Fixes: 6c984083ec24 ("NFS: Use of mapping_set_error() results in spurious errors")
+Signed-off-by: ChenXiaoSong <chenxiaosong2@huawei.com>
 ---
- drivers/char/ipmi/ipmi_ssif.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/nfs/file.c  | 3 +++
+ fs/nfs/write.c | 5 +----
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/char/ipmi/ipmi_ssif.c b/drivers/char/ipmi/ipmi_ssif.c
-index f199cc1..9383de3 100644
---- a/drivers/char/ipmi/ipmi_ssif.c
-+++ b/drivers/char/ipmi/ipmi_ssif.c
-@@ -814,7 +814,7 @@ static void msg_done_handler(struct ssif_info *ssif_info, int result,
- 		break;
+diff --git a/fs/nfs/file.c b/fs/nfs/file.c
+index b0ca244c50d0..5513ab63c108 100644
+--- a/fs/nfs/file.c
++++ b/fs/nfs/file.c
+@@ -683,6 +683,9 @@ ssize_t nfs_file_write(struct kiocb *iocb, struct iov_iter *from)
+ 	}
+ 	nfs_add_stats(inode, NFSIOS_NORMALWRITTENBYTES, written);
+ out:
++	/* Use the more nuanced writeback error for -EIO */
++	if (result == -EIO)
++		result = filemap_check_wb_err(file->f_mapping, 0);
+ 	return result;
  
- 	case SSIF_GETTING_EVENTS:
--		if ((result < 0) || (len < 3) || (msg->rsp[2] != 0)) {
-+		if ((result < 0) || (len < 3) || (msg && (msg->rsp[2] != 0))) {
- 			/* Error getting event, probably done. */
- 			msg->done(msg);
+ out_swapfile:
+diff --git a/fs/nfs/write.c b/fs/nfs/write.c
+index f00d45cf80ef..eec15efb41ab 100644
+--- a/fs/nfs/write.c
++++ b/fs/nfs/write.c
+@@ -312,10 +312,7 @@ static void nfs_mapping_set_error(struct page *page, int error)
+ 	struct address_space *mapping = page_file_mapping(page);
+ 
+ 	SetPageError(page);
+-	filemap_set_wb_err(mapping, error);
+-	if (mapping->host)
+-		errseq_set(&mapping->host->i_sb->s_wb_err,
+-			   error == -ENOSPC ? -ENOSPC : -EIO);
++	mapping_set_error(mapping, error);
+ 	nfs_set_pageerror(mapping);
+ }
  
 -- 
-2.7.4
+2.31.1
 
