@@ -2,49 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF8B5C43217
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:11:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16230C47085
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:11:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353173AbiDAPJv (ORCPT
+        id S1353188AbiDAPJy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:09:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60490 "EHLO
+        Fri, 1 Apr 2022 11:09:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350748AbiDAOsA (ORCPT
+        with ESMTP id S1350897AbiDAOsJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:48:00 -0400
+        Fri, 1 Apr 2022 10:48:09 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62D4D43ED2;
-        Fri,  1 Apr 2022 07:38:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88EFC53A70;
+        Fri,  1 Apr 2022 07:38:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8757660A53;
-        Fri,  1 Apr 2022 14:38:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7274AC36AEF;
-        Fri,  1 Apr 2022 14:38:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CCDB760AC0;
+        Fri,  1 Apr 2022 14:38:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E39DC2BBE4;
+        Fri,  1 Apr 2022 14:38:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823899;
-        bh=tiS/AMbghCKUJCgtbDBDwXBAJjMpILpG1ZtoPCEFpz4=;
+        s=k20201202; t=1648823915;
+        bh=BRK+9JeOfueA1hXgfeqN+d3kw7Pcf0cfVeiYcuNNvxY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fo0Mj+e7cmYEkvFoHqabBqBopzaC1107hQKpmxgaAnLMSg1GBaeh7AmhPoK/JyBQv
-         T5V4adnrNeX+EN0eiJz8aV9ozr6ce5HSvbRCG93ryvu/ASgePfMtxKSEQVwRSWCoCN
-         TrKg3IuDxpCGHGb5FLl0AQH4ffLo35tV1siyfd20sje4pEqPVgpDIUBXsnA8QqqkFK
-         98PcftWJbl10K1rKI62KFpZAJtkO1SXa5q/yhl6jw9T5BO+0FpI60R+9nh4Jfb2WrZ
-         5RSc2aN4FeacOBUHDn07WyEtyHZpqwOcWnFjAjx1ebTQ6uTASfNO4le4/mjoGFj+z4
-         wfhfEmkfeYRZQ==
+        b=j38KeovWU6jQOwlU6o8ThJlrieTU+8cl50BZi6OL44qRkKbk8IAtjKt7tfRDenVSg
+         mPAtSnS0jKm24tJGQLk4VLPTUF47KMq/6cchCN3808zcxo9PwmQvLPEiP02gzNeAJk
+         JSBGQYwPAmxYhfS+P+RjfQ5n9kmnGnQ+tjL4YbiHre2u+V7qDB2KFc8R4bGO4gThCj
+         P+brjLz2VM4leVi8rtau+iztZSdDWWdkWOp7pUcfC7R5eOMThXEL3D6WVPkHqFCeep
+         5Zl+Kylzg1pSkQlgA2fOnfaSTgM94rAoqEyoqsh4SGsvX8IxWs4SNj8c34H4V5+2CO
+         UwaPqt99riprg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Wayne Chang <waynec@nvidia.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, balbi@kernel.org,
-        thierry.reding@gmail.com, jonathanh@nvidia.com,
-        zhangqilong3@huawei.com, rikard.falkeborn@gmail.com,
-        chunfeng.yun@mediatek.com, jakobkoschel@gmail.com,
-        linux-usb@vger.kernel.org, linux-tegra@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 08/98] usb: gadget: tegra-xudc: Fix control endpoint's definitions
-Date:   Fri,  1 Apr 2022 10:36:12 -0400
-Message-Id: <20220401143742.1952163-8-sashal@kernel.org>
+Cc:     Yongzhi Liu <lyz_cs@pku.edu.cn>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        Sasha Levin <sashal@kernel.org>, andrzej.hajda@intel.com,
+        narmstrong@baylibre.com, airlied@linux.ie, daniel@ffwll.ch,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.15 17/98] drm/bridge: Add missing pm_runtime_put_sync
+Date:   Fri,  1 Apr 2022 10:36:21 -0400
+Message-Id: <20220401143742.1952163-17-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143742.1952163-1-sashal@kernel.org>
 References: <20220401143742.1952163-1-sashal@kernel.org>
@@ -56,62 +55,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wayne Chang <waynec@nvidia.com>
+From: Yongzhi Liu <lyz_cs@pku.edu.cn>
 
-[ Upstream commit 7bd42fb95eb4f98495ccadf467ad15124208ec49 ]
+[ Upstream commit 46f47807738441e354873546dde0b000106c068a ]
 
-According to the Tegra Technical Reference Manual, the seq_num
-field of control endpoint is not [31:24] but [31:27]. Bit 24
-is reserved and bit 26 is splitxstate.
+pm_runtime_get_sync() will increase the rumtime PM counter
+even when it returns an error. Thus a pairing decrement is needed
+to prevent refcount leak. Fix this by replacing this API with
+pm_runtime_resume_and_get(), which will not change the runtime
+PM counter on error. Besides, a matching decrement is needed
+on the error handling path to keep the counter balanced.
 
-The change fixes the wrong control endpoint's definitions.
-
-Signed-off-by: Wayne Chang <waynec@nvidia.com>
-Link: https://lore.kernel.org/r/20220107091349.149798-1-waynec@nvidia.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Yongzhi Liu <lyz_cs@pku.edu.cn>
+Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Signed-off-by: Robert Foss <robert.foss@linaro.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/1643008835-73961-1-git-send-email-lyz_cs@pku.edu.cn
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/gadget/udc/tegra-xudc.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/bridge/nwl-dsi.c | 18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/usb/gadget/udc/tegra-xudc.c b/drivers/usb/gadget/udc/tegra-xudc.c
-index 716d9ab2d2ff..be76f891b9c5 100644
---- a/drivers/usb/gadget/udc/tegra-xudc.c
-+++ b/drivers/usb/gadget/udc/tegra-xudc.c
-@@ -272,8 +272,10 @@ BUILD_EP_CONTEXT_RW(deq_hi, deq_hi, 0, 0xffffffff)
- BUILD_EP_CONTEXT_RW(avg_trb_len, tx_info, 0, 0xffff)
- BUILD_EP_CONTEXT_RW(max_esit_payload, tx_info, 16, 0xffff)
- BUILD_EP_CONTEXT_RW(edtla, rsvd[0], 0, 0xffffff)
--BUILD_EP_CONTEXT_RW(seq_num, rsvd[0], 24, 0xff)
-+BUILD_EP_CONTEXT_RW(rsvd, rsvd[0], 24, 0x1)
- BUILD_EP_CONTEXT_RW(partial_td, rsvd[0], 25, 0x1)
-+BUILD_EP_CONTEXT_RW(splitxstate, rsvd[0], 26, 0x1)
-+BUILD_EP_CONTEXT_RW(seq_num, rsvd[0], 27, 0x1f)
- BUILD_EP_CONTEXT_RW(cerrcnt, rsvd[1], 18, 0x3)
- BUILD_EP_CONTEXT_RW(data_offset, rsvd[2], 0, 0x1ffff)
- BUILD_EP_CONTEXT_RW(numtrbs, rsvd[2], 22, 0x1f)
-@@ -1554,6 +1556,9 @@ static int __tegra_xudc_ep_set_halt(struct tegra_xudc_ep *ep, bool halt)
- 		ep_reload(xudc, ep->index);
+diff --git a/drivers/gpu/drm/bridge/nwl-dsi.c b/drivers/gpu/drm/bridge/nwl-dsi.c
+index af07eeb47ca0..1529b9e3d576 100644
+--- a/drivers/gpu/drm/bridge/nwl-dsi.c
++++ b/drivers/gpu/drm/bridge/nwl-dsi.c
+@@ -861,18 +861,19 @@ nwl_dsi_bridge_mode_set(struct drm_bridge *bridge,
+ 	memcpy(&dsi->mode, adjusted_mode, sizeof(dsi->mode));
+ 	drm_mode_debug_printmodeline(adjusted_mode);
  
- 		ep_ctx_write_state(ep->context, EP_STATE_RUNNING);
-+		ep_ctx_write_rsvd(ep->context, 0);
-+		ep_ctx_write_partial_td(ep->context, 0);
-+		ep_ctx_write_splitxstate(ep->context, 0);
- 		ep_ctx_write_seq_num(ep->context, 0);
+-	pm_runtime_get_sync(dev);
++	if (pm_runtime_resume_and_get(dev) < 0)
++		return;
  
- 		ep_reload(xudc, ep->index);
-@@ -2809,7 +2814,10 @@ static void tegra_xudc_reset(struct tegra_xudc *xudc)
- 	xudc->setup_seq_num = 0;
- 	xudc->queued_setup_packet = false;
+ 	if (clk_prepare_enable(dsi->lcdif_clk) < 0)
+-		return;
++		goto runtime_put;
+ 	if (clk_prepare_enable(dsi->core_clk) < 0)
+-		return;
++		goto runtime_put;
  
--	ep_ctx_write_seq_num(ep0->context, xudc->setup_seq_num);
-+	ep_ctx_write_rsvd(ep0->context, 0);
-+	ep_ctx_write_partial_td(ep0->context, 0);
-+	ep_ctx_write_splitxstate(ep0->context, 0);
-+	ep_ctx_write_seq_num(ep0->context, 0);
+ 	/* Step 1 from DSI reset-out instructions */
+ 	ret = reset_control_deassert(dsi->rst_pclk);
+ 	if (ret < 0) {
+ 		DRM_DEV_ERROR(dev, "Failed to deassert PCLK: %d\n", ret);
+-		return;
++		goto runtime_put;
+ 	}
  
- 	deq_ptr = trb_virt_to_phys(ep0, &ep0->transfer_ring[ep0->deq_ptr]);
+ 	/* Step 2 from DSI reset-out instructions */
+@@ -882,13 +883,18 @@ nwl_dsi_bridge_mode_set(struct drm_bridge *bridge,
+ 	ret = reset_control_deassert(dsi->rst_esc);
+ 	if (ret < 0) {
+ 		DRM_DEV_ERROR(dev, "Failed to deassert ESC: %d\n", ret);
+-		return;
++		goto runtime_put;
+ 	}
+ 	ret = reset_control_deassert(dsi->rst_byte);
+ 	if (ret < 0) {
+ 		DRM_DEV_ERROR(dev, "Failed to deassert BYTE: %d\n", ret);
+-		return;
++		goto runtime_put;
+ 	}
++
++	return;
++
++runtime_put:
++	pm_runtime_put_sync(dev);
+ }
  
+ static void
 -- 
 2.34.1
 
