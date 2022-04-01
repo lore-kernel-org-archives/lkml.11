@@ -2,91 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E88D4C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 09:46:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 282E2C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 09:47:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344774AbiDAJsD (ORCPT
+        id S1344756AbiDAJsv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 05:48:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46064 "EHLO
+        Fri, 1 Apr 2022 05:48:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344742AbiDAJrp (ORCPT
+        with ESMTP id S1344725AbiDAJsu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 05:47:45 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6450026B5BF;
-        Fri,  1 Apr 2022 02:45:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1648806355; x=1680342355;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=ix84LapGlJhLR1dcJ3nwj0Z8S4KPIohgPEkaTYvfGXc=;
-  b=qt0QVp3xug1moWEg0N6ilehx8tfw9OrGeIjp83GoxFL0SApjyFEPSxPj
-   bAB3l8O/MnqSgEpP3mqMi34rYt2m9F7k2ERmaQU1thSc4p2wcxAHtKTVW
-   AWytezsGMnlE7hSyxY2jkc2q4jeUdXlmM9lKZk4wUsIsSdRBjIuEd3gbq
-   7rdMYZhYXoCvAeCfCG/eMB1er05UHqOmdf8I7mhJCf4nPsTU6n8YUOX7p
-   vcShwMgYoaKgGiItzdA8EqaGwTSfURYJF4v47yiTlYE4s9nL7MCZPBxqI
-   RD4YRgll7aiCTUURpi3MqEV2yHj01xvhe3P50OcSIwkn6+Cu1bNk5Gx5a
-   A==;
-X-IronPort-AV: E=Sophos;i="5.90,226,1643698800"; 
-   d="scan'208";a="167969759"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 01 Apr 2022 02:45:54 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 1 Apr 2022 02:45:54 -0700
-Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Fri, 1 Apr 2022 02:45:51 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
-        <Divya.Koppera@microchip.com>, <davem@davemloft.net>,
-        <kuba@kernel.org>, <richardcochran@gmail.com>,
-        <UNGLinuxDriver@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net 3/3] net: phy: micrel: Remove DT option lan8814,ignore-ts
-Date:   Fri, 1 Apr 2022 11:48:05 +0200
-Message-ID: <20220401094805.3343464-4-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220401094805.3343464-1-horatiu.vultur@microchip.com>
-References: <20220401094805.3343464-1-horatiu.vultur@microchip.com>
+        Fri, 1 Apr 2022 05:48:50 -0400
+Received: from mail-yw1-x1134.google.com (mail-yw1-x1134.google.com [IPv6:2607:f8b0:4864:20::1134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6E0026B399
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 02:47:01 -0700 (PDT)
+Received: by mail-yw1-x1134.google.com with SMTP id 00721157ae682-2e64a6b20eeso26642007b3.3
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 02:47:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=GAYB7YHwkTinDw7E1Hr055TsYKSrU9cTtU3idS1nwFE=;
+        b=T7TFO+XXJNRV6magk4KPRqHtgWPszHdyFBawap8mmDRpZQfcZqDlupwIvwwexFyXSJ
+         BvNrViFBSbXPbkSPpw1/B3T9YHBEvUUr/8xAYh7JjR+TUBi/DHPSEnOn/tbCx3Jg2K5p
+         XQRmVFqwPJRQ+EKvsdyP41cTWtdGjyJe45yX5wJjuY85t38tH9yRXa+yT+8/lqcoi44N
+         7M/Ccre6sBRqYh4rAuEgRuBM7eViN82F+6vFRKIYJmoauDHtzlA7Hj+ojHi51jSf9K5o
+         xN++pgLJhECEFLBDf1FzyTzmSDOXenq1BEeAU6Liq/7aJvSdlhFYgtpNZ3gguA+APqsz
+         cfTw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=GAYB7YHwkTinDw7E1Hr055TsYKSrU9cTtU3idS1nwFE=;
+        b=X1bNJmCjH16YUhYb/GyoGEc2kqUgULUBj+lg5ViH6Km8JanBvtTkEHUsCo07KAQAAC
+         /kMAQkAK8mN0R401toQIaIFRLGRGUzW1F9MLxRv8Q7YlfastAQ/gdiHtpldPNIV8WgrH
+         BR4y/GxLD+gfqltAiDaWERuzWQFri0zqviwS/y2dv51wSm+ft+EfyzRED/h3WT/tLtAt
+         hYDK9c5A7/DLGJlZSNvaEqlGd9YK0RGQjnNdpGwH7AUozssHFk+Fp5Z3a2eg7m4L2Q3c
+         14KKk94EpkVXeqDbWXcmRV0BpYbgqIsH4Njk6THCulymY0t74w76uX4VabfCITk8HLOT
+         fppA==
+X-Gm-Message-State: AOAM533584ZgqjtbHkXj5U9AyTZcAfN+zm8DfMQ+Ehe1nzMezSRnc0C3
+        xBlO2YehzycRonMu8RjgPTJK/i8FkmcBUAtUY9uztA==
+X-Google-Smtp-Source: ABdhPJx/jKPikl4GfrIg4T3A7vPOTssiwcfuqoQuqq/ArA/daD1Xd6c4VHqAMRBs+NmYysldNlTvSIYZsoUag8B+UiE=
+X-Received: by 2002:a0d:c306:0:b0:2e5:96ab:592e with SMTP id
+ f6-20020a0dc306000000b002e596ab592emr9300635ywd.316.1648806420888; Fri, 01
+ Apr 2022 02:47:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+References: <20220401084333.85616-1-nogikh@google.com>
+In-Reply-To: <20220401084333.85616-1-nogikh@google.com>
+From:   Marco Elver <elver@google.com>
+Date:   Fri, 1 Apr 2022 11:46:24 +0200
+Message-ID: <CANpmjNO=qjoY+8m9Nf-8vanFZTgsiDwfchv_JsLoksFKwU98BQ@mail.gmail.com>
+Subject: Re: [PATCH v2] kcov: don't generate a warning on vm_insert_page()'s failure
+To:     Aleksandr Nogikh <nogikh@google.com>
+Cc:     kasan-dev@googlegroups.com, linux-kernel@vger.kernel.org,
+        akpm@linux-foundation.org, dvyukov@google.com,
+        andreyknvl@gmail.com, glider@google.com, tarasmadan@google.com,
+        bigeasy@linutronix.de
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When the PHY and the MAC are capable of doing timestamping, the PHY has
-priority. Therefore the DT option lan8814,ignore-ts was added such that
-the PHY will not expose a PHC so then the timestamping was done in the
-MAC. This is not the correct approach of doing it, therefore remove
-this.
+On Fri, 1 Apr 2022 at 10:43, Aleksandr Nogikh <nogikh@google.com> wrote:
+>
+> vm_insert_page()'s failure is not an unexpected condition, so don't do
+> WARN_ONCE() in such a case.
+>
+> Instead, print a kernel message and just return an error code.
+>
+> Signed-off-by: Aleksandr Nogikh <nogikh@google.com>
 
-Fixes: ece19502834d84 ("net: phy: micrel: 1588 support for LAN8814 phy")
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
----
- drivers/net/phy/micrel.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+Acked-by: Marco Elver <elver@google.com>
 
-diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-index 886ea99b3906..fc53b71dc872 100644
---- a/drivers/net/phy/micrel.c
-+++ b/drivers/net/phy/micrel.c
-@@ -2629,8 +2629,7 @@ static int lan8814_probe(struct phy_device *phydev)
- 	phydev->priv = priv;
- 
- 	if (!IS_ENABLED(CONFIG_PTP_1588_CLOCK) ||
--	    !IS_ENABLED(CONFIG_NETWORK_PHY_TIMESTAMPING) ||
--	    of_property_read_bool(np, "lan8814,ignore-ts"))
-+	    !IS_ENABLED(CONFIG_NETWORK_PHY_TIMESTAMPING))
- 		return 0;
- 
- 	/* Strap-in value for PHY address, below register read gives starting
--- 
-2.33.0
 
+Just minor "process" comments:
+1) There should be a '---' so that the below doesn't appear in the
+commit message on 'git am' and maintainers don't have to manually
+remove it.
+
+> PATCH v2:
+> * Added a newline at the end of pr_warn_once().
+>
+> PATCH v1: https://lkml.org/lkml/2022/3/31/909
+
+2) We should use lore permalinks, because lkml.org isn't official and
+was actually down most of this week. v1 was
+https://lore.kernel.org/all/20220331180501.4130549-1-nogikh@google.com/
+
+> ---
+>  kernel/kcov.c | 7 +++++--
+>  1 file changed, 5 insertions(+), 2 deletions(-)
+>
+> diff --git a/kernel/kcov.c b/kernel/kcov.c
+> index 475524bd900a..b3732b210593 100644
+> --- a/kernel/kcov.c
+> +++ b/kernel/kcov.c
+> @@ -475,8 +475,11 @@ static int kcov_mmap(struct file *filep, struct vm_area_struct *vma)
+>         vma->vm_flags |= VM_DONTEXPAND;
+>         for (off = 0; off < size; off += PAGE_SIZE) {
+>                 page = vmalloc_to_page(kcov->area + off);
+> -               if (vm_insert_page(vma, vma->vm_start + off, page))
+> -                       WARN_ONCE(1, "vm_insert_page() failed");
+> +               res = vm_insert_page(vma, vma->vm_start + off, page);
+> +               if (res) {
+> +                       pr_warn_once("kcov: vm_insert_page() failed\n");
+> +                       return res;
+> +               }
+>         }
+>         return 0;
+>  exit:
+> --
+> 2.35.1.1094.g7c7d902a7c-goog
+>
