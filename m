@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7214C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8283C433F5
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:27:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356429AbiDAP1s (ORCPT
+        id S1356415AbiDAP1o (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:27:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49304 "EHLO
+        Fri, 1 Apr 2022 11:27:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349608AbiDAO5F (ORCPT
+        with ESMTP id S1349621AbiDAO5F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 1 Apr 2022 10:57:05 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E22D514DFDD;
-        Fri,  1 Apr 2022 07:44:31 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EF3C14F123;
+        Fri,  1 Apr 2022 07:44:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 60D9DCE2586;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 12837B823EB;
+        Fri,  1 Apr 2022 14:44:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB4F3C340EE;
         Fri,  1 Apr 2022 14:44:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5F7EC34112;
-        Fri,  1 Apr 2022 14:44:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824268;
-        bh=7xvtjIYKvCOq1DgobQy5RPLDfFKfoEXvSj4vPHbv+5I=;
+        s=k20201202; t=1648824271;
+        bh=LhYPBZufSIIUYsYfgK8Zvs0kn4YmUTSXiOrYVvfFpMU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mKJ5xpdzuoG4Qv2ptjHJq9yWRSDxi4pbbI7VUqvXm1lrj8U4XMb7SvI1cqvUAzpNu
-         18tmb8CV4Eq0B0GiojJYBGxzeOEMgpI2d08TtrKC87W+Fz+ZxydEL31nzap+DC97NV
-         Fe5C/cjR7mG0z7jjVWGHiXtxgZLFK/ngsjI82he1T1EQ3qHaWQVUBDJzCPOXYdJ6t8
-         3ZEqQrnV1q1rriNqhAmemwBYGrVWdPK2BEMn3scqMoQbmW3DKFZYYYuLI6c9fnGVqr
-         1Lh9zAxR/DxuxL0v1d8J1653C8BqNwMU5lP1/GivGHR3r/YKe5Mtc3ssfmWaZqRHfG
-         uTfF3SNhtx09A==
+        b=fG+4rN696d06lqx76Ono3W7fXDb7u38v1HMqcUWDwQEskB1HAYrkHd1hdsdXfh1nP
+         6JyYTnPEwihmPKrOhhIRFOrUlywqVkqRx5E+x9cYlcfqepKAoDefyj+P3Uf0YZ3FjQ
+         fiUj7/3IEIxjN6RxBSw48Jcd04EmEBdXiC2Zu3R7KYQdBfH/UN8SdVE7hA4Y6WyVAL
+         YPcCJMXI1iZ+whW4EtU/xJvQfVn4B43nEt/wxKcP3m+M4AA3oqztb5h4/v/hqPfMyF
+         sMiz4iCoIhhCMbHWBWRvbNb1OOxiBgzqbPJGV2yoAr4+xFIhTIVTvQrGHmCwPX46xn
+         NFmNlLfhXGgLw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Michael Walle <michael@walle.cc>, Paolo Abeni <pabeni@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, linux@armlinux.org.uk,
-        andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 57/65] net: sfp: add 2500base-X quirk for Lantech SFP module
-Date:   Fri,  1 Apr 2022 10:41:58 -0400
-Message-Id: <20220401144206.1953700-57-sashal@kernel.org>
+Cc:     Max Filippov <jcmvbkbc@gmail.com>, Sasha Levin <sashal@kernel.org>,
+        robh+dt@kernel.org, krzk+dt@kernel.org, chris@zankel.net,
+        devicetree@vger.kernel.org, linux-xtensa@linux-xtensa.org
+Subject: [PATCH AUTOSEL 5.10 59/65] xtensa: fix DTC warning unit_address_format
+Date:   Fri,  1 Apr 2022 10:42:00 -0400
+Message-Id: <20220401144206.1953700-59-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401144206.1953700-1-sashal@kernel.org>
 References: <20220401144206.1953700-1-sashal@kernel.org>
@@ -53,51 +52,101 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Walle <michael@walle.cc>
+From: Max Filippov <jcmvbkbc@gmail.com>
 
-[ Upstream commit 00eec9fe4f3b9588b4bfa8ef9dd0aae96407d5d7 ]
+[ Upstream commit e85d29ba4b24f68e7a78cb85c55e754362eeb2de ]
 
-The Lantech 8330-262D-E module is 2500base-X capable, but it reports the
-nominal bitrate as 2500MBd instead of 3125MBd. Add a quirk for the
-module.
+DTC issues the following warnings when building xtfpga device trees:
 
-The following in an EEPROM dump of such a SFP with the serial number
-redacted:
+ /soc/flash@00000000/partition@0x0: unit name should not have leading "0x"
+ /soc/flash@00000000/partition@0x6000000: unit name should not have leading "0x"
+ /soc/flash@00000000/partition@0x6800000: unit name should not have leading "0x"
+ /soc/flash@00000000/partition@0x7fe0000: unit name should not have leading "0x"
 
-00: 03 04 07 00 00 00 01 20 40 0c 05 01 19 00 00 00    ???...? @????...
-10: 1e 0f 00 00 4c 61 6e 74 65 63 68 20 20 20 20 20    ??..Lantech
-20: 20 20 20 20 00 00 00 00 38 33 33 30 2d 32 36 32        ....8330-262
-30: 44 2d 45 20 20 20 20 20 56 31 2e 30 03 52 00 cb    D-E     V1.0?R.?
-40: 00 1a 00 00 46 43 XX XX XX XX XX XX XX XX XX XX    .?..FCXXXXXXXXXX
-50: 20 20 20 20 32 32 30 32 31 34 20 20 68 b0 01 98        220214  h???
-60: 45 58 54 52 45 4d 45 4c 59 20 43 4f 4d 50 41 54    EXTREMELY COMPAT
-70: 49 42 4c 45 20 20 20 20 20 20 20 20 20 20 20 20    IBLE
+Drop leading 0x from flash partition unit names.
 
-Signed-off-by: Michael Walle <michael@walle.cc>
-Link: https://lore.kernel.org/r/20220312205014.4154907-1-michael@walle.cc
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/sfp-bus.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ arch/xtensa/boot/dts/xtfpga-flash-128m.dtsi | 8 ++++----
+ arch/xtensa/boot/dts/xtfpga-flash-16m.dtsi  | 8 ++++----
+ arch/xtensa/boot/dts/xtfpga-flash-4m.dtsi   | 4 ++--
+ 3 files changed, 10 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/phy/sfp-bus.c b/drivers/net/phy/sfp-bus.c
-index a05d8372669c..850915a37f4c 100644
---- a/drivers/net/phy/sfp-bus.c
-+++ b/drivers/net/phy/sfp-bus.c
-@@ -74,6 +74,12 @@ static const struct sfp_quirk sfp_quirks[] = {
- 		.vendor = "HUAWEI",
- 		.part = "MA5671A",
- 		.modes = sfp_quirk_2500basex,
-+	}, {
-+		// Lantech 8330-262D-E can operate at 2500base-X, but
-+		// incorrectly report 2500MBd NRZ in their EEPROM
-+		.vendor = "Lantech",
-+		.part = "8330-262D-E",
-+		.modes = sfp_quirk_2500basex,
- 	}, {
- 		.vendor = "UBNT",
- 		.part = "UF-INSTANT",
+diff --git a/arch/xtensa/boot/dts/xtfpga-flash-128m.dtsi b/arch/xtensa/boot/dts/xtfpga-flash-128m.dtsi
+index 9bf8bad1dd18..c33932568aa7 100644
+--- a/arch/xtensa/boot/dts/xtfpga-flash-128m.dtsi
++++ b/arch/xtensa/boot/dts/xtfpga-flash-128m.dtsi
+@@ -8,19 +8,19 @@ flash: flash@00000000 {
+ 			reg = <0x00000000 0x08000000>;
+ 			bank-width = <2>;
+ 			device-width = <2>;
+-			partition@0x0 {
++			partition@0 {
+ 				label = "data";
+ 				reg = <0x00000000 0x06000000>;
+ 			};
+-			partition@0x6000000 {
++			partition@6000000 {
+ 				label = "boot loader area";
+ 				reg = <0x06000000 0x00800000>;
+ 			};
+-			partition@0x6800000 {
++			partition@6800000 {
+ 				label = "kernel image";
+ 				reg = <0x06800000 0x017e0000>;
+ 			};
+-			partition@0x7fe0000 {
++			partition@7fe0000 {
+ 				label = "boot environment";
+ 				reg = <0x07fe0000 0x00020000>;
+ 			};
+diff --git a/arch/xtensa/boot/dts/xtfpga-flash-16m.dtsi b/arch/xtensa/boot/dts/xtfpga-flash-16m.dtsi
+index 40c2f81f7cb6..7bde2ab2d6fb 100644
+--- a/arch/xtensa/boot/dts/xtfpga-flash-16m.dtsi
++++ b/arch/xtensa/boot/dts/xtfpga-flash-16m.dtsi
+@@ -8,19 +8,19 @@ flash: flash@08000000 {
+ 			reg = <0x08000000 0x01000000>;
+ 			bank-width = <2>;
+ 			device-width = <2>;
+-			partition@0x0 {
++			partition@0 {
+ 				label = "boot loader area";
+ 				reg = <0x00000000 0x00400000>;
+ 			};
+-			partition@0x400000 {
++			partition@400000 {
+ 				label = "kernel image";
+ 				reg = <0x00400000 0x00600000>;
+ 			};
+-			partition@0xa00000 {
++			partition@a00000 {
+ 				label = "data";
+ 				reg = <0x00a00000 0x005e0000>;
+ 			};
+-			partition@0xfe0000 {
++			partition@fe0000 {
+ 				label = "boot environment";
+ 				reg = <0x00fe0000 0x00020000>;
+ 			};
+diff --git a/arch/xtensa/boot/dts/xtfpga-flash-4m.dtsi b/arch/xtensa/boot/dts/xtfpga-flash-4m.dtsi
+index fb8d3a9f33c2..0655b868749a 100644
+--- a/arch/xtensa/boot/dts/xtfpga-flash-4m.dtsi
++++ b/arch/xtensa/boot/dts/xtfpga-flash-4m.dtsi
+@@ -8,11 +8,11 @@ flash: flash@08000000 {
+ 			reg = <0x08000000 0x00400000>;
+ 			bank-width = <2>;
+ 			device-width = <2>;
+-			partition@0x0 {
++			partition@0 {
+ 				label = "boot loader area";
+ 				reg = <0x00000000 0x003f0000>;
+ 			};
+-			partition@0x3f0000 {
++			partition@3f0000 {
+ 				label = "boot environment";
+ 				reg = <0x003f0000 0x00010000>;
+ 			};
 -- 
 2.34.1
 
