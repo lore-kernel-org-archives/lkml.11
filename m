@@ -2,93 +2,217 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98CD9C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 00:55:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B022C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 01:06:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243619AbiDAA5B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 20:57:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55934 "EHLO
+        id S243635AbiDABHr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 21:07:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230257AbiDAA46 (ORCPT
+        with ESMTP id S232254AbiDABHo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 20:56:58 -0400
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54D3A1F1251
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 17:55:10 -0700 (PDT)
-Received: by mail-yb1-xb2c.google.com with SMTP id u103so2334338ybi.9
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 17:55:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=86DTzap4bdiVTuZNwdTqOhXAkw8m2QiKxxFLmTpRn4c=;
-        b=ewPouCCRc+TgbTluxb631jmVzywNZXcbJ2uyae1cvgEjQU1HOuXtjU0wGn8FjveNfi
-         iFRvHs3BdjHl+0JaNAFnPpps7juudS8kviF/Xx6ggtd75I3XsR4mz1pV54Qt4L9qZqvt
-         8yz1mtdv1yOcLvKVtlQgqFVYYT2RtY2xuYYdCpT4XUypYhDLcXyfGl7ey+IzwV+MEQA6
-         9fp1HUZTmsqxQW0d0Z0G1kqnSSxXJ3J6kxa+Eyw3HbCJ47ooTm2DG8rj/E9Xje+Wat6a
-         mELDMimY7kAyj87oS5SU3W4b7h5+1s4WHO1abjlxM5xAbRIHPqrXgNYyYHxlR40NWrUG
-         gEkg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=86DTzap4bdiVTuZNwdTqOhXAkw8m2QiKxxFLmTpRn4c=;
-        b=D9YsZGbQNRp36eazl+rEDUQ6xiCKatYeYJvq6Os7WZCfDzRVPBGevFxbd8zrXKKe86
-         mkHr0Skkrol5GTpOimOIdluQn98E9jPpVXP/Lufq7KqtkPjnDq+R6aa+9KGpiNofHGu4
-         JiAq+NFNH6ikgQy/PXTKbvRmKhuE3fq5SFUJuKwZo+Q0KPVL0Q2NtwURobbU90+Ay/wK
-         YhbdpzB51OdG+TGkzLDwQIqwoIkAYWGdM+wr7/NyyALvEwaEEgEyWMk2pcI2hRnrdWyM
-         rxSU5nLDjUsrumslDwjzo4+c8sdcjRsatbHb9rU7pQPQRxst2aIAg11qIPuYyOgbhUEn
-         QZdQ==
-X-Gm-Message-State: AOAM5316/TaJC4ofiNDatoRRl5Zi5Z6zM4i7jNWYPdZseNv5lYDrSdrV
-        VBswyfIz64KXatEi+kZ4ZjVKqiZ4/P59tAqeQX64Tw==
-X-Google-Smtp-Source: ABdhPJzzKIq9hPymPphLUnTQT4/xUNSd8LVrZ4/47f29wSqMfPIYp3UhD2pvEracvmXnYanipnWJu3BDkDIqzjDIBYg=
-X-Received: by 2002:a25:8382:0:b0:63d:6201:fa73 with SMTP id
- t2-20020a258382000000b0063d6201fa73mr628199ybk.55.1648774509318; Thu, 31 Mar
- 2022 17:55:09 -0700 (PDT)
+        Thu, 31 Mar 2022 21:07:44 -0400
+Received: from wout3-smtp.messagingengine.com (wout3-smtp.messagingengine.com [64.147.123.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6A9522452B
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 18:05:55 -0700 (PDT)
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailout.west.internal (Postfix) with ESMTP id A8F533201D7C;
+        Thu, 31 Mar 2022 21:05:51 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute1.internal (MEProxy); Thu, 31 Mar 2022 21:05:52 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
+        cc:cc:content-transfer-encoding:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm2; bh=JFPUhEjYt2T4y/
+        GMkEpZ62RhA982gs20GEDWtE6vuw0=; b=Teg/IxXO072MtZ6w8wqKTQ9jMwRRwb
+        JUC32kpiUh4om79WZpOd89UU5CrAZI6eb1EKMnUHlWsJ60pqBUF1PlTOKM9ejmeI
+        POc52d8FfoSuYLKw46I+VuE/AWv2N4uIsNMQ9l2mHkj3NOlsLqxcfQ4FvWha0+eG
+        r/cAkk2CueW+4ndElt1PrTIPDnyZAKIejtS5MLjfNcbfjhhhEDvUy71+SMcU/iUj
+        d4a+OgbtLDYDICUq4/SIzXrbIFLdNWfLQLzlS/QtTuNNzlgJIqJCIR7Kz9unMfXh
+        T6Uql2Ut3AngcQ+jGtyvj7JFzu1Ak7TMDhex9z8HFP/G9YGCq2qO9z2w==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm3; bh=JFPUhEjYt2T4y/GMkEpZ62RhA982gs20GEDWtE6vu
+        w0=; b=N5Sw/NgUAzNkar8BRLk7ziFMiwX+6SAXPG3RX9oigAjmMrdgACzZqSX8U
+        TEHcgKyuWBzf5kEdhaTz+/7//vDWqhytXsBqDjYGLzL5RF1QZWT+mfcC34qAM9pt
+        Yqm0nJ8ASo7avMmCYlqua5QUgZnQtByKau9ZfaIChoVB/eclQQvbA03VYDQwYFFQ
+        0/JPOghF7TDl94+8jIQKmV/9AifUUk4QTvMluyGMAXuXSxKonxYSy7lErHF71weJ
+        AaJBQ2EFadevYrg9l8E+zQ7vVV6uvgRh9ze/6maPHdwdFm/4K/jNbWyrXOUgbWNE
+        FqAmccExgEtD9CBeEJ9ONa/q3GHSQ==
+X-ME-Sender: <xms:7k9GYg_v06RsvtEt-tnNH5a3trqEzlHB_VgLWVuy6_80Qh8nD_j5cg>
+    <xme:7k9GYotfzkJYN8TW1azCeI0FVT1sUNSw6yxmGlLTuQwpNVlHH-XOeBzelxl92qU_E
+    mK8GH1K8W8YrleVKA>
+X-ME-Received: <xmr:7k9GYmDoOXEVD3Q0JgRwfRrxTb_WlXUvTC1F98vIaOUQUwFcjh19MKDL5MZDSwbdmmSHgjhmq6jvXgYztUndS2Pw_7eZ9F1a7L3lRKtdeH4m-yvz5hsaKQ4u9g>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudeihedggeduucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepuffvfhfhkffffgggjggtgfesthejredttdefjeenucfhrhhomhepufgrmhhu
+    vghlucfjohhllhgrnhguuceoshgrmhhuvghlsehshhholhhlrghnugdrohhrgheqnecugg
+    ftrfgrthhtvghrnhepgfevffetleehffejueekvdekvdeitdehveegfeekheeuieeiueet
+    uefgtedtgeegnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrh
+    homhepshgrmhhuvghlsehshhholhhlrghnugdrohhrgh
+X-ME-Proxy: <xmx:7k9GYged0fk-Mm9VRkcAVGZgdqDhwy69nQsl9mAebzlxFytEqdesCA>
+    <xmx:7k9GYlPqC8JNO1dQD2MYfLz3CWPDj-DGre8VyZh3rlefGIRL84X4MQ>
+    <xmx:7k9GYqnzA9OI5FnFHbTGDE4W4S-RB0HjHCR3lRJvG3Rv1sw1R8SaLg>
+    <xmx:709GYmG33Tqsn1PrchZiTVQfdRsYiVXqflubtw5id1SuimpkPRthYA>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 31 Mar 2022 21:05:49 -0400 (EDT)
+Subject: Re: [PATCH 2/2] riscv: implement cache-management errata for T-Head
+ SoCs
+To:     Heiko Stuebner <heiko@sntech.de>, palmer@dabbelt.com,
+        paul.walmsley@sifive.com
+Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        wefu@redhat.com, guoren@kernel.org, atishp@atishpatra.org,
+        anup@brainfault.org, mick@ics.forth.gr, cmuellner@linux.com,
+        philipp.tomsich@vrull.eu
+References: <20220307224620.1933061-1-heiko@sntech.de>
+ <20220307224620.1933061-3-heiko@sntech.de>
+From:   Samuel Holland <samuel@sholland.org>
+Message-ID: <ab119a0a-3434-dd76-7af1-4e8b296896f6@sholland.org>
+Date:   Thu, 31 Mar 2022 20:05:48 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-References: <E1nZMdl-0006nG-0J@plastiekpoot> <CADVnQyn=A9EuTwxe-Bd9qgD24PLQ02YQy0_b7YWZj4_rqhWRVA@mail.gmail.com>
- <eaf54cab-f852-1499-95e2-958af8be7085@uls.co.za> <CANn89iKHbmVYoBdo2pCQWTzB4eFBjqAMdFbqL5EKSFqgg3uAJQ@mail.gmail.com>
- <10c1e561-8f01-784f-c4f4-a7c551de0644@uls.co.za> <CADVnQynf8f7SUtZ8iQi-fACYLpAyLqDKQVYKN-mkEgVtFUTVXQ@mail.gmail.com>
- <e0bc0c7f-5e47-ddb7-8e24-ad5fb750e876@uls.co.za> <CANn89i+Dqtrm-7oW+D6EY+nVPhRH07GXzDXt93WgzxZ1y9_tJA@mail.gmail.com>
- <CADVnQyn=VfcqGgWXO_9h6QTkMn5ZxPbNRTnMFAxwQzKpMRvH3A@mail.gmail.com>
- <5f1bbeb2-efe4-0b10-bc76-37eff30ea905@uls.co.za> <CANn89i+KsjGUppc3D8KLa4XUd-dzS3A+yDxbv2bRkDEkziS1qw@mail.gmail.com>
- <4b4ff443-f8a9-26a8-8342-ae78b999335b@uls.co.za> <CANn89iL203ZuRdcyxh16yKXqxXJW2u+4559DsDFmW=8S+_n7fg@mail.gmail.com>
-In-Reply-To: <CANn89iL203ZuRdcyxh16yKXqxXJW2u+4559DsDFmW=8S+_n7fg@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 31 Mar 2022 17:54:58 -0700
-Message-ID: <CANn89i+6LCWOZahAi_vPf9H=SKw-4vdMTj5T0dYsp1Se4g9-yw@mail.gmail.com>
-Subject: Re: linux 5.17.1 disregarding ACK values resulting in stalled TCP connections
-To:     Jaco Kroon <jaco@uls.co.za>
-Cc:     Neal Cardwell <ncardwell@google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Yuchung Cheng <ycheng@google.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20220307224620.1933061-3-heiko@sntech.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 31, 2022 at 5:41 PM Eric Dumazet <edumazet@google.com> wrote:
->
-> On Thu, Mar 31, 2022 at 5:33 PM Jaco Kroon <jaco@uls.co.za> wrote:
->
-> > I'll deploy same on a dev host we've got in the coming week and start a
-> > bisect process.
->
-> Thanks, this will definitely help.
+On 3/7/22 4:46 PM, Heiko Stuebner wrote:
+> The T-Head C906 and C910 implement a scheme for handling
+> cache operations different from the generic Zicbom extension.
+> 
+> Add an errata for it next to the generic dma coherency ops.
+> 
+> Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 
-One thing I noticed in your pcap is a good amount of drops, as if
-Hystart was not able to stop slow-start before the drops are
-happening.
+Tested-by: Samuel Holland <samuel@sholland.org>
 
-TFO with one less RTT at connection establishment could be the trigger.
+With this option disabled, MMC and USB are broken on D1 boards:
 
-If you are still using cubic, please try to revert.
+[    3.021326] Waiting for root device /dev/mmcblk0p1...
+[    3.219727] usb 4-1: new full-speed USB device number 2 using ohci-platform
+[   18.703736] usb 4-1: device descriptor read/64, error -110
 
+With the option enabled, MMC, USB, and Ethernet all work fine.
 
-commit 4e1fddc98d2585ddd4792b5e44433dcee7ece001
-Author: Eric Dumazet <edumazet@google.com>
-Date:   Tue Nov 23 12:25:35 2021 -0800
+> ---
+>  arch/riscv/Kconfig.erratas           | 10 +++++++
+>  arch/riscv/errata/thead/errata.c     |  5 ++++
+>  arch/riscv/include/asm/errata_list.h | 45 ++++++++++++++++++++++++++--
+>  3 files changed, 57 insertions(+), 3 deletions(-)
+> 
+> diff --git a/arch/riscv/Kconfig.erratas b/arch/riscv/Kconfig.erratas
+> index de4002baa1d0..89a6dcb8ac2a 100644
+> --- a/arch/riscv/Kconfig.erratas
+> +++ b/arch/riscv/Kconfig.erratas
+> @@ -50,4 +50,14 @@ config ERRATA_THEAD_PBMT
+>  
+>  	  If you don't know what to do here, say "Y".
+>  
+> +config ERRATA_THEAD_CMO
+> +	bool "Apply T-Head cache management errata"
+> +	depends on ERRATA_THEAD && RISCV_DMA_NONCOHERENT
+> +	default y
+> +	help
+> +	  This will apply the cache management errata to handle the
+> +	  non-standard handling on non-coherent operations on T-Head SoCs.
+> +
+> +	  If you don't know what to do here, say "Y".
+> +
+>  endmenu
+> diff --git a/arch/riscv/errata/thead/errata.c b/arch/riscv/errata/thead/errata.c
+> index fd8e0538a3f0..11c26c37425f 100644
+> --- a/arch/riscv/errata/thead/errata.c
+> +++ b/arch/riscv/errata/thead/errata.c
+> @@ -33,6 +33,11 @@ static const struct errata_info errata_list[ERRATA_THEAD_NUMBER] = {
+>  		.stage = RISCV_ALTERNATIVES_EARLY_BOOT,
+>  		.check_func = errata_mt_check_func
+>  	},
+> +	{
+> +		.name = "cache-management",
+> +		.stage = RISCV_ALTERNATIVES_BOOT,
+> +		.check_func = errata_mt_check_func
+> +	},
+>  };
+>  
+>  static u32 thead_errata_probe(unsigned int stage, unsigned long archid, unsigned long impid)
+> diff --git a/arch/riscv/include/asm/errata_list.h b/arch/riscv/include/asm/errata_list.h
+> index 7a2dd61af24d..f7c6805daeab 100644
+> --- a/arch/riscv/include/asm/errata_list.h
+> +++ b/arch/riscv/include/asm/errata_list.h
+> @@ -16,7 +16,8 @@
+>  
+>  #ifdef CONFIG_ERRATA_THEAD
+>  #define	ERRATA_THEAD_PBMT 0
+> -#define	ERRATA_THEAD_NUMBER 1
+> +#define	ERRATA_THEAD_CMO 1
+> +#define	ERRATA_THEAD_NUMBER 2
+>  #endif
+>  
+>  #define	CPUFEATURE_SVPBMT 0
+> @@ -104,8 +105,37 @@ asm volatile(ALTERNATIVE(								\
+>  #define CBO_CLEAN_A0	".long 0x25200F"
+>  #define CBO_FLUSH_A0	".long 0x05200F"
+>  
+> +/*
+> + * dcache.ipa rs1 (invalidate, physical address)
+> + * | 31 - 25 | 24 - 20 | 19 - 15 | 14 - 12 | 11 - 7 | 6 - 0 |
+> + *   0000001    01010      rs1       000      00000  0001011
+> + * dache.iva rs1 (invalida, virtual address)
+> + *   0000001    00110      rs1       000      00000  0001011
+> + *
+> + * dcache.cpa rs1 (clean, physical address)
+> + * | 31 - 25 | 24 - 20 | 19 - 15 | 14 - 12 | 11 - 7 | 6 - 0 |
+> + *   0000001    01001      rs1       000      00000  0001011
+> + * dcache.cva rs1 (clean, virtual address)
+> + *   0000001    00100      rs1       000      00000  0001011
+> + *
+> + * dcache.cipa rs1 (clean then invalidate, physical address)
+> + * | 31 - 25 | 24 - 20 | 19 - 15 | 14 - 12 | 11 - 7 | 6 - 0 |
+> + *   0000001    01011      rs1       000      00000  0001011
+> + * dcache.civa rs1 (... virtual address)
+> + *   0000001    00111      rs1       000      00000  0001011
+> + *
+> + * sync.s (make sure all cache operations finished)
+> + * | 31 - 25 | 24 - 20 | 19 - 15 | 14 - 12 | 11 - 7 | 6 - 0 |
+> + *   0000000    11001     00000      000      00000  0001011
+> + */
+> +#define THEAD_INVAL_A0	".long 0x0265000b"
+> +#define THEAD_CLEAN_A0	".long 0x0245000b"
+> +#define THEAD_FLUSH_A0	".long 0x0275000b"
+> +#define THEAD_SYNC_S	".long 0x0190000b"
+> +
+>  #define ALT_CMO_OP(_op, _start, _size)							\
+> -asm volatile(ALTERNATIVE(								\
+> +asm volatile(ALTERNATIVE_2(								\
+> +	"nop\n\t"									\
+>  	"nop\n\t"									\
+>  	"nop\n\t"									\
+>  	"nop\n\t"									\
+> @@ -117,7 +147,16 @@ asm volatile(ALTERNATIVE(								\
+>  	CBO_##_op##_A0 "\n\t"								\
+>  	"addi a0, a0, %0\n\t"								\
+>  	"2:\n\t"									\
+> -	"bltu a0, %2, 3b\n\t", 0, CPUFEATURE_CMO, CONFIG_RISCV_DMA_NONCOHERENT)		\
+> +	"bltu a0, %2, 3b\n\t"								\
+> +	"nop", 0, CPUFEATURE_CMO, CONFIG_RISCV_DMA_NONCOHERENT,				\
+> +	"mv a0, %1\n\t"									\
+> +	"j 2f\n\t"									\
+> +	"3:\n\t"									\
+> +	THEAD_##_op##_A0 "\n\t"								\
+> +	"addi a0, a0, %0\n\t"								\
+> +	"2:\n\t"									\
+> +	"bltu a0, %2, 3b\n\t"								\
+> +	THEAD_SYNC_S, THEAD_VENDOR_ID, ERRATA_THEAD_CMO, CONFIG_ERRATA_THEAD_CMO)	\
+>  	: : "I"(L1_CACHE_BYTES), "r"((_start) & ~(L1_CACHE_BYTES - 1)),			\
+>  	    "r"(ALIGN((_start) + (_size), L1_CACHE_BYTES)))
+>  
+> 
 
-    tcp_cubic: fix spurious Hystart ACK train detections for
-not-cwnd-limited flows
