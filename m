@@ -2,45 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7058AC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9229C4167D
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:13:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354583AbiDAPMK (ORCPT
+        id S1354687AbiDAPMS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:12:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60524 "EHLO
+        Fri, 1 Apr 2022 11:12:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352108AbiDAOtz (ORCPT
+        with ESMTP id S1352162AbiDAOt7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:49:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6A5A292DA2;
-        Fri,  1 Apr 2022 07:41:02 -0700 (PDT)
+        Fri, 1 Apr 2022 10:49:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C9742B19DA;
+        Fri,  1 Apr 2022 07:41:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 720C460A64;
-        Fri,  1 Apr 2022 14:40:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 050B6C2BBE4;
-        Fri,  1 Apr 2022 14:40:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 68B76B82504;
+        Fri,  1 Apr 2022 14:40:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DD15C2BBE4;
+        Fri,  1 Apr 2022 14:40:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824010;
-        bh=ZqjFng1BBWMjrqvsY7fCtSykKyUDEeNJsAGxQ8POOOE=;
+        s=k20201202; t=1648824029;
+        bh=9Wc3k6gE6jmVeDTnq2FcMaJX6Ctbq58Pzce8ZBN2X+c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CrQz9p7cD88HZZ1YUQrTayFeuBcZVzN+dhmwnV9oEsfNX0j6kPeU4LRC4UhV8Osjl
-         yvn9+/CwDsOGv+aUkdVQTfMrxrl/fY6skf9JhRy/pftShMMpfTRUAWqh0CerfEBQ9o
-         ccbQEouEkNuijlIose5jTlFn+BRCFrcj1p2IkumqckrQBkBdMn0kmGCeOTHNcxD1id
-         Aezu7/Fmh4OshRcz+jUuAbPmXAvFr0/U+uX9JR7xqnfQR6eksuipPQUkpOe6OcJ3iw
-         HoTqfpczPeJIchzuxJukVmIoCNtuSC6s9BqCYYhXSPeeb82qqHMsziek3hjKg+Y5yt
-         PsNktSL35p2dw==
+        b=HBi+scHJlORbjdv5JIfJwlokRmWF/VVoBT+JgjB+MadOsxqd1Mli4e+XMpHyZRM/9
+         SWiPcWBhe5MBsBu6kOq8yKUjA9ddTY+nyz04JLcWWXdLiJFeoHFWeSX/nBAYybKe4C
+         Lnzsu7iuNLjCtbZrc/wsqN1pmeUihiA9I2hYUKUI0L6pxtOWuXDSgrwOfZcX+VIwoS
+         l4PUFWwgwMkq6+dB2d1gyDNrAnOKsxqaiBS4jqeCc7bNh6XXmhgjxr81hMVIEo/PIY
+         lFtYAPumZbiZfPlzxlB0QzNYG/x59dSaUAA9JCl5vHpC7UVZBDBp+LtM9Hg2Er3Mqc
+         XD0OXYMRUXI6A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mike Snitzer <snitzer@redhat.com>, Zhang Yi <yi.zhang@huawei.com>,
-        Sasha Levin <sashal@kernel.org>, agk@redhat.com,
-        snitzer@kernel.org, dm-devel@redhat.com
-Subject: [PATCH AUTOSEL 5.15 50/98] dm: requeue IO if mapping table not yet available
-Date:   Fri,  1 Apr 2022 10:36:54 -0400
-Message-Id: <20220401143742.1952163-50-sashal@kernel.org>
+Cc:     Johan Almbladh <johan.almbladh@anyfinetworks.com>,
+        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>,
+        lorenzo.bianconi83@gmail.com, ryder.lee@mediatek.com,
+        kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, matthias.bgg@gmail.com, Bo.Jiao@mediatek.com,
+        shayne.chen@mediatek.com, greearb@candelatech.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.15 58/98] mt76: mt7915: fix injected MPDU transmission to not use HW A-MSDU
+Date:   Fri,  1 Apr 2022 10:37:02 -0400
+Message-Id: <20220401143742.1952163-58-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143742.1952163-1-sashal@kernel.org>
 References: <20220401143742.1952163-1-sashal@kernel.org>
@@ -52,68 +58,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mike Snitzer <snitzer@redhat.com>
+From: Johan Almbladh <johan.almbladh@anyfinetworks.com>
 
-[ Upstream commit fa247089de9936a46e290d4724cb5f0b845600f5 ]
+[ Upstream commit 28225a6ef80ebf46c46e5fbd5b1ee231a0b2b5b7 ]
 
-Update both bio-based and request-based DM to requeue IO if the
-mapping table not available.
+Before, the hardware would be allowed to transmit injected 802.11 MPDUs
+as A-MSDU. This resulted in corrupted frames being transmitted. Now,
+injected MPDUs are transmitted as-is, without A-MSDU.
 
-This race of IO being submitted before the DM device ready is so
-narrow, yet possible for initial table load given that the DM device's
-request_queue is created prior, that it best to requeue IO to handle
-this unlikely case.
+The fix was verified with frame injection on MT7915 hardware, both with
+and without the injected frame being encrypted.
 
-Reported-by: Zhang Yi <yi.zhang@huawei.com>
-Signed-off-by: Mike Snitzer <snitzer@redhat.com>
+If the hardware cannot do A-MSDU aggregation on MPDUs, this problem
+would also be present in the TX path where mac80211 does the 802.11
+encapsulation. However, I have not observed any such problem when
+disabling IEEE80211_HW_SUPPORTS_TX_ENCAP_OFFLOAD to force that mode.
+Therefore this fix is isolated to injected frames only.
+
+The same A-MSDU logic is also present in the mt7921 driver, so it is
+likely that this fix should be applied there too. I do not have access
+to mt7921 hardware so I have not been able to test that.
+
+Signed-off-by: Johan Almbladh <johan.almbladh@anyfinetworks.com>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/md/dm-rq.c |  7 ++++++-
- drivers/md/dm.c    | 11 +++--------
- 2 files changed, 9 insertions(+), 9 deletions(-)
+ drivers/net/wireless/mediatek/mt76/mt7915/mac.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/md/dm-rq.c b/drivers/md/dm-rq.c
-index a896dea9750e..53a9b16c7b2e 100644
---- a/drivers/md/dm-rq.c
-+++ b/drivers/md/dm-rq.c
-@@ -500,8 +500,13 @@ static blk_status_t dm_mq_queue_rq(struct blk_mq_hw_ctx *hctx,
- 
- 	if (unlikely(!ti)) {
- 		int srcu_idx;
--		struct dm_table *map = dm_get_live_table(md, &srcu_idx);
-+		struct dm_table *map;
- 
-+		map = dm_get_live_table(md, &srcu_idx);
-+		if (unlikely(!map)) {
-+			dm_put_live_table(md, srcu_idx);
-+			return BLK_STS_RESOURCE;
-+		}
- 		ti = dm_table_find_target(map, 0);
- 		dm_put_live_table(md, srcu_idx);
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mac.c b/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
+index ff613d705611..7691292526e0 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
+@@ -899,6 +899,7 @@ mt7915_mac_write_txwi_80211(struct mt7915_dev *dev, __le32 *txwi,
+ 		val = MT_TXD3_SN_VALID |
+ 		      FIELD_PREP(MT_TXD3_SEQ, IEEE80211_SEQ_TO_SN(seqno));
+ 		txwi[3] |= cpu_to_le32(val);
++		txwi[7] &= ~cpu_to_le32(MT_TXD7_HW_AMSDU);
  	}
-diff --git a/drivers/md/dm.c b/drivers/md/dm.c
-index 5f33700d1247..73046fd21e47 100644
---- a/drivers/md/dm.c
-+++ b/drivers/md/dm.c
-@@ -1570,15 +1570,10 @@ static blk_qc_t dm_submit_bio(struct bio *bio)
- 	struct dm_table *map;
  
- 	map = dm_get_live_table(md, &srcu_idx);
--	if (unlikely(!map)) {
--		DMERR_LIMIT("%s: mapping table unavailable, erroring io",
--			    dm_device_name(md));
--		bio_io_error(bio);
--		goto out;
--	}
- 
--	/* If suspended, queue this IO for later */
--	if (unlikely(test_bit(DMF_BLOCK_IO_FOR_SUSPEND, &md->flags))) {
-+	/* If suspended, or map not yet available, queue this IO for later */
-+	if (unlikely(test_bit(DMF_BLOCK_IO_FOR_SUSPEND, &md->flags)) ||
-+	    unlikely(!map)) {
- 		if (bio->bi_opf & REQ_NOWAIT)
- 			bio_wouldblock_error(bio);
- 		else if (bio->bi_opf & REQ_RAHEAD)
+ 	val = FIELD_PREP(MT_TXD7_TYPE, fc_type) |
 -- 
 2.34.1
 
