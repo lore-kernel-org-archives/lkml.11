@@ -2,56 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5240BC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D16B6C433EF
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:13:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354747AbiDAPMX (ORCPT
+        id S1354911AbiDAPMl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:12:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55258 "EHLO
+        Fri, 1 Apr 2022 11:12:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352206AbiDAOuJ (ORCPT
+        with ESMTP id S1352371AbiDAOuR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:50:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62BFB2B19C6;
-        Fri,  1 Apr 2022 07:41:15 -0700 (PDT)
+        Fri, 1 Apr 2022 10:50:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DD172B2B5B;
+        Fri,  1 Apr 2022 07:41:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2E64CB82500;
-        Fri,  1 Apr 2022 14:35:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3897C340EE;
-        Fri,  1 Apr 2022 14:35:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 14CFD611C4;
+        Fri,  1 Apr 2022 14:40:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 711BEC36AEC;
+        Fri,  1 Apr 2022 14:40:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823720;
-        bh=wVy5NP4YCSoyEzZjb6vJTotOF7bMrwyo1S8x1rMxh4E=;
+        s=k20201202; t=1648824049;
+        bh=GtGEHyCq6iT+G8LTa1QP4bDbH2jB17E5HjEoP4Oz/Yw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Wx/uy+wCWHZIcsR2R8bw+EPTcQ8xLUCg6YZPEWFThS2hs8nwu0V50tQYyKEXXpXli
-         3O98M/oRJG8YbuDH0c0DNzgr9HNf2Sw4q765y84PWtM78A2MwpK9rHTusFI1hvuRm2
-         q7JbWXDFBNrdrkdlLlN2Z6bFWJ7RIGIGdrraUZclXDWpiSBImkRh40h+2l+klIXyFh
-         YD/zNxR9bRvlEowzLpqiPnWVhVlvquWSI/ffDjSXmaWP1ZAfAZ+4axnHvXw4QVxe72
-         MuVK8HOVyCmkdGLivfnA7ZZ0Zp5uQaV/N3r3+oX/bea9mkPZ8g/a4K6j0PX5anzHlY
-         JNANsALIDj/8w==
+        b=pAL5Xt3IVR/dGTziiLWHvODdo3rNmOBdW9Xj5UyI3hYEqJDMwTzaGUmog8ig0U2OT
+         pgHKwsidBFgZCbI5th4P7pV6QxLHd7cFCuteRIIqfpsCW2k2mg1EVZ0tVKDmyh4Fw7
+         +1PletNnit09FzIMP4Rjz3Sc9rTwgXIgBqDeJnTIl6YKxL0e6laZiuMOGTKPpVl6SK
+         OsDSQgGiCRzmWY+KsKFhQiYALp+++KPhxlUcFkf8Xiaj+vWCkEnIgszattQRWt90AD
+         Cj/HepzG1FrrgFs0JnG7y9iYBjXqT7c2VD7O3j33p2Jjk+BMG7tT4k1aSnVLCaWilZ
+         d2AY4hFpEktRg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sung Joon Kim <sungkim@amd.com>,
-        Meenakshikumar Somasundaram <Meenakshikumar.Somasundaram@amd.com>,
-        Jun Lei <Jun.Lei@amd.com>, Jasdeep Dhillon <jdhillon@amd.com>,
-        Daniel Wheeler <daniel.wheeler@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, harry.wentland@amd.com,
-        sunpeng.li@amd.com, Rodrigo.Siqueira@amd.com,
-        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
-        daniel@ffwll.ch, wenjing.liu@amd.com, george.shen@amd.com,
-        Jimmy.Kizito@amd.com, Wesley.Chalmers@amd.com, Jerry.Zuo@amd.com,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.16 050/109] drm/amd/display: reset lane settings after each PHY repeater LT
-Date:   Fri,  1 Apr 2022 10:31:57 -0400
-Message-Id: <20220401143256.1950537-50-sashal@kernel.org>
+Cc:     Dust Li <dust.li@linux.alibaba.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, kgraul@linux.ibm.com,
+        kuba@kernel.org, pabeni@redhat.com, linux-s390@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 65/98] net/smc: correct settings of RMB window update limit
+Date:   Fri,  1 Apr 2022 10:37:09 -0400
+Message-Id: <20220401143742.1952163-65-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220401143256.1950537-1-sashal@kernel.org>
-References: <20220401143256.1950537-1-sashal@kernel.org>
+In-Reply-To: <20220401143742.1952163-1-sashal@kernel.org>
+References: <20220401143742.1952163-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -60,71 +54,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sung Joon Kim <sungkim@amd.com>
+From: Dust Li <dust.li@linux.alibaba.com>
 
-[ Upstream commit 3b853c316c9321e195414a6fb121d1c2d45b1e87 ]
+[ Upstream commit 6bf536eb5c8ca011d1ff57b5c5f7c57ceac06a37 ]
 
-[why]
-In LTTPR non-transparent mode, we need
-to reset the cached lane settings before performing
-link training on the next PHY repeater. Otherwise,
-the cached lane settings will be used for the next
-clock recovery e.g. VS = MAX (3) which should not be
-the case according to the DP specs. We expect to use
-minimum lane settings on each clock recovery sequence.
+rmbe_update_limit is used to limit announcing receive
+window updating too frequently. RFC7609 request a minimal
+increase in the window size of 10% of the receive buffer
+space. But current implementation used:
 
-[how]
-Reset DPCD and HW lane settings on each repeater LT.
-Set training pattern to 0 for the repeater that failed LT
-at the proper place.
+  min_t(int, rmbe_size / 10, SOCK_MIN_SNDBUF / 2)
 
-Reviewed-by: Meenakshikumar Somasundaram <Meenakshikumar.Somasundaram@amd.com>
-Reviewed-by: Jun Lei <Jun.Lei@amd.com>
-Acked-by: Jasdeep Dhillon <jdhillon@amd.com>
-Signed-off-by: Sung Joon Kim <sungkim@amd.com>
-Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+and SOCK_MIN_SNDBUF / 2 == 2304 Bytes, which is almost
+always less then 10% of the receive buffer space.
+
+This causes the receiver always sending CDC message to
+update its consumer cursor when it consumes more then 2K
+of data. And as a result, we may encounter something like
+"TCP silly window syndrome" when sending 2.5~8K message.
+
+This patch fixes this using max(rmbe_size / 10, SOCK_MIN_SNDBUF / 2).
+
+With this patch and SMC autocorking enabled, qperf 2K/4K/8K
+tcp_bw test shows 45%/75%/40% increase in throughput respectively.
+
+Signed-off-by: Dust Li <dust.li@linux.alibaba.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c | 15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+ net/smc/smc_core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c b/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c
-index 135ea1c422f2..f46aa7f8c35d 100644
---- a/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c
-+++ b/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c
-@@ -2124,21 +2124,26 @@ static enum link_training_result dp_perform_8b_10b_link_training(
- 				repeater_id--) {
- 			status = perform_clock_recovery_sequence(link, lt_settings, repeater_id);
+diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
+index dee336eef6d2..7401ec67ebcf 100644
+--- a/net/smc/smc_core.c
++++ b/net/smc/smc_core.c
+@@ -1822,7 +1822,7 @@ static struct smc_buf_desc *smc_buf_get_slot(int compressed_bufsize,
+  */
+ static inline int smc_rmb_wnd_update_limit(int rmbe_size)
+ {
+-	return min_t(int, rmbe_size / 10, SOCK_MIN_SNDBUF / 2);
++	return max_t(int, rmbe_size / 10, SOCK_MIN_SNDBUF / 2);
+ }
  
--			if (status != LINK_TRAINING_SUCCESS)
-+			if (status != LINK_TRAINING_SUCCESS) {
-+				repeater_training_done(link, repeater_id);
- 				break;
-+			}
- 
- 			status = perform_channel_equalization_sequence(link,
- 					lt_settings,
- 					repeater_id);
- 
-+			repeater_training_done(link, repeater_id);
-+
- 			if (status != LINK_TRAINING_SUCCESS)
- 				break;
- 
--			repeater_training_done(link, repeater_id);
-+			for (lane = 0; lane < LANE_COUNT_DP_MAX; lane++) {
-+				lt_settings->dpcd_lane_settings[lane].raw = 0;
-+				lt_settings->hw_lane_settings[lane].VOLTAGE_SWING = 0;
-+				lt_settings->hw_lane_settings[lane].PRE_EMPHASIS = 0;
-+			}
- 		}
--
--		for (lane = 0; lane < (uint8_t)lt_settings->link_settings.lane_count; lane++)
--			lt_settings->dpcd_lane_settings[lane].raw = 0;
- 	}
- 
- 	if (status == LINK_TRAINING_SUCCESS) {
+ /* map an rmb buf to a link */
 -- 
 2.34.1
 
