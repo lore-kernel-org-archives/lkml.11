@@ -2,160 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FE63C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 09:21:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E6A7C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 09:22:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344479AbiDAJXQ (ORCPT
+        id S1344473AbiDAJYW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 05:23:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50418 "EHLO
+        Fri, 1 Apr 2022 05:24:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344465AbiDAJXL (ORCPT
+        with ESMTP id S237354AbiDAJYU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 05:23:11 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D9D620C2F4;
-        Fri,  1 Apr 2022 02:21:21 -0700 (PDT)
-Date:   Fri, 1 Apr 2022 11:21:18 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1648804879;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=m1HecoWE+iiHH4ehJehxpl0caYG8Y79MmUQV70QpxUk=;
-        b=x2HPDsEyOtRuRE4I4sCZBszZiUXXPB+YGf4h7GhKgJLaY8QllGQ4BSe+9E0hJAGevLmEnB
-        oBXuxjR0vXvmZRTfz18PKOjrDkI4c6rmEheue1ElfzJ2dT0/iOqHOOGhef/LAyrj8cdgIa
-        CyK4jCZ+aJcBtCZukYwhu3RbbZog649T6B9cUfD9nxARUMA6LpPNNdFqi189K8gaPifr2c
-        DwVL1VVul7BRAg0E5q0UdA3D6dLXGpkO3wwWVe95YKKqB9nZMYTYcnh5+qfI2cNg0tvYfF
-        wkCXR360bGfTZeHlwER21amcm4oMXXOsKyzmdrvx1M/EVN7BAKbYQ7srkvZznw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1648804879;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=m1HecoWE+iiHH4ehJehxpl0caYG8Y79MmUQV70QpxUk=;
-        b=O505T+RrGZwrO+BcbOCRSbXVf0T0zEZL2ELO/BWY0OvfitTgLpsdJs1nv/gusP44yMWkHl
-        FyEsjq36MfC2S4Bg==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Cc:     Tejun Heo <tj@kernel.org>, Marc Kleine-Budde <mkl@pengutronix.de>,
-        Peter Hurley <peter@hurleysoftware.com>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Esben Haabendal <esben@geanix.com>,
-        Steven Walter <stevenrwalter@gmail.com>,
-        linux-kernel@vger.kernel.org,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        =?utf-8?B?QW5kcsOp?= Pribil <a.pribil@beck-ipc.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-rt-users@vger.kernel.org
-Subject: Re: [RFC PATCH 0/2] RT scheduling policies for workqueues
-Message-ID: <YkbEDoPBKzVUqNLb@linutronix.de>
-References: <20220323145600.2156689-1-linux@rasmusvillemoes.dk>
- <YkGIhYKJG+w4L7ge@linutronix.de>
- <20220328100927.5ax34nea7sp7jdsy@pengutronix.de>
- <YkHyzcfiyjLfIVOo@slm.duckdns.org>
- <YkKnlUUsufZPiZxM@linutronix.de>
- <8b21ad64-ea9c-84f2-c798-222c9383e3de@rasmusvillemoes.dk>
+        Fri, 1 Apr 2022 05:24:20 -0400
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4042A269367
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 02:22:31 -0700 (PDT)
+Received: by mail-il1-f197.google.com with SMTP id h13-20020a056e021d8d00b002c7fb1ec601so1454032ila.6
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 02:22:31 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=SiA6SGYJJIZ5dSSuu0urRTJnO2w3RknAKYRvrA5F5nY=;
+        b=q46oGYznVFOWSmC8mRbN4QrEhs0FGGUEqur6YcjMQP8eGboTlTlwYmAk2vP/JuCLKj
+         IyrVS1UuQWg5g5VxQLJzn6IOFxvbBOS1pOXLnK165DyzNH27C7Z50UMGY5v9joSea6Ll
+         OsV9KP5Em7wTARFZBaqlU83mrpU17jERGfP//Gq8fens5ezeQEAUhEeYHl2Pl71wAELh
+         q5lx5D3ySKuuK3sey9eknC7aAkgpV4Vej0dI1aZU5f35VqJNCQSaq2BmwQBkyX9vzBfJ
+         vMfHOrkaru5FZIWOy7+Gibcg2sc3SozkerHe85NJ5zhcDjjOqZWzAJbmXqQ4yFDcVl+1
+         PY0Q==
+X-Gm-Message-State: AOAM531ETwykVLH3I9n/vpXhUInCPDZDqfaOqnkSh0E8O3Gz8UFWMYgZ
+        jHAgea6RXV2C0KLdsl5+trYgh1iyYCwGXCLBOoTqt9BzZiE+
+X-Google-Smtp-Source: ABdhPJwIlEf20SuiayZwei8JX5zZOt1ZlKFN06RW8QPp1ET9O17XMgisVehnNnpxaab7p2qZ1jfxPJyP9MGeE06rKoTzANM8Sli2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <8b21ad64-ea9c-84f2-c798-222c9383e3de@rasmusvillemoes.dk>
+X-Received: by 2002:a92:1e09:0:b0:2c6:304e:61fa with SMTP id
+ e9-20020a921e09000000b002c6304e61famr16320640ile.211.1648804950620; Fri, 01
+ Apr 2022 02:22:30 -0700 (PDT)
+Date:   Fri, 01 Apr 2022 02:22:30 -0700
+In-Reply-To: <00000000000065061a05d85b8262@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000062c05a05db9451e4@google.com>
+Subject: Re: [syzbot] KASAN: use-after-free Read in io_poll_check_events
+From:   syzbot <syzbot+edb9c7738ba8cbdbf197@syzkaller.appspotmail.com>
+To:     asml.silence@gmail.com, axboe@kernel.dk, io-uring@vger.kernel.org,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-03-29 10:33:19 [+0200], Rasmus Villemoes wrote:
-> On 29/03/2022 08.30, Sebastian Andrzej Siewior wrote:
-> > On 2022-03-28 07:39:25 [-1000], Tejun Heo wrote:
-> >> Hello,
-> > Hi,
-> > 
-> >> I wonder whether it'd be useful to provide a set of wrappers which can make
-> >> switching between workqueue and kworker easy. Semantics-wise, they're
-> >> already mostly aligned and it shouldn't be too difficult to e.g. make an
-> >> unbounded workqueue be backed by a dedicated kthread_worker instead of
-> >> shared pool depending on a flag, or even allow switching dynamically.
-> 
-> Well, that would certainly not make it any easier for userspace to
-> discover the thread it needs to chrt().
+syzbot has found a reproducer for the following issue on:
 
-It should be configured within the tty-layer and not making a working RT
-just because it is possible.
+HEAD commit:    e5071887cd22 Add linux-next specific files for 20220401
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=1672d26b700000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=17fed8f59a304eee
+dashboard link: https://syzkaller.appspot.com/bug?extid=edb9c7738ba8cbdbf197
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1016f8f3700000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14907c5b700000
 
-> > This could work. For the tty layer it could use 'lowlatency' attribute
-> > to decide which implementation makes sense.
-> 
-> I have patches that merely touch the tty layer, but tying it to the
-> lowlatency attribute is quite painful (which has also come up in
-> previous discussions on this) - because the lowlatency flag can be
-> flipped from userspace, but synchronizing which variant is used and
-> switching dynamically is at least beyond my skills to make work
-> robustly. So in my patches, the choice is made at open() time. However,
-> I'm still not convinced code like
-> 
->  struct tty_bufhead {
->         struct tty_buffer *head;        /* Queue head */
->         struct work_struct work;
-> +       struct kthread_work kwork;
-> +       struct kthread_worker *kworker;
-> 
-> 
->  bool tty_buffer_restart_work(struct tty_port *port)
->  {
-> -       return queue_work(system_unbound_wq, &port->buf.work);
-> +       struct tty_bufhead *buf = &port->buf;
-> +
-> +       if (buf->kworker)
-> +               return kthread_queue_work(buf->kworker, &buf->kwork);
-> +       else
-> +               return queue_work(system_unbound_wq, &buf->work);
->  }
-> 
-> etc. is the way to go.
-> 
-> ===
-> 
-> Here's another idea: In an ideal world, the irq thread itself [people
-> caring about latency use threaded interrupts] could just do the work
-> immediately - then the admin only has one kernel thread to properly
-> configure. However, as Sebastian pointed out, doing that leads to a
-> lockdep splat [1], and it also means that there's no work item involved,
-> so some other thread calling tty_buffer_flush_work() might not actually
-> wait for a concurrent flush_to_ldisc() to finish. So could we create a
-> struct hybrid_work { } which, when enqueued, does something like
-> 
->   bool current_is_irqthread(void) { return in_task() &&
-> kthread_func(current) == irq_thread; }
-> 
-> hwork_queue(struct hybrid_work *hwork, struct workqueue_struct *wq)
->   if (current_is_irqthread()) {
->     task_work_add(current, &hwork->twork)
->   } else {
->     queue_work(wq, &hwork->work);
->   }
-> 
-> (with extra bookkeeping so _flush  and _cancel_sync methods can also be
-> created). It would require irqthread to learn to run its queued
-> task_works in its main loop, which in turn would require finding some
-> other way to do the irq_thread_dtor() cleanup, but that should be doable.
-> 
-> While the implementation of hybrid_work might be a bit complex, I think
-> this would have potential for being used in other situations, and for
-> the users, the API would be as simple as the current workqueue/struct
-> kwork APIs. By letting the irq thread do more/all of the work, we'd
-> probably also win some latency due to fewer threads involved and better
-> cache locality. And the admin/BSP is already setting the rt priorities
-> of the [irq/...] threads.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+edb9c7738ba8cbdbf197@syzkaller.appspotmail.com
 
-Hmmm. Sounds complicated. Especially the part where irqthread needs to
-deal with irq_thread_dtor in another way.
-If this is something we want for everyone and not just for the "low
-latency" attribute because it seems to make sense for everyone, would it
-work to add the data in one step and then flush it once all locks are
-dropped? The UART driver could be extended to a threaded handler if it
-is not desired/ possible to complete in the primary handler.
+general protection fault, probably for non-canonical address 0xdffffc0000000005: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x0000000000000028-0x000000000000002f]
+CPU: 1 PID: 3567 Comm: syz-executor893 Not tainted 5.17.0-next-20220401-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:vfs_poll include/linux/poll.h:86 [inline]
+RIP: 0010:io_poll_check_events+0x1e0/0x800 fs/io_uring.c:5960
+Code: e8 03 48 c7 44 24 60 00 00 00 00 44 89 74 24 68 42 80 3c 28 00 0f 85 ac 05 00 00 48 8b 5d 00 48 8d 7b 28 48 89 f8 48 c1 e8 03 <42> 80 3c 28 00 0f 85 88 05 00 00 48 8b 43 28 48 8d 78 48 48 89 fa
+RSP: 0018:ffffc900038ffa00 EFLAGS: 00010206
+RAX: 0000000000000005 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: ffff88801cea0000 RSI: ffffffff81eba128 RDI: 0000000000000028
+RBP: ffff8880182d28c0 R08: 0000000000000000 R09: ffff8880182d2947
+R10: ffffffff81eba2f4 R11: 0000000000000006 R12: 0000000000000001
+R13: dffffc0000000000 R14: 0000000040002038 R15: ffff8880182d2944
+FS:  0000555556048300(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007ff954a2e140 CR3: 000000001a5af000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ io_poll_task_func+0x41/0x500 fs/io_uring.c:5995
+ handle_tw_list fs/io_uring.c:2462 [inline]
+ tctx_task_work+0x1a4/0x1460 fs/io_uring.c:2496
+ task_work_run+0xdd/0x1a0 kernel/task_work.c:164
+ get_signal+0x1c5/0x24c0 kernel/signal.c:2681
+ arch_do_signal_or_restart+0x88/0x1a10 arch/x86/kernel/signal.c:867
+ exit_to_user_mode_loop kernel/entry/common.c:180 [inline]
+ exit_to_user_mode_prepare+0x15f/0x250 kernel/entry/common.c:215
+ __syscall_exit_to_user_mode_work kernel/entry/common.c:297 [inline]
+ syscall_exit_to_user_mode+0x19/0x60 kernel/entry/common.c:308
+ do_syscall_64+0x42/0x80 arch/x86/entry/common.c:86
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7ff9549bcff9
+Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 b1 14 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffd1be31e78 EFLAGS: 00000246 ORIG_RAX: 00000000000001aa
+RAX: 0000000000000200 RBX: 0000000000000000 RCX: 00007ff9549bcff9
+RDX: 0000000000000000 RSI: 000000000000146f RDI: 0000000000000003
+RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 00007ff954980880
+R13: 431bde82d7b634db R14: 0000000000000000 R15: 0000000000000000
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:vfs_poll include/linux/poll.h:86 [inline]
+RIP: 0010:io_poll_check_events+0x1e0/0x800 fs/io_uring.c:5960
+Code: e8 03 48 c7 44 24 60 00 00 00 00 44 89 74 24 68 42 80 3c 28 00 0f 85 ac 05 00 00 48 8b 5d 00 48 8d 7b 28 48 89 f8 48 c1 e8 03 <42> 80 3c 28 00 0f 85 88 05 00 00 48 8b 43 28 48 8d 78 48 48 89 fa
+RSP: 0018:ffffc900038ffa00 EFLAGS: 00010206
+RAX: 0000000000000005 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: ffff88801cea0000 RSI: ffffffff81eba128 RDI: 0000000000000028
+RBP: ffff8880182d28c0 R08: 0000000000000000 R09: ffff8880182d2947
+R10: ffffffff81eba2f4 R11: 0000000000000006 R12: 0000000000000001
+R13: dffffc0000000000 R14: 0000000040002038 R15: ffff8880182d2944
+FS:  0000555556048300(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007ff954a2e140 CR3: 000000001a5af000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+----------------
+Code disassembly (best guess):
+   0:	e8 03 48 c7 44       	callq  0x44c74808
+   5:	24 60                	and    $0x60,%al
+   7:	00 00                	add    %al,(%rax)
+   9:	00 00                	add    %al,(%rax)
+   b:	44 89 74 24 68       	mov    %r14d,0x68(%rsp)
+  10:	42 80 3c 28 00       	cmpb   $0x0,(%rax,%r13,1)
+  15:	0f 85 ac 05 00 00    	jne    0x5c7
+  1b:	48 8b 5d 00          	mov    0x0(%rbp),%rbx
+  1f:	48 8d 7b 28          	lea    0x28(%rbx),%rdi
+  23:	48 89 f8             	mov    %rdi,%rax
+  26:	48 c1 e8 03          	shr    $0x3,%rax
+* 2a:	42 80 3c 28 00       	cmpb   $0x0,(%rax,%r13,1) <-- trapping instruction
+  2f:	0f 85 88 05 00 00    	jne    0x5bd
+  35:	48 8b 43 28          	mov    0x28(%rbx),%rax
+  39:	48 8d 78 48          	lea    0x48(%rax),%rdi
+  3d:	48 89 fa             	mov    %rdi,%rdx
 
-> Rasmus
-
-Sebastian
