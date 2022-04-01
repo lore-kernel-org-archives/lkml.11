@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40DA6C35276
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:51:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5E7CC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:52:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348951AbiDAOxE (ORCPT
+        id S1349050AbiDAOxN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 10:53:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56418 "EHLO
+        Fri, 1 Apr 2022 10:53:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347959AbiDAOdj (ORCPT
+        with ESMTP id S1348189AbiDAOdt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:33:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A059528D2AC;
-        Fri,  1 Apr 2022 07:30:56 -0700 (PDT)
+        Fri, 1 Apr 2022 10:33:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 949A8292DB7;
+        Fri,  1 Apr 2022 07:31:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2CFD661C3C;
-        Fri,  1 Apr 2022 14:30:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7544AC340F2;
-        Fri,  1 Apr 2022 14:30:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 39A76B8250B;
+        Fri,  1 Apr 2022 14:31:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AB9CC3410F;
+        Fri,  1 Apr 2022 14:31:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823455;
-        bh=4oU2fYehfcJoUos0ENtaH9fVSrDM0HjhphxCh1pfqNI=;
+        s=k20201202; t=1648823470;
+        bh=rCEQD5Z7Au9yX33/IhgwV/aeEEhrjMYdth/fvUikTvw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jD1PYRXS5m5XmOJAf1HhmFLc9567rh37gc6HDw9yuB1Pe5rdd9lr8TXl/dzitMYjy
-         WqANYOGeGOBYNRJYwyDFxaRTogseax4/FsioPfoGv1bXFMrw7W2qP51VO/82rmHw4E
-         hQ1akUrSO1GCO6FJv6W06Su5hjue3k8QBQnhRWIWuEmji0aPwkcHqmgCiu1dT3V91W
-         N+43QnalwKW8RoCnLURkFErDNgYSWIjZbwKSvI6c9JdMh26nhpC05fpcucPZ+dsbaO
-         Qqh8RkaNJLvWQV4kOqtXUNAJ3kp/JVSlbGnq85BHlECXwSPnAl+ayBvFd8YMX3J8lr
-         TMcH5DEdIUimw==
+        b=rgOHngsQVnt38u6yVw19smY0360HJlPQ+8xgcNEndq8bPPr1Js00VUF7uciRizuAz
+         0nyH8wCZpXKXPelWXCjYUTBcoDtPh/VGa2bwAxhIR7RbH4UIK/bkRR7i1q71F5YiJ5
+         WAnWrpR8kJSy7q/8vvq0qf14GzKP7n5y/A8GLmePQQt4KwWfyHPvVJeF3A6mlI46Lr
+         4CZqPZkuY42pF8QzSrSE7q6ScGx585HA+2226aaQyxQqaGSvfq7HitVX7dmJ9YVU5O
+         WcjqOudLMRimDxTxhPwDSUR6RRRj8nS3ecJDzjlwCkTVTS5lPq7wpLK+Etaxuut5Md
+         tC85OEA82rQWg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Matt Johnston <matt@codeconstruct.com.au>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, jk@codeconstruct.com.au,
-        pabeni@redhat.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 101/149] mctp: make __mctp_dev_get() take a refcount hold
-Date:   Fri,  1 Apr 2022 10:24:48 -0400
-Message-Id: <20220401142536.1948161-101-sashal@kernel.org>
+Cc:     Hans de Goede <hdegoede@redhat.com>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        Sasha Levin <sashal@kernel.org>, sre@kernel.org, wens@csie.org,
+        linux-pm@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 104/149] power: supply: axp288_charger: Use acpi_quirk_skip_acpi_ac_and_battery()
+Date:   Fri,  1 Apr 2022 10:24:51 -0400
+Message-Id: <20220401142536.1948161-104-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401142536.1948161-1-sashal@kernel.org>
 References: <20220401142536.1948161-1-sashal@kernel.org>
@@ -54,137 +53,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matt Johnston <matt@codeconstruct.com.au>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit dc121c0084910db985cf1c8ba6fce5d8c307cc02 ]
+[ Upstream commit 00d0566614b7bb7b226cb5a6895b0180ffe6915a ]
 
-Previously there was a race that could allow the mctp_dev refcount
-to hit zero:
+Normally the native AXP288 fg/charger drivers are preferred but one some
+devices the ACPI drivers should be used instead.
 
-rcu_read_lock();
-mdev = __mctp_dev_get(dev);
-// mctp_unregister() happens here, mdev->refs hits zero
-mctp_dev_hold(dev);
-rcu_read_unlock();
+The ACPI battery/ac drivers use the acpi_quirk_skip_acpi_ac_and_battery()
+helper to determine if they should skip loading because native fuel-gauge/
+charger drivers like the AXP288 drivers will be used.
 
-Now we make __mctp_dev_get() take the hold itself. It is safe to test
-against the zero refcount because __mctp_dev_get() is called holding
-rcu_read_lock and mctp_dev uses kfree_rcu().
+The new acpi_quirk_skip_acpi_ac_and_battery() helper includes a list of
+exceptions for boards where the ACPI drivers should be used instead.
 
-Reported-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Matt Johnston <matt@codeconstruct.com.au>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Use this new helper to avoid loading on such boards. Note this requires
+adding a Kconfig dependency on ACPI, this is not a problem because ACPI
+should be enabled on all boards with an AXP288 PMIC anyways.
+
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mctp/device.c     | 21 ++++++++++++++++++---
- net/mctp/route.c      |  5 ++++-
- net/mctp/test/utils.c |  1 -
- 3 files changed, 22 insertions(+), 5 deletions(-)
+ drivers/power/supply/Kconfig          | 2 +-
+ drivers/power/supply/axp288_charger.c | 7 +++++++
+ 2 files changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/net/mctp/device.c b/net/mctp/device.c
-index ef2755f82f87..f86ef6d751bd 100644
---- a/net/mctp/device.c
-+++ b/net/mctp/device.c
-@@ -24,12 +24,25 @@ struct mctp_dump_cb {
- 	size_t a_idx;
- };
+diff --git a/drivers/power/supply/Kconfig b/drivers/power/supply/Kconfig
+index b366e2fd8e97..d7534f12e9ef 100644
+--- a/drivers/power/supply/Kconfig
++++ b/drivers/power/supply/Kconfig
+@@ -351,7 +351,7 @@ config AXP20X_POWER
  
--/* unlocked: caller must hold rcu_read_lock */
-+/* unlocked: caller must hold rcu_read_lock.
-+ * Returned mctp_dev has its refcount incremented, or NULL if unset.
-+ */
- struct mctp_dev *__mctp_dev_get(const struct net_device *dev)
- {
--	return rcu_dereference(dev->mctp_ptr);
-+	struct mctp_dev *mdev = rcu_dereference(dev->mctp_ptr);
-+
-+	/* RCU guarantees that any mdev is still live.
-+	 * Zero refcount implies a pending free, return NULL.
+ config AXP288_CHARGER
+ 	tristate "X-Powers AXP288 Charger"
+-	depends on MFD_AXP20X && EXTCON_AXP288 && IOSF_MBI
++	depends on MFD_AXP20X && EXTCON_AXP288 && IOSF_MBI && ACPI
+ 	help
+ 	  Say yes here to have support X-Power AXP288 power management IC (PMIC)
+ 	  integrated charger.
+diff --git a/drivers/power/supply/axp288_charger.c b/drivers/power/supply/axp288_charger.c
+index c498e62ab4e2..19746e658a6a 100644
+--- a/drivers/power/supply/axp288_charger.c
++++ b/drivers/power/supply/axp288_charger.c
+@@ -838,6 +838,13 @@ static int axp288_charger_probe(struct platform_device *pdev)
+ 	struct power_supply_config charger_cfg = {};
+ 	unsigned int val;
+ 
++	/*
++	 * Normally the native AXP288 fg/charger drivers are preferred but
++	 * on some devices the ACPI drivers should be used instead.
 +	 */
-+	if (mdev)
-+		if (!refcount_inc_not_zero(&mdev->refs))
-+			return NULL;
-+	return mdev;
- }
- 
-+/* Returned mctp_dev does not have refcount incremented. The returned pointer
-+ * remains live while rtnl_lock is held, as that prevents mctp_unregister()
-+ */
- struct mctp_dev *mctp_dev_get_rtnl(const struct net_device *dev)
- {
- 	return rtnl_dereference(dev->mctp_ptr);
-@@ -123,6 +136,7 @@ static int mctp_dump_addrinfo(struct sk_buff *skb, struct netlink_callback *cb)
- 				if (mdev) {
- 					rc = mctp_dump_dev_addrinfo(mdev,
- 								    skb, cb);
-+					mctp_dev_put(mdev);
- 					// Error indicates full buffer, this
- 					// callback will get retried.
- 					if (rc < 0)
-@@ -297,7 +311,7 @@ void mctp_dev_hold(struct mctp_dev *mdev)
- 
- void mctp_dev_put(struct mctp_dev *mdev)
- {
--	if (refcount_dec_and_test(&mdev->refs)) {
-+	if (mdev && refcount_dec_and_test(&mdev->refs)) {
- 		dev_put(mdev->dev);
- 		kfree_rcu(mdev, rcu);
- 	}
-@@ -369,6 +383,7 @@ static size_t mctp_get_link_af_size(const struct net_device *dev,
- 	if (!mdev)
- 		return 0;
- 	ret = nla_total_size(4); /* IFLA_MCTP_NET */
-+	mctp_dev_put(mdev);
- 	return ret;
- }
- 
-diff --git a/net/mctp/route.c b/net/mctp/route.c
-index e52cef750500..05fbd318eb98 100644
---- a/net/mctp/route.c
-+++ b/net/mctp/route.c
-@@ -786,7 +786,7 @@ int mctp_local_output(struct sock *sk, struct mctp_route *rt,
- {
- 	struct mctp_sock *msk = container_of(sk, struct mctp_sock, sk);
- 	struct mctp_skb_cb *cb = mctp_cb(skb);
--	struct mctp_route tmp_rt;
-+	struct mctp_route tmp_rt = {0};
- 	struct mctp_sk_key *key;
- 	struct net_device *dev;
- 	struct mctp_hdr *hdr;
-@@ -892,6 +892,7 @@ int mctp_local_output(struct sock *sk, struct mctp_route *rt,
- 		mctp_route_release(rt);
- 
- 	dev_put(dev);
-+	mctp_dev_put(tmp_rt.dev);
- 
- 	return rc;
- 
-@@ -1057,11 +1058,13 @@ static int mctp_pkttype_receive(struct sk_buff *skb, struct net_device *dev,
- 
- 	rt->output(rt, skb);
- 	mctp_route_release(rt);
-+	mctp_dev_put(mdev);
- 
- 	return NET_RX_SUCCESS;
- 
- err_drop:
- 	kfree_skb(skb);
-+	mctp_dev_put(mdev);
- 	return NET_RX_DROP;
- }
- 
-diff --git a/net/mctp/test/utils.c b/net/mctp/test/utils.c
-index 7b7918702592..e03ba66bbe18 100644
---- a/net/mctp/test/utils.c
-+++ b/net/mctp/test/utils.c
-@@ -54,7 +54,6 @@ struct mctp_test_dev *mctp_test_create_dev(void)
- 
- 	rcu_read_lock();
- 	dev->mdev = __mctp_dev_get(ndev);
--	mctp_dev_hold(dev->mdev);
- 	rcu_read_unlock();
- 
- 	return dev;
++	if (!acpi_quirk_skip_acpi_ac_and_battery())
++		return -ENODEV;
++
+ 	/*
+ 	 * On some devices the fuelgauge and charger parts of the axp288 are
+ 	 * not used, check that the fuelgauge is enabled (CC_CTRL != 0).
 -- 
 2.34.1
 
