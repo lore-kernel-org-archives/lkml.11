@@ -2,113 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15FD5C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 09:54:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7A36C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 09:54:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344820AbiDAJ4E (ORCPT
+        id S1344811AbiDAJ4c (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 05:56:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40178 "EHLO
+        Fri, 1 Apr 2022 05:56:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244173AbiDAJz4 (ORCPT
+        with ESMTP id S243756AbiDAJ43 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 05:55:56 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44DA4146B57;
-        Fri,  1 Apr 2022 02:54:02 -0700 (PDT)
-Received: from kwepemi500014.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KVFnw6vckzgY8Z;
-        Fri,  1 Apr 2022 17:52:20 +0800 (CST)
-Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
- kwepemi500014.china.huawei.com (7.221.188.232) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Fri, 1 Apr 2022 17:54:00 +0800
-Received: from localhost.localdomain (10.175.112.125) by
- kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Fri, 1 Apr 2022 17:54:00 +0800
-From:   Peng Liu <liupeng256@huawei.com>
-To:     <mike.kravetz@oracle.com>, <akpm@linux-foundation.org>,
-        <yaozhenguo1@gmail.com>, <linux-mm@kvack.org>,
-        <linux-kernel@vger.kernel.org>, <stable@vger.kernel.org>
-CC:     <liupeng256@huawei.com>
-Subject: [PATCH v2 1/2] hugetlb: Fix hugepages_setup when deal with pernode
-Date:   Fri, 1 Apr 2022 10:12:31 +0000
-Message-ID: <20220401101232.2790280-2-liupeng256@huawei.com>
-X-Mailer: git-send-email 2.18.0.huawei.25
-In-Reply-To: <20220401101232.2790280-1-liupeng256@huawei.com>
-References: <20220401101232.2790280-1-liupeng256@huawei.com>
+        Fri, 1 Apr 2022 05:56:29 -0400
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5686E147AD9;
+        Fri,  1 Apr 2022 02:54:40 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id y10so2172840pfa.7;
+        Fri, 01 Apr 2022 02:54:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Wz8YVUbIP5nrpoUYrQkW7TtuDiEPJ3Xg42mnIzGwg5I=;
+        b=dFmzRXQV21ibYwzi7Ayh1t6Wolpm2UrezH96+Q749JEdIflJbBh6i5nPWEEcJa9GLI
+         QkVWYXd35aIINLVDoNEJESGco883A+pKdxzBg4M/ezTSoIwNT2X5Jix0s0tIWQWN5GaT
+         2V9U9ClRKNSHNkh3HUpN6Rg98Jdv6U9iTLws/2Lhu7kP8YkTimPzw4JCWFe8JIljvsGZ
+         BdJ2xc6CuSPteOxIGFtmEPVvaT7rjTmBPoaN9zQ6+PkeIlwD49a1ixiljpYGVDzPal/H
+         gQpezLRo9ctRtTgV3PW/e2zL6J2IJahEP3HUXaJPdr55ws+UwQgD3Xf0w1wWWzxqeyFv
+         qFog==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Wz8YVUbIP5nrpoUYrQkW7TtuDiEPJ3Xg42mnIzGwg5I=;
+        b=aKIAbi8sUH9jSOZ2aEsy1s8+2J+dE6F8RWESbrIyhd+ZGarl1vzkqyQLGfxNV8ZGKH
+         5EsuV7aH85ydpByTBJdyGwe738a6mS2SlPkEN/8W5V0M8rsBVxYWO7sA5c0+JZZF+7Eq
+         iqXkyX8FoLR4F3557+WrHpzEymmborGQsEDLPIF886Vvq4vEymWzcoGEuQgc+AryFat2
+         q2d7j9oG2D2/OhPsAJCYmqvuT0+Xh7kk/ojENWvRqFYRafkackAgsKvnqPii6kB5qUT/
+         ymzCWiRE66k3qr7Z6i0rSzOKMo399MNDC03EHjGBiBVSxOo+TQK/rlOSmUY8Bg7fxhVl
+         z3mg==
+X-Gm-Message-State: AOAM5320sEKk+MM3H+09IL5P7ffunyJxGx8nDH9UR6xD1tb27nE77Tgp
+        JJT9YZCuZyzz455yxN7NInmnK7Pkaz0=
+X-Google-Smtp-Source: ABdhPJz3yZtbUujbvFgD9334kdr1l4bb6xKKoNxXMzUqACAZooVSdoi5PdJG0uoxS8Xv6Kj06qlIrg==
+X-Received: by 2002:a65:6d87:0:b0:374:2525:dcb0 with SMTP id bc7-20020a656d87000000b003742525dcb0mr14484850pgb.248.1648806879714;
+        Fri, 01 Apr 2022 02:54:39 -0700 (PDT)
+Received: from localhost ([122.179.46.149])
+        by smtp.gmail.com with ESMTPSA id p13-20020a056a000b4d00b004faecee6e89sm2541921pfo.208.2022.04.01.02.54.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 01 Apr 2022 02:54:39 -0700 (PDT)
+Date:   Fri, 1 Apr 2022 15:24:36 +0530
+From:   Ritesh Harjani <ritesh.list@gmail.com>
+To:     Ojaswin Mujoo <ojaswin@linux.ibm.com>
+Cc:     fstests@vger.kernel.org, riteshh@linux.ibm.com,
+        linux-ext4@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] common/rc: Modify _require_batched_discard to improve
+ test coverage
+Message-ID: <20220401095436.oxdq2duhuudx2c4r@riteshh-domain>
+References: <20220401055713.634842-1-ojaswin@linux.ibm.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.112.125]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- kwepemm600017.china.huawei.com (7.193.23.234)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220401055713.634842-1-ojaswin@linux.ibm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hugepages can be specified to pernode since "hugetlbfs: extend
-the definition of hugepages parameter to support node allocation",
-but the following problem is observed.
+On 22/04/01 11:27AM, Ojaswin Mujoo wrote:
+> A recent ext4 patch discussed [1] that some devices (eg LVMs) can
+> have a discard granularity as big as 42MB which makes it larger
+> than the group size of ext4 FS with 1k BS. This causes the FITRIM
+> IOCTL to fail on filesystems like ext4.
+>
+> This case was not correctly handle by "_require_batched_discard" as
+> it incorrectly interpreted the FITRIM failure as fs not supporting
+> the IOCTL. This caused the tests like generic/260 to incorectly
+> report "not run" instead of "failed" in case of large discard
+> granularity.
 
-Confusing behavior is observed when both 1G and 2M hugepage is set
-after "numa=off".
- cmdline hugepage settings:
-  hugepagesz=1G hugepages=0:3,1:3
-  hugepagesz=2M hugepages=0:1024,1:1024
- results:
-  HugeTLB registered 1.00 GiB page size, pre-allocated 0 pages
-  HugeTLB registered 2.00 MiB page size, pre-allocated 1024 pages
+Ok, I looked at fstrim code and it does print [1]
+"the discard operation is not supported" in case of rc == 1.
+And if rc != 0 it will always returns EXIT_FAILURE.
 
-Furthermore, confusing behavior can be also observed when invalid
-node behind valid node.
+So this patch looks good to me. Feel free to add:
 
-To fix this, hugetlb_hstate_alloc_pages should be called even when
-hugepages_setup going to invalid.
+Reviewed-by: Ritesh Harjani <riteshh@linux.ibm.com>
 
-Cc: <stable@vger.kernel.org>
-Fixes: b5389086ad7b ("hugetlbfs: extend the definition of hugepages parameter to support node allocation")
-Signed-off-by: Peng Liu <liupeng256@huawei.com>
----
- mm/hugetlb.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/mm/hugetlb.c b/mm/hugetlb.c
-index b34f50156f7e..9cd746432ca9 100644
---- a/mm/hugetlb.c
-+++ b/mm/hugetlb.c
-@@ -4131,6 +4131,7 @@ static int __init hugepages_setup(char *s)
- 	int count;
- 	unsigned long tmp;
- 	char *p = s;
-+	int ret = 1;
- 
- 	if (!parsed_valid_hugepagesz) {
- 		pr_warn("HugeTLB: hugepages=%s does not follow a valid hugepagesz, ignoring\n", s);
-@@ -4189,6 +4190,7 @@ static int __init hugepages_setup(char *s)
- 		}
- 	}
- 
-+out:
- 	/*
- 	 * Global state is always initialized later in hugetlb_init.
- 	 * But we need to allocate gigantic hstates here early to still
-@@ -4199,11 +4201,12 @@ static int __init hugepages_setup(char *s)
- 
- 	last_mhp = mhp;
- 
--	return 1;
-+	return ret;
- 
- invalid:
- 	pr_warn("HugeTLB: Invalid hugepages parameter %s\n", p);
--	return 0;
-+	ret = 0;
-+	goto out;
- }
- __setup("hugepages=", hugepages_setup);
- 
--- 
-2.18.0.huawei.25
+Although it will be good to check if we can add a generic test case
+using maybe lvm or dm device, where this device could report large
+discard_granularity for actually excercising this code path
+(rather then changing kernel code to test it).
 
+-ritesh
+
+[1]: https://github.com/util-linux/util-linux/blob/master/sys-utils/fstrim.c
+
+>
+> Fix "_require_batched_discard" to use a more accurate method
+> to determine if discard is supported.
+>
+> [1] commit 173b6e383d2
+>     ext4: avoid trim error on fs with small groups
+>
+> Signed-off-by: Ojaswin Mujoo <ojaswin@linux.ibm.com>
+> ---
+>  common/rc | 8 +++++++-
+>  1 file changed, 7 insertions(+), 1 deletion(-)
+>
