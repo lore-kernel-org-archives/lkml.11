@@ -2,49 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6FC7C4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ACD4C35276
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:20:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352250AbiDAPTv (ORCPT
+        id S1351976AbiDAPTd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:19:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60610 "EHLO
+        Fri, 1 Apr 2022 11:19:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352557AbiDAOu6 (ORCPT
+        with ESMTP id S1352538AbiDAOu3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:50:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 417322B3D55;
-        Fri,  1 Apr 2022 07:41:59 -0700 (PDT)
+        Fri, 1 Apr 2022 10:50:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC9192B3334;
+        Fri,  1 Apr 2022 07:41:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 99F2BB82505;
-        Fri,  1 Apr 2022 14:41:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00517C34112;
-        Fri,  1 Apr 2022 14:40:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AE15460BC2;
+        Fri,  1 Apr 2022 14:41:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57BFCC34111;
+        Fri,  1 Apr 2022 14:41:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824060;
-        bh=/9RyJR/Q5Gaje1DvMBdIgZsbMi+DILHwOCail3i1sDM=;
+        s=k20201202; t=1648824113;
+        bh=ZJE+a/pgXS/4JKFi5R+vhx5YJj6QBxc21iT71MnUsbE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P546oGTThBy1FZT9pgM8JvIo0/kFAsrBwNaud/xATp3psqtFF3vthaysd4sHuyUxT
-         6SmT8eoh/WC6rYMLW1RFDN2jABa8obuGU8ZnIwU2heU7t6kxZkKWEgTIkESqgXKX1X
-         JDs8eTMOj0u4fIZ7FVHgn9wePM1UVkfs/9hGGUYkaI0DQGDiLnCosVvDfdmPNZntl4
-         ntlfETSrB74J+TngpVOE1LphDY3UoLzp9kTgkUwb9u/x19NSWdyicKejqtB/ogJnFc
-         wgFQoElQhkpiOwwdeXfaQeLfVo3WlcUWa/3y4j7veHHnit++jFcI4vZNuLMKLsVG0G
-         6Inss7jHeP84w==
+        b=jJKrwx0ohLBHZwye1XUu6H61nTc4gWOSuTlQs+UFAuU3idBMWUR7Iv/Yw/1DA2cgT
+         O6BRNLZbLvcOiRp2GHCdRcLT4ajuLkutAysSk2f560ebJ7NJIkT32vfPqg5ygYn9fB
+         HVvg1iuMSJAzZC5oVF7c0sWYIo3t4UmtfVcse4tAvVNo18itqE62aNx7iyRZ30CaWX
+         TwLbSGAc8H9dlMT8+KFvnSgA2L4SMZeV5V8vQ8lHHOgIT0Ukt17Np47OB6VDtGY5qp
+         727xIUufG3TpuEiQQsOxb/kONsfW+oPEOuzCfAceucQFLZ2lLvkZEX8gwHJjF9i6BC
+         CLStUhjWj67ig==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Minghao Chi (CGEL ZTE)" <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Sasha Levin <sashal@kernel.org>, johan.hedberg@gmail.com,
-        luiz.dentz@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, linux-bluetooth@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 71/98] Bluetooth: use memset avoid memory leaks
-Date:   Fri,  1 Apr 2022 10:37:15 -0400
-Message-Id: <20220401143742.1952163-71-sashal@kernel.org>
+Cc:     Xiubo Li <xiubli@redhat.com>, Jeff Layton <jlayton@kernel.org>,
+        Ilya Dryomov <idryomov@gmail.com>,
+        Sasha Levin <sashal@kernel.org>, ceph-devel@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 94/98] ceph: fix inode reference leakage in ceph_get_snapdir()
+Date:   Fri,  1 Apr 2022 10:37:38 -0400
+Message-Id: <20220401143742.1952163-94-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143742.1952163-1-sashal@kernel.org>
 References: <20220401143742.1952163-1-sashal@kernel.org>
@@ -56,33 +52,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Minghao Chi (CGEL ZTE)" <chi.minghao@zte.com.cn>
+From: Xiubo Li <xiubli@redhat.com>
 
-[ Upstream commit d3715b2333e9a21692ba16ef8645eda584a9515d ]
+[ Upstream commit 322794d3355c33adcc4feace0045d85a8e4ed813 ]
 
-Use memset to initialize structs to prevent memory leaks
-in l2cap_ecred_connect
+The ceph_get_inode() will search for or insert a new inode into the
+hash for the given vino, and return a reference to it. If new is
+non-NULL, its reference is consumed.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+We should release the reference when in error handing cases.
+
+Signed-off-by: Xiubo Li <xiubli@redhat.com>
+Reviewed-by: Jeff Layton <jlayton@kernel.org>
+Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/l2cap_core.c | 1 +
- 1 file changed, 1 insertion(+)
+ fs/ceph/inode.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
-index 77ba68209dbd..c57a45df7a26 100644
---- a/net/bluetooth/l2cap_core.c
-+++ b/net/bluetooth/l2cap_core.c
-@@ -1436,6 +1436,7 @@ static void l2cap_ecred_connect(struct l2cap_chan *chan)
+diff --git a/fs/ceph/inode.c b/fs/ceph/inode.c
+index 1c7574105478..42e449d3f18b 100644
+--- a/fs/ceph/inode.c
++++ b/fs/ceph/inode.c
+@@ -87,13 +87,13 @@ struct inode *ceph_get_snapdir(struct inode *parent)
+ 	if (!S_ISDIR(parent->i_mode)) {
+ 		pr_warn_once("bad snapdir parent type (mode=0%o)\n",
+ 			     parent->i_mode);
+-		return ERR_PTR(-ENOTDIR);
++		goto err;
+ 	}
  
- 	l2cap_ecred_init(chan, 0);
+ 	if (!(inode->i_state & I_NEW) && !S_ISDIR(inode->i_mode)) {
+ 		pr_warn_once("bad snapdir inode type (mode=0%o)\n",
+ 			     inode->i_mode);
+-		return ERR_PTR(-ENOTDIR);
++		goto err;
+ 	}
  
-+	memset(&data, 0, sizeof(data));
- 	data.pdu.req.psm     = chan->psm;
- 	data.pdu.req.mtu     = cpu_to_le16(chan->imtu);
- 	data.pdu.req.mps     = cpu_to_le16(chan->mps);
+ 	inode->i_mode = parent->i_mode;
+@@ -113,6 +113,12 @@ struct inode *ceph_get_snapdir(struct inode *parent)
+ 	}
+ 
+ 	return inode;
++err:
++	if ((inode->i_state & I_NEW))
++		discard_new_inode(inode);
++	else
++		iput(inode);
++	return ERR_PTR(-ENOTDIR);
+ }
+ 
+ const struct inode_operations ceph_file_iops = {
 -- 
 2.34.1
 
