@@ -2,50 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19FD6C4321E
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:02:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2281C35276
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:02:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350845AbiDAPAp (ORCPT
+        id S1350561AbiDAPAJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:00:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34122 "EHLO
+        Fri, 1 Apr 2022 11:00:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348987AbiDAOpR (ORCPT
+        with ESMTP id S1348436AbiDAOnR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:45:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 609CF2986FE;
-        Fri,  1 Apr 2022 07:35:15 -0700 (PDT)
+        Fri, 1 Apr 2022 10:43:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FEC4295275;
+        Fri,  1 Apr 2022 07:34:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 37F7B60A3C;
-        Fri,  1 Apr 2022 14:35:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB368C340EE;
-        Fri,  1 Apr 2022 14:35:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9AD95B824D5;
+        Fri,  1 Apr 2022 14:34:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17E45C340EE;
+        Fri,  1 Apr 2022 14:34:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823714;
-        bh=O9osNwnWnovFmioDsg9RoWnkdzW2wddKSctaV6asboM=;
+        s=k20201202; t=1648823686;
+        bh=DvDLWLpok6lt21vdRgj5cJUWQCTHAuI/pyMdviZ0r0o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ebl9Z8ddJtdkFowA8rzp0qPVMTt8NX8Q3F0aI3FMaGDnejJSU2GZKu/DrmmYajWuo
-         ssG86mJNTliJB4AhhR5/OBw8VlFL51n6O5FOWF95Oo7ZZ7dGfUaLL4jRmcRoOqJgbS
-         gsXIueFNmXk+mgZXxMwTllmS65yFL0romOoGe+WCHjGDtQWYmJPKQN3bzBU95e+9/I
-         AX2os95UKXc2kmmha/+C6T6hVNmMDlrjZXKq6cEBe9eODw5J9/ywX16V2gcVaxpOBP
-         TIe/ODKOijDjaksuUHlIstuX1byeinmU9JZcyBY/X7XSrh9nztlGhehQkV4nIaTxqq
-         kQK++S8aT/LdQ==
+        b=pKQtufzYEbqn2J89vkCixl3wHFviY54sKu61JVIoPHg2BWUMzem+YvOLnhD92Dvr6
+         BpVZiECMF5yNS2MobP4MtCJPsiI3Pu+t5RdOLcKvXTmaECD2TJj9hMdXnO3MGy4mEU
+         8xyCE8DmRFGTdDq/dXZAmdwBpWQ2+CtS45lUx/pOBdo4VEHQJMwUewGgzVmTA/Nyas
+         7NuDuQSqu3uv/98ea/+1h4Ks4hWCUiQgQ2AqPpk7rh2eN8NF2GQBNdWQBgoc4G1Fxh
+         DLDLUiSNgTSbop6YRZaLgXam6X344iDJwYwFVYBS9KYGbbSHVuHF5oOzelbLa39KYT
+         hGfKdYmGHoU0w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Hans de Goede <hdegoede@redhat.com>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
-        Sasha Levin <sashal@kernel.org>, sre@kernel.org, wens@csie.org,
-        linux-pm@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 049/109] power: supply: axp288-charger: Set Vhold to 4.4V
-Date:   Fri,  1 Apr 2022 10:31:56 -0400
-Message-Id: <20220401143256.1950537-49-sashal@kernel.org>
+Cc:     =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Sasha Levin <sashal@kernel.org>, thomas.petazzoni@bootlin.com,
+        bhelgaas@google.com, linux-pci@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.16 039/109] PCI: aardvark: Fix support for MSI interrupts
+Date:   Fri,  1 Apr 2022 10:31:46 -0400
+Message-Id: <20220401143256.1950537-39-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143256.1950537-1-sashal@kernel.org>
 References: <20220401143256.1950537-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -53,83 +56,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Pali Rohár <pali@kernel.org>
 
-[ Upstream commit 5ac121b81b4051e7fc83d5b3456a5e499d5bd147 ]
+[ Upstream commit b0b0b8b897f8e12b2368e868bd7cdc5742d5c5a9 ]
 
-The AXP288's recommended and factory default Vhold value (minimum
-input voltage below which the input current draw will be reduced)
-is 4.4V. This lines up with other charger IC's such as the TI
-bq2419x/bq2429x series which use 4.36V or 4.44V.
+Aardvark hardware supports Multi-MSI and MSI_FLAG_MULTI_PCI_MSI is already
+set for the MSI chip. But when allocating MSI interrupt numbers for
+Multi-MSI, the numbers need to be properly aligned, otherwise endpoint
+devices send MSI interrupt with incorrect numbers.
 
-For some reason some BIOS-es initialize Vhold to 4.6V or even 4.7V
-which combined with the typical voltage drop over typically low
-wire gauge micro-USB cables leads to the input-current getting
-capped below 1A (with a 2A capable dedicated charger) based on Vhold.
+Fix this issue by using function bitmap_find_free_region() instead of
+bitmap_find_next_zero_area().
 
-This leads to slow charging, or even to the device slowly discharging
-if the device is in heavy use.
+To ensure that aligned MSI interrupt numbers are used by endpoint devices,
+we cannot use Linux virtual irq numbers (as they are random and not
+properly aligned). Instead we need to use the aligned hwirq numbers.
 
-As the Linux AXP288 drivers use the builtin BC1.2 charger detection
-and send the input-current-limit according to the detected charger
-there really is no reason not to use the recommended 4.4V Vhold.
+This change fixes receiving MSI interrupts on Armada 3720 boards and
+allows using NVMe disks which use Multi-MSI feature with 3 interrupts.
 
-Set Vhold to 4.4V to fix the slow charging issue on various devices.
+Without this NVMe disks freeze booting as linux nvme-core.c is waiting
+60s for an interrupt.
 
-There is one exception, the special-case of the HP X2 2-in-1s which
-combine this BC1.2 capable PMIC with a Type-C port and a 5V/3A factory
-provided charger with a Type-C plug which does not do BC1.2. These
-have their input-current-limit hardcoded to 3A (like under Windows)
-and use a higher Vhold on purpose to limit the current when used
-with other chargers. To avoid touching Vhold on these HP X2 laptops
-the code setting Vhold is added to an else branch of the if checking
-for these models.
-
-Note this also fixes the sofar unused VBUS_ISPOUT_VHOLD_SET_MASK
-define, which was wrong.
-
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Link: https://lore.kernel.org/r/20220110015018.26359-4-kabel@kernel.org
+Signed-off-by: Pali Rohár <pali@kernel.org>
+Signed-off-by: Marek Behún <kabel@kernel.org>
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/power/supply/axp288_charger.c | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
+ drivers/pci/controller/pci-aardvark.c | 16 ++++++----------
+ 1 file changed, 6 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/power/supply/axp288_charger.c b/drivers/power/supply/axp288_charger.c
-index ec41f6cd3f93..c498e62ab4e2 100644
---- a/drivers/power/supply/axp288_charger.c
-+++ b/drivers/power/supply/axp288_charger.c
-@@ -42,11 +42,11 @@
- #define VBUS_ISPOUT_CUR_LIM_1500MA	0x1	/* 1500mA */
- #define VBUS_ISPOUT_CUR_LIM_2000MA	0x2	/* 2000mA */
- #define VBUS_ISPOUT_CUR_NO_LIM		0x3	/* 2500mA */
--#define VBUS_ISPOUT_VHOLD_SET_MASK	0x31
-+#define VBUS_ISPOUT_VHOLD_SET_MASK	0x38
- #define VBUS_ISPOUT_VHOLD_SET_BIT_POS	0x3
- #define VBUS_ISPOUT_VHOLD_SET_OFFSET	4000	/* 4000mV */
- #define VBUS_ISPOUT_VHOLD_SET_LSB_RES	100	/* 100mV */
--#define VBUS_ISPOUT_VHOLD_SET_4300MV	0x3	/* 4300mV */
-+#define VBUS_ISPOUT_VHOLD_SET_4400MV	0x4	/* 4400mV */
- #define VBUS_ISPOUT_VBUS_PATH_DIS	BIT(7)
+diff --git a/drivers/pci/controller/pci-aardvark.c b/drivers/pci/controller/pci-aardvark.c
+index b2217e2b3efd..e97fd1cb00fc 100644
+--- a/drivers/pci/controller/pci-aardvark.c
++++ b/drivers/pci/controller/pci-aardvark.c
+@@ -1177,7 +1177,7 @@ static void advk_msi_irq_compose_msi_msg(struct irq_data *data,
  
- #define CHRG_CCCV_CC_MASK		0xf		/* 4 bits */
-@@ -769,6 +769,16 @@ static int charger_init_hw_regs(struct axp288_chrg_info *info)
- 		ret = axp288_charger_vbus_path_select(info, true);
- 		if (ret < 0)
- 			return ret;
-+	} else {
-+		/* Set Vhold to the factory default / recommended 4.4V */
-+		val = VBUS_ISPOUT_VHOLD_SET_4400MV << VBUS_ISPOUT_VHOLD_SET_BIT_POS;
-+		ret = regmap_update_bits(info->regmap, AXP20X_VBUS_IPSOUT_MGMT,
-+					 VBUS_ISPOUT_VHOLD_SET_MASK, val);
-+		if (ret < 0) {
-+			dev_err(&info->pdev->dev, "register(%x) write error(%d)\n",
-+				AXP20X_VBUS_IPSOUT_MGMT, ret);
-+			return ret;
-+		}
- 	}
+ 	msg->address_lo = lower_32_bits(msi_msg);
+ 	msg->address_hi = upper_32_bits(msi_msg);
+-	msg->data = data->irq;
++	msg->data = data->hwirq;
+ }
  
- 	/* Read current charge voltage and current limit */
+ static int advk_msi_set_affinity(struct irq_data *irq_data,
+@@ -1194,15 +1194,11 @@ static int advk_msi_irq_domain_alloc(struct irq_domain *domain,
+ 	int hwirq, i;
+ 
+ 	mutex_lock(&pcie->msi_used_lock);
+-	hwirq = bitmap_find_next_zero_area(pcie->msi_used, MSI_IRQ_NUM,
+-					   0, nr_irqs, 0);
+-	if (hwirq >= MSI_IRQ_NUM) {
+-		mutex_unlock(&pcie->msi_used_lock);
+-		return -ENOSPC;
+-	}
+-
+-	bitmap_set(pcie->msi_used, hwirq, nr_irqs);
++	hwirq = bitmap_find_free_region(pcie->msi_used, MSI_IRQ_NUM,
++					order_base_2(nr_irqs));
+ 	mutex_unlock(&pcie->msi_used_lock);
++	if (hwirq < 0)
++		return -ENOSPC;
+ 
+ 	for (i = 0; i < nr_irqs; i++)
+ 		irq_domain_set_info(domain, virq + i, hwirq + i,
+@@ -1220,7 +1216,7 @@ static void advk_msi_irq_domain_free(struct irq_domain *domain,
+ 	struct advk_pcie *pcie = domain->host_data;
+ 
+ 	mutex_lock(&pcie->msi_used_lock);
+-	bitmap_clear(pcie->msi_used, d->hwirq, nr_irqs);
++	bitmap_release_region(pcie->msi_used, d->hwirq, order_base_2(nr_irqs));
+ 	mutex_unlock(&pcie->msi_used_lock);
+ }
+ 
 -- 
 2.34.1
 
