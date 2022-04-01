@@ -2,50 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C6BDC47082
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF8B5C43217
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:11:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353159AbiDAPJq (ORCPT
+        id S1353173AbiDAPJv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:09:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60486 "EHLO
+        Fri, 1 Apr 2022 11:09:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350756AbiDAOsA (ORCPT
+        with ESMTP id S1350748AbiDAOsA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 1 Apr 2022 10:48:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 566A23EAAF;
-        Fri,  1 Apr 2022 07:38:27 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62D4D43ED2;
+        Fri,  1 Apr 2022 07:38:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1EEF8B824FD;
-        Fri,  1 Apr 2022 14:37:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93F5DC34112;
-        Fri,  1 Apr 2022 14:37:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8757660A53;
+        Fri,  1 Apr 2022 14:38:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7274AC36AEF;
+        Fri,  1 Apr 2022 14:38:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823865;
-        bh=aNouMf6HB7bGVRYB3vXS2dnlB1LtY2eK90MMG/PNgRg=;
-        h=From:To:Cc:Subject:Date:From;
-        b=a1eT1SyQy7EBzI8Dt/NxJrX3kDDxMHgSLirPzCzGuJnOeKb+vs+8jipOdySKMOfhj
-         MWrA4axf0CzIMQ36stznTThoQN4lxJMnxGOthrqDF0+aJe9qBcC7qZClaq4b4q6Sbm
-         fVZvyonYtvDw4Ju+7uDCq1qzAMJhpLlT6R6Na6pSMrJ6Wv8Ly6MZUuAD0umSK1GzNx
-         uvPTgTQnpuJxqWBUDBYIIXXSlwg46iRLI+NsBhDGd25skR9jjU6Mf8C3a9YJptBWfq
-         QeIRVfz4YJ1JFTr9uMFFnXBP4EpD8lFPk/+oI0sL75bZy8nA2kAGITStJuTQzBBcqF
-         PWENG+wEUsmjQ==
+        s=k20201202; t=1648823899;
+        bh=tiS/AMbghCKUJCgtbDBDwXBAJjMpILpG1ZtoPCEFpz4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=fo0Mj+e7cmYEkvFoHqabBqBopzaC1107hQKpmxgaAnLMSg1GBaeh7AmhPoK/JyBQv
+         T5V4adnrNeX+EN0eiJz8aV9ozr6ce5HSvbRCG93ryvu/ASgePfMtxKSEQVwRSWCoCN
+         TrKg3IuDxpCGHGb5FLl0AQH4ffLo35tV1siyfd20sje4pEqPVgpDIUBXsnA8QqqkFK
+         98PcftWJbl10K1rKI62KFpZAJtkO1SXa5q/yhl6jw9T5BO+0FpI60R+9nh4Jfb2WrZ
+         5RSc2aN4FeacOBUHDn07WyEtyHZpqwOcWnFjAjx1ebTQ6uTASfNO4le4/mjoGFj+z4
+         wfhfEmkfeYRZQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Anisse Astier <anisse@astier.eu>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Jani Nikula <jani.nikula@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        maarten.lankhorst@linux.intel.com, mripard@kernel.org,
-        tzimmermann@suse.de, airlied@linux.ie, daniel@ffwll.ch,
-        dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.15 01/98] drm: Add orientation quirk for GPD Win Max
-Date:   Fri,  1 Apr 2022 10:36:05 -0400
-Message-Id: <20220401143742.1952163-1-sashal@kernel.org>
+Cc:     Wayne Chang <waynec@nvidia.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, balbi@kernel.org,
+        thierry.reding@gmail.com, jonathanh@nvidia.com,
+        zhangqilong3@huawei.com, rikard.falkeborn@gmail.com,
+        chunfeng.yun@mediatek.com, jakobkoschel@gmail.com,
+        linux-usb@vger.kernel.org, linux-tegra@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 08/98] usb: gadget: tegra-xudc: Fix control endpoint's definitions
+Date:   Fri,  1 Apr 2022 10:36:12 -0400
+Message-Id: <20220401143742.1952163-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220401143742.1952163-1-sashal@kernel.org>
+References: <20220401143742.1952163-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,38 +56,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anisse Astier <anisse@astier.eu>
+From: Wayne Chang <waynec@nvidia.com>
 
-[ Upstream commit 0b464ca3e0dd3cec65f28bc6d396d82f19080f69 ]
+[ Upstream commit 7bd42fb95eb4f98495ccadf467ad15124208ec49 ]
 
-Panel is 800x1280, but mounted on a laptop form factor, sideways.
+According to the Tegra Technical Reference Manual, the seq_num
+field of control endpoint is not [31:24] but [31:27]. Bit 24
+is reserved and bit 26 is splitxstate.
 
-Signed-off-by: Anisse Astier <anisse@astier.eu>
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Jani Nikula <jani.nikula@intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20211229222200.53128-3-anisse@astier.eu
+The change fixes the wrong control endpoint's definitions.
+
+Signed-off-by: Wayne Chang <waynec@nvidia.com>
+Link: https://lore.kernel.org/r/20220107091349.149798-1-waynec@nvidia.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/drm_panel_orientation_quirks.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/usb/gadget/udc/tegra-xudc.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/drm_panel_orientation_quirks.c b/drivers/gpu/drm/drm_panel_orientation_quirks.c
-index 448c2f2d803a..f5ab891731d0 100644
---- a/drivers/gpu/drm/drm_panel_orientation_quirks.c
-+++ b/drivers/gpu/drm/drm_panel_orientation_quirks.c
-@@ -166,6 +166,12 @@ static const struct dmi_system_id orientation_data[] = {
- 		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "MicroPC"),
- 		},
- 		.driver_data = (void *)&lcd720x1280_rightside_up,
-+	}, {	/* GPD Win Max */
-+		.matches = {
-+		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "GPD"),
-+		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "G1619-01"),
-+		},
-+		.driver_data = (void *)&lcd800x1280_rightside_up,
- 	}, {	/*
- 		 * GPD Pocket, note that the the DMI data is less generic then
- 		 * it seems, devices with a board-vendor of "AMI Corporation"
+diff --git a/drivers/usb/gadget/udc/tegra-xudc.c b/drivers/usb/gadget/udc/tegra-xudc.c
+index 716d9ab2d2ff..be76f891b9c5 100644
+--- a/drivers/usb/gadget/udc/tegra-xudc.c
++++ b/drivers/usb/gadget/udc/tegra-xudc.c
+@@ -272,8 +272,10 @@ BUILD_EP_CONTEXT_RW(deq_hi, deq_hi, 0, 0xffffffff)
+ BUILD_EP_CONTEXT_RW(avg_trb_len, tx_info, 0, 0xffff)
+ BUILD_EP_CONTEXT_RW(max_esit_payload, tx_info, 16, 0xffff)
+ BUILD_EP_CONTEXT_RW(edtla, rsvd[0], 0, 0xffffff)
+-BUILD_EP_CONTEXT_RW(seq_num, rsvd[0], 24, 0xff)
++BUILD_EP_CONTEXT_RW(rsvd, rsvd[0], 24, 0x1)
+ BUILD_EP_CONTEXT_RW(partial_td, rsvd[0], 25, 0x1)
++BUILD_EP_CONTEXT_RW(splitxstate, rsvd[0], 26, 0x1)
++BUILD_EP_CONTEXT_RW(seq_num, rsvd[0], 27, 0x1f)
+ BUILD_EP_CONTEXT_RW(cerrcnt, rsvd[1], 18, 0x3)
+ BUILD_EP_CONTEXT_RW(data_offset, rsvd[2], 0, 0x1ffff)
+ BUILD_EP_CONTEXT_RW(numtrbs, rsvd[2], 22, 0x1f)
+@@ -1554,6 +1556,9 @@ static int __tegra_xudc_ep_set_halt(struct tegra_xudc_ep *ep, bool halt)
+ 		ep_reload(xudc, ep->index);
+ 
+ 		ep_ctx_write_state(ep->context, EP_STATE_RUNNING);
++		ep_ctx_write_rsvd(ep->context, 0);
++		ep_ctx_write_partial_td(ep->context, 0);
++		ep_ctx_write_splitxstate(ep->context, 0);
+ 		ep_ctx_write_seq_num(ep->context, 0);
+ 
+ 		ep_reload(xudc, ep->index);
+@@ -2809,7 +2814,10 @@ static void tegra_xudc_reset(struct tegra_xudc *xudc)
+ 	xudc->setup_seq_num = 0;
+ 	xudc->queued_setup_packet = false;
+ 
+-	ep_ctx_write_seq_num(ep0->context, xudc->setup_seq_num);
++	ep_ctx_write_rsvd(ep0->context, 0);
++	ep_ctx_write_partial_td(ep0->context, 0);
++	ep_ctx_write_splitxstate(ep0->context, 0);
++	ep_ctx_write_seq_num(ep0->context, 0);
+ 
+ 	deq_ptr = trb_virt_to_phys(ep0, &ep0->transfer_ring[ep0->deq_ptr]);
+ 
 -- 
 2.34.1
 
