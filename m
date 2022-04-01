@@ -2,97 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66D12C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 16:28:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E081C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 16:28:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237703AbiDAQaE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 12:30:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53662 "EHLO
+        id S233973AbiDAQaN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Apr 2022 12:30:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346368AbiDAQ1y (ORCPT
+        with ESMTP id S1347836AbiDAQ14 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 12:27:54 -0400
-Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 915C4BC2
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 08:58:12 -0700 (PDT)
-Received: by mail-io1-xd2f.google.com with SMTP id p21so3681595ioj.4
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 08:58:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=oaN9C0oDq1idmqd2LmsOaaxM8zUlCcCIJMIjqQvndL4=;
-        b=ea/IE/fe0VT/Rd2tjIq/T5uvj1KigQvyuF63fwmr58Epj4H7G6yUy7U1w0tkzNRX3d
-         stblNmSfNTlJOAyYOqhZUihlV//5gdYlfbG3FJPVku+U8s+os579AyHpvO9YKhFvdXxe
-         7ns9sglzF7d4QqAVTR+/QJBAyRghLLTY5DvAA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=oaN9C0oDq1idmqd2LmsOaaxM8zUlCcCIJMIjqQvndL4=;
-        b=rS/DBewrGs0gLCYDR0PD5OpvYQUGAq73gRdqgLPRitH1FgEowA6mOfdaruBj37kRTc
-         X9/rZyQFtIpmUUX5BS1wsGP/kO2BIGRXFvGveFtz8HksHH8onnEtIoyhe8KeOfY6Ug4o
-         N+w3P8tlrxGeZ7EAWeZpNnsEFou7S1mjzmIm8IV24eYc8pA7l/8gdZfMimYfRlkGxoN5
-         xG4ZXxnyogMMqgjs2KlIg4u/uH2Tr62V256jS9pQ4V/Ju4A6Qq0j6k2pkl0eW/fqU5YS
-         08AHrHNpXq3yMlV3r+6m+WTpmN28zX1UCbFr1EAGs92q2WZeOFOcGyFB/kjeopwbZE+9
-         e7EQ==
-X-Gm-Message-State: AOAM5323dpT9/QdSG62UsJ7bChGr38QXNcI/WI18hxUEvYVkDL6OVubD
-        lPtzQxwyh174mM6mcuNFEfO/U+KVfKnvtA==
-X-Google-Smtp-Source: ABdhPJyVm5eJ6v6Sn0EKwc9zkAf28JqyDggWSu+3Pg9ORPXF0VPnMhMj12LBcd0SANEOxBPO/LSt/Q==
-X-Received: by 2002:a05:6602:3787:b0:649:ec10:183b with SMTP id be7-20020a056602378700b00649ec10183bmr185159iob.117.1648828691712;
-        Fri, 01 Apr 2022 08:58:11 -0700 (PDT)
-Received: from [192.168.1.128] ([71.205.29.0])
-        by smtp.gmail.com with ESMTPSA id c15-20020a92b74f000000b002c9cc44ede9sm1458833ilm.86.2022.04.01.08.58.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 01 Apr 2022 08:58:11 -0700 (PDT)
-Subject: Re: [PATCH] selftests/bpf: Return true/false (not 1/0) from bool
- functions
-To:     Haowen Bai <baihaowen@meizu.com>, Shuah Khan <shuah@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>
-Cc:     linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <1648779354-14700-1-git-send-email-baihaowen@meizu.com>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <7af611e7-88dd-9525-dccc-92bda4d1fb8d@linuxfoundation.org>
-Date:   Fri, 1 Apr 2022 09:58:10 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        Fri, 1 Apr 2022 12:27:56 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21CFD2F3B0;
+        Fri,  1 Apr 2022 08:58:56 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id A06F01FD00;
+        Fri,  1 Apr 2022 15:58:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1648828735;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=MhAtGdRSnzMlSPMcK6cQ4fm3keZyBBT8jVyV6htCkSA=;
+        b=XYFKtOMxC1z7G48Ru9i9yaghtTen1k6QgMMoW1yDbTdRh2Mxk4rvCxEvOel1smUvC+c9ZJ
+        mkw8hCV19Z1MK14DWbOUh0luB3JVBHboGye8d8wXYI6wGOAflZKJbyzQJLRv6t94VvSDBS
+        batoXhMZrdBijBpsCxR4V2F5Cj0C5Mc=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1648828735;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=MhAtGdRSnzMlSPMcK6cQ4fm3keZyBBT8jVyV6htCkSA=;
+        b=BGqogJOxtfE3A31RcWCAOp27zO7LF4mbxSJJfGdpPI7m4+RiZx9t9EsWffvqPLCKmjGOII
+        hW+lntlrcpaoVWCQ==
+Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
+        by relay2.suse.de (Postfix) with ESMTP id 969D8A3B82;
+        Fri,  1 Apr 2022 15:58:55 +0000 (UTC)
+Received: by ds.suse.cz (Postfix, from userid 10065)
+        id 82ED0DA7F3; Fri,  1 Apr 2022 17:54:56 +0200 (CEST)
+Date:   Fri, 1 Apr 2022 17:54:56 +0200
+From:   David Sterba <dsterba@suse.cz>
+To:     Jia-Ju Bai <baijiaju1990@gmail.com>
+Cc:     dsterba@suse.cz, clm@fb.com, josef@toxicpanda.com,
+        dsterba@suse.com, linux-btrfs@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] fs: btrfs: fix possible use-after-free bug in error
+ handling code of btrfs_get_root_ref()
+Message-ID: <20220401155456.GL15609@twin.jikos.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz, Jia-Ju Bai <baijiaju1990@gmail.com>,
+        clm@fb.com, josef@toxicpanda.com, dsterba@suse.com,
+        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220324134454.15192-1-baijiaju1990@gmail.com>
+ <20220324181940.GK2237@suse.cz>
+ <84720b1d-831e-4a2e-e2c5-4f20ac7bb778@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <1648779354-14700-1-git-send-email-baihaowen@meizu.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <84720b1d-831e-4a2e-e2c5-4f20ac7bb778@gmail.com>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/31/22 8:15 PM, Haowen Bai wrote:
-> Return boolean values ("true" or "false") instead of 1 or 0 from bool
-> functions.  This fixes the following warnings from coccicheck:
+On Fri, Mar 25, 2022 at 04:04:17PM +0800, Jia-Ju Bai wrote:
+> >> @@ -1850,9 +1850,10 @@ static struct btrfs_root *btrfs_get_root_ref(struct btrfs_fs_info *fs_info,
+> >>   
+> >>   	ret = btrfs_insert_fs_root(fs_info, root);
+> >>   	if (ret) {
+> >> -		btrfs_put_root(root);
+> >> -		if (ret == -EEXIST)
+> >> +		if (ret == -EEXIST) {
+> >> +			btrfs_put_root(root);
+> > I think this fix is correct, though it's not that clear. If you look how
+> > the code changed, there was the unconditional put and then followed by a
+> > free:
+> >
+> > 8c38938c7bb0 ("btrfs: move the root freeing stuff into btrfs_put_root")
+> >
+> > Here it's putting twice where one will be the final free.
+> >
+> > And then the whole refcounting gets updated in
+> >
+> > 4785e24fa5d2 ("btrfs: don't take an extra root ref at allocation time")
+> >
+> > which could be removing the wrong put, I'm not yet sure.
 > 
-> ./tools/testing/selftests/bpf/progs/test_xdp_noinline.c:567:9-10: WARNING:
-> return of 0/1 in function 'get_packet_dst' with return type bool
-> ./tools/testing/selftests/bpf/progs/test_l4lb_noinline.c:221:9-10: WARNING:
-> return of 0/1 in function 'get_packet_dst' with return type bool
+> Thanks for the reply!
 > 
+> I think the bug should be introduced by this commit:
+> bc44d7c4b2b1 ("btrfs: push btrfs_grab_fs_root into btrfs_get_fs_root")
+> 
+> This commit has a change:
+>       ret = btrfs_insert_fs_root(fs_info, root);
+>       if (ret) {
+> +      btrfs_put_fs_root(root);
+>           if (ret == -EEXIST) {
+>               btrfs_free_fs_root(root);
+>               goto again;
+>           }
+> 
+> I could add a Fixes tag of this commit in my V2 patch.
+> Is it okay?
 
-Thank you for including details on how the problem was found.
-
-> Signed-off-by: Haowen Bai <baihaowen@meizu.com>
-> ---
-
-Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
-
-thanks,
--- Shuah
+I can add it myself, that's a minor thing. The fix is correct, I've
+rewritten the changelog a bit, patch now added to misc-next, thanks.
