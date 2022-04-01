@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF707C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C04C2C433FE
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:27:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356156AbiDAP0o (ORCPT
+        id S1356171AbiDAP0t (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:26:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60066 "EHLO
+        Fri, 1 Apr 2022 11:26:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349429AbiDAOzk (ORCPT
+        with ESMTP id S1348399AbiDAO4A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:55:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 951A265816;
-        Fri,  1 Apr 2022 07:43:50 -0700 (PDT)
+        Fri, 1 Apr 2022 10:56:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D874AC337D;
+        Fri,  1 Apr 2022 07:44:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3AF05B8240E;
-        Fri,  1 Apr 2022 14:43:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EB8CC34113;
-        Fri,  1 Apr 2022 14:43:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C4581B8240E;
+        Fri,  1 Apr 2022 14:44:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 338C7C3410F;
+        Fri,  1 Apr 2022 14:43:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824228;
-        bh=Qo0QuXOTAUSojoSYUM3ShTjaFRA1mLkuZiHLouEKk7g=;
+        s=k20201202; t=1648824239;
+        bh=H9GmwK+B63pcrmYuNjENxKmlouwAu7ZViJydwDwFh7g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iaAl+HV3rEBzTcAyP6vTw5AKWE4YQeDzmEqNQIBgCJdFJyjCEZhWbAMFd6abKIiyy
-         ngN2CZ6//WgN1qHtRX62JpnxvOvjeLK8htPJcFRoXDDujTSZj96qfQ/HRXR1zEDWk+
-         kjqi5AI9WzRY3oTs++JDwGp1KX//r+fZCxv400N9+4ss+CSR0Ofo7PZ98jYsAxBMKD
-         TV8v/p7VRJWZq9Vkmd352T2yVoIR0Ms6f3LvlFWjPfzwC1i20VMACSgU521mLZwCB7
-         NGfb5gxU99JwlWT0MNfFaQIjQbZZHcYOJoMpbPLXVg8pgmHJQbmg5ZtuZzHKZbd0sV
-         c25lI3pEkvWsg==
+        b=fkMR5sRuJzYJF8Ybo0bg1p7pd9nd5FEGnEBMYvkZSaXR+foOdZplA049OLB3H4zr4
+         ss4jT05rClIm7YPRh7m/IFXRWoySkAhxSX9aO6iYESJ2gBzvNoEQdNoMTbjhRAsHgc
+         D/vkK5x+RXYQBYGdpuvT0EBxnBFbdDS556QQI/yOBAhFdiQHHbvwVBTXgpUW3ofOvr
+         /Lw5fKuwSipNmnIfBaJ1G11ulJkdSZC/zoznjdnEADJKdFqLxRzJ/xxNG0qBxDrsgx
+         k5hEeKGLHyZuIUHq2qH0P79JRwFNDt5/qzoPE9d6EF/BMBfkvr2Xa7c40+qx/DhyL6
+         bd91z1/vUElHQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        "Juergen E. Fischer" <fischer@norbit.de>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        Sasha Levin <sashal@kernel.org>, linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 39/65] scsi: aha152x: Fix aha152x_setup() __setup handler return value
-Date:   Fri,  1 Apr 2022 10:41:40 -0400
-Message-Id: <20220401144206.1953700-39-sashal@kernel.org>
+Cc:     Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>, johan.hedberg@gmail.com,
+        luiz.dentz@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, linux-bluetooth@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 46/65] Bluetooth: Fix not checking for valid hdev on bt_dev_{info,warn,err,dbg}
+Date:   Fri,  1 Apr 2022 10:41:47 -0400
+Message-Id: <20220401144206.1953700-46-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401144206.1953700-1-sashal@kernel.org>
 References: <20220401144206.1953700-1-sashal@kernel.org>
@@ -55,50 +55,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 
-[ Upstream commit cc8294ec4738d25e2bb2d71f7d82a9bf7f4a157b ]
+[ Upstream commit 9b392e0e0b6d026da5a62bb79a08f32e27af858e ]
 
-__setup() handlers should return 1 if the command line option is handled
-and 0 if not (or maybe never return 0; doing so just pollutes init's
-environment with strings that are not init arguments/parameters).
+This fixes attemting to print hdev->name directly which causes them to
+print an error:
 
-Return 1 from aha152x_setup() to indicate that the boot option has been
-handled.
+kernel: read_version:367: (efault): sock 000000006a3008f2
 
-Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Link: https://lore.kernel.org/r/20220223000623.5920-1-rdunlap@infradead.org
-Cc: "Juergen E. Fischer" <fischer@norbit.de>
-Cc: "James E.J. Bottomley" <jejb@linux.ibm.com>
-Cc: "Martin K. Petersen" <martin.petersen@oracle.com>
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/aha152x.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ include/net/bluetooth/bluetooth.h | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/scsi/aha152x.c b/drivers/scsi/aha152x.c
-index d8e19afa7a14..c6607c4686bb 100644
---- a/drivers/scsi/aha152x.c
-+++ b/drivers/scsi/aha152x.c
-@@ -3367,13 +3367,11 @@ static int __init aha152x_setup(char *str)
- 	setup[setup_count].synchronous = ints[0] >= 6 ? ints[6] : 1;
- 	setup[setup_count].delay       = ints[0] >= 7 ? ints[7] : DELAY_DEFAULT;
- 	setup[setup_count].ext_trans   = ints[0] >= 8 ? ints[8] : 0;
--	if (ints[0] > 8) {                                                /*}*/
-+	if (ints[0] > 8)
- 		printk(KERN_NOTICE "aha152x: usage: aha152x=<IOBASE>[,<IRQ>[,<SCSI ID>"
- 		       "[,<RECONNECT>[,<PARITY>[,<SYNCHRONOUS>[,<DELAY>[,<EXT_TRANS>]]]]]]]\n");
--	} else {
-+	else
- 		setup_count++;
--		return 0;
--	}
+diff --git a/include/net/bluetooth/bluetooth.h b/include/net/bluetooth/bluetooth.h
+index 9125effbf448..3fecc4a411a1 100644
+--- a/include/net/bluetooth/bluetooth.h
++++ b/include/net/bluetooth/bluetooth.h
+@@ -180,19 +180,21 @@ void bt_err_ratelimited(const char *fmt, ...);
+ #define BT_DBG(fmt, ...)	pr_debug(fmt "\n", ##__VA_ARGS__)
+ #endif
  
- 	return 1;
- }
++#define bt_dev_name(hdev) ((hdev) ? (hdev)->name : "null")
++
+ #define bt_dev_info(hdev, fmt, ...)				\
+-	BT_INFO("%s: " fmt, (hdev)->name, ##__VA_ARGS__)
++	BT_INFO("%s: " fmt, bt_dev_name(hdev), ##__VA_ARGS__)
+ #define bt_dev_warn(hdev, fmt, ...)				\
+-	BT_WARN("%s: " fmt, (hdev)->name, ##__VA_ARGS__)
++	BT_WARN("%s: " fmt, bt_dev_name(hdev), ##__VA_ARGS__)
+ #define bt_dev_err(hdev, fmt, ...)				\
+-	BT_ERR("%s: " fmt, (hdev)->name, ##__VA_ARGS__)
++	BT_ERR("%s: " fmt, bt_dev_name(hdev), ##__VA_ARGS__)
+ #define bt_dev_dbg(hdev, fmt, ...)				\
+-	BT_DBG("%s: " fmt, (hdev)->name, ##__VA_ARGS__)
++	BT_DBG("%s: " fmt, bt_dev_name(hdev), ##__VA_ARGS__)
+ 
+ #define bt_dev_warn_ratelimited(hdev, fmt, ...)			\
+-	bt_warn_ratelimited("%s: " fmt, (hdev)->name, ##__VA_ARGS__)
++	bt_warn_ratelimited("%s: " fmt, bt_dev_name(hdev), ##__VA_ARGS__)
+ #define bt_dev_err_ratelimited(hdev, fmt, ...)			\
+-	bt_err_ratelimited("%s: " fmt, (hdev)->name, ##__VA_ARGS__)
++	bt_err_ratelimited("%s: " fmt, bt_dev_name(hdev), ##__VA_ARGS__)
+ 
+ /* Connection and socket states */
+ enum {
 -- 
 2.34.1
 
