@@ -2,51 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1E87C352AA
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:40:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50F37C47088
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:40:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357602AbiDAPir (ORCPT
+        id S1351868AbiDAPfk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:38:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33066 "EHLO
+        Fri, 1 Apr 2022 11:35:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350676AbiDAPAZ (ORCPT
+        with ESMTP id S1349969AbiDAO61 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 11:00:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 383D239140;
-        Fri,  1 Apr 2022 07:48:48 -0700 (PDT)
+        Fri, 1 Apr 2022 10:58:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E54F176D25;
+        Fri,  1 Apr 2022 07:45:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DF2D4B82500;
-        Fri,  1 Apr 2022 14:48:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68BC9C340F2;
-        Fri,  1 Apr 2022 14:48:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D30A360A53;
+        Fri,  1 Apr 2022 14:45:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54151C34112;
+        Fri,  1 Apr 2022 14:45:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824525;
-        bh=NrhotgYaEmvmytZ5SsnIyI+yW0k65GrkEjY84+HFvTI=;
+        s=k20201202; t=1648824342;
+        bh=kjuBNnbI+Yjinw7VoawrZRPNdjU4KrvX+KNkVbNlDjM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZB/zK2amGa9yqIXvO6ehMNAfVoIojcmYhyGWc0Vy53xWPuTQfxO3bygpV8SPy6PYx
-         gifKrcQgYa9R4ov00CpCdH0/ouLO5Peeb1ZU+ktgdEP4QPaFNxDlk0KiihEKAjtjKn
-         GX0+4W6rJk3mX+5jy/2QWJzvJfpDwid8cCxxhy3Id3yPo969n7nwHNR0owMc43mOB0
-         AMvI7fQEyXn4WcT7hXujyK5k9JFRIIKOGNB3C92RQYqhZDEb9skKRIb+4LnAAEVlvG
-         q7WX6CxOu4dFTSIYDEI8IVIAVJ5/gn97WrHHDPAL8KAxYGLMPbKxbfH5Z/DHi4a/g9
-         FIzKjEExEeIxQ==
+        b=Q1SPRredrd1DTZKSoAUQQdgBRmgWyitKtjY/3yKObh9lJhVh8Tvm33Ep7+hlETPP4
+         xhucRlGmEuLzcrnknQZZfGDsOvTBBH55Nbdb9qq3jzelwqH/TC5aMLHuwZQ+zpLH01
+         O4ENUTp6T6fnKcz5n/OwTxXucPb0ssPvR/X0qy95z1cEYI0yyM19HhR/rTOGy/WfxQ
+         b7PrQ7jXSlcztxEESOaS0BDLJUUOEx6/nx7/XR5gGjEpWQfc2NMDwNm66VcUxkS1Jg
+         08NcIX8aAJ7+MeZZaswW41WfeRJI5l0gXVmIs5+805p9aRry4GAZPhHo8E3ZFO4omf
+         Wgwxu7oaBtGEQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jordy Zomer <jordy@jordyzomer.github.io>,
-        Jordy Zomer <jordy@pwning.systems>,
-        Mike Snitzer <snitzer@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, agk@redhat.com,
-        snitzer@kernel.org, dm-devel@redhat.com
-Subject: [PATCH AUTOSEL 4.9 07/16] dm ioctl: prevent potential spectre v1 gadget
-Date:   Fri,  1 Apr 2022 10:48:18 -0400
-Message-Id: <20220401144827.1955845-7-sashal@kernel.org>
+Cc:     Sven Eckelmann <sven@narfation.org>,
+        =?UTF-8?q?Leonardo=20M=C3=B6rlein?= <freifunk@irrelefant.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        pabeni@redhat.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 25/37] macvtap: advertise link netns via netlink
+Date:   Fri,  1 Apr 2022 10:44:34 -0400
+Message-Id: <20220401144446.1954694-25-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220401144827.1955845-1-sashal@kernel.org>
-References: <20220401144827.1955845-1-sashal@kernel.org>
+In-Reply-To: <20220401144446.1954694-1-sashal@kernel.org>
+References: <20220401144446.1954694-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -54,42 +55,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jordy Zomer <jordy@jordyzomer.github.io>
+From: Sven Eckelmann <sven@narfation.org>
 
-[ Upstream commit cd9c88da171a62c4b0f1c70e50c75845969fbc18 ]
+[ Upstream commit a02192151b7dbf855084c38dca380d77c7658353 ]
 
-It appears like cmd could be a Spectre v1 gadget as it's supplied by a
-user and used as an array index. Prevent the contents of kernel memory
-from being leaked to userspace via speculative execution by using
-array_index_nospec.
+Assign rtnl_link_ops->get_link_net() callback so that IFLA_LINK_NETNSID is
+added to rtnetlink messages. This fixes iproute2 which otherwise resolved
+the link interface to an interface in the wrong namespace.
 
-Signed-off-by: Jordy Zomer <jordy@pwning.systems>
-Signed-off-by: Mike Snitzer <snitzer@redhat.com>
+Test commands:
+
+  ip netns add nst
+  ip link add dummy0 type dummy
+  ip link add link macvtap0 link dummy0 type macvtap
+  ip link set macvtap0 netns nst
+  ip -netns nst link show macvtap0
+
+Before:
+
+  10: macvtap0@gre0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 500
+      link/ether 5e:8f:ae:1d:60:50 brd ff:ff:ff:ff:ff:ff
+
+After:
+
+  10: macvtap0@if2: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 500
+      link/ether 5e:8f:ae:1d:60:50 brd ff:ff:ff:ff:ff:ff link-netnsid 0
+
+Reported-by: Leonardo Mörlein <freifunk@irrelefant.net>
+Signed-off-by: Sven Eckelmann <sven@narfation.org>
+Link: https://lore.kernel.org/r/20220228003240.1337426-1-sven@narfation.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/md/dm-ioctl.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/macvtap.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/md/dm-ioctl.c b/drivers/md/dm-ioctl.c
-index eb2659a12310..70245782e7f6 100644
---- a/drivers/md/dm-ioctl.c
-+++ b/drivers/md/dm-ioctl.c
-@@ -16,6 +16,7 @@
- #include <linux/dm-ioctl.h>
- #include <linux/hdreg.h>
- #include <linux/compat.h>
-+#include <linux/nospec.h>
- 
- #include <asm/uaccess.h>
- 
-@@ -1642,6 +1643,7 @@ static ioctl_fn lookup_ioctl(unsigned int cmd, int *ioctl_flags)
- 	if (unlikely(cmd >= ARRAY_SIZE(_ioctls)))
- 		return NULL;
- 
-+	cmd = array_index_nospec(cmd, ARRAY_SIZE(_ioctls));
- 	*ioctl_flags = _ioctls[cmd].flags;
- 	return _ioctls[cmd].fn;
+diff --git a/drivers/net/macvtap.c b/drivers/net/macvtap.c
+index 694e2f5dbbe5..39801c31e507 100644
+--- a/drivers/net/macvtap.c
++++ b/drivers/net/macvtap.c
+@@ -133,11 +133,17 @@ static void macvtap_setup(struct net_device *dev)
+ 	dev->tx_queue_len = TUN_READQ_SIZE;
  }
+ 
++static struct net *macvtap_link_net(const struct net_device *dev)
++{
++	return dev_net(macvlan_dev_real_dev(dev));
++}
++
+ static struct rtnl_link_ops macvtap_link_ops __read_mostly = {
+ 	.kind		= "macvtap",
+ 	.setup		= macvtap_setup,
+ 	.newlink	= macvtap_newlink,
+ 	.dellink	= macvtap_dellink,
++	.get_link_net	= macvtap_link_net,
+ 	.priv_size      = sizeof(struct macvtap_dev),
+ };
+ 
 -- 
 2.34.1
 
