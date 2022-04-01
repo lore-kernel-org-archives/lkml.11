@@ -2,82 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B52CAC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:26:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DCE1C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:26:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355998AbiDAPZ5 (ORCPT
+        id S1356055AbiDAP0Q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:25:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44936 "EHLO
+        Fri, 1 Apr 2022 11:26:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349377AbiDAOzX (ORCPT
+        with ESMTP id S1349360AbiDAOzT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:55:23 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0308E25E9E;
-        Fri,  1 Apr 2022 07:43:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=b2CiO4L5LMsTPjyVGlh+eoZTqAHsqAzbmA0VJTGYz9o=; b=o6BUqL3qcos1U48U8sIZkxD6OH
-        YW8IGXnQorGS207zezKy4MeXATgJB4mmk/Z2/4hON2iGNgaBvIQqnMXHOp5QWoaI6LY8FMnh9fnYk
-        UrCSXHdy7RFQ1wxLt9GGZRWC0vKxHO/5LFF6DsGHA4uAI6pEOZkj4Wf/DDXdFu+JAwbq3GIqpKQIl
-        ul9BhwQ7ZuYl1fYhKTqHQKd9NApdCXPq+HwZU/uL8QdWrt1PImgbni7qrmxbrhdjcp4GuKniKZUnB
-        kAZ2Xb12OAQsWelmi73rYWpDAobSOHKhLItkhIxrRseDl3ygyokyVxhGXuT9nwWKU5db1gm9HjvgE
-        Avu36DhA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58082)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1naIUs-0006GG-6f; Fri, 01 Apr 2022 15:43:29 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1naIUo-0000H1-0J; Fri, 01 Apr 2022 15:43:26 +0100
-Date:   Fri, 1 Apr 2022 15:43:25 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Horatiu Vultur <horatiu.vultur@microchip.com>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, hkallweit1@gmail.com,
-        Divya.Koppera@microchip.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, richardcochran@gmail.com,
-        UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH net v2 0/3] net: phy: micrel: Remove latencies support
- lan8814
-Message-ID: <YkcPja9WxzJ6eU5d@shell.armlinux.org.uk>
-References: <20220401110522.3418258-1-horatiu.vultur@microchip.com>
- <Ykb2yoXHib6l9gkT@lunn.ch>
+        Fri, 1 Apr 2022 10:55:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BFF755A8;
+        Fri,  1 Apr 2022 07:43:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B036060A53;
+        Fri,  1 Apr 2022 14:43:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE4CDC3410F;
+        Fri,  1 Apr 2022 14:43:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648824203;
+        bh=aAtUW6xzviuFlUiqNktomCAuc9i20pmfxhiullHdCE0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=n5Nkge55mv/f6JJwxoml31LGIZvhKjpfU7bTeKoJ7aMxRUj/yhaShadYaNXmaEfo7
+         CMfwMyAQu/LlCsXmW22Vv+pQlJyqSuSeMxoUzcwupW34Jn3pCLluvzVpqvUvHsGz+o
+         qEirMtn/zjA/n6s+oUl/CspKr67R+GB5JzZW0QOFjbu6oFNwsmgF5LSqTHqfNlJyw4
+         Gz3vNNr0Jehzu6DUc4b0JDhJcIQBydbVp8q4PdOugQXZbAB2BajzzQl1tfdb+thXoo
+         5GeCNvjSSTlPRfItWHs3IpVHqnXIXVv2M4LD+uXrPY8YbMX+mPbsMiat5/voQGFlIu
+         G0521rpFoAvDw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Sasha Levin <sashal@kernel.org>, lukas@wunner.de,
+        naveennaidu479@gmail.com, mani@kernel.org, hdegoede@redhat.com,
+        zhangliguang@linux.alibaba.com, ameynarkhede03@gmail.com,
+        linux-pci@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 26/65] PCI: pciehp: Add Qualcomm quirk for Command Completed erratum
+Date:   Fri,  1 Apr 2022 10:41:27 -0400
+Message-Id: <20220401144206.1953700-26-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220401144206.1953700-1-sashal@kernel.org>
+References: <20220401144206.1953700-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Ykb2yoXHib6l9gkT@lunn.ch>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 01, 2022 at 02:57:46PM +0200, Andrew Lunn wrote:
-> On Fri, Apr 01, 2022 at 01:05:19PM +0200, Horatiu Vultur wrote:
-> > Remove the latencies support both from the PHY driver and from the DT.
-> > The IP already has some default latencies values which can be used to get
-> > decent results. It has the following values(defined in ns):
-> > rx-1000mbit: 429
-> > tx-1000mbit: 201
-> > rx-100mbit:  2346
-> > tx-100mbit:  705
-> 
-> So one alternative option here is that ptp4l looks at
-> 
-> /sys/class/net/<ifname>/phydev/phy_id
+From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 
-That doesn't work for Clause 45 PHYs, only Clause 22 PHYs. If we want
-userspace to know which PHY it is, we need a proper interface that
-exports all the 31 Clause 45 IDs (each mmd's registers 2/3) as well, as
-well as the Clause 45 package ID (registers 14/15).
+[ Upstream commit 9f72d4757cbe4d1ed669192f6d23817c9e437c4b ]
 
+The Qualcomm PCI bridge device (Device ID 0x0110) found in chipsets such as
+SM8450 does not set the Command Completed bit unless writes to the Slot
+Command register change "Control" bits.
+
+This results in timeouts like below:
+
+  pcieport 0001:00:00.0: pciehp: Timeout on hotplug command 0x03c0 (issued 2020 msec ago)
+
+Add the device to the Command Completed quirk to mark commands "completed"
+immediately unless they change the "Control" bits.
+
+Link: https://lore.kernel.org/r/20220210145003.135907-1-manivannan.sadhasivam@linaro.org
+Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/pci/hotplug/pciehp_hpc.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/pci/hotplug/pciehp_hpc.c b/drivers/pci/hotplug/pciehp_hpc.c
+index 30708af975ad..ee43c85d3cd2 100644
+--- a/drivers/pci/hotplug/pciehp_hpc.c
++++ b/drivers/pci/hotplug/pciehp_hpc.c
+@@ -1058,6 +1058,8 @@ static void quirk_cmd_compl(struct pci_dev *pdev)
+ }
+ DECLARE_PCI_FIXUP_CLASS_EARLY(PCI_VENDOR_ID_INTEL, PCI_ANY_ID,
+ 			      PCI_CLASS_BRIDGE_PCI, 8, quirk_cmd_compl);
++DECLARE_PCI_FIXUP_CLASS_EARLY(PCI_VENDOR_ID_QCOM, 0x0110,
++			      PCI_CLASS_BRIDGE_PCI, 8, quirk_cmd_compl);
+ DECLARE_PCI_FIXUP_CLASS_EARLY(PCI_VENDOR_ID_QCOM, 0x0400,
+ 			      PCI_CLASS_BRIDGE_PCI, 8, quirk_cmd_compl);
+ DECLARE_PCI_FIXUP_CLASS_EARLY(PCI_VENDOR_ID_QCOM, 0x0401,
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.34.1
+
