@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AE6BC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FD06C41535
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:26:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351424AbiDAPWj (ORCPT
+        id S1353509AbiDAPXf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:22:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60558 "EHLO
+        Fri, 1 Apr 2022 11:23:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352593AbiDAOu7 (ORCPT
+        with ESMTP id S1352565AbiDAOu6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:50:59 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 347632B3D7F;
-        Fri,  1 Apr 2022 07:42:05 -0700 (PDT)
+        Fri, 1 Apr 2022 10:50:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFC292B3D66;
+        Fri,  1 Apr 2022 07:42:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id E19AECE258D;
-        Fri,  1 Apr 2022 14:41:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 565EBC34111;
-        Fri,  1 Apr 2022 14:41:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 21656B82519;
+        Fri,  1 Apr 2022 14:41:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D790C34111;
+        Fri,  1 Apr 2022 14:41:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824106;
-        bh=6QlKQl+0OseeNyRTe5krfh3/2JlBiteEUET6YMPdbJ8=;
+        s=k20201202; t=1648824096;
+        bh=79s09JmfnRTspuMBLjDF/9qtIeFT50RzlTzUkGad3r4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=StMAKz2fDO+LlACn6nMJE9YrydiOn0JxztEUXu01YkfMCC57/06splwUK7DqHxNSi
-         E6Qxabec072YVhxQ33KEjaWi0fDf2CoXRwnJHI3N3NwKP9aotdaT/9lakIprVBdOGm
-         1BLC6EqLIXFfB0YwzArCSt7uiW697EZ3LMmZz44RrqUFYpU90miSCKrhLEqtT/fmSf
-         s9oVbW3M7NnyJ/DpAb40OYj1cyeX9mfBvu0OMbp4A17wsOuTKM2biuoEOSw2XRPtn0
-         StGE3c/Lw50LhmbfUSzB6N0+aMDG8gGyh2vceFAvbqBUEq8LJfs617i4TyIYj0mY92
-         TZdRzEtfwEFGQ==
+        b=RrrJEc3+n5gh3IGsMhRwes0/KyLGtVJmB/2sJACAUZ9/5F3w7DV6ANJcAbqo8cvAd
+         NI7PKuC61/6BMsVA6eWn97fZsRO/5PG1mvFAoB/GScR13+nbKz5DCOMdbaU7pWPrCA
+         m2PziGXnoM83zm/KwFVMejPAdzg51aaiZ8O93DwgfI36r8nxrNiXjhskOuR3NI1xWR
+         YnabOnFl4BGDalo5Vh3Eyqztx2Pig6qhELom5gt5tCC7upi/jZVTAGFzRydpMjKmqH
+         12TQXZiiDxuf/8LkX0ULnc0GGU6EbFEV7XrCX5fy8dxkzICUYQ9AcDnQLzuOqpQpfi
+         /NB5Ysr9ozBSg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Paul Cercueil <paul@crapouillou.net>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
-        krzk+dt@kernel.org, linux-mips@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 90/98] MIPS: ingenic: correct unit node address
-Date:   Fri,  1 Apr 2022 10:37:34 -0400
-Message-Id: <20220401143742.1952163-90-sashal@kernel.org>
+Cc:     Gal Pressman <gal@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
+        Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 84/98] net/mlx5e: Remove overzealous validations in netlink EEPROM query
+Date:   Fri,  1 Apr 2022 10:37:28 -0400
+Message-Id: <20220401143742.1952163-84-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143742.1952163-1-sashal@kernel.org>
 References: <20220401143742.1952163-1-sashal@kernel.org>
@@ -55,35 +55,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+From: Gal Pressman <gal@nvidia.com>
 
-[ Upstream commit 8931ddd8d6a55fcefb20f44a38ba42bb746f0b62 ]
+[ Upstream commit 970adfb76095fa719778d70a6b86030d2feb88dd ]
 
-Unit node addresses should not have leading 0x:
+Unlike the legacy EEPROM callbacks, when using the netlink EEPROM query
+(get_module_eeprom_by_page) the driver should not try to validate the
+query parameters, but just perform the read requested by the userspace.
 
-  Warning (unit_address_format): /nemc@13410000/efuse@d0/eth-mac-addr@0x22: unit name should not have leading "0x"
+Recent discussion in the mailing list:
+https://lore.kernel.org/netdev/20220120093051.70845141@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net/
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Reviewed-by: Paul Cercueil <paul@crapouillou.net>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Signed-off-by: Gal Pressman <gal@nvidia.com>
+Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+Reviewed-by: Maxim Mikityanskiy <maximmi@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/boot/dts/ingenic/jz4780.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../net/ethernet/mellanox/mlx5/core/port.c    | 23 -------------------
+ 1 file changed, 23 deletions(-)
 
-diff --git a/arch/mips/boot/dts/ingenic/jz4780.dtsi b/arch/mips/boot/dts/ingenic/jz4780.dtsi
-index 9e34f433b9b5..efbbddaf0fde 100644
---- a/arch/mips/boot/dts/ingenic/jz4780.dtsi
-+++ b/arch/mips/boot/dts/ingenic/jz4780.dtsi
-@@ -450,7 +450,7 @@ efuse: efuse@d0 {
- 			#address-cells = <1>;
- 			#size-cells = <1>;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/port.c b/drivers/net/ethernet/mellanox/mlx5/core/port.c
+index 7b16a1188aab..fd79860de723 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/port.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/port.c
+@@ -433,35 +433,12 @@ int mlx5_query_module_eeprom_by_page(struct mlx5_core_dev *dev,
+ 				     struct mlx5_module_eeprom_query_params *params,
+ 				     u8 *data)
+ {
+-	u8 module_id;
+ 	int err;
  
--			eth0_addr: eth-mac-addr@0x22 {
-+			eth0_addr: eth-mac-addr@22 {
- 				reg = <0x22 0x6>;
- 			};
- 		};
+ 	err = mlx5_query_module_num(dev, &params->module_number);
+ 	if (err)
+ 		return err;
+ 
+-	err = mlx5_query_module_id(dev, params->module_number, &module_id);
+-	if (err)
+-		return err;
+-
+-	switch (module_id) {
+-	case MLX5_MODULE_ID_SFP:
+-		if (params->page > 0)
+-			return -EINVAL;
+-		break;
+-	case MLX5_MODULE_ID_QSFP:
+-	case MLX5_MODULE_ID_QSFP28:
+-	case MLX5_MODULE_ID_QSFP_PLUS:
+-		if (params->page > 3)
+-			return -EINVAL;
+-		break;
+-	case MLX5_MODULE_ID_DSFP:
+-		break;
+-	default:
+-		mlx5_core_err(dev, "Module ID not recognized: 0x%x\n", module_id);
+-		return -EINVAL;
+-	}
+-
+ 	if (params->i2c_address != MLX5_I2C_ADDR_HIGH &&
+ 	    params->i2c_address != MLX5_I2C_ADDR_LOW) {
+ 		mlx5_core_err(dev, "I2C address not recognized: 0x%x\n", params->i2c_address);
 -- 
 2.34.1
 
