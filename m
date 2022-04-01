@@ -2,106 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B33D8C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:26:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44637C4321E
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:27:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347039AbiDAO2i (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 10:28:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37634 "EHLO
+        id S239540AbiDAO2v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Apr 2022 10:28:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346978AbiDAO2T (ORCPT
+        with ESMTP id S1346911AbiDAO2Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:28:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B6A92856A4;
-        Fri,  1 Apr 2022 07:26:25 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D816FB824FD;
-        Fri,  1 Apr 2022 14:26:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66420C340EE;
-        Fri,  1 Apr 2022 14:26:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823182;
-        bh=4cQFOGC321tZUM5kmqe8vJLMcu83UtVRJLbTIIHfQT0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KP3AbLeiW4jACv7S6UfA2h0GhbyBx1V4GX1sKkxzhQcaV+yq3Mz52mK4jLu1+5wOC
-         v7ICr0wWoN2f2NSn4ingDdDwnCmtUzu3euOE7TFL0EWUvEsTrxa74xAY40UBI6v46w
-         I1Y3CgGdODbPrA/UECdyMaHUW620XgD8NlcHcCyDFZaOF0lXloC4X3cPidBWkmd2B3
-         QX5GqfhIkzU+P9CK9kG0XCzTLk5lNy76w3386PyDvd3yVuCKSDhAjl20pyPpJZO25B
-         n834j/Hq1JvPzMMA1eQitVZkcH1i1QpQINh4ZIKvNrOUDreJdvDCpfzYc3go12Q7St
-         aaH/vqd9HK7sQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>,
-        Daniel Wheeler <daniel.wheeler@amd.com>,
-        Anthony Koo <Anthony.Koo@amd.com>,
-        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, harry.wentland@amd.com,
-        sunpeng.li@amd.com, christian.koenig@amd.com, Xinhui.Pan@amd.com,
-        airlied@linux.ie, daniel@ffwll.ch, roman.li@amd.com,
-        mikita.lipski@amd.com, robin.chen@amd.com, pulehui@huawei.com,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.17 013/149] drm/amd/display: Use PSR version selected during set_psr_caps
-Date:   Fri,  1 Apr 2022 10:23:20 -0400
-Message-Id: <20220401142536.1948161-13-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220401142536.1948161-1-sashal@kernel.org>
-References: <20220401142536.1948161-1-sashal@kernel.org>
+        Fri, 1 Apr 2022 10:28:25 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1F8591E3189
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 07:26:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648823190;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=2UVV1ZX1y9UdjpKVLfQDZGpGG6d6q550euWe10BEY9E=;
+        b=hUOw6p+Y4E4tlcFUL0wmM3fCsfUJAEh6zeCZY35oJR/A6ENIUFc6naEn6fJLssunnzjov2
+        n6vTy/+YBaDkkCUi1nmohbqbZQA7WQklJrmYKtKR1Q/N75UsLBqlJJ2V9lzAKsDLbAJLQL
+        cmmNBAfgaG255N0azMlYwIS/JkrW8Ik=
+Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
+ [209.85.167.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-522-wPpgVoM1MUCqsjfcuTCy2g-1; Fri, 01 Apr 2022 10:26:28 -0400
+X-MC-Unique: wPpgVoM1MUCqsjfcuTCy2g-1
+Received: by mail-lf1-f71.google.com with SMTP id bp13-20020a056512158d00b0044a7966d6baso1268574lfb.21
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 07:26:28 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2UVV1ZX1y9UdjpKVLfQDZGpGG6d6q550euWe10BEY9E=;
+        b=6gjDy2Z8fdvzbaxW2ufLCsyzhOGxd/XySUdOaD4dHkm+YuMnQzHNFXCXxeGhA9KBlG
+         rvssd/bIS0Uog1V3FkB6vSoARrB7JqI9rATdsGOKCLghcSsTbmaVGZvlOK7QUehQ4jtx
+         tF4jKZKUha11omxswrAzALsw9WsBp5jt+IPUjzBs+ZcHdDEVrVUpWleaEhU+KYR8Z2Or
+         QBp7LyDcpyngiSHFM/KvZ8x/BXQYzmBRKeKTfNmNk9moQHQ2RAxENFB0gbnvUT+1fWrf
+         REmk5rUxWbKap84YAQdwYj0wN5u1PntreaH1X9eoL6AoA3XFcXd+/bpr6u66booGjOnl
+         OYzw==
+X-Gm-Message-State: AOAM532AT6u1hEZPx1SUB/7+y0oPCnlVBKXuUfl46arC2SkUnIUOwKqF
+        +3xAMM9H4cDY5opxTVPPkS2cwumMWrI93tWK6CuZbgO4RV4dm94ZJbUZhF3A1eZedOLUdrMP7zk
+        LzSk7Ov2iMpmihCLapZvXcLbGFEEZnM+0A9mx+ZKz
+X-Received: by 2002:a05:6512:308a:b0:44a:96cf:7ceb with SMTP id z10-20020a056512308a00b0044a96cf7cebmr13936439lfd.1.1648823187409;
+        Fri, 01 Apr 2022 07:26:27 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwEZVCL9DRSUlkJcPMDBd0xC2u70/SZJFXNSHYEoLpznTZMmi9QE8ctwQW8FDrNG5W5P8YwVfpONL2yFm35WK8=
+X-Received: by 2002:a05:6512:308a:b0:44a:96cf:7ceb with SMTP id
+ z10-20020a056512308a00b0044a96cf7cebmr13936426lfd.1.1648823187229; Fri, 01
+ Apr 2022 07:26:27 -0700 (PDT)
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+References: <20220331190257.101781-1-wander@redhat.com> <20220331190257.101781-2-wander@redhat.com>
+ <4767809d-5818-ad40-a0e7-b3af40aa071e@kernel.org>
+In-Reply-To: <4767809d-5818-ad40-a0e7-b3af40aa071e@kernel.org>
+From:   Wander Costa <wcosta@redhat.com>
+Date:   Fri, 1 Apr 2022 11:26:15 -0300
+Message-ID: <CAAq0SUmZ1u0TLTOq9fcn68oTZ6iHmpALbjhhy3zh6T=Kz1afxg@mail.gmail.com>
+Subject: Re: [PATCH v5 1/1] serial/8250: Use fifo in 8250 console driver
+To:     Jiri Slaby <jirislaby@kernel.org>
+Cc:     Wander Lairson Costa <wander@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Johan Hovold <johan@kernel.org>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Lukas Wunner <lukas@wunner.de>,
+        =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        =?UTF-8?Q?Andr=C3=A9_Goddard_Rosa?= <andre.goddard@gmail.com>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        David Laight <David.Laight@aculab.com>,
+        Jon Hunter <jonathanh@nvidia.com>, phil@raspberrypi.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>
+On Fri, Apr 1, 2022 at 1:36 AM Jiri Slaby <jirislaby@kernel.org> wrote:
+>
 
-[ Upstream commit b80ddeb29d9df449f875f0b6f5de08d7537c02b8 ]
+>
+> ">" missing here. Doesn't a compiler warn about subtracting different types?
+>
 
-[Why]
-If the DPCD caps specifies a PSR version newer than PSR_VERSION_1 then
-we fallback to using PSR_VERSION_1 in amdgpu_dm_set_psr_caps.
-
-This gets overriden with the raw DPCD value in amdgpu_dm_link_setup_psr,
-which can result in DMCUB hanging if we pass in an unsupported PSR
-version number.
-
-[How]
-Fix the hang by using link->psr_settings.psr_version directly during
-amdgpu_dm_link_setup_psr.
-
-Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
-Reviewed-by: Anthony Koo <Anthony.Koo@amd.com>
-Acked-by: Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>
-Signed-off-by: Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_psr.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_psr.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_psr.c
-index c510638b4f99..a009fc654ac9 100644
---- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_psr.c
-+++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_psr.c
-@@ -149,10 +149,8 @@ bool amdgpu_dm_link_setup_psr(struct dc_stream_state *stream)
- 
- 	link = stream->link;
- 
--	psr_config.psr_version = link->dpcd_caps.psr_caps.psr_version;
--
--	if (psr_config.psr_version > 0) {
--		psr_config.psr_exit_link_training_required = 0x1;
-+	if (link->psr_settings.psr_version != DC_PSR_VERSION_UNSUPPORTED) {
-+		psr_config.psr_version = link->psr_settings.psr_version;
- 		psr_config.psr_frame_capture_indication_req = 0;
- 		psr_config.psr_rfb_setup_time = 0x37;
- 		psr_config.psr_sdp_transmit_line_num_deadline = 0x20;
--- 
-2.34.1
+My local machine doesn't generate a warning; it causes a build error.
+So my question was, how was I able to build and test yesterday in a
+remote server? It turns out I built it with make -j40, so I missed the
+error message because of the parallel build, and I didn't pay
+attention that the output didn't display the modules_install typical
+output. Usually, I do my tests in an RHEL9 machine, which ships with
+kernel 5.14, but this time I tested in a Fedora machine, which ships
+kernel 5.16. And for a moment, I forgot that. So when I booted with
+kernel 5.16, I believed I was running my custom kernel. Luckily, v5
+mainly was a squash of v4 with this port->state check added. Anyway,
+sorry about the typo. v6 is on the way.
 
