@@ -2,47 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60734C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FBC3C3527E
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:20:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352634AbiDAPUG (ORCPT
+        id S1352551AbiDAPUE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:20:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60492 "EHLO
+        Fri, 1 Apr 2022 11:20:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352604AbiDAOvA (ORCPT
+        with ESMTP id S1352629AbiDAOvA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 1 Apr 2022 10:51:00 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EB902B4492;
-        Fri,  1 Apr 2022 07:42:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDDB5294A39;
+        Fri,  1 Apr 2022 07:42:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C6C79B82510;
-        Fri,  1 Apr 2022 14:41:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9403C36AE7;
-        Fri,  1 Apr 2022 14:41:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A8C9DB8240F;
+        Fri,  1 Apr 2022 14:41:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02D4CC2BBE4;
+        Fri,  1 Apr 2022 14:41:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824081;
-        bh=3zdgk+amzkz5hnhB65s9Sk8Gho2/tyIKqasTtRUMeCk=;
+        s=k20201202; t=1648824091;
+        bh=uuujoU80f34Vm6LW6kP45+MJG3kikm0acZFZVljE2Q8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KMLqYZEvuD0lKmfm8SEcdOHtC8MKMP/+EZXgfAfEbDDlY+pmI2/QnNmaKxoEI9k3n
-         Iv55ImbpKQM7BmLlLAR5l3mSm03+jjnXA7X/eaFh+zc+ox0lN0Ytied/MfAnyhiexO
-         5jVDGKiPweo4WCe1CKv3Te/aag8wZ+42emLXiRGozg6fWnUOMGJhPt3UFwfkNBzMQd
-         ErbZ+gZY9o8H5wjeSphU7ksCJ7d6rYbX1Z8GZSFP9SnPZcnln9v1QSopeoy+AXUkXp
-         7EKzjajj5z3WlLDMVBxxNgmVHguEhGE9BN78r8hsBXpf6voVPzKps0vO8qd+qRwvlQ
-         vJamiE0HL68CQ==
+        b=CqY5wa2kIlAjFItX0xUj38nZuFn0e3eoK1zk2l0+4sozZ379COKQMqC3vNgSqUTYm
+         BYptXVtgudnFmpMVgYLZSGheSs2k+XUDVUcbNTpQw7l6x/WTG6D0I6NhF6ofNMjHnM
+         OQpMEmIuFyQb6QiayGTQGF9HNfJT1AUrbFRhLn1MD4jOnl9uVUMaPPiskWjGNi7QXY
+         HDCRLPm5JW6VTC/lbnm9a2BoFVFkXmm+bJ4en7102CLJqxxidYX1qeLb72G6zO5n/O
+         eScR3A68y91BeLOQozKDLrjl7Kc3sI0RsAqZq0g4EzT4oi/eW6J1SeKGUbHhjEYDE4
+         zL2566npuP99Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jianglei Nie <niejianglei2021@163.com>,
-        Hannes Reinecke <hare@suse.de>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, jejb@linux.ibm.com,
-        linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 78/98] scsi: libfc: Fix use after free in fc_exch_abts_resp()
-Date:   Fri,  1 Apr 2022 10:37:22 -0400
-Message-Id: <20220401143742.1952163-78-sashal@kernel.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        George Shuklin <george.shuklin@gmail.com>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        pabeni@redhat.com, idosch@nvidia.com, petrm@nvidia.com,
+        edumazet@google.com, johannes.berg@intel.com, avagin@gmail.com,
+        cong.wang@bytedance.com, yajun.deng@linux.dev,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 82/98] net: account alternate interface name memory
+Date:   Fri,  1 Apr 2022 10:37:26 -0400
+Message-Id: <20220401143742.1952163-82-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143742.1952163-1-sashal@kernel.org>
 References: <20220401143742.1952163-1-sashal@kernel.org>
@@ -54,37 +56,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jianglei Nie <niejianglei2021@163.com>
+From: Jakub Kicinski <kuba@kernel.org>
 
-[ Upstream commit 271add11994ba1a334859069367e04d2be2ebdd4 ]
+[ Upstream commit 5d26cff5bdbebdf98ba48217c078ff102536f134 ]
 
-fc_exch_release(ep) will decrease the ep's reference count. When the
-reference count reaches zero, it is freed. But ep is still used in the
-following code, which will lead to a use after free.
+George reports that altnames can eat up kernel memory.
+We should charge that memory appropriately.
 
-Return after the fc_exch_release() call to avoid use after free.
-
-Link: https://lore.kernel.org/r/20220303015115.459778-1-niejianglei2021@163.com
-Reviewed-by: Hannes Reinecke <hare@suse.de>
-Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Reported-by: George Shuklin <george.shuklin@gmail.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/libfc/fc_exch.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/core/rtnetlink.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/libfc/fc_exch.c b/drivers/scsi/libfc/fc_exch.c
-index 841000445b9a..aa223db4cf53 100644
---- a/drivers/scsi/libfc/fc_exch.c
-+++ b/drivers/scsi/libfc/fc_exch.c
-@@ -1701,6 +1701,7 @@ static void fc_exch_abts_resp(struct fc_exch *ep, struct fc_frame *fp)
- 	if (cancel_delayed_work_sync(&ep->timeout_work)) {
- 		FC_EXCH_DBG(ep, "Exchange timer canceled due to ABTS response\n");
- 		fc_exch_release(ep);	/* release from pending timer hold */
-+		return;
- 	}
+diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+index 91d7a5a5a08d..a8c319dc224a 100644
+--- a/net/core/rtnetlink.c
++++ b/net/core/rtnetlink.c
+@@ -3637,7 +3637,7 @@ static int rtnl_alt_ifname(int cmd, struct net_device *dev, struct nlattr *attr,
+ 	if (err)
+ 		return err;
  
- 	spin_lock_bh(&ep->ex_lock);
+-	alt_ifname = nla_strdup(attr, GFP_KERNEL);
++	alt_ifname = nla_strdup(attr, GFP_KERNEL_ACCOUNT);
+ 	if (!alt_ifname)
+ 		return -ENOMEM;
+ 
 -- 
 2.34.1
 
