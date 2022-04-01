@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E6CDC35295
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92523C4167B
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:11:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352944AbiDAPI5 (ORCPT
+        id S1353025AbiDAPJM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:08:57 -0400
+        Fri, 1 Apr 2022 11:09:12 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350192AbiDAOrS (ORCPT
+        with ESMTP id S1350299AbiDAOrX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:47:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F11EE2A12A9;
-        Fri,  1 Apr 2022 07:37:20 -0700 (PDT)
+        Fri, 1 Apr 2022 10:47:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 913FE2A1EAA;
+        Fri,  1 Apr 2022 07:37:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CDB8C60BAC;
-        Fri,  1 Apr 2022 14:37:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E4B8C36AEA;
-        Fri,  1 Apr 2022 14:37:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1907EB8251C;
+        Fri,  1 Apr 2022 14:37:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 192E4C2BBE4;
+        Fri,  1 Apr 2022 14:37:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823840;
-        bh=LhYPBZufSIIUYsYfgK8Zvs0kn4YmUTSXiOrYVvfFpMU=;
+        s=k20201202; t=1648823849;
+        bh=WK7tB+5PUmSKJ5UKAfBqMVxWt6Hj85EBkF01L8UeFSU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kNa6FWYsejRxosiRjVFgclx3ZFhMtzWCFArmNeT1g1TWYmjXNmdnXHEJfYW5IcIvR
-         g6YWx4QyzvWQfGKFFDtqBDNk9pZ76ClpYHUPCBDB44n2TnwQIl0kDaHtABHdvxgEgz
-         mQ7Fv9elRh0WLHKLkN4+FNkzutleBpvp4YeOT8DkGROs5LOm+Atk3uOhFZ1sd1/hAb
-         42HaNxXiYMt2l2OFLfPfTxSGZlF36otQxNVnZ0UsieuVDIBERrFISnpeKpoSolUBR1
-         dSPODCrKtR7gbPUB7rG00oq/jg7Ck60c/V60oRmiG2vlojbS+MgyaMWJ2EeOrskPyl
-         Qe3iRZKI340tg==
+        b=BSl1IOaTP1yXH3lHlPilWTMLk7cKrQKtoA6a0iyynUaCv3MV4Z5XnQrGldb6YZbOU
+         FzuSU0XmQB4UC/Eq2ar2Y2+SjFD6n6jxnd5FHPCrQsyn5YaC2xZsa4gReso3f6pFQu
+         Yr3/++JbJeb5G7Wyu0XiHYHGScnzfrwu6HWQ8E6kORZcO/Eu4abAuQ3Zmavk2MBO+i
+         tLuX2FrwksK+07Rbf94tOTrnEbCk++sRFfvlk8pI66qWX4a76e1LsnhixwbmH/o7ak
+         Wpm6f53H0UUD5BIM55zg5/ZHWZeAbj5ydm0h9QUU2mydoXMXr6A+Dc3wDa+GYb5U/C
+         QUpfkHIcl21qQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Max Filippov <jcmvbkbc@gmail.com>, Sasha Levin <sashal@kernel.org>,
-        robh+dt@kernel.org, krzk+dt@kernel.org, chris@zankel.net,
-        devicetree@vger.kernel.org, linux-xtensa@linux-xtensa.org
-Subject: [PATCH AUTOSEL 5.16 100/109] xtensa: fix DTC warning unit_address_format
-Date:   Fri,  1 Apr 2022 10:32:47 -0400
-Message-Id: <20220401143256.1950537-100-sashal@kernel.org>
+Cc:     Xiubo Li <xiubli@redhat.com>, Jeff Layton <jlayton@kernel.org>,
+        Ilya Dryomov <idryomov@gmail.com>,
+        Sasha Levin <sashal@kernel.org>, ceph-devel@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 106/109] ceph: fix memory leak in ceph_readdir when note_last_dentry returns error
+Date:   Fri,  1 Apr 2022 10:32:53 -0400
+Message-Id: <20220401143256.1950537-106-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143256.1950537-1-sashal@kernel.org>
 References: <20220401143256.1950537-1-sashal@kernel.org>
@@ -52,101 +52,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Max Filippov <jcmvbkbc@gmail.com>
+From: Xiubo Li <xiubli@redhat.com>
 
-[ Upstream commit e85d29ba4b24f68e7a78cb85c55e754362eeb2de ]
+[ Upstream commit f639d9867eea647005dc824e0e24f39ffc50d4e4 ]
 
-DTC issues the following warnings when building xtfpga device trees:
+Reset the last_readdir at the same time, and add a comment explaining
+why we don't free last_readdir when dir_emit returns false.
 
- /soc/flash@00000000/partition@0x0: unit name should not have leading "0x"
- /soc/flash@00000000/partition@0x6000000: unit name should not have leading "0x"
- /soc/flash@00000000/partition@0x6800000: unit name should not have leading "0x"
- /soc/flash@00000000/partition@0x7fe0000: unit name should not have leading "0x"
-
-Drop leading 0x from flash partition unit names.
-
-Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
+Signed-off-by: Xiubo Li <xiubli@redhat.com>
+Reviewed-by: Jeff Layton <jlayton@kernel.org>
+Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/xtensa/boot/dts/xtfpga-flash-128m.dtsi | 8 ++++----
- arch/xtensa/boot/dts/xtfpga-flash-16m.dtsi  | 8 ++++----
- arch/xtensa/boot/dts/xtfpga-flash-4m.dtsi   | 4 ++--
- 3 files changed, 10 insertions(+), 10 deletions(-)
+ fs/ceph/dir.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-diff --git a/arch/xtensa/boot/dts/xtfpga-flash-128m.dtsi b/arch/xtensa/boot/dts/xtfpga-flash-128m.dtsi
-index 9bf8bad1dd18..c33932568aa7 100644
---- a/arch/xtensa/boot/dts/xtfpga-flash-128m.dtsi
-+++ b/arch/xtensa/boot/dts/xtfpga-flash-128m.dtsi
-@@ -8,19 +8,19 @@ flash: flash@00000000 {
- 			reg = <0x00000000 0x08000000>;
- 			bank-width = <2>;
- 			device-width = <2>;
--			partition@0x0 {
-+			partition@0 {
- 				label = "data";
- 				reg = <0x00000000 0x06000000>;
- 			};
--			partition@0x6000000 {
-+			partition@6000000 {
- 				label = "boot loader area";
- 				reg = <0x06000000 0x00800000>;
- 			};
--			partition@0x6800000 {
-+			partition@6800000 {
- 				label = "kernel image";
- 				reg = <0x06800000 0x017e0000>;
- 			};
--			partition@0x7fe0000 {
-+			partition@7fe0000 {
- 				label = "boot environment";
- 				reg = <0x07fe0000 0x00020000>;
- 			};
-diff --git a/arch/xtensa/boot/dts/xtfpga-flash-16m.dtsi b/arch/xtensa/boot/dts/xtfpga-flash-16m.dtsi
-index 40c2f81f7cb6..7bde2ab2d6fb 100644
---- a/arch/xtensa/boot/dts/xtfpga-flash-16m.dtsi
-+++ b/arch/xtensa/boot/dts/xtfpga-flash-16m.dtsi
-@@ -8,19 +8,19 @@ flash: flash@08000000 {
- 			reg = <0x08000000 0x01000000>;
- 			bank-width = <2>;
- 			device-width = <2>;
--			partition@0x0 {
-+			partition@0 {
- 				label = "boot loader area";
- 				reg = <0x00000000 0x00400000>;
- 			};
--			partition@0x400000 {
-+			partition@400000 {
- 				label = "kernel image";
- 				reg = <0x00400000 0x00600000>;
- 			};
--			partition@0xa00000 {
-+			partition@a00000 {
- 				label = "data";
- 				reg = <0x00a00000 0x005e0000>;
- 			};
--			partition@0xfe0000 {
-+			partition@fe0000 {
- 				label = "boot environment";
- 				reg = <0x00fe0000 0x00020000>;
- 			};
-diff --git a/arch/xtensa/boot/dts/xtfpga-flash-4m.dtsi b/arch/xtensa/boot/dts/xtfpga-flash-4m.dtsi
-index fb8d3a9f33c2..0655b868749a 100644
---- a/arch/xtensa/boot/dts/xtfpga-flash-4m.dtsi
-+++ b/arch/xtensa/boot/dts/xtfpga-flash-4m.dtsi
-@@ -8,11 +8,11 @@ flash: flash@08000000 {
- 			reg = <0x08000000 0x00400000>;
- 			bank-width = <2>;
- 			device-width = <2>;
--			partition@0x0 {
-+			partition@0 {
- 				label = "boot loader area";
- 				reg = <0x00000000 0x003f0000>;
- 			};
--			partition@0x3f0000 {
-+			partition@3f0000 {
- 				label = "boot environment";
- 				reg = <0x003f0000 0x00010000>;
- 			};
+diff --git a/fs/ceph/dir.c b/fs/ceph/dir.c
+index 133dbd9338e7..d91fa53e12b3 100644
+--- a/fs/ceph/dir.c
++++ b/fs/ceph/dir.c
+@@ -478,8 +478,11 @@ static int ceph_readdir(struct file *file, struct dir_context *ctx)
+ 					2 : (fpos_off(rde->offset) + 1);
+ 			err = note_last_dentry(dfi, rde->name, rde->name_len,
+ 					       next_offset);
+-			if (err)
++			if (err) {
++				ceph_mdsc_put_request(dfi->last_readdir);
++				dfi->last_readdir = NULL;
+ 				return err;
++			}
+ 		} else if (req->r_reply_info.dir_end) {
+ 			dfi->next_offset = 2;
+ 			/* keep last name */
+@@ -520,6 +523,12 @@ static int ceph_readdir(struct file *file, struct dir_context *ctx)
+ 		if (!dir_emit(ctx, rde->name, rde->name_len,
+ 			      ceph_present_ino(inode->i_sb, le64_to_cpu(rde->inode.in->ino)),
+ 			      le32_to_cpu(rde->inode.in->mode) >> 12)) {
++			/*
++			 * NOTE: Here no need to put the 'dfi->last_readdir',
++			 * because when dir_emit stops us it's most likely
++			 * doesn't have enough memory, etc. So for next readdir
++			 * it will continue.
++			 */
+ 			dout("filldir stopping us...\n");
+ 			return 0;
+ 		}
 -- 
 2.34.1
 
