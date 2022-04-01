@@ -2,51 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B678BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:16:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA5DBC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:20:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235570AbiDAPRq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:17:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60524 "EHLO
+        id S230319AbiDAPQo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Apr 2022 11:16:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351881AbiDAOtj (ORCPT
+        with ESMTP id S1351397AbiDAOsw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:49:39 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7288B2B04D6;
-        Fri,  1 Apr 2022 07:40:34 -0700 (PDT)
+        Fri, 1 Apr 2022 10:48:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9250B28CA84;
+        Fri,  1 Apr 2022 07:39:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 6192CCE258C;
-        Fri,  1 Apr 2022 14:39:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA1EFC36AE2;
-        Fri,  1 Apr 2022 14:39:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6C726B82502;
+        Fri,  1 Apr 2022 14:39:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05585C36AE5;
+        Fri,  1 Apr 2022 14:39:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823987;
-        bh=/yfV8bz2vNtdrO0Qc04Iiksnfpc9KJXbAWkZeRolfpM=;
+        s=k20201202; t=1648823962;
+        bh=DvDLWLpok6lt21vdRgj5cJUWQCTHAuI/pyMdviZ0r0o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=obNVBtC1g2S4ILnYhbori0gBZtMPEuvE0/OrtNf9LfuO6yRbO2BAi2hICDaSdeV2m
-         vAlUWecV/F0+QLWNwnulKzHm9XUV3X8JgHv6Sj7husEAIk7SC/VVmAzTjEC/YPy8PK
-         UAkIUxOjJMxT3qmrT1aZVH+YZUIhMhgw8jLDr6YTmqH+hbGG/Mbxogir4NmIg+uUN2
-         uH9Aezze6G9cQbhktR4mcExjexCKho1nGi9ELe1QlW9SyNgvXflrDMt8l3D0nM7ZSZ
-         LlJ3wV4nrlGt5zwGEK38n/lkC1GN88V7w6gQ1l9Q8Z+cczvPQqhPpegp8jNsqni+Xh
-         TPkUQArxvgoBQ==
+        b=NDOYuSi+NJ3Ml5K0CNhU4gSxOcGKO4g7ruokNgmumuAO4S4BpErkVl5fGWAVMuP9F
+         YmmxIQZWCqqFEdjainYigisuZgtuU9rxhf+QhPHDIsc45Q4SdMSG8hX6jpeD3SDDsC
+         cMQBxvXoQXkndfeu3kbdoz8i7mm7O/h9acQ7uJNlTCO9ucIg1N3WMCWNUH+UNAv2O6
+         XI8s6nzfTUubTLbysY+Si8+653nGwvwBMwL7iAo1mA0ad0KzS+fqvQW5HsT6PBjJmE
+         0hnpMyi1P4qCDGltgX7A3Ax3ETXOKaUpgzn0a6FK3jtBaekYNZ2VwODdtmmIAco8i6
+         CKDM9jEp6U6aQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Maxim Mikityanskiy <maximmi@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 42/98] net/mlx5e: Disable TX queues before registering the netdev
-Date:   Fri,  1 Apr 2022 10:36:46 -0400
-Message-Id: <20220401143742.1952163-42-sashal@kernel.org>
+Cc:     =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Sasha Levin <sashal@kernel.org>, thomas.petazzoni@bootlin.com,
+        bhelgaas@google.com, linux-pci@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.15 32/98] PCI: aardvark: Fix support for MSI interrupts
+Date:   Fri,  1 Apr 2022 10:36:36 -0400
+Message-Id: <20220401143742.1952163-32-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143742.1952163-1-sashal@kernel.org>
 References: <20220401143742.1952163-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -54,36 +55,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxim Mikityanskiy <maximmi@nvidia.com>
+From: Pali Rohár <pali@kernel.org>
 
-[ Upstream commit d08c6e2a4d0308a7922d7ef3b1b3af45d4096aad ]
+[ Upstream commit b0b0b8b897f8e12b2368e868bd7cdc5742d5c5a9 ]
 
-Normally, the queues are disabled when the channels are deactivated, and
-enabled when the channels are activated. However, on register, the
-channels are not active, but the queues are enabled by default. This
-change fixes it, preventing mlx5e_xmit from running when the channels
-are deactivated in the beginning.
+Aardvark hardware supports Multi-MSI and MSI_FLAG_MULTI_PCI_MSI is already
+set for the MSI chip. But when allocating MSI interrupt numbers for
+Multi-MSI, the numbers need to be properly aligned, otherwise endpoint
+devices send MSI interrupt with incorrect numbers.
 
-Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Fix this issue by using function bitmap_find_free_region() instead of
+bitmap_find_next_zero_area().
+
+To ensure that aligned MSI interrupt numbers are used by endpoint devices,
+we cannot use Linux virtual irq numbers (as they are random and not
+properly aligned). Instead we need to use the aligned hwirq numbers.
+
+This change fixes receiving MSI interrupts on Armada 3720 boards and
+allows using NVMe disks which use Multi-MSI feature with 3 interrupts.
+
+Without this NVMe disks freeze booting as linux nvme-core.c is waiting
+60s for an interrupt.
+
+Link: https://lore.kernel.org/r/20220110015018.26359-4-kabel@kernel.org
+Signed-off-by: Pali Rohár <pali@kernel.org>
+Signed-off-by: Marek Behún <kabel@kernel.org>
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/pci/controller/pci-aardvark.c | 16 ++++++----------
+ 1 file changed, 6 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index f075bb8ccd00..01301bee420c 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -4914,6 +4914,7 @@ mlx5e_create_netdev(struct mlx5_core_dev *mdev, const struct mlx5e_profile *prof
- 	}
+diff --git a/drivers/pci/controller/pci-aardvark.c b/drivers/pci/controller/pci-aardvark.c
+index b2217e2b3efd..e97fd1cb00fc 100644
+--- a/drivers/pci/controller/pci-aardvark.c
++++ b/drivers/pci/controller/pci-aardvark.c
+@@ -1177,7 +1177,7 @@ static void advk_msi_irq_compose_msi_msg(struct irq_data *data,
  
- 	netif_carrier_off(netdev);
-+	netif_tx_disable(netdev);
- 	dev_net_set(netdev, mlx5_core_net(mdev));
+ 	msg->address_lo = lower_32_bits(msi_msg);
+ 	msg->address_hi = upper_32_bits(msi_msg);
+-	msg->data = data->irq;
++	msg->data = data->hwirq;
+ }
  
- 	return netdev;
+ static int advk_msi_set_affinity(struct irq_data *irq_data,
+@@ -1194,15 +1194,11 @@ static int advk_msi_irq_domain_alloc(struct irq_domain *domain,
+ 	int hwirq, i;
+ 
+ 	mutex_lock(&pcie->msi_used_lock);
+-	hwirq = bitmap_find_next_zero_area(pcie->msi_used, MSI_IRQ_NUM,
+-					   0, nr_irqs, 0);
+-	if (hwirq >= MSI_IRQ_NUM) {
+-		mutex_unlock(&pcie->msi_used_lock);
+-		return -ENOSPC;
+-	}
+-
+-	bitmap_set(pcie->msi_used, hwirq, nr_irqs);
++	hwirq = bitmap_find_free_region(pcie->msi_used, MSI_IRQ_NUM,
++					order_base_2(nr_irqs));
+ 	mutex_unlock(&pcie->msi_used_lock);
++	if (hwirq < 0)
++		return -ENOSPC;
+ 
+ 	for (i = 0; i < nr_irqs; i++)
+ 		irq_domain_set_info(domain, virq + i, hwirq + i,
+@@ -1220,7 +1216,7 @@ static void advk_msi_irq_domain_free(struct irq_domain *domain,
+ 	struct advk_pcie *pcie = domain->host_data;
+ 
+ 	mutex_lock(&pcie->msi_used_lock);
+-	bitmap_clear(pcie->msi_used, d->hwirq, nr_irqs);
++	bitmap_release_region(pcie->msi_used, d->hwirq, order_base_2(nr_irqs));
+ 	mutex_unlock(&pcie->msi_used_lock);
+ }
+ 
 -- 
 2.34.1
 
