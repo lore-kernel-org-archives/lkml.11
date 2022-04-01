@@ -2,146 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2DC7C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 17:24:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D480C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 17:24:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349972AbiDAR0g (ORCPT
+        id S1349947AbiDAR0n (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 13:26:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33328 "EHLO
+        Fri, 1 Apr 2022 13:26:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344008AbiDAR0b (ORCPT
+        with ESMTP id S1349930AbiDAR0c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 13:26:31 -0400
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 625C11B8FF0;
-        Fri,  1 Apr 2022 10:24:41 -0700 (PDT)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4KVRqr0ZQbz9sRy;
-        Fri,  1 Apr 2022 19:24:40 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id 4qjzDkK5GQhv; Fri,  1 Apr 2022 19:24:39 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4KVRqq6mdHz9sRx;
-        Fri,  1 Apr 2022 19:24:39 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id D64128B87E;
-        Fri,  1 Apr 2022 19:24:39 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id fvM4XEFXo0GL; Fri,  1 Apr 2022 19:24:39 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.202.82])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 8931B8B879;
-        Fri,  1 Apr 2022 19:24:39 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 231HOSh9665353
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Fri, 1 Apr 2022 19:24:28 +0200
-Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 231HOS1i665352;
-        Fri, 1 Apr 2022 19:24:28 +0200
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Viresh Kumar <viresh.kumar@linaro.org>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-pm@vger.kernel.org
-Subject: [PATCH] cpufreq: Prepare cleanup of powerpc's asm/prom.h
-Date:   Fri,  1 Apr 2022 19:24:28 +0200
-Message-Id: <4cb0c4573cce165657ad1f7275c4b3852cbcd115.1648833416.git.christophe.leroy@csgroup.eu>
-X-Mailer: git-send-email 2.35.1
+        Fri, 1 Apr 2022 13:26:32 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22C8C1CAF37
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 10:24:42 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id o10so7291933ejd.1
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 10:24:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=xWq0Bx0LmZDm5Y8w65sfJx2cyjtA0fBP46ee9Dab/58=;
+        b=j/YGux/o+fdqdyDLwRmwRwmlBTZpZiXgkjdsgKhLSEiVumFYY1jH3R/mPf1YYpf/hp
+         PvJ2rdIuKUiAjpYhbMXM6066bu2+lmI7v6SqAdvlYJYaAsQBqUGAjCgzXI6uuQbgMwyG
+         NH2rcmnudgDUUnlqwyBvhd5PWE9JmWt57T0ZE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=xWq0Bx0LmZDm5Y8w65sfJx2cyjtA0fBP46ee9Dab/58=;
+        b=zn3IL8gZemoIN7tkMeA9AOBeUTtmNUyROHewDigp70+Lv6EtAjv6AXQB5eHzoC6XBy
+         XJb2Su6bZ8tG903VD4893ANSHliL05ex3u7WAkYL33zVfqIHIatajXCgajfTRNxCYVxy
+         ZqNSulUVxLx3AB7j32BiU42K9LX/bfyCB+qtSMsgvvl/TsHbXC++gL6eszxGN43AM9/j
+         nxZPCXS+BK3/zK1ict0/KL+sr3ha987IgdJXtJ2LjzWIPDVsBJrjvPg0LLv25T2pI5FG
+         IPNt8Sz7Q1+UA1qgppHnEBpSehl8OH5lcTfaWCarkUQzyN7kU3OvPKrtoVGhqW0uahGi
+         iQjA==
+X-Gm-Message-State: AOAM531MFTIUMNQd0nPvS4d8WOSyF/qdp+PazMu27ndWHeJiim8v24e5
+        16lBy49Wgx/HSIw5lenrZpKkzQUraFOwYg==
+X-Google-Smtp-Source: ABdhPJyyFztYNNuqM4TEc43tO1QzdDwFobKPY9KqlGoAGUMMiOJmd9L+/q+DxaZaQ6rovKhI0YfQvA==
+X-Received: by 2002:a17:906:7056:b0:6d6:dd99:f2a4 with SMTP id r22-20020a170906705600b006d6dd99f2a4mr713879ejj.43.1648833880632;
+        Fri, 01 Apr 2022 10:24:40 -0700 (PDT)
+Received: from alco.lan (80.71.134.83.ipv4.parknet.dk. [80.71.134.83])
+        by smtp.gmail.com with ESMTPSA id m25-20020a170906161900b006d43be5b95fsm1230475ejd.118.2022.04.01.10.24.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 01 Apr 2022 10:24:40 -0700 (PDT)
+From:   Ricardo Ribalda <ribalda@chromium.org>
+To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Ricardo Ribalda <ribalda@chromium.org>
+Subject: [PATCH 2/2] media: uvc: Undup use uvv-endpoint_max_bpi code
+Date:   Fri,  1 Apr 2022 19:24:37 +0200
+Message-Id: <20220401172437.625645-2-ribalda@chromium.org>
+X-Mailer: git-send-email 2.35.1.1094.g7c7d902a7c-goog
+In-Reply-To: <20220401172437.625645-1-ribalda@chromium.org>
+References: <20220401172437.625645-1-ribalda@chromium.org>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1648833867; l=2544; s=20211009; h=from:subject:message-id; bh=6HFH5vctb4CM6TLdbxSxVP3cPSYLITg6N2oWHo7zycc=; b=0BIt3RnuB6YZdFU81km55wIzh5IeKiTLNExtM96tTDNPAiacFInZhJksD8Sq0ZMwePxp99ntZew9 Hm4h1wLFBvHEscGH+LPDl3CXVt+ySx0rXVo7e8M5zhqzah87dCkJ
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-powerpc's asm/prom.h brings some headers that it doesn't
-need itself.
+Replace manual decoding of psize in uvc_parse_streaming(), with the code
+from uvc_endpoint_max_bpi(). It also handles usb3 devices.
 
-In order to clean it up, first add missing headers in
-users of asm/prom.h
-
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Ricardo Ribalda <ribalda@chromium.org>
 ---
- drivers/cpufreq/pasemi-cpufreq.c      | 1 -
- drivers/cpufreq/pmac32-cpufreq.c      | 2 +-
- drivers/cpufreq/pmac64-cpufreq.c      | 2 +-
- drivers/cpufreq/ppc_cbe_cpufreq.c     | 1 -
- drivers/cpufreq/ppc_cbe_cpufreq_pmi.c | 2 +-
- 5 files changed, 3 insertions(+), 5 deletions(-)
+ drivers/media/usb/uvc/uvc_driver.c | 4 +---
+ drivers/media/usb/uvc/uvc_video.c  | 3 +--
+ drivers/media/usb/uvc/uvcvideo.h   | 1 +
+ 3 files changed, 3 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/cpufreq/pasemi-cpufreq.c b/drivers/cpufreq/pasemi-cpufreq.c
-index 815645170c4d..039a66bbe1be 100644
---- a/drivers/cpufreq/pasemi-cpufreq.c
-+++ b/drivers/cpufreq/pasemi-cpufreq.c
-@@ -18,7 +18,6 @@
+diff --git a/drivers/media/usb/uvc/uvc_driver.c b/drivers/media/usb/uvc/uvc_driver.c
+index dda0f0aa78b8..977566aa2c89 100644
+--- a/drivers/media/usb/uvc/uvc_driver.c
++++ b/drivers/media/usb/uvc/uvc_driver.c
+@@ -1009,9 +1009,7 @@ static int uvc_parse_streaming(struct uvc_device *dev,
+ 				streaming->header.bEndpointAddress);
+ 		if (ep == NULL)
+ 			continue;
+-
+-		psize = le16_to_cpu(ep->desc.wMaxPacketSize);
+-		psize = (psize & 0x07ff) * (1 + ((psize >> 11) & 3));
++		psize = uvc_endpoint_max_bpi(dev->udev, ep);
+ 		if (psize > streaming->maxpsize)
+ 			streaming->maxpsize = psize;
+ 	}
+diff --git a/drivers/media/usb/uvc/uvc_video.c b/drivers/media/usb/uvc/uvc_video.c
+index a2dcfeaaac1b..9dc0a5dba158 100644
+--- a/drivers/media/usb/uvc/uvc_video.c
++++ b/drivers/media/usb/uvc/uvc_video.c
+@@ -1756,8 +1756,7 @@ static void uvc_video_stop_transfer(struct uvc_streaming *stream,
+ /*
+  * Compute the maximum number of bytes per interval for an endpoint.
+  */
+-static unsigned int uvc_endpoint_max_bpi(struct usb_device *dev,
+-					 struct usb_host_endpoint *ep)
++u16 uvc_endpoint_max_bpi(struct usb_device *dev, struct usb_host_endpoint *ep)
+ {
+ 	u16 psize;
  
- #include <asm/hw_irq.h>
- #include <asm/io.h>
--#include <asm/prom.h>
- #include <asm/time.h>
- #include <asm/smp.h>
+diff --git a/drivers/media/usb/uvc/uvcvideo.h b/drivers/media/usb/uvc/uvcvideo.h
+index 143230b3275b..28eb337a6cfb 100644
+--- a/drivers/media/usb/uvc/uvcvideo.h
++++ b/drivers/media/usb/uvc/uvcvideo.h
+@@ -911,6 +911,7 @@ void uvc_simplify_fraction(u32 *numerator, u32 *denominator,
+ u32 uvc_fraction_to_interval(u32 numerator, u32 denominator);
+ struct usb_host_endpoint *uvc_find_endpoint(struct usb_host_interface *alts,
+ 					    u8 epaddr);
++u16 uvc_endpoint_max_bpi(struct usb_device *dev, struct usb_host_endpoint *ep);
  
-diff --git a/drivers/cpufreq/pmac32-cpufreq.c b/drivers/cpufreq/pmac32-cpufreq.c
-index 4f20c6a9108d..20f64a8b0a35 100644
---- a/drivers/cpufreq/pmac32-cpufreq.c
-+++ b/drivers/cpufreq/pmac32-cpufreq.c
-@@ -24,7 +24,7 @@
- #include <linux/device.h>
- #include <linux/hardirq.h>
- #include <linux/of_device.h>
--#include <asm/prom.h>
-+
- #include <asm/machdep.h>
- #include <asm/irq.h>
- #include <asm/pmac_feature.h>
-diff --git a/drivers/cpufreq/pmac64-cpufreq.c b/drivers/cpufreq/pmac64-cpufreq.c
-index d7542a106e6b..ba9c31d98bd6 100644
---- a/drivers/cpufreq/pmac64-cpufreq.c
-+++ b/drivers/cpufreq/pmac64-cpufreq.c
-@@ -22,7 +22,7 @@
- #include <linux/completion.h>
- #include <linux/mutex.h>
- #include <linux/of_device.h>
--#include <asm/prom.h>
-+
- #include <asm/machdep.h>
- #include <asm/irq.h>
- #include <asm/sections.h>
-diff --git a/drivers/cpufreq/ppc_cbe_cpufreq.c b/drivers/cpufreq/ppc_cbe_cpufreq.c
-index c58abb4cca3a..e3313ce63b38 100644
---- a/drivers/cpufreq/ppc_cbe_cpufreq.c
-+++ b/drivers/cpufreq/ppc_cbe_cpufreq.c
-@@ -12,7 +12,6 @@
- #include <linux/of_platform.h>
- 
- #include <asm/machdep.h>
--#include <asm/prom.h>
- #include <asm/cell-regs.h>
- 
- #include "ppc_cbe_cpufreq.h"
-diff --git a/drivers/cpufreq/ppc_cbe_cpufreq_pmi.c b/drivers/cpufreq/ppc_cbe_cpufreq_pmi.c
-index 037fe23bc6ed..4fba3637b115 100644
---- a/drivers/cpufreq/ppc_cbe_cpufreq_pmi.c
-+++ b/drivers/cpufreq/ppc_cbe_cpufreq_pmi.c
-@@ -13,9 +13,9 @@
- #include <linux/init.h>
- #include <linux/of_platform.h>
- #include <linux/pm_qos.h>
-+#include <linux/slab.h>
- 
- #include <asm/processor.h>
--#include <asm/prom.h>
- #include <asm/pmi.h>
- #include <asm/cell-regs.h>
- 
+ /* Quirks support */
+ void uvc_video_decode_isight(struct uvc_urb *uvc_urb,
 -- 
-2.35.1
+2.35.1.1094.g7c7d902a7c-goog
 
