@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7625EC35280
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09531C3527E
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:13:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354799AbiDAPMb (ORCPT
+        id S1354489AbiDAPMA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:12:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60698 "EHLO
+        Fri, 1 Apr 2022 11:12:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352269AbiDAOuM (ORCPT
+        with ESMTP id S1352050AbiDAOtt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:50:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C1422B19D4;
-        Fri,  1 Apr 2022 07:41:21 -0700 (PDT)
+        Fri, 1 Apr 2022 10:49:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F3172B122E;
+        Fri,  1 Apr 2022 07:40:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 72FB7B824FD;
-        Fri,  1 Apr 2022 14:41:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91C8DC36AE3;
-        Fri,  1 Apr 2022 14:41:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 364DF60E9A;
+        Fri,  1 Apr 2022 14:40:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A95BBC2BBE4;
+        Fri,  1 Apr 2022 14:40:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824080;
-        bh=1JoZfE6UdxHEB+nH3V/p32G6m+oS2lKo835qRMi3X5E=;
+        s=k20201202; t=1648824016;
+        bh=FqPKhz65cLe+F8JBBk9WgDK9u85F0RIQc3mjbm+xiHI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d74ERmFF3lq5HZe1XTv/Wn9DmYtY4a+Ksb/5DSCEKpg9cLt+o4NO7mVHxY/cWBPPM
-         4uSe+lbYC6asVzWaE4JR/ooSCqHVA67/Z6xEmUorzEGesJ+1fKHm7xxHq4Cm9Ae/yz
-         Wa8JtbrShUULTPkjHJPX3HBumxkmH3s6nwKgQ2dAkdfTOiU3rQlcPSFSTHghryiy1v
-         qSraKnjg0+cml5KYeMHZdpQIL+3Vs/ygOePubc61Vg7YO2a1o7yBE5qG+hb1ua80Gm
-         4++EJf6PCAt+0pBqaGCpSaD+xxec2KcEZn5zaJji9b/Pa7JEj1LUmlNuo7Z+6xhqjT
-         KNfG64u96aKNg==
+        b=dt6PzJ3fJewKhtnOkfHFFqrLkrDxclAcYkaadZ6lwMnZIJ832TmxhJBIvd4kCyt8J
+         Z+NGIkyCg69TsQMZ0yhEnmL7MJBMjhiTl4VotDboUEWRTSvxr3OrCta7Zfmi4o0j7m
+         /1fkYw0FjX5OqIWmS+tOvQifadQuw0x3DbNwrqfXl7hgIazab9s3Lwp21Da8E6+Crp
+         F19D3/ld/BaATB55MEjrEatJRwjoofzswYJqGdn1r3NARatCxfs5MRORjSQMKkgWjJ
+         S6gfL43ZXu7bC0PNqdxtJwbrYLs5Df/kh8OdeiAuAJsKcl+ZxgDl74fubVZJeXB5e/
+         kYqFv8ha4gK6g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Hangyu Hua <hbh25y@gmail.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>, linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH AUTOSEL 5.15 77/98] powerpc/secvar: fix refcount leak in format_show()
-Date:   Fri,  1 Apr 2022 10:37:21 -0400
-Message-Id: <20220401143742.1952163-77-sashal@kernel.org>
+Cc:     Alex Williamson <alex.williamson@redhat.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Sasha Levin <sashal@kernel.org>, yishaih@nvidia.com,
+        mgurtovoy@nvidia.com, jgg@ziepe.ca, kvm@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 52/98] vfio/pci: Stub vfio_pci_vga_rw when !CONFIG_VFIO_PCI_VGA
+Date:   Fri,  1 Apr 2022 10:36:56 -0400
+Message-Id: <20220401143742.1952163-52-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143742.1952163-1-sashal@kernel.org>
 References: <20220401143742.1952163-1-sashal@kernel.org>
@@ -52,47 +53,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: Alex Williamson <alex.williamson@redhat.com>
 
-[ Upstream commit d601fd24e6964967f115f036a840f4f28488f63f ]
+[ Upstream commit 6e031ec0e5a2dda53e12e0d2a7e9b15b47a3c502 ]
 
-Refcount leak will happen when format_show returns failure in multiple
-cases. Unified management of of_node_put can fix this problem.
+Resolve build errors reported against UML build for undefined
+ioport_map() and ioport_unmap() functions.  Without this config
+option a device cannot have vfio_pci_core_device.has_vga set,
+so the existing function would always return -EINVAL anyway.
 
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220302021959.10959-1-hbh25y@gmail.com
+Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Link: https://lore.kernel.org/r/20220123125737.2658758-1-geert@linux-m68k.org
+Link: https://lore.kernel.org/r/164306582968.3758255.15192949639574660648.stgit@omen
+Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kernel/secvar-sysfs.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/vfio/pci/vfio_pci_rdwr.c | 2 ++
+ include/linux/vfio_pci_core.h    | 9 +++++++++
+ 2 files changed, 11 insertions(+)
 
-diff --git a/arch/powerpc/kernel/secvar-sysfs.c b/arch/powerpc/kernel/secvar-sysfs.c
-index a0a78aba2083..1ee4640a2641 100644
---- a/arch/powerpc/kernel/secvar-sysfs.c
-+++ b/arch/powerpc/kernel/secvar-sysfs.c
-@@ -26,15 +26,18 @@ static ssize_t format_show(struct kobject *kobj, struct kobj_attribute *attr,
- 	const char *format;
+diff --git a/drivers/vfio/pci/vfio_pci_rdwr.c b/drivers/vfio/pci/vfio_pci_rdwr.c
+index 57d3b2cbbd8e..82ac1569deb0 100644
+--- a/drivers/vfio/pci/vfio_pci_rdwr.c
++++ b/drivers/vfio/pci/vfio_pci_rdwr.c
+@@ -288,6 +288,7 @@ ssize_t vfio_pci_bar_rw(struct vfio_pci_core_device *vdev, char __user *buf,
+ 	return done;
+ }
  
- 	node = of_find_compatible_node(NULL, NULL, "ibm,secvar-backend");
--	if (!of_device_is_available(node))
--		return -ENODEV;
-+	if (!of_device_is_available(node)) {
-+		rc = -ENODEV;
-+		goto out;
-+	}
++#ifdef CONFIG_VFIO_PCI_VGA
+ ssize_t vfio_pci_vga_rw(struct vfio_pci_core_device *vdev, char __user *buf,
+ 			       size_t count, loff_t *ppos, bool iswrite)
+ {
+@@ -355,6 +356,7 @@ ssize_t vfio_pci_vga_rw(struct vfio_pci_core_device *vdev, char __user *buf,
  
- 	rc = of_property_read_string(node, "format", &format);
- 	if (rc)
--		return rc;
-+		goto out;
+ 	return done;
+ }
++#endif
  
- 	rc = sprintf(buf, "%s\n", format);
+ static void vfio_pci_ioeventfd_do_write(struct vfio_pci_ioeventfd *ioeventfd,
+ 					bool test_mem)
+diff --git a/include/linux/vfio_pci_core.h b/include/linux/vfio_pci_core.h
+index ef9a44b6cf5d..ae6f4838ab75 100644
+--- a/include/linux/vfio_pci_core.h
++++ b/include/linux/vfio_pci_core.h
+@@ -159,8 +159,17 @@ extern ssize_t vfio_pci_config_rw(struct vfio_pci_core_device *vdev,
+ extern ssize_t vfio_pci_bar_rw(struct vfio_pci_core_device *vdev, char __user *buf,
+ 			       size_t count, loff_t *ppos, bool iswrite);
  
-+out:
- 	of_node_put(node);
++#ifdef CONFIG_VFIO_PCI_VGA
+ extern ssize_t vfio_pci_vga_rw(struct vfio_pci_core_device *vdev, char __user *buf,
+ 			       size_t count, loff_t *ppos, bool iswrite);
++#else
++static inline ssize_t vfio_pci_vga_rw(struct vfio_pci_core_device *vdev,
++				      char __user *buf, size_t count,
++				      loff_t *ppos, bool iswrite)
++{
++	return -EINVAL;
++}
++#endif
  
- 	return rc;
+ extern long vfio_pci_ioeventfd(struct vfio_pci_core_device *vdev, loff_t offset,
+ 			       uint64_t data, int count, int fd);
 -- 
 2.34.1
 
