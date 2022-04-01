@@ -2,88 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCF72C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 20:25:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D51FC43219
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 20:27:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352246AbiDAU1o (ORCPT
+        id S1352343AbiDAU3N (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 16:27:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52600 "EHLO
+        Fri, 1 Apr 2022 16:29:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240467AbiDAU1m (ORCPT
+        with ESMTP id S1352918AbiDAU27 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 16:27:42 -0400
-Received: from mail-oa1-x29.google.com (mail-oa1-x29.google.com [IPv6:2001:4860:4864:20::29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5C5F2A5
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 13:25:51 -0700 (PDT)
-Received: by mail-oa1-x29.google.com with SMTP id 586e51a60fabf-df22f50e0cso3949708fac.3
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 13:25:51 -0700 (PDT)
+        Fri, 1 Apr 2022 16:28:59 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F1019154E
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 13:27:08 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id i27so1059552ejd.9
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 13:27:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=oqLr3CQkeovfFARJlOS29QpiBz7Mv54uvfNsfK21+RE=;
-        b=coOUZSozgph8g3yWCWkQpoEyvEcw2gzPyFFMsn0aOu49d0AOZRLPlt6DB6qkqE/1aa
-         oZP8LkZY7cBvT/pMb0haVysTmw7cesWJ/R2J5jXQ9Nn/cXmlrWyuxxUGPvFed5adi4sB
-         SPk6XCvE/fEhadDXiP5NicXLmDj5B/ofrUB8jORzZGoN3lNh4K4saSCMKh78xTS2u8mf
-         JE5bo/FKjygn/SdX5FALm8Q/QVEw+XLRkF+jsVrhIw0qFKfc7v5PdxM2Cl5M+7ECLwSx
-         messGYWBZpMOrq9ZMDr+IyEvR6gozjPg65suApTedWWcCms1+jjJbxa1jcNun68/RR3G
-         1YWg==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=jc3RgWHjY2p/tsxxVAzB8ba7RaDO2fJGXxeAES8PpOI=;
+        b=SVDXGE3XLq/KSmiUjaRHGDcvUd3VB9aFLp9A1T1si6A8krWfqdKqir6M2mu2L5xx4E
+         cOSz7Gel6JSYnZrp8yVgnCgd8mnAeJUkTOYeMTIKq8rvHUFWscg+IRDD4f5DBN7INWjD
+         zc4kENwU21T2z75Qf1xYSuWUuu7X6aX99FQHN3tMQhXMZaq8Z72/0j1zZDEcZJIxddmr
+         NFyF7a24MFPHrrTgahe2RoeJvGer28t23TTwUBYr3iHGlZxri+lScy5F/biQSuIjpQCa
+         BWONqVqYX076Iezm4fzyGbRoJvGGG0wiBd0GN1zL+ZXsdMzNQiw5INMn+3vGq3zgib8+
+         5R1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :subject:content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=oqLr3CQkeovfFARJlOS29QpiBz7Mv54uvfNsfK21+RE=;
-        b=WI+DvQo+qKnNyB69Kpb0X7Ju4PnIMDlza0RA/l2NgwW6flfIfRU8YoSJcKp4nO8S3W
-         pBcD0KVl9lFcMKlu03iXa8qQgVsZANKsepogRk1xYuPXFqSP4VKnIsEBYjZkuP4fCdAv
-         pIYbe+TSmaOCs480FHtY8yY1uZ0NlUfcUedFYnTkNWno1xoR8Shs67UG0PpkbMtPkESH
-         mN7U+wIQZz5RpUyazZwIn9+LBm+dpsW9m74OU/Tf4FWfztJsMP+uZcbwK5FoANSCiSIJ
-         qxqbBWnXsMMPjmdxqcsbUd7SUJC/mZ6PyuuRh0LdAdahEJeXlrnWqAr+tX+KmIhkQwt0
-         k4kQ==
-X-Gm-Message-State: AOAM530vKecxRbCvSLYAIha+45qTKMjbKsqgAdUUsf5QLpc7UL4rVQmb
-        6JESMPWPw3qP5wl/lHOFIFWWkvjYOt4=
-X-Google-Smtp-Source: ABdhPJzkb0JznTQj7KBrDYpwHJJyzvXVyXaU1Rdk3Hk1yrEsFgwqtafPkNRZupXizjn7fIqrVHbepg==
-X-Received: by 2002:a05:6870:e9a0:b0:e1:c609:74ac with SMTP id r32-20020a056870e9a000b000e1c60974acmr1419358oao.127.1648844751291;
-        Fri, 01 Apr 2022 13:25:51 -0700 (PDT)
-Received: from ?IPV6:2603:8090:2005:39b3::1004? (2603-8090-2005-39b3-0000-0000-0000-1004.res6.spectrum.com. [2603:8090:2005:39b3::1004])
-        by smtp.gmail.com with ESMTPSA id h11-20020a9d6f8b000000b005b230ab0461sm1559019otq.64.2022.04.01.13.25.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 01 Apr 2022 13:25:50 -0700 (PDT)
-Sender: Larry Finger <larry.finger@gmail.com>
-Message-ID: <8e68501c-24fd-cfbc-60f2-ec3e277159ab@lwfinger.net>
-Date:   Fri, 1 Apr 2022 15:25:49 -0500
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=jc3RgWHjY2p/tsxxVAzB8ba7RaDO2fJGXxeAES8PpOI=;
+        b=XmvihrnKnP5UFTAw3ATGpKuG6Z0oo1jsU9qkPrN9qBNluQ2t5gL6Tq87Ihwq6wl4Je
+         p966yn+PyUJf6WvIiRFMMpY/fUoh0mdiqAb4T8vWh4Dzj8356R5+xtAY5ePlv8H/i3AI
+         9qiIiTQgNzWZHO17nmRQFn3czqkvUPjuJL2FVFP/wZTbaQBMsvUt4gkztdpf9TqvSXR9
+         KCZ4gceG24QyUjnPKph7j4MHA3sNX/5Cayt/iBrfym1mL7vYkEhrlTMZhxMGWhTUNs2c
+         PuyVTq3+IYtqgNhYQz2AC8XRE8YKXUGke+LfUyADeftR//5vldVBVq0HTdeQPWgCSMnY
+         LuGQ==
+X-Gm-Message-State: AOAM533PFi34XjMvqWhSSbpIN7YbAGw6MRRJwjZh7mtwih8kN0pFAltp
+        swMV8tIxb4yw4mVYBVrW/+JYDg==
+X-Google-Smtp-Source: ABdhPJyDR6JG5CgQmBI7+eKNve5VCFxxv8uRCv92S6bNXYY+dcQdSxM0K3PsMRQnCHLe0zmLr2jzrg==
+X-Received: by 2002:a17:907:3da9:b0:6db:f3f:33c2 with SMTP id he41-20020a1709073da900b006db0f3f33c2mr1253083ejc.735.1648844826728;
+        Fri, 01 Apr 2022 13:27:06 -0700 (PDT)
+Received: from localhost.localdomain (cpc78119-cwma10-2-0-cust590.7-3.cable.virginm.net. [81.96.50.79])
+        by smtp.gmail.com with ESMTPSA id k14-20020a50e18e000000b0041b6f23f7f6sm1619346edl.22.2022.04.01.13.27.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 01 Apr 2022 13:27:06 -0700 (PDT)
+From:   Caleb Connolly <caleb.connolly@linaro.org>
+To:     caleb.connolly@linaro.org, Sebastian Reichel <sre@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Cc:     Amit Pundir <amit.pundir@linaro.org>,
+        Sumit Semwal <sumit.semwal@linaro.org>
+Subject: [PATCH 2/6] arm64: dts: qcom: pmi8998: add smb2 node
+Date:   Fri,  1 Apr 2022 21:26:39 +0100
+Message-Id: <20220401202643.877609-3-caleb.connolly@linaro.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220401202643.877609-1-caleb.connolly@linaro.org>
+References: <20220401202643.877609-1-caleb.connolly@linaro.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] staging: r8188eu: Fix PPPoE tag insertion on big endian
- systems
-Content-Language: en-US
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     Phillip Potter <phil@philpotter.co.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20220401151257.3414576-1-linux@roeck-us.net>
- <782f0115-e45f-1aff-a152-5d403c990b31@lwfinger.net>
- <dcba377b-1fce-92e6-680a-77c5567cd06c@roeck-us.net>
-From:   Larry Finger <Larry.Finger@lwfinger.net>
-In-Reply-To: <dcba377b-1fce-92e6-680a-77c5567cd06c@roeck-us.net>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/1/22 14:25, Guenter Roeck wrote:
-> The rest of the code uses htons/ntohs, so I prefer to follow that lead.
+Add a node for the smb2 charger hardware found on the pmi8998.
 
-You just proved my point. It is hard to get be16_to_cpu() wrong. Sparse will 
-flag the error when you use cpu_to_be16() instead. I expect that your 
-htons/ntohs problem would also have shown up with Sparse.
+Signed-off-by: Caleb Connolly <caleb.connolly@linaro.org>
+---
+ arch/arm64/boot/dts/qcom/pmi8998.dtsi | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
-Larry
-
-
-
+diff --git a/arch/arm64/boot/dts/qcom/pmi8998.dtsi b/arch/arm64/boot/dts/qcom/pmi8998.dtsi
+index da10668c361d..b98dad166a0b 100644
+--- a/arch/arm64/boot/dts/qcom/pmi8998.dtsi
++++ b/arch/arm64/boot/dts/qcom/pmi8998.dtsi
+@@ -9,6 +9,21 @@ pmi8998_lsid0: pmic@2 {
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 
++		pmi8998_smb2: smb2@1000 {
++			compatible = "qcom,pmi8998-smb2";
++			reg = <0x1000>;
++
++			interrupts = <0x2 0x13 0x4 IRQ_TYPE_EDGE_BOTH>;
++			interrupt-names = "usb-plugin";
++
++			io-channels = <&pmi8998_rradc 3>,
++				      <&pmi8998_rradc 4>;
++			io-channel-names = "usbin_i",
++					   "usbin_v";
++
++			status = "disabled";
++		};
++
+ 		pmi8998_gpio: gpios@c000 {
+ 			compatible = "qcom,pmi8998-gpio", "qcom,spmi-gpio";
+ 			reg = <0xc000>;
+-- 
+2.35.1
 
