@@ -2,47 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04CF8C352A1
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:40:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBFF3C47080
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:40:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356898AbiDAPiC (ORCPT
+        id S1356613AbiDAPhn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:38:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54038 "EHLO
+        Fri, 1 Apr 2022 11:37:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350626AbiDAPAX (ORCPT
+        with ESMTP id S1350544AbiDAPAI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 11:00:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EB46185453;
-        Fri,  1 Apr 2022 07:48:06 -0700 (PDT)
+        Fri, 1 Apr 2022 11:00:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9831A64BF3;
+        Fri,  1 Apr 2022 07:47:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3E641B82500;
-        Fri,  1 Apr 2022 14:48:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F15BEC34111;
-        Fri,  1 Apr 2022 14:48:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2450A60AC9;
+        Fri,  1 Apr 2022 14:47:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21E2EC340EE;
+        Fri,  1 Apr 2022 14:47:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824484;
-        bh=xBWEKNFE5H+l+atNx46GIEd2XdhRTc0zdVyHl0dLdTA=;
+        s=k20201202; t=1648824463;
+        bh=J1f0lQ9piKBazL8l/JdIIROG6EMQUCVmrex/JmHS88Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K1/KRL6xBkZ/Uxh1yV4+NAO+t2rtU2Ec1UAyknvazL2XXneTqemqkMhsFGqO/fNul
-         fO4K5xLqxi2zkxCHGWf0zISAMK+4hAJ8e3jmanvZxIT+44jN65R5nXDHy2aF6EvYT7
-         zX+piFzNcVL748esIHkhmVLZawq3RkzgVAsRjUbkpCn1hWQjeBVnVypedsYlFVoeyJ
-         5OtZd5SNPB1xCTH2OQbsieIzsnf/XH8pn1/SrtDZR48WZUlb1elbYAxP5/+I/HlrjQ
-         ngMf4wiOlYQmNNoi6o4P+3xF0wo9UO+Wj9fdEro2ommaWPg5Ig+F8FOI0nG5R9z7we
-         EvHzgX1Ivh4tg==
+        b=gg7GJdaGJYw1+dD+MbOYw9ithpQ13PUlxc7zHfkNt2M7Z8OMQy/AtnLPsi6M4J9Hx
+         tYg/EB2iwShmW6qK9EwwgPns7hNXgua1ptZA0PvFbqNtzJuYMc1Zq7qDdU+bYO1H5d
+         AMAMwt4upgFrGQWfroING+SrUT1oBuUdLI0bZpRPajgU2kqanJIkWIDMUqX4E794+/
+         12qs63lhfGPzZBOO5Cg9LE2lWZfZdtPG/xk5wTzlZGlqc3a/xPrtxtX4u8YQ1ecW+u
+         KG1zIG0EkzY3AeKhRczKwy+bZgXNzOEbxT0RPRINRkY7hs40FPEGUPFmQO4EuBkg2w
+         /nl9Xak9jV34A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Dust Li <dust.li@linux.alibaba.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, kgraul@linux.ibm.com,
-        kuba@kernel.org, pabeni@redhat.com, linux-s390@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 13/22] net/smc: correct settings of RMB window update limit
-Date:   Fri,  1 Apr 2022 10:47:20 -0400
-Message-Id: <20220401144729.1955554-13-sashal@kernel.org>
+Cc:     Yang Guang <yang.guang5@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>,
+        David Yang <davidcomponentone@gmail.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, jejb@linux.ibm.com,
+        john.garry@huawei.com, bvanassche@acm.org, yuyufen@huawei.com,
+        johannes.thumshirn@wdc.com, thunder.leizhen@huawei.com,
+        linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 04/22] scsi: mvsas: Replace snprintf() with sysfs_emit()
+Date:   Fri,  1 Apr 2022 10:47:11 -0400
+Message-Id: <20220401144729.1955554-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401144729.1955554-1-sashal@kernel.org>
 References: <20220401144729.1955554-1-sashal@kernel.org>
@@ -54,50 +57,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dust Li <dust.li@linux.alibaba.com>
+From: Yang Guang <yang.guang5@zte.com.cn>
 
-[ Upstream commit 6bf536eb5c8ca011d1ff57b5c5f7c57ceac06a37 ]
+[ Upstream commit 0ad3867b0f13e45cfee5a1298bfd40eef096116c ]
 
-rmbe_update_limit is used to limit announcing receive
-window updating too frequently. RFC7609 request a minimal
-increase in the window size of 10% of the receive buffer
-space. But current implementation used:
+coccinelle report:
+./drivers/scsi/mvsas/mv_init.c:699:8-16:
+WARNING: use scnprintf or sprintf
+./drivers/scsi/mvsas/mv_init.c:747:8-16:
+WARNING: use scnprintf or sprintf
 
-  min_t(int, rmbe_size / 10, SOCK_MIN_SNDBUF / 2)
+Use sysfs_emit() instead of scnprintf() or sprintf().
 
-and SOCK_MIN_SNDBUF / 2 == 2304 Bytes, which is almost
-always less then 10% of the receive buffer space.
-
-This causes the receiver always sending CDC message to
-update its consumer cursor when it consumes more then 2K
-of data. And as a result, we may encounter something like
-"TCP silly window syndrome" when sending 2.5~8K message.
-
-This patch fixes this using max(rmbe_size / 10, SOCK_MIN_SNDBUF / 2).
-
-With this patch and SMC autocorking enabled, qperf 2K/4K/8K
-tcp_bw test shows 45%/75%/40% increase in throughput respectively.
-
-Signed-off-by: Dust Li <dust.li@linux.alibaba.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Link: https://lore.kernel.org/r/c1711f7cf251730a8ceb5bdfc313bf85662b3395.1643182948.git.yang.guang5@zte.com.cn
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Yang Guang <yang.guang5@zte.com.cn>
+Signed-off-by: David Yang <davidcomponentone@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/smc/smc_core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/scsi/mvsas/mv_init.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
-index 7dc907a45c68..a28e06c70e52 100644
---- a/net/smc/smc_core.c
-+++ b/net/smc/smc_core.c
-@@ -499,7 +499,7 @@ struct smc_buf_desc *smc_buf_get_slot(struct smc_link_group *lgr,
-  */
- static inline int smc_rmb_wnd_update_limit(int rmbe_size)
+diff --git a/drivers/scsi/mvsas/mv_init.c b/drivers/scsi/mvsas/mv_init.c
+index 718c88de328b..f6070b1fe1d8 100644
+--- a/drivers/scsi/mvsas/mv_init.c
++++ b/drivers/scsi/mvsas/mv_init.c
+@@ -729,7 +729,7 @@ static ssize_t
+ mvs_show_driver_version(struct device *cdev,
+ 		struct device_attribute *attr,  char *buffer)
  {
--	return min_t(int, rmbe_size / 10, SOCK_MIN_SNDBUF / 2);
-+	return max_t(int, rmbe_size / 10, SOCK_MIN_SNDBUF / 2);
+-	return snprintf(buffer, PAGE_SIZE, "%s\n", DRV_VERSION);
++	return sysfs_emit(buffer, "%s\n", DRV_VERSION);
  }
  
- static struct smc_buf_desc *smc_new_buf_create(struct smc_link_group *lgr,
+ static DEVICE_ATTR(driver_version,
+@@ -781,7 +781,7 @@ mvs_store_interrupt_coalescing(struct device *cdev,
+ static ssize_t mvs_show_interrupt_coalescing(struct device *cdev,
+ 			struct device_attribute *attr, char *buffer)
+ {
+-	return snprintf(buffer, PAGE_SIZE, "%d\n", interrupt_coalescing);
++	return sysfs_emit(buffer, "%d\n", interrupt_coalescing);
+ }
+ 
+ static DEVICE_ATTR(interrupt_coalescing,
 -- 
 2.34.1
 
