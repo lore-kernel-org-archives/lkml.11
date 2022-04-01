@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B267AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 20:21:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50F77C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 20:22:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352373AbiDAUXD (ORCPT
+        id S1352555AbiDAUXu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 16:23:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50700 "EHLO
+        Fri, 1 Apr 2022 16:23:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352338AbiDAUVW (ORCPT
+        with ESMTP id S1352225AbiDAUVC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 16:21:22 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 543781128
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 13:18:35 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id h23so5778749wrb.8
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 13:18:35 -0700 (PDT)
+        Fri, 1 Apr 2022 16:21:02 -0400
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BAA327545F
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 13:18:29 -0700 (PDT)
+Received: by mail-wm1-x330.google.com with SMTP id f6-20020a1c3806000000b0038e4a0fc5easo2142216wma.3
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 13:18:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=baylibre-com.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Qnu62bJemS/jWg8J4I3N48ZBUGfR4KO6Vf9cdKvDqZI=;
-        b=8TVf6qwBl0uHvhrV68CLdsiGsrTE4EUegwd1ikdA6z/qhYMFiO6FC/yl0QH0cUg+mS
-         7aHD98hPOgUw0yGHMUPePkVSMeX/Pv822pWJN5/Q/nof2wZApIO0w/1YDrGxkXd077Ki
-         AGAYeB9kJbKYwOR1ixFoqpKkgH8UEETuZwtA+O14p7ER+XBV84HDnsgNBp+jjokLu4B/
-         plJkkZ/pLYKyYhNYSoUWqk6x5x2QOQmI/U5Hg2UjwMSgkWLRHDRhQzXoxa+WkYh3xJ6T
-         4cIu8c4NI4pPTDGg9AiHr0lGuN/onYesvoW3VQwf5wnHBsgpUE6VcWNCIZcG4bn5HeIW
-         UJ8w==
+        bh=wKC9BF4dXA1G634QoNLIKuQnuaNkW3/UOb3sMC/u5kY=;
+        b=tICJ0RLoEBdT1RLJeSR2Qdmj0wSFyJNAkSICQ0VllNB5Pumz6HvKWt/nlnUoOOyI+u
+         LSJQBev6GcooY+39S0jfbxZSikrx7RdpcDJgOVxNl11DyqCKdq4XUOkbLUdnEoxBQN/L
+         wkugfBBvIyLoyiGAOpxI4IfbyPRECIXlF84FEOrImvkENev2lCMLDatubNZk020hsPi4
+         t3JClCEV0/rYD5t6GK9X4VPEgEurgUNxuPBsrrtAnXW1ioFCJ7+jgkSelGySQxjUDX1r
+         06jm3Tc3YbSxVMbKejWmGO8LctlXaN+jkTqwhQn1K3kg2Bdlxy6M0vJVdnoJ6uuUBUAf
+         m+Eg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Qnu62bJemS/jWg8J4I3N48ZBUGfR4KO6Vf9cdKvDqZI=;
-        b=cnd6CPNZ2xYK/tXlfj+lqSijZMxMqTDXna40LgzMgdRn7tiJq0UdS1xG059HsvwpwX
-         P9oeYWBCuSS/JVCUbXIWtdiU49UYpakuQ0E1dPxDujsACBvjuHe3dOaIBQNiMkrxu86D
-         272iBZg2Mzfm7slFke9wjp9YnACDBGIlMUQhkm3AulMtLrGHBs6VjWSyfuKZ22+jQtDn
-         0CZ+UFEKWXy05WUJHdeSyandxCgJdIyA0tuXog4sL9w9sUeslD0lRJjgis71TFUOnygP
-         rBN9SWyVhpuxRSxQVgyxKbRATOszK6GXwL3cooSRBkPU0bt2gHXr2J5JIs6S/snM2gWD
-         oOWw==
-X-Gm-Message-State: AOAM530tOnkKTjptvx9bWMmIr0Pn9PPiCcEj0Ui1uNS6WdJ8awrXoBBZ
-        Qh754lOd9KakdrosX5rwa6oLLw==
-X-Google-Smtp-Source: ABdhPJyzMnqRZxBp1VScKUGrqBnHjZLNhiPrB1uY3/f7ItRkGi4AfEMDThcmsWoiphNLREoBcSKQJQ==
-X-Received: by 2002:a5d:64e7:0:b0:205:8b74:8db7 with SMTP id g7-20020a5d64e7000000b002058b748db7mr8794143wri.34.1648844314215;
-        Fri, 01 Apr 2022 13:18:34 -0700 (PDT)
+        bh=wKC9BF4dXA1G634QoNLIKuQnuaNkW3/UOb3sMC/u5kY=;
+        b=KbV6dmMvcIW61Eq/GHChPXW6yWdbrgF5q8il48dy+RHgKTnbssPGs7+VXUYKSb9hAN
+         Sr/4oLNtWWDrolCsGhkgVAMvqhsrCed83nDDzZK5QFElT71hv0r85/ljNQLLTYHnGk+K
+         4RZwqJ1Uj5NFqmDS5azBAiQklAIVPveK9L5C5+lV9wtZ77gmp/TYC7wB1cWu2Db4jIws
+         1HyPoo+aGA2H/NGnrU581qOWbrCfLOUXpERJzSYciM00NbbjPGPY+1QR0JCTOiJfNEY4
+         JlYSojhBM9pqlgwn/q87oKl5q+8DCnKdcMHibfLMEsEPBS3Nmi4WL3WlXOaAESrfzJPe
+         LUbQ==
+X-Gm-Message-State: AOAM532uynyLLihYwdL/fSlbVwjM4iYXE43ifNFLOOQrDv4qvrsXQRz7
+        O5XggDd6SBcrDeTpwLQBtFOuaA==
+X-Google-Smtp-Source: ABdhPJzBjRPNRhqYPjIRRftpKO82O6trPepqmMbG4DH3r7zywq41QfkZv3g3CDZwixcv1zGNRXgMGQ==
+X-Received: by 2002:a05:600c:21a:b0:38b:d06e:e0f7 with SMTP id 26-20020a05600c021a00b0038bd06ee0f7mr9809753wmi.105.1648844307626;
+        Fri, 01 Apr 2022 13:18:27 -0700 (PDT)
 Received: from localhost.localdomain (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
-        by smtp.googlemail.com with ESMTPSA id j16-20020a05600c191000b0038ca3500494sm17823838wmq.27.2022.04.01.13.18.33
+        by smtp.googlemail.com with ESMTPSA id j16-20020a05600c191000b0038ca3500494sm17823838wmq.27.2022.04.01.13.18.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Apr 2022 13:18:33 -0700 (PDT)
+        Fri, 01 Apr 2022 13:18:27 -0700 (PDT)
 From:   Corentin Labbe <clabbe@baylibre.com>
 To:     heiko@sntech.de, herbert@gondor.apana.org.au, krzk+dt@kernel.org,
         robh+dt@kernel.org
@@ -56,9 +56,9 @@ Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-rockchip@lists.infradead.org,
         Corentin Labbe <clabbe@baylibre.com>
-Subject: [PATCH v4 32/33] arm64: dts: rockchip: rk3399: add crypto node
-Date:   Fri,  1 Apr 2022 20:18:03 +0000
-Message-Id: <20220401201804.2867154-33-clabbe@baylibre.com>
+Subject: [PATCH v4 23/33] crypto: rockchip: use the rk_crypto_info given as parameter
+Date:   Fri,  1 Apr 2022 20:17:54 +0000
+Message-Id: <20220401201804.2867154-24-clabbe@baylibre.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220401201804.2867154-1-clabbe@baylibre.com>
 References: <20220401201804.2867154-1-clabbe@baylibre.com>
@@ -68,43 +68,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The rk3399 has a crypto IP handled by the rk3288 crypto driver so adds a
-node for it.
+Instead of using the crypto_info from TFM ctx, use the one given as parameter.
 
 Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
 ---
- arch/arm64/boot/dts/rockchip/rk3399.dtsi | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+ drivers/crypto/rockchip/rk3288_crypto_skcipher.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/rockchip/rk3399.dtsi b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-index 88f26d89eea1..2f355de14fce 100644
---- a/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-@@ -573,6 +573,24 @@ saradc: saradc@ff100000 {
- 		status = "disabled";
- 	};
- 
-+	crypto0: crypto@ff8b0000 {
-+		compatible = "rockchip,rk3399-crypto0";
-+		reg = <0x0 0xff8b0000 0x0 0x4000>;
-+		interrupts = <GIC_SPI 0 IRQ_TYPE_LEVEL_HIGH 0>;
-+		clocks = <&cru HCLK_M_CRYPTO0>, <&cru HCLK_S_CRYPTO0>, <&cru SCLK_CRYPTO0>;
-+		clock-names = "hclk_master", "hclk_slave", "sclk";
-+		resets = <&cru SRST_CRYPTO0>, <&cru SRST_CRYPTO0_S>, <&cru SRST_CRYPTO0_M>;
-+	};
-+
-+	crypto1: crypto@ff8b8000 {
-+		compatible = "rockchip,rk3399-crypto1";
-+		reg = <0x0 0xff8b8000 0x0 0x4000>;
-+		interrupts = <GIC_SPI 135 IRQ_TYPE_LEVEL_HIGH 0>;
-+		clocks = <&cru HCLK_M_CRYPTO1>, <&cru HCLK_S_CRYPTO1>, <&cru SCLK_CRYPTO1>;
-+		clock-names = "hclk_master", "hclk_slave", "sclk";
-+		resets = <&cru SRST_CRYPTO1>, <&cru SRST_CRYPTO1_S>, <&cru SRST_CRYPTO1_M>;
-+	};
-+
- 	i2c1: i2c@ff110000 {
- 		compatible = "rockchip,rk3399-i2c";
- 		reg = <0x0 0xff110000 0x0 0x1000>;
+diff --git a/drivers/crypto/rockchip/rk3288_crypto_skcipher.c b/drivers/crypto/rockchip/rk3288_crypto_skcipher.c
+index 9e2935716840..9784b25e64ce 100644
+--- a/drivers/crypto/rockchip/rk3288_crypto_skcipher.c
++++ b/drivers/crypto/rockchip/rk3288_crypto_skcipher.c
+@@ -264,7 +264,7 @@ static void rk_cipher_hw_init(struct rk_crypto_info *dev, struct skcipher_reques
+ 			     RK_CRYPTO_TDES_BYTESWAP_KEY |
+ 			     RK_CRYPTO_TDES_BYTESWAP_IV;
+ 		CRYPTO_WRITE(dev, RK_CRYPTO_TDES_CTRL, rctx->mode);
+-		memcpy_toio(ctx->dev->reg + RK_CRYPTO_TDES_KEY1_0, ctx->key, ctx->keylen);
++		memcpy_toio(dev->reg + RK_CRYPTO_TDES_KEY1_0, ctx->key, ctx->keylen);
+ 		conf_reg = RK_CRYPTO_DESSEL;
+ 	} else {
+ 		rctx->mode |= RK_CRYPTO_AES_FIFO_MODE |
+@@ -276,7 +276,7 @@ static void rk_cipher_hw_init(struct rk_crypto_info *dev, struct skcipher_reques
+ 		else if (ctx->keylen == AES_KEYSIZE_256)
+ 			rctx->mode |= RK_CRYPTO_AES_256BIT_key;
+ 		CRYPTO_WRITE(dev, RK_CRYPTO_AES_CTRL, rctx->mode);
+-		memcpy_toio(ctx->dev->reg + RK_CRYPTO_AES_KEY_0, ctx->key, ctx->keylen);
++		memcpy_toio(dev->reg + RK_CRYPTO_AES_KEY_0, ctx->key, ctx->keylen);
+ 	}
+ 	conf_reg |= RK_CRYPTO_BYTESWAP_BTFIFO |
+ 		    RK_CRYPTO_BYTESWAP_BRFIFO;
 -- 
 2.35.1
 
