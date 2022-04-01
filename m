@@ -2,52 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80CCAC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:05:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 216BBC4167D
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:05:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351386AbiDAPHF (ORCPT
+        id S1351776AbiDAPHQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:07:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54888 "EHLO
+        Fri, 1 Apr 2022 11:07:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349834AbiDAOqw (ORCPT
+        with ESMTP id S1349836AbiDAOqw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 1 Apr 2022 10:46:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EAF11EB82C;
-        Fri,  1 Apr 2022 07:36:37 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ABBC24ED8D;
+        Fri,  1 Apr 2022 07:36:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 795DB60B8C;
-        Fri,  1 Apr 2022 14:36:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E49A2C34112;
-        Fri,  1 Apr 2022 14:36:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 364CD60B9F;
+        Fri,  1 Apr 2022 14:36:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3178C340F2;
+        Fri,  1 Apr 2022 14:36:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823788;
-        bh=66sFSy8wNULr2MfX4IcAY9QzAY5sLQeRa4oJ/F55KYk=;
+        s=k20201202; t=1648823767;
+        bh=aTDvfyBb6ZFwQUDdatUy1W5KmV+kCGUwHFAYnOu3iOA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hc7kzNbV3s+ZLPb4DQ+GvWLrKyfRy+7QHil9m2skrIRv2hy3nNwhG0epiQtdQIxvN
-         qfjEiWUpkP5bFjC+6pZmPLDCtXiVEK+8rpPTtUNXh0bcGh6V2oeDBrqOvNSBK4fyX6
-         ur5XMNLPjmb2UE/JDRtMmEu3yZix4rnV4BfmUqY7AnFO2gnw9kKZNxOJegfJ6Bs/Fb
-         yWuIx2+SLs+BYr3S6PRcT1IHOj0MQiVxlvotuocttew74RlVZF8bposgaqY7IFY2d/
-         zPwD5zVUVKhkQ3qiPZkstQTOUy/JHiMnk22pFBIh1IuX+MfhEPxj7uHW7oRFkB9x74
-         FKIc4CjmYOSfQ==
+        b=t/DJqzU3J8GMTr+9Fissfr3gsnc0/vOp+a9Uk7h0h/EJ0ftU2Bb3dkISjjoIl8hOv
+         6t5/UvvG6MIFcu/L7ejBercTn4TCL5K1oON/5ngCDDI2Aj0NctEkh84VSvjhY1cl55
+         xWk0d0QvGK/ASyiCFnebjyZDpPC6ufkEIcBPzGyMUlJZUYk0MlYSIG7cJD3/FaKGrq
+         eKmIwDiJFiQjKHhCSlGSPTZs+g5mBb4Ua8Wug72apKBoLAQkXhymEFnFEw/jvwjnTH
+         0v13aKaT03uiQ2ABxXMCgzlr4C5P636LzDkkD+SsRB7hjA5LRoto8sy47gVDNXiij8
+         64A//kJS80jFQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sven Eckelmann <sven@narfation.org>,
-        =?UTF-8?q?Leonardo=20M=C3=B6rlein?= <freifunk@irrelefant.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        pabeni@redhat.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 078/109] macvtap: advertise link netns via netlink
-Date:   Fri,  1 Apr 2022 10:32:25 -0400
-Message-Id: <20220401143256.1950537-78-sashal@kernel.org>
+Cc:     Hans de Goede <hdegoede@redhat.com>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Sasha Levin <sashal@kernel.org>, airlied@linux.ie,
+        daniel@ffwll.ch, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.16 070/109] drm/simpledrm: Add "panel orientation" property on non-upright mounted LCD panels
+Date:   Fri,  1 Apr 2022 10:32:17 -0400
+Message-Id: <20220401143256.1950537-70-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143256.1950537-1-sashal@kernel.org>
 References: <20220401143256.1950537-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -55,62 +54,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sven Eckelmann <sven@narfation.org>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit a02192151b7dbf855084c38dca380d77c7658353 ]
+[ Upstream commit 94fa115f7b28a3f02611499175e134f0a823b686 ]
 
-Assign rtnl_link_ops->get_link_net() callback so that IFLA_LINK_NETNSID is
-added to rtnetlink messages. This fixes iproute2 which otherwise resolved
-the link interface to an interface in the wrong namespace.
+Some devices use e.g. a portrait panel in a standard laptop casing made
+for landscape panels. efifb calls drm_get_panel_orientation_quirk() and
+sets fb_info.fbcon_rotate_hint to make fbcon rotate the console so that
+it shows up-right instead of on its side.
 
-Test commands:
+When switching to simpledrm the fbcon renders on its side. Call the
+drm_connector_set_panel_orientation_with_quirk() helper to add
+a "panel orientation" property on devices listed in the quirk table,
+to make the fbcon (and aware userspace apps) rotate the image to
+display properly.
 
-  ip netns add nst
-  ip link add dummy0 type dummy
-  ip link add link macvtap0 link dummy0 type macvtap
-  ip link set macvtap0 netns nst
-  ip -netns nst link show macvtap0
-
-Before:
-
-  10: macvtap0@gre0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 500
-      link/ether 5e:8f:ae:1d:60:50 brd ff:ff:ff:ff:ff:ff
-
-After:
-
-  10: macvtap0@if2: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 500
-      link/ether 5e:8f:ae:1d:60:50 brd ff:ff:ff:ff:ff:ff link-netnsid 0
-
-Reported-by: Leonardo Mörlein <freifunk@irrelefant.net>
-Signed-off-by: Sven Eckelmann <sven@narfation.org>
-Link: https://lore.kernel.org/r/20220228003240.1337426-1-sven@narfation.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Cc: Javier Martinez Canillas <javierm@redhat.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
+Acked-by: Thomas Zimmermann <tzimmermann@suse.de>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220221220045.11958-1-hdegoede@redhat.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/macvtap.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/gpu/drm/tiny/simpledrm.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/macvtap.c b/drivers/net/macvtap.c
-index 6b12902a803f..cecf8c63096c 100644
---- a/drivers/net/macvtap.c
-+++ b/drivers/net/macvtap.c
-@@ -133,11 +133,17 @@ static void macvtap_setup(struct net_device *dev)
- 	dev->tx_queue_len = TUN_READQ_SIZE;
- }
+diff --git a/drivers/gpu/drm/tiny/simpledrm.c b/drivers/gpu/drm/tiny/simpledrm.c
+index 5a6e89825bc2..3e3f9ba1e885 100644
+--- a/drivers/gpu/drm/tiny/simpledrm.c
++++ b/drivers/gpu/drm/tiny/simpledrm.c
+@@ -779,6 +779,9 @@ static int simpledrm_device_init_modeset(struct simpledrm_device *sdev)
+ 	if (ret)
+ 		return ret;
+ 	drm_connector_helper_add(connector, &simpledrm_connector_helper_funcs);
++	drm_connector_set_panel_orientation_with_quirk(connector,
++						       DRM_MODE_PANEL_ORIENTATION_UNKNOWN,
++						       mode->hdisplay, mode->vdisplay);
  
-+static struct net *macvtap_link_net(const struct net_device *dev)
-+{
-+	return dev_net(macvlan_dev_real_dev(dev));
-+}
-+
- static struct rtnl_link_ops macvtap_link_ops __read_mostly = {
- 	.kind		= "macvtap",
- 	.setup		= macvtap_setup,
- 	.newlink	= macvtap_newlink,
- 	.dellink	= macvtap_dellink,
-+	.get_link_net	= macvtap_link_net,
- 	.priv_size      = sizeof(struct macvtap_dev),
- };
+ 	formats = simpledrm_device_formats(sdev, &nformats);
  
 -- 
 2.34.1
