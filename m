@@ -2,50 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 947FFC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84BA8C4321E
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:20:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350635AbiDAPSx (ORCPT
+        id S1350406AbiDAPSr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:18:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60298 "EHLO
+        Fri, 1 Apr 2022 11:18:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352301AbiDAOuO (ORCPT
+        with ESMTP id S1352316AbiDAOuO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 1 Apr 2022 10:50:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 123E12B207B;
-        Fri,  1 Apr 2022 07:41:25 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFF0C1F047B;
+        Fri,  1 Apr 2022 07:41:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E0A04B824D8;
-        Fri,  1 Apr 2022 14:40:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6B9FC340EE;
-        Fri,  1 Apr 2022 14:40:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DA25E611E6;
+        Fri,  1 Apr 2022 14:40:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4FC94C36AE2;
+        Fri,  1 Apr 2022 14:40:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824046;
-        bh=fkv3DsJP6QDnF5V9WKUbhc3cbI7Ae3zkZ3dapDGXnZE=;
+        s=k20201202; t=1648824052;
+        bh=kjuBNnbI+Yjinw7VoawrZRPNdjU4KrvX+KNkVbNlDjM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Obn5225KK7dQ9PGlD0WzcFVKYLnilEoHvFzposh9LdBK0Pv3x7gloq18rsEjap2fS
-         nSJv8lBkVJ4PVH71kZ0Hk2lft5+sE0qroUphFIVkPyyymbOIq7XYivLfiDdJJZrpHB
-         kZV2PTOcbHH8HsfhJRaS1NC5/Zv1HrWAjf1UXoyevjBiDhzrCGKNjkD6v5N7DFwRL6
-         bGHTpV6gQ/1+MrUUxVQTJGC6JhJnpzqWvxVUDnsKniWyvXPQcY4Y/2Qu6cbFC3OMEF
-         /4n1GeNNJlORavnazVk9me+SRsq5CxIT7wtwynwbvkoztz8+8FT6ppdRTFKzaG4cyy
-         Uun1/9JH1xgWQ==
+        b=ndIYvCFF8XIh3Av4BW94dXtU8fn9ImUsPusjldoFdlA3r/kERzA+dNu7UqmsYGlWS
+         T050VNikV9uJz/Z0chOPngKV6Jilwf7jn91zr6t2Of2Y/UzK4UtFlJ+3vFhtZ6KJah
+         g5Z/jFPUpazBJ0djW+bOBVUt9Cr/VrbOZfMcSekHgoHEAB+ivrMBx/B+CFIVlgvVGx
+         IBVQ0UD2MtsJgjbmKkNUoDpi4qPfO1XJa/m2mQr7e6CzfxnEmcf76jWAt7oCRp150W
+         Y1qV9JHkSRUZoFtHTGiVe1gqqAlrO/2M1x3pPPtyx7cx4lL6mgAg9gSY4mkJMVWwao
+         Qg7RhXvJguknA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Qi Liu <liuqi115@huawei.com>, John Garry <john.garry@huawei.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, jejb@linux.ibm.com,
-        linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 63/98] scsi: hisi_sas: Free irq vectors in order for v3 HW
-Date:   Fri,  1 Apr 2022 10:37:07 -0400
-Message-Id: <20220401143742.1952163-63-sashal@kernel.org>
+Cc:     Sven Eckelmann <sven@narfation.org>,
+        =?UTF-8?q?Leonardo=20M=C3=B6rlein?= <freifunk@irrelefant.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        pabeni@redhat.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 67/98] macvtap: advertise link netns via netlink
+Date:   Fri,  1 Apr 2022 10:37:11 -0400
+Message-Id: <20220401143742.1952163-67-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143742.1952163-1-sashal@kernel.org>
 References: <20220401143742.1952163-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -53,107 +55,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Qi Liu <liuqi115@huawei.com>
+From: Sven Eckelmann <sven@narfation.org>
 
-[ Upstream commit 554fb72ee34f4732c7f694f56c3c6e67790352a0 ]
+[ Upstream commit a02192151b7dbf855084c38dca380d77c7658353 ]
 
-If the driver probe fails to request the channel IRQ or fatal IRQ, the
-driver will free the IRQ vectors before freeing the IRQs in free_irq(),
-and this will cause a kernel BUG like this:
+Assign rtnl_link_ops->get_link_net() callback so that IFLA_LINK_NETNSID is
+added to rtnetlink messages. This fixes iproute2 which otherwise resolved
+the link interface to an interface in the wrong namespace.
 
-------------[ cut here ]------------
-kernel BUG at drivers/pci/msi.c:369!
-Internal error: Oops - BUG: 0 [#1] PREEMPT SMP
-Call trace:
-   free_msi_irqs+0x118/0x13c
-   pci_disable_msi+0xfc/0x120
-   pci_free_irq_vectors+0x24/0x3c
-   hisi_sas_v3_probe+0x360/0x9d0 [hisi_sas_v3_hw]
-   local_pci_probe+0x44/0xb0
-   work_for_cpu_fn+0x20/0x34
-   process_one_work+0x1d0/0x340
-   worker_thread+0x2e0/0x460
-   kthread+0x180/0x190
-   ret_from_fork+0x10/0x20
----[ end trace b88990335b610c11 ]---
+Test commands:
 
-So we use devm_add_action() to control the order in which we free the
-vectors.
+  ip netns add nst
+  ip link add dummy0 type dummy
+  ip link add link macvtap0 link dummy0 type macvtap
+  ip link set macvtap0 netns nst
+  ip -netns nst link show macvtap0
 
-Link: https://lore.kernel.org/r/1645703489-87194-4-git-send-email-john.garry@huawei.com
-Signed-off-by: Qi Liu <liuqi115@huawei.com>
-Signed-off-by: John Garry <john.garry@huawei.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Before:
+
+  10: macvtap0@gre0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 500
+      link/ether 5e:8f:ae:1d:60:50 brd ff:ff:ff:ff:ff:ff
+
+After:
+
+  10: macvtap0@if2: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 500
+      link/ether 5e:8f:ae:1d:60:50 brd ff:ff:ff:ff:ff:ff link-netnsid 0
+
+Reported-by: Leonardo Mörlein <freifunk@irrelefant.net>
+Signed-off-by: Sven Eckelmann <sven@narfation.org>
+Link: https://lore.kernel.org/r/20220228003240.1337426-1-sven@narfation.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/hisi_sas/hisi_sas_v3_hw.c | 16 +++++++++++-----
- 1 file changed, 11 insertions(+), 5 deletions(-)
+ drivers/net/macvtap.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
-index 3ab669dc806f..fd14f66c71df 100644
---- a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
-+++ b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
-@@ -2392,17 +2392,25 @@ static irqreturn_t cq_interrupt_v3_hw(int irq_no, void *p)
- 	return IRQ_WAKE_THREAD;
+diff --git a/drivers/net/macvtap.c b/drivers/net/macvtap.c
+index 694e2f5dbbe5..39801c31e507 100644
+--- a/drivers/net/macvtap.c
++++ b/drivers/net/macvtap.c
+@@ -133,11 +133,17 @@ static void macvtap_setup(struct net_device *dev)
+ 	dev->tx_queue_len = TUN_READQ_SIZE;
  }
  
-+static void hisi_sas_v3_free_vectors(void *data)
++static struct net *macvtap_link_net(const struct net_device *dev)
 +{
-+	struct pci_dev *pdev = data;
-+
-+	pci_free_irq_vectors(pdev);
++	return dev_net(macvlan_dev_real_dev(dev));
 +}
 +
- static int interrupt_preinit_v3_hw(struct hisi_hba *hisi_hba)
- {
- 	int vectors;
- 	int max_msi = HISI_SAS_MSI_COUNT_V3_HW, min_msi;
- 	struct Scsi_Host *shost = hisi_hba->shost;
-+	struct pci_dev *pdev = hisi_hba->pci_dev;
- 	struct irq_affinity desc = {
- 		.pre_vectors = BASE_VECTORS_V3_HW,
- 	};
+ static struct rtnl_link_ops macvtap_link_ops __read_mostly = {
+ 	.kind		= "macvtap",
+ 	.setup		= macvtap_setup,
+ 	.newlink	= macvtap_newlink,
+ 	.dellink	= macvtap_dellink,
++	.get_link_net	= macvtap_link_net,
+ 	.priv_size      = sizeof(struct macvtap_dev),
+ };
  
- 	min_msi = MIN_AFFINE_VECTORS_V3_HW;
--	vectors = pci_alloc_irq_vectors_affinity(hisi_hba->pci_dev,
-+	vectors = pci_alloc_irq_vectors_affinity(pdev,
- 						 min_msi, max_msi,
- 						 PCI_IRQ_MSI |
- 						 PCI_IRQ_AFFINITY,
-@@ -2414,6 +2422,7 @@ static int interrupt_preinit_v3_hw(struct hisi_hba *hisi_hba)
- 	hisi_hba->cq_nvecs = vectors - BASE_VECTORS_V3_HW;
- 	shost->nr_hw_queues = hisi_hba->cq_nvecs;
- 
-+	devm_add_action(&pdev->dev, hisi_sas_v3_free_vectors, pdev);
- 	return 0;
- }
- 
-@@ -4763,7 +4772,7 @@ hisi_sas_v3_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 	dev_err(dev, "%d hw queues\n", shost->nr_hw_queues);
- 	rc = scsi_add_host(shost, dev);
- 	if (rc)
--		goto err_out_free_irq_vectors;
-+		goto err_out_debugfs;
- 
- 	rc = sas_register_ha(sha);
- 	if (rc)
-@@ -4792,8 +4801,6 @@ hisi_sas_v3_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 	sas_unregister_ha(sha);
- err_out_register_ha:
- 	scsi_remove_host(shost);
--err_out_free_irq_vectors:
--	pci_free_irq_vectors(pdev);
- err_out_debugfs:
- 	debugfs_exit_v3_hw(hisi_hba);
- err_out_ha:
-@@ -4821,7 +4828,6 @@ hisi_sas_v3_destroy_irqs(struct pci_dev *pdev, struct hisi_hba *hisi_hba)
- 
- 		devm_free_irq(&pdev->dev, pci_irq_vector(pdev, nr), cq);
- 	}
--	pci_free_irq_vectors(pdev);
- }
- 
- static void hisi_sas_v3_remove(struct pci_dev *pdev)
 -- 
 2.34.1
 
