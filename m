@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 753F0C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 12:20:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81208C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 12:20:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345834AbiDAMWX (ORCPT
+        id S1345840AbiDAMW1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 08:22:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43358 "EHLO
+        Fri, 1 Apr 2022 08:22:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345813AbiDAMWR (ORCPT
+        with ESMTP id S1345820AbiDAMWT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 08:22:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5B25277950
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 05:20:27 -0700 (PDT)
+        Fri, 1 Apr 2022 08:22:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84271278546
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 05:20:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7A39EB824BC
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 12:20:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64B99C2BBE4;
-        Fri,  1 Apr 2022 12:20:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1F70461766
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 12:20:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE622C340EC
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 12:20:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648815625;
-        bh=WgcDm8lINjYoBfcpf/qZCYYpX6TB3e3SEjJlr3phKWk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W/fBPLL1xTJFIpmUJbBlKXiCNVEpHlFUFLOT2fC0tFDl6NaEAA5q1/TyEBjje+Hw5
-         QawVDRehVgV6BSl7McX1/WqGW3acaNdg3iyD8oqByuajwI30GTSUhN48IqXhi/68in
-         GrjXGsjCrgmVnMmogv6baRbWIRpSFHkK/LSC2WgdDw0c4W2Huxvy3Bq+gavBfBaBiG
-         MuAu2yqqQM6H5IyfImmw1tIAmr7mWlJbU2x23WGEVWRPR3lz140zfi7gZf6Ez0jT41
-         obITWV1shiE5J7TxyAjgHeZ7KPln5U6+q3JPRIw7DwwdPe8UaRuxUuh6cPmbtqNoOd
-         o9PYBo7ix7UtQ==
+        s=k20201202; t=1648815629;
+        bh=bv4ai29WIvi/ELGyR4yjSriIpSdWNprpTDF3XEOVCp8=;
+        h=From:To:Subject:Date:In-Reply-To:References:From;
+        b=dI2B5VPxbg4U1m8Sa5adTMLDAyOvqyOK1deMeWe035676cpxjL6tdXlfrLIziT7zM
+         FaAYBmnPYHOPCvkD9EwlUPrnOdErSBB+brGZYw6kwHKuTXS80Xw9SaPOzX4G8EmG91
+         AbSvkI+G18r0u06vV4WNHphRRByFaBFLjvnhOixRgqdf2swvYpD+CGgK8pOnWcIFGG
+         l55D2JPCPmgeYBlndWmIub/4FZVH2KCi8qX8MkJhuMMpFZgzLqSBmlsbW4FgMTHCRj
+         Th4k0xcG1z8v3SsmjUrWonMM/abNMiPbzZcLDP6dL8/U6lxMdrCC+A4XYPAPiY4bZc
+         eMtIOEwLxsJCw==
 From:   Oded Gabbay <ogabbay@kernel.org>
 To:     linux-kernel@vger.kernel.org
-Cc:     Dafna Hirschfeld <dhirschfeld@habana.ai>
-Subject: [PATCH 3/7] habanalabs: enforce alignment upon registers access through debugfs
-Date:   Fri,  1 Apr 2022 15:20:13 +0300
-Message-Id: <20220401122017.116205-3-ogabbay@kernel.org>
+Subject: [PATCH 6/7] habanalabs: remove redundant info print
+Date:   Fri,  1 Apr 2022 15:20:16 +0300
+Message-Id: <20220401122017.116205-6-ogabbay@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220401122017.116205-1-ogabbay@kernel.org>
 References: <20220401122017.116205-1-ogabbay@kernel.org>
@@ -48,35 +47,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dafna Hirschfeld <dhirschfeld@habana.ai>
+Halting compute engines is a print that doesn't add us any information
+because it is always done in the reset process and not used elsewhere.
 
-When accessing the configuration registers through debugfs,
-it is only allowed to access aligned address.
-Fail if address is not aligned.
+Even if it was, we don't use prints to mark functions we passed
+through.
 
-Signed-off-by: Dafna Hirschfeld <dhirschfeld@habana.ai>
-Reviewed-by: Oded Gabbay <ogabbay@kernel.org>
 Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
 ---
- drivers/misc/habanalabs/common/device.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/misc/habanalabs/gaudi/gaudi.c | 3 ---
+ drivers/misc/habanalabs/goya/goya.c   | 3 ---
+ 2 files changed, 6 deletions(-)
 
-diff --git a/drivers/misc/habanalabs/common/device.c b/drivers/misc/habanalabs/common/device.c
-index bd76a68d44be..9a71737fc804 100644
---- a/drivers/misc/habanalabs/common/device.c
-+++ b/drivers/misc/habanalabs/common/device.c
-@@ -94,6 +94,11 @@ int hl_access_cfg_region(struct hl_device *hdev, u64 addr, u64 *val,
- 	struct pci_mem_region *cfg_region = &hdev->pci_mem_region[PCI_REGION_CFG];
- 	u32 val_h, val_l;
+diff --git a/drivers/misc/habanalabs/gaudi/gaudi.c b/drivers/misc/habanalabs/gaudi/gaudi.c
+index bacb2f1df81e..33f7cfea53ae 100644
+--- a/drivers/misc/habanalabs/gaudi/gaudi.c
++++ b/drivers/misc/habanalabs/gaudi/gaudi.c
+@@ -3795,9 +3795,6 @@ static void gaudi_halt_engines(struct hl_device *hdev, bool hard_reset, bool fw_
+ {
+ 	u32 wait_timeout_ms;
  
-+	if (!IS_ALIGNED(addr, sizeof(u32))) {
-+		dev_err(hdev->dev, "address %#llx not a multiple of %zu\n", addr, sizeof(u32));
-+		return -EINVAL;
-+	}
-+
- 	switch (acc_type) {
- 	case DEBUGFS_READ32:
- 		*val = RREG32(addr - cfg_region->region_base);
+-	dev_info(hdev->dev,
+-		"Halting compute engines and disabling interrupts\n");
+-
+ 	if (hdev->pldm)
+ 		wait_timeout_ms = GAUDI_PLDM_RESET_WAIT_MSEC;
+ 	else
+diff --git a/drivers/misc/habanalabs/goya/goya.c b/drivers/misc/habanalabs/goya/goya.c
+index d75a180cf5bb..8572b178ef7d 100644
+--- a/drivers/misc/habanalabs/goya/goya.c
++++ b/drivers/misc/habanalabs/goya/goya.c
+@@ -2482,9 +2482,6 @@ static void goya_halt_engines(struct hl_device *hdev, bool hard_reset, bool fw_r
+ {
+ 	u32 wait_timeout_ms;
+ 
+-	dev_info(hdev->dev,
+-		"Halting compute engines and disabling interrupts\n");
+-
+ 	if (hdev->pldm)
+ 		wait_timeout_ms = GOYA_PLDM_RESET_WAIT_MSEC;
+ 	else
 -- 
 2.25.1
 
