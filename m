@@ -2,51 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B5E8C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80A99C4167B
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:26:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352661AbiDAPWz (ORCPT
+        id S1353428AbiDAPXZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:22:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60346 "EHLO
+        Fri, 1 Apr 2022 11:23:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352585AbiDAOu7 (ORCPT
+        with ESMTP id S1352583AbiDAOu7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 1 Apr 2022 10:50:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E5022B3D79;
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E8282B3D7A;
         Fri,  1 Apr 2022 07:42:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C661BB82502;
-        Fri,  1 Apr 2022 14:41:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D55D9C2BBE4;
-        Fri,  1 Apr 2022 14:41:15 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 4A8D3CE2586;
+        Fri,  1 Apr 2022 14:41:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E5F7C2BBE4;
+        Fri,  1 Apr 2022 14:41:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824077;
-        bh=36BEvjQhgTtwogplVLYvptZj3ZgbM6dbvLzk2LibxkE=;
+        s=k20201202; t=1648824099;
+        bh=kZg0v5FucZpofCALveWpY2jHVoQuhvK6jkvQzLCVBjI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=txTMUW/9U7r6EPVV7AAeRyo8dVdTJA/1gWiP003jvsRXQsIkIUboIyd7s7mxp9Wr8
-         B9bLRa7rSK+3XcDc35jgWYLj3x2D8ypaZpQ9BGU00JixJs6E1VuKuNcXYIFnJ26nUU
-         ibnymzDHKZTT4hG38c4xCHHcToRwt99RaLsMlJU+Nxu7uE9tU0MYjKFqQboK0SJfRW
-         G4EnjF2fzqUvQmqTAqB9O2+H215W/tBcJQ8rA9EHqHoMRNeK/ecs4dd6z3XLokk+RJ
-         UoQOQk3SpRnp8Qb+Os7Wm21t9pI5VnF8RGSr4QVlXm7Mpa/RQpvKlOMoGInxqrbvnP
-         IHsdF8Bao7tqA==
+        b=aTmZQmJpOZKin+RwaPLgU1Jac8H0OPPBmyEVbK82ShXsRKU6I+8nwtrCSmyvHSEYU
+         29mhFdZjBCt8Hqvf0xLXNHQuYAQ3iX25iq8EOOsFKn0RbNnIj+krUcTdNx41NYWijc
+         zxz0rHpf4DCevdTAh4w9/FIlLahA1WcFSJjagYFAdN8EjVg8eJiuhYrQ1vanouBjIj
+         A8CYMQ7Ir8qkInBsGxWMgcLfvbHvKWGnjlkxn5r+StmXfCSdGtH0MpoVoO4/Trl+hr
+         fbLfVH2RL+dcfmuyjKpM0f3yqrMVnt5jjT4WC9soJm6QQSQnptQcia3gmeVYBEqMd3
+         jApDgfOEj9AtA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Michael Ellerman <mpe@ellerman.id.au>,
-        kernel test robot <lkp@intel.com>,
-        "Naveen N . Rao" <naveen.n.rao@linux.vnet.ibm.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Sasha Levin <sashal@kernel.org>, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, akpm@linux-foundation.org,
-        catalin.marinas@arm.com, anshuman.khandual@arm.com,
-        npiggin@gmail.com, linuxppc-dev@lists.ozlabs.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 76/98] powerpc/64e: Tie PPC_BOOK3E_64 to PPC_FSL_BOOK3E
-Date:   Fri,  1 Apr 2022 10:37:20 -0400
-Message-Id: <20220401143742.1952163-76-sashal@kernel.org>
+Cc:     Michael Walle <michael@walle.cc>, Paolo Abeni <pabeni@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, linux@armlinux.org.uk,
+        andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 86/98] net: sfp: add 2500base-X quirk for Lantech SFP module
+Date:   Fri,  1 Apr 2022 10:37:30 -0400
+Message-Id: <20220401143742.1952163-86-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143742.1952163-1-sashal@kernel.org>
 References: <20220401143742.1952163-1-sashal@kernel.org>
@@ -58,58 +53,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Ellerman <mpe@ellerman.id.au>
+From: Michael Walle <michael@walle.cc>
 
-[ Upstream commit 1a76e520ee1831a81dabf8a9a58c6453f700026e ]
+[ Upstream commit 00eec9fe4f3b9588b4bfa8ef9dd0aae96407d5d7 ]
 
-Since the IBM A2 CPU support was removed, see commit
-fb5a515704d7 ("powerpc: Remove platforms/wsp and associated pieces"),
-the only 64-bit Book3E CPUs we support are Freescale (NXP) ones.
+The Lantech 8330-262D-E module is 2500base-X capable, but it reports the
+nominal bitrate as 2500MBd instead of 3125MBd. Add a quirk for the
+module.
 
-However our Kconfig still allows configurating a kernel that has 64-bit
-Book3E support, but no Freescale CPU support enabled. Such a kernel
-would never boot, it doesn't know about any CPUs.
+The following in an EEPROM dump of such a SFP with the serial number
+redacted:
 
-It also causes build errors, as reported by lkp, because
-PPC_BARRIER_NOSPEC is not enabled in such a configuration:
+00: 03 04 07 00 00 00 01 20 40 0c 05 01 19 00 00 00    ???...? @????...
+10: 1e 0f 00 00 4c 61 6e 74 65 63 68 20 20 20 20 20    ??..Lantech
+20: 20 20 20 20 00 00 00 00 38 33 33 30 2d 32 36 32        ....8330-262
+30: 44 2d 45 20 20 20 20 20 56 31 2e 30 03 52 00 cb    D-E     V1.0?R.?
+40: 00 1a 00 00 46 43 XX XX XX XX XX XX XX XX XX XX    .?..FCXXXXXXXXXX
+50: 20 20 20 20 32 32 30 32 31 34 20 20 68 b0 01 98        220214  h???
+60: 45 58 54 52 45 4d 45 4c 59 20 43 4f 4d 50 41 54    EXTREMELY COMPAT
+70: 49 42 4c 45 20 20 20 20 20 20 20 20 20 20 20 20    IBLE
 
-  powerpc64-linux-ld: arch/powerpc/net/bpf_jit_comp64.o:(.toc+0x0):
-  undefined reference to `powerpc_security_features'
-
-To fix this, force PPC_FSL_BOOK3E to be selected whenever we are
-building a 64-bit Book3E kernel.
-
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
-Suggested-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220304061222.2478720-1-mpe@ellerman.id.au
+Signed-off-by: Michael Walle <michael@walle.cc>
+Link: https://lore.kernel.org/r/20220312205014.4154907-1-michael@walle.cc
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/platforms/Kconfig.cputype | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/phy/sfp-bus.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/arch/powerpc/platforms/Kconfig.cputype b/arch/powerpc/platforms/Kconfig.cputype
-index a208997ade88..87a95cbff2f3 100644
---- a/arch/powerpc/platforms/Kconfig.cputype
-+++ b/arch/powerpc/platforms/Kconfig.cputype
-@@ -111,6 +111,7 @@ config PPC_BOOK3S_64
- 
- config PPC_BOOK3E_64
- 	bool "Embedded processors"
-+	select PPC_FSL_BOOK3E
- 	select PPC_FPU # Make it a choice ?
- 	select PPC_SMP_MUXED_IPI
- 	select PPC_DOORBELL
-@@ -287,7 +288,7 @@ config FSL_BOOKE
- config PPC_FSL_BOOK3E
- 	bool
- 	select ARCH_SUPPORTS_HUGETLBFS if PHYS_64BIT || PPC64
--	select FSL_EMB_PERFMON
-+	imply FSL_EMB_PERFMON
- 	select PPC_SMP_MUXED_IPI
- 	select PPC_DOORBELL
- 	default y if FSL_BOOKE
+diff --git a/drivers/net/phy/sfp-bus.c b/drivers/net/phy/sfp-bus.c
+index ef2c6a09eb0f..4369d6249e7b 100644
+--- a/drivers/net/phy/sfp-bus.c
++++ b/drivers/net/phy/sfp-bus.c
+@@ -74,6 +74,12 @@ static const struct sfp_quirk sfp_quirks[] = {
+ 		.vendor = "HUAWEI",
+ 		.part = "MA5671A",
+ 		.modes = sfp_quirk_2500basex,
++	}, {
++		// Lantech 8330-262D-E can operate at 2500base-X, but
++		// incorrectly report 2500MBd NRZ in their EEPROM
++		.vendor = "Lantech",
++		.part = "8330-262D-E",
++		.modes = sfp_quirk_2500basex,
+ 	}, {
+ 		.vendor = "UBNT",
+ 		.part = "UF-INSTANT",
 -- 
 2.34.1
 
