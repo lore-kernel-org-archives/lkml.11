@@ -2,57 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D466C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B3D3C4321E
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:40:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352459AbiDAPgT (ORCPT
+        id S1352583AbiDAPg3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:36:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52362 "EHLO
+        Fri, 1 Apr 2022 11:36:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350127AbiDAO7E (ORCPT
+        with ESMTP id S1350280AbiDAO7b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:59:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 398A9184B4F;
-        Fri,  1 Apr 2022 07:46:25 -0700 (PDT)
+        Fri, 1 Apr 2022 10:59:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6CF85A17B;
+        Fri,  1 Apr 2022 07:46:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CB0B560AC0;
-        Fri,  1 Apr 2022 14:46:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37A8DC3410F;
-        Fri,  1 Apr 2022 14:46:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7B202B824D5;
+        Fri,  1 Apr 2022 14:46:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAA95C2BBE4;
+        Fri,  1 Apr 2022 14:46:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824384;
-        bh=FdC1Qi/w1GcVPIE3V0IbzsA9PxSqblnKMj//IRcgbGA=;
+        s=k20201202; t=1648824412;
+        bh=CoLXnWVIKhJ5vBHDitAWSa245b6xFqXKoWrvAGnLIm8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LuHGdYN21AXqakC0bwvy6l/qBRr4Kgzm4qw+5JU4S4KXzzwJk+agyLvQCiiYgssIK
-         9IJOTZVYx5O9jwbcTaqzUkDGzoov6bz4cN8IRvtZSCEWvyu6farLXFPNs3428Ee5pU
-         ytfSgSAW0RXCRQW0XWdIyJoP6XjcFCHx9nd+xuJNdpum4VbpwtJm4f55IeYnfNpDnN
-         8i/ETbuas+aNHVRpsCaCLwgJSTmiM7OJuoowMQywmmdBckwDe3kcT8/lBFSWpUMOPH
-         tioeDONo1wybylr7fpsVxdvXBWOFqpp3ZD8Xb4RJu/I2YXTuHou5m/hL9oczv622Rm
-         xqSHkb7pw+Dug==
+        b=J/ofY+IXvvokGvB5nYaEIe4/UOfEnPWrFtaMYNBxKgX4zyJELp7Xt525XVLvBOBq+
+         S9FK3GtJM+6wExVbfLic6pnj8MvfOJF/eePKlslkVUHNk6qSqDfr46Zz5uTNija+hs
+         +7uG+Rp+PBh+qT9zNiDn7sAeZK5QxtkC27qMHBCggtuq9gx+s1lOAVjquiwI3BrAyA
+         eo1gxK5di83NL6278MVJY+gsevjYyoXQ9qMcv5hCvjnDZGidYOqbjQzlWvbl7iBecv
+         etEtnL/NshBwvrlomoF3R0bs53aYaPya6PfpCjJHNvaVroirGPDjC6d3yDArzmqrHt
+         4g2OmAlAAvrMg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Xin Xiong <xiongx18@fudan.edu.cn>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Xin Tan <tanxin.ctf@gmail.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, Xinhui.Pan@amd.com,
-        airlied@linux.ie, daniel@ffwll.ch, sumit.semwal@linaro.org,
-        JinhuiEric.Huang@amd.com, nirmoy.das@amd.com, Ken.Xue@amd.com,
-        Lang.Yu@amd.com, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, linux-media@vger.kernel.org,
-        linaro-mm-sig@lists.linaro.org
-Subject: [PATCH AUTOSEL 4.19 03/29] drm/amd/amdgpu/amdgpu_cs: fix refcount leak of a dma_fence obj
-Date:   Fri,  1 Apr 2022 10:45:46 -0400
-Message-Id: <20220401144612.1955177-3-sashal@kernel.org>
+Cc:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Sasha Levin <sashal@kernel.org>, lukas@wunner.de,
+        naveennaidu479@gmail.com,
+        sathyanarayanan.kuppuswamy@linux.intel.com,
+        zhangliguang@linux.alibaba.com, ameynarkhede03@gmail.com,
+        hdegoede@redhat.com, mani@kernel.org, linux-pci@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 13/29] PCI: pciehp: Add Qualcomm quirk for Command Completed erratum
+Date:   Fri,  1 Apr 2022 10:45:56 -0400
+Message-Id: <20220401144612.1955177-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401144612.1955177-1-sashal@kernel.org>
 References: <20220401144612.1955177-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -60,41 +56,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xin Xiong <xiongx18@fudan.edu.cn>
+From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 
-[ Upstream commit dfced44f122c500004a48ecc8db516bb6a295a1b ]
+[ Upstream commit 9f72d4757cbe4d1ed669192f6d23817c9e437c4b ]
 
-This issue takes place in an error path in
-amdgpu_cs_fence_to_handle_ioctl(). When `info->in.what` falls into
-default case, the function simply returns -EINVAL, forgetting to
-decrement the reference count of a dma_fence obj, which is bumped
-earlier by amdgpu_cs_get_fence(). This may result in reference count
-leaks.
+The Qualcomm PCI bridge device (Device ID 0x0110) found in chipsets such as
+SM8450 does not set the Command Completed bit unless writes to the Slot
+Command register change "Control" bits.
 
-Fix it by decreasing the refcount of specific object before returning
-the error code.
+This results in timeouts like below:
 
-Reviewed-by: Christian König <christian.koenig@amd.com>
-Signed-off-by: Xin Xiong <xiongx18@fudan.edu.cn>
-Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+  pcieport 0001:00:00.0: pciehp: Timeout on hotplug command 0x03c0 (issued 2020 msec ago)
+
+Add the device to the Command Completed quirk to mark commands "completed"
+immediately unless they change the "Control" bits.
+
+Link: https://lore.kernel.org/r/20220210145003.135907-1-manivannan.sadhasivam@linaro.org
+Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/pci/hotplug/pciehp_hpc.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c
-index 81001d879322..023309296bfc 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c
-@@ -1469,6 +1469,7 @@ int amdgpu_cs_fence_to_handle_ioctl(struct drm_device *dev, void *data,
- 		return 0;
- 
- 	default:
-+		dma_fence_put(fence);
- 		return -EINVAL;
- 	}
+diff --git a/drivers/pci/hotplug/pciehp_hpc.c b/drivers/pci/hotplug/pciehp_hpc.c
+index 53227232243f..502c307dee14 100644
+--- a/drivers/pci/hotplug/pciehp_hpc.c
++++ b/drivers/pci/hotplug/pciehp_hpc.c
+@@ -969,6 +969,8 @@ static void quirk_cmd_compl(struct pci_dev *pdev)
  }
+ DECLARE_PCI_FIXUP_CLASS_EARLY(PCI_VENDOR_ID_INTEL, PCI_ANY_ID,
+ 			      PCI_CLASS_BRIDGE_PCI, 8, quirk_cmd_compl);
++DECLARE_PCI_FIXUP_CLASS_EARLY(PCI_VENDOR_ID_QCOM, 0x0110,
++			      PCI_CLASS_BRIDGE_PCI, 8, quirk_cmd_compl);
+ DECLARE_PCI_FIXUP_CLASS_EARLY(PCI_VENDOR_ID_QCOM, 0x0400,
+ 			      PCI_CLASS_BRIDGE_PCI, 8, quirk_cmd_compl);
+ DECLARE_PCI_FIXUP_CLASS_EARLY(PCI_VENDOR_ID_QCOM, 0x0401,
 -- 
 2.34.1
 
