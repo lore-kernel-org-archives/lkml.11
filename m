@@ -2,49 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23527C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78E25C47080
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:11:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352923AbiDAPIv (ORCPT
+        id S1352993AbiDAPJI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:08:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59620 "EHLO
+        Fri, 1 Apr 2022 11:09:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350163AbiDAOrP (ORCPT
+        with ESMTP id S1350257AbiDAOrV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:47:15 -0400
+        Fri, 1 Apr 2022 10:47:21 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED4692A1291;
-        Fri,  1 Apr 2022 07:37:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E1D4221B9D;
+        Fri,  1 Apr 2022 07:37:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 19A8EB82511;
-        Fri,  1 Apr 2022 14:37:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B521C36AE9;
-        Fri,  1 Apr 2022 14:37:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F37F7B8240E;
+        Fri,  1 Apr 2022 14:37:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C45F2C36AE3;
+        Fri,  1 Apr 2022 14:37:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823828;
-        bh=3FgySLGZd2lZArBcZCCZLr0HckLaDAWd/MmLHujcab0=;
+        s=k20201202; t=1648823838;
+        bh=TNhuIYcQcfG4QlNOpWtFeXYobcT5C6Y/M7tHewwSy5E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hO6Q6dWV4bw6ovmIrJEpUfdECqIJwaWxsaxeYCitjp6qzosA1ql8Z71P5zNPLiN3B
-         3IZmrD0AEYVjgHrXwUB1p81g7BCisKZdgUAgwae0kkgOa2y2gbHDQe6lzImGaKusjE
-         H/qjVCusLwFaOCYCmPuAWetkEIlnht76n5oKufm+opHHt0fmalYAV7/6sDL2ppr0fk
-         rG9fa9BbfbpP+cpKPm1N9Zp5psHkUuq6FtyMiPwHfK3nHD11VhfKMsMglIaU2p2YYP
-         N4PJOfjGLXKjZFRCc86C6I+xfzP2iG5any5DOlJFJYTkX089ZkfTJtV1Nv/3etWOMC
-         9CguqaGKQSYig==
+        b=BkCMqCklg1npmmNOYdACDMrRxCxT+Du4OssYB70E69JbBqvsacJEjf5quYmix4rOd
+         qM35wvFAMJVdWQtnA0YjyS8druLPFpTwqCcr2tL/Fs+hIXyClGz0Ll2QI2/PN1GAVT
+         eHAC1t1SwHnKhqLtv8/mOCjwBsjJvDnqDgK8P4zKC3ga35vLTQVcu3i8PfJ7yYxFm8
+         oTfPZ4M3ZxteJXEYQH5JtQY9FwvPzozQkI01KFomOaSbHKu3OQBCgcMOIhEr3TgT2l
+         FOw8pRQ3FMpICFRkoTm7DnoGmQLt2lRX9XAkwhOadDKI2hA75Wuntz9R82WibtEri8
+         0pNArgX7bx0wg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        George Shuklin <george.shuklin@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        pabeni@redhat.com, idosch@nvidia.com, petrm@nvidia.com,
-        edumazet@google.com, yajun.deng@linux.dev, avagin@gmail.com,
-        cong.wang@bytedance.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 093/109] net: limit altnames to 64k total
-Date:   Fri,  1 Apr 2022 10:32:40 -0400
-Message-Id: <20220401143256.1950537-93-sashal@kernel.org>
+Cc:     Deren Wu <deren.wu@mediatek.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>,
+        lorenzo.bianconi83@gmail.com, ryder.lee@mediatek.com,
+        kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, matthias.bgg@gmail.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.16 099/109] mt76: fix monitor mode crash with sdio driver
+Date:   Fri,  1 Apr 2022 10:32:46 -0400
+Message-Id: <20220401143256.1950537-99-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143256.1950537-1-sashal@kernel.org>
 References: <20220401143256.1950537-1-sashal@kernel.org>
@@ -56,55 +59,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakub Kicinski <kuba@kernel.org>
+From: Deren Wu <deren.wu@mediatek.com>
 
-[ Upstream commit 155fb43b70b5fce341347a77d1af2765d1e8fbb8 ]
+[ Upstream commit 123bc712b1de0805f9d683687e17b1ec2aba0b68 ]
 
-Property list (altname is a link "property") is wrapped
-in a nlattr. nlattrs length is 16bit so practically
-speaking the list of properties can't be longer than
-that, otherwise user space would have to interpret
-broken netlink messages.
+mt7921s driver may receive frames with fragment buffers. If there is a
+CTS packet received in monitor mode, the payload is 10 bytes only and
+need 6 bytes header padding after RXD buffer. However, only RXD in the
+first linear buffer, if we pull buffer size RXD-size+6 bytes with
+skb_pull(), that would trigger "BUG_ON(skb->len < skb->data_len)" in
+__skb_pull().
 
-Prevent the problem from occurring by checking the length
-of the property list before adding new entries.
+To avoid the nonlinear buffer issue, enlarge the RXD size from 128 to
+256 to make sure all MCU operation in linear buffer.
 
-Reported-by: George Shuklin <george.shuklin@gmail.com>
-Reviewed-by: David Ahern <dsahern@kernel.org>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+[   52.007562] kernel BUG at include/linux/skbuff.h:2313!
+[   52.007578] Internal error: Oops - BUG: 0 [#1] PREEMPT SMP
+[   52.007987] pc : skb_pull+0x48/0x4c
+[   52.008015] lr : mt7921_queue_rx_skb+0x494/0x890 [mt7921_common]
+[   52.008361] Call trace:
+[   52.008377]  skb_pull+0x48/0x4c
+[   52.008400]  mt76s_net_worker+0x134/0x1b0 [mt76_sdio 35339a92c6eb7d4bbcc806a1d22f56365565135c]
+[   52.008431]  __mt76_worker_fn+0xe8/0x170 [mt76 ef716597d11a77150bc07e3fdd68eeb0f9b56917]
+[   52.008449]  kthread+0x148/0x3ac
+[   52.008466]  ret_from_fork+0x10/0x30
+
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Signed-off-by: Sean Wang <sean.wang@mediatek.com>
+Signed-off-by: Deren Wu <deren.wu@mediatek.com>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/rtnetlink.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ drivers/net/wireless/mediatek/mt76/mt76.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index 6a7883ec0489..ef56dc8d7c44 100644
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -3631,12 +3631,23 @@ static int rtnl_alt_ifname(int cmd, struct net_device *dev, struct nlattr *attr,
- 			   bool *changed, struct netlink_ext_ack *extack)
- {
- 	char *alt_ifname;
-+	size_t size;
- 	int err;
+diff --git a/drivers/net/wireless/mediatek/mt76/mt76.h b/drivers/net/wireless/mediatek/mt76/mt76.h
+index e2da720a91b6..f740a8ba164d 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt76.h
++++ b/drivers/net/wireless/mediatek/mt76/mt76.h
+@@ -19,7 +19,7 @@
  
- 	err = nla_validate(attr, attr->nla_len, IFLA_MAX, ifla_policy, extack);
- 	if (err)
- 		return err;
+ #define MT_MCU_RING_SIZE	32
+ #define MT_RX_BUF_SIZE		2048
+-#define MT_SKB_HEAD_LEN		128
++#define MT_SKB_HEAD_LEN		256
  
-+	if (cmd == RTM_NEWLINKPROP) {
-+		size = rtnl_prop_list_size(dev);
-+		size += nla_total_size(ALTIFNAMSIZ);
-+		if (size >= U16_MAX) {
-+			NL_SET_ERR_MSG(extack,
-+				       "effective property list too long");
-+			return -EINVAL;
-+		}
-+	}
-+
- 	alt_ifname = nla_strdup(attr, GFP_KERNEL_ACCOUNT);
- 	if (!alt_ifname)
- 		return -ENOMEM;
+ #define MT_MAX_NON_AQL_PKT	16
+ #define MT_TXQ_FREE_THR		32
 -- 
 2.34.1
 
