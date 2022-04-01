@@ -2,56 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A760C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:29:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 299A6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:29:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242013AbiDAPad (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:30:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54392 "EHLO
+        id S240590AbiDAPan (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Apr 2022 11:30:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349828AbiDAO6H (ORCPT
+        with ESMTP id S1349863AbiDAO6L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:58:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4320F1FA5E;
-        Fri,  1 Apr 2022 07:44:58 -0700 (PDT)
+        Fri, 1 Apr 2022 10:58:11 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEAD7169B27;
+        Fri,  1 Apr 2022 07:45:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E3D88B824AF;
-        Fri,  1 Apr 2022 14:44:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA4F3C340EE;
-        Fri,  1 Apr 2022 14:44:53 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 3FB27CE2587;
+        Fri,  1 Apr 2022 14:45:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CB17C2BBE4;
+        Fri,  1 Apr 2022 14:45:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824295;
-        bh=s/I9A8Qj+Pf3szN/trXnD8eZt55ywktSOqlEN9N+ss8=;
+        s=k20201202; t=1648824316;
+        bh=T2ypYNvpx3B7ILDqdpWxXox+SipGNY5Cj0gALaqc91c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UaEDcqSSM6VPWoZQ7R4U1buZOqM1y2YyzzpRdYP3l6t9RV96vCPdWTz68NNjhce11
-         mGp5X7iXNUfF6r0u30N0CnjYdmhb4J4t6P1e+6PU6elCMAbM59bgbNL/TO6N+Knlp6
-         Qc3Y+WpCO3wFJkgXrShcLbyu7sJnm6BaRuHFHgD7M62vSKumsV5fvbaib1vCwDrnWx
-         yjdfAWP0niOaXTAqlbUJ+62ofO7ZijaBfwJxv/njtNpWIZDBIUzqKsuxE2jqYm+rVc
-         m1++KU+BHflEZzqbgC3B8ndBTyK4kaKB1GTWtJcIcEwN6/J1L4yD6mejNKw6IcAQh9
-         LyDPaDJ66fguw==
+        b=JrPBmmJEnmHM/1iIn+yIYp4W2k6pwV5SqnP23A0obxZFEKH2ryXth+ZVftDBSMeAp
+         2z+SvsJJroSmzZrifGA8vQi4x5DaXNtuQVqp76qV4E3CRhQ6smFZAXj/qCKsM3/sX1
+         MhzhX/Fxp24MmUYpk9rzV3eIDdOSAkctiCxJusDJWLOa/Kw0R9W/ku6cXD4VrnFA69
+         THWFjf/QeGkZLxt7BOIFn6Dlwwb2ZRY2PGDjEiYg0cEbpEezMrcQucP5LLD2d3t04u
+         9AYHVLDx9WLYa5DsmQpVAvMVqnD6/9k6RMaFSRlhqDVThF7KExQeTmLw/qZOMQ7/u+
+         YFgPLV7G1LYyQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Xin Xiong <xiongx18@fudan.edu.cn>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Xin Tan <tanxin.ctf@gmail.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, Xinhui.Pan@amd.com,
-        airlied@linux.ie, daniel@ffwll.ch, sumit.semwal@linaro.org,
-        JinhuiEric.Huang@amd.com, nirmoy.das@amd.com, Ken.Xue@amd.com,
-        Lang.Yu@amd.com, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, linux-media@vger.kernel.org,
-        linaro-mm-sig@lists.linaro.org
-Subject: [PATCH AUTOSEL 5.4 03/37] drm/amd/amdgpu/amdgpu_cs: fix refcount leak of a dma_fence obj
-Date:   Fri,  1 Apr 2022 10:44:12 -0400
-Message-Id: <20220401144446.1954694-3-sashal@kernel.org>
+Cc:     Sourabh Jain <sourabhjain@linux.ibm.com>,
+        Abdul haleem <abdhalee@linux.vnet.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>, nathanl@linux.ibm.com,
+        ajd@linux.ibm.com, aik@ozlabs.ru, ardb@kernel.org,
+        adobriyan@gmail.com, npiggin@gmail.com,
+        linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH AUTOSEL 5.4 11/37] powerpc: Set crashkernel offset to mid of RMA region
+Date:   Fri,  1 Apr 2022 10:44:20 -0400
+Message-Id: <20220401144446.1954694-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401144446.1954694-1-sashal@kernel.org>
 References: <20220401144446.1954694-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -59,41 +55,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xin Xiong <xiongx18@fudan.edu.cn>
+From: Sourabh Jain <sourabhjain@linux.ibm.com>
 
-[ Upstream commit dfced44f122c500004a48ecc8db516bb6a295a1b ]
+[ Upstream commit 7c5ed82b800d8615cdda00729e7b62e5899f0b13 ]
 
-This issue takes place in an error path in
-amdgpu_cs_fence_to_handle_ioctl(). When `info->in.what` falls into
-default case, the function simply returns -EINVAL, forgetting to
-decrement the reference count of a dma_fence obj, which is bumped
-earlier by amdgpu_cs_get_fence(). This may result in reference count
-leaks.
+On large config LPARs (having 192 and more cores), Linux fails to boot
+due to insufficient memory in the first memblock. It is due to the
+memory reservation for the crash kernel which starts at 128MB offset of
+the first memblock. This memory reservation for the crash kernel doesn't
+leave enough space in the first memblock to accommodate other essential
+system resources.
 
-Fix it by decreasing the refcount of specific object before returning
-the error code.
+The crash kernel start address was set to 128MB offset by default to
+ensure that the crash kernel get some memory below the RMA region which
+is used to be of size 256MB. But given that the RMA region size can be
+512MB or more, setting the crash kernel offset to mid of RMA size will
+leave enough space for the kernel to allocate memory for other system
+resources.
 
-Reviewed-by: Christian König <christian.koenig@amd.com>
-Signed-off-by: Xin Xiong <xiongx18@fudan.edu.cn>
-Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Since the above crash kernel offset change is only applicable to the LPAR
+platform, the LPAR feature detection is pushed before the crash kernel
+reservation. The rest of LPAR specific initialization will still
+be done during pseries_probe_fw_features as usual.
+
+This patch is dependent on changes to paca allocation for boot CPU. It
+expect boot CPU to discover 1T segment support which is introduced by
+the patch posted here:
+https://lists.ozlabs.org/pipermail/linuxppc-dev/2022-January/239175.html
+
+Reported-by: Abdul haleem <abdhalee@linux.vnet.ibm.com>
+Signed-off-by: Sourabh Jain <sourabhjain@linux.ibm.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220204085601.107257-1-sourabhjain@linux.ibm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/powerpc/kernel/machine_kexec.c | 15 +++++++++++----
+ arch/powerpc/kernel/rtas.c          |  6 ++++++
+ 2 files changed, 17 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c
-index 82823d9a8ba8..fddeea2b17e5 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c
-@@ -1542,6 +1542,7 @@ int amdgpu_cs_fence_to_handle_ioctl(struct drm_device *dev, void *data,
- 		return 0;
+diff --git a/arch/powerpc/kernel/machine_kexec.c b/arch/powerpc/kernel/machine_kexec.c
+index 7a1c11a7cba5..716f8bb17461 100644
+--- a/arch/powerpc/kernel/machine_kexec.c
++++ b/arch/powerpc/kernel/machine_kexec.c
+@@ -146,11 +146,18 @@ void __init reserve_crashkernel(void)
+ 	if (!crashk_res.start) {
+ #ifdef CONFIG_PPC64
+ 		/*
+-		 * On 64bit we split the RMO in half but cap it at half of
+-		 * a small SLB (128MB) since the crash kernel needs to place
+-		 * itself and some stacks to be in the first segment.
++		 * On the LPAR platform place the crash kernel to mid of
++		 * RMA size (512MB or more) to ensure the crash kernel
++		 * gets enough space to place itself and some stack to be
++		 * in the first segment. At the same time normal kernel
++		 * also get enough space to allocate memory for essential
++		 * system resource in the first segment. Keep the crash
++		 * kernel starts at 128MB offset on other platforms.
+ 		 */
+-		crashk_res.start = min(0x8000000ULL, (ppc64_rma_size / 2));
++		if (firmware_has_feature(FW_FEATURE_LPAR))
++			crashk_res.start = ppc64_rma_size / 2;
++		else
++			crashk_res.start = min(0x8000000ULL, (ppc64_rma_size / 2));
+ #else
+ 		crashk_res.start = KDUMP_KERNELBASE;
+ #endif
+diff --git a/arch/powerpc/kernel/rtas.c b/arch/powerpc/kernel/rtas.c
+index c1e2e351ebff..9392661ac8a8 100644
+--- a/arch/powerpc/kernel/rtas.c
++++ b/arch/powerpc/kernel/rtas.c
+@@ -1244,6 +1244,12 @@ int __init early_init_dt_scan_rtas(unsigned long node,
+ 	entryp = of_get_flat_dt_prop(node, "linux,rtas-entry", NULL);
+ 	sizep  = of_get_flat_dt_prop(node, "rtas-size", NULL);
  
- 	default:
-+		dma_fence_put(fence);
- 		return -EINVAL;
- 	}
- }
++#ifdef CONFIG_PPC64
++	/* need this feature to decide the crashkernel offset */
++	if (of_get_flat_dt_prop(node, "ibm,hypertas-functions", NULL))
++		powerpc_firmware_features |= FW_FEATURE_LPAR;
++#endif
++
+ 	if (basep && entryp && sizep) {
+ 		rtas.base = *basep;
+ 		rtas.entry = *entryp;
 -- 
 2.34.1
 
