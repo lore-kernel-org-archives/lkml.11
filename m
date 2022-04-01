@@ -2,177 +2,193 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3ABD8C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 06:36:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDFD9C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 06:37:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245471AbiDAGio (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 02:38:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44402 "EHLO
+        id S245543AbiDAGit (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Apr 2022 02:38:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245448AbiDAGid (ORCPT
+        with ESMTP id S245455AbiDAGie (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 02:38:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03F9318C0D5;
-        Thu, 31 Mar 2022 23:36:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AE278B81AF8;
-        Fri,  1 Apr 2022 06:36:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 204B3C2BBE4;
-        Fri,  1 Apr 2022 06:36:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648795001;
-        bh=GAvANzyYA+9K0Yc0MTlCfYFep6CxLTCmuC7AZmzCkd4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ewPTUyO2ygg2xewCapZCLG4AYxVFzKwSf0rxDjHZR8fVm+r4zHu2ObLQV4Jhw04BA
-         JAEH3lcZhgHStPbJQLvxFJBdys3USNvJKeW7+Xk5jUt0dx78srn2rd/cgXDT6LV7B4
-         i3L/jENjHKEyn2RxHpo6asLLEmcRaWCm82nBDs/o=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>,
-        Marc Zyngier <marc.zyngier@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        James Morse <james.morse@arm.com>
-Subject: [PATCH 4.14 01/27] arm64: arch_timer: Add workaround for ARM erratum 1188873
-Date:   Fri,  1 Apr 2022 08:36:11 +0200
-Message-Id: <20220401063624.274902998@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220401063624.232282121@linuxfoundation.org>
-References: <20220401063624.232282121@linuxfoundation.org>
-User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Fri, 1 Apr 2022 02:38:34 -0400
+Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBE6118D9AE
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 23:36:45 -0700 (PDT)
+Received: by mail-pf1-x44a.google.com with SMTP id b19-20020a621b13000000b004fa68b3677bso1079012pfb.20
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 23:36:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=reply-to:date:in-reply-to:message-id:mime-version:references
+         :subject:from:to:cc;
+        bh=79d9al9/Ox8ojgYPVafCO8rjr+Q8aeYemdUQb3D6s/c=;
+        b=N3b6Yhe/1EBQnTkfpidMiqiMv9Vb0c2ONl+P0zVk+ldqlgRmqSNSMQzz6W5kdeqGiG
+         5N2WnohG0La3eMJjqlEt/3fAoG0FKkeCcNZbs53PdEx+CCYJRIq4GDWaNN4awB4rzbS8
+         beRw0rfxKpYYKnLouF0wkgn1rl0G6pTUde4p0fRb+Uz4rxrjqGOn4WdlcfElTdecYPvN
+         MHTF3uzCRELJYPqahjhEgG+R2bBQpgMsZXZzdiauYrMLnVWuCIS0EDl1VSlcTykTG9iu
+         1DuIBZKF/lDYPzhGhzXvyQKokiMKcVHqjG0BUPKFSBMhqXKkVHzcP4YkMG8UTy/6pxky
+         yrPg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
+         :mime-version:references:subject:from:to:cc;
+        bh=79d9al9/Ox8ojgYPVafCO8rjr+Q8aeYemdUQb3D6s/c=;
+        b=RV+J4cnxVswp+KVCIl1pFHgYlWi60h1X1iMV0r3W1XH/141/IsD95EiX2iB3LMrNkV
+         kDt1oycnB1v+AhTblizP5Qpn/m+dC5wYWdt4DT/D0CqNBk34Yp24QiXYJuqqmrDs3k3Q
+         ZhT4t/JX7g1s6UgsxTnT6eaDf0/wiITG13kzZmLWFh/k3xcbBzAxzSQIWTKCAq7wpJwo
+         9Gjysiunj41LWjXGRIm+70EYobPiLOY/Jcm9ta4xZyPFQ4H3USzEVRBBchCXS2W31PRR
+         aEz8YxEpsYmWD1pLHupDbysqeSVSx9h4ZA0fFir9d600oMJJsrphX4JNYzn0pBDtckTw
+         0lqw==
+X-Gm-Message-State: AOAM530vjuD4FV6jPb36fojZop/c7VeEQQXvM4752Tc54rTAbj9ZLb2q
+        K+mg8vfQoPQciVeoNF4qGb2fxhD2OGRd
+X-Google-Smtp-Source: ABdhPJy3jxKjcEEonO+XJQJHQsbp/0IBv5UTK/0rCshy1zEI4VBGvkOvFuAhzl/cNBA6e0+bHVc8Bje4cTQi
+X-Received: from mizhang-super.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:1071])
+ (user=mizhang job=sendgmr) by 2002:a63:1d62:0:b0:382:1421:c7 with SMTP id
+ d34-20020a631d62000000b00382142100c7mr13700229pgm.416.1648795005383; Thu, 31
+ Mar 2022 23:36:45 -0700 (PDT)
+Reply-To: Mingwei Zhang <mizhang@google.com>
+Date:   Fri,  1 Apr 2022 06:36:32 +0000
+In-Reply-To: <20220401063636.2414200-1-mizhang@google.com>
+Message-Id: <20220401063636.2414200-3-mizhang@google.com>
+Mime-Version: 1.0
+References: <20220401063636.2414200-1-mizhang@google.com>
+X-Mailer: git-send-email 2.35.1.1094.g7c7d902a7c-goog
+Subject: [PATCH v3 2/6] KVM: x86/mmu: Track the number of TDP MMU pages, but
+ not the actual pages
+From:   Mingwei Zhang <mizhang@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Mingwei Zhang <mizhang@google.com>,
+        Yosry Ahmed <yosryahmed@google.com>,
+        Ben Gardon <bgardon@google.com>,
+        David Matlack <dmatlack@google.com>,
+        Jing Zhang <jingzhangos@google.com>,
+        Peter Xu <peterx@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Zyngier <marc.zyngier@arm.com>
+From: Sean Christopherson <seanjc@google.com>
 
-commit 95b861a4a6d94f64d5242605569218160ebacdbe upstream.
+Track the number of TDP MMU "shadow" pages instead of tracking the pages
+themselves. With the NX huge page list manipulation moved out of the common
+linking flow, elminating the list-based tracking means the happy path of
+adding a shadow page doesn't need to acquire a spinlock and can instead
+inc/dec an atomic.
 
-When running on Cortex-A76, a timer access from an AArch32 EL0
-task may end up with a corrupted value or register. The workaround for
-this is to trap these accesses at EL1/EL2 and execute them there.
+Keep the tracking as the WARN during TDP MMU teardown on leaked shadow
+pages is very, very useful for detecting KVM bugs.
 
-This only affects versions r0p0, r1p0 and r2p0 of the CPU.
+Tracking the number of pages will also make it trivial to expose the
+counter to userspace as a stat in the future, which may or may not be
+desirable.
 
-Acked-by: Mark Rutland <mark.rutland@arm.com>
-Signed-off-by: Marc Zyngier <marc.zyngier@arm.com>
-Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
-Signed-off-by: James Morse <james.morse@arm.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Note, the TDP MMU needs to use a separate counter (and stat if that ever
+comes to be) from the existing n_used_mmu_pages. The TDP MMU doesn't bother
+supporting the shrinker nor does it honor KVM_SET_NR_MMU_PAGES (because the
+TDP MMU consumes so few pages relative to shadow paging), and including TDP
+MMU pages in that counter would break both the shrinker and shadow MMUs,
+e.g. if a VM is using nested TDP.
+
+Cc: Yosry Ahmed <yosryahmed@google.com>
+Reviewed-by: Mingwei Zhang <mizhang@google.com>
+Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- arch/arm64/Kconfig                   |   12 ++++++++++++
- arch/arm64/include/asm/cpucaps.h     |    3 ++-
- arch/arm64/include/asm/cputype.h     |    2 ++
- arch/arm64/kernel/cpu_errata.c       |    8 ++++++++
- drivers/clocksource/arm_arch_timer.c |   15 +++++++++++++++
- 5 files changed, 39 insertions(+), 1 deletion(-)
+ arch/x86/include/asm/kvm_host.h | 11 +++--------
+ arch/x86/kvm/mmu/tdp_mmu.c      | 16 ++++++++--------
+ 2 files changed, 11 insertions(+), 16 deletions(-)
 
---- a/arch/arm64/Kconfig
-+++ b/arch/arm64/Kconfig
-@@ -458,6 +458,18 @@ config ARM64_ERRATUM_1024718
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index 9694dd5e6ccc..d0dd5ed2e209 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -1192,6 +1192,9 @@ struct kvm_arch {
+ 	 */
+ 	bool tdp_mmu_enabled;
  
- 	  If unsure, say Y.
- 
-+config ARM64_ERRATUM_1188873
-+	bool "Cortex-A76: MRC read following MRRC read of specific Generic Timer in AArch32 might give incorrect result"
-+	default y
-+	help
-+	  This option adds work arounds for ARM Cortex-A76 erratum 1188873
++	/* The number of TDP MMU pages across all roots. */
++	atomic64_t tdp_mmu_pages;
 +
-+	  Affected Cortex-A76 cores (r0p0, r1p0, r2p0) could cause
-+	  register corruption when accessing the timer registers from
-+	  AArch32 userspace.
+ 	/*
+ 	 * List of struct kvm_mmu_pages being used as roots.
+ 	 * All struct kvm_mmu_pages in the list should have
+@@ -1212,18 +1215,10 @@ struct kvm_arch {
+ 	 */
+ 	struct list_head tdp_mmu_roots;
+ 
+-	/*
+-	 * List of struct kvmp_mmu_pages not being used as roots.
+-	 * All struct kvm_mmu_pages in the list should have
+-	 * tdp_mmu_page set and a tdp_mmu_root_count of 0.
+-	 */
+-	struct list_head tdp_mmu_pages;
+-
+ 	/*
+ 	 * Protects accesses to the following fields when the MMU lock
+ 	 * is held in read mode:
+ 	 *  - tdp_mmu_roots (above)
+-	 *  - tdp_mmu_pages (above)
+ 	 *  - the link field of struct kvm_mmu_pages used by the TDP MMU
+ 	 *  - lpage_disallowed_mmu_pages
+ 	 *  - the lpage_disallowed_link field of struct kvm_mmu_pages used
+diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
+index f05423545e6d..5ca78a89d8ed 100644
+--- a/arch/x86/kvm/mmu/tdp_mmu.c
++++ b/arch/x86/kvm/mmu/tdp_mmu.c
+@@ -24,7 +24,6 @@ bool kvm_mmu_init_tdp_mmu(struct kvm *kvm)
+ 
+ 	INIT_LIST_HEAD(&kvm->arch.tdp_mmu_roots);
+ 	spin_lock_init(&kvm->arch.tdp_mmu_pages_lock);
+-	INIT_LIST_HEAD(&kvm->arch.tdp_mmu_pages);
+ 	kvm->arch.tdp_mmu_zap_wq =
+ 		alloc_workqueue("kvm", WQ_UNBOUND|WQ_MEM_RECLAIM|WQ_CPU_INTENSIVE, 0);
+ 
+@@ -51,7 +50,7 @@ void kvm_mmu_uninit_tdp_mmu(struct kvm *kvm)
+ 	flush_workqueue(kvm->arch.tdp_mmu_zap_wq);
+ 	destroy_workqueue(kvm->arch.tdp_mmu_zap_wq);
+ 
+-	WARN_ON(!list_empty(&kvm->arch.tdp_mmu_pages));
++	WARN_ON(atomic64_read(&kvm->arch.tdp_mmu_pages));
+ 	WARN_ON(!list_empty(&kvm->arch.tdp_mmu_roots));
+ 
+ 	/*
+@@ -381,14 +380,17 @@ static void handle_changed_spte_dirty_log(struct kvm *kvm, int as_id, gfn_t gfn,
+ static void tdp_mmu_unlink_sp(struct kvm *kvm, struct kvm_mmu_page *sp,
+ 			      bool shared)
+ {
++	atomic64_dec(&kvm->arch.tdp_mmu_pages);
 +
-+	  If unsure, say Y.
++	if (!sp->lpage_disallowed)
++		return;
 +
- config CAVIUM_ERRATUM_22375
- 	bool "Cavium erratum 22375, 24313"
- 	default y
---- a/arch/arm64/include/asm/cpucaps.h
-+++ b/arch/arm64/include/asm/cpucaps.h
-@@ -45,7 +45,8 @@
- #define ARM64_SSBD				25
- #define ARM64_MISMATCHED_CACHE_TYPE		26
- #define ARM64_SSBS				27
-+#define ARM64_WORKAROUND_1188873		28
+ 	if (shared)
+ 		spin_lock(&kvm->arch.tdp_mmu_pages_lock);
+ 	else
+ 		lockdep_assert_held_write(&kvm->mmu_lock);
  
--#define ARM64_NCAPS				28
-+#define ARM64_NCAPS				29
+-	list_del(&sp->link);
+-	if (sp->lpage_disallowed)
+-		unaccount_huge_nx_page(kvm, sp);
++	unaccount_huge_nx_page(kvm, sp);
  
- #endif /* __ASM_CPUCAPS_H */
---- a/arch/arm64/include/asm/cputype.h
-+++ b/arch/arm64/include/asm/cputype.h
-@@ -87,6 +87,7 @@
- #define ARM_CPU_PART_CORTEX_A75		0xD0A
- #define ARM_CPU_PART_CORTEX_A35		0xD04
- #define ARM_CPU_PART_CORTEX_A55		0xD05
-+#define ARM_CPU_PART_CORTEX_A76		0xD0B
- 
- #define APM_CPU_PART_POTENZA		0x000
- 
-@@ -112,6 +113,7 @@
- #define MIDR_CORTEX_A75 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A75)
- #define MIDR_CORTEX_A35 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A35)
- #define MIDR_CORTEX_A55 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A55)
-+#define MIDR_CORTEX_A76	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A76)
- #define MIDR_THUNDERX	MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX)
- #define MIDR_THUNDERX_81XX MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX_81XX)
- #define MIDR_THUNDERX_83XX MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX_83XX)
---- a/arch/arm64/kernel/cpu_errata.c
-+++ b/arch/arm64/kernel/cpu_errata.c
-@@ -712,6 +712,14 @@ const struct arm64_cpu_capabilities arm6
- 		.matches = has_ssbd_mitigation,
- 		.midr_range_list = arm64_ssb_cpus,
- 	},
-+#ifdef CONFIG_ARM64_ERRATUM_1188873
-+	{
-+		/* Cortex-A76 r0p0 to r2p0 */
-+		.desc = "ARM erratum 1188873",
-+		.capability = ARM64_WORKAROUND_1188873,
-+		ERRATA_MIDR_RANGE(MIDR_CORTEX_A76, 0, 0, 2, 0),
-+	},
-+#endif
- 	{
+ 	if (shared)
+ 		spin_unlock(&kvm->arch.tdp_mmu_pages_lock);
+@@ -1141,9 +1143,7 @@ static int tdp_mmu_link_sp(struct kvm *kvm, struct tdp_iter *iter,
+ 		tdp_mmu_set_spte(kvm, iter, spte);
  	}
- };
---- a/drivers/clocksource/arm_arch_timer.c
-+++ b/drivers/clocksource/arm_arch_timer.c
-@@ -298,6 +298,13 @@ static u64 notrace arm64_858921_read_cnt
+ 
+-	spin_lock(&kvm->arch.tdp_mmu_pages_lock);
+-	list_add(&sp->link, &kvm->arch.tdp_mmu_pages);
+-	spin_unlock(&kvm->arch.tdp_mmu_pages_lock);
++	atomic64_inc(&kvm->arch.tdp_mmu_pages);
+ 
+ 	return 0;
  }
- #endif
- 
-+#ifdef CONFIG_ARM64_ERRATUM_1188873
-+static u64 notrace arm64_1188873_read_cntvct_el0(void)
-+{
-+	return read_sysreg(cntvct_el0);
-+}
-+#endif
-+
- #ifdef CONFIG_ARM_ARCH_TIMER_OOL_WORKAROUND
- DEFINE_PER_CPU(const struct arch_timer_erratum_workaround *,
- 	       timer_unstable_counter_workaround);
-@@ -381,6 +388,14 @@ static const struct arch_timer_erratum_w
- 		.read_cntvct_el0 = arm64_858921_read_cntvct_el0,
- 	},
- #endif
-+#ifdef CONFIG_ARM64_ERRATUM_1188873
-+	{
-+		.match_type = ate_match_local_cap_id,
-+		.id = (void *)ARM64_WORKAROUND_1188873,
-+		.desc = "ARM erratum 1188873",
-+		.read_cntvct_el0 = arm64_1188873_read_cntvct_el0,
-+	},
-+#endif
- };
- 
- typedef bool (*ate_match_fn_t)(const struct arch_timer_erratum_workaround *,
-
+-- 
+2.35.1.1094.g7c7d902a7c-goog
 
