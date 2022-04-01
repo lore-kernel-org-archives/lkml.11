@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96DF6C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:48:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F04AC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:49:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348255AbiDAOmt (ORCPT
+        id S1348354AbiDAOnB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 10:42:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57916 "EHLO
+        Fri, 1 Apr 2022 10:43:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348414AbiDAOeX (ORCPT
+        with ESMTP id S1348466AbiDAOe3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:34:23 -0400
+        Fri, 1 Apr 2022 10:34:29 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0FE7FEB;
-        Fri,  1 Apr 2022 07:32:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A7EEFEB;
+        Fri,  1 Apr 2022 07:32:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8BA5061C1A;
-        Fri,  1 Apr 2022 14:32:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF121C2BBE4;
-        Fri,  1 Apr 2022 14:32:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DA55361C50;
+        Fri,  1 Apr 2022 14:32:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F35D1C34112;
+        Fri,  1 Apr 2022 14:32:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823553;
-        bh=6O5MY15bGC7w3fxkEN+iAojQQpbzjkvf6drSby+veTU=;
+        s=k20201202; t=1648823559;
+        bh=FuCO+U6N9ZCghCVd1CqTy9TOpm50qfLHeScE/HPLP+o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JIZZuT5J1iQVD/TCIKiPSwfTTtZLVTxjuHUNN4wT1sHQdUXzaNBvz8SOTsNBnA8VJ
-         7pwW4gBxMO35BUO11VZ4Mbo+HHGaLH6FdSof1es1DAWMArfGW43M6gk5mAsflwJBg/
-         jKeOBUuny/Mzt4TRafQugHaiOYEE4l/pBqrZAWeScG6+OvU5adjrjilK1HBil6Ppuc
-         kwFVH2IRL4+rEHFTvJvTpFlbJv2nZjFxU6UZyZt/MtkOhTMkrkaD161R7x49i1/MMK
-         o+iiBOdbHFlnKUN3z6ik2vFzD8SylDq1Auwn/NeDJxwTjiPTnMoHqgZgVlDtmc9y1d
-         Y4XnxmqPDpmsQ==
+        b=NKIRTH/0iIw9Volcgp6mJTNKIMxqmSae2w5+satehUDLj14OqvGtUkaS4Ef276le4
+         I3YFRvxq+OMufsQTWGSH32BnDlGN9vTYjJcITcv1AN1O+JElYySJER0D11C89LK5rw
+         SPHVXLSgM1JJZazOfj2f4RMnu7gEBuH0Ds1RT3k12sE7j+n25+qM29MvWxLOTDpQa4
+         FROpJkB75izWPvxLzLpjN08666dT6gnlsysfYb//6C+USNYicfYY2r5IbsompSxpuZ
+         a2mnSMwCt4pbQaqTMGL1E6I7VRCTlWQYLbslx0XjQ8nMz0nbVR7xJOAr36KSC19J6i
+         GZ/xcWkXXC1dA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Paul Cercueil <paul@crapouillou.net>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
-        krzk+dt@kernel.org, linux-mips@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 141/149] MIPS: ingenic: correct unit node address
-Date:   Fri,  1 Apr 2022 10:25:28 -0400
-Message-Id: <20220401142536.1948161-141-sashal@kernel.org>
+Cc:     Wang Yufen <wangyufen@huawei.com>, Hulk Robot <hulkci@huawei.com>,
+        Paul Moore <paul@paul-moore.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-security-module@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 144/149] netlabel: fix out-of-bounds memory accesses
+Date:   Fri,  1 Apr 2022 10:25:31 -0400
+Message-Id: <20220401142536.1948161-144-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401142536.1948161-1-sashal@kernel.org>
 References: <20220401142536.1948161-1-sashal@kernel.org>
@@ -55,35 +55,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+From: Wang Yufen <wangyufen@huawei.com>
 
-[ Upstream commit 8931ddd8d6a55fcefb20f44a38ba42bb746f0b62 ]
+[ Upstream commit f22881de730ebd472e15bcc2c0d1d46e36a87b9c ]
 
-Unit node addresses should not have leading 0x:
+In calipso_map_cat_ntoh(), in the for loop, if the return value of
+netlbl_bitmap_walk() is equal to (net_clen_bits - 1), when
+netlbl_bitmap_walk() is called next time, out-of-bounds memory accesses
+of bitmap[byte_offset] occurs.
 
-  Warning (unit_address_format): /nemc@13410000/efuse@d0/eth-mac-addr@0x22: unit name should not have leading "0x"
+The bug was found during fuzzing. The following is the fuzzing report
+ BUG: KASAN: slab-out-of-bounds in netlbl_bitmap_walk+0x3c/0xd0
+ Read of size 1 at addr ffffff8107bf6f70 by task err_OH/252
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Reviewed-by: Paul Cercueil <paul@crapouillou.net>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+ CPU: 7 PID: 252 Comm: err_OH Not tainted 5.17.0-rc7+ #17
+ Hardware name: linux,dummy-virt (DT)
+ Call trace:
+  dump_backtrace+0x21c/0x230
+  show_stack+0x1c/0x60
+  dump_stack_lvl+0x64/0x7c
+  print_address_description.constprop.0+0x70/0x2d0
+  __kasan_report+0x158/0x16c
+  kasan_report+0x74/0x120
+  __asan_load1+0x80/0xa0
+  netlbl_bitmap_walk+0x3c/0xd0
+  calipso_opt_getattr+0x1a8/0x230
+  calipso_sock_getattr+0x218/0x340
+  calipso_sock_getattr+0x44/0x60
+  netlbl_sock_getattr+0x44/0x80
+  selinux_netlbl_socket_setsockopt+0x138/0x170
+  selinux_socket_setsockopt+0x4c/0x60
+  security_socket_setsockopt+0x4c/0x90
+  __sys_setsockopt+0xbc/0x2b0
+  __arm64_sys_setsockopt+0x6c/0x84
+  invoke_syscall+0x64/0x190
+  el0_svc_common.constprop.0+0x88/0x200
+  do_el0_svc+0x88/0xa0
+  el0_svc+0x128/0x1b0
+  el0t_64_sync_handler+0x9c/0x120
+  el0t_64_sync+0x16c/0x170
+
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Wang Yufen <wangyufen@huawei.com>
+Acked-by: Paul Moore <paul@paul-moore.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/boot/dts/ingenic/jz4780.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/netlabel/netlabel_kapi.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/mips/boot/dts/ingenic/jz4780.dtsi b/arch/mips/boot/dts/ingenic/jz4780.dtsi
-index 3f9ea47a10cd..b998301f179c 100644
---- a/arch/mips/boot/dts/ingenic/jz4780.dtsi
-+++ b/arch/mips/boot/dts/ingenic/jz4780.dtsi
-@@ -510,7 +510,7 @@ efuse: efuse@d0 {
- 			#address-cells = <1>;
- 			#size-cells = <1>;
+diff --git a/net/netlabel/netlabel_kapi.c b/net/netlabel/netlabel_kapi.c
+index beb0e573266d..54c083003947 100644
+--- a/net/netlabel/netlabel_kapi.c
++++ b/net/netlabel/netlabel_kapi.c
+@@ -885,6 +885,8 @@ int netlbl_bitmap_walk(const unsigned char *bitmap, u32 bitmap_len,
+ 	unsigned char bitmask;
+ 	unsigned char byte;
  
--			eth0_addr: eth-mac-addr@0x22 {
-+			eth0_addr: eth-mac-addr@22 {
- 				reg = <0x22 0x6>;
- 			};
- 		};
++	if (offset >= bitmap_len)
++		return -1;
+ 	byte_offset = offset / 8;
+ 	byte = bitmap[byte_offset];
+ 	bit_spot = offset;
 -- 
 2.34.1
 
