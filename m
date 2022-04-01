@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6874C352A8
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41FF6C352A1
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:02:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349996AbiDAO6n (ORCPT
+        id S1351089AbiDAPBT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 10:58:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60584 "EHLO
+        Fri, 1 Apr 2022 11:01:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347761AbiDAOk0 (ORCPT
+        with ESMTP id S1349338AbiDAOpu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:40:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F57428AC59;
-        Fri,  1 Apr 2022 07:33:57 -0700 (PDT)
+        Fri, 1 Apr 2022 10:45:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9D9029B114;
+        Fri,  1 Apr 2022 07:35:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9F705B8251D;
-        Fri,  1 Apr 2022 14:33:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF4A6C36AE2;
-        Fri,  1 Apr 2022 14:33:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A53D2B8240E;
+        Fri,  1 Apr 2022 14:35:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D857C340EE;
+        Fri,  1 Apr 2022 14:35:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823627;
-        bh=h4Y8GhbrW7EbudaAIpKpL6s0aQrBD6+OdBbGGRuK+/E=;
+        s=k20201202; t=1648823746;
+        bh=XiDbRpRqXbQPUNKnDQQ2gCdqVVLhPM/D2i/bwQl4Lko=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F69YJscgqHxxpIRaGnl8FGqC4KfS2yZ/MDrPpu7p2lPZiII4xOyMoqfo8EI3Z6H9T
-         azu7+4zrGLp8PJqJmbw4ocexUZ1Z6EesvoRbiDsHIEdWVd59hRg+OaHo1ZvDdYFaje
-         etExlQ91dR4vXmUTkl0bvK35I4/Pd6utoqzBwsK2O6r3IPrIMFAKeajZMrUsaISB4B
-         0KihtLOob6KN2brUxd94Lpi9y6oxcqPamsXhGf+435oMFtcu8sYl4RhJYe5EvhYVpw
-         oJUnlSLATpn4sI8Z+ywoDHHvzrhnU83YlOxEDlbuqQhpffn1GesQu5fES3a1KLmIcu
-         VIQsAGggBwzTg==
+        b=aXVOIszbeSeXUd0ivSQljTzwf9gpXXs6dYXahchlEza5xXaSpB0ynZq7RZtSbG6T7
+         HmFKU65MgIa/Ce6R/tcH23CZG03BEBpE1xcifLKA3Wf+/t3y2ejtQ1y5DkmGBjtjQI
+         R3qHMp6EmP9MvWOsJoenxYMM0U9JFRBPJ3fVVs2RXR5jVYbVuxXNaCc2oSPtiYfiff
+         cGQ/Lx7THcXSVU2I3JujZMQ8yv5JuDL90hiuH/8GZkzrBv25pQ/WFFPpMJHkAu+HOZ
+         Cvd+j5JuKIy2UnX47GT7Miy5zHxBzIKpLGIftEQmtj21PtNGVlBTpV+EPQpTmtX50w
+         e9ZgVwwtuODjQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Philip Yang <Philip.Yang@amd.com>, Ruili Ji <ruili.ji@amd.com>,
-        Felix Kuehling <Felix.Kuehling@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
-        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.16 017/109] drm/amdkfd: svm range restore work deadlock when process exit
-Date:   Fri,  1 Apr 2022 10:31:24 -0400
-Message-Id: <20220401143256.1950537-17-sashal@kernel.org>
+Cc:     Ido Schimmel <idosch@nvidia.com>, Wang Hai <wanghai38@huawei.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
+        pabeni@redhat.com, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 059/109] ipv4: Invalidate neighbour for broadcast address upon address addition
+Date:   Fri,  1 Apr 2022 10:32:06 -0400
+Message-Id: <20220401143256.1950537-59-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143256.1950537-1-sashal@kernel.org>
 References: <20220401143256.1950537-1-sashal@kernel.org>
@@ -55,104 +54,115 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Philip Yang <Philip.Yang@amd.com>
+From: Ido Schimmel <idosch@nvidia.com>
 
-[ Upstream commit 6225bb3a88d22594aacea2485dc28ca12d596721 ]
+[ Upstream commit 0c51e12e218f20b7d976158fdc18019627326f7a ]
 
-kfd_process_notifier_release flush svm_range_restore_work
-which calls svm_range_list_lock_and_flush_work to flush deferred_list
-work, but if deferred_list work mmput release the last user, it will
-call exit_mmap -> notifier_release, it is deadlock with below backtrace.
+In case user space sends a packet destined to a broadcast address when a
+matching broadcast route is not configured, the kernel will create a
+unicast neighbour entry that will never be resolved [1].
 
-Move flush svm_range_restore_work to kfd_process_wq_release to avoid
-deadlock. Then svm_range_restore_work take task->mm ref to avoid mm is
-gone while validating and mapping ranges to GPU.
+When the broadcast route is configured, the unicast neighbour entry will
+not be invalidated and continue to linger, resulting in packets being
+dropped.
 
-Workqueue: events svm_range_deferred_list_work [amdgpu]
-Call Trace:
- wait_for_completion+0x94/0x100
- __flush_work+0x12a/0x1e0
- __cancel_work_timer+0x10e/0x190
- cancel_delayed_work_sync+0x13/0x20
- kfd_process_notifier_release+0x98/0x2a0 [amdgpu]
- __mmu_notifier_release+0x74/0x1f0
- exit_mmap+0x170/0x200
- mmput+0x5d/0x130
- svm_range_deferred_list_work+0x104/0x230 [amdgpu]
- process_one_work+0x220/0x3c0
+Solve this by invalidating unresolved neighbour entries for broadcast
+addresses after routes for these addresses are internally configured by
+the kernel. This allows the kernel to create a broadcast neighbour entry
+following the next route lookup.
 
-Signed-off-by: Philip Yang <Philip.Yang@amd.com>
-Reported-by: Ruili Ji <ruili.ji@amd.com>
-Tested-by: Ruili Ji <ruili.ji@amd.com>
-Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Another possible solution that is more generic but also more complex is
+to have the ARP code register a listener to the FIB notification chain
+and invalidate matching neighbour entries upon the addition of broadcast
+routes.
+
+It is also possible to wave off the issue as a user space problem, but
+it seems a bit excessive to expect user space to be that intimately
+familiar with the inner workings of the FIB/neighbour kernel code.
+
+[1] https://lore.kernel.org/netdev/55a04a8f-56f3-f73c-2aea-2195923f09d1@huawei.com/
+
+Reported-by: Wang Hai <wanghai38@huawei.com>
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Tested-by: Wang Hai <wanghai38@huawei.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdkfd/kfd_process.c |  1 -
- drivers/gpu/drm/amd/amdkfd/kfd_svm.c     | 15 +++++++++------
- 2 files changed, 9 insertions(+), 7 deletions(-)
+ include/net/arp.h       | 1 +
+ net/ipv4/arp.c          | 9 +++++++--
+ net/ipv4/fib_frontend.c | 5 ++++-
+ 3 files changed, 12 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_process.c b/drivers/gpu/drm/amd/amdkfd/kfd_process.c
-index b993011cfa64..990228711108 100644
---- a/drivers/gpu/drm/amd/amdkfd/kfd_process.c
-+++ b/drivers/gpu/drm/amd/amdkfd/kfd_process.c
-@@ -1150,7 +1150,6 @@ static void kfd_process_notifier_release(struct mmu_notifier *mn,
+diff --git a/include/net/arp.h b/include/net/arp.h
+index 4950191f6b2b..4a23a97195f3 100644
+--- a/include/net/arp.h
++++ b/include/net/arp.h
+@@ -71,6 +71,7 @@ void arp_send(int type, int ptype, __be32 dest_ip,
+ 	      const unsigned char *src_hw, const unsigned char *th);
+ int arp_mc_map(__be32 addr, u8 *haddr, struct net_device *dev, int dir);
+ void arp_ifdown(struct net_device *dev);
++int arp_invalidate(struct net_device *dev, __be32 ip, bool force);
  
- 	cancel_delayed_work_sync(&p->eviction_work);
- 	cancel_delayed_work_sync(&p->restore_work);
--	cancel_delayed_work_sync(&p->svms.restore_work);
+ struct sk_buff *arp_create(int type, int ptype, __be32 dest_ip,
+ 			   struct net_device *dev, __be32 src_ip,
+diff --git a/net/ipv4/arp.c b/net/ipv4/arp.c
+index 857a144b1ea9..5ee382309a9d 100644
+--- a/net/ipv4/arp.c
++++ b/net/ipv4/arp.c
+@@ -1116,13 +1116,18 @@ static int arp_req_get(struct arpreq *r, struct net_device *dev)
+ 	return err;
+ }
  
- 	mutex_lock(&p->mutex);
+-static int arp_invalidate(struct net_device *dev, __be32 ip)
++int arp_invalidate(struct net_device *dev, __be32 ip, bool force)
+ {
+ 	struct neighbour *neigh = neigh_lookup(&arp_tbl, &ip, dev);
+ 	int err = -ENXIO;
+ 	struct neigh_table *tbl = &arp_tbl;
  
-diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_svm.c b/drivers/gpu/drm/amd/amdkfd/kfd_svm.c
-index ea1c5aaf659a..a1b0c6bda803 100644
---- a/drivers/gpu/drm/amd/amdkfd/kfd_svm.c
-+++ b/drivers/gpu/drm/amd/amdkfd/kfd_svm.c
-@@ -1589,13 +1589,14 @@ static void svm_range_restore_work(struct work_struct *work)
- 
- 	pr_debug("restore svm ranges\n");
- 
--	/* kfd_process_notifier_release destroys this worker thread. So during
--	 * the lifetime of this thread, kfd_process and mm will be valid.
--	 */
- 	p = container_of(svms, struct kfd_process, svms);
--	mm = p->mm;
--	if (!mm)
+ 	if (neigh) {
++		if ((neigh->nud_state & NUD_VALID) && !force) {
++			neigh_release(neigh);
++			return 0;
++		}
 +
-+	/* Keep mm reference when svm_range_validate_and_map ranges */
-+	mm = get_task_mm(p->lead_thread);
-+	if (!mm) {
-+		pr_debug("svms 0x%p process mm gone\n", svms);
+ 		if (neigh->nud_state & ~NUD_NOARP)
+ 			err = neigh_update(neigh, NULL, NUD_FAILED,
+ 					   NEIGH_UPDATE_F_OVERRIDE|
+@@ -1169,7 +1174,7 @@ static int arp_req_delete(struct net *net, struct arpreq *r,
+ 		if (!dev)
+ 			return -EINVAL;
+ 	}
+-	return arp_invalidate(dev, ip);
++	return arp_invalidate(dev, ip, true);
+ }
+ 
+ /*
+diff --git a/net/ipv4/fib_frontend.c b/net/ipv4/fib_frontend.c
+index 4d61ddd8a0ec..1eb7795edb9d 100644
+--- a/net/ipv4/fib_frontend.c
++++ b/net/ipv4/fib_frontend.c
+@@ -1112,9 +1112,11 @@ void fib_add_ifaddr(struct in_ifaddr *ifa)
  		return;
+ 
+ 	/* Add broadcast address, if it is explicitly assigned. */
+-	if (ifa->ifa_broadcast && ifa->ifa_broadcast != htonl(0xFFFFFFFF))
++	if (ifa->ifa_broadcast && ifa->ifa_broadcast != htonl(0xFFFFFFFF)) {
+ 		fib_magic(RTM_NEWROUTE, RTN_BROADCAST, ifa->ifa_broadcast, 32,
+ 			  prim, 0);
++		arp_invalidate(dev, ifa->ifa_broadcast, false);
 +	}
  
- 	svm_range_list_lock_and_flush_work(svms, mm);
- 	mutex_lock(&svms->lock);
-@@ -1649,6 +1650,7 @@ static void svm_range_restore_work(struct work_struct *work)
- out_reschedule:
- 	mutex_unlock(&svms->lock);
- 	mmap_write_unlock(mm);
-+	mmput(mm);
- 
- 	/* If validation failed, reschedule another attempt */
- 	if (evicted_ranges) {
-@@ -2779,6 +2781,8 @@ void svm_range_list_fini(struct kfd_process *p)
- 
- 	pr_debug("pasid 0x%x svms 0x%p\n", p->pasid, &p->svms);
- 
-+	cancel_delayed_work_sync(&p->svms.restore_work);
-+
- 	/* Ensure list work is finished before process is destroyed */
- 	flush_work(&p->svms.deferred_list_work);
- 
-@@ -2789,7 +2793,6 @@ void svm_range_list_fini(struct kfd_process *p)
- 	atomic_inc(&p->svms.drain_pagefaults);
- 	svm_range_drain_retry_fault(&p->svms);
- 
--
- 	list_for_each_entry_safe(prange, next, &p->svms.list, list) {
- 		svm_range_unlink(prange);
- 		svm_range_remove_notifier(prange);
+ 	if (!ipv4_is_zeronet(prefix) && !(ifa->ifa_flags & IFA_F_SECONDARY) &&
+ 	    (prefix != addr || ifa->ifa_prefixlen < 32)) {
+@@ -1128,6 +1130,7 @@ void fib_add_ifaddr(struct in_ifaddr *ifa)
+ 		if (ifa->ifa_prefixlen < 31) {
+ 			fib_magic(RTM_NEWROUTE, RTN_BROADCAST, prefix | ~mask,
+ 				  32, prim, 0);
++			arp_invalidate(dev, prefix | ~mask, false);
+ 		}
+ 	}
+ }
 -- 
 2.34.1
 
