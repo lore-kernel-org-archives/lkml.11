@@ -2,46 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0444BC3526F
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:38:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21728C41535
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:38:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350870AbiDAPes (ORCPT
+        id S1350930AbiDAPey (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:34:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43018 "EHLO
+        Fri, 1 Apr 2022 11:34:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350123AbiDAO7E (ORCPT
+        with ESMTP id S1350132AbiDAO7E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 1 Apr 2022 10:59:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 194C65676D;
-        Fri,  1 Apr 2022 07:46:40 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CEED56C23;
+        Fri,  1 Apr 2022 07:46:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BF4B6B824FD;
-        Fri,  1 Apr 2022 14:46:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7877FC34113;
-        Fri,  1 Apr 2022 14:46:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AF07060A3C;
+        Fri,  1 Apr 2022 14:46:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2D35C2BBE4;
+        Fri,  1 Apr 2022 14:46:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824397;
-        bh=CdT67UIb3gW6Ey5zJJcP49xxe4aOfAQ2gK2EWJliYUI=;
+        s=k20201202; t=1648824394;
+        bh=tkeNPRTeNCg3I4EubeoVXkxqOabZ9vgTkmUy2NLLq98=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NrVlkA+ol+eZppUVnF4PzKV9dmiH9fehzKPH5cxjG+aBKzZQSVlv3crgcb0+K1mcp
-         lqamSmENPkY2kdXNh6FajusarrDAvQd84lkJJDpn1U0HJE6ubAaRmSMvt22zGevQ05
-         wwF2gLEA3TZFBv8qPAd2QaHCL18M4U1P7LSj7QTxBcUptodoPmxSGdqPOvMti86D7v
-         7OVxEVEHSrVwPciTDiEEcgwwqiZL1uOn1mbSmBUgEy50ZU8hIgQJlel46OuOzmj2fn
-         3VF5PyP+sz98t5Vv/Dr9NB3ToFeS2iiQZ/UpVZTbNKmUEtKzDxc6qUmJq8LrcaOLFe
-         TCFWeUBqlaMJw==
+        b=owP7+ufvlpjnHIkEnQGvt8ChAoKRX/pFO13K26we25lpu3kPmC6BlKd2ktLo/kkEp
+         rzPvrB67/cxmOaR8NZ6N4saMRuymmTIYYkcjybvvQkslmFxhoY/X7MfSvnOJGvkFzv
+         Nfnb024rpyvWxdWPeNIACXRrgW2P0b/NPKoTo2tw2uqfvNT/6GrgXQy74eAE4vcU/C
+         cDn8pr9r9eFFEpv02jn+G9608+wjg2XSVhGVYvnmufacMQY2jkGkGv8DuYVujjKvJB
+         E1BDAr12zS5k1LXS9x8f+pAtGuEozYtFazGdfU+s1mWjVweC162Ke5lmnuaQjm5ceb
+         +WduQe7VkE/qA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Evgeny Boger <boger@wirenboard.com>, Chen-Yu Tsai <wens@csie.org>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
-        Sasha Levin <sashal@kernel.org>, sre@kernel.org,
-        linux-pm@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 08/29] power: supply: axp20x_battery: properly report current when discharging
-Date:   Fri,  1 Apr 2022 10:45:51 -0400
-Message-Id: <20220401144612.1955177-8-sashal@kernel.org>
+Cc:     Yang Guang <yang.guang5@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>,
+        David Yang <davidcomponentone@gmail.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, jejb@linux.ibm.com,
+        john.garry@huawei.com, bvanassche@acm.org,
+        thunder.leizhen@huawei.com, yuyufen@huawei.com,
+        linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 06/29] scsi: mvsas: Replace snprintf() with sysfs_emit()
+Date:   Fri,  1 Apr 2022 10:45:49 -0400
+Message-Id: <20220401144612.1955177-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401144612.1955177-1-sashal@kernel.org>
 References: <20220401144612.1955177-1-sashal@kernel.org>
@@ -53,60 +57,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Evgeny Boger <boger@wirenboard.com>
+From: Yang Guang <yang.guang5@zte.com.cn>
 
-[ Upstream commit d4f408cdcd26921c1268cb8dcbe8ffb6faf837f3 ]
+[ Upstream commit 0ad3867b0f13e45cfee5a1298bfd40eef096116c ]
 
-As stated in [1], negative current values are used for discharging
-batteries.
+coccinelle report:
+./drivers/scsi/mvsas/mv_init.c:699:8-16:
+WARNING: use scnprintf or sprintf
+./drivers/scsi/mvsas/mv_init.c:747:8-16:
+WARNING: use scnprintf or sprintf
 
-AXP PMICs internally have two different ADC channels for shunt current
-measurement: one used during charging and one during discharging.
-The values reported by these ADCs are unsigned.
-While the driver properly selects ADC channel to get the data from,
-it doesn't apply negative sign when reporting discharging current.
+Use sysfs_emit() instead of scnprintf() or sprintf().
 
-[1] Documentation/ABI/testing/sysfs-class-power
-
-Signed-off-by: Evgeny Boger <boger@wirenboard.com>
-Acked-by: Chen-Yu Tsai <wens@csie.org>
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Link: https://lore.kernel.org/r/c1711f7cf251730a8ceb5bdfc313bf85662b3395.1643182948.git.yang.guang5@zte.com.cn
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Yang Guang <yang.guang5@zte.com.cn>
+Signed-off-by: David Yang <davidcomponentone@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/power/supply/axp20x_battery.c | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+ drivers/scsi/mvsas/mv_init.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/power/supply/axp20x_battery.c b/drivers/power/supply/axp20x_battery.c
-index e84b6e4da14a..9fda98b950ba 100644
---- a/drivers/power/supply/axp20x_battery.c
-+++ b/drivers/power/supply/axp20x_battery.c
-@@ -185,7 +185,6 @@ static int axp20x_battery_get_prop(struct power_supply *psy,
- 				   union power_supply_propval *val)
+diff --git a/drivers/scsi/mvsas/mv_init.c b/drivers/scsi/mvsas/mv_init.c
+index 98d6608068ab..9c48394ac68a 100644
+--- a/drivers/scsi/mvsas/mv_init.c
++++ b/drivers/scsi/mvsas/mv_init.c
+@@ -729,7 +729,7 @@ static ssize_t
+ mvs_show_driver_version(struct device *cdev,
+ 		struct device_attribute *attr,  char *buffer)
  {
- 	struct axp20x_batt_ps *axp20x_batt = power_supply_get_drvdata(psy);
--	struct iio_channel *chan;
- 	int ret = 0, reg, val1;
+-	return snprintf(buffer, PAGE_SIZE, "%s\n", DRV_VERSION);
++	return sysfs_emit(buffer, "%s\n", DRV_VERSION);
+ }
  
- 	switch (psp) {
-@@ -265,12 +264,12 @@ static int axp20x_battery_get_prop(struct power_supply *psy,
- 		if (ret)
- 			return ret;
+ static DEVICE_ATTR(driver_version,
+@@ -781,7 +781,7 @@ mvs_store_interrupt_coalescing(struct device *cdev,
+ static ssize_t mvs_show_interrupt_coalescing(struct device *cdev,
+ 			struct device_attribute *attr, char *buffer)
+ {
+-	return snprintf(buffer, PAGE_SIZE, "%d\n", interrupt_coalescing);
++	return sysfs_emit(buffer, "%d\n", interrupt_coalescing);
+ }
  
--		if (reg & AXP20X_PWR_STATUS_BAT_CHARGING)
--			chan = axp20x_batt->batt_chrg_i;
--		else
--			chan = axp20x_batt->batt_dischrg_i;
--
--		ret = iio_read_channel_processed(chan, &val->intval);
-+		if (reg & AXP20X_PWR_STATUS_BAT_CHARGING) {
-+			ret = iio_read_channel_processed(axp20x_batt->batt_chrg_i, &val->intval);
-+		} else {
-+			ret = iio_read_channel_processed(axp20x_batt->batt_dischrg_i, &val1);
-+			val->intval = -val1;
-+		}
- 		if (ret)
- 			return ret;
- 
+ static DEVICE_ATTR(interrupt_coalescing,
 -- 
 2.34.1
 
