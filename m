@@ -2,117 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 687E8C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 06:50:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CC16C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 06:53:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245627AbiDAGwF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 02:52:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42168 "EHLO
+        id S245759AbiDAGzP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Apr 2022 02:55:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232040AbiDAGwD (ORCPT
+        with ESMTP id S235169AbiDAGzN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 02:52:03 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 043401C406D
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 23:50:14 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id i16so3756314ejk.12
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 23:50:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=YuBl/f3XfwHvQa93+ozqB8r1E47ocLC0Rqnq4xYkwnk=;
-        b=dbN8gBG1DIw4qjBl6ffKKyiZ7V0DgQNxcTQaaAqGEjfw0Y9CIT9fi7Yxtkil2lBF4d
-         lluQ2qS4B+ycFFK++rnpr8ovwDcCPqugcI1ivBF9S81SZszy7IAwY0Z+t3mJL9Ks03Q4
-         Vd9bENcM5LH1zxOIi+WhsPx3iJLlM9GL14gr9cVZl0+El0PS+L1RpFYlKZB0zxZ8Fc7t
-         bzSWeuiMTsirTmSq3nI38bxmdM8lFqR6C5kwCkJW3+FYyiW74VsGFpYdvES/ICY4THji
-         GHC/j4/h+owfAUSYy+g1E2Xc39VT2PvDCcHrY3u5RfCsZ9tI+Cc/oVQE03IpYARaHWKt
-         9LBQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=YuBl/f3XfwHvQa93+ozqB8r1E47ocLC0Rqnq4xYkwnk=;
-        b=1lHxnUQ33CypKBtvNdDJVBrQAn/xlqz/M7TEZeLV/kNSKIIvxuPa+n8FzmF7YBKfqF
-         1cC49Al/uZ+5KtrNdYi32uI2CSiOrCJ41KGd4IUkiOcXp8cUOSI72c/m5iHRXvFDw/bk
-         Kpp8KPMjQbwJcGGbpoBKL7ajU92W/MQaQ2lF9V9voCxMimsdP3FxesOMTjt5nDJ0tx7h
-         NZUcjfs8ayIUfrov0EUDjhIv47e1i4pyhdCeWO0buL5XkHoaiJ8IYI2gOoYfiftJsf8a
-         FRIg6v9xTimFC0v57aCbtz5BJdLbm9+MX/yWldxrqFE6mLDO3UERR9fX7Nr0k4ysQRPM
-         fsyA==
-X-Gm-Message-State: AOAM530l0eLa8cdSySHhyHcBHYQHd0G92fu+5ynILFMyzFYbn6k8ej9Q
-        d6+3azNso+gI0XkqVt/668Q=
-X-Google-Smtp-Source: ABdhPJzMkxBXFe5gLY12+rQoXVgTb5dNkbuEXAGLuYMAH+KhEA+hGON971+OoAEx8VXnJWu+9qVn8Q==
-X-Received: by 2002:a17:907:6e0d:b0:6e0:59ae:21f1 with SMTP id sd13-20020a1709076e0d00b006e059ae21f1mr8351917ejc.362.1648795812369;
-        Thu, 31 Mar 2022 23:50:12 -0700 (PDT)
-Received: from smtpclient.apple (i130160.upc-i.chello.nl. [62.195.130.160])
-        by smtp.gmail.com with ESMTPSA id m24-20020a170906161800b006d420027b63sm678937ejd.18.2022.03.31.23.50.11
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 31 Mar 2022 23:50:11 -0700 (PDT)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.80.82.1.1\))
-Subject: Re: [PATCH] staging: android: ashmem: remove usage of list iterator
- after the loop body
-From:   Jakob Koschel <jakobkoschel@gmail.com>
-In-Reply-To: <YkaP6UWmSZjxO/oA@kroah.com>
-Date:   Fri, 1 Apr 2022 08:50:10 +0200
-Cc:     =?utf-8?Q?Arve_Hj=C3=B8nnev=C3=A5g?= <arve@android.com>,
-        Todd Kjos <tkjos@android.com>,
-        Martijn Coenen <maco@android.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Hridya Valsaraju <hridya@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
+        Fri, 1 Apr 2022 02:55:13 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33B59389A
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 23:53:23 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1naB9k-00025p-1L; Fri, 01 Apr 2022 08:53:12 +0200
+Received: from pengutronix.de (2a03-f580-87bc-d400-a2e4-7752-b370-a958.ip6.dokom21.de [IPv6:2a03:f580:87bc:d400:a2e4:7752:b370:a958])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 1B3C458411;
+        Fri,  1 Apr 2022 06:53:10 +0000 (UTC)
+Date:   Fri, 1 Apr 2022 08:53:09 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Aurelien Jarno <aurelien@aurel32.net>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-staging@lists.linux.dev, Mike Rapoport <rppt@kernel.org>,
-        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <7BBD57E4-287B-461B-BC5C-D2FF35865D39@gmail.com>
-References: <20220331213934.866804-1-jakobkoschel@gmail.com>
- <YkaP6UWmSZjxO/oA@kroah.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-X-Mailer: Apple Mail (2.3696.80.82.1.1)
+        stable <stable@vger.kernel.org>,
+        Kito Cheng <kito.cheng@gmail.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        "open list:RISC-V ARCHITECTURE" <linux-riscv@lists.infradead.org>,
+        Sparse Mailing-list <linux-sparse@vger.kernel.org>,
+        ukl@pengutronix.de,
+        Luc Van Oostenryck <luc.vanoostenryck@gmail.com>
+Subject: Re: [PATCH] riscv: fix build with binutils 2.38
+Message-ID: <20220401065309.dizbkleyw44auhbo@pengutronix.de>
+References: <20220126171442.1338740-1-aurelien@aurel32.net>
+ <20220331103247.y33wvkxk5vfbqohf@pengutronix.de>
+ <20220331103913.2vlneq6clnheuty6@pengutronix.de>
+ <20220331105112.7t3qgtilhortkiq4@pengutronix.de>
+ <CAHk-=wjnuMD091mNbY=fRm-qFyhMjbtfiwkAFKyFehyR8bPB5A@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="5jl2rqq57omr4yri"
+Content-Disposition: inline
+In-Reply-To: <CAHk-=wjnuMD091mNbY=fRm-qFyhMjbtfiwkAFKyFehyR8bPB5A@mail.gmail.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
+--5jl2rqq57omr4yri
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> On 1. Apr 2022, at 07:38, Greg Kroah-Hartman =
-<gregkh@linuxfoundation.org> wrote:
+On 31.03.2022 11:16:53, Linus Torvalds wrote:
+> On Thu, Mar 31, 2022 at 3:51 AM Marc Kleine-Budde <mkl@pengutronix.de> wr=
+ote:
+> >
+> > Cc +=3D linux-sparse, Uwe, Luc Van Oostenryck
+> >
+> > tl;dr:
+> >
+> > A recent change in the kernel regarding the riscv -march handling breaks
+> > current sparse.
 >=20
-> On Thu, Mar 31, 2022 at 11:39:34PM +0200, Jakob Koschel wrote:
->> In preparation to limit the scope of a list iterator to the list
->> traversal loop, use a dedicated pointer to point to the found element
->> [1].
->>=20
->> Before, the code implicitly used the head when no element was found
->> when using &pos->list. Since the new variable is only set if an
->> element was found, the head needs to be used explicitly if the
->> variable is NULL.
->>=20
->> Link: =
-https://lore.kernel.org/all/CAHk-=3DwgRr_D8CB-D9Kg-c=3DEHreAsk5SqXPwr9Y7k9=
-sA6cWXJ6w@mail.gmail.com/ [1]
->> Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
->> ---
->> drivers/staging/android/ashmem.c | 21 ++++++++++++---------
->> 1 file changed, 12 insertions(+), 9 deletions(-)
+> Gaah. Normally sparse doesn't even look at the -march flag, but for
+> riscv it does, because it's meaningful for the predefined macros.
 >=20
-> What tree did you make this against? This file is no longer in Linus's
-> tree.
-
-Looks like the driver was removed just a few hours after I rebased.
-Feel free to just ignore this patch.
-
+> Maybe that 'die()' shouldn't be so fatal. And maybe add a few more
+> extensions (but ignore them) to the parsing.
 >=20
-> thanks,
->=20
-> greg k-h
+> Something ENTIRELY UNTESTED like the attached.
 
-Thanks,
-Jakob
+Works-for-me:
 
+|   CHECK   /srv/work/frogger/socketcan/linux/drivers/net/can/usb/etas_es58=
+x/es58x_core.c
+| WARNING: invalid argument to '-march': 'zicsr_zifencei'
 
+Tested-by: Marc Kleine-Budde <mkl@pengutronix.de>
+
+Regards,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--5jl2rqq57omr4yri
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmJGoVIACgkQrX5LkNig
+0131+gf+OoP5mBIuthsyF3cauP7RO1sSa7VFXUnlth9PI5r6HwTL7dHAjry4lXfJ
+x4Dl/7p024mbaQcCTKyUVStHaSIVd6aze/8pCsjmBTARtMe86P9rOyWGaLcES5P7
+tp/DjsYxQrYrOt+5Fs7+UrqZP5vnXuPYrKfYz0/VP3fLoA6gFGYTvlTXgiYFj7vL
+2xdpRvS1pbZhExvNlkKnJSzKZwE6L841k292RtWWOCzogsPt5YwUlkn/Zb4FbHwR
+y8BbMJhcGHG6T+DkgQA6amREXr6Y0Z5z4vzPDZMRpTFdVVmAUaYgqO7sncdEoyDL
+qv7LdfZg11z7bYVLbk/Z7Y5oXcsG8A==
+=1XuF
+-----END PGP SIGNATURE-----
+
+--5jl2rqq57omr4yri--
