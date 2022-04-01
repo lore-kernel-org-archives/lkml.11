@@ -2,94 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DD8DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 13:39:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A3EDC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 13:39:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346456AbiDANlg (ORCPT
+        id S1346460AbiDANli (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 09:41:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49274 "EHLO
+        Fri, 1 Apr 2022 09:41:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346421AbiDANl3 (ORCPT
+        with ESMTP id S1346450AbiDANle (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 09:41:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 137E2377EC;
-        Fri,  1 Apr 2022 06:39:40 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Fri, 1 Apr 2022 09:41:34 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B4E53377F8
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 06:39:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648820383;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=h6NQyMqLB58mw6AkprjfrT2eMsB7dX14dgGFHiYBaig=;
+        b=Te19cyqTItTb52oZEDD3sn2FbFExWtyZDX9jMIg6oN91xyskJ2/Gk+Wk6QBgOnzY1wV8N7
+        zeaanDsJx+1n+Ef/2oaD7x2dJ3IfrMOvUcsc52zxzd3CNq7Bu+3Fm6quJnBaZT6zmVGcHy
+        jvYp1wp0R7Iht0hB82Ac2IykXvwBSmM=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-450-nL7KlP4-Pv-1HD6HzTPi4A-1; Fri, 01 Apr 2022 09:39:40 -0400
+X-MC-Unique: nL7KlP4-Pv-1HD6HzTPi4A-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C82A5B824FC;
-        Fri,  1 Apr 2022 13:39:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C567C34111;
-        Fri,  1 Apr 2022 13:39:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648820377;
-        bh=d0HYYSzBFiO0QLVb9RS/N/6MxRm6wrny8ms762htYcU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VRC13yr1gIPBER1tskAq3wkJXADYdIKDycf5He/+4t3FGoVjKP2u9bmZEJW3G/lsa
-         xP3rQFFhZEWj/YtPn6izHtNtDwKCVc60+pz1gpuTLsPZIlxV5nY1lv4faSqIwRNPQQ
-         v9HoW2+/Jz4Nm4hjQDE44wZ8y1MGMN157XQDbgoJkE0P+a6accW/f4ao6ETSbazf/9
-         RS6DAi9bsk42wM8bfqNA8dCGQlHFNntXcmBiP5vUwYdsDjftPighARN1xOZl/T3d1x
-         P7QZctG4PTuGTaGFgyhmJfwksmP6N2IHnWpKo56YkDqdNqkFjr+Ue4gK+uFkxl/xSr
-         9UtrKtYRb+kSw==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan+linaro@kernel.org>)
-        id 1naHV3-0002kc-R7; Fri, 01 Apr 2022 15:39:37 +0200
-From:   Johan Hovold <johan+linaro@kernel.org>
-To:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Stanimir Varbanov <svarbanov@mm-sol.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Rob Herring <robh@kernel.org>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        linux-pci@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Johan Hovold <johan+linaro@kernel.org>, stable@vger.kernel.org
-Subject: [PATCH v2 2/2] PCI: qcom: Fix unbalanced PHY init on probe errors
-Date:   Fri,  1 Apr 2022 15:38:54 +0200
-Message-Id: <20220401133854.10421-3-johan+linaro@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220401133854.10421-1-johan+linaro@kernel.org>
-References: <20220401133854.10421-1-johan+linaro@kernel.org>
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 0E27B101AA64;
+        Fri,  1 Apr 2022 13:39:40 +0000 (UTC)
+Received: from x2.localnet (unknown [10.22.11.39])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 6157342CFE9;
+        Fri,  1 Apr 2022 13:39:39 +0000 (UTC)
+From:   Steve Grubb <sgrubb@redhat.com>
+To:     Paul Moore <paul@paul-moore.com>, linux-audit@redhat.com,
+        CGEL <cgel.zte@gmail.com>
+Cc:     kbuild-all@lists.01.org, Zeal Robot <zealci@zte.com.cn>,
+        linux-kernel@vger.kernel.org, eparis@redhat.com,
+        dai.shixin@zte.com.cn, Yang Yang <yang.yang29@zte.com.cn>,
+        linux-audit@redhat.com, ink@jurassic.park.msu.ru,
+        huang.junhua@zte.com.cn, guo.xiaofeng@zte.com.cn,
+        mattst88@gmail.com
+Subject: Re: [PATCH] audit: do a quick exit when syscall number is invalid
+Date:   Fri, 01 Apr 2022 09:39:38 -0400
+Message-ID: <2777189.mvXUDI8C0e@x2>
+Organization: Red Hat
+In-Reply-To: <62465bf3.1c69fb81.d5424.365e@mx.google.com>
+References: <20220326094654.2361956-1-yang.yang29@zte.com.cn> <CAHC9VhTaCNqfTOi8X5G3AheBFzTYCzGnt_-=fNFc5Z1o8gPm9Q@mail.gmail.com> <62465bf3.1c69fb81.d5424.365e@mx.google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Make sure to undo the PHY initialisation (e.g. balance runtime PM) in
-case host initialisation fails during probe.
+On Thursday, March 31, 2022 9:57:05 PM EDT CGEL wrote:
+> On Thu, Mar 31, 2022 at 10:16:23AM -0400, Paul Moore wrote:
+> > On Wed, Mar 30, 2022 at 10:29 PM CGEL <cgel.zte@gmail.com> wrote:
+> > > On Wed, Mar 30, 2022 at 10:48:12AM -0400, Paul Moore wrote:
+> > > > If audit is not generating SYSCALL records, even for invalid/ENOSYS
+> > > > syscalls, I would consider that a bug which should be fixed.
+> > > 
+> > > If we fix this bug, do you think audit invalid/ENOSYS syscalls better
+> > > be forcible or be a rule that can be configure? I think configure is
+> > > better.
+> > 
+> > It isn't clear to me exactly what you are asking, but I would expect
+> > the existing audit syscall filtering mechanism to work regardless if
+> > the syscall is valid or not.
+> 
+> Thanks, I try to make it more clear. We found that auditctl would only
+> set rule with syscall number (>=0 && <2047). So if userspace using
+> syscall whose number is (<0 || >=2047), there seems no meaning for
+> kernel audit to handle it, since this kind of syscall will never hit
+> any audit rule(this rule could not be set by auditctl).
 
-Fixes: 82a823833f4e ("PCI: qcom: Add Qualcomm PCIe controller driver")
-Cc: stable@vger.kernel.org      # 4.5
-Cc: Stanimir Varbanov <svarbanov@mm-sol.com>
-Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
----
- drivers/pci/controller/dwc/pcie-qcom.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+This limit is imposed by:
 
-diff --git a/drivers/pci/controller/dwc/pcie-qcom.c b/drivers/pci/controller/dwc/pcie-qcom.c
-index 0b0bd71f1bd2..df47986bda29 100644
---- a/drivers/pci/controller/dwc/pcie-qcom.c
-+++ b/drivers/pci/controller/dwc/pcie-qcom.c
-@@ -1624,11 +1624,13 @@ static int qcom_pcie_probe(struct platform_device *pdev)
- 	ret = dw_pcie_host_init(pp);
- 	if (ret) {
- 		dev_err(dev, "cannot initialize host\n");
--		goto err_pm_runtime_put;
-+		goto err_phy_exit;
- 	}
- 
- 	return 0;
- 
-+err_phy_exit:
-+	phy_exit(pcie->phy);
- err_pm_runtime_put:
- 	pm_runtime_put(dev);
- 	pm_runtime_disable(dev);
--- 
-2.35.1
+/usr/include/linux/audit.h
+
+struct audit_rule_data {
+...
+        __u32           mask[AUDIT_BITMASK_SIZE]; /* syscall(s) affected */
+
+Where   #define AUDIT_BITMASK_SIZE 64
+
+So, 64 * 32 = 2048
+
+-Steve
+
+> By the way it's a little strange for auditctl(using libaudit.c) to limit
+> syscall number (>=0 && <2047)(see audit_rule_syscall_data()), especially
+> we know NR_syscalls is the real limit in kernel, you can see how other
+> kernel code to the similar thing in ftrace_syscall_enter():
+> 
+> 	static void ftrace_syscall_enter(void *data, struct pt_regs
+> 	*regs, long id)
+> 	{
+> 		...
+> 		syscall_nr = trace_get_syscall_nr(current, regs);
+> 		if (syscall_nr < 0 || syscall_nr >= NR_syscalls)
+> 			return;
+> 		...
+> 	}
+> 
+> Thanks.
+> 
+> > Beware that there are some limitations
+> > to the audit syscall filter, which are unfortunately baked into the
+> > current design/implementation, which may affect this to some extent.
+> 
+> --
+> Linux-audit mailing list
+> Linux-audit@redhat.com
+> https://listman.redhat.com/mailman/listinfo/linux-audit
+
+
+
 
