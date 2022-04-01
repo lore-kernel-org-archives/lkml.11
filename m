@@ -2,51 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ECE3C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:26:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1D4FC352A7
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:26:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355915AbiDAPZZ (ORCPT
+        id S1355965AbiDAPZo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:25:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48880 "EHLO
+        Fri, 1 Apr 2022 11:25:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345602AbiDAOze (ORCPT
+        with ESMTP id S1349409AbiDAOze (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 1 Apr 2022 10:55:34 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 190B060CC9;
-        Fri,  1 Apr 2022 07:43:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2251344744;
+        Fri,  1 Apr 2022 07:43:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CA1AEB823EB;
-        Fri,  1 Apr 2022 14:43:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1351C340EE;
-        Fri,  1 Apr 2022 14:43:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BAD2EB8240E;
+        Fri,  1 Apr 2022 14:43:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 887FFC34111;
+        Fri,  1 Apr 2022 14:43:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824226;
-        bh=LSzVRn0NDfhPSMCSW4F1VVYlmUgrs7tEe750gpeqMOs=;
+        s=k20201202; t=1648824217;
+        bh=+Efgl/EiyX4lpAMQFc7aQLZOHq+E8tyv9W/AxuPRJok=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ddy5brxVmk4E0iIcdxzLkArG1ZV86eSiO+DiNgmfspO6qP2o2jfAczO7LUEKED+QZ
-         UQadmcfgaW39i5s+uI05duO/bMvn+4bvzTuMYSWAMBeR/LwX9jncx/ahIIyI697LTr
-         cNTUmOIVFG8kwzSnhDNpkCkffEpLrcWEuMaV+MdryXi6sEUxx2nrKv0HnFCRMpbl90
-         xkVu+3prTsv7xSchz7Ar+GHeBZ26mBxUqRDONzo2ONU84m7G+MBBOq3iGoshbYLpio
-         Jiy90UIBxAb/6D55Gw0GvTMBMbBU+4C9NPwm8o9DsLTA0oZE/eilCVBsM41ElQ/Tkl
-         xZz+o2pXhuPHg==
+        b=AutQbI5Iy4a2piH2b9DKzK1IJz8tl5YGYJ009vCDKyDLhDijXHrw28ZDI+pOtRiBc
+         X5uWk7XGXFTdzH28d2dF+U8E9adIrpB2tQ4zUyahstwruwDyf2OMYKT7gSCjup3F7E
+         lP4ovTawqqhD6h5c8liX/IIbKN33TFs1n0psIlxg5uKMsH/OEqbq3OdXyCSsEqRYK0
+         jvLtIed2uE7wqRcIS53W6jwRStsGiVdrAECpFxA63uVV6jTe3490jBn2NtJHsAv61C
+         wLa6fO+FrWHzCmSZQ5fPmf6c0Zb/2KQv5To97/1e4FPeeFfniMf7t3KJi2QrrP+G5e
+         bw6cqCDPa5oxg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yang Li <yang.lee@linux.alibaba.com>,
-        Abaci Robot <abaci@linux.alibaba.com>,
-        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>,
-        lorenzo.bianconi83@gmail.com, ryder.lee@mediatek.com,
-        kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, matthias.bgg@gmail.com, xing.song@mediatek.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.10 38/65] mt76: mt7615: Fix assigning negative values to unsigned variable
-Date:   Fri,  1 Apr 2022 10:41:39 -0400
-Message-Id: <20220401144206.1953700-38-sashal@kernel.org>
+Cc:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Jack Wang <jinpu.wang@ionos.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, jinpu.wang@cloud.ionos.com,
+        jejb@linux.ibm.com, linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 34/65] scsi: pm8001: Fix pm8001_mpi_task_abort_resp()
+Date:   Fri,  1 Apr 2022 10:41:35 -0400
+Message-Id: <20220401144206.1953700-34-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401144206.1953700-1-sashal@kernel.org>
 References: <20220401144206.1953700-1-sashal@kernel.org>
@@ -58,39 +54,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Li <yang.lee@linux.alibaba.com>
+From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 
-[ Upstream commit 9273ffcc9a11942bd586bb42584337ef3962b692 ]
+[ Upstream commit 7e6b7e740addcea450041b5be8e42f0a4ceece0f ]
 
-Smatch reports the following:
-drivers/net/wireless/mediatek/mt76/mt7615/mac.c:1865
-mt7615_mac_adjust_sensitivity() warn: assigning (-110) to unsigned
-variable 'def_th'
-drivers/net/wireless/mediatek/mt76/mt7615/mac.c:1865
-mt7615_mac_adjust_sensitivity() warn: assigning (-98) to unsigned
-variable 'def_th'
+The call to pm8001_ccb_task_free() at the end of
+pm8001_mpi_task_abort_resp() already frees the ccb tag. So when the device
+NCQ_ABORT_ALL_FLAG is set, the tag should not be freed again.  Also change
+the hardcoded 0xBFFFFFFF value to ~NCQ_ABORT_ALL_FLAG as it ought to be.
 
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Link: https://lore.kernel.org/r/20220220031810.738362-19-damien.lemoal@opensource.wdc.com
+Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7615/mac.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/scsi/pm8001/pm8001_hwi.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/mac.c b/drivers/net/wireless/mediatek/mt76/mt7615/mac.c
-index 424be103093c..1465a92ea3fc 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7615/mac.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7615/mac.c
-@@ -1626,7 +1626,7 @@ mt7615_mac_adjust_sensitivity(struct mt7615_phy *phy,
- 	struct mt7615_dev *dev = phy->dev;
- 	int false_cca = ofdm ? phy->false_cca_ofdm : phy->false_cca_cck;
- 	bool ext_phy = phy != &dev->phy;
--	u16 def_th = ofdm ? -98 : -110;
-+	s16 def_th = ofdm ? -98 : -110;
- 	bool update = false;
- 	s8 *sensitivity;
- 	int signal;
+diff --git a/drivers/scsi/pm8001/pm8001_hwi.c b/drivers/scsi/pm8001/pm8001_hwi.c
+index 9b318958d78c..a6b8700c7f0c 100644
+--- a/drivers/scsi/pm8001/pm8001_hwi.c
++++ b/drivers/scsi/pm8001/pm8001_hwi.c
+@@ -3666,12 +3666,11 @@ int pm8001_mpi_task_abort_resp(struct pm8001_hba_info *pm8001_ha, void *piomb)
+ 	mb();
+ 
+ 	if (pm8001_dev->id & NCQ_ABORT_ALL_FLAG) {
+-		pm8001_tag_free(pm8001_ha, tag);
+ 		sas_free_task(t);
+-		/* clear the flag */
+-		pm8001_dev->id &= 0xBFFFFFFF;
+-	} else
++		pm8001_dev->id &= ~NCQ_ABORT_ALL_FLAG;
++	} else {
+ 		t->task_done(t);
++	}
+ 
+ 	return 0;
+ }
 -- 
 2.34.1
 
