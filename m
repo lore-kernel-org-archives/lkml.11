@@ -2,83 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B78CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 12:10:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFCBCC4167B
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 12:12:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345757AbiDAMLx (ORCPT
+        id S1345775AbiDAMNx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 08:11:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37526 "EHLO
+        Fri, 1 Apr 2022 08:13:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234174AbiDAMLu (ORCPT
+        with ESMTP id S1345596AbiDAMNv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 08:11:50 -0400
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82547C6EEF;
-        Fri,  1 Apr 2022 05:10:00 -0700 (PDT)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@strlen.de>)
-        id 1naG6I-0007Oy-V9; Fri, 01 Apr 2022 14:09:58 +0200
-Date:   Fri, 1 Apr 2022 14:09:58 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     Jaco Kroon <jaco@uls.co.za>
-Cc:     Florian Westphal <fw@strlen.de>,
-        Eric Dumazet <edumazet@google.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Yuchung Cheng <ycheng@google.com>
-Subject: Re: linux 5.17.1 disregarding ACK values resulting in stalled TCP
- connections
-Message-ID: <20220401120958.GA28321@breakpoint.cc>
-References: <CANn89iKHbmVYoBdo2pCQWTzB4eFBjqAMdFbqL5EKSFqgg3uAJQ@mail.gmail.com>
- <10c1e561-8f01-784f-c4f4-a7c551de0644@uls.co.za>
- <CADVnQynf8f7SUtZ8iQi-fACYLpAyLqDKQVYKN-mkEgVtFUTVXQ@mail.gmail.com>
- <e0bc0c7f-5e47-ddb7-8e24-ad5fb750e876@uls.co.za>
- <CANn89i+Dqtrm-7oW+D6EY+nVPhRH07GXzDXt93WgzxZ1y9_tJA@mail.gmail.com>
- <CADVnQyn=VfcqGgWXO_9h6QTkMn5ZxPbNRTnMFAxwQzKpMRvH3A@mail.gmail.com>
- <5f1bbeb2-efe4-0b10-bc76-37eff30ea905@uls.co.za>
- <CANn89i+KsjGUppc3D8KLa4XUd-dzS3A+yDxbv2bRkDEkziS1qw@mail.gmail.com>
- <20220401001531.GB9545@breakpoint.cc>
- <7d08dcfd-6ba0-f972-cee3-4fa0eff8c855@uls.co.za>
+        Fri, 1 Apr 2022 08:13:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96388277942;
+        Fri,  1 Apr 2022 05:12:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 29236619A3;
+        Fri,  1 Apr 2022 12:12:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75431C34113;
+        Fri,  1 Apr 2022 12:12:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648815120;
+        bh=d0HYYSzBFiO0QLVb9RS/N/6MxRm6wrny8ms762htYcU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=EDmZfqd32cjmkFbdHYnUqt6WfaCkfG4YZLT01LPwPrV+Xoe/nHmKZiJkFEyh0Pz9j
+         2Sa3CXG9kAeyGZZ2GQKd4eS6HS1H9BbyU7eBbAYPXANO1jO0Tn5/R4t0bH5EpBwemr
+         296B4sa1LqArG6LQncXsb6vONSBr9GujVQiWkhSnH2Vf/Z5lUWwemdod4s4cD3Mz2m
+         tDjxQlHFib5P/4Bcwx8usAP2/vlLg6NqxKVlUMJp/nKfx3uzeqzI2cPTKxjlB828RL
+         0jY8nd+q7ksSnBW4bwOuMgT4ZpvtsFbjyZxjKborUKq/30Y5Au/A9XJnnaeuWLUoQc
+         HQZcU9ARguwaw==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan+linaro@kernel.org>)
+        id 1naG8G-0001dO-Da; Fri, 01 Apr 2022 14:12:00 +0200
+From:   Johan Hovold <johan+linaro@kernel.org>
+To:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Stanimir Varbanov <svarbanov@mm-sol.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Rob Herring <robh@kernel.org>,
+        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        linux-pci@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Johan Hovold <johan+linaro@kernel.org>, stable@vger.kernel.org
+Subject: [PATCH 2/2] PCI: qcom: fix unbalanced phy init on probe errors
+Date:   Fri,  1 Apr 2022 14:10:54 +0200
+Message-Id: <20220401121054.6205-3-johan+linaro@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220401121054.6205-1-johan+linaro@kernel.org>
+References: <20220401121054.6205-1-johan+linaro@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7d08dcfd-6ba0-f972-cee3-4fa0eff8c855@uls.co.za>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Jaco Kroon <jaco@uls.co.za> wrote:
-> > Eric Dumazet <edumazet@google.com> wrote:
-> >> Next step would be to attempt removing _all_ firewalls, especially not
-> >> common setups like yours.
-> >>
-> >> conntrack had a bug preventing TFO deployment for a while, because
-> >> many boxes kept buggy kernel versions for years.
-> >>
-> >> 356d7d88e088687b6578ca64601b0a2c9d145296 netfilter: nf_conntrack: fix
-> >> tcp_in_window for Fast Open
-> > Jaco could also try with
-> > net.netfilter.nf_conntrack_tcp_be_liberal=1
-> >
-> > and, if that helps, with liberal=0 and
-> > sysctl net.netfilter.nf_conntrack_log_invalid=6
-> >
-> > (check dmesg/syslog/nflog).
-> 
-> Our core firewalls already had nf_conntrack_tcp_be_liberal for other
-> reasons (asymmetric routing combined with conntrackd left-over if I
-> recall), so maybe that's why it got through there ... don't exactly want
-> to just flip that setting though, is there a way to log if it would have
-> dropped anything, without actually dropping it (yet)?
+Make sure to undo the PHY initialisation (e.g. balance runtime PM) in
+case host initialisation fails during probe.
 
-This means conntrack doesn't tag packets as invalid EVEN if it would
-consider sequence/ack out-of-window (e.g. due to a bug).
+Fixes: 82a823833f4e ("PCI: qcom: Add Qualcomm PCIe controller driver")
+Cc: stable@vger.kernel.org      # 4.5
+Cc: Stanimir Varbanov <svarbanov@mm-sol.com>
+Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+---
+ drivers/pci/controller/dwc/pcie-qcom.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-I have a hard time seeing how tcp liberal-mode conntrack would be to
-blame here.
+diff --git a/drivers/pci/controller/dwc/pcie-qcom.c b/drivers/pci/controller/dwc/pcie-qcom.c
+index 0b0bd71f1bd2..df47986bda29 100644
+--- a/drivers/pci/controller/dwc/pcie-qcom.c
++++ b/drivers/pci/controller/dwc/pcie-qcom.c
+@@ -1624,11 +1624,13 @@ static int qcom_pcie_probe(struct platform_device *pdev)
+ 	ret = dw_pcie_host_init(pp);
+ 	if (ret) {
+ 		dev_err(dev, "cannot initialize host\n");
+-		goto err_pm_runtime_put;
++		goto err_phy_exit;
+ 	}
+ 
+ 	return 0;
+ 
++err_phy_exit:
++	phy_exit(pcie->phy);
+ err_pm_runtime_put:
+ 	pm_runtime_put(dev);
+ 	pm_runtime_disable(dev);
+-- 
+2.35.1
 
-Only thing you could also check is if
-net.netfilter.nf_conntrack_checksum=0 helps (but i doubt it).
