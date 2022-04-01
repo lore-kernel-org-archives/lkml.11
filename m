@@ -2,209 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3674BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 16:14:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04763C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 16:14:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349222AbiDAQQN (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 12:16:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41620 "EHLO
+        id S233760AbiDAQQW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Apr 2022 12:16:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350404AbiDAQNw (ORCPT
+        with ESMTP id S1350413AbiDAQNy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 12:13:52 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CBD8CC53A;
-        Fri,  1 Apr 2022 08:39:40 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id bg10so6685734ejb.4;
-        Fri, 01 Apr 2022 08:39:40 -0700 (PDT)
+        Fri, 1 Apr 2022 12:13:54 -0400
+Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD8D0CC52F
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 08:39:41 -0700 (PDT)
+Received: by mail-qt1-x832.google.com with SMTP id a11so2431811qtb.12
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 08:39:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=PeXk7Ks+fNVGI2/bl+W72hWsR2c/g3dfM5gY6CT867Q=;
-        b=Rp7ne8oDad6XcRIlLfpw/9pQd8HXNWf99qahudH0TbQmMk/jdKmCop8mweJieYHEoh
-         m5nkE6Mz/JFKIq+8Lx1O+UbVzwoNyRDG+CnH6DJjlAXnBqjUNiG8qICQCLAYjyzrOgij
-         XKRvYmijSQy5NsQNNEAxvjrhum6RQkB4xYBWDi3h6FL0QnI4BbNDvpvjkDbC9Xp9krUW
-         //NQBllwVlBRCu1/IxgcuXmmar8POPpLY7yiO2zSwUF2AOCV4vOpf6gYSCKBJWrZcu8O
-         RCzLt0mdHcl+gg+ya4zfRgVkvJeEgrzZ16w65ALX9nmd/PDNN0onEHY1HmqkdlomHEMZ
-         NSdw==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=NStYi8rXtYWop4V2MnxgWp7QtmI7tN/4ns3xchJYyfU=;
+        b=RcBEDEhwGNG4pz2bKGcoUjhgTPL//Nw9SMozlKIJc/XyK5WeU3Z51Nq9I6OP26Qego
+         NZCnXhVVX0/YyfUzn51W4PEJVv9q+AWibLf4tNKLhoRnytOvEeL67wZA0WTNC58XbncV
+         rN5RfSRPM7HXo31kmDUNKIW48ke86Nc6RlBpatVt2QpyHllYeIRubzqOhP01RSyFeJTv
+         63toCKRjluEIi2Ud+b3w19ZNRaYRwhS0j4Kvym9j1GLh3X7v5squ5E9kC17IF3iC1t6Q
+         xGzYu8R9+oKaCVw+geZf/roX+EFERpJpHQ3Ok5K8/7qADlsejiKMbNh7EPMQf4vOGXuS
+         OsfA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=PeXk7Ks+fNVGI2/bl+W72hWsR2c/g3dfM5gY6CT867Q=;
-        b=wum/EfsrYwt7qmsYHM43ez4fKBTETinXGFMNyNdPhz6oXIDgBf5sesrlaMJ2C1x+if
-         yBuOqjnypvoVPQR/8alaROmRej+OuXoifCymC34ZF8YcEOR/FG2ngHH2jNCrOyuAFAvk
-         IHovNLA/WbNRgKJULGoaGqoYD4UY+tlPw3accDsKZnE/ty3t5BJDq8GYc0In/orzP/F7
-         Vy4LZwqyECnsujB8ZIjykOXx2fyQK5Iwy8tUeVXFGTsfzR5BGhk/6hHbl8PNsOYJjYHT
-         C6mWl/rWJRI5qC1e4wR/tAENUr30JJ65rOTJ5Mp3zkL1DEqd2ZfvjIrBijjtPwLEJtfR
-         lE8Q==
-X-Gm-Message-State: AOAM531mxLSryJyiBSzo7msUbXE3cxfMkpT7kZGOc4wxRqJS93xvZfZz
-        pdmn6zcUsrNNhG0GV0y8qhE=
-X-Google-Smtp-Source: ABdhPJyWp/Eh2olp3U5NWRmn07izDA0NLguhIkEt6HwxOfA08cYF3QYfMQFEQswwwVAQOSiMOvttxg==
-X-Received: by 2002:a17:907:6d19:b0:6db:89c8:52e3 with SMTP id sa25-20020a1709076d1900b006db89c852e3mr348766ejc.754.1648827578994;
-        Fri, 01 Apr 2022 08:39:38 -0700 (PDT)
-Received: from Francescos-Air.fritz.box (host-79-3-210-6.business.telecomitalia.it. [79.3.210.6])
-        by smtp.gmail.com with ESMTPSA id 17-20020a170906059100b006cee1bceddasm1134220ejn.130.2022.04.01.08.39.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Apr 2022 08:39:38 -0700 (PDT)
-Date:   Fri, 1 Apr 2022 17:39:36 +0200
-From:   Francesco Duca <f.duca00@gmail.com>
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     Francesco Duca <s23265@iisve.it>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] kbuild: use hostname -s along uname to obtain
- LINUX_COMPILE_HOST
-Message-ID: <YkccuNfZOjQ0FQEJ@Francescos-Air.fritz.box>
-References: <20220330182329.52310-1-s23265@iisve.it>
- <CAK7LNARvEsh3+dix+EdcXnm2L0rh8hndQD5N2vyc0q_c0Vf7gQ@mail.gmail.com>
- <CAK7LNAQ3cj2M0+k2H0O30wdOwONGE3OVrFJfTHicpqaKPRgG3Q@mail.gmail.com>
- <YkcU4mpNX7AsJgbg@Francescos-Air.fritz.box>
- <CAK7LNATvFnac4sSFkbtMT-+h6-jGNuCaJpNZOua0g5wg56vRjQ@mail.gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=NStYi8rXtYWop4V2MnxgWp7QtmI7tN/4ns3xchJYyfU=;
+        b=tfEFbj8mNJV+GdpiaKI33s/cOZoyh5SF7GSokfVi3ODcERLCzRu13u45u5CiZed+ie
+         Wlnmznpd9i2oYggG+cM51xgpMOFvSrquxtItlPkM3hIdKNSonjdpUzmlqNAaVEiyR7Zr
+         TNGVhYfw6XiE0YHN3GDvNQmzwEARW+HTqCBGDIotr3reEiYgXdZnyEJzpJg/wkh9R078
+         9Nn01wQHx3K9T8q4Fwzs5DbPhtJPHiV0IpbA/yUjU6v+j6MZkkzmd+Y2DVTj2WKgUreA
+         MHOm+kaS7WzIlDIGhS92JwFLYUo1axjdhFCgIBgJLmWLcLarBc+XDoGWGASL7pRvQgJj
+         pdTg==
+X-Gm-Message-State: AOAM53073ndViOI1hcOM19+EL4PxevaIrEg9iXeLS4FPXNOHMtf24iAM
+        oNXwnBMTi0nuPRzMrwwZy6QAv0GsTYEN8eJKKXaf4Q==
+X-Google-Smtp-Source: ABdhPJwQDqagA7/Uue9NFuWCMhrm/bBHXbtSwxNv7+uqSSiCMCYxX/856COy5CwMZFSp16jLb6Y8mXhI8vhvcRppTkU=
+X-Received: by 2002:ac8:7f0d:0:b0:2e1:e894:9f16 with SMTP id
+ f13-20020ac87f0d000000b002e1e8949f16mr8818981qtk.183.1648827580616; Fri, 01
+ Apr 2022 08:39:40 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAK7LNATvFnac4sSFkbtMT-+h6-jGNuCaJpNZOua0g5wg56vRjQ@mail.gmail.com>
+References: <E1nZMdl-0006nG-0J@plastiekpoot> <CADVnQyn=A9EuTwxe-Bd9qgD24PLQ02YQy0_b7YWZj4_rqhWRVA@mail.gmail.com>
+ <eaf54cab-f852-1499-95e2-958af8be7085@uls.co.za> <CANn89iKHbmVYoBdo2pCQWTzB4eFBjqAMdFbqL5EKSFqgg3uAJQ@mail.gmail.com>
+ <10c1e561-8f01-784f-c4f4-a7c551de0644@uls.co.za> <CADVnQynf8f7SUtZ8iQi-fACYLpAyLqDKQVYKN-mkEgVtFUTVXQ@mail.gmail.com>
+ <e0bc0c7f-5e47-ddb7-8e24-ad5fb750e876@uls.co.za> <CANn89i+Dqtrm-7oW+D6EY+nVPhRH07GXzDXt93WgzxZ1y9_tJA@mail.gmail.com>
+ <CADVnQyn=VfcqGgWXO_9h6QTkMn5ZxPbNRTnMFAxwQzKpMRvH3A@mail.gmail.com>
+ <5f1bbeb2-efe4-0b10-bc76-37eff30ea905@uls.co.za> <CADVnQymPoyY+AX_P7k+NcRWabJZrb7UCJdDZ=FOkvWguiTPVyQ@mail.gmail.com>
+In-Reply-To: <CADVnQymPoyY+AX_P7k+NcRWabJZrb7UCJdDZ=FOkvWguiTPVyQ@mail.gmail.com>
+From:   Neal Cardwell <ncardwell@google.com>
+Date:   Fri, 1 Apr 2022 11:39:24 -0400
+Message-ID: <CADVnQy=GX0J_QbMJXogGzPwD=f0diKDDxLiHV0gzrb4bo=4FjA@mail.gmail.com>
+Subject: Re: linux 5.17.1 disregarding ACK values resulting in stalled TCP connections
+To:     Jaco Kroon <jaco@uls.co.za>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Yuchung Cheng <ycheng@google.com>, Wei Wang <weiwan@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> ( <hostname> on Debian vs <hostname>.<domainname> on Arch Linux)
+On Tue, Mar 29, 2022 at 9:03 PM Jaco <jaco@uls.co.za> wrote:
+...
+> Connection setup:
+>
+> 00:56:17.055481 IP6 2c0f:f720:0:3:d6ae:52ff:feb8:f27b.59110 > 2a00:1450:4=
+00c:c07::1b.25: Flags [S], seq 956633779, win 62580, options [mss 8940,nop,=
+nop,TS val 3687705482 ecr 0,nop,wscale 7,tfo  cookie f025dd84b6122510,nop,n=
+op], length 0
+>
+> 00:56:17.217747 IP6 2a00:1450:400c:c07::1b.25 > 2c0f:f720:0:3:d6ae:52ff:f=
+eb8:f27b.59110: Flags [S.], seq 726465675, ack 956633780, win 65535, option=
+s [mss 1440,nop,nop,TS val 3477429218 ecr 3687705482,nop,wscale 8], length =
+0
+>
+> 00:56:17.218628 IP6 2a00:1450:400c:c07::1b.25 > 2c0f:f720:0:3:d6ae:52ff:f=
+eb8:f27b.59110: Flags [P.], seq 726465676:726465760, ack 956633780, win 256=
+, options [nop,nop,TS val 3477429220 ecr 3687705482], length 84: SMTP: 220 =
+mx.google.com ESMTP e16-20020a05600c4e5000b0038c77be9b2dsi226281wmq.72 - gs=
+mtp
+>
+> 00:56:17.218663 IP6 2c0f:f720:0:3:d6ae:52ff:feb8:f27b.59110 > 2a00:1450:4=
+00c:c07::1b.25: Flags [.], ack 726465760, win 489, options [nop,nop,TS val =
+3687705645 ecr 3477429220], length 0
+>
+> This is pretty normal, we advertise an MSS of 8940 and the return is 1440=
+, thus
+> we shouldn't send segments larger than that, and they "can't".  I need to
+> determine if this is some form of offloading or they really are sending >=
+1500
+> byte frames (which I know won't pass our firewalls without fragmentation =
+so
+> probably some form of NIC offloading - which if it was active on older 5.=
+8
+> kernels did not cause problems):
 
-Actually, every time i compiled a kernel (on Arch/Ubuntu), KBUILD_BUILD_HOST it's always <hostname>
-without <domainname>, while on macOS, KBUILD_BUILD_HOST is <hostname>.<domainname>
+Jaco, was there some previous kernel version on these client machines
+where this problem did not show up? Perhaps the v5.8 version you
+mention here? Can you please share the exact version number?
 
-> As I said, it is not annoying.
+If so, a hypothesis would be:
 
-I said it is annoying just because <hostname>.<domainname> is set on
-macOS only and not on Linux (Arch or Ubuntu).
+(1) There is a bug in netfilter's handling of TFO connections where
+the server sends a data packet after a TFO SYNACK, before the client
+ACKs anything (as we see in this trace).
 
-Now, it may be a "me only" problem, so i'm not sure, but from my
-experience it only happens on macOS.
+This bug is perhaps similar in character to the bug fixed by Yuchung's
+2013 commit that Eric mentioned:
 
-On Sat, Apr 02, 2022 at 12:22:55AM +0900, Masahiro Yamada wrote:
-> On Sat, Apr 2, 2022 at 12:06 AM Francesco Duca <f.duca00@gmail.com> wrote:
-> >
-> > >And, the intention of this patch is,
-> > >print  Francescos-Air if the 'hostname -s' command is available,
-> > >but Francescos-Air.fritz.box  otherwise, correct  ?
-> >
-> > Yes exactly, this is the intention of this patch
-> >
-> > >error message because   "2>/dev/null" is missing ?
-> >
-> > It is missing indeed, i forgot to add it.
-> >
-> > I will send a new v2 patch in a while
-> >
-> > On Fri, Apr 01, 2022 at 11:19:22PM +0900, Masahiro Yamada wrote:
-> > > On Fri, Apr 1, 2022 at 11:04 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
-> > > >
-> > > > On Thu, Mar 31, 2022 at 3:23 AM FraSharp <f.duca00@gmail.com> wrote:
-> > > > >
-> > > > > From: Francesco Duca <s23265@iisve.it>
-> > > > >
-> > > > > * On some systems (e.g. macOS), using commands like 'uname -n' or
-> > > > >   'hostname' will print something similar to "hostname.domain"
-> > > >
-> > > >
-> > > > Not only macOS, but also on Linux systems such as Fedora, Debian.
-> > > >
-> > > > 'uname -s' or 'hostname' prints "hostname.domain"
-> > >
-> > > I mean,
-> > >
-> > >     'uname -n' or 'hostname' prints "hostname.domain"
-> > >
-> > >
-> > >
-> > > >
-> > > >
-> > > >
-> > > > >   ("Francescos-Air.fritz.box" for example), which is very annoying.
-> > > >
-> > > > I do not think so.
-> > > >
-> > > >
-> > > > >   What works instead is 'hostname -s', which will only write hostname
-> > > > >   without the domain ("Francescos-Air" for example),
-> > > > >   but also keep 'uname -n', as some systems as Arch Linux does not have
-> > > > >   'hostname' as command.
-> > > >
-> > > > If so, on Arch Linux, will this patch spit
-> > > >   hostname: command not found
-> > > > error message because   "2>/dev/null" is missing ?
-> > > >
-> > > >
-> > > > And, the intention of this patch is,
-> > > > print  Francescos-Air if the 'hostname -s' command is available,
-> > > > but Francescos-Air.fritz.box  otherwise, correct  ?
-> 
-> I do not see a good reason to output different strings on different
-> distributions.
-> ( <hostname> on Debian vs <hostname>.<domainname> on Arch Linux)
-> 
-> 
-> <hostname>.<domainname> is just fine.
-> As I said, it is not annoying.
-> 
-> NACK.
-> 
-> 
-> 
-> 
-> 
-> 
-> > > >
-> > > >
-> > > >
-> > > >
-> > > >
-> > > >
-> > > > >
-> > > > > * This commit is complementary to
-> > > > >   1e66d50ad3a1dbf0169b14d502be59a4b1213149
-> > > > >   ("kbuild: Use uname for LINUX_COMPILE_HOST detection")
-> > > > >
-> > > > > Signed-off-by: Francesco Duca <s23265@iisve.it>
-> > > > > ---
-> > > > >  scripts/mkcompile_h | 2 +-
-> > > > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > > > >
-> > > > > diff --git a/scripts/mkcompile_h b/scripts/mkcompile_h
-> > > > > index ca40a5258..6054e3eee 100755
-> > > > > --- a/scripts/mkcompile_h
-> > > > > +++ b/scripts/mkcompile_h
-> > > > > @@ -34,7 +34,7 @@ else
-> > > > >         LINUX_COMPILE_BY=$KBUILD_BUILD_USER
-> > > > >  fi
-> > > > >  if test -z "$KBUILD_BUILD_HOST"; then
-> > > > > -       LINUX_COMPILE_HOST=`uname -n`
-> > > > > +       LINUX_COMPILE_HOST=$(hostname -s || uname -n)
-> > > > >  else
-> > > > >         LINUX_COMPILE_HOST=$KBUILD_BUILD_HOST
-> > > > >  fi
-> > > > > --
-> > > > > 2.32.0 (Apple Git-132)
-> > > > >
-> > > >
-> > > >
-> > > > --
-> > > > Best Regards
-> > > > Masahiro Yamada
-> > >
-> > >
-> > >
-> > > --
-> > > Best Regards
-> > > Masahiro Yamada
-> 
-> 
-> 
-> --
-> Best Regards
-> Masahiro Yamada
+356d7d88e088687b6578ca64601b0a2c9d145296
+netfilter: nf_conntrack: fix tcp_in_window for Fast Open
+
+(2) With kernel v5.8, TFO blackhole detection detected that in your
+workload there were TFO connections that died due to apparent
+blackholing (like what's shown in the trace), and dynamically disabled
+TFO on your machines. This allowed mail traffic to flow, because the
+netfilter bug was no longer tickled. This worked around the netfilter
+bug.
+
+(3) You upgraded your client-side machine from v5.8 to v5.17, which
+has the following commit from v5.14, which disables TFO blackhole
+logic by default:
+  213ad73d0607 tcp: disable TFO blackhole logic by default
+
+(4) Due to (3), the blackhole detection logic was no longer operative,
+and when the netfilter bug blackholed the connection, TFO stayed
+enabled. This caused mail traffic to Google to stall.
+
+This hypothesis would explain why:
+  o disabling TFO fixes this problem
+  o you are seeing this with a newer kernel (and apparently not with a
+kernel before v5.14?)
+
+With this hypothesis, we need several pieces to trigger this:
+
+(a) client side software that tries TFO to a server that supports TFO
+(like the exim mail transfer agent you are using, connecting to
+Google)
+
+(b) a client-side Linux kernel running buggy netfilter code (you are
+running netfilter)
+
+(c) a client-side Linux kernel with TFO support but no blackhole
+detection logic active (e.g. v5.14 or later, like your v5.17.1)
+
+That's probably a rare combination, so would explain why we have not
+had this report before.
+
+Jaco, to provide some evidence for this hypothesis, can you please
+re-enable fastopen but also enable the TFO blackhole detection that
+was disabled in v5.14 (213ad73d0607), with something like:
+
+  sysctl -w net.ipv4.tcp_fastopen=3D1
+  sysctl -w tcp_fastopen_blackhole_timeout=3D3600
+
+And then after a few hours, check to see if this blackholing behavior
+has been detected:
+  nstat -az | grep -i blackhole
+And see if TFO FastOpenActive attempts have been cut to a super-low rate:
+  nstat -az | grep -i fastopenactive
+
+thanks,
+neal
