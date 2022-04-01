@@ -2,56 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5002C43219
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:37:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0444BC3526F
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:38:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350802AbiDAPei (ORCPT
+        id S1350870AbiDAPes (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:34:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42352 "EHLO
+        Fri, 1 Apr 2022 11:34:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350065AbiDAO6x (ORCPT
+        with ESMTP id S1350123AbiDAO7E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:58:53 -0400
+        Fri, 1 Apr 2022 10:59:04 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DD98181B3A;
-        Fri,  1 Apr 2022 07:46:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 194C65676D;
+        Fri,  1 Apr 2022 07:46:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4C6B7B82500;
-        Fri,  1 Apr 2022 14:46:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15A79C2BBE4;
-        Fri,  1 Apr 2022 14:46:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BF4B6B824FD;
+        Fri,  1 Apr 2022 14:46:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7877FC34113;
+        Fri,  1 Apr 2022 14:46:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824368;
-        bh=Uq8IKRYb1CKI8oteRhFM1NknKrwKvla0xctmkVgqtB8=;
+        s=k20201202; t=1648824397;
+        bh=CdT67UIb3gW6Ey5zJJcP49xxe4aOfAQ2gK2EWJliYUI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WQElCcmGyWAl/Z/VCCJs9cL+zzHa1sMjV4cepY0s9pwFNR0mSR7vKZUfkY8zlaaQQ
-         v9LIEJEmlwK5Fp6x9VQpTSYPU++bsQiFaasDGHrJxfr8JniMsRL7oM8pRnF7vM2L1X
-         pxorw/G1Fjf8LWYuSDEvvd4wwI6Xqz6B4frUxZzDToGDIgPgUMUwPTuVh9aMDFr+e1
-         5JHeSPjyVciPwxNhhD9ekJgk0jinb1cWqxJlVCN0V/0znrzYgA6bVryDVFerkR+8sK
-         m3res4cTG/ovV1Hz3fUB9oQxC0xWWWNXL/32luhMyl3F525lkBJrbK5/QkY+svdAMH
-         7Lr3+MBzd93eQ==
+        b=NrVlkA+ol+eZppUVnF4PzKV9dmiH9fehzKPH5cxjG+aBKzZQSVlv3crgcb0+K1mcp
+         lqamSmENPkY2kdXNh6FajusarrDAvQd84lkJJDpn1U0HJE6ubAaRmSMvt22zGevQ05
+         wwF2gLEA3TZFBv8qPAd2QaHCL18M4U1P7LSj7QTxBcUptodoPmxSGdqPOvMti86D7v
+         7OVxEVEHSrVwPciTDiEEcgwwqiZL1uOn1mbSmBUgEy50ZU8hIgQJlel46OuOzmj2fn
+         3VF5PyP+sz98t5Vv/Dr9NB3ToFeS2iiQZ/UpVZTbNKmUEtKzDxc6qUmJq8LrcaOLFe
+         TCFWeUBqlaMJw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        Ingo Molnar <mingo@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>, rostedt@goodmis.org,
-        mhiramat@kernel.org, ahalaney@redhat.com, vbabka@suse.cz,
-        wangkefeng.wang@huawei.com, linux@rasmusvillemoes.dk,
-        keescook@chromium.org, mark-pk.tsai@mediatek.com,
-        peterz@infradead.org, valentin.schneider@arm.com
-Subject: [PATCH AUTOSEL 5.4 36/37] init/main.c: return 1 from handled __setup() functions
-Date:   Fri,  1 Apr 2022 10:44:45 -0400
-Message-Id: <20220401144446.1954694-36-sashal@kernel.org>
+Cc:     Evgeny Boger <boger@wirenboard.com>, Chen-Yu Tsai <wens@csie.org>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        Sasha Levin <sashal@kernel.org>, sre@kernel.org,
+        linux-pm@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 08/29] power: supply: axp20x_battery: properly report current when discharging
+Date:   Fri,  1 Apr 2022 10:45:51 -0400
+Message-Id: <20220401144612.1955177-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220401144446.1954694-1-sashal@kernel.org>
-References: <20220401144446.1954694-1-sashal@kernel.org>
+In-Reply-To: <20220401144612.1955177-1-sashal@kernel.org>
+References: <20220401144612.1955177-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -60,55 +53,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Evgeny Boger <boger@wirenboard.com>
 
-[ Upstream commit f9a40b0890658330c83c95511f9d6b396610defc ]
+[ Upstream commit d4f408cdcd26921c1268cb8dcbe8ffb6faf837f3 ]
 
-initcall_blacklist() should return 1 to indicate that it handled its
-cmdline arguments.
+As stated in [1], negative current values are used for discharging
+batteries.
 
-set_debug_rodata() should return 1 to indicate that it handled its
-cmdline arguments.  Print a warning if the option string is invalid.
+AXP PMICs internally have two different ADC channels for shunt current
+measurement: one used during charging and one during discharging.
+The values reported by these ADCs are unsigned.
+While the driver properly selects ADC channel to get the data from,
+it doesn't apply negative sign when reporting discharging current.
 
-This prevents these strings from being added to the 'init' program's
-environment as they are not init arguments/parameters.
+[1] Documentation/ABI/testing/sysfs-class-power
 
-Link: https://lkml.kernel.org/r/20220221050901.23985-1-rdunlap@infradead.org
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Cc: Ingo Molnar <mingo@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Evgeny Boger <boger@wirenboard.com>
+Acked-by: Chen-Yu Tsai <wens@csie.org>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- init/main.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/power/supply/axp20x_battery.c | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
-diff --git a/init/main.c b/init/main.c
-index e6a1fb14f308..d292daabd9a2 100644
---- a/init/main.c
-+++ b/init/main.c
-@@ -831,7 +831,7 @@ static int __init initcall_blacklist(char *str)
- 		}
- 	} while (str_entry);
- 
--	return 0;
-+	return 1;
- }
- 
- static bool __init_or_module initcall_blacklisted(initcall_t fn)
-@@ -1072,7 +1072,9 @@ static noinline void __init kernel_init_freeable(void);
- bool rodata_enabled __ro_after_init = true;
- static int __init set_debug_rodata(char *str)
+diff --git a/drivers/power/supply/axp20x_battery.c b/drivers/power/supply/axp20x_battery.c
+index e84b6e4da14a..9fda98b950ba 100644
+--- a/drivers/power/supply/axp20x_battery.c
++++ b/drivers/power/supply/axp20x_battery.c
+@@ -185,7 +185,6 @@ static int axp20x_battery_get_prop(struct power_supply *psy,
+ 				   union power_supply_propval *val)
  {
--	return strtobool(str, &rodata_enabled);
-+	if (strtobool(str, &rodata_enabled))
-+		pr_warn("Invalid option string for rodata: '%s'\n", str);
-+	return 1;
- }
- __setup("rodata=", set_debug_rodata);
- #endif
+ 	struct axp20x_batt_ps *axp20x_batt = power_supply_get_drvdata(psy);
+-	struct iio_channel *chan;
+ 	int ret = 0, reg, val1;
+ 
+ 	switch (psp) {
+@@ -265,12 +264,12 @@ static int axp20x_battery_get_prop(struct power_supply *psy,
+ 		if (ret)
+ 			return ret;
+ 
+-		if (reg & AXP20X_PWR_STATUS_BAT_CHARGING)
+-			chan = axp20x_batt->batt_chrg_i;
+-		else
+-			chan = axp20x_batt->batt_dischrg_i;
+-
+-		ret = iio_read_channel_processed(chan, &val->intval);
++		if (reg & AXP20X_PWR_STATUS_BAT_CHARGING) {
++			ret = iio_read_channel_processed(axp20x_batt->batt_chrg_i, &val->intval);
++		} else {
++			ret = iio_read_channel_processed(axp20x_batt->batt_dischrg_i, &val1);
++			val->intval = -val1;
++		}
+ 		if (ret)
+ 			return ret;
+ 
 -- 
 2.34.1
 
