@@ -2,111 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E081C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 16:28:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ED97C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 16:28:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233973AbiDAQaN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 12:30:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49222 "EHLO
+        id S243414AbiDAQaY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Apr 2022 12:30:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347836AbiDAQ14 (ORCPT
+        with ESMTP id S1348557AbiDAQ16 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 12:27:56 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21CFD2F3B0;
-        Fri,  1 Apr 2022 08:58:56 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id A06F01FD00;
-        Fri,  1 Apr 2022 15:58:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1648828735;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=MhAtGdRSnzMlSPMcK6cQ4fm3keZyBBT8jVyV6htCkSA=;
-        b=XYFKtOMxC1z7G48Ru9i9yaghtTen1k6QgMMoW1yDbTdRh2Mxk4rvCxEvOel1smUvC+c9ZJ
-        mkw8hCV19Z1MK14DWbOUh0luB3JVBHboGye8d8wXYI6wGOAflZKJbyzQJLRv6t94VvSDBS
-        batoXhMZrdBijBpsCxR4V2F5Cj0C5Mc=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1648828735;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=MhAtGdRSnzMlSPMcK6cQ4fm3keZyBBT8jVyV6htCkSA=;
-        b=BGqogJOxtfE3A31RcWCAOp27zO7LF4mbxSJJfGdpPI7m4+RiZx9t9EsWffvqPLCKmjGOII
-        hW+lntlrcpaoVWCQ==
-Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
-        by relay2.suse.de (Postfix) with ESMTP id 969D8A3B82;
-        Fri,  1 Apr 2022 15:58:55 +0000 (UTC)
-Received: by ds.suse.cz (Postfix, from userid 10065)
-        id 82ED0DA7F3; Fri,  1 Apr 2022 17:54:56 +0200 (CEST)
-Date:   Fri, 1 Apr 2022 17:54:56 +0200
-From:   David Sterba <dsterba@suse.cz>
-To:     Jia-Ju Bai <baijiaju1990@gmail.com>
-Cc:     dsterba@suse.cz, clm@fb.com, josef@toxicpanda.com,
-        dsterba@suse.com, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] fs: btrfs: fix possible use-after-free bug in error
- handling code of btrfs_get_root_ref()
-Message-ID: <20220401155456.GL15609@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz, Jia-Ju Bai <baijiaju1990@gmail.com>,
-        clm@fb.com, josef@toxicpanda.com, dsterba@suse.com,
-        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220324134454.15192-1-baijiaju1990@gmail.com>
- <20220324181940.GK2237@suse.cz>
- <84720b1d-831e-4a2e-e2c5-4f20ac7bb778@gmail.com>
+        Fri, 1 Apr 2022 12:27:58 -0400
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2EB0E13F89
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 08:59:26 -0700 (PDT)
+Received: from [192.168.4.54] (cpe-70-95-196-11.san.res.rr.com [70.95.196.11])
+        by linux.microsoft.com (Postfix) with ESMTPSA id 267D920DEEBF;
+        Fri,  1 Apr 2022 08:59:25 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 267D920DEEBF
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1648828765;
+        bh=4U2yibKauUx9VepxeUJ4omwk1df4H2DqEYX73pyN2jU=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=cJfgF5guqfuH2XAMLI4R332Jmgro/dAyFeCQw/usoUMHx5Tu/aaSgNhhP14UOAdv2
+         nIpTkdNy0+ME3YhEd1tfhJRFWjGkYeEDbocixtfiWuGm4LFn+QVmvSUgK+PYlStRZV
+         urQmxT+RTEHnW8ILrxgzj4iSgTp0Dyvo6WSYjlPA=
+Message-ID: <69c1e722-33ea-95cf-de84-aed3022cb042@linux.microsoft.com>
+Date:   Fri, 1 Apr 2022 08:59:24 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <84720b1d-831e-4a2e-e2c5-4f20ac7bb778@gmail.com>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v2 resend 1/3] arm64: mm: Do not defer
+ reserve_crashkernel() if only ZONE_DMA32
+Content-Language: en-US
+To:     Kefeng Wang <wangkefeng.wang@huawei.com>, catalin.marinas@arm.com,
+        will@kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Cc:     f.fainelli@gmail.com, Pasha Tatashin <pasha.tatashin@soleen.com>
+References: <20220331074055.125824-1-wangkefeng.wang@huawei.com>
+ <20220331074055.125824-2-wangkefeng.wang@huawei.com>
+From:   Vijay Balakrishna <vijayb@linux.microsoft.com>
+In-Reply-To: <20220331074055.125824-2-wangkefeng.wang@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 25, 2022 at 04:04:17PM +0800, Jia-Ju Bai wrote:
-> >> @@ -1850,9 +1850,10 @@ static struct btrfs_root *btrfs_get_root_ref(struct btrfs_fs_info *fs_info,
-> >>   
-> >>   	ret = btrfs_insert_fs_root(fs_info, root);
-> >>   	if (ret) {
-> >> -		btrfs_put_root(root);
-> >> -		if (ret == -EEXIST)
-> >> +		if (ret == -EEXIST) {
-> >> +			btrfs_put_root(root);
-> > I think this fix is correct, though it's not that clear. If you look how
-> > the code changed, there was the unconditional put and then followed by a
-> > free:
-> >
-> > 8c38938c7bb0 ("btrfs: move the root freeing stuff into btrfs_put_root")
-> >
-> > Here it's putting twice where one will be the final free.
-> >
-> > And then the whole refcounting gets updated in
-> >
-> > 4785e24fa5d2 ("btrfs: don't take an extra root ref at allocation time")
-> >
-> > which could be removing the wrong put, I'm not yet sure.
-> 
-> Thanks for the reply!
-> 
-> I think the bug should be introduced by this commit:
-> bc44d7c4b2b1 ("btrfs: push btrfs_grab_fs_root into btrfs_get_fs_root")
-> 
-> This commit has a change:
->       ret = btrfs_insert_fs_root(fs_info, root);
->       if (ret) {
-> +      btrfs_put_fs_root(root);
->           if (ret == -EEXIST) {
->               btrfs_free_fs_root(root);
->               goto again;
->           }
-> 
-> I could add a Fixes tag of this commit in my V2 patch.
-> Is it okay?
 
-I can add it myself, that's a minor thing. The fix is correct, I've
-rewritten the changelog a bit, patch now added to misc-next, thanks.
+
+On 3/31/2022 12:40 AM, Kefeng Wang wrote:
+> The kernel could be benefit due to BLOCK_MAPPINGS, see commit
+> 031495635b46 ("arm64: Do not defer reserve_crashkernel() for
+> platforms with no DMA memory zones"), if only with ZONE_DMA32,
+> set arm64_dma_phys_limit to max_zone_phys(32) earlier in
+> arm64_memblock_init(), so platforms with just ZONE_DMA32 config
+> enabled will be benefit.
+
+nit --
+- "will be benefit" => will benefit
+
+On further look I feel we can getaway without dma32_phys_limit static 
+global and replace with two separate calls to max_zone_phys(32)?  Just a 
+thought.  If you decide to keep it then a better location would be 
+immediately above arm64_memblock_init() definition where it is 
+initialized can improve code readability.
+
+Thanks,
+Vijay
+
+> 
+> Cc: Vijay Balakrishna <vijayb@linux.microsoft.com>
+> Cc: Pasha Tatashin <pasha.tatashin@soleen.com>
+> Cc: Will Deacon <will@kernel.org>
+> Reviewed-by: Vijay Balakrishna <vijayb@linux.microsoft.com>
+> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+> ---
+>   arch/arm64/mm/init.c | 23 +++++++++++++----------
+>   arch/arm64/mm/mmu.c  |  6 ++----
+>   2 files changed, 15 insertions(+), 14 deletions(-)
+> 
+> diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
+> index 8ac25f19084e..fb01eb489fa9 100644
+> --- a/arch/arm64/mm/init.c
+> +++ b/arch/arm64/mm/init.c
+> @@ -65,8 +65,9 @@ EXPORT_SYMBOL(memstart_addr);
+>    * Memory reservation for crash kernel either done early or deferred
+>    * depending on DMA memory zones configs (ZONE_DMA) --
+>    *
+> - * In absence of ZONE_DMA configs arm64_dma_phys_limit initialized
+> - * here instead of max_zone_phys().  This lets early reservation of
+> + * In absence of ZONE_DMA and ZONE_DMA32 configs arm64_dma_phys_limit
+> + * initialized here and if only with ZONE_DMA32 arm64_dma_phys_limit
+> + * initialised to dma32_phys_limit. This lets early reservation of
+>    * crash kernel memory which has a dependency on arm64_dma_phys_limit.
+>    * Reserving memory early for crash kernel allows linear creation of block
+>    * mappings (greater than page-granularity) for all the memory bank rangs.
+> @@ -84,6 +85,7 @@ EXPORT_SYMBOL(memstart_addr);
+>    * Note: Page-granularity mapppings are necessary for crash kernel memory
+>    * range for shrinking its size via /sys/kernel/kexec_crash_size interface.
+>    */
+> +static phys_addr_t __ro_after_init dma32_phys_limit;
+
+
+>   #if IS_ENABLED(CONFIG_ZONE_DMA) || IS_ENABLED(CONFIG_ZONE_DMA32)
+>   phys_addr_t __ro_after_init arm64_dma_phys_limit;
+>   #else
+> @@ -160,11 +162,10 @@ static phys_addr_t __init max_zone_phys(unsigned int zone_bits)
+>   static void __init zone_sizes_init(unsigned long min, unsigned long max)
+>   {
+>   	unsigned long max_zone_pfns[MAX_NR_ZONES]  = {0};
+> -	unsigned int __maybe_unused acpi_zone_dma_bits;
+> -	unsigned int __maybe_unused dt_zone_dma_bits;
+> -	phys_addr_t __maybe_unused dma32_phys_limit = max_zone_phys(32);
+> -
+>   #ifdef CONFIG_ZONE_DMA
+> +	unsigned int acpi_zone_dma_bits;
+> +	unsigned int dt_zone_dma_bits;
+> +
+>   	acpi_zone_dma_bits = fls64(acpi_iort_dma_get_max_cpu_address());
+>   	dt_zone_dma_bits = fls64(of_dma_get_max_cpu_address(NULL));
+>   	zone_dma_bits = min3(32U, dt_zone_dma_bits, acpi_zone_dma_bits);
+> @@ -173,8 +174,6 @@ static void __init zone_sizes_init(unsigned long min, unsigned long max)
+>   #endif
+>   #ifdef CONFIG_ZONE_DMA32
+>   	max_zone_pfns[ZONE_DMA32] = PFN_DOWN(dma32_phys_limit);
+> -	if (!arm64_dma_phys_limit)
+> -		arm64_dma_phys_limit = dma32_phys_limit;
+>   #endif
+>   	max_zone_pfns[ZONE_NORMAL] = max;
+>   
+> @@ -336,8 +335,12 @@ void __init arm64_memblock_init(void)
+>   
+>   	early_init_fdt_scan_reserved_mem();
+>   
+> -	if (!IS_ENABLED(CONFIG_ZONE_DMA) && !IS_ENABLED(CONFIG_ZONE_DMA32))
+> +	dma32_phys_limit = max_zone_phys(32);
+> +	if (!IS_ENABLED(CONFIG_ZONE_DMA)) {
+> +		if (IS_ENABLED(CONFIG_ZONE_DMA32))
+> +			arm64_dma_phys_limit = dma32_phys_limit;
+>   		reserve_crashkernel();
+> +	}
+>   
+>   	high_memory = __va(memblock_end_of_DRAM() - 1) + 1;
+>   }
+> @@ -385,7 +388,7 @@ void __init bootmem_init(void)
+>   	 * request_standard_resources() depends on crashkernel's memory being
+>   	 * reserved, so do it here.
+>   	 */
+> -	if (IS_ENABLED(CONFIG_ZONE_DMA) || IS_ENABLED(CONFIG_ZONE_DMA32))
+> +	if (IS_ENABLED(CONFIG_ZONE_DMA))
+>   		reserve_crashkernel();
+>   
+>   	memblock_dump_all();
+> diff --git a/arch/arm64/mm/mmu.c b/arch/arm64/mm/mmu.c
+> index 626ec32873c6..23734481318a 100644
+> --- a/arch/arm64/mm/mmu.c
+> +++ b/arch/arm64/mm/mmu.c
+> @@ -529,8 +529,7 @@ static void __init map_mem(pgd_t *pgdp)
+>   
+>   #ifdef CONFIG_KEXEC_CORE
+>   	if (crash_mem_map) {
+> -		if (IS_ENABLED(CONFIG_ZONE_DMA) ||
+> -		    IS_ENABLED(CONFIG_ZONE_DMA32))
+> +		if (IS_ENABLED(CONFIG_ZONE_DMA))
+>   			flags |= NO_BLOCK_MAPPINGS | NO_CONT_MAPPINGS;
+>   		else if (crashk_res.end)
+>   			memblock_mark_nomap(crashk_res.start,
+> @@ -571,8 +570,7 @@ static void __init map_mem(pgd_t *pgdp)
+>   	 * through /sys/kernel/kexec_crash_size interface.
+>   	 */
+>   #ifdef CONFIG_KEXEC_CORE
+> -	if (crash_mem_map &&
+> -	    !IS_ENABLED(CONFIG_ZONE_DMA) && !IS_ENABLED(CONFIG_ZONE_DMA32)) {
+> +	if (crash_mem_map && !IS_ENABLED(CONFIG_ZONE_DMA)) {
+>   		if (crashk_res.end) {
+>   			__map_memblock(pgdp, crashk_res.start,
+>   				       crashk_res.end + 1,
