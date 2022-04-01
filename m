@@ -2,49 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB8C6C4743F
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:13:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24540C48BCD
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:13:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355403AbiDAPOt (ORCPT
+        id S1355460AbiDAPPC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:14:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59620 "EHLO
+        Fri, 1 Apr 2022 11:15:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350270AbiDAOrW (ORCPT
+        with ESMTP id S1350466AbiDAOrg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:47:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 927FD2A1E9B;
-        Fri,  1 Apr 2022 07:37:30 -0700 (PDT)
+        Fri, 1 Apr 2022 10:47:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B37CE2A33A9;
+        Fri,  1 Apr 2022 07:37:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F0B39B82511;
-        Fri,  1 Apr 2022 14:37:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2078C340F2;
-        Fri,  1 Apr 2022 14:37:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D267BB824D8;
+        Fri,  1 Apr 2022 14:37:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41788C34117;
+        Fri,  1 Apr 2022 14:37:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823848;
-        bh=mHKZ7ckdU7TkU9H+n/vpGu0Ah9I3UG0+uNUuTBwQZLc=;
+        s=k20201202; t=1648823843;
+        bh=UTnAX8PQR9gEalWQBxx99AX4urD2SGKVXrfW4MLdxdo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JII1diyuvhjYivXhx7ID9YX4vZGs2JGv+Hnf8Mk6faARb8HOmg43oHK2haf0+URHf
-         UBnxHpsz3/leIXa7Fyiawo73+/klN8VUmSI8gAC1SLCjDXq/VQdGaao8UKYmjON2/Z
-         E9LS16LlNGHZRazgpfK6gnNkLEl1iM5Go+FINVTwHdMAFBIGpUMpBSA7gfOT4FkKuz
-         EJGefpVc4sHL398L6F2RF14NDTz3f/xGMgR/95yes6iuMDwHcXN+5DxgOB1C2GFelG
-         F6Bca2zaHxJ7eBhkel6G9eIPwgDu2CV2LhaqMawDsXneo2PQQ+kzDrvoyeQEK0hx3L
-         SuJe913gr3BvQ==
+        b=HTUd+6O6RGX9FSt8pqpbGCei4JEJ98erZjAqN4tuImtL6wjp85GOghgMO2EraYjpb
+         XBehiggPZl8wM7ifOWnnGnYdRRp/fs2GHYF5f414h7mmE04Yg3aNE9EJ6PhSHl6l4X
+         LF98jolVG6I4YJfK9NJBctNZQ8Q7Q7wQ4i9XcNBUwgjGD9v10Kk3IJgjTqbQ5ncYz8
+         dDWDkn+iuA+HT25uGteYzgTLmgj3UuT57HIk+1IS9r0tc94Nu+cNikcVS3X1xOX50p
+         dM3S7tsn+1ivv/wyif6pH6wM07eSkG9iLdGI14NGI1g4ZZToUjrTkXxDfYvSlAKR5q
+         7I52NwpttPq/Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Xiubo Li <xiubli@redhat.com>, Jeff Layton <jlayton@kernel.org>,
-        Ilya Dryomov <idryomov@gmail.com>,
-        Sasha Levin <sashal@kernel.org>, ceph-devel@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 105/109] ceph: fix inode reference leakage in ceph_get_snapdir()
-Date:   Fri,  1 Apr 2022 10:32:52 -0400
-Message-Id: <20220401143256.1950537-105-sashal@kernel.org>
+Cc:     Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        =?UTF-8?q?S=C3=B6nke=20Huster?= <soenke.huster@eknoes.de>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>, johan.hedberg@gmail.com,
+        luiz.dentz@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, linux-bluetooth@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 102/109] Bluetooth: Fix use after free in hci_send_acl
+Date:   Fri,  1 Apr 2022 10:32:49 -0400
+Message-Id: <20220401143256.1950537-102-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143256.1950537-1-sashal@kernel.org>
 References: <20220401143256.1950537-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -52,57 +57,129 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiubo Li <xiubli@redhat.com>
+From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 
-[ Upstream commit 322794d3355c33adcc4feace0045d85a8e4ed813 ]
+[ Upstream commit f63d24baff787e13b723d86fe036f84bdbc35045 ]
 
-The ceph_get_inode() will search for or insert a new inode into the
-hash for the given vino, and return a reference to it. If new is
-non-NULL, its reference is consumed.
+This fixes the following trace caused by receiving
+HCI_EV_DISCONN_PHY_LINK_COMPLETE which does call hci_conn_del without
+first checking if conn->type is in fact AMP_LINK and in case it is
+do properly cleanup upper layers with hci_disconn_cfm:
 
-We should release the reference when in error handing cases.
+ ==================================================================
+    BUG: KASAN: use-after-free in hci_send_acl+0xaba/0xc50
+    Read of size 8 at addr ffff88800e404818 by task bluetoothd/142
 
-Signed-off-by: Xiubo Li <xiubli@redhat.com>
-Reviewed-by: Jeff Layton <jlayton@kernel.org>
-Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
+    CPU: 0 PID: 142 Comm: bluetoothd Not tainted
+    5.17.0-rc5-00006-gda4022eeac1a #7
+    Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
+    rel-1.14.0-0-g155821a1990b-prebuilt.qemu.org 04/01/2014
+    Call Trace:
+     <TASK>
+     dump_stack_lvl+0x45/0x59
+     print_address_description.constprop.0+0x1f/0x150
+     kasan_report.cold+0x7f/0x11b
+     hci_send_acl+0xaba/0xc50
+     l2cap_do_send+0x23f/0x3d0
+     l2cap_chan_send+0xc06/0x2cc0
+     l2cap_sock_sendmsg+0x201/0x2b0
+     sock_sendmsg+0xdc/0x110
+     sock_write_iter+0x20f/0x370
+     do_iter_readv_writev+0x343/0x690
+     do_iter_write+0x132/0x640
+     vfs_writev+0x198/0x570
+     do_writev+0x202/0x280
+     do_syscall_64+0x38/0x90
+     entry_SYSCALL_64_after_hwframe+0x44/0xae
+    RSP: 002b:00007ffce8a099b8 EFLAGS: 00000246 ORIG_RAX: 0000000000000014
+    Code: 0f 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff eb b8 0f 1f 00 f3
+    0f 1e fa 64 8b 04 25 18 00 00 00 85 c0 75 10 b8 14 00 00 00 0f 05
+    <48> 3d 00 f0 ff ff 77 51 c3 48 83 ec 28 89 54 24 1c 48 89 74 24 10
+    RDX: 0000000000000001 RSI: 00007ffce8a099e0 RDI: 0000000000000015
+    RAX: ffffffffffffffda RBX: 00007ffce8a099e0 RCX: 00007f788fc3cf77
+    R10: 00007ffce8af7080 R11: 0000000000000246 R12: 000055e4ccf75580
+    RBP: 0000000000000015 R08: 0000000000000002 R09: 0000000000000001
+    </TASK>
+    R13: 000055e4ccf754a0 R14: 000055e4ccf75cd0 R15: 000055e4ccf4a6b0
+
+    Allocated by task 45:
+        kasan_save_stack+0x1e/0x40
+        __kasan_kmalloc+0x81/0xa0
+        hci_chan_create+0x9a/0x2f0
+        l2cap_conn_add.part.0+0x1a/0xdc0
+        l2cap_connect_cfm+0x236/0x1000
+        le_conn_complete_evt+0x15a7/0x1db0
+        hci_le_conn_complete_evt+0x226/0x2c0
+        hci_le_meta_evt+0x247/0x450
+        hci_event_packet+0x61b/0xe90
+        hci_rx_work+0x4d5/0xc50
+        process_one_work+0x8fb/0x15a0
+        worker_thread+0x576/0x1240
+        kthread+0x29d/0x340
+        ret_from_fork+0x1f/0x30
+
+    Freed by task 45:
+        kasan_save_stack+0x1e/0x40
+        kasan_set_track+0x21/0x30
+        kasan_set_free_info+0x20/0x30
+        __kasan_slab_free+0xfb/0x130
+        kfree+0xac/0x350
+        hci_conn_cleanup+0x101/0x6a0
+        hci_conn_del+0x27e/0x6c0
+        hci_disconn_phylink_complete_evt+0xe0/0x120
+        hci_event_packet+0x812/0xe90
+        hci_rx_work+0x4d5/0xc50
+        process_one_work+0x8fb/0x15a0
+        worker_thread+0x576/0x1240
+        kthread+0x29d/0x340
+        ret_from_fork+0x1f/0x30
+
+    The buggy address belongs to the object at ffff88800c0f0500
+    The buggy address is located 24 bytes inside of
+    which belongs to the cache kmalloc-128 of size 128
+    The buggy address belongs to the page:
+    128-byte region [ffff88800c0f0500, ffff88800c0f0580)
+    flags: 0x100000000000200(slab|node=0|zone=1)
+    page:00000000fe45cd86 refcount:1 mapcount:0
+    mapping:0000000000000000 index:0x0 pfn:0xc0f0
+    raw: 0000000000000000 0000000080100010 00000001ffffffff
+    0000000000000000
+    raw: 0100000000000200 ffffea00003a2c80 dead000000000004
+    ffff8880078418c0
+    page dumped because: kasan: bad access detected
+    ffff88800c0f0400: 00 00 00 00 00 00 00 00 00 00 00 00 00 fc fc fc
+    Memory state around the buggy address:
+    >ffff88800c0f0500: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+    ffff88800c0f0480: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+    ffff88800c0f0580: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+                                ^
+    ==================================================================
+    ffff88800c0f0600: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+
+Reported-by: Sönke Huster <soenke.huster@eknoes.de>
+Tested-by: Sönke Huster <soenke.huster@eknoes.de>
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ceph/inode.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ net/bluetooth/hci_event.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/fs/ceph/inode.c b/fs/ceph/inode.c
-index e3322fcb2e8d..6d87991cf67e 100644
---- a/fs/ceph/inode.c
-+++ b/fs/ceph/inode.c
-@@ -87,13 +87,13 @@ struct inode *ceph_get_snapdir(struct inode *parent)
- 	if (!S_ISDIR(parent->i_mode)) {
- 		pr_warn_once("bad snapdir parent type (mode=0%o)\n",
- 			     parent->i_mode);
--		return ERR_PTR(-ENOTDIR);
-+		goto err;
+diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+index 816a0f6823a3..e06802d31469 100644
+--- a/net/bluetooth/hci_event.c
++++ b/net/bluetooth/hci_event.c
+@@ -5203,8 +5203,9 @@ static void hci_disconn_phylink_complete_evt(struct hci_dev *hdev,
+ 	hci_dev_lock(hdev);
+ 
+ 	hcon = hci_conn_hash_lookup_handle(hdev, ev->phy_handle);
+-	if (hcon) {
++	if (hcon && hcon->type == AMP_LINK) {
+ 		hcon->state = BT_CLOSED;
++		hci_disconn_cfm(hcon, ev->reason);
+ 		hci_conn_del(hcon);
  	}
  
- 	if (!(inode->i_state & I_NEW) && !S_ISDIR(inode->i_mode)) {
- 		pr_warn_once("bad snapdir inode type (mode=0%o)\n",
- 			     inode->i_mode);
--		return ERR_PTR(-ENOTDIR);
-+		goto err;
- 	}
- 
- 	inode->i_mode = parent->i_mode;
-@@ -113,6 +113,12 @@ struct inode *ceph_get_snapdir(struct inode *parent)
- 	}
- 
- 	return inode;
-+err:
-+	if ((inode->i_state & I_NEW))
-+		discard_new_inode(inode);
-+	else
-+		iput(inode);
-+	return ERR_PTR(-ENOTDIR);
- }
- 
- const struct inode_operations ceph_file_iops = {
 -- 
 2.34.1
 
