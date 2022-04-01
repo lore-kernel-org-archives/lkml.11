@@ -2,72 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6980BC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 08:09:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55221C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 08:10:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344177AbiDAILm (ORCPT
+        id S1344180AbiDAILt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 04:11:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43704 "EHLO
+        Fri, 1 Apr 2022 04:11:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245087AbiDAILk (ORCPT
+        with ESMTP id S245087AbiDAILr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 04:11:40 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 097A54DF4E
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 01:09:50 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KVCT23ScMzDqDN;
-        Fri,  1 Apr 2022 16:07:34 +0800 (CST)
-Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
- (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Fri, 1 Apr
- 2022 16:09:48 +0800
-From:   Miaohe Lin <linmiaohe@huawei.com>
-To:     <akpm@linux-foundation.org>
-CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-        <linmiaohe@huawei.com>
-Subject: [PATCH] mm/mremap: avoid unneeded do_munmap call
-Date:   Fri, 1 Apr 2022 16:10:23 +0800
-Message-ID: <20220401081023.37080-1-linmiaohe@huawei.com>
-X-Mailer: git-send-email 2.23.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.124.27]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+        Fri, 1 Apr 2022 04:11:47 -0400
+Received: from mxhk.zte.com.cn (mxhk.zte.com.cn [63.216.63.35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 817704DF6B;
+        Fri,  1 Apr 2022 01:09:57 -0700 (PDT)
+Received: from mxct.zte.com.cn (unknown [192.168.251.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mxhk.zte.com.cn (FangMail) with ESMTPS id 4KVCWk4SMWz5B13f;
+        Fri,  1 Apr 2022 16:09:54 +0800 (CST)
+Received: from mse-fl2.zte.com.cn (unknown [10.30.14.239])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mxct.zte.com.cn (FangMail) with ESMTPS id 4KVCWg2Zfxz4y3ZP;
+        Fri,  1 Apr 2022 16:09:51 +0800 (CST)
+Received: from szxlzmapp03.zte.com.cn ([10.5.231.207])
+        by mse-fl2.zte.com.cn with SMTP id 23189eDM017032;
+        Fri, 1 Apr 2022 16:09:40 +0800 (GMT-8)
+        (envelope-from wang.yi59@zte.com.cn)
+Received: from mapi (szxlzmapp02[null])
+        by mapi (Zmail) with MAPI id mid14;
+        Fri, 1 Apr 2022 16:09:40 +0800 (CST)
+Date:   Fri, 1 Apr 2022 16:09:40 +0800 (CST)
+X-Zmail-TransId: 2b046246b3447fd-f3269
+X-Mailer: Zmail v1.0
+Message-ID: <202204011609406223339@zte.com.cn>
+In-Reply-To: <20220331212152.GG1544202@dread.disaster.area>
+References: 20220331053340.GE1544202@dread.disaster.area,202203311632074775168@zte.com.cn,20220331212152.GG1544202@dread.disaster.area
+Mime-Version: 1.0
+From:   <wang.yi59@zte.com.cn>
+To:     <david@fromorbit.com>
+Cc:     <djwong@kernel.org>, <linux-xfs@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <xue.zhihong@zte.com.cn>,
+        <wang.liang82@zte.com.cn>, <cheng.lin130@zte.com.cn>
+Subject: =?UTF-8?B?UmU6W1BBVENIXSB4ZnM6IGdldGF0dHIgaWdub3JlIGJsb2NrcyBiZXlvbmQgZW9m?=
+Content-Type: text/plain;
+        charset="UTF-8"
+X-MAIL: mse-fl2.zte.com.cn 23189eDM017032
+X-Fangmail-Gw-Spam-Type: 0
+X-FangMail-Miltered: at cgslv5.04-192.168.250.138.novalocal with ID 6246B352.001 by FangMail milter!
+X-FangMail-Envelope: 1648800594/4KVCWk4SMWz5B13f/6246B352.001/192.168.251.13/[192.168.251.13]/mxct.zte.com.cn/<wang.yi59@zte.com.cn>
+X-Fangmail-Anti-Spam-Filtered: true
+X-Fangmail-MID-QID: 6246B352.001/4KVCWk4SMWz5B13f
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When old_len == new_len, do_munmap will return -EINVAL due to len == 0.
-This errno will be simply ignored because of old_len != new_len check.
-So it is unnecessary to call do_munmap when old_len == new_len because
-nothing is actually done.
+> On Thu, Mar 31, 2022 at 04:32:07PM +0800, wang.yi59@zte.com.cn wrote:
+> > > We do not, and have not ever tried to, hide allocation or block
+> > > usage artifacts from userspace because any application that depends
+> > > on specific block allocation patterns or accounting from the
+> > > filesystem is broken by design.
+> > >
+> > > If your application is dependent on block counts exactly matching
+> > > the file data space for waht ever reason, then what speculative
+> > > preallocation does is the least of your problems.
+> > >
+> >
+> > Thanks for your explaination.
+> >
+> > Unfortunately, the app I'm using evaluates diskusage by querying
+> > the changes of the backend filesystem (XFS) file before and after
+> > the operation.
+>
+> What application is this?
+>
+> What is it trying to use this information for?
 
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
----
- mm/mremap.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Thanks very much, Dave.
 
-diff --git a/mm/mremap.c b/mm/mremap.c
-index e776d4c2345c..dd966621a056 100644
---- a/mm/mremap.c
-+++ b/mm/mremap.c
-@@ -817,9 +817,9 @@ static unsigned long mremap_to(unsigned long addr, unsigned long old_len,
- 			goto out;
- 	}
- 
--	if (old_len >= new_len) {
-+	if (old_len > new_len) {
- 		ret = do_munmap(mm, addr+new_len, old_len - new_len, uf_unmap);
--		if (ret && old_len != new_len)
-+		if (ret)
- 			goto out;
- 		old_len = new_len;
- 	}
--- 
-2.23.0
+I'm trying to use a new xlater(module) named 'simple-quota' in
+glusterfs, which collects file's diskusage by stat, for quota function.
 
+>
+> I'm trying to understand why someone thought this was a good idea,
+> and without actually being able to look up the code and see what it
+> is using the information for, I can't really say much more than
+> "this seems broken by design".
+>
+> > Without giving up the benefits of preallocation, the
+> > app's statistics will become obsolete and no chance to correct it
+> > at a small cost, because of the silence reclaim of posteof blocks.
+> > That is the app's problem.
