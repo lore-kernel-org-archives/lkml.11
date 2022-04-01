@@ -2,48 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93A0AC3527E
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:11:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E6CDC35295
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:11:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352864AbiDAPIV (ORCPT
+        id S1352944AbiDAPI5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:08:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57440 "EHLO
+        Fri, 1 Apr 2022 11:08:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350080AbiDAOrI (ORCPT
+        with ESMTP id S1350192AbiDAOrS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:47:08 -0400
+        Fri, 1 Apr 2022 10:47:18 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C56862A0446;
-        Fri,  1 Apr 2022 07:37:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F11EE2A12A9;
+        Fri,  1 Apr 2022 07:37:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8987760A3C;
-        Fri,  1 Apr 2022 14:36:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF706C340F2;
-        Fri,  1 Apr 2022 14:36:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CDB8C60BAC;
+        Fri,  1 Apr 2022 14:37:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E4B8C36AEA;
+        Fri,  1 Apr 2022 14:37:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823795;
-        bh=SE+J609oeQlZhlyDL5ijUSgT6DNgriKlJseZDVa3ubg=;
+        s=k20201202; t=1648823840;
+        bh=LhYPBZufSIIUYsYfgK8Zvs0kn4YmUTSXiOrYVvfFpMU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i99djtnhJaHSdflIz74yX1rfqJVf8DJRgK8E8KMh4rx4C3Z7rl1OjNOH6/o+dhvXx
-         FL0szpCJ97mcDfNGn+1ojBZ7hy0iRF5LHKVp51pkcychdTwTj95/P78mAahbTIdDur
-         pfl/k1FAOAeoQ6ftxXP6HMQqcL/QeZL5VggkZHGyEu0nUdLI6TUYkcNacspe6XTnna
-         eLJcKmZpnrcz0RvcDAznjDRJZr525/HzID5XMkppx5Eiqnx1lIfD3tRwf1oCHaUcgE
-         MjpjQZ/F5LFGne4G20Z6TxbrIQhYdlz0ZJhcKk68uCZ8F/YlencKkxPGsuPKr1lhst
-         liP6BWfk9KZvA==
+        b=kNa6FWYsejRxosiRjVFgclx3ZFhMtzWCFArmNeT1g1TWYmjXNmdnXHEJfYW5IcIvR
+         g6YWx4QyzvWQfGKFFDtqBDNk9pZ76ClpYHUPCBDB44n2TnwQIl0kDaHtABHdvxgEgz
+         mQ7Fv9elRh0WLHKLkN4+FNkzutleBpvp4YeOT8DkGROs5LOm+Atk3uOhFZ1sd1/hAb
+         42HaNxXiYMt2l2OFLfPfTxSGZlF36otQxNVnZ0UsieuVDIBERrFISnpeKpoSolUBR1
+         dSPODCrKtR7gbPUB7rG00oq/jg7Ck60c/V60oRmiG2vlojbS+MgyaMWJ2EeOrskPyl
+         Qe3iRZKI340tg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Sasha Levin <sashal@kernel.org>, johan.hedberg@gmail.com,
-        luiz.dentz@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, linux-bluetooth@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 081/109] Bluetooth: Fix not checking for valid hdev on bt_dev_{info,warn,err,dbg}
-Date:   Fri,  1 Apr 2022 10:32:28 -0400
-Message-Id: <20220401143256.1950537-81-sashal@kernel.org>
+Cc:     Max Filippov <jcmvbkbc@gmail.com>, Sasha Levin <sashal@kernel.org>,
+        robh+dt@kernel.org, krzk+dt@kernel.org, chris@zankel.net,
+        devicetree@vger.kernel.org, linux-xtensa@linux-xtensa.org
+Subject: [PATCH AUTOSEL 5.16 100/109] xtensa: fix DTC warning unit_address_format
+Date:   Fri,  1 Apr 2022 10:32:47 -0400
+Message-Id: <20220401143256.1950537-100-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143256.1950537-1-sashal@kernel.org>
 References: <20220401143256.1950537-1-sashal@kernel.org>
@@ -55,54 +52,101 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+From: Max Filippov <jcmvbkbc@gmail.com>
 
-[ Upstream commit 9b392e0e0b6d026da5a62bb79a08f32e27af858e ]
+[ Upstream commit e85d29ba4b24f68e7a78cb85c55e754362eeb2de ]
 
-This fixes attemting to print hdev->name directly which causes them to
-print an error:
+DTC issues the following warnings when building xtfpga device trees:
 
-kernel: read_version:367: (efault): sock 000000006a3008f2
+ /soc/flash@00000000/partition@0x0: unit name should not have leading "0x"
+ /soc/flash@00000000/partition@0x6000000: unit name should not have leading "0x"
+ /soc/flash@00000000/partition@0x6800000: unit name should not have leading "0x"
+ /soc/flash@00000000/partition@0x7fe0000: unit name should not have leading "0x"
 
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Drop leading 0x from flash partition unit names.
+
+Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/bluetooth/bluetooth.h | 14 ++++++++------
- 1 file changed, 8 insertions(+), 6 deletions(-)
+ arch/xtensa/boot/dts/xtfpga-flash-128m.dtsi | 8 ++++----
+ arch/xtensa/boot/dts/xtfpga-flash-16m.dtsi  | 8 ++++----
+ arch/xtensa/boot/dts/xtfpga-flash-4m.dtsi   | 4 ++--
+ 3 files changed, 10 insertions(+), 10 deletions(-)
 
-diff --git a/include/net/bluetooth/bluetooth.h b/include/net/bluetooth/bluetooth.h
-index a1093994e5e4..720316467127 100644
---- a/include/net/bluetooth/bluetooth.h
-+++ b/include/net/bluetooth/bluetooth.h
-@@ -204,19 +204,21 @@ void bt_err_ratelimited(const char *fmt, ...);
- #define BT_DBG(fmt, ...)	pr_debug(fmt "\n", ##__VA_ARGS__)
- #endif
- 
-+#define bt_dev_name(hdev) ((hdev) ? (hdev)->name : "null")
-+
- #define bt_dev_info(hdev, fmt, ...)				\
--	BT_INFO("%s: " fmt, (hdev)->name, ##__VA_ARGS__)
-+	BT_INFO("%s: " fmt, bt_dev_name(hdev), ##__VA_ARGS__)
- #define bt_dev_warn(hdev, fmt, ...)				\
--	BT_WARN("%s: " fmt, (hdev)->name, ##__VA_ARGS__)
-+	BT_WARN("%s: " fmt, bt_dev_name(hdev), ##__VA_ARGS__)
- #define bt_dev_err(hdev, fmt, ...)				\
--	BT_ERR("%s: " fmt, (hdev)->name, ##__VA_ARGS__)
-+	BT_ERR("%s: " fmt, bt_dev_name(hdev), ##__VA_ARGS__)
- #define bt_dev_dbg(hdev, fmt, ...)				\
--	BT_DBG("%s: " fmt, (hdev)->name, ##__VA_ARGS__)
-+	BT_DBG("%s: " fmt, bt_dev_name(hdev), ##__VA_ARGS__)
- 
- #define bt_dev_warn_ratelimited(hdev, fmt, ...)			\
--	bt_warn_ratelimited("%s: " fmt, (hdev)->name, ##__VA_ARGS__)
-+	bt_warn_ratelimited("%s: " fmt, bt_dev_name(hdev), ##__VA_ARGS__)
- #define bt_dev_err_ratelimited(hdev, fmt, ...)			\
--	bt_err_ratelimited("%s: " fmt, (hdev)->name, ##__VA_ARGS__)
-+	bt_err_ratelimited("%s: " fmt, bt_dev_name(hdev), ##__VA_ARGS__)
- 
- /* Connection and socket states */
- enum {
+diff --git a/arch/xtensa/boot/dts/xtfpga-flash-128m.dtsi b/arch/xtensa/boot/dts/xtfpga-flash-128m.dtsi
+index 9bf8bad1dd18..c33932568aa7 100644
+--- a/arch/xtensa/boot/dts/xtfpga-flash-128m.dtsi
++++ b/arch/xtensa/boot/dts/xtfpga-flash-128m.dtsi
+@@ -8,19 +8,19 @@ flash: flash@00000000 {
+ 			reg = <0x00000000 0x08000000>;
+ 			bank-width = <2>;
+ 			device-width = <2>;
+-			partition@0x0 {
++			partition@0 {
+ 				label = "data";
+ 				reg = <0x00000000 0x06000000>;
+ 			};
+-			partition@0x6000000 {
++			partition@6000000 {
+ 				label = "boot loader area";
+ 				reg = <0x06000000 0x00800000>;
+ 			};
+-			partition@0x6800000 {
++			partition@6800000 {
+ 				label = "kernel image";
+ 				reg = <0x06800000 0x017e0000>;
+ 			};
+-			partition@0x7fe0000 {
++			partition@7fe0000 {
+ 				label = "boot environment";
+ 				reg = <0x07fe0000 0x00020000>;
+ 			};
+diff --git a/arch/xtensa/boot/dts/xtfpga-flash-16m.dtsi b/arch/xtensa/boot/dts/xtfpga-flash-16m.dtsi
+index 40c2f81f7cb6..7bde2ab2d6fb 100644
+--- a/arch/xtensa/boot/dts/xtfpga-flash-16m.dtsi
++++ b/arch/xtensa/boot/dts/xtfpga-flash-16m.dtsi
+@@ -8,19 +8,19 @@ flash: flash@08000000 {
+ 			reg = <0x08000000 0x01000000>;
+ 			bank-width = <2>;
+ 			device-width = <2>;
+-			partition@0x0 {
++			partition@0 {
+ 				label = "boot loader area";
+ 				reg = <0x00000000 0x00400000>;
+ 			};
+-			partition@0x400000 {
++			partition@400000 {
+ 				label = "kernel image";
+ 				reg = <0x00400000 0x00600000>;
+ 			};
+-			partition@0xa00000 {
++			partition@a00000 {
+ 				label = "data";
+ 				reg = <0x00a00000 0x005e0000>;
+ 			};
+-			partition@0xfe0000 {
++			partition@fe0000 {
+ 				label = "boot environment";
+ 				reg = <0x00fe0000 0x00020000>;
+ 			};
+diff --git a/arch/xtensa/boot/dts/xtfpga-flash-4m.dtsi b/arch/xtensa/boot/dts/xtfpga-flash-4m.dtsi
+index fb8d3a9f33c2..0655b868749a 100644
+--- a/arch/xtensa/boot/dts/xtfpga-flash-4m.dtsi
++++ b/arch/xtensa/boot/dts/xtfpga-flash-4m.dtsi
+@@ -8,11 +8,11 @@ flash: flash@08000000 {
+ 			reg = <0x08000000 0x00400000>;
+ 			bank-width = <2>;
+ 			device-width = <2>;
+-			partition@0x0 {
++			partition@0 {
+ 				label = "boot loader area";
+ 				reg = <0x00000000 0x003f0000>;
+ 			};
+-			partition@0x3f0000 {
++			partition@3f0000 {
+ 				label = "boot environment";
+ 				reg = <0x003f0000 0x00010000>;
+ 			};
 -- 
 2.34.1
 
