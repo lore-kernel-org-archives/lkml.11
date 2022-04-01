@@ -2,97 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56CC0C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 12:01:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81F4AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 12:01:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235788AbiCaMCq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 08:02:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46958 "EHLO
+        id S235516AbiCaMDm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 08:03:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235652AbiCaMCY (ORCPT
+        with ESMTP id S235643AbiCaMCd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 08:02:24 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9D491C6ED4;
-        Thu, 31 Mar 2022 04:59:24 -0700 (PDT)
-X-UUID: 8989adea57284d6fb7d6a5c98c5e7e74-20220331
-X-UUID: 8989adea57284d6fb7d6a5c98c5e7e74-20220331
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
-        (envelope-from <xinlei.lee@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1629266243; Thu, 31 Mar 2022 19:59:18 +0800
-Received: from MTKMBS34N1.mediatek.inc (172.27.4.172) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Thu, 31 Mar 2022 19:59:17 +0800
-Received: from MTKCAS32.mediatek.inc (172.27.4.184) by MTKMBS34N1.mediatek.inc
- (172.27.4.172) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 31 Mar
- 2022 19:59:15 +0800
-Received: from mszsdaap41.gcn.mediatek.inc (10.16.6.141) by
- MTKCAS32.mediatek.inc (172.27.4.170) with Microsoft SMTP Server id
- 15.0.1497.2 via Frontend Transport; Thu, 31 Mar 2022 19:59:08 +0800
-From:   <xinlei.lee@mediatek.com>
-To:     <chunkuang.hu@kernel.org>, <p.zabel@pengutronix.de>,
-        <airlied@linux.ie>, <daniel@ffwll.ch>, <robh+dt@kernel.org>,
-        <matthias.bgg@gmail.com>
-CC:     <dri-devel@lists.freedesktop.org>,
-        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <rex-bc.chen@mediatek.com>, <jitao.shi@mediatek.com>,
-        Xinlei Lee <xinlei.lee@mediatek.com>
-Subject: [PATCH v2,2/2] drm/mediatek: Add mt8186 dpi compatible to mtk_dpi.c
-Date:   Thu, 31 Mar 2022 19:58:37 +0800
-Message-ID: <1648727917-3099-3-git-send-email-xinlei.lee@mediatek.com>
-X-Mailer: git-send-email 2.6.4
-In-Reply-To: <1648727917-3099-1-git-send-email-xinlei.lee@mediatek.com>
-References: <1648727917-3099-1-git-send-email-xinlei.lee@mediatek.com>
+        Thu, 31 Mar 2022 08:02:33 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EFB81C7E92;
+        Thu, 31 Mar 2022 04:59:33 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KThdB4XwFzgYHy;
+        Thu, 31 Mar 2022 19:57:50 +0800 (CST)
+Received: from dggpemm500017.china.huawei.com (7.185.36.178) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Thu, 31 Mar 2022 19:59:30 +0800
+Received: from huawei.com (10.175.101.6) by dggpemm500017.china.huawei.com
+ (7.185.36.178) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Thu, 31 Mar
+ 2022 19:59:29 +0800
+From:   Wenchao Hao <haowenchao@huawei.com>
+To:     "James E . J . Bottomley" <jejb@linux.ibm.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        <linux-scsi@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <linfeilong@huawei.com>, Wenchao Hao <haowenchao@huawei.com>,
+        <syzbot+f08c77040fa163a75a46@syzkaller.appspotmail.com>
+Subject: [PATCH] scsi: sd: cleanup gendisk if device_add_disk() failed
+Date:   Thu, 31 Mar 2022 21:10:19 -0400
+Message-ID: <20220401011018.1026553-1-haowenchao@huawei.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.101.6]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemm500017.china.huawei.com (7.185.36.178)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xinlei Lee <xinlei.lee@mediatek.com>
+We forget to call blk_cleanup_disk() when device_add_disk() failed.
+Which would cause memory leak of gendisk and sched_tags alloced in
+elevator_init_mq()
 
-Add the compatible because use different .data in mt8186.
+Reference:https://syzkaller.appspot.com/x/log.txt?x=13b41dcb700000
+Reported-and-tested-by: syzbot+f08c77040fa163a75a46@syzkaller.appspotmail.com
 
-Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
+Signed-off-by: Wenchao Hao <haowenchao@huawei.com>
 ---
- drivers/gpu/drm/mediatek/mtk_dpi.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ drivers/scsi/sd.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c b/drivers/gpu/drm/mediatek/mtk_dpi.c
-index 4554e2de1430..6fac146cf1fb 100644
---- a/drivers/gpu/drm/mediatek/mtk_dpi.c
-+++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
-@@ -823,6 +823,14 @@ static const struct mtk_dpi_conf mt8192_conf = {
- 	.num_output_fmts = ARRAY_SIZE(mt8173_output_fmts),
- };
+diff --git a/drivers/scsi/sd.c b/drivers/scsi/sd.c
+index a390679cf458..4620a1158272 100644
+--- a/drivers/scsi/sd.c
++++ b/drivers/scsi/sd.c
+@@ -3475,6 +3475,7 @@ static int sd_probe(struct device *dev)
+ 	error = device_add_disk(dev, gd, NULL);
+ 	if (error) {
+ 		put_device(&sdkp->disk_dev);
++		blk_cleanup_disk(gd);
+ 		goto out;
+ 	}
  
-+static const struct mtk_dpi_conf mt8186_conf = {
-+	.cal_factor =  mt8183_calculate_factor,
-+	.reg_h_fre_con = 0xe0,
-+	.max_clock_khz = 150000,
-+	.output_fmts = mt8183_output_fmts,
-+	.num_output_fmts = ARRAY_SIZE(mt8183_output_fmts),
-+};
-+
- static int mtk_dpi_probe(struct platform_device *pdev)
- {
- 	struct device *dev = &pdev->dev;
-@@ -945,6 +953,9 @@ static const struct of_device_id mtk_dpi_of_ids[] = {
- 	{ .compatible = "mediatek,mt8192-dpi",
- 	  .data = &mt8192_conf,
- 	},
-+	{ .compatible = "mediatek,mt8186-dpi",
-+	  .data = &mt8186_conf,
-+	},
- 	{ },
- };
- MODULE_DEVICE_TABLE(of, mtk_dpi_of_ids);
 -- 
-2.18.0
+2.32.0
 
