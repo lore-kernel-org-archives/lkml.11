@@ -2,92 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 655E1C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 07:46:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A26B0C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 07:47:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343936AbiDAHsi (ORCPT
+        id S1343961AbiDAHtD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 03:48:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51068 "EHLO
+        Fri, 1 Apr 2022 03:49:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241844AbiDAHsh (ORCPT
+        with ESMTP id S243493AbiDAHtC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 03:48:37 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 909D625F652
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 00:46:48 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: rcn)
-        with ESMTPSA id 4FC251F47521
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1648799207;
-        bh=UVhZOV6XJ+PfylwaNjtDwbQrX2mrJqZLJFMmEHVtovc=;
-        h=From:To:Cc:Subject:Date:From;
-        b=UimVplzcmG61RHhogAJ9KWXKH4pPeCRCXapcTyqXXKENkGiqe0eDnOIFShrBdL+/d
-         oe36beC32Br3D3tePQlVGm4fc3ZMpA+D96PuqMQmcUQbbmqRnKEA+ZQhlbx3iKzQe/
-         1gcmNFHYpKoGplgrxaMKU959OP1xIuG/LQycuA+uSGJ/1I9mDc9AhVrvpE1naOsCSv
-         9VfjK+fZNQoioqn17xfiDSXscf18NXkJ51ovP7hgZwVGSTeMocupP1zkhloj48DD2s
-         +An8txkG119BLmzls0RJbMpRc04fAFVeTtbY57TVKt+UpJ8mt3VbBx90LkhK72QydG
-         +uZaRvVclvccA==
-From:   =?UTF-8?q?Ricardo=20Ca=C3=B1uelo?= <ricardo.canuelo@collabora.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     =?UTF-8?q?Ricardo=20Ca=C3=B1uelo?= <ricardo.canuelo@collabora.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
-        Mark Gross <mgross@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        John Johansen <john.johansen@canonical.com>,
-        Steve Beattie <sbeattie@ubuntu.com>, kernel@collabora.com
-Subject: [PATCH v3] x86/speculation/srbds: do not try to turn mitigation off when not supported
-Date:   Fri,  1 Apr 2022 09:45:17 +0200
-Message-Id: <20220401074517.1848264-1-ricardo.canuelo@collabora.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 1 Apr 2022 03:49:02 -0400
+Received: from mail-qt1-f179.google.com (mail-qt1-f179.google.com [209.85.160.179])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64AB218C0F8;
+        Fri,  1 Apr 2022 00:47:13 -0700 (PDT)
+Received: by mail-qt1-f179.google.com with SMTP id t2so1521844qtw.9;
+        Fri, 01 Apr 2022 00:47:13 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hsgG5k1IRB7JkkSvYRKFqt0X90anL2wVYww9yxyb0VA=;
+        b=lnOnBBtJyi+ptYHryHFTbrSIM8RtWYeGSVrzVT8ziC8F/Nvt53QglIDMITc2ZX7AhZ
+         lrvLKKpXG1PL5hdaAM8vmXsVVGAU/Vd2+aC8GketleM3dPW9YNP0ai6RePkDhl5LVzT0
+         FObZUBHwcESGALGiPZLUAugR1xpF5buIXSAhIe4UiaFHlj5D4UyufWZTWiAr2DoDJIfu
+         eQ2fID1iWNGcmc5ctX+QJgdx9dPAF5llfXwhwMa/75goEfEsOtIvFwx/nQ6sHtAz8MSD
+         Jn0hfb2U4f41ebz2Qndq/UuapX/YJ5UBpzplb0f//nqX69RyWMR3tkk5kQG+00TfP5O8
+         Z3yw==
+X-Gm-Message-State: AOAM5337dPgbNs8vtYMzN2DFDS9dvLaeg979Rh6dNmtx6Af/MNsw5pmj
+        M9Svs/HHxLvSBtctklh2Hg6p3+hxKUWgVw==
+X-Google-Smtp-Source: ABdhPJwZE4sp1jfUL16KYUDF2Yg41lwFL597VHQxrQFo3hwFvOCVshdhzRqByH59tiWLWbTzIE+Mzg==
+X-Received: by 2002:a05:622a:2d5:b0:2e1:ea60:231 with SMTP id a21-20020a05622a02d500b002e1ea600231mr7530800qtx.460.1648799232308;
+        Fri, 01 Apr 2022 00:47:12 -0700 (PDT)
+Received: from mail-yw1-f170.google.com (mail-yw1-f170.google.com. [209.85.128.170])
+        by smtp.gmail.com with ESMTPSA id y17-20020a05622a121100b002e0702457b2sm1303952qtx.20.2022.04.01.00.47.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 01 Apr 2022 00:47:12 -0700 (PDT)
+Received: by mail-yw1-f170.google.com with SMTP id 00721157ae682-2e592e700acso23523827b3.5;
+        Fri, 01 Apr 2022 00:47:11 -0700 (PDT)
+X-Received: by 2002:a81:5c2:0:b0:2e5:e4eb:c3e7 with SMTP id
+ 185-20020a8105c2000000b002e5e4ebc3e7mr8846053ywf.62.1648799231230; Fri, 01
+ Apr 2022 00:47:11 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220331211653.175200-1-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220331211653.175200-1-krzysztof.kozlowski@linaro.org>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Fri, 1 Apr 2022 09:46:59 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdVX-6A5KH1+WodNviq1LKqZ4qo7aq92S-j+zf79xQD0gQ@mail.gmail.com>
+Message-ID: <CAMuHMdVX-6A5KH1+WodNviq1LKqZ4qo7aq92S-j+zf79xQD0gQ@mail.gmail.com>
+Subject: Re: [PATCH 1/2] regulator: dt-bindings: maxim,max8997: correct array
+ of voltages
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-samsung-soc <linux-samsung-soc@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When SRBDS is mitigated by TSX OFF, update_srbds_msr will still read and
-write to MSR_IA32_MCU_OPT_CTRL even when that is not supported by the
-microcode.
+On Thu, Mar 31, 2022 at 11:17 PM Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
+> uint32-array with voltages should be within one bracket pair <>, not
+> each number in its own <>.  Also the number of elements in the array
+> should be defined within "items:".
+>
+> This fixes DT schema warnings like:
+>
+>   maxim,max8997.example.dtb: pmic@66: max8997,pmic-buck1-dvs-voltage:
+>     [[1350000, 1300000, 1250000, 1200000, 1150000, 1100000, 1000000, 950000]] is too short
+>
+> Fixes: 1d2104f21618 ("regulator: dt-bindings: maxim,max8997: convert to dtschema")
+> Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-Checking for X86_FEATURE_SRBDS_CTRL as a CPU feature available makes
-more sense than checking for SRBDS_MITIGATION_UCODE_NEEDED as the found
-"mitigation".
+Thanks!
+Warning going, and if I add one entry too much, it still complains, so:
+Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Signed-off-by: Borislav Petkov <bp@alien8.de>
-Signed-off-by: Ricardo Cañuelo <ricardo.canuelo@collabora.com>
-Tested-by: Ricardo Cañuelo <ricardo.canuelo@collabora.com>
----
+Gr{oetje,eeting}s,
 
-Changes in v3:
-  - Simplified and more explicit solution proposed by Boris
+                        Geert
 
- arch/x86/kernel/cpu/bugs.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-diff --git a/arch/x86/kernel/cpu/bugs.c b/arch/x86/kernel/cpu/bugs.c
-index 6296e1ebed1d..d879a6c93609 100644
---- a/arch/x86/kernel/cpu/bugs.c
-+++ b/arch/x86/kernel/cpu/bugs.c
-@@ -446,6 +446,13 @@ void update_srbds_msr(void)
- 	if (srbds_mitigation == SRBDS_MITIGATION_UCODE_NEEDED)
- 		return;
- 
-+	/*
-+	 * A MDS_NO CPU for which SRBDS mitigation is not needed due to TSX
-+	 * being disabled and it hasn't received the SRBDS MSR microcode.
-+	 */
-+	if (!boot_cpu_has(X86_FEATURE_SRBDS_CTRL))
-+		return;
-+
- 	rdmsrl(MSR_IA32_MCU_OPT_CTRL, mcu_ctrl);
- 
- 	switch (srbds_mitigation) {
--- 
-2.25.1
-
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
