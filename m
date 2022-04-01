@@ -2,198 +2,268 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76F76C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 06:37:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C086AC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 06:37:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243456AbiDAGjA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 02:39:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44616 "EHLO
+        id S245553AbiDAGjE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Apr 2022 02:39:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245462AbiDAGig (ORCPT
+        with ESMTP id S245480AbiDAGio (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 02:38:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E77A218DAB9;
-        Thu, 31 Mar 2022 23:36:46 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7F99DB823D9;
-        Fri,  1 Apr 2022 06:36:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B43F9C2BBE4;
-        Fri,  1 Apr 2022 06:36:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648795004;
-        bh=xBXlQCMtFbWUMpyKpU6xZl2vpjdaAwZgL0XinuyoEy4=;
-        h=From:To:Cc:Subject:Date:From;
-        b=fsLaZ2YmsTHPnn56D7sX0K6mTtxfyjaJ5nsKsjUZ3hTVr5AqxQ5m1JuXySTWhuH9m
-         UVSb8cV5CYyJdBb93xu9VPVayG+YJPcTAw/paCWFcX5Gd9xRpXXuFPI7LHn82HTr4/
-         yYEPSESyPE07Gv4AiOg4ZIY4JN3ppKbNXtcY5/14=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-Subject: [PATCH 4.14 00/27] 4.14.275-rc1 review
-Date:   Fri,  1 Apr 2022 08:36:10 +0200
-Message-Id: <20220401063624.232282121@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-MIME-Version: 1.0
-User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
-X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.14.275-rc1.gz
-X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-X-KernelTest-Branch: linux-4.14.y
-X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
-X-KernelTest-Version: 4.14.275-rc1
-X-KernelTest-Deadline: 2022-04-03T06:36+00:00
-Content-Transfer-Encoding: 8bit
+        Fri, 1 Apr 2022 02:38:44 -0400
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 309BF18FAF4
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 23:36:49 -0700 (PDT)
+Received: by mail-pj1-x1049.google.com with SMTP id e15-20020a17090ab38f00b001c9989ae56cso1009613pjr.9
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 23:36:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=reply-to:date:in-reply-to:message-id:mime-version:references
+         :subject:from:to:cc;
+        bh=zA1hhg2v3lONrCX4JFcIbrA6dugCDeMMabOIS+UXvt0=;
+        b=RXpbAJNaZOQPRyOFrsI7PdtluW2DTEvL1zNv/NNNaBPnnoSu4LJpKois3txuZ9gyUQ
+         FOfa91I8HAgcDZxNrKLdIBXiqFsC7opatEQGzDH5sjtixKXs9yaOG5M3ArS6BxZ8UfFC
+         PPVRKKqwQksQp8X86ES2PNinMfWLe4uI4x6UPLIBEq4LgG0ZbhY+w5WQ80xUl+aNoIxC
+         nWN+GaAcv0OQWIbex/CzEy3Voq1cxvcjGgPbhnpoZF7oIni4G6ULtW48Zz0aXLvTuY9A
+         I9zab5jIkgJGZV7VRtjVwFEtApKEvmvDoUYmsQOwz0yMLILx4rQz5C8H5iy6UxElbh7N
+         Cp7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
+         :mime-version:references:subject:from:to:cc;
+        bh=zA1hhg2v3lONrCX4JFcIbrA6dugCDeMMabOIS+UXvt0=;
+        b=gP6q18XiZQIs8SKV46JEAypLQhjU5qJThBDnIdLHG0/iT6ckpAZFmhfpkBodfjjN/I
+         cYMUjl9gJJZUbKGwGIf/GD5iHv7Z8HMvWPozhfE8oMzkPj42lkc3cZ7FAIgUhKKt4xuT
+         3NKk9qy5BIeRPVO7OG8C9QzisTp4vAmF7g8jlzlfGT+fA0h6SqYRVkolY/9KUPvl4KO8
+         a55YK3rSFbAbHWbh6oKcIEzicZpM0/BWASBujk+6psvurgZt7N+RKPxg4+SAoRkQuuNB
+         R0UrAsZAx9ZyhEsu6flO0zyRHo3LZUYWAE4bTPuG0QFPXzDBm4lFI1TwCPePb/gcrzPh
+         xHgg==
+X-Gm-Message-State: AOAM533j5BDqGGSZc4TXcvO9ivoCRuNCcEwr67cX92WbXO63C6QjZDkL
+        sTS2kt02s95wOywjzqdANKVcm3K5guKZ
+X-Google-Smtp-Source: ABdhPJxSwDEJqS5VukOG+zSAw6wXw4vSsoAWgyTHY2cPhIoFUZZiodY5hfmMCC80lOVeAqOeTzv1xYwsWgzc
+X-Received: from mizhang-super.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:1071])
+ (user=mizhang job=sendgmr) by 2002:a17:902:6b42:b0:156:e1f:ba75 with SMTP id
+ g2-20020a1709026b4200b001560e1fba75mr8998795plt.55.1648795008695; Thu, 31 Mar
+ 2022 23:36:48 -0700 (PDT)
+Reply-To: Mingwei Zhang <mizhang@google.com>
+Date:   Fri,  1 Apr 2022 06:36:34 +0000
+In-Reply-To: <20220401063636.2414200-1-mizhang@google.com>
+Message-Id: <20220401063636.2414200-5-mizhang@google.com>
+Mime-Version: 1.0
+References: <20220401063636.2414200-1-mizhang@google.com>
+X-Mailer: git-send-email 2.35.1.1094.g7c7d902a7c-goog
+Subject: [PATCH v3 4/6] KVM: selftests: Dump VM stats in binary stats test
+From:   Mingwei Zhang <mizhang@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Mingwei Zhang <mizhang@google.com>,
+        Yosry Ahmed <yosryahmed@google.com>,
+        Ben Gardon <bgardon@google.com>,
+        David Matlack <dmatlack@google.com>,
+        Jing Zhang <jingzhangos@google.com>,
+        Peter Xu <peterx@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is the start of the stable review cycle for the 4.14.275 release.
-There are 27 patches in this series, all will be posted as a response
-to this one.  If anyone has any issues with these being applied, please
-let me know.
+From: Ben Gardon <bgardon@google.com>
 
-Responses should be made by Sun, 03 Apr 2022 06:36:16 +0000.
-Anything received after that time might be too late.
+Add kvm_util library functions to read KVM stats through the binary
+stats interface and then dump them to stdout when running the binary
+stats test. Subsequent commits will extend the kvm_util code and use it
+to make assertions in a test for NX hugepages.
 
-The whole patch series can be found in one patch at:
-	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.14.275-rc1.gz
-or in the git tree and branch at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.14.y
-and the diffstat can be found below.
+CC: Jing Zhang <jingzhangos@google.com>
+Signed-off-by: Ben Gardon <bgardon@google.com>
+---
+ .../selftests/kvm/include/kvm_util_base.h     |   1 +
+ .../selftests/kvm/kvm_binary_stats_test.c     |   3 +
+ tools/testing/selftests/kvm/lib/kvm_util.c    | 143 ++++++++++++++++++
+ 3 files changed, 147 insertions(+)
 
-thanks,
-
-greg k-h
-
--------------
-Pseudo-Shortlog of commits:
-
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    Linux 4.14.275-rc1
-
-James Morse <james.morse@arm.com>
-    arm64: Use the clearbhb instruction in mitigations
-
-James Morse <james.morse@arm.com>
-    arm64: add ID_AA64ISAR2_EL1 sys register
-
-James Morse <james.morse@arm.com>
-    KVM: arm64: Allow SMCCC_ARCH_WORKAROUND_3 to be discovered and migrated
-
-James Morse <james.morse@arm.com>
-    arm64: Mitigate spectre style branch history side channels
-
-James Morse <james.morse@arm.com>
-    KVM: arm64: Add templates for BHB mitigation sequences
-
-James Morse <james.morse@arm.com>
-    arm64: proton-pack: Report Spectre-BHB vulnerabilities as part of Spectre-v2
-
-James Morse <james.morse@arm.com>
-    arm64: Add percpu vectors for EL1
-
-James Morse <james.morse@arm.com>
-    arm64: entry: Add macro for reading symbol addresses from the trampoline
-
-James Morse <james.morse@arm.com>
-    arm64: entry: Add vectors that have the bhb mitigation sequences
-
-James Morse <james.morse@arm.com>
-    arm64: entry: Add non-kpti __bp_harden_el1_vectors for mitigations
-
-James Morse <james.morse@arm.com>
-    arm64: entry: Allow the trampoline text to occupy multiple pages
-
-James Morse <james.morse@arm.com>
-    arm64: entry: Make the kpti trampoline's kpti sequence optional
-
-James Morse <james.morse@arm.com>
-    arm64: entry: Move trampoline macros out of ifdef'd section
-
-James Morse <james.morse@arm.com>
-    arm64: entry: Don't assume tramp_vectors is the start of the vectors
-
-James Morse <james.morse@arm.com>
-    arm64: entry: Allow tramp_alias to access symbols after the 4K boundary
-
-James Morse <james.morse@arm.com>
-    arm64: entry: Move the trampoline data page before the text page
-
-James Morse <james.morse@arm.com>
-    arm64: entry: Free up another register on kpti's tramp_exit path
-
-James Morse <james.morse@arm.com>
-    arm64: entry: Make the trampoline cleanup optional
-
-James Morse <james.morse@arm.com>
-    arm64: entry.S: Add ventry overflow sanity checks
-
-Anshuman Khandual <anshuman.khandual@arm.com>
-    arm64: Add Cortex-X2 CPU part definition
-
-Suzuki K Poulose <suzuki.poulose@arm.com>
-    arm64: Add Neoverse-N2, Cortex-A710 CPU part definition
-
-Rob Herring <robh@kernel.org>
-    arm64: Add part number for Arm Cortex-A77
-
-Marc Zyngier <marc.zyngier@arm.com>
-    arm64: Add part number for Neoverse N1
-
-Marc Zyngier <marc.zyngier@arm.com>
-    arm64: Make ARM64_ERRATUM_1188873 depend on COMPAT
-
-Marc Zyngier <marc.zyngier@arm.com>
-    arm64: Add silicon-errata.txt entry for ARM erratum 1188873
-
-Arnd Bergmann <arnd@arndb.de>
-    arm64: arch_timer: avoid unused function warning
-
-Marc Zyngier <marc.zyngier@arm.com>
-    arm64: arch_timer: Add workaround for ARM erratum 1188873
-
-
--------------
-
-Diffstat:
-
- Documentation/arm64/silicon-errata.txt |   1 +
- Makefile                               |   4 +-
- arch/arm/include/asm/kvm_host.h        |   6 +
- arch/arm64/Kconfig                     |  24 ++
- arch/arm64/include/asm/assembler.h     |  34 +++
- arch/arm64/include/asm/cpu.h           |   1 +
- arch/arm64/include/asm/cpucaps.h       |   4 +-
- arch/arm64/include/asm/cpufeature.h    |  39 ++++
- arch/arm64/include/asm/cputype.h       |  20 ++
- arch/arm64/include/asm/fixmap.h        |   6 +-
- arch/arm64/include/asm/kvm_host.h      |   5 +
- arch/arm64/include/asm/kvm_mmu.h       |   2 +-
- arch/arm64/include/asm/mmu.h           |   8 +-
- arch/arm64/include/asm/sections.h      |   6 +
- arch/arm64/include/asm/sysreg.h        |   5 +
- arch/arm64/include/asm/vectors.h       |  74 ++++++
- arch/arm64/kernel/bpi.S                |  55 +++++
- arch/arm64/kernel/cpu_errata.c         | 395 ++++++++++++++++++++++++++++++++-
- arch/arm64/kernel/cpufeature.c         |  21 ++
- arch/arm64/kernel/cpuinfo.c            |   1 +
- arch/arm64/kernel/entry.S              | 196 ++++++++++++----
- arch/arm64/kernel/vmlinux.lds.S        |   2 +-
- arch/arm64/kvm/hyp/hyp-entry.S         |   4 +
- arch/arm64/kvm/hyp/switch.c            |   9 +-
- arch/arm64/mm/mmu.c                    |  11 +-
- drivers/clocksource/arm_arch_timer.c   |  15 ++
- include/linux/arm-smccc.h              |   7 +
- virt/kvm/arm/psci.c                    |  12 +
- 28 files changed, 909 insertions(+), 58 deletions(-)
-
+diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
+index 92cef0ffb19e..c5f4a67772cb 100644
+--- a/tools/testing/selftests/kvm/include/kvm_util_base.h
++++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
+@@ -400,6 +400,7 @@ void assert_on_unhandled_exception(struct kvm_vm *vm, uint32_t vcpuid);
+ 
+ int vm_get_stats_fd(struct kvm_vm *vm);
+ int vcpu_get_stats_fd(struct kvm_vm *vm, uint32_t vcpuid);
++void dump_vm_stats(struct kvm_vm *vm);
+ 
+ uint32_t guest_get_vcpuid(void);
+ 
+diff --git a/tools/testing/selftests/kvm/kvm_binary_stats_test.c b/tools/testing/selftests/kvm/kvm_binary_stats_test.c
+index 17f65d514915..afc4701ce8dd 100644
+--- a/tools/testing/selftests/kvm/kvm_binary_stats_test.c
++++ b/tools/testing/selftests/kvm/kvm_binary_stats_test.c
+@@ -174,6 +174,9 @@ static void vm_stats_test(struct kvm_vm *vm)
+ 	stats_test(stats_fd);
+ 	close(stats_fd);
+ 	TEST_ASSERT(fcntl(stats_fd, F_GETFD) == -1, "Stats fd not freed");
++
++	/* Dump VM stats */
++	dump_vm_stats(vm);
+ }
+ 
+ static void vcpu_stats_test(struct kvm_vm *vm, int vcpu_id)
+diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
+index 1665a220abcb..4d21c3b46780 100644
+--- a/tools/testing/selftests/kvm/lib/kvm_util.c
++++ b/tools/testing/selftests/kvm/lib/kvm_util.c
+@@ -2556,3 +2556,146 @@ int vcpu_get_stats_fd(struct kvm_vm *vm, uint32_t vcpuid)
+ 
+ 	return ioctl(vcpu->fd, KVM_GET_STATS_FD, NULL);
+ }
++
++/* Caller is responsible for freeing the returned kvm_stats_header. */
++static struct kvm_stats_header *read_vm_stats_header(int stats_fd)
++{
++	struct kvm_stats_header *header;
++	ssize_t ret;
++
++	/* Read kvm stats header */
++	header = malloc(sizeof(*header));
++	TEST_ASSERT(header, "Allocate memory for stats header");
++
++	ret = read(stats_fd, header, sizeof(*header));
++	TEST_ASSERT(ret == sizeof(*header), "Read stats header");
++
++	return header;
++}
++
++static void dump_header(int stats_fd, struct kvm_stats_header *header)
++{
++	ssize_t ret;
++	char *id;
++
++	printf("flags: %u\n", header->flags);
++	printf("name size: %u\n", header->name_size);
++	printf("num_desc: %u\n", header->num_desc);
++	printf("id_offset: %u\n", header->id_offset);
++	printf("desc_offset: %u\n", header->desc_offset);
++	printf("data_offset: %u\n", header->data_offset);
++
++	/* Read kvm stats id string */
++	id = malloc(header->name_size);
++	TEST_ASSERT(id, "Allocate memory for id string");
++	ret = pread(stats_fd, id, header->name_size, header->id_offset);
++	TEST_ASSERT(ret == header->name_size, "Read id string");
++
++	printf("id: %s\n", id);
++
++	free(id);
++}
++
++static ssize_t stats_desc_size(struct kvm_stats_header *header)
++{
++	return sizeof(struct kvm_stats_desc) + header->name_size;
++}
++
++/* Caller is responsible for freeing the returned kvm_stats_desc. */
++static struct kvm_stats_desc *read_vm_stats_desc(int stats_fd,
++						 struct kvm_stats_header *header)
++{
++	struct kvm_stats_desc *stats_desc;
++	size_t size_desc;
++	ssize_t ret;
++
++	size_desc = header->num_desc * stats_desc_size(header);
++
++	/* Allocate memory for stats descriptors */
++	stats_desc = malloc(size_desc);
++	TEST_ASSERT(stats_desc, "Allocate memory for stats descriptors");
++
++	/* Read kvm stats descriptors */
++	ret = pread(stats_fd, stats_desc, size_desc, header->desc_offset);
++	TEST_ASSERT(ret == size_desc, "Read KVM stats descriptors");
++
++	return stats_desc;
++}
++
++/* Caller is responsible for freeing the memory *data. */
++static int read_stat_data(int stats_fd, struct kvm_stats_header *header,
++			  struct kvm_stats_desc *desc, uint64_t **data)
++{
++	u64 *stats_data;
++	ssize_t ret;
++
++	stats_data = malloc(desc->size * sizeof(*stats_data));
++
++	ret = pread(stats_fd, stats_data, desc->size * sizeof(*stats_data),
++		    header->data_offset + desc->offset);
++
++	/* ret is in bytes. */
++	ret = ret / sizeof(*stats_data);
++
++	TEST_ASSERT(ret == desc->size,
++		    "Read data of KVM stats: %s", desc->name);
++
++	*data = stats_data;
++
++	return ret;
++}
++
++static void dump_stat(int stats_fd, struct kvm_stats_header *header,
++		      struct kvm_stats_desc *desc)
++{
++	u64 *stats_data;
++	ssize_t ret;
++	int i;
++
++	printf("\tflags: %u\n", desc->flags);
++	printf("\texponent: %u\n", desc->exponent);
++	printf("\tsize: %u\n", desc->size);
++	printf("\toffset: %u\n", desc->offset);
++	printf("\tbucket_size: %u\n", desc->bucket_size);
++	printf("\tname: %s\n", (char *)&desc->name);
++
++	ret = read_stat_data(stats_fd, header, desc, &stats_data);
++
++	printf("\tdata: %lu", *stats_data);
++	for (i = 1; i < ret; i++)
++		printf(", %lu", *(stats_data + i));
++	printf("\n\n");
++
++	free(stats_data);
++}
++
++void dump_vm_stats(struct kvm_vm *vm)
++{
++	struct kvm_stats_desc *stats_desc;
++	struct kvm_stats_header *header;
++	struct kvm_stats_desc *desc;
++	size_t size_desc;
++	int stats_fd;
++	int i;
++
++	stats_fd = vm_get_stats_fd(vm);
++
++	header = read_vm_stats_header(stats_fd);
++	dump_header(stats_fd, header);
++
++	stats_desc = read_vm_stats_desc(stats_fd, header);
++
++	size_desc = stats_desc_size(header);
++
++	/* Read kvm stats data one by one */
++	for (i = 0; i < header->num_desc; ++i) {
++		desc = (void *)stats_desc + (i * size_desc);
++		dump_stat(stats_fd, header, desc);
++	}
++
++	free(stats_desc);
++	free(header);
++
++	close(stats_fd);
++}
++
+-- 
+2.35.1.1094.g7c7d902a7c-goog
 
