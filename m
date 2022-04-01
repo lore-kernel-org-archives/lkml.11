@@ -2,96 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9CE5C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 19:29:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A40BC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 19:31:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351632AbiDATbe (ORCPT
+        id S1351648AbiDATdQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 15:31:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42686 "EHLO
+        Fri, 1 Apr 2022 15:33:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234533AbiDATbc (ORCPT
+        with ESMTP id S233893AbiDATdO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 15:31:32 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F4CE175853;
-        Fri,  1 Apr 2022 12:29:42 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id d30so3314614pjk.0;
-        Fri, 01 Apr 2022 12:29:42 -0700 (PDT)
+        Fri, 1 Apr 2022 15:33:14 -0400
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D917F176644
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 12:31:23 -0700 (PDT)
+Received: by mail-lj1-x22f.google.com with SMTP id s13so5210936ljd.5
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 12:31:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=0shfvy/fPUsWtO9pWkOF1b2wqeGp1bpB57Bxyy5guiI=;
-        b=ZXat4C1nJtL9qvQF4az+scfE9LZ6u6+EHLhaJv4Tp87XcZ/qPqqjJvI7aJvufBRFCT
-         kPS7LSQ5DruVAyMQDYJOCBV20VBPPJQqOglud7UOxwlrB4qK5jSkTSoQzg+1JkuyHq3N
-         j/p4WlOZGK/1MFxttaVFDHOshbnDQbthOOsnNhLEcCl1AR0lvRrM3iQeeZO0VaD/UTb+
-         SXH9cOe2DeGZXOH0c/N97GMZvnuSZoO8QIvrGZ6PWBjcMtV7gD6qwzQiXHlfFmQPk2z/
-         E6yWd7wC4Je+ucbJYrlsw2tDkmpzHx9t0A6m/IggdBqU5fqv5e7oF1QFpTxhOM4Ey4lA
-         XRmA==
+        h=from:to:cc:references:in-reply-to:subject:date:message-id
+         :mime-version:content-transfer-encoding:thread-index
+         :content-language;
+        bh=cfmX/O2SgNnrnDuRsZx92/ld8EluHoAXxb/JiEZdT/Y=;
+        b=QqklvXK3eJB2gidfL2DUGT6rsBXhN7MV8TJkAZqSGlznfdJyFNexILf4gVcYtwG85I
+         rTRl4qNtiBRRdvelUgF4GkDNT1jXdcwky9ro4EsNwqBLqRyCt+UM4wpI5/TgoZ3LNU/e
+         Zlm9TVBuT+XyBif0XuSj1RbtcYeZEsvXviSJCkDJ+akJJkGNooqVcmoFh4o4G0wQh1tE
+         hMZaBjr+n6jY9F3ekT6SgMbh2zACpdyE082G/mabh7FdNJRzpl6SXT6FBWNtH5sVcohR
+         49kILWQodT141f65Ji8mFv4bHcZZLMOTmDMkc7nt1PxW1zig3hFv6pUv/RgXJEWFgRXx
+         bDXg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=0shfvy/fPUsWtO9pWkOF1b2wqeGp1bpB57Bxyy5guiI=;
-        b=BmdDDrUzW3Nq8jH8XRf1deFYBZ0LlIFisdexOWJJSySkz3d23To4C1lZkL4fqllRc8
-         jMfwG8ztcTvBQptyQ+xu2s8xmGaX0DLEW13chVDemvoyvT+ll4H8YxhIU/lIYxm0dVW/
-         jhVC8WZh5rzcbuI+mdMLipYl2OIRgeZKhtFN+9c60EhHBfNu3rslrOcir8mSLYBjZFiA
-         4iOemYGJ8RV6H6T+zE9fpxCVPgtI4OJxLBjCK0TUmlWJrzvhZXPm2ilqYvP6+n1J/j85
-         qaQUYezCm/gf82wbEn37ww2rpD8ZWXMAP7tfXqU9a+FCDZpjsn6+Xco8NdzajQOFpYUJ
-         v2WA==
-X-Gm-Message-State: AOAM533A1dDHzlDoNJ+nJZohW0x2gCzz4b9YCJcn8UvYTlDkmdsnEML9
-        gNt847zIuWfEk578uI+JSBg=
-X-Google-Smtp-Source: ABdhPJwpzVfyWNERknJm4J4Y4bNmiOHbAI35odkY6/BnP64cxxv+Eop9x+GRsYWZKMIxR+yz+2y3ew==
-X-Received: by 2002:a17:902:d346:b0:155:d034:2cef with SMTP id l6-20020a170902d34600b00155d0342cefmr11572917plk.79.1648841381353;
-        Fri, 01 Apr 2022 12:29:41 -0700 (PDT)
-Received: from google.com ([2620:15c:202:201:70b1:2e48:cb83:26e1])
-        by smtp.gmail.com with ESMTPSA id s24-20020a63af58000000b003981789eadfsm3043794pgo.21.2022.04.01.12.29.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Apr 2022 12:29:40 -0700 (PDT)
-Date:   Fri, 1 Apr 2022 12:29:38 -0700
-From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-input@vger.kernel.org
-Subject: Re: [git pull] Input updates for v5.18-rc0
-Message-ID: <YkdSoimi0kGPqwFo@google.com>
-References: <YkZ+K2Gtt75y1/O+@google.com>
- <CAHk-=wgdff1hwOzT+SHzKMGbr+3zc553WU5zvNNbZLdT1TsTNg@mail.gmail.com>
+        h=x-gm-message-state:from:to:cc:references:in-reply-to:subject:date
+         :message-id:mime-version:content-transfer-encoding:thread-index
+         :content-language;
+        bh=cfmX/O2SgNnrnDuRsZx92/ld8EluHoAXxb/JiEZdT/Y=;
+        b=f/545dlK+yzlgesxiTs9jDva9QPOYgHCd+biIBTw8fNF4JYS3mpgMA+ODMkvto7mjE
+         UlDAtpEG0rfhwBYpKs02NsbQd0FtoZSaWq8ozUfyIsuWHtdynUwssZ8Pgeva17JGJ1P9
+         r/aEtuvbDz5eZY5p40JcI4/7I/mubZsyywKWfamLcRgpcH+3LzFNk5V96lTPRVPLdaId
+         MeEprkK+rINErllZ35a7a/HcFem6p7YTmWBC+PEJ1m6Pltm8rzRA+oNAfos6DS+vcMUt
+         WzA4TJRQtyMJ5fmQ0Oq0ME1QWg2lUX2G48RqPDfEiJhWFhtwfidLiOeG1g2pJoWL6eJr
+         oVLg==
+X-Gm-Message-State: AOAM530FWaX6d2MX5+I2X9Rx+nDTOVnpvdn7HWZk6wRSFFB7U0ZhbIRG
+        Pgfl0KF5VRROhdVKyfQqOeI=
+X-Google-Smtp-Source: ABdhPJytwvvDuhap1KRy+LDsKLcSGLc+zxZhs/zR5BG+l38BVaIId9fqqs0/I8xURMDqUT/xLp5XPA==
+X-Received: by 2002:a2e:a169:0:b0:24a:fed8:d1f4 with SMTP id u9-20020a2ea169000000b0024afed8d1f4mr3760104ljl.348.1648841481945;
+        Fri, 01 Apr 2022 12:31:21 -0700 (PDT)
+Received: from DESKTOPMNL9DDQ (88-115-161-74.elisa-laajakaista.fi. [88.115.161.74])
+        by smtp.gmail.com with ESMTPSA id g12-20020a05651222cc00b0044a1065ca5fsm323949lfu.304.2022.04.01.12.31.09
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 01 Apr 2022 12:31:14 -0700 (PDT)
+From:   <zhi.wang.linux@gmail.com>
+To:     "'Christoph Hellwig'" <hch@lst.de>
+Cc:     <dri-devel@lists.freedesktop.org>, <linux-kernel@vger.kernel.org>,
+        <intel-gfx@lists.freedesktop.org>,
+        <intel-gvt-dev@lists.freedesktop.org>,
+        "'Zhi Wang'" <zhi.a.wang@intel.com>,
+        "'Jason Gunthorpe'" <jgg@nvidia.com>,
+        "'Jani Nikula'" <jani.nikula@linux.intel.com>,
+        "'Joonas Lahtinen'" <joonas.lahtinen@linux.intel.com>,
+        "'Vivi Rodrigo'" <rodrigo.vivi@intel.com>,
+        "'Zhenyu Wang'" <zhenyuw@linux.intel.com>
+References: <20220401130207.33944-1-zhi.a.wang@intel.com> <20220401130207.33944-4-zhi.a.wang@intel.com> <20220401172216.GA21871@lst.de>
+In-Reply-To: <20220401172216.GA21871@lst.de>
+Subject: RE: [PATCH v8 3/3] i915/gvt: Use the initial HW state snapshot saved in i915
+Date:   Fri, 1 Apr 2022 22:31:08 +0300
+Message-ID: <00e301d845ff$0ce37580$26aa6080$@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHk-=wgdff1hwOzT+SHzKMGbr+3zc553WU5zvNNbZLdT1TsTNg@mail.gmail.com>
+Content-Type: text/plain;
+        charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+X-Mailer: Microsoft Outlook 16.0
+Thread-Index: AQJQSBcZS23vTPs7eBbLlLvOx5cHvgMe/OlPAVLjqxCrx97X0A==
+Content-Language: en-us
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Linus,
+Hi Chirs:
 
-On Fri, Apr 01, 2022 at 10:19:52AM -0700, Linus Torvalds wrote:
-> On Thu, Mar 31, 2022 at 9:23 PM Dmitry Torokhov
-> <dmitry.torokhov@gmail.com> wrote:
-> >
-> >         git://git.kernel.org/pub/scm/linux/kernel/git/dtor/input.git for-linus
-> 
-> I've been watching _almost_ all the pull requests I get this merge
-> window be nice signed tags.
-> 
-> Yours is one of the fairly few ones missing a signature.
-> 
-> I've pulled it (kernel.org and all that), but I'd like to get it to
-> that "everything" stage.
-> 
-> I can see your pgp key in the kernel.org key repository, I just don't
-> think I've ever gotten a signed tag from you.
+Thanks for the testing. I will find a kabelake and try it. :)
 
-Yeah, I have not been signing anything mainly because my kernel tree is
-on my headless workstation in the office and my smart card is with me
-(potentially elsewhere) and I simply ssh into my workstation. I will
-need to figure out how to forward GPG agent there, especially if I am
-using a Chromebook instead of my Linux laptop.
+-----Original Message-----
+From: Christoph Hellwig <hch@lst.de> 
+Sent: Friday, April 1, 2022 8:22 PM
+To: Zhi Wang <zhi.wang.linux@gmail.com>
+Cc: dri-devel@lists.freedesktop.org; linux-kernel@vger.kernel.org;
+intel-gfx@lists.freedesktop.org; intel-gvt-dev@lists.freedesktop.org; Zhi
+Wang <zhi.a.wang@intel.com>; Christoph Hellwig <hch@lst.de>; Jason Gunthorpe
+<jgg@nvidia.com>; Jani Nikula <jani.nikula@linux.intel.com>; Joonas Lahtinen
+<joonas.lahtinen@linux.intel.com>; Vivi Rodrigo <rodrigo.vivi@intel.com>;
+Zhenyu Wang <zhenyuw@linux.intel.com>
+Subject: Re: [PATCH v8 3/3] i915/gvt: Use the initial HW state snapshot
+saved in i915
 
-Thanks.
+This version still seems unhappy (same hardware as the last report):
 
--- 
-Dmitry
+[   38.650768] vfio_mdev 6814f392-50ac-4236-ae3d-26d472fd8aae: Adding to
+iommu group 0
+[   38.880317] L1TF CPU bug present and SMT on, data leak possible. See
+CVE-2018-3646 and
+https://www.kernel.org/doc/html/latest/admin-guide/hw-vuln/l1tf.html for
+details.
+[   39.736514] kvm [3037]: vcpu0, guest rIP: 0xffffffff81003e6e disabled
+perfctr wrmsr: 0xc2 data 0xffff
+[   43.387606] general protection fault, probably for non-canonical address
+0xd2ff1d88269987a: 0000 [#1] PREEMPT SMP PTI
+[   43.387612] CPU: 0 PID: 3050 Comm: qemu-system-x86 Tainted: G
+E     5.17.0+ #1296
+[   43.387615] Hardware name: LENOVO 20KH006JGE/20KH006JGE, BIOS N23ET62W
+(1.37 ) 02/19/2019
+[   43.387616] RIP: 0010:__x86_indirect_thunk_array+0x10/0x20
+[   43.387621] Code: 43 54 e9 13 05 c4 ff 53 43 54 e9 db 8c c4 ff 53 43 54
+e9 b3 4a d1 ff 53 43 54 e8 07 00 00 00 f3 90 0f ae e8 eb f9 48 89 04 24 <c3>
+66 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 e8 07 00 00 00 f3
+[   43.387623] RSP: 0018:ffffc0214461fe10 EFLAGS: 00010286
+[   43.387626] RAX: 0d2ff1d88269987a RBX: ffff9d5808ae0000 RCX:
+0000000000000004
+[   43.387627] RDX: ffffc0214461fe80 RSI: 0000000000145000 RDI:
+ffffc021422c3000
+[   43.387628] RBP: ffffc021422c3000 R08: 0000000000000001 R09:
+00000000000a2800
+[   43.387630] R10: ffffc0214461fe80 R11: ffffc0214461fe80 R12:
+0000000000000004
+[   43.387631] R13: 00000000fd145000 R14: 0000000000145000 R15:
+ffffc021422c3008
+[   43.387632] FS:  00007f50c5576700(0000) GS:ffff9d5b92600000(0000)
+knlGS:0000000000000000
+[   43.387633] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   43.387635] CR2: 0000000000000000 CR3: 0000000103de8005 CR4:
+00000000003726f0
+[   43.387636] Call Trace:
+[   43.387638]  <TASK>
+[   43.387640]  ? intel_vgpu_emulate_mmio_read+0xe9/0x390
+[   43.387645]  ? intel_vgpu_rw.isra.0+0x1a7/0x1e0
+[   43.387648]  ? intel_vgpu_read+0x15c/0x200
+[   43.387650]  ? vfs_read+0x9b/0x190
+[   43.387655]  ? __x64_sys_pread64+0x8d/0xc0
+[   43.387658]  ? do_syscall_64+0x3b/0x90
+[   43.387661]  ? entry_SYSCALL_64_after_hwframe+0x44/0xae
+[   43.387664]  </TASK>
+[   43.387665] Modules linked in: cmac(E) ctr(E) ccm(E) rfcomm(E) sd_mod(E)
+sg(E) uvcvideo(E) videobuf2_vmalloc(E) videobuf2_memops(E) videobuf2_v4l2(E)
+videobuf2_common(E) btusb(E) videodev(E) btrtl(E) btbcm(E) btintel(E) mc(E)
+uas(E) usb_storage(E) scsi_mod(E) scsi_common(E) bnep(E)
+snd_hda_codec_hdmi(E) x86_pkg_temp_thermal(E) intel_powerclamp(E)
+bluetooth(E) crc16(E) jitterentropy_rng(E) sha512_generic(E) coretemp(E)
+drbg(E) crc32_pclmul(E) ansi_cprng(E) ecdh_generic(E) ghash_clmulni_intel(E)
+ecc(E) wmi_bmof(E) intel_wmi_thunderbolt(E) intel_rapl_msr(E) joydev(E)
+aesni_intel(E) iwlmvm(E) libaes(E) snd_soc_skl(E) snd_soc_hdac_hda(E)
+crypto_simd(E) snd_ctl_led(E) snd_hda_ext_core(E) snd_soc_core(E) cryptd(E)
+snd_soc_acpi_intel_match(E) snd_soc_acpi(E) mac80211(E)
+snd_hda_codec_realtek(E) snd_soc_sst_ipc(E) snd_hda_codec_generic(E)
+snd_soc_sst_dsp(E) kvm_intel(E) libarc4(E) intel_cstate(E) snd_hda_intel(E)
+iwlwifi(E) snd_intel_dspcfg(E) intel_uncore(E) snd_hda_codec(E) pcspkr(E)
+[   43.387700]  serio_raw(E) snd_hwdep(E) iTCO_wdt(E) efi_pstore(E)
+iTCO_vendor_support(E) snd_hda_core(E) tpm_crb(E) watchdog(E)
+thinkpad_acpi(E) snd_pcm(E) nvram(E) processor_thermal_device_pci_legacy(E)
+intel_soc_dts_iosf(E) ledtrig_audio(E) cfg80211(E) snd_timer(E)
+processor_thermal_device(E) platform_profile(E) tpm_tis(E)
+processor_thermal_rfim(E) processor_thermal_mbox(E) tpm_tis_core(E) snd(E)
+mei_me(E) ucsi_acpi(E) processor_thermal_rapl(E) tpm(E) typec_ucsi(E)
+soundcore(E) int3403_thermal(E) intel_rapl_common(E) mei(E)
+intel_pch_thermal(E) typec(E) rng_core(E) wmi(E) int340x_thermal_zone(E)
+rfkill(E) ac(E) battery(E) int3400_thermal(E) acpi_thermal_rel(E) evdev(E)
+acpi_pad(E) parport_pc(E) ppdev(E) lp(E) parport(E) efivarfs(E) ip_tables(E)
+x_tables(E) autofs4(E) i2c_designware_platform(E) i2c_designware_core(E)
+e1000e(E) nvme(E) xhci_pci(E) crc32c_intel(E) ptp(E) nvme_core(E)
+xhci_hcd(E) psmouse(E) t10_pi(E) i2c_i801(E) pps_core(E) i2c_smbus(E)
+thunderbolt(E) usbcore(E)
+[   43.387733]  crc64_rocksoft(E) crc64(E) crc_t10dif(E)
+crct10dif_generic(E) intel_lpss_pci(E) crct10dif_pclmul(E)
+crct10dif_common(E) intel_lpss(E) idma64(E) usb_common(E) mfd_core(E)
+[   43.387741] ---[ end trace 0000000000000000 ]---
+
