@@ -2,207 +2,279 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7FF1C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 10:11:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 381B8C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 10:11:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235224AbiDAKNT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 06:13:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42530 "EHLO
+        id S244876AbiDAKNk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Apr 2022 06:13:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245116AbiDAKNE (ORCPT
+        with ESMTP id S243938AbiDAKNj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 06:13:04 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 567C91945EF;
-        Fri,  1 Apr 2022 03:11:15 -0700 (PDT)
+        Fri, 1 Apr 2022 06:13:39 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 547BB26E012
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 03:11:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648807875; x=1680343875;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=3jrUqHzpUZ6P6RDmRVFOzQHdXQmwz8aUSRdfTS+i0xw=;
-  b=PxxV0HEEnTd0N3tTpPBMmI2YD5N8W0XV1C25H8/1urFdtlKiL4amIzy9
-   Zb3Pa1a4Ie6mrECAOXuLMGFTfAuttb+DNxqjsPrAPkGowvYsi3A8ahd/E
-   S6DY//beKj/WlZlh6uc40Dg9bYXOW4h9gvZ86GQA9MEKfZ3EmG9F3Oe30
-   8TRSYihQ4hYFIK4mI8SNuth6Jcx3sDiuMOpl0BnBpyI0aEF+UinKqRmzC
-   g6SZlApG4K+hUAoZqWqWzn+Peaqv5ZsE571WX514PiVC+VAoxN0W4+TLU
-   pWruBxvC6fTLhoA3/OiukIeAlzGLDlac8qjiNFT8Av3zXe74+EDY5+ym1
+  t=1648807909; x=1680343909;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=1B2kYDU3Img6Pt/wdwoOR4IguuFtckbX5iLYO4yHPrI=;
+  b=ApJ5YJu8nxYVKADIHf8p7APL9IBgMVOecnfm30JD4EL4/KpLaNuR7xKV
+   z5Q4Gh5bY4LWgEeLSm2Zjt//N+KCizZiPJnHGuuIU39MxSSXmLjxxLEap
+   zuGOsYfX8DyzsMLYZrBuo9ytCnaJrBXSH3PunnJFkudmsTtpyRw6YbBLj
+   m6fsV7D/mxJb18j0n5Em/Jov5uTkwMRtkYUjfJeqGurjNOb0CGgKvUNCe
+   ISa6S5Dtrh0u/Yd5HyhgrcP2n9enqP298v5wdCr4oz3nXiGmfHsLI4ItS
+   0SyeFa+6v/fSKPvdTG5hcEGzw74o+swW36eGJy6zv9cSluivY/KCEdO3t
    A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10303"; a="258927457"
+X-IronPort-AV: E=McAfee;i="6200,9189,10303"; a="259800452"
 X-IronPort-AV: E=Sophos;i="5.90,227,1643702400"; 
-   d="scan'208";a="258927457"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Apr 2022 03:10:48 -0700
+   d="scan'208";a="259800452"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Apr 2022 03:11:48 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,227,1643702400"; 
-   d="scan'208";a="567359956"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by orsmga008.jf.intel.com with ESMTP; 01 Apr 2022 03:10:46 -0700
-Received: from fmsmsx609.amr.corp.intel.com (10.18.126.89) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Fri, 1 Apr 2022 03:10:45 -0700
-Received: from fmsmsx609.amr.corp.intel.com (10.18.126.89) by
- fmsmsx609.amr.corp.intel.com (10.18.126.89) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Fri, 1 Apr 2022 03:10:45 -0700
-Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
- fmsmsx609.amr.corp.intel.com (10.18.126.89) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27 via Frontend Transport; Fri, 1 Apr 2022 03:10:45 -0700
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.171)
- by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.27; Fri, 1 Apr 2022 03:10:44 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZhclSsMO1tfxvuAeJPchnMQ+wDy1qAdf7vycd2zfML98nm4ExGTcjubXOu7PWgO7td6E+sLcPT5iFOPd5FF0KxIpQW7M3pJD7OLzI4LIVB0NC6pnEeDVgkd36tf0YzAcYSS6YqjZh7NB+4WpDvW5572bDW9ia+SVLzAjBdmLiB9WftfomchZyLNN6PwazWx+u/+iND72W1mVitNqjnc/eIqO2DTYO9qDTXjRdS4UIkD6DrOe5MlxH9L+zZvdmSWBaSpFzcgjDlF3gtsctNZAE1daUOuiU3XLSz+WbNfBQw6HwAI7CsLHXrSs+Ea2AFHplBXb+efnIBmr+4YHcVVAgg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=3jrUqHzpUZ6P6RDmRVFOzQHdXQmwz8aUSRdfTS+i0xw=;
- b=im+ViYDxKhM5mcm+NEkbIPLzYAZibzlsuB8hvBHkiK1UzF+++EExryssq4VKFjC4w4eSBkAhX971Ncup6NZD5DOAbAS58psyFYrP463VPrtAJRHZwX5KxAXJgTMxDodfby+4GNHc0fkLC3EZIzddEUAYR293xay5fi0NpBsdT+HHM7TggMMFjfrZAY9uxndGbC1KPI6uyznlSyJZRgdtW5uZ3oNFCQlifDvz636bbD34HKpGiDEPs01RO9+WT0tf5Ko4sIRP3B8/qyZQXzJeEGFrc1Ut9nrkL8OupKUJpF4kGmxsN9SE+YsWw2avMfgkCgI74xmOFs4xSHEwUEzURw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from PH0PR11MB5880.namprd11.prod.outlook.com (2603:10b6:510:143::14)
- by BYAPR11MB3047.namprd11.prod.outlook.com (2603:10b6:a03:8b::32) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.17; Fri, 1 Apr
- 2022 10:10:38 +0000
-Received: from PH0PR11MB5880.namprd11.prod.outlook.com
- ([fe80::6439:b0f1:f43f:54d3]) by PH0PR11MB5880.namprd11.prod.outlook.com
- ([fe80::6439:b0f1:f43f:54d3%7]) with mapi id 15.20.5123.021; Fri, 1 Apr 2022
- 10:10:38 +0000
-From:   "Zhang, Qiang1" <qiang1.zhang@intel.com>
-To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-CC:     "ryabinin.a.a@gmail.com" <ryabinin.a.a@gmail.com>,
-        "glider@google.com" <glider@google.com>,
-        "andreyknvl@gmail.com" <andreyknvl@gmail.com>,
-        "dvyukov@google.com" <dvyukov@google.com>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "kasan-dev@googlegroups.com" <kasan-dev@googlegroups.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-rt-users@vger.kernel.org" <linux-rt-users@vger.kernel.org>
-Subject: RE: [PATCH] kasan: Fix sleeping function called from invalid context
- in PREEMPT_RT
-Thread-Topic: [PATCH] kasan: Fix sleeping function called from invalid context
- in PREEMPT_RT
-Thread-Index: AQHYRahAPBhx8+IVqEWk1xTI1Gzupqzayh8AgAAKNUA=
-Date:   Fri, 1 Apr 2022 10:10:38 +0000
-Message-ID: <PH0PR11MB58800917A1BF8D1A76BEF84EDAE09@PH0PR11MB5880.namprd11.prod.outlook.com>
-References: <20220401091006.2100058-1-qiang1.zhang@intel.com>
- <YkbFhgN1jZPTMfnS@linutronix.de>
-In-Reply-To: <YkbFhgN1jZPTMfnS@linutronix.de>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-version: 11.6.401.20
-dlp-reaction: no-action
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 32646faa-937f-43f3-0e61-08da13c7dee2
-x-ms-traffictypediagnostic: BYAPR11MB3047:EE_
-x-microsoft-antispam-prvs: <BYAPR11MB30473BAA821113939619CEF9DAE09@BYAPR11MB3047.namprd11.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: bEnti1Xivxyhh5bUJYsXpmoh5NJ8FbsbCKD/b2lJpyyeVE6i4d4IodzP9BvWrUt0ebOb8puv+vLQdX4TgiUL2vcSMQ0SJdeAurMt9fEGK/5JP9iTU/HGhFp4s1Xjdy20gu+dD4+GZBTxGTVzQf3fPcF3IvAGoXImsDDn6KMlGE7JMZnatc7lbwpqDHBdYZghhUdoYvSTOFnpzFYTWq5+md51U90ovrYBKLpnVOmR3+HMmsq+hE6Ccwn2aGKOteyUiFFQQUKnknTvPh62AzjUuGx8GOn2wUmGTi9KWU/5zU005LXFXJKlChOPauDKCX9Lb7A0co/Q0LZn6bvr567wAxbojg0cYf5NV2b+Kp72h2oPQV/z/W7qdb/EG/phcBnRGaWUc6ERxwZiADTNeSvAef9ohGE2TKV5AWR5r/xGmfqIyuZ5UcQ6bCvWNRzr5rfqaDtl8qv9h1HObdkZsjOjLNvf4shMuinnkAz1x3XvE8zfF3grgTqSODVfbcfyvLC04w4ozo9Z6GezCvn18Xa09R1jqDDJDhdM2FZ003tpyb6PacmDKOqAFDqQV6SkIUO6lU4rXROk+sXFZlsM4vr6jG+1jbux6H9NW0vZWa65XT5JDPDQH0ZVOg3HI/xOdkDMZkEq5E/Kk8nf6C4L/bIF/opGMJnfiHb6VmYxjLMdF+16r0NiFMSGoVMg6sE/AtVFp/MN4xa6ZPrinAUS6K1RMQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5880.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(6506007)(55016003)(7696005)(54906003)(53546011)(52536014)(6916009)(9686003)(2906002)(8936002)(38100700002)(122000001)(82960400001)(5660300002)(38070700005)(8676002)(86362001)(66946007)(33656002)(66476007)(71200400001)(64756008)(66446008)(76116006)(4326008)(66556008)(508600001)(26005)(186003)(83380400001)(316002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?bk53SWp1RTdMcWxHdjZ4SThYeWw4WDVEY2d6bHRPZjduNlJhcVpGVFM5SW9L?=
- =?utf-8?B?dkNnc00vSUM3RTdKYTlkRFZtTjBDNk5DWExUUWhwVnE4RXQ2MlZFVWwxclVK?=
- =?utf-8?B?Q2FBSHNZYVE3RjR3ZkdJd1IzV3JHSWZLSVh0Y2VCcXFWQlhaMGczSVhsMnB4?=
- =?utf-8?B?TStPbEhpdXlDTE5MdmxrdjduS2plNEhSWElKLytUVUtBZitHQWVSeTFGd1NB?=
- =?utf-8?B?ZktRY1p2bWVxSElKRHhKUjVLbjBHKy8zY1A4Z0lqYWFxYytsdWVWMkVhRFhs?=
- =?utf-8?B?UDJ1ait1MlpsUmN1TGh5cWZNbXQyVjNzNzc1MTlBSFFzRWNoaGRjQTJxZzF3?=
- =?utf-8?B?NVg1ZGkwRDBPd1FHNENmdjlhVjFURkRnNDd3eW0wKzJFajJzTnhIVWptU2gy?=
- =?utf-8?B?WUw4Rk5TOFd4MHpSdlVjSzdFVmFZd0c4STZ1UGYwcGRiQWJkN3dhRDRjWm9t?=
- =?utf-8?B?YllCTzZBM0ZXWVM3NWhlTG94RmNpdUZ0Y051aldWa25oYXFCTnQ4VlUrbHJC?=
- =?utf-8?B?ODdOM2EyNlFUTFJRL0NnaGxFazUxWHF1OFIxY2FzdXMrZlZNU20xMlJrRTNY?=
- =?utf-8?B?ZTNUZndwN3dSUytYbzYrK1RDcTFjcmRLK08rdnN2dUtpUHRPZUtOMkFhMzhz?=
- =?utf-8?B?R09TWldBekpMNXJmenpvZklRYmJlUDZKY0xYRFpXMXdTVEdmdWZENitGMEpn?=
- =?utf-8?B?NGJiUUJqdE56RUZwTDJ4QXB3U0F5ekVDV3YxYTdzUXU3RytJcndXbDYwTStz?=
- =?utf-8?B?U1ZQYUZqQXZMSUR4MGhPYXlLQk5Pbk5CV0tJdStxem5aWk5jVkxKZm16MjBC?=
- =?utf-8?B?MDcyZ2NEYXZCckU5alMwVSswTTVwVXptMDZ2MkROaGdYQUdFa2dRd0UyYlcr?=
- =?utf-8?B?aUJTVDVlRXQ4SmpnV0VPaVo2MHJ3QzNtNG5VandUelBlMnh2Sit5T1JIQmZr?=
- =?utf-8?B?dWorcE5GRFdXYVdkTkZmcTAxNG44UHRhU0hyOCtuTWRWdWowR3FuTS9DQ2hK?=
- =?utf-8?B?MnlmcFRnbEo2WldmZ3lsR3kwMitZSnFGTVFpOE5KL1NDZ2dNRzVEZkxsK3hm?=
- =?utf-8?B?QVdFRGJJV00wamROd2pYREQzQXJoTGJlNStCOVFSQmpDb0lrWmVTK3hReGVO?=
- =?utf-8?B?eDQvcFNjcXV4UEpOQTUzMURKKzBMUmk1THhZRWZYOS9NeDVLNW9qUW9nWndM?=
- =?utf-8?B?VDdIMUlvV1JYaUtyUUhyV1BQRHlQaFMyWFZRTDI5VVhwOTlsbEhvVVRQRGlS?=
- =?utf-8?B?L2pUcjdWOTVCS1QxeDZ6RjdkNzYrVjgyakZmU1Z6Z09DZkVZWDQxN0F1YVVi?=
- =?utf-8?B?NEE5U3NBRnh0Q1pqRFpJV1pyck1iWHA4Y2VjeFM4alFWdmxySUhPZGFEWG1V?=
- =?utf-8?B?SUlYL2ZSaStmd3JCTU56WXVpN2pPS0Jwdmd3REEwcFBXbmVSaGpTRU5YZEpO?=
- =?utf-8?B?MVFWWWdrdGNLalVaRjllUkdYaHJKMXhsK2dlZE4zUEtocWlyK054UVpOYVk4?=
- =?utf-8?B?R3pWRHNIdkpWbjF5MmV0SDhMMVZDQytnTlhILzJtM3pQNFFCckNna3o4b2VP?=
- =?utf-8?B?dlRJaTFzSEdZVFRLS1NzaW4zTTlUS0c1QldNS3BadG9WM2lya2JTTGNUMEpT?=
- =?utf-8?B?NVExaUdCTXJuRks3cldBdlJpQy9QZytqYTdkTTRvd2F6Z2hsdGRoWkhuTTAw?=
- =?utf-8?B?N2xtOXlDeDJjTUtQS2owdWxTODNZS1FRMlFZcUJ5bnkyRXN2QkpteWJMeXpo?=
- =?utf-8?B?WngydXo3enJtYkdMTWIvVjlPMnZ6Y1drSWlVRmNWaExWK3lOeFIrRHpUc0xP?=
- =?utf-8?B?enpJNUg5SDlNL3RKRlk1NEI5aVpDSnoyUnFkNURaek00U284VDhnSG5LOGo2?=
- =?utf-8?B?Zmc1SzMyeHRQOXp2eGRDcmc1WHpka3BmMkRoK0hIdEFxT2dIeUtPYjJzNXV6?=
- =?utf-8?B?SE9VZTRpMUJIdmJZSW9FUlYremg2djFrMGlTclpnWStEL0VaajdTTjRRZDdI?=
- =?utf-8?B?VWtheFNYeHhySEtGTEJlWHB5ekdxOFdtMUR3ZFdQU3prT05GMzliT2JMR2R4?=
- =?utf-8?B?QU5EeXU4SEN1dTRGdUMraHh3NS9yeG05a3BkdTBmbDZSa2ozalZnb05nWit3?=
- =?utf-8?B?aTZuZ3hMYkxHcVBydU1KTEJHQlRDcFRKZyt6NGg0eFVzM0VuMVNwbmpqY1d4?=
- =?utf-8?B?aUtEamlUcUZpZlNvbmUrVG1wWVVielFxbENkYVNtUVU5ZnBrU0dERHV4dktY?=
- =?utf-8?B?N2NsR3VYWWpsZm5yOFV4ejVWVnVvMzlGS0l5d1hyLzJDWFNJOFN2bU9MaTlq?=
- =?utf-8?B?SUFla3R1Sk1BL0NYWWlJUWtTWjdmRUYyNzRjVTFtU2NCOEJoMEEzZz09?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+   d="scan'208";a="586798234"
+Received: from lkp-server02.sh.intel.com (HELO 3231c491b0e2) ([10.239.97.151])
+  by orsmga001.jf.intel.com with ESMTP; 01 Apr 2022 03:11:47 -0700
+Received: from kbuild by 3231c491b0e2 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1naEFu-00018u-HH;
+        Fri, 01 Apr 2022 10:11:46 +0000
+Date:   Fri, 1 Apr 2022 18:11:03 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Christoph Hellwig <hch@lst.de>
+Subject: arch/nios2/kernel/misaligned.c:111:42: sparse: sparse: incorrect
+ type in argument 1 (different address spaces)
+Message-ID: <202204011821.XHt4bDMK-lkp@intel.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5880.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 32646faa-937f-43f3-0e61-08da13c7dee2
-X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Apr 2022 10:10:38.4185
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: S24SZGqBVXZzYPLz9xuvCsAC9AjVeFsfZ4TlgjBA1rNaI/PfohG8DVxwMZTsB0GH5i1+3dYr53P8od2Mr+/R4w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR11MB3047
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-T24gMjAyMi0wNC0wMSAxNzoxMDowNiBbKzA4MDBdLCBacWlhbmcgd3JvdGU6DQo+IEJVRzogc2xl
-ZXBpbmcgZnVuY3Rpb24gY2FsbGVkIGZyb20gaW52YWxpZCBjb250ZXh0IGF0IA0KPiBrZXJuZWwv
-bG9ja2luZy9zcGlubG9ja19ydC5jOjQ2DQo+IGluX2F0b21pYygpOiAxLCBpcnFzX2Rpc2FibGVk
-KCk6IDEsIG5vbl9ibG9jazogMCwgcGlkOiAxLCBuYW1lOiANCj4gc3dhcHBlci8wDQo+IHByZWVt
-cHRfY291bnQ6IDEsIGV4cGVjdGVkOiAwDQo+IC4uLi4uLi4uLi4uDQo+IENQVTogMCBQSUQ6IDEg
-Q29tbTogc3dhcHBlci8wIE5vdCB0YWludGVkIDUuMTcuMS1ydDE2LXlvY3RvLXByZWVtcHQtcnQg
-DQo+ICMyMiBIYXJkd2FyZSBuYW1lOiBRRU1VIFN0YW5kYXJkIFBDIChRMzUgKyBJQ0g5LCAyMDA5
-KSwgQklPUyANCj4gcmVsLTEuMTUuMC0wLWcyZGQ0YjliM2Y4NDAtcHJlYnVpbHQucWVtdS5vcmcg
-MDQvMDEvMjAxNCBDYWxsIFRyYWNlOg0KPiA8VEFTSz4NCj4gZHVtcF9zdGFja19sdmwrMHg2MC8w
-eDhjDQo+IGR1bXBfc3RhY2srMHgxMC8weDEyDQo+ICBfX21pZ2h0X3Jlc2NoZWQuY29sZCsweDEz
-Yi8weDE3Mw0KPiBydF9zcGluX2xvY2srMHg1Yi8weGYwDQo+ICBfX19jYWNoZV9mcmVlKzB4YTUv
-MHgxODANCj4gcWxpc3RfZnJlZV9hbGwrMHg3YS8weDE2MA0KPiBwZXJfY3B1X3JlbW92ZV9jYWNo
-ZSsweDVmLzB4NzANCj4gc21wX2NhbGxfZnVuY3Rpb25fbWFueV9jb25kKzB4NGM0LzB4NGYwDQo+
-IG9uX2VhY2hfY3B1X2NvbmRfbWFzaysweDQ5LzB4YzANCj4ga2FzYW5fcXVhcmFudGluZV9yZW1v
-dmVfY2FjaGUrMHg1NC8weGYwDQo+IGthc2FuX2NhY2hlX3NocmluaysweDkvMHgxMA0KPiBrbWVt
-X2NhY2hlX3NocmluaysweDEzLzB4MjANCj4gYWNwaV9vc19wdXJnZV9jYWNoZSsweGUvMHgyMA0K
-PiBhY3BpX3B1cmdlX2NhY2hlZF9vYmplY3RzKzB4MjEvMHg2ZA0KPiBhY3BpX2luaXRpYWxpemVf
-b2JqZWN0cysweDE1LzB4M2INCj4gYWNwaV9pbml0KzB4MTMwLzB4NWJhDQo+IGRvX29uZV9pbml0
-Y2FsbCsweGU1LzB4NWIwDQo+IGtlcm5lbF9pbml0X2ZyZWVhYmxlKzB4MzRmLzB4M2FkDQo+IGtl
-cm5lbF9pbml0KzB4MWUvMHgxNDANCj4gcmV0X2Zyb21fZm9yaysweDIyLzB4MzANCj4gDQo+IFdo
-ZW4gdGhlIGttZW1fY2FjaGVfc2hyaW5rKCkgYmUgY2FsbGVkLCB0aGUgSVBJIHdhcyB0cmlnZ2Vy
-ZWQsIHRoZQ0KPiBfX19jYWNoZV9mcmVlKCkgaXMgY2FsbGVkIGluIElQSSBpbnRlcnJ1cHQgY29u
-dGV4dCwgdGhlIGxvY2FsIGxvY2sgb3IgDQo+IHNwaW4gbG9jayB3aWxsIGJlIGFjcXVpcmVkLiBv
-biBQUkVFTVBUX1JUIGtlcm5lbCwgdGhlc2UgbG9jayBpcyANCj4gcmVwbGFjZWQgd2l0aCBzbGVl
-cGJhbGUgcnQgc3BpbiBsb2NrLCBzbyB0aGUgYWJvdmUgcHJvYmxlbSBpcyB0cmlnZ2VyZWQuDQo+
-IGZpeCBpdCBieSBtaWdyYXRpbmcgdGhlIHJlbGVhc2UgYWN0aW9uIGZyb20gdGhlIElQSSBpbnRl
-cnJ1cHQgY29udGV4dCANCj4gdG8gdGhlIHRhc2sgY29udGV4dCBvbiBSVCBrZXJuZWwuDQoNCj5J
-IGhhdmVuJ3Qgc2VlbiB0aGF0IHdoaWxlIHBsYXlpbmcgd2l0aCBrYXNhbi4gSXMgdGhpcyBuZXc/
-DQo+Q291bGQgd2UgZml4IGluIGEgd2F5IHRoYXQgd2UgZG9uJ3QgaW52b2x2ZSBmcmVlaW5nIG1l
-bW9yeSBmcm9tIGluLUlSUT8NCj5UaGlzIGNvdWxkIHRyaWdnZXIgYSBsb2NrZGVwIHNwbGF0IGlm
-IHRoZSBsb2NhbC1sb2NrIGluIFNMVUIgaXMgYWNxdWlyZWQgZnJvbSBpbi1JUlEgY29udGV4dCBv
-biAhUFJFRU1QVF9SVC4NCg0KSGksIEkgIHdpbGwgbW92ZSBxbGlzdF9mcmVlX2FsbCgpIGZyb20g
-SVBJIGNvbnRleHQgdG8gdGFzayBjb250ZXh0LA0KVGhpcyBvcGVyYXRpb24gYW5kIHRoZSBuZXh0
-IHJlbGVhc2UgIG1lbWJlcnMNCmluIHRoZSBxdWFyYW50aW5lIHBvb2wgb3BlcmF0ZSBzaW1pbGFy
-bHkNCg0KSSBkb24ndCBrbm93IHRoZSBwaGVub21lbm9uIHlvdSBkZXNjcmliZWQuIENhbiB5b3Ug
-ZXhwbGFpbiBpdCBpbiBkZXRhaWw/DQoNClRoYW5rcw0KWnFpYW5nDQoNCg0KPiBTaWduZWQtb2Zm
-LWJ5OiBacWlhbmcgPHFpYW5nMS56aGFuZ0BpbnRlbC5jb20+DQoNClNlYmFzdGlhbg0K
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   e8b767f5e04097aaedcd6e06e2270f9fe5282696
+commit: 90997c128049c75a74bd9ebb852b17e359066541 nios2: drop access_ok() check from __put_user()
+date:   5 weeks ago
+config: nios2-randconfig-s032-20220330 (https://download.01.org/0day-ci/archive/20220401/202204011821.XHt4bDMK-lkp@intel.com/config)
+compiler: nios2-linux-gcc (GCC) 11.2.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=90997c128049c75a74bd9ebb852b17e359066541
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 90997c128049c75a74bd9ebb852b17e359066541
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=nios2 SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+
+sparse warnings: (new ones prefixed by >>)
+   arch/nios2/kernel/misaligned.c:98:34: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected unsigned char const [noderef] __user *__gu_ptr @@     got unsigned char [usertype] * @@
+   arch/nios2/kernel/misaligned.c:98:34: sparse:     expected unsigned char const [noderef] __user *__gu_ptr
+   arch/nios2/kernel/misaligned.c:98:34: sparse:     got unsigned char [usertype] *
+   arch/nios2/kernel/misaligned.c:99:34: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected unsigned char const [noderef] __user *__gu_ptr @@     got unsigned char [usertype] * @@
+   arch/nios2/kernel/misaligned.c:99:34: sparse:     expected unsigned char const [noderef] __user *__gu_ptr
+   arch/nios2/kernel/misaligned.c:99:34: sparse:     got unsigned char [usertype] *
+>> arch/nios2/kernel/misaligned.c:111:42: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void [noderef] __user *to @@     got unsigned char [usertype] *__pu_ptr @@
+   arch/nios2/kernel/misaligned.c:111:42: sparse:     expected void [noderef] __user *to
+   arch/nios2/kernel/misaligned.c:111:42: sparse:     got unsigned char [usertype] *__pu_ptr
+   arch/nios2/kernel/misaligned.c:112:42: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void [noderef] __user *to @@     got unsigned char [usertype] *__pu_ptr @@
+   arch/nios2/kernel/misaligned.c:112:42: sparse:     expected void [noderef] __user *to
+   arch/nios2/kernel/misaligned.c:112:42: sparse:     got unsigned char [usertype] *__pu_ptr
+   arch/nios2/kernel/misaligned.c:116:34: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected unsigned char const [noderef] __user *__gu_ptr @@     got unsigned char [usertype] * @@
+   arch/nios2/kernel/misaligned.c:116:34: sparse:     expected unsigned char const [noderef] __user *__gu_ptr
+   arch/nios2/kernel/misaligned.c:116:34: sparse:     got unsigned char [usertype] *
+   arch/nios2/kernel/misaligned.c:117:34: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected unsigned char const [noderef] __user *__gu_ptr @@     got unsigned char [usertype] * @@
+   arch/nios2/kernel/misaligned.c:117:34: sparse:     expected unsigned char const [noderef] __user *__gu_ptr
+   arch/nios2/kernel/misaligned.c:117:34: sparse:     got unsigned char [usertype] *
+   arch/nios2/kernel/misaligned.c:133:42: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void [noderef] __user *to @@     got unsigned char [usertype] *__pu_ptr @@
+   arch/nios2/kernel/misaligned.c:133:42: sparse:     expected void [noderef] __user *to
+   arch/nios2/kernel/misaligned.c:133:42: sparse:     got unsigned char [usertype] *__pu_ptr
+   arch/nios2/kernel/misaligned.c:134:42: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void [noderef] __user *to @@     got unsigned char [usertype] *__pu_ptr @@
+   arch/nios2/kernel/misaligned.c:134:42: sparse:     expected void [noderef] __user *to
+   arch/nios2/kernel/misaligned.c:134:42: sparse:     got unsigned char [usertype] *__pu_ptr
+   arch/nios2/kernel/misaligned.c:135:42: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void [noderef] __user *to @@     got unsigned char [usertype] *__pu_ptr @@
+   arch/nios2/kernel/misaligned.c:135:42: sparse:     expected void [noderef] __user *to
+   arch/nios2/kernel/misaligned.c:135:42: sparse:     got unsigned char [usertype] *__pu_ptr
+   arch/nios2/kernel/misaligned.c:136:42: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void [noderef] __user *to @@     got unsigned char [usertype] *__pu_ptr @@
+   arch/nios2/kernel/misaligned.c:136:42: sparse:     expected void [noderef] __user *to
+   arch/nios2/kernel/misaligned.c:136:42: sparse:     got unsigned char [usertype] *__pu_ptr
+   arch/nios2/kernel/misaligned.c:140:34: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected unsigned char const [noderef] __user *__gu_ptr @@     got unsigned char [usertype] * @@
+   arch/nios2/kernel/misaligned.c:140:34: sparse:     expected unsigned char const [noderef] __user *__gu_ptr
+   arch/nios2/kernel/misaligned.c:140:34: sparse:     got unsigned char [usertype] *
+   arch/nios2/kernel/misaligned.c:141:34: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected unsigned char const [noderef] __user *__gu_ptr @@     got unsigned char [usertype] * @@
+   arch/nios2/kernel/misaligned.c:141:34: sparse:     expected unsigned char const [noderef] __user *__gu_ptr
+   arch/nios2/kernel/misaligned.c:141:34: sparse:     got unsigned char [usertype] *
+   arch/nios2/kernel/misaligned.c:142:34: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected unsigned char const [noderef] __user *__gu_ptr @@     got unsigned char [usertype] * @@
+   arch/nios2/kernel/misaligned.c:142:34: sparse:     expected unsigned char const [noderef] __user *__gu_ptr
+   arch/nios2/kernel/misaligned.c:142:34: sparse:     got unsigned char [usertype] *
+   arch/nios2/kernel/misaligned.c:143:34: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected unsigned char const [noderef] __user *__gu_ptr @@     got unsigned char [usertype] * @@
+   arch/nios2/kernel/misaligned.c:143:34: sparse:     expected unsigned char const [noderef] __user *__gu_ptr
+   arch/nios2/kernel/misaligned.c:143:34: sparse:     got unsigned char [usertype] *
+
+vim +111 arch/nios2/kernel/misaligned.c
+
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06   62  
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06   63  /*
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06   64   * (mis)alignment handler
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06   65   */
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06   66  asmlinkage void handle_unaligned_c(struct pt_regs *fp, int cause)
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06   67  {
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06   68  	u32 isn, addr, val;
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06   69  	int in_kernel;
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06   70  	u8 a, b, d0, d1, d2, d3;
+db5a7e55468147 Bernd Weiberg 2015-09-04   71  	s16 imm16;
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06   72  	unsigned int fault;
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06   73  
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06   74  	/* back up one instruction */
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06   75  	fp->ea -= 4;
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06   76  
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06   77  	if (fixup_exception(fp)) {
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06   78  		return;
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06   79  	}
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06   80  
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06   81  	in_kernel = !user_mode(fp);
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06   82  
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06   83  	isn = *(unsigned long *)(fp->ea);
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06   84  
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06   85  	fault = 0;
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06   86  
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06   87  	/* do fixup if in kernel or mode turned on */
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06   88  	if (in_kernel || (ma_usermode & UM_FIXUP)) {
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06   89  		/* decompose instruction */
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06   90  		a = (isn >> 27) & 0x1f;
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06   91  		b = (isn >> 22) & 0x1f;
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06   92  		imm16 = (isn >> 6) & 0xffff;
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06   93  		addr = get_reg_val(fp, a) + imm16;
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06   94  
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06   95  		/* do fixup to saved registers */
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06   96  		switch (isn & 0x3f) {
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06   97  		case INST_LDHU:
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06   98  			fault |= __get_user(d0, (u8 *)(addr+0));
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06   99  			fault |= __get_user(d1, (u8 *)(addr+1));
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  100  			val = (d1 << 8) | d0;
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  101  			put_reg_val(fp, b, val);
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  102  			break;
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  103  		case INST_STH:
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  104  			val = get_reg_val(fp, b);
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  105  			d1 = val >> 8;
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  106  			d0 = val >> 0;
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  107  			if (in_kernel) {
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  108  				*(u8 *)(addr+0) = d0;
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  109  				*(u8 *)(addr+1) = d1;
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  110  			} else {
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06 @111  				fault |= __put_user(d0, (u8 *)(addr+0));
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  112  				fault |= __put_user(d1, (u8 *)(addr+1));
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  113  			}
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  114  			break;
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  115  		case INST_LDH:
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  116  			fault |= __get_user(d0, (u8 *)(addr+0));
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  117  			fault |= __get_user(d1, (u8 *)(addr+1));
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  118  			val = (short)((d1 << 8) | d0);
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  119  			put_reg_val(fp, b, val);
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  120  			break;
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  121  		case INST_STW:
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  122  			val = get_reg_val(fp, b);
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  123  			d3 = val >> 24;
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  124  			d2 = val >> 16;
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  125  			d1 = val >> 8;
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  126  			d0 = val >> 0;
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  127  			if (in_kernel) {
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  128  				*(u8 *)(addr+0) = d0;
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  129  				*(u8 *)(addr+1) = d1;
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  130  				*(u8 *)(addr+2) = d2;
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  131  				*(u8 *)(addr+3) = d3;
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  132  			} else {
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  133  				fault |= __put_user(d0, (u8 *)(addr+0));
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  134  				fault |= __put_user(d1, (u8 *)(addr+1));
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  135  				fault |= __put_user(d2, (u8 *)(addr+2));
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  136  				fault |= __put_user(d3, (u8 *)(addr+3));
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  137  			}
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  138  			break;
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  139  		case INST_LDW:
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  140  			fault |= __get_user(d0, (u8 *)(addr+0));
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  141  			fault |= __get_user(d1, (u8 *)(addr+1));
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  142  			fault |= __get_user(d2, (u8 *)(addr+2));
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  143  			fault |= __get_user(d3, (u8 *)(addr+3));
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  144  			val = (d3 << 24) | (d2 << 16) | (d1 << 8) | d0;
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  145  			put_reg_val(fp, b, val);
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  146  			break;
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  147  		}
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  148  	}
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  149  
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  150  	addr = RDCTL(CTL_BADADDR);
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  151  	cause >>= 2;
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  152  
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  153  	if (fault) {
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  154  		if (in_kernel) {
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  155  			pr_err("fault during kernel misaligned fixup @ %#lx; addr 0x%08x; isn=0x%08x\n",
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  156  				fp->ea, (unsigned int)addr,
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  157  				(unsigned int)isn);
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  158  		} else {
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  159  			pr_err("fault during user misaligned fixup @ %#lx; isn=%08x addr=0x%08x sp=0x%08lx pid=%d\n",
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  160  				fp->ea,
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  161  				(unsigned int)isn, addr, fp->sp,
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  162  				current->pid);
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  163  
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  164  			_exception(SIGSEGV, fp, SEGV_MAPERR, fp->ea);
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  165  			return;
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  166  		}
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  167  	}
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  168  
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  169  	/*
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  170  	 * kernel mode -
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  171  	 *  note exception and skip bad instruction (return)
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  172  	 */
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  173  	if (in_kernel) {
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  174  		fp->ea += 4;
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  175  
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  176  		if (ma_usermode & KM_WARN) {
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  177  			pr_err("kernel unaligned access @ %#lx; BADADDR 0x%08x; cause=%d, isn=0x%08x\n",
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  178  				fp->ea,
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  179  				(unsigned int)addr, cause,
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  180  				(unsigned int)isn);
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  181  			/* show_regs(fp); */
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  182  		}
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  183  
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  184  		return;
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  185  	}
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  186  
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  187  	/*
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  188  	 * user mode -
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  189  	 *  possibly warn,
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  190  	 *  possibly send SIGBUS signal to process
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  191  	 */
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  192  	if (ma_usermode & UM_WARN) {
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  193  		pr_err("user unaligned access @ %#lx; isn=0x%08lx ea=0x%08lx ra=0x%08lx sp=0x%08lx\n",
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  194  			(unsigned long)addr, (unsigned long)isn,
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  195  			fp->ea, fp->ra, fp->sp);
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  196  	}
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  197  
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  198  	if (ma_usermode & UM_SIGNAL)
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  199  		_exception(SIGBUS, fp, BUS_ADRALN, fp->ea);
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  200  	else
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  201  		fp->ea += 4;	/* else advance */
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  202  }
+82ed08dd1b0e0e Ley Foon Tan  2014-11-06  203  
+
+:::::: The code at line 111 was first introduced by commit
+:::::: 82ed08dd1b0e0e0728f9188f66795c49dffe437d nios2: Exception handling
+
+:::::: TO: Ley Foon Tan <lftan@altera.com>
+:::::: CC: Ley Foon Tan <lftan@altera.com>
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
