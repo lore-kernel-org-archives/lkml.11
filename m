@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F723C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:52:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE9D4C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:52:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348571AbiDAOyU (ORCPT
+        id S1348863AbiDAOya (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 10:54:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57838 "EHLO
+        Fri, 1 Apr 2022 10:54:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348353AbiDAOeM (ORCPT
+        with ESMTP id S1347717AbiDAOda (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:34:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E29AFEB;
-        Fri,  1 Apr 2022 07:32:23 -0700 (PDT)
+        Fri, 1 Apr 2022 10:33:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 854C527CE21;
+        Fri,  1 Apr 2022 07:30:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9E4D761C1A;
-        Fri,  1 Apr 2022 14:32:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2261C3410F;
-        Fri,  1 Apr 2022 14:32:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 19211B824D5;
+        Fri,  1 Apr 2022 14:30:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF398C34111;
+        Fri,  1 Apr 2022 14:30:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823542;
-        bh=yKDECHd+3Hf1wFsavIVXaGAn88ZEKbCwTF4OHq50O2A=;
+        s=k20201202; t=1648823434;
+        bh=RC/q1JVCEkuM3JuNHi6fRnuxwQ+cQCQYeX4Xc0dfUug=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DQ00L72wy+4RztmG7CmxxejqPCjZy0Ut8sYc98uxRXWto9n116b9wGroD4WLS5XBL
-         6NpZV0fJpbV/1Quxrp7nurUJBCXuvbOitW/gl0QKz0XXNxWAACZIjTtDRg+vP2cifl
-         Y2+67wsSIcUJgVwuXFOuNJSUCqDDR3WLQf9MFCxoPtPYFpJ58aDzp1y7lNtTjXHAeO
-         WD9m1QPXrgmZgtzA2U740NoubY0y+5Rdjp4Gi2TCLfuLENgmzNpV1BlQxLh2Jv+Vci
-         kPlGakmEV2Z30j7eVIsLg+chvvnH4fr2NWDKEgyUWS3WBBawfwJQV1XiZ6lsn6pvVd
-         7LicOI7ddQh9Q==
+        b=Orlz7cIHLWbhDv26DeENJ8eYZaw76qewxOO8IW0VotM7Vmu2KbAVG6UZI8lz5XpGT
+         7KvmNGauE1w5F1azPbz9iKWShHTfp/9Avobvh4HSxeE7zB0WT1zFF115JaXTd9WrDD
+         7keTvexXgLzDvJ7tFLQe6aFmziemIxOSwy7gMD+IeFDFiWcX3OgeeQORv6B7u33Jdb
+         6Y5FwjVY6RWJqXpHXH1ksY+4UzsIpQ32cLDWzQiT3v6dozzY1KrohtYOYIacu+nV/0
+         d9eWKP5eakJY7ScbmfvuCzbzYm4aTXG9mmxO+1qzRtM+6WGGEgTlPfRlu2cBGDtsjc
+         31nR5cgHvin7Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Michael Walle <michael@walle.cc>, Paolo Abeni <pabeni@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, linux@armlinux.org.uk,
-        andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 135/149] net: sfp: add 2500base-X quirk for Lantech SFP module
-Date:   Fri,  1 Apr 2022 10:25:22 -0400
-Message-Id: <20220401142536.1948161-135-sashal@kernel.org>
+Cc:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Jack Wang <jinpu.wang@ionos.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, jinpu.wang@cloud.ionos.com,
+        jejb@linux.ibm.com, linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 093/149] scsi: pm8001: Fix pm80xx_pci_mem_copy() interface
+Date:   Fri,  1 Apr 2022 10:24:40 -0400
+Message-Id: <20220401142536.1948161-93-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401142536.1948161-1-sashal@kernel.org>
 References: <20220401142536.1948161-1-sashal@kernel.org>
@@ -53,51 +54,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Walle <michael@walle.cc>
+From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 
-[ Upstream commit 00eec9fe4f3b9588b4bfa8ef9dd0aae96407d5d7 ]
+[ Upstream commit 3762d8f6edcdb03994c919f9487fd6d336c06561 ]
 
-The Lantech 8330-262D-E module is 2500base-X capable, but it reports the
-nominal bitrate as 2500MBd instead of 3125MBd. Add a quirk for the
-module.
+The declaration of the local variable destination1 in pm80xx_pci_mem_copy()
+as a pointer to a u32 results in the sparse warning:
 
-The following in an EEPROM dump of such a SFP with the serial number
-redacted:
+warning: incorrect type in assignment (different base types)
+    expected unsigned int [usertype]
+    got restricted __le32 [usertype]
 
-00: 03 04 07 00 00 00 01 20 40 0c 05 01 19 00 00 00    ???...? @????...
-10: 1e 0f 00 00 4c 61 6e 74 65 63 68 20 20 20 20 20    ??..Lantech
-20: 20 20 20 20 00 00 00 00 38 33 33 30 2d 32 36 32        ....8330-262
-30: 44 2d 45 20 20 20 20 20 56 31 2e 30 03 52 00 cb    D-E     V1.0?R.?
-40: 00 1a 00 00 46 43 XX XX XX XX XX XX XX XX XX XX    .?..FCXXXXXXXXXX
-50: 20 20 20 20 32 32 30 32 31 34 20 20 68 b0 01 98        220214  h???
-60: 45 58 54 52 45 4d 45 4c 59 20 43 4f 4d 50 41 54    EXTREMELY COMPAT
-70: 49 42 4c 45 20 20 20 20 20 20 20 20 20 20 20 20    IBLE
+Furthermore, the destination" argument of pm80xx_pci_mem_copy() is wrongly
+declared with the const attribute.
 
-Signed-off-by: Michael Walle <michael@walle.cc>
-Link: https://lore.kernel.org/r/20220312205014.4154907-1-michael@walle.cc
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Fix both problems by changing the type of the "destination" argument to
+"__le32 *" and use this argument directly inside the pm80xx_pci_mem_copy()
+function, thus removing the need for the destination1 local variable.
+
+Link: https://lore.kernel.org/r/20220220031810.738362-6-damien.lemoal@opensource.wdc.com
+Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/sfp-bus.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/scsi/pm8001/pm80xx_hwi.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/phy/sfp-bus.c b/drivers/net/phy/sfp-bus.c
-index c1512c9925a6..15aa5ac1ff49 100644
---- a/drivers/net/phy/sfp-bus.c
-+++ b/drivers/net/phy/sfp-bus.c
-@@ -74,6 +74,12 @@ static const struct sfp_quirk sfp_quirks[] = {
- 		.vendor = "HUAWEI",
- 		.part = "MA5671A",
- 		.modes = sfp_quirk_2500basex,
-+	}, {
-+		// Lantech 8330-262D-E can operate at 2500base-X, but
-+		// incorrectly report 2500MBd NRZ in their EEPROM
-+		.vendor = "Lantech",
-+		.part = "8330-262D-E",
-+		.modes = sfp_quirk_2500basex,
- 	}, {
- 		.vendor = "UBNT",
- 		.part = "UF-INSTANT",
+diff --git a/drivers/scsi/pm8001/pm80xx_hwi.c b/drivers/scsi/pm8001/pm80xx_hwi.c
+index 9d20f8009b89..f6b9253e626b 100644
+--- a/drivers/scsi/pm8001/pm80xx_hwi.c
++++ b/drivers/scsi/pm8001/pm80xx_hwi.c
+@@ -67,18 +67,16 @@ int pm80xx_bar4_shift(struct pm8001_hba_info *pm8001_ha, u32 shift_value)
+ }
+ 
+ static void pm80xx_pci_mem_copy(struct pm8001_hba_info  *pm8001_ha, u32 soffset,
+-				const void *destination,
++				__le32 *destination,
+ 				u32 dw_count, u32 bus_base_number)
+ {
+ 	u32 index, value, offset;
+-	u32 *destination1;
+-	destination1 = (u32 *)destination;
+ 
+-	for (index = 0; index < dw_count; index += 4, destination1++) {
++	for (index = 0; index < dw_count; index += 4, destination++) {
+ 		offset = (soffset + index);
+ 		if (offset < (64 * 1024)) {
+ 			value = pm8001_cr32(pm8001_ha, bus_base_number, offset);
+-			*destination1 =  cpu_to_le32(value);
++			*destination = cpu_to_le32(value);
+ 		}
+ 	}
+ 	return;
 -- 
 2.34.1
 
