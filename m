@@ -2,172 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8AA5C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 22:14:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A951C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 22:18:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353306AbiDAWQ2 (ORCPT
+        id S1353307AbiDAWUd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 18:16:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36718 "EHLO
+        Fri, 1 Apr 2022 18:20:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353291AbiDAWQU (ORCPT
+        with ESMTP id S236871AbiDAWU3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 18:16:20 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E729765D07
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 15:14:27 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 90F63210E7;
-        Fri,  1 Apr 2022 22:14:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1648851266; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Pe8liXZM2h2O58fZfmoQfsuWte/F3qXp4GTmZwoKHTo=;
-        b=C8LKGm9NV3UCxChk+Ki0Qqi5ub/fm2rMl8CvkGWwDWUif+yFiVSVMHQ8zOX0MDlgefO7d9
-        9uxTovQbdZpz6oTGnOY+3H+148DZgAFhmCnEpSkdrK3ixVee0d9bjiuHf6b30Xk4Qipq+E
-        EEz6eL64kNB7x3eAcHKbAow2+JyXxfQ=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1648851266;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Pe8liXZM2h2O58fZfmoQfsuWte/F3qXp4GTmZwoKHTo=;
-        b=agfDnaSu6LIxtuRbx0j1308aGrwrlbUC2vDiZxV8ghYOE3FnxP32itpafXxMJrfv5PfxLD
-        URWvqp5wqIIoOwAw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 5DF01132C1;
-        Fri,  1 Apr 2022 22:14:26 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id pbouFkJ5R2LlLgAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Fri, 01 Apr 2022 22:14:26 +0000
-Message-ID: <a085d739-aa06-eff0-d350-0df088a7f2d0@suse.cz>
-Date:   Sat, 2 Apr 2022 00:14:25 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH v2 1/2] mm: page_alloc: simplify pageblock migratetype
- check in __free_one_page().
-Content-Language: en-US
-To:     Zi Yan <ziy@nvidia.com>, linux-mm@kvack.org
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        David Hildenbrand <david@redhat.com>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Mike Rapoport <rppt@kernel.org>,
-        Oscar Salvador <osalvador@suse.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
+        Fri, 1 Apr 2022 18:20:29 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4251B6446;
+        Fri,  1 Apr 2022 15:18:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648851518; x=1680387518;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references;
+  bh=MOFSRUY4vkr1OSoHJcHl0ihCsdiiWyX8LybT3qRw3P4=;
+  b=hxXuZlwPhsxYgJavoYjz2VXHcce43SGqoqQTQisCbZKudD11oMfpbscj
+   v9HjE5jphHIg5Cd22ooZ7jIwimeLpEnppihDem4sKaj3GRNiRMod3f+Nd
+   tGOVG+8tKcNhzh6jrP257uwtmf6zdYCc7rZx4xs7qR71qgoW8vFIsOrn0
+   gwlZZ4IWZpg1ATbNa9kNNOuBNaRMIIMHzDmxlvmUkqYCJnHsZyjhjqH15
+   4Ahhn0kPS8/7ydAXzKpQMrnJFRpfxkIsnSDZUs8Y1ptd8ud5VNWi953kI
+   HK+NXCpO7Q6AqKqzaEsRbx04MpVQf/dRmzay6yNkCcVSo58K+YOTEnmh9
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10304"; a="259070830"
+X-IronPort-AV: E=Sophos;i="5.90,228,1643702400"; 
+   d="scan'208";a="259070830"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Apr 2022 15:18:37 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,228,1643702400"; 
+   d="scan'208";a="567860546"
+Received: from chang-linux-3.sc.intel.com ([172.25.112.114])
+  by orsmga008.jf.intel.com with ESMTP; 01 Apr 2022 15:18:35 -0700
+From:   "Chang S. Bae" <chang.seok.bae@intel.com>
+To:     linux-kselftest@vger.kernel.org, shuah@kernel.org,
         linux-kernel@vger.kernel.org
-References: <20220401181109.1477354-1-zi.yan@sent.com>
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <20220401181109.1477354-1-zi.yan@sent.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Cc:     dave.hansen@linux.intel.com, tglx@linutronix.de, bp@suse.de,
+        chang.seok.bae@intel.com
+Subject: [PATCH 2/2] selftests/x86/amx: Fix the test to avoid failure when AMX is unavailable
+Date:   Fri,  1 Apr 2022 15:10:14 -0700
+Message-Id: <20220401221014.13556-3-chang.seok.bae@intel.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220401221014.13556-1-chang.seok.bae@intel.com>
+References: <20220401221014.13556-1-chang.seok.bae@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/1/22 20:11, Zi Yan wrote:
-> From: Zi Yan <ziy@nvidia.com>
-> 
-> Move pageblock migratetype check code in the while loop to simplify the
-> logic. It also saves redundant buddy page checking code.
-> 
-> Suggested-by: Vlastimil Babka <vbabka@suse.cz>
-> Link: https://lore.kernel.org/linux-mm/27ff69f9-60c5-9e59-feb2-295250077551@suse.cz/
-> Signed-off-by: Zi Yan <ziy@nvidia.com>
+When a CPU does not have AMX, the test fails. But this is wrong as it
+should be runnable regardless. Skip the test instead.
 
-Acked-by: Vlastimil Babka <vbabka@suse.cz>
+Reported-by: Thomas Gleixner <tglx@linutronix.de>
+Fixes: 6a3e0651b4a ("selftests/x86/amx: Add test cases for AMX state management")
+Signed-off-by: Chang S. Bae <chang.seok.bae@intel.com>
+Cc: linux-kselftest@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+---
+ tools/testing/selftests/x86/amx.c | 42 +++++++++++++++++++++++--------
+ 1 file changed, 31 insertions(+), 11 deletions(-)
 
-> ---
->  mm/page_alloc.c | 46 +++++++++++++++++-----------------------------
->  1 file changed, 17 insertions(+), 29 deletions(-)
-> 
-> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-> index 856473e54155..2ea106146686 100644
-> --- a/mm/page_alloc.c
-> +++ b/mm/page_alloc.c
-> @@ -1054,7 +1054,6 @@ static inline void __free_one_page(struct page *page,
->  		int migratetype, fpi_t fpi_flags)
->  {
->  	struct capture_control *capc = task_capc(zone);
-> -	unsigned int max_order = pageblock_order;
->  	unsigned long buddy_pfn;
->  	unsigned long combined_pfn;
->  	struct page *buddy;
-> @@ -1070,8 +1069,7 @@ static inline void __free_one_page(struct page *page,
->  	VM_BUG_ON_PAGE(pfn & ((1 << order) - 1), page);
->  	VM_BUG_ON_PAGE(bad_range(zone, page), page);
->  
-> -continue_merging:
-> -	while (order < max_order) {
-> +	while (order < MAX_ORDER - 1) {
->  		if (compaction_capture(capc, page, order, migratetype)) {
->  			__mod_zone_freepage_state(zone, -(1 << order),
->  								migratetype);
-> @@ -1082,6 +1080,22 @@ static inline void __free_one_page(struct page *page,
->  
->  		if (!page_is_buddy(page, buddy, order))
->  			goto done_merging;
-> +
-> +		if (unlikely(order >= pageblock_order)) {
-> +			/*
-> +			 * We want to prevent merge between freepages on pageblock
-> +			 * without fallbacks and normal pageblock. Without this,
-> +			 * pageblock isolation could cause incorrect freepage or CMA
-> +			 * accounting or HIGHATOMIC accounting.
-> +			 */
-> +			int buddy_mt = get_pageblock_migratetype(buddy);
-> +
-> +			if (migratetype != buddy_mt
-> +					&& (!migratetype_is_mergeable(migratetype) ||
-> +						!migratetype_is_mergeable(buddy_mt)))
-> +				goto done_merging;
-> +		}
-> +
->  		/*
->  		 * Our buddy is free or it is CONFIG_DEBUG_PAGEALLOC guard page,
->  		 * merge with it and move up one order.
-> @@ -1095,32 +1109,6 @@ static inline void __free_one_page(struct page *page,
->  		pfn = combined_pfn;
->  		order++;
->  	}
-> -	if (order < MAX_ORDER - 1) {
-> -		/* If we are here, it means order is >= pageblock_order.
-> -		 * We want to prevent merge between freepages on pageblock
-> -		 * without fallbacks and normal pageblock. Without this,
-> -		 * pageblock isolation could cause incorrect freepage or CMA
-> -		 * accounting or HIGHATOMIC accounting.
-> -		 *
-> -		 * We don't want to hit this code for the more frequent
-> -		 * low-order merging.
-> -		 */
-> -		int buddy_mt;
-> -
-> -		buddy_pfn = __find_buddy_pfn(pfn, order);
-> -		buddy = page + (buddy_pfn - pfn);
-> -
-> -		if (!page_is_buddy(page, buddy, order))
-> -			goto done_merging;
-> -		buddy_mt = get_pageblock_migratetype(buddy);
-> -
-> -		if (migratetype != buddy_mt
-> -				&& (!migratetype_is_mergeable(migratetype) ||
-> -					!migratetype_is_mergeable(buddy_mt)))
-> -			goto done_merging;
-> -		max_order = order + 1;
-> -		goto continue_merging;
-> -	}
->  
->  done_merging:
->  	set_buddy_order(page, order);
+diff --git a/tools/testing/selftests/x86/amx.c b/tools/testing/selftests/x86/amx.c
+index 3615ef4a48bb..14abb6072a7d 100644
+--- a/tools/testing/selftests/x86/amx.c
++++ b/tools/testing/selftests/x86/amx.c
+@@ -106,6 +106,12 @@ static void clearhandler(int sig)
+ 
+ #define CPUID_LEAF1_ECX_XSAVE_MASK	(1 << 26)
+ #define CPUID_LEAF1_ECX_OSXSAVE_MASK	(1 << 27)
++
++static struct {
++	unsigned xsave:   1;
++	unsigned osxsave: 1;
++} cpuinfo;
++
+ static inline void check_cpuid_xsave(void)
+ {
+ 	uint32_t eax, ebx, ecx, edx;
+@@ -118,10 +124,8 @@ static inline void check_cpuid_xsave(void)
+ 	eax = 1;
+ 	ecx = 0;
+ 	cpuid(&eax, &ebx, &ecx, &edx);
+-	if (!(ecx & CPUID_LEAF1_ECX_XSAVE_MASK))
+-		fatal_error("cpuid: no CPU xsave support");
+-	if (!(ecx & CPUID_LEAF1_ECX_OSXSAVE_MASK))
+-		fatal_error("cpuid: no OS xsave support");
++	cpuinfo.xsave = !!(ecx & CPUID_LEAF1_ECX_XSAVE_MASK);
++	cpuinfo.osxsave = !!(ecx & CPUID_LEAF1_ECX_OSXSAVE_MASK);
+ }
+ 
+ static uint32_t xbuf_size;
+@@ -161,14 +165,31 @@ static void check_cpuid_xtiledata(void)
+ 	 * eax: XTILEDATA state component size
+ 	 * ebx: XTILEDATA state component offset in user buffer
+ 	 */
+-	if (!eax || !ebx)
+-		fatal_error("xstate cpuid: invalid tile data size/offset: %d/%d",
+-				eax, ebx);
+-
+ 	xtiledata.size	      = eax;
+ 	xtiledata.xbuf_offset = ebx;
+ }
+ 
++static bool amx_available(void)
++{
++	check_cpuid_xsave();
++	if (!cpuinfo.xsave) {
++		printf("[SKIP]\tcpuid: no CPU xsave support\n");
++		return false;
++	} else if (!cpuinfo.osxsave) {
++		printf("[SKIP]\tcpuid: no OS xsave support\n");
++		return false;
++	}
++
++	check_cpuid_xtiledata();
++	if (!xtiledata.size || !xtiledata.xbuf_offset) {
++		printf("[SKIP]\txstate cpuid: no tile data (size/offset: %d/%d)\n",
++		       xtiledata.size, xtiledata.xbuf_offset);
++		return false;
++	}
++
++	return true;
++}
++
+ /* The helpers for managing XSAVE buffer and tile states: */
+ 
+ struct xsave_buffer *alloc_xbuf(void)
+@@ -826,9 +847,8 @@ static void test_context_switch(void)
+ 
+ int main(void)
+ {
+-	/* Check hardware availability at first */
+-	check_cpuid_xsave();
+-	check_cpuid_xtiledata();
++	if (!amx_available())
++		return 0;
+ 
+ 	init_stashed_xsave();
+ 	sethandler(SIGILL, handle_noperm, 0);
+-- 
+2.17.1
 
