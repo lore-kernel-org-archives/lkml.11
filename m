@@ -2,102 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4B54C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 05:06:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F18BC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 05:07:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244948AbiDAFIB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 01:08:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44176 "EHLO
+        id S244961AbiDAFJX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Apr 2022 01:09:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233411AbiDAFH7 (ORCPT
+        with ESMTP id S234476AbiDAFJV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 01:07:59 -0400
-X-Greylist: delayed 312 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 31 Mar 2022 22:06:09 PDT
-Received: from m228-13.mailgun.net (m228-13.mailgun.net [159.135.228.13])
-        by lindbergh.monkeyblade.net (Postfix) with UTF8SMTPS id 2616D25F678
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 22:06:08 -0700 (PDT)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=codeagain.dev; q=dns/txt;
- s=smtp; t=1648789568; h=Content-Transfer-Encoding: MIME-Version:
- Message-Id: Date: Subject: Subject: Cc: To: To: From: From: Sender:
- Sender; bh=l+7Y194RkHEDvlBRUE9dOX8hqW2hHbFhgCzQfGAyZwQ=; b=gRoRH1cLY05CwIS9RZg5qf2Ex3BIQ2c33jMdGISh7sEuJ1UvZzP8LYjPUHvjR9axgsG2UILy
- T+aNt66L+rnMmWH0SGxJvy1DZDhfKPcIlPwvIR6B1+O4X/zyzNKNHBfZqn/gqHLbdtX/KLRG
- 97nGNqlKHdGhjwc6n4OjXF9MZ9wYWxUVEcs4xt7K/NiTD4O3QcalqXJ3oylghvixb9s3Xa+q
- vKr7kOKDBIRBy/lDPjkTUEl/ePnunTYMatmDLq0uynsP5UiKfP7pqgIszbvfrzpev5QY/coI
- Gm6g+TIsiy8p2UF5Lov+9tjH1oHyAXfZutHy+KptetvUiavcOYo11w==
-X-Mailgun-Sending-Ip: 159.135.228.13
-X-Mailgun-Sid: WyJkNDU4NiIsICJsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWM2ZCJd
-Received: from localhost.localdomain (dynamic-user.170.84.58.28.mhnet.com.br
- [170.84.58.28]) by smtp-out-n06.prod.us-east-1.postgun.com with SMTP id
- 624687077afabd0707a01256 (version=TLS1.3, cipher=TLS_AES_128_GCM_SHA256);
- Fri, 01 Apr 2022 05:00:55 GMT
-Sender: codeagain@codeagain.dev
-From:   Bruno Moreira-Guedes <codeagain@codeagain.dev>
-To:     reg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Martyn Welch <martyn@welchs.me.uk>,
-        Manohar Vanga <manohar.vanga@gmail.com>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        outreachy@lists.linux.dev
-Cc:     Bruno Moreira-Guedes <codeagain@codeagain.dev>
-Subject: [PATCH] staging: vme: Adjusted VME_USER in Kconfig
-Date:   Fri,  1 Apr 2022 02:00:45 -0300
-Message-Id: <20220401050045.3686663-1-codeagain@codeagain.dev>
-X-Mailer: git-send-email 2.35.1
+        Fri, 1 Apr 2022 01:09:21 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 263A025FD42;
+        Thu, 31 Mar 2022 22:07:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648789653; x=1680325653;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=hqvHu/vWPMwXBYJFRV8AkDoq4xnOkIf3H0wEgyrnips=;
+  b=TDtN3ZXkoJA/nCoNFGzhB4OhBUAvihRkp7Gqo4GhqPtESUrpzZy5cB+f
+   hOf0ayGGMRgBzz9+i4L6wAWtPml7ENFcB8ILo8lH8mjBg6fatWsG8IZWR
+   GuDhabW2P+wtLMUkIKOJz4nN0eF7ayZ760a13Dkq2jA/kABtKIuC57P+0
+   LQ+MAEokCBLGjRC/nX9TOlTuKurGLEUsK0VEDYiinZ0aSMFs1tSwnQ4Gf
+   W3/zlhadnpGJIYGiyvesNGqco+XGEdjaAjAFh5EFbMZyRRjxW+DQr7v6m
+   1IDBpwvzW11frmNSFtgznEqqeOE1rMcY9JtmkzIUK88UuJLHq19pWYFtb
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10303"; a="284970399"
+X-IronPort-AV: E=Sophos;i="5.90,226,1643702400"; 
+   d="scan'208";a="284970399"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2022 22:07:32 -0700
+X-IronPort-AV: E=Sophos;i="5.90,226,1643702400"; 
+   d="scan'208";a="547650151"
+Received: from gao-cwp.sh.intel.com (HELO gao-cwp) ([10.239.159.23])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2022 22:07:29 -0700
+Date:   Fri, 1 Apr 2022 13:07:26 +0800
+From:   Chao Gao <chao.gao@intel.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Isaku Yamahata <isaku.yamahata@gmail.com>,
+        Paolo Bonzini <pbonzini@redhat.com>, isaku.yamahata@intel.com,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jim Mattson <jmattson@google.com>, erdemaktas@google.com,
+        Connor Kuehl <ckuehl@redhat.com>, Chao Gao <chao.gao@intel.com>
+Subject: Re: [RFC PATCH v5 008/104] KVM: TDX: Add a function to initialize
+ TDX module
+Message-ID: <20220401050725.GA12103@gao-cwp>
+References: <cover.1646422845.git.isaku.yamahata@intel.com>
+ <b92217283fa96b85e9a683ca3fcf1b368cf8d1c4.1646422845.git.isaku.yamahata@intel.com>
+ <05aecc5a-e8d2-b357-3bf1-3d0cb247c28d@redhat.com>
+ <20220314194513.GD1964605@ls.amr.corp.intel.com>
+ <YkTvw5OXTTFf7j4y@google.com>
+ <20220331170303.GA2179440@ls.amr.corp.intel.com>
+ <YkYCNF3l62IxpmAD@google.com>
+ <20220401032741.GA2806@gao-cwp>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220401032741.GA2806@gao-cwp>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently, the VME_USER driver is in the staging tree Kconfig, unlike
-other VME drivers already moved to the main portions of the kernel tree.
-Its configuration is, however, nested into the VME_BUS config option,
-which might be misleading.
+The original reply was sent to Sean only by mistake. Add others back.
 
-Since the staging tree "[...] is used to hold stand-alone[1] drivers and
-filesystem that are not ready to be merged into the main portion of the
-Linux kernel tree [...]"[1], IMHO all staging drivers should appear
-nested into the Main Menu -> Device Drivers -> Staging Drivers to make
-sure the user don't pick it without being fully aware of its staging
-status as it could be the case in Menu -> Device Drivers -> VME bridge
-support (the current location).
-
-With this change menuconfig users will clearly know this is not a driver
-in the main portion of the kernel tree and decide whether to build it or
-not with that clearly in mind.
-
-This change goes into the same direction of commit 4b4cdf3979c3
-("STAGING: Move staging drivers back to staging-specific menu")
-
-[1] https://lkml.org/lkml/2009/3/18/314
-
-Signed-off-by: Bruno Moreira-Guedes <codeagain@codeagain.dev>
----
- drivers/staging/Kconfig | 2 ++
- drivers/vme/Kconfig     | 2 --
- 2 files changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/staging/Kconfig b/drivers/staging/Kconfig
-index 932acb4e8cbc..0545850eb2ff 100644
---- a/drivers/staging/Kconfig
-+++ b/drivers/staging/Kconfig
-@@ -88,4 +88,6 @@ source "drivers/staging/qlge/Kconfig"
- 
- source "drivers/staging/wfx/Kconfig"
- 
-+source "drivers/staging/vme/devices/Kconfig"
-+
- endif # STAGING
-diff --git a/drivers/vme/Kconfig b/drivers/vme/Kconfig
-index 936392ca3c8c..c13dd9d2a604 100644
---- a/drivers/vme/Kconfig
-+++ b/drivers/vme/Kconfig
-@@ -15,6 +15,4 @@ source "drivers/vme/bridges/Kconfig"
- 
- source "drivers/vme/boards/Kconfig"
- 
--source "drivers/staging/vme/devices/Kconfig"
--
- endif # VME
--- 
-2.35.1
-
+On Fri, Apr 01, 2022 at 11:27:42AM +0800, Chao Gao wrote:
+>On Thu, Mar 31, 2022 at 07:34:12PM +0000, Sean Christopherson wrote:
+>>+Chao Gao
+>>
+>>On Thu, Mar 31, 2022, Isaku Yamahata wrote:
+>>> On Thu, Mar 31, 2022 at 12:03:15AM +0000, Sean Christopherson <seanjc@google.com> wrote:
+>>> > On Mon, Mar 14, 2022, Isaku Yamahata wrote:
+>>> > > - VMXON on all pCPUs: The TDX module initialization requires to enable VMX
+>>> > > (VMXON) on all present pCPUs.  vmx_hardware_enable() which is called on creating
+>>> > > guest does it.  It naturally fits with the TDX module initialization at creating
+>>> > > first TD.  I wanted to avoid code to enable VMXON on loading the kvm_intel.ko.
+>>> > 
+>>> > That's a solvable problem, though making it work without exporting hardware_enable_all()
+>>> > could get messy.
+>>> 
+>>> Could you please explain any reason why it's bad idea to export it?
+>>
+>>I'd really prefer to keep the hardware enable/disable logic internal to kvm_main.c
+>>so that all architectures share a common flow, and so that kvm_main.c is the sole
+>>owner.  I'm worried that exposing the helper will lead to other arch/vendor usage,
+>>and that will end up with what is effectively duplicate flows.  Deduplicating arch
+>>code into generic KVM is usually very difficult.
+>>
+>>This might also be a good opportunity to make KVM slightly more robust.  Ooh, and
+>>we can kill two birds with one stone.  There's an in-flight series to add compatibility
+>>checks to hotplug[*].  But rather than special case hotplug, what if we instead do
+>>hardware enable/disable during module load, and move the compatibility check into
+>>the hardware_enable path?  That fixes the hotplug issue, gives TDX a window for running
+>>post-VMXON code in kvm_init(), and makes the broadcast IPI less wasteful on architectures
+>>that don't have compatiblity checks.
+>
+>Sounds good. But more time is wasted on compat checks on architectures
+>that have them because they are done each time of enabling hardware.
+>A solution for this is caching the result of kvm_arch_check_processor_compat().
+>
+>>
+>>I'm thinking something like this, maybe as a modificatyion to patch 6 in Chao's
+>>series, or more likely as a patch 7 so that the hotplug compat checks still get
+>>in even
+>
+>>if the early hardware enable doesn't work on all architectures for some
+>>reason.
+>
+>By "early", do you mean hardware enable during module loading or during CPU hotplug?
+>
+>And if below change is put into my series, kvm_arch_post_hardware_enable_setup()
+>will be an empty function for all architectures until TDX series gets merged.
+>So, I prefer to drop kvm_arch_post_hardware_enable_setup() and let TDX series
+>introduce it.
