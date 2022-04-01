@@ -2,50 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 603A6C43219
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:30:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DF8AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:30:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232429AbiDAOcK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 10:32:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38404 "EHLO
+        id S1347380AbiDAOcN (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Apr 2022 10:32:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347170AbiDAOaz (ORCPT
+        with ESMTP id S1347295AbiDAOb1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:30:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C9BD286F53;
-        Fri,  1 Apr 2022 07:27:47 -0700 (PDT)
+        Fri, 1 Apr 2022 10:31:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7809528B139;
+        Fri,  1 Apr 2022 07:27:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4E2BFB82500;
-        Fri,  1 Apr 2022 14:27:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1AE1C2BBE4;
-        Fri,  1 Apr 2022 14:27:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 04E9661C33;
+        Fri,  1 Apr 2022 14:27:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D93D8C36AE7;
+        Fri,  1 Apr 2022 14:27:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823265;
-        bh=fOMAEttNRP3JQe3JAD4ElWJ5oYZt9g8F/dp3fJIe+uo=;
+        s=k20201202; t=1648823269;
+        bh=QsEnBO8My2ETVS8CVQvoiz31u6hCY6YY0ugyJqmKCUs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MpX0IOixdktOTWR+T1Bi87dS5RdlhL+gc4kH53vTPoab2vmbiX0TN5tFkgf94ylYu
-         Njz56RXTbEuMTCAAbrOTy2oTR2S2i8hT2WHs3sGuvH/WcWrhZQA8W/S8kpJ3pD9exv
-         FaPOmeMMSXdEdjBhHGH8ln/07Fva3FWh8T2+izno5d61H35cKglu+GYpcDEQygyxql
-         8tRaBs8QKIQpuG5sIjzVTJgtInAJFtIhmRURexvnJ7YA1VDLyXLjIb2T5mc6ytQDIg
-         kqVCZAj6ZZpLuAXO1nVlUovs/G1d4c/WURQbRO8G1MEtH9+vjIY9DAMgDYR/oebkmK
-         zj2iu16N4QH0g==
+        b=eoOqwg9CwdGTfoshtAKgCUs4sT5p3BJbYMz/JDeJTdwPXjgopIOY/n+FLqT+SlyMd
+         eLEIyNk1ZDq7FqdP3nzo32P/wGo1lvlRzuI+rOCVBuiPotCDEhlIeGiDllaFCgUu3Z
+         6erRh8tNuNLKdjqouJ8Pgzck5Djqgh5UaFjXHsXVUu/3u7LBmM3ed8kPdwnYyss6ow
+         tA2S1gKW6Uo2rc9jc/1ve24VgG+t/ZGATBfWRM9m4xVg5d6FSdiHVs/97oZDrG1dGs
+         BZp1QaEZODjX9oXh2dHgJK9gGg87/1MxIJ56L7L7kmpCTQVfJqwivBfDqweOpy47sa
+         tce+AtxRMsEPg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ben Greear <greearb@candelatech.com>, Felix Fietkau <nbd@nbd.name>,
-        Sasha Levin <sashal@kernel.org>, lorenzo.bianconi83@gmail.com,
-        ryder.lee@mediatek.com, kvalo@kernel.org, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, matthias.bgg@gmail.com,
-        sean.wang@mediatek.com, deren.wu@mediatek.com,
-        johannes.berg@intel.com, YN.Chen@mediatek.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.17 039/149] mt76: mt7921: fix crash when startup fails.
-Date:   Fri,  1 Apr 2022 10:23:46 -0400
-Message-Id: <20220401142536.1948161-39-sashal@kernel.org>
+Cc:     Jedrzej Jagielski <jedrzej.jagielski@intel.com>,
+        Witold Fijalkowski <witoldx.fijalkowski@intel.com>,
+        Gurucharan G <gurucharanx.g@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Sasha Levin <sashal@kernel.org>, jesse.brandeburg@intel.com,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 041/149] i40e: Add sending commands in atomic context
+Date:   Fri,  1 Apr 2022 10:23:48 -0400
+Message-Id: <20220401142536.1948161-41-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401142536.1948161-1-sashal@kernel.org>
 References: <20220401142536.1948161-1-sashal@kernel.org>
@@ -57,39 +56,91 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ben Greear <greearb@candelatech.com>
+From: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
 
-[ Upstream commit 827e7799c61b978fbc2cc9dac66cb62401b2b3f0 ]
+[ Upstream commit 59b3d7350ff35c939b8e173eb2eecac80a5ee046 ]
 
-If the nic fails to start, it is possible that the
-reset_work has already been scheduled.  Ensure the
-work item is canceled so we do not have use-after-free
-crash in case cleanup is called before the work item
-is executed.
+Change functions:
+- i40e_aq_add_macvlan
+- i40e_aq_remove_macvlan
+- i40e_aq_delete_element
+- i40e_aq_add_vsi
+- i40e_aq_update_vsi_params
+to explicitly use i40e_asq_send_command_atomic(..., true)
+instead of i40e_asq_send_command, as they use mutexes and do some
+work in an atomic context.
+Without this change setting vlan via netdev will fail with
+call trace cased by bug "BUG: scheduling while atomic".
 
-This fixes crash on my x86_64 apu2 when mt7921k radio
-fails to work.  Radio still fails, but OS does not
-crash.
-
-Signed-off-by: Ben Greear <greearb@candelatech.com>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Signed-off-by: Witold Fijalkowski <witoldx.fijalkowski@intel.com>
+Signed-off-by: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
+Tested-by: Gurucharan G <gurucharanx.g@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7921/main.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/intel/i40e/i40e_common.c | 21 +++++++++++--------
+ 1 file changed, 12 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/main.c b/drivers/net/wireless/mediatek/mt76/mt7921/main.c
-index 7a8d2596c226..4abb7a6e775a 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7921/main.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7921/main.c
-@@ -273,6 +273,7 @@ static void mt7921_stop(struct ieee80211_hw *hw)
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_common.c b/drivers/net/ethernet/intel/i40e/i40e_common.c
+index 9ddeb015eb7e..e830987a8c6d 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_common.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_common.c
+@@ -1899,8 +1899,9 @@ i40e_status i40e_aq_add_vsi(struct i40e_hw *hw,
  
- 	cancel_delayed_work_sync(&dev->pm.ps_work);
- 	cancel_work_sync(&dev->pm.wake_work);
-+	cancel_work_sync(&dev->reset_work);
- 	mt76_connac_free_pending_tx_skbs(&dev->pm, NULL);
+ 	desc.flags |= cpu_to_le16((u16)(I40E_AQ_FLAG_BUF | I40E_AQ_FLAG_RD));
  
- 	mt7921_mutex_acquire(dev);
+-	status = i40e_asq_send_command(hw, &desc, &vsi_ctx->info,
+-				    sizeof(vsi_ctx->info), cmd_details);
++	status = i40e_asq_send_command_atomic(hw, &desc, &vsi_ctx->info,
++					      sizeof(vsi_ctx->info),
++					      cmd_details, true);
+ 
+ 	if (status)
+ 		goto aq_add_vsi_exit;
+@@ -2287,8 +2288,9 @@ i40e_status i40e_aq_update_vsi_params(struct i40e_hw *hw,
+ 
+ 	desc.flags |= cpu_to_le16((u16)(I40E_AQ_FLAG_BUF | I40E_AQ_FLAG_RD));
+ 
+-	status = i40e_asq_send_command(hw, &desc, &vsi_ctx->info,
+-				    sizeof(vsi_ctx->info), cmd_details);
++	status = i40e_asq_send_command_atomic(hw, &desc, &vsi_ctx->info,
++					      sizeof(vsi_ctx->info),
++					      cmd_details, true);
+ 
+ 	vsi_ctx->vsis_allocated = le16_to_cpu(resp->vsi_used);
+ 	vsi_ctx->vsis_unallocated = le16_to_cpu(resp->vsi_free);
+@@ -2673,8 +2675,8 @@ i40e_status i40e_aq_add_macvlan(struct i40e_hw *hw, u16 seid,
+ 	if (buf_size > I40E_AQ_LARGE_BUF)
+ 		desc.flags |= cpu_to_le16((u16)I40E_AQ_FLAG_LB);
+ 
+-	status = i40e_asq_send_command(hw, &desc, mv_list, buf_size,
+-				       cmd_details);
++	status = i40e_asq_send_command_atomic(hw, &desc, mv_list, buf_size,
++					      cmd_details, true);
+ 
+ 	return status;
+ }
+@@ -2715,8 +2717,8 @@ i40e_status i40e_aq_remove_macvlan(struct i40e_hw *hw, u16 seid,
+ 	if (buf_size > I40E_AQ_LARGE_BUF)
+ 		desc.flags |= cpu_to_le16((u16)I40E_AQ_FLAG_LB);
+ 
+-	status = i40e_asq_send_command(hw, &desc, mv_list, buf_size,
+-				       cmd_details);
++	status = i40e_asq_send_command_atomic(hw, &desc, mv_list, buf_size,
++					      cmd_details, true);
+ 
+ 	return status;
+ }
+@@ -3868,7 +3870,8 @@ i40e_status i40e_aq_delete_element(struct i40e_hw *hw, u16 seid,
+ 
+ 	cmd->seid = cpu_to_le16(seid);
+ 
+-	status = i40e_asq_send_command(hw, &desc, NULL, 0, cmd_details);
++	status = i40e_asq_send_command_atomic(hw, &desc, NULL, 0,
++					      cmd_details, true);
+ 
+ 	return status;
+ }
 -- 
 2.34.1
 
