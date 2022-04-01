@@ -2,49 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EB04C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A08CC4167B
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:40:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352354AbiDAPgP (ORCPT
+        id S1352632AbiDAPgc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:36:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54038 "EHLO
+        Fri, 1 Apr 2022 11:36:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350156AbiDAO7I (ORCPT
+        with ESMTP id S1350289AbiDAO7b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:59:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2D0E5A150;
-        Fri,  1 Apr 2022 07:46:45 -0700 (PDT)
+        Fri, 1 Apr 2022 10:59:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 621DB5A598;
+        Fri,  1 Apr 2022 07:47:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 75953B8240E;
-        Fri,  1 Apr 2022 14:46:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8DECC2BBE4;
-        Fri,  1 Apr 2022 14:46:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 01136B82500;
+        Fri,  1 Apr 2022 14:47:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8AED1C3410F;
+        Fri,  1 Apr 2022 14:46:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824403;
-        bh=B+AMA4xiE5uPLiXRSk7ZVjqKbPo0KlbAPcS2Swv05ZM=;
+        s=k20201202; t=1648824420;
+        bh=sVa7r0s74UmzeuT+XoCA7/h+qEfIdkHAAJ4thMgQaLk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=faAyTGU8dtebTbeH1hlUIQT9bCxlNVwRuM20UeE0lePpQn6L+YGS9VoeqoaeaDCOy
-         /RQLoVwq9iuzKf4fHt9YsTlWK/cKqGOR20Aj8AlGu+LriVt0IgaqmxXAPPkfqmvKjz
-         y8m4aQK4hBs6nHJ5QjSWd1lT+wlGf8tulq6t23pcXnIwTTTCPNd3N4GhGVzYJ6eNvb
-         2kDfTvQ3hWLvNwd5wzKMvBbPlP4YOuihcMzEaMOohio4ldJbdjrWrKjqSh9hTIMhlz
-         7RnYVFTyDQVGkl7pThOFMFT3ETPUc5BjCRXMbei8UTT1S7c1+4jjZAnECZv5hCVxPJ
-         zDFJWGGOKuoEg==
+        b=U975OmfUtZky59MkSeYyIY3W+hgt02XEsVhctcOJdOyJGsuFXYT9sqA68ZLPqg43Q
+         Um6RRIltpDfxHzLodGXdyNblRz9D+36VbOyr9Q3yap4Mzk8o3Wn0M5oUC4rtgTvA4m
+         wrwZoeKryVz5yQxD43gIyDq40c15hJnSNfniu3Ovwgg0XRqJHKnv0b7UPz+s5eKcuj
+         1j82zxPRzEziV/+I8fwwqPHh4tkHDDIlxLjDau4nQcEvY3H6rvrWeTwP8yAJHdTera
+         eEWgzH7zzSCLLiHGboK+bonsLmf8qMWna8VmkNHVc7Btj4MYHGzDG79p48g/nlr6h8
+         6DxszwdxX5AaQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sourabh Jain <sourabhjain@linux.ibm.com>,
-        Abdul haleem <abdhalee@linux.vnet.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>, nathanl@linux.ibm.com,
-        ajd@linux.ibm.com, aik@ozlabs.ru, rafael.j.wysocki@intel.com,
-        adobriyan@gmail.com, npiggin@gmail.com,
-        linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH AUTOSEL 4.19 09/29] powerpc: Set crashkernel offset to mid of RMA region
-Date:   Fri,  1 Apr 2022 10:45:52 -0400
-Message-Id: <20220401144612.1955177-9-sashal@kernel.org>
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        "Juergen E. Fischer" <fischer@norbit.de>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        Sasha Levin <sashal@kernel.org>, linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 18/29] scsi: aha152x: Fix aha152x_setup() __setup handler return value
+Date:   Fri,  1 Apr 2022 10:46:01 -0400
+Message-Id: <20220401144612.1955177-18-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401144612.1955177-1-sashal@kernel.org>
 References: <20220401144612.1955177-1-sashal@kernel.org>
@@ -56,88 +55,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sourabh Jain <sourabhjain@linux.ibm.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit 7c5ed82b800d8615cdda00729e7b62e5899f0b13 ]
+[ Upstream commit cc8294ec4738d25e2bb2d71f7d82a9bf7f4a157b ]
 
-On large config LPARs (having 192 and more cores), Linux fails to boot
-due to insufficient memory in the first memblock. It is due to the
-memory reservation for the crash kernel which starts at 128MB offset of
-the first memblock. This memory reservation for the crash kernel doesn't
-leave enough space in the first memblock to accommodate other essential
-system resources.
+__setup() handlers should return 1 if the command line option is handled
+and 0 if not (or maybe never return 0; doing so just pollutes init's
+environment with strings that are not init arguments/parameters).
 
-The crash kernel start address was set to 128MB offset by default to
-ensure that the crash kernel get some memory below the RMA region which
-is used to be of size 256MB. But given that the RMA region size can be
-512MB or more, setting the crash kernel offset to mid of RMA size will
-leave enough space for the kernel to allocate memory for other system
-resources.
+Return 1 from aha152x_setup() to indicate that the boot option has been
+handled.
 
-Since the above crash kernel offset change is only applicable to the LPAR
-platform, the LPAR feature detection is pushed before the crash kernel
-reservation. The rest of LPAR specific initialization will still
-be done during pseries_probe_fw_features as usual.
-
-This patch is dependent on changes to paca allocation for boot CPU. It
-expect boot CPU to discover 1T segment support which is introduced by
-the patch posted here:
-https://lists.ozlabs.org/pipermail/linuxppc-dev/2022-January/239175.html
-
-Reported-by: Abdul haleem <abdhalee@linux.vnet.ibm.com>
-Signed-off-by: Sourabh Jain <sourabhjain@linux.ibm.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220204085601.107257-1-sourabhjain@linux.ibm.com
+Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Link: https://lore.kernel.org/r/20220223000623.5920-1-rdunlap@infradead.org
+Cc: "Juergen E. Fischer" <fischer@norbit.de>
+Cc: "James E.J. Bottomley" <jejb@linux.ibm.com>
+Cc: "Martin K. Petersen" <martin.petersen@oracle.com>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kernel/machine_kexec.c | 15 +++++++++++----
- arch/powerpc/kernel/rtas.c          |  6 ++++++
- 2 files changed, 17 insertions(+), 4 deletions(-)
+ drivers/scsi/aha152x.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/arch/powerpc/kernel/machine_kexec.c b/arch/powerpc/kernel/machine_kexec.c
-index 094c37fb07a9..437c50bfe4e6 100644
---- a/arch/powerpc/kernel/machine_kexec.c
-+++ b/arch/powerpc/kernel/machine_kexec.c
-@@ -148,11 +148,18 @@ void __init reserve_crashkernel(void)
- 	if (!crashk_res.start) {
- #ifdef CONFIG_PPC64
- 		/*
--		 * On 64bit we split the RMO in half but cap it at half of
--		 * a small SLB (128MB) since the crash kernel needs to place
--		 * itself and some stacks to be in the first segment.
-+		 * On the LPAR platform place the crash kernel to mid of
-+		 * RMA size (512MB or more) to ensure the crash kernel
-+		 * gets enough space to place itself and some stack to be
-+		 * in the first segment. At the same time normal kernel
-+		 * also get enough space to allocate memory for essential
-+		 * system resource in the first segment. Keep the crash
-+		 * kernel starts at 128MB offset on other platforms.
- 		 */
--		crashk_res.start = min(0x8000000ULL, (ppc64_rma_size / 2));
-+		if (firmware_has_feature(FW_FEATURE_LPAR))
-+			crashk_res.start = ppc64_rma_size / 2;
-+		else
-+			crashk_res.start = min(0x8000000ULL, (ppc64_rma_size / 2));
- #else
- 		crashk_res.start = KDUMP_KERNELBASE;
- #endif
-diff --git a/arch/powerpc/kernel/rtas.c b/arch/powerpc/kernel/rtas.c
-index b3aa0cea6283..362c20c8c22f 100644
---- a/arch/powerpc/kernel/rtas.c
-+++ b/arch/powerpc/kernel/rtas.c
-@@ -1357,6 +1357,12 @@ int __init early_init_dt_scan_rtas(unsigned long node,
- 	entryp = of_get_flat_dt_prop(node, "linux,rtas-entry", NULL);
- 	sizep  = of_get_flat_dt_prop(node, "rtas-size", NULL);
+diff --git a/drivers/scsi/aha152x.c b/drivers/scsi/aha152x.c
+index 4d7b0e0adbf7..2690098d4411 100644
+--- a/drivers/scsi/aha152x.c
++++ b/drivers/scsi/aha152x.c
+@@ -3379,13 +3379,11 @@ static int __init aha152x_setup(char *str)
+ 	setup[setup_count].synchronous = ints[0] >= 6 ? ints[6] : 1;
+ 	setup[setup_count].delay       = ints[0] >= 7 ? ints[7] : DELAY_DEFAULT;
+ 	setup[setup_count].ext_trans   = ints[0] >= 8 ? ints[8] : 0;
+-	if (ints[0] > 8) {                                                /*}*/
++	if (ints[0] > 8)
+ 		printk(KERN_NOTICE "aha152x: usage: aha152x=<IOBASE>[,<IRQ>[,<SCSI ID>"
+ 		       "[,<RECONNECT>[,<PARITY>[,<SYNCHRONOUS>[,<DELAY>[,<EXT_TRANS>]]]]]]]\n");
+-	} else {
++	else
+ 		setup_count++;
+-		return 0;
+-	}
  
-+#ifdef CONFIG_PPC64
-+	/* need this feature to decide the crashkernel offset */
-+	if (of_get_flat_dt_prop(node, "ibm,hypertas-functions", NULL))
-+		powerpc_firmware_features |= FW_FEATURE_LPAR;
-+#endif
-+
- 	if (basep && entryp && sizep) {
- 		rtas.base = *basep;
- 		rtas.entry = *entryp;
+ 	return 1;
+ }
 -- 
 2.34.1
 
