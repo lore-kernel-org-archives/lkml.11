@@ -2,52 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C0A8C3527B
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:13:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 565C5C3527E
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:13:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346372AbiDAPPT (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:15:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54912 "EHLO
+        id S235579AbiDAPP3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Apr 2022 11:15:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350828AbiDAOsD (ORCPT
+        with ESMTP id S1350841AbiDAOsE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:48:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0053D48387;
+        Fri, 1 Apr 2022 10:48:04 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0017B47AE9;
         Fri,  1 Apr 2022 07:38:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E7B9060A3C;
-        Fri,  1 Apr 2022 14:38:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38ACDC340EE;
-        Fri,  1 Apr 2022 14:38:22 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id B4209CE2585;
+        Fri,  1 Apr 2022 14:37:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6633CC2BBE4;
+        Fri,  1 Apr 2022 14:37:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823903;
-        bh=HPmQlfnEGDUt0Kj+fjq7JwPfhjCVzJ90ywgOi5tV4VE=;
+        s=k20201202; t=1648823878;
+        bh=ZlH3p4nfIQUFa+vr9HA+avERXrJE3bdbQOyk0o/uNaw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IiBVU3BXYlCM8qUR9uQLG3f0ZhxSiN0G0B1Of/0pmfNVm7Bf9yUFuyA3ptuLyaUt0
-         KzFhyQTMliDJKrX5fqc/y2M2f/MkhAozQOwCdfX+hNiRf7p7mG6HhV0jVIXxTm8L9c
-         hDgQsYsAtt4X3xYY2Vg/NCnYa5M0X3uRxMkfcCs7jONAZaZfGwDmYmJGKZiAjJKRov
-         F8PPlfjGtScBj30iqj2oDy5JfBM6QuFrnwOKJHcju9dzhPFJ4HaUCs3ZhIReXX6hdS
-         Co5Podd/RXC9TkRkFYwcQYrFr+4CtOse1DjUS24+yBKuQMzz2LOcHde4hX3CSjJIbK
-         z4O83Eu9NxWJw==
+        b=N4QYrItvxDRB9y0yCb3M3NIZdvB0XkH6s7W9ojkrg3Ya7ZJubDMTf7Uog09M/9JJj
+         lrIwn5D0Lcy40i9+53MASAod1vLQr2cqem0d008pcnldDP3v2IUGsWfywYN8/mKym3
+         q+AIjA62K7e6oxTXuOhzW5BsAI3Ytxyd5xXpkA+37DBKqppXfyKpDJbDUx4BI6N98L
+         ddnQ7LPDsSrXkznUUT/zhP6p/rZDuGfZi8LhbO6aYw+gIHlv7AjTwVtB1YwNSVtefw
+         KPmRoOPRsK/cRytkFz9Fy2ujNEYATeatV2FEiOUBL05AYYZgc2VAfXxlQC7kC8owzd
+         clwx6ivamwIAQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Philip Yang <Philip.Yang@amd.com>,
-        Felix Kuehling <Felix.Kuehling@amd.com>,
+Cc:     Xin Xiong <xiongx18@fudan.edu.cn>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        Xin Tan <tanxin.ctf@gmail.com>,
         Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
-        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.15 11/98] drm/amdkfd: Don't take process mutex for svm ioctls
-Date:   Fri,  1 Apr 2022 10:36:15 -0400
-Message-Id: <20220401143742.1952163-11-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, Xinhui.Pan@amd.com,
+        airlied@linux.ie, daniel@ffwll.ch, sumit.semwal@linaro.org,
+        JinhuiEric.Huang@amd.com, nirmoy.das@amd.com, Ken.Xue@amd.com,
+        Lang.Yu@amd.com, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, linux-media@vger.kernel.org,
+        linaro-mm-sig@lists.linaro.org
+Subject: [PATCH AUTOSEL 5.15 04/98] drm/amd/amdgpu/amdgpu_cs: fix refcount leak of a dma_fence obj
+Date:   Fri,  1 Apr 2022 10:36:08 -0400
+Message-Id: <20220401143742.1952163-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143742.1952163-1-sashal@kernel.org>
 References: <20220401143742.1952163-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -55,53 +59,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Philip Yang <Philip.Yang@amd.com>
+From: Xin Xiong <xiongx18@fudan.edu.cn>
 
-[ Upstream commit ac7c48c0cce00d03b3c95fddcccb0a45257e33e3 ]
+[ Upstream commit dfced44f122c500004a48ecc8db516bb6a295a1b ]
 
-SVM ioctls take proper svms->lock to handle race conditions, don't need
-take process mutex to serialize ioctls. This also fixes circular locking
-warning:
+This issue takes place in an error path in
+amdgpu_cs_fence_to_handle_ioctl(). When `info->in.what` falls into
+default case, the function simply returns -EINVAL, forgetting to
+decrement the reference count of a dma_fence obj, which is bumped
+earlier by amdgpu_cs_get_fence(). This may result in reference count
+leaks.
 
-WARNING: possible circular locking dependency detected
+Fix it by decreasing the refcount of specific object before returning
+the error code.
 
-  Possible unsafe locking scenario:
-
-        CPU0                    CPU1
-        ----                    ----
-   lock((work_completion)(&svms->deferred_list_work));
-                                lock(&process->mutex);
-                     lock((work_completion)(&svms->deferred_list_work));
-   lock(&process->mutex);
-
-   *** DEADLOCK ***
-
-Signed-off-by: Philip Yang <Philip.Yang@amd.com>
-Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
+Reviewed-by: Christian König <christian.koenig@amd.com>
+Signed-off-by: Xin Xiong <xiongx18@fudan.edu.cn>
+Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
 Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdkfd/kfd_chardev.c | 4 ----
- 1 file changed, 4 deletions(-)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_chardev.c b/drivers/gpu/drm/amd/amdkfd/kfd_chardev.c
-index 86afd37b098d..6688129df240 100644
---- a/drivers/gpu/drm/amd/amdkfd/kfd_chardev.c
-+++ b/drivers/gpu/drm/amd/amdkfd/kfd_chardev.c
-@@ -1807,13 +1807,9 @@ static int kfd_ioctl_svm(struct file *filep, struct kfd_process *p, void *data)
- 	if (!args->start_addr || !args->size)
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c
+index 913f9eaa9cd6..aa823f154199 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c
+@@ -1508,6 +1508,7 @@ int amdgpu_cs_fence_to_handle_ioctl(struct drm_device *dev, void *data,
+ 		return 0;
+ 
+ 	default:
++		dma_fence_put(fence);
  		return -EINVAL;
- 
--	mutex_lock(&p->mutex);
--
- 	r = svm_ioctl(p, args->op, args->start_addr, args->size, args->nattr,
- 		      args->attrs);
- 
--	mutex_unlock(&p->mutex);
--
- 	return r;
+ 	}
  }
- #else
 -- 
 2.34.1
 
