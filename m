@@ -2,49 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1898FC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:50:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4776C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:50:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348710AbiDAOwT (ORCPT
+        id S1348698AbiDAOwe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 10:52:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38658 "EHLO
+        Fri, 1 Apr 2022 10:52:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347401AbiDAOcb (ORCPT
+        with ESMTP id S1347588AbiDAOdN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:32:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 109BF1EA5F4;
-        Fri,  1 Apr 2022 07:28:47 -0700 (PDT)
+        Fri, 1 Apr 2022 10:33:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66F8F24F291;
+        Fri,  1 Apr 2022 07:30:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A6BBCB8240E;
-        Fri,  1 Apr 2022 14:28:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2048C36AE5;
-        Fri,  1 Apr 2022 14:28:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 26765B8250B;
+        Fri,  1 Apr 2022 14:30:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F89FC340F2;
+        Fri,  1 Apr 2022 14:29:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823324;
-        bh=ztBeVF9WB83uKZD3kNmhGZbstigJErovXUlgTqCNbBY=;
+        s=k20201202; t=1648823399;
+        bh=bQHH1mY6aTg8iDORT8gr9BI0rqtlsMuolgkU5jHa954=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=N32vJlpUZM1U33gexbg3wJllv+Q6KhX0MH2LZLSuz3H2N90md4muYd0CCd/wRmvVy
-         /nLgFBv5UjYYSz2M5WAr9Xt3qSSSbq3jD4OrQVo3f+Ei63so+17tROKfl7AiQtgEPl
-         TIR9LDuhhXnPKqtyy6Y4tW4Q1m2DerB2gr5GLlul2kZx8lHsS3LQ3B13Gt6/hVGiPZ
-         vemEXNauqRLX8Zu8OGzaUak5OKkSb40C7GOkeGQClEB/SI6pIuyoHpqwfSmLkGLWhE
-         PyUuK16/Fv0oObrY2YQeOD5iiesYU9j8EziOOy9cPy6x5pjGrqB3I/3qrED1ZBhubk
-         mMMNWR49QXLdA==
+        b=Yl7PFo9UFC4CVnEkRdx6OkTYmC8fYv7LCFKMqeRWZrZL/CJ3/QAjzsu2EdUG5gOTk
+         Kn8v0LUa2IpVB6bUX2892m5Wr8RJHKYfn9vv41h5/3KR5I2d55C7hTdT9Efe27DaYE
+         hNeQmD7wLB22/ulFTAP3RGju4jkvaPUxcprgmQBA6HYx+hsCoQg85SW3NoP39p/1Gq
+         WDCVhq8XjPyEZ2vUAHgspI74g+jswiqFnmTKoWEpX95RKgqRjyXWcXhxQWs5fvqEk+
+         w93zD1/ufdI5mrtHtqZvliW6Wj24nA1RiwL41YuHH5XX3E4b2aS5PAtpwsNhtiTuGt
+         n2fCbfJ67IE7w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zhou Guanghui <zhouguanghui1@huawei.com>,
-        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        joro@8bytes.org, robin.murphy@arm.com, thunder.leizhen@huawei.com,
-        jgg@ziepe.ca, jean-philippe@linaro.org, tglx@linutronix.de,
-        christophe.jaillet@wanadoo.fr,
-        linux-arm-kernel@lists.infradead.org,
-        iommu@lists.linux-foundation.org
-Subject: [PATCH AUTOSEL 5.17 057/149] iommu/arm-smmu-v3: fix event handling soft lockup
-Date:   Fri,  1 Apr 2022 10:24:04 -0400
-Message-Id: <20220401142536.1948161-57-sashal@kernel.org>
+Cc:     Ilan Peer <ilan.peer@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        johannes.berg@intel.com, avraham.stern@intel.com,
+        ayala.beker@intel.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 079/149] iwlwifi: mvm: Passively scan non PSC channels only when requested so
+Date:   Fri,  1 Apr 2022 10:24:26 -0400
+Message-Id: <20220401142536.1948161-79-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401142536.1948161-1-sashal@kernel.org>
 References: <20220401142536.1948161-1-sashal@kernel.org>
@@ -56,53 +56,113 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhou Guanghui <zhouguanghui1@huawei.com>
+From: Ilan Peer <ilan.peer@intel.com>
 
-[ Upstream commit 30de2b541af98179780054836b48825fcfba4408 ]
+[ Upstream commit 9966904e9472703a05861f343157cd78f47514fd ]
 
-During event processing, events are read from the event queue one
-by one until the queue is empty.If the master device continuously
-requests address access at the same time and the SMMU generates
-events, the cyclic processing of the event takes a long time and
-softlockup warnings may be reported.
+Non PSC channels should generally be scanned based on information about
+collocated APs obtained during scan on legacy bands, and otherwise
+should not be scanned unless specifically requested so (as there are
+relatively many non PSC channels, scanning them passively is time consuming
+and interferes with regular data traffic).
 
-arm-smmu-v3 arm-smmu-v3.34.auto: event 0x0a received:
-arm-smmu-v3 arm-smmu-v3.34.auto: 	0x00007f220000280a
-arm-smmu-v3 arm-smmu-v3.34.auto: 	0x000010000000007e
-arm-smmu-v3 arm-smmu-v3.34.auto: 	0x00000000034e8670
-watchdog: BUG: soft lockup - CPU#0 stuck for 22s! [irq/268-arm-smm:247]
-Call trace:
- _dev_info+0x7c/0xa0
- arm_smmu_evtq_thread+0x1c0/0x230
- irq_thread_fn+0x30/0x80
- irq_thread+0x128/0x210
- kthread+0x134/0x138
- ret_from_fork+0x10/0x1c
-Kernel panic - not syncing: softlockup: hung tasks
+Thus, modify the scan logic to avoid passively scanning PSC channels
+if there is no information about collocated APs and the scan is not
+a passive scan.
 
-Fix this by calling cond_resched() after the event information is
-printed.
-
-Signed-off-by: Zhou Guanghui <zhouguanghui1@huawei.com>
-Link: https://lore.kernel.org/r/20220119070754.26528-1-zhouguanghui1@huawei.com
-Signed-off-by: Will Deacon <will@kernel.org>
+Signed-off-by: Ilan Peer <ilan.peer@intel.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/iwlwifi.20220204122220.457da4cc95eb.Ic98472bab5f5475f1e102547644caaae89ce4c4a@changeid
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/wireless/intel/iwlwifi/mvm/scan.c | 42 ++++++++++++++-----
+ 1 file changed, 32 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 6dc6d8b6b368..f60381cdf1c4 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -1558,6 +1558,7 @@ static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
- 				dev_info(smmu->dev, "\t0x%016llx\n",
- 					 (unsigned long long)evt[i]);
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/scan.c b/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
+index 4cd507cb412d..630cfb64c6b1 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
+@@ -1735,27 +1735,37 @@ iwl_mvm_umac_scan_fill_6g_chan_list(struct iwl_mvm *mvm,
+ }
  
-+			cond_resched();
- 		}
+ /* TODO: this function can be merged with iwl_mvm_scan_umac_fill_ch_p_v6 */
+-static void
+-iwl_mvm_umac_scan_cfg_channels_v6_6g(struct iwl_mvm_scan_params *params,
++static u32
++iwl_mvm_umac_scan_cfg_channels_v6_6g(struct iwl_mvm *mvm,
++				     struct iwl_mvm_scan_params *params,
+ 				     u32 n_channels,
+ 				     struct iwl_scan_probe_params_v4 *pp,
+ 				     struct iwl_scan_channel_params_v6 *cp,
+ 				     enum nl80211_iftype vif_type)
+ {
+-	struct iwl_scan_channel_cfg_umac *channel_cfg = cp->channel_config;
+ 	int i;
+ 	struct cfg80211_scan_6ghz_params *scan_6ghz_params =
+ 		params->scan_6ghz_params;
++	u32 ch_cnt;
  
- 		/*
+-	for (i = 0; i < params->n_channels; i++) {
++	for (i = 0, ch_cnt = 0; i < params->n_channels; i++) {
+ 		struct iwl_scan_channel_cfg_umac *cfg =
+-			&cp->channel_config[i];
++			&cp->channel_config[ch_cnt];
+ 
+ 		u32 s_ssid_bitmap = 0, bssid_bitmap = 0, flags = 0;
+ 		u8 j, k, s_max = 0, b_max = 0, n_used_bssid_entries;
+ 		bool force_passive, found = false, allow_passive = true,
+ 		     unsolicited_probe_on_chan = false, psc_no_listen = false;
+ 
++		/*
++		 * Avoid performing passive scan on non PSC channels unless the
++		 * scan is specifically a passive scan, i.e., no SSIDs
++		 * configured in the scan command.
++		 */
++		if (!cfg80211_channel_is_psc(params->channels[i]) &&
++		    !params->n_6ghz_params && params->n_ssids)
++			continue;
++
+ 		cfg->v1.channel_num = params->channels[i]->hw_value;
+ 		cfg->v2.band = 2;
+ 		cfg->v2.iter_count = 1;
+@@ -1875,8 +1885,16 @@ iwl_mvm_umac_scan_cfg_channels_v6_6g(struct iwl_mvm_scan_params *params,
+ 		else
+ 			flags |= bssid_bitmap | (s_ssid_bitmap << 16);
+ 
+-		channel_cfg[i].flags |= cpu_to_le32(flags);
++		cfg->flags |= cpu_to_le32(flags);
++		ch_cnt++;
+ 	}
++
++	if (params->n_channels > ch_cnt)
++		IWL_DEBUG_SCAN(mvm,
++			       "6GHz: reducing number channels: (%u->%u)\n",
++			       params->n_channels, ch_cnt);
++
++	return ch_cnt;
+ }
+ 
+ static u8 iwl_mvm_scan_umac_chan_flags_v2(struct iwl_mvm *mvm,
+@@ -2424,10 +2442,14 @@ static int iwl_mvm_scan_umac_v14_and_above(struct iwl_mvm *mvm,
+ 	if (ret)
+ 		return ret;
+ 
+-	iwl_mvm_umac_scan_cfg_channels_v6_6g(params,
+-					     params->n_channels,
+-					     pb, cp, vif->type);
+-	cp->count = params->n_channels;
++	cp->count = iwl_mvm_umac_scan_cfg_channels_v6_6g(mvm, params,
++							 params->n_channels,
++							 pb, cp, vif->type);
++	if (!cp->count) {
++		mvm->scan_uid_status[uid] = 0;
++		return -EINVAL;
++	}
++
+ 	if (!params->n_ssids ||
+ 	    (params->n_ssids == 1 && !params->ssids[0].ssid_len))
+ 		cp->flags |= IWL_SCAN_CHANNEL_FLAG_6G_PSC_NO_FILTER;
 -- 
 2.34.1
 
