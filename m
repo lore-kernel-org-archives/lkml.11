@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFA51C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:40:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45CDAC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:40:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348136AbiDAOm2 (ORCPT
+        id S1348214AbiDAOmd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 10:42:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38654 "EHLO
+        Fri, 1 Apr 2022 10:42:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347641AbiDAOdQ (ORCPT
+        with ESMTP id S1348375AbiDAOeP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:33:16 -0400
+        Fri, 1 Apr 2022 10:34:15 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C1F4258FD9;
-        Fri,  1 Apr 2022 07:30:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 031BABC7;
+        Fri,  1 Apr 2022 07:32:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 27B3861CDD;
-        Fri,  1 Apr 2022 14:30:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24D7CC340EE;
-        Fri,  1 Apr 2022 14:30:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9575561AFD;
+        Fri,  1 Apr 2022 14:32:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C9B1C340EE;
+        Fri,  1 Apr 2022 14:32:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823424;
-        bh=NpT9VW1FQ93NPLxswDxOgob1dy14BMzgePbyvFwUzus=;
+        s=k20201202; t=1648823545;
+        bh=Vj4CtnGKUb63FsBPnORkP2HBgGUmnUAO7NFD8yaKwPk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RSSnVkn8quYK1xSseyz2g46d2QTqBJz3Huv8EAB7Vwo3tt6OgqJY3Nwrjvd6a9wyc
-         7k21Ym3E2UW0/rXY6pG69Nz2u/lpRb1HAj/nOhGE0GGPtxk1pQ+zn5dfISJ0HoadhR
-         mIuG6YUtpGJmeoUW9ySoIcQlBWvgh0TPEVeg1LKeTG9VlWANCIGu/qFp6a0/ZHyk5H
-         n+TWjQinx1Gej9ByfSuaUrBdFm2Yol6G7e0Iy2FDoD5O0YCj8TSvxzwfb40U0q6NxQ
-         ny9CjT4N/XlJzTE082NW3VThnN3he5/BaXQ0xE3yQWKf/bu0uqQGpml8tTD6sN9tQf
-         Yzj0yhmH+Q2LA==
+        b=V9IoOOs4KK52b4HhNDRbajUpbkYDeEdjV06oDnl+DNMpRDkqplrmD3W08F4YED9VJ
+         jAfuZ8Y5mMbhfaAkDbUkzs2IMwfQ+hiv5EvUcurk2/Z6wEEZ/B/0zE1YZ5kLRRWdQZ
+         pV7Ogtr2y30/t5j9S9mgHCcO7jrYqzIRuJehDKNsn5qT5b9lBstZCfQoohJh/jxQfa
+         Hgbtvy7ZAUoW1XsDEpX0uUZZLiV/0WBINwWi+TvLx26u1gqjUwm71rFe0fuIrixSVF
+         1qFpRIhj7M0B0xcz9T10BIjWYst1pFoom8K4xhYUtnQW680IlME24TWP4xZRWOekSK
+         PbqunJ1zeLkHg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ping-Ke Shih <pkshih@realtek.com>,
-        Larry Finger <Larry.Finger@lwfinger.net>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        tony0620emma@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 088/149] rtw88: change rtw_info() to proper message level
-Date:   Fri,  1 Apr 2022 10:24:35 -0400
-Message-Id: <20220401142536.1948161-88-sashal@kernel.org>
+Cc:     Juergen Gross <jgross@suse.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>,
+        xen-devel@lists.xenproject.org, linux-usb@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 137/149] xen/usb: harden xen_hcd against malicious backends
+Date:   Fri,  1 Apr 2022 10:25:24 -0400
+Message-Id: <20220401142536.1948161-137-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401142536.1948161-1-sashal@kernel.org>
 References: <20220401142536.1948161-1-sashal@kernel.org>
@@ -55,204 +53,168 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ping-Ke Shih <pkshih@realtek.com>
+From: Juergen Gross <jgross@suse.com>
 
-[ Upstream commit a0061be4e54b52e5e4ff179c3f817107ddbb2830 ]
+[ Upstream commit aff477cb8f94613f501d386d10f20019e294bc35 ]
 
-Larry reported funny log entries [1] when he used rtl8821ce. These
-messages are not harmless, but not useful for users, so change them to
-rtw_dbg() level. By the way, I review all rtw_info() and change others
-to rtw_warn().
+Make sure a malicious backend can't cause any harm other than wrong
+I/O data.
 
-[1] https://lore.kernel.org/linux-wireless/c356d5ae-a7b3-3065-1121-64c446e70333@lwfinger.net/
+Missing are verification of the request id in a response, sanitizing
+the reported actual I/O length, and protection against interrupt storms
+from the backend.
 
-Reported-by: Larry Finger <Larry.Finger@lwfinger.net>
-Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220218035527.9835-1-pkshih@realtek.com
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Link: https://lore.kernel.org/r/20220311103509.12908-1-jgross@suse.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/realtek/rtw88/debug.c    | 2 +-
- drivers/net/wireless/realtek/rtw88/debug.h    | 1 +
- drivers/net/wireless/realtek/rtw88/fw.c       | 2 +-
- drivers/net/wireless/realtek/rtw88/mac80211.c | 8 ++++----
- drivers/net/wireless/realtek/rtw88/main.c     | 8 ++++----
- drivers/net/wireless/realtek/rtw88/rtw8821c.c | 2 +-
- drivers/net/wireless/realtek/rtw88/rtw8822b.c | 4 ++--
- drivers/net/wireless/realtek/rtw88/rtw8822c.c | 4 ++--
- drivers/net/wireless/realtek/rtw88/sar.c      | 8 ++++----
- 9 files changed, 20 insertions(+), 19 deletions(-)
+ drivers/usb/host/xen-hcd.c | 57 ++++++++++++++++++++++++++++----------
+ 1 file changed, 43 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/net/wireless/realtek/rtw88/debug.c b/drivers/net/wireless/realtek/rtw88/debug.c
-index e429428232c1..e7e9f17df96a 100644
---- a/drivers/net/wireless/realtek/rtw88/debug.c
-+++ b/drivers/net/wireless/realtek/rtw88/debug.c
-@@ -390,7 +390,7 @@ static ssize_t rtw_debugfs_set_h2c(struct file *filp,
- 		     &param[0], &param[1], &param[2], &param[3],
- 		     &param[4], &param[5], &param[6], &param[7]);
- 	if (num != 8) {
--		rtw_info(rtwdev, "invalid H2C command format for debug\n");
-+		rtw_warn(rtwdev, "invalid H2C command format for debug\n");
- 		return -EINVAL;
- 	}
- 
-diff --git a/drivers/net/wireless/realtek/rtw88/debug.h b/drivers/net/wireless/realtek/rtw88/debug.h
-index 61f8369fe2d6..066792dd96af 100644
---- a/drivers/net/wireless/realtek/rtw88/debug.h
-+++ b/drivers/net/wireless/realtek/rtw88/debug.h
-@@ -23,6 +23,7 @@ enum rtw_debug_mask {
- 	RTW_DBG_PATH_DIV	= 0x00004000,
- 	RTW_DBG_ADAPTIVITY	= 0x00008000,
- 	RTW_DBG_HW_SCAN		= 0x00010000,
-+	RTW_DBG_STATE		= 0x00020000,
- 
- 	RTW_DBG_ALL		= 0xffffffff
+diff --git a/drivers/usb/host/xen-hcd.c b/drivers/usb/host/xen-hcd.c
+index 19b8c7ed74cb..4ed3ee328a4a 100644
+--- a/drivers/usb/host/xen-hcd.c
++++ b/drivers/usb/host/xen-hcd.c
+@@ -51,6 +51,7 @@ struct vdevice_status {
+ struct usb_shadow {
+ 	struct xenusb_urb_request req;
+ 	struct urb *urb;
++	bool in_flight;
  };
-diff --git a/drivers/net/wireless/realtek/rtw88/fw.c b/drivers/net/wireless/realtek/rtw88/fw.c
-index 2f7c036f9022..08437df0f0ed 100644
---- a/drivers/net/wireless/realtek/rtw88/fw.c
-+++ b/drivers/net/wireless/realtek/rtw88/fw.c
-@@ -2109,7 +2109,7 @@ void rtw_hw_scan_status_report(struct rtw_dev *rtwdev, struct sk_buff *skb)
- 	rtw_hw_scan_complete(rtwdev, vif, aborted);
  
- 	if (aborted)
--		rtw_info(rtwdev, "HW scan aborted with code: %d\n", rc);
-+		rtw_dbg(rtwdev, RTW_DBG_HW_SCAN, "HW scan aborted with code: %d\n", rc);
+ struct xenhcd_info {
+@@ -722,6 +723,12 @@ static void xenhcd_gnttab_done(struct xenhcd_info *info, unsigned int id)
+ 	int nr_segs = 0;
+ 	int i;
+ 
++	if (!shadow->in_flight) {
++		xenhcd_set_error(info, "Illegal request id");
++		return;
++	}
++	shadow->in_flight = false;
++
+ 	nr_segs = shadow->req.nr_buffer_segs;
+ 
+ 	if (xenusb_pipeisoc(shadow->req.pipe))
+@@ -805,6 +812,7 @@ static int xenhcd_do_request(struct xenhcd_info *info, struct urb_priv *urbp)
+ 
+ 	info->urb_ring.req_prod_pvt++;
+ 	info->shadow[id].urb = urb;
++	info->shadow[id].in_flight = true;
+ 
+ 	RING_PUSH_REQUESTS_AND_CHECK_NOTIFY(&info->urb_ring, notify);
+ 	if (notify)
+@@ -933,10 +941,27 @@ static int xenhcd_unlink_urb(struct xenhcd_info *info, struct urb_priv *urbp)
+ 	return ret;
  }
  
- void rtw_store_op_chan(struct rtw_dev *rtwdev)
-diff --git a/drivers/net/wireless/realtek/rtw88/mac80211.c b/drivers/net/wireless/realtek/rtw88/mac80211.c
-index ae7d97de5fdf..2933a8be1a18 100644
---- a/drivers/net/wireless/realtek/rtw88/mac80211.c
-+++ b/drivers/net/wireless/realtek/rtw88/mac80211.c
-@@ -205,7 +205,7 @@ static int rtw_ops_add_interface(struct ieee80211_hw *hw,
- 
- 	mutex_unlock(&rtwdev->mutex);
- 
--	rtw_info(rtwdev, "start vif %pM on port %d\n", vif->addr, rtwvif->port);
-+	rtw_dbg(rtwdev, RTW_DBG_STATE, "start vif %pM on port %d\n", vif->addr, rtwvif->port);
- 	return 0;
- }
- 
-@@ -216,7 +216,7 @@ static void rtw_ops_remove_interface(struct ieee80211_hw *hw,
- 	struct rtw_vif *rtwvif = (struct rtw_vif *)vif->drv_priv;
- 	u32 config = 0;
- 
--	rtw_info(rtwdev, "stop vif %pM on port %d\n", vif->addr, rtwvif->port);
-+	rtw_dbg(rtwdev, RTW_DBG_STATE, "stop vif %pM on port %d\n", vif->addr, rtwvif->port);
- 
- 	mutex_lock(&rtwdev->mutex);
- 
-@@ -242,8 +242,8 @@ static int rtw_ops_change_interface(struct ieee80211_hw *hw,
+-static int xenhcd_urb_request_done(struct xenhcd_info *info)
++static void xenhcd_res_to_urb(struct xenhcd_info *info,
++			      struct xenusb_urb_response *res, struct urb *urb)
++{
++	if (unlikely(!urb))
++		return;
++
++	if (res->actual_length > urb->transfer_buffer_length)
++		urb->actual_length = urb->transfer_buffer_length;
++	else if (res->actual_length < 0)
++		urb->actual_length = 0;
++	else
++		urb->actual_length = res->actual_length;
++	urb->error_count = res->error_count;
++	urb->start_frame = res->start_frame;
++	xenhcd_giveback_urb(info, urb, res->status);
++}
++
++static int xenhcd_urb_request_done(struct xenhcd_info *info,
++				   unsigned int *eoiflag)
  {
- 	struct rtw_dev *rtwdev = hw->priv;
+ 	struct xenusb_urb_response res;
+-	struct urb *urb;
+ 	RING_IDX i, rp;
+ 	__u16 id;
+ 	int more_to_do = 0;
+@@ -963,16 +988,12 @@ static int xenhcd_urb_request_done(struct xenhcd_info *info)
+ 			xenhcd_gnttab_done(info, id);
+ 			if (info->error)
+ 				goto err;
+-			urb = info->shadow[id].urb;
+-			if (likely(urb)) {
+-				urb->actual_length = res.actual_length;
+-				urb->error_count = res.error_count;
+-				urb->start_frame = res.start_frame;
+-				xenhcd_giveback_urb(info, urb, res.status);
+-			}
++			xenhcd_res_to_urb(info, &res, info->shadow[id].urb);
+ 		}
  
--	rtw_info(rtwdev, "change vif %pM (%d)->(%d), p2p (%d)->(%d)\n",
--		 vif->addr, vif->type, type, vif->p2p, p2p);
-+	rtw_dbg(rtwdev, RTW_DBG_STATE, "change vif %pM (%d)->(%d), p2p (%d)->(%d)\n",
-+		vif->addr, vif->type, type, vif->p2p, p2p);
+ 		xenhcd_add_id_to_freelist(info, id);
++
++		*eoiflag = 0;
+ 	}
+ 	info->urb_ring.rsp_cons = i;
  
- 	rtw_ops_remove_interface(hw, vif);
- 
-diff --git a/drivers/net/wireless/realtek/rtw88/main.c b/drivers/net/wireless/realtek/rtw88/main.c
-index 38252113c4a8..20b85af7bd3e 100644
---- a/drivers/net/wireless/realtek/rtw88/main.c
-+++ b/drivers/net/wireless/realtek/rtw88/main.c
-@@ -305,8 +305,8 @@ int rtw_sta_add(struct rtw_dev *rtwdev, struct ieee80211_sta *sta,
- 
- 	rtwdev->sta_cnt++;
- 	rtwdev->beacon_loss = false;
--	rtw_info(rtwdev, "sta %pM joined with macid %d\n",
--		 sta->addr, si->mac_id);
-+	rtw_dbg(rtwdev, RTW_DBG_STATE, "sta %pM joined with macid %d\n",
-+		sta->addr, si->mac_id);
- 
+@@ -990,7 +1011,7 @@ static int xenhcd_urb_request_done(struct xenhcd_info *info)
  	return 0;
  }
-@@ -327,8 +327,8 @@ void rtw_sta_remove(struct rtw_dev *rtwdev, struct ieee80211_sta *sta,
- 	kfree(si->mask);
  
- 	rtwdev->sta_cnt--;
--	rtw_info(rtwdev, "sta %pM with macid %d left\n",
--		 sta->addr, si->mac_id);
-+	rtw_dbg(rtwdev, RTW_DBG_STATE, "sta %pM with macid %d left\n",
-+		sta->addr, si->mac_id);
+-static int xenhcd_conn_notify(struct xenhcd_info *info)
++static int xenhcd_conn_notify(struct xenhcd_info *info, unsigned int *eoiflag)
+ {
+ 	struct xenusb_conn_response res;
+ 	struct xenusb_conn_request *req;
+@@ -1035,6 +1056,8 @@ static int xenhcd_conn_notify(struct xenhcd_info *info)
+ 				       info->conn_ring.req_prod_pvt);
+ 		req->id = id;
+ 		info->conn_ring.req_prod_pvt++;
++
++		*eoiflag = 0;
+ 	}
+ 
+ 	if (rc != info->conn_ring.req_prod_pvt)
+@@ -1057,14 +1080,19 @@ static int xenhcd_conn_notify(struct xenhcd_info *info)
+ static irqreturn_t xenhcd_int(int irq, void *dev_id)
+ {
+ 	struct xenhcd_info *info = (struct xenhcd_info *)dev_id;
++	unsigned int eoiflag = XEN_EOI_FLAG_SPURIOUS;
+ 
+-	if (unlikely(info->error))
++	if (unlikely(info->error)) {
++		xen_irq_lateeoi(irq, XEN_EOI_FLAG_SPURIOUS);
+ 		return IRQ_HANDLED;
++	}
+ 
+-	while (xenhcd_urb_request_done(info) | xenhcd_conn_notify(info))
++	while (xenhcd_urb_request_done(info, &eoiflag) |
++	       xenhcd_conn_notify(info, &eoiflag))
+ 		/* Yield point for this unbounded loop. */
+ 		cond_resched();
+ 
++	xen_irq_lateeoi(irq, eoiflag);
+ 	return IRQ_HANDLED;
  }
  
- struct rtw_fwcd_hdr {
-diff --git a/drivers/net/wireless/realtek/rtw88/rtw8821c.c b/drivers/net/wireless/realtek/rtw88/rtw8821c.c
-index db078df63f85..80d4761796b1 100644
---- a/drivers/net/wireless/realtek/rtw88/rtw8821c.c
-+++ b/drivers/net/wireless/realtek/rtw88/rtw8821c.c
-@@ -499,7 +499,7 @@ static s8 get_cck_rx_pwr(struct rtw_dev *rtwdev, u8 lna_idx, u8 vga_idx)
+@@ -1141,9 +1169,9 @@ static int xenhcd_setup_rings(struct xenbus_device *dev,
+ 		goto fail;
  	}
  
- 	if (lna_idx >= lna_gain_table_size) {
--		rtw_info(rtwdev, "incorrect lna index (%d)\n", lna_idx);
-+		rtw_warn(rtwdev, "incorrect lna index (%d)\n", lna_idx);
- 		return -120;
+-	err = bind_evtchn_to_irq(info->evtchn);
++	err = bind_evtchn_to_irq_lateeoi(info->evtchn);
+ 	if (err <= 0) {
+-		xenbus_dev_fatal(dev, err, "bind_evtchn_to_irq");
++		xenbus_dev_fatal(dev, err, "bind_evtchn_to_irq_lateeoi");
+ 		goto fail;
  	}
  
-diff --git a/drivers/net/wireless/realtek/rtw88/rtw8822b.c b/drivers/net/wireless/realtek/rtw88/rtw8822b.c
-index dd4fbb82750d..a23806b69b0f 100644
---- a/drivers/net/wireless/realtek/rtw88/rtw8822b.c
-+++ b/drivers/net/wireless/realtek/rtw88/rtw8822b.c
-@@ -1012,12 +1012,12 @@ static int rtw8822b_set_antenna(struct rtw_dev *rtwdev,
- 		antenna_tx, antenna_rx);
- 
- 	if (!rtw8822b_check_rf_path(antenna_tx)) {
--		rtw_info(rtwdev, "unsupported tx path 0x%x\n", antenna_tx);
-+		rtw_warn(rtwdev, "unsupported tx path 0x%x\n", antenna_tx);
- 		return -EINVAL;
+@@ -1496,6 +1524,7 @@ static struct usb_hcd *xenhcd_create_hcd(struct xenbus_device *dev)
+ 	for (i = 0; i < XENUSB_URB_RING_SIZE; i++) {
+ 		info->shadow[i].req.id = i + 1;
+ 		info->shadow[i].urb = NULL;
++		info->shadow[i].in_flight = false;
  	}
+ 	info->shadow[XENUSB_URB_RING_SIZE - 1].req.id = 0x0fff;
  
- 	if (!rtw8822b_check_rf_path(antenna_rx)) {
--		rtw_info(rtwdev, "unsupported rx path 0x%x\n", antenna_rx);
-+		rtw_warn(rtwdev, "unsupported rx path 0x%x\n", antenna_rx);
- 		return -EINVAL;
- 	}
- 
-diff --git a/drivers/net/wireless/realtek/rtw88/rtw8822c.c b/drivers/net/wireless/realtek/rtw88/rtw8822c.c
-index 35c46e5209de..ddf4d1a23e60 100644
---- a/drivers/net/wireless/realtek/rtw88/rtw8822c.c
-+++ b/drivers/net/wireless/realtek/rtw88/rtw8822c.c
-@@ -2798,7 +2798,7 @@ static int rtw8822c_set_antenna(struct rtw_dev *rtwdev,
- 	case BB_PATH_AB:
- 		break;
- 	default:
--		rtw_info(rtwdev, "unsupported tx path 0x%x\n", antenna_tx);
-+		rtw_warn(rtwdev, "unsupported tx path 0x%x\n", antenna_tx);
- 		return -EINVAL;
- 	}
- 
-@@ -2808,7 +2808,7 @@ static int rtw8822c_set_antenna(struct rtw_dev *rtwdev,
- 	case BB_PATH_AB:
- 		break;
- 	default:
--		rtw_info(rtwdev, "unsupported rx path 0x%x\n", antenna_rx);
-+		rtw_warn(rtwdev, "unsupported rx path 0x%x\n", antenna_rx);
- 		return -EINVAL;
- 	}
- 
-diff --git a/drivers/net/wireless/realtek/rtw88/sar.c b/drivers/net/wireless/realtek/rtw88/sar.c
-index 3383726c4d90..c472f1502b82 100644
---- a/drivers/net/wireless/realtek/rtw88/sar.c
-+++ b/drivers/net/wireless/realtek/rtw88/sar.c
-@@ -91,10 +91,10 @@ int rtw_set_sar_specs(struct rtw_dev *rtwdev,
- 			return -EINVAL;
- 
- 		power = sar->sub_specs[i].power;
--		rtw_info(rtwdev, "On freq %u to %u, set SAR %d in 1/%lu dBm\n",
--			 rtw_common_sar_freq_ranges[idx].start_freq,
--			 rtw_common_sar_freq_ranges[idx].end_freq,
--			 power, BIT(RTW_COMMON_SAR_FCT));
-+		rtw_dbg(rtwdev, RTW_DBG_REGD, "On freq %u to %u, set SAR %d in 1/%lu dBm\n",
-+			rtw_common_sar_freq_ranges[idx].start_freq,
-+			rtw_common_sar_freq_ranges[idx].end_freq,
-+			power, BIT(RTW_COMMON_SAR_FCT));
- 
- 		for (j = 0; j < RTW_RF_PATH_MAX; j++) {
- 			for (k = 0; k < RTW_RATE_SECTION_MAX; k++) {
 -- 
 2.34.1
 
