@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F4B9C46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A01DC3527B
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:02:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350921AbiDAPA5 (ORCPT
+        id S1350896AbiDAPAu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:00:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60648 "EHLO
+        Fri, 1 Apr 2022 11:00:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349207AbiDAOpk (ORCPT
+        with ESMTP id S1349154AbiDAOph (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:45:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E97D829A541;
-        Fri,  1 Apr 2022 07:35:36 -0700 (PDT)
+        Fri, 1 Apr 2022 10:45:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23D41299A46;
+        Fri,  1 Apr 2022 07:35:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E9A060AAF;
-        Fri,  1 Apr 2022 14:35:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 813BAC2BBE4;
-        Fri,  1 Apr 2022 14:35:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EDC02B82507;
+        Fri,  1 Apr 2022 14:35:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE838C340EE;
+        Fri,  1 Apr 2022 14:35:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823734;
-        bh=sXYWVK0lthYG0YtqGswx+v1n0pnOJ5A9MyQ31rH2NdQ=;
+        s=k20201202; t=1648823722;
+        bh=BajCV1XP1yu2fNsxTPAu527PA7vDUg5dFLjTlsjP+bE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lsYy+QWjE19YYSBJPB3t2+p+l0G17D1VjgUK4PiC20bz89PERFeGc79+YQEuXOZtr
-         U+O2gQqLNpXzp1Yfjsw9lmwjQJjo1VpqvdRI7Cnpw7N1QXsvk38EcEFNQlKUuKov8P
-         V9FqN2t0L6xcG5wlJC3bCGq+pZ3U2q0gwRbY0LpMqfj9/FItYCF2wYR6quu3hTcr2R
-         Slvud9CCogaiHoKr9C7pGaP/MxToy9yLogdUmgUfxL+onCM4uqCax0yzVWqzyZtPm9
-         MGbyfpPXifJmvHlGqOB535OlaJyZn9pzmQu7Do5PtkjBGRBDfQGQZ8X50am5vhUuJg
-         7BvQXjsTsQp6w==
+        b=aT3bb40XXxiWlHGpQ9NUrhwFsSGWNzN8ZbPumib98ieuDO6gkGtSIVnDlMFeZil9e
+         j3KdW2XcRGlYqCnoj1bj1z6tBzMP8xvNkJsnuX7ULwFUNhFSu1DFWU8axDW1jF2whv
+         pTLdo7Ga2VViksu6NdeheqClTrWDib9SdFNx9Hhz3QFtv3A01D6UeEOaeMYfVqSmlI
+         7HTcmbr56FOw9s4DPX8DNOPQg0D8+/zkNA7tGTVp6Dd83K70mymovgYKdq0YPCAybp
+         /EPmyPDdTJeeVx9uhGxb3MhG28/J9tE4eTSIBxDB3FwYlfsWjLBCfIXrbe9pbggsfn
+         8+9HRmTS1TiDg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Luca Coelho <luciano.coelho@intel.com>,
-        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        mukesh.sisodiya@intel.com, johannes.berg@intel.com,
-        mordechay.goodstein@intel.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 055/109] iwlwifi: fix small doc mistake for iwl_fw_ini_addr_val
-Date:   Fri,  1 Apr 2022 10:32:02 -0400
-Message-Id: <20220401143256.1950537-55-sashal@kernel.org>
+Cc:     Hans de Goede <hdegoede@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, balbi@kernel.org,
+        linux-usb@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 052/109] usb: dwc3: pci: Set the swnode from inside dwc3_pci_quirks()
+Date:   Fri,  1 Apr 2022 10:31:59 -0400
+Message-Id: <20220401143256.1950537-52-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143256.1950537-1-sashal@kernel.org>
 References: <20220401143256.1950537-1-sashal@kernel.org>
@@ -55,46 +53,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luca Coelho <luciano.coelho@intel.com>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit 3009c797c4b3840495e8f48d8d07f48d2ddfed80 ]
+[ Upstream commit e285cb403994419e997749c9a52b9370884ae0c8 ]
 
-There was a small copy and paste mistake in the doc declaration of
-iwl_fw_ini_addr_val.  Fix it.
+The quirk handling may need to set some different properties
+which means using a different swnode, move the setting of the swnode
+to inside dwc3_pci_quirks() so that the quirk handling can choose
+a different swnode.
 
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20220205112029.aeec71c397b3.I0ba3234419eb8c8c7512a2ca531a6dbb55046cf7@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Link: https://lore.kernel.org/r/20220213130524.18748-4-hdegoede@redhat.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/fw/api/dbg-tlv.h | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/usb/dwc3/dwc3-pci.c | 11 ++++-------
+ 1 file changed, 4 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/fw/api/dbg-tlv.h b/drivers/net/wireless/intel/iwlwifi/fw/api/dbg-tlv.h
-index 3988f5fea33a..6b2a2828cb83 100644
---- a/drivers/net/wireless/intel/iwlwifi/fw/api/dbg-tlv.h
-+++ b/drivers/net/wireless/intel/iwlwifi/fw/api/dbg-tlv.h
-@@ -1,6 +1,6 @@
- /* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
- /*
-- * Copyright (C) 2018-2021 Intel Corporation
-+ * Copyright (C) 2018-2022 Intel Corporation
-  */
- #ifndef __iwl_fw_dbg_tlv_h__
- #define __iwl_fw_dbg_tlv_h__
-@@ -244,11 +244,10 @@ struct iwl_fw_ini_hcmd_tlv {
- } __packed; /* FW_TLV_DEBUG_HCMD_API_S_VER_1 */
+diff --git a/drivers/usb/dwc3/dwc3-pci.c b/drivers/usb/dwc3/dwc3-pci.c
+index 06d0e88ec8af..4d9608cc55f7 100644
+--- a/drivers/usb/dwc3/dwc3-pci.c
++++ b/drivers/usb/dwc3/dwc3-pci.c
+@@ -185,7 +185,8 @@ static const struct software_node dwc3_pci_amd_mr_swnode = {
+ 	.properties = dwc3_pci_mr_properties,
+ };
  
- /**
--* struct iwl_fw_ini_conf_tlv - preset configuration TLV
-+* struct iwl_fw_ini_addr_val - Address and value to set it to
- *
- * @address: the base address
- * @value: value to set at address
+-static int dwc3_pci_quirks(struct dwc3_pci *dwc)
++static int dwc3_pci_quirks(struct dwc3_pci *dwc,
++			   const struct software_node *swnode)
+ {
+ 	struct pci_dev			*pdev = dwc->pci;
+ 
+@@ -242,7 +243,7 @@ static int dwc3_pci_quirks(struct dwc3_pci *dwc)
+ 		}
+ 	}
+ 
+-	return 0;
++	return device_add_software_node(&dwc->dwc3->dev, swnode);
+ }
+ 
+ #ifdef CONFIG_PM
+@@ -307,11 +308,7 @@ static int dwc3_pci_probe(struct pci_dev *pci, const struct pci_device_id *id)
+ 	dwc->dwc3->dev.parent = dev;
+ 	ACPI_COMPANION_SET(&dwc->dwc3->dev, ACPI_COMPANION(dev));
+ 
+-	ret = device_add_software_node(&dwc->dwc3->dev, (void *)id->driver_data);
+-	if (ret < 0)
+-		goto err;
 -
- */
- struct iwl_fw_ini_addr_val {
- 	__le32 address;
+-	ret = dwc3_pci_quirks(dwc);
++	ret = dwc3_pci_quirks(dwc, (void *)id->driver_data);
+ 	if (ret)
+ 		goto err;
+ 
 -- 
 2.34.1
 
