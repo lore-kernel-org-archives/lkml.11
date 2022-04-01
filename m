@@ -2,117 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 771B3C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 13:52:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A368C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 13:53:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345919AbiDANy0 (ORCPT
+        id S1346528AbiDANzN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 09:54:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35514 "EHLO
+        Fri, 1 Apr 2022 09:55:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344797AbiDANyV (ORCPT
+        with ESMTP id S1346361AbiDANzK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 09:54:21 -0400
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C3C9280C0A;
-        Fri,  1 Apr 2022 06:52:32 -0700 (PDT)
-Received: by mail-pf1-x433.google.com with SMTP id x31so2692347pfh.9;
-        Fri, 01 Apr 2022 06:52:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=zWTc1GA+fDXQjVICuLK5pDFkGNHXuuKJ75eX3a0jFpk=;
-        b=q8JS2irBMX1lLwCC7Oi3yAaY/hQ1zpcHByB5AgM41VPIU1DQuLACPYobevPxPc+uB7
-         aK+87kQULmu9KeFyHKgU8+nfyCYrUt4KIi1zaOaV4vglIH6C1zStNGyA9nIgJn4yT6oI
-         0+W5HFu6UJiY9qb9gY6Fvb7HqBHoOOk7wriStn6wwguau8DCr2JqRWFwu7F8WmuUxrGN
-         cvMVRE1KSw0Ee0PkCKn21TjMCa7xLL2UWvU53N9u2VG41waHYHu/Mw90HbAuIOX2FDtC
-         cCgr4pp6v6KvErodaM44Xuakm8aR1N7Ce7bOWBgZOJFmkDj85zODAPEdfh7lxPKLQXfT
-         xMfQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=zWTc1GA+fDXQjVICuLK5pDFkGNHXuuKJ75eX3a0jFpk=;
-        b=F8T8zJVRzX0NcD/MI/T5qe/AxGPzL1awDLv2G+AGjKHCAJXzysAfaP8zISycTSLAFd
-         jrG5NG/R6XlMM2aq2dX+oIqH7LahwIIlCEeJaoWSffK6PgXeUSh1NcqCw/5FTm0zagKH
-         RuoAxIlXgCy/2Xs8QwMM24JEPCj0X4NomPi76MWJKpTowyjt9M5wtiFf1DerWpGUep2I
-         +2sApOiWXSX1bcDvPzWhxKdVW+IFsxvdjdlChZa7yTf2LjCz9svP515yzPqEM4uflzmj
-         Cee3rnJUKyg0T5yfaNsUxtIggg4UDYDV1cfHcm5lbArhFFMG14CJrdlQ4xmGA2rXYq8M
-         67eQ==
-X-Gm-Message-State: AOAM530BD/OK+dycDzh++0mwbY0F4cQrKCaGSZm8ih+Da4K2aSujfl6Q
-        /q6r64B4IRdHKImHmI1Ky1s=
-X-Google-Smtp-Source: ABdhPJy3hN5vTr9dLoBt4zMf7HbBZijJUPijvLmh0eNC9FCvnJmNdb6cYKiFWxU0MIfOkZ0iGr2wSQ==
-X-Received: by 2002:a63:ec43:0:b0:382:11ef:b94a with SMTP id r3-20020a63ec43000000b0038211efb94amr15399453pgj.409.1648821151426;
-        Fri, 01 Apr 2022 06:52:31 -0700 (PDT)
-Received: from 9a2d8922b8f1 ([122.161.51.18])
-        by smtp.gmail.com with ESMTPSA id y16-20020a63b510000000b00398d8b19bbfsm2567167pge.23.2022.04.01.06.52.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Apr 2022 06:52:31 -0700 (PDT)
-Date:   Fri, 1 Apr 2022 19:22:24 +0530
-From:   Kuldeep Singh <singh.kuldeep87k@gmail.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Mark Brown <broonie@kernel.org>, linux-arm-msm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-spi@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] spi: dt-bindings: qcom,spi-geni-qcom: convert to
- dtschema
-Message-ID: <20220401135224.GA40286@9a2d8922b8f1>
-References: <20220331160248.716234-1-krzysztof.kozlowski@linaro.org>
- <20220331175817.GA91341@9a2d8922b8f1>
- <ddc12aab-3cff-16a1-9ec9-a246240f9521@linaro.org>
+        Fri, 1 Apr 2022 09:55:10 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2447CC57
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 06:53:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648821201; x=1680357201;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=NxPLj+EOCmrCwV6lNB3BH9LIzEApUxGmlciC9PV9DKM=;
+  b=IVBtvX3ba58e1PCDHPacPYFFjCbOtOuZ7eww/XqSe5y3UtPFTGtoTo3x
+   9fuUPGLxVPcLphRj5RYZVbOo1dbDUViKQs/LdbsZnhuEzroGLzefoRuCN
+   vVVc2ukjf6kFcvEW6dhPLHAfd0W9qrNeXOjDAzOPla3lA1SfKfBpl2YWl
+   QTEh4oVFk5nWz5HpKqzf8LHsckv38Y5Dere4/72lOoxin3VFHabiOLBoe
+   HmaZZIFPpgM54lXF4qlMO8kYBILfJeDP9oOaWcP8E+Tn/Rx68cPzPW0nN
+   eOcABZqBOj6v7fZnqvEQ8UgS3UwDRqBnjCwnYHLFHfLQhLdCXWrwrc0Xc
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10304"; a="240732658"
+X-IronPort-AV: E=Sophos;i="5.90,227,1643702400"; 
+   d="scan'208";a="240732658"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Apr 2022 06:53:20 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,227,1643702400"; 
+   d="scan'208";a="547805163"
+Received: from unknown (HELO localhost) ([10.238.155.175])
+  by orsmga007.jf.intel.com with ESMTP; 01 Apr 2022 06:53:18 -0700
+Date:   Fri, 1 Apr 2022 20:45:19 +0800
+From:   Youquan Song <youquan.song@linux.intel.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Youquan Song <youquan.song@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Josh Poimboeuf <jpoimboe@redhat.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org, Zhiquan Li <zhiquan1.li@intel.com>,
+        Youquan Song <youquan.song@intel.com>
+Subject: Re: [PATCH] x86/uaccess: restore get_user exception type to
+ EX_TYPE_UACCESS
+Message-ID: <20220401124519.GA6935@linux-youquan.bj.intel.com>
+References: <20220328201748.1864491-1-tony.luck@intel.com>
+ <20220330123205.GL8939@worktop.programming.kicks-ass.net>
+ <20220331113125.GA2628@linux-youquan.bj.intel.com>
+ <20220331175113.GV8939@worktop.programming.kicks-ass.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ddc12aab-3cff-16a1-9ec9-a246240f9521@linaro.org>
+In-Reply-To: <20220331175113.GV8939@worktop.programming.kicks-ass.net>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 31, 2022 at 09:40:08PM +0200, Krzysztof Kozlowski wrote:
-> On 31/03/2022 19:58, Kuldeep Singh wrote:
-> > On Thu, Mar 31, 2022 at 06:02:47PM +0200, Krzysztof Kozlowski wrote:
-> >> Convert the GENI based Qualcomm Universal Peripheral (QUP) Serial
-> >> Peripheral Interface (SPI) bindings to DT Schema.
-> >>
-> >> The original bindings in TXT were not complete, so add during conversion
-> >> properties already used in DTS and/or in the driver: reg-names, dmas,
-> >> interconnects, operating points and power-domains.
-> >>
-> >> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
-[...]
-
-> >> +  reg:
-> >> +    maxItems: 1
-> >> +
-> >> +  reg-names:
-> >> +    const: se
-> > 
-> > Why reg-names is required?
-> > Reg contain max 1 value, we can skip reg-names like other users.
-> > 
-> > Also, "se" is used as clock name and using it again for reg-names?
-> > I think this is wrong and reg-names shouldn't be documented.
+On Thu, Mar 31, 2022 at 07:51:13PM +0200, Peter Zijlstra wrote:
+> On Thu, Mar 31, 2022 at 07:31:25PM +0800, Youquan Song wrote:
+> > > Did you do your testing on RHEL or something daft like that?
+> > Tested on RHEL8.x
 > 
-> reg-names are not required. If you ask why they are documented? As I
-> wrote in commit msg - bindings were not fully updated to DTSes being used.
+> Right; the home of obsolete software.. :-)
+> 
+> > > Something like the below can also work, I suppose. But please, add
+> > > coherent comments to the extable code with useful references to the MCE
+> > > code that does this abuse.
+> > Here is the full fix patch depending on your suggestion. Thanks a lot!
+> 
+> Did you verify this was indeed the only UACCESS I lost?
 
-Hi Krzysztof,
+The full fix patch has included a change in error_context to identify
+this case to be MCE_IN_KERNEL_COPYIN. I verfied it fix the issue.
+In addition, LTP was run and no issues were reported.
 
-Power-domains, operating-points etc. makes sense, but reg-names?
+@@ -286,6 +286,7 @@ static noinstr int error_context(struct mce *m, struct pt_regs *regs)
+ 	switch (fixup_type) {
+ 	case EX_TYPE_UACCESS:
+ 	case EX_TYPE_COPY:
++	case EX_TYPE_UA_IMM_REG:
+ 		if (!copy_user)
+ 			return IN_KERNEL;
+ 		m->kflags |= MCE_IN_KERNEL_COPYIN;
 
-With quick search, sm8150.dtsi is the only user of reg-names. Moreover,
-there is no reference in driver to incorporate it.
-Driver(drivers/spi/spi-geni-qcom.c) looks for "se" as clock name and not
-as reg-name. If there's one, kindly help in pointing out.
-
-It seems you are adding reg-names because some DT is using it and no
-other reason. And with no reference even in driver, that's surely not a
-way to go ahead as you have been advising the same in past.
-
--Kuldeep
+-Youquan
