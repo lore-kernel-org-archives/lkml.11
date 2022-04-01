@@ -2,86 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0357C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 07:09:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC322C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 07:10:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343727AbiDAHLm (ORCPT
+        id S1343747AbiDAHLt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 03:11:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49042 "EHLO
+        Fri, 1 Apr 2022 03:11:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235431AbiDAHLk (ORCPT
+        with ESMTP id S241278AbiDAHLo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 03:11:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FEFD1D66FF
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 00:09:51 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 12358B823E3
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 07:09:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C43FC2BBE4;
-        Fri,  1 Apr 2022 07:09:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648796988;
-        bh=0xkpWx1ivqtq3td6Im0P8AwAE+UYEwAQxJGy7qqhrR0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=hnpBeMZZt2od0g6krfAlUgq7FtMwbpwQlqXsNxFBpsX7to/5312/OFyEehtBkWu8D
-         fyTkvI2DqWNgDgMTHNYzI9fikEJHQ1HPY4qXuoPeT8C1LjMtWae4P0JlgeuU3jVQbc
-         Xp8s+ByG/sjdKC2p3tdxq9oe1VTV2QTYmNVwnVcE+uX+8yfyHr1CohjjUMAInwprKk
-         0tf0+WrUTJ4mLGMCYOG268RW2C+rnQIyzEf1A0pQIuYuJOphNC/aVEzzjtkl9z7LjQ
-         e8u9ZIosn0m7ACXg9hx9C5ZYybSLfwBM+sgaLbD+2wJdJHEuaXQ0LclBxvUpAnLXlq
-         0WptxGFfQ919A==
-Date:   Fri, 1 Apr 2022 09:09:42 +0200
-From:   Christian Brauner <brauner@kernel.org>
-To:     Alois Wohlschlager <alois1@gmx-topmail.de>
-Cc:     "Eric W. Biederman" <ebiederm@xmission.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Alexey Gladkov <legion@kernel.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        David Hildenbrand <david@redhat.com>,
-        Rolf Eike Beer <eb@emlix.com>,
-        Ran Xiaokai <ran.xiaokai@zte.com.cn>,
-        Matthew Bobrowski <repnop@google.com>, Jan Kara <jack@suse.cz>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] pid: Allow creation of pidfds to threads
-Message-ID: <20220401070942.odjbuc5wecfayyok@wittgenstein>
-References: <3412128.IC5jYiYEAv@genesis>
+        Fri, 1 Apr 2022 03:11:44 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBDC91D67C8
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 00:09:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648796995; x=1680332995;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=x7JxNYZE4bR2Se13EgnNdI0M8Y2HG+1d7lIDBk7wNqs=;
+  b=k1pJVLwUyoCjHG/1D4A6mFt+94jvX8WcSG0yRUdwHqDu1B3NG1W/V8u4
+   xrZXJFoty7iGXY1j3nHYfcxX4xCK5npHrArjbZDqxkVGdlXaEgVraH5Vq
+   IlZ57mRr7s6R1kLjmEN/frK5Of5eNpgcr8o8w24oN2YfAVVBR06I96Kdb
+   z22Ntk2j4cpz8YDMu6hUjwbNlICodTtrt4oybJ7NxD2uHk38uPfkgd3rn
+   ZMyDTztjV1O6IoQpj0sOyHN4Ct218dMIyPJGRve6E/q/+hAryOluDduy4
+   wAROnzhbZVqWlvGiWMY3oumxpMie+WOCO4v/vfoX+t4F2yS7lPiccWI8j
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10303"; a="242208282"
+X-IronPort-AV: E=Sophos;i="5.90,226,1643702400"; 
+   d="scan'208";a="242208282"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Apr 2022 00:09:55 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,226,1643702400"; 
+   d="scan'208";a="504064753"
+Received: from lkp-server02.sh.intel.com (HELO 3231c491b0e2) ([10.239.97.151])
+  by orsmga003.jf.intel.com with ESMTP; 01 Apr 2022 00:09:31 -0700
+Received: from kbuild by 3231c491b0e2 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1naBPX-00012m-2V;
+        Fri, 01 Apr 2022 07:09:31 +0000
+Date:   Fri, 1 Apr 2022 15:08:46 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Borislav Petkov <bp@suse.de>
+Subject: [intel-tdx:guest-upstream 5/32] arch/x86/coco/tdx/tdcall.o: warning:
+ objtool: __tdx_module_call()+0x3a: missing int3 after ret
+Message-ID: <202204011414.sHGf1lWN-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <3412128.IC5jYiYEAv@genesis>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 31, 2022 at 09:02:32PM +0200, Alois Wohlschlager wrote:
-> The pidfd_open() syscall now allows retrieving pidfds to processes which
-> are not thread group leaders. Like standard pidfds so far, these may be
-> used to retrieve file descriptors from the target thread using
-> pidfd_getfd(), as well as for killing the target thread group using
-> pidfd_send_signal().
-> However, unlike pidfds referencing thread group leaders, they do not
-> support polling for process exit. Attempts to do so signal an error
-> condition instead of blocking indefinitely.
-> 
-> Since the semantics of pidfd_getfd() and pidfd_send_signal() are not
-> very useful within a thread group, these thread pidfds can only be
-> created using pidfd_open(), not via clone().
-> 
-> Signed-off-by: Alois Wohlschlager <alois1@gmx-topmail.de>
-> ---
+Hi Kuppuswamy,
 
-Hey Alois,
+First bad commit (maybe != root cause):
 
-We originally blocked this because it is not as easy as simply allowing
-pidfds to be created for non-thread-group leaders.
-For a start, pidfd_poll() currently doens't work if pidfd_task() isn't a
-thread-group leader and you'll just hang for CLONE_PIDFD | CLONE_THREAD.
-So at least that needs to be adapated as well and there's likely a bunch
-of other corner-cases I'm forgetting about.
-Do you have a concrete use-case you want this for?
+tree:   https://github.com/intel/tdx.git guest-upstream
+head:   7d5c8afa0ebaf1731bb7ce8fe34a3248224fe0e9
+commit: c03bec7b2dad416b31b8e5d5d656dfd84430ee09 [5/32] x86/tdx: Add __tdx_module_call() and __tdx_hypercall() helper functions
+config: x86_64-allyesconfig (https://download.01.org/0day-ci/archive/20220401/202204011414.sHGf1lWN-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.2.0-19) 11.2.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel/tdx/commit/c03bec7b2dad416b31b8e5d5d656dfd84430ee09
+        git remote add intel-tdx https://github.com/intel/tdx.git
+        git fetch --no-tags intel-tdx guest-upstream
+        git checkout c03bec7b2dad416b31b8e5d5d656dfd84430ee09
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash arch/x86/
 
-Christian
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> arch/x86/coco/tdx/tdcall.o: warning: objtool: __tdx_module_call()+0x3a: missing int3 after ret
+>> arch/x86/coco/tdx/tdcall.o: warning: objtool: __tdx_hypercall()+0x60: missing int3 after ret
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
