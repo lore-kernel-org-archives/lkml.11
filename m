@@ -2,49 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B83BCC4167D
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:29:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4F3FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:29:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347273AbiDAOaw (ORCPT
+        id S1347160AbiDAOay (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 10:30:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39730 "EHLO
+        Fri, 1 Apr 2022 10:30:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347212AbiDAO3x (ORCPT
+        with ESMTP id S1347151AbiDAOaR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:29:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C64FF28AB03;
-        Fri,  1 Apr 2022 07:27:21 -0700 (PDT)
+        Fri, 1 Apr 2022 10:30:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AE0A28A021;
+        Fri,  1 Apr 2022 07:27:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2049FB824FD;
-        Fri,  1 Apr 2022 14:27:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86889C2BBE4;
-        Fri,  1 Apr 2022 14:27:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 369EA61C27;
+        Fri,  1 Apr 2022 14:27:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 642D7C340F2;
+        Fri,  1 Apr 2022 14:27:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823238;
-        bh=b51VNEiKO+Fx8+RwLfJTXx0nWoth9Ssof+K5dUkMstw=;
+        s=k20201202; t=1648823246;
+        bh=/W904OnNAqirvLGft/TJEDt2A3BrJgSla57s39MEQDs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lzRb5qcLN1/53yc5oKT7sO3W6zaQ42oQ3Jca7Tb2yP2UboEfdR/V5+nrf9uI/ET2b
-         dRE6ku5jr+MY/+L0VJS6m88I/eXQYZX0Vzl8imU5JPcPP9lZrwuONARZLCqW9FE6yO
-         f7ZSbCaHSXF2n936Jsbmpcg1M8ccdLZmlAqAIg/Gc1AtP3dwLTIThIHCMGwzX5uvod
-         6o5u3hMQo5QaUDXA3R8/hUS11rULghiEn0RSN0hXkGlIufBTJhkG8iT4IS0rdZW0L7
-         o33WLfkdHswI+WXTxg+K6fHgRmniEgrciDxsUFGi5zDoXJ1SuSXCUs4AA8AxqTliIf
-         4g13TgkmDEIXg==
+        b=CLZWffP1a0Jgxrnm17flBW7oO/ZvxmarERqBBUuWRh26bAXeNi/s46ZWyXR7++ljy
+         DjisCC5+j9h6Rg6b0RhQuZ1snaRX6QIuEoK375ZqmLLmX9P2aaiEgGcwglO4YijhFF
+         yWnKoa0ghsBXJriMny1q/oR6jbyA0yak6fuDN71mz9FC0XjFpUfX4QX1WMfH+d5FUB
+         ZzbiUn3VQQUSehM9o5pw3sHcObVxUtZJ9xF1RkDCejhzjdZYe+aez6rRDA5TVjw0MI
+         6yRC5ycK1LZAteWEF7XMNnlXw6A0cEptGKuqoJp3LRxd1gElFuYoItym3zTxiPeF6X
+         zYCy4Q5vf3BCA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Maxim Kiselev <bigunclemax@gmail.com>,
-        Maxim Kochetkov <fido_max@inbox.ru>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
-        krzk+dt@kernel.org, devicetree@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH AUTOSEL 5.17 028/149] powerpc: dts: t104xrdb: fix phy type for FMAN 4/5
-Date:   Fri,  1 Apr 2022 10:23:35 -0400
-Message-Id: <20220401142536.1948161-28-sashal@kernel.org>
+Cc:     Tony Lu <tonylu@linux.alibaba.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, kgraul@linux.ibm.com,
+        kuba@kernel.org, pabeni@redhat.com, linux-s390@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 032/149] net/smc: Send directly when TCP_CORK is cleared
+Date:   Fri,  1 Apr 2022 10:23:39 -0400
+Message-Id: <20220401142536.1948161-32-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401142536.1948161-1-sashal@kernel.org>
 References: <20220401142536.1948161-1-sashal@kernel.org>
@@ -56,45 +54,109 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxim Kiselev <bigunclemax@gmail.com>
+From: Tony Lu <tonylu@linux.alibaba.com>
 
-[ Upstream commit 17846485dff91acce1ad47b508b633dffc32e838 ]
+[ Upstream commit ea785a1a573b390a150010b3c5b81e1ccd8c98a8 ]
 
-T1040RDB has two RTL8211E-VB phys which requires setting
-of internal delays for correct work.
+According to the man page of TCP_CORK [1], if set, don't send out
+partial frames. All queued partial frames are sent when option is
+cleared again.
 
-Changing the phy-connection-type property to `rgmii-id`
-will fix this issue.
+When applications call setsockopt to disable TCP_CORK, this call is
+protected by lock_sock(), and tries to mod_delayed_work() to 0, in order
+to send pending data right now. However, the delayed work smc_tx_work is
+also protected by lock_sock(). There introduces lock contention for
+sending data.
 
-Signed-off-by: Maxim Kiselev <bigunclemax@gmail.com>
-Reviewed-by: Maxim Kochetkov <fido_max@inbox.ru>
-Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20211230151123.1258321-1-bigunclemax@gmail.com
+To fix it, send pending data directly which acts like TCP, without
+lock_sock() protected in the context of setsockopt (already lock_sock()ed),
+and cancel unnecessary dealyed work, which is protected by lock.
+
+[1] https://linux.die.net/man/7/tcp
+
+Signed-off-by: Tony Lu <tonylu@linux.alibaba.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/boot/dts/fsl/t104xrdb.dtsi | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/smc/af_smc.c |  4 ++--
+ net/smc/smc_tx.c | 25 +++++++++++++++----------
+ net/smc/smc_tx.h |  1 +
+ 3 files changed, 18 insertions(+), 12 deletions(-)
 
-diff --git a/arch/powerpc/boot/dts/fsl/t104xrdb.dtsi b/arch/powerpc/boot/dts/fsl/t104xrdb.dtsi
-index 099a598c74c0..bfe1ed5be337 100644
---- a/arch/powerpc/boot/dts/fsl/t104xrdb.dtsi
-+++ b/arch/powerpc/boot/dts/fsl/t104xrdb.dtsi
-@@ -139,12 +139,12 @@ pca9546@77 {
- 		fman@400000 {
- 			ethernet@e6000 {
- 				phy-handle = <&phy_rgmii_0>;
--				phy-connection-type = "rgmii";
-+				phy-connection-type = "rgmii-id";
- 			};
+diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+index 284befa90967..67fc72047c9c 100644
+--- a/net/smc/af_smc.c
++++ b/net/smc/af_smc.c
+@@ -2636,8 +2636,8 @@ static int smc_setsockopt(struct socket *sock, int level, int optname,
+ 		    sk->sk_state != SMC_CLOSED) {
+ 			if (!val) {
+ 				SMC_STAT_INC(smc, cork_cnt);
+-				mod_delayed_work(smc->conn.lgr->tx_wq,
+-						 &smc->conn.tx_work, 0);
++				smc_tx_pending(&smc->conn);
++				cancel_delayed_work(&smc->conn.tx_work);
+ 			}
+ 		}
+ 		break;
+diff --git a/net/smc/smc_tx.c b/net/smc/smc_tx.c
+index be241d53020f..7b0b6e24582f 100644
+--- a/net/smc/smc_tx.c
++++ b/net/smc/smc_tx.c
+@@ -597,27 +597,32 @@ int smc_tx_sndbuf_nonempty(struct smc_connection *conn)
+ 	return rc;
+ }
  
- 			ethernet@e8000 {
- 				phy-handle = <&phy_rgmii_1>;
--				phy-connection-type = "rgmii";
-+				phy-connection-type = "rgmii-id";
- 			};
+-/* Wakeup sndbuf consumers from process context
+- * since there is more data to transmit
+- */
+-void smc_tx_work(struct work_struct *work)
++void smc_tx_pending(struct smc_connection *conn)
+ {
+-	struct smc_connection *conn = container_of(to_delayed_work(work),
+-						   struct smc_connection,
+-						   tx_work);
+ 	struct smc_sock *smc = container_of(conn, struct smc_sock, conn);
+ 	int rc;
  
- 			mdio0: mdio@fc000 {
+-	lock_sock(&smc->sk);
+ 	if (smc->sk.sk_err)
+-		goto out;
++		return;
+ 
+ 	rc = smc_tx_sndbuf_nonempty(conn);
+ 	if (!rc && conn->local_rx_ctrl.prod_flags.write_blocked &&
+ 	    !atomic_read(&conn->bytes_to_rcv))
+ 		conn->local_rx_ctrl.prod_flags.write_blocked = 0;
++}
++
++/* Wakeup sndbuf consumers from process context
++ * since there is more data to transmit
++ */
++void smc_tx_work(struct work_struct *work)
++{
++	struct smc_connection *conn = container_of(to_delayed_work(work),
++						   struct smc_connection,
++						   tx_work);
++	struct smc_sock *smc = container_of(conn, struct smc_sock, conn);
+ 
+-out:
++	lock_sock(&smc->sk);
++	smc_tx_pending(conn);
+ 	release_sock(&smc->sk);
+ }
+ 
+diff --git a/net/smc/smc_tx.h b/net/smc/smc_tx.h
+index 07e6ad76224a..a59f370b8b43 100644
+--- a/net/smc/smc_tx.h
++++ b/net/smc/smc_tx.h
+@@ -27,6 +27,7 @@ static inline int smc_tx_prepared_sends(struct smc_connection *conn)
+ 	return smc_curs_diff(conn->sndbuf_desc->len, &sent, &prep);
+ }
+ 
++void smc_tx_pending(struct smc_connection *conn);
+ void smc_tx_work(struct work_struct *work);
+ void smc_tx_init(struct smc_sock *smc);
+ int smc_tx_sendmsg(struct smc_sock *smc, struct msghdr *msg, size_t len);
 -- 
 2.34.1
 
