@@ -2,52 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84BA8C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFAA0C4167B
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:20:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350406AbiDAPSr (ORCPT
+        id S1351017AbiDAPTF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:18:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60334 "EHLO
+        Fri, 1 Apr 2022 11:19:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352316AbiDAOuO (ORCPT
+        with ESMTP id S1352087AbiDAOty (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:50:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFF0C1F047B;
-        Fri,  1 Apr 2022 07:41:28 -0700 (PDT)
+        Fri, 1 Apr 2022 10:49:54 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D258F292BAE;
+        Fri,  1 Apr 2022 07:40:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DA25E611E6;
-        Fri,  1 Apr 2022 14:40:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4FC94C36AE2;
-        Fri,  1 Apr 2022 14:40:51 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id A5BDECE258D;
+        Fri,  1 Apr 2022 14:39:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51776C36AE3;
+        Fri,  1 Apr 2022 14:39:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824052;
-        bh=kjuBNnbI+Yjinw7VoawrZRPNdjU4KrvX+KNkVbNlDjM=;
+        s=k20201202; t=1648823989;
+        bh=BajCV1XP1yu2fNsxTPAu527PA7vDUg5dFLjTlsjP+bE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ndIYvCFF8XIh3Av4BW94dXtU8fn9ImUsPusjldoFdlA3r/kERzA+dNu7UqmsYGlWS
-         T050VNikV9uJz/Z0chOPngKV6Jilwf7jn91zr6t2Of2Y/UzK4UtFlJ+3vFhtZ6KJah
-         g5Z/jFPUpazBJ0djW+bOBVUt9Cr/VrbOZfMcSekHgoHEAB+ivrMBx/B+CFIVlgvVGx
-         IBVQ0UD2MtsJgjbmKkNUoDpi4qPfO1XJa/m2mQr7e6CzfxnEmcf76jWAt7oCRp150W
-         Y1qV9JHkSRUZoFtHTGiVe1gqqAlrO/2M1x3pPPtyx7cx4lL6mgAg9gSY4mkJMVWwao
-         Qg7RhXvJguknA==
+        b=RQV/REYtoQ9tOiwHv0K0OmBIc+KLDjReggAmONsZxkN3B3SYjkzy+xztERErwxZTJ
+         ZhVMjmHZ+Fhjc0EmtBuQP6Q9S7Mu1VVVOrjOmt8KWj4I8CiOldfoK010YKM000lUEK
+         a9L9l/jug5lVKu3jaW6irSxHhbIqvjFYn5ydk8ZwM26s0a6vEx6nrv+Ai6JgLYelFH
+         xNYc/6lXauJS1ajTv2hKocAuBi+tCCMIet47/Cebz0Cwq/+DGUonx1IVLw1oVBuF85
+         Oye3ydTl3Bz5fuRfmJMy6LzfEmA+BT1dm2q1FjaCubdZvEP8M3L8bmiN2xt6p/JlOg
+         3Vohhul1/SchQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sven Eckelmann <sven@narfation.org>,
-        =?UTF-8?q?Leonardo=20M=C3=B6rlein?= <freifunk@irrelefant.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        pabeni@redhat.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 67/98] macvtap: advertise link netns via netlink
-Date:   Fri,  1 Apr 2022 10:37:11 -0400
-Message-Id: <20220401143742.1952163-67-sashal@kernel.org>
+Cc:     Hans de Goede <hdegoede@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, balbi@kernel.org,
+        linux-usb@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 43/98] usb: dwc3: pci: Set the swnode from inside dwc3_pci_quirks()
+Date:   Fri,  1 Apr 2022 10:36:47 -0400
+Message-Id: <20220401143742.1952163-43-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143742.1952163-1-sashal@kernel.org>
 References: <20220401143742.1952163-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -55,62 +53,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sven Eckelmann <sven@narfation.org>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit a02192151b7dbf855084c38dca380d77c7658353 ]
+[ Upstream commit e285cb403994419e997749c9a52b9370884ae0c8 ]
 
-Assign rtnl_link_ops->get_link_net() callback so that IFLA_LINK_NETNSID is
-added to rtnetlink messages. This fixes iproute2 which otherwise resolved
-the link interface to an interface in the wrong namespace.
+The quirk handling may need to set some different properties
+which means using a different swnode, move the setting of the swnode
+to inside dwc3_pci_quirks() so that the quirk handling can choose
+a different swnode.
 
-Test commands:
-
-  ip netns add nst
-  ip link add dummy0 type dummy
-  ip link add link macvtap0 link dummy0 type macvtap
-  ip link set macvtap0 netns nst
-  ip -netns nst link show macvtap0
-
-Before:
-
-  10: macvtap0@gre0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 500
-      link/ether 5e:8f:ae:1d:60:50 brd ff:ff:ff:ff:ff:ff
-
-After:
-
-  10: macvtap0@if2: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 500
-      link/ether 5e:8f:ae:1d:60:50 brd ff:ff:ff:ff:ff:ff link-netnsid 0
-
-Reported-by: Leonardo Mörlein <freifunk@irrelefant.net>
-Signed-off-by: Sven Eckelmann <sven@narfation.org>
-Link: https://lore.kernel.org/r/20220228003240.1337426-1-sven@narfation.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Link: https://lore.kernel.org/r/20220213130524.18748-4-hdegoede@redhat.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/macvtap.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/usb/dwc3/dwc3-pci.c | 11 ++++-------
+ 1 file changed, 4 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/macvtap.c b/drivers/net/macvtap.c
-index 694e2f5dbbe5..39801c31e507 100644
---- a/drivers/net/macvtap.c
-+++ b/drivers/net/macvtap.c
-@@ -133,11 +133,17 @@ static void macvtap_setup(struct net_device *dev)
- 	dev->tx_queue_len = TUN_READQ_SIZE;
+diff --git a/drivers/usb/dwc3/dwc3-pci.c b/drivers/usb/dwc3/dwc3-pci.c
+index 06d0e88ec8af..4d9608cc55f7 100644
+--- a/drivers/usb/dwc3/dwc3-pci.c
++++ b/drivers/usb/dwc3/dwc3-pci.c
+@@ -185,7 +185,8 @@ static const struct software_node dwc3_pci_amd_mr_swnode = {
+ 	.properties = dwc3_pci_mr_properties,
+ };
+ 
+-static int dwc3_pci_quirks(struct dwc3_pci *dwc)
++static int dwc3_pci_quirks(struct dwc3_pci *dwc,
++			   const struct software_node *swnode)
+ {
+ 	struct pci_dev			*pdev = dwc->pci;
+ 
+@@ -242,7 +243,7 @@ static int dwc3_pci_quirks(struct dwc3_pci *dwc)
+ 		}
+ 	}
+ 
+-	return 0;
++	return device_add_software_node(&dwc->dwc3->dev, swnode);
  }
  
-+static struct net *macvtap_link_net(const struct net_device *dev)
-+{
-+	return dev_net(macvlan_dev_real_dev(dev));
-+}
-+
- static struct rtnl_link_ops macvtap_link_ops __read_mostly = {
- 	.kind		= "macvtap",
- 	.setup		= macvtap_setup,
- 	.newlink	= macvtap_newlink,
- 	.dellink	= macvtap_dellink,
-+	.get_link_net	= macvtap_link_net,
- 	.priv_size      = sizeof(struct macvtap_dev),
- };
+ #ifdef CONFIG_PM
+@@ -307,11 +308,7 @@ static int dwc3_pci_probe(struct pci_dev *pci, const struct pci_device_id *id)
+ 	dwc->dwc3->dev.parent = dev;
+ 	ACPI_COMPANION_SET(&dwc->dwc3->dev, ACPI_COMPANION(dev));
+ 
+-	ret = device_add_software_node(&dwc->dwc3->dev, (void *)id->driver_data);
+-	if (ret < 0)
+-		goto err;
+-
+-	ret = dwc3_pci_quirks(dwc);
++	ret = dwc3_pci_quirks(dwc, (void *)id->driver_data);
+ 	if (ret)
+ 		goto err;
  
 -- 
 2.34.1
