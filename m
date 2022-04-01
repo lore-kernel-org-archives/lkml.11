@@ -2,94 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E532C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:54:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27F30C43217
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:54:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347642AbiDAOzz (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 10:55:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39112 "EHLO
+        id S244199AbiDAO4F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Apr 2022 10:56:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347589AbiDAOdN (ORCPT
+        with ESMTP id S235124AbiDAOe4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:33:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 276BD252787;
-        Fri,  1 Apr 2022 07:29:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D206DB82505;
-        Fri,  1 Apr 2022 14:29:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D77B2C340F2;
-        Fri,  1 Apr 2022 14:29:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823395;
-        bh=meHZKgJD2/CHY17/45V/Gog6cSR4aNTmev2oCWXyvHI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=f6EEh9j0o5xm+rXtNoDkTjGUBmDvdLuEmw164D0C/8nbzj6s7TTDe+FumH7LEJyF1
-         FoI28jLZeAzM89jFGNF3u/ybjufi00x+N5i+M6k9BuAtOoFrHoRuUgj1MhlrA3/TzJ
-         07VrjomQDMI5goVOhqTWPLIm8Jj2ySf7xBTxqtUGVV6N6X9lquf9mZFm9/CLmXKLbq
-         efseNxH4D6dt5Va1EfXKGo53oeIC3YWURxWNUZm0mV1kiBQ2WlpLZxpSOVv+KSxeSd
-         RoYhXvzXJWOaZ0klVAv2oxigqTJMgm3kTXXB4lzNT7DkgS4XfklLcinq6AnI6+zRzz
-         S0uyODSnkXtxw==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ilan Peer <ilan.peer@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        johannes.berg@intel.com, ayala.beker@intel.com,
-        avraham.stern@intel.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 078/149] iwlwifi: mvm: Correctly set fragmented EBS
-Date:   Fri,  1 Apr 2022 10:24:25 -0400
-Message-Id: <20220401142536.1948161-78-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220401142536.1948161-1-sashal@kernel.org>
-References: <20220401142536.1948161-1-sashal@kernel.org>
+        Fri, 1 Apr 2022 10:34:56 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A5E8EBC7
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 07:33:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648823582;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=3FkKGzcuRI3KoanzjeW8ZOHsDrDg07oCSregG+FQ4Kw=;
+        b=Tep+GDuei6eVmf45zPq3kjOIg2BkYPdetRiIqNHb02l6lClFZimlHH1SKY/+sOr/twJxMu
+        JU8tVt/rWhbXA8CVzTBi33mvBEe2mtKVX0jZ33ay24xjkzf9FHbbYgX0UNZZeRmt4+z9eF
+        P1ClbickyAxT6Ej9WVXesX/rB1ne49Q=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-272-wKM647CTOPOufhEMG7txWw-1; Fri, 01 Apr 2022 10:33:01 -0400
+X-MC-Unique: wKM647CTOPOufhEMG7txWw-1
+Received: by mail-wr1-f72.google.com with SMTP id d17-20020adfc3d1000000b00203e2ff73a6so646436wrg.8
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 07:33:01 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:from:to:cc:references:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=3FkKGzcuRI3KoanzjeW8ZOHsDrDg07oCSregG+FQ4Kw=;
+        b=qJMKLKpH+9TrNPsvFn+GmLHhf3+Ea58+kFKy9xsTGQgJsU6LsrYTCXbTEATUe+ANb2
+         BloBEA4w5dhMfmZqO4mytB8g+l+yPCbfE8AqaG8QfBMvUnBd1TAwyUf0F/N3X7X6b/gA
+         hobFeWHQbztraL8NR99ZB54R0fsLSzMIScYeM3Yktdelmj908FSrk4VXMG5r4FGzCTEb
+         XZiHYwOHGm43NmxH7rbhtKnTik9Hbm/YC1wfPd5WaGebylBqUYlGkyumBWy4YNniEIRa
+         /0r0gC6LtJ0XRf47MnOnnZKEVrlXxavwMMZlTUoI3Zf+o9oZzg0I3nKWYLj8wicuF/AF
+         81Dw==
+X-Gm-Message-State: AOAM533GfVNZGsLWLIfdPvKyBmGLcY6Rl/1WHq8OT3D88XZSvZrMDkuI
+        d3v257BDDfwTGnx2rsr79q36qM7SwcCXvAuW7s79QaeGFxoeCEBYHY1UHgHwOjpRSOxZrWaeNgA
+        YMjMmz2p+W1HXDvMjx/lRPaMP
+X-Received: by 2002:a05:6000:188b:b0:204:109a:fbed with SMTP id a11-20020a056000188b00b00204109afbedmr8159236wri.569.1648823580413;
+        Fri, 01 Apr 2022 07:33:00 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwyV9Q2jBUjWwSiTkc1PF8AjDbEpvkrStU0j3S3k+eK49Ta/wdPOnig6w7vETKZoWdfoezUzw==
+X-Received: by 2002:a05:6000:188b:b0:204:109a:fbed with SMTP id a11-20020a056000188b00b00204109afbedmr8159222wri.569.1648823580173;
+        Fri, 01 Apr 2022 07:33:00 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c706:9e00:229d:4a10:2574:c6fa? (p200300cbc7069e00229d4a102574c6fa.dip0.t-ipconnect.de. [2003:cb:c706:9e00:229d:4a10:2574:c6fa])
+        by smtp.gmail.com with ESMTPSA id e8-20020a05600c2dc800b0038d05f2b34dsm10629273wmh.2.2022.04.01.07.32.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 01 Apr 2022 07:32:59 -0700 (PDT)
+Message-ID: <6696fb21-090c-37c6-77a7-79423cc9c703@redhat.com>
+Date:   Fri, 1 Apr 2022 16:32:58 +0200
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: [PATCH 1/2] mm: page_alloc: simplify pageblock migratetype check
+ in __free_one_page().
+Content-Language: en-US
+From:   David Hildenbrand <david@redhat.com>
+To:     Zi Yan <ziy@nvidia.com>
+Cc:     linux-mm@kvack.org, Linus Torvalds <torvalds@linux-foundation.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        Mike Rapoport <rppt@kernel.org>,
+        Oscar Salvador <osalvador@suse.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org
+References: <20220401135820.1453829-1-zi.yan@sent.com>
+ <134f56da-e827-2d29-75ba-1ec88ae2b118@redhat.com>
+ <66F9766D-A7D8-4310-9FA9-5EC8B2CC341C@nvidia.com>
+ <85520c49-5ef9-25f2-d6fa-f8b26e5dfec2@redhat.com>
+Organization: Red Hat
+In-Reply-To: <85520c49-5ef9-25f2-d6fa-f8b26e5dfec2@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ilan Peer <ilan.peer@intel.com>
+On 01.04.22 16:22, David Hildenbrand wrote:
+> On 01.04.22 16:19, Zi Yan wrote:
+>> On 1 Apr 2022, at 10:12, David Hildenbrand wrote:
+>>
+>>> On 01.04.22 15:58, Zi Yan wrote:
+>>>
+>>> It's weird, your mails arrive on my end as empty body with attachment. I
+>>> first suspected Thunderbird, but I get the same result on the google
+>>> mail web client.
+>>>
+>>> Not sure why that happens.
+>>
+>> No idea. They look fine (except mangled links by outlook) on my outlook
+>> desk client and web client on my side. lore looks OK too:
+>> https://lore.kernel.org/linux-mm/20220401135820.1453829-1-zi.yan@sent.com/
+> 
+> I can spot in the raw mail I receive
+> 
+> "Content-Type: application/octet-stream; x-default=true"
+> 
+> But that seems to differ to the lore mail:
+> 
+> https://lore.kernel.org/linux-mm/20220401135820.1453829-1-zi.yan@sent.com/raw
+> 
+> 
+> Maybe something in my mail server chain decides to do some nasty
+> conversion (grml, wouldn't be the first time)
+> 
 
-[ Upstream commit d8d4dd26b9e0469baf5017f0544d852fd4e3fb6d ]
+Weird thing is that this only happens with your mails. I opened an
+internal ticket, sorry for the noise.
 
-Currently, fragmented EBS was set for a channel only if the 'hb_type'
-was set to fragmented or balanced scan. However, 'hb_type' is set only
-in case of CDB, and thus fragmented EBS is never set for a channel for
-non-CDB devices. Fix it.
-
-Signed-off-by: Ilan Peer <ilan.peer@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20220204122220.a6165ac9b9d5.I654eafa62fd647030ae6d4f07f32c96c3171decb@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/wireless/intel/iwlwifi/mvm/scan.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/scan.c b/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
-index 5f92a09db374..4cd507cb412d 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
-@@ -1893,7 +1893,10 @@ static u8 iwl_mvm_scan_umac_chan_flags_v2(struct iwl_mvm *mvm,
- 			IWL_SCAN_CHANNEL_FLAG_CACHE_ADD;
- 
- 	/* set fragmented ebs for fragmented scan on HB channels */
--	if (iwl_mvm_is_scan_fragmented(params->hb_type))
-+	if ((!iwl_mvm_is_cdb_supported(mvm) &&
-+	     iwl_mvm_is_scan_fragmented(params->type)) ||
-+	    (iwl_mvm_is_cdb_supported(mvm) &&
-+	     iwl_mvm_is_scan_fragmented(params->hb_type)))
- 		flags |= IWL_SCAN_CHANNEL_FLAG_EBS_FRAG;
- 
- 	return flags;
 -- 
-2.34.1
+Thanks,
+
+David / dhildenb
 
