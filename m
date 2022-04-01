@@ -2,220 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7062C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 03:22:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30060C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 03:23:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244486AbiDADYa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 23:24:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41014 "EHLO
+        id S244495AbiDADY7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 23:24:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238195AbiDADY2 (ORCPT
+        with ESMTP id S244491AbiDADY4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 23:24:28 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0FD425E310
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 20:22:39 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id u26so1411531eda.12
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 20:22:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=XdauwCHmvbbvImMgP4K9wRmxt+jBRFf1cw9qB07n2kA=;
-        b=FP+aiRHeVmO30anLjOmrxa48MfTrIkItmMOH8SSeAclp1WT+WOtFTwGXAOnKsGH9Er
-         Hs3WsVAWpshoNIme1hJp70KrDKqQdwxrOCGLe/++IBVU13Gi1wC0L/s4KRb/RvbyOtz0
-         J6pM5wfO72LWIv53FjaEcpkR8JavUiQvMi6TUdUP8+ltUq1lCCb1DS83NDIAH+wrmJc+
-         w4EI8PigFKOWKQcimuKbXcBoLLO4gWeuzdhzGkIR7rsPoor2NUJZLGanCSeOFeBcMO9I
-         6ozUiDC0abTaQyvx+QScQ+VeTvPzOJX7jGdB03If+iPoCd0RV/FNjKaUMhdJuqGbyDpD
-         b1WQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=XdauwCHmvbbvImMgP4K9wRmxt+jBRFf1cw9qB07n2kA=;
-        b=qBCN9jd9lK8kaokV+2St+kApMmvenR+1V7b+Um0zEvtJcvNhbutxVnVNJ5v1GAGmj2
-         vPTukkmEBN97C6Ql/O8kGQaQMD2/DzWAu6Ud5eW8FQmEaxvYzWK4obsIma+wd6LBuTiM
-         XnMQpZ2FvIEsD9gnW+u93yIUC6AIPz7KoSYrxlOwnxUCrrA+rWzZqdWJ7+dh6qLtLKjr
-         ZHUKu63CVHW0HlG7T0QxPygRXMrddVL0EqLbEKMHykiT8ld3amtNAyGU53Tx37SjqlKb
-         LmTbqkWJmuT31YGqXEALLrGV3mSihhlqMbQ8eVOjznTVl76bTrRSQ1MlQabcSAZHK53O
-         1GzQ==
-X-Gm-Message-State: AOAM533IyiwBMjfWs2pCdEdIEetxy6Hjx3Kx0S+AJCYsmP2Ugrw4gED2
-        k+soG2vxdU5t3Y8GgCVwn2E=
-X-Google-Smtp-Source: ABdhPJx9LKpDuOjtyECXrBpTU7ySJHLKMGTdwL/xuQyDw85XjHmtkA5kUiiCOgOmwx9jDjZOKJGEkA==
-X-Received: by 2002:a05:6402:54:b0:419:9b58:e305 with SMTP id f20-20020a056402005400b004199b58e305mr19115464edu.158.1648783358200;
-        Thu, 31 Mar 2022 20:22:38 -0700 (PDT)
-Received: from smtpclient.apple (i130160.upc-i.chello.nl. [62.195.130.160])
-        by smtp.gmail.com with ESMTPSA id c11-20020a056402120b00b004196059efd1sm597980edw.75.2022.03.31.20.22.37
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 31 Mar 2022 20:22:37 -0700 (PDT)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.80.82.1.1\))
-Subject: Re: [PATCH] virt: acrn: fix invalid check past list iterator
-From:   Jakob Koschel <jakobkoschel@gmail.com>
-In-Reply-To: <20220401011533.GA29696@louislifei-OptiPlex-7050>
-Date:   Fri, 1 Apr 2022 05:22:36 +0200
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>, h.j.bos@vu.nl
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <F54F358F-FFBC-4D6D-AB5C-9BC4A617C9BF@gmail.com>
-References: <20220319203819.2559993-1-jakobkoschel@gmail.com>
- <20220330075742.GA22544@louislifei-OptiPlex-7050>
- <6E68C33F-9CBB-418C-A11D-2AD863C0B19A@gmail.com>
- <20220401011533.GA29696@louislifei-OptiPlex-7050>
-To:     Li Fei1 <fei1.li@intel.com>
-X-Mailer: Apple Mail (2.3696.80.82.1.1)
+        Thu, 31 Mar 2022 23:24:56 -0400
+Received: from out30-43.freemail.mail.aliyun.com (out30-43.freemail.mail.aliyun.com [115.124.30.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8B8425E32B
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 20:23:07 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R181e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=yaohongbo@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0V8mkkFC_1648783383;
+Received: from 30.225.24.82(mailfrom:yaohongbo@linux.alibaba.com fp:SMTPD_---0V8mkkFC_1648783383)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 01 Apr 2022 11:23:04 +0800
+Message-ID: <b6d2b1e8-f458-650b-37d1-e73830f1c85e@linux.alibaba.com>
+Date:   Fri, 1 Apr 2022 11:23:01 +0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.1
+Subject: Re: [PATCH RESEND] uio/uio_pci_generic: Introduce refcnt on
+ open/release
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
+        alikernel-developer@linux.alibaba.com, gang.cao@intel.com,
+        shouqu.ssq@alibaba-inc.com, yangxiu.yx@alibaba-inc.com
+References: <1648693432-129409-1-git-send-email-yaohongbo@linux.alibaba.com>
+ <20220331162952-mutt-send-email-mst@kernel.org>
+From:   Yao Hongbo <yaohongbo@linux.alibaba.com>
+In-Reply-To: <20220331162952-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
++ cc.
 
-> On 1. Apr 2022, at 03:15, Li Fei1 <fei1.li@intel.com> wrote:
->=20
-> On Thu, Mar 31, 2022 at 01:20:50PM +0200, Jakob Koschel wrote:
->>=20
->>> On 30. Mar 2022, at 09:57, Li Fei1 <fei1.li@intel.com> wrote:
->>>=20
->>> On Sat, Mar 19, 2022 at 09:38:19PM +0100, Jakob Koschel wrote:
->>>> The condition retry =3D=3D 0 is theoretically possible even if =
-'client'
->>>> does not point to a valid element because no break was hit.
->>>>=20
->>>> To only execute the dev_warn if actually a break within the loop =
-was
->>>> hit, a separate variable is used that is only set if it is ensured =
-to
->>>> point to a valid client struct.
->>>>=20
->>> Hi Koschel
->>>=20
->>> Thanks for you to help us to try to improve the code. Maybe you =
-don't get the point.
->>> The dev_warn should only been called when has_pending =3D true && =
-retry =3D=3D 0
->>=20
->> Maybe I don't understand but looking isolated at this function I =
-could see a way to call
->> the dev_warn() with has_pending =3D false && retry =3D=3D 0.
-> Yes, even has_pending =3D true && retry =3D=3D 0 at the beginning, we =
-could not make sure
-> has_pending is true after schedule_timeout_interruptible and we even =
-didn't check
-> there're other pending client on the ioreq_clients (because we can't =
-make sure
-> when we dev_warn this clent is still pending). So we just use dev_warn =
-not higher log level.
-
-I'm sorry, I don't quite understand what you mean by that.
-Do you agree that has_pending =3D false && retry =3D=3D 0 is possible =
-when calling the dev_warn()
-or not?
-
->>=20
->>> 		list_for_each_entry(client, &vm->ioreq_clients, list) {
->>> 			has_pending =3D has_pending_request(client);
->>> 			if (has_pending)
->>> 		}
->>> 		spin_unlock_bh(&vm->ioreq_clients_lock);
->>=20
->> imagine has_pending =3D=3D false && retry =3D=3D 1 here, then client =
-will not hold a valid list entry.
-> What do you mean "client will not hold a valid list entry" ?=20
-
-Imagine a very simple example:
-
-	struct acrn_ioreq_client *client;
-	list_for_each_entry(client, &vm->ioreq_clients, list) {
-		continue;
-	}
-
-	dev_warn(acrn_dev.this_device,
-		 "%s cannot flush pending request!\n", client->name); /* =
-NOT GOOD */
-
-
-Since there is no break for the list_for_each_entry() iterator to return =
-early,
-client *cannot* be a valid entry of the list. In fact if you look at the =
-list_for_each_entry()
-macro, it will be an 'bogus' pointer, pointing somewhere into 'vm'.
-Essentially before the terminating condition of the list traversal the =
-following code is called:
-
-	list_entry(&vm->ioreq_clients, struct acrn_ioreq_client *, =
-list);
-
-resulting in a:
-
-	container_of(&vm->ioreq_clients, struct acrn_ioreq_client *, =
-list);
-
-&vm->ioreq_clients however is not contained in a struct =
-acrn_ioreq_client, making
-this call compute an invalid pointer.
-Therefore using 'client' as in the example above (e.g. client->name) =
-after the loop is
-not safe. Since the loop can never return early in the simple example =
-above it will
-always break. On other cases (the one we are discussing here) there =
-might be a chance that
-there is one code path (in theory) where the loop did not exit early and =
-'client'
-holds that 'invalid entry'.
-
-This would be the case with has_pending =3D false && retry =3D=3D 0.
-
-I hope this makes sense.
-
->=20
->>=20
->>>=20
->>> 		if (has_pending)
->>> 			schedule_timeout_interruptible(HZ / 100);
->>> 	} while (has_pending && --retry > 0);
->>=20
->> since has_pending && --retry > 0 is no longer true the loop stops.
->>=20
->>> 	if (retry =3D=3D 0)
->>> 		dev_warn(acrn_dev.this_device,
->>> 			 "%s cannot flush pending request!\n", =
-client->name);
->> client->name is accessed since retry =3D=3D 0 now, but client is not =
-a valid struct ending up
->> in a type confusion.
->>=20
->>>=20
->>> If retry > 0 and has_pending is true, we would call =
-schedule_timeout_interruptible
->>> to schedule out to wait all the pending I/O requests would been =
-completed.
->>>=20
->>> Thanks.
->>=20
->> Again, I'm not sure if this is realistically possible. I'm trying to =
-remove
->> any use of the list iterator after the loop to make such potentially =
-issues detectable
-> You may think we still in the loop (could we ?), even that we didn't =
-write the list iterator then.
-
-I'm not exactly sure which loop you are referring to but no, I don't =
-think we are still in
-the do while loop.
-
-The only thing we know after the do while loop is that: !has_pending || =
-retry =3D=3D 0
-And iff has_pending && retry =3D=3D 0, then we shouldn't call the =
-dev_warn().
-
->> at compile time instead of relying on certain (difficult to maintain) =
-conditions to be met
->> to avoid the type confusion.
->>=20
->> Thanks,
->> Jakob
-
-	Jakob
-
+在 2022/4/1 上午4:30, Michael S. Tsirkin 写道:
+> On Thu, Mar 31, 2022 at 10:23:52AM +0800, Yao Hongbo wrote:
+>> If two userspace programs both open the PCI UIO fd, when one
+>> of the program exits uncleanly, the other will cause IO hang
+>> due to bus-mastering disabled.
+> 
+> With two programs poking at the same device, how is this ever
+> supposed to work even while both are alive?
+> 
+>> It's a common usage for spdk/dpdk to use UIO. So, introduce refcnt
+>> to avoid such problems.
+>>
+>> Fixes: 865a11f("uio/uio_pci_generic: Disable bus-mastering on release")
+>> Reported-by: Xiu Yang <yangxiu.yx@alibaba-inc.com>
+>> Signed-off-by: Yao Hongbo <yaohongbo@linux.alibaba.com>
+>> ---
+>>  drivers/uio/uio_pci_generic.c | 16 +++++++++++++++-
+>>  1 file changed, 15 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/uio/uio_pci_generic.c b/drivers/uio/uio_pci_generic.c
+>> index e03f9b5..8add2cf 100644
+>> --- a/drivers/uio/uio_pci_generic.c
+>> +++ b/drivers/uio/uio_pci_generic.c
+>> @@ -31,6 +31,7 @@
+>>  struct uio_pci_generic_dev {
+>>  	struct uio_info info;
+>>  	struct pci_dev *pdev;
+>> +	atomic_t refcnt;
+>>  };
+>>  
+>>  static inline struct uio_pci_generic_dev *
+>> @@ -39,6 +40,14 @@ struct uio_pci_generic_dev {
+>>  	return container_of(info, struct uio_pci_generic_dev, info);
+>>  }
+>>  
+>> +static int open(struct uio_info *info, struct inode *inode)
+>> +{
+>> +	struct uio_pci_generic_dev *gdev = to_uio_pci_generic_dev(info);
+>> +
+>> +	atomic_inc(&gdev->refcnt);
+>> +	return 0;
+>> +}
+>> +
+>>  static int release(struct uio_info *info, struct inode *inode)
+>>  {
+>>  	struct uio_pci_generic_dev *gdev = to_uio_pci_generic_dev(info);
+>> @@ -51,7 +60,9 @@ static int release(struct uio_info *info, struct inode *inode)
+>>  	 * Note that there's a non-zero chance doing this will wedge the device
+>>  	 * at least until reset.
+>>  	 */
+>> -	pci_clear_master(gdev->pdev);
+>> +	if (atomic_dec_and_test(&gdev->refcnt))
+>> +		pci_clear_master(gdev->pdev);
+>> +
+>>  	return 0;
+>>  }
+>>  
+>> @@ -92,8 +103,11 @@ static int probe(struct pci_dev *pdev,
+>>  
+>>  	gdev->info.name = "uio_pci_generic";
+>>  	gdev->info.version = DRIVER_VERSION;
+>> +	gdev->info.open = open;
+>>  	gdev->info.release = release;
+>>  	gdev->pdev = pdev;
+>> +	atomic_set(&gdev->refcnt, 0);
+>> +
+>>  	if (pdev->irq && (pdev->irq != IRQ_NOTCONNECTED)) {
+>>  		gdev->info.irq = pdev->irq;
+>>  		gdev->info.irq_flags = IRQF_SHARED;
+>> -- 
+>> 1.8.3.1
