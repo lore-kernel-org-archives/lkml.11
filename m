@@ -2,47 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ADB6C47089
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:02:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35331C38A02
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:02:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350308AbiDAO7d (ORCPT
+        id S1350208AbiDAO7S (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 10:59:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60842 "EHLO
+        Fri, 1 Apr 2022 10:59:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346215AbiDAOll (ORCPT
+        with ESMTP id S1347811AbiDAOl0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:41:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C8F5292B88;
-        Fri,  1 Apr 2022 07:34:27 -0700 (PDT)
+        Fri, 1 Apr 2022 10:41:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9C3A2908A1;
+        Fri,  1 Apr 2022 07:34:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C8C15B82507;
-        Fri,  1 Apr 2022 14:33:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 845A2C340F2;
-        Fri,  1 Apr 2022 14:33:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C5709604F5;
+        Fri,  1 Apr 2022 14:34:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DAB7C36AE2;
+        Fri,  1 Apr 2022 14:34:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823637;
-        bh=6gfl03XtCpSy+DNmNt9vEiFSJ0VxUrjJP6txBusHbEA=;
+        s=k20201202; t=1648823647;
+        bh=Y3bmTY6EHM/p/DxTRtJ/8DFTtCE5rPup0sZ7PjcaaJ4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iZ0yx8N1d7x18ANd+lQiuDesP8T7N25ttlHzm3fhj0sAuDwEYAptCDh7IiQlw+1Pw
-         lmfqjQAo7/7z2h8wiubOffKyXlejiCEj5Hjye+jynzfVXYyyigkfw4Tv+W4ozm6wtu
-         QDgCR71QDTWwMqVC635mAnnGk1YgdE5BZmQiZdweRG2lhBbRZOj6QxYWLgFSdjNQhQ
-         UVAh0fVK+hqhJd+FbzhzA5bS/dKSFk5KVyJmXWqjvwwS7d9Czj3xT1ugGxiLQDcwrL
-         pIr6wGjYhj0VZq6aXn/aAXgIzbXkpcLNDWFRPDHCQqUFowLlSdp8cCSZwKLxyZbvsw
-         dZ3+wpcn1CurA==
+        b=XoyPDbTQArj0niYaKoUdJMjsZixwpy3U0vX0djXXGJXmpWlQ9Qf4ZFVN067+lUFAL
+         m6dngkz8TSJsmYOV6dYbRy9IrBzXOQ7Tqoe68idOfOP6NwqArsEWrMhCyaTRejneQE
+         2j7eG/umAT1oykiHlAkivTxBN/3bjXDi+reoAiQ+nz7WEy/yYQc2xH6xQjlrcgBGny
+         2/+VsmIk84BOFtNSy+T+wD2uHPbhLNgrHSnS01E3C3QW3JVyfglSAyiv/zzOKWqaQq
+         usGIVHq+4W8idXgyw2wjpguNOkVAXcwgTqmQgaUSckTxhwU6gyd2ZMsf4UpF4tO/Kc
+         CUcZXrDKF4kCw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Tony Lu <tonylu@linux.alibaba.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, kgraul@linux.ibm.com,
-        kuba@kernel.org, pabeni@redhat.com, linux-s390@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 022/109] net/smc: Send directly when TCP_CORK is cleared
-Date:   Fri,  1 Apr 2022 10:31:29 -0400
-Message-Id: <20220401143256.1950537-22-sashal@kernel.org>
+Cc:     Yang Guang <yang.guang5@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>,
+        David Yang <davidcomponentone@gmail.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, anil.gurumurthy@qlogic.com,
+        sudarsana.kalluru@qlogic.com, jejb@linux.ibm.com,
+        linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 026/109] scsi: bfa: Replace snprintf() with sysfs_emit()
+Date:   Fri,  1 Apr 2022 10:31:33 -0400
+Message-Id: <20220401143256.1950537-26-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143256.1950537-1-sashal@kernel.org>
 References: <20220401143256.1950537-1-sashal@kernel.org>
@@ -54,109 +56,167 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tony Lu <tonylu@linux.alibaba.com>
+From: Yang Guang <yang.guang5@zte.com.cn>
 
-[ Upstream commit ea785a1a573b390a150010b3c5b81e1ccd8c98a8 ]
+[ Upstream commit 2245ea91fd3a04cafbe2f54911432a8657528c3b ]
 
-According to the man page of TCP_CORK [1], if set, don't send out
-partial frames. All queued partial frames are sent when option is
-cleared again.
+coccinelle report:
+./drivers/scsi/bfa/bfad_attr.c:908:8-16:
+WARNING: use scnprintf or sprintf
+./drivers/scsi/bfa/bfad_attr.c:860:8-16:
+WARNING: use scnprintf or sprintf
+./drivers/scsi/bfa/bfad_attr.c:888:8-16:
+WARNING: use scnprintf or sprintf
+./drivers/scsi/bfa/bfad_attr.c:853:8-16:
+WARNING: use scnprintf or sprintf
+./drivers/scsi/bfa/bfad_attr.c:808:8-16:
+WARNING: use scnprintf or sprintf
+./drivers/scsi/bfa/bfad_attr.c:728:8-16:
+WARNING: use scnprintf or sprintf
+./drivers/scsi/bfa/bfad_attr.c:822:8-16:
+WARNING: use scnprintf or sprintf
+./drivers/scsi/bfa/bfad_attr.c:927:9-17:
+WARNING: use scnprintf or sprintf
+./drivers/scsi/bfa/bfad_attr.c:900:8-16:
+WARNING: use scnprintf or sprintf
+./drivers/scsi/bfa/bfad_attr.c:874:8-16:
+WARNING: use scnprintf or sprintf
+./drivers/scsi/bfa/bfad_attr.c:714:8-16:
+WARNING: use scnprintf or sprintf
+./drivers/scsi/bfa/bfad_attr.c:839:8-16:
+WARNING: use scnprintf or sprintf
 
-When applications call setsockopt to disable TCP_CORK, this call is
-protected by lock_sock(), and tries to mod_delayed_work() to 0, in order
-to send pending data right now. However, the delayed work smc_tx_work is
-also protected by lock_sock(). There introduces lock contention for
-sending data.
+Use sysfs_emit() instead of scnprintf() or sprintf().
 
-To fix it, send pending data directly which acts like TCP, without
-lock_sock() protected in the context of setsockopt (already lock_sock()ed),
-and cancel unnecessary dealyed work, which is protected by lock.
-
-[1] https://linux.die.net/man/7/tcp
-
-Signed-off-by: Tony Lu <tonylu@linux.alibaba.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Link: https://lore.kernel.org/r/def83ff75faec64ba592b867a8499b1367bae303.1643181468.git.yang.guang5@zte.com.cn
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Yang Guang <yang.guang5@zte.com.cn>
+Signed-off-by: David Yang <davidcomponentone@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/smc/af_smc.c |  4 ++--
- net/smc/smc_tx.c | 25 +++++++++++++++----------
- net/smc/smc_tx.h |  1 +
- 3 files changed, 18 insertions(+), 12 deletions(-)
+ drivers/scsi/bfa/bfad_attr.c | 26 +++++++++++++-------------
+ 1 file changed, 13 insertions(+), 13 deletions(-)
 
-diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-index a0fb596459a3..0ec721b8059a 100644
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -2632,8 +2632,8 @@ static int smc_setsockopt(struct socket *sock, int level, int optname,
- 		    sk->sk_state != SMC_CLOSED) {
- 			if (!val) {
- 				SMC_STAT_INC(smc, cork_cnt);
--				mod_delayed_work(smc->conn.lgr->tx_wq,
--						 &smc->conn.tx_work, 0);
-+				smc_tx_pending(&smc->conn);
-+				cancel_delayed_work(&smc->conn.tx_work);
- 			}
- 		}
- 		break;
-diff --git a/net/smc/smc_tx.c b/net/smc/smc_tx.c
-index be241d53020f..7b0b6e24582f 100644
---- a/net/smc/smc_tx.c
-+++ b/net/smc/smc_tx.c
-@@ -597,27 +597,32 @@ int smc_tx_sndbuf_nonempty(struct smc_connection *conn)
- 	return rc;
+diff --git a/drivers/scsi/bfa/bfad_attr.c b/drivers/scsi/bfa/bfad_attr.c
+index c8b947c16069..0254e610ea8f 100644
+--- a/drivers/scsi/bfa/bfad_attr.c
++++ b/drivers/scsi/bfa/bfad_attr.c
+@@ -711,7 +711,7 @@ bfad_im_serial_num_show(struct device *dev, struct device_attribute *attr,
+ 	char serial_num[BFA_ADAPTER_SERIAL_NUM_LEN];
+ 
+ 	bfa_get_adapter_serial_num(&bfad->bfa, serial_num);
+-	return snprintf(buf, PAGE_SIZE, "%s\n", serial_num);
++	return sysfs_emit(buf, "%s\n", serial_num);
  }
  
--/* Wakeup sndbuf consumers from process context
-- * since there is more data to transmit
-- */
--void smc_tx_work(struct work_struct *work)
-+void smc_tx_pending(struct smc_connection *conn)
+ static ssize_t
+@@ -725,7 +725,7 @@ bfad_im_model_show(struct device *dev, struct device_attribute *attr,
+ 	char model[BFA_ADAPTER_MODEL_NAME_LEN];
+ 
+ 	bfa_get_adapter_model(&bfad->bfa, model);
+-	return snprintf(buf, PAGE_SIZE, "%s\n", model);
++	return sysfs_emit(buf, "%s\n", model);
+ }
+ 
+ static ssize_t
+@@ -805,7 +805,7 @@ bfad_im_model_desc_show(struct device *dev, struct device_attribute *attr,
+ 		snprintf(model_descr, BFA_ADAPTER_MODEL_DESCR_LEN,
+ 			"Invalid Model");
+ 
+-	return snprintf(buf, PAGE_SIZE, "%s\n", model_descr);
++	return sysfs_emit(buf, "%s\n", model_descr);
+ }
+ 
+ static ssize_t
+@@ -819,7 +819,7 @@ bfad_im_node_name_show(struct device *dev, struct device_attribute *attr,
+ 	u64        nwwn;
+ 
+ 	nwwn = bfa_fcs_lport_get_nwwn(port->fcs_port);
+-	return snprintf(buf, PAGE_SIZE, "0x%llx\n", cpu_to_be64(nwwn));
++	return sysfs_emit(buf, "0x%llx\n", cpu_to_be64(nwwn));
+ }
+ 
+ static ssize_t
+@@ -836,7 +836,7 @@ bfad_im_symbolic_name_show(struct device *dev, struct device_attribute *attr,
+ 	bfa_fcs_lport_get_attr(&bfad->bfa_fcs.fabric.bport, &port_attr);
+ 	strlcpy(symname, port_attr.port_cfg.sym_name.symname,
+ 			BFA_SYMNAME_MAXLEN);
+-	return snprintf(buf, PAGE_SIZE, "%s\n", symname);
++	return sysfs_emit(buf, "%s\n", symname);
+ }
+ 
+ static ssize_t
+@@ -850,14 +850,14 @@ bfad_im_hw_version_show(struct device *dev, struct device_attribute *attr,
+ 	char hw_ver[BFA_VERSION_LEN];
+ 
+ 	bfa_get_pci_chip_rev(&bfad->bfa, hw_ver);
+-	return snprintf(buf, PAGE_SIZE, "%s\n", hw_ver);
++	return sysfs_emit(buf, "%s\n", hw_ver);
+ }
+ 
+ static ssize_t
+ bfad_im_drv_version_show(struct device *dev, struct device_attribute *attr,
+ 				char *buf)
  {
--	struct smc_connection *conn = container_of(to_delayed_work(work),
--						   struct smc_connection,
--						   tx_work);
- 	struct smc_sock *smc = container_of(conn, struct smc_sock, conn);
- 	int rc;
- 
--	lock_sock(&smc->sk);
- 	if (smc->sk.sk_err)
--		goto out;
-+		return;
- 
- 	rc = smc_tx_sndbuf_nonempty(conn);
- 	if (!rc && conn->local_rx_ctrl.prod_flags.write_blocked &&
- 	    !atomic_read(&conn->bytes_to_rcv))
- 		conn->local_rx_ctrl.prod_flags.write_blocked = 0;
-+}
-+
-+/* Wakeup sndbuf consumers from process context
-+ * since there is more data to transmit
-+ */
-+void smc_tx_work(struct work_struct *work)
-+{
-+	struct smc_connection *conn = container_of(to_delayed_work(work),
-+						   struct smc_connection,
-+						   tx_work);
-+	struct smc_sock *smc = container_of(conn, struct smc_sock, conn);
- 
--out:
-+	lock_sock(&smc->sk);
-+	smc_tx_pending(conn);
- 	release_sock(&smc->sk);
+-	return snprintf(buf, PAGE_SIZE, "%s\n", BFAD_DRIVER_VERSION);
++	return sysfs_emit(buf, "%s\n", BFAD_DRIVER_VERSION);
  }
  
-diff --git a/net/smc/smc_tx.h b/net/smc/smc_tx.h
-index 07e6ad76224a..a59f370b8b43 100644
---- a/net/smc/smc_tx.h
-+++ b/net/smc/smc_tx.h
-@@ -27,6 +27,7 @@ static inline int smc_tx_prepared_sends(struct smc_connection *conn)
- 	return smc_curs_diff(conn->sndbuf_desc->len, &sent, &prep);
+ static ssize_t
+@@ -871,7 +871,7 @@ bfad_im_optionrom_version_show(struct device *dev,
+ 	char optrom_ver[BFA_VERSION_LEN];
+ 
+ 	bfa_get_adapter_optrom_ver(&bfad->bfa, optrom_ver);
+-	return snprintf(buf, PAGE_SIZE, "%s\n", optrom_ver);
++	return sysfs_emit(buf, "%s\n", optrom_ver);
  }
  
-+void smc_tx_pending(struct smc_connection *conn);
- void smc_tx_work(struct work_struct *work);
- void smc_tx_init(struct smc_sock *smc);
- int smc_tx_sendmsg(struct smc_sock *smc, struct msghdr *msg, size_t len);
+ static ssize_t
+@@ -885,7 +885,7 @@ bfad_im_fw_version_show(struct device *dev, struct device_attribute *attr,
+ 	char fw_ver[BFA_VERSION_LEN];
+ 
+ 	bfa_get_adapter_fw_ver(&bfad->bfa, fw_ver);
+-	return snprintf(buf, PAGE_SIZE, "%s\n", fw_ver);
++	return sysfs_emit(buf, "%s\n", fw_ver);
+ }
+ 
+ static ssize_t
+@@ -897,7 +897,7 @@ bfad_im_num_of_ports_show(struct device *dev, struct device_attribute *attr,
+ 			(struct bfad_im_port_s *) shost->hostdata[0];
+ 	struct bfad_s *bfad = im_port->bfad;
+ 
+-	return snprintf(buf, PAGE_SIZE, "%d\n",
++	return sysfs_emit(buf, "%d\n",
+ 			bfa_get_nports(&bfad->bfa));
+ }
+ 
+@@ -905,7 +905,7 @@ static ssize_t
+ bfad_im_drv_name_show(struct device *dev, struct device_attribute *attr,
+ 				char *buf)
+ {
+-	return snprintf(buf, PAGE_SIZE, "%s\n", BFAD_DRIVER_NAME);
++	return sysfs_emit(buf, "%s\n", BFAD_DRIVER_NAME);
+ }
+ 
+ static ssize_t
+@@ -924,14 +924,14 @@ bfad_im_num_of_discovered_ports_show(struct device *dev,
+ 	rports = kcalloc(nrports, sizeof(struct bfa_rport_qualifier_s),
+ 			 GFP_ATOMIC);
+ 	if (rports == NULL)
+-		return snprintf(buf, PAGE_SIZE, "Failed\n");
++		return sysfs_emit(buf, "Failed\n");
+ 
+ 	spin_lock_irqsave(&bfad->bfad_lock, flags);
+ 	bfa_fcs_lport_get_rport_quals(port->fcs_port, rports, &nrports);
+ 	spin_unlock_irqrestore(&bfad->bfad_lock, flags);
+ 	kfree(rports);
+ 
+-	return snprintf(buf, PAGE_SIZE, "%d\n", nrports);
++	return sysfs_emit(buf, "%d\n", nrports);
+ }
+ 
+ static          DEVICE_ATTR(serial_number, S_IRUGO,
 -- 
 2.34.1
 
