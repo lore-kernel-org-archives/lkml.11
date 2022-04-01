@@ -2,52 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2285C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:20:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7E2AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:26:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353831AbiDAPUu (ORCPT
+        id S1353958AbiDAPUy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:20:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52884 "EHLO
+        Fri, 1 Apr 2022 11:20:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348340AbiDAOwR (ORCPT
+        with ESMTP id S1352588AbiDAOvA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:52:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3D592B4A76;
-        Fri,  1 Apr 2022 07:42:32 -0700 (PDT)
+        Fri, 1 Apr 2022 10:51:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A26652B4481;
+        Fri,  1 Apr 2022 07:42:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 78FCAB82500;
-        Fri,  1 Apr 2022 14:42:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0D84C3410F;
-        Fri,  1 Apr 2022 14:42:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 92DDEB824FD;
+        Fri,  1 Apr 2022 14:41:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93063C2BBE4;
+        Fri,  1 Apr 2022 14:41:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824151;
-        bh=K6FeWVmXG3xj/jlF00WeWCIZWm/+qO1HLrMEDR0Tuiw=;
+        s=k20201202; t=1648824114;
+        bh=WK7tB+5PUmSKJ5UKAfBqMVxWt6Hj85EBkF01L8UeFSU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eAAebSeTQE6bOzHvG74nLXeG6f4eGq4EyxC7OHCLdFFQ0Dy6oIDsfACb5jS4/0jlC
-         /PA9IKu7H8T0Gk1iVFEPqY81gmNCl9P+1kTtdCcyAYy/IyB9NGV8hpulfBcy/uJFw8
-         niiPIxLKgtTO0MOYFFrKQfcFkW8Th5xSuNKCyemJHHgGeoc0AmPOJSSGbPrMq/DDZa
-         z3P83foyDeSluw7HNf76G7CzdFk8vMibctVSDiYZkNTxlTatcn+zVk71P6OclLRA2h
-         5kGkxD/po81yCsmFTWyPWkKnZCLpDZtJwdKtFUjG7SzCprv4Pvo5ZxM9o038NoebWx
-         ZOnSiy0gyCo8A==
+        b=h8Cv9XFfjUdF95kumtAYFJeJAKMNCmHZSwHnF8Wc7kQuP2aSpNINs0ihNmVfjaHky
+         uHk1N59NQQ4TKqH+s34XebLTKUttya0G2hhPgMXfzvXHjCvnQCeky8dYLkwcZzdycu
+         EGiPTNTkLPPf9nV5H8pvYQBk2QGaxMLER42zhA81j7s/LumWvfS4AE98p3lv4M7nio
+         atUG79ssW9KPnssTMSGLkO/fwTmjBagk9M7n0B92lB3S4P3PiHE+tP6ybOkcu3GH9z
+         ZLbJWcF6GTBqXDpeRlaCnox5SE5g9NLHUF9mQxNrq/w3YbwQ018esACMFl26+rKNG3
+         JMsQKHUod8AVw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Wayne Chang <waynec@nvidia.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, balbi@kernel.org,
-        thierry.reding@gmail.com, jonathanh@nvidia.com,
-        yangyingliang@huawei.com, chunfeng.yun@mediatek.com,
-        rikard.falkeborn@gmail.com, jakobkoschel@gmail.com,
-        linux-usb@vger.kernel.org, linux-tegra@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 06/65] usb: gadget: tegra-xudc: Fix control endpoint's definitions
-Date:   Fri,  1 Apr 2022 10:41:07 -0400
-Message-Id: <20220401144206.1953700-6-sashal@kernel.org>
+Cc:     Xiubo Li <xiubli@redhat.com>, Jeff Layton <jlayton@kernel.org>,
+        Ilya Dryomov <idryomov@gmail.com>,
+        Sasha Levin <sashal@kernel.org>, ceph-devel@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 95/98] ceph: fix memory leak in ceph_readdir when note_last_dentry returns error
+Date:   Fri,  1 Apr 2022 10:37:39 -0400
+Message-Id: <20220401143742.1952163-95-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220401144206.1953700-1-sashal@kernel.org>
-References: <20220401144206.1953700-1-sashal@kernel.org>
+In-Reply-To: <20220401143742.1952163-1-sashal@kernel.org>
+References: <20220401143742.1952163-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -56,62 +52,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wayne Chang <waynec@nvidia.com>
+From: Xiubo Li <xiubli@redhat.com>
 
-[ Upstream commit 7bd42fb95eb4f98495ccadf467ad15124208ec49 ]
+[ Upstream commit f639d9867eea647005dc824e0e24f39ffc50d4e4 ]
 
-According to the Tegra Technical Reference Manual, the seq_num
-field of control endpoint is not [31:24] but [31:27]. Bit 24
-is reserved and bit 26 is splitxstate.
+Reset the last_readdir at the same time, and add a comment explaining
+why we don't free last_readdir when dir_emit returns false.
 
-The change fixes the wrong control endpoint's definitions.
-
-Signed-off-by: Wayne Chang <waynec@nvidia.com>
-Link: https://lore.kernel.org/r/20220107091349.149798-1-waynec@nvidia.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Xiubo Li <xiubli@redhat.com>
+Reviewed-by: Jeff Layton <jlayton@kernel.org>
+Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/gadget/udc/tegra-xudc.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ fs/ceph/dir.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/usb/gadget/udc/tegra-xudc.c b/drivers/usb/gadget/udc/tegra-xudc.c
-index 1dd0d50c6b56..de178bf264c2 100644
---- a/drivers/usb/gadget/udc/tegra-xudc.c
-+++ b/drivers/usb/gadget/udc/tegra-xudc.c
-@@ -272,8 +272,10 @@ BUILD_EP_CONTEXT_RW(deq_hi, deq_hi, 0, 0xffffffff)
- BUILD_EP_CONTEXT_RW(avg_trb_len, tx_info, 0, 0xffff)
- BUILD_EP_CONTEXT_RW(max_esit_payload, tx_info, 16, 0xffff)
- BUILD_EP_CONTEXT_RW(edtla, rsvd[0], 0, 0xffffff)
--BUILD_EP_CONTEXT_RW(seq_num, rsvd[0], 24, 0xff)
-+BUILD_EP_CONTEXT_RW(rsvd, rsvd[0], 24, 0x1)
- BUILD_EP_CONTEXT_RW(partial_td, rsvd[0], 25, 0x1)
-+BUILD_EP_CONTEXT_RW(splitxstate, rsvd[0], 26, 0x1)
-+BUILD_EP_CONTEXT_RW(seq_num, rsvd[0], 27, 0x1f)
- BUILD_EP_CONTEXT_RW(cerrcnt, rsvd[1], 18, 0x3)
- BUILD_EP_CONTEXT_RW(data_offset, rsvd[2], 0, 0x1ffff)
- BUILD_EP_CONTEXT_RW(numtrbs, rsvd[2], 22, 0x1f)
-@@ -1554,6 +1556,9 @@ static int __tegra_xudc_ep_set_halt(struct tegra_xudc_ep *ep, bool halt)
- 		ep_reload(xudc, ep->index);
- 
- 		ep_ctx_write_state(ep->context, EP_STATE_RUNNING);
-+		ep_ctx_write_rsvd(ep->context, 0);
-+		ep_ctx_write_partial_td(ep->context, 0);
-+		ep_ctx_write_splitxstate(ep->context, 0);
- 		ep_ctx_write_seq_num(ep->context, 0);
- 
- 		ep_reload(xudc, ep->index);
-@@ -2809,7 +2814,10 @@ static void tegra_xudc_reset(struct tegra_xudc *xudc)
- 	xudc->setup_seq_num = 0;
- 	xudc->queued_setup_packet = false;
- 
--	ep_ctx_write_seq_num(ep0->context, xudc->setup_seq_num);
-+	ep_ctx_write_rsvd(ep0->context, 0);
-+	ep_ctx_write_partial_td(ep0->context, 0);
-+	ep_ctx_write_splitxstate(ep0->context, 0);
-+	ep_ctx_write_seq_num(ep0->context, 0);
- 
- 	deq_ptr = trb_virt_to_phys(ep0, &ep0->transfer_ring[ep0->deq_ptr]);
- 
+diff --git a/fs/ceph/dir.c b/fs/ceph/dir.c
+index 133dbd9338e7..d91fa53e12b3 100644
+--- a/fs/ceph/dir.c
++++ b/fs/ceph/dir.c
+@@ -478,8 +478,11 @@ static int ceph_readdir(struct file *file, struct dir_context *ctx)
+ 					2 : (fpos_off(rde->offset) + 1);
+ 			err = note_last_dentry(dfi, rde->name, rde->name_len,
+ 					       next_offset);
+-			if (err)
++			if (err) {
++				ceph_mdsc_put_request(dfi->last_readdir);
++				dfi->last_readdir = NULL;
+ 				return err;
++			}
+ 		} else if (req->r_reply_info.dir_end) {
+ 			dfi->next_offset = 2;
+ 			/* keep last name */
+@@ -520,6 +523,12 @@ static int ceph_readdir(struct file *file, struct dir_context *ctx)
+ 		if (!dir_emit(ctx, rde->name, rde->name_len,
+ 			      ceph_present_ino(inode->i_sb, le64_to_cpu(rde->inode.in->ino)),
+ 			      le32_to_cpu(rde->inode.in->mode) >> 12)) {
++			/*
++			 * NOTE: Here no need to put the 'dfi->last_readdir',
++			 * because when dir_emit stops us it's most likely
++			 * doesn't have enough memory, etc. So for next readdir
++			 * it will continue.
++			 */
+ 			dout("filldir stopping us...\n");
+ 			return 0;
+ 		}
 -- 
 2.34.1
 
