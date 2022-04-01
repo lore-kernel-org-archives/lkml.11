@@ -2,47 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10A0AC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 308CAC433FE
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:27:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356325AbiDAP12 (ORCPT
+        id S1356340AbiDAP1d (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:27:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58070 "EHLO
+        Fri, 1 Apr 2022 11:27:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349539AbiDAO4u (ORCPT
+        with ESMTP id S1347583AbiDAOxi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:56:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03B75114351;
-        Fri,  1 Apr 2022 07:44:16 -0700 (PDT)
+        Fri, 1 Apr 2022 10:53:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6432F2B51B7;
+        Fri,  1 Apr 2022 07:42:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6F8EBB824FC;
-        Fri,  1 Apr 2022 14:44:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56F3AC34111;
-        Fri,  1 Apr 2022 14:44:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 246C6B8240E;
+        Fri,  1 Apr 2022 14:42:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61C5BC2BBE4;
+        Fri,  1 Apr 2022 14:42:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824254;
-        bh=kDaX8Fs6vkuVs1w+4i2zFz8PB7vOnUM+ljVcSSxy+Zk=;
+        s=k20201202; t=1648824165;
+        bh=H3kJBKjkElF9b1nIgcZlCZgC/bo0QUgBCnDKOc8Dv84=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Qsml3hZtZq3EwlWxdVSGhVxcodUKBuh0xk2Bvj1+brVlwaUO3+N/qluD/HvWe/SyQ
-         eIqlTs5fEeftWyDIKVguNOvYc2fa/x/Z/Fcj3M5+g9fMhtHo+3OQK+SlPwqLHi+TqD
-         CNaDKA+zgtxHNhix2NHJQ+IeZZWa+ZL/Hv3Y6ecS1CAi3M8UH1KDZU4DTwQhRHx+kV
-         pzE95smaxyrKlZ7CWRhiHkx5BWxcHipuzalwB30ra5zRFIVKI94ReqAacipofzMfS/
-         0YUv+wEF26zb6j6e1L3r2Gpdib0eF+SpbAqX5aE7AcyxONDeE1/PHUWZ6JwfY893A9
-         kedg9bdRQYlWA==
+        b=YL4AikZHBX3ht6UVGTG1+DyD/6t1bkOtmOkiSMIUMrs1gC1lLH6wuTaHex6aTvJrA
+         a1eDh3P4GY65VwZROGEVOl4JHV94s2USUDb/d5kCXJdIKRp5aJGreRuPH+jGDEeZ8V
+         Wb1Z1einvo+4V0ROj/5eMbS2fLKg4k2uBVsbIquLHAWRXu15kLr+pNK1ol448kMsWX
+         ALkBYob+RVOoE8Iq+5H4d9gx+QxWe6PZQ9M6Mg2wTbw0b+aBJYE9nwAak+cy8VYUzY
+         FLwchMz95eATo7VNFpxGh32GbM8JJt2vovOB2XuegNPOqk7TzkVzuCxomszTUey6rK
+         kNqWigkZJnGaQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Michael Ellerman <mpe@ellerman.id.au>,
-        Paul Menzel <pmenzel@molgen.mpg.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Sasha Levin <sashal@kernel.org>, linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH AUTOSEL 5.10 51/65] powerpc/code-patching: Pre-map patch area
-Date:   Fri,  1 Apr 2022 10:41:52 -0400
-Message-Id: <20220401144206.1953700-51-sashal@kernel.org>
+Cc:     Yang Guang <yang.guang5@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>,
+        David Yang <davidcomponentone@gmail.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, jejb@linux.ibm.com,
+        john.garry@huawei.com, bvanassche@acm.org,
+        chenxiang66@hisilicon.com, thunder.leizhen@huawei.com,
+        yuyufen@huawei.com, linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 12/65] scsi: mvsas: Replace snprintf() with sysfs_emit()
+Date:   Fri,  1 Apr 2022 10:41:13 -0400
+Message-Id: <20220401144206.1953700-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401144206.1953700-1-sashal@kernel.org>
 References: <20220401144206.1953700-1-sashal@kernel.org>
@@ -54,97 +57,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Ellerman <mpe@ellerman.id.au>
+From: Yang Guang <yang.guang5@zte.com.cn>
 
-[ Upstream commit 591b4b268435f00d2f0b81f786c2c7bd5ef66416 ]
+[ Upstream commit 0ad3867b0f13e45cfee5a1298bfd40eef096116c ]
 
-Paul reported a warning with DEBUG_ATOMIC_SLEEP=y:
+coccinelle report:
+./drivers/scsi/mvsas/mv_init.c:699:8-16:
+WARNING: use scnprintf or sprintf
+./drivers/scsi/mvsas/mv_init.c:747:8-16:
+WARNING: use scnprintf or sprintf
 
-  BUG: sleeping function called from invalid context at include/linux/sched/mm.h:256
-  in_atomic(): 0, irqs_disabled(): 1, non_block: 0, pid: 1, name: swapper/0
-  preempt_count: 0, expected: 0
-  ...
-  Call Trace:
-    dump_stack_lvl+0xa0/0xec (unreliable)
-    __might_resched+0x2f4/0x310
-    kmem_cache_alloc+0x220/0x4b0
-    __pud_alloc+0x74/0x1d0
-    hash__map_kernel_page+0x2cc/0x390
-    do_patch_instruction+0x134/0x4a0
-    arch_jump_label_transform+0x64/0x78
-    __jump_label_update+0x148/0x180
-    static_key_enable_cpuslocked+0xd0/0x120
-    static_key_enable+0x30/0x50
-    check_kvm_guest+0x60/0x88
-    pSeries_smp_probe+0x54/0xb0
-    smp_prepare_cpus+0x3e0/0x430
-    kernel_init_freeable+0x20c/0x43c
-    kernel_init+0x30/0x1a0
-    ret_from_kernel_thread+0x5c/0x64
+Use sysfs_emit() instead of scnprintf() or sprintf().
 
-Peter pointed out that this is because do_patch_instruction() has
-disabled interrupts, but then map_patch_area() calls map_kernel_page()
-then hash__map_kernel_page() which does a sleeping memory allocation.
-
-We only see the warning in KVM guests with SMT enabled, which is not
-particularly common, or on other platforms if CONFIG_KPROBES is
-disabled, also not common. The reason we don't see it in most
-configurations is that another path that happens to have interrupts
-enabled has allocated the required page tables for us, eg. there's a
-path in kprobes init that does that. That's just pure luck though.
-
-As Christophe suggested, the simplest solution is to do a dummy
-map/unmap when we initialise the patching, so that any required page
-table levels are pre-allocated before the first call to
-do_patch_instruction(). This works because the unmap doesn't free any
-page tables that were allocated by the map, it just clears the PTE,
-leaving the page table levels there for the next map.
-
-Reported-by: Paul Menzel <pmenzel@molgen.mpg.de>
-Debugged-by: Peter Zijlstra <peterz@infradead.org>
-Suggested-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220223015821.473097-1-mpe@ellerman.id.au
+Link: https://lore.kernel.org/r/c1711f7cf251730a8ceb5bdfc313bf85662b3395.1643182948.git.yang.guang5@zte.com.cn
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Yang Guang <yang.guang5@zte.com.cn>
+Signed-off-by: David Yang <davidcomponentone@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/lib/code-patching.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ drivers/scsi/mvsas/mv_init.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/powerpc/lib/code-patching.c b/arch/powerpc/lib/code-patching.c
-index a2e4f864b63d..4318aee65a39 100644
---- a/arch/powerpc/lib/code-patching.c
-+++ b/arch/powerpc/lib/code-patching.c
-@@ -43,9 +43,14 @@ int raw_patch_instruction(struct ppc_inst *addr, struct ppc_inst instr)
- #ifdef CONFIG_STRICT_KERNEL_RWX
- static DEFINE_PER_CPU(struct vm_struct *, text_poke_area);
- 
-+static int map_patch_area(void *addr, unsigned long text_poke_addr);
-+static void unmap_patch_area(unsigned long addr);
-+
- static int text_area_cpu_up(unsigned int cpu)
+diff --git a/drivers/scsi/mvsas/mv_init.c b/drivers/scsi/mvsas/mv_init.c
+index b03c0f35d7b0..0cfea7b2ab13 100644
+--- a/drivers/scsi/mvsas/mv_init.c
++++ b/drivers/scsi/mvsas/mv_init.c
+@@ -697,7 +697,7 @@ static ssize_t
+ mvs_show_driver_version(struct device *cdev,
+ 		struct device_attribute *attr,  char *buffer)
  {
- 	struct vm_struct *area;
-+	unsigned long addr;
-+	int err;
+-	return snprintf(buffer, PAGE_SIZE, "%s\n", DRV_VERSION);
++	return sysfs_emit(buffer, "%s\n", DRV_VERSION);
+ }
  
- 	area = get_vm_area(PAGE_SIZE, VM_ALLOC);
- 	if (!area) {
-@@ -53,6 +58,15 @@ static int text_area_cpu_up(unsigned int cpu)
- 			cpu);
- 		return -1;
- 	}
-+
-+	// Map/unmap the area to ensure all page tables are pre-allocated
-+	addr = (unsigned long)area->addr;
-+	err = map_patch_area(empty_zero_page, addr);
-+	if (err)
-+		return err;
-+
-+	unmap_patch_area(addr);
-+
- 	this_cpu_write(text_poke_area, area);
+ static DEVICE_ATTR(driver_version,
+@@ -749,7 +749,7 @@ mvs_store_interrupt_coalescing(struct device *cdev,
+ static ssize_t mvs_show_interrupt_coalescing(struct device *cdev,
+ 			struct device_attribute *attr, char *buffer)
+ {
+-	return snprintf(buffer, PAGE_SIZE, "%d\n", interrupt_coalescing);
++	return sysfs_emit(buffer, "%d\n", interrupt_coalescing);
+ }
  
- 	return 0;
+ static DEVICE_ATTR(interrupt_coalescing,
 -- 
 2.34.1
 
