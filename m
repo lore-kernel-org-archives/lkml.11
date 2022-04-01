@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D62A3C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:20:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BBB5C43217
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:20:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237212AbiDAPSA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:18:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54906 "EHLO
+        id S1350160AbiDAPSj (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Apr 2022 11:18:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351941AbiDAOtn (ORCPT
+        with ESMTP id S1352337AbiDAOuP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:49:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 136BD2B120E;
-        Fri,  1 Apr 2022 07:40:42 -0700 (PDT)
+        Fri, 1 Apr 2022 10:50:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E63D929341D;
+        Fri,  1 Apr 2022 07:41:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4CEAA60C9B;
-        Fri,  1 Apr 2022 14:39:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45AE3C2BBE4;
-        Fri,  1 Apr 2022 14:39:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F30C611C6;
+        Fri,  1 Apr 2022 14:40:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EEE0C3410F;
+        Fri,  1 Apr 2022 14:40:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823997;
-        bh=kGf7ZIV+v4tY82G8Mz72jUPIY7jgqniLJ05Zmhp+eIA=;
+        s=k20201202; t=1648824024;
+        bh=vGF3y5k+Md9JoYlQ/HpFasDzK2ORKMQo7WzM+vUcTPQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SElphT/VYwHN1zbJW2GJew4foS9gdxmhtrZrqfIny8NDpEoEguHSGDd4ydcE18+RN
-         kLOvHVRfZBVNFhWaQxnOIVDZxyTVLHVC5ndz3REHmt9G18ZLRzrkpdlLrhb90ugG8/
-         Q/s48ewAgz3bXKk3kdOH96Y1q91GUiuo/XeCt+R1HpLH6E6fB25NXjvfx1JwAMN6+h
-         Zv1dqsZD/0gmj8BOI/PFcvMImziJpjz70zZd+4yp3gUTiXjcZn6qWXFIIFEacq0QRb
-         WYEmyM7/z7jCGcD18LlrwhxysNSY+yslrylqxZmrQ6xDHEZ/iO9FZZ9cUm9eGrT9q9
-         w8MvSPvQenB9w==
+        b=LB0Q5yJ/zBQobiKcMwstGy6QYFOHp4XPj/bL3a7X2iiDCyEtHK87F/2loiKxYABNp
+         hgyszgbbU+poUvhH4XCNIt5bgNCZ3GKD/kkKAgfAPr1Wf4xMD3TcPcKIoQg5hD1xe+
+         dxgwVdMKoKwcHw43VVMOETmszFu1a8XEvEomcjfwKxY2ql5GN+bPmGZQak1CRm9Ega
+         zkGezCFvQEzqHPnwDUF8v1Xyi0f/JpKNQoF1Z0zOAGwlnzAZa5QeihOqtnYn1DsQ+E
+         GUsUJGqGwTfUMj6zhcTQa/xQKOo91XxYMe6Q+kc61hjMbG2NIW3r7Fe6PmAqDLYEmJ
+         sCVmWXZbFQ9Pg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ilan Peer <ilan.peer@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        johannes.berg@intel.com, ayala.beker@intel.com,
-        avraham.stern@intel.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 45/98] iwlwifi: mvm: Passively scan non PSC channels only when requested so
-Date:   Fri,  1 Apr 2022 10:36:49 -0400
-Message-Id: <20220401143742.1952163-45-sashal@kernel.org>
+Cc:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Jack Wang <jinpu.wang@ionos.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, jinpu.wang@cloud.ionos.com,
+        jejb@linux.ibm.com, linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 57/98] scsi: pm8001: Fix memory leak in pm8001_chip_fw_flash_update_req()
+Date:   Fri,  1 Apr 2022 10:37:01 -0400
+Message-Id: <20220401143742.1952163-57-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143742.1952163-1-sashal@kernel.org>
 References: <20220401143742.1952163-1-sashal@kernel.org>
@@ -55,113 +54,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ilan Peer <ilan.peer@intel.com>
+From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 
-[ Upstream commit 9966904e9472703a05861f343157cd78f47514fd ]
+[ Upstream commit f792a3629f4c4aa4c3703d66b43ce1edcc3ec09a ]
 
-Non PSC channels should generally be scanned based on information about
-collocated APs obtained during scan on legacy bands, and otherwise
-should not be scanned unless specifically requested so (as there are
-relatively many non PSC channels, scanning them passively is time consuming
-and interferes with regular data traffic).
+In pm8001_chip_fw_flash_update_build(), if
+pm8001_chip_fw_flash_update_build() fails, the struct fw_control_ex
+allocated must be freed.
 
-Thus, modify the scan logic to avoid passively scanning PSC channels
-if there is no information about collocated APs and the scan is not
-a passive scan.
-
-Signed-off-by: Ilan Peer <ilan.peer@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20220204122220.457da4cc95eb.Ic98472bab5f5475f1e102547644caaae89ce4c4a@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/20220220031810.738362-23-damien.lemoal@opensource.wdc.com
+Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/mvm/scan.c | 42 ++++++++++++++-----
- 1 file changed, 32 insertions(+), 10 deletions(-)
+ drivers/scsi/pm8001/pm8001_hwi.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/scan.c b/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
-index 65e382756de6..f1217e2b7a11 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
-@@ -1733,27 +1733,37 @@ iwl_mvm_umac_scan_fill_6g_chan_list(struct iwl_mvm *mvm,
- }
- 
- /* TODO: this function can be merged with iwl_mvm_scan_umac_fill_ch_p_v6 */
--static void
--iwl_mvm_umac_scan_cfg_channels_v6_6g(struct iwl_mvm_scan_params *params,
-+static u32
-+iwl_mvm_umac_scan_cfg_channels_v6_6g(struct iwl_mvm *mvm,
-+				     struct iwl_mvm_scan_params *params,
- 				     u32 n_channels,
- 				     struct iwl_scan_probe_params_v4 *pp,
- 				     struct iwl_scan_channel_params_v6 *cp,
- 				     enum nl80211_iftype vif_type)
- {
--	struct iwl_scan_channel_cfg_umac *channel_cfg = cp->channel_config;
- 	int i;
- 	struct cfg80211_scan_6ghz_params *scan_6ghz_params =
- 		params->scan_6ghz_params;
-+	u32 ch_cnt;
- 
--	for (i = 0; i < params->n_channels; i++) {
-+	for (i = 0, ch_cnt = 0; i < params->n_channels; i++) {
- 		struct iwl_scan_channel_cfg_umac *cfg =
--			&cp->channel_config[i];
-+			&cp->channel_config[ch_cnt];
- 
- 		u32 s_ssid_bitmap = 0, bssid_bitmap = 0, flags = 0;
- 		u8 j, k, s_max = 0, b_max = 0, n_used_bssid_entries;
- 		bool force_passive, found = false, allow_passive = true,
- 		     unsolicited_probe_on_chan = false, psc_no_listen = false;
- 
-+		/*
-+		 * Avoid performing passive scan on non PSC channels unless the
-+		 * scan is specifically a passive scan, i.e., no SSIDs
-+		 * configured in the scan command.
-+		 */
-+		if (!cfg80211_channel_is_psc(params->channels[i]) &&
-+		    !params->n_6ghz_params && params->n_ssids)
-+			continue;
-+
- 		cfg->v1.channel_num = params->channels[i]->hw_value;
- 		cfg->v2.band = 2;
- 		cfg->v2.iter_count = 1;
-@@ -1872,8 +1882,16 @@ iwl_mvm_umac_scan_cfg_channels_v6_6g(struct iwl_mvm_scan_params *params,
- 		    (!flags && !cfg80211_channel_is_psc(params->channels[i])))
- 			flags |= IWL_UHB_CHAN_CFG_FLAG_FORCE_PASSIVE;
- 
--		channel_cfg[i].flags |= cpu_to_le32(flags);
-+		cfg->flags |= cpu_to_le32(flags);
-+		ch_cnt++;
- 	}
-+
-+	if (params->n_channels > ch_cnt)
-+		IWL_DEBUG_SCAN(mvm,
-+			       "6GHz: reducing number channels: (%u->%u)\n",
-+			       params->n_channels, ch_cnt);
-+
-+	return ch_cnt;
- }
- 
- static u8 iwl_mvm_scan_umac_chan_flags_v2(struct iwl_mvm *mvm,
-@@ -2406,10 +2424,14 @@ static int iwl_mvm_scan_umac_v14(struct iwl_mvm *mvm, struct ieee80211_vif *vif,
- 	if (ret)
- 		return ret;
- 
--	iwl_mvm_umac_scan_cfg_channels_v6_6g(params,
--					     params->n_channels,
--					     pb, cp, vif->type);
--	cp->count = params->n_channels;
-+	cp->count = iwl_mvm_umac_scan_cfg_channels_v6_6g(mvm, params,
-+							 params->n_channels,
-+							 pb, cp, vif->type);
-+	if (!cp->count) {
-+		mvm->scan_uid_status[uid] = 0;
-+		return -EINVAL;
+diff --git a/drivers/scsi/pm8001/pm8001_hwi.c b/drivers/scsi/pm8001/pm8001_hwi.c
+index d0e8e6c2f87d..caf5bcb367e4 100644
+--- a/drivers/scsi/pm8001/pm8001_hwi.c
++++ b/drivers/scsi/pm8001/pm8001_hwi.c
+@@ -4900,8 +4900,10 @@ pm8001_chip_fw_flash_update_req(struct pm8001_hba_info *pm8001_ha,
+ 	ccb->ccb_tag = tag;
+ 	rc = pm8001_chip_fw_flash_update_build(pm8001_ha, &flash_update_info,
+ 		tag);
+-	if (rc)
++	if (rc) {
++		kfree(fw_control_context);
+ 		pm8001_tag_free(pm8001_ha, tag);
 +	}
-+
- 	if (!params->n_ssids ||
- 	    (params->n_ssids == 1 && !params->ssids[0].ssid_len))
- 		cp->flags |= IWL_SCAN_CHANNEL_FLAG_6G_PSC_NO_FILTER;
+ 
+ 	return rc;
+ }
 -- 
 2.34.1
 
