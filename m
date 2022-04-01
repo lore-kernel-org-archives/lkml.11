@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3914C4321E
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:04:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2346C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:04:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349474AbiDAPFz (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:05:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54890 "EHLO
+        id S236347AbiDAPGL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Apr 2022 11:06:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349559AbiDAOqK (ORCPT
+        with ESMTP id S1349655AbiDAOql (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:46:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 810CD29C97A;
-        Fri,  1 Apr 2022 07:36:12 -0700 (PDT)
+        Fri, 1 Apr 2022 10:46:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E2B329D25F;
+        Fri,  1 Apr 2022 07:36:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3355960A3C;
-        Fri,  1 Apr 2022 14:35:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71D42C36AE2;
-        Fri,  1 Apr 2022 14:35:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D3544B8250B;
+        Fri,  1 Apr 2022 14:35:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73BF4C36AE9;
+        Fri,  1 Apr 2022 14:35:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823744;
-        bh=PJeafsnUQnriLKTm/R8j1CwVfZCJuZ9TyKc2Zi2Znw8=;
+        s=k20201202; t=1648823750;
+        bh=AM4Arlzi1uMQcuMz63HSz5AFP4b2LLZXu13ilcUheqs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XVFkL+J/BzntJznj7EZgNkjIrFd1Q+M2EvAORdtD/9saMBWSNGGTjqeuZV9SxixsX
-         kVpKDLTaJfOMrpFdLvLXNF5+PNNZqBKdZJk0CUNaQp4l7A8V9jAnq/YznuAoJR4fU6
-         5Xle3IFhza699/+BlChIEC60P+hQMb8aA3XqKTNI2d8NDZ68Hxk6rQJAUUphxPOiYR
-         pg6i7l4OZ7vCKAHjq4j+KNJS9yBHif0SG4vIrt9Gkyu0MDke24aFNcUr6rWMmLi6pn
-         jk9lB8pIODZFlioF3e262btGqDmL4jZ/mI01dyPyOIycU3P7p9gFnWEjjOYYRsn/Sh
-         ieFl10AwIddhQ==
+        b=ktDllcx1YjGHNBfBO7lSkle6yacz9iKQJCZzsMJgoBBE/g+WX3njXFrlZIjNjKG0Z
+         f/brejViNlWpY6DZ76M/c2Cjk0JYkGotRzzWIYirN/8ml9CKEYdSWmH9YIaPd9ZpF8
+         El0+m2W7mm+1CebK1JPn8n0hGw8fR1pIjw2iIzJbpJcOuQ2BbfSw22jcd0p3MGvmNH
+         H/ImMO2NPn+HPn7kWp8W2u7EEcWtYkctVs3P3miv61cus6k75QrC+LK2Wi0AMlqkRh
+         5ozQWBnLvTAn2i+6qpZv0jo4jhmWkMgLjrZTshcIbV+Cp0CKPxxACRM3Hk/P/Lg0ta
+         B9+5nnXsjlyJA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jiri Kosina <jkosina@suse.cz>, Ping-Ke Shih <pkshih@realtek.com>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 058/109] rtw89: fix RCU usage in rtw89_core_txq_push()
-Date:   Fri,  1 Apr 2022 10:32:05 -0400
-Message-Id: <20220401143256.1950537-58-sashal@kernel.org>
+Cc:     Alex Deucher <alexander.deucher@amd.com>,
+        Felix Kuehling <Felix.Kuehling@amd.com>,
+        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
+        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.16 062/109] drm/amdkfd: make CRAT table missing message informational only
+Date:   Fri,  1 Apr 2022 10:32:09 -0400
+Message-Id: <20220401143256.1950537-62-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143256.1950537-1-sashal@kernel.org>
 References: <20220401143256.1950537-1-sashal@kernel.org>
@@ -53,114 +53,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiri Kosina <jkosina@suse.cz>
+From: Alex Deucher <alexander.deucher@amd.com>
 
-[ Upstream commit f3d825a35920714fb7f73e4d4f36ea2328860660 ]
+[ Upstream commit 9dff13f9edf755a15f6507874185a3290c1ae8bb ]
 
-ieee80211_tx_h_select_key() is performing a series of RCU dereferences,
-but rtw89_core_txq_push() is calling it (via ieee80211_tx_dequeue_ni())
-without RCU read-side lock held; fix that.
+The driver has a fallback so make the message informational
+rather than a warning. The driver has a fallback if the
+Component Resource Association Table (CRAT) is missing, so
+make this informational now.
 
-This addresses the splat below.
-
- =============================
- WARNING: suspicious RCU usage
- 5.17.0-rc4-00003-gccad664b7f14 #3 Tainted: G            E
- -----------------------------
- net/mac80211/tx.c:593 suspicious rcu_dereference_check() usage!
-
- other info that might help us debug this:
-
- rcu_scheduler_active = 2, debug_locks = 1
- 2 locks held by kworker/u33:0/184:
-  #0: ffff9c0b14811d38 ((wq_completion)rtw89_tx_wq){+.+.}-{0:0}, at: process_one_work+0x258/0x660
-  #1: ffffb97380cf3e78 ((work_completion)(&rtwdev->txq_work)){+.+.}-{0:0}, at: process_one_work+0x258/0x660
-
- stack backtrace:
- CPU: 8 PID: 184 Comm: kworker/u33:0 Tainted: G            E     5.17.0-rc4-00003-gccad664b7f14 #3 473b49ab0e7c2d6af2900c756bfd04efd7a9de13
- Hardware name: LENOVO 20UJS2B905/20UJS2B905, BIOS R1CET63W(1.32 ) 04/09/2021
- Workqueue: rtw89_tx_wq rtw89_core_txq_work [rtw89_core]
- Call Trace:
-  <TASK>
-  dump_stack_lvl+0x58/0x71
-  ieee80211_tx_h_select_key+0x2c0/0x530 [mac80211 911c23e2351c0ae60b597a67b1204a5ea955e365]
-  ieee80211_tx_dequeue+0x1a7/0x1260 [mac80211 911c23e2351c0ae60b597a67b1204a5ea955e365]
-  rtw89_core_txq_work+0x1a6/0x420 [rtw89_core b39ba493f2e517ad75e0f8187ecc24edf58bbbea]
-  process_one_work+0x2d8/0x660
-  worker_thread+0x39/0x3e0
-  ? process_one_work+0x660/0x660
-  kthread+0xe5/0x110
-  ? kthread_complete_and_exit+0x20/0x20
-  ret_from_fork+0x22/0x30
-  </TASK>
-
- =============================
- WARNING: suspicious RCU usage
- 5.17.0-rc4-00003-gccad664b7f14 #3 Tainted: G            E
- -----------------------------
- net/mac80211/tx.c:607 suspicious rcu_dereference_check() usage!
-
- other info that might help us debug this:
-
- rcu_scheduler_active = 2, debug_locks = 1
- 2 locks held by kworker/u33:0/184:
-  #0: ffff9c0b14811d38 ((wq_completion)rtw89_tx_wq){+.+.}-{0:0}, at: process_one_work+0x258/0x660
-  #1: ffffb97380cf3e78 ((work_completion)(&rtwdev->txq_work)){+.+.}-{0:0}, at: process_one_work+0x258/0x660
-
- stack backtrace:
- CPU: 8 PID: 184 Comm: kworker/u33:0 Tainted: G            E     5.17.0-rc4-00003-gccad664b7f14 #3 473b49ab0e7c2d6af2900c756bfd04efd7a9de13
- Hardware name: LENOVO 20UJS2B905/20UJS2B905, BIOS R1CET63W(1.32 ) 04/09/2021
- Workqueue: rtw89_tx_wq rtw89_core_txq_work [rtw89_core]
- Call Trace:
-  <TASK>
-  dump_stack_lvl+0x58/0x71
-  ieee80211_tx_h_select_key+0x464/0x530 [mac80211 911c23e2351c0ae60b597a67b1204a5ea955e365]
-  ieee80211_tx_dequeue+0x1a7/0x1260 [mac80211 911c23e2351c0ae60b597a67b1204a5ea955e365]
-  rtw89_core_txq_work+0x1a6/0x420 [rtw89_core b39ba493f2e517ad75e0f8187ecc24edf58bbbea]
-  process_one_work+0x2d8/0x660
-  worker_thread+0x39/0x3e0
-  ? process_one_work+0x660/0x660
-  kthread+0xe5/0x110
-  ? kthread_complete_and_exit+0x20/0x20
-  ret_from_fork+0x22/0x30
-  </TASK>
-
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
-Acked-by: Ping-Ke Shih <pkshih@realtek.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/nycvar.YFH.7.76.2202152037000.11721@cbobk.fhfr.pm
+Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/1906
+Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/realtek/rtw89/core.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/amd/amdkfd/kfd_crat.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/realtek/rtw89/core.c b/drivers/net/wireless/realtek/rtw89/core.c
-index d02ec5a735cb..9d9c0984903f 100644
---- a/drivers/net/wireless/realtek/rtw89/core.c
-+++ b/drivers/net/wireless/realtek/rtw89/core.c
-@@ -1501,11 +1501,12 @@ static void rtw89_core_txq_push(struct rtw89_dev *rtwdev,
- 	unsigned long i;
- 	int ret;
- 
-+	rcu_read_lock();
- 	for (i = 0; i < frame_cnt; i++) {
- 		skb = ieee80211_tx_dequeue_ni(rtwdev->hw, txq);
- 		if (!skb) {
- 			rtw89_debug(rtwdev, RTW89_DBG_TXRX, "dequeue a NULL skb\n");
--			return;
-+			goto out;
- 		}
- 		rtw89_core_txq_check_agg(rtwdev, rtwtxq, skb);
- 		ret = rtw89_core_tx_write(rtwdev, vif, sta, skb, NULL);
-@@ -1515,6 +1516,8 @@ static void rtw89_core_txq_push(struct rtw89_dev *rtwdev,
- 			break;
- 		}
- 	}
-+out:
-+	rcu_read_unlock();
- }
- 
- static u32 rtw89_check_and_reclaim_tx_resource(struct rtw89_dev *rtwdev, u8 tid)
+diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_crat.c b/drivers/gpu/drm/amd/amdkfd/kfd_crat.c
+index c33d689f29e8..e574aa32a111 100644
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_crat.c
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_crat.c
+@@ -1563,7 +1563,7 @@ int kfd_create_crat_image_acpi(void **crat_image, size_t *size)
+ 	/* Fetch the CRAT table from ACPI */
+ 	status = acpi_get_table(CRAT_SIGNATURE, 0, &crat_table);
+ 	if (status == AE_NOT_FOUND) {
+-		pr_warn("CRAT table not found\n");
++		pr_info("CRAT table not found\n");
+ 		return -ENODATA;
+ 	} else if (ACPI_FAILURE(status)) {
+ 		const char *err = acpi_format_exception(status);
 -- 
 2.34.1
 
