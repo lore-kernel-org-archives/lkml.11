@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA5DBC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:20:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D62A3C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:20:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230319AbiDAPQo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:16:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60144 "EHLO
+        id S237212AbiDAPSA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Apr 2022 11:18:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351397AbiDAOsw (ORCPT
+        with ESMTP id S1351941AbiDAOtn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:48:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9250B28CA84;
-        Fri,  1 Apr 2022 07:39:38 -0700 (PDT)
+        Fri, 1 Apr 2022 10:49:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 136BD2B120E;
+        Fri,  1 Apr 2022 07:40:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6C726B82502;
-        Fri,  1 Apr 2022 14:39:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05585C36AE5;
-        Fri,  1 Apr 2022 14:39:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4CEAA60C9B;
+        Fri,  1 Apr 2022 14:39:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45AE3C2BBE4;
+        Fri,  1 Apr 2022 14:39:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823962;
-        bh=DvDLWLpok6lt21vdRgj5cJUWQCTHAuI/pyMdviZ0r0o=;
+        s=k20201202; t=1648823997;
+        bh=kGf7ZIV+v4tY82G8Mz72jUPIY7jgqniLJ05Zmhp+eIA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NDOYuSi+NJ3Ml5K0CNhU4gSxOcGKO4g7ruokNgmumuAO4S4BpErkVl5fGWAVMuP9F
-         YmmxIQZWCqqFEdjainYigisuZgtuU9rxhf+QhPHDIsc45Q4SdMSG8hX6jpeD3SDDsC
-         cMQBxvXoQXkndfeu3kbdoz8i7mm7O/h9acQ7uJNlTCO9ucIg1N3WMCWNUH+UNAv2O6
-         XI8s6nzfTUubTLbysY+Si8+653nGwvwBMwL7iAo1mA0ad0KzS+fqvQW5HsT6PBjJmE
-         0hnpMyi1P4qCDGltgX7A3Ax3ETXOKaUpgzn0a6FK3jtBaekYNZ2VwODdtmmIAco8i6
-         CKDM9jEp6U6aQ==
+        b=SElphT/VYwHN1zbJW2GJew4foS9gdxmhtrZrqfIny8NDpEoEguHSGDd4ydcE18+RN
+         kLOvHVRfZBVNFhWaQxnOIVDZxyTVLHVC5ndz3REHmt9G18ZLRzrkpdlLrhb90ugG8/
+         Q/s48ewAgz3bXKk3kdOH96Y1q91GUiuo/XeCt+R1HpLH6E6fB25NXjvfx1JwAMN6+h
+         Zv1dqsZD/0gmj8BOI/PFcvMImziJpjz70zZd+4yp3gUTiXjcZn6qWXFIIFEacq0QRb
+         WYEmyM7/z7jCGcD18LlrwhxysNSY+yslrylqxZmrQ6xDHEZ/iO9FZZ9cUm9eGrT9q9
+         w8MvSPvQenB9w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Sasha Levin <sashal@kernel.org>, thomas.petazzoni@bootlin.com,
-        bhelgaas@google.com, linux-pci@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.15 32/98] PCI: aardvark: Fix support for MSI interrupts
-Date:   Fri,  1 Apr 2022 10:36:36 -0400
-Message-Id: <20220401143742.1952163-32-sashal@kernel.org>
+Cc:     Ilan Peer <ilan.peer@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        johannes.berg@intel.com, ayala.beker@intel.com,
+        avraham.stern@intel.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 45/98] iwlwifi: mvm: Passively scan non PSC channels only when requested so
+Date:   Fri,  1 Apr 2022 10:36:49 -0400
+Message-Id: <20220401143742.1952163-45-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143742.1952163-1-sashal@kernel.org>
 References: <20220401143742.1952163-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -55,79 +55,113 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pali Rohár <pali@kernel.org>
+From: Ilan Peer <ilan.peer@intel.com>
 
-[ Upstream commit b0b0b8b897f8e12b2368e868bd7cdc5742d5c5a9 ]
+[ Upstream commit 9966904e9472703a05861f343157cd78f47514fd ]
 
-Aardvark hardware supports Multi-MSI and MSI_FLAG_MULTI_PCI_MSI is already
-set for the MSI chip. But when allocating MSI interrupt numbers for
-Multi-MSI, the numbers need to be properly aligned, otherwise endpoint
-devices send MSI interrupt with incorrect numbers.
+Non PSC channels should generally be scanned based on information about
+collocated APs obtained during scan on legacy bands, and otherwise
+should not be scanned unless specifically requested so (as there are
+relatively many non PSC channels, scanning them passively is time consuming
+and interferes with regular data traffic).
 
-Fix this issue by using function bitmap_find_free_region() instead of
-bitmap_find_next_zero_area().
+Thus, modify the scan logic to avoid passively scanning PSC channels
+if there is no information about collocated APs and the scan is not
+a passive scan.
 
-To ensure that aligned MSI interrupt numbers are used by endpoint devices,
-we cannot use Linux virtual irq numbers (as they are random and not
-properly aligned). Instead we need to use the aligned hwirq numbers.
-
-This change fixes receiving MSI interrupts on Armada 3720 boards and
-allows using NVMe disks which use Multi-MSI feature with 3 interrupts.
-
-Without this NVMe disks freeze booting as linux nvme-core.c is waiting
-60s for an interrupt.
-
-Link: https://lore.kernel.org/r/20220110015018.26359-4-kabel@kernel.org
-Signed-off-by: Pali Rohár <pali@kernel.org>
-Signed-off-by: Marek Behún <kabel@kernel.org>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Signed-off-by: Ilan Peer <ilan.peer@intel.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/iwlwifi.20220204122220.457da4cc95eb.Ic98472bab5f5475f1e102547644caaae89ce4c4a@changeid
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/controller/pci-aardvark.c | 16 ++++++----------
- 1 file changed, 6 insertions(+), 10 deletions(-)
+ drivers/net/wireless/intel/iwlwifi/mvm/scan.c | 42 ++++++++++++++-----
+ 1 file changed, 32 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/pci/controller/pci-aardvark.c b/drivers/pci/controller/pci-aardvark.c
-index b2217e2b3efd..e97fd1cb00fc 100644
---- a/drivers/pci/controller/pci-aardvark.c
-+++ b/drivers/pci/controller/pci-aardvark.c
-@@ -1177,7 +1177,7 @@ static void advk_msi_irq_compose_msi_msg(struct irq_data *data,
- 
- 	msg->address_lo = lower_32_bits(msi_msg);
- 	msg->address_hi = upper_32_bits(msi_msg);
--	msg->data = data->irq;
-+	msg->data = data->hwirq;
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/scan.c b/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
+index 65e382756de6..f1217e2b7a11 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
+@@ -1733,27 +1733,37 @@ iwl_mvm_umac_scan_fill_6g_chan_list(struct iwl_mvm *mvm,
  }
  
- static int advk_msi_set_affinity(struct irq_data *irq_data,
-@@ -1194,15 +1194,11 @@ static int advk_msi_irq_domain_alloc(struct irq_domain *domain,
- 	int hwirq, i;
+ /* TODO: this function can be merged with iwl_mvm_scan_umac_fill_ch_p_v6 */
+-static void
+-iwl_mvm_umac_scan_cfg_channels_v6_6g(struct iwl_mvm_scan_params *params,
++static u32
++iwl_mvm_umac_scan_cfg_channels_v6_6g(struct iwl_mvm *mvm,
++				     struct iwl_mvm_scan_params *params,
+ 				     u32 n_channels,
+ 				     struct iwl_scan_probe_params_v4 *pp,
+ 				     struct iwl_scan_channel_params_v6 *cp,
+ 				     enum nl80211_iftype vif_type)
+ {
+-	struct iwl_scan_channel_cfg_umac *channel_cfg = cp->channel_config;
+ 	int i;
+ 	struct cfg80211_scan_6ghz_params *scan_6ghz_params =
+ 		params->scan_6ghz_params;
++	u32 ch_cnt;
  
- 	mutex_lock(&pcie->msi_used_lock);
--	hwirq = bitmap_find_next_zero_area(pcie->msi_used, MSI_IRQ_NUM,
--					   0, nr_irqs, 0);
--	if (hwirq >= MSI_IRQ_NUM) {
--		mutex_unlock(&pcie->msi_used_lock);
--		return -ENOSPC;
--	}
--
--	bitmap_set(pcie->msi_used, hwirq, nr_irqs);
-+	hwirq = bitmap_find_free_region(pcie->msi_used, MSI_IRQ_NUM,
-+					order_base_2(nr_irqs));
- 	mutex_unlock(&pcie->msi_used_lock);
-+	if (hwirq < 0)
-+		return -ENOSPC;
+-	for (i = 0; i < params->n_channels; i++) {
++	for (i = 0, ch_cnt = 0; i < params->n_channels; i++) {
+ 		struct iwl_scan_channel_cfg_umac *cfg =
+-			&cp->channel_config[i];
++			&cp->channel_config[ch_cnt];
  
- 	for (i = 0; i < nr_irqs; i++)
- 		irq_domain_set_info(domain, virq + i, hwirq + i,
-@@ -1220,7 +1216,7 @@ static void advk_msi_irq_domain_free(struct irq_domain *domain,
- 	struct advk_pcie *pcie = domain->host_data;
+ 		u32 s_ssid_bitmap = 0, bssid_bitmap = 0, flags = 0;
+ 		u8 j, k, s_max = 0, b_max = 0, n_used_bssid_entries;
+ 		bool force_passive, found = false, allow_passive = true,
+ 		     unsolicited_probe_on_chan = false, psc_no_listen = false;
  
- 	mutex_lock(&pcie->msi_used_lock);
--	bitmap_clear(pcie->msi_used, d->hwirq, nr_irqs);
-+	bitmap_release_region(pcie->msi_used, d->hwirq, order_base_2(nr_irqs));
- 	mutex_unlock(&pcie->msi_used_lock);
++		/*
++		 * Avoid performing passive scan on non PSC channels unless the
++		 * scan is specifically a passive scan, i.e., no SSIDs
++		 * configured in the scan command.
++		 */
++		if (!cfg80211_channel_is_psc(params->channels[i]) &&
++		    !params->n_6ghz_params && params->n_ssids)
++			continue;
++
+ 		cfg->v1.channel_num = params->channels[i]->hw_value;
+ 		cfg->v2.band = 2;
+ 		cfg->v2.iter_count = 1;
+@@ -1872,8 +1882,16 @@ iwl_mvm_umac_scan_cfg_channels_v6_6g(struct iwl_mvm_scan_params *params,
+ 		    (!flags && !cfg80211_channel_is_psc(params->channels[i])))
+ 			flags |= IWL_UHB_CHAN_CFG_FLAG_FORCE_PASSIVE;
+ 
+-		channel_cfg[i].flags |= cpu_to_le32(flags);
++		cfg->flags |= cpu_to_le32(flags);
++		ch_cnt++;
+ 	}
++
++	if (params->n_channels > ch_cnt)
++		IWL_DEBUG_SCAN(mvm,
++			       "6GHz: reducing number channels: (%u->%u)\n",
++			       params->n_channels, ch_cnt);
++
++	return ch_cnt;
  }
  
+ static u8 iwl_mvm_scan_umac_chan_flags_v2(struct iwl_mvm *mvm,
+@@ -2406,10 +2424,14 @@ static int iwl_mvm_scan_umac_v14(struct iwl_mvm *mvm, struct ieee80211_vif *vif,
+ 	if (ret)
+ 		return ret;
+ 
+-	iwl_mvm_umac_scan_cfg_channels_v6_6g(params,
+-					     params->n_channels,
+-					     pb, cp, vif->type);
+-	cp->count = params->n_channels;
++	cp->count = iwl_mvm_umac_scan_cfg_channels_v6_6g(mvm, params,
++							 params->n_channels,
++							 pb, cp, vif->type);
++	if (!cp->count) {
++		mvm->scan_uid_status[uid] = 0;
++		return -EINVAL;
++	}
++
+ 	if (!params->n_ssids ||
+ 	    (params->n_ssids == 1 && !params->ssids[0].ssid_len))
+ 		cp->flags |= IWL_SCAN_CHANNEL_FLAG_6G_PSC_NO_FILTER;
 -- 
 2.34.1
 
