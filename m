@@ -2,66 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BFC3C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 03:36:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05702C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 03:37:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238347AbiDADiK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 23:38:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51782 "EHLO
+        id S244632AbiDADir (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 23:38:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243899AbiDADiC (ORCPT
+        with ESMTP id S244625AbiDADim (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 23:38:02 -0400
-Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07F79F4629
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 20:36:14 -0700 (PDT)
-Received: by mail-il1-f197.google.com with SMTP id s4-20020a92c5c4000000b002c7884b8608so1009587ilt.21
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 20:36:13 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=4CTVOpRlL+R3DgLW480cMVd45Tf3kymrAnPQ8cwHjuQ=;
-        b=WfzEx9AeaqzgnYjWTCM3Eh67+PrhcbgbiVrhZlrGvdkffTYPaGasj13scJ6OVN059P
-         Qo1KXGVdg7414D/YnL5N+wJdz+L3iJ9u7+avHxg7VexJN3CWmrq2/rnSe6hM5yrwoaVc
-         Mh1bMKhleF753t4VhfaBm3YEAAhidEZSBQMlFfjRVRF7DNt/5MvGbWe8+Cx1A5/gJxab
-         Mu6i1xMK0C0QxGS9JpfuHFeFXyaqTOrx5oSEmTD1tFRUlKc0tsyfqIAFPgFkxlMlFilg
-         CT2OV1DtAH3eW8pImdI+0kt6J+V05vUs0mZ2BUlvGhl/N+tTZr8qc9PgvBmjkkYh6XS2
-         M1oQ==
-X-Gm-Message-State: AOAM530fVpU/mbsxq+NBtlUzGVcIfcT4oJc7FTXvBUtulV6nJrWtDdPr
-        2cMiEajv7cxJpOYbcpg/DqbHT1jiC7y2bhOcZaa+nC8/PnbS
-X-Google-Smtp-Source: ABdhPJyPTJAo7j7p54O5jevUsiLvUW96vIvsJSiUQkhbzfRTVaGd3ZKkQWtlF92JrXEgVsuN331iFK8xXal7zrTDeobFHcLMxZjA
+        Thu, 31 Mar 2022 23:38:42 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D016718A7BE;
+        Thu, 31 Mar 2022 20:36:52 -0700 (PDT)
+Received: from kwepemi500019.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KV5Qk43hwzgYGg;
+        Fri,  1 Apr 2022 11:35:10 +0800 (CST)
+Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
+ kwepemi500019.china.huawei.com (7.221.188.117) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 1 Apr 2022 11:36:50 +0800
+Received: from huawei.com (10.175.127.227) by kwepemm600009.china.huawei.com
+ (7.193.23.164) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Fri, 1 Apr
+ 2022 11:36:49 +0800
+From:   Yu Kuai <yukuai3@huawei.com>
+To:     <axboe@kernel.dk>
+CC:     <linux-block@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <yukuai3@huawei.com>, <yi.zhang@huawei.co>
+Subject: [PATCH] blk-mq: fix possible creation failure for 'debugfs_dir'
+Date:   Fri, 1 Apr 2022 11:51:39 +0800
+Message-ID: <20220401035139.272897-1-yukuai3@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-X-Received: by 2002:a92:d9c7:0:b0:2c8:7bf5:b85e with SMTP id
- n7-20020a92d9c7000000b002c87bf5b85emr14615650ilq.275.1648784173368; Thu, 31
- Mar 2022 20:36:13 -0700 (PDT)
-Date:   Thu, 31 Mar 2022 20:36:13 -0700
-In-Reply-To: <20220401032249.4888-1-hdanton@sina.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000f70c4805db8f7ae0@google.com>
-Subject: Re: [syzbot] KASAN: use-after-free Read in j1939_xtp_rx_dat_one (3)
-From:   syzbot <syzbot+a9dce1ff45c3bbeceb3a@syzkaller.appspotmail.com>
-To:     hdanton@sina.com, linux-kernel@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ kwepemm600009.china.huawei.com (7.193.23.164)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+'q->debugfs_dir' is created in blk_register_queue(), however, it's not
+removed in blk_unregister_queue() and is delayed to blk_release_queue().
+Thus it's possible that del_gendisk() is done and the old 'debugfs_dir'
+is not removed yet, and in the mean time blk_register_queue() is called
+for the new device with the same name. In this case, kernel will
+compalin about creation failure for 'debugfs_dir' like following:
 
-syzbot has tested the proposed patch and the reproducer did not trigger any issue:
+debugfs: Directory 'nullb1' with parent 'block' already present!
 
-Reported-and-tested-by: syzbot+a9dce1ff45c3bbeceb3a@syzkaller.appspotmail.com
+Fix the problem by moving forward the removal of 'debgfs_dir' to
+blk_unregister_queue().
 
-Tested on:
+Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+---
+ block/blk-sysfs.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-commit:         ae085d7f mm: kfence: fix missing objcg housekeeping fo..
-git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/
-kernel config:  https://syzkaller.appspot.com/x/.config?x=6bae4cd50262530e
-dashboard link: https://syzkaller.appspot.com/bug?extid=a9dce1ff45c3bbeceb3a
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-patch:          https://syzkaller.appspot.com/x/patch.diff?x=11cc67f5700000
+diff --git a/block/blk-sysfs.c b/block/blk-sysfs.c
+index 88bd41d4cb59..15fc3f0786e3 100644
+--- a/block/blk-sysfs.c
++++ b/block/blk-sysfs.c
+@@ -779,11 +779,6 @@ static void blk_release_queue(struct kobject *kobj)
+ 	if (queue_is_mq(q))
+ 		blk_mq_release(q);
+ 
+-	blk_trace_shutdown(q);
+-	mutex_lock(&q->debugfs_mutex);
+-	debugfs_remove_recursive(q->debugfs_dir);
+-	mutex_unlock(&q->debugfs_mutex);
+-
+ 	if (queue_is_mq(q))
+ 		blk_mq_debugfs_unregister(q);
+ 
+@@ -951,5 +946,11 @@ void blk_unregister_queue(struct gendisk *disk)
+ 
+ 	mutex_unlock(&q->sysfs_dir_lock);
+ 
++	blk_trace_shutdown(q);
++	mutex_lock(&q->debugfs_mutex);
++	blk_mq_debugfs_unregister_hctxs(q);
++	debugfs_remove_recursive(q->debugfs_dir);
++	mutex_unlock(&q->debugfs_mutex);
++
+ 	kobject_put(&disk_to_dev(disk)->kobj);
+ }
+-- 
+2.31.1
 
-Note: testing is done by a robot and is best-effort only.
