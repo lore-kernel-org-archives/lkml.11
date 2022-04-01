@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41D48C43217
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:13:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AE30C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:13:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353402AbiDAPK2 (ORCPT
+        id S1353766AbiDAPLC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:10:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60520 "EHLO
+        Fri, 1 Apr 2022 11:11:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351092AbiDAOsX (ORCPT
+        with ESMTP id S1351270AbiDAOsi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:48:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05B095BE78;
-        Fri,  1 Apr 2022 07:39:03 -0700 (PDT)
+        Fri, 1 Apr 2022 10:48:38 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10D9926A945;
+        Fri,  1 Apr 2022 07:39:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DEC5F60B9A;
-        Fri,  1 Apr 2022 14:38:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13D02C34113;
-        Fri,  1 Apr 2022 14:38:28 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id F19A8CE2585;
+        Fri,  1 Apr 2022 14:38:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84C12C340EE;
+        Fri,  1 Apr 2022 14:38:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823910;
-        bh=NiQNJY9hd7UZ1j5KvTKMH92DrlESa/IzBQ3BC9eFhAE=;
+        s=k20201202; t=1648823926;
+        bh=Vb9jK5l2dL7OUkRHwt1xmUNIYgFrzM1D1PHHrhDfYeM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Wx3U75jqVdT9hxc4z7y8qIa2s4MQhZVxUHecd7IEAr7ABwr19FnXgCb/F7n5SqKse
-         gMFfNnHt0MZNAVPWMul8+VwCPHWjXwuWiGnG6W33p28uoUlIS3vs68vQRHTMwc5n7F
-         xb6XY5wBU1Wu0Fo8Q8bmPgtro2yK+bz9osocu1xiQtbYGmNp95JHRJ6kZ6EFAP9YHO
-         F/0rBwrAvOkFwU44mM5P/mXqS9AV/fc30ySjSbeLNVb6KovzhrPSyghze5cR2+WXhg
-         PmnJUjHvzHsI8gIeIFUlCfpMliJBmZwpdAtYGeXNDNR2B95uhyDB6VHOxKFCFNrdw1
-         XqYJftI60+6CA==
+        b=ECSoWF4rgFaQHV36NsXEvXhvA5r3UEjtVUsYwHda6UFMAcdie733W/lp/4OHVnNBW
+         aTAJEcx1c4txpt+nWX9u0t84Dda3eXXoLVQGl08k3vXyT/HREf6RG30WyXg22YluSf
+         IQaOZEIPR3vHWqsjGhLROCwnBH6pZLgiHL4/4/HfWk91F8RSre7LKgZQLfEH9zXayZ
+         pza73XZB5rhIKLhm7I5FAgNN97gVLIIQP7zIn7SKI448EcpI/+bX7TabMpbQXHyuAK
+         PiImuKMo0fjRaq3vBDehjjqge71hwi6EJkSEz5yOQfRJmYa3eGbnBosW4Q/C/nnJVP
+         022jPNpo6azbw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Kalle Valo <quic_kvalo@quicinc.com>,
-        Mario Limonciello <mario.limonciello@amd.com>,
-        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 14/98] ath11k: pci: fix crash on suspend if board file is not found
-Date:   Fri,  1 Apr 2022 10:36:18 -0400
-Message-Id: <20220401143742.1952163-14-sashal@kernel.org>
+Cc:     Evgeny Boger <boger@wirenboard.com>, Chen-Yu Tsai <wens@csie.org>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        Sasha Levin <sashal@kernel.org>, sre@kernel.org,
+        linux-pm@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 22/98] power: supply: axp20x_battery: properly report current when discharging
+Date:   Fri,  1 Apr 2022 10:36:26 -0400
+Message-Id: <20220401143742.1952163-22-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143742.1952163-1-sashal@kernel.org>
 References: <20220401143742.1952163-1-sashal@kernel.org>
@@ -55,92 +53,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kalle Valo <quic_kvalo@quicinc.com>
+From: Evgeny Boger <boger@wirenboard.com>
 
-[ Upstream commit b4f4c56459a5c744f7f066b9fc2b54ea995030c5 ]
+[ Upstream commit d4f408cdcd26921c1268cb8dcbe8ffb6faf837f3 ]
 
-Mario reported that the kernel was crashing on suspend if ath11k was not able
-to find a board file:
+As stated in [1], negative current values are used for discharging
+batteries.
 
-[  473.693286] PM: Suspending system (s2idle)
-[  473.693291] printk: Suspending console(s) (use no_console_suspend to debug)
-[  474.407787] BUG: unable to handle page fault for address: 0000000000002070
-[  474.407791] #PF: supervisor read access in kernel mode
-[  474.407794] #PF: error_code(0x0000) - not-present page
-[  474.407798] PGD 0 P4D 0
-[  474.407801] Oops: 0000 [#1] PREEMPT SMP NOPTI
-[  474.407805] CPU: 2 PID: 2350 Comm: kworker/u32:14 Tainted: G        W         5.16.0 #248
-[...]
-[  474.407868] Call Trace:
-[  474.407870]  <TASK>
-[  474.407874]  ? _raw_spin_lock_irqsave+0x2a/0x60
-[  474.407882]  ? lock_timer_base+0x72/0xa0
-[  474.407889]  ? _raw_spin_unlock_irqrestore+0x29/0x3d
-[  474.407892]  ? try_to_del_timer_sync+0x54/0x80
-[  474.407896]  ath11k_dp_rx_pktlog_stop+0x49/0xc0 [ath11k]
-[  474.407912]  ath11k_core_suspend+0x34/0x130 [ath11k]
-[  474.407923]  ath11k_pci_pm_suspend+0x1b/0x50 [ath11k_pci]
-[  474.407928]  pci_pm_suspend+0x7e/0x170
-[  474.407935]  ? pci_pm_freeze+0xc0/0xc0
-[  474.407939]  dpm_run_callback+0x4e/0x150
-[  474.407947]  __device_suspend+0x148/0x4c0
-[  474.407951]  async_suspend+0x20/0x90
-dmesg-efi-164255130401001:
-Oops#1 Part1
-[  474.407955]  async_run_entry_fn+0x33/0x120
-[  474.407959]  process_one_work+0x220/0x3f0
-[  474.407966]  worker_thread+0x4a/0x3d0
-[  474.407971]  kthread+0x17a/0x1a0
-[  474.407975]  ? process_one_work+0x3f0/0x3f0
-[  474.407979]  ? set_kthread_struct+0x40/0x40
-[  474.407983]  ret_from_fork+0x22/0x30
-[  474.407991]  </TASK>
+AXP PMICs internally have two different ADC channels for shunt current
+measurement: one used during charging and one during discharging.
+The values reported by these ADCs are unsigned.
+While the driver properly selects ADC channel to get the data from,
+it doesn't apply negative sign when reporting discharging current.
 
-The issue here is that board file loading happens after ath11k_pci_probe()
-succesfully returns (ath11k initialisation happends asynchronously) and the
-suspend handler is still enabled, of course failing as ath11k is not properly
-initialised. Fix this by checking ATH11K_FLAG_QMI_FAIL during both suspend and
-resume.
+[1] Documentation/ABI/testing/sysfs-class-power
 
-Tested-on: WCN6855 hw2.0 PCI WLAN.HSP.1.1-03003-QCAHSPSWPL_V1_V2_SILICONZ_LITE-2
-
-Reported-by: Mario Limonciello <mario.limonciello@amd.com>
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215504
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220127090117.2024-1-kvalo@kernel.org
+Signed-off-by: Evgeny Boger <boger@wirenboard.com>
+Acked-by: Chen-Yu Tsai <wens@csie.org>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/pci.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/power/supply/axp20x_battery.c | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/pci.c b/drivers/net/wireless/ath/ath11k/pci.c
-index 54ce08f1c6e0..353a2d669fcd 100644
---- a/drivers/net/wireless/ath/ath11k/pci.c
-+++ b/drivers/net/wireless/ath/ath11k/pci.c
-@@ -1382,6 +1382,11 @@ static __maybe_unused int ath11k_pci_pm_suspend(struct device *dev)
- 	struct ath11k_base *ab = dev_get_drvdata(dev);
- 	int ret;
+diff --git a/drivers/power/supply/axp20x_battery.c b/drivers/power/supply/axp20x_battery.c
+index 18a9db0df4b1..335e12cc5e2f 100644
+--- a/drivers/power/supply/axp20x_battery.c
++++ b/drivers/power/supply/axp20x_battery.c
+@@ -186,7 +186,6 @@ static int axp20x_battery_get_prop(struct power_supply *psy,
+ 				   union power_supply_propval *val)
+ {
+ 	struct axp20x_batt_ps *axp20x_batt = power_supply_get_drvdata(psy);
+-	struct iio_channel *chan;
+ 	int ret = 0, reg, val1;
  
-+	if (test_bit(ATH11K_FLAG_QMI_FAIL, &ab->dev_flags)) {
-+		ath11k_dbg(ab, ATH11K_DBG_BOOT, "boot skipping pci suspend as qmi is not initialised\n");
-+		return 0;
-+	}
-+
- 	ret = ath11k_core_suspend(ab);
- 	if (ret)
- 		ath11k_warn(ab, "failed to suspend core: %d\n", ret);
-@@ -1394,6 +1399,11 @@ static __maybe_unused int ath11k_pci_pm_resume(struct device *dev)
- 	struct ath11k_base *ab = dev_get_drvdata(dev);
- 	int ret;
+ 	switch (psp) {
+@@ -266,12 +265,12 @@ static int axp20x_battery_get_prop(struct power_supply *psy,
+ 		if (ret)
+ 			return ret;
  
-+	if (test_bit(ATH11K_FLAG_QMI_FAIL, &ab->dev_flags)) {
-+		ath11k_dbg(ab, ATH11K_DBG_BOOT, "boot skipping pci resume as qmi is not initialised\n");
-+		return 0;
-+	}
-+
- 	ret = ath11k_core_resume(ab);
- 	if (ret)
- 		ath11k_warn(ab, "failed to resume core: %d\n", ret);
+-		if (reg & AXP20X_PWR_STATUS_BAT_CHARGING)
+-			chan = axp20x_batt->batt_chrg_i;
+-		else
+-			chan = axp20x_batt->batt_dischrg_i;
+-
+-		ret = iio_read_channel_processed(chan, &val->intval);
++		if (reg & AXP20X_PWR_STATUS_BAT_CHARGING) {
++			ret = iio_read_channel_processed(axp20x_batt->batt_chrg_i, &val->intval);
++		} else {
++			ret = iio_read_channel_processed(axp20x_batt->batt_dischrg_i, &val1);
++			val->intval = -val1;
++		}
+ 		if (ret)
+ 			return ret;
+ 
 -- 
 2.34.1
 
