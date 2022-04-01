@@ -2,53 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DAFFC43217
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:35:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD71CC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:35:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348029AbiDAOgz (ORCPT
+        id S1348057AbiDAOhH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 10:36:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39994 "EHLO
+        Fri, 1 Apr 2022 10:37:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347554AbiDAOdL (ORCPT
+        with ESMTP id S1347576AbiDAOdM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:33:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBB18231ACC;
-        Fri,  1 Apr 2022 07:29:41 -0700 (PDT)
+        Fri, 1 Apr 2022 10:33:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C70C224D9BA;
+        Fri,  1 Apr 2022 07:29:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9452EB82500;
-        Fri,  1 Apr 2022 14:29:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9540EC2BBE4;
-        Fri,  1 Apr 2022 14:29:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 651B561CB1;
+        Fri,  1 Apr 2022 14:29:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C342EC3410F;
+        Fri,  1 Apr 2022 14:29:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823379;
-        bh=eTiovVUCen7xNYJkwiLrMjheRNdT5H42VgeNdAbVmjY=;
+        s=k20201202; t=1648823389;
+        bh=8puUcxcsAgziHU04aioiE2ywk84f9b43kRquxeUisbs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iY0HzFuPYi+s0imDltpHRMocEkETTYKm61R7TfU9XFe15ev2tKsadFIjBfhl02lFb
-         23Zuo9dtQXdKg2SKm4hEkFbkAkGGY9G0VYyf47ZzNoUnSElMYsUk9RE5Q7HERRH4ZW
-         YTxKYiAJMgDnmwbkGH5JxnSajZcke2nAzp/n4lnJ3CUijcxBISuDYSUFKn3LAuhmml
-         /J4LHvSbXLRPQZuUHesQDza/22Wo6Zqtl4a0ARA8Zxb0VtfVa9EKWUWIdzRsiUIazw
-         vToQivUPl2eEwt3uE159IXhUMAd/kZ3K8dpM5JaEt/A/xJspaRvmH9T4MfgQ+dEUg+
-         /yiJY+DNBxAFA==
+        b=fxnr3xgAr0NpN2wbxyolnC6Q0OATeG76OZlW4SEQddwXY0fdvYq1vrg6yell85+kf
+         Y7pn+trPLQFLFWKs2/RWltXn7dB/9HVXY5gMU4l2dI/H1WOyGrMickwfMopZiGOHb9
+         nu4DZdkz3sgJs+9ZwYKcxBHVUVtTRJjzlfkbfjI7ZZOyGTBVDSr8wfMjp2wEvmTZiJ
+         8/yjtiNPPeQRReAb1F+vyj/Sp3wYyBsxtlkOktWnoGzXvpvJI0MiIxpa9uH/Zj5PBA
+         2///O3KmlBFpPLCyTZbGtLNeVuwFREt5KLDTOqQjvcRIsn3Q7rNuTEYXpG0ZU4o4JD
+         ZdTL0fCfG5llQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Kevin Tang <kevin3.tang@gmail.com>, Zou Wei <zou_wei@huawei.com>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Sasha Levin <sashal@kernel.org>, airlied@linux.ie,
-        daniel@ffwll.ch, orsonzhai@gmail.com, baolin.wang7@gmail.com,
-        zhang.lyra@gmail.com, maarten.lankhorst@linux.intel.com,
-        maxime@cerno.tech, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.17 072/149] drm/sprd: check the platform_get_resource() return value
-Date:   Fri,  1 Apr 2022 10:24:19 -0400
-Message-Id: <20220401142536.1948161-72-sashal@kernel.org>
+Cc:     =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
+        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>,
+        jikos@kernel.org, benjamin.tissoires@redhat.com,
+        linux-input@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 076/149] HID: apple: Report Magic Keyboard 2021 with fingerprint reader battery over USB
+Date:   Fri,  1 Apr 2022 10:24:23 -0400
+Message-Id: <20220401142536.1948161-76-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401142536.1948161-1-sashal@kernel.org>
 References: <20220401142536.1948161-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -56,60 +54,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kevin Tang <kevin3.tang@gmail.com>
+From: José Expósito <jose.exposito89@gmail.com>
 
-[ Upstream commit 73792e6e66be1225837cc1a40f1e39b1d077751c ]
+[ Upstream commit cbfcfbfc384890a062a5d0cc4792df094a6cc7a8 ]
 
-platform_get_resource() may fail and return NULL, so check it's value
-before using it.
+Like the Apple Magic Keyboard 2015, when connected over USB, the 2021
+version with fingerprint reader registers 2 different interfaces. One of
+them is used to report the battery level.
 
-Reported-by: Zou Wei <zou_wei@huawei.com>
-Signed-off-by: Kevin Tang <kevin3.tang@gmail.com>
-Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
-Acked-by: Thomas Zimmermann <tzimmermann@suse.de>
-Link: https://lore.kernel.org/all/20220117084156.9338-1-kevin3.tang@gmail.com
+However, unlike when connected over Bluetooth, the battery level is not
+reported automatically and it is required to fetch it manually.
 
-v1 -> v2:
-- new patch
+Add the APPLE_RDESC_BATTERY quirk to fix the battery report descriptor
+and manually fetch the battery level.
 
+Tested with the ANSI variant of the keyboard with and without numpad.
+
+Signed-off-by: José Expósito <jose.exposito89@gmail.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/sprd/sprd_dpu.c | 5 +++++
- drivers/gpu/drm/sprd/sprd_dsi.c | 5 +++++
- 2 files changed, 10 insertions(+)
+ drivers/hid/hid-apple.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/sprd/sprd_dpu.c b/drivers/gpu/drm/sprd/sprd_dpu.c
-index 06a3414ee43a..1637203ea103 100644
---- a/drivers/gpu/drm/sprd/sprd_dpu.c
-+++ b/drivers/gpu/drm/sprd/sprd_dpu.c
-@@ -790,6 +790,11 @@ static int sprd_dpu_context_init(struct sprd_dpu *dpu,
- 	int ret;
+diff --git a/drivers/hid/hid-apple.c b/drivers/hid/hid-apple.c
+index 18de4ccb0fb2..590376d776a1 100644
+--- a/drivers/hid/hid-apple.c
++++ b/drivers/hid/hid-apple.c
+@@ -752,11 +752,11 @@ static const struct hid_device_id apple_devices[] = {
+ 	{ HID_BLUETOOTH_DEVICE(BT_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_2021),
+ 		.driver_data = APPLE_HAS_FN | APPLE_ISO_TILDE_QUIRK },
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_FINGERPRINT_2021),
+-		.driver_data = APPLE_HAS_FN | APPLE_ISO_TILDE_QUIRK },
++		.driver_data = APPLE_HAS_FN | APPLE_ISO_TILDE_QUIRK | APPLE_RDESC_BATTERY },
+ 	{ HID_BLUETOOTH_DEVICE(BT_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_FINGERPRINT_2021),
+ 		.driver_data = APPLE_HAS_FN | APPLE_ISO_TILDE_QUIRK },
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_NUMPAD_2021),
+-		.driver_data = APPLE_HAS_FN | APPLE_ISO_TILDE_QUIRK },
++		.driver_data = APPLE_HAS_FN | APPLE_ISO_TILDE_QUIRK | APPLE_RDESC_BATTERY },
+ 	{ HID_BLUETOOTH_DEVICE(BT_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_NUMPAD_2021),
+ 		.driver_data = APPLE_HAS_FN | APPLE_ISO_TILDE_QUIRK },
  
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	if (!res) {
-+		dev_err(dev, "failed to get I/O resource\n");
-+		return -EINVAL;
-+	}
-+
- 	ctx->base = devm_ioremap(dev, res->start, resource_size(res));
- 	if (!ctx->base) {
- 		dev_err(dev, "failed to map dpu registers\n");
-diff --git a/drivers/gpu/drm/sprd/sprd_dsi.c b/drivers/gpu/drm/sprd/sprd_dsi.c
-index 911b3cddc264..12b67a5d5923 100644
---- a/drivers/gpu/drm/sprd/sprd_dsi.c
-+++ b/drivers/gpu/drm/sprd/sprd_dsi.c
-@@ -907,6 +907,11 @@ static int sprd_dsi_context_init(struct sprd_dsi *dsi,
- 	struct resource *res;
- 
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	if (!res) {
-+		dev_err(dev, "failed to get I/O resource\n");
-+		return -EINVAL;
-+	}
-+
- 	ctx->base = devm_ioremap(dev, res->start, resource_size(res));
- 	if (!ctx->base) {
- 		drm_err(dsi->drm, "failed to map dsi host registers\n");
 -- 
 2.34.1
 
