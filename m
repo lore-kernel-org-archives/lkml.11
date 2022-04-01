@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D1EFC4321E
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:37:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEEB0C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:37:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344888AbiDAOjq (ORCPT
+        id S1348245AbiDAOhx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 10:39:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39112 "EHLO
+        Fri, 1 Apr 2022 10:37:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348310AbiDAOdy (ORCPT
+        with ESMTP id S1347608AbiDAOdO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:33:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D9CA1FA5E;
-        Fri,  1 Apr 2022 07:32:04 -0700 (PDT)
+        Fri, 1 Apr 2022 10:33:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E349256640;
+        Fri,  1 Apr 2022 07:30:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1D123B8250D;
-        Fri,  1 Apr 2022 14:32:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 880B1C340F2;
-        Fri,  1 Apr 2022 14:32:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3D1F9B82515;
+        Fri,  1 Apr 2022 14:30:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BFC0C2BBE4;
+        Fri,  1 Apr 2022 14:30:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823521;
-        bh=Txc91Sc7y22n4OIlr5P3dUwdGHeP5PieAR7WokxOg5Y=;
+        s=k20201202; t=1648823408;
+        bh=y5iZjuzgrRz546+vtyJdXA0k4Yb5zv7HJ+OnbQJvTLw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fxEWPG4JNZhz+VV/gbzmtPWuh6FiQj3s9Jv2rIpJwo2ytYw9DxtF9qVF8tQg4D1CM
-         k/lPnPlNZBxrs+NrXSfMCTLUDioQOAK/qgqd8D6FevKsRd/RM65fzyACX8WEi5EwsN
-         YNYqTn/qwfi7LmNk4M3NPbADp5Ai6VPQZNDbL7TxP24jGUuRxL578s/Thi5/Q6+26u
-         OgzbKzUmO0GtCD1TBt67lb0lF8UYYhn9kze9VcJX1stPyVQBJgiqOPb9rDfoNizBoj
-         qDMt0G64qHhnxEJDP7NP4MvJkLEgwC1+htfCdaUSFcW1EDdcZTrFdRVJWlhHCJqXjx
-         g2nfKqzBHjgDg==
+        b=eL8iVazPQHmEFFsfaKckK3Sr5hbIB6ayDdY6vcHt8/6lffSYxPDcfg4GUUIMEJeCG
+         F68fMXGEPWXdj5h79xcz+o+XI0qX2VfjbKVbYe014a082etD0vIrIWS+eIu5sp2ggk
+         ZcWJP8LEnjb6xQNWqJZjQJKf/ll4Su4l974wDqPBPuRC/GDn19ySaSi8IpI1X2jsaY
+         +6H5RXYYRbCtAhv06JGi51/2XprfU6AF0FBPCJt2WT1yqHLZMy8dIO8LcGmbKal8m2
+         sAm8m1r7TVx+L9OZMQt/OjriDoOeyjV7+8hvUGiCDAr8OIp2LQ8+rm8Jl5x4dUfoVW
+         7EB3sp9DD4gEQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Sasha Levin <sashal@kernel.org>, wg@grandegger.com,
+Cc:     Miri Korenblit <miriam.rachel.korenblit@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
         davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 128/149] can: etas_es58x: es58x_fd_rx_event_msg(): initialize rx_event_msg before calling es58x_check_msg_len()
-Date:   Fri,  1 Apr 2022 10:25:15 -0400
-Message-Id: <20220401142536.1948161-128-sashal@kernel.org>
+        johannes.berg@intel.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 081/149] iwlwifi: mvm: move only to an enabled channel
+Date:   Fri,  1 Apr 2022 10:24:28 -0400
+Message-Id: <20220401142536.1948161-81-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401142536.1948161-1-sashal@kernel.org>
 References: <20220401142536.1948161-1-sashal@kernel.org>
@@ -54,61 +55,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+From: Miri Korenblit <miriam.rachel.korenblit@intel.com>
 
-[ Upstream commit 7a8cd7c0ee823a1cc893ab3feaa23e4b602bfb9a ]
+[ Upstream commit e04135c07755d001b5cde61048c69a7cc84bb94b ]
 
-Function es58x_fd_rx_event() invokes the es58x_check_msg_len() macro:
+During disassociation we're decreasing the phy's ref count.
+If the ref count becomes 0, we're configuring the phy ctxt
+to the default channel (the lowest channel which the device
+can operate on). Currently we're not checking whether the
+the default channel is enabled or not. Fix it by configuring
+the phy ctxt to the lowest channel which is enabled.
 
-| 	ret = es58x_check_msg_len(es58x_dev->dev, *rx_event_msg, msg_len);
-
-While doing so, it dereferences an uninitialized
-variable: *rx_event_msg.
-
-This is actually harmless because es58x_check_msg_len() only uses
-preprocessor macros (sizeof() and __stringify()) on
-*rx_event_msg. c.f. [1].
-
-Nonetheless, this pattern is confusing so the lines are reordered to
-make sure that rx_event_msg is correctly initialized.
-
-This patch also fixes a false positive warning reported by cppcheck:
-
-| cppcheck possible warnings: (new ones prefixed by >>, may not be real problems)
-|
-|    In file included from drivers/net/can/usb/etas_es58x/es58x_fd.c:
-| >> drivers/net/can/usb/etas_es58x/es58x_fd.c:174:8: warning: Uninitialized variable: rx_event_msg [uninitvar]
-|     ret = es58x_check_msg_len(es58x_dev->dev, *rx_event_msg, msg_len);
-|           ^
-
-[1] https://elixir.bootlin.com/linux/v5.16/source/drivers/net/can/usb/etas_es58x/es58x_core.h#L467
-
-Link: https://lore.kernel.org/all/20220306101302.708783-1-mailhol.vincent@wanadoo.fr
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Miri Korenblit <miriam.rachel.korenblit@intel.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/iwlwifi.20220210181930.03f281b6a6bc.I5b63d43ec41996d599e6f37ec3f32e878b3e405e@changeid
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/can/usb/etas_es58x/es58x_fd.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ .../net/wireless/intel/iwlwifi/mvm/phy-ctxt.c | 31 +++++++++++++------
+ 1 file changed, 22 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/can/usb/etas_es58x/es58x_fd.c b/drivers/net/can/usb/etas_es58x/es58x_fd.c
-index ec87126e1a7d..8ccda748fd08 100644
---- a/drivers/net/can/usb/etas_es58x/es58x_fd.c
-+++ b/drivers/net/can/usb/etas_es58x/es58x_fd.c
-@@ -172,12 +172,11 @@ static int es58x_fd_rx_event_msg(struct net_device *netdev,
- 	const struct es58x_fd_rx_event_msg *rx_event_msg;
- 	int ret;
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/phy-ctxt.c b/drivers/net/wireless/intel/iwlwifi/mvm/phy-ctxt.c
+index 9af40b0fa37a..a6e6673bf4ee 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/phy-ctxt.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/phy-ctxt.c
+@@ -1,6 +1,6 @@
+ // SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
+ /*
+- * Copyright (C) 2012-2014, 2018-2021 Intel Corporation
++ * Copyright (C) 2012-2014, 2018-2022 Intel Corporation
+  * Copyright (C) 2013-2014 Intel Mobile Communications GmbH
+  * Copyright (C) 2017 Intel Deutschland GmbH
+  */
+@@ -349,18 +349,31 @@ void iwl_mvm_phy_ctxt_unref(struct iwl_mvm *mvm, struct iwl_mvm_phy_ctxt *ctxt)
+ 	 * otherwise we might not be able to reuse this phy.
+ 	 */
+ 	if (ctxt->ref == 0) {
+-		struct ieee80211_channel *chan;
++		struct ieee80211_channel *chan = NULL;
+ 		struct cfg80211_chan_def chandef;
+-		struct ieee80211_supported_band *sband = NULL;
+-		enum nl80211_band band = NL80211_BAND_2GHZ;
++		struct ieee80211_supported_band *sband;
++		enum nl80211_band band;
++		int channel;
  
-+	rx_event_msg = &es58x_fd_urb_cmd->rx_event_msg;
- 	ret = es58x_check_msg_len(es58x_dev->dev, *rx_event_msg, msg_len);
- 	if (ret)
- 		return ret;
+-		while (!sband && band < NUM_NL80211_BANDS)
+-			sband = mvm->hw->wiphy->bands[band++];
++		for (band = NL80211_BAND_2GHZ; band < NUM_NL80211_BANDS; band++) {
++			sband = mvm->hw->wiphy->bands[band];
  
--	rx_event_msg = &es58x_fd_urb_cmd->rx_event_msg;
--
- 	return es58x_rx_err_msg(netdev, rx_event_msg->error_code,
- 				rx_event_msg->event_code,
- 				get_unaligned_le64(&rx_event_msg->timestamp));
+-		if (WARN_ON(!sband))
+-			return;
++			if (!sband)
++				continue;
++
++			for (channel = 0; channel < sband->n_channels; channel++)
++				if (!(sband->channels[channel].flags &
++						IEEE80211_CHAN_DISABLED)) {
++					chan = &sband->channels[channel];
++					break;
++				}
+ 
+-		chan = &sband->channels[0];
++			if (chan)
++				break;
++		}
++
++		if (WARN_ON(!chan))
++			return;
+ 
+ 		cfg80211_chandef_create(&chandef, chan, NL80211_CHAN_NO_HT);
+ 		iwl_mvm_phy_ctxt_changed(mvm, ctxt, &chandef, 1, 1);
 -- 
 2.34.1
 
