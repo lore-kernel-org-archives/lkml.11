@@ -2,50 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8096AC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04603C35295
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:37:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350388AbiDAPd5 (ORCPT
+        id S1350472AbiDAPeF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:33:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52274 "EHLO
+        Fri, 1 Apr 2022 11:34:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350112AbiDAO7D (ORCPT
+        with ESMTP id S1350072AbiDAO6y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:59:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAC8712607;
-        Fri,  1 Apr 2022 07:46:17 -0700 (PDT)
+        Fri, 1 Apr 2022 10:58:54 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E289714020;
+        Fri,  1 Apr 2022 07:46:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7696A60AC0;
-        Fri,  1 Apr 2022 14:46:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 925F1C2BBE4;
-        Fri,  1 Apr 2022 14:46:14 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 170E9CE2585;
+        Fri,  1 Apr 2022 14:41:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45B1BC34111;
+        Fri,  1 Apr 2022 14:40:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824376;
-        bh=3RH+nJbvcqxz4TuE9bjrYQ80EldCXoX6Z8YQfmYDaYs=;
-        h=From:To:Cc:Subject:Date:From;
-        b=X0WDkAbhUGHVDLXE8uR5LbMR1a5jDKK2qNQ5PHFdGVv4jLygef1jRtVdDDvq48sBF
-         pUCyDVPBhxQX0IwInzyjviCop19xjwhnLEygmOV3fxkcAznCP0h2jKskYNcS4j+cvL
-         7XiJsz8ZKMcVkkyyd/4GI34bjE6Qp0YhVsgyQEP89/YDJZgYsTpYJ/VD/Y32NIMiz7
-         2WUNiP0rrKVPwTWKatL187bEdNd6MJgl9BWTtZwuMdtbaOcF00z71aNk2cHzN3ssvg
-         v0XXaHm280j997gUpqh/LWN1cPuo4l5EKP9fQlblGH03bJq/O5axt/UEwJkbTmZqrE
-         RWZSr4+skFhAg==
+        s=k20201202; t=1648824058;
+        bh=H9GmwK+B63pcrmYuNjENxKmlouwAu7ZViJydwDwFh7g=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=XqgRG/yAgDPeajrYkfAoCS76sxSvPWrPQYXGlobOJ0JKtaAcTb32bN/YHC2ax/2XF
+         cz7Jcs44xMJ+YRyh5IyWffpiDTtSU8W1zv1ODkGg0nq52yhS1QWMJjzfbJvW4i//jS
+         W49HxeJsv3R8yGOef3Ht4bpUPpAJ8BagDj5McEUq5CDdvCsOYFMbWToDQay9ao56fT
+         YE8XewVPiRCvou3n5FGkffCd307vsGGzvGzLpFagMTxdoGWS6VQv92MeYZZox0KTnt
+         ujz6Ka5Rf5DHGDqm7WzFpKi2Et039T2ykb/SG7Lax2Jls9d/dDK//Bd4SCsOnCqP6x
+         sxzek0Jht5iMg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Anisse Astier <anisse@astier.eu>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Jani Nikula <jani.nikula@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        maarten.lankhorst@linux.intel.com, mripard@kernel.org,
-        tzimmermann@suse.de, airlied@linux.ie, daniel@ffwll.ch,
-        dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 4.19 01/29] drm: Add orientation quirk for GPD Win Max
-Date:   Fri,  1 Apr 2022 10:45:44 -0400
-Message-Id: <20220401144612.1955177-1-sashal@kernel.org>
+Cc:     Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>, johan.hedberg@gmail.com,
+        luiz.dentz@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, linux-bluetooth@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 70/98] Bluetooth: Fix not checking for valid hdev on bt_dev_{info,warn,err,dbg}
+Date:   Fri,  1 Apr 2022 10:37:14 -0400
+Message-Id: <20220401143742.1952163-70-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220401143742.1952163-1-sashal@kernel.org>
+References: <20220401143742.1952163-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,38 +55,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anisse Astier <anisse@astier.eu>
+From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 
-[ Upstream commit 0b464ca3e0dd3cec65f28bc6d396d82f19080f69 ]
+[ Upstream commit 9b392e0e0b6d026da5a62bb79a08f32e27af858e ]
 
-Panel is 800x1280, but mounted on a laptop form factor, sideways.
+This fixes attemting to print hdev->name directly which causes them to
+print an error:
 
-Signed-off-by: Anisse Astier <anisse@astier.eu>
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Jani Nikula <jani.nikula@intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20211229222200.53128-3-anisse@astier.eu
+kernel: read_version:367: (efault): sock 000000006a3008f2
+
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/drm_panel_orientation_quirks.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ include/net/bluetooth/bluetooth.h | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/gpu/drm/drm_panel_orientation_quirks.c b/drivers/gpu/drm/drm_panel_orientation_quirks.c
-index 3b70a338e5b4..265df1e67eb3 100644
---- a/drivers/gpu/drm/drm_panel_orientation_quirks.c
-+++ b/drivers/gpu/drm/drm_panel_orientation_quirks.c
-@@ -133,6 +133,12 @@ static const struct dmi_system_id orientation_data[] = {
- 		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "MicroPC"),
- 		},
- 		.driver_data = (void *)&lcd720x1280_rightside_up,
-+	}, {	/* GPD Win Max */
-+		.matches = {
-+		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "GPD"),
-+		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "G1619-01"),
-+		},
-+		.driver_data = (void *)&lcd800x1280_rightside_up,
- 	}, {	/*
- 		 * GPD Pocket, note that the the DMI data is less generic then
- 		 * it seems, devices with a board-vendor of "AMI Corporation"
+diff --git a/include/net/bluetooth/bluetooth.h b/include/net/bluetooth/bluetooth.h
+index 9125effbf448..3fecc4a411a1 100644
+--- a/include/net/bluetooth/bluetooth.h
++++ b/include/net/bluetooth/bluetooth.h
+@@ -180,19 +180,21 @@ void bt_err_ratelimited(const char *fmt, ...);
+ #define BT_DBG(fmt, ...)	pr_debug(fmt "\n", ##__VA_ARGS__)
+ #endif
+ 
++#define bt_dev_name(hdev) ((hdev) ? (hdev)->name : "null")
++
+ #define bt_dev_info(hdev, fmt, ...)				\
+-	BT_INFO("%s: " fmt, (hdev)->name, ##__VA_ARGS__)
++	BT_INFO("%s: " fmt, bt_dev_name(hdev), ##__VA_ARGS__)
+ #define bt_dev_warn(hdev, fmt, ...)				\
+-	BT_WARN("%s: " fmt, (hdev)->name, ##__VA_ARGS__)
++	BT_WARN("%s: " fmt, bt_dev_name(hdev), ##__VA_ARGS__)
+ #define bt_dev_err(hdev, fmt, ...)				\
+-	BT_ERR("%s: " fmt, (hdev)->name, ##__VA_ARGS__)
++	BT_ERR("%s: " fmt, bt_dev_name(hdev), ##__VA_ARGS__)
+ #define bt_dev_dbg(hdev, fmt, ...)				\
+-	BT_DBG("%s: " fmt, (hdev)->name, ##__VA_ARGS__)
++	BT_DBG("%s: " fmt, bt_dev_name(hdev), ##__VA_ARGS__)
+ 
+ #define bt_dev_warn_ratelimited(hdev, fmt, ...)			\
+-	bt_warn_ratelimited("%s: " fmt, (hdev)->name, ##__VA_ARGS__)
++	bt_warn_ratelimited("%s: " fmt, bt_dev_name(hdev), ##__VA_ARGS__)
+ #define bt_dev_err_ratelimited(hdev, fmt, ...)			\
+-	bt_err_ratelimited("%s: " fmt, (hdev)->name, ##__VA_ARGS__)
++	bt_err_ratelimited("%s: " fmt, bt_dev_name(hdev), ##__VA_ARGS__)
+ 
+ /* Connection and socket states */
+ enum {
 -- 
 2.34.1
 
