@@ -2,101 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44637C4321E
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:27:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DB3BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:27:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239540AbiDAO2v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 10:28:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37626 "EHLO
+        id S1346916AbiDAO26 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Apr 2022 10:28:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346911AbiDAO2Z (ORCPT
+        with ESMTP id S1346935AbiDAO2Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 1 Apr 2022 10:28:25 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1F8591E3189
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 07:26:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648823190;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=2UVV1ZX1y9UdjpKVLfQDZGpGG6d6q550euWe10BEY9E=;
-        b=hUOw6p+Y4E4tlcFUL0wmM3fCsfUJAEh6zeCZY35oJR/A6ENIUFc6naEn6fJLssunnzjov2
-        n6vTy/+YBaDkkCUi1nmohbqbZQA7WQklJrmYKtKR1Q/N75UsLBqlJJ2V9lzAKsDLbAJLQL
-        cmmNBAfgaG255N0azMlYwIS/JkrW8Ik=
-Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
- [209.85.167.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-522-wPpgVoM1MUCqsjfcuTCy2g-1; Fri, 01 Apr 2022 10:26:28 -0400
-X-MC-Unique: wPpgVoM1MUCqsjfcuTCy2g-1
-Received: by mail-lf1-f71.google.com with SMTP id bp13-20020a056512158d00b0044a7966d6baso1268574lfb.21
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 07:26:28 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2UVV1ZX1y9UdjpKVLfQDZGpGG6d6q550euWe10BEY9E=;
-        b=6gjDy2Z8fdvzbaxW2ufLCsyzhOGxd/XySUdOaD4dHkm+YuMnQzHNFXCXxeGhA9KBlG
-         rvssd/bIS0Uog1V3FkB6vSoARrB7JqI9rATdsGOKCLghcSsTbmaVGZvlOK7QUehQ4jtx
-         tF4jKZKUha11omxswrAzALsw9WsBp5jt+IPUjzBs+ZcHdDEVrVUpWleaEhU+KYR8Z2Or
-         QBp7LyDcpyngiSHFM/KvZ8x/BXQYzmBRKeKTfNmNk9moQHQ2RAxENFB0gbnvUT+1fWrf
-         REmk5rUxWbKap84YAQdwYj0wN5u1PntreaH1X9eoL6AoA3XFcXd+/bpr6u66booGjOnl
-         OYzw==
-X-Gm-Message-State: AOAM532AT6u1hEZPx1SUB/7+y0oPCnlVBKXuUfl46arC2SkUnIUOwKqF
-        +3xAMM9H4cDY5opxTVPPkS2cwumMWrI93tWK6CuZbgO4RV4dm94ZJbUZhF3A1eZedOLUdrMP7zk
-        LzSk7Ov2iMpmihCLapZvXcLbGFEEZnM+0A9mx+ZKz
-X-Received: by 2002:a05:6512:308a:b0:44a:96cf:7ceb with SMTP id z10-20020a056512308a00b0044a96cf7cebmr13936439lfd.1.1648823187409;
-        Fri, 01 Apr 2022 07:26:27 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwEZVCL9DRSUlkJcPMDBd0xC2u70/SZJFXNSHYEoLpznTZMmi9QE8ctwQW8FDrNG5W5P8YwVfpONL2yFm35WK8=
-X-Received: by 2002:a05:6512:308a:b0:44a:96cf:7ceb with SMTP id
- z10-20020a056512308a00b0044a96cf7cebmr13936426lfd.1.1648823187229; Fri, 01
- Apr 2022 07:26:27 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220331190257.101781-1-wander@redhat.com> <20220331190257.101781-2-wander@redhat.com>
- <4767809d-5818-ad40-a0e7-b3af40aa071e@kernel.org>
-In-Reply-To: <4767809d-5818-ad40-a0e7-b3af40aa071e@kernel.org>
-From:   Wander Costa <wcosta@redhat.com>
-Date:   Fri, 1 Apr 2022 11:26:15 -0300
-Message-ID: <CAAq0SUmZ1u0TLTOq9fcn68oTZ6iHmpALbjhhy3zh6T=Kz1afxg@mail.gmail.com>
-Subject: Re: [PATCH v5 1/1] serial/8250: Use fifo in 8250 console driver
-To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     Wander Lairson Costa <wander@redhat.com>,
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71D251E533E;
+        Fri,  1 Apr 2022 07:26:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0DF8061C47;
+        Fri,  1 Apr 2022 14:26:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4967C340F2;
+        Fri,  1 Apr 2022 14:26:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648823192;
+        bh=tiS/AMbghCKUJCgtbDBDwXBAJjMpILpG1ZtoPCEFpz4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=uJC/RBp3yF5Fk/Kr+vqTpUwfVNEeFLK9/gqqEIcwNhk5nk0C3AKl6c2I/hlklJBbl
+         +tvm4UprcAL5NWXIl0NPs1D/3l/FDSjihJ4S3xcI7rbCG65ToatUqtUgVxWmom8v/8
+         /qhwugPb8+AFgWqGzDtZVHeTB3UPOT8V6/aZLX5x37rduaTwMMExOFjWpoUGckYUC0
+         vLnwRGUa3ZoD/LPOHUSOMxz9VDDes/DdGa/+FWkmqI4YdHdiEncXCwBj4yeYZXYfdF
+         /0OuJSmweoQAJPqcnWkLcAihLowV1dHbbtsWICJasVQ/9jAJ9n3RuYLaa4kHoRjtoJ
+         c1ar8D6dvbLTg==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Wayne Chang <waynec@nvidia.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Johan Hovold <johan@kernel.org>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Lukas Wunner <lukas@wunner.de>,
-        =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        =?UTF-8?Q?Andr=C3=A9_Goddard_Rosa?= <andre.goddard@gmail.com>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        David Laight <David.Laight@aculab.com>,
-        Jon Hunter <jonathanh@nvidia.com>, phil@raspberrypi.com
-Content-Type: text/plain; charset="UTF-8"
+        Sasha Levin <sashal@kernel.org>, balbi@kernel.org,
+        thierry.reding@gmail.com, jonathanh@nvidia.com,
+        jakobkoschel@gmail.com, chunfeng.yun@mediatek.com,
+        rikard.falkeborn@gmail.com, linux-usb@vger.kernel.org,
+        linux-tegra@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 015/149] usb: gadget: tegra-xudc: Fix control endpoint's definitions
+Date:   Fri,  1 Apr 2022 10:23:22 -0400
+Message-Id: <20220401142536.1948161-15-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220401142536.1948161-1-sashal@kernel.org>
+References: <20220401142536.1948161-1-sashal@kernel.org>
+MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 1, 2022 at 1:36 AM Jiri Slaby <jirislaby@kernel.org> wrote:
->
+From: Wayne Chang <waynec@nvidia.com>
 
->
-> ">" missing here. Doesn't a compiler warn about subtracting different types?
->
+[ Upstream commit 7bd42fb95eb4f98495ccadf467ad15124208ec49 ]
 
-My local machine doesn't generate a warning; it causes a build error.
-So my question was, how was I able to build and test yesterday in a
-remote server? It turns out I built it with make -j40, so I missed the
-error message because of the parallel build, and I didn't pay
-attention that the output didn't display the modules_install typical
-output. Usually, I do my tests in an RHEL9 machine, which ships with
-kernel 5.14, but this time I tested in a Fedora machine, which ships
-kernel 5.16. And for a moment, I forgot that. So when I booted with
-kernel 5.16, I believed I was running my custom kernel. Luckily, v5
-mainly was a squash of v4 with this port->state check added. Anyway,
-sorry about the typo. v6 is on the way.
+According to the Tegra Technical Reference Manual, the seq_num
+field of control endpoint is not [31:24] but [31:27]. Bit 24
+is reserved and bit 26 is splitxstate.
+
+The change fixes the wrong control endpoint's definitions.
+
+Signed-off-by: Wayne Chang <waynec@nvidia.com>
+Link: https://lore.kernel.org/r/20220107091349.149798-1-waynec@nvidia.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/usb/gadget/udc/tegra-xudc.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/usb/gadget/udc/tegra-xudc.c b/drivers/usb/gadget/udc/tegra-xudc.c
+index 716d9ab2d2ff..be76f891b9c5 100644
+--- a/drivers/usb/gadget/udc/tegra-xudc.c
++++ b/drivers/usb/gadget/udc/tegra-xudc.c
+@@ -272,8 +272,10 @@ BUILD_EP_CONTEXT_RW(deq_hi, deq_hi, 0, 0xffffffff)
+ BUILD_EP_CONTEXT_RW(avg_trb_len, tx_info, 0, 0xffff)
+ BUILD_EP_CONTEXT_RW(max_esit_payload, tx_info, 16, 0xffff)
+ BUILD_EP_CONTEXT_RW(edtla, rsvd[0], 0, 0xffffff)
+-BUILD_EP_CONTEXT_RW(seq_num, rsvd[0], 24, 0xff)
++BUILD_EP_CONTEXT_RW(rsvd, rsvd[0], 24, 0x1)
+ BUILD_EP_CONTEXT_RW(partial_td, rsvd[0], 25, 0x1)
++BUILD_EP_CONTEXT_RW(splitxstate, rsvd[0], 26, 0x1)
++BUILD_EP_CONTEXT_RW(seq_num, rsvd[0], 27, 0x1f)
+ BUILD_EP_CONTEXT_RW(cerrcnt, rsvd[1], 18, 0x3)
+ BUILD_EP_CONTEXT_RW(data_offset, rsvd[2], 0, 0x1ffff)
+ BUILD_EP_CONTEXT_RW(numtrbs, rsvd[2], 22, 0x1f)
+@@ -1554,6 +1556,9 @@ static int __tegra_xudc_ep_set_halt(struct tegra_xudc_ep *ep, bool halt)
+ 		ep_reload(xudc, ep->index);
+ 
+ 		ep_ctx_write_state(ep->context, EP_STATE_RUNNING);
++		ep_ctx_write_rsvd(ep->context, 0);
++		ep_ctx_write_partial_td(ep->context, 0);
++		ep_ctx_write_splitxstate(ep->context, 0);
+ 		ep_ctx_write_seq_num(ep->context, 0);
+ 
+ 		ep_reload(xudc, ep->index);
+@@ -2809,7 +2814,10 @@ static void tegra_xudc_reset(struct tegra_xudc *xudc)
+ 	xudc->setup_seq_num = 0;
+ 	xudc->queued_setup_packet = false;
+ 
+-	ep_ctx_write_seq_num(ep0->context, xudc->setup_seq_num);
++	ep_ctx_write_rsvd(ep0->context, 0);
++	ep_ctx_write_partial_td(ep0->context, 0);
++	ep_ctx_write_splitxstate(ep0->context, 0);
++	ep_ctx_write_seq_num(ep0->context, 0);
+ 
+ 	deq_ptr = trb_virt_to_phys(ep0, &ep0->transfer_ring[ep0->deq_ptr]);
+ 
+-- 
+2.34.1
 
