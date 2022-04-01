@@ -2,52 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A987C47084
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:11:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57972C43219
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:11:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353247AbiDAPKH (ORCPT
+        id S1352904AbiDAPIl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:10:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60348 "EHLO
+        Fri, 1 Apr 2022 11:08:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351061AbiDAOsV (ORCPT
+        with ESMTP id S1350107AbiDAOrK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:48:21 -0400
+        Fri, 1 Apr 2022 10:47:10 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A46E5B3C8;
-        Fri,  1 Apr 2022 07:39:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FE4A2A045E;
+        Fri,  1 Apr 2022 07:37:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 13F38B82505;
-        Fri,  1 Apr 2022 14:38:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A34A3C34112;
-        Fri,  1 Apr 2022 14:38:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7F742B8251C;
+        Fri,  1 Apr 2022 14:36:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36319C3410F;
+        Fri,  1 Apr 2022 14:36:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823906;
-        bh=b51VNEiKO+Fx8+RwLfJTXx0nWoth9Ssof+K5dUkMstw=;
+        s=k20201202; t=1648823798;
+        bh=S46w/pxrwPOG7Z8NatzWOuahhK3mDX+zNm6g8+N03LY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TqoooJMbDn3u1DY3Zyo5MawmssEG6IaCpT+vpAbb1Ua5SsT6KM6qd4U6CCS2sj4+g
-         9zcZuwk7aJPosdtmrAhHMIEh08PwfBy9OxC75t6jRCkViQ27Gi9WZ0xh6YAS4rvEm9
-         6EHn9Bw9uEIctqDWcLOPpuSgWS/r4FTmiHpX2jszTph2NSITMtCRBg2v2RFwlW+Qwf
-         ICRkgiM31ro/xecRB65rkRlBQBuTjzN/mYpAzq/swf3lQsfFDW102wJJmJFtzY16hl
-         BgehL7UgW1kcnh3a2eBp/NZJlIjICCsjjkeT0EdkXXncq8DYV8OTpgwslVlENu+eOV
-         uOhSWu9XNAElQ==
+        b=iOf58D7abVSr1f/tQpQn0acm3k8akZ+zGDFu/uAuVru1DWMUgNqzuaIU2kqSokJfg
+         FaGrzCbALRwId32MdtZTOQj8NV4ul7c2A9rVVvlz+/60m3twaou7snxSjmkA/iUOpX
+         MGILHSVgrm4LjhqK4/fQaz2S8x5pyBdEnWI264SIAkFZN5TnyIUa6QhTsaRYYUToiD
+         aTmmtrBJYdcgnnG4yTH4F4roz39JBZUKRlCzMOoMSPczfmE54r83xJfM9Ryy35q4Mj
+         rL2PmCZ5UF4mQONpomsagjdXGnehJdleAMDmBXqPWtypTGzfk+YNw0XNXz652AllFG
+         oluBfFmj4oTIQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Maxim Kiselev <bigunclemax@gmail.com>,
-        Maxim Kochetkov <fido_max@inbox.ru>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
-        krzk+dt@kernel.org, devicetree@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH AUTOSEL 5.15 12/98] powerpc: dts: t104xrdb: fix phy type for FMAN 4/5
-Date:   Fri,  1 Apr 2022 10:36:16 -0400
-Message-Id: <20220401143742.1952163-12-sashal@kernel.org>
+Cc:     Michael Chan <michael.chan@broadcom.com>,
+        Colin Winegarden <colin.winegarden@broadcom.com>,
+        Pavan Chebbi <pavan.chebbi@broadcom.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 083/109] bnxt_en: Eliminate unintended link toggle during FW reset
+Date:   Fri,  1 Apr 2022 10:32:30 -0400
+Message-Id: <20220401143256.1950537-83-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220401143742.1952163-1-sashal@kernel.org>
-References: <20220401143742.1952163-1-sashal@kernel.org>
+In-Reply-To: <20220401143256.1950537-1-sashal@kernel.org>
+References: <20220401143256.1950537-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -56,45 +55,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxim Kiselev <bigunclemax@gmail.com>
+From: Michael Chan <michael.chan@broadcom.com>
 
-[ Upstream commit 17846485dff91acce1ad47b508b633dffc32e838 ]
+[ Upstream commit 7c492a2530c1f05441da541307c2534230dfd59b ]
 
-T1040RDB has two RTL8211E-VB phys which requires setting
-of internal delays for correct work.
+If the flow control settings have been changed, a subsequent FW reset
+may cause the ethernet link to toggle unnecessarily.  This link toggle
+will increase the down time by a few seconds.
 
-Changing the phy-connection-type property to `rgmii-id`
-will fix this issue.
+The problem is caused by bnxt_update_phy_setting() detecting a false
+mismatch in the flow control settings between the stored software
+settings and the current FW settings after the FW reset.  This mismatch
+is caused by the AUTONEG bit added to link_info->req_flow_ctrl in an
+inconsistent way in bnxt_set_pauseparam() in autoneg mode.  The AUTONEG
+bit should not be added to link_info->req_flow_ctrl.
 
-Signed-off-by: Maxim Kiselev <bigunclemax@gmail.com>
-Reviewed-by: Maxim Kochetkov <fido_max@inbox.ru>
-Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20211230151123.1258321-1-bigunclemax@gmail.com
+Reviewed-by: Colin Winegarden <colin.winegarden@broadcom.com>
+Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
+Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/boot/dts/fsl/t104xrdb.dtsi | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/arch/powerpc/boot/dts/fsl/t104xrdb.dtsi b/arch/powerpc/boot/dts/fsl/t104xrdb.dtsi
-index 099a598c74c0..bfe1ed5be337 100644
---- a/arch/powerpc/boot/dts/fsl/t104xrdb.dtsi
-+++ b/arch/powerpc/boot/dts/fsl/t104xrdb.dtsi
-@@ -139,12 +139,12 @@ pca9546@77 {
- 		fman@400000 {
- 			ethernet@e6000 {
- 				phy-handle = <&phy_rgmii_0>;
--				phy-connection-type = "rgmii";
-+				phy-connection-type = "rgmii-id";
- 			};
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+index f147ad5a6531..a47753a4498e 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+@@ -2076,9 +2076,7 @@ static int bnxt_set_pauseparam(struct net_device *dev,
+ 		}
  
- 			ethernet@e8000 {
- 				phy-handle = <&phy_rgmii_1>;
--				phy-connection-type = "rgmii";
-+				phy-connection-type = "rgmii-id";
- 			};
- 
- 			mdio0: mdio@fc000 {
+ 		link_info->autoneg |= BNXT_AUTONEG_FLOW_CTRL;
+-		if (bp->hwrm_spec_code >= 0x10201)
+-			link_info->req_flow_ctrl =
+-				PORT_PHY_CFG_REQ_AUTO_PAUSE_AUTONEG_PAUSE;
++		link_info->req_flow_ctrl = 0;
+ 	} else {
+ 		/* when transition from auto pause to force pause,
+ 		 * force a link change
 -- 
 2.34.1
 
