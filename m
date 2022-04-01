@@ -2,111 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D576C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 09:25:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 712D1C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 09:26:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344519AbiDAJ1P (ORCPT
+        id S1344524AbiDAJ1w (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 05:27:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34300 "EHLO
+        Fri, 1 Apr 2022 05:27:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231834AbiDAJ1M (ORCPT
+        with ESMTP id S1344538AbiDAJ1s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 05:27:12 -0400
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11DFEEAC87
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 02:25:24 -0700 (PDT)
-Received: by mail-pl1-x630.google.com with SMTP id y6so2010810plg.2
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 02:25:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=cpps/7SgFquxKCOj7M8NgIo6De4u6whEjneyMo4UPFs=;
-        b=Q6PGD1JOHNbZ64V72kkcK/KPtpC2zWKuQycsjZo5rWtV1MiuQ97AuWj1IPyn197/OR
-         Buxc58Q0yQO+JBpQeztseOPQOQr+2TgzFKGW3VzNAR7c6eKjJJXlgIYzCof8QFeoQdFE
-         qbrNgotWTxY/DbY89IYxpbpR/k1NzhsVRpCnpulnaYCTPwNLRwJYGQYzBU6RSJMyGw/p
-         T03kfCYjjr4kzdBsuVJKdBlRyDZAFcSSx9jw/RNGtuNyCQTZKi8nNImONmbNLxIav80a
-         UBzxUJwKxAuRjTrS8p7UlMz3uiyGcdlzZtWBPqTzCWAzO39OBzV7rdUBJVPGBmONkcz2
-         6/8Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cpps/7SgFquxKCOj7M8NgIo6De4u6whEjneyMo4UPFs=;
-        b=lN5e+YAKRWewW8vIluaoDYDqWC7gII/u9ZCLfRyQvgofMm4d6ZU2UL/MY23KH5zzzS
-         Q8ndmVYF/op6My2VTV5XNiRiIwldPdl2wPWI0hoGUDcTrzqnHHY+uIUdM2F0X/OzedDR
-         jkiR0PRPQ0f1ZYYA5Tm3iH042kWo6dfnlc3k1phGI9uSlXjPQKAcsavUO3QwJJXFnrZN
-         AaBNvcnSQqqTCOPTnW14MpPFZj7YJnE9kLqq6vJoe4UHvWnwdqZ2gejVoIIKFY6NKZjz
-         VW3zLZKbn90DsHwnkapZhQ6KvzrDnyKpQXn1zquPyI74pFgxq/WUXPxWAr4RPrix5o0l
-         Mbdw==
-X-Gm-Message-State: AOAM530mAGDVjUfQwTX5ocyhYuwtlIgm/q3cEa3Rk7NbZubxEu+cd0u/
-        H2KANLZKUCbX5DVdBM6UybUfAdcb6GvahL2YjXPVk4pXmYc=
-X-Google-Smtp-Source: ABdhPJxezlGSi8KeogGlaccw9MFltaFsZMFMDGs0jf8o6lgPej2KNJmC1QA3IjMgku2i6lCVeXsdV26QsfufovSNWMU=
-X-Received: by 2002:a17:902:7e0d:b0:156:47a4:a7c4 with SMTP id
- b13-20020a1709027e0d00b0015647a4a7c4mr9473951plm.141.1648805123539; Fri, 01
- Apr 2022 02:25:23 -0700 (PDT)
+        Fri, 1 Apr 2022 05:27:48 -0400
+Received: from mx1.cqplus1.com (unknown [113.204.237.245])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C15AFFA22B
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 02:25:34 -0700 (PDT)
+X-MailGates: (flag:1,DYNAMIC,RELAY,NOHOST,LAN:PASS)(compute_score:DELIVE
+        R,40,3)
+Received: from 172.27.96.203
+        by mx1.cqplus1.com with MailGates ESMTP Server V5.0(1193:1:AUTH_RELAY)
+        (envelope-from <qinjian@cqplus1.com>); Fri, 01 Apr 2022 17:18:32 +0800 (CST)
+Received: from CQEXMAIL01.cqplus1.com (172.27.96.203) by
+ CQEXMAIL01.cqplus1.com (172.27.96.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.18; Fri, 1 Apr 2022 17:19:31 +0800
+Received: from CQEXMAIL01.cqplus1.com ([::1]) by CQEXMAIL01.cqplus1.com
+ ([::1]) with mapi id 15.01.2375.018; Fri, 1 Apr 2022 17:19:31 +0800
+From:   =?utf-8?B?cWluamlhblvopoPlgaVd?= <qinjian@cqplus1.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+CC:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "mturquette@baylibre.com" <mturquette@baylibre.com>,
+        "sboyd@kernel.org" <sboyd@kernel.org>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "maz@kernel.org" <maz@kernel.org>,
+        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "arnd@arndb.de" <arnd@arndb.de>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>
+Subject: RE: [PATCH v12 4/9] dt-bindings: clock: Add bindings for SP7021 clock
+ driver
+Thread-Topic: [PATCH v12 4/9] dt-bindings: clock: Add bindings for SP7021
+ clock driver
+Thread-Index: AQHYRNqEmfEToMF3qkaI4FVvqF6nN6zZafcAgAFYO/A=
+Date:   Fri, 1 Apr 2022 09:19:31 +0000
+Message-ID: <eae0d1c49fcd4b41b700e8fd86af1b3e@cqplus1.com>
+References: <cover.1648714851.git.qinjian@cqplus1.com>
+ <c535be1e977098993850789faceea1db605df81d.1648714851.git.qinjian@cqplus1.com>
+ <84d1e5b6-caa5-cf98-a4b2-2f1ca738b795@linaro.org>
+In-Reply-To: <84d1e5b6-caa5-cf98-a4b2-2f1ca738b795@linaro.org>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.28.110.18]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20220330120246.25580-1-xiam0nd.tong@gmail.com> <20220330120246.25580-2-xiam0nd.tong@gmail.com>
-In-Reply-To: <20220330120246.25580-2-xiam0nd.tong@gmail.com>
-From:   Patrik Jakobsson <patrik.r.jakobsson@gmail.com>
-Date:   Fri, 1 Apr 2022 11:25:12 +0200
-Message-ID: <CAMeQTsaL45HwKjVoh2k0m1gq7j5ui43LBLXsq0_-RJnFko40mA@mail.gmail.com>
-Subject: Re: [PATCH 1/5] gma500: fix a missing break in oaktrail_crtc_mode_set
-To:     Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
-        "Clark, Rob" <rob@ti.com>, Zhao Yakui <yakui.zhao@intel.com>,
-        Dave Airlie <airlied@redhat.com>,
-        Alan Cox <alan@linux.intel.com>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 30, 2022 at 2:03 PM Xiaomeng Tong <xiam0nd.tong@gmail.com> wrote:
->
-> Instead of exiting the loop as expected when an entry is found, the
-> list_for_each_entry() continues until the traversal is complete. It
-> will certainly lead to a invalid reference to list itereator variable
-> 'connector' after the loop pointing an bogus address at an offset
-> from the list head, and could lead to multiple 'is_*' flags being set
-> with true mistakely too.
->
-> The invalid reference to list itereator is here:
->         drm_object_property_get_value(&connector->base,
->
-> To fix this, when found the entry, add a break after the switch
-> statement.
-
-Hi, this is already fixed in:
-commit b1a7d0ddb169774c3db5afe9e64124daea7fdd9f
-Author: Patrik Jakobsson <patrik.r.jakobsson@gmail.com>
-Date:   Tue Mar 22 14:17:38 2022 +0100
-
-    drm/gma500: Make use of the drm connector iterator
-
->
-> Fixes: a69ac9ea85d87 ("drm/gma500: drm_connector_property -> drm_object_property")
-> Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-> ---
->  drivers/gpu/drm/gma500/oaktrail_crtc.c | 2 ++
->  1 file changed, 2 insertions(+)
->
-> diff --git a/drivers/gpu/drm/gma500/oaktrail_crtc.c b/drivers/gpu/drm/gma500/oaktrail_crtc.c
-> index 36c7c2686c90..eb2d79872bd5 100644
-> --- a/drivers/gpu/drm/gma500/oaktrail_crtc.c
-> +++ b/drivers/gpu/drm/gma500/oaktrail_crtc.c
-> @@ -409,6 +409,8 @@ static int oaktrail_crtc_mode_set(struct drm_crtc *crtc,
->                         is_mipi = true;
->                         break;
->                 }
-> +
-> +               break;
->         }
->
->         /* Disable the VGA plane that we never use */
-> --
-> 2.17.1
->
+PiA+IGRpZmYgLS1naXQgYS9pbmNsdWRlL2R0LWJpbmRpbmdzL2Nsb2NrL3NwLXNwNzAyMS5oIGIv
+aW5jbHVkZS9kdC1iaW5kaW5ncy9jbG9jay9zcC1zcDcwMjEuaA0KPiA+IG5ldyBmaWxlIG1vZGUg
+MTAwNjQ0DQo+ID4gaW5kZXggMDAwMDAwMDAwLi40NWRhYzZkZTgNCj4gPiAtLS0gL2Rldi9udWxs
+DQo+ID4gKysrIGIvaW5jbHVkZS9kdC1iaW5kaW5ncy9jbG9jay9zcC1zcDcwMjEuaA0KPiA+IEBA
+IC0wLDAgKzEsMTEyIEBADQo+ID4gKy8qIFNQRFgtTGljZW5zZS1JZGVudGlmaWVyOiAoR1BMLTIu
+MC1vbmx5IE9SIEJTRC0yLUNsYXVzZSkgKi8NCj4gPiArLyoNCj4gPiArICogQ29weXJpZ2h0IChD
+KSBTdW5wbHVzIFRlY2hub2xvZ3kgQ28uLCBMdGQuDQo+ID4gKyAqICAgICAgIEFsbCByaWdodHMg
+cmVzZXJ2ZWQuDQo+ID4gKyAqLw0KPiA+ICsjaWZuZGVmIF9EVF9CSU5ESU5HU19DTE9DS19TVU5Q
+TFVTX1NQNzAyMV9IDQo+ID4gKyNkZWZpbmUgX0RUX0JJTkRJTkdTX0NMT0NLX1NVTlBMVVNfU1A3
+MDIxX0gNCj4gPiArDQo+ID4gKyNkZWZpbmUgWFRBTAkJCTI3MDAwMDAwDQo+ID4gKw0KPiA+ICsv
+KiBwbGxzICovDQo+ID4gKyNkZWZpbmUgUExMX0EJCQkwDQo+ID4gKyNkZWZpbmUgUExMX0UJCQkx
+DQo+ID4gKyNkZWZpbmUgUExMX0VfMlA1CQkyDQo+ID4gKyNkZWZpbmUgUExMX0VfMjUJCTMNCj4g
+PiArI2RlZmluZSBQTExfRV8xMTJQNQkJNA0KPiA+ICsjZGVmaW5lIFBMTF9GCQkJNQ0KPiA+ICsj
+ZGVmaW5lIFBMTF9UVgkJCTYNCj4gPiArI2RlZmluZSBQTExfVFZfQQkJNw0KPiA+ICsjZGVmaW5l
+IFBMTF9TWVMJCQk4DQo+ID4gKw0KPiA+ICsvKiBnYXRlczogbW9fY2xrZW4wIH4gbW9fY2xrZW45
+ICovDQo+ID4gKyNkZWZpbmUgQ0xLX1NZU1RFTQkJMHgxMA0KPiA+ICsjZGVmaW5lIENMS19SVEMJ
+CQkweDEyDQo+IA0KPiBZQU1MIGxvb2tzIG9rLCBidXQgaGVyZSBjb21tZW50IGZyb20gQXJuZCBh
+bHNvIGFwcGxpZXMuIFRoZXNlIHNob3VsZCBiZQ0KPiByZWd1bGFyIGRlY2ltYWwgbnVtYmVycyBp
+bmNyZW1lbnRlZCBieSBvbmUuDQo+IA0KPiBCZXN0IHJlZ2FyZHMsDQo+IEtyenlzenRvZg0KDQpZ
+ZXMsIHNhbWUgYXMgcmVzZXQgZHJpdmVyLCB0aGVzZSBkZWZpbmVzIGFsc28gbWFwcGluZyB0aGUg
+aGFyZHdhcmUuDQpCdXQgZGlmZmVyZW50IGZyb20gcmVzZXQgZHJpdmVyLCBjbGsgZHJpdmVyIGFs
+c28gdXNlZCB0aGVzZSBkZWZpbmVzLg0KSWYgSSByZW1vdmVkIHRoaXMgZGVmaW5lcywgSSAgbXVz
+dCB3cml0ZSB0aGUgcHJvcGVyIGhhcmR3YXJlIG51bWJlciB0d2ljZSBpbiBkdCAmIGRyaXZlci4N
+Ckl0J3MgbWVhbmluZ2xlc3MgJiBoYXJkIHRvIGNoZWNrLg0KDQoNCg0KDQo=
