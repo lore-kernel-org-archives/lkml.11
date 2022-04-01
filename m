@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 043DDC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:27:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93657C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:28:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347181AbiDAO3o (ORCPT
+        id S1347065AbiDAO34 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 10:29:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38710 "EHLO
+        Fri, 1 Apr 2022 10:29:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347078AbiDAO2s (ORCPT
+        with ESMTP id S1347094AbiDAO27 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:28:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A543428256B;
-        Fri,  1 Apr 2022 07:26:56 -0700 (PDT)
+        Fri, 1 Apr 2022 10:28:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4303282B1D;
+        Fri,  1 Apr 2022 07:27:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3568061C3F;
-        Fri,  1 Apr 2022 14:26:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD4FCC2BBE4;
-        Fri,  1 Apr 2022 14:26:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 364BF61C43;
+        Fri,  1 Apr 2022 14:27:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23563C34112;
+        Fri,  1 Apr 2022 14:26:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823215;
-        bh=6oDoP0Q28YCI0QRjMe8GAq0uKPQEXJq/i8fibSIytJ0=;
+        s=k20201202; t=1648823219;
+        bh=F3FQSc1hP6nwyBj6FyFPyZKn+Qy0aHxvWMd3vhQLYRM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CoGPGaIG5UHK99kKbNxYFBIA76FzkP37jUG9I9LQRXfTf+oqFVT9HPFtCP5Lppn/X
-         NOm7j92kxDkQICUmZF7Bu5IRpW3IeKOegj4+kMYXHVjfizIcS89ykIwayPy1KqOQfq
-         uCAWPtwKVU7Jph4/tPRdeV3/SpLE2cmvsXiAVd1sgZSsuzC8heExvrjcYO9v4lYN+y
-         p9bO8c059e+KwIatWO69Dsp7xCKfp7CH1ekiaOB0K6PZHuTec2h+B+fgrSDsSYn+P+
-         rkgmfbTPIlPWGL0WBouPQ16g9oBo9ooVXBQJ1k9eUTHBFjncD149FvY3EN36x/aRL/
-         v2mwAXgbdYEMw==
+        b=BusjT5Ek0Y2Sj9ZVREQJVIwVh4BrWDZAAnvYzAlsZW7Jjr1jUaruJHawEEhtjVo5d
+         pX2iKoS/U6nXU429GzKEchZlMAWmv+iNZFateAK+CT3Dw0/J/3ZpgRPsV6aXvVixvI
+         5UJF9LINRbN0a0I3KPIt5/tam72Dfwb/3/Zbd1Zj67aqkvLyWbs7hpdrQsFP90T/UX
+         NOlQvZMuNafGWkK3O/Zwgqa6UcPP/zuMd+s7FEcf66fvGcFb0PKESvEc0siP0/SFMC
+         oNc60OGaFXi0QQeus7xYtUvmjcYzTJRrySfHxTsIDiGbcadQofPxG5rBRtq+JcIxGa
+         Nqnl+Sb3LIdlA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Roi Dayan <roid@nvidia.com>, Oz Shlomo <ozsh@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, cmi@nvidia.com,
-        mbloch@nvidia.com, paulb@nvidia.com, nathan@kernel.org,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 020/149] net/mlx5e: TC, Hold sample_attr on stack instead of pointer
-Date:   Fri,  1 Apr 2022 10:23:27 -0400
-Message-Id: <20220401142536.1948161-20-sashal@kernel.org>
+Cc:     Philip Yang <Philip.Yang@amd.com>, Ruili Ji <ruili.ji@amd.com>,
+        Felix Kuehling <Felix.Kuehling@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
+        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.17 022/149] drm/amdkfd: Ensure mm remain valid in svm deferred_list work
+Date:   Fri,  1 Apr 2022 10:23:29 -0400
+Message-Id: <20220401142536.1948161-22-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401142536.1948161-1-sashal@kernel.org>
 References: <20220401142536.1948161-1-sashal@kernel.org>
@@ -55,154 +55,139 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Roi Dayan <roid@nvidia.com>
+From: Philip Yang <Philip.Yang@amd.com>
 
-[ Upstream commit eeed226ed110ed40598e60e29b66643012277be7 ]
+[ Upstream commit 367c9b0f1b8750a704070e7ae85234d591290434 ]
 
-In later commit we are going to instantiate multiple attr instances
-for flow instead of single attr.
-Parsing TC sample allocates a new memory but there is no symmetric
-cleanup in the infrastructure.
-To avoid asymmetric alloc/free use sample_attr as part of the flow attr
-and not allocated and held as a pointer.
-This will avoid a cleanup leak when sample action is not on the first
-attr.
+svm_deferred_list work should continue to handle deferred_range_list
+which maybe split to child range to avoid child range leak, and remove
+ranges mmu interval notifier to avoid mm mm_count leak. So taking mm
+reference when adding range to deferred list, to ensure mm is valid in
+the scheduled deferred_list_work, and drop the mm referrence after range
+is handled.
 
-Signed-off-by: Roi Dayan <roid@nvidia.com>
-Reviewed-by: Oz Shlomo <ozsh@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Signed-off-by: Philip Yang <Philip.Yang@amd.com>
+Reported-by: Ruili Ji <ruili.ji@amd.com>
+Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/ethernet/mellanox/mlx5/core/en/tc/act/sample.c |  7 +------
- drivers/net/ethernet/mellanox/mlx5/core/en/tc/sample.c | 10 +++++-----
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.c        |  1 -
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.h        |  2 +-
- .../net/ethernet/mellanox/mlx5/core/eswitch_offloads.c |  6 +++---
- 5 files changed, 10 insertions(+), 16 deletions(-)
+ drivers/gpu/drm/amd/amdkfd/kfd_svm.c | 62 ++++++++++++++++------------
+ 1 file changed, 36 insertions(+), 26 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/sample.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/sample.c
-index 6699bdf5cf01..b895c378cfaf 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/sample.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/sample.c
-@@ -27,11 +27,7 @@ tc_act_parse_sample(struct mlx5e_tc_act_parse_state *parse_state,
- 		    struct mlx5e_priv *priv,
- 		    struct mlx5_flow_attr *attr)
- {
--	struct mlx5e_sample_attr *sample_attr;
--
--	sample_attr = kzalloc(sizeof(*attr->sample_attr), GFP_KERNEL);
--	if (!sample_attr)
--		return -ENOMEM;
-+	struct mlx5e_sample_attr *sample_attr = &attr->sample_attr;
- 
- 	sample_attr->rate = act->sample.rate;
- 	sample_attr->group_num = act->sample.psample_group->group_num;
-@@ -39,7 +35,6 @@ tc_act_parse_sample(struct mlx5e_tc_act_parse_state *parse_state,
- 	if (act->sample.truncate)
- 		sample_attr->trunc_size = act->sample.trunc_size;
- 
--	attr->sample_attr = sample_attr;
- 	flow_flag_set(parse_state->flow, SAMPLE);
- 
- 	return 0;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/sample.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/sample.c
-index ff4b4f8a5a9d..0faaf9a4b531 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/sample.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/sample.c
-@@ -513,7 +513,7 @@ mlx5e_tc_sample_offload(struct mlx5e_tc_psample *tc_psample,
- 	sample_flow = kzalloc(sizeof(*sample_flow), GFP_KERNEL);
- 	if (!sample_flow)
- 		return ERR_PTR(-ENOMEM);
--	sample_attr = attr->sample_attr;
-+	sample_attr = &attr->sample_attr;
- 	sample_attr->sample_flow = sample_flow;
- 
- 	/* For NICs with reg_c_preserve support or decap action, use
-@@ -546,6 +546,7 @@ mlx5e_tc_sample_offload(struct mlx5e_tc_psample *tc_psample,
- 		err = PTR_ERR(sample_flow->sampler);
- 		goto err_sampler;
- 	}
-+	sample_attr->sampler_id = sample_flow->sampler->sampler_id;
- 
- 	/* Create an id mapping reg_c0 value to sample object. */
- 	restore_obj.type = MLX5_MAPPED_OBJ_SAMPLE;
-@@ -585,8 +586,7 @@ mlx5e_tc_sample_offload(struct mlx5e_tc_psample *tc_psample,
- 	pre_attr->outer_match_level = attr->outer_match_level;
- 	pre_attr->chain = attr->chain;
- 	pre_attr->prio = attr->prio;
--	pre_attr->sample_attr = attr->sample_attr;
--	sample_attr->sampler_id = sample_flow->sampler->sampler_id;
-+	pre_attr->sample_attr = *sample_attr;
- 	pre_esw_attr = pre_attr->esw_attr;
- 	pre_esw_attr->in_mdev = esw_attr->in_mdev;
- 	pre_esw_attr->in_rep = esw_attr->in_rep;
-@@ -633,11 +633,11 @@ mlx5e_tc_sample_unoffload(struct mlx5e_tc_psample *tc_psample,
- 	 * will hit fw syndromes.
- 	 */
- 	esw = tc_psample->esw;
--	sample_flow = attr->sample_attr->sample_flow;
-+	sample_flow = attr->sample_attr.sample_flow;
- 	mlx5_eswitch_del_offloaded_rule(esw, sample_flow->pre_rule, sample_flow->pre_attr);
- 
- 	sample_restore_put(tc_psample, sample_flow->restore);
--	mapping_remove(esw->offloads.reg_c0_obj_pool, attr->sample_attr->restore_obj_id);
-+	mapping_remove(esw->offloads.reg_c0_obj_pool, attr->sample_attr.restore_obj_id);
- 	sampler_put(tc_psample, sample_flow->sampler);
- 	if (sample_flow->post_act_handle)
- 		mlx5e_tc_post_act_del(tc_psample->post_act, sample_flow->post_act_handle);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-index b27532a9301e..7e5c00349ccf 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -1634,7 +1634,6 @@ static void mlx5e_tc_del_fdb_flow(struct mlx5e_priv *priv,
- 	if (flow_flag_test(flow, L3_TO_L2_DECAP))
- 		mlx5e_detach_decap(priv, flow);
- 
--	kfree(attr->sample_attr);
- 	kvfree(attr->esw_attr->rx_tun_attr);
- 	kvfree(attr->parse_attr);
- 	kfree(flow->attr);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
-index 5ffae9b13066..2f09e34db9ff 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
-@@ -71,7 +71,7 @@ struct mlx5_flow_attr {
- 	struct mlx5_fc *counter;
- 	struct mlx5_modify_hdr *modify_hdr;
- 	struct mlx5_ct_attr ct_attr;
--	struct mlx5e_sample_attr *sample_attr;
-+	struct mlx5e_sample_attr sample_attr;
- 	struct mlx5e_tc_flow_parse_attr *parse_attr;
- 	u32 chain;
- 	u16 prio;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-index cfcd72bad9af..e7e7b4b0dcdb 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-@@ -201,12 +201,12 @@ esw_cleanup_decap_indir(struct mlx5_eswitch *esw,
- static int
- esw_setup_sampler_dest(struct mlx5_flow_destination *dest,
- 		       struct mlx5_flow_act *flow_act,
--		       struct mlx5_flow_attr *attr,
-+		       u32 sampler_id,
- 		       int i)
- {
- 	flow_act->flags |= FLOW_ACT_IGNORE_FLOW_LEVEL;
- 	dest[i].type = MLX5_FLOW_DESTINATION_TYPE_FLOW_SAMPLER;
--	dest[i].sampler_id = attr->sample_attr->sampler_id;
-+	dest[i].sampler_id = sampler_id;
- 
- 	return 0;
+diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_svm.c b/drivers/gpu/drm/amd/amdkfd/kfd_svm.c
+index f2805ba74c80..225affcddbc1 100644
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_svm.c
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_svm.c
+@@ -1985,10 +1985,9 @@ svm_range_update_notifier_and_interval_tree(struct mm_struct *mm,
  }
-@@ -466,7 +466,7 @@ esw_setup_dests(struct mlx5_flow_destination *dest,
- 		attr->flags |= MLX5_ESW_ATTR_FLAG_SRC_REWRITE;
  
- 	if (attr->flags & MLX5_ESW_ATTR_FLAG_SAMPLE) {
--		esw_setup_sampler_dest(dest, flow_act, attr, *i);
-+		esw_setup_sampler_dest(dest, flow_act, attr->sample_attr.sampler_id, *i);
- 		(*i)++;
- 	} else if (attr->dest_ft) {
- 		esw_setup_ft_dest(dest, flow_act, esw, attr, spec, *i);
+ static void
+-svm_range_handle_list_op(struct svm_range_list *svms, struct svm_range *prange)
++svm_range_handle_list_op(struct svm_range_list *svms, struct svm_range *prange,
++			 struct mm_struct *mm)
+ {
+-	struct mm_struct *mm = prange->work_item.mm;
+-
+ 	switch (prange->work_item.op) {
+ 	case SVM_OP_NULL:
+ 		pr_debug("NULL OP 0x%p prange 0x%p [0x%lx 0x%lx]\n",
+@@ -2071,34 +2070,41 @@ static void svm_range_deferred_list_work(struct work_struct *work)
+ 	pr_debug("enter svms 0x%p\n", svms);
+ 
+ 	p = container_of(svms, struct kfd_process, svms);
+-	/* Avoid mm is gone when inserting mmu notifier */
+-	mm = get_task_mm(p->lead_thread);
+-	if (!mm) {
+-		pr_debug("svms 0x%p process mm gone\n", svms);
+-		return;
+-	}
+-retry:
+-	mmap_write_lock(mm);
+-
+-	/* Checking for the need to drain retry faults must be inside
+-	 * mmap write lock to serialize with munmap notifiers.
+-	 */
+-	if (unlikely(atomic_read(&svms->drain_pagefaults))) {
+-		mmap_write_unlock(mm);
+-		svm_range_drain_retry_fault(svms);
+-		goto retry;
+-	}
+ 
+ 	spin_lock(&svms->deferred_list_lock);
+ 	while (!list_empty(&svms->deferred_range_list)) {
+ 		prange = list_first_entry(&svms->deferred_range_list,
+ 					  struct svm_range, deferred_list);
+-		list_del_init(&prange->deferred_list);
+ 		spin_unlock(&svms->deferred_list_lock);
+ 
+ 		pr_debug("prange 0x%p [0x%lx 0x%lx] op %d\n", prange,
+ 			 prange->start, prange->last, prange->work_item.op);
+ 
++		mm = prange->work_item.mm;
++retry:
++		mmap_write_lock(mm);
++
++		/* Checking for the need to drain retry faults must be inside
++		 * mmap write lock to serialize with munmap notifiers.
++		 */
++		if (unlikely(atomic_read(&svms->drain_pagefaults))) {
++			mmap_write_unlock(mm);
++			svm_range_drain_retry_fault(svms);
++			goto retry;
++		}
++
++		/* Remove from deferred_list must be inside mmap write lock, for
++		 * two race cases:
++		 * 1. unmap_from_cpu may change work_item.op and add the range
++		 *    to deferred_list again, cause use after free bug.
++		 * 2. svm_range_list_lock_and_flush_work may hold mmap write
++		 *    lock and continue because deferred_list is empty, but
++		 *    deferred_list work is actually waiting for mmap lock.
++		 */
++		spin_lock(&svms->deferred_list_lock);
++		list_del_init(&prange->deferred_list);
++		spin_unlock(&svms->deferred_list_lock);
++
+ 		mutex_lock(&svms->lock);
+ 		mutex_lock(&prange->migrate_mutex);
+ 		while (!list_empty(&prange->child_list)) {
+@@ -2109,19 +2115,20 @@ static void svm_range_deferred_list_work(struct work_struct *work)
+ 			pr_debug("child prange 0x%p op %d\n", pchild,
+ 				 pchild->work_item.op);
+ 			list_del_init(&pchild->child_list);
+-			svm_range_handle_list_op(svms, pchild);
++			svm_range_handle_list_op(svms, pchild, mm);
+ 		}
+ 		mutex_unlock(&prange->migrate_mutex);
+ 
+-		svm_range_handle_list_op(svms, prange);
++		svm_range_handle_list_op(svms, prange, mm);
+ 		mutex_unlock(&svms->lock);
++		mmap_write_unlock(mm);
++
++		/* Pairs with mmget in svm_range_add_list_work */
++		mmput(mm);
+ 
+ 		spin_lock(&svms->deferred_list_lock);
+ 	}
+ 	spin_unlock(&svms->deferred_list_lock);
+-
+-	mmap_write_unlock(mm);
+-	mmput(mm);
+ 	pr_debug("exit svms 0x%p\n", svms);
+ }
+ 
+@@ -2139,6 +2146,9 @@ svm_range_add_list_work(struct svm_range_list *svms, struct svm_range *prange,
+ 			prange->work_item.op = op;
+ 	} else {
+ 		prange->work_item.op = op;
++
++		/* Pairs with mmput in deferred_list_work */
++		mmget(mm);
+ 		prange->work_item.mm = mm;
+ 		list_add_tail(&prange->deferred_list,
+ 			      &prange->svms->deferred_range_list);
 -- 
 2.34.1
 
