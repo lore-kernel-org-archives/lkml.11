@@ -2,51 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED07EC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDED0C433F5
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:28:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240436AbiDAP3t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:29:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53782 "EHLO
+        id S244029AbiDAP3c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Apr 2022 11:29:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349792AbiDAO6A (ORCPT
+        with ESMTP id S1349576AbiDAO5m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:58:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47CE115A205;
-        Fri,  1 Apr 2022 07:44:52 -0700 (PDT)
+        Fri, 1 Apr 2022 10:57:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E12F1557F8;
+        Fri,  1 Apr 2022 07:44:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D877860AD8;
-        Fri,  1 Apr 2022 14:44:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C151AC34112;
-        Fri,  1 Apr 2022 14:44:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 487AFB8240E;
+        Fri,  1 Apr 2022 14:44:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C4BAC2BBE4;
+        Fri,  1 Apr 2022 14:44:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824291;
-        bh=aDjIbtXpZcKp3KyrL3zGXS1AA90UMCdcBlY1qKml0nA=;
+        s=k20201202; t=1648824282;
+        bh=PyJAd+7bYNCWsSRK4v2x7FxfIiWWd56XJim2a7gC9L8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Zvsi76uPQnLFn2DFRyMIji90YQ6IA3vQl/fPsxTJYjjswwvIA/mNLNiCzlBGmxeWv
-         8nBVbVxnXf7IYWNnFPBW4RS+r8YAcFqUmUmNIMWwzrTEoPWV0WIcrBIBKjNthZwa4q
-         ZL0p9h4r4svM6ePn62rLIoBOjpcogFZKsfYKRWzdZlDO8sA+JYv10CfiVF6g9ozgT6
-         L/pUyJVQIXfW2tefFDXIFcEsV+ZNLJEpTRgkASi2qzzCAfprvgs3UsEroHjILxOLJ4
-         mUO6I9XztYOUHWR+7DRS11OgsW9hzorZfLte7oQADMVuBHjjCjoiPSKsbDzQp6+eAl
-         YCMTKE73MDCsw==
+        b=J6UHA63jBLxen4MsFScuRLUjOKVvOpq2fbbJo3Hn8b9oRjkxts842eVct7Ogr09i7
+         ZUuuaL5gJk/zrvgQLC9yLLsQ3QzdncQL2oCO57HsS65EApZO7m0Y2mPnEOB1nmS1nf
+         a4T7HW7XFPaBwl+rBE3UU+LabZWn6zRRkaezYrdWZHqgGaxyWakuo8FObiF0YTEgfl
+         EN9Fg4pum5XFWaRDStuyqjWb7IAd0OgvDtN7Nzb6jPmdpqsFl/DjgjPam+egg72XiR
+         uTIe3T/YSSxbJlMlMu3UaX/5euqEyC4EPNZHNdNcaKGq2NRxKu9g6fhlrleFXiSfWb
+         VE5V431gKaGkA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zekun Shen <bruceshenzk@gmail.com>,
-        Brendan Dolan-Gavitt <brendandg@nyu.edu>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
-        Sasha Levin <sashal@kernel.org>, jirislaby@kernel.org,
-        mickflemm@gmail.com, mcgrof@kernel.org, kvalo@kernel.org,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 02/37] ath5k: fix OOB in ath5k_eeprom_read_pcal_info_5111
-Date:   Fri,  1 Apr 2022 10:44:11 -0400
-Message-Id: <20220401144446.1954694-2-sashal@kernel.org>
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        Ingo Molnar <mingo@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>, mhiramat@kernel.org,
+        rostedt@goodmis.org, ahalaney@redhat.com, vbabka@suse.cz,
+        wangkefeng.wang@huawei.com, linux@rasmusvillemoes.dk,
+        keescook@chromium.org, mark-pk.tsai@mediatek.com,
+        valentin.schneider@arm.com, peterz@infradead.org
+Subject: [PATCH AUTOSEL 5.10 64/65] init/main.c: return 1 from handled __setup() functions
+Date:   Fri,  1 Apr 2022 10:42:05 -0400
+Message-Id: <20220401144206.1953700-64-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220401144446.1954694-1-sashal@kernel.org>
-References: <20220401144446.1954694-1-sashal@kernel.org>
+In-Reply-To: <20220401144206.1953700-1-sashal@kernel.org>
+References: <20220401144206.1953700-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -55,85 +59,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zekun Shen <bruceshenzk@gmail.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit 564d4eceb97eaf381dd6ef6470b06377bb50c95a ]
+[ Upstream commit f9a40b0890658330c83c95511f9d6b396610defc ]
 
-The bug was found during fuzzing. Stacktrace locates it in
-ath5k_eeprom_convert_pcal_info_5111.
-When none of the curve is selected in the loop, idx can go
-up to AR5K_EEPROM_N_PD_CURVES. The line makes pd out of bound.
-pd = &chinfo[pier].pd_curves[idx];
+initcall_blacklist() should return 1 to indicate that it handled its
+cmdline arguments.
 
-There are many OOB writes using pd later in the code. So I
-added a sanity check for idx. Checks for other loops involving
-AR5K_EEPROM_N_PD_CURVES are not needed as the loop index is not
-used outside the loops.
+set_debug_rodata() should return 1 to indicate that it handled its
+cmdline arguments.  Print a warning if the option string is invalid.
 
-The patch is NOT tested with real device.
+This prevents these strings from being added to the 'init' program's
+environment as they are not init arguments/parameters.
 
-The following is the fuzzing report
-
-BUG: KASAN: slab-out-of-bounds in ath5k_eeprom_read_pcal_info_5111+0x126a/0x1390 [ath5k]
-Write of size 1 at addr ffff8880174a4d60 by task modprobe/214
-
-CPU: 0 PID: 214 Comm: modprobe Not tainted 5.6.0 #1
-Call Trace:
- dump_stack+0x76/0xa0
- print_address_description.constprop.0+0x16/0x200
- ? ath5k_eeprom_read_pcal_info_5111+0x126a/0x1390 [ath5k]
- ? ath5k_eeprom_read_pcal_info_5111+0x126a/0x1390 [ath5k]
- __kasan_report.cold+0x37/0x7c
- ? ath5k_eeprom_read_pcal_info_5111+0x126a/0x1390 [ath5k]
- kasan_report+0xe/0x20
- ath5k_eeprom_read_pcal_info_5111+0x126a/0x1390 [ath5k]
- ? apic_timer_interrupt+0xa/0x20
- ? ath5k_eeprom_init_11a_pcal_freq+0xbc0/0xbc0 [ath5k]
- ? ath5k_pci_eeprom_read+0x228/0x3c0 [ath5k]
- ath5k_eeprom_init+0x2513/0x6290 [ath5k]
- ? ath5k_eeprom_init_11a_pcal_freq+0xbc0/0xbc0 [ath5k]
- ? usleep_range+0xb8/0x100
- ? apic_timer_interrupt+0xa/0x20
- ? ath5k_eeprom_read_pcal_info_2413+0x2f20/0x2f20 [ath5k]
- ath5k_hw_init+0xb60/0x1970 [ath5k]
- ath5k_init_ah+0x6fe/0x2530 [ath5k]
- ? kasprintf+0xa6/0xe0
- ? ath5k_stop+0x140/0x140 [ath5k]
- ? _dev_notice+0xf6/0xf6
- ? apic_timer_interrupt+0xa/0x20
- ath5k_pci_probe.cold+0x29a/0x3d6 [ath5k]
- ? ath5k_pci_eeprom_read+0x3c0/0x3c0 [ath5k]
- ? mutex_lock+0x89/0xd0
- ? ath5k_pci_eeprom_read+0x3c0/0x3c0 [ath5k]
- local_pci_probe+0xd3/0x160
- pci_device_probe+0x23f/0x3e0
- ? pci_device_remove+0x280/0x280
- ? pci_device_remove+0x280/0x280
- really_probe+0x209/0x5d0
-
-Reported-by: Brendan Dolan-Gavitt <brendandg@nyu.edu>
-Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/YckvDdj3mtCkDRIt@a-10-27-26-18.dynapool.vpn.nyu.edu
+Link: https://lkml.kernel.org/r/20220221050901.23985-1-rdunlap@infradead.org
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath5k/eeprom.c | 3 +++
- 1 file changed, 3 insertions(+)
+ init/main.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath5k/eeprom.c b/drivers/net/wireless/ath/ath5k/eeprom.c
-index 94d34ee02265..01163b333945 100644
---- a/drivers/net/wireless/ath/ath5k/eeprom.c
-+++ b/drivers/net/wireless/ath/ath5k/eeprom.c
-@@ -746,6 +746,9 @@ ath5k_eeprom_convert_pcal_info_5111(struct ath5k_hw *ah, int mode,
- 			}
+diff --git a/init/main.c b/init/main.c
+index 4fe58ed4aca7..3526eaec7508 100644
+--- a/init/main.c
++++ b/init/main.c
+@@ -1104,7 +1104,7 @@ static int __init initcall_blacklist(char *str)
  		}
+ 	} while (str_entry);
  
-+		if (idx == AR5K_EEPROM_N_PD_CURVES)
-+			goto err_out;
-+
- 		ee->ee_pd_gains[mode] = 1;
+-	return 0;
++	return 1;
+ }
  
- 		pd = &chinfo[pier].pd_curves[idx];
+ static bool __init_or_module initcall_blacklisted(initcall_t fn)
+@@ -1367,7 +1367,9 @@ static noinline void __init kernel_init_freeable(void);
+ bool rodata_enabled __ro_after_init = true;
+ static int __init set_debug_rodata(char *str)
+ {
+-	return strtobool(str, &rodata_enabled);
++	if (strtobool(str, &rodata_enabled))
++		pr_warn("Invalid option string for rodata: '%s'\n", str);
++	return 1;
+ }
+ __setup("rodata=", set_debug_rodata);
+ #endif
 -- 
 2.34.1
 
