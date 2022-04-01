@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C6BAC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 06:37:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D11DEC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 06:37:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245573AbiDAGja (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 02:39:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45432 "EHLO
+        id S235779AbiDAGjf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Apr 2022 02:39:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245456AbiDAGir (ORCPT
+        with ESMTP id S245540AbiDAGiq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 02:38:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9693918EE95;
-        Thu, 31 Mar 2022 23:36:58 -0700 (PDT)
+        Fri, 1 Apr 2022 02:38:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBCC018FAEA;
+        Thu, 31 Mar 2022 23:36:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 348A460FE9;
-        Fri,  1 Apr 2022 06:36:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3EA6FC340EE;
-        Fri,  1 Apr 2022 06:36:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 10D2DB823E5;
+        Fri,  1 Apr 2022 06:36:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FC8DC2BBE4;
+        Fri,  1 Apr 2022 06:36:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648795017;
-        bh=ViaEw0BZEPgV3E6v8+BFDmzY9RBYo77aHWoqssTfxt0=;
+        s=korg; t=1648795014;
+        bh=xOv+40HOcRxPtNaZC2tGN/gUvTlRS5bV5BUPMr7oCoE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PQxoNPkimRmmpa7ND3NRYufMTxdIOOF9gCr5xlUpbMPTS2l9JmgwUrTT+pA9OGI6f
-         BXZL3VdU0R3o3cp/kqTQE6X5IKjPhdFXJIJgoNtmq2Ym2Br1mFDn76FlP+FuV6Fmyy
-         8jN0IaV2ZTMIo7YaW510tPvhwxtbTgxGJwPC0XAw=
+        b=d9ueYTUdbTomGUEu50RSZ9w0qPbWIDGXtWnyjzqtBsdok2azc4vepFvLrbJITSIa6
+         2bwcttKXDRRweGueUc+dgfIdzKPqU0tIIK52xehEvDEusKEp9BpcQXuEVfGsPLuamT
+         PIc77V3114KH48Qn3GwXNFTVVaQG2xpah6LXuyTY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rob Herring <robh@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
+        stable@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>,
+        Will Deacon <will.deacon@arm.com>,
         James Morse <james.morse@arm.com>
-Subject: [PATCH 4.14 06/27] arm64: Add part number for Arm Cortex-A77
-Date:   Fri,  1 Apr 2022 08:36:16 +0200
-Message-Id: <20220401063624.414227637@linuxfoundation.org>
+Subject: [PATCH 4.14 04/27] arm64: Make ARM64_ERRATUM_1188873 depend on COMPAT
+Date:   Fri,  1 Apr 2022 08:36:14 +0200
+Message-Id: <20220401063624.358469645@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220401063624.232282121@linuxfoundation.org>
 References: <20220401063624.232282121@linuxfoundation.org>
@@ -50,41 +49,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rob Herring <robh@kernel.org>
+From: Marc Zyngier <marc.zyngier@arm.com>
 
-commit 8a6b88e66233f5f1779b0a1342aa9dc030dddcd5 upstream.
+commit c2b5bba3967a000764e9148e6f020d776b7ecd82 upstream.
 
-Add the MIDR part number info for the Arm Cortex-A77.
+Since ARM64_ERRATUM_1188873 only affects AArch32 EL0, it makes some
+sense that it should depend on COMPAT.
 
-Signed-off-by: Rob Herring <robh@kernel.org>
-Acked-by: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Will Deacon <will@kernel.org>
-Link: https://lore.kernel.org/r/20201028182839.166037-1-robh@kernel.org
-Signed-off-by: Will Deacon <will@kernel.org>
+Signed-off-by: Marc Zyngier <marc.zyngier@arm.com>
+Signed-off-by: Will Deacon <will.deacon@arm.com>
 Signed-off-by: James Morse <james.morse@arm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/include/asm/cputype.h |    2 ++
- 1 file changed, 2 insertions(+)
+ arch/arm64/Kconfig |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/arch/arm64/include/asm/cputype.h
-+++ b/arch/arm64/include/asm/cputype.h
-@@ -89,6 +89,7 @@
- #define ARM_CPU_PART_CORTEX_A55		0xD05
- #define ARM_CPU_PART_CORTEX_A76		0xD0B
- #define ARM_CPU_PART_NEOVERSE_N1	0xD0C
-+#define ARM_CPU_PART_CORTEX_A77		0xD0D
- 
- #define APM_CPU_PART_POTENZA		0x000
- 
-@@ -116,6 +117,7 @@
- #define MIDR_CORTEX_A55 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A55)
- #define MIDR_CORTEX_A76	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A76)
- #define MIDR_NEOVERSE_N1 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_NEOVERSE_N1)
-+#define MIDR_CORTEX_A77	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A77)
- #define MIDR_THUNDERX	MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX)
- #define MIDR_THUNDERX_81XX MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX_81XX)
- #define MIDR_THUNDERX_83XX MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX_83XX)
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -461,6 +461,7 @@ config ARM64_ERRATUM_1024718
+ config ARM64_ERRATUM_1188873
+ 	bool "Cortex-A76: MRC read following MRRC read of specific Generic Timer in AArch32 might give incorrect result"
+ 	default y
++	depends on COMPAT
+ 	select ARM_ARCH_TIMER_OOL_WORKAROUND
+ 	help
+ 	  This option adds work arounds for ARM Cortex-A76 erratum 1188873
 
 
