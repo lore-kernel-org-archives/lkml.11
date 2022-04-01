@@ -2,133 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E97A8C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 10:02:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C429CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 10:03:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344883AbiDAKEr (ORCPT
+        id S1344892AbiDAKFb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 06:04:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42820 "EHLO
+        Fri, 1 Apr 2022 06:05:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237915AbiDAKEj (ORCPT
+        with ESMTP id S1344898AbiDAKFL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 06:04:39 -0400
-Received: from mail-qv1-xf36.google.com (mail-qv1-xf36.google.com [IPv6:2607:f8b0:4864:20::f36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C49826D123
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 03:02:50 -0700 (PDT)
-Received: by mail-qv1-xf36.google.com with SMTP id a5so1656234qvx.1
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 03:02:50 -0700 (PDT)
+        Fri, 1 Apr 2022 06:05:11 -0400
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B750616BF9B
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 03:03:22 -0700 (PDT)
+Received: by mail-pg1-x536.google.com with SMTP id q19so2038792pgm.6
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 03:03:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=dowhile0-org.20210112.gappssmtp.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=aqMK4M1InDYThrQysEp5iPweZrSJ1BirpP75Fhn0bLE=;
-        b=v8pyYAOBtFNUDrQbtm5WA+p9a1vinNfC2F10aFHIj0fPcQ7Odqioc9KSe2vi1Xh2Zk
-         IXSf+HVtEib8GLDe+fl1POvfPzjEsLV6iWpPPARSJRMvXGlYl4oe27z1bQIL6ae0muVt
-         AGmCMQU/mhFbMky9EUDeAogRmG2zy1+xFMjrLTi3xkI8z5LaOzKp3b7dsYPZsiNBTuHM
-         c8k+IDBe7fJlKDOdZV7vElHPsYdEcmgHllGd4gGJQlFsiFdpx752OZHlVfWWo3vWeICF
-         bmMbq3d0wbEP3LzUUvf1tvGOXwd61dKCPUQ9c6xnFW2xEUblSGdmk9LkcZZY8ibVBe7W
-         Pf1w==
+        bh=tX+BPVS9BPv8n6VKzSXnF+wc68I5Je6Qk2J6Ghu6RDQ=;
+        b=n9knzbXGB/jvF5BOCglcNRiyMIDFcfNQoZLTD2PfR8ROW2mvj+nV0iRrPEdLKZpSph
+         vzguSb7cXa66bjzphVmti0yNptHSJQQlAQ6i7yVkYnors74fkIpWuC9+/Odv4N6xiou4
+         P1/aduWBtjC0YlAzg0a1qF1MienP9LHtj8dNGo+LKuyI95nIEZ6GOuBWVzdz+NQACbci
+         0WRRETdAVG5wG4w0Hi4DCQ6vliDs/yi5iwJk4+CIvvqunJLzmhe7/7TlroQoSbizUdzq
+         62rYhZYgHiSBQLRfl9CvSawykOK0o7aWxB+WKpGLZ5Z6uy8GEwy5YJKqx65PTQVZF/Ac
+         AQYg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=aqMK4M1InDYThrQysEp5iPweZrSJ1BirpP75Fhn0bLE=;
-        b=CQwKkqVyX9ziQmDINCsLNtpnG9mwi/RAG/7n+8dpXyBQZXxLrK3ijY5sMGXG+gJfua
-         9AJq/QdyKz0dSf7EQA7OQnYxuq6ZNVq3jhvWI65svlcxyBhabF2xV8+YNGGAoE/03cPP
-         7U2UejZGpbZ0pn3Gaow9K2dV6SR2HHpnngf6AiJM8h+KsqhkbKFvlHp9c5EOgh8r3SXx
-         qf/W+tnv7lA0EcZoqkfZWJwVKKX47QxzMHUUJ72BujDMYuJO9huzUSQe+TNYwF8F0oE9
-         kkPZ17k8D7Iq2S/7zqtf9xjAKJU1jfxvybrULoNQNaaQuHpCMwB8nECe5J8/fGVozDgX
-         Wbbw==
-X-Gm-Message-State: AOAM5323hdLdlno1l8NsjBzWWeyJ+zjFQzA0p7miAgzC8+rDYVcfn4dN
-        2LP4Yxx5xCRMtlGG7vV4K/EpcD91Ftjw/A78fQ0Bgw==
-X-Google-Smtp-Source: ABdhPJx3kDfdp/cLod8RhpuczJxKeYyi+MMYeDn2oKD/KNzazZRboLRNTTeZkBYev9if54aHevFDIq9tAYpuoOnSZ5Y=
-X-Received: by 2002:a05:6214:2a8e:b0:443:8a10:c1ca with SMTP id
- jr14-20020a0562142a8e00b004438a10c1camr9900126qvb.88.1648807369348; Fri, 01
- Apr 2022 03:02:49 -0700 (PDT)
+        bh=tX+BPVS9BPv8n6VKzSXnF+wc68I5Je6Qk2J6Ghu6RDQ=;
+        b=3sU7k6XVy1rxQ0PykkzAh3PcXC3ETCeelh6vDnce18NSn5GO09AOybk6n4dlwb4Nwr
+         r/hWwzZIh1WNXNDY80pWncK8ZAu7J7/WONaw8qAcIcIQJrxRrrGNomdDEPgsPJ2yeUfE
+         SlOkK7K3nMoYoMKqqM+BtQX8bqncMPe5q7fSPbLaUEeqerKo0vVuaLSGkxpjckSH5XLV
+         Q7f+pdUQlYYJRE37+15L3ZRoi8mepcCn94+cjBpFu5k77DPGGP2XbINbzPKh+gARRFJs
+         xHwcEZHZstxtOdcvWsZf06EnNfp8mwipQAzflZl84EvF3mYdWVf6kRhn2W1btpDM8c60
+         dcLA==
+X-Gm-Message-State: AOAM5333+WWVYgzlcIvjcF3A+sByaChsIji1D7MpK15JFtePBChmmDOe
+        Ozl05XptcTSCM8hXTBSjRiyjXC2Tp+4ON7T4A18=
+X-Google-Smtp-Source: ABdhPJyIPfkp/BerqOovqJMj2WSOiOe9iqYASkuWLcLT7uQMcDzKykZZOUsc0aeY8wKuxeEpNgTHO8kXyukBN3JBL7Y=
+X-Received: by 2002:a05:6a00:c85:b0:4fa:f806:10f5 with SMTP id
+ a5-20020a056a000c8500b004faf80610f5mr10024572pfv.43.1648807402184; Fri, 01
+ Apr 2022 03:03:22 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220330190846.13997-1-wens@kernel.org> <20220330190846.13997-4-wens@kernel.org>
-In-Reply-To: <20220330190846.13997-4-wens@kernel.org>
-From:   Javier Martinez Canillas <javier@dowhile0.org>
-Date:   Fri, 1 Apr 2022 12:02:38 +0200
-Message-ID: <CABxcv=nFBmgQaoG6u_kW2v60yhPSi3wH_MSd7T9tS0cXqvCNKQ@mail.gmail.com>
-Subject: Re: [PATCH 3/4] drm: ssd130x: Support page addressing mode
-To:     Chen-Yu Tsai <wens@kernel.org>
-Cc:     Javier Martinez Canillas <javierm@redhat.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, devicetree@vger.kernel.org,
-        Chen-Yu Tsai <wens@csie.org>,
-        Linux Kernel <linux-kernel@vger.kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>
+References: <20220330120246.25580-1-xiam0nd.tong@gmail.com> <20220330120246.25580-5-xiam0nd.tong@gmail.com>
+In-Reply-To: <20220330120246.25580-5-xiam0nd.tong@gmail.com>
+From:   Patrik Jakobsson <patrik.r.jakobsson@gmail.com>
+Date:   Fri, 1 Apr 2022 12:03:10 +0200
+Message-ID: <CAMeQTsa1YeB2GFyUUJ2PJxACZ2dgWprN8mneka=VXDn5o-7+HA@mail.gmail.com>
+Subject: Re: [PATCH 4/5] gma500: fix a missing break in cdv_intel_dp_set_m_n
+To:     Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
+        Zhao Yakui <yakui.zhao@intel.com>,
+        Dave Airlie <airlied@redhat.com>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 30, 2022 at 9:09 PM Chen-Yu Tsai <wens@kernel.org> wrote:
+On Wed, Mar 30, 2022 at 2:03 PM Xiaomeng Tong <xiam0nd.tong@gmail.com> wrote:
 >
-> From: Chen-Yu Tsai <wens@csie.org>
+> Instead of exiting the loop as expected when an entry is found, the
+> list_for_each_entry() continues until the traversal is complete. It
+> could lead to a invalid reference to 'lane_count/bpp' after the loop.
 >
-> On the SINO WEALTH SH1106, which is mostly compatible with the SSD1306,
-> only the basic page addressing mode is supported. This addressing mode
-> is not as easy to use compared to the currently supported horizontal
-> addressing mode, as the page address has to be set prior to writing
-> out each page, and each page must be written out separately as a result.
-> Also, there is no way to force the column address to wrap around early,
-> thus the column address must also be reset for each page to be accurate.
+> The invalid reference to 'lane_count/bpp' is here:
+>         cdv_intel_dp_compute_m_n(bpp, lane_count,
 >
-
-Thanks for including this explanation, it's very informative.
-
-> Add support for this addressing mode, with a flag to choose it. This
-> flag is designed to be set from the device info data structure, but
-> can be extended to be explicitly forced on through a device tree
-> property if such a need arises.
+> To fix this, when found the entry, add a break after the switch statement.
 >
+> Fixes: 8695b61294356 ("gma500: Add the support of display port on CDV")
+> Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-Agreed. Unless an OLED controller supports both page addressing modes,
-I don't see what could be an advantage of having that property in the
-device tree. And even if that's the case, we could just always make it
-default to use horizontal addressing mode.
+This loop already breaks when the desired conditions are met (see the
+if statements).
 
-[snip]
-
-> +/* Set address range for horizontal/vertical addressing modes */
-
-Thanks for adding these comments.
-
->  static int ssd130x_set_col_range(struct ssd130x_device *ssd130x,
->                                  u8 col_start, u8 cols)
->  {
-> @@ -166,6 +173,26 @@ static int ssd130x_set_page_range(struct ssd130x_device *ssd130x,
->         return 0;
->  }
+> ---
+>  drivers/gpu/drm/gma500/cdv_intel_dp.c | 2 ++
+>  1 file changed, 2 insertions(+)
 >
-> +/* Set page and column start address for page addressing mode */
-> +static int ssd130x_set_page_pos(struct ssd130x_device *ssd130x,
-> +                               u8 page_start, u8 col_start)
-> +{
-> +       int ret;
-> +       u32 page, col_low, col_high;
+> diff --git a/drivers/gpu/drm/gma500/cdv_intel_dp.c b/drivers/gpu/drm/gma500/cdv_intel_dp.c
+> index ba6ad1466374..e6473b8da296 100644
+> --- a/drivers/gpu/drm/gma500/cdv_intel_dp.c
+> +++ b/drivers/gpu/drm/gma500/cdv_intel_dp.c
+> @@ -1016,6 +1016,8 @@ cdv_intel_dp_set_m_n(struct drm_crtc *crtc, struct drm_display_mode *mode,
+>                         bpp = dev_priv->edp.bpp;
+>                         break;
+>                 }
 > +
-> +       page = SSD130X_START_PAGE_ADDRESS |
-> +              SSD130X_START_PAGE_ADDRESS_SET(page_start);
-> +       col_low = SSD130X_PAGE_COL_START_LOW |
-> +                 SSD130X_PAGE_COL_START_SET(col_start & 0xf);
-> +       col_high = SSD130X_PAGE_COL_START_HIGH |
-> +                  SSD130X_PAGE_COL_START_SET((col_start >> 4) & 0xf);
-
-Maybe instead we should define
-SSD130X_PAGE_COL_START_{HIGH,LOW}_{MASK,SET} to be consistent with how
-the other fields are set and not using bitwise operations explicitly
-here ?
-
-Other than that, the patch looks good to me.
-
-Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
-
-Best regards,
-Javier
+> +               break;
+>         }
+>
+>         /*
+> --
+> 2.17.1
+>
