@@ -2,93 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A368C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 13:53:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A6B1C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 13:53:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346528AbiDANzN (ORCPT
+        id S1346546AbiDANz2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 09:55:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36410 "EHLO
+        Fri, 1 Apr 2022 09:55:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346361AbiDANzK (ORCPT
+        with ESMTP id S1345150AbiDANzZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 09:55:10 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2447CC57
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 06:53:21 -0700 (PDT)
+        Fri, 1 Apr 2022 09:55:25 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3624D3153D;
+        Fri,  1 Apr 2022 06:53:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648821201; x=1680357201;
+  t=1648821215; x=1680357215;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=NxPLj+EOCmrCwV6lNB3BH9LIzEApUxGmlciC9PV9DKM=;
-  b=IVBtvX3ba58e1PCDHPacPYFFjCbOtOuZ7eww/XqSe5y3UtPFTGtoTo3x
-   9fuUPGLxVPcLphRj5RYZVbOo1dbDUViKQs/LdbsZnhuEzroGLzefoRuCN
-   vVVc2ukjf6kFcvEW6dhPLHAfd0W9qrNeXOjDAzOPla3lA1SfKfBpl2YWl
-   QTEh4oVFk5nWz5HpKqzf8LHsckv38Y5Dere4/72lOoxin3VFHabiOLBoe
-   HmaZZIFPpgM54lXF4qlMO8kYBILfJeDP9oOaWcP8E+Tn/Rx68cPzPW0nN
-   eOcABZqBOj6v7fZnqvEQ8UgS3UwDRqBnjCwnYHLFHfLQhLdCXWrwrc0Xc
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10304"; a="240732658"
+  bh=9JVIFR1RY3e4c1DpSi0zz4R7HTop2QK2Mx5IigfiEgA=;
+  b=BgVXgZca8UcIkIqGCH9ubUE6Ty0rdYiMjBpJWb7Eg/7GuzCahVuBdIId
+   /NpljIlBNYOCZrkTKRebmU9vSJTVEGzXJyPpIGG/PxxLZJN4Kq1gkManL
+   WsaDgvkvtzVjsGcT3ca3POO7s6SyUUS5/9728kEWjhF1s323w7EJoPrxn
+   H1dgxiRWnBgfEUk286+5JptMfcjGCje12LFV6pqACxEpUKs6WEuZBpk8W
+   ZPZRZuMWaevQ8iUajE+dUNW8x7AXzNOs5Od+NDurZLOYJzv6qB47LOOmm
+   3BpsfKhLgXq+LxpQfsWsW1Bzc5lASnwqX/5PYIWXAy++HlkzsRekcqYi3
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10304"; a="323311000"
 X-IronPort-AV: E=Sophos;i="5.90,227,1643702400"; 
-   d="scan'208";a="240732658"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Apr 2022 06:53:20 -0700
+   d="scan'208";a="323311000"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Apr 2022 06:53:34 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,227,1643702400"; 
-   d="scan'208";a="547805163"
-Received: from unknown (HELO localhost) ([10.238.155.175])
-  by orsmga007.jf.intel.com with ESMTP; 01 Apr 2022 06:53:18 -0700
-Date:   Fri, 1 Apr 2022 20:45:19 +0800
-From:   Youquan Song <youquan.song@linux.intel.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Youquan Song <youquan.song@linux.intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Josh Poimboeuf <jpoimboe@redhat.com>, x86@kernel.org,
-        linux-kernel@vger.kernel.org, Zhiquan Li <zhiquan1.li@intel.com>,
-        Youquan Song <youquan.song@intel.com>
-Subject: Re: [PATCH] x86/uaccess: restore get_user exception type to
- EX_TYPE_UACCESS
-Message-ID: <20220401124519.GA6935@linux-youquan.bj.intel.com>
-References: <20220328201748.1864491-1-tony.luck@intel.com>
- <20220330123205.GL8939@worktop.programming.kicks-ass.net>
- <20220331113125.GA2628@linux-youquan.bj.intel.com>
- <20220331175113.GV8939@worktop.programming.kicks-ass.net>
+   d="scan'208";a="695898668"
+Received: from kuha.fi.intel.com ([10.237.72.185])
+  by fmsmga001.fm.intel.com with SMTP; 01 Apr 2022 06:53:32 -0700
+Received: by kuha.fi.intel.com (sSMTP sendmail emulation); Fri, 01 Apr 2022 16:53:31 +0300
+Date:   Fri, 1 Apr 2022 16:53:31 +0300
+From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
+To:     tanveer1.alam@intel.com
+Cc:     gregkh@linuxfoundation.org, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org, abhijeet.rao@intel.com
+Subject: Re: [PATCH] usb: typec: mux: intel_pmc_mux: Add retry logic to a PMC
+ command
+Message-ID: <YkcD25gTJ07h7XDK@kuha.fi.intel.com>
+References: <20220328105137.6223-1-tanveer1.alam@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220331175113.GV8939@worktop.programming.kicks-ass.net>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+In-Reply-To: <20220328105137.6223-1-tanveer1.alam@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 31, 2022 at 07:51:13PM +0200, Peter Zijlstra wrote:
-> On Thu, Mar 31, 2022 at 07:31:25PM +0800, Youquan Song wrote:
-> > > Did you do your testing on RHEL or something daft like that?
-> > Tested on RHEL8.x
+On Mon, Mar 28, 2022 at 04:21:37PM +0530, tanveer1.alam@intel.com wrote:
+> From: Tanveer Alam <tanveer1.alam@intel.com>
 > 
-> Right; the home of obsolete software.. :-)
+> There are few scenerio when PMC reports 'busy condition' and command
+> fail.
 > 
-> > > Something like the below can also work, I suppose. But please, add
-> > > coherent comments to the extable code with useful references to the MCE
-> > > code that does this abuse.
-> > Here is the full fix patch depending on your suggestion. Thanks a lot!
+> If PMC receives a high priority command while servicing a low priority
+> command then it discards the low priority command and start servicing
+> the high priority command. The lower priority command fail and driver
+> returns error. If the same command resend to the PMC then PMC latches
+> the command and service it accordingly.
 > 
-> Did you verify this was indeed the only UACCESS I lost?
+> Thus adds the retry logic for the PMC command.
+> 
+> Signed-off-by: Tanveer Alam <tanveer1.alam@intel.com>
 
-The full fix patch has included a change in error_context to identify
-this case to be MCE_IN_KERNEL_COPYIN. I verfied it fix the issue.
-In addition, LTP was run and no issues were reported.
+Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
 
-@@ -286,6 +286,7 @@ static noinstr int error_context(struct mce *m, struct pt_regs *regs)
- 	switch (fixup_type) {
- 	case EX_TYPE_UACCESS:
- 	case EX_TYPE_COPY:
-+	case EX_TYPE_UA_IMM_REG:
- 		if (!copy_user)
- 			return IN_KERNEL;
- 		m->kflags |= MCE_IN_KERNEL_COPYIN;
+> ---
+>  drivers/usb/typec/mux/intel_pmc_mux.c | 21 +++++++++++++++++++--
+>  1 file changed, 19 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/usb/typec/mux/intel_pmc_mux.c b/drivers/usb/typec/mux/intel_pmc_mux.c
+> index 2cdd22130834..da6b381ddf00 100644
+> --- a/drivers/usb/typec/mux/intel_pmc_mux.c
+> +++ b/drivers/usb/typec/mux/intel_pmc_mux.c
+> @@ -173,7 +173,7 @@ static int hsl_orientation(struct pmc_usb_port *port)
+>  	return port->orientation - 1;
+>  }
+>  
+> -static int pmc_usb_command(struct pmc_usb_port *port, u8 *msg, u32 len)
+> +static int pmc_usb_send_command(struct intel_scu_ipc_dev *ipc, u8 *msg, u32 len)
+>  {
+>  	u8 response[4];
+>  	u8 status_res;
+> @@ -184,7 +184,7 @@ static int pmc_usb_command(struct pmc_usb_port *port, u8 *msg, u32 len)
+>  	 * Status can be checked from the response message if the
+>  	 * function intel_scu_ipc_dev_command succeeds.
+>  	 */
+> -	ret = intel_scu_ipc_dev_command(port->pmc->ipc, PMC_USBC_CMD, 0, msg,
+> +	ret = intel_scu_ipc_dev_command(ipc, PMC_USBC_CMD, 0, msg,
+>  					len, response, sizeof(response));
+>  
+>  	if (ret)
+> @@ -203,6 +203,23 @@ static int pmc_usb_command(struct pmc_usb_port *port, u8 *msg, u32 len)
+>  	return 0;
+>  }
+>  
+> +static int pmc_usb_command(struct pmc_usb_port *port, u8 *msg, u32 len)
+> +{
+> +	int retry_count = 3;
+> +	int ret;
+> +
+> +	/*
+> +	 * If PMC is busy then retry the command once again
+> +	 */
+> +	while (retry_count--) {
+> +		ret = pmc_usb_send_command(port->pmc->ipc, msg, len);
+> +		if (ret != -EBUSY)
+> +			break;
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+>  static int
+>  pmc_usb_mux_dp_hpd(struct pmc_usb_port *port, struct typec_displayport_data *dp)
+>  {
 
--Youquan
+thanks,
+
+-- 
+heikki
