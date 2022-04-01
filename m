@@ -2,116 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2DA5C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 13:50:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E219C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 13:51:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346483AbiDANwC (ORCPT
+        id S1344111AbiDANwy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 09:52:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54284 "EHLO
+        Fri, 1 Apr 2022 09:52:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230238AbiDANwA (ORCPT
+        with ESMTP id S241902AbiDANwu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 09:52:00 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F33E18BCFA
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 06:50:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648821011; x=1680357011;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=77yhwsYWPsiqHHfA6moAiSeRKcbYgu3opG1tlGvuejE=;
-  b=QFXgK5Go24Bxkg1DJ/CqDLXEFE6nhb9gnRUz8Wi5LKzpLBPHmNqaTNci
-   ocRj7ji5LN7AVAemBLRwVRnPPMpiEEY8/j7oPoIKSuf3X5+cPLnv81TX/
-   Gq7Nu///eD9LazyfOSxQkdEBJNMP3pIfz40l7+IDcapxDOVnN18Wr/m9n
-   h7kBVZa65r9G/M5HZdbD+wtPvmekVK+KLUSAgKsRnevPLZ2SU49mQ2cnw
-   YC1r8qU0rqzvVQD0JZl4cCgO/HNjgSXzRS8htmCJeIrnELRy1e1ebwoJT
-   UC6vjzjiAimyEmwUgcN02WiVgPq9URe4SOnya/vVygktUyvE3hqhb0Shh
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10304"; a="240731965"
-X-IronPort-AV: E=Sophos;i="5.90,227,1643702400"; 
-   d="scan'208";a="240731965"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Apr 2022 06:50:11 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,227,1643702400"; 
-   d="scan'208";a="521408614"
-Received: from lkp-server02.sh.intel.com (HELO 3231c491b0e2) ([10.239.97.151])
-  by orsmga002.jf.intel.com with ESMTP; 01 Apr 2022 06:50:09 -0700
-Received: from kbuild by 3231c491b0e2 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1naHfF-0001Hw-0H;
-        Fri, 01 Apr 2022 13:50:09 +0000
-Date:   Fri, 01 Apr 2022 21:49:23 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "x86-ml" <x86@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [tip:x86/mm] BUILD SUCCESS
- e1300d97cbc347d319adfa0976be723ada4b582c
-Message-ID: <624702e3.gDsgaVv76nwbYq1/%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Fri, 1 Apr 2022 09:52:50 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 701941C60F9
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 06:51:00 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id g22so3066308edz.2
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 06:51:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=citymesh-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=6aSqh8t2BYpvepsKwdaEj1ou1yqlDXevbgf6RBEOluU=;
+        b=x3RG4p4AlxUrIj7eUzOZ6cZozpv8RTywvdn4EP59i7LoI96cwfCaT5l0+fbQnFblma
+         +wNNDGBYFwGlcpEYNNoJryJBmUtVCemDP5ARcPJPiY60skPIooA06/jTvtoI3PjSknfS
+         0sOyVa/raQ1hOk2rQwXkHh99El3lQ9AvIMBFQnSFk7Y/7mS+zbjthNgt1xFQR0PnIWlC
+         sG2pq75816M4FXl+p+75fr310eoi8BMpYO49AzzAmXoDawC16grvK7cbcfPXtllQPugI
+         JoeIwxL+wlQjO7kDuDv87TaZWJgjUEJ6pcq3n4LM1xcCNO86p8pxkSuqOXyHZvY1SJ2J
+         WZSQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=6aSqh8t2BYpvepsKwdaEj1ou1yqlDXevbgf6RBEOluU=;
+        b=rfdyKrNdWEjdrwHWI/JPlqpRbPhHJYzQlMUKeDRICiCZsaHHP6FdAODSPYnXjieBUG
+         ulOq4nwbj2WV6Xd1UEcObMAYS1ULszoWl0aT1EHB01Hqd0mFUOwI3HnQj0xJzjZ+PTRW
+         EC4jHHMk9NdUhbxhcL6a/WkWKVW6IPbVU1GASbhkGnbXQHr/X4iGD79HMDFf79BN8cJk
+         sGic1yRMQTWhpJv05wh2t0HNSn/2Mfmzb0yDNmilfsAoPRkiNUnyp0Hg4Pw4FrMoGLes
+         TkK2DwEYhxaG7wrbYY/NUup5ys/oatF4zltho1dQZAml3figMBWlKX584IU2b5tVbYaC
+         ccAg==
+X-Gm-Message-State: AOAM5302oqis3R0+zJcCUJdLTpkIOzih8h7+h26nRj/ws5m0PMHRK6Ds
+        rcppQ15atsN0It6KhGEfOnhT/A==
+X-Google-Smtp-Source: ABdhPJwov9JVqDZYwNLrmlDFC6Zy6ucgTQHK2aKYXvX/V3O2PQ2vQl6iReZ6zhqmXsvUWRyA2+pIJw==
+X-Received: by 2002:a05:6402:26c7:b0:41b:7aef:bdf6 with SMTP id x7-20020a05640226c700b0041b7aefbdf6mr8221907edd.210.1648821058896;
+        Fri, 01 Apr 2022 06:50:58 -0700 (PDT)
+Received: from [10.202.0.7] ([31.31.140.89])
+        by smtp.gmail.com with ESMTPSA id d23-20020aa7d5d7000000b00418f7b2f1dbsm1217075eds.71.2022.04.01.06.50.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 01 Apr 2022 06:50:57 -0700 (PDT)
+Message-ID: <46ae7788-dade-3ff4-a353-985544f12c19@citymesh.com>
+Date:   Fri, 1 Apr 2022 15:50:55 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: PCI: Race condition in pci_create_sysfs_dev_files (can't boot)
+Content-Language: en-US
+To:     =?UTF-8?Q?Krzysztof_Ha=c5=82asa?= <khalasa@piap.pl>,
+        Bjorn Helgaas <helgaas@kernel.org>
+Cc:     =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        =?UTF-8?Q?Krzysztof_Wilczy=c5=84ski?= <kw@linux.com>,
+        Dexuan Cui <dexuan.linux@gmail.com>
+References: <20220208234023.GA505306@bhelgaas> <m3czjovdqn.fsf@t19.piap.pl>
+From:   Koen Vandeputte <koen.vandeputte@citymesh.com>
+In-Reply-To: <m3czjovdqn.fsf@t19.piap.pl>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/mm
-branch HEAD: e1300d97cbc347d319adfa0976be723ada4b582c  x86/mm/tlb: Revert retpoline avoidance approach
 
-elapsed time: 760m
+On 15.02.22 07:35, Krzysztof Hałasa wrote:
+> Hi Bjorn,
+>
+> Bjorn Helgaas <helgaas@kernel.org> writes:
+>
+>> Koen collected some interesting logs at
+>> https://lore.kernel.org/all/cd4812f0-1de3-0582-936c-ba30906595af@citymesh.com/
+>> They're from v5.10, which was before all of Krzysztof W's nice work
+>> converting to static attributes, but Koen's log shows the error
+>> happening in the pci_sysfs_init() initcall, which is *after*
+>> imx6_pcie_probe():
+>>
+>>    imx6_pcie_probe                # probably device initcall (level 6)
+>>      ...
+>>        pci_create_sysfs_dev_files
+>>
+>>    pci_sysfs_init                 # late initcall (level 7)
+>>      pci_create_sysfs_dev_files
+>>        "sysfs: cannot create duplicate filename"
+> Well, imx6_pcie_probe() is called indirectly by
+> platform_driver_register(). I guess it doesn't know about the initcall
+> ordering, after it's registered.
+>
+> It looks like the problem is the imx6_pcie_probe() (via
+> dw_pcie_host_init() -> pci_host_probe()) is interfering with
+> pci_sysfs_init(). This may eventually cause some invalid memory access
+> as well.
+>
+> BTW I thought for a moment that maybe 5.14 is free from this. I was
+> wrong. The problem doesn't manifest itself on my custom i.MX6 device
+> (using Tinyrex CPU module from Voipac/Fedevel, perhaps because I don't
+> use any PCI devices there). It does on Ventana SBC from Gateworks,
+> though. BTW the above (and below) is v5.16.
+>
+> It goes like this:
+> [0.096212] do_initcall_level: 6
+> [0.105625] imx6_pcie_init
+> [0.106106] imx6_pcie_probe       <<<<<<<<<<<<<<<<<<<<<
+> [0.106412] imx6q-pcie 1ffc000.pcie: host bridge /soc/pcie@1ffc000 ranges:
+>
+> [0.322613] imx6q-pcie 1ffc000.pcie: Link up
+> [0.322776] imx6q-pcie 1ffc000.pcie: PCI host bridge to bus 0000:00
+> [0.322790] pci_bus 0000:00: root bus resource [bus 00-ff]
+>
+> [0.405251] do_initcall_level: 6 ENDs but imx6_pcie_probe() still active
+> [0.405262] do_initcall_level: 7
+>
+> [0.410393] pci_sysfs_init        <<<<<<<<<<<<<<<<<<<<<
+> [0.410423] pci 0000:00:00.0: pci_create_sysfs_dev_files
+>
+> [0.410532] [<8068091c>] (pci_create_sysfs_dev_files)
+> [0.410551] [<80918710>] (pci_sysfs_init)
+> [0.410568] [<8010166c>] (do_one_initcall)
+>
+> [0.410717] pci_sysfs_init END    <<<<<<<<<<<<<<<<<<<<<
+>
+> [0.533843] [<803f1c74>] (pci_bus_add_devices)
+> [0.533862] [<803f574c>] (pci_host_probe)
+> [0.533879] [<80414310>] (dw_pcie_host_init)
+> [0.533895] [<80681ac8>] (imx6_pcie_probe)
+> [0.533915] [<8045e9e4>] (platform_probe)
+> (Repeats multiple times, I guess for each PCI device)
+>
+> [0.543893] imx6_pcie_probe END   <<<<<<<<<<<<<<<<<<<<<
+>
+> [0.692244] do_initcall_level: 7 END
 
-configs tested: 38
-configs skipped: 84
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+Hi all,
 
-gcc tested configs:
-i386                          randconfig-c001
-x86_64                        randconfig-c001
-i386                              debian-10.3
-i386                                defconfig
-i386                   debian-10.3-kselftests
-i386                             allyesconfig
-x86_64                        randconfig-a004
-x86_64                        randconfig-a002
-x86_64                        randconfig-a006
-i386                          randconfig-a001
-i386                          randconfig-a003
-i386                          randconfig-a005
-x86_64                        randconfig-a013
-x86_64                        randconfig-a011
-x86_64                        randconfig-a015
-i386                          randconfig-a012
-i386                          randconfig-a016
-i386                          randconfig-a014
-x86_64                              defconfig
-x86_64                           allyesconfig
-x86_64                                  kexec
-x86_64                          rhel-8.3-func
-x86_64                               rhel-8.3
-x86_64                         rhel-8.3-kunit
-x86_64                    rhel-8.3-kselftests
+Any update on this topic?
+I just tested kernel 5.15 on imx6 (gateworks Ventana 5200) and as soon 
+as I connect a pcie device on one of the ports,
 
-clang tested configs:
-x86_64                        randconfig-c007
-i386                          randconfig-c001
-x86_64                        randconfig-a001
-x86_64                        randconfig-a003
-x86_64                        randconfig-a005
-i386                          randconfig-a002
-i386                          randconfig-a004
-i386                          randconfig-a006
-x86_64                        randconfig-a014
-x86_64                        randconfig-a012
-x86_64                        randconfig-a016
-i386                          randconfig-a013
-i386                          randconfig-a011
-i386                          randconfig-a015
+following happens:
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+https://pastebin.com/raw/mgfSvTRB
+
+Any idea if this is related?
+
+
+Thanks,
+
+Koen
+
