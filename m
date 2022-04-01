@@ -2,54 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1C5DC43219
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:02:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 980F2C35294
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:02:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350803AbiDAPAk (ORCPT
+        id S1350979AbiDAPBG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:00:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34356 "EHLO
+        Fri, 1 Apr 2022 11:01:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348913AbiDAOpE (ORCPT
+        with ESMTP id S1349322AbiDAOps (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:45:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F7552976F7;
-        Fri,  1 Apr 2022 07:35:08 -0700 (PDT)
+        Fri, 1 Apr 2022 10:45:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E8ED29B111;
+        Fri,  1 Apr 2022 07:35:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2CAA260AC0;
-        Fri,  1 Apr 2022 14:34:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8A5AC340EE;
-        Fri,  1 Apr 2022 14:34:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 42BB060B9F;
+        Fri,  1 Apr 2022 14:35:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5C61C36AE3;
+        Fri,  1 Apr 2022 14:35:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823671;
-        bh=vuXQ7peP/W4Eg3nMz7d/M5/lb3ur9UE13yD5yISQwts=;
+        s=k20201202; t=1648823747;
+        bh=9/9iLykxpxjIxqulCf4eS0Gth61utHyAlCQBiVJTpdE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BHN5llHtLmatntVYQx/mQb07YXYELGv9CB9ASYeKTGQuBrP2TtuvVXDwYAwWk1g3l
-         VbR1eSilWCHAmdQJfNruwHCiXntnY0X3MEhEij6v2Sl1sJqe8643pIS7mPHKnrTIiE
-         sH1ceKu8ESzvbuqQvXNOTm/AoZHeiVhpv9wzZ6n8FYJdveAbxkOkJamqauNx07tfW5
-         TXXiRDEssZfZm+JIpLgmwYizlCC4Q4Q6cHj+6/XeXceODJsf4WPNW2EUn9ReeN/50m
-         /nzwl6OGSsxXmBssKTjovKYrw9X39qtt0g50iSIlX6L5bWEtQVPHNLySFb0V9MRlOY
-         KaWkWCB0sjJxg==
+        b=F2GyoCPuE5noCNOWe0Jexxn+1CwAUT9Fk/QvCtoPtInWU+L+990YZPUdM0ave7GmE
+         7nCbtS7Cn0/CE/fPotE+B6+l87obqJbV0SQW99dCrMP+Tee5w8yvwmqcV22sdx3R/E
+         uHXwqOBu1XcgF5FSgmkM1wJBjZZPD24cg1KzE7xHVG3OJyglcZi+iROwHKQfdtfs5U
+         JqWy0d5/W9oefqzd8taPY6e0pK3PMMX4dNwFbUUCu0q14FNLLRgoXrlVAcGQphmPoO
+         ObZSWsE0/9oYLREND2rtSEM+cGOVuu84YHLFRWwWdpk3gC+EtPqi6o5ZEytcsUuZAo
+         lJNZ90FhfrVjg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
-        pabeni@redhat.com, akpm@linux-foundation.org, mhiramat@kernel.org,
-        rostedt@goodmis.org, vbabka@suse.cz, ahalaney@redhat.com,
-        wangkefeng.wang@huawei.com, linux@rasmusvillemoes.dk,
-        keescook@chromium.org, mark-pk.tsai@mediatek.com,
-        peterz@infradead.org, valentin.schneider@arm.com,
-        bigeasy@linutronix.de, toke@redhat.com, imagedong@tencent.com,
-        petrm@nvidia.com, memxor@gmail.com, arnd@arndb.de,
-        changbin.du@intel.com, yajun.deng@linux.dev, hmukos@yandex-team.ru,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 034/109] net: initialize init_net earlier
-Date:   Fri,  1 Apr 2022 10:31:41 -0400
-Message-Id: <20220401143256.1950537-34-sashal@kernel.org>
+Cc:     Jordy Zomer <jordy@jordyzomer.github.io>,
+        Jordy Zomer <jordy@pwning.systems>,
+        Mike Snitzer <snitzer@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, agk@redhat.com,
+        snitzer@kernel.org, dm-devel@redhat.com
+Subject: [PATCH AUTOSEL 5.16 060/109] dm ioctl: prevent potential spectre v1 gadget
+Date:   Fri,  1 Apr 2022 10:32:07 -0400
+Message-Id: <20220401143256.1950537-60-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143256.1950537-1-sashal@kernel.org>
 References: <20220401143256.1950537-1-sashal@kernel.org>
@@ -61,150 +54,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Jordy Zomer <jordy@jordyzomer.github.io>
 
-[ Upstream commit 9c1be1935fb68b2413796cdc03d019b8cf35ab51 ]
+[ Upstream commit cd9c88da171a62c4b0f1c70e50c75845969fbc18 ]
 
-While testing a patch that will follow later
-("net: add netns refcount tracker to struct nsproxy")
-I found that devtmpfs_init() was called before init_net
-was initialized.
+It appears like cmd could be a Spectre v1 gadget as it's supplied by a
+user and used as an array index. Prevent the contents of kernel memory
+from being leaked to userspace via speculative execution by using
+array_index_nospec.
 
-This is a bug, because devtmpfs_setup() calls
-ksys_unshare(CLONE_NEWNS);
-
-This has the effect of increasing init_net refcount,
-which will be later overwritten to 1, as part of setup_net(&init_net)
-
-We had too many prior patches [1] trying to work around the root cause.
-
-Really, make sure init_net is in BSS section, and that net_ns_init()
-is called earlier at boot time.
-
-Note that another patch ("vfs: add netns refcount tracker
-to struct fs_context") also will need net_ns_init() being called
-before vfs_caches_init()
-
-As a bonus, this patch saves around 4KB in .data section.
-
-[1]
-
-f8c46cb39079 ("netns: do not call pernet ops for not yet set up init_net namespace")
-b5082df8019a ("net: Initialise init_net.count to 1")
-734b65417b24 ("net: Statically initialize init_net.dev_base_head")
-
-v2: fixed a build error reported by kernel build bots (CONFIG_NET=n)
-
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Jordy Zomer <jordy@pwning.systems>
+Signed-off-by: Mike Snitzer <snitzer@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/net_namespace.h |  6 ++++++
- init/main.c                 |  2 ++
- net/core/dev.c              |  3 +--
- net/core/net_namespace.c    | 17 +++++------------
- 4 files changed, 14 insertions(+), 14 deletions(-)
+ drivers/md/dm-ioctl.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/include/net/net_namespace.h b/include/net/net_namespace.h
-index bb5fa5914032..2ba326f9e004 100644
---- a/include/net/net_namespace.h
-+++ b/include/net/net_namespace.h
-@@ -479,4 +479,10 @@ static inline void fnhe_genid_bump(struct net *net)
- 	atomic_inc(&net->fnhe_genid);
+diff --git a/drivers/md/dm-ioctl.c b/drivers/md/dm-ioctl.c
+index 21fe8652b095..901abd6dea41 100644
+--- a/drivers/md/dm-ioctl.c
++++ b/drivers/md/dm-ioctl.c
+@@ -18,6 +18,7 @@
+ #include <linux/dm-ioctl.h>
+ #include <linux/hdreg.h>
+ #include <linux/compat.h>
++#include <linux/nospec.h>
+ 
+ #include <linux/uaccess.h>
+ #include <linux/ima.h>
+@@ -1788,6 +1789,7 @@ static ioctl_fn lookup_ioctl(unsigned int cmd, int *ioctl_flags)
+ 	if (unlikely(cmd >= ARRAY_SIZE(_ioctls)))
+ 		return NULL;
+ 
++	cmd = array_index_nospec(cmd, ARRAY_SIZE(_ioctls));
+ 	*ioctl_flags = _ioctls[cmd].flags;
+ 	return _ioctls[cmd].fn;
  }
- 
-+#ifdef CONFIG_NET
-+void net_ns_init(void);
-+#else
-+static inline void net_ns_init(void) {}
-+#endif
-+
- #endif /* __NET_NET_NAMESPACE_H */
-diff --git a/init/main.c b/init/main.c
-index bb984ed79de0..cb68bc48a682 100644
---- a/init/main.c
-+++ b/init/main.c
-@@ -99,6 +99,7 @@
- #include <linux/kcsan.h>
- #include <linux/init_syscalls.h>
- #include <linux/stackdepot.h>
-+#include <net/net_namespace.h>
- 
- #include <asm/io.h>
- #include <asm/bugs.h>
-@@ -1113,6 +1114,7 @@ asmlinkage __visible void __init __no_sanitize_address start_kernel(void)
- 	key_init();
- 	security_init();
- 	dbg_late_init();
-+	net_ns_init();
- 	vfs_caches_init();
- 	pagecache_init();
- 	signals_init();
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 2078d04c6482..8c47e0f2075d 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -11403,8 +11403,7 @@ static int __net_init netdev_init(struct net *net)
- 	BUILD_BUG_ON(GRO_HASH_BUCKETS >
- 		     8 * sizeof_field(struct napi_struct, gro_bitmask));
- 
--	if (net != &init_net)
--		INIT_LIST_HEAD(&net->dev_base_head);
-+	INIT_LIST_HEAD(&net->dev_base_head);
- 
- 	net->dev_name_head = netdev_create_hash();
- 	if (net->dev_name_head == NULL)
-diff --git a/net/core/net_namespace.c b/net/core/net_namespace.c
-index 9702d2b0d920..9745cb6fdf51 100644
---- a/net/core/net_namespace.c
-+++ b/net/core/net_namespace.c
-@@ -44,13 +44,7 @@ EXPORT_SYMBOL_GPL(net_rwsem);
- static struct key_tag init_net_key_domain = { .usage = REFCOUNT_INIT(1) };
- #endif
- 
--struct net init_net = {
--	.ns.count	= REFCOUNT_INIT(1),
--	.dev_base_head	= LIST_HEAD_INIT(init_net.dev_base_head),
--#ifdef CONFIG_KEYS
--	.key_domain	= &init_net_key_domain,
--#endif
--};
-+struct net init_net;
- EXPORT_SYMBOL(init_net);
- 
- static bool init_net_initialized;
-@@ -1081,7 +1075,7 @@ static void rtnl_net_notifyid(struct net *net, int cmd, int id, u32 portid,
- 	rtnl_set_sk_err(net, RTNLGRP_NSID, err);
- }
- 
--static int __init net_ns_init(void)
-+void __init net_ns_init(void)
- {
- 	struct net_generic *ng;
- 
-@@ -1102,6 +1096,9 @@ static int __init net_ns_init(void)
- 
- 	rcu_assign_pointer(init_net.gen, ng);
- 
-+#ifdef CONFIG_KEYS
-+	init_net.key_domain = &init_net_key_domain;
-+#endif
- 	down_write(&pernet_ops_rwsem);
- 	if (setup_net(&init_net, &init_user_ns))
- 		panic("Could not setup the initial network namespace");
-@@ -1116,12 +1113,8 @@ static int __init net_ns_init(void)
- 		      RTNL_FLAG_DOIT_UNLOCKED);
- 	rtnl_register(PF_UNSPEC, RTM_GETNSID, rtnl_net_getid, rtnl_net_dumpid,
- 		      RTNL_FLAG_DOIT_UNLOCKED);
--
--	return 0;
- }
- 
--pure_initcall(net_ns_init);
--
- static void free_exit_list(struct pernet_operations *ops, struct list_head *net_exit_list)
- {
- 	ops_pre_exit_list(ops, net_exit_list);
 -- 
 2.34.1
 
