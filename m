@@ -2,47 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8C3DC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:54:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E532C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:54:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239274AbiDAOzo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 10:55:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38560 "EHLO
+        id S1347642AbiDAOzz (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Apr 2022 10:55:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347610AbiDAOdO (ORCPT
+        with ESMTP id S1347589AbiDAOdN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:33:14 -0400
+        Fri, 1 Apr 2022 10:33:13 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF81E258443;
-        Fri,  1 Apr 2022 07:30:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 276BD252787;
+        Fri,  1 Apr 2022 07:29:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 50795B8250D;
-        Fri,  1 Apr 2022 14:30:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 963D3C36AEB;
-        Fri,  1 Apr 2022 14:30:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D206DB82505;
+        Fri,  1 Apr 2022 14:29:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D77B2C340F2;
+        Fri,  1 Apr 2022 14:29:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823409;
-        bh=7neBOU9oE4j7aDMHTncJJ/MR1ImcyVePGzhQPKR9npo=;
+        s=k20201202; t=1648823395;
+        bh=meHZKgJD2/CHY17/45V/Gog6cSR4aNTmev2oCWXyvHI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C7yB3HYwTvOY33K6S4iObLbxcYH2JGZJr0KWRPs31s105PixkTxtefHTv/mSyBzxB
-         +SrrZCOwFgo4ZGyr7EkaG74DjcYbroJcnNoP4MNibX8bV/jRqvzMKb7Xsji8HhW4La
-         6Se4PxbBS0aKhVZpBAdwWldzBVPnwVv9LWL54sKsltpt6mlAAezX8aZ1Uvvl6og79d
-         2q9mKeEmKGrNBzlaEMagfbzhgyA/Tvs+20CCWT8oZNLsWS/vyt3ju6Ug8B0WnzXO/q
-         iC/CK8TFf1EyrPOUlRtR3H7KOl8H0ewcZUNhBJ6ROC/Csu+7AqxZrOTbRVrRdCJIHo
-         PfNsN7RnI46Ug==
+        b=f6EEh9j0o5xm+rXtNoDkTjGUBmDvdLuEmw164D0C/8nbzj6s7TTDe+FumH7LEJyF1
+         FoI28jLZeAzM89jFGNF3u/ybjufi00x+N5i+M6k9BuAtOoFrHoRuUgj1MhlrA3/TzJ
+         07VrjomQDMI5goVOhqTWPLIm8Jj2ySf7xBTxqtUGVV6N6X9lquf9mZFm9/CLmXKLbq
+         efseNxH4D6dt5Va1EfXKGo53oeIC3YWURxWNUZm0mV1kiBQ2WlpLZxpSOVv+KSxeSd
+         RoYhXvzXJWOaZ0klVAv2oxigqTJMgm3kTXXB4lzNT7DkgS4XfklLcinq6AnI6+zRzz
+         S0uyODSnkXtxw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, kuba@kernel.org, pabeni@redhat.com,
+Cc:     Ilan Peer <ilan.peer@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        johannes.berg@intel.com, ayala.beker@intel.com,
+        avraham.stern@intel.com, linux-wireless@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 082/149] ipv6: annotate some data-races around sk->sk_prot
-Date:   Fri,  1 Apr 2022 10:24:29 -0400
-Message-Id: <20220401142536.1948161-82-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.17 078/149] iwlwifi: mvm: Correctly set fragmented EBS
+Date:   Fri,  1 Apr 2022 10:24:25 -0400
+Message-Id: <20220401142536.1948161-78-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401142536.1948161-1-sashal@kernel.org>
 References: <20220401142536.1948161-1-sashal@kernel.org>
@@ -54,168 +56,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Ilan Peer <ilan.peer@intel.com>
 
-[ Upstream commit 086d49058cd8471046ae9927524708820f5fd1c7 ]
+[ Upstream commit d8d4dd26b9e0469baf5017f0544d852fd4e3fb6d ]
 
-IPv6 has this hack changing sk->sk_prot when an IPv6 socket
-is 'converted' to an IPv4 one with IPV6_ADDRFORM option.
+Currently, fragmented EBS was set for a channel only if the 'hb_type'
+was set to fragmented or balanced scan. However, 'hb_type' is set only
+in case of CDB, and thus fragmented EBS is never set for a channel for
+non-CDB devices. Fix it.
 
-This operation is only performed for TCP and UDP, knowing
-their 'struct proto' for the two network families are populated
-in the same way, and can not disappear while a reader
-might use and dereference sk->sk_prot.
-
-If we think about it all reads of sk->sk_prot while
-either socket lock or RTNL is not acquired should be using READ_ONCE().
-
-Also note that other layers like MPTCP, XFRM, CHELSIO_TLS also
-write over sk->sk_prot.
-
-BUG: KCSAN: data-race in inet6_recvmsg / ipv6_setsockopt
-
-write to 0xffff8881386f7aa8 of 8 bytes by task 26932 on cpu 0:
- do_ipv6_setsockopt net/ipv6/ipv6_sockglue.c:492 [inline]
- ipv6_setsockopt+0x3758/0x3910 net/ipv6/ipv6_sockglue.c:1019
- udpv6_setsockopt+0x85/0x90 net/ipv6/udp.c:1649
- sock_common_setsockopt+0x5d/0x70 net/core/sock.c:3489
- __sys_setsockopt+0x209/0x2a0 net/socket.c:2180
- __do_sys_setsockopt net/socket.c:2191 [inline]
- __se_sys_setsockopt net/socket.c:2188 [inline]
- __x64_sys_setsockopt+0x62/0x70 net/socket.c:2188
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-read to 0xffff8881386f7aa8 of 8 bytes by task 26911 on cpu 1:
- inet6_recvmsg+0x7a/0x210 net/ipv6/af_inet6.c:659
- ____sys_recvmsg+0x16c/0x320
- ___sys_recvmsg net/socket.c:2674 [inline]
- do_recvmmsg+0x3f5/0xae0 net/socket.c:2768
- __sys_recvmmsg net/socket.c:2847 [inline]
- __do_sys_recvmmsg net/socket.c:2870 [inline]
- __se_sys_recvmmsg net/socket.c:2863 [inline]
- __x64_sys_recvmmsg+0xde/0x160 net/socket.c:2863
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-value changed: 0xffffffff85e0e980 -> 0xffffffff85e01580
-
-Reported by Kernel Concurrency Sanitizer on:
-CPU: 1 PID: 26911 Comm: syz-executor.3 Not tainted 5.17.0-rc2-syzkaller-00316-g0457e5153e0e-dirty #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Ilan Peer <ilan.peer@intel.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/iwlwifi.20220204122220.a6165ac9b9d5.I654eafa62fd647030ae6d4f07f32c96c3171decb@changeid
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv6/af_inet6.c      | 24 ++++++++++++++++++------
- net/ipv6/ipv6_sockglue.c |  6 ++++--
- 2 files changed, 22 insertions(+), 8 deletions(-)
+ drivers/net/wireless/intel/iwlwifi/mvm/scan.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/net/ipv6/af_inet6.c b/net/ipv6/af_inet6.c
-index 8fe7900f1949..7d7b7523d126 100644
---- a/net/ipv6/af_inet6.c
-+++ b/net/ipv6/af_inet6.c
-@@ -441,11 +441,14 @@ int inet6_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
- {
- 	struct sock *sk = sock->sk;
- 	u32 flags = BIND_WITH_LOCK;
-+	const struct proto *prot;
- 	int err = 0;
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/scan.c b/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
+index 5f92a09db374..4cd507cb412d 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
+@@ -1893,7 +1893,10 @@ static u8 iwl_mvm_scan_umac_chan_flags_v2(struct iwl_mvm *mvm,
+ 			IWL_SCAN_CHANNEL_FLAG_CACHE_ADD;
  
-+	/* IPV6_ADDRFORM can change sk->sk_prot under us. */
-+	prot = READ_ONCE(sk->sk_prot);
- 	/* If the socket has its own bind function then use it. */
--	if (sk->sk_prot->bind)
--		return sk->sk_prot->bind(sk, uaddr, addr_len);
-+	if (prot->bind)
-+		return prot->bind(sk, uaddr, addr_len);
+ 	/* set fragmented ebs for fragmented scan on HB channels */
+-	if (iwl_mvm_is_scan_fragmented(params->hb_type))
++	if ((!iwl_mvm_is_cdb_supported(mvm) &&
++	     iwl_mvm_is_scan_fragmented(params->type)) ||
++	    (iwl_mvm_is_cdb_supported(mvm) &&
++	     iwl_mvm_is_scan_fragmented(params->hb_type)))
+ 		flags |= IWL_SCAN_CHANNEL_FLAG_EBS_FRAG;
  
- 	if (addr_len < SIN6_LEN_RFC2133)
- 		return -EINVAL;
-@@ -555,6 +558,7 @@ int inet6_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
- 	void __user *argp = (void __user *)arg;
- 	struct sock *sk = sock->sk;
- 	struct net *net = sock_net(sk);
-+	const struct proto *prot;
- 
- 	switch (cmd) {
- 	case SIOCADDRT:
-@@ -572,9 +576,11 @@ int inet6_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
- 	case SIOCSIFDSTADDR:
- 		return addrconf_set_dstaddr(net, argp);
- 	default:
--		if (!sk->sk_prot->ioctl)
-+		/* IPV6_ADDRFORM can change sk->sk_prot under us. */
-+		prot = READ_ONCE(sk->sk_prot);
-+		if (!prot->ioctl)
- 			return -ENOIOCTLCMD;
--		return sk->sk_prot->ioctl(sk, cmd, arg);
-+		return prot->ioctl(sk, cmd, arg);
- 	}
- 	/*NOTREACHED*/
- 	return 0;
-@@ -636,11 +642,14 @@ INDIRECT_CALLABLE_DECLARE(int udpv6_sendmsg(struct sock *, struct msghdr *,
- int inet6_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
- {
- 	struct sock *sk = sock->sk;
-+	const struct proto *prot;
- 
- 	if (unlikely(inet_send_prepare(sk)))
- 		return -EAGAIN;
- 
--	return INDIRECT_CALL_2(sk->sk_prot->sendmsg, tcp_sendmsg, udpv6_sendmsg,
-+	/* IPV6_ADDRFORM can change sk->sk_prot under us. */
-+	prot = READ_ONCE(sk->sk_prot);
-+	return INDIRECT_CALL_2(prot->sendmsg, tcp_sendmsg, udpv6_sendmsg,
- 			       sk, msg, size);
- }
- 
-@@ -650,13 +659,16 @@ int inet6_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
- 		  int flags)
- {
- 	struct sock *sk = sock->sk;
-+	const struct proto *prot;
- 	int addr_len = 0;
- 	int err;
- 
- 	if (likely(!(flags & MSG_ERRQUEUE)))
- 		sock_rps_record_flow(sk);
- 
--	err = INDIRECT_CALL_2(sk->sk_prot->recvmsg, tcp_recvmsg, udpv6_recvmsg,
-+	/* IPV6_ADDRFORM can change sk->sk_prot under us. */
-+	prot = READ_ONCE(sk->sk_prot);
-+	err = INDIRECT_CALL_2(prot->recvmsg, tcp_recvmsg, udpv6_recvmsg,
- 			      sk, msg, size, flags & MSG_DONTWAIT,
- 			      flags & ~MSG_DONTWAIT, &addr_len);
- 	if (err >= 0)
-diff --git a/net/ipv6/ipv6_sockglue.c b/net/ipv6/ipv6_sockglue.c
-index a733803a710c..222f6bf220ba 100644
---- a/net/ipv6/ipv6_sockglue.c
-+++ b/net/ipv6/ipv6_sockglue.c
-@@ -475,7 +475,8 @@ static int do_ipv6_setsockopt(struct sock *sk, int level, int optname,
- 				sock_prot_inuse_add(net, sk->sk_prot, -1);
- 				sock_prot_inuse_add(net, &tcp_prot, 1);
- 
--				sk->sk_prot = &tcp_prot;
-+				/* Paired with READ_ONCE(sk->sk_prot) in net/ipv6/af_inet6.c */
-+				WRITE_ONCE(sk->sk_prot, &tcp_prot);
- 				icsk->icsk_af_ops = &ipv4_specific;
- 				sk->sk_socket->ops = &inet_stream_ops;
- 				sk->sk_family = PF_INET;
-@@ -489,7 +490,8 @@ static int do_ipv6_setsockopt(struct sock *sk, int level, int optname,
- 				sock_prot_inuse_add(net, sk->sk_prot, -1);
- 				sock_prot_inuse_add(net, prot, 1);
- 
--				sk->sk_prot = prot;
-+				/* Paired with READ_ONCE(sk->sk_prot) in net/ipv6/af_inet6.c */
-+				WRITE_ONCE(sk->sk_prot, prot);
- 				sk->sk_socket->ops = &inet_dgram_ops;
- 				sk->sk_family = PF_INET;
- 			}
+ 	return flags;
 -- 
 2.34.1
 
