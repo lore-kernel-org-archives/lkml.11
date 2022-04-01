@@ -2,51 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67B8AC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:11:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EE87C4167D
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:11:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352176AbiDAPHq (ORCPT
+        id S1352812AbiDAPIB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:07:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60716 "EHLO
+        Fri, 1 Apr 2022 11:08:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350054AbiDAOrH (ORCPT
+        with ESMTP id S1350050AbiDAOrH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 1 Apr 2022 10:47:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB91E2A03F5;
-        Fri,  1 Apr 2022 07:37:01 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC9B62A03F0;
+        Fri,  1 Apr 2022 07:37:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D89C260A64;
-        Fri,  1 Apr 2022 14:36:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00D8CC3410F;
-        Fri,  1 Apr 2022 14:36:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 85CF6B824D8;
+        Fri,  1 Apr 2022 14:36:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F1BBC340F2;
+        Fri,  1 Apr 2022 14:36:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823793;
-        bh=OvF6t2EGTm+JmxnUQZpM+QgMaTFbq/PD/YPATXWW9b8=;
+        s=k20201202; t=1648823786;
+        bh=fG9MQxUZVJfuo423h37Uy9a7r2z2UmE9/ApwUfDq85M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hCXn53OIIfUgBs+xMvowr3Q99lNAalkUER0ag1RHgX+7DPGQ7CTs4DKIe3GBckbss
-         OyY+N0MAHupe3OhidocFFxC/lALoyaZYOi0t4iSeRpr55F+ohs0kqo6gh4t0Dvfcvt
-         lR/D6UcmuWF0MgJGB+R1pXFRKp+Tt4WkdncE1q5i0RN+1Fiqe2phebR1gsrpolAwrN
-         LtbhvTW2dK9KG26AUdkFHpMIMOMyn7wjSwsOkYvik9wnnnX/HluSAFISgw6US8trtM
-         M93rbQNZ9eTrqEIl3GXIKe2+dpFX8m4C6xWyEKmTLkB/7irLI7MGGt7zezgKFI+pT9
-         nsB+Ab8BVa6AQ==
+        b=fR24yzge4htB+kf5fKwd5FS/VYM07RxS+JN96C1ApphqoFUt6AsGWUdD5HKotJe2S
+         Od36PFCFVwLN1TKwrwM+LpB4ENjNzcNkH0oS5/FXVH12CFflh8RfNe5XoMQKNwKdmk
+         UiF6/2Z4WWhoGcpReOrFUPGZxzogcmux5A9grRLPdjOzhufgYurXxt9p3YCeRrZ7qh
+         9GPkVBnR0laGdU9VQRjXJ/RCePBPReV0K6UA3XEVpJggxAyFrNZxWdlj2UgDCpB9Vc
+         7QbMgoeY7xawRo1jJVXV0pLNdcv6hAQa4dVfZlGQELZBzN3NXC60OPhACrZpc0jhLG
+         TtfzN0nyGcNow==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Robin Murphy <robin.murphy@arm.com>,
-        Yunfei Wang <yf.wang@mediatek.com>,
-        Miles Chen <miles.chen@mediatek.com>,
-        Joerg Roedel <jroedel@suse.de>,
-        Sasha Levin <sashal@kernel.org>, joro@8bytes.org,
-        will@kernel.org, matthias.bgg@gmail.com,
-        iommu@lists.linux-foundation.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.16 080/109] iommu/iova: Improve 32-bit free space estimate
-Date:   Fri,  1 Apr 2022 10:32:27 -0400
-Message-Id: <20220401143256.1950537-80-sashal@kernel.org>
+Cc:     Dust Li <dust.li@linux.alibaba.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, kgraul@linux.ibm.com,
+        kuba@kernel.org, pabeni@redhat.com, linux-s390@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 076/109] net/smc: correct settings of RMB window update limit
+Date:   Fri,  1 Apr 2022 10:32:23 -0400
+Message-Id: <20220401143256.1950537-76-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143256.1950537-1-sashal@kernel.org>
 References: <20220401143256.1950537-1-sashal@kernel.org>
@@ -58,54 +54,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robin Murphy <robin.murphy@arm.com>
+From: Dust Li <dust.li@linux.alibaba.com>
 
-[ Upstream commit 5b61343b50590fb04a3f6be2cdc4868091757262 ]
+[ Upstream commit 6bf536eb5c8ca011d1ff57b5c5f7c57ceac06a37 ]
 
-For various reasons based on the allocator behaviour and typical
-use-cases at the time, when the max32_alloc_size optimisation was
-introduced it seemed reasonable to couple the reset of the tracked
-size to the update of cached32_node upon freeing a relevant IOVA.
-However, since subsequent optimisations focused on helping genuine
-32-bit devices make best use of even more limited address spaces, it
-is now a lot more likely for cached32_node to be anywhere in a "full"
-32-bit address space, and as such more likely for space to become
-available from IOVAs below that node being freed.
+rmbe_update_limit is used to limit announcing receive
+window updating too frequently. RFC7609 request a minimal
+increase in the window size of 10% of the receive buffer
+space. But current implementation used:
 
-At this point, the short-cut in __cached_rbnode_delete_update() really
-doesn't hold up any more, and we need to fix the logic to reliably
-provide the expected behaviour. We still want cached32_node to only move
-upwards, but we should reset the allocation size if *any* 32-bit space
-has become available.
+  min_t(int, rmbe_size / 10, SOCK_MIN_SNDBUF / 2)
 
-Reported-by: Yunfei Wang <yf.wang@mediatek.com>
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-Reviewed-by: Miles Chen <miles.chen@mediatek.com>
-Link: https://lore.kernel.org/r/033815732d83ca73b13c11485ac39336f15c3b40.1646318408.git.robin.murphy@arm.com
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
+and SOCK_MIN_SNDBUF / 2 == 2304 Bytes, which is almost
+always less then 10% of the receive buffer space.
+
+This causes the receiver always sending CDC message to
+update its consumer cursor when it consumes more then 2K
+of data. And as a result, we may encounter something like
+"TCP silly window syndrome" when sending 2.5~8K message.
+
+This patch fixes this using max(rmbe_size / 10, SOCK_MIN_SNDBUF / 2).
+
+With this patch and SMC autocorking enabled, qperf 2K/4K/8K
+tcp_bw test shows 45%/75%/40% increase in throughput respectively.
+
+Signed-off-by: Dust Li <dust.li@linux.alibaba.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/iova.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ net/smc/smc_core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index 920fcc27c9a1..cae5a73ff518 100644
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -154,10 +154,11 @@ __cached_rbnode_delete_update(struct iova_domain *iovad, struct iova *free)
- 	cached_iova = to_iova(iovad->cached32_node);
- 	if (free == cached_iova ||
- 	    (free->pfn_hi < iovad->dma_32bit_pfn &&
--	     free->pfn_lo >= cached_iova->pfn_lo)) {
-+	     free->pfn_lo >= cached_iova->pfn_lo))
- 		iovad->cached32_node = rb_next(&free->node);
-+
-+	if (free->pfn_lo < iovad->dma_32bit_pfn)
- 		iovad->max32_alloc_size = iovad->dma_32bit_pfn;
--	}
+diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
+index d1cdc891c211..f1dc5b914771 100644
+--- a/net/smc/smc_core.c
++++ b/net/smc/smc_core.c
+@@ -1904,7 +1904,7 @@ static struct smc_buf_desc *smc_buf_get_slot(int compressed_bufsize,
+  */
+ static inline int smc_rmb_wnd_update_limit(int rmbe_size)
+ {
+-	return min_t(int, rmbe_size / 10, SOCK_MIN_SNDBUF / 2);
++	return max_t(int, rmbe_size / 10, SOCK_MIN_SNDBUF / 2);
+ }
  
- 	cached_iova = to_iova(iovad->cached_node);
- 	if (free->pfn_lo >= cached_iova->pfn_lo)
+ /* map an rmb buf to a link */
 -- 
 2.34.1
 
