@@ -2,156 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A45FBC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 17:25:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB5EDC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 17:26:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350058AbiDAR1W (ORCPT
+        id S1350092AbiDAR23 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 13:27:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36694 "EHLO
+        Fri, 1 Apr 2022 13:28:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349931AbiDAR1P (ORCPT
+        with ESMTP id S1346717AbiDAR22 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 13:27:15 -0400
-Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B90261B8FF0;
-        Fri,  1 Apr 2022 10:25:25 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1648833899; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=A+qVXCI8B/v/0h/89awxMV8kULVcp1PZrXFsVavkmLBPAOtWtHKYGp85PIeX0eaIPrp+0+PgKMfjJPGLAGKiTY+7aoTerK7WPmkpcq5w6bT+wxnnb287rT0/QZ6DoUmCNKWnTPzjakm6N5pjwhkEoVAcFEFn3ar+EQI38Ypazy8=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1648833899; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:MIME-Version:Message-ID:Subject:To; 
-        bh=o5HN4+D5UQ9euR0BVh4ZToQJDW/64+Gz9slpGZrQ7b0=; 
-        b=guv5aZD5o1M2LJfUSxYNJxrYsHvldaMeCw6hTDtLB1eoZ9nF+Mv3+60XJnQ2TFDhA8fff6rMRp2HBmuBRhP0pth5XesgIFjxSOU/YrbPrLqMK7eFOExjliXDnucdjYAXOvlvky3jf+b/5dqThNUwom/8izBcZI2a2XGbemrkHTI=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1648833899;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=From:From:To:To:Cc:Cc:Subject:Subject:Date:Message-Id:Message-Id:MIME-Version:Content-Type:Content-Transfer-Encoding:Reply-To;
-        bh=o5HN4+D5UQ9euR0BVh4ZToQJDW/64+Gz9slpGZrQ7b0=;
-        b=IXK/gkmJRb7yKtYwtcMvkRYxsiqUITMf3libtsxsaO+jpZASqrRFCoZhmHkiGRrs
-        BJa1f89MdYmryvNK5tZQv3lsycDtG6+lM4Nat5O8Vj/7VdU+6ZIDjX9U5jpEbiWU9kJ
-        uH30VD3/MqHez5BhjM4GcSGkFcpTSINUjk2Af+fo=
-Received: from arinc9-PC.localdomain (85.117.236.245 [85.117.236.245]) by mx.zohomail.com
-        with SMTPS id 1648833897593238.78338422234162; Fri, 1 Apr 2022 10:24:57 -0700 (PDT)
-From:   =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Scott Branden <scott.branden@broadcom.com>,
-        Christian Lamparter <chunkeey@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        devicetree@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
-        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
-Subject: [PATCH 1/2] dt-bindings: arm: bcm: fix BCM53012 and BCM53016 SoC strings
-Date:   Fri,  1 Apr 2022 20:24:27 +0300
-Message-Id: <20220401172427.2806-1-arinc.unal@arinc9.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 1 Apr 2022 13:28:28 -0400
+Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::226])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7838C1DDFEC;
+        Fri,  1 Apr 2022 10:26:37 -0700 (PDT)
+Received: (Authenticated sender: alexandre.belloni@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 50DEFC0003;
+        Fri,  1 Apr 2022 17:26:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1648833995;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=r/HOAWD9NQve0+L1ZUrgJcxvj4WZhxF2ITTY20w8QMk=;
+        b=jkzztuWaNF9oeDSwd2ZW7StnstfMLQ+rd4rUWYvZ42+pxWpliYsgtBaPMfFqPLlvj1OV5U
+        Qn5bCU5FotcshvJSeQBON8jMdI4XPJgZthg3SRv1QGzWo4tgchx0hKbNExew8MonW66wez
+        ywxaqmLAXy9QxWrE1Kad+Ewci+U15uhhV+UYXFXF23AtRMuhTtqft7VQAWnfy1hDU5dpsm
+        R7UnSmBzVx5EqN0vIlDyDN/J0CM1rOzvBe4dBy+cGAL9b8gDYrqv43pHN1OAN0gxtdlSlD
+        4f8SnvNdWRXfv6HerillumQH6a+D+ni1IUSPJBQlUjSwUXlGszyUk4FB/KQ+ig==
+Date:   Fri, 1 Apr 2022 19:26:35 +0200
+From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     linux-rtc@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [GIT PULL] RTC for 5.18
+Message-ID: <Ykc1y1yQC3Z059Uo@mail.local>
+References: <YkYpfK5ubwafd+Rw@mail.local>
+ <CAHk-=wjuUZWMeUaTGtfivNQYeuqsQb2C4HnbbPLe+qFXU5Y70Q@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHk-=wjuUZWMeUaTGtfivNQYeuqsQb2C4HnbbPLe+qFXU5Y70Q@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix inaccurate SoC strings brcm,brcm53012 and brcm,brcm53016 to respectively
-brcm,bcm53012 and brcm,bcm53016.
+On 01/04/2022 09:50:30-0700, Linus Torvalds wrote:
+> On Thu, Mar 31, 2022 at 3:21 PM Alexandre Belloni
+> <alexandre.belloni@bootlin.com> wrote:
+> >
+> > Here is the RTC subsystem pull request for 5.18. The bulk of the patches
+> > are about replacing the uie_unsupported struct rtc_device member by a
+> > feature bit.
+> 
+> Hmm.
+> 
+> I've pulled this, but I don't see the point of the ALARM_RES_2S bit.
+> 
+> In particular, I don't see it used anywhere, and the two drivers that
+> now set it clear both the UPDATE_INTERRUPT and ALARM features.
+> 
+> So what's the point of that feature bit?
+> 
 
-Create a new description for BCM53016 and move Meraki MR32 under it.
+The features member is exposed to userspace which will be the main
+consumer in order to know what to expect from a particular RTC.
 
-Fixes: 4cb5201fcb5d ("dt-bindings: arm: bcm: Convert BCM4708 to YAML")
-Fixes: a2e385f5374d ("dt-bindings: ARM: add bindings for the Meraki MR32")
-Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
----
-brcm,bcm53012 string was silently changed to brcm,brcm53012 after
-converting to YAML. Let me know if this was intentional.
+ALARM_RES_2S could also be used to forbid setting the alarm for two
+consecutive seconds but this is not yet implemented as you observed.
+This is not the most pressing issue but currently it is allowed and you
+will not get any interrupt from the RTC for the second alarm so this is
+silently ignored.
+Note that these two are probably not the only ones that are affected,
+those are the ones I did test.
 
-Arınç
----
- .../devicetree/bindings/arm/bcm/brcm,bcm4708.yaml        | 9 +++++++--
- arch/arm/boot/dts/bcm53016-meraki-mr32.dts               | 2 +-
- arch/arm/boot/dts/bcm953012er.dts                        | 2 +-
- arch/arm/boot/dts/bcm953012hr.dts                        | 2 +-
- arch/arm/boot/dts/bcm953012k.dts                         | 2 +-
- 5 files changed, 11 insertions(+), 6 deletions(-)
+Regards,
 
-diff --git a/Documentation/devicetree/bindings/arm/bcm/brcm,bcm4708.yaml b/Documentation/devicetree/bindings/arm/bcm/brcm,bcm4708.yaml
-index 434d3c6db61e..8a97ee048053 100644
---- a/Documentation/devicetree/bindings/arm/bcm/brcm,bcm4708.yaml
-+++ b/Documentation/devicetree/bindings/arm/bcm/brcm,bcm4708.yaml
-@@ -83,9 +83,14 @@ properties:
-               - brcm,bcm953012er
-               - brcm,bcm953012hr
-               - brcm,bcm953012k
-+          - const: brcm,bcm53012
-+          - const: brcm,bcm4708
-+
-+      - description: BCM53016 based boards
-+        items:
-+          - enum:
-               - meraki,mr32
--          - const: brcm,brcm53012
--          - const: brcm,brcm53016
-+          - const: brcm,bcm53016
-           - const: brcm,bcm4708
- 
- additionalProperties: true
-diff --git a/arch/arm/boot/dts/bcm53016-meraki-mr32.dts b/arch/arm/boot/dts/bcm53016-meraki-mr32.dts
-index 66c64a6ec414..daca63f25134 100644
---- a/arch/arm/boot/dts/bcm53016-meraki-mr32.dts
-+++ b/arch/arm/boot/dts/bcm53016-meraki-mr32.dts
-@@ -13,7 +13,7 @@
- #include <dt-bindings/leds/common.h>
- 
- / {
--	compatible = "meraki,mr32", "brcm,brcm53016", "brcm,bcm4708";
-+	compatible = "meraki,mr32", "brcm,bcm53016", "brcm,bcm4708";
- 	model = "Meraki MR32";
- 
- 	chosen {
-diff --git a/arch/arm/boot/dts/bcm953012er.dts b/arch/arm/boot/dts/bcm953012er.dts
-index 52feca0fb906..dd63a148a16b 100644
---- a/arch/arm/boot/dts/bcm953012er.dts
-+++ b/arch/arm/boot/dts/bcm953012er.dts
-@@ -37,7 +37,7 @@
- 
- / {
- 	model = "NorthStar Enterprise Router (BCM953012ER)";
--	compatible = "brcm,bcm953012er", "brcm,brcm53012", "brcm,bcm4708";
-+	compatible = "brcm,bcm953012er", "brcm,bcm53012", "brcm,bcm4708";
- 
- 	memory@0 {
- 		device_type = "memory";
-diff --git a/arch/arm/boot/dts/bcm953012hr.dts b/arch/arm/boot/dts/bcm953012hr.dts
-index 9140be7ec053..b070b69466bd 100644
---- a/arch/arm/boot/dts/bcm953012hr.dts
-+++ b/arch/arm/boot/dts/bcm953012hr.dts
-@@ -37,7 +37,7 @@
- 
- / {
- 	model = "NorthStar HR (BCM953012HR)";
--	compatible = "brcm,bcm953012hr", "brcm,brcm53012", "brcm,bcm4708";
-+	compatible = "brcm,bcm953012hr", "brcm,bcm53012", "brcm,bcm4708";
- 
- 	aliases {
- 		ethernet0 = &gmac0;
-diff --git a/arch/arm/boot/dts/bcm953012k.dts b/arch/arm/boot/dts/bcm953012k.dts
-index de40bd59a5fa..f1e6bcaa1edd 100644
---- a/arch/arm/boot/dts/bcm953012k.dts
-+++ b/arch/arm/boot/dts/bcm953012k.dts
-@@ -36,7 +36,7 @@
- 
- / {
- 	model = "NorthStar SVK (BCM953012K)";
--	compatible = "brcm,bcm953012k", "brcm,brcm53012", "brcm,bcm4708";
-+	compatible = "brcm,bcm953012k", "brcm,bcm53012", "brcm,bcm4708";
- 
- 	aliases {
- 		serial0 = &uart0;
 -- 
-2.25.1
-
+Alexandre Belloni, co-owner and COO, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
