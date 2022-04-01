@@ -2,188 +2,318 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26911C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 09:37:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFA1BC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 09:37:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344679AbiDAJix (ORCPT
+        id S1344685AbiDAJjO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 05:38:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45390 "EHLO
+        Fri, 1 Apr 2022 05:39:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344653AbiDAJis (ORCPT
+        with ESMTP id S1344659AbiDAJjM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 05:38:48 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0FBF26B3A3;
-        Fri,  1 Apr 2022 02:36:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1648805818; x=1680341818;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=8SOAYzNZRqNk713P5UplsGuvt3kP/bvIxPw6GOJY6zc=;
-  b=WIiKMo33lP48CL/s3sy00NpsJxHRPGOzAfdEoQg4r4WW0NOJxpNZ7HOp
-   FUQiDQcwE56QAN2WPTcegZUu8nEzIj0RWS+AGLt/eAwQE0csqaihrjSBg
-   +nYNhzHMzN599m9vAF0jn4oVJHOb9HGSKQidRtDMyq+AT3stfEPN0KVk8
-   r7XQi26Dt0TQ2lRP24wHuEBMDJABhVjbS+JpdWyDbFogyttcLZYexB+pg
-   XWAm3oMjnYef1G4fj6JPYZcENkGVNxGsio06Aig7UsPPVK78D6KxjQXID
-   MhKSRcjTuc3jcOZgQvYG7X3BIUVZR4XCW5dQOwAPR5mpDfnlRGimr5LWv
-   g==;
-X-IronPort-AV: E=Sophos;i="5.90,226,1643698800"; 
-   d="scan'208";a="167969083"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 01 Apr 2022 02:36:58 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 1 Apr 2022 02:36:58 -0700
-Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Fri, 1 Apr 2022 02:36:56 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
-        <davem@davemloft.net>, <kuba@kernel.org>,
-        <richardcochran@gmail.com>, <UNGLinuxDriver@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [RFC PATCH net-next 2/2] net: phy: micrel: Implement set/get_tunable
-Date:   Fri, 1 Apr 2022 11:39:09 +0200
-Message-ID: <20220401093909.3341836-3-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220401093909.3341836-1-horatiu.vultur@microchip.com>
-References: <20220401093909.3341836-1-horatiu.vultur@microchip.com>
+        Fri, 1 Apr 2022 05:39:12 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B875026B3AF
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 02:37:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648805840;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=0M8G++tCAQg6E5BcGRGJH27i6pTcxL9PU4K81djE3PY=;
+        b=RWlgAC5DDbvO8XcoUraZDurzFrNMUCswGFji3Tdivpxm851Gqkg32o5QrHaoYboDUZ8NN3
+        Cf9SHXKAd55TT9tffa6cHVljv22yB+W+h3o8v9n1Z5XPvT8RXY/tHZYcuw71ZZyZ+jXOor
+        5wySFY+Yr4vSQHZtMsH6YerQiiBz4iI=
+Received: from mail-pf1-f198.google.com (mail-pf1-f198.google.com
+ [209.85.210.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-614-ItiMa5FYNmSdqBXNGHEeww-1; Fri, 01 Apr 2022 05:37:19 -0400
+X-MC-Unique: ItiMa5FYNmSdqBXNGHEeww-1
+Received: by mail-pf1-f198.google.com with SMTP id a68-20020a621a47000000b004fb74bed1e7so1384652pfa.5
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 02:37:19 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0M8G++tCAQg6E5BcGRGJH27i6pTcxL9PU4K81djE3PY=;
+        b=nNEZ7bDzzDUfsNIYUJpfB1F43rpy3uik1lpwibp8phugCW8zRmtXOHBuHHdnKTU7Qn
+         +suaeDeclooUibltsRn67C7d6impvEU7cZytW6ZxZwBwoX3AwrnOogY8obzLe9QBozSW
+         cZrvbxlqYYEpMcTiCAYyPyor3M2PmDBuB8A9RHCCoWij9rxMSgV1iXs6z7s+L/rLcy/4
+         sPtoytgYUU4n2sKkb3CbGhynXxPo1lMgvSmltcrXHt9c6VizkUlMWqula/Ca+LW/EOUi
+         HSrdoU4A1rGWxg2F6A+knFEMIc1nxiu88wGxVGVuFJ7yso3MWq9MQI3hY2SzlsR6fIqK
+         RGdg==
+X-Gm-Message-State: AOAM532kGAhjEStmTBihS8yvUy7Ra1OhWrVaOG14zG9XW4Z104WENiV/
+        gn+zaL6A+1O6JQpRPGhvDrZuV4i8Z1fI15exLN8Pk7RG8SCOiEvNEnJ0f2i5zF6jUI1+5bzDEkQ
+        +WJZzH6mLZpdXHLPpaNaEp0vNZLo/vRdeAJ1/dIf9
+X-Received: by 2002:a63:416:0:b0:386:66e:33d9 with SMTP id 22-20020a630416000000b00386066e33d9mr14527107pge.146.1648805838545;
+        Fri, 01 Apr 2022 02:37:18 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwNl+VbItEjD1pMRpgDlFu7TBQ5+iIqlAzQoVMfN+lwbwix5VCsshPmNK4HcxorDlicGYEtlxZYENovQ3UeUKk=
+X-Received: by 2002:a63:416:0:b0:386:66e:33d9 with SMTP id 22-20020a630416000000b00386066e33d9mr14527085pge.146.1648805838169;
+ Fri, 01 Apr 2022 02:37:18 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+References: <20220318161528.1531164-1-benjamin.tissoires@redhat.com> <0a30942b-e6c9-72fb-d012-4b8a6a16ae42@linux.intel.com>
+In-Reply-To: <0a30942b-e6c9-72fb-d012-4b8a6a16ae42@linux.intel.com>
+From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Date:   Fri, 1 Apr 2022 11:37:06 +0200
+Message-ID: <CAO-hwJKTxPGc3BO0g2ui5MiN6J9aWybuyRnhyZPWBntnF5ng8A@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 00/17] Introduce eBPF support for HID devices
+To:     Tero Kristo <tero.kristo@linux.intel.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>,
+        lkml <linux-kernel@vger.kernel.org>,
+        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Implement set/get_tunable to set/get the PHY latencies.
+Hi Tero,
 
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
----
- drivers/net/phy/micrel.c | 93 ++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 93 insertions(+)
+On Tue, Mar 29, 2022 at 3:04 PM Tero Kristo <tero.kristo@linux.intel.com> wrote:
+>
+> Hi Benjamin,
+>
+> I tested this iteration of the set, and I faced couple of problems with it.
+>
+> 1) There were some conflicts as I could not figure out the correct
+> kernel commit on which to apply the series on. I applied this on top of
+> last weeks bpf-next (see below) with some local merge fixes.
 
-diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-index fc53b71dc872..f537e61cb61d 100644
---- a/drivers/net/phy/micrel.c
-+++ b/drivers/net/phy/micrel.c
-@@ -99,6 +99,15 @@
- #define PTP_TIMESTAMP_EN_PDREQ_			BIT(2)
- #define PTP_TIMESTAMP_EN_PDRES_			BIT(3)
- 
-+#define PTP_RX_LATENCY_1000			0x0224
-+#define PTP_TX_LATENCY_1000			0x0225
-+
-+#define PTP_RX_LATENCY_100			0x0222
-+#define PTP_TX_LATENCY_100			0x0223
-+
-+#define PTP_RX_LATENCY_10			0x0220
-+#define PTP_TX_LATENCY_10			0x0221
-+
- #define PTP_TX_PARSE_L2_ADDR_EN			0x0284
- #define PTP_RX_PARSE_L2_ADDR_EN			0x0244
- 
-@@ -2591,6 +2600,88 @@ static int lan8814_ptp_probe_once(struct phy_device *phydev)
- 	return 0;
- }
- 
-+static void lan8814_get_latency(struct phy_device *phydev, u32 id, s32 *latency)
-+{
-+	switch (id) {
-+	case ETHTOOL_PHY_LATENCY_RX_10MBIT:
-+		*latency = lanphy_read_page_reg(phydev, 5, PTP_RX_LATENCY_10);
-+		break;
-+	case ETHTOOL_PHY_LATENCY_TX_10MBIT:
-+		*latency = lanphy_read_page_reg(phydev, 5, PTP_TX_LATENCY_10);
-+		break;
-+	case ETHTOOL_PHY_LATENCY_RX_100MBIT:
-+		*latency = lanphy_read_page_reg(phydev, 5, PTP_RX_LATENCY_100);
-+		break;
-+	case ETHTOOL_PHY_LATENCY_TX_100MBIT:
-+		*latency = lanphy_read_page_reg(phydev, 5, PTP_TX_LATENCY_100);
-+		break;
-+	case ETHTOOL_PHY_LATENCY_RX_1000MBIT:
-+		*latency = lanphy_read_page_reg(phydev, 5, PTP_RX_LATENCY_1000);
-+		break;
-+	case ETHTOOL_PHY_LATENCY_TX_1000MBIT:
-+		*latency = lanphy_read_page_reg(phydev, 5, PTP_TX_LATENCY_1000);
-+		break;
-+	}
-+}
-+
-+static int lan8814_get_tunable(struct phy_device *phydev,
-+			       struct ethtool_tunable *tuna, void *data)
-+{
-+	switch (tuna->id) {
-+	case ETHTOOL_PHY_LATENCY_RX_10MBIT:
-+	case ETHTOOL_PHY_LATENCY_TX_10MBIT:
-+	case ETHTOOL_PHY_LATENCY_RX_100MBIT:
-+	case ETHTOOL_PHY_LATENCY_TX_100MBIT:
-+	case ETHTOOL_PHY_LATENCY_RX_1000MBIT:
-+	case ETHTOOL_PHY_LATENCY_TX_1000MBIT:
-+		lan8814_get_latency(phydev, tuna->id, data);
-+		return 0;
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+}
-+
-+static void lan8814_set_latency(struct phy_device *phydev, u32 id, s32 latency)
-+{
-+	switch (id) {
-+	case ETHTOOL_PHY_LATENCY_RX_10MBIT:
-+		lanphy_write_page_reg(phydev, 5, PTP_RX_LATENCY_10, latency);
-+		break;
-+	case ETHTOOL_PHY_LATENCY_TX_10MBIT:
-+		lanphy_write_page_reg(phydev, 5, PTP_TX_LATENCY_10, latency);
-+		break;
-+	case ETHTOOL_PHY_LATENCY_RX_100MBIT:
-+		lanphy_write_page_reg(phydev, 5, PTP_RX_LATENCY_100, latency);
-+		break;
-+	case ETHTOOL_PHY_LATENCY_TX_100MBIT:
-+		lanphy_write_page_reg(phydev, 5, PTP_TX_LATENCY_100, latency);
-+		break;
-+	case ETHTOOL_PHY_LATENCY_RX_1000MBIT:
-+		lanphy_write_page_reg(phydev, 5, PTP_RX_LATENCY_1000, latency);
-+		break;
-+	case ETHTOOL_PHY_LATENCY_TX_1000MBIT:
-+		lanphy_write_page_reg(phydev, 5, PTP_TX_LATENCY_1000, latency);
-+		break;
-+	}
-+}
-+
-+static int lan8814_set_tunable(struct phy_device *phydev,
-+			       struct ethtool_tunable *tuna, const void *data)
-+{
-+	switch (tuna->id) {
-+	case ETHTOOL_PHY_LATENCY_RX_10MBIT:
-+	case ETHTOOL_PHY_LATENCY_TX_10MBIT:
-+	case ETHTOOL_PHY_LATENCY_RX_100MBIT:
-+	case ETHTOOL_PHY_LATENCY_TX_100MBIT:
-+	case ETHTOOL_PHY_LATENCY_RX_1000MBIT:
-+	case ETHTOOL_PHY_LATENCY_TX_1000MBIT:
-+		lan8814_set_latency(phydev, tuna->id, *(const s32 *)data);
-+		return 0;
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+}
-+
- static int lan8814_config_init(struct phy_device *phydev)
- {
- 	int val;
-@@ -2827,6 +2918,8 @@ static struct phy_driver ksphy_driver[] = {
- 	.probe		= lan8814_probe,
- 	.soft_reset	= genphy_soft_reset,
- 	.read_status	= ksz9031_read_status,
-+	.get_tunable	= lan8814_get_tunable,
-+	.set_tunable	= lan8814_set_tunable,
- 	.get_sset_count	= kszphy_get_sset_count,
- 	.get_strings	= kszphy_get_strings,
- 	.get_stats	= kszphy_get_stats,
--- 
-2.33.0
+Right, there was a new conflict in bpf-next, but you managed it :)
+
+>
+> commit 2af7e566a8616c278e1d7287ce86cd3900bed943 (bpf-next/master,
+> bpf-next/for-next)
+> Author: Saeed Mahameed <saeedm@nvidia.com>
+> Date:   Tue Mar 22 10:22:24 2022 -0700
+>
+>      net/mlx5e: Fix build warning, detected write beyond size of field
+>
+> 2) hid_is_valid_access() causes some trouble and it rejects pretty much
+> every BPF program which tries to use ctx->retval. This appears to be
+> because prog->expected_attach_type is not populated, I had to apply
+> below local tweak to overcome this problem:
+>
+> diff --git a/kernel/bpf/hid.c b/kernel/bpf/hid.c
+> index 30a62e8e0f0a..bf64411e6e9b 100644
+> --- a/kernel/bpf/hid.c
+> +++ b/kernel/bpf/hid.c
+> @@ -180,8 +180,7 @@ static bool hid_is_valid_access(int off, int size,
+>          case offsetof(struct hid_bpf_ctx, retval):
+>                  if (size != size_default)
+>                          return false;
+> -               return (prog->expected_attach_type == BPF_HID_USER_EVENT ||
+> -                       prog->expected_attach_type == BPF_HID_DRIVER_EVENT);
+> +               return true;
+>          default:
+>                  if (size != size_default)
+>                          return false;
+>
+> Proper fix would probably be to actually populate the
+> expected_attach_type, but I could not figure out quickly where this
+> should be done, or whether it is actually done on some other base commit.
+
+Hmm, this is not what I would have expected. Anyway, "return true"
+would be a valid solution too, but...
+
+>
+> With those, for the whole series:
+>
+> Tested-by: Tero Kristo <tero.kristo@linux.intel.com>
+
+Thanks a lot. Unfortunately, if you saw the discussion with Alexei in
+patch 6/17, you'll see that there is a push toward a slightly
+different implementation.
+
+I had a meeting with Alexei, and a few other BPF folks yesterday, and
+they convinced me that this series is implementing a BPF feature the
+"old way", and that we should aim at having HID using standard BPF
+facilities instead of having HID messing up with bpf-core.
+
+This will be beneficial in the long term as we won't depend on BPF to
+be able to add new UAPI, being BPF calls or functions.
+
+I'll reply in more detail on 6/17.
+
+Cheers,
+Benjamin
+
+>
+> On 18/03/2022 18:15, Benjamin Tissoires wrote:
+> > Hi,
+> >
+> > This is a followup of my v1 at [0] and v2 at [1].
+> >
+> > The short summary of the previous cover letter and discussions is that
+> > HID could benefit from BPF for the following use cases:
+> >
+> > - simple fixup of report descriptor:
+> >    benefits are faster development time and testing, with the produced
+> >    bpf program being shipped in the kernel directly (the shipping part
+> >    is *not* addressed here).
+> >
+> > - Universal Stylus Interface:
+> >    allows a user-space program to define its own kernel interface
+> >
+> > - Surface Dial:
+> >    somehow similar to the previous one except that userspace can decide
+> >    to change the shape of the exported device
+> >
+> > - firewall:
+> >    still partly missing there, there is not yet interception of hidraw
+> >    calls, but it's coming in a followup series, I promise
+> >
+> > - tracing:
+> >    well, tracing.
+> >
+> >
+> > I think I addressed the comments from the previous version, but there are
+> > a few things I'd like to note here:
+> >
+> > - I did not take the various rev-by and tested-by (thanks a lot for those)
+> >    because the uapi changed significantly in v3, so I am not very confident
+> >    in taking those rev-by blindly
+> >
+> > - I mentioned in my discussion with Song that I'll put a summary of the uapi
+> >    in the cover letter, but I ended up adding a (long) file in the Documentation
+> >    directory. So please maybe start by reading 17/17 to have an overview of
+> >    what I want to achieve
+> >
+> > - I added in the libbpf and bpf the new type BPF_HID_DRIVER_EVENT, even though
+> >    I don't have a user of it right now in the kernel. I wanted to have them in
+> >    the docs, but we might not want to have them ready here.
+> >    In terms of code, it just means that we can attach such programs types
+> >    but that they will never get triggered.
+> >
+> > Anyway, I have been mulling on this for the past 2 weeks, and I think that
+> > maybe sharing this now is better than me just starring at the code over and
+> > over.
+> >
+> >
+> > Short summary of changes:
+> >
+> > v3:
+> > ===
+> >
+> > - squashed back together most of the libbpf and bpf changes into bigger
+> >    commits that give a better overview of the whole interactions
+> >
+> > - reworked the user API to not expose .data as a directly accessible field
+> >    from the context, but instead forces everyone to use hid_bpf_get_data (or
+> >    get/set_bits)
+> >
+> > - added BPF_HID_DRIVER_EVENT (see note above)
+> >
+> > - addressed the various nitpicks from v2
+> >
+> > - added a big Documentation file (and so adding now the doc maintainers to the
+> >    long list of recipients)
+> >
+> > v2:
+> > ===
+> >
+> > - split the series by subsystem (bpf, HID, libbpf, selftests and
+> >    samples)
+> >
+> > - Added an extra patch at the beginning to not require CAP_NET_ADMIN for
+> >    BPF_PROG_TYPE_LIRC_MODE2 (please shout if this is wrong)
+> >
+> > - made the bpf context attached to HID program of dynamic size:
+> >    * the first 1 kB will be able to be addressed directly
+> >    * the rest can be retrieved through bpf_hid_{set|get}_data
+> >      (note that I am definitivey not happy with that API, because there
+> >      is part of it in bits and other in bytes. ouch)
+> >
+> > - added an extra patch to prevent non GPL HID bpf programs to be loaded
+> >    of type BPF_PROG_TYPE_HID
+> >    * same here, not really happy but I don't know where to put that check
+> >      in verifier.c
+> >
+> > - added a new flag BPF_F_INSERT_HEAD for BPF_LINK_CREATE syscall when in
+> >    used with HID program types.
+> >    * this flag is used for tracing, to be able to load a program before
+> >      any others that might already have been inserted and that might
+> >      change the data stream.
+> >
+> > Cheers,
+> > Benjamin
+> >
+> >
+> >
+> > [0] https://lore.kernel.org/linux-input/20220224110828.2168231-1-benjamin.tissoires@redhat.com/T/#t
+> > [1] https://lore.kernel.org/linux-input/20220304172852.274126-1-benjamin.tissoires@redhat.com/T/#t
+> >
+> >
+> > Benjamin Tissoires (17):
+> >    bpf: add new is_sys_admin_prog_type() helper
+> >    bpf: introduce hid program type
+> >    bpf/verifier: prevent non GPL programs to be loaded against HID
+> >    libbpf: add HID program type and API
+> >    HID: hook up with bpf
+> >    HID: allow to change the report descriptor from an eBPF program
+> >    selftests/bpf: add tests for the HID-bpf initial implementation
+> >    selftests/bpf: add report descriptor fixup tests
+> >    selftests/bpf: Add a test for BPF_F_INSERT_HEAD
+> >    selftests/bpf: add test for user call of HID bpf programs
+> >    samples/bpf: add new hid_mouse example
+> >    bpf/hid: add more HID helpers
+> >    HID: bpf: implement hid_bpf_get|set_bits
+> >    HID: add implementation of bpf_hid_raw_request
+> >    selftests/bpf: add tests for hid_{get|set}_bits helpers
+> >    selftests/bpf: add tests for bpf_hid_hw_request
+> >    Documentation: add HID-BPF docs
+> >
+> >   Documentation/hid/hid-bpf.rst                | 444 +++++++++++
+> >   Documentation/hid/index.rst                  |   1 +
+> >   drivers/hid/Makefile                         |   1 +
+> >   drivers/hid/hid-bpf.c                        | 328 ++++++++
+> >   drivers/hid/hid-core.c                       |  34 +-
+> >   include/linux/bpf-hid.h                      | 127 +++
+> >   include/linux/bpf_types.h                    |   4 +
+> >   include/linux/hid.h                          |  36 +-
+> >   include/uapi/linux/bpf.h                     |  67 ++
+> >   include/uapi/linux/bpf_hid.h                 |  71 ++
+> >   include/uapi/linux/hid.h                     |  10 +
+> >   kernel/bpf/Makefile                          |   3 +
+> >   kernel/bpf/btf.c                             |   1 +
+> >   kernel/bpf/hid.c                             | 728 +++++++++++++++++
+> >   kernel/bpf/syscall.c                         |  27 +-
+> >   kernel/bpf/verifier.c                        |   7 +
+> >   samples/bpf/.gitignore                       |   1 +
+> >   samples/bpf/Makefile                         |   4 +
+> >   samples/bpf/hid_mouse_kern.c                 | 117 +++
+> >   samples/bpf/hid_mouse_user.c                 | 129 +++
+> >   tools/include/uapi/linux/bpf.h               |  67 ++
+> >   tools/lib/bpf/libbpf.c                       |  23 +-
+> >   tools/lib/bpf/libbpf.h                       |   2 +
+> >   tools/lib/bpf/libbpf.map                     |   1 +
+> >   tools/testing/selftests/bpf/config           |   3 +
+> >   tools/testing/selftests/bpf/prog_tests/hid.c | 788 +++++++++++++++++++
+> >   tools/testing/selftests/bpf/progs/hid.c      | 205 +++++
+> >   27 files changed, 3204 insertions(+), 25 deletions(-)
+> >   create mode 100644 Documentation/hid/hid-bpf.rst
+> >   create mode 100644 drivers/hid/hid-bpf.c
+> >   create mode 100644 include/linux/bpf-hid.h
+> >   create mode 100644 include/uapi/linux/bpf_hid.h
+> >   create mode 100644 kernel/bpf/hid.c
+> >   create mode 100644 samples/bpf/hid_mouse_kern.c
+> >   create mode 100644 samples/bpf/hid_mouse_user.c
+> >   create mode 100644 tools/testing/selftests/bpf/prog_tests/hid.c
+> >   create mode 100644 tools/testing/selftests/bpf/progs/hid.c
+> >
+>
 
