@@ -2,48 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3003BC3527E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8284CC35280
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:02:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350869AbiDAPAt (ORCPT
+        id S1350957AbiDAPBC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:00:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60650 "EHLO
+        Fri, 1 Apr 2022 11:01:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349068AbiDAOp0 (ORCPT
+        with ESMTP id S1349298AbiDAOpp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:45:26 -0400
+        Fri, 1 Apr 2022 10:45:45 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11B012993C4;
-        Fri,  1 Apr 2022 07:35:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4275929A576;
+        Fri,  1 Apr 2022 07:35:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1BB2C60A53;
-        Fri,  1 Apr 2022 14:35:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B4AFC3410F;
-        Fri,  1 Apr 2022 14:35:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9419960A3D;
+        Fri,  1 Apr 2022 14:35:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E2B0C36AE3;
+        Fri,  1 Apr 2022 14:35:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823721;
-        bh=sQyD0WvxCJXwMP79jC9b51qZAMNLQWS+fvG1GiZTs6A=;
+        s=k20201202; t=1648823743;
+        bh=i64Q6PJPKB5YWZerPhowdHyXo9IXQAbP8ZYTqYDC98A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VscSwgHa3mfGgdKVcK/bcVGPcS9Dgcdw0jdova7qSNE+AoCFhHI6RiZsQJW9meQxq
-         +lIcodwon1IuthRawFCl1qG++ConISP2xx4gILfIygPvvF4RFxQbOKoDF+OfQVHgFP
-         EdkMggHpWzDXQA34AnpYx7XKxJUVGEHtp8+OHhMMiNY4H5hZw/Y6VDnB3IiBlGhXcp
-         /EYyPd3m5D8+pmdmaBc0ryX97XxlfQpDHrlVzoxGproBgI0aUucEHk6U3/z+YZDkWm
-         IBOObxJ6KGZfDs9NhrT47i/BXuix7p+ljxE1hz8yp5URLcyqX8COhW/brSXPcEFa0R
-         A1b5T+oXJO13g==
+        b=aFWVAVnqJgr5881ZzoKV7iMKT54K9eBsBAu+IFjleWJj3AEvtleg1V6l8Q7UcThDh
+         wKWheKXQ+/gt9g3WzzuSD76cXEdSH/qlt8/RbBSpXx9H88G4k+3+I+qtILfVcKEoN9
+         03C5uz5iOBmlsHVKEmVvgoe2QufZjU0pJ6qtdDFhx1OOiTjYObGXHoB7rKAodwMfCp
+         /F7Mh3+xaCJzZbJKoiuhHjE/Q1Zm2utfbJgiIiJZKn8MbbfgzpGnC2RHhl2Et4LxnE
+         qmVZJIZKgtycJ6LEkk68Vw185qKhF9CaeBMzUH9xKMYeXqQSBxP1MFo9PcKaro+b//
+         ETk2JwBiBRXNg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Maxim Mikityanskiy <maximmi@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 051/109] net/mlx5e: Disable TX queues before registering the netdev
-Date:   Fri,  1 Apr 2022 10:31:58 -0400
-Message-Id: <20220401143256.1950537-51-sashal@kernel.org>
+Cc:     Daniel Thompson <daniel.thompson@linaro.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Sasha Levin <sashal@kernel.org>, robdclark@gmail.com,
+        sean@poorly.run, airlied@linux.ie, daniel@ffwll.ch,
+        quic_abhinavk@quicinc.com, swboyd@chromium.org,
+        bjorn.andersson@linaro.org, jonathan@marek.ca,
+        quic_jesszhan@quicinc.com, linux-arm-msm@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.16 057/109] drm/msm/dsi: Remove spurious IRQF_ONESHOT flag
+Date:   Fri,  1 Apr 2022 10:32:04 -0400
+Message-Id: <20220401143256.1950537-57-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143256.1950537-1-sashal@kernel.org>
 References: <20220401143256.1950537-1-sashal@kernel.org>
@@ -55,36 +57,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxim Mikityanskiy <maximmi@nvidia.com>
+From: Daniel Thompson <daniel.thompson@linaro.org>
 
-[ Upstream commit d08c6e2a4d0308a7922d7ef3b1b3af45d4096aad ]
+[ Upstream commit 24b176d8827d167ac3b379317f60c0985f6e95aa ]
 
-Normally, the queues are disabled when the channels are deactivated, and
-enabled when the channels are activated. However, on register, the
-channels are not active, but the queues are enabled by default. This
-change fixes it, preventing mlx5e_xmit from running when the channels
-are deactivated in the beginning.
+Quoting the header comments, IRQF_ONESHOT is "Used by threaded interrupts
+which need to keep the irq line disabled until the threaded handler has
+been run.". When applied to an interrupt that doesn't request a threaded
+irq then IRQF_ONESHOT has a lesser known (undocumented?) side effect,
+which it to disable the forced threading of irqs (and for "normal" kernels
+it is a nop). In this case I can find no evidence that suppressing forced
+threading is intentional. Had it been intentional then a driver must adopt
+the raw_spinlock API in order to avoid deadlocks on PREEMPT_RT kernels
+(and avoid calling any kernel API that uses regular spinlocks).
 
-Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Fix this by removing the spurious additional flag.
+
+This change is required for my Snapdragon 7cx Gen2 tablet to boot-to-GUI
+with PREEMPT_RT enabled.
+
+Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Link: https://lore.kernel.org/r/20220201174734.196718-2-daniel.thompson@linaro.org
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpu/drm/msm/dsi/dsi_host.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index 22de7327c5a8..4730d6c14aeb 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -5223,6 +5223,7 @@ mlx5e_create_netdev(struct mlx5_core_dev *mdev, const struct mlx5e_profile *prof
- 	}
+diff --git a/drivers/gpu/drm/msm/dsi/dsi_host.c b/drivers/gpu/drm/msm/dsi/dsi_host.c
+index 0afc3b756f92..09f8fa111dcc 100644
+--- a/drivers/gpu/drm/msm/dsi/dsi_host.c
++++ b/drivers/gpu/drm/msm/dsi/dsi_host.c
+@@ -1871,7 +1871,7 @@ int msm_dsi_host_init(struct msm_dsi *msm_dsi)
  
- 	netif_carrier_off(netdev);
-+	netif_tx_disable(netdev);
- 	dev_net_set(netdev, mlx5_core_net(mdev));
- 
- 	return netdev;
+ 	/* do not autoenable, will be enabled later */
+ 	ret = devm_request_irq(&pdev->dev, msm_host->irq, dsi_host_irq,
+-			IRQF_TRIGGER_HIGH | IRQF_ONESHOT | IRQF_NO_AUTOEN,
++			IRQF_TRIGGER_HIGH | IRQF_NO_AUTOEN,
+ 			"dsi_isr", msm_host);
+ 	if (ret < 0) {
+ 		dev_err(&pdev->dev, "failed to request IRQ%u: %d\n",
 -- 
 2.34.1
 
