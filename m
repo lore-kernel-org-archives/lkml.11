@@ -2,51 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C45FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:37:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8096AC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:37:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350315AbiDAPdq (ORCPT
+        id S1350388AbiDAPd5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:33:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58270 "EHLO
+        Fri, 1 Apr 2022 11:33:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350068AbiDAO6x (ORCPT
+        with ESMTP id S1350112AbiDAO7D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:58:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF23317FD2A;
-        Fri,  1 Apr 2022 07:46:05 -0700 (PDT)
+        Fri, 1 Apr 2022 10:59:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAC8712607;
+        Fri,  1 Apr 2022 07:46:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 29BA4B82520;
-        Fri,  1 Apr 2022 14:41:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2929C2BBE4;
-        Fri,  1 Apr 2022 14:41:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7696A60AC0;
+        Fri,  1 Apr 2022 14:46:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 925F1C2BBE4;
+        Fri,  1 Apr 2022 14:46:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824061;
-        bh=7x2r0qrLE+YujoPqLj6Sj9kM2yV47z1YIuk6sa/E9fc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZtXjHDuCy9gjwjqkzwmUKm+n1a/2oMKLEJxw3JT31GXzt4QF+AzVAMO1yxhehKy1O
-         CJBJOoLdFf+WGalJ7Xm9Zyco5NBKcBaQedJ6Y1zV8grbNuA/k7UJBNvoJ7nNTw2RdD
-         i0HnBTOa8hr88hsJsd3iIOcJk46Yuh+5IKlHn2X7aw0VnmHeuKTAmtGbzj5DmQzUYQ
-         hnOrO5eWGaU5flUT/QyLugU64BtuQuD3GEMth1HH/VYMxgJuc6Q4YpZWky5bCv3ic7
-         0ZwzBhglZ19TyCH/VNknj3PbA4/9kS/Xqsjn/BmQqwiGzvqMMihh9oaq6ptpDA3U+w
-         LILvwzQIziQug==
+        s=k20201202; t=1648824376;
+        bh=3RH+nJbvcqxz4TuE9bjrYQ80EldCXoX6Z8YQfmYDaYs=;
+        h=From:To:Cc:Subject:Date:From;
+        b=X0WDkAbhUGHVDLXE8uR5LbMR1a5jDKK2qNQ5PHFdGVv4jLygef1jRtVdDDvq48sBF
+         pUCyDVPBhxQX0IwInzyjviCop19xjwhnLEygmOV3fxkcAznCP0h2jKskYNcS4j+cvL
+         7XiJsz8ZKMcVkkyyd/4GI34bjE6Qp0YhVsgyQEP89/YDJZgYsTpYJ/VD/Y32NIMiz7
+         2WUNiP0rrKVPwTWKatL187bEdNd6MJgl9BWTtZwuMdtbaOcF00z71aNk2cHzN3ssvg
+         v0XXaHm280j997gUpqh/LWN1cPuo4l5EKP9fQlblGH03bJq/O5axt/UEwJkbTmZqrE
+         RWZSr4+skFhAg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Michael Chan <michael.chan@broadcom.com>,
-        Colin Winegarden <colin.winegarden@broadcom.com>,
-        Pavan Chebbi <pavan.chebbi@broadcom.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 72/98] bnxt_en: Eliminate unintended link toggle during FW reset
-Date:   Fri,  1 Apr 2022 10:37:16 -0400
-Message-Id: <20220401143742.1952163-72-sashal@kernel.org>
+Cc:     Anisse Astier <anisse@astier.eu>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Jani Nikula <jani.nikula@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        maarten.lankhorst@linux.intel.com, mripard@kernel.org,
+        tzimmermann@suse.de, airlied@linux.ie, daniel@ffwll.ch,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 4.19 01/29] drm: Add orientation quirk for GPD Win Max
+Date:   Fri,  1 Apr 2022 10:45:44 -0400
+Message-Id: <20220401144612.1955177-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220401143742.1952163-1-sashal@kernel.org>
-References: <20220401143742.1952163-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -55,45 +54,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Chan <michael.chan@broadcom.com>
+From: Anisse Astier <anisse@astier.eu>
 
-[ Upstream commit 7c492a2530c1f05441da541307c2534230dfd59b ]
+[ Upstream commit 0b464ca3e0dd3cec65f28bc6d396d82f19080f69 ]
 
-If the flow control settings have been changed, a subsequent FW reset
-may cause the ethernet link to toggle unnecessarily.  This link toggle
-will increase the down time by a few seconds.
+Panel is 800x1280, but mounted on a laptop form factor, sideways.
 
-The problem is caused by bnxt_update_phy_setting() detecting a false
-mismatch in the flow control settings between the stored software
-settings and the current FW settings after the FW reset.  This mismatch
-is caused by the AUTONEG bit added to link_info->req_flow_ctrl in an
-inconsistent way in bnxt_set_pauseparam() in autoneg mode.  The AUTONEG
-bit should not be added to link_info->req_flow_ctrl.
-
-Reviewed-by: Colin Winegarden <colin.winegarden@broadcom.com>
-Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Anisse Astier <anisse@astier.eu>
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Jani Nikula <jani.nikula@intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20211229222200.53128-3-anisse@astier.eu
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/gpu/drm/drm_panel_orientation_quirks.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-index af7de9ee66cf..0f276ce2d1eb 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-@@ -2074,9 +2074,7 @@ static int bnxt_set_pauseparam(struct net_device *dev,
- 		}
- 
- 		link_info->autoneg |= BNXT_AUTONEG_FLOW_CTRL;
--		if (bp->hwrm_spec_code >= 0x10201)
--			link_info->req_flow_ctrl =
--				PORT_PHY_CFG_REQ_AUTO_PAUSE_AUTONEG_PAUSE;
-+		link_info->req_flow_ctrl = 0;
- 	} else {
- 		/* when transition from auto pause to force pause,
- 		 * force a link change
+diff --git a/drivers/gpu/drm/drm_panel_orientation_quirks.c b/drivers/gpu/drm/drm_panel_orientation_quirks.c
+index 3b70a338e5b4..265df1e67eb3 100644
+--- a/drivers/gpu/drm/drm_panel_orientation_quirks.c
++++ b/drivers/gpu/drm/drm_panel_orientation_quirks.c
+@@ -133,6 +133,12 @@ static const struct dmi_system_id orientation_data[] = {
+ 		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "MicroPC"),
+ 		},
+ 		.driver_data = (void *)&lcd720x1280_rightside_up,
++	}, {	/* GPD Win Max */
++		.matches = {
++		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "GPD"),
++		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "G1619-01"),
++		},
++		.driver_data = (void *)&lcd800x1280_rightside_up,
+ 	}, {	/*
+ 		 * GPD Pocket, note that the the DMI data is less generic then
+ 		 * it seems, devices with a board-vendor of "AMI Corporation"
 -- 
 2.34.1
 
