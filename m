@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BE58C3527E
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:26:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CE10C35296
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:26:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355761AbiDAPYr (ORCPT
+        id S1355928AbiDAPZd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:24:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43950 "EHLO
+        Fri, 1 Apr 2022 11:25:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349355AbiDAOzT (ORCPT
+        with ESMTP id S1349413AbiDAOze (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:55:19 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20A8D182;
-        Fri,  1 Apr 2022 07:43:21 -0700 (PDT)
+        Fri, 1 Apr 2022 10:55:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C070522C1;
+        Fri,  1 Apr 2022 07:43:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 5450FCE2586;
-        Fri,  1 Apr 2022 14:43:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD4EBC340EE;
-        Fri,  1 Apr 2022 14:43:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 45062B824AF;
+        Fri,  1 Apr 2022 14:43:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03B44C340EE;
+        Fri,  1 Apr 2022 14:43:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824197;
-        bh=x3dT+DRrUHEyWgSp2GIzctNgqRJI1RTLFgiQNQ6Ldk8=;
+        s=k20201202; t=1648824219;
+        bh=D3MMkIZa9gVS2t4YZ8IbXig4tAtjQ5LpsMXgRj2Xx+Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EMqSYt0ER4T92tsFIMkO31icjaTPTcia/PNbzvA54J2IFr045g7fagP3ePeVegGwf
-         HmoqNt4Ley0pzWieb2dycpzg8vGMaNxCqCh0RLXcbNfrXVwQ/IYz0OZ591p+B0kouz
-         fsuFDoUvCOLGIWFrQTUNmKWy2VfOt77Hf/QVNuUdhO3PzX/ZIVChMIDlmH5WFUAKzQ
-         2rqYwLUEYXREE597GkMhEjd2jMZDy885BxO/ZCSSbPK/iv5VsoeSJKld0qRKYj1ONQ
-         f+J6k6lKsp/9pk25Z7W+ru3IzP8RPTizBlbNozRXFjY3pCKLHBiPKk4XpFI+2nMoqE
-         LJhyUCpCpQAQA==
+        b=WQiHYwUaOM/X6CH4B+Pqoii8Pp9TgmOzvRY0nhsCcPSZpWyz1vYxv9JAD497cn1oh
+         fQZ2hzUb+eB0OdcJuDJjAvP5lL+GYBu5k2SUw9dEuBV7HtpaKDuq1wLggM3iG5q9wT
+         XVOV1KAbzZeRuTWbQIjefH8FaLC1LMbrSfy6tm4+r1xagDoof1N/+N6yog9N9y7NLW
+         ciCP8k1S1okQRZ+hhXTjkEYea60mcW5pkQwPwUmi02jBxRoukrJtGcviXr0cv2Hl5o
+         FfRjMUYVWmCJMHbgOP206gx4N7CnhfrDDfJGNLc2OkDmbAVMCRUxFwsS8zjc1QskOm
+         DmTyRYC2s7BBg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Hou Zhiqiang <Zhiqiang.Hou@nxp.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Sasha Levin <sashal@kernel.org>, bhelgaas@google.com,
-        yangyingliang@huawei.com, lchen@ambarella.com,
-        linux-pci@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 24/65] PCI: endpoint: Fix alignment fault error in copy tests
-Date:   Fri,  1 Apr 2022 10:41:25 -0400
-Message-Id: <20220401144206.1953700-24-sashal@kernel.org>
+Cc:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        John Garry <john.garry@huawei.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, jinpu.wang@cloud.ionos.com,
+        jejb@linux.ibm.com, linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 35/65] scsi: pm8001: Fix task leak in pm8001_send_abort_all()
+Date:   Fri,  1 Apr 2022 10:41:36 -0400
+Message-Id: <20220401144206.1953700-35-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401144206.1953700-1-sashal@kernel.org>
 References: <20220401144206.1953700-1-sashal@kernel.org>
@@ -55,90 +54,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hou Zhiqiang <Zhiqiang.Hou@nxp.com>
+From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 
-[ Upstream commit 829cc0e2ea2d61fb6c54bc3f8a17f86c56e11864 ]
+[ Upstream commit f90a74892f3acf0cdec5844e90fc8686ca13e7d7 ]
 
-The copy test uses the memcpy() to copy data between IO memory spaces.
-This can trigger an alignment fault error (pasted the error logs below)
-because memcpy() may use unaligned accesses on a mapped memory that is
-just IO, which does not support unaligned memory accesses.
+In pm8001_send_abort_all(), make sure to free the allocated sas task
+if pm8001_tag_alloc() or pm8001_mpi_build_cmd() fail.
 
-Fix it by using the correct memcpy API to copy from/to IO memory.
-
-Alignment fault error logs:
-   Unable to handle kernel paging request at virtual address ffff8000101cd3c1
-   Mem abort info:
-     ESR = 0x96000021
-     EC = 0x25: DABT (current EL), IL = 32 bits
-     SET = 0, FnV = 0
-     EA = 0, S1PTW = 0
-     FSC = 0x21: alignment fault
-   Data abort info:
-     ISV = 0, ISS = 0x00000021
-     CM = 0, WnR = 0
-   swapper pgtable: 4k pages, 48-bit VAs, pgdp=0000000081773000
-   [ffff8000101cd3c1] pgd=1000000082410003, p4d=1000000082410003, pud=1000000082411003, pmd=1000000082412003, pte=0068004000001f13
-   Internal error: Oops: 96000021 [#1] PREEMPT SMP
-   Modules linked in:
-   CPU: 0 PID: 6 Comm: kworker/0:0H Not tainted 5.15.0-rc1-next-20210914-dirty #2
-   Hardware name: LS1012A RDB Board (DT)
-   Workqueue: kpcitest pci_epf_test_cmd_handler
-   pstate: 80000005 (Nzcv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-   pc : __memcpy+0x168/0x230
-   lr : pci_epf_test_cmd_handler+0x6f0/0xa68
-   sp : ffff80001003bce0
-   x29: ffff80001003bce0 x28: ffff800010135000 x27: ffff8000101e5000
-   x26: ffff8000101cd000 x25: ffff6cda941cf6c8 x24: 0000000000000000
-   x23: ffff6cda863f2000 x22: ffff6cda9096c800 x21: ffff800010135000
-   x20: ffff6cda941cf680 x19: ffffaf39fd999000 x18: 0000000000000000
-   x17: 0000000000000000 x16: 0000000000000000 x15: ffffaf39fd2b6000
-   x14: 0000000000000000 x13: 15f5c8fa2f984d57 x12: 604d132b60275454
-   x11: 065cee5e5fb428b6 x10: aae662eb17d0cf3e x9 : 1d97c9a1b4ddef37
-   x8 : 7541b65edebf928c x7 : e71937c4fc595de0 x6 : b8a0e09562430d1c
-   x5 : ffff8000101e5401 x4 : ffff8000101cd401 x3 : ffff8000101e5380
-   x2 : fffffffffffffff1 x1 : ffff8000101cd3c0 x0 : ffff8000101e5000
-   Call trace:
-    __memcpy+0x168/0x230
-    process_one_work+0x1ec/0x370
-    worker_thread+0x44/0x478
-    kthread+0x154/0x160
-    ret_from_fork+0x10/0x20
-   Code: a984346c a9c4342c f1010042 54fffee8 (a97c3c8e)
-   ---[ end trace 568c28c7b6336335 ]---
-
-Link: https://lore.kernel.org/r/20211217094708.28678-1-Zhiqiang.Hou@nxp.com
-Signed-off-by: Hou Zhiqiang <Zhiqiang.Hou@nxp.com>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Reviewed-by: Kishon Vijay Abraham I <kishon@ti.com>
+Link: https://lore.kernel.org/r/20220220031810.738362-21-damien.lemoal@opensource.wdc.com
+Reviewed-by: John Garry <john.garry@huawei.com>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/endpoint/functions/pci-epf-test.c | 12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
+ drivers/scsi/pm8001/pm8001_hwi.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/pci/endpoint/functions/pci-epf-test.c b/drivers/pci/endpoint/functions/pci-epf-test.c
-index d41570715dc7..b861840e867c 100644
---- a/drivers/pci/endpoint/functions/pci-epf-test.c
-+++ b/drivers/pci/endpoint/functions/pci-epf-test.c
-@@ -285,7 +285,17 @@ static int pci_epf_test_copy(struct pci_epf_test *epf_test)
- 		if (ret)
- 			dev_err(dev, "Data transfer failed\n");
- 	} else {
--		memcpy(dst_addr, src_addr, reg->size);
-+		void *buf;
-+
-+		buf = kzalloc(reg->size, GFP_KERNEL);
-+		if (!buf) {
-+			ret = -ENOMEM;
-+			goto err_map_addr;
-+		}
-+
-+		memcpy_fromio(buf, src_addr, reg->size);
-+		memcpy_toio(dst_addr, buf, reg->size);
-+		kfree(buf);
+diff --git a/drivers/scsi/pm8001/pm8001_hwi.c b/drivers/scsi/pm8001/pm8001_hwi.c
+index a6b8700c7f0c..4e43f0c295b2 100644
+--- a/drivers/scsi/pm8001/pm8001_hwi.c
++++ b/drivers/scsi/pm8001/pm8001_hwi.c
+@@ -1711,7 +1711,6 @@ static void pm8001_send_abort_all(struct pm8001_hba_info *pm8001_ha,
  	}
- 	ktime_get_ts64(&end);
- 	pci_epf_test_print_rate("COPY", reg->size, &start, &end, use_dma);
+ 
+ 	task = sas_alloc_slow_task(GFP_ATOMIC);
+-
+ 	if (!task) {
+ 		pm8001_dbg(pm8001_ha, FAIL, "cannot allocate task\n");
+ 		return;
+@@ -1720,8 +1719,10 @@ static void pm8001_send_abort_all(struct pm8001_hba_info *pm8001_ha,
+ 	task->task_done = pm8001_task_done;
+ 
+ 	res = pm8001_tag_alloc(pm8001_ha, &ccb_tag);
+-	if (res)
++	if (res) {
++		sas_free_task(task);
+ 		return;
++	}
+ 
+ 	ccb = &pm8001_ha->ccb_info[ccb_tag];
+ 	ccb->device = pm8001_ha_dev;
+@@ -1737,8 +1738,10 @@ static void pm8001_send_abort_all(struct pm8001_hba_info *pm8001_ha,
+ 
+ 	ret = pm8001_mpi_build_cmd(pm8001_ha, circularQ, opc, &task_abort,
+ 			sizeof(task_abort), 0);
+-	if (ret)
++	if (ret) {
++		sas_free_task(task);
+ 		pm8001_tag_free(pm8001_ha, ccb_tag);
++	}
+ 
+ }
+ 
 -- 
 2.34.1
 
