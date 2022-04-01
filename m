@@ -2,48 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7588C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:38:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9A40C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:38:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347547AbiDAOkZ (ORCPT
+        id S1347428AbiDAOkd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 10:40:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39994 "EHLO
+        Fri, 1 Apr 2022 10:40:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348282AbiDAOdx (ORCPT
+        with ESMTP id S1348253AbiDAOdv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:33:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 461111E1105;
-        Fri,  1 Apr 2022 07:31:43 -0700 (PDT)
+        Fri, 1 Apr 2022 10:33:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CBFB1EC60D;
+        Fri,  1 Apr 2022 07:31:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B8314B824D5;
-        Fri,  1 Apr 2022 14:31:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4542EC2BBE4;
-        Fri,  1 Apr 2022 14:31:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0FD3B61C1D;
+        Fri,  1 Apr 2022 14:31:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 266DBC340EE;
+        Fri,  1 Apr 2022 14:31:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823500;
-        bh=clkxCeeVshCjj/tkcXT/aa1TUVS1+JD8nre3csosIJQ=;
+        s=k20201202; t=1648823491;
+        bh=qwb1WY2jHtNY5Hm+ktnqHKmRUzT0l4+oqODn1UVDDVM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gC/gkYW0CTU1rvhWEXAf1BfeYUEOQbeagFTV8gwoQx175I3OsQ1S2WC4TlnwtL4We
-         FAWSGFcVjjA9gxT0lF4BOJzNHPcJN2fPdY9ADIHXV6ortnV1NGKBhMz80EZSZrV+d0
-         eaW7cMnULc4OsNTgOq+OtyXfaikA5tugi4rA/ft1kIYftfQ4bbcPXF/zduovrLS9+E
-         WjqyBgmpSUmlIM4fREpqNr+L03ZVW7xXJTljBGAQUCyVzF8kNejNhM5UgKyKM//Yiz
-         eac2S7mz53t6+XGgcwZbW62TdVkOfjGewSrhIyy+7kiTfphBi8MQHbqKcJSIFASDiK
-         GizzZli7c75lg==
+        b=avi4Sa8x0tBd9rdhYG3kwbuFxLs8fYqC3bQ7e2RYIj6PGtddKx8CewLyCS+x72Xd6
+         4WR206OXivkTZ/Z7BAxyATRBWzAmL9ChUWImdtveLAw85uNtdK/qiG4jcA2H70PJXy
+         /A5bGldjD0IDZERcWWYboZRm9YKpFHscvJVJ7Qg9nTEW4faupXSCmH989PS/yswTO/
+         tJpayP5K63nbu6yOZ4H7sVER4UdzuuQcqPIzsCe5ZiGa52EkaJyIVD6+ZH7q5SEDeB
+         WjC1ffeYAbcBj6IcKRT1BC4zTOuHC/hexqEnm77haOv9SDSZXlkK/E3uQLvsnAvSzC
+         7aUjmznOXpm+g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Li Chen <lchen@ambarella.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Sasha Levin <sashal@kernel.org>, bhelgaas@google.com,
-        yangyingliang@huawei.com, Zhiqiang.Hou@nxp.com,
-        linux-pci@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 120/149] PCI: endpoint: Fix misused goto label
-Date:   Fri,  1 Apr 2022 10:25:07 -0400
-Message-Id: <20220401142536.1948161-120-sashal@kernel.org>
+Cc:     Sean Wang <sean.wang@mediatek.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>, johan.hedberg@gmail.com,
+        luiz.dentz@gmail.com, matthias.bgg@gmail.com,
+        linux-bluetooth@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.17 116/149] Bluetooth: mediatek: fix the conflict between mtk and msft vendor event
+Date:   Fri,  1 Apr 2022 10:25:03 -0400
+Message-Id: <20220401142536.1948161-116-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401142536.1948161-1-sashal@kernel.org>
 References: <20220401142536.1948161-1-sashal@kernel.org>
@@ -55,34 +56,96 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Li Chen <lchen@ambarella.com>
+From: Sean Wang <sean.wang@mediatek.com>
 
-[ Upstream commit bf8d87c076f55b8b4dfdb6bc6c6b6dc0c2ccb487 ]
+[ Upstream commit e4412654e260842e1a94ffe0d4026e8a6fd34246 ]
 
-Fix a misused goto label jump since that can result in a memory leak.
+There is a conflict between MediaTek wmt event and msft vendor extension
+logic in the core layer since 145373cb1b1f ("Bluetooth: Add framework for
+Microsoft vendor extension") was introduced because we changed the type of
+mediatek wmt event to the type of msft vendor event in the driver.
 
-Link: https://lore.kernel.org/r/17e7b9b9ee6.c6d9c6a02564.4545388417402742326@zohomail.com
-Signed-off-by: Li Chen <lchen@ambarella.com>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Acked-by: Kishon Vijay Abraham I <kishon@ti.com>
+But the purpose we reported mediatek event to the core layer is for the
+diagnostic purpose with that we are able to see the full packet trace via
+monitoring socket with btmon. Thus, it is harmless we keep the original
+type of mediatek vendor event here to avoid breaking the msft extension
+function especially they can be supported by Mediatek chipset like MT7921
+, MT7922 devices and future devices.
+
+Signed-off-by: Sean Wang <sean.wang@mediatek.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/endpoint/functions/pci-epf-test.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/bluetooth/btmtk.h     | 1 +
+ drivers/bluetooth/btmtksdio.c | 9 +--------
+ drivers/bluetooth/btusb.c     | 8 --------
+ 3 files changed, 2 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/pci/endpoint/functions/pci-epf-test.c b/drivers/pci/endpoint/functions/pci-epf-test.c
-index c7e45633beaf..5b833f00e980 100644
---- a/drivers/pci/endpoint/functions/pci-epf-test.c
-+++ b/drivers/pci/endpoint/functions/pci-epf-test.c
-@@ -451,7 +451,7 @@ static int pci_epf_test_write(struct pci_epf_test *epf_test)
- 		if (!epf_test->dma_supported) {
- 			dev_err(dev, "Cannot transfer data using DMA\n");
- 			ret = -EINVAL;
--			goto err_map_addr;
-+			goto err_dma_map;
- 		}
+diff --git a/drivers/bluetooth/btmtk.h b/drivers/bluetooth/btmtk.h
+index 6e7b0c7567c0..0defa68bc2ce 100644
+--- a/drivers/bluetooth/btmtk.h
++++ b/drivers/bluetooth/btmtk.h
+@@ -5,6 +5,7 @@
+ #define FIRMWARE_MT7668		"mediatek/mt7668pr2h.bin"
+ #define FIRMWARE_MT7961		"mediatek/BT_RAM_CODE_MT7961_1_2_hdr.bin"
  
- 		src_phys_addr = dma_map_single(dma_dev, buf, reg->size,
++#define HCI_EV_WMT 0xe4
+ #define HCI_WMT_MAX_EVENT_SIZE		64
+ 
+ #define BTMTK_WMT_REG_READ 0x2
+diff --git a/drivers/bluetooth/btmtksdio.c b/drivers/bluetooth/btmtksdio.c
+index b5ea8d3bffaa..a295a9389892 100644
+--- a/drivers/bluetooth/btmtksdio.c
++++ b/drivers/bluetooth/btmtksdio.c
+@@ -284,13 +284,6 @@ static int btmtksdio_recv_event(struct hci_dev *hdev, struct sk_buff *skb)
+ 	struct hci_event_hdr *hdr = (void *)skb->data;
+ 	int err;
+ 
+-	/* Fix up the vendor event id with 0xff for vendor specific instead
+-	 * of 0xe4 so that event send via monitoring socket can be parsed
+-	 * properly.
+-	 */
+-	if (hdr->evt == 0xe4)
+-		hdr->evt = HCI_EV_VENDOR;
+-
+ 	/* When someone waits for the WMT event, the skb is being cloned
+ 	 * and being processed the events from there then.
+ 	 */
+@@ -306,7 +299,7 @@ static int btmtksdio_recv_event(struct hci_dev *hdev, struct sk_buff *skb)
+ 	if (err < 0)
+ 		goto err_free_skb;
+ 
+-	if (hdr->evt == HCI_EV_VENDOR) {
++	if (hdr->evt == HCI_EV_WMT) {
+ 		if (test_and_clear_bit(BTMTKSDIO_TX_WAIT_VND_EVT,
+ 				       &bdev->tx_state)) {
+ 			/* Barrier to sync with other CPUs */
+diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
+index c30d131da784..0959d10a6b84 100644
+--- a/drivers/bluetooth/btusb.c
++++ b/drivers/bluetooth/btusb.c
+@@ -2245,7 +2245,6 @@ static void btusb_mtk_wmt_recv(struct urb *urb)
+ {
+ 	struct hci_dev *hdev = urb->context;
+ 	struct btusb_data *data = hci_get_drvdata(hdev);
+-	struct hci_event_hdr *hdr;
+ 	struct sk_buff *skb;
+ 	int err;
+ 
+@@ -2265,13 +2264,6 @@ static void btusb_mtk_wmt_recv(struct urb *urb)
+ 		hci_skb_pkt_type(skb) = HCI_EVENT_PKT;
+ 		skb_put_data(skb, urb->transfer_buffer, urb->actual_length);
+ 
+-		hdr = (void *)skb->data;
+-		/* Fix up the vendor event id with 0xff for vendor specific
+-		 * instead of 0xe4 so that event send via monitoring socket can
+-		 * be parsed properly.
+-		 */
+-		hdr->evt = 0xff;
+-
+ 		/* When someone waits for the WMT event, the skb is being cloned
+ 		 * and being processed the events from there then.
+ 		 */
 -- 
 2.34.1
 
