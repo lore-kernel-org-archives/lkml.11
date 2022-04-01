@@ -2,195 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 665E6C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 07:04:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ECFFC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 07:05:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343708AbiDAHGh (ORCPT
+        id S1343696AbiDAHHn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 03:06:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60294 "EHLO
+        Fri, 1 Apr 2022 03:07:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343644AbiDAHGS (ORCPT
+        with ESMTP id S242935AbiDAHHk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 03:06:18 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 273266A06D
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 00:04:29 -0700 (PDT)
-Received: from dggpeml500020.china.huawei.com (unknown [172.30.72.55])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KV9zV1g9QzBrvk;
-        Fri,  1 Apr 2022 15:00:22 +0800 (CST)
-Received: from dggpeml500009.china.huawei.com (7.185.36.209) by
- dggpeml500020.china.huawei.com (7.185.36.88) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Fri, 1 Apr 2022 15:04:27 +0800
-Received: from huawei.com (10.175.127.227) by dggpeml500009.china.huawei.com
- (7.185.36.209) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Fri, 1 Apr
- 2022 15:04:27 +0800
-From:   Yufen Yu <yuyufen@huawei.com>
-To:     <jaegeuk@kernel.org>, <chao@kernel.org>
-CC:     <linux-kernel@vger.kernel.org>,
-        <linux-f2fs-devel@lists.sourceforge.net>, <yuyufen@huawei.com>
-Subject: [PATCH 5/5] f2fs: update doc for f2fs fault injection
-Date:   Fri, 1 Apr 2022 15:19:09 +0800
-Message-ID: <20220401071909.505086-6-yuyufen@huawei.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220401071909.505086-1-yuyufen@huawei.com>
-References: <20220401071909.505086-1-yuyufen@huawei.com>
+        Fri, 1 Apr 2022 03:07:40 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCF26FA238
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 00:05:51 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id w8so1707908pll.10
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 00:05:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=DgqOKKf2QPWibHI++3a4qElNtqGNYsPXAymuITvgbww=;
+        b=NaWjXWOVRG8zYJAo01P6Bae8CTdC/AZpskHAWVHlIfyVAnPQhoM0EHcb5BgVJAJic0
+         UuO//02kyZt70g/h79qvCWj2L9j8HUMVIUAx1YVRoyE+rmKpLmppjdP3bwT/zILRfd/x
+         zZrdWoBZabP0fcujPVmeQyiw2xGoAqrx+C2NpVzXwf391zKMe71GNUA67OCdDxaOoogG
+         yExVwdPfqJLJhNwS+pXgGpmBtSeFW4vNfia4Vf1YYV8uEjt2OhVqzT12VvJLBGt8PcnO
+         bpBIVyQyMN5VYBHRBKFg3aX5/k2WVj3QXbp71RmfwZh2J0GNlM6Appj9XMH3ruuCvWcT
+         E4SQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=DgqOKKf2QPWibHI++3a4qElNtqGNYsPXAymuITvgbww=;
+        b=VHpxDO9Hq+CAD377bMKREGxqPxtjOtAi9xcgKxuC4oqQzP9LCf6hVJLcA9jpx+ED6/
+         XSGeJQZibwPhbv4Ir0UXoHdVyWQbbIKt589D3ShqSxMZ0Rb2JdR41QnH6/APTvySiwx6
+         W24uf8ynQO27mt3IB8lic+JHtFMdSEglGv6skhxxND2Yb1LnhPINLUSmz3jwqiubqy5/
+         +ovw29l3lvryN3NpRbAuBlB3Vjnaj8+xpRNi7RgzmfTtQF4yC3gv5aUZnZN1oZzYFlQv
+         MJ3Ihi3e0NuTSfhHTnRxXxN6TldDLUWFu+XbLmOdnYi70DlvTAvkWG53QHLqpKn1H/3h
+         R0WA==
+X-Gm-Message-State: AOAM5311CUVpgMIAwy/aoXAV/tBtCf9UX9Kg+Wuw6CPGUKkjFriH1nQK
+        ScgruA93qPB1g/8Pp3cnoan/oQ==
+X-Google-Smtp-Source: ABdhPJwr/N4+d353Pr+bgVkOXaa2KhIRQTdZiVrZBVriWKv8NUxHiG1Epi3pLbPTWxa+RzzF3VugSA==
+X-Received: by 2002:a17:902:c745:b0:151:e8fa:629b with SMTP id q5-20020a170902c74500b00151e8fa629bmr45891827plq.90.1648796751375;
+        Fri, 01 Apr 2022 00:05:51 -0700 (PDT)
+Received: from ?IPV6:2409:8a28:e6d:3f10:69f0:2593:647c:15eb? ([2409:8a28:e6d:3f10:69f0:2593:647c:15eb])
+        by smtp.gmail.com with ESMTPSA id t5-20020a17090a6a0500b001c9ba10352fsm1382968pjj.25.2022.04.01.00.05.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 01 Apr 2022 00:05:50 -0700 (PDT)
+Message-ID: <2f178bad-06e1-83de-0430-b0107053f248@bytedance.com>
+Date:   Fri, 1 Apr 2022 15:05:38 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpeml500009.china.huawei.com (7.185.36.209)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.7.0
+Subject: Re: [External] Re: [PATCH] sched/fair: fix broken bandwidth control
+ with nohz_full
+Content-Language: en-US
+To:     Phil Auld <pauld@redhat.com>, Peter Zijlstra <peterz@infradead.org>
+Cc:     Steven Rostedt <rostedt@goodmis.org>, mingo@redhat.com,
+        juri.lelli@redhat.com, vincent.guittot@linaro.org,
+        dietmar.eggemann@arm.com, bsegall@google.com, mgorman@suse.de,
+        bristot@redhat.com, linux-kernel@vger.kernel.org,
+        duanxiongchun@bytedance.com, songmuchun@bytedance.com,
+        Frederic Weisbecker <fweisbec@gmail.com>
+References: <20220328110751.39987-1-zhouchengming@bytedance.com>
+ <20220328132047.GD8939@worktop.programming.kicks-ass.net>
+ <c0465b27-328a-1288-fb50-d4c6321c8b4d@bytedance.com>
+ <YkHRmv/OcABIB0wP@hirez.programming.kicks-ass.net>
+ <6fc49cff-f8a1-8b09-5a25-a64e5d07d258@bytedance.com>
+ <YkHal1m3pnxGoQ1Y@hirez.programming.kicks-ass.net>
+ <20220328124454.08ab6126@gandalf.local.home>
+ <20220330182327.GO8939@worktop.programming.kicks-ass.net>
+ <20220330191439.GC17246@pauld.bos.csb>
+From:   Chengming Zhou <zhouchengming@bytedance.com>
+In-Reply-To: <20220330191439.GC17246@pauld.bos.csb>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Just update doc for fault injection.
+Hi,
 
-Signed-off-by: Yufen Yu <yuyufen@huawei.com>
----
- Documentation/filesystems/f2fs.rst | 118 ++++++++++++++++++++++-------
- 1 file changed, 90 insertions(+), 28 deletions(-)
+On 2022/3/31 03:14, Phil Auld wrote:
+> Hi Peter,
+> 
+> On Wed, Mar 30, 2022 at 08:23:27PM +0200 Peter Zijlstra wrote:
+>> On Mon, Mar 28, 2022 at 12:44:54PM -0400, Steven Rostedt wrote:
+>>> On Mon, 28 Mar 2022 17:56:07 +0200
+>>> Peter Zijlstra <peterz@infradead.org> wrote:
+>>>
+>>>>> echo $$ > test/cgroup.procs
+>>>>> taskset -c 1 bash -c "while true; do let i++; done"  --> will be throttled  
+>>>>
+>>>> Ofcourse.. I'm arguing that bandiwdth control and NOHZ_FULL are somewhat
+>>>> mutually exclusive, use-case wise. So I really don't get why you'd want
+>>>> them both.
+>>>
+>>> Is it?
+>>>
+>>> One use case I can see for having both is for having a deadline task that
+>>> needs to get something done in a tight deadline. NOHZ_FULL means "do not
+>>> interrupt this task when it is the top priority task on the CPU and is
+>>> running in user space".
+>>
+>> This is absolute batshit.. It means no such thing. We'll happily wake
+>> another task to this CPU and re-enable the tick any instant.
+>>
+>> Worse; the use-case at hand pertains to cfs bandwidth control, which
+>> pretty much guarantees there *will* be an interrupt.
+> 
+> The problem is (at least in some cases) that container orchestration userspace
+> code allocates a whole CPU by setting quota == period.  Or 3 cpus as 3*period etc.
+> 
+> In cases where an isolated task is expected to run uninterrupted (only task in 
+> the system affined to that cpu, nohz_full, nocbs etc) you can end up with it
+> getting throttled even though it theoritically has enough bandwidth for the full
+> cpu and therefore should never get throttled. 
+> 
+> There are radio network setups where the packet processing is isolated
+> like this but the system as a whole is managed by container orchestration so 
+> everything has cfs bandwidth quotas set.
+> 
+> I don't think generally the bandwidth controls in these cases are used for 
+> CPU sharing (quota < period). I agree that doesn't make much sense with NOHZ_FULL
+> and won't work right. 
+> 
+> It's doled out as full cpu(s) in these cases.
+> 
+> Thats not a VM case so is likely different from the one that started this thread
+> but I thought I should mention it.
 
-diff --git a/Documentation/filesystems/f2fs.rst b/Documentation/filesystems/f2fs.rst
-index 4a2426f0485a..e8dfe1541613 100644
---- a/Documentation/filesystems/f2fs.rst
-+++ b/Documentation/filesystems/f2fs.rst
-@@ -172,34 +172,6 @@ reserve_root=%d		 Support configuring reserved space which is used for
- 			 gid, unit: 4KB, the default limit is 0.2% of user blocks.
- resuid=%d		 The user ID which may use the reserved blocks.
- resgid=%d		 The group ID which may use the reserved blocks.
--fault_injection=%d	 Enable fault injection in all supported types with
--			 specified injection rate.
--fault_type=%d		 Support configuring fault injection type, should be
--			 enabled with fault_injection option, fault type value
--			 is shown below, it supports single or combined type.
--
--			 ===================	  ===========
--			 Type_Name		  Type_Value
--			 ===================	  ===========
--			 FAULT_KMALLOC		  0x000000001
--			 FAULT_KVMALLOC		  0x000000002
--			 FAULT_PAGE_ALLOC	  0x000000004
--			 FAULT_PAGE_GET		  0x000000008
--			 FAULT_ALLOC_BIO	  0x000000010 (obsolete)
--			 FAULT_ALLOC_NID	  0x000000020
--			 FAULT_ORPHAN		  0x000000040
--			 FAULT_BLOCK		  0x000000080
--			 FAULT_DIR_DEPTH	  0x000000100
--			 FAULT_EVICT_INODE	  0x000000200
--			 FAULT_TRUNCATE		  0x000000400
--			 FAULT_READ_IO		  0x000000800
--			 FAULT_CHECKPOINT	  0x000001000
--			 FAULT_DISCARD		  0x000002000
--			 FAULT_WRITE_IO		  0x000004000
--			 FAULT_SLAB_ALLOC	  0x000008000
--			 FAULT_DQUOT_INIT	  0x000010000
--			 FAULT_LOCK_OP		  0x000020000
--			 ===================	  ===========
- mode=%s			 Control block allocation mode which supports "adaptive"
- 			 and "lfs". In "lfs" mode, there should be no random
- 			 writes towards main area.
-@@ -367,6 +339,96 @@ The files in each per-device directory are shown in table below.
- Files in /sys/fs/f2fs/<devname>
- (see also Documentation/ABI/testing/sysfs-fs-f2fs)
- 
-+Fault Injection
-+=============
-+/sys/kernel/debug/f2fs/<devname>/fault_inject contains fault_inject control.
-+
-+Support configuring fault injection type by writing value to
-+/sys/kernel/debug/f2fs/<devname>/fault_inject/inject_type.
-+The values are shown below. They support single or combined type.
-+
-+			 ===================	  ===========
-+			 Type_Name		  Type_Value
-+			 ===================	  ===========
-+			 FAULT_KMALLOC		  0x000000001
-+			 FAULT_KVMALLOC		  0x000000002
-+			 FAULT_PAGE_ALLOC	  0x000000004
-+			 FAULT_PAGE_GET		  0x000000008
-+			 FAULT_ALLOC_BIO	  0x000000010 (obsolete)
-+			 FAULT_ALLOC_NID	  0x000000020
-+			 FAULT_ORPHAN		  0x000000040
-+			 FAULT_BLOCK		  0x000000080
-+			 FAULT_DIR_DEPTH	  0x000000100
-+			 FAULT_EVICT_INODE	  0x000000200
-+			 FAULT_TRUNCATE		  0x000000400
-+			 FAULT_READ_IO		  0x000000800
-+			 FAULT_CHECKPOINT	  0x000001000
-+			 FAULT_DISCARD		  0x000002000
-+			 FAULT_WRITE_IO		  0x000004000
-+			 FAULT_SLAB_ALLOC	  0x000008000
-+			 FAULT_DQUOT_INIT	  0x000010000
-+			 FAULT_LOCK_OP		  0x000020000
-+			 ===================	  ===========
-+
-+Example: Inject write io fail
-+---------------------------------------------------
-+
-+::
-+
-+    mount /dev/sda /mnt
-+    echo 0x000000800 > /sys/kernel/debug/f2fs/sda/fault_inject/inject_type
-+    echo 1 > /sys/kernel/debug/f2fs/sda/fault_inject/times
-+    echo 100 > /sys/kernel/debug/f2fs/sda/fault_inject/probability
-+    cp /mnt/file .
-+
-+Expected Result::
-+
-+    cat: /mnt/file: Input/output error
-+
-+Message from dmesg::
-+
-+    FAULT_INJECTION: forcing a failure.
-+    name fault_inject, interval 1, probability 100, space 0, times 1
-+    CPU: 30 PID: 0 Comm: swapper/30 Not tainted 5.17.0-rc8 #6
-+    Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS ?-20190727_073836-build
-+    Call Trace:
-+     <IRQ>
-+     ? dump_stack_lvl+0x73/0x9f
-+     ? dump_stack+0x13/0x1b
-+     ? should_fail.cold+0x4a/0x57
-+     ? f2fs_should_fail+0x3e/0x60
-+     ? f2fs_read_end_io+0x94/0x230
-+     ? bio_endio+0x15d/0x2d0
-+     ? blk_update_request+0x188/0x5b0
-+     ? kfree+0x138/0x4a0
-+     ? scsi_end_request+0x2f/0x230
-+     ? scsi_io_completion+0x86/0x9a0
-+     ? scsi_dec_host_busy+0xc6/0xe0
-+     ? scsi_finish_command+0xf0/0x160
-+     ? scsi_complete+0x9f/0x160
-+     ? blk_complete_reqs+0x5a/0x70
-+     ? blk_done_softirq+0x34/0x40
-+     ? __do_softirq+0x14f/0x4ef
-+     ? irq_exit_rcu+0x1a7/0x210
-+     ? common_interrupt+0xa4/0xc0
-+     </IRQ>
-+     <TASK>
-+     ? asm_common_interrupt+0x1e/0x40
-+     ? default_idle+0x38/0x50
-+     ? arch_cpu_idle+0x13/0x20
-+     ? default_idle_call+0x82/0x270
-+     ? do_idle+0x37c/0x4a0
-+     ? swake_up_locked+0x38/0x80
-+     ? _raw_spin_unlock_irqrestore+0x4b/0x90
-+     ? cpu_startup_entry+0x31/0x40
-+     ? start_secondary+0x222/0x280
-+     ? secondary_startup_64_no_verify+0xc3/0xcb
-+     </TASK>
-+    F2FS-fs (sda) : inject read IO error in f2fs_read_end_io of bio_endio+0x15d/0x2d0
-+
-+Files in /sys/kernel/debug/f2fs/<devname>/fault_inject
-+(see also Documentation/fault-injection/fault-injection.rst)
-+
- Usage
- =====
- 
--- 
-2.31.1
+Yes, it's a different use-case from ours. Thanks for sharing with us. I should
+put these in the patch log and send an updated version.
 
+Thanks.
+
+> 
+> 
+> Cheers,
+> Phil
+> 
+>>
+>>> Why is it mutually exclusive to have a deadline task that does not want to
+>>> be interrupted by timer interrupts?
+>>
+>> This has absolutely nothing to do with deadline tasks, nada, noppes.
+>>
+>>> Just because the biggest pushers of NOHZ_FULL is for those that are running
+>>> RT tasks completely in user space and event want to fault if it ever goes
+>>> into the kernel, doesn't mean that's the only use case.
+>>
+>> Because there's costs associated with the whole thing. system entry/exit
+>> get far more expensive. It just doesn't make much sense to use NOHZ_FULL
+>> if you're not absoultely limiting system entry.
+>>
+>>> Chengming brought up VMs. That's a case to want to control the bandwidth,
+>>> but also not interrupt them with timer interrupts when they are running as
+>>> the top priority task on a CPU.
+>>
+>> It's CFS, there is nothing top priority about that.
+>>
+> 
