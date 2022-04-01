@@ -2,121 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F9ECC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 01:57:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C784EC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 02:00:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243909AbiDAB7D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 21:59:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57130 "EHLO
+        id S243914AbiDACCe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 22:02:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233627AbiDAB7B (ORCPT
+        with ESMTP id S233627AbiDACCd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 21:59:01 -0400
-Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F58525846E
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 18:57:10 -0700 (PDT)
-Received: by mail-qk1-x730.google.com with SMTP id d65so1062523qke.5
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 18:57:10 -0700 (PDT)
+        Thu, 31 Mar 2022 22:02:33 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 514751A6E68
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 19:00:44 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id r23so1375846edb.0
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 19:00:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:from:to:cc:subject:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=its5ZVzLNySBxXzZdl/ejpOgC699lFgiSCphdNqxw3M=;
-        b=C+GinWkGW9kXz8S6iY+9Pa9rt93JXP8qXPcM7cyM/jl5JN0MK/MszALO65g7eVVcNo
-         moXRGmHiuJcQWFwiOgIjWa+tDd9pU344v6THdrDj/wl4eFD4I051N/1xdLob+ilsA6rb
-         gVbS1yJI9UAm/3LHAIclPG45LI6qw3xBwRwr9D5wMgLREvzX6Ie2NSZ4ivgpOMe0QgXl
-         BB1gsGEOaO1InqfxQAEmO/kUsu6LhCc9NxFvJs0e6u+HyJA12v6rJdIsGZqPUJ/MuzAp
-         tJxvdzG7jnekAAIQAhQ2ICFITGWS70nHoVdgbjbmPy0iRvi6xm9cylIgnzdWXk5nqLLU
-         /Vhg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=hNRvmRxRt7nKkMkW5WxVDCU1Iy6gNw03vGAy8sCh0g0=;
+        b=q6NNPzOLkXZoGfXiZdO6mALYkbFbSKmWy7A/tlX6Ss2tLm8FmRZ8T71Q/8D3NeX97/
+         hPUgZhJhXFhu0gQd8NtmHv15QqJFEdkFHn/jlBcOXNQE9qpi7voVdSP7yGofeQEt1b54
+         ztud9MOJqhvE0WBgfJ2Nx5WfghihikU4K7OZaS7TJfHaYggeDA91Ntzas5EODulNCD7K
+         nwMwrH/3On7bY8q6UQCsEEEOvRkUAd7YU429FvG/v+6C8CTNjygjx/Kr8+PZGJLJiXxv
+         D0V2g144e1V6ldVXWxgCQHCB4J/ivuKw9yqwG0M2kg2fHpzkGy6iuP0hFa+Iqdy9eTay
+         7nZw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=its5ZVzLNySBxXzZdl/ejpOgC699lFgiSCphdNqxw3M=;
-        b=B/hTDzk4osJu72t9x6hc2YCWRonEopDfaOhco1rcpsHw+QEHrNsyPjqt7ykWtntaCf
-         Ipw49ARdA5Wrr2wVNz0f4T/4R7D31cgU5FXMbN5FiSi1c0CV3hPT2T5z0XP8w9tXN4SB
-         XmtMtHDScCyAoCJt6Esh4VFrUbR5W9oJnCTsSysZ8WWLk6mFLFYyx65cQK5gdJTQXhPu
-         xh/8U3Ld/1T2QMtLszBovNzBzPREazQGupUhXFYeW45uv/vkbRi6m8mIl6MydPfws1+5
-         kwCfb2t4Om42u6rNe1NRrvY2Jk5XpTu+TfoWL5iA2/NmR45J3R+wvP3jDo4QQQS9FtSx
-         WVQg==
-X-Gm-Message-State: AOAM533aQXZo7ROnIoiTplx9Cqq4wyJF3QZGyJ+UX2eG0/7Q9PJu1U5K
-        G+CigKbAI10xynRrTKI671Q=
-X-Google-Smtp-Source: ABdhPJw5E4iL6lKbhxPnTqk3ytLmMT3d0XS35G1p5m72cwroJPbaVszP2yOmiqWTcX/HWoqtsqrWfw==
-X-Received: by 2002:a05:620a:17a6:b0:67d:85e6:a86b with SMTP id ay38-20020a05620a17a600b0067d85e6a86bmr5161830qkb.771.1648778229629;
-        Thu, 31 Mar 2022 18:57:09 -0700 (PDT)
-Received: from localhost ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id p64-20020a37a643000000b0067d9afad07asm540901qke.76.2022.03.31.18.57.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 31 Mar 2022 18:57:07 -0700 (PDT)
-Message-ID: <62465bf3.1c69fb81.d5424.365e@mx.google.com>
-X-Google-Original-Message-ID: <20220401015705.GB2404167@cgel.zte@gmail.com>
-Date:   Fri, 1 Apr 2022 01:57:05 +0000
-From:   CGEL <cgel.zte@gmail.com>
-To:     Paul Moore <paul@paul-moore.com>
-Cc:     rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com,
-        eparis@redhat.com, linux-audit@redhat.com, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Yang Yang <yang.yang29@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>, guo.xiaofeng@zte.com.cn,
-        huang.junhua@zte.com.cn, dai.shixin@zte.com.cn
-Subject: Re: [PATCH] audit: do a quick exit when syscall number is invalid
-References: <20220326094654.2361956-1-yang.yang29@zte.com.cn>
- <202203270449.WBYQF9X3-lkp@intel.com>
- <62426553.1c69fb81.bb808.345c@mx.google.com>
- <CAHC9VhRNuoPH6AySUbe6h2D6kghhezyVQtTAvm-t-fTpXH6XwQ@mail.gmail.com>
- <62427b5c.1c69fb81.fc2a7.d1af@mx.google.com>
- <CAHC9VhTLTQmHaka9tTyuu=rQOzpsn_K2NxfJ==7-6FSY3KnuFg@mail.gmail.com>
- <6243f1d7.1c69fb81.b19c7.7ec1@mx.google.com>
- <CAHC9VhTxACMG=V_J1OYy_7VjM3LjuNJcwJSf6om1eO8esCDAbg@mail.gmail.com>
- <6245121e.1c69fb81.ea0ab.0c2e@mx.google.com>
- <CAHC9VhTaCNqfTOi8X5G3AheBFzTYCzGnt_-=fNFc5Z1o8gPm9Q@mail.gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hNRvmRxRt7nKkMkW5WxVDCU1Iy6gNw03vGAy8sCh0g0=;
+        b=vVggSF2CYQUnIV1unJRyuxs6FtRP7y6bTzCoE2cdBV18zCShBGVm7UaiOWChkpNyO9
+         1pkYOWQhbNoc2J4qfOPE71rSCInSz37ECcJgNhPZ5JmOvxeiC9ftxq1eYk0s2Pfn2+J2
+         jTKZWnzWwh88wNPxt6O3JjNtTnDKnQMpG3ovR2BDKJUT2RXNTURxAZvmI3t+H7zxRZk5
+         ct3nso8uS58Wivc1stPTH3vezfs6PJWA6oinAv5hO96+1LLVsOW4F6P/GO6Xi5P1nguw
+         VULl5SRTwaWrDXElJYBaWHU7q55oHZ+OFBJRlV20T1rqEDLVL1X5jOQvd5jCJKcACKP+
+         4oYQ==
+X-Gm-Message-State: AOAM532ZpFwE7YfCcZ5HjeC0L+6AR35qqAPWlkfKlSTzWBbv40RK3897
+        nbyMaLhTZgafwcEZevNjDs9XPBWwv+tAzcVVzSM=
+X-Google-Smtp-Source: ABdhPJz6SbZ2JP++j7i1h9VR9R6xNzNBB/VbD5rE7Bch3cokupLLnU+lmRSu3tF7qoUdQXORvWkmU99jmdhFflmeEkY=
+X-Received: by 2002:a05:6402:2788:b0:41b:c871:715b with SMTP id
+ b8-20020a056402278800b0041bc871715bmr3590672ede.53.1648778442797; Thu, 31 Mar
+ 2022 19:00:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHC9VhTaCNqfTOi8X5G3AheBFzTYCzGnt_-=fNFc5Z1o8gPm9Q@mail.gmail.com>
+References: <20220316135047.188122-1-dzm91@hust.edu.cn> <CAHUa44FiumE97drc11vBdr46Zh2uWysk--bn2AZnaw==5bTphA@mail.gmail.com>
+ <CAD-N9QU=_M2_=GsQii8R85o46PnsxcLqJGFKA0UANbRWAFnjHQ@mail.gmail.com>
+In-Reply-To: <CAD-N9QU=_M2_=GsQii8R85o46PnsxcLqJGFKA0UANbRWAFnjHQ@mail.gmail.com>
+From:   Dongliang Mu <mudongliangabcd@gmail.com>
+Date:   Fri, 1 Apr 2022 10:00:16 +0800
+Message-ID: <CAD-N9QWB9HGY=DU1gazbt3e8p4GdG-=CJtD26M59AgAhbagusA@mail.gmail.com>
+Subject: Re: [PATCH] tee: optee: add missing mutext_destroy in optee_ffa_probe
+To:     Jens Wiklander <jens.wiklander@linaro.org>
+Cc:     Dongliang Mu <dzm91@hust.edu.cn>,
+        Sumit Garg <sumit.garg@linaro.org>,
+        op-tee@lists.trustedfirmware.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 31, 2022 at 10:16:23AM -0400, Paul Moore wrote:
-> On Wed, Mar 30, 2022 at 10:29 PM CGEL <cgel.zte@gmail.com> wrote:
-> > On Wed, Mar 30, 2022 at 10:48:12AM -0400, Paul Moore wrote:
-> > >
-> > > If audit is not generating SYSCALL records, even for invalid/ENOSYS
-> > > syscalls, I would consider that a bug which should be fixed.
+On Thu, Mar 24, 2022 at 5:33 PM Dongliang Mu <mudongliangabcd@gmail.com> wrote:
+>
+> On Thu, Mar 24, 2022 at 4:29 PM Jens Wiklander
+> <jens.wiklander@linaro.org> wrote:
 > >
-> > If we fix this bug, do you think audit invalid/ENOSYS syscalls better
-> > be forcible or be a rule that can be configure? I think configure is
-> > better.
-> 
-> It isn't clear to me exactly what you are asking, but I would expect
-> the existing audit syscall filtering mechanism to work regardless if
-> the syscall is valid or not.  
+> > On Wed, Mar 16, 2022 at 2:51 PM Dongliang Mu <dzm91@hust.edu.cn> wrote:
+> > >
+> > > From: Dongliang Mu <mudongliangabcd@gmail.com>
+> > >
+> > > The error handling code of optee_ffa_probe misses the mutex_destroy of
+> > > ffa.mutex when mutext_init succeeds.
+> > >
+> > > Fix this by adding mutex_destory of ffa.mutex at the error handling part
+> > >
+> > > Fixes: aceeafefff73 ("optee: use driver internal tee_context for some rpc")
+> >
+> > I believe this should be
+> > Fixes: 4615e5a34b95 ("optee: add FF-A support")
+> > don't you agree?
+>
+> Hi Jen,
+>
+> This commit 4615e5a34b95 is more suitable since mutex_init is introduced here.
+>
+> Why did I label the commit aceeafefff73?
+>
+> Because this commit tried to fix the issue, but only added one
+> mutex_destroy for &optee->call_queue.mutex, misses &optee->ffa.mutex.
+>
 
-Thanks, I try to make it more clear. We found that auditctl would only
-set rule with syscall number (>=0 && <2047). So if userspace using
-syscall whose number is (<0 || >=2047), there seems no meaning for
-kernel audit to handle it, since this kind of syscall will never hit
-any audit rule(this rule could not be set by auditctl).
+ping?
 
-By the way it's a little strange for auditctl(using libaudit.c) to limit
-syscall number (>=0 && <2047)(see audit_rule_syscall_data()), especially
-we know NR_syscalls is the real limit in kernel, you can see how other
-kernel code to the similar thing in ftrace_syscall_enter():
-
-	static void ftrace_syscall_enter(void *data, struct pt_regs
-	*regs, long id)
-	{
-		...
-		syscall_nr = trace_get_syscall_nr(current, regs);
-		if (syscall_nr < 0 || syscall_nr >= NR_syscalls)
-			return;
-		...
-	}
-
-Thanks.
-> Beware that there are some limitations
-> to the audit syscall filter, which are unfortunately baked into the
-> current design/implementation, which may affect this to some extent.
-> 
-> -- 
-> paul-moore.com
+> >
+> > Thanks,
+> > Jens
+> >
+> > > Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+> > > ---
+> > >  drivers/tee/optee/ffa_abi.c | 1 +
+> > >  1 file changed, 1 insertion(+)
+> > >
+> > > diff --git a/drivers/tee/optee/ffa_abi.c b/drivers/tee/optee/ffa_abi.c
+> > > index f744ab15bf2c..30a6119a2b16 100644
+> > > --- a/drivers/tee/optee/ffa_abi.c
+> > > +++ b/drivers/tee/optee/ffa_abi.c
+> > > @@ -894,6 +894,7 @@ static int optee_ffa_probe(struct ffa_device *ffa_dev)
+> > >         rhashtable_free_and_destroy(&optee->ffa.global_ids, rh_free_fn, NULL);
+> > >         optee_supp_uninit(&optee->supp);
+> > >         mutex_destroy(&optee->call_queue.mutex);
+> > > +       mutex_destroy(&optee->ffa.mutex);
+> > >  err_unreg_supp_teedev:
+> > >         tee_device_unregister(optee->supp_teedev);
+> > >  err_unreg_teedev:
+> > > --
+> > > 2.25.1
+> > >
