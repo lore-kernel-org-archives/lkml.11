@@ -2,111 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F26B9C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 09:32:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 724E9C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 09:35:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344609AbiDAJef (ORCPT
+        id S1344612AbiDAJgx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 05:34:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60032 "EHLO
+        Fri, 1 Apr 2022 05:36:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344602AbiDAJed (ORCPT
+        with ESMTP id S231773AbiDAJgv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 05:34:33 -0400
-Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E094C26A97D
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 02:32:44 -0700 (PDT)
-Received: by mail-qv1-xf2e.google.com with SMTP id gi14so1633904qvb.0
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 02:32:44 -0700 (PDT)
+        Fri, 1 Apr 2022 05:36:51 -0400
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 974BD5FF2D
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 02:35:02 -0700 (PDT)
+Received: by mail-pf1-x435.google.com with SMTP id u22so2132301pfg.6
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 02:35:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=dowhile0-org.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MicAAIxYy/iDzT2iR5+kPbLoF8E6ss/329hg63ZuCOU=;
-        b=3CnCTumz9YY76lxgWN2UlTVuzhev3Nna6J9Du2HqvA02Ij7ZZAjLKRk12K5FieougC
-         d5Zn5GbFenpld2+RH3IV09sfmWtBZyk1Xi9A5PPqT8XBxUS4Hm27jFj+tIRNbIMTOuCn
-         DPvka0Ye9GhRE0FfJMhXRxRE54vxK2VkbEkY9dPdmEeTQvKxlTdwMYaFo7/SG8p+d/0W
-         8AGA75haiy9s12RjV6772ct/rs/eS23jKFaTL26ya6TVYy+VkYskp6iAsh0MTs8ffZMv
-         CB0qHW21RXJLAHtsWEQTVIBYi0Qlnrs2d51fNiVgvgUGiA8oQBDRln13hNzk+D4yc313
-         29aw==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=Vn5NpwWl2cUBu3wyjrfqRsuWIfgmZwnj+QZMZfZlE/o=;
+        b=CPE6jLWhuduMCAlXTGzuwb+9zkkIdlAQuOgnc0x6jioAs4AQZNKD2gjBz1Rno1Pn/l
+         3Tu1PCdfhKnDpauhEo9sd0Uea3Ap3nuOoO7HbqPjRbjq5aBkQnqUN/Mf4iiyGZKHoxUG
+         cSFgEq9/EkisIEdCM+hLr8UXEIxc865l0zVGwT9w54NMxYJmWWgHhy6zj8ppru8rIkHV
+         rjsax0X+KVtTy4SeB5tgzqxiC6uALyRBu/7FLQwhY6q8l3HvCj0w4+zXAnFcUNucsnsY
+         73dvrJoyTV7xv3VX/AETE/Z/Vb+ly4ONIjdVrs/09mozESXk+7xX/rdj7FQKYooeWkyB
+         AJDg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MicAAIxYy/iDzT2iR5+kPbLoF8E6ss/329hg63ZuCOU=;
-        b=Ki5sLkenATq1dtcT9JBijg2TSf1Kx1d4CCp0ZtqAa0PXNaXpqbGQGoo0rq6KnMhyF1
-         fAg+AhTeSgCp8NT/jbpiRnI3PZ+ih68Tbza/sRaURwdTY600fc/o5oB0jEh3VK5QcciZ
-         sOND3wUv7fhxu6jtXY4ROMGVdS07QbdqkikJQynpIjlZ+7HoEtWDaY3ZtJxzG1fFO5+P
-         U72BpQNIg/yHOTqURoE0co9lr3rg/e9hjEJSuqamTFeaujVukUVB6fEccV7Q3DXgxMXw
-         8weq47Wmp369BcjLkNWLSq7zlCk5nDhaNrxENci0YvjPelwbMaiLHLVG12s5ibYKrkU2
-         cSnQ==
-X-Gm-Message-State: AOAM531lY/rH2CRXLWEY689KS9KY1mq06s9B4A2Pi8ZmRA9mgXh3huFi
-        zyudB3yYqlEWUAYkShIDPRVl+f8nDWBG6EHL5K4GsA==
-X-Google-Smtp-Source: ABdhPJxMrWFRgnJ0HABbALsyEWn++3TYT3GlrWCdJTKoJ5qhP66rEVIDTbtidg6sinbHg72xQektuQEkP9W4JCYNA8A=
-X-Received: by 2002:ad4:4eaf:0:b0:441:7ff6:f639 with SMTP id
- ed15-20020ad44eaf000000b004417ff6f639mr7098344qvb.73.1648805564076; Fri, 01
- Apr 2022 02:32:44 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220330190846.13997-1-wens@kernel.org> <20220330190846.13997-3-wens@kernel.org>
-In-Reply-To: <20220330190846.13997-3-wens@kernel.org>
-From:   Javier Martinez Canillas <javier@dowhile0.org>
-Date:   Fri, 1 Apr 2022 11:32:33 +0200
-Message-ID: <CABxcv==csvqsxM46ce2LecDh4E-UxxD2DG+3E-hCFoyrdtRv7A@mail.gmail.com>
-Subject: Re: [PATCH 2/4] dt-bindings: display: ssd1307fb: Add entry for SINO
- WEALTH SH1106
-To:     Chen-Yu Tsai <wens@kernel.org>
-Cc:     Javier Martinez Canillas <javierm@redhat.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, devicetree@vger.kernel.org,
-        Chen-Yu Tsai <wens@csie.org>,
-        Linux Kernel <linux-kernel@vger.kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=Vn5NpwWl2cUBu3wyjrfqRsuWIfgmZwnj+QZMZfZlE/o=;
+        b=qDCIdgeJiSVBju8T9pbbqNlKUSKRAothECNVHgVqfmOkBlKsCLOuG36RmO1/NxBtVZ
+         jeCaaFrZl+9aO10fPdTCVr5+rHsUpu3I3Phvn8QH3zpkbnpOUPGHGoudJrC6k03pX+8m
+         xsIs4XgPvtMWw06JtmB8d2Q+uL1T1Zmf4DXJWI42nN7jdRxX/96zjrn2hSoPrmaOsz6Z
+         a8DABcPq+3DJv4kQ6y2Djp1owHe6BrF5tOLtE17gSl7/v2VR4oZqoCe/73LW2j/FnOum
+         9nPAd1Y7z9yOhAjrZd9ZqphK8jY89Lf3kK6g8mtlMAZYve41lYccEP0TkYv9dvBiac/0
+         hVfQ==
+X-Gm-Message-State: AOAM530pCs1H4WonUSntvaS70C14dx0NoAY7E5gzfSxCRvpEs67PnLPQ
+        gFto7GEw/ghZuDOCgj3Jybo=
+X-Google-Smtp-Source: ABdhPJzFDfY8T2KmlZBnyKjVPHPRbcL8J3AJgUkKFtxAkNZ3slUYcVxRLw3Bb62kN5W4umPef3HiGQ==
+X-Received: by 2002:a63:b55d:0:b0:398:5eeb:e637 with SMTP id u29-20020a63b55d000000b003985eebe637mr13994421pgo.314.1648805702073;
+        Fri, 01 Apr 2022 02:35:02 -0700 (PDT)
+Received: from ubuntu-vm.jnpr.net ([116.197.184.14])
+        by smtp.gmail.com with ESMTPSA id d21-20020a056a0010d500b004fd9ee64134sm2321715pfu.74.2022.04.01.02.34.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 01 Apr 2022 02:35:01 -0700 (PDT)
+From:   Sathish Kumar <skumark1902@gmail.com>
+To:     Larry.Finger@lwfinger.net, florian.c.schilhabel@googlemail.com,
+        gregkh@linuxfoundation.org, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+Cc:     Sathish Kumar <skumark1902@gmail.com>
+Subject: [PATCH] staging: rtl8712: Fix multiple blank lines warning
+Date:   Fri,  1 Apr 2022 15:04:49 +0530
+Message-Id: <20220401093449.6872-1-skumark1902@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Chen-Yu,
+This patch fixes the checkpatch.pl warnings like:
+CHECK: Please don't use multiple blank lines
++
++
 
-Thanks a lot for your patch.
+Signed-off-by: Sathish Kumar <skumark1902@gmail.com>
+---
+ drivers/staging/rtl8712/rtl871x_ioctl_rtl.c | 1 -
+ drivers/staging/rtl8712/rtl871x_ioctl_set.c | 1 -
+ drivers/staging/rtl8712/rtl871x_recv.c      | 1 -
+ drivers/staging/rtl8712/rtl871x_security.c  | 1 -
+ 4 files changed, 4 deletions(-)
 
-On Wed, Mar 30, 2022 at 9:09 PM Chen-Yu Tsai <wens@kernel.org> wrote:
->
-> From: Chen-Yu Tsai <wens@csie.org>
->
-> The SINO WEALTH SH1106 is an OLED display driver that is somewhat
-> compatible with the SSD1306. It supports a slightly wider display,
-> at 132 instead of 128 pixels. The basic commands are the same, but
-> the SH1106 doesn't support the horizontal or vertical address modes.
->
-> Add a compatible string for it.
->
-> Signed-off-by: Chen-Yu Tsai <wens@csie.org>
-> ---
->  Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml b/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
-> index 9baafd0c42dd..1ac016a2d847 100644
-> --- a/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
-> +++ b/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
-> @@ -13,6 +13,7 @@ maintainers:
->  properties:
->    compatible:
->      enum:
-> +      - sinowealth,sh1106-i2c
+diff --git a/drivers/staging/rtl8712/rtl871x_ioctl_rtl.c b/drivers/staging/rtl8712/rtl871x_ioctl_rtl.c
+index b78101afc93d..2b539335206a 100644
+--- a/drivers/staging/rtl8712/rtl871x_ioctl_rtl.c
++++ b/drivers/staging/rtl8712/rtl871x_ioctl_rtl.c
+@@ -367,7 +367,6 @@ uint oid_rt_get_scan_in_progress_hdl(struct oid_par_priv *poid_par_priv)
+ 	return RNDIS_STATUS_SUCCESS;
+ }
+ 
+-
+ uint oid_rt_forced_data_rate_hdl(struct oid_par_priv *poid_par_priv)
+ {
+ 	return RNDIS_STATUS_SUCCESS;
+diff --git a/drivers/staging/rtl8712/rtl871x_ioctl_set.c b/drivers/staging/rtl8712/rtl871x_ioctl_set.c
+index 6cdc6f1a6bc6..603a3a48f952 100644
+--- a/drivers/staging/rtl8712/rtl871x_ioctl_set.c
++++ b/drivers/staging/rtl8712/rtl871x_ioctl_set.c
+@@ -22,7 +22,6 @@
+ #include "usb_osintf.h"
+ #include "usb_ops.h"
+ 
+-
+ static u8 validate_ssid(struct ndis_802_11_ssid *ssid)
+ {
+ 	u8 i;
+diff --git a/drivers/staging/rtl8712/rtl871x_recv.c b/drivers/staging/rtl8712/rtl871x_recv.c
+index 66cc50f24e29..de9a568eaffa 100644
+--- a/drivers/staging/rtl8712/rtl871x_recv.c
++++ b/drivers/staging/rtl8712/rtl871x_recv.c
+@@ -455,7 +455,6 @@ static sint validate_recv_mgnt_frame(struct _adapter *adapter,
+ 	return _FAIL;
+ }
+ 
+-
+ static sint validate_recv_data_frame(struct _adapter *adapter,
+ 				     union recv_frame *precv_frame)
+ {
+diff --git a/drivers/staging/rtl8712/rtl871x_security.c b/drivers/staging/rtl8712/rtl871x_security.c
+index e0a1c30a8fe6..e46a5dbc7b65 100644
+--- a/drivers/staging/rtl8712/rtl871x_security.c
++++ b/drivers/staging/rtl8712/rtl871x_security.c
+@@ -381,7 +381,6 @@ void seccalctkipmic(u8 *key, u8 *header, u8 *data, u32 data_len, u8 *mic_code,
+ #define P1K_SIZE         10    /*  80-bit Phase1 key                */
+ #define RC4_KEY_SIZE     16    /* 128-bit RC4KEY (104 bits unknown) */
+ 
+-
+ /* 2-unsigned char by 2-unsigned char subset of the full AES S-box table */
+ static const unsigned short Sbox1[2][256] = {/* Sbox for hash (can be in ROM) */
+ 	{
+-- 
+2.17.1
 
-I like that you didn't include a "fb" suffix for this, the existing
-ones are cargo culting from the previous fbdev driver to make existing
-DTBs compatible with the DRM driver.
-
-I've been thinking if I should post a patch to compatible strings
-without the "fb" and mark the current ones as deprecated...
-
-Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
-
-Best regards,
-Javier
