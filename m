@@ -2,47 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC792C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:20:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A303C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:20:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349040AbiDAPSN (ORCPT
+        id S1349517AbiDAPS2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:18:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33224 "EHLO
+        Fri, 1 Apr 2022 11:18:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352143AbiDAOt6 (ORCPT
+        with ESMTP id S1352395AbiDAOuS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:49:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E75C292DAE;
-        Fri,  1 Apr 2022 07:41:06 -0700 (PDT)
+        Fri, 1 Apr 2022 10:50:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66F842B2B70;
+        Fri,  1 Apr 2022 07:41:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 352ED611BC;
-        Fri,  1 Apr 2022 14:40:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC630C2BBE4;
-        Fri,  1 Apr 2022 14:40:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1C58FB8251C;
+        Fri,  1 Apr 2022 14:40:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B686C340F2;
+        Fri,  1 Apr 2022 14:40:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824022;
-        bh=fGD5iJdC6D5RFyUz1FPQvYZjYGUGy6/NKYeb4gNSH+U=;
+        s=k20201202; t=1648824056;
+        bh=OvF6t2EGTm+JmxnUQZpM+QgMaTFbq/PD/YPATXWW9b8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SXNC53CzuZ7T+BIvZb93hnCdgyerCx7sj6YUM7bAZsKgkuNPUEVjX4m3Jr75R3dff
-         CXC/E1A2NxoeYUxApTAkNCL992EaXyhM3h/PE9xl1hzHk/Md1D8jjlwQoGL6cii8FJ
-         4t8YkJxr8J5ho0XMgVgzDaaC4CCELjw1bomx6/YeVOWCwGuUFrH/xc40SYofO0LmkA
-         91jo0tyf9gZ6IBRTj+doC+TSJo+nAvCuEd4AtvzITNuwRxeknyA8L3Ecff1XKU2k6c
-         3BoOVPcHwEhvGLDxvCtsoEzphakdAfXdx9VH9uAdlGEybq4VhLydVUTP1tdJnNZh8B
-         GN+y3esCYgG8A==
+        b=P/mxdTS5UU83gWUIFY1vpOsL86G5y/vo7AKaJ+lUA/22Xmb2zMuxve82/3wSk1ovB
+         9KW+Oo0hsMJ2mAO1PzERxZSMp1z5nsLpUi2WGEIGZM6qM2ma2LpiNJOuGrQmQSSXw7
+         zbM2dTJZFsqEs+zUgLuiMw8TzuCfKFMaWIG2jk5jOZW4X4V/bORSkjSvmpdfjiwqT3
+         cFyAnxaiiKAQ63dS/FVAqfTriW/nGLHeEbjp9gHgKFXQ11SsCk8GkEyNj2aOgz6QDb
+         QGV1Ih8Jnj8UKslfxJ6xK2fjy9b23RpuGHS6ye54pXIMRFVVxPHIvQtsLMFsoWvS3J
+         a87WDH2SxFD0g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        John Garry <john.garry@huawei.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, jinpu.wang@cloud.ionos.com,
-        jejb@linux.ibm.com, linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 56/98] scsi: pm8001: Fix tag leaks on error
-Date:   Fri,  1 Apr 2022 10:37:00 -0400
-Message-Id: <20220401143742.1952163-56-sashal@kernel.org>
+Cc:     Robin Murphy <robin.murphy@arm.com>,
+        Yunfei Wang <yf.wang@mediatek.com>,
+        Miles Chen <miles.chen@mediatek.com>,
+        Joerg Roedel <jroedel@suse.de>,
+        Sasha Levin <sashal@kernel.org>, joro@8bytes.org,
+        will@kernel.org, matthias.bgg@gmail.com,
+        iommu@lists.linux-foundation.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.15 69/98] iommu/iova: Improve 32-bit free space estimate
+Date:   Fri,  1 Apr 2022 10:37:13 -0400
+Message-Id: <20220401143742.1952163-69-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143742.1952163-1-sashal@kernel.org>
 References: <20220401143742.1952163-1-sashal@kernel.org>
@@ -54,100 +58,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+From: Robin Murphy <robin.murphy@arm.com>
 
-[ Upstream commit 4c8f04b1905cd4b776d0b720463c091545478ef7 ]
+[ Upstream commit 5b61343b50590fb04a3f6be2cdc4868091757262 ]
 
-In pm8001_chip_set_dev_state_req(), pm8001_chip_fw_flash_update_req(),
-pm80xx_chip_phy_ctl_req() and pm8001_chip_reg_dev_req() add missing calls
-to pm8001_tag_free() to free the allocated tag when pm8001_mpi_build_cmd()
-fails.
+For various reasons based on the allocator behaviour and typical
+use-cases at the time, when the max32_alloc_size optimisation was
+introduced it seemed reasonable to couple the reset of the tracked
+size to the update of cached32_node upon freeing a relevant IOVA.
+However, since subsequent optimisations focused on helping genuine
+32-bit devices make best use of even more limited address spaces, it
+is now a lot more likely for cached32_node to be anywhere in a "full"
+32-bit address space, and as such more likely for space to become
+available from IOVAs below that node being freed.
 
-Similarly, in pm8001_exec_internal_task_abort(), if the chip ->task_abort
-method fails, the tag allocated for the abort request task must be
-freed. Add the missing call to pm8001_tag_free().
+At this point, the short-cut in __cached_rbnode_delete_update() really
+doesn't hold up any more, and we need to fix the logic to reliably
+provide the expected behaviour. We still want cached32_node to only move
+upwards, but we should reset the allocation size if *any* 32-bit space
+has become available.
 
-Link: https://lore.kernel.org/r/20220220031810.738362-22-damien.lemoal@opensource.wdc.com
-Reviewed-by: John Garry <john.garry@huawei.com>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Reported-by: Yunfei Wang <yf.wang@mediatek.com>
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+Reviewed-by: Miles Chen <miles.chen@mediatek.com>
+Link: https://lore.kernel.org/r/033815732d83ca73b13c11485ac39336f15c3b40.1646318408.git.robin.murphy@arm.com
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/pm8001/pm8001_hwi.c | 9 +++++++++
- drivers/scsi/pm8001/pm8001_sas.c | 2 +-
- drivers/scsi/pm8001/pm80xx_hwi.c | 9 +++++++--
- 3 files changed, 17 insertions(+), 3 deletions(-)
+ drivers/iommu/iova.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/scsi/pm8001/pm8001_hwi.c b/drivers/scsi/pm8001/pm8001_hwi.c
-index 7e8cb377cb65..d0e8e6c2f87d 100644
---- a/drivers/scsi/pm8001/pm8001_hwi.c
-+++ b/drivers/scsi/pm8001/pm8001_hwi.c
-@@ -4485,6 +4485,9 @@ static int pm8001_chip_reg_dev_req(struct pm8001_hba_info *pm8001_ha,
- 		SAS_ADDR_SIZE);
- 	rc = pm8001_mpi_build_cmd(pm8001_ha, circularQ, opc, &payload,
- 			sizeof(payload), 0);
-+	if (rc)
-+		pm8001_tag_free(pm8001_ha, tag);
+diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+index 920fcc27c9a1..cae5a73ff518 100644
+--- a/drivers/iommu/iova.c
++++ b/drivers/iommu/iova.c
+@@ -154,10 +154,11 @@ __cached_rbnode_delete_update(struct iova_domain *iovad, struct iova *free)
+ 	cached_iova = to_iova(iovad->cached32_node);
+ 	if (free == cached_iova ||
+ 	    (free->pfn_hi < iovad->dma_32bit_pfn &&
+-	     free->pfn_lo >= cached_iova->pfn_lo)) {
++	     free->pfn_lo >= cached_iova->pfn_lo))
+ 		iovad->cached32_node = rb_next(&free->node);
 +
- 	return rc;
- }
++	if (free->pfn_lo < iovad->dma_32bit_pfn)
+ 		iovad->max32_alloc_size = iovad->dma_32bit_pfn;
+-	}
  
-@@ -4897,6 +4900,9 @@ pm8001_chip_fw_flash_update_req(struct pm8001_hba_info *pm8001_ha,
- 	ccb->ccb_tag = tag;
- 	rc = pm8001_chip_fw_flash_update_build(pm8001_ha, &flash_update_info,
- 		tag);
-+	if (rc)
-+		pm8001_tag_free(pm8001_ha, tag);
-+
- 	return rc;
- }
- 
-@@ -5001,6 +5007,9 @@ pm8001_chip_set_dev_state_req(struct pm8001_hba_info *pm8001_ha,
- 	payload.nds = cpu_to_le32(state);
- 	rc = pm8001_mpi_build_cmd(pm8001_ha, circularQ, opc, &payload,
- 			sizeof(payload), 0);
-+	if (rc)
-+		pm8001_tag_free(pm8001_ha, tag);
-+
- 	return rc;
- 
- }
-diff --git a/drivers/scsi/pm8001/pm8001_sas.c b/drivers/scsi/pm8001/pm8001_sas.c
-index 491cecbbe1aa..5fb08acbc0e5 100644
---- a/drivers/scsi/pm8001/pm8001_sas.c
-+++ b/drivers/scsi/pm8001/pm8001_sas.c
-@@ -831,10 +831,10 @@ pm8001_exec_internal_task_abort(struct pm8001_hba_info *pm8001_ha,
- 
- 		res = PM8001_CHIP_DISP->task_abort(pm8001_ha,
- 			pm8001_dev, flag, task_tag, ccb_tag);
--
- 		if (res) {
- 			del_timer(&task->slow_task->timer);
- 			pm8001_dbg(pm8001_ha, FAIL, "Executing internal task failed\n");
-+			pm8001_tag_free(pm8001_ha, ccb_tag);
- 			goto ex_err;
- 		}
- 		wait_for_completion(&task->slow_task->completion);
-diff --git a/drivers/scsi/pm8001/pm80xx_hwi.c b/drivers/scsi/pm8001/pm80xx_hwi.c
-index 287887d8d729..e3d80918d21e 100644
---- a/drivers/scsi/pm8001/pm80xx_hwi.c
-+++ b/drivers/scsi/pm8001/pm80xx_hwi.c
-@@ -4901,8 +4901,13 @@ static int pm80xx_chip_phy_ctl_req(struct pm8001_hba_info *pm8001_ha,
- 	payload.tag = cpu_to_le32(tag);
- 	payload.phyop_phyid =
- 		cpu_to_le32(((phy_op & 0xFF) << 8) | (phyId & 0xFF));
--	return pm8001_mpi_build_cmd(pm8001_ha, circularQ, opc, &payload,
--			sizeof(payload), 0);
-+
-+	rc = pm8001_mpi_build_cmd(pm8001_ha, circularQ, opc, &payload,
-+				  sizeof(payload), 0);
-+	if (rc)
-+		pm8001_tag_free(pm8001_ha, tag);
-+
-+	return rc;
- }
- 
- static u32 pm80xx_chip_is_our_interrupt(struct pm8001_hba_info *pm8001_ha)
+ 	cached_iova = to_iova(iovad->cached_node);
+ 	if (free->pfn_lo >= cached_iova->pfn_lo)
 -- 
 2.34.1
 
