@@ -2,48 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98950C35294
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:20:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CBEAC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:20:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353073AbiDAPUS (ORCPT
+        id S1353264AbiDAPUX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:20:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60688 "EHLO
+        Fri, 1 Apr 2022 11:20:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343840AbiDAOvc (ORCPT
+        with ESMTP id S1349264AbiDAOvc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 1 Apr 2022 10:51:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42CA42B44B9;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE9622B44BA;
         Fri,  1 Apr 2022 07:42:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3ED38B8250F;
-        Fri,  1 Apr 2022 14:41:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB94AC3410F;
-        Fri,  1 Apr 2022 14:41:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8987960AD8;
+        Fri,  1 Apr 2022 14:42:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C469C2BBE4;
+        Fri,  1 Apr 2022 14:42:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824104;
-        bh=LhYPBZufSIIUYsYfgK8Zvs0kn4YmUTSXiOrYVvfFpMU=;
+        s=k20201202; t=1648824138;
+        bh=YlT8pUaLtdbBrX1BWTnq5Kvsw1TYm69WsdMS5uTFZco=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PjHH8z4vrEu6MgSpvgZ9gbeVe25OhAKi4Vf1ixpH6wtD51mUIrAQ0eqSicAv9Mrin
-         INBh6R0I4L0TUzk7s/grVw0II2aTTtkc/ycfPJE1IL2V21RpV4PUpXDXttgKtNeDkf
-         EGkTdSnluKYrDOBZJsAjAXGcpd922myfYb0tHyPX+SJoQEJHsBsiUDMu24z3RWB6oI
-         VhSkXNYVua0441Slt+qt827c1w88AoWl1QUn6wgyYEfht9O1Jwa2prpMHu/pICznBm
-         W51K8jjup/MxQ2Bnx0qpPf/X9BUJlG/p7R1fwEJFrDGASOS+8Ilv9u3KjMVwQq/byf
-         oqRZxs0yz4R9w==
+        b=CTtviXsh8ORXzjuGOYL8eWePA8AiHQQ/dlUQ7WjuW7ZMaQhAkJ/20rIcJPW3LrVNT
+         RGg7sGjA7XjWLkHpB95CuevguXoEEI/0FNRbhxkTpPI0RhZNSPfo+ARBbzFt9zQQEb
+         /oNcYghC76dymVVUflwf+y+i8JFYlMXqxBDYDmU1j7iRki3fmyPkZrH+WTzu8ws8w3
+         dNd+MilrJbfQMEJxApXQFCWBW6p/RfMDAqI6W/yynM1oCduOWUionIGsk5PgHZB6mw
+         8IpK29GBhJfGVf8+X1nzDpl81xYQ0zlGnW0lJ52rTUoz1M+XwjC2w3fTV+27iVSM56
+         BvX/JpwDi8CYw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Max Filippov <jcmvbkbc@gmail.com>, Sasha Levin <sashal@kernel.org>,
-        robh+dt@kernel.org, krzk+dt@kernel.org, chris@zankel.net,
-        devicetree@vger.kernel.org, linux-xtensa@linux-xtensa.org
-Subject: [PATCH AUTOSEL 5.15 89/98] xtensa: fix DTC warning unit_address_format
-Date:   Fri,  1 Apr 2022 10:37:33 -0400
-Message-Id: <20220401143742.1952163-89-sashal@kernel.org>
+Cc:     Dale Zhao <dale.zhao@amd.com>, Aric Cyr <Aric.Cyr@amd.com>,
+        Wayne Lin <wayne.lin@amd.com>,
+        Daniel Wheeler <daniel.wheeler@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, harry.wentland@amd.com,
+        sunpeng.li@amd.com, Rodrigo.Siqueira@amd.com,
+        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
+        daniel@ffwll.ch, Jun.Lei@amd.com, aric.cyr@amd.com,
+        Jimmy.Kizito@amd.com, wenjing.liu@amd.com,
+        nicholas.kazlauskas@amd.com, mario.kleiner.de@gmail.com,
+        Dmytro.Laktyushkin@amd.com, Jerry.Zuo@amd.com,
+        meenakshikumar.somasundaram@amd.com, eric.bernstein@amd.com,
+        Martin.Leung@amd.com, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.10 03/65] drm/amd/display: Add signal type check when verify stream backends same
+Date:   Fri,  1 Apr 2022 10:41:04 -0400
+Message-Id: <20220401144206.1953700-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220401143742.1952163-1-sashal@kernel.org>
-References: <20220401143742.1952163-1-sashal@kernel.org>
+In-Reply-To: <20220401144206.1953700-1-sashal@kernel.org>
+References: <20220401144206.1953700-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,101 +63,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Max Filippov <jcmvbkbc@gmail.com>
+From: Dale Zhao <dale.zhao@amd.com>
 
-[ Upstream commit e85d29ba4b24f68e7a78cb85c55e754362eeb2de ]
+[ Upstream commit 047db281c026de5971cedb5bb486aa29bd16a39d ]
 
-DTC issues the following warnings when building xtfpga device trees:
+[Why]
+For allow eDP hot-plug feature, the stream signal may change to VIRTUAL
+when plug-out and back to eDP when plug-in. OS will still setPathMode
+with same timing for each plugging, but eDP gets no stream update as we
+don't check signal type changing back as keeping it VIRTUAL. It's also
+unsafe for future cases that stream signal is switched with same timing.
 
- /soc/flash@00000000/partition@0x0: unit name should not have leading "0x"
- /soc/flash@00000000/partition@0x6000000: unit name should not have leading "0x"
- /soc/flash@00000000/partition@0x6800000: unit name should not have leading "0x"
- /soc/flash@00000000/partition@0x7fe0000: unit name should not have leading "0x"
+[How]
+Check stream signal type change include previous HDMI signal case.
 
-Drop leading 0x from flash partition unit names.
-
-Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
+Reviewed-by: Aric Cyr <Aric.Cyr@amd.com>
+Acked-by: Wayne Lin <wayne.lin@amd.com>
+Signed-off-by: Dale Zhao <dale.zhao@amd.com>
+Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/xtensa/boot/dts/xtfpga-flash-128m.dtsi | 8 ++++----
- arch/xtensa/boot/dts/xtfpga-flash-16m.dtsi  | 8 ++++----
- arch/xtensa/boot/dts/xtfpga-flash-4m.dtsi   | 4 ++--
- 3 files changed, 10 insertions(+), 10 deletions(-)
+ drivers/gpu/drm/amd/display/dc/core/dc_resource.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/arch/xtensa/boot/dts/xtfpga-flash-128m.dtsi b/arch/xtensa/boot/dts/xtfpga-flash-128m.dtsi
-index 9bf8bad1dd18..c33932568aa7 100644
---- a/arch/xtensa/boot/dts/xtfpga-flash-128m.dtsi
-+++ b/arch/xtensa/boot/dts/xtfpga-flash-128m.dtsi
-@@ -8,19 +8,19 @@ flash: flash@00000000 {
- 			reg = <0x00000000 0x08000000>;
- 			bank-width = <2>;
- 			device-width = <2>;
--			partition@0x0 {
-+			partition@0 {
- 				label = "data";
- 				reg = <0x00000000 0x06000000>;
- 			};
--			partition@0x6000000 {
-+			partition@6000000 {
- 				label = "boot loader area";
- 				reg = <0x06000000 0x00800000>;
- 			};
--			partition@0x6800000 {
-+			partition@6800000 {
- 				label = "kernel image";
- 				reg = <0x06800000 0x017e0000>;
- 			};
--			partition@0x7fe0000 {
-+			partition@7fe0000 {
- 				label = "boot environment";
- 				reg = <0x07fe0000 0x00020000>;
- 			};
-diff --git a/arch/xtensa/boot/dts/xtfpga-flash-16m.dtsi b/arch/xtensa/boot/dts/xtfpga-flash-16m.dtsi
-index 40c2f81f7cb6..7bde2ab2d6fb 100644
---- a/arch/xtensa/boot/dts/xtfpga-flash-16m.dtsi
-+++ b/arch/xtensa/boot/dts/xtfpga-flash-16m.dtsi
-@@ -8,19 +8,19 @@ flash: flash@08000000 {
- 			reg = <0x08000000 0x01000000>;
- 			bank-width = <2>;
- 			device-width = <2>;
--			partition@0x0 {
-+			partition@0 {
- 				label = "boot loader area";
- 				reg = <0x00000000 0x00400000>;
- 			};
--			partition@0x400000 {
-+			partition@400000 {
- 				label = "kernel image";
- 				reg = <0x00400000 0x00600000>;
- 			};
--			partition@0xa00000 {
-+			partition@a00000 {
- 				label = "data";
- 				reg = <0x00a00000 0x005e0000>;
- 			};
--			partition@0xfe0000 {
-+			partition@fe0000 {
- 				label = "boot environment";
- 				reg = <0x00fe0000 0x00020000>;
- 			};
-diff --git a/arch/xtensa/boot/dts/xtfpga-flash-4m.dtsi b/arch/xtensa/boot/dts/xtfpga-flash-4m.dtsi
-index fb8d3a9f33c2..0655b868749a 100644
---- a/arch/xtensa/boot/dts/xtfpga-flash-4m.dtsi
-+++ b/arch/xtensa/boot/dts/xtfpga-flash-4m.dtsi
-@@ -8,11 +8,11 @@ flash: flash@08000000 {
- 			reg = <0x08000000 0x00400000>;
- 			bank-width = <2>;
- 			device-width = <2>;
--			partition@0x0 {
-+			partition@0 {
- 				label = "boot loader area";
- 				reg = <0x00000000 0x003f0000>;
- 			};
--			partition@0x3f0000 {
-+			partition@3f0000 {
- 				label = "boot environment";
- 				reg = <0x003f0000 0x00010000>;
- 			};
+diff --git a/drivers/gpu/drm/amd/display/dc/core/dc_resource.c b/drivers/gpu/drm/amd/display/dc/core/dc_resource.c
+index 5f4cdb05c4db..5c5ccbad9658 100644
+--- a/drivers/gpu/drm/amd/display/dc/core/dc_resource.c
++++ b/drivers/gpu/drm/amd/display/dc/core/dc_resource.c
+@@ -1674,6 +1674,9 @@ static bool are_stream_backends_same(
+ 	if (is_timing_changed(stream_a, stream_b))
+ 		return false;
+ 
++	if (stream_a->signal != stream_b->signal)
++		return false;
++
+ 	if (stream_a->dpms_off != stream_b->dpms_off)
+ 		return false;
+ 
 -- 
 2.34.1
 
