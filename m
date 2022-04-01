@@ -2,49 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FBC3C3527E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8180EC35280
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:20:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352551AbiDAPUE (ORCPT
+        id S1352772AbiDAPUM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:20:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60488 "EHLO
+        Fri, 1 Apr 2022 11:20:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352629AbiDAOvA (ORCPT
+        with ESMTP id S1352603AbiDAOvA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 1 Apr 2022 10:51:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDDB5294A39;
-        Fri,  1 Apr 2022 07:42:10 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAB5B2B4487;
+        Fri,  1 Apr 2022 07:42:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A8C9DB8240F;
-        Fri,  1 Apr 2022 14:41:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02D4CC2BBE4;
-        Fri,  1 Apr 2022 14:41:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7007EB8251F;
+        Fri,  1 Apr 2022 14:42:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3477BC340EE;
+        Fri,  1 Apr 2022 14:42:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824091;
-        bh=uuujoU80f34Vm6LW6kP45+MJG3kikm0acZFZVljE2Q8=;
+        s=k20201202; t=1648824122;
+        bh=YE12cUvIVXb3Uc3DidVzRG0U2wk/7bDcCFNx8boAYXI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CqY5wa2kIlAjFItX0xUj38nZuFn0e3eoK1zk2l0+4sozZ379COKQMqC3vNgSqUTYm
-         BYptXVtgudnFmpMVgYLZSGheSs2k+XUDVUcbNTpQw7l6x/WTG6D0I6NhF6ofNMjHnM
-         OQpMEmIuFyQb6QiayGTQGF9HNfJT1AUrbFRhLn1MD4jOnl9uVUMaPPiskWjGNi7QXY
-         HDCRLPm5JW6VTC/lbnm9a2BoFVFkXmm+bJ4en7102CLJqxxidYX1qeLb72G6zO5n/O
-         eScR3A68y91BeLOQozKDLrjl7Kc3sI0RsAqZq0g4EzT4oi/eW6J1SeKGUbHhjEYDE4
-         zL2566npuP99Q==
+        b=coMtgrzTKuGJv96WMN4A6iVIe27s1qWOP4g7endAyyefnL5uqGo//IZeYON5WK/EB
+         K+58D92yNvLzsXxseTsJtFp11SAHPTVV8J73bDTZZNZlBD+AI2qw9br07DpZVn1/6p
+         BCJIqkpYNV/vIxyXIw8jvwGRbhMEebKAXuMFpbaXTeGzUdvajB9odvpg+aXa/Tj9W+
+         cSn43EXR2m6lUYyN1kjVG7nCrvyquHUNu9+XlWVll5E8bnXTj8TcrUBnjPj8Vq/CTZ
+         RSkdYAXsDlBieIK098Xrz6VilyRYBWuX68dzyqws8nosvDmcI27vT5wyWPJW9iMK+c
+         UguUWBF4CljAQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        George Shuklin <george.shuklin@gmail.com>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        pabeni@redhat.com, idosch@nvidia.com, petrm@nvidia.com,
-        edumazet@google.com, johannes.berg@intel.com, avagin@gmail.com,
-        cong.wang@bytedance.com, yajun.deng@linux.dev,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 82/98] net: account alternate interface name memory
-Date:   Fri,  1 Apr 2022 10:37:26 -0400
-Message-Id: <20220401143742.1952163-82-sashal@kernel.org>
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        Ingo Molnar <mingo@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>, mhiramat@kernel.org,
+        rostedt@goodmis.org, vbabka@suse.cz, ahalaney@redhat.com,
+        linux@rasmusvillemoes.dk, wangkefeng.wang@huawei.com,
+        keescook@chromium.org, mark-pk.tsai@mediatek.com,
+        valentin.schneider@arm.com, peterz@infradead.org
+Subject: [PATCH AUTOSEL 5.15 97/98] init/main.c: return 1 from handled __setup() functions
+Date:   Fri,  1 Apr 2022 10:37:41 -0400
+Message-Id: <20220401143742.1952163-97-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143742.1952163-1-sashal@kernel.org>
 References: <20220401143742.1952163-1-sashal@kernel.org>
@@ -56,33 +60,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakub Kicinski <kuba@kernel.org>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit 5d26cff5bdbebdf98ba48217c078ff102536f134 ]
+[ Upstream commit f9a40b0890658330c83c95511f9d6b396610defc ]
 
-George reports that altnames can eat up kernel memory.
-We should charge that memory appropriately.
+initcall_blacklist() should return 1 to indicate that it handled its
+cmdline arguments.
 
-Reported-by: George Shuklin <george.shuklin@gmail.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+set_debug_rodata() should return 1 to indicate that it handled its
+cmdline arguments.  Print a warning if the option string is invalid.
+
+This prevents these strings from being added to the 'init' program's
+environment as they are not init arguments/parameters.
+
+Link: https://lkml.kernel.org/r/20220221050901.23985-1-rdunlap@infradead.org
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/rtnetlink.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ init/main.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index 91d7a5a5a08d..a8c319dc224a 100644
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -3637,7 +3637,7 @@ static int rtnl_alt_ifname(int cmd, struct net_device *dev, struct nlattr *attr,
- 	if (err)
- 		return err;
+diff --git a/init/main.c b/init/main.c
+index b340d990d77c..06b98350ebd2 100644
+--- a/init/main.c
++++ b/init/main.c
+@@ -1198,7 +1198,7 @@ static int __init initcall_blacklist(char *str)
+ 		}
+ 	} while (str_entry);
  
--	alt_ifname = nla_strdup(attr, GFP_KERNEL);
-+	alt_ifname = nla_strdup(attr, GFP_KERNEL_ACCOUNT);
- 	if (!alt_ifname)
- 		return -ENOMEM;
+-	return 0;
++	return 1;
+ }
  
+ static bool __init_or_module initcall_blacklisted(initcall_t fn)
+@@ -1460,7 +1460,9 @@ static noinline void __init kernel_init_freeable(void);
+ bool rodata_enabled __ro_after_init = true;
+ static int __init set_debug_rodata(char *str)
+ {
+-	return strtobool(str, &rodata_enabled);
++	if (strtobool(str, &rodata_enabled))
++		pr_warn("Invalid option string for rodata: '%s'\n", str);
++	return 1;
+ }
+ __setup("rodata=", set_debug_rodata);
+ #endif
 -- 
 2.34.1
 
