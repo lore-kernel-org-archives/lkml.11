@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7B48C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:15:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B678BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:16:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346043AbiDAPRf (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:17:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60548 "EHLO
+        id S235570AbiDAPRq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Apr 2022 11:17:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351793AbiDAOte (ORCPT
+        with ESMTP id S1351881AbiDAOtj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:49:34 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 152412AA878;
-        Fri,  1 Apr 2022 07:40:25 -0700 (PDT)
+        Fri, 1 Apr 2022 10:49:39 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7288B2B04D6;
+        Fri,  1 Apr 2022 07:40:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 66340CE258A;
-        Fri,  1 Apr 2022 14:39:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5DF2C340F2;
-        Fri,  1 Apr 2022 14:39:38 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 6192CCE258C;
+        Fri,  1 Apr 2022 14:39:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA1EFC36AE2;
+        Fri,  1 Apr 2022 14:39:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823979;
-        bh=A7zIwQRI211zRaTHQsoqYRO9i3VwRJrSVQE/uFNqMXE=;
+        s=k20201202; t=1648823987;
+        bh=/yfV8bz2vNtdrO0Qc04Iiksnfpc9KJXbAWkZeRolfpM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F94/m7HHkjBFWkQ9cGk8ChYONg+8V2r+QgQiV0l0MYuzCSflAU7MNZX5F4ePsq6an
-         AaVmOklzBxPdSzbITQhqGsgEt3M2zJkUYBXk5mBKFspACs1qGGh5OIyBBHkZKzb7yl
-         zHgoAe3kP793z1c3EWMIfO1a25Y09U/iaNnzRx8j99/3xuuOvfqisR2VCmGeoO5DYL
-         caJly+wN/zjWz9PLnkuimH7XX0R35dNLAlwvxVSAX2UMg/wkOBaVjmrcf5O6vqu44C
-         8BAz8UXd5c990AAxhQPqckuFvHIDEPUXF4c36tYfPQfAWIXYbeKjAYaF+oFcNYd2/Y
-         giOkZdKLP6Y2w==
+        b=obNVBtC1g2S4ILnYhbori0gBZtMPEuvE0/OrtNf9LfuO6yRbO2BAi2hICDaSdeV2m
+         vAlUWecV/F0+QLWNwnulKzHm9XUV3X8JgHv6Sj7husEAIk7SC/VVmAzTjEC/YPy8PK
+         UAkIUxOjJMxT3qmrT1aZVH+YZUIhMhgw8jLDr6YTmqH+hbGG/Mbxogir4NmIg+uUN2
+         uH9Aezze6G9cQbhktR4mcExjexCKho1nGi9ELe1QlW9SyNgvXflrDMt8l3D0nM7ZSZ
+         LlJ3wV4nrlGt5zwGEK38n/lkC1GN88V7w6gQ1l9Q8Z+cczvPQqhPpegp8jNsqni+Xh
+         TPkUQArxvgoBQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, sathya.prakash@broadcom.com,
-        kashyap.desai@broadcom.com, sumit.saxena@broadcom.com,
-        jejb@linux.ibm.com, mpi3mr-linuxdrv.pdl@broadcom.com,
-        linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 39/98] scsi: mpi3mr: Fix memory leaks
-Date:   Fri,  1 Apr 2022 10:36:43 -0400
-Message-Id: <20220401143742.1952163-39-sashal@kernel.org>
+Cc:     Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 42/98] net/mlx5e: Disable TX queues before registering the netdev
+Date:   Fri,  1 Apr 2022 10:36:46 -0400
+Message-Id: <20220401143742.1952163-42-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143742.1952163-1-sashal@kernel.org>
 References: <20220401143742.1952163-1-sashal@kernel.org>
@@ -55,34 +54,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sreekanth Reddy <sreekanth.reddy@broadcom.com>
+From: Maxim Mikityanskiy <maximmi@nvidia.com>
 
-[ Upstream commit d44b5fefb22e139408ae12b864da1ecb9ad9d1d2 ]
+[ Upstream commit d08c6e2a4d0308a7922d7ef3b1b3af45d4096aad ]
 
-Fix memory leaks related to operational reply queue's memory segments which
-are not getting freed while unloading the driver.
+Normally, the queues are disabled when the channels are deactivated, and
+enabled when the channels are activated. However, on register, the
+channels are not active, but the queues are enabled by default. This
+change fixes it, preventing mlx5e_xmit from running when the channels
+are deactivated in the beginning.
 
-Link: https://lore.kernel.org/r/20220210095817.22828-9-sreekanth.reddy@broadcom.com
-Signed-off-by: Sreekanth Reddy <sreekanth.reddy@broadcom.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
+Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/mpi3mr/mpi3mr_fw.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/scsi/mpi3mr/mpi3mr_fw.c b/drivers/scsi/mpi3mr/mpi3mr_fw.c
-index 5af36c54cb59..3ef6b6edef46 100644
---- a/drivers/scsi/mpi3mr/mpi3mr_fw.c
-+++ b/drivers/scsi/mpi3mr/mpi3mr_fw.c
-@@ -1275,7 +1275,7 @@ static void mpi3mr_free_op_req_q_segments(struct mpi3mr_ioc *mrioc, u16 q_idx)
- 			    MPI3MR_MAX_SEG_LIST_SIZE,
- 			    mrioc->req_qinfo[q_idx].q_segment_list,
- 			    mrioc->req_qinfo[q_idx].q_segment_list_dma);
--			mrioc->op_reply_qinfo[q_idx].q_segment_list = NULL;
-+			mrioc->req_qinfo[q_idx].q_segment_list = NULL;
- 		}
- 	} else
- 		size = mrioc->req_qinfo[q_idx].segment_qd *
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+index f075bb8ccd00..01301bee420c 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+@@ -4914,6 +4914,7 @@ mlx5e_create_netdev(struct mlx5_core_dev *mdev, const struct mlx5e_profile *prof
+ 	}
+ 
+ 	netif_carrier_off(netdev);
++	netif_tx_disable(netdev);
+ 	dev_net_set(netdev, mlx5_core_net(mdev));
+ 
+ 	return netdev;
 -- 
 2.34.1
 
