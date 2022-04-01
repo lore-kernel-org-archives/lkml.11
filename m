@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C089FC4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F4B9C46467
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:02:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351036AbiDAPBL (ORCPT
+        id S1350921AbiDAPA5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:01:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59946 "EHLO
+        Fri, 1 Apr 2022 11:00:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349296AbiDAOpp (ORCPT
+        with ESMTP id S1349207AbiDAOpk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:45:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41EBF29A574;
-        Fri,  1 Apr 2022 07:35:45 -0700 (PDT)
+        Fri, 1 Apr 2022 10:45:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E97D829A541;
+        Fri,  1 Apr 2022 07:35:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6DAEDB824D5;
-        Fri,  1 Apr 2022 14:35:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0962AC34115;
-        Fri,  1 Apr 2022 14:35:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E9A060AAF;
+        Fri,  1 Apr 2022 14:35:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 813BAC2BBE4;
+        Fri,  1 Apr 2022 14:35:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823708;
-        bh=6mM1adCGrD3rDYo/3TLkfQu8rH9G9TR8/XIofQoLSUI=;
+        s=k20201202; t=1648823734;
+        bh=sXYWVK0lthYG0YtqGswx+v1n0pnOJ5A9MyQ31rH2NdQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rYNYdCqh6VkYk7U59oFph3eDLWgarDkRg2t7m0vKPQc6jgqhkAnqAFGRes5oPQwDQ
-         RPSMwAy5rQ/wPAOFvzYJqsD3onCw6814vPHe3Eir6xMMP/tEpVR0+DgWzVOYE/XJIF
-         2aDOqG6rtjziZdQD4+qxdIRtWDcAgnZBq1w2b6LYaJ7EPDhObpmzxlGrsfTx6mPpFb
-         3P68kJ309EaQoM78I+PXajmICWeeXu9wIAnFv+8/1K2ycC2+CD3i8jJTsNrit9yFeO
-         /tKc8Hykq8EfCtqB7WpnqJFuP5ePJ0czA+5umxxOg1K90BpKEXc3mnpFBI5J+xOJO3
-         CaQ8pZsNuRC/g==
+        b=lsYy+QWjE19YYSBJPB3t2+p+l0G17D1VjgUK4PiC20bz89PERFeGc79+YQEuXOZtr
+         U+O2gQqLNpXzp1Yfjsw9lmwjQJjo1VpqvdRI7Cnpw7N1QXsvk38EcEFNQlKUuKov8P
+         V9FqN2t0L6xcG5wlJC3bCGq+pZ3U2q0gwRbY0LpMqfj9/FItYCF2wYR6quu3hTcr2R
+         Slvud9CCogaiHoKr9C7pGaP/MxToy9yLogdUmgUfxL+onCM4uqCax0yzVWqzyZtPm9
+         MGbyfpPXifJmvHlGqOB535OlaJyZn9pzmQu7Do5PtkjBGRBDfQGQZ8X50am5vhUuJg
+         7BvQXjsTsQp6w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, sathya.prakash@broadcom.com,
-        kashyap.desai@broadcom.com, sumit.saxena@broadcom.com,
-        jejb@linux.ibm.com, mpi3mr-linuxdrv.pdl@broadcom.com,
-        linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 047/109] scsi: mpi3mr: Fix memory leaks
-Date:   Fri,  1 Apr 2022 10:31:54 -0400
-Message-Id: <20220401143256.1950537-47-sashal@kernel.org>
+Cc:     Luca Coelho <luciano.coelho@intel.com>,
+        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        mukesh.sisodiya@intel.com, johannes.berg@intel.com,
+        mordechay.goodstein@intel.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 055/109] iwlwifi: fix small doc mistake for iwl_fw_ini_addr_val
+Date:   Fri,  1 Apr 2022 10:32:02 -0400
+Message-Id: <20220401143256.1950537-55-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143256.1950537-1-sashal@kernel.org>
 References: <20220401143256.1950537-1-sashal@kernel.org>
@@ -55,34 +55,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sreekanth Reddy <sreekanth.reddy@broadcom.com>
+From: Luca Coelho <luciano.coelho@intel.com>
 
-[ Upstream commit d44b5fefb22e139408ae12b864da1ecb9ad9d1d2 ]
+[ Upstream commit 3009c797c4b3840495e8f48d8d07f48d2ddfed80 ]
 
-Fix memory leaks related to operational reply queue's memory segments which
-are not getting freed while unloading the driver.
+There was a small copy and paste mistake in the doc declaration of
+iwl_fw_ini_addr_val.  Fix it.
 
-Link: https://lore.kernel.org/r/20220210095817.22828-9-sreekanth.reddy@broadcom.com
-Signed-off-by: Sreekanth Reddy <sreekanth.reddy@broadcom.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/iwlwifi.20220205112029.aeec71c397b3.I0ba3234419eb8c8c7512a2ca531a6dbb55046cf7@changeid
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/mpi3mr/mpi3mr_fw.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireless/intel/iwlwifi/fw/api/dbg-tlv.h | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/scsi/mpi3mr/mpi3mr_fw.c b/drivers/scsi/mpi3mr/mpi3mr_fw.c
-index 2daf633ea295..9bb64a7b2af7 100644
---- a/drivers/scsi/mpi3mr/mpi3mr_fw.c
-+++ b/drivers/scsi/mpi3mr/mpi3mr_fw.c
-@@ -1275,7 +1275,7 @@ static void mpi3mr_free_op_req_q_segments(struct mpi3mr_ioc *mrioc, u16 q_idx)
- 			    MPI3MR_MAX_SEG_LIST_SIZE,
- 			    mrioc->req_qinfo[q_idx].q_segment_list,
- 			    mrioc->req_qinfo[q_idx].q_segment_list_dma);
--			mrioc->op_reply_qinfo[q_idx].q_segment_list = NULL;
-+			mrioc->req_qinfo[q_idx].q_segment_list = NULL;
- 		}
- 	} else
- 		size = mrioc->req_qinfo[q_idx].segment_qd *
+diff --git a/drivers/net/wireless/intel/iwlwifi/fw/api/dbg-tlv.h b/drivers/net/wireless/intel/iwlwifi/fw/api/dbg-tlv.h
+index 3988f5fea33a..6b2a2828cb83 100644
+--- a/drivers/net/wireless/intel/iwlwifi/fw/api/dbg-tlv.h
++++ b/drivers/net/wireless/intel/iwlwifi/fw/api/dbg-tlv.h
+@@ -1,6 +1,6 @@
+ /* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
+ /*
+- * Copyright (C) 2018-2021 Intel Corporation
++ * Copyright (C) 2018-2022 Intel Corporation
+  */
+ #ifndef __iwl_fw_dbg_tlv_h__
+ #define __iwl_fw_dbg_tlv_h__
+@@ -244,11 +244,10 @@ struct iwl_fw_ini_hcmd_tlv {
+ } __packed; /* FW_TLV_DEBUG_HCMD_API_S_VER_1 */
+ 
+ /**
+-* struct iwl_fw_ini_conf_tlv - preset configuration TLV
++* struct iwl_fw_ini_addr_val - Address and value to set it to
+ *
+ * @address: the base address
+ * @value: value to set at address
+-
+ */
+ struct iwl_fw_ini_addr_val {
+ 	__le32 address;
 -- 
 2.34.1
 
