@@ -2,169 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADD32C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 21:59:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D580CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 21:59:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353172AbiDAWBH (ORCPT
+        id S1353187AbiDAWBO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 18:01:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53274 "EHLO
+        Fri, 1 Apr 2022 18:01:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352882AbiDAWAv (ORCPT
+        with ESMTP id S1352902AbiDAWAw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 18:00:51 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D71961C1EF9;
-        Fri,  1 Apr 2022 14:59:00 -0700 (PDT)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 9438922246;
-        Fri,  1 Apr 2022 23:58:57 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1648850337;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=dtYXoB9k65DDzh/3GNKkILqrWJ73ElQye4xmaYveacg=;
-        b=AOttoDHVGKNrIW9SkuZqEPzuVRaCEQqLdMmGpytqH+LYUJhScJXTebbcswvDHJKIVy3gKs
-        f/U5EmJQdAHPyjUDSI2x1edDHRAiF3mw/LQ/3YPwK4Hy0A67KMtr4DC0uSGDy0L+y7VtpV
-        1YK++om7YQ60ZZP5BpW/kNVetXqS7C0=
-From:   Michael Walle <michael@walle.cc>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Michael Walle <michael@walle.cc>
-Subject: [PATCH RFC net-next v2 1/3] dt-bindings: net: convert mscc-miim to YAML format
-Date:   Fri,  1 Apr 2022 23:58:32 +0200
-Message-Id: <20220401215834.3757692-2-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220401215834.3757692-1-michael@walle.cc>
-References: <20220401215834.3757692-1-michael@walle.cc>
+        Fri, 1 Apr 2022 18:00:52 -0400
+Received: from mail.thepaulodoom.com (www.thepaulodoom.com [45.77.108.202])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6F2FA1C1EED
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 14:58:58 -0700 (PDT)
+Received: from localhost (c-98-240-189-147.hsd1.mn.comcast.net [98.240.189.147])
+        by vultr.guest (OpenSMTPD) with ESMTPSA id ff8c64a7 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Fri, 1 Apr 2022 21:58:56 +0000 (UTC)
+From:   Paul Lemmermann <thepaulodoom@thepaulodoom.com>
+To:     dmitry.torokhov@gmail.com
+Cc:     linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Paul Lemmermann <thepaulodoom@thepaulodoom.com>
+Subject: [PATCH] input: evdev: fixed case statements
+Date:   Fri,  1 Apr 2022 16:58:42 -0500
+Message-Id: <20220401215842.58135-1-thepaulodoom@thepaulodoom.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert the mscc-miim device tree binding to the new YAML format.
+Fixed case statements which have more than one operation on a single
+line. Found using checkpatch.pl.
 
-The original binding don't mention if the interrupt property is optional
-or not. But on the SparX-5 SoC, for example, the interrupt property isn't
-used, thus in the new binding that property is optional. FWIW the driver
-doesn't use interrupts at all.
-
-Signed-off-by: Michael Walle <michael@walle.cc>
+Signed-off-by: Paul Lemmermann <thepaulodoom@thepaulodoom.com>
 ---
- .../devicetree/bindings/net/mscc,miim.yaml    | 56 +++++++++++++++++++
- .../devicetree/bindings/net/mscc-miim.txt     | 26 ---------
- 2 files changed, 56 insertions(+), 26 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/net/mscc,miim.yaml
- delete mode 100644 Documentation/devicetree/bindings/net/mscc-miim.txt
+ drivers/input/evdev.c | 48 ++++++++++++++++++++++++++++++++++---------
+ 1 file changed, 38 insertions(+), 10 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/net/mscc,miim.yaml b/Documentation/devicetree/bindings/net/mscc,miim.yaml
-new file mode 100644
-index 000000000000..cdc39aa20683
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/mscc,miim.yaml
-@@ -0,0 +1,56 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/net/mscc,miim.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Microsemi MII Management Controller (MIIM)
-+
-+maintainers:
-+  - Alexandre Belloni <alexandre.belloni@bootlin.com>
-+
-+allOf:
-+  - $ref: "mdio.yaml#"
-+
-+properties:
-+  compatible:
-+    enum:
-+      - mscc,ocelot-miim
-+      - microchip,lan966x-miim
-+
-+  "#address-cells":
-+    const: 1
-+
-+  "#size-cells":
-+    const: 0
-+
-+  reg:
-+    items:
-+      - description: base address
-+      - description: associated reset register for internal PHYs
-+    minItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - "#address-cells"
-+  - "#size-cells"
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    mdio@107009c {
-+      compatible = "mscc,ocelot-miim";
-+      reg = <0x107009c 0x36>, <0x10700f0 0x8>;
-+      interrupts = <14>;
-+      #address-cells = <1>;
-+      #size-cells = <0>;
-+
-+      phy0: ethernet-phy@0 {
-+        reg = <0>;
-+      };
-+    };
-diff --git a/Documentation/devicetree/bindings/net/mscc-miim.txt b/Documentation/devicetree/bindings/net/mscc-miim.txt
-deleted file mode 100644
-index 70e0cb1ee485..000000000000
---- a/Documentation/devicetree/bindings/net/mscc-miim.txt
-+++ /dev/null
-@@ -1,26 +0,0 @@
--Microsemi MII Management Controller (MIIM) / MDIO
--=================================================
--
--Properties:
--- compatible: must be "mscc,ocelot-miim" or "microchip,lan966x-miim"
--- reg: The base address of the MDIO bus controller register bank. Optionally, a
--  second register bank can be defined if there is an associated reset register
--  for internal PHYs
--- #address-cells: Must be <1>.
--- #size-cells: Must be <0>.  MDIO addresses have no size component.
--- interrupts: interrupt specifier (refer to the interrupt binding)
--
--Typically an MDIO bus might have several children.
--
--Example:
--	mdio@107009c {
--		#address-cells = <1>;
--		#size-cells = <0>;
--		compatible = "mscc,ocelot-miim";
--		reg = <0x107009c 0x36>, <0x10700f0 0x8>;
--		interrupts = <14>;
--
--		phy0: ethernet-phy@0 {
--			reg = <0>;
--		};
--	};
+diff --git a/drivers/input/evdev.c b/drivers/input/evdev.c
+index 95f90699d..85c92b30d 100644
+--- a/drivers/input/evdev.c
++++ b/drivers/input/evdev.c
+@@ -784,16 +784,44 @@ static int handle_eviocgbit(struct input_dev *dev,
+ 
+ 	switch (type) {
+ 
+-	case      0: bits = dev->evbit;  len = EV_MAX;  break;
+-	case EV_KEY: bits = dev->keybit; len = KEY_MAX; break;
+-	case EV_REL: bits = dev->relbit; len = REL_MAX; break;
+-	case EV_ABS: bits = dev->absbit; len = ABS_MAX; break;
+-	case EV_MSC: bits = dev->mscbit; len = MSC_MAX; break;
+-	case EV_LED: bits = dev->ledbit; len = LED_MAX; break;
+-	case EV_SND: bits = dev->sndbit; len = SND_MAX; break;
+-	case EV_FF:  bits = dev->ffbit;  len = FF_MAX;  break;
+-	case EV_SW:  bits = dev->swbit;  len = SW_MAX;  break;
+-	default: return -EINVAL;
++	case      0: 
++		bits = dev->evbit;  
++		len = EV_MAX;  
++		break;
++	case EV_KEY: 
++		bits = dev->keybit; 
++		len = KEY_MAX; 
++		break;
++	case EV_REL: 
++		bits = dev->relbit; 
++		len = REL_MAX; 
++		break;
++	case EV_ABS: 
++		bits = dev->absbit; 
++		len = ABS_MAX; 
++		break;
++	case EV_MSC: 
++		bits = dev->mscbit; 
++		len = MSC_MAX; 
++		break;
++	case EV_LED: 
++		bits = dev->ledbit; 
++		len = LED_MAX; 
++		break;
++	case EV_SND: 
++		bits = dev->sndbit; 
++		len = SND_MAX; 
++		break;
++	case EV_FF:  
++		bits = dev->ffbit; 
++		len = FF_MAX; 
++		break;
++	case EV_SW:  
++		bits = dev->swbit; 
++		len = SW_MAX; 
++		break;
++	default: 
++		return -EINVAL;
+ 	}
+ 
+ 	return bits_to_user(bits, len, size, p, compat_mode);
 -- 
-2.30.2
+2.35.1
 
