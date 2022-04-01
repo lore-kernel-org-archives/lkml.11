@@ -2,93 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67FB2C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 16:29:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA0ABC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 16:32:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235848AbiDAQar (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 12:30:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60592 "EHLO
+        id S1344273AbiDAQeD (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Apr 2022 12:34:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344678AbiDAQaA (ORCPT
+        with ESMTP id S1349171AbiDAQdI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 12:30:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6C32182AF9;
-        Fri,  1 Apr 2022 09:03:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 766F761AF8;
-        Fri,  1 Apr 2022 16:03:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83596C2BBE4;
-        Fri,  1 Apr 2022 16:03:07 +0000 (UTC)
-Date:   Fri, 1 Apr 2022 12:03:05 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     linux-kernel@vger.kernel.org, Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        linux-s390@vger.kernel.org, Ingo Molnar <mingo@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        sparclinux@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
-        linux-ia64@vger.kernel.org,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Pavel Machek <pavel@ucw.cz>, Len Brown <lenb@kernel.org>,
-        linux-pm@vger.kernel.org, linux-acpi@vger.kernel.org,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org
-Subject: Re: [PATCH 1/3 v2] Docs: admin/kernel-parameters: edit a few boot
- options
-Message-ID: <20220401120305.00076d14@gandalf.local.home>
-In-Reply-To: <20220401030927.12023-2-rdunlap@infradead.org>
-References: <20220401030927.12023-1-rdunlap@infradead.org>
-        <20220401030927.12023-2-rdunlap@infradead.org>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Fri, 1 Apr 2022 12:33:08 -0400
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A08E2A2672
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 09:05:45 -0700 (PDT)
+Received: by mail-wr1-x433.google.com with SMTP id d7so4895988wrb.7
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 09:05:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=isovalent-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=hklOial7Zin/mLTXaf/iXnKaJeASDMWSnjZgJ7Zag2s=;
+        b=GdVx/x1hfwTLunRYxNvqUPUbdWWogD+G59+vrK1Zq0dApIBz7crwov2uLpbp0evF8O
+         qyUs9lIaANPw7O3KhU0Zv+L3e4dEEHrRSw0fe7XhJprf7ouW42E8StAP8ujLRS+NX073
+         JX6UcTPifPB46dqCJmLfy2NV2PHFdgkgVexgvyiEWdMDeKoVc1JF4svhuFtn5Nc4JBfp
+         T+Jiq+ne3W8vPxJAK4sSPrK9MQyefGBUVJRBIbyUMcFpRZdVknmPqgEZbyOC2n4eB2o1
+         cehZoqEN1gFUCChxzyMLol4VthqQGHFEtXln2pC52IumpLT1tXGylESGda8PwvsaVsDu
+         zXhQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=hklOial7Zin/mLTXaf/iXnKaJeASDMWSnjZgJ7Zag2s=;
+        b=z5vfnnCKOY8FA8Q2fK44QL+/Wnki57nY/BkJlFKqQ2jsPvMC6uJ0XOkGOLpfzBdE5C
+         FHZ2z/5LcAzrhX8ekqdGne6VXLFKGElnbVX0WISHjGpXxKED8qjuzPg5bwEddeJFsqKI
+         m7FtXa6tFFdEI4K3ILDs9hKosyS/3rdalPB8jq9PWgblKt5sGj4xO0MkAlhtoAs3+tJw
+         q9ISeFQdWWI+4yr/3+0K+riJSyEffL46nubYhxB5tgl0UEh0RJPSPBtl3e3HPhuUv40e
+         OPn0twRboa0CuOARytBfq7wiN9GyxKGSODImwSzk1tH1idnGNSmPAFD0nF0pLijYyHYf
+         0iug==
+X-Gm-Message-State: AOAM533LC9BQMIXnKo0Z3NzYWTR+fVcAk0FZ9+hOuwQGTb+W6J7sE5OU
+        KxkagY/O+E69hPJz+Iz5Ujt7oA==
+X-Google-Smtp-Source: ABdhPJz7ieQF66lrWTCTnXwP+yJlWhUuGDKKDSZue48u1bteSU3Fw+ZtxqA7MmlmJWdrwlmtyich1Q==
+X-Received: by 2002:adf:db4b:0:b0:203:e76f:fc45 with SMTP id f11-20020adfdb4b000000b00203e76ffc45mr8010081wrj.549.1648829108697;
+        Fri, 01 Apr 2022 09:05:08 -0700 (PDT)
+Received: from [192.168.178.8] ([51.155.200.13])
+        by smtp.gmail.com with ESMTPSA id g17-20020a05600c4ed100b0038ca32d0f26sm2497333wmq.17.2022.04.01.09.05.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 01 Apr 2022 09:05:08 -0700 (PDT)
+Message-ID: <8457bd5f-0541-e128-b033-05131381c590@isovalent.com>
+Date:   Fri, 1 Apr 2022 17:05:07 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH bpf-next 3/3] bpf/bpftool: handle libbpf_probe_prog_type
+ errors
+Content-Language: en-GB
+To:     Milan Landaverde <milan@mdaverde.com>, bpf@vger.kernel.org
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        davemarchevsky@fb.com, sdf@google.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220331154555.422506-1-milan@mdaverde.com>
+ <20220331154555.422506-4-milan@mdaverde.com>
+From:   Quentin Monnet <quentin@isovalent.com>
+In-Reply-To: <20220331154555.422506-4-milan@mdaverde.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 31 Mar 2022 20:09:25 -0700
-Randy Dunlap <rdunlap@infradead.org> wrote:
-
-> @@ -5908,6 +5910,8 @@
->  	trace_buf_size=nn[KMG]
->  			[FTRACE] will set tracing buffer size on each cpu.
+2022-03-31 11:45 UTC-0400 ~ Milan Landaverde <milan@mdaverde.com>
+> Previously [1], we were using bpf_probe_prog_type which returned a
+> bool, but the new libbpf_probe_bpf_prog_type can return a negative
+> error code on failure. This change decides for bpftool to declare
+> a program type is not available on probe failure.
+> 
+> [1] https://lore.kernel.org/bpf/20220202225916.3313522-3-andrii@kernel.org/
+> 
+> Signed-off-by: Milan Landaverde <milan@mdaverde.com>
+> ---
+>  tools/bpf/bpftool/feature.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/tools/bpf/bpftool/feature.c b/tools/bpf/bpftool/feature.c
+> index c2f43a5d38e0..b2fbaa7a6b15 100644
+> --- a/tools/bpf/bpftool/feature.c
+> +++ b/tools/bpf/bpftool/feature.c
+> @@ -564,7 +564,7 @@ probe_prog_type(enum bpf_prog_type prog_type, bool *supported_types,
 >  
-> +	trace_clock=	[FTRACE] See Documentation/trace/ftrace.rst
+>  		res = probe_prog_type_ifindex(prog_type, ifindex);
+>  	} else {
+> -		res = libbpf_probe_bpf_prog_type(prog_type, NULL);
+> +		res = libbpf_probe_bpf_prog_type(prog_type, NULL) > 0;
+>  	}
+>  
+>  #ifdef USE_LIBCAP
 
-	trace_clock=	[FTRACE] Set the clock used for tracing events
-			at boot up.
-			local - Use the per CPU time stamp counter
-				(converted into nanoseconds). Fast, but
-				depending on the architecture, may not be
-				in sync between CPUs.
-			global - Event time stamps are synchronize across
-				CPUs. May be slower than the local clock,
-				but better for some race conditions.
-			counter - Simple counting of events (1, 2, ..)
-				note, some counts may be skipped due to the
-				infrastructure grabbing the clock more than
-				once per event.
-			uptime - Use jiffies as the time stamp.
-			perf - Use the same clock that perf uses.
-			mono - Use ktime_get_mono_fast_ns() for time stamps.
-			mono_raw - Use ktime_get_raw_fast_ns() for time
-				stamps.
-			boot - Use ktime_get_boot_fast_ns() for time stamps.
-			Architectures may add more clocks. See
-			Documentation/trace/ftrace.rst for more details.
+Reviewed-by: Quentin Monnet <quentin@isovalent.com>
 
--- Steve
-
-
-> +
->  	trace_event=[event-list]
->  			[FTRACE] Set and start specified trace events in order
->  			to facilitate early boot debugging. The event-list is a
+Thanks!
