@@ -2,77 +2,258 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 401B0C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 03:57:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AF60C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 04:05:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244794AbiDAD7J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 23:59:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60734 "EHLO
+        id S238308AbiDAEHW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Apr 2022 00:07:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233809AbiDAD7F (ORCPT
+        with ESMTP id S233366AbiDAEHR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 23:59:05 -0400
-Received: from mail.meizu.com (unknown [14.29.68.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41D921E7452;
-        Thu, 31 Mar 2022 20:57:16 -0700 (PDT)
-Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail04.meizu.com
- (172.16.1.16) with Microsoft SMTP Server (TLS) id 14.3.487.0; Fri, 1 Apr 2022
- 11:57:15 +0800
-Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
- (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Fri, 1 Apr
- 2022 11:57:13 +0800
-From:   Haowen Bai <baihaowen@meizu.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-CC:     Haowen Bai <baihaowen@meizu.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH] net/ipv4: fix potential NULL dereference in sisfb_post_sis300()
-Date:   Fri, 1 Apr 2022 11:57:12 +0800
-Message-ID: <1648785432-21824-1-git-send-email-baihaowen@meizu.com>
-X-Mailer: git-send-email 2.7.4
+        Fri, 1 Apr 2022 00:07:17 -0400
+Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEEF73E5F7
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 21:05:27 -0700 (PDT)
+Received: by mail-io1-xd2f.google.com with SMTP id p21so1904288ioj.4
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 21:05:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=B+CLss0WbItuifu72dHflWYaudPs9OpOIrtnBZ+LuaU=;
+        b=W4lP36K+Sb0fsBGicZNNHA2PdXSFLxGLOGu+QIo0Pr+K09Bfb/JQ9y7h29SJTwHCkL
+         qo9Meye8l/bh5ZdCafGJlboKfyAh3OTCZiwV615CLHt7foV27/crahdWIZpXP9o5zyDT
+         f4B0knRfleCmNsT7S/1gVtK/jnuLe8dMnvgnkEw7P3BsrmJSWJR0z6u8myMWpvrwhycC
+         K0MJjUxswzx2hsClKurU0lxBklqJnt5jCMfdXO/WkmQApUMQX+vefGDz6SReFNqKkDvo
+         OLqXgs1GpET++yDSsieKbkumlNIePUfHJvkrEdI24CUoKeH4Ge+57mvK0e8QEpJiPpQ6
+         0WeQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=B+CLss0WbItuifu72dHflWYaudPs9OpOIrtnBZ+LuaU=;
+        b=QbWFL6n44ViWDHZZ8cd7Eeswi1RmX6Kuwtu5Gvb0L1ZMZ8A05lo+wFZiumK/xfh9c7
+         P1dpXQWOeTHk2vWWPQmSuz7amltKDhPDxfGLjPJsVkA6t+a4z3R+qjU1E/jAs9znHrwS
+         fUKX9b3PLxOGR+/XlibwH4uXiL0saGKySbQ8ncYr0F/FSTL99b22WMnWKyUrOS5JnvS+
+         VhHh7XpqdSgiTWuOV5vZ8LPgZ4jEFsCAouNjDZi+AYm8Hezed/uweGRdZ7U9c/842Uw9
+         vmAqHgFXoGHesOvFaWYl4EGSGr+yUMmjyJzZjPaxw5bIUsIxWCjKFAFn0Y4wnwPHYwf8
+         fhUQ==
+X-Gm-Message-State: AOAM533ACwNcPw3LG4w/5Uggu8tCdwOYNdNS3ALG6p/nIehq1xRk1rcg
+        YOSa13Nhl5VxwOTbcTGltg+ddGU4nLIfJ7Yov9Rbgw==
+X-Google-Smtp-Source: ABdhPJxTpgpr2IYgcO6o0NsQkkbran/YiQB177+6APQAT+EOzydrNcz9ySUynHUNFST25lY4tTlWweAtwwYoDAybsGU=
+X-Received: by 2002:a05:6638:4128:b0:323:62b4:30c3 with SMTP id
+ ay40-20020a056638412800b0032362b430c3mr4994319jab.318.1648785926987; Thu, 31
+ Mar 2022 21:05:26 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.16.137.70]
-X-ClientProxiedBy: IT-EXMB-1-124.meizu.com (172.16.1.124) To
- IT-EXMB-1-125.meizu.com (172.16.1.125)
+References: <20220331084151.2600229-1-yosryahmed@google.com>
+In-Reply-To: <20220331084151.2600229-1-yosryahmed@google.com>
+From:   Wei Xu <weixugc@google.com>
+Date:   Thu, 31 Mar 2022 21:05:15 -0700
+Message-ID: <CAAPL-u8g2qkhdTQtFtBS3GNYz0WnyahWEXvR4g_OSaKv+7EozA@mail.gmail.com>
+Subject: Re: [PATCH resend] memcg: introduce per-memcg reclaim interface
+To:     Yosry Ahmed <yosryahmed@google.com>
+Cc:     Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Shakeel Butt <shakeelb@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Rientjes <rientjes@google.com>,
+        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        cgroups@vger.kernel.org, linux-doc@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux MM <linux-mm@kvack.org>,
+        Jonathan Corbet <corbet@lwn.net>, Yu Zhao <yuzhao@google.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Greg Thelen <gthelen@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-psin and psl could be null without checking null and return, so
-we need to dereference after checking.
+On Thu, Mar 31, 2022 at 1:42 AM Yosry Ahmed <yosryahmed@google.com> wrote:
+>
+> From: Shakeel Butt <shakeelb@google.com>
+>
+> Introduce an memcg interface to trigger memory reclaim on a memory cgroup.
+>
+> Use case: Proactive Reclaim
+> ---------------------------
+>
+> A userspace proactive reclaimer can continuously probe the memcg to
+> reclaim a small amount of memory. This gives more accurate and
+> up-to-date workingset estimation as the LRUs are continuously
+> sorted and can potentially provide more deterministic memory
+> overcommit behavior. The memory overcommit controller can provide
+> more proactive response to the changing behavior of the running
+> applications instead of being reactive.
+>
+> A userspace reclaimer's purpose in this case is not a complete replacement
+> for kswapd or direct reclaim, it is to proactively identify memory savings
+> opportunities and reclaim some amount of cold pages set by the policy
+> to free up the memory for more demanding jobs or scheduling new jobs.
+>
+> A user space proactive reclaimer is used in Google data centers.
+> Additionally, Meta's TMO paper recently referenced a very similar
+> interface used for user space proactive reclaim:
+> https://dl.acm.org/doi/pdf/10.1145/3503222.3507731
+>
+> Benefits of a user space reclaimer:
+> -----------------------------------
+>
+> 1) More flexible on who should be charged for the cpu of the memory
+> reclaim. For proactive reclaim, it makes more sense to be centralized.
+>
+> 2) More flexible on dedicating the resources (like cpu). The memory
+> overcommit controller can balance the cost between the cpu usage and
+> the memory reclaimed.
+>
+> 3) Provides a way to the applications to keep their LRUs sorted, so,
+> under memory pressure better reclaim candidates are selected. This also
+> gives more accurate and uptodate notion of working set for an
+> application.
+>
+> Why memory.high is not enough?
+> ------------------------------
+>
+> - memory.high can be used to trigger reclaim in a memcg and can
+>   potentially be used for proactive reclaim.
+>   However there is a big downside in using memory.high. It can potentially
+>   introduce high reclaim stalls in the target application as the
+>   allocations from the processes or the threads of the application can hit
+>   the temporary memory.high limit.
+>
+> - Userspace proactive reclaimers usually use feedback loops to decide
+>   how much memory to proactively reclaim from a workload. The metrics
+>   used for this are usually either refaults or PSI, and these metrics
+>   will become messy if the application gets throttled by hitting the
+>   high limit.
+>
+> - memory.high is a stateful interface, if the userspace proactive
+>   reclaimer crashes for any reason while triggering reclaim it can leave
+>   the application in a bad state.
+>
+> - If a workload is rapidly expanding, setting memory.high to proactively
+>   reclaim memory can result in actually reclaiming more memory than
+>   intended.
+>
+> The benefits of such interface and shortcomings of existing interface
+> were further discussed in this RFC thread:
+> https://lore.kernel.org/linux-mm/5df21376-7dd1-bf81-8414-32a73cea45dd@google.com/
+>
+> Interface:
+> ----------
+>
+> Introducing a very simple memcg interface 'echo 10M > memory.reclaim' to
+> trigger reclaim in the target memory cgroup.
+>
+>
+> Possible Extensions:
+> --------------------
+>
+> - This interface can be extended with an additional parameter or flags
+>   to allow specifying one or more types of memory to reclaim from (e.g.
+>   file, anon, ..).
+>
+> - The interface can also be extended with a node mask to reclaim from
+>   specific nodes. This has use cases for reclaim-based demotion in memory
+>   tiering systens.
+>
+> - A similar per-node interface can also be added to support proactive
+>   reclaim and reclaim-based demotion in systems without memcg.
+>
+> For now, let's keep things simple by adding the basic functionality.
+>
+> [yosryahmed@google.com: refreshed to current master, updated commit
+> message based on recent discussions and use cases]
+> Signed-off-by: Shakeel Butt <shakeelb@google.com>
+> Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
+> ---
+>  Documentation/admin-guide/cgroup-v2.rst |  9 ++++++
+>  mm/memcontrol.c                         | 37 +++++++++++++++++++++++++
+>  2 files changed, 46 insertions(+)
+>
+> diff --git a/Documentation/admin-guide/cgroup-v2.rst b/Documentation/admin-guide/cgroup-v2.rst
+> index 69d7a6983f78..925aaabb2247 100644
+> --- a/Documentation/admin-guide/cgroup-v2.rst
+> +++ b/Documentation/admin-guide/cgroup-v2.rst
+> @@ -1208,6 +1208,15 @@ PAGE_SIZE multiple when read back.
+>         high limit is used and monitored properly, this limit's
+>         utility is limited to providing the final safety net.
+>
+> +  memory.reclaim
+> +       A write-only file which exists on non-root cgroups.
+> +
+> +       This is a simple interface to trigger memory reclaim in the
+> +       target cgroup. Write the number of bytes to reclaim to this
+> +       file and the kernel will try to reclaim that much memory.
+> +       Please note that the kernel can over or under reclaim from
+> +       the target cgroup.
+> +
+>    memory.oom.group
+>         A read-write single value file which exists on non-root
+>         cgroups.  The default value is "0".
+> diff --git a/mm/memcontrol.c b/mm/memcontrol.c
+> index 725f76723220..994849fab7df 100644
+> --- a/mm/memcontrol.c
+> +++ b/mm/memcontrol.c
+> @@ -6355,6 +6355,38 @@ static ssize_t memory_oom_group_write(struct kernfs_open_file *of,
+>         return nbytes;
+>  }
+>
+> +static ssize_t memory_reclaim(struct kernfs_open_file *of, char *buf,
+> +                             size_t nbytes, loff_t off)
+> +{
+> +       struct mem_cgroup *memcg = mem_cgroup_from_css(of_css(of));
+> +       unsigned int nr_retries = MAX_RECLAIM_RETRIES;
+> +       unsigned long nr_to_reclaim, nr_reclaimed = 0;
+> +       int err;
+> +
+> +       buf = strstrip(buf);
+> +       err = page_counter_memparse(buf, "", &nr_to_reclaim);
+> +       if (err)
+> +               return err;
+> +
+> +       while (nr_reclaimed < nr_to_reclaim) {
+> +               unsigned long reclaimed;
+> +
+> +               if (signal_pending(current))
+> +                       break;
+> +
+> +               reclaimed = try_to_free_mem_cgroup_pages(memcg,
+> +                                               nr_to_reclaim - nr_reclaimed,
+> +                                               GFP_KERNEL, true);
+> +
+> +               if (!reclaimed && !nr_retries--)
+> +                       break;
+> +
+> +               nr_reclaimed += reclaimed;
+> +       }
+> +
+> +       return nbytes;
 
-Signed-off-by: Haowen Bai <baihaowen@meizu.com>
----
- net/ipv4/igmp.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+It is better to return an error code (e.g. -EBUSY) when
+memory_reclaim() fails to reclaim nr_to_reclaim bytes of memory,
+except if the cgroup memory usage is already 0.  We can also return
+-EINVAL if nr_to_reclaim is too large (e.g. > limit).
 
-diff --git a/net/ipv4/igmp.c b/net/ipv4/igmp.c
-index 2ad3c7b..d400080 100644
---- a/net/ipv4/igmp.c
-+++ b/net/ipv4/igmp.c
-@@ -2569,7 +2569,7 @@ int ip_mc_msfget(struct sock *sk, struct ip_msfilter *msf,
- 	    copy_to_user(optval, msf, IP_MSFILTER_SIZE(0))) {
- 		return -EFAULT;
- 	}
--	if (len &&
-+	if (len && psl &&
- 	    copy_to_user(&optval->imsf_slist_flex[0], psl->sl_addr, len))
- 		return -EFAULT;
- 	return 0;
-@@ -2608,7 +2608,7 @@ int ip_mc_gsfget(struct sock *sk, struct group_filter *gsf,
- 	count = psl ? psl->sl_count : 0;
- 	copycount = count < gsf->gf_numsrc ? count : gsf->gf_numsrc;
- 	gsf->gf_numsrc = count;
--	for (i = 0; i < copycount; i++, p++) {
-+	for (i = 0; i < copycount && psin && psl; i++, p++) {
- 		struct sockaddr_storage ss;
- 
- 		psin = (struct sockaddr_in *)&ss;
--- 
-2.7.4
-
+> +}
+> +
+>  static struct cftype memory_files[] = {
+>         {
+>                 .name = "current",
+> @@ -6413,6 +6445,11 @@ static struct cftype memory_files[] = {
+>                 .seq_show = memory_oom_group_show,
+>                 .write = memory_oom_group_write,
+>         },
+> +       {
+> +               .name = "reclaim",
+> +               .flags = CFTYPE_NOT_ON_ROOT | CFTYPE_NS_DELEGATABLE,
+> +               .write = memory_reclaim,
+> +       },
+>         { }     /* terminate */
+>  };
+>
+> --
+> 2.35.1.1021.g381101b075-goog
+>
