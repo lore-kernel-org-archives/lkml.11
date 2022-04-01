@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9E22C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:52:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F723C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:52:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348261AbiDAOyD (ORCPT
+        id S1348571AbiDAOyU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 10:54:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57796 "EHLO
+        Fri, 1 Apr 2022 10:54:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348346AbiDAOeL (ORCPT
+        with ESMTP id S1348353AbiDAOeM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:34:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A508ABC7;
-        Fri,  1 Apr 2022 07:32:21 -0700 (PDT)
+        Fri, 1 Apr 2022 10:34:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E29AFEB;
+        Fri,  1 Apr 2022 07:32:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2588FB82507;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9E4D761C1A;
+        Fri,  1 Apr 2022 14:32:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2261C3410F;
         Fri,  1 Apr 2022 14:32:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AFE2C34111;
-        Fri,  1 Apr 2022 14:32:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823538;
-        bh=9+CJce3zi7zJk3H7CtrwgSw+is0x8Hf2+lYfYxr2l14=;
+        s=k20201202; t=1648823542;
+        bh=yKDECHd+3Hf1wFsavIVXaGAn88ZEKbCwTF4OHq50O2A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Gg93b9bbTgZL+gZ5Kz+35lPdc5d//CDCcg050+tglklPJsgxCxquFgC/WUkPw0n0c
-         cBsAUJ1TZS/al483ucGWvbFFPIk7Z8BvTCIZegAFw6Iwu60gF6uXs2ZomlzraHoCsV
-         dixJ1fRTHs+v6gLDGQoMMBXiudKtjbslgzmoUGjzdMKYYuuh/RmguKHM+4qpIK+a5V
-         xpeeYUayegsuZT0z/i9wAze2+GMHm/0Ro06WUCwGmm/tUxCEzgQnz4DkXbbiSjKJDF
-         v15NiMtKfLzbOnfkWHhIVJed6VHrvbpf2GJT70fSAkK88p4Gs8k4annTx1hIeTA3Jd
-         8sKXXDnvxYDPQ==
+        b=DQ00L72wy+4RztmG7CmxxejqPCjZy0Ut8sYc98uxRXWto9n116b9wGroD4WLS5XBL
+         6NpZV0fJpbV/1Quxrp7nurUJBCXuvbOitW/gl0QKz0XXNxWAACZIjTtDRg+vP2cifl
+         Y2+67wsSIcUJgVwuXFOuNJSUCqDDR3WLQf9MFCxoPtPYFpJ58aDzp1y7lNtTjXHAeO
+         WD9m1QPXrgmZgtzA2U740NoubY0y+5Rdjp4Gi2TCLfuLENgmzNpV1BlQxLh2Jv+Vci
+         kPlGakmEV2Z30j7eVIsLg+chvvnH4fr2NWDKEgyUWS3WBBawfwJQV1XiZ6lsn6pvVd
+         7LicOI7ddQh9Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jorge Lopez <jorge.lopez2@hp.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, markgross@kernel.org,
-        platform-driver-x86@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 133/149] platform/x86: hp-wmi: Fix SW_TABLET_MODE detection method
-Date:   Fri,  1 Apr 2022 10:25:20 -0400
-Message-Id: <20220401142536.1948161-133-sashal@kernel.org>
+Cc:     Michael Walle <michael@walle.cc>, Paolo Abeni <pabeni@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, linux@armlinux.org.uk,
+        andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 135/149] net: sfp: add 2500base-X quirk for Lantech SFP module
+Date:   Fri,  1 Apr 2022 10:25:22 -0400
+Message-Id: <20220401142536.1948161-135-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401142536.1948161-1-sashal@kernel.org>
 References: <20220401142536.1948161-1-sashal@kernel.org>
@@ -53,195 +53,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jorge Lopez <jorge.lopez2@hp.com>
+From: Michael Walle <michael@walle.cc>
 
-[ Upstream commit 520ee4ea1cc60251a6e3c911cf0336278aa52634 ]
+[ Upstream commit 00eec9fe4f3b9588b4bfa8ef9dd0aae96407d5d7 ]
 
-The purpose of this patch is to introduce a fix and removal of the
-current hack when determining tablet mode status.
+The Lantech 8330-262D-E module is 2500base-X capable, but it reports the
+nominal bitrate as 2500MBd instead of 3125MBd. Add a quirk for the
+module.
 
-Determining the tablet mode status requires reading Byte 0 bit 2 as
-reported by HPWMI_HARDWARE_QUERY.  The investigation identified the
-failure was rooted in two areas: HPWMI_HARDWARE_QUERY failure (0x05)
-and reading Byte 0, bit 2 only to determine the table mode status.
-HPWMI_HARDWARE_QUERY WMI failure also rendered the dock state value
-invalid.
+The following in an EEPROM dump of such a SFP with the serial number
+redacted:
 
-The latest changes use SMBIOS Type 3 (chassis type) and WMI Command
-0x40 (device_mode_status) information to determine if the device is
-in tablet mode or not.
+00: 03 04 07 00 00 00 01 20 40 0c 05 01 19 00 00 00    ???...? @????...
+10: 1e 0f 00 00 4c 61 6e 74 65 63 68 20 20 20 20 20    ??..Lantech
+20: 20 20 20 20 00 00 00 00 38 33 33 30 2d 32 36 32        ....8330-262
+30: 44 2d 45 20 20 20 20 20 56 31 2e 30 03 52 00 cb    D-E     V1.0?R.?
+40: 00 1a 00 00 46 43 XX XX XX XX XX XX XX XX XX XX    .?..FCXXXXXXXXXX
+50: 20 20 20 20 32 32 30 32 31 34 20 20 68 b0 01 98        220214  h???
+60: 45 58 54 52 45 4d 45 4c 59 20 43 4f 4d 50 41 54    EXTREMELY COMPAT
+70: 49 42 4c 45 20 20 20 20 20 20 20 20 20 20 20 20    IBLE
 
-hp_wmi_hw_state function was split into two functions;
-hp_wmi_get_dock_state and hp_wmi_get_tablet_mode.  The new functions
-separate how dock_state and tablet_mode is handled in a cleaner
-manner.
-
-All changes were validated on a HP ZBook Workstation notebook,
-HP EliteBook x360, and HP EliteBook 850 G8.
-
-Signed-off-by: Jorge Lopez <jorge.lopez2@hp.com>
-Link: https://lore.kernel.org/r/20220310210853.28367-3-jorge.lopez2@hp.com
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Michael Walle <michael@walle.cc>
+Link: https://lore.kernel.org/r/20220312205014.4154907-1-michael@walle.cc
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/platform/x86/hp-wmi.c | 71 +++++++++++++++++++++++++----------
- 1 file changed, 52 insertions(+), 19 deletions(-)
+ drivers/net/phy/sfp-bus.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/platform/x86/hp-wmi.c b/drivers/platform/x86/hp-wmi.c
-index 48a46466f086..f822ef6eb93c 100644
---- a/drivers/platform/x86/hp-wmi.c
-+++ b/drivers/platform/x86/hp-wmi.c
-@@ -35,10 +35,6 @@ MODULE_LICENSE("GPL");
- MODULE_ALIAS("wmi:95F24279-4D7B-4334-9387-ACCDC67EF61C");
- MODULE_ALIAS("wmi:5FB7F034-2C63-45e9-BE91-3D44E2C707E4");
- 
--static int enable_tablet_mode_sw = -1;
--module_param(enable_tablet_mode_sw, int, 0444);
--MODULE_PARM_DESC(enable_tablet_mode_sw, "Enable SW_TABLET_MODE reporting (-1=auto, 0=no, 1=yes)");
--
- #define HPWMI_EVENT_GUID "95F24279-4D7B-4334-9387-ACCDC67EF61C"
- #define HPWMI_BIOS_GUID "5FB7F034-2C63-45e9-BE91-3D44E2C707E4"
- #define HP_OMEN_EC_THERMAL_PROFILE_OFFSET 0x95
-@@ -107,6 +103,7 @@ enum hp_wmi_commandtype {
- 	HPWMI_FEATURE2_QUERY		= 0x0d,
- 	HPWMI_WIRELESS2_QUERY		= 0x1b,
- 	HPWMI_POSTCODEERROR_QUERY	= 0x2a,
-+	HPWMI_SYSTEM_DEVICE_MODE	= 0x40,
- 	HPWMI_THERMAL_PROFILE_QUERY	= 0x4c,
- };
- 
-@@ -217,6 +214,19 @@ struct rfkill2_device {
- static int rfkill2_count;
- static struct rfkill2_device rfkill2[HPWMI_MAX_RFKILL2_DEVICES];
- 
-+/*
-+ * Chassis Types values were obtained from SMBIOS reference
-+ * specification version 3.00. A complete list of system enclosures
-+ * and chassis types is available on Table 17.
-+ */
-+static const char * const tablet_chassis_types[] = {
-+	"30", /* Tablet*/
-+	"31", /* Convertible */
-+	"32"  /* Detachable */
-+};
-+
-+#define DEVICE_MODE_TABLET	0x06
-+
- /* map output size to the corresponding WMI method id */
- static inline int encode_outsize_for_pvsz(int outsize)
- {
-@@ -345,14 +355,39 @@ static int hp_wmi_read_int(int query)
- 	return val;
- }
- 
--static int hp_wmi_hw_state(int mask)
-+static int hp_wmi_get_dock_state(void)
- {
- 	int state = hp_wmi_read_int(HPWMI_HARDWARE_QUERY);
- 
- 	if (state < 0)
- 		return state;
- 
--	return !!(state & mask);
-+	return !!(state & HPWMI_DOCK_MASK);
-+}
-+
-+static int hp_wmi_get_tablet_mode(void)
-+{
-+	char system_device_mode[4] = { 0 };
-+	const char *chassis_type;
-+	bool tablet_found;
-+	int ret;
-+
-+	chassis_type = dmi_get_system_info(DMI_CHASSIS_TYPE);
-+	if (!chassis_type)
-+		return -ENODEV;
-+
-+	tablet_found = match_string(tablet_chassis_types,
-+				    ARRAY_SIZE(tablet_chassis_types),
-+				    chassis_type) >= 0;
-+	if (!tablet_found)
-+		return -ENODEV;
-+
-+	ret = hp_wmi_perform_query(HPWMI_SYSTEM_DEVICE_MODE, HPWMI_READ,
-+				   system_device_mode, 0, sizeof(system_device_mode));
-+	if (ret < 0)
-+		return ret;
-+
-+	return system_device_mode[0] == DEVICE_MODE_TABLET;
- }
- 
- static int omen_thermal_profile_set(int mode)
-@@ -568,7 +603,7 @@ static ssize_t als_show(struct device *dev, struct device_attribute *attr,
- static ssize_t dock_show(struct device *dev, struct device_attribute *attr,
- 			 char *buf)
- {
--	int value = hp_wmi_hw_state(HPWMI_DOCK_MASK);
-+	int value = hp_wmi_get_dock_state();
- 	if (value < 0)
- 		return value;
- 	return sprintf(buf, "%d\n", value);
-@@ -577,7 +612,7 @@ static ssize_t dock_show(struct device *dev, struct device_attribute *attr,
- static ssize_t tablet_show(struct device *dev, struct device_attribute *attr,
- 			   char *buf)
- {
--	int value = hp_wmi_hw_state(HPWMI_TABLET_MASK);
-+	int value = hp_wmi_get_tablet_mode();
- 	if (value < 0)
- 		return value;
- 	return sprintf(buf, "%d\n", value);
-@@ -699,10 +734,10 @@ static void hp_wmi_notify(u32 value, void *context)
- 	case HPWMI_DOCK_EVENT:
- 		if (test_bit(SW_DOCK, hp_wmi_input_dev->swbit))
- 			input_report_switch(hp_wmi_input_dev, SW_DOCK,
--					    hp_wmi_hw_state(HPWMI_DOCK_MASK));
-+					    hp_wmi_get_dock_state());
- 		if (test_bit(SW_TABLET_MODE, hp_wmi_input_dev->swbit))
- 			input_report_switch(hp_wmi_input_dev, SW_TABLET_MODE,
--					    hp_wmi_hw_state(HPWMI_TABLET_MASK));
-+					    hp_wmi_get_tablet_mode());
- 		input_sync(hp_wmi_input_dev);
- 		break;
- 	case HPWMI_PARK_HDD:
-@@ -780,19 +815,17 @@ static int __init hp_wmi_input_setup(void)
- 	__set_bit(EV_SW, hp_wmi_input_dev->evbit);
- 
- 	/* Dock */
--	val = hp_wmi_hw_state(HPWMI_DOCK_MASK);
-+	val = hp_wmi_get_dock_state();
- 	if (!(val < 0)) {
- 		__set_bit(SW_DOCK, hp_wmi_input_dev->swbit);
- 		input_report_switch(hp_wmi_input_dev, SW_DOCK, val);
- 	}
- 
- 	/* Tablet mode */
--	if (enable_tablet_mode_sw > 0) {
--		val = hp_wmi_hw_state(HPWMI_TABLET_MASK);
--		if (val >= 0) {
--			__set_bit(SW_TABLET_MODE, hp_wmi_input_dev->swbit);
--			input_report_switch(hp_wmi_input_dev, SW_TABLET_MODE, val);
--		}
-+	val = hp_wmi_get_tablet_mode();
-+	if (!(val < 0)) {
-+		__set_bit(SW_TABLET_MODE, hp_wmi_input_dev->swbit);
-+		input_report_switch(hp_wmi_input_dev, SW_TABLET_MODE, val);
- 	}
- 
- 	err = sparse_keymap_setup(hp_wmi_input_dev, hp_wmi_keymap, NULL);
-@@ -1227,10 +1260,10 @@ static int hp_wmi_resume_handler(struct device *device)
- 	if (hp_wmi_input_dev) {
- 		if (test_bit(SW_DOCK, hp_wmi_input_dev->swbit))
- 			input_report_switch(hp_wmi_input_dev, SW_DOCK,
--					    hp_wmi_hw_state(HPWMI_DOCK_MASK));
-+					    hp_wmi_get_dock_state());
- 		if (test_bit(SW_TABLET_MODE, hp_wmi_input_dev->swbit))
- 			input_report_switch(hp_wmi_input_dev, SW_TABLET_MODE,
--					    hp_wmi_hw_state(HPWMI_TABLET_MASK));
-+					    hp_wmi_get_tablet_mode());
- 		input_sync(hp_wmi_input_dev);
- 	}
- 
+diff --git a/drivers/net/phy/sfp-bus.c b/drivers/net/phy/sfp-bus.c
+index c1512c9925a6..15aa5ac1ff49 100644
+--- a/drivers/net/phy/sfp-bus.c
++++ b/drivers/net/phy/sfp-bus.c
+@@ -74,6 +74,12 @@ static const struct sfp_quirk sfp_quirks[] = {
+ 		.vendor = "HUAWEI",
+ 		.part = "MA5671A",
+ 		.modes = sfp_quirk_2500basex,
++	}, {
++		// Lantech 8330-262D-E can operate at 2500base-X, but
++		// incorrectly report 2500MBd NRZ in their EEPROM
++		.vendor = "Lantech",
++		.part = "8330-262D-E",
++		.modes = sfp_quirk_2500basex,
+ 	}, {
+ 		.vendor = "UBNT",
+ 		.part = "UF-INSTANT",
 -- 
 2.34.1
 
