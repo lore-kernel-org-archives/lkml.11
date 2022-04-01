@@ -2,98 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E0CDC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 18:07:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48826C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 18:08:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346324AbiDASJY (ORCPT
+        id S1350958AbiDASKc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 14:09:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48726 "EHLO
+        Fri, 1 Apr 2022 14:10:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236250AbiDASJV (ORCPT
+        with ESMTP id S236250AbiDASKZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 14:09:21 -0400
-X-Greylist: delayed 1466 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 01 Apr 2022 11:07:31 PDT
-Received: from finn.localdomain (finn.gateworks.com [108.161.129.64])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B72B511A9BA;
-        Fri,  1 Apr 2022 11:07:31 -0700 (PDT)
-Received: from 068-189-091-139.biz.spectrum.com ([68.189.91.139] helo=tharvey.pdc.gateworks.com)
-        by finn.localdomain with esmtp (Exim 4.93)
-        (envelope-from <tharvey@gateworks.com>)
-        id 1naLIS-00C92z-8l; Fri, 01 Apr 2022 17:42:52 +0000
-From:   Tim Harvey <tharvey@gateworks.com>
-To:     Rob Herring <robh+dt@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Cc:     Tim Harvey <tharvey@gateworks.com>, stable@vger.kernel.org
-Subject: [PATCH] ARM: dts: imx8mm-venice-gw{72xx,73xx}: fix OTG controller OC mode
-Date:   Fri,  1 Apr 2022 10:42:49 -0700
-Message-Id: <20220401174249.10252-1-tharvey@gateworks.com>
-X-Mailer: git-send-email 2.17.1
+        Fri, 1 Apr 2022 14:10:25 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D27ED222BC
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 11:08:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648836514; x=1680372514;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=DU9PgH/5rb/qkF9q+WrXb9XrVXA9a5dGo5mm1m9YnB0=;
+  b=UCtb36vYQL9/5IroLSSPLErbYBjMEr+WP1VQ9amTS/C2WTzhj1kK1Y81
+   PKW3jnwZQgZ14LCanGztoSg5GZgluXO/K82UsIlcmIsAMvDCRoHAuP+j0
+   ZtMuUiiG9ygbIKOFPwlB5S4ygKFj/H263Rn2JtWxZ9hbG6Zr5VljVaXh1
+   3EdQbVmnvOEQ0I3wmKoOATKzC9lRM5LxHi9C/Huulal0CJRC2eYmfQbut
+   tsbFx77svSEWUdCzfwHdeULNG+KE2jDqYNGcj/VzN+WMxckWDAOxA1e3K
+   N94Z+1MF6qUfi5bHj2+4fEG0JsUcXunxTJuSM58dKJYV5sjzTQZDP6vH7
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10304"; a="240137058"
+X-IronPort-AV: E=Sophos;i="5.90,228,1643702400"; 
+   d="scan'208";a="240137058"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Apr 2022 11:08:34 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,228,1643702400"; 
+   d="scan'208";a="547894028"
+Received: from lkp-server02.sh.intel.com (HELO 3231c491b0e2) ([10.239.97.151])
+  by orsmga007.jf.intel.com with ESMTP; 01 Apr 2022 11:08:32 -0700
+Received: from kbuild by 3231c491b0e2 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1naLhH-0001S0-EK;
+        Fri, 01 Apr 2022 18:08:31 +0000
+Date:   Sat, 2 Apr 2022 02:08:02 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Sevinj Aghayeva <sevinj.aghayeva@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     kbuild-all@lists.01.org, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org, outreachy@lists.linux.dev,
+        Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
+Subject: Re: [PATCH 3/3] staging: rtl8723bs: remove redundant else branches
+Message-ID: <202204020208.cUdIa2Q2-lkp@intel.com>
+References: <8d745122cd10f5db59393b1bff09e6a73e88640b.1648817213.git.sevinj.aghayeva@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8d745122cd10f5db59393b1bff09e6a73e88640b.1648817213.git.sevinj.aghayeva@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Both the GW72xx and GW73xx boards have USB1 routed to a USB OTG
-connector and USB2 routed to a USB hub.
+Hi Sevinj,
 
-The OTG connector has over-current protection with an active-low
-pin and the USB1 to HUB connection has no over-current protection (as
-the HUB itself implements this for its downstream ports).
+Thank you for the patch! Perhaps something to improve:
 
-Add proper dt nodes to specify the over-current pin polarity for USB1
-and disable over-current protection for USB2.
+[auto build test WARNING on staging/staging-testing]
+[also build test WARNING on v5.17 next-20220401]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-Fixes: 6f30b27c5ef5 ("arm64: dts: imx8mm: Add Gateworks i.MX 8M Mini Development Kits")
-Cc: stable@vger.kernel.org
-Signed-off-by: Tim Harvey <tharvey@gateworks.com>
----
- arch/arm64/boot/dts/freescale/imx8mm-venice-gw72xx.dtsi | 2 ++
- arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx.dtsi | 2 ++
- 2 files changed, 4 insertions(+)
+url:    https://github.com/intel-lab-lkp/linux/commits/Sevinj-Aghayeva/rlt8723bs-cleanup/20220401-210507
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/staging.git b22c721c4f3fd4608da059c56fbe7a0cc598fb6a
+config: alpha-allyesconfig (https://download.01.org/0day-ci/archive/20220402/202204020208.cUdIa2Q2-lkp@intel.com/config)
+compiler: alpha-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/ed0a6d578663ac28fa89918bc7ad86c0e6f82f8a
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Sevinj-Aghayeva/rlt8723bs-cleanup/20220401-210507
+        git checkout ed0a6d578663ac28fa89918bc7ad86c0e6f82f8a
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=alpha SHELL=/bin/bash drivers/staging/
 
-diff --git a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw72xx.dtsi b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw72xx.dtsi
-index 27afa46a253a..b0de99b4a608 100644
---- a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw72xx.dtsi
-+++ b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw72xx.dtsi
-@@ -139,12 +139,14 @@
- 
- &usbotg1 {
- 	dr_mode = "otg";
-+	over-current-active-low;
- 	vbus-supply = <&reg_usb_otg1_vbus>;
- 	status = "okay";
- };
- 
- &usbotg2 {
- 	dr_mode = "host";
-+	disable-over-current;
- 	vbus-supply = <&reg_usb_otg2_vbus>;
- 	status = "okay";
- };
-diff --git a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx.dtsi b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx.dtsi
-index a59e849c7be2..3c26c125678d 100644
---- a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx.dtsi
-+++ b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx.dtsi
-@@ -166,12 +166,14 @@
- 
- &usbotg1 {
- 	dr_mode = "otg";
-+	over-current-active-low;
- 	vbus-supply = <&reg_usb_otg1_vbus>;
- 	status = "okay";
- };
- 
- &usbotg2 {
- 	dr_mode = "host";
-+	disable-over-current;
- 	vbus-supply = <&reg_usb_otg2_vbus>;
- 	status = "okay";
- };
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+   drivers/staging/rtl8723bs/core/rtw_mlme_ext.c: In function 'OnDeAuth':
+>> drivers/staging/rtl8723bs/core/rtw_mlme_ext.c:1505:9: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+    1505 |         int     ignore_received_deauth = 0;
+         |         ^~~
+
+
+vim +1505 drivers/staging/rtl8723bs/core/rtw_mlme_ext.c
+
+554c0a3abf216c Hans de Goede   2017-03-29  1461  
+554c0a3abf216c Hans de Goede   2017-03-29  1462  unsigned int OnDeAuth(struct adapter *padapter, union recv_frame *precv_frame)
+554c0a3abf216c Hans de Goede   2017-03-29  1463  {
+554c0a3abf216c Hans de Goede   2017-03-29  1464  	unsigned short	reason;
+554c0a3abf216c Hans de Goede   2017-03-29  1465  	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
+554c0a3abf216c Hans de Goede   2017-03-29  1466  	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
+554c0a3abf216c Hans de Goede   2017-03-29  1467  	struct mlme_ext_info *pmlmeinfo = &(pmlmeext->mlmext_info);
+554c0a3abf216c Hans de Goede   2017-03-29  1468  	u8 *pframe = precv_frame->u.hdr.rx_data;
+554c0a3abf216c Hans de Goede   2017-03-29  1469  
+554c0a3abf216c Hans de Goede   2017-03-29  1470  	/* check A3 */
+554c0a3abf216c Hans de Goede   2017-03-29  1471  	if (memcmp(GetAddr3Ptr(pframe), get_my_bssid(&pmlmeinfo->network), ETH_ALEN))
+554c0a3abf216c Hans de Goede   2017-03-29  1472  		return _SUCCESS;
+554c0a3abf216c Hans de Goede   2017-03-29  1473  
+554c0a3abf216c Hans de Goede   2017-03-29  1474  	reason = le16_to_cpu(*(__le16 *)(pframe + WLAN_HDR_A3_LEN));
+554c0a3abf216c Hans de Goede   2017-03-29  1475  
+0ad02fa8b90a87 Georgiana Chelu 2017-09-22  1476  	if (check_fwstate(pmlmepriv, WIFI_AP_STATE)) {
+554c0a3abf216c Hans de Goede   2017-03-29  1477  		struct sta_info *psta;
+554c0a3abf216c Hans de Goede   2017-03-29  1478  		struct sta_priv *pstapriv = &padapter->stapriv;
+554c0a3abf216c Hans de Goede   2017-03-29  1479  
+554c0a3abf216c Hans de Goede   2017-03-29  1480  		/* rtw_free_stainfo(padapter, psta); */
+554c0a3abf216c Hans de Goede   2017-03-29  1481  
+79df841b435018 Fabio Aiuto     2021-04-15  1482  		netdev_dbg(padapter->pnetdev,
+79df841b435018 Fabio Aiuto     2021-04-15  1483  			   "ap recv deauth reason code(%d) sta:%pM\n", reason,
+79df841b435018 Fabio Aiuto     2021-04-15  1484  			   GetAddr2Ptr(pframe));
+554c0a3abf216c Hans de Goede   2017-03-29  1485  
+554c0a3abf216c Hans de Goede   2017-03-29  1486  		psta = rtw_get_stainfo(pstapriv, GetAddr2Ptr(pframe));
+554c0a3abf216c Hans de Goede   2017-03-29  1487  		if (psta) {
+554c0a3abf216c Hans de Goede   2017-03-29  1488  			u8 updated = false;
+554c0a3abf216c Hans de Goede   2017-03-29  1489  
+554c0a3abf216c Hans de Goede   2017-03-29  1490  			spin_lock_bh(&pstapriv->asoc_list_lock);
+554c0a3abf216c Hans de Goede   2017-03-29  1491  			if (list_empty(&psta->asoc_list) == false) {
+554c0a3abf216c Hans de Goede   2017-03-29  1492  				list_del_init(&psta->asoc_list);
+554c0a3abf216c Hans de Goede   2017-03-29  1493  				pstapriv->asoc_list_cnt--;
+554c0a3abf216c Hans de Goede   2017-03-29  1494  				updated = ap_free_sta(padapter, psta, false, reason);
+554c0a3abf216c Hans de Goede   2017-03-29  1495  
+554c0a3abf216c Hans de Goede   2017-03-29  1496  			}
+554c0a3abf216c Hans de Goede   2017-03-29  1497  			spin_unlock_bh(&pstapriv->asoc_list_lock);
+554c0a3abf216c Hans de Goede   2017-03-29  1498  
+554c0a3abf216c Hans de Goede   2017-03-29  1499  			associated_clients_update(padapter, updated);
+554c0a3abf216c Hans de Goede   2017-03-29  1500  		}
+554c0a3abf216c Hans de Goede   2017-03-29  1501  
+554c0a3abf216c Hans de Goede   2017-03-29  1502  
+554c0a3abf216c Hans de Goede   2017-03-29  1503  		return _SUCCESS;
+ed0a6d578663ac Sevinj Aghayeva 2022-04-01  1504  	}
+554c0a3abf216c Hans de Goede   2017-03-29 @1505  	int	ignore_received_deauth = 0;
+554c0a3abf216c Hans de Goede   2017-03-29  1506  
+554c0a3abf216c Hans de Goede   2017-03-29  1507  	/* 	Commented by Albert 20130604 */
+554c0a3abf216c Hans de Goede   2017-03-29  1508  	/* 	Before sending the auth frame to start the STA/GC mode connection with AP/GO, */
+554c0a3abf216c Hans de Goede   2017-03-29  1509  	/* 	we will send the deauth first. */
+554c0a3abf216c Hans de Goede   2017-03-29  1510  	/* 	However, the Win8.1 with BRCM Wi-Fi will send the deauth with reason code 6 to us after receieving our deauth. */
+554c0a3abf216c Hans de Goede   2017-03-29  1511  	/* 	Added the following code to avoid this case. */
+554c0a3abf216c Hans de Goede   2017-03-29  1512  	if ((pmlmeinfo->state & WIFI_FW_AUTH_STATE) ||
+554c0a3abf216c Hans de Goede   2017-03-29  1513  		(pmlmeinfo->state & WIFI_FW_ASSOC_STATE)) {
+554c0a3abf216c Hans de Goede   2017-03-29  1514  		if (reason == WLAN_REASON_CLASS2_FRAME_FROM_NONAUTH_STA) {
+554c0a3abf216c Hans de Goede   2017-03-29  1515  			ignore_received_deauth = 1;
+a8be3a14951eb8 Sevinj Aghayeva 2022-04-01  1516  		} else if (reason == WLAN_REASON_PREV_AUTH_NOT_VALID) {
+554c0a3abf216c Hans de Goede   2017-03-29  1517  			/*  TODO: 802.11r */
+554c0a3abf216c Hans de Goede   2017-03-29  1518  			ignore_received_deauth = 1;
+554c0a3abf216c Hans de Goede   2017-03-29  1519  		}
+554c0a3abf216c Hans de Goede   2017-03-29  1520  	}
+554c0a3abf216c Hans de Goede   2017-03-29  1521  
+79df841b435018 Fabio Aiuto     2021-04-15  1522  	netdev_dbg(padapter->pnetdev,
+79df841b435018 Fabio Aiuto     2021-04-15  1523  		"sta recv deauth reason code(%d) sta:%pM, ignore = %d\n",
+79df841b435018 Fabio Aiuto     2021-04-15  1524  		reason, GetAddr3Ptr(pframe),
+79df841b435018 Fabio Aiuto     2021-04-15  1525  		ignore_received_deauth);
+554c0a3abf216c Hans de Goede   2017-03-29  1526  
+a8be3a14951eb8 Sevinj Aghayeva 2022-04-01  1527  	if (ignore_received_deauth == 0)
+554c0a3abf216c Hans de Goede   2017-03-29  1528  		receive_disconnect(padapter, GetAddr3Ptr(pframe), reason);
+ed0a6d578663ac Sevinj Aghayeva 2022-04-01  1529  
+554c0a3abf216c Hans de Goede   2017-03-29  1530  	pmlmepriv->LinkDetectInfo.bBusyTraffic = false;
+554c0a3abf216c Hans de Goede   2017-03-29  1531  	return _SUCCESS;
+554c0a3abf216c Hans de Goede   2017-03-29  1532  
+
 -- 
-2.17.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
