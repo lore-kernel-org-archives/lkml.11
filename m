@@ -2,80 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4326AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 16:37:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7040EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 16:37:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349377AbiDAQjF (ORCPT
+        id S1348578AbiDAQjf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 12:39:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47002 "EHLO
+        Fri, 1 Apr 2022 12:39:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350581AbiDAQiJ (ORCPT
+        with ESMTP id S243238AbiDAQgU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 12:38:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8626C1AA056;
-        Fri,  1 Apr 2022 09:16:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 39351B82370;
-        Fri,  1 Apr 2022 16:16:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98425C2BBE4;
-        Fri,  1 Apr 2022 16:16:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648829796;
-        bh=QX63Fn0eIgqEzcIIs1tirFb9cVGOSCZjLncptockG0w=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=q1nDlwiu9xUgQzfzc44B/c9aOelMsTe1UrKgUfsMg10qRetGAJe8yFX3jCleyVyYw
-         lBsIU54sESdNSkDqo0w2Lj5vOz6rIaqNcpHTEI+AWykxLqXyDM5PxabEOB0wKvAepF
-         eLHEzYZpDti2+zHcOFhCPAhFU51w5QLf8w/Hy0wFK2KL+QgeV+OkCYw1YuQbqSm0TX
-         tZxvF5xADvH40388zZ7kuvP2Uhl1v2dmHgi28KUYdf2wxU2kSRqFQvlJ3Xp7kQ5wIx
-         w+9MxzNbxsJZCXI0MjVyMq5Z1PyKzUd2UbcLY+c0JWrny+ZxC4bqoe4oM9aPdfi3OL
-         N3+543RJ/ds4w==
-Date:   Fri, 1 Apr 2022 17:16:31 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Subject: Re: [PATCH] modpost: restore the warning message for missing symbol
- versions
-Message-ID: <YkclXzHamGiOJJGz@sirena.org.uk>
-References: <20220401155610.1280262-1-masahiroy@kernel.org>
+        Fri, 1 Apr 2022 12:36:20 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 932D360ABA;
+        Fri,  1 Apr 2022 09:09:27 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id y10so3499766edv.7;
+        Fri, 01 Apr 2022 09:09:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=OsRh1+OUJjafmw1DLalzmHZY/d86wBXtRZCzuhQ9mCU=;
+        b=CyaAXZ+IZKz9gQ7HVvoq92nHK87TtxUVRVI+dFs2B2UzLDczPui7Zt+1vUbmgx3Bdt
+         dpkGF1v81vHMc3grDBckD5+il7kl40JL+LMt+glIHncxGx42UclHTuL+3qQhARf5up8N
+         VYAPCe5GDasxGVJG81cP9vsjjlvjLoYOWgiyObxxMnwnGxPWXeBNFSNTaKqi/FmvrO+n
+         cpm0PirjT1Ego1eSZj2BOi3r0ESuibWg+TNdxIiE16r+fJeqD58K2Y2fokGGZxHciWzk
+         WijuccdcZfn+O8TFWAdhtCW11jP4jquKrxZZMHZQdWrBmCI7sakO9I41pBw8+JcKMa56
+         l9FA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=OsRh1+OUJjafmw1DLalzmHZY/d86wBXtRZCzuhQ9mCU=;
+        b=SE8/ecDw2ERYSDtcNTnVxa0uG9QGL1hak47UYukw5vwvflOfHhxXcsDh0RtI68d38b
+         TbHTiKXaue5thcli90lTnzgMsgQViml+nEbFDen4hUYutOc8FXTr/iZresHV69uSyMik
+         KN7g2HsMiYHTlWufuT2ajBVYB/h+eiL3w/EwB+MR+YYSdnGEe8i7jU5k9rz5d8k9sfUe
+         xXzae0k8YMuwczpN9y3k71AuCjJDloX8zVRuMDylkbJQhZsD0k6cUZiXrCVidDFQ7iWD
+         mUK15ru7+MDm3R7Onazg68wK/1IeKa1xHHFoCfZAuik8UkGktjhbUwWv0AWbQaT2E3m9
+         chbw==
+X-Gm-Message-State: AOAM533pCuzN8T0vGuvkeBUGSFL4c4co6Dd4db/sYu8lNuesMuFwV9WA
+        g0oeSx1bkgewij65s53aww0=
+X-Google-Smtp-Source: ABdhPJzv5bt7f0IiLlBql9Y5PWwGhZWdPagcJ+jWbTiZA17jQAlP+7vQNkZuTUH5vvkRzeIERD4AwA==
+X-Received: by 2002:a05:6402:4250:b0:419:5e89:a40f with SMTP id g16-20020a056402425000b004195e89a40fmr21974008edb.319.1648829365926;
+        Fri, 01 Apr 2022 09:09:25 -0700 (PDT)
+Received: from anparri (host-82-59-4-232.retail.telecomitalia.it. [82.59.4.232])
+        by smtp.gmail.com with ESMTPSA id a21-20020a170906275500b006d10c07fabesm1158632ejd.201.2022.04.01.09.09.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 01 Apr 2022 09:09:25 -0700 (PDT)
+Date:   Fri, 1 Apr 2022 18:09:22 +0200
+From:   Andrea Parri <parri.andrea@gmail.com>
+To:     "Michael Kelley (LINUX)" <mikelley@microsoft.com>
+Cc:     KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        Wei Hu <weh@microsoft.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof Wilczynski <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC PATCH 3/4] Drivers: hv: vmbus: Introduce
+ vmbus_sendpacket_getid()
+Message-ID: <20220401160922.GB437893@anparri>
+References: <20220328144244.100228-1-parri.andrea@gmail.com>
+ <20220328144244.100228-4-parri.andrea@gmail.com>
+ <PH0PR21MB3025F80C3F90284900C3D128D7E19@PH0PR21MB3025.namprd21.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="ERM5Vcs9RzIVdQ6X"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220401155610.1280262-1-masahiroy@kernel.org>
-X-Cookie: Universe, n.:
+In-Reply-To: <PH0PR21MB3025F80C3F90284900C3D128D7E19@PH0PR21MB3025.namprd21.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+> > @@ -354,6 +354,8 @@ int hv_ringbuffer_write(struct vmbus_channel *channel,
+> >  	}
+> >  	desc = hv_get_ring_buffer(outring_info) + old_write;
+> >  	desc->trans_id = (rqst_id == VMBUS_NO_RQSTOR) ? requestid : rqst_id;
+> > +	if (trans_id)
+> > +		*trans_id = desc->trans_id;
+> 
+> This line should *not* read the trans_id out of the ring buffer, since that
+> memory is shared with the Hyper-V host and subject to being maliciously
+> changed by the host.  Need to set *trans_id only from local variables, and
+> somehow ensure the compiler doesn't generate code that reads the value
+> from the ring buffer.  Maybe mark the desc->trans_id field as volatile, or cast
+> it as such?  Or does WRITE_ONCE() work when setting it?
 
---ERM5Vcs9RzIVdQ6X
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+I'd stick to WRITE_ONCE() (with a comment).
 
-On Sat, Apr 02, 2022 at 12:56:10AM +0900, Masahiro Yamada wrote:
-> This log message was accidentally chopped off.
+Good catch!
 
-Acked-by: Mark Brown <broonie@kernel.org>
-
---ERM5Vcs9RzIVdQ6X
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJHJV8ACgkQJNaLcl1U
-h9BPZgf/Sfv3McX+bh3xSWnkxUleIIraRJQKSsPAS01PUQQ//vHzAJX+OBvTYA3S
-w1u4K6JSQaVyoDSxLUVrT4fVbxrRNESImFDhDl7cFoFtkHAhS1UC010i4UR+g50r
-KOIT5Jqyb7QghVkMo6Ak+bLWfeBf+o49JVz/5l2m6ek6er/QPrKO3/rcSN9dExgS
-PzaAe2y0bkLIxQ04UCudAtF8agSvW4mLQU098KR3zviDAMKRMoAgbEfePS8JgWxE
-RB0wWLaeuBEBSI22a255kd8Z4l4agADtv2QudSH0/mipUySVm/OgOtqxY6GHhRFP
-pgVuBaU+AuIWUmUVU8yKHeagfF6LnA==
-=tYvk
------END PGP SIGNATURE-----
-
---ERM5Vcs9RzIVdQ6X--
+Thanks,
+  Andrea
