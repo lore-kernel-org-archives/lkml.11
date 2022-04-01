@@ -2,148 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C572C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 16:54:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4A9EC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 16:55:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347564AbiDAQ4W (ORCPT
+        id S1345493AbiDAQ50 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 12:56:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52774 "EHLO
+        Fri, 1 Apr 2022 12:57:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349429AbiDAQvZ (ORCPT
+        with ESMTP id S233692AbiDAQ5R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 12:51:25 -0400
-Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C65A22559E
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 09:38:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=k1; bh=W7hfSuRyn1E7HghHdP7BGcwK4daD
-        hFOObLkZu3lm/os=; b=B868RuvQjaf2XCQpap4C9lppkrSXYxoUmvTaE1bASwM3
-        nWHUV0ezLuQI+y2/50xOPs5Usu7OQ1R5z+LvDxH1r0lPa9IecJ+vYPRor3u9WVYK
-        fkRp6JWsZ18CEMTZDWbjemTKVDPpGWcWtkBUHwiHpkCA0B7juv7EtFYwMTcc/u4=
-Received: (qmail 805831 invoked from network); 1 Apr 2022 18:38:56 +0200
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 1 Apr 2022 18:38:56 +0200
-X-UD-Smtp-Session: l3s3148p1@/6EwaprbfKYgAQnoAGGbAFirbAEmXd1u
-Date:   Fri, 1 Apr 2022 18:38:56 +0200
-From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
-To:     Eugeniu Rosca <erosca@de.adit-jv.com>
-Cc:     Andrew Gabbasov <andrew_gabbasov@mentor.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        linux-renesas-soc@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Bhuvanesh Surachari <bhuvanesh_surachari@mentor.com>,
-        Eugeniu Rosca <roscaeugeniu@gmail.com>
-Subject: Re: [PATCH v2] i2c: rcar: add SMBus block read support
-Message-ID: <YkcqoIMF2uw4FSZh@ninjato>
-Mail-Followup-To: Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Eugeniu Rosca <erosca@de.adit-jv.com>,
-        Andrew Gabbasov <andrew_gabbasov@mentor.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        linux-renesas-soc@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Bhuvanesh Surachari <bhuvanesh_surachari@mentor.com>,
-        Eugeniu Rosca <roscaeugeniu@gmail.com>
-References: <20210922160649.28449-1-andrew_gabbasov@mentor.com>
- <CAMuHMdVVDpBAQR+H1TAnpf65aVbAL0Mm0km7Z9L7+1JuF6n1gQ@mail.gmail.com>
- <000001d7badd$a8512d30$f8f38790$@mentor.com>
- <20211006182314.10585-1-andrew_gabbasov@mentor.com>
- <Yg6ls0zyTDe7LQbK@kunai>
- <20220323215229.GA9403@lxhi-065>
- <YkQ31VMqj1MXqBd3@shikoro>
- <YkQ6XRITOFZ7hLXV@shikoro>
- <20220331160207.GA27757@lxhi-065>
+        Fri, 1 Apr 2022 12:57:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE9C9F32B3;
+        Fri,  1 Apr 2022 09:55:27 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 834CDB82468;
+        Fri,  1 Apr 2022 16:55:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35661C340EC;
+        Fri,  1 Apr 2022 16:55:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648832125;
+        bh=48jXrzw1a+CUwNYdJ11VTIPu+z+bLZeiEL8pwinzCA0=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=OEoFXO3NMbcynJRaDOTTxooyYoOathk93aEkp8jb0BdKB+GNLCeDCPMnKt0daMM/m
+         zXDVUX01qvb0FJt1LeprWEehLrV7xZPnrNBGTYhh4Do//7gmG2C/Wns6Vt4cW4ZsGQ
+         k+sh5qpHfUfCP7hCTE0+sJxmDYdhrnufQGhsiHmD7mk/CUtwoPbBtMaqV6WrOaNvbp
+         B0V1d6Yy3tYqe+8rQymISG41alvjKON5PFOhWM5Xcd77yuiN64T/OoMwKQBVvu2bo4
+         s7p/ixdbGviK4T8dfvN1axYNCIp8jLF4cJG2NKQfvpjVwsGe9crgvhuwRfXKHFPsex
+         MIzMBL9bxAbHg==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id D71685C0A15; Fri,  1 Apr 2022 09:55:24 -0700 (PDT)
+Date:   Fri, 1 Apr 2022 09:55:24 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     "Zhang, Qiang1" <qiang1.zhang@intel.com>
+Cc:     "frederic@kernel.org" <frederic@kernel.org>,
+        "rcu@vger.kernel.org" <rcu@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] rcu: Put the irq work into hard interrupt context for
+ execution
+Message-ID: <20220401165524.GF4285@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220330060012.2470054-1-qiang1.zhang@intel.com>
+ <20220330201620.GM4285@paulmck-ThinkPad-P17-Gen-1>
+ <PH0PR11MB58802C1246C6F4FB895BDDA9DA1F9@PH0PR11MB5880.namprd11.prod.outlook.com>
+ <20220331172943.GV4285@paulmck-ThinkPad-P17-Gen-1>
+ <PH0PR11MB5880709B39EC5BDAACBD340FDAE09@PH0PR11MB5880.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="XyHwHtEw0BUCuLMS"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220331160207.GA27757@lxhi-065>
+In-Reply-To: <PH0PR11MB5880709B39EC5BDAACBD340FDAE09@PH0PR11MB5880.namprd11.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Fri, Apr 01, 2022 at 01:55:51AM +0000, Zhang, Qiang1 wrote:
+> 
+> On Wed, Mar 30, 2022 at 10:47:05PM +0000, Zhang, Qiang1 wrote:
+> > On Wed, Mar 30, 2022 at 02:00:12PM +0800, Zqiang wrote:
+> > > In PREEMPT_RT kernel, if irq work flags is not set, it will be 
+> > > executed in per-CPU irq_work kthreads. set IRQ_WORK_HARD_IRQ flags 
+> > > to irq work, put it in the context of hard interrupt execution, 
+> > > accelerate scheduler to re-evaluate.
+> > > 
+> > > Signed-off-by: Zqiang <qiang1.zhang@intel.com>
+> > > ---
+> > >  kernel/rcu/tree.c        | 2 +-
+> > >  kernel/rcu/tree_plugin.h | 2 +-
+> > >  2 files changed, 2 insertions(+), 2 deletions(-)
+> > > 
+> > > diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c index
+> > > e2ffbeceba69..a69587773a85 100644
+> > > --- a/kernel/rcu/tree.c
+> > > +++ b/kernel/rcu/tree.c
+> > > @@ -678,7 +678,7 @@ static void late_wakeup_func(struct irq_work
+> > > *work)  }
+> > >  
+> > >  static DEFINE_PER_CPU(struct irq_work, late_wakeup_work) =
+> > > -	IRQ_WORK_INIT(late_wakeup_func);
+> > > +	IRQ_WORK_INIT_HARD(late_wakeup_func);
+> > 
+> > >This is used only by rcu_irq_work_resched(), which is invoked only by rcu_user_enter(), which is never invoked until userspace is enabled, by which time all of the various kthreads will have been spawned, correct?
+> > >
+> > >Either way, please show me the exact sequence of events that lead to a problem with the current IRQ_WORK_INIT().
+> > >
+> > >  /*
+> > >   * If either:
+> > > diff --git a/kernel/rcu/tree_plugin.h b/kernel/rcu/tree_plugin.h 
+> > > index 3037c2536e1f..cf7bd28af8ef 100644
+> > > --- a/kernel/rcu/tree_plugin.h
+> > > +++ b/kernel/rcu/tree_plugin.h
+> > > @@ -661,7 +661,7 @@ static void rcu_read_unlock_special(struct task_struct *t)
+> > >  			    expboost && !rdp->defer_qs_iw_pending && cpu_online(rdp->cpu)) {
+> > >  				// Get scheduler to re-evaluate and call hooks.
+> > >  				// If !IRQ_WORK, FQS scan will eventually IPI.
+> > > -				init_irq_work(&rdp->defer_qs_iw, rcu_preempt_deferred_qs_handler);
+> > > +				rdp->defer_qs_iw =
+> > > +IRQ_WORK_INIT_HARD(rcu_preempt_deferred_qs_handler);
+> > >  				rdp->defer_qs_iw_pending = true;
+> > >  				irq_work_queue_on(&rdp->defer_qs_iw, rdp->cpu);
+> > >  			}
+> > >
+> > >OK, in theory, rcu_read_unlock() could get to this point before all of the various kthreads were spawned.  In practice, the next time that the boot CPU went idle, the end of the quiescent state would be noticed.
+> > 
+> > Through my understanding, use irq_work in order to make the quiescent 
+> > state be noticed earlier, Because the irq_work execute in interrupt, 
+> > this irq_work can be executed in time, but In RT kernel The irq_work  is put into the kthread for execution, when it is executed, it is affected by the scheduling delay.
+> > Is there anything I missed?
+> 
+> >Yes, in that I am not seeing any actual data showing that this fix really makes things better.  Please in mind that IRQ_WORK_INIT_HARD does have performance disadvantages of its own.  So although I agree with your words saying that IRQ_WORK_INIT_HARD -might- be helpful, those words are not sufficient.
+> >
+> >So, can you show a statistically significant benefit on a real system?
+> >For example, by measuring the time required for a expedited grace period to complete?  That would argue for this change, though it would need to be conditional, so that systems that don't care that much about the latency of expedited RCU grace periods don't need to pay the IRQ_WORK_INIT_HARD performance penalties.  Or you would need to demonstrate that these performance penalties don't cause problems.  (But such a demonstration is not easy given the wide variety of systems that Linux supports.)
+> >
+> >Now, I could imagine that the current code could cause problems during boot on CONFIG_PREEMPT_RT kernels.  But, believe me, I can imagine all sorts of horrible problems.  But we should fix those that happen not just in my imagination, but also in the real world.  ;-)
+> 
+> Thanks, agree.  I'll test it according to your suggestion.
 
---XyHwHtEw0BUCuLMS
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Very good!  I am looking forward to seeing what you come up with.
 
-Hi Eugeniu,
+							Thanx, Paul
 
-> BTW, thanks to Bhuvanesh, we've got another patch [*] which tries
-> to combine the best of both worlds:
->=20
-> * DMA support in the v1/v2 patches from Andrew/Bhuvanesh
-> * Simplicity of your proposal in https://lore.kernel.org/lkml/Yg6ls0zyTDe=
-7LQbK@kunai/
-
-This was nice to see. But where does it come from? I don't see it on
-this list and I also couldn't find it in the regular BSP?
-
-> Unfortunately, this patch has a dependency to the rcar_i2c_is_pio()
-> in https://github.com/renesas-rcar/linux-bsp/commit/55d2d2fb8b0=20
-> (which should be resolvable by extracting the function).
-
-This patch is obsolete since March 2019. It has been properly fixed with
-94e290b0e9a6 ("i2c: rcar: wait for data empty before starting DMA"). I
-am still trying to feed this information back.
-
-> Do you think we are on the right track with this new approach or do
-> you feel the implementation is still overly complicated?
-
-The approach is much better but there are still things I don't like. The
-use of 'goto next_txn' is bad. I hope it could be done better with
-refactoring the code, so DMA will be tried at one place (with two
-conditions then). Not sure yet, I am still working on refactoring the
-one-byte transfer which is broken with my patch. What we surely can use
-=66rom this patch is the -EPROTO handling because I have given up on
-converting the max read block size first. We can still remove it from
-this driver if that gets implemented somewhen.
-
-> +			if (!rcar_i2c_is_pio(priv)) {
-> +				/*
-> +				 * Still try to use DMA to receive the rest of
-> +				 * data
-> +				 */
-> +				rcar_i2c_dma(priv);
-> +				goto next_txn;
-> +			} else {
-> +				recv_len_init =3D false;
-> +			}
-
-So, I'd like to get rid of this block with refactoring.
-
->  	u32 func =3D I2C_FUNC_I2C | I2C_FUNC_SLAVE |
-> -		   (I2C_FUNC_SMBUS_EMUL & ~I2C_FUNC_SMBUS_QUICK);
-> +		   (I2C_FUNC_SMBUS_EMUL & ~I2C_FUNC_SMBUS_QUICK) |
-> +		   I2C_FUNC_SMBUS_READ_BLOCK_DATA;
-
-Still not using the new macro to include PROC_CALL, but that is easy to
-change.
-
-All the best,
-
-   Wolfram
-
-
---XyHwHtEw0BUCuLMS
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmJHKqAACgkQFA3kzBSg
-KbZ3YhAAlZ6U47cxbA5tJaMYHwA65HCGZILIZvzgd46iOtDMuXPsOQ3z+kWfOZMm
-4RF2iA7j1i8bNskg13P8Y+DD89mSx/gzVoZ2Ju8W5MeeOPwKlQ6VRgLACAwcZP3W
-2T07+7uXso35K5pOLGm7iLge6JN+UxLbE1V2x8wrb9A8zqJMhYNdEnTs7HvvQJFk
-FK0v4L+SJaU/yVI9OrjQkITXnZNxtdaNxXtIdtfB+yUGlZSK58N/Ul0bwXk1hqiT
-dQg4QEA4N/WEgw6sXc9NU90y1Dqt/ZJFKjJo7fC3lyPFVp3bedFzB44FvHGpxvGs
-5dPLyo2lXl1xt7Rh5RCY0DRTsYJoO4joEqNDoPbyOUuAC8G2er84u0Y4TJrrOu7+
-v7VlWz0+5lPbpAzGoxzhs5V9WQCIh8LZ+usHiPqR+wSpxBbgp/zglyIhYxqwQJ6d
-MLLtvvsqyo9Z02qsUA9yrY40YpogzJFP3MBpB/j6uWhiKGho0H2KmsKO39dcXXMC
-5zHhID9JIfRgdWnD2JwSyn/nHqywgfoGofYctvaHwZYEjP/XiK2gNo+wvD3Ji5+R
-mfzPaiyiBJ7YBoXW3/Z/czE5yDjmW/1qgrCJdrFhbYQAclne5AYiyH80K1jjPEG0
-v7mRS+SsJ7RxekDzHGO8IzefXHYi4o+ddyzEDRSw7VZrqRih5Ps=
-=5/T5
------END PGP SIGNATURE-----
-
---XyHwHtEw0BUCuLMS--
+> >So if you can make such a problem happen in real life, then I would be happy to take a patch that fixed this on CONFIG_PREEMPT_RT but kept the current code otherwise.
+> >
+> >							Thanx, Paul
+> 
+> > Thanks
+> > Zqiang	
+> > 
+> > >
+> > >Or has this been failing in some other manner?  If so, please let me know the exact sequence of events.
+> > >
+> > >							Thanx, Paul
