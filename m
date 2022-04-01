@@ -2,86 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0387C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 02:31:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2931BC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 02:33:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244098AbiDACdN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 22:33:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44600 "EHLO
+        id S244113AbiDACev (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 22:34:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240300AbiDACdK (ORCPT
+        with ESMTP id S240300AbiDACeu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 22:33:10 -0400
-Received: from mx1.cqplus1.com (unknown [113.204.237.245])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 38A0C255AA9
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 19:30:58 -0700 (PDT)
-X-MailGates: (flag:1,DYNAMIC,RELAY,NOHOST,LAN:PASS)(compute_score:DELIVE
-        R,40,3)
-Received: from 172.27.96.203
-        by mx1.cqplus1.com with MailGates ESMTP Server V5.0(1172:0:AUTH_RELAY)
-        (envelope-from <qinjian@cqplus1.com>); Fri, 01 Apr 2022 10:28:59 +0800 (CST)
-Received: from CQEXMAIL01.cqplus1.com (172.27.96.203) by
- CQEXMAIL01.cqplus1.com (172.27.96.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.18; Fri, 1 Apr 2022 10:29:58 +0800
-Received: from CQEXMAIL01.cqplus1.com ([::1]) by CQEXMAIL01.cqplus1.com
- ([::1]) with mapi id 15.01.2375.018; Fri, 1 Apr 2022 10:29:58 +0800
-From:   =?utf-8?B?cWluamlhblvopoPlgaVd?= <qinjian@cqplus1.com>
-To:     Rob Herring <robh@kernel.org>
-CC:     "arnd@arndb.de" <arnd@arndb.de>,
-        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>,
-        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
-        "maz@kernel.org" <maz@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "mturquette@baylibre.com" <mturquette@baylibre.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "sboyd@kernel.org" <sboyd@kernel.org>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "krzysztof.kozlowski@canonical.com" 
-        <krzysztof.kozlowski@canonical.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>
-Subject: RE: [PATCH v12 6/9] dt-bindings: interrupt-controller: Add bindings
- for SP7021 interrupt controller
-Thread-Topic: [PATCH v12 6/9] dt-bindings: interrupt-controller: Add bindings
- for SP7021 interrupt controller
-Thread-Index: AQHYRNqIBkj2YEKP8ka+VOn6WZsX66zZcIoAgADkMAA=
-Date:   Fri, 1 Apr 2022 02:29:58 +0000
-Message-ID: <3373b11528214394baae71198df3adff@cqplus1.com>
-References: <cover.1648714851.git.qinjian@cqplus1.com>
- <ff5bfd5611ab0defe0c98f98edbbf655e33cd16d.1648714851.git.qinjian@cqplus1.com>
- <YkYSyHVGsXkGs0uf@robh.at.kernel.org>
-In-Reply-To: <YkYSyHVGsXkGs0uf@robh.at.kernel.org>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.28.110.18]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
+        Thu, 31 Mar 2022 22:34:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63371255AB3
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 19:33:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 23382B82206
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 02:33:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4E2EC340ED;
+        Fri,  1 Apr 2022 02:32:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1648780378;
+        bh=n0qM4nf5Ta5C6oUtQqbjtn+9oGwp1yQktL1/ylHeBYY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=YJk+lJV8JQGFKgNBkVIy4o07iMRsdKIy9ttLfY+D6ICy/YEw48tMZ7C7Z0pQV/C/0
+         8nqNRv+nbehyb7BwUK2QGdvMBJyOESDwL53sOQcu9U53TMd5rwiuRq8x/foOHH4DTB
+         Q852v2UhQHMlUfeGBunJmzRccXQMm6EWEBefi6ls=
+Date:   Thu, 31 Mar 2022 19:32:57 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Rolf Eike Beer <eb@emlix.com>
+Cc:     Christoph Hellwig <hch@infradead.org>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: mm: use mmap_assert_write_locked() instead of open coding it
+Message-Id: <20220331193257.c6e52c65346cbc21ba5a7bf5@linux-foundation.org>
+In-Reply-To: <10178697.CBVEcFiDRS@mobilepool36.emlix.com>
+References: <5827758.TJ1SttVevJ@mobilepool36.emlix.com>
+        <YkKo93R1Fm0JXXtS@infradead.org>
+        <10178697.CBVEcFiDRS@mobilepool36.emlix.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-PiANCj4gT24gVGh1LCAzMSBNYXIgMjAyMiAxNjoyOTo1MyArMDgwMCwgUWluIEppYW4gd3JvdGU6
-DQo+ID4gQWRkIGRvY3VtZW50YXRpb24gdG8gZGVzY3JpYmUgU3VucGx1cyBTUDcwMjEgaW50ZXJy
-dXB0IGNvbnRyb2xsZXIgYmluZGluZ3MuDQo+ID4NCj4gPiBTaWduZWQtb2ZmLWJ5OiBRaW4gSmlh
-biA8cWluamlhbkBjcXBsdXMxLmNvbT4NCj4gPiAtLS0NCj4gPiBNb3ZlICdyZWcnIGFmdGVyICdj
-b21wYXRpYmxlJw0KPiA+IC0tLQ0KPiA+ICAuLi4vc3VucGx1cyxzcDcwMjEtaW50Yy55YW1sICAg
-ICAgICAgICAgICAgICAgfCA2MiArKysrKysrKysrKysrKysrKysrDQo+ID4gIE1BSU5UQUlORVJT
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8ICAxICsNCj4gPiAgMiBmaWxlcyBj
-aGFuZ2VkLCA2MyBpbnNlcnRpb25zKCspDQo+ID4gIGNyZWF0ZSBtb2RlIDEwMDY0NCBEb2N1bWVu
-dGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvaW50ZXJydXB0LWNvbnRyb2xsZXIvc3VucGx1cyxz
-cDcwMjEtaW50Yy55YW1sDQo+ID4NCj4gDQo+IA0KPiBQbGVhc2UgYWRkIEFja2VkLWJ5L1Jldmll
-d2VkLWJ5IHRhZ3Mgd2hlbiBwb3N0aW5nIG5ldyB2ZXJzaW9ucy4gSG93ZXZlciwNCj4gdGhlcmUn
-cyBubyBuZWVkIHRvIHJlcG9zdCBwYXRjaGVzICpvbmx5KiB0byBhZGQgdGhlIHRhZ3MuIFRoZSB1
-cHN0cmVhbQ0KPiBtYWludGFpbmVyIHdpbGwgZG8gdGhhdCBmb3IgYWNrcyByZWNlaXZlZCBvbiB0
-aGUgdmVyc2lvbiB0aGV5IGFwcGx5Lg0KPiANCj4gSWYgYSB0YWcgd2FzIG5vdCBhZGRlZCBvbiBw
-dXJwb3NlLCBwbGVhc2Ugc3RhdGUgd2h5IGFuZCB3aGF0IGNoYW5nZWQuDQoNCkNoYW5nZXM6IE1v
-dmUgJ3JlZycgYWZ0ZXIgJ2NvbXBhdGlibGUnDQpJIGRpZCBhIG1vZGlmaWNhdGlvbiBiYXNlZCBv
-biBjb21tZW50cyBmcm9tIGtyenlzenRvZi5rb3psb3dza2lAY2Fub25pY2FsLmNvbSBbMV0NCg0K
-WzFdIGh0dHBzOi8vbG9yZS5rZXJuZWwub3JnL2FsbC82ZGJlZGExOC1hMTFjLTYwOWQtN2E4Zi1i
-ZjJlNmYyN2FlYTdAa2VybmVsLm9yZy8NCg0K
+On Tue, 29 Mar 2022 08:45:37 +0200 Rolf Eike Beer <eb@emlix.com> wrote:
+
+> You are right, it was in tools/include/linux/kernel.h and I didn't spot the 
+> prefix. Andrew, maybe you could just delete the sentence when you add the 
+> Reviewed-by?
+
+Did that.  I used simply "In case the lock is actually not held at this
+point."
+
