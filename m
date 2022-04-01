@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AA19C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7CA9C43217
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:13:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353448AbiDAPKb (ORCPT
+        id S1353602AbiDAPKp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:10:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60524 "EHLO
+        Fri, 1 Apr 2022 11:10:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351093AbiDAOsX (ORCPT
+        with ESMTP id S1351233AbiDAOsg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:48:23 -0400
+        Fri, 1 Apr 2022 10:48:36 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 639955C345;
-        Fri,  1 Apr 2022 07:39:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 719B51EC617;
+        Fri,  1 Apr 2022 07:39:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0B814B8240E;
-        Fri,  1 Apr 2022 14:38:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6AD5C36AE5;
-        Fri,  1 Apr 2022 14:38:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2BF34B82504;
+        Fri,  1 Apr 2022 14:38:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0E15C36AE2;
+        Fri,  1 Apr 2022 14:38:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823901;
-        bh=iJAefKwV0vXB8+ooJfoNg3L+br/xXcmwSH/DsOucH7g=;
+        s=k20201202; t=1648823925;
+        bh=vMu8pWYKMJZ864kGxfeosTglLSDtISoLZi7BhO4s0GQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AywpsXvSoJvUhO6Jmw2236L3RBNHmez3i6jxoFJm5K33pBF5YUzP960vlLuoejhVR
-         ByZ7XbShIbKlSitTPKFk6CWPj05ZFJYs+3bovGpjr3+3tiq7bIhS9huQgHJUtJSnk9
-         TGRieni8kICfZ9gdtRhSx2OWbRwqYPe/3lj6E97phq50ncGFj7FRqi5PR1XY/Ei4Nb
-         buOdVDMLL/qIk/Chdw75c8GCeNHF5svXB5kD+KuhRjpKCa+BZ6UqlMLiGgzQ0W2lpd
-         S87js4YU+9ocJPyUq5Kp72co/AbpO/A5zPRRtIVicb49Mjw5LL4+xEVPAXECVLRYBY
-         nbbqaoglhusUw==
+        b=K3Czenc593WJYW5FaavrTRroL55dYNMkUk+QNeSWuwBhhO8T7le1w81q/Ir3rd+jy
+         wFG8p81fj+6ZXukJHp/2SlsDMIB3YGu3AK8qrMfVLWqGKI520RJjsdzXh7tazDNQ5c
+         pUXyXvLtuwhULu2axzJTX/F/YLb083/C5CsufrLRhy/gt6xKqlVjPyscTX0ekI0g7X
+         h6lkLsIYZvrVp8jkXwoIWJ1GBHmNJstEi3E2GkOF/i6gB/cKZ3IJ7SIA2DNdNXxG9f
+         N2+DrSGVz2j/05gkgQo73T81HOisDTkBjE69tjs6gzH+r9TCiQbw7RdAoqgWt0cnL6
+         KN0+ynGFKHs6Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yang Guang <yang.guang5@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>,
-        David Yang <davidcomponentone@gmail.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 10/98] ptp: replace snprintf with sysfs_emit
-Date:   Fri,  1 Apr 2022 10:36:14 -0400
-Message-Id: <20220401143742.1952163-10-sashal@kernel.org>
+Cc:     Yongzhi Liu <lyz_cs@pku.edu.cn>, Melissa Wen <mwen@igalia.com>,
+        Melissa Wen <melissa.srw@gmail.com>,
+        Sasha Levin <sashal@kernel.org>, emma@anholt.net,
+        airlied@linux.ie, daniel@ffwll.ch, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.15 21/98] drm/v3d: fix missing unlock
+Date:   Fri,  1 Apr 2022 10:36:25 -0400
+Message-Id: <20220401143742.1952163-21-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143742.1952163-1-sashal@kernel.org>
 References: <20220401143742.1952163-1-sashal@kernel.org>
@@ -55,50 +53,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Guang <yang.guang5@zte.com.cn>
+From: Yongzhi Liu <lyz_cs@pku.edu.cn>
 
-[ Upstream commit e2cf07654efb0fd7bbcb475c6f74be7b5755a8fd ]
+[ Upstream commit e57c1a3bd5e8e0c7181f65ae55581f0236a8f284 ]
 
-coccinelle report:
-./drivers/ptp/ptp_sysfs.c:17:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/ptp/ptp_sysfs.c:390:8-16:
-WARNING: use scnprintf or sprintf
+[why]
+Unlock is needed on the error handling path to prevent dead lock.
+v3d_submit_cl_ioctl and v3d_submit_csd_ioctl is missing unlock.
 
-Use sysfs_emit instead of scnprintf or sprintf makes more sense.
+[how]
+Fix this by changing goto target on the error handling path. So
+changing the goto to target an error handling path
+that includes drm_gem_unlock reservations.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Yang Guang <yang.guang5@zte.com.cn>
-Signed-off-by: David Yang <davidcomponentone@gmail.com>
-Acked-by: Richard Cochran <richardcochran@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Yongzhi Liu <lyz_cs@pku.edu.cn>
+Reviewed-by: Melissa Wen <mwen@igalia.com>
+Signed-off-by: Melissa Wen <melissa.srw@gmail.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/1643377262-109975-1-git-send-email-lyz_cs@pku.edu.cn
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/ptp/ptp_sysfs.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/v3d/v3d_gem.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/ptp/ptp_sysfs.c b/drivers/ptp/ptp_sysfs.c
-index 41b92dc2f011..9233bfedeb17 100644
---- a/drivers/ptp/ptp_sysfs.c
-+++ b/drivers/ptp/ptp_sysfs.c
-@@ -14,7 +14,7 @@ static ssize_t clock_name_show(struct device *dev,
- 			       struct device_attribute *attr, char *page)
- {
- 	struct ptp_clock *ptp = dev_get_drvdata(dev);
--	return snprintf(page, PAGE_SIZE-1, "%s\n", ptp->info->name);
-+	return sysfs_emit(page, "%s\n", ptp->info->name);
- }
- static DEVICE_ATTR_RO(clock_name);
+diff --git a/drivers/gpu/drm/v3d/v3d_gem.c b/drivers/gpu/drm/v3d/v3d_gem.c
+index 772b5831bcc6..805d6f6cba0e 100644
+--- a/drivers/gpu/drm/v3d/v3d_gem.c
++++ b/drivers/gpu/drm/v3d/v3d_gem.c
+@@ -625,7 +625,7 @@ v3d_submit_cl_ioctl(struct drm_device *dev, void *data,
  
-@@ -387,7 +387,7 @@ static ssize_t ptp_pin_show(struct device *dev, struct device_attribute *attr,
+ 		if (!render->base.perfmon) {
+ 			ret = -ENOENT;
+-			goto fail;
++			goto fail_perfmon;
+ 		}
+ 	}
  
- 	mutex_unlock(&ptp->pincfg_mux);
+@@ -678,6 +678,7 @@ v3d_submit_cl_ioctl(struct drm_device *dev, void *data,
  
--	return snprintf(page, PAGE_SIZE, "%u %u\n", func, chan);
-+	return sysfs_emit(page, "%u %u\n", func, chan);
- }
+ fail_unreserve:
+ 	mutex_unlock(&v3d->sched_lock);
++fail_perfmon:
+ 	drm_gem_unlock_reservations(last_job->bo,
+ 				    last_job->bo_count, &acquire_ctx);
+ fail:
+@@ -854,7 +855,7 @@ v3d_submit_csd_ioctl(struct drm_device *dev, void *data,
+ 						     args->perfmon_id);
+ 		if (!job->base.perfmon) {
+ 			ret = -ENOENT;
+-			goto fail;
++			goto fail_perfmon;
+ 		}
+ 	}
  
- static ssize_t ptp_pin_store(struct device *dev, struct device_attribute *attr,
+@@ -886,6 +887,7 @@ v3d_submit_csd_ioctl(struct drm_device *dev, void *data,
+ 
+ fail_unreserve:
+ 	mutex_unlock(&v3d->sched_lock);
++fail_perfmon:
+ 	drm_gem_unlock_reservations(clean_job->bo, clean_job->bo_count,
+ 				    &acquire_ctx);
+ fail:
 -- 
 2.34.1
 
