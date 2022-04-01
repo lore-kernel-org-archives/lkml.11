@@ -2,55 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC2D2C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:26:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CA9FC43217
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:26:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351665AbiDAPTT (ORCPT
+        id S1348340AbiDAPWZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:19:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60666 "EHLO
+        Fri, 1 Apr 2022 11:22:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352451AbiDAOuW (ORCPT
+        with ESMTP id S1348560AbiDAOwR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:50:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AB77292B86;
-        Fri,  1 Apr 2022 07:41:44 -0700 (PDT)
+        Fri, 1 Apr 2022 10:52:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B1072B4A7B;
+        Fri,  1 Apr 2022 07:42:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DF2A060BAF;
-        Fri,  1 Apr 2022 14:41:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BF00C340F2;
-        Fri,  1 Apr 2022 14:41:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 23076B8240F;
+        Fri,  1 Apr 2022 14:42:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF7E8C34114;
+        Fri,  1 Apr 2022 14:42:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824103;
-        bh=E82SV7e6t4GyW9rakvNFtqwmoOj2puq32T+bfxLiQxM=;
+        s=k20201202; t=1648824152;
+        bh=0mpPexRFo7zhA3WSAo9XaOCpHuoEaH4M/JoyqcnhP8k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OvAS1AUpfMcN8KGEI4TgxTw2/09RgD0nZbo67TEoAde4EdWv56WCu3+fgsiSgBKJn
-         7dcJQAIuYFczyapXpWifrX8S5qMrMGl/k8DY7fkJuGEtR6s57Nj+C87pLdARX5mxUb
-         N76Lg4TxaRql8eUoJTs5zIrq+UyIWU7ZsI6okd54nYyqO4gPGECvQSNABtepQHU+1o
-         sljaS5VFkI2ogpvHkaLEcyTTI0uG7w5JaBuvjttRQdVScmWr+dx9DsvBYqCKwbk35/
-         9HjwZfuCUZcHOph0uUMgUMna23jGu3xxTCTeyDsDVNX3XmoiAK7YeItfabWVN6dBsB
-         exTWiQ3HaaOpg==
+        b=R6OGs81U6RVyrQpAhyhg2XH6EVbCESpjupuN3+jcF5DQ0iNvvycd+YjQROk3qzI01
+         DzNpsIGFC66kuWTKfvnPRIOs4Z3N663jx//ka5qst1gy83fJdGL4zRFx29Di85s65H
+         YLZFHjhzgnSVjUFCiok8FodFNldUeGDTiVaC4StEQTPkaLEK/k+ZPrl39qbk0Wh4ne
+         D/HcE7EPVr+UgohMWc1vw7AoYH3wPnIDx1MRmRDtX2wmO9EDqc/VU9j+5Lpd7zdCRB
+         XE5RHmzyP7DOmYF5gnWHO9PhBK3JjaTUx5GVrQxM4ZLGZWwNrjNyYigg2pKPp5qHel
+         IO+iNrQTg/+SA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Deren Wu <deren.wu@mediatek.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>,
-        lorenzo.bianconi83@gmail.com, ryder.lee@mediatek.com,
-        kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, matthias.bgg@gmail.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.15 88/98] mt76: fix monitor mode crash with sdio driver
-Date:   Fri,  1 Apr 2022 10:37:32 -0400
-Message-Id: <20220401143742.1952163-88-sashal@kernel.org>
+Cc:     Yang Guang <yang.guang5@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>,
+        David Yang <davidcomponentone@gmail.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 07/65] ptp: replace snprintf with sysfs_emit
+Date:   Fri,  1 Apr 2022 10:41:08 -0400
+Message-Id: <20220401144206.1953700-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220401143742.1952163-1-sashal@kernel.org>
-References: <20220401143742.1952163-1-sashal@kernel.org>
+In-Reply-To: <20220401144206.1953700-1-sashal@kernel.org>
+References: <20220401144206.1953700-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -59,53 +55,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Deren Wu <deren.wu@mediatek.com>
+From: Yang Guang <yang.guang5@zte.com.cn>
 
-[ Upstream commit 123bc712b1de0805f9d683687e17b1ec2aba0b68 ]
+[ Upstream commit e2cf07654efb0fd7bbcb475c6f74be7b5755a8fd ]
 
-mt7921s driver may receive frames with fragment buffers. If there is a
-CTS packet received in monitor mode, the payload is 10 bytes only and
-need 6 bytes header padding after RXD buffer. However, only RXD in the
-first linear buffer, if we pull buffer size RXD-size+6 bytes with
-skb_pull(), that would trigger "BUG_ON(skb->len < skb->data_len)" in
-__skb_pull().
+coccinelle report:
+./drivers/ptp/ptp_sysfs.c:17:8-16:
+WARNING: use scnprintf or sprintf
+./drivers/ptp/ptp_sysfs.c:390:8-16:
+WARNING: use scnprintf or sprintf
 
-To avoid the nonlinear buffer issue, enlarge the RXD size from 128 to
-256 to make sure all MCU operation in linear buffer.
+Use sysfs_emit instead of scnprintf or sprintf makes more sense.
 
-[   52.007562] kernel BUG at include/linux/skbuff.h:2313!
-[   52.007578] Internal error: Oops - BUG: 0 [#1] PREEMPT SMP
-[   52.007987] pc : skb_pull+0x48/0x4c
-[   52.008015] lr : mt7921_queue_rx_skb+0x494/0x890 [mt7921_common]
-[   52.008361] Call trace:
-[   52.008377]  skb_pull+0x48/0x4c
-[   52.008400]  mt76s_net_worker+0x134/0x1b0 [mt76_sdio 35339a92c6eb7d4bbcc806a1d22f56365565135c]
-[   52.008431]  __mt76_worker_fn+0xe8/0x170 [mt76 ef716597d11a77150bc07e3fdd68eeb0f9b56917]
-[   52.008449]  kthread+0x148/0x3ac
-[   52.008466]  ret_from_fork+0x10/0x30
-
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-Signed-off-by: Sean Wang <sean.wang@mediatek.com>
-Signed-off-by: Deren Wu <deren.wu@mediatek.com>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Yang Guang <yang.guang5@zte.com.cn>
+Signed-off-by: David Yang <davidcomponentone@gmail.com>
+Acked-by: Richard Cochran <richardcochran@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt76.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/ptp/ptp_sysfs.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt76.h b/drivers/net/wireless/mediatek/mt76/mt76.h
-index 4d01fd85283d..6e4d69715927 100644
---- a/drivers/net/wireless/mediatek/mt76/mt76.h
-+++ b/drivers/net/wireless/mediatek/mt76/mt76.h
-@@ -19,7 +19,7 @@
+diff --git a/drivers/ptp/ptp_sysfs.c b/drivers/ptp/ptp_sysfs.c
+index be076a91e20e..8cd59e848163 100644
+--- a/drivers/ptp/ptp_sysfs.c
++++ b/drivers/ptp/ptp_sysfs.c
+@@ -13,7 +13,7 @@ static ssize_t clock_name_show(struct device *dev,
+ 			       struct device_attribute *attr, char *page)
+ {
+ 	struct ptp_clock *ptp = dev_get_drvdata(dev);
+-	return snprintf(page, PAGE_SIZE-1, "%s\n", ptp->info->name);
++	return sysfs_emit(page, "%s\n", ptp->info->name);
+ }
+ static DEVICE_ATTR_RO(clock_name);
  
- #define MT_MCU_RING_SIZE	32
- #define MT_RX_BUF_SIZE		2048
--#define MT_SKB_HEAD_LEN		128
-+#define MT_SKB_HEAD_LEN		256
+@@ -227,7 +227,7 @@ static ssize_t ptp_pin_show(struct device *dev, struct device_attribute *attr,
  
- #define MT_MAX_NON_AQL_PKT	16
- #define MT_TXQ_FREE_THR		32
+ 	mutex_unlock(&ptp->pincfg_mux);
+ 
+-	return snprintf(page, PAGE_SIZE, "%u %u\n", func, chan);
++	return sysfs_emit(page, "%u %u\n", func, chan);
+ }
+ 
+ static ssize_t ptp_pin_store(struct device *dev, struct device_attribute *attr,
 -- 
 2.34.1
 
