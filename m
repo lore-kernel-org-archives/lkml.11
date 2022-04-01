@@ -2,202 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7B44C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 06:36:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3ABD8C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 06:36:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245466AbiDAGii (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 02:38:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44338 "EHLO
+        id S245471AbiDAGio (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Apr 2022 02:38:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236461AbiDAGid (ORCPT
+        with ESMTP id S245448AbiDAGid (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 1 Apr 2022 02:38:33 -0400
-Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 302DB18C0FB
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 23:36:44 -0700 (PDT)
-Received: by mail-pl1-x649.google.com with SMTP id j1-20020a170903028100b0014b1f9e0068so1017673plr.8
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 23:36:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=reply-to:date:in-reply-to:message-id:mime-version:references
-         :subject:from:to:cc;
-        bh=ENE9zx/RQL0mygOY8ggwW7MkJ6Wz+nE6nyB1FT/1jsI=;
-        b=g/PXhHA9mEdDh3slFWre1e8TY+VvyivH7kjt/GwKq6ffkDtuX8VopYGCymUtyb6RhB
-         ewGF1UtAPU9Sa4dDc2iZ/Vy4PCNdUU1oab2oehFVqdpd50H5GyiHav8G1r3hK+dGQCEd
-         2M03mMQ3XT30DZuUkxXGbS8wIldDzpmGyJbXpYUzJ+B0h0Vq5/FZqP5GXso0g7lZAPDa
-         Z9wniQhVdLTYYSQpK2p/N6gEsY02XpfE5LgltNjUxFVZwNvPXeoTjlGQpvck6zw5v86S
-         GSJgvXA2Y+rWm0Zj/zC6O02GcPTDMoUv5jdOBqHc2jB9el+gIeA2f0LV9z9IhvWcNZ+u
-         Z4MA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
-         :mime-version:references:subject:from:to:cc;
-        bh=ENE9zx/RQL0mygOY8ggwW7MkJ6Wz+nE6nyB1FT/1jsI=;
-        b=RDDwwbl3tBYRtBtreHWp19gCxs+Pu2oJtNvo3+2rS4nqxUEZQmuXX4vvGilazv7LMi
-         Cd7upfAZVEMqsy7TAnHD6egDMrULRpUQK2YfITGiOLAwcH5v9fJbWgSivSUE8okSENwA
-         zSzUCeP9nVtwXs+qPaNOqzLcGkG2Z5IVzJAhMcMIJPl+dbwIGy8LbsiMX+2Pjt1vfdAe
-         7Ewwg3EL70/tJ+PM9wX9MVCOUd6ftuJ677U2OkmFjOaOT0fun9VUAVJbqnkmy1dFzlN0
-         piXLXQb2XM7IiffOwWxTGUmBI1OgL1mUStFVjkPenyDRbbuVTtBP0dMb5Z2FubXBjL92
-         cN1w==
-X-Gm-Message-State: AOAM5336ZCg8mUpgu7lZXxmeYVq115WgPMf73uCIwMRdyXOXJBc46WIz
-        mI7Xd1sH2AXOjwbyZE11fnQ3k9Qqo2JX
-X-Google-Smtp-Source: ABdhPJzv9YI6PtocdAi7hN0IW4mYt7gmW+cmzFUcODAijax0zAODiJkHDyITC84noPld2tbNypH2tj2bhqUm
-X-Received: from mizhang-super.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:1071])
- (user=mizhang job=sendgmr) by 2002:a63:f54b:0:b0:384:64d1:fa45 with SMTP id
- e11-20020a63f54b000000b0038464d1fa45mr13816423pgk.95.1648795003619; Thu, 31
- Mar 2022 23:36:43 -0700 (PDT)
-Reply-To: Mingwei Zhang <mizhang@google.com>
-Date:   Fri,  1 Apr 2022 06:36:31 +0000
-In-Reply-To: <20220401063636.2414200-1-mizhang@google.com>
-Message-Id: <20220401063636.2414200-2-mizhang@google.com>
-Mime-Version: 1.0
-References: <20220401063636.2414200-1-mizhang@google.com>
-X-Mailer: git-send-email 2.35.1.1094.g7c7d902a7c-goog
-Subject: [PATCH v3 1/6] KVM: x86/mmu: Set lpage_disallowed in TDP MMU before
- setting SPTE
-From:   Mingwei Zhang <mizhang@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Mingwei Zhang <mizhang@google.com>,
-        Yosry Ahmed <yosryahmed@google.com>,
-        Ben Gardon <bgardon@google.com>,
-        David Matlack <dmatlack@google.com>,
-        Jing Zhang <jingzhangos@google.com>,
-        Peter Xu <peterx@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03F9318C0D5;
+        Thu, 31 Mar 2022 23:36:44 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AE278B81AF8;
+        Fri,  1 Apr 2022 06:36:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 204B3C2BBE4;
+        Fri,  1 Apr 2022 06:36:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1648795001;
+        bh=GAvANzyYA+9K0Yc0MTlCfYFep6CxLTCmuC7AZmzCkd4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ewPTUyO2ygg2xewCapZCLG4AYxVFzKwSf0rxDjHZR8fVm+r4zHu2ObLQV4Jhw04BA
+         JAEH3lcZhgHStPbJQLvxFJBdys3USNvJKeW7+Xk5jUt0dx78srn2rd/cgXDT6LV7B4
+         i3L/jENjHKEyn2RxHpo6asLLEmcRaWCm82nBDs/o=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>,
+        Marc Zyngier <marc.zyngier@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        James Morse <james.morse@arm.com>
+Subject: [PATCH 4.14 01/27] arm64: arch_timer: Add workaround for ARM erratum 1188873
+Date:   Fri,  1 Apr 2022 08:36:11 +0200
+Message-Id: <20220401063624.274902998@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220401063624.232282121@linuxfoundation.org>
+References: <20220401063624.232282121@linuxfoundation.org>
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Marc Zyngier <marc.zyngier@arm.com>
 
-Set lpage_disallowed in TDP MMU shadow pages before making the SP visible
-to other readers, i.e. before setting its SPTE.  This will allow KVM to
-query lpage_disallowed when determining if a shadow page can be replaced
-by a NX huge page without violating the rules of the mitigation.
+commit 95b861a4a6d94f64d5242605569218160ebacdbe upstream.
 
-Reviewed-by: Mingwei Zhang <mizhang@google.com>
-Signed-off-by: Sean Christopherson <seanjc@google.com>
+When running on Cortex-A76, a timer access from an AArch32 EL0
+task may end up with a corrupted value or register. The workaround for
+this is to trap these accesses at EL1/EL2 and execute them there.
+
+This only affects versions r0p0, r1p0 and r2p0 of the CPU.
+
+Acked-by: Mark Rutland <mark.rutland@arm.com>
+Signed-off-by: Marc Zyngier <marc.zyngier@arm.com>
+Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: James Morse <james.morse@arm.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/mmu/mmu.c          | 14 ++++++++++----
- arch/x86/kvm/mmu/mmu_internal.h |  2 +-
- arch/x86/kvm/mmu/tdp_mmu.c      | 20 ++++++++++++--------
- 3 files changed, 23 insertions(+), 13 deletions(-)
+ arch/arm64/Kconfig                   |   12 ++++++++++++
+ arch/arm64/include/asm/cpucaps.h     |    3 ++-
+ arch/arm64/include/asm/cputype.h     |    2 ++
+ arch/arm64/kernel/cpu_errata.c       |    8 ++++++++
+ drivers/clocksource/arm_arch_timer.c |   15 +++++++++++++++
+ 5 files changed, 39 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index 1361eb4599b4..5cb845fae56e 100644
---- a/arch/x86/kvm/mmu/mmu.c
-+++ b/arch/x86/kvm/mmu/mmu.c
-@@ -812,14 +812,20 @@ static void account_shadowed(struct kvm *kvm, struct kvm_mmu_page *sp)
- 	kvm_mmu_gfn_disallow_lpage(slot, gfn);
- }
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -458,6 +458,18 @@ config ARM64_ERRATUM_1024718
  
--void account_huge_nx_page(struct kvm *kvm, struct kvm_mmu_page *sp)
-+void __account_huge_nx_page(struct kvm *kvm, struct kvm_mmu_page *sp)
- {
--	if (sp->lpage_disallowed)
--		return;
--
- 	++kvm->stat.nx_lpage_splits;
- 	list_add_tail(&sp->lpage_disallowed_link,
- 		      &kvm->arch.lpage_disallowed_mmu_pages);
-+}
+ 	  If unsure, say Y.
+ 
++config ARM64_ERRATUM_1188873
++	bool "Cortex-A76: MRC read following MRRC read of specific Generic Timer in AArch32 might give incorrect result"
++	default y
++	help
++	  This option adds work arounds for ARM Cortex-A76 erratum 1188873
 +
-+static void account_huge_nx_page(struct kvm *kvm, struct kvm_mmu_page *sp)
-+{
-+	if (sp->lpage_disallowed)
-+		return;
++	  Affected Cortex-A76 cores (r0p0, r1p0, r2p0) could cause
++	  register corruption when accessing the timer registers from
++	  AArch32 userspace.
 +
-+	__account_huge_nx_page(kvm, sp);
++	  If unsure, say Y.
 +
- 	sp->lpage_disallowed = true;
- }
+ config CAVIUM_ERRATUM_22375
+ 	bool "Cavium erratum 22375, 24313"
+ 	default y
+--- a/arch/arm64/include/asm/cpucaps.h
++++ b/arch/arm64/include/asm/cpucaps.h
+@@ -45,7 +45,8 @@
+ #define ARM64_SSBD				25
+ #define ARM64_MISMATCHED_CACHE_TYPE		26
+ #define ARM64_SSBS				27
++#define ARM64_WORKAROUND_1188873		28
  
-diff --git a/arch/x86/kvm/mmu/mmu_internal.h b/arch/x86/kvm/mmu/mmu_internal.h
-index 1bff453f7cbe..4a0087efa1e3 100644
---- a/arch/x86/kvm/mmu/mmu_internal.h
-+++ b/arch/x86/kvm/mmu/mmu_internal.h
-@@ -168,7 +168,7 @@ void disallowed_hugepage_adjust(struct kvm_page_fault *fault, u64 spte, int cur_
+-#define ARM64_NCAPS				28
++#define ARM64_NCAPS				29
  
- void *mmu_memory_cache_alloc(struct kvm_mmu_memory_cache *mc);
+ #endif /* __ASM_CPUCAPS_H */
+--- a/arch/arm64/include/asm/cputype.h
++++ b/arch/arm64/include/asm/cputype.h
+@@ -87,6 +87,7 @@
+ #define ARM_CPU_PART_CORTEX_A75		0xD0A
+ #define ARM_CPU_PART_CORTEX_A35		0xD04
+ #define ARM_CPU_PART_CORTEX_A55		0xD05
++#define ARM_CPU_PART_CORTEX_A76		0xD0B
  
--void account_huge_nx_page(struct kvm *kvm, struct kvm_mmu_page *sp);
-+void __account_huge_nx_page(struct kvm *kvm, struct kvm_mmu_page *sp);
- void unaccount_huge_nx_page(struct kvm *kvm, struct kvm_mmu_page *sp);
+ #define APM_CPU_PART_POTENZA		0x000
  
- #endif /* __KVM_X86_MMU_INTERNAL_H */
-diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
-index b3b6426725d4..f05423545e6d 100644
---- a/arch/x86/kvm/mmu/tdp_mmu.c
-+++ b/arch/x86/kvm/mmu/tdp_mmu.c
-@@ -1122,16 +1122,13 @@ static int tdp_mmu_map_handle_target_level(struct kvm_vcpu *vcpu,
-  * @kvm: kvm instance
-  * @iter: a tdp_iter instance currently on the SPTE that should be set
-  * @sp: The new TDP page table to install.
-- * @account_nx: True if this page table is being installed to split a
-- *              non-executable huge page.
-  * @shared: This operation is running under the MMU lock in read mode.
-  *
-  * Returns: 0 if the new page table was installed. Non-0 if the page table
-  *          could not be installed (e.g. the atomic compare-exchange failed).
-  */
- static int tdp_mmu_link_sp(struct kvm *kvm, struct tdp_iter *iter,
--			   struct kvm_mmu_page *sp, bool account_nx,
--			   bool shared)
-+			   struct kvm_mmu_page *sp, bool shared)
- {
- 	u64 spte = make_nonleaf_spte(sp->spt, !shadow_accessed_mask);
- 	int ret = 0;
-@@ -1146,8 +1143,6 @@ static int tdp_mmu_link_sp(struct kvm *kvm, struct tdp_iter *iter,
- 
- 	spin_lock(&kvm->arch.tdp_mmu_pages_lock);
- 	list_add(&sp->link, &kvm->arch.tdp_mmu_pages);
--	if (account_nx)
--		account_huge_nx_page(kvm, sp);
- 	spin_unlock(&kvm->arch.tdp_mmu_pages_lock);
- 
- 	return 0;
-@@ -1160,6 +1155,7 @@ static int tdp_mmu_link_sp(struct kvm *kvm, struct tdp_iter *iter,
- int kvm_tdp_mmu_map(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault)
- {
- 	struct kvm_mmu *mmu = vcpu->arch.mmu;
-+	struct kvm *kvm = vcpu->kvm;
- 	struct tdp_iter iter;
- 	struct kvm_mmu_page *sp;
- 	int ret;
-@@ -1210,10 +1206,18 @@ int kvm_tdp_mmu_map(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault)
- 			sp = tdp_mmu_alloc_sp(vcpu);
- 			tdp_mmu_init_child_sp(sp, &iter);
- 
--			if (tdp_mmu_link_sp(vcpu->kvm, &iter, sp, account_nx, true)) {
-+			sp->lpage_disallowed = account_nx;
-+
-+			if (tdp_mmu_link_sp(kvm, &iter, sp, true)) {
- 				tdp_mmu_free_sp(sp);
- 				break;
- 			}
-+
-+			if (account_nx) {
-+				spin_lock(&kvm->arch.tdp_mmu_pages_lock);
-+				__account_huge_nx_page(kvm, sp);
-+				spin_unlock(&kvm->arch.tdp_mmu_pages_lock);
-+			}
- 		}
+@@ -112,6 +113,7 @@
+ #define MIDR_CORTEX_A75 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A75)
+ #define MIDR_CORTEX_A35 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A35)
+ #define MIDR_CORTEX_A55 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A55)
++#define MIDR_CORTEX_A76	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A76)
+ #define MIDR_THUNDERX	MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX)
+ #define MIDR_THUNDERX_81XX MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX_81XX)
+ #define MIDR_THUNDERX_83XX MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX_83XX)
+--- a/arch/arm64/kernel/cpu_errata.c
++++ b/arch/arm64/kernel/cpu_errata.c
+@@ -712,6 +712,14 @@ const struct arm64_cpu_capabilities arm6
+ 		.matches = has_ssbd_mitigation,
+ 		.midr_range_list = arm64_ssb_cpus,
+ 	},
++#ifdef CONFIG_ARM64_ERRATUM_1188873
++	{
++		/* Cortex-A76 r0p0 to r2p0 */
++		.desc = "ARM erratum 1188873",
++		.capability = ARM64_WORKAROUND_1188873,
++		ERRATA_MIDR_RANGE(MIDR_CORTEX_A76, 0, 0, 2, 0),
++	},
++#endif
+ 	{
  	}
+ };
+--- a/drivers/clocksource/arm_arch_timer.c
++++ b/drivers/clocksource/arm_arch_timer.c
+@@ -298,6 +298,13 @@ static u64 notrace arm64_858921_read_cnt
+ }
+ #endif
  
-@@ -1501,7 +1505,7 @@ static int tdp_mmu_split_huge_page(struct kvm *kvm, struct tdp_iter *iter,
- 	 * correctness standpoint since the translation will be the same either
- 	 * way.
- 	 */
--	ret = tdp_mmu_link_sp(kvm, iter, sp, false, shared);
-+	ret = tdp_mmu_link_sp(kvm, iter, sp, shared);
- 	if (ret)
- 		goto out;
++#ifdef CONFIG_ARM64_ERRATUM_1188873
++static u64 notrace arm64_1188873_read_cntvct_el0(void)
++{
++	return read_sysreg(cntvct_el0);
++}
++#endif
++
+ #ifdef CONFIG_ARM_ARCH_TIMER_OOL_WORKAROUND
+ DEFINE_PER_CPU(const struct arch_timer_erratum_workaround *,
+ 	       timer_unstable_counter_workaround);
+@@ -381,6 +388,14 @@ static const struct arch_timer_erratum_w
+ 		.read_cntvct_el0 = arm64_858921_read_cntvct_el0,
+ 	},
+ #endif
++#ifdef CONFIG_ARM64_ERRATUM_1188873
++	{
++		.match_type = ate_match_local_cap_id,
++		.id = (void *)ARM64_WORKAROUND_1188873,
++		.desc = "ARM erratum 1188873",
++		.read_cntvct_el0 = arm64_1188873_read_cntvct_el0,
++	},
++#endif
+ };
  
--- 
-2.35.1.1094.g7c7d902a7c-goog
+ typedef bool (*ate_match_fn_t)(const struct arch_timer_erratum_workaround *,
+
 
