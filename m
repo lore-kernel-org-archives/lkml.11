@@ -2,45 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68A04C3527D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA40CC47080
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:26:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355723AbiDAPYg (ORCPT
+        id S1355778AbiDAPYx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:24:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58590 "EHLO
+        Fri, 1 Apr 2022 11:24:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349368AbiDAOzT (ORCPT
+        with ESMTP id S1348808AbiDAOzT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 1 Apr 2022 10:55:19 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD7C93334B;
-        Fri,  1 Apr 2022 07:43:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F3022963F0;
+        Fri,  1 Apr 2022 07:43:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 466D5B823EB;
-        Fri,  1 Apr 2022 14:43:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14029C34111;
-        Fri,  1 Apr 2022 14:43:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 21818B823EB;
+        Fri,  1 Apr 2022 14:43:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 758FDC2BBE4;
+        Fri,  1 Apr 2022 14:43:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824213;
-        bh=RYGyEI6MkST0Y+glRhBSRLGQeLbeO3s8JoQoCSpU9e0=;
+        s=k20201202; t=1648824192;
+        bh=JnF4kJS7E34D+Ls3+jnc6FhaP0lY3jxcchq/2J9G21c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IW9R2W3X1FkRMWi7ZgAsRfeXZ/MGlPuXWbZSPvu8PErqlFf5XyjUqb/RUdCvDSUJu
-         mvx8tb83/QITEIaXkiw2TNT7V4apP/G9MNAkpHhhRawXH7E/jdvHCaIdXAsqn5K/9I
-         ntj267CoCtHVrN+mpyfcOxBf20EMOkFgaASoQ/aSxSCQZqIxm4M8kKd8HIkCeiGoOS
-         JTI/FZEIzxh1eK6JmUEKEa/PpUwpdLZkg7aUV13ys+Zlmc7JMBotdaYOs0orPOEwwR
-         TcxoGbzXcav3obvuU5qocHdSvJbDZxHoObl9jkuqMK2/1vaGLkj28gH4H52spCgxDl
-         QSwP6Bivi5ncA==
+        b=WyJQYVu8DEgRxDBHvEH9uQTpic/37OoThUWlTzbsYEUkascSGjMy2iDkUBZBUe+Xm
+         kJrPmLIN7JhjzUw24Q9xMP8b/aJPRn8yNQhLOWBlpIzti16OepyUugzcmmkACAabNw
+         Mh7pY558S/uiqTSOb53NMdHIkPGTebnPbKhgDLZomXbnVVQj5J7jfx+q4zgJCkXtS5
+         rFE/VdLhJtP5cKwUl41zMDMnFD8QPHUYGa6yOV60JC8nI95+3uU30Vrr9jpH05q2KT
+         yHMuFl0NOXePtAcMiD+bN9hoCVGcM22ayF3wodofJEspzCWTrMm5Xi9vWRWsL+w/rS
+         i4hHuZXvCNWaw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mike Snitzer <snitzer@redhat.com>, Zhang Yi <yi.zhang@huawei.com>,
-        Sasha Levin <sashal@kernel.org>, agk@redhat.com,
-        snitzer@kernel.org, dm-devel@redhat.com
-Subject: [PATCH AUTOSEL 5.10 31/65] dm: requeue IO if mapping table not yet available
-Date:   Fri,  1 Apr 2022 10:41:32 -0400
-Message-Id: <20220401144206.1953700-31-sashal@kernel.org>
+Cc:     Zhou Guanghui <zhouguanghui1@huawei.com>,
+        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        joro@8bytes.org, robin.murphy@arm.com, thunder.leizhen@huawei.com,
+        jean-philippe@linaro.org, tglx@linutronix.de,
+        chenxiang66@hisilicon.com, christophe.jaillet@wanadoo.fr,
+        linux-arm-kernel@lists.infradead.org,
+        iommu@lists.linux-foundation.org
+Subject: [PATCH AUTOSEL 5.10 22/65] iommu/arm-smmu-v3: fix event handling soft lockup
+Date:   Fri,  1 Apr 2022 10:41:23 -0400
+Message-Id: <20220401144206.1953700-22-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401144206.1953700-1-sashal@kernel.org>
 References: <20220401144206.1953700-1-sashal@kernel.org>
@@ -52,68 +56,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mike Snitzer <snitzer@redhat.com>
+From: Zhou Guanghui <zhouguanghui1@huawei.com>
 
-[ Upstream commit fa247089de9936a46e290d4724cb5f0b845600f5 ]
+[ Upstream commit 30de2b541af98179780054836b48825fcfba4408 ]
 
-Update both bio-based and request-based DM to requeue IO if the
-mapping table not available.
+During event processing, events are read from the event queue one
+by one until the queue is empty.If the master device continuously
+requests address access at the same time and the SMMU generates
+events, the cyclic processing of the event takes a long time and
+softlockup warnings may be reported.
 
-This race of IO being submitted before the DM device ready is so
-narrow, yet possible for initial table load given that the DM device's
-request_queue is created prior, that it best to requeue IO to handle
-this unlikely case.
+arm-smmu-v3 arm-smmu-v3.34.auto: event 0x0a received:
+arm-smmu-v3 arm-smmu-v3.34.auto: 	0x00007f220000280a
+arm-smmu-v3 arm-smmu-v3.34.auto: 	0x000010000000007e
+arm-smmu-v3 arm-smmu-v3.34.auto: 	0x00000000034e8670
+watchdog: BUG: soft lockup - CPU#0 stuck for 22s! [irq/268-arm-smm:247]
+Call trace:
+ _dev_info+0x7c/0xa0
+ arm_smmu_evtq_thread+0x1c0/0x230
+ irq_thread_fn+0x30/0x80
+ irq_thread+0x128/0x210
+ kthread+0x134/0x138
+ ret_from_fork+0x10/0x1c
+Kernel panic - not syncing: softlockup: hung tasks
 
-Reported-by: Zhang Yi <yi.zhang@huawei.com>
-Signed-off-by: Mike Snitzer <snitzer@redhat.com>
+Fix this by calling cond_resched() after the event information is
+printed.
+
+Signed-off-by: Zhou Guanghui <zhouguanghui1@huawei.com>
+Link: https://lore.kernel.org/r/20220119070754.26528-1-zhouguanghui1@huawei.com
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/md/dm-rq.c |  7 ++++++-
- drivers/md/dm.c    | 11 +++--------
- 2 files changed, 9 insertions(+), 9 deletions(-)
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/md/dm-rq.c b/drivers/md/dm-rq.c
-index b1e867feb4f6..4833f4b20b2c 100644
---- a/drivers/md/dm-rq.c
-+++ b/drivers/md/dm-rq.c
-@@ -492,8 +492,13 @@ static blk_status_t dm_mq_queue_rq(struct blk_mq_hw_ctx *hctx,
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 7067b7c11626..483c1362cc4a 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -1368,6 +1368,7 @@ static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
+ 				dev_info(smmu->dev, "\t0x%016llx\n",
+ 					 (unsigned long long)evt[i]);
  
- 	if (unlikely(!ti)) {
- 		int srcu_idx;
--		struct dm_table *map = dm_get_live_table(md, &srcu_idx);
-+		struct dm_table *map;
++			cond_resched();
+ 		}
  
-+		map = dm_get_live_table(md, &srcu_idx);
-+		if (unlikely(!map)) {
-+			dm_put_live_table(md, srcu_idx);
-+			return BLK_STS_RESOURCE;
-+		}
- 		ti = dm_table_find_target(map, 0);
- 		dm_put_live_table(md, srcu_idx);
- 	}
-diff --git a/drivers/md/dm.c b/drivers/md/dm.c
-index 6030cba5b038..2836d44094ab 100644
---- a/drivers/md/dm.c
-+++ b/drivers/md/dm.c
-@@ -1692,15 +1692,10 @@ static blk_qc_t dm_submit_bio(struct bio *bio)
- 	struct dm_table *map;
- 
- 	map = dm_get_live_table(md, &srcu_idx);
--	if (unlikely(!map)) {
--		DMERR_LIMIT("%s: mapping table unavailable, erroring io",
--			    dm_device_name(md));
--		bio_io_error(bio);
--		goto out;
--	}
- 
--	/* If suspended, queue this IO for later */
--	if (unlikely(test_bit(DMF_BLOCK_IO_FOR_SUSPEND, &md->flags))) {
-+	/* If suspended, or map not yet available, queue this IO for later */
-+	if (unlikely(test_bit(DMF_BLOCK_IO_FOR_SUSPEND, &md->flags)) ||
-+	    unlikely(!map)) {
- 		if (bio->bi_opf & REQ_NOWAIT)
- 			bio_wouldblock_error(bio);
- 		else if (bio->bi_opf & REQ_RAHEAD)
+ 		/*
 -- 
 2.34.1
 
