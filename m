@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE575C43219
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:14:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89CD2C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:15:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343661AbiDAPQc (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:16:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57424 "EHLO
+        id S245745AbiDAPQs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Apr 2022 11:16:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351407AbiDAOsw (ORCPT
+        with ESMTP id S1351727AbiDAOtb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:48:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C27EF28CAB6;
-        Fri,  1 Apr 2022 07:39:39 -0700 (PDT)
+        Fri, 1 Apr 2022 10:49:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B63D62AD5C3;
+        Fri,  1 Apr 2022 07:40:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 90FC2B82515;
-        Fri,  1 Apr 2022 14:38:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB127C340F2;
-        Fri,  1 Apr 2022 14:38:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 164A6B824D5;
+        Fri,  1 Apr 2022 14:39:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E3E8C2BBE4;
+        Fri,  1 Apr 2022 14:39:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823937;
-        bh=2KYdkVbYweu2jPFBk8vsmW6eEaxUvJvz5ZstF43+gYk=;
+        s=k20201202; t=1648823976;
+        bh=JhlCK4E1mu3yOPgCJV7utZ0/yQ80NcX7V3ZlF9qox6o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=N4pEpLqdLFGvsq2FCcAJL8Dh3wiA6dJbw5LTgXf9mEQdHuzArBqi3TGilHp6Jqlep
-         0BtSlIGFgNb0jWanxrEQdm8YODRKxmhc1hsOnXQc8hRS8OoM1R5EaUi8kQNgJZylvH
-         AodexiNHqZrECuLhi4UDt7VCQoTG0wKUw/LiRGs7qnunl4sLIScz7G4ENJDbjcSQ/t
-         DXSrpVdzZ03wnyDlWMFOjcxD4uxnFQMWSycGou+fFif/8wdd/DSwwoHWnyCDaYJRy8
-         CsdCaWCuw9WNtOelv8sdl7pZtqWQgZ+BRaE1OeyjZfh0XZ2OfpX1kNb8GczscaTxBJ
-         qpNl7AwoJDPqA==
+        b=o7kjlmBRO7kIOhMZyJKOnT6iNyvIOxOdCR7LOytDZF2pTA1ajN/TjAjdMtIn+jEeR
+         /foES2A1oWVgpm5GkRxJ0MxR6/4xVWTjaENWJbs4ROjnbf1Bix2woiBzqLVEDKlvMZ
+         0uxRWalKz2nW6K+OcWFZb/miagX3YVxEv3aM7oCA+cm/95gsCTLFYymhYlrR1hJQcT
+         QqASMh9omjYjzTLDVkPdh/Ihy9gEUQUethmXTOmglSyDeRIzncKGbPSfgoXHFjhok4
+         oO5sQbKmx69PQ7pBRwSCBc6rbkKQwyMAd/enJSBH/DYUDKR0dC3Cl5Lf8wgIBTdChr
+         Sg4kRPF5ZFemg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yonghong Song <yhs@fb.com>, Delyan Kratunov <delyank@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, ast@kernel.org,
-        daniel@iogearbox.net, nathan@kernel.org, ndesaulniers@google.com,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, llvm@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.15 26/98] libbpf: Fix build issue with llvm-readelf
-Date:   Fri,  1 Apr 2022 10:36:30 -0400
-Message-Id: <20220401143742.1952163-26-sashal@kernel.org>
+Cc:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Sasha Levin <sashal@kernel.org>, lukas@wunner.de,
+        zhangliguang@linux.alibaba.com, ameynarkhede03@gmail.com,
+        sathyanarayanan.kuppuswamy@linux.intel.com,
+        naveennaidu479@gmail.com, mani@kernel.org, hdegoede@redhat.com,
+        linux-pci@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 37/98] PCI: pciehp: Add Qualcomm quirk for Command Completed erratum
+Date:   Fri,  1 Apr 2022 10:36:41 -0400
+Message-Id: <20220401143742.1952163-37-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143742.1952163-1-sashal@kernel.org>
 References: <20220401143742.1952163-1-sashal@kernel.org>
@@ -54,95 +55,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yonghong Song <yhs@fb.com>
+From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 
-[ Upstream commit 0908a66ad1124c1634c33847ac662106f7f2c198 ]
+[ Upstream commit 9f72d4757cbe4d1ed669192f6d23817c9e437c4b ]
 
-There are cases where clang compiler is packaged in a way
-readelf is a symbolic link to llvm-readelf. In such cases,
-llvm-readelf will be used instead of default binutils readelf,
-and the following error will appear during libbpf build:
+The Qualcomm PCI bridge device (Device ID 0x0110) found in chipsets such as
+SM8450 does not set the Command Completed bit unless writes to the Slot
+Command register change "Control" bits.
 
-  Warning: Num of global symbols in
-   /home/yhs/work/bpf-next/tools/testing/selftests/bpf/tools/build/libbpf/sharedobjs/libbpf-in.o (367)
-   does NOT match with num of versioned symbols in
-   /home/yhs/work/bpf-next/tools/testing/selftests/bpf/tools/build/libbpf/libbpf.so libbpf.map (383).
-   Please make sure all LIBBPF_API symbols are versioned in libbpf.map.
-  --- /home/yhs/work/bpf-next/tools/testing/selftests/bpf/tools/build/libbpf/libbpf_global_syms.tmp ...
-  +++ /home/yhs/work/bpf-next/tools/testing/selftests/bpf/tools/build/libbpf/libbpf_versioned_syms.tmp ...
-  @@ -324,6 +324,22 @@
-   btf__str_by_offset
-   btf__type_by_id
-   btf__type_cnt
-  +LIBBPF_0.0.1
-  +LIBBPF_0.0.2
-  +LIBBPF_0.0.3
-  +LIBBPF_0.0.4
-  +LIBBPF_0.0.5
-  +LIBBPF_0.0.6
-  +LIBBPF_0.0.7
-  +LIBBPF_0.0.8
-  +LIBBPF_0.0.9
-  +LIBBPF_0.1.0
-  +LIBBPF_0.2.0
-  +LIBBPF_0.3.0
-  +LIBBPF_0.4.0
-  +LIBBPF_0.5.0
-  +LIBBPF_0.6.0
-  +LIBBPF_0.7.0
-   libbpf_attach_type_by_name
-   libbpf_find_kernel_btf
-   libbpf_find_vmlinux_btf_id
-  make[2]: *** [Makefile:184: check_abi] Error 1
-  make[1]: *** [Makefile:140: all] Error 2
+This results in timeouts like below:
 
-The above failure is due to different printouts for some ABS
-versioned symbols. For example, with the same libbpf.so,
-  $ /bin/readelf --dyn-syms --wide tools/lib/bpf/libbpf.so | grep "LIBBPF" | grep ABS
-     134: 0000000000000000     0 OBJECT  GLOBAL DEFAULT  ABS LIBBPF_0.5.0
-     202: 0000000000000000     0 OBJECT  GLOBAL DEFAULT  ABS LIBBPF_0.6.0
-     ...
-  $ /opt/llvm/bin/readelf --dyn-syms --wide tools/lib/bpf/libbpf.so | grep "LIBBPF" | grep ABS
-     134: 0000000000000000     0 OBJECT  GLOBAL DEFAULT   ABS LIBBPF_0.5.0@@LIBBPF_0.5.0
-     202: 0000000000000000     0 OBJECT  GLOBAL DEFAULT   ABS LIBBPF_0.6.0@@LIBBPF_0.6.0
-     ...
-The binutils readelf doesn't print out the symbol LIBBPF_* version and llvm-readelf does.
-Such a difference caused libbpf build failure with llvm-readelf.
+  pcieport 0001:00:00.0: pciehp: Timeout on hotplug command 0x03c0 (issued 2020 msec ago)
 
-The proposed fix filters out all ABS symbols as they are not part of the comparison.
-This works for both binutils readelf and llvm-readelf.
+Add the device to the Command Completed quirk to mark commands "completed"
+immediately unless they change the "Control" bits.
 
-Reported-by: Delyan Kratunov <delyank@fb.com>
-Signed-off-by: Yonghong Song <yhs@fb.com>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Link: https://lore.kernel.org/bpf/20220204214355.502108-1-yhs@fb.com
+Link: https://lore.kernel.org/r/20220210145003.135907-1-manivannan.sadhasivam@linaro.org
+Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/lib/bpf/Makefile | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/pci/hotplug/pciehp_hpc.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/tools/lib/bpf/Makefile b/tools/lib/bpf/Makefile
-index 74c3b73a5fbe..089b73b3cb37 100644
---- a/tools/lib/bpf/Makefile
-+++ b/tools/lib/bpf/Makefile
-@@ -126,7 +126,7 @@ GLOBAL_SYM_COUNT = $(shell readelf -s --wide $(BPF_IN_SHARED) | \
- 			   sort -u | wc -l)
- VERSIONED_SYM_COUNT = $(shell readelf --dyn-syms --wide $(OUTPUT)libbpf.so | \
- 			      sed 's/\[.*\]//' | \
--			      awk '/GLOBAL/ && /DEFAULT/ && !/UND/ {print $$NF}' | \
-+			      awk '/GLOBAL/ && /DEFAULT/ && !/UND|ABS/ {print $$NF}' | \
- 			      grep -Eo '[^ ]+@LIBBPF_' | cut -d@ -f1 | sort -u | wc -l)
- 
- CMD_TARGETS = $(LIB_TARGET) $(PC_FILE)
-@@ -195,7 +195,7 @@ check_abi: $(OUTPUT)libbpf.so $(VERSION_SCRIPT)
- 		    sort -u > $(OUTPUT)libbpf_global_syms.tmp;		 \
- 		readelf --dyn-syms --wide $(OUTPUT)libbpf.so |		 \
- 		    sed 's/\[.*\]//' |					 \
--		    awk '/GLOBAL/ && /DEFAULT/ && !/UND/ {print $$NF}'|  \
-+		    awk '/GLOBAL/ && /DEFAULT/ && !/UND|ABS/ {print $$NF}'|  \
- 		    grep -Eo '[^ ]+@LIBBPF_' | cut -d@ -f1 |		 \
- 		    sort -u > $(OUTPUT)libbpf_versioned_syms.tmp; 	 \
- 		diff -u $(OUTPUT)libbpf_global_syms.tmp			 \
+diff --git a/drivers/pci/hotplug/pciehp_hpc.c b/drivers/pci/hotplug/pciehp_hpc.c
+index b0692f33b03a..2fb044bfaebe 100644
+--- a/drivers/pci/hotplug/pciehp_hpc.c
++++ b/drivers/pci/hotplug/pciehp_hpc.c
+@@ -1058,6 +1058,8 @@ static void quirk_cmd_compl(struct pci_dev *pdev)
+ }
+ DECLARE_PCI_FIXUP_CLASS_EARLY(PCI_VENDOR_ID_INTEL, PCI_ANY_ID,
+ 			      PCI_CLASS_BRIDGE_PCI, 8, quirk_cmd_compl);
++DECLARE_PCI_FIXUP_CLASS_EARLY(PCI_VENDOR_ID_QCOM, 0x0110,
++			      PCI_CLASS_BRIDGE_PCI, 8, quirk_cmd_compl);
+ DECLARE_PCI_FIXUP_CLASS_EARLY(PCI_VENDOR_ID_QCOM, 0x0400,
+ 			      PCI_CLASS_BRIDGE_PCI, 8, quirk_cmd_compl);
+ DECLARE_PCI_FIXUP_CLASS_EARLY(PCI_VENDOR_ID_QCOM, 0x0401,
 -- 
 2.34.1
 
