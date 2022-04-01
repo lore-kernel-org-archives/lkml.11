@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80A99C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AE6BC4321E
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:26:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353428AbiDAPXZ (ORCPT
+        id S1351424AbiDAPWj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:23:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44034 "EHLO
+        Fri, 1 Apr 2022 11:22:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352583AbiDAOu7 (ORCPT
+        with ESMTP id S1352593AbiDAOu7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 1 Apr 2022 10:50:59 -0400
 Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E8282B3D7A;
-        Fri,  1 Apr 2022 07:42:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 347632B3D7F;
+        Fri,  1 Apr 2022 07:42:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 4A8D3CE2586;
-        Fri,  1 Apr 2022 14:41:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E5F7C2BBE4;
-        Fri,  1 Apr 2022 14:41:38 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id E19AECE258D;
+        Fri,  1 Apr 2022 14:41:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 565EBC34111;
+        Fri,  1 Apr 2022 14:41:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824099;
-        bh=kZg0v5FucZpofCALveWpY2jHVoQuhvK6jkvQzLCVBjI=;
+        s=k20201202; t=1648824106;
+        bh=6QlKQl+0OseeNyRTe5krfh3/2JlBiteEUET6YMPdbJ8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aTmZQmJpOZKin+RwaPLgU1Jac8H0OPPBmyEVbK82ShXsRKU6I+8nwtrCSmyvHSEYU
-         29mhFdZjBCt8Hqvf0xLXNHQuYAQ3iX25iq8EOOsFKn0RbNnIj+krUcTdNx41NYWijc
-         zxz0rHpf4DCevdTAh4w9/FIlLahA1WcFSJjagYFAdN8EjVg8eJiuhYrQ1vanouBjIj
-         A8CYMQ7Ir8qkInBsGxWMgcLfvbHvKWGnjlkxn5r+StmXfCSdGtH0MpoVoO4/Trl+hr
-         fbLfVH2RL+dcfmuyjKpM0f3yqrMVnt5jjT4WC9soJm6QQSQnptQcia3gmeVYBEqMd3
-         jApDgfOEj9AtA==
+        b=StMAKz2fDO+LlACn6nMJE9YrydiOn0JxztEUXu01YkfMCC57/06splwUK7DqHxNSi
+         E6Qxabec072YVhxQ33KEjaWi0fDf2CoXRwnJHI3N3NwKP9aotdaT/9lakIprVBdOGm
+         1BLC6EqLIXFfB0YwzArCSt7uiW697EZ3LMmZz44RrqUFYpU90miSCKrhLEqtT/fmSf
+         s9oVbW3M7NnyJ/DpAb40OYj1cyeX9mfBvu0OMbp4A17wsOuTKM2biuoEOSw2XRPtn0
+         StGE3c/Lw50LhmbfUSzB6N0+aMDG8gGyh2vceFAvbqBUEq8LJfs617i4TyIYj0mY92
+         TZdRzEtfwEFGQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Michael Walle <michael@walle.cc>, Paolo Abeni <pabeni@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, linux@armlinux.org.uk,
-        andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 86/98] net: sfp: add 2500base-X quirk for Lantech SFP module
-Date:   Fri,  1 Apr 2022 10:37:30 -0400
-Message-Id: <20220401143742.1952163-86-sashal@kernel.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
+        krzk+dt@kernel.org, linux-mips@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 90/98] MIPS: ingenic: correct unit node address
+Date:   Fri,  1 Apr 2022 10:37:34 -0400
+Message-Id: <20220401143742.1952163-90-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143742.1952163-1-sashal@kernel.org>
 References: <20220401143742.1952163-1-sashal@kernel.org>
@@ -53,51 +55,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Walle <michael@walle.cc>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
-[ Upstream commit 00eec9fe4f3b9588b4bfa8ef9dd0aae96407d5d7 ]
+[ Upstream commit 8931ddd8d6a55fcefb20f44a38ba42bb746f0b62 ]
 
-The Lantech 8330-262D-E module is 2500base-X capable, but it reports the
-nominal bitrate as 2500MBd instead of 3125MBd. Add a quirk for the
-module.
+Unit node addresses should not have leading 0x:
 
-The following in an EEPROM dump of such a SFP with the serial number
-redacted:
+  Warning (unit_address_format): /nemc@13410000/efuse@d0/eth-mac-addr@0x22: unit name should not have leading "0x"
 
-00: 03 04 07 00 00 00 01 20 40 0c 05 01 19 00 00 00    ???...? @????...
-10: 1e 0f 00 00 4c 61 6e 74 65 63 68 20 20 20 20 20    ??..Lantech
-20: 20 20 20 20 00 00 00 00 38 33 33 30 2d 32 36 32        ....8330-262
-30: 44 2d 45 20 20 20 20 20 56 31 2e 30 03 52 00 cb    D-E     V1.0?R.?
-40: 00 1a 00 00 46 43 XX XX XX XX XX XX XX XX XX XX    .?..FCXXXXXXXXXX
-50: 20 20 20 20 32 32 30 32 31 34 20 20 68 b0 01 98        220214  h???
-60: 45 58 54 52 45 4d 45 4c 59 20 43 4f 4d 50 41 54    EXTREMELY COMPAT
-70: 49 42 4c 45 20 20 20 20 20 20 20 20 20 20 20 20    IBLE
-
-Signed-off-by: Michael Walle <michael@walle.cc>
-Link: https://lore.kernel.org/r/20220312205014.4154907-1-michael@walle.cc
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Reviewed-by: Paul Cercueil <paul@crapouillou.net>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/sfp-bus.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ arch/mips/boot/dts/ingenic/jz4780.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/phy/sfp-bus.c b/drivers/net/phy/sfp-bus.c
-index ef2c6a09eb0f..4369d6249e7b 100644
---- a/drivers/net/phy/sfp-bus.c
-+++ b/drivers/net/phy/sfp-bus.c
-@@ -74,6 +74,12 @@ static const struct sfp_quirk sfp_quirks[] = {
- 		.vendor = "HUAWEI",
- 		.part = "MA5671A",
- 		.modes = sfp_quirk_2500basex,
-+	}, {
-+		// Lantech 8330-262D-E can operate at 2500base-X, but
-+		// incorrectly report 2500MBd NRZ in their EEPROM
-+		.vendor = "Lantech",
-+		.part = "8330-262D-E",
-+		.modes = sfp_quirk_2500basex,
- 	}, {
- 		.vendor = "UBNT",
- 		.part = "UF-INSTANT",
+diff --git a/arch/mips/boot/dts/ingenic/jz4780.dtsi b/arch/mips/boot/dts/ingenic/jz4780.dtsi
+index 9e34f433b9b5..efbbddaf0fde 100644
+--- a/arch/mips/boot/dts/ingenic/jz4780.dtsi
++++ b/arch/mips/boot/dts/ingenic/jz4780.dtsi
+@@ -450,7 +450,7 @@ efuse: efuse@d0 {
+ 			#address-cells = <1>;
+ 			#size-cells = <1>;
+ 
+-			eth0_addr: eth-mac-addr@0x22 {
++			eth0_addr: eth-mac-addr@22 {
+ 				reg = <0x22 0x6>;
+ 			};
+ 		};
 -- 
 2.34.1
 
