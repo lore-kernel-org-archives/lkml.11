@@ -2,175 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BF9DC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 13:03:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 743A6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 13:04:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239737AbiDANFW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 09:05:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43500 "EHLO
+        id S1346137AbiDANFv (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Apr 2022 09:05:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346129AbiDANFJ (ORCPT
+        with ESMTP id S1346156AbiDANFq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 09:05:09 -0400
-Received: from mail-qv1-xf34.google.com (mail-qv1-xf34.google.com [IPv6:2607:f8b0:4864:20::f34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3352E220
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 06:03:20 -0700 (PDT)
-Received: by mail-qv1-xf34.google.com with SMTP id gi14so1984430qvb.0
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 06:03:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=oI4MeZFmluScztYaA4VGctO3l6sUlCTurVeMLoxfQBg=;
-        b=YvI0VDDH3q5+7ckyi7kCQTBjoOqgTj+ac4c9wT8B8eJ1PbPaRwwK0+7mto6l5e0DcS
-         0TjrdiBikRqVaBrF2BT/jPxFFgcOKyYAUklYMsq20KQHj/Ey25bvWuyjbDUFwQqNI0ya
-         Xooja1fJ+rAk314BrC4GIWJIGBZX0k+aaD26e0ZoGoz06GxE6IfjNE0Cn87VEEJJZqbK
-         yruEBFnbu652T3+OqKOOV9GqXGraxiVaQfpgk/aeYWt/47VwZ6cwAKYLkVHIbi6kZBVS
-         nKBNv+PhAmZbut7ss3SkJWReTmK5GvW3UC53Cz5gRm2XE5r9Qid0BXEKGzSqIRcM68kD
-         loyQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=oI4MeZFmluScztYaA4VGctO3l6sUlCTurVeMLoxfQBg=;
-        b=yIk/p7SShenqKenAWcoeIZoTwjTFOIoNfvxnUUu+bJxVJPkkyYDjPr1s0q9W5vWdag
-         McxH7c4cVTwvkRP9+lecaN+4kYYLl+nOURRFrGgDJHXYtoGmUucaAEwBQsYUH9B2yKe2
-         sZm0NPBDx2xS3cgxxi21R+n38zccO3qudmnP4G7xMCq96lTtm4XzDn6ZKyKi0utRYvYP
-         Q6YCfUdjY68jAjFV0Vu50n4MzdfHkHBrN/5Ppv5yUF5LzXoytqP8kZCmbFPYKi7cbyKv
-         4C8A5VfIun5jF6JJ5So0tX4e79z/g6JkrY+mXIdgOA2pk4RA/RCi/qgsMYZMNlm+idM3
-         epDw==
-X-Gm-Message-State: AOAM532Tn1wY2QdO2yUbGXzXRFTR6XgS3AnDJBllkDVgK3NNPOWEVjEl
-        IGQP6SdsawGvO671mZRxXeg=
-X-Google-Smtp-Source: ABdhPJyvsCwzPlmuiLN3jWABn2eF7L/jerRPovbVt3dzsb3tiE8WZzgpYikzbcbDORXhvkobAMQWUw==
-X-Received: by 2002:a05:6214:5017:b0:441:1ced:36e4 with SMTP id jo23-20020a056214501700b004411ced36e4mr7926306qvb.80.1648818199108;
-        Fri, 01 Apr 2022 06:03:19 -0700 (PDT)
-Received: from euclid ([71.58.109.160])
-        by smtp.gmail.com with ESMTPSA id l13-20020a37a20d000000b0067d17b656acsm1220235qke.78.2022.04.01.06.03.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Apr 2022 06:03:18 -0700 (PDT)
-From:   Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        outreachy@lists.linux.dev,
-        Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
-Subject: [PATCH 3/3] staging: rtl8723bs: remove redundant else branches
-Date:   Fri,  1 Apr 2022 09:02:47 -0400
-Message-Id: <8d745122cd10f5db59393b1bff09e6a73e88640b.1648817213.git.sevinj.aghayeva@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1648817213.git.sevinj.aghayeva@gmail.com>
-References: <cover.1648817213.git.sevinj.aghayeva@gmail.com>
+        Fri, 1 Apr 2022 09:05:46 -0400
+Received: from smtpout1.mo3004.mail-out.ovh.net (smtpout1.mo3004.mail-out.ovh.net [79.137.123.219])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7232211C26;
+        Fri,  1 Apr 2022 06:03:44 -0700 (PDT)
+Received: from pro2.mail.ovh.net (unknown [10.108.20.220])
+        by mo3004.mail-out.ovh.net (Postfix) with ESMTPS id E28952451C7;
+        Fri,  1 Apr 2022 13:03:31 +0000 (UTC)
+Received: from [192.168.1.42] (88.125.132.78) by DAG1EX2.emp2.local
+ (172.16.2.2) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 1 Apr
+ 2022 15:03:30 +0200
+Message-ID: <8fb86bde-7672-87e1-28a1-e78f371bfcca@traphandler.com>
+Date:   Fri, 1 Apr 2022 15:03:29 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v4 2/2] watchdog: Add Renesas RZ/N1 Watchdog driver
+Content-Language: en-US
+To:     Tzung-Bi Shih <tzungbi@kernel.org>
+CC:     <wim@linux-watchdog.org>, <linux@roeck-us.net>,
+        <geert+renesas@glider.be>, <linux-watchdog@vger.kernel.org>,
+        <linux-renesas-soc@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        Phil Edworthy <phil.edworthy@renesas.com>
+References: <20220330100829.1000679-1-jjhiblot@traphandler.com>
+ <20220330100829.1000679-3-jjhiblot@traphandler.com>
+ <YkVFc6Q6/6rxSw89@google.com>
+From:   Jean-Jacques Hiblot <jjhiblot@traphandler.com>
+In-Reply-To: <YkVFc6Q6/6rxSw89@google.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [88.125.132.78]
+X-ClientProxiedBy: DAG3EX1.emp2.local (172.16.2.21) To DAG1EX2.emp2.local
+ (172.16.2.2)
+X-Ovh-Tracer-Id: 17880416423138572789
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudeiiedgheelucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhepkfffgggfuffvfhfhjggtgfhisehtjeertddtfeejnecuhfhrohhmpeflvggrnhdqlfgrtghquhgvshcujfhisghlohhtuceojhhjhhhisghlohhtsehtrhgrphhhrghnughlvghrrdgtohhmqeenucggtffrrghtthgvrhhnpefhiedthedttdegueeggfdtjeegtdeileeftdegheeutdetjeeuieehtdevvdefieenucfkpheptddrtddrtddrtddpkeekrdduvdehrddufedvrdejkeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhhouggvpehsmhhtphhouhhtpdhhvghlohepphhrohdvrdhmrghilhdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepjhhjhhhisghlohhtsehtrhgrphhhrghnughlvghrrdgtohhmpdhnsggprhgtphhtthhopedupdhrtghpthhtohepphhhihhlrdgvugifohhrthhhhiesrhgvnhgvshgrshdrtghomh
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Adhere to Linux kernel coding style.
 
-Reported by checkpatch:
+On 31/03/2022 08:08, Tzung-Bi Shih wrote:
+> On Wed, Mar 30, 2022 at 12:08:29PM +0200, Jean-Jacques Hiblot wrote:
+>> diff --git a/drivers/watchdog/rzn1_wdt.c b/drivers/watchdog/rzn1_wdt.c
+> [...]
+>> +/*
+>> + * Renesas RZ/N1 Watchdog timer.
+>> + * This is a 12-bit timer driver from a (62.5/16384) MHz clock. It can't even
+>> + * cope with 2 seconds.
+>> + *
+>> + * Copyright 2018 Renesas Electronics Europe Ltd.
+> s/2018/2022/ ?
+This driver wasn't written by me originally. So I'd rather not change 
+this line.
+>
+>> +#define RZN1_WDT_RETRIGGER			0x0
+>> +#define RZN1_WDT_RETRIGGER_RELOAD_VAL		0
+>> +#define RZN1_WDT_RETRIGGER_RELOAD_VAL_MASK	0xfff
+>> +#define RZN1_WDT_RETRIGGER_PRESCALE		BIT(12)
+>> +#define RZN1_WDT_RETRIGGER_ENABLE		BIT(13)
+>> +#define RZN1_WDT_RETRIGGER_WDSI			(0x2 << 14)
+> Do RZN1_WDT_RETRIGGER_RELOAD_VAL and RZN1_WDT_RETRIGGER_WDSI get 1 more tab
+> indent intentionally?
+>
+>> +static const struct watchdog_device rzn1_wdt = {
+>> +	.info = &rzn1_wdt_info,
+>> +	.ops = &rzn1_wdt_ops,
+>> +	.status = WATCHDOG_NOWAYOUT_INIT_STATUS,
+>> +};
+> [...]
+>> +static int rzn1_wdt_probe(struct platform_device *pdev)
+>> +{
+> [...]
+>> +	wdt->wdt = rzn1_wdt;
+> Does it really need to copy the memory?  For example,
+>
+> 1. Use the memory in `wdt` directly and fill the `wdd`.
+>
+> struct watchdog_device *wdd = &wdt->wdt;
+> wdd->info = &rzn1_wdt_info;
+> wdd->ops = &rzn1_wdt_ops;
+> ...
+>
+> 2. Use drvdata instead of container_of().
+>
+> Use watchdog_set_drvdata() in _probe and watchdog_get_drvdata() in the
+> watchdog ops to get struct rzn1_watchdog.
+I'll rework this. Thanks for the review
+>> +static const struct of_device_id rzn1_wdt_match[] = {
+>> +	{ .compatible = "renesas,rzn1-wdt" },
+>> +	{},
+>> +};
+>> +MODULE_DEVICE_TABLE(of, rzn1_wdt_match);
+> Doesn't it need to guard by CONFIG_OF?
 
-WARNING: else is not generally useful after a break or return
+I don't think it has to.
 
-Signed-off-by: Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
----
- drivers/staging/rtl8723bs/core/rtw_mlme_ext.c | 63 +++++++++----------
- 1 file changed, 30 insertions(+), 33 deletions(-)
-
-diff --git a/drivers/staging/rtl8723bs/core/rtw_mlme_ext.c b/drivers/staging/rtl8723bs/core/rtw_mlme_ext.c
-index 81e4b1bf68f6..b80d9061f5a5 100644
---- a/drivers/staging/rtl8723bs/core/rtw_mlme_ext.c
-+++ b/drivers/staging/rtl8723bs/core/rtw_mlme_ext.c
-@@ -907,10 +907,9 @@ unsigned int OnAuthClient(struct adapter *padapter, union recv_frame *precv_fram
- 			set_link_timer(pmlmeext, REAUTH_TO);
- 
- 			return _SUCCESS;
--		} else {
--			/*  open system */
--			go2asoc = 1;
- 		}
-+		/*  open system */
-+		go2asoc = 1;
- 	} else if (seq == 4) {
- 		if (pmlmeinfo->auth_algo == dot11AuthAlgrthm_Shared)
- 			go2asoc = 1;
-@@ -1502,32 +1501,32 @@ unsigned int OnDeAuth(struct adapter *padapter, union recv_frame *precv_frame)
- 
- 
- 		return _SUCCESS;
--	} else {
--		int	ignore_received_deauth = 0;
--
--		/* 	Commented by Albert 20130604 */
--		/* 	Before sending the auth frame to start the STA/GC mode connection with AP/GO, */
--		/* 	we will send the deauth first. */
--		/* 	However, the Win8.1 with BRCM Wi-Fi will send the deauth with reason code 6 to us after receieving our deauth. */
--		/* 	Added the following code to avoid this case. */
--		if ((pmlmeinfo->state & WIFI_FW_AUTH_STATE) ||
--			(pmlmeinfo->state & WIFI_FW_ASSOC_STATE)) {
--			if (reason == WLAN_REASON_CLASS2_FRAME_FROM_NONAUTH_STA) {
--				ignore_received_deauth = 1;
--			} else if (reason == WLAN_REASON_PREV_AUTH_NOT_VALID) {
--				/*  TODO: 802.11r */
--				ignore_received_deauth = 1;
--			}
-+	}
-+	int	ignore_received_deauth = 0;
-+
-+	/* 	Commented by Albert 20130604 */
-+	/* 	Before sending the auth frame to start the STA/GC mode connection with AP/GO, */
-+	/* 	we will send the deauth first. */
-+	/* 	However, the Win8.1 with BRCM Wi-Fi will send the deauth with reason code 6 to us after receieving our deauth. */
-+	/* 	Added the following code to avoid this case. */
-+	if ((pmlmeinfo->state & WIFI_FW_AUTH_STATE) ||
-+		(pmlmeinfo->state & WIFI_FW_ASSOC_STATE)) {
-+		if (reason == WLAN_REASON_CLASS2_FRAME_FROM_NONAUTH_STA) {
-+			ignore_received_deauth = 1;
-+		} else if (reason == WLAN_REASON_PREV_AUTH_NOT_VALID) {
-+			/*  TODO: 802.11r */
-+			ignore_received_deauth = 1;
- 		}
-+	}
- 
--		netdev_dbg(padapter->pnetdev,
--			   "sta recv deauth reason code(%d) sta:%pM, ignore = %d\n",
--			   reason, GetAddr3Ptr(pframe),
--			   ignore_received_deauth);
-+	netdev_dbg(padapter->pnetdev,
-+		"sta recv deauth reason code(%d) sta:%pM, ignore = %d\n",
-+		reason, GetAddr3Ptr(pframe),
-+		ignore_received_deauth);
-+
-+	if (ignore_received_deauth == 0)
-+		receive_disconnect(padapter, GetAddr3Ptr(pframe), reason);
- 
--		if (ignore_received_deauth == 0)
--			receive_disconnect(padapter, GetAddr3Ptr(pframe), reason);
--	}
- 	pmlmepriv->LinkDetectInfo.bBusyTraffic = false;
- 	return _SUCCESS;
- 
-@@ -1574,16 +1573,14 @@ unsigned int OnDisassoc(struct adapter *padapter, union recv_frame *precv_frame)
- 		}
- 
- 		return _SUCCESS;
--	} else {
--		netdev_dbg(padapter->pnetdev,
--			   "sta recv disassoc reason code(%d) sta:%pM\n",
--			   reason, GetAddr3Ptr(pframe));
--
--		receive_disconnect(padapter, GetAddr3Ptr(pframe), reason);
- 	}
-+	netdev_dbg(padapter->pnetdev,
-+		"sta recv disassoc reason code(%d) sta:%pM\n",
-+		reason, GetAddr3Ptr(pframe));
-+
-+	receive_disconnect(padapter, GetAddr3Ptr(pframe), reason);
- 	pmlmepriv->LinkDetectInfo.bBusyTraffic = false;
- 	return _SUCCESS;
--
- }
- 
- unsigned int OnAtim(struct adapter *padapter, union recv_frame *precv_frame)
--- 
-2.25.1
-
+>
+>> +static struct platform_driver rzn1_wdt_driver = {
+>> +	.probe		= rzn1_wdt_probe,
+>> +	.driver		= {
+>> +		.name		= KBUILD_MODNAME,
+>> +		.of_match_table	= rzn1_wdt_match,
+> Does it makes more sense to use of_match_ptr()?
+>
+>> +	},
+>> +};
+>> +
+>> +module_platform_driver(rzn1_wdt_driver);
+> To make it look like a whole thing, I prefer to remove the extra blank line
+> in between struct platform_driver and module_platform_driver().
