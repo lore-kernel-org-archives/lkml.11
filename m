@@ -2,87 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F7FCC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 13:03:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D98A3C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 13:03:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346104AbiDANE7 (ORCPT
+        id S1346122AbiDANFG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 09:04:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43116 "EHLO
+        Fri, 1 Apr 2022 09:05:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245752AbiDANE6 (ORCPT
+        with ESMTP id S245752AbiDANFB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 09:04:58 -0400
-Received: from mail-qv1-xf36.google.com (mail-qv1-xf36.google.com [IPv6:2607:f8b0:4864:20::f36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F875220FD7
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 06:03:08 -0700 (PDT)
-Received: by mail-qv1-xf36.google.com with SMTP id kl29so1948358qvb.2
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 06:03:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=cuEZGYCDTIg4hAs18A6RZQYja/XtuoYHfBwjj8fnnZ0=;
-        b=FnP/rNV7/WXimg+zgn3ZqWYzD72kkxZ/ONysifSpqL/1K7GEgH19xEywvc/NBFTB67
-         /fR/Qc2j32gxCUahzaVZJ9DXaVZULmEjajoKBSjIa5Xd+pKVSaxeu+JgLGjDdJXPqRHP
-         1C/h8SdDjkKTBqNEjYbYg/hnkBSlVZSPHtdzdgRLr3QS0czqcsXEuNs8p9mZ3Vjyu2eo
-         lu2m4KQpjSUwls5Cp9s32l6HbNcuT6KdcGYRs3oEk2xosAk28ZaTlNAbRIYJmjJfBWZ0
-         C/PUuBgVfsMTuMA51hheK8DvaccF7J47dgy4LTtQ9QS8ngwCa2kAENdsCOcaycTdfaoW
-         rEQQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=cuEZGYCDTIg4hAs18A6RZQYja/XtuoYHfBwjj8fnnZ0=;
-        b=yxauyUcvlWKWB6eVplA0Ym8d5ZLNdJU32HYzIzDL8WZx8ZxXh49yLJrt7hVAKw0vCA
-         +v3W3uNr8DU70s67LkEq0DmtXDTrqWgiBhSJ6SFT2cMhk8vO+JE39LCfpbd7SPnWsMzc
-         4eT4760Enw6Tx+khh1P5olmez6MVozJhcuWoQV/9itO54gaznfnfIqFL2/r4AVpAtgqY
-         RWIQphm3iJuu11IBs0wR5j3ILNesvJxKgBZhAVbS9iLM2eEqFNgooXTgOF4I4prfrt04
-         A4ebJZnGi4oYC5oTgbINYVnbBFqIHDmBLF9nJEvfbgx/CKACoGmRX1hqcJmG71uCOwOH
-         YxMA==
-X-Gm-Message-State: AOAM5302sirepJ+zkGeZpwk+Sl4C36RO24jOza3Kyh6jAw63rhEGLmRp
-        euU6cQZu3CugWI7XjduxcBjKb7G6pKF/9Idv
-X-Google-Smtp-Source: ABdhPJxDLw2zhT+Jeb4LonUp4ejui9EfOEDSyMLbQER+MBQC28/Iq33mx1o7adfNF3glFSgma3LaEQ==
-X-Received: by 2002:ad4:5dca:0:b0:441:6063:e235 with SMTP id m10-20020ad45dca000000b004416063e235mr7845530qvh.48.1648818186806;
-        Fri, 01 Apr 2022 06:03:06 -0700 (PDT)
-Received: from euclid ([71.58.109.160])
-        by smtp.gmail.com with ESMTPSA id s13-20020a05620a0bcd00b0067afe7dd3ffsm1348581qki.49.2022.04.01.06.03.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Apr 2022 06:03:06 -0700 (PDT)
-From:   Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        outreachy@lists.linux.dev,
-        Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
-Subject: [PATCH 0/3] rlt8723bs cleanup
-Date:   Fri,  1 Apr 2022 09:02:44 -0400
-Message-Id: <cover.1648817213.git.sevinj.aghayeva@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 1 Apr 2022 09:05:01 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F5962706E5;
+        Fri,  1 Apr 2022 06:03:12 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 0CD4E1FCFF;
+        Fri,  1 Apr 2022 13:03:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1648818191; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=L8Fv6ZDQ8m+qPC8dDpr3Y/+f6kvNVrRdMcIsE+f6ZEU=;
+        b=lubng6AuK16ZqODySVuFbAIiNelcW5AfzZgr4sNsal07K8TvFn3bNcchUYwkoBlOMOeKLp
+        BtLjH2snjDWIO1W3RF9RbkPDG+a/s+0v1MjSq4/BODP/3y/3mddKI4fF4Hxdnm1mZcB+1b
+        hW0uhc+1XDp1BKTMZ1QPAnz025krtu8=
+Received: from suse.cz (unknown [10.100.201.86])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 59DE7A3B87;
+        Fri,  1 Apr 2022 13:03:10 +0000 (UTC)
+Date:   Fri, 1 Apr 2022 15:03:09 +0200
+From:   Michal Hocko <mhocko@suse.com>
+To:     Yosry Ahmed <yosryahmed@google.com>
+Cc:     Wei Xu <weixugc@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Shakeel Butt <shakeelb@google.com>,
+        David Rientjes <rientjes@google.com>,
+        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        cgroups@vger.kernel.org, linux-doc@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux MM <linux-mm@kvack.org>,
+        Jonathan Corbet <corbet@lwn.net>, Yu Zhao <yuzhao@google.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Greg Thelen <gthelen@google.com>
+Subject: Re: [PATCH resend] memcg: introduce per-memcg reclaim interface
+Message-ID: <Ykb4DVt0eKrstDWv@dhcp22.suse.cz>
+References: <20220331084151.2600229-1-yosryahmed@google.com>
+ <20220331173350.1fe09370479a4a6f916b477d@linux-foundation.org>
+ <CAAPL-u-_Da0qe7h_o70HCz4gPtjT8_bjx4rVNdgKZh3KNruzpA@mail.gmail.com>
+ <CAJD7tkarUYM6fjty8FXn9gtR=RVWgksa3LNwswi1Ug1LPnLt4g@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAJD7tkarUYM6fjty8FXn9gtR=RVWgksa3LNwswi1Ug1LPnLt4g@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-These patches fix three categories of checkpatch warnings (redundant
-braces, redundant else branches after return/break, and constant
-placements on tests) in file rtw_mlme_ext.c, which is part of the
-rtl8723bs driver. False positives, such as
+On Fri 01-04-22 02:17:28, Yosry Ahmed wrote:
+> On Thu, Mar 31, 2022 at 8:38 PM Wei Xu <weixugc@google.com> wrote:
+> >
+> > On Thu, Mar 31, 2022 at 5:33 PM Andrew Morton <akpm@linux-foundation.org> wrote:
+> > >
+> > > On Thu, 31 Mar 2022 08:41:51 +0000 Yosry Ahmed <yosryahmed@google.com> wrote:
+> > >
+> > > > --- a/mm/memcontrol.c
+> > > > +++ b/mm/memcontrol.c
+> > > > @@ -6355,6 +6355,38 @@ static ssize_t memory_oom_group_write(struct kernfs_open_file *of,
+> > > >       return nbytes;
+> > > >  }
+> > > >
+> > > > +static ssize_t memory_reclaim(struct kernfs_open_file *of, char *buf,
+> > > > +                           size_t nbytes, loff_t off)
+> > > > +{
+> > > > +     struct mem_cgroup *memcg = mem_cgroup_from_css(of_css(of));
+> > > > +     unsigned int nr_retries = MAX_RECLAIM_RETRIES;
+> > > > +     unsigned long nr_to_reclaim, nr_reclaimed = 0;
+> > > > +     int err;
+> > > > +
+> > > > +     buf = strstrip(buf);
+> > > > +     err = page_counter_memparse(buf, "", &nr_to_reclaim);
+> > > > +     if (err)
+> > > > +             return err;
+> > > > +
+> > > > +     while (nr_reclaimed < nr_to_reclaim) {
+> > > > +             unsigned long reclaimed;
+> > > > +
+> > > > +             if (signal_pending(current))
+> > > > +                     break;
+> > > > +
+> > > > +             reclaimed = try_to_free_mem_cgroup_pages(memcg,
+> > > > +                                             nr_to_reclaim - nr_reclaimed,
+> > > > +                                             GFP_KERNEL, true);
+> > > > +
+> > > > +             if (!reclaimed && !nr_retries--)
+> > > > +                     break;
+> > > > +
+> > > > +             nr_reclaimed += reclaimed;
+> > > > +     }
+> > >
+> > > Is there any way in which this can be provoked into triggering the
+> > > softlockup detector?
+> >
+> > memory.reclaim is similar to memory.high w.r.t. reclaiming memory,
+> > except that memory.reclaim is stateless, while the kernel remembers
+> > the state set by memory.high.  So memory.reclaim should not bring in
+> > any new risks of triggering soft lockup, if any.
 
-if (foo) {
-	/* TODO: ... */
-}
+Memory reclaim already has cond_resched even if there is nothing
+reclaimable. See shrink_node_memcgs
 
-were not altered.
+> > > Is it optimal to do the MAX_RECLAIM_RETRIES loop in the kernel?
+> > > Would additional flexibility be gained by letting userspace handle
+> > > retrying?
+> >
+> > I agree it is better to retry from the userspace.
+> 
+> Thanks Andrew and Wei for looking at this. IIUC the
+> MAX_RECLAIM_RETRIES loop was modeled after the loop in memory.high as
+> well. Is there a reason why it should be different here?
 
-Sevinj Aghayeva (3):
-  staging: rtl8723bs: remove redundant braces in if statements
-  staging: rtl8723bs: place constants on the right side of tests
-  staging: rtl8723bs: remove redundant else branches
-
- drivers/staging/rtl8723bs/core/rtw_mlme_ext.c | 167 ++++++++----------
- 1 file changed, 70 insertions(+), 97 deletions(-)
+No, I would go with the same approach other interfaces use. I am not a
+great fan of MAX_RECLAIM_RETRIES - especially when we have a bail out on
+signals - but if we are to change this then let's do it consisently.
 
 -- 
-2.25.1
-
+Michal Hocko
+SUSE Labs
