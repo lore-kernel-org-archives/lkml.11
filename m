@@ -2,101 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50F77C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 20:22:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4B38C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 20:22:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352555AbiDAUXu (ORCPT
+        id S1351970AbiDAUX4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 16:23:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48224 "EHLO
+        Fri, 1 Apr 2022 16:23:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352225AbiDAUVC (ORCPT
+        with ESMTP id S1352316AbiDAUX1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 16:21:02 -0400
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BAA327545F
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 13:18:29 -0700 (PDT)
-Received: by mail-wm1-x330.google.com with SMTP id f6-20020a1c3806000000b0038e4a0fc5easo2142216wma.3
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 13:18:28 -0700 (PDT)
+        Fri, 1 Apr 2022 16:23:27 -0400
+Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 793CD281694
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 13:19:19 -0700 (PDT)
+Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-2e5db04460cso35181767b3.17
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 13:19:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=wKC9BF4dXA1G634QoNLIKuQnuaNkW3/UOb3sMC/u5kY=;
-        b=tICJ0RLoEBdT1RLJeSR2Qdmj0wSFyJNAkSICQ0VllNB5Pumz6HvKWt/nlnUoOOyI+u
-         LSJQBev6GcooY+39S0jfbxZSikrx7RdpcDJgOVxNl11DyqCKdq4XUOkbLUdnEoxBQN/L
-         wkugfBBvIyLoyiGAOpxI4IfbyPRECIXlF84FEOrImvkENev2lCMLDatubNZk020hsPi4
-         t3JClCEV0/rYD5t6GK9X4VPEgEurgUNxuPBsrrtAnXW1ioFCJ7+jgkSelGySQxjUDX1r
-         06jm3Tc3YbSxVMbKejWmGO8LctlXaN+jkTqwhQn1K3kg2Bdlxy6M0vJVdnoJ6uuUBUAf
-         m+Eg==
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=MzDAtS181K28awKeVRl3qYn1BJqlBjys5Tr9TP3rlP4=;
+        b=QOgDbsi0Jkp536F8U3evqUrA5teUQPwd1J3oZVmL+ceW77Te9PiOo30oFh5I+Cfnhk
+         JRSBlrE2TEWRY9lp5O1ExdJ3rZ9tfHfrX12HIXnDBsywa2HTxTYfrUExdO5O8Mc+CXYr
+         +VcSZEAIn2TgQuCpwRPrZzCk6qPTjQeOMd0ydmwzGr9JKJ2gcUkb9xCkMMam9FGwIlcX
+         I33j6enXrKAymZJ+EdW0R1h5SNan1gb07PokkU/kScowj+gVxDmYYzu/QgCPhjm0q8EV
+         IKcE5cJMHuqqlrQzg5mj8ST5/OrbGo/QFKGmOIxcvChc3wGvv2gW5KJlZfG0TNiGur72
+         8KFQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=wKC9BF4dXA1G634QoNLIKuQnuaNkW3/UOb3sMC/u5kY=;
-        b=KbV6dmMvcIW61Eq/GHChPXW6yWdbrgF5q8il48dy+RHgKTnbssPGs7+VXUYKSb9hAN
-         Sr/4oLNtWWDrolCsGhkgVAMvqhsrCed83nDDzZK5QFElT71hv0r85/ljNQLLTYHnGk+K
-         4RZwqJ1Uj5NFqmDS5azBAiQklAIVPveK9L5C5+lV9wtZ77gmp/TYC7wB1cWu2Db4jIws
-         1HyPoo+aGA2H/NGnrU581qOWbrCfLOUXpERJzSYciM00NbbjPGPY+1QR0JCTOiJfNEY4
-         JlYSojhBM9pqlgwn/q87oKl5q+8DCnKdcMHibfLMEsEPBS3Nmi4WL3WlXOaAESrfzJPe
-         LUbQ==
-X-Gm-Message-State: AOAM532uynyLLihYwdL/fSlbVwjM4iYXE43ifNFLOOQrDv4qvrsXQRz7
-        O5XggDd6SBcrDeTpwLQBtFOuaA==
-X-Google-Smtp-Source: ABdhPJzBjRPNRhqYPjIRRftpKO82O6trPepqmMbG4DH3r7zywq41QfkZv3g3CDZwixcv1zGNRXgMGQ==
-X-Received: by 2002:a05:600c:21a:b0:38b:d06e:e0f7 with SMTP id 26-20020a05600c021a00b0038bd06ee0f7mr9809753wmi.105.1648844307626;
-        Fri, 01 Apr 2022 13:18:27 -0700 (PDT)
-Received: from localhost.localdomain (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
-        by smtp.googlemail.com with ESMTPSA id j16-20020a05600c191000b0038ca3500494sm17823838wmq.27.2022.04.01.13.18.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Apr 2022 13:18:27 -0700 (PDT)
-From:   Corentin Labbe <clabbe@baylibre.com>
-To:     heiko@sntech.de, herbert@gondor.apana.org.au, krzk+dt@kernel.org,
-        robh+dt@kernel.org
-Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rockchip@lists.infradead.org,
-        Corentin Labbe <clabbe@baylibre.com>
-Subject: [PATCH v4 23/33] crypto: rockchip: use the rk_crypto_info given as parameter
-Date:   Fri,  1 Apr 2022 20:17:54 +0000
-Message-Id: <20220401201804.2867154-24-clabbe@baylibre.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220401201804.2867154-1-clabbe@baylibre.com>
-References: <20220401201804.2867154-1-clabbe@baylibre.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=MzDAtS181K28awKeVRl3qYn1BJqlBjys5Tr9TP3rlP4=;
+        b=OUjSCfYLMWjP7UNFiLmGYxbPMZL80LzLv3tk8Q+QhAd89qdjldSXhs1bZ1zefGiqn4
+         wDCosTgJmpFfoqq7pV5aYehNFcAwNUtxE+9DRmYWORz72YHbF40r7CvvZXMUNUK4y/q7
+         Kexfjg/GJOsQztX9Or8WmZwcaX0MsiQX3zwQ7EeJC6/pmh78/6fZDOB2TZH49b9bI7xO
+         CLZmOBx5XrDOqGRMhxiHYA/1vPK9tUQeU2GMdjcAHC+fBGnOIkbtaXGDmsuBvN0xbFtS
+         Q82Yz6rCVesqVlPAr1vTRPRlE2f/slY5Lu7mYgNee4aPwoEkM6ugUcB0vL5pzEY/Jyse
+         2BGQ==
+X-Gm-Message-State: AOAM531UwOBuLYTTCQpFPOZCVqk9yj0uuZ/TyKLz+PS9+yVikw5llQkx
+        MC37KLx5bIVrtY5dSdVjsU8CmTvjHF2NeyYSlIo=
+X-Google-Smtp-Source: ABdhPJzVa2+iD5w2wZiAll+bNYAh4Woiw4BvSeE/HM1A5wWyO8tbc7KvmBfTDvYoGqyu9lJ2HX/YyH0IRTBMNj5XBOQ=
+X-Received: from samitolvanen1.mtv.corp.google.com ([2620:15c:201:2:ebe8:1acf:913c:f19e])
+ (user=samitolvanen job=sendgmr) by 2002:a81:4754:0:b0:2e5:9447:b1a0 with SMTP
+ id u81-20020a814754000000b002e59447b1a0mr12543646ywa.66.1648844358691; Fri,
+ 01 Apr 2022 13:19:18 -0700 (PDT)
+Date:   Fri,  1 Apr 2022 13:19:13 -0700
+Message-Id: <20220401201916.1487500-1-samitolvanen@google.com>
+Mime-Version: 1.0
+X-Developer-Key: i=samitolvanen@google.com; a=openpgp; fpr=35CCFB63B283D6D3AEB783944CB5F6848BBC56EE
+X-Developer-Signature: v=1; a=openpgp-sha256; l=755; h=from:subject;
+ bh=WH/8OyJEi9p/hM5wZbbTiaLpH/4ppY4IMtyv+KlnWGQ=; b=owEB7QES/pANAwAKAUy19oSLvFbuAcsmYgBiR15CtFhTIHqRjcowQZaTOrS5xpFZwIuWGKgZH9QY
+ 9U9tLmuJAbMEAAEKAB0WIQQ1zPtjsoPW0663g5RMtfaEi7xW7gUCYkdeQgAKCRBMtfaEi7xW7nC8C/
+ 9PyrDAAwDUSsKHBXM2cS1o2I7dEFr0YXswqSVooDhekKHMqQvLQ36MLEJKCXvGOq4Hp4BEeyFauzi2
+ gVFFOC8aM0YY+vuiYObacWitVa/ZXz91yRIIRdFKsrvSdMalN+Nei37wUcBtyaoleFlwe/kP4jwCxr
+ ap9Mwf152DR57HwdQAwfJNXDPk2l+xkGh43Bsw4Bvkc5JZHl7q68+SvHZuYnTySOhdfE1x2NJo2o9a
+ g+BYwOVTkyQv3ktPgnCIPmwmj1JNKQXrYcoDOTfvRd5RmFKIzA/zYXypH/FEb3D3EY76bkdIuNg44S
+ 30bclKxDr7N/BgTQFumcNdOVgnvgm9ZcDNkT7xT/NpdvfM1HyHHW72wwtWmT5e1aZARYcVTsCdY0Wh
+ GqEJoMP3nQuyozhUqhU3WKFtKjvO5PYkGimKFod4mrEl4hJ/mUu5YFzJC4UVJ1xYqXrWa/K+oScIl9
+ dq8P2Qvs08jBmPDSxm8nEE8HlUHh+7VC6SIgRPcXP2F/8=
+X-Mailer: git-send-email 2.35.0
+Subject: [PATCH 0/3] cfi: Use __builtin_function_start
+From:   Sami Tolvanen <samitolvanen@google.com>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Catalin Marinas <catalin.marinas@arm.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Will Deacon <will@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, Sami Tolvanen <samitolvanen@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Instead of using the crypto_info from TFM ctx, use the one given as parameter.
+Clang 14 introduced the __builtin_function_start intrinsic, which
+makes it possible to cleanly implement the function_nocfi() macro in a
+way that also works with static initializers. Add a default
+function_nocfi() implementation and drop the arm64 inline assembly
+version.
 
-Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
----
- drivers/crypto/rockchip/rk3288_crypto_skcipher.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Sami Tolvanen (3):
+  kbuild: Change CFI_CLANG to depend on __builtin_function_start
+  linux/compiler-clang.h: define function_nocfi
+  arm64: Drop the inline assembly implementation of function_nocfi
 
-diff --git a/drivers/crypto/rockchip/rk3288_crypto_skcipher.c b/drivers/crypto/rockchip/rk3288_crypto_skcipher.c
-index 9e2935716840..9784b25e64ce 100644
---- a/drivers/crypto/rockchip/rk3288_crypto_skcipher.c
-+++ b/drivers/crypto/rockchip/rk3288_crypto_skcipher.c
-@@ -264,7 +264,7 @@ static void rk_cipher_hw_init(struct rk_crypto_info *dev, struct skcipher_reques
- 			     RK_CRYPTO_TDES_BYTESWAP_KEY |
- 			     RK_CRYPTO_TDES_BYTESWAP_IV;
- 		CRYPTO_WRITE(dev, RK_CRYPTO_TDES_CTRL, rctx->mode);
--		memcpy_toio(ctx->dev->reg + RK_CRYPTO_TDES_KEY1_0, ctx->key, ctx->keylen);
-+		memcpy_toio(dev->reg + RK_CRYPTO_TDES_KEY1_0, ctx->key, ctx->keylen);
- 		conf_reg = RK_CRYPTO_DESSEL;
- 	} else {
- 		rctx->mode |= RK_CRYPTO_AES_FIFO_MODE |
-@@ -276,7 +276,7 @@ static void rk_cipher_hw_init(struct rk_crypto_info *dev, struct skcipher_reques
- 		else if (ctx->keylen == AES_KEYSIZE_256)
- 			rctx->mode |= RK_CRYPTO_AES_256BIT_key;
- 		CRYPTO_WRITE(dev, RK_CRYPTO_AES_CTRL, rctx->mode);
--		memcpy_toio(ctx->dev->reg + RK_CRYPTO_AES_KEY_0, ctx->key, ctx->keylen);
-+		memcpy_toio(dev->reg + RK_CRYPTO_AES_KEY_0, ctx->key, ctx->keylen);
- 	}
- 	conf_reg |= RK_CRYPTO_BYTESWAP_BTFIFO |
- 		    RK_CRYPTO_BYTESWAP_BRFIFO;
+ arch/Kconfig                      |  5 +----
+ arch/arm64/include/asm/compiler.h | 16 ----------------
+ include/linux/compiler-clang.h    | 10 ++++++++++
+ init/Kconfig                      |  3 +++
+ 4 files changed, 14 insertions(+), 20 deletions(-)
+
 -- 
-2.35.1
+2.35.0
 
