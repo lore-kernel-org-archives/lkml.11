@@ -2,97 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94A4DC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 13:30:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9FCAC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 13:31:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346349AbiDANbx (ORCPT
+        id S1346362AbiDANdm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 09:31:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44946 "EHLO
+        Fri, 1 Apr 2022 09:33:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232890AbiDANbu (ORCPT
+        with ESMTP id S1345975AbiDANdk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 09:31:50 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34C73276FBE;
-        Fri,  1 Apr 2022 06:30:00 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 7C173210EC;
-        Fri,  1 Apr 2022 13:29:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1648819799;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=pbRJr7IPn8qeEu81RK3Y+vqOSQRcbz2LMBzi+HgbIr8=;
-        b=TPMSwncJZtNw918WLa+hnrGEKvZieut+mublksy1AsW1fKAp3kqDx6QhzYCm0gjr3DjKGN
-        YIDrpzZHz16i7J5g8VXY6aFuHmhgqgL8UI1CrMfMNrvT18N2Fzp1rLZ811jHeJ9xjbbRKS
-        sBU+HNsM4/tzebwGmFzotiQvkWHA6QQ=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1648819799;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=pbRJr7IPn8qeEu81RK3Y+vqOSQRcbz2LMBzi+HgbIr8=;
-        b=PnsAKlVlpalyVK/QMAf1uoZqLPQbGAE63ACdZs5Q8Waq0BcpDskylPQby35lqHnyrLZvYw
-        itMrDdGmwU/ZZODg==
-Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
-        by relay2.suse.de (Postfix) with ESMTP id 6F8B4A3B93;
-        Fri,  1 Apr 2022 13:29:59 +0000 (UTC)
-Received: by ds.suse.cz (Postfix, from userid 10065)
-        id 64C3DDA7F3; Fri,  1 Apr 2022 15:26:00 +0200 (CEST)
-Date:   Fri, 1 Apr 2022 15:26:00 +0200
-From:   David Sterba <dsterba@suse.cz>
-To:     Sweet Tea Dorminy <sweettea-kernel@dorminy.me>
-Cc:     dsterba@suse.cz, Chris Mason <clm@fb.com>,
-        Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>,
-        Nick Terrell <terrelln@fb.com>, linux-kernel@vger.kernel.org,
-        linux-btrfs@vger.kernel.org, kernel-team@fb.com,
-        Nikolay Borisov <nborisov@suse.com>
-Subject: Re: [PATCH v3 2/2] btrfs: allocate page arrays using bulk page
- allocator
-Message-ID: <20220401132600.GI15609@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz,
-        Sweet Tea Dorminy <sweettea-kernel@dorminy.me>,
-        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>, Nick Terrell <terrelln@fb.com>,
-        linux-kernel@vger.kernel.org, linux-btrfs@vger.kernel.org,
-        kernel-team@fb.com, Nikolay Borisov <nborisov@suse.com>
-References: <cover.1648669832.git.sweettea-kernel@dorminy.me>
- <ede1d39f7878ee2ed12c1526cc2ec358a2d862cf.1648669832.git.sweettea-kernel@dorminy.me>
- <20220331173525.GF15609@twin.jikos.cz>
- <f9493291-9981-d684-bf49-a551aaf08061@dorminy.me>
+        Fri, 1 Apr 2022 09:33:40 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D25027DEA6;
+        Fri,  1 Apr 2022 06:31:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1648819909; x=1680355909;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=lOHpdOenq/fYFzyDMijV5NodHbSZD635rAmVNUrJjAs=;
+  b=LXlqkFAVQeMRZgo02TR8wYLY51ymTpt0kg1Dmct8GLHAl8f526xEgYct
+   l+y0TgWtft2/Z9COa87xaKRfsVViyXwhzeuu5dSpU1igAeYKAtAZuX+zd
+   bfSflxkoy5uPrEPrqOxX38yIYfSrsn8Xtdv4yoSZceU0M9ijvaxa2YvaL
+   7M07rkkLfuiLXKuAn2sD4oRH4W8avbjaZvu5qCnTUgS+0mdho8XMvLgI2
+   5zmT0ahkuyGev1KQ8bYIWfoDu1/0kV5KDAZGLq3R6ynbDyiWm7vbsXlHB
+   1eCKddLGzsHDhGj2t3xmn+fhIr0NPXuwiUupbf7E6+nSgfMZqI/PHCdMU
+   A==;
+X-IronPort-AV: E=Sophos;i="5.90,227,1643698800"; 
+   d="scan'208";a="158536030"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 01 Apr 2022 06:31:47 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Fri, 1 Apr 2022 06:31:46 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Fri, 1 Apr 2022 06:31:46 -0700
+Date:   Fri, 1 Apr 2022 15:34:54 +0200
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <hkallweit1@gmail.com>,
+        <linux@armlinux.org.uk>, <Divya.Koppera@microchip.com>,
+        <davem@davemloft.net>, <kuba@kernel.org>,
+        <richardcochran@gmail.com>, <UNGLinuxDriver@microchip.com>
+Subject: Re: [PATCH net 2/3] net: phy: micrel: Remove latency from driver
+Message-ID: <20220401133454.ic6jxnripuxjhp5g@soft-dev3-1.localhost>
+References: <20220401094805.3343464-1-horatiu.vultur@microchip.com>
+ <20220401094805.3343464-3-horatiu.vultur@microchip.com>
+ <Ykb0RgM+fnzOUTNx@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Disposition: inline
-In-Reply-To: <f9493291-9981-d684-bf49-a551aaf08061@dorminy.me>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+In-Reply-To: <Ykb0RgM+fnzOUTNx@lunn.ch>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 31, 2022 at 02:19:07PM -0400, Sweet Tea Dorminy wrote:
-> > Also in the xfs code there's memalloc_retry_wait() which is supposed to be
-> > called when repeated memory allocation is retried. What was the reason
-> > you removed it?
+The 04/01/2022 14:47, Andrew Lunn wrote:
 > 
-> Trying to keep the behavior as close as possible to the existing behavior.
-
-I see, makes sense.
-
-> The current behavior of each alloc_page loop is to fail if alloc_page() 
-> fails; in the worst case, alloc_pages_bulk_array() calls alloc_page() 
-> after trying to get a batch, so I figured the worst case is still 
-> basically a loop calling alloc_page() and failing if it ever fails.
+> On Fri, Apr 01, 2022 at 11:48:04AM +0200, Horatiu Vultur wrote:
+> > Based on the discussions here[1], the PHY driver is the wrong place
+> > to set the latencies, therefore remove them.
+> >
+> > [1] https://lkml.org/lkml/2022/3/4/325
+> >
+> > Fixes: ece19502834d84 ("net: phy: micrel: 1588 support for LAN8814 phy")
+> > Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 > 
-> Reading up on it, though, arguably the memalloc_retry_wait() should 
-> already be in all the callsites, so maybe I should insert a patch in the 
-> middle that just adds the memalloc_retry_wait() into 
-> btrfs_alloc_page_array()? Since it's an orthogonal fixup to either the 
-> refactoring or the conversion to alloc_pages_bulk_array()?
+> Thanks for the revert.
+> 
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> 
+> > -static struct kszphy_latencies lan8814_latencies = {
+> > -     .rx_10          = 0x22AA,
+> > -     .tx_10          = 0x2E4A,
+> > -     .rx_100         = 0x092A,
+> > -     .tx_100         = 0x02C1,
+> > -     .rx_1000        = 0x01AD,
+> > -     .tx_1000        = 0x00C9,
+> > -};
+> 
+> What are the reset defaults of these? 
 
-Yeah a separate patch with the reasonig about the potential effects is
-better. The v3 is now in misc-next with the suggested loop refactoring,
-so please send the memalloc_retry_wait() update on top of that. Thanks.
+Those are actually the reset values.
+
+> I'm just wondering if we should
+> explicitly set them to 0, so we don't get into a mess where some
+> vendor bootloader sets values but mainline bootloader does not,
+> breaking a configuration where the userspace daemon does the correct?
+
+It would be fine for me to set them to 0. But then definitely we need a
+way to set these latencies from userspace.
+
+> 
+>          Andrew
+
+-- 
+/Horatiu
