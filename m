@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2346C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:04:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46329C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:04:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236347AbiDAPGL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:06:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60488 "EHLO
+        id S1349707AbiDAPG0 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Apr 2022 11:06:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349655AbiDAOql (ORCPT
+        with ESMTP id S1349731AbiDAOqp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:46:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E2B329D25F;
-        Fri,  1 Apr 2022 07:36:18 -0700 (PDT)
+        Fri, 1 Apr 2022 10:46:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECCD129E4C4;
+        Fri,  1 Apr 2022 07:36:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D3544B8250B;
-        Fri,  1 Apr 2022 14:35:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73BF4C36AE9;
-        Fri,  1 Apr 2022 14:35:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C4DB160B9A;
+        Fri,  1 Apr 2022 14:36:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 531EBC2BBE4;
+        Fri,  1 Apr 2022 14:36:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823750;
-        bh=AM4Arlzi1uMQcuMz63HSz5AFP4b2LLZXu13ilcUheqs=;
+        s=k20201202; t=1648823783;
+        bh=tsODSIxsLeSUxtlp3/TVZzEZFMypKoyJ0UBhTRNd7vg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ktDllcx1YjGHNBfBO7lSkle6yacz9iKQJCZzsMJgoBBE/g+WX3njXFrlZIjNjKG0Z
-         f/brejViNlWpY6DZ76M/c2Cjk0JYkGotRzzWIYirN/8ml9CKEYdSWmH9YIaPd9ZpF8
-         El0+m2W7mm+1CebK1JPn8n0hGw8fR1pIjw2iIzJbpJcOuQ2BbfSw22jcd0p3MGvmNH
-         H/ImMO2NPn+HPn7kWp8W2u7EEcWtYkctVs3P3miv61cus6k75QrC+LK2Wi0AMlqkRh
-         5ozQWBnLvTAn2i+6qpZv0jo4jhmWkMgLjrZTshcIbV+Cp0CKPxxACRM3Hk/P/Lg0ta
-         B9+5nnXsjlyJA==
+        b=uv3NncpbueRKuf7rLbBE6pgzyhlEkwOKll8pG5tf88U+OA+e/Rq8WcFJvjJ5Gdsx2
+         dPsF+hvjh3W+S3Gy0v8TgrcojZNzJXwwx4ocn5Yxll8e1aXG8HzTBvUVjjRs2j80WL
+         vdSoNHPVBNCDlcTTrO4DazpuBltabBy53SpGpbJk2tqC2bC2809nHCxLUGz+U1BN10
+         RYjRznFLFC1g2SWuuHQSlVR35wXe0zZonjZw+x+FSK4tR1ya76YWdKT206ogHWXm0Q
+         4efamNH4CMVGzARPA5ka/h8Gm+iOLzY8TDyGkjK2TsI+871EEJHmGYCYNn1z2xVCig
+         tmAACn3b+gNlw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alex Deucher <alexander.deucher@amd.com>,
-        Felix Kuehling <Felix.Kuehling@amd.com>,
-        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
-        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.16 062/109] drm/amdkfd: make CRAT table missing message informational only
-Date:   Fri,  1 Apr 2022 10:32:09 -0400
-Message-Id: <20220401143256.1950537-62-sashal@kernel.org>
+Cc:     Qi Liu <liuqi115@huawei.com>, John Garry <john.garry@huawei.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, jejb@linux.ibm.com,
+        linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 074/109] scsi: hisi_sas: Free irq vectors in order for v3 HW
+Date:   Fri,  1 Apr 2022 10:32:21 -0400
+Message-Id: <20220401143256.1950537-74-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143256.1950537-1-sashal@kernel.org>
 References: <20220401143256.1950537-1-sashal@kernel.org>
@@ -53,36 +53,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alex Deucher <alexander.deucher@amd.com>
+From: Qi Liu <liuqi115@huawei.com>
 
-[ Upstream commit 9dff13f9edf755a15f6507874185a3290c1ae8bb ]
+[ Upstream commit 554fb72ee34f4732c7f694f56c3c6e67790352a0 ]
 
-The driver has a fallback so make the message informational
-rather than a warning. The driver has a fallback if the
-Component Resource Association Table (CRAT) is missing, so
-make this informational now.
+If the driver probe fails to request the channel IRQ or fatal IRQ, the
+driver will free the IRQ vectors before freeing the IRQs in free_irq(),
+and this will cause a kernel BUG like this:
 
-Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/1906
-Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+------------[ cut here ]------------
+kernel BUG at drivers/pci/msi.c:369!
+Internal error: Oops - BUG: 0 [#1] PREEMPT SMP
+Call trace:
+   free_msi_irqs+0x118/0x13c
+   pci_disable_msi+0xfc/0x120
+   pci_free_irq_vectors+0x24/0x3c
+   hisi_sas_v3_probe+0x360/0x9d0 [hisi_sas_v3_hw]
+   local_pci_probe+0x44/0xb0
+   work_for_cpu_fn+0x20/0x34
+   process_one_work+0x1d0/0x340
+   worker_thread+0x2e0/0x460
+   kthread+0x180/0x190
+   ret_from_fork+0x10/0x20
+---[ end trace b88990335b610c11 ]---
+
+So we use devm_add_action() to control the order in which we free the
+vectors.
+
+Link: https://lore.kernel.org/r/1645703489-87194-4-git-send-email-john.garry@huawei.com
+Signed-off-by: Qi Liu <liuqi115@huawei.com>
+Signed-off-by: John Garry <john.garry@huawei.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdkfd/kfd_crat.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/scsi/hisi_sas/hisi_sas_v3_hw.c | 16 +++++++++++-----
+ 1 file changed, 11 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_crat.c b/drivers/gpu/drm/amd/amdkfd/kfd_crat.c
-index c33d689f29e8..e574aa32a111 100644
---- a/drivers/gpu/drm/amd/amdkfd/kfd_crat.c
-+++ b/drivers/gpu/drm/amd/amdkfd/kfd_crat.c
-@@ -1563,7 +1563,7 @@ int kfd_create_crat_image_acpi(void **crat_image, size_t *size)
- 	/* Fetch the CRAT table from ACPI */
- 	status = acpi_get_table(CRAT_SIGNATURE, 0, &crat_table);
- 	if (status == AE_NOT_FOUND) {
--		pr_warn("CRAT table not found\n");
-+		pr_info("CRAT table not found\n");
- 		return -ENODATA;
- 	} else if (ACPI_FAILURE(status)) {
- 		const char *err = acpi_format_exception(status);
+diff --git a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
+index 11a44d9dd9b2..b3e010483705 100644
+--- a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
++++ b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
+@@ -2390,17 +2390,25 @@ static irqreturn_t cq_interrupt_v3_hw(int irq_no, void *p)
+ 	return IRQ_WAKE_THREAD;
+ }
+ 
++static void hisi_sas_v3_free_vectors(void *data)
++{
++	struct pci_dev *pdev = data;
++
++	pci_free_irq_vectors(pdev);
++}
++
+ static int interrupt_preinit_v3_hw(struct hisi_hba *hisi_hba)
+ {
+ 	int vectors;
+ 	int max_msi = HISI_SAS_MSI_COUNT_V3_HW, min_msi;
+ 	struct Scsi_Host *shost = hisi_hba->shost;
++	struct pci_dev *pdev = hisi_hba->pci_dev;
+ 	struct irq_affinity desc = {
+ 		.pre_vectors = BASE_VECTORS_V3_HW,
+ 	};
+ 
+ 	min_msi = MIN_AFFINE_VECTORS_V3_HW;
+-	vectors = pci_alloc_irq_vectors_affinity(hisi_hba->pci_dev,
++	vectors = pci_alloc_irq_vectors_affinity(pdev,
+ 						 min_msi, max_msi,
+ 						 PCI_IRQ_MSI |
+ 						 PCI_IRQ_AFFINITY,
+@@ -2412,6 +2420,7 @@ static int interrupt_preinit_v3_hw(struct hisi_hba *hisi_hba)
+ 	hisi_hba->cq_nvecs = vectors - BASE_VECTORS_V3_HW;
+ 	shost->nr_hw_queues = hisi_hba->cq_nvecs;
+ 
++	devm_add_action(&pdev->dev, hisi_sas_v3_free_vectors, pdev);
+ 	return 0;
+ }
+ 
+@@ -4763,7 +4772,7 @@ hisi_sas_v3_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 
+ 	rc = scsi_add_host(shost, dev);
+ 	if (rc)
+-		goto err_out_free_irq_vectors;
++		goto err_out_debugfs;
+ 
+ 	rc = sas_register_ha(sha);
+ 	if (rc)
+@@ -4792,8 +4801,6 @@ hisi_sas_v3_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 	sas_unregister_ha(sha);
+ err_out_register_ha:
+ 	scsi_remove_host(shost);
+-err_out_free_irq_vectors:
+-	pci_free_irq_vectors(pdev);
+ err_out_debugfs:
+ 	debugfs_exit_v3_hw(hisi_hba);
+ err_out_ha:
+@@ -4817,7 +4824,6 @@ hisi_sas_v3_destroy_irqs(struct pci_dev *pdev, struct hisi_hba *hisi_hba)
+ 
+ 		devm_free_irq(&pdev->dev, pci_irq_vector(pdev, nr), cq);
+ 	}
+-	pci_free_irq_vectors(pdev);
+ }
+ 
+ static void hisi_sas_v3_remove(struct pci_dev *pdev)
 -- 
 2.34.1
 
