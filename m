@@ -2,105 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A5E0C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 08:13:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79E4BC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 08:26:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244057AbiDAIPm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 04:15:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57356 "EHLO
+        id S242952AbiDAI2h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Apr 2022 04:28:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243763AbiDAIPb (ORCPT
+        with ESMTP id S229568AbiDAI2f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 04:15:31 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1386B1D31F;
-        Fri,  1 Apr 2022 01:13:41 -0700 (PDT)
-X-UUID: 4a56c69402d54db885d804758a1a8491-20220401
-X-UUID: 4a56c69402d54db885d804758a1a8491-20220401
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
-        (envelope-from <yunfei.dong@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 38215872; Fri, 01 Apr 2022 16:13:35 +0800
-Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Fri, 1 Apr 2022 16:13:34 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb02.mediatek.inc
- (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 1 Apr
- 2022 16:13:33 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 1 Apr 2022 16:13:30 +0800
-From:   Yunfei Dong <yunfei.dong@mediatek.com>
-To:     Yunfei Dong <yunfei.dong@mediatek.com>,
-        Alexandre Courbot <acourbot@chromium.org>,
-        Nicolas Dufresne <nicolas@ndufresne.ca>,
-        "Hans Verkuil" <hverkuil-cisco@xs4all.nl>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        Tiffany Lin <tiffany.lin@mediatek.com>,
-        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Tomasz Figa <tfiga@google.com>
-CC:     George Sun <george.sun@mediatek.com>,
-        Xiaoyong Lu <xiaoyong.lu@mediatek.com>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Fritz Koenig <frkoenig@chromium.org>,
-        Dafna Hirschfeld <dafna.hirschfeld@collabora.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Irui Wang <irui.wang@mediatek.com>,
-        Steve Cho <stevecho@chromium.org>,
-        <linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <srv_heupstream@mediatek.com>,
-        <linux-mediatek@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Subject: [PATCH v2] media: mediatek: vcodec: Fix v4l2 compliance decoder cmd test fail
-Date:   Fri, 1 Apr 2022 16:13:02 +0800
-Message-ID: <20220401081302.9475-1-yunfei.dong@mediatek.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 1 Apr 2022 04:28:35 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C796324B5CF
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 01:26:46 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id y10so2060671edv.7
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 01:26:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=9hsMF7BCfjYirFT1IksTwNQVIId/FnL7I37gK+LNZTY=;
+        b=coHjGKP2dzde1Xd07Zjvj7YNaOPUdCjyk2t2tfXmsE0tcUE75ziOcdpt1fFPR6xlE0
+         qhPrIoZTrHX3XDBZcbWK2JV7qu2xXdArmEcIh9e1fUmmuE/nxFwhA56aFiL3+1Pap3Zx
+         R6uwSoW2crKgJRdu0mrbKFaVinGAyfij3jgLGZCw2R0yOkP5cYuDTt61e54mU2h28yzV
+         1vjZDKpMxE1TnESzbHi2TGM5AORJN4oJuRwahUv6pnzkuGlTvZKT1G5QyJ+cQcmdhtth
+         Rp+G/R7kq8XRHRaDQ8G/DeUtQeK9c77P/vGz71SLP3eoNjwTOWqGaiJu/C843q/R4Cnn
+         /WDg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=9hsMF7BCfjYirFT1IksTwNQVIId/FnL7I37gK+LNZTY=;
+        b=N9zjY9dUvaCU9scuaG9AfMLUI538T5ttYm+Wheh96vVv4yD+5iwOvIbldBAAHpoonB
+         7dPtTGMejrc6iVbnhqm3w2wAHkQnYAJ/CnMW77OzGx4jH4fm2X+Sgl5rnL21xcjmbhCH
+         tz7CLJmLdtappw9kMVsBth0RcARUVYz6JdXDrAMTSztIMVCOplFuC3ZT5GRiWv77azPn
+         sGM7684gZiYlYqvVJuqQZ5Ki5wK1BgVhYr9f3vXkCmhIXuAh9T+LQCz33mC121GrJxsr
+         sG5WivR7ZSDfVafXyQz0CkK/SiHwUuiIfMWuaHvPX//gKWCMXHXUSPKbFzbL2TCq1O5v
+         OLWg==
+X-Gm-Message-State: AOAM5311gAn047b2+rkG++Jphx7ZqYElRllvnJSAHWgw6wOXr9fhFKxv
+        p8Fdo+6YPMWOPWpluJbn9ug=
+X-Google-Smtp-Source: ABdhPJwtVEmM1Ovd0jOYKQpen33GZA28WERT42Fptm2WeHbobCIIXTD/T9VT5RllPkXMqD/pA8yRkA==
+X-Received: by 2002:a05:6402:524c:b0:419:4d8c:e959 with SMTP id t12-20020a056402524c00b004194d8ce959mr20062285edd.398.1648801605184;
+        Fri, 01 Apr 2022 01:26:45 -0700 (PDT)
+Received: from leap.localnet (host-95-249-145-232.retail.telecomitalia.it. [95.249.145.232])
+        by smtp.gmail.com with ESMTPSA id c5-20020a170906d18500b006ce371f09d4sm757857ejz.57.2022.04.01.01.26.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 01 Apr 2022 01:26:43 -0700 (PDT)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        bcm-kernel-feedback-list@broadcom.com,
+        linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        ira.weiny@intel.com, outreachy@lists.linux.dev
+Subject: Re: [PATCH] staging: vc04_services: Convert kmap() to kmap_local_page()
+Date:   Fri, 01 Apr 2022 10:07:36 +0200
+Message-ID: <3162339.aeNJFYEL58@leap>
+In-Reply-To: <20220330191414.23141-1-fmdefrancesco@gmail.com>
+References: <20220330191414.23141-1-fmdefrancesco@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="ISO-8859-1"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Will return -EINVAL using standard framework api when test stateless
-decoder with cmd VIDIOC_(TRY)DECODER_CMD.
+On mercoled=EC 30 marzo 2022 21:14:14 CEST Fabio M. De Francesco wrote:
+> The use of kmap() is being deprecated in favor of kmap_local_page()
+> where it is feasible. In file interface/vchiq_arm/vchiq_arm.c,
+> function free_pagelist() calls kmap() / kunmap() from two places.
+>=20
+> With kmap_local_page(), the mapping is per thread, CPU local and not
+> globally visible. Therefore, free_pagelist() is a function where the
+> use of kmap_local_page() in place of kmap() is correctly suited.
+>=20
+> Convert to kmap_local_page() but, instead of open coding it, use the
+> memcpy_to_page() helper.
+>=20
+> Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+> ---
+>  .../vc04_services/interface/vchiq_arm/vchiq_arm.c   | 13 +++++--------
+>  1 file changed, 5 insertions(+), 8 deletions(-)
+>=20
+> diff --git a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.=
+c b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
+> index f0bfacfdea80..efb1383b5218 100644
+> --- a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
+> +++ b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
+> @@ -431,21 +431,18 @@ free_pagelist(struct vchiq_pagelist_info *pagelisti=
+nfo,
+>  			if (head_bytes > actual)
+>  				head_bytes =3D actual;
+> =20
+> -			memcpy((char *)kmap(pages[0]) +
+> +			memcpy_to_page(pages[0],
+>  				pagelist->offset,
+>  				fragments,
+>  				head_bytes);
+> -			kunmap(pages[0]);
+>  		}
+>  		if ((actual >=3D 0) && (head_bytes < actual) &&
+> -		    (tail_bytes !=3D 0)) {
+> -			memcpy((char *)kmap(pages[num_pages - 1]) +
+> -				((pagelist->offset + actual) &
+> -				(PAGE_SIZE - 1) & ~(g_cache_line_size - 1)),
+> +		    (tail_bytes !=3D 0))
+> +			memcpy_to_page(pages[num_pages - 1],
+> +				(pagelist->offset + actual) &
+> +				(PAGE_SIZE - 1) & ~(g_cache_line_size - 1),
+>  				fragments + g_cache_line_size,
+>  				tail_bytes);
+> -			kunmap(pages[num_pages - 1]);
+> -		}
+> =20
+>  		down(&g_free_fragments_mutex);
+>  		*(char **)fragments =3D g_free_fragments;
+> --=20
+> 2.34.1
+>=20
+Hi Greg,
 
-Using another return value to adjust v4l2 compliance test for user
-driver(GStreamer/Chrome) won't use decoder cmd.
+I've just received a message from you that says that a patch that I sent
+on March 31 has been applied to staging testing. I know that you usually
+apply patches in first come first served fashion (FIFO), therefore I wonder
+why this patch has not yet been applied.
 
-Fixes: 8cdc3794b2e3 ("media: mtk-vcodec: vdec: support stateless API")
-Signed-off-by: Yunfei Dong <yunfei.dong@mediatek.com>
----
-changes compared with v1:
-- add Fixes: tag
----
- drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+Please don't misunderstand me: I have no hurry. I'm asking only because=20
+I suspect that this patch, sent on March 30th) could have been overlooked=20
+since it has the very identical subject of another patch that I sent on=20
+the same day (or the day before, I'm not sure about it now) and which has=20
+already been applied. Therefore, they may appear to be the same patch,
+because the only difference is that the drivers are different.
 
-diff --git a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c
-index 3859e4c651c6..69b0e797d342 100644
---- a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c
-+++ b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c
-@@ -51,8 +51,7 @@ static int vidioc_try_decoder_cmd(struct file *file, void *priv,
- 
- 	/* Use M2M stateless helper if relevant */
- 	if (ctx->dev->vdec_pdata->uses_stateless_api)
--		return v4l2_m2m_ioctl_stateless_try_decoder_cmd(file, priv,
--								cmd);
-+		return -ENOTTY;
- 	else
- 		return v4l2_m2m_ioctl_try_decoder_cmd(file, priv, cmd);
- }
--- 
-2.18.0
+Thanks,
+
+=46abio
+
+
 
