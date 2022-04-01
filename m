@@ -2,48 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 483B7C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C35BC46467
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:13:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353939AbiDAPLO (ORCPT
+        id S1354019AbiDAPLY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:11:14 -0400
+        Fri, 1 Apr 2022 11:11:24 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351350AbiDAOss (ORCPT
+        with ESMTP id S1351701AbiDAOtb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:48:48 -0400
+        Fri, 1 Apr 2022 10:49:31 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F7381EA5F8;
-        Fri,  1 Apr 2022 07:39:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AE122A85DC;
+        Fri,  1 Apr 2022 07:40:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 43D9EB8240E;
-        Fri,  1 Apr 2022 14:39:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1019CC2BBE4;
-        Fri,  1 Apr 2022 14:39:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 120D9B82511;
+        Fri,  1 Apr 2022 14:38:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1977CC340F2;
+        Fri,  1 Apr 2022 14:38:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823971;
-        bh=fyBbIOLAXtls+WKXRpPj1SEbx8F+22RILRzryEetKtE=;
+        s=k20201202; t=1648823933;
+        bh=ckzIrfL6TdjsEI+KDgKSPG8nEY/WesOEbocmrIN68qM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CIu4VQusmabfkRjzYgIOYFQw9ccSITinobhyK/K3IoCCcEKOd9y2vnxmFcK3rx4I+
-         2FxZcqDgkZ3qxU53cm4I54Dfgqkb/M4VDkFxA7s03LJWgDdarm5xaS4tGJjRWPbuGC
-         i+4Ltq+CE5zlFa2jg+U/1xC2qH0lop6x0r1+MtqkeNskmjtkwHoVMSQJiJFCx0ZlQ9
-         bJrbDQlnZjwqoCXoMv9sWuddpYHYVXngdGzdGHSLVUlPI+bL+h7GpTJOzS8vReX7OJ
-         mX+Di8l8rNw9R6OpMbgSvlSN0zAfv30bD3tRKPmqnly+O20o9jauSvVsSrN/XDMD+7
-         eAKibUwhaPWXw==
+        b=GZhSm+4ZfKWy3iEFL4D01wic59ADJpUrNV4cAwPO4D8qEUDnAglSwSsI5aNERHegw
+         zZjyg5JeJO9HPWGkMoh3g0814J7ZLYmJaUJTzy4vBA99+n5OG8gmQTV6ma7DXbCmF9
+         q13MJJ9HYB84/lTTgzcbZQvzn52TeF6O2WeDRjxaqdIydFMbO3EGO13WJIegGYyU7D
+         PlseT+00Q8/PA4H6OIBjYh7ZjKO2KobGhGqOgd7+R9TaDq1eGP49XfOQJcs8VABYnR
+         HiLcfbnGu2wL/SbSZ/3h5K/qCJrZbyRRl+mXPIGqOMR7LrZLxpoOx+Hbt4IHFN+Cja
+         EEiOenp+JMg7g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Hou Zhiqiang <Zhiqiang.Hou@nxp.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Sasha Levin <sashal@kernel.org>, bhelgaas@google.com,
-        lchen@ambarella.com, yangyingliang@huawei.com,
-        linux-pci@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 35/98] PCI: endpoint: Fix alignment fault error in copy tests
-Date:   Fri,  1 Apr 2022 10:36:39 -0400
-Message-Id: <20220401143742.1952163-35-sashal@kernel.org>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>,
+        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>,
+        lorenzo.bianconi83@gmail.com, ryder.lee@mediatek.com,
+        kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, matthias.bgg@gmail.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.15 24/98] mt76: dma: initialize skip_unmap in mt76_dma_rx_fill
+Date:   Fri,  1 Apr 2022 10:36:28 -0400
+Message-Id: <20220401143742.1952163-24-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143742.1952163-1-sashal@kernel.org>
 References: <20220401143742.1952163-1-sashal@kernel.org>
@@ -55,90 +57,87 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hou Zhiqiang <Zhiqiang.Hou@nxp.com>
+From: Lorenzo Bianconi <lorenzo@kernel.org>
 
-[ Upstream commit 829cc0e2ea2d61fb6c54bc3f8a17f86c56e11864 ]
+[ Upstream commit 577298ec55dfc8b9aece54520f0258c3f93a6573 ]
 
-The copy test uses the memcpy() to copy data between IO memory spaces.
-This can trigger an alignment fault error (pasted the error logs below)
-because memcpy() may use unaligned accesses on a mapped memory that is
-just IO, which does not support unaligned memory accesses.
+Even if it is only a false-positive since skip_buf0/skip_buf1 are only
+used in mt76_dma_tx_cleanup_idx routine, initialize skip_unmap in
+mt76_dma_rx_fill in order to fix the following UBSAN report:
 
-Fix it by using the correct memcpy API to copy from/to IO memory.
+[   13.924906] UBSAN: invalid-load in linux-5.15.0/drivers/net/wireless/mediatek/mt76/dma.c:162:13
+[   13.924909] load of value 225 is not a valid value for type '_Bool'
+[   13.924912] CPU: 9 PID: 672 Comm: systemd-udevd Not tainted 5.15.0-18-generic #18-Ubuntu
+[   13.924914] Hardware name: LENOVO 21A0000CMX/21A0000CMX, BIOS R1MET43W (1.13 ) 11/05/2021
+[   13.924915] Call Trace:
+[   13.924917]  <TASK>
+[   13.924920]  show_stack+0x52/0x58
+[   13.924925]  dump_stack_lvl+0x4a/0x5f
+[   13.924931]  dump_stack+0x10/0x12
+[   13.924932]  ubsan_epilogue+0x9/0x45
+[   13.924934]  __ubsan_handle_load_invalid_value.cold+0x44/0x49
+[   13.924935]  ? __iommu_dma_map+0x84/0xf0
+[   13.924939]  mt76_dma_add_buf.constprop.0.cold+0x23/0x85 [mt76]
+[   13.924949]  mt76_dma_rx_fill.isra.0+0x102/0x1f0 [mt76]
+[   13.924954]  mt76_dma_init+0xc9/0x150 [mt76]
+[   13.924959]  ? mt7921_dma_enable+0x110/0x110 [mt7921e]
+[   13.924966]  mt7921_dma_init+0x1e3/0x260 [mt7921e]
+[   13.924970]  mt7921_register_device+0x29d/0x510 [mt7921e]
+[   13.924975]  mt7921_pci_probe.part.0+0x17f/0x1b0 [mt7921e]
+[   13.924980]  mt7921_pci_probe+0x43/0x60 [mt7921e]
+[   13.924984]  local_pci_probe+0x4b/0x90
+[   13.924987]  pci_device_probe+0x115/0x1f0
+[   13.924989]  really_probe+0x21e/0x420
+[   13.924992]  __driver_probe_device+0x115/0x190
+[   13.924994]  driver_probe_device+0x23/0xc0
+[   13.924996]  __driver_attach+0xbd/0x1d0
+[   13.924998]  ? __device_attach_driver+0x110/0x110
+[   13.924999]  bus_for_each_dev+0x7e/0xc0
+[   13.925001]  driver_attach+0x1e/0x20
+[   13.925003]  bus_add_driver+0x135/0x200
+[   13.925005]  driver_register+0x95/0xf0
+[   13.925008]  ? 0xffffffffc0766000
+[   13.925010]  __pci_register_driver+0x68/0x70
+[   13.925011]  mt7921_pci_driver_init+0x23/0x1000 [mt7921e]
+[   13.925015]  do_one_initcall+0x48/0x1d0
+[   13.925019]  ? kmem_cache_alloc_trace+0x19e/0x2e0
+[   13.925022]  do_init_module+0x62/0x280
+[   13.925025]  load_module+0xac9/0xbb0
+[   13.925027]  __do_sys_finit_module+0xbf/0x120
+[   13.925029]  __x64_sys_finit_module+0x18/0x20
+[   13.925030]  do_syscall_64+0x5c/0xc0
+[   13.925033]  ? do_syscall_64+0x69/0xc0
+[   13.925034]  ? sysvec_reschedule_ipi+0x78/0xe0
+[   13.925036]  ? asm_sysvec_reschedule_ipi+0xa/0x20
+[   13.925039]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[   13.925040] RIP: 0033:0x7fbf2b90f94d
+[   13.925045] RSP: 002b:00007ffe2ec7e5d8 EFLAGS: 00000246 ORIG_RAX: 0000000000000139
+[   13.925047] RAX: ffffffffffffffda RBX: 000056106b0634e0 RCX: 00007fbf2b90f94d
+[   13.925048] RDX: 0000000000000000 RSI: 00007fbf2baa3441 RDI: 0000000000000013
+[   13.925049] RBP: 0000000000020000 R08: 0000000000000000 R09: 0000000000000002
+[   13.925050] R10: 0000000000000013 R11: 0000000000000246 R12: 00007fbf2baa3441
+[   13.925051] R13: 000056106b062620 R14: 000056106b0610c0 R15: 000056106b0640d0
+[   13.925053]  </TASK>
 
-Alignment fault error logs:
-   Unable to handle kernel paging request at virtual address ffff8000101cd3c1
-   Mem abort info:
-     ESR = 0x96000021
-     EC = 0x25: DABT (current EL), IL = 32 bits
-     SET = 0, FnV = 0
-     EA = 0, S1PTW = 0
-     FSC = 0x21: alignment fault
-   Data abort info:
-     ISV = 0, ISS = 0x00000021
-     CM = 0, WnR = 0
-   swapper pgtable: 4k pages, 48-bit VAs, pgdp=0000000081773000
-   [ffff8000101cd3c1] pgd=1000000082410003, p4d=1000000082410003, pud=1000000082411003, pmd=1000000082412003, pte=0068004000001f13
-   Internal error: Oops: 96000021 [#1] PREEMPT SMP
-   Modules linked in:
-   CPU: 0 PID: 6 Comm: kworker/0:0H Not tainted 5.15.0-rc1-next-20210914-dirty #2
-   Hardware name: LS1012A RDB Board (DT)
-   Workqueue: kpcitest pci_epf_test_cmd_handler
-   pstate: 80000005 (Nzcv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-   pc : __memcpy+0x168/0x230
-   lr : pci_epf_test_cmd_handler+0x6f0/0xa68
-   sp : ffff80001003bce0
-   x29: ffff80001003bce0 x28: ffff800010135000 x27: ffff8000101e5000
-   x26: ffff8000101cd000 x25: ffff6cda941cf6c8 x24: 0000000000000000
-   x23: ffff6cda863f2000 x22: ffff6cda9096c800 x21: ffff800010135000
-   x20: ffff6cda941cf680 x19: ffffaf39fd999000 x18: 0000000000000000
-   x17: 0000000000000000 x16: 0000000000000000 x15: ffffaf39fd2b6000
-   x14: 0000000000000000 x13: 15f5c8fa2f984d57 x12: 604d132b60275454
-   x11: 065cee5e5fb428b6 x10: aae662eb17d0cf3e x9 : 1d97c9a1b4ddef37
-   x8 : 7541b65edebf928c x7 : e71937c4fc595de0 x6 : b8a0e09562430d1c
-   x5 : ffff8000101e5401 x4 : ffff8000101cd401 x3 : ffff8000101e5380
-   x2 : fffffffffffffff1 x1 : ffff8000101cd3c0 x0 : ffff8000101e5000
-   Call trace:
-    __memcpy+0x168/0x230
-    process_one_work+0x1ec/0x370
-    worker_thread+0x44/0x478
-    kthread+0x154/0x160
-    ret_from_fork+0x10/0x20
-   Code: a984346c a9c4342c f1010042 54fffee8 (a97c3c8e)
-   ---[ end trace 568c28c7b6336335 ]---
-
-Link: https://lore.kernel.org/r/20211217094708.28678-1-Zhiqiang.Hou@nxp.com
-Signed-off-by: Hou Zhiqiang <Zhiqiang.Hou@nxp.com>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Reviewed-by: Kishon Vijay Abraham I <kishon@ti.com>
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/endpoint/functions/pci-epf-test.c | 12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
+ drivers/net/wireless/mediatek/mt76/dma.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/pci/endpoint/functions/pci-epf-test.c b/drivers/pci/endpoint/functions/pci-epf-test.c
-index 90d84d3bc868..c7e45633beaf 100644
---- a/drivers/pci/endpoint/functions/pci-epf-test.c
-+++ b/drivers/pci/endpoint/functions/pci-epf-test.c
-@@ -285,7 +285,17 @@ static int pci_epf_test_copy(struct pci_epf_test *epf_test)
- 		if (ret)
- 			dev_err(dev, "Data transfer failed\n");
- 	} else {
--		memcpy(dst_addr, src_addr, reg->size);
-+		void *buf;
-+
-+		buf = kzalloc(reg->size, GFP_KERNEL);
-+		if (!buf) {
-+			ret = -ENOMEM;
-+			goto err_map_addr;
-+		}
-+
-+		memcpy_fromio(buf, src_addr, reg->size);
-+		memcpy_toio(dst_addr, buf, reg->size);
-+		kfree(buf);
+diff --git a/drivers/net/wireless/mediatek/mt76/dma.c b/drivers/net/wireless/mediatek/mt76/dma.c
+index 5e1c1506a4c6..7aecde35cb9a 100644
+--- a/drivers/net/wireless/mediatek/mt76/dma.c
++++ b/drivers/net/wireless/mediatek/mt76/dma.c
+@@ -465,6 +465,7 @@ mt76_dma_rx_fill(struct mt76_dev *dev, struct mt76_queue *q)
+ 
+ 		qbuf.addr = addr + offset;
+ 		qbuf.len = len - offset;
++		qbuf.skip_unmap = false;
+ 		mt76_dma_add_buf(dev, q, &qbuf, 1, 0, buf, NULL);
+ 		frames++;
  	}
- 	ktime_get_ts64(&end);
- 	pci_epf_test_print_rate("COPY", reg->size, &start, &end, use_dma);
 -- 
 2.34.1
 
