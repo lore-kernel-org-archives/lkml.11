@@ -2,49 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6047C38A04
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3721CC4167D
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:02:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350343AbiDAO7n (ORCPT
+        id S1350265AbiDAO7a (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 10:59:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34344 "EHLO
+        Fri, 1 Apr 2022 10:59:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348197AbiDAOmc (ORCPT
+        with ESMTP id S1347993AbiDAOl3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:42:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F220292B9C;
-        Fri,  1 Apr 2022 07:34:25 -0700 (PDT)
+        Fri, 1 Apr 2022 10:41:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 433242921C6;
+        Fri,  1 Apr 2022 07:34:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A355960A65;
-        Fri,  1 Apr 2022 14:34:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86396C34111;
-        Fri,  1 Apr 2022 14:34:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 99E56B82515;
+        Fri,  1 Apr 2022 14:33:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EB2CC34112;
+        Fri,  1 Apr 2022 14:33:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823663;
-        bh=6ofM+DEm0Sb91xORAMMNN6wfHsIeX5+RWcmzILaw8HM=;
+        s=k20201202; t=1648823634;
+        bh=I6ui8yr5ddiJmm8uIzxNym8y7SedmbS78BmSFkx9b2I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hdOu7OWBGVfIV3KEKYMtqnPTEBjj4TkyjXBEgD2CMGFdDvjGTWU9K0PCIXqfsSLky
-         qDovaM4nk/WT/1UDny4vqfEM6keUihQ+wOowcnB1rIA+g1DDBgBDrYFsEvHLqQWQ0z
-         mOGncQkCz5c75igWOzzd/7acqnUqREvFQDM6R2OEuNn/QtV5L9Bc1Dia8SVN/1lcaG
-         1sWcQL430MFbg2REemBEp9Pum/PlgVLXNxZnQVF1CfcPHwNJs9FKkl/LrQ65a9D2B2
-         Au1cSwiZFt36SPrhBSiDztU56r+S8NB3Kl18kIaCd+xiY/PsKWkRi2AX3fOB7e7dn4
-         DQL9mSUYMpk2g==
+        b=YGPkVMDrDvqeqkeKO3utmuO40VKB+Qzz23g//7+mYAE76nQmqDM911iZTonjkFzb6
+         80FOM9LWLu+pi9tXoz6o6sAoXAbc5pHtmYo/kqNar1jMgGp3TZpH/ZhN+KzrPeCJCH
+         ywHqBFocy6Pf5PgwiQUHLKbcMxXnhZkUhe23AyTkwA683Q2ylnLxOnoK1+B873CzX+
+         wcJULDWh943TBEwfu5Jc+eSm82ivV/NbPHiBGJeJ+Cfb6zsdta4dvUufBfZeiMUQSy
+         DscyZDhfEZ3AF/SxwTfpWjzDh3gLWONaL2jSYMwxg6Vc7RZXs5EXWgUx+9D8ZURuXS
+         JjBDmrXOkLcuw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, mareklindner@neomailbox.ch,
-        sw@simonwunderlich.de, a@unstable.cc, sven@narfation.org,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-        b.a.t.m.a.n@lists.open-mesh.org
-Subject: [PATCH AUTOSEL 5.16 033/109] ipv6: make mc_forwarding atomic
-Date:   Fri,  1 Apr 2022 10:31:40 -0400
-Message-Id: <20220401143256.1950537-33-sashal@kernel.org>
+Cc:     Kalle Valo <quic_kvalo@quicinc.com>,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 020/109] ath11k: pci: fix crash on suspend if board file is not found
+Date:   Fri,  1 Apr 2022 10:31:27 -0400
+Message-Id: <20220401143256.1950537-20-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143256.1950537-1-sashal@kernel.org>
 References: <20220401143256.1950537-1-sashal@kernel.org>
@@ -56,125 +55,92 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Kalle Valo <quic_kvalo@quicinc.com>
 
-[ Upstream commit 145c7a793838add5e004e7d49a67654dc7eba147 ]
+[ Upstream commit b4f4c56459a5c744f7f066b9fc2b54ea995030c5 ]
 
-This fixes minor data-races in ip6_mc_input() and
-batadv_mcast_mla_rtr_flags_softif_get_ipv6()
+Mario reported that the kernel was crashing on suspend if ath11k was not able
+to find a board file:
 
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+[  473.693286] PM: Suspending system (s2idle)
+[  473.693291] printk: Suspending console(s) (use no_console_suspend to debug)
+[  474.407787] BUG: unable to handle page fault for address: 0000000000002070
+[  474.407791] #PF: supervisor read access in kernel mode
+[  474.407794] #PF: error_code(0x0000) - not-present page
+[  474.407798] PGD 0 P4D 0
+[  474.407801] Oops: 0000 [#1] PREEMPT SMP NOPTI
+[  474.407805] CPU: 2 PID: 2350 Comm: kworker/u32:14 Tainted: G        W         5.16.0 #248
+[...]
+[  474.407868] Call Trace:
+[  474.407870]  <TASK>
+[  474.407874]  ? _raw_spin_lock_irqsave+0x2a/0x60
+[  474.407882]  ? lock_timer_base+0x72/0xa0
+[  474.407889]  ? _raw_spin_unlock_irqrestore+0x29/0x3d
+[  474.407892]  ? try_to_del_timer_sync+0x54/0x80
+[  474.407896]  ath11k_dp_rx_pktlog_stop+0x49/0xc0 [ath11k]
+[  474.407912]  ath11k_core_suspend+0x34/0x130 [ath11k]
+[  474.407923]  ath11k_pci_pm_suspend+0x1b/0x50 [ath11k_pci]
+[  474.407928]  pci_pm_suspend+0x7e/0x170
+[  474.407935]  ? pci_pm_freeze+0xc0/0xc0
+[  474.407939]  dpm_run_callback+0x4e/0x150
+[  474.407947]  __device_suspend+0x148/0x4c0
+[  474.407951]  async_suspend+0x20/0x90
+dmesg-efi-164255130401001:
+Oops#1 Part1
+[  474.407955]  async_run_entry_fn+0x33/0x120
+[  474.407959]  process_one_work+0x220/0x3f0
+[  474.407966]  worker_thread+0x4a/0x3d0
+[  474.407971]  kthread+0x17a/0x1a0
+[  474.407975]  ? process_one_work+0x3f0/0x3f0
+[  474.407979]  ? set_kthread_struct+0x40/0x40
+[  474.407983]  ret_from_fork+0x22/0x30
+[  474.407991]  </TASK>
+
+The issue here is that board file loading happens after ath11k_pci_probe()
+succesfully returns (ath11k initialisation happends asynchronously) and the
+suspend handler is still enabled, of course failing as ath11k is not properly
+initialised. Fix this by checking ATH11K_FLAG_QMI_FAIL during both suspend and
+resume.
+
+Tested-on: WCN6855 hw2.0 PCI WLAN.HSP.1.1-03003-QCAHSPSWPL_V1_V2_SILICONZ_LITE-2
+
+Reported-by: Mario Limonciello <mario.limonciello@amd.com>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215504
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20220127090117.2024-1-kvalo@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/ipv6.h       | 2 +-
- net/batman-adv/multicast.c | 2 +-
- net/ipv6/addrconf.c        | 4 ++--
- net/ipv6/ip6_input.c       | 2 +-
- net/ipv6/ip6mr.c           | 8 ++++----
- 5 files changed, 9 insertions(+), 9 deletions(-)
+ drivers/net/wireless/ath/ath11k/pci.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/include/linux/ipv6.h b/include/linux/ipv6.h
-index a59d25f19385..b8641dc0ee66 100644
---- a/include/linux/ipv6.h
-+++ b/include/linux/ipv6.h
-@@ -51,7 +51,7 @@ struct ipv6_devconf {
- 	__s32		use_optimistic;
- #endif
- #ifdef CONFIG_IPV6_MROUTE
--	__s32		mc_forwarding;
-+	atomic_t	mc_forwarding;
- #endif
- 	__s32		disable_ipv6;
- 	__s32		drop_unicast_in_l2_multicast;
-diff --git a/net/batman-adv/multicast.c b/net/batman-adv/multicast.c
-index f4004cf0ff6f..9f311fddfaf9 100644
---- a/net/batman-adv/multicast.c
-+++ b/net/batman-adv/multicast.c
-@@ -134,7 +134,7 @@ static u8 batadv_mcast_mla_rtr_flags_softif_get_ipv6(struct net_device *dev)
- {
- 	struct inet6_dev *in6_dev = __in6_dev_get(dev);
+diff --git a/drivers/net/wireless/ath/ath11k/pci.c b/drivers/net/wireless/ath/ath11k/pci.c
+index 4c348bacf2cb..754578f3dcf1 100644
+--- a/drivers/net/wireless/ath/ath11k/pci.c
++++ b/drivers/net/wireless/ath/ath11k/pci.c
+@@ -1419,6 +1419,11 @@ static __maybe_unused int ath11k_pci_pm_suspend(struct device *dev)
+ 	struct ath11k_base *ab = dev_get_drvdata(dev);
+ 	int ret;
  
--	if (in6_dev && in6_dev->cnf.mc_forwarding)
-+	if (in6_dev && atomic_read(&in6_dev->cnf.mc_forwarding))
- 		return BATADV_NO_FLAGS;
- 	else
- 		return BATADV_MCAST_WANT_NO_RTR6;
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index e92ca415756a..4f64fb285af7 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -554,7 +554,7 @@ static int inet6_netconf_fill_devconf(struct sk_buff *skb, int ifindex,
- #ifdef CONFIG_IPV6_MROUTE
- 	if ((all || type == NETCONFA_MC_FORWARDING) &&
- 	    nla_put_s32(skb, NETCONFA_MC_FORWARDING,
--			devconf->mc_forwarding) < 0)
-+			atomic_read(&devconf->mc_forwarding)) < 0)
- 		goto nla_put_failure;
- #endif
- 	if ((all || type == NETCONFA_PROXY_NEIGH) &&
-@@ -5539,7 +5539,7 @@ static inline void ipv6_store_devconf(struct ipv6_devconf *cnf,
- 	array[DEVCONF_USE_OPTIMISTIC] = cnf->use_optimistic;
- #endif
- #ifdef CONFIG_IPV6_MROUTE
--	array[DEVCONF_MC_FORWARDING] = cnf->mc_forwarding;
-+	array[DEVCONF_MC_FORWARDING] = atomic_read(&cnf->mc_forwarding);
- #endif
- 	array[DEVCONF_DISABLE_IPV6] = cnf->disable_ipv6;
- 	array[DEVCONF_ACCEPT_DAD] = cnf->accept_dad;
-diff --git a/net/ipv6/ip6_input.c b/net/ipv6/ip6_input.c
-index 80256717868e..d4b1e2c5aa76 100644
---- a/net/ipv6/ip6_input.c
-+++ b/net/ipv6/ip6_input.c
-@@ -508,7 +508,7 @@ int ip6_mc_input(struct sk_buff *skb)
- 	/*
- 	 *      IPv6 multicast router mode is now supported ;)
- 	 */
--	if (dev_net(skb->dev)->ipv6.devconf_all->mc_forwarding &&
-+	if (atomic_read(&dev_net(skb->dev)->ipv6.devconf_all->mc_forwarding) &&
- 	    !(ipv6_addr_type(&hdr->daddr) &
- 	      (IPV6_ADDR_LOOPBACK|IPV6_ADDR_LINKLOCAL)) &&
- 	    likely(!(IP6CB(skb)->flags & IP6SKB_FORWARDED))) {
-diff --git a/net/ipv6/ip6mr.c b/net/ipv6/ip6mr.c
-index 6a4065d81aa9..91f1c5f56d5f 100644
---- a/net/ipv6/ip6mr.c
-+++ b/net/ipv6/ip6mr.c
-@@ -739,7 +739,7 @@ static int mif6_delete(struct mr_table *mrt, int vifi, int notify,
++	if (test_bit(ATH11K_FLAG_QMI_FAIL, &ab->dev_flags)) {
++		ath11k_dbg(ab, ATH11K_DBG_BOOT, "boot skipping pci suspend as qmi is not initialised\n");
++		return 0;
++	}
++
+ 	ret = ath11k_core_suspend(ab);
+ 	if (ret)
+ 		ath11k_warn(ab, "failed to suspend core: %d\n", ret);
+@@ -1431,6 +1436,11 @@ static __maybe_unused int ath11k_pci_pm_resume(struct device *dev)
+ 	struct ath11k_base *ab = dev_get_drvdata(dev);
+ 	int ret;
  
- 	in6_dev = __in6_dev_get(dev);
- 	if (in6_dev) {
--		in6_dev->cnf.mc_forwarding--;
-+		atomic_dec(&in6_dev->cnf.mc_forwarding);
- 		inet6_netconf_notify_devconf(dev_net(dev), RTM_NEWNETCONF,
- 					     NETCONFA_MC_FORWARDING,
- 					     dev->ifindex, &in6_dev->cnf);
-@@ -907,7 +907,7 @@ static int mif6_add(struct net *net, struct mr_table *mrt,
- 
- 	in6_dev = __in6_dev_get(dev);
- 	if (in6_dev) {
--		in6_dev->cnf.mc_forwarding++;
-+		atomic_inc(&in6_dev->cnf.mc_forwarding);
- 		inet6_netconf_notify_devconf(dev_net(dev), RTM_NEWNETCONF,
- 					     NETCONFA_MC_FORWARDING,
- 					     dev->ifindex, &in6_dev->cnf);
-@@ -1557,7 +1557,7 @@ static int ip6mr_sk_init(struct mr_table *mrt, struct sock *sk)
- 	} else {
- 		rcu_assign_pointer(mrt->mroute_sk, sk);
- 		sock_set_flag(sk, SOCK_RCU_FREE);
--		net->ipv6.devconf_all->mc_forwarding++;
-+		atomic_inc(&net->ipv6.devconf_all->mc_forwarding);
- 	}
- 	write_unlock_bh(&mrt_lock);
- 
-@@ -1590,7 +1590,7 @@ int ip6mr_sk_done(struct sock *sk)
- 			 * so the RCU grace period before sk freeing
- 			 * is guaranteed by sk_destruct()
- 			 */
--			net->ipv6.devconf_all->mc_forwarding--;
-+			atomic_dec(&net->ipv6.devconf_all->mc_forwarding);
- 			write_unlock_bh(&mrt_lock);
- 			inet6_netconf_notify_devconf(net, RTM_NEWNETCONF,
- 						     NETCONFA_MC_FORWARDING,
++	if (test_bit(ATH11K_FLAG_QMI_FAIL, &ab->dev_flags)) {
++		ath11k_dbg(ab, ATH11K_DBG_BOOT, "boot skipping pci resume as qmi is not initialised\n");
++		return 0;
++	}
++
+ 	ret = ath11k_core_resume(ab);
+ 	if (ret)
+ 		ath11k_warn(ab, "failed to resume core: %d\n", ret);
 -- 
 2.34.1
 
