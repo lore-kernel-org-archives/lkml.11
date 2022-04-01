@@ -2,77 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E386EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 16:33:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E419AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 16:35:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347569AbiDAQfL (ORCPT
+        id S1349357AbiDAQhS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 12:35:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41168 "EHLO
+        Fri, 1 Apr 2022 12:37:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348318AbiDAQew (ORCPT
+        with ESMTP id S244385AbiDAQhD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 12:34:52 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D3BC22EE49;
-        Fri,  1 Apr 2022 09:07:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 603C2CE2414;
-        Fri,  1 Apr 2022 16:07:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F380DC2BBE4;
-        Fri,  1 Apr 2022 16:07:06 +0000 (UTC)
-Date:   Fri, 1 Apr 2022 12:07:05 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     Wander Lairson Costa <wander@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Johan Hovold <johan@kernel.org>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Lukas Wunner <lukas@wunner.de>,
-        Pali =?UTF-8?B?Um9ow6Fy?= <pali@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        senozhatsky@chromium.org, andre.goddard@gmail.com,
-        sudipm.mukherjee@gmail.com, andy.shevchenko@gmail.com,
-        David.Laight@aculab.com, jonathanh@nvidia.com, phil@raspberrypi.com
-Subject: Re: [PATCH v5 1/1] serial/8250: Use fifo in 8250 console driver
-Message-ID: <20220401120705.533896e5@gandalf.local.home>
-In-Reply-To: <4767809d-5818-ad40-a0e7-b3af40aa071e@kernel.org>
-References: <20220331190257.101781-1-wander@redhat.com>
-        <20220331190257.101781-2-wander@redhat.com>
-        <4767809d-5818-ad40-a0e7-b3af40aa071e@kernel.org>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Fri, 1 Apr 2022 12:37:03 -0400
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47F9856C1D;
+        Fri,  1 Apr 2022 09:12:03 -0700 (PDT)
+Received: by mail-wm1-x330.google.com with SMTP id v64-20020a1cac43000000b0038cfd1b3a6dso3795143wme.5;
+        Fri, 01 Apr 2022 09:12:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=MiR5EPOKkLhhEObk+YmsUARSnRu9/gwuzLaNmeH+HbE=;
+        b=PC1r74zw0BaM045emgzXvZ34kFbAVR0vYhGnDMBlSxTxsbRp0q7AJpcgfDz8gomnJA
+         56KqY8Qbll1p/J1/OnxHqA0oe0xMxZhdbPJNVWmWI9HVs4gzE3mhGTC9NGw4eEMIcLx2
+         WdvLf+ZxlcusfDT4AZlJGYcyLS8RUPafiVxnk5LBvYjxlIcV1y7vfy3xCxMxtyvsFonu
+         IAdgll79N6pGq8Lih8WdCocdG8jxqFkxGRq6sS7W8xK/kaagd9IsNBJOoRySkwmrIFkA
+         1cdvbDBanw9xnSxEbNt4YAJ56XweOQnYTWeYL/095b0fq4cXvd/3ARqAcDKNYEBwxHAy
+         544A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=MiR5EPOKkLhhEObk+YmsUARSnRu9/gwuzLaNmeH+HbE=;
+        b=d/3pJ3/eT4Z57OpVNzw/sR/odq0PoNUlXRrs8GwlW5QVxZiXpP+W0azMJ7ehje5Be6
+         QO7DzxbtUrqSONirKQwd/QwCj9+uqqJrnhV0QYGaKnG/Kd8P+H3KosM591vTBdbTeSu5
+         ZMRyLl1qJhDrOEnbhoQQhbaArWE1/UVlqCdoh2WJJRXDqybbDeHT0VsvnR/5CXhp1X4w
+         2YxoJMPini6n5Ao8NfyKGb5pjXLpQl/cHftF0xpBP982o6Hf0P1KPCy/mrE4+uwFDToy
+         zFtX5/Ag5mMZfhqjXbaO2vPH2XNks2/eOV+s9pHXhQk8Fj1pm5NdV3sAhGkc/Qgp4cDB
+         HzoA==
+X-Gm-Message-State: AOAM533N63JEk8R9cUAJEthTAlLKDOmUW1Fyu8/d/hV9OlFJijtR3n20
+        +TsvlHEcpt5MdM+iz3SRqlE=
+X-Google-Smtp-Source: ABdhPJyFiyZhDPEC+rND9soHKz13sCFb9qDf8Mc2AIa/JTh7yxH0ggHH+x0G0Crv+QULy1frYEgG+w==
+X-Received: by 2002:a1c:4e19:0:b0:38c:88b8:c1ef with SMTP id g25-20020a1c4e19000000b0038c88b8c1efmr9458436wmh.133.1648829521497;
+        Fri, 01 Apr 2022 09:12:01 -0700 (PDT)
+Received: from [192.168.1.208] ([87.68.193.190])
+        by smtp.gmail.com with ESMTPSA id e12-20020a5d6d0c000000b001a65e479d20sm3023375wrq.83.2022.04.01.09.11.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 01 Apr 2022 09:12:00 -0700 (PDT)
+Message-ID: <707a6991-ba4a-1224-8fb2-ea2d11963bdf@gmail.com>
+Date:   Fri, 1 Apr 2022 19:11:57 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH V5 1/1] Intel Sky Lake-E host root ports check.
+Content-Language: en-US
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+        andrew.maier@eideticom.com, logang@deltatee.com,
+        bhelgaas@google.com, jgg@nvidia.com,
+        Shlomo Pongratz <shlomop@pliops.com>
+References: <20220331143101.GA4846@bhelgaas>
+From:   Shlomo Pongratz <shlomopongratz@gmail.com>
+In-Reply-To: <20220331143101.GA4846@bhelgaas>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 1 Apr 2022 06:35:58 +0200
-Jiri Slaby <jirislaby@kernel.org> wrote:
+On 31/03/2022 17:31, Bjorn Helgaas wrote:
+> On Thu, Mar 31, 2022 at 10:35:39AM +0300, Shlomo Pongratz wrote:
+>> In commit 7b94b53db34f ("PCI/P2PDMA: Add Intel Sky Lake-E Root Ports B, C, D to
+>> the whitelist")
+>> Andrew Maier added the Sky Lake-E additional devices
+>> 2031, 2032 and 2033 root ports to the already existing 2030 device.
+>>
+>> The Intel devices 2030, 2031, 2032 and 2033 which are root ports A, B, C and D,
+>> respectively and if all exist they will occupy slots 0 till 3 in that order.
+> Please make this a sentence.
+>
+>> The original code handled only the case where the devices in the whitelist are
+>> host bridges and assumed that they will be found on slot 0.
+>>
+>> This assumption doesn't hold for root ports so an explicit test was added to
+>> cover this case.
+> Please update the subject line to match the style of previous ones.
+>
+> Please wrap the commit log to fit in 80 columns (including the 4
+> spaces added by "git log") like previous commits.
+>
+> Please figure out whether you want "Sky Lake-E" or "SkyLake-E" and use
+> it consistently in commit log and code comments.  It seems to be
+> "Skylake" on intel.com, so I suggest using that.
+I think that you are right and Skylake is indeed a better name,
+but since Andrew Maier in his original patch used Sky Lake-E it is
+better to stick with it. (SkyLake-E will be removed).
+>
+> Please use imperative mood, e.g., instead of "an explicit test was
+> added ...," write "add a test to cover this case."  Do the same in
+> code comments.
+>
+> Bjorn
+Shlomo
+------------------------------------------------------------------------
+*From:* Bjorn Helgaas [mailto:helgaas@kernel.org]
+*Sent:* Thursday, March 31, 2022, 5:31 PM
+*To:* Shlomo Pongratz
+*Cc:* linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, 
+andrew.maier@eideticom.com, logang@deltatee.com, bhelgaas@google.com, 
+jgg@nvidia.com, Shlomo Pongratz
+*Subject:* [PATCH V5 1/1] Intel Sky Lake-E host root ports check.
 
-> > With the help of the function tracer, I then noticed the serial
-> > controller was taking around 410us seconds to dispatch one single byte:
-> > 
-> > $ trace-cmd record -p function_graph -g serial8250_console_write \
-> >     ./sertest -n 1 /tmp/serco
-> > 
-> > $ trace-cmd report
-> > 
-
-Note, the function graph tracer can add a noticeable amount of overhead to
-these timings. If you want a more accurate time for a function, just trace
-that one function:
-
-	trace-cmd record -p function_graph -l serial8250_console_write ...
-
-As that will only trace the serial8250_console_write() function (think of
--l as "limit"), and the overhead of function graph for tracing a single
-function becomes negligible, and then you can see the true time of that
-function.
-
--- Steve
+> On Thu, Mar 31, 2022 at 10:35:39AM +0300, Shlomo Pongratz wrote:
+>> In commit 7b94b53db34f ("PCI/P2PDMA: Add Intel Sky Lake-E Root Ports B, C, D to
+>> the whitelist")
+>> Andrew Maier added the Sky Lake-E additional devices
+>> 2031, 2032 and 2033 root ports to the already existing 2030 device.
+>>
+>> The Intel devices 2030, 2031, 2032 and 2033 which are root ports A, B, C and D,
+>> respectively and if all exist they will occupy slots 0 till 3 in that order.
+> Please make this a sentence.
+>
+>> The original code handled only the case where the devices in the whitelist are
+>> host bridges and assumed that they will be found on slot 0.
+>>
+>> This assumption doesn't hold for root ports so an explicit test was added to
+>> cover this case.
+> Please update the subject line to match the style of previous ones.
+>
+> Please wrap the commit log to fit in 80 columns (including the 4
+> spaces added by "git log") like previous commits.
+>
+> Please figure out whether you want "Sky Lake-E" or "SkyLake-E" and use
+> it consistently in commit log and code comments.  It seems to be
+> "Skylake" on intel.com, so I suggest using that.
+>
+> Please use imperative mood, e.g., instead of "an explicit test was
+> added ...," write "add a test to cover this case."  Do the same in
+> code comments.
+>
+> Bjorn
