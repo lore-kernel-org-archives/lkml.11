@@ -2,49 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35331C38A02
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:02:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6047C38A04
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:02:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350208AbiDAO7S (ORCPT
+        id S1350343AbiDAO7n (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 10:59:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57370 "EHLO
+        Fri, 1 Apr 2022 10:59:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347811AbiDAOl0 (ORCPT
+        with ESMTP id S1348197AbiDAOmc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:41:26 -0400
+        Fri, 1 Apr 2022 10:42:32 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9C3A2908A1;
-        Fri,  1 Apr 2022 07:34:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F220292B9C;
+        Fri,  1 Apr 2022 07:34:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C5709604F5;
-        Fri,  1 Apr 2022 14:34:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DAB7C36AE2;
-        Fri,  1 Apr 2022 14:34:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A355960A65;
+        Fri,  1 Apr 2022 14:34:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86396C34111;
+        Fri,  1 Apr 2022 14:34:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823647;
-        bh=Y3bmTY6EHM/p/DxTRtJ/8DFTtCE5rPup0sZ7PjcaaJ4=;
+        s=k20201202; t=1648823663;
+        bh=6ofM+DEm0Sb91xORAMMNN6wfHsIeX5+RWcmzILaw8HM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XoyPDbTQArj0niYaKoUdJMjsZixwpy3U0vX0djXXGJXmpWlQ9Qf4ZFVN067+lUFAL
-         m6dngkz8TSJsmYOV6dYbRy9IrBzXOQ7Tqoe68idOfOP6NwqArsEWrMhCyaTRejneQE
-         2j7eG/umAT1oykiHlAkivTxBN/3bjXDi+reoAiQ+nz7WEy/yYQc2xH6xQjlrcgBGny
-         2/+VsmIk84BOFtNSy+T+wD2uHPbhLNgrHSnS01E3C3QW3JVyfglSAyiv/zzOKWqaQq
-         usGIVHq+4W8idXgyw2wjpguNOkVAXcwgTqmQgaUSckTxhwU6gyd2ZMsf4UpF4tO/Kc
-         CUcZXrDKF4kCw==
+        b=hdOu7OWBGVfIV3KEKYMtqnPTEBjj4TkyjXBEgD2CMGFdDvjGTWU9K0PCIXqfsSLky
+         qDovaM4nk/WT/1UDny4vqfEM6keUihQ+wOowcnB1rIA+g1DDBgBDrYFsEvHLqQWQ0z
+         mOGncQkCz5c75igWOzzd/7acqnUqREvFQDM6R2OEuNn/QtV5L9Bc1Dia8SVN/1lcaG
+         1sWcQL430MFbg2REemBEp9Pum/PlgVLXNxZnQVF1CfcPHwNJs9FKkl/LrQ65a9D2B2
+         Au1cSwiZFt36SPrhBSiDztU56r+S8NB3Kl18kIaCd+xiY/PsKWkRi2AX3fOB7e7dn4
+         DQL9mSUYMpk2g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yang Guang <yang.guang5@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>,
-        David Yang <davidcomponentone@gmail.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, anil.gurumurthy@qlogic.com,
-        sudarsana.kalluru@qlogic.com, jejb@linux.ibm.com,
-        linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 026/109] scsi: bfa: Replace snprintf() with sysfs_emit()
-Date:   Fri,  1 Apr 2022 10:31:33 -0400
-Message-Id: <20220401143256.1950537-26-sashal@kernel.org>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, mareklindner@neomailbox.ch,
+        sw@simonwunderlich.de, a@unstable.cc, sven@narfation.org,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        b.a.t.m.a.n@lists.open-mesh.org
+Subject: [PATCH AUTOSEL 5.16 033/109] ipv6: make mc_forwarding atomic
+Date:   Fri,  1 Apr 2022 10:31:40 -0400
+Message-Id: <20220401143256.1950537-33-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143256.1950537-1-sashal@kernel.org>
 References: <20220401143256.1950537-1-sashal@kernel.org>
@@ -56,167 +56,125 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Guang <yang.guang5@zte.com.cn>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit 2245ea91fd3a04cafbe2f54911432a8657528c3b ]
+[ Upstream commit 145c7a793838add5e004e7d49a67654dc7eba147 ]
 
-coccinelle report:
-./drivers/scsi/bfa/bfad_attr.c:908:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/bfa/bfad_attr.c:860:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/bfa/bfad_attr.c:888:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/bfa/bfad_attr.c:853:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/bfa/bfad_attr.c:808:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/bfa/bfad_attr.c:728:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/bfa/bfad_attr.c:822:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/bfa/bfad_attr.c:927:9-17:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/bfa/bfad_attr.c:900:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/bfa/bfad_attr.c:874:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/bfa/bfad_attr.c:714:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/bfa/bfad_attr.c:839:8-16:
-WARNING: use scnprintf or sprintf
+This fixes minor data-races in ip6_mc_input() and
+batadv_mcast_mla_rtr_flags_softif_get_ipv6()
 
-Use sysfs_emit() instead of scnprintf() or sprintf().
-
-Link: https://lore.kernel.org/r/def83ff75faec64ba592b867a8499b1367bae303.1643181468.git.yang.guang5@zte.com.cn
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Yang Guang <yang.guang5@zte.com.cn>
-Signed-off-by: David Yang <davidcomponentone@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/bfa/bfad_attr.c | 26 +++++++++++++-------------
- 1 file changed, 13 insertions(+), 13 deletions(-)
+ include/linux/ipv6.h       | 2 +-
+ net/batman-adv/multicast.c | 2 +-
+ net/ipv6/addrconf.c        | 4 ++--
+ net/ipv6/ip6_input.c       | 2 +-
+ net/ipv6/ip6mr.c           | 8 ++++----
+ 5 files changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/scsi/bfa/bfad_attr.c b/drivers/scsi/bfa/bfad_attr.c
-index c8b947c16069..0254e610ea8f 100644
---- a/drivers/scsi/bfa/bfad_attr.c
-+++ b/drivers/scsi/bfa/bfad_attr.c
-@@ -711,7 +711,7 @@ bfad_im_serial_num_show(struct device *dev, struct device_attribute *attr,
- 	char serial_num[BFA_ADAPTER_SERIAL_NUM_LEN];
- 
- 	bfa_get_adapter_serial_num(&bfad->bfa, serial_num);
--	return snprintf(buf, PAGE_SIZE, "%s\n", serial_num);
-+	return sysfs_emit(buf, "%s\n", serial_num);
- }
- 
- static ssize_t
-@@ -725,7 +725,7 @@ bfad_im_model_show(struct device *dev, struct device_attribute *attr,
- 	char model[BFA_ADAPTER_MODEL_NAME_LEN];
- 
- 	bfa_get_adapter_model(&bfad->bfa, model);
--	return snprintf(buf, PAGE_SIZE, "%s\n", model);
-+	return sysfs_emit(buf, "%s\n", model);
- }
- 
- static ssize_t
-@@ -805,7 +805,7 @@ bfad_im_model_desc_show(struct device *dev, struct device_attribute *attr,
- 		snprintf(model_descr, BFA_ADAPTER_MODEL_DESCR_LEN,
- 			"Invalid Model");
- 
--	return snprintf(buf, PAGE_SIZE, "%s\n", model_descr);
-+	return sysfs_emit(buf, "%s\n", model_descr);
- }
- 
- static ssize_t
-@@ -819,7 +819,7 @@ bfad_im_node_name_show(struct device *dev, struct device_attribute *attr,
- 	u64        nwwn;
- 
- 	nwwn = bfa_fcs_lport_get_nwwn(port->fcs_port);
--	return snprintf(buf, PAGE_SIZE, "0x%llx\n", cpu_to_be64(nwwn));
-+	return sysfs_emit(buf, "0x%llx\n", cpu_to_be64(nwwn));
- }
- 
- static ssize_t
-@@ -836,7 +836,7 @@ bfad_im_symbolic_name_show(struct device *dev, struct device_attribute *attr,
- 	bfa_fcs_lport_get_attr(&bfad->bfa_fcs.fabric.bport, &port_attr);
- 	strlcpy(symname, port_attr.port_cfg.sym_name.symname,
- 			BFA_SYMNAME_MAXLEN);
--	return snprintf(buf, PAGE_SIZE, "%s\n", symname);
-+	return sysfs_emit(buf, "%s\n", symname);
- }
- 
- static ssize_t
-@@ -850,14 +850,14 @@ bfad_im_hw_version_show(struct device *dev, struct device_attribute *attr,
- 	char hw_ver[BFA_VERSION_LEN];
- 
- 	bfa_get_pci_chip_rev(&bfad->bfa, hw_ver);
--	return snprintf(buf, PAGE_SIZE, "%s\n", hw_ver);
-+	return sysfs_emit(buf, "%s\n", hw_ver);
- }
- 
- static ssize_t
- bfad_im_drv_version_show(struct device *dev, struct device_attribute *attr,
- 				char *buf)
+diff --git a/include/linux/ipv6.h b/include/linux/ipv6.h
+index a59d25f19385..b8641dc0ee66 100644
+--- a/include/linux/ipv6.h
++++ b/include/linux/ipv6.h
+@@ -51,7 +51,7 @@ struct ipv6_devconf {
+ 	__s32		use_optimistic;
+ #endif
+ #ifdef CONFIG_IPV6_MROUTE
+-	__s32		mc_forwarding;
++	atomic_t	mc_forwarding;
+ #endif
+ 	__s32		disable_ipv6;
+ 	__s32		drop_unicast_in_l2_multicast;
+diff --git a/net/batman-adv/multicast.c b/net/batman-adv/multicast.c
+index f4004cf0ff6f..9f311fddfaf9 100644
+--- a/net/batman-adv/multicast.c
++++ b/net/batman-adv/multicast.c
+@@ -134,7 +134,7 @@ static u8 batadv_mcast_mla_rtr_flags_softif_get_ipv6(struct net_device *dev)
  {
--	return snprintf(buf, PAGE_SIZE, "%s\n", BFAD_DRIVER_VERSION);
-+	return sysfs_emit(buf, "%s\n", BFAD_DRIVER_VERSION);
- }
+ 	struct inet6_dev *in6_dev = __in6_dev_get(dev);
  
- static ssize_t
-@@ -871,7 +871,7 @@ bfad_im_optionrom_version_show(struct device *dev,
- 	char optrom_ver[BFA_VERSION_LEN];
+-	if (in6_dev && in6_dev->cnf.mc_forwarding)
++	if (in6_dev && atomic_read(&in6_dev->cnf.mc_forwarding))
+ 		return BATADV_NO_FLAGS;
+ 	else
+ 		return BATADV_MCAST_WANT_NO_RTR6;
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index e92ca415756a..4f64fb285af7 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -554,7 +554,7 @@ static int inet6_netconf_fill_devconf(struct sk_buff *skb, int ifindex,
+ #ifdef CONFIG_IPV6_MROUTE
+ 	if ((all || type == NETCONFA_MC_FORWARDING) &&
+ 	    nla_put_s32(skb, NETCONFA_MC_FORWARDING,
+-			devconf->mc_forwarding) < 0)
++			atomic_read(&devconf->mc_forwarding)) < 0)
+ 		goto nla_put_failure;
+ #endif
+ 	if ((all || type == NETCONFA_PROXY_NEIGH) &&
+@@ -5539,7 +5539,7 @@ static inline void ipv6_store_devconf(struct ipv6_devconf *cnf,
+ 	array[DEVCONF_USE_OPTIMISTIC] = cnf->use_optimistic;
+ #endif
+ #ifdef CONFIG_IPV6_MROUTE
+-	array[DEVCONF_MC_FORWARDING] = cnf->mc_forwarding;
++	array[DEVCONF_MC_FORWARDING] = atomic_read(&cnf->mc_forwarding);
+ #endif
+ 	array[DEVCONF_DISABLE_IPV6] = cnf->disable_ipv6;
+ 	array[DEVCONF_ACCEPT_DAD] = cnf->accept_dad;
+diff --git a/net/ipv6/ip6_input.c b/net/ipv6/ip6_input.c
+index 80256717868e..d4b1e2c5aa76 100644
+--- a/net/ipv6/ip6_input.c
++++ b/net/ipv6/ip6_input.c
+@@ -508,7 +508,7 @@ int ip6_mc_input(struct sk_buff *skb)
+ 	/*
+ 	 *      IPv6 multicast router mode is now supported ;)
+ 	 */
+-	if (dev_net(skb->dev)->ipv6.devconf_all->mc_forwarding &&
++	if (atomic_read(&dev_net(skb->dev)->ipv6.devconf_all->mc_forwarding) &&
+ 	    !(ipv6_addr_type(&hdr->daddr) &
+ 	      (IPV6_ADDR_LOOPBACK|IPV6_ADDR_LINKLOCAL)) &&
+ 	    likely(!(IP6CB(skb)->flags & IP6SKB_FORWARDED))) {
+diff --git a/net/ipv6/ip6mr.c b/net/ipv6/ip6mr.c
+index 6a4065d81aa9..91f1c5f56d5f 100644
+--- a/net/ipv6/ip6mr.c
++++ b/net/ipv6/ip6mr.c
+@@ -739,7 +739,7 @@ static int mif6_delete(struct mr_table *mrt, int vifi, int notify,
  
- 	bfa_get_adapter_optrom_ver(&bfad->bfa, optrom_ver);
--	return snprintf(buf, PAGE_SIZE, "%s\n", optrom_ver);
-+	return sysfs_emit(buf, "%s\n", optrom_ver);
- }
+ 	in6_dev = __in6_dev_get(dev);
+ 	if (in6_dev) {
+-		in6_dev->cnf.mc_forwarding--;
++		atomic_dec(&in6_dev->cnf.mc_forwarding);
+ 		inet6_netconf_notify_devconf(dev_net(dev), RTM_NEWNETCONF,
+ 					     NETCONFA_MC_FORWARDING,
+ 					     dev->ifindex, &in6_dev->cnf);
+@@ -907,7 +907,7 @@ static int mif6_add(struct net *net, struct mr_table *mrt,
  
- static ssize_t
-@@ -885,7 +885,7 @@ bfad_im_fw_version_show(struct device *dev, struct device_attribute *attr,
- 	char fw_ver[BFA_VERSION_LEN];
+ 	in6_dev = __in6_dev_get(dev);
+ 	if (in6_dev) {
+-		in6_dev->cnf.mc_forwarding++;
++		atomic_inc(&in6_dev->cnf.mc_forwarding);
+ 		inet6_netconf_notify_devconf(dev_net(dev), RTM_NEWNETCONF,
+ 					     NETCONFA_MC_FORWARDING,
+ 					     dev->ifindex, &in6_dev->cnf);
+@@ -1557,7 +1557,7 @@ static int ip6mr_sk_init(struct mr_table *mrt, struct sock *sk)
+ 	} else {
+ 		rcu_assign_pointer(mrt->mroute_sk, sk);
+ 		sock_set_flag(sk, SOCK_RCU_FREE);
+-		net->ipv6.devconf_all->mc_forwarding++;
++		atomic_inc(&net->ipv6.devconf_all->mc_forwarding);
+ 	}
+ 	write_unlock_bh(&mrt_lock);
  
- 	bfa_get_adapter_fw_ver(&bfad->bfa, fw_ver);
--	return snprintf(buf, PAGE_SIZE, "%s\n", fw_ver);
-+	return sysfs_emit(buf, "%s\n", fw_ver);
- }
- 
- static ssize_t
-@@ -897,7 +897,7 @@ bfad_im_num_of_ports_show(struct device *dev, struct device_attribute *attr,
- 			(struct bfad_im_port_s *) shost->hostdata[0];
- 	struct bfad_s *bfad = im_port->bfad;
- 
--	return snprintf(buf, PAGE_SIZE, "%d\n",
-+	return sysfs_emit(buf, "%d\n",
- 			bfa_get_nports(&bfad->bfa));
- }
- 
-@@ -905,7 +905,7 @@ static ssize_t
- bfad_im_drv_name_show(struct device *dev, struct device_attribute *attr,
- 				char *buf)
- {
--	return snprintf(buf, PAGE_SIZE, "%s\n", BFAD_DRIVER_NAME);
-+	return sysfs_emit(buf, "%s\n", BFAD_DRIVER_NAME);
- }
- 
- static ssize_t
-@@ -924,14 +924,14 @@ bfad_im_num_of_discovered_ports_show(struct device *dev,
- 	rports = kcalloc(nrports, sizeof(struct bfa_rport_qualifier_s),
- 			 GFP_ATOMIC);
- 	if (rports == NULL)
--		return snprintf(buf, PAGE_SIZE, "Failed\n");
-+		return sysfs_emit(buf, "Failed\n");
- 
- 	spin_lock_irqsave(&bfad->bfad_lock, flags);
- 	bfa_fcs_lport_get_rport_quals(port->fcs_port, rports, &nrports);
- 	spin_unlock_irqrestore(&bfad->bfad_lock, flags);
- 	kfree(rports);
- 
--	return snprintf(buf, PAGE_SIZE, "%d\n", nrports);
-+	return sysfs_emit(buf, "%d\n", nrports);
- }
- 
- static          DEVICE_ATTR(serial_number, S_IRUGO,
+@@ -1590,7 +1590,7 @@ int ip6mr_sk_done(struct sock *sk)
+ 			 * so the RCU grace period before sk freeing
+ 			 * is guaranteed by sk_destruct()
+ 			 */
+-			net->ipv6.devconf_all->mc_forwarding--;
++			atomic_dec(&net->ipv6.devconf_all->mc_forwarding);
+ 			write_unlock_bh(&mrt_lock);
+ 			inet6_netconf_notify_devconf(net, RTM_NEWNETCONF,
+ 						     NETCONFA_MC_FORWARDING,
 -- 
 2.34.1
 
