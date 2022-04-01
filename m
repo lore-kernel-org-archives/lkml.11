@@ -2,51 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4B5DC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B572CC433EF
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:49:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348492AbiDAOnZ (ORCPT
+        id S1348407AbiDAOnQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 10:43:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58000 "EHLO
+        Fri, 1 Apr 2022 10:43:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348510AbiDAOeg (ORCPT
+        with ESMTP id S1348471AbiDAOea (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:34:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54166BC7;
-        Fri,  1 Apr 2022 07:32:47 -0700 (PDT)
+        Fri, 1 Apr 2022 10:34:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3639BC7;
+        Fri,  1 Apr 2022 07:32:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E749E61CC9;
-        Fri,  1 Apr 2022 14:32:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C332C340EE;
-        Fri,  1 Apr 2022 14:32:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3EA9861CA5;
+        Fri,  1 Apr 2022 14:32:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDA71C340F2;
+        Fri,  1 Apr 2022 14:32:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823566;
-        bh=SB+NCy8FgSOwn6tdSeaqf1yh8nc1j/Qp2PIomYSzIKY=;
+        s=k20201202; t=1648823560;
+        bh=sE4+EECy/LIgdSLc+FT42yrSgLpqf3BDjDtRJM+SOLc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b0Pifl2Nx0TyxuR73OAjfIH2RSfbH8fudjqaGL8aJL/rQFmWfQc87ANWk+BL3hpsU
-         SPbf7KZWiiaJvYAu5DythngsIQO1nlvpJtg/q6dMjZOKzfhy/38sfnDSPhMhkK10q8
-         b4n6EP93S6cAkvI3EZP3YnO36HL3cv/h+KgqBHOi4LHGr956fGFdPE7SpbkMpPCu0X
-         YWrTaRVjGr8MkpJagIvlZeIF+XnrqpMOFJbZXtaej7QIvNUnVcfOIsqjDbtpKC3p+3
-         a9Tw9luIw9IwfV5a+DLvxnzWODUZhflHbLT1/wfi/r0yVaTvgGcp1iwe62ujA6rjdA
-         WN1dMLdMwZfLA==
+        b=giRe+288fo4xO4dHMGZNCN/U8H6qKbYQflRsF5b/Pihu50X4G2l8PXQxtXwQbBA41
+         6dc/5L2rz6uO7thYTEXNOUZd+tTLYiKjOPL282xCtskdecN22o6JgucmEHZh8YuSJI
+         LRGKsOVmasgjTWmGFJuB2IfgaZF8C9hVfvkIuXtOLMR/3nfXCi/NcGfyjOOvpU89ie
+         VoYoOyAvZsgIFNt7CKt8T448v97MhKovAnWvNTVHu4m/C68o7Asb6gtmrGG/fIdvl+
+         wULLdqoWyiwCne4dqv3fuWoJeWO4n/Bd2VGS6KKLEBYvU33r55REVCNwVzDB6gsN4S
+         r65xCoSGEGZOQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Feng Tang <feng.tang@intel.com>, kernel test robot <lkp@intel.com>,
-        Guo Ren <guoren@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>, nathan@kernel.org,
-        peterz@infradead.org, ndesaulniers@google.com,
-        keescook@chromium.org, penguin-kernel@I-love.SAKURA.ne.jp,
-        isabbasso@riseup.net, dan.j.williams@intel.com,
-        linux-csky@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 147/149] lib/Kconfig.debug: add ARCH dependency for FUNCTION_ALIGN option
-Date:   Fri,  1 Apr 2022 10:25:34 -0400
-Message-Id: <20220401142536.1948161-147-sashal@kernel.org>
+Cc:     Xiubo Li <xiubli@redhat.com>, Jeff Layton <jlayton@kernel.org>,
+        Ilya Dryomov <idryomov@gmail.com>,
+        Sasha Levin <sashal@kernel.org>, ceph-devel@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 145/149] ceph: fix inode reference leakage in ceph_get_snapdir()
+Date:   Fri,  1 Apr 2022 10:25:32 -0400
+Message-Id: <20220401142536.1948161-145-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401142536.1948161-1-sashal@kernel.org>
 References: <20220401142536.1948161-1-sashal@kernel.org>
@@ -58,50 +52,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Feng Tang <feng.tang@intel.com>
+From: Xiubo Li <xiubli@redhat.com>
 
-[ Upstream commit 1bf18da62106225dbc47aab41efee2aeb99caccd ]
+[ Upstream commit 322794d3355c33adcc4feace0045d85a8e4ed813 ]
 
-0Day robots reported there is compiling issue for 'csky' ARCH when
-CONFIG_DEBUG_FORCE_DATA_SECTION_ALIGNED is enabled [1]:
+The ceph_get_inode() will search for or insert a new inode into the
+hash for the given vino, and return a reference to it. If new is
+non-NULL, its reference is consumed.
 
-All errors (new ones prefixed by >>):
+We should release the reference when in error handing cases.
 
-   {standard input}: Assembler messages:
->> {standard input}:2277: Error: pcrel offset for branch to .LS000B too far (0x3c)
-
-Which was discussed in [2].  And as there is no solution for csky yet, add
-some dependency for this config to limit it to several ARCHs which have no
-compiling issue so far.
-
-[1]. https://lore.kernel.org/lkml/202202271612.W32UJAj2-lkp@intel.com/
-[2]. https://www.spinics.net/lists/linux-kbuild/msg30298.html
-
-Link: https://lkml.kernel.org/r/20220304021100.GN4548@shbuild999.sh.intel.com
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Feng Tang <feng.tang@intel.com>
-Cc: Guo Ren <guoren@kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Xiubo Li <xiubli@redhat.com>
+Reviewed-by: Jeff Layton <jlayton@kernel.org>
+Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- lib/Kconfig.debug | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ fs/ceph/inode.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
-index 14b89aa37c5c..440fd666c16d 100644
---- a/lib/Kconfig.debug
-+++ b/lib/Kconfig.debug
-@@ -416,7 +416,8 @@ config SECTION_MISMATCH_WARN_ONLY
- 	  If unsure, say Y.
+diff --git a/fs/ceph/inode.c b/fs/ceph/inode.c
+index ef4a980a7bf3..c092dce0485c 100644
+--- a/fs/ceph/inode.c
++++ b/fs/ceph/inode.c
+@@ -87,13 +87,13 @@ struct inode *ceph_get_snapdir(struct inode *parent)
+ 	if (!S_ISDIR(parent->i_mode)) {
+ 		pr_warn_once("bad snapdir parent type (mode=0%o)\n",
+ 			     parent->i_mode);
+-		return ERR_PTR(-ENOTDIR);
++		goto err;
+ 	}
  
- config DEBUG_FORCE_FUNCTION_ALIGN_64B
--	bool "Force all function address 64B aligned" if EXPERT
-+	bool "Force all function address 64B aligned"
-+	depends on EXPERT && (X86_64 || ARM64 || PPC32 || PPC64 || ARC)
- 	help
- 	  There are cases that a commit from one domain changes the function
- 	  address alignment of other domains, and cause magic performance
+ 	if (!(inode->i_state & I_NEW) && !S_ISDIR(inode->i_mode)) {
+ 		pr_warn_once("bad snapdir inode type (mode=0%o)\n",
+ 			     inode->i_mode);
+-		return ERR_PTR(-ENOTDIR);
++		goto err;
+ 	}
+ 
+ 	inode->i_mode = parent->i_mode;
+@@ -113,6 +113,12 @@ struct inode *ceph_get_snapdir(struct inode *parent)
+ 	}
+ 
+ 	return inode;
++err:
++	if ((inode->i_state & I_NEW))
++		discard_new_inode(inode);
++	else
++		iput(inode);
++	return ERR_PTR(-ENOTDIR);
+ }
+ 
+ const struct inode_operations ceph_file_iops = {
 -- 
 2.34.1
 
