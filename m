@@ -2,253 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCB02C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 01:55:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7CD7C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 01:56:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243895AbiDAB5q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 21:57:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53960 "EHLO
+        id S243902AbiDAB6k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 21:58:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233627AbiDAB5n (ORCPT
+        with ESMTP id S233627AbiDAB6g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 21:57:43 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BAB41925A9;
-        Thu, 31 Mar 2022 18:55:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648778154; x=1680314154;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=QiD7b2hjqJ3TZWo1bNgev7iGSizl3kBp80iai3jo8CY=;
-  b=AkOkoFXAKMYyQ2CcSB3GW2DqcPVbTVpj/GmRvcID29BGyveTtiaEEn9o
-   tutmBTw9KGWIqGqMtfeaqGrq1TI7ggf5bvX5XNEdnGnnuYXfm0YFvdx+w
-   XZXocDzAprGp6sAhK6XUksun9xbXZJ9DV18Khbr0KrnKapCwN+ayMkobT
-   AFODgzG3lVrM5yZ1OE7HXikIPue1bxmcJWSqPOBjjGWm8cxjU1AE2MzrO
-   EbzokO8G7iT824bomWeG3bZNFwDode8WeQ4Sx+O+0+d96qt5Q8cbuhG/g
-   jxLx/tpTK3jSssDCyuMofbmZo55OzM1aD1lEjpZxL5ex+rvYlY5lEv7tE
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10303"; a="242168421"
-X-IronPort-AV: E=Sophos;i="5.90,225,1643702400"; 
-   d="scan'208";a="242168421"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2022 18:55:54 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,225,1643702400"; 
-   d="scan'208";a="720706062"
-Received: from fmsmsx604.amr.corp.intel.com ([10.18.126.84])
-  by orsmga005.jf.intel.com with ESMTP; 31 Mar 2022 18:55:53 -0700
-Received: from fmsmsx601.amr.corp.intel.com (10.18.126.81) by
- fmsmsx604.amr.corp.intel.com (10.18.126.84) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Thu, 31 Mar 2022 18:55:53 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27 via Frontend Transport; Thu, 31 Mar 2022 18:55:53 -0700
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.170)
- by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.27; Thu, 31 Mar 2022 18:55:53 -0700
+        Thu, 31 Mar 2022 21:58:36 -0400
+Received: from EUR02-AM5-obe.outbound.protection.outlook.com (mail-eopbgr00058.outbound.protection.outlook.com [40.107.0.58])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D19B258462
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 18:56:48 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WsBpD/yKQwb3a5L/L2AUicTjskYhVxc/jVlEk6/qg2Uueledm37ZiaVNTlEG9xx1ZyqvliQoD+GCDA0i6tq9txTnzmLjIg+9LszFCEaEpncLwUx0t6uHp7AUeeJ0lfbd20OHA6mgUdH3Yif8UKVAGr6+0HPK2GOqXeway16iLShyjKAS31hI9OgJRd3EHAAd+I4yDeomW+V3uiGT+hf2EiE9gqJTETXV7xyR991yIIAYZGQM1EwASqQhJuztCaqIBzNCkL+HzgW1dN5rM6sNnhC+6fKmS3jGCy1tjzfU6/mXZohbnfl/8YPXQAxoq6HuFWCnKEFFIGrOVWED0Opf7g==
+ b=E1fPkXveBBoB7y1CMfeWzp4h+CqU0DlBHTB6Z2KbUvTnvZU7vIXpFVBBBuHB9S/DNHOW0d3l8SwSGclSiyTqBxMM3LN79P/4nr+koMnI9IQhPEtXnnFHxKQ0gHaIpX3Hng1hPDW4MIwqXN3eSqZcoUw2cexlH+ASI+tQYJtQGsq7yBIR9FcIv7DyOOWPia3K/VG8OuR9JrGHMmNHW7xAuV93x+7mnCInSOUskJaggittk8ELUpWyN+MJlxgT6+JRRsGl3syPY0uhAyYWr1Z7Vrb+AxlyUZVXR0sYq4G1tHFU3y/tJCe3Vl4CRtAvybDfq7TPEO54sbAB/W36oUUOew==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=5p/8HMjpfbDLIK2Onxy6+DzB35Eo30gz5r1lM6RAX4k=;
- b=db5NwKctiGKt6N71eQT6OkzyKsQh2hbMj+ZeDr3vne5B9gNJYL2U+3dJ4x08XcXzeX67UlkFcRvoxoXtHmxrIZ+7C60i0xWHdcjSp2UnhuUFSr3VhToRRc3oRj+dxSqxyWAPXvva6ZOhkyF8CKtelPxKYXMPd8rYCE0vvfHD5lamGUESn8Q54VVwzV6zL/nDdc4m+LSEtqGngsmFy5fmnwgvHtbw7/TWZLN2gen3wn1XOKW4puzzqWVl8gUkUZ22XS9vnDBFJjJVIqBzrM52oJqQscUJU6oDgLRDWAwE6kf2SdWzx4ej2UylKiP87FrdDA9DwOOEE/mbfyWdxDEs+Q==
+ bh=v7TwW0iIZbjcAXIVc/N0IvnmdRWcq09kzIYPajxVeTA=;
+ b=Xb8dN1DSS5d46Mqx0UDa6JOCQ+TS8Ckt3NV3HKzaQaq5uNIu8A4qYa7pDWIo2icUR3yKq5loHd8tjNeB5wnGx+2tDAp7ECmG0uJc/h6sgEVuwXTyPCkucD3Xh/fJkLg8Nv4jNUc+ahp1aX+UfV9XkMy7/3yN7xAQcTxVIe7Touj9wyo6pOZmU+5enA2utmrk5bTGFSv7nM9I2aF5R8/PSXKModiNLUmDlpu97ZPObpwQ7JxscG/TJFQIhH9oMKXNqDSPdm48L14Mosws4ACM4dKtWNVxVyxRRFCDoMwVUwbCKO6lulK0Zh6O79leNiErptxL3W1JEPuPBAdzD1NX2A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from PH0PR11MB5880.namprd11.prod.outlook.com (2603:10b6:510:143::14)
- by BY5PR11MB4308.namprd11.prod.outlook.com (2603:10b6:a03:1b9::19) with
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=v7TwW0iIZbjcAXIVc/N0IvnmdRWcq09kzIYPajxVeTA=;
+ b=E+8ndxFxEnu/xcz3lZFvz9HqVssCLxP09aSMz/yOWwxTWhze7QjDPz1iZF4d1rTZsFsw5XpPT+l63oQTJmMkC97D7giGiyNYGvnraGVX5ySH3a3NxkNGT3LhY8CUNtgYioUw0CrhonVJF83XDEyUNIZ19Jed2KiPp2md6zkffa4=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from AM7PR04MB7046.eurprd04.prod.outlook.com (2603:10a6:20b:113::22)
+ by AM5PR04MB2979.eurprd04.prod.outlook.com (2603:10a6:206:9::29) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.19; Fri, 1 Apr
- 2022 01:55:51 +0000
-Received: from PH0PR11MB5880.namprd11.prod.outlook.com
- ([fe80::6439:b0f1:f43f:54d3]) by PH0PR11MB5880.namprd11.prod.outlook.com
- ([fe80::6439:b0f1:f43f:54d3%7]) with mapi id 15.20.5123.021; Fri, 1 Apr 2022
- 01:55:51 +0000
-From:   "Zhang, Qiang1" <qiang1.zhang@intel.com>
-To:     "paulmck@kernel.org" <paulmck@kernel.org>
-CC:     "frederic@kernel.org" <frederic@kernel.org>,
-        "rcu@vger.kernel.org" <rcu@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH] rcu: Put the irq work into hard interrupt context for
- execution
-Thread-Topic: [PATCH] rcu: Put the irq work into hard interrupt context for
- execution
-Thread-Index: AQHYQ/uAOn2CUwsFkEWWhrezlLtpoqzYXhIAgAAlweCAAT4HgIAAdE2Q
-Date:   Fri, 1 Apr 2022 01:55:51 +0000
-Message-ID: <PH0PR11MB5880709B39EC5BDAACBD340FDAE09@PH0PR11MB5880.namprd11.prod.outlook.com>
-References: <20220330060012.2470054-1-qiang1.zhang@intel.com>
- <20220330201620.GM4285@paulmck-ThinkPad-P17-Gen-1>
- <PH0PR11MB58802C1246C6F4FB895BDDA9DA1F9@PH0PR11MB5880.namprd11.prod.outlook.com>
- <20220331172943.GV4285@paulmck-ThinkPad-P17-Gen-1>
-In-Reply-To: <20220331172943.GV4285@paulmck-ThinkPad-P17-Gen-1>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-version: 11.6.401.20
-dlp-reaction: no-action
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 3253a90e-9b00-4047-1b18-08da1382c027
-x-ms-traffictypediagnostic: BY5PR11MB4308:EE_
-x-microsoft-antispam-prvs: <BY5PR11MB43089717F328967FD43CCB8ADAE09@BY5PR11MB4308.namprd11.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: OJlR/C2uNnoLx4LhbFnK/qk8+g4sgTg1RKJn14KG+B407qDxEsrZKfqL/jJ27Ne4ap385blBhq0IGhKxzok4z3V9MXi9+R4LbOt659x18Bko/mC1Q4f96gEfm7KdMe2JKOwx0uwFxoQrqIY/VLdt2jjRsEh12SfpgA1MupIxYErU2CSj8iwcdzjh/LG7JQnLInGnE//hCtJttg1uRgdHjX6FqaPRxiokDg1wcF6yham6QSXfvUAwFadpTh8SPAyJDovTl6ixozHlAAYKWvmf2VwfCofqId7sgrKWCKgLM5fCQG/m7WGmm+hDHUuLvo1gBj8skZCX/ZsX7Puc0vKQbc3tzReInp1+PLx4ReE2IqtpJcEqdkt0ts+CnrOnDy5jEwFmRwOXa3wrlEuQyGRpGKQusJsYurjRuxwKYn6IFRIF2RgsSpk/w85by5sR+/ul7bYuG+5t0yXyWOWnCTcIZ71sWZq+EH9GDfv4s+nu9KEcbQSwMMjVPcg2CZofoTg+A+REWbtq5x5HIY5Rt59V4dJnCqSHnjlx9hwuAWJbiS7fwo5unqBmExrDuLa7aS4Vj8XOIhlOrIl2QWz71dUZhrpR26dP33HwZ00xHW6aNCh8gK4/2wRttjpzG3PJa/pKF0pQ8iDi3oQtHxZL9BA82nYCAXaXF9ZVbhHNCtQ7vl+0DV2hzDdZVxG8ipDwx14nbTC8vt1qV3zZ1ipDVYZ8mA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5880.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(66574015)(6506007)(186003)(55016003)(76116006)(26005)(5660300002)(8936002)(508600001)(7696005)(9686003)(83380400001)(52536014)(4326008)(33656002)(86362001)(82960400001)(66556008)(66946007)(8676002)(64756008)(122000001)(71200400001)(38100700002)(6916009)(54906003)(38070700005)(2906002)(316002)(66446008)(66476007);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?FABdoArYEu9ib5859WdOj/dM/M4+C7qAUjPdULD7wkwdm+AIo8zUyDCLJdjt?=
- =?us-ascii?Q?vxGOeqj/p5YK5BKiRcT9KKaDKFIbme1aFLr6Ze80SqC9H9w3gCZp5rYw/zJA?=
- =?us-ascii?Q?ay7KdbdqxRiNFJ8ObnobrGi0ss0nNXev7uK5IeplNVsCmqSK/yS4+XNMp1Ov?=
- =?us-ascii?Q?KnxSyDbH91+C0LpA55rTfBkcW+UXEnbo3RDZ2lbX/czzLe1ldXPOgDIerR/A?=
- =?us-ascii?Q?+IzZYYti+tN6WxNXfhvWmN8bCkXN0fe7jJy2nx9VINcDN9WZHRZnQOYvLoij?=
- =?us-ascii?Q?PghXVGHTRQO0BkkDXJEGfh+HKiwvYPMunPQoI2L6O5/sbYw4XlXnXJoGiqqq?=
- =?us-ascii?Q?6bAMwWpUpcPGAblUXKYTRQHzzsqkae0HDu+yAQ5yB6sPppNcOQXXZURhUDL+?=
- =?us-ascii?Q?oKhNg9nAsyb7dby1RbUdR8WZ5oYPcfwbDlK2VvGN/LLMcSNTeha5496/cF8m?=
- =?us-ascii?Q?0Nn+IXKIwXjw+G5/0uL2/RDDv5hc27e0kyxNj7WYxf00tW6Ilq4kxXj7mW0S?=
- =?us-ascii?Q?gytRkQ5VSSj+/wyhcxWqQbrNB5migKeoIhok1v57+3jdi/rR5QIlhTXTfYlN?=
- =?us-ascii?Q?xAJHU14epMToMWXG2NDjKa4GX32rJKWUebku1J0F5LikXbBX4aknMEBB0t5M?=
- =?us-ascii?Q?0vIxFma2C450ovZ9KC+V159aHeFyNGZx0Okyfpkzjs85kXObKnchNSM4XqtV?=
- =?us-ascii?Q?6HkFKVSCswXECs4+VmFHfzL1L5VdkCNs0dLqKm6BhGlZFv7M65dDJhE1hAKa?=
- =?us-ascii?Q?u+U2Wjh/QkO+o4BOFsnL38EylxKW25RpM9gFA9rI7UZ3lDOuqujyN+n+CgbK?=
- =?us-ascii?Q?Wy2v7REqyUkziHpqLh3+YFP14evXn2LyiYFtNXSXQMRZmzGreEGSWNvPuALy?=
- =?us-ascii?Q?pLW7e8oj8pY5vEizbJSLZnXSHFulYS+X1U/51GQiWPrtGMnWfm0Mifd1v7zz?=
- =?us-ascii?Q?vjmjorWqE9d+9Kwh756jyMEEZk7BQCU2s30kx7eLVTVjlcBDIrx93Qeb77b2?=
- =?us-ascii?Q?la7+No4JDNzARZrqX0Uy9/tXPwZV6RT02WfOJqo8cC5C6/+Mm5IXmeGZfxIx?=
- =?us-ascii?Q?xsbfbwIaegH75ABgdgiTvAazllH4knUjagwk7Nkc+ijtz3AMHIfLnr2ZRa43?=
- =?us-ascii?Q?aybmjF1P1xN484t83tlAWgD0kQe1U1KOsuOsZ9CReuC+zZg/N5ClCRia6A6x?=
- =?us-ascii?Q?qBUfyjcEvOyUWKnTsU+glNFQUjzfetzDvZwr7adUr5j3hqjDSg4VwMXm9Xl2?=
- =?us-ascii?Q?wykP+D5qvxl8qF6W2YDpeTF31PpYB53XNhQsR88caEn8n28NxMV6x3idGFt0?=
- =?us-ascii?Q?a4c2bEAtoVCFQAgGQy1rkvD5NbNxYGvltO3KdMLiHA1wga1PUgZ8G0usG65o?=
- =?us-ascii?Q?VtnqPV+KRyEpCTwX0Qr68LxZObuTLZaefe8vEy/I4ZqgiHRNzz4yRh5vGK1O?=
- =?us-ascii?Q?jvzSP6i/2b4PFBBBzHz6ojyUWwU7bak3s/cNsI3YN92sbxNOScKCtHg09+kc?=
- =?us-ascii?Q?QoyMLcrAKx/XE+paiP+r4BB75eFCKBA7GjozfwGcxcToTxC+Iv4eCu4aelp8?=
- =?us-ascii?Q?XoX3dH3Eb5SIkeK+yVIUvMvBCNu5LWknmSQpObNdXxYoZqQv9i9+fXN7ebWK?=
- =?us-ascii?Q?VpQjUDaR7O7PTVP4KfAEucIrLCVDgduK+geAhpuBRJ6ztVlV2f7wBP2HJ30D?=
- =?us-ascii?Q?Ibvw/WrTteLIHIcBehCbvC+RbgI78kn+OPzXxFuFP+vtVgai8dwyPZgELqIB?=
- =?us-ascii?Q?OG0sjeGwaw=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.21; Fri, 1 Apr
+ 2022 01:56:46 +0000
+Received: from AM7PR04MB7046.eurprd04.prod.outlook.com
+ ([fe80::b09c:8ffe:8e02:7387]) by AM7PR04MB7046.eurprd04.prod.outlook.com
+ ([fe80::b09c:8ffe:8e02:7387%9]) with mapi id 15.20.5123.025; Fri, 1 Apr 2022
+ 01:56:46 +0000
+From:   Liu Ying <victor.liu@nxp.com>
+To:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Cc:     Robert Foss <robert.foss@linaro.org>,
+        =?UTF-8?q?Guido=20G=C3=BCnther?= <agx@sigxcpu.org>,
+        Jagan Teki <jagan@amarulasolutions.com>,
+        NXP Linux Team <linux-imx@nxp.com>
+Subject: [PATCH] drm/bridge: nwl-dsi: Drop the drm_of_panel_bridge_remove() function call
+Date:   Fri,  1 Apr 2022 09:58:28 +0800
+Message-Id: <20220401015828.2959505-1-victor.liu@nxp.com>
+X-Mailer: git-send-email 2.25.1
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: SG2PR04CA0196.apcprd04.prod.outlook.com
+ (2603:1096:4:14::34) To AM7PR04MB7046.eurprd04.prod.outlook.com
+ (2603:10a6:20b:113::22)
 MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 2b82abea-23af-46bc-4d5a-08da1382e041
+X-MS-TrafficTypeDiagnostic: AM5PR04MB2979:EE_
+X-Microsoft-Antispam-PRVS: <AM5PR04MB297947096DA785A65B438CDA98E09@AM5PR04MB2979.eurprd04.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: vx/y4MpnrtsMo+ViVFprZqjVp7iAUGK+OqioU4trvVi5vU7s4uYnQHtPF5AmrppasvD4Kc5m8BUlO/DU21OtZvjpOMx1eBLUMgmkv1aD8oRucoyub+QUHIBK90H2lJhXsDm9DcAM/P9KKXhNU6RKmuxGv7CFGkIvQAo5ICJoQ27P1bFBMeW7N3Z+0NbvFR1gltKqIAFDgpjuHVVN2sW0nHpxPwKJkWjfKEShMyZ3cHSInsdaNr2d8QqCbWme8juCfl28Dh8NFHpmP72G2N5bonW+OWmJTXdMyMChmYm0s1SllqwDpkFrgi8Xk12DxyFGSyomROcmFthLyrKSxU7tv7WBjTrhCf4NMAuKNUi39b8mXPCLGaB/M8FaPdNfHZ7tUn9Tg4ID54aAYpVc51Tq/m6ADJhyLkwHT7sZsF4BnGLRaFsVuBZkKVQfN0Ohwgn3LmRKy+2Xz5xECZ6AyRZtC0bQNTr6AEW84FV6dFxmRNGpEqvlDgqwAorvAxt0f//3Xeg8omZFIJXtyCOsQsSFTQJ8WHWdKPKlhpD2sgpj9IxSScbbhb7g7Os8wgKNNtKwNk8Wm/nHtKGimPjjWJQE4ZE01WWbG6Vi/wdoGKG0faLafBKI17Parynn5aOYPHxWQKZyPL9peG5iUw3/TRfqavxOX0uEYB2t8j7SaKSgr/YIR+vilM5qVyTWxZtFtI+7a5dUvtaKPJPUB4CLgg6qYA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM7PR04MB7046.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(1076003)(2616005)(186003)(8936002)(36756003)(6512007)(2906002)(26005)(83380400001)(86362001)(5660300002)(52116002)(316002)(54906003)(38100700002)(66946007)(4326008)(6506007)(6666004)(66556008)(66476007)(38350700002)(6486002)(8676002)(508600001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?R1BQQkRKejNoWC9jV2lXeUpSTHNxTmsvTzdYbWNmYmE3T0ZjakpCeWl1aTdJ?=
+ =?utf-8?B?dEt3MHlmNTFEMHhxdDlXMGVuVDhRUnNOU25Wb2ZiNkF0ZnhZeW5RalFjQlBH?=
+ =?utf-8?B?cjkzeFBXVHVYemt4U2c2S1pnQm13S05WMkRGLzRRdEZiMERnckhWdFdHampi?=
+ =?utf-8?B?T2orK3NjcnhWOWZpWThGdmdXb0ZxYmxTZDhxRmZPRkZOc0RKcUhLQ3BTeXJ6?=
+ =?utf-8?B?Z2JwRUJ1ajJVeUs0Z2NBWWV0Z1VVd0VzVXhCMU93UUZBUlgzV3JZM3N2bGlD?=
+ =?utf-8?B?QzVkWnpUK29sb2o3ekdySmpRVzErOWlpeksrWUg0blNqclBjZW43clRRWUxC?=
+ =?utf-8?B?UVZTZnRaNWpyVS9QczA1eEd4SjRLU1RxM2xCYndML3RMZTBXcWlsTlNuWVY1?=
+ =?utf-8?B?Snd5M2R0YkZFdTNVU0JJdkhDNUdsdTZSazBKdmF2YTBJZ3l4cFU5TVZHalVs?=
+ =?utf-8?B?Ym5FYm1mNHZ1SUlLeHhuNkRRU0t1ekR5UDVGRkR1QVdlSERpdHhJUE5Ma0Fy?=
+ =?utf-8?B?T3ZxTHdZWEtvc3FqTkRPQVhPNEppMDY5MHRIUUt1Q0V0Qno2WEhsTDNNS1NC?=
+ =?utf-8?B?d3c4bW0wcU1hQ2t6cDNsS3ZMbTRVeGhXTi91dDhGVHlDOTV0QmQ1M1dhV0Iw?=
+ =?utf-8?B?TnZrSWNXd3poM0hsSFJEcEdsREFaWk9seEhQNkp2ZVAvV0txNC94K2xuL01K?=
+ =?utf-8?B?ZldNUmxEUCtrTU42VHRqbzBGODA5akZJUXR2T0FDQ2lqV3JpbmhTMFY3aVI4?=
+ =?utf-8?B?ZW9VUTh1VzhEZlN0dzhwbGJHYnJ0VzJIbEM0c05VUzJuRVVmYUR2RFA5SDlU?=
+ =?utf-8?B?WVRqTmRsQ2dTNEtIb0FkdFVSL1hscXJyQk5NVUxBQlg4Z0VqczM3bjhIZ0tk?=
+ =?utf-8?B?T0tOUFB6eFJPRHVlelh5NHBzVkZUTkVtVDBSYjJxSDdkUVZzc0hLYVR6WVNQ?=
+ =?utf-8?B?Y3JrOFRtM2VEUGdLYVUwaHdJNFV1QWhaQlRjekdzV3hDNzliSy9FK0dpbnYv?=
+ =?utf-8?B?RnpsV1NNeVJGMVQ1L3JIMjl4Q2pvUzB3TmxHOUxmb01lWTEwOE0ySVBpTG1R?=
+ =?utf-8?B?ZUtadmJWWWJnaHliQVRiekcrWk9zazF6cUwrS29zRTZnYUNydUFNUmtqU2Ju?=
+ =?utf-8?B?SXF3c051ZmlodGhqa3BvL2NoOSttQU1XZ3E1d0lPV1pWdkxWSzlGZFBMRUc5?=
+ =?utf-8?B?SFhmMklsZmh0RFlmd3VBTThQNHFBNS9xL3RFQmRnRkdWU3BkSUJQTVg0T0NV?=
+ =?utf-8?B?K2hZUDJndFV6MEIxNndoYllEbkszemdqTUJWUEIwak1JamtSMFNaOHNLYytt?=
+ =?utf-8?B?Z3FNbTVvSTg3dEpBa0pyZUYrZHErM2Vza01YdXNYWDVPbEFVYVIvUXh0U2tv?=
+ =?utf-8?B?Y3NRcmE1VGMvSTJwdEo2QUxXTGkxRHYwNEhKOVRQUVM1NllCVGIxTVJKQXVM?=
+ =?utf-8?B?SjRqR3UzMGVqc0pXUDM4bWs3SHFCeDJyZUhLSmRZT1JXZDVNVUNXc05FQkFV?=
+ =?utf-8?B?bVVEL2hDc1Vvb2JVS2JRRlNqbWJQRXRmTUJ0QUhyMjhhR013TUlOOTZDTlZH?=
+ =?utf-8?B?S3Q3QmN0VlJYWFFuUit1U1VJd0tYam1YSS9BQjQxVURPZXdVZzJ3UHVIOW9C?=
+ =?utf-8?B?Sk5SR3ZUdzYyZTRwT2tMUDV0eDFkcFB1WkJRbE82Y1hkSFppTXRGR1lMYVdS?=
+ =?utf-8?B?bTBpcHlGbmI1WGNEaGU3MTVONFdhbWlyUjZBQ1RCaG9CcnNlVzRzUDN3RnBU?=
+ =?utf-8?B?ZnU3U3ZqNWdsWmpGemRpU2NGTHo5akxKT1Z5SjBsanJOdnVyM0ZQVEZzZTl0?=
+ =?utf-8?B?K2xYOUFUaG5pTHpVcXBhWUg3QkhoTVhKY2IrTnZ2d2dXdnlsaTl4SjgyTmdK?=
+ =?utf-8?B?d0xuK0RncW1laXZ0RHEvUTlXSGVNUHo2a3RLTitUa1RHWVc2L0lXTVRLUmlO?=
+ =?utf-8?B?NjZSSHN0NWZVYy9pQU5jdDlSOU1Rb3EyWjAySS9QVXdGa2I2cjZFb0NORGd6?=
+ =?utf-8?B?cDR3Z1BXYThFRTBGQnBqcjFaL1pST0p2RlYwV0VMY2NRYkJPa3VFNFpHZHQy?=
+ =?utf-8?B?QXJDRWd4VlV2VVpDMDV2c25DTWM5eTlDR2xvNlZvZXJmWXk2MDlMZXFJa2lC?=
+ =?utf-8?B?MFZKVjlSZmt5VUpIZXhiMU1xMUVhTTF2ZzBFQzVuMzdINDZRSU1rNFJtdTJL?=
+ =?utf-8?B?V0hkRm9KODJQUUJkdHhvY2tuOXE2dUU5eFUvWm9hd2ZYbmxBMUxEYnlCaVFV?=
+ =?utf-8?B?RWZrRHhHdkJ6S1hjZVh2UjhqMmUrZzZwYlNWRzZpVHlrWkEyMVllMmVSdU9a?=
+ =?utf-8?B?b05rdFhzNmxNSFNLYjdmWjRDalFsakZYckE1M3RDRm5kcEd1emVCdz09?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2b82abea-23af-46bc-4d5a-08da1382e041
+X-MS-Exchange-CrossTenant-AuthSource: AM7PR04MB7046.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5880.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3253a90e-9b00-4047-1b18-08da1382c027
-X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Apr 2022 01:55:51.6185
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Apr 2022 01:56:45.9148
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: RWbGxBB65702ySPlum8Dc6Xh5Lyf9lA48yTVU+OyxB9RkbC8+kn0qtJ9vYP7UsPrpiqqD9MRiC5/POrRKn4K/Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR11MB4308
-X-OriginatorOrg: intel.com
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: vk5k27pqoYPMzRYw+RW63tBivGDRbqbKQi+7dr7bOcTdNQ/sRY4p5fXzky+yv5GZGCdPVwaUSV+oRe0PnGgBCw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM5PR04MB2979
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Since this driver has been changed to use the resource managed
+devm_drm_of_get_bridge() to get bridge from ->attach(), it's
+unnecessary to call drm_of_panel_bridge_remove() to remove the
+bridge from ->detach().  So, let's drop the drm_of_panel_bridge_remove()
+function call.  As nwl_dsi_bridge_detach() only calls
+drm_of_panel_bridge_remove(), it can also be dropped.
 
-On Wed, Mar 30, 2022 at 10:47:05PM +0000, Zhang, Qiang1 wrote:
-> On Wed, Mar 30, 2022 at 02:00:12PM +0800, Zqiang wrote:
-> > In PREEMPT_RT kernel, if irq work flags is not set, it will be=20
-> > executed in per-CPU irq_work kthreads. set IRQ_WORK_HARD_IRQ flags=20
-> > to irq work, put it in the context of hard interrupt execution,=20
-> > accelerate scheduler to re-evaluate.
-> >=20
-> > Signed-off-by: Zqiang <qiang1.zhang@intel.com>
-> > ---
-> >  kernel/rcu/tree.c        | 2 +-
-> >  kernel/rcu/tree_plugin.h | 2 +-
-> >  2 files changed, 2 insertions(+), 2 deletions(-)
-> >=20
-> > diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c index
-> > e2ffbeceba69..a69587773a85 100644
-> > --- a/kernel/rcu/tree.c
-> > +++ b/kernel/rcu/tree.c
-> > @@ -678,7 +678,7 @@ static void late_wakeup_func(struct irq_work
-> > *work)  }
-> > =20
-> >  static DEFINE_PER_CPU(struct irq_work, late_wakeup_work) =3D
-> > -	IRQ_WORK_INIT(late_wakeup_func);
-> > +	IRQ_WORK_INIT_HARD(late_wakeup_func);
->=20
-> >This is used only by rcu_irq_work_resched(), which is invoked only by rc=
-u_user_enter(), which is never invoked until userspace is enabled, by which=
- time all of the various kthreads will have been spawned, correct?
-> >
-> >Either way, please show me the exact sequence of events that lead to a p=
-roblem with the current IRQ_WORK_INIT().
-> >
-> >  /*
-> >   * If either:
-> > diff --git a/kernel/rcu/tree_plugin.h b/kernel/rcu/tree_plugin.h=20
-> > index 3037c2536e1f..cf7bd28af8ef 100644
-> > --- a/kernel/rcu/tree_plugin.h
-> > +++ b/kernel/rcu/tree_plugin.h
-> > @@ -661,7 +661,7 @@ static void rcu_read_unlock_special(struct task_str=
-uct *t)
-> >  			    expboost && !rdp->defer_qs_iw_pending && cpu_online(rdp->cpu)) =
-{
-> >  				// Get scheduler to re-evaluate and call hooks.
-> >  				// If !IRQ_WORK, FQS scan will eventually IPI.
-> > -				init_irq_work(&rdp->defer_qs_iw, rcu_preempt_deferred_qs_handler);
-> > +				rdp->defer_qs_iw =3D
-> > +IRQ_WORK_INIT_HARD(rcu_preempt_deferred_qs_handler);
-> >  				rdp->defer_qs_iw_pending =3D true;
-> >  				irq_work_queue_on(&rdp->defer_qs_iw, rdp->cpu);
-> >  			}
-> >
-> >OK, in theory, rcu_read_unlock() could get to this point before all of t=
-he various kthreads were spawned.  In practice, the next time that the boot=
- CPU went idle, the end of the quiescent state would be noticed.
->=20
-> Through my understanding, use irq_work in order to make the quiescent=20
-> state be noticed earlier, Because the irq_work execute in interrupt,=20
-> this irq_work can be executed in time, but In RT kernel The irq_work  is =
-put into the kthread for execution, when it is executed, it is affected by =
-the scheduling delay.
-> Is there anything I missed?
+Cc: Robert Foss <robert.foss@linaro.org>
+Cc: Guido Günther <agx@sigxcpu.org>
+Cc: Jagan Teki <jagan@amarulasolutions.com>
+Cc: NXP Linux Team <linux-imx@nxp.com>
+Signed-off-by: Liu Ying <victor.liu@nxp.com>
+---
+ drivers/gpu/drm/bridge/nwl-dsi.c | 7 -------
+ 1 file changed, 7 deletions(-)
 
->Yes, in that I am not seeing any actual data showing that this fix really =
-makes things better.  Please in mind that IRQ_WORK_INIT_HARD does have perf=
-ormance disadvantages of its own.  So although I agree with your words sayi=
-ng that IRQ_WORK_INIT_HARD -might- be helpful, those words are not sufficie=
-nt.
->
->So, can you show a statistically significant benefit on a real system?
->For example, by measuring the time required for a expedited grace period t=
-o complete?  That would argue for this change, though it would need to be c=
-onditional, so that systems that don't care that much about the latency of =
-expedited RCU grace periods don't need to pay the IRQ_WORK_INIT_HARD perfor=
-mance penalties.  Or you would need to demonstrate that these performance p=
-enalties don't cause problems.  (But such a demonstration is not easy given=
- the wide variety of systems that Linux supports.)
->
->Now, I could imagine that the current code could cause problems during boo=
-t on CONFIG_PREEMPT_RT kernels.  But, believe me, I can imagine all sorts o=
-f horrible problems.  But we should fix those that happen not just in my im=
-agination, but also in the real world.  ;-)
+diff --git a/drivers/gpu/drm/bridge/nwl-dsi.c b/drivers/gpu/drm/bridge/nwl-dsi.c
+index a549da5b3f93..47859d4506b4 100644
+--- a/drivers/gpu/drm/bridge/nwl-dsi.c
++++ b/drivers/gpu/drm/bridge/nwl-dsi.c
+@@ -919,12 +919,6 @@ static int nwl_dsi_bridge_attach(struct drm_bridge *bridge,
+ 	return drm_bridge_attach(bridge->encoder, panel_bridge, bridge, flags);
+ }
+ 
+-static void nwl_dsi_bridge_detach(struct drm_bridge *bridge)
+-{	struct nwl_dsi *dsi = bridge_to_dsi(bridge);
+-
+-	drm_of_panel_bridge_remove(dsi->dev->of_node, 1, 0);
+-}
+-
+ static u32 *nwl_bridge_atomic_get_input_bus_fmts(struct drm_bridge *bridge,
+ 						 struct drm_bridge_state *bridge_state,
+ 						 struct drm_crtc_state *crtc_state,
+@@ -970,7 +964,6 @@ static const struct drm_bridge_funcs nwl_dsi_bridge_funcs = {
+ 	.mode_set		= nwl_dsi_bridge_mode_set,
+ 	.mode_valid		= nwl_dsi_bridge_mode_valid,
+ 	.attach			= nwl_dsi_bridge_attach,
+-	.detach			= nwl_dsi_bridge_detach,
+ };
+ 
+ static int nwl_dsi_parse_dt(struct nwl_dsi *dsi)
+-- 
+2.25.1
 
-Thanks, agree.  I'll test it according to your suggestion.
-
->
->So if you can make such a problem happen in real life, then I would be hap=
-py to take a patch that fixed this on CONFIG_PREEMPT_RT but kept the curren=
-t code otherwise.
->
->							Thanx, Paul
-
-> Thanks
-> Zqiang=09
->=20
-> >
-> >Or has this been failing in some other manner?  If so, please let me kno=
-w the exact sequence of events.
-> >
-> >							Thanx, Paul
