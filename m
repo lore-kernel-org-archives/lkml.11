@@ -2,81 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17BE2C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 11:07:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B08DC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 11:09:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345338AbiDALJN (ORCPT
+        id S1345337AbiDALLM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 07:09:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58612 "EHLO
+        Fri, 1 Apr 2022 07:11:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229459AbiDALJJ (ORCPT
+        with ESMTP id S229459AbiDALLJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 07:09:09 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8688F1207E9;
-        Fri,  1 Apr 2022 04:07:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1648811240; x=1680347240;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=PQKYqlplQ+YtuM+4DhzNPUAAGz0mJYlg4m/LCeRhK/E=;
-  b=Cd1BaCjyCrLbVAcDo3A3kWZ+qljw256c4nMTcLjOhX1odbCm84BE+qKH
-   vX+Qn5gU0e1aeBnGHmkslvK8pNJZ7z9rTRxUK0k5lTwCmLSKi9Qrha0zt
-   AyZWtKsPKzg1+nooghbLyKl2RJkes0YYe5jWkEUJcH7YjRA60ObX8SH2M
-   Y=;
-Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 01 Apr 2022 04:07:20 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Apr 2022 04:07:18 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Fri, 1 Apr 2022 04:07:18 -0700
-Received: from qian (10.80.80.8) by nalasex01a.na.qualcomm.com (10.47.209.196)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Fri, 1 Apr 2022
- 04:07:14 -0700
-Date:   Fri, 1 Apr 2022 07:07:12 -0400
-From:   Qian Cai <quic_qiancai@quicinc.com>
-To:     Muchun Song <songmuchun@bytedance.com>
-CC:     Dan Williams <dan.j.williams@intel.com>,
-        Matthew Wilcox <willy@infradead.org>, Jan Kara <jack@suse.cz>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Alistair Popple <apopple@nvidia.com>,
-        Yang Shi <shy828301@gmail.com>,
-        "Ralph Campbell" <rcampbell@nvidia.com>,
-        Hugh Dickins <hughd@google.com>,
-        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Ross Zwisler <zwisler@kernel.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        Linux NVDIMM <nvdimm@lists.linux.dev>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Xiongchun duan <duanxiongchun@bytedance.com>,
-        "Muchun Song" <smuchun@gmail.com>
-Subject: Re: [PATCH v5 0/6] Fix some bugs related to ramp and dax
-Message-ID: <Ykbc4N+Q1CH43CQ/@qian>
-References: <20220318074529.5261-1-songmuchun@bytedance.com>
- <YkXPA69iLBDHFtjn@qian>
- <CAMZfGtWFg=khjaHsjeHA24G8DMbjbRYRhGytBHaD7FbORa+iMg@mail.gmail.com>
+        Fri, 1 Apr 2022 07:11:09 -0400
+X-Greylist: delayed 387 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 01 Apr 2022 04:09:20 PDT
+Received: from mail.avm.de (mail.avm.de [IPv6:2001:bf0:244:244::94])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C06126ECA3
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 04:09:19 -0700 (PDT)
+Received: from mail-auth.avm.de (unknown [IPv6:2001:bf0:244:244::71])
+        by mail.avm.de (Postfix) with ESMTPS;
+        Fri,  1 Apr 2022 13:09:17 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=avm.de; s=mail;
+        t=1648811358; bh=sFx/9K+fATOwENpzWD0YB1nZDFiZRSMkfrxRTxYpYu4=;
+        h=Resent-From:Resent-Date:Resent-To:Date:From:To:Cc:Subject:
+         References:In-Reply-To:From;
+        b=f1+caPrFTM9krPvMzGaMjvf21458ykaBZj+qyEm215jn1ETA64nFCVVgl9ybWQsmn
+         eTo3J6miq1wsVvuBB5chBT3SOZawGquvDTWqYQ9Qk2xF2RHhlMLe2tof8vqxumssfJ
+         f557qT00kleC6jIOvQoCyiQqddX7WpoIPB8WkmSE=
+Received: from buildd.core.avm.de (buildd-sv-01.avm.de [172.16.0.225])
+        by mail-auth.avm.de (Postfix) with ESMTPSA id 553F581C33;
+        Fri,  1 Apr 2022 13:09:17 +0200 (CEST)
+Received: from buildd.core.avm.de ([172.16.0.225])
+          by mail-notes.avm.de (HCL Domino Release 12.0.1HF50)
+          with ESMTP id 2022040113024702-22341 ;
+          Fri, 1 Apr 2022 13:02:47 +0200
+Received: by buildd.core.avm.de (Postfix, from userid 1000)
+        id 0378D180FAB; Fri,  1 Apr 2022 13:02:46 +0200 (CEST)
+Date:   Fri, 01 Apr 2022 13:02:46 +0200
+From:   Nicolas Schier <n.schier@avm.de>
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     patches@arm.linux.org.uk, linux-kernel@vger.kernel.org,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Arnd Bergmann <arnd@arndb.de>,
+        David Heidelberg <david@ixit.cz>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH] ARM: decompressor: fix unneeded rebuilds of library
+ objects
+Message-ID: <Ykbb1ow2Oya0aXb+@buildd.core.avm.de>
+References: <20220331084709.1079362-1-masahiroy@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+In-Reply-To: <20220331084709.1079362-1-masahiroy@kernel.org>
+X-MIMETrack: Itemize by SMTP Server on ANIS1/AVM(Release 12.0.1HF50 | March 1,
+ 2022) at
+ 01.04.2022 13:02:47,
+        Serialize by http on ANIS1/AVM(Release 12.0.1HF50 | March 1, 2022) at
+ 01.04.2022 13:04:32,
+        Serialize complete at 01.04.2022 13:04:32
+X-TNEFEvaluated: 1
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <CAMZfGtWFg=khjaHsjeHA24G8DMbjbRYRhGytBHaD7FbORa+iMg@mail.gmail.com>
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Old-Date: Fri, 1 Apr 2022 13:02:46 +0200
+X-Notes-UNID: 39A4C571028BCD46B1950F2992BC67A7
+X-purgate-ID: 149429::1648811358-0000050B-38C9F536/0/0
+X-purgate-type: clean
+X-purgate-size: 721
+X-purgate-Ad: Categorized by eleven eXpurgate (R) http://www.eleven.de
+X-purgate: This mail is considered clean (visit http://www.eleven.de for further information)
+X-purgate: clean
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 01, 2022 at 11:44:16AM +0800, Muchun Song wrote:
-> Thanks for your report. Would you mind providing the .config?
+On Thu, Mar 31, 2022 at 05:47:09PM +0900, Masahiro Yamada wrote:
+> Since commit 251cc826be7d ("ARM: 9154/1: decompressor: do not copy source
+> files while building"), the following three are rebuilt every time.
+> 
+>   AS      arch/arm/boot/compressed/lib1funcs.o
+>   AS      arch/arm/boot/compressed/ashldi3.o
+>   AS      arch/arm/boot/compressed/bswapsdi2.o
+> 
+> Move the "OBJS += ..." line up so these objects are added to 'targets'.
+> 
+> Fixes: 251cc826be7d ("ARM: 9154/1: decompressor: do not copy source files while building")
+> Reported-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+> ---
 
-$ make ARCH=arm64 defconfig debug.config
+Tested-by: Nicolas Schier <n.schier@avm.de>
