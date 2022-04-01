@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E64EEC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:37:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1C53C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:37:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347614AbiDAOjd (ORCPT
+        id S1347656AbiDAOjk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 10:39:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56230 "EHLO
+        Fri, 1 Apr 2022 10:39:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348301AbiDAOdy (ORCPT
+        with ESMTP id S1348306AbiDAOdy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 1 Apr 2022 10:33:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76577FEB;
-        Fri,  1 Apr 2022 07:31:49 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F168B86E;
+        Fri,  1 Apr 2022 07:32:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 12E0961CC9;
-        Fri,  1 Apr 2022 14:31:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79D23C2BBE4;
-        Fri,  1 Apr 2022 14:31:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 58128B8250D;
+        Fri,  1 Apr 2022 14:31:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55A4FC34111;
+        Fri,  1 Apr 2022 14:31:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823508;
-        bh=hU3Q0C6ciYXg84ZqJPR6S0ruqfbCwlbRuBLw65YdvU0=;
+        s=k20201202; t=1648823518;
+        bh=ByhBYzofePU6Tas8c4DovQWKKLR8w9G3c/X2fMZCPFI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bs6jOih6TcmUhl4qmZ8/LGinIdpmyZiyapbQL/pnNvKVOPbgl5MsK5kkNObn4h0zG
-         IgXs4cvtbZPY2+ar1SfMwNE4O2IpZ6j7dUllHvK58bhJMNlfMCJrRvXstWB+2zd/fw
-         IH6zp9tx9n4YVmdkChGqcS3fAo8t+TzFJfEHpWl5nYp6F368A/JK2xhGHW8nLlQYqe
-         CFjfHnrVctwgWLMAVe89xKXS+n9wktGijKopHadq4msubbANdBM6f3F8+GiMMRfK+0
-         DxuH/2hZnotaS/mF4W9AFvLNz6g3YLcOIPVnmEV7edQRiTJecRMKYQEEwyVhqqca18
-         mizET6q0lhOig==
+        b=pcW86vdqUNyfc6148X4vXlajq8712UxiPDFaLOw92U7o8DGK++qIdQU/FeqCEZjPe
+         4GA5tmYYvIPyaALjq8PYxO5h3njp9OSVhxoTv2BNWY/sXEUIUbFKxC0kx7qKzNUYhX
+         ZnZAtXEW59QIWWZiEVcwqB4toCd6sHp1jH6Gb7wLSmU9pp8a+tORfHUg1r36J/Q2ms
+         X2X23tk67vHrQZBTBoENXKXxIx7bbZq1pLgbFXyh/ASwK1dyabSNbQPbudpD9C5Z57
+         dMXn/EfWeNJ2F26QAvFXSOIqUtTpS3uHoiIHKfaqjQSUyCHYphpsRrURNdgIy3ffnB
+         rcGJVE0llGogw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Michael Ellerman <mpe@ellerman.id.au>,
-        Paul Menzel <pmenzel@molgen.mpg.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Sasha Levin <sashal@kernel.org>, linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH AUTOSEL 5.17 122/149] powerpc/code-patching: Pre-map patch area
-Date:   Fri,  1 Apr 2022 10:25:09 -0400
-Message-Id: <20220401142536.1948161-122-sashal@kernel.org>
+Cc:     Hans de Goede <hdegoede@redhat.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Sasha Levin <sashal@kernel.org>, markgross@kernel.org,
+        platform-driver-x86@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 126/149] platform/x86: x86-android-tablets: Depend on EFI and SPI
+Date:   Fri,  1 Apr 2022 10:25:13 -0400
+Message-Id: <20220401142536.1948161-126-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401142536.1948161-1-sashal@kernel.org>
 References: <20220401142536.1948161-1-sashal@kernel.org>
@@ -54,97 +53,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Ellerman <mpe@ellerman.id.au>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit 591b4b268435f00d2f0b81f786c2c7bd5ef66416 ]
+[ Upstream commit 1e8aa2aa1274953e8e595f0630436744597d0d64 ]
 
-Paul reported a warning with DEBUG_ATOMIC_SLEEP=y:
+The recently added support for Lenovo Yoga Tablet 2 tablets uses
+symbols from EFI and SPI add "depends on EFI && SPI" to the
+X86_ANDROID_TABLETS Kconfig entry.
 
-  BUG: sleeping function called from invalid context at include/linux/sched/mm.h:256
-  in_atomic(): 0, irqs_disabled(): 1, non_block: 0, pid: 1, name: swapper/0
-  preempt_count: 0, expected: 0
-  ...
-  Call Trace:
-    dump_stack_lvl+0xa0/0xec (unreliable)
-    __might_resched+0x2f4/0x310
-    kmem_cache_alloc+0x220/0x4b0
-    __pud_alloc+0x74/0x1d0
-    hash__map_kernel_page+0x2cc/0x390
-    do_patch_instruction+0x134/0x4a0
-    arch_jump_label_transform+0x64/0x78
-    __jump_label_update+0x148/0x180
-    static_key_enable_cpuslocked+0xd0/0x120
-    static_key_enable+0x30/0x50
-    check_kvm_guest+0x60/0x88
-    pSeries_smp_probe+0x54/0xb0
-    smp_prepare_cpus+0x3e0/0x430
-    kernel_init_freeable+0x20c/0x43c
-    kernel_init+0x30/0x1a0
-    ret_from_kernel_thread+0x5c/0x64
-
-Peter pointed out that this is because do_patch_instruction() has
-disabled interrupts, but then map_patch_area() calls map_kernel_page()
-then hash__map_kernel_page() which does a sleeping memory allocation.
-
-We only see the warning in KVM guests with SMT enabled, which is not
-particularly common, or on other platforms if CONFIG_KPROBES is
-disabled, also not common. The reason we don't see it in most
-configurations is that another path that happens to have interrupts
-enabled has allocated the required page tables for us, eg. there's a
-path in kprobes init that does that. That's just pure luck though.
-
-As Christophe suggested, the simplest solution is to do a dummy
-map/unmap when we initialise the patching, so that any required page
-table levels are pre-allocated before the first call to
-do_patch_instruction(). This works because the unmap doesn't free any
-page tables that were allocated by the map, it just clears the PTE,
-leaving the page table levels there for the next map.
-
-Reported-by: Paul Menzel <pmenzel@molgen.mpg.de>
-Debugged-by: Peter Zijlstra <peterz@infradead.org>
-Suggested-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220223015821.473097-1-mpe@ellerman.id.au
+Reported-by: Randy Dunlap <rdunlap@infradead.org>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Acked-by: Randy Dunlap <rdunlap@infradead.org>
+Tested-by: Randy Dunlap <rdunlap@infradead.org>
+Link: https://lore.kernel.org/r/20220308152942.262130-1-hdegoede@redhat.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/lib/code-patching.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ drivers/platform/x86/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/powerpc/lib/code-patching.c b/arch/powerpc/lib/code-patching.c
-index 906d43463366..00c68e7fb11e 100644
---- a/arch/powerpc/lib/code-patching.c
-+++ b/arch/powerpc/lib/code-patching.c
-@@ -43,9 +43,14 @@ int raw_patch_instruction(u32 *addr, ppc_inst_t instr)
- #ifdef CONFIG_STRICT_KERNEL_RWX
- static DEFINE_PER_CPU(struct vm_struct *, text_poke_area);
+diff --git a/drivers/platform/x86/Kconfig b/drivers/platform/x86/Kconfig
+index 24deeeb29af2..53abd553b842 100644
+--- a/drivers/platform/x86/Kconfig
++++ b/drivers/platform/x86/Kconfig
+@@ -1027,7 +1027,7 @@ config TOUCHSCREEN_DMI
  
-+static int map_patch_area(void *addr, unsigned long text_poke_addr);
-+static void unmap_patch_area(unsigned long addr);
-+
- static int text_area_cpu_up(unsigned int cpu)
- {
- 	struct vm_struct *area;
-+	unsigned long addr;
-+	int err;
- 
- 	area = get_vm_area(PAGE_SIZE, VM_ALLOC);
- 	if (!area) {
-@@ -53,6 +58,15 @@ static int text_area_cpu_up(unsigned int cpu)
- 			cpu);
- 		return -1;
- 	}
-+
-+	// Map/unmap the area to ensure all page tables are pre-allocated
-+	addr = (unsigned long)area->addr;
-+	err = map_patch_area(empty_zero_page, addr);
-+	if (err)
-+		return err;
-+
-+	unmap_patch_area(addr);
-+
- 	this_cpu_write(text_poke_area, area);
- 
- 	return 0;
+ config X86_ANDROID_TABLETS
+ 	tristate "X86 Android tablet support"
+-	depends on I2C && SERIAL_DEV_BUS && ACPI && GPIOLIB
++	depends on I2C && SPI && SERIAL_DEV_BUS && ACPI && EFI && GPIOLIB
+ 	help
+ 	  X86 tablets which ship with Android as (part of) the factory image
+ 	  typically have various problems with their DSDTs. The factory kernels
 -- 
 2.34.1
 
