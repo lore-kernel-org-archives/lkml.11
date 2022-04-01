@@ -2,53 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77FF5C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:26:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FD99C4321E
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:26:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346995AbiDAO23 (ORCPT
+        id S1347019AbiDAO2e (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 10:28:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37626 "EHLO
+        Fri, 1 Apr 2022 10:28:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346969AbiDAO2S (ORCPT
+        with ESMTP id S1346965AbiDAO2U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:28:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F8D726B381;
-        Fri,  1 Apr 2022 07:26:15 -0700 (PDT)
+        Fri, 1 Apr 2022 10:28:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F1281E1105;
+        Fri,  1 Apr 2022 07:26:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CC32B61C4A;
-        Fri,  1 Apr 2022 14:26:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE532C36AE5;
-        Fri,  1 Apr 2022 14:26:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 015ACB82500;
+        Fri,  1 Apr 2022 14:26:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 059ACC3410F;
+        Fri,  1 Apr 2022 14:26:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823174;
-        bh=OBPbGbaO8x6r6b9mYxviduU9OXtQWOmDlqCVDbt1XsE=;
+        s=k20201202; t=1648823187;
+        bh=SyTOn7y6nyPh5CZweMHgg1YlsPXWzamM40RkWEELlmY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XQxB0H6RTfEH9MPuwkcFi4b3cAMT6gLOtPWLFFmED1evGXJTojBjwkTSGC6Qmis5s
-         DsUTsLlFRi0d4ef2OwfFCNYkMQKv9PlOwv4f9vJxec1rKDSA4ap0oYuZrY6lz10T1V
-         pzgzVKE8gXkMfAMJhtGE+qSwjEjFa9de+nmQX3VK47f6vZdeVOM4CVVqnGSvkUL/+d
-         EvBLH3VcrXtnlb7mC1m7887O2xfdjoDvRX2U40Ws58Dz0OjAdM+3QhUdp+UeSYYcmW
-         V7gthgIChw/bW3vNvccua0zj+0PHU1Jxy6+ibqgTTA+Te/MoaBBWy5EnsT/10AeZor
-         dCFNlA6SHp3zw==
+        b=pylCjjYQAH5egynesWfl4aTGWNCCsUAOQfND58X+wMA5QpIY2feWPZDmfj+OGCaVD
+         8O0a4Irp489tJlsQD8Ihmu6EtN0rg9XjA9uaFD0siTP/O4CNc7Bj1b6kX1b0mlzwDl
+         rooEOljNbzLPQKzleir9mOq85zl91lGQBByXKc6963pieyzwBzxpT/i47ZnqK96hNI
+         JGdQIY9cNMJ/5eK7hVtaIkehPASup0CsB+iGza2M3zbHbKydDimPm7UvxHt7uXTnBk
+         k052Pq77sV5llhT2923e5fP/LcCv5DY67HK3Aosuwq07YAFo+3bTMy2V66isPY/Tfm
+         YNUlB3D5S3bLw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yongzhi Liu <lyz_cs@pku.edu.cn>,
-        Harry Wentland <harry.wentland@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, sunpeng.li@amd.com,
-        Rodrigo.Siqueira@amd.com, christian.koenig@amd.com,
-        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
-        Wayne.Lin@amd.com, mikita.lipski@amd.com, Jerry.Zuo@amd.com,
-        Anson.Jacob@amd.com, patrik.r.jakobsson@gmail.com,
-        aurabindo.pillai@amd.com, victorchengchi.lu@amd.com,
-        seanpaul@chromium.org, greenfoo@u92.eu,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.17 012/149] drm/amd/display: Fix memory leak
-Date:   Fri,  1 Apr 2022 10:23:19 -0400
-Message-Id: <20220401142536.1948161-12-sashal@kernel.org>
+Cc:     Wayne Chang <waynec@nvidia.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, balbi@kernel.org,
+        thierry.reding@gmail.com, jonathanh@nvidia.com,
+        chunfeng.yun@mediatek.com, zhangqilong3@huawei.com,
+        yangyingliang@huawei.com, jakobkoschel@gmail.com,
+        rikard.falkeborn@gmail.com, linux-usb@vger.kernel.org,
+        linux-tegra@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 014/149] usb: gadget: tegra-xudc: Do not program SPARAM
+Date:   Fri,  1 Apr 2022 10:23:21 -0400
+Message-Id: <20220401142536.1948161-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401142536.1948161-1-sashal@kernel.org>
 References: <20220401142536.1948161-1-sashal@kernel.org>
@@ -60,269 +57,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yongzhi Liu <lyz_cs@pku.edu.cn>
+From: Wayne Chang <waynec@nvidia.com>
 
-[ Upstream commit 5d5c6dba2b43e28845d7d7ed32a36802329a5f52 ]
+[ Upstream commit 62fb61580eb48fc890b7bc9fb5fd263367baeca8 ]
 
-[why]
-Resource release is needed on the error handling path
-to prevent memory leak.
+According to the Tegra Technical Reference Manual, SPARAM
+is a read-only register and should not be programmed in
+the driver.
 
-[how]
-Fix this by adding kfree on the error handling path.
+The change removes the wrong SPARAM usage.
 
-Reviewed-by: Harry Wentland <harry.wentland@amd.com>
-Signed-off-by: Yongzhi Liu <lyz_cs@pku.edu.cn>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Wayne Chang <waynec@nvidia.com>
+Link: https://lore.kernel.org/r/20220107090443.149021-1-waynec@nvidia.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../amd/display/amdgpu_dm/amdgpu_dm_debugfs.c | 80 ++++++++++++++-----
- 1 file changed, 60 insertions(+), 20 deletions(-)
+ drivers/usb/gadget/udc/tegra-xudc.c | 8 --------
+ 1 file changed, 8 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_debugfs.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_debugfs.c
-index 26719efa5396..12d437d9a0e4 100644
---- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_debugfs.c
-+++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_debugfs.c
-@@ -227,8 +227,10 @@ static ssize_t dp_link_settings_read(struct file *f, char __user *buf,
- 			break;
+diff --git a/drivers/usb/gadget/udc/tegra-xudc.c b/drivers/usb/gadget/udc/tegra-xudc.c
+index 43f1b0d461c1..716d9ab2d2ff 100644
+--- a/drivers/usb/gadget/udc/tegra-xudc.c
++++ b/drivers/usb/gadget/udc/tegra-xudc.c
+@@ -32,9 +32,6 @@
+ #include <linux/workqueue.h>
  
- 		r = put_user(*(rd_buf + result), buf);
--		if (r)
-+		if (r) {
-+			kfree(rd_buf);
- 			return r; /* r = -EFAULT */
-+		}
+ /* XUSB_DEV registers */
+-#define SPARAM 0x000
+-#define  SPARAM_ERSTMAX_MASK GENMASK(20, 16)
+-#define  SPARAM_ERSTMAX(x) (((x) << 16) & SPARAM_ERSTMAX_MASK)
+ #define DB 0x004
+ #define  DB_TARGET_MASK GENMASK(15, 8)
+ #define  DB_TARGET(x) (((x) << 8) & DB_TARGET_MASK)
+@@ -3295,11 +3292,6 @@ static void tegra_xudc_init_event_ring(struct tegra_xudc *xudc)
+ 	unsigned int i;
+ 	u32 val;
  
- 		buf += 1;
- 		size -= 1;
-@@ -389,8 +391,10 @@ static ssize_t dp_phy_settings_read(struct file *f, char __user *buf,
- 			break;
- 
- 		r = put_user((*(rd_buf + result)), buf);
--		if (r)
-+		if (r) {
-+			kfree(rd_buf);
- 			return r; /* r = -EFAULT */
-+		}
- 
- 		buf += 1;
- 		size -= 1;
-@@ -1359,8 +1363,10 @@ static ssize_t dp_dsc_clock_en_read(struct file *f, char __user *buf,
- 				break;
- 	}
- 
--	if (!pipe_ctx)
-+	if (!pipe_ctx) {
-+		kfree(rd_buf);
- 		return -ENXIO;
-+	}
- 
- 	dsc = pipe_ctx->stream_res.dsc;
- 	if (dsc)
-@@ -1376,8 +1382,10 @@ static ssize_t dp_dsc_clock_en_read(struct file *f, char __user *buf,
- 			break;
- 
- 		r = put_user(*(rd_buf + result), buf);
--		if (r)
-+		if (r) {
-+			kfree(rd_buf);
- 			return r; /* r = -EFAULT */
-+		}
- 
- 		buf += 1;
- 		size -= 1;
-@@ -1546,8 +1554,10 @@ static ssize_t dp_dsc_slice_width_read(struct file *f, char __user *buf,
- 				break;
- 	}
- 
--	if (!pipe_ctx)
-+	if (!pipe_ctx) {
-+		kfree(rd_buf);
- 		return -ENXIO;
-+	}
- 
- 	dsc = pipe_ctx->stream_res.dsc;
- 	if (dsc)
-@@ -1563,8 +1573,10 @@ static ssize_t dp_dsc_slice_width_read(struct file *f, char __user *buf,
- 			break;
- 
- 		r = put_user(*(rd_buf + result), buf);
--		if (r)
-+		if (r) {
-+			kfree(rd_buf);
- 			return r; /* r = -EFAULT */
-+		}
- 
- 		buf += 1;
- 		size -= 1;
-@@ -1731,8 +1743,10 @@ static ssize_t dp_dsc_slice_height_read(struct file *f, char __user *buf,
- 				break;
- 	}
- 
--	if (!pipe_ctx)
-+	if (!pipe_ctx) {
-+		kfree(rd_buf);
- 		return -ENXIO;
-+	}
- 
- 	dsc = pipe_ctx->stream_res.dsc;
- 	if (dsc)
-@@ -1748,8 +1762,10 @@ static ssize_t dp_dsc_slice_height_read(struct file *f, char __user *buf,
- 			break;
- 
- 		r = put_user(*(rd_buf + result), buf);
--		if (r)
-+		if (r) {
-+			kfree(rd_buf);
- 			return r; /* r = -EFAULT */
-+		}
- 
- 		buf += 1;
- 		size -= 1;
-@@ -1912,8 +1928,10 @@ static ssize_t dp_dsc_bits_per_pixel_read(struct file *f, char __user *buf,
- 				break;
- 	}
- 
--	if (!pipe_ctx)
-+	if (!pipe_ctx) {
-+		kfree(rd_buf);
- 		return -ENXIO;
-+	}
- 
- 	dsc = pipe_ctx->stream_res.dsc;
- 	if (dsc)
-@@ -1929,8 +1947,10 @@ static ssize_t dp_dsc_bits_per_pixel_read(struct file *f, char __user *buf,
- 			break;
- 
- 		r = put_user(*(rd_buf + result), buf);
--		if (r)
-+		if (r) {
-+			kfree(rd_buf);
- 			return r; /* r = -EFAULT */
-+		}
- 
- 		buf += 1;
- 		size -= 1;
-@@ -2088,8 +2108,10 @@ static ssize_t dp_dsc_pic_width_read(struct file *f, char __user *buf,
- 				break;
- 	}
- 
--	if (!pipe_ctx)
-+	if (!pipe_ctx) {
-+		kfree(rd_buf);
- 		return -ENXIO;
-+	}
- 
- 	dsc = pipe_ctx->stream_res.dsc;
- 	if (dsc)
-@@ -2105,8 +2127,10 @@ static ssize_t dp_dsc_pic_width_read(struct file *f, char __user *buf,
- 			break;
- 
- 		r = put_user(*(rd_buf + result), buf);
--		if (r)
-+		if (r) {
-+			kfree(rd_buf);
- 			return r; /* r = -EFAULT */
-+		}
- 
- 		buf += 1;
- 		size -= 1;
-@@ -2145,8 +2169,10 @@ static ssize_t dp_dsc_pic_height_read(struct file *f, char __user *buf,
- 				break;
- 	}
- 
--	if (!pipe_ctx)
-+	if (!pipe_ctx) {
-+		kfree(rd_buf);
- 		return -ENXIO;
-+	}
- 
- 	dsc = pipe_ctx->stream_res.dsc;
- 	if (dsc)
-@@ -2162,8 +2188,10 @@ static ssize_t dp_dsc_pic_height_read(struct file *f, char __user *buf,
- 			break;
- 
- 		r = put_user(*(rd_buf + result), buf);
--		if (r)
-+		if (r) {
-+			kfree(rd_buf);
- 			return r; /* r = -EFAULT */
-+		}
- 
- 		buf += 1;
- 		size -= 1;
-@@ -2217,8 +2245,10 @@ static ssize_t dp_dsc_chunk_size_read(struct file *f, char __user *buf,
- 				break;
- 	}
- 
--	if (!pipe_ctx)
-+	if (!pipe_ctx) {
-+		kfree(rd_buf);
- 		return -ENXIO;
-+	}
- 
- 	dsc = pipe_ctx->stream_res.dsc;
- 	if (dsc)
-@@ -2234,8 +2264,10 @@ static ssize_t dp_dsc_chunk_size_read(struct file *f, char __user *buf,
- 			break;
- 
- 		r = put_user(*(rd_buf + result), buf);
--		if (r)
-+		if (r) {
-+			kfree(rd_buf);
- 			return r; /* r = -EFAULT */
-+		}
- 
- 		buf += 1;
- 		size -= 1;
-@@ -2289,8 +2321,10 @@ static ssize_t dp_dsc_slice_bpg_offset_read(struct file *f, char __user *buf,
- 				break;
- 	}
- 
--	if (!pipe_ctx)
-+	if (!pipe_ctx) {
-+		kfree(rd_buf);
- 		return -ENXIO;
-+	}
- 
- 	dsc = pipe_ctx->stream_res.dsc;
- 	if (dsc)
-@@ -2306,8 +2340,10 @@ static ssize_t dp_dsc_slice_bpg_offset_read(struct file *f, char __user *buf,
- 			break;
- 
- 		r = put_user(*(rd_buf + result), buf);
--		if (r)
-+		if (r) {
-+			kfree(rd_buf);
- 			return r; /* r = -EFAULT */
-+		}
- 
- 		buf += 1;
- 		size -= 1;
-@@ -3459,8 +3495,10 @@ static ssize_t dcc_en_bits_read(
- 	dc->hwss.get_dcc_en_bits(dc, dcc_en_bits);
- 
- 	rd_buf = kcalloc(rd_buf_size, sizeof(char), GFP_KERNEL);
--	if (!rd_buf)
-+	if (!rd_buf) {
-+		kfree(dcc_en_bits);
- 		return -ENOMEM;
-+	}
- 
- 	for (i = 0; i < num_pipes; i++)
- 		offset += snprintf(rd_buf + offset, rd_buf_size - offset,
-@@ -3473,8 +3511,10 @@ static ssize_t dcc_en_bits_read(
- 		if (*pos >= rd_buf_size)
- 			break;
- 		r = put_user(*(rd_buf + result), buf);
--		if (r)
-+		if (r) {
-+			kfree(rd_buf);
- 			return r; /* r = -EFAULT */
-+		}
- 		buf += 1;
- 		size -= 1;
- 		*pos += 1;
+-	val = xudc_readl(xudc, SPARAM);
+-	val &= ~(SPARAM_ERSTMAX_MASK);
+-	val |= SPARAM_ERSTMAX(XUDC_NR_EVENT_RINGS);
+-	xudc_writel(xudc, val, SPARAM);
+-
+ 	for (i = 0; i < ARRAY_SIZE(xudc->event_ring); i++) {
+ 		memset(xudc->event_ring[i], 0, XUDC_EVENT_RING_SIZE *
+ 		       sizeof(*xudc->event_ring[i]));
 -- 
 2.34.1
 
