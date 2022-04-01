@@ -2,90 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92DE8C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 06:23:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3B07C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 06:26:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245370AbiDAGZp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 02:25:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58288 "EHLO
+        id S245384AbiDAG2S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Apr 2022 02:28:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233382AbiDAGZn (ORCPT
+        with ESMTP id S233382AbiDAG2P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 02:25:43 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60AF025C59E
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 23:23:53 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id b15so1770510edn.4
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 23:23:53 -0700 (PDT)
+        Fri, 1 Apr 2022 02:28:15 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8F4725FD5E;
+        Thu, 31 Mar 2022 23:26:26 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id p4-20020a17090ad30400b001c7ca87c05bso4472621pju.1;
+        Thu, 31 Mar 2022 23:26:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=xQMDBGJX/jflZ53QpHSB8LvVGDDFW1x1dQ4Ucf7ki+I=;
-        b=nrwJeBN8hHzwkveYcjMDzL7r0pd3kmP3pk9rP2aTD0OqdjGdkLRB7D1Kavw+U8BATM
-         p7bvS/4WHFtb+cGNSozE3xiZ2wUpTf3XI/tJB1kNZp3e9KyF9+9TEKnzfNeRqipJ++y7
-         3O0VQqmzMSY2PzXSqiYaRLO3bSWpzY2UQiGkcuBhJAz6ZRj0UILs2QTPix4z2zuEAjmP
-         uOyDh7x13Xn2v/vdlfS5396MXJPwn+acbO9Ulieh3n+7oALSuHmts6M3hH4OxvxHLbOq
-         GTcl+PJ2Hve0UhB09AFJQRgU4dtUThG2jaC2AeQ+n9MIS82yRvndjO8elv3SH+pweUer
-         nJNw==
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=9fHQZIB7lEOQ68Fiz/ieQBcf4TMZ/QdfUXApZz8NUgg=;
+        b=UaOznirKfKonKligOllW8vnuEJEkeWhR8CChTAZkggFNqGQNi+ZC0uoM49LZao7Rnz
+         doLKhS6BlQ5WQjPaoZyg/nDIfWBMFkTs9Zq45/mxpV5iuuIfWysCTpgRFhF864DBAxuC
+         h6FoLmeKKhqNn3f5OrfKVoQMzWFy8NHdv+A8s94XRDB/nnL3utZAjQ2X6Qn7PemQLJkO
+         mFYA2pEarcqnrlhfuapxMyM3HddPEhDsoe8itQ43axG6QV+HLsGDTrOENeCXwoLJO5Qy
+         1fXNyLo5m1D17QaGhWNFYC/sPQsAAcRWP+K6jBUurtAahyShIF2L85kFtg04R6kOOyp6
+         d4IA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=xQMDBGJX/jflZ53QpHSB8LvVGDDFW1x1dQ4Ucf7ki+I=;
-        b=eMmDB+t/9Qmoh2zKTLPy0NuR98IqN18Vf0FOTWp6U737QbgPr4Q9dUTff1dME2HKiq
-         BV6diSvc3ylJYk2zmCBONv4OFH7hftwh/DD4Rxe/FwrlaXMjBbd9zRNiG3CQlbiRMSDq
-         8ZSdArF/RgmPsYEwa6UhbNP9JF+ppe0l1rifaXGx0OdnfozPb3g2Nae//6Zv+hEU6l7w
-         TwS2iWC/i392hwjRCsg4KoSkfAKvuS28/KOkrzfdTjbm4vMk842c4DwreG+tAjfbtWrc
-         8NAWt5d9QtUFD8AoLHWFSJOB9nAWEhMgaTbdD3bxjsMwTUGpuLC3vTs0GlfUNzyzSqiS
-         WGig==
-X-Gm-Message-State: AOAM533Are5hnbM6FTedUQcKsUsHRVHxoDNKRbECB/Z+cOLbLMaHyD/P
-        qvlOHV+a1heLV5zPn6Ww0DcbOfaBhZO53qj/
-X-Google-Smtp-Source: ABdhPJxMB1TEIOVvp+9kCB/IjTZAOwtiVWwPHZdkhtPIcHDQGxejHUBCt/HIVRegmbHmO9aQXtI3Iw==
-X-Received: by 2002:a05:6402:4414:b0:408:4dc0:3ee9 with SMTP id y20-20020a056402441400b004084dc03ee9mr19553120eda.203.1648794231818;
-        Thu, 31 Mar 2022 23:23:51 -0700 (PDT)
-Received: from [192.168.0.168] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id bn14-20020a170906c0ce00b006c5ef0494besm647740ejb.86.2022.03.31.23.23.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 31 Mar 2022 23:23:51 -0700 (PDT)
-Message-ID: <f45a7b96-4110-c9e0-f0ba-6c4432977bc2@linaro.org>
-Date:   Fri, 1 Apr 2022 08:23:50 +0200
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=9fHQZIB7lEOQ68Fiz/ieQBcf4TMZ/QdfUXApZz8NUgg=;
+        b=hfHlXysmtPgPnrQd+2amPjSHxFa1w1uKfegAggCVCVNHHbiiIFqMDf8MzrVJKxO1Tz
+         G3eo4vHrl+aLyLyBg3JbdaabFHH1YxRovWLngtsuw7k1njdxRpmTiuwMJWoD6BOZXBZu
+         4w9QZD+EPFIUQCskGqWpaFHcwk01NaYffQUqkcku+ixuQ7+UA450PMyPYvuQrnoZLnLM
+         sXL2TXrRaIN4PVpcNyL+IFH7caodInZTUnvEuwL9pLyAk5SxLZZNq2Skj5ZIvnVMv+Rx
+         yzB5h7MXjBH6oGbtdjrmD0mhRpXrtLlPnycNZ4VlA0w2yH3OyaLCYgAsLWNcxEJA8FZZ
+         yPQA==
+X-Gm-Message-State: AOAM530zqzERMAy2ymHB1O6xFzJwaJjh7pCIMQJRGP9qbLv+pzrrIVV4
+        DKXgBEU9ygKWrJ8NcNEOD4E=
+X-Google-Smtp-Source: ABdhPJyj0tuiwEwJ+qROZpwB/NOzj5QftX/nkjRseN6sPLBWpd2GqEKAPDS45dsfrkZq0craCACJxw==
+X-Received: by 2002:a17:90a:c28c:b0:1c9:9eef:6e2b with SMTP id f12-20020a17090ac28c00b001c99eef6e2bmr10043854pjt.188.1648794386131;
+        Thu, 31 Mar 2022 23:26:26 -0700 (PDT)
+Received: from google.com ([2601:647:4800:3540:4583:f18f:adab:79b7])
+        by smtp.gmail.com with ESMTPSA id j13-20020a056a00130d00b004f1025a4361sm1578335pfu.202.2022.03.31.23.26.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 31 Mar 2022 23:26:25 -0700 (PDT)
+Sender: Namhyung Kim <namhyung@gmail.com>
+Date:   Thu, 31 Mar 2022 23:26:17 -0700
+From:   Namhyung Kim <namhyung@kernel.org>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
+        Waiman Long <longman@redhat.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Byungchul Park <byungchul.park@lge.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Radoslaw Burny <rburny@google.com>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Hyeonggon Yoo <42.hyeyoo@gmail.com>
+Subject: Re: [PATCH 2/2] locking: Apply contention tracepoints in the slow
+ path
+Message-ID: <YkabCQYJmq9G9ZJ4@google.com>
+References: <20220322185709.141236-1-namhyung@kernel.org>
+ <20220322185709.141236-3-namhyung@kernel.org>
+ <20220328113946.GA8939@worktop.programming.kicks-ass.net>
+ <CAM9d7ciQQEypvv2a2zQLHNc7p3NNxF59kASxHoFMCqiQicKwBA@mail.gmail.com>
+ <20220330110853.GK8939@worktop.programming.kicks-ass.net>
+ <CAM9d7cjQnThKgsUfnqJDcmBFseSTk-56a6f0sefo1x8D7LWSZw@mail.gmail.com>
+ <20220331115916.GU8939@worktop.programming.kicks-ass.net>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] dt-bindings: gpio: davinci: list contents of GPIO hogs
-Content-Language: en-US
-To:     Rob Herring <robh@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, Keerthy <j-keerthy@ti.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        linux-gpio@vger.kernel.org, devicetree@vger.kernel.org
-References: <20220328191153.171241-1-krzysztof.kozlowski@linaro.org>
- <YkZK1OzF5Wq2bDma@robh.at.kernel.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <YkZK1OzF5Wq2bDma@robh.at.kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220331115916.GU8939@worktop.programming.kicks-ass.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 01/04/2022 02:44, Rob Herring wrote:
-> On Mon, Mar 28, 2022 at 09:11:53PM +0200, Krzysztof Kozlowski wrote:
->> The hogs children should list allowed properties, otherwise any property
->> would be accepted.  Simplify also GPIO hog node name pattern.
+On Thu, Mar 31, 2022 at 01:59:16PM +0200, Peter Zijlstra wrote:
+> I've since pushed out the lot to:
 > 
-> Only if 'gpio-hog' is missing, because the gpio-hog.yaml schema will 
-> check every node with that property.
+>   git://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git locking/core
 > 
-> Hogs are allowed on any GPIO controller, but I don't think we to 
-> duplicate what's here on every schema.
+> It builds, but I've not actually used it. Much appreciated if you could
+> test.
+> 
 
-I understand, so the patch could be dropped because it requires
-gpio-hog, thus the schema will always match.
+I've tested it and it worked well.  Thanks for your work!
 
+And we need to add the below too..
 
-Best regards,
-Krzysztof
+Thanks,
+Namhyung
+
+----8<----
+
+diff --git a/include/trace/events/lock.h b/include/trace/events/lock.h
+index db5bdbb9b9c0..9463a93132c3 100644
+--- a/include/trace/events/lock.h
++++ b/include/trace/events/lock.h
+@@ -114,7 +114,8 @@ TRACE_EVENT(contention_begin,
+ 				{ LCB_F_READ,		"READ" },
+ 				{ LCB_F_WRITE,		"WRITE" },
+ 				{ LCB_F_RT,		"RT" },
+-				{ LCB_F_PERCPU,		"PERCPU" }
++				{ LCB_F_PERCPU,		"PERCPU" },
++				{ LCB_F_MUTEX,		"MUTEX" }
+ 			  ))
+ );
+ 
