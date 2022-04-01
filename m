@@ -2,51 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D69DC4708E
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:13:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19BBEC47091
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:13:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355182AbiDAPOO (ORCPT
+        id S1355214AbiDAPOS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:14:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60508 "EHLO
+        Fri, 1 Apr 2022 11:14:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350005AbiDAOrF (ORCPT
+        with ESMTP id S1350009AbiDAOrF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 1 Apr 2022 10:47:05 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AB822A03C4;
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AB6E2A03C3;
         Fri,  1 Apr 2022 07:36:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id DE04ECE2585;
-        Fri,  1 Apr 2022 14:36:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86F68C2BBE4;
-        Fri,  1 Apr 2022 14:36:18 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 7A52ACE258A;
+        Fri,  1 Apr 2022 14:36:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3946EC2BBE4;
+        Fri,  1 Apr 2022 14:36:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823780;
-        bh=8CFmazhXImik3BIUnQsKZe9iS5ZceAaTZVntSr+XZt4=;
+        s=k20201202; t=1648823810;
+        bh=36BEvjQhgTtwogplVLYvptZj3ZgbM6dbvLzk2LibxkE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jYhjXhVs/QdWQ+CrsqtZ0BYyj101ZaKvlC1YtnX43Q7WsEDMIheq3z7MH+anTH+Od
-         5llK+Y/Y6AMkSuciR5MZjomHOMmtJjMPgF77prdBI7+h8+oTjH018pZTRZMtzGQr1R
-         wlA9DMpWQmBNIehGP4rDJU6LORznl/DF15sEl6pkWOx+kk0+XOKJcRFSbEX5X3jHgL
-         MlyHE0DImaktGDuTsLoKFiNEbN1HwcEx6U4dY5I08QKa/djngY+OIuVcJ6fyRG5+O0
-         57G5m4YqBVPGNhd75AzOUUdNo0Gj92XPRR5ql+98lSW9KalBxNMK1wH8q9FewNj+2z
-         Dh3nKfovjMKig==
+        b=by23TCql5jWwrlYUnOBdtsxzgJdbm/sJtIw4vSR7DZC7jdGs3deFobzNHVE4BkD6Y
+         DtyeiD8TwDCqYqgTW87WvtOPQ4jjJ+p/MbBJ6S6YrmVx6J1BENU9GDvfiXd4pg67Ik
+         jWmAehGZimDCUuMnyWV6NLtkbDD7tzJUj2Bd0Cm3Ch3L+Pi+rDDvA/L+kyFA/cgGm7
+         oSuWTO527xLR2OQ2UqXMUfQnHcYHWTiIPY26EDR1Wnm0dqvc2BN5Y659kBMuPSR7ir
+         axHpHFWLr6f48uFVaPwRJmvhf+3cQpaNjmdIrQhP4ykTzvSPu/OQlHYagBJvAjEQua
+         WvF2wEUcNSX+A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yang Li <yang.lee@linux.alibaba.com>,
-        Abaci Robot <abaci@linux.alibaba.com>,
-        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>,
-        lorenzo.bianconi83@gmail.com, ryder.lee@mediatek.com,
-        kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, matthias.bgg@gmail.com, xing.song@mediatek.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.16 072/109] mt76: mt7615: Fix assigning negative values to unsigned variable
-Date:   Fri,  1 Apr 2022 10:32:19 -0400
-Message-Id: <20220401143256.1950537-72-sashal@kernel.org>
+Cc:     Michael Ellerman <mpe@ellerman.id.au>,
+        kernel test robot <lkp@intel.com>,
+        "Naveen N . Rao" <naveen.n.rao@linux.vnet.ibm.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Sasha Levin <sashal@kernel.org>, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, akpm@linux-foundation.org,
+        catalin.marinas@arm.com, anshuman.khandual@arm.com,
+        npiggin@gmail.com, linuxppc-dev@lists.ozlabs.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 086/109] powerpc/64e: Tie PPC_BOOK3E_64 to PPC_FSL_BOOK3E
+Date:   Fri,  1 Apr 2022 10:32:33 -0400
+Message-Id: <20220401143256.1950537-86-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143256.1950537-1-sashal@kernel.org>
 References: <20220401143256.1950537-1-sashal@kernel.org>
@@ -58,39 +58,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Li <yang.lee@linux.alibaba.com>
+From: Michael Ellerman <mpe@ellerman.id.au>
 
-[ Upstream commit 9273ffcc9a11942bd586bb42584337ef3962b692 ]
+[ Upstream commit 1a76e520ee1831a81dabf8a9a58c6453f700026e ]
 
-Smatch reports the following:
-drivers/net/wireless/mediatek/mt76/mt7615/mac.c:1865
-mt7615_mac_adjust_sensitivity() warn: assigning (-110) to unsigned
-variable 'def_th'
-drivers/net/wireless/mediatek/mt76/mt7615/mac.c:1865
-mt7615_mac_adjust_sensitivity() warn: assigning (-98) to unsigned
-variable 'def_th'
+Since the IBM A2 CPU support was removed, see commit
+fb5a515704d7 ("powerpc: Remove platforms/wsp and associated pieces"),
+the only 64-bit Book3E CPUs we support are Freescale (NXP) ones.
 
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+However our Kconfig still allows configurating a kernel that has 64-bit
+Book3E support, but no Freescale CPU support enabled. Such a kernel
+would never boot, it doesn't know about any CPUs.
+
+It also causes build errors, as reported by lkp, because
+PPC_BARRIER_NOSPEC is not enabled in such a configuration:
+
+  powerpc64-linux-ld: arch/powerpc/net/bpf_jit_comp64.o:(.toc+0x0):
+  undefined reference to `powerpc_security_features'
+
+To fix this, force PPC_FSL_BOOK3E to be selected whenever we are
+building a 64-bit Book3E kernel.
+
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+Suggested-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220304061222.2478720-1-mpe@ellerman.id.au
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7615/mac.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/powerpc/platforms/Kconfig.cputype | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/mac.c b/drivers/net/wireless/mediatek/mt76/mt7615/mac.c
-index c79abce543f3..0089c8b29b7b 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7615/mac.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7615/mac.c
-@@ -1732,7 +1732,7 @@ mt7615_mac_adjust_sensitivity(struct mt7615_phy *phy,
- 	struct mt7615_dev *dev = phy->dev;
- 	int false_cca = ofdm ? phy->false_cca_ofdm : phy->false_cca_cck;
- 	bool ext_phy = phy != &dev->phy;
--	u16 def_th = ofdm ? -98 : -110;
-+	s16 def_th = ofdm ? -98 : -110;
- 	bool update = false;
- 	s8 *sensitivity;
- 	int signal;
+diff --git a/arch/powerpc/platforms/Kconfig.cputype b/arch/powerpc/platforms/Kconfig.cputype
+index a208997ade88..87a95cbff2f3 100644
+--- a/arch/powerpc/platforms/Kconfig.cputype
++++ b/arch/powerpc/platforms/Kconfig.cputype
+@@ -111,6 +111,7 @@ config PPC_BOOK3S_64
+ 
+ config PPC_BOOK3E_64
+ 	bool "Embedded processors"
++	select PPC_FSL_BOOK3E
+ 	select PPC_FPU # Make it a choice ?
+ 	select PPC_SMP_MUXED_IPI
+ 	select PPC_DOORBELL
+@@ -287,7 +288,7 @@ config FSL_BOOKE
+ config PPC_FSL_BOOK3E
+ 	bool
+ 	select ARCH_SUPPORTS_HUGETLBFS if PHYS_64BIT || PPC64
+-	select FSL_EMB_PERFMON
++	imply FSL_EMB_PERFMON
+ 	select PPC_SMP_MUXED_IPI
+ 	select PPC_DOORBELL
+ 	default y if FSL_BOOKE
 -- 
 2.34.1
 
