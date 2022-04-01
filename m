@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE991C3A59E
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:02:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E45E9C35276
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:02:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348753AbiDAPEH (ORCPT
+        id S1348364AbiDAPEO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:04:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34350 "EHLO
+        Fri, 1 Apr 2022 11:04:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349374AbiDAOpy (ORCPT
+        with ESMTP id S1349425AbiDAOp5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:45:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37D3529B7C4;
-        Fri,  1 Apr 2022 07:35:54 -0700 (PDT)
+        Fri, 1 Apr 2022 10:45:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BC7429B7DE;
+        Fri,  1 Apr 2022 07:35:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C845260A53;
-        Fri,  1 Apr 2022 14:35:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B21FC2BBE4;
-        Fri,  1 Apr 2022 14:35:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 68D35B824D8;
+        Fri,  1 Apr 2022 14:35:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14FB3C340EE;
+        Fri,  1 Apr 2022 14:35:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823754;
-        bh=FqPKhz65cLe+F8JBBk9WgDK9u85F0RIQc3mjbm+xiHI=;
+        s=k20201202; t=1648823757;
+        bh=rz650yzX6zlru2F0OGZGpmKImpcIennoaZbQcZ+2KYc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CjrvSHjumA4EOTVz57Je3oQKZUgtHYV2TRcnyDO05HKjEMukkkrxJr6VQKKQA6q8E
-         khb4/DOE7aq76puc93XLmPTujyjK9db6XfEbefSaKUM7grSfk47Ak05t/jFb25qW0a
-         4KU4BNnRWKRQr2XrGN6iyh/fnDDUd/gL1rpsXsCWkzjDLYRqllpwi+M6QmYAnn2ckV
-         MVwGMUp/4dOIJ4F/MfxeVOYn6NrtqyAS92yVR3UIwrWVFJvDFVO0fBuXL5bdHb+iiO
-         n26fZSr8Qe+hE5PHf4GMwvaQ+GkyzEsEYnxKuqHCloWBFgtudplGjrnwy6gpyHTQ0e
-         khp+vNLHz3pcg==
+        b=o/dLgYRGVCU1Tued9sHBQhKweKqYpCkctJcRIz0pg01GIFAHeXmuAHDuqLobxs+dI
+         Ngi7w+uMzBHlhPSsEdrsRlzDNFl7n/X8Si4ATnnB0OzdRyfqK+8IAbeF6HbuaXg/ed
+         hT/mTg2uO7ruemkfTitSDP/hJB+2yOgg95GX48lHFQUwSD+9GmjhRFImpqKHPJSEU7
+         sZfGrHhvGBxZCpxDB3heAojJB2N0wgCTjzavL7nR+5J1RAi6u9wAioStNus1V+71db
+         Eusx/Ds62wQmwcTr2cTjhe43qI/K/EkOZYUKPenh9ieCuk/MzRkg9D6ojgH3Jnjw35
+         zi+dY3YgTb1+g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alex Williamson <alex.williamson@redhat.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Sasha Levin <sashal@kernel.org>, yishaih@nvidia.com,
-        mgurtovoy@nvidia.com, jgg@ziepe.ca, kvm@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 063/109] vfio/pci: Stub vfio_pci_vga_rw when !CONFIG_VFIO_PCI_VGA
-Date:   Fri,  1 Apr 2022 10:32:10 -0400
-Message-Id: <20220401143256.1950537-63-sashal@kernel.org>
+Cc:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Jack Wang <jinpu.wang@ionos.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, jinpu.wang@cloud.ionos.com,
+        jejb@linux.ibm.com, linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 065/109] scsi: pm8001: Fix pm8001_mpi_task_abort_resp()
+Date:   Fri,  1 Apr 2022 10:32:12 -0400
+Message-Id: <20220401143256.1950537-65-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143256.1950537-1-sashal@kernel.org>
 References: <20220401143256.1950537-1-sashal@kernel.org>
@@ -53,67 +54,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alex Williamson <alex.williamson@redhat.com>
+From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 
-[ Upstream commit 6e031ec0e5a2dda53e12e0d2a7e9b15b47a3c502 ]
+[ Upstream commit 7e6b7e740addcea450041b5be8e42f0a4ceece0f ]
 
-Resolve build errors reported against UML build for undefined
-ioport_map() and ioport_unmap() functions.  Without this config
-option a device cannot have vfio_pci_core_device.has_vga set,
-so the existing function would always return -EINVAL anyway.
+The call to pm8001_ccb_task_free() at the end of
+pm8001_mpi_task_abort_resp() already frees the ccb tag. So when the device
+NCQ_ABORT_ALL_FLAG is set, the tag should not be freed again.  Also change
+the hardcoded 0xBFFFFFFF value to ~NCQ_ABORT_ALL_FLAG as it ought to be.
 
-Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Link: https://lore.kernel.org/r/20220123125737.2658758-1-geert@linux-m68k.org
-Link: https://lore.kernel.org/r/164306582968.3758255.15192949639574660648.stgit@omen
-Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
+Link: https://lore.kernel.org/r/20220220031810.738362-19-damien.lemoal@opensource.wdc.com
+Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/vfio/pci/vfio_pci_rdwr.c | 2 ++
- include/linux/vfio_pci_core.h    | 9 +++++++++
- 2 files changed, 11 insertions(+)
+ drivers/scsi/pm8001/pm8001_hwi.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/vfio/pci/vfio_pci_rdwr.c b/drivers/vfio/pci/vfio_pci_rdwr.c
-index 57d3b2cbbd8e..82ac1569deb0 100644
---- a/drivers/vfio/pci/vfio_pci_rdwr.c
-+++ b/drivers/vfio/pci/vfio_pci_rdwr.c
-@@ -288,6 +288,7 @@ ssize_t vfio_pci_bar_rw(struct vfio_pci_core_device *vdev, char __user *buf,
- 	return done;
+diff --git a/drivers/scsi/pm8001/pm8001_hwi.c b/drivers/scsi/pm8001/pm8001_hwi.c
+index 066290dd5756..51d58606da7f 100644
+--- a/drivers/scsi/pm8001/pm8001_hwi.c
++++ b/drivers/scsi/pm8001/pm8001_hwi.c
+@@ -3714,12 +3714,11 @@ int pm8001_mpi_task_abort_resp(struct pm8001_hba_info *pm8001_ha, void *piomb)
+ 	mb();
+ 
+ 	if (pm8001_dev->id & NCQ_ABORT_ALL_FLAG) {
+-		pm8001_tag_free(pm8001_ha, tag);
+ 		sas_free_task(t);
+-		/* clear the flag */
+-		pm8001_dev->id &= 0xBFFFFFFF;
+-	} else
++		pm8001_dev->id &= ~NCQ_ABORT_ALL_FLAG;
++	} else {
+ 		t->task_done(t);
++	}
+ 
+ 	return 0;
  }
- 
-+#ifdef CONFIG_VFIO_PCI_VGA
- ssize_t vfio_pci_vga_rw(struct vfio_pci_core_device *vdev, char __user *buf,
- 			       size_t count, loff_t *ppos, bool iswrite)
- {
-@@ -355,6 +356,7 @@ ssize_t vfio_pci_vga_rw(struct vfio_pci_core_device *vdev, char __user *buf,
- 
- 	return done;
- }
-+#endif
- 
- static void vfio_pci_ioeventfd_do_write(struct vfio_pci_ioeventfd *ioeventfd,
- 					bool test_mem)
-diff --git a/include/linux/vfio_pci_core.h b/include/linux/vfio_pci_core.h
-index ef9a44b6cf5d..ae6f4838ab75 100644
---- a/include/linux/vfio_pci_core.h
-+++ b/include/linux/vfio_pci_core.h
-@@ -159,8 +159,17 @@ extern ssize_t vfio_pci_config_rw(struct vfio_pci_core_device *vdev,
- extern ssize_t vfio_pci_bar_rw(struct vfio_pci_core_device *vdev, char __user *buf,
- 			       size_t count, loff_t *ppos, bool iswrite);
- 
-+#ifdef CONFIG_VFIO_PCI_VGA
- extern ssize_t vfio_pci_vga_rw(struct vfio_pci_core_device *vdev, char __user *buf,
- 			       size_t count, loff_t *ppos, bool iswrite);
-+#else
-+static inline ssize_t vfio_pci_vga_rw(struct vfio_pci_core_device *vdev,
-+				      char __user *buf, size_t count,
-+				      loff_t *ppos, bool iswrite)
-+{
-+	return -EINVAL;
-+}
-+#endif
- 
- extern long vfio_pci_ioeventfd(struct vfio_pci_core_device *vdev, loff_t offset,
- 			       uint64_t data, int count, int fd);
 -- 
 2.34.1
 
