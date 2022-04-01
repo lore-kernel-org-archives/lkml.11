@@ -2,125 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6945FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:34:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29B3AC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:34:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233787AbiDAOfw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 10:35:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38656 "EHLO
+        id S1347782AbiDAOgC (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Apr 2022 10:36:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347399AbiDAOcb (ORCPT
+        with ESMTP id S1347403AbiDAOcb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 1 Apr 2022 10:32:31 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05D5E1EC613
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 07:28:55 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id b24so3150281edu.10
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 07:28:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=1adJU3bhpcLZT1nUnce0EbLAPPbeXtcoClCStkyt9oM=;
-        b=VZ39SYrJ6PEuCxfqeqF/rIXuHwNzeIMR4RSC49UzVjrWCxHsx0BHlKRiOJeA1aqUBh
-         na4Lqb60PW31/7aJkHlKz9+Z08pkCtFhMyaXwX8Iy9jpon6g4s2pKRT0RCBleow+tdtW
-         QEiPis/ejow0d2ueveCIyUc4iwSnr38jDYFT1GE4dFhiPG2Udvvm/zmLMNbKxlfnEv9T
-         xXEkatWlkg9mzdM+9/XY5ee1SCfy1wGgdgcSrCJTna7dFOWET+ne5lUiyS7OR2YiKL05
-         F4AECbU5SrJABBKxCxYd09Lp7o/CQMl/NRSvMaytCitplDniftvzBoHs8IuJsmG2EI/r
-         5AOw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=1adJU3bhpcLZT1nUnce0EbLAPPbeXtcoClCStkyt9oM=;
-        b=M+VwyLUt0sf2wqiFUEOQ0gy73SrUU/S3jkSXbCrspmZcTzQWDpPbRHbgEDmNqEdAAq
-         6br7AnkeAgSAdYqg2vWdHbMfLKLjjmWJ0PFya+YAYGvJTo1/7aC3TcRAoR9+H/IUu/kO
-         1WR2DF6iQ67FA0htlF3FCcn0ai3iGwWHjailZJJRck/9DZcnJmhR2bTvjlm+/LXqzSGJ
-         KcU00z3rk8HYF1+6VXKlT02YFDPCxarqwT3/ddrLCwV8nZjkQTTszKOaFJu+Gh83k+ZL
-         CiPhnKkiNmtwL49EluxwYKAPdA5oVyKNuNkVqGUywH/SHYEHoH5BbqHO3e9jGr1mDyEK
-         uiHQ==
-X-Gm-Message-State: AOAM5325sQPtsNeDcKPXWy1fOAtPj/a1yy6hgsfYpwB/6L0H0QJTqfQL
-        7Tnt2FjL8Lu2J9H0gwVurpUbGw==
-X-Google-Smtp-Source: ABdhPJwzpAYQRuMQgEMzKTOmbEnykgFo3n9w7xJ0j1Au8dBsZfXNwd8pz6gGo426T8lHlCYDUd4yPw==
-X-Received: by 2002:a05:6402:2681:b0:419:4564:1bd4 with SMTP id w1-20020a056402268100b0041945641bd4mr21552795edd.358.1648823333577;
-        Fri, 01 Apr 2022 07:28:53 -0700 (PDT)
-Received: from [192.168.0.170] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id f17-20020a056402355100b0041925e80963sm1285501edd.41.2022.04.01.07.28.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 01 Apr 2022 07:28:53 -0700 (PDT)
-Message-ID: <67df9824-898c-192f-7baf-a1f05936f0ab@linaro.org>
-Date:   Fri, 1 Apr 2022 16:28:52 +0200
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9BE01EA5F0;
+        Fri,  1 Apr 2022 07:28:46 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6445A61CB1;
+        Fri,  1 Apr 2022 14:28:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D554FC36AE2;
+        Fri,  1 Apr 2022 14:28:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648823325;
+        bh=DhyRSmYkqVp0mD9tp8xB/iWyiPaIGIOPXQyeKGIgjq8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=bnM4mdMXnlUpBnPiv4K5nZ8GfR9kYUrVVRWlTod9ecjVSJAUDV/fOy+EV8a4Ulds2
+         kJ2qIE4uTKQvu+F88zZ4EEXysnoGeJ5pU/m49ccOZ6VKLn4ZsPwyfXvExg7TXEt+kI
+         51/9MoxT9q4HFOErgZ1mdmf67274NlpE2Dpxq5nNVpVG8Vo4xH99T3O4SQ3zEqLm2n
+         FCprEbR9+ybzEcKP0B+nCmqdVeEqWCze1Fcv6vrTTD2WyPGe08+LGpMQyyL0tQc4ll
+         gviXdWrLxNhrUra7Jiu3sPVRmSW1qIgHR8L8JbtVppU2iaYl4BAkVZoO3cLgrtrpek
+         28n28m21CnRKg==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Neal Liu <neal_liu@aspeedtech.com>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, linux-usb@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 058/149] usb: ehci: add pci device support for Aspeed platforms
+Date:   Fri,  1 Apr 2022 10:24:05 -0400
+Message-Id: <20220401142536.1948161-58-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220401142536.1948161-1-sashal@kernel.org>
+References: <20220401142536.1948161-1-sashal@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2 1/2] spi: dt-bindings: qcom,spi-geni-qcom: convert to
- dtschema
-Content-Language: en-US
-To:     Kuldeep Singh <singh.kuldeep87k@gmail.com>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Mark Brown <broonie@kernel.org>, linux-arm-msm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-spi@vger.kernel.org
-References: <20220331160248.716234-1-krzysztof.kozlowski@linaro.org>
- <20220331175817.GA91341@9a2d8922b8f1>
- <ddc12aab-3cff-16a1-9ec9-a246240f9521@linaro.org>
- <20220401135224.GA40286@9a2d8922b8f1>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220401135224.GA40286@9a2d8922b8f1>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 01/04/2022 15:52, Kuldeep Singh wrote:
-> On Thu, Mar 31, 2022 at 09:40:08PM +0200, Krzysztof Kozlowski wrote:
->> On 31/03/2022 19:58, Kuldeep Singh wrote:
->>> On Thu, Mar 31, 2022 at 06:02:47PM +0200, Krzysztof Kozlowski wrote:
->>>> Convert the GENI based Qualcomm Universal Peripheral (QUP) Serial
->>>> Peripheral Interface (SPI) bindings to DT Schema.
->>>>
->>>> The original bindings in TXT were not complete, so add during conversion
->>>> properties already used in DTS and/or in the driver: reg-names, dmas,
->>>> interconnects, operating points and power-domains.
->>>>
->>>> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> 
-> [...]
-> 
->>>> +  reg:
->>>> +    maxItems: 1
->>>> +
->>>> +  reg-names:
->>>> +    const: se
->>>
->>> Why reg-names is required?
->>> Reg contain max 1 value, we can skip reg-names like other users.
->>>
->>> Also, "se" is used as clock name and using it again for reg-names?
->>> I think this is wrong and reg-names shouldn't be documented.
->>
->> reg-names are not required. If you ask why they are documented? As I
->> wrote in commit msg - bindings were not fully updated to DTSes being used.
-> 
-> Hi Krzysztof,
-> 
-> Power-domains, operating-points etc. makes sense, but reg-names?
-> 
-> With quick search, sm8150.dtsi is the only user of reg-names. Moreover,
-> there is no reference in driver to incorporate it.
-> Driver(drivers/spi/spi-geni-qcom.c) looks for "se" as clock name and not
-> as reg-name. If there's one, kindly help in pointing out.
-> 
-> It seems you are adding reg-names because some DT is using it and no
-> other reason. And with no reference even in driver, that's surely not a
-> way to go ahead as you have been advising the same in past.
+From: Neal Liu <neal_liu@aspeedtech.com>
 
-I don't mind dropping it.
+[ Upstream commit c3c9cee592828528fd228b01d312c7526c584a42 ]
 
-Best regards,
-Krzysztof
+Enable Aspeed quirks in commit 7f2d73788d90 ("usb: ehci:
+handshake CMD_RUN instead of STS_HALT") to support Aspeed
+ehci-pci device.
+
+Acked-by: Alan Stern <stern@rowland.harvard.edu>
+Signed-off-by: Neal Liu <neal_liu@aspeedtech.com>
+Link: https://lore.kernel.org/r/20220208101657.76459-1-neal_liu@aspeedtech.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/usb/host/ehci-pci.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/drivers/usb/host/ehci-pci.c b/drivers/usb/host/ehci-pci.c
+index e87cf3a00fa4..638f03b89739 100644
+--- a/drivers/usb/host/ehci-pci.c
++++ b/drivers/usb/host/ehci-pci.c
+@@ -21,6 +21,9 @@ static const char hcd_name[] = "ehci-pci";
+ /* defined here to avoid adding to pci_ids.h for single instance use */
+ #define PCI_DEVICE_ID_INTEL_CE4100_USB	0x2e70
+ 
++#define PCI_VENDOR_ID_ASPEED		0x1a03
++#define PCI_DEVICE_ID_ASPEED_EHCI	0x2603
++
+ /*-------------------------------------------------------------------------*/
+ #define PCI_DEVICE_ID_INTEL_QUARK_X1000_SOC		0x0939
+ static inline bool is_intel_quark_x1000(struct pci_dev *pdev)
+@@ -222,6 +225,12 @@ static int ehci_pci_setup(struct usb_hcd *hcd)
+ 			ehci->has_synopsys_hc_bug = 1;
+ 		}
+ 		break;
++	case PCI_VENDOR_ID_ASPEED:
++		if (pdev->device == PCI_DEVICE_ID_ASPEED_EHCI) {
++			ehci_info(ehci, "applying Aspeed HC workaround\n");
++			ehci->is_aspeed = 1;
++		}
++		break;
+ 	}
+ 
+ 	/* optional debug port, normally in the first BAR */
+-- 
+2.34.1
+
