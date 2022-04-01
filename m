@@ -2,54 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBFF3C47080
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:40:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C18CC47081
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:40:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356613AbiDAPhn (ORCPT
+        id S1356943AbiDAPiE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:37:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42352 "EHLO
+        Fri, 1 Apr 2022 11:38:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350544AbiDAPAI (ORCPT
+        with ESMTP id S1350625AbiDAPAX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 11:00:08 -0400
+        Fri, 1 Apr 2022 11:00:23 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9831A64BF3;
-        Fri,  1 Apr 2022 07:47:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CF62185452;
+        Fri,  1 Apr 2022 07:48:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2450A60AC9;
-        Fri,  1 Apr 2022 14:47:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21E2EC340EE;
-        Fri,  1 Apr 2022 14:47:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 28FB060AD8;
+        Fri,  1 Apr 2022 14:48:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 948C5C34114;
+        Fri,  1 Apr 2022 14:48:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824463;
-        bh=J1f0lQ9piKBazL8l/JdIIROG6EMQUCVmrex/JmHS88Q=;
+        s=k20201202; t=1648824485;
+        bh=2tozWS5tfBdaYLvOOUCaxEOdv61E7cXQz0LV10ZBMtU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gg7GJdaGJYw1+dD+MbOYw9ithpQ13PUlxc7zHfkNt2M7Z8OMQy/AtnLPsi6M4J9Hx
-         tYg/EB2iwShmW6qK9EwwgPns7hNXgua1ptZA0PvFbqNtzJuYMc1Zq7qDdU+bYO1H5d
-         AMAMwt4upgFrGQWfroING+SrUT1oBuUdLI0bZpRPajgU2kqanJIkWIDMUqX4E794+/
-         12qs63lhfGPzZBOO5Cg9LE2lWZfZdtPG/xk5wTzlZGlqc3a/xPrtxtX4u8YQ1ecW+u
-         KG1zIG0EkzY3AeKhRczKwy+bZgXNzOEbxT0RPRINRkY7hs40FPEGUPFmQO4EuBkg2w
-         /nl9Xak9jV34A==
+        b=HRNvni91x0sDPRG8lAJbYL/HSUVZMa8bGuncghDBfb3vxYeZr1qKccJqluOHeu7SH
+         IVlyR7dUdLyNQcqcvyQYl135Ahwo6P8NFW9ZYVq0QLi5h0a1ZvPKnCwnns/9b69AhN
+         Ten+to2R5RFYGKvkDcRPvDO5qZ2qtDxwrpwJG4FjrmW58S+eCfgUjLLYQyPdWHwnFG
+         U8cvKCb95MVLg+Q8cH7dLUXuvIH1mb4ZmUxcnpucFT0/djLXiVuLH5abLiH9wJo0IS
+         scpb+K17VdmfOfaYpHFxNcjhC9YH/LtmBHcELCZOUU0hHKYmdlW/24DiaHAfdPH4Bk
+         lHLgWiYUDfVCA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yang Guang <yang.guang5@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>,
-        David Yang <davidcomponentone@gmail.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, jejb@linux.ibm.com,
-        john.garry@huawei.com, bvanassche@acm.org, yuyufen@huawei.com,
-        johannes.thumshirn@wdc.com, thunder.leizhen@huawei.com,
-        linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 04/22] scsi: mvsas: Replace snprintf() with sysfs_emit()
-Date:   Fri,  1 Apr 2022 10:47:11 -0400
-Message-Id: <20220401144729.1955554-4-sashal@kernel.org>
+Cc:     Sven Eckelmann <sven@narfation.org>,
+        =?UTF-8?q?Leonardo=20M=C3=B6rlein?= <freifunk@irrelefant.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        pabeni@redhat.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 14/22] macvtap: advertise link netns via netlink
+Date:   Fri,  1 Apr 2022 10:47:21 -0400
+Message-Id: <20220401144729.1955554-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401144729.1955554-1-sashal@kernel.org>
 References: <20220401144729.1955554-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -57,50 +55,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Guang <yang.guang5@zte.com.cn>
+From: Sven Eckelmann <sven@narfation.org>
 
-[ Upstream commit 0ad3867b0f13e45cfee5a1298bfd40eef096116c ]
+[ Upstream commit a02192151b7dbf855084c38dca380d77c7658353 ]
 
-coccinelle report:
-./drivers/scsi/mvsas/mv_init.c:699:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/mvsas/mv_init.c:747:8-16:
-WARNING: use scnprintf or sprintf
+Assign rtnl_link_ops->get_link_net() callback so that IFLA_LINK_NETNSID is
+added to rtnetlink messages. This fixes iproute2 which otherwise resolved
+the link interface to an interface in the wrong namespace.
 
-Use sysfs_emit() instead of scnprintf() or sprintf().
+Test commands:
 
-Link: https://lore.kernel.org/r/c1711f7cf251730a8ceb5bdfc313bf85662b3395.1643182948.git.yang.guang5@zte.com.cn
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Yang Guang <yang.guang5@zte.com.cn>
-Signed-off-by: David Yang <davidcomponentone@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+  ip netns add nst
+  ip link add dummy0 type dummy
+  ip link add link macvtap0 link dummy0 type macvtap
+  ip link set macvtap0 netns nst
+  ip -netns nst link show macvtap0
+
+Before:
+
+  10: macvtap0@gre0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 500
+      link/ether 5e:8f:ae:1d:60:50 brd ff:ff:ff:ff:ff:ff
+
+After:
+
+  10: macvtap0@if2: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 500
+      link/ether 5e:8f:ae:1d:60:50 brd ff:ff:ff:ff:ff:ff link-netnsid 0
+
+Reported-by: Leonardo Mörlein <freifunk@irrelefant.net>
+Signed-off-by: Sven Eckelmann <sven@narfation.org>
+Link: https://lore.kernel.org/r/20220228003240.1337426-1-sven@narfation.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/mvsas/mv_init.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/macvtap.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/scsi/mvsas/mv_init.c b/drivers/scsi/mvsas/mv_init.c
-index 718c88de328b..f6070b1fe1d8 100644
---- a/drivers/scsi/mvsas/mv_init.c
-+++ b/drivers/scsi/mvsas/mv_init.c
-@@ -729,7 +729,7 @@ static ssize_t
- mvs_show_driver_version(struct device *cdev,
- 		struct device_attribute *attr,  char *buffer)
- {
--	return snprintf(buffer, PAGE_SIZE, "%s\n", DRV_VERSION);
-+	return sysfs_emit(buffer, "%s\n", DRV_VERSION);
+diff --git a/drivers/net/macvtap.c b/drivers/net/macvtap.c
+index cba5cb3b849a..dc89019ca876 100644
+--- a/drivers/net/macvtap.c
++++ b/drivers/net/macvtap.c
+@@ -132,11 +132,17 @@ static void macvtap_setup(struct net_device *dev)
+ 	dev->tx_queue_len = TUN_READQ_SIZE;
  }
  
- static DEVICE_ATTR(driver_version,
-@@ -781,7 +781,7 @@ mvs_store_interrupt_coalescing(struct device *cdev,
- static ssize_t mvs_show_interrupt_coalescing(struct device *cdev,
- 			struct device_attribute *attr, char *buffer)
- {
--	return snprintf(buffer, PAGE_SIZE, "%d\n", interrupt_coalescing);
-+	return sysfs_emit(buffer, "%d\n", interrupt_coalescing);
- }
++static struct net *macvtap_link_net(const struct net_device *dev)
++{
++	return dev_net(macvlan_dev_real_dev(dev));
++}
++
+ static struct rtnl_link_ops macvtap_link_ops __read_mostly = {
+ 	.kind		= "macvtap",
+ 	.setup		= macvtap_setup,
+ 	.newlink	= macvtap_newlink,
+ 	.dellink	= macvtap_dellink,
++	.get_link_net	= macvtap_link_net,
+ 	.priv_size      = sizeof(struct macvtap_dev),
+ };
  
- static DEVICE_ATTR(interrupt_coalescing,
 -- 
 2.34.1
 
