@@ -2,53 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8AF1C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB5B3C4167E
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:40:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357916AbiDAPjV (ORCPT
+        id S1349016AbiDAPj4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:39:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54402 "EHLO
+        Fri, 1 Apr 2022 11:39:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350656AbiDAPAX (ORCPT
+        with ESMTP id S1350637AbiDAPAX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 1 Apr 2022 11:00:23 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D36EADF0C;
-        Fri,  1 Apr 2022 07:48:29 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25C1518545A;
+        Fri,  1 Apr 2022 07:48:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 45975CE258F;
-        Fri,  1 Apr 2022 14:48:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBC41C2BBE4;
-        Fri,  1 Apr 2022 14:48:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CCCDFB8240E;
+        Fri,  1 Apr 2022 14:48:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D20BC2BBE4;
+        Fri,  1 Apr 2022 14:48:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824506;
-        bh=MICxgwXy2CQrPa83r0uiCj8GpEQUlbiVbweW7fCQ4ss=;
+        s=k20201202; t=1648824492;
+        bh=UiVYWP+yq50r/sTqzdo77qM1WOWiNUF315E1f9WUSRg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eeD/1xEdp7xif4ue9xsvh5NUYpoXU6MDRgRBAHADCD81NqhRveEGlIos0CTKlAuso
-         7LGGMYbz63492ZALDn5x3VM68Ff7CAPtUDwy0Galp3Ol/pBr1d2RDJcsbLOcsdUv0v
-         iASIJ36/liG1+sBG0yWTifWvdpC1Vqd+5mTpO0EA1tmeE2Ez4WBXC4yD8XHVb0w1KI
-         yAg5O52OIs+SEhFHdrddqzsLn9EgvT/HDQMcaKKhMiwqysDjbDIdKEFhslTa1vyUtU
-         k50EeuoLRntAg3HZ+2ziy5iC/LLUS20z0mvvP/eKF3sAhE57XcS2TzMNjk2V0yIKlO
-         PL661DVrD7dtA==
+        b=horz6GEqEYmUxtfZ+1XGQb/0r4tIvrWmmSHLvYbd3YuySYvy5kfHJ8ZEYAw0aB98n
+         w5Fjq6Nc09JqejA6QYzTdkspmPSmmiiiXWzrFvX2ASsym28MnEbWlKzNADNUNNzjo5
+         GG8fQ91xDd0O+EU/v4wefg/omvPJDsWmgWor85pMTO5kHJXsbekUsCxHdu0QKlPeMG
+         SBz7sHFDBsQWigwuWF0S9ugQHuJuTSwNpWhauw6dGjJaQmwh2yFzNzkHB7FDJkUS9Q
+         Xw2+yAY/3i8eSu0iP1g0KteYYH8snp9A5Mfe0TPkTVAo0uJ8nUDg9pvjBiCzeL2nd8
+         s2nxl+Gn1WuDA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        Ingo Molnar <mingo@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>, mhiramat@kernel.org,
-        rostedt@goodmis.org, ahalaney@redhat.com, vbabka@suse.cz,
-        wangkefeng.wang@huawei.com, linux@rasmusvillemoes.dk,
-        keescook@chromium.org, mark-pk.tsai@mediatek.com,
-        peterz@infradead.org, valentin.schneider@arm.com
-Subject: [PATCH AUTOSEL 4.14 22/22] init/main.c: return 1 from handled __setup() functions
-Date:   Fri,  1 Apr 2022 10:47:29 -0400
-Message-Id: <20220401144729.1955554-22-sashal@kernel.org>
+Cc:     Alexander Lobakin <alobakin@pm.me>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Sasha Levin <sashal@kernel.org>, ebiederm@xmission.com,
+        akpm@linux-foundation.org, dbueso@suse.de, liam.howlett@oracle.com,
+        f.fainelli@gmail.com, linux-mips@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 16/22] MIPS: fix fortify panic when copying asm exception handlers
+Date:   Fri,  1 Apr 2022 10:47:23 -0400
+Message-Id: <20220401144729.1955554-16-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401144729.1955554-1-sashal@kernel.org>
 References: <20220401144729.1955554-1-sashal@kernel.org>
@@ -60,55 +54,97 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Alexander Lobakin <alobakin@pm.me>
 
-[ Upstream commit f9a40b0890658330c83c95511f9d6b396610defc ]
+[ Upstream commit d17b66417308996e7e64b270a3c7f3c1fbd4cfc8 ]
 
-initcall_blacklist() should return 1 to indicate that it handled its
-cmdline arguments.
+With KCFLAGS="-O3", I was able to trigger a fortify-source
+memcpy() overflow panic on set_vi_srs_handler().
+Although O3 level is not supported in the mainline, under some
+conditions that may've happened with any optimization settings,
+it's just a matter of inlining luck. The panic itself is correct,
+more precisely, 50/50 false-positive and not at the same time.
+From the one side, no real overflow happens. Exception handler
+defined in asm just gets copied to some reserved places in the
+memory.
+But the reason behind is that C code refers to that exception
+handler declares it as `char`, i.e. something of 1 byte length.
+It's obvious that the asm function itself is way more than 1 byte,
+so fortify logics thought we are going to past the symbol declared.
+The standard way to refer to asm symbols from C code which is not
+supposed to be called from C is to declare them as
+`extern const u8[]`. This is fully correct from any point of view,
+as any code itself is just a bunch of bytes (including 0 as it is
+for syms like _stext/_etext/etc.), and the exact size is not known
+at the moment of compilation.
+Adjust the type of the except_vec_vi_*() and related variables.
+Make set_handler() take `const` as a second argument to avoid
+cast-away warnings and give a little more room for optimization.
 
-set_debug_rodata() should return 1 to indicate that it handled its
-cmdline arguments.  Print a warning if the option string is invalid.
-
-This prevents these strings from being added to the 'init' program's
-environment as they are not init arguments/parameters.
-
-Link: https://lkml.kernel.org/r/20220221050901.23985-1-rdunlap@infradead.org
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Cc: Ingo Molnar <mingo@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Alexander Lobakin <alobakin@pm.me>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- init/main.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ arch/mips/include/asm/setup.h |  2 +-
+ arch/mips/kernel/traps.c      | 22 +++++++++++-----------
+ 2 files changed, 12 insertions(+), 12 deletions(-)
 
-diff --git a/init/main.c b/init/main.c
-index f0b2411a5fbf..621cedd9173a 100644
---- a/init/main.c
-+++ b/init/main.c
-@@ -749,7 +749,7 @@ static int __init initcall_blacklist(char *str)
- 		}
- 	} while (str_entry);
- 
--	return 0;
-+	return 1;
- }
- 
- static bool __init_or_module initcall_blacklisted(initcall_t fn)
-@@ -965,7 +965,9 @@ static noinline void __init kernel_init_freeable(void);
- bool rodata_enabled __ro_after_init = true;
- static int __init set_debug_rodata(char *str)
- {
--	return strtobool(str, &rodata_enabled);
-+	if (strtobool(str, &rodata_enabled))
-+		pr_warn("Invalid option string for rodata: '%s'\n", str);
-+	return 1;
- }
- __setup("rodata=", set_debug_rodata);
+diff --git a/arch/mips/include/asm/setup.h b/arch/mips/include/asm/setup.h
+index d49d247d48a1..d48a5f18a267 100644
+--- a/arch/mips/include/asm/setup.h
++++ b/arch/mips/include/asm/setup.h
+@@ -14,7 +14,7 @@ static inline void setup_8250_early_printk_port(unsigned long base,
+ 	unsigned int reg_shift, unsigned int timeout) {}
  #endif
+ 
+-extern void set_handler(unsigned long offset, void *addr, unsigned long len);
++void set_handler(unsigned long offset, const void *addr, unsigned long len);
+ extern void set_uncached_handler(unsigned long offset, void *addr, unsigned long len);
+ 
+ typedef void (*vi_handler_t)(void);
+diff --git a/arch/mips/kernel/traps.c b/arch/mips/kernel/traps.c
+index 4a23d89e251c..abbc64788008 100644
+--- a/arch/mips/kernel/traps.c
++++ b/arch/mips/kernel/traps.c
+@@ -2017,19 +2017,19 @@ static void *set_vi_srs_handler(int n, vi_handler_t addr, int srs)
+ 		 * If no shadow set is selected then use the default handler
+ 		 * that does normal register saving and standard interrupt exit
+ 		 */
+-		extern char except_vec_vi, except_vec_vi_lui;
+-		extern char except_vec_vi_ori, except_vec_vi_end;
+-		extern char rollback_except_vec_vi;
+-		char *vec_start = using_rollback_handler() ?
+-			&rollback_except_vec_vi : &except_vec_vi;
++		extern const u8 except_vec_vi[], except_vec_vi_lui[];
++		extern const u8 except_vec_vi_ori[], except_vec_vi_end[];
++		extern const u8 rollback_except_vec_vi[];
++		const u8 *vec_start = using_rollback_handler() ?
++				      rollback_except_vec_vi : except_vec_vi;
+ #if defined(CONFIG_CPU_MICROMIPS) || defined(CONFIG_CPU_BIG_ENDIAN)
+-		const int lui_offset = &except_vec_vi_lui - vec_start + 2;
+-		const int ori_offset = &except_vec_vi_ori - vec_start + 2;
++		const int lui_offset = except_vec_vi_lui - vec_start + 2;
++		const int ori_offset = except_vec_vi_ori - vec_start + 2;
+ #else
+-		const int lui_offset = &except_vec_vi_lui - vec_start;
+-		const int ori_offset = &except_vec_vi_ori - vec_start;
++		const int lui_offset = except_vec_vi_lui - vec_start;
++		const int ori_offset = except_vec_vi_ori - vec_start;
+ #endif
+-		const int handler_len = &except_vec_vi_end - vec_start;
++		const int handler_len = except_vec_vi_end - vec_start;
+ 
+ 		if (handler_len > VECTORSPACING) {
+ 			/*
+@@ -2249,7 +2249,7 @@ void per_cpu_trap_init(bool is_boot_cpu)
+ }
+ 
+ /* Install CPU exception handler */
+-void set_handler(unsigned long offset, void *addr, unsigned long size)
++void set_handler(unsigned long offset, const void *addr, unsigned long size)
+ {
+ #ifdef CONFIG_CPU_MICROMIPS
+ 	memcpy((void *)(ebase + offset), ((unsigned char *)addr - 1), size);
 -- 
 2.34.1
 
