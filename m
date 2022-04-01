@@ -2,51 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 544FFC38162
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:13:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FD28C4167E
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:13:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350080AbiDAPN3 (ORCPT
+        id S1354634AbiDAPMN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:13:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60646 "EHLO
+        Fri, 1 Apr 2022 11:12:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349279AbiDAOpn (ORCPT
+        with ESMTP id S1352168AbiDAOt7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:45:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D439D29A55D;
-        Fri,  1 Apr 2022 07:35:42 -0700 (PDT)
+        Fri, 1 Apr 2022 10:49:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAB322B19DC;
+        Fri,  1 Apr 2022 07:41:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1F11D60B9A;
-        Fri,  1 Apr 2022 14:35:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FC87C34112;
-        Fri,  1 Apr 2022 14:35:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4F81D60A3C;
+        Fri,  1 Apr 2022 14:40:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5556C34111;
+        Fri,  1 Apr 2022 14:40:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823706;
-        bh=Rbs7DnAUFvAXbZTT5xlzrTp8sk6yUOBZFc755WKAgkw=;
+        s=k20201202; t=1648824030;
+        bh=aTDvfyBb6ZFwQUDdatUy1W5KmV+kCGUwHFAYnOu3iOA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DN9cvSxCAO+iR7b+OAbTV1xCXGkYicYiKc+pNAoWdf9VMTmr5h+AUg+6gthaXr5U1
-         UxKDa17xPX1OqNDmY400yxvNE65bMLfZGU488iWxe1HBoIDxQuafwV/ZjhXWe+qXFd
-         vkhCX1xzRJbqcPkkHDxc/yDh20OnsVdbVL+oYaUldFaLWw+RmIMgrR4Lz3mf0uqiR4
-         E34hWKLLDonFz8V2RxirgLR0h7zCo6zJE9q1ZaGFlJLyCH992y5XYxYbUaWrHS6cMH
-         CbEBeArHDzRciDGsXwuCqW+HPF6Ysi/UmD8YHOo/H4tmr3Rw5OykKB9hmjc916hME6
-         mdyXGQzP/Q5yA==
+        b=tdD5WveRzUtwHO1q6jGSryp/MSMJ6n/dqUjK/17V9JZTKCsc5X9VGIC6Q2CtIK6cP
+         ZfKMDhDqoS9OQ1e+WyeTCOvfxR14RnVCgG5ZiXrDK1+kiAVXGCNn2X4QbMzdk2LmER
+         0eqlPst3YF3UtsjhRKD8RA+g+Jb4jBpgszg/Ew7LMuSYue+XXM1TLG18h6iYH1Uao4
+         n7XmwOEjEqgsuPN2Kd1UNq7AWFXzOn647g1b/OTHY4GBeL6tVozYZXyzocnpqk1wYt
+         trsqw92+U1ezB5w/FsAE5p1D5GuyzuwUzIlrguCB7T4i5g+QqZt+woFQ7YaNwqhFPg
+         9RMsKlCkIiDcg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, sathya.prakash@broadcom.com,
-        kashyap.desai@broadcom.com, sumit.saxena@broadcom.com,
-        jejb@linux.ibm.com, mpi3mr-linuxdrv.pdl@broadcom.com,
-        linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 046/109] scsi: mpi3mr: Fix reporting of actual data transfer size
-Date:   Fri,  1 Apr 2022 10:31:53 -0400
-Message-Id: <20220401143256.1950537-46-sashal@kernel.org>
+Cc:     Hans de Goede <hdegoede@redhat.com>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Sasha Levin <sashal@kernel.org>, airlied@linux.ie,
+        daniel@ffwll.ch, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.15 59/98] drm/simpledrm: Add "panel orientation" property on non-upright mounted LCD panels
+Date:   Fri,  1 Apr 2022 10:37:03 -0400
+Message-Id: <20220401143742.1952163-59-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220401143256.1950537-1-sashal@kernel.org>
-References: <20220401143256.1950537-1-sashal@kernel.org>
+In-Reply-To: <20220401143742.1952163-1-sashal@kernel.org>
+References: <20220401143742.1952163-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -55,35 +54,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sreekanth Reddy <sreekanth.reddy@broadcom.com>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit 9992246127246a27cc7184f05cce6f62ac48f84e ]
+[ Upstream commit 94fa115f7b28a3f02611499175e134f0a823b686 ]
 
-The driver is missing to set the residual size while completing an
-I/O. Ensure proper data transfer size is reported to the kernel on I/O
-completion based on the transfer length reported by the firmware.
+Some devices use e.g. a portrait panel in a standard laptop casing made
+for landscape panels. efifb calls drm_get_panel_orientation_quirk() and
+sets fb_info.fbcon_rotate_hint to make fbcon rotate the console so that
+it shows up-right instead of on its side.
 
-Link: https://lore.kernel.org/r/20220210095817.22828-7-sreekanth.reddy@broadcom.com
-Signed-off-by: Sreekanth Reddy <sreekanth.reddy@broadcom.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+When switching to simpledrm the fbcon renders on its side. Call the
+drm_connector_set_panel_orientation_with_quirk() helper to add
+a "panel orientation" property on devices listed in the quirk table,
+to make the fbcon (and aware userspace apps) rotate the image to
+display properly.
+
+Cc: Javier Martinez Canillas <javierm@redhat.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
+Acked-by: Thomas Zimmermann <tzimmermann@suse.de>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220221220045.11958-1-hdegoede@redhat.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/mpi3mr/mpi3mr_os.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/gpu/drm/tiny/simpledrm.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/scsi/mpi3mr/mpi3mr_os.c b/drivers/scsi/mpi3mr/mpi3mr_os.c
-index fe10f257b5a4..224a4155d9b4 100644
---- a/drivers/scsi/mpi3mr/mpi3mr_os.c
-+++ b/drivers/scsi/mpi3mr/mpi3mr_os.c
-@@ -2204,6 +2204,8 @@ void mpi3mr_process_op_reply_desc(struct mpi3mr_ioc *mrioc,
- 		scmd->result = DID_OK << 16;
- 		goto out_success;
- 	}
-+
-+	scsi_set_resid(scmd, scsi_bufflen(scmd) - xfer_count);
- 	if (ioc_status == MPI3_IOCSTATUS_SCSI_DATA_UNDERRUN &&
- 	    xfer_count == 0 && (scsi_status == MPI3_SCSI_STATUS_BUSY ||
- 	    scsi_status == MPI3_SCSI_STATUS_RESERVATION_CONFLICT ||
+diff --git a/drivers/gpu/drm/tiny/simpledrm.c b/drivers/gpu/drm/tiny/simpledrm.c
+index 5a6e89825bc2..3e3f9ba1e885 100644
+--- a/drivers/gpu/drm/tiny/simpledrm.c
++++ b/drivers/gpu/drm/tiny/simpledrm.c
+@@ -779,6 +779,9 @@ static int simpledrm_device_init_modeset(struct simpledrm_device *sdev)
+ 	if (ret)
+ 		return ret;
+ 	drm_connector_helper_add(connector, &simpledrm_connector_helper_funcs);
++	drm_connector_set_panel_orientation_with_quirk(connector,
++						       DRM_MODE_PANEL_ORIENTATION_UNKNOWN,
++						       mode->hdisplay, mode->vdisplay);
+ 
+ 	formats = simpledrm_device_formats(sdev, &nformats);
+ 
 -- 
 2.34.1
 
