@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D51FC43219
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 20:27:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5904BC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 20:27:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352343AbiDAU3N (ORCPT
+        id S1352736AbiDAU3P (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 16:29:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57868 "EHLO
+        Fri, 1 Apr 2022 16:29:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352918AbiDAU27 (ORCPT
+        with ESMTP id S1352975AbiDAU3E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 16:28:59 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F1019154E
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 13:27:08 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id i27so1059552ejd.9
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 13:27:08 -0700 (PDT)
+        Fri, 1 Apr 2022 16:29:04 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE36791AFB
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 13:27:12 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id g20so4273932edw.6
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 13:27:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=jc3RgWHjY2p/tsxxVAzB8ba7RaDO2fJGXxeAES8PpOI=;
-        b=SVDXGE3XLq/KSmiUjaRHGDcvUd3VB9aFLp9A1T1si6A8krWfqdKqir6M2mu2L5xx4E
-         cOSz7Gel6JSYnZrp8yVgnCgd8mnAeJUkTOYeMTIKq8rvHUFWscg+IRDD4f5DBN7INWjD
-         zc4kENwU21T2z75Qf1xYSuWUuu7X6aX99FQHN3tMQhXMZaq8Z72/0j1zZDEcZJIxddmr
-         NFyF7a24MFPHrrTgahe2RoeJvGer28t23TTwUBYr3iHGlZxri+lScy5F/biQSuIjpQCa
-         BWONqVqYX076Iezm4fzyGbRoJvGGG0wiBd0GN1zL+ZXsdMzNQiw5INMn+3vGq3zgib8+
-         5R1g==
+        bh=bAoIntk9Icd3bmVcFvqZzW4v1A6fl47DD1Y7M0nV1IQ=;
+        b=vImCi7X8ua2jZNYMsn/SLG0jECLtAMJ2VYieJfBTIwUm44lTxWaqMTEHcsUiv+MCYc
+         Cfkt1jfR7iJn795Gun0VO3JlqnKrNKskcetNLpgORRNPa/Dgg2ggbbcGDPLmf9ckE0vv
+         5zM8gBcdPUzLxZYLs+MAOCjFftTLFxwoffC0T9fx13pUziFMwJqrJcVCUsnEX8as/Nvp
+         7BLbBO2fEbKsfhPn8M6PXfe1iw/g1P6Remltvot7RXm+ESQBT6OuPZ9Jmt9LV4smbnmu
+         kktpHcS2mJ6QLr6vjqORN18dcdQghPm2CXjHKFd+RN9X0z3qkw3z6oPYZEUweP1NL2Ri
+         CD5w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=jc3RgWHjY2p/tsxxVAzB8ba7RaDO2fJGXxeAES8PpOI=;
-        b=XmvihrnKnP5UFTAw3ATGpKuG6Z0oo1jsU9qkPrN9qBNluQ2t5gL6Tq87Ihwq6wl4Je
-         p966yn+PyUJf6WvIiRFMMpY/fUoh0mdiqAb4T8vWh4Dzj8356R5+xtAY5ePlv8H/i3AI
-         9qiIiTQgNzWZHO17nmRQFn3czqkvUPjuJL2FVFP/wZTbaQBMsvUt4gkztdpf9TqvSXR9
-         KCZ4gceG24QyUjnPKph7j4MHA3sNX/5Cayt/iBrfym1mL7vYkEhrlTMZhxMGWhTUNs2c
-         PuyVTq3+IYtqgNhYQz2AC8XRE8YKXUGke+LfUyADeftR//5vldVBVq0HTdeQPWgCSMnY
-         LuGQ==
-X-Gm-Message-State: AOAM533PFi34XjMvqWhSSbpIN7YbAGw6MRRJwjZh7mtwih8kN0pFAltp
-        swMV8tIxb4yw4mVYBVrW/+JYDg==
-X-Google-Smtp-Source: ABdhPJyDR6JG5CgQmBI7+eKNve5VCFxxv8uRCv92S6bNXYY+dcQdSxM0K3PsMRQnCHLe0zmLr2jzrg==
-X-Received: by 2002:a17:907:3da9:b0:6db:f3f:33c2 with SMTP id he41-20020a1709073da900b006db0f3f33c2mr1253083ejc.735.1648844826728;
-        Fri, 01 Apr 2022 13:27:06 -0700 (PDT)
+        bh=bAoIntk9Icd3bmVcFvqZzW4v1A6fl47DD1Y7M0nV1IQ=;
+        b=ebFa824gg65HMSdskVts1cGrP5sMB3O+P5+/BFzTmDDlnkCl79FiyfAH3OkjyaXqtn
+         0byA8dUo+BQ7TNiPUGOS5JS8lx8A6WaL6RlsK4wtldrRrekcRvXFQgffUyX22ewrPJpM
+         S3OBeFb0/Ujgs4ygZz1/QVD0W/7Wz2jFe/URFIGCwMd47ZnRWJrEsS+TaJfHILWgiDxS
+         W2TQFWDER4u9mEzy5OlaoE7KNfLHLTOiTfHF2Zu0MF+4bdq6Qqkq1O1OEu0VHUAP5MTk
+         fzLaqOz/v5hpbLdU4JXd+4jlbG+WY2dQr4i+rK5MYVH9q4tf1hjCDuDYvhKSzKc0T45B
+         18UQ==
+X-Gm-Message-State: AOAM533IWgD8oGY7/fyvXKHfjjS7X8pi1aFBkqCItetxQgdmrgtYvuNj
+        6d5JIEQWxBg597aetV1TlXLLRQ==
+X-Google-Smtp-Source: ABdhPJzDdeMkyNBKunc+WbWXyy+TbvIDLmbxeMCjZJyLExFw+xUYQIp/cVJsCjqQwOY4wHpaJVQpXA==
+X-Received: by 2002:a05:6402:270b:b0:419:3383:7a9f with SMTP id y11-20020a056402270b00b0041933837a9fmr22753644edd.191.1648844831457;
+        Fri, 01 Apr 2022 13:27:11 -0700 (PDT)
 Received: from localhost.localdomain (cpc78119-cwma10-2-0-cust590.7-3.cable.virginm.net. [81.96.50.79])
-        by smtp.gmail.com with ESMTPSA id k14-20020a50e18e000000b0041b6f23f7f6sm1619346edl.22.2022.04.01.13.27.05
+        by smtp.gmail.com with ESMTPSA id k14-20020a50e18e000000b0041b6f23f7f6sm1619346edl.22.2022.04.01.13.27.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Apr 2022 13:27:06 -0700 (PDT)
+        Fri, 01 Apr 2022 13:27:11 -0700 (PDT)
 From:   Caleb Connolly <caleb.connolly@linaro.org>
 To:     caleb.connolly@linaro.org, Sebastian Reichel <sre@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
@@ -59,9 +59,9 @@ To:     caleb.connolly@linaro.org, Sebastian Reichel <sre@kernel.org>,
         linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
 Cc:     Amit Pundir <amit.pundir@linaro.org>,
         Sumit Semwal <sumit.semwal@linaro.org>
-Subject: [PATCH 2/6] arm64: dts: qcom: pmi8998: add smb2 node
-Date:   Fri,  1 Apr 2022 21:26:39 +0100
-Message-Id: <20220401202643.877609-3-caleb.connolly@linaro.org>
+Subject: [PATCH 6/6] dt-bindings: power: supply: qcom,smb2: add bindings for smb2 driver
+Date:   Fri,  1 Apr 2022 21:26:43 +0100
+Message-Id: <20220401202643.877609-7-caleb.connolly@linaro.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220401202643.877609-1-caleb.connolly@linaro.org>
 References: <20220401202643.877609-1-caleb.connolly@linaro.org>
@@ -71,39 +71,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a node for the smb2 charger hardware found on the pmi8998.
+Add devicetree bindings for the Qualcomm PMI8998/PM660 SMB2 charger
+drivers.
 
 Signed-off-by: Caleb Connolly <caleb.connolly@linaro.org>
 ---
- arch/arm64/boot/dts/qcom/pmi8998.dtsi | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+ .../bindings/power/supply/qcom,smb2.yaml      | 68 +++++++++++++++++++
+ 1 file changed, 68 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/power/supply/qcom,smb2.yaml
 
-diff --git a/arch/arm64/boot/dts/qcom/pmi8998.dtsi b/arch/arm64/boot/dts/qcom/pmi8998.dtsi
-index da10668c361d..b98dad166a0b 100644
---- a/arch/arm64/boot/dts/qcom/pmi8998.dtsi
-+++ b/arch/arm64/boot/dts/qcom/pmi8998.dtsi
-@@ -9,6 +9,21 @@ pmi8998_lsid0: pmic@2 {
- 		#address-cells = <1>;
- 		#size-cells = <0>;
- 
-+		pmi8998_smb2: smb2@1000 {
-+			compatible = "qcom,pmi8998-smb2";
-+			reg = <0x1000>;
+diff --git a/Documentation/devicetree/bindings/power/supply/qcom,smb2.yaml b/Documentation/devicetree/bindings/power/supply/qcom,smb2.yaml
+new file mode 100644
+index 000000000000..1bea1fef78b8
+--- /dev/null
++++ b/Documentation/devicetree/bindings/power/supply/qcom,smb2.yaml
+@@ -0,0 +1,68 @@
++# SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/power/supply/qcom,smb2.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+			interrupts = <0x2 0x13 0x4 IRQ_TYPE_EDGE_BOTH>;
-+			interrupt-names = "usb-plugin";
++title: Qualcomm PMI8998/PM660 Switch-Mode Battery Charger "2"
 +
-+			io-channels = <&pmi8998_rradc 3>,
-+				      <&pmi8998_rradc 4>;
-+			io-channel-names = "usbin_i",
-+					   "usbin_v";
++maintainers:
++  - Caleb Connolly <caleb.connolly@linaro.org>
 +
-+			status = "disabled";
-+		};
++properties:
++  compatible:
++    enum:
++      - qcom,pmi8998-smb2
 +
- 		pmi8998_gpio: gpios@c000 {
- 			compatible = "qcom,pmi8998-gpio", "qcom,spmi-gpio";
- 			reg = <0xc000>;
++  reg:
++    maxItems: 1
++
++  interrupts:
++    items:
++      - description: usb plugin
++
++  interrupt-names:
++    items:
++      - const: usb-plugin
++
++  io-channels:
++    items:
++      - description: USB in current in uA
++      - description: USB in voltage in uV
++
++  io-channel-names:
++    items:
++      - const: usbin_i
++      - const: usbin_v
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - interrupt-names
++  - io-channels
++  - io-channel-names
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++    pmic {
++      #address-cells = <1>;
++      #size-cells = <0>;
++      #interrupt-cells = <4>;
++
++      smb2@1000 {
++        compatible = "qcom,pmi8998-smb2";
++        reg = <0x1000>;
++
++        interrupts = <0x2 0x13 0x4 IRQ_TYPE_EDGE_BOTH>;
++        interrupt-names = "usb-plugin";
++
++        io-channels = <&pmi8998_rradc 3>,
++                      <&pmi8998_rradc 4>;
++        io-channel-names = "usbin_i",
++                           "usbin_v";
++      };
++    };
 -- 
 2.35.1
 
