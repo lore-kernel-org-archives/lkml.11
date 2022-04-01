@@ -2,113 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3FAFC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 18:04:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E0CDC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 18:07:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350983AbiDASGP (ORCPT
+        id S1346324AbiDASJY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 14:06:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35886 "EHLO
+        Fri, 1 Apr 2022 14:09:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350958AbiDASGM (ORCPT
+        with ESMTP id S236250AbiDASJV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 14:06:12 -0400
-Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D32A22E9
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 11:04:21 -0700 (PDT)
-Received: by mail-qt1-x82d.google.com with SMTP id 10so2794791qtz.11
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 11:04:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=WT1tpbzDbSP9t8G1jkgJMnxYn25i+YOBCOQG5IXPFh8=;
-        b=GmHGsqgjUA5ThgaQ/EEn1tKYzNrTGE3cXgpyV10qyAlM0IKCS/ggdPzSAXMnVQGjEQ
-         BbFr/PPpxCUUTBrvUAl3WP2WUPSbMMbm0BuzDL7+NXwNy36mA9psXidT+QMnO5JBZaTg
-         qKa8/0ffzYYSQUe4IsK73NreZXTQhJ6bv7IWFZtjDRTYtvfadqvg0hCK+sK+SkgayMiV
-         qXEWImeyaatLv8joK/00U5NDta1pmrKQrb0x74bmTEbyzuuOlDAog03V1yhOBjPMGB6i
-         ipV089G8IzawUaB8O3LZu45FiF9Lkv9rCYxPG5KbBUsHR4vqLfVcQvNkqre38NxPfuCW
-         cqNQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=WT1tpbzDbSP9t8G1jkgJMnxYn25i+YOBCOQG5IXPFh8=;
-        b=UqdEG4/m+nrjEDYY3hzO9zNGDgeFOwhIaCD3Inei5E5F1GFC6OH3Jf3943ywlvFN97
-         1aFvKpOIiEtmYMFUviP/dzTsmh3m55KwgRnOPmsOVZRNbdKR6bq2CwSY4Gv8MHQ+hOEr
-         Maw/PiLvnjgrIKjF8ASaDTTE8ZowbqdwymNZ7A6wbltsFyPqHj2HtC069/HRWGIpjVX+
-         g9o/qP6Ey/B+vXMJ4+y4ymU57+nmYIzxJ9Nzbe7sxSzdK+AJjF6ZZdX/MVykX+K897av
-         pYM1zWy3EjIEuIKfS4ukiP3uND0M3I/xJzsc6k1M9G1bBRTrR6ogepzHPdlh6yAad+nz
-         IFXA==
-X-Gm-Message-State: AOAM5316HSIDNFWeAJpNlLlGjTUAPUEHF+ejYazyIfeuVc0Gbo3u4LPP
-        4bhS5pA+Nge+GDGLaIRZrmR51aNRK62UVSEGBCg6BHS9NCJrIg==
-X-Google-Smtp-Source: ABdhPJziwM7EiqcAjKItqmHEsi9uYsDUw8S0qqKX+rkxNhBJiejPhNnC+ybF8Crwy6M9YipadjH9KA7FjhAYo7NqVcQ=
-X-Received: by 2002:a05:622a:155:b0:2e1:cc60:8947 with SMTP id
- v21-20020a05622a015500b002e1cc608947mr9325218qtw.243.1648836260945; Fri, 01
- Apr 2022 11:04:20 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220330094632.GB6999@xsang-OptiPlex-9020> <7aa67fedb4b6dc9126bc59ee993fa18d0e472475.camel@linux.intel.com>
-In-Reply-To: <7aa67fedb4b6dc9126bc59ee993fa18d0e472475.camel@linux.intel.com>
-From:   Chen Yu <yu.chen.surf@gmail.com>
-Date:   Sat, 2 Apr 2022 02:04:09 +0800
-Message-ID: <CADjb_WQsTkdbwrvtzWwjt2O_jiuQTx+=Xy=yMPbAwKPmFDX-0w@mail.gmail.com>
-Subject: Re: [sched/fair] ddb3b1126f: hackbench.throughput -25.9% regression
-To:     Tim Chen <tim.c.chen@linux.intel.com>
-Cc:     kernel test robot <oliver.sang@intel.com>,
-        0day robot <lkp@intel.com>, Chen Yu <yu.c.chen@intel.com>,
-        Walter Mack <walter.mack@intel.com>,
-        LKML <linux-kernel@vger.kernel.org>, lkp@lists.01.org,
-        Huang Ying <ying.huang@intel.com>, feng.tang@intel.com,
-        zhengjun.xing@linux.intel.com, fengwei.yin@intel.com,
-        Peter Zijlstra <peterz@infradead.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Ingo Molnar <mingo@elte.hu>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Mel Gorman <mgorman@suse.de>,
-        Aubrey Li <aubrey.li@linux.intel.com>
-Content-Type: text/plain; charset="UTF-8"
+        Fri, 1 Apr 2022 14:09:21 -0400
+X-Greylist: delayed 1466 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 01 Apr 2022 11:07:31 PDT
+Received: from finn.localdomain (finn.gateworks.com [108.161.129.64])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B72B511A9BA;
+        Fri,  1 Apr 2022 11:07:31 -0700 (PDT)
+Received: from 068-189-091-139.biz.spectrum.com ([68.189.91.139] helo=tharvey.pdc.gateworks.com)
+        by finn.localdomain with esmtp (Exim 4.93)
+        (envelope-from <tharvey@gateworks.com>)
+        id 1naLIS-00C92z-8l; Fri, 01 Apr 2022 17:42:52 +0000
+From:   Tim Harvey <tharvey@gateworks.com>
+To:     Rob Herring <robh+dt@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Cc:     Tim Harvey <tharvey@gateworks.com>, stable@vger.kernel.org
+Subject: [PATCH] ARM: dts: imx8mm-venice-gw{72xx,73xx}: fix OTG controller OC mode
+Date:   Fri,  1 Apr 2022 10:42:49 -0700
+Message-Id: <20220401174249.10252-1-tharvey@gateworks.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 31, 2022 at 11:42 AM Tim Chen <tim.c.chen@linux.intel.com> wrote:
->
-> On Wed, 2022-03-30 at 17:46 +0800, kernel test robot wrote:
-> >
-> > Greeting,
-> >
-> > FYI, we noticed a -25.9% regression of hackbench.throughput due to commit:
-> >
->
-> Will try to check the regression seen.
->
-Double check  that the regression could be reproduced on top of the
-latest sched/core branch:
-parent ("sched/fair: Don't rely on ->exec_start for migration")
-fbc  ("sched/fair: Simple runqueue order on migrate")
+Both the GW72xx and GW73xx boards have USB1 routed to a USB OTG
+connector and USB2 routed to a USB hub.
 
-parent                                fbc
-91107           -40.8%      53897        hackbench.throughput
+The OTG connector has over-current protection with an active-low
+pin and the USB1 to HUB connection has no over-current protection (as
+the HUB itself implements this for its downstream ports).
 
-and it is consistent with lkp's original report that the  context
-switch count is much higher with patch applied:
-9591919          +510.3%   58534937
-hackbench.time.involuntary_context_switches
-36451523          +281.5%  1.391e+08
-hackbench.time.voluntary_context_switches
+Add proper dt nodes to specify the over-current pin polarity for USB1
+and disable over-current protection for USB2.
 
-Considering that this patch  'raises' the priority of the migrated
-task, by giving it the cfs_rq->min_vruntime,
-it is possible that the migrated task would preempt the current
-running task more easily.
+Fixes: 6f30b27c5ef5 ("arm64: dts: imx8mm: Add Gateworks i.MX 8M Mini Development Kits")
+Cc: stable@vger.kernel.org
+Signed-off-by: Tim Harvey <tharvey@gateworks.com>
+---
+ arch/arm64/boot/dts/freescale/imx8mm-venice-gw72xx.dtsi | 2 ++
+ arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx.dtsi | 2 ++
+ 2 files changed, 4 insertions(+)
 
-0.00           +12.2       12.21
-perf-profile.calltrace.cycles-pp.enqueue_entity.enqueue_task_fair.ttwu_do_activate.try_to_wake_up.autoremove_wake_function
-and the patched version has  spent more time on enqueue_entity(),
-which might be caused by setting sched entity hierarchy from leaf to
-root,
-which was mentioned in another thread.
-
+diff --git a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw72xx.dtsi b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw72xx.dtsi
+index 27afa46a253a..b0de99b4a608 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw72xx.dtsi
++++ b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw72xx.dtsi
+@@ -139,12 +139,14 @@
+ 
+ &usbotg1 {
+ 	dr_mode = "otg";
++	over-current-active-low;
+ 	vbus-supply = <&reg_usb_otg1_vbus>;
+ 	status = "okay";
+ };
+ 
+ &usbotg2 {
+ 	dr_mode = "host";
++	disable-over-current;
+ 	vbus-supply = <&reg_usb_otg2_vbus>;
+ 	status = "okay";
+ };
+diff --git a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx.dtsi b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx.dtsi
+index a59e849c7be2..3c26c125678d 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx.dtsi
++++ b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx.dtsi
+@@ -166,12 +166,14 @@
+ 
+ &usbotg1 {
+ 	dr_mode = "otg";
++	over-current-active-low;
+ 	vbus-supply = <&reg_usb_otg1_vbus>;
+ 	status = "okay";
+ };
+ 
+ &usbotg2 {
+ 	dr_mode = "host";
++	disable-over-current;
+ 	vbus-supply = <&reg_usb_otg2_vbus>;
+ 	status = "okay";
+ };
 -- 
-Thanks,
-Chenyu
+2.17.1
+
