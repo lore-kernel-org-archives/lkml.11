@@ -2,141 +2,267 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E6A7C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 09:22:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD3F1C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 09:22:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344473AbiDAJYW (ORCPT
+        id S1344475AbiDAJYa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 05:24:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53590 "EHLO
+        Fri, 1 Apr 2022 05:24:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237354AbiDAJYU (ORCPT
+        with ESMTP id S1344474AbiDAJY2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 05:24:20 -0400
-Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4042A269367
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 02:22:31 -0700 (PDT)
-Received: by mail-il1-f197.google.com with SMTP id h13-20020a056e021d8d00b002c7fb1ec601so1454032ila.6
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 02:22:31 -0700 (PDT)
+        Fri, 1 Apr 2022 05:24:28 -0400
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A801269374
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 02:22:38 -0700 (PDT)
+Received: by mail-pg1-x52d.google.com with SMTP id bc27so1979379pgb.4
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 02:22:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=EyRExLAQW3m/1gMlz2hctnqaSl+H0AAJm330r3O/ZwY=;
+        b=JEtAlBR0JyfJM25DDuiGeSo9iIQUhiRgfxKW6UMpgaCmRtDZmRf7mrFS2Jljti8Lot
+         b3lw9HymXOrt7JC8DZRPFC0nCkdmRNMQosI3Wqb+kFk0fwjxT5Pc77yEHtjchA2bK/wH
+         14rXfmGFBZ8b5lvOB9Hq+gJJo2RZUJLt7iWD+aMxkZhjD6xSa/1JQgtXgMVTotg7DpiX
+         LEzB9jdJRxLen+/a8Df00++pQe8TmjoS9qG8zBXYU+J1KRhvQTVhpqbv2Op+/Y9StY2K
+         2SPRieOpDwK+yK5c66n49IL1TB4UUIgbeUZHBHNlhDAbGxLKOQaWrbKLaNmk5KNzSmrT
+         EpDw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=SiA6SGYJJIZ5dSSuu0urRTJnO2w3RknAKYRvrA5F5nY=;
-        b=q46oGYznVFOWSmC8mRbN4QrEhs0FGGUEqur6YcjMQP8eGboTlTlwYmAk2vP/JuCLKj
-         IyrVS1UuQWg5g5VxQLJzn6IOFxvbBOS1pOXLnK165DyzNH27C7Z50UMGY5v9joSea6Ll
-         OsV9KP5Em7wTARFZBaqlU83mrpU17jERGfP//Gq8fens5ezeQEAUhEeYHl2Pl71wAELh
-         q5lx5D3ySKuuK3sey9eknC7aAkgpV4Vej0dI1aZU5f35VqJNCQSaq2BmwQBkyX9vzBfJ
-         vMfHOrkaru5FZIWOy7+Gibcg2sc3SozkerHe85NJ5zhcDjjOqZWzAJbmXqQ4yFDcVl+1
-         PY0Q==
-X-Gm-Message-State: AOAM531ETwykVLH3I9n/vpXhUInCPDZDqfaOqnkSh0E8O3Gz8UFWMYgZ
-        jHAgea6RXV2C0KLdsl5+trYgh1iyYCwGXCLBOoTqt9BzZiE+
-X-Google-Smtp-Source: ABdhPJwIlEf20SuiayZwei8JX5zZOt1ZlKFN06RW8QPp1ET9O17XMgisVehnNnpxaab7p2qZ1jfxPJyP9MGeE06rKoTzANM8Sli2
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=EyRExLAQW3m/1gMlz2hctnqaSl+H0AAJm330r3O/ZwY=;
+        b=lyK8ur+FkbdiK/6ub+KIbQtN3F9ykSmRhgLBDEFRDAdW3J+7wW9HYVq85Rx9c8nDq0
+         82d88O/JTMF9JoXAcdsMc6ZDFqlI2xZ+0mEuyMV2p1YFAAbOdCJwHz12AsrzYVtCIqI4
+         36QHtf1qq9pdz9+CBZX7MyH2OZ9N5LXVYNbCXY/lI2YtBreZaM2C7IBWxzTwzQWzVvxy
+         Z0SHTeWWnExXw6nU+qTQSO4Ix5PK9HnuwGPehTLTVdVeyqIMb/Ix2r8Q5FcS4bIcnEFd
+         N5SCQ+2dkCrKyL1GcAl/NBJZSzoSQwaxskQ9DE14l0fTaYIsuf6EffpJW3yiSWv/3j1J
+         4niQ==
+X-Gm-Message-State: AOAM532vV2lvNs63LSrKrAb+vOsrZUt71lBxz1iffZ1VTsvVxtHbsbEu
+        D+zOkm3kTJKR+XIBIiABFgzOQMq9k/dgaYa22vgbVg==
+X-Google-Smtp-Source: ABdhPJzPGK4Wj1VbuaKgyrD4+BY+Qz1wmT91honIjqxq6dAiJYfDQEjCcolwiIjZtcqpipZcLmNYSGbhlVu79xmax40=
+X-Received: by 2002:a05:6a00:a0f:b0:4e1:309:83c0 with SMTP id
+ p15-20020a056a000a0f00b004e1030983c0mr9865708pfh.68.1648804957383; Fri, 01
+ Apr 2022 02:22:37 -0700 (PDT)
 MIME-Version: 1.0
-X-Received: by 2002:a92:1e09:0:b0:2c6:304e:61fa with SMTP id
- e9-20020a921e09000000b002c6304e61famr16320640ile.211.1648804950620; Fri, 01
- Apr 2022 02:22:30 -0700 (PDT)
-Date:   Fri, 01 Apr 2022 02:22:30 -0700
-In-Reply-To: <00000000000065061a05d85b8262@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000062c05a05db9451e4@google.com>
-Subject: Re: [syzbot] KASAN: use-after-free Read in io_poll_check_events
-From:   syzbot <syzbot+edb9c7738ba8cbdbf197@syzkaller.appspotmail.com>
-To:     asml.silence@gmail.com, axboe@kernel.dk, io-uring@vger.kernel.org,
-        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
+References: <20220331084151.2600229-1-yosryahmed@google.com> <CAAPL-u8g2qkhdTQtFtBS3GNYz0WnyahWEXvR4g_OSaKv+7EozA@mail.gmail.com>
+In-Reply-To: <CAAPL-u8g2qkhdTQtFtBS3GNYz0WnyahWEXvR4g_OSaKv+7EozA@mail.gmail.com>
+From:   Yosry Ahmed <yosryahmed@google.com>
+Date:   Fri, 1 Apr 2022 02:22:01 -0700
+Message-ID: <CAJD7tkYDLKNpx6uAsB4vFR1O3_UpftXFH9U-f31cSZJ7OuPXmQ@mail.gmail.com>
+Subject: Re: [PATCH resend] memcg: introduce per-memcg reclaim interface
+To:     Wei Xu <weixugc@google.com>
+Cc:     Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Shakeel Butt <shakeelb@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Rientjes <rientjes@google.com>,
+        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        cgroups@vger.kernel.org, linux-doc@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux MM <linux-mm@kvack.org>,
+        Jonathan Corbet <corbet@lwn.net>, Yu Zhao <yuzhao@google.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Greg Thelen <gthelen@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-syzbot has found a reproducer for the following issue on:
+On Thu, Mar 31, 2022 at 9:05 PM Wei Xu <weixugc@google.com> wrote:
+>
+> On Thu, Mar 31, 2022 at 1:42 AM Yosry Ahmed <yosryahmed@google.com> wrote:
+> >
+> > From: Shakeel Butt <shakeelb@google.com>
+> >
+> > Introduce an memcg interface to trigger memory reclaim on a memory cgroup.
+> >
+> > Use case: Proactive Reclaim
+> > ---------------------------
+> >
+> > A userspace proactive reclaimer can continuously probe the memcg to
+> > reclaim a small amount of memory. This gives more accurate and
+> > up-to-date workingset estimation as the LRUs are continuously
+> > sorted and can potentially provide more deterministic memory
+> > overcommit behavior. The memory overcommit controller can provide
+> > more proactive response to the changing behavior of the running
+> > applications instead of being reactive.
+> >
+> > A userspace reclaimer's purpose in this case is not a complete replacement
+> > for kswapd or direct reclaim, it is to proactively identify memory savings
+> > opportunities and reclaim some amount of cold pages set by the policy
+> > to free up the memory for more demanding jobs or scheduling new jobs.
+> >
+> > A user space proactive reclaimer is used in Google data centers.
+> > Additionally, Meta's TMO paper recently referenced a very similar
+> > interface used for user space proactive reclaim:
+> > https://dl.acm.org/doi/pdf/10.1145/3503222.3507731
+> >
+> > Benefits of a user space reclaimer:
+> > -----------------------------------
+> >
+> > 1) More flexible on who should be charged for the cpu of the memory
+> > reclaim. For proactive reclaim, it makes more sense to be centralized.
+> >
+> > 2) More flexible on dedicating the resources (like cpu). The memory
+> > overcommit controller can balance the cost between the cpu usage and
+> > the memory reclaimed.
+> >
+> > 3) Provides a way to the applications to keep their LRUs sorted, so,
+> > under memory pressure better reclaim candidates are selected. This also
+> > gives more accurate and uptodate notion of working set for an
+> > application.
+> >
+> > Why memory.high is not enough?
+> > ------------------------------
+> >
+> > - memory.high can be used to trigger reclaim in a memcg and can
+> >   potentially be used for proactive reclaim.
+> >   However there is a big downside in using memory.high. It can potentially
+> >   introduce high reclaim stalls in the target application as the
+> >   allocations from the processes or the threads of the application can hit
+> >   the temporary memory.high limit.
+> >
+> > - Userspace proactive reclaimers usually use feedback loops to decide
+> >   how much memory to proactively reclaim from a workload. The metrics
+> >   used for this are usually either refaults or PSI, and these metrics
+> >   will become messy if the application gets throttled by hitting the
+> >   high limit.
+> >
+> > - memory.high is a stateful interface, if the userspace proactive
+> >   reclaimer crashes for any reason while triggering reclaim it can leave
+> >   the application in a bad state.
+> >
+> > - If a workload is rapidly expanding, setting memory.high to proactively
+> >   reclaim memory can result in actually reclaiming more memory than
+> >   intended.
+> >
+> > The benefits of such interface and shortcomings of existing interface
+> > were further discussed in this RFC thread:
+> > https://lore.kernel.org/linux-mm/5df21376-7dd1-bf81-8414-32a73cea45dd@google.com/
+> >
+> > Interface:
+> > ----------
+> >
+> > Introducing a very simple memcg interface 'echo 10M > memory.reclaim' to
+> > trigger reclaim in the target memory cgroup.
+> >
+> >
+> > Possible Extensions:
+> > --------------------
+> >
+> > - This interface can be extended with an additional parameter or flags
+> >   to allow specifying one or more types of memory to reclaim from (e.g.
+> >   file, anon, ..).
+> >
+> > - The interface can also be extended with a node mask to reclaim from
+> >   specific nodes. This has use cases for reclaim-based demotion in memory
+> >   tiering systens.
+> >
+> > - A similar per-node interface can also be added to support proactive
+> >   reclaim and reclaim-based demotion in systems without memcg.
+> >
+> > For now, let's keep things simple by adding the basic functionality.
+> >
+> > [yosryahmed@google.com: refreshed to current master, updated commit
+> > message based on recent discussions and use cases]
+> > Signed-off-by: Shakeel Butt <shakeelb@google.com>
+> > Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
+> > ---
+> >  Documentation/admin-guide/cgroup-v2.rst |  9 ++++++
+> >  mm/memcontrol.c                         | 37 +++++++++++++++++++++++++
+> >  2 files changed, 46 insertions(+)
+> >
+> > diff --git a/Documentation/admin-guide/cgroup-v2.rst b/Documentation/admin-guide/cgroup-v2.rst
+> > index 69d7a6983f78..925aaabb2247 100644
+> > --- a/Documentation/admin-guide/cgroup-v2.rst
+> > +++ b/Documentation/admin-guide/cgroup-v2.rst
+> > @@ -1208,6 +1208,15 @@ PAGE_SIZE multiple when read back.
+> >         high limit is used and monitored properly, this limit's
+> >         utility is limited to providing the final safety net.
+> >
+> > +  memory.reclaim
+> > +       A write-only file which exists on non-root cgroups.
+> > +
+> > +       This is a simple interface to trigger memory reclaim in the
+> > +       target cgroup. Write the number of bytes to reclaim to this
+> > +       file and the kernel will try to reclaim that much memory.
+> > +       Please note that the kernel can over or under reclaim from
+> > +       the target cgroup.
+> > +
+> >    memory.oom.group
+> >         A read-write single value file which exists on non-root
+> >         cgroups.  The default value is "0".
+> > diff --git a/mm/memcontrol.c b/mm/memcontrol.c
+> > index 725f76723220..994849fab7df 100644
+> > --- a/mm/memcontrol.c
+> > +++ b/mm/memcontrol.c
+> > @@ -6355,6 +6355,38 @@ static ssize_t memory_oom_group_write(struct kernfs_open_file *of,
+> >         return nbytes;
+> >  }
+> >
+> > +static ssize_t memory_reclaim(struct kernfs_open_file *of, char *buf,
+> > +                             size_t nbytes, loff_t off)
+> > +{
+> > +       struct mem_cgroup *memcg = mem_cgroup_from_css(of_css(of));
+> > +       unsigned int nr_retries = MAX_RECLAIM_RETRIES;
+> > +       unsigned long nr_to_reclaim, nr_reclaimed = 0;
+> > +       int err;
+> > +
+> > +       buf = strstrip(buf);
+> > +       err = page_counter_memparse(buf, "", &nr_to_reclaim);
+> > +       if (err)
+> > +               return err;
+> > +
+> > +       while (nr_reclaimed < nr_to_reclaim) {
+> > +               unsigned long reclaimed;
+> > +
+> > +               if (signal_pending(current))
+> > +                       break;
+> > +
+> > +               reclaimed = try_to_free_mem_cgroup_pages(memcg,
+> > +                                               nr_to_reclaim - nr_reclaimed,
+> > +                                               GFP_KERNEL, true);
+> > +
+> > +               if (!reclaimed && !nr_retries--)
+> > +                       break;
+> > +
+> > +               nr_reclaimed += reclaimed;
+> > +       }
+> > +
+> > +       return nbytes;
+>
+> It is better to return an error code (e.g. -EBUSY) when
+> memory_reclaim() fails to reclaim nr_to_reclaim bytes of memory,
+> except if the cgroup memory usage is already 0.  We can also return
+> -EINVAL if nr_to_reclaim is too large (e.g. > limit).
 
-HEAD commit:    e5071887cd22 Add linux-next specific files for 20220401
-git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=1672d26b700000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=17fed8f59a304eee
-dashboard link: https://syzkaller.appspot.com/bug?extid=edb9c7738ba8cbdbf197
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1016f8f3700000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14907c5b700000
+IIUC this interface is modeled after memory.high, which returns nbytes
+as well. If you think it's better here to do this instead of
+maintaining consistency with memory.high we can certainly do this for
+v2.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+edb9c7738ba8cbdbf197@syzkaller.appspotmail.com
-
-general protection fault, probably for non-canonical address 0xdffffc0000000005: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000028-0x000000000000002f]
-CPU: 1 PID: 3567 Comm: syz-executor893 Not tainted 5.17.0-next-20220401-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:vfs_poll include/linux/poll.h:86 [inline]
-RIP: 0010:io_poll_check_events+0x1e0/0x800 fs/io_uring.c:5960
-Code: e8 03 48 c7 44 24 60 00 00 00 00 44 89 74 24 68 42 80 3c 28 00 0f 85 ac 05 00 00 48 8b 5d 00 48 8d 7b 28 48 89 f8 48 c1 e8 03 <42> 80 3c 28 00 0f 85 88 05 00 00 48 8b 43 28 48 8d 78 48 48 89 fa
-RSP: 0018:ffffc900038ffa00 EFLAGS: 00010206
-RAX: 0000000000000005 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: ffff88801cea0000 RSI: ffffffff81eba128 RDI: 0000000000000028
-RBP: ffff8880182d28c0 R08: 0000000000000000 R09: ffff8880182d2947
-R10: ffffffff81eba2f4 R11: 0000000000000006 R12: 0000000000000001
-R13: dffffc0000000000 R14: 0000000040002038 R15: ffff8880182d2944
-FS:  0000555556048300(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007ff954a2e140 CR3: 000000001a5af000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- io_poll_task_func+0x41/0x500 fs/io_uring.c:5995
- handle_tw_list fs/io_uring.c:2462 [inline]
- tctx_task_work+0x1a4/0x1460 fs/io_uring.c:2496
- task_work_run+0xdd/0x1a0 kernel/task_work.c:164
- get_signal+0x1c5/0x24c0 kernel/signal.c:2681
- arch_do_signal_or_restart+0x88/0x1a10 arch/x86/kernel/signal.c:867
- exit_to_user_mode_loop kernel/entry/common.c:180 [inline]
- exit_to_user_mode_prepare+0x15f/0x250 kernel/entry/common.c:215
- __syscall_exit_to_user_mode_work kernel/entry/common.c:297 [inline]
- syscall_exit_to_user_mode+0x19/0x60 kernel/entry/common.c:308
- do_syscall_64+0x42/0x80 arch/x86/entry/common.c:86
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7ff9549bcff9
-Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 b1 14 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffd1be31e78 EFLAGS: 00000246 ORIG_RAX: 00000000000001aa
-RAX: 0000000000000200 RBX: 0000000000000000 RCX: 00007ff9549bcff9
-RDX: 0000000000000000 RSI: 000000000000146f RDI: 0000000000000003
-RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007ff954980880
-R13: 431bde82d7b634db R14: 0000000000000000 R15: 0000000000000000
- </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:vfs_poll include/linux/poll.h:86 [inline]
-RIP: 0010:io_poll_check_events+0x1e0/0x800 fs/io_uring.c:5960
-Code: e8 03 48 c7 44 24 60 00 00 00 00 44 89 74 24 68 42 80 3c 28 00 0f 85 ac 05 00 00 48 8b 5d 00 48 8d 7b 28 48 89 f8 48 c1 e8 03 <42> 80 3c 28 00 0f 85 88 05 00 00 48 8b 43 28 48 8d 78 48 48 89 fa
-RSP: 0018:ffffc900038ffa00 EFLAGS: 00010206
-RAX: 0000000000000005 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: ffff88801cea0000 RSI: ffffffff81eba128 RDI: 0000000000000028
-RBP: ffff8880182d28c0 R08: 0000000000000000 R09: ffff8880182d2947
-R10: ffffffff81eba2f4 R11: 0000000000000006 R12: 0000000000000001
-R13: dffffc0000000000 R14: 0000000040002038 R15: ffff8880182d2944
-FS:  0000555556048300(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007ff954a2e140 CR3: 000000001a5af000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-----------------
-Code disassembly (best guess):
-   0:	e8 03 48 c7 44       	callq  0x44c74808
-   5:	24 60                	and    $0x60,%al
-   7:	00 00                	add    %al,(%rax)
-   9:	00 00                	add    %al,(%rax)
-   b:	44 89 74 24 68       	mov    %r14d,0x68(%rsp)
-  10:	42 80 3c 28 00       	cmpb   $0x0,(%rax,%r13,1)
-  15:	0f 85 ac 05 00 00    	jne    0x5c7
-  1b:	48 8b 5d 00          	mov    0x0(%rbp),%rbx
-  1f:	48 8d 7b 28          	lea    0x28(%rbx),%rdi
-  23:	48 89 f8             	mov    %rdi,%rax
-  26:	48 c1 e8 03          	shr    $0x3,%rax
-* 2a:	42 80 3c 28 00       	cmpb   $0x0,(%rax,%r13,1) <-- trapping instruction
-  2f:	0f 85 88 05 00 00    	jne    0x5bd
-  35:	48 8b 43 28          	mov    0x28(%rbx),%rax
-  39:	48 8d 78 48          	lea    0x48(%rax),%rdi
-  3d:	48 89 fa             	mov    %rdi,%rdx
-
+>
+> > +}
+> > +
+> >  static struct cftype memory_files[] = {
+> >         {
+> >                 .name = "current",
+> > @@ -6413,6 +6445,11 @@ static struct cftype memory_files[] = {
+> >                 .seq_show = memory_oom_group_show,
+> >                 .write = memory_oom_group_write,
+> >         },
+> > +       {
+> > +               .name = "reclaim",
+> > +               .flags = CFTYPE_NOT_ON_ROOT | CFTYPE_NS_DELEGATABLE,
+> > +               .write = memory_reclaim,
+> > +       },
+> >         { }     /* terminate */
+> >  };
+> >
+> > --
+> > 2.35.1.1021.g381101b075-goog
+> >
