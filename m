@@ -2,53 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96489C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:35:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19E4FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:35:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348139AbiDAOhd (ORCPT
+        id S1348168AbiDAOhn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 10:37:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40194 "EHLO
+        Fri, 1 Apr 2022 10:37:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347565AbiDAOdM (ORCPT
+        with ESMTP id S1347664AbiDAOdY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:33:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BBF1237FCD;
-        Fri,  1 Apr 2022 07:29:46 -0700 (PDT)
+        Fri, 1 Apr 2022 10:33:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD5C725A4A2;
+        Fri,  1 Apr 2022 07:30:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9EC6D61C33;
-        Fri,  1 Apr 2022 14:29:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75528C340F2;
-        Fri,  1 Apr 2022 14:29:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9D49CB824AF;
+        Fri,  1 Apr 2022 14:30:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E093C2BBE4;
+        Fri,  1 Apr 2022 14:30:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823385;
-        bh=cqrUv7O8vSE9JaxNbS3Vy/vKIXdKbT3eUmQ0SnuZxIs=;
+        s=k20201202; t=1648823429;
+        bh=4B6tXLq3G2bQS1BZQuhsZRukCUn4oOn+sxoByT29lXo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GLjSQttXcPk59ovQdKFtmFaZIRarqp6HpQnR1XCVTDURudQJJJRAJcMugrmtihQ3z
-         nl1jVj8pw7du8Uu7uiwego3pct72h+r3eXWFtGzPaBBkY1LdHNKQp67eEXCJy7Xc3P
-         sYYpDSqNBifDyzYVUle8v6m8icRpYfIU9FmjSbarjfRugeP84FgHpuTuncmipXrhDm
-         mL2oxHNOVyWLWXotNHxzfWMRuFCbAyBa6Q4ac5vJVfeev/LtP29Bj6asQazyZWN5B+
-         hI3zDkpNtkLM17O0nyEdiinBCYcVBcNa0es8XmCO70bjkzt3L9wxEVzDM0zpLtsJdP
-         57NFAvnKgWoTg==
+        b=i1GMQLrSwW8BDRwyj1nhuRCKTyfpuu+LN6SGJ3HDfl+2XyHWCaGS4T9LHr+ksEsn/
+         LTQjscseD+fPZ1xYXxMZMgC3Iss4bl5eFnFOevHFZ+ZkfSGx7kOOfLOaXC4ASXFyTs
+         VUiHLJ/u9hTNq9uL32CYrYMS+OPvoXYq2XqDphDsUPvOk1FtrwfzOKvoKsYpDXUzL8
+         UYBRgrTUtxzl6uUD87zRMEzRyMziPnwjzLM8f1ZPyWHCMPl26/GC4tcwX4O8t3CMKJ
+         oSaUepmyxMYJLn6/5DfVLVxxtrIhva4ZMqV5SkSM3dG765WFR7mzbGtMoAy0jzzSSd
+         TQF/cE6R73XIw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sung Joon Kim <sungkim@amd.com>,
-        Meenakshikumar Somasundaram <Meenakshikumar.Somasundaram@amd.com>,
-        Jun Lei <Jun.Lei@amd.com>, Jasdeep Dhillon <jdhillon@amd.com>,
-        Daniel Wheeler <daniel.wheeler@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, harry.wentland@amd.com,
-        sunpeng.li@amd.com, Rodrigo.Siqueira@amd.com,
-        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
-        daniel@ffwll.ch, wenjing.liu@amd.com, george.shen@amd.com,
-        Jimmy.Kizito@amd.com, Wesley.Chalmers@amd.com, Jerry.Zuo@amd.com,
+Cc:     Alex Deucher <alexander.deucher@amd.com>,
+        Felix Kuehling <Felix.Kuehling@amd.com>,
+        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
+        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
         amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.17 073/149] drm/amd/display: reset lane settings after each PHY repeater LT
-Date:   Fri,  1 Apr 2022 10:24:20 -0400
-Message-Id: <20220401142536.1948161-73-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.17 091/149] drm/amdkfd: make CRAT table missing message informational only
+Date:   Fri,  1 Apr 2022 10:24:38 -0400
+Message-Id: <20220401142536.1948161-91-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401142536.1948161-1-sashal@kernel.org>
 References: <20220401142536.1948161-1-sashal@kernel.org>
@@ -60,72 +54,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sung Joon Kim <sungkim@amd.com>
+From: Alex Deucher <alexander.deucher@amd.com>
 
-[ Upstream commit 3b853c316c9321e195414a6fb121d1c2d45b1e87 ]
+[ Upstream commit 9dff13f9edf755a15f6507874185a3290c1ae8bb ]
 
-[why]
-In LTTPR non-transparent mode, we need
-to reset the cached lane settings before performing
-link training on the next PHY repeater. Otherwise,
-the cached lane settings will be used for the next
-clock recovery e.g. VS = MAX (3) which should not be
-the case according to the DP specs. We expect to use
-minimum lane settings on each clock recovery sequence.
+The driver has a fallback so make the message informational
+rather than a warning. The driver has a fallback if the
+Component Resource Association Table (CRAT) is missing, so
+make this informational now.
 
-[how]
-Reset DPCD and HW lane settings on each repeater LT.
-Set training pattern to 0 for the repeater that failed LT
-at the proper place.
-
-Reviewed-by: Meenakshikumar Somasundaram <Meenakshikumar.Somasundaram@amd.com>
-Reviewed-by: Jun Lei <Jun.Lei@amd.com>
-Acked-by: Jasdeep Dhillon <jdhillon@amd.com>
-Signed-off-by: Sung Joon Kim <sungkim@amd.com>
-Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
+Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/1906
+Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
 Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c | 15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+ drivers/gpu/drm/amd/amdkfd/kfd_crat.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c b/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c
-index 61b8f29a0c30..49d5271dcfdc 100644
---- a/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c
-+++ b/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c
-@@ -2378,22 +2378,27 @@ static enum link_training_result dp_perform_8b_10b_link_training(
- 				repeater_id--) {
- 			status = perform_clock_recovery_sequence(link, link_res, lt_settings, repeater_id);
- 
--			if (status != LINK_TRAINING_SUCCESS)
-+			if (status != LINK_TRAINING_SUCCESS) {
-+				repeater_training_done(link, repeater_id);
- 				break;
-+			}
- 
- 			status = perform_channel_equalization_sequence(link,
- 					link_res,
- 					lt_settings,
- 					repeater_id);
- 
-+			repeater_training_done(link, repeater_id);
-+
- 			if (status != LINK_TRAINING_SUCCESS)
- 				break;
- 
--			repeater_training_done(link, repeater_id);
-+			for (lane = 0; lane < LANE_COUNT_DP_MAX; lane++) {
-+				lt_settings->dpcd_lane_settings[lane].raw = 0;
-+				lt_settings->hw_lane_settings[lane].VOLTAGE_SWING = 0;
-+				lt_settings->hw_lane_settings[lane].PRE_EMPHASIS = 0;
-+			}
- 		}
--
--		for (lane = 0; lane < (uint8_t)lt_settings->link_settings.lane_count; lane++)
--			lt_settings->dpcd_lane_settings[lane].raw = 0;
- 	}
- 
- 	if (status == LINK_TRAINING_SUCCESS) {
+diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_crat.c b/drivers/gpu/drm/amd/amdkfd/kfd_crat.c
+index 9624bbe8b501..281def1c6c08 100644
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_crat.c
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_crat.c
+@@ -1567,7 +1567,7 @@ int kfd_create_crat_image_acpi(void **crat_image, size_t *size)
+ 	/* Fetch the CRAT table from ACPI */
+ 	status = acpi_get_table(CRAT_SIGNATURE, 0, &crat_table);
+ 	if (status == AE_NOT_FOUND) {
+-		pr_warn("CRAT table not found\n");
++		pr_info("CRAT table not found\n");
+ 		return -ENODATA;
+ 	} else if (ACPI_FAILURE(status)) {
+ 		const char *err = acpi_format_exception(status);
 -- 
 2.34.1
 
