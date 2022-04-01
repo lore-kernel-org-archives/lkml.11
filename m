@@ -2,51 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87AF3C47084
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:13:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 639BBC35294
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:13:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349027AbiDAPNE (ORCPT
+        id S1354772AbiDAPM0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:13:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34474 "EHLO
+        Fri, 1 Apr 2022 11:12:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348734AbiDAOoP (ORCPT
+        with ESMTP id S1352286AbiDAOuN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:44:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED334296D2B;
-        Fri,  1 Apr 2022 07:35:00 -0700 (PDT)
+        Fri, 1 Apr 2022 10:50:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C90AD2B2077;
+        Fri,  1 Apr 2022 07:41:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A3AEF60B98;
-        Fri,  1 Apr 2022 14:34:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1212C3410F;
-        Fri,  1 Apr 2022 14:34:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 667EAB82518;
+        Fri,  1 Apr 2022 14:41:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C059C340EE;
+        Fri,  1 Apr 2022 14:41:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823699;
-        bh=fyBbIOLAXtls+WKXRpPj1SEbx8F+22RILRzryEetKtE=;
+        s=k20201202; t=1648824083;
+        bh=hffhfGZggXIZrzhWpnf/mKyIGXVLLu+mdlXrm1Va7YI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gKOZWwOOktFFPfI4AP/jZQpcsH4hZJ21/HxekQLAztIHWM8PKBJsb3dZHZNMtH7JA
-         t0HjpLKRAC8DyPInmnmGYgtSxwF+PIikHpIz3+1hBlpak/cBUEwQTrqhD0GwaVK+bj
-         pcyBs4kvlvhiPSlp3n+9reCGpdlLx2gqZHRP1cOr8bL1DAlKtlLs0zbe2W2fV+L1y3
-         JrwQfNFclqpe6PHni6ENdNDF42nAGDg0z/z7I1HqSliIAWhSF1QrkfXalAogbmnvGH
-         Ka2MjAOtQHZREgs8dUAnmJIwdwYE3R+mFCsBPL7xtBmAerhwyAuoM875wNGO81ROvv
-         npoxUzgTNqjvw==
+        b=Z8GQtQXP8RN1D0yidqnV9s97OLB9+crUXMsmD+ILkt1rqXtdZv04L2W3ejyQOd57R
+         ooV2nsPqB0P0aw6BvXmu/9XD22W2IwPv29tKkY6ODD8YRDfdAeUDirobA5NPb1NbT+
+         XwCOwh0qW13wF5EL4eaRA6Mu7rHGf5/R9d4pd9IJk3KrUkzLpXUFMPY156vIzbErIp
+         EItb886olybFVEwXWRI+kS8do3mxJaIyfhTkJ8wEZC5gEthVtgK7H7DA0unP7BvgNK
+         wgF8Ypg3q8JmUaDKzKVOdN8y6BkNclxOAK5vvMmzwaQNcn0Mkd99qQfAzQFBoSeMhP
+         Cs2zR10DFsETw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Hou Zhiqiang <Zhiqiang.Hou@nxp.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Sasha Levin <sashal@kernel.org>, bhelgaas@google.com,
-        yangyingliang@huawei.com, lchen@ambarella.com,
-        linux-pci@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 043/109] PCI: endpoint: Fix alignment fault error in copy tests
-Date:   Fri,  1 Apr 2022 10:31:50 -0400
-Message-Id: <20220401143256.1950537-43-sashal@kernel.org>
+Cc:     Oliver Hartkopp <socketcan@hartkopp.net>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 79/98] can: isotp: set default value for N_As to 50 micro seconds
+Date:   Fri,  1 Apr 2022 10:37:23 -0400
+Message-Id: <20220401143742.1952163-79-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220401143256.1950537-1-sashal@kernel.org>
-References: <20220401143256.1950537-1-sashal@kernel.org>
+In-Reply-To: <20220401143742.1952163-1-sashal@kernel.org>
+References: <20220401143742.1952163-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -55,90 +54,136 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hou Zhiqiang <Zhiqiang.Hou@nxp.com>
+From: Oliver Hartkopp <socketcan@hartkopp.net>
 
-[ Upstream commit 829cc0e2ea2d61fb6c54bc3f8a17f86c56e11864 ]
+[ Upstream commit 530e0d46c61314c59ecfdb8d3bcb87edbc0f85d3 ]
 
-The copy test uses the memcpy() to copy data between IO memory spaces.
-This can trigger an alignment fault error (pasted the error logs below)
-because memcpy() may use unaligned accesses on a mapped memory that is
-just IO, which does not support unaligned memory accesses.
+The N_As value describes the time a CAN frame needs on the wire when
+transmitted by the CAN controller. Even very short CAN FD frames need
+arround 100 usecs (bitrate 1Mbit/s, data bitrate 8Mbit/s).
 
-Fix it by using the correct memcpy API to copy from/to IO memory.
+Having N_As to be zero (the former default) leads to 'no CAN frame
+separation' when STmin is set to zero by the receiving node. This 'burst
+mode' should not be enabled by default as it could potentially dump a high
+number of CAN frames into the netdev queue from the soft hrtimer context.
+This does not affect the system stability but is just not nice and
+cooperative.
 
-Alignment fault error logs:
-   Unable to handle kernel paging request at virtual address ffff8000101cd3c1
-   Mem abort info:
-     ESR = 0x96000021
-     EC = 0x25: DABT (current EL), IL = 32 bits
-     SET = 0, FnV = 0
-     EA = 0, S1PTW = 0
-     FSC = 0x21: alignment fault
-   Data abort info:
-     ISV = 0, ISS = 0x00000021
-     CM = 0, WnR = 0
-   swapper pgtable: 4k pages, 48-bit VAs, pgdp=0000000081773000
-   [ffff8000101cd3c1] pgd=1000000082410003, p4d=1000000082410003, pud=1000000082411003, pmd=1000000082412003, pte=0068004000001f13
-   Internal error: Oops: 96000021 [#1] PREEMPT SMP
-   Modules linked in:
-   CPU: 0 PID: 6 Comm: kworker/0:0H Not tainted 5.15.0-rc1-next-20210914-dirty #2
-   Hardware name: LS1012A RDB Board (DT)
-   Workqueue: kpcitest pci_epf_test_cmd_handler
-   pstate: 80000005 (Nzcv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-   pc : __memcpy+0x168/0x230
-   lr : pci_epf_test_cmd_handler+0x6f0/0xa68
-   sp : ffff80001003bce0
-   x29: ffff80001003bce0 x28: ffff800010135000 x27: ffff8000101e5000
-   x26: ffff8000101cd000 x25: ffff6cda941cf6c8 x24: 0000000000000000
-   x23: ffff6cda863f2000 x22: ffff6cda9096c800 x21: ffff800010135000
-   x20: ffff6cda941cf680 x19: ffffaf39fd999000 x18: 0000000000000000
-   x17: 0000000000000000 x16: 0000000000000000 x15: ffffaf39fd2b6000
-   x14: 0000000000000000 x13: 15f5c8fa2f984d57 x12: 604d132b60275454
-   x11: 065cee5e5fb428b6 x10: aae662eb17d0cf3e x9 : 1d97c9a1b4ddef37
-   x8 : 7541b65edebf928c x7 : e71937c4fc595de0 x6 : b8a0e09562430d1c
-   x5 : ffff8000101e5401 x4 : ffff8000101cd401 x3 : ffff8000101e5380
-   x2 : fffffffffffffff1 x1 : ffff8000101cd3c0 x0 : ffff8000101e5000
-   Call trace:
-    __memcpy+0x168/0x230
-    process_one_work+0x1ec/0x370
-    worker_thread+0x44/0x478
-    kthread+0x154/0x160
-    ret_from_fork+0x10/0x20
-   Code: a984346c a9c4342c f1010042 54fffee8 (a97c3c8e)
-   ---[ end trace 568c28c7b6336335 ]---
+With this N_As/frame_txtime value the 'burst mode' is disabled by default.
 
-Link: https://lore.kernel.org/r/20211217094708.28678-1-Zhiqiang.Hou@nxp.com
-Signed-off-by: Hou Zhiqiang <Zhiqiang.Hou@nxp.com>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Reviewed-by: Kishon Vijay Abraham I <kishon@ti.com>
+As user space applications usually do not set the frame_txtime element
+of struct can_isotp_options the new in-kernel default is very likely
+overwritten with zero when the sockopt() CAN_ISOTP_OPTS is invoked.
+To make sure that a N_As value of zero is only set intentional the
+value '0' is now interpreted as 'do not change the current value'.
+When a frame_txtime of zero is required for testing purposes this
+CAN_ISOTP_FRAME_TXTIME_ZERO u32 value has to be set in frame_txtime.
+
+Link: https://lore.kernel.org/all/20220309120416.83514-2-socketcan@hartkopp.net
+Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/endpoint/functions/pci-epf-test.c | 12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
+ include/uapi/linux/can/isotp.h | 28 ++++++++++++++++++++++------
+ net/can/isotp.c                | 12 +++++++++++-
+ 2 files changed, 33 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/pci/endpoint/functions/pci-epf-test.c b/drivers/pci/endpoint/functions/pci-epf-test.c
-index 90d84d3bc868..c7e45633beaf 100644
---- a/drivers/pci/endpoint/functions/pci-epf-test.c
-+++ b/drivers/pci/endpoint/functions/pci-epf-test.c
-@@ -285,7 +285,17 @@ static int pci_epf_test_copy(struct pci_epf_test *epf_test)
- 		if (ret)
- 			dev_err(dev, "Data transfer failed\n");
- 	} else {
--		memcpy(dst_addr, src_addr, reg->size);
-+		void *buf;
+diff --git a/include/uapi/linux/can/isotp.h b/include/uapi/linux/can/isotp.h
+index c55935b64ccc..590f8aea2b6d 100644
+--- a/include/uapi/linux/can/isotp.h
++++ b/include/uapi/linux/can/isotp.h
+@@ -137,20 +137,16 @@ struct can_isotp_ll_options {
+ #define CAN_ISOTP_WAIT_TX_DONE	0x400	/* wait for tx completion */
+ #define CAN_ISOTP_SF_BROADCAST	0x800	/* 1-to-N functional addressing */
+ 
+-/* default values */
++/* protocol machine default values */
+ 
+ #define CAN_ISOTP_DEFAULT_FLAGS		0
+ #define CAN_ISOTP_DEFAULT_EXT_ADDRESS	0x00
+ #define CAN_ISOTP_DEFAULT_PAD_CONTENT	0xCC /* prevent bit-stuffing */
+-#define CAN_ISOTP_DEFAULT_FRAME_TXTIME	0
++#define CAN_ISOTP_DEFAULT_FRAME_TXTIME	50000 /* 50 micro seconds */
+ #define CAN_ISOTP_DEFAULT_RECV_BS	0
+ #define CAN_ISOTP_DEFAULT_RECV_STMIN	0x00
+ #define CAN_ISOTP_DEFAULT_RECV_WFTMAX	0
+ 
+-#define CAN_ISOTP_DEFAULT_LL_MTU	CAN_MTU
+-#define CAN_ISOTP_DEFAULT_LL_TX_DL	CAN_MAX_DLEN
+-#define CAN_ISOTP_DEFAULT_LL_TX_FLAGS	0
+-
+ /*
+  * Remark on CAN_ISOTP_DEFAULT_RECV_* values:
+  *
+@@ -162,4 +158,24 @@ struct can_isotp_ll_options {
+  * consistency and copied directly into the flow control (FC) frame.
+  */
+ 
++/* link layer default values => make use of Classical CAN frames */
 +
-+		buf = kzalloc(reg->size, GFP_KERNEL);
-+		if (!buf) {
-+			ret = -ENOMEM;
-+			goto err_map_addr;
++#define CAN_ISOTP_DEFAULT_LL_MTU	CAN_MTU
++#define CAN_ISOTP_DEFAULT_LL_TX_DL	CAN_MAX_DLEN
++#define CAN_ISOTP_DEFAULT_LL_TX_FLAGS	0
++
++/*
++ * The CAN_ISOTP_DEFAULT_FRAME_TXTIME has become a non-zero value as
++ * it only makes sense for isotp implementation tests to run without
++ * a N_As value. As user space applications usually do not set the
++ * frame_txtime element of struct can_isotp_options the new in-kernel
++ * default is very likely overwritten with zero when the sockopt()
++ * CAN_ISOTP_OPTS is invoked.
++ * To make sure that a N_As value of zero is only set intentional the
++ * value '0' is now interpreted as 'do not change the current value'.
++ * When a frame_txtime of zero is required for testing purposes this
++ * CAN_ISOTP_FRAME_TXTIME_ZERO u32 value has to be set in frame_txtime.
++ */
++#define CAN_ISOTP_FRAME_TXTIME_ZERO	0xFFFFFFFF
++
+ #endif /* !_UAPI_CAN_ISOTP_H */
+diff --git a/net/can/isotp.c b/net/can/isotp.c
+index d2a430b6a13b..ea8e932008a3 100644
+--- a/net/can/isotp.c
++++ b/net/can/isotp.c
+@@ -141,6 +141,7 @@ struct isotp_sock {
+ 	struct can_isotp_options opt;
+ 	struct can_isotp_fc_options rxfc, txfc;
+ 	struct can_isotp_ll_options ll;
++	u32 frame_txtime;
+ 	u32 force_tx_stmin;
+ 	u32 force_rx_stmin;
+ 	struct tpcon rx, tx;
+@@ -360,7 +361,7 @@ static int isotp_rcv_fc(struct isotp_sock *so, struct canfd_frame *cf, int ae)
+ 
+ 		so->tx_gap = ktime_set(0, 0);
+ 		/* add transmission time for CAN frame N_As */
+-		so->tx_gap = ktime_add_ns(so->tx_gap, so->opt.frame_txtime);
++		so->tx_gap = ktime_add_ns(so->tx_gap, so->frame_txtime);
+ 		/* add waiting time for consecutive frames N_Cs */
+ 		if (so->opt.flags & CAN_ISOTP_FORCE_TXSTMIN)
+ 			so->tx_gap = ktime_add_ns(so->tx_gap,
+@@ -1238,6 +1239,14 @@ static int isotp_setsockopt_locked(struct socket *sock, int level, int optname,
+ 		/* no separate rx_ext_address is given => use ext_address */
+ 		if (!(so->opt.flags & CAN_ISOTP_RX_EXT_ADDR))
+ 			so->opt.rx_ext_address = so->opt.ext_address;
++
++		/* check for frame_txtime changes (0 => no changes) */
++		if (so->opt.frame_txtime) {
++			if (so->opt.frame_txtime == CAN_ISOTP_FRAME_TXTIME_ZERO)
++				so->frame_txtime = 0;
++			else
++				so->frame_txtime = so->opt.frame_txtime;
 +		}
-+
-+		memcpy_fromio(buf, src_addr, reg->size);
-+		memcpy_toio(dst_addr, buf, reg->size);
-+		kfree(buf);
- 	}
- 	ktime_get_ts64(&end);
- 	pci_epf_test_print_rate("COPY", reg->size, &start, &end, use_dma);
+ 		break;
+ 
+ 	case CAN_ISOTP_RECV_FC:
+@@ -1439,6 +1448,7 @@ static int isotp_init(struct sock *sk)
+ 	so->opt.rxpad_content = CAN_ISOTP_DEFAULT_PAD_CONTENT;
+ 	so->opt.txpad_content = CAN_ISOTP_DEFAULT_PAD_CONTENT;
+ 	so->opt.frame_txtime = CAN_ISOTP_DEFAULT_FRAME_TXTIME;
++	so->frame_txtime = CAN_ISOTP_DEFAULT_FRAME_TXTIME;
+ 	so->rxfc.bs = CAN_ISOTP_DEFAULT_RECV_BS;
+ 	so->rxfc.stmin = CAN_ISOTP_DEFAULT_RECV_STMIN;
+ 	so->rxfc.wftmax = CAN_ISOTP_DEFAULT_RECV_WFTMAX;
 -- 
 2.34.1
 
