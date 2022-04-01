@@ -2,49 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B3D3C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3761C4167E
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:40:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352583AbiDAPg3 (ORCPT
+        id S1352765AbiDAPgi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:36:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48050 "EHLO
+        Fri, 1 Apr 2022 11:36:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350280AbiDAO7b (ORCPT
+        with ESMTP id S1350288AbiDAO7b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 1 Apr 2022 10:59:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6CF85A17B;
-        Fri,  1 Apr 2022 07:46:54 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 622C55A5A8;
+        Fri,  1 Apr 2022 07:47:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7B202B824D5;
-        Fri,  1 Apr 2022 14:46:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAA95C2BBE4;
-        Fri,  1 Apr 2022 14:46:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E98D160AC9;
+        Fri,  1 Apr 2022 14:47:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2958FC34111;
+        Fri,  1 Apr 2022 14:47:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824412;
-        bh=CoLXnWVIKhJ5vBHDitAWSa245b6xFqXKoWrvAGnLIm8=;
+        s=k20201202; t=1648824422;
+        bh=6S0elGmAHKM1RwkqoLD2Od7pEym8vSOjGtE6SypzUts=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J/ofY+IXvvokGvB5nYaEIe4/UOfEnPWrFtaMYNBxKgX4zyJELp7Xt525XVLvBOBq+
-         S9FK3GtJM+6wExVbfLic6pnj8MvfOJF/eePKlslkVUHNk6qSqDfr46Zz5uTNija+hs
-         +7uG+Rp+PBh+qT9zNiDn7sAeZK5QxtkC27qMHBCggtuq9gx+s1lOAVjquiwI3BrAyA
-         eo1gxK5di83NL6278MVJY+gsevjYyoXQ9qMcv5hCvjnDZGidYOqbjQzlWvbl7iBecv
-         etEtnL/NshBwvrlomoF3R0bs53aYaPya6PfpCjJHNvaVroirGPDjC6d3yDArzmqrHt
-         4g2OmAlAAvrMg==
+        b=G+V1AAw1co1PgYeber9trcpIvgPrsi2frsD398Fbk9PGJMwnoxLoWEoIauQOGyHjM
+         j4Ssx0ea1Qt0hdsCzGWAkoCnWOd/1SrDXi6kT/7+chKzOJrBAutU7Ubs/0c6lu8xKm
+         ECsqFbcyUTEksOonwFnBHzDo9YtXEDMZYhYqNyNsEC9QC4OfzirVZViZqIOrPAObTP
+         +D+S9O+4ARbozTT1/J5mOYsl+aJHNH6vPSZmtxuKTumUcn6yrygw/JjxPD2GmRcGye
+         HHvLjTSNw7b4Ws7+/G285Anj0l7FbxfzVyv1h6xVls17xJK+ENZ+YleMz4A6Q47mu4
+         /O+BBaIcLoWCQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Sasha Levin <sashal@kernel.org>, lukas@wunner.de,
-        naveennaidu479@gmail.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com,
-        zhangliguang@linux.alibaba.com, ameynarkhede03@gmail.com,
-        hdegoede@redhat.com, mani@kernel.org, linux-pci@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 13/29] PCI: pciehp: Add Qualcomm quirk for Command Completed erratum
-Date:   Fri,  1 Apr 2022 10:45:56 -0400
-Message-Id: <20220401144612.1955177-13-sashal@kernel.org>
+Cc:     Dust Li <dust.li@linux.alibaba.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, kgraul@linux.ibm.com,
+        kuba@kernel.org, pabeni@redhat.com, linux-s390@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 19/29] net/smc: correct settings of RMB window update limit
+Date:   Fri,  1 Apr 2022 10:46:02 -0400
+Message-Id: <20220401144612.1955177-19-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401144612.1955177-1-sashal@kernel.org>
 References: <20220401144612.1955177-1-sashal@kernel.org>
@@ -56,42 +54,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+From: Dust Li <dust.li@linux.alibaba.com>
 
-[ Upstream commit 9f72d4757cbe4d1ed669192f6d23817c9e437c4b ]
+[ Upstream commit 6bf536eb5c8ca011d1ff57b5c5f7c57ceac06a37 ]
 
-The Qualcomm PCI bridge device (Device ID 0x0110) found in chipsets such as
-SM8450 does not set the Command Completed bit unless writes to the Slot
-Command register change "Control" bits.
+rmbe_update_limit is used to limit announcing receive
+window updating too frequently. RFC7609 request a minimal
+increase in the window size of 10% of the receive buffer
+space. But current implementation used:
 
-This results in timeouts like below:
+  min_t(int, rmbe_size / 10, SOCK_MIN_SNDBUF / 2)
 
-  pcieport 0001:00:00.0: pciehp: Timeout on hotplug command 0x03c0 (issued 2020 msec ago)
+and SOCK_MIN_SNDBUF / 2 == 2304 Bytes, which is almost
+always less then 10% of the receive buffer space.
 
-Add the device to the Command Completed quirk to mark commands "completed"
-immediately unless they change the "Control" bits.
+This causes the receiver always sending CDC message to
+update its consumer cursor when it consumes more then 2K
+of data. And as a result, we may encounter something like
+"TCP silly window syndrome" when sending 2.5~8K message.
 
-Link: https://lore.kernel.org/r/20220210145003.135907-1-manivannan.sadhasivam@linaro.org
-Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+This patch fixes this using max(rmbe_size / 10, SOCK_MIN_SNDBUF / 2).
+
+With this patch and SMC autocorking enabled, qperf 2K/4K/8K
+tcp_bw test shows 45%/75%/40% increase in throughput respectively.
+
+Signed-off-by: Dust Li <dust.li@linux.alibaba.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/hotplug/pciehp_hpc.c | 2 ++
- 1 file changed, 2 insertions(+)
+ net/smc/smc_core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/pci/hotplug/pciehp_hpc.c b/drivers/pci/hotplug/pciehp_hpc.c
-index 53227232243f..502c307dee14 100644
---- a/drivers/pci/hotplug/pciehp_hpc.c
-+++ b/drivers/pci/hotplug/pciehp_hpc.c
-@@ -969,6 +969,8 @@ static void quirk_cmd_compl(struct pci_dev *pdev)
+diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
+index 6add3094ea9e..4d421407d6fc 100644
+--- a/net/smc/smc_core.c
++++ b/net/smc/smc_core.c
+@@ -709,7 +709,7 @@ static struct smc_buf_desc *smc_buf_get_slot(int compressed_bufsize,
+  */
+ static inline int smc_rmb_wnd_update_limit(int rmbe_size)
+ {
+-	return min_t(int, rmbe_size / 10, SOCK_MIN_SNDBUF / 2);
++	return max_t(int, rmbe_size / 10, SOCK_MIN_SNDBUF / 2);
  }
- DECLARE_PCI_FIXUP_CLASS_EARLY(PCI_VENDOR_ID_INTEL, PCI_ANY_ID,
- 			      PCI_CLASS_BRIDGE_PCI, 8, quirk_cmd_compl);
-+DECLARE_PCI_FIXUP_CLASS_EARLY(PCI_VENDOR_ID_QCOM, 0x0110,
-+			      PCI_CLASS_BRIDGE_PCI, 8, quirk_cmd_compl);
- DECLARE_PCI_FIXUP_CLASS_EARLY(PCI_VENDOR_ID_QCOM, 0x0400,
- 			      PCI_CLASS_BRIDGE_PCI, 8, quirk_cmd_compl);
- DECLARE_PCI_FIXUP_CLASS_EARLY(PCI_VENDOR_ID_QCOM, 0x0401,
+ 
+ static struct smc_buf_desc *smcr_new_buf_create(struct smc_link_group *lgr,
 -- 
 2.34.1
 
