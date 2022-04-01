@@ -2,57 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25F34C4321E
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:41:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7A67C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:41:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351145AbiDAPlN (ORCPT
+        id S1351203AbiDAPlX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:41:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49538 "EHLO
+        Fri, 1 Apr 2022 11:41:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350732AbiDAPA1 (ORCPT
+        with ESMTP id S1349424AbiDAOzk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 11:00:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 384FF48E57;
-        Fri,  1 Apr 2022 07:49:08 -0700 (PDT)
+        Fri, 1 Apr 2022 10:55:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F3F26A023;
+        Fri,  1 Apr 2022 07:43:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 979D9B82500;
-        Fri,  1 Apr 2022 14:49:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3AEA0C2BBE4;
-        Fri,  1 Apr 2022 14:49:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1B53E60AC9;
+        Fri,  1 Apr 2022 14:43:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85905C34111;
+        Fri,  1 Apr 2022 14:43:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824546;
-        bh=o8YDpZKNkKx9K8H24UsAzuvpu3RPGpJE7BK9YEMZNtE=;
+        s=k20201202; t=1648824233;
+        bh=kjuBNnbI+Yjinw7VoawrZRPNdjU4KrvX+KNkVbNlDjM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kODdGsOBRowIZTI+Zny474CCzBKkiH5Dc+NER3OFgeAZZ+zG2mBVPOnQ+SwrwTEc6
-         041r6o3xQIJKvnOtmGyQdw2HznbWtLPVO+TUEaSdetdRVidbi5nNQjxWjZBDLv7uKC
-         Ldn7KaQmxmPeEGP6cC3ZsAMXWZk7ImnGO31Bap9lJcEBqiFvduiC3EX3b4TWaWzG1F
-         KPp7kcYr8arS4ZYM0e90MQ2GZMcajyROmsYQUr189k7xeNI2PgLdD1QRg1FHgl4GOi
-         0fsyKKMhUbGsG47tZYokXRJ7HqQIrKoqXarnKed6GGVDLj3HaXYjI0Yc8Wswa1tGPk
-         lQhslmMbzXmQA==
+        b=hoWvgB9P7Qg0UYNeQiV5l/TbPjj/mEYg32tpL0+c52tyCOUliODtPoH1AupYDvRU8
+         Nqr3Me37lxU1YLk9lsSuWJzvoIBmNyD5S4b4RR8VBvpv/Thi5neS5DCxizSGmDAEq0
+         Jd/rhs2u8NalZ8s+kRiJXMbvBgWRnUuVkmQR5ytlKaMCu/pbnJ3SGHmCIF7axfbEUM
+         kXnKcflRj2ULuDiGIRE1sRVimslvTQ9+lzJbnDYzsi/8TYwx5rbmBg0lsBM7Egz1kR
+         BL+ovEBqIvCeLbEAJPzT2iBYT8Tz8KY9dm3Szw3v39wxKi/oFaJVALw/QbKy0BUhrW
+         3qVnVQs7wcKlw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        Ingo Molnar <mingo@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>, mhiramat@kernel.org,
-        rostedt@goodmis.org, ahalaney@redhat.com, vbabka@suse.cz,
-        linux@rasmusvillemoes.dk, wangkefeng.wang@huawei.com,
-        keescook@chromium.org, mark-pk.tsai@mediatek.com,
-        peterz@infradead.org, valentin.schneider@arm.com
-Subject: [PATCH AUTOSEL 4.9 16/16] init/main.c: return 1 from handled __setup() functions
-Date:   Fri,  1 Apr 2022 10:48:27 -0400
-Message-Id: <20220401144827.1955845-16-sashal@kernel.org>
+Cc:     Sven Eckelmann <sven@narfation.org>,
+        =?UTF-8?q?Leonardo=20M=C3=B6rlein?= <freifunk@irrelefant.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        pabeni@redhat.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 43/65] macvtap: advertise link netns via netlink
+Date:   Fri,  1 Apr 2022 10:41:44 -0400
+Message-Id: <20220401144206.1953700-43-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220401144827.1955845-1-sashal@kernel.org>
-References: <20220401144827.1955845-1-sashal@kernel.org>
+In-Reply-To: <20220401144206.1953700-1-sashal@kernel.org>
+References: <20220401144206.1953700-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -60,55 +55,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Sven Eckelmann <sven@narfation.org>
 
-[ Upstream commit f9a40b0890658330c83c95511f9d6b396610defc ]
+[ Upstream commit a02192151b7dbf855084c38dca380d77c7658353 ]
 
-initcall_blacklist() should return 1 to indicate that it handled its
-cmdline arguments.
+Assign rtnl_link_ops->get_link_net() callback so that IFLA_LINK_NETNSID is
+added to rtnetlink messages. This fixes iproute2 which otherwise resolved
+the link interface to an interface in the wrong namespace.
 
-set_debug_rodata() should return 1 to indicate that it handled its
-cmdline arguments.  Print a warning if the option string is invalid.
+Test commands:
 
-This prevents these strings from being added to the 'init' program's
-environment as they are not init arguments/parameters.
+  ip netns add nst
+  ip link add dummy0 type dummy
+  ip link add link macvtap0 link dummy0 type macvtap
+  ip link set macvtap0 netns nst
+  ip -netns nst link show macvtap0
 
-Link: https://lkml.kernel.org/r/20220221050901.23985-1-rdunlap@infradead.org
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Cc: Ingo Molnar <mingo@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Before:
+
+  10: macvtap0@gre0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 500
+      link/ether 5e:8f:ae:1d:60:50 brd ff:ff:ff:ff:ff:ff
+
+After:
+
+  10: macvtap0@if2: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 500
+      link/ether 5e:8f:ae:1d:60:50 brd ff:ff:ff:ff:ff:ff link-netnsid 0
+
+Reported-by: Leonardo Mörlein <freifunk@irrelefant.net>
+Signed-off-by: Sven Eckelmann <sven@narfation.org>
+Link: https://lore.kernel.org/r/20220228003240.1337426-1-sven@narfation.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- init/main.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/net/macvtap.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/init/main.c b/init/main.c
-index 9e057314a15f..0c01d4e10d2f 100644
---- a/init/main.c
-+++ b/init/main.c
-@@ -705,7 +705,7 @@ static int __init initcall_blacklist(char *str)
- 		}
- 	} while (str_entry);
- 
--	return 0;
-+	return 1;
+diff --git a/drivers/net/macvtap.c b/drivers/net/macvtap.c
+index 694e2f5dbbe5..39801c31e507 100644
+--- a/drivers/net/macvtap.c
++++ b/drivers/net/macvtap.c
+@@ -133,11 +133,17 @@ static void macvtap_setup(struct net_device *dev)
+ 	dev->tx_queue_len = TUN_READQ_SIZE;
  }
  
- static bool __init_or_module initcall_blacklisted(initcall_t fn)
-@@ -921,7 +921,9 @@ static noinline void __init kernel_init_freeable(void);
- bool rodata_enabled __ro_after_init = true;
- static int __init set_debug_rodata(char *str)
- {
--	return strtobool(str, &rodata_enabled);
-+	if (strtobool(str, &rodata_enabled))
-+		pr_warn("Invalid option string for rodata: '%s'\n", str);
-+	return 1;
- }
- __setup("rodata=", set_debug_rodata);
- #endif
++static struct net *macvtap_link_net(const struct net_device *dev)
++{
++	return dev_net(macvlan_dev_real_dev(dev));
++}
++
+ static struct rtnl_link_ops macvtap_link_ops __read_mostly = {
+ 	.kind		= "macvtap",
+ 	.setup		= macvtap_setup,
+ 	.newlink	= macvtap_newlink,
+ 	.dellink	= macvtap_dellink,
++	.get_link_net	= macvtap_link_net,
+ 	.priv_size      = sizeof(struct macvtap_dev),
+ };
+ 
 -- 
 2.34.1
 
