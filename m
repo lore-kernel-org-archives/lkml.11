@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA376C35295
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:40:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04CF8C352A1
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:40:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356752AbiDAPhv (ORCPT
+        id S1356898AbiDAPiC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:37:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58272 "EHLO
+        Fri, 1 Apr 2022 11:38:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350546AbiDAPAI (ORCPT
+        with ESMTP id S1350626AbiDAPAX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 11:00:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E5C291565;
-        Fri,  1 Apr 2022 07:47:47 -0700 (PDT)
+        Fri, 1 Apr 2022 11:00:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EB46185453;
+        Fri,  1 Apr 2022 07:48:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C54360A53;
-        Fri,  1 Apr 2022 14:47:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5DBEC36AE3;
-        Fri,  1 Apr 2022 14:47:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3E641B82500;
+        Fri,  1 Apr 2022 14:48:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F15BEC34111;
+        Fri,  1 Apr 2022 14:48:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824466;
-        bh=SuBR1hW/0xDCQAQZLmbTr1+EmG9QhsVoHp7VnORdMZY=;
+        s=k20201202; t=1648824484;
+        bh=xBWEKNFE5H+l+atNx46GIEd2XdhRTc0zdVyHl0dLdTA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Mcrpv6LX9VkOmM8EtxZ8tXkfcxuG1ZOnjBLScAaqe1zVtGidwHN7Pa4nliEFY777B
-         dmM0+pMyZG38CHtJogwK8PXLxf6siRPeJbBntnhdNH1fPxgMEpDdJuE/P8FVXNXVCv
-         l+6+FqQ86tGWOGOz/0QFsvInU2gNiVSDidv9UwK6qmNYkttDx1xfwZw8gvd9bsBVBn
-         MjyTXmuE+1sxHy4MgTpWPaapAiM5Rt+Jm0ez98unLWBVHYshknPbLuoj8SBo333a1r
-         wVWFwaSGWI06OQO6qSOeqzi7ASmFEdxNzkJgKNlBgV3wpsrv1xqR+hKC/brMegz/rc
-         H6iZM6wdXUjbw==
+        b=K1/KRL6xBkZ/Uxh1yV4+NAO+t2rtU2Ec1UAyknvazL2XXneTqemqkMhsFGqO/fNul
+         fO4K5xLqxi2zkxCHGWf0zISAMK+4hAJ8e3jmanvZxIT+44jN65R5nXDHy2aF6EvYT7
+         zX+piFzNcVL748esIHkhmVLZawq3RkzgVAsRjUbkpCn1hWQjeBVnVypedsYlFVoeyJ
+         5OtZd5SNPB1xCTH2OQbsieIzsnf/XH8pn1/SrtDZR48WZUlb1elbYAxP5/+I/HlrjQ
+         ngMf4wiOlYQmNNoi6o4P+3xF0wo9UO+Wj9fdEro2ommaWPg5Ig+F8FOI0nG5R9z7we
+         EvHzgX1Ivh4tg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Evgeny Boger <boger@wirenboard.com>, Chen-Yu Tsai <wens@csie.org>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
-        Sasha Levin <sashal@kernel.org>, sre@kernel.org,
-        linux-pm@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 06/22] power: supply: axp20x_battery: properly report current when discharging
-Date:   Fri,  1 Apr 2022 10:47:13 -0400
-Message-Id: <20220401144729.1955554-6-sashal@kernel.org>
+Cc:     Dust Li <dust.li@linux.alibaba.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, kgraul@linux.ibm.com,
+        kuba@kernel.org, pabeni@redhat.com, linux-s390@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 13/22] net/smc: correct settings of RMB window update limit
+Date:   Fri,  1 Apr 2022 10:47:20 -0400
+Message-Id: <20220401144729.1955554-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401144729.1955554-1-sashal@kernel.org>
 References: <20220401144729.1955554-1-sashal@kernel.org>
@@ -53,60 +54,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Evgeny Boger <boger@wirenboard.com>
+From: Dust Li <dust.li@linux.alibaba.com>
 
-[ Upstream commit d4f408cdcd26921c1268cb8dcbe8ffb6faf837f3 ]
+[ Upstream commit 6bf536eb5c8ca011d1ff57b5c5f7c57ceac06a37 ]
 
-As stated in [1], negative current values are used for discharging
-batteries.
+rmbe_update_limit is used to limit announcing receive
+window updating too frequently. RFC7609 request a minimal
+increase in the window size of 10% of the receive buffer
+space. But current implementation used:
 
-AXP PMICs internally have two different ADC channels for shunt current
-measurement: one used during charging and one during discharging.
-The values reported by these ADCs are unsigned.
-While the driver properly selects ADC channel to get the data from,
-it doesn't apply negative sign when reporting discharging current.
+  min_t(int, rmbe_size / 10, SOCK_MIN_SNDBUF / 2)
 
-[1] Documentation/ABI/testing/sysfs-class-power
+and SOCK_MIN_SNDBUF / 2 == 2304 Bytes, which is almost
+always less then 10% of the receive buffer space.
 
-Signed-off-by: Evgeny Boger <boger@wirenboard.com>
-Acked-by: Chen-Yu Tsai <wens@csie.org>
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+This causes the receiver always sending CDC message to
+update its consumer cursor when it consumes more then 2K
+of data. And as a result, we may encounter something like
+"TCP silly window syndrome" when sending 2.5~8K message.
+
+This patch fixes this using max(rmbe_size / 10, SOCK_MIN_SNDBUF / 2).
+
+With this patch and SMC autocorking enabled, qperf 2K/4K/8K
+tcp_bw test shows 45%/75%/40% increase in throughput respectively.
+
+Signed-off-by: Dust Li <dust.li@linux.alibaba.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/power/supply/axp20x_battery.c | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+ net/smc/smc_core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/power/supply/axp20x_battery.c b/drivers/power/supply/axp20x_battery.c
-index 7494f0f0eadb..a2e2443357fa 100644
---- a/drivers/power/supply/axp20x_battery.c
-+++ b/drivers/power/supply/axp20x_battery.c
-@@ -160,7 +160,6 @@ static int axp20x_battery_get_prop(struct power_supply *psy,
- 				   union power_supply_propval *val)
+diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
+index 7dc907a45c68..a28e06c70e52 100644
+--- a/net/smc/smc_core.c
++++ b/net/smc/smc_core.c
+@@ -499,7 +499,7 @@ struct smc_buf_desc *smc_buf_get_slot(struct smc_link_group *lgr,
+  */
+ static inline int smc_rmb_wnd_update_limit(int rmbe_size)
  {
- 	struct axp20x_batt_ps *axp20x_batt = power_supply_get_drvdata(psy);
--	struct iio_channel *chan;
- 	int ret = 0, reg, val1;
+-	return min_t(int, rmbe_size / 10, SOCK_MIN_SNDBUF / 2);
++	return max_t(int, rmbe_size / 10, SOCK_MIN_SNDBUF / 2);
+ }
  
- 	switch (psp) {
-@@ -240,12 +239,12 @@ static int axp20x_battery_get_prop(struct power_supply *psy,
- 		if (ret)
- 			return ret;
- 
--		if (reg & AXP20X_PWR_STATUS_BAT_CHARGING)
--			chan = axp20x_batt->batt_chrg_i;
--		else
--			chan = axp20x_batt->batt_dischrg_i;
--
--		ret = iio_read_channel_processed(chan, &val->intval);
-+		if (reg & AXP20X_PWR_STATUS_BAT_CHARGING) {
-+			ret = iio_read_channel_processed(axp20x_batt->batt_chrg_i, &val->intval);
-+		} else {
-+			ret = iio_read_channel_processed(axp20x_batt->batt_dischrg_i, &val1);
-+			val->intval = -val1;
-+		}
- 		if (ret)
- 			return ret;
- 
+ static struct smc_buf_desc *smc_new_buf_create(struct smc_link_group *lgr,
 -- 
 2.34.1
 
