@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A09A2C47086
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:38:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B630FC38A2D
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:38:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351582AbiDAPf3 (ORCPT
+        id S1352150AbiDAPgG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:35:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57484 "EHLO
+        Fri, 1 Apr 2022 11:36:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350021AbiDAO6p (ORCPT
+        with ESMTP id S1349964AbiDAO61 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:58:45 -0400
+        Fri, 1 Apr 2022 10:58:27 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F320B17B8B8;
-        Fri,  1 Apr 2022 07:45:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFCCD1760E1;
+        Fri,  1 Apr 2022 07:45:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8ABBE60A53;
-        Fri,  1 Apr 2022 14:45:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DC4AC3410F;
-        Fri,  1 Apr 2022 14:45:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6AC3660A53;
+        Fri,  1 Apr 2022 14:45:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25698C3410F;
+        Fri,  1 Apr 2022 14:45:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824356;
-        bh=T6tPuj8Acp42Rr5p3oVDbKRALnGv/RT8/DtkoTLBGkc=;
+        s=k20201202; t=1648824340;
+        bh=BPY4iL0mfZ8AciSKgUHRdxdkSURMUlxvIQOFjDnHAw0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S6CzPe3g8j8QaMkZB3SZXd6Z+FJCKIXJbAgFYClH0VYc1g57i1cJYoR6TiGS63czn
-         v3iJ6OI8QqUz5tgQTjAM8Cb5itJ79d0mUbgeSqpykeXFkBuVbs94+j1J76efablNxo
-         P7lOjN1UuORxvjYh6FoM5SWnEJkLw4bUMl3uMEqpJBS6piz6OGMikjvn0InioBbK4M
-         qc0kIvktvKklst2JIdZT6OKKSPTctURM5DDESXd0KLzOknV3EEO/tWWqPBl0VDdEMd
-         A9smc+Az7OotG5nJePikT7O6+hxxkR9IBfmYyEdoNoeOsoGmqzHpTa+WwcATtAHFqo
-         qJqbGL8RmzzpQ==
+        b=fHcs0wIgLxan+ZvEd3iniLDFuOv1h/x8cSMaQyFVXY/Opq8I5MEcmN5ukX63J5VSx
+         JHgjjYLcxU/MhrloNSSI4OeQ2EODP1shiBtEzZIpKtc0mz4UilImkevPm0ZwqTJNTG
+         rGOpYciHZbP+vUdMSLG9GDsbudK8Mfthr1v5OUxOeHWt0OJMeuQQtAf7gFn5LRETNI
+         E3erBDsPkhP8tqsuojLjYtwEjJYW9bg1kcvxF/eKek6mwh/k7U5kUVZMIdegb9f9hr
+         W1MNuKDujv6r7sQjM2U5EIqdwhCsGw/2rq/7VnfS2wt3mN+tXIAa6b+oFAI0eqdMjQ
+         COXw1UVtS0lvg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Michael Ellerman <mpe@ellerman.id.au>,
-        Paul Menzel <pmenzel@molgen.mpg.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Sasha Levin <sashal@kernel.org>, linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH AUTOSEL 5.4 30/37] powerpc/code-patching: Pre-map patch area
-Date:   Fri,  1 Apr 2022 10:44:39 -0400
-Message-Id: <20220401144446.1954694-30-sashal@kernel.org>
+Cc:     Hangyu Hua <hbh25y@gmail.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Sasha Levin <sashal@kernel.org>, john@phrozen.org,
+        linux-mips@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 24/37] mips: ralink: fix a refcount leak in ill_acc_of_setup()
+Date:   Fri,  1 Apr 2022 10:44:33 -0400
+Message-Id: <20220401144446.1954694-24-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401144446.1954694-1-sashal@kernel.org>
 References: <20220401144446.1954694-1-sashal@kernel.org>
@@ -54,97 +53,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Ellerman <mpe@ellerman.id.au>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-[ Upstream commit 591b4b268435f00d2f0b81f786c2c7bd5ef66416 ]
+[ Upstream commit 4a0a1436053b17e50b7c88858fb0824326641793 ]
 
-Paul reported a warning with DEBUG_ATOMIC_SLEEP=y:
+of_node_put(np) needs to be called when pdev == NULL.
 
-  BUG: sleeping function called from invalid context at include/linux/sched/mm.h:256
-  in_atomic(): 0, irqs_disabled(): 1, non_block: 0, pid: 1, name: swapper/0
-  preempt_count: 0, expected: 0
-  ...
-  Call Trace:
-    dump_stack_lvl+0xa0/0xec (unreliable)
-    __might_resched+0x2f4/0x310
-    kmem_cache_alloc+0x220/0x4b0
-    __pud_alloc+0x74/0x1d0
-    hash__map_kernel_page+0x2cc/0x390
-    do_patch_instruction+0x134/0x4a0
-    arch_jump_label_transform+0x64/0x78
-    __jump_label_update+0x148/0x180
-    static_key_enable_cpuslocked+0xd0/0x120
-    static_key_enable+0x30/0x50
-    check_kvm_guest+0x60/0x88
-    pSeries_smp_probe+0x54/0xb0
-    smp_prepare_cpus+0x3e0/0x430
-    kernel_init_freeable+0x20c/0x43c
-    kernel_init+0x30/0x1a0
-    ret_from_kernel_thread+0x5c/0x64
-
-Peter pointed out that this is because do_patch_instruction() has
-disabled interrupts, but then map_patch_area() calls map_kernel_page()
-then hash__map_kernel_page() which does a sleeping memory allocation.
-
-We only see the warning in KVM guests with SMT enabled, which is not
-particularly common, or on other platforms if CONFIG_KPROBES is
-disabled, also not common. The reason we don't see it in most
-configurations is that another path that happens to have interrupts
-enabled has allocated the required page tables for us, eg. there's a
-path in kprobes init that does that. That's just pure luck though.
-
-As Christophe suggested, the simplest solution is to do a dummy
-map/unmap when we initialise the patching, so that any required page
-table levels are pre-allocated before the first call to
-do_patch_instruction(). This works because the unmap doesn't free any
-page tables that were allocated by the map, it just clears the PTE,
-leaving the page table levels there for the next map.
-
-Reported-by: Paul Menzel <pmenzel@molgen.mpg.de>
-Debugged-by: Peter Zijlstra <peterz@infradead.org>
-Suggested-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220223015821.473097-1-mpe@ellerman.id.au
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/lib/code-patching.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ arch/mips/ralink/ill_acc.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/powerpc/lib/code-patching.c b/arch/powerpc/lib/code-patching.c
-index a05f289e613e..e417d4470397 100644
---- a/arch/powerpc/lib/code-patching.c
-+++ b/arch/powerpc/lib/code-patching.c
-@@ -41,9 +41,14 @@ int raw_patch_instruction(unsigned int *addr, unsigned int instr)
- #ifdef CONFIG_STRICT_KERNEL_RWX
- static DEFINE_PER_CPU(struct vm_struct *, text_poke_area);
- 
-+static int map_patch_area(void *addr, unsigned long text_poke_addr);
-+static void unmap_patch_area(unsigned long addr);
-+
- static int text_area_cpu_up(unsigned int cpu)
- {
- 	struct vm_struct *area;
-+	unsigned long addr;
-+	int err;
- 
- 	area = get_vm_area(PAGE_SIZE, VM_ALLOC);
- 	if (!area) {
-@@ -51,6 +56,15 @@ static int text_area_cpu_up(unsigned int cpu)
- 			cpu);
- 		return -1;
+diff --git a/arch/mips/ralink/ill_acc.c b/arch/mips/ralink/ill_acc.c
+index 0ddeb31afa93..45ca2b84f096 100644
+--- a/arch/mips/ralink/ill_acc.c
++++ b/arch/mips/ralink/ill_acc.c
+@@ -61,6 +61,7 @@ static int __init ill_acc_of_setup(void)
+ 	pdev = of_find_device_by_node(np);
+ 	if (!pdev) {
+ 		pr_err("%pOFn: failed to lookup pdev\n", np);
++		of_node_put(np);
+ 		return -EINVAL;
  	}
-+
-+	// Map/unmap the area to ensure all page tables are pre-allocated
-+	addr = (unsigned long)area->addr;
-+	err = map_patch_area(empty_zero_page, addr);
-+	if (err)
-+		return err;
-+
-+	unmap_patch_area(addr);
-+
- 	this_cpu_write(text_poke_area, area);
  
- 	return 0;
 -- 
 2.34.1
 
