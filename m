@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D11DEC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 06:37:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 322B2C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 06:37:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235779AbiDAGjf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 02:39:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45574 "EHLO
+        id S245616AbiDAGji (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Apr 2022 02:39:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245540AbiDAGiq (ORCPT
+        with ESMTP id S245567AbiDAGix (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 02:38:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBCC018FAEA;
-        Thu, 31 Mar 2022 23:36:57 -0700 (PDT)
+        Fri, 1 Apr 2022 02:38:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AA37262D42;
+        Thu, 31 Mar 2022 23:37:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 10D2DB823E5;
-        Fri,  1 Apr 2022 06:36:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FC8DC2BBE4;
-        Fri,  1 Apr 2022 06:36:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C16B1B823E7;
+        Fri,  1 Apr 2022 06:37:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EF91C2BBE4;
+        Fri,  1 Apr 2022 06:37:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648795014;
-        bh=xOv+40HOcRxPtNaZC2tGN/gUvTlRS5bV5BUPMr7oCoE=;
+        s=korg; t=1648795020;
+        bh=NHCYVgMKZyxPvn7xelmJphkre9IBISbvC3oACIVsBqU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d9ueYTUdbTomGUEu50RSZ9w0qPbWIDGXtWnyjzqtBsdok2azc4vepFvLrbJITSIa6
-         2bwcttKXDRRweGueUc+dgfIdzKPqU0tIIK52xehEvDEusKEp9BpcQXuEVfGsPLuamT
-         PIc77V3114KH48Qn3GwXNFTVVaQG2xpah6LXuyTY=
+        b=bAfpFhQ9wfNZCrscd4peTz9KktZ32LQQV030cxh1/BFuV+EqmGOorq5hatdyeWv09
+         ofuuzkpT1kF+lg0+tBusOlIouJ0qqGFXQBAw3LB4n42WVZxZX94oEy497G9ENBBmEb
+         5Y7L9Vqj0RzpEdiONDGPcBfzvaqkBWqNV38qeN60=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>,
-        Will Deacon <will.deacon@arm.com>,
+        stable@vger.kernel.org,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
         James Morse <james.morse@arm.com>
-Subject: [PATCH 4.14 04/27] arm64: Make ARM64_ERRATUM_1188873 depend on COMPAT
-Date:   Fri,  1 Apr 2022 08:36:14 +0200
-Message-Id: <20220401063624.358469645@linuxfoundation.org>
+Subject: [PATCH 4.14 15/27] arm64: entry: Move trampoline macros out of ifdefd section
+Date:   Fri,  1 Apr 2022 08:36:25 +0200
+Message-Id: <20220401063624.665094578@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220401063624.232282121@linuxfoundation.org>
 References: <20220401063624.232282121@linuxfoundation.org>
@@ -49,30 +50,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Zyngier <marc.zyngier@arm.com>
+From: James Morse <james.morse@arm.com>
 
-commit c2b5bba3967a000764e9148e6f020d776b7ecd82 upstream.
+commit 13d7a08352a83ef2252aeb464a5e08dfc06b5dfd upstream.
 
-Since ARM64_ERRATUM_1188873 only affects AArch32 EL0, it makes some
-sense that it should depend on COMPAT.
+The macros for building the kpti trampoline are all behind
+CONFIG_UNMAP_KERNEL_AT_EL0, and in a region that outputs to the
+.entry.tramp.text section.
 
-Signed-off-by: Marc Zyngier <marc.zyngier@arm.com>
-Signed-off-by: Will Deacon <will.deacon@arm.com>
+Move the macros out so they can be used to generate other kinds of
+trampoline. Only the symbols need to be guarded by
+CONFIG_UNMAP_KERNEL_AT_EL0 and appear in the .entry.tramp.text section.
+
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
 Signed-off-by: James Morse <james.morse@arm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/Kconfig |    1 +
- 1 file changed, 1 insertion(+)
+ arch/arm64/kernel/entry.S |   12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
---- a/arch/arm64/Kconfig
-+++ b/arch/arm64/Kconfig
-@@ -461,6 +461,7 @@ config ARM64_ERRATUM_1024718
- config ARM64_ERRATUM_1188873
- 	bool "Cortex-A76: MRC read following MRRC read of specific Generic Timer in AArch32 might give incorrect result"
- 	default y
-+	depends on COMPAT
- 	select ARM_ARCH_TIMER_OOL_WORKAROUND
- 	help
- 	  This option adds work arounds for ARM Cortex-A76 erratum 1188873
+--- a/arch/arm64/kernel/entry.S
++++ b/arch/arm64/kernel/entry.S
+@@ -985,12 +985,7 @@ __ni_sys_trace:
+ 
+ 	.popsection				// .entry.text
+ 
+-#ifdef CONFIG_UNMAP_KERNEL_AT_EL0
+-/*
+- * Exception vectors trampoline.
+- */
+-	.pushsection ".entry.tramp.text", "ax"
+-
++	// Move from tramp_pg_dir to swapper_pg_dir
+ 	.macro tramp_map_kernel, tmp
+ 	mrs	\tmp, ttbr1_el1
+ 	sub	\tmp, \tmp, #(SWAPPER_DIR_SIZE + RESERVED_TTBR0_SIZE)
+@@ -1081,6 +1076,11 @@ alternative_insn isb, nop, ARM64_WORKARO
+ 	.endr
+ 	.endm
+ 
++#ifdef CONFIG_UNMAP_KERNEL_AT_EL0
++/*
++ * Exception vectors trampoline.
++ */
++	.pushsection ".entry.tramp.text", "ax"
+ 	.align	11
+ ENTRY(tramp_vectors)
+ 	generate_tramp_vector
 
 
