@@ -2,130 +2,397 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC6A7C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 06:40:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0A4BC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 06:40:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245659AbiDAGl5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 02:41:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45304 "EHLO
+        id S1343536AbiDAGmJ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Apr 2022 02:42:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343577AbiDAGks (ORCPT
+        with ESMTP id S1343542AbiDAGlx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 02:40:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC5A1263674;
-        Thu, 31 Mar 2022 23:37:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 85DF1B823D9;
-        Fri,  1 Apr 2022 06:37:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7D14C340EE;
-        Fri,  1 Apr 2022 06:37:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648795076;
-        bh=s+xIgTkmKfr5tokAv9i5sEmT+FUSp2unDkisn9xnNSs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uXkkpYaFHsqbR756VwGqft0ddwKEtqFdaYc+lvhGaKlg3rer0FoPUDdlnKMhRiP7D
-         RbWb6Yx6mF3NJoOz9/an/gxQl3smLCMwZPS65s8ycr2VKCc89aFyIOLoGL7RMfSJ2j
-         Cjm83KXpXYvYaEwmi1s6Hj4P1Z5EixQ6pN1KqGhY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        James Morse <james.morse@arm.com>
-Subject: [PATCH 4.14 14/27] arm64: entry: Dont assume tramp_vectors is the start of the vectors
-Date:   Fri,  1 Apr 2022 08:36:24 +0200
-Message-Id: <20220401063624.637108924@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220401063624.232282121@linuxfoundation.org>
-References: <20220401063624.232282121@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Fri, 1 Apr 2022 02:41:53 -0400
+Received: from mail-oa1-x34.google.com (mail-oa1-x34.google.com [IPv6:2001:4860:4864:20::34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EF23267F94
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 23:38:26 -0700 (PDT)
+Received: by mail-oa1-x34.google.com with SMTP id 586e51a60fabf-dacc470e03so1755063fac.5
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 23:38:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=x7K0NNGbsqIDHBdlMGPt/V1O+M6Uv/9MEVWEM7blpuU=;
+        b=AFa9LXaE8CxIoNuIoeI3nMWTUA+1OvCRUR4wwKGWyoRB/cGqYVqEvcYfKuoHYkyPVN
+         Dn5XI01sLKg3HcUjbr6B01whWOsMb+aqnEaP63JaCQ3jpK8ibqwM3AdePd+AYD267nY0
+         Vhm79DH4bTfOKzcRydXufpLS810KHlttH56GXB+Dh3zeNYQJhADJSB6vhqZhiG5EiyAR
+         MR4w0dIg5+7NEF+QF8zyX1uXxX7FdgtVEJnMtNtucbcHOltcWk+pLa3oqJjmmon25MGL
+         AurVU9HowC6Wxc+CSwS0jXKPIXWJGIX+tYDX+eoAUPIMhepyXGBvzUV2fWTgBwHO/JAq
+         nC4A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=x7K0NNGbsqIDHBdlMGPt/V1O+M6Uv/9MEVWEM7blpuU=;
+        b=wdJKxvleFCDsW5FxkwTURsIynzKOGC7L66gWAOs2Ouq48zOodLuRDBfTyL7tVoYUpT
+         7SUkLpcTStOb1O0R0SWd+gDyzvgfH2m77XhK/TmsiZvlm9yS/7izPTrgmAdWOpgbhgJn
+         yscZo8IevwbwbDhoyZRo3+H7uwNgy3HaG5RNL9C9HPK1SM0iWpyPKfsTZfWs+H3eptE2
+         eNWNuagcW20CnRM6C+sg7EN3a8Zl7Yu2mUvov76sKlbleMC5vQEO2xfCrXGXt6pYqPvk
+         J7dNMWAhwuem+RfXEhV+oLkXeeCgcLhP/+8svYIzeGS41zA1Wz+HKYHLvweDwjuaKiwt
+         Cz2w==
+X-Gm-Message-State: AOAM532aICa6/ayW23/QjAcAEG0QS/5RkVfTZxK6iLT1kIOtblyMyOK2
+        CwH4jwobFG39m/A1y/UeF+Kd/tQg8+6s+4XifeBPDQ==
+X-Google-Smtp-Source: ABdhPJxEdV7+8VeF+WK12KFUIuN7p/RPx1MavbLIAAylZWBzIUgJkEQLIgLSGlwOzkUCLolvxk26x6UkOqDv3kxuqkE=
+X-Received: by 2002:a05:6870:b629:b0:de:a293:bf74 with SMTP id
+ cm41-20020a056870b62900b000dea293bf74mr4412865oab.163.1648795104484; Thu, 31
+ Mar 2022 23:38:24 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <000000000000adb96505db8ad847@google.com>
+In-Reply-To: <000000000000adb96505db8ad847@google.com>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Fri, 1 Apr 2022 08:38:13 +0200
+Message-ID: <CACT4Y+Z3y0Df4eikT+LSmRw2S+TXn+koJYqP4u=j7kN_rYjZ7Q@mail.gmail.com>
+Subject: Re: [syzbot] BUG: sleeping function called from invalid context in blk_mq_release
+To:     syzbot <syzbot+d17750670998d5d4f5ec@syzkaller.appspotmail.com>
+Cc:     axboe@kernel.dk, linux-block@vger.kernel.org,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Morse <james.morse@arm.com>
+On Fri, 1 Apr 2022 at 00:04, syzbot
+<syzbot+d17750670998d5d4f5ec@syzkaller.appspotmail.com> wrote:
+>
+> Hello,
+>
+> syzbot found the following issue on:
+>
+> HEAD commit:    787af64d05cd mm: page_alloc: validate buddy before check i..
+> git tree:       upstream
+> console output: https://syzkaller.appspot.com/x/log.txt?x=109c0687700000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=3daed5742799b46b
+> dashboard link: https://syzkaller.appspot.com/bug?extid=d17750670998d5d4f5ec
+> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+>
+> Unfortunately, I don't have any reproducer for this issue yet.
+>
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+d17750670998d5d4f5ec@syzkaller.appspotmail.com
 
-commit ed50da7764535f1e24432ded289974f2bf2b0c5a upstream.
+#syz fix: block: avoid calling blkg_free() in atomic context
 
-The tramp_ventry macro uses tramp_vectors as the address of the vectors
-when calculating which ventry in the 'full fat' vectors to branch to.
-
-While there is one set of tramp_vectors, this will be true.
-Adding multiple sets of vectors will break this assumption.
-
-Move the generation of the vectors to a macro, and pass the start
-of the vectors as an argument to tramp_ventry.
-
-Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
-Signed-off-by: James Morse <james.morse@arm.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- arch/arm64/kernel/entry.S |   30 ++++++++++++++++--------------
- 1 file changed, 16 insertions(+), 14 deletions(-)
-
---- a/arch/arm64/kernel/entry.S
-+++ b/arch/arm64/kernel/entry.S
-@@ -1027,7 +1027,7 @@ alternative_else_nop_endif
- 	sub	\dst, \dst, PAGE_SIZE
- 	.endm
- 
--	.macro tramp_ventry, regsize = 64
-+	.macro tramp_ventry, vector_start, regsize
- 	.align	7
- 1:
- 	.if	\regsize == 64
-@@ -1049,9 +1049,9 @@ alternative_insn isb, nop, ARM64_WORKARO
- #else
- 	ldr	x30, =vectors
- #endif
--	prfm	plil1strm, [x30, #(1b - tramp_vectors)]
-+	prfm	plil1strm, [x30, #(1b - \vector_start)]
- 	msr	vbar_el1, x30
--	add	x30, x30, #(1b - tramp_vectors + 4)
-+	add	x30, x30, #(1b - \vector_start + 4)
- 	isb
- 	ret
- .org 1b + 128	// Did we overflow the ventry slot?
-@@ -1069,19 +1069,21 @@ alternative_insn isb, nop, ARM64_WORKARO
- 	eret
- 	.endm
- 
--	.align	11
--ENTRY(tramp_vectors)
-+	.macro	generate_tramp_vector
-+.Lvector_start\@:
- 	.space	0x400
- 
--	tramp_ventry
--	tramp_ventry
--	tramp_ventry
--	tramp_ventry
--
--	tramp_ventry	32
--	tramp_ventry	32
--	tramp_ventry	32
--	tramp_ventry	32
-+	.rept	4
-+	tramp_ventry	.Lvector_start\@, 64
-+	.endr
-+	.rept	4
-+	tramp_ventry	.Lvector_start\@, 32
-+	.endr
-+	.endm
-+
-+	.align	11
-+ENTRY(tramp_vectors)
-+	generate_tramp_vector
- END(tramp_vectors)
- 
- ENTRY(tramp_exit_native)
-
-
+> BUG: sleeping function called from invalid context at block/blk-sysfs.c:766
+> in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 3123, name: udevd
+> preempt_count: 100, expected: 0
+> RCU nest depth: 2, expected: 0
+> 4 locks held by udevd/3123:
+>  #0: ffffffff8c592858 (tomoyo_ss){....}-{0:0}, at: tomoyo_check_open_permission+0xe8/0x380 security/tomoyo/file.c:761
+>  #1: ffffffff8bd7f3e0 (rcu_read_lock){....}-{1:2}, at: prepend_path+0x0/0xea0 fs/d_path.c:368
+>  #2: ffffffff8bd7f3e0 (rcu_read_lock){....}-{1:2}, at: need_seqretry include/linux/seqlock.h:1158 [inline]
+>  #2: ffffffff8bd7f3e0 (rcu_read_lock){....}-{1:2}, at: prepend_path+0x25f/0xea0 fs/d_path.c:182
+>  #3: ffffffff8bd7f2c0 (rcu_callback){....}-{0:0}, at: rcu_do_batch kernel/rcu/tree.c:2524 [inline]
+>  #3: ffffffff8bd7f2c0 (rcu_callback){....}-{0:0}, at: rcu_core+0x73d/0x1880 kernel/rcu/tree.c:2786
+>  <IRQ>
+>  kobject_cleanup lib/kobject.c:705 [inline]
+>  kobject_release lib/kobject.c:736 [inline]
+>  kref_put include/linux/kref.h:65 [inline]
+>  kobject_put+0x1c8/0x540 lib/kobject.c:753
+>  blkg_free.part.0+0x112/0x1f0 block/blk-cgroup.c:86
+>  blkg_free block/blk-cgroup.c:78 [inline]
+>  __blkg_release+0x105/0x160 block/blk-cgroup.c:102
+>  rcu_do_batch kernel/rcu/tree.c:2535 [inline]
+>  rcu_core+0x7b1/0x1880 kernel/rcu/tree.c:2786
+>  __do_softirq+0x29b/0x9c2 kernel/softirq.c:558
+>  invoke_softirq kernel/softirq.c:432 [inline]
+>  __irq_exit_rcu+0x123/0x180 kernel/softirq.c:637
+>  irq_exit_rcu+0x5/0x20 kernel/softirq.c:649
+>  sysvec_apic_timer_interrupt+0x93/0xc0 arch/x86/kernel/apic/apic.c:1097
+>  </IRQ>
+>  <TASK>
+>  asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.h:645
+> RIP: 0010:preempt_count arch/x86/include/asm/preempt.h:27 [inline]
+> RIP: 0010:check_kcov_mode kernel/kcov.c:166 [inline]
+> RIP: 0010:__sanitizer_cov_trace_pc+0x0/0x60 kernel/kcov.c:200
+> Code: 48 89 ef 5d e9 f1 90 4a 00 5d be 03 00 00 00 e9 36 66 74 02 66 0f 1f 44 00 00 48 8b be a8 01 00 00 e8 b4 ff ff ff 31 c0 c3 90 <65> 8b 05 c9 a2 8a 7e 89 c1 48 8b 34 24 81 e1 00 01 00 00 65 48 8b
+> RSP: 0018:ffffc900030ff5c8 EFLAGS: 00000293
+> RAX: 0000000000000000 RBX: 0000000000000200 RCX: 0000000000000000
+> RDX: ffff888021002280 RSI: ffffffff81df460e RDI: 0000000000000003
+> RBP: ffffc900030ff6d8 R08: 0000000000000000 R09: 0000000000000001
+> R10: ffffffff81df4604 R11: 0000000000000001 R12: 0000000000000000
+> R13: ffff88801ab435d0 R14: dffffc0000000000 R15: dffffc0000000000
+>  __seqprop_spinlock_sequence include/linux/seqlock.h:277 [inline]
+>  read_seqbegin include/linux/seqlock.h:840 [inline]
+>  read_seqbegin_or_lock include/linux/seqlock.h:1144 [inline]
+>  prepend_path+0x3b4/0xea0 fs/d_path.c:170
+>  d_absolute_path+0xef/0x1a0 fs/d_path.c:233
+>  tomoyo_file_open security/tomoyo/tomoyo.c:311 [inline]
+>  tomoyo_file_open+0x9d/0xc0 security/tomoyo/tomoyo.c:306
+>  security_file_open+0x45/0xb0 security/security.c:1651
+>  do_dentry_open+0x349/0x11e0 fs/open.c:811
+>  do_open fs/namei.c:3476 [inline]
+>  path_openat+0x1c71/0x2910 fs/namei.c:3609
+>  do_filp_open+0x1aa/0x400 fs/namei.c:3636
+>  do_sys_openat2+0x16d/0x4c0 fs/open.c:1213
+>  do_sys_open fs/open.c:1229 [inline]
+>  __do_sys_openat fs/open.c:1245 [inline]
+>  __se_sys_openat fs/open.c:1240 [inline]
+>  __x64_sys_openat+0x13f/0x1f0 fs/open.c:1240
+>  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+>  do_syscall_64+0x35/0x80 arch/x86/entry/common.c:80
+>  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> RIP: 0033:0x7fa17d125697
+> Code: 25 00 00 41 00 3d 00 00 41 00 74 37 64 8b 04 25 18 00 00 00 85 c0 75 5b 44 89 e2 48 89 ee bf 9c ff ff ff b8 01 01 00 00 0f 05 <48> 3d 00 f0 ff ff 0f 87 85 00 00 00 48 83 c4 68 5d 41 5c c3 0f 1f
+> RSP: 002b:00007ffeed1068f0 EFLAGS: 00000246 ORIG_RAX: 0000000000000101
+> RAX: ffffffffffffffda RBX: 0000564cae660160 RCX: 00007fa17d125697
+> RDX: 0000000000080000 RSI: 00007ffeed106a28 RDI: 00000000ffffff9c
+> RBP: 00007ffeed106a28 R08: 0000000000000008 R09: 0000000000000001
+> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000080000
+> R13: 0000564cae660160 R14: 0000000000000001 R15: 0000000000000000
+>  </TASK>
+>
+> ================================
+> WARNING: inconsistent lock state
+> 5.17.0-syzkaller-13430-g787af64d05cd #0 Tainted: G        W
+> --------------------------------
+> inconsistent {SOFTIRQ-ON-W} -> {IN-SOFTIRQ-W} usage.
+> udevd/3123 [HC0[0]:SC1[1]:HE0:SE0] takes:
+> ffff8880140d2160 (&xa->xa_lock#8){+.?.}-{2:2}, at: xa_destroy+0xb3/0x360 lib/xarray.c:2207
+> {SOFTIRQ-ON-W} state was registered at:
+>   lock_acquire kernel/locking/lockdep.c:5641 [inline]
+>   lock_acquire+0x1ab/0x510 kernel/locking/lockdep.c:5606
+>   __raw_spin_lock include/linux/spinlock_api_smp.h:133 [inline]
+>   _raw_spin_lock+0x2a/0x40 kernel/locking/spinlock.c:154
+>   spin_lock include/linux/spinlock.h:349 [inline]
+>   xa_insert include/linux/xarray.h:772 [inline]
+>   blk_mq_init_hctx block/blk-mq.c:3501 [inline]
+>   blk_mq_alloc_and_init_hctx+0x52d/0x1190 block/blk-mq.c:3962
+>   blk_mq_realloc_hw_ctxs+0x43d/0x590 block/blk-mq.c:3991
+>   blk_mq_init_allocated_queue+0x457/0x13d0 block/blk-mq.c:4053
+>   blk_mq_init_queue_data block/blk-mq.c:3906 [inline]
+>   __blk_mq_alloc_disk+0xd1/0x1c0 block/blk-mq.c:3926
+>   floppy_alloc_disk+0x3d/0x390 drivers/block/floppy.c:4495
+>   do_floppy_init drivers/block/floppy.c:4576 [inline]
+>   floppy_async_init+0x316/0x21ca drivers/block/floppy.c:4746
+>   async_run_entry_fn+0x9d/0x550 kernel/async.c:127
+>   process_one_work+0x996/0x1610 kernel/workqueue.c:2289
+>   worker_thread+0x665/0x1080 kernel/workqueue.c:2436
+> softirqs last  enabled at (20583496): [<ffffffff8146ca53>] invoke_softirq kernel/softirq.c:432 [inline]
+> softirqs last  enabled at (20583496): [<ffffffff8146ca53>] __irq_exit_rcu+0x123/0x180 kernel/softirq.c:637
+> softirqs last disabled at (20587107): [<ffffffff8146ca53>] invoke_softirq kernel/softirq.c:432 [inline]
+> softirqs last disabled at (20587107): [<ffffffff8146ca53>] __irq_exit_rcu+0x123/0x180 kernel/softirq.c:637
+>
+> other info that might help us debug this:
+>  Possible unsafe locking scenario:
+>
+>        CPU0
+>        ----
+>   lock(&xa->xa_lock#8);
+>   <Interrupt>
+>
+>  *** DEADLOCK ***
+>
+>  #0: ffffffff8c592858 (tomoyo_ss){....}-{0:0}, at: tomoyo_check_open_permission+0xe8/0x380 security/tomoyo/file.c:761
+>  #2: ffffffff8bd7f3e0 (rcu_read_lock){....}-{1:2}, at: need_seqretry include/linux/seqlock.h:1158 [inline]
+>  #2: ffffffff8bd7f3e0 (rcu_read_lock){....}-{1:2}, at: prepend_path+0x25f/0xea0 fs/d_path.c:182
+>
+> stack backtrace:
+> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
+> Call Trace:
+>  <IRQ>
+>  __dump_stack lib/dump_stack.c:88 [inline]
+>  dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+>  print_usage_bug kernel/locking/lockdep.c:3935 [inline]
+>  valid_state kernel/locking/lockdep.c:3947 [inline]
+>  mark_lock_irq kernel/locking/lockdep.c:4150 [inline]
+>  mark_lock.part.0.cold+0x18/0xd8 kernel/locking/lockdep.c:4607
+>  mark_lock kernel/locking/lockdep.c:4571 [inline]
+>  mark_usage kernel/locking/lockdep.c:4502 [inline]
+>  __lock_acquire+0x11e7/0x56c0 kernel/locking/lockdep.c:4983
+>  lock_acquire kernel/locking/lockdep.c:5641 [inline]
+>  lock_acquire+0x1ab/0x510 kernel/locking/lockdep.c:5606
+>  __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
+>  _raw_spin_lock_irqsave+0x39/0x50 kernel/locking/spinlock.c:162
+>  blk_mq_release+0x2b1/0x3e0 block/blk-mq.c:3887
+>  blk_release_queue+0x15b/0x320 block/blk-sysfs.c:780
+>  blkg_free.part.0+0x112/0x1f0 block/blk-cgroup.c:86
+>  blkg_free block/blk-cgroup.c:78 [inline]
+>  __blkg_release+0x105/0x160 block/blk-cgroup.c:102
+>  rcu_do_batch kernel/rcu/tree.c:2535 [inline]
+>  rcu_core+0x7b1/0x1880 kernel/rcu/tree.c:2786
+>  __do_softirq+0x29b/0x9c2 kernel/softirq.c:558
+>  invoke_softirq kernel/softirq.c:432 [inline]
+>  __irq_exit_rcu+0x123/0x180 kernel/softirq.c:637
+>  irq_exit_rcu+0x5/0x20 kernel/softirq.c:649
+>  sysvec_apic_timer_interrupt+0x93/0xc0 arch/x86/kernel/apic/apic.c:1097
+>  </IRQ>
+>  <TASK>
+>  asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.h:645
+> RIP: 0010:preempt_count arch/x86/include/asm/preempt.h:27 [inline]
+> RIP: 0010:check_kcov_mode kernel/kcov.c:166 [inline]
+> RIP: 0010:__sanitizer_cov_trace_pc+0x0/0x60 kernel/kcov.c:200
+> Code: 48 89 ef 5d e9 f1 90 4a 00 5d be 03 00 00 00 e9 36 66 74 02 66 0f 1f 44 00 00 48 8b be a8 01 00 00 e8 b4 ff ff ff 31 c0 c3 90 <65> 8b 05 c9 a2 8a 7e 89 c1 48 8b 34 24 81 e1 00 01 00 00 65 48 8b
+> RSP: 0018:ffffc900030ff5c8 EFLAGS: 00000293
+> RAX: 0000000000000000 RBX: 0000000000000200 RCX: 0000000000000000
+> RDX: ffff888021002280 RSI: ffffffff81df460e RDI: 0000000000000003
+> RBP: ffffc900030ff6d8 R08: 0000000000000000 R09: 0000000000000001
+> R10: ffffffff81df4604 R11: 0000000000000001 R12: 0000000000000000
+> R13: ffff88801ab435d0 R14: dffffc0000000000 R15: dffffc0000000000
+>  __seqprop_spinlock_sequence include/linux/seqlock.h:277 [inline]
+>  read_seqbegin include/linux/seqlock.h:840 [inline]
+>  read_seqbegin_or_lock include/linux/seqlock.h:1144 [inline]
+>  prepend_path+0x3b4/0xea0 fs/d_path.c:170
+>  d_absolute_path+0xef/0x1a0 fs/d_path.c:233
+>  tomoyo_get_realpath security/tomoyo/file.c:151 [inline]
+>  tomoyo_check_open_permission+0x272/0x380 security/tomoyo/file.c:771
+>  tomoyo_file_open security/tomoyo/tomoyo.c:311 [inline]
+>  tomoyo_file_open+0x9d/0xc0 security/tomoyo/tomoyo.c:306
+>  do_dentry_open+0x349/0x11e0 fs/open.c:811
+>  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+>  do_syscall_64+0x35/0x80 arch/x86/entry/common.c:80
+> RIP: 0033:0x7fa17d125697
+> RSP: 002b:00007ffeed1068f0 EFLAGS: 00000246 ORIG_RAX: 0000000000000101
+> BUG: sleeping function called from invalid context at kernel/locking/mutex.c:577
+> INFO: lockdep is turned off.
+> Preemption disabled at:
+> [<ffffffff89a000e1>] softirq_handle_begin kernel/softirq.c:396 [inline]
+> [<ffffffff89a000e1>] __do_softirq+0xe1/0x9c2 kernel/softirq.c:534
+> CPU: 0 PID: 3123 Comm: udevd Tainted: G        W         5.17.0-syzkaller-13430-g787af64d05cd #0
+> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
+> Call Trace:
+>  <IRQ>
+>  __dump_stack lib/dump_stack.c:88 [inline]
+>  dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+>  __might_resched.cold+0x222/0x26b kernel/sched/core.c:9733
+>  blk_trace_shutdown+0x1d/0x100 kernel/trace/blktrace.c:773
+>  kobject_cleanup lib/kobject.c:705 [inline]
+>  kobject_release lib/kobject.c:736 [inline]
+>  kref_put include/linux/kref.h:65 [inline]
+>  kobject_put+0x1c8/0x540 lib/kobject.c:753
+>  blkg_free.part.0+0x112/0x1f0 block/blk-cgroup.c:86
+>  blkg_free block/blk-cgroup.c:78 [inline]
+>  __blkg_release+0x105/0x160 block/blk-cgroup.c:102
+>  rcu_do_batch kernel/rcu/tree.c:2535 [inline]
+>  rcu_core+0x7b1/0x1880 kernel/rcu/tree.c:2786
+>  __do_softirq+0x29b/0x9c2 kernel/softirq.c:558
+>  invoke_softirq kernel/softirq.c:432 [inline]
+>  __irq_exit_rcu+0x123/0x180 kernel/softirq.c:637
+>  irq_exit_rcu+0x5/0x20 kernel/softirq.c:649
+>  sysvec_apic_timer_interrupt+0x93/0xc0 arch/x86/kernel/apic/apic.c:1097
+>  </IRQ>
+>  <TASK>
+>  asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.h:645
+> RIP: 0010:preempt_count arch/x86/include/asm/preempt.h:27 [inline]
+> RIP: 0010:check_kcov_mode kernel/kcov.c:166 [inline]
+> RIP: 0010:__sanitizer_cov_trace_pc+0x0/0x60 kernel/kcov.c:200
+> Code: 48 89 ef 5d e9 f1 90 4a 00 5d be 03 00 00 00 e9 36 66 74 02 66 0f 1f 44 00 00 48 8b be a8 01 00 00 e8 b4 ff ff ff 31 c0 c3 90 <65> 8b 05 c9 a2 8a 7e 89 c1 48 8b 34 24 81 e1 00 01 00 00 65 48 8b
+> RSP: 0018:ffffc900030ff5c8 EFLAGS: 00000293
+> RAX: 0000000000000000 RBX: 0000000000000200 RCX: 0000000000000000
+> RDX: ffff888021002280 RSI: ffffffff81df460e RDI: 0000000000000003
+> RBP: ffffc900030ff6d8 R08: 0000000000000000 R09: 0000000000000001
+> R10: ffffffff81df4604 R11: 0000000000000001 R12: 0000000000000000
+> R13: ffff88801ab435d0 R14: dffffc0000000000 R15: dffffc0000000000
+>  __seqprop_spinlock_sequence include/linux/seqlock.h:277 [inline]
+>  read_seqbegin include/linux/seqlock.h:840 [inline]
+>  read_seqbegin_or_lock include/linux/seqlock.h:1144 [inline]
+>  prepend_path+0x3b4/0xea0 fs/d_path.c:170
+>  d_absolute_path+0xef/0x1a0 fs/d_path.c:233
+>  tomoyo_get_absolute_path security/tomoyo/realpath.c:101 [inline]
+>  tomoyo_realpath_from_path+0x288/0x620 security/tomoyo/realpath.c:276
+>  tomoyo_get_realpath security/tomoyo/file.c:151 [inline]
+>  tomoyo_check_open_permission+0x272/0x380 security/tomoyo/file.c:771
+>  tomoyo_file_open security/tomoyo/tomoyo.c:311 [inline]
+>  tomoyo_file_open+0x9d/0xc0 security/tomoyo/tomoyo.c:306
+>  security_file_open+0x45/0xb0 security/security.c:1651
+>  do_dentry_open+0x349/0x11e0 fs/open.c:811
+>  do_open fs/namei.c:3476 [inline]
+>  path_openat+0x1c71/0x2910 fs/namei.c:3609
+>  do_filp_open+0x1aa/0x400 fs/namei.c:3636
+>  do_sys_openat2+0x16d/0x4c0 fs/open.c:1213
+>  do_sys_open fs/open.c:1229 [inline]
+>  __do_sys_openat fs/open.c:1245 [inline]
+>  __se_sys_openat fs/open.c:1240 [inline]
+>  __x64_sys_openat+0x13f/0x1f0 fs/open.c:1240
+> RIP: 0033:0x7fa17d125697
+> RAX: ffffffffffffffda RBX: 0000564cae660160 RCX: 00007fa17d125697
+> R13: 0000564cae660160 R14: 0000000000000001 R15: 0000000000000000
+>  </TASK>
+> BUG: sleeping function called from invalid context at block/blk-sysfs.c:766
+> in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 0, name: swapper/0
+> preempt_count: 101, expected: 0
+> RCU nest depth: 0, expected: 0
+> INFO: lockdep is turned off.
+> Preemption disabled at:
+> [<ffffffff895f3be9>] schedule_preempt_disabled+0x19/0x20 kernel/sched/core.c:6514
+> CPU: 0 PID: 0 Comm: swapper/0 Tainted: G        W         5.17.0-syzkaller-13430-g787af64d05cd #0
+> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
+> Call Trace:
+>  <IRQ>
+>  __dump_stack lib/dump_stack.c:88 [inline]
+>  dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+>  __might_resched.cold+0x222/0x26b kernel/sched/core.c:9733
+>  blk_release_queue+0x1f/0x320 block/blk-sysfs.c:766
+>  kobject_cleanup lib/kobject.c:705 [inline]
+>  kobject_release lib/kobject.c:736 [inline]
+>  kref_put include/linux/kref.h:65 [inline]
+>  kobject_put+0x1c8/0x540 lib/kobject.c:753
+>  blkg_free.part.0+0x112/0x1f0 block/blk-cgroup.c:86
+>  blkg_free block/blk-cgroup.c:78 [inline]
+>  __blkg_release+0x105/0x160 block/blk-cgroup.c:102
+>  rcu_do_batch kernel/rcu/tree.c:2535 [inline]
+>  rcu_core+0x7b1/0x1880 kernel/rcu/tree.c:2786
+>  __do_softirq+0x29b/0x9c2 kernel/softirq.c:558
+>  invoke_softirq kernel/softirq.c:432 [inline]
+>  __irq_exit_rcu+0x123/0x180 kernel/softirq.c:637
+>  irq_exit_rcu+0x5/0x20 kernel/softirq.c:649
+>  sysvec_apic_timer_interrupt+0x93/0xc0 arch/x86/kernel/apic/apic.c:1097
+>  </IRQ>
+>  <TASK>
+>  asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.h:645
+> RIP: 0010:default_idle+0xb/0x10 arch/x86/kernel/process.c:734
+> Code: ff ff ff 48 89 df e8 d4 78 62 f8 e9 55 ff ff ff 4c 89 e7 e8 c7 78 62 f8 eb 96 0f 1f 44 00 00 eb 07 0f 00 2d d7 24 66 00 fb f4 <c3> cc cc cc cc 41 55 41 54 55 48 89 fd 53 e8 12 68 17 f8 e8 6d 1d
+> RSP: 0018:ffffffff8ba07e40 EFLAGS: 00000246
+> RAX: 00000000000ff8da RBX: ffffffff8babc700 RCX: ffffffff895d77c1
+> RDX: ffffed1005947603 RSI: 0000000000000001 RDI: ffffffff8960688f
+> RBP: 0000000000000000 R08: 0000000000000000 R09: ffff88802ca3b013
+> R10: ffffed1005947602 R11: 0000000000000000 R12: fffffbfff17578e0
+> R13: 0000000000000000 R14: ffffffff8db63990 R15: 0000000000000000
+>  default_idle_call+0x87/0xd0 kernel/sched/idle.c:109
+>  cpuidle_idle_call kernel/sched/idle.c:191 [inline]
+>  do_idle+0x401/0x590 kernel/sched/idle.c:303
+>  secondary_startup_64_no_verify+0xc3/0xcb
+> ----------------
+> Code disassembly (best guess):
+>    0:   48 89 ef                mov    %rbp,%rdi
+>    3:   5d                      pop    %rbp
+>    4:   e9 f1 90 4a 00          jmpq   0x4a90fa
+>    9:   5d                      pop    %rbp
+>    a:   be 03 00 00 00          mov    $0x3,%esi
+>    f:   e9 36 66 74 02          jmpq   0x274664a
+>   14:   66 0f 1f 44 00 00       nopw   0x0(%rax,%rax,1)
+>   1a:   48 8b be a8 01 00 00    mov    0x1a8(%rsi),%rdi
+>   21:   e8 b4 ff ff ff          callq  0xffffffda
+>   26:   31 c0                   xor    %eax,%eax
+>   28:   c3                      retq
+>   29:   90                      nop
+> * 2a:   65 8b 05 c9 a2 8a 7e    mov    %gs:0x7e8aa2c9(%rip),%eax        # 0x7e8aa2fa <-- trapping instruction
+>   31:   89 c1                   mov    %eax,%ecx
+>   33:   48 8b 34 24             mov    (%rsp),%rsi
+>   37:   81 e1 00 01 00 00       and    $0x100,%ecx
+>   3d:   65                      gs
+>   3e:   48                      rex.W
+>   3f:   8b                      .byte 0x8b
+>
+>
+> ---
+> This report is generated by a bot. It may contain errors.
+> See https://goo.gl/tpsmEJ for more information about syzbot.
+> syzbot engineers can be reached at syzkaller@googlegroups.com.
+>
+> syzbot will keep track of this issue. See:
+> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+>
+> --
+> You received this message because you are subscribed to the Google Groups "syzkaller-bugs" group.
+> To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-bugs+unsubscribe@googlegroups.com.
+> To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/000000000000adb96505db8ad847%40google.com.
