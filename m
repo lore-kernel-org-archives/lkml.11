@@ -2,182 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B692CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 21:59:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86E63C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 21:59:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353183AbiDAWBS (ORCPT
+        id S1353181AbiDAWBo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 18:01:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53330 "EHLO
+        Fri, 1 Apr 2022 18:01:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353022AbiDAWAx (ORCPT
+        with ESMTP id S1353245AbiDAWBh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 18:00:53 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 713EE1C1EF2;
-        Fri,  1 Apr 2022 14:59:01 -0700 (PDT)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 61E142224D;
-        Fri,  1 Apr 2022 23:58:59 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1648850339;
+        Fri, 1 Apr 2022 18:01:37 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1E2B81C2D92
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 14:59:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648850385;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=lXaKgxGNpuK0yYdrx+h4AvW9g4SuXjOi+hv1ZjALUpE=;
-        b=ulQqJeOZYsv6bAPWVqubJXZzXQ4y4NqiVoP4UsHY6wVZga68Bvt7r9aF48ks1z5mqfMJs7
-        2/K5jXv/+Z7ZwUfOX40jyv7dWtFfBF4B86hdSOU5XdAI4r3KaeGduuh4qP728ri/vbaU5p
-        XUK2p8JXs9ro+y9T+N6uVy5a095wAfE=
-From:   Michael Walle <michael@walle.cc>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Michael Walle <michael@walle.cc>
-Subject: [PATCH RFC net-next v2 3/3] net: phy: mscc-miim: add support to set MDIO bus frequency
-Date:   Fri,  1 Apr 2022 23:58:34 +0200
-Message-Id: <20220401215834.3757692-4-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220401215834.3757692-1-michael@walle.cc>
-References: <20220401215834.3757692-1-michael@walle.cc>
+        bh=61wW65IickgTmxTx2khZS+SxGaK0lmd6zMvqkKt3GSY=;
+        b=MCfeDySmvqGsRW/nvG942lI2Sy3bUiQrgtyqLQ8MybkLuECZot8dI3ZyBFOz0iQuqte5og
+        iNVtRgGRQhSfuSh2N1IoDQDPPap45Rg7zcn824QcP45/LBl9bSJ7mtaquqVTGU1rufHo0C
+        D5/kRO9Y63mqr3uu6KFij/MsqNMYIPs=
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
+ [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-354-s-fNCh3NO0e41loseMC_8w-1; Fri, 01 Apr 2022 17:59:43 -0400
+X-MC-Unique: s-fNCh3NO0e41loseMC_8w-1
+Received: by mail-ej1-f69.google.com with SMTP id zd21-20020a17090698d500b006df778721f7so2217404ejb.3
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 14:59:43 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=61wW65IickgTmxTx2khZS+SxGaK0lmd6zMvqkKt3GSY=;
+        b=3MLCjnw4iLhOcR7MzK+uq2dVG+cF23fRxJ1cLb5MnGk+7CO1/DxxvBnD6f+vnsKbVr
+         kLzPfHTdEA1WRyh1LvnEPjnnm9kiotvHkr61GIn+dxPWq83TUACA3VVdOwNyOFmcIsTo
+         e4LjwKkWWvrloCiNIbJ0J/Nh5LIF8S5SZcHHfCTnyzHTV/czkQHgoa4Lmp2+9zGqmYF1
+         TVzhFcrksbX4xB/j024deXoHEwck8l72kKTpIyRpbGmTY8QbVTXrCC+uKFYNo6HcUAm6
+         yFKu8G5kvG7tWQ+OSTo3TBvL70tplXtE9U1tV7M4+LZmdAXP+WgWJvVnEqvuj9d0jrxW
+         MX7g==
+X-Gm-Message-State: AOAM530VpzifIootgO8ovyirJB6vb0nlX2rTZW7+/iyXZCZ7fo3nYgo1
+        bRywqsZ1R6NS5kd/cLoOfCibWdVmgYQcc6NugKO+p7fDpt2djbrusXim0TJfteulAvIELjMplpS
+        TZU2b2QB0YTOpfK+k5rZUZpNf
+X-Received: by 2002:a05:6402:5107:b0:419:935d:bb6e with SMTP id m7-20020a056402510700b00419935dbb6emr22861738edd.242.1648850382152;
+        Fri, 01 Apr 2022 14:59:42 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxyVwN8jLrGhcGscqlNjTLvmUrq0hjTs8PZsenn7ftgxg0OLULJ9IB8wuh6jl4vWUU3f72jdw==
+X-Received: by 2002:a05:6402:5107:b0:419:935d:bb6e with SMTP id m7-20020a056402510700b00419935dbb6emr22861728edd.242.1648850381896;
+        Fri, 01 Apr 2022 14:59:41 -0700 (PDT)
+Received: from ?IPV6:2001:b07:6468:f312:e3ec:5559:7c5c:1928? ([2001:b07:6468:f312:e3ec:5559:7c5c:1928])
+        by smtp.googlemail.com with ESMTPSA id o3-20020aa7dd43000000b00419db53ae65sm1691942edw.7.2022.04.01.14.59.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 01 Apr 2022 14:59:41 -0700 (PDT)
+Message-ID: <30ffdecc-6ecd-5194-14ec-40e8b818889a@redhat.com>
+Date:   Fri, 1 Apr 2022 23:59:40 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [GIT PULL] Second batch of KVM changes for Linux 5.18
+Content-Language: en-US
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        KVM list <kvm@vger.kernel.org>
+References: <20220401153256.103938-1-pbonzini@redhat.com>
+ <CAHk-=wgSqvsP08ox-KwAU4TztVsjx07cMQni-rFEzxZQw6+iiA@mail.gmail.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <CAHk-=wgSqvsP08ox-KwAU4TztVsjx07cMQni-rFEzxZQw6+iiA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Until now, the MDIO bus will have the hardware default bus frequency.
-Read the desired frequency of the bus from the device tree and configure
-it.
+On 4/1/22 22:40, Linus Torvalds wrote:
+> I've had enough with the big random kvm pull requests.
+> 
+> NONE of this has been in linux-next before the merge window. In fact,
+> None of it was there even the first week of the merge window.
+> 
+> So by all means send me fixes.
+> 
+> But no more of this last-minute development stuff, which clearly was
+> not ready to go before the merge window started, and must have been
+> some wild last-minute merging thing.
 
-Signed-off-by: Michael Walle <michael@walle.cc>
----
- drivers/net/mdio/mdio-mscc-miim.c | 58 +++++++++++++++++++++++++++++--
- 1 file changed, 56 insertions(+), 2 deletions(-)
+tl;dr okey dokey, will resend in a few minutes.  But anyway here's a 
+description of how I do things; there's certainly a lot of variability 
+among subsystems, so perhaps it helps to share it.
 
-diff --git a/drivers/net/mdio/mdio-mscc-miim.c b/drivers/net/mdio/mdio-mscc-miim.c
-index c9efcfa2a1ce..7fd979f68dc0 100644
---- a/drivers/net/mdio/mdio-mscc-miim.c
-+++ b/drivers/net/mdio/mdio-mscc-miim.c
-@@ -7,6 +7,7 @@
-  */
- 
- #include <linux/bitops.h>
-+#include <linux/clk.h>
- #include <linux/io.h>
- #include <linux/iopoll.h>
- #include <linux/kernel.h>
-@@ -30,6 +31,8 @@
- #define		MSCC_MIIM_CMD_VLD		BIT(31)
- #define MSCC_MIIM_REG_DATA		0xC
- #define		MSCC_MIIM_DATA_ERROR		(BIT(16) | BIT(17))
-+#define MSCC_MIIM_REG_CFG		0x10
-+#define		MSCC_MIIM_CFG_PRESCALE_MASK	GENMASK(7, 0)
- 
- #define MSCC_PHY_REG_PHY_CFG	0x0
- #define		PHY_CFG_PHY_ENA		(BIT(0) | BIT(1) | BIT(2) | BIT(3))
-@@ -50,6 +53,8 @@ struct mscc_miim_dev {
- 	int mii_status_offset;
- 	struct regmap *phy_regs;
- 	const struct mscc_miim_info *info;
-+	struct clk *clk;
-+	u32 bus_freq;
- };
- 
- /* When high resolution timers aren't built-in: we can't use usleep_range() as
-@@ -242,9 +247,32 @@ int mscc_miim_setup(struct device *dev, struct mii_bus **pbus, const char *name,
- }
- EXPORT_SYMBOL(mscc_miim_setup);
- 
-+static int mscc_miim_clk_set(struct mii_bus *bus)
-+{
-+	struct mscc_miim_dev *miim = bus->priv;
-+	unsigned long rate;
-+	u32 div;
-+
-+	/* Keep the current settings */
-+	if (!miim->bus_freq)
-+		return 0;
-+
-+	rate = clk_get_rate(miim->clk);
-+
-+	div = DIV_ROUND_UP(rate, 2 * miim->bus_freq) - 1;
-+	if (div == 0 || div & ~MSCC_MIIM_CFG_PRESCALE_MASK) {
-+		dev_err(&bus->dev, "Incorrect MDIO clock frequency\n");
-+		return -EINVAL;
-+	}
-+
-+	return regmap_update_bits(miim->regs, MSCC_MIIM_REG_CFG,
-+				  MSCC_MIIM_CFG_PRESCALE_MASK, div);
-+}
-+
- static int mscc_miim_probe(struct platform_device *pdev)
- {
- 	struct regmap *mii_regmap, *phy_regmap = NULL;
-+	struct device_node *np = pdev->dev.of_node;
- 	void __iomem *regs, *phy_regs;
- 	struct mscc_miim_dev *miim;
- 	struct resource *res;
-@@ -295,21 +323,47 @@ static int mscc_miim_probe(struct platform_device *pdev)
- 	if (!miim->info)
- 		return -EINVAL;
- 
--	ret = of_mdiobus_register(bus, pdev->dev.of_node);
-+	miim->clk = devm_clk_get_optional(&pdev->dev, NULL);
-+	if (IS_ERR(miim->clk))
-+		return PTR_ERR(miim->clk);
-+
-+	of_property_read_u32(np, "clock-frequency", &miim->bus_freq);
-+
-+	if (miim->bus_freq && !miim->clk) {
-+		dev_err(&pdev->dev,
-+			"cannot use clock-frequency without a clock\n");
-+		return -EINVAL;
-+	}
-+
-+	ret = clk_prepare_enable(miim->clk);
-+	if (ret)
-+		return ret;
-+
-+	ret = mscc_miim_clk_set(bus);
-+	if (ret)
-+		goto out_disable_clk;
-+
-+	ret = of_mdiobus_register(bus, np);
- 	if (ret < 0) {
- 		dev_err(&pdev->dev, "Cannot register MDIO bus (%d)\n", ret);
--		return ret;
-+		goto out_disable_clk;
- 	}
- 
- 	platform_set_drvdata(pdev, bus);
- 
- 	return 0;
-+
-+out_disable_clk:
-+	clk_disable_unprepare(miim->clk);
-+	return ret;
- }
- 
- static int mscc_miim_remove(struct platform_device *pdev)
- {
- 	struct mii_bus *bus = platform_get_drvdata(pdev);
-+	struct mscc_miim_dev *miim = bus->priv;
- 
-+	clk_disable_unprepare(miim->clk);
- 	mdiobus_unregister(bus);
- 
- 	return 0;
--- 
-2.30.2
+All this stuff in general has been ready for a few weeks, even though it 
+was not committed to linux-next.  It was not committed because in 
+general I prioritize big merges that affect existing code, as those need 
+a lot more time in linux-next and absolutely go in the first pull 
+request.  These are the larger patch series with higher chance of 
+introducing regressions, often nondeterministic ones with little 
+possibility to bisect, and they take a lot of time for both reviewing 
+and testing.
+
+While I focus on the bigger stuff for the first pull request, others are 
+busy sending and also reviewing smaller series.  I start to grab around 
+-rc6, though this time it was a bit later due to a larger first PR and 
+due to the whole family being sick at the wrong time.  But in general, 
+things that spill into the second week of the merge window are usually:
+
+* covered very well by the testsuites (today's pull request was 30% 
+documentation and tests; those tests only cover new code and even more 
+tests exist outside the selftests framework and outside the Linux tree).
+
+* and/or only activated by userspace bits that only exist in developer 
+trees, or sometimes do not exist at all outside Amazon/Google.
+
+Very often, at the time this code is merged, there are zero chances that 
+any linux-next tester ever hits the code except via selftests or static 
+analysis; even syzkaller needs to be taught the new ioctls.
+
+This is a workflow that I've been using for a few years.  If that's not 
+okay, I can certainly stop doing that and only send one pull request.
+
+> kvm needs to make stability as a priority.
+
+We are, and this includes both selftests for new features and lots of 
+eyes looking at older code.  Some of that crappy code I can definitely 
+blame on my own inexperience or overwork; I am happy that people go 
+through it with a fine-toothed comb and I try to help as well (which 
+takes away time from development, so you could say it also helps stability).
+
+Of the stuff you see from me during -rc, merge-window bugs are 
+relatively rare and merge-window regressions even less so.  Instead 
+you'll see a lot of new selftests, fixes to old bugs, cleaning up 
+lockless code to removes nasty race conditions, etc. (one of these days 
+I want to get some numbers to see if my intuition is correct, though).
+
+Again, if you prefer this kind of work to go through the merge window 
+because it's too large for -rc, that's fine by me.  But overall, rest 
+assured that when I send things late it's not to sneak them into a 
+release; if anything, it's out of abundance of caution, and wanting to 
+keep linux-next.git and linux.git as stable and bisectable as possible.
+
+Thanks,
+
+Paolo
 
