@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3509C38A2B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12918C3526F
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:02:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350611AbiDAPAT (ORCPT
+        id S1350363AbiDAO7p (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:00:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57378 "EHLO
+        Fri, 1 Apr 2022 10:59:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348554AbiDAOne (ORCPT
+        with ESMTP id S1348239AbiDAOme (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:43:34 -0400
+        Fri, 1 Apr 2022 10:42:34 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2E142963CC;
-        Fri,  1 Apr 2022 07:34:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D70BBDB;
+        Fri,  1 Apr 2022 07:34:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AB9E5B8251E;
-        Fri,  1 Apr 2022 14:34:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E8EEC36AE7;
-        Fri,  1 Apr 2022 14:34:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5EE9DB8240E;
+        Fri,  1 Apr 2022 14:34:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D1F2C340EE;
+        Fri,  1 Apr 2022 14:34:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823691;
-        bh=DhyRSmYkqVp0mD9tp8xB/iWyiPaIGIOPXQyeKGIgjq8=;
+        s=k20201202; t=1648823650;
+        bh=Vb9jK5l2dL7OUkRHwt1xmUNIYgFrzM1D1PHHrhDfYeM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j+aJXGfaeLzP7i3hjB2g73J5bHg0MoZYqUDxiJGui7yOs/iZQmEg/v+CF5gLO6m+S
-         wv8nhy/fTTcox670OfFfwkbjeS01lIR+Zal6MDPJGhEF68pnzFn32SkyxVVddsJqyw
-         Ljv8fuQewwOzIjupUcKdC74UTpthU/J0RMmD2inn69HB1iLPabFN0J/3wtK/xSVjP2
-         5UXiBV4kzMxSJSRugD+omEceCSlEdg/fXRQ/1+wY/Eh6YLUv4XvbjMmGLA3wiMzq8A
-         DoaiapG445Bn/yB9Bo62t/Yz55KPqU9VoPXu+BfvT5klGtcMWD+yNm5hzWXHKjkiQ0
-         7cqk5d7HC1AVw==
+        b=LysxBhUmjUOJ5czfT4BtkwpKwKo47NHl6T7TBzUXY7U4giu8emfJaMMivcViHQUog
+         n5im66C5MGmXgvaofk8d7ZAtdPyRT3wLANemIP1vlFcRM4noS+XFQr9wpCWgOMkL2c
+         baeLsiRWTnvjUinUCbR8Ak4gFCQpS4GbNQ2IHr84VG9YCuuyLFNlgdKaWg+n7T2X4J
+         u9FOrYxfU+hj1EJLYUBTh6Or2CCsCFF6OoaWqjwMKbykOMehQbrz/Pw2o/Dm80xmS/
+         T9ePU4Ln7V82sAohHRZjuDg9ITmaEASlA8gOMiDn5puxdnsIdGQpHvkNNYa7VinUuF
+         yPMmwnsduAE9A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Neal Liu <neal_liu@aspeedtech.com>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, linux-usb@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 041/109] usb: ehci: add pci device support for Aspeed platforms
-Date:   Fri,  1 Apr 2022 10:31:48 -0400
-Message-Id: <20220401143256.1950537-41-sashal@kernel.org>
+Cc:     Evgeny Boger <boger@wirenboard.com>, Chen-Yu Tsai <wens@csie.org>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        Sasha Levin <sashal@kernel.org>, sre@kernel.org,
+        linux-pm@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 028/109] power: supply: axp20x_battery: properly report current when discharging
+Date:   Fri,  1 Apr 2022 10:31:35 -0400
+Message-Id: <20220401143256.1950537-28-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143256.1950537-1-sashal@kernel.org>
 References: <20220401143256.1950537-1-sashal@kernel.org>
@@ -53,50 +53,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Neal Liu <neal_liu@aspeedtech.com>
+From: Evgeny Boger <boger@wirenboard.com>
 
-[ Upstream commit c3c9cee592828528fd228b01d312c7526c584a42 ]
+[ Upstream commit d4f408cdcd26921c1268cb8dcbe8ffb6faf837f3 ]
 
-Enable Aspeed quirks in commit 7f2d73788d90 ("usb: ehci:
-handshake CMD_RUN instead of STS_HALT") to support Aspeed
-ehci-pci device.
+As stated in [1], negative current values are used for discharging
+batteries.
 
-Acked-by: Alan Stern <stern@rowland.harvard.edu>
-Signed-off-by: Neal Liu <neal_liu@aspeedtech.com>
-Link: https://lore.kernel.org/r/20220208101657.76459-1-neal_liu@aspeedtech.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+AXP PMICs internally have two different ADC channels for shunt current
+measurement: one used during charging and one during discharging.
+The values reported by these ADCs are unsigned.
+While the driver properly selects ADC channel to get the data from,
+it doesn't apply negative sign when reporting discharging current.
+
+[1] Documentation/ABI/testing/sysfs-class-power
+
+Signed-off-by: Evgeny Boger <boger@wirenboard.com>
+Acked-by: Chen-Yu Tsai <wens@csie.org>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/host/ehci-pci.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ drivers/power/supply/axp20x_battery.c | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/usb/host/ehci-pci.c b/drivers/usb/host/ehci-pci.c
-index e87cf3a00fa4..638f03b89739 100644
---- a/drivers/usb/host/ehci-pci.c
-+++ b/drivers/usb/host/ehci-pci.c
-@@ -21,6 +21,9 @@ static const char hcd_name[] = "ehci-pci";
- /* defined here to avoid adding to pci_ids.h for single instance use */
- #define PCI_DEVICE_ID_INTEL_CE4100_USB	0x2e70
+diff --git a/drivers/power/supply/axp20x_battery.c b/drivers/power/supply/axp20x_battery.c
+index 18a9db0df4b1..335e12cc5e2f 100644
+--- a/drivers/power/supply/axp20x_battery.c
++++ b/drivers/power/supply/axp20x_battery.c
+@@ -186,7 +186,6 @@ static int axp20x_battery_get_prop(struct power_supply *psy,
+ 				   union power_supply_propval *val)
+ {
+ 	struct axp20x_batt_ps *axp20x_batt = power_supply_get_drvdata(psy);
+-	struct iio_channel *chan;
+ 	int ret = 0, reg, val1;
  
-+#define PCI_VENDOR_ID_ASPEED		0x1a03
-+#define PCI_DEVICE_ID_ASPEED_EHCI	0x2603
-+
- /*-------------------------------------------------------------------------*/
- #define PCI_DEVICE_ID_INTEL_QUARK_X1000_SOC		0x0939
- static inline bool is_intel_quark_x1000(struct pci_dev *pdev)
-@@ -222,6 +225,12 @@ static int ehci_pci_setup(struct usb_hcd *hcd)
- 			ehci->has_synopsys_hc_bug = 1;
- 		}
- 		break;
-+	case PCI_VENDOR_ID_ASPEED:
-+		if (pdev->device == PCI_DEVICE_ID_ASPEED_EHCI) {
-+			ehci_info(ehci, "applying Aspeed HC workaround\n");
-+			ehci->is_aspeed = 1;
+ 	switch (psp) {
+@@ -266,12 +265,12 @@ static int axp20x_battery_get_prop(struct power_supply *psy,
+ 		if (ret)
+ 			return ret;
+ 
+-		if (reg & AXP20X_PWR_STATUS_BAT_CHARGING)
+-			chan = axp20x_batt->batt_chrg_i;
+-		else
+-			chan = axp20x_batt->batt_dischrg_i;
+-
+-		ret = iio_read_channel_processed(chan, &val->intval);
++		if (reg & AXP20X_PWR_STATUS_BAT_CHARGING) {
++			ret = iio_read_channel_processed(axp20x_batt->batt_chrg_i, &val->intval);
++		} else {
++			ret = iio_read_channel_processed(axp20x_batt->batt_dischrg_i, &val1);
++			val->intval = -val1;
 +		}
-+		break;
- 	}
+ 		if (ret)
+ 			return ret;
  
- 	/* optional debug port, normally in the first BAR */
 -- 
 2.34.1
 
