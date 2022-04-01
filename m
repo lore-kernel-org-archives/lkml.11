@@ -2,48 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40492C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:27:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1354C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:27:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350495AbiDAP2M (ORCPT
+        id S1353593AbiDAPXn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:28:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59944 "EHLO
+        Fri, 1 Apr 2022 11:23:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346908AbiDAOxd (ORCPT
+        with ESMTP id S1348869AbiDAOw7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:53:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF1FE2B51AC;
-        Fri,  1 Apr 2022 07:42:42 -0700 (PDT)
+        Fri, 1 Apr 2022 10:52:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4F922B5187;
+        Fri,  1 Apr 2022 07:42:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F140560A53;
-        Fri,  1 Apr 2022 14:42:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00E61C3410F;
-        Fri,  1 Apr 2022 14:42:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C3D1A60AC0;
+        Fri,  1 Apr 2022 14:42:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A69D4C2BBE4;
+        Fri,  1 Apr 2022 14:42:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824161;
-        bh=OZy9dv5isNlN3HZp52aRawqCq6r3c3JsOGv1dvnIUdk=;
+        s=k20201202; t=1648824147;
+        bh=QsLGF1AfyUMyqSOnet8s4XlUWwiSjJOJzE+S82WR1sM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=e+Zt4sQ6Q7GB0sP6hBWwGcmfXPfhx+cIEF+gdb4TPfjM8J0OjF+knqjLjYQsiNyVy
-         n+zlRnxLwrXASusOJBUVL+69dhsrynkVHlfLVk6T+z4s/D1Xb+cB3fxtxT+UfyqqOd
-         MQ07tcG5Kfzp7OoOlHQqPcvePKbR9v49IXFxUvk2NIEEGkGrlxaXg+qIVY2wiDiROI
-         mLVuGtDebwC8d7x+NJHrfsFzjrhvCFikkGtgNT/TpEKYasztTnElOtcU7BvETcSqP4
-         0G/jgHQ38nd1IbWKLr+ta01hI3AYUFnj01N9eDUSDBjfCG05a2sllGVtdlnzns+XLn
-         2iGFl5iwdWIKw==
+        b=Jk7buF+y2hA5sGfZ7CpoYNT8paj93IGGEhY6e9fQmL88TYjzaBPsfYl/g9W5Yn61J
+         xOk0JhKQ8AVRZA3ieKRkC3I0D3omOqZptFtfSDTp0mwQGK0Jva5WW1tCr9S2Juse/d
+         JGGzjNm+J1LGDmDBR162Kw2OfJTemUsKO0f6RNvkk4I8rA3Pv2SW8fxnMK2G6BEynF
+         ZyJMNayAT3FuvHq1kJF9JfqFZwupYlalRnbgOKnTwgUM22kK5kkxXIHq7rzf+UF6rb
+         YH69D6rCX3ZN3MXmxutiwths78pfIQnu/Fgtm+8803Ft8J6ysJYFYPkFBcGSSYgxyi
+         JeIX9GcJKeExg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jakub Sitnicki <jakub@cloudflare.com>,
-        Menglong Dong <imagedong@tencent.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, daniel@iogearbox.net,
-        andrii@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 11/65] bpf: Make dst_port field in struct bpf_sock 16-bit wide
-Date:   Fri,  1 Apr 2022 10:41:12 -0400
-Message-Id: <20220401144206.1953700-11-sashal@kernel.org>
+Cc:     Wayne Chang <waynec@nvidia.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, balbi@kernel.org,
+        thierry.reding@gmail.com, jonathanh@nvidia.com,
+        zhangqilong3@huawei.com, rikard.falkeborn@gmail.com,
+        yangyingliang@huawei.com, jakobkoschel@gmail.com,
+        chunfeng.yun@mediatek.com, linux-usb@vger.kernel.org,
+        linux-tegra@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 05/65] usb: gadget: tegra-xudc: Do not program SPARAM
+Date:   Fri,  1 Apr 2022 10:41:06 -0400
+Message-Id: <20220401144206.1953700-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401144206.1953700-1-sashal@kernel.org>
 References: <20220401144206.1953700-1-sashal@kernel.org>
@@ -55,92 +57,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakub Sitnicki <jakub@cloudflare.com>
+From: Wayne Chang <waynec@nvidia.com>
 
-[ Upstream commit 4421a582718ab81608d8486734c18083b822390d ]
+[ Upstream commit 62fb61580eb48fc890b7bc9fb5fd263367baeca8 ]
 
-Menglong Dong reports that the documentation for the dst_port field in
-struct bpf_sock is inaccurate and confusing. From the BPF program PoV, the
-field is a zero-padded 16-bit integer in network byte order. The value
-appears to the BPF user as if laid out in memory as so:
+According to the Tegra Technical Reference Manual, SPARAM
+is a read-only register and should not be programmed in
+the driver.
 
-  offsetof(struct bpf_sock, dst_port) + 0  <port MSB>
-                                      + 8  <port LSB>
-                                      +16  0x00
-                                      +24  0x00
+The change removes the wrong SPARAM usage.
 
-32-, 16-, and 8-bit wide loads from the field are all allowed, but only if
-the offset into the field is 0.
-
-32-bit wide loads from dst_port are especially confusing. The loaded value,
-after converting to host byte order with bpf_ntohl(dst_port), contains the
-port number in the upper 16-bits.
-
-Remove the confusion by splitting the field into two 16-bit fields. For
-backward compatibility, allow 32-bit wide loads from offsetof(struct
-bpf_sock, dst_port).
-
-While at it, allow loads 8-bit loads at offset [0] and [1] from dst_port.
-
-Reported-by: Menglong Dong <imagedong@tencent.com>
-Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
-Link: https://lore.kernel.org/r/20220130115518.213259-2-jakub@cloudflare.com
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Signed-off-by: Wayne Chang <waynec@nvidia.com>
+Link: https://lore.kernel.org/r/20220107090443.149021-1-waynec@nvidia.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/uapi/linux/bpf.h |  3 ++-
- net/core/filter.c        | 10 +++++++++-
- 2 files changed, 11 insertions(+), 2 deletions(-)
+ drivers/usb/gadget/udc/tegra-xudc.c | 8 --------
+ 1 file changed, 8 deletions(-)
 
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index 762bf87c26a3..e25446519bcf 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -4180,7 +4180,8 @@ struct bpf_sock {
- 	__u32 src_ip4;
- 	__u32 src_ip6[4];
- 	__u32 src_port;		/* host byte order */
--	__u32 dst_port;		/* network byte order */
-+	__be16 dst_port;	/* network byte order */
-+	__u16 :16;		/* zero padding */
- 	__u32 dst_ip4;
- 	__u32 dst_ip6[4];
- 	__u32 state;
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 659a32802471..fe5e0ec5cd3e 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -7709,6 +7709,7 @@ bool bpf_sock_is_valid_access(int off, int size, enum bpf_access_type type,
- 			      struct bpf_insn_access_aux *info)
- {
- 	const int size_default = sizeof(__u32);
-+	int field_size;
+diff --git a/drivers/usb/gadget/udc/tegra-xudc.c b/drivers/usb/gadget/udc/tegra-xudc.c
+index 57ee72fead45..1dd0d50c6b56 100644
+--- a/drivers/usb/gadget/udc/tegra-xudc.c
++++ b/drivers/usb/gadget/udc/tegra-xudc.c
+@@ -32,9 +32,6 @@
+ #include <linux/workqueue.h>
  
- 	if (off < 0 || off >= sizeof(struct bpf_sock))
- 		return false;
-@@ -7720,7 +7721,6 @@ bool bpf_sock_is_valid_access(int off, int size, enum bpf_access_type type,
- 	case offsetof(struct bpf_sock, family):
- 	case offsetof(struct bpf_sock, type):
- 	case offsetof(struct bpf_sock, protocol):
--	case offsetof(struct bpf_sock, dst_port):
- 	case offsetof(struct bpf_sock, src_port):
- 	case offsetof(struct bpf_sock, rx_queue_mapping):
- 	case bpf_ctx_range(struct bpf_sock, src_ip4):
-@@ -7729,6 +7729,14 @@ bool bpf_sock_is_valid_access(int off, int size, enum bpf_access_type type,
- 	case bpf_ctx_range_till(struct bpf_sock, dst_ip6[0], dst_ip6[3]):
- 		bpf_ctx_record_field_size(info, size_default);
- 		return bpf_ctx_narrow_access_ok(off, size, size_default);
-+	case bpf_ctx_range(struct bpf_sock, dst_port):
-+		field_size = size == size_default ?
-+			size_default : sizeof_field(struct bpf_sock, dst_port);
-+		bpf_ctx_record_field_size(info, field_size);
-+		return bpf_ctx_narrow_access_ok(off, size, field_size);
-+	case offsetofend(struct bpf_sock, dst_port) ...
-+	     offsetof(struct bpf_sock, dst_ip4) - 1:
-+		return false;
- 	}
+ /* XUSB_DEV registers */
+-#define SPARAM 0x000
+-#define  SPARAM_ERSTMAX_MASK GENMASK(20, 16)
+-#define  SPARAM_ERSTMAX(x) (((x) << 16) & SPARAM_ERSTMAX_MASK)
+ #define DB 0x004
+ #define  DB_TARGET_MASK GENMASK(15, 8)
+ #define  DB_TARGET(x) (((x) << 8) & DB_TARGET_MASK)
+@@ -3295,11 +3292,6 @@ static void tegra_xudc_init_event_ring(struct tegra_xudc *xudc)
+ 	unsigned int i;
+ 	u32 val;
  
- 	return size == size_default;
+-	val = xudc_readl(xudc, SPARAM);
+-	val &= ~(SPARAM_ERSTMAX_MASK);
+-	val |= SPARAM_ERSTMAX(XUDC_NR_EVENT_RINGS);
+-	xudc_writel(xudc, val, SPARAM);
+-
+ 	for (i = 0; i < ARRAY_SIZE(xudc->event_ring); i++) {
+ 		memset(xudc->event_ring[i], 0, XUDC_EVENT_RING_SIZE *
+ 		       sizeof(*xudc->event_ring[i]));
 -- 
 2.34.1
 
