@@ -2,48 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE420C48BCB
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB8C6C4743F
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:13:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355416AbiDAPOy (ORCPT
+        id S1355403AbiDAPOt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:14:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60392 "EHLO
+        Fri, 1 Apr 2022 11:14:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350190AbiDAOrS (ORCPT
+        with ESMTP id S1350270AbiDAOrW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:47:18 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AED92A12AF;
-        Fri,  1 Apr 2022 07:37:21 -0700 (PDT)
+        Fri, 1 Apr 2022 10:47:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 927FD2A1E9B;
+        Fri,  1 Apr 2022 07:37:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 04497CE258A;
-        Fri,  1 Apr 2022 14:37:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 396FEC340EE;
-        Fri,  1 Apr 2022 14:37:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F0B39B82511;
+        Fri,  1 Apr 2022 14:37:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2078C340F2;
+        Fri,  1 Apr 2022 14:37:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823830;
-        bh=79s09JmfnRTspuMBLjDF/9qtIeFT50RzlTzUkGad3r4=;
+        s=k20201202; t=1648823848;
+        bh=mHKZ7ckdU7TkU9H+n/vpGu0Ah9I3UG0+uNUuTBwQZLc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F1TnHsKqhX6rVSXoMWICZx9nWQLdbuN46dQp7UhA1bG02I2MyK8XsFhfUY6yVm3GF
-         RtC2Q8eCvHzq3WFCpJkFLMeh3I4Ajfoz5esej1Xbsqlq81ENSXdn7yRZ7UjywplBOH
-         EC1jJ2ChAAGA+4uInqMrFVtPYvfhQhJ4MNfHM5WDZNIh9tTvBvcFaI/DvpLwbnsui2
-         IcGvU2IvZt7NLhCJ5/MZaTfh4mmif3oyMQ+4wUoZR7OouTWyGQO8LgctgRKCJkr5AF
-         X4wMuQouk/GgTKn7N1ASe0S4jO+fk+AjRiqleAlZrRUYug0dGeQiKmp/O/7DjkxXYy
-         5MT/GTldzrstg==
+        b=JII1diyuvhjYivXhx7ID9YX4vZGs2JGv+Hnf8Mk6faARb8HOmg43oHK2haf0+URHf
+         UBnxHpsz3/leIXa7Fyiawo73+/klN8VUmSI8gAC1SLCjDXq/VQdGaao8UKYmjON2/Z
+         E9LS16LlNGHZRazgpfK6gnNkLEl1iM5Go+FINVTwHdMAFBIGpUMpBSA7gfOT4FkKuz
+         EJGefpVc4sHL398L6F2RF14NDTz3f/xGMgR/95yes6iuMDwHcXN+5DxgOB1C2GFelG
+         F6Bca2zaHxJ7eBhkel6G9eIPwgDu2CV2LhaqMawDsXneo2PQQ+kzDrvoyeQEK0hx3L
+         SuJe913gr3BvQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Gal Pressman <gal@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
-        Maxim Mikityanskiy <maximmi@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 094/109] net/mlx5e: Remove overzealous validations in netlink EEPROM query
-Date:   Fri,  1 Apr 2022 10:32:41 -0400
-Message-Id: <20220401143256.1950537-94-sashal@kernel.org>
+Cc:     Xiubo Li <xiubli@redhat.com>, Jeff Layton <jlayton@kernel.org>,
+        Ilya Dryomov <idryomov@gmail.com>,
+        Sasha Levin <sashal@kernel.org>, ceph-devel@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 105/109] ceph: fix inode reference leakage in ceph_get_snapdir()
+Date:   Fri,  1 Apr 2022 10:32:52 -0400
+Message-Id: <20220401143256.1950537-105-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143256.1950537-1-sashal@kernel.org>
 References: <20220401143256.1950537-1-sashal@kernel.org>
@@ -55,66 +52,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gal Pressman <gal@nvidia.com>
+From: Xiubo Li <xiubli@redhat.com>
 
-[ Upstream commit 970adfb76095fa719778d70a6b86030d2feb88dd ]
+[ Upstream commit 322794d3355c33adcc4feace0045d85a8e4ed813 ]
 
-Unlike the legacy EEPROM callbacks, when using the netlink EEPROM query
-(get_module_eeprom_by_page) the driver should not try to validate the
-query parameters, but just perform the read requested by the userspace.
+The ceph_get_inode() will search for or insert a new inode into the
+hash for the given vino, and return a reference to it. If new is
+non-NULL, its reference is consumed.
 
-Recent discussion in the mailing list:
-https://lore.kernel.org/netdev/20220120093051.70845141@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net/
+We should release the reference when in error handing cases.
 
-Signed-off-by: Gal Pressman <gal@nvidia.com>
-Reviewed-by: Ido Schimmel <idosch@nvidia.com>
-Reviewed-by: Maxim Mikityanskiy <maximmi@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Signed-off-by: Xiubo Li <xiubli@redhat.com>
+Reviewed-by: Jeff Layton <jlayton@kernel.org>
+Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/ethernet/mellanox/mlx5/core/port.c    | 23 -------------------
- 1 file changed, 23 deletions(-)
+ fs/ceph/inode.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/port.c b/drivers/net/ethernet/mellanox/mlx5/core/port.c
-index 7b16a1188aab..fd79860de723 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/port.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/port.c
-@@ -433,35 +433,12 @@ int mlx5_query_module_eeprom_by_page(struct mlx5_core_dev *dev,
- 				     struct mlx5_module_eeprom_query_params *params,
- 				     u8 *data)
- {
--	u8 module_id;
- 	int err;
+diff --git a/fs/ceph/inode.c b/fs/ceph/inode.c
+index e3322fcb2e8d..6d87991cf67e 100644
+--- a/fs/ceph/inode.c
++++ b/fs/ceph/inode.c
+@@ -87,13 +87,13 @@ struct inode *ceph_get_snapdir(struct inode *parent)
+ 	if (!S_ISDIR(parent->i_mode)) {
+ 		pr_warn_once("bad snapdir parent type (mode=0%o)\n",
+ 			     parent->i_mode);
+-		return ERR_PTR(-ENOTDIR);
++		goto err;
+ 	}
  
- 	err = mlx5_query_module_num(dev, &params->module_number);
- 	if (err)
- 		return err;
+ 	if (!(inode->i_state & I_NEW) && !S_ISDIR(inode->i_mode)) {
+ 		pr_warn_once("bad snapdir inode type (mode=0%o)\n",
+ 			     inode->i_mode);
+-		return ERR_PTR(-ENOTDIR);
++		goto err;
+ 	}
  
--	err = mlx5_query_module_id(dev, params->module_number, &module_id);
--	if (err)
--		return err;
--
--	switch (module_id) {
--	case MLX5_MODULE_ID_SFP:
--		if (params->page > 0)
--			return -EINVAL;
--		break;
--	case MLX5_MODULE_ID_QSFP:
--	case MLX5_MODULE_ID_QSFP28:
--	case MLX5_MODULE_ID_QSFP_PLUS:
--		if (params->page > 3)
--			return -EINVAL;
--		break;
--	case MLX5_MODULE_ID_DSFP:
--		break;
--	default:
--		mlx5_core_err(dev, "Module ID not recognized: 0x%x\n", module_id);
--		return -EINVAL;
--	}
--
- 	if (params->i2c_address != MLX5_I2C_ADDR_HIGH &&
- 	    params->i2c_address != MLX5_I2C_ADDR_LOW) {
- 		mlx5_core_err(dev, "I2C address not recognized: 0x%x\n", params->i2c_address);
+ 	inode->i_mode = parent->i_mode;
+@@ -113,6 +113,12 @@ struct inode *ceph_get_snapdir(struct inode *parent)
+ 	}
+ 
+ 	return inode;
++err:
++	if ((inode->i_state & I_NEW))
++		discard_new_inode(inode);
++	else
++		iput(inode);
++	return ERR_PTR(-ENOTDIR);
+ }
+ 
+ const struct inode_operations ceph_file_iops = {
 -- 
 2.34.1
 
