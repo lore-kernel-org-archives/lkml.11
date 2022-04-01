@@ -2,150 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57324C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75493C43217
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:44:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350030AbiDAPoK (ORCPT
+        id S1351298AbiDAPol (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:44:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55594 "EHLO
+        Fri, 1 Apr 2022 11:44:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350486AbiDAPAF (ORCPT
+        with ESMTP id S1352403AbiDAPDd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 11:00:05 -0400
+        Fri, 1 Apr 2022 11:03:33 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E3A456403;
-        Fri,  1 Apr 2022 07:47:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3182928F822;
+        Fri,  1 Apr 2022 07:51:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C86E2B8240E;
-        Fri,  1 Apr 2022 14:47:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50D70C2BBE4;
-        Fri,  1 Apr 2022 14:47:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 15C2EB82504;
+        Fri,  1 Apr 2022 14:51:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2D98C340EE;
+        Fri,  1 Apr 2022 14:50:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824430;
-        bh=omGA+X6p/RvP1OzQLPGcngunwHizySxsgWsggIAJrzc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZG+cPMtbwUJR3Lan/USecEwPay+axyATHwx19cOwTaaKKsg3eEZhihjRwgnmt7L/I
-         bNjC8y+NFYro2emtzI87almn3oQX0edwSBWoHaqB4y3z457awY4RGmf6FOlWVZZx7N
-         YJ8KF03yj1ShgqeBnY5j585sFIAZ6LmdoS92RCNBtK6HHzhovsL4jVx462/fwPjten
-         VeZSz67Fl9ITdTyrbzxjdPKj/N1J7BXieeM0W0W/hYCon0Dm+z3R3mRPJxHo/K5Or9
-         BRhm84uQVAVhWfTi1d/stGpNKpiVg03mnwSp0e5hdVGjI82GothzpLSdZJ1EUtNWw1
-         Tbt9r7Z8Z0PHQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alexander Lobakin <alobakin@pm.me>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Sasha Levin <sashal@kernel.org>, dbueso@suse.de,
-        liam.howlett@oracle.com, ldufour@linux.ibm.com,
-        ebiederm@xmission.com, f.fainelli@gmail.com,
-        linux-mips@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 22/29] MIPS: fix fortify panic when copying asm exception handlers
-Date:   Fri,  1 Apr 2022 10:46:05 -0400
-Message-Id: <20220401144612.1955177-22-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220401144612.1955177-1-sashal@kernel.org>
-References: <20220401144612.1955177-1-sashal@kernel.org>
+        s=k20201202; t=1648824660;
+        bh=gjV78sg4M+SM1WZOKlh+sYIDNQs2GbRiH0Kl00+k6sU=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=XtL/uOlm7Nc/XmvuFw9Y8MtWQjXB4YZxqS9fsjx/DLkiHyr7t611GPc4N30ZUWosI
+         IbH9H7f6G2MXdFMO7g80pNst29rq5yBE/AC+QU6eDkb6UDaFqadfzdt09ucBXG3DTr
+         mPQh/siL1bHfm+/iWaHQeBSL5b6a5msoZOxR6CA3GIVMJ9nWtd/gU2500iKjMpbyzQ
+         zc0EOfevuMQ/7n2/CxQ6Lk8feUVkwqb/n1P2iQnwSy7dT+e75xnUPhb0AywOUhBaJr
+         u4W1kOQfxdp69fWzo6QoLdcSkHodk3c4PTNnY94yW+I0TTkgkdGUlTfDbMeFTJt4Ro
+         zmIv6r7ZkLU7g==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Robert Marko <robimarko@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ath11k: select QRTR for AHB as well
+References: <20220401093554.360211-1-robimarko@gmail.com>
+Date:   Fri, 01 Apr 2022 17:50:55 +0300
+In-Reply-To: <20220401093554.360211-1-robimarko@gmail.com> (Robert Marko's
+        message of "Fri, 1 Apr 2022 11:35:54 +0200")
+Message-ID: <87ilrsuab4.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Lobakin <alobakin@pm.me>
+Robert Marko <robimarko@gmail.com> writes:
 
-[ Upstream commit d17b66417308996e7e64b270a3c7f3c1fbd4cfc8 ]
+> Currently, ath11k only selects QRTR if ath11k PCI is selected, however
+> AHB support requires QRTR, more precisely QRTR_SMD because it is using
+> QMI as well which in turn uses QRTR.
+>
+> Without QRTR_SMD AHB does not work, so select QRTR in ATH11K and then
+> select QRTR_SMD for ATH11K_AHB and QRTR_MHI for ATH11K_PCI.
+>
+> Tested-on: IPQ8074 hw2.0 AHB WLAN.HK.2.5.0.1-01208-QCAHKSWPL_SILICONZ-1
+>
+> Signed-off-by: Robert Marko <robimarko@gmail.com>
+> ---
+>  drivers/net/wireless/ath/ath11k/Kconfig | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/net/wireless/ath/ath11k/Kconfig b/drivers/net/wireless/ath/ath11k/Kconfig
+> index ad5cc6cac05b..b45baad184f6 100644
+> --- a/drivers/net/wireless/ath/ath11k/Kconfig
+> +++ b/drivers/net/wireless/ath/ath11k/Kconfig
+> @@ -5,6 +5,7 @@ config ATH11K
+>  	depends on CRYPTO_MICHAEL_MIC
+>  	select ATH_COMMON
+>  	select QCOM_QMI_HELPERS
+> +	select QRTR
+>  	help
+>  	  This module adds support for Qualcomm Technologies 802.11ax family of
+>  	  chipsets.
+> @@ -15,6 +16,7 @@ config ATH11K_AHB
+>  	tristate "Atheros ath11k AHB support"
+>  	depends on ATH11K
+>  	depends on REMOTEPROC
+> +	select QRTR_SMD
+>  	help
+>  	  This module adds support for AHB bus
+>  
+> @@ -22,7 +24,6 @@ config ATH11K_PCI
+>  	tristate "Atheros ath11k PCI support"
+>  	depends on ATH11K && PCI
+>  	select MHI_BUS
+> -	select QRTR
+>  	select QRTR_MHI
+>  	help
+>  	  This module adds support for PCIE bus
 
-With KCFLAGS="-O3", I was able to trigger a fortify-source
-memcpy() overflow panic on set_vi_srs_handler().
-Although O3 level is not supported in the mainline, under some
-conditions that may've happened with any optimization settings,
-it's just a matter of inlining luck. The panic itself is correct,
-more precisely, 50/50 false-positive and not at the same time.
-From the one side, no real overflow happens. Exception handler
-defined in asm just gets copied to some reserved places in the
-memory.
-But the reason behind is that C code refers to that exception
-handler declares it as `char`, i.e. something of 1 byte length.
-It's obvious that the asm function itself is way more than 1 byte,
-so fortify logics thought we are going to past the symbol declared.
-The standard way to refer to asm symbols from C code which is not
-supposed to be called from C is to declare them as
-`extern const u8[]`. This is fully correct from any point of view,
-as any code itself is just a bunch of bytes (including 0 as it is
-for syms like _stext/_etext/etc.), and the exact size is not known
-at the moment of compilation.
-Adjust the type of the except_vec_vi_*() and related variables.
-Make set_handler() take `const` as a second argument to avoid
-cast-away warnings and give a little more room for optimization.
+I now see a new warning:
 
-Signed-off-by: Alexander Lobakin <alobakin@pm.me>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/mips/include/asm/setup.h |  2 +-
- arch/mips/kernel/traps.c      | 22 +++++++++++-----------
- 2 files changed, 12 insertions(+), 12 deletions(-)
+WARNING: unmet direct dependencies detected for QRTR_SMD
+  Depends on [n]: NET [=y] && QRTR [=m] && (RPMSG [=n] || COMPILE_TEST [=n] && RPMSG [=n]=n)
+  Selected by [m]:
+  - ATH11K_AHB [=m] && NETDEVICES [=y] && WLAN [=y] && WLAN_VENDOR_ATH [=y] && ATH11K [=m] && REMOTEPROC [=y]
 
-diff --git a/arch/mips/include/asm/setup.h b/arch/mips/include/asm/setup.h
-index bb36a400203d..8c56b862fd9c 100644
---- a/arch/mips/include/asm/setup.h
-+++ b/arch/mips/include/asm/setup.h
-@@ -16,7 +16,7 @@ static inline void setup_8250_early_printk_port(unsigned long base,
- 	unsigned int reg_shift, unsigned int timeout) {}
- #endif
- 
--extern void set_handler(unsigned long offset, void *addr, unsigned long len);
-+void set_handler(unsigned long offset, const void *addr, unsigned long len);
- extern void set_uncached_handler(unsigned long offset, void *addr, unsigned long len);
- 
- typedef void (*vi_handler_t)(void);
-diff --git a/arch/mips/kernel/traps.c b/arch/mips/kernel/traps.c
-index b9da2cefb564..0ca4185cc5e3 100644
---- a/arch/mips/kernel/traps.c
-+++ b/arch/mips/kernel/traps.c
-@@ -1978,19 +1978,19 @@ static void *set_vi_srs_handler(int n, vi_handler_t addr, int srs)
- 		 * If no shadow set is selected then use the default handler
- 		 * that does normal register saving and standard interrupt exit
- 		 */
--		extern char except_vec_vi, except_vec_vi_lui;
--		extern char except_vec_vi_ori, except_vec_vi_end;
--		extern char rollback_except_vec_vi;
--		char *vec_start = using_rollback_handler() ?
--			&rollback_except_vec_vi : &except_vec_vi;
-+		extern const u8 except_vec_vi[], except_vec_vi_lui[];
-+		extern const u8 except_vec_vi_ori[], except_vec_vi_end[];
-+		extern const u8 rollback_except_vec_vi[];
-+		const u8 *vec_start = using_rollback_handler() ?
-+				      rollback_except_vec_vi : except_vec_vi;
- #if defined(CONFIG_CPU_MICROMIPS) || defined(CONFIG_CPU_BIG_ENDIAN)
--		const int lui_offset = &except_vec_vi_lui - vec_start + 2;
--		const int ori_offset = &except_vec_vi_ori - vec_start + 2;
-+		const int lui_offset = except_vec_vi_lui - vec_start + 2;
-+		const int ori_offset = except_vec_vi_ori - vec_start + 2;
- #else
--		const int lui_offset = &except_vec_vi_lui - vec_start;
--		const int ori_offset = &except_vec_vi_ori - vec_start;
-+		const int lui_offset = except_vec_vi_lui - vec_start;
-+		const int ori_offset = except_vec_vi_ori - vec_start;
- #endif
--		const int handler_len = &except_vec_vi_end - vec_start;
-+		const int handler_len = except_vec_vi_end - vec_start;
- 
- 		if (handler_len > VECTORSPACING) {
- 			/*
-@@ -2210,7 +2210,7 @@ void per_cpu_trap_init(bool is_boot_cpu)
- }
- 
- /* Install CPU exception handler */
--void set_handler(unsigned long offset, void *addr, unsigned long size)
-+void set_handler(unsigned long offset, const void *addr, unsigned long size)
- {
- #ifdef CONFIG_CPU_MICROMIPS
- 	memcpy((void *)(ebase + offset), ((unsigned char *)addr - 1), size);
 -- 
-2.34.1
+https://patchwork.kernel.org/project/linux-wireless/list/
 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
