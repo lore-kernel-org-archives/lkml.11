@@ -2,125 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D622CC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 06:37:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76F76C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 06:37:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245501AbiDAGi5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 02:38:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44618 "EHLO
+        id S243456AbiDAGjA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Apr 2022 02:39:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245460AbiDAGig (ORCPT
+        with ESMTP id S245462AbiDAGig (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 1 Apr 2022 02:38:36 -0400
-Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85B5718F202
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 23:36:47 -0700 (PDT)
-Received: by mail-pf1-x44a.google.com with SMTP id y26-20020aa793da000000b004fb7c6f5d10so1122853pff.1
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 23:36:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=reply-to:date:in-reply-to:message-id:mime-version:references
-         :subject:from:to:cc;
-        bh=jEiThSY5io7iqeivSdVrWS3wQB6IdCOB+6U4bME4fgY=;
-        b=sps9qGKyNmf+5b3n2bkwDIVDtx5Yq0BVKRxCnUepqnxV9GAILe7KG+LbBRCJa2lkL6
-         9w3aOe7cIwtMG+dVHztyRSADk6zzm+RzxFs2RqBUjRZFhzBcDPP+bMyJO5n+y5qQrGjG
-         QleH2pwjAoMZvRLAqoN3H2Lqqi8a1K3rFRYd4lJxspD5FIXKG6bI/t/K6jfKLoTJlvGq
-         2lEMI4HhR1zQdkFyWlulmdZ1HO2BFJAcAbDfe9C2+ey8lgx+IID3v/ZTBJFFcfQSuo+Z
-         u6pHXykmiIgt0F+X2Zfbs9HgoOsZmzPqGI+C0URmCxzcJ0IEoxuoykh5zxJgWo8xIr9e
-         1kfg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
-         :mime-version:references:subject:from:to:cc;
-        bh=jEiThSY5io7iqeivSdVrWS3wQB6IdCOB+6U4bME4fgY=;
-        b=o3k/TVAsdyW7545P0lSZSua+/IZNpWeDzZnm1s/uaXPbf48oS9ZiD+8nu/nCis6MWX
-         6DdQxK+fsWAAeB/KfaQYpq8GzpOp20KBx4Yq6f1AaYvNrLFgtRgo5GuZrI+J4yDancwM
-         dTJdHC1Q5LHV+GLhh2c44RUoiQItdL4SrdhsEvyPsXRVmH4PqCqBmqrNWpeyDQEWoVXy
-         hOl3lQ3+6/pUJ+74gutz3anMYscOtWq2Z5SBHfZfdpnQhNm+AJxJTZ7r2B8mY2hd5GvZ
-         chy4gr8/rQlt+tda3uOjAyl3rlOMVCURmDebnTiwkid915H8ZnE4Yxbh0ucgojfsgJfh
-         hogw==
-X-Gm-Message-State: AOAM532hP4zFk0FHmtJshSxrXEVnlmtBu5gKw99KTlVGvmyFqAoocZ0u
-        NM2GFa3tGOEREMcMAN2b7KOfMugu2U/g
-X-Google-Smtp-Source: ABdhPJwo9sODgkPXK77NyeA2JigKrPu7Ax7hOoyKYNGMGTjTyYZjOrtTdGXzsPU1XHtnHlWu9KuX2om/jf0v
-X-Received: from mizhang-super.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:1071])
- (user=mizhang job=sendgmr) by 2002:a05:6a00:2908:b0:4fa:9297:f631 with SMTP
- id cg8-20020a056a00290800b004fa9297f631mr42950687pfb.3.1648795007009; Thu, 31
- Mar 2022 23:36:47 -0700 (PDT)
-Reply-To: Mingwei Zhang <mizhang@google.com>
-Date:   Fri,  1 Apr 2022 06:36:33 +0000
-In-Reply-To: <20220401063636.2414200-1-mizhang@google.com>
-Message-Id: <20220401063636.2414200-4-mizhang@google.com>
-Mime-Version: 1.0
-References: <20220401063636.2414200-1-mizhang@google.com>
-X-Mailer: git-send-email 2.35.1.1094.g7c7d902a7c-goog
-Subject: [PATCH v3 3/6] KVM: x86/mmu: explicitly check nx_hugepage in disallowed_hugepage_adjust()
-From:   Mingwei Zhang <mizhang@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Mingwei Zhang <mizhang@google.com>,
-        Yosry Ahmed <yosryahmed@google.com>,
-        Ben Gardon <bgardon@google.com>,
-        David Matlack <dmatlack@google.com>,
-        Jing Zhang <jingzhangos@google.com>,
-        Peter Xu <peterx@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E77A218DAB9;
+        Thu, 31 Mar 2022 23:36:46 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7F99DB823D9;
+        Fri,  1 Apr 2022 06:36:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B43F9C2BBE4;
+        Fri,  1 Apr 2022 06:36:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1648795004;
+        bh=xBXlQCMtFbWUMpyKpU6xZl2vpjdaAwZgL0XinuyoEy4=;
+        h=From:To:Cc:Subject:Date:From;
+        b=fsLaZ2YmsTHPnn56D7sX0K6mTtxfyjaJ5nsKsjUZ3hTVr5AqxQ5m1JuXySTWhuH9m
+         UVSb8cV5CYyJdBb93xu9VPVayG+YJPcTAw/paCWFcX5Gd9xRpXXuFPI7LHn82HTr4/
+         yYEPSESyPE07Gv4AiOg4ZIY4JN3ppKbNXtcY5/14=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+Subject: [PATCH 4.14 00/27] 4.14.275-rc1 review
+Date:   Fri,  1 Apr 2022 08:36:10 +0200
+Message-Id: <20220401063624.232282121@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+MIME-Version: 1.0
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
+X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.14.275-rc1.gz
+X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+X-KernelTest-Branch: linux-4.14.y
+X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
+X-KernelTest-Version: 4.14.275-rc1
+X-KernelTest-Deadline: 2022-04-03T06:36+00:00
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Explicitly check if a NX huge page is disallowed when determining if a page
-fault needs to be forced to use a smaller sized page. KVM incorrectly
-assumes that the NX huge page mitigation is the only scenario where KVM
-will create a shadow page instead of a huge page. Any scenario that causes
-KVM to zap leaf SPTEs may result in having a SP that can be made huge
-without violating the NX huge page mitigation. E.g. disabling of dirty
-logging, zapping from mmu_notifier due to page migration, guest MTRR
-changes that affect the viability of a huge page, etc...
+This is the start of the stable review cycle for the 4.14.275 release.
+There are 27 patches in this series, all will be posted as a response
+to this one.  If anyone has any issues with these being applied, please
+let me know.
 
-Fixes: b8e8c8303ff2 ("kvm: mmu: ITLB_MULTIHIT mitigation")
+Responses should be made by Sun, 03 Apr 2022 06:36:16 +0000.
+Anything received after that time might be too late.
 
-Reviewed-by: Ben Gardon <bgardon@google.com>
-Signed-off-by: Mingwei Zhang <mizhang@google.com>
----
- arch/x86/kvm/mmu/mmu.c | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
+The whole patch series can be found in one patch at:
+	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.14.275-rc1.gz
+or in the git tree and branch at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.14.y
+and the diffstat can be found below.
 
-diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index 5cb845fae56e..033609e8b332 100644
---- a/arch/x86/kvm/mmu/mmu.c
-+++ b/arch/x86/kvm/mmu/mmu.c
-@@ -2896,6 +2896,16 @@ void disallowed_hugepage_adjust(struct kvm_page_fault *fault, u64 spte, int cur_
- 	    cur_level == fault->goal_level &&
- 	    is_shadow_present_pte(spte) &&
- 	    !is_large_pte(spte)) {
-+		struct kvm_mmu_page *sp;
-+		u64 page_mask;
-+
-+		sp = to_shadow_page(spte & PT64_BASE_ADDR_MASK);
-+
-+		/* Prevent lpage_disallowed read from moving ahead. */
-+		smp_rmb();
-+
-+		if (!sp->lpage_disallowed)
-+			return;
- 		/*
- 		 * A small SPTE exists for this pfn, but FNAME(fetch)
- 		 * and __direct_map would like to create a large PTE
-@@ -2903,8 +2913,8 @@ void disallowed_hugepage_adjust(struct kvm_page_fault *fault, u64 spte, int cur_
- 		 * patching back for them into pfn the next 9 bits of
- 		 * the address.
- 		 */
--		u64 page_mask = KVM_PAGES_PER_HPAGE(cur_level) -
--				KVM_PAGES_PER_HPAGE(cur_level - 1);
-+		page_mask = KVM_PAGES_PER_HPAGE(cur_level) -
-+			KVM_PAGES_PER_HPAGE(cur_level - 1);
- 		fault->pfn |= fault->gfn & page_mask;
- 		fault->goal_level--;
- 	}
--- 
-2.35.1.1094.g7c7d902a7c-goog
+thanks,
+
+greg k-h
+
+-------------
+Pseudo-Shortlog of commits:
+
+Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Linux 4.14.275-rc1
+
+James Morse <james.morse@arm.com>
+    arm64: Use the clearbhb instruction in mitigations
+
+James Morse <james.morse@arm.com>
+    arm64: add ID_AA64ISAR2_EL1 sys register
+
+James Morse <james.morse@arm.com>
+    KVM: arm64: Allow SMCCC_ARCH_WORKAROUND_3 to be discovered and migrated
+
+James Morse <james.morse@arm.com>
+    arm64: Mitigate spectre style branch history side channels
+
+James Morse <james.morse@arm.com>
+    KVM: arm64: Add templates for BHB mitigation sequences
+
+James Morse <james.morse@arm.com>
+    arm64: proton-pack: Report Spectre-BHB vulnerabilities as part of Spectre-v2
+
+James Morse <james.morse@arm.com>
+    arm64: Add percpu vectors for EL1
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Add macro for reading symbol addresses from the trampoline
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Add vectors that have the bhb mitigation sequences
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Add non-kpti __bp_harden_el1_vectors for mitigations
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Allow the trampoline text to occupy multiple pages
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Make the kpti trampoline's kpti sequence optional
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Move trampoline macros out of ifdef'd section
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Don't assume tramp_vectors is the start of the vectors
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Allow tramp_alias to access symbols after the 4K boundary
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Move the trampoline data page before the text page
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Free up another register on kpti's tramp_exit path
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Make the trampoline cleanup optional
+
+James Morse <james.morse@arm.com>
+    arm64: entry.S: Add ventry overflow sanity checks
+
+Anshuman Khandual <anshuman.khandual@arm.com>
+    arm64: Add Cortex-X2 CPU part definition
+
+Suzuki K Poulose <suzuki.poulose@arm.com>
+    arm64: Add Neoverse-N2, Cortex-A710 CPU part definition
+
+Rob Herring <robh@kernel.org>
+    arm64: Add part number for Arm Cortex-A77
+
+Marc Zyngier <marc.zyngier@arm.com>
+    arm64: Add part number for Neoverse N1
+
+Marc Zyngier <marc.zyngier@arm.com>
+    arm64: Make ARM64_ERRATUM_1188873 depend on COMPAT
+
+Marc Zyngier <marc.zyngier@arm.com>
+    arm64: Add silicon-errata.txt entry for ARM erratum 1188873
+
+Arnd Bergmann <arnd@arndb.de>
+    arm64: arch_timer: avoid unused function warning
+
+Marc Zyngier <marc.zyngier@arm.com>
+    arm64: arch_timer: Add workaround for ARM erratum 1188873
+
+
+-------------
+
+Diffstat:
+
+ Documentation/arm64/silicon-errata.txt |   1 +
+ Makefile                               |   4 +-
+ arch/arm/include/asm/kvm_host.h        |   6 +
+ arch/arm64/Kconfig                     |  24 ++
+ arch/arm64/include/asm/assembler.h     |  34 +++
+ arch/arm64/include/asm/cpu.h           |   1 +
+ arch/arm64/include/asm/cpucaps.h       |   4 +-
+ arch/arm64/include/asm/cpufeature.h    |  39 ++++
+ arch/arm64/include/asm/cputype.h       |  20 ++
+ arch/arm64/include/asm/fixmap.h        |   6 +-
+ arch/arm64/include/asm/kvm_host.h      |   5 +
+ arch/arm64/include/asm/kvm_mmu.h       |   2 +-
+ arch/arm64/include/asm/mmu.h           |   8 +-
+ arch/arm64/include/asm/sections.h      |   6 +
+ arch/arm64/include/asm/sysreg.h        |   5 +
+ arch/arm64/include/asm/vectors.h       |  74 ++++++
+ arch/arm64/kernel/bpi.S                |  55 +++++
+ arch/arm64/kernel/cpu_errata.c         | 395 ++++++++++++++++++++++++++++++++-
+ arch/arm64/kernel/cpufeature.c         |  21 ++
+ arch/arm64/kernel/cpuinfo.c            |   1 +
+ arch/arm64/kernel/entry.S              | 196 ++++++++++++----
+ arch/arm64/kernel/vmlinux.lds.S        |   2 +-
+ arch/arm64/kvm/hyp/hyp-entry.S         |   4 +
+ arch/arm64/kvm/hyp/switch.c            |   9 +-
+ arch/arm64/mm/mmu.c                    |  11 +-
+ drivers/clocksource/arm_arch_timer.c   |  15 ++
+ include/linux/arm-smccc.h              |   7 +
+ virt/kvm/arm/psci.c                    |  12 +
+ 28 files changed, 909 insertions(+), 58 deletions(-)
+
 
