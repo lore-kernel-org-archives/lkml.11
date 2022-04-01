@@ -2,109 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BBEBC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 07:03:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63FA6C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 07:04:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343630AbiDAHFi (ORCPT
+        id S1343646AbiDAHGS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 03:05:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57186 "EHLO
+        Fri, 1 Apr 2022 03:06:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236804AbiDAHFc (ORCPT
+        with ESMTP id S234604AbiDAHGQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 03:05:32 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9362AF;
-        Fri,  1 Apr 2022 00:03:41 -0700 (PDT)
-Received: from kwepemi500016.china.huawei.com (unknown [172.30.72.54])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KV9yW2txtzBrvc;
-        Fri,  1 Apr 2022 14:59:31 +0800 (CST)
-Received: from kwepemm600015.china.huawei.com (7.193.23.52) by
- kwepemi500016.china.huawei.com (7.221.188.220) with Microsoft SMTP Server
+        Fri, 1 Apr 2022 03:06:16 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ED0C65D29
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 00:04:27 -0700 (PDT)
+Received: from dggpeml500021.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KVB3n2CpVzdZQQ;
+        Fri,  1 Apr 2022 15:04:05 +0800 (CST)
+Received: from dggpeml500009.china.huawei.com (7.185.36.209) by
+ dggpeml500021.china.huawei.com (7.185.36.21) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Fri, 1 Apr 2022 15:03:36 +0800
-Received: from [10.174.176.52] (10.174.176.52) by
- kwepemm600015.china.huawei.com (7.193.23.52) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Fri, 1 Apr 2022 15:03:35 +0800
-Message-ID: <3381d7df-7254-e0ba-648c-6e763bda2ea4@huawei.com>
-Date:   Fri, 1 Apr 2022 15:03:34 +0800
+ 15.1.2308.21; Fri, 1 Apr 2022 15:04:25 +0800
+Received: from huawei.com (10.175.127.227) by dggpeml500009.china.huawei.com
+ (7.185.36.209) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Fri, 1 Apr
+ 2022 15:04:25 +0800
+From:   Yufen Yu <yuyufen@huawei.com>
+To:     <jaegeuk@kernel.org>, <chao@kernel.org>
+CC:     <linux-kernel@vger.kernel.org>,
+        <linux-f2fs-devel@lists.sourceforge.net>, <yuyufen@huawei.com>
+Subject: [PATCH 0/5] f2fs: try to use common fault injection framework
+Date:   Fri, 1 Apr 2022 15:19:04 +0800
+Message-ID: <20220401071909.505086-1-yuyufen@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.2.1
-Subject: Re: [PATCH -next,v2 0/3] nfs: handle writeback errors correctly
-To:     <trond.myklebust@hammerspace.com>, <anna@kernel.org>,
-        <smayhew@redhat.com>
-CC:     <linux-nfs@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <liuyongqiang13@huawei.com>, <yi.zhang@huawei.com>,
-        <zhangxiaoxu5@huawei.com>
-References: <20220401034409.256770-1-chenxiaosong2@huawei.com>
-From:   "chenxiaosong (A)" <chenxiaosong2@huawei.com>
-In-Reply-To: <20220401034409.256770-1-chenxiaosong2@huawei.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.176.52]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- kwepemm600015.china.huawei.com (7.193.23.52)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpeml500009.china.huawei.com (7.185.36.209)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-在 2022/4/1 11:44, ChenXiaoSong 写道:
-> v1:
-> cover letter: (nfs: check writeback errors correctly)
-> 
-> v2:
-> - return more nuanced writeback errors in nfs_file_write().
-> - return writeback error in close()->flush() without consumed it.
-> - fix: nfs_file_write() will always call nfs_wb_all() even if there is no
-> new writeback error.
-> 
-> 
-> ChenXiaoSong (3):
->    NFS: return more nuanced writeback errors in nfs_file_write()
->    NFS: nfs{,4}_file_flush() return correct writeback errors
->    Revert "nfs: nfs_file_write() should check for writeback errors"
-> 
->   fs/nfs/file.c     | 23 ++++++++++-------------
->   fs/nfs/nfs4file.c |  8 ++++----
->   fs/nfs/write.c    |  5 +----
->   3 files changed, 15 insertions(+), 21 deletions(-)
-> 
+Hi,
 
-It is not a good idea to modify error sequence mechanism, as the 
-`lib/errseq.c` described:
+  Kernel fault injection framework have provided a a systematic
+  way to support error injection via debugfs in the /sys/kernel/debug
+  directory.
 
-	22  * Note that there is a risk of collisions if new errors are being 
-recorded
-	23  * frequently, since we have so few bits to use as a counter. 
+  Compared to the current fault injection by mount options and sysfs,
+  fault injection framework can provide more easy used fault injection
+  control means.
 
-	24  *
-	25  * To mitigate this, one bit is used as a flag to tell whether the 
-value has
-	26  * been sampled since a new value was recorded. That allows us to 
-avoid bumping
-	27  * the counter if no one has sampled it since the last time an error was
-	28  * recorded.
+  Thus, this patchset try to use common fault injection for f2fs.
 
+Yufen Yu (5):
+  f2fs: extract f2fs root debugfs to init_f2fs_fs
+  f2fs: use common fault injection frmework
+  f2fs: replace function time_to_inject by f2fs_should_fail
+  f2fs: get rid of stale fault injection code
+  f2fs: update doc for f2fs fault injection
 
-So, if we want to report nuanced writeback error, it is better to detect 
-wb error from filemap_check_errors(), and then return 
--(file->f_mapping->wb_err & MAX_ERRNO) to userspace without consume it.
+ Documentation/filesystems/f2fs.rst | 118 ++++++++++++++++++++++-------
+ fs/f2fs/Kconfig                    |   2 +-
+ fs/f2fs/Makefile                   |   1 +
+ fs/f2fs/checkpoint.c               |   4 +-
+ fs/f2fs/data.c                     |   4 +-
+ fs/f2fs/debug.c                    |  19 +----
+ fs/f2fs/dir.c                      |   2 +-
+ fs/f2fs/f2fs.h                     |  81 ++++++++------------
+ fs/f2fs/fault_inject.c             |  67 ++++++++++++++++
+ fs/f2fs/file.c                     |   2 +-
+ fs/f2fs/gc.c                       |   2 +-
+ fs/f2fs/inode.c                    |   2 +-
+ fs/f2fs/node.c                     |   2 +-
+ fs/f2fs/segment.c                  |   4 +-
+ fs/f2fs/super.c                    |  82 ++++++--------------
+ fs/f2fs/sysfs.c                    |  23 ------
+ 16 files changed, 227 insertions(+), 188 deletions(-)
+ create mode 100644 fs/f2fs/fault_inject.c
 
-   nfs_mapping_set_error
-     mapping_set_error
-       __filemap_set_wb_err // record error sequence
-         errseq_set
-       set_bit(..., &mapping->flags) // record address_space flag
-
-   // it is not used to be reported, just used to detect
-   error = filemap_check_errors // -ENOSPC or -EIO
-     test_and_clear_bit(..., &mapping->flags) // error bit cleared
-
-   // now we try to return nuanced writeback error
-   if (error)
-   return filemap_check_wb_err(file->f_mapping, 0);
-     return -(file->f_mapping->wb_err & MAX_ERRNO)
+-- 
+2.31.1
 
