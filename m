@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C33B7C47085
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6569BC35296
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:40:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357655AbiDAPiu (ORCPT
+        id S1357469AbiDAPii (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:38:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55142 "EHLO
+        Fri, 1 Apr 2022 11:38:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350684AbiDAPAZ (ORCPT
+        with ESMTP id S1350672AbiDAPAZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 1 Apr 2022 11:00:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 986A53BA57;
-        Fri,  1 Apr 2022 07:48:59 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E80232FFC0;
+        Fri,  1 Apr 2022 07:48:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1D69AB8250F;
-        Fri,  1 Apr 2022 14:48:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFBD7C340F2;
-        Fri,  1 Apr 2022 14:48:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 82F0060C9B;
+        Fri,  1 Apr 2022 14:48:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A551C2BBE4;
+        Fri,  1 Apr 2022 14:48:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824536;
-        bh=u9t8ec+R60dscpY1RNsPdumAnADN3VqVPPwLgkkCueM=;
+        s=k20201202; t=1648824523;
+        bh=VOQJl+M10hiXQCzmqGdvprLeFI05sGhBpUkds2yTKOc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JVPm/6sUa7GjE6c6fGNUy5s/ficJVCVq6OI06q9wZwq4MUeE/MiHKtayaq2HwVs8P
-         6eYBtewa6xDylp2Q2XLvkCo0JUGYPrG6kcErfoI/3BFqy3wAa600QQyyLFh0wAsCAS
-         Lk29yFOM+SWCfK7Aztmg83rTVkxzr5JsJn/4S/B0g6I5TxsJ2uE7xkLu+jR2b0P81w
-         zKjuL+VgfRZ8/TVGlDLgyIP5jiKwj0L5GGnbDQ72zNv3v70QTtkYGD9sdBr722H0xU
-         j8ZRYAU7hjpuvBZNuHU7MKMQkv3v2dDPVvM9NeyLwPbAarxMgajvG4cHX/oycbeGqF
-         lN0BmxUwwc3WA==
+        b=T0XfFtO7Fmvy2mvagSRLptfwf6QOzRYoYhVrIS1dgft2M5W4aIUrTllV3+NeFjg3Z
+         TXcsBb+31OVJo0xYNJONeqQ8iMDK5PHnURYmwvsJhAbJqEGAoNGhoKOcly9UgGJ0Cj
+         bEVZ4UJ2sGxBW9Iz3Hl26CCsPYKixl5yfN22bu0WMMizYYMRg9dThcifCWDlOSYTlo
+         hIUJOdaPKnTK/2SJXb/L8boIPIsG19TMkA51c4gb460gr2Vvx6pgIUhxOQfm6+iZSx
+         9LpeKPesyp5KYWIpXmbm+szSwR0R2BIABPsZggeBtNQmF5KlOq1kDbEtuT/yJVudWy
+         OVLzufUgta1lg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jianglei Nie <niejianglei2021@163.com>,
-        Hannes Reinecke <hare@suse.de>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, jejb@linux.ibm.com,
-        linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 12/16] scsi: libfc: Fix use after free in fc_exch_abts_resp()
-Date:   Fri,  1 Apr 2022 10:48:23 -0400
-Message-Id: <20220401144827.1955845-12-sashal@kernel.org>
+Cc:     Zhou Guanghui <zhouguanghui1@huawei.com>,
+        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        joro@8bytes.org, iommu@lists.linux-foundation.org
+Subject: [PATCH AUTOSEL 4.9 06/16] iommu/arm-smmu-v3: fix event handling soft lockup
+Date:   Fri,  1 Apr 2022 10:48:17 -0400
+Message-Id: <20220401144827.1955845-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401144827.1955845-1-sashal@kernel.org>
 References: <20220401144827.1955845-1-sashal@kernel.org>
@@ -54,37 +52,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jianglei Nie <niejianglei2021@163.com>
+From: Zhou Guanghui <zhouguanghui1@huawei.com>
 
-[ Upstream commit 271add11994ba1a334859069367e04d2be2ebdd4 ]
+[ Upstream commit 30de2b541af98179780054836b48825fcfba4408 ]
 
-fc_exch_release(ep) will decrease the ep's reference count. When the
-reference count reaches zero, it is freed. But ep is still used in the
-following code, which will lead to a use after free.
+During event processing, events are read from the event queue one
+by one until the queue is empty.If the master device continuously
+requests address access at the same time and the SMMU generates
+events, the cyclic processing of the event takes a long time and
+softlockup warnings may be reported.
 
-Return after the fc_exch_release() call to avoid use after free.
+arm-smmu-v3 arm-smmu-v3.34.auto: event 0x0a received:
+arm-smmu-v3 arm-smmu-v3.34.auto: 	0x00007f220000280a
+arm-smmu-v3 arm-smmu-v3.34.auto: 	0x000010000000007e
+arm-smmu-v3 arm-smmu-v3.34.auto: 	0x00000000034e8670
+watchdog: BUG: soft lockup - CPU#0 stuck for 22s! [irq/268-arm-smm:247]
+Call trace:
+ _dev_info+0x7c/0xa0
+ arm_smmu_evtq_thread+0x1c0/0x230
+ irq_thread_fn+0x30/0x80
+ irq_thread+0x128/0x210
+ kthread+0x134/0x138
+ ret_from_fork+0x10/0x1c
+Kernel panic - not syncing: softlockup: hung tasks
 
-Link: https://lore.kernel.org/r/20220303015115.459778-1-niejianglei2021@163.com
-Reviewed-by: Hannes Reinecke <hare@suse.de>
-Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Fix this by calling cond_resched() after the event information is
+printed.
+
+Signed-off-by: Zhou Guanghui <zhouguanghui1@huawei.com>
+Link: https://lore.kernel.org/r/20220119070754.26528-1-zhouguanghui1@huawei.com
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/libfc/fc_exch.c | 1 +
+ drivers/iommu/arm-smmu-v3.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/scsi/libfc/fc_exch.c b/drivers/scsi/libfc/fc_exch.c
-index 59fd6101f188..177e494b5e47 100644
---- a/drivers/scsi/libfc/fc_exch.c
-+++ b/drivers/scsi/libfc/fc_exch.c
-@@ -1663,6 +1663,7 @@ static void fc_exch_abts_resp(struct fc_exch *ep, struct fc_frame *fp)
- 	if (cancel_delayed_work_sync(&ep->timeout_work)) {
- 		FC_EXCH_DBG(ep, "Exchange timer canceled due to ABTS response\n");
- 		fc_exch_release(ep);	/* release from pending timer hold */
-+		return;
- 	}
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 48d382008788..db40ce599e97 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -1171,6 +1171,7 @@ static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
+ 				dev_info(smmu->dev, "\t0x%016llx\n",
+ 					 (unsigned long long)evt[i]);
  
- 	spin_lock_bh(&ep->ex_lock);
++			cond_resched();
+ 		}
+ 
+ 		/*
 -- 
 2.34.1
 
