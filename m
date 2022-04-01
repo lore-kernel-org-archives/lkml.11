@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F40F3C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 13:51:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7789FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 13:51:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346516AbiDANxD (ORCPT
+        id S1346520AbiDANxG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 09:53:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58226 "EHLO
+        Fri, 1 Apr 2022 09:53:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346492AbiDANw6 (ORCPT
+        with ESMTP id S241902AbiDANw6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 1 Apr 2022 09:52:58 -0400
 Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 426E81C6490;
-        Fri,  1 Apr 2022 06:51:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0A871C60F9;
+        Fri,  1 Apr 2022 06:51:04 -0700 (PDT)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: kholk11)
-        with ESMTPSA id 821301F41C6C
+        with ESMTPSA id C7F6E1F41ACC
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1648821065;
-        bh=4ga0haARvqzGPiyyyt4tWRKPqw/63CPmbmTUs4qGJ3U=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dhpkztki5+AjyK5hQG+xNcDGcijGvtqA5JVjwtmg8LtTtw6i/WnWsUdqDwRbhHJgF
-         upxSgAY0ngHLzGa9FTnU6VWZnRjnKIZ7MoOQ5/+dJp7evVlvRwVuTYfm4JLMAuEBAp
-         el7LarJicw6tjsmzr0vOp25tAR8VwSbLxh/a+615yI+ZBV+FWr12onZF41/lyT4RCk
-         4FiWczSy5/IuhuMWxg3KIQ2iRc22OglqkDFkxXRkzKOknq4wD83JiA1FOxKDh1O2fS
-         72F4BUfNj/2WqhNBPDoINQeJ7NAwJUET8HcuAMCvyDxw6y4MGznBFHRYMVIIsvjELv
-         TMwNBeZNYRuPQ==
+        s=mail; t=1648821063;
+        bh=sQBT1nOGAS5f3qWyG27bCf0tVzLDuIZ4Dbng+BOtF9c=;
+        h=From:To:Cc:Subject:Date:From;
+        b=MI3Oc71fKUUdQd+OT25LDfxtxevGSQwW/GJsgMRt7sulhGBXWFUvVKph0aP1ZLdCi
+         mQtsqnkHbpEEneizGW+JPkwYF5RHGebPPpDifolJ3BVgZwLFtqKc0ct6bnBRqN4Nm3
+         z5xEgpmwyL+iU/RX3ULFqpgxeRaXGnD7SjdYM3KrAsLzpQy8ocj/H+u/ZP2Cgrqu5P
+         36Xzw48F4+ayx+E03cJhJsVpnZFALeCxiUKKKL20nY8qI2kA359BZQdTWsctaQs8ql
+         WIMdfdOTK4GtYyFjgC8nxNLn0NRLj472tWwa8FNOtGlQIUspcEpWPwO00ZWHy+3EnA
+         StA2faYBr++WQ==
 From:   AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
 To:     lee.jones@linaro.org
@@ -38,61 +38,31 @@ Cc:     robh+dt@kernel.org, krzk+dt@kernel.org, arnd@arndb.de,
         kernel@collabora.com,
         AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
-Subject: [PATCH 2/2] dt-bindings: mfd: syscon: Add support for regmap fast-io
-Date:   Fri,  1 Apr 2022 15:50:48 +0200
-Message-Id: <20220401135048.23245-3-angelogioacchino.delregno@collabora.com>
+Subject: [PATCH 0/2] Allow syscon to use spinlocks with regmap fast_io
+Date:   Fri,  1 Apr 2022 15:50:46 +0200
+Message-Id: <20220401135048.23245-1-angelogioacchino.delregno@collabora.com>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220401135048.23245-1-angelogioacchino.delregno@collabora.com>
-References: <20220401135048.23245-1-angelogioacchino.delregno@collabora.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The syscon driver now enables the .fast_io regmap configuration when
-the 'fast-io' property is found in a syscon node.
+This series adds support for enabling the regmap's fast_io configuration
+option for SoCs featuring very fast MMIO operations, for which mutexes
+are introducing a lot of overhead / latency.
 
-Keeping in mind that, in regmap, fast_io is checked only if we are
-not using hardware spinlocks, allow the fast-io property only if
-there is no hwlocks reference (and vice-versa).
+This has been tested locally on some MediaTek Chromebooks (but, of course,
+that requires devicetree patches that are not included in this series).
 
-Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
+AngeloGioacchino Del Regno (2):
+  mfd: syscon: Allow using spinlocks with regmap fast_io
+  dt-bindings: mfd: syscon: Add support for regmap fast-io
+
  Documentation/devicetree/bindings/mfd/syscon.yaml | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+ drivers/mfd/syscon.c                              |  4 ++++
+ 2 files changed, 19 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/mfd/syscon.yaml b/Documentation/devicetree/bindings/mfd/syscon.yaml
-index 13baa452cc9d..85a2e83b5861 100644
---- a/Documentation/devicetree/bindings/mfd/syscon.yaml
-+++ b/Documentation/devicetree/bindings/mfd/syscon.yaml
-@@ -83,11 +83,26 @@ properties:
-     $ref: /schemas/types.yaml#/definitions/uint32
-     enum: [1, 2, 4, 8]
- 
-+  fast-io:
-+    description:
-+      Indicates that this bus has a very fast IO, for which
-+      acquiring a mutex would be significant overhead.
-+      When present, regmap will use a spinlock instead.
-+    type: boolean
-+
-   hwlocks:
-     maxItems: 1
-     description:
-       Reference to a phandle of a hardware spinlock provider node.
- 
-+if:
-+  required:
-+    - hwlocks
-+then:
-+  not:
-+    required:
-+      - fast-io
-+
- required:
-   - compatible
-   - reg
 -- 
 2.35.1
 
