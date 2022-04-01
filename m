@@ -2,122 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC29CC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 09:35:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95507C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 09:36:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344626AbiDAJhM (ORCPT
+        id S1344640AbiDAJiF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 05:37:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40706 "EHLO
+        Fri, 1 Apr 2022 05:38:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233761AbiDAJhH (ORCPT
+        with ESMTP id S1344628AbiDAJhv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 05:37:07 -0400
-Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC86C62BDF
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 02:35:17 -0700 (PDT)
-Received: by mail-lj1-x235.google.com with SMTP id bn33so3136465ljb.6
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 02:35:17 -0700 (PDT)
+        Fri, 1 Apr 2022 05:37:51 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD17E70076;
+        Fri,  1 Apr 2022 02:36:01 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id b15so2277241edn.4;
+        Fri, 01 Apr 2022 02:36:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/4FSuKnccX1iFN0uwomkiOn5u1Xbdrve2qg2JRoojKE=;
-        b=VogYOcScEozGo2HMiWfqxuG6WYR1q4RB22WpLk5JKZJ7C7863bdDZMoez1zh52xN3E
-         tQRCs5L9iLeEb3iV/aDNvioJiF6J1FXPf/1x+Jyf0ZnUG8mzmEooJR7j+y5YldogbuP+
-         5ezZ26ojecVxEvsIhBKIacbEiCW3aRA9iQwLnC0eJIRp9QpLT3gCIlLWTVPWekSneKDD
-         gETW8elTB+iNq/ztsFTbH9BsNjgxNo1YX7KDi+JnJHg6QgCVPbLGDuQJi9sf2ve2FCoA
-         TVnlbcWW+EXB4ILmmm8EcrghRQ2R5G/sodiSOxtoOtAHy5iED1RwUgHk4B4qiR9ViDYB
-         1gFw==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=8ChGEZUwxXxDaxj8jm+DIh6cj4fnGyQfICbK1J0+U1A=;
+        b=A79tAmggU6JmNIp++HoBgOXDsNrdEeRfooo06Q9jn6t8L6yNWZnqfVu1PaCIjTQoBp
+         DzwmeugkPVJRZB3qJkgXPzXTo3xHlzOKRIrBAugCtPH2OeMgiRwm5TjKvUeaoTdQ3/fW
+         SKsd6bEkme+qYIloK5jD6YrUvRkB0Znzh6P9jikVjiVPl0IC2dXD8oYs51Kdj/HOVA3l
+         WUXJYypZaYU+TL5i7lZSRGSjOjxdwARAyXfM1iOqUoNLuQFNCyHUjt8TAQAgU7z0Tn8a
+         OjZ0UwHV8RpxjHpeCh8gp7G1VNzAH8cFa5PhJJuXStogSZ5v5BBzL2PVWFyXJTNECFHr
+         W1/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/4FSuKnccX1iFN0uwomkiOn5u1Xbdrve2qg2JRoojKE=;
-        b=5haFoPkk3sPdQ9SuROzvoMKJGIvOY3cbIyg0DOLwMypWMdBV0onA/IZBorJgqcrnLW
-         0xFBvKpbPhi8O72TfcAzbUD0InWySA1vb29ttMCNjYFCv4Bm1/PPiopPM2lAjVntFaLn
-         1SCaXLwG/A6FLKrXxjUqF8B0zQzfN1KPZv4uoirLviiircLXj5CAMEGe5McxCj+b3tWF
-         J+4hL4l7a+8Y/Qy8DRh//qjUTWXc1bbDnKOfvI++gTJIWvjRrRTHDNKE34kaBjCCkyQW
-         Q75sjcXsOdUr7DtPWT6lsICL9cTj3LozpCj3Py/IKNQ5gV+IzvKLJMI2L16A5cvta0Kc
-         TBGA==
-X-Gm-Message-State: AOAM532ccsTXMbLhitWBFOm8V5S6J7/F5n9IrQUUIBHhie3MC3j5XtNO
-        aq/B0YdOqjgrn0iSBKWEea5QWjpJDfjhJeb/2lSh8w==
-X-Google-Smtp-Source: ABdhPJz6psO/sjbUT/j1r3XjHcZRBUCIC5sFVlTg1I2riC4zd4S5suzIVESlXB2FKEJIV3qX81Z8ZtW69b0xCIMwSA8=
-X-Received: by 2002:a2e:8189:0:b0:249:7d3a:ceb0 with SMTP id
- e9-20020a2e8189000000b002497d3aceb0mr12136101ljg.367.1648805715996; Fri, 01
- Apr 2022 02:35:15 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=8ChGEZUwxXxDaxj8jm+DIh6cj4fnGyQfICbK1J0+U1A=;
+        b=b+qpZEdmPFIW/JOmlyL7061oyG85WBQIAzJwSWaUmJYdkDfIn0FluzqVQoEb5nunOn
+         UaGbXe4DcfYsPnjua5qmfK8H589RKKicK+hid1kAGTSkEi/YMXeesaFnGlil6wq4gFIs
+         9FiVg5saI8P7gEvNz+v/tmmDq4GrOynhXnXVRZvq2zFUKyvADYtU1Qvev6N4QPbib+B3
+         0aIBZqS8tGrhoCb4+UP2chU5KkrGFSDOY3Pmuaieoy0AvfW7IJaipsskWtDN+L90JaF2
+         Te9G2QOYy1n7vces2SApXz3k68TuLiafp75ThLqWMLwwh4sLnJQYsmO2SXT+ZGLF9OVT
+         n4gA==
+X-Gm-Message-State: AOAM530h4N1v6EeQYDQFnwlKieRJZtTtv2k7wn46l0dVFczkGreMeL2H
+        exqiZIPWNI2fddThu4s6DcA=
+X-Google-Smtp-Source: ABdhPJzm8mxDWrntuztPp6BZheOhHfWdwWCsOOS/sgETBckm+VbxonZQWm4VIVX0DmXmctv3+WAfhg==
+X-Received: by 2002:a05:6402:2805:b0:41b:630b:de68 with SMTP id h5-20020a056402280500b0041b630bde68mr12946845ede.143.1648805760217;
+        Fri, 01 Apr 2022 02:36:00 -0700 (PDT)
+Received: from fedora.robimarko.hr ([88.207.4.27])
+        by smtp.googlemail.com with ESMTPSA id v17-20020a17090651d100b006dfa26428bcsm831460ejk.108.2022.04.01.02.35.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 01 Apr 2022 02:35:59 -0700 (PDT)
+From:   Robert Marko <robimarko@gmail.com>
+To:     kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, ath11k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Robert Marko <robimarko@gmail.com>
+Subject: [PATCH] ath11k: select QRTR for AHB as well
+Date:   Fri,  1 Apr 2022 11:35:54 +0200
+Message-Id: <20220401093554.360211-1-robimarko@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-References: <20220329032913.8750-1-axe.yang@mediatek.com> <20220329032913.8750-2-axe.yang@mediatek.com>
- <CAPDyKFqoTN1pF-L6qCHxpdMCmPtHP0aHHaDURN2QJsN3v+wZBw@mail.gmail.com>
-In-Reply-To: <CAPDyKFqoTN1pF-L6qCHxpdMCmPtHP0aHHaDURN2QJsN3v+wZBw@mail.gmail.com>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Fri, 1 Apr 2022 11:34:39 +0200
-Message-ID: <CAPDyKFo_PYc9ofWuXeaE86oK6FqOAnHsH-ZSG58MfNq8nEOVOw@mail.gmail.com>
-Subject: Re: [PATCH v9 1/3] dt-bindings: mmc: mtk-sd: extend interrupts and
- pinctrls properties
-To:     Axe Yang <axe.yang@mediatek.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Chaotian Jing <chaotian.jing@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Satya Tangirala <satyat@google.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Lucas Stach <dev@lynxeye.de>,
-        Eric Biggers <ebiggers@google.com>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Kiwoong Kim <kwmad.kim@samsung.com>,
-        Yue Hu <huyue2@yulong.com>, Tian Tao <tiantao6@hisilicon.com>,
-        angelogioacchino.delregno@collabora.com, linux-mmc@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 1 Apr 2022 at 11:22, Ulf Hansson <ulf.hansson@linaro.org> wrote:
->
-> On Tue, 29 Mar 2022 at 05:29, Axe Yang <axe.yang@mediatek.com> wrote:
-> >
-> > Extend interrupts and pinctrls for SDIO wakeup interrupt feature.
-> > This feature allow SDIO devices alarm asynchronous interrupt to host
-> > even when host stop providing clock to SDIO card. An extra wakeup
-> > interrupt and pinctrl states for SDIO DAT1 pin state switching are
-> > required in this scenario.
-> >
-> > Signed-off-by: Axe Yang <axe.yang@mediatek.com>
-> > ---
-> >  .../devicetree/bindings/mmc/mtk-sd.yaml         | 17 ++++++++++++++++-
-> >  1 file changed, 16 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/Documentation/devicetree/bindings/mmc/mtk-sd.yaml b/Documentation/devicetree/bindings/mmc/mtk-sd.yaml
-> > index 297ada03e3de..3872a6ce2867 100644
-> > --- a/Documentation/devicetree/bindings/mmc/mtk-sd.yaml
-> > +++ b/Documentation/devicetree/bindings/mmc/mtk-sd.yaml
-> > @@ -69,12 +69,22 @@ properties:
-> >        - const: ahb_cg
-> >
-> >    interrupts:
-> > -    maxItems: 1
-> > +    description:
-> > +      Should at least contain MSDC GIC interrupt. To support SDIO in-band wakeup, an extended
-> > +      interrupt is required and be configured as wakeup source irq.
->
-> If I understand correctly, the extended interrupt (a GPIO irq) may not
-> necessarily share the same interrupt parent as the primary device
-> interrupt.
->
-> Perhaps it's then better to extend this with "interrupts-extended"
-> instead. See Documentation/devicetree/bindings/interrupt-controller/interrupts.txt.
+Currently, ath11k only selects QRTR if ath11k PCI is selected, however
+AHB support requires QRTR, more precisely QRTR_SMD because it is using
+QMI as well which in turn uses QRTR.
 
-One more thing, looks like using the "interrupt-names" property would
-be good to use too. To easier distinguish the different irqs.
+Without QRTR_SMD AHB does not work, so select QRTR in ATH11K and then
+select QRTR_SMD for ATH11K_AHB and QRTR_MHI for ATH11K_PCI.
 
-[...]
+Tested-on: IPQ8074 hw2.0 AHB WLAN.HK.2.5.0.1-01208-QCAHKSWPL_SILICONZ-1
 
-Kind regards
-Uffe
+Signed-off-by: Robert Marko <robimarko@gmail.com>
+---
+ drivers/net/wireless/ath/ath11k/Kconfig | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/ath/ath11k/Kconfig b/drivers/net/wireless/ath/ath11k/Kconfig
+index ad5cc6cac05b..b45baad184f6 100644
+--- a/drivers/net/wireless/ath/ath11k/Kconfig
++++ b/drivers/net/wireless/ath/ath11k/Kconfig
+@@ -5,6 +5,7 @@ config ATH11K
+ 	depends on CRYPTO_MICHAEL_MIC
+ 	select ATH_COMMON
+ 	select QCOM_QMI_HELPERS
++	select QRTR
+ 	help
+ 	  This module adds support for Qualcomm Technologies 802.11ax family of
+ 	  chipsets.
+@@ -15,6 +16,7 @@ config ATH11K_AHB
+ 	tristate "Atheros ath11k AHB support"
+ 	depends on ATH11K
+ 	depends on REMOTEPROC
++	select QRTR_SMD
+ 	help
+ 	  This module adds support for AHB bus
+ 
+@@ -22,7 +24,6 @@ config ATH11K_PCI
+ 	tristate "Atheros ath11k PCI support"
+ 	depends on ATH11K && PCI
+ 	select MHI_BUS
+-	select QRTR
+ 	select QRTR_MHI
+ 	help
+ 	  This module adds support for PCIE bus
+-- 
+2.35.1
+
