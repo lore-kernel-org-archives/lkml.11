@@ -2,124 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A7FCC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 13:11:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05997C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 13:12:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346235AbiDANNc (ORCPT
+        id S1346237AbiDANO2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 09:13:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43852 "EHLO
+        Fri, 1 Apr 2022 09:14:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346351AbiDANNS (ORCPT
+        with ESMTP id S244872AbiDANOX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 09:13:18 -0400
-Received: from conssluserg-04.nifty.com (conssluserg-04.nifty.com [210.131.2.83])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15C261D66DE
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 06:11:27 -0700 (PDT)
-Received: from mail-pj1-f42.google.com (mail-pj1-f42.google.com [209.85.216.42]) (authenticated)
-        by conssluserg-04.nifty.com with ESMTP id 231DB4ub028016
-        for <linux-kernel@vger.kernel.org>; Fri, 1 Apr 2022 22:11:05 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-04.nifty.com 231DB4ub028016
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1648818665;
-        bh=/kI3lQPTgEygcI7vmBN005HvGRQcbjUBTIDFX8fCsok=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=vlVvQCkO5HP+kKJ2zs9SP8MYR167xK8MnHYtRrF8iD825i5ZfWXP5RezshrudtHAV
-         ekNu4WL0lCFYRrEgYQEJeIxhAcgstnWdT9D9JoO1wOrJuNKjkOsfXvX3+ERh+ReWR5
-         HQ6BMJ7JIXAWqsB8Yykil5Ju8sWVTrjS5e0MguhbWdw1vpXoHDwmu1P+gdVoBe5E5s
-         0KGsc1Of/ErmaSOaQXa9+bic1VtjolCwhJx7rPrHAI4Pk7TUadqCdN87UPnCV04gVq
-         p7QtxVnt43izdvv7CyDDopnwkCa2mkAlsq7wwOzgO+BjeLvZ0oQUmZtjdBYXoDiCm6
-         Lms+rHpPPX9YA==
-X-Nifty-SrcIP: [209.85.216.42]
-Received: by mail-pj1-f42.google.com with SMTP id y16so2368717pju.4
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 06:11:04 -0700 (PDT)
-X-Gm-Message-State: AOAM532TAH5Pgr0P/SI+uQ9jDItEExr0x0Rqd2JFBl1NvGlwJgLkNIZS
-        XC029v9Q46hiuuGM6dta0E0QmbIK5uDxZmyD+Ug=
-X-Google-Smtp-Source: ABdhPJxIay5Z8UU92lADQCkERH4RVzsDhwr+Hx1SjiWIoiMOqBVc5jaSrmPEqdxc4cMxCGnuhdAN/qfPy2s6hzVNF1M=
-X-Received: by 2002:a17:902:9887:b0:151:6e1c:7082 with SMTP id
- s7-20020a170902988700b001516e1c7082mr10211008plp.162.1648818664197; Fri, 01
- Apr 2022 06:11:04 -0700 (PDT)
+        Fri, 1 Apr 2022 09:14:23 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECD5A1D66DE;
+        Fri,  1 Apr 2022 06:12:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Transfer-Encoding:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
+        Sender:Reply-To:Content-ID:Content-Description;
+        bh=TpRKn7SJqJk10dOIDt+TAhE5hOf2Y79WpsicE+YX85k=; b=PHtC2Xm86gFfykvKt6TEThyM7M
+        Of9YUNDCIcLsjkG/E3JJi26aThQnEy3e2XeE1Ze1NDD5eVAK8t/lmr3JbkTS7ejKWUGrlDekcrscT
+        zxNnM8A4j6wafn7bBTbzDasdq+0Sq4n/LSwOc/lZeB7aWqsRa0wT/baok6J9nRtoIb0zWmgcosrXz
+        0LTQtqFKW1oAW4ApN1crtiuseHp/po4kZye4sHM7kI/8lkPQIVBQIwJjQMmnSp6vyDzkJ0IlanT2K
+        36IncTVI3qDFnRSjgm3ye3+xOylL8xomBBjF1Zc6VoOC16bhLYh90wsVZoJyyhqXM/kNI7Oz3IOBl
+        OIZYMNwQ==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1naH4g-003DMW-V2; Fri, 01 Apr 2022 13:12:23 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 77FFD30027B;
+        Fri,  1 Apr 2022 15:12:22 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 5C6182008B7BF; Fri,  1 Apr 2022 15:12:22 +0200 (CEST)
+Date:   Fri, 1 Apr 2022 15:12:22 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: Re: [PATCH][next] x86/mm/pgtable: Fix Wstringop-overflow warnings
+Message-ID: <Ykb6Nv80LJomLDsO@hirez.programming.kicks-ass.net>
+References: <20220401005834.GA182932@embeddedor>
 MIME-Version: 1.0
-References: <20220322173547.677760-1-nathan@kernel.org> <CAK7LNAT8TcDy=iKaWZ7_+MbT84vOVEBzHxJY8Bx54Ju5fur8-w@mail.gmail.com>
- <Yj9wyNwZWkilNbJM@dev-arch.thelio-3990X>
-In-Reply-To: <Yj9wyNwZWkilNbJM@dev-arch.thelio-3990X>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Fri, 1 Apr 2022 22:10:17 +0900
-X-Gmail-Original-Message-ID: <CAK7LNASKg87aZTTF7heXnh1sWFm9Stxsu5unRw_rSbKB=jCr9g@mail.gmail.com>
-Message-ID: <CAK7LNASKg87aZTTF7heXnh1sWFm9Stxsu5unRw_rSbKB=jCr9g@mail.gmail.com>
-Subject: Re: [PATCH] um: Fix filtering '-mno-global-merge'
-To:     Nathan Chancellor <nathan@kernel.org>
-Cc:     Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        David Gow <davidgow@google.com>, linux-um@lists.infradead.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        llvm@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220401005834.GA182932@embeddedor>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Mar 27, 2022 at 5:00 AM Nathan Chancellor <nathan@kernel.org> wrote:
->
-> On Sat, Mar 26, 2022 at 12:29:55PM +0900, Masahiro Yamada wrote:
-> > On Wed, Mar 23, 2022 at 2:39 AM Nathan Chancellor <nathan@kernel.org> wrote:
-> > >
-> > > When booting a clang compiled UML kernel, the kernel panics when trying
-> > > to run init:
-> > >
-> > >   wait_stub_done : failed to wait for SIGTRAP, pid = 651294, n = 651294, errno = 0, status = 0xb7f
-> > >   Kernel panic - not syncing: Attempted to kill init! exitcode=0x0000000b
-> > >
-> > > After the commit in Fixes, many flags from KBUILD_CFLAGS do not appear
-> > > in USER_CFLAGS, likely due to USER_CFLAGS initially being a recursive
-> > > variable ("VAR =") then being switched to a simple ("VAR :=") variable.
-> > > For example, diffing arch/x86/um/.ptrace_user.o.cmd shows flags such as
-> > > '-Os' and '-fno-delete-null-pointer-checks' getting dropped, which both
-> > > impact code generation.
-> > >
-> > > Rework the filtering to use filter-out instead of patsubst, which allows
-> > > all the patterns that USER_CFLAGS cares about to be excluded in one
-> > > command and ensures all flags from KBUILD_CFLAGS are transferred over to
-> > > USER_CFLAGS properly, which resolves the boot issue noted above.
-> > >
-> > > Fixes: 6580c5c18fb3 ("um: clang: Strip out -mno-global-merge from USER_CFLAGS")
-> > > Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-> >
-> >
-> >
-> > Can we remove -mno-global-merge entirely?
-> >
-> >
-> > 61163efae02040f66a95 was a very old commit,
-> > without enough explanation.
-> >
-> > Shall we remove  -mno-global-merge, and do compile-tests.
-> > If we are hit by problems for arm/arm64, we can re-add it.
->
-> Yes, I think that was the conversation that we had on the commit that
-> this fixes:
->
-> https://lore.kernel.org/r/YiD7R2wRxoWxtVq7@dev-arch.thelio-3990X/
->
-> I can test that on my Raspberry Pi 3 and 4 on Monday, although I would
-> like for this patch to be picked up in the meantime so that it is
-> possible to test UML on -next with clang. We can remove
-> -mno-global-merge in a follow up change, if you do not have any
-> objections?
->
-> Cheers,
-> Nathano
+On Thu, Mar 31, 2022 at 07:58:34PM -0500, Gustavo A. R. Silva wrote:
+> Fix the following -Wstringop-overflow warnings when building with GCC-11:
+> 
+> .arch/x86/mm/pgtable.c: In function ‘pgd_alloc’:
+> arch/x86/mm/pgtable.c:437:13: warning: ‘preallocate_pmds.constprop’ accessing 8 bytes in a region of size 0 [-Wstringop-overflow=]
+>   437 |         if (preallocate_pmds(mm, pmds, PREALLOCATED_PMDS) != 0)
+>       |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> arch/x86/mm/pgtable.c:437:13: note: referencing argument 2 of type ‘pmd_t **’
+> arch/x86/mm/pgtable.c:225:12: note: in a call to function ‘preallocate_pmds.constprop’
+>   225 | static int preallocate_pmds(struct mm_struct *mm, pmd_t *pmds[], int count)
+>       |            ^~~~~~~~~~~~~~~~
+> arch/x86/mm/pgtable.c:440:13: warning: ‘preallocate_pmds.constprop’ accessing 8 bytes in a region of size 0 [-Wstringop-overflow=]
+>   440 |         if (preallocate_pmds(mm, u_pmds, PREALLOCATED_USER_PMDS) != 0)
+>       |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> arch/x86/mm/pgtable.c:440:13: note: referencing argument 2 of type ‘pmd_t **’
+> arch/x86/mm/pgtable.c:225:12: note: in a call to function ‘preallocate_pmds.constprop’
+>   225 | static int preallocate_pmds(struct mm_struct *mm, pmd_t *pmds[], int count)
+>       |            ^~~~~~~~~~~~~~~~
+> arch/x86/mm/pgtable.c:462:9: warning: ‘free_pmds.constprop’ accessing 8 bytes in a region of size 0 [-Wstringop-overflow=]
+>   462 |         free_pmds(mm, u_pmds, PREALLOCATED_USER_PMDS);
+>       |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> arch/x86/mm/pgtable.c:462:9: note: referencing argument 2 of type ‘pmd_t **’
+> arch/x86/mm/pgtable.c:213:13: note: in a call to function ‘free_pmds.constprop’
+>   213 | static void free_pmds(struct mm_struct *mm, pmd_t *pmds[], int count)
+>       |             ^~~~~~~~~
+> arch/x86/mm/pgtable.c:455:9: warning: ‘pgd_prepopulate_user_pmd’ accessing 8 bytes in a region of size 0 [-Wstringop-overflow=]
+>   455 |         pgd_prepopulate_user_pmd(mm, pgd, u_pmds);
+>       |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> arch/x86/mm/pgtable.c:455:9: note: referencing argument 3 of type ‘pmd_t **’
+> arch/x86/mm/pgtable.c:320:13: note: in a call to function ‘pgd_prepopulate_user_pmd’
+>   320 | static void pgd_prepopulate_user_pmd(struct mm_struct *mm,
+>       |             ^~~~~~~~~~~~~~~~~~~~~~~~
+> arch/x86/mm/pgtable.c:464:9: warning: ‘free_pmds.constprop’ accessing 8 bytes in a region of size 0 [-Wstringop-overflow=]
+>   464 |         free_pmds(mm, pmds, PREALLOCATED_PMDS);
+>       |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> arch/x86/mm/pgtable.c:464:9: note: referencing argument 2 of type ‘pmd_t **’
+> arch/x86/mm/pgtable.c:213:13: note: in a call to function ‘free_pmds.constprop’
+>   213 | static void free_pmds(struct mm_struct *mm, pmd_t *pmds[], int count)
+>       |             ^~~~~~~~~
+> 
+> by using pointer notation instead of array notation as a workaround for
+> the above GCC warnings.
 
+'Workaround' implies the warning is on crack...
 
-This patch is unneeded now
-because I picked up the alternative:
+> This helps with the ongoing efforts to globally enable
+> -Wstringop-overflow.
 
-https://lore.kernel.org/all/CAK7LNAS6C6Uj9cCQ0o=bYF1F-EVD=VgdR8YYx-1PJc9toX_HZA@mail.gmail.com/
+which puts to question this endeavour, why are you wanting to have this
+if its crap?
 
-
-
--- 
-Best Regards
-Masahiro Yamada
