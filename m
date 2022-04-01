@@ -2,93 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7C27C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 16:47:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1A40C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 16:49:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349122AbiDAQry (ORCPT
+        id S1349589AbiDAQvD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 12:47:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33522 "EHLO
+        Fri, 1 Apr 2022 12:51:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349897AbiDAQrP (ORCPT
+        with ESMTP id S1345159AbiDAQqm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 12:47:15 -0400
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D241017DCB5
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 09:32:19 -0700 (PDT)
-Received: by mail-lf1-x12d.google.com with SMTP id h7so5933889lfl.2
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 09:32:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=jSn+1DlBmjF9liCFAObVEDkZuTzAiSQphLAr9mc3iek=;
-        b=EMrbF6/FUCzz/mA9FTkStMXcBiPNQ3kZ6MlkbNvu29QIQOMkngWpkkZSDjJgw+o1Wn
-         L39n6IqZYh2upzJE1VQ4bvuZj1k/YuRpwkL1xpensQ19FI//uyAsOog8d1vF1s+0Fy/7
-         c+Z3RRCNMyi3MKUUNQaDjDcza+QULvzb70HA4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=jSn+1DlBmjF9liCFAObVEDkZuTzAiSQphLAr9mc3iek=;
-        b=F/kH4n8DH4ZSS3UwHCRq5dbRrk5va42b8ReEFLSkSWYMB8Vx7HeZ4xCnXTSNFbK7cK
-         pDJKMUPMI/MVCU3FKKU5GdITbNiGqiB27SorGbpuPVqDIG2Kv1jkAHex8mpm+UM3FRlP
-         gX1bM+Y+WLTRy6HWG7GhtiWw6Nw6IJfXOaWfMw4fuhRE4YyNK0LGJ03+AJNUXKiOLilF
-         msxElkc8IEP12NuelYom861D65WQRsonaKrBksOYds+6Y7dY1Weze0gN8QPzXK6BleSc
-         p9M8HeHLGmatQuuM/gx0Rp43etvG4DEabpy3YG/k0mQpHo8qepqR6tJsf1wOazrEjyiJ
-         V7UQ==
-X-Gm-Message-State: AOAM530DoJjqjHG4DnKVAsb0dmv0HHlbvv6vIzJUWDGXQPyzMJnN56Qx
-        B+iLV3tp4pSSltbCt6p1jnFhyufg1Q+S88jiQ20=
-X-Google-Smtp-Source: ABdhPJwPkTr/iXa/AE5+WbA6er1ANlSWqu3PO7rplltcOi1s1fO5QjN+xf9nbC1gqKrwaIwUV5YrFw==
-X-Received: by 2002:a05:6512:1594:b0:44a:2d71:f14d with SMTP id bp20-20020a056512159400b0044a2d71f14dmr14695200lfb.446.1648830737246;
-        Fri, 01 Apr 2022 09:32:17 -0700 (PDT)
-Received: from mail-lf1-f53.google.com (mail-lf1-f53.google.com. [209.85.167.53])
-        by smtp.gmail.com with ESMTPSA id l5-20020a056512110500b0044a1061f722sm278812lfg.200.2022.04.01.09.32.15
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 01 Apr 2022 09:32:15 -0700 (PDT)
-Received: by mail-lf1-f53.google.com with SMTP id z12so5863494lfu.10
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 09:32:15 -0700 (PDT)
-X-Received: by 2002:a05:6512:3ca1:b0:44a:93f1:45cf with SMTP id
- h33-20020a0565123ca100b0044a93f145cfmr14626698lfv.542.1648830735595; Fri, 01
- Apr 2022 09:32:15 -0700 (PDT)
+        Fri, 1 Apr 2022 12:46:42 -0400
+Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1DF816C0A2
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 09:29:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
+        date:from:to:cc:subject:message-id:references:mime-version
+        :content-type:in-reply-to; s=k1; bh=ktNL83zFsqcHZQmH520XjhHZQ3xo
+        saNUtB3KzFboe7w=; b=Z5/UmC+Dx1eQX67RWkfQO7/vMBet/5A8gUjIpC0M2wtT
+        cvpen/Hf236XtVjuCiah4V1UR+JBRLFyxIgkQJK7bKhO3m0q5enTdHPtoS3WuTxm
+        N6daqHx8sL1meXnzP9m2Y5xE+dlnBZRv0quy3PEBAIPVTY8SxpqWvpPCQTJ8HTY=
+Received: (qmail 803177 invoked from network); 1 Apr 2022 18:29:43 +0200
+Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 1 Apr 2022 18:29:43 +0200
+X-UD-Smtp-Session: l3s3148p1@xUQ1SZrbeqYgAQnoAGGbAFirbAEmXd1u
+Date:   Fri, 1 Apr 2022 18:29:43 +0200
+From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
+To:     "Gabbasov, Andrew" <Andrew_Gabbasov@mentor.com>
+Cc:     "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>,
+        "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        "Surachari, Bhuvanesh" <Bhuvanesh_Surachari@mentor.com>
+Subject: Re: [PATCH v2] i2c: rcar: add SMBus block read support
+Message-ID: <Ykcod/XOYvGfUsga@ninjato>
+Mail-Followup-To: Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        "Gabbasov, Andrew" <Andrew_Gabbasov@mentor.com>,
+        "linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>,
+        "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        "Surachari, Bhuvanesh" <Bhuvanesh_Surachari@mentor.com>
+References: <20210922160649.28449-1-andrew_gabbasov@mentor.com>
+ <CAMuHMdVVDpBAQR+H1TAnpf65aVbAL0Mm0km7Z9L7+1JuF6n1gQ@mail.gmail.com>
+ <000001d7badd$a8512d30$f8f38790$@mentor.com>
+ <20211006182314.10585-1-andrew_gabbasov@mentor.com>
+ <Yg6ls0zyTDe7LQbK@kunai>
+ <0a07902900bc4ecc84bd93a6b85a2e0c@svr-ies-mbx-02.mgc.mentorg.com>
 MIME-Version: 1.0
-References: <20220401135820.1453829-1-zi.yan@sent.com> <20220401135820.1453829-2-zi.yan@sent.com>
-In-Reply-To: <20220401135820.1453829-2-zi.yan@sent.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Fri, 1 Apr 2022 09:31:59 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wjToETfvzxkz_Y=QPt0JQRHF3VZ51xjhbPNAneHFvZofw@mail.gmail.com>
-Message-ID: <CAHk-=wjToETfvzxkz_Y=QPt0JQRHF3VZ51xjhbPNAneHFvZofw@mail.gmail.com>
-Subject: Re: [PATCH 2/2] mm: wrap __find_buddy_pfn() with a necessary buddy
- page validation.
-To:     Zi Yan <ziy@nvidia.com>
-Cc:     Linux-MM <linux-mm@kvack.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        David Hildenbrand <david@redhat.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Mike Rapoport <rppt@kernel.org>,
-        Oscar Salvador <osalvador@suse.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="mF/tvCESj+ud+RK9"
+Content-Disposition: inline
+In-Reply-To: <0a07902900bc4ecc84bd93a6b85a2e0c@svr-ies-mbx-02.mgc.mentorg.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 1, 2022 at 6:58 AM Zi Yan <zi.yan@sent.com> wrote:
->
-> +extern bool find_buddy_page_pfn(struct page *page, unsigned int order,
-> +                               struct page **buddy, unsigned long *buddy_pfn);
 
-Wouldn't it make more sense to just return the 'struct page *buddy'
-here, instead of the 'bool'?
+--mF/tvCESj+ud+RK9
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-So a NULL buddy means the obvious "no buddy found".
+> >  	/* If next received data is the _LAST_, go to new phase. */
+> > -	if (priv->pos + 1 =3D=3D msg->len) {
+> > +	if (priv->pos + 1 =3D=3D msg->len && !recv_len_init) {
+>=20
+> If a message contains a single byte after the length byte,
+> when we come here after processing the length (in the same function call),
+> "pos" is 1, "len" is 2, and we indeed are going to process the last byte.
+> However, "recv_len_init" is still "true", and we skip these corresponding
+> register writes, which is probably incorrect.
+> The flag in this case should be re-set back to "false" after length
+> processing and "pos" moving, but I think the variant in my patch
 
-I dislike those "pass return value by reference" in general, and the
-above has _two_ of them.
+Confirmed. Tests fail with only one extra byte and clearing
+'recv_len_init' fixes the issue. I don't think this is the proper
+solution, though. I think it will create more readable code if we update
+the checks. So people will understand what we are aiming for. The
+current code is already implicit enough.
 
-We can get rid of at least one very obviously.
 
-           Linus
+--mF/tvCESj+ud+RK9
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmJHKHYACgkQFA3kzBSg
+KbY3RRAAjBujpOTFoM4N3pzMYiwyeRWB9MO733t7w+Ds9VMMxXdAp/nAR5zTj6NK
+CqEyWDL6Mjahp6Ajwmp1XQg+tOX7xV+Bz+4VFe0vlCFsi7t9vzEjPYnVevjP/BBq
+JH1/v/iUkJlb70M/+/7tpDkPKFcBP+fEl2mLe1aRAPCf1KOXgnsoTqYeMcZyFYor
+qCDN5Tku2N9y1zRe9x48BYZcHwzuH3FQ/lYEu/BhAsYaChHP+fnfS+Ax3zY5Sa7V
+t3XYgEi8aREHqZD5njV/YCukS75PGeu33AWlQnguBxNc/hdkt/HtqS/foqDop6Ok
+qxMh/ETZXkUoq0QJL9ChPf+8+zh+EWeuXt7EuH6XedBJYkFcr0Og9gwvKYnuFp6f
++5FMik3Xz19rsoGoVP+C+a/G6zUvCurnDFZTlBvU05JpA99gWagcHjn1jdnlYlp1
+l/6Dv/cKdER+af2Rc8Ixz3t6pJvFffOGSqKJRcaJSxWDhiT7wc3xKEbevMYv3+/f
+PMKXLkvaPihsRjvsuTMbJ9wbxU5AtYE9C/o5E+t9ZdkTgT8P9WOqMixkxorQDJmP
+tc99oRHnLyuOWo1sE+GHIIfuxdFhTLW3Df4so//r5BKcX6VqqnuJXBb7q6D1jjRh
+2J+BVpbjNSPxbnvd1g3Kz4tsFCav2VR+jotcJc38rKPoeGuS8ck=
+=20pe
+-----END PGP SIGNATURE-----
+
+--mF/tvCESj+ud+RK9--
