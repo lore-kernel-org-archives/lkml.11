@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF39EC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:37:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CDCCC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 14:37:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347402AbiDAOjD (ORCPT
+        id S1347476AbiDAOjJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 10:39:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55834 "EHLO
+        Fri, 1 Apr 2022 10:39:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348239AbiDAOdv (ORCPT
+        with ESMTP id S1348297AbiDAOdy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:33:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D40A61DEC09;
-        Fri,  1 Apr 2022 07:31:25 -0700 (PDT)
+        Fri, 1 Apr 2022 10:33:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7C021EF5FA;
+        Fri,  1 Apr 2022 07:31:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 71DB861C0C;
-        Fri,  1 Apr 2022 14:31:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBFAFC340F2;
-        Fri,  1 Apr 2022 14:31:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8717FB82500;
+        Fri,  1 Apr 2022 14:31:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 210FAC2BBE4;
+        Fri,  1 Apr 2022 14:31:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823484;
-        bh=nb1BfveGHdAFBMBASJ1bcZjrexzu4aBwmM6gxjQV74k=;
+        s=k20201202; t=1648823505;
+        bh=Cd4woDbGU4a/oXWtqVnq8tGqZFrCP9Dc50bC46alTX8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=maYx76lwmgl+mjdSh1WCoyeFAuPr7hb1dTq6bFFITgZsF57XcN5XTt44IQLgUtYjp
-         ODJWxeqRF36H72FkNjJ8uRdEMH7cxvv9wurOM70Q6IkpMnBxtb+INTEKVrB6fLPbl0
-         R+5JKPwUVdxvpSwFyMGDBZNS8yIvihyi3avv+WvhPpVEDIHGeB5LiuKkXcP7mkE8Z/
-         X88U26co5a75vGVD6od/KhDpNuycBqQDBkvFneK/TBP7hntH0f3dPO4OweVwBNvMn8
-         3uqNYc/MCaT4Bv9Na7N0ZhT9CqTB3ZYxisFAqn3sn7DENo1f1tPBzmRUFPOKRZOd7E
-         61UiykL6iBOfQ==
+        b=Qghwz2T9U/XHDm73+4BKFGf+vn7wtOKihBoh9cAYkNnej+bFdKezSE3al9wJ9N2vA
+         cSTph/q5YP+MM4pBz9HYiSWuGM++Tq90yY2WAQ4Z73sW9f9FmeX5taOnZOeQNvogrB
+         fKEswsYgWZ0gr2UC5fEToWYzRl8f6nAe5EL33j1o2/U6+7j/6WSMsCz9VfLkNfZRPy
+         i4tSn0liGtJPmKO5lGyudQMHU/5BXvhOyRj0qwL8Hmgeq+4tdEzdjs/Usso5MAHPY4
+         LZhXXFcyWg2np2NyG4kGjHeceJcJOaDt2ZGd/qxrvBxX3Iv9c5DIJ7/6WzpIvpZnfA
+         zrWnuP4jWn5+A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mark Pearson <markpearson@lenovo.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, hmh@hmh.eng.br,
-        markgross@kernel.org, ibm-acpi-devel@lists.sourceforge.net,
-        platform-driver-x86@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 113/149] platform/x86: thinkpad_acpi: Add dual fan probe
-Date:   Fri,  1 Apr 2022 10:25:00 -0400
-Message-Id: <20220401142536.1948161-113-sashal@kernel.org>
+Cc:     Alexander Lobakin <alobakin@pm.me>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Sasha Levin <sashal@kernel.org>, david@redhat.com,
+        f.fainelli@gmail.com, ebiederm@xmission.com,
+        liam.howlett@oracle.com, linux-mips@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 121/149] MIPS: fix fortify panic when copying asm exception handlers
+Date:   Fri,  1 Apr 2022 10:25:08 -0400
+Message-Id: <20220401142536.1948161-121-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401142536.1948161-1-sashal@kernel.org>
 References: <20220401142536.1948161-1-sashal@kernel.org>
@@ -54,79 +54,97 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Pearson <markpearson@lenovo.com>
+From: Alexander Lobakin <alobakin@pm.me>
 
-[ Upstream commit bf779aaf56ea23864e39e9862b3b3a8436236e07 ]
+[ Upstream commit d17b66417308996e7e64b270a3c7f3c1fbd4cfc8 ]
 
-Instead of having quirks for systems that have a second fan it would
-be nice to detect this setup.
-Unfortunately, confirmed by the Lenovo FW team, there is no way to
-retrieve this information from the EC or BIOS. Recommendation was to
-attempt to read the fan and if successful then assume a 2nd fan is
-present.
+With KCFLAGS="-O3", I was able to trigger a fortify-source
+memcpy() overflow panic on set_vi_srs_handler().
+Although O3 level is not supported in the mainline, under some
+conditions that may've happened with any optimization settings,
+it's just a matter of inlining luck. The panic itself is correct,
+more precisely, 50/50 false-positive and not at the same time.
+From the one side, no real overflow happens. Exception handler
+defined in asm just gets copied to some reserved places in the
+memory.
+But the reason behind is that C code refers to that exception
+handler declares it as `char`, i.e. something of 1 byte length.
+It's obvious that the asm function itself is way more than 1 byte,
+so fortify logics thought we are going to past the symbol declared.
+The standard way to refer to asm symbols from C code which is not
+supposed to be called from C is to declare them as
+`extern const u8[]`. This is fully correct from any point of view,
+as any code itself is just a bunch of bytes (including 0 as it is
+for syms like _stext/_etext/etc.), and the exact size is not known
+at the moment of compilation.
+Adjust the type of the except_vec_vi_*() and related variables.
+Make set_handler() take `const` as a second argument to avoid
+cast-away warnings and give a little more room for optimization.
 
-The fans are also supposed to spin up on boot for some time, so in
-theory we could check for a speed > 0. In testing this seems to hold
-true but as I couldn't test on all platforms I've avoided implementing
-this. It also breaks for the corner case where you load the module
-once the fans are idle.
-
-Tested on P1G4, P1G3, X1C9 and T14 (no fans) and it works correctly.
-For the platforms with dual fans where it was confirmed to work I have
-removed the quirks. Potentially this could be done for all platforms
-but I've left untested platforms in for now. On these platforms the
-fans will be enabled and then detected - so no impact.
-
-Signed-off-by: Mark Pearson <markpearson@lenovo.com>
-Link: https://lore.kernel.org/r/20220222185137.4325-1-markpearson@lenovo.com
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Alexander Lobakin <alobakin@pm.me>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/platform/x86/thinkpad_acpi.c | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+ arch/mips/include/asm/setup.h |  2 +-
+ arch/mips/kernel/traps.c      | 22 +++++++++++-----------
+ 2 files changed, 12 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/platform/x86/thinkpad_acpi.c b/drivers/platform/x86/thinkpad_acpi.c
-index 3424b080db77..3fb8cda31eb9 100644
---- a/drivers/platform/x86/thinkpad_acpi.c
-+++ b/drivers/platform/x86/thinkpad_acpi.c
-@@ -8699,10 +8699,7 @@ static const struct tpacpi_quirk fan_quirk_table[] __initconst = {
- 	TPACPI_Q_LNV3('N', '2', 'N', TPACPI_FAN_2CTL),	/* P53 / P73 */
- 	TPACPI_Q_LNV3('N', '2', 'E', TPACPI_FAN_2CTL),	/* P1 / X1 Extreme (1st gen) */
- 	TPACPI_Q_LNV3('N', '2', 'O', TPACPI_FAN_2CTL),	/* P1 / X1 Extreme (2nd gen) */
--	TPACPI_Q_LNV3('N', '2', 'V', TPACPI_FAN_2CTL),	/* P1 / X1 Extreme (3nd gen) */
--	TPACPI_Q_LNV3('N', '4', '0', TPACPI_FAN_2CTL),	/* P1 / X1 Extreme (4nd gen) */
- 	TPACPI_Q_LNV3('N', '3', '0', TPACPI_FAN_2CTL),	/* P15 (1st gen) / P15v (1st gen) */
--	TPACPI_Q_LNV3('N', '3', '2', TPACPI_FAN_2CTL),	/* X1 Carbon (9th gen) */
- 	TPACPI_Q_LNV3('N', '3', '7', TPACPI_FAN_2CTL),  /* T15g (2nd gen) */
- 	TPACPI_Q_LNV3('N', '1', 'O', TPACPI_FAN_NOFAN),	/* X1 Tablet (2nd gen) */
- };
-@@ -8746,6 +8743,9 @@ static int __init fan_init(struct ibm_init_struct *iibm)
- 		 * ThinkPad ECs supports the fan control register */
- 		if (likely(acpi_ec_read(fan_status_offset,
- 					&fan_control_initial_status))) {
-+			int res;
-+			unsigned int speed;
-+
- 			fan_status_access_mode = TPACPI_FAN_RD_TPEC;
- 			if (quirks & TPACPI_FAN_Q1)
- 				fan_quirk1_setup();
-@@ -8758,6 +8758,15 @@ static int __init fan_init(struct ibm_init_struct *iibm)
- 				tp_features.second_fan_ctl = 1;
- 				pr_info("secondary fan control enabled\n");
- 			}
-+			/* Try and probe the 2nd fan */
-+			res = fan2_get_speed(&speed);
-+			if (res >= 0) {
-+				/* It responded - so let's assume it's there */
-+				tp_features.second_fan = 1;
-+				tp_features.second_fan_ctl = 1;
-+				pr_info("secondary fan control detected & enabled\n");
-+			}
-+
- 		} else {
- 			pr_err("ThinkPad ACPI EC access misbehaving, fan status and control unavailable\n");
- 			return -ENODEV;
+diff --git a/arch/mips/include/asm/setup.h b/arch/mips/include/asm/setup.h
+index bb36a400203d..8c56b862fd9c 100644
+--- a/arch/mips/include/asm/setup.h
++++ b/arch/mips/include/asm/setup.h
+@@ -16,7 +16,7 @@ static inline void setup_8250_early_printk_port(unsigned long base,
+ 	unsigned int reg_shift, unsigned int timeout) {}
+ #endif
+ 
+-extern void set_handler(unsigned long offset, void *addr, unsigned long len);
++void set_handler(unsigned long offset, const void *addr, unsigned long len);
+ extern void set_uncached_handler(unsigned long offset, void *addr, unsigned long len);
+ 
+ typedef void (*vi_handler_t)(void);
+diff --git a/arch/mips/kernel/traps.c b/arch/mips/kernel/traps.c
+index a486486b2355..246c6a6b0261 100644
+--- a/arch/mips/kernel/traps.c
++++ b/arch/mips/kernel/traps.c
+@@ -2091,19 +2091,19 @@ static void *set_vi_srs_handler(int n, vi_handler_t addr, int srs)
+ 		 * If no shadow set is selected then use the default handler
+ 		 * that does normal register saving and standard interrupt exit
+ 		 */
+-		extern char except_vec_vi, except_vec_vi_lui;
+-		extern char except_vec_vi_ori, except_vec_vi_end;
+-		extern char rollback_except_vec_vi;
+-		char *vec_start = using_rollback_handler() ?
+-			&rollback_except_vec_vi : &except_vec_vi;
++		extern const u8 except_vec_vi[], except_vec_vi_lui[];
++		extern const u8 except_vec_vi_ori[], except_vec_vi_end[];
++		extern const u8 rollback_except_vec_vi[];
++		const u8 *vec_start = using_rollback_handler() ?
++				      rollback_except_vec_vi : except_vec_vi;
+ #if defined(CONFIG_CPU_MICROMIPS) || defined(CONFIG_CPU_BIG_ENDIAN)
+-		const int lui_offset = &except_vec_vi_lui - vec_start + 2;
+-		const int ori_offset = &except_vec_vi_ori - vec_start + 2;
++		const int lui_offset = except_vec_vi_lui - vec_start + 2;
++		const int ori_offset = except_vec_vi_ori - vec_start + 2;
+ #else
+-		const int lui_offset = &except_vec_vi_lui - vec_start;
+-		const int ori_offset = &except_vec_vi_ori - vec_start;
++		const int lui_offset = except_vec_vi_lui - vec_start;
++		const int ori_offset = except_vec_vi_ori - vec_start;
+ #endif
+-		const int handler_len = &except_vec_vi_end - vec_start;
++		const int handler_len = except_vec_vi_end - vec_start;
+ 
+ 		if (handler_len > VECTORSPACING) {
+ 			/*
+@@ -2311,7 +2311,7 @@ void per_cpu_trap_init(bool is_boot_cpu)
+ }
+ 
+ /* Install CPU exception handler */
+-void set_handler(unsigned long offset, void *addr, unsigned long size)
++void set_handler(unsigned long offset, const void *addr, unsigned long size)
+ {
+ #ifdef CONFIG_CPU_MICROMIPS
+ 	memcpy((void *)(ebase + offset), ((unsigned char *)addr - 1), size);
 -- 
 2.34.1
 
