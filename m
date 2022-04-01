@@ -2,106 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0820C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 07:50:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BED2C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 07:53:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343995AbiDAHw2 (ORCPT
+        id S1344036AbiDAHzL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 03:52:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34462 "EHLO
+        Fri, 1 Apr 2022 03:55:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235432AbiDAHw1 (ORCPT
+        with ESMTP id S233506AbiDAHzJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 03:52:27 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44BB118DABE;
-        Fri,  1 Apr 2022 00:50:37 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id 6975B1F40FA7
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1648799436;
-        bh=GEf0nEJQNZXszGDptrQO3o7b80i82CTwEgPl8PZMhOA=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=jOwCiMnFbtrL2h5VrTaakpahFkQ9lyJBlI+5o/TInsHv9DsHVBS42/SycdxYzP8Z7
-         2rnV/9eeI3dLUgM+WIuGpo/jElJoqHM+bCHH9xZyitktLLhraAak+Hx5UbfxdzZ+2u
-         09VpPaI4M69e3oYBIfHgPPIIEbMOQt5+IyJJaGNcDFn3wLfAf3dMH0aFnpYBYFVxOb
-         TNVaUw1dyMzcLzJx8mVvm7Kc9S9OuKR7+GFBz+/B+3SrWooUnyCE3mbRjqMjctG/aW
-         fpqN9VDrR2AgU41yVkrpGsNR8Gt/DJKI2obowakUufYAB+yHvoP4mbVVmP0kA3PP7A
-         CpfJT++gxUrlg==
-Message-ID: <38c9685e-380e-87ce-4a3a-5d274c0892fa@collabora.com>
-Date:   Fri, 1 Apr 2022 09:50:33 +0200
+        Fri, 1 Apr 2022 03:55:09 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18EC3140C7
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 00:53:18 -0700 (PDT)
+Received: from mail-wr1-f54.google.com ([209.85.221.54]) by
+ mrelayeu.kundenserver.de (mreue010 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1M5Q2f-1nZMc41MiD-001U4k for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022
+ 09:53:17 +0200
+Received: by mail-wr1-f54.google.com with SMTP id i4so2989708wrb.5
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 00:53:17 -0700 (PDT)
+X-Gm-Message-State: AOAM533MrPHAaEurEsdxkil6j/oSz6C92HaKXJM9iBuE5vGWvVWUjyiW
+        KzsD0zxG93Ixrw9Jg2qjYlmWh0RWdAXXBnSffhk=
+X-Google-Smtp-Source: ABdhPJxusnK+u0DqKBkLuDZOOKI4/Zzi0nexaW+kVu52xIgMD7+d3FBFhk7GeTr34pvfDFosmtsJveIZUp+6B4PwU/8=
+X-Received: by 2002:a05:6000:178c:b0:204:648:b4c4 with SMTP id
+ e12-20020a056000178c00b002040648b4c4mr6693841wrg.219.1648799596920; Fri, 01
+ Apr 2022 00:53:16 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] media: mediatek: vcodec: fix v4l2 compliance decoder cmd
- test fail
-Content-Language: en-US
-To:     Yunfei Dong <yunfei.dong@mediatek.com>,
-        Alexandre Courbot <acourbot@chromium.org>,
-        Nicolas Dufresne <nicolas@ndufresne.ca>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        Tiffany Lin <tiffany.lin@mediatek.com>,
-        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Tomasz Figa <tfiga@google.com>
-Cc:     George Sun <george.sun@mediatek.com>,
-        Xiaoyong Lu <xiaoyong.lu@mediatek.com>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Fritz Koenig <frkoenig@chromium.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Irui Wang <irui.wang@mediatek.com>,
-        Steve Cho <stevecho@chromium.org>, linux-media@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, srv_heupstream@mediatek.com,
-        linux-mediatek@lists.infradead.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-References: <20220401030406.6437-1-yunfei.dong@mediatek.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220401030406.6437-1-yunfei.dong@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220401041615.3296387-1-jcmvbkbc@gmail.com> <CAK8P3a19-qtAg8GD8a9nG4ZPuyoDi3n39+zvHcRV-YdPJbJfKA@mail.gmail.com>
+ <CAFCwf10hm4+WOa9JTNLTnEGtOGScOVu+PAXbk2=r+14u8d68VA@mail.gmail.com>
+In-Reply-To: <CAFCwf10hm4+WOa9JTNLTnEGtOGScOVu+PAXbk2=r+14u8d68VA@mail.gmail.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Fri, 1 Apr 2022 09:53:00 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a05=J6-utHZ682bVGb8bEZczLDEcFXsK7yXcbER5CRTDA@mail.gmail.com>
+Message-ID: <CAK8P3a05=J6-utHZ682bVGb8bEZczLDEcFXsK7yXcbER5CRTDA@mail.gmail.com>
+Subject: Re: [PATCH] habanalabs: fix build warning
+To:     Oded Gabbay <ogabbay@kernel.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>, Max Filippov <jcmvbkbc@gmail.com>,
+        Ohad Sharabi <osharabi@habana.ai>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:gUryK+d737oRkj6KChzTzsB2DtmkjWe+raEzZUlbfDHfbG4GuUh
+ q+K2i4oEkKef56HEab/Bus/FqUo1kSYGAaIagatst9DDSCNrrSJccE/xlW2g4o5MlxWRBW3
+ MqrTfwmAY0O1Jf5aNy2zSOqjDAO0xkjjuj0lcQvEyJsMUdnw431eP2OGqxV4ftKPrz3Q4au
+ i4JkRCw5PtMkj63CJz6QA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:am+a0hmLgcY=:FhzXhqpSfeWX+Pe8RNLni4
+ yLu85JFVlJnygYGReUvGYzfrEImZYCMCJBAG5iPMrsS8Ii2qXAZEMeEb3EKg/tl35dnKdWaXq
+ EpcbNkV5zDX8JHWWlSm1keQmSwIHundBJZbMhx+w3l7RjKgX1OnyU+llhEthCm+lHs4yK4Y45
+ c1wA/nf20a2knWPgrNYTTr3u2DK6eWh2+dSEnnEn8NRQ9l+koB7fdEefOGgUSL5W8H2S39UQ/
+ K/JA6LN2dP+UcbiXr9C1y4dKUBVWyTBN+8Q327aAFoZv8XKon4pUtO3Zl/dNBG15P+QltDBIp
+ Cl6fqEnsOj6Vejo1foK9Pu0QHQy6kC94bTA0SohnDp1zae5YNscmIGKvoKr7fE5eFU79vDMcZ
+ fsbJE9ldvaKR6+vLJujha9tbghMbLDXc1F9w4E/aem73ZFI2ZvvbCdn/cW7YhWE39s7w2qjba
+ NWDt9RKWnn1HxnANqC1M8BDjU3EQGMcI7R+x0IHI5mvRvdyIL3kEaT0KSEhbg8PHKFudVci0P
+ W8JvelH6jt7ZFtpCEjGo3MtoAx0E9wXLFfdBDwW7AVKxDsRVBp5OW3nWDptaqZfDXYQlhGu7d
+ 66E3n4rqPbPcIzYu0YaTk3TvtKU8DJpuw+/YFrLddR6xQr5bwfY/VUIcIo5JCBQXDTEh01RS/
+ oP11LQm36ioSUMBS4J4FnoN3b9r6bPPSkRcBYEo2EALR0g+/gluJuxx/ElYwnHaGd6gea2ZMR
+ pOKi9XRD49DF+7FbX5lK2Z1fKhvpiadqCi+VctN59uo2ROazv2NjL9C17sU9xYzztQcuODgl1
+ njv1p88RB/maJ3RYGFewlaA1zcQyQyVOBywb5vUpxirYQF42vQ=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 01/04/22 05:04, Yunfei Dong ha scritto:
-> Will return -EINVAL using standard framework api when test stateless
-> decoder with cmd VIDIOC_(TRY)DECODER_CMD.
-> 
-> Using another return value to adjust v4l2 compliance test for user
-> driver(GStreamer/Chrome) won't use decode cmd.
-> 
-> Signed-off-by: Yunfei Dong <yunfei.dong@mediatek.com>
+On Fri, Apr 1, 2022 at 8:55 AM Oded Gabbay <ogabbay@kernel.org> wrote:
+> On Fri, Apr 1, 2022 at 9:40 AM Arnd Bergmann <arnd@arndb.de> wrote:
+> > On Fri, Apr 1, 2022 at 6:16 AM Max Filippov <jcmvbkbc@gmail.com> wrote:
+>
+> We use gen_pool in this function to manage our device memory
+> allocations (this is why it is called alloc_device_memory).
 
-Hello Yunfei,
+Ok, so it's none of the three I listed ;-)
 
-this patch is a fix.. hence, this needs an appropriate Fixes: tag.
-Please add one.
+> Basically, we initialize the genpool with the total size of the device memory,
+> and each bit represents a page according to a fixed page size, which
+> is dependent on asic type.
+> The addresses represent the physical address of the device memory, as
+> our device sees them.
+> As these addresses are not accessible from the host, it is appropriate
+> to hold them in u64, imo.
+>
+> For future asics which will support multiple page sizes, we need to
+> use the gen_pool_dma_alloc_align() variant,
+> because then we need the allocation to be aligned to the page size as
+> requested by the user per allocation.
+>
+> We ignore the DMA address because this is device memory, not host memory.
+> Therefore, our device's dma engine addresses the memory using the
+> virtual memory addresses we assign to it in our device's MMU.
+>
+> Having said that, I'm wondering whether gen_pool_first_fit_align() can
+> also work here, which might be less confusing.
 
-Thanks,
-Angelo
+Thank you for the explanation. I think the best way to make this less
+confusing and to avoid the type casts would be to define your own
+typedef for a device-internal address, and then wrap the allocator
+functions such as gen_pool_dma_alloc_align() in helper functions that
+do the type conversion safely.
 
-> ---
->   drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c | 3 +--
->   1 file changed, 1 insertion(+), 2 deletions(-)
-> 
-> diff --git a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c
-> index 3859e4c651c6..69b0e797d342 100644
-> --- a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c
-> +++ b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c
-> @@ -51,8 +51,7 @@ static int vidioc_try_decoder_cmd(struct file *file, void *priv,
->   
->   	/* Use M2M stateless helper if relevant */
->   	if (ctx->dev->vdec_pdata->uses_stateless_api)
-> -		return v4l2_m2m_ioctl_stateless_try_decoder_cmd(file, priv,
-> -								cmd);
-> +		return -ENOTTY;
->   	else
->   		return v4l2_m2m_ioctl_try_decoder_cmd(file, priv, cmd);
->   }
+       Arnd
