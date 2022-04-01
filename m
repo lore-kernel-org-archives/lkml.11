@@ -2,107 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36DE7C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 17:58:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBC05C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 17:58:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350866AbiDAR7z (ORCPT
+        id S1350925AbiDASAC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 13:59:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40404 "EHLO
+        Fri, 1 Apr 2022 14:00:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347903AbiDAR7v (ORCPT
+        with ESMTP id S1350814AbiDAR7z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 13:59:51 -0400
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E7D12128EE
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 10:58:00 -0700 (PDT)
-Received: by mail-lf1-x135.google.com with SMTP id bq24so6305940lfb.5
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 10:57:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fungible.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=JvhYeVuiyHzD2XZ5Sv6yl6UpWLRVligCuXo9RsgwXcc=;
-        b=gus+G3NKsoMAx1p9mych9MlnHzYDB3gBK5/+lInIhjhpc4I7FWao+babG4/sJ9GNJ2
-         YYElr7WYxvEm7tE47uBGZd1aREwnvxMa+JwEgv4Ddz0lvnyK1iVOAGaIadg9J+FssOYB
-         wQQHQing6CY+riYLM2tpNTjcNVS4V2N/UQ1wQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=JvhYeVuiyHzD2XZ5Sv6yl6UpWLRVligCuXo9RsgwXcc=;
-        b=RS8pirP7FcxTHkT/MrZmSxyXhofW4uCFIDbnjoQL8xKOzkIj3PRr3VdqjbEDudYQro
-         Gqqm3V3WQX1QBRgBEAxhzqnjOXldd5EFCwLaw4PN1hCPp9JuC/+d6F9nEHYZwdLKkZHa
-         8jjK6CBW2UwzFmRubZKcLIbQ9hWYQWGgSQSkj2uv9Zj80LF2rhOaUJ9KbvhZ2M4bAoG0
-         E3y7yCkAQ6GkCJlvD3peDd7NUCCnk7NFDXbgDuNLDJkxgl+WsAbjgZOjOQUgAnbY0D7j
-         hFZkdJT0asZVKu4CXInQ17E0CVN5hlLAJK0wq270m1OhBV7JzFgOERTgdX7sP3qtEPW0
-         XvOQ==
-X-Gm-Message-State: AOAM533Al5NyHToJzbX2NSnrGtenz0dC5rQapnDqld9zH6jEVaijOqC7
-        70eULhr+rsVuX0uxWZ7/Y3EhL8LIHFq8QJR9BskHXg==
-X-Google-Smtp-Source: ABdhPJxWQ+i+ITn0cTBp8HpNpYi+FsZ+tLlRK5zUpDEx6eXcl5SqgGujjoEi601Spl5n8pBWofs9JC8n72Sl/3ZAbrY=
-X-Received: by 2002:a05:6512:11eb:b0:448:8cd0:7d7e with SMTP id
- p11-20020a05651211eb00b004488cd07d7emr14517234lfs.593.1648835872472; Fri, 01
- Apr 2022 10:57:52 -0700 (PDT)
+        Fri, 1 Apr 2022 13:59:55 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AE0528F81B;
+        Fri,  1 Apr 2022 10:58:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648835886; x=1680371886;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=Hq5DKbyMQWiEpKptaUPukm1orUxGRlNXS+XrcMujQ2g=;
+  b=c654WxW4PC+IrGZd9D01w0ewlz6HoUsZahN7yBVO6Gvouc3pR8yLQg6p
+   2foHnOWmZG8BqapEJvfctzW5oethL/+Fg//pGSLEPWSkm1oWNUw579BIY
+   rlUgxGNnF9W2s9aEb07r/ofYUoXEpYVVysbK/N9dsFgb9mp3wO1XKFkFz
+   74qmYVPW2bi9Uqk3VL4k7k1r/X4UOGaYZ9shkEpMGRgxLacLnYmghYZyM
+   ekTx7sHal6uk3nW6qZbz3y0M6/qNLbrzAoOY1q5c2D0bmD/9iZnfE8k2s
+   ZqBxmJR2o/acDz0rtOMCUmYi5Oav8HlL6ImZCd4bPnY7uZVotNSGKnrLY
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10304"; a="259026482"
+X-IronPort-AV: E=Sophos;i="5.90,228,1643702400"; 
+   d="scan'208";a="259026482"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Apr 2022 10:58:06 -0700
+X-IronPort-AV: E=Sophos;i="5.90,228,1643702400"; 
+   d="scan'208";a="567678388"
+Received: from dajones-mobl.amr.corp.intel.com (HELO [10.212.134.9]) ([10.212.134.9])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Apr 2022 10:58:05 -0700
+Message-ID: <ee82ed75-03f5-1962-6888-11491c9569c8@intel.com>
+Date:   Fri, 1 Apr 2022 10:58:05 -0700
 MIME-Version: 1.0
-References: <20220401033845.8359AC2BBE4@smtp.kernel.org> <048945eb-dd6b-c1b6-1430-973f70b4dda5@infradead.org>
- <20220401100418.7c109f81@kernel.org>
-In-Reply-To: <20220401100418.7c109f81@kernel.org>
-From:   Dimitris Michailidis <d.michailidis@fungible.com>
-Date:   Fri, 1 Apr 2022 10:57:38 -0700
-Message-ID: <CAOkoqZncM3JMQvcbaixuBPg43=Da2ac2JjZAfWRt_Ezs2CCyOg@mail.gmail.com>
-Subject: Re: mmotm 2022-03-31-20-37 uploaded (drivers/net/ethernet/fungible/funcore/fun_dev.o)
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        Dimitris Michailidis <dmichail@fungible.com>,
-        Andrew Morton <akpm@linux-foundation.org>, broonie@kernel.org,
-        mhocko@suse.cz, Stephen Rothwell <sfr@canb.auug.org.au>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        mm-commits@vger.kernel.org,
-        Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v3 1/3] x86/fpu: Make XCR0 accessors immune to unwanted
+ compiler reordering
+Content-Language: en-US
+To:     "Chang S. Bae" <chang.seok.bae@intel.com>,
+        linux-kernel@vger.kernel.org, x86@kernel.org,
+        linux-pm@vger.kernel.org
+Cc:     tglx@linutronix.de, dave.hansen@linux.intel.com,
+        peterz@infradead.org, bp@alien8.de, rafael@kernel.org,
+        ravi.v.shankar@intel.com
+References: <20220325022219.829-1-chang.seok.bae@intel.com>
+ <20220325022219.829-2-chang.seok.bae@intel.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+In-Reply-To: <20220325022219.829-2-chang.seok.bae@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 1, 2022 at 10:04 AM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Thu, 31 Mar 2022 22:15:15 -0700 Randy Dunlap wrote:
-> > On 3/31/22 20:38, Andrew Morton wrote:
-> > > The mm-of-the-moment snapshot 2022-03-31-20-37 has been uploaded to
-> > >
-> > >    https://www.ozlabs.org/~akpm/mmotm/
-> > >
-> > > mmotm-readme.txt says
-> > >
-> > > README for mm-of-the-moment:
-> > >
-> > > https://www.ozlabs.org/~akpm/mmotm/
-> > >
-> > > This is a snapshot of my -mm patch queue.  Uploaded at random hopefully
-> > > more than once a week.
-> > >
-> > > You will need quilt to apply these patches to the latest Linus release (5.x
-> > > or 5.x-rcY).  The series file is in broken-out.tar.gz and is duplicated in
-> > > https://ozlabs.org/~akpm/mmotm/series
-> >
-> > on i386:
-> >
-> > ld: drivers/net/ethernet/fungible/funcore/fun_dev.o: in function `fun_dev_enable':
-> > (.text+0xe1a): undefined reference to `__udivdi3'
->
-> Doesn't fail here.
->
-> Oh... Probably this:
->
->         num_dbs = (pci_resource_len(pdev, 0) - NVME_REG_DBS) /
->                   (fdev->db_stride * 4);
->
-> The bad config must have 64b resource length. Dimitris, PTAL.
+On 3/24/22 19:22, Chang S. Bae wrote:
+> Some old GCC versions (4.9.x and 5.x) have an issue that incorrectly
+> reordering volatile asm statements with each other [1]. While this bug was
+> fixed on later versions (8.1, 7.3, and 6.5), and the kernel's current XCR0
+> read/write do not appear to be impacted, it is preventive to ensure them on
+> the program order.
 
-I built last night with the mm tree from github tagged
-v5.17-mmotm-2022-03-31-20-37, i386 allmodconfig. It didn't reach the
-link stage due to other errors but I looked at fun_dev.o with nm, it
-didn't have a reference to __udivdi3. It may need a PAE config, I'll
-try that.
+I thought you *actually* saw xgetbv() be reordered, though.  Was that on
+a buggy compiler?
