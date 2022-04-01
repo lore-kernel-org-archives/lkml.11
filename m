@@ -2,115 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD7A2C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 17:33:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93597C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 17:37:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350150AbiDARfj (ORCPT
+        id S1350183AbiDARjO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 13:35:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36444 "EHLO
+        Fri, 1 Apr 2022 13:39:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350165AbiDARfb (ORCPT
+        with ESMTP id S233152AbiDARjL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 13:35:31 -0400
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39AE125280
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 10:33:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648834421; x=1680370421;
-  h=message-id:date:mime-version:to:cc:references:from:
-   subject:in-reply-to:content-transfer-encoding;
-  bh=Prr3OHQFQtCFSdwCOz3twIgyEvMuZhH+9u/SrFurkRA=;
-  b=LYRKIq3+kEva+sU1MFFJmf1WgZAxyvwFJhAgvfwqLCyK6lMo949IrIHz
-   hTJO33Cx2x2f1eMLQvOyHoT4hCND4fGvYxJraY+07+ExuARquTIQf33yX
-   cTUDcya4cjJ5FzGpBoOYlfKnxg1R4pHhbHyeZxmOFY2L4JUsHqYeuRKVC
-   /NvvGPNcVh4dNQTe/t4WW0CkTVNkr1crPyM68/kwWT2/O8hFg2pdTDF2h
-   qzgeOnw4QwGhdxfTN9YupZI/6M81tFmja6P/8NJZdEbgVPv3xlJX5kkxG
-   Vy+iuYvVoNJIzoAhKZrxdasfSiXTIWpkDgZ+rUNBBRBkpUVBnX3a5r3ud
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10304"; a="320891334"
-X-IronPort-AV: E=Sophos;i="5.90,228,1643702400"; 
-   d="scan'208";a="320891334"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Apr 2022 10:33:39 -0700
-X-IronPort-AV: E=Sophos;i="5.90,228,1643702400"; 
-   d="scan'208";a="567663407"
-Received: from dajones-mobl.amr.corp.intel.com (HELO [10.212.134.9]) ([10.212.134.9])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Apr 2022 10:33:39 -0700
-Message-ID: <d97855fa-24e8-523a-fe9f-de504f02872a@intel.com>
-Date:   Fri, 1 Apr 2022 10:33:39 -0700
+        Fri, 1 Apr 2022 13:39:11 -0400
+Received: from mx0a-002e3701.pphosted.com (mx0a-002e3701.pphosted.com [148.163.147.86])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED82F20A3B6;
+        Fri,  1 Apr 2022 10:37:17 -0700 (PDT)
+Received: from pps.filterd (m0150242.ppops.net [127.0.0.1])
+        by mx0a-002e3701.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 231G9jLc018254;
+        Fri, 1 Apr 2022 17:29:09 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pps0720;
+ bh=IWEKHRJ+fTq1DXKGcxx15f9MF6DQXhL75wZkQHTjY3E=;
+ b=R/kzY6m+2ynGFjiCcHxmA9rRLU980gxYvsThUIVNS2Bu6krl1dBR1oZjzO8kea97fnzR
+ ibbTe6q2iQ1drncqNb7EcR+niApcWMhFj9SS1zpaPotxbUr4TDraz5SeKaIqikrucG1h
+ XRR+awR53mlBgDbNCenSQdB6wUwtbzagG3fQCm5NgGfp2uIMcZV16Y/CYLNMBH72WLSA
+ oZq4v59AW2AnopdC8Bpo9mUStiVFkEIf1fs0TSFjZK2qhRuC52C5/9EUmG1YMXiXnADd
+ 4VGP4LJjgGLw2KChTb9GXH0FVT7aWdoRCoEW6zNxmmpVHa5Pi1b4b3S2v1wY68StwZQR jA== 
+Received: from g4t3427.houston.hpe.com (g4t3427.houston.hpe.com [15.241.140.73])
+        by mx0a-002e3701.pphosted.com (PPS) with ESMTPS id 3f60uptts7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 01 Apr 2022 17:29:08 +0000
+Received: from g4t3433.houston.hpecorp.net (g4t3433.houston.hpecorp.net [16.208.49.245])
+        by g4t3427.houston.hpe.com (Postfix) with ESMTP id 8898357;
+        Fri,  1 Apr 2022 17:29:07 +0000 (UTC)
+Received: from ubuntu-20.04.3 (unknown [16.116.198.225])
+        by g4t3433.houston.hpecorp.net (Postfix) with ESMTP id 47D994B;
+        Fri,  1 Apr 2022 17:29:05 +0000 (UTC)
+From:   james.liu@hpe.com
+To:     rafael@kernel.org, lenb@kernel.org
+Cc:     linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        rwright@hpe.com, david.chang@hpe.co, clayc@hpe.com,
+        james.liu@hpe.com
+Subject: [PATCH]     ACPI: OSL: Fix the memory mapping of an ACPI GAS that addresses a data structure
+Date:   Fri,  1 Apr 2022 17:28:40 +0000
+Message-Id: <20220401172840.1252-1-james.liu@hpe.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Content-Language: en-US
-To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        luto@kernel.org, peterz@infradead.org,
-        sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
-        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
-        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
-        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
-        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
-        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
-        thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
-        linux-kernel@vger.kernel.org,
-        Sean Christopherson <sean.j.christopherson@intel.com>,
-        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>
-References: <20220318153048.51177-1-kirill.shutemov@linux.intel.com>
- <20220318153048.51177-22-kirill.shutemov@linux.intel.com>
- <2847763c-6202-9e2a-54c5-44c761b59a63@intel.com>
- <20220324152415.grt6xvhblmd4uccu@black.fi.intel.com>
- <4c0c05a8-08f2-7d5d-6746-a92d0d3c5ef0@intel.com>
- <20220330231609.ymxekzgdp2pd7gfy@black.fi.intel.com>
- <9e84cdea-754c-1864-4c54-66beeba7f921@intel.com>
- <20220331015239.h7bihbfjq4xfrhyj@black.fi.intel.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-Subject: Re: [PATCHv7 21/30] x86/acpi, x86/boot: Add multiprocessor wake-up
- support
-In-Reply-To: <20220331015239.h7bihbfjq4xfrhyj@black.fi.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-GUID: 8n1cIHgXF3AJkwOoNdF5kd7vptPv2_rX
+X-Proofpoint-ORIG-GUID: 8n1cIHgXF3AJkwOoNdF5kd7vptPv2_rX
+X-HPE-SCL: -1
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-04-01_05,2022-03-31_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011 suspectscore=0
+ adultscore=0 priorityscore=1501 mlxlogscore=955 mlxscore=0 spamscore=0
+ bulkscore=0 phishscore=0 impostorscore=0 malwarescore=0 lowpriorityscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
+ definitions=main-2204010083
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/30/22 18:52, Kirill A. Shutemov wrote:
-> 
->>From ab320371f9ef8d24722394ec2505089e68737527 Mon Sep 17 00:00:00 2001
-> From: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-> Date: Thu, 15 Apr 2021 10:31:38 -0700
-> Subject: [PATCH] x86/acpi, x86/boot: Add multiprocessor wake-up support
-> 
-> Secondary CPU startup is currently performed with something called
-> the "INIT/SIPI protocol".  This protocol requires assistance from
-> VMMs to boot guests.  As should be a familiar story by now, that
-> support can not be provded to TDX guests because TDX VMMs are
-> not trusted by guests.
-> 
-> To remedy this situation a new[1] "Multiprocessor Wakeup Structure"
-> has been added to to an existing ACPI table (MADT).  This structure
-> provides the physical address of a "mailbox".  A write to the mailbox
-> then steers the secondary CPU to the boot code.
-> 
-> Add ACPI MADT wake structure parsing support and wake support.  Use
-> this support to wake CPUs whenever it is present instead of INIT/SIPI.
-> 
-> While this structure can theoretically be used on 32-bit kernels,
-> there are no 32-bit TDX guest kernels.  It has not been tested and
-> can not practically *be* tested on 32-bit.  Make it 64-bit only.
-> 
-> 1. Details about the new structure can be found in ACPI v6.4, in the
->    "Multiprocessor Wakeup Structure" section.
-> 
-> Co-developed-by: Sean Christopherson <sean.j.christopherson@intel.com>
-> Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
-> Reviewed-by: Andi Kleen <ak@linux.intel.com>
-> Reviewed-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-> Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-> Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+From: James Liu <james.liu@hpe.com>
 
-Looks good.  I'm glad you were able to get rid of the extra-wakeup
-checks too.
+    Modify acpi_os_map_generic_address and acpi_os_unmap_generic_address
+    to handle a case that a GAS table (i.e., Table 5.1 in ACPI 6.4) is used
+    to address a data structure; in this case, the GAS has the field of
+    "Register Bit Width" equal to 0.
 
-Reviewed-by: Dave Hansen <dave.hansen@linux.intel.com>
+    For example, "Injection Instruction Entry" (Table 18.25 in ACPI 6.4)
+    has a RegisterRegion field that is a GAS that points to a data
+    structure SET_ERROR_TYPE_WITH_ADDRESS (Table 18.30), which is required
+    when using EINJ (Error Injection module).
+
+    This fix preserves a fairly sufficient memory space (i.e., page size)
+    to store the data structure so as to prevent EINJ module from loading
+    failure if platform firmware can support Injection Instruction Entry in
+    an EINJ table.
+
+Signed-off-by: James Liu <james.liu@hpe.com>
+---
+ drivers/acpi/osl.c | 23 +++++++++++++++++++++--
+ 1 file changed, 21 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/acpi/osl.c b/drivers/acpi/osl.c
+index 45c5c0e45..ab2f584b1 100644
+--- a/drivers/acpi/osl.c
++++ b/drivers/acpi/osl.c
+@@ -457,9 +457,15 @@ void __iomem *acpi_os_map_generic_address(struct acpi_generic_address *gas)
+ 	if (gas->space_id != ACPI_ADR_SPACE_SYSTEM_MEMORY)
+ 		return NULL;
+ 
++	/* Handle a case that GAS is used to address an ACPI data structure */
++	if (!gas->bit_width) {
++		pr_info("An ACPI data structure at 0x%llx is mapped\n", addr);
++		return  acpi_os_map_iomem(addr, PAGE_SIZE);
++	}
++
+ 	/* Handle possible alignment issues */
+ 	memcpy(&addr, &gas->address, sizeof(addr));
+-	if (!addr || !gas->bit_width)
++	if (!addr)
+ 		return NULL;
+ 
+ 	return acpi_os_map_iomem(addr, gas->bit_width / 8);
+@@ -474,9 +480,22 @@ void acpi_os_unmap_generic_address(struct acpi_generic_address *gas)
+ 	if (gas->space_id != ACPI_ADR_SPACE_SYSTEM_MEMORY)
+ 		return;
+ 
++	/* Handle a case that GAS is used to address an ACPI data structure */
++	if (!gas->bit_width) {
++		pr_info("An ACPI data structure at 0x%llx is unmapped\n", addr);
++		mutex_lock(&acpi_ioremap_lock);
++		map = acpi_map_lookup(addr, PAGE_SIZE);
++		if (!map) {
++			mutex_unlock(&acpi_ioremap_lock);
++			return;
++		}
++		acpi_os_drop_map_ref(map);
++		mutex_unlock(&acpi_ioremap_lock);
++	}
++
+ 	/* Handle possible alignment issues */
+ 	memcpy(&addr, &gas->address, sizeof(addr));
+-	if (!addr || !gas->bit_width)
++	if (!addr)
+ 		return;
+ 
+ 	mutex_lock(&acpi_ioremap_lock);
+-- 
+2.25.1
+
