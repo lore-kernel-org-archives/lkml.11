@@ -2,99 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 305B8C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 11:03:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6415CC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 11:03:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345320AbiDALEx (ORCPT
+        id S1345334AbiDALFI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 07:04:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44802 "EHLO
+        Fri, 1 Apr 2022 07:05:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345314AbiDALEo (ORCPT
+        with ESMTP id S1345309AbiDALFF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 07:04:44 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BF2F2706C4;
-        Fri,  1 Apr 2022 04:02:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1648810975; x=1680346975;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=iQO9f8iaENIV19XBT+seKvipVsM/1nu/lvqiaWsIUus=;
-  b=s45eiVSDw4JEOknXnf6TZcNTaF8qgM8UuvXeIZWTLn+GssNGAaX1C8iU
-   r55WEOWtjdvli12q0uYBQmhz+FYMK0mfu6sSRu3EyBvBd6ogXSbicS6Ex
-   1AZX602N0m6SjRpD+wfjq0NjQnK60mXOm0Lx3tmj4HwPKodvs1DV2QxWi
-   v2TXEQ18nvLMDFIt7Z96SubcspWdkcNcSChBTmyxicn/aAAROFxDPoAJm
-   5PUURhx6FkeWrVt01jbirOpmdhx2+qdPGhRfAE+qgIk/gnceV7zHXsbJZ
-   Sc7Jt11xW85PIvXLB26mJKF0vSQLTn0mJeV62wTyJKwJt/ZqO3b2+p/R+
-   w==;
-X-IronPort-AV: E=Sophos;i="5.90,227,1643698800"; 
-   d="scan'208";a="158520209"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 01 Apr 2022 04:02:55 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 1 Apr 2022 04:02:54 -0700
-Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Fri, 1 Apr 2022 04:02:52 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
-        <Divya.Koppera@microchip.com>, <davem@davemloft.net>,
-        <kuba@kernel.org>, <pabeni@redhat.com>, <richardcochran@gmail.com>,
-        <UNGLinuxDriver@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net v2 3/3] net: phy: micrel: Remove DT option lan8814,ignore-ts
-Date:   Fri, 1 Apr 2022 13:05:22 +0200
-Message-ID: <20220401110522.3418258-4-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220401110522.3418258-1-horatiu.vultur@microchip.com>
-References: <20220401110522.3418258-1-horatiu.vultur@microchip.com>
+        Fri, 1 Apr 2022 07:05:05 -0400
+Received: from mail-sh.amlogic.com (mail-sh.amlogic.com [58.32.228.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0123426F907;
+        Fri,  1 Apr 2022 04:03:15 -0700 (PDT)
+Received: from droid01-cd.amlogic.com (10.98.11.200) by mail-sh.amlogic.com
+ (10.18.11.5) with Microsoft SMTP Server id 15.1.2176.14; Fri, 1 Apr 2022
+ 19:03:12 +0800
+From:   Shunzhou Jiang <shunzhou.jiang@amlogic.com>
+To:     <robh+dt@kernel.org>, <krzk+dt@kernel.org>,
+        <narmstrong@baylibre.com>, <khilman@baylibre.com>
+CC:     <jbrunet@baylibre.com>, <martin.blumenstingl@googlemail.com>,
+        <devicetree@vger.kernel.org>, <linux-amlogic@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <shunzhou.jiang@amlogic.com>
+Subject: [PATCH V0] arm64: dts: add support for S4 power domain controller
+Date:   Fri, 1 Apr 2022 19:03:06 +0800
+Message-ID: <20220401110306.3364551-1-shunzhou.jiang@amlogic.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.98.11.200]
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When the PHY and the MAC are capable of doing timestamping, the PHY has
-priority. Therefore the DT option lan8814,ignore-ts was added such that
-the PHY will not expose a PHC so then the timestamping was done in the
-MAC. This is not the correct approach of doing it, therefore remove
-this.
+Enable power domain controller for Meson s4 SoC
 
-Fixes: ece19502834d84 ("net: phy: micrel: 1588 support for LAN8814 phy")
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+Signed-off-by: Shunzhou Jiang <shunzhou.jiang@amlogic.com>
 ---
- drivers/net/phy/micrel.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ arch/arm64/boot/dts/amlogic/meson-s4.dtsi | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-index a873df07ad24..fc53b71dc872 100644
---- a/drivers/net/phy/micrel.c
-+++ b/drivers/net/phy/micrel.c
-@@ -2616,7 +2616,6 @@ static int lan8814_config_init(struct phy_device *phydev)
+diff --git a/arch/arm64/boot/dts/amlogic/meson-s4.dtsi b/arch/arm64/boot/dts/amlogic/meson-s4.dtsi
+index bf9ae1e1016b..96ea95ea5eb9 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-s4.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-s4.dtsi
+@@ -60,6 +60,12 @@ xtal: xtal-clk {
+ 		#clock-cells = <0>;
+ 	};
  
- static int lan8814_probe(struct phy_device *phydev)
- {
--	const struct device_node *np = phydev->mdio.dev.of_node;
- 	struct kszphy_priv *priv;
- 	u16 addr;
- 	int err;
-@@ -2630,8 +2629,7 @@ static int lan8814_probe(struct phy_device *phydev)
- 	phydev->priv = priv;
- 
- 	if (!IS_ENABLED(CONFIG_PTP_1588_CLOCK) ||
--	    !IS_ENABLED(CONFIG_NETWORK_PHY_TIMESTAMPING) ||
--	    of_property_read_bool(np, "lan8814,ignore-ts"))
-+	    !IS_ENABLED(CONFIG_NETWORK_PHY_TIMESTAMPING))
- 		return 0;
- 
- 	/* Strap-in value for PHY address, below register read gives starting
++	pwrc: power-controller {
++		compatible = "amlogic,meson-s4-pwrc";
++		#power-domain-cells = <1>;
++		status = "okay";
++	};
++
+ 	soc {
+ 		compatible = "simple-bus";
+ 		#address-cells = <2>;
+
+base-commit: 1930a6e739c4b4a654a69164dbe39e554d228915
 -- 
-2.33.0
+2.34.1
 
