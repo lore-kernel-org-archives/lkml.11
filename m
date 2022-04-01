@@ -2,90 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 712D1C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 09:26:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA124C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 09:26:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344524AbiDAJ1w (ORCPT
+        id S1344533AbiDAJ2Y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 05:27:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35238 "EHLO
+        Fri, 1 Apr 2022 05:28:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344538AbiDAJ1s (ORCPT
+        with ESMTP id S244634AbiDAJ2S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 05:27:48 -0400
-Received: from mx1.cqplus1.com (unknown [113.204.237.245])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C15AFFA22B
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 02:25:34 -0700 (PDT)
-X-MailGates: (flag:1,DYNAMIC,RELAY,NOHOST,LAN:PASS)(compute_score:DELIVE
-        R,40,3)
-Received: from 172.27.96.203
-        by mx1.cqplus1.com with MailGates ESMTP Server V5.0(1193:1:AUTH_RELAY)
-        (envelope-from <qinjian@cqplus1.com>); Fri, 01 Apr 2022 17:18:32 +0800 (CST)
-Received: from CQEXMAIL01.cqplus1.com (172.27.96.203) by
- CQEXMAIL01.cqplus1.com (172.27.96.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.18; Fri, 1 Apr 2022 17:19:31 +0800
-Received: from CQEXMAIL01.cqplus1.com ([::1]) by CQEXMAIL01.cqplus1.com
- ([::1]) with mapi id 15.01.2375.018; Fri, 1 Apr 2022 17:19:31 +0800
-From:   =?utf-8?B?cWluamlhblvopoPlgaVd?= <qinjian@cqplus1.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-CC:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "mturquette@baylibre.com" <mturquette@baylibre.com>,
-        "sboyd@kernel.org" <sboyd@kernel.org>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "maz@kernel.org" <maz@kernel.org>,
-        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "arnd@arndb.de" <arnd@arndb.de>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>
-Subject: RE: [PATCH v12 4/9] dt-bindings: clock: Add bindings for SP7021 clock
- driver
-Thread-Topic: [PATCH v12 4/9] dt-bindings: clock: Add bindings for SP7021
- clock driver
-Thread-Index: AQHYRNqEmfEToMF3qkaI4FVvqF6nN6zZafcAgAFYO/A=
-Date:   Fri, 1 Apr 2022 09:19:31 +0000
-Message-ID: <eae0d1c49fcd4b41b700e8fd86af1b3e@cqplus1.com>
-References: <cover.1648714851.git.qinjian@cqplus1.com>
- <c535be1e977098993850789faceea1db605df81d.1648714851.git.qinjian@cqplus1.com>
- <84d1e5b6-caa5-cf98-a4b2-2f1ca738b795@linaro.org>
-In-Reply-To: <84d1e5b6-caa5-cf98-a4b2-2f1ca738b795@linaro.org>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.28.110.18]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        Fri, 1 Apr 2022 05:28:18 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB772FA22B;
+        Fri,  1 Apr 2022 02:26:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=zD1bh8zBdF6SWEbtcuaNiNWduZj2pRO29dlVMIKrE7w=; b=q4bzTMMtSJLueTsGJcO/34ysUf
+        wyz9AQNc0dJ3tUyivpAw4uGN+3qThn7qqycBSDot6XOLEeD5YGQ1VNEUQV8X+Dzkn9dg4SKkgVoQV
+        IjVXUjTTMHhQCGjjWzQjmucW6GB4fR194p4vmecZF2ouped3zOnRKYU9GwkHqb6WLgrBmpX8nksta
+        5p4tOd3I8CdGlAtEvGgFqgJudyNuHyxEOidXQcJNBMa8A8e0CoccoPzhZtSMFCusH8a+81q1qokJR
+        yGTw6U+gJA9bQMziZ0usxZ0DYgClHXU1kzgCCEwI+0F3q2WNJG2D7H2sw7TAYwxUAmR+jR6VHTfM6
+        tHJTFp7Q==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1naDXe-0033hJ-7N; Fri, 01 Apr 2022 09:26:02 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id E05619861EB; Fri,  1 Apr 2022 11:25:59 +0200 (CEST)
+Date:   Fri, 1 Apr 2022 11:25:59 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Namhyung Kim <namhyung@kernel.org>
+Cc:     Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
+        Waiman Long <longman@redhat.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Byungchul Park <byungchul.park@lge.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Radoslaw Burny <rburny@google.com>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Hyeonggon Yoo <42.hyeyoo@gmail.com>
+Subject: Re: [PATCH 2/2] locking: Apply contention tracepoints in the slow
+ path
+Message-ID: <20220401092559.GW8939@worktop.programming.kicks-ass.net>
+References: <20220322185709.141236-1-namhyung@kernel.org>
+ <20220322185709.141236-3-namhyung@kernel.org>
+ <20220328113946.GA8939@worktop.programming.kicks-ass.net>
+ <CAM9d7ciQQEypvv2a2zQLHNc7p3NNxF59kASxHoFMCqiQicKwBA@mail.gmail.com>
+ <20220330110853.GK8939@worktop.programming.kicks-ass.net>
+ <CAM9d7cjQnThKgsUfnqJDcmBFseSTk-56a6f0sefo1x8D7LWSZw@mail.gmail.com>
+ <20220331115916.GU8939@worktop.programming.kicks-ass.net>
+ <YkabCQYJmq9G9ZJ4@google.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YkabCQYJmq9G9ZJ4@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-PiA+IGRpZmYgLS1naXQgYS9pbmNsdWRlL2R0LWJpbmRpbmdzL2Nsb2NrL3NwLXNwNzAyMS5oIGIv
-aW5jbHVkZS9kdC1iaW5kaW5ncy9jbG9jay9zcC1zcDcwMjEuaA0KPiA+IG5ldyBmaWxlIG1vZGUg
-MTAwNjQ0DQo+ID4gaW5kZXggMDAwMDAwMDAwLi40NWRhYzZkZTgNCj4gPiAtLS0gL2Rldi9udWxs
-DQo+ID4gKysrIGIvaW5jbHVkZS9kdC1iaW5kaW5ncy9jbG9jay9zcC1zcDcwMjEuaA0KPiA+IEBA
-IC0wLDAgKzEsMTEyIEBADQo+ID4gKy8qIFNQRFgtTGljZW5zZS1JZGVudGlmaWVyOiAoR1BMLTIu
-MC1vbmx5IE9SIEJTRC0yLUNsYXVzZSkgKi8NCj4gPiArLyoNCj4gPiArICogQ29weXJpZ2h0IChD
-KSBTdW5wbHVzIFRlY2hub2xvZ3kgQ28uLCBMdGQuDQo+ID4gKyAqICAgICAgIEFsbCByaWdodHMg
-cmVzZXJ2ZWQuDQo+ID4gKyAqLw0KPiA+ICsjaWZuZGVmIF9EVF9CSU5ESU5HU19DTE9DS19TVU5Q
-TFVTX1NQNzAyMV9IDQo+ID4gKyNkZWZpbmUgX0RUX0JJTkRJTkdTX0NMT0NLX1NVTlBMVVNfU1A3
-MDIxX0gNCj4gPiArDQo+ID4gKyNkZWZpbmUgWFRBTAkJCTI3MDAwMDAwDQo+ID4gKw0KPiA+ICsv
-KiBwbGxzICovDQo+ID4gKyNkZWZpbmUgUExMX0EJCQkwDQo+ID4gKyNkZWZpbmUgUExMX0UJCQkx
-DQo+ID4gKyNkZWZpbmUgUExMX0VfMlA1CQkyDQo+ID4gKyNkZWZpbmUgUExMX0VfMjUJCTMNCj4g
-PiArI2RlZmluZSBQTExfRV8xMTJQNQkJNA0KPiA+ICsjZGVmaW5lIFBMTF9GCQkJNQ0KPiA+ICsj
-ZGVmaW5lIFBMTF9UVgkJCTYNCj4gPiArI2RlZmluZSBQTExfVFZfQQkJNw0KPiA+ICsjZGVmaW5l
-IFBMTF9TWVMJCQk4DQo+ID4gKw0KPiA+ICsvKiBnYXRlczogbW9fY2xrZW4wIH4gbW9fY2xrZW45
-ICovDQo+ID4gKyNkZWZpbmUgQ0xLX1NZU1RFTQkJMHgxMA0KPiA+ICsjZGVmaW5lIENMS19SVEMJ
-CQkweDEyDQo+IA0KPiBZQU1MIGxvb2tzIG9rLCBidXQgaGVyZSBjb21tZW50IGZyb20gQXJuZCBh
-bHNvIGFwcGxpZXMuIFRoZXNlIHNob3VsZCBiZQ0KPiByZWd1bGFyIGRlY2ltYWwgbnVtYmVycyBp
-bmNyZW1lbnRlZCBieSBvbmUuDQo+IA0KPiBCZXN0IHJlZ2FyZHMsDQo+IEtyenlzenRvZg0KDQpZ
-ZXMsIHNhbWUgYXMgcmVzZXQgZHJpdmVyLCB0aGVzZSBkZWZpbmVzIGFsc28gbWFwcGluZyB0aGUg
-aGFyZHdhcmUuDQpCdXQgZGlmZmVyZW50IGZyb20gcmVzZXQgZHJpdmVyLCBjbGsgZHJpdmVyIGFs
-c28gdXNlZCB0aGVzZSBkZWZpbmVzLg0KSWYgSSByZW1vdmVkIHRoaXMgZGVmaW5lcywgSSAgbXVz
-dCB3cml0ZSB0aGUgcHJvcGVyIGhhcmR3YXJlIG51bWJlciB0d2ljZSBpbiBkdCAmIGRyaXZlci4N
-Ckl0J3MgbWVhbmluZ2xlc3MgJiBoYXJkIHRvIGNoZWNrLg0KDQoNCg0KDQo=
+On Thu, Mar 31, 2022 at 11:26:17PM -0700, Namhyung Kim wrote:
+> On Thu, Mar 31, 2022 at 01:59:16PM +0200, Peter Zijlstra wrote:
+> > I've since pushed out the lot to:
+> > 
+> >   git://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git locking/core
+> > 
+> > It builds, but I've not actually used it. Much appreciated if you could
+> > test.
+> > 
+> 
+> I've tested it and it worked well.  Thanks for your work!
+> 
+> And we need to add the below too..
+
+Thanks
+
+> ----8<----
+> 
+> diff --git a/include/trace/events/lock.h b/include/trace/events/lock.h
+> index db5bdbb9b9c0..9463a93132c3 100644
+> --- a/include/trace/events/lock.h
+> +++ b/include/trace/events/lock.h
+> @@ -114,7 +114,8 @@ TRACE_EVENT(contention_begin,
+>  				{ LCB_F_READ,		"READ" },
+>  				{ LCB_F_WRITE,		"WRITE" },
+>  				{ LCB_F_RT,		"RT" },
+> -				{ LCB_F_PERCPU,		"PERCPU" }
+> +				{ LCB_F_PERCPU,		"PERCPU" },
+> +				{ LCB_F_MUTEX,		"MUTEX" }
+>  			  ))
+>  );
+
+Duh, indeed, folded!
