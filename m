@@ -2,96 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF4F2C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 07:13:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D60AFC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 07:16:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343767AbiDAHPL (ORCPT
+        id S1343790AbiDAHSW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 03:15:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57578 "EHLO
+        Fri, 1 Apr 2022 03:18:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343740AbiDAHPJ (ORCPT
+        with ESMTP id S235587AbiDAHSS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 03:15:09 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4D0ABAE;
-        Fri,  1 Apr 2022 00:13:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648797198; x=1680333198;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=v7BxFZS7EqBUMLT0jC44zPK3Hm0zxzgqgjgsmXPUMUw=;
-  b=Ac42CdQetfvW8slyl4NOL6AoLTBR/8A9IIRmo7HIlpSxy16IgCCsMTSo
-   l1IMWjIb28B8RtTdhyi/32Qe4EcZhNUtI2/SuoDd4rJEQ5XdBpDxgbxTb
-   qeChU8nvUfzOOq1lZOLGCFf+T7HXZOnKJ4NbttwIwi+yJteois7xg/tOD
-   qFxxZ61Kyo++AQQuGvT/r7hQle70wahFujccmTadEWRBUoUaUFUm1yr5Y
-   4hzHOC5HEE7RGa+iS5A/Ez0D/lPOwr3csI1b0Ppc6QRmA37f3agEDjfty
-   0Cvi+4ORg2+jloTOCrjpN+XN6GCDeC6xXx8hXX8jwnwDzSKSNPSf1sFrx
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10303"; a="240652800"
-X-IronPort-AV: E=Sophos;i="5.90,226,1643702400"; 
-   d="scan'208";a="240652800"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Apr 2022 00:13:18 -0700
-X-IronPort-AV: E=Sophos;i="5.90,226,1643702400"; 
-   d="scan'208";a="547686744"
-Received: from jamendoz-mobl.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.255.95.128])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Apr 2022 00:13:15 -0700
-Message-ID: <3cfffe9a29e53ae58dc59d0af3d52128babde79f.camel@intel.com>
-Subject: Re: [RFC PATCH v5 037/104] KVM: x86/mmu: Allow non-zero init value
- for shadow PTE
-From:   Kai Huang <kai.huang@intel.com>
-To:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     isaku.yamahata@gmail.com, Paolo Bonzini <pbonzini@redhat.com>,
-        Jim Mattson <jmattson@google.com>, erdemaktas@google.com,
-        Connor Kuehl <ckuehl@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-Date:   Fri, 01 Apr 2022 20:13:13 +1300
-In-Reply-To: <968de4765e63d8255ae1b3ac7062ffdca64706e4.camel@intel.com>
-References: <cover.1646422845.git.isaku.yamahata@intel.com>
-         <b74b3660f9d16deafe83f2670539a8287bef988f.1646422845.git.isaku.yamahata@intel.com>
-         <968de4765e63d8255ae1b3ac7062ffdca64706e4.camel@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
+        Fri, 1 Apr 2022 03:18:18 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63A6725CBA0;
+        Fri,  1 Apr 2022 00:16:26 -0700 (PDT)
+X-UUID: d5c908bba9ca447f8dc5113c76938d63-20220401
+X-UUID: d5c908bba9ca447f8dc5113c76938d63-20220401
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
+        (envelope-from <leilk.liu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 650611933; Fri, 01 Apr 2022 15:16:21 +0800
+Received: from mtkexhb01.mediatek.inc (172.21.101.102) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Fri, 1 Apr 2022 15:16:21 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb01.mediatek.inc
+ (172.21.101.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 1 Apr
+ 2022 15:16:21 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 1 Apr 2022 15:16:20 +0800
+From:   Leilk Liu <leilk.liu@mediatek.com>
+To:     Mark Brown <broonie@kernel.org>
+CC:     Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-spi@vger.kernel.org>, <linux-mediatek@lists.infradead.org>
+Subject: [PATCH V7 0/3] spi: mediatek: add single/quad mode support 
+Date:   Fri, 1 Apr 2022 15:16:13 +0800
+Message-ID: <20220401071616.8874-1-leilk.liu@mediatek.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-04-01 at 18:13 +1300, Kai Huang wrote:
-> > --- a/arch/x86/kvm/mmu/mmu.c
-> > +++ b/arch/x86/kvm/mmu/mmu.c
-> > @@ -617,9 +617,9 @@ static int mmu_spte_clear_track_bits(struct kvm *kvm,
-> > u64 *sptep)
-> >   	int level = sptep_to_sp(sptep)->role.level;
-> >   
-> >   	if (!spte_has_volatile_bits(old_spte))
-> > -		__update_clear_spte_fast(sptep, 0ull);
-> > +		__update_clear_spte_fast(sptep, shadow_init_value);
-> >   	else
-> > -		old_spte = __update_clear_spte_slow(sptep, 0ull);
-> > +		old_spte = __update_clear_spte_slow(sptep,
-> > shadow_init_value);
-> 
-> I guess it's better to have some comment here.  Allow non-zero init value for
-> shadow PTE doesn't necessarily mean the initial value should be used when one
-> PTE is zapped.  I think mmu_spte_clear_track_bits() is only called for mapping
-> of normal (shared) memory but not MMIO? Then perhaps it's better to have a
-> comment to explain we want "suppress #VE" set to get a real EPT violation for
-> normal memory access from guest?
+This series of patches are based on spi for-next, and provide 3 patches to support MT7986.
 
-Btw, I think the relevant part of TDP MMU change should be included in this
-patch too otherwise TDP MMU is broken with this patch.
+V7:
+1. add Reviewed-by: Rob Herring
 
-Actually in this series legacy MMU is not supported to work with TDX, so above
-change to legacy MMU doesn't matter actually.  Instead, TDP MMU change should be
-here.
+V6:
+ 1. remove SPI_CFG3_IPM_PIN_MODE_OFFSET.
+ 2. add Reviewed-by: AngeloGioacchino Del Regno
 
--- 
-Thanks,
--Kai
+V5:
+ 1. remove 3 patches that already applied.
+ 2. use devm_clk_get_optional.
+ 3. remove of_mtk_spi_parse_dt()
+
+v4:
+ 1. fix Rob comment in v3;
+ 2. use "mediatek,mt7986-spi-ipm","mediatek,spi-ipm"
+
+v3:
+ 1. add Rob Acked-by in "dt-bindings: spi: Add compatible for MT7986 with single mode";
+ 2. add a fix patch "spi: mediatek: support tick_delay without enhance_timing";
+ 3. fix Angelogioacchino comments;
+ 4. use mt7986 instead of ipm in dt-binding.
+
+v2:
+ 1. rebase this series on spi for-next.
+ 2. fix Rob and Krzysztof comments in v1.
+
+Leilk Liu (3):
+  spi: mediatek: add spi memory support for ipm design
+  dt-bindings: spi: support hclk
+  spi: mediatek: support hclk
+
+ .../bindings/spi/mediatek,spi-mt65xx.yaml     |   4 +
+ drivers/spi/spi-mt65xx.c                      | 386 +++++++++++++++++-
+ 2 files changed, 373 insertions(+), 17 deletions(-)
+
+--
+2.25.1
 
 
