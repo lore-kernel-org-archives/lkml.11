@@ -2,129 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3BFEC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F73FC433F5
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:44:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358302AbiDAPqZ (ORCPT
+        id S1358088AbiDAPqT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 11:46:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36052 "EHLO
+        Fri, 1 Apr 2022 11:46:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350104AbiDAPRF (ORCPT
+        with ESMTP id S1352878AbiDAPUM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 11:17:05 -0400
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D3F759A44
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 07:58:30 -0700 (PDT)
-Received: by mail-wm1-x331.google.com with SMTP id l7-20020a05600c1d0700b0038c99618859so3691684wms.2
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 07:58:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=K8iJL2q3As3zzwdz8529fEEZQXinzEbA6iVffO5JCw4=;
-        b=gAw9uKXxBpP0+l/FsExGrFZKGlfbBOnEzDF2KtQgPGeonCt5ot3PcKIvm+oUPMtT8n
-         y5ZqXPaqAarqpi8xfYYLJvu5tzPW9wT70R3am9D7xFITmMFwt4vsYIVqX/n8dhCnsH85
-         Ai6a5VeuNV4ZTtZBlcot20j4htC0DD/R4/mPB19BrA5i1HyplNnU9mSSOc0QsDhZ44x4
-         aZfaQ07vN4E/mgE4B1qqbokUKXCPJpaI0z7l5Y7d4Z9vF2GgZScHNyfiIVXhDS4W1IOu
-         mowELakVMDfvVYVilPSjq6nwCjV6Zv1fbAqINaNJAy8z4f/Gw2HMoMgFBEYqlSiY/QWc
-         Go5g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=K8iJL2q3As3zzwdz8529fEEZQXinzEbA6iVffO5JCw4=;
-        b=7Q60ikVWSTPGn19ewCGS/3C+Uh5t+NGn7kc2eigiVBXxvPiPrtMBVFxgG2SC6bu/5K
-         FypdZHltUaZ/x2UXfVBBFSujm2RnXMPH2YadsZKOtJDLWqcX0KQA9lnWiG+9IZbeYVwJ
-         1wIhtkcenvzcnnqCh91sASl7XwyZBj0ICyOOOS38ccwDVMO9ztUXvV5uG2d8cUl5XNk3
-         x0GGl9FrM0POpw3XWCuqc+ENWVEpLr7puvupbFdYXsxU76tLMa9DvbfBy/VKR8MGBLLP
-         TXrP1HYhRUeKvc5QU0l8PALach4ts/OGT5RcvhiNVGpYKAFhpHTaasMajvx1rdxKe880
-         +bVQ==
-X-Gm-Message-State: AOAM533x4+/2lZFIYqWI9w4LdiQ9hTtm//CZ6aPm/P9y/hgcpcvcAjLI
-        vob3s9I6JpXpGwReL3UdGWKbrg==
-X-Google-Smtp-Source: ABdhPJzRdJIaIzMFeeJvk97VMkntf14Z4PyRXAxrDx3BRlFhHFG2iJWpnqp97DFOyl9gYTo2sakUJA==
-X-Received: by 2002:a1c:7308:0:b0:38c:7b63:e385 with SMTP id d8-20020a1c7308000000b0038c7b63e385mr9094276wmb.116.1648825108956;
-        Fri, 01 Apr 2022 07:58:28 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id j8-20020a05600c404800b0038cc9c7670bsm8530722wmm.3.2022.04.01.07.58.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Apr 2022 07:58:28 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Avri Altman <avri.altman@wdc.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Bean Huo <beanhuo@micron.com>,
-        Bart Van Assche <bvanassche@acm.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Taniya Das <tdas@codeaurora.org>,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-scsi@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [RFC PATCH 3/4] arm64: dts: qcom: sdm845: control RPMHPD performance states with UFS
-Date:   Fri,  1 Apr 2022 16:58:19 +0200
-Message-Id: <20220401145820.1003826-4-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220401145820.1003826-1-krzysztof.kozlowski@linaro.org>
-References: <20220401145820.1003826-1-krzysztof.kozlowski@linaro.org>
+        Fri, 1 Apr 2022 11:20:12 -0400
+Received: from mx0b-001ae601.pphosted.com (mx0a-001ae601.pphosted.com [67.231.149.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87E121D833C;
+        Fri,  1 Apr 2022 08:02:39 -0700 (PDT)
+Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
+        by mx0a-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 231CJbL4008410;
+        Fri, 1 Apr 2022 10:02:19 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=PODMain02222019;
+ bh=PdYyuppgFyyHYAEkB/pCVaPIbFP1vk2s7gMdjvDUBi4=;
+ b=f5Y3eL2wKH9irysVBEy3+mjnCENUWDETwnm1up4R1WbiMHyCEfXoCAt7cSQ6173TADjD
+ mDGf01jJnd6Bc7PjHkq4b46O/5GXYPBCVO9xjsbdiyHlhV3CosrNcaJOBoe4B8uD8OzX
+ GAzncZec1Pv6uIFqjgOGXLGfHDlyjMcIEBsLwdckEoH85qs/1mncCAZErEXlCj9e6sIg
+ ZKIaOwYXwgQ8Nzr5Oytg9IsCKI0viJFi7SwBNOYrANUfA2WXkYFuHlmd8MuAl4EuAbbs
+ 4HJ500afQQmrPUHkWD/9V4VnSRDzSXKuG5i/9p4h+ZuVb7vXFLUS+lMLsLxU9/SzfEt4 3g== 
+Received: from ediex02.ad.cirrus.com ([84.19.233.68])
+        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3f2081jg3u-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Fri, 01 Apr 2022 10:02:18 -0500
+Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
+ (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 1 Apr
+ 2022 16:02:16 +0100
+Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.24 via Frontend
+ Transport; Fri, 1 Apr 2022 16:02:16 +0100
+Received: from ediswmail.ad.cirrus.com (ediswmail.ad.cirrus.com [198.61.86.93])
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id B32C211D1;
+        Fri,  1 Apr 2022 15:02:16 +0000 (UTC)
+Date:   Fri, 1 Apr 2022 15:02:16 +0000
+From:   Charles Keepax <ckeepax@opensource.cirrus.com>
+To:     Rob Herring <robh@kernel.org>
+CC:     Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        Tony Lindgren <tony@atomide.com>,
+        Yunfei Dong <yunfei.dong@mediatek.com>,
+        - <patches@opensource.cirrus.com>, <linux-media@vger.kernel.org>,
+        <alsa-devel@alsa-project.org>, <linux-gpio@vger.kernel.org>,
+        <linux-pm@vger.kernel.org>
+Subject: Re: [PATCH] dt-bindings: Fix 'enum' lists with duplicate entries
+Message-ID: <20220401150216.GK38351@ediswmail.ad.cirrus.com>
+References: <20220401141247.2993925-1-robh@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20220401141247.2993925-1-robh@kernel.org>
+User-Agent: Mutt/1.5.21 (2010-09-15)
+X-Proofpoint-ORIG-GUID: foSJCjKXTi2Rwva_dqLI1GjRicTPaoII
+X-Proofpoint-GUID: foSJCjKXTi2Rwva_dqLI1GjRicTPaoII
+X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-UFS, when scaling gears, should choose appropriate performance state of
-RPMHPD power domain controller.  Since UFS belongs to UFS_PHY_GDSC power
-domain, add necessary parent power domain to GCC.
+On Fri, Apr 01, 2022 at 09:12:47AM -0500, Rob Herring wrote:
+> There's no reason to list the same value twice in an 'enum'. Fix all the
+> occurrences in the tree. A meta-schema change will catch future ones.
+> 
+> Cc: Krzysztof Kozlowski <krzk+dt@kernel.org>
+> Cc: Thierry Reding <thierry.reding@gmail.com>
+> Cc: Jonathan Hunter <jonathanh@nvidia.com>
+> Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
+> Cc: Charles Keepax <ckeepax@opensource.cirrus.com>
+> Cc: Linus Walleij <linus.walleij@linaro.org>
+> Cc: Sebastian Reichel <sre@kernel.org>
+> Cc: Tony Lindgren <tony@atomide.com>
+> Cc: Yunfei Dong <yunfei.dong@mediatek.com>
+> Cc: - <patches@opensource.cirrus.com>
+> Cc: linux-media@vger.kernel.org
+> Cc: alsa-devel@alsa-project.org
+> Cc: linux-gpio@vger.kernel.org
+> Cc: linux-pm@vger.kernel.org
+> Signed-off-by: Rob Herring <robh@kernel.org>
+> ---
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- arch/arm64/boot/dts/qcom/sdm845.dtsi | 17 ++++++++++++++++-
- 1 file changed, 16 insertions(+), 1 deletion(-)
+Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-diff --git a/arch/arm64/boot/dts/qcom/sdm845.dtsi b/arch/arm64/boot/dts/qcom/sdm845.dtsi
-index b31bf62e8680..c999b41c2605 100644
---- a/arch/arm64/boot/dts/qcom/sdm845.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sdm845.dtsi
-@@ -1078,6 +1078,7 @@ gcc: clock-controller@100000 {
- 			#clock-cells = <1>;
- 			#reset-cells = <1>;
- 			#power-domain-cells = <1>;
-+			power-domains = <&rpmhpd SDM845_CX>;
- 		};
- 
- 		qfprom@784000 {
-@@ -2336,8 +2337,22 @@ ufs_mem_hc: ufshc@1d84000 {
- 				<0 0>,
- 				<0 0>,
- 				<0 300000000>;
--
-+			operating-points-v2 = <&ufs_opp_table>;
- 			status = "disabled";
-+
-+			ufs_opp_table: opp-table {
-+				compatible = "operating-points-v2";
-+
-+				opp-50000000 {
-+					opp-hz = /bits/ 64 <50000000>;
-+					required-opps = <&rpmhpd_opp_svs>;
-+				};
-+
-+				opp-200000000 {
-+					opp-hz = /bits/ 64 <200000000>;
-+					required-opps = <&rpmhpd_opp_nom>;
-+				};
-+			};
- 		};
- 
- 		ufs_mem_phy: phy@1d87000 {
--- 
-2.32.0
-
+Thanks,
+Charles
