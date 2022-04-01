@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D552C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ADB6C47089
 	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:02:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350227AbiDAO7W (ORCPT
+        id S1350308AbiDAO7d (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 10:59:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57372 "EHLO
+        Fri, 1 Apr 2022 10:59:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347816AbiDAOl0 (ORCPT
+        with ESMTP id S1346215AbiDAOll (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:41:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F1C02908B8;
-        Fri,  1 Apr 2022 07:34:16 -0700 (PDT)
+        Fri, 1 Apr 2022 10:41:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C8F5292B88;
+        Fri,  1 Apr 2022 07:34:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 13387B8250E;
-        Fri,  1 Apr 2022 14:34:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8F2AC36AE3;
-        Fri,  1 Apr 2022 14:34:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C8C15B82507;
+        Fri,  1 Apr 2022 14:33:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 845A2C340F2;
+        Fri,  1 Apr 2022 14:33:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823648;
-        bh=egz4uTNlCOfFS/B1f2h+SiQr2Nz+oyORKD+O+02NICQ=;
+        s=k20201202; t=1648823637;
+        bh=6gfl03XtCpSy+DNmNt9vEiFSJ0VxUrjJP6txBusHbEA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EmgqmJgvULnz1K+Wq0z4TH5Huo1MneBTgCFfTX+gYnxeiWLVaNprS1fhnxfbHBJqM
-         HFqec6ibSqsaSuTnh3w13ESrUakN2qtPs8gkvPymnvpYsI3tNNsILQIgXK2JbOTSwN
-         yqcgLHu1IPTop9KZv4laOYGUWl4XKw70MdGtFU2mtW/bjOXFYC1HtjyftSZQZt5RKJ
-         0J6VrV9Nfdd5+mWuLS9F1nW4bQpug1rK5MOMYDC+CoclAc+7W+gsb3KAFuQvU/lmnI
-         qyf34mBqMmxDWq8A2BTMsWY2gpWq6mZche+Qhq0j7AXPjG/h3UnfgRzmVJYbZpoxEz
-         g7iGTOnlBZo8Q==
+        b=iZ0yx8N1d7x18ANd+lQiuDesP8T7N25ttlHzm3fhj0sAuDwEYAptCDh7IiQlw+1Pw
+         lmfqjQAo7/7z2h8wiubOffKyXlejiCEj5Hjye+jynzfVXYyyigkfw4Tv+W4ozm6wtu
+         QDgCR71QDTWwMqVC635mAnnGk1YgdE5BZmQiZdweRG2lhBbRZOj6QxYWLgFSdjNQhQ
+         UVAh0fVK+hqhJd+FbzhzA5bS/dKSFk5KVyJmXWqjvwwS7d9Czj3xT1ugGxiLQDcwrL
+         pIr6wGjYhj0VZq6aXn/aAXgIzbXkpcLNDWFRPDHCQqUFowLlSdp8cCSZwKLxyZbvsw
+         dZ3+wpcn1CurA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yongzhi Liu <lyz_cs@pku.edu.cn>, Melissa Wen <mwen@igalia.com>,
-        Melissa Wen <melissa.srw@gmail.com>,
-        Sasha Levin <sashal@kernel.org>, emma@anholt.net,
-        airlied@linux.ie, daniel@ffwll.ch, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.16 027/109] drm/v3d: fix missing unlock
-Date:   Fri,  1 Apr 2022 10:31:34 -0400
-Message-Id: <20220401143256.1950537-27-sashal@kernel.org>
+Cc:     Tony Lu <tonylu@linux.alibaba.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, kgraul@linux.ibm.com,
+        kuba@kernel.org, pabeni@redhat.com, linux-s390@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 022/109] net/smc: Send directly when TCP_CORK is cleared
+Date:   Fri,  1 Apr 2022 10:31:29 -0400
+Message-Id: <20220401143256.1950537-22-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143256.1950537-1-sashal@kernel.org>
 References: <20220401143256.1950537-1-sashal@kernel.org>
@@ -53,66 +54,109 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yongzhi Liu <lyz_cs@pku.edu.cn>
+From: Tony Lu <tonylu@linux.alibaba.com>
 
-[ Upstream commit e57c1a3bd5e8e0c7181f65ae55581f0236a8f284 ]
+[ Upstream commit ea785a1a573b390a150010b3c5b81e1ccd8c98a8 ]
 
-[why]
-Unlock is needed on the error handling path to prevent dead lock.
-v3d_submit_cl_ioctl and v3d_submit_csd_ioctl is missing unlock.
+According to the man page of TCP_CORK [1], if set, don't send out
+partial frames. All queued partial frames are sent when option is
+cleared again.
 
-[how]
-Fix this by changing goto target on the error handling path. So
-changing the goto to target an error handling path
-that includes drm_gem_unlock reservations.
+When applications call setsockopt to disable TCP_CORK, this call is
+protected by lock_sock(), and tries to mod_delayed_work() to 0, in order
+to send pending data right now. However, the delayed work smc_tx_work is
+also protected by lock_sock(). There introduces lock contention for
+sending data.
 
-Signed-off-by: Yongzhi Liu <lyz_cs@pku.edu.cn>
-Reviewed-by: Melissa Wen <mwen@igalia.com>
-Signed-off-by: Melissa Wen <melissa.srw@gmail.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/1643377262-109975-1-git-send-email-lyz_cs@pku.edu.cn
+To fix it, send pending data directly which acts like TCP, without
+lock_sock() protected in the context of setsockopt (already lock_sock()ed),
+and cancel unnecessary dealyed work, which is protected by lock.
+
+[1] https://linux.die.net/man/7/tcp
+
+Signed-off-by: Tony Lu <tonylu@linux.alibaba.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/v3d/v3d_gem.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ net/smc/af_smc.c |  4 ++--
+ net/smc/smc_tx.c | 25 +++++++++++++++----------
+ net/smc/smc_tx.h |  1 +
+ 3 files changed, 18 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/gpu/drm/v3d/v3d_gem.c b/drivers/gpu/drm/v3d/v3d_gem.c
-index e47ae40a865a..91bdec3e0ef7 100644
---- a/drivers/gpu/drm/v3d/v3d_gem.c
-+++ b/drivers/gpu/drm/v3d/v3d_gem.c
-@@ -798,7 +798,7 @@ v3d_submit_cl_ioctl(struct drm_device *dev, void *data,
- 
- 		if (!render->base.perfmon) {
- 			ret = -ENOENT;
--			goto fail;
-+			goto fail_perfmon;
+diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+index a0fb596459a3..0ec721b8059a 100644
+--- a/net/smc/af_smc.c
++++ b/net/smc/af_smc.c
+@@ -2632,8 +2632,8 @@ static int smc_setsockopt(struct socket *sock, int level, int optname,
+ 		    sk->sk_state != SMC_CLOSED) {
+ 			if (!val) {
+ 				SMC_STAT_INC(smc, cork_cnt);
+-				mod_delayed_work(smc->conn.lgr->tx_wq,
+-						 &smc->conn.tx_work, 0);
++				smc_tx_pending(&smc->conn);
++				cancel_delayed_work(&smc->conn.tx_work);
+ 			}
  		}
- 	}
+ 		break;
+diff --git a/net/smc/smc_tx.c b/net/smc/smc_tx.c
+index be241d53020f..7b0b6e24582f 100644
+--- a/net/smc/smc_tx.c
++++ b/net/smc/smc_tx.c
+@@ -597,27 +597,32 @@ int smc_tx_sndbuf_nonempty(struct smc_connection *conn)
+ 	return rc;
+ }
  
-@@ -847,6 +847,7 @@ v3d_submit_cl_ioctl(struct drm_device *dev, void *data,
+-/* Wakeup sndbuf consumers from process context
+- * since there is more data to transmit
+- */
+-void smc_tx_work(struct work_struct *work)
++void smc_tx_pending(struct smc_connection *conn)
+ {
+-	struct smc_connection *conn = container_of(to_delayed_work(work),
+-						   struct smc_connection,
+-						   tx_work);
+ 	struct smc_sock *smc = container_of(conn, struct smc_sock, conn);
+ 	int rc;
  
- fail_unreserve:
- 	mutex_unlock(&v3d->sched_lock);
-+fail_perfmon:
- 	drm_gem_unlock_reservations(last_job->bo,
- 				    last_job->bo_count, &acquire_ctx);
- fail:
-@@ -1027,7 +1028,7 @@ v3d_submit_csd_ioctl(struct drm_device *dev, void *data,
- 						     args->perfmon_id);
- 		if (!job->base.perfmon) {
- 			ret = -ENOENT;
--			goto fail;
-+			goto fail_perfmon;
- 		}
- 	}
+-	lock_sock(&smc->sk);
+ 	if (smc->sk.sk_err)
+-		goto out;
++		return;
  
-@@ -1056,6 +1057,7 @@ v3d_submit_csd_ioctl(struct drm_device *dev, void *data,
+ 	rc = smc_tx_sndbuf_nonempty(conn);
+ 	if (!rc && conn->local_rx_ctrl.prod_flags.write_blocked &&
+ 	    !atomic_read(&conn->bytes_to_rcv))
+ 		conn->local_rx_ctrl.prod_flags.write_blocked = 0;
++}
++
++/* Wakeup sndbuf consumers from process context
++ * since there is more data to transmit
++ */
++void smc_tx_work(struct work_struct *work)
++{
++	struct smc_connection *conn = container_of(to_delayed_work(work),
++						   struct smc_connection,
++						   tx_work);
++	struct smc_sock *smc = container_of(conn, struct smc_sock, conn);
  
- fail_unreserve:
- 	mutex_unlock(&v3d->sched_lock);
-+fail_perfmon:
- 	drm_gem_unlock_reservations(clean_job->bo, clean_job->bo_count,
- 				    &acquire_ctx);
- fail:
+-out:
++	lock_sock(&smc->sk);
++	smc_tx_pending(conn);
+ 	release_sock(&smc->sk);
+ }
+ 
+diff --git a/net/smc/smc_tx.h b/net/smc/smc_tx.h
+index 07e6ad76224a..a59f370b8b43 100644
+--- a/net/smc/smc_tx.h
++++ b/net/smc/smc_tx.h
+@@ -27,6 +27,7 @@ static inline int smc_tx_prepared_sends(struct smc_connection *conn)
+ 	return smc_curs_diff(conn->sndbuf_desc->len, &sent, &prep);
+ }
+ 
++void smc_tx_pending(struct smc_connection *conn);
+ void smc_tx_work(struct work_struct *work);
+ void smc_tx_init(struct smc_sock *smc);
+ int smc_tx_sendmsg(struct smc_sock *smc, struct msghdr *msg, size_t len);
 -- 
 2.34.1
 
