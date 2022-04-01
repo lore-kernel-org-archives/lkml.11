@@ -2,50 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DDA4C47086
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:02:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C4CCC47081
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Apr 2022 15:02:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349910AbiDAO6R (ORCPT
+        id S1349850AbiDAO6I (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 10:58:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32850 "EHLO
+        Fri, 1 Apr 2022 10:58:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347709AbiDAOj5 (ORCPT
+        with ESMTP id S1347662AbiDAOjz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 10:39:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE35B28958A;
-        Fri,  1 Apr 2022 07:33:39 -0700 (PDT)
+        Fri, 1 Apr 2022 10:39:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D9FF287A1C;
+        Fri,  1 Apr 2022 07:33:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 61A78B824D5;
-        Fri,  1 Apr 2022 14:33:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0655C3410F;
-        Fri,  1 Apr 2022 14:33:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C2DF7B82518;
+        Fri,  1 Apr 2022 14:33:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65F67C36AEB;
+        Fri,  1 Apr 2022 14:33:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823617;
-        bh=tiS/AMbghCKUJCgtbDBDwXBAJjMpILpG1ZtoPCEFpz4=;
+        s=k20201202; t=1648823623;
+        bh=Xq0CieXTAsTIcyE49vHIu0rglLkIexXFeVvGevFWMNY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oGCZBuboy7jXXc348bB2gjpyqocdp5bCZ2URYGYhraTXNvHx11pcVDPPDHBtwKjXH
-         RwGRubkYlg7d1vbEYJrBwfKBVOfF0dNljfY9ovCnQSMW7HIAqaI2B4t4gNFHuVgu1r
-         ExOQ/4bACy1xe2fFIUg2DCSoCK2Zh78NFbBOsLdS6fuXwQH0zD/6guQzgpdh8LYFyX
-         maVQi6FpYaQrEhO0VIIsxwtkZLjPZmQI2ixtYJWMfWxspYdh4LdIqIyzouiowpc0Dg
-         pqpGVkBugHs+2w/EaKH8WBvi8Ts0RmF7JSoVyl+UuFeERXDzQwMZaVPh3hwR0YAobf
-         5+iQHCXSC2dcg==
+        b=aN5WHGDuuvFmCoh4N8+9M8uIDggAtvV3g/VymkisK1j95iDBQUSiDQO5NC04bg5+3
+         QI5TSFwq9e2iGERIeon+mAmkyrC0JMbcifrngrkZPoBPiTL6XykNRzpJ7Ss3AumM1E
+         tRHtAfaUnuleVwXbE5EzDX6rdYMQuqUQAr2mL7oU3HeorekImNyCngtCq+nzT2jsl7
+         TT+4duOBvB84v33RSW2P+jn3uiZniekZ+NwNpXZLgjNKiWw7iaMUqNXC5yGCkucDt6
+         slbjxvXb5GtensLnjAVj0j9wHujsOJWVucfM8yGtS3tjhAl4UGgrGUm2ZdcZYmVXaA
+         Bh9Rmad3Wk4dA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Wayne Chang <waynec@nvidia.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, balbi@kernel.org,
-        thierry.reding@gmail.com, jonathanh@nvidia.com,
-        zhangqilong3@huawei.com, rikard.falkeborn@gmail.com,
-        yangyingliang@huawei.com, jakobkoschel@gmail.com,
-        chunfeng.yun@mediatek.com, linux-usb@vger.kernel.org,
-        linux-tegra@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 011/109] usb: gadget: tegra-xudc: Fix control endpoint's definitions
-Date:   Fri,  1 Apr 2022 10:31:18 -0400
-Message-Id: <20220401143256.1950537-11-sashal@kernel.org>
+Cc:     Philip Yang <Philip.Yang@amd.com>,
+        Felix Kuehling <Felix.Kuehling@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
+        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.16 015/109] drm/amdkfd: Don't take process mutex for svm ioctls
+Date:   Fri,  1 Apr 2022 10:31:22 -0400
+Message-Id: <20220401143256.1950537-15-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143256.1950537-1-sashal@kernel.org>
 References: <20220401143256.1950537-1-sashal@kernel.org>
@@ -57,62 +55,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wayne Chang <waynec@nvidia.com>
+From: Philip Yang <Philip.Yang@amd.com>
 
-[ Upstream commit 7bd42fb95eb4f98495ccadf467ad15124208ec49 ]
+[ Upstream commit ac7c48c0cce00d03b3c95fddcccb0a45257e33e3 ]
 
-According to the Tegra Technical Reference Manual, the seq_num
-field of control endpoint is not [31:24] but [31:27]. Bit 24
-is reserved and bit 26 is splitxstate.
+SVM ioctls take proper svms->lock to handle race conditions, don't need
+take process mutex to serialize ioctls. This also fixes circular locking
+warning:
 
-The change fixes the wrong control endpoint's definitions.
+WARNING: possible circular locking dependency detected
 
-Signed-off-by: Wayne Chang <waynec@nvidia.com>
-Link: https://lore.kernel.org/r/20220107091349.149798-1-waynec@nvidia.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+  Possible unsafe locking scenario:
+
+        CPU0                    CPU1
+        ----                    ----
+   lock((work_completion)(&svms->deferred_list_work));
+                                lock(&process->mutex);
+                     lock((work_completion)(&svms->deferred_list_work));
+   lock(&process->mutex);
+
+   *** DEADLOCK ***
+
+Signed-off-by: Philip Yang <Philip.Yang@amd.com>
+Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/gadget/udc/tegra-xudc.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/amd/amdkfd/kfd_chardev.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
-diff --git a/drivers/usb/gadget/udc/tegra-xudc.c b/drivers/usb/gadget/udc/tegra-xudc.c
-index 716d9ab2d2ff..be76f891b9c5 100644
---- a/drivers/usb/gadget/udc/tegra-xudc.c
-+++ b/drivers/usb/gadget/udc/tegra-xudc.c
-@@ -272,8 +272,10 @@ BUILD_EP_CONTEXT_RW(deq_hi, deq_hi, 0, 0xffffffff)
- BUILD_EP_CONTEXT_RW(avg_trb_len, tx_info, 0, 0xffff)
- BUILD_EP_CONTEXT_RW(max_esit_payload, tx_info, 16, 0xffff)
- BUILD_EP_CONTEXT_RW(edtla, rsvd[0], 0, 0xffffff)
--BUILD_EP_CONTEXT_RW(seq_num, rsvd[0], 24, 0xff)
-+BUILD_EP_CONTEXT_RW(rsvd, rsvd[0], 24, 0x1)
- BUILD_EP_CONTEXT_RW(partial_td, rsvd[0], 25, 0x1)
-+BUILD_EP_CONTEXT_RW(splitxstate, rsvd[0], 26, 0x1)
-+BUILD_EP_CONTEXT_RW(seq_num, rsvd[0], 27, 0x1f)
- BUILD_EP_CONTEXT_RW(cerrcnt, rsvd[1], 18, 0x3)
- BUILD_EP_CONTEXT_RW(data_offset, rsvd[2], 0, 0x1ffff)
- BUILD_EP_CONTEXT_RW(numtrbs, rsvd[2], 22, 0x1f)
-@@ -1554,6 +1556,9 @@ static int __tegra_xudc_ep_set_halt(struct tegra_xudc_ep *ep, bool halt)
- 		ep_reload(xudc, ep->index);
+diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_chardev.c b/drivers/gpu/drm/amd/amdkfd/kfd_chardev.c
+index 24ebd61395d8..3aaf10c778d7 100644
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_chardev.c
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_chardev.c
+@@ -1840,13 +1840,9 @@ static int kfd_ioctl_svm(struct file *filep, struct kfd_process *p, void *data)
+ 	if (!args->start_addr || !args->size)
+ 		return -EINVAL;
  
- 		ep_ctx_write_state(ep->context, EP_STATE_RUNNING);
-+		ep_ctx_write_rsvd(ep->context, 0);
-+		ep_ctx_write_partial_td(ep->context, 0);
-+		ep_ctx_write_splitxstate(ep->context, 0);
- 		ep_ctx_write_seq_num(ep->context, 0);
+-	mutex_lock(&p->mutex);
+-
+ 	r = svm_ioctl(p, args->op, args->start_addr, args->size, args->nattr,
+ 		      args->attrs);
  
- 		ep_reload(xudc, ep->index);
-@@ -2809,7 +2814,10 @@ static void tegra_xudc_reset(struct tegra_xudc *xudc)
- 	xudc->setup_seq_num = 0;
- 	xudc->queued_setup_packet = false;
- 
--	ep_ctx_write_seq_num(ep0->context, xudc->setup_seq_num);
-+	ep_ctx_write_rsvd(ep0->context, 0);
-+	ep_ctx_write_partial_td(ep0->context, 0);
-+	ep_ctx_write_splitxstate(ep0->context, 0);
-+	ep_ctx_write_seq_num(ep0->context, 0);
- 
- 	deq_ptr = trb_virt_to_phys(ep0, &ep0->transfer_ring[ep0->deq_ptr]);
- 
+-	mutex_unlock(&p->mutex);
+-
+ 	return r;
+ }
+ #else
 -- 
 2.34.1
 
