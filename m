@@ -2,85 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0534AC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 15:30:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D85A1C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 15:38:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357318AbiDBPc0 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Apr 2022 11:32:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35648 "EHLO
+        id S237747AbiDBPj5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 2 Apr 2022 11:39:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231587AbiDBPcT (ORCPT
+        with ESMTP id S233255AbiDBPjy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Apr 2022 11:32:19 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1355F12342E;
-        Sat,  2 Apr 2022 08:30:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1648913415;
-        bh=qbwQAiVMk58tGGoiDErQltrxLS9k74j45rz0UOdmUWQ=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
-        b=Pxd0aROwUk9/A9tQ0k2UKk1KJoSoKhHq8Hj4Hpv1A7iu7KUxhx5vCRGpEqVBGA1Un
-         mKXYQkU168aFSMXIcm0y9RKJqg4GkaXqqmB/CVeejjpeF8pUggsHnMhYuX6obqH68G
-         nNl7Hr0HJQDuN+Zr9P+2yxKLJB3u0fTAW+Czfsqc=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from localhost.fritz.box ([62.216.209.166]) by mail.gmx.net
- (mrgmx104 [212.227.17.168]) with ESMTPSA (Nemesis) id
- 1MeU0q-1oB6Rv2kaa-00aTDi; Sat, 02 Apr 2022 17:30:15 +0200
-From:   Peter Seiderer <ps.report@gmx.net>
-To:     linux-wireless@vger.kernel.org
-Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v1 1/2] ath9k: fix ath_get_rate_txpower() to respect the rate list end tag
-Date:   Sat,  2 Apr 2022 17:30:13 +0200
-Message-Id: <20220402153014.31332-1-ps.report@gmx.net>
-X-Mailer: git-send-email 2.35.1
+        Sat, 2 Apr 2022 11:39:54 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFE00147AC4
+        for <linux-kernel@vger.kernel.org>; Sat,  2 Apr 2022 08:37:59 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id a6so663891ejk.0
+        for <linux-kernel@vger.kernel.org>; Sat, 02 Apr 2022 08:37:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=Om7g1lbZHptt45F5/8EMxdm2FJFfgH0D0EuLInj36vU=;
+        b=JVpQL/v5kWGf/e2/0JHBaEUGGw/gj3Ojbu7L/yyxICvL6KyitRYisyaCKKvLuhnzRR
+         bAfAQP9PDU2bjs9AqA2JVHTfBGMh8fmWIugeGXrIAu6aDnRrJW7zkBjzeIA3lxhPcJak
+         SZkNWnlrUSlK3Rd3vLkZqXMrEcEVjAlK+O5bwuXqMDa1vGIOlmnhvuK68upNgJyomv7G
+         sc3KNTc4y9T5EXLE/guXbGP0nyME9ORiSoViSq/PG2SA573R80+wm5VdUkKA1OWYXX0R
+         pTnm9LSwLzLb/WXEzClRvpw2rsunxAiftvC1xqcKI18olKG7ZZnq5RGSNnw/MlN5LwvF
+         6Qug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Om7g1lbZHptt45F5/8EMxdm2FJFfgH0D0EuLInj36vU=;
+        b=ZMP/e1LsRIEsPkp8bTP3DHnuqSOci1Q7W40fnJWrW0dg4ZSWroG5dFTlFNlS8WOa35
+         f77gIHKpni3MI6cKfKkdJeb/xXbmy2YGGR8ulNEogt7KSo1E1+n+/7cdDD5C5s2ljxVL
+         KXeDPGg+4Q1zuDOr59hYQ/Z45s0yhx3hOGKSjZmxkV7aXmIwnosjaefhIhLcEHI4qVHB
+         wYuWE7ZPIKRjBoB4g9aed10wPgAYw5bPF1YLcRMA2+qqd04iiIveSQ5ys+uQL+nj5qlZ
+         dzbcwo0z/hvyZPLHiDx2otDPLJYUQcQSeyj+IZhryCR22OpcrmoeZ8xVSdZcHAAHr2k3
+         kOoQ==
+X-Gm-Message-State: AOAM533AiMvuqPtWFp/k830J0nzVofqWbzLPaziA5AQXbKcDHR7bs84K
+        wYybbU2r9SXRgJxUUAF6JmyLEA==
+X-Google-Smtp-Source: ABdhPJyxFZOKe4x3u3oQufe6RweNYX1YclatcvzBUnGqI5aWiZseTdOA+bMUDSEEh3I460buuu9lLA==
+X-Received: by 2002:a17:907:7f0c:b0:6e1:42ee:3e71 with SMTP id qf12-20020a1709077f0c00b006e142ee3e71mr4248325ejc.127.1648913878505;
+        Sat, 02 Apr 2022 08:37:58 -0700 (PDT)
+Received: from [192.168.0.171] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id i14-20020a50cfce000000b0041cbaba8743sm434843edk.56.2022.04.02.08.37.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 02 Apr 2022 08:37:58 -0700 (PDT)
+Message-ID: <523c6f46-54eb-22f0-221c-981879b8311e@linaro.org>
+Date:   Sat, 2 Apr 2022 17:37:57 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-X-Provags-ID: V03:K1:MohT/QwUArtXl+6vE+K5BnfsY+AJOMTC9brnN5PqrveWj7Xtzwa
- j1ywHVQK9DWdQWyIXP9CE9NW9jemaU8t4AxgAof4IwMWM2AQ640M5+fARZa1dCkmw+s6/vd
- REm3JcmbEf9nGryy7qUj6rjx30DwGAL9zFd5X0HWciAmqhhMAGiYwkYgkI/FcDVisB3+lE0
- 5KI3gPozFDIhgaqbkyazg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:2AFzgIAydoo=:gxx+/aJDdCMsTVrHZa6T7x
- IFEhbQNpZasl2nJDKQO3OdsvBzEWesDMBPVFR4wz7DoNc1YUWWHev9hNJ3pDOKNSlzIHiCDmJ
- FC/J2YymhG86K3UqwZzZIT9TSU0MzGrzGreaUP8LMhZjt0UTrsCYXW4BNbXcYaIOfJXEzwZkj
- gblK6j5dE/aEJlGsMxTatBJe6VyD69ZglbNz/wcemnAFLoV0+twLaO715CEjsDUSWUvODiBkt
- 4udQQGG2ptTKh8fyhaD9fiYeX3qX/KXIRgjBF9PCqs0kKjDfTcE/WTTSLc5jZRf6fiFp61GHv
- g60vkct2wveZXnwqf+Jh3ywT92tuRyRiXvoB/trXKJvUrGj9d+ktuMxAkXANSBtQkQ/KTyXin
- 33ss4mCoLf++M8GM380Hj8wUUUdICx+Ovrwa+10I1XhlEueGiAkQKZl4ZO7C8A2FdPsMcyyeW
- V4jF3MLeGHDj7W7K5Go2TqXPTIFMyU/aHqhcHKBoZX8QikEbUOz80Ql/icf9V2Mh1a3xkQ/0R
- FejqxUaQBE7Y6jxs3z1VngMtwH9ear9Keu97Y+DagdOkHvnpjEKU7KhXvCpRW8T+KmRFt4CV1
- 6G7XFbl7hUqD4Qmn1JtkV0+dD4EYGouE9Ury7StHJeLskRMEAihpp51lA7Nuns2bL8ftUOe89
- S2MT6Mfzp2/N3foX+OljyT0gDwfPorEIaIxux2RelPDSjP7yQgR1bDRgJTLtFJWivwoDrEt+m
- /y7GR5ckyIBDkyrtfCWtT1oRXv1h4+J260DUOMNQi2ijKfIlMrrhJTG6YfO6tzue9AHGzWxC6
- BAjBUaZ7DmJl6GQzsfOj4h7ZvcKVQU6reJLD9aOQi1wIsaiDEWDz8vszssLuxZtKqfLOUqItE
- IpaMTm3+Nya5QYZ2imVpxTQmcuL5BbuYzGyQfxIaeM50N5Np3PaJNKuRYRsIT7asmrHXySUIh
- ZA0P57MjG9gwnbiwzsZyckYaB8AN1PuHWcHgH3MTwSxxvUk4ph43i5Jv5BNrFcEbpnMuw59hD
- LaczuQA9RLLNkTpATHzAe2y0HsxlTuSQR69kqfdYaf1sCX0cPmPSRRg5DkOrltjmKTsC1qQE+
- pW4fVQxb8cA+ak=
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 3/5] dt-bindings: serial: Update Qualcomm geni based QUP
+ uart bindings
+Content-Language: en-US
+To:     Kuldeep Singh <singh.kuldeep87k@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org
+References: <20220402051206.6115-1-singh.kuldeep87k@gmail.com>
+ <20220402051206.6115-4-singh.kuldeep87k@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220402051206.6115-4-singh.kuldeep87k@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-U3RvcCByZWFkaW5nIChhbmQgY29weWluZykgZnJvbSBpZWVlODAyMTFfdHhfcmF0ZSB0byBhdGhf
-dHhfaW5mby5yYXRlcwphZnRlciBsaXN0IGVuZCB0YWcgKGNvdW50ID09IDAsIGlkeCA8IDApLCBw
-cmV2ZW50cyBjb3B5aW5nIG9mIGdhcmJhZ2UKdG8gY2FyZCByZWdpc3RlcnMuCgpOb3RlOiBubyBu
-ZWVkIHRvIHdyaXRlIHRvIHRoZSByZW1haW5pbmcgYXRoX3R4X2luZm8ucmF0ZXMgZW50cmllcwph
-cyB0aGUgY29tcGxldGUgYXRoX3R4X2luZm8gc3RydWN0IGlzIGFscmVhZHkgaW5pdGlhbGl6ZWQg
-dG8gemVybyBmcm9tCmJvdGggY2FsbCBzaXRlcy4KClNpZ25lZC1vZmYtYnk6IFBldGVyIFNlaWRl
-cmVyIDxwcy5yZXBvcnRAZ214Lm5ldD4KLS0tCiBkcml2ZXJzL25ldC93aXJlbGVzcy9hdGgvYXRo
-OWsveG1pdC5jIHwgMiArLQogMSBmaWxlIGNoYW5nZWQsIDEgaW5zZXJ0aW9uKCspLCAxIGRlbGV0
-aW9uKC0pCgpkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvd2lyZWxlc3MvYXRoL2F0aDlrL3htaXQu
-YyBiL2RyaXZlcnMvbmV0L3dpcmVsZXNzL2F0aC9hdGg5ay94bWl0LmMKaW5kZXggZDBjYWYxZGUy
-YmRlLi5lYzliYWQyZDk1MTAgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvbmV0L3dpcmVsZXNzL2F0aC9h
-dGg5ay94bWl0LmMKKysrIGIvZHJpdmVycy9uZXQvd2lyZWxlc3MvYXRoL2F0aDlrL3htaXQuYwpA
-QCAtMTI3MSw3ICsxMjcxLDcgQEAgc3RhdGljIHZvaWQgYXRoX2J1Zl9zZXRfcmF0ZShzdHJ1Y3Qg
-YXRoX3NvZnRjICpzYywgc3RydWN0IGF0aF9idWYgKmJmLAogCQlpbnQgcGh5OwogCiAJCWlmICgh
-cmF0ZXNbaV0uY291bnQgfHwgKHJhdGVzW2ldLmlkeCA8IDApKQotCQkJY29udGludWU7CisJCQli
-cmVhazsKIAogCQlyaXggPSByYXRlc1tpXS5pZHg7CiAJCWluZm8tPnJhdGVzW2ldLlRyaWVzID0g
-cmF0ZXNbaV0uY291bnQ7Ci0tIAoyLjM1LjEKCg==
+On 02/04/2022 07:12, Kuldeep Singh wrote:
+> Similar to i2c controller, move geni based QUP uart controller bindings
+
+s/i2c/I2C/
+s/uart/UART/
+
+> out from parent schema to an individual binding and let parent refer to
+> child schema later on. Uart bindings also stand incomplete right now
+
+s/Uart/UART/
+
+> similar to i2c, complete it along this process.
+
+s/i2c/I2C/
+
+
+
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
+
+Best regards,
+Krzysztof
