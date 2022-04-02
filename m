@@ -2,58 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40966C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 10:07:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60758C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 10:08:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240115AbiDBKJN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Apr 2022 06:09:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43146 "EHLO
+        id S241273AbiDBKKr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 2 Apr 2022 06:10:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231253AbiDBKJI (ORCPT
+        with ESMTP id S240000AbiDBKKn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Apr 2022 06:09:08 -0400
+        Sat, 2 Apr 2022 06:10:43 -0400
 Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1726615CB79;
-        Sat,  2 Apr 2022 03:07:17 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC05F17A87
+        for <linux-kernel@vger.kernel.org>; Sat,  2 Apr 2022 03:08:51 -0700 (PDT)
 Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4KVt4g5QcQz9sSQ;
-        Sat,  2 Apr 2022 12:07:15 +0200 (CEST)
+        by localhost (Postfix) with ESMTP id 4KVt6V37fXz9sSQ;
+        Sat,  2 Apr 2022 12:08:50 +0200 (CEST)
 X-Virus-Scanned: amavisd-new at c-s.fr
 Received: from pegase2.c-s.fr ([172.26.127.65])
         by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id asFxCh_05TOq; Sat,  2 Apr 2022 12:07:15 +0200 (CEST)
+        with ESMTP id hjJaduITydCT; Sat,  2 Apr 2022 12:08:50 +0200 (CEST)
 Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4KVt4g4WGXz9sSK;
-        Sat,  2 Apr 2022 12:07:15 +0200 (CEST)
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4KVt6V2JbRz9sSK;
+        Sat,  2 Apr 2022 12:08:50 +0200 (CEST)
 Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 7F5988B76D;
-        Sat,  2 Apr 2022 12:07:15 +0200 (CEST)
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 3D47F8B76D;
+        Sat,  2 Apr 2022 12:08:50 +0200 (CEST)
 X-Virus-Scanned: amavisd-new at c-s.fr
 Received: from messagerie.si.c-s.fr ([127.0.0.1])
         by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id 2D74MgcuY2Vi; Sat,  2 Apr 2022 12:07:15 +0200 (CEST)
+        with ESMTP id iF9RxfsW8Iav; Sat,  2 Apr 2022 12:08:50 +0200 (CEST)
 Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.202.136])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 48F538B768;
-        Sat,  2 Apr 2022 12:07:15 +0200 (CEST)
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 0962E8B768;
+        Sat,  2 Apr 2022 12:08:49 +0200 (CEST)
 Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 232A74wg684262
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 232A8cOS684345
         (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Sat, 2 Apr 2022 12:07:04 +0200
+        Sat, 2 Apr 2022 12:08:39 +0200
 Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 232A74Ji684261;
-        Sat, 2 Apr 2022 12:07:04 +0200
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 232A8c9u684344;
+        Sat, 2 Apr 2022 12:08:38 +0200
 X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
 From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Wolfram Sang <wsa@kernel.org>
+To:     Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
 Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-i2c@vger.kernel.org
-Subject: [PATCH] i2c: powermac: Prepare cleanup of powerpc's asm/prom.h
-Date:   Sat,  2 Apr 2022 12:06:59 +0200
-Message-Id: <f1785f7b2b9f79bb41525e3b5c3e06894852414f.1648833430.git.christophe.leroy@csgroup.eu>
+        linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
+Subject: [PATCH] iommu/fsl_pamu: Prepare cleanup of powerpc's asm/prom.h
+Date:   Sat,  2 Apr 2022 12:08:38 +0200
+Message-Id: <06862cca930068e8fa4fdd0b20d74872d3b929d6.1648833431.git.christophe.leroy@csgroup.eu>
 X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1648894018; l=777; s=20211009; h=from:subject:message-id; bh=TTfGC1WVgw9/YdK3SjnxF1B4kO3mMlAN6QcoLSGLB/k=; b=/lNEosBlMu6rfLiBCzuIWPEQEvxU2MGvGLDvhQIyqNb0YnjzigdBtVfokmx4fyj2yloatRsDKRr7 8eYGvxjWATj3Ttzp6VaIeRKrSc318JxMIfASTb5n7uXyCZL+WysU
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1648894117; l=1091; s=20211009; h=from:subject:message-id; bh=NWEQQSEGweH5QQ1/ViVd36IBMW3h78Fi4MZNGXLHOCc=; b=EtgOic5Jx3wJmS0/Mu5+W3OalOOGwvbU49c1Af0rSKyzeq80mRmsol8y1c8nsH7AM3ZlxeYnoeAR RY64tCrYCeDsWZK2u7hyWOke0Smd2LWkKkZk6kiatMl1DI/4dnQz
 X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -68,22 +67,36 @@ users of asm/prom.h
 
 Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
 ---
- drivers/i2c/busses/i2c-powermac.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/fsl_pamu.c        | 3 +++
+ drivers/iommu/fsl_pamu_domain.c | 1 +
+ 2 files changed, 4 insertions(+)
 
-diff --git a/drivers/i2c/busses/i2c-powermac.c b/drivers/i2c/busses/i2c-powermac.c
-index 5241e6f414e9..2e74747eec9c 100644
---- a/drivers/i2c/busses/i2c-powermac.c
-+++ b/drivers/i2c/busses/i2c-powermac.c
-@@ -15,7 +15,7 @@
- #include <linux/device.h>
- #include <linux/platform_device.h>
- #include <linux/of_irq.h>
--#include <asm/prom.h>
-+
- #include <asm/pmac_low_i2c.h>
+diff --git a/drivers/iommu/fsl_pamu.c b/drivers/iommu/fsl_pamu.c
+index fc38b1fba7cf..0d03f837a5d4 100644
+--- a/drivers/iommu/fsl_pamu.c
++++ b/drivers/iommu/fsl_pamu.c
+@@ -11,6 +11,9 @@
+ #include <linux/fsl/guts.h>
+ #include <linux/interrupt.h>
+ #include <linux/genalloc.h>
++#include <linux/of_address.h>
++#include <linux/of_irq.h>
++#include <linux/platform_device.h>
  
- MODULE_AUTHOR("Benjamin Herrenschmidt <benh@kernel.crashing.org>");
+ #include <asm/mpc85xx.h>
+ 
+diff --git a/drivers/iommu/fsl_pamu_domain.c b/drivers/iommu/fsl_pamu_domain.c
+index 69a4a62dc3b9..94b4589dc67c 100644
+--- a/drivers/iommu/fsl_pamu_domain.c
++++ b/drivers/iommu/fsl_pamu_domain.c
+@@ -9,6 +9,7 @@
+ 
+ #include "fsl_pamu_domain.h"
+ 
++#include <linux/platform_device.h>
+ #include <sysdev/fsl_pci.h>
+ 
+ /*
 -- 
 2.35.1
 
