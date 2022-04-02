@@ -2,77 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 619D0C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 01:24:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9B46C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 01:33:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236977AbiDBB0c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 21:26:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38442 "EHLO
+        id S237124AbiDBBfX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Apr 2022 21:35:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229819AbiDBB03 (ORCPT
+        with ESMTP id S229819AbiDBBfU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 21:26:29 -0400
-X-Greylist: delayed 3087 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 01 Apr 2022 18:24:39 PDT
-Received: from baldur.buserror.net (baldur.buserror.net [165.227.176.147])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CAC4144B4D;
-        Fri,  1 Apr 2022 18:24:39 -0700 (PDT)
-Received: from [2601:449:8480:af0::46ce]
-        by baldur.buserror.net with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <oss@buserror.net>)
-        id 1naRdE-005fFq-04; Fri, 01 Apr 2022 19:28:44 -0500
-Message-ID: <def6cb6b2ca84b007efea28df13075be25c70525.camel@buserror.net>
-From:   Scott Wood <oss@buserror.net>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Johannes Thumshirn <morbidrsa@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        devicetree@vger.kernel.org, linux-edac@vger.kernel.org,
-        Borislav Petkov <bp@alien8.de>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Tony Luck <tony.luck@intel.com>,
-        James Morse <james.morse@arm.com>,
-        Robert Richter <rric@kernel.org>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Date:   Fri, 01 Apr 2022 19:28:42 -0500
-In-Reply-To: <82a8bc4450a4daee50ee5fada75621fecb3703ff.1648721299.git.christophe.leroy@csgroup.eu>
-References: <82a8bc4450a4daee50ee5fada75621fecb3703ff.1648721299.git.christophe.leroy@csgroup.eu>
-Organization: Red Hat
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.4-1ubuntu2 
+        Fri, 1 Apr 2022 21:35:20 -0400
+Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25705C1CAD
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 18:33:30 -0700 (PDT)
+Received: by mail-qk1-x72a.google.com with SMTP id d142so3505792qkc.4
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 18:33:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=kLWion0WCWSkquD591asRO6YeUmhw3poQH4Z8c7saLc=;
+        b=AS5E31wWp8dtOG+Ko/3LoMKkYtXTOdAEJU2Qu96ynB/NskCvZkBk6VPgbN19h8GCLt
+         De1f0l8I8bOFMqBiwmiSlLR1yggy4tgPYFfvlT61gbZRl/yK3MhvSjQF/cDbMMt6oA54
+         NvqH9tzbqoJXU56LU1Fu58yk9uC/h+dw9jUnNp3QK6NGjNmcefsdGa8uQLDxkQ92lPFs
+         9HKrE5cq6zUFAsY9GRPiCx696/suc++ZsHnw2dh9OKxZ5Pl/9n2wskwGsvIkNHfha797
+         BGYm5Cp4ZBXlevonyf1pmvT2enAGBn0ieE1k5levVI1kmodvSqtM33HL7DkziDqO91q1
+         M5qg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=kLWion0WCWSkquD591asRO6YeUmhw3poQH4Z8c7saLc=;
+        b=5VZRzl5G77Z57DBKWNxVZn3yrchbY/XUvBeEp79J+u3MjBnWwDCNGnvLPqLsQKsgNz
+         pRiLmlN9cDCD6NDoz/w640NkyyzsSXsg76wHdXqpn3cyfJNIS8/617er6PL9fwW4q3Qr
+         yTbuI/cDLbxSVhw3UlW8bgPzgbava0c/RcCtJth04imT/92RMeRI/QCyOEcQp7CMwoDf
+         2EzlPHo3KmC08D6Nwd6t29DBDruBAnH9DHjPlRGKKthFAMWnJJ26yJQq3q8B99VkFBxk
+         OZdF4/ArOh2YTwbiQ9zXcpanFNMXII1MERuBSk12qQu4sIYxql2QOBtQlcnvWvszVcUs
+         YmsA==
+X-Gm-Message-State: AOAM5301zVR4A5Q2DneDZi5vCv3YshvIvb4eT0FCYf90b3rHIXVXAcr1
+        QHC67dWD97/ODwSu7bpmyr4=
+X-Google-Smtp-Source: ABdhPJz2SRTRv7nbuDJAZndFiet4TJg9EdzD2xnBacNnU2ZyilSwMGe86m0ftqxPY+xfEmDd1scC+A==
+X-Received: by 2002:a37:2717:0:b0:680:b3ea:cff3 with SMTP id n23-20020a372717000000b00680b3eacff3mr8273564qkn.573.1648863209329;
+        Fri, 01 Apr 2022 18:33:29 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id g4-20020ac87d04000000b002e06b4674a1sm3120968qtb.61.2022.04.01.18.33.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 01 Apr 2022 18:33:28 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: lv.ruyi@zte.com.cn
+To:     linux@armlinux.org.uk
+Cc:     shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
+        festevam@gmail.com, linux-imx@nxp.com, lv.ruyi@zte.com.cn,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] fix refcount leak in mxs_get_ocotp()
+Date:   Sat,  2 Apr 2022 01:33:22 +0000
+Message-Id: <20220402013322.2410228-1-lv.ruyi@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2601:449:8480:af0::46ce
-X-SA-Exim-Rcpt-To: christophe.leroy@csgroup.eu, krzk@kernel.org, robh+dt@kernel.org, morbidrsa@gmail.com, linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, devicetree@vger.kernel.org, linux-edac@vger.kernel.org, bp@alien8.de, mchehab@kernel.org, tony.luck@intel.com, james.morse@arm.com, rric@kernel.org, benh@kernel.crashing.org, paulus@samba.org, mpe@ellerman.id.au
-X-SA-Exim-Mail-From: oss@buserror.net
-Subject: Re: [PATCH] powerpc/85xx: Remove fsl,85... bindings
-X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
-X-SA-Exim-Scanned: Yes (on baldur.buserror.net)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-03-31 at 12:13 +0200, Christophe Leroy wrote:
-> Since commit 8a4ab218ef70 ("powerpc/85xx: Change deprecated binding
-> for 85xx-based boards"), those bindings are not used anymore.
-> 
-> A comment in drivers/edac/mpc85xx_edac.c say they are to be removed
-> with kernel 2.6.30.
-> 
-> Remove them now.
-> 
-> Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-> ---
->  .../bindings/memory-controllers/fsl/fsl,ddr.yaml   |  6 ------
->  .../devicetree/bindings/powerpc/fsl/l2cache.txt    |  6 ------
->  drivers/edac/mpc85xx_edac.c                        | 14 --------------
->  3 files changed, 26 deletions(-)
+From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-Acked-by: Scott Wood <oss@buserror.net>
+The of_find_compatible_node() function returns a node pointer with
+refcount incremented, use of_node_put() on it when done.
 
--Scott
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+---
+ arch/arm/mach-mxs/mach-mxs.c | 1 +
+ 1 file changed, 1 insertion(+)
 
+diff --git a/arch/arm/mach-mxs/mach-mxs.c b/arch/arm/mach-mxs/mach-mxs.c
+index 25c9d184fa4c..6eb731f38727 100644
+--- a/arch/arm/mach-mxs/mach-mxs.c
++++ b/arch/arm/mach-mxs/mach-mxs.c
+@@ -98,6 +98,7 @@ static const u32 *mxs_get_ocotp(void)
+ 
+ 	np = of_find_compatible_node(NULL, NULL, "fsl,ocotp");
+ 	ocotp_base = of_iomap(np, 0);
++	of_node_put(np);
+ 	WARN_ON(!ocotp_base);
+ 
+ 	mutex_lock(&ocotp_mutex);
+-- 
+2.25.1
 
