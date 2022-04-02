@@ -2,105 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12BA9C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 15:19:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C2D3C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 15:23:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357246AbiDBPUt (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Apr 2022 11:20:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58736 "EHLO
+        id S244301AbiDBPZa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 2 Apr 2022 11:25:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354802AbiDBPUq (ORCPT
+        with ESMTP id S232989AbiDBPZ2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Apr 2022 11:20:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6493211C20;
-        Sat,  2 Apr 2022 08:18:54 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1866EB80883;
-        Sat,  2 Apr 2022 15:18:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F582C340F0;
-        Sat,  2 Apr 2022 15:18:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648912731;
-        bh=rx3+JliMGIpaZApdgMUkzyOqNL+m0ef+I2pUyVfu2+U=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=HvL+FHkqpZDJifWDwb32vEGkreVa/vjqyXMbqo5MIFfX3ZvTW+lUGJMUJRyJO7Aav
-         QBv6D0QkUOFhIucwsLeFb/L8RK6ywPKPNyJKEe/xIxT39Cf9LjUUrWfUvYpeJqkIqy
-         /adz/syA7EU0IUWo9xGaADeFyN5o0S3z+n4p3RwBMBaKmEQpC/UlwhUu2fELqHeLz3
-         fTdxAQDZ4Nj05OmqZdCe+EO6AkE0Ok4946es8UwhJKz+KZV7n+x4RnO+EGTMS44Qs5
-         scYrzXg+4eVj7wesjsnzhfJms0voI25hmuFjl21IwhSKrvUs54a69Oe76MYcybmDxx
-         eXmithQccLKaA==
-Date:   Sat, 2 Apr 2022 16:26:33 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Gwendal Grignou <gwendal@chromium.org>
-Cc:     Stephen Boyd <swboyd@chromium.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio:proximity:sx_common: Fix device property parsing on
- DT systems
-Message-ID: <20220402162633.0050d289@jic23-huawei>
-In-Reply-To: <CAPUE2uvpBaE+YLkg6RXq4CCEFBr5ZFhjS1dXkbse9nyH8C=2Jg@mail.gmail.com>
-References: <20220331210425.3908278-1-swboyd@chromium.org>
-        <CAPUE2uvpBaE+YLkg6RXq4CCEFBr5ZFhjS1dXkbse9nyH8C=2Jg@mail.gmail.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        Sat, 2 Apr 2022 11:25:28 -0400
+Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADBE513E3E
+        for <linux-kernel@vger.kernel.org>; Sat,  2 Apr 2022 08:23:35 -0700 (PDT)
+Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-2eb43ad7909so8657077b3.2
+        for <linux-kernel@vger.kernel.org>; Sat, 02 Apr 2022 08:23:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=W5lz1yu1RFJJdDu7tlqZAj/hd2BIwyW9U6AOb+WHcfU=;
+        b=VaK/YZ0LEai3SCnmIqYQjLY0MtJCmHqesh95UNNYpEp1s1eLcWGZ8+soRa+hREMxPM
+         vfQAvOwhcUsNpepKcdIP4sdD0ivvdxpw9cUdhONb3oG70s0GziVXmrtBdI4xae4Gxu33
+         RZL4Xv9V9Pg0ZUQW/PYfaS6Jg+R7GbcWjPjOHyXlQKVhOxWQTx71W1cKEAdGMCajwz4l
+         lJSvIg3YUxr8TnQcHRlomRbIE4uJNiaZ1n1LX2YsuVHjSqTf5aguzGNNxxFytAuHz6cC
+         R9DkbEOc4+WCiWwTJsINnc1KilKJTv0wpGH9jv9eZDMSL7uDtKk7CGX9HS/Aw4fRsIoI
+         UR8g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=W5lz1yu1RFJJdDu7tlqZAj/hd2BIwyW9U6AOb+WHcfU=;
+        b=pliNwBYHHuKhMta+7UI45c8w+DexKntGzKQxeON7wVXO1lbAMKpOyxwJnQxs+XSe+s
+         noVOBDDEOFyzMFh8kyeUrzPVedCjgiDpZKelB3jq39roBAzg4fNRr+ghfFV2mkxP6UX/
+         fKdFReabY8TgrbShqpuI+obuJSFJPkOLCvWSkaeiQzsz0dcT8rihr8DctqFzQaV3D4Bv
+         UkHn/kibNgrxxLhlr25q2Hyb2VY3+c713sBS21gMigUrkyFpJwZ0G52v6yi2L2q936iL
+         cPHFMskKZ8tjkAev84WpKy2d19DyuLpJcEuYVGN1UsaV0Y23XymSXUbSastma69iuFEp
+         fzpA==
+X-Gm-Message-State: AOAM533TUcmt91QANk/bDvdSeS0yzauUMFaopTy5k8W2/cnyhLI8wAFW
+        ymxAjYaeqVAnhdws5JFdwp3mzP4MrN9Qk4aq6YIlwg==
+X-Google-Smtp-Source: ABdhPJxBtIz5h4o4ZDKE06XtUDNAYTU8cqFRU2+fDTEVoOG7eowpXHczRBTer2vdg7XNoB8BnBTepYLJukeN5EbKTFY=
+X-Received: by 2002:a81:897:0:b0:2e5:f3b2:f6de with SMTP id
+ 145-20020a810897000000b002e5f3b2f6demr15402644ywi.141.1648913014940; Sat, 02
+ Apr 2022 08:23:34 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20220318074529.5261-1-songmuchun@bytedance.com> <YkXPA69iLBDHFtjn@qian>
+In-Reply-To: <YkXPA69iLBDHFtjn@qian>
+From:   Muchun Song <songmuchun@bytedance.com>
+Date:   Sat, 2 Apr 2022 23:22:51 +0800
+Message-ID: <CAMZfGtWgPFRK5UogHx7cSesM5=4m2cSvtmk2KhqURHoMEq+=oQ@mail.gmail.com>
+Subject: Re: [PATCH v5 0/6] Fix some bugs related to ramp and dax
+To:     Qian Cai <quic_qiancai@quicinc.com>
+Cc:     Dan Williams <dan.j.williams@intel.com>,
+        Matthew Wilcox <willy@infradead.org>, Jan Kara <jack@suse.cz>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Alistair Popple <apopple@nvidia.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Ralph Campbell <rcampbell@nvidia.com>,
+        Hugh Dickins <hughd@google.com>,
+        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Ross Zwisler <zwisler@kernel.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        Linux NVDIMM <nvdimm@lists.linux.dev>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Xiongchun duan <duanxiongchun@bytedance.com>,
+        Muchun Song <smuchun@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 1 Apr 2022 13:54:51 -0700
-Gwendal Grignou <gwendal@chromium.org> wrote:
-
-> On Thu, Mar 31, 2022 at 2:04 PM Stephen Boyd <swboyd@chromium.org> wrote:
+On Thu, Mar 31, 2022 at 11:55 PM Qian Cai <quic_qiancai@quicinc.com> wrote:
+>
+> On Fri, Mar 18, 2022 at 03:45:23PM +0800, Muchun Song wrote:
+> > This series is based on next-20220225.
 > >
-> > After commit 7a3605bef878 ("iio: sx9310: Support ACPI property") we
-> > started using the 'indio_dev->dev' to extract device properties for
-> > various register settings in sx9310_get_default_reg(). This broke DT
-> > based systems because dev_fwnode() used in the device_property*() APIs
-> > can't find an 'of_node'. That's because the 'indio_dev->dev.of_node'
-> > pointer isn't set until iio_device_register() is called. Set the pointer
-> > earlier, next to where the ACPI companion is set, so that the device
-> > property APIs work on DT systems.
-> >
-> > Cc: Gwendal Grignou <gwendal@chromium.org>
-> > Fixes: 7a3605bef878 ("iio: sx9310: Support ACPI property")
-> > Signed-off-by: Stephen Boyd <swboyd@chromium.org>  
-> Reviewed-by: Gwendal Grignou <gwendal@chromium.org>
+> > Patch 1-2 fix a cache flush bug, because subsequent patches depend on
+> > those on those changes, there are placed in this series.  Patch 3-4
+> > are preparation for fixing a dax bug in patch 5.  Patch 6 is code clean=
+up
+> > since the previous patch remove the usage of follow_invalidate_pte().
+>
+> Reverting this series fixed boot crashes.
+>
+>  KASAN: null-ptr-deref in range [0x0000000000000018-0x000000000000001f]
+>  Mem abort info:
+>    ESR =3D 0x96000004
+>    EC =3D 0x25: DABT (current EL), IL =3D 32 bits
+>    SET =3D 0, FnV =3D 0
+>    EA =3D 0, S1PTW =3D 0
+>    FSC =3D 0x04: level 0 translation fault
+>  Data abort info:
+>    ISV =3D 0, ISS =3D 0x00000004
+>    CM =3D 0, WnR =3D 0
+>  [dfff800000000003] address between user and kernel address ranges
+>  Internal error: Oops: 96000004 [#1] PREEMPT SMP
+>  Modules linked in: cdc_ether usbnet ipmi_devintf ipmi_msghandler cppc_cp=
+ufreq fuse ip_tables x_tables ipv6 btrfs blake2b_generic libcrc32c xor xor_=
+neon raid6_pq zstd_compress dm_mod nouveau crct10dif_ce drm_ttm_helper mlx5=
+_core ttm drm_dp_helper drm_kms_helper nvme mpt3sas nvme_core xhci_pci raid=
+_class drm xhci_pci_renesas
+>  CPU: 3 PID: 1707 Comm: systemd-udevd Not tainted 5.17.0-next-20220331-00=
+004-g2d550916a6b9 #51
+>  pstate: 104000c9 (nzcV daIF +PAN -UAO -TCO -DIT -SSBS BTYPE=3D--)
+>  pc : __lock_acquire
+>  lr : lock_acquire.part.0
+>  sp : ffff800030a16fd0
+>  x29: ffff800030a16fd0 x28: ffffdd876c4e9f90 x27: 0000000000000018
+>  x26: 0000000000000000 x25: 0000000000000018 x24: 0000000000000000
+>  x23: ffff08022beacf00 x22: ffffdd8772507660 x21: 0000000000000000
+>  x20: 0000000000000000 x19: 0000000000000000 x18: ffffdd8772417d2c
+>  x17: ffffdd876c5bc2e0 x16: 1fffe100457d5b06 x15: 0000000000000094
+>  x14: 000000000000f1f1 x13: 00000000f3f3f3f3 x12: ffff08022beacf08
+>  x11: 1ffffbb0ee482fa5 x10: ffffdd8772417d28 x9 : 0000000000000000
+>  x8 : 0000000000000003 x7 : ffffdd876c4e9f90 x6 : 0000000000000000
+>  x5 : 0000000000000000 x4 : 0000000000000001 x3 : 0000000000000000
+>  x2 : 0000000000000000 x1 : 0000000000000003 x0 : dfff800000000000
+>  Call trace:
+>   __lock_acquire
+>   lock_acquire.part.0
+>   lock_acquire
+>   _raw_spin_lock
+>   page_vma_mapped_walk
+>   try_to_migrate_one
+>   rmap_walk_anon
+>   try_to_migrate
+>   __unmap_and_move
+>   unmap_and_move
+>   migrate_pages
+>   migrate_misplaced_page
+>   do_huge_pmd_numa_page
+>   __handle_mm_fault
+>   handle_mm_fault
+>   do_translation_fault
+>   do_mem_abort
+>   el0_da
+>   el0t_64_sync_handler
+>   el0t_64_sync
+>  Code: d65f03c0 d343ff61 d2d00000 f2fbffe0 (38e06820)
 
-Applied to the fixes-togreg branch of iio.git though I'll not push
-that out until rc1 is out in a few days time and I can rebase appropriately.
+Hi,
 
-Thinking on the cause of this problem it seems like we should really be setting
-the indio_dev->dev.of_node in iio_device_alloc() and then let a driver
-override it if desired rather than this approach of fill it in if not set.
-Such a change only affects a few drivers based on a dumb bit of grepping.
-I'd treat such a change as a cleanup though, so having this fix in place
-makes sense anyway. 
+I have found the root cause. It is because the implementation of
+pmd_leaf() on arm64 is wrong.  It didn't consider the PROT_NONE
+mapped PMD, which does not match the expectation of pmd_leaf().
+I'll send a fixed patch for arm64 like the following.
 
-Jonathan
+diff --git a/arch/arm64/include/asm/pgtable.h b/arch/arm64/include/asm/pgta=
+ble.h
+index 94e147e5456c..09eaae46a19b 100644
+--- a/arch/arm64/include/asm/pgtable.h
++++ b/arch/arm64/include/asm/pgtable.h
+@@ -535,7 +535,7 @@ extern pgprot_t phys_mem_access_prot(struct file
+*file, unsigned long pfn,
+                                 PMD_TYPE_TABLE)
+ #define pmd_sect(pmd)          ((pmd_val(pmd) & PMD_TYPE_MASK) =3D=3D \
+                                 PMD_TYPE_SECT)
+-#define pmd_leaf(pmd)          pmd_sect(pmd)
++#define pmd_leaf(pmd)          (pmd_present(pmd) && !(pmd_val(pmd) &
+PMD_TABLE_BIT))
+ #define pmd_bad(pmd)           (!pmd_table(pmd))
 
-> > ---
-> >  drivers/iio/proximity/sx_common.c | 1 +
-> >  1 file changed, 1 insertion(+)
-> >
-> > diff --git a/drivers/iio/proximity/sx_common.c b/drivers/iio/proximity/sx_common.c
-> > index a7c07316a0a9..8ad814d96b7e 100644
-> > --- a/drivers/iio/proximity/sx_common.c
-> > +++ b/drivers/iio/proximity/sx_common.c
-> > @@ -521,6 +521,7 @@ int sx_common_probe(struct i2c_client *client,
-> >                 return dev_err_probe(dev, ret, "error reading WHOAMI\n");
-> >
-> >         ACPI_COMPANION_SET(&indio_dev->dev, ACPI_COMPANION(dev));
-> > +       indio_dev->dev.of_node = client->dev.of_node;
-> >         indio_dev->modes = INDIO_DIRECT_MODE;
-> >
-> >         indio_dev->channels =  data->chip_info->iio_channels;
-> > --
-> > https://chromeos.dev
-> >  
+ #define pmd_leaf_size(pmd)     (pmd_cont(pmd) ? CONT_PMD_SIZE : PMD_SIZE)
 
+Thanks.
