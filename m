@@ -2,291 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CEAFC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 18:41:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BCB6C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 19:07:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236707AbiDBSnA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Apr 2022 14:43:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40606 "EHLO
+        id S236693AbiDBTJ3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 2 Apr 2022 15:09:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356102AbiDBSme (ORCPT
+        with ESMTP id S229629AbiDBTJ2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Apr 2022 14:42:34 -0400
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71AC64ECF5
-        for <linux-kernel@vger.kernel.org>; Sat,  2 Apr 2022 11:40:26 -0700 (PDT)
-Received: by mail-wm1-x32b.google.com with SMTP id q20so3550964wmq.1
-        for <linux-kernel@vger.kernel.org>; Sat, 02 Apr 2022 11:40:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=risKkAqOEjWleKmnT8bK4h1KlQ5AGYxyoMhBddPo4NY=;
-        b=crRmsryJtbKcnhb0bGcpTCYhixdMvRx86AheptFtDOcs7zUDb8AX52Hgz3zpG4YQq0
-         enrzShGgZ7acmJQIFgq8btYpe+CcCG+CnD29wqVM2f56VCdiPJUr9bvXPe7nzO85KMLl
-         yfSLV/VtX+dMdDd214mGIoVOgWFa3D504YaW47gZPUQqCFVmj94KGo55c5P05JoOnj0z
-         5wFOeZ0up4z65FAHe1790YdMLY56ktB4REXDN0ebLzgeYxxjTIahFeTGFgQ1rT+uFeJG
-         UOfF+vIMhpE1IIbCp4Nbk5/55l917vSwx+XhZottRV7K+vT5fw+owozOYcnyF5ga/jAT
-         Ja1A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=risKkAqOEjWleKmnT8bK4h1KlQ5AGYxyoMhBddPo4NY=;
-        b=TbRV6QNhhdFGTcI3zVS5pTEFMyUihtkweYouZCnfHW2issXuTz+sWN7iRe+6+e5pVO
-         dEurtsEYmOV6eec/3MEYuGlXa8dTkIwNGiA5A0PJolGOuEItg3pOLyuiJPAx9cFKwcdW
-         4Ezxm6KNSsnIB9TgVAP61GKXEODpp+NdlnV4T1s+2ijm0cXNn8CCIWjdm4SDdiiSUqcd
-         S8UlYVC/fxq9R4ho9uEuY7kmjd00ufD+DzhRWqkR1IWxaoUHdpytVm5+hqpCHkYPLe68
-         IUtkezQWlDl5sFT79xtt9URPUth8gL/GIewy+Ni2M3wLb2RObwMS8QqnJidhc615w7yf
-         iSqQ==
-X-Gm-Message-State: AOAM531l38X90zlQWp5Kw5PFP+YlCYh9DSwE1NXQeEmYPClHfjGIk44b
-        F9SqzqHXNIwmMYmGb/+O4ZxsfQ==
-X-Google-Smtp-Source: ABdhPJxJQX61Lgc2fAm69igVVaag+E3gYfkAZRc9p6w8zF72MDwfxkT2QRbAS8dxPrqO/W3uXoelLA==
-X-Received: by 2002:a7b:c1d3:0:b0:38c:5b15:de91 with SMTP id a19-20020a7bc1d3000000b0038c5b15de91mr13178881wmj.40.1648924824755;
-        Sat, 02 Apr 2022 11:40:24 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id m20-20020a05600c4f5400b0038b5162260csm6760502wmq.23.2022.04.02.11.40.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 02 Apr 2022 11:40:24 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mark Brown <broonie@kernel.org>, linux-arm-msm@vger.kernel.org,
-        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-spi@vger.kernel.org
-Cc:     Kuldeep Singh <singh.kuldeep87k@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v3 7/9] dt-bindings: serial: qcom,msm-uartdm: convert to dtschema
-Date:   Sat,  2 Apr 2022 20:40:09 +0200
-Message-Id: <20220402184011.132465-8-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220402184011.132465-1-krzysztof.kozlowski@linaro.org>
-References: <20220402184011.132465-1-krzysztof.kozlowski@linaro.org>
+        Sat, 2 Apr 2022 15:09:28 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F208E12A8DD;
+        Sat,  2 Apr 2022 12:07:35 -0700 (PDT)
+Received: from mail-wm1-f54.google.com ([209.85.128.54]) by
+ mrelayeu.kundenserver.de (mreue107 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1MC3H1-1niiuB0qkv-00CPnt; Sat, 02 Apr 2022 21:07:34 +0200
+Received: by mail-wm1-f54.google.com with SMTP id q20so3573896wmq.1;
+        Sat, 02 Apr 2022 12:07:34 -0700 (PDT)
+X-Gm-Message-State: AOAM532WvDSooXWBhNNyCjvEapY+WnlGKEn1DBemeZgATB8czEOj0tbf
+        5BP0b7UWbSV5IXQyBeqYHcHpTdKtN05SHuPcuQA=
+X-Google-Smtp-Source: ABdhPJwIAkpxl+JZt9LjgRq9lJWnGHnJOqkbLJpfn319rdmgWy77pOsaUi8rkQeJc/4Nv+hf1X3LMml3uCdwMixVHak=
+X-Received: by 2002:a7b:cd13:0:b0:38b:f39c:1181 with SMTP id
+ f19-20020a7bcd13000000b0038bf39c1181mr13827152wmj.20.1648926453781; Sat, 02
+ Apr 2022 12:07:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220321165049.35985-1-sven@svenpeter.dev> <20220321165049.35985-5-sven@svenpeter.dev>
+ <CAK8P3a19F8K0MvZV_R6HrmmR+WBsDge+u6U3iEVEjZ74i6+nEg@mail.gmail.com> <f06576c8-76c6-41ae-874d-81ea0b5b5603@www.fastmail.com>
+In-Reply-To: <f06576c8-76c6-41ae-874d-81ea0b5b5603@www.fastmail.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Sat, 2 Apr 2022 21:07:17 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a3xioqJDb7hQ3dvxQyHPg2hgJbeJywEP+N4cDzpo=8VhQ@mail.gmail.com>
+Message-ID: <CAK8P3a3xioqJDb7hQ3dvxQyHPg2hgJbeJywEP+N4cDzpo=8VhQ@mail.gmail.com>
+Subject: Re: [PATCH 4/9] soc: apple: Add SART driver
+To:     Sven Peter <sven@svenpeter.dev>
+Cc:     Arnd Bergmann <arnd@arndb.de>, Hector Martin <marcan@marcan.st>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Rob Herring <robh+dt@kernel.org>,
+        Keith Busch <kbusch@kernel.org>, "axboe@fb.com" <axboe@fb.com>,
+        "hch@lst.de" <hch@lst.de>, "sagi@grimberg.me" <sagi@grimberg.me>,
+        Marc Zyngier <maz@kernel.org>,
+        DTML <devicetree@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-nvme@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:u5NOoiQ4rEi4dh4tfDGxLExnqqNZSURzhc/HD4eZvY96ATyEZlC
+ foNU9lXJjj6QTWCgD3EVneljiwx196JRipv8X4NVhVfLK+Gb3IdwtCIiCgv6PcSjl8he9IP
+ m3fNXVPT+NcSOzt8t1JjFqgGpfaWGWTmz78zOmgmTsdZA2LY9xgw9nrmnrHCf1yKaNON+rO
+ HrKXMFTndMPv40EF+n9oQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:R/NA65EZX+s=:i+QXtWZDna6xQuE85HNZAt
+ f17BOhoLSXQPnpsy0dwCJ/yZCWaCW+77RNvtqRRgDUM0nNdM5LUG9N4nrTl6ZZUYjTMYRV9RL
+ 5AgbT/o1iDfm3Ax8hNFZ6et1OdP1g1bqDD3uenLZGs2msasK5ihumIsSJJI0Tvh2d5kXcdMZY
+ ASzFG77Yqh/VFLFNPFmTPmu/rCQZXztI5hsJ0mlUHuWoRi0cAQI/41p7QCgam8Zrl8qH98rub
+ 7IP1bNLwMigmz7VwMhJxPRkrOu3bWGPWq6f3O0qlZmVfIkYXmqf9zzAK+Z+Vm+rQ95GXF3/jV
+ eXBDLoTKbOOujaCfE9PkGRziJd/D3rgAcc1TcXkk2eLFkcH8VWsqAE8pOZ7/qFuVlHJvKtXkl
+ 4E/rny11gdYrHRXM/NjYARukeCGmMinWD/e/jgMWNtfBUGNI/ybyUs5z9aLYqVdenrkYhFPx7
+ piE1GCrNwsgylxbAF52LfChJ4ydRDICyaLsq69iqo3dzlvHItUA5TvZUk82tbI+tygvjVTNjn
+ hZbOwitVrtQMI8R+Rf9FaoZzqb40oL+MHU2LRXdeUylcoNLtaeYfmGpaPL7xTB8Kw1pa4Gjwf
+ Ss2TGm2HHBV8QgNYbwBZOPHM/54iDWO0AD0pCCyI7D5NJvlaZ36n/DKvIgWeSCNPRmDgc6jz/
+ sqDoNWNgFg0Kj1k/yTBbfJwWdbR4YGTIirkxw8Z+lLj3KeE93MS0wVPSqQIcryfZuKnLMinYz
+ H6a5lVWj+D+0LMOC5hsQXLcIUYiL6Sekgb3XMnmb5MCaSKx9WoxfUJPPXYAClHw0PXYAE5p9L
+ x6hzrOazIbGWOi3TF3BHkCyeU3QE16FDu62m5AEwCvPXSXnVIk=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert the Qualcomm MSM Serial UARTDM bindings to DT Schema.
+On Sat, Apr 2, 2022 at 2:38 PM Sven Peter <sven@svenpeter.dev> wrote:
+> On Mon, Mar 21, 2022, at 18:07, Arnd Bergmann wrote:
+> > On Mon, Mar 21, 2022 at 5:50 PM Sven Peter <sven@svenpeter.dev> wrote:
+> >> The NVMe co-processor on the Apple M1 uses a DMA address filter called
+> >> SART for some DMA transactions. This adds a simple driver used to
+> >> configure the memory regions from which DMA transactions are allowed.
+> >>
+> >> Co-developed-by: Hector Martin <marcan@marcan.st>
+> >> Signed-off-by: Hector Martin <marcan@marcan.st>
+> >> Signed-off-by: Sven Peter <sven@svenpeter.dev>
+> >
+> > Can you add some explanation about why this uses a custom interface
+> > instead of hooking into the dma_map_ops?
+>
+> Sure.
+> In a perfect world this would just be an IOMMU implementation but since
+> SART can't create any real IOVA space using pagetables it doesn't fit
+> inside that subsytem.
+>
+> In a slightly less perfect world I could just implement dma_map_ops here
+> but that won't work either because not all DMA buffers of the NVMe
+> device have to go through SART and those allocations happen
+> inside the same device and would use the same dma_map_ops.
+>
+> The NVMe controller has two separate DMA filters:
+>
+>    - NVMMU, which must be set up for any command that uses PRPs and
+>      ensures that the DMA transactions only touch the pages listed
+>      inside the PRP structure. NVMMU itself is tightly coupled
+>      to the NVMe controller: The list of allowed pages is configured
+>      based on command's tag id and even commands that require no DMA
+>      transactions must be listed inside NVMMU before they are started.
+>    - SART, which must be set up for some shared memory buffers (e.g.
+>      log messages from the NVMe firmware) and for some NVMe debug
+>      commands that don't use PRPs.
+>      SART is only loosely coupled to the NVMe controller and could
+>      also be used together with other devices. It's also the only
+>      thing that changed between M1 and M1 Pro/Max/Ultra and that's
+>      why I decided to separate it from the NVMe driver.
+>
+> I'll add this explanation to the commit message.
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- .../bindings/serial/qcom,msm-uartdm.txt       |  81 -------------
- .../bindings/serial/qcom,msm-uartdm.yaml      | 112 ++++++++++++++++++
- 2 files changed, 112 insertions(+), 81 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/serial/qcom,msm-uartdm.txt
- create mode 100644 Documentation/devicetree/bindings/serial/qcom,msm-uartdm.yaml
+Ok, thanks.
 
-diff --git a/Documentation/devicetree/bindings/serial/qcom,msm-uartdm.txt b/Documentation/devicetree/bindings/serial/qcom,msm-uartdm.txt
-deleted file mode 100644
-index 9d098cf73b53..000000000000
---- a/Documentation/devicetree/bindings/serial/qcom,msm-uartdm.txt
-+++ /dev/null
-@@ -1,81 +0,0 @@
--* MSM Serial UARTDM
--
--The MSM serial UARTDM hardware is designed for high-speed use cases where the
--transmit and/or receive channels can be offloaded to a dma-engine. From a
--software perspective it's mostly compatible with the MSM serial UART except
--that it supports reading and writing multiple characters at a time.
--
--Required properties:
--- compatible: Should contain at least "qcom,msm-uartdm".
--              A more specific property should be specified as follows depending
--	      on the version:
--		"qcom,msm-uartdm-v1.1"
--		"qcom,msm-uartdm-v1.2"
--		"qcom,msm-uartdm-v1.3"
--		"qcom,msm-uartdm-v1.4"
--- reg: Should contain UART register locations and lengths. The first
--       register shall specify the main control registers. An optional second
--       register location shall specify the GSBI control region.
--       "qcom,msm-uartdm-v1.3" is the only compatible value that might
--       need the GSBI control region.
--- interrupts: Should contain UART interrupt.
--- clocks: Should contain the core clock and the AHB clock.
--- clock-names: Should be "core" for the core clock and "iface" for the
--	       AHB clock.
--
--Optional properties:
--- dmas: Should contain dma specifiers for transmit and receive channels
--- dma-names: Should contain "tx" for transmit and "rx" for receive channels
--- qcom,tx-crci: Identificator <u32> for Client Rate Control Interface to be
--           used with TX DMA channel. Required when using DMA for transmission
--           with UARTDM v1.3 and below.
--- qcom,rx-crci: Identificator <u32> for Client Rate Control Interface to be
--           used with RX DMA channel. Required when using DMA for reception
--           with UARTDM v1.3 and below.
--
--Note: Aliases may be defined to ensure the correct ordering of the UARTs.
--The alias serialN will result in the UART being assigned port N.  If any
--serialN alias exists, then an alias must exist for each enabled UART.  The
--serialN aliases should be in a .dts file instead of in a .dtsi file.
--
--Examples:
--
--- A uartdm v1.4 device with dma capabilities.
--
--	serial@f991e000 {
--		compatible = "qcom,msm-uartdm-v1.4", "qcom,msm-uartdm";
--		reg = <0xf991e000 0x1000>;
--		interrupts = <0 108 0x0>;
--		clocks = <&blsp1_uart2_apps_cxc>, <&blsp1_ahb_cxc>;
--		clock-names = "core", "iface";
--		dmas = <&dma0 0>, <&dma0 1>;
--		dma-names = "tx", "rx";
--	};
--
--- A uartdm v1.3 device without dma capabilities and part of a GSBI complex.
--
--	serial@19c40000 {
--		compatible = "qcom,msm-uartdm-v1.3", "qcom,msm-uartdm";
--		reg = <0x19c40000 0x1000>,
--		<0x19c00000 0x1000>;
--		interrupts = <0 195 0x0>;
--		clocks = <&gsbi5_uart_cxc>, <&gsbi5_ahb_cxc>;
--		clock-names = "core", "iface";
--	};
--
--- serialN alias.
--
--	aliases {
--		serial0 = &uarta;
--		serial1 = &uartc;
--		serial2 = &uartb;
--	};
--
--	uarta: serial@12490000 {
--	};
--
--	uartb: serial@16340000 {
--	};
--
--	uartc: serial@1a240000 {
--	};
-diff --git a/Documentation/devicetree/bindings/serial/qcom,msm-uartdm.yaml b/Documentation/devicetree/bindings/serial/qcom,msm-uartdm.yaml
-new file mode 100644
-index 000000000000..e73366fe7f7d
---- /dev/null
-+++ b/Documentation/devicetree/bindings/serial/qcom,msm-uartdm.yaml
-@@ -0,0 +1,112 @@
-+# SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/serial/qcom,msm-uartdm.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Qualcomm MSM Serial UARTDM
-+
-+maintainers:
-+  - Andy Gross <agross@kernel.org>
-+  - Bjorn Andersson <bjorn.andersson@linaro.org>
-+  - Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-+
-+description: |
-+  The MSM serial UARTDM hardware is designed for high-speed use cases where the
-+  transmit and/or receive channels can be offloaded to a dma-engine. From a
-+  software perspective it's mostly compatible with the MSM serial UART except
-+  that it supports reading and writing multiple characters at a time.
-+
-+  Note:: Aliases may be defined to ensure the correct ordering of the UARTs.
-+  The alias serialN will result in the UART being assigned port N.  If any
-+  serialN alias exists, then an alias must exist for each enabled UART.  The
-+  serialN aliases should be in a .dts file instead of in a .dtsi file.
-+
-+properties:
-+  compatible:
-+    items:
-+      - enum:
-+          - qcom,msm-uartdm-v1.1
-+          - qcom,msm-uartdm-v1.2
-+          - qcom,msm-uartdm-v1.3
-+          - qcom,msm-uartdm-v1.4
-+      - const: qcom,msm-uartdm
-+
-+  clocks:
-+    maxItems: 2
-+
-+  clock-names:
-+    items:
-+      - const: core
-+      - const: iface
-+
-+  dmas:
-+    maxItems: 2
-+
-+  dma-names:
-+    items:
-+      - const: tx
-+      - const: rx
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  qcom,rx-crci:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description:
-+      Identificator for Client Rate Control Interface to be used with RX DMA
-+      channel. Required when using DMA for reception with UARTDM v1.3 and
-+      below.
-+
-+  qcom,tx-crci:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description:
-+      Identificator for Client Rate Control Interface to be used with TX DMA
-+      channel. Required when using DMA for transmission with UARTDM v1.3 and
-+      below.
-+
-+  reg:
-+    minItems: 1
-+    items:
-+      - description: Main control registers
-+      - description: An optional second register location shall specify the GSBI control region.
-+
-+required:
-+  - compatible
-+  - clock-names
-+  - clocks
-+  - interrupts
-+  - reg
-+
-+unevaluatedProperties: false
-+
-+allOf:
-+  - $ref: /schemas/serial/serial.yaml#
-+
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: qcom,msm-uartdm-v1.3
-+    then:
-+      properties:
-+        reg:
-+          minItems: 2
-+    else:
-+      properties:
-+        reg:
-+          maxItems: 1
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+
-+    serial@f991e000 {
-+        compatible = "qcom,msm-uartdm-v1.4", "qcom,msm-uartdm";
-+        reg = <0xf991e000 0x1000>;
-+        interrupts = <GIC_SPI 108 IRQ_TYPE_LEVEL_HIGH>;
-+        clocks = <&blsp1_uart2_apps_cxc>, <&blsp1_ahb_cxc>;
-+        clock-names = "core", "iface";
-+        dmas = <&dma0 1>, <&dma0 0>;
-+        dma-names = "rx", "tx";
-+    };
--- 
-2.32.0
+> >> +static void sart2_get_entry(struct apple_sart *sart, int index, u8 *flags,
+> >> +                           phys_addr_t *paddr, size_t *size)
+> >> +{
+> >> +       u32 cfg = readl_relaxed(sart->regs + APPLE_SART2_CONFIG(index));
+> >> +       u32 paddr_ = readl_relaxed(sart->regs + APPLE_SART2_PADDR(index));
+> >
+> > Why do you use the _relaxed() accessors here and elsewhere in the driver?
+>
+> This device itself doesn't do any DMA transactions so it needs no memory
+> synchronization barriers. Only the consumer (i.e. rtkit and nvme) read/write
+> from/to these buffers (multiple times) and they have the required barriers
+> in place whenever they are used.
+>
+> These buffers so far are only allocated at probe time though so even using
+> the normal writel/readl here won't hurt performance at all. I can just use
+> those if you prefer or alternatively add a comment why _relaxed is fine here.
+>
+> This is a bit similar to the discussion for the pinctrl series last year [1].
 
+I think it's better to only use the _relaxed version where it actually helps,
+with a comment about it, and use the normal version elsewhere, in
+particular in functions that you have copied from the normal nvme driver.
+I had tried to compare some of your code with the other version and
+was rather confused by that.
+
+        Arnd
