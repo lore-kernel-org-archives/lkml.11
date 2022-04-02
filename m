@@ -2,133 +2,225 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F7B9C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 16:08:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E6C3C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 16:12:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357758AbiDBQKo (ORCPT
+        id S1357814AbiDBQOG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Apr 2022 12:10:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41936 "EHLO
+        Sat, 2 Apr 2022 12:14:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357741AbiDBQKl (ORCPT
+        with ESMTP id S1357826AbiDBQNl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Apr 2022 12:10:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CEF0388E;
-        Sat,  2 Apr 2022 09:08:48 -0700 (PDT)
+        Sat, 2 Apr 2022 12:13:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78702132EBA
+        for <linux-kernel@vger.kernel.org>; Sat,  2 Apr 2022 09:11:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C93EFB80A25;
-        Sat,  2 Apr 2022 16:08:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65ED7C340EE;
-        Sat,  2 Apr 2022 16:08:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 111C9616E8
+        for <linux-kernel@vger.kernel.org>; Sat,  2 Apr 2022 16:11:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C38DC340F3;
+        Sat,  2 Apr 2022 16:11:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648915725;
-        bh=y7ESlPWtxRlIdhSZGGzoj11NW8q7/9qcgGEefxK5zJw=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=Ua6L3GXkmuQ6CJbvQ5F7qY2YUTD9Bm6adyIsvhGeNXsNC6XRQIDKubNcYcYmQrvco
-         +xNuRPps41q7NWA61K7FbzYDDgXDaZEOyXf+p7VeRmvUBltK3U2nX0I/AVa2t7E3SL
-         cLQNzb8kmFQWQBE8pfS7TarHYEEMdK41tv2k/1+R1QOp2UVifNHDF4A5l3hILUFi+c
-         ZsmRQ5qhDFtCxYqYGKvFdtRFMFgnBWKfgEF4pemgf+qI//J3aAGlJc+qPCfwNGKV0u
-         dzHpss38jhP2I9JXo/Hbe2cIJB288yvvfURXVXUtb4Ma/LTQYbTCK2ByCjkOCFZM+j
-         SdJo2JLAF6dZg==
-Message-ID: <bc91bff4-0ba6-8f9d-e3b2-5e8caf16bd98@kernel.org>
-Date:   Sat, 2 Apr 2022 18:08:37 +0200
+        s=k20201202; t=1648915908;
+        bh=CNi5BhB2Pfe+7ZRjxOOMrputi5ySIyr2QrGcrCv5xPc=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=Fm066Ks8rPFnfLKfxZsFdhyHNvT5uXgb6nCNrutqvNtfRhOnzooLGgLzf82/vi6Np
+         97Ut9PmBGfAhlx7fP3qr2tce4VDFFElAgqvSEpMCNOgc+XE2WGIu+Z54dtZ5aC2ax6
+         FGtSbKR/jX4IL1ZpzX6KgjiP2ACuoKGRo1YYCiM46L3BkPy2bbNbZi4FY/V18DCTdO
+         bXJA5jZwdatubg9tmMv8aVopRxkyvnmONTit1Lh+ZwnWSGHfxeS9iaJVPivquTplol
+         CyCwaP24bVF/40apcXBm4U/UNOxaeiwgI78+PbZmj6bMC2M5StwCqedMVN4B+h6rGt
+         8RfLhAHVQhpxw==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 0B04D5C084F; Sat,  2 Apr 2022 09:11:48 -0700 (PDT)
+Date:   Sat, 2 Apr 2022 09:11:48 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     kernel test robot <lkp@intel.com>
+Cc:     linux-kernel@vger.kernel.org, aneesh.kumar@linux.ibm.com
+Subject: Re: [paulmck-rcu:fastexp.2022.04.01a] BUILD REGRESSION
+ d9f3e7d671416fdf5b61f094765754269b652db0
+Message-ID: <20220402161148.GK4285@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <62486f05.ithFB6YqfjaeQiXK%lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 5/9] soc: apple: Add RTKit IPC library
-Content-Language: en-US
-To:     Sven Peter <sven@svenpeter.dev>
-Cc:     Hector Martin <marcan@marcan.st>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Rob Herring <robh+dt@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Keith Busch <kbusch@kernel.org>,
-        "axboe@fb.com" <axboe@fb.com>, "hch@lst.de" <hch@lst.de>,
-        "sagi@grimberg.me" <sagi@grimberg.me>,
-        Marc Zyngier <maz@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-nvme@lists.infradead.org
-References: <20220321165049.35985-1-sven@svenpeter.dev>
- <20220321165049.35985-6-sven@svenpeter.dev>
- <5eed58a1-ee56-8aee-e73b-76b162d59873@kernel.org>
- <35f5fdbf-faac-457b-a225-35d7141f6b2e@www.fastmail.com>
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-In-Reply-To: <35f5fdbf-faac-457b-a225-35d7141f6b2e@www.fastmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <62486f05.ithFB6YqfjaeQiXK%lkp@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 02/04/2022 15:51, Sven Peter wrote:
-> On Wed, Mar 23, 2022, at 12:19, Krzysztof Kozlowski wrote:
->> On 21/03/2022 17:50, Sven Peter wrote:
->>> Apple SoCs such as the M1 come with multiple embedded co-processors
->>> running proprietary firmware. Communication with those is established
->>> over a simple mailbox using the RTKit IPC protocol.
->>>
->>> Signed-off-by: Sven Peter <sven@svenpeter.dev>
->>> ---
->>>  drivers/soc/apple/Kconfig          |  13 +
->>>  drivers/soc/apple/Makefile         |   3 +
->>>  drivers/soc/apple/rtkit-crashlog.c | 147 +++++
->>>  drivers/soc/apple/rtkit-internal.h |  76 +++
->>>  drivers/soc/apple/rtkit.c          | 842 +++++++++++++++++++++++++++++
->>>  include/linux/soc/apple/rtkit.h    | 203 +++++++
->>>  6 files changed, 1284 insertions(+)
->>
->> Isn't this some implementation of a mailbox? If so, it should be in
->> drivers/mailbox. Please don't put all stuff in soc/apple, that's not how
->> Linux is organized. To drivers/soc usually we put drivers which do not
->> fit regular subsystems.
->>
+On Sat, Apr 02, 2022 at 11:43:01PM +0800, kernel test robot wrote:
+> tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git fastexp.2022.04.01a
+> branch HEAD: d9f3e7d671416fdf5b61f094765754269b652db0  EXP rcu: Move expedited grace period (GP) work to RT kthread_worker
 > 
-> I put this into soc/apple because I don't think it fits within the mailbox
-> framework very well.
-> (It actually uses the mailbox framework for the actual communication
-> with the hardware with a driver that's already upstream.)
+> Error/Warning reports:
 > 
-> Essentially, the mailbox subsystem provides a common API to send and
-> receive messages over indepedent hardware channels and devicetree bindings
-> to describe the relationship between those channels and other drivers.
+> https://lore.kernel.org/lkml/202204021454.WDwBbwVL-lkp@intel.com
 > 
-> One of the features that doesn't really fit is that we need to be able
-> to start, shutdown and re-start these co-processors. The NVMe driver
-> actually doesn't need to send/receive any messages except those required
-> to setup the common syslog/crashlog/etc. interfaces.
-> The mailbox framework would have to be extended to support these specific
-> use cases.
+> Error/Warning: (recently discovered and may have been fixed)
 > 
-> Another thing that doesn't fit is the memory management: These co-processors
-> sometimes need shared memory buffers to e.g. send syslog messages.
-> They always request these buffers with an IPC message but then there are
-> different possibilities:
-> 
-> 	- For some processor the DMA API can just be used and an IOVA must be
-> 	  sent back. For NVMe these buffers must additionally be allowed in this
-> 	  SART address filter.
-> 	- At least one other processor (SMC) does not request such buffers but
-> 	  instead just sends a pointer into MMIO space and the buffer must be
-> 	  accessed using readl/writel. This MMIO memory region is used for
-> 	  both the common buffers (syslog etc.) and for the actual shared buffers
-> 	  used for communication, such that the resource would have to be shared
-> 	  across drivers.
-> 	- And yet another coprocessor (for the display controller) requests some
-> 	  buffers with an already existing IOVA that than need to be mapped
-> 	  specifically inside the IOMMU.
-> 
-> Each of these co-processors also provides a single function and most
-> of them don't even have different endpoints. And even those that do (DCP) will
-> just become a single driver since all those endpoints are very much related.
-> 
-> While it's not impossible to do all that by extending and forcing this into the
-> mailbox framework at lest I think that it doesn't fit very well and would just
-> create unneccesarry impedance.
+> arch/powerpc/include/asm/book3s/64/pgtable-64k.h:60:1: error: no return statement in function returning non-void
 
-Thanks for explanation. I don't know the mailbox framework well enough
-to advise you, so I don't mind keeping it in current location (drivers/soc).
+Adding Aneesh on CC.  My kneejerk reaction would be to add a
+"return 0" to this function, but there might be a reason why it
+looks like this:
 
-Best regards,
-Krzysztof
+	/*
+	 * This should never get called
+	 */
+	static inline int get_hugepd_cache_index(int index)
+	{
+		BUG();
+	}
+
+Working on the other problem with RCU's Kconfig options.
+
+							Thanx, Paul
+
+> Error/Warning ids grouped by kconfigs:
+> 
+> gcc_recent_errors
+> `-- powerpc64-randconfig-c003-20220402
+>     `-- arch-powerpc-include-asm-book3s-pgtable-64k.h:error:no-return-statement-in-function-returning-non-void
+> 
+> elapsed time: 819m
+> 
+> configs tested: 124
+> configs skipped: 3
+> 
+> gcc tested configs:
+> arm64                               defconfig
+> arm                              allmodconfig
+> arm                                 defconfig
+> arm                              allyesconfig
+> arm64                            allyesconfig
+> i386                          randconfig-c001
+> xtensa                  audio_kc705_defconfig
+> arc                 nsimosci_hs_smp_defconfig
+> powerpc                      ppc6xx_defconfig
+> arm                        cerfcube_defconfig
+> arm                        realview_defconfig
+> arm                      jornada720_defconfig
+> arm                          exynos_defconfig
+> powerpc                 mpc85xx_cds_defconfig
+> powerpc64                           defconfig
+> m68k                       m5208evb_defconfig
+> powerpc                      makalu_defconfig
+> sh                           se7721_defconfig
+> powerpc                           allnoconfig
+> arm                       aspeed_g5_defconfig
+> mips                      loongson3_defconfig
+> riscv                            allmodconfig
+> alpha                               defconfig
+> arm                         vf610m4_defconfig
+> powerpc                         wii_defconfig
+> sh                        dreamcast_defconfig
+> powerpc                mpc7448_hpc2_defconfig
+> powerpc                 canyonlands_defconfig
+> mips                  maltasmvp_eva_defconfig
+> s390                       zfcpdump_defconfig
+> mips                         cobalt_defconfig
+> sh                           se7712_defconfig
+> x86_64                        randconfig-c001
+> arm                  randconfig-c002-20220402
+> ia64                             allmodconfig
+> ia64                             allyesconfig
+> ia64                                defconfig
+> m68k                             allyesconfig
+> m68k                             allmodconfig
+> m68k                                defconfig
+> nios2                               defconfig
+> arc                              allyesconfig
+> csky                                defconfig
+> nios2                            allyesconfig
+> alpha                            allyesconfig
+> h8300                            allyesconfig
+> xtensa                           allyesconfig
+> arc                                 defconfig
+> sh                               allmodconfig
+> s390                                defconfig
+> s390                             allmodconfig
+> parisc                              defconfig
+> parisc64                            defconfig
+> parisc                           allyesconfig
+> s390                             allyesconfig
+> i386                   debian-10.3-kselftests
+> i386                              debian-10.3
+> i386                                defconfig
+> i386                             allyesconfig
+> sparc                            allyesconfig
+> sparc                               defconfig
+> mips                             allyesconfig
+> mips                             allmodconfig
+> powerpc                          allyesconfig
+> powerpc                          allmodconfig
+> x86_64                        randconfig-a006
+> x86_64                        randconfig-a004
+> x86_64                        randconfig-a002
+> i386                          randconfig-a001
+> i386                          randconfig-a003
+> i386                          randconfig-a005
+> x86_64                        randconfig-a015
+> x86_64                        randconfig-a013
+> x86_64                        randconfig-a011
+> i386                          randconfig-a014
+> i386                          randconfig-a012
+> i386                          randconfig-a016
+> arc                  randconfig-r043-20220402
+> s390                 randconfig-r044-20220402
+> riscv                randconfig-r042-20220402
+> riscv                               defconfig
+> riscv                    nommu_virt_defconfig
+> riscv                          rv32_defconfig
+> riscv                    nommu_k210_defconfig
+> riscv                             allnoconfig
+> riscv                            allyesconfig
+> x86_64                    rhel-8.3-kselftests
+> um                             i386_defconfig
+> um                           x86_64_defconfig
+> x86_64                          rhel-8.3-func
+> x86_64                                  kexec
+> x86_64                              defconfig
+> x86_64                           allyesconfig
+> x86_64                         rhel-8.3-kunit
+> x86_64                               rhel-8.3
+> 
+> clang tested configs:
+> x86_64                        randconfig-c007
+> i386                          randconfig-c001
+> powerpc              randconfig-c003-20220402
+> riscv                randconfig-c006-20220402
+> mips                 randconfig-c004-20220402
+> arm                  randconfig-c002-20220402
+> powerpc                      obs600_defconfig
+> arm                        neponset_defconfig
+> powerpc                     mpc512x_defconfig
+> arm                           spitz_defconfig
+> arm                       spear13xx_defconfig
+> mips                      bmips_stb_defconfig
+> powerpc                     mpc5200_defconfig
+> mips                           mtx1_defconfig
+> powerpc                 mpc832x_mds_defconfig
+> powerpc                    ge_imp3a_defconfig
+> mips                           ip28_defconfig
+> arm                         bcm2835_defconfig
+> powerpc                   microwatt_defconfig
+> x86_64                        randconfig-a005
+> i386                          randconfig-a002
+> i386                          randconfig-a006
+> i386                          randconfig-a004
+> x86_64                        randconfig-a014
+> x86_64                        randconfig-a016
+> x86_64                        randconfig-a012
+> i386                          randconfig-a013
+> i386                          randconfig-a011
+> i386                          randconfig-a015
+> hexagon              randconfig-r041-20220402
+> hexagon              randconfig-r045-20220402
+> 
+> -- 
+> 0-DAY CI Kernel Test Service
+> https://01.org/lkp
