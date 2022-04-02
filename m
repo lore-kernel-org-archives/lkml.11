@@ -2,172 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAAC1C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 16:27:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35B7FC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 16:28:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358048AbiDBQ3Z (ORCPT
+        id S1358062AbiDBQ36 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Apr 2022 12:29:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53520 "EHLO
+        Sat, 2 Apr 2022 12:29:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345180AbiDBQ3X (ORCPT
+        with ESMTP id S1358053AbiDBQ3z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Apr 2022 12:29:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35B2A158D9C;
-        Sat,  2 Apr 2022 09:27:30 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E277DB80AB2;
-        Sat,  2 Apr 2022 16:27:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67D2BC340F3;
-        Sat,  2 Apr 2022 16:27:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648916847;
-        bh=m6wRN/Ozv9b5FQGVEHdRnB+vvT2QvfMHvXSoL21Mhc4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Hn+y7TS8hLCS2OAWIiI17VtbVNBAVhCgS/91kyR+Xq7JA0MBeX+IInlwvj0hxTKNS
-         JAHrg5T2sSPLxFRitJ3dqnfFdcDiV3Q3B335zPsPYozns8cNxuB8Lvjw5+I0Kx5zdF
-         NbO5ouy+9XNBr+OSVTNm7RQa8eCfxQoO+YESQnecNl/Y2CSgM9oAA2+ZE/bcD/8CPZ
-         8dbJphB5b+SZMI8hxpi6pqm4qhSlkw7/+jgjsG+1C8cgxAsI0iJj2+L9xR5Js5iENZ
-         f+v7U7ZV1hXvuwthxnSnuyJ0gF9eq22ARVuWoKw9U3rx/Zx5IW/V+MEVMvvbNGu2JR
-         eFy/eJv0N3erg==
-Date:   Sat, 2 Apr 2022 17:35:10 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Paul Lemmermann <thepaulodoom@thepaulodoom.com>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] IIO: accel: fixed coding style issues
-Message-ID: <20220402173510.2b38e261@jic23-huawei>
-In-Reply-To: <YkIJ3/nkVNMy/qv8@hp-amd-paul>
-References: <YkHOpCT2Gad1YaxN@hp-amd-paul>
-        <20220328180623.1380d23e@jic23-huawei>
-        <YkIJ3/nkVNMy/qv8@hp-amd-paul>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        Sat, 2 Apr 2022 12:29:55 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C5F5158DAF
+        for <linux-kernel@vger.kernel.org>; Sat,  2 Apr 2022 09:28:03 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id u26so6252271eda.12
+        for <linux-kernel@vger.kernel.org>; Sat, 02 Apr 2022 09:28:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=85K94gC6fjSv5+mFsUOnacf7TgjC5LIwnDsMPlBwdvE=;
+        b=VpeFPGN0HmleD2Jl1+XMRpn+P5x0hdN88iBjisIjms7Bi+lCv4HgWBQXgrn8TLIjtu
+         tJECLvb/VR1xrBSvUiE3Jwiw0MkrXZyKZ3ujqWzzxQOkHngI9REs+XbYoFipYyJOKCye
+         4BvCUpkp1Cjs8X8pr+25doAg1RNdSEhYf0Rb1noezEJQfX9tWHKA4/YJ/BQIf1fiHVZa
+         Kah5FB/1+00MtSTXyXRDCKrBNuXF4SCmLYrjH9ioGMQBtlQ/n4m5g33MlE9ifcvKmDQf
+         aTDpLtlWJISB48mza5FAmnbrOTe0+I/lJJrlxY0RBijey+nY60A2HMlXhha0WDB21q9P
+         ve2g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=85K94gC6fjSv5+mFsUOnacf7TgjC5LIwnDsMPlBwdvE=;
+        b=AhpnwhKvC7q+MUbKMXyOseof3InWyXSpG9lLkDWbeASb/C7G1RtuCErsOtM+gxqxyb
+         l0zqGpDhRG8qle8x7xthEElD9EYYeMJroy/FM4MXbcRrd4lUp5yVhd2jBtwsjEm05LHX
+         CxJrlNsHzWLeS4EbsQyKHgnzU80S3qrHhaD70tTOFj/BQK/lxaxJpbCrZahZAsA5WI5p
+         Pe+R6tfyCwSrtVoRqsTrhPY+fyuKoih58WQDG9Yjk0ovG11dm7b4+6RhyHkU7h/UMiNC
+         ks6EMYEtthKvsgiTDJ4PD3Cnx2CwhGa0QAA0EZQM9sSNeLnrQkB4O9Sex7406tstDHOi
+         LblQ==
+X-Gm-Message-State: AOAM531gP8NKsOGYk5ugVdpgH5N0e55g0tqvLqbCJ/78WHJ1b/wIKIVp
+        nZXMUz35ZQ6M5gqK2Gsy/9kXfQ==
+X-Google-Smtp-Source: ABdhPJzMki+SpO7ynQLrGREJgcJiMbYxfBKm5GoMZjh7NZz2e9H7iQoUbF2ejuba4CdkSQAmnFhAiw==
+X-Received: by 2002:a50:ec18:0:b0:419:3af:5736 with SMTP id g24-20020a50ec18000000b0041903af5736mr25863643edr.215.1648916882039;
+        Sat, 02 Apr 2022 09:28:02 -0700 (PDT)
+Received: from [192.168.0.171] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id o22-20020a170906289600b006e44a0c1105sm2278430ejd.46.2022.04.02.09.28.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 02 Apr 2022 09:28:01 -0700 (PDT)
+Message-ID: <fbbd44cc-e839-9532-962a-538ce834930c@linaro.org>
+Date:   Sat, 2 Apr 2022 18:28:00 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 1/2] dt-bindings: arm: bcm: fix BCM53012 and BCM53016 SoC
+ strings
+Content-Language: en-US
+To:     =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Scott Branden <scott.branden@broadcom.com>,
+        Christian Lamparter <chunkeey@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        devicetree@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com
+References: <20220401172427.2806-1-arinc.unal@arinc9.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220401172427.2806-1-arinc.unal@arinc9.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 28 Mar 2022 14:17:51 -0500
-Paul Lemmermann <thepaulodoom@thepaulodoom.com> wrote:
-
-> On Mon, Mar 28, 2022 at 06:06:23PM +0100, Jonathan Cameron wrote:
-> > On Mon, 28 Mar 2022 10:05:08 -0500
-> > Paul Lemmermann <thepaulodoom@thepaulodoom.com> wrote:
-> >   
-> > > Fixed case statement issues and spacing issues.
-> > > 
-> > > Signed-off-by: Paul Lemmermann <thepaulodoom@thepaulodoom.com>  
-> > Hi Paul,
-> > 
-> > Thanks for the patch.
-> > 
-> > These are drivers written / maintained by different authors, so one
-> > patch per driver preferred.  Particularly handy as people might not
-> > agree with all of them so separate patches would allow me to pick
-> > and choose which ones to pick up.
-> > 
-> > Comments inline.
-> > 
-> > Please state how you identified the changes btw.  Script?  
+On 01/04/2022 19:24, Arınç ÜNAL wrote:
+> Fix inaccurate SoC strings brcm,brcm53012 and brcm,brcm53016 to respectively
+> brcm,bcm53012 and brcm,bcm53016.
 > 
-> I used the checkpatch.pl script to identify these changes.
-Please mention that in patch descriptions in future.
-It's useful to anyone tracking this sort of information.
-
-I added it to the broken out patches whilst applying.
-
-Thanks,
-
-Jonathan
-
+> Create a new description for BCM53016 and move Meraki MR32 under it.
 > 
-> > 
-> > Jonathan
-> >   
-> > > ---
-> > >  drivers/iio/accel/bmc150-accel-core.c | 15 +++++++++++----
-> > >  drivers/iio/accel/dmard09.c           |  2 +-
-> > >  drivers/iio/accel/kxsd9-spi.c         |  4 ++--
-> > >  3 files changed, 14 insertions(+), 7 deletions(-)
-> > > 
-> > > diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
-> > > index d11f66801..f7dd7ec2c 100644
-> > > --- a/drivers/iio/accel/bmc150-accel-core.c
-> > > +++ b/drivers/iio/accel/bmc150-accel-core.c
-> > > @@ -432,10 +432,17 @@ static bool bmc150_apply_bosc0200_acpi_orientation(struct device *dev,
-> > >  
-> > >  		for (j = 0; j < 3; j++) {
-> > >  			switch (val[j]) {
-> > > -			case -1: str = "-1"; break;
-> > > -			case 0:  str = "0";  break;
-> > > -			case 1:  str = "1";  break;
-> > > -			default: goto unknown_format;
-> > > +			case -1:
-> > > +				str = "-1";
-> > > +				break;
-> > > +			case 0:
-> > > +				str = "0";
-> > > +				break;
-> > > +			case 1:
-> > > +				str = "1";
-> > > +				break;
-> > > +			default:
-> > > +				goto unknown_format;  
-> > 
-> > I'm not seeing any clear advantage to this change.
-> >  
-> The reason for this change is that most, if not all, case statements in
-> the kernel are multiple lines. Also, in the kernel docs (https://docs.kernel.org/process/coding-style.html)
-> it says, to not put multiple statements on one line.
+> Fixes: 4cb5201fcb5d ("dt-bindings: arm: bcm: Convert BCM4708 to YAML")
+> Fixes: a2e385f5374d ("dt-bindings: ARM: add bindings for the Meraki MR32")
+> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+> ---
+> brcm,bcm53012 string was silently changed to brcm,brcm53012 after
+> converting to YAML. Let me know if this was intentional.
 > 
-> Thanks,
-> Paul
-> >   
-> > >  			}
-> > >  			orientation->rotation[i * 3 + j] = str;
-> > >  		}
-> > > diff --git a/drivers/iio/accel/dmard09.c b/drivers/iio/accel/dmard09.c
-> > > index e6e28c964..87bc38d4d 100644
-> > > --- a/drivers/iio/accel/dmard09.c
-> > > +++ b/drivers/iio/accel/dmard09.c
-> > > @@ -24,7 +24,7 @@
-> > >  #define DMARD09_AXIS_Y 1
-> > >  #define DMARD09_AXIS_Z 2
-> > >  #define DMARD09_AXIS_X_OFFSET ((DMARD09_AXIS_X + 1) * 2)
-> > > -#define DMARD09_AXIS_Y_OFFSET ((DMARD09_AXIS_Y + 1 )* 2)
-> > > +#define DMARD09_AXIS_Y_OFFSET ((DMARD09_AXIS_Y + 1) * 2)  
-> > 
-> > This is one is good.
-> >   
-> > >  #define DMARD09_AXIS_Z_OFFSET ((DMARD09_AXIS_Z + 1) * 2)
-> > >  
-> > >  struct dmard09_data {
-> > > diff --git a/drivers/iio/accel/kxsd9-spi.c b/drivers/iio/accel/kxsd9-spi.c
-> > > index 57c451cfb..989f53fb0 100644
-> > > --- a/drivers/iio/accel/kxsd9-spi.c
-> > > +++ b/drivers/iio/accel/kxsd9-spi.c
-> > > @@ -44,8 +44,8 @@ static const struct spi_device_id kxsd9_spi_id[] = {
-> > >  MODULE_DEVICE_TABLE(spi, kxsd9_spi_id);
-> > >  
-> > >  static const struct of_device_id kxsd9_of_match[] = {
-> > > -        { .compatible = "kionix,kxsd9" },
-> > > -        { },
-> > > +	{ .compatible = "kionix,kxsd9" },  
-> > 
-> > Also good to clean up.
-> > 
-> > Thanks,
-> > 
-> > Jonathan
-> > 
-> >   
-> > > +	{ },
-> > >  };
-> > >  MODULE_DEVICE_TABLE(of, kxsd9_of_match);
-> > >    
-> >   
 
+Thanks for your patch. This looks like 2 or 3 separate patches:
+1. Correct meraki and BCM53016 bindings,
+2. Rename brcm->bcm, in bindings,
+3. Change DTS.
+
+Best regards,
+Krzysztof
