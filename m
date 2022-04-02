@@ -2,127 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02163C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 20:47:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D918C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 21:01:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355288AbiDBUtm (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Apr 2022 16:49:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39056 "EHLO
+        id S239106AbiDBVC7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 2 Apr 2022 17:02:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354565AbiDBUt2 (ORCPT
+        with ESMTP id S230163AbiDBVCz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Apr 2022 16:49:28 -0400
-Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 490DC8F983;
-        Sat,  2 Apr 2022 13:47:33 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1648932429; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=UQautQa6oGBP6OSsDtJc5nDEQ4o9YR4lVDA3jnSfOfQwJIyGPasR0AzibS4OnwZzX0y2LeJueXws1sTXAIUAG+FANqoGIAtJ5UHTNSFF2JLt4gmmINGhOvr12kqWArPUtjNRDsA7ER51bq//OW/sdKy+ynadasRmIRhTVVzlJzo=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1648932429; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=jxKdYoJjmi1tmdXcjDwSIdRNmtEpRM2sygXNAEsxYdc=; 
-        b=aYpal4+X+qH0ZTx5oZH7Ba8O5Q5vaQeMU9hS/011CQRslsX/a7AN4H7xMv0T/rxuH4cLcpnP9G2fJXDFS7O5JN51Q9pUS0pMuEJhnb11bCLaA+1g2ump+K0+Q8sWRYAHd9vlI6mrcoXaGPO9j5aOS1Rx8X1wL/jextdC7v7gHOM=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1648932429;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=From:From:To:To:Cc:Cc:Subject:Subject:Date:Message-Id:Message-Id:In-Reply-To:References:MIME-Version:Content-Type:Content-Transfer-Encoding:Reply-To;
-        bh=jxKdYoJjmi1tmdXcjDwSIdRNmtEpRM2sygXNAEsxYdc=;
-        b=CjhuDRP9NMgHR+0+b7SxRdW2izCnkIjVfcanrEO7oWaDp/9sRX95QLVwYPijnFAH
-        7tUWWy5FwjHk+H2KbMLMkOVR/EvF2igJK1mOxIZJrAevWTth7ba+iepm9DBwLu+jBoI
-        I5V0LO9naiTiYAlW8qUKCXb8LZE1D1PzdHeikqtU=
-Received: from arinc9-PC.localdomain (85.117.236.245 [85.117.236.245]) by mx.zohomail.com
-        with SMTPS id 1648932426117981.5903705693622; Sat, 2 Apr 2022 13:47:06 -0700 (PDT)
-From:   =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
+        Sat, 2 Apr 2022 17:02:55 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94DF0654B3;
+        Sat,  2 Apr 2022 14:01:02 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id nt14-20020a17090b248e00b001ca601046a4so1535439pjb.0;
+        Sat, 02 Apr 2022 14:01:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ep31zfzXgtGPRrK4JzjcT4OsqwVUibu1oi7iQV6wMvk=;
+        b=omQXM9rtM1ebTOd9z8Ztav/WBoT+BCHziqEXwKWAlkioz9DLMeAftY4UcrbPRF9dvo
+         iMHIqhBJ9HMNXG//Hjyk0XTZSaeCqnlM2A5aofHxAibbOUdnvHBjxiXOGuQ5tYYhIyO1
+         SoXc5o5jQ0DrsbD4yjkJKCSXvYG4amJfPA2Kl0VW5lUg4Ji/H072psVjvLOq6Wyy1tRq
+         OINubE8bnpoZEu78zYfE05TRpk/YnxYkPzAbOMIat9Dv63xoS16Tkya1xAs9dogtMaQW
+         BNpctb9fvWMaxbp4kOsrdI33JWavTeVRlusI9oeNfS4484++uizErQPu/8lBwlZB9K7w
+         TX9A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ep31zfzXgtGPRrK4JzjcT4OsqwVUibu1oi7iQV6wMvk=;
+        b=pS+aCfcY64YNuluT25mIeNvPiwO1FvhYmZRJf04esUAYUJNRGO+Fb20feZgXrVLJEU
+         6Uq0XA3W+IQhVBS8DR/sO95liNb+4LrXjJhSO054kFgq+qrMexwTez2/GJmIvdXF5FIP
+         8J5xmxbjdM7gCPIDIrntKOYs7WFpLsxmrNve9yJ3Wl9prSlAzwEIJSsrlrJkCZ/NfkIJ
+         lxMu7vB0+z0YRDp05b1OWZvsJvnnecfXVQxDNWlLxAbeA8KJMuraeRDJVtpfNJYdVEqU
+         +IF+4ioLDJO9b2iSdM59WM6Ia8ET+I71+gN6yjzWfuz5aQ+dcjX59QLEl5lHUGl3jS7D
+         8GlA==
+X-Gm-Message-State: AOAM531i0021svKiu1G/hS/byACrDxNz8ZG8BY0srKPoLHUMAI6u0W7e
+        7Rgc4e4u6p9r1M0OghOWMPMYZd2fU4E=
+X-Google-Smtp-Source: ABdhPJxj78ez9xkFhutTGi0ECjYCluuCwbPoK7lVzjaR9HcfVHQxlmELJUaq1hfN74k4vofie6i9Kg==
+X-Received: by 2002:a17:902:bb92:b0:153:4eae:c77e with SMTP id m18-20020a170902bb9200b001534eaec77emr51730419pls.93.1648933261795;
+        Sat, 02 Apr 2022 14:01:01 -0700 (PDT)
+Received: from 9a2d8922b8f1 ([122.161.51.18])
+        by smtp.gmail.com with ESMTPSA id f15-20020a056a001acf00b004fb2ad05521sm7259339pfv.215.2022.04.02.14.00.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 02 Apr 2022 14:01:01 -0700 (PDT)
+Date:   Sun, 3 Apr 2022 02:30:54 +0530
+From:   Kuldeep Singh <singh.kuldeep87k@gmail.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Rob Herring <robh+dt@kernel.org>,
-        Scott Branden <scott.branden@broadcom.com>,
-        Christian Lamparter <chunkeey@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        devicetree@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
-        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
-Subject: [PATCH v2 3/4] ARM: dts: BCM5301X: Fix compatible strings for BCM53012 and BCM53016 SoC
-Date:   Sat,  2 Apr 2022 23:46:21 +0300
-Message-Id: <20220402204622.3360-3-arinc.unal@arinc9.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220402204622.3360-1-arinc.unal@arinc9.com>
-References: <20220402204622.3360-1-arinc.unal@arinc9.com>
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mark Brown <broonie@kernel.org>, linux-arm-msm@vger.kernel.org,
+        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-spi@vger.kernel.org
+Subject: Re: [PATCH v3 9/9] dt-bindings: qcom: qcom,gsbi: convert to dtschema
+Message-ID: <20220402210054.GA36286@9a2d8922b8f1>
+References: <20220402184011.132465-1-krzysztof.kozlowski@linaro.org>
+ <20220402184011.132465-10-krzysztof.kozlowski@linaro.org>
+ <20220402202917.GA36054@9a2d8922b8f1>
+ <9a584eac-6ac9-e4ed-ef90-49569f4a4baa@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9a584eac-6ac9-e4ed-ef90-49569f4a4baa@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix compatible strings for devicetrees using the BCM53012 and BCM53016 SoC.
+On Sat, Apr 02, 2022 at 10:38:23PM +0200, Krzysztof Kozlowski wrote:
+> On 02/04/2022 22:29, Kuldeep Singh wrote:
+> > On Sat, Apr 02, 2022 at 08:40:11PM +0200, Krzysztof Kozlowski wrote:
+> >> Convert the Qualcomm General Serial Bus Interface (GSBI) to DT
+> >> Schema.
+> >>
+> >> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> >> ---
+> >>  .../bindings/soc/qcom/qcom,gsbi.txt           |  87 ------------
+> >>  .../bindings/soc/qcom/qcom,gsbi.yaml          | 133 ++++++++++++++++++
+> >>  2 files changed, 133 insertions(+), 87 deletions(-)
+> >>  delete mode 100644 Documentation/devicetree/bindings/soc/qcom/qcom,gsbi.txt
+> >>  create mode 100644 Documentation/devicetree/bindings/soc/qcom/qcom,gsbi.yaml
+> > 
+> > Great initiative to convert everything in one go!
+> > 
+> > [...]
+> > 
+> >> diff --git a/Documentation/devicetree/bindings/soc/qcom/qcom,gsbi.yaml b/Documentation/devicetree/bindings/soc/qcom/qcom,gsbi.yaml
+> >> new file mode 100644
+> >> index 000000000000..b97e359f3f90
+> >> --- /dev/null
+> >> +++ b/Documentation/devicetree/bindings/soc/qcom/qcom,gsbi.yaml
+> >> @@ -0,0 +1,133 @@
+> >> +# SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause
+> >> +%YAML 1.2
+> >> +---
+> >> +$id: http://devicetree.org/schemas/soc/qcom/qcom,gsbi.yaml#
+> >> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> >> +
+> >> +title: Qualcomm General Serial Bus Interface (GSBI)
+> >> +
+> >> +maintainers:
+> >> +  - Andy Gross <agross@kernel.org>
+> >> +  - Bjorn Andersson <bjorn.andersson@linaro.org>
+> >> +  - Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> >> +
+> >> +description:
+> >> +  The GSBI controller is modeled as a node with zero or more child nodes, each
+> >> +  representing a serial sub-node device that is mux'd as part of the GSBI
+> >> +  configuration settings.  The mode setting will govern the input/output mode
+> >> +  of the 4 GSBI IOs.
+> >> +
+> >> +  A GSBI controller node can contain 0 or more child nodes representing serial
+> >> +  devices.  These serial devices can be a QCOM UART, I2C controller, spi
+> >> +  controller, or some combination of aforementioned devices.
+> >> +
+> >> +properties:
+> >> +  compatible:
+> >> +    enum:
+> >> +      - qcom,gsbi-v1.0.0
+> > 
+> > Only 1 entry? const.
+> 
+> v1.0.0 looks like there could be some more, although they did not reach
+> mainline. The GSBI seems to be replaced by different blocks, so maybe
+> there will be no new entries here.
 
-Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
----
- arch/arm/boot/dts/bcm53016-meraki-mr32.dts | 2 +-
- arch/arm/boot/dts/bcm953012er.dts          | 2 +-
- arch/arm/boot/dts/bcm953012hr.dts          | 2 +-
- arch/arm/boot/dts/bcm953012k.dts           | 2 +-
- 4 files changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/arch/arm/boot/dts/bcm53016-meraki-mr32.dts b/arch/arm/boot/dts/bcm53016-meraki-mr32.dts
-index 66c64a6ec414..daca63f25134 100644
---- a/arch/arm/boot/dts/bcm53016-meraki-mr32.dts
-+++ b/arch/arm/boot/dts/bcm53016-meraki-mr32.dts
-@@ -13,7 +13,7 @@
- #include <dt-bindings/leds/common.h>
- 
- / {
--	compatible = "meraki,mr32", "brcm,brcm53016", "brcm,bcm4708";
-+	compatible = "meraki,mr32", "brcm,bcm53016", "brcm,bcm4708";
- 	model = "Meraki MR32";
- 
- 	chosen {
-diff --git a/arch/arm/boot/dts/bcm953012er.dts b/arch/arm/boot/dts/bcm953012er.dts
-index 52feca0fb906..dd63a148a16b 100644
---- a/arch/arm/boot/dts/bcm953012er.dts
-+++ b/arch/arm/boot/dts/bcm953012er.dts
-@@ -37,7 +37,7 @@
- 
- / {
- 	model = "NorthStar Enterprise Router (BCM953012ER)";
--	compatible = "brcm,bcm953012er", "brcm,brcm53012", "brcm,bcm4708";
-+	compatible = "brcm,bcm953012er", "brcm,bcm53012", "brcm,bcm4708";
- 
- 	memory@0 {
- 		device_type = "memory";
-diff --git a/arch/arm/boot/dts/bcm953012hr.dts b/arch/arm/boot/dts/bcm953012hr.dts
-index 9140be7ec053..b070b69466bd 100644
---- a/arch/arm/boot/dts/bcm953012hr.dts
-+++ b/arch/arm/boot/dts/bcm953012hr.dts
-@@ -37,7 +37,7 @@
- 
- / {
- 	model = "NorthStar HR (BCM953012HR)";
--	compatible = "brcm,bcm953012hr", "brcm,brcm53012", "brcm,bcm4708";
-+	compatible = "brcm,bcm953012hr", "brcm,bcm53012", "brcm,bcm4708";
- 
- 	aliases {
- 		ethernet0 = &gmac0;
-diff --git a/arch/arm/boot/dts/bcm953012k.dts b/arch/arm/boot/dts/bcm953012k.dts
-index de40bd59a5fa..f1e6bcaa1edd 100644
---- a/arch/arm/boot/dts/bcm953012k.dts
-+++ b/arch/arm/boot/dts/bcm953012k.dts
-@@ -36,7 +36,7 @@
- 
- / {
- 	model = "NorthStar SVK (BCM953012K)";
--	compatible = "brcm,bcm953012k", "brcm,brcm53012", "brcm,bcm4708";
-+	compatible = "brcm,bcm953012k", "brcm,bcm53012", "brcm,bcm4708";
- 
- 	aliases {
- 		serial0 = &uart0;
--- 
-2.25.1
-
+Yes, GSBI seems pretty old and only v1 rolled out.
+Don't think there are more revisions on the cards. Still can't say so.
