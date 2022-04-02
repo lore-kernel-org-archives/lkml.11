@@ -2,200 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 279F8C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 07:05:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B73E6C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 07:11:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238520AbiDBHHQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Apr 2022 03:07:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58794 "EHLO
+        id S238564AbiDBHNK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 2 Apr 2022 03:13:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229714AbiDBHHO (ORCPT
+        with ESMTP id S229714AbiDBHNH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Apr 2022 03:07:14 -0400
-X-Greylist: delayed 359 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 02 Apr 2022 00:05:21 PDT
-Received: from box.trvn.ru (box.trvn.ru [194.87.146.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BF5B10241F;
-        Sat,  2 Apr 2022 00:05:21 -0700 (PDT)
-Received: from authenticated-user (box.trvn.ru [194.87.146.52])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        Sat, 2 Apr 2022 03:13:07 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 837D5205D6
+        for <linux-kernel@vger.kernel.org>; Sat,  2 Apr 2022 00:11:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648883475;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=MHkMY/gjWD4ayMgnmR9Ub7v0rfA5e49jqyy9dp2VcPM=;
+        b=NrJbxxE+E05yl0HjBD+hyc+aeM8tf7ruug5VY4PallJGo2nTyxSivuItcucWBoq8eo1Got
+        3q2q7XvP5G4fUULBbAXsPnJ1y6imPSlrBoYwF00ODzF94Vbvir93sz0ZajjcWwZPETnpU5
+        gAnKa/d+WoYUQx+dwxpsOT3Mi4l2DKg=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-127-beyOVKkxMM66W9dohVyjag-1; Sat, 02 Apr 2022 03:11:12 -0400
+X-MC-Unique: beyOVKkxMM66W9dohVyjag-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by box.trvn.ru (Postfix) with ESMTPSA id B31FE403F2;
-        Sat,  2 Apr 2022 11:59:16 +0500 (+05)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=trvn.ru; s=mail;
-        t=1648882757; bh=g3dd49ZLEvD3b7UkZq09nzJLTrDcbZhjuvyIkuyxUww=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=rOhlGsQO/HTUiVU8OGWlJGCELzbuJLDlRNa5zJWC64lw2R6V66Vfo4vQg90/aWOM4
-         ptqXOjnOMgkSH236j+4w+8n5Co2yiCluXvASZKsMm7RGMaegx7OqCArSywud4CzGyC
-         fy2f5OFuN+er3HLk8tigyOkhM0/UZXdA57bL1C1A9Fq6aRNdBPD3BaiROs8vK0+j94
-         XJUVBBGhqHkCT0kscg/JSsO9oNw32bVDRM9JI5VnVT0x66RYA9LLP2gbh76oGZ+839
-         RAMeC6r8pcUNXPR/7HvfGHZxGZCVtrkItwCi4vMPx1sBg6Gn01y/TSEryhdP2nLZ6h
-         3TWDX5lPmP2wg==
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 120A42A2AD45;
+        Sat,  2 Apr 2022 07:11:12 +0000 (UTC)
+Received: from sparkplug.usersys.redhat.com (unknown [10.40.192.9])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 71F2840885AD;
+        Sat,  2 Apr 2022 07:11:09 +0000 (UTC)
+Date:   Sat, 2 Apr 2022 09:11:09 +0200
+From:   Artem Savkov <asavkov@redhat.com>
+To:     kernel test robot <oliver.sang@intel.com>
+Cc:     0day robot <lkp@intel.com>, LKML <linux-kernel@vger.kernel.org>,
+        lkp@lists.01.org, netdev@vger.kernel.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Josh Poimboeuf <jpoimboe@redhat.com>, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org,
+        Anna-Maria Gleixner <anna-maria@linutronix.de>,
+        dsahern@kernel.org
+Subject: Re: [net]  6ef3f95797:
+ UBSAN:shift-out-of-bounds_in_kernel/time/timer.c
+Message-ID: <Ykf3DZ4VJQ0yLJss@sparkplug.usersys.redhat.com>
+References: <20220330082046.3512424-3-asavkov@redhat.com>
+ <20220402030939.GA19395@xsang-OptiPlex-9020>
 MIME-Version: 1.0
-Date:   Sat, 02 Apr 2022 11:59:15 +0500
-From:   Nikita Travkin <nikita@trvn.ru>
-To:     =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc:     thierry.reding@gmail.com, lee.jones@linaro.org, robh+dt@kernel.org,
-        sboyd@kernel.org, krzk@kernel.org, linus.walleij@linaro.org,
-        masneyb@onstation.org, sean.anderson@seco.com,
-        linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht, kernel@pengutronix.de
-Subject: Re: [PATCH v6 2/2] pwm: Add clock based PWM output driver
-In-Reply-To: <20220328105659.mg3pxbqynlufaq6z@pengutronix.de>
-References: <20220220115030.23772-1-nikita@trvn.ru>
- <20220220115030.23772-3-nikita@trvn.ru>
- <20220328105659.mg3pxbqynlufaq6z@pengutronix.de>
-Message-ID: <ce9a8bab61485ba06933cdb7fdea50ac@trvn.ru>
-X-Sender: nikita@trvn.ru
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220402030939.GA19395@xsang-OptiPlex-9020>
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Sat, Apr 02, 2022 at 11:09:40AM +0800, kernel test robot wrote:
+> 
+> 
+> Greeting,
+> 
+> FYI, we noticed the following commit (built with gcc-9):
+> 
+> commit: 6ef3f95797546781829db3bb6228c9990ba1d49f ("[PATCH v3 2/2] net: make tcp keepalive timer upper bound")
+> url: https://github.com/intel-lab-lkp/linux/commits/Artem-Savkov/timer-add-a-function-to-adjust-timeouts-to-be-upper-bound/20220330-172140
+> base: https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git b166e52541f2357ce126a92ce1d9a580fdca719d
+> patch link: https://lore.kernel.org/netdev/20220330082046.3512424-3-asavkov@redhat.com
+> 
+> in testcase: kernel-selftests
+> version: kernel-selftests-x86_64-a17aac1b-1_20220328
+> with following parameters:
+> 
+> 	group: tc-testing
+> 	ucode: 0xec
+> 
+> test-description: The kernel contains a set of "self tests" under the tools/testing/selftests/ directory. These are intended to be small unit tests to exercise individual code paths in the kernel.
+> test-url: https://www.kernel.org/doc/Documentation/kselftest.txt
+> 
+> 
+> on test machine: 8 threads Intel(R) Core(TM) i7-6700 CPU @ 3.40GHz with 16G memory
+> 
+> caused below changes (please refer to attached dmesg/kmsg for entire log/backtrace):
+> 
+> 
+> 
+> If you fix the issue, kindly add following tag
+> Reported-by: kernel test robot <oliver.sang@intel.com>
+> 
+> 
+> [  158.913672][    C1] UBSAN: shift-out-of-bounds in kernel/time/timer.c:584:32
+> [  158.922603][    C1] shift exponent -3 is negative
 
-Uwe Kleine-König писал(а) 28.03.2022 15:56:
-> Hello,
-> 
-> just a few minor things left to criticize, see below.
-> 
-> On Sun, Feb 20, 2022 at 04:50:30PM +0500, Nikita Travkin wrote:
->> Some systems have clocks exposed to external devices. If the clock
->> controller supports duty-cycle configuration, such clocks can be used as
->> pwm outputs. In fact PWM and CLK subsystems are interfaced with in a
->> similar way and an "opposite" driver already exists (clk-pwm). Add a
->> driver that would enable pwm devices to be used via clk subsystem.
->>
->> Signed-off-by: Nikita Travkin <nikita@trvn.ru>
->> --
->>
->> Changes in v2:
->>  - Address Uwe's review comments:
->>    - Round set clk rate up
->>    - Add a description with limitations of the driver
->>    - Disable and unprepare clock before removing pwmchip
->> Changes in v3:
->>  - Use 64bit version of div round up
->>  - Address Uwe's review comments:
->>    - Reword the limitations to avoid incorrect claims
->>    - Move the clk_enabled flag assignment
->>    - Drop unnecessary statements
->> Changes in v5:
->>  - add missed returns
->> Changes in v6:
->>  - Unprepare the clock on error
->>  - Drop redundant limitations points
->> ---
->>  drivers/pwm/Kconfig   |  10 +++
->>  drivers/pwm/Makefile  |   1 +
->>  drivers/pwm/pwm-clk.c | 139 ++++++++++++++++++++++++++++++++++++++++++
->>  3 files changed, 150 insertions(+)
->>  create mode 100644 drivers/pwm/pwm-clk.c
->>
->> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
->> index 21e3b05a5153..daa2491a4054 100644
->> --- a/drivers/pwm/Kconfig
->> +++ b/drivers/pwm/Kconfig
->> @@ -140,6 +140,16 @@ config PWM_BRCMSTB
->>  	  To compile this driver as a module, choose M Here: the module
->>  	  will be called pwm-brcmstb.c.
->>
->> +config PWM_CLK
->> +	tristate "Clock based PWM support"
->> +	depends on HAVE_CLK || COMPILE_TEST
-> 
-> Can you really compile this driver if HAVE_CLK isn't available?
-> 
+This is caused by LVL_START(0). Levels 0 and 1 need to be handled
+separately to insure we don't end up with negative values.
 
-As I can see, clk.h has all the methods stubbed out if CONFIG_HAVE_CLK
-is not set. (And I think that all other headers like that do as well)
+-- 
+ Artem
 
-I've tried to build it without clk right now and it builds with no
-errors, neither test robots complained about that.
-
->> +	help
->> +	  Generic PWM framework driver for outputs that can be
->> +	  muxed to clocks.
->> +
->> +	  To compile this driver as a module, choose M here: the module
->> +	  will be called pwm-clk.
->> +
->>  config PWM_CLPS711X
->>  	tristate "CLPS711X PWM support"
->>  	depends on ARCH_CLPS711X || COMPILE_TEST
->> diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
->> index 708840b7fba8..4a860103c470 100644
->> --- a/drivers/pwm/Makefile
->> +++ b/drivers/pwm/Makefile
->> @@ -10,6 +10,7 @@ obj-$(CONFIG_PWM_BCM_KONA)	+= pwm-bcm-kona.o
->>  obj-$(CONFIG_PWM_BCM2835)	+= pwm-bcm2835.o
->>  obj-$(CONFIG_PWM_BERLIN)	+= pwm-berlin.o
->>  obj-$(CONFIG_PWM_BRCMSTB)	+= pwm-brcmstb.o
->> +obj-$(CONFIG_PWM_CLK)		+= pwm-clk.o
->>  obj-$(CONFIG_PWM_CLPS711X)	+= pwm-clps711x.o
->>  obj-$(CONFIG_PWM_CRC)		+= pwm-crc.o
->>  obj-$(CONFIG_PWM_CROS_EC)	+= pwm-cros-ec.o
->> diff --git a/drivers/pwm/pwm-clk.c b/drivers/pwm/pwm-clk.c
->> new file mode 100644
->> index 000000000000..52c9923368cb
->> --- /dev/null
->> +++ b/drivers/pwm/pwm-clk.c
->> @@ -0,0 +1,139 @@
->> +// SPDX-License-Identifier: GPL-2.0
->> +/*
->> + * Clock based PWM controller
->> + *
->> + * Copyright (c) 2021 Nikita Travkin <nikita@trvn.ru>
->> + *
->> + * This is an "adapter" driver that allows PWM consumers to use
->> + * system clocks with duty cycle control as PWM outputs.
->> + *
->> + * Limitations:
->> + * - Due to the fact that exact behavior depends on the underlying
->> + *   clock driver, various limitations are possible.
->> + * - Underlying clock may not be able to give 0% or 100% duty cycle
->> + *   (constant off or on), exact behavior will depend on the clock.
->> + * - When the PWM is disabled, the clock will be disabled as well,
->> + *   line state will depend on the clock.
-> 
->  - The clk API doesn't expose the necessary calls to implement
->    .get_state().
-> 
->> + */
->> +
->> +#include <linux/kernel.h>
->> +#include <linux/math64.h>
->> +#include <linux/err.h>
->> +#include <linux/module.h>
->> +#include <linux/of.h>
->> +#include <linux/platform_device.h>
->> +#include <linux/clk.h>
->> +#include <linux/pwm.h>
->> +
->> +struct pwm_clk_chip {
->> +	struct pwm_chip chip;
->> +	struct clk *clk;
->> +	bool clk_enabled;
->> +};
->> +
->> +#define to_pwm_clk_chip(_chip) container_of(_chip, struct pwm_clk_chip, chip)
->> +
->> +static int pwm_clk_apply(struct pwm_chip *pwm_chip, struct pwm_device *pwm,
->> +			 const struct pwm_state *state)
->> +{
->> +	struct pwm_clk_chip *chip = to_pwm_clk_chip(pwm_chip);
-> 
-> I'd prefer this was not called chip, as this is how struct pwm_chip
-> variables are called usually. My suggestion is:
-> 
-> 	chip -> pcchip
-> 	pwm_chip -> chip
-> 
-
-Thanks for the suggestion, I'll use the common naming then.
-
-Nikita
-
-> Best regards
-> Uwe
