@@ -2,106 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14FBAC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 11:06:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EBEAC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 11:16:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354624AbiDBLIn (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Apr 2022 07:08:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33030 "EHLO
+        id S240463AbiDBLSo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 2 Apr 2022 07:18:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240377AbiDBLIk (ORCPT
+        with ESMTP id S236766AbiDBLSl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Apr 2022 07:08:40 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6254C1A2A3C
-        for <linux-kernel@vger.kernel.org>; Sat,  2 Apr 2022 04:06:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648897608; x=1680433608;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=UTrwRC9CVEj2XQ9MRG+jq1Dx8X22KCSb9lse/9+ObOo=;
-  b=FeWPDkMqg0fsSi2TRhuFW12bUUpOo6edYr3vWwPOE+aTV7Jjnybcd1rp
-   j+Ih+Tm44DAI4GtraGyJuWyDkJszJmTl+Yd5JQEP5Ocvznxzs5LanqTwc
-   OHKI5LHQD3pNxgQHIGyWkVb6qksEc19VbyR1by/wxPywrzPV+eMwermy7
-   Td/RnP7BBfZsQhCaPYN7kuagiWoV6/hTNh+DheSP/HtUUrD8lQ4Ws54Si
-   5GTFehLILzOfGfTpGqfdHIBf0tTp5umWsCJXU4uEFbr6UMmWUxE+Zb7V7
-   wWoKy9RXRC2SGjUbBbJTjnj3bj00sm9waW0en17YB6cILOuzduJXLC/Rn
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10304"; a="240232984"
-X-IronPort-AV: E=Sophos;i="5.90,229,1643702400"; 
-   d="scan'208";a="240232984"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Apr 2022 04:06:48 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,229,1643702400"; 
-   d="scan'208";a="504438268"
-Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
-  by orsmga003.jf.intel.com with ESMTP; 02 Apr 2022 04:06:46 -0700
-Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nabaf-00003j-Lj;
-        Sat, 02 Apr 2022 11:06:45 +0000
-Date:   Sat, 2 Apr 2022 19:05:43 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Philipp Hortmann <philipp.g.hortmann@gmail.com>,
-        Forest Bond <forest@alittletooquiet.net>,
+        Sat, 2 Apr 2022 07:18:41 -0400
+Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CCF815B052
+        for <linux-kernel@vger.kernel.org>; Sat,  2 Apr 2022 04:16:49 -0700 (PDT)
+Received: by mail-oi1-x231.google.com with SMTP id b188so5231264oia.13
+        for <linux-kernel@vger.kernel.org>; Sat, 02 Apr 2022 04:16:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=vanguardiasur-com-ar.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=WjzH3Bp/QUa2TjJHjxkVQdmU8VTnKhEV9IV9oEFA8ak=;
+        b=CEdR9sisN7IB5r5tB2HaKFQKMuuVaopkESp5PcnA5otm521+G6ap3QLvZOf64W+uDM
+         4z/o9qUzrs6hJxDfNHi+i8kZh8VKUG8L2U5ZhpEhg2r/fhmpvYuxP+Kb5r5w4iWhH//L
+         /wRhOSNcUnSYFHBFRT01NOBqLfxeHeRLSyZAaDLzakXgR1k+7GL4zcobbIZ4du3YHQjT
+         BA2zG3n3Jn1/q7rUzwWWYeDZ3D/VSpcb7TZHR1ottkM2XhvwEpZMlq6R+AeEIlGCPDHv
+         hUHa7xVJ7/CFr2u2SBGrz1A/NSTaB4gRI7shibJASst6BRstnVDp2eKzGAPm1iiXo7Ir
+         nUuQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=WjzH3Bp/QUa2TjJHjxkVQdmU8VTnKhEV9IV9oEFA8ak=;
+        b=0r4+92pEd30tAe2jKQx39Xq3Jw570oJjP/Y0yXP0DhYMP1H/CA66/S/5hlhxbvI/X+
+         IJLSzuOnJ9Wsmerxm9qHKp6jq/piA3c+Ks3VV5KsOWnqtOayNqQvVjrIdHncSeDll8ha
+         FrcX+Dp3bZbt41swxatDnjoZEenDe5eB/cmItpTNAapCKxSiPdUSlB5DvyqhlVpi6yrv
+         AJvoV7+uzBlMFeCHwRFF/tdFFAGoLha9M4GpDIggJd1NEm+H7PB2vE+VeTw3/TPG5zhZ
+         bicXQaC40G9OOGKsP/IFj90OTtvOhJJWjYtbbOkn5JfbHdPAISXo6cxl8KZCoLnX8/KF
+         Gufw==
+X-Gm-Message-State: AOAM532LktU9WHnyQIN6tu2NnZ/LgcxiR+zVcJotj4KucT3l2q9Av8L0
+        /QEmvb3yAnTtXTk07cesxncrJQ==
+X-Google-Smtp-Source: ABdhPJwt+k9ISqksCBiUGrS67w5cQJUESwaCZG9FKIOUke5sO/15am/gUUnCSnZtlVN7b/1Iyfy3TQ==
+X-Received: by 2002:a05:6808:1247:b0:2d3:5181:449a with SMTP id o7-20020a056808124700b002d35181449amr6301215oiv.83.1648898208790;
+        Sat, 02 Apr 2022 04:16:48 -0700 (PDT)
+Received: from eze-laptop ([2803:9800:98c2:8470:9f4:8e2a:88e5:ec01])
+        by smtp.gmail.com with ESMTPSA id bm51-20020a0568081ab300b002da5c44e0bdsm1954097oib.28.2022.04.02.04.16.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 02 Apr 2022 04:16:48 -0700 (PDT)
+Date:   Sat, 2 Apr 2022 08:16:43 -0300
+From:   Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
+To:     Nicolas Dufresne <nicolas.dufresne@collabora.com>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        kernel@collabora.com,
+        Sebastian Fricke <sebastian.fricke@collabora.com>,
+        linux-media@vger.kernel.org, linux-rockchip@lists.infradead.org,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Cc:     kbuild-all@lists.01.org
-Subject: Re: [PATCH 7/7] staging: vt6655: Convert macro PCAvDelayByIO to
- function
-Message-ID: <202204021811.0EJtWYxo-lkp@intel.com>
-References: <b7551e92f42d60ff3bb74b5e28467f09781e3d06.1648882847.git.philipp.g.hortmann@gmail.com>
+Subject: Re: [PATCH v2 13/23] media: rkvdec: h264: Fix dpb_valid
+ implementation
+Message-ID: <YkgwmwTMa83RysKB@eze-laptop>
+References: <20220331193726.289559-1-nicolas.dufresne@collabora.com>
+ <20220331193726.289559-14-nicolas.dufresne@collabora.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <b7551e92f42d60ff3bb74b5e28467f09781e3d06.1648882847.git.philipp.g.hortmann@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220331193726.289559-14-nicolas.dufresne@collabora.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Philipp,
+On Thu, Mar 31, 2022 at 03:37:15PM -0400, Nicolas Dufresne wrote:
+> The ref builder only provided references that are marked as valid in the
+> dpb. Thus the current implementation of dpb_valid would always set the
+> flag to 1. This is not representing missing frames (this is called
+> 'non-existing' pictures in the spec). In some context, these non-existing
+> pictures still need to occupy a slot in the reference list according to
+> the spec.
+> 
 
-Thank you for the patch! Perhaps something to improve:
+Good catch! OOC, did you find this because it was failing a test vector?
 
-[auto build test WARNING on staging/staging-testing]
+> Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
+> Reviewed-by: Sebastian Fricke <sebastian.fricke@collabora.com>
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Philipp-Hortmann/staging-vt6655-Fix-CamelCase-in-upc-h-and-started-in-mac-h/20220402-153118
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/staging.git b22c721c4f3fd4608da059c56fbe7a0cc598fb6a
-config: parisc-buildonly-randconfig-r006-20220402 (https://download.01.org/0day-ci/archive/20220402/202204021811.0EJtWYxo-lkp@intel.com/config)
-compiler: hppa-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/87b8c1713c4ec7a743b07417150821e2c83dd49d
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Philipp-Hortmann/staging-vt6655-Fix-CamelCase-in-upc-h-and-started-in-mac-h/20220402-153118
-        git checkout 87b8c1713c4ec7a743b07417150821e2c83dd49d
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=parisc SHELL=/bin/bash drivers/staging/vt6655/
+Fixes: cd33c830448ba ("media: rkvdec: Add the rkvdec driver")
+Reviewed-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Thanks,
+Ezequiel
 
-All warnings (new ones prefixed by >>):
-
-   drivers/staging/vt6655/srom.c: In function 'PCAvDelayByIO':
->> drivers/staging/vt6655/srom.c:145:23: warning: variable 'data' set but not used [-Wunused-but-set-variable]
-     145 |         unsigned char data;
-         |                       ^~~~
-
-
-vim +/data +145 drivers/staging/vt6655/srom.c
-
-   142	
-   143	void PCAvDelayByIO(unsigned char u_delay_unit)
-   144	{
- > 145		unsigned char data;
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+> ---
+>  drivers/staging/media/rkvdec/rkvdec-h264.c | 33 ++++++++++++++++------
+>  1 file changed, 24 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/staging/media/rkvdec/rkvdec-h264.c b/drivers/staging/media/rkvdec/rkvdec-h264.c
+> index dff89732ddd0..bcde37d72244 100644
+> --- a/drivers/staging/media/rkvdec/rkvdec-h264.c
+> +++ b/drivers/staging/media/rkvdec/rkvdec-h264.c
+> @@ -112,6 +112,7 @@ struct rkvdec_h264_run {
+>  	const struct v4l2_ctrl_h264_sps *sps;
+>  	const struct v4l2_ctrl_h264_pps *pps;
+>  	const struct v4l2_ctrl_h264_scaling_matrix *scaling_matrix;
+> +	int ref_buf_idx[V4L2_H264_NUM_DPB_ENTRIES];
+>  };
+>  
+>  struct rkvdec_h264_ctx {
+> @@ -725,6 +726,26 @@ static void assemble_hw_pps(struct rkvdec_ctx *ctx,
+>  	}
+>  }
+>  
+> +static void lookup_ref_buf_idx(struct rkvdec_ctx *ctx,
+> +			       struct rkvdec_h264_run *run)
+> +{
+> +	const struct v4l2_ctrl_h264_decode_params *dec_params = run->decode_params;
+> +	u32 i;
+> +
+> +	for (i = 0; i < ARRAY_SIZE(dec_params->dpb); i++) {
+> +		struct v4l2_m2m_ctx *m2m_ctx = ctx->fh.m2m_ctx;
+> +		const struct v4l2_h264_dpb_entry *dpb = run->decode_params->dpb;
+> +		struct vb2_queue *cap_q = &m2m_ctx->cap_q_ctx.q;
+> +		int buf_idx = -1;
+> +
+> +		if (dpb[i].flags & V4L2_H264_DPB_ENTRY_FLAG_ACTIVE)
+> +			buf_idx = vb2_find_timestamp(cap_q,
+> +						     dpb[i].reference_ts, 0);
+> +
+> +		run->ref_buf_idx[i] = buf_idx;
+> +	}
+> +}
+> +
+>  static void assemble_hw_rps(struct rkvdec_ctx *ctx,
+>  			    struct rkvdec_h264_run *run)
+>  {
+> @@ -762,7 +783,7 @@ static void assemble_hw_rps(struct rkvdec_ctx *ctx,
+>  
+>  	for (j = 0; j < RKVDEC_NUM_REFLIST; j++) {
+>  		for (i = 0; i < h264_ctx->reflists.num_valid; i++) {
+> -			u8 dpb_valid = 0;
+> +			bool dpb_valid = run->ref_buf_idx[i] >= 0;
+>  			u8 idx = 0;
+>  
+>  			switch (j) {
+> @@ -779,8 +800,6 @@ static void assemble_hw_rps(struct rkvdec_ctx *ctx,
+>  
+>  			if (idx >= ARRAY_SIZE(dec_params->dpb))
+>  				continue;
+> -			dpb_valid = !!(dpb[idx].flags &
+> -				       V4L2_H264_DPB_ENTRY_FLAG_ACTIVE);
+>  
+>  			set_ps_field(hw_rps, DPB_INFO(i, j),
+>  				     idx | dpb_valid << 4);
+> @@ -859,13 +878,8 @@ get_ref_buf(struct rkvdec_ctx *ctx, struct rkvdec_h264_run *run,
+>  	    unsigned int dpb_idx)
+>  {
+>  	struct v4l2_m2m_ctx *m2m_ctx = ctx->fh.m2m_ctx;
+> -	const struct v4l2_h264_dpb_entry *dpb = run->decode_params->dpb;
+>  	struct vb2_queue *cap_q = &m2m_ctx->cap_q_ctx.q;
+> -	int buf_idx = -1;
+> -
+> -	if (dpb[dpb_idx].flags & V4L2_H264_DPB_ENTRY_FLAG_ACTIVE)
+> -		buf_idx = vb2_find_timestamp(cap_q,
+> -					     dpb[dpb_idx].reference_ts, 0);
+> +	int buf_idx = run->ref_buf_idx[dpb_idx];
+>  
+>  	/*
+>  	 * If a DPB entry is unused or invalid, address of current destination
+> @@ -1102,6 +1116,7 @@ static int rkvdec_h264_run(struct rkvdec_ctx *ctx)
+>  
+>  	assemble_hw_scaling_list(ctx, &run);
+>  	assemble_hw_pps(ctx, &run);
+> +	lookup_ref_buf_idx(ctx, &run);
+>  	assemble_hw_rps(ctx, &run);
+>  	config_registers(ctx, &run);
+>  
+> -- 
+> 2.34.1
+> 
