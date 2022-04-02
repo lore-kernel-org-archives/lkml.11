@@ -2,109 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E78BC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 21:26:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA3D7C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 21:29:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345143AbiDBV2q (ORCPT
+        id S1343986AbiDBVbZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Apr 2022 17:28:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56646 "EHLO
+        Sat, 2 Apr 2022 17:31:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229636AbiDBV2j (ORCPT
+        with ESMTP id S243844AbiDBVbX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Apr 2022 17:28:39 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8883252A8;
-        Sat,  2 Apr 2022 14:26:46 -0700 (PDT)
-Received: from mail-wm1-f44.google.com ([209.85.128.44]) by
- mrelayeu.kundenserver.de (mreue109 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1MbAYo-1o7c323umW-00bY9M; Sat, 02 Apr 2022 23:26:44 +0200
-Received: by mail-wm1-f44.google.com with SMTP id n63-20020a1c2742000000b0038d0c31db6eso3413631wmn.1;
-        Sat, 02 Apr 2022 14:26:44 -0700 (PDT)
-X-Gm-Message-State: AOAM5322Clzfnf/qwSNK/kgsENGPMT97WynnqBMnVAe1Wso/xJZokitl
-        60brgr31KhgccU3BFtc1bt3r0VQiBzLt3Id0ccU=
-X-Google-Smtp-Source: ABdhPJylADU8u1Uad2avcKqoy4J12Y7Ldo8r2ly4hCBr2blS2EVb+EGXxI00qvmV4NpEdPUxq7mTzkMgGKL7bOTsU7M=
-X-Received: by 2002:a05:600c:4e11:b0:38c:bd19:e72c with SMTP id
- b17-20020a05600c4e1100b0038cbd19e72cmr13758469wmq.174.1648934804584; Sat, 02
- Apr 2022 14:26:44 -0700 (PDT)
+        Sat, 2 Apr 2022 17:31:23 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 364571DA44;
+        Sat,  2 Apr 2022 14:29:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1648934951;
+        bh=7yYtWMHnK6AVMZOBHrVxK81UGFtO3CpC0uUtw1WFFkw=;
+        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
+        b=hrVLRcJMX46o3hSrAMCOqLtAUECGQfibzskxQteSecownJnqZWbxJvKexs2G3kvU1
+         0cD4uBQebnO8p0OYkZtwtxpEUPAjpVnQfYLnduQfjaywZA2oLjFI4a95vOz9gkKYo5
+         PDOmXsHSZF7ND6lXvJnqFS+7J9RLwvuTAR5CNX5g=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.20.60] ([92.116.149.42]) by mail.gmx.net (mrgmx104
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1M4s51-1nch722iE3-001xuL; Sat, 02
+ Apr 2022 23:29:11 +0200
+Message-ID: <ba21a1d3-26bb-cc80-57b5-6bd416de5e93@gmx.de>
+Date:   Sat, 2 Apr 2022 23:29:08 +0200
 MIME-Version: 1.0
-References: <20220321165049.35985-1-sven@svenpeter.dev> <20220321165049.35985-7-sven@svenpeter.dev>
- <CAK8P3a27-eWP=krGQOp29krcc7bVME9=MbN6B3Rs7Q4Ran_VFw@mail.gmail.com> <7876eb84-9803-48dc-ab6b-27d49858e27a@www.fastmail.com>
-In-Reply-To: <7876eb84-9803-48dc-ab6b-27d49858e27a@www.fastmail.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Sat, 2 Apr 2022 23:26:28 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a3d5XmtXxGwVHFSyNraOJdTaFCG1s+LNev=39eLXxGFHg@mail.gmail.com>
-Message-ID: <CAK8P3a3d5XmtXxGwVHFSyNraOJdTaFCG1s+LNev=39eLXxGFHg@mail.gmail.com>
-Subject: Re: [PATCH 6/9] nvme-apple: Add initial Apple SoC NVMe driver
-To:     Sven Peter <sven@svenpeter.dev>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Keith Busch <kbusch@kernel.org>,
-        "axboe@fb.com" <axboe@fb.com>, "hch@lst.de" <hch@lst.de>,
-        "sagi@grimberg.me" <sagi@grimberg.me>,
-        Hector Martin <marcan@marcan.st>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Rob Herring <robh+dt@kernel.org>,
-        Marc Zyngier <maz@kernel.org>,
-        DTML <devicetree@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-nvme@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:QVlumoECcVTiHC5u2S6Rwvxgn5vdkFihYQYtznc++DhQvJ0F2RK
- ZxtOtoSPeY5khKzM3uVVpREH9ML7BSTfAkH/Kj5Numjl7p5Glx7Phv10C+9LYZkQDTXQ5Bh
- WWGgTGgHnVD6jrRIi+ysVHNwFuLGJyUIFOasFbT8BF0CXjq1kucH06rq8MRM6ih2Q7EpAD0
- qGlZDBI9aTNflsiDx3vAQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:pFhRKGiCbjo=:1N0YG1QrJF/QXWd9niqOW7
- 0Gtz5sVAx85pNw/WcR406dvkC1b2nta17SmsrgEDR/S9uIJYCBXF3SAPDVPBq0mTULFglJA2b
- mVrhPKo7KM7MKvIpd1C3Fy9lmlP6qUwRAQXgXkYahkhSn0W0EXk4DnmCn6C509wTe4A/x9AK9
- eh5GQxhekhq91CsLoiOMWsBYdVSlMaYDD4WgD7f9iVjKibAR+AGcCpvnpaILbU69BRVpMjpln
- +rGEDkBhJAX46bn+Ux6ujeThhOcC8S0J/iSfFGO7R3phB6gKbXaosUJJoFEZlcDV3+pHmLK1N
- otnGRRP0Cju3bBp5RpGwHC8GbVGJcRbbcLobejJVdL+boBCBV6qyAjVpY8SdHOexFD7hXpH5B
- YsvI+TuJdzfyjJUtfBXsV61+jtS37U+T0HV8PC6z8VwTGkXn2jAdFZIp0SusPsODFuDYpP2E4
- Y1FZS87VbbvRyF4RAcKP3Y32D405L/JiN01gSmLWmOW2liFw8DIgXwW1m4E2iHuI9c65Mypa0
- N+vXLekHd5OW87k9Gpe3MqjLTRbQfW49vg5wm+ErDYk26HD4yaKPjMwz+dWdzKxVNDJtbpblW
- SBcQSdGgfnatGe/T4Az0SbO448nmqPMHMNMi6svahoNAqxGt5mCajxp3e1+UIJMkZSGhnkzW6
- zmsMdnYmRcylLg7ETIRSipMkmcmcGQiu9qZ84XJBUiGL+HXXckZq+lXmZcYieNFzYtDA=
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] parisc: Switch from GENERIC_CPU_DEVICES to
+ GENERIC_ARCH_TOPOLOGY
+Content-Language: en-US
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     James.Bottomley@hansenpartnership.com,
+        linux-parisc@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220401154137.GA3745625@roeck-us.net>
+ <57e79014-25e6-62d3-27de-64797e43992b@gmx.de>
+ <927a54f9-b413-0c71-461d-28ed9d5ece96@roeck-us.net> <YkdiDJZ/XHODymRk@p100>
+ <6353bc69-901e-32e7-e736-00dd6a09a1ea@roeck-us.net>
+From:   Helge Deller <deller@gmx.de>
+In-Reply-To: <6353bc69-901e-32e7-e736-00dd6a09a1ea@roeck-us.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:qzehXp0poiCdBkIlbE8WwHR4L7EsVNc/e7hthJeT5hHoT3XUu1l
+ ep6AM+jlkPXd8gy2ONlcRwf2bGuWAcBGjLZPe0b7HPJ2vN+ADYSoVzMLPQtdsOOoBJpFvuX
+ s2kec7+BK95oe0Q+2Cx+h0gzfEwaAmtGk5DzF3bkpHG2Liv4OZgcsMtqiU3hKpCT+cgnDx5
+ KAq6nTLyfCcnEh0htZ3TA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:Y2azOLBicSg=:U2aYiByJG1xJC3T/7WN0Ps
+ mfgNpTAQWigMirN7EqtWTItQklPIcRNNQrggCfGZkaU6mNWnxqh5/BhdjfC6K2Ds19Bpp0Pbf
+ G3aKNCvuuzzv8qFmqpujeJDy46vxNYbOFOKsrpVi+MDAc4KtLVma5uExdA/LvxRk62dAE8Ba9
+ p6M3quuuHnF1ku58Bm7J0qsMyZsdupBhj9Hnj14V3AqEWo10c1FqPFw5/tR9GiFbvFny3tDea
+ TIUaGyOc9STNr7c93A4mTlsqqZ9ua0iq33cujijEBf7yfdA59SMciHlqMch4q5dve2lDNY4Iy
+ 922vMLtWHetWHKQKquSGANPYh87CjOtDeUeMyI0+/yjRng/uUvtrWIjYlsLkaLXDFA0VpqpqV
+ uOjs4qVWHCWDUgq3r7iPR3y1hcV4zTVbdAsP+l8+2kq+/zQnoKMzOoQdsDxcruxRl93h/pNUT
+ mn4lk8Eb2EBpXbvqeF+ku7w2J+WMpBc1JlKBpQRYUWDfS/mJdxKp1s1crMavXH6RqMcZJOf/I
+ wpJGDV8sHdPXAOlHbwZ2u6BRrxqraH+FX4ZNyV+3e16zlma9NZuG0Lx0o6vf2N5ZQ9W7BNFPv
+ fwiz4j3jYdfR/yRcjcCoaKIqHzofeY/ueYcWWdN6uth4x9M4p941oSNuBOY+j2Zkoznxa0ecN
+ v1kTW9PSD6PejXfbMg0YfDji7gT+Tiktpol5k5dSKWNHrD+w7dZLtOoZfvR1I4lh/3frik2FY
+ zCCwAOMy+wOygbJYkQjpnJo7rP9G+HpvK5AHDCXDr4F9Jz9SOzza6kDBLUiimsarls68/dl8Y
+ fHNTH/21OH0PfvlCS+YRPuxLfj8bfXDnTNqpw5BkLW+KG7Jpg9TEEu1bxbNFTKPTdHdofssmW
+ vJPaeiriyjcyz9t+rKo70q1QBUdrevpAwcHkahjJo2Ui6psQtYHvidgo21/eB7jQoBLhzDcDZ
+ KkZoWFrsqBfhg984+5dZu9VEw68+Q9vGEcf/5lQ7Y60rW++gfc1XsMp99X8iuXUEBxG+Sa1Vu
+ qwG4FUGlZp1dACYi383JySzOR5QIxicTyH8OL54KjkJoe1XRGuPkciq8hquiKsM5p7++qrIsP
+ zATu6ovfvBvZu4=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Apr 2, 2022 at 3:34 PM Sven Peter <sven@svenpeter.dev> wrote:
-> On Tue, Mar 22, 2022, at 14:38, Arnd Bergmann wrote:
-> > On Mon, Mar 21, 2022 at 5:50 PM Sven Peter <sven@svenpeter.dev> wrote:
-
-> >> +bad_sgl:
-> >> +       WARN(DO_ONCE(apple_nvme_print_sgl, iod->sg, iod->nents),
-> >> +            "Invalid SGL for payload:%d nents:%d\n", blk_rq_payload_bytes(req),
-> >> +            iod->nents);
-> >
-> > I think you mean WARN_ONCE() here?
+On 4/2/22 23:27, Guenter Roeck wrote:
+> On 4/1/22 13:35, Helge Deller wrote:
+>> Hi G=C3=BCnter,
+>>
+>> * Guenter Roeck <linux@roeck-us.net>:
+>>> On 4/1/22 09:47, Helge Deller wrote:
+>>>> Hi G=C3=BCnter,
+>>>>
+>>>> On 4/1/22 17:41, Guenter Roeck wrote:
+>>>>> On Thu, Mar 24, 2022 at 07:46:50PM +0100, Helge Deller wrote:
+>>>>>> Switch away from the own cpu topology code to common code which is =
+used
+>>>>>> by ARM64 and RISCV. That will allow us to enable CPU hotplug later =
+on.
+>>>>>>
+>>>>>> Signed-off-by: Helge Deller <deller@gmx.de>
+>>>>>
+>>>>> This patch results in the following traceback when
+>>>>> booting generic-32bit_defconfig - SMP in qemu.
+>>>>
+>>>> That's strange, because I just built this generic-32bit_defconfig mys=
+elf and
+>>>> it boots up nicely in qemu for me. The only thing missing is CONFIG_C=
+GROUPS=3Dy so that
+>>>> systemd can start.
+>>>>
+>>>
+>>> Did you disable SMP (that is what - SMP was supposed to mean) ?
+>>> Also, note that the system does boot fine, it just spits out the warni=
+ng.
+>>
+>> The patch below fixes the warning for me.
+>> Could you try?
+>>
 >
-> This is taken from pci.c which used to use WARN_ONCE but was replaced in
-> d08774738446e77734777adcf5d1045237b4475a with this construction here.
-> The commit message mentions
+> I did, and it fixes the problem. I just sent a Tested-by: in response to
+> your patch.
+
+Thanks for testing !!
+Helge
+
+
 >
->     The WARN_ONCE macro returns true if the condition is true, not if the
->     warn was raised, so we're printing the scatter list every time it's
->     invalid. This is excessive and makes debugging harder, so this patch
->     prints it just once.
+> Guenter
+>
+>> Helge
+>>
+>>
+>> From: Helge Deller <deller@gmx.de>
+>> Subject: [PATCH] parisc: Re-enable GENERIC_CPU_DEVICES for !SMP
+>>
+>> In commit 62773112acc5 ("parisc: Switch from GENERIC_CPU_DEVICES to
+>> GENERIC_ARCH_TOPOLOGY") GENERIC_CPU_DEVICES was unconditionally turned
+>> off, but this triggers a warning in topology_add_dev(). Turning it back
+>> on for the !SMP case avoids this warning.
+>>
+>> Reported-by: Guenter Roeck <linux@roeck-us.net>
+>> Fixes: 62773112acc5 ("parisc: Switch from GENERIC_CPU_DEVICES to GENERI=
+C_ARCH_TOPOLOGY")
+>> Signed-off-by: Helge Deller <deller@gmx.de>
+>>
+>> diff --git a/arch/parisc/Kconfig b/arch/parisc/Kconfig
+>> index 52e550b45692..bd22578859d0 100644
+>> --- a/arch/parisc/Kconfig
+>> +++ b/arch/parisc/Kconfig
+>> @@ -38,6 +38,7 @@ config PARISC
+>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 select ARCH_HAVE_NMI_SAFE_CMPXCHG
+>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 select GENERIC_SMP_IDLE_THREAD
+>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 select GENERIC_ARCH_TOPOLOGY if SMP
+>> +=C2=A0=C2=A0=C2=A0 select GENERIC_CPU_DEVICES if !SMP
+>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 select GENERIC_LIB_DEVMEM_IS_ALLOWED
+>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 select SYSCTL_ARCH_UNALIGN_ALLOW
+>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 select SYSCTL_EXCEPTION_TRACE
 >
 
-Ok, makes sense. If we get more of these in the kernel, we may want to
-add a helper that makes this more obvious, but it appears that for now
-these two are the only ones.
-
-It could also be expressed by moving the WARN_ONCE() into the
-condition above the 'goto', but I don't see a reason to change the other
-driver and it's better to keep the two consistent.
-
-> Agreed, I've actually tried replacing all non-relaxed ones with the normal
-> accessors (even those inside the hot path) and didn't see any performance
-> difference.
-> I can use the normal ones here and I'll consider using the non-relaxed ones
-> in the hot path together with a comment why they are safe in those places.
-
-Sounds good. If you find any instances in the hot path that have a
-corresponding version in the pci.c file, it would be good to keep these
-two in sync, hopefully making the non-apple case faster as well.
-
-        Arnd
