@@ -2,244 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DD3BC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 16:22:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAAC1C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 16:27:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357989AbiDBQYd (ORCPT
+        id S1358048AbiDBQ3Z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Apr 2022 12:24:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37894 "EHLO
+        Sat, 2 Apr 2022 12:29:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347243AbiDBQY3 (ORCPT
+        with ESMTP id S1345180AbiDBQ3X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Apr 2022 12:24:29 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2604B14147A;
-        Sat,  2 Apr 2022 09:22:37 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id o10so11785884ejd.1;
-        Sat, 02 Apr 2022 09:22:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=TpBrMR6oS9V/SbBfjNMiP6m12bFbq6KIwbF80S3aCJ8=;
-        b=EXY019FWntu4G5GGHBNtLLD7ID8nqNnP3oZHC3jJJYj0jeJDsHI7IISoRyxt2NDufZ
-         ofKbd0Ec76vqsHRUmteFxJEcReHngOldz6uJkP/W4b3V6XF9mOinDtTmBKYhcRXKe+8y
-         j+esHv+6RygnvzjCa9T4rd+pqjEQuQXVt2dcdl041YdSzfy/bDOwT/GcKBZqpjYeVyJR
-         yDvzebrlk7vUhKek7iA+oVH+ty/kR8DcIZSfTLHTNDESHQD/xchBrTywgiDR9HOhVJA1
-         RDKrxOBqnlnPigW/Jgqd6eW1uwQ5/Knqrb7AFpb8mYphHCnC2gMzKEcpNOR8HSRPdnJw
-         MGhQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=TpBrMR6oS9V/SbBfjNMiP6m12bFbq6KIwbF80S3aCJ8=;
-        b=zcwzbQDVUiqpY8MNuycHkpUsoYsS08ixJv+NM3DoSjEbz5OdxM4cUyUTLiWqUlo0ow
-         YyPoBh1fjFPKh7tJkJrj4n9jyJVWJJiIKTxUzo2/twZ66aUNv6UBbxQ15n+FoNYj4VmD
-         Zs0CMSBXj4fF2R0m8bTwTtAtpClrMAxHmO7th5nTewFFZUX2CIjMXHXIHVhshu6xvm0O
-         nIMF8ifzOyLYTdKAf7OvPclgH4BTICUlLVdGb15SyKeBamNgsZhvgbxMsATG4GvAadgY
-         auPS6isApimPrHB571WGFPLNVGsHO9VBbnkZ18g1EhE+q/kuNmZcJuT+VSWCYU4Fllzp
-         N0bg==
-X-Gm-Message-State: AOAM5307oNk5gVfJL6+Yvy1BmuKZmXF6HUOIA17FdpWtrqFVRk68br4T
-        JleEUTuh4gX4+XGzytXTIUB8ffpoeWR3BZ9aYTE=
-X-Google-Smtp-Source: ABdhPJz/6K9Rl99P1P1n3MsOF+mfJYbq/9WGuUQJuwA0GZlt2Hp7WEI55rPdAUk8tGkS1MUES4129we4bdovHByX0iM=
-X-Received: by 2002:a17:907:7704:b0:6cf:48ac:b4a8 with SMTP id
- kw4-20020a170907770400b006cf48acb4a8mr4196371ejc.305.1648916555350; Sat, 02
- Apr 2022 09:22:35 -0700 (PDT)
+        Sat, 2 Apr 2022 12:29:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35B2A158D9C;
+        Sat,  2 Apr 2022 09:27:30 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E277DB80AB2;
+        Sat,  2 Apr 2022 16:27:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67D2BC340F3;
+        Sat,  2 Apr 2022 16:27:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648916847;
+        bh=m6wRN/Ozv9b5FQGVEHdRnB+vvT2QvfMHvXSoL21Mhc4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Hn+y7TS8hLCS2OAWIiI17VtbVNBAVhCgS/91kyR+Xq7JA0MBeX+IInlwvj0hxTKNS
+         JAHrg5T2sSPLxFRitJ3dqnfFdcDiV3Q3B335zPsPYozns8cNxuB8Lvjw5+I0Kx5zdF
+         NbO5ouy+9XNBr+OSVTNm7RQa8eCfxQoO+YESQnecNl/Y2CSgM9oAA2+ZE/bcD/8CPZ
+         8dbJphB5b+SZMI8hxpi6pqm4qhSlkw7/+jgjsG+1C8cgxAsI0iJj2+L9xR5Js5iENZ
+         f+v7U7ZV1hXvuwthxnSnuyJ0gF9eq22ARVuWoKw9U3rx/Zx5IW/V+MEVMvvbNGu2JR
+         eFy/eJv0N3erg==
+Date:   Sat, 2 Apr 2022 17:35:10 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Paul Lemmermann <thepaulodoom@thepaulodoom.com>
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] IIO: accel: fixed coding style issues
+Message-ID: <20220402173510.2b38e261@jic23-huawei>
+In-Reply-To: <YkIJ3/nkVNMy/qv8@hp-amd-paul>
+References: <YkHOpCT2Gad1YaxN@hp-amd-paul>
+        <20220328180623.1380d23e@jic23-huawei>
+        <YkIJ3/nkVNMy/qv8@hp-amd-paul>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20220228140838.622021-1-benjamin.gaignard@collabora.com>
- <eefa63b3-2a4d-4470-9a4e-517087ebcfaf@collabora.com> <CAHCN7xL2uZTMy30FGfDkDK4Lym6wvfr_MTv7QwtchrkTXMQiuw@mail.gmail.com>
- <79a9c925-d930-ad23-dc53-9ebc16d1328a@collabora.com> <3f778844-f655-74a7-0a00-05caa84eca35@collabora.com>
-In-Reply-To: <3f778844-f655-74a7-0a00-05caa84eca35@collabora.com>
-From:   Adam Ford <aford173@gmail.com>
-Date:   Sat, 2 Apr 2022 11:22:23 -0500
-Message-ID: <CAHCN7xLy2381AFLWhLxk5YuRV7C=OwLX=XPXONX8sbkg-SqMjA@mail.gmail.com>
-Subject: Re: [PATCH v4 00/15] Move HEVC stateless controls out of staging
-To:     Benjamin Gaignard <benjamin.gaignard@collabora.com>
-Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        mripard@kernel.org, paul.kocialkowski@bootlin.com,
-        Chen-Yu Tsai <wens@csie.org>,
-        "jernej.skrabec" <jernej.skrabec@gmail.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Nicolas Dufresne <nicolas@ndufresne.ca>,
-        linux-media <linux-media@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:STAGING SUBSYSTEM" <linux-staging@lists.linux.dev>,
-        arm-soc <linux-arm-kernel@lists.infradead.org>,
-        linux-sunxi@lists.linux.dev, kernel <kernel@collabora.com>,
-        knaerzche@gmail.com, jc@kynesim.co.uk
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 1, 2022 at 8:18 AM Benjamin Gaignard
-<benjamin.gaignard@collabora.com> wrote:
->
->
-> Le 31/03/2022 =C3=A0 08:53, Benjamin Gaignard a =C3=A9crit :
-> >
-> > Le 30/03/2022 =C3=A0 20:52, Adam Ford a =C3=A9crit :
-> >> On Wed, Mar 30, 2022 at 2:53 AM Benjamin Gaignard
-> >> <benjamin.gaignard@collabora.com> wrote:
-> >>>
-> >>> Le 28/02/2022 =C3=A0 15:08, Benjamin Gaignard a =C3=A9crit :
-> >>>> This series aims to make HEVC uapi stable and usable for hardware
-> >>>> decoder. HEVC uapi is used by 2 mainlined drivers (Cedrus and Hantro=
-)
-> >>>> and 2 out of the tree drivers (rkvdec and RPI).
-> >>>>
-> >>>> After the remarks done on version 2, I have completely reworked to
-> >>>> patches
-> >>>> split so changelogs are meaningless. I have also drop "RFC" from the
-> >>>> titles.
-> >>>>
-> >>>> Version 4:
-> >>>> - Add num_entry_point_offsets field in  struct
-> >>>> v4l2_ctrl_hevc_slice_params
-> >>>> - Fix V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS name
-> >>>> - Initialize control V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS
-> >>>> - Fix space/tab issue in kernel-doc
-> >>>> - Add patch to change data_bit_offset definition
-> >>>> - Fix hantro-media SPDX license
-> >>>> - put controls under stateless section in v4l2-ctrls-defs.c
-> >>>>
-> >>>> At the end fluster tests results on IMX8MQ is 77/147 for HEVC codec.
-> >>> Dear reviewers,
-> >>>
-> >>> This series is waiting for your feedback,
-> >> I tried several times with the suggested repos for both the kernel and
-> >> g-streamer without success getting Fluster to pass any tests on the
-> >> imx8mq.  I can try again but I likely won't get to it until this
-> >> weekend.  If I can get it working, I'll test both the 8mq and 8mm.
-> >
-> > Thanks a lot for that.
-> >
-> > Benjamin
->
-> Adam,
->
-> You may need to check if h265parse and v4l2slh265dec are available on you=
-r board.
+On Mon, 28 Mar 2022 14:17:51 -0500
+Paul Lemmermann <thepaulodoom@thepaulodoom.com> wrote:
 
-I ran gst-inspect to see what showed up with 265 in the name.
+> On Mon, Mar 28, 2022 at 06:06:23PM +0100, Jonathan Cameron wrote:
+> > On Mon, 28 Mar 2022 10:05:08 -0500
+> > Paul Lemmermann <thepaulodoom@thepaulodoom.com> wrote:
+> >   
+> > > Fixed case statement issues and spacing issues.
+> > > 
+> > > Signed-off-by: Paul Lemmermann <thepaulodoom@thepaulodoom.com>  
+> > Hi Paul,
+> > 
+> > Thanks for the patch.
+> > 
+> > These are drivers written / maintained by different authors, so one
+> > patch per driver preferred.  Particularly handy as people might not
+> > agree with all of them so separate patches would allow me to pick
+> > and choose which ones to pick up.
+> > 
+> > Comments inline.
+> > 
+> > Please state how you identified the changes btw.  Script?  
+> 
+> I used the checkpatch.pl script to identify these changes.
+Please mention that in patch descriptions in future.
+It's useful to anyone tracking this sort of information.
 
-# gst-inspect-1.0 |grep 265
-libav:  avdec_h265: libav HEVC (High Efficiency Video Coding) decoder
-rtp:  rtph265depay: RTP H265 depayloader
-rtp:  rtph265pay: RTP H265 payloader
-typefindfunctions: video/x-h265: h265, x265, 265
-v4l2codecs:  v4l2slh265dec: V4L2 Stateless H.265 Video Decoder
-videoparsersbad:  h265parse: H.265 parser
+I added it to the broken out patches whilst applying.
 
-It appears I have both h265parse and v4l2slh265dec.
+Thanks,
 
->
-> fluster check if v4l2slh265dec is working fine with this command line:
->
-> gst-launch-1.0 appsrc num-buffers=3D0 ! h265parse ! v4l2slh265dec ! fakes=
-ink
->
-> so if one of them is missing it won't work.
+Jonathan
 
-gst-launch-1.0 appsrc num-buffers=3D0 ! h265parse ! v4l2slh265dec ! fakesin=
-k
-Setting pipeline to PAUSED ...
-0:00:00.098389938   526 0xaaaaf9d86ac0 ERROR     v4l2codecs-decoder
-gstv4l2decoder.c:725:gst_v4l2_decoder_get_controls:<v4l2decoder2>
-VIDIOC_G_EXT_CTRLS failed: Invalid argument
-ERROR: from element
-/GstPipeline:pipeline0/v4l2slh265dec:v4l2slh265dec0: Driver did not
-report framing and start code method.
-Additional debug info:
-../subprojects/gst-plugins-bad/sys/v4l2codecs/gstv4l2codech265dec.c(155):
-gst_v4l2_codec_h265_dec_open ():
-/GstPipeline:pipeline0/v4l2slh265dec:v4l2slh265dec0:
-gst_v4l2_decoder_get_controls() failed: Invalid argument
-ERROR: pipeline doesn't want to preroll.
-ERROR: from element
-/GstPipeline:pipeline0/v4l2slh265dec:v4l2slh265dec0: Could not
-initialize supporting library.
-Additional debug info:
-../subprojects/gst-plugins-base/gst-libs/gst/video/gstvideodecoder.c(2909):
-gst_video_decoder_change_state ():
-/GstPipeline:pipeline0/v4l2slh265dec:v4l2slh265dec0:
-Failed to open decoder
-ERROR: pipeline doesn't want to preroll.
-Failed to set pipeline to PAUSED.
-Setting pipeline to NULL ...
-Freeing pipeline ...
+> 
+> > 
+> > Jonathan
+> >   
+> > > ---
+> > >  drivers/iio/accel/bmc150-accel-core.c | 15 +++++++++++----
+> > >  drivers/iio/accel/dmard09.c           |  2 +-
+> > >  drivers/iio/accel/kxsd9-spi.c         |  4 ++--
+> > >  3 files changed, 14 insertions(+), 7 deletions(-)
+> > > 
+> > > diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
+> > > index d11f66801..f7dd7ec2c 100644
+> > > --- a/drivers/iio/accel/bmc150-accel-core.c
+> > > +++ b/drivers/iio/accel/bmc150-accel-core.c
+> > > @@ -432,10 +432,17 @@ static bool bmc150_apply_bosc0200_acpi_orientation(struct device *dev,
+> > >  
+> > >  		for (j = 0; j < 3; j++) {
+> > >  			switch (val[j]) {
+> > > -			case -1: str = "-1"; break;
+> > > -			case 0:  str = "0";  break;
+> > > -			case 1:  str = "1";  break;
+> > > -			default: goto unknown_format;
+> > > +			case -1:
+> > > +				str = "-1";
+> > > +				break;
+> > > +			case 0:
+> > > +				str = "0";
+> > > +				break;
+> > > +			case 1:
+> > > +				str = "1";
+> > > +				break;
+> > > +			default:
+> > > +				goto unknown_format;  
+> > 
+> > I'm not seeing any clear advantage to this change.
+> >  
+> The reason for this change is that most, if not all, case statements in
+> the kernel are multiple lines. Also, in the kernel docs (https://docs.kernel.org/process/coding-style.html)
+> it says, to not put multiple statements on one line.
+> 
+> Thanks,
+> Paul
+> >   
+> > >  			}
+> > >  			orientation->rotation[i * 3 + j] = str;
+> > >  		}
+> > > diff --git a/drivers/iio/accel/dmard09.c b/drivers/iio/accel/dmard09.c
+> > > index e6e28c964..87bc38d4d 100644
+> > > --- a/drivers/iio/accel/dmard09.c
+> > > +++ b/drivers/iio/accel/dmard09.c
+> > > @@ -24,7 +24,7 @@
+> > >  #define DMARD09_AXIS_Y 1
+> > >  #define DMARD09_AXIS_Z 2
+> > >  #define DMARD09_AXIS_X_OFFSET ((DMARD09_AXIS_X + 1) * 2)
+> > > -#define DMARD09_AXIS_Y_OFFSET ((DMARD09_AXIS_Y + 1 )* 2)
+> > > +#define DMARD09_AXIS_Y_OFFSET ((DMARD09_AXIS_Y + 1) * 2)  
+> > 
+> > This is one is good.
+> >   
+> > >  #define DMARD09_AXIS_Z_OFFSET ((DMARD09_AXIS_Z + 1) * 2)
+> > >  
+> > >  struct dmard09_data {
+> > > diff --git a/drivers/iio/accel/kxsd9-spi.c b/drivers/iio/accel/kxsd9-spi.c
+> > > index 57c451cfb..989f53fb0 100644
+> > > --- a/drivers/iio/accel/kxsd9-spi.c
+> > > +++ b/drivers/iio/accel/kxsd9-spi.c
+> > > @@ -44,8 +44,8 @@ static const struct spi_device_id kxsd9_spi_id[] = {
+> > >  MODULE_DEVICE_TABLE(spi, kxsd9_spi_id);
+> > >  
+> > >  static const struct of_device_id kxsd9_of_match[] = {
+> > > -        { .compatible = "kionix,kxsd9" },
+> > > -        { },
+> > > +	{ .compatible = "kionix,kxsd9" },  
+> > 
+> > Also good to clean up.
+> > 
+> > Thanks,
+> > 
+> > Jonathan
+> > 
+> >   
+> > > +	{ },
+> > >  };
+> > >  MODULE_DEVICE_TABLE(of, kxsd9_of_match);
+> > >    
+> >   
 
-Does this mean I have a wrong version of the kernel and/or incomplete patch=
-es?
-
-adam
->
-> Regards,
-> Benjamin
->
-> >
-> >>
-> >> adam
-> >>> Thanks,
-> >>> Benjamin
-> >>>
-> >>>> Benjamin
-> >>>>
-> >>>>
-> >>>> Benjamin Gaignard (12):
-> >>>>     media: uapi: HEVC: Add missing fields in HEVC controls
-> >>>>     media: uapi: HEVC: Rename HEVC stateless controls with STATELESS
-> >>>>       prefix
-> >>>>     media: uapi: HEVC: Add document uAPI structure
-> >>>>     media: uapi: HEVC: Define V4L2_CID_STATELESS_HEVC_SLICE_PARAMS
-> >>>> as a
-> >>>>       dynamic array
-> >>>>     media: uapi: Move parsed HEVC pixel format out of staging
-> >>>>     media: uapi: Add V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS
-> >>>> control
-> >>>>     media: uapi: Move the HEVC stateless control type out of staging
-> >>>>     media: controls: Log HEVC stateless control in .std_log
-> >>>>     media: uapi: Create a dedicated header for Hantro control
-> >>>>     media: uapi: HEVC: fix padding in v4l2 control structures
-> >>>>     media: uapi: Change data_bit_offset definition
-> >>>>     media: uapi: move HEVC stateless controls out of staging
-> >>>>
-> >>>> Hans Verkuil (3):
-> >>>>     videodev2.h: add V4L2_CTRL_FLAG_DYNAMIC_ARRAY
-> >>>>     v4l2-ctrls: add support for dynamically allocated arrays.
-> >>>>     vivid: add dynamic array test control
-> >>>>
-> >>>>    .../userspace-api/media/drivers/hantro.rst    |   5 -
-> >>>>    .../media/v4l/ext-ctrls-codec-stateless.rst   | 833
-> >>>> ++++++++++++++++++
-> >>>>    .../media/v4l/ext-ctrls-codec.rst             | 780
-> >>>> ----------------
-> >>>>    .../media/v4l/pixfmt-compressed.rst           |   7 +-
-> >>>>    .../media/v4l/vidioc-g-ext-ctrls.rst          |  20 +
-> >>>>    .../media/v4l/vidioc-queryctrl.rst            |   8 +
-> >>>>    .../media/videodev2.h.rst.exceptions          |   5 +
-> >>>>    .../media/test-drivers/vivid/vivid-ctrls.c    |  15 +
-> >>>>    drivers/media/v4l2-core/v4l2-ctrls-api.c      | 103 ++-
-> >>>>    drivers/media/v4l2-core/v4l2-ctrls-core.c     | 198 ++++-
-> >>>>    drivers/media/v4l2-core/v4l2-ctrls-defs.c     |  37 +-
-> >>>>    drivers/media/v4l2-core/v4l2-ctrls-priv.h     |   3 +-
-> >>>>    drivers/media/v4l2-core/v4l2-ctrls-request.c  |  13 +-
-> >>>>    drivers/staging/media/hantro/hantro_drv.c     |  27 +-
-> >>>>    drivers/staging/media/hantro/hantro_hevc.c    |   8 +-
-> >>>>    drivers/staging/media/sunxi/cedrus/cedrus.c   |  24 +-
-> >>>>    .../staging/media/sunxi/cedrus/cedrus_dec.c   |  10 +-
-> >>>>    .../staging/media/sunxi/cedrus/cedrus_h265.c  |   2 +-
-> >>>>    include/media/hevc-ctrls.h                    | 250 ------
-> >>>>    include/media/v4l2-ctrls.h                    |  48 +-
-> >>>>    include/uapi/linux/hantro-media.h             |  19 +
-> >>>>    include/uapi/linux/v4l2-controls.h            | 439 +++++++++
-> >>>>    include/uapi/linux/videodev2.h                |  13 +
-> >>>>    23 files changed, 1697 insertions(+), 1170 deletions(-)
-> >>>>    delete mode 100644 include/media/hevc-ctrls.h
-> >>>>    create mode 100644 include/uapi/linux/hantro-media.h
-> >>>>
