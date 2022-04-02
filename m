@@ -2,91 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 341C6C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 16:35:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16E95C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 16:37:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358244AbiDBQhn (ORCPT
+        id S1358245AbiDBQj0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Apr 2022 12:37:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55524 "EHLO
+        Sat, 2 Apr 2022 12:39:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358223AbiDBQhi (ORCPT
+        with ESMTP id S1358233AbiDBQjY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Apr 2022 12:37:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F38851066DB;
-        Sat,  2 Apr 2022 09:35:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F79360B64;
-        Sat,  2 Apr 2022 16:35:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75363C340EE;
-        Sat,  2 Apr 2022 16:35:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648917345;
-        bh=mkH8uJWXxF9WDJTF9GQSX6lH/7+pN83clSgWCPk/tJo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=D+vCMtlg9wDUXQg/1cudIhkrlzFEBvMJLjDtXPGF/NvH4Xf47sqh62KthhKdR+JXa
-         LJGA1LnSyvtEtBiRRRWGRHlWjGwVChU+dKFQyWnB9XKz44tXdU8ojeIEPt20lhsUtg
-         mEkd/l2Dv/uBr5Pi9MLjTNSQWYRnPpuD3kWCBMui0SB4o1OaAQcJah9ziEcge2NAqL
-         6SgZCAg/Lyz6Rt4hqR5sjYWqYq7z/eVM51i+Ht/Lfg8QqCDHaMXZTYt+0+/BZxyj9E
-         VbXvm2Chj8ah0B5D05Vl0Ncwohdjc9LuLajNvi9IMkw70d+p3+XeVeYN3RK0jo4Sbb
-         vygZfZxO56STA==
-Date:   Sat, 2 Apr 2022 18:35:39 +0200
-From:   Mauro Carvalho Chehab <mchehab@kernel.org>
-To:     Sasha Levin <sashal@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        =?UTF-8?B?UMOpdGVy?= Ujfalusi <peter.ujfalusi@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>, lgirdwood@gmail.com,
-        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
-Subject: Re: [PATCH AUTOSEL 5.16 54/59] ASoC: Intel: sof_es8336: log all
- quirks
-Message-ID: <20220402183539.738ffb7b@coco.lan>
-In-Reply-To: <20220330114831.1670235-54-sashal@kernel.org>
-References: <20220330114831.1670235-1-sashal@kernel.org>
-        <20220330114831.1670235-54-sashal@kernel.org>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-redhat-linux-gnu)
+        Sat, 2 Apr 2022 12:39:24 -0400
+Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5D0310F6EB
+        for <linux-kernel@vger.kernel.org>; Sat,  2 Apr 2022 09:37:31 -0700 (PDT)
+Received: by mail-oi1-x22a.google.com with SMTP id r8so5787947oib.5
+        for <linux-kernel@vger.kernel.org>; Sat, 02 Apr 2022 09:37:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=+SrOdpKkibueEZ8eDGW7T0xC56oTL11h6V+jlJthOQ4=;
+        b=DsLi3EnN3YFbOVIJLaRoUhsgy/G0bmJh3Nn+pHdw4dxkDNV51PiTWHOioyO1/AIPR/
+         ntrq5xU2V8b6NKpldeo+sKZDbTnB3bql3YT3691vtY7PGqi0w6mU6JqshXIdnYxqa4c4
+         WasqcgIWXKJgB7I3Vgt/T/HjTVROp8+v2bzUeSeS+CBM88/7wSCCfA3hLsC+2PKIFUPX
+         8NU2T01o+mlGVWZHe14VJtExQOh8ewctAeYfU/9RteMpHUZgg7VDnLcG8ZctUTxVKDGp
+         Nh+hTQmYjh0niTcGvNjWMmBrMYY+dYuKYMsfygHhypxSesXtXgLnLuRRbjwHj/dD7T9v
+         CMSA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=+SrOdpKkibueEZ8eDGW7T0xC56oTL11h6V+jlJthOQ4=;
+        b=UG53Ym81Ij/XAHmuJKhkfkxaHEoY0N5oGugrAXg/RJBCWqQDLgYw5sDpHAunkFuAFa
+         42BgV8F13uEqVT6nTA93N39Xfag6QJvEdJtKjUYsu/pW3DfJL+L2ABTbXdiGVqr50u2x
+         4U+CUfHXE0RxgDKWcA32Ocx1wTYmn5PR+bOScoiAAwJ/UJjj7n/thWvkHFLoDHbW1Jtb
+         UD8VgxagFW+ucXK4ovPwEN58m3CcQ5vvpE8CEwscHAmr45lF5spUSeGJ7tT6sY0YqKlK
+         FdmnCKCYWD7gswbH/6EC2nTnt5JvhK5IJZq69i721er1Nkhi/Lk9NtJ6KIy2YrJ0+kBW
+         U75w==
+X-Gm-Message-State: AOAM531XOpLUs64WVEIbCjHU6Fb3msl4lhyt1cdt+j1q635e7+6/Cjja
+        wPwWU4MtOl/3B+0sSxdGp8peuXPNe9E=
+X-Google-Smtp-Source: ABdhPJy/wqNp3hVjUDNjyBYFhnwTLbEVb2FrtK2I7HzzwTh3kUcZMXjmsIW5K+jVgs3+sybmcjibFw==
+X-Received: by 2002:a05:6808:1444:b0:2ed:a247:e5e2 with SMTP id x4-20020a056808144400b002eda247e5e2mr7064762oiv.115.1648917450991;
+        Sat, 02 Apr 2022 09:37:30 -0700 (PDT)
+Received: from ?IPV6:2603:8090:2005:39b3::1004? (2603-8090-2005-39b3-0000-0000-0000-1004.res6.spectrum.com. [2603:8090:2005:39b3::1004])
+        by smtp.gmail.com with ESMTPSA id s24-20020a056808209800b002da3b9bf8e0sm2235436oiw.32.2022.04.02.09.37.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 02 Apr 2022 09:37:30 -0700 (PDT)
+Sender: Larry Finger <larry.finger@gmail.com>
+Message-ID: <563ddd2d-b8b2-dde6-a0de-c7bbebcc834e@lwfinger.net>
+Date:   Sat, 2 Apr 2022 11:37:27 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 4/6] staging: r8188eu: format block comments
+Content-Language: en-US
+To:     Rebecca Mckeever <remckee0@gmail.com>, outreachy@lists.linux.dev
+Cc:     Phillip Potter <phil@philpotter.co.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <cover.1648888461.git.remckee0@gmail.com>
+ <0387f3df49d89c17acf96cf072e70c98e81e58f7.1648888462.git.remckee0@gmail.com>
+From:   Larry Finger <Larry.Finger@lwfinger.net>
+In-Reply-To: <0387f3df49d89c17acf96cf072e70c98e81e58f7.1648888462.git.remckee0@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-HI Sasha,
-
-Em Wed, 30 Mar 2022 07:48:26 -0400
-Sasha Levin <sashal@kernel.org> escreveu:
-
-> From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+On 4/2/22 03:50, Rebecca Mckeever wrote:
+> Add ' * ' or ' ' to beginning of block comment lines
+> to conform to Linux kernel coding style.
 > 
-> [ Upstream commit 9c818d849192491a8799b1cb14ca0f7aead4fb09 ]
+> Reported by checkpatch:
 > 
-> We only logged the SSP quirk, make sure the GPIO and DMIC quirks are
-> exposed.
+> WARNING: Block comments use * on subsequent lines
+> 
+> Signed-off-by: Rebecca Mckeever <remckee0@gmail.com>
+> ---
+>   drivers/staging/r8188eu/core/rtw_cmd.c | 29 +++++++++++++-------------
+>   1 file changed, 14 insertions(+), 15 deletions(-)
+> 
+> diff --git a/drivers/staging/r8188eu/core/rtw_cmd.c b/drivers/staging/r8188eu/core/rtw_cmd.c
+> index 2e135bbd836a..0c659b40aa1c 100644
+> --- a/drivers/staging/r8188eu/core/rtw_cmd.c
+> +++ b/drivers/staging/r8188eu/core/rtw_cmd.c
+> @@ -12,9 +12,9 @@
+>   #include "../include/rtl8188e_dm.h"
+>   
+>   /*
+> -Caller and the rtw_cmd_thread can protect cmd_q by spin_lock.
+> -No irqsave is necessary.
+> -*/
+> + * Caller and the rtw_cmd_thread can protect cmd_q by spin_lock.
+> + * No irqsave is necessary.
+> + */
+>   
+>   static int _rtw_init_cmd_priv(struct cmd_priv *pcmdpriv)
+>   {
+> @@ -97,14 +97,13 @@ static void _rtw_free_cmd_priv(struct cmd_priv *pcmdpriv)
+>   }
+>   
+>   /*
+> -Calling Context:
+> -
+> -rtw_enqueue_cmd can only be called between kernel thread,
+> -since only spin_lock is used.
+> -
+> -ISR/Call-Back functions can't call this sub-function.
+> -
+> -*/
+> + * Calling Context:
+> + *
+> + * rtw_enqueue_cmd can only be called between kernel thread,
+> + * since only spin_lock is used.
+> + *
+> + * ISR/Call-Back functions can't call this sub-function.
+> + */
+>   
+>   static int _rtw_enqueue_cmd(struct __queue *queue, struct cmd_obj *obj)
+>   {
+> @@ -319,10 +318,10 @@ int rtw_cmd_thread(void *context)
+>   }
+>   
+>   /*
+> -rtw_sitesurvey_cmd(~)
+> -	### NOTE:#### (!!!!)
+> -	MUST TAKE CARE THAT BEFORE CALLING THIS FUNC, YOU SHOULD HAVE LOCKED pmlmepriv->lock
+> -*/
+> + * rtw_sitesurvey_cmd(~)
+> + *	### NOTE:#### (!!!!)
+> + *	MUST TAKE CARE THAT BEFORE CALLING THIS FUNC, YOU SHOULD HAVE LOCKED pmlmepriv->lock
+> + */
+>   u8 rtw_sitesurvey_cmd(struct adapter  *padapter, struct ndis_802_11_ssid *ssid, int ssid_num,
+>   	struct rtw_ieee80211_channel *ch, int ch_num)
+>   {
 
-Checking the backports for sof_es8336, it would be nice to also
-backport this one:
+These changes are OK, but the rules in drivers/net/wireless specify using
 
-	https://lore.kernel.org/all/20220308192610.392950-20-pierre-louis.bossart@linux.intel.com/
+/* abcd
 
-Without that, UCM won't detect a digital microphone and would fallback
-to analog mic, which won't work on machines with digital mic.
+rather than
 
--
+/*
+  * abcd
 
-Btw, I'm testing those using upstream UCM plus a couple of fixes
-I applied on the top of it:
+Thus, if and when this driver is accepted into the drivers/net/wireless tree, 
+another change will be needed. I suggest doing that now.
 
-	https://github.com/mchehab/alsa-ucm-conf/commits/master
-
-there's a pending PR#144 for upstream's alsa-ucm-conf fixing 3
-issues at the UCM logic for essx8336.
-
-Tested on a Huawei Matebook D15 notebook.
-
-Thanks,
-Mauro
+Larry
