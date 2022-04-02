@@ -2,64 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 179EDC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 16:17:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A613BC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 16:20:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357902AbiDBQT1 (ORCPT
+        id S1357954AbiDBQW3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Apr 2022 12:19:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46878 "EHLO
+        Sat, 2 Apr 2022 12:22:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233563AbiDBQTZ (ORCPT
+        with ESMTP id S1357947AbiDBQW0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Apr 2022 12:19:25 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 102D514866A;
-        Sat,  2 Apr 2022 09:17:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=JINKbqhOzJGOEsZNaR/VHXOnA2Rg4duv9P14QYv3WG0=; b=EWjokUVlhn2V99hAQ3xR0mH/KM
-        q3bFC7P6giYJXUD1dDMrC+iSfKLCM20bGHp0lYh2x0r5rhsLEznoKjxsrukDKHQY1bIUCb7jQXqie
-        8vBSZ35+W7vez0smEPXfJdadZ4BM15YMYpp67RPDTDu6D2IM1q+kNyOK6aWe7ClFHFTSfhUHlrGYE
-        NGlsc5mf/TWE2+3pKzY+UWDNYax23Zq/QTMlHHlusAHHX5coejg+vp2bIqUJVHonaxy6iI4f1Ca51
-        A3jzUVOJ84WRhNSmGLr9+STlFlLEooSlSfo4MHHwZFmg44x1v9mH1v6/wZQniZxmb+wgSmRAUolQy
-        FY/Rv3Jw==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nagRJ-004Dbq-C6; Sat, 02 Apr 2022 16:17:25 +0000
-Date:   Sat, 2 Apr 2022 17:17:25 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Baoquan He <bhe@redhat.com>
-Cc:     akpm@linux-foundation.org, linux-kernel@vger.kernel.org,
-        kexec@lists.infradead.org, yangtiezhu@loongson.cn,
-        amit.kachhap@arm.com, hch@lst.de, linux-fsdevel@vger.kernel.org,
-        viro@zeniv.linux.org.uk
-Subject: Re: [PATCH v5 1/3] vmcore: Convert copy_oldmem_page() to take an
- iov_iter
-Message-ID: <Ykh3FVUFQH0x11Zw@casper.infradead.org>
-References: <20220402043008.458679-1-bhe@redhat.com>
- <20220402043008.458679-2-bhe@redhat.com>
- <YkffO7QHuR2vq3gI@MiWiFi-R3L-srv>
+        Sat, 2 Apr 2022 12:22:26 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3102583B9;
+        Sat,  2 Apr 2022 09:20:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 6313ECE094D;
+        Sat,  2 Apr 2022 16:20:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2845C340EC;
+        Sat,  2 Apr 2022 16:20:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648916431;
+        bh=XgXaNNuEeJ937JoBXfirPFs0iHTDR3KVxroTM16ZOXU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=vPb4/LeXLtPgTtnh7SrubheryX+KZ17p/OHrO4TkrXgkO9FhxVggv5bJT9FYBWDrq
+         aX80NsOmWenz6OU8e9MeBUpt9eM1o/xRzR4aMdWW3XEdLd7p3eWfolcg+xSuyfd60B
+         n5JblRKN3D6nc5uLOCywV5qK78+9yFd+FcFAwAnUQLfk0ZaPMwuQcM9Q9LOoX7fV5K
+         7Kv5IGozbe4fWdJ4UGunY6520k0GykjiGT1PqlGyK1DWkv22CdDNf/ftWTFqS1/UJV
+         vmK0qLUku6ASQSQuYINzy5BNWPBxfQhm+voxZoWDjDNa51CgFNI67kAIbUb4hnMQpw
+         TjnqwWrgwZwyQ==
+Date:   Sat, 2 Apr 2022 17:28:14 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Paul Lemmermann <thepaulodoom@thepaulodoom.com>
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] IIO: accel: dmard09: fixed code styling issues
+Message-ID: <20220402172814.5117cdb7@jic23-huawei>
+In-Reply-To: <YkItIE5sp3P4sZdY@hp-amd-paul>
+References: <YkItIE5sp3P4sZdY@hp-amd-paul>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YkffO7QHuR2vq3gI@MiWiFi-R3L-srv>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Apr 02, 2022 at 01:29:31PM +0800, Baoquan He wrote:
-> On 04/02/22 at 12:30pm, Baoquan He wrote:
+On Mon, 28 Mar 2022 16:48:16 -0500
+Paul Lemmermann <thepaulodoom@thepaulodoom.com> wrote:
+
+> Cleaning up code.
 > 
-> It's odd. I cann't see the content of patches in this series from my
-> mailbox and mail client, but I can see them in lore.kernel.org.
+> Signed-off-by: Paul Lemmermann <thepaulodoom@thepaulodoom.com>
+Applied to the togreg branch of iio.git and pushed out as testing
+for 0-day to see if it can find anything we did wrong.
 
-Yes, Red Hat have screwed up their email server again.  David Hildenbrand
-already filed a ticket, but you should too so they don't think it's
-just him.
+BTW.  You seem to have sent two identical copies of this patch.
+I randomly decided to apply this second one.
 
-https://lore.kernel.org/linux-mm/6696fb21-090c-37c6-77a7-79423cc9c703@redhat.com/
+Thanks,
 
-> https://lore.kernel.org/all/20220402043008.458679-1-bhe@redhat.com/T/#u
+Jonathan
+
+> ---
+>  drivers/iio/accel/dmard09.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
+> diff --git a/drivers/iio/accel/dmard09.c b/drivers/iio/accel/dmard09.c
+> index 53ab6078c..cb0246ca7 100644
+> --- a/drivers/iio/accel/dmard09.c
+> +++ b/drivers/iio/accel/dmard09.c
+> @@ -24,7 +24,7 @@
+>  #define DMARD09_AXIS_Y 1
+>  #define DMARD09_AXIS_Z 2
+>  #define DMARD09_AXIS_X_OFFSET ((DMARD09_AXIS_X + 1) * 2)
+> -#define DMARD09_AXIS_Y_OFFSET ((DMARD09_AXIS_Y + 1 )* 2)
+> +#define DMARD09_AXIS_Y_OFFSET ((DMARD09_AXIS_Y + 1) * 2)
+>  #define DMARD09_AXIS_Z_OFFSET ((DMARD09_AXIS_Z + 1) * 2)
+>  
+>  struct dmard09_data {
+
