@@ -2,204 +2,201 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 947F9C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 10:23:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6490C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 10:29:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354289AbiDBKZH (ORCPT
+        id S1354334AbiDBKa7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Apr 2022 06:25:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38026 "EHLO
+        Sat, 2 Apr 2022 06:30:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238093AbiDBKZD (ORCPT
+        with ESMTP id S239592AbiDBKaz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Apr 2022 06:25:03 -0400
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79D791AA056;
-        Sat,  2 Apr 2022 03:23:11 -0700 (PDT)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4KVtR21LGgz9sSZ;
-        Sat,  2 Apr 2022 12:23:10 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id hZquyIJd4SRe; Sat,  2 Apr 2022 12:23:10 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4KVtR20SFlz9sSQ;
-        Sat,  2 Apr 2022 12:23:10 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id E92E08B76D;
-        Sat,  2 Apr 2022 12:23:09 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id C6PcTIWmTHoD; Sat,  2 Apr 2022 12:23:09 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.202.136])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id A012F8B768;
-        Sat,  2 Apr 2022 12:23:09 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 232AMwHq685346
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Sat, 2 Apr 2022 12:22:58 +0200
-Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 232AMuYv685345;
-        Sat, 2 Apr 2022 12:22:56 +0200
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Paul Mackerras <paulus@samba.org>, Helge Deller <deller@gmx.de>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        dri-devel@lists.freedesktop.org
-Subject: [PATCH] video: fbdev: Prepare cleanup of powerpc's asm/prom.h
-Date:   Sat,  2 Apr 2022 12:22:56 +0200
-Message-Id: <68d44009feb802c58b855ade3ac9109496b9d0e5.1648833426.git.christophe.leroy@csgroup.eu>
-X-Mailer: git-send-email 2.35.1
+        Sat, 2 Apr 2022 06:30:55 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 060FE49266
+        for <linux-kernel@vger.kernel.org>; Sat,  2 Apr 2022 03:29:03 -0700 (PDT)
+Received: from canpemm500009.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KVtWr1Z9nzgY97;
+        Sat,  2 Apr 2022 18:27:20 +0800 (CST)
+Received: from [10.67.102.169] (10.67.102.169) by
+ canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Sat, 2 Apr 2022 18:29:00 +0800
+CC:     <yangyicong@hisilicon.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] sched: topology: make cache topology separate from cpu
+ topology
+To:     =?UTF-8?B?546L5pOO?= <wangqing@vivo.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>
+References: <1646917125-20038-1-git-send-email-wangqing@vivo.com>
+ <CAKfTPtAvbpUUaOqP3gmOT7fLk8-7v70LzBUiQ-vgDvc7ZZujag@mail.gmail.com>
+ <SL2PR06MB30828CF9FF2879AFC9DC53D2BD0C9@SL2PR06MB3082.apcprd06.prod.outlook.com>
+ <CAKfTPtBM9WBEgP_PpRHNaATvp9FrBeV2NXhg_EAp4xYtBZYCWQ@mail.gmail.com>
+ <SL2PR06MB30826C314139509EC4778C1BBD0C9@SL2PR06MB3082.apcprd06.prod.outlook.com>
+ <CAKfTPtA=dy4M2OK+GqvPDo9D8YBZAHbEpM-YPVZEyEUjEJKU5g@mail.gmail.com>
+ <SL2PR06MB308268BDF646BFA0FC9A4590BD0C9@SL2PR06MB3082.apcprd06.prod.outlook.com>
+ <CAKfTPtCVV_cpBty7xH8Gea8HdjNzfiE3Kd882i7Pffvrv3p1zw@mail.gmail.com>
+ <SL2PR06MB3082ED191BF8892367A3465EBD109@SL2PR06MB3082.apcprd06.prod.outlook.com>
+ <CAKfTPtCn0As7Kbj7aHtmu++RDyo8proM6k9DLa1AMAc7iSSQXg@mail.gmail.com>
+ <SL2PR06MB308281BAC7D7F7CBF136DCD3BDE39@SL2PR06MB3082.apcprd06.prod.outlook.com>
+From:   Yicong Yang <yangyicong@huawei.com>
+Message-ID: <c1e348d1-6b74-9ac9-b7c6-6508a0fd9690@huawei.com>
+Date:   Sat, 2 Apr 2022 18:29:00 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.1
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1648894975; l=4417; s=20211009; h=from:subject:message-id; bh=NUrHFSycOvagcdRTsZ0KQOWwYFUWWBtR8hlzOrV8ib0=; b=l7Qb3dp99ynwky4d0UQJ3JdMGk7zv+x3ehiGgnBVDG2PjZuA50gzwIi53OWyRGw1RuqAMkcs8uEU cRMaGK1HBJCKKH6tnhTx9ElNNLaV+eAdiyo10o+t4GX49Rs5SX8P
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
+In-Reply-To: <SL2PR06MB308281BAC7D7F7CBF136DCD3BDE39@SL2PR06MB3082.apcprd06.prod.outlook.com>
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.67.102.169]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ canpemm500009.china.huawei.com (7.192.105.203)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-powerpc's asm/prom.h brings some headers that it doesn't
-need itself.
+Hi Qing,
 
-In order to clean it up, first add missing headers in
-users of asm/prom.h
+On 2022/4/2 17:34, 王擎 wrote:
+> 
+>>>
+>>>
+>>>>>
+>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>> On Thu, 10 Mar 2022 at 13:59, Qing Wang <wangqing@vivo.com> wrote:
+>>>>>>>>>>>
+>>>>>>>>>>> From: Wang Qing <wangqing@vivo.com>
+>>>>>>>>>>>
+>>>>>>>>>>> Some architectures(e.g. ARM64), caches are implemented below:
+>>>>>>>>>>> cluster:                     ****** cluster 0 *****      ****** cluster 1 *****
+>>>>>>>>>>> core:                         0      1          2      3          4      5           6      7
+>>>>>>>>> (add cache level 1)        c0    c1        c2    c3         c4    c5         c6    c7
+>>>>>>>>>>> cache(Leveln):         **cache0**  **cache1**  **cache2**  **cache3**
+>>>>>>>>> (add cache level 3)        *************share level 3 cache ***************
+>>>>>>>>>>> sd_llc_id(current):     0      0          0      0          4      4           4      4
+>>>>>>>>>>> sd_llc_id(should be): 0      0          2      2          4      4           6      6
+>>>>>>>>>>>
+>>>>>>>>> Here, n always be 2 in ARM64, but others are also possible.
+>>>>>>>>> core[0,1] form a complex(ARMV9),  which share L2 cache, core[2,3] is the same.
+>>>>>>>>>
+>>>>>>>>>>> Caches and cpus have different topology, this causes cpus_share_cache()
+>>>>>>>>>>> return the wrong value, which will affect the CPU load balance.
+>>>>>>>>>>>
+>>>>>>>>>> What does your current scheduler topology  look like?
+>>>>>>>>>>
+>>>>>>>>>> For CPU 0 to 3, do you have the below ?
+>>>>>>>>>> DIE [0     -     3] [4-7]
+>>>>>>>>>> MC  [0] [1] [2] [3]
+>>>>>>>>>
+>>>>>>>>> The current scheduler topology consistent with CPU topology:
+>>>>>>>>> DIE  [0-7]
+>>>>>>>>> MC  [0-3] [4-7]  (SD_SHARE_PKG_RESOURCES)
+>>>>>>>>> Most Android phones have this topology.
+>>>>>>>>>>
+>>>>>>>>>> But you would like something like below for cpu 0-1 instead ?
+>>>>>>>>>> DIE [0     -     3] [4-7]
+>>>>>>>>>> CLS [0 - 1] [2 - 3]
+>>>>>>>>>> MC  [0] [1]
+>>>>>>>>>>
+>>>>>>>>>> with SD_SHARE_PKG_RESOURCES only set to MC level ?
+>>>>>>>>>
+>>>>>>>>> We don't change the current scheduler topology, but the
+>>>>>>>>> cache topology should be separated like below:
+>>>>>>>>
+>>>>>>>> The scheduler topology is not only cpu topology but a mixed of cpu and
+>>>>>>>> cache/memory cache topology
+>>>>>>>>
+>>>>>>>>> [0-7]                          (shared level 3 cache )
+>>>>>>>>> [0-1] [2-3][4-5][6-7]   (shared level 2 cache )
+>>>>>>>>
+>>>>>>>> So you don't  bother the intermediate cluster level which is even simpler.
+>>>>>>>> you have to modify generic arch topology so that cpu_coregroup_mask
+>>>>>>>> returns the correct cpu mask directly.
+>>>>>>>>
+>>>>>>>> You will notice a llc_sibling field that is currently used by acpi but
+>>>>>>>> not DT to return llc cpu mask
+>>>>>>>>
+>>>>>>> cpu_topology[].llc_sibling describe the last level cache of whole system,
+>>>>>>> not in the sched_domain.
+>>>>>>>
+>>>>>>> in the above cache topology, llc_sibling is 0xff([0-7]) , it describes
+>>>>>>
+>>>>>> If llc_sibling was 0xff([0-7] on your system, you would have only one level:
+>>>>>> MC[0-7]
+>>>>>
+>>>>> Sorry, but I don't get it, why llc_sibling was 0xff([0-7] means MC[0-7]?
+>>>>> In our system(Android), llc_sibling is indeed 0xff([0-7]) , because they
+>>>>> shared the llc(L3), but we also have two level:
+>>>>> DIE [0-7]
+>>>>> MC [0-3][4-6]
+>>>>> It makes sense, [0-3] are little cores, [4-7] are bit cores, se only up migrate
+>>>>> when misfit. We won't change it.
+>>>>>
+>>>>>>
+>>>>>>> the L3 cache sibling, but sd_llc_id describes the maximum shared cache
+>>>>>>> in sd, which should be [0-1] instead of [0-3].
+>>>>>>
+>>>>>> sd_llc_id describes the last sched_domain with SD_SHARE_PKG_RESOURCES.
+>>>>>> If you want llc to be [0-3] make sure that the
+>>>>>> sched_domain_topology_level array returns the correct cpumask with
+>>>>>> this flag
+>>>>>
+>>>>> Acturely, we want sd_llc to be [0-1] [2-3], but if the MC domain don't have
+>>>>
+>>>> sd_llc_id refers to a scheduler domain but your patch breaks this so
+>>>> if you want a llc that reflects this topo:  [0-1] [2-3] you must
+>>>> provide a sched_domain level with this topo
+>>>
+>>> Maybe we should add a shared-cache level(SC), like what CLS does:
+>>>
+>>> DIE  [0-7] (shared level 3 cache, SD_SHARE_PKG_RESOURCES)
+>>> MC  [0-3] [4-7]  (not SD_SHARE_PKG_RESOURCES)
+>>> CLS  (if necessary)
+>>> SC    [0-1][2-3][4-5][6-7] (shared level 2 cache, SD_SHARE_PKG_RESOURCES)
+>>> SMT (if necessary)
+>>>
+>>> SC means a couple of CPUs which are placed closely by sharing
+>>> mid-level caches, but not enough to be a cluster.
+>>
+>> what you name SC above looks the same as CLS which should not be mixed
+>> with Arm cluster terminology
+> 
+> Do you mean cluster is equal to shared cache instead of containing, SC just 
+> means shared cache, but not form a cluster, a CLS can contain many SCs.
+> 
 
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
----
- drivers/video/fbdev/aty/aty128fb.c         | 1 -
- drivers/video/fbdev/aty/atyfb_base.c       | 1 -
- drivers/video/fbdev/aty/radeon_pm.c        | 1 -
- drivers/video/fbdev/aty/radeonfb.h         | 2 +-
- drivers/video/fbdev/controlfb.c            | 3 ---
- drivers/video/fbdev/matrox/matroxfb_base.h | 1 -
- drivers/video/fbdev/mb862xx/mb862xxfbdrv.c | 2 ++
- drivers/video/fbdev/platinumfb.c           | 2 +-
- drivers/video/fbdev/valkyriefb.c           | 3 +--
- 9 files changed, 5 insertions(+), 11 deletions(-)
+The cluster is a topology level above the CPUs but under LLC. On Kunpeng 920 the cpus
+in a CLS will share L3T and on Intel's Jacobsville cpus in a CLS will share L2[1].
 
-diff --git a/drivers/video/fbdev/aty/aty128fb.c b/drivers/video/fbdev/aty/aty128fb.c
-index 6ff16d3132e5..b26c81233b6b 100644
---- a/drivers/video/fbdev/aty/aty128fb.c
-+++ b/drivers/video/fbdev/aty/aty128fb.c
-@@ -68,7 +68,6 @@
- #ifdef CONFIG_PPC_PMAC
- #include <asm/machdep.h>
- #include <asm/pmac_feature.h>
--#include <asm/prom.h>
- #include "../macmodes.h"
- #endif
- 
-diff --git a/drivers/video/fbdev/aty/atyfb_base.c b/drivers/video/fbdev/aty/atyfb_base.c
-index 1aef3d6ebd88..a3e6faed7745 100644
---- a/drivers/video/fbdev/aty/atyfb_base.c
-+++ b/drivers/video/fbdev/aty/atyfb_base.c
-@@ -79,7 +79,6 @@
- 
- #ifdef __powerpc__
- #include <asm/machdep.h>
--#include <asm/prom.h>
- #include "../macmodes.h"
- #endif
- #ifdef __sparc__
-diff --git a/drivers/video/fbdev/aty/radeon_pm.c b/drivers/video/fbdev/aty/radeon_pm.c
-index b5fbd5329652..97a5972f5b1f 100644
---- a/drivers/video/fbdev/aty/radeon_pm.c
-+++ b/drivers/video/fbdev/aty/radeon_pm.c
-@@ -22,7 +22,6 @@
- 
- #ifdef CONFIG_PPC_PMAC
- #include <asm/machdep.h>
--#include <asm/prom.h>
- #include <asm/pmac_feature.h>
- #endif
- 
-diff --git a/drivers/video/fbdev/aty/radeonfb.h b/drivers/video/fbdev/aty/radeonfb.h
-index 93f403cbb415..91d81b576231 100644
---- a/drivers/video/fbdev/aty/radeonfb.h
-+++ b/drivers/video/fbdev/aty/radeonfb.h
-@@ -21,7 +21,7 @@
- 
- #include <asm/io.h>
- 
--#if defined(CONFIG_PPC) || defined(CONFIG_SPARC)
-+#ifdef CONFIG_SPARC
- #include <asm/prom.h>
- #endif
- 
-diff --git a/drivers/video/fbdev/controlfb.c b/drivers/video/fbdev/controlfb.c
-index bd59e7b11ed5..aba46118b208 100644
---- a/drivers/video/fbdev/controlfb.c
-+++ b/drivers/video/fbdev/controlfb.c
-@@ -47,9 +47,6 @@
- #include <linux/nvram.h>
- #include <linux/adb.h>
- #include <linux/cuda.h>
--#ifdef CONFIG_PPC_PMAC
--#include <asm/prom.h>
--#endif
- #ifdef CONFIG_BOOTX_TEXT
- #include <asm/btext.h>
- #endif
-diff --git a/drivers/video/fbdev/matrox/matroxfb_base.h b/drivers/video/fbdev/matrox/matroxfb_base.h
-index 759dee996af1..958be6805f87 100644
---- a/drivers/video/fbdev/matrox/matroxfb_base.h
-+++ b/drivers/video/fbdev/matrox/matroxfb_base.h
-@@ -47,7 +47,6 @@
- #include <asm/unaligned.h>
- 
- #if defined(CONFIG_PPC_PMAC)
--#include <asm/prom.h>
- #include "../macmodes.h"
- #endif
- 
-diff --git a/drivers/video/fbdev/mb862xx/mb862xxfbdrv.c b/drivers/video/fbdev/mb862xx/mb862xxfbdrv.c
-index 63721337a377..a7508f5be343 100644
---- a/drivers/video/fbdev/mb862xx/mb862xxfbdrv.c
-+++ b/drivers/video/fbdev/mb862xx/mb862xxfbdrv.c
-@@ -18,6 +18,8 @@
- #include <linux/interrupt.h>
- #include <linux/pci.h>
- #if defined(CONFIG_OF)
-+#include <linux/of_address.h>
-+#include <linux/of_irq.h>
- #include <linux/of_platform.h>
- #endif
- #include "mb862xxfb.h"
-diff --git a/drivers/video/fbdev/platinumfb.c b/drivers/video/fbdev/platinumfb.c
-index ce413a9df06e..5b9e26ea6449 100644
---- a/drivers/video/fbdev/platinumfb.c
-+++ b/drivers/video/fbdev/platinumfb.c
-@@ -30,9 +30,9 @@
- #include <linux/fb.h>
- #include <linux/init.h>
- #include <linux/nvram.h>
-+#include <linux/of_address.h>
- #include <linux/of_device.h>
- #include <linux/of_platform.h>
--#include <asm/prom.h>
- 
- #include "macmodes.h"
- #include "platinumfb.h"
-diff --git a/drivers/video/fbdev/valkyriefb.c b/drivers/video/fbdev/valkyriefb.c
-index 8425afe37d7c..a6c9d4f26669 100644
---- a/drivers/video/fbdev/valkyriefb.c
-+++ b/drivers/video/fbdev/valkyriefb.c
-@@ -54,10 +54,9 @@
- #include <linux/nvram.h>
- #include <linux/adb.h>
- #include <linux/cuda.h>
-+#include <linux/of_address.h>
- #ifdef CONFIG_MAC
- #include <asm/macintosh.h>
--#else
--#include <asm/prom.h>
- #endif
- 
- #include "macmodes.h"
--- 
-2.35.1
+Seems you're using a DT based system. I think the parsing of cluster level is not
+supported on DT yet so you cannot see it. Otherwise with right cpu topology reported
+you will have a CLS level in which the cpus share L2 cache, just like Jacobsville.
 
+[1] https://lore.kernel.org/all/20210924085104.44806-4-21cnbao@gmail.com/
+
+> If as you said, SC looks the same as CLS, should we rename CLS to SC to 
+> avoid confusion?
+> 
+> Thanks,
+> Wang
+> 
