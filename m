@@ -2,53 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 306ECC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 08:51:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65E82C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 08:52:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353987AbiDBIxc (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Apr 2022 04:53:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54502 "EHLO
+        id S239563AbiDBIxy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 2 Apr 2022 04:53:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353961AbiDBIxS (ORCPT
+        with ESMTP id S1353897AbiDBIwz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Apr 2022 04:53:18 -0400
-Received: from mail-ot1-x342.google.com (mail-ot1-x342.google.com [IPv6:2607:f8b0:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB650156C7D
-        for <linux-kernel@vger.kernel.org>; Sat,  2 Apr 2022 01:51:25 -0700 (PDT)
-Received: by mail-ot1-x342.google.com with SMTP id o20-20020a9d7194000000b005cb20cf4f1bso3692790otj.7
-        for <linux-kernel@vger.kernel.org>; Sat, 02 Apr 2022 01:51:25 -0700 (PDT)
+        Sat, 2 Apr 2022 04:52:55 -0400
+Received: from mail-oo1-xc41.google.com (mail-oo1-xc41.google.com [IPv6:2607:f8b0:4864:20::c41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86A72F4601
+        for <linux-kernel@vger.kernel.org>; Sat,  2 Apr 2022 01:51:03 -0700 (PDT)
+Received: by mail-oo1-xc41.google.com with SMTP id p10-20020a056820044a00b00320d7d4af22so918996oou.4
+        for <linux-kernel@vger.kernel.org>; Sat, 02 Apr 2022 01:51:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ldid4ljpTipmsQhOv6JPWoqFhKtbXsLDYhk2KntAovc=;
-        b=KAFQGvZ0NJ9rVgGYrPkiRPInodeyew81EEkXVadDRY8N6ktZRH5Iqs0gGptd9EAKuV
-         6DEo+8wnwOddDm5nibVVRniAPDTbdG17FbEYMgEA+AbRQwJ/wzei2H3fxkHWEZ0ULFis
-         KOZsrbpkCnfNEPpgbO4LXQnlQHw7QBL18Yqo0mPBEYs2rv1vhRW/sz59H95Jdsh4F6NO
-         pPxC15AqnyFI8YjGJhBU6ekW88/fQk015anivwUZIZeIvTB6Rh0RCsp+bXIi0/ua1ZTl
-         hOaPZC82HOlxvXkey8SypmVvqqbyOcrjYe9WUxDANfP0q7Y9QWCn1RQQxfWn7gNRG+5Q
-         807Q==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=VUOMhCxGGDDxH0dnq3ze5cK/Iq3zT9j9067V4Svj/w8=;
+        b=hrLcCtLYrV4YeL/G377XYASUh4ynccAF3dZOX/TdMfZ0LT7DWHenqFFyLsgJ+xcmWY
+         l30NBxyr80GQFqz2/yVqvr1QHMERlogfqRKw6AxdrAOikr9iths9SSGjgA6uZpq8IMXG
+         +8hEFoqw969OmbP089du3ZZ6uDbQiiOAwEdtW5wH21gwR162yn+8axiyenkjardWQWEK
+         oST7dqdh5VWZlBFhlphAzewFXgGGslRtGwBqwLtVOo+u2ccMieDYdKxUHVQd8EcjSsq5
+         vqoFpNvvTlti4wUkJ/HqKUcglFP1uLPiuidpO6h1EVORreAvpbuuWdC0QlwvzTJw8ZRB
+         o4SA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ldid4ljpTipmsQhOv6JPWoqFhKtbXsLDYhk2KntAovc=;
-        b=KlXW3xDgEKkFeSGyyBq8VBuJ6yWNXzMT0QtLb8vPgHiw+Onz9NFL0ZTpj6qYwSPgfN
-         PT6b4+xt0OdogxZkVQISKDaSd4wLNuNAGVtfd6JlILwAs9N2BdXnQIHmPglU1+qY4RjN
-         3inS52C5FpNMVbZDjoYexsBI63HxyYszrq1Hrcy6ovh/ZAqm2GKgcBTrgDeLdz2kst/A
-         1tVE0ckaKn/VCSrhUMctICUBQ9LPWaIzrWpNQgOrUwkeZhSJSZvXobriwchhcz7nPDB/
-         6iCMeAT9IKmhf9dglfDM/1cy+rzcY1h+rMvy/kiAlPI1OayAiZQ95mi6wG1xRRfVBYPv
-         4LXA==
-X-Gm-Message-State: AOAM530B/RgXnTkmctntMOFFQI3zNo7yAqU6nBVmwt2hnfHIkcER5HDO
-        jZJHnpJDUonRyvekcznXyHqHnEifWhqtdA==
-X-Google-Smtp-Source: ABdhPJzJtFaXbMcy+64yaYYRroXmyTyK8j8Gkg7Uj2Kv573XC8okNjixo4oiA7R0G6MyTG46ipjrAQ==
-X-Received: by 2002:a9d:7d96:0:b0:5cd:ae1e:3043 with SMTP id j22-20020a9d7d96000000b005cdae1e3043mr8942959otn.284.1648889485183;
-        Sat, 02 Apr 2022 01:51:25 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=VUOMhCxGGDDxH0dnq3ze5cK/Iq3zT9j9067V4Svj/w8=;
+        b=xYHab4lGjJqrxSED6mRktEMjdhZGGgKcC8PFZ2dtRTPxoRiXpmNJ+w/4jmXc2hQN20
+         rQwByVOK5gnsABpTdyErRZ2M9suyjpX0ptvViWwUMlHciGp3OMNci7hRzhF3dgr76Df4
+         PIhReL7AXfq0Uv8S6BvxGg80LEDqbxKKqT+saJTc45p5VU4R4Q7pm1IoSSGuCQWzFHI3
+         yFwGbaJKNzGrUZsDxyqhP9fL8Vo8/YVcrNGSQ+r2g5wntfvBkcs8XRpI62MzC8XnQ6Ic
+         Q8ZXuooElzo0ojPx7myzF1reloTXtGn/5/ysH96BT2AA/+tbC8q9800EpaK1Ue2zzirb
+         BBkg==
+X-Gm-Message-State: AOAM5328att6hypx1IEk+xGvomanp73C0JiXSKfNksRt/AbsIinkHMrR
+        sYM2YVJ/GClTOXimMhnVjWKfDE3nQDM2Xw==
+X-Google-Smtp-Source: ABdhPJxrzV+xUQGXp8PKXfzymFhsePke7giMv8WhRPhF+uAjb81XNa8NFgNWfLbe2Tkz9gZNql63bw==
+X-Received: by 2002:a4a:5510:0:b0:328:faf7:9ed9 with SMTP id e16-20020a4a5510000000b00328faf79ed9mr3063895oob.65.1648889462911;
+        Sat, 02 Apr 2022 01:51:02 -0700 (PDT)
 Received: from bertie (072-190-140-117.res.spectrum.com. [72.190.140.117])
-        by smtp.gmail.com with ESMTPSA id g25-20020a544f99000000b002da70c710b8sm1947556oiy.54.2022.04.02.01.51.24
+        by smtp.gmail.com with ESMTPSA id o17-20020a9d5c11000000b005b2611a13edsm2146162otk.61.2022.04.02.01.51.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 02 Apr 2022 01:51:24 -0700 (PDT)
+        Sat, 02 Apr 2022 01:51:02 -0700 (PDT)
 From:   Rebecca Mckeever <remckee0@gmail.com>
 To:     outreachy@lists.linux.dev
 Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
@@ -56,77 +55,30 @@ Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Rebecca Mckeever <remckee0@gmail.com>
-Subject: [PATCH 6/6] staging: r8188eu: remove spaces before tabs
-Date:   Sat,  2 Apr 2022 03:50:48 -0500
-Message-Id: <2fd10f393e3bc7381a85d0bfc1ec04a80af4eabb.1648888462.git.remckee0@gmail.com>
+Subject: [PATCH 0/6] staging: r8188eu: cleanup
+Date:   Sat,  2 Apr 2022 03:50:42 -0500
+Message-Id: <cover.1648888461.git.remckee0@gmail.com>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <cover.1648888461.git.remckee0@gmail.com>
-References: <cover.1648888461.git.remckee0@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Conform to Linux kernel coding style.
+These patches address style issues found by checkpatch.
 
-Reported by checkpatch:
+Rebecca Mckeever (6):
+  staging: r8188eu: place constants on the right side of tests
+  staging: r8188eu: remove else after return
+  staging: r8188eu: correct misspelling in comment "conider" ->
+    "consider"
+  staging: r8188eu: format block comments
+  staging: r8188eu: remove unnecessary braces in conditional statements
+  staging: r8188eu: remove spaces before tabs
 
-WARNING: please, no space before tabs
+ drivers/staging/r8188eu/core/rtw_cmd.c | 70 +++++++++++++-------------
+ 1 file changed, 34 insertions(+), 36 deletions(-)
 
-Signed-off-by: Rebecca Mckeever <remckee0@gmail.com>
----
- drivers/staging/r8188eu/core/rtw_cmd.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/staging/r8188eu/core/rtw_cmd.c b/drivers/staging/r8188eu/core/rtw_cmd.c
-index 832bf25b1a83..8ae25cb4246b 100644
---- a/drivers/staging/r8188eu/core/rtw_cmd.c
-+++ b/drivers/staging/r8188eu/core/rtw_cmd.c
-@@ -548,9 +548,9 @@ u8 rtw_joinbss_cmd(struct adapter  *padapter, struct wlan_network *pnetwork)
- 
- 	phtpriv->ht_option = false;
- 	if (pregistrypriv->ht_enable) {
--		/* 	Added by Albert 2010/06/23 */
--		/* 	For the WEP mode, we will use the bg mode to do the connection to avoid some IOT issue. */
--		/* 	Especially for Realtek 8192u SoftAP. */
-+		/*	Added by Albert 2010/06/23 */
-+		/*	For the WEP mode, we will use the bg mode to do the connection to avoid some IOT issue. */
-+		/*	Especially for Realtek 8192u SoftAP. */
- 		if ((padapter->securitypriv.dot11PrivacyAlgrthm != _WEP40_) &&
- 		    (padapter->securitypriv.dot11PrivacyAlgrthm != _WEP104_) &&
- 		    (padapter->securitypriv.dot11PrivacyAlgrthm != _TKIP_)) {
-@@ -1010,7 +1010,7 @@ u8 rtw_lps_ctrl_wk_cmd(struct adapter *padapter, u8 lps_ctrl_type, u8 enqueue)
- 	u8	res = _SUCCESS;
- 
- 	/* if (!pwrctrlpriv->bLeisurePs) */
--	/* 	return res; */
-+	/*	return res; */
- 
- 	if (enqueue) {
- 		ph2c = kzalloc(sizeof(struct cmd_obj), GFP_ATOMIC);
-@@ -1151,8 +1151,8 @@ u8 p2p_protocol_wk_cmd(struct adapter *padapter, int intCmdType)
- 	}
- 
- 	pdrvextra_cmd_parm->ec_id = P2P_PROTO_WK_CID;
--	pdrvextra_cmd_parm->type_size = intCmdType;	/* 	As the command tppe. */
--	pdrvextra_cmd_parm->pbuf = NULL;		/* 	Must be NULL here */
-+	pdrvextra_cmd_parm->type_size = intCmdType;	/*	As the command tppe. */
-+	pdrvextra_cmd_parm->pbuf = NULL;		/*	Must be NULL here */
- 
- 	init_h2fwcmd_w_parm_no_rsp(ph2c, pdrvextra_cmd_parm, GEN_CMD_CODE(_Set_Drv_Extra));
- 
-@@ -1378,8 +1378,8 @@ u8 rtw_drvextra_cmd_hdl(struct adapter *padapter, unsigned char *pbuf)
- 		p2p_ps_wk_hdl(padapter, pdrvextra_cmd->type_size);
- 		break;
- 	case P2P_PROTO_WK_CID:
--		/* 	Commented by Albert 2011/07/01 */
--		/* 	I used the type_size as the type command */
-+		/*	Commented by Albert 2011/07/01 */
-+		/*	I used the type_size as the type command */
- 		p2p_protocol_wk_hdl(padapter, pdrvextra_cmd->type_size);
- 		break;
- 	case CHECK_HIQ_WK_CID:
 -- 
 2.32.0
 
