@@ -2,219 +2,200 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E5C9C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 07:04:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 279F8C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 07:05:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238466AbiDBHF7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Apr 2022 03:05:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52916 "EHLO
+        id S238520AbiDBHHQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 2 Apr 2022 03:07:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229714AbiDBHFz (ORCPT
+        with ESMTP id S229714AbiDBHHO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Apr 2022 03:05:55 -0400
-Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ABAA10241F
-        for <linux-kernel@vger.kernel.org>; Sat,  2 Apr 2022 00:04:03 -0700 (PDT)
-Received: by mail-oi1-x232.google.com with SMTP id r8so4931173oib.5
-        for <linux-kernel@vger.kernel.org>; Sat, 02 Apr 2022 00:04:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6Z03HddOiBT6dfJtiuyG7zdlSX2bpfFdVHZctOvlZUw=;
-        b=qEJvsgmcxWTm42tFtAWR1reTgdh+i8WSkwU+M6T/NSKk2Fz5DZ9Zo7eqUhzlhJZwyR
-         HNvTH5/06JXV2B7MeO4tsGacm+DTsUXiPjp33hrN3fw/gDolMmzbQ1geE/k017wUY1iM
-         cbtg+Shx4R7nJEgcQ2ffVLyTHyqsaamBTbQLW0tFZBTRerL+nd7L4Z+bwXPuUN3zB4Sk
-         wCeDnTz933RzH+oe3jKminHtolc/VEIWWiytlnow7DNWxwwaeWUX+IzTN9gttJ/7lZG9
-         748IvAgRz15o0twIAGPOCvcVGBUw15aSbA3W9xJxXymJ1FYfrS+1SaTWKJQiFeZNfiDx
-         MWIw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6Z03HddOiBT6dfJtiuyG7zdlSX2bpfFdVHZctOvlZUw=;
-        b=gaCdNIdgdpNj2c70XiufCltQyI/x+fFTxEqE5+3NxkVT3VrzXLNH9WJX+JpczAkL1F
-         EbZeFuYTni/1sAd5kwa77914z6a68u7JYqiTyBOrmxk65Avnu17xmDYAqiQtRtDlC/Wj
-         tx5iTkG4TzmfHoAdfLdwm4qTitjeeVIBCjBI07cqEGsUrLn1foktO6u8T9cURS1CB+Kz
-         lZXwp9gX9f/+Ev18kSDgiv39uwjPO67uRD71/JsVUDshIyB4tZlUeAEPbsMaG4tZuzaR
-         5HHpZlTs/oF2dRaPV5ZWKULljr7QTTnlZAvtL0V7xMjmYPPR3x5nXn4btlt9ST9cZ6Na
-         Pbzg==
-X-Gm-Message-State: AOAM533xxG3gcIHzmS42mbliHcSGHevoVUMMkt916QUpQFm8+Mai+ky5
-        fHiQuzleyhmqzveXhukBVcUlbSw8ddf+PWpoyc4Gvg==
-X-Google-Smtp-Source: ABdhPJzrg7OvXpoML6OsioH16mOuj1gnsTHrk5CU+q1S4ig/M9YoXt7dszUieXy+QhCsKmjD5YH4cQWkuP5VwNUOA2Q=
-X-Received: by 2002:a05:6808:16a4:b0:2f7:1fd1:f48 with SMTP id
- bb36-20020a05680816a400b002f71fd10f48mr6285983oib.163.1648883042276; Sat, 02
- Apr 2022 00:04:02 -0700 (PDT)
+        Sat, 2 Apr 2022 03:07:14 -0400
+X-Greylist: delayed 359 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 02 Apr 2022 00:05:21 PDT
+Received: from box.trvn.ru (box.trvn.ru [194.87.146.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BF5B10241F;
+        Sat,  2 Apr 2022 00:05:21 -0700 (PDT)
+Received: from authenticated-user (box.trvn.ru [194.87.146.52])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by box.trvn.ru (Postfix) with ESMTPSA id B31FE403F2;
+        Sat,  2 Apr 2022 11:59:16 +0500 (+05)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=trvn.ru; s=mail;
+        t=1648882757; bh=g3dd49ZLEvD3b7UkZq09nzJLTrDcbZhjuvyIkuyxUww=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=rOhlGsQO/HTUiVU8OGWlJGCELzbuJLDlRNa5zJWC64lw2R6V66Vfo4vQg90/aWOM4
+         ptqXOjnOMgkSH236j+4w+8n5Co2yiCluXvASZKsMm7RGMaegx7OqCArSywud4CzGyC
+         fy2f5OFuN+er3HLk8tigyOkhM0/UZXdA57bL1C1A9Fq6aRNdBPD3BaiROs8vK0+j94
+         XJUVBBGhqHkCT0kscg/JSsO9oNw32bVDRM9JI5VnVT0x66RYA9LLP2gbh76oGZ+839
+         RAMeC6r8pcUNXPR/7HvfGHZxGZCVtrkItwCi4vMPx1sBg6Gn01y/TSEryhdP2nLZ6h
+         3TWDX5lPmP2wg==
 MIME-Version: 1.0
-References: <20220401134649.2222485-1-qiang1.zhang@intel.com>
- <CACT4Y+YrKd=+uJT9UN8QvctPUGKnOgcReYfX41vNuVC0ecWXcg@mail.gmail.com> <PH0PR11MB588000A40081EC48536CA7A3DAE09@PH0PR11MB5880.namprd11.prod.outlook.com>
-In-Reply-To: <PH0PR11MB588000A40081EC48536CA7A3DAE09@PH0PR11MB5880.namprd11.prod.outlook.com>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Sat, 2 Apr 2022 09:03:50 +0200
-Message-ID: <CACT4Y+YdRTu=5JhGcbzSra5mTJA4n6mimPSSwXtS=GswRa8CAA@mail.gmail.com>
-Subject: Re: [PATCH v2] kasan: Fix sleeping function called from invalid
- context on RT kernel
-To:     "Zhang, Qiang1" <qiang1.zhang@intel.com>
-Cc:     "ryabinin.a.a@gmail.com" <ryabinin.a.a@gmail.com>,
-        "glider@google.com" <glider@google.com>,
-        "andreyknvl@gmail.com" <andreyknvl@gmail.com>,
-        "bigeasy@linutronix.de" <bigeasy@linutronix.de>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>
-Content-Type: text/plain; charset="UTF-8"
+Date:   Sat, 02 Apr 2022 11:59:15 +0500
+From:   Nikita Travkin <nikita@trvn.ru>
+To:     =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc:     thierry.reding@gmail.com, lee.jones@linaro.org, robh+dt@kernel.org,
+        sboyd@kernel.org, krzk@kernel.org, linus.walleij@linaro.org,
+        masneyb@onstation.org, sean.anderson@seco.com,
+        linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht, kernel@pengutronix.de
+Subject: Re: [PATCH v6 2/2] pwm: Add clock based PWM output driver
+In-Reply-To: <20220328105659.mg3pxbqynlufaq6z@pengutronix.de>
+References: <20220220115030.23772-1-nikita@trvn.ru>
+ <20220220115030.23772-3-nikita@trvn.ru>
+ <20220328105659.mg3pxbqynlufaq6z@pengutronix.de>
+Message-ID: <ce9a8bab61485ba06933cdb7fdea50ac@trvn.ru>
+X-Sender: nikita@trvn.ru
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 2 Apr 2022 at 01:15, Zhang, Qiang1 <qiang1.zhang@intel.com> wrote:
->
->
->  On Fri, 1 Apr 2022 at 15:46, Zqiang <qiang1.zhang@intel.com> wrote:
-> >
-> > BUG: sleeping function called from invalid context at
-> > kernel/locking/spinlock_rt.c:46
-> > in_atomic(): 1, irqs_disabled(): 1, non_block: 0, pid: 1, name:
-> > swapper/0
-> > preempt_count: 1, expected: 0
-> > ...........
-> > CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.17.1-rt16-yocto-preempt-rt
-> > #22 Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS
-> > rel-1.15.0-0-g2dd4b9b3f840-prebuilt.qemu.org 04/01/2014 Call Trace:
-> > <TASK>
-> > dump_stack_lvl+0x60/0x8c
-> > dump_stack+0x10/0x12
-> >  __might_resched.cold+0x13b/0x173
-> > rt_spin_lock+0x5b/0xf0
-> >  ___cache_free+0xa5/0x180
-> > qlist_free_all+0x7a/0x160
-> > per_cpu_remove_cache+0x5f/0x70
-> > smp_call_function_many_cond+0x4c4/0x4f0
-> > on_each_cpu_cond_mask+0x49/0xc0
-> > kasan_quarantine_remove_cache+0x54/0xf0
-> > kasan_cache_shrink+0x9/0x10
-> > kmem_cache_shrink+0x13/0x20
-> > acpi_os_purge_cache+0xe/0x20
-> > acpi_purge_cached_objects+0x21/0x6d
-> > acpi_initialize_objects+0x15/0x3b
-> > acpi_init+0x130/0x5ba
-> > do_one_initcall+0xe5/0x5b0
-> > kernel_init_freeable+0x34f/0x3ad
-> > kernel_init+0x1e/0x140
-> > ret_from_fork+0x22/0x30
-> >
-> > When the kmem_cache_shrink() be called, the IPI was triggered, the
-> > ___cache_free() is called in IPI interrupt context, the local-lock or
-> > spin-lock will be acquired. on PREEMPT_RT kernel, these lock is
-> > replaced with sleepbale rt-spinlock, so the above problem is triggered.
-> > fix it by move the qlist_free_allfrom() the IPI interrupt context to
-> > the task context when PREEMPT_RT is enabled.
-> >
-> > Signed-off-by: Zqiang <qiang1.zhang@intel.com>
-> > ---
-> >  v1->v2:
-> >  Add raw_spinlock protect per-cpu shrink qlist.
-> >
-> >  mm/kasan/quarantine.c | 40 ++++++++++++++++++++++++++++++++++++++--
-> >  1 file changed, 38 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/mm/kasan/quarantine.c b/mm/kasan/quarantine.c index
-> > 08291ed33e93..0e33d30abb8d 100644
-> > --- a/mm/kasan/quarantine.c
-> > +++ b/mm/kasan/quarantine.c
-> > @@ -99,6 +99,17 @@ static unsigned long quarantine_size;  static
-> > DEFINE_RAW_SPINLOCK(quarantine_lock);
-> >  DEFINE_STATIC_SRCU(remove_cache_srcu);
-> >
-> > +#ifdef CONFIG_PREEMPT_RT
-> > +struct cpu_shrink_qlist {
-> > +       raw_spinlock_t lock;
-> > +       struct qlist_head qlist;
-> > +};
-> > +
-> > +static DEFINE_PER_CPU(struct cpu_shrink_qlist, shrink_qlist) = {
-> > +       .lock = __RAW_SPIN_LOCK_UNLOCKED(shrink_qlist.lock),
-> > +};
-> > +#endif
-> > +
-> >  /* Maximum size of the global queue. */  static unsigned long
-> > quarantine_max_size;
-> >
-> > @@ -311,12 +322,23 @@ static void qlist_move_cache(struct qlist_head
-> > *from,  static void per_cpu_remove_cache(void *arg)  {
-> >         struct kmem_cache *cache = arg;
-> > -       struct qlist_head to_free = QLIST_INIT;
-> >         struct qlist_head *q;
-> > -
-> > +#ifndef CONFIG_PREEMPT_RT
-> > +       struct qlist_head to_free = QLIST_INIT; #else
-> > +       unsigned long flags;
-> > +       struct cpu_shrink_qlist *sq;
-> > +#endif
-> >         q = this_cpu_ptr(&cpu_quarantine);
-> > +#ifndef CONFIG_PREEMPT_RT
-> >         qlist_move_cache(q, &to_free, cache);
-> >         qlist_free_all(&to_free, cache);
-> > +#else
-> > +       sq = this_cpu_ptr(&shrink_qlist);
-> > +       raw_spin_lock_irqsave(&sq->lock, flags);
-> > +       qlist_move_cache(q, &sq->qlist, cache);
-> > +       raw_spin_unlock_irqrestore(&sq->lock, flags); #endif
-> >  }
-> >
-> >  /* Free all quarantined objects belonging to cache. */ @@ -324,6
-> > +346,10 @@ void kasan_quarantine_remove_cache(struct kmem_cache
-> > *cache)  {
-> >         unsigned long flags, i;
-> >         struct qlist_head to_free = QLIST_INIT;
-> > +#ifdef CONFIG_PREEMPT_RT
-> > +       int cpu;
-> > +       struct cpu_shrink_qlist *sq;
-> > +#endif
-> >
-> >         /*
-> >          * Must be careful to not miss any objects that are being
-> > moved from @@ -334,6 +360,16 @@ void kasan_quarantine_remove_cache(struct kmem_cache *cache)
-> >          */
-> >         on_each_cpu(per_cpu_remove_cache, cache, 1);
-> >
-> > +#ifdef CONFIG_PREEMPT_RT
-> > +       for_each_online_cpu(cpu) {
-> > +               sq = per_cpu_ptr(&shrink_qlist, cpu);
-> > +               raw_spin_lock_irqsave(&sq->lock, flags);
-> > +               qlist_move_cache(&sq->qlist, &to_free, cache);
-> > +               raw_spin_unlock_irqrestore(&sq->lock, flags);
-> > +       }
-> > +       qlist_free_all(&to_free, cache);
->
-> >
-> >I think now there is another subtle bug.
-> >I assume that by the time kasan_quarantine_remove_cache(cache) returns all objects belonging to the cache must be freed. I think there are scenarios where it's not the case.
-> >Consider there is thread 1 that calls kasan_quarantine_remove_cache(A) and thread 2 that calls kasan_quarantine_remove_cache(B).
-> >Consider that kasan_quarantine_remove_cache callbacks for both A and B has finished and shrink_qlist contains all objects that belong to caches A and B.
-> >Now thread 1 executes for_each_online_cpu part and collects all objects into the local to_free list.
->
-> According to my understanding
-> Thread 1 only collects objects which belong to caches A , because the qlist_move_cache(&sq->qlist, &to_free, cache)
-> Will filtered again,  or did I miss something?
+Hi,
 
-You are right. I missed that kasan_quarantine_remove_cache also
-filters based on cache.
+Uwe Kleine-König писал(а) 28.03.2022 15:56:
+> Hello,
+> 
+> just a few minor things left to criticize, see below.
+> 
+> On Sun, Feb 20, 2022 at 04:50:30PM +0500, Nikita Travkin wrote:
+>> Some systems have clocks exposed to external devices. If the clock
+>> controller supports duty-cycle configuration, such clocks can be used as
+>> pwm outputs. In fact PWM and CLK subsystems are interfaced with in a
+>> similar way and an "opposite" driver already exists (clk-pwm). Add a
+>> driver that would enable pwm devices to be used via clk subsystem.
+>>
+>> Signed-off-by: Nikita Travkin <nikita@trvn.ru>
+>> --
+>>
+>> Changes in v2:
+>>  - Address Uwe's review comments:
+>>    - Round set clk rate up
+>>    - Add a description with limitations of the driver
+>>    - Disable and unprepare clock before removing pwmchip
+>> Changes in v3:
+>>  - Use 64bit version of div round up
+>>  - Address Uwe's review comments:
+>>    - Reword the limitations to avoid incorrect claims
+>>    - Move the clk_enabled flag assignment
+>>    - Drop unnecessary statements
+>> Changes in v5:
+>>  - add missed returns
+>> Changes in v6:
+>>  - Unprepare the clock on error
+>>  - Drop redundant limitations points
+>> ---
+>>  drivers/pwm/Kconfig   |  10 +++
+>>  drivers/pwm/Makefile  |   1 +
+>>  drivers/pwm/pwm-clk.c | 139 ++++++++++++++++++++++++++++++++++++++++++
+>>  3 files changed, 150 insertions(+)
+>>  create mode 100644 drivers/pwm/pwm-clk.c
+>>
+>> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+>> index 21e3b05a5153..daa2491a4054 100644
+>> --- a/drivers/pwm/Kconfig
+>> +++ b/drivers/pwm/Kconfig
+>> @@ -140,6 +140,16 @@ config PWM_BRCMSTB
+>>  	  To compile this driver as a module, choose M Here: the module
+>>  	  will be called pwm-brcmstb.c.
+>>
+>> +config PWM_CLK
+>> +	tristate "Clock based PWM support"
+>> +	depends on HAVE_CLK || COMPILE_TEST
+> 
+> Can you really compile this driver if HAVE_CLK isn't available?
+> 
 
-Acked-by: Dmitry Vyukov <dvyukov@google.com>
+As I can see, clk.h has all the methods stubbed out if CONFIG_HAVE_CLK
+is not set. (And I think that all other headers like that do as well)
 
-> >Now thread 2 executes the for_each_online_cpu, calls qlist_free_all (on an empty list) and returns from kasan_quarantine_remove_cache.
-> >Then cache B is completely destroyed and freed.
-> >Now thread 1 resumes and calls qlist_free_all for objects from cache B.
-> >Bang!
->
->
->
->
-> > +#endif
-> > +
-> >         raw_spin_lock_irqsave(&quarantine_lock, flags);
-> >         for (i = 0; i < QUARANTINE_BATCHES; i++) {
-> >                 if (qlist_empty(&global_quarantine[i]))
-> > --
-> > 2.25.1
-> >
+I've tried to build it without clk right now and it builds with no
+errors, neither test robots complained about that.
+
+>> +	help
+>> +	  Generic PWM framework driver for outputs that can be
+>> +	  muxed to clocks.
+>> +
+>> +	  To compile this driver as a module, choose M here: the module
+>> +	  will be called pwm-clk.
+>> +
+>>  config PWM_CLPS711X
+>>  	tristate "CLPS711X PWM support"
+>>  	depends on ARCH_CLPS711X || COMPILE_TEST
+>> diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
+>> index 708840b7fba8..4a860103c470 100644
+>> --- a/drivers/pwm/Makefile
+>> +++ b/drivers/pwm/Makefile
+>> @@ -10,6 +10,7 @@ obj-$(CONFIG_PWM_BCM_KONA)	+= pwm-bcm-kona.o
+>>  obj-$(CONFIG_PWM_BCM2835)	+= pwm-bcm2835.o
+>>  obj-$(CONFIG_PWM_BERLIN)	+= pwm-berlin.o
+>>  obj-$(CONFIG_PWM_BRCMSTB)	+= pwm-brcmstb.o
+>> +obj-$(CONFIG_PWM_CLK)		+= pwm-clk.o
+>>  obj-$(CONFIG_PWM_CLPS711X)	+= pwm-clps711x.o
+>>  obj-$(CONFIG_PWM_CRC)		+= pwm-crc.o
+>>  obj-$(CONFIG_PWM_CROS_EC)	+= pwm-cros-ec.o
+>> diff --git a/drivers/pwm/pwm-clk.c b/drivers/pwm/pwm-clk.c
+>> new file mode 100644
+>> index 000000000000..52c9923368cb
+>> --- /dev/null
+>> +++ b/drivers/pwm/pwm-clk.c
+>> @@ -0,0 +1,139 @@
+>> +// SPDX-License-Identifier: GPL-2.0
+>> +/*
+>> + * Clock based PWM controller
+>> + *
+>> + * Copyright (c) 2021 Nikita Travkin <nikita@trvn.ru>
+>> + *
+>> + * This is an "adapter" driver that allows PWM consumers to use
+>> + * system clocks with duty cycle control as PWM outputs.
+>> + *
+>> + * Limitations:
+>> + * - Due to the fact that exact behavior depends on the underlying
+>> + *   clock driver, various limitations are possible.
+>> + * - Underlying clock may not be able to give 0% or 100% duty cycle
+>> + *   (constant off or on), exact behavior will depend on the clock.
+>> + * - When the PWM is disabled, the clock will be disabled as well,
+>> + *   line state will depend on the clock.
+> 
+>  - The clk API doesn't expose the necessary calls to implement
+>    .get_state().
+> 
+>> + */
+>> +
+>> +#include <linux/kernel.h>
+>> +#include <linux/math64.h>
+>> +#include <linux/err.h>
+>> +#include <linux/module.h>
+>> +#include <linux/of.h>
+>> +#include <linux/platform_device.h>
+>> +#include <linux/clk.h>
+>> +#include <linux/pwm.h>
+>> +
+>> +struct pwm_clk_chip {
+>> +	struct pwm_chip chip;
+>> +	struct clk *clk;
+>> +	bool clk_enabled;
+>> +};
+>> +
+>> +#define to_pwm_clk_chip(_chip) container_of(_chip, struct pwm_clk_chip, chip)
+>> +
+>> +static int pwm_clk_apply(struct pwm_chip *pwm_chip, struct pwm_device *pwm,
+>> +			 const struct pwm_state *state)
+>> +{
+>> +	struct pwm_clk_chip *chip = to_pwm_clk_chip(pwm_chip);
+> 
+> I'd prefer this was not called chip, as this is how struct pwm_chip
+> variables are called usually. My suggestion is:
+> 
+> 	chip -> pcchip
+> 	pwm_chip -> chip
+> 
+
+Thanks for the suggestion, I'll use the common naming then.
+
+Nikita
+
+> Best regards
+> Uwe
