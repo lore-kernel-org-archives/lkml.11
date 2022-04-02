@@ -2,106 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE729C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 07:45:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00D7CC433FE
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 07:49:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238799AbiDBHrd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Apr 2022 03:47:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46248 "EHLO
+        id S244684AbiDBHvV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 2 Apr 2022 03:51:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229776AbiDBHra (ORCPT
+        with ESMTP id S230150AbiDBHvT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Apr 2022 03:47:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31C3D43485
-        for <linux-kernel@vger.kernel.org>; Sat,  2 Apr 2022 00:45:39 -0700 (PDT)
+        Sat, 2 Apr 2022 03:51:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD84F3586B
+        for <linux-kernel@vger.kernel.org>; Sat,  2 Apr 2022 00:49:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B7C8160FD6
-        for <linux-kernel@vger.kernel.org>; Sat,  2 Apr 2022 07:45:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04D45C340EC;
-        Sat,  2 Apr 2022 07:45:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648885538;
-        bh=MJ7b9c3E+nr51fYg+bLs09xCaDLg+mwoHo8xrQPdmdM=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=gTe9FQEsGX2DWtwkxFAeywtDpdPuha8W9QpuiHLMEAzbkE7nXyZcMTxrFprvpBSA2
-         FOR78HTNENSKY2Z/VXpyFhlkjjZBUKQCXAy3VK8y37uX4OzJCoJ/j0uwfgufnQfDqj
-         Xrge3R3OcL5eTLVsbSIBRz1bFyQJGge8/91/Q0438loexWSJTjGJEwutT6IzzZzhe6
-         1rdcESLeMrY7Am8/mAZAYBNzBls8XgctDbnoxAPomA2foOShPoue9+1Qx13EWEnobR
-         YjcwJAiFnbSaaZ8A9Rw39n6c1adNszVr0ekrD2FVA+pmHYrGd7BGNi23gqMCwV6F/h
-         91v8Fh87O0pyg==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     David Hildenbrand <david@redhat.com>
-Cc:     Zi Yan <ziy@nvidia.com>, linux-mm@kvack.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Mike Rapoport <rppt@kernel.org>,
-        Oscar Salvador <osalvador@suse.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] mm: page_alloc: simplify pageblock migratetype check in __free_one_page().
-References: <20220401135820.1453829-1-zi.yan@sent.com>
-        <134f56da-e827-2d29-75ba-1ec88ae2b118@redhat.com>
-        <66F9766D-A7D8-4310-9FA9-5EC8B2CC341C@nvidia.com>
-        <85520c49-5ef9-25f2-d6fa-f8b26e5dfec2@redhat.com>
-        <6696fb21-090c-37c6-77a7-79423cc9c703@redhat.com>
-Date:   Sat, 02 Apr 2022 10:45:33 +0300
-In-Reply-To: <6696fb21-090c-37c6-77a7-79423cc9c703@redhat.com> (David
-        Hildenbrand's message of "Fri, 1 Apr 2022 16:32:58 +0200")
-Message-ID: <87sfqwszc2.fsf@tynnyri.adurom.net>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 290C86104D
+        for <linux-kernel@vger.kernel.org>; Sat,  2 Apr 2022 07:49:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1DAFC340EC;
+        Sat,  2 Apr 2022 07:49:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1648885766;
+        bh=n5LErFXRESNWybe75JSAh5NCeQt0jrP61FM5XFBKGkI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=kNtFpBeSmonWdZyVB6qCDjlQOeTN4J2lVP1d924C8kEH+x0gZ9rrTOCIhhBAE5frI
+         jq8GQp/qz7U+ld7ULy5Ki9RyDRH2LQeT+XQexFGVlcBkUvx54z7bcznFTJiJ0tX+P6
+         yhrLGNogbVGHWmRKIQQ5fM/p0ftHGcdUtnyx2uHs=
+Date:   Sat, 2 Apr 2022 09:49:22 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Oded Gabbay <ogabbay@kernel.org>
+Cc:     Palmer Dabbelt <palmer@rivosinc.com>,
+        linux-riscv@lists.infradead.org, Arnd Bergmann <arnd@arndb.de>,
+        "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>,
+        Ohad Sharabi <osharabi@habana.ai>
+Subject: Re: [PATCH] habanalabs: Elide a warning on 32-bit targets
+Message-ID: <YkgAAqAb+9UKDEtn@kroah.com>
+References: <20220401163909.20343-1-palmer@rivosinc.com>
+ <CAFCwf13-o=kUR61xjWt=F-Q-Vfy=kF6fpMP7iB+83Gfqw7+2HA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAFCwf13-o=kUR61xjWt=F-Q-Vfy=kF6fpMP7iB+83Gfqw7+2HA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-David Hildenbrand <david@redhat.com> writes:
+On Fri, Apr 01, 2022 at 09:13:48PM +0300, Oded Gabbay wrote:
+> On Fri, Apr 1, 2022 at 7:41 PM Palmer Dabbelt <palmer@rivosinc.com> wrote:
+> >
+> > From: Palmer Dabbelt <palmer@rivosinc.com>
+> >
+> > This double-cast pattern looks a bit awkward, but it already exists
+> > elsewhere in the driver.  Without this patch I get
+> >
+> > drivers/misc/habanalabs/common/memory.c: In function ‘alloc_device_memory’:
+> > drivers/misc/habanalabs/common/memory.c:153:49: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+> >   153 |                                                 (u64) gen_pool_dma_alloc_align(vm->dram_pg_pool,
+> >       |                                                 ^
+> >
+> > which ends up promoted to a build error in my test setup.
+> >
+> > Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+> >
+> > ---
+> >
+> > I don't know anything about this driver, I'm just pattern-matching the
+> > warning away.
+> > ---
+> >  drivers/misc/habanalabs/common/memory.c | 10 +++++-----
+> >  1 file changed, 5 insertions(+), 5 deletions(-)
+> >
+> > diff --git a/drivers/misc/habanalabs/common/memory.c b/drivers/misc/habanalabs/common/memory.c
+> > index e008d82e4ba3..f1fc79c1fc10 100644
+> > --- a/drivers/misc/habanalabs/common/memory.c
+> > +++ b/drivers/misc/habanalabs/common/memory.c
+> > @@ -150,12 +150,12 @@ static int alloc_device_memory(struct hl_ctx *ctx, struct hl_mem_in *args,
+> >                 for (i = 0 ; i < num_pgs ; i++) {
+> >                         if (is_power_of_2(page_size))
+> >                                 phys_pg_pack->pages[i] =
+> > -                                               (u64) gen_pool_dma_alloc_align(vm->dram_pg_pool,
+> > -                                                                               page_size, NULL,
+> > -                                                                               page_size);
+> > +                                               (u64) (uintptr_t) gen_pool_dma_alloc_align(vm->dram_pg_pool,
+> > +                                                                                          page_size, NULL,
+> > +                                                                                          page_size);
+> >                         else
+> > -                               phys_pg_pack->pages[i] = (u64) gen_pool_alloc(vm->dram_pg_pool,
+> > -                                                                               page_size);
+> > +                               phys_pg_pack->pages[i] = (u64) (uintptr_t) gen_pool_alloc(vm->dram_pg_pool,
+> > +                                                                                         page_size);
+> >                         if (!phys_pg_pack->pages[i]) {
+> >                                 dev_err(hdev->dev,
+> >                                         "Failed to allocate device memory (out of memory)\n");
+> > --
+> > 2.34.1
+> >
+> 
+> This patch is:
+> Reviewed-by: Oded Gabbay <ogabbay@kernel.org>
+> 
+> Greg,
+> Could you please apply this directly to your misc tree and send it to
+> Linus at your next pull request ?
 
-> On 01.04.22 16:22, David Hildenbrand wrote:
->> On 01.04.22 16:19, Zi Yan wrote:
->>> On 1 Apr 2022, at 10:12, David Hildenbrand wrote:
->>>
->>>> On 01.04.22 15:58, Zi Yan wrote:
->>>>
->>>> It's weird, your mails arrive on my end as empty body with attachment. I
->>>> first suspected Thunderbird, but I get the same result on the google
->>>> mail web client.
->>>>
->>>> Not sure why that happens.
->>>
->>> No idea. They look fine (except mangled links by outlook) on my outlook
->>> desk client and web client on my side. lore looks OK too:
->>> https://lore.kernel.org/linux-mm/20220401135820.1453829-1-zi.yan@sent.com/
->> 
->> I can spot in the raw mail I receive
->> 
->> "Content-Type: application/octet-stream; x-default=true"
->> 
->> But that seems to differ to the lore mail:
->> 
->> https://lore.kernel.org/linux-mm/20220401135820.1453829-1-zi.yan@sent.com/raw
->> 
->> 
->> Maybe something in my mail server chain decides to do some nasty
->> conversion (grml, wouldn't be the first time)
->> 
->
-> Weird thing is that this only happens with your mails. I opened an
-> internal ticket, sorry for the noise.
+So ignore https://lore.kernel.org/r/20220401041615.3296387-1-jcmvbkbc@gmail.com ?
 
-Zi's patch emails I received didn't have Content-Type, that might have
-something to do with this. (But his reply later in the thread did have
-one.) Also last week I got one patch email with no Content-Type either
-and my Gnus decided to convert it to octet-stream, I guess to be on the
-safe side. No idea if something similar is happening to you, but wanted
-to mention it anyway.
+> I don't have any other fixes pending for 5.18.
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+Yes, I will queue this up after -rc1 is out.
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+thanks,
+
+greg k-h
