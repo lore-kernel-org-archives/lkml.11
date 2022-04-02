@@ -2,154 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 510B4C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 14:38:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CE47C4332F
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 14:40:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356743AbiDBOjx (ORCPT
+        id S1356744AbiDBOmZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Apr 2022 10:39:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59098 "EHLO
+        Sat, 2 Apr 2022 10:42:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356616AbiDBOi5 (ORCPT
+        with ESMTP id S1356714AbiDBOmV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Apr 2022 10:38:57 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28E48182DA1;
-        Sat,  2 Apr 2022 07:36:55 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id ot30so1483918ejb.12;
-        Sat, 02 Apr 2022 07:36:55 -0700 (PDT)
+        Sat, 2 Apr 2022 10:42:21 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 588F21A3BC
+        for <linux-kernel@vger.kernel.org>; Sat,  2 Apr 2022 07:40:29 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id b24so6068223edu.10
+        for <linux-kernel@vger.kernel.org>; Sat, 02 Apr 2022 07:40:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=WTxrl9DDD0eAWWMFEHVULS2CUBJnWkuPK0erlkszq2w=;
-        b=DxUpH7rm+/P+HnQ19VTOK/tUKPQchAqczLMAB75R0meXlaemhfpXusfoWalpxwCR4s
-         xqJ+MAzebx1HjyaWBZcKnNADD2X0RKmVhfWc6hxsyYnOnGekp8Crm91Ef0Mj00Jhj2T9
-         k+3RMJMDyCuSpF5jo/hqn7F+c1C56L7KU7k17tQi0IC9hUW0RDovZcdex8Z/+2A1hnB5
-         5yDkxgiYwxBrEuvwvCKeDOjO7EHOpzzLG6CY0TNpCwGAX9SBH4j2wM8LrCq8WFKt1Eq0
-         VNM0kUM9KMBN92n93fDTvWCvDJZqoW1TdNsiCPHf7x0cTXHgSTnt1V/+h7IaQVv/bKHf
-         EsCQ==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=XNA7JZlHCOkUJgQubK0e6uaBuAfi7LHL/HwfQfGUJqY=;
+        b=MZKmHtRdE/d/kZs2anM8GJZvVNaaX3G1SPUeftLFK9gW+DWkbyNRK6ulfS3D4T1yT8
+         AhUorGjiS6roW4BOK9VkNnU/stRAID6EO28ez4dPDkQ2Dr1woOuFtCzaMtNHoJzn894w
+         zqcvg2Oh9Z+tHf2qPo8qalIjZ7PQB3BXywkpLtDKLh7ffhsFu8mdqhn3sV1CivRjDJeV
+         i7O4/HXkdyuvpqjVogaVaWKD7y3tJnm7XaNGHRQG/JdzzYoXUp2wpXVMK1OJHIwBnNkQ
+         Y05V2/KmHuIWqREZL0sKDrw9VIL/vNDtgBWVxSkfIOYBpy7P+MKrjGaZeoZHPFvEXgGV
+         ylZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=WTxrl9DDD0eAWWMFEHVULS2CUBJnWkuPK0erlkszq2w=;
-        b=BuqSrtgruXjxVmkh07eZlZqVrtZ36jVxug2Xq4rmOI9uAtKwZZn9K9Gfd8zyf5CsJC
-         iLbCcNudt4USXQfZimhGBluJ1auy+kvDzbhoPATLY5VbjpyTvjJbRLJbwtRTe5e9YBJm
-         9wXCDxfuEw2Ah8NJSTenZwI0wnilEctU2Di1jALlkBLvZXe1HRfcoOj/qgwimUQxlrpB
-         cksI/f2K+V9EgL63Gs6Q3trHR3whaqXzeS/SmqicTRsV1Qd9I6tiT9DRgfMFN03Mkr2y
-         L1iRUZAp0/RbEWCYqowGvLA/03s4kEDX7dBFWCqJzIZrMg/2emeqrbCMWcVAAT+ZBZIR
-         hrvg==
-X-Gm-Message-State: AOAM532kbuAN2HDytVrE53W4Xu1sUsj7hvqn5EvddgZJkqcXz8UyJmy/
-        2IgtVkA59F0sVnahaNgyKC8=
-X-Google-Smtp-Source: ABdhPJysthL0YIUDq1FZbVLlu57eYwOcK+vbupy00jeGwH2c8ufKvDM7S2KQ3X5r7vLI8+iI6M1u/g==
-X-Received: by 2002:a17:907:869f:b0:6da:888b:4258 with SMTP id qa31-20020a170907869f00b006da888b4258mr4077833ejc.720.1648910213763;
-        Sat, 02 Apr 2022 07:36:53 -0700 (PDT)
-Received: from debian.home (81-204-249-205.fixed.kpn.net. [81.204.249.205])
-        by smtp.gmail.com with ESMTPSA id bp8-20020a170907918800b006e0daaa63ddsm2169557ejb.60.2022.04.02.07.36.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 02 Apr 2022 07:36:53 -0700 (PDT)
-From:   Johan Jonker <jbx6244@gmail.com>
-To:     heiko@sntech.de, zhangqing@rock-chips.com
-Cc:     robh+dt@kernel.org, krzk+dt@kernel.org, mturquette@baylibre.com,
-        sboyd@kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v4 11/16] arm64: dts: rockchip: add clocks property to Rockchip cru nodes
-Date:   Sat,  2 Apr 2022 16:36:31 +0200
-Message-Id: <20220402143636.15222-12-jbx6244@gmail.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220402143636.15222-1-jbx6244@gmail.com>
-References: <20220402143636.15222-1-jbx6244@gmail.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=XNA7JZlHCOkUJgQubK0e6uaBuAfi7LHL/HwfQfGUJqY=;
+        b=JuG9UTiMFfvj7y8X3c9dVWTO6y/AdnPL5HXlqWrgE1m6WpaHhz4bQl6CFLRoAaRKSJ
+         +is/XxQ+V0Ok4g+tMuWhH8Oq+PPDGwH/Bf7vtsUUqDrhmOg5Xl+hhARGGpSqiK1skpno
+         vSBiM1isRXGYQUZKR1SGSQ5YKzOTSj6BgiBui8Iw41a0n3L9U3TvyshkkB7K5i9rxOVH
+         Fi7iHfKoBL5oE1wcQJ9Pe958vl3cc8xvPNYRoxYyg9x3ymOaNbvRPkKSmdw7+1bZcRLJ
+         LdLzo/cpmGkXEfSYtQHUFsYoj5gTQLzojO4ROJj6DPIZZWKhK1m3vpDUYTrBSUnd1inA
+         yw4A==
+X-Gm-Message-State: AOAM530cLd+wmc0Y4OrcXtmnE/aDabb0jH1XQYBFH9QyDxoReQ91n+38
+        yTmFwnhDtQ3D+0dPpU7JTeYNPQ==
+X-Google-Smtp-Source: ABdhPJwfB7bogzwm+XNxHgXGVvJMn3iHK2ZRqopei35YEBOlAIMBCKMkBPEF833A1qJMt/T+ntpH8w==
+X-Received: by 2002:aa7:d6d8:0:b0:419:886:dede with SMTP id x24-20020aa7d6d8000000b004190886dedemr25491467edr.258.1648910427904;
+        Sat, 02 Apr 2022 07:40:27 -0700 (PDT)
+Received: from [192.168.0.171] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id rh26-20020a17090720fa00b006e0da7ef847sm2176812ejb.13.2022.04.02.07.40.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 02 Apr 2022 07:40:27 -0700 (PDT)
+Message-ID: <ba93d501-56db-143c-164a-333ae573d9f0@linaro.org>
+Date:   Sat, 2 Apr 2022 16:40:26 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 2/6] arm64: dts: qcom: pmi8998: add smb2 node
+Content-Language: en-US
+To:     Caleb Connolly <caleb.connolly@linaro.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Cc:     Amit Pundir <amit.pundir@linaro.org>,
+        Sumit Semwal <sumit.semwal@linaro.org>
+References: <20220401202643.877609-1-caleb.connolly@linaro.org>
+ <20220401202643.877609-3-caleb.connolly@linaro.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220401202643.877609-3-caleb.connolly@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add clocks and clock-names to the Rockchip cru node, because
-the device has to have at least one input clock.
-With the addition of new properties also sort the node properties
-a little bit where needed.
+On 01/04/2022 22:26, Caleb Connolly wrote:
+> Add a node for the smb2 charger hardware found on the pmi8998.
+> 
+> Signed-off-by: Caleb Connolly <caleb.connolly@linaro.org>
+> ---
+>  arch/arm64/boot/dts/qcom/pmi8998.dtsi | 15 +++++++++++++++
+>  1 file changed, 15 insertions(+)
+> 
+> diff --git a/arch/arm64/boot/dts/qcom/pmi8998.dtsi b/arch/arm64/boot/dts/qcom/pmi8998.dtsi
+> index da10668c361d..b98dad166a0b 100644
+> --- a/arch/arm64/boot/dts/qcom/pmi8998.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/pmi8998.dtsi
+> @@ -9,6 +9,21 @@ pmi8998_lsid0: pmic@2 {
+>  		#address-cells = <1>;
+>  		#size-cells = <0>;
+>  
+> +		pmi8998_smb2: smb2@1000 {
 
-Signed-off-by: Johan Jonker <jbx6244@gmail.com>
----
+Generic node name please, so "charger". Have in mind that PMIC
+(parent's) schema might require it.
 
-Changed V4:
-  combine patches
----
- arch/arm64/boot/dts/rockchip/rk3308.dtsi | 5 +++--
- arch/arm64/boot/dts/rockchip/rk3328.dtsi | 2 ++
- arch/arm64/boot/dts/rockchip/rk3368.dtsi | 2 ++
- arch/arm64/boot/dts/rockchip/rk3399.dtsi | 4 ++++
- 4 files changed, 11 insertions(+), 2 deletions(-)
+If it exists (I did not check), it should reference also your charger's
+schema.
 
-diff --git a/arch/arm64/boot/dts/rockchip/rk3308.dtsi b/arch/arm64/boot/dts/rockchip/rk3308.dtsi
-index 1cbe21261..2dfa67f1c 100644
---- a/arch/arm64/boot/dts/rockchip/rk3308.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3308.dtsi
-@@ -745,10 +745,11 @@
- 	cru: clock-controller@ff500000 {
- 		compatible = "rockchip,rk3308-cru";
- 		reg = <0x0 0xff500000 0x0 0x1000>;
-+		clocks = <&xin24m>;
-+		clock-names = "xin24m";
-+		rockchip,grf = <&grf>;
- 		#clock-cells = <1>;
- 		#reset-cells = <1>;
--		rockchip,grf = <&grf>;
--
- 		assigned-clocks = <&cru SCLK_RTC32K>;
- 		assigned-clock-rates = <32768>;
- 	};
-diff --git a/arch/arm64/boot/dts/rockchip/rk3328.dtsi b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
-index b822533dc..9c76c288b 100644
---- a/arch/arm64/boot/dts/rockchip/rk3328.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
-@@ -758,6 +758,8 @@
- 	cru: clock-controller@ff440000 {
- 		compatible = "rockchip,rk3328-cru", "rockchip,cru", "syscon";
- 		reg = <0x0 0xff440000 0x0 0x1000>;
-+		clocks = <&xin24m>;
-+		clock-names = "xin24m";
- 		rockchip,grf = <&grf>;
- 		#clock-cells = <1>;
- 		#reset-cells = <1>;
-diff --git a/arch/arm64/boot/dts/rockchip/rk3368.dtsi b/arch/arm64/boot/dts/rockchip/rk3368.dtsi
-index c99da9032..4f0b5feaa 100644
---- a/arch/arm64/boot/dts/rockchip/rk3368.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3368.dtsi
-@@ -747,6 +747,8 @@
- 	cru: clock-controller@ff760000 {
- 		compatible = "rockchip,rk3368-cru";
- 		reg = <0x0 0xff760000 0x0 0x1000>;
-+		clocks = <&xin24m>;
-+		clock-names = "xin24m";
- 		rockchip,grf = <&grf>;
- 		#clock-cells = <1>;
- 		#reset-cells = <1>;
-diff --git a/arch/arm64/boot/dts/rockchip/rk3399.dtsi b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-index 88f26d89e..ce1cc42ff 100644
---- a/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-@@ -1416,6 +1416,8 @@
- 	pmucru: pmu-clock-controller@ff750000 {
- 		compatible = "rockchip,rk3399-pmucru";
- 		reg = <0x0 0xff750000 0x0 0x1000>;
-+		clocks = <&xin24m>;
-+		clock-names = "xin24m";
- 		rockchip,grf = <&pmugrf>;
- 		#clock-cells = <1>;
- 		#reset-cells = <1>;
-@@ -1426,6 +1428,8 @@
- 	cru: clock-controller@ff760000 {
- 		compatible = "rockchip,rk3399-cru";
- 		reg = <0x0 0xff760000 0x0 0x1000>;
-+		clocks = <&xin24m>;
-+		clock-names = "xin24m";
- 		rockchip,grf = <&grf>;
- 		#clock-cells = <1>;
- 		#reset-cells = <1>;
--- 
-2.20.1
-
+Best regards,
+Krzysztof
