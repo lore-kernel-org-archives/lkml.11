@@ -2,87 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04C76C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 21:51:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69C64C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 21:52:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345753AbiDBVxo (ORCPT
+        id S1355027AbiDBVyC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Apr 2022 17:53:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47582 "EHLO
+        Sat, 2 Apr 2022 17:54:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233305AbiDBVxh (ORCPT
+        with ESMTP id S1346078AbiDBVx5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Apr 2022 17:53:37 -0400
-Received: from uriel.iewc.co.za (uriel.iewc.co.za [IPv6:2c0f:f720:0:3:d6ae:52ff:feb8:f27b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63BF21FA60;
-        Sat,  2 Apr 2022 14:51:41 -0700 (PDT)
-Received: from [2c0f:f720:fe16:c400::1] (helo=tauri.local.uls.co.za)
-        by uriel.iewc.co.za with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+        Sat, 2 Apr 2022 17:53:57 -0400
+X-Greylist: delayed 1467 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 02 Apr 2022 14:52:05 PDT
+Received: from gateway20.websitewelcome.com (gateway20.websitewelcome.com [192.185.55.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E04F3A5EB
+        for <linux-kernel@vger.kernel.org>; Sat,  2 Apr 2022 14:52:05 -0700 (PDT)
+Received: from cm13.websitewelcome.com (cm13.websitewelcome.com [100.42.49.6])
+        by gateway20.websitewelcome.com (Postfix) with ESMTP id 56F81400C5548
+        for <linux-kernel@vger.kernel.org>; Sat,  2 Apr 2022 16:27:38 -0500 (CDT)
+Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
+        by cmsmtp with SMTP
+        id alHWnfWxfb6UBalHWneeUq; Sat, 02 Apr 2022 16:27:38 -0500
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=roeck-us.net; s=default; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=+fqVS2YHoB85ngIYgaaiabTFUqnbMkVGBsGk+DSrzAU=; b=PyeH8okZjcl6Hb8vuAVnEJ/WIA
+        ZOdJgvCd5kHIgpAILfxvGh6RiqquW3yB/bHt6OvbMHoaeLo2kfalL4iCMXnpKkErXmmMwTLJtH2+c
+        btf95l4gZFxp3e0QuNryCkUkj3HwtPr9YTR/xjJvj+7GBqP3/mOPOmeBkJ6b09rbCs28hjZ5vRTa1
+        HylW0lU/enP9O4fvxQtnL/3zW8RjbN3I/xg/3RD1I5HGLuM3tRTRqETofPzp+AeS8vdss9kNVVM5w
+        H6U+nWz8ha8IUE2oMi2pqrhdt+AHnTt+PJ09q1MOVflPA6heVHW6rC+V1Yv2mikPE5MVp3yxe4Nv0
+        l1OBfm7g==;
+Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:54666)
+        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
-        (envelope-from <jaco@uls.co.za>)
-        id 1nalej-0000AW-Q1; Sat, 02 Apr 2022 23:51:37 +0200
-Received: from [192.168.42.201]
-        by tauri.local.uls.co.za with esmtp (Exim 4.94.2)
-        (envelope-from <jaco@uls.co.za>)
-        id 1nalei-0001Pv-Ao; Sat, 02 Apr 2022 23:51:36 +0200
-Message-ID: <e70a253d-da38-1acb-544f-81d29b72fc21@uls.co.za>
-Date:   Sat, 2 Apr 2022 23:51:35 +0200
+        (envelope-from <linux@roeck-us.net>)
+        id 1nalHW-0012pj-0x; Sat, 02 Apr 2022 21:27:38 +0000
+Message-ID: <6353bc69-901e-32e7-e736-00dd6a09a1ea@roeck-us.net>
+Date:   Sat, 2 Apr 2022 14:27:36 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: linux 5.17.1 disregarding ACK values resulting in stalled TCP
- connections
-Content-Language: en-GB
-To:     Florian Westphal <fw@strlen.de>
-Cc:     Neal Cardwell <ncardwell@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Yuchung Cheng <ycheng@google.com>, Wei Wang <weiwan@google.com>
-References: <CANn89iKHbmVYoBdo2pCQWTzB4eFBjqAMdFbqL5EKSFqgg3uAJQ@mail.gmail.com>
- <10c1e561-8f01-784f-c4f4-a7c551de0644@uls.co.za>
- <CADVnQynf8f7SUtZ8iQi-fACYLpAyLqDKQVYKN-mkEgVtFUTVXQ@mail.gmail.com>
- <e0bc0c7f-5e47-ddb7-8e24-ad5fb750e876@uls.co.za>
- <CANn89i+Dqtrm-7oW+D6EY+nVPhRH07GXzDXt93WgzxZ1y9_tJA@mail.gmail.com>
- <CADVnQyn=VfcqGgWXO_9h6QTkMn5ZxPbNRTnMFAxwQzKpMRvH3A@mail.gmail.com>
- <5f1bbeb2-efe4-0b10-bc76-37eff30ea905@uls.co.za>
- <CADVnQymPoyY+AX_P7k+NcRWabJZrb7UCJdDZ=FOkvWguiTPVyQ@mail.gmail.com>
- <CADVnQy=GX0J_QbMJXogGzPwD=f0diKDDxLiHV0gzrb4bo=4FjA@mail.gmail.com>
- <429dd56b-8a6c-518f-ccb4-fa5beae30953@uls.co.za>
- <20220402141410.GE28321@breakpoint.cc>
-From:   Jaco Kroon <jaco@uls.co.za>
-Organization: Ultimate Linux Solutions (Pty) Ltd
-In-Reply-To: <20220402141410.GE28321@breakpoint.cc>
-Content-Type: text/plain; charset=UTF-8
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] parisc: Switch from GENERIC_CPU_DEVICES to
+ GENERIC_ARCH_TOPOLOGY
+Content-Language: en-US
+To:     Helge Deller <deller@gmx.de>
+Cc:     James.Bottomley@hansenpartnership.com,
+        linux-parisc@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220401154137.GA3745625@roeck-us.net>
+ <57e79014-25e6-62d3-27de-64797e43992b@gmx.de>
+ <927a54f9-b413-0c71-461d-28ed9d5ece96@roeck-us.net> <YkdiDJZ/XHODymRk@p100>
+From:   Guenter Roeck <linux@roeck-us.net>
+In-Reply-To: <YkdiDJZ/XHODymRk@p100>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - roeck-us.net
+X-BWhitelist: no
+X-Source-IP: 108.223.40.66
+X-Source-L: No
+X-Exim-ID: 1nalHW-0012pj-0x
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net [108.223.40.66]:54666
+X-Source-Auth: linux@roeck-us.net
+X-Email-Count: 10
+X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Florian,
-
-On 2022/04/02 16:14, Florian Westphal wrote:
-> Jaco Kroon <jaco@uls.co.za> wrote:
->> Including sysctl net.netfilter.nf_conntrack_log_invalid=6- which
->> generates lots of logs, something specific I should be looking for?  I
->> suspect these relate:
+On 4/1/22 13:35, Helge Deller wrote:
+> Hi Günter,
+> 
+> * Guenter Roeck <linux@roeck-us.net>:
+>> On 4/1/22 09:47, Helge Deller wrote:
+>>> Hi Günter,
+>>>
+>>> On 4/1/22 17:41, Guenter Roeck wrote:
+>>>> On Thu, Mar 24, 2022 at 07:46:50PM +0100, Helge Deller wrote:
+>>>>> Switch away from the own cpu topology code to common code which is used
+>>>>> by ARM64 and RISCV. That will allow us to enable CPU hotplug later on.
+>>>>>
+>>>>> Signed-off-by: Helge Deller <deller@gmx.de>
+>>>>
+>>>> This patch results in the following traceback when
+>>>> booting generic-32bit_defconfig - SMP in qemu.
+>>>
+>>> That's strange, because I just built this generic-32bit_defconfig myself and
+>>> it boots up nicely in qemu for me. The only thing missing is CONFIG_CGROUPS=y so that
+>>> systemd can start.
+>>>
 >>
->> [Sat Apr  2 10:31:53 2022] nf_ct_proto_6: SEQ is over the upper bound
->> (over the window of the receiver) IN= OUT=bond0
->> SRC=2c0f:f720:0000:0003:d6ae:52ff:feb8:f27b
->> DST=2a00:1450:400c:0c08:0000:0000:0000:001a LEN=2928 TC=0 HOPLIMIT=64
->> FLOWLBL=867133 PROTO=TCP SPT=48920 DPT=25 SEQ=2689938314 ACK=4200412020
->> WINDOW=447 RES=0x00 ACK PSH URGP=0 OPT (0101080A2F36C1C120EDFB91) UID=8
->> GID=12
-> I thought this had "liberal mode" enabled for tcp conntrack?
-> The above implies its off.
+>> Did you disable SMP (that is what - SMP was supposed to mean) ?
+>> Also, note that the system does boot fine, it just spits out the warning.
+> 
+> The patch below fixes the warning for me.
+> Could you try?
+> 
 
-We have liberal on the core firewalls, not on the endpoints ... yes, we
-do double firewall :).
+I did, and it fixes the problem. I just sent a Tested-by: in response to
+your patch.
 
-So the firewalls into the subnets has liberal mode (which really was an
-oversight when axing conntrackd), but the servers themselves do not.
+Guenter
 
-Kind Regards,
-Jaco
+> Helge
+> 
+> 
+> From: Helge Deller <deller@gmx.de>
+> Subject: [PATCH] parisc: Re-enable GENERIC_CPU_DEVICES for !SMP
+> 
+> In commit 62773112acc5 ("parisc: Switch from GENERIC_CPU_DEVICES to
+> GENERIC_ARCH_TOPOLOGY") GENERIC_CPU_DEVICES was unconditionally turned
+> off, but this triggers a warning in topology_add_dev(). Turning it back
+> on for the !SMP case avoids this warning.
+> 
+> Reported-by: Guenter Roeck <linux@roeck-us.net>
+> Fixes: 62773112acc5 ("parisc: Switch from GENERIC_CPU_DEVICES to GENERIC_ARCH_TOPOLOGY")
+> Signed-off-by: Helge Deller <deller@gmx.de>
+> 
+> diff --git a/arch/parisc/Kconfig b/arch/parisc/Kconfig
+> index 52e550b45692..bd22578859d0 100644
+> --- a/arch/parisc/Kconfig
+> +++ b/arch/parisc/Kconfig
+> @@ -38,6 +38,7 @@ config PARISC
+>   	select ARCH_HAVE_NMI_SAFE_CMPXCHG
+>   	select GENERIC_SMP_IDLE_THREAD
+>   	select GENERIC_ARCH_TOPOLOGY if SMP
+> +	select GENERIC_CPU_DEVICES if !SMP
+>   	select GENERIC_LIB_DEVMEM_IS_ALLOWED
+>   	select SYSCTL_ARCH_UNALIGN_ALLOW
+>   	select SYSCTL_EXCEPTION_TRACE
 
