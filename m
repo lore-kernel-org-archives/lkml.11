@@ -2,143 +2,413 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69C64C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 21:52:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCB22C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 22:02:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355027AbiDBVyC (ORCPT
+        id S1351728AbiDBWD6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Apr 2022 17:54:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49224 "EHLO
+        Sat, 2 Apr 2022 18:03:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346078AbiDBVx5 (ORCPT
+        with ESMTP id S237725AbiDBWDz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Apr 2022 17:53:57 -0400
-X-Greylist: delayed 1467 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 02 Apr 2022 14:52:05 PDT
-Received: from gateway20.websitewelcome.com (gateway20.websitewelcome.com [192.185.55.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E04F3A5EB
-        for <linux-kernel@vger.kernel.org>; Sat,  2 Apr 2022 14:52:05 -0700 (PDT)
-Received: from cm13.websitewelcome.com (cm13.websitewelcome.com [100.42.49.6])
-        by gateway20.websitewelcome.com (Postfix) with ESMTP id 56F81400C5548
-        for <linux-kernel@vger.kernel.org>; Sat,  2 Apr 2022 16:27:38 -0500 (CDT)
-Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
-        by cmsmtp with SMTP
-        id alHWnfWxfb6UBalHWneeUq; Sat, 02 Apr 2022 16:27:38 -0500
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=roeck-us.net; s=default; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=+fqVS2YHoB85ngIYgaaiabTFUqnbMkVGBsGk+DSrzAU=; b=PyeH8okZjcl6Hb8vuAVnEJ/WIA
-        ZOdJgvCd5kHIgpAILfxvGh6RiqquW3yB/bHt6OvbMHoaeLo2kfalL4iCMXnpKkErXmmMwTLJtH2+c
-        btf95l4gZFxp3e0QuNryCkUkj3HwtPr9YTR/xjJvj+7GBqP3/mOPOmeBkJ6b09rbCs28hjZ5vRTa1
-        HylW0lU/enP9O4fvxQtnL/3zW8RjbN3I/xg/3RD1I5HGLuM3tRTRqETofPzp+AeS8vdss9kNVVM5w
-        H6U+nWz8ha8IUE2oMi2pqrhdt+AHnTt+PJ09q1MOVflPA6heVHW6rC+V1Yv2mikPE5MVp3yxe4Nv0
-        l1OBfm7g==;
-Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:54666)
-        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@roeck-us.net>)
-        id 1nalHW-0012pj-0x; Sat, 02 Apr 2022 21:27:38 +0000
-Message-ID: <6353bc69-901e-32e7-e736-00dd6a09a1ea@roeck-us.net>
-Date:   Sat, 2 Apr 2022 14:27:36 -0700
+        Sat, 2 Apr 2022 18:03:55 -0400
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCDFCC49;
+        Sat,  2 Apr 2022 15:02:01 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id c7so9129493wrd.0;
+        Sat, 02 Apr 2022 15:02:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=2OQnYVvLaW9bpTUFsIzEdFq8P66ZYalyZFA5fImrQ1E=;
+        b=aoIxuoEO2EhbGmTWv6RB+MxlG91kTNCBMtSzXP8hLXlk93Ot1NVeRtokLGpoC16HwI
+         j/N6lxJoZPFUvM6+kqsGO7ko9/DvrU/K2S+WWaZZ8ILc6L6Abe1sWiYnj5CiiniCzSOT
+         3nWhb/kkby6UuL4M42vxoVgzlYz1dRd0XHm6T4TI4Xvq2L5u0FKEfXlbcAU0fGYKz+Fc
+         XvmwQuaBnOK4ZmpSU9Lo1JUUK2YkKipe+TPG0q/mxS4zQSQXDMpiQcFQG2JeQLXtz98d
+         CkEx6i/XyXy3g3Eg33G8sF+NJvTM/N45c+A8hrPnkAXYnk+dJlaHYqN2xQ4dIK+UU4lS
+         FeHA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=2OQnYVvLaW9bpTUFsIzEdFq8P66ZYalyZFA5fImrQ1E=;
+        b=cuOyQS2b24a+G9XUuLlUR11ISIZ9JaG9KuCzPB8wNDvLBDb5mDMsqkCkumRnk+uT9O
+         1coCmcUIgxLP5S7iawvSQHO/qBidObJDRvBVVbap47Kw9q/dpHkbCvGE9DaYbfH8Pkde
+         FxxhhNdvbQj1JkhFqLuwOr8/sLaupdeFf7enFkjI4+zPj/Vv8JkdPEy+K8RcYCkBhH8V
+         B6adb1oT4ESvLNI0ScriU6Uqrw5bDBQLFZrVXLMah7/1aSu0qBSpjByBHhhJBab/Y2gW
+         3htImksxNcAPFFEzb+HrE5yJI1Lby64jlsDcHwlPsG3z6QBemsJ6DfcWh/9bw4K4VWGC
+         Q7Vg==
+X-Gm-Message-State: AOAM531VxPoYKP2A3uiS4aTz9gOu5/Xw0P8FDrhCMrPMI+fmKWB50WWS
+        zn/g97ylLtvaeHYo7FewCnc=
+X-Google-Smtp-Source: ABdhPJw3EcGH9cK9fmCnPv80XHvktAOF1EfUjxBpV4gQT8voyFEZOHEqy5v4XtO0UG/+0fbhm7N3og==
+X-Received: by 2002:a05:6000:2a8:b0:205:8817:8296 with SMTP id l8-20020a05600002a800b0020588178296mr12090836wry.309.1648936920207;
+        Sat, 02 Apr 2022 15:02:00 -0700 (PDT)
+Received: from [192.168.0.160] ([170.253.36.171])
+        by smtp.gmail.com with ESMTPSA id l15-20020a05600c4f0f00b0038cbdf5221dsm14756280wmq.41.2022.04.02.15.01.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 02 Apr 2022 15:01:59 -0700 (PDT)
+Message-ID: <6f3aef3d-62ba-b068-bc65-604eba315946@gmail.com>
+Date:   Sun, 3 Apr 2022 00:01:58 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
-Subject: Re: [PATCH] parisc: Switch from GENERIC_CPU_DEVICES to
- GENERIC_ARCH_TOPOLOGY
+Subject: Re: [PATCH v3] ioctl_userfaultfd.2, userfaultfd.2: add minor fault
+ mode
 Content-Language: en-US
-To:     Helge Deller <deller@gmx.de>
-Cc:     James.Bottomley@hansenpartnership.com,
-        linux-parisc@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220401154137.GA3745625@roeck-us.net>
- <57e79014-25e6-62d3-27de-64797e43992b@gmx.de>
- <927a54f9-b413-0c71-461d-28ed9d5ece96@roeck-us.net> <YkdiDJZ/XHODymRk@p100>
-From:   Guenter Roeck <linux@roeck-us.net>
-In-Reply-To: <YkdiDJZ/XHODymRk@p100>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - roeck-us.net
-X-BWhitelist: no
-X-Source-IP: 108.223.40.66
-X-Source-L: No
-X-Exim-ID: 1nalHW-0012pj-0x
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net [108.223.40.66]:54666
-X-Source-Auth: linux@roeck-us.net
-X-Email-Count: 10
-X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
-X-Local-Domain: yes
+To:     Axel Rasmussen <axelrasmussen@google.com>,
+        Ian Abbott <abbotti@mev.co.uk>
+Cc:     linux-kernel@vger.kernel.org, linux-man@vger.kernel.org,
+        linux-mm@kvack.org, Andrea Arcangeli <aarcange@redhat.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Hugh Dickins <hughd@google.com>, Peter Xu <peterx@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Michael Kerrisk <mtk.manpages@gmail.com>
+References: <20220322163944.631042-1-axelrasmussen@google.com>
+From:   "Alejandro Colomar (man-pages)" <alx.manpages@gmail.com>
+In-Reply-To: <20220322163944.631042-1-axelrasmussen@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/1/22 13:35, Helge Deller wrote:
-> Hi Günter,
-> 
-> * Guenter Roeck <linux@roeck-us.net>:
->> On 4/1/22 09:47, Helge Deller wrote:
->>> Hi Günter,
->>>
->>> On 4/1/22 17:41, Guenter Roeck wrote:
->>>> On Thu, Mar 24, 2022 at 07:46:50PM +0100, Helge Deller wrote:
->>>>> Switch away from the own cpu topology code to common code which is used
->>>>> by ARM64 and RISCV. That will allow us to enable CPU hotplug later on.
->>>>>
->>>>> Signed-off-by: Helge Deller <deller@gmx.de>
->>>>
->>>> This patch results in the following traceback when
->>>> booting generic-32bit_defconfig - SMP in qemu.
->>>
->>> That's strange, because I just built this generic-32bit_defconfig myself and
->>> it boots up nicely in qemu for me. The only thing missing is CONFIG_CGROUPS=y so that
->>> systemd can start.
->>>
->>
->> Did you disable SMP (that is what - SMP was supposed to mean) ?
->> Also, note that the system does boot fine, it just spits out the warning.
-> 
-> The patch below fixes the warning for me.
-> Could you try?
-> 
+Hi Axel,
 
-I did, and it fixes the problem. I just sent a Tested-by: in response to
-your patch.
+On 3/22/22 17:39, Axel Rasmussen wrote:
+> Userfaultfd minor fault mode is supported starting from Linux 5.13.
+> 
+> This commit adds a description of the new mode, as well as the new ioctl
+> used to resolve such faults. The two go hand-in-hand: one can't resolve
+> a minor fault without continue, and continue can't be used to resolve
+> any other kind of fault.
+> 
+> This patch covers just the hugetlbfs implementation (in 5.13). Support
+> for shmem is forthcoming, but as it has not yet made it into a kernel
+> release candidate, it will be added in a future commit.
+> 
+> Reviewed-by: Peter Xu <peterx@redhat.com>
+> Signed-off-by: Axel Rasmussen <axelrasmussen@google.com>
 
-Guenter
+Sorry, but this patch doesn't apply after one from Ian that I applied to
+my tree.  I can fix the conflicts myself (they seem easy from a
+lines-in-lines-out point of view), but I'd prefer you to do it since I
+may introduce some incorrections in the page, and you'll know better.
 
-> Helge
-> 
-> 
-> From: Helge Deller <deller@gmx.de>
-> Subject: [PATCH] parisc: Re-enable GENERIC_CPU_DEVICES for !SMP
-> 
-> In commit 62773112acc5 ("parisc: Switch from GENERIC_CPU_DEVICES to
-> GENERIC_ARCH_TOPOLOGY") GENERIC_CPU_DEVICES was unconditionally turned
-> off, but this triggers a warning in topology_add_dev(). Turning it back
-> on for the !SMP case avoids this warning.
-> 
-> Reported-by: Guenter Roeck <linux@roeck-us.net>
-> Fixes: 62773112acc5 ("parisc: Switch from GENERIC_CPU_DEVICES to GENERIC_ARCH_TOPOLOGY")
-> Signed-off-by: Helge Deller <deller@gmx.de>
-> 
-> diff --git a/arch/parisc/Kconfig b/arch/parisc/Kconfig
-> index 52e550b45692..bd22578859d0 100644
-> --- a/arch/parisc/Kconfig
-> +++ b/arch/parisc/Kconfig
-> @@ -38,6 +38,7 @@ config PARISC
->   	select ARCH_HAVE_NMI_SAFE_CMPXCHG
->   	select GENERIC_SMP_IDLE_THREAD
->   	select GENERIC_ARCH_TOPOLOGY if SMP
-> +	select GENERIC_CPU_DEVICES if !SMP
->   	select GENERIC_LIB_DEVMEM_IS_ALLOWED
->   	select SYSCTL_ARCH_UNALIGN_ALLOW
->   	select SYSCTL_EXCEPTION_TRACE
+Please check
+<http://www.alejandro-colomar.es/src/alx/linux/man-pages/man-pages.git/>
 
+Thanks,
+
+Alex
+
+> ---
+>  man2/ioctl_userfaultfd.2 | 135 ++++++++++++++++++++++++++++++++++++---
+>  man2/userfaultfd.2       |  79 +++++++++++++++++++----
+>  2 files changed, 192 insertions(+), 22 deletions(-)
+> 
+> diff --git a/man2/ioctl_userfaultfd.2 b/man2/ioctl_userfaultfd.2
+> index 504f61d4b..d213a0a43 100644
+> --- a/man2/ioctl_userfaultfd.2
+> +++ b/man2/ioctl_userfaultfd.2
+> @@ -214,6 +214,11 @@ memory accesses to the regions registered with userfaultfd.
+>  If this feature bit is set,
+>  .I uffd_msg.pagefault.feat.ptid
+>  will be set to the faulted thread ID for each page-fault message.
+> +.TP
+> +.BR UFFD_FEATURE_MINOR_HUGETLBFS " (since Linux 5.13)"
+> +If this feature bit is set,
+> +the kernel supports registering userfaultfd ranges
+> +in minor mode on hugetlbfs-backed memory areas.
+>  .PP
+>  The returned
+>  .I ioctls
+> @@ -240,6 +245,11 @@ operation is supported.
+>  The
+>  .B UFFDIO_WRITEPROTECT
+>  operation is supported.
+> +.TP
+> +.B 1 << _UFFDIO_CONTINUE
+> +The
+> +.B UFFDIO_CONTINUE
+> +operation is supported.
+>  .PP
+>  This
+>  .BR ioctl (2)
+> @@ -278,14 +288,8 @@ by the current kernel version.
+>  (Since Linux 4.3.)
+>  Register a memory address range with the userfaultfd object.
+>  The pages in the range must be "compatible".
+> -.PP
+> -Up to Linux kernel 4.11,
+> -only private anonymous ranges are compatible for registering with
+> -.BR UFFDIO_REGISTER .
+> -.PP
+> -Since Linux 4.11,
+> -hugetlbfs and shared memory ranges are also compatible with
+> -.BR UFFDIO_REGISTER .
+> +Please refer to the list of register modes below
+> +for the compatible memory backends for each mode.
+>  .PP
+>  The
+>  .I argp
+> @@ -324,9 +328,20 @@ the specified range:
+>  .TP
+>  .B UFFDIO_REGISTER_MODE_MISSING
+>  Track page faults on missing pages.
+> +Since Linux 4.3,
+> +only private anonymous ranges are compatible.
+> +Since Linux 4.11,
+> +hugetlbfs and shared memory ranges are also compatible.
+>  .TP
+>  .B UFFDIO_REGISTER_MODE_WP
+>  Track page faults on write-protected pages.
+> +Since Linux 5.7,
+> +only private anonymous ranges are compatible.
+> +.TP
+> +.B UFFDIO_REGISTER_MODE_MINOR
+> +Track minor page faults.
+> +Since Linux 5.13,
+> +only hugetlbfs ranges are compatible.
+>  .PP
+>  If the operation is successful, the kernel modifies the
+>  .I ioctls
+> @@ -735,6 +750,110 @@ or not registered with userfaultfd write-protect mode.
+>  .TP
+>  .B EFAULT
+>  Encountered a generic fault during processing.
+> +.\"
+> +.SS UFFDIO_CONTINUE
+> +(Since Linux 5.13.)
+> +Resolve a minor page fault
+> +by installing page table entries
+> +for existing pages in the page cache.
+> +.PP
+> +The
+> +.I argp
+> +argument is a pointer to a
+> +.I uffdio_continue
+> +structure as shown below:
+> +.PP
+> +.in +4n
+> +.EX
+> +struct uffdio_continue {
+> +    struct uffdio_range range; /* Range to install PTEs for and continue */
+> +    __u64 mode;                /* Flags controlling the behavior of continue */
+> +    __s64 mapped;              /* Number of bytes mapped, or negated error */
+> +};
+> +.EE
+> +.in
+> +.PP
+> +The following value may be bitwise ORed in
+> +.IR mode
+> +to change the behavior of the
+> +.B UFFDIO_CONTINUE
+> +operation:
+> +.TP
+> +.B UFFDIO_CONTINUE_MODE_DONTWAKE
+> +Do not wake up the thread that waits for page-fault resolution.
+> +.PP
+> +The
+> +.I mapped
+> +field is used by the kernel
+> +to return the number of bytes that were actually mapped,
+> +or an error in the same manner as
+> +.BR UFFDIO_COPY .
+> +If the value returned in the
+> +.I mapped
+> +field doesn't match the value that was specified in
+> +.IR range.len ,
+> +the operation fails with the error
+> +.BR EAGAIN .
+> +The
+> +.I mapped
+> +field is output-only;
+> +it is not read by the
+> +.B UFFDIO_CONTINUE
+> +operation.
+> +.PP
+> +This
+> +.BR ioctl (2)
+> +operation returns 0 on success.
+> +In this case,
+> +the entire area was mapped.
+> +On error, \-1 is returned and
+> +.I errno
+> +is set to indicate the error.
+> +Possible errors include:
+> +.TP
+> +.B EAGAIN
+> +The number of bytes mapped
+> +(i.e., the value returned in the
+> +.I mapped
+> +field)
+> +does not equal the value that was specified in the
+> +.I range.len
+> +field.
+> +.TP
+> +.B EINVAL
+> +Either
+> +.I range.start
+> +or
+> +.I range.len
+> +was not a multiple of the system page size; or
+> +.I range.len
+> +was zero; or the range specified was invalid.
+> +.TP
+> +.B EINVAL
+> +An invalid bit was specified in the
+> +.IR mode
+> +field.
+> +.TP
+> +.B EEXIST
+> +One or more pages were already mapped in the given range.
+> +.TP
+> +.B ENOENT
+> +The faulting process has changed its virtual memory layout simultaneously with
+> +an outstanding
+> +.B UFFDIO_CONTINUE
+> +operation.
+> +.TP
+> +.B ENOMEM
+> +Allocating memory needed to setup the page table mappings failed.
+> +.TP
+> +.B EFAULT
+> +No existing page could be found in the page cache for the given range.
+> +.TP
+> +.BR ESRCH
+> +The faulting process has exited at the time of a
+> +.B UFFDIO_CONTINUE
+> +operation.
+> +.\"
+>  .SH RETURN VALUE
+>  See descriptions of the individual operations, above.
+>  .SH ERRORS
+> diff --git a/man2/userfaultfd.2 b/man2/userfaultfd.2
+> index cee7c01d2..458e05faa 100644
+> --- a/man2/userfaultfd.2
+> +++ b/man2/userfaultfd.2
+> @@ -82,7 +82,7 @@ all memory ranges that were registered with the object are unregistered
+>  and unread events are flushed.
+>  .\"
+>  .PP
+> -Userfaultfd supports two modes of registration:
+> +Userfaultfd supports three modes of registration:
+>  .TP
+>  .BR UFFDIO_REGISTER_MODE_MISSING " (since 4.10)"
+>  When registered with
+> @@ -96,6 +96,18 @@ or an
+>  .B UFFDIO_ZEROPAGE
+>  ioctl.
+>  .TP
+> +.BR UFFDIO_REGISTER_MODE_MINOR " (since 5.13)"
+> +When registered with
+> +.B UFFDIO_REGISTER_MODE_MINOR
+> +mode, user-space will receive a page-fault notification
+> +when a minor page fault occurs.
+> +That is, when a backing page is in the page cache, but
+> +page table entries don't yet exist.
+> +The faulted thread will be stopped from execution
+> +until the page fault is resolved from user-space by an
+> +.B UFFDIO_CONTINUE
+> +ioctl.
+> +.TP
+>  .BR UFFDIO_REGISTER_MODE_WP " (since 5.7)"
+>  When registered with
+>  .B UFFDIO_REGISTER_MODE_WP
+> @@ -216,9 +228,10 @@ a page fault occurring in the requested memory range, and satisfying
+>  the mode defined at the registration time, will be forwarded by the kernel to
+>  the user-space application.
+>  The application can then use the
+> -.B UFFDIO_COPY
+> +.B UFFDIO_COPY ,
+> +.B UFFDIO_ZEROPAGE ,
+>  or
+> -.B UFFDIO_ZEROPAGE
+> +.B UFFDIO_CONTINUE
+>  .BR ioctl (2)
+>  operations to resolve the page fault.
+>  .PP
+> @@ -322,6 +335,43 @@ should have the flag
+>  cleared upon the faulted page or range.
+>  .PP
+>  Write-protect mode supports only private anonymous memory.
+> +.\"
+> +.SS Userfaultfd minor fault mode (since 5.13)
+> +Since Linux 5.13, userfaultfd supports minor fault mode.
+> +In this mode, fault messages are produced not for major faults (where the
+> +page was missing), but rather for minor faults, where a page exists in the page
+> +cache, but the page table entries are not yet present.
+> +The user needs to first check availability of this feature using
+> +.B UFFDIO_API
+> +ioctl against the feature bit
+> +.B UFFD_FEATURE_MINOR_HUGETLBFS
+> +before using this feature.
+> +.PP
+> +To register with userfaultfd minor fault mode, the user needs to initiate the
+> +.B UFFDIO_REGISTER
+> +ioctl with mode
+> +.B UFFD_REGISTER_MODE_MINOR
+> +set.
+> +.PP
+> +When a minor fault occurs, user-space will receive a page-fault notification
+> +whose
+> +.I uffd_msg.pagefault.flags
+> +will have the
+> +.B UFFD_PAGEFAULT_FLAG_MINOR
+> +flag set.
+> +.PP
+> +To resolve a minor page fault, the handler should decide whether or not the
+> +existing page contents need to be modified first.
+> +If so, this should be done in-place via a second, non-userfaultfd-registered
+> +mapping to the same backing page (e.g., by mapping the hugetlbfs file twice).
+> +Once the page is considered "up to date", the fault can be resolved by
+> +initiating an
+> +.B UFFDIO_CONTINUE
+> +ioctl, which installs the page table entries and (by default) wakes up the
+> +faulting thread(s).
+> +.PP
+> +Minor fault mode supports only hugetlbfs-backed memory.
+> +.\"
+>  .SS Reading from the userfaultfd structure
+>  Each
+>  .BR read (2)
+> @@ -460,19 +510,20 @@ For
+>  the following flag may appear:
+>  .RS
+>  .TP
+> -.B UFFD_PAGEFAULT_FLAG_WRITE
+> -If the address is in a range that was registered with the
+> -.B UFFDIO_REGISTER_MODE_MISSING
+> -flag (see
+> -.BR ioctl_userfaultfd (2))
+> -and this flag is set, this a write fault;
+> -otherwise it is a read fault.
+> +.B UFFD_PAGEFAULT_FLAG_WP
+> +If this flag is set, then the fault was a write-protect fault.
+> +.TP
+> +.B UFFD_PAGEFAULT_FLAG_MINOR
+> +If this flag is set, then the fault was a minor fault.
+>  .TP
+> +.B UFFD_PAGEFAULT_FLAG_WRITE
+> +If this flag is set, then the fault was a write fault.
+> +.PP
+> +If neither
+>  .B UFFD_PAGEFAULT_FLAG_WP
+> -If the address is in a range that was registered with the
+> -.B UFFDIO_REGISTER_MODE_WP
+> -flag, when this bit is set, it means it is a write-protect fault.
+> -Otherwise it is a page-missing fault.
+> +nor
+> +.B UFFD_PAGEFAULT_FLAG_MINOR
+> +are set, then the fault was a missing fault.
+>  .RE
+>  .TP
+>  .I pagefault.feat.pid
+
+-- 
+Alejandro Colomar
+Linux man-pages comaintainer; https://www.kernel.org/doc/man-pages/
+http://www.alejandro-colomar.es/
