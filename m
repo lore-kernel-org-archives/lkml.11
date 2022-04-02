@@ -2,155 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16E95C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 16:37:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFA45C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 16:41:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358245AbiDBQj0 (ORCPT
+        id S1358335AbiDBQna (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Apr 2022 12:39:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60488 "EHLO
+        Sat, 2 Apr 2022 12:43:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358233AbiDBQjY (ORCPT
+        with ESMTP id S1358437AbiDBQnR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Apr 2022 12:39:24 -0400
-Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5D0310F6EB
-        for <linux-kernel@vger.kernel.org>; Sat,  2 Apr 2022 09:37:31 -0700 (PDT)
-Received: by mail-oi1-x22a.google.com with SMTP id r8so5787947oib.5
-        for <linux-kernel@vger.kernel.org>; Sat, 02 Apr 2022 09:37:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=+SrOdpKkibueEZ8eDGW7T0xC56oTL11h6V+jlJthOQ4=;
-        b=DsLi3EnN3YFbOVIJLaRoUhsgy/G0bmJh3Nn+pHdw4dxkDNV51PiTWHOioyO1/AIPR/
-         ntrq5xU2V8b6NKpldeo+sKZDbTnB3bql3YT3691vtY7PGqi0w6mU6JqshXIdnYxqa4c4
-         WasqcgIWXKJgB7I3Vgt/T/HjTVROp8+v2bzUeSeS+CBM88/7wSCCfA3hLsC+2PKIFUPX
-         8NU2T01o+mlGVWZHe14VJtExQOh8ewctAeYfU/9RteMpHUZgg7VDnLcG8ZctUTxVKDGp
-         Nh+hTQmYjh0niTcGvNjWMmBrMYY+dYuKYMsfygHhypxSesXtXgLnLuRRbjwHj/dD7T9v
-         CMSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :subject:content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=+SrOdpKkibueEZ8eDGW7T0xC56oTL11h6V+jlJthOQ4=;
-        b=UG53Ym81Ij/XAHmuJKhkfkxaHEoY0N5oGugrAXg/RJBCWqQDLgYw5sDpHAunkFuAFa
-         42BgV8F13uEqVT6nTA93N39Xfag6QJvEdJtKjUYsu/pW3DfJL+L2ABTbXdiGVqr50u2x
-         4U+CUfHXE0RxgDKWcA32Ocx1wTYmn5PR+bOScoiAAwJ/UJjj7n/thWvkHFLoDHbW1Jtb
-         UD8VgxagFW+ucXK4ovPwEN58m3CcQ5vvpE8CEwscHAmr45lF5spUSeGJ7tT6sY0YqKlK
-         FdmnCKCYWD7gswbH/6EC2nTnt5JvhK5IJZq69i721er1Nkhi/Lk9NtJ6KIy2YrJ0+kBW
-         U75w==
-X-Gm-Message-State: AOAM531XOpLUs64WVEIbCjHU6Fb3msl4lhyt1cdt+j1q635e7+6/Cjja
-        wPwWU4MtOl/3B+0sSxdGp8peuXPNe9E=
-X-Google-Smtp-Source: ABdhPJy/wqNp3hVjUDNjyBYFhnwTLbEVb2FrtK2I7HzzwTh3kUcZMXjmsIW5K+jVgs3+sybmcjibFw==
-X-Received: by 2002:a05:6808:1444:b0:2ed:a247:e5e2 with SMTP id x4-20020a056808144400b002eda247e5e2mr7064762oiv.115.1648917450991;
-        Sat, 02 Apr 2022 09:37:30 -0700 (PDT)
-Received: from ?IPV6:2603:8090:2005:39b3::1004? (2603-8090-2005-39b3-0000-0000-0000-1004.res6.spectrum.com. [2603:8090:2005:39b3::1004])
-        by smtp.gmail.com with ESMTPSA id s24-20020a056808209800b002da3b9bf8e0sm2235436oiw.32.2022.04.02.09.37.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 02 Apr 2022 09:37:30 -0700 (PDT)
-Sender: Larry Finger <larry.finger@gmail.com>
-Message-ID: <563ddd2d-b8b2-dde6-a0de-c7bbebcc834e@lwfinger.net>
-Date:   Sat, 2 Apr 2022 11:37:27 -0500
+        Sat, 2 Apr 2022 12:43:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CF7112109B;
+        Sat,  2 Apr 2022 09:41:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3B29260B60;
+        Sat,  2 Apr 2022 16:41:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19287C34110;
+        Sat,  2 Apr 2022 16:41:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648917683;
+        bh=Rjz+B7crTurKM0RORXJ3TgrTC5tbLzg9y46rgD7LmpY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=sbPP49t7ikeIxsFpkag86YK8dgs/7a+fZeqKBcs4nEfc9nnl11w22XG37UhCDFQIg
+         i/oqvIaBTxnacEO4cvS9wDftnBFkn7srBB+hAVKfiTxaJN7qo2Yp1uhQyPC69RRzcF
+         fIAQWx4XD2rFMhVTO5l1LFvZnxIUtuX9TcX0SCKDA1RmYC67qGvKFZmMdPGYAWln/3
+         p6EFwgiieANDCisWi7GO8hx5kgQS4NuPtnfXyW8Pvu43iGYa7SobOibZX8eVSE+V2Z
+         4L6WLdKjs6XxJKCXWfnvFNie03oUJl+eUndge49qjzDEnyro5v7hOsaaXwyJ6o9/EU
+         TlzQYVu/dJ9hQ==
+Date:   Sat, 2 Apr 2022 17:49:03 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Shreeya Patel <shreeya.patel@collabora.com>
+Cc:     lars@metafoo.de, robh+dt@kernel.org, Zhigang.Shi@liteon.com,
+        krisman@collabora.com, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel@collabora.com, alvaro.soliverez@collabora.com
+Subject: Re: [PATCH 3/3] iio: light: Add support for ltrf216a sensor
+Message-ID: <20220402174903.035f1181@jic23-huawei>
+In-Reply-To: <ffcdf821-38f2-f8d7-2bcd-8ea51cad1b96@collabora.com>
+References: <20220325103014.6597-1-shreeya.patel@collabora.com>
+        <20220325103014.6597-4-shreeya.patel@collabora.com>
+        <20220327153049.10e525e9@jic23-huawei>
+        <ffcdf821-38f2-f8d7-2bcd-8ea51cad1b96@collabora.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 4/6] staging: r8188eu: format block comments
-Content-Language: en-US
-To:     Rebecca Mckeever <remckee0@gmail.com>, outreachy@lists.linux.dev
-Cc:     Phillip Potter <phil@philpotter.co.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <cover.1648888461.git.remckee0@gmail.com>
- <0387f3df49d89c17acf96cf072e70c98e81e58f7.1648888462.git.remckee0@gmail.com>
-From:   Larry Finger <Larry.Finger@lwfinger.net>
-In-Reply-To: <0387f3df49d89c17acf96cf072e70c98e81e58f7.1648888462.git.remckee0@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/2/22 03:50, Rebecca Mckeever wrote:
-> Add ' * ' or ' ' to beginning of block comment lines
-> to conform to Linux kernel coding style.
+On Wed, 30 Mar 2022 01:33:19 +0530
+Shreeya Patel <shreeya.patel@collabora.com> wrote:
+
+> On 27/03/22 20:00, Jonathan Cameron wrote:
 > 
-> Reported by checkpatch:
+> Hi Jonathan,
 > 
-> WARNING: Block comments use * on subsequent lines
+> Thanks for your detailed review. I am working on v2 with the modifications
+> suggested by you.
 > 
-> Signed-off-by: Rebecca Mckeever <remckee0@gmail.com>
-> ---
->   drivers/staging/r8188eu/core/rtw_cmd.c | 29 +++++++++++++-------------
->   1 file changed, 14 insertions(+), 15 deletions(-)
+> Just one comment inline.
 > 
-> diff --git a/drivers/staging/r8188eu/core/rtw_cmd.c b/drivers/staging/r8188eu/core/rtw_cmd.c
-> index 2e135bbd836a..0c659b40aa1c 100644
-> --- a/drivers/staging/r8188eu/core/rtw_cmd.c
-> +++ b/drivers/staging/r8188eu/core/rtw_cmd.c
-> @@ -12,9 +12,9 @@
->   #include "../include/rtl8188e_dm.h"
->   
->   /*
-> -Caller and the rtw_cmd_thread can protect cmd_q by spin_lock.
-> -No irqsave is necessary.
-> -*/
-> + * Caller and the rtw_cmd_thread can protect cmd_q by spin_lock.
-> + * No irqsave is necessary.
-> + */
->   
->   static int _rtw_init_cmd_priv(struct cmd_priv *pcmdpriv)
->   {
-> @@ -97,14 +97,13 @@ static void _rtw_free_cmd_priv(struct cmd_priv *pcmdpriv)
->   }
->   
->   /*
-> -Calling Context:
-> -
-> -rtw_enqueue_cmd can only be called between kernel thread,
-> -since only spin_lock is used.
-> -
-> -ISR/Call-Back functions can't call this sub-function.
-> -
-> -*/
-> + * Calling Context:
-> + *
-> + * rtw_enqueue_cmd can only be called between kernel thread,
-> + * since only spin_lock is used.
-> + *
-> + * ISR/Call-Back functions can't call this sub-function.
-> + */
->   
->   static int _rtw_enqueue_cmd(struct __queue *queue, struct cmd_obj *obj)
->   {
-> @@ -319,10 +318,10 @@ int rtw_cmd_thread(void *context)
->   }
->   
->   /*
-> -rtw_sitesurvey_cmd(~)
-> -	### NOTE:#### (!!!!)
-> -	MUST TAKE CARE THAT BEFORE CALLING THIS FUNC, YOU SHOULD HAVE LOCKED pmlmepriv->lock
-> -*/
-> + * rtw_sitesurvey_cmd(~)
-> + *	### NOTE:#### (!!!!)
-> + *	MUST TAKE CARE THAT BEFORE CALLING THIS FUNC, YOU SHOULD HAVE LOCKED pmlmepriv->lock
-> + */
->   u8 rtw_sitesurvey_cmd(struct adapter  *padapter, struct ndis_802_11_ssid *ssid, int ssid_num,
->   	struct rtw_ieee80211_channel *ch, int ch_num)
->   {
 
-These changes are OK, but the rules in drivers/net/wireless specify using
+...
 
-/* abcd
+> >> +static int ltrf216a_set_it_time(struct ltrf216a_data *data, int itime)
+> >> +{
+> >> +	int i, ret, index = -1;
+> >> +	u8 reg;
+> >> +
+> >> +	for (i = 0; i < ARRAY_SIZE(int_time_mapping); i++) {
+> >> +		if (int_time_mapping[i] == itime) {
+> >> +			index = i;
+> >> +			break;
+> >> +		}
+> >> +	}
+> >> +	/* Make sure integration time index is valid */
+> >> +	if (index < 0)
+> >> +		return -EINVAL;
+> >> +
+> >> +	if (index == 0) {  
+> > Switch statement seems more appropriate than this stack of if else
+> >  
+> >> +		reg = 0x03;  
+> > reg isn't a great name as I assume this is the value, not the address
+> > which was my first thought... Perhaps reg_val?  
+> >> +		data->int_time_fac = 4;
+> >> +	} else if (index == 1) {
+> >> +		reg = 0x13;
+> >> +		data->int_time_fac = 2;
+> >> +	} else {
+> >> +		reg = (index << 4) | 0x02;  
+> > Unless I'm missing something index == 2 if we get here.
+> > So why the calculation?  I'd suggest defining the two fields and using
+> > FIELD_PREP() to set up each part probably to one of a set of
+> > #define LTRF216A_ALS_MEAS_RATE_  
+> 
+> I think the calculation here is to set the default value when the
+> integration time = 1. 
 
-rather than
+1 isn't a possible value in int_time_available.
 
-/*
-  * abcd
+I guess you mean 100ms in which case if this were a switch statement
 
-Thus, if and when this driver is accepted into the drivers/net/wireless tree, 
-another change will be needed. I suggest doing that now.
+	switch (index) {
+	case 0: /* 400msec */
+		reg = 0x03;
+		data->int_time_fac = 4;
+		break;
+	case 1: /* 200msec */
+		reg = 0x13;
+		data->int_time_fac = 2;
+		break;
+	case 2: /* 100sec */
+		reg = 0x22;
+		data->int_time_fac = 1;
+		break; 
+	}
 
-Larry
+btw from datasheet, 50ms and 25ms also seem possible, why not support them?
+
+Note the switch might be better handled as a constant look up table of appropriate
+structures.
+
+> In this case, reg value will be 34 (0x22) which
+> is the default value of ALS_MEAS_RATE register.
+
+> 
+> I will still confirm it once from Zhigang before sending a v2.
+> 
+> >> +		data->int_time_fac = 1;
+> >> +	}
+> >> +
+>
+Jonathan
