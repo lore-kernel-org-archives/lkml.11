@@ -2,231 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C9DEC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 06:30:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E2BFC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 06:55:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238297AbiDBGci (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Apr 2022 02:32:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41560 "EHLO
+        id S238366AbiDBG5k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 2 Apr 2022 02:57:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229714AbiDBGcd (ORCPT
+        with ESMTP id S229714AbiDBG5h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Apr 2022 02:32:33 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B07702F3B9
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 23:30:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648881041; x=1680417041;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=odvBG0LW7rL0CGKEf46igdKlQi9grIbl5o33MYuxeiE=;
-  b=WyCTB9oRGd3tAeOPP1OjCegPJBH6MAXO5yDYY3HvUh041/EJhCQpsBus
-   inc9IqjLfGKGpKcI98UEB87Kc0ARufz3Ksjpz7ioOwdPhvMzZh3SWyGDZ
-   c6rvhLIU2n4KKc0VG2LezHGCWB9XzplYKYk4OId9M11XRYBF1TLvzkmFz
-   6HyVEk2TjN3RMIt/k52AI5NZ38RzdRmqv9Jpwe07MYBaPMTdCzxNEePA9
-   HLDygSek5okYcF6ovwV18dSCw7WvHa4Sh8fFCivT+w3TGrAaws1vXJzXa
-   vSnWI+t1nnS9U8bWnCEKVMvelQHuGxWIrxRgt8mvXVgOZGYD6UJe06PfL
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10304"; a="240869313"
-X-IronPort-AV: E=Sophos;i="5.90,229,1643702400"; 
-   d="scan'208";a="240869313"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Apr 2022 23:30:40 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,229,1643702400"; 
-   d="scan'208";a="504403158"
-Received: from lkp-server02.sh.intel.com (HELO 3231c491b0e2) ([10.239.97.151])
-  by orsmga003.jf.intel.com with ESMTP; 01 Apr 2022 23:30:39 -0700
-Received: from kbuild by 3231c491b0e2 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1naXHS-0001nl-DO;
-        Sat, 02 Apr 2022 06:30:38 +0000
-Date:   Sat, 2 Apr 2022 14:29:55 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Anup Patel <anup.patel@wdc.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: drivers/cpuidle/cpuidle-riscv-sbi.c:350:26: error: implicit
- declaration of function 'cpuid_to_hartid_map'
-Message-ID: <202204021409.IwExY1Pb-lkp@intel.com>
+        Sat, 2 Apr 2022 02:57:37 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8D8A56586
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 23:55:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648882544;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=BZ31gR6OuppI3OSuopIkD35xeUkys2Q81lOBmdyZewY=;
+        b=VABP4MJiuUYmLNmMm7wXRG3j0p61x2Xt4q5QRbLus1P6W1ysw9q14cWnnJn33WnAUw/sOO
+        UZyY38NQF+ygWbqyQkJ/QDvSvm2iZr71LZFSkUWVCRrLTmqmi0avJ9NbsgQf3NRI40bUK1
+        5OG15rjeTVLqJ2urRiS+ZhPVHdNaXtI=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-642-xa1AZ-w_N4ewJCFCvH6KgA-1; Sat, 02 Apr 2022 02:55:41 -0400
+X-MC-Unique: xa1AZ-w_N4ewJCFCvH6KgA-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id ACA5980A0AD;
+        Sat,  2 Apr 2022 06:55:40 +0000 (UTC)
+Received: from sparkplug.usersys.redhat.com (unknown [10.40.192.9])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 172F720296A9;
+        Sat,  2 Apr 2022 06:55:33 +0000 (UTC)
+Date:   Sat, 2 Apr 2022 08:55:33 +0200
+From:   Artem Savkov <asavkov@redhat.com>
+To:     Anna-Maria Behnsen <anna-maria@linutronix.de>
+Cc:     netdev@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Josh Poimboeuf <jpoimboe@redhat.com>, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 1/2] timer: add a function to adjust timeouts to be
+ upper bound
+Message-ID: <YkfzZWs+Nj3hCvnE@sparkplug.usersys.redhat.com>
+References: <87zglcfmcv.ffs@tglx>
+ <20220330082046.3512424-1-asavkov@redhat.com>
+ <20220330082046.3512424-2-asavkov@redhat.com>
+ <alpine.DEB.2.21.2203301514570.4409@somnus>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <alpine.DEB.2.21.2203301514570.4409@somnus>
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   88e6c0207623874922712e162e25d9dafd39661e
-commit: 6abf32f1d9c5009dcccded2c1e7ca899a4ab587b cpuidle: Add RISC-V SBI CPU idle driver
-date:   3 weeks ago
-config: riscv-randconfig-r015-20220402 (https://download.01.org/0day-ci/archive/20220402/202204021409.IwExY1Pb-lkp@intel.com/config)
-compiler: riscv32-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=6abf32f1d9c5009dcccded2c1e7ca899a4ab587b
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 6abf32f1d9c5009dcccded2c1e7ca899a4ab587b
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=riscv SHELL=/bin/bash drivers/cpuidle/
+On Wed, Mar 30, 2022 at 03:40:55PM +0200, Anna-Maria Behnsen wrote:
+> On Wed, 30 Mar 2022, Artem Savkov wrote:
+> 
+> > Current timer wheel implementation is optimized for performance and
+> > energy usage but lacks in precision. This, normally, is not a problem as
+> > most timers that use timer wheel are used for timeouts and thus rarely
+> > expire, instead they often get canceled or modified before expiration.
+> > Even when they don't, expiring a bit late is not an issue for timeout
+> > timers.
+> > 
+> > TCP keepalive timer is a special case, it's aim is to prevent timeouts,
+> > so triggering earlier rather than later is desired behavior. In a
+> > reported case the user had a 3600s keepalive timer for preventing firewall
+> > disconnects (on a 3650s interval). They observed keepalive timers coming
+> > in up to four minutes late, causing unexpected disconnects.
+> > 
+> > This commit adds upper_bound_timeout() function that takes a relative
+> > timeout and adjusts it based on timer wheel granularity so that supplied
+> > value effectively becomes an upper bound for the timer.
+> > 
+> 
+> I think there is a problem with this approach. Please correct me, if I'm
+> wrong. The timer wheel index and level calculation depends on
+> timer_base::clk. The timeout/delta which is used for this calculation is
+> relative to timer_base::clk (delta = expires - base::clk). timer_base::clk
+> is not updated in sync with jiffies. It is forwarded before a new timer is
+> queued. It is possible, that timer_base::clk is behind jiffies after
+> forwarding because of a not yet expired timer.
+> 
+> When calculating the level/index with a relative timeout, there is no
+> guarantee that the result is the same when actual enqueueing the timer with
+> expiry = jiffies + timeout .
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Yes, you are correct. This especially is a problem for timeouts placed
+just before LVL_START(x), which is a good chunk of cases. I don't think
+it is possible to get to timer_base clock without meddling with the
+hot-path.
 
-All error/warnings (new ones prefixed by >>):
-
-   In file included from include/asm-generic/bug.h:22,
-                    from arch/riscv/include/asm/bug.h:83,
-                    from include/linux/bug.h:5,
-                    from include/linux/mmdebug.h:5,
-                    from include/linux/percpu.h:5,
-                    from include/linux/cpuidle.h:14,
-                    from drivers/cpuidle/cpuidle-riscv-sbi.c:11:
-   drivers/cpuidle/cpuidle-riscv-sbi.c: In function 'sbi_cpuidle_init_cpu':
->> drivers/cpuidle/cpuidle-riscv-sbi.c:350:26: error: implicit declaration of function 'cpuid_to_hartid_map' [-Werror=implicit-function-declaration]
-     350 |                          cpuid_to_hartid_map(cpu));
-         |                          ^~~~~~~~~~~~~~~~~~~
-   include/linux/printk.h:418:33: note: in definition of macro 'printk_index_wrap'
-     418 |                 _p_func(_fmt, ##__VA_ARGS__);                           \
-         |                                 ^~~~~~~~~~~
-   include/linux/printk.h:132:17: note: in expansion of macro 'printk'
-     132 |                 printk(fmt, ##__VA_ARGS__);             \
-         |                 ^~~~~~
-   include/linux/printk.h:576:9: note: in expansion of macro 'no_printk'
-     576 |         no_printk(KERN_DEBUG pr_fmt(fmt), ##__VA_ARGS__)
-         |         ^~~~~~~~~
-   drivers/cpuidle/cpuidle-riscv-sbi.c:349:17: note: in expansion of macro 'pr_debug'
-     349 |                 pr_debug("HART%ld: failed to parse DT idle states\n",
-         |                 ^~~~~~~~
->> include/linux/kern_levels.h:5:25: warning: format '%ld' expects argument of type 'long int', but argument 2 has type 'int' [-Wformat=]
-       5 | #define KERN_SOH        "\001"          /* ASCII Start Of Header */
-         |                         ^~~~~~
-   include/linux/printk.h:418:25: note: in definition of macro 'printk_index_wrap'
-     418 |                 _p_func(_fmt, ##__VA_ARGS__);                           \
-         |                         ^~~~
-   include/linux/printk.h:132:17: note: in expansion of macro 'printk'
-     132 |                 printk(fmt, ##__VA_ARGS__);             \
-         |                 ^~~~~~
-   include/linux/printk.h:576:9: note: in expansion of macro 'no_printk'
-     576 |         no_printk(KERN_DEBUG pr_fmt(fmt), ##__VA_ARGS__)
-         |         ^~~~~~~~~
-   include/linux/kern_levels.h:15:25: note: in expansion of macro 'KERN_SOH'
-      15 | #define KERN_DEBUG      KERN_SOH "7"    /* debug-level messages */
-         |                         ^~~~~~~~
-   include/linux/printk.h:576:19: note: in expansion of macro 'KERN_DEBUG'
-     576 |         no_printk(KERN_DEBUG pr_fmt(fmt), ##__VA_ARGS__)
-         |                   ^~~~~~~~~~
-   drivers/cpuidle/cpuidle-riscv-sbi.c:349:17: note: in expansion of macro 'pr_debug'
-     349 |                 pr_debug("HART%ld: failed to parse DT idle states\n",
-         |                 ^~~~~~~~
->> include/linux/kern_levels.h:5:25: warning: format '%ld' expects argument of type 'long int', but argument 2 has type 'int' [-Wformat=]
-       5 | #define KERN_SOH        "\001"          /* ASCII Start Of Header */
-         |                         ^~~~~~
-   include/linux/printk.h:418:25: note: in definition of macro 'printk_index_wrap'
-     418 |                 _p_func(_fmt, ##__VA_ARGS__);                           \
-         |                         ^~~~
-   include/linux/printk.h:489:9: note: in expansion of macro 'printk'
-     489 |         printk(KERN_ERR pr_fmt(fmt), ##__VA_ARGS__)
-         |         ^~~~~~
-   include/linux/kern_levels.h:11:25: note: in expansion of macro 'KERN_SOH'
-      11 | #define KERN_ERR        KERN_SOH "3"    /* error conditions */
-         |                         ^~~~~~~~
-   include/linux/printk.h:489:16: note: in expansion of macro 'KERN_ERR'
-     489 |         printk(KERN_ERR pr_fmt(fmt), ##__VA_ARGS__)
-         |                ^~~~~~~~
-   drivers/cpuidle/cpuidle-riscv-sbi.c:358:17: note: in expansion of macro 'pr_err'
-     358 |                 pr_err("HART%ld: failed to init idle states\n",
-         |                 ^~~~~~
-   drivers/cpuidle/cpuidle-riscv-sbi.c: In function 'sbi_cpuidle_probe':
->> include/linux/kern_levels.h:5:25: warning: format '%ld' expects argument of type 'long int', but argument 2 has type 'int' [-Wformat=]
-       5 | #define KERN_SOH        "\001"          /* ASCII Start Of Header */
-         |                         ^~~~~~
-   include/linux/printk.h:418:25: note: in definition of macro 'printk_index_wrap'
-     418 |                 _p_func(_fmt, ##__VA_ARGS__);                           \
-         |                         ^~~~
-   include/linux/printk.h:132:17: note: in expansion of macro 'printk'
-     132 |                 printk(fmt, ##__VA_ARGS__);             \
-         |                 ^~~~~~
-   include/linux/printk.h:576:9: note: in expansion of macro 'no_printk'
-     576 |         no_printk(KERN_DEBUG pr_fmt(fmt), ##__VA_ARGS__)
-         |         ^~~~~~~~~
-   include/linux/kern_levels.h:15:25: note: in expansion of macro 'KERN_SOH'
-      15 | #define KERN_DEBUG      KERN_SOH "7"    /* debug-level messages */
-         |                         ^~~~~~~~
-   include/linux/printk.h:576:19: note: in expansion of macro 'KERN_DEBUG'
-     576 |         no_printk(KERN_DEBUG pr_fmt(fmt), ##__VA_ARGS__)
-         |                   ^~~~~~~~~~
-   drivers/cpuidle/cpuidle-riscv-sbi.c:566:25: note: in expansion of macro 'pr_debug'
-     566 |                         pr_debug("HART%ld: idle driver init failed\n",
-         |                         ^~~~~~~~
-   cc1: some warnings being treated as errors
-
-
-vim +/cpuid_to_hartid_map +350 drivers/cpuidle/cpuidle-riscv-sbi.c
-
-   317	
-   318	static int sbi_cpuidle_init_cpu(struct device *dev, int cpu)
-   319	{
-   320		struct cpuidle_driver *drv;
-   321		unsigned int state_count = 0;
-   322		int ret = 0;
-   323	
-   324		drv = devm_kzalloc(dev, sizeof(*drv), GFP_KERNEL);
-   325		if (!drv)
-   326			return -ENOMEM;
-   327	
-   328		drv->name = "sbi_cpuidle";
-   329		drv->owner = THIS_MODULE;
-   330		drv->cpumask = (struct cpumask *)cpumask_of(cpu);
-   331	
-   332		/* RISC-V architectural WFI to be represented as state index 0. */
-   333		drv->states[0].enter = sbi_cpuidle_enter_state;
-   334		drv->states[0].exit_latency = 1;
-   335		drv->states[0].target_residency = 1;
-   336		drv->states[0].power_usage = UINT_MAX;
-   337		strcpy(drv->states[0].name, "WFI");
-   338		strcpy(drv->states[0].desc, "RISC-V WFI");
-   339	
-   340		/*
-   341		 * If no DT idle states are detected (ret == 0) let the driver
-   342		 * initialization fail accordingly since there is no reason to
-   343		 * initialize the idle driver if only wfi is supported, the
-   344		 * default archictectural back-end already executes wfi
-   345		 * on idle entry.
-   346		 */
-   347		ret = dt_init_idle_driver(drv, sbi_cpuidle_state_match, 1);
-   348		if (ret <= 0) {
-   349			pr_debug("HART%ld: failed to parse DT idle states\n",
- > 350				 cpuid_to_hartid_map(cpu));
-   351			return ret ? : -ENODEV;
-   352		}
-   353		state_count = ret + 1; /* Include WFI state as well */
-   354	
-   355		/* Initialize idle states from DT. */
-   356		ret = sbi_cpuidle_dt_init_states(dev, drv, cpu, state_count);
-   357		if (ret) {
-   358			pr_err("HART%ld: failed to init idle states\n",
-   359			       cpuid_to_hartid_map(cpu));
-   360			return ret;
-   361		}
-   362	
-   363		ret = cpuidle_register(drv, NULL);
-   364		if (ret)
-   365			goto deinit;
-   366	
-   367		cpuidle_cooling_register(drv);
-   368	
-   369		return 0;
-   370	deinit:
-   371		sbi_cpuidle_deinit_cpu(cpu);
-   372		return ret;
-   373	}
-   374	
+Is it possible to determine the upper limit of error margin here? My
+assumption is it shouldn't be very big, so maybe it would be enough to
+account for this when adjusting timeout at the edge of a level.
+I know this doesn't sound good but I am running out of ideas here.
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+ Artem
+
