@@ -2,67 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06E7AC433FE
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 18:10:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B19CFC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 18:11:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244783AbiDBSMh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Apr 2022 14:12:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35312 "EHLO
+        id S244858AbiDBSMl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 2 Apr 2022 14:12:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244192AbiDBSMf (ORCPT
+        with ESMTP id S244778AbiDBSMh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Apr 2022 14:12:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99FE91AF1B
-        for <linux-kernel@vger.kernel.org>; Sat,  2 Apr 2022 11:10:43 -0700 (PDT)
+        Sat, 2 Apr 2022 14:12:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E2D41B780;
+        Sat,  2 Apr 2022 11:10:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 383E260DE3
-        for <linux-kernel@vger.kernel.org>; Sat,  2 Apr 2022 18:10:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 92552C340EC;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 26C3EB80B51;
+        Sat,  2 Apr 2022 18:10:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id BE934C34111;
         Sat,  2 Apr 2022 18:10:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1648923042;
-        bh=WpNqyFOqyBiFNnWAg3vAHgSDi48Ads2iTRKIlnmMmIU=;
+        bh=KJjrQrWl2FusWB1BVg5NXpOJOA99gIR/4LmDUjDO/fk=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=fVUKt7Mg72XVEa2fksqCFtGICZVHg8Pvra1QDruqb0AM4Zrtz/N90l2RjL8kpUv0f
-         gvOwsvl4WY2yvBt1xcroitSKoLhuCos34DeIQxUE9mPd93G5y3Q+Dyp2/17WLFPKZ3
-         4595BF+FCYxHXgLokHNYwDSe1pUoPvUAOGuwGKWoVBMQk3C2hUUhfRJ4dQiYyj7t9N
-         c97uM9feTMI0nRwQBs84riRNd+BriAVK5uCYJJpa1oUUqB8I6I2qQskhVS53mx1ESc
-         4u5pmxEcQmjHTdyNlmNY5BWac145IZKta2VCUBVy6cJKwZDsa0Q4fhzh1nQ9ZO02WY
-         nKq7dvFYWGdMA==
+        b=l4Ksr5IL3SAy58z6ZubEiACfLegz/qUAaB37BZrEqnGQZCiPaMJ+R3/iy28GS03dK
+         tOYjnxQ2GZrSRe1J+pdJJhkJQ1YQoC0w314cVR5K7wo/tb664bM7k12mHlriPMCNyj
+         vZ68Ll5r9QZAH1AXNkyqFPvHU8kye2n3WVMimvGCZj2WYseaxA70UkYfe2crYduwCu
+         w9FDU++meSpXVB2Fwcj+pwF5eLTP6f4TMLnsXLAdTfdRm+vsEdbZghO4ekJxy7XY01
+         VHtnbm1C3PIkW1dQa5Rj+uJ1JsNRza4bwqb/08mqAv6QRsPRKv6MOELSR8+yMxpFuC
+         QPHCiZKnYN/Sg==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7F512E6BBCA;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A882FF0384A;
         Sat,  2 Apr 2022 18:10:42 +0000 (UTC)
-Subject: Re: [GIT PULL] chrome-platform changes for v5.18
+Subject: Re: [GIT PULL] PCI changes for v5.18, part 2
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <YkekVRh9Ixdfa5qL@google.com>
-References: <YkekVRh9Ixdfa5qL@google.com>
+In-Reply-To: <20220402172137.GA272816@bhelgaas>
+References: <20220402172137.GA272816@bhelgaas>
 X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <YkekVRh9Ixdfa5qL@google.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/chrome-platform/linux.git tags/tag-chrome-platform-for-v5.18
-X-PR-Tracked-Commit-Id: 0e8eb5e8acbad19ac2e1856b2fb2320184299b33
+X-PR-Tracked-Message-Id: <20220402172137.GA272816@bhelgaas>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/helgaas/pci.git pci-v5.18-changes-2
+X-PR-Tracked-Commit-Id: 22ef7ee3eeb2a41e07f611754ab9a2663232fedf
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 02d4f8a3e05b4d09fcd20bd7dbe4046757e151e2
-Message-Id: <164892304251.15050.10163111732751999015.pr-tracker-bot@kernel.org>
+X-PR-Merge-Commit-Id: 9a212aaf95369d56f811b60a1ebdfa7e6b0ca030
+Message-Id: <164892304268.15050.6825968175560781882.pr-tracker-bot@kernel.org>
 Date:   Sat, 02 Apr 2022 18:10:42 +0000
-To:     Benson Leung <bleung@google.com>
-Cc:     torvalds@linux-foundation.org, pmalani@chromium.org,
-        bleung@chromium.org, bleung@google.com, bleung@kernel.org,
-        chrome-platform@lists.linux.dev, linux-kernel@vger.kernel.org,
-        tzungbi@kernel.org
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        YueHaibing <yuehaibing@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Fri, 1 Apr 2022 18:18:13 -0700:
+The pull request you sent on Sat, 2 Apr 2022 12:21:37 -0500:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/chrome-platform/linux.git tags/tag-chrome-platform-for-v5.18
+> git://git.kernel.org/pub/scm/linux/kernel/git/helgaas/pci.git pci-v5.18-changes-2
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/02d4f8a3e05b4d09fcd20bd7dbe4046757e151e2
+https://git.kernel.org/torvalds/c/9a212aaf95369d56f811b60a1ebdfa7e6b0ca030
 
 Thank you!
 
