@@ -2,86 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F12BC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 10:44:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B3AEC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 10:45:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354449AbiDBKpz (ORCPT
+        id S1354458AbiDBKqw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Apr 2022 06:45:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39644 "EHLO
+        Sat, 2 Apr 2022 06:46:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229934AbiDBKpu (ORCPT
+        with ESMTP id S235134AbiDBKqv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Apr 2022 06:45:50 -0400
-Received: from mxout4.routing.net (mxout4.routing.net [IPv6:2a03:2900:1:a::9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BEC828E3A;
-        Sat,  2 Apr 2022 03:43:53 -0700 (PDT)
-Received: from mxbox1.masterlogin.de (unknown [192.168.10.88])
-        by mxout4.routing.net (Postfix) with ESMTP id 281A510129B;
-        Sat,  2 Apr 2022 10:43:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailerdienst.de;
-        s=20200217; t=1648896232;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=fiF2czy3fSgLbpJlx4zoA+bi17AwyEhQirvjS4BVRRE=;
-        b=EKhywowqgD8mhbptufDTUWiLypYU+Up40Z25D6W6lbBrFkhNUFNgP5Mvmda4z9KkHL4Gj3
-        hnbck8gqsbX+4/EiTU1urqbyily/JilKUY72EtHQKGFjzcAld3Njo7TUQkrHsS0Npv5SGw
-        AQ1Gxmyw//AGNeGDAktw08NnTCcMljc=
-Received: from localhost.localdomain (fttx-pool-80.245.79.107.bambit.de [80.245.79.107])
-        by mxbox1.masterlogin.de (Postfix) with ESMTPSA id 651E840684;
-        Sat,  2 Apr 2022 10:43:51 +0000 (UTC)
-From:   Frank Wunderlich <linux@fw-web.de>
-To:     linux-rockchip@lists.infradead.org
-Cc:     Frank Wunderlich <frank-w@public-files.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Peter Geis <pgwipeout@gmail.com>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v1 1/2] arm64: dts: rockchip: Change io-domains of bpi-r2-pro
-Date:   Sat,  2 Apr 2022 12:43:11 +0200
-Message-Id: <20220402104313.100333-2-linux@fw-web.de>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220402104313.100333-1-linux@fw-web.de>
-References: <20220402104313.100333-1-linux@fw-web.de>
+        Sat, 2 Apr 2022 06:46:51 -0400
+Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB16F10A976
+        for <linux-kernel@vger.kernel.org>; Sat,  2 Apr 2022 03:44:58 -0700 (PDT)
+Received: from [192.168.165.80] (unknown [182.2.36.61])
+        by gnuweeb.org (Postfix) with ESMTPSA id 91E3B7E356;
+        Sat,  2 Apr 2022 10:44:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
+        s=default; t=1648896298;
+        bh=Fj/zOc2m5wPgUFQ7ymabonXvdGcHFYpQV8ZRUFwpB2o=;
+        h=Date:To:Cc:References:From:Subject:In-Reply-To:From;
+        b=FfPuMaGV3YewdDb3emorhUmC8cEIVXmjoEcs0MqlYBbSpSDT0m60J9nG18WQrc8xY
+         oMzAFNjMAxJMmlga4EthkNgprcquvCQP6MSSuKewv+YpxvH2fJ4WS6a+uMvAYTmxq/
+         CCdbb7P3fDA1JbLQ9LbeJKIFkIseVClMPb52EYQeIS5/k88B9h6kCMtoM7g7OtK1oL
+         IcJZ1c3xHjbcMjfD3n2+jDnkEE/SEyFXNqEBrZZW/lk+5YMxFsUfUBIWZEUALG4brs
+         0slMALKJ3IHHmJcqBEdpbSgPNQQ7xXeZWTI3avj2E0rHKmVun1QZU2ol3dFaFrKK/6
+         fw/CpD4PAb2zQ==
+Message-ID: <60274552-dc33-e9ff-3fd8-d4d743a6f577@gnuweeb.org>
+Date:   Sat, 2 Apr 2022 17:44:49 +0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Mail-ID: fa3152c6-9b76-4e6a-a150-d8d5c2c20cd0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Content-Language: en-US
+To:     Marc Zyngier <maz@kernel.org>
+Cc:     kernel test robot <lkp@intel.com>, llvm@lists.linux.dev,
+        kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org, Quentin Perret <qperret@google.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Will Deacon <willdeacon@google.com>
+References: <202204021112.ErKMELRr-lkp@intel.com>
+ <87r16fbzaq.wl-maz@kernel.org>
+ <9fa2454e-aef5-c879-eb0d-2eb23e603b55@gnuweeb.org>
+ <87pmlzbyff.wl-maz@kernel.org>
+From:   Ammar Faizi <ammarfaizi2@gnuweeb.org>
+Subject: Re:
+ [ammarfaizi2-block:google/android/kernel/common/android12-5.10-2022-03
+ 199/9999] arch/arm64/kvm/perf.c:58:36: error: implicit declaration of
+ function 'perf_num_counters'
+In-Reply-To: <87pmlzbyff.wl-maz@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Frank Wunderlich <frank-w@public-files.de>
+Hi Marc,
 
-New Hardware revision has different io domain settings than the first
-board.
+On 4/2/22 4:57 PM, Marc Zyngier wrote:
+> It doesn't bother me at all, and you shouldn't stop pushing stuff that
+> is useful to you. My objection is to the testing of random trees and
+> spamming of random people, specially when it is pretty obvious that
+> the tree isn't targeting upstream Linux.
+> 
+> You really shouldn't change anything in your workflow on my account.
 
-First version was not sold, so the setting can be savely overridden.
+I sent a PR to lkp-tests to make the build error report private for my
+google/android/.* branches. Should be good now.
 
-Fixes: f901aaadaa2a ("arm64: dts: rockchip: Add Bananapi R2 Pro")
-Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
----
- arch/arm64/boot/dts/rockchip/rk3568-bpi-r2-pro.dts | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+https://github.com/intel/lkp-tests/pull/130
 
-diff --git a/arch/arm64/boot/dts/rockchip/rk3568-bpi-r2-pro.dts b/arch/arm64/boot/dts/rockchip/rk3568-bpi-r2-pro.dts
-index a01886b467ed..a0388ff85ddf 100644
---- a/arch/arm64/boot/dts/rockchip/rk3568-bpi-r2-pro.dts
-+++ b/arch/arm64/boot/dts/rockchip/rk3568-bpi-r2-pro.dts
-@@ -345,9 +345,9 @@ &pmu_io_domains {
- 	pmuio2-supply = <&vcc3v3_pmu>;
- 	vccio1-supply = <&vccio_acodec>;
- 	vccio3-supply = <&vccio_sd>;
--	vccio4-supply = <&vcc_1v8>;
-+	vccio4-supply = <&vcc_3v3>;
- 	vccio5-supply = <&vcc_3v3>;
--	vccio6-supply = <&vcc_3v3>;
-+	vccio6-supply = <&vcc_1v8>;
- 	vccio7-supply = <&vcc_3v3>;
- 	status = "okay";
- };
+Thanks!
+
 -- 
-2.25.1
-
+Ammar Faizi
