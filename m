@@ -2,139 +2,218 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C71EC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 09:57:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90780C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 10:01:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354224AbiDBJ7F (ORCPT
+        id S1354231AbiDBKDf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Apr 2022 05:59:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35178 "EHLO
+        Sat, 2 Apr 2022 06:03:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230086AbiDBJ7D (ORCPT
+        with ESMTP id S230086AbiDBKDe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Apr 2022 05:59:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D916D1A61CD
-        for <linux-kernel@vger.kernel.org>; Sat,  2 Apr 2022 02:57:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Sat, 2 Apr 2022 06:03:34 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 362DB154704
+        for <linux-kernel@vger.kernel.org>; Sat,  2 Apr 2022 03:01:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648893701;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=LYm+0CN57sQSjMfbJWHKtXLX0EOoFZkZWVWS7mzLOeA=;
+        b=gMca9a4mUgScEZ6uZTWSf2vK7vt53YhYMR5mhgb1A+bQK/wOfADmHG8+VP8JilPQASva5s
+        TDsquM9X+DuWUJpAMDOKfxZU9U/88vUOGIXupJivr7okCO8yLKa4zrmQcn6umOfrjBM1r8
+        AZ6NhREGJf7w6mv6hAjrLEDyLd/4GQ8=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-108-R6-uAnFGP_GvO8V4GOIgLA-1; Sat, 02 Apr 2022 06:01:40 -0400
+X-MC-Unique: R6-uAnFGP_GvO8V4GOIgLA-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7528360B25
-        for <linux-kernel@vger.kernel.org>; Sat,  2 Apr 2022 09:57:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6647C3410F;
-        Sat,  2 Apr 2022 09:57:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648893430;
-        bh=tNEYj6qWpjR4LDDLwHTWok2cg8Gv7S8PvGfWvnVsaxM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=fbiLjiITInNNlqq2fBa7KVuP1L7N0hiCEj0fKipdAcfXwx1Hvccs6hCLbzuXRESKv
-         1QvR8gwO5zp/iMzAoFlM/OOLWZoSAoGHfzxuOn/drv0/elXmSumawdYc1ZuTDrJJw2
-         51SO51Y9FHCUqrc7vlOt3DTEMF8Etq6ZdPrhI/ComT6m6iOVFzuYadroDZos2tNooR
-         0yKdVEqpy/gKuuOZplJb8sMpdweoR5vXBKk1DPRY4GA/wRdTLRjFi02zrSIpGTd/e5
-         S42i5FHsOFpL3beKIuoX2P9NQlivPhfFsj4rg6Z0OR9NCo+wBZCThzfBect2KaDJKX
-         8k1/DSYV3Oa2Q==
-Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
-        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <maz@kernel.org>)
-        id 1naaVI-0010mT-J1; Sat, 02 Apr 2022 10:57:08 +0100
-Date:   Sat, 02 Apr 2022 10:57:08 +0100
-Message-ID: <87pmlzbyff.wl-maz@kernel.org>
-From:   Marc Zyngier <maz@kernel.org>
-To:     Ammar Faizi <ammarfaizi2@gnuweeb.org>
-Cc:     kernel test robot <lkp@intel.com>, llvm@lists.linux.dev,
-        kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org, Quentin Perret <qperret@google.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Will Deacon <willdeacon@google.com>
-Subject: Re: [ammarfaizi2-block:google/android/kernel/common/android12-5.10-2022-03 199/9999] arch/arm64/kvm/perf.c:58:36: error: implicit declaration of function 'perf_num_counters'
-In-Reply-To: <9fa2454e-aef5-c879-eb0d-2eb23e603b55@gnuweeb.org>
-References: <202204021112.ErKMELRr-lkp@intel.com>
-        <87r16fbzaq.wl-maz@kernel.org>
-        <9fa2454e-aef5-c879-eb0d-2eb23e603b55@gnuweeb.org>
-User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
- FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
- (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
-MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
-Content-Type: text/plain; charset=US-ASCII
-X-SA-Exim-Connect-IP: 185.219.108.64
-X-SA-Exim-Rcpt-To: ammarfaizi2@gnuweeb.org, lkp@intel.com, llvm@lists.linux.dev, kbuild-all@lists.01.org, gwml@vger.gnuweeb.org, linux-kernel@vger.kernel.org, qperret@google.com, alexandru.elisei@arm.com, willdeacon@google.com
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2F9FC3806708;
+        Sat,  2 Apr 2022 10:01:40 +0000 (UTC)
+Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 11A94112C063;
+        Sat,  2 Apr 2022 10:01:40 +0000 (UTC)
+From:   Paolo Bonzini <pbonzini@redhat.com>
+To:     torvalds@linux-foundation.org
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Subject: [GIT PULL] KVM fixes and docs for Linux 5.18 merge window
+Date:   Sat,  2 Apr 2022 06:01:39 -0400
+Message-Id: <20220402100139.207620-1-pbonzini@redhat.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Ammar,
+Linus,
 
-On Sat, 02 Apr 2022 10:52:39 +0100,
-Ammar Faizi <ammarfaizi2@gnuweeb.org> wrote:
-> 
-> Hi Marc,
-> 
-> On 4/2/22 4:38 PM, Marc Zyngier wrote:
-> > Hi Robot,
-> > 
-> > On Sat, 02 Apr 2022 04:47:04 +0100,
-> > kernel test robot <lkp@intel.com> wrote:
-> >> 
-> >> Hi Marc,
-> >> 
-> >> FYI, the error/warning still remains.
-> >> 
-> >> tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android12-5.10-2022-03
-> > 
-> > Oh look, a random Android tree based on ... 5.10.
-> > 
-> >> head:   64099431c232d4a95f621411747a3972cc1c8061
-> >> commit: 13dbdc0759fd4b89417f64d399ffa6a86fdc7caf [199/9999] FROMGIT: KVM: arm64: Turn kvm_arm_support_pmu_v3() into a static key
-> >> config: arm64-randconfig-r024-20220331 (https://download.01.org/0day-ci/archive/20220402/202204021112.ErKMELRr-lkp@intel.com/config)
-> >> compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project cc2e2b80a1f36a28fa7c96c38c2674b10868f09f)
-> >> reproduce (this is a W=1 build):
-> >>          wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-> >>          chmod +x ~/bin/make.cross
-> >>          # install arm64 cross compiling tool for clang build
-> >>          # apt-get install binutils-aarch64-linux-gnu
-> >>          # https://github.com/ammarfaizi2/linux-block/commit/13dbdc0759fd4b89417f64d399ffa6a86fdc7caf
-> >>          git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-> >>          git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android12-5.10-2022-03
-> >>          git checkout 13dbdc0759fd4b89417f64d399ffa6a86fdc7caf
-> >>          # save the config file to linux build tree
-> >>          mkdir build_dir
-> >>          COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash arch/arm64/
-> >> 
-> >> If you fix the issue, kindly add following tag as appropriate
-> >> Reported-by: kernel test robot <lkp@intel.com>
-> >> 
-> >> All errors (new ones prefixed by >>):
-> >> 
-> >>>> arch/arm64/kvm/perf.c:58:36: error: implicit declaration of function 'perf_num_counters' [-Werror,-Wimplicit-function-declaration]
-> >>             if (IS_ENABLED(CONFIG_ARM_PMU) && perf_num_counters() > 0)
-> >>                                               ^
-> >>     1 error generated.
-> > 
-> > $ ls -l arch/arm64/kvm/perf.c
-> > ls: cannot access 'arch/arm64/kvm/perf.c': No such file or directory
-> > 
-> > What is the point of testing trees that have no resemblance with
-> > upstream?
-> 
-> It's my tree. Didn't realize it yields many irrelevant errors like this.
-> I will stop pushing Android stuff to this tree.
-> 
-> Sorry for bothering you.
+The following changes since commit c9b8fecddb5bb4b67e351bbaeaa648a6f7456912:
 
-It doesn't bother me at all, and you shouldn't stop pushing stuff that
-is useful to you. My objection is to the testing of random trees and
-spamming of random people, specially when it is pretty obvious that
-the tree isn't targeting upstream Linux.
+  KVM: use kvcalloc for array allocations (2022-03-21 09:28:41 -0400)
 
-You really shouldn't change anything in your workflow on my account.
+are available in the Git repository at:
 
-Thanks,
+  https://git.kernel.org/pub/scm/virt/kvm/kvm.git tags/for-linus
 
-	M.
+for you to fetch changes up to c15e0ae42c8e5a61e9aca8aac920517cf7b3e94e:
 
--- 
-Without deviation from the norm, progress is not possible.
+  KVM: x86: fix sending PV IPI (2022-04-02 05:37:27 -0400)
+
+----------------------------------------------------------------
+* Only do MSR filtering for MSRs accessed by rdmsr/wrmsr
+
+* Documentation improvements
+
+* Prevent module exit until all VMs are freed
+
+* PMU Virtualization fixes
+
+* Fix for kvm_irq_delivery_to_apic_fast() NULL-pointer dereferences
+
+* Other miscellaneous bugfixes
+
+----------------------------------------------------------------
+David Matlack (2):
+      KVM: Prevent module exit until all VMs are freed
+      Revert "KVM: set owner of cpu and vm file operations"
+
+David Woodhouse (2):
+      KVM: avoid double put_page with gfn-to-pfn cache
+      KVM: Remove dirty handling from gfn_to_pfn_cache completely
+
+Hou Wenlong (2):
+      KVM: x86/emulator: Emulate RDPID only if it is enabled in guest
+      KVM: x86: Only do MSR filtering when access MSR by rdmsr/wrmsr
+
+Jim Mattson (2):
+      KVM: x86/pmu: Use different raw event masks for AMD and Intel
+      KVM: x86/svm: Clear reserved bits written to PerfEvtSeln MSRs
+
+Lai Jiangshan (4):
+      KVM: X86: Change the type of access u32 to u64
+      KVM: X86: Fix comments in update_permission_bitmask
+      KVM: X86: Rename variable smap to not_smap in permission_fault()
+      KVM: X86: Handle implicit supervisor access with SMAP
+
+Li RongQing (1):
+      KVM: x86: fix sending PV IPI
+
+Like Xu (1):
+      KVM: x86/pmu: Fix and isolate TSX-specific performance event logic
+
+Maxim Levitsky (5):
+      KVM: x86: mmu: trace kvm_mmu_set_spte after the new SPTE was set
+      KVM: x86: SVM: fix avic spec based definitions again
+      KVM: x86: SVM: move tsc ratio definitions to svm.h
+      kvm: x86: SVM: remove unused defines
+      KVM: x86: SVM: fix tsc scaling when the host doesn't support it
+
+Nathan Chancellor (1):
+      KVM: x86: Fix clang -Wimplicit-fallthrough in do_host_cpuid()
+
+Paolo Bonzini (9):
+      Documentation: kvm: fixes for locking.rst
+      Documentation: kvm: include new locks
+      Documentation: KVM: add separate directories for architecture-specific documentation
+      Documentation: KVM: add virtual CPU errata documentation
+      Documentation: KVM: add API issues section
+      KVM: MMU: propagate alloc_workqueue failure
+      KVM: x86: document limitations of MSR filtering
+      KVM: MIPS: remove reference to trap&emulate virtualization
+      KVM: x86/mmu: do compare-and-exchange of gPTE via the user address
+
+Peter Gonda (1):
+      KVM: SVM: Fix kvm_cache_regs.h inclusions for is_guest_mode()
+
+Sean Christopherson (6):
+      KVM: x86/mmu: Zap only TDP MMU leafs in zap range and mmu_notifier unmap
+      KVM: Don't actually set a request when evicting vCPUs for GFN cache invd
+      KVM: Use enum to track if cached PFN will be used in guest and/or host
+      KVM: x86: Make APICv inhibit reasons an enum and cleanup naming
+      KVM: x86: Add wrappers for setting/clearing APICv inhibits
+      KVM: x86: Trace all APICv inhibit changes and capture overall status
+
+Vitaly Kuznetsov (3):
+      KVM: x86: Check lapic_in_kernel() before attempting to set a SynIC irq
+      KVM: x86: Avoid theoretical NULL pointer dereference in kvm_irq_delivery_to_apic_fast()
+      KVM: x86: Forbid VMM to set SYNIC/STIMER MSRs when SynIC wasn't activated
+
+Yi Wang (1):
+      KVM: SVM: fix panic on out-of-bounds guest IRQ
+
+Zhenzhong Duan (2):
+      KVM: x86: cleanup enter_rmode()
+      KVM: x86: Remove redundant vm_entry_controls_clearbit() call
+
+ Documentation/virt/kvm/api.rst                     |  61 +++++++-
+ Documentation/virt/kvm/index.rst                   |  26 +---
+ Documentation/virt/kvm/locking.rst                 |  43 ++++--
+ Documentation/virt/kvm/s390/index.rst              |  12 ++
+ Documentation/virt/kvm/{ => s390}/s390-diag.rst    |   0
+ Documentation/virt/kvm/{ => s390}/s390-pv-boot.rst |   0
+ Documentation/virt/kvm/{ => s390}/s390-pv.rst      |   0
+ Documentation/virt/kvm/vcpu-requests.rst           |  10 ++
+ .../virt/kvm/{ => x86}/amd-memory-encryption.rst   |   0
+ Documentation/virt/kvm/{ => x86}/cpuid.rst         |   0
+ Documentation/virt/kvm/x86/errata.rst              |  39 +++++
+ Documentation/virt/kvm/{ => x86}/halt-polling.rst  |   0
+ Documentation/virt/kvm/{ => x86}/hypercalls.rst    |   0
+ Documentation/virt/kvm/x86/index.rst               |  19 +++
+ Documentation/virt/kvm/{ => x86}/mmu.rst           |   0
+ Documentation/virt/kvm/{ => x86}/msr.rst           |   0
+ Documentation/virt/kvm/{ => x86}/nested-vmx.rst    |   0
+ .../virt/kvm/{ => x86}/running-nested-guests.rst   |   0
+ Documentation/virt/kvm/{ => x86}/timekeeping.rst   |   0
+ arch/s390/kvm/kvm-s390.c                           |   2 +-
+ arch/x86/include/asm/kvm_host.h                    |  46 ++++--
+ arch/x86/include/asm/svm.h                         |  14 +-
+ arch/x86/kernel/kvm.c                              |   2 +-
+ arch/x86/kvm/cpuid.c                               |   1 +
+ arch/x86/kvm/emulate.c                             |   8 +-
+ arch/x86/kvm/hyperv.c                              |  22 ++-
+ arch/x86/kvm/i8254.c                               |   6 +-
+ arch/x86/kvm/kvm_emulate.h                         |   3 +
+ arch/x86/kvm/lapic.c                               |   4 +
+ arch/x86/kvm/mmu.h                                 |  32 ++--
+ arch/x86/kvm/mmu/mmu.c                             |  27 ++--
+ arch/x86/kvm/mmu/paging_tmpl.h                     |  82 +++++------
+ arch/x86/kvm/mmu/tdp_mmu.c                         |  72 ++++-----
+ arch/x86/kvm/mmu/tdp_mmu.h                         |  12 +-
+ arch/x86/kvm/pmu.c                                 |  18 +--
+ arch/x86/kvm/svm/avic.c                            |  14 +-
+ arch/x86/kvm/svm/pmu.c                             |   9 +-
+ arch/x86/kvm/svm/svm.c                             |  36 ++---
+ arch/x86/kvm/svm/svm.h                             |  15 +-
+ arch/x86/kvm/svm/svm_onhyperv.c                    |   1 -
+ arch/x86/kvm/trace.h                               |  22 +--
+ arch/x86/kvm/vmx/pmu_intel.c                       |  14 +-
+ arch/x86/kvm/vmx/vmx.c                             |  26 ++--
+ arch/x86/kvm/x86.c                                 | 161 +++++++++++++--------
+ arch/x86/kvm/xen.c                                 |   7 +-
+ include/linux/kvm_host.h                           |  60 +++++---
+ include/linux/kvm_types.h                          |  11 +-
+ virt/kvm/kvm_main.c                                |  22 ++-
+ virt/kvm/pfncache.c                                |  72 ++++-----
+ 49 files changed, 617 insertions(+), 414 deletions(-)
+ create mode 100644 Documentation/virt/kvm/s390/index.rst
+ rename Documentation/virt/kvm/{ => s390}/s390-diag.rst (100%)
+ rename Documentation/virt/kvm/{ => s390}/s390-pv-boot.rst (100%)
+ rename Documentation/virt/kvm/{ => s390}/s390-pv.rst (100%)
+ rename Documentation/virt/kvm/{ => x86}/amd-memory-encryption.rst (100%)
+ rename Documentation/virt/kvm/{ => x86}/cpuid.rst (100%)
+ create mode 100644 Documentation/virt/kvm/x86/errata.rst
+ rename Documentation/virt/kvm/{ => x86}/halt-polling.rst (100%)
+ rename Documentation/virt/kvm/{ => x86}/hypercalls.rst (100%)
+ create mode 100644 Documentation/virt/kvm/x86/index.rst
+ rename Documentation/virt/kvm/{ => x86}/mmu.rst (100%)
+ rename Documentation/virt/kvm/{ => x86}/msr.rst (100%)
+ rename Documentation/virt/kvm/{ => x86}/nested-vmx.rst (100%)
+ rename Documentation/virt/kvm/{ => x86}/running-nested-guests.rst (100%)
+ rename Documentation/virt/kvm/{ => x86}/timekeeping.rst (100%)
+
