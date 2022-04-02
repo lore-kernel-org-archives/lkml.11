@@ -2,114 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F635C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 08:50:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D064FC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 08:50:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352989AbiDBIwH (ORCPT
+        id S1353889AbiDBIw3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Apr 2022 04:52:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48760 "EHLO
+        Sat, 2 Apr 2022 04:52:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230100AbiDBIwD (ORCPT
+        with ESMTP id S230100AbiDBIw1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Apr 2022 04:52:03 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 910306380
-        for <linux-kernel@vger.kernel.org>; Sat,  2 Apr 2022 01:50:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648889412; x=1680425412;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=y7sSkd9UD22NCQ4FcQr0EgofGUC0OSFealjI83DxPQc=;
-  b=SZVcy5yavA755IeqdjXXDGQU5t2XKmMwZt5L0p4XJ96tlQXHvnVfkigA
-   RDAFdjFC6xPu3uEP4N6B7J3aoTdQW93xr5UxfuCKOQz2+X/zvPYmffj2R
-   OjS/gzcA4xf9bslBBVNhda0Aq6wGYBuOeznnKVLS7ahA2VMztFrREnvcf
-   ShxnoJg2iAOjHMLithTVgRydxQPkeErNV6d0L0PWWlvkK7knLkT7usddv
-   +OatqCwnmBGSKGkSb3Hczgttm2XgQWwB+9kOOTpcnCJ/C2wZZfo15AOzB
-   tDtTIlvGpq6rVeqzAQqLBndwrYyFl773MTUmyYHeg+OFIaqitkYxWQxQj
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10304"; a="240876820"
-X-IronPort-AV: E=Sophos;i="5.90,229,1643702400"; 
-   d="scan'208";a="240876820"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Apr 2022 01:50:12 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,229,1643702400"; 
-   d="scan'208";a="568141682"
-Received: from shbuild999.sh.intel.com (HELO localhost) ([10.239.146.138])
-  by orsmga008.jf.intel.com with ESMTP; 02 Apr 2022 01:50:06 -0700
-Date:   Sat, 2 Apr 2022 16:50:05 +0800
-From:   Feng Tang <feng.tang@intel.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     kernel test robot <oliver.sang@intel.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Oscar Salvador <osalvador@suse.de>,
-        Michal Hocko <mhocko@suse.com>,
-        Rik van Riel <riel@surriel.com>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Zi Yan <ziy@nvidia.com>, Wei Xu <weixugc@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        zhongjiang-ali <zhongjiang-ali@linux.alibaba.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        LKML <linux-kernel@vger.kernel.org>, lkp@lists.01.org,
-        kernel test robot <lkp@intel.com>,
-        "Huang, Ying" <ying.huang@intel.com>,
-        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
-        fengwei.yin@intel.com
-Subject: Re: [NUMA Balancing] e39bb6be9f: will-it-scale.per_thread_ops 64.4%
- improvement
-Message-ID: <20220402085005.GC32311@shbuild999.sh.intel.com>
-References: <20220401094214.GA8368@xsang-OptiPlex-9020>
- <CAHk-=wg+mJrTvun6qkdEnkZk9FSyj6vNYU2j7QY-iPn0g_y1nw@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHk-=wg+mJrTvun6qkdEnkZk9FSyj6vNYU2j7QY-iPn0g_y1nw@mail.gmail.com>
+        Sat, 2 Apr 2022 04:52:27 -0400
+Received: from 189.cn (ptr.189.cn [183.61.185.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5FA3D403C3;
+        Sat,  2 Apr 2022 01:50:32 -0700 (PDT)
+HMM_SOURCE_IP: 10.64.8.41:47232.458224640
+HMM_ATTACHE_NUM: 0000
+HMM_SOURCE_TYPE: SMTP
+Received: from clientip-123.150.8.43 (unknown [10.64.8.41])
+        by 189.cn (HERMES) with SMTP id 190901001DC;
+        Sat,  2 Apr 2022 16:50:21 +0800 (CST)
+Received: from  ([172.27.8.53])
+        by gateway-151646-dep-b7fbf7d79-9vctg with ESMTP id 7c40bd6158ac417ba079583c19fc5d74 for ast@kernel.org;
+        Sat, 02 Apr 2022 16:50:31 CST
+X-Transaction-ID: 7c40bd6158ac417ba079583c19fc5d74
+X-Real-From: chensong_2000@189.cn
+X-Receive-IP: 172.27.8.53
+X-MEDUSA-Status: 0
+Sender: chensong_2000@189.cn
+From:   Song Chen <chensong_2000@189.cn>
+To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Song Chen <chensong_2000@189.cn>
+Subject: [PATCH v2] sample: bpf: syscall_tp_user: print result of verify_map
+Date:   Sat,  2 Apr 2022 16:57:08 +0800
+Message-Id: <1648889828-12417-1-git-send-email-chensong_2000@189.cn>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Linus,
+At the end of the test, we already print out
+    prog <prog number>: map ids <...> <...>
+Value is the number read from kernel through bpf map, further print out
+    verify map:<map id> val:<...>
+will help users to understand the program runs successfully.
 
-On Fri, Apr 01, 2022 at 09:35:24AM -0700, Linus Torvalds wrote:
-> On Fri, Apr 1, 2022 at 2:42 AM kernel test robot <oliver.sang@intel.com> wrote:
-> >
-> > FYI, we noticed a 64.4% improvement of will-it-scale.per_thread_ops due to commit:
-> > e39bb6be9f2b ("NUMA Balancing: add page promotion counter")
-> 
-> That looks odd and unlikely.
-> 
-> That commit only modifies some page counting statistics. Sure, it
-> could be another cache layout thing, and maybe it's due to the subtle
-> change in how NUMA_PAGE_MIGRATE gets counted, but it still looks a bit
-> odd.
+Signed-off-by: Song Chen <chensong_2000@189.cn>
+---
+ samples/bpf/syscall_tp_user.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-We did a quick check about cache stuff by disabling HW cache prefetch
-completely (writing 0xf to MSR 0x1a4), and the performance change
-is almost gone:
+diff --git a/samples/bpf/syscall_tp_user.c b/samples/bpf/syscall_tp_user.c
+index a0ebf1833ed3..c55383068384 100644
+--- a/samples/bpf/syscall_tp_user.c
++++ b/samples/bpf/syscall_tp_user.c
+@@ -36,6 +36,9 @@ static void verify_map(int map_id)
+ 		fprintf(stderr, "failed: map #%d returns value 0\n", map_id);
+ 		return;
+ 	}
++
++	printf("verify map:%d val: %d\n", map_id, val);
++
+ 	val = 0;
+ 	if (bpf_map_update_elem(map_id, &key, &val, BPF_ANY) != 0) {
+ 		fprintf(stderr, "map_update failed: %s\n", strerror(errno));
+-- 
+2.25.1
 
-  ee97347fe058d020     e39bb6be9f2b39a6dbaeff48436 
-  ----------------     --------------------------- 
-    134793            -1.4%     132867        will-it-scale.per_thread_ops
-
-The test box is a Cascadelake machine with 4 nodes, and the similar trend
-is found on a 2 nodes machine, that the commit has 55% improvement with
-HW cache prefetch enabled, and has less than 1% change when disabled.
-
-Though we still cannot pin-point the exact place affected.
-
-Also per our experience, the patch changing vm statistics can easily
-trigger strange performance bumps for micro-benchmarks like will-it-scale,
-stress-ng etc.
-
-Thanks,
-Feng
-
-
->                Linus
