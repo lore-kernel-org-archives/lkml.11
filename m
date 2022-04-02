@@ -2,124 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC41BC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 13:56:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 589ADC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 14:02:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348687AbiDBN6W (ORCPT
+        id S1350410AbiDBOEd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Apr 2022 09:58:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38068 "EHLO
+        Sat, 2 Apr 2022 10:04:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356187AbiDBN5F (ORCPT
+        with ESMTP id S235277AbiDBOE3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Apr 2022 09:57:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 627E417AA2;
-        Sat,  2 Apr 2022 06:55:00 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C5B73B808CF;
-        Sat,  2 Apr 2022 13:54:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B648FC340EE;
-        Sat,  2 Apr 2022 13:54:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648907697;
-        bh=qyoPYJlSA6NEig6jnwlt/QYfSWiYQ9maXb6WEkmPDVA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Pe4pC/yKY++LpOsMbzFLmblnxqvaef97rOg7pqmYFTa0TzQ2wUk0tobdlEnXhYYP6
-         OapS9D9YcqeZd8WESzRc8gabevqmAXQ0okpm4/wy487vIgU1tD2F91LDqSFIGhIPNX
-         VrsseNh9Z2loSnoELgUELneEoe7WyDaFd7RrFiJwNznp+cT9LzFfNwoyD2G10g+GRJ
-         ls87Q64Ux7e3wb6u4MiJlgOFSLroyzHBdkdqASfY2cjoLIJnyZfIR4/GKZtaGeud4r
-         /ZiybISscUriO1FUrAwDhK7WvrKN9NSertkPK3IxL3+sbutxO3fOOmd3guUmHCrQE1
-         5gJtBXRs58Rfg==
-From:   guoren@kernel.org
-To:     guoren@kernel.org, palmer@dabbelt.com, arnd@arndb.de,
-        gregkh@linuxfoundation.org, hch@lst.de
-Cc:     linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-riscv@lists.infradead.org, linux-csky@vger.kernel.org,
-        linux-s390@vger.kernel.org, sparclinux@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-parisc@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        x86@kernel.org, heiko@sntech.de, Guo Ren <guoren@linux.alibaba.com>
-Subject: [PATCH V11 20/20] riscv: compat: Add COMPAT Kbuild skeletal support
-Date:   Sat,  2 Apr 2022 21:52:56 +0800
-Message-Id: <20220402135256.2691868-21-guoren@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220402135256.2691868-1-guoren@kernel.org>
-References: <20220402135256.2691868-1-guoren@kernel.org>
+        Sat, 2 Apr 2022 10:04:29 -0400
+Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B360E1877CF;
+        Sat,  2 Apr 2022 07:02:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=icAzEvW9eshnhDDfO4k2r0xUbbSJoCJF2BriJcmZNbs=; b=T2f5fscevlWSEb+/xhKV5fAIlF
+        wpTfSa4ML3NUQn7Iy4w0Cl+WmkLxWaCwKZjCghK+UY3ec6GKTY3Dtju3O3r9RI7nhzCPVIqH+fnlH
+        QvklxrbXyWJspyn/YcMmekOM/Nh1Iybs+P+2WQQqA9Uu7d/FmPo34+BxVaYspiZFaUtJ3Oju5oQVq
+        Oyj9h+sR9w+Xzs0rTsg1ultpfEA5VgXRtfI6yOSAVNj3siEvv67mYnZ8ZGZjSfRzTj5XKzjBGDkl4
+        kEae9d4Ols3FfRk0gXyTpI/v0B67+W74Rnic+6Az+L/pFPMmlnA3SK/+DsJ+r6om94wQMglZ+mLgo
+        sw5jmdlw==;
+Received: from [177.138.180.15] (helo=[192.168.1.60])
+        by fanzine2.igalia.com with esmtpsa 
+        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
+        id 1naeKT-0006Wc-Lz; Sat, 02 Apr 2022 16:02:14 +0200
+Message-ID: <f2fe220f-70c9-7b95-a9cb-4709752e4bdc@igalia.com>
+Date:   Sat, 2 Apr 2022 11:01:51 -0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [RFC 0/1] Add sysctl entry for controlling
+ crash_kexec_post_notifiers
+Content-Language: en-US
+To:     Alejandro Jimenez <alejandro.j.jimenez@oracle.com>, corbet@lwn.net,
+        mcgrof@kernel.org, keescook@chromium.org, yzaikin@google.com,
+        linux-fsdevel@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     akpm@linux-foundation.org, linux@rasmusvillemoes.dk,
+        ebiggers@google.com, peterz@infradead.org, ying.huang@intel.com,
+        mchehab+huawei@kernel.org, Jason@zx2c4.com, daniel@iogearbox.net,
+        robh@kernel.org, wangqing@vivo.com, prestwoj@gmail.com,
+        dsahern@kernel.org, stephen.s.brennan@oracle.com
+References: <20220401202300.12660-1-alejandro.j.jimenez@oracle.com>
+From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+In-Reply-To: <20220401202300.12660-1-alejandro.j.jimenez@oracle.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guo Ren <guoren@linux.alibaba.com>
+On 01/04/2022 17:22, Alejandro Jimenez wrote:
+> I noticed that in contrast to other kernel core parameters (e.g. kernel.panic,
+> kernel.panic_on_warn, kernel.panic_print) crash_kexec_post_notifiers is not
+> available as a sysctl tunable. I am aware that because it is a kernel core
+> parameter, there is already an entry under:
+> 
+>   /sys/module/kernel/parameters/crash_kexec_post_notifiers
+> 
+> and that allows us to read/modify it at runtime. However, I thought it should
+> also be available via sysctl, since users that want to read/set this value at
+> runtime might look there first.
+> 
+> I believe there is an ongoing effort to clean up kernel/sysctl.c, but it wasn't
+> clear to me if this entry (and perhaps the other panic related entries too)
+> should be placed on kernel/panic.c. I wanted to verify first that this change
+> would be welcomed before doing additional refactoring work.
+> 
+> I'd appreciate any comments or suggestions.
+> 
+> Thank you,
+> Alejandro
 
-Adds initial skeletal COMPAT Kbuild (Running 32bit U-mode on
-64bit S-mode) support.
- - Setup kconfig & dummy functions for compiling.
- - Implement compat_start_thread by the way.
+Hi Alejandro, thanks for you patch. I have a "selfish" concern though,
+I'll expose it here.
 
-Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
-Signed-off-by: Guo Ren <guoren@kernel.org>
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
-Tested-by: Heiko Stuebner <heiko@sntech.de>
-Cc: Palmer Dabbelt <palmer@dabbelt.com>
----
- arch/riscv/Kconfig | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
+I'm working a panic refactor, in order to split the panic notifiers in
+more lists - good summary of this discussion at [0].
+I'm in the half of the patches, hopefully next 2 weeks I have something
+ready to submit (I'll be out next week).
 
-diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
-index 5adcbd9b5e88..6f11df8c189f 100644
---- a/arch/riscv/Kconfig
-+++ b/arch/riscv/Kconfig
-@@ -73,6 +73,7 @@ config RISCV
- 	select HAVE_ARCH_KGDB if !XIP_KERNEL
- 	select HAVE_ARCH_KGDB_QXFER_PKT
- 	select HAVE_ARCH_MMAP_RND_BITS if MMU
-+	select HAVE_ARCH_MMAP_RND_COMPAT_BITS if COMPAT
- 	select HAVE_ARCH_SECCOMP_FILTER
- 	select HAVE_ARCH_TRACEHOOK
- 	select HAVE_ARCH_TRANSPARENT_HUGEPAGE if 64BIT && MMU
-@@ -123,12 +124,18 @@ config ARCH_MMAP_RND_BITS_MIN
- 	default 18 if 64BIT
- 	default 8
- 
-+config ARCH_MMAP_RND_COMPAT_BITS_MIN
-+	default 8
-+
- # max bits determined by the following formula:
- #  VA_BITS - PAGE_SHIFT - 3
- config ARCH_MMAP_RND_BITS_MAX
- 	default 24 if 64BIT # SV39 based
- 	default 17
- 
-+config ARCH_MMAP_RND_COMPAT_BITS_MAX
-+	default 17
-+
- # set if we run in machine mode, cleared if we run in supervisor mode
- config RISCV_M_MODE
- 	bool
-@@ -406,6 +413,18 @@ config CRASH_DUMP
- 
- 	  For more details see Documentation/admin-guide/kdump/kdump.rst
- 
-+config COMPAT
-+	bool "Kernel support for 32-bit U-mode"
-+	default 64BIT
-+	depends on 64BIT && MMU
-+	help
-+	  This option enables support for a 32-bit U-mode running under a 64-bit
-+	  kernel at S-mode. riscv32-specific components such as system calls,
-+	  the user helper functions (vdso), signal rt_frame functions and the
-+	  ptrace interface are handled appropriately by the kernel.
-+
-+	  If you want to execute 32-bit userspace applications, say Y.
-+
- endmenu
- 
- menu "Boot options"
--- 
-2.25.1
+As part of this effort, I plan to have a more fine-grained control of
+this parameter, and it's going to be a sysctl, but not
+"crash_kexec_post_notifiers" - this one should be kept I guess due to
+retro-compatibility, but it'd be a layer on top oh the new one.
+With that said, unless you have urgent needs for this patch to be
+reviewed/merged , I'd like to ask you to wait the series and I can loop
+you there, so you may review/comment and see if it fits your use case.
 
+Thanks,
+
+
+Guilherme
+
+
+[0] https://lore.kernel.org/lkml/YfPxvzSzDLjO5ldp@alley/
