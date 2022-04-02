@@ -2,61 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1712BC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 09:23:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAD5EC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 09:24:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354145AbiDBJZq (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Apr 2022 05:25:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40378 "EHLO
+        id S243098AbiDBJZ5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 2 Apr 2022 05:25:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243098AbiDBJZd (ORCPT
+        with ESMTP id S1354116AbiDBJZe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Apr 2022 05:25:33 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFEB049F8D
-        for <linux-kernel@vger.kernel.org>; Sat,  2 Apr 2022 02:23:41 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id x34so5540098ede.8
-        for <linux-kernel@vger.kernel.org>; Sat, 02 Apr 2022 02:23:41 -0700 (PDT)
+        Sat, 2 Apr 2022 05:25:34 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DDC54CD5F
+        for <linux-kernel@vger.kernel.org>; Sat,  2 Apr 2022 02:23:43 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id pv16so10565513ejb.0
+        for <linux-kernel@vger.kernel.org>; Sat, 02 Apr 2022 02:23:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=X+8dg39ZMxlEKu2qH0LGovBPHbNVLriY80Y0/3wt26s=;
-        b=jlUnGQO7VLQB02aBXnzHHIIQmsem5Y7978FHYZkQ13bzMli1+/HLZRuLxcIJF2DJs1
-         +92SzMyRr2jGVIYK4S8AcAVtkFyzHqdHAW+7aIZWIy/lH1263RcEqYOAadjdfALFIGv4
-         7/Orl4U2qSYVqXpF2AalYXFufuAuYZv+rQc+CIHxZhzKL4PugBSzc3Jwvaa5FMJzxJvt
-         +qZlNfs22J2AujLaEGaIQy4tlmw4emRFE5TQc5GcKYvInTtoYMF0HYF0bG38MRdEJIBe
-         q9Zi3EWk4BdbxuXNnRFOcPW5E8Ys1sXeAVZ3bypyZBUKzRvE29UeZiSOlcBY8MbAM6Ou
-         koww==
+        bh=Kj0NK64/6VOX5kKDITGHXBLvkxZmhHmuskzVJ746a1s=;
+        b=Hv9it68CijLFSwsSmW/b2hNjYUjEItE+yy8rNczB4SS5RU5urdnFL8gJaBqWD2eTVC
+         B5dPp85eANDq7D+3V3XUQqP80sahcSVvsyg5t2FnJ08oYppLvJiglXILTPxmisjWwnBc
+         EuE8Y4kURuqIlsot5yBvPzVVjomFc1upW1eHFuAIpvcUzyU0nW9Sc5N4/Td2DPmUf96A
+         JdggqdCH7skF6h4IAJ/WtW0IPs9Kdit2ewBxY6UlOF4EUK3prreb575i3nNGJjUOB0Ze
+         96JzHZe1dG9snZkIAL5ej3P27WYHFppuCbFWYKlgyR54aqP3nLr6IwZt1tzUURzWXjfu
+         zvIA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=X+8dg39ZMxlEKu2qH0LGovBPHbNVLriY80Y0/3wt26s=;
-        b=2W05vQGdolIBtDIaonZNK+HwIU62a5gbeUtIpt0/FNEEI3obZ4xwNL3/Is6PkTMGZZ
-         ATqBej4d96wDjvVJobzyYt8QUDyuDpJckwT4RB+GJsdTjL7aNmqO4d1RbH2BEiBQ8pvN
-         KyounUMsa4EQlaTb+mQRGsnbUCGexPRunBBorooiwUx1To+WFETy2SMvHUTQCrvX3/eY
-         5PLyH0cggHaVnbjmnhlMXfOpQ8ltfS1l8hquCQ+6Lsj+R2Dx+8/Lc7xD59sD1xmHhZ78
-         0cBQ3FUP86yeYucOnn6RmyQDrgSgmEroM8FUSaIECwJGy4of9n5wpgaNSwB45LA/Htm8
-         FggQ==
-X-Gm-Message-State: AOAM530eYZKPWXBZvT4lMOnx9XBTtbSWS3kA4jVjb/hvG4CzmlLuPlKW
-        E7riLG9Jq7fLqV2hEVtv+4U=
-X-Google-Smtp-Source: ABdhPJw7gJEAS/rD6G/8I5GInrNgjVelEj0neKitE2n+7DXDAwmVMyaJi0UH53HFZgBul7DOyMPxrQ==
-X-Received: by 2002:a05:6402:5245:b0:419:5437:fc6b with SMTP id t5-20020a056402524500b004195437fc6bmr24091277edd.282.1648891420229;
-        Sat, 02 Apr 2022 02:23:40 -0700 (PDT)
+        bh=Kj0NK64/6VOX5kKDITGHXBLvkxZmhHmuskzVJ746a1s=;
+        b=S/85igmrR3XChlzvt76mrZlQTRGPxJlC7htMo8OqsXRCM4OawQEP7oTbni3fSD0oII
+         nQNXHWKyWdnCMgE+cNX3yT3Jsf50RG2vQubIyROHW6AkwrVp9SA4LqVqmRKpMX8c8HRR
+         b64fgrLcIzGjbILghXipJeX3W42++jlH5yLttWd80JCthXuvLmX4wg4dKth/OMLNHp/K
+         thd1gf0w+bLhHJFAygeD27Qh0hNA8HBc0shZBoNAmV1ijrG5cccv1KMZWzPEVDR0A9J/
+         arm1UnC6JL2xCDWwktkwSs7yzCY9fuL7VVNZCDgxsFe9fh7+jRXwsiudZowH8V8Pcpfq
+         fFVA==
+X-Gm-Message-State: AOAM533AW7HRa38f9xSkcF2GaTneYAA0bzX4QYf5GA9w5QzrTQ8HZdOk
+        /Lo4zp/Oit/gxk7idaFY9r0=
+X-Google-Smtp-Source: ABdhPJz/yRat7Vq2PFwQGRYsW6sE5hNV6cm2sFVOlgWjf7PnjhEo4k5+lvWjAuZd7Mbk3mOJA2grbQ==
+X-Received: by 2002:a17:907:7d93:b0:6da:8f57:68fa with SMTP id oz19-20020a1709077d9300b006da8f5768famr3335611ejc.42.1648891422095;
+        Sat, 02 Apr 2022 02:23:42 -0700 (PDT)
 Received: from localhost.localdomain (ip5f5abb55.dynamic.kabel-deutschland.de. [95.90.187.85])
-        by smtp.gmail.com with ESMTPSA id jv19-20020a170907769300b006e095c047d6sm1897679ejc.109.2022.04.02.02.23.39
+        by smtp.gmail.com with ESMTPSA id jv19-20020a170907769300b006e095c047d6sm1897679ejc.109.2022.04.02.02.23.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 02 Apr 2022 02:23:39 -0700 (PDT)
+        Sat, 02 Apr 2022 02:23:41 -0700 (PDT)
 From:   Michael Straube <straube.linux@gmail.com>
 To:     gregkh@linuxfoundation.org
 Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Michael Straube <straube.linux@gmail.com>
-Subject: [PATCH 3/7] staging: r8188eu: remove HW_VAR_AMPDU_MIN_SPACE from SetHwReg8188EU()
-Date:   Sat,  2 Apr 2022 11:23:28 +0200
-Message-Id: <20220402092332.6627-4-straube.linux@gmail.com>
+Subject: [PATCH 5/7] staging: r8188eu: remove HW_VAR_RPT_TIMER_SETTING from SetHwReg8188EU()
+Date:   Sat,  2 Apr 2022 11:23:30 +0200
+Message-Id: <20220402092332.6627-6-straube.linux@gmail.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220402092332.6627-1-straube.linux@gmail.com>
 References: <20220402092332.6627-1-straube.linux@gmail.com>
@@ -66,117 +65,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove the HW_VAR_AMPDU_MIN_SPACE case from SetHwReg8188EU() and move
-its functionality to rtw_wlan_util.c where it is actually used. This
-is part of the ongoing effort to get rid of the unwanted hal layer.
+Remove the HW_VAR_RPT_TIMER_SETTING case from SetHwReg8188EU() and
+move its functionality to rtw_cmd.c where it is actually used. This is
+part of the ongoing effort to get rid of the unwanted hal layer.
 
 Signed-off-by: Michael Straube <straube.linux@gmail.com>
 ---
- drivers/staging/r8188eu/core/rtw_wlan_util.c | 31 +++++++++++++++++++-
- drivers/staging/r8188eu/hal/usb_halinit.c    | 28 ------------------
- drivers/staging/r8188eu/include/hal_intf.h   |  1 -
- 3 files changed, 30 insertions(+), 30 deletions(-)
+ drivers/staging/r8188eu/core/rtw_cmd.c     | 5 ++++-
+ drivers/staging/r8188eu/hal/usb_halinit.c  | 6 ------
+ drivers/staging/r8188eu/include/hal_intf.h | 1 -
+ 3 files changed, 4 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/staging/r8188eu/core/rtw_wlan_util.c b/drivers/staging/r8188eu/core/rtw_wlan_util.c
-index acc554627adc..b526715a70bc 100644
---- a/drivers/staging/r8188eu/core/rtw_wlan_util.c
-+++ b/drivers/staging/r8188eu/core/rtw_wlan_util.c
-@@ -760,6 +760,35 @@ void HT_info_handler(struct adapter *padapter, struct ndis_802_11_var_ie *pIE)
- 	memcpy(&pmlmeinfo->HT_info, pIE->data, pIE->Length);
- }
+diff --git a/drivers/staging/r8188eu/core/rtw_cmd.c b/drivers/staging/r8188eu/core/rtw_cmd.c
+index a9152db589c7..19a04fcb6762 100644
+--- a/drivers/staging/r8188eu/core/rtw_cmd.c
++++ b/drivers/staging/r8188eu/core/rtw_cmd.c
+@@ -1049,7 +1049,10 @@ u8 rtw_lps_ctrl_wk_cmd(struct adapter *padapter, u8 lps_ctrl_type, u8 enqueue)
  
-+static void set_min_ampdu_spacing(struct adapter *adapter, u8 spacing)
-+{
-+	u8 sec_spacing;
-+
-+	if (spacing <= 7) {
-+		switch (adapter->securitypriv.dot11PrivacyAlgrthm) {
-+		case _NO_PRIVACY_:
-+		case _AES_:
-+			sec_spacing = 0;
-+			break;
-+		case _WEP40_:
-+		case _WEP104_:
-+		case _TKIP_:
-+		case _TKIP_WTMIC_:
-+			sec_spacing = 6;
-+			break;
-+		default:
-+			sec_spacing = 7;
-+			break;
-+		}
-+
-+		if (spacing < sec_spacing)
-+			spacing = sec_spacing;
-+
-+		rtw_write8(adapter, REG_AMPDU_MIN_SPACE,
-+			   (rtw_read8(adapter, REG_AMPDU_MIN_SPACE) & 0xf8) | spacing);
-+	}
-+}
-+
- void HTOnAssocRsp(struct adapter *padapter)
+ static void rpt_timer_setting_wk_hdl(struct adapter *padapter, u16 min_time)
  {
- 	unsigned char		max_AMPDU_len;
-@@ -784,7 +813,7 @@ void HTOnAssocRsp(struct adapter *padapter)
- 
- 	min_MPDU_spacing = (pmlmeinfo->HT_caps.u.HT_cap_element.AMPDU_para & 0x1c) >> 2;
- 
--	SetHwReg8188EU(padapter, HW_VAR_AMPDU_MIN_SPACE, (u8 *)(&min_MPDU_spacing));
-+	set_min_ampdu_spacing(padapter, min_MPDU_spacing);
- 
- 	SetHwReg8188EU(padapter, HW_VAR_AMPDU_FACTOR, (u8 *)(&max_AMPDU_len));
+-	SetHwReg8188EU(padapter, HW_VAR_RPT_TIMER_SETTING, (u8 *)(&min_time));
++	struct hal_data_8188e *haldata = &padapter->haldata;
++	struct odm_dm_struct *odmpriv = &haldata->odmpriv;
++
++	ODM_RA_Set_TxRPT_Time(odmpriv, min_time);
  }
+ 
+ u8 rtw_rpt_timer_cfg_cmd(struct adapter *padapter, u16 min_time)
 diff --git a/drivers/staging/r8188eu/hal/usb_halinit.c b/drivers/staging/r8188eu/hal/usb_halinit.c
-index 9326a6080819..7b231e9a2193 100644
+index 39db038d75fd..d13a8ab598fd 100644
 --- a/drivers/staging/r8188eu/hal/usb_halinit.c
 +++ b/drivers/staging/r8188eu/hal/usb_halinit.c
-@@ -1113,34 +1113,6 @@ void SetHwReg8188EU(struct adapter *Adapter, u8 variable, u8 *val)
- 		haldata->AcParam_BE = ((u32 *)(val))[0];
- 		rtw_write32(Adapter, REG_EDCA_BE_PARAM, ((u32 *)(val))[0]);
+@@ -1175,12 +1175,6 @@ void SetHwReg8188EU(struct adapter *Adapter, u8 variable, u8 *val)
+ 			}
+ 		}
  		break;
--	case HW_VAR_AMPDU_MIN_SPACE:
+-	case HW_VAR_RPT_TIMER_SETTING:
 -		{
--			u8 MinSpacingToSet;
--			u8 SecMinSpace;
--
--			MinSpacingToSet = *((u8 *)val);
--			if (MinSpacingToSet <= 7) {
--				switch (Adapter->securitypriv.dot11PrivacyAlgrthm) {
--				case _NO_PRIVACY_:
--				case _AES_:
--					SecMinSpace = 0;
--					break;
--				case _WEP40_:
--				case _WEP104_:
--				case _TKIP_:
--				case _TKIP_WTMIC_:
--					SecMinSpace = 6;
--					break;
--				default:
--					SecMinSpace = 7;
--					break;
--				}
--				if (MinSpacingToSet < SecMinSpace)
--					MinSpacingToSet = SecMinSpace;
--				rtw_write8(Adapter, REG_AMPDU_MIN_SPACE, (rtw_read8(Adapter, REG_AMPDU_MIN_SPACE) & 0xf8) | MinSpacingToSet);
--			}
+-			u16 min_rpt_time = (*(u16 *)val);
+-			ODM_RA_Set_TxRPT_Time(podmpriv, min_rpt_time);
 -		}
 -		break;
- 	case HW_VAR_AMPDU_FACTOR:
+ 	case HW_VAR_FIFO_CLEARN_UP:
  		{
- 			u8 RegToSet_Normal[4] = {0x41, 0xa8, 0x72, 0xb9};
+ 			struct pwrctrl_priv *pwrpriv = &Adapter->pwrctrlpriv;
 diff --git a/drivers/staging/r8188eu/include/hal_intf.h b/drivers/staging/r8188eu/include/hal_intf.h
-index c2b97fa4e372..c18ff1469c2b 100644
+index 1ba2eb0a46b2..edc4c6f42bc8 100644
 --- a/drivers/staging/r8188eu/include/hal_intf.h
 +++ b/drivers/staging/r8188eu/include/hal_intf.h
-@@ -20,7 +20,6 @@ enum hw_variables {
- 	HW_VAR_DM_FUNC_RESET,
- 	HW_VAR_DM_FUNC_CLR,
- 	HW_VAR_AC_PARAM_BE,
--	HW_VAR_AMPDU_MIN_SPACE,
- 	HW_VAR_AMPDU_FACTOR,
- 	HW_VAR_H2C_FW_PWRMODE,
- 	HW_VAR_H2C_FW_JOINBSSRPT,
+@@ -26,7 +26,6 @@ enum hw_variables {
+ 	HW_VAR_H2C_FW_P2P_PS_OFFLOAD,
+ 	HW_VAR_INITIAL_GAIN,
+ 	HW_VAR_FIFO_CLEARN_UP,
+-	HW_VAR_RPT_TIMER_SETTING,
+ 	HW_VAR_H2C_MEDIA_STATUS_RPT,
+ };
+ 
 -- 
 2.35.1
 
