@@ -2,84 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A613BC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 16:20:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2E8CC4332F
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 16:21:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357954AbiDBQW3 (ORCPT
+        id S1357957AbiDBQXq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Apr 2022 12:22:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58270 "EHLO
+        Sat, 2 Apr 2022 12:23:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357947AbiDBQW0 (ORCPT
+        with ESMTP id S1357968AbiDBQW7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Apr 2022 12:22:26 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3102583B9;
-        Sat,  2 Apr 2022 09:20:34 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 6313ECE094D;
-        Sat,  2 Apr 2022 16:20:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2845C340EC;
-        Sat,  2 Apr 2022 16:20:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648916431;
-        bh=XgXaNNuEeJ937JoBXfirPFs0iHTDR3KVxroTM16ZOXU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=vPb4/LeXLtPgTtnh7SrubheryX+KZ17p/OHrO4TkrXgkO9FhxVggv5bJT9FYBWDrq
-         aX80NsOmWenz6OU8e9MeBUpt9eM1o/xRzR4aMdWW3XEdLd7p3eWfolcg+xSuyfd60B
-         n5JblRKN3D6nc5uLOCywV5qK78+9yFd+FcFAwAnUQLfk0ZaPMwuQcM9Q9LOoX7fV5K
-         7Kv5IGozbe4fWdJ4UGunY6520k0GykjiGT1PqlGyK1DWkv22CdDNf/ftWTFqS1/UJV
-         vmK0qLUku6ASQSQuYINzy5BNWPBxfQhm+voxZoWDjDNa51CgFNI67kAIbUb4hnMQpw
-         TjnqwWrgwZwyQ==
-Date:   Sat, 2 Apr 2022 17:28:14 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Paul Lemmermann <thepaulodoom@thepaulodoom.com>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] IIO: accel: dmard09: fixed code styling issues
-Message-ID: <20220402172814.5117cdb7@jic23-huawei>
-In-Reply-To: <YkItIE5sp3P4sZdY@hp-amd-paul>
-References: <YkItIE5sp3P4sZdY@hp-amd-paul>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        Sat, 2 Apr 2022 12:22:59 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E4CC6A023
+        for <linux-kernel@vger.kernel.org>; Sat,  2 Apr 2022 09:21:06 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id bq8so11699796ejb.10
+        for <linux-kernel@vger.kernel.org>; Sat, 02 Apr 2022 09:21:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=mnGt6W+Yxzjo9+/+HIyfnhtyS1WFSMtagQnoizbL1R0=;
+        b=GJwZFGWMfHIBnC1wfxgc9r7rpLndt29L5PyMvPW1IFf+DRW2csbfA1olTD5scsM+SR
+         dR20QG4DtEqIoAKSZfVB4YCPysxcGzrePbMs9EpqU5RRbYmg2hVdja0oIjKH7Q8YA18B
+         Ah0LQQJJP56KZFtnNdO0nkaND7gz4n3Mrn3XDBRcfjc6LgMtUZpv/rrn7xdnr6upoqWK
+         G9QU/IDTJ3hwr48aPieGhLZ5ynK6xU/mXHC7pPFzx/3dhQEriL12ADhztEptk8Aaf7iP
+         0DeOfCQPgiZCPa29SoIWawVINwv3wuyypuV7fOLFHGwxOoLf4teOF0IXwcxqANHymCg8
+         nkwQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=mnGt6W+Yxzjo9+/+HIyfnhtyS1WFSMtagQnoizbL1R0=;
+        b=stUSCCfm/l9HSAc3Q9Q6H/nGNRX/vgBUyR76W0KT31xs5JTKLhji/FvIcfH+IuMrja
+         P31oR9iKqhFpwWmonLcHc9UN9bc1SaEkCMqnbvQWOvKpb1Svcyc0vGj2q4m30Cm5/4Kd
+         xOfwisjIQJhYYcipfO5YDjWI4HRb8TEOMawou56bCNNYR8RBEpmF8Ti0lBxdsOmnxkad
+         UwrDKe69DqQKoAqo6JdhmPBVYCZ3FLwfSEHg6Jzc8UwaWTs+HM4Tw+2Qjbu971heDfOG
+         /5sQZ7UkcaxiNP+Xi9jcj2V/Up02P7bSJsD8CofDa2SvAr2gbMuetg+zx5VRsDNyZ1Vt
+         perA==
+X-Gm-Message-State: AOAM532lPAmTv03HmLG0vuRRFHrVMlokU04tpshWAj/Yxmf6qpCgxD2M
+        tMO5wF6euFLY3Q7yRJXhFdXIUA==
+X-Google-Smtp-Source: ABdhPJwr6iufJ5ANsNQoEWLNc+tMOFQ/Hxw54wk/gFKN6u6OnQXSWTkJJ9vsUMAaFPtBFxpnVzSNBw==
+X-Received: by 2002:a17:907:9718:b0:6e0:6faa:3aa with SMTP id jg24-20020a170907971800b006e06faa03aamr4338206ejc.307.1648916464849;
+        Sat, 02 Apr 2022 09:21:04 -0700 (PDT)
+Received: from [192.168.0.171] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id e11-20020a50becb000000b0041b64129200sm2709359edk.50.2022.04.02.09.21.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 02 Apr 2022 09:21:04 -0700 (PDT)
+Message-ID: <7d66c6ce-80d9-3a09-b34c-7ae5a7763465@linaro.org>
+Date:   Sat, 2 Apr 2022 18:21:03 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v13 1/2] dt-bindings: mmc: mtk-sd: increase reg items
+Content-Language: en-US
+To:     Tinghan Shen <tinghan.shen@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Chaotian Jing <chaotian.jing@mediatek.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Wenbin Mei <wenbin.mei@mediatek.com>
+Cc:     linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        ryder.lee@kernel.org, wenst@chromium.org, chunfeng.yun@mediatek.com
+References: <20220330094532.21721-1-tinghan.shen@mediatek.com>
+ <20220330094532.21721-2-tinghan.shen@mediatek.com>
+ <aebbb5c8-1d27-5e66-e18a-e2b647bc8cb4@gmail.com>
+ <53cb53b8614aa39e0785b99f46b708ad201c3dd8.camel@mediatek.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <53cb53b8614aa39e0785b99f46b708ad201c3dd8.camel@mediatek.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 28 Mar 2022 16:48:16 -0500
-Paul Lemmermann <thepaulodoom@thepaulodoom.com> wrote:
-
-> Cleaning up code.
+On 01/04/2022 04:18, Tinghan Shen wrote:
+> Hi Matthias,
 > 
-> Signed-off-by: Paul Lemmermann <thepaulodoom@thepaulodoom.com>
-Applied to the togreg branch of iio.git and pushed out as testing
-for 0-day to see if it can find anything we did wrong.
-
-BTW.  You seem to have sent two identical copies of this patch.
-I randomly decided to apply this second one.
-
-Thanks,
-
-Jonathan
-
-> ---
->  drivers/iio/accel/dmard09.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> On Thu, 2022-03-31 at 12:54 +0200, Matthias Brugger wrote:
+>>
+>> On 30/03/2022 11:45, Tinghan Shen wrote:
+>>> MediaTek has a new version of mmc IP since mt8183. Some IO registers
+>>> are moved to top to improve hardware design and named as "host top
+>>> registers".
+>>>
+>>> Add host top register in the reg binding description for mt8183 and
+>>> successors.
+>>>
+>>> Signed-off-by: Wenbin Mei <wenbin.mei@mediatek.com>
+>>> Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
+>>> ---
+>>>   Documentation/devicetree/bindings/mmc/mtk-sd.yaml | 15 ++++++++++++++-
+>>>   1 file changed, 14 insertions(+), 1 deletion(-)
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/mmc/mtk-sd.yaml
+>>> b/Documentation/devicetree/bindings/mmc/mtk-sd.yaml
+>>> index 297ada03e3de..2a2e9fa8c188 100644
+>>> --- a/Documentation/devicetree/bindings/mmc/mtk-sd.yaml
+>>> +++ b/Documentation/devicetree/bindings/mmc/mtk-sd.yaml
+>>> @@ -40,7 +40,10 @@ properties:
+>>>             - const: mediatek,mt8183-mmc
+>>>   
+>>>     reg:
+>>> -    maxItems: 1
+>>> +    minItems: 1
+>>
+>>  From my understanding adding minItems is correct, but you need to add also 
+>> maxItems: 2 as there can't be more then two register entries.
+>>
+>> Regards,
+>> Matthias
+>>
 > 
-> diff --git a/drivers/iio/accel/dmard09.c b/drivers/iio/accel/dmard09.c
-> index 53ab6078c..cb0246ca7 100644
-> --- a/drivers/iio/accel/dmard09.c
-> +++ b/drivers/iio/accel/dmard09.c
-> @@ -24,7 +24,7 @@
->  #define DMARD09_AXIS_Y 1
->  #define DMARD09_AXIS_Z 2
->  #define DMARD09_AXIS_X_OFFSET ((DMARD09_AXIS_X + 1) * 2)
-> -#define DMARD09_AXIS_Y_OFFSET ((DMARD09_AXIS_Y + 1 )* 2)
-> +#define DMARD09_AXIS_Y_OFFSET ((DMARD09_AXIS_Y + 1) * 2)
->  #define DMARD09_AXIS_Z_OFFSET ((DMARD09_AXIS_Z + 1) * 2)
->  
->  struct dmard09_data {
+> After add "maxItems: 2", I get following message when doing dt_binding_check.
+> from this message, it looks like that maxItems is not necessary.
 
+
+That's correct, you don't need them because "items" defines it.
+
+
+Best regards,
+Krzysztof
