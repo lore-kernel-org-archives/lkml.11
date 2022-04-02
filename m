@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9287BC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 01:09:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A6AAC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 01:09:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353690AbiDBBL2 (ORCPT
+        id S1353698AbiDBBLh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Apr 2022 21:11:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43592 "EHLO
+        Fri, 1 Apr 2022 21:11:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353614AbiDBBLF (ORCPT
+        with ESMTP id S1353675AbiDBBLO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Apr 2022 21:11:05 -0400
-Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 348B78FE45
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 18:09:14 -0700 (PDT)
-Received: by mail-pj1-x104a.google.com with SMTP id o15-20020a17090aac0f00b001c6595a43dbso2405016pjq.4
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 18:09:14 -0700 (PDT)
+        Fri, 1 Apr 2022 21:11:14 -0400
+Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F3E0A145D
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Apr 2022 18:09:19 -0700 (PDT)
+Received: by mail-pl1-x64a.google.com with SMTP id z8-20020a170903018800b001566875e0f5so1668480plg.21
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Apr 2022 18:09:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=Ol8exfApW6qp8ksY+lqUpF5z/oy5z9y8ZI2QOtFIzaY=;
-        b=Mg+HcPSPAzhKgemV6VtSyQw1b+lZxkXiayU8hXXSVt6JO3BCHvxXvdSbAbQOTL7+Yp
-         sxvAAyE2cJZIMrQwjYrdwNgEdaYb8oq0BOIfdnWcJ2r0R0lUZCQ0h1egoCn5Lqp8UHLj
-         LdBk8g+GujiQY7A4CyhaTKH5gfXr2rXfIVZOpvRuooZYAX/tYWTMesQNuu4QIQIpakaj
-         J77gqdAv3XNBVxnt9fwS8wkpo9hVd/eBSeaQmaNCzEHbMKC1zvGEKLyQOBbIJHOCyTvx
-         Hs5SIDIKRbhwak/of+DWADUUjZTyKVz+w/bWKJN6FuLavdX//9ckRo5XlZoT8H/HEFKm
-         9z3g==
+        bh=OExX1Igb+SEI7PdUVeKXKi/G1aHbfTSQe6uvI8ZE66s=;
+        b=QoWYxsIze+C3Ee47cmi+k5goTPGx2Io4H2IyLGbi5BL+YuSOtk8JZB9VbBiKfn+5KE
+         tyrkF6Zyy4naj8XbTkWvhkg/sFU+thgF+DR7zGxHaU0Zufu1ol74uxq4AXOtb0GAHX2+
+         RCwbWhRxvZMYnWlv5Pel0agogKAldZa+yRq1pBY6qslSIaYI1EsqNARyskD1VinUqj37
+         0o4B7ukkXknlytvlvFrKfIN3Log0v9sa7s+sDwVihw3X5My32CK4QQgkdwX9QMxI0OCg
+         rolELI0I7ldjj+6WJTt4XTF7oYy1R+nt/GzVXksOb23zb7L7SLrRPoB+qBeferqjl3zT
+         i/Qg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=Ol8exfApW6qp8ksY+lqUpF5z/oy5z9y8ZI2QOtFIzaY=;
-        b=cYldBAuAFglVfDIlkI/9/xgL2Xw6c0zSmry0RMgntJ5zVcryzXNAyDsdLwsK5Na1IW
-         OzMBVGdVKqkZeAMvCjnGm3QryF1Q5zomlxlnWYnnlZ2OKt8ZATp4/aYJiSQWL4YukeAM
-         pVrPziNgK9EIkz49L8oLO8LXf3mfRA9p0YqmSflPhAETmhC06fLd/ruuSYQYTwJ7Vt7a
-         SwcB2FLYzQ6oRg8Zn2T6cohUJcGjqbV3GENZBeKMMIWTe2vUGJ0gZarMUlyZhBhqLxLl
-         kf64CFynLMt7GehwEW31GvJrIFpYKBwtnY0VdOHN00GpfDZrtS8zPsvc6+zKQkDzdPDR
-         Oz0w==
-X-Gm-Message-State: AOAM531kxyi3aZOsc4vLlklUhG9J1CQy+aPG5dupZ5mg9aj2vaTVYjdF
-        Y3ydptyne+4shglBAj38PJqcFvNbz4Y=
-X-Google-Smtp-Source: ABdhPJwh/+tkHKjROpI8f4YVjL3HYSEb25RxtMSK2Di63Mhnl5I5MjZhGP/4LburLgNSPXEAy1Gz5q6Y8DM=
+        bh=OExX1Igb+SEI7PdUVeKXKi/G1aHbfTSQe6uvI8ZE66s=;
+        b=pNtPBwdUOHqGAUkj/ukfOwn/c14196ZqQD26UxgS5MIbGZvWAz5D00qtYxakYDSMro
+         gEiE4kW1fo2+hUPUkbe/w9BdbztSjOvWDh7YFUSZdktv0A2TTjhspV0vCA5Gwvg3EWsQ
+         reNhrNFl1UJEVI2ckBrPDvc7+Eruak7bFJbkMK0hQ/1dum8xEp6TAa7V8l7zBO1nw1Ic
+         C/AeLDriILP486aD5EWT2Hq9WfAJIGJCcRMc7z/xFdW/0a//Wz8WlT3M/BzN1W0Ze96G
+         PR4rwdmekiw/kI1IM8DQ37rFHq9Bk+LcKGz54xJ9zoJcQ6KrrXnk4suThUHtQJ4E7KxN
+         v2aQ==
+X-Gm-Message-State: AOAM533zN8NkGR4f7eEUz2xw/+A3/ceCiT/MHiT7Y4cXmDXgl4MDWH3D
+        rb4rHUz7g99mB39FzIjjXsqYmNzkLpY=
+X-Google-Smtp-Source: ABdhPJySbHKlONilMxgSTz0tRz1iIrI+IQGst6MP1o+Dhm9cpdIUyvg75yFzuaUSapncQePMHGO9Y0zty3A=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:90b:2246:b0:1c6:5781:7193 with SMTP id
- hk6-20020a17090b224600b001c657817193mr14995812pjb.48.1648861753762; Fri, 01
- Apr 2022 18:09:13 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a63:6d4c:0:b0:398:7c40:c160 with SMTP id
+ i73-20020a636d4c000000b003987c40c160mr17309928pgc.109.1648861758524; Fri, 01
+ Apr 2022 18:09:18 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Sat,  2 Apr 2022 01:09:00 +0000
+Date:   Sat,  2 Apr 2022 01:09:03 +0000
 In-Reply-To: <20220402010903.727604-1-seanjc@google.com>
-Message-Id: <20220402010903.727604-6-seanjc@google.com>
+Message-Id: <20220402010903.727604-9-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220402010903.727604-1-seanjc@google.com>
 X-Mailer: git-send-email 2.35.1.1094.g7c7d902a7c-goog
-Subject: [PATCH 5/8] KVM: SVM: Re-inject INT3/INTO instead of retrying the instruction
+Subject: [PATCH 8/8] KVM: selftests: nSVM: Add svm_nested_soft_inject_test
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -69,222 +69,219 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Re-inject INT3/INTO instead of retrying the instruction if the CPU
-encountered an intercepted exception while vectoring the software
-exception, e.g. if vectoring INT3 encounters a #PF and KVM is using
-shadow paging.  Retrying the instruction is architecturally wrong, e.g.
-will result in a spurious #DB if there's a code breakpoint on the INT3/O,
-and lack of re-injection also breaks nested virtualization, e.g. if L1
-injects a software exception and vectoring the injected exception
-encounters an exception that is intercepted by L0 but not L1.
+From: Maciej S. Szmigiero <maciej.szmigiero@oracle.com>
 
-Due to, ahem, deficiencies in the SVM architecture, acquiring the next
-RIP may require flowing through the emulator even if NRIPS is supported,
-as the CPU clears next_rip if the VM-Exit is due to an exception other
-than "exceptions caused by the INT3, INTO, and BOUND instructions".  To
-deal with this, "skip" the instruction to calculate next_ript, and then
-unwind the RIP write and any side effects (RFLAGS updates).
+Add a KVM self-test that checks whether a nSVM L1 is able to successfully
+inject a software interrupt and a soft exception into its L2 guest.
 
-Reported-by: Maciej S. Szmigiero <maciej.szmigiero@oracle.com>
+In practice, this tests both the next_rip field consistency and
+L1-injected event with intervening L0 VMEXIT during its delivery:
+the first nested VMRUN (that's also trying to inject a software interrupt)
+will immediately trigger a L0 NPF.
+This L0 NPF will have zero in its CPU-returned next_rip field, which if
+incorrectly reused by KVM will trigger a #PF when trying to return to
+such address 0 from the interrupt handler.
+
+Signed-off-by: Maciej S. Szmigiero <maciej.szmigiero@oracle.com>
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- arch/x86/kvm/svm/svm.c | 111 ++++++++++++++++++++++++++++-------------
- arch/x86/kvm/svm/svm.h |   4 +-
- 2 files changed, 79 insertions(+), 36 deletions(-)
+ tools/testing/selftests/kvm/.gitignore        |   1 +
+ tools/testing/selftests/kvm/Makefile          |   1 +
+ .../selftests/kvm/include/x86_64/svm_util.h   |   2 +
+ .../kvm/x86_64/svm_nested_soft_inject_test.c  | 147 ++++++++++++++++++
+ 4 files changed, 151 insertions(+)
+ create mode 100644 tools/testing/selftests/kvm/x86_64/svm_nested_soft_inject_test.c
 
-diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index 6ea8f16e39ac..ecc828d6921e 100644
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -341,9 +341,11 @@ static void svm_set_interrupt_shadow(struct kvm_vcpu *vcpu, int mask)
+diff --git a/tools/testing/selftests/kvm/.gitignore b/tools/testing/selftests/kvm/.gitignore
+index 1f1b6c978bf7..1354d3f4a362 100644
+--- a/tools/testing/selftests/kvm/.gitignore
++++ b/tools/testing/selftests/kvm/.gitignore
+@@ -33,6 +33,7 @@
+ /x86_64/state_test
+ /x86_64/svm_vmcall_test
+ /x86_64/svm_int_ctl_test
++/x86_64/svm_nested_soft_inject_test
+ /x86_64/sync_regs_test
+ /x86_64/tsc_msrs_test
+ /x86_64/userspace_io_test
+diff --git a/tools/testing/selftests/kvm/Makefile b/tools/testing/selftests/kvm/Makefile
+index c9cdbd248727..cef6d583044b 100644
+--- a/tools/testing/selftests/kvm/Makefile
++++ b/tools/testing/selftests/kvm/Makefile
+@@ -66,6 +66,7 @@ TEST_GEN_PROGS_x86_64 += x86_64/state_test
+ TEST_GEN_PROGS_x86_64 += x86_64/vmx_preemption_timer_test
+ TEST_GEN_PROGS_x86_64 += x86_64/svm_vmcall_test
+ TEST_GEN_PROGS_x86_64 += x86_64/svm_int_ctl_test
++TEST_GEN_PROGS_x86_64 += x86_64/svm_nested_soft_inject_test
+ TEST_GEN_PROGS_x86_64 += x86_64/tsc_scaling_sync
+ TEST_GEN_PROGS_x86_64 += x86_64/sync_regs_test
+ TEST_GEN_PROGS_x86_64 += x86_64/userspace_io_test
+diff --git a/tools/testing/selftests/kvm/include/x86_64/svm_util.h b/tools/testing/selftests/kvm/include/x86_64/svm_util.h
+index a25aabd8f5e7..d49f7c9b4564 100644
+--- a/tools/testing/selftests/kvm/include/x86_64/svm_util.h
++++ b/tools/testing/selftests/kvm/include/x86_64/svm_util.h
+@@ -16,6 +16,8 @@
+ #define CPUID_SVM_BIT		2
+ #define CPUID_SVM		BIT_ULL(CPUID_SVM_BIT)
  
- }
++#define SVM_EXIT_EXCP_BASE	0x040
++#define SVM_EXIT_HLT		0x078
+ #define SVM_EXIT_MSR		0x07c
+ #define SVM_EXIT_VMMCALL	0x081
  
--static int svm_skip_emulated_instruction(struct kvm_vcpu *vcpu)
-+static int __svm_skip_emulated_instruction(struct kvm_vcpu *vcpu,
-+					   bool commit_side_effects)
- {
- 	struct vcpu_svm *svm = to_svm(vcpu);
-+	unsigned long old_rflags;
- 
- 	/*
- 	 * SEV-ES does not expose the next RIP. The RIP update is controlled by
-@@ -358,18 +360,71 @@ static int svm_skip_emulated_instruction(struct kvm_vcpu *vcpu)
- 	}
- 
- 	if (!svm->next_rip) {
-+		if (unlikely(!commit_side_effects))
-+			old_rflags = svm->vmcb->save.rflags;
+diff --git a/tools/testing/selftests/kvm/x86_64/svm_nested_soft_inject_test.c b/tools/testing/selftests/kvm/x86_64/svm_nested_soft_inject_test.c
+new file mode 100644
+index 000000000000..d39be5d885c1
+--- /dev/null
++++ b/tools/testing/selftests/kvm/x86_64/svm_nested_soft_inject_test.c
+@@ -0,0 +1,147 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Copyright (C) 2022 Oracle and/or its affiliates.
++ *
++ * Based on:
++ *   svm_int_ctl_test
++ *
++ *   Copyright (C) 2021, Red Hat, Inc.
++ *
++ */
 +
- 		if (!kvm_emulate_instruction(vcpu, EMULTYPE_SKIP))
- 			return 0;
++#include "test_util.h"
++#include "kvm_util.h"
++#include "processor.h"
++#include "svm_util.h"
 +
-+		if (unlikely(!commit_side_effects))
-+			svm->vmcb->save.rflags = old_rflags;
- 	} else {
- 		kvm_rip_write(vcpu, svm->next_rip);
- 	}
- 
- done:
--	svm_set_interrupt_shadow(vcpu, 0);
-+	if (likely(commit_side_effects))
-+		svm_set_interrupt_shadow(vcpu, 0);
- 
- 	return 1;
- }
- 
-+static int svm_skip_emulated_instruction(struct kvm_vcpu *vcpu)
++#define VCPU_ID		0
++#define INT_NR			0x20
++#define X86_FEATURE_NRIPS	BIT(3)
++
++#define vmcall()		\
++	__asm__ __volatile__(	\
++		"vmmcall\n"	\
++		)
++
++#define ud2()			\
++	__asm__ __volatile__(	\
++		"ud2\n"	\
++		)
++
++#define hlt()			\
++	__asm__ __volatile__(	\
++		"hlt\n"	\
++		)
++
++static unsigned int bp_fired;
++static void guest_bp_handler(struct ex_regs *regs)
 +{
-+	return __svm_skip_emulated_instruction(vcpu, true);
++	bp_fired++;
 +}
 +
-+static int svm_update_soft_interrupt_rip(struct kvm_vcpu *vcpu)
++static unsigned int int_fired;
++static void guest_int_handler(struct ex_regs *regs)
 +{
-+	unsigned long rip, old_rip = kvm_rip_read(vcpu);
-+	struct vcpu_svm *svm = to_svm(vcpu);
++	int_fired++;
++}
 +
-+	/*
-+	 * Due to architectural shortcomings, the CPU doesn't always provide
-+	 * NextRIP, e.g. if KVM intercepted an exception that occurred while
-+	 * the CPU was vectoring an INTO/INT3 in the guest.  Temporarily skip
-+	 * the instruction even if NextRIP is supported to acquire the next
-+	 * RIP so that it can be shoved into the NextRIP field, otherwise
-+	 * hardware will fail to advance guest RIP during event injection.
-+	 * Drop the exception/interrupt if emulation fails and effectively
-+	 * retry the instruction, it's the least awful option.  If NRIPS is
-+	 * in use, the skip must not commit any side effects such as clearing
-+	 * the interrupt shadow or RFLAGS.RF.
-+	 */
-+	if (!__svm_skip_emulated_instruction(vcpu, !nrips))
-+		return -EIO;
++static void l2_guest_code(void)
++{
++	GUEST_ASSERT(int_fired == 1);
++	vmcall();
++	ud2();
 +
-+	rip = kvm_rip_read(vcpu);
++	GUEST_ASSERT(bp_fired == 1);
++	hlt();
++}
 +
-+	/*
-+	 * If NextRIP is supported, rewind RIP and update NextRip.  If NextRip
-+	 * isn't supported, keep the result of the skip as the CPU obviously
-+	 * won't advance RIP, but stash away the injection information so that
-+	 * RIP can be unwound if injection fails.
-+	 */
-+	if (nrips) {
-+		kvm_rip_write(vcpu, old_rip);
-+		svm->vmcb->control.next_rip = rip;
-+	} else {
-+		if (boot_cpu_has(X86_FEATURE_NRIPS))
-+			svm->vmcb->control.next_rip = rip;
++static void l1_guest_code(struct svm_test_data *svm)
++{
++	#define L2_GUEST_STACK_SIZE 64
++	unsigned long l2_guest_stack[L2_GUEST_STACK_SIZE];
++	struct vmcb *vmcb = svm->vmcb;
 +
-+		svm->soft_int_linear_rip = rip + svm->vmcb->save.cs.base;
-+		svm->soft_int_injected = rip - old_rip;
++	/* Prepare for L2 execution. */
++	generic_svm_setup(svm, l2_guest_code,
++			  &l2_guest_stack[L2_GUEST_STACK_SIZE]);
++
++	vmcb->control.intercept_exceptions |= BIT(PF_VECTOR) | BIT(UD_VECTOR);
++	vmcb->control.intercept |= BIT(INTERCEPT_HLT);
++
++	vmcb->control.event_inj = INT_NR | SVM_EVTINJ_VALID | SVM_EVTINJ_TYPE_SOFT;
++	/* The return address pushed on stack */
++	vmcb->control.next_rip = vmcb->save.rip;
++
++	run_guest(vmcb, svm->vmcb_gpa);
++	GUEST_ASSERT_3(vmcb->control.exit_code == SVM_EXIT_VMMCALL,
++		       vmcb->control.exit_code,
++		       vmcb->control.exit_info_1, vmcb->control.exit_info_2);
++
++	/* Skip over VMCALL */
++	vmcb->save.rip += 3;
++
++	vmcb->control.event_inj = BP_VECTOR | SVM_EVTINJ_VALID | SVM_EVTINJ_TYPE_EXEPT;
++	/* The return address pushed on stack, skip over UD2 */
++	vmcb->control.next_rip = vmcb->save.rip + 2;
++
++	run_guest(vmcb, svm->vmcb_gpa);
++	GUEST_ASSERT_3(vmcb->control.exit_code == SVM_EXIT_HLT,
++		       vmcb->control.exit_code,
++		       vmcb->control.exit_info_1, vmcb->control.exit_info_2);
++
++	GUEST_DONE();
++}
++
++int main(int argc, char *argv[])
++{
++	struct kvm_cpuid_entry2 *cpuid;
++	struct kvm_vm *vm;
++	vm_vaddr_t svm_gva;
++	struct kvm_guest_debug debug;
++
++	nested_svm_check_supported();
++
++	cpuid = kvm_get_supported_cpuid_entry(0x8000000a);
++	if (!(cpuid->edx & X86_FEATURE_NRIPS)) {
++		print_skip("nRIP Save unavailable");
++		exit(KSFT_SKIP);
 +	}
++
++	vm = vm_create_default(VCPU_ID, 0, (void *) l1_guest_code);
++
++	vm_init_descriptor_tables(vm);
++	vcpu_init_descriptor_tables(vm, VCPU_ID);
++
++	vm_install_exception_handler(vm, BP_VECTOR, guest_bp_handler);
++	vm_install_exception_handler(vm, INT_NR, guest_int_handler);
++
++	vcpu_alloc_svm(vm, &svm_gva);
++	vcpu_args_set(vm, VCPU_ID, 1, svm_gva);
++
++	memset(&debug, 0, sizeof(debug));
++	vcpu_set_guest_debug(vm, VCPU_ID, &debug);
++
++	struct kvm_run *run = vcpu_state(vm, VCPU_ID);
++	struct ucall uc;
++
++	vcpu_run(vm, VCPU_ID);
++	TEST_ASSERT(run->exit_reason == KVM_EXIT_IO,
++		    "Got exit_reason other than KVM_EXIT_IO: %u (%s)\n",
++		    run->exit_reason,
++		    exit_reason_str(run->exit_reason));
++
++	switch (get_ucall(vm, VCPU_ID, &uc)) {
++	case UCALL_ABORT:
++		TEST_FAIL("%s at %s:%ld, vals = 0x%lx 0x%lx 0x%lx", (const char *)uc.args[0],
++			  __FILE__, uc.args[1], uc.args[2], uc.args[3], uc.args[4]);
++		break;
++		/* NOT REACHED */
++	case UCALL_DONE:
++		goto done;
++	default:
++		TEST_FAIL("Unknown ucall 0x%lx.", uc.cmd);
++	}
++done:
++	kvm_vm_free(vm);
 +	return 0;
 +}
-+
- static void svm_queue_exception(struct kvm_vcpu *vcpu)
- {
- 	struct vcpu_svm *svm = to_svm(vcpu);
-@@ -379,25 +434,9 @@ static void svm_queue_exception(struct kvm_vcpu *vcpu)
- 
- 	kvm_deliver_exception_payload(vcpu);
- 
--	if (nr == BP_VECTOR && !nrips) {
--		unsigned long rip, old_rip = kvm_rip_read(vcpu);
--
--		/*
--		 * For guest debugging where we have to reinject #BP if some
--		 * INT3 is guest-owned:
--		 * Emulate nRIP by moving RIP forward. Will fail if injection
--		 * raises a fault that is not intercepted. Still better than
--		 * failing in all cases.
--		 */
--		(void)svm_skip_emulated_instruction(vcpu);
--		rip = kvm_rip_read(vcpu);
--
--		if (boot_cpu_has(X86_FEATURE_NRIPS))
--			svm->vmcb->control.next_rip = rip;
--
--		svm->int3_rip = rip + svm->vmcb->save.cs.base;
--		svm->int3_injected = rip - old_rip;
--	}
-+	if (kvm_exception_is_soft(nr) &&
-+	    svm_update_soft_interrupt_rip(vcpu))
-+		return;
- 
- 	svm->vmcb->control.event_inj = nr
- 		| SVM_EVTINJ_VALID
-@@ -3676,9 +3715,9 @@ static void svm_complete_interrupts(struct kvm_vcpu *vcpu)
- 	u8 vector;
- 	int type;
- 	u32 exitintinfo = svm->vmcb->control.exit_int_info;
--	unsigned int3_injected = svm->int3_injected;
-+	unsigned soft_int_injected = svm->soft_int_injected;
- 
--	svm->int3_injected = 0;
-+	svm->soft_int_injected = 0;
- 
- 	/*
- 	 * If we've made progress since setting HF_IRET_MASK, we've
-@@ -3698,6 +3737,18 @@ static void svm_complete_interrupts(struct kvm_vcpu *vcpu)
- 	if (!(exitintinfo & SVM_EXITINTINFO_VALID))
- 		return;
- 
-+	/*
-+	 * If NextRIP isn't enabled, KVM must manually advance RIP prior to
-+	 * injecting the soft exception/interrupt.  That advancement needs to
-+	 * be unwound if vectoring didn't complete.  Note, the _new_ event may
-+	 * not be the injected event, e.g. if KVM injected an INTn, the INTn
-+	 * hit a #NP in the guest, and the #NP encountered a #PF, the #NP will
-+	 * be the reported vectored event, but RIP still needs to be unwound.
-+	 */
-+	if (soft_int_injected &&
-+	    kvm_is_linear_rip(vcpu, to_svm(vcpu)->soft_int_linear_rip))
-+		kvm_rip_write(vcpu, kvm_rip_read(vcpu) - soft_int_injected);
-+
- 	kvm_make_request(KVM_REQ_EVENT, vcpu);
- 
- 	vector = exitintinfo & SVM_EXITINTINFO_VEC_MASK;
-@@ -3711,9 +3762,9 @@ static void svm_complete_interrupts(struct kvm_vcpu *vcpu)
- 	 * hit a #NP in the guest, and the #NP encountered a #PF, the #NP will
- 	 * be the reported vectored event, but RIP still needs to be unwound.
- 	 */
--	if (int3_injected && type == SVM_EXITINTINFO_TYPE_EXEPT &&
--	   kvm_is_linear_rip(vcpu, svm->int3_rip))
--		kvm_rip_write(vcpu, kvm_rip_read(vcpu) - int3_injected);
-+	if (soft_int_injected && type == SVM_EXITINTINFO_TYPE_EXEPT &&
-+	   kvm_is_linear_rip(vcpu, svm->soft_int_linear_rip))
-+		kvm_rip_write(vcpu, kvm_rip_read(vcpu) - soft_int_injected);
- 
- 	switch (type) {
- 	case SVM_EXITINTINFO_TYPE_NMI:
-@@ -3726,14 +3777,6 @@ static void svm_complete_interrupts(struct kvm_vcpu *vcpu)
- 		if (vector == X86_TRAP_VC)
- 			break;
- 
--		/*
--		 * In case of software exceptions, do not reinject the vector,
--		 * but re-execute the instruction instead. Rewind RIP first
--		 * if we emulated INT3 before.
--		 */
--		if (kvm_exception_is_soft(vector))
--			break;
--
- 		if (exitintinfo & SVM_EXITINTINFO_VALID_ERR) {
- 			u32 err = svm->vmcb->control.exit_int_info_err;
- 			kvm_requeue_exception_e(vcpu, vector, err);
-diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
-index 47e7427d0395..a770a1c7ddd2 100644
---- a/arch/x86/kvm/svm/svm.h
-+++ b/arch/x86/kvm/svm/svm.h
-@@ -230,8 +230,8 @@ struct vcpu_svm {
- 	bool nmi_singlestep;
- 	u64 nmi_singlestep_guest_rflags;
- 
--	unsigned int3_injected;
--	unsigned long int3_rip;
-+	unsigned soft_int_injected;
-+	unsigned long soft_int_linear_rip;
- 
- 	/* optional nested SVM features that are enabled for this guest  */
- 	bool nrips_enabled                : 1;
 -- 
 2.35.1.1094.g7c7d902a7c-goog
 
