@@ -2,143 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52983C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 16:42:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99FD7C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 16:44:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358361AbiDBQoY (ORCPT
+        id S1358381AbiDBQpv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Apr 2022 12:44:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46096 "EHLO
+        Sat, 2 Apr 2022 12:45:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234325AbiDBQoU (ORCPT
+        with ESMTP id S1358372AbiDBQpo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Apr 2022 12:44:20 -0400
-Received: from mail-ot1-x32c.google.com (mail-ot1-x32c.google.com [IPv6:2607:f8b0:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8733127589
-        for <linux-kernel@vger.kernel.org>; Sat,  2 Apr 2022 09:42:28 -0700 (PDT)
-Received: by mail-ot1-x32c.google.com with SMTP id a17-20020a9d3e11000000b005cb483c500dso4246130otd.6
-        for <linux-kernel@vger.kernel.org>; Sat, 02 Apr 2022 09:42:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=LxIBYGAnw0G2uTyNe8oc7bEWhXzBTFL31jJUCuZn7Ig=;
-        b=Ud7pFw36L7xNhE5Zi5Gc2HHWzUiX54grQmv9viTGoFtw7vSweK2Z/4PZTt2+wi9Q/e
-         CpLM/f6QKrhwXxxlP0vBnHb+LUUSnYxLDiLMvAhViF8IFUuJnJCwNyOyfTijV4Uw/dMm
-         UigcLdy9E5wI2GKtAtoqgQUFdttuzH7JMfPtryDTYO576ueDsxz/wcaPd+iKwJwNdpOg
-         z0j+KzUDVODl9sWRFFsDNgFlycdJ6gTC4Ki/sddE66viVryGpj2+PiCfoOPEBRRi5TuY
-         J+RptEc5E9pNC8IjWcTqfkzptcULkwl6WlHhcGytwQasuAeoVd3S3tgUtPcBxYfjgebz
-         ekZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :subject:content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=LxIBYGAnw0G2uTyNe8oc7bEWhXzBTFL31jJUCuZn7Ig=;
-        b=HjBPUViGPj3j7DD0ibN9ehJQ4WkNihrhfR2xZ7LeNdZaBvxrLjrDWbcy24ofQl3JzD
-         MGulT8BEJlP0blO+/N7OjVEPTxts+JopZMFkYdpuVeLeTbLgKe1ahrRLTL8l3mQHTdCc
-         o7kBKH28MHIwOr1nJ1OFd7vMz7iVMpMUeDMlcaCbz+5N21Dpbcf13Ct/ccJrL6ADcwEs
-         f4HbBYGay7h0ReoqLF4s6PTP00PhhnLMenMu9WcfpagNiXxxlGayCKKnEi6RCE8zkf/y
-         0NsQCKOxA7v0N5tmx1w8FnpCTUrP0ypU9QnuoOAp62H/jYJsQG/lfDdhSItppzsLK97I
-         GFEw==
-X-Gm-Message-State: AOAM532nVQDVGc5/CMWZBMvpFjelb0ERIP7Iz8DNdc5YbmjjurhXy1G3
-        sWPsCqM7UeNTsECWAU6AgwY=
-X-Google-Smtp-Source: ABdhPJxX1JfkTpQWEVQe5XDpoAfaEarTckKHCpsEqTCFXzoIHsXejI5ei7Oj+GSHSDH5/ObNYlzKOA==
-X-Received: by 2002:a05:6830:1047:b0:5b2:3173:d781 with SMTP id b7-20020a056830104700b005b23173d781mr9031403otp.178.1648917748252;
-        Sat, 02 Apr 2022 09:42:28 -0700 (PDT)
-Received: from ?IPV6:2603:8090:2005:39b3::1004? (2603-8090-2005-39b3-0000-0000-0000-1004.res6.spectrum.com. [2603:8090:2005:39b3::1004])
-        by smtp.gmail.com with ESMTPSA id eq37-20020a056870a92500b000c6699dad62sm2529148oab.41.2022.04.02.09.42.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 02 Apr 2022 09:42:27 -0700 (PDT)
-Sender: Larry Finger <larry.finger@gmail.com>
-Message-ID: <583569c9-baf0-b478-d14a-4a2beb3708d3@lwfinger.net>
-Date:   Sat, 2 Apr 2022 11:42:26 -0500
+        Sat, 2 Apr 2022 12:45:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB27F1AF3D;
+        Sat,  2 Apr 2022 09:43:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 58721B80A27;
+        Sat,  2 Apr 2022 16:43:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AAEEC340F2;
+        Sat,  2 Apr 2022 16:43:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648917829;
+        bh=HL5ErD+PNC54BIsnAcEv8+1ZhI/4B9+Tha0CXuwWvg8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ZbylgVab8HyjN7gPZNVlQDJjJ8LU7lOLdJv06UIkBC9LH7qM5Zkua4APb3g4Sbo+1
+         +qrWrJl+mF3NnwitsoJFXaAySj1MQQdsAI3W7DC5MNpnkmP4QQDdutGOAsKJv7gSHi
+         5woLn4CRn14k6JM38GFaUwCcgIEZ5iMxD6cfb3dipuCFmr3myn2nmbSO9mgAVP/o+E
+         +R/eaPBjeEwVrIzHZSKE3Xzsr9qAvCkvvDyusKy3hmV+qZjq7c3tqnJOp0EZvuvdYO
+         UjAZhv16YRil6dr2GihTY73Y190nVe4KYCHkev/F1wMYdgRbBtNxavQxmK2rPwWjCG
+         EquiA8+wDgvLg==
+Date:   Sat, 2 Apr 2022 17:51:31 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Stephen Boyd <swboyd@chromium.org>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org, Gwendal Grignou <gwendal@chromium.org>
+Subject: Re: [PATCH v2] iio:proximity:sx9324: Fix hardware gain read/write
+Message-ID: <20220402175131.75bb95de@jic23-huawei>
+In-Reply-To: <CAE-0n50T9uqcB9EK-RnGXPGhd6RWdrsE9pA5FJY9yC58xd=05A@mail.gmail.com>
+References: <20220324222928.874522-1-swboyd@chromium.org>
+        <20220327155147.52e898b4@jic23-huawei>
+        <CAE-0n50T9uqcB9EK-RnGXPGhd6RWdrsE9pA5FJY9yC58xd=05A@mail.gmail.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 6/6] staging: r8188eu: remove spaces before tabs
-Content-Language: en-US
-To:     Rebecca Mckeever <remckee0@gmail.com>, outreachy@lists.linux.dev
-Cc:     Phillip Potter <phil@philpotter.co.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <cover.1648888461.git.remckee0@gmail.com>
- <2fd10f393e3bc7381a85d0bfc1ec04a80af4eabb.1648888462.git.remckee0@gmail.com>
-From:   Larry Finger <Larry.Finger@lwfinger.net>
-In-Reply-To: <2fd10f393e3bc7381a85d0bfc1ec04a80af4eabb.1648888462.git.remckee0@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/2/22 03:50, Rebecca Mckeever wrote:
-> Conform to Linux kernel coding style.
-> 
-> Reported by checkpatch:
-> 
-> WARNING: please, no space before tabs
-> 
-> Signed-off-by: Rebecca Mckeever <remckee0@gmail.com>
-> ---
->   drivers/staging/r8188eu/core/rtw_cmd.c | 16 ++++++++--------
->   1 file changed, 8 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/staging/r8188eu/core/rtw_cmd.c b/drivers/staging/r8188eu/core/rtw_cmd.c
-> index 832bf25b1a83..8ae25cb4246b 100644
-> --- a/drivers/staging/r8188eu/core/rtw_cmd.c
-> +++ b/drivers/staging/r8188eu/core/rtw_cmd.c
-> @@ -548,9 +548,9 @@ u8 rtw_joinbss_cmd(struct adapter  *padapter, struct wlan_network *pnetwork)
->   
->   	phtpriv->ht_option = false;
->   	if (pregistrypriv->ht_enable) {
-> -		/* 	Added by Albert 2010/06/23 */
-> -		/* 	For the WEP mode, we will use the bg mode to do the connection to avoid some IOT issue. */
-> -		/* 	Especially for Realtek 8192u SoftAP. */
-> +		/*	Added by Albert 2010/06/23 */
-> +		/*	For the WEP mode, we will use the bg mode to do the connection to avoid some IOT issue. */
-> +		/*	Especially for Realtek 8192u SoftAP. */
->   		if ((padapter->securitypriv.dot11PrivacyAlgrthm != _WEP40_) &&
->   		    (padapter->securitypriv.dot11PrivacyAlgrthm != _WEP104_) &&
->   		    (padapter->securitypriv.dot11PrivacyAlgrthm != _TKIP_)) {
-> @@ -1010,7 +1010,7 @@ u8 rtw_lps_ctrl_wk_cmd(struct adapter *padapter, u8 lps_ctrl_type, u8 enqueue)
->   	u8	res = _SUCCESS;
->   
->   	/* if (!pwrctrlpriv->bLeisurePs) */
-> -	/* 	return res; */
-> +	/*	return res; */
->   
->   	if (enqueue) {
->   		ph2c = kzalloc(sizeof(struct cmd_obj), GFP_ATOMIC);
-> @@ -1151,8 +1151,8 @@ u8 p2p_protocol_wk_cmd(struct adapter *padapter, int intCmdType)
->   	}
->   
->   	pdrvextra_cmd_parm->ec_id = P2P_PROTO_WK_CID;
-> -	pdrvextra_cmd_parm->type_size = intCmdType;	/* 	As the command tppe. */
-> -	pdrvextra_cmd_parm->pbuf = NULL;		/* 	Must be NULL here */
-> +	pdrvextra_cmd_parm->type_size = intCmdType;	/*	As the command tppe. */
-> +	pdrvextra_cmd_parm->pbuf = NULL;		/*	Must be NULL here */
->   
->   	init_h2fwcmd_w_parm_no_rsp(ph2c, pdrvextra_cmd_parm, GEN_CMD_CODE(_Set_Drv_Extra));
->   
-> @@ -1378,8 +1378,8 @@ u8 rtw_drvextra_cmd_hdl(struct adapter *padapter, unsigned char *pbuf)
->   		p2p_ps_wk_hdl(padapter, pdrvextra_cmd->type_size);
->   		break;
->   	case P2P_PROTO_WK_CID:
-> -		/* 	Commented by Albert 2011/07/01 */
-> -		/* 	I used the type_size as the type command */
-> +		/*	Commented by Albert 2011/07/01 */
-> +		/*	I used the type_size as the type command */
->   		p2p_protocol_wk_hdl(padapter, pdrvextra_cmd->type_size);
->   		break;
->   	case CHECK_HIQ_WK_CID:
+On Tue, 29 Mar 2022 22:25:31 +0200
+Stephen Boyd <swboyd@chromium.org> wrote:
 
-Congratulations on a very clear set of patches. Each performs a single change 
-exactly as required by the rules.
+> Quoting Jonathan Cameron (2022-03-27 07:51:47)
+> > On Thu, 24 Mar 2022 15:29:28 -0700
+> > Stephen Boyd <swboyd@chromium.org> wrote:
+> >  
+> > > There are four possible gain values according to 'sx9324_gain_vals[]':
+> > >
+> > >       1, 2, 4, and 8
+> > >
+> > > The values are off by one when writing and reading the register. The
+> > > bits should be set according to this equation:
+> > >
+> > >       ilog2(<gain>) + 1
+> > >
+> > > so that a gain of 8 is 0x3 in the register field and a gain of 4 is 0x2
+> > > in the register field, etc  
+> >
+> > Example seems wrong...
+> >
+> > ilog2(8) + 1 = 3 + 1 = 0x4
+> > ilog2(4) + 1 = 2 + 1 = 0x3
+> > ilog2(2) + 1 = 1 + 1 = 0x2
+> > ilog2(1) + 1 = 0 + 1 = 0x1
+> >                        0x0 reserved.
+> >
+> > or have I misunderstood?  
+> 
+> Nope. I hit the wrong key but your table is correct. Can you fix it when
+> applying?
 
-For all 6,
-Acked-by: Larry Finger <Larry.Finger@lwfinger.net>
+Done and applied to the fixes-togreg branch of iio.git but I haven't pushed
+it out yet as I want to rebase that tree on rc1 when it comes out.
+
+After that, please take a quick look check I didn't mess up.
 
 Thanks,
-Larry
+
+Jonathan
