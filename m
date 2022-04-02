@@ -2,109 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E835C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 13:47:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F89AC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 13:48:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355721AbiDBNsx (ORCPT
+        id S1355811AbiDBNuf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Apr 2022 09:48:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39350 "EHLO
+        Sat, 2 Apr 2022 09:50:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240004AbiDBNsr (ORCPT
+        with ESMTP id S1355801AbiDBNu1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Apr 2022 09:48:47 -0400
-Received: from mail-oi1-f175.google.com (mail-oi1-f175.google.com [209.85.167.175])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF3F415DABB;
-        Sat,  2 Apr 2022 06:46:54 -0700 (PDT)
-Received: by mail-oi1-f175.google.com with SMTP id b188so5462633oia.13;
-        Sat, 02 Apr 2022 06:46:54 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=PYegHaEuhlY2VhKGl3I3pW9pPdgl7qRkG8VHF5n6JTw=;
-        b=FYPHnBWqroeBrbArtZQBD1Q3KEmj8oF0r9EHenL1v5o1HGQ5GSL+IF7sNvBSBaKidb
-         /Ak5Ra8JWE9owNnc0cK+diNu9keodYYrq2RE71FIYbEQps9FFXB89bzj/OoDE65qsDCm
-         aYTfcMuW7GZ2w5mAdEI7iMYq2XX18oTnB1rLBp1znY3cf+pMET8pXpIskMIKjtxBfZ2q
-         9RN2/u3y0HOla1VzI94nk0ybRBhT147OMgI37dWlXzeyaxbk113HRQZql/SUyvsVvI4I
-         UTDRCiPoXvjlI8F8+558ksDn9QNR3BgGlisZoJnqIdiHvw3x2z9k/ojT+7oZGYwazI2S
-         eCyQ==
-X-Gm-Message-State: AOAM532Reml2u8bo2nLFA9CLp5A0+Jydykh0Yqw+0y7Z+bVjZB39Lc2n
-        d7BRaV+6YjSb50wGHttRjGo48YS13Q==
-X-Google-Smtp-Source: ABdhPJx1x7E35z39ft+D4POeguSDa0gubfQC2fnl4EmTmsyuU+lI7tGV/uos8UwZuGXiMoWb3u+Qsg==
-X-Received: by 2002:a05:6808:2008:b0:2da:5b12:83ff with SMTP id q8-20020a056808200800b002da5b1283ffmr6521278oiw.216.1648907214036;
-        Sat, 02 Apr 2022 06:46:54 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id l12-20020a056870d3cc00b000ddeb925982sm2101659oag.38.2022.04.02.06.46.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 02 Apr 2022 06:46:53 -0700 (PDT)
-Received: (nullmailer pid 903502 invoked by uid 1000);
-        Sat, 02 Apr 2022 13:46:51 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Kathiravan T <kathirav@codeaurora.org>,
-        linux-clk@vger.kernel.org, Stephen Boyd <sboyd@kernel.org>,
-        linux-remoteproc@vger.kernel.org,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        linux-arm-msm@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Michael Turquette <mturquette@baylibre.com>,
-        Mark Brown <broonie@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>
-In-Reply-To: <20220401201035.189106-9-krzysztof.kozlowski@linaro.org>
-References: <20220401201035.189106-1-krzysztof.kozlowski@linaro.org> <20220401201035.189106-9-krzysztof.kozlowski@linaro.org>
-Subject: Re: [PATCH 08/10] dt-bindings: soc: qcom,smd: convert to dtschema
-Date:   Sat, 02 Apr 2022 08:46:51 -0500
-Message-Id: <1648907211.831405.903501.nullmailer@robh.at.kernel.org>
+        Sat, 2 Apr 2022 09:50:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DD2CEA1;
+        Sat,  2 Apr 2022 06:48:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7B055B808C6;
+        Sat,  2 Apr 2022 13:48:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9C8AC340F3;
+        Sat,  2 Apr 2022 13:48:31 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="d28JnGQn"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1648907309;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=NgYDNU0LQiY6oGkA7JBX7Ywvm2wYE+9Kr5hdSyar1FY=;
+        b=d28JnGQnNAjDqdvF6yV+SPY3luDFLVLJizwvnP2vvfCCuZoTZMV1RgPIKd+yVRWT4D0wUt
+        1gsNfKVSBsgY9KGVpEVlML9M9aSPi0H2fDZO0+EPanG67VCUe+uOQOoztN1eG8frOC7QgA
+        eca+VPWzaBFuhZRG+eu6Cs05KO5kqcE=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id ec277bcf (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Sat, 2 Apr 2022 13:48:29 +0000 (UTC)
+Received: by mail-yw1-f170.google.com with SMTP id 00721157ae682-2eafabbc80aso58077437b3.11;
+        Sat, 02 Apr 2022 06:48:29 -0700 (PDT)
+X-Gm-Message-State: AOAM530Ou8CWE+8rh98X9kKOxbScL0YDK5VjStP8RN5jgoKvNn5fgz0r
+        vPzrDavWQkeVsDtOnNWS7I9ZR4Laj3noRRAbeBE=
+X-Google-Smtp-Source: ABdhPJx4PUBZG9fWTmS3fDp6+Djy5WxFlwhbGEo6ocKKRYNhKoMpheI843vvlWLu9wgp8qX/jvyi3v1lXm+tqqM+9HM=
+X-Received: by 2002:a81:66c3:0:b0:2eb:41cf:1202 with SMTP id
+ a186-20020a8166c3000000b002eb41cf1202mr1884044ywc.396.1648907308407; Sat, 02
+ Apr 2022 06:48:28 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220331150706.124075-1-Jason@zx2c4.com> <20220331152641.169301-1-Jason@zx2c4.com>
+ <CACXcFm=vw6XCnO8peYH4V+sPR076O-Gav46r83+CZJ8oXM8iHA@mail.gmail.com>
+In-Reply-To: <CACXcFm=vw6XCnO8peYH4V+sPR076O-Gav46r83+CZJ8oXM8iHA@mail.gmail.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Sat, 2 Apr 2022 15:48:17 +0200
+X-Gmail-Original-Message-ID: <CAHmME9qd_jHB-7FHNqNhZC1AQBAZjUjQAYwqcLn3sz-FXoEAFw@mail.gmail.com>
+Message-ID: <CAHmME9qd_jHB-7FHNqNhZC1AQBAZjUjQAYwqcLn3sz-FXoEAFw@mail.gmail.com>
+Subject: Re: [PATCH v2] random: mix build-time latent entropy into pool at init
+To:     Sandy Harris <sandyinchina@gmail.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        "Theodore Ts'o" <tytso@mit.edu>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 01 Apr 2022 22:10:33 +0200, Krzysztof Kozlowski wrote:
-> Convert the Qualcomm Shared Memory Driver bindings to DT Schema.
-> 
-> Changes against original bindings: enforce only specific names of child
-> nodes, instead of any names.
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> ---
->  .../regulator/qcom,smd-rpm-regulator.yaml     |   2 +-
->  .../bindings/remoteproc/qcom,q6v5.txt         |   2 +-
->  .../bindings/remoteproc/qcom,wcnss-pil.txt    |   2 +-
->  .../bindings/soc/qcom/qcom,smd-rpm.yaml       |   4 +-
->  .../devicetree/bindings/soc/qcom/qcom,smd.txt |  98 -------------
->  .../bindings/soc/qcom/qcom,smd.yaml           | 137 ++++++++++++++++++
->  6 files changed, 142 insertions(+), 103 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/soc/qcom/qcom,smd.txt
->  create mode 100644 Documentation/devicetree/bindings/soc/qcom/qcom,smd.yaml
-> 
+Hi Sandy,
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+On Sat, Apr 2, 2022 at 6:45 AM Sandy Harris <sandyinchina@gmail.com> wrote:
+> > In switching to using a hash function, this required us to
+> > specifically initialize it to some specific state,
+>
+> Hash functions do not require that. Any such function must
+> work correctly with a new input block and a more-or-less
+> random state from hashing previous blocks.
 
-yamllint warnings/errors:
+Well yes and no. Strictly no in the sense that blake2s_state has a few
+book-keeping variables, which we probably benefit in terms of caching
+from having next to the other state variables. Almost yes in the sense
+that in the ideal model, the hash state can become _anything_ so
+initializing it to random might be okay. But in practice, maybe not,
+because at the moment the latent entropy plugin is actually expanding
+a 64-bit seed with a basic LFSR, rather than supplying more uniformly
+random bytes (I have a patch out for that now). These details might
+matter, so rather than tempting fate, just calling blake2s_update the
+way the hash function is intended to be used seems a lot more cautious
+than poking at the function's innards unnecessarily.
 
-dtschema/dtc warnings/errors:
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/soc/qcom/qcom,smd.example.dt.yaml: rpm-requests: 'clock-controller' does not match any of the regexes: 'pinctrl-[0-9]+'
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/soc/qcom/qcom,smd-rpm.yaml
-Documentation/devicetree/bindings/soc/qcom/qcom,smd.example.dt.yaml:0:0: /example-0/shared-memory/rpm/rpm-requests/clock-controller: failed to match any schema with compatible: ['qcom,rpmcc-msm8974', 'qcom,rpmcc']
-Documentation/devicetree/bindings/soc/qcom/qcom,smd.example.dt.yaml:0:0: /example-0/shared-memory/rpm/rpm-requests/clock-controller: failed to match any schema with compatible: ['qcom,rpmcc-msm8974', 'qcom,rpmcc']
-
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/patch/
-
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
-
+Jason
