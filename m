@@ -2,102 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BD1CC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 09:50:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43756C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 09:52:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354204AbiDBJwp (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Apr 2022 05:52:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39122 "EHLO
+        id S239997AbiDBJyZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 2 Apr 2022 05:54:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354189AbiDBJwl (ORCPT
+        with ESMTP id S239868AbiDBJyY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Apr 2022 05:52:41 -0400
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9CE0657BE;
-        Sat,  2 Apr 2022 02:50:48 -0700 (PDT)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4KVsjd2M5Zz9sSQ;
-        Sat,  2 Apr 2022 11:50:45 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id z3MUvRq6RmtZ; Sat,  2 Apr 2022 11:50:45 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4KVsjd1DWVz9sSK;
-        Sat,  2 Apr 2022 11:50:45 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 125F78B76D;
-        Sat,  2 Apr 2022 11:50:40 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id HCQ8W1xZ0UnK; Sat,  2 Apr 2022 11:50:40 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.202.136])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id CE5D98B768;
-        Sat,  2 Apr 2022 11:50:39 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 2329oSiI683640
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Sat, 2 Apr 2022 11:50:28 +0200
-Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 2329oSfu683638;
-        Sat, 2 Apr 2022 11:50:28 +0200
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Mark Brown <broonie@kernel.org>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org
-Subject: [PATCH] spi: Prepare cleanup of powerpc's asm/prom.h
-Date:   Sat,  2 Apr 2022 11:50:21 +0200
-Message-Id: <5ed3298d8b5b1b5bf681d79584c61cb495852f4e.1648833423.git.christophe.leroy@csgroup.eu>
-X-Mailer: git-send-email 2.35.1
+        Sat, 2 Apr 2022 05:54:24 -0400
+Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCBE4198974;
+        Sat,  2 Apr 2022 02:52:32 -0700 (PDT)
+Received: by mail-qt1-x82f.google.com with SMTP id t7so4046290qta.10;
+        Sat, 02 Apr 2022 02:52:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Rf+Z8BCmAsoqSh2imF0kTHHsFmoLp9md0M8PNzOORW0=;
+        b=FpjP+yDw+rd8QIuPn3pAflciBU8szYdoU9YGdbrT3mDllMK2WthyTvaRMVJyXhWwf+
+         NZwiHHwVcxGhm9/fc3iVPMB8CtrcqxkWDayKmli159Hi2vbE5Sp+iUAa56LzExqyFzZF
+         fqQxgW51lj//KnlluAqJ4+b4rXSU8yW2d8H5Zm7U31dW435C8NQCmKGkDMHDlwsUUV3Y
+         C5+qo4qACTYkiJXZ9BiJ4CeT9LkvkfD3isd1pc5xt1bbzjyUWFlpFOWMZsxxgkFmFCzZ
+         Ny2uM5CDI3opmvKuHc+JCX88TYNEZnPHxYsdxQuGCC0bGaD/1ZFT/qzxmlKKzmH5yuHZ
+         njnw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Rf+Z8BCmAsoqSh2imF0kTHHsFmoLp9md0M8PNzOORW0=;
+        b=bUbQ/wggRrYIAt0F+B8LXwzQVNgf/nJieRfF6Rm+1cUkOQe/pFhTacsHDX3unTdDHv
+         EyedNLZjJlM/0qU/D7xNxMZy9DAmHwerurtG0j2YpbC2xGAyBFxU+hRdN7kBg+iVYo33
+         jZJKT4wdevJ3/oQNaO3olfB4kngwGp51Xh/X0f60GEJCgYjZbnCjH+INXv9klT4sD+Op
+         LapunoLK0aAKXCCV+J++nTkZyUFUDzOhDjK6lnNlSn1hdtVT/WSaxft0Pmzoe1wkUJT2
+         Hr4ck2NziWKtK56T0cpOveb8H9Sl+8cOU4XmjBSUdP9hgm+MY29N4S8cKmStCsAo1+9R
+         cLmg==
+X-Gm-Message-State: AOAM531BAaz9pcG7g2cXfYu+XdgRbbAqFm76HErXCd3l9hv0xbism4qq
+        rSLHsoBLBrpi0h5GgTHSgRek5Bakf1OqaU2AsRX++eC2Fkk=
+X-Google-Smtp-Source: ABdhPJzM3PO5vJI14orWCHqDgZL3GwaLuRPCeqgqlwej3gH0Wk3KtPQmkf0ZAisVJGYGwj4tfQH5Nz4ETHT/H2ITgIo=
+X-Received: by 2002:a05:622a:4cd:b0:2e1:ec2f:8c22 with SMTP id
+ q13-20020a05622a04cd00b002e1ec2f8c22mr11532022qtx.494.1648893152007; Sat, 02
+ Apr 2022 02:52:32 -0700 (PDT)
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1648893020; l=1125; s=20211009; h=from:subject:message-id; bh=AN5+sJJJcquHvC2UPmI8GuxRgyVnpRlVKbnl/IP79Gc=; b=Fie+6glCGNPKokhM39eJzMe0z6W7PURsdfNqy7vMjCl9usnHh1FN57C9J6/EsQWtuuSXk/GHvDEo 1NQvLrlZA4x0XpUmOOvZf/TtHls5JEQdfQz2h4EZEVNLA2LSrlii
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
-Content-Transfer-Encoding: 8bit
+References: <20220401093554.360211-1-robimarko@gmail.com> <87ilrsuab4.fsf@kernel.org>
+In-Reply-To: <87ilrsuab4.fsf@kernel.org>
+From:   Robert Marko <robimarko@gmail.com>
+Date:   Sat, 2 Apr 2022 11:52:21 +0200
+Message-ID: <CAOX2RU4pCn8C-HhhuOzyikjk2Ax3VDcjMKh7N6X5HeMN4xLMEg@mail.gmail.com>
+Subject: Re: [PATCH] ath11k: select QRTR for AHB as well
+To:     Kalle Valo <kvalo@kernel.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-powerpc's asm/prom.h brings some headers that it doesn't
-need itself.
+On Fri, 1 Apr 2022 at 16:51, Kalle Valo <kvalo@kernel.org> wrote:
+>
+> Robert Marko <robimarko@gmail.com> writes:
+>
+> > Currently, ath11k only selects QRTR if ath11k PCI is selected, however
+> > AHB support requires QRTR, more precisely QRTR_SMD because it is using
+> > QMI as well which in turn uses QRTR.
+> >
+> > Without QRTR_SMD AHB does not work, so select QRTR in ATH11K and then
+> > select QRTR_SMD for ATH11K_AHB and QRTR_MHI for ATH11K_PCI.
+> >
+> > Tested-on: IPQ8074 hw2.0 AHB WLAN.HK.2.5.0.1-01208-QCAHKSWPL_SILICONZ-1
+> >
+> > Signed-off-by: Robert Marko <robimarko@gmail.com>
+> > ---
+> >  drivers/net/wireless/ath/ath11k/Kconfig | 3 ++-
+> >  1 file changed, 2 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/net/wireless/ath/ath11k/Kconfig b/drivers/net/wireless/ath/ath11k/Kconfig
+> > index ad5cc6cac05b..b45baad184f6 100644
+> > --- a/drivers/net/wireless/ath/ath11k/Kconfig
+> > +++ b/drivers/net/wireless/ath/ath11k/Kconfig
+> > @@ -5,6 +5,7 @@ config ATH11K
+> >       depends on CRYPTO_MICHAEL_MIC
+> >       select ATH_COMMON
+> >       select QCOM_QMI_HELPERS
+> > +     select QRTR
+> >       help
+> >         This module adds support for Qualcomm Technologies 802.11ax family of
+> >         chipsets.
+> > @@ -15,6 +16,7 @@ config ATH11K_AHB
+> >       tristate "Atheros ath11k AHB support"
+> >       depends on ATH11K
+> >       depends on REMOTEPROC
+> > +     select QRTR_SMD
+> >       help
+> >         This module adds support for AHB bus
+> >
+> > @@ -22,7 +24,6 @@ config ATH11K_PCI
+> >       tristate "Atheros ath11k PCI support"
+> >       depends on ATH11K && PCI
+> >       select MHI_BUS
+> > -     select QRTR
+> >       select QRTR_MHI
+> >       help
+> >         This module adds support for PCIE bus
+>
+> I now see a new warning:
+>
+> WARNING: unmet direct dependencies detected for QRTR_SMD
+>   Depends on [n]: NET [=y] && QRTR [=m] && (RPMSG [=n] || COMPILE_TEST [=n] && RPMSG [=n]=n)
+>   Selected by [m]:
+>   - ATH11K_AHB [=m] && NETDEVICES [=y] && WLAN [=y] && WLAN_VENDOR_ATH [=y] && ATH11K [=m] && REMOTEPROC [=y]
 
-In order to clean it up, first add missing headers in
-users of asm/prom.h
+Ahh yeah, since it's SMD then it requires RPMGS which in turn requires
+more stuff.
+What do you think about making it depend on QRTR_SMD instead, because
+without it AHB literally does not work?
 
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
----
- drivers/spi/spi-mpc52xx-psc.c | 1 +
- drivers/spi/spi-mpc52xx.c     | 3 +++
- 2 files changed, 4 insertions(+)
-
-diff --git a/drivers/spi/spi-mpc52xx-psc.c b/drivers/spi/spi-mpc52xx-psc.c
-index 21ef5d481faf..7654736c2c0e 100644
---- a/drivers/spi/spi-mpc52xx-psc.c
-+++ b/drivers/spi/spi-mpc52xx-psc.c
-@@ -20,6 +20,7 @@
- #include <linux/spi/spi.h>
- #include <linux/fsl_devices.h>
- #include <linux/slab.h>
-+#include <linux/of_irq.h>
- 
- #include <asm/mpc52xx.h>
- #include <asm/mpc52xx_psc.h>
-diff --git a/drivers/spi/spi-mpc52xx.c b/drivers/spi/spi-mpc52xx.c
-index 51041526546d..3ebdce804b90 100644
---- a/drivers/spi/spi-mpc52xx.c
-+++ b/drivers/spi/spi-mpc52xx.c
-@@ -19,6 +19,9 @@
- #include <linux/io.h>
- #include <linux/of_gpio.h>
- #include <linux/slab.h>
-+#include <linux/of_address.h>
-+#include <linux/of_irq.h>
-+
- #include <asm/time.h>
- #include <asm/mpc52xx.h>
- 
--- 
-2.35.1
-
+Regards,
+Robert
+>
+> --
+> https://patchwork.kernel.org/project/linux-wireless/list/
+>
+> https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
