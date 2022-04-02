@@ -2,254 +2,221 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62752C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 16:29:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93567C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 16:29:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358107AbiDBQbW (ORCPT
+        id S1358111AbiDBQbZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Apr 2022 12:31:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60678 "EHLO
+        Sat, 2 Apr 2022 12:31:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349268AbiDBQbR (ORCPT
+        with ESMTP id S1358099AbiDBQbU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Apr 2022 12:31:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1B496556;
-        Sat,  2 Apr 2022 09:29:25 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3CA5760B0B;
-        Sat,  2 Apr 2022 16:29:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F1BAC340EE;
-        Sat,  2 Apr 2022 16:29:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648916964;
-        bh=0zTZVCqwikHoAkGPgno+BTuZyaWtzijYrNpFzKqJ33M=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=D3sNX+PDnxEVBgBLoyl/H0BCVQAtjYdWojhjsdti04zD0d0hHa8tqx/bfxguMzeVI
-         TxvCDp/8oVW2QmUGNYd98MS4k85VTsrn9zLw1s9+XPYQmB+Uzp2mewNgEgMqnnKBPs
-         wtzydlwqx3z2w9zoXW7WtqOqgLOeGvl28ObSa25s1VZeaUGoI2vupaINCbRBRr/OdO
-         37M1iBVIVtAx+hvAhGNCeDJLET8nu3v+Pj0egVM9ePucO7bhGq8NgWMDFoj1iH9YOb
-         rv2OFfmL5HLGFLAn5f3CfggRypBgV2BFpj1htHzprg+NhOEcRq/2rCCXBAwdIMtgYT
-         sOEL6Gpu6Oorw==
-Date:   Sat, 2 Apr 2022 17:37:07 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Jagath Jog J <jagathjog1996@gmail.com>
-Cc:     dan@dlrobertson.com, andy.shevchenko@gmail.com,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 5/5] iio: accel: bma400: Add step change event
-Message-ID: <20220402173707.426cb005@jic23-huawei>
-In-Reply-To: <20220328203710.GA8027@jagath-PC>
-References: <20220326194146.15549-1-jagathjog1996@gmail.com>
-        <20220326194146.15549-6-jagathjog1996@gmail.com>
-        <20220327175036.4b026481@jic23-huawei>
-        <20220328203710.GA8027@jagath-PC>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        Sat, 2 Apr 2022 12:31:20 -0400
+Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3E7ABCA4
+        for <linux-kernel@vger.kernel.org>; Sat,  2 Apr 2022 09:29:27 -0700 (PDT)
+Received: by mail-qk1-x72a.google.com with SMTP id w141so4444218qkb.6
+        for <linux-kernel@vger.kernel.org>; Sat, 02 Apr 2022 09:29:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=RD/SL3A/PB4aGwlwZcvxfJZV+KuZPOFqFnL5Aicr83A=;
+        b=EpjYyPmehIo12xnnLZ4Q6ZXMqEnarR4szn/QCyQ3uDWA6cFGtxBie775H9pvpahSAZ
+         qa2bE7oTrxUF0cg/DSrDD6VyCM95/wfbW3cRlPJ2STJ1g2YeWOcQ4v07TXqoqKQiKHep
+         abcVkm/IKpiTI+GDn34ZZpzYaBuoiAOSx6wfYhNmCJT+hgZ0qenHL+Tzgq7tjAxLIASc
+         Zab5/8rDYsF2wRYXLlKTLlZZUyZfSX7cLV7tUNq8xbbUH2HmPM8MgRWN5qtx1ZWRfi4Y
+         pVIZpCicOoINqIKMBwEmRAFdnU/Lk+j40FGbBrXdZkLkr3I4qYCoWGPQxJg6JyZlaO+R
+         uacw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=RD/SL3A/PB4aGwlwZcvxfJZV+KuZPOFqFnL5Aicr83A=;
+        b=KRWChuud/aWEKFOUj973GLru/FCVnyYHM7+Ok5U/bKcMdDc+5wdej1Kj9N9GCpchth
+         r1GK2POPTzTfLJsNtLbjL5w+fiZPq7TBYv5q80JSgu5gls39hRPoKF+DEkS3ytMh3zbf
+         REK37SH8FB+6CX6OQhQf3ukYVoMiycrinxI8QA7v3t8CfBlcYcpAx8qKxYBfDP2weVyN
+         hxxjSy6wnSF127m1rViCPXtjmfrRvpnlIpYyOZuZh9ZTU/4NymZv+6ScRCWjctBFKTEa
+         99H/rzkX1GE9WgAPeGuqqoEwOKMcElBGZRh0fl+aYTW1V7VDzFV5WZ8tsf2VEVGVkqjb
+         9mfQ==
+X-Gm-Message-State: AOAM532dcdrlpoIoaagWN4JeSZpC0O2TZurANzifuWXBXLAiCSgIqyhn
+        l4dynFGEIUjefw+7FIHAKAqmGJh5sz6TeKAyyyleJnTslTXSFg==
+X-Google-Smtp-Source: ABdhPJzfaNIPQ5JupJfh1qHMWDuQu+LB5oF6f/JsYyZHDn0e19hzYZZ8z5sFdmynH60Hi5MGZjjnUJtliSX7AWrDteg=
+X-Received: by 2002:a37:bdc4:0:b0:67b:4cce:b058 with SMTP id
+ n187-20020a37bdc4000000b0067b4cceb058mr9639516qkf.395.1648916966668; Sat, 02
+ Apr 2022 09:29:26 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <E1nZMdl-0006nG-0J@plastiekpoot> <CADVnQyn=A9EuTwxe-Bd9qgD24PLQ02YQy0_b7YWZj4_rqhWRVA@mail.gmail.com>
+ <eaf54cab-f852-1499-95e2-958af8be7085@uls.co.za> <CANn89iKHbmVYoBdo2pCQWTzB4eFBjqAMdFbqL5EKSFqgg3uAJQ@mail.gmail.com>
+ <10c1e561-8f01-784f-c4f4-a7c551de0644@uls.co.za> <CADVnQynf8f7SUtZ8iQi-fACYLpAyLqDKQVYKN-mkEgVtFUTVXQ@mail.gmail.com>
+ <e0bc0c7f-5e47-ddb7-8e24-ad5fb750e876@uls.co.za> <CANn89i+Dqtrm-7oW+D6EY+nVPhRH07GXzDXt93WgzxZ1y9_tJA@mail.gmail.com>
+ <CADVnQyn=VfcqGgWXO_9h6QTkMn5ZxPbNRTnMFAxwQzKpMRvH3A@mail.gmail.com>
+ <5f1bbeb2-efe4-0b10-bc76-37eff30ea905@uls.co.za> <CADVnQymPoyY+AX_P7k+NcRWabJZrb7UCJdDZ=FOkvWguiTPVyQ@mail.gmail.com>
+ <CADVnQy=GX0J_QbMJXogGzPwD=f0diKDDxLiHV0gzrb4bo=4FjA@mail.gmail.com> <429dd56b-8a6c-518f-ccb4-fa5beae30953@uls.co.za>
+In-Reply-To: <429dd56b-8a6c-518f-ccb4-fa5beae30953@uls.co.za>
+From:   Neal Cardwell <ncardwell@google.com>
+Date:   Sat, 2 Apr 2022 12:29:10 -0400
+Message-ID: <CADVnQynGT7pGBT4PJ=vYg-bj9gnHTsKYHMU_6W0RFZb2FOoxiw@mail.gmail.com>
+Subject: Re: linux 5.17.1 disregarding ACK values resulting in stalled TCP connections
+To:     Jaco Kroon <jaco@uls.co.za>
+Cc:     Florian Westphal <fw@strlen.de>,
+        Eric Dumazet <edumazet@google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Yuchung Cheng <ycheng@google.com>, Wei Wang <weiwan@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 29 Mar 2022 02:07:11 +0530
-Jagath Jog J <jagathjog1996@gmail.com> wrote:
+)
 
-> Hi Jonathan,
-> 
-> On Sun, Mar 27, 2022 at 05:50:36PM +0100, Jonathan Cameron wrote:
-> > On Sun, 27 Mar 2022 01:11:46 +0530
-> > Jagath Jog J <jagathjog1996@gmail.com> wrote:
-> >   
-> > > Added support for event when there is a detection of step change.
-> > > INT1 pin is used to interrupt and event is pushed to userspace.
-> > > 
-> > > Signed-off-by: Jagath Jog J <jagathjog1996@gmail.com>  
-> > 
-> > These last two patches look fine to me.  Simply having the
-> > event enable the channel makes things simpler.  
-> 
-> Means do I need to drop the step _INFO_ENABLE and handle the
-> enabling and disabling of step channel through the event enable and
-> disable?
+On Sat, Apr 2, 2022 at 4:42 AM Jaco Kroon <jaco@uls.co.za> wrote:
+>
+> Hi Neal,
+>
+> On 2022/04/01 17:39, Neal Cardwell wrote:
+> > On Tue, Mar 29, 2022 at 9:03 PM Jaco <jaco@uls.co.za> wrote:
+> > ...
+> >> Connection setup:
+> >>
+> >> 00:56:17.055481 IP6 2c0f:f720:0:3:d6ae:52ff:feb8:f27b.59110 > 2a00:145=
+0:400c:c07::1b.25: Flags [S], seq 956633779, win 62580, options [mss 8940,n=
+op,nop,TS val 3687705482 ecr 0,nop,wscale 7,tfo  cookie f025dd84b6122510,no=
+p,nop], length 0
+> >>
+> >> 00:56:17.217747 IP6 2a00:1450:400c:c07::1b.25 > 2c0f:f720:0:3:d6ae:52f=
+f:feb8:f27b.59110: Flags [S.], seq 726465675, ack 956633780, win 65535, opt=
+ions [mss 1440,nop,nop,TS val 3477429218 ecr 3687705482,nop,wscale 8], leng=
+th 0
+> >>
+> >> 00:56:17.218628 IP6 2a00:1450:400c:c07::1b.25 > 2c0f:f720:0:3:d6ae:52f=
+f:feb8:f27b.59110: Flags [P.], seq 726465676:726465760, ack 956633780, win =
+256, options [nop,nop,TS val 3477429220 ecr 3687705482], length 84: SMTP: 2=
+20 mx.google.com ESMTP e16-20020a05600c4e5000b0038c77be9b2dsi226281wmq.72 -=
+ gsmtp
+> >>
+> >> 00:56:17.218663 IP6 2c0f:f720:0:3:d6ae:52ff:feb8:f27b.59110 > 2a00:145=
+0:400c:c07::1b.25: Flags [.], ack 726465760, win 489, options [nop,nop,TS v=
+al 3687705645 ecr 3477429220], length 0
+> >>
+> >> This is pretty normal, we advertise an MSS of 8940 and the return is 1=
+440, thus
+> >> we shouldn't send segments larger than that, and they "can't".  I need=
+ to
+> >> determine if this is some form of offloading or they really are sendin=
+g >1500
+> >> byte frames (which I know won't pass our firewalls without fragmentati=
+on so
+> >> probably some form of NIC offloading - which if it was active on older=
+ 5.8
+> >> kernels did not cause problems):
+> > Jaco, was there some previous kernel version on these client machines
+> > where this problem did not show up? Perhaps the v5.8 version you
+> > mention here? Can you please share the exact version number?
+> 5.8.14
 
-No.  I was trying to say I like the solution you have now.
+Thanks for the client kernel version! (5.8.14)
 
-> 
-> > I briefly wondered if we need to care about sequences like
-> > 
-> > 1) Enable event
-> > 2) Enable channel (already enabled, but perhaps this indicates separate intent)
-> > 3) Disable event.
-> > 4) Is the channel still enabled?
-> > 
-> > or the simpler case of whether we should disable the channel if the event is
-> > disabled and it wasn't otherwise turned on.
-> > 
-> > However, I can't see a sensible way to do so. Hence I think what you have
-> > gone with is the best we can do.
-> > 
-> > Thanks,
-> > 
-> > Jonathan  
-> 
-> Thanks for reviewing the patch series. I will also address all the comments
-> from Andy in the next patch v3.
-> 
-> Thank you
-> Jagath
-> >   
-> > > ---
-> > >  drivers/iio/accel/bma400.h      |  2 +
-> > >  drivers/iio/accel/bma400_core.c | 73 +++++++++++++++++++++++++++++++++
-> > >  2 files changed, 75 insertions(+)
-> > > 
-> > > diff --git a/drivers/iio/accel/bma400.h b/drivers/iio/accel/bma400.h
-> > > index c9b856b37021..c4ec0cf6dc00 100644
-> > > --- a/drivers/iio/accel/bma400.h
-> > > +++ b/drivers/iio/accel/bma400.h
-> > > @@ -39,6 +39,7 @@
-> > >  #define BMA400_INT_STAT0_REG        0x0e
-> > >  #define BMA400_INT_STAT1_REG        0x0f
-> > >  #define BMA400_INT_STAT2_REG        0x10
-> > > +#define BMA400_INT12_MAP_REG	    0x23
-> > >  
-> > >  /* Temperature register */
-> > >  #define BMA400_TEMP_DATA_REG        0x11
-> > > @@ -54,6 +55,7 @@
-> > >  #define BMA400_STEP_CNT3_REG        0x17
-> > >  #define BMA400_STEP_STAT_REG        0x18
-> > >  #define BMA400_STEP_INT_MSK	    BIT(0)
-> > > +#define BMA400_STEP_STAT_MASK	    GENMASK(9, 8)
-> > >  
-> > >  /*
-> > >   * Read-write configuration registers
-> > > diff --git a/drivers/iio/accel/bma400_core.c b/drivers/iio/accel/bma400_core.c
-> > > index ec2f9c380bda..aaa104a2698b 100644
-> > > --- a/drivers/iio/accel/bma400_core.c
-> > > +++ b/drivers/iio/accel/bma400_core.c
-> > > @@ -24,6 +24,7 @@
-> > >  #include <linux/iio/iio.h>
-> > >  #include <linux/iio/sysfs.h>
-> > >  #include <linux/iio/buffer.h>
-> > > +#include <linux/iio/events.h>
-> > >  #include <linux/iio/trigger.h>
-> > >  #include <linux/iio/trigger_consumer.h>
-> > >  #include <linux/iio/triggered_buffer.h>
-> > > @@ -70,6 +71,7 @@ struct bma400_data {
-> > >  	int scale;
-> > >  	struct iio_trigger *trig;
-> > >  	int steps_enabled;
-> > > +	bool step_event_en;
-> > >  	/* Correct time stamp alignment */
-> > >  	struct {
-> > >  		__le16 buff[3];
-> > > @@ -167,6 +169,12 @@ static const struct iio_chan_spec_ext_info bma400_ext_info[] = {
-> > >  	{ }
-> > >  };
-> > >  
-> > > +static const struct iio_event_spec bma400_step_detect_event = {
-> > > +	.type = IIO_EV_TYPE_CHANGE,
-> > > +	.dir = IIO_EV_DIR_NONE,
-> > > +	.mask_separate = BIT(IIO_EV_INFO_ENABLE),
-> > > +};
-> > > +
-> > >  #define BMA400_ACC_CHANNEL(_index, _axis) { \
-> > >  	.type = IIO_ACCEL, \
-> > >  	.modified = 1, \
-> > > @@ -209,6 +217,8 @@ static const struct iio_chan_spec bma400_channels[] = {
-> > >  		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
-> > >  				      BIT(IIO_CHAN_INFO_ENABLE),
-> > >  		.scan_index = -1, /* No buffer support */
-> > > +		.event_spec = &bma400_step_detect_event,
-> > > +		.num_event_specs = 1,
-> > >  	},
-> > >  	IIO_CHAN_SOFT_TIMESTAMP(4),
-> > >  };
-> > > @@ -878,6 +888,58 @@ static int bma400_write_raw_get_fmt(struct iio_dev *indio_dev,
-> > >  	}
-> > >  }
-> > >  
-> > > +static int bma400_read_event_config(struct iio_dev *indio_dev,
-> > > +				    const struct iio_chan_spec *chan,
-> > > +				    enum iio_event_type type,
-> > > +				    enum iio_event_direction dir)
-> > > +{
-> > > +	struct bma400_data *data = iio_priv(indio_dev);
-> > > +
-> > > +	switch (type) {
-> > > +	case IIO_EV_TYPE_CHANGE:
-> > > +		return data->step_event_en;
-> > > +	default:
-> > > +		return -EINVAL;
-> > > +	}
-> > > +}
-> > > +
-> > > +static int bma400_write_event_config(struct iio_dev *indio_dev,
-> > > +				     const struct iio_chan_spec *chan,
-> > > +				     enum iio_event_type type,
-> > > +				     enum iio_event_direction dir, int state)
-> > > +{
-> > > +	int ret;
-> > > +	struct bma400_data *data = iio_priv(indio_dev);
-> > > +
-> > > +	switch (type) {
-> > > +	case IIO_EV_TYPE_CHANGE:
-> > > +		mutex_lock(&data->mutex);
-> > > +		if (!data->steps_enabled) {
-> > > +			ret = regmap_update_bits(data->regmap,
-> > > +						 BMA400_INT_CONFIG1_REG,
-> > > +						 BMA400_STEP_INT_MSK,
-> > > +						 FIELD_PREP(BMA400_STEP_INT_MSK,
-> > > +							    1));
-> > > +			if (ret)
-> > > +				return ret;
-> > > +			data->steps_enabled = 1;
-> > > +		}
-> > > +
-> > > +		ret = regmap_update_bits(data->regmap,
-> > > +					 BMA400_INT12_MAP_REG,
-> > > +					 BMA400_STEP_INT_MSK,
-> > > +					 FIELD_PREP(BMA400_STEP_INT_MSK,
-> > > +						    state));
-> > > +		mutex_unlock(&data->mutex);
-> > > +		if (ret)
-> > > +			return ret;
-> > > +		data->step_event_en = state;
-> > > +		return 0;
-> > > +	default:
-> > > +		return -EINVAL;
-> > > +	}
-> > > +}
-> > > +
-> > >  static int bma400_data_rdy_trigger_set_state(struct iio_trigger *trig,
-> > >  					     bool state)
-> > >  {
-> > > @@ -910,6 +972,8 @@ static const struct iio_info bma400_info = {
-> > >  	.read_avail        = bma400_read_avail,
-> > >  	.write_raw         = bma400_write_raw,
-> > >  	.write_raw_get_fmt = bma400_write_raw_get_fmt,
-> > > +	.read_event_config = bma400_read_event_config,
-> > > +	.write_event_config = bma400_write_event_config,
-> > >  };
-> > >  
-> > >  static const struct iio_trigger_ops bma400_trigger_ops = {
-> > > @@ -965,6 +1029,15 @@ static irqreturn_t bma400_interrupt(int irq, void *private)
-> > >  		ret = IRQ_HANDLED;
-> > >  	}
-> > >  
-> > > +	if (FIELD_GET(BMA400_STEP_STAT_MASK, le16_to_cpu(status))) {
-> > > +		iio_push_event(indio_dev,
-> > > +			       IIO_EVENT_CODE(IIO_STEPS, 0, IIO_NO_MOD,
-> > > +					      IIO_EV_DIR_NONE,
-> > > +					      IIO_EV_TYPE_CHANGE, 0, 0, 0),
-> > > +			       iio_get_time_ns(indio_dev));
-> > > +		ret = IRQ_HANDLED;
-> > > +	}
-> > > +
-> > >  	return ret;
-> > >  }
-> > >    
-> >   
+> > If so, a hypothesis would be:
+> >
+> > (1) There is a bug in netfilter's handling of TFO connections where
+> > the server sends a data packet after a TFO SYNACK, before the client
+> > ACKs anything (as we see in this trace).
+> >
+> > This bug is perhaps similar in character to the bug fixed by Yuchung's
+> > 2013 commit that Eric mentioned:
+> >
+> > 356d7d88e088687b6578ca64601b0a2c9d145296
+> > netfilter: nf_conntrack: fix tcp_in_window for Fast Open
+> >
+> > (2) With kernel v5.8, TFO blackhole detection detected that in your
+> > workload there were TFO connections that died due to apparent
+> > blackholing (like what's shown in the trace), and dynamically disabled
+> > TFO on your machines. This allowed mail traffic to flow, because the
+> > netfilter bug was no longer tickled. This worked around the netfilter
+> > bug.
+> >
+> > (3) You upgraded your client-side machine from v5.8 to v5.17, which
+> > has the following commit from v5.14, which disables TFO blackhole
+> > logic by default:
+> >   213ad73d0607 tcp: disable TFO blackhole logic by default
+> >
+> > (4) Due to (3), the blackhole detection logic was no longer operative,
+> > and when the netfilter bug blackholed the connection, TFO stayed
+> > enabled. This caused mail traffic to Google to stall.
+> >
+> > This hypothesis would explain why:
+> >   o disabling TFO fixes this problem
+> >   o you are seeing this with a newer kernel (and apparently not with a
+> > kernel before v5.14?)
+> Agreed.
+> >
+> > With this hypothesis, we need several pieces to trigger this:
+> >
+> > (a) client side software that tries TFO to a server that supports TFO
+> > (like the exim mail transfer agent you are using, connecting to
+> > Google)
+> >
+> > (b) a client-side Linux kernel running buggy netfilter code (you are
+> > running netfilter)
+> >
+> > (c) a client-side Linux kernel with TFO support but no blackhole
+> > detection logic active (e.g. v5.14 or later, like your v5.17.1)
+> >
+> > That's probably a rare combination, so would explain why we have not
+> > had this report before.
+> >
+> > Jaco, to provide some evidence for this hypothesis, can you please
+> > re-enable fastopen but also enable the TFO blackhole detection that
+> > was disabled in v5.14 (213ad73d0607), with something like:
+> >
+> >   sysctl -w net.ipv4.tcp_fastopen=3D1
+> >   sysctl -w tcp_fastopen_blackhole_timeout=3D3600
+>
+> Done.
 
+Thanks for running that experiment and reporting your data! That was
+super-informative. So it seems like we have a working high-level
+theory about what's going on and where, and we just need to pinpoint
+the buggy lines in the netfilter conntrack code running on the mail
+client machines.
+
+> Including sysctl net.netfilter.nf_conntrack_log_invalid=3D6- which
+> generates lots of logs, something specific I should be looking for?  I
+> suspect these relate:
+>
+> [Sat Apr  2 10:31:53 2022] nf_ct_proto_6: SEQ is over the upper bound
+> (over the window of the receiver) IN=3D OUT=3Dbond0
+> SRC=3D2c0f:f720:0000:0003:d6ae:52ff:feb8:f27b
+> DST=3D2a00:1450:400c:0c08:0000:0000:0000:001a LEN=3D2928 TC=3D0 HOPLIMIT=
+=3D64
+> FLOWLBL=3D867133 PROTO=3DTCP SPT=3D48920 DPT=3D25 SEQ=3D2689938314 ACK=3D=
+4200412020
+> WINDOW=3D447 RES=3D0x00 ACK PSH URGP=3D0 OPT (0101080A2F36C1C120EDFB91) U=
+ID=3D8
+> GID=3D12
+> [Sat Apr  2 10:31:53 2022] nf_ct_proto_6: SEQ is over the upper bound
+> (over the window of the receiver) IN=3D OUT=3Dbond0
+> SRC=3D2c0f:f720:0000:0003:d6ae:52ff:feb8:f27b
+> DST=3D2a00:1450:400c:0c08:0000:0000:0000:001a LEN=3D2928 TC=3D0 HOPLIMIT=
+=3D64
+> FLOWLBL=3D867133 PROTO=3DTCP SPT=3D48920 DPT=3D25 SEQ=3D2689941170 ACK=3D=
+4200412020
+> WINDOW=3D447 RES=3D0x00 ACK PSH URGP=3D0 OPT (0101080A2F36C1C120EDFB91) U=
+ID=3D8
+> GID=3D12
+>
+> (There are many more of those, and the remote side is Google in this case=
+)
+
+FWIW those log entries indicate netfilter on the mail client machine
+dropping consecutive outbound skbs with 2*MSS of payload. So that
+explains the large consecutive losses of client data packets to the
+e-mail server. That seems to confirm my earlier hunch that those drops
+of consecutive client data packets "do not look like normal congestive
+packet loss".
+
+neal
