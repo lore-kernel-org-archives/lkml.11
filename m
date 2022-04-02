@@ -2,141 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFA45C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 16:41:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52983C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 16:42:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358335AbiDBQna (ORCPT
+        id S1358361AbiDBQoY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Apr 2022 12:43:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44164 "EHLO
+        Sat, 2 Apr 2022 12:44:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358437AbiDBQnR (ORCPT
+        with ESMTP id S234325AbiDBQoU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Apr 2022 12:43:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CF7112109B;
-        Sat,  2 Apr 2022 09:41:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3B29260B60;
-        Sat,  2 Apr 2022 16:41:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19287C34110;
-        Sat,  2 Apr 2022 16:41:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648917683;
-        bh=Rjz+B7crTurKM0RORXJ3TgrTC5tbLzg9y46rgD7LmpY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=sbPP49t7ikeIxsFpkag86YK8dgs/7a+fZeqKBcs4nEfc9nnl11w22XG37UhCDFQIg
-         i/oqvIaBTxnacEO4cvS9wDftnBFkn7srBB+hAVKfiTxaJN7qo2Yp1uhQyPC69RRzcF
-         fIAQWx4XD2rFMhVTO5l1LFvZnxIUtuX9TcX0SCKDA1RmYC67qGvKFZmMdPGYAWln/3
-         p6EFwgiieANDCisWi7GO8hx5kgQS4NuPtnfXyW8Pvu43iGYa7SobOibZX8eVSE+V2Z
-         4L6WLdKjs6XxJKCXWfnvFNie03oUJl+eUndge49qjzDEnyro5v7hOsaaXwyJ6o9/EU
-         TlzQYVu/dJ9hQ==
-Date:   Sat, 2 Apr 2022 17:49:03 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Shreeya Patel <shreeya.patel@collabora.com>
-Cc:     lars@metafoo.de, robh+dt@kernel.org, Zhigang.Shi@liteon.com,
-        krisman@collabora.com, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel@collabora.com, alvaro.soliverez@collabora.com
-Subject: Re: [PATCH 3/3] iio: light: Add support for ltrf216a sensor
-Message-ID: <20220402174903.035f1181@jic23-huawei>
-In-Reply-To: <ffcdf821-38f2-f8d7-2bcd-8ea51cad1b96@collabora.com>
-References: <20220325103014.6597-1-shreeya.patel@collabora.com>
-        <20220325103014.6597-4-shreeya.patel@collabora.com>
-        <20220327153049.10e525e9@jic23-huawei>
-        <ffcdf821-38f2-f8d7-2bcd-8ea51cad1b96@collabora.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        Sat, 2 Apr 2022 12:44:20 -0400
+Received: from mail-ot1-x32c.google.com (mail-ot1-x32c.google.com [IPv6:2607:f8b0:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8733127589
+        for <linux-kernel@vger.kernel.org>; Sat,  2 Apr 2022 09:42:28 -0700 (PDT)
+Received: by mail-ot1-x32c.google.com with SMTP id a17-20020a9d3e11000000b005cb483c500dso4246130otd.6
+        for <linux-kernel@vger.kernel.org>; Sat, 02 Apr 2022 09:42:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=LxIBYGAnw0G2uTyNe8oc7bEWhXzBTFL31jJUCuZn7Ig=;
+        b=Ud7pFw36L7xNhE5Zi5Gc2HHWzUiX54grQmv9viTGoFtw7vSweK2Z/4PZTt2+wi9Q/e
+         CpLM/f6QKrhwXxxlP0vBnHb+LUUSnYxLDiLMvAhViF8IFUuJnJCwNyOyfTijV4Uw/dMm
+         UigcLdy9E5wI2GKtAtoqgQUFdttuzH7JMfPtryDTYO576ueDsxz/wcaPd+iKwJwNdpOg
+         z0j+KzUDVODl9sWRFFsDNgFlycdJ6gTC4Ki/sddE66viVryGpj2+PiCfoOPEBRRi5TuY
+         J+RptEc5E9pNC8IjWcTqfkzptcULkwl6WlHhcGytwQasuAeoVd3S3tgUtPcBxYfjgebz
+         ekZg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=LxIBYGAnw0G2uTyNe8oc7bEWhXzBTFL31jJUCuZn7Ig=;
+        b=HjBPUViGPj3j7DD0ibN9ehJQ4WkNihrhfR2xZ7LeNdZaBvxrLjrDWbcy24ofQl3JzD
+         MGulT8BEJlP0blO+/N7OjVEPTxts+JopZMFkYdpuVeLeTbLgKe1ahrRLTL8l3mQHTdCc
+         o7kBKH28MHIwOr1nJ1OFd7vMz7iVMpMUeDMlcaCbz+5N21Dpbcf13Ct/ccJrL6ADcwEs
+         f4HbBYGay7h0ReoqLF4s6PTP00PhhnLMenMu9WcfpagNiXxxlGayCKKnEi6RCE8zkf/y
+         0NsQCKOxA7v0N5tmx1w8FnpCTUrP0ypU9QnuoOAp62H/jYJsQG/lfDdhSItppzsLK97I
+         GFEw==
+X-Gm-Message-State: AOAM532nVQDVGc5/CMWZBMvpFjelb0ERIP7Iz8DNdc5YbmjjurhXy1G3
+        sWPsCqM7UeNTsECWAU6AgwY=
+X-Google-Smtp-Source: ABdhPJxX1JfkTpQWEVQe5XDpoAfaEarTckKHCpsEqTCFXzoIHsXejI5ei7Oj+GSHSDH5/ObNYlzKOA==
+X-Received: by 2002:a05:6830:1047:b0:5b2:3173:d781 with SMTP id b7-20020a056830104700b005b23173d781mr9031403otp.178.1648917748252;
+        Sat, 02 Apr 2022 09:42:28 -0700 (PDT)
+Received: from ?IPV6:2603:8090:2005:39b3::1004? (2603-8090-2005-39b3-0000-0000-0000-1004.res6.spectrum.com. [2603:8090:2005:39b3::1004])
+        by smtp.gmail.com with ESMTPSA id eq37-20020a056870a92500b000c6699dad62sm2529148oab.41.2022.04.02.09.42.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 02 Apr 2022 09:42:27 -0700 (PDT)
+Sender: Larry Finger <larry.finger@gmail.com>
+Message-ID: <583569c9-baf0-b478-d14a-4a2beb3708d3@lwfinger.net>
+Date:   Sat, 2 Apr 2022 11:42:26 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 6/6] staging: r8188eu: remove spaces before tabs
+Content-Language: en-US
+To:     Rebecca Mckeever <remckee0@gmail.com>, outreachy@lists.linux.dev
+Cc:     Phillip Potter <phil@philpotter.co.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <cover.1648888461.git.remckee0@gmail.com>
+ <2fd10f393e3bc7381a85d0bfc1ec04a80af4eabb.1648888462.git.remckee0@gmail.com>
+From:   Larry Finger <Larry.Finger@lwfinger.net>
+In-Reply-To: <2fd10f393e3bc7381a85d0bfc1ec04a80af4eabb.1648888462.git.remckee0@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 30 Mar 2022 01:33:19 +0530
-Shreeya Patel <shreeya.patel@collabora.com> wrote:
-
-> On 27/03/22 20:00, Jonathan Cameron wrote:
+On 4/2/22 03:50, Rebecca Mckeever wrote:
+> Conform to Linux kernel coding style.
 > 
-> Hi Jonathan,
+> Reported by checkpatch:
 > 
-> Thanks for your detailed review. I am working on v2 with the modifications
-> suggested by you.
+> WARNING: please, no space before tabs
 > 
-> Just one comment inline.
+> Signed-off-by: Rebecca Mckeever <remckee0@gmail.com>
+> ---
+>   drivers/staging/r8188eu/core/rtw_cmd.c | 16 ++++++++--------
+>   1 file changed, 8 insertions(+), 8 deletions(-)
 > 
+> diff --git a/drivers/staging/r8188eu/core/rtw_cmd.c b/drivers/staging/r8188eu/core/rtw_cmd.c
+> index 832bf25b1a83..8ae25cb4246b 100644
+> --- a/drivers/staging/r8188eu/core/rtw_cmd.c
+> +++ b/drivers/staging/r8188eu/core/rtw_cmd.c
+> @@ -548,9 +548,9 @@ u8 rtw_joinbss_cmd(struct adapter  *padapter, struct wlan_network *pnetwork)
+>   
+>   	phtpriv->ht_option = false;
+>   	if (pregistrypriv->ht_enable) {
+> -		/* 	Added by Albert 2010/06/23 */
+> -		/* 	For the WEP mode, we will use the bg mode to do the connection to avoid some IOT issue. */
+> -		/* 	Especially for Realtek 8192u SoftAP. */
+> +		/*	Added by Albert 2010/06/23 */
+> +		/*	For the WEP mode, we will use the bg mode to do the connection to avoid some IOT issue. */
+> +		/*	Especially for Realtek 8192u SoftAP. */
+>   		if ((padapter->securitypriv.dot11PrivacyAlgrthm != _WEP40_) &&
+>   		    (padapter->securitypriv.dot11PrivacyAlgrthm != _WEP104_) &&
+>   		    (padapter->securitypriv.dot11PrivacyAlgrthm != _TKIP_)) {
+> @@ -1010,7 +1010,7 @@ u8 rtw_lps_ctrl_wk_cmd(struct adapter *padapter, u8 lps_ctrl_type, u8 enqueue)
+>   	u8	res = _SUCCESS;
+>   
+>   	/* if (!pwrctrlpriv->bLeisurePs) */
+> -	/* 	return res; */
+> +	/*	return res; */
+>   
+>   	if (enqueue) {
+>   		ph2c = kzalloc(sizeof(struct cmd_obj), GFP_ATOMIC);
+> @@ -1151,8 +1151,8 @@ u8 p2p_protocol_wk_cmd(struct adapter *padapter, int intCmdType)
+>   	}
+>   
+>   	pdrvextra_cmd_parm->ec_id = P2P_PROTO_WK_CID;
+> -	pdrvextra_cmd_parm->type_size = intCmdType;	/* 	As the command tppe. */
+> -	pdrvextra_cmd_parm->pbuf = NULL;		/* 	Must be NULL here */
+> +	pdrvextra_cmd_parm->type_size = intCmdType;	/*	As the command tppe. */
+> +	pdrvextra_cmd_parm->pbuf = NULL;		/*	Must be NULL here */
+>   
+>   	init_h2fwcmd_w_parm_no_rsp(ph2c, pdrvextra_cmd_parm, GEN_CMD_CODE(_Set_Drv_Extra));
+>   
+> @@ -1378,8 +1378,8 @@ u8 rtw_drvextra_cmd_hdl(struct adapter *padapter, unsigned char *pbuf)
+>   		p2p_ps_wk_hdl(padapter, pdrvextra_cmd->type_size);
+>   		break;
+>   	case P2P_PROTO_WK_CID:
+> -		/* 	Commented by Albert 2011/07/01 */
+> -		/* 	I used the type_size as the type command */
+> +		/*	Commented by Albert 2011/07/01 */
+> +		/*	I used the type_size as the type command */
+>   		p2p_protocol_wk_hdl(padapter, pdrvextra_cmd->type_size);
+>   		break;
+>   	case CHECK_HIQ_WK_CID:
 
-...
+Congratulations on a very clear set of patches. Each performs a single change 
+exactly as required by the rules.
 
-> >> +static int ltrf216a_set_it_time(struct ltrf216a_data *data, int itime)
-> >> +{
-> >> +	int i, ret, index = -1;
-> >> +	u8 reg;
-> >> +
-> >> +	for (i = 0; i < ARRAY_SIZE(int_time_mapping); i++) {
-> >> +		if (int_time_mapping[i] == itime) {
-> >> +			index = i;
-> >> +			break;
-> >> +		}
-> >> +	}
-> >> +	/* Make sure integration time index is valid */
-> >> +	if (index < 0)
-> >> +		return -EINVAL;
-> >> +
-> >> +	if (index == 0) {  
-> > Switch statement seems more appropriate than this stack of if else
-> >  
-> >> +		reg = 0x03;  
-> > reg isn't a great name as I assume this is the value, not the address
-> > which was my first thought... Perhaps reg_val?  
-> >> +		data->int_time_fac = 4;
-> >> +	} else if (index == 1) {
-> >> +		reg = 0x13;
-> >> +		data->int_time_fac = 2;
-> >> +	} else {
-> >> +		reg = (index << 4) | 0x02;  
-> > Unless I'm missing something index == 2 if we get here.
-> > So why the calculation?  I'd suggest defining the two fields and using
-> > FIELD_PREP() to set up each part probably to one of a set of
-> > #define LTRF216A_ALS_MEAS_RATE_  
-> 
-> I think the calculation here is to set the default value when the
-> integration time = 1. 
+For all 6,
+Acked-by: Larry Finger <Larry.Finger@lwfinger.net>
 
-1 isn't a possible value in int_time_available.
-
-I guess you mean 100ms in which case if this were a switch statement
-
-	switch (index) {
-	case 0: /* 400msec */
-		reg = 0x03;
-		data->int_time_fac = 4;
-		break;
-	case 1: /* 200msec */
-		reg = 0x13;
-		data->int_time_fac = 2;
-		break;
-	case 2: /* 100sec */
-		reg = 0x22;
-		data->int_time_fac = 1;
-		break; 
-	}
-
-btw from datasheet, 50ms and 25ms also seem possible, why not support them?
-
-Note the switch might be better handled as a constant look up table of appropriate
-structures.
-
-> In this case, reg value will be 34 (0x22) which
-> is the default value of ALS_MEAS_RATE register.
-
-> 
-> I will still confirm it once from Zhigang before sending a v2.
-> 
-> >> +		data->int_time_fac = 1;
-> >> +	}
-> >> +
->
-Jonathan
+Thanks,
+Larry
