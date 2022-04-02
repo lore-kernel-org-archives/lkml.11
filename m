@@ -2,147 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CC31C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 10:37:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7C35C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 10:44:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240244AbiDBKjq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Apr 2022 06:39:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52602 "EHLO
+        id S1354413AbiDBKpw (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 2 Apr 2022 06:45:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231775AbiDBKjm (ORCPT
+        with ESMTP id S229988AbiDBKpu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Apr 2022 06:39:42 -0400
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EA581AF7E9
-        for <linux-kernel@vger.kernel.org>; Sat,  2 Apr 2022 03:37:47 -0700 (PDT)
-Received: by mail-lf1-x12b.google.com with SMTP id h7so9081729lfl.2
-        for <linux-kernel@vger.kernel.org>; Sat, 02 Apr 2022 03:37:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Jx8e761MNPFyJ2/BAtkY0nyoED7Z8+xj5f0GT++V4DU=;
-        b=CM5tAEao5vQ2577zZq46eGT5uUdK6gdVlWEARVuyxYeNLnYiT8lvo5OCG2ZcKhDGfb
-         wy6RzILMGSWya1H7UCQr8Y4fjgCHbD+N0bIgO8rFWOwSygD60R87YX12LQBKXes0rNPR
-         FQOBFpPb/5zrL2nQxvW2rumRZWeKgIx/p9Ila06gACmYl8sawMjF2PLwS8QtgZb8I5qx
-         QyOD88AioP5g/0oCKIYAfuqniXGLgVHDyp5CkITXTV/3iv2MJ1nPjOiTehzvNKJJvomc
-         Oa3oNbA/WgWKKW3dNoiI/IVu3xfKKUao07GPXs4EzJA+/sVfrm6CUbZRq58SKFwbCDRs
-         CVjQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Jx8e761MNPFyJ2/BAtkY0nyoED7Z8+xj5f0GT++V4DU=;
-        b=crYwIJEkoPF06oyWgvbGgQcNTxEqzlR6OoHrz5yEYu+wAKuONMxf9nB79Ywe0qWDlF
-         a9NElrWd66lqFnBD/nRfLgD91dknnwh8f9m5GPCdXAiPSjtwVYY+4uqdqxU/el345Lub
-         ko7gWrJkUygl8QDVR0KxNpQ/N1u+qo3VcOBmJBGLJr9VnxeqABOMGOvvsabdsl5PdAN0
-         TlNhsS1ee9wb8S8YXL6sgAP4xKUqUl45dsktkR3/eWQ6HFzuiPEjJ4Mtwx8r56N71YRj
-         MI0oxpC8VqZzNaOH3Q8/AGkjRW14jAKqN5H0Kp+VqrmP0aFGRHk1NzumeBJLTd4Gr+j6
-         VyOw==
-X-Gm-Message-State: AOAM531LHE71YW5i1l2aTqggSQAQwtXFPHePl8kzX+Iusjs7M7QM09GN
-        azrAgs7K9gPi6MFTzMnJSx+Rag==
-X-Google-Smtp-Source: ABdhPJwCW+uY9rOuoWmKzwTgEAQFjN4YRpp4A7QPyITSlGphPJj0f1ExJfTaWODEaAXo0GmLCCHjuw==
-X-Received: by 2002:a05:6512:3c90:b0:44a:dc25:ab44 with SMTP id h16-20020a0565123c9000b0044adc25ab44mr4502073lfv.407.1648895865799;
-        Sat, 02 Apr 2022 03:37:45 -0700 (PDT)
-Received: from [192.168.1.211] ([37.153.55.125])
-        by smtp.gmail.com with ESMTPSA id i16-20020a056512319000b0044ae52c6365sm264006lfe.88.2022.04.02.03.37.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 02 Apr 2022 03:37:45 -0700 (PDT)
-Message-ID: <392b933f-760c-3c81-1040-c514045df3da@linaro.org>
-Date:   Sat, 2 Apr 2022 13:37:44 +0300
+        Sat, 2 Apr 2022 06:45:50 -0400
+Received: from mxout3.routing.net (mxout3.routing.net [IPv6:2a03:2900:1:a::8])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 076A22AE24;
+        Sat,  2 Apr 2022 03:43:54 -0700 (PDT)
+Received: from mxbox1.masterlogin.de (unknown [192.168.10.88])
+        by mxout3.routing.net (Postfix) with ESMTP id D0527604DC;
+        Sat,  2 Apr 2022 10:43:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailerdienst.de;
+        s=20200217; t=1648896233;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=rVlsNMjXQQ4jdCL0TbPne+ht1OtgQ3f4+EzKpSKvrX8=;
+        b=laU5/8abs7BHEJiXUVOxX/fh85mUVBUDwAH9+jDMwO/f9mGWpiSwt4ZUrFPAE7KGkMKUPJ
+        +mjsNSrOTgI4P7PHHnQFwRQaKd2LIZ1e8BKJcuGqj/CqcnlPd5FHYEJ4923KdR1LiMCHUz
+        PpzFTTQEDyx4yiYhKUuefvKK8dq8ugE=
+Received: from localhost.localdomain (fttx-pool-80.245.79.107.bambit.de [80.245.79.107])
+        by mxbox1.masterlogin.de (Postfix) with ESMTPSA id 21652403AC;
+        Sat,  2 Apr 2022 10:43:52 +0000 (UTC)
+From:   Frank Wunderlich <linux@fw-web.de>
+To:     linux-rockchip@lists.infradead.org
+Cc:     Frank Wunderlich <frank-w@public-files.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Peter Geis <pgwipeout@gmail.com>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v1 2/2] arm64: dts: rockchip: Add gmac1 and change network settings
+Date:   Sat,  2 Apr 2022 12:43:12 +0200
+Message-Id: <20220402104313.100333-3-linux@fw-web.de>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220402104313.100333-1-linux@fw-web.de>
+References: <20220402104313.100333-1-linux@fw-web.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v6 1/8] drm/msm/dp: Add eDP support via aux_bus
-Content-Language: en-GB
-To:     Doug Anderson <dianders@chromium.org>,
-        Sankeerth Billakanti <quic_sbillaka@quicinc.com>
-Cc:     dri-devel <dri-devel@lists.freedesktop.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        freedreno <freedreno@lists.freedesktop.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, Rob Clark <robdclark@gmail.com>,
-        Sean Paul <seanpaul@chromium.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        quic_kalyant <quic_kalyant@quicinc.com>,
-        "Abhinav Kumar (QUIC)" <quic_abhinavk@quicinc.com>,
-        "Kuogee Hsieh (QUIC)" <quic_khsieh@quicinc.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        quic_vproddut <quic_vproddut@quicinc.com>,
-        quic_aravindh@quicinc.com
-References: <1648656179-10347-1-git-send-email-quic_sbillaka@quicinc.com>
- <1648656179-10347-2-git-send-email-quic_sbillaka@quicinc.com>
- <CAD=FV=X+QvjwoT2zGP82KW4kD0oMUY6ZgCizSikNX_Uj8dNDqA@mail.gmail.com>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-In-Reply-To: <CAD=FV=X+QvjwoT2zGP82KW4kD0oMUY6ZgCizSikNX_Uj8dNDqA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Mail-ID: 9004292b-8e73-4ef7-931d-e37bf50c2a4b
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 01/04/2022 02:22, Doug Anderson wrote:
-> Hi,
-> 
-> On Wed, Mar 30, 2022 at 9:03 AM Sankeerth Billakanti
-> <quic_sbillaka@quicinc.com> wrote:
->>
->> @@ -1547,6 +1593,10 @@ int msm_dp_modeset_init(struct msm_dp *dp_display, struct drm_device *dev,
->>
->>          dp_display->encoder = encoder;
->>
->> +       ret = dp_display_get_next_bridge(dp_display);
->> +       if (ret)
->> +               return ret;
-> 
-> It feels weird to me that this is in a function called "modeset_init",
-> though I certainly don't know the structure of the MSM display code
-> well enough to fully comment.
+From: Frank Wunderlich <frank-w@public-files.de>
 
-It's called modeset_init() as it initializes KMS objects used by DP 
-driver. We have similar functions for dsi and hdmi
+New Version (v1.0) of R2 pro has swapped gmacs compared to the v00.
 
-> My expectation would have been that
-> devm_of_dp_aux_populate_ep_devices() would have been called from your
-> probe routine and then you would have returned -EPROBE_DEFER from your
-> probe if you were unable to find the panel afterwards.
+WAN-Port is now on gmac1 (RTL8211F) and lan-ports on gmac0 with mt7531
+switch.
 
-I don't think it's possible to call it from probe() since 
-drm_dp_aux_register() is called only from dp_display_bind().
-The PHY also isn't initialized at that moment, so we can not probe AUX 
-devices.
+There is already a mt7531 dsa driver in mainline, but it needs to be
+modified to work for this board.
 
-The overall semantics of the AUX bus is not clear to me.
-Typically the bus is populated (and probed) when devices are accessible. 
-But for the display related buses this might not be the case.
-For example for the DSI bus we clearly define that DSI transfer are not 
-possible before the corresponding bridge's (or panel's) enable call.
+Fixes: f901aaadaa2a ("arm64: dts: rockchip: Add Bananapi R2 Pro")
+Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
+---
+ .../boot/dts/rockchip/rk3568-bpi-r2-pro.dts   | 36 +++++++++++++++++--
+ 1 file changed, 33 insertions(+), 3 deletions(-)
 
-Maybe the same approach should be adopted for the AUX bus. This would 
-allow us to populate the AUX bus before hardware access is actually 
-possible, thus creating all the DRM bridges before the hardware is 
-actually up and running.
-
-> Huh, but I guess you _are_ getting called (indirectly) from
-> dpu_kms_hw_init() and I can't imagine AUX transfers working before
-> that function is called, so maybe I should just accept that it's
-> complicated and let those who understand this driver better confirm
-> that it's OK. ;-)
-> 
-> 
->> @@ -140,5 +140,6 @@ struct dp_parser {
->>    * can be parsed using this module.
->>    */
->>   struct dp_parser *dp_parser_get(struct platform_device *pdev);
->> +int dp_parser_find_next_bridge(struct dp_parser *parser);
-> 
-> Everything else in this file is described w/ kerneldoc. Shouldn't your
-> function also have a kerneldoc comment?
-
+diff --git a/arch/arm64/boot/dts/rockchip/rk3568-bpi-r2-pro.dts b/arch/arm64/boot/dts/rockchip/rk3568-bpi-r2-pro.dts
+index a0388ff85ddf..067fe4a6b178 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3568-bpi-r2-pro.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3568-bpi-r2-pro.dts
+@@ -16,6 +16,7 @@ / {
+ 
+ 	aliases {
+ 		ethernet0 = &gmac0;
++		ethernet1 = &gmac1;
+ 		mmc0 = &sdmmc0;
+ 		mmc1 = &sdhci;
+ 	};
+@@ -78,7 +79,6 @@ &gmac0 {
+ 	assigned-clocks = <&cru SCLK_GMAC0_RX_TX>, <&cru SCLK_GMAC0>;
+ 	assigned-clock-parents = <&cru SCLK_GMAC0_RGMII_SPEED>, <&cru CLK_MAC0_2TOP>;
+ 	clock_in_out = "input";
+-	phy-handle = <&rgmii_phy0>;
+ 	phy-mode = "rgmii";
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&gmac0_miim
+@@ -90,8 +90,38 @@ &gmac0_rgmii_clk
+ 	snps,reset-active-low;
+ 	/* Reset time is 20ms, 100ms for rtl8211f */
+ 	snps,reset-delays-us = <0 20000 100000>;
++	tx_delay = <0x4f>;
++	rx_delay = <0x0f>;
++	status = "okay";
++
++	fixed-link {
++		speed = <1000>;
++		full-duplex;
++		pause;
++	};
++};
++
++&gmac1 {
++	assigned-clocks = <&cru SCLK_GMAC1_RX_TX>, <&cru SCLK_GMAC1>;
++	assigned-clock-parents = <&cru SCLK_GMAC1_RGMII_SPEED>, <&cru CLK_MAC1_2TOP>;
++	clock_in_out = "output";
++	phy-handle = <&rgmii_phy1>;
++	phy-mode = "rgmii";
++	pinctrl-names = "default";
++	pinctrl-0 = <&gmac1m1_miim
++		     &gmac1m1_tx_bus2
++		     &gmac1m1_rx_bus2
++		     &gmac1m1_rgmii_clk
++		     &gmac1m1_rgmii_bus>;
++
++	snps,reset-gpio = <&gpio3 RK_PB0 GPIO_ACTIVE_LOW>;
++	snps,reset-active-low;
++	/* Reset time is 20ms, 100ms for rtl8211f */
++	snps,reset-delays-us = <0 20000 100000>;
++
+ 	tx_delay = <0x3c>;
+ 	rx_delay = <0x2f>;
++
+ 	status = "okay";
+ };
+ 
+@@ -315,8 +345,8 @@ &i2c5 {
+ 	status = "disabled";
+ };
+ 
+-&mdio0 {
+-	rgmii_phy0: ethernet-phy@0 {
++&mdio1 {
++	rgmii_phy1: ethernet-phy@0 {
+ 		compatible = "ethernet-phy-ieee802.3-c22";
+ 		reg = <0x0>;
+ 	};
 -- 
-With best wishes
-Dmitry
+2.25.1
+
