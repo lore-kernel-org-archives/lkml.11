@@ -2,129 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B773C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 14:05:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20626C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 14:07:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356034AbiDBOHL (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Apr 2022 10:07:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47908 "EHLO
+        id S243630AbiDBOJE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 2 Apr 2022 10:09:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230301AbiDBOHI (ORCPT
+        with ESMTP id S230301AbiDBOI7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Apr 2022 10:07:08 -0400
-Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3992EFD6DD;
-        Sat,  2 Apr 2022 07:05:17 -0700 (PDT)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.nyi.internal (Postfix) with ESMTP id 9FBAD5C0138;
-        Sat,  2 Apr 2022 10:05:16 -0400 (EDT)
-Received: from imap47 ([10.202.2.97])
-  by compute2.internal (MEProxy); Sat, 02 Apr 2022 10:05:16 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
-         h=cc:cc:content-type:date:date:from:from:in-reply-to
-        :in-reply-to:message-id:mime-version:references:reply-to:sender
-        :subject:subject:to:to; s=fm1; bh=MSqxliGRmaqeBjqjXF6Gm6Q29Wo8+B
-        U30FxXYdxfB/o=; b=RrQh5Qfi3JCyrNr+6e3X7PpLV4GhgvX2rjzeGvDy4j4Rm1
-        BpRjtlXvxB2l7eLKUam/VBhPVuhpbh1gG/nhh/1y4xSwURIAOLkObJdosImX0PnX
-        ZNb7g0lia5HpzZfONC6Pr+AAN8HXUMb5MtqbinEHcBwXJan1F0sfgBirG/EfAbJz
-        038QQnfZ8QSDsy2hYaLW72y7NDgBuXMBglNz08inr8AymgwbDOUuI0eIX775+FVB
-        U1U79uLn7+wdl9DBjfnUIC4QyumLF3g1/5vrvHU1khoLTHGS2ORxCOceof8aEzHV
-        IFUIxAm+tuqYtspOmqIwEIGb99tomxi2v5WOFo7Q==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=MSqxliGRmaqeBjqjX
-        F6Gm6Q29Wo8+BU30FxXYdxfB/o=; b=AiI7QD+EkZrr4ugGvlqsTu8wQNa3M5b52
-        GboNbpYAZic3kbIJI6ufUy9Y43rEp/LVpYJuQAMXW5If9IhKVytbWbEphCFpi2jo
-        L3dYOJW3rrZnlyk8PyIOT4az4k2e8UNqHWGa3edOfQbfR92XMQYtKVAT7zCqy7Ee
-        XzGjq/GL3nDd5aj3t8UhA0rRAwXU7c5CwYKodfThs/eNJO9Rg3fcd7ulUmrbZ1Ew
-        7eNIq6FnfT6fKoq+6DoeqJqd6fJRsclblgdCXkJuyMkrgMefSkxSKBISISm3fIli
-        YtbTc/ODNOeoaTMThU7bbPK9maffXgUaooPD+92Tij+AtTGjFB8rg==
-X-ME-Sender: <xms:HFhIYijvLTduOdyQqIhN0Wy4aWny4vAwTyc1Q8fs1O7RsgWe3u0EWA>
-    <xme:HFhIYjDgQjQCjzt3eO1msXacnXLfPYol-JUQct6tFRJdInDg4z2BR4sRjslStGHNU
-    SavwD-qOrjJ-uXBzNY>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudeikedgjeegucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepofgfggfkjghffffhvffutgesthdtredtreertdenucfhrhhomhepfdfuvhgv
-    nhcurfgvthgvrhdfuceoshhvvghnsehsvhgvnhhpvghtvghrrdguvghvqeenucggtffrrg
-    htthgvrhhnpefgieegieffuefhtedtjefgteejteefleefgfefgfdvvddtgffhffduhedv
-    feekffenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
-    hsvhgvnhesshhvvghnphgvthgvrhdruggvvh
-X-ME-Proxy: <xmx:HFhIYqHshJm3fX77A6bMVTI0ITdzbtdL_gjt5rutx4YuEliYyXlj_Q>
-    <xmx:HFhIYrTSgNF3pL0eBWlIZ_5nUcURP0bHVZUfg3AJyjjjGtQ3nmCtzQ>
-    <xmx:HFhIYvwyW4M4yeSQaQ3QU2avkYgZHAED2OTRET_EM-HvStM9NFaQdw>
-    <xmx:HFhIYt5v6ero_5KclzbL_PoPODlTA8Yq0_BJlXiRyWnoBxLRE87opA>
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id 72A7F27402C7; Sat,  2 Apr 2022 10:05:16 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.7.0-alpha0-382-g88b93171a9-fm-20220330.001-g88b93171
-Mime-Version: 1.0
-Message-Id: <f944f2b4-17fe-41dc-a262-e266ac45b3ef@www.fastmail.com>
-In-Reply-To: <20220402135834.GC10474@jannau.net>
-References: <20220321165049.35985-1-sven@svenpeter.dev>
- <20220321165049.35985-7-sven@svenpeter.dev>
- <CAK8P3a27-eWP=krGQOp29krcc7bVME9=MbN6B3Rs7Q4Ran_VFw@mail.gmail.com>
- <7876eb84-9803-48dc-ab6b-27d49858e27a@www.fastmail.com>
- <20220402135834.GC10474@jannau.net>
-Date:   Sat, 02 Apr 2022 16:02:05 +0200
-From:   "Sven Peter" <sven@svenpeter.dev>
-To:     "Janne Grunau" <j@jannau.net>
-Cc:     "Arnd Bergmann" <arnd@arndb.de>, "Keith Busch" <kbusch@kernel.org>,
-        "axboe@fb.com" <axboe@fb.com>, "hch@lst.de" <hch@lst.de>,
-        "sagi@grimberg.me" <sagi@grimberg.me>,
-        "Hector Martin" <marcan@marcan.st>,
-        "Alyssa Rosenzweig" <alyssa@rosenzweig.io>,
-        "Rob Herring" <robh+dt@kernel.org>,
-        "Marc Zyngier" <maz@kernel.org>, DTML <devicetree@vger.kernel.org>,
-        "Linux ARM" <linux-arm-kernel@lists.infradead.org>,
-        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
-        linux-nvme@lists.infradead.org
-Subject: Re: [PATCH 6/9] nvme-apple: Add initial Apple SoC NVMe driver
-Content-Type: text/plain
+        Sat, 2 Apr 2022 10:08:59 -0400
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FDEDFFB56
+        for <linux-kernel@vger.kernel.org>; Sat,  2 Apr 2022 07:07:04 -0700 (PDT)
+Received: by mail-wm1-x32d.google.com with SMTP id v64-20020a1cac43000000b0038cfd1b3a6dso5073257wme.5
+        for <linux-kernel@vger.kernel.org>; Sat, 02 Apr 2022 07:07:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=fg7D1iGUfw9j684AaN9ZwUUtm9p5W+5qSKHanyjniig=;
+        b=XhKe6RBzOIYGM7e1jgWJtS6NaOo4+4DLXXecjeNVeEgHXKdrxJ54a8D6RAAHjJ5QOY
+         BlkaPbXoCClrtXJ5Rl+dzMbMRuL69iFqyY0BlGEa6j7/TXmR7/nEewXOEipQuLbycwIk
+         EER4AZGnsSfOtNsL0LkfXOnzds3+z1PJQxYRzwP81AX1QWdDebCsV0KWRSnw+6vtvogF
+         RGJiuz0XHVxeTkSCQToYFFxfOD4hKaSZBJZQnk7D3gzEXzm/YPXTNKl87tQ7RD8FIWFg
+         BkOTUR5Vqcs+P3DxcqD53+CDLJ/i8yM0CGVjDbEQsxQBmYHYyBnwouSSEkHLUR5Y/cz0
+         LmFw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=fg7D1iGUfw9j684AaN9ZwUUtm9p5W+5qSKHanyjniig=;
+        b=nLJDSyE9314PlCewNDamvEEQr9cQ3BP5+1fCKHncF4FGmCJYEZnlJY2Ub5017CEwms
+         Z10IXeXCDMzX7GckPOUjto+Vgy1y9965bpWr67AU05XwPG4f/xdhXZm9UpZPSfwLogyW
+         /iBqMs7sJxxrMKfNBurCH+zCO2y4TJmeXvr/b7KdxiY/Kof9a94BN8i8K/G8AW5ujthD
+         dlnjNSpSZFEo2nBrB7PPzpFJetTwduZgQwnzizW5AWYhiEDSzmQFXtVylBRf2HcVt1XI
+         LMFe6sp7JPi1yFO2wTamMZRcJvpt/LsrXCrPMuGbNoqyBOJBX/nKWlJzc+CTndMfSXrH
+         jzhA==
+X-Gm-Message-State: AOAM531inbEhoKkg2lZaK0Wk+VwBcPMof26O5Y8UVJ0374LJKJbpT6Xl
+        rgW2HZYxMOtN4ZvOsTVjLHw=
+X-Google-Smtp-Source: ABdhPJygcdRjc8ahdcTdoCmXr0p4Hl8GYpF9eDNU5lTcaWSQGrz4m6EBUQgXxO4UOGoIYdwA68lXVw==
+X-Received: by 2002:a7b:c5d0:0:b0:355:482a:6f44 with SMTP id n16-20020a7bc5d0000000b00355482a6f44mr12523721wmk.58.1648908423127;
+        Sat, 02 Apr 2022 07:07:03 -0700 (PDT)
+Received: from localhost.localdomain (host-95-249-145-232.retail.telecomitalia.it. [95.249.145.232])
+        by smtp.gmail.com with ESMTPSA id z13-20020a5d440d000000b00203f2b010b1sm4638195wrq.44.2022.04.02.07.07.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 02 Apr 2022 07:07:01 -0700 (PDT)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     Larry Finger <Larry.Finger@lwfinger.net>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        outreachy@lists.linux.dev
+Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        Martin Kaiser <martin@kaiser.cx>
+Subject: [PATCH] staging: r8188eu: Remove redundant code from rtw_free_netdev()
+Date:   Sat,  2 Apr 2022 16:06:57 +0200
+Message-Id: <20220402140657.10549-1-fmdefrancesco@gmail.com>
+X-Mailer: git-send-email 2.34.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+In rtw_free_netdev() there are two redundant tests. The first checks for
+a valid pointer to a "struct net_device". This pointer is the argument
+of rtw_free_netdev(). The two callers of this function already test this
+parameter immediatelly before the calls. The second checks for a valid
+pointer to a "struct rtw_netdev_priv_indicator". This pointer is always
+valid and, even if it were not, vfree() is a no-op on NULL pointers.
 
+Therefore the above-mentioned two "if" statements are unnecessary and
+redundant. For this reason, remove these two tests.
 
-On Sat, Apr 2, 2022, at 15:58, Janne Grunau wrote:
-> On 2022-04-02 15:34:55 +0200, Sven Peter wrote:
->> 
->> 
->> On Tue, Mar 22, 2022, at 14:38, Arnd Bergmann wrote:
->> > On Mon, Mar 21, 2022 at 5:50 PM Sven Peter <sven@svenpeter.dev> wrote:
->> >
->> >> +static int apple_nvme_sart_dma_setup(void *cookie, struct apple_rtkit_shmem *bfr,
->> >> +                                    dma_addr_t iova, size_t size)
->> >> +{
->> >> +       struct apple_nvme *anv = cookie;
->> >> +       int ret;
->> >> +
->> >> +       if (iova)
->> >> +               return -EINVAL;
->> >> +
->> >> +       bfr->buffer = dma_alloc_coherent(anv->dev, size, &iova, GFP_KERNEL);
->> >> +       if (!bfr->buffer)
->> >> +               return -ENOMEM;
->> >
->> > You pass 'iova' as an argument, but then replace it with the address
->> > returned by dma_alloc_coherent(). Can you remove the function
->> > argument?
->> 
->> Yup, will remove it.
->
-> You can remove it but we will have to add it back once we submit the dcp 
-> driver (display co-processor). dcp is initialized during boot and uses a 
-> single pre-allocated buffer which needs to be mapped instead of 
-> allocated. It seemed easier to make apple_rtkit_ops.shmem_setup() 
-> omnipotent than adding a different function pointer for this case.
+After removing these tests there is no more need of the "RETURN" label.
+Therefore, remove also the "RETURN" label.
 
-Or we can already pass the iova DCP sent us into bfr->iova
-and this function then has the task to just "do whatever is required
-so that struct apple_rtkit_shmem *bfr is usable".
+Cc: Pavel Skripkin <paskripkin@gmail.com>
+Cc: Martin Kaiser <martin@kaiser.cx>
+Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+---
+ drivers/staging/r8188eu/os_dep/osdep_service.c | 9 ---------
+ 1 file changed, 9 deletions(-)
 
+diff --git a/drivers/staging/r8188eu/os_dep/osdep_service.c b/drivers/staging/r8188eu/os_dep/osdep_service.c
+index 7a6fcc96081a..fc10eefe04a9 100644
+--- a/drivers/staging/r8188eu/os_dep/osdep_service.c
++++ b/drivers/staging/r8188eu/os_dep/osdep_service.c
+@@ -116,19 +116,10 @@ void rtw_free_netdev(struct net_device *netdev)
+ {
+ 	struct rtw_netdev_priv_indicator *pnpi;
+ 
+-	if (!netdev)
+-		goto RETURN;
+-
+ 	pnpi = netdev_priv(netdev);
+ 
+-	if (!pnpi->priv)
+-		goto RETURN;
+-
+ 	vfree(pnpi->priv);
+ 	free_netdev(netdev);
+-
+-RETURN:
+-	return;
+ }
+ 
+ int rtw_change_ifname(struct adapter *padapter, const char *ifname)
+-- 
+2.34.1
 
-Sven
