@@ -2,55 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 278E5C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 11:27:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59903C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 11:27:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354645AbiDBL24 (ORCPT
+        id S1354647AbiDBL3X (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Apr 2022 07:28:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44766 "EHLO
+        Sat, 2 Apr 2022 07:29:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344286AbiDBL2l (ORCPT
+        with ESMTP id S1348433AbiDBL3V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Apr 2022 07:28:41 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70C9F1A6E56;
-        Sat,  2 Apr 2022 04:26:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648898809; x=1680434809;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=BRnv69DO2+dbPWklauQlsMw88d2pUSSJu9MmnqEjmKc=;
-  b=MlYQx2yCu1YYJVUst9JExZv/iLuYcvY6001a3vC6MMelCugGhuBDIlD4
-   /dVjqvuQweRzmkY6Acp+U/t/Cm3jTfpKO/0ReDgcd5b6+vgb+BBO3PWaH
-   KzV2/TUILeak3cCiETVMPzBTuKyylWYDhNLSJz2sj4c0dL3cnkQBY6Inw
-   EnmWFSgp6pa78gntLDK4E8R+kq9OYTrNOJiK5GcWbHIyhwWGc1UFBg3uD
-   PCjnxFxls3f5uCfgpOzv+Uc0bevxXmCWdpcH4Sd+giWtW98NVh8cdC453
-   oXwc1igxh4+mqtEoNEAaZHRmYklGUs8c1E4vSpw/qJJ+ITZofamrwGsBI
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10304"; a="242438433"
-X-IronPort-AV: E=Sophos;i="5.90,229,1643702400"; 
-   d="scan'208";a="242438433"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Apr 2022 04:26:49 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,229,1643702400"; 
-   d="scan'208";a="568187259"
-Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
-  by orsmga008.jf.intel.com with ESMTP; 02 Apr 2022 04:26:47 -0700
-Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nabu2-000057-CL;
-        Sat, 02 Apr 2022 11:26:46 +0000
-Date:   Sat, 2 Apr 2022 19:26:16 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: csky-linux-ld: drivers/media/platform/nxp/imx-mipi-csis.o:undefined
- reference to `v4l2_subdev_link_validate'
-Message-ID: <202204021936.aWjDwNSD-lkp@intel.com>
+        Sat, 2 Apr 2022 07:29:21 -0400
+Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AF9101A6E4E;
+        Sat,  2 Apr 2022 04:27:29 -0700 (PDT)
+Received: from uucp (helo=alpha)
+        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
+        id 1nabuh-0000Ts-00; Sat, 02 Apr 2022 13:27:27 +0200
+Received: by alpha.franken.de (Postfix, from userid 1000)
+        id E7F35C4E4E; Sat,  2 Apr 2022 13:27:19 +0200 (CEST)
+Date:   Sat, 2 Apr 2022 13:27:19 +0200
+From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+To:     torvalds@linux-foundation.org
+Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [GIT PULL] MIPS fixes vor v5.18
+Message-ID: <20220402112719.GA5234@alpha.franken.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -59,80 +35,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   88e6c0207623874922712e162e25d9dafd39661e
-commit: 63fe3d27b226fe01746bace4d1f1f2164406140d media: platform/*/Kconfig: make manufacturer menus more uniform
-date:   2 weeks ago
-config: csky-randconfig-r006-20220401 (https://download.01.org/0day-ci/archive/20220402/202204021936.aWjDwNSD-lkp@intel.com/config)
-compiler: csky-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=63fe3d27b226fe01746bace4d1f1f2164406140d
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 63fe3d27b226fe01746bace4d1f1f2164406140d
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=csky SHELL=/bin/bash
+The following changes since commit f8f9f21c7848e63133c16c899f3d84aa54eb79fe:
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+  MIPS: Fix build error for loongson64 and sgi-ip27 (2022-03-24 09:45:15 +0100)
 
-All errors (new ones prefixed by >>):
+are available in the Git repository at:
 
-   csky-linux-ld: drivers/media/platform/nxp/imx-mipi-csis.o: in function `mipi_csis_calculate_params':
-   imx-mipi-csis.c:(.text+0x4fe): undefined reference to `v4l2_get_link_freq'
-   csky-linux-ld: imx-mipi-csis.c:(.text+0x648): undefined reference to `v4l2_get_link_freq'
-   csky-linux-ld: drivers/media/platform/nxp/imx-mipi-csis.o: in function `mipi_csis_async_register':
-   imx-mipi-csis.c:(.text+0x750): undefined reference to `v4l2_async_nf_init'
-   csky-linux-ld: imx-mipi-csis.c:(.text+0x78c): undefined reference to `v4l2_fwnode_endpoint_parse'
-   csky-linux-ld: imx-mipi-csis.c:(.text+0x88e): undefined reference to `__v4l2_async_nf_add_fwnode_remote'
-   csky-linux-ld: imx-mipi-csis.c:(.text+0x8b8): undefined reference to `v4l2_async_nf_init'
-   csky-linux-ld: imx-mipi-csis.c:(.text+0x8c8): undefined reference to `v4l2_fwnode_endpoint_parse'
-   csky-linux-ld: imx-mipi-csis.c:(.text+0x900): undefined reference to `__v4l2_async_nf_add_fwnode_remote'
-   csky-linux-ld: imx-mipi-csis.c:(.text+0x928): undefined reference to `v4l2_async_subdev_nf_register'
-   csky-linux-ld: imx-mipi-csis.c:(.text+0x948): undefined reference to `v4l2_async_register_subdev'
-   csky-linux-ld: drivers/media/platform/nxp/imx-mipi-csis.o: in function `mipi_csis_notify_bound':
-   imx-mipi-csis.c:(.text+0x97c): undefined reference to `v4l2_create_fwnode_links_to_pad'
-   csky-linux-ld: drivers/media/platform/nxp/imx-mipi-csis.o: in function `mipi_csis_dump_regs_open':
-   imx-mipi-csis.c:(.text+0x9b0): undefined reference to `v4l2_async_subdev_nf_register'
-   csky-linux-ld: imx-mipi-csis.c:(.text+0x9b4): undefined reference to `v4l2_async_register_subdev'
-   csky-linux-ld: imx-mipi-csis.c:(.text+0x9bc): undefined reference to `v4l2_create_fwnode_links_to_pad'
-   csky-linux-ld: drivers/media/platform/nxp/imx-mipi-csis.o: in function `mipi_csis_set_fmt':
-   imx-mipi-csis.c:(.text+0xf80): undefined reference to `v4l_bound_align_image'
-   csky-linux-ld: drivers/media/platform/nxp/imx-mipi-csis.o: in function `mipi_csis_enum_mbus_code':
-   imx-mipi-csis.c:(.text+0x10c4): undefined reference to `v4l_bound_align_image'
-   csky-linux-ld: drivers/media/platform/nxp/imx-mipi-csis.o: in function `mipi_csis_probe':
-   imx-mipi-csis.c:(.text+0x1484): undefined reference to `v4l2_subdev_init'
-   csky-linux-ld: imx-mipi-csis.c:(.text+0x154c): undefined reference to `v4l2_subdev_init'
-   csky-linux-ld: imx-mipi-csis.c:(.text+0x166c): undefined reference to `v4l2_async_nf_unregister'
-   csky-linux-ld: imx-mipi-csis.c:(.text+0x1676): undefined reference to `v4l2_async_nf_cleanup'
-   csky-linux-ld: imx-mipi-csis.c:(.text+0x1680): undefined reference to `v4l2_async_unregister_subdev'
-   csky-linux-ld: drivers/media/platform/nxp/imx-mipi-csis.o: in function `mipi_csis_stop_stream':
-   imx-mipi-csis.c:(.text+0x1720): undefined reference to `v4l2_async_nf_unregister'
-   csky-linux-ld: imx-mipi-csis.c:(.text+0x1724): undefined reference to `v4l2_async_nf_cleanup'
-   csky-linux-ld: imx-mipi-csis.c:(.text+0x1728): undefined reference to `v4l2_async_unregister_subdev'
-   csky-linux-ld: drivers/media/platform/nxp/imx-mipi-csis.o: in function `mipi_csis_s_stream':
-   imx-mipi-csis.c:(.text+0x18b4): undefined reference to `v4l2_subdev_call_wrappers'
-   csky-linux-ld: imx-mipi-csis.c:(.text+0x19f8): undefined reference to `v4l2_subdev_call_wrappers'
-   csky-linux-ld: drivers/media/platform/nxp/imx-mipi-csis.o: in function `mipi_csis_remove':
-   imx-mipi-csis.c:(.text+0x1b14): undefined reference to `v4l2_async_nf_unregister'
-   csky-linux-ld: imx-mipi-csis.c:(.text+0x1b1e): undefined reference to `v4l2_async_nf_cleanup'
-   csky-linux-ld: imx-mipi-csis.c:(.text+0x1b28): undefined reference to `v4l2_async_unregister_subdev'
-   csky-linux-ld: imx-mipi-csis.c:(.text+0x1b7c): undefined reference to `v4l2_subdev_call_wrappers'
-   csky-linux-ld: imx-mipi-csis.c:(.text+0x1b9c): undefined reference to `v4l2_async_nf_unregister'
-   csky-linux-ld: imx-mipi-csis.c:(.text+0x1ba0): undefined reference to `v4l2_async_nf_cleanup'
-   csky-linux-ld: imx-mipi-csis.c:(.text+0x1ba4): undefined reference to `v4l2_async_unregister_subdev'
-   csky-linux-ld: drivers/media/platform/nxp/imx-mipi-csis.o:(.rodata+0x36c): undefined reference to `v4l2_subdev_get_fwnode_pad_1_to_1'
->> csky-linux-ld: drivers/media/platform/nxp/imx-mipi-csis.o:(.rodata+0x374): undefined reference to `v4l2_subdev_link_validate'
+  git://git.kernel.org/pub/scm/linux/kernel/git/mips/linux.git/ tags/mips_5.18_1
 
-Kconfig warnings: (for reference only)
-   WARNING: unmet direct dependencies detected for VIDEO_V4L2_SUBDEV_API
-   Depends on MEDIA_SUPPORT && VIDEO_DEV && MEDIA_CONTROLLER
-   Selected by
-   - VIDEO_IMX_MIPI_CSIS && MEDIA_SUPPORT && MEDIA_PLATFORM_SUPPORT && MEDIA_PLATFORM_DRIVERS
+for you to fetch changes up to 41022eff9c2d21e658c7a6fcd31005bf514d28b7:
+
+  MIPS: crypto: Fix CRC32 code (2022-04-01 10:19:03 +0200)
+
+----------------------------------------------------------------
+- build fix for gpio
+- fix crc32 build problems
+- check for failed memory allocations
+
+----------------------------------------------------------------
+Jackie Liu (1):
+      MIPS: rb532: move GPIOD definition into C-files
+
+Paul Cercueil (1):
+      MIPS: crypto: Fix CRC32 code
+
+Xiaoke Wang (2):
+      mips: sgi-ip22: add a check for the return of kzalloc()
+      MIPS: lantiq: check the return value of kzalloc()
+
+ arch/mips/crypto/crc32-mips.c           | 46 +++++++++++++++++++--------------
+ arch/mips/include/asm/mach-rc32434/rb.h |  9 -------
+ arch/mips/lantiq/falcon/sysctrl.c       |  2 ++
+ arch/mips/lantiq/xway/gptu.c            |  2 ++
+ arch/mips/lantiq/xway/sysctrl.c         | 46 +++++++++++++++++++++------------
+ arch/mips/rb532/gpio.c                  | 10 +++++++
+ arch/mips/sgi-ip22/ip22-gio.c           |  2 ++
+ 7 files changed, 72 insertions(+), 45 deletions(-)
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
+good idea.                                                [ RFC1925, 2.3 ]
