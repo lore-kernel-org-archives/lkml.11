@@ -2,84 +2,244 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DEB7C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 16:21:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DD3BC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 16:22:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357973AbiDBQXs (ORCPT
+        id S1357989AbiDBQYd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Apr 2022 12:23:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35004 "EHLO
+        Sat, 2 Apr 2022 12:24:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358127AbiDBQXk (ORCPT
+        with ESMTP id S1347243AbiDBQY3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Apr 2022 12:23:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35545CBE6C;
-        Sat,  2 Apr 2022 09:21:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E2681B80A6C;
-        Sat,  2 Apr 2022 16:21:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97A68C340F3;
-        Sat,  2 Apr 2022 16:21:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648916506;
-        bh=R4xX0nZUJB2h/jpS68lCERpoTucJ4KN+l6ypGuDvodE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=DH3ob2v4SNXbHTxI1nUAp/0E22Xi++fkd0M69I04Qv8LUl5gUcrE/L/C1zS+OeOZm
-         dyB2amV8L8ylkcui9Nyr5M57L7PkT2O3pIqLCaADs2lHWXhES1iM0SNiMaQu9SNIV2
-         El/7D068OM5FLpqCOFsrez1clQZzvpZgWf/5Mq1PJYKiwIwiAyao70wxJN5yi7NgZN
-         I2soWoQqDivz5S1oBd1zAMi7JIDf3wC6ygg4f5lU0g21xBBS8VQVrbk18QvuKEMt19
-         WVmrm9KE5ey86Qf4nQi6Mcd3BZExTcVgwHhm6YCimyLPvvsZeTPi6mttiicVa+RZXk
-         lxrDJP3u/Hlfw==
-Date:   Sat, 2 Apr 2022 17:29:29 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Paul Lemmermann <thepaulodoom@thepaulodoom.com>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] IIO: accel: kxsd9-spi: changed leading spaces to tabs
-Message-ID: <20220402172929.05be6a63@jic23-huawei>
-In-Reply-To: <YkInN6SL7pP2f5Sf@hp-amd-paul>
-References: <YkInN6SL7pP2f5Sf@hp-amd-paul>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        Sat, 2 Apr 2022 12:24:29 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2604B14147A;
+        Sat,  2 Apr 2022 09:22:37 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id o10so11785884ejd.1;
+        Sat, 02 Apr 2022 09:22:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=TpBrMR6oS9V/SbBfjNMiP6m12bFbq6KIwbF80S3aCJ8=;
+        b=EXY019FWntu4G5GGHBNtLLD7ID8nqNnP3oZHC3jJJYj0jeJDsHI7IISoRyxt2NDufZ
+         ofKbd0Ec76vqsHRUmteFxJEcReHngOldz6uJkP/W4b3V6XF9mOinDtTmBKYhcRXKe+8y
+         j+esHv+6RygnvzjCa9T4rd+pqjEQuQXVt2dcdl041YdSzfy/bDOwT/GcKBZqpjYeVyJR
+         yDvzebrlk7vUhKek7iA+oVH+ty/kR8DcIZSfTLHTNDESHQD/xchBrTywgiDR9HOhVJA1
+         RDKrxOBqnlnPigW/Jgqd6eW1uwQ5/Knqrb7AFpb8mYphHCnC2gMzKEcpNOR8HSRPdnJw
+         MGhQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=TpBrMR6oS9V/SbBfjNMiP6m12bFbq6KIwbF80S3aCJ8=;
+        b=zcwzbQDVUiqpY8MNuycHkpUsoYsS08ixJv+NM3DoSjEbz5OdxM4cUyUTLiWqUlo0ow
+         YyPoBh1fjFPKh7tJkJrj4n9jyJVWJJiIKTxUzo2/twZ66aUNv6UBbxQ15n+FoNYj4VmD
+         Zs0CMSBXj4fF2R0m8bTwTtAtpClrMAxHmO7th5nTewFFZUX2CIjMXHXIHVhshu6xvm0O
+         nIMF8ifzOyLYTdKAf7OvPclgH4BTICUlLVdGb15SyKeBamNgsZhvgbxMsATG4GvAadgY
+         auPS6isApimPrHB571WGFPLNVGsHO9VBbnkZ18g1EhE+q/kuNmZcJuT+VSWCYU4Fllzp
+         N0bg==
+X-Gm-Message-State: AOAM5307oNk5gVfJL6+Yvy1BmuKZmXF6HUOIA17FdpWtrqFVRk68br4T
+        JleEUTuh4gX4+XGzytXTIUB8ffpoeWR3BZ9aYTE=
+X-Google-Smtp-Source: ABdhPJz/6K9Rl99P1P1n3MsOF+mfJYbq/9WGuUQJuwA0GZlt2Hp7WEI55rPdAUk8tGkS1MUES4129we4bdovHByX0iM=
+X-Received: by 2002:a17:907:7704:b0:6cf:48ac:b4a8 with SMTP id
+ kw4-20020a170907770400b006cf48acb4a8mr4196371ejc.305.1648916555350; Sat, 02
+ Apr 2022 09:22:35 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20220228140838.622021-1-benjamin.gaignard@collabora.com>
+ <eefa63b3-2a4d-4470-9a4e-517087ebcfaf@collabora.com> <CAHCN7xL2uZTMy30FGfDkDK4Lym6wvfr_MTv7QwtchrkTXMQiuw@mail.gmail.com>
+ <79a9c925-d930-ad23-dc53-9ebc16d1328a@collabora.com> <3f778844-f655-74a7-0a00-05caa84eca35@collabora.com>
+In-Reply-To: <3f778844-f655-74a7-0a00-05caa84eca35@collabora.com>
+From:   Adam Ford <aford173@gmail.com>
+Date:   Sat, 2 Apr 2022 11:22:23 -0500
+Message-ID: <CAHCN7xLy2381AFLWhLxk5YuRV7C=OwLX=XPXONX8sbkg-SqMjA@mail.gmail.com>
+Subject: Re: [PATCH v4 00/15] Move HEVC stateless controls out of staging
+To:     Benjamin Gaignard <benjamin.gaignard@collabora.com>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        mripard@kernel.org, paul.kocialkowski@bootlin.com,
+        Chen-Yu Tsai <wens@csie.org>,
+        "jernej.skrabec" <jernej.skrabec@gmail.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        Nicolas Dufresne <nicolas@ndufresne.ca>,
+        linux-media <linux-media@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:STAGING SUBSYSTEM" <linux-staging@lists.linux.dev>,
+        arm-soc <linux-arm-kernel@lists.infradead.org>,
+        linux-sunxi@lists.linux.dev, kernel <kernel@collabora.com>,
+        knaerzche@gmail.com, jc@kynesim.co.uk
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 28 Mar 2022 16:23:03 -0500
-Paul Lemmermann <thepaulodoom@thepaulodoom.com> wrote:
+On Fri, Apr 1, 2022 at 8:18 AM Benjamin Gaignard
+<benjamin.gaignard@collabora.com> wrote:
+>
+>
+> Le 31/03/2022 =C3=A0 08:53, Benjamin Gaignard a =C3=A9crit :
+> >
+> > Le 30/03/2022 =C3=A0 20:52, Adam Ford a =C3=A9crit :
+> >> On Wed, Mar 30, 2022 at 2:53 AM Benjamin Gaignard
+> >> <benjamin.gaignard@collabora.com> wrote:
+> >>>
+> >>> Le 28/02/2022 =C3=A0 15:08, Benjamin Gaignard a =C3=A9crit :
+> >>>> This series aims to make HEVC uapi stable and usable for hardware
+> >>>> decoder. HEVC uapi is used by 2 mainlined drivers (Cedrus and Hantro=
+)
+> >>>> and 2 out of the tree drivers (rkvdec and RPI).
+> >>>>
+> >>>> After the remarks done on version 2, I have completely reworked to
+> >>>> patches
+> >>>> split so changelogs are meaningless. I have also drop "RFC" from the
+> >>>> titles.
+> >>>>
+> >>>> Version 4:
+> >>>> - Add num_entry_point_offsets field in  struct
+> >>>> v4l2_ctrl_hevc_slice_params
+> >>>> - Fix V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS name
+> >>>> - Initialize control V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS
+> >>>> - Fix space/tab issue in kernel-doc
+> >>>> - Add patch to change data_bit_offset definition
+> >>>> - Fix hantro-media SPDX license
+> >>>> - put controls under stateless section in v4l2-ctrls-defs.c
+> >>>>
+> >>>> At the end fluster tests results on IMX8MQ is 77/147 for HEVC codec.
+> >>> Dear reviewers,
+> >>>
+> >>> This series is waiting for your feedback,
+> >> I tried several times with the suggested repos for both the kernel and
+> >> g-streamer without success getting Fluster to pass any tests on the
+> >> imx8mq.  I can try again but I likely won't get to it until this
+> >> weekend.  If I can get it working, I'll test both the 8mq and 8mm.
+> >
+> > Thanks a lot for that.
+> >
+> > Benjamin
+>
+> Adam,
+>
+> You may need to check if h265parse and v4l2slh265dec are available on you=
+r board.
 
-> Changed the leading spaces to tabs, in accordance with kernel coding
-> conventions, and removed trailing comma.
-> 
-> Signed-off-by: Paul Lemmermann <thepaulodoom@thepaulodoom.com>
-Applied to the togreg branch of iio.git and pushed out as testing to let
-0-day take a look at it and see what it thinks.  Note I'll also be
-rebasing that tree after rc1 is out.
+I ran gst-inspect to see what showed up with 265 in the name.
 
-Thanks,
+# gst-inspect-1.0 |grep 265
+libav:  avdec_h265: libav HEVC (High Efficiency Video Coding) decoder
+rtp:  rtph265depay: RTP H265 depayloader
+rtp:  rtph265pay: RTP H265 payloader
+typefindfunctions: video/x-h265: h265, x265, 265
+v4l2codecs:  v4l2slh265dec: V4L2 Stateless H.265 Video Decoder
+videoparsersbad:  h265parse: H.265 parser
 
-Jonathan
-> ---
->  drivers/iio/accel/kxsd9-spi.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iio/accel/kxsd9-spi.c b/drivers/iio/accel/kxsd9-spi.c
-> index ec17e35e5..b7b5af454 100644
-> --- a/drivers/iio/accel/kxsd9-spi.c
-> +++ b/drivers/iio/accel/kxsd9-spi.c
-> @@ -44,8 +44,8 @@ static const struct spi_device_id kxsd9_spi_id[] = {
->  MODULE_DEVICE_TABLE(spi, kxsd9_spi_id);
->  
->  static const struct of_device_id kxsd9_of_match[] = {
-> -        { .compatible = "kionix,kxsd9" },
-> -        { },
-> +	{ .compatible = "kionix,kxsd9" },
-> +	{ }
->  };
->  MODULE_DEVICE_TABLE(of, kxsd9_of_match);
->  
+It appears I have both h265parse and v4l2slh265dec.
 
+>
+> fluster check if v4l2slh265dec is working fine with this command line:
+>
+> gst-launch-1.0 appsrc num-buffers=3D0 ! h265parse ! v4l2slh265dec ! fakes=
+ink
+>
+> so if one of them is missing it won't work.
+
+gst-launch-1.0 appsrc num-buffers=3D0 ! h265parse ! v4l2slh265dec ! fakesin=
+k
+Setting pipeline to PAUSED ...
+0:00:00.098389938   526 0xaaaaf9d86ac0 ERROR     v4l2codecs-decoder
+gstv4l2decoder.c:725:gst_v4l2_decoder_get_controls:<v4l2decoder2>
+VIDIOC_G_EXT_CTRLS failed: Invalid argument
+ERROR: from element
+/GstPipeline:pipeline0/v4l2slh265dec:v4l2slh265dec0: Driver did not
+report framing and start code method.
+Additional debug info:
+../subprojects/gst-plugins-bad/sys/v4l2codecs/gstv4l2codech265dec.c(155):
+gst_v4l2_codec_h265_dec_open ():
+/GstPipeline:pipeline0/v4l2slh265dec:v4l2slh265dec0:
+gst_v4l2_decoder_get_controls() failed: Invalid argument
+ERROR: pipeline doesn't want to preroll.
+ERROR: from element
+/GstPipeline:pipeline0/v4l2slh265dec:v4l2slh265dec0: Could not
+initialize supporting library.
+Additional debug info:
+../subprojects/gst-plugins-base/gst-libs/gst/video/gstvideodecoder.c(2909):
+gst_video_decoder_change_state ():
+/GstPipeline:pipeline0/v4l2slh265dec:v4l2slh265dec0:
+Failed to open decoder
+ERROR: pipeline doesn't want to preroll.
+Failed to set pipeline to PAUSED.
+Setting pipeline to NULL ...
+Freeing pipeline ...
+
+Does this mean I have a wrong version of the kernel and/or incomplete patch=
+es?
+
+adam
+>
+> Regards,
+> Benjamin
+>
+> >
+> >>
+> >> adam
+> >>> Thanks,
+> >>> Benjamin
+> >>>
+> >>>> Benjamin
+> >>>>
+> >>>>
+> >>>> Benjamin Gaignard (12):
+> >>>>     media: uapi: HEVC: Add missing fields in HEVC controls
+> >>>>     media: uapi: HEVC: Rename HEVC stateless controls with STATELESS
+> >>>>       prefix
+> >>>>     media: uapi: HEVC: Add document uAPI structure
+> >>>>     media: uapi: HEVC: Define V4L2_CID_STATELESS_HEVC_SLICE_PARAMS
+> >>>> as a
+> >>>>       dynamic array
+> >>>>     media: uapi: Move parsed HEVC pixel format out of staging
+> >>>>     media: uapi: Add V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS
+> >>>> control
+> >>>>     media: uapi: Move the HEVC stateless control type out of staging
+> >>>>     media: controls: Log HEVC stateless control in .std_log
+> >>>>     media: uapi: Create a dedicated header for Hantro control
+> >>>>     media: uapi: HEVC: fix padding in v4l2 control structures
+> >>>>     media: uapi: Change data_bit_offset definition
+> >>>>     media: uapi: move HEVC stateless controls out of staging
+> >>>>
+> >>>> Hans Verkuil (3):
+> >>>>     videodev2.h: add V4L2_CTRL_FLAG_DYNAMIC_ARRAY
+> >>>>     v4l2-ctrls: add support for dynamically allocated arrays.
+> >>>>     vivid: add dynamic array test control
+> >>>>
+> >>>>    .../userspace-api/media/drivers/hantro.rst    |   5 -
+> >>>>    .../media/v4l/ext-ctrls-codec-stateless.rst   | 833
+> >>>> ++++++++++++++++++
+> >>>>    .../media/v4l/ext-ctrls-codec.rst             | 780
+> >>>> ----------------
+> >>>>    .../media/v4l/pixfmt-compressed.rst           |   7 +-
+> >>>>    .../media/v4l/vidioc-g-ext-ctrls.rst          |  20 +
+> >>>>    .../media/v4l/vidioc-queryctrl.rst            |   8 +
+> >>>>    .../media/videodev2.h.rst.exceptions          |   5 +
+> >>>>    .../media/test-drivers/vivid/vivid-ctrls.c    |  15 +
+> >>>>    drivers/media/v4l2-core/v4l2-ctrls-api.c      | 103 ++-
+> >>>>    drivers/media/v4l2-core/v4l2-ctrls-core.c     | 198 ++++-
+> >>>>    drivers/media/v4l2-core/v4l2-ctrls-defs.c     |  37 +-
+> >>>>    drivers/media/v4l2-core/v4l2-ctrls-priv.h     |   3 +-
+> >>>>    drivers/media/v4l2-core/v4l2-ctrls-request.c  |  13 +-
+> >>>>    drivers/staging/media/hantro/hantro_drv.c     |  27 +-
+> >>>>    drivers/staging/media/hantro/hantro_hevc.c    |   8 +-
+> >>>>    drivers/staging/media/sunxi/cedrus/cedrus.c   |  24 +-
+> >>>>    .../staging/media/sunxi/cedrus/cedrus_dec.c   |  10 +-
+> >>>>    .../staging/media/sunxi/cedrus/cedrus_h265.c  |   2 +-
+> >>>>    include/media/hevc-ctrls.h                    | 250 ------
+> >>>>    include/media/v4l2-ctrls.h                    |  48 +-
+> >>>>    include/uapi/linux/hantro-media.h             |  19 +
+> >>>>    include/uapi/linux/v4l2-controls.h            | 439 +++++++++
+> >>>>    include/uapi/linux/videodev2.h                |  13 +
+> >>>>    23 files changed, 1697 insertions(+), 1170 deletions(-)
+> >>>>    delete mode 100644 include/media/hevc-ctrls.h
+> >>>>    create mode 100644 include/uapi/linux/hantro-media.h
+> >>>>
