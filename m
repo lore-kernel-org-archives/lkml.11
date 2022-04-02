@@ -2,76 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59903C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 11:27:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 301DBC4332F
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 11:31:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354647AbiDBL3X (ORCPT
+        id S1354670AbiDBLd1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Apr 2022 07:29:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45516 "EHLO
+        Sat, 2 Apr 2022 07:33:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348433AbiDBL3V (ORCPT
+        with ESMTP id S241104AbiDBLd0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Apr 2022 07:29:21 -0400
-Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AF9101A6E4E;
-        Sat,  2 Apr 2022 04:27:29 -0700 (PDT)
-Received: from uucp (helo=alpha)
-        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
-        id 1nabuh-0000Ts-00; Sat, 02 Apr 2022 13:27:27 +0200
-Received: by alpha.franken.de (Postfix, from userid 1000)
-        id E7F35C4E4E; Sat,  2 Apr 2022 13:27:19 +0200 (CEST)
-Date:   Sat, 2 Apr 2022 13:27:19 +0200
-From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-To:     torvalds@linux-foundation.org
-Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [GIT PULL] MIPS fixes vor v5.18
-Message-ID: <20220402112719.GA5234@alpha.franken.de>
+        Sat, 2 Apr 2022 07:33:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C95B14A3E4;
+        Sat,  2 Apr 2022 04:31:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7B974B8075A;
+        Sat,  2 Apr 2022 11:31:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22C65C340EC;
+        Sat,  2 Apr 2022 11:31:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648899092;
+        bh=hHiaN9oQ8ExvCLuAqHVX8GhGvr0JDcc8KoNUT7YzQeQ=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=XKuIRDL43MpBpxr/RptIaKZKJR6EGeGWNkYtaNMCtIGwGXVqzA5i57XwxM54tVZ2N
+         SjEfIUs8wDBMf81/FJiWI633TR1Bqh5IbwxY44eD1obDH5wSpDPvoGug1iLEbJ9zl9
+         dF1SrQrFYf4IhpClRUs2MejERVXmb/nr9GW+YaBI2kfjIx6xNg5XE/DEuHkTwCKDZb
+         O2itFS38dngcTS/XWun70RifGDQFMBuryMyU/DyVxwpJ040NeR7+L9eAfaXo8lFnrU
+         4E+xDrArOnbh4T5cLQkNUSgcuoNZyvBWF1OM+aRt90V9CuznkyCNGqjf2JwyKD3IEg
+         jiimG0s8JPYjw==
+Message-ID: <ac0e3336-f9eb-def9-68ea-ab49e2c467a1@kernel.org>
+Date:   Sat, 2 Apr 2022 13:31:22 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 1/3] dt-bindings: devfreq: mediatek: add mtk cci devfreq
+ dt-bindings
+Content-Language: en-US
+To:     Jia-Wei Chang <jia-wei.chang@mediatek.com>,
+        MyungJoo Ham <myungjoo.ham@samsung.com>,
+        Kyungmin Park <kyungmin.park@samsung.com>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+Cc:     linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        fan.chen@mediatek.com, louis.yu@mediatek.com,
+        roger.lu@mediatek.com, Allen-yy.Lin@mediatek.com,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        hsinyi@google.com,
+        Jia-Wei Chang <jia-wei.chang@mediatek.corp-partner.google.com>
+References: <20220307122513.11822-1-jia-wei.chang@mediatek.com>
+ <20220307122513.11822-2-jia-wei.chang@mediatek.com>
+ <bf418e08-2e32-5e61-abd8-abb0d8f5c080@canonical.com>
+ <13482b1b4244df5c0c0a4d6a60cdb2a7ba88500a.camel@mediatek.com>
+ <aa34eccf-ef08-4a8f-7a6c-7fbd05bd54b6@kernel.org>
+ <126e0905c2eb9f22a0be46dd7aa8ac891622346d.camel@mediatek.com>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+In-Reply-To: <126e0905c2eb9f22a0be46dd7aa8ac891622346d.camel@mediatek.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following changes since commit f8f9f21c7848e63133c16c899f3d84aa54eb79fe:
+On 01/04/2022 15:39, Jia-Wei Chang wrote:
+>>>>
+>>>>> +
+>>>>> +  operating-points-v2:
+>>>>> +    description:
+>>>>> +      For details, please refer to
+>>>>> +      Documentation/devicetree/bindings/opp/opp-v2.yaml
+>>>>> +
+>>>>> +  opp-table: true
+>>>>
+>>>> Same comments as your CPU freq bindings apply.
+>>>
+>>> mtk-cci-devfreq is a new driver and its arch is same as mediatek-
+>>> cpufreq so that the properties of mtk-cci are refer to mediatek-
+>>> cpufreq 
+>>> bindings.
+>>> operating-point-v2 is used to determine the voltage and frequency
+>>> of
+>>> dvfs which is further utilized by mtk-cci-devfreq.
+>>
+>> "operating-point-v2" is understood, but the same as in cpufreq
+>> bindings,
+>> I am questioning why do you have "opp-table: true". It's a bit
+>> confusing, so maybe I miss something?
+> 
+> Yes, you're correct.
+> "opp-table: true" should be removed.
+> I messed it up.
 
-  MIPS: Fix build error for loongson64 and sgi-ip27 (2022-03-24 09:45:15 +0100)
+No, I think I was wrong. The opp-table pretty frequently is embedded in
+the the device node itself. The operating-points-v2 references it.
 
-are available in the Git repository at:
+You don't use it in the example, but it might be a valid usage, so it
+can stay. Sorry for the confusion, it passed some time since I looked at
+OPP bindings.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/mips/linux.git/ tags/mips_5.18_1
 
-for you to fetch changes up to 41022eff9c2d21e658c7a6fcd31005bf514d28b7:
-
-  MIPS: crypto: Fix CRC32 code (2022-04-01 10:19:03 +0200)
-
-----------------------------------------------------------------
-- build fix for gpio
-- fix crc32 build problems
-- check for failed memory allocations
-
-----------------------------------------------------------------
-Jackie Liu (1):
-      MIPS: rb532: move GPIOD definition into C-files
-
-Paul Cercueil (1):
-      MIPS: crypto: Fix CRC32 code
-
-Xiaoke Wang (2):
-      mips: sgi-ip22: add a check for the return of kzalloc()
-      MIPS: lantiq: check the return value of kzalloc()
-
- arch/mips/crypto/crc32-mips.c           | 46 +++++++++++++++++++--------------
- arch/mips/include/asm/mach-rc32434/rb.h |  9 -------
- arch/mips/lantiq/falcon/sysctrl.c       |  2 ++
- arch/mips/lantiq/xway/gptu.c            |  2 ++
- arch/mips/lantiq/xway/sysctrl.c         | 46 +++++++++++++++++++++------------
- arch/mips/rb532/gpio.c                  | 10 +++++++
- arch/mips/sgi-ip22/ip22-gio.c           |  2 ++
- 7 files changed, 72 insertions(+), 45 deletions(-)
-
--- 
-Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
-good idea.                                                [ RFC1925, 2.3 ]
+Best regards,
+Krzysztof
