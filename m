@@ -2,88 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6104C433FE
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 20:42:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F9CAC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 20:47:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351329AbiDBUnx (ORCPT
+        id S1352800AbiDBUtB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Apr 2022 16:43:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51220 "EHLO
+        Sat, 2 Apr 2022 16:49:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236254AbiDBUnw (ORCPT
+        with ESMTP id S236254AbiDBUs6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Apr 2022 16:43:52 -0400
-Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A765A5D1A4;
-        Sat,  2 Apr 2022 13:41:59 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1648932087; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=cxCXJ5ZUtSYPG7vW7hSxEAccR9bEs2MbAtgJ+5IFb6WFeCswEzYACBoczyhED11heVpBmInFLZsL14riOJ8HunTGAL7kdPStjtr3PUMN+PpCKc4353SKoSBSkJW7VDrhyElLazCF/FvVvCgOpcox/dLazNaf3k+DnnNv/31eiYM=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1648932087; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=AI1CWy+vPCL4wJICPiReEnWqJXsxDqhOFVpnH4rLfIo=; 
-        b=CvlrV2zE3EuZWh2q4DDrEVvNo+7QdbWglYHkkQpcOYLetZ02E5XanTvjJ6Jxi9U2ZB/Cvwx35Oc2CKiapbsCGRMTVSHNmv9/Qoy/+dc7EbkPBMQPB+SgOZtl3kES2jXTLQuup+fQOvaejRgZwwUxWtrEyJly8Sls0CXe9jbVsXA=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1648932087;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=Message-ID:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=AI1CWy+vPCL4wJICPiReEnWqJXsxDqhOFVpnH4rLfIo=;
-        b=kaEcM0BcaN7ZiPmSZoD3QvFbwweveaaN0nzDxEIWP09xOu4Zx6JMROjfGHGHqj9e
-        7YPodsOHpBR82lEnJng4gw4SMkNKJeuNMy3wdTI8MOSxPgwFciUkHDqGHa+m3wl1Pfi
-        Ju0JVnRwuItIC3H2KN27jxV2mi9OCEDv69gW/9A8=
-Received: from [10.10.10.3] (85.117.236.245 [85.117.236.245]) by mx.zohomail.com
-        with SMTPS id 1648932083496229.1744985746061; Sat, 2 Apr 2022 13:41:23 -0700 (PDT)
-Message-ID: <bf363c60-3432-7b98-97c5-0dbeddad8a4d@arinc9.com>
-Date:   Sat, 2 Apr 2022 23:41:18 +0300
+        Sat, 2 Apr 2022 16:48:58 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB83A8C7C2;
+        Sat,  2 Apr 2022 13:47:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648932426; x=1680468426;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=g37OhN95hQDsEq5tM7Z8xgfEwHCJ4ewxpSG/HutWnaE=;
+  b=gz5n1+BHtwmKZa62cVUT3gbEFw23Kc7RtZcQGnqBJzWXlj+PMMznqD05
+   mhGd9/7YFAypC5pdoe+BQr4Cjc23tID+2/rrTGng3Al18PSQ3MG+PBawI
+   T3BKJgA8Qwgo8Va1BUU0WnQR+tNUOqWvtOg6U2SyiRCP7SI4Hlz3U/oE/
+   7ZMK309nCXXlYPw9/pJi4Q8m47d6qCrz/RawRPfzGpxegIuORiL31P6NJ
+   bR7Qi71YrZ3GROmk5QDzpkcGbTkmnwcoDfGsQPd9/KltBCCmFmIP1ORBA
+   70ppyYXsR15cy7Z3TRTaWpjU9hgs5yfBCmeBsqVrg5ng0CcACz696JE1h
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10305"; a="240924370"
+X-IronPort-AV: E=Sophos;i="5.90,231,1643702400"; 
+   d="scan'208";a="240924370"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Apr 2022 13:47:06 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,231,1643702400"; 
+   d="scan'208";a="548206722"
+Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
+  by orsmga007.jf.intel.com with ESMTP; 02 Apr 2022 13:47:04 -0700
+Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nakeF-0000PD-NW;
+        Sat, 02 Apr 2022 20:47:03 +0000
+Date:   Sun, 3 Apr 2022 04:46:44 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Subject: drivers/media/platform/renesas/rcar_jpu.c:77:9: warning: 'RST' macro
+ redefined
+Message-ID: <202204030453.ISJ7wI3L-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 1/2] dt-bindings: arm: bcm: fix BCM53012 and BCM53016 SoC
- strings
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Scott Branden <scott.branden@broadcom.com>,
-        Christian Lamparter <chunkeey@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        devicetree@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com
-References: <20220401172427.2806-1-arinc.unal@arinc9.com>
- <fbbd44cc-e839-9532-962a-538ce834930c@linaro.org>
-From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-In-Reply-To: <fbbd44cc-e839-9532-962a-538ce834930c@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 02/04/2022 19:28, Krzysztof Kozlowski wrote:
-> On 01/04/2022 19:24, Arınç ÜNAL wrote:
->> Fix inaccurate SoC strings brcm,brcm53012 and brcm,brcm53016 to respectively
->> brcm,bcm53012 and brcm,bcm53016.
->>
->> Create a new description for BCM53016 and move Meraki MR32 under it.
->>
->> Fixes: 4cb5201fcb5d ("dt-bindings: arm: bcm: Convert BCM4708 to YAML")
->> Fixes: a2e385f5374d ("dt-bindings: ARM: add bindings for the Meraki MR32")
->> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
->> ---
->> brcm,bcm53012 string was silently changed to brcm,brcm53012 after
->> converting to YAML. Let me know if this was intentional.
->>
-> 
-> Thanks for your patch. This looks like 2 or 3 separate patches:
-> 1. Correct meraki and BCM53016 bindings,
-> 2. Rename brcm->bcm, in bindings,
-> 3. Change DTS.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   6f34f8c3d6178527d4c02aa3a53c370cc70cb91e
+commit: ee4a77a32b39064fdab0aa2b36bbd35ebf57e077 media: platform: place Renesas drivers on a separate dir
+date:   3 weeks ago
+config: mips-randconfig-r001-20220403 (https://download.01.org/0day-ci/archive/20220403/202204030453.ISJ7wI3L-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project c4a1b07d0979e7ff20d7d541af666d822d66b566)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install mips cross compiling tool for clang build
+        # apt-get install binutils-mips-linux-gnu
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=ee4a77a32b39064fdab0aa2b36bbd35ebf57e077
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout ee4a77a32b39064fdab0aa2b36bbd35ebf57e077
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash drivers/media/platform/
 
-Will send v2, thanks.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Arınç
+All warnings (new ones prefixed by >>):
+
+>> drivers/media/platform/renesas/rcar_jpu.c:77:9: warning: 'RST' macro redefined [-Wmacro-redefined]
+   #define RST     0xd0
+           ^
+   arch/mips/include/asm/mach-rc32434/rb.h:13:9: note: previous definition is here
+   #define RST             (1 << 15)
+           ^
+   1 warning generated.
+
+
+vim +/RST +77 drivers/media/platform/renesas/rcar_jpu.c
+
+2c42cdbaec56a9 drivers/media/platform/rcar_jpu.c Mikhail Ulyanov 2015-07-22  73  
+2c42cdbaec56a9 drivers/media/platform/rcar_jpu.c Mikhail Ulyanov 2015-07-22  74  /* JPEG markers */
+2c42cdbaec56a9 drivers/media/platform/rcar_jpu.c Mikhail Ulyanov 2015-07-22  75  #define TEM	0x01
+2c42cdbaec56a9 drivers/media/platform/rcar_jpu.c Mikhail Ulyanov 2015-07-22  76  #define SOF0	0xc0
+2c42cdbaec56a9 drivers/media/platform/rcar_jpu.c Mikhail Ulyanov 2015-07-22 @77  #define RST	0xd0
+2c42cdbaec56a9 drivers/media/platform/rcar_jpu.c Mikhail Ulyanov 2015-07-22  78  #define SOI	0xd8
+2c42cdbaec56a9 drivers/media/platform/rcar_jpu.c Mikhail Ulyanov 2015-07-22  79  #define EOI	0xd9
+2c42cdbaec56a9 drivers/media/platform/rcar_jpu.c Mikhail Ulyanov 2015-07-22  80  #define DHP	0xde
+2c42cdbaec56a9 drivers/media/platform/rcar_jpu.c Mikhail Ulyanov 2015-07-22  81  #define DHT	0xc4
+2c42cdbaec56a9 drivers/media/platform/rcar_jpu.c Mikhail Ulyanov 2015-07-22  82  #define COM	0xfe
+2c42cdbaec56a9 drivers/media/platform/rcar_jpu.c Mikhail Ulyanov 2015-07-22  83  #define DQT	0xdb
+2c42cdbaec56a9 drivers/media/platform/rcar_jpu.c Mikhail Ulyanov 2015-07-22  84  #define DRI	0xdd
+2c42cdbaec56a9 drivers/media/platform/rcar_jpu.c Mikhail Ulyanov 2015-07-22  85  #define APP0	0xe0
+2c42cdbaec56a9 drivers/media/platform/rcar_jpu.c Mikhail Ulyanov 2015-07-22  86  
+
+:::::: The code at line 77 was first introduced by commit
+:::::: 2c42cdbaec56a9565a2717b450506150c9c55103 [media] V4L2: platform: Add Renesas R-Car JPEG codec driver
+
+:::::: TO: Mikhail Ulyanov <mikhail.ulyanov@cogentembedded.com>
+:::::: CC: Mauro Carvalho Chehab <mchehab@osg.samsung.com>
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
