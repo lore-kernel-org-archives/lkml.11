@@ -2,201 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6490C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 10:29:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9ECFC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Apr 2022 10:29:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354334AbiDBKa7 (ORCPT
+        id S1354346AbiDBKb3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Apr 2022 06:30:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54502 "EHLO
+        Sat, 2 Apr 2022 06:31:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239592AbiDBKaz (ORCPT
+        with ESMTP id S1354335AbiDBKb0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Apr 2022 06:30:55 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 060FE49266
-        for <linux-kernel@vger.kernel.org>; Sat,  2 Apr 2022 03:29:03 -0700 (PDT)
-Received: from canpemm500009.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KVtWr1Z9nzgY97;
-        Sat,  2 Apr 2022 18:27:20 +0800 (CST)
-Received: from [10.67.102.169] (10.67.102.169) by
- canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Sat, 2 Apr 2022 18:29:00 +0800
-CC:     <yangyicong@hisilicon.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] sched: topology: make cache topology separate from cpu
- topology
-To:     =?UTF-8?B?546L5pOO?= <wangqing@vivo.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>
-References: <1646917125-20038-1-git-send-email-wangqing@vivo.com>
- <CAKfTPtAvbpUUaOqP3gmOT7fLk8-7v70LzBUiQ-vgDvc7ZZujag@mail.gmail.com>
- <SL2PR06MB30828CF9FF2879AFC9DC53D2BD0C9@SL2PR06MB3082.apcprd06.prod.outlook.com>
- <CAKfTPtBM9WBEgP_PpRHNaATvp9FrBeV2NXhg_EAp4xYtBZYCWQ@mail.gmail.com>
- <SL2PR06MB30826C314139509EC4778C1BBD0C9@SL2PR06MB3082.apcprd06.prod.outlook.com>
- <CAKfTPtA=dy4M2OK+GqvPDo9D8YBZAHbEpM-YPVZEyEUjEJKU5g@mail.gmail.com>
- <SL2PR06MB308268BDF646BFA0FC9A4590BD0C9@SL2PR06MB3082.apcprd06.prod.outlook.com>
- <CAKfTPtCVV_cpBty7xH8Gea8HdjNzfiE3Kd882i7Pffvrv3p1zw@mail.gmail.com>
- <SL2PR06MB3082ED191BF8892367A3465EBD109@SL2PR06MB3082.apcprd06.prod.outlook.com>
- <CAKfTPtCn0As7Kbj7aHtmu++RDyo8proM6k9DLa1AMAc7iSSQXg@mail.gmail.com>
- <SL2PR06MB308281BAC7D7F7CBF136DCD3BDE39@SL2PR06MB3082.apcprd06.prod.outlook.com>
-From:   Yicong Yang <yangyicong@huawei.com>
-Message-ID: <c1e348d1-6b74-9ac9-b7c6-6508a0fd9690@huawei.com>
-Date:   Sat, 2 Apr 2022 18:29:00 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.1
+        Sat, 2 Apr 2022 06:31:26 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 873C360044
+        for <linux-kernel@vger.kernel.org>; Sat,  2 Apr 2022 03:29:35 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id bg10so10653984ejb.4
+        for <linux-kernel@vger.kernel.org>; Sat, 02 Apr 2022 03:29:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=LastlIlp3ExuBmWFIzRxFtrilFT5BPcN0d/npk5blEA=;
+        b=PnCyQzWYZfowMMLFepox8LSupe9oBT98ViN0jGp1KPeRVTKS0lQJ105RNbRGBHkfBC
+         vYriAZJRL5Ms2YxlyHTO7sojUiIEdFCbecRX4uj2dhveN4QNkey/NDXw1OuCMC2p8+63
+         IR82ikIuH2bcGnV8wm2Wp6hEBk8axhNbTzZBOGBHCe3JgUVIUO3x0tx0NtPO9+kDDcKD
+         rpAd4N3tLRqClad+W9n4EmKaJ9re+mfksTQ4fUna7TWeabvPH0z8/c2q83hgz3mKfNzO
+         PMX38a/y7YDAoDDakCB5yw3Maumkpp2MVeRgqW/hE/RWoCr9yYaUutEc6AMP/IEjaBTv
+         8aZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=LastlIlp3ExuBmWFIzRxFtrilFT5BPcN0d/npk5blEA=;
+        b=K4DXXJfyoW+J5NTzK17/74V5nB2OvwqMR4PL2zTsuLzSTVzQ6hDOmY+4y1BRbX+i+a
+         hdpCMwHJ5x9XVAIImHTSFAcCBAASkOIGA5dG6Xp3CT9kAypldfAETkIjBlNSqRerrXWg
+         wTvvR9zy8cz6OSDiNj0NKTxX0hGL9/58YrXAlzzmdtsLRU6Eizga9r0Fcokd4rtlZcZR
+         7BBfQXDPNYcW959JUDhzRGc7vFaQP0wVBTynupCSmAS1ehgOINaul1n5iMuThMQaoGjC
+         MRJ+HcDyzmhgnNlBztjSv7GvNDOxGwm8UpHwyJQNDLdcGu8R73A6lcMz72wePJuCWAiR
+         yhKg==
+X-Gm-Message-State: AOAM532mkQBrhVdYbluByO+ik0ND4UQweKxSI6cnHP5J0YpvsbwB2vxR
+        jd6wAH1GZE11tYgM0LO082Q=
+X-Google-Smtp-Source: ABdhPJzE+ftupkONrdbBMv0aFZ6kBjc3RScrgJGYwat9UGVhM/XZ05LCG5dOy+D5qcEvi8fUvfqH5w==
+X-Received: by 2002:a17:907:6089:b0:6db:a3d7:3fa9 with SMTP id ht9-20020a170907608900b006dba3d73fa9mr3428769ejc.593.1648895374047;
+        Sat, 02 Apr 2022 03:29:34 -0700 (PDT)
+Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
+        by smtp.googlemail.com with ESMTPSA id qk32-20020a1709077fa000b006df6bb30b28sm1952187ejc.171.2022.04.02.03.29.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 02 Apr 2022 03:29:33 -0700 (PDT)
+From:   Jakob Koschel <jakobkoschel@gmail.com>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Ingo Molnar <mingo@redhat.com>, linux-kernel@vger.kernel.org,
+        Mike Rapoport <rppt@kernel.org>,
+        "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>, Jakob Koschel <jakobkoschel@gmail.com>
+Subject: [PATCH v2 1/4] tracing: Remove usage of list iterator after the loop body
+Date:   Sat,  2 Apr 2022 12:28:45 +0200
+Message-Id: <20220402102848.1759172-2-jakobkoschel@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220402102848.1759172-1-jakobkoschel@gmail.com>
+References: <20220402102848.1759172-1-jakobkoschel@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <SL2PR06MB308281BAC7D7F7CBF136DCD3BDE39@SL2PR06MB3082.apcprd06.prod.outlook.com>
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.67.102.169]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- canpemm500009.china.huawei.com (7.192.105.203)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Qing,
+In preparation to limit the scope of the list iterator variable to the
+traversal loop, use a dedicated pointer to point to the found element
+[1].
 
-On 2022/4/2 17:34, 王擎 wrote:
-> 
->>>
->>>
->>>>>
->>>>>
->>>>>>>
->>>>>>>
->>>>>>>>>
->>>>>>>>>
->>>>>>>>>> On Thu, 10 Mar 2022 at 13:59, Qing Wang <wangqing@vivo.com> wrote:
->>>>>>>>>>>
->>>>>>>>>>> From: Wang Qing <wangqing@vivo.com>
->>>>>>>>>>>
->>>>>>>>>>> Some architectures(e.g. ARM64), caches are implemented below:
->>>>>>>>>>> cluster:                     ****** cluster 0 *****      ****** cluster 1 *****
->>>>>>>>>>> core:                         0      1          2      3          4      5           6      7
->>>>>>>>> (add cache level 1)        c0    c1        c2    c3         c4    c5         c6    c7
->>>>>>>>>>> cache(Leveln):         **cache0**  **cache1**  **cache2**  **cache3**
->>>>>>>>> (add cache level 3)        *************share level 3 cache ***************
->>>>>>>>>>> sd_llc_id(current):     0      0          0      0          4      4           4      4
->>>>>>>>>>> sd_llc_id(should be): 0      0          2      2          4      4           6      6
->>>>>>>>>>>
->>>>>>>>> Here, n always be 2 in ARM64, but others are also possible.
->>>>>>>>> core[0,1] form a complex(ARMV9),  which share L2 cache, core[2,3] is the same.
->>>>>>>>>
->>>>>>>>>>> Caches and cpus have different topology, this causes cpus_share_cache()
->>>>>>>>>>> return the wrong value, which will affect the CPU load balance.
->>>>>>>>>>>
->>>>>>>>>> What does your current scheduler topology  look like?
->>>>>>>>>>
->>>>>>>>>> For CPU 0 to 3, do you have the below ?
->>>>>>>>>> DIE [0     -     3] [4-7]
->>>>>>>>>> MC  [0] [1] [2] [3]
->>>>>>>>>
->>>>>>>>> The current scheduler topology consistent with CPU topology:
->>>>>>>>> DIE  [0-7]
->>>>>>>>> MC  [0-3] [4-7]  (SD_SHARE_PKG_RESOURCES)
->>>>>>>>> Most Android phones have this topology.
->>>>>>>>>>
->>>>>>>>>> But you would like something like below for cpu 0-1 instead ?
->>>>>>>>>> DIE [0     -     3] [4-7]
->>>>>>>>>> CLS [0 - 1] [2 - 3]
->>>>>>>>>> MC  [0] [1]
->>>>>>>>>>
->>>>>>>>>> with SD_SHARE_PKG_RESOURCES only set to MC level ?
->>>>>>>>>
->>>>>>>>> We don't change the current scheduler topology, but the
->>>>>>>>> cache topology should be separated like below:
->>>>>>>>
->>>>>>>> The scheduler topology is not only cpu topology but a mixed of cpu and
->>>>>>>> cache/memory cache topology
->>>>>>>>
->>>>>>>>> [0-7]                          (shared level 3 cache )
->>>>>>>>> [0-1] [2-3][4-5][6-7]   (shared level 2 cache )
->>>>>>>>
->>>>>>>> So you don't  bother the intermediate cluster level which is even simpler.
->>>>>>>> you have to modify generic arch topology so that cpu_coregroup_mask
->>>>>>>> returns the correct cpu mask directly.
->>>>>>>>
->>>>>>>> You will notice a llc_sibling field that is currently used by acpi but
->>>>>>>> not DT to return llc cpu mask
->>>>>>>>
->>>>>>> cpu_topology[].llc_sibling describe the last level cache of whole system,
->>>>>>> not in the sched_domain.
->>>>>>>
->>>>>>> in the above cache topology, llc_sibling is 0xff([0-7]) , it describes
->>>>>>
->>>>>> If llc_sibling was 0xff([0-7] on your system, you would have only one level:
->>>>>> MC[0-7]
->>>>>
->>>>> Sorry, but I don't get it, why llc_sibling was 0xff([0-7] means MC[0-7]?
->>>>> In our system(Android), llc_sibling is indeed 0xff([0-7]) , because they
->>>>> shared the llc(L3), but we also have two level:
->>>>> DIE [0-7]
->>>>> MC [0-3][4-6]
->>>>> It makes sense, [0-3] are little cores, [4-7] are bit cores, se only up migrate
->>>>> when misfit. We won't change it.
->>>>>
->>>>>>
->>>>>>> the L3 cache sibling, but sd_llc_id describes the maximum shared cache
->>>>>>> in sd, which should be [0-1] instead of [0-3].
->>>>>>
->>>>>> sd_llc_id describes the last sched_domain with SD_SHARE_PKG_RESOURCES.
->>>>>> If you want llc to be [0-3] make sure that the
->>>>>> sched_domain_topology_level array returns the correct cpumask with
->>>>>> this flag
->>>>>
->>>>> Acturely, we want sd_llc to be [0-1] [2-3], but if the MC domain don't have
->>>>
->>>> sd_llc_id refers to a scheduler domain but your patch breaks this so
->>>> if you want a llc that reflects this topo:  [0-1] [2-3] you must
->>>> provide a sched_domain level with this topo
->>>
->>> Maybe we should add a shared-cache level(SC), like what CLS does:
->>>
->>> DIE  [0-7] (shared level 3 cache, SD_SHARE_PKG_RESOURCES)
->>> MC  [0-3] [4-7]  (not SD_SHARE_PKG_RESOURCES)
->>> CLS  (if necessary)
->>> SC    [0-1][2-3][4-5][6-7] (shared level 2 cache, SD_SHARE_PKG_RESOURCES)
->>> SMT (if necessary)
->>>
->>> SC means a couple of CPUs which are placed closely by sharing
->>> mid-level caches, but not enough to be a cluster.
->>
->> what you name SC above looks the same as CLS which should not be mixed
->> with Arm cluster terminology
-> 
-> Do you mean cluster is equal to shared cache instead of containing, SC just 
-> means shared cache, but not form a cluster, a CLS can contain many SCs.
-> 
+Before, the code implicitly used the head when no element was found
+when using &pos->list. Since the new variable is only set if an
+element was found, the head needs to be used explicitly if the
+variable is NULL.
 
-The cluster is a topology level above the CPUs but under LLC. On Kunpeng 920 the cpus
-in a CLS will share L3T and on Intel's Jacobsville cpus in a CLS will share L2[1].
+Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/ [1]
+Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
+---
+ kernel/trace/trace_output.c | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
 
-Seems you're using a DT based system. I think the parsing of cluster level is not
-supported on DT yet so you cannot see it. Otherwise with right cpu topology reported
-you will have a CLS level in which the cpus share L2 cache, just like Jacobsville.
+diff --git a/kernel/trace/trace_output.c b/kernel/trace/trace_output.c
+index 8aa493d25c73..733a4d6c20e2 100644
+--- a/kernel/trace/trace_output.c
++++ b/kernel/trace/trace_output.c
+@@ -692,7 +692,7 @@ static LIST_HEAD(ftrace_event_list);
+ 
+ static int trace_search_list(struct list_head **list)
+ {
+-	struct trace_event *e;
++	struct trace_event *e = NULL, *iter;
+ 	int next = __TRACE_LAST_TYPE;
+ 
+ 	if (list_empty(&ftrace_event_list)) {
+@@ -704,9 +704,11 @@ static int trace_search_list(struct list_head **list)
+ 	 * We used up all possible max events,
+ 	 * lets see if somebody freed one.
+ 	 */
+-	list_for_each_entry(e, &ftrace_event_list, list) {
+-		if (e->type != next)
++	list_for_each_entry(iter, &ftrace_event_list, list) {
++		if (iter->type != next) {
++			e = iter;
+ 			break;
++		}
+ 		next++;
+ 	}
+ 
+@@ -714,7 +716,10 @@ static int trace_search_list(struct list_head **list)
+ 	if (next > TRACE_EVENT_TYPE_MAX)
+ 		return 0;
+ 
+-	*list = &e->list;
++	if (e)
++		*list = &e->list;
++	else
++		*list = &ftrace_event_list;
+ 	return next;
+ }
+ 
+-- 
+2.25.1
 
-[1] https://lore.kernel.org/all/20210924085104.44806-4-21cnbao@gmail.com/
-
-> If as you said, SC looks the same as CLS, should we rename CLS to SC to 
-> avoid confusion?
-> 
-> Thanks,
-> Wang
-> 
