@@ -2,96 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC26CC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  3 Apr 2022 02:49:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1EB6C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  3 Apr 2022 03:07:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231263AbiDCCvm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Apr 2022 22:51:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49778 "EHLO
+        id S234128AbiDCDI6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 2 Apr 2022 23:08:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230133AbiDCCvk (ORCPT
+        with ESMTP id S234495AbiDCDI4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Apr 2022 22:51:40 -0400
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD76324942
-        for <linux-kernel@vger.kernel.org>; Sat,  2 Apr 2022 19:49:46 -0700 (PDT)
-Received: by mail-pg1-x531.google.com with SMTP id t4so5515733pgc.1
-        for <linux-kernel@vger.kernel.org>; Sat, 02 Apr 2022 19:49:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0edowekvp+uuabuvCBvmZKu7k9xu44C+w2QWuBKwXVg=;
-        b=3dMnBV4kTdo2WSciKxJYmAvpw7AXg+p1T7qReeNIsAg9ObVb5KAqh/PpPL3m0fgd4Y
-         oGduNrh4X484v+yN6pxoeKd7cankKPiivDqNTmf5+0a252b+RNt6r2rhIigXJcbAT8p7
-         WS7vsgnpJelzKwddJVQ3rnU7FyRQYaiOoLM5kLYgQkzm1OqLjkLDdyuedGTu8YzaXsNc
-         ayZABioTmxF68JUvHh82NrI1seLWO5w4/bFU+0LrhB3p0iHP/n/C0lgKdH2BmU11Hcij
-         ukj0Slag8wF6GzQVngme9rPCzCCVjvo7eDHN5bVtbUPY+m5boGvo06SVCzz0XWzOhEjB
-         PtWg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0edowekvp+uuabuvCBvmZKu7k9xu44C+w2QWuBKwXVg=;
-        b=QPUJ2J4qPNRJfuJ6v8dAsvlTOkCAM5VDjN2i7JByS9EI8rHs4gbSkeycVgNORzI4yW
-         sxai7sGph2jT44gE2fc8zIKfDqdXA7gZAPWBzl3JYi9TALgOk4nLqbQ0DSnHVOrIgEYe
-         eTGTyMPwOJ3h4Gk19TNH1Wlfhd57miIcjFL8T4OY9ZAghWMlmOr37T9rXN26TBugUIrT
-         VVmdaKv9Jia3Ue+DJOodVpyI5dvwtN2SWpwG3nRC+Ghqr8b+l1RyhENvMfR+iHtA2uKR
-         wLefiG+lQOh340gzoYLDCPuimjpmLJfn5O7cm4jVBNiG7Iz8jNVgQ2zv7Z7C44+TqEno
-         0M+A==
-X-Gm-Message-State: AOAM533U3HpXja5ReX+zHKfQu9IMjKGiUPdoZRBsHmy8vyLtV83UP1LH
-        MKidl+9r6ui07sTFOEUOKixOyQKvQvO91Q==
-X-Google-Smtp-Source: ABdhPJyDRXDH8Tz4dAGJv60lUuLMHE7z7aPaZZDJTkLlzwE4WSvWneTIZD0ZfdfJklDfoH1bNBhFsA==
-X-Received: by 2002:a63:a555:0:b0:382:3ec:ee4f with SMTP id r21-20020a63a555000000b0038203ecee4fmr20547497pgu.79.1648954186335;
-        Sat, 02 Apr 2022 19:49:46 -0700 (PDT)
-Received: from FVFYT0MHHV2J.bytedance.net ([139.177.225.245])
-        by smtp.gmail.com with ESMTPSA id d9-20020a056a00198900b004fafdb88076sm7600992pfl.117.2022.04.02.19.49.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 02 Apr 2022 19:49:45 -0700 (PDT)
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     catalin.marinas@arm.com, will@kernel.org,
-        akpm@linux-foundation.org, anshuman.khandual@arm.com,
-        aneesh.kumar@linux.ibm.com, steven.price@arm.com,
-        lengxujun2007@126.com, arnd@arndb.de
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        smuchun@gmail.com, duanxiongchun@bytedance.com,
-        Muchun Song <songmuchun@bytedance.com>,
-        Qian Cai <quic_qiancai@quicinc.com>
-Subject: [PATCH] arm64: mm: fix pmd_leaf()
-Date:   Sun,  3 Apr 2022 10:49:28 +0800
-Message-Id: <20220403024928.4125-1-songmuchun@bytedance.com>
-X-Mailer: git-send-email 2.32.0 (Apple Git-132)
+        Sat, 2 Apr 2022 23:08:56 -0400
+X-Greylist: delayed 415 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 02 Apr 2022 20:06:50 PDT
+Received: from mail.tintel.eu (mail.tintel.eu [IPv6:2001:41d0:a:6e77:0:ff:fe5c:6a54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBBA438DB1;
+        Sat,  2 Apr 2022 20:06:50 -0700 (PDT)
+Received: from localhost (localhost [IPv6:::1])
+        by mail.tintel.eu (Postfix) with ESMTP id 004144407640;
+        Sun,  3 Apr 2022 04:59:53 +0200 (CEST)
+Received: from mail.tintel.eu ([IPv6:::1])
+        by localhost (mail.tintel.eu [IPv6:::1]) (amavisd-new, port 10032)
+        with ESMTP id FPQdfFrD67em; Sun,  3 Apr 2022 04:59:52 +0200 (CEST)
+Received: from localhost (localhost [IPv6:::1])
+        by mail.tintel.eu (Postfix) with ESMTP id AF200443A8BC;
+        Sun,  3 Apr 2022 04:59:52 +0200 (CEST)
+DKIM-Filter: OpenDKIM Filter v2.10.3 mail.tintel.eu AF200443A8BC
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux-ipv6.be;
+        s=502B7754-045F-11E5-BBC5-64595FD46BE8; t=1648954792;
+        bh=cob7IhTPnKgDjCS6j35aXVOPak/SkzGLuDDAOZT0P1Y=;
+        h=From:To:Date:Message-Id:MIME-Version;
+        b=pBsjR0/UiQTtUlNmoVVGPs6Uzo5yPOBHVV8ZufJ7EO6fgu35Xc9BK00FcEThfFAr0
+         9MuE0TqS9qyi3gis0p1AKRIdoRglWKy91BzRwK3j7U6oton6qEEdJmPVmTze+NHO0e
+         HXUdWaYo7at9GKbJjfaHMBDumITX/Hp473fU9Q0s=
+X-Virus-Scanned: amavisd-new at mail.tintel.eu
+Received: from mail.tintel.eu ([IPv6:::1])
+        by localhost (mail.tintel.eu [IPv6:::1]) (amavisd-new, port 10026)
+        with ESMTP id umedI9jnahRL; Sun,  3 Apr 2022 04:59:52 +0200 (CEST)
+Received: from taz.sof.bg.adlevio.net (unknown [IPv6:2001:67c:21bc:20::10])
+        by mail.tintel.eu (Postfix) with ESMTPS id 6DFB84407640;
+        Sun,  3 Apr 2022 04:59:52 +0200 (CEST)
+From:   Stijn Tintel <stijn@linux-ipv6.be>
+To:     linux-mips@vger.kernel.org
+Cc:     tsbogend@alpha.franken.de, rdunlap@infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 2/2] MIPS: Octeon: support all interfaces on CN66XX
+Date:   Sun,  3 Apr 2022 05:59:50 +0300
+Message-Id: <20220403025950.837085-2-stijn@linux-ipv6.be>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220403025950.837085-1-stijn@linux-ipv6.be>
+References: <20220403025950.837085-1-stijn@linux-ipv6.be>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Rspamd-Pre-Result: action=no action;
+        module=multimap;
+        Matched map: IP_WHITELIST
+X-Rspamd-Queue-Id: 6DFB84407640
+X-Rspamd-Pre-Result: action=no action;
+        module=multimap;
+        Matched map: IP_WHITELIST
+X-Spamd-Result: default: False [0.00 / 15.00];
+        ASN(0.00)[asn:200533, ipnet:2001:67c:21bc::/48, country:BG];
+        IP_WHITELIST(0.00)[2001:67c:21bc:20::10]
+X-Rspamd-Server: skulls
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pmd_leaf() is used to test a leaf mapped PMD, however, it misses
-the PROT_NONE mapped PMD on arm64.  Fix it.  A real world issue [1]
-caused by this was reported by Qian Cai.
+CN66XX_PASS1_0 has 7 interfaces, other revisions have 8 interfaces.
 
-Link: https://patchwork.kernel.org/comment/24798260/ [1]
-Fixes: 8aa82df3c123 ("arm64: mm: add p?d_leaf() definitions")
-Reported-by: Qian Cai <quic_qiancai@quicinc.com>
-Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+Signed-off-by: Stijn Tintel <stijn@linux-ipv6.be>
 ---
- arch/arm64/include/asm/pgtable.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/mips/cavium-octeon/executive/cvmx-helper.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/arch/arm64/include/asm/pgtable.h b/arch/arm64/include/asm/pgtable.h
-index 94e147e5456c..09eaae46a19b 100644
---- a/arch/arm64/include/asm/pgtable.h
-+++ b/arch/arm64/include/asm/pgtable.h
-@@ -535,7 +535,7 @@ extern pgprot_t phys_mem_access_prot(struct file *file, unsigned long pfn,
- 				 PMD_TYPE_TABLE)
- #define pmd_sect(pmd)		((pmd_val(pmd) & PMD_TYPE_MASK) == \
- 				 PMD_TYPE_SECT)
--#define pmd_leaf(pmd)		pmd_sect(pmd)
-+#define pmd_leaf(pmd)		(pmd_present(pmd) && !(pmd_val(pmd) & PMD_TABLE_BIT))
- #define pmd_bad(pmd)		(!pmd_table(pmd))
- 
- #define pmd_leaf_size(pmd)	(pmd_cont(pmd) ? CONT_PMD_SIZE : PMD_SIZE)
--- 
-2.11.0
+diff --git a/arch/mips/cavium-octeon/executive/cvmx-helper.c b/arch/mips/=
+cavium-octeon/executive/cvmx-helper.c
+index b22f664e2d29..6f49fd9be1f3 100644
+--- a/arch/mips/cavium-octeon/executive/cvmx-helper.c
++++ b/arch/mips/cavium-octeon/executive/cvmx-helper.c
+@@ -61,6 +61,12 @@ int cvmx_helper_get_number_of_interfaces(void)
+ {
+ 	if (OCTEON_IS_MODEL(OCTEON_CN68XX))
+ 		return 9;
++	if (OCTEON_IS_MODEL(OCTEON_CN66XX)) {
++		if (OCTEON_IS_MODEL(OCTEON_CN66XX_PASS1_0))
++			return 7;
++		else
++			return 8;
++	}
+ 	if (OCTEON_IS_MODEL(OCTEON_CN56XX) || OCTEON_IS_MODEL(OCTEON_CN52XX))
+ 		return 4;
+ 	if (OCTEON_IS_MODEL(OCTEON_CN7XXX))
+--=20
+2.35.1
 
