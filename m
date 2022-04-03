@@ -2,237 +2,271 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A5ACC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  3 Apr 2022 16:46:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C036C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  3 Apr 2022 16:49:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359522AbiDCQsV (ORCPT
+        id S1357116AbiDCQv3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 3 Apr 2022 12:48:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55798 "EHLO
+        Sun, 3 Apr 2022 12:51:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359504AbiDCQrz (ORCPT
+        with ESMTP id S232213AbiDCQv0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 3 Apr 2022 12:47:55 -0400
-Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C761138DAF
-        for <linux-kernel@vger.kernel.org>; Sun,  3 Apr 2022 09:46:00 -0700 (PDT)
-Received: from dslb-094-219-033-178.094.219.pools.vodafone-ip.de ([94.219.33.178] helo=martin-debian-2.paytec.ch)
-        by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <martin@kaiser.cx>)
-        id 1nb3MD-00085T-Qy; Sun, 03 Apr 2022 18:45:41 +0200
-From:   Martin Kaiser <martin@kaiser.cx>
+        Sun, 3 Apr 2022 12:51:26 -0400
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96D5315A1C;
+        Sun,  3 Apr 2022 09:49:31 -0700 (PDT)
+Received: by mail-pf1-x42d.google.com with SMTP id x31so6841754pfh.9;
+        Sun, 03 Apr 2022 09:49:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Lm6EDo9U6T46SVMiT4kkA7cUJNXMhvSwyBSrhgcsBh4=;
+        b=kIMGUTwCWbnhbAIzMshtJAD4gjDxe+AzzFy+i5lawvCF9X23s+KZcm4NeZEbQ3R7Ax
+         ZwFL2IdbrVbnJf7q0+KVLwI0JlHwkiTXzalD0g/vHq2fcjCNpraHbcQSkd9+Pms3FrCN
+         /99ijQkDn0cOIpqNol21REsNCrF35/lH3YEAfDK1j41lIQBsM6ZEeWbVkqJi2eXacUR/
+         XtSgfwyu42dzTxHtHf+qjCjMxqlWYkiPFKrjjtWWKS9YEo85PUSdn6sonVkH2+YnSNjc
+         OyHEqV4+zT0wNVdh/MbOks+LKuHsQx21zwXTOOkqGeF8MoBtZetl+74vQiT2epXrd5th
+         Z59Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Lm6EDo9U6T46SVMiT4kkA7cUJNXMhvSwyBSrhgcsBh4=;
+        b=gbxfz+HV+iwggV1hWSTa9GHEIQEXKoc3br89COElJkSdxiXfd5jJw3i4D+S+2M+HxX
+         6ZfSucAYwDuI6hwtaf0IrWBUy7SqVZoTr7IHIVOu7JGB8E9lLDQ5rQJnBQgBjdUVj/ZI
+         L+QX128vUkV1rObOjHdyN12uZM0midAkWiHrBCTOs+coJ9efZfwq79nm53dPIjSbVaDH
+         JxrVxyYIfTUVNWbbsL9Yi/x+ToMR1aqmAf117dKeVOKevUfKNxeKEDDZCp6XCgyWEWzM
+         U2jt2jveKDD6Xk+6Tjd6sxjLyrf42sQnD5dMzg3TYlqeZtcw7L2arXAT7gRtnwD7o7lW
+         EYNQ==
+X-Gm-Message-State: AOAM53313jCQiXGBUW+dc64QlMu5riQ3tLUqz/FAw8arz2Mw1bcfEbmw
+        A9zpnnfCEnBvqR60ALLXGvE=
+X-Google-Smtp-Source: ABdhPJykfCk2L9MOmLf4SrnSkBFZ32h1SbxIvekrC4hS1eXRkjfbCVQ7xAVyhtRHfmK3Cb2KgiFfyg==
+X-Received: by 2002:a05:6a00:13a9:b0:4fa:ae49:7c06 with SMTP id t41-20020a056a0013a900b004faae497c06mr53900569pfg.38.1649004570977;
+        Sun, 03 Apr 2022 09:49:30 -0700 (PDT)
+Received: from charizard.lan (c-67-165-113-11.hsd1.wa.comcast.net. [67.165.113.11])
+        by smtp.gmail.com with ESMTPSA id j13-20020a056a00130d00b004f1025a4361sm9535971pfu.202.2022.04.03.09.49.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 03 Apr 2022 09:49:29 -0700 (PDT)
+From:   Andrey Smirnov <andrew.smirnov@gmail.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Michael Straube <straube.linux@gmail.com>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Martin Kaiser <martin@kaiser.cx>
-Subject: [PATCH 3/5] staging: r8188eu: exit straight away if we have no pspoll frame
-Date:   Sun,  3 Apr 2022 18:45:24 +0200
-Message-Id: <20220403164526.357371-4-martin@kaiser.cx>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220403164526.357371-1-martin@kaiser.cx>
-References: <20220403164526.357371-1-martin@kaiser.cx>
+Cc:     Andrey Smirnov <andrew.smirnov@gmail.com>,
+        Felipe Balbi <balbi@kernel.org>,
+        Thinh Nguyen <thinhn@synopsys.com>, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Thinh Nguyen <Thinh.Nguyen@synopsys.com>
+Subject: [PATCH v4] usb: dwc3: Don't switch OTG -> peripheral if extcon is present
+Date:   Sun,  3 Apr 2022 09:49:07 -0700
+Message-Id: <20220403164907.662860-1-andrew.smirnov@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-validate_recv_ctrl_frame wraps nearly all of its code into a large
-if (pspoll) { ... } clause.
+If the extcon device exists, get the mode from the extcon device. If
+the controller is DRD and the driver is unable to determine the mode,
+only then default the dr_mode to USB_DR_MODE_PERIPHERAL.
 
-Revert this condition and exit if the incoming frame is not a pspoll
-frame.
-
-Signed-off-by: Martin Kaiser <martin@kaiser.cx>
+Cc: Felipe Balbi <balbi@kernel.org>
+Cc: Thinh Nguyen <thinhn@synopsys.com>
+Cc: linux-usb@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Reviewed-by: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
+Signed-off-by: Andrey Smirnov <andrew.smirnov@gmail.com>
 ---
- drivers/staging/r8188eu/core/rtw_recv.c | 146 ++++++++++++------------
- 1 file changed, 73 insertions(+), 73 deletions(-)
 
-diff --git a/drivers/staging/r8188eu/core/rtw_recv.c b/drivers/staging/r8188eu/core/rtw_recv.c
-index 74fe2d7011fc..39834771519f 100644
---- a/drivers/staging/r8188eu/core/rtw_recv.c
-+++ b/drivers/staging/r8188eu/core/rtw_recv.c
-@@ -803,104 +803,104 @@ static void validate_recv_ctrl_frame(struct adapter *padapter,
- 	u8 *pframe = precv_frame->rx_data;
- 	__le16 fc = *(__le16 *)pframe;
- 	/* uint len = precv_frame->len; */
-+	u16 aid;
-+	u8 wmmps_ac;
-+	struct sta_info *psta;
- 
- 	/* receive the frames that ra(a1) is my address */
- 	if (memcmp(GetAddr1Ptr(pframe), myid(&padapter->eeprompriv), ETH_ALEN))
- 		return;
- 
- 	/* only handle ps-poll */
--	if (ieee80211_is_pspoll(fc)) {
--		u16 aid;
--		u8 wmmps_ac = 0;
--		struct sta_info *psta = NULL;
-+	if (!ieee80211_is_pspoll(fc))
-+		return;
- 
--		aid = GetAid(pframe);
--		psta = rtw_get_stainfo(pstapriv, GetAddr2Ptr(pframe));
-+	aid = GetAid(pframe);
-+	psta = rtw_get_stainfo(pstapriv, GetAddr2Ptr(pframe));
- 
--		if (!psta || psta->aid != aid)
--			return;
-+	if (!psta || psta->aid != aid)
-+		return;
- 
--		/* for rx pkt statistics */
--		psta->sta_stats.rx_ctrl_pkts++;
-+	/* for rx pkt statistics */
-+	psta->sta_stats.rx_ctrl_pkts++;
- 
--		switch (pattrib->priority) {
--		case 1:
--		case 2:
--			wmmps_ac = psta->uapsd_bk & BIT(0);
--			break;
--		case 4:
--		case 5:
--			wmmps_ac = psta->uapsd_vi & BIT(0);
--			break;
--		case 6:
--		case 7:
--			wmmps_ac = psta->uapsd_vo & BIT(0);
--			break;
--		case 0:
--		case 3:
--		default:
--			wmmps_ac = psta->uapsd_be & BIT(0);
--			break;
--		}
-+	switch (pattrib->priority) {
-+	case 1:
-+	case 2:
-+		wmmps_ac = psta->uapsd_bk & BIT(0);
-+		break;
-+	case 4:
-+	case 5:
-+		wmmps_ac = psta->uapsd_vi & BIT(0);
-+		break;
-+	case 6:
-+	case 7:
-+		wmmps_ac = psta->uapsd_vo & BIT(0);
-+		break;
-+	case 0:
-+	case 3:
-+	default:
-+		wmmps_ac = psta->uapsd_be & BIT(0);
-+		break;
-+	}
- 
--		if (wmmps_ac)
--			return;
-+	if (wmmps_ac)
-+		return;
- 
--		if (psta->state & WIFI_STA_ALIVE_CHK_STATE) {
--			psta->expire_to = pstapriv->expire_to;
--			psta->state ^= WIFI_STA_ALIVE_CHK_STATE;
--		}
-+	if (psta->state & WIFI_STA_ALIVE_CHK_STATE) {
-+		psta->expire_to = pstapriv->expire_to;
-+		psta->state ^= WIFI_STA_ALIVE_CHK_STATE;
-+	}
- 
--		if ((psta->state & WIFI_SLEEP_STATE) && (pstapriv->sta_dz_bitmap & BIT(psta->aid))) {
--			struct list_head *xmitframe_plist, *xmitframe_phead;
--			struct xmit_frame *pxmitframe = NULL;
--			struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
-+	if ((psta->state & WIFI_SLEEP_STATE) && (pstapriv->sta_dz_bitmap & BIT(psta->aid))) {
-+		struct list_head *xmitframe_plist, *xmitframe_phead;
-+		struct xmit_frame *pxmitframe = NULL;
-+		struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
- 
--			spin_lock_bh(&pxmitpriv->lock);
-+		spin_lock_bh(&pxmitpriv->lock);
- 
--			xmitframe_phead = get_list_head(&psta->sleep_q);
--			xmitframe_plist = xmitframe_phead->next;
-+		xmitframe_phead = get_list_head(&psta->sleep_q);
-+		xmitframe_plist = xmitframe_phead->next;
- 
--			if (xmitframe_phead != xmitframe_plist) {
--				pxmitframe = container_of(xmitframe_plist, struct xmit_frame, list);
-+		if (xmitframe_phead != xmitframe_plist) {
-+			pxmitframe = container_of(xmitframe_plist, struct xmit_frame, list);
- 
--				xmitframe_plist = xmitframe_plist->next;
-+			xmitframe_plist = xmitframe_plist->next;
- 
--				list_del_init(&pxmitframe->list);
-+			list_del_init(&pxmitframe->list);
- 
--				psta->sleepq_len--;
-+			psta->sleepq_len--;
- 
--				if (psta->sleepq_len > 0)
--					pxmitframe->attrib.mdata = 1;
--				else
--					pxmitframe->attrib.mdata = 0;
-+			if (psta->sleepq_len > 0)
-+				pxmitframe->attrib.mdata = 1;
-+			else
-+				pxmitframe->attrib.mdata = 0;
- 
--				pxmitframe->attrib.triggered = 1;
-+			pxmitframe->attrib.triggered = 1;
- 
--				if (psta->sleepq_len == 0) {
--					pstapriv->tim_bitmap &= ~BIT(psta->aid);
-+			if (psta->sleepq_len == 0) {
-+				pstapriv->tim_bitmap &= ~BIT(psta->aid);
- 
--					/* upate BCN for TIM IE */
--					/* update_BCNTIM(padapter); */
--					update_beacon(padapter, _TIM_IE_, NULL, false);
--				}
--			} else {
--				if (pstapriv->tim_bitmap & BIT(psta->aid)) {
--					if (psta->sleepq_len == 0)
--						/* issue nulldata with More data bit = 0 to indicate we have no buffered packets */
--						issue_nulldata(padapter, psta->hwaddr, 0, 0, 0);
--					else
--						psta->sleepq_len = 0;
--
--					pstapriv->tim_bitmap &= ~BIT(psta->aid);
--
--					/* upate BCN for TIM IE */
--					/* update_BCNTIM(padapter); */
--					update_beacon(padapter, _TIM_IE_, NULL, false);
--				}
-+				/* upate BCN for TIM IE */
-+				/* update_BCNTIM(padapter); */
-+				update_beacon(padapter, _TIM_IE_, NULL, false);
-+			}
-+		} else {
-+			if (pstapriv->tim_bitmap & BIT(psta->aid)) {
-+				if (psta->sleepq_len == 0)
-+					/* issue nulldata with More data bit = 0 to indicate we have no buffered packets */
-+					issue_nulldata(padapter, psta->hwaddr, 0, 0, 0);
-+				else
-+					psta->sleepq_len = 0;
-+
-+				pstapriv->tim_bitmap &= ~BIT(psta->aid);
-+
-+				/* upate BCN for TIM IE */
-+				/* update_BCNTIM(padapter); */
-+				update_beacon(padapter, _TIM_IE_, NULL, false);
- 			}
--			spin_unlock_bh(&pxmitpriv->lock);
- 		}
-+		spin_unlock_bh(&pxmitpriv->lock);
+Changes since [v3] of the patch:
+
+  - Rebased to apply on "main" of git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/usb.git
+
+Changes since [v2] of the patch:
+
+   - Fixed "Minor formatting change" to reflect what was meant by
+     review comment
+
+Changes since [v1] of the patch:
+
+   - Reworded commit message
+   - Minor formatting change
+
+
+[v3] https://lore.kernel.org/linux-usb/20220228171252.1827788-1-andrew.smirnov@gmail.com/
+[v2] https://lore.kernel.org/linux-usb/20220221192020.346622-1-andrew.smirnov@gmail.com/
+[v1] https://lore.kernel.org/linux-usb/20220206014532.372109-1-andrew.smirnov@gmail.com/T/#u
+
+previons discussion:
+
+https://lore.kernel.org/linux-usb/20220131192102.4115473-1-andrew.smirnov@gmail.com/
+
+
+ drivers/usb/dwc3/core.c | 55 ++++++++++++++++++++++++++++++++++++++++-
+ drivers/usb/dwc3/drd.c  | 50 -------------------------------------
+ 2 files changed, 54 insertions(+), 51 deletions(-)
+
+diff --git a/drivers/usb/dwc3/core.c b/drivers/usb/dwc3/core.c
+index 1170b800acdc..39956846b16d 100644
+--- a/drivers/usb/dwc3/core.c
++++ b/drivers/usb/dwc3/core.c
+@@ -23,6 +23,7 @@
+ #include <linux/delay.h>
+ #include <linux/dma-mapping.h>
+ #include <linux/of.h>
++#include <linux/of_graph.h>
+ #include <linux/acpi.h>
+ #include <linux/pinctrl/consumer.h>
+ #include <linux/reset.h>
+@@ -85,7 +86,7 @@ static int dwc3_get_dr_mode(struct dwc3 *dwc)
+ 		 * mode. If the controller supports DRD but the dr_mode is not
+ 		 * specified or set to OTG, then set the mode to peripheral.
+ 		 */
+-		if (mode == USB_DR_MODE_OTG &&
++		if (mode == USB_DR_MODE_OTG && !dwc->edev &&
+ 		    (!IS_ENABLED(CONFIG_USB_ROLE_SWITCH) ||
+ 		     !device_property_read_bool(dwc->dev, "usb-role-switch")) &&
+ 		    !DWC3_VER_IS_PRIOR(DWC3, 330A))
+@@ -1632,6 +1633,51 @@ static void dwc3_check_params(struct dwc3 *dwc)
  	}
  }
- 
--- 
-2.30.2
 
++static struct extcon_dev *dwc3_get_extcon(struct dwc3 *dwc)
++{
++	struct device *dev = dwc->dev;
++	struct device_node *np_phy;
++	struct extcon_dev *edev = NULL;
++	const char *name;
++
++	if (device_property_read_bool(dev, "extcon"))
++		return extcon_get_edev_by_phandle(dev, 0);
++
++	/*
++	 * Device tree platforms should get extcon via phandle.
++	 * On ACPI platforms, we get the name from a device property.
++	 * This device property is for kernel internal use only and
++	 * is expected to be set by the glue code.
++	 */
++	if (device_property_read_string(dev, "linux,extcon-name", &name) == 0) {
++		edev = extcon_get_extcon_dev(name);
++		if (!edev)
++			return ERR_PTR(-EPROBE_DEFER);
++
++		return edev;
++	}
++
++	/*
++	 * Try to get an extcon device from the USB PHY controller's "port"
++	 * node. Check if it has the "port" node first, to avoid printing the
++	 * error message from underlying code, as it's a valid case: extcon
++	 * device (and "port" node) may be missing in case of "usb-role-switch"
++	 * or OTG mode.
++	 */
++	np_phy = of_parse_phandle(dev->of_node, "phys", 0);
++	if (of_graph_is_present(np_phy)) {
++		struct device_node *np_conn;
++
++		np_conn = of_graph_get_remote_node(np_phy, -1, -1);
++		if (np_conn)
++			edev = extcon_find_edev_by_node(np_conn);
++		of_node_put(np_conn);
++	}
++	of_node_put(np_phy);
++
++	return edev;
++}
++
+ static int dwc3_probe(struct platform_device *pdev)
+ {
+ 	struct device		*dev = &pdev->dev;
+@@ -1744,6 +1790,13 @@ static int dwc3_probe(struct platform_device *pdev)
+ 		goto err2;
+ 	}
+
++	dwc->edev = dwc3_get_extcon(dwc);
++	if (IS_ERR(dwc->edev)) {
++		ret = PTR_ERR(dwc->edev);
++		dev_err_probe(dwc->dev, ret, "failed to get extcon\n");
++		goto err3;
++	}
++
+ 	ret = dwc3_get_dr_mode(dwc);
+ 	if (ret)
+ 		goto err3;
+diff --git a/drivers/usb/dwc3/drd.c b/drivers/usb/dwc3/drd.c
+index b60b5f7b6dff..f277bebdaa09 100644
+--- a/drivers/usb/dwc3/drd.c
++++ b/drivers/usb/dwc3/drd.c
+@@ -8,7 +8,6 @@
+  */
+
+ #include <linux/extcon.h>
+-#include <linux/of_graph.h>
+ #include <linux/of_platform.h>
+ #include <linux/platform_device.h>
+ #include <linux/property.h>
+@@ -439,51 +438,6 @@ static int dwc3_drd_notifier(struct notifier_block *nb,
+ 	return NOTIFY_DONE;
+ }
+
+-static struct extcon_dev *dwc3_get_extcon(struct dwc3 *dwc)
+-{
+-	struct device *dev = dwc->dev;
+-	struct device_node *np_phy;
+-	struct extcon_dev *edev = NULL;
+-	const char *name;
+-
+-	if (device_property_read_bool(dev, "extcon"))
+-		return extcon_get_edev_by_phandle(dev, 0);
+-
+-	/*
+-	 * Device tree platforms should get extcon via phandle.
+-	 * On ACPI platforms, we get the name from a device property.
+-	 * This device property is for kernel internal use only and
+-	 * is expected to be set by the glue code.
+-	 */
+-	if (device_property_read_string(dev, "linux,extcon-name", &name) == 0) {
+-		edev = extcon_get_extcon_dev(name);
+-		if (!edev)
+-			return ERR_PTR(-EPROBE_DEFER);
+-
+-		return edev;
+-	}
+-
+-	/*
+-	 * Try to get an extcon device from the USB PHY controller's "port"
+-	 * node. Check if it has the "port" node first, to avoid printing the
+-	 * error message from underlying code, as it's a valid case: extcon
+-	 * device (and "port" node) may be missing in case of "usb-role-switch"
+-	 * or OTG mode.
+-	 */
+-	np_phy = of_parse_phandle(dev->of_node, "phys", 0);
+-	if (of_graph_is_present(np_phy)) {
+-		struct device_node *np_conn;
+-
+-		np_conn = of_graph_get_remote_node(np_phy, -1, -1);
+-		if (np_conn)
+-			edev = extcon_find_edev_by_node(np_conn);
+-		of_node_put(np_conn);
+-	}
+-	of_node_put(np_phy);
+-
+-	return edev;
+-}
+-
+ #if IS_ENABLED(CONFIG_USB_ROLE_SWITCH)
+ #define ROLE_SWITCH 1
+ static int dwc3_usb_role_switch_set(struct usb_role_switch *sw,
+@@ -584,10 +538,6 @@ int dwc3_drd_init(struct dwc3 *dwc)
+ {
+ 	int ret, irq;
+
+-	dwc->edev = dwc3_get_extcon(dwc);
+-	if (IS_ERR(dwc->edev))
+-		return PTR_ERR(dwc->edev);
+-
+ 	if (ROLE_SWITCH &&
+ 	    device_property_read_bool(dwc->dev, "usb-role-switch")) {
+ 		ret = dwc3_setup_role_switch(dwc);
+--
+2.25.1
