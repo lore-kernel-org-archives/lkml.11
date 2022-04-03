@@ -2,40 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2AEEC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  3 Apr 2022 14:32:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C19BC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  3 Apr 2022 14:32:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359018AbiDCOd5 (ORCPT
+        id S1359030AbiDCOeA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 3 Apr 2022 10:33:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46582 "EHLO
+        Sun, 3 Apr 2022 10:34:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358997AbiDCOdh (ORCPT
+        with ESMTP id S1358999AbiDCOdh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sun, 3 Apr 2022 10:33:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B077F2FFE0
-        for <linux-kernel@vger.kernel.org>; Sun,  3 Apr 2022 07:31:42 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99F602FFED;
+        Sun,  3 Apr 2022 07:31:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2960C611D7
-        for <linux-kernel@vger.kernel.org>; Sun,  3 Apr 2022 14:31:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E450C3411C;
-        Sun,  3 Apr 2022 14:31:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3B094B80D58;
+        Sun,  3 Apr 2022 14:31:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9219C340ED;
+        Sun,  3 Apr 2022 14:31:40 +0000 (UTC)
 Received: from rostedt by gandalf.local.home with local (Exim 4.95)
         (envelope-from <rostedt@goodmis.org>)
-        id 1nb1GW-001EiY-HG;
-        Sun, 03 Apr 2022 10:31:40 -0400
-Message-ID: <20220403143140.369657075@goodmis.org>
+        id 1nb1GV-001EgK-Pm;
+        Sun, 03 Apr 2022 10:31:39 -0400
+Message-ID: <20220403143139.633512320@goodmis.org>
 User-Agent: quilt/0.66
-Date:   Sun, 03 Apr 2022 10:25:06 -0400
+Date:   Sun, 03 Apr 2022 10:25:02 -0400
 From:   Steven Rostedt <rostedt@goodmis.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Ingo Molnar <mingo@kernel.org>,
         Andrew Morton <akpm@linux-foundation.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>
-Subject: [for-linus][PATCH 6/7] ftrace: Make ftrace_graph_is_dead() a static branch
+        stable@vger.kernel.org, Masami Hiramatsu <mhiramat@kernel.org>,
+        Zeal Robot <zealci@zte.com.cn>, Lv Ruyi <lv.ruyi@zte.com.cn>
+Subject: [for-linus][PATCH 2/7] proc: bootconfig: Add null pointer check
 References: <20220403142500.388473000@goodmis.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -43,113 +44,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe Leroy <christophe.leroy@csgroup.eu>
+From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-ftrace_graph_is_dead() is used on hot paths, it just reads a variable
-in memory and is not worth suffering function call constraints.
+kzalloc is a memory allocation function which can return NULL when some
+internal memory errors happen. It is safer to add null pointer check.
 
-For instance, at entry of prepare_ftrace_return(), inlining it avoids
-saving prepare_ftrace_return() parameters to stack and restoring them
-after calling ftrace_graph_is_dead().
+Link: https://lkml.kernel.org/r/20220329104004.2376879-1-lv.ruyi@zte.com.cn
 
-While at it using a static branch is even more performant and is
-rather well adapted considering that the returned value will almost
-never change.
-
-Inline ftrace_graph_is_dead() and replace 'kill_ftrace_graph' bool
-by a static branch.
-
-The performance improvement is noticeable.
-
-Link: https://lkml.kernel.org/r/e0411a6a0ed3eafff0ad2bc9cd4b0e202b4617df.1648623570.git.christophe.leroy@csgroup.eu
-
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc: stable@vger.kernel.org
+Fixes: c1a3c36017d4 ("proc: bootconfig: Add /proc/bootconfig to show boot config list")
+Acked-by: Masami Hiramatsu <mhiramat@kernel.org>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
 Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 ---
- include/linux/ftrace.h | 16 +++++++++++++++-
- kernel/trace/fgraph.c  | 17 +++--------------
- 2 files changed, 18 insertions(+), 15 deletions(-)
+ fs/proc/bootconfig.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/include/linux/ftrace.h b/include/linux/ftrace.h
-index 37b619185ec9..f15a4b76cbfc 100644
---- a/include/linux/ftrace.h
-+++ b/include/linux/ftrace.h
-@@ -9,6 +9,7 @@
+diff --git a/fs/proc/bootconfig.c b/fs/proc/bootconfig.c
+index 6d8d4bf20837..2e244ada1f97 100644
+--- a/fs/proc/bootconfig.c
++++ b/fs/proc/bootconfig.c
+@@ -32,6 +32,8 @@ static int __init copy_xbc_key_value_list(char *dst, size_t size)
+ 	int ret = 0;
  
- #include <linux/trace_recursion.h>
- #include <linux/trace_clock.h>
-+#include <linux/jump_label.h>
- #include <linux/kallsyms.h>
- #include <linux/linkage.h>
- #include <linux/bitops.h>
-@@ -1015,7 +1016,20 @@ unsigned long ftrace_graph_ret_addr(struct task_struct *task, int *idx,
- extern int register_ftrace_graph(struct fgraph_ops *ops);
- extern void unregister_ftrace_graph(struct fgraph_ops *ops);
+ 	key = kzalloc(XBC_KEYLEN_MAX, GFP_KERNEL);
++	if (!key)
++		return -ENOMEM;
  
--extern bool ftrace_graph_is_dead(void);
-+/**
-+ * ftrace_graph_is_dead - returns true if ftrace_graph_stop() was called
-+ *
-+ * ftrace_graph_stop() is called when a severe error is detected in
-+ * the function graph tracing. This function is called by the critical
-+ * paths of function graph to keep those paths from doing any more harm.
-+ */
-+DECLARE_STATIC_KEY_FALSE(kill_ftrace_graph);
-+
-+static inline bool ftrace_graph_is_dead(void)
-+{
-+	return static_branch_unlikely(&kill_ftrace_graph);
-+}
-+
- extern void ftrace_graph_stop(void);
- 
- /* The current handlers in use */
-diff --git a/kernel/trace/fgraph.c b/kernel/trace/fgraph.c
-index 19028e072cdb..8f4fb328133a 100644
---- a/kernel/trace/fgraph.c
-+++ b/kernel/trace/fgraph.c
-@@ -7,6 +7,7 @@
-  *
-  * Highly modified by Steven Rostedt (VMware).
-  */
-+#include <linux/jump_label.h>
- #include <linux/suspend.h>
- #include <linux/ftrace.h>
- #include <linux/slab.h>
-@@ -23,24 +24,12 @@
- #define ASSIGN_OPS_HASH(opsname, val)
- #endif
- 
--static bool kill_ftrace_graph;
-+DEFINE_STATIC_KEY_FALSE(kill_ftrace_graph);
- int ftrace_graph_active;
- 
- /* Both enabled by default (can be cleared by function_graph tracer flags */
- static bool fgraph_sleep_time = true;
- 
--/**
-- * ftrace_graph_is_dead - returns true if ftrace_graph_stop() was called
-- *
-- * ftrace_graph_stop() is called when a severe error is detected in
-- * the function graph tracing. This function is called by the critical
-- * paths of function graph to keep those paths from doing any more harm.
-- */
--bool ftrace_graph_is_dead(void)
--{
--	return kill_ftrace_graph;
--}
--
- /**
-  * ftrace_graph_stop - set to permanently disable function graph tracing
-  *
-@@ -51,7 +40,7 @@ bool ftrace_graph_is_dead(void)
-  */
- void ftrace_graph_stop(void)
- {
--	kill_ftrace_graph = true;
-+	static_branch_enable(&kill_ftrace_graph);
- }
- 
- /* Add a function return address to the trace stack on thread info.*/
+ 	xbc_for_each_key_value(leaf, val) {
+ 		ret = xbc_node_compose_key(leaf, key, XBC_KEYLEN_MAX);
 -- 
 2.35.1
