@@ -2,108 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1B53C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  3 Apr 2022 12:29:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2830C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  3 Apr 2022 12:38:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357925AbiDCMav (ORCPT
+        id S1358050AbiDCMka (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 3 Apr 2022 08:30:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37720 "EHLO
+        Sun, 3 Apr 2022 08:40:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240845AbiDCMao (ORCPT
+        with ESMTP id S237151AbiDCMk1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 3 Apr 2022 08:30:44 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE85234B85;
-        Sun,  3 Apr 2022 05:28:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648988928; x=1680524928;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Ykhv0PHM2+QYmFYUxNK1v3kWBps7WbMwukEDYifJB/Y=;
-  b=RELnGWHM5YwJyn38W3I6Ni7k5PAW9PeWBprQl9/SlGurIj9wUYalCSQR
-   XsUDxTMFLRC+btS6sG0npWZg8kbAuT+JgD9WlW+TeWTflFIXVijN/ZfV+
-   Wjj1o4j4wajO3DgRGJ9QHwEHa6vMQbIichgDDZl/sgtYOu6V5iNWVpvGh
-   C37XyD3sCRHN8C1D9Sb0aEYPzmGaOgT35QVD644l0+9sVY0WylL/PVIsD
-   Qj/HnyJtCKtV4dPQcRxulnYeXR3DrBFvxrbtppoxscqD2OAKBNDWI6wcI
-   aL1dXjop06qFfglZgkZBXzcoE4AhrJIE6Pgp9RVduIH2vSaFn543Z7euB
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10305"; a="285326415"
-X-IronPort-AV: E=Sophos;i="5.90,231,1643702400"; 
-   d="scan'208";a="285326415"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Apr 2022 05:28:48 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,231,1643702400"; 
-   d="scan'208";a="568943543"
-Received: from npg-dpdk-haiyue-2.sh.intel.com ([10.67.111.4])
-  by orsmga008.jf.intel.com with ESMTP; 03 Apr 2022 05:28:45 -0700
-From:   Haiyue Wang <haiyue.wang@intel.com>
-To:     bpf@vger.kernel.org
-Cc:     Haiyue Wang <haiyue.wang@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        netdev@vger.kernel.org (open list:BPF (Safe dynamic programs and tools)),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH v2] bpf: correct the comment for BTF kind bitfield
-Date:   Sun,  3 Apr 2022 19:53:26 +0800
-Message-Id: <20220403115327.205964-1-haiyue.wang@intel.com>
+        Sun, 3 Apr 2022 08:40:27 -0400
+Received: from gateway30.websitewelcome.com (gateway30.websitewelcome.com [192.185.146.7])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A512BC91
+        for <linux-kernel@vger.kernel.org>; Sun,  3 Apr 2022 05:38:32 -0700 (PDT)
+Received: from cm10.websitewelcome.com (cm10.websitewelcome.com [100.42.49.4])
+        by gateway30.websitewelcome.com (Postfix) with ESMTP id 01304AA0F
+        for <linux-kernel@vger.kernel.org>; Sun,  3 Apr 2022 07:38:32 -0500 (CDT)
+Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
+        by cmsmtp with SMTP
+        id azT5nKsvhRnrrazT5nPSj5; Sun, 03 Apr 2022 07:36:31 -0500
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=roeck-us.net; s=default; h=Content-Transfer-Encoding:MIME-Version:
+        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=CYOWZgHjZ+R9GBciJmXVJ6KuHCf+mXuaB0YT+N2ma3o=; b=IY4EDNfee5a4+olnuCoiU/tDYn
+        ckCHxny/SYfc/Z53UlZLknsrnrNdVNEuj3wQ7Kf0RRWdVhnrsvzyGf0Z3lQ4WOtwjkN8QkbiO2lOz
+        /IUu33ELx5GRSj4T0JggjxBjXHP64DJx/JQiIsSsOQjLsHlfFOA41Cxr5PeRgRgeH8i58g47ZMrO/
+        9Y7O8V2PrPdgpJL8HvX4fZUZDSxMx2+C3RzbQgWpcAyd5G4js7PRc1E484bGJ6Cx+7ulGqvzNFsU4
+        H7oaAHClu6iBzPs1+bmNxrRPC7zJbb/2RW4OZ+3Hoxy5ssXCJS63Qy86+hCvunxtWr8btTNDGB5He
+        L/H3UPfg==;
+Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:57820 helo=localhost)
+        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@roeck-us.net>)
+        id 1nazT4-001y5E-TV; Sun, 03 Apr 2022 12:36:31 +0000
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Larry Finger <Larry.Finger@lwfinger.net>
+Cc:     Phillip Potter <phil@philpotter.co.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Guenter Roeck <linux@roeck-us.net>
+Subject: [PATCH v2] staging: r8188eu: Fix PPPoE tag insertion on big endian systems
+Date:   Sun,  3 Apr 2022 05:36:28 -0700
+Message-Id: <20220403123628.3113382-1-linux@roeck-us.net>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220403084433.200701-1-haiyue.wang@intel.com>
-References: <20220403084433.200701-1-haiyue.wang@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - roeck-us.net
+X-BWhitelist: no
+X-Source-IP: 108.223.40.66
+X-Source-L: No
+X-Exim-ID: 1nazT4-001y5E-TV
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net (localhost) [108.223.40.66]:57820
+X-Source-Auth: guenter@roeck-us.net
+X-Email-Count: 2
+X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The commit 8fd886911a6a ("bpf: Add BTF_KIND_FLOAT to uapi") has extended
-the BTF kind bitfield from 4 to 5 bits, correct the comment.
+In __nat25_add_pppoe_tag(), the tag length is read from the tag data
+structure. The value is kept in network format, but read as raw value.
+With -Warray-bounds, this results in the following gcc error/warning
+when building the driver on a big endian system such as alpha.
 
-Signed-off-by: Haiyue Wang <haiyue.wang@intel.com>
----
-v2: update the btf.h under tools directory.
----
- include/uapi/linux/btf.h       | 4 ++--
- tools/include/uapi/linux/btf.h | 4 ++--
- 2 files changed, 4 insertions(+), 4 deletions(-)
+In function '__nat25_add_pppoe_tag',
+    inlined from 'nat25_db_handle' at
+	drivers/staging/r8188eu/core/rtw_br_ext.c:479:11:
+arch/alpha/include/asm/string.h:22:16: error:
+	'__builtin_memcpy' forming offset [40, 2051] is out of the bounds
+	[0, 40] of object 'tag_buf' with type 'unsigned char[40]'
 
-diff --git a/include/uapi/linux/btf.h b/include/uapi/linux/btf.h
-index b0d8fea1951d..a9162a6c0284 100644
---- a/include/uapi/linux/btf.h
-+++ b/include/uapi/linux/btf.h
-@@ -33,8 +33,8 @@ struct btf_type {
- 	/* "info" bits arrangement
- 	 * bits  0-15: vlen (e.g. # of struct's members)
- 	 * bits 16-23: unused
--	 * bits 24-27: kind (e.g. int, ptr, array...etc)
--	 * bits 28-30: unused
-+	 * bits 24-28: kind (e.g. int, ptr, array...etc)
-+	 * bits 29-30: unused
- 	 * bit     31: kind_flag, currently used by
- 	 *             struct, union and fwd
- 	 */
-diff --git a/tools/include/uapi/linux/btf.h b/tools/include/uapi/linux/btf.h
-index b0d8fea1951d..a9162a6c0284 100644
---- a/tools/include/uapi/linux/btf.h
-+++ b/tools/include/uapi/linux/btf.h
-@@ -33,8 +33,8 @@ struct btf_type {
- 	/* "info" bits arrangement
- 	 * bits  0-15: vlen (e.g. # of struct's members)
- 	 * bits 16-23: unused
--	 * bits 24-27: kind (e.g. int, ptr, array...etc)
--	 * bits 28-30: unused
-+	 * bits 24-28: kind (e.g. int, ptr, array...etc)
-+	 * bits 29-30: unused
- 	 * bit     31: kind_flag, currently used by
- 	 *             struct, union and fwd
- 	 */
+Add the missing be16_to_cpu() to fix the compile error. It should be
+noted, however, that this fix means that the code did probably not work
+on little endian systems and/or that the driver has other endiannes related
+issues. A build with C=1 suggests that this is indeed the case. This patch
+does not attempt to fix any of those issues.
+
+Fixes: 15865124feed ("staging: r8188eu: introduce new core dir for RTL8188eu driver")
+Cc: Phillip Potter <phil@philpotter.co.uk>
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+---
+v2: Use be16_to_cpu().
+    Add comment to patch description suggesting that the driver may have
+    other endianness related problems.
+
+ drivers/staging/r8188eu/core/rtw_br_ext.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/staging/r8188eu/core/rtw_br_ext.c b/drivers/staging/r8188eu/core/rtw_br_ext.c
+index d68611ef22f8..f056204c0fdb 100644
+--- a/drivers/staging/r8188eu/core/rtw_br_ext.c
++++ b/drivers/staging/r8188eu/core/rtw_br_ext.c
+@@ -70,7 +70,7 @@ static int __nat25_add_pppoe_tag(struct sk_buff *skb, struct pppoe_tag *tag)
+ 	struct pppoe_hdr *ph = (struct pppoe_hdr *)(skb->data + ETH_HLEN);
+ 	int data_len;
+ 
+-	data_len = tag->tag_len + TAG_HDR_LEN;
++	data_len = be16_to_cpu(tag->tag_len) + TAG_HDR_LEN;
+ 	if (skb_tailroom(skb) < data_len)
+ 		return -1;
+ 
 -- 
 2.35.1
 
