@@ -2,263 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC81AC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  3 Apr 2022 05:25:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1762C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  3 Apr 2022 05:41:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232400AbiDCF05 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 3 Apr 2022 01:26:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47920 "EHLO
+        id S237886AbiDCFnG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 3 Apr 2022 01:43:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229566AbiDCF0z (ORCPT
+        with ESMTP id S231992AbiDCFnE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 3 Apr 2022 01:26:55 -0400
-Received: from smtp-fw-2101.amazon.com (smtp-fw-2101.amazon.com [72.21.196.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99E252FFC9;
-        Sat,  2 Apr 2022 22:25:01 -0700 (PDT)
+        Sun, 3 Apr 2022 01:43:04 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 831C433E8F
+        for <linux-kernel@vger.kernel.org>; Sat,  2 Apr 2022 22:41:10 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id c15-20020a17090a8d0f00b001c9c81d9648so6120966pjo.2
+        for <linux-kernel@vger.kernel.org>; Sat, 02 Apr 2022 22:41:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1648963502; x=1680499502;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=wVMh7tSi6gT+Vt5r8ezb44wyB4qunOjWSvYnQ5DFeVE=;
-  b=WmQ9VYqAIiNfcsmcvuKid0Wpz+yUH7yXFYFgs9ZKXGl4/xxlcCZ2C47G
-   FgVhhklByIN4vzQj3TQimlVzOfcM4uwdqy53br7MaWkf/IoPmYooSMoGV
-   sLvWj0POsCUeHHZl+tMgv4rmmF2GCnqjSYYagAS+K1Tjx15lsxnaPM29G
-   w=;
-X-IronPort-AV: E=Sophos;i="5.90,231,1643673600"; 
-   d="scan'208";a="186714655"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-iad-1d-35b1f9a2.us-east-1.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-2101.iad2.amazon.com with ESMTP; 03 Apr 2022 05:24:51 +0000
-Received: from EX13MTAUEE002.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
-        by email-inbound-relay-iad-1d-35b1f9a2.us-east-1.amazon.com (Postfix) with ESMTPS id 3ABF82005AB;
-        Sun,  3 Apr 2022 05:24:49 +0000 (UTC)
-Received: from EX13D08UEE001.ant.amazon.com (10.43.62.126) by
- EX13MTAUEE002.ant.amazon.com (10.43.62.24) with Microsoft SMTP Server (TLS)
- id 15.0.1497.32; Sun, 3 Apr 2022 05:24:49 +0000
-Received: from EX13MTAUEE002.ant.amazon.com (10.43.62.24) by
- EX13D08UEE001.ant.amazon.com (10.43.62.126) with Microsoft SMTP Server (TLS)
- id 15.0.1497.32; Sun, 3 Apr 2022 05:24:49 +0000
-Received: from dev-dsk-farbere-1a-46ecabed.eu-west-1.amazon.com
- (172.19.116.181) by mail-relay.amazon.com (10.43.62.224) with Microsoft SMTP
- Server id 15.0.1497.32 via Frontend Transport; Sun, 3 Apr 2022 05:24:49 +0000
-Received: by dev-dsk-farbere-1a-46ecabed.eu-west-1.amazon.com (Postfix, from userid 14301484)
-        id 36EE71687; Sun,  3 Apr 2022 05:24:49 +0000 (UTC)
-From:   Eliav Farber <farbere@amazon.com>
-To:     <wim@linux-watchdog.org>, <linux@roeck-us.net>,
-        <linux-watchdog@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <ronenk@amazon.com>, <talel@amazon.com>, <hhhawa@amazon.com>,
-        <jonnyc@amazon.com>, <hanochu@amazon.com>, <farbere@amazon.com>,
-        <dwmw@amazon.co.uk>
-Subject: [PATCH] watchdog: sp805: add support for irq
-Date:   Sun, 3 Apr 2022 05:24:49 +0000
-Message-ID: <20220403052449.1986-1-farbere@amazon.com>
-X-Mailer: git-send-email 2.32.0
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Wvujdoj+rXf8TntjDreBsLKKbh2J4gp+Ud8xZlie1p0=;
+        b=TCwPLuOIkV9+38cDLkpS9nuHTn65VZXSagGE6TWoOmUkruIu5+qF3NuNmWAfItBIZD
+         sXdedXicM713G2Gaq+ubx4DWik03Qcj/3gAF0jV7yUwqCGnR/cGdjiNUTr5HBiMoaWBL
+         l5HMCf7TtzZK2fclBrR9rIhfV7zRzydnFm0chT0bjmPlqWlnmz3pul9UnvWP7EAVQBK9
+         fgIeSdi7V8f0YcbmyjkPmQRNFerDaidkAzMo5vRBGQcwx+qxsDNJPpCWnY8wbDTmNV1j
+         f9YLHSrBCv8R2lu/h1BrOd9a342SdGQ7Ase0xNRvLlS+K3/Kjnk33gdqXgNMhoNeZrLX
+         T9fw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Wvujdoj+rXf8TntjDreBsLKKbh2J4gp+Ud8xZlie1p0=;
+        b=b6/rszHaD1ZFlw2FocupslWjfVVDoY2/J75a6emDSYH2JZMrhB9j7O8BZjai+wipXM
+         UOuAUnPwxx1ZuEiVi57nRIDwrBAMYpSuw7O0ctsAuWKWg0++aLTU4bTNmzI4MJMz8GJ3
+         uxBe/MBuh+ko5ufdKY7YxV5QEMJEnBYZd7+Ef29ya62U4cwQwAvgD5a1JyQVRXzmMSv7
+         ol+sHDiLSzuCFXpBfRDygP+9xVkztmyCUt0u0HUmxGAAsoM6xOTDbbW+QHdqQppkLJJE
+         bxAbU14Y/06VVglzK5EuIuFS61/wnF4p11bLiM+OotCCDqTuFh6FXcdVe9ic0HrxsOLM
+         TvDA==
+X-Gm-Message-State: AOAM530g0SbF2mXNuFPXeCG4dBCMDCyTdZPvwLtss5d60CquH7/XN9S0
+        vorKf+ZfkUJIyz7wySjnOoLfJg==
+X-Google-Smtp-Source: ABdhPJyUkVA34KXhqdWAtjVviE8uqiNT/qpXOuafZYF1Nio1ft2L3/3huAbiQqZd1DwmC0Hw+XJQHQ==
+X-Received: by 2002:a17:90b:3447:b0:1c6:fe01:675c with SMTP id lj7-20020a17090b344700b001c6fe01675cmr19568783pjb.59.1648964469978;
+        Sat, 02 Apr 2022 22:41:09 -0700 (PDT)
+Received: from FVFYT0MHHV2J.bytedance.net ([139.177.225.245])
+        by smtp.gmail.com with ESMTPSA id a38-20020a056a001d2600b004f70d5e92basm8262479pfx.34.2022.04.02.22.41.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 02 Apr 2022 22:41:09 -0700 (PDT)
+From:   Muchun Song <songmuchun@bytedance.com>
+To:     dan.j.williams@intel.com, willy@infradead.org, jack@suse.cz,
+        viro@zeniv.linux.org.uk, akpm@linux-foundation.org,
+        apopple@nvidia.com, shy828301@gmail.com, rcampbell@nvidia.com,
+        hughd@google.com, xiyuyang19@fudan.edu.cn,
+        kirill.shutemov@linux.intel.com, zwisler@kernel.org,
+        hch@infradead.org
+Cc:     linux-fsdevel@vger.kernel.org, nvdimm@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        duanxiongchun@bytedance.com, smuchun@gmail.com,
+        Muchun Song <songmuchun@bytedance.com>
+Subject: [PATCH v7 0/6] Fix some bugs related to ramp and dax
+Date:   Sun,  3 Apr 2022 13:39:51 +0800
+Message-Id: <20220403053957.10770-1-songmuchun@bytedance.com>
+X-Mailer: git-send-email 2.32.0 (Apple Git-132)
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This change adds registration to IRQ for the sp805 watchdog.
-Before this change there was no notification for watchdog
-barking and the only thing that the HW watchdog did was to
-directly restart the CPU.
+This series is based on next-20220225.
 
-With this change, upon IRQ the driver will call panic() which
-in turn might initiate kdump (in case configured). In case the
-dying process (like kdump collection) will hang, the hardware
-watchdog will still directly restart the CPU on a second timeout.
+Patch 1-2 fix a cache flush bug, because subsequent patches depend on
+those on those changes, there are placed in this series.  Patch 3-4
+are preparation for fixing a dax bug in patch 5.  Patch 6 is code cleanup
+since the previous patch remove the usage of follow_invalidate_pte().
 
-The driver used to cut the specified timeout in half when setting
-the watchdog timeout, since it was ignoring the IRQ that occurred
-the first time the timeout expired. We now use the timeout as is
-since the watchdog IRQ will go off after the configured interval.
+v7:
+- Remove redurant "*" above vma_address() reported by Christoph.
+- Fix oops (reported by Qian) on arm64 by using "pmd_present() && pmd_devmap()"
+  to workaround the bug in pmd_leaf() on arm64, which is fixed in another
+  patch [1].
 
-Signed-off-by: Talel Shenhar <talel@amazon.com>
-Signed-off-by: Eliav Farber <farbere@amazon.com>
----
- drivers/watchdog/sp805_wdt.c | 102 +++++++++++++++++++++++++++++++----
- 1 file changed, 93 insertions(+), 9 deletions(-)
+[1] https://lore.kernel.org/all/20220403024928.4125-1-songmuchun@bytedance.com/
 
-diff --git a/drivers/watchdog/sp805_wdt.c b/drivers/watchdog/sp805_wdt.c
-index d8876fba686d..09223aed87e3 100644
---- a/drivers/watchdog/sp805_wdt.c
-+++ b/drivers/watchdog/sp805_wdt.c
-@@ -17,6 +17,7 @@
- #include <linux/amba/bus.h>
- #include <linux/bitops.h>
- #include <linux/clk.h>
-+#include <linux/interrupt.h>
- #include <linux/io.h>
- #include <linux/ioport.h>
- #include <linux/kernel.h>
-@@ -78,6 +79,11 @@ module_param(nowayout, bool, 0);
- MODULE_PARM_DESC(nowayout,
- 		"Set to 1 to keep watchdog running after device release");
- 
-+static bool skip_panic_skip_reset_on_timeout;
-+module_param(skip_panic_skip_reset_on_timeout, bool, 0600);
-+MODULE_PARM_DESC(skip_panic_skip_reset_on_timeout,
-+		 "For skipping panic and skipping reset on timeout, set this to Y/1");
-+
- /* returns true if wdt is running; otherwise returns false */
- static bool wdt_is_running(struct watchdog_device *wdd)
- {
-@@ -87,7 +93,14 @@ static bool wdt_is_running(struct watchdog_device *wdd)
- 	return (wdtcontrol & ENABLE_MASK) == ENABLE_MASK;
- }
- 
--/* This routine finds load value that will reset system in required timout */
-+/*
-+ * This routine finds load value that will reset or panic the system in the
-+ * required timeout.
-+ * It also calculates the actual timeout, which can differ from the input
-+ * timeout if load value is not in the range of LOAD_MIN and LOAD_MAX.
-+ * When panic is enabled it calculates the timeout till the panic, and when it
-+ * is disabled it calculates the timeout till the reset.
-+ */
- static int wdt_setload(struct watchdog_device *wdd, unsigned int timeout)
- {
- 	struct sp805_wdt *wdt = watchdog_get_drvdata(wdd);
-@@ -98,10 +111,21 @@ static int wdt_setload(struct watchdog_device *wdd, unsigned int timeout)
- 	/*
- 	 * sp805 runs counter with given value twice, after the end of first
- 	 * counter it gives an interrupt and then starts counter again. If
--	 * interrupt already occurred then it resets the system. This is why
--	 * load is half of what should be required.
-+	 * interrupt already occurred then it resets the system.
- 	 */
--	load = div_u64(rate, 2) * timeout - 1;
-+	if (wdt->adev->irq[0]) {
-+		/*
-+		 * Set load value based on a single timeout until we handle
-+		 * the interrupt.
-+		 */
-+		load = rate * timeout - 1;
-+	} else {
-+		/*
-+		 * Set load value to half the timeout, since the interrupt is
-+		 * ignored and counter must expire twice before CPU is reset.
-+		 */
-+		load = div_u64(rate, 2) * timeout - 1;
-+	}
- 
- 	load = (load > LOAD_MAX) ? LOAD_MAX : load;
- 	load = (load < LOAD_MIN) ? LOAD_MIN : load;
-@@ -109,13 +133,19 @@ static int wdt_setload(struct watchdog_device *wdd, unsigned int timeout)
- 	spin_lock(&wdt->lock);
- 	wdt->load_val = load;
- 	/* roundup timeout to closest positive integer value */
--	wdd->timeout = div_u64((load + 1) * 2 + (rate / 2), rate);
-+	if (wdt->adev->irq[0])
-+		wdd->timeout = div_u64((load + 1) + (rate / 2), rate);
-+	else
-+		wdd->timeout = div_u64((load + 1) * 2 + (rate / 2), rate);
- 	spin_unlock(&wdt->lock);
- 
- 	return 0;
- }
- 
--/* returns number of seconds left for reset to occur */
-+/*
-+ * returns number of seconds left for reset to occur, or returns number of
-+ * seconds left for panic to occur when enabled.
-+ */
- static unsigned int wdt_timeleft(struct watchdog_device *wdd)
- {
- 	struct sp805_wdt *wdt = watchdog_get_drvdata(wdd);
-@@ -124,9 +154,18 @@ static unsigned int wdt_timeleft(struct watchdog_device *wdd)
- 	spin_lock(&wdt->lock);
- 	load = readl_relaxed(wdt->base + WDTVALUE);
- 
--	/*If the interrupt is inactive then time left is WDTValue + WDTLoad. */
--	if (!(readl_relaxed(wdt->base + WDTRIS) & INT_MASK))
--		load += wdt->load_val + 1;
-+	/*
-+	 * When panic is enabled, it occurs after the first time that sp805
-+	 * runs the counter with the given load value.
-+	 * Otherwise, reset happens after sp805 runs the counter with given
-+	 * value twice (once before the interrupt and second after the
-+	 * interrupt), so if the interrupt is inactive (first count) then time
-+	 * left is WDTValue + WDTLoad.
-+	 */
-+	if (!wdt->adev->irq[0])
-+		if (!(readl_relaxed(wdt->base + WDTRIS) & INT_MASK))
-+			load += wdt->load_val + 1;
-+
- 	spin_unlock(&wdt->lock);
- 
- 	return div_u64(load, wdt->rate);
-@@ -227,6 +266,29 @@ static const struct watchdog_ops wdt_ops = {
- 	.restart	= wdt_restart,
- };
- 
-+static irqreturn_t wdt_irq_handler(int irq, void *dev_id)
-+{
-+	struct device *dev = dev_id;
-+	struct sp805_wdt *wdt = dev_get_drvdata(dev);
-+
-+	/*
-+	 * Reset the watchdog timeout to maximize time available to the panic
-+	 * handler before the watchdog induces a CPU reset.  Without resetting
-+	 * the watchdog here, it would have a single timeout remaining between
-+	 * interrupt and hardware reset. By resetting the timeout, the panic
-+	 * handler can run with interrupts disabled for two watchdog timeouts,
-+	 * ignoring the interrupt that would occur after the first timeout.
-+	 */
-+	wdt_config(&wdt->wdd, true);
-+
-+	if (skip_panic_skip_reset_on_timeout)
-+		dev_warn(dev, "watchdog timeout expired\n");
-+	else
-+		panic("watchdog timeout expired");
-+
-+	return IRQ_HANDLED;
-+}
-+
- static int
- sp805_wdt_probe(struct amba_device *adev, const struct amba_id *id)
- {
-@@ -299,9 +361,28 @@ sp805_wdt_probe(struct amba_device *adev, const struct amba_id *id)
- 	}
- 	amba_set_drvdata(adev, wdt);
- 
-+	if (adev->irq[0]) {
-+		ret = devm_request_irq(&adev->dev,
-+				       adev->irq[0],
-+				       wdt_irq_handler,
-+				       0,
-+				       MODULE_NAME,
-+				       adev);
-+		if (ret) {
-+			dev_err(&adev->dev,
-+				"watchdog irq request failed: %d\n",
-+				ret);
-+			goto err_request_irq;
-+		}
-+	} else {
-+		dev_warn(&adev->dev, "no irq exists for watchdog\n");
-+	}
-+
- 	dev_info(&adev->dev, "registration successful\n");
- 	return 0;
- 
-+err_request_irq:
-+	watchdog_unregister_device(&wdt->wdd);
- err:
- 	dev_err(&adev->dev, "Probe Failed!!!\n");
- 	return ret;
-@@ -311,6 +392,9 @@ static int sp805_wdt_remove(struct amba_device *adev)
- {
- 	struct sp805_wdt *wdt = amba_get_drvdata(adev);
- 
-+	if (adev->irq[0])
-+		devm_free_irq(&adev->dev, adev->irq[0], adev);
-+
- 	watchdog_unregister_device(&wdt->wdd);
- 	watchdog_set_drvdata(&wdt->wdd, NULL);
- 
+v6:
+- Collect Reviewed-by from Christoph Hellwig.
+- Fold dax_entry_mkclean() into dax_writeback_one().
+
+v5:
+- Collect Reviewed-by from Dan Williams.
+- Fix panic reported by kernel test robot <oliver.sang@intel.com>.
+- Remove pmdpp parameter from follow_invalidate_pte() and fold it into follow_pte().
+
+v4:
+- Fix compilation error on riscv.
+
+v3:
+- Based on next-20220225.
+
+v2:
+- Avoid the overly long line in lots of places suggested by Christoph.
+- Fix a compiler warning reported by kernel test robot since pmd_pfn()
+  is not defined when !CONFIG_TRANSPARENT_HUGEPAGE on powerpc architecture.
+- Split a new patch 4 for preparation of fixing the dax bug.
+
+Muchun Song (6):
+  mm: rmap: fix cache flush on THP pages
+  dax: fix cache flush on PMD-mapped pages
+  mm: rmap: introduce pfn_mkclean_range() to cleans PTEs
+  mm: pvmw: add support for walking devmap pages
+  dax: fix missing writeprotect the pte entry
+  mm: simplify follow_invalidate_pte()
+
+ fs/dax.c             | 98 +++++++---------------------------------------------
+ include/linux/mm.h   |  3 --
+ include/linux/rmap.h |  3 ++
+ mm/internal.h        | 26 +++++++++-----
+ mm/memory.c          | 81 ++++++++++++-------------------------------
+ mm/page_vma_mapped.c | 17 ++++-----
+ mm/rmap.c            | 68 +++++++++++++++++++++++++++++-------
+ 7 files changed, 120 insertions(+), 176 deletions(-)
+
 -- 
-2.32.0
+2.11.0
 
