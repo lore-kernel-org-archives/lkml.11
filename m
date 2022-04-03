@@ -2,51 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04F54C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  3 Apr 2022 16:32:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4658C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  3 Apr 2022 16:33:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344496AbiDCQe3 (ORCPT
+        id S1359438AbiDCQfb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 3 Apr 2022 12:34:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58582 "EHLO
+        Sun, 3 Apr 2022 12:35:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359419AbiDCQeV (ORCPT
+        with ESMTP id S1349759AbiDCQf2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 3 Apr 2022 12:34:21 -0400
-Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CD2D25E8A
-        for <linux-kernel@vger.kernel.org>; Sun,  3 Apr 2022 09:32:27 -0700 (PDT)
-Received: from dslb-094-219-033-178.094.219.pools.vodafone-ip.de ([94.219.33.178] helo=martin-debian-2.paytec.ch)
-        by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <martin@kaiser.cx>)
-        id 1nb39B-0007x0-G7; Sun, 03 Apr 2022 18:32:13 +0200
-From:   Martin Kaiser <martin@kaiser.cx>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Michael Straube <straube.linux@gmail.com>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Martin Kaiser <martin@kaiser.cx>
-Subject: [PATCH 0/2] two simple cleanups in OnProbeReq
-Date:   Sun,  3 Apr 2022 18:32:04 +0200
-Message-Id: <20220403163206.357004-1-martin@kaiser.cx>
-X-Mailer: git-send-email 2.30.2
+        Sun, 3 Apr 2022 12:35:28 -0400
+Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58FDA11140
+        for <linux-kernel@vger.kernel.org>; Sun,  3 Apr 2022 09:33:31 -0700 (PDT)
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1649003607;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=rj22f0kFZ7NUcXO468exbIwbC8edz8OwX/wtkMZHahM=;
+        b=YGfztAsTroxPMmfd7BhFy+VreKT9Cj3uBXpixs7sK5SIUG2AkJWzDMHF5LgxD/4x+R8bHf
+        rPUdjv3duUMwAOU2DH7L7rE01gyF5nHWx3f63zaMeaHpiB6eN8sglGc6MUE/IAVxekWTb4
+        QX/xbsBQpm7zcAGD7hWyBk6OxOEdVTk=
+From:   Tao Zhou <tao.zhou@linux.dev>
+To:     linux-kernel@vger.kernel.org, tao.zhou@linux.dev
+Subject: [PATCH] sched/fair: Minor making update_blocked_load_status() be able to set has_blocked_load to 1
+Date:   Mon,  4 Apr 2022 00:33:38 +0800
+Message-Id: <20220403163338.6341-1-tao.zhou@linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove a constant variable and an unnecessary goto.
+I realize that newidle_balance() can not set rq->has_blocked_load to 1
+when it has block load. When no task pulled then nohz_newidle_balance()
+will set flag NOHZ_NEWILB_KICK to trigger ILB. In do_idle(),
+nohz_run_idle_balance() will call _nohz_idle_balance() to update status
+using update_nohz_stats() to make sure there has blocked load. If it is
+not set in newidle_balance(), update_nohz_stats() will exit early and do
+not do update_blocked_averages()(time spent from newidle_balance() to
+update_nohz_stats will not be used to update load avg). There has
+chance to call cpuidle_idle_call() to set  has_blocked_load to 1 and
+can also update later but if cpuidle_idle_call() is not called, the
+lost update in nohz_run_idle_balance() will not be permitted that me not
+thoroughly think. I know this is likely a invalid commit log.
+---
+ kernel/sched/fair.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-Martin Kaiser (2):
-  staging: r8188eu: remove unnecessary jump
-  staging: r8188eu: remove constant variable
-
- drivers/staging/r8188eu/core/rtw_mlme_ext.c | 24 +++++++--------------
- 1 file changed, 8 insertions(+), 16 deletions(-)
-
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index 5146163bfabb..fc8765792a77 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -8091,7 +8091,9 @@ static inline void update_blocked_load_tick(struct rq *rq)
+ 
+ static inline void update_blocked_load_status(struct rq *rq, bool has_blocked)
+ {
+-	if (!has_blocked)
++	if (has_blocked)
++		rq->has_blocked_load = 1;
++	else
+ 		rq->has_blocked_load = 0;
+ }
+ #else
+@@ -10597,7 +10599,7 @@ void nohz_balance_enter_idle(int cpu)
+ 	 * If a clear happens, it will have evaluated last additions because
+ 	 * rq->lock is held during the check and the clear
+ 	 */
+-	rq->has_blocked_load = 1;
++	update_blocked_load_status(rq, 1);
+ 
+ 	/*
+ 	 * The tick is still stopped but load could have been added in the
 -- 
-2.30.2
+2.35.1
 
