@@ -2,64 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF3C2C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02AA2C43217
 	for <linux-kernel@archiver.kernel.org>; Sun,  3 Apr 2022 19:17:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376293AbiDCTTQ (ORCPT
+        id S1376314AbiDCTTV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 3 Apr 2022 15:19:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58740 "EHLO
+        Sun, 3 Apr 2022 15:19:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231417AbiDCTTK (ORCPT
+        with ESMTP id S231417AbiDCTTR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 3 Apr 2022 15:19:10 -0400
-Received: from mail-ot1-x343.google.com (mail-ot1-x343.google.com [IPv6:2607:f8b0:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF29538D93
-        for <linux-kernel@vger.kernel.org>; Sun,  3 Apr 2022 12:17:16 -0700 (PDT)
-Received: by mail-ot1-x343.google.com with SMTP id 88-20020a9d0ee1000000b005d0ae4e126fso3904415otj.5
-        for <linux-kernel@vger.kernel.org>; Sun, 03 Apr 2022 12:17:16 -0700 (PDT)
+        Sun, 3 Apr 2022 15:19:17 -0400
+Received: from mail-ot1-x344.google.com (mail-ot1-x344.google.com [IPv6:2607:f8b0:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E44D938D9E
+        for <linux-kernel@vger.kernel.org>; Sun,  3 Apr 2022 12:17:22 -0700 (PDT)
+Received: by mail-ot1-x344.google.com with SMTP id w17-20020a056830111100b005b22c584b93so5875603otq.11
+        for <linux-kernel@vger.kernel.org>; Sun, 03 Apr 2022 12:17:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=zZOpoW+EgxvMAo7hvmBoOUeiQEc5COuYjcGcZDOKzLc=;
-        b=JQK1FwAb9d8bTgZVd7v9+TEI8+adbyUbMJ5BEuAaJsT0lGtcNpU2uyNrENyCyfk1hC
-         081WHP4dXs60RAGaLrweRKW2n2Lx2/vmpjO7aWMwBRln654nYBlMBYGocuuA+eEZn75V
-         HZuhkr8Yche0813E2nDbH//ZXW2MV+tCQITD9syD5I2l2wE27vCQ+YYyHzGUcRvHLx91
-         L0wLk1lkbWLV8gqPU7ooFUebiAcwQBwKGNxg0v5RRmQLwCWcA9J/aDYefl2n9rpR/4FX
-         JP0xBTuXJ9w1hUA5KTQXRjt75oFCHRg0yLstvgxasV4KQbWdcOS6k0/T1Fd5ulGq1qE5
-         FZkg==
+        bh=7Gd2y7AVWs28ptZSwQ3MW03jeLKh2Yn3UJWNjnhCBkQ=;
+        b=YgrvFGuqMar6kg3zLV4k+VqjMG6i6EycoQA/RYbGd3gM4mXvQyL8XIIW0SZfxnI/rO
+         p9bi2Nci3azhNOjylJ6gtg30uFSDQBBqpZ8IdCNJMcqTOCqUwXzqeaKw5pmQQMXR33Xf
+         VMANVxSrNJAfEWwrxPz+T7dSvTf0PB6UPZNlntgL5nQ3PEfdcO8e39m0TBoVNrIupn49
+         nauj1SPH3OZ7D7l/85kycHTimQ2WKW7Eyzi8SoUMdDJoBWCYYIvnPvDm6e/x48JiQA+m
+         mKOXOh+/ZUJW8eEKHeKdsaAJOKa2fnL05jMEe+fsC5+QgBOOEotUBF1e4jDmhmm9OA3e
+         TBig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=zZOpoW+EgxvMAo7hvmBoOUeiQEc5COuYjcGcZDOKzLc=;
-        b=Hr8MllL5AuE/nEjDbA5euTA710mOFU12eWtL9rmjIn1dhZjMUKvTLd/k3rqeMxejea
-         P4Ie861UOEL9n4IdYGlK5s02RsIn0R4hrp06+Qu2y2Hj6UVQKwlvBnoYBxylURAyLM1v
-         g1uRDNdQ/K28S3LNMgfCN/TfIRrsBmt3hHXD6Rup3auv6XX/0Q49D8CX8nUE3ELDgNy3
-         MDB/Gj+y3ZMehmlZXNln688vfa2c4th6oCmt/RzB4zcPmqJ8gqbVouUJtShGd4HLrPl8
-         5FmueGh8pkL+q/DJUM21HAdFU9n8xLnAeMRyYOdwhjBff0skkUrxQ23YJ64wbgBPhn4r
-         +8Rw==
-X-Gm-Message-State: AOAM531pMqI+HgKDfEn6lrqys5qle5lvhmkZqkEy3OOSv6O/mM/KUjq6
-        GaGBuTh9J3vDQKnmBxR0Ebg=
-X-Google-Smtp-Source: ABdhPJyjmxClNgj0VKMCSAgVoFaHxPSSnWmsCRFSbROZnjNlk493xlFpDF25J2s1BXfg5F1yQiWMLQ==
-X-Received: by 2002:a05:6830:907:b0:5c9:54e8:8e0a with SMTP id v7-20020a056830090700b005c954e88e0amr10711310ott.103.1649013436199;
-        Sun, 03 Apr 2022 12:17:16 -0700 (PDT)
+        bh=7Gd2y7AVWs28ptZSwQ3MW03jeLKh2Yn3UJWNjnhCBkQ=;
+        b=zelCc0EpEUwp2gw/TM0jXex88GHMvSqPYn+itdjwKBlQSTGFSwO7LPq1/1fozM2QZS
+         +RswMeiRh7QiL2yqj05bV6l6OOJWZCfdTVGOHzvBz1wK3FiLIDDkufYTFNV19ZKNjYId
+         PYtYnCYOiQo93oO4qopECaDb7YoTXZY1J5Pr8hGHDZWoT6O0SvIxyku5JSqAo9Zd16/X
+         4aEOjQ6EQh1lI5TZrnJoYZ0zyrzgTzXs7qcBttI5BnmCESNp+/jNChd/rk7FtsOWDb3x
+         kGyTKZCr1TmfCkPQ93jYPhVB1bpOgcNKERq+9ST6g6+0wGpXTCcZLVzB3LTQX9MoCqS+
+         iErQ==
+X-Gm-Message-State: AOAM533KkT40uyIOilYLwJTpHm/n/VMzOfU4gGMci6g0+px+N60zbp6z
+        K4DAdZRbqq8uxk/Uj32TazQ=
+X-Google-Smtp-Source: ABdhPJwJtsq53S3z9z1uQyzjBZ6vcJ80DYbL2VyzbQ+bH5n5YfFTu2BQDNp/2klJ9ja8D7aLJAYsIA==
+X-Received: by 2002:a05:6830:61b:b0:5cc:e44:7dc3 with SMTP id w27-20020a056830061b00b005cc0e447dc3mr10688999oti.159.1649013442167;
+        Sun, 03 Apr 2022 12:17:22 -0700 (PDT)
 Received: from bertie (072-190-140-117.res.spectrum.com. [72.190.140.117])
-        by smtp.gmail.com with ESMTPSA id r23-20020a056830237700b005b2610517c8sm3808634oth.56.2022.04.03.12.17.15
+        by smtp.gmail.com with ESMTPSA id i28-20020a9d4a9c000000b005ce06a77de2sm3920329otf.48.2022.04.03.12.17.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 03 Apr 2022 12:17:15 -0700 (PDT)
+        Sun, 03 Apr 2022 12:17:21 -0700 (PDT)
 From:   Rebecca Mckeever <remckee0@gmail.com>
 To:     outreachy@lists.linux.dev
 Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
         Phillip Potter <phil@philpotter.co.uk>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Rebecca Mckeever <remckee0@gmail.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>
-Subject: [PATCH 1/3] staging: r8188eu: remove handlerOS independent comment
-Date:   Sun,  3 Apr 2022 14:17:04 -0500
-Message-Id: <7d0d2253d86f46bc0def0447de424727d70f03a7.1649011311.git.remckee0@gmail.com>
+        Rebecca Mckeever <remckee0@gmail.com>
+Subject: [PATCH 3/3] staging: r8188eu: add blank line between functions
+Date:   Sun,  3 Apr 2022 14:17:06 -0500
+Message-Id: <ccacca6f679a879ad2032dc0aeb0b0156e3a847b.1649011311.git.remckee0@gmail.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <cover.1649011311.git.remckee0@gmail.com>
 References: <cover.1649011311.git.remckee0@gmail.com>
@@ -69,28 +68,26 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The "need to make timeout handlerOS independent" comment is incorrect.
-Remove the comment to avoid misleading developers.
-Additional instance found with git grep.
+Conform to Linux kernel coding style.
+Noticed when completing a different patch.
 
-Suggested-by: Dan Carpenter <dan.carpenter@oracle.com>
 Signed-off-by: Rebecca Mckeever <remckee0@gmail.com>
 ---
- drivers/staging/r8188eu/core/rtw_cmd.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/staging/r8188eu/core/rtw_cmd.c | 1 +
+ 1 file changed, 1 insertion(+)
 
 diff --git a/drivers/staging/r8188eu/core/rtw_cmd.c b/drivers/staging/r8188eu/core/rtw_cmd.c
-index 8b24330e97c1..da455eb4d8cb 100644
+index 2d316a6c8294..ecd0488c439b 100644
 --- a/drivers/staging/r8188eu/core/rtw_cmd.c
 +++ b/drivers/staging/r8188eu/core/rtw_cmd.c
-@@ -1447,7 +1447,6 @@ void rtw_joinbss_cmd_callback(struct adapter *padapter,  struct cmd_obj *pcmd)
+@@ -1420,6 +1420,7 @@ void rtw_survey_cmd_callback(struct adapter *padapter,  struct cmd_obj *pcmd)
+ 	rtw_free_cmd_obj(pcmd);
  
- 	if (pcmd->res == H2C_DROPPED) {
- 		/* TODO: cancel timer and do timeout handler directly... */
--		/* need to make timeout handlerOS independent */
- 		_set_timer(&pmlmepriv->assoc_timer, 1);
- 	} else if (pcmd->res != H2C_SUCCESS) {
- 		_set_timer(&pmlmepriv->assoc_timer, 1);
+ }
++
+ void rtw_disassoc_cmd_callback(struct adapter *padapter, struct cmd_obj *pcmd)
+ {
+ 	struct	mlme_priv *pmlmepriv = &padapter->mlmepriv;
 -- 
 2.32.0
 
