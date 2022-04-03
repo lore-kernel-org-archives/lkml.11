@@ -2,112 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1278C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  3 Apr 2022 15:59:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7021C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  3 Apr 2022 16:00:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359298AbiDCQB2 (ORCPT
+        id S1359308AbiDCQCc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 3 Apr 2022 12:01:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50458 "EHLO
+        Sun, 3 Apr 2022 12:02:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236415AbiDCQBZ (ORCPT
+        with ESMTP id S236415AbiDCQC3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 3 Apr 2022 12:01:25 -0400
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52288340FA
-        for <linux-kernel@vger.kernel.org>; Sun,  3 Apr 2022 08:59:31 -0700 (PDT)
-Received: by mail-lf1-x135.google.com with SMTP id t25so13070904lfg.7
-        for <linux-kernel@vger.kernel.org>; Sun, 03 Apr 2022 08:59:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=KKlcn54PThq2FKahUYvLZsgWJiUdQCm2Y4kdU3bFhN4=;
-        b=dpLPC2z/Esldqx70eDH/rzllBYsmWf6BYGOJq/cjhDbq7B8Hj23wMtHvTVaFHAAqBD
-         q895Ga1Jm8cov5tIist9q+36g1Jjm/FS1feywqK7wDshsh0pHQ49pUmHXKBsbCVHftUB
-         FZEkPUjeOecuxRIefH9/L1YaGfbjLBhTw6ZAbZNBuf0AXcMA4jUnbDwCs7NsXflUSYmp
-         fFpVvg3/swKwNfXuQQXPAexy+UGLeobwtzsUjMrGWB7lElFOOmfdM6JWI26YyvyQJbSy
-         k8Nvc3CqZR9bceECFFnGQEDd23rJOkipHLcTUNPTZErVIgRh/ozscBA4aDVydSsSSxq+
-         d2Ug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=KKlcn54PThq2FKahUYvLZsgWJiUdQCm2Y4kdU3bFhN4=;
-        b=dZsN2wadWjx0dRnANLAgF5n/8/1/36xTV79FfjI2A26209lkPBnTxfQ1AzGeDBaMzJ
-         VrSlZS0VDWlVWdnzgKW0N3SNGq4lKFIidPK0TKdSszH9Nu0P+AZxSn04ZnjDg/QmIc+i
-         DpaVZZo+VM87e1JkWuK+st6SN2dfF3U0k1RYpwW2GWc76Nb1msP6/fm9E6fibHxq0F26
-         uRG7jVlJxG7PQYr/p4oKv3WEIkK6OHU9VM8HUOo8TRZw0Ys6Zc8MxNdGjBwdBeciDJ3+
-         czE34JHs+FmBYxNMXJX46Qy/KNKoOX3/AiZsUx7AO6WmV5WsBLMNDCSVa3ASctKeBpkA
-         EokQ==
-X-Gm-Message-State: AOAM530vkFYpJNxxEMa4WJut3b/k2Y+P0xY1jZ22BPGzbHLBRGvuEGtj
-        f9wb86y0htCZuW54OFhHBxo=
-X-Google-Smtp-Source: ABdhPJzBYJwux5sXQl5VKAeCWo4U7G4PmLnSLsJM5yTssEvU2NHL4xzK8+jBz4LkfC90iPNKp2geWw==
-X-Received: by 2002:a05:6512:3f86:b0:44a:f5bf:ec9a with SMTP id x6-20020a0565123f8600b0044af5bfec9amr3181456lfa.490.1649001569396;
-        Sun, 03 Apr 2022 08:59:29 -0700 (PDT)
-Received: from [192.168.1.11] ([46.235.67.247])
-        by smtp.gmail.com with ESMTPSA id bp15-20020a056512158f00b0044a3271802asm859675lfb.17.2022.04.03.08.59.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 03 Apr 2022 08:59:29 -0700 (PDT)
-Message-ID: <ed0e9f7b-9ba9-b0c8-8261-397bf793b9b9@gmail.com>
-Date:   Sun, 3 Apr 2022 18:59:26 +0300
+        Sun, 3 Apr 2022 12:02:29 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ADBD340FA
+        for <linux-kernel@vger.kernel.org>; Sun,  3 Apr 2022 09:00:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649001635; x=1680537635;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=+/ypF/YPTV/X3Gzog/+9OJoarfhftw4HnrnQQkEePBQ=;
+  b=JBHBkwOEQFDTdquqSG1ivZdMlXAKJbCELMdMk/gHUn4puwnweM2r81mX
+   IvrIjxIUY9AO2uDPX2ez/r7bS0MVDcqERIFpKvPYfJNj9VTUv9GGIp8Hr
+   9ilr0QWDTN7N+OO1/94SKLU39IOg4SgZUtEpECo86vlh8S6w5VxfcLvku
+   fjLcJw8TCVunuWNkbnxvkbs5F8CFNtIrXicUE+r3NUgwTcTCNUpNUbHUL
+   TIE3mDwv4SiRr6Q/icfpMn5k1yd+TY/bO5ybBA7S+2USRDIYYcJiW297N
+   dovLxHENZpjRfOq1l422jAmTu0756kqXF+KfMlUD9wyKYfVK4RCs1MKnH
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10306"; a="259223781"
+X-IronPort-AV: E=Sophos;i="5.90,231,1643702400"; 
+   d="scan'208";a="259223781"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Apr 2022 09:00:35 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,231,1643702400"; 
+   d="scan'208";a="548384835"
+Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
+  by orsmga007.jf.intel.com with ESMTP; 03 Apr 2022 09:00:33 -0700
+Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nb2eW-00014b-Ov;
+        Sun, 03 Apr 2022 16:00:32 +0000
+Date:   Sun, 3 Apr 2022 23:59:48 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Sven Peter <sven@svenpeter.dev>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [asahilinux:nvme-v2 5/6] drivers/soc/apple/rtkit.c:575:21: warning:
+ no previous prototype for function 'apple_rtkit_init'
+Message-ID: <202204032336.1xnXEpJ7-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] staging: r8188eu: simplify control flow
-Content-Language: en-US
-To:     Sevinj Aghayeva <sevinj.aghayeva@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        outreachy@lists.linux.dev
-References: <20220403155111.GA333187@euclid>
-From:   Pavel Skripkin <paskripkin@gmail.com>
-In-Reply-To: <20220403155111.GA333187@euclid>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Sevinj,
+tree:   https://github.com/AsahiLinux/linux nvme-v2
+head:   1c4210208a7dffa2a6697b0be5fa1da9f2bc448c
+commit: 49f954ccdfe134d00b9e17b9ff5186a47725c6bf [5/6] soc: apple: Add RTKit IPC library
+config: arm64-randconfig-r015-20220403 (https://download.01.org/0day-ci/archive/20220403/202204032336.1xnXEpJ7-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project c4a1b07d0979e7ff20d7d541af666d822d66b566)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm64 cross compiling tool for clang build
+        # apt-get install binutils-aarch64-linux-gnu
+        # https://github.com/AsahiLinux/linux/commit/49f954ccdfe134d00b9e17b9ff5186a47725c6bf
+        git remote add asahilinux https://github.com/AsahiLinux/linux
+        git fetch --no-tags asahilinux nvme-v2
+        git checkout 49f954ccdfe134d00b9e17b9ff5186a47725c6bf
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/soc/apple/
 
-On 4/3/22 18:51, Sevinj Aghayeva wrote:
-> The function iterates an index from 0 to NUM_PMKID_CACHE and returns
-> the first index for which the condition is true. If no such index is
-> found, the function returns -1. Current code has a complex control
-> flow that obfuscates this simple task. Replace it with a loop.
-> 
-> Also, given the shortened function body, replace the long variable
-> name psecuritypriv with a short variable name p.
-> 
-> Reported by checkpatch:
-> 
-> WARNING: else is not generally useful after a break or return
-> 
-> Signed-off-by: Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
-> ---
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-[code snip]
+All warnings (new ones prefixed by >>):
 
-> +	for (i = 0; i < NUM_PMKID_CACHE; i++)
-> +		if ((p->PMKIDList[i].bUsed) &&
-> +				(!memcmp(p->PMKIDList[i].Bssid, bssid, ETH_ALEN)))
-> +			return i;
-> +	return -1;
->   }
->   
->   /*  */
-
-Looks good, but let's not introduce new checkpatch issue:
-
-CHECK: Alignment should match open parenthesis
-#62: FILE: drivers/staging/r8188eu/core/rtw_mlme.c:1645:
-+		if ((p->PMKIDList[i].bUsed) &&
-+				(!memcmp(p->PMKIDList[i].Bssid, bssid, ETH_ALEN)))
+>> drivers/soc/apple/rtkit.c:575:21: warning: no previous prototype for function 'apple_rtkit_init' [-Wmissing-prototypes]
+   struct apple_rtkit *apple_rtkit_init(struct device *dev, void *cookie,
+                       ^
+   drivers/soc/apple/rtkit.c:575:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   struct apple_rtkit *apple_rtkit_init(struct device *dev, void *cookie,
+   ^
+   static 
+>> drivers/soc/apple/rtkit.c:789:6: warning: no previous prototype for function 'apple_rtkit_free' [-Wmissing-prototypes]
+   void apple_rtkit_free(struct apple_rtkit *rtk)
+        ^
+   drivers/soc/apple/rtkit.c:789:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void apple_rtkit_free(struct apple_rtkit *rtk)
+   ^
+   static 
+   2 warnings generated.
 
 
+vim +/apple_rtkit_init +575 drivers/soc/apple/rtkit.c
 
+   574	
+ > 575	struct apple_rtkit *apple_rtkit_init(struct device *dev, void *cookie,
+   576					     const char *mbox_name, int mbox_idx,
+   577					     const struct apple_rtkit_ops *ops)
+   578	{
+   579		struct apple_rtkit *rtk;
+   580		int ret;
+   581	
+   582		if (!ops)
+   583			return ERR_PTR(-EINVAL);
+   584	
+   585		rtk = kzalloc(sizeof(*rtk), GFP_KERNEL);
+   586		if (!rtk)
+   587			return ERR_PTR(-ENOMEM);
+   588	
+   589		rtk->dev = dev;
+   590		rtk->cookie = cookie;
+   591		rtk->ops = ops;
+   592	
+   593		init_completion(&rtk->epmap_completion);
+   594		init_completion(&rtk->reinit_completion);
+   595		init_completion(&rtk->iop_pwr_ack_completion);
+   596		init_completion(&rtk->ap_pwr_ack_completion);
+   597	
+   598		bitmap_zero(rtk->endpoints, APPLE_RTKIT_MAX_ENDPOINTS);
+   599		set_bit(APPLE_RTKIT_EP_MGMT, rtk->endpoints);
+   600	
+   601		rtk->mbox_name = mbox_name;
+   602		rtk->mbox_idx = mbox_idx;
+   603		rtk->mbox_cl.dev = dev;
+   604		rtk->mbox_cl.tx_block = true;
+   605		rtk->mbox_cl.knows_txdone = false;
+   606		rtk->mbox_cl.rx_callback = &apple_rtkit_rx_callback;
+   607	
+   608		ret = apple_rtkit_request_mbox_chan(rtk);
+   609		if (ret)
+   610			return (struct apple_rtkit *)ERR_PTR(ret);
+   611	
+   612		return rtk;
+   613	}
+   614	
 
-With regards,
-Pavel Skripkin
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
