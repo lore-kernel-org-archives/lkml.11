@@ -2,86 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 063F4C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  3 Apr 2022 08:59:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6074EC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  3 Apr 2022 09:11:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356039AbiDCJBh (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 3 Apr 2022 05:01:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47732 "EHLO
+        id S243877AbiDCJMn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 3 Apr 2022 05:12:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355323AbiDCJB3 (ORCPT
+        with ESMTP id S234343AbiDCJMm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 3 Apr 2022 05:01:29 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B816436324
-        for <linux-kernel@vger.kernel.org>; Sun,  3 Apr 2022 01:59:34 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id EA670CE0B75
-        for <linux-kernel@vger.kernel.org>; Sun,  3 Apr 2022 08:59:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 227A8C340F3;
-        Sun,  3 Apr 2022 08:59:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648976371;
-        bh=+MRl4rjdWzvUS2WdlS62P5OnEWVQOdoGiz49cpOtwgg=;
-        h=From:To:Cc:Subject:Date:From;
-        b=e/UxQhRf7BDgVVBto0RfrPHS5nJwc3nj5bm9X+9H/bcsRhxwHuQIfmdfMd3B9Ap84
-         td9OWJ8SFL9YLEGhDfgdv9NyQe3ecY3Sz2KUplVel5FFjb1lEWIt4Efumncx8W+1bs
-         OSLr7NmMWm7jAdVGUPfBmT7B9XbTURf5MB/grhSLmhd0iqzhwQBQpEqgsbnlkDJSgD
-         05P1AFDMmMCn7u+T3sq09iPWikzNVjzPtd60q0a2J0G3tY9mXtZoW3URJ+ov28yMEY
-         r0ClxWttx+wA5uh+PkMRY0ffCVzu7ReGo+ddZES9RkI7VP+u+Mb3EPfnz+zxunVMj1
-         mhskVBBOEQ1qw==
-Received: from mchehab by mail.kernel.org with local (Exim 4.94.2)
-        (envelope-from <mchehab@kernel.org>)
-        id 1naw52-00D6f1-GH; Sun, 03 Apr 2022 10:59:28 +0200
-From:   Mauro Carvalho Chehab <mchehab@kernel.org>
-To:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        =?UTF-8?q?P=C3=A9ter=20Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Cezary Rojewski <cezary.rojewski@intel.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Jie Yang <yang.jie@linux.intel.com>,
-        Liam Girdwood <liam.r.girdwood@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>, Takashi Iwai <tiwai@suse.com>,
-        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
-Subject: [PATCH RFC 0/2] Make headphone work on Huawei Matebook D15
-Date:   Sun,  3 Apr 2022 10:59:23 +0200
-Message-Id: <cover.1648975926.git.mchehab@kernel.org>
-X-Mailer: git-send-email 2.35.1
-MIME-Version: 1.0
+        Sun, 3 Apr 2022 05:12:42 -0400
+Received: from ciao.gmane.io (ciao.gmane.io [116.202.254.214])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCB7632EEC
+        for <linux-kernel@vger.kernel.org>; Sun,  3 Apr 2022 02:10:48 -0700 (PDT)
+Received: from list by ciao.gmane.io with local (Exim 4.92)
+        (envelope-from <glk-linux-kernel-4@m.gmane-mx.org>)
+        id 1nawFy-00091i-GC
+        for linux-kernel@vger.kernel.org; Sun, 03 Apr 2022 11:10:46 +0200
+X-Injected-Via-Gmane: http://gmane.org/
+To:     linux-kernel@vger.kernel.org
+From:   Akemi Yagi <toracat@elrepo.org>
+Subject: Re: [PATCH] Makefile: fix config cc version check
+Date:   Sun, 3 Apr 2022 09:10:38 -0000 (UTC)
+Message-ID: <t2boae$9u9$1@ciao.gmane.io>
+References: <20220307223231.608498-1-mst@redhat.com>
+        <CAK7LNAR=fs+VJUZJj7YyprdA6xjx=4bttPRL6e4bvNkEeX9eng@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+User-Agent: Pan/0.149 (Bellevue; 4c157ba git@gitlab.gnome.org:GNOME/pan.git)
+Cc:     linux-kbuild@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The headphone output at Huawei Matebook D15 is controlled by a separate
-GPIO than the speaker. So, the es8336 boards logic need to handle two events:
-one for the speaker switch and another one for the headphone.
+On Tue, 08 Mar 2022 11:23:31 +0900, Masahiro Yamada wrote:
 
-Please notice that this is my first real incursion at SOC/SOF. While this is working
-fine, I'm still struggling with some troubles with pipewire, which I believe are
-due to UCM support, as, sometimes when pavucontrol starts, the playback stucks.
-Also, sometimes the mixers won't change when jack plug/unplug is detected.
+> On Tue, Mar 8, 2022 at 7:32 AM Michael S. Tsirkin <mst@redhat.com>
+> wrote:
+>>
+>> .config is of the form:
+>> CONFIG_CC_VERSION_TEXT="gcc (GCC) 11.2.1 20220127 (Red Hat 11.2.1-9)"
+> 
+> 
+> No. This was changed.
+> 
+> See this:
+> 
+> $ git show 129ab0d2d9f -- Makefile
+> 
+> 
+> 
+>> while CC_VERSION_TEXT is of the form: gcc (GCC) 11.2.1 20220127 (Red
+>> Hat 11.2.1-7)
+>>
+>> thus when comparing these, CONFIG_CC_VERSION_TEXT should not be put in
+>> "", otherwise we get () outside "" which shell then tries to evaluate.
+>>
+>> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+>> ---
+>>  Makefile | 4 ++--
+>>  1 file changed, 2 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/Makefile b/Makefile index daeb5c88b50b..d5c03c827825
+>> 100644 --- a/Makefile +++ b/Makefile @@ -1714,9 +1714,9 @@ PHONY +=
+>> prepare
+>>  # now expand this into a simple variable to reduce the cost of shell
+>>  evaluations prepare: CC_VERSION_TEXT := $(CC_VERSION_TEXT)
+>>  prepare:
+>> -       @if [ "$(CC_VERSION_TEXT)" != "$(CONFIG_CC_VERSION_TEXT)" ];
+>> then \
+>> +       @if [ "$(CC_VERSION_TEXT)" != $(CONFIG_CC_VERSION_TEXT) ]; then
+>> \
+>>                 echo >&2 "warning: the compiler differs from the one
+>>                 used to build the kernel"; \
+>> -               echo >&2 "  The kernel was built by:
+>> $(CONFIG_CC_VERSION_TEXT)"; \ +               echo >&2 "  The kernel
+>> was built by: "$(CONFIG_CC_VERSION_TEXT)";" \
+>>                 echo >&2 "  You are using:          
+>>                 $(CC_VERSION_TEXT)"; \
+>>         fi
+>>
+>> --
+>> MST
 
-So, more debug is needed, and probably the UCM will also need to be closer to
-the definitions that are used at ucm2/codecs/es8316/, as es8336 is a variant of
-it.
+I believe the patch proposed by Michael indeed fixes an issue 
+introduced by 129ab0d2d9f (Makefile).
 
-Anyway, let me submit this as as RFC, in order to get some feedback if this is
-going at the right way to support the headphone switch event.
+Please see the following bug reports:
 
-Mauro Carvalho Chehab (2):
-  ASoC: Intel: sof_es8336: support a separate gpio to control headphone
-  ASoC: Intel: sof_es8336: Huawei Matebook D15 uses a headphone gpio
+https://elrepo.org/bugs/view.php?id=1215
+https://elrepo.org/bugs/view.php?id=1214
 
- sound/soc/intel/boards/sof_es8336.c | 84 ++++++++++++++++++++++-------
- 1 file changed, 65 insertions(+), 19 deletions(-)
+and this forum post:
 
--- 
-2.35.1
+https://www.phoronix.com/forums/forum/software/general-linux-open-source/
+1303986-linux-5-17-rc1-released-a-little-bit-early-but-with-shiny-new-
+features#post1304036
 
+Akemi
 
