@@ -2,121 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CFACC4332F
-	for <linux-kernel@archiver.kernel.org>; Sun,  3 Apr 2022 10:38:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D8BAC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  3 Apr 2022 10:38:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356482AbiDCKj0 (ORCPT
+        id S1356502AbiDCKkA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 3 Apr 2022 06:39:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55816 "EHLO
+        Sun, 3 Apr 2022 06:40:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239200AbiDCKjT (ORCPT
+        with ESMTP id S1356730AbiDCKjy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 3 Apr 2022 06:39:19 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E70C2529B
-        for <linux-kernel@vger.kernel.org>; Sun,  3 Apr 2022 03:37:26 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id f18so2738090edc.5
-        for <linux-kernel@vger.kernel.org>; Sun, 03 Apr 2022 03:37:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=GSyRYDX1aNYM71dkaQ/N0Y+9b2N5O+FflhMrusy6CQQ=;
-        b=Ejg+9ZumG2W4lnDxjgs80njEkgJ9gEU7hYYsPeZazpGzJVBdOFIuFiCAmj+c636R5S
-         6NkKzmp+n6x+fo+F95dT/07sjIwNUL0MvYkge5obaR6GzFGxu8bHzoXTWC4Ml+DBNSLi
-         mCLkVRM0BC/uz9ydpdxk/EX/ISZ07NXuC3p7jQ/Ao3O0ELjTK+fCte2w7dXpSS4F95hA
-         iFENBHJYvGRUh0UtupwUvRESQJ8IF9Lm9vD5G9Odhv5eq/ypMOzOrWoahKK/nNxwBRcq
-         ie7gVgaXRNY+CRRYrRzSDon3wRxvUJVo715I4DKBC+5rUQx67LRllhJXLasYNDZ+e928
-         /gkg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=GSyRYDX1aNYM71dkaQ/N0Y+9b2N5O+FflhMrusy6CQQ=;
-        b=xLqG+WPYp4zFEdhZB1uNBKF+qAe2FMUToU9bvn8OGTHa7nPj8RkoiEvEmv51GEvcOD
-         IMXjZK1cCl15FyZKgsFxdha2XUUQsWhQXKg/jhNsF2o15f/xCMg5A8KlQWV1cBWmzVaF
-         P4FSHoTiubDaF1szZ31L1b9tSncaSCNz9a+/xddRAH+Gr9JQmq7ilD871Fsj/jqdIHwf
-         cpDlXeqydGsqYYjAAMIU7iVpLTPvRxyS1mKZ1Me5eGzS0mzHZnXslLVRV4G/cRnx/HIG
-         ucZCX3NxEHyP9cjFn+zqBJJtUqucFNJHcSJQIrov8KNlYHmlmFZzTYbuoBxcZhBDIGgl
-         G++Q==
-X-Gm-Message-State: AOAM531KidQu7Nmeg0OgHPWMCTz7C/623HXFp1gkbuDP95RsOTzOEXaG
-        z92LxwhAstp67ss/TWAWIK0=
-X-Google-Smtp-Source: ABdhPJz5Y4ypgQ5cqIkZnzERRBeUUhGqmsQ8HOqOVR92z0xXiuMthkNocV5P0Yut88wp99Z/PBiEsA==
-X-Received: by 2002:a05:6402:909:b0:415:cdbf:4748 with SMTP id g9-20020a056402090900b00415cdbf4748mr28149461edz.395.1648982244752;
-        Sun, 03 Apr 2022 03:37:24 -0700 (PDT)
-Received: from localhost.localdomain (ip5f5abb55.dynamic.kabel-deutschland.de. [95.90.187.85])
-        by smtp.gmail.com with ESMTPSA id kx5-20020a170907774500b006e1382b8192sm3130751ejc.147.2022.04.03.03.37.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 03 Apr 2022 03:37:24 -0700 (PDT)
-From:   Michael Straube <straube.linux@gmail.com>
-To:     gregkh@linuxfoundation.org
-Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Michael Straube <straube.linux@gmail.com>
-Subject: [PATCH 2/4] staging: r8188eu: remove constant parameter from _rtw_pwr_wakeup()
-Date:   Sun,  3 Apr 2022 12:37:11 +0200
-Message-Id: <20220403103713.12883-3-straube.linux@gmail.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220403103713.12883-1-straube.linux@gmail.com>
-References: <20220403103713.12883-1-straube.linux@gmail.com>
+        Sun, 3 Apr 2022 06:39:54 -0400
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [IPv6:2001:4190:8020::34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 516FC39804;
+        Sun,  3 Apr 2022 03:37:54 -0700 (PDT)
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+        id F22BB92009D; Sun,  3 Apr 2022 12:37:53 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by angie.orcam.me.uk (Postfix) with ESMTP id ECD3492009B;
+        Sun,  3 Apr 2022 11:37:53 +0100 (BST)
+Date:   Sun, 3 Apr 2022 11:37:53 +0100 (BST)
+From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
+To:     Andrew Holmes <aholmes@omnom.net>
+cc:     yaliang.wang@windriver.com, rppt@kernel.org,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        huangpei@loongson.cn, Andrew Morton <akpm@linux-foundation.org>,
+        kumba@gentoo.org, Geert Uytterhoeven <geert@linux-m68k.org>,
+        anshuman.khandual@arm.com, penberg@kernel.org,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] MIPS: pgalloc: fix memory leak caused by pgd_free()
+In-Reply-To: <9cc88b1c-8a8c-95ea-2cf7-31be3b771495@omnom.net>
+Message-ID: <alpine.DEB.2.21.2204031122020.47162@angie.orcam.me.uk>
+References: <20220310113116.2068859-1-yaliang.wang@windriver.com> <alpine.DEB.2.21.2204021446370.47162@angie.orcam.me.uk> <9cc88b1c-8a8c-95ea-2cf7-31be3b771495@omnom.net>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The parameter 'ips_deffer_ms' of _rtw_pwr_wakeup() is always
-RTW_PWR_STATE_CHK_INTERVAL. Make it local.
+On Sun, 3 Apr 2022, Andrew Holmes wrote:
 
-Signed-off-by: Michael Straube <straube.linux@gmail.com>
----
- drivers/staging/r8188eu/core/rtw_pwrctrl.c    | 7 +++++--
- drivers/staging/r8188eu/include/rtw_pwrctrl.h | 5 ++---
- 2 files changed, 7 insertions(+), 5 deletions(-)
+> MIPS64 has essentially been broken/unusable for 8 kernel releases,
+> including two LTS kernels, since the original commit landed. Should
+> there not have been CI/tests that caught this? It's pretty major!
 
-diff --git a/drivers/staging/r8188eu/core/rtw_pwrctrl.c b/drivers/staging/r8188eu/core/rtw_pwrctrl.c
-index 08e8a5efba5e..ee324c18a1b9 100644
---- a/drivers/staging/r8188eu/core/rtw_pwrctrl.c
-+++ b/drivers/staging/r8188eu/core/rtw_pwrctrl.c
-@@ -349,16 +349,19 @@ void rtw_init_pwrctrl_priv(struct adapter *padapter)
- /*
- * rtw_pwr_wakeup - Wake the NIC up from: 1)IPS. 2)USB autosuspend
- * @adapter: pointer to struct adapter structure
--* @ips_deffer_ms: the ms wiil prevent from falling into IPS after wakeup
- * Return _SUCCESS or _FAIL
- */
- 
--int _rtw_pwr_wakeup(struct adapter *padapter, u32 ips_deffer_ms)
-+int _rtw_pwr_wakeup(struct adapter *padapter)
- {
- 	struct pwrctrl_priv *pwrpriv = &padapter->pwrctrlpriv;
- 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
- 	int ret = _SUCCESS;
- 	u32 start = jiffies;
-+	u32 ips_deffer_ms;
-+
-+	/* the ms will prevent from falling into IPS after wakeup */
-+	ips_deffer_ms = RTW_PWR_STATE_CHK_INTERVAL;
- 
- 	if (pwrpriv->ips_deny_time < jiffies + rtw_ms_to_systime(ips_deffer_ms))
- 		pwrpriv->ips_deny_time = jiffies + rtw_ms_to_systime(ips_deffer_ms);
-diff --git a/drivers/staging/r8188eu/include/rtw_pwrctrl.h b/drivers/staging/r8188eu/include/rtw_pwrctrl.h
-index 0a0f7a4c4052..fd301a9f117a 100644
---- a/drivers/staging/r8188eu/include/rtw_pwrctrl.h
-+++ b/drivers/staging/r8188eu/include/rtw_pwrctrl.h
-@@ -121,9 +121,8 @@ s32 LPS_RF_ON_check(struct adapter *adapter, u32 delay_ms);
- void LPS_Enter(struct adapter *adapter);
- void LPS_Leave(struct adapter *adapter);
- 
--int _rtw_pwr_wakeup(struct adapter *adapter, u32 ips_defer_ms);
--#define rtw_pwr_wakeup(adapter)						\
--	 _rtw_pwr_wakeup(adapter, RTW_PWR_STATE_CHK_INTERVAL)
-+int _rtw_pwr_wakeup(struct adapter *adapter);
-+#define rtw_pwr_wakeup(adapter) _rtw_pwr_wakeup(adapter)
- int rtw_pm_set_ips(struct adapter *adapter, u8 mode);
- int rtw_pm_set_lps(struct adapter *adapter, u8 mode);
- 
--- 
-2.35.1
+ AFAIK the MIPS port is only maintained on the best effort basis nowadays 
+I'm afraid.  I.e. it's enthusiasts investing their free time for the joy 
+of fiddling with things.  So things are bound to break from time to time 
+and remain unnoticed for a while.  We're doing our best, but our resources 
+are limited.
 
+ Taking these limitations into account I think Thomas has been doing a 
+tremendous job maintaining the MIPS port, but he hasn't been cc-ed on the 
+submission of the original change and it's very easy to miss stuff in the 
+flood that has only been posted to a mailing list.
+
+  Maciej
