@@ -2,140 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 034D7C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  3 Apr 2022 16:55:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF758C4332F
+	for <linux-kernel@archiver.kernel.org>; Sun,  3 Apr 2022 16:57:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359581AbiDCQ5h (ORCPT
+        id S1351553AbiDCQ7i (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 3 Apr 2022 12:57:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47510 "EHLO
+        Sun, 3 Apr 2022 12:59:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359583AbiDCQ52 (ORCPT
+        with ESMTP id S236624AbiDCQ7g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 3 Apr 2022 12:57:28 -0400
-Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 700CC3A5DA
-        for <linux-kernel@vger.kernel.org>; Sun,  3 Apr 2022 09:55:21 -0700 (PDT)
-Received: from dslb-094-219-033-178.094.219.pools.vodafone-ip.de ([94.219.33.178] helo=martin-debian-2.paytec.ch)
-        by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <martin@kaiser.cx>)
-        id 1nb3V5-0008D7-UZ; Sun, 03 Apr 2022 18:54:52 +0200
-From:   Martin Kaiser <martin@kaiser.cx>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Michael Straube <straube.linux@gmail.com>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Martin Kaiser <martin@kaiser.cx>
-Subject: [PATCH 07/11] staging: r8188eu: remove to_fr_ds from struct rx_pkt_attrib
-Date:   Sun,  3 Apr 2022 18:54:34 +0200
-Message-Id: <20220403165438.357728-8-martin@kaiser.cx>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220403165438.357728-1-martin@kaiser.cx>
-References: <20220403165438.357728-1-martin@kaiser.cx>
+        Sun, 3 Apr 2022 12:59:36 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79AB0326D9;
+        Sun,  3 Apr 2022 09:57:42 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649005061;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=tfXrkBnVhjzrSwPZ0Laq9qOonGjVgWvsNc2Gv3Ncd+c=;
+        b=dvO3fnMR8Rqjh/M8WmNPijFfQ7EVMUklhEGzbPDD3IlHlBiI58R0d5aM32WjMV5AqmSXbu
+        jmtex8GkM13wX6Db/DejMcADu9QhrRZdauTKyjclSUKdExs+BkxUXcaQC9xvAYQGg05xXR
+        uzF+d1BUltlSSqr9Py8FTY5YXLgXf+c0a4b35Z6Z9UngSSCjOyZSh1hRBzcq9o2f/edgGv
+        3/aFpTMQ+J0Hpm6roDPTuY5F+drRLhHZFyfaRRDIgpuF9VFo9heJEX+AQijjLLLmPJUUVC
+        Jpd6QwKE50NKnkOW89E6BMBdXY4DDIEmVp/FreSp4PUOLaTx5XvYXaVaSkCvCQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649005061;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=tfXrkBnVhjzrSwPZ0Laq9qOonGjVgWvsNc2Gv3Ncd+c=;
+        b=PNYRgzlU5vnuF03DCEere9Ai1yJR65djGR9xY/V4o8Hw6YV0C8ksumiS9+y2t6Z4dxYOMG
+        M5MKdjILbTSCrzDw==
+To:     Ammar Faizi <ammarfaizi2@gnuweeb.org>,
+        Borislav Petkov <bp@alien8.de>
+Cc:     Ammar Faizi <ammarfaizi2@gnuweeb.org>,
+        Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Yazen Ghannam <yazen.ghannam@amd.com>,
+        Linux Edac Mailing List <linux-edac@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Stable Kernel <stable@vger.kernel.org>,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        x86 Mailing List <x86@kernel.org>,
+        David Laight <David.Laight@ACULAB.COM>,
+        Jiri Hladky <hladky.jiri@googlemail.com>
+Subject: Re: [PATCH v6 1/2] x86/delay: Fix the wrong asm constraint in
+ `delay_loop()`
+In-Reply-To: <20220329104705.65256-2-ammarfaizi2@gnuweeb.org>
+References: <20220329104705.65256-1-ammarfaizi2@gnuweeb.org>
+ <20220329104705.65256-2-ammarfaizi2@gnuweeb.org>
+Date:   Sun, 03 Apr 2022 18:57:40 +0200
+Message-ID: <87zgl2ksu3.ffs@tglx>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-to_fr_ds in struct rx_pkt_attrib stores the values of the to_ds and
-from_ds bits of an incoming data frame. to_fr_ds is set by parsing the
-frame control bytes and it's used only in validate_recv_data_frame.
+On Tue, Mar 29 2022 at 17:47, Ammar Faizi wrote:
+> The asm constraint does not reflect that the asm statement can modify
+> the value of @loops. But the asm statement in delay_loop() does modify
+> the @loops.
+>
+> Specifiying the wrong constraint may lead to undefined behavior, it may
+> clobber random stuff (e.g. local variable, important temporary value in
+> regs, etc.). This is especially dangerous when the compiler decides to
+> inline the function and since it doesn't know that the value gets
+> modified, it might decide to use it from a register directly without
+> reloading it.
+>
+> Fix this by changing the constraint from "a" (as an input) to "+a" (as
+> an input and output).
 
-Remove to_fr_ds from struct rx_pkt_attrib and use the ieee80211 helpers
-to distinguish between the four different cases for to_ds, from_ds.
+This analysis is plain wrong. The assembly code operates on a register
+and not on memory:
 
-Signed-off-by: Martin Kaiser <martin@kaiser.cx>
----
- drivers/staging/r8188eu/core/rtw_recv.c    | 26 +++++++++-------------
- drivers/staging/r8188eu/include/rtw_recv.h |  1 -
- drivers/staging/r8188eu/include/wifi.h     |  2 --
- 3 files changed, 10 insertions(+), 19 deletions(-)
+	asm volatile(
+		"	test %0,%0	\n"
+		"	jz 3f		\n"
+		"	jmp 1f		\n"
 
-diff --git a/drivers/staging/r8188eu/core/rtw_recv.c b/drivers/staging/r8188eu/core/rtw_recv.c
-index c200e1251545..0098f3de31d7 100644
---- a/drivers/staging/r8188eu/core/rtw_recv.c
-+++ b/drivers/staging/r8188eu/core/rtw_recv.c
-@@ -958,25 +958,22 @@ static int validate_recv_data_frame(struct adapter *adapter,
- 
- 	memcpy(pattrib->bssid, pbssid, ETH_ALEN);
- 
--	switch (pattrib->to_fr_ds) {
--	case 0:
--		memcpy(pattrib->ra, pda, ETH_ALEN);
--		memcpy(pattrib->ta, psa, ETH_ALEN);
--		ret = sta2sta_data_frame(adapter, precv_frame, &psta);
--		break;
--	case 1:
-+	/* address4 is used only if both to_ds and from_ds are set */
-+	if (ieee80211_has_a4(hdr->frame_control))
-+		return _FAIL;
-+
-+	if (ieee80211_has_fromds(hdr->frame_control)) {
- 		memcpy(pattrib->ra, pda, ETH_ALEN);
- 		memcpy(pattrib->ta, pbssid, ETH_ALEN);
- 		ret = ap2sta_data_frame(adapter, precv_frame, &psta);
--		break;
--	case 2:
-+	} else if (ieee80211_has_tods(hdr->frame_control)) {
- 		memcpy(pattrib->ra, pbssid, ETH_ALEN);
- 		memcpy(pattrib->ta, psa, ETH_ALEN);
- 		ret = sta2ap_data_frame(adapter, precv_frame, &psta);
--		break;
--	default:
--		ret = _FAIL;
--		break;
-+	} else {
-+		memcpy(pattrib->ra, pda, ETH_ALEN);
-+		memcpy(pattrib->ta, psa, ETH_ALEN);
-+		ret = sta2sta_data_frame(adapter, precv_frame, &psta);
- 	}
- 
- 	if (ret == _FAIL || ret == RTW_RX_HANDLED)
-@@ -1035,7 +1032,6 @@ static int validate_recv_frame(struct adapter *adapter, struct recv_frame *precv
- 
- 	int retval = _FAIL;
- 	struct rx_pkt_attrib *pattrib = &precv_frame->attrib;
--	u8 *ptr = precv_frame->rx_data;
- 	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)precv_frame->rx_data;
- 	struct mlme_ext_priv *pmlmeext = &adapter->mlmeextpriv;
- 
-@@ -1048,8 +1044,6 @@ static int validate_recv_frame(struct adapter *adapter, struct recv_frame *precv
- 	if ((hdr->frame_control & cpu_to_le16(IEEE80211_FCTL_VERS)) != 0)
- 		return _FAIL;
- 
--	pattrib->to_fr_ds = get_tofr_ds(ptr);
--
- 	pattrib->frag_num = le16_to_cpu(hdr->seq_ctrl) & IEEE80211_SCTL_FRAG;
- 	pattrib->seq_num = IEEE80211_SEQ_TO_SN(le16_to_cpu(hdr->seq_ctrl));
- 
-diff --git a/drivers/staging/r8188eu/include/rtw_recv.h b/drivers/staging/r8188eu/include/rtw_recv.h
-index 4ac4e6b3e177..59b4773bc3c9 100644
---- a/drivers/staging/r8188eu/include/rtw_recv.h
-+++ b/drivers/staging/r8188eu/include/rtw_recv.h
-@@ -80,7 +80,6 @@ struct rx_pkt_attrib {
- 	u8	drvinfo_sz;
- 	u8	shift_sz;
- 	u8	hdrlen; /* the WLAN Header Len */
--	u8	to_fr_ds;
- 	u8	amsdu;
- 	bool	qos;
- 	u8	priority;
-diff --git a/drivers/staging/r8188eu/include/wifi.h b/drivers/staging/r8188eu/include/wifi.h
-index eb3cb1fb285f..a252a416d3e5 100644
---- a/drivers/staging/r8188eu/include/wifi.h
-+++ b/drivers/staging/r8188eu/include/wifi.h
-@@ -152,8 +152,6 @@ enum WIFI_REG_DOMAIN {
- 
- #define GetFrDs(pbuf)	(((*(__le16 *)(pbuf)) & cpu_to_le16(_FROM_DS_)) != 0)
- 
--#define get_tofr_ds(pframe)	((GetToDs(pframe) << 1) | GetFrDs(pframe))
--
- #define SetMFrag(pbuf)	\
- 	*(__le16 *)(pbuf) |= cpu_to_le16(_MORE_FRAG_)
- 
--- 
-2.30.2
+		".align 16		\n"
+		"1:	jmp 2f		\n"
 
+		".align 16		\n"
+		"2:	dec %0		\n"
+		"	jnz 2b		\n"
+		"3:	dec %0		\n"
+
+		: /* we don't need output */
+---->		:"a" (loops)
+
+This tells the compiler to use [RE]AX and initialize it from the
+variable 'loops'. It's never written back because all '%0' in the above
+assembly are substituted with [RE]AX. This also tells the compiler that
+the inline assembly clobbers [RE]AX and that's all it needs to know.
+
+Nothing to fix here, whether the code is inlined or not.
+
+Thanks,
+
+        tglx
