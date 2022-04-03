@@ -2,281 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4077EC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  3 Apr 2022 17:22:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CA29C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  3 Apr 2022 17:22:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359666AbiDCRYi (ORCPT
+        id S1359677AbiDCRYn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 3 Apr 2022 13:24:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50542 "EHLO
+        Sun, 3 Apr 2022 13:24:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350166AbiDCRYf (ORCPT
+        with ESMTP id S1359654AbiDCRYg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 3 Apr 2022 13:24:35 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18AE339837;
-        Sun,  3 Apr 2022 10:22:40 -0700 (PDT)
+        Sun, 3 Apr 2022 13:24:36 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56FA939836;
+        Sun,  3 Apr 2022 10:22:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649006561; x=1680542561;
+  t=1649006562; x=1680542562;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=SilCYHxevAy4gyqpkXifpwPMYrzpHXKUa6mkQ7VKcBA=;
-  b=LEpeJkdoicCS29nVceefPoUjxU6AC7Cm1L/jT8/608PFStiUMv9L0Yxq
-   OtFWLlXWJdkJtAmFUCOuhATU7yIt16rVmKhap5rIfOQMCHFhl0UZzJQpZ
-   Qmtiur9jdljRMamjc9XwJdIioUfxHlRzaEmLtgoucnt2sPCYk+AeQs4EM
-   M5HoLjp/cKM5uWvldVKmD6rOETx/3ig8ARajyJp5dAlCu9uXfcRANUCVT
-   /qtS+z9Z+dCwZcJg5tVcD3CEwirCVJINySltGsBuIgca8gcmhwevy46VD
-   6/qJr5+WLGQDVZzARod1t7FSNJomSa61Q6elk0zzwxcajb4RuQPICismO
+  bh=Kg3nT9zXXv061+GqAw9adWjDJuUK/w2Dr4majqksh4k=;
+  b=Z0eZ59Fp7LPrRDbZMeKQdugdoFWL1UzSdHs0uI3Kl0mInG5l6+65iFog
+   jnAYMbh0fypUYxk2KXOGTRh8R1V3vgeQA9qN8APWaajePoooBtLjQgUZK
+   ELGwXWuZfl12h4nN2g+zvtXkq/g11P4q5njB6uHfuOUR4aZM8g7U2ZMsK
+   lhUynb5EofZQvPqz8IRYFF82BAQoxPM4G8UbcbEtPIW7wHEblBwaGWB9X
+   ZJGOQ/bN1Sd92gLPfI7zPiujOEu5V4lMjZzSVLTbcOvn0U3cvUIydEEG7
+   99E+GoYgYcIDdV4RrbNiEqvUqDcwukT2KskkIMfqw8QGYE3jY6ssCb+GV
    w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10306"; a="346837217"
+X-IronPort-AV: E=McAfee;i="6200,9189,10306"; a="257980051"
 X-IronPort-AV: E=Sophos;i="5.90,231,1643702400"; 
-   d="scan'208";a="346837217"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Apr 2022 10:22:39 -0700
+   d="scan'208";a="257980051"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Apr 2022 10:22:41 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,231,1643702400"; 
-   d="scan'208";a="569029877"
+   d="scan'208";a="651261140"
 Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
-  by orsmga008.jf.intel.com with ESMTP; 03 Apr 2022 10:22:37 -0700
+  by fmsmga002.fm.intel.com with ESMTP; 03 Apr 2022 10:22:37 -0700
 Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
         (envelope-from <lkp@intel.com>)
-        id 1nb3vx-000189-8y;
+        id 1nb3vx-00018E-AT;
         Sun, 03 Apr 2022 17:22:37 +0000
-Date:   Mon, 4 Apr 2022 01:22:09 +0800
+Date:   Mon, 4 Apr 2022 01:22:18 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     Chuanhong Guo <gch981213@gmail.com>, linux-spi@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, linux-mtd@lists.infradead.org
-Subject: Re: [PATCH resend 2/4] spi: add driver for MTK SPI NAND Flash
- Interface
-Message-ID: <202204040143.fnOgLTp5-lkp@intel.com>
-References: <20220403131453.1269229-3-gch981213@gmail.com>
+To:     Bui Quang Minh <minhquangbui99@gmail.com>, cgroups@vger.kernel.org
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Bui Quang Minh <minhquangbui99@gmail.com>,
+        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [PATCH] cgroup: Kill the parent controller when its last child
+ is killed
+Message-ID: <202204040103.yTRTggqu-lkp@intel.com>
+References: <20220403135717.8294-1-minhquangbui99@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220403131453.1269229-3-gch981213@gmail.com>
+In-Reply-To: <20220403135717.8294-1-minhquangbui99@gmail.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Chuanhong,
+Hi Bui,
 
 Thank you for the patch! Yet something to improve:
 
-[auto build test ERROR on next-20220401]
-[cannot apply to mtd/nand/next broonie-spi/for-next robh/for-next v5.17 v5.17-rc8 v5.17-rc7 v5.17]
+[auto build test ERROR on tj-cgroup/for-next]
+[also build test ERROR on v5.17 next-20220401]
 [If your patch is applied to the wrong git tree, kindly drop us a note.
 And when submitting patch, we suggest to use '--base' as documented in
 https://git-scm.com/docs/git-format-patch]
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Chuanhong-Guo/spi-add-support-for-Mediatek-SPI-NAND-controller/20220403-211703
-base:    e5071887cd2296a7704dbcd10c1cedf0f11cdbd5
-config: mips-allmodconfig (https://download.01.org/0day-ci/archive/20220404/202204040143.fnOgLTp5-lkp@intel.com/config)
-compiler: mips-linux-gcc (GCC) 11.2.0
+url:    https://github.com/intel-lab-lkp/linux/commits/Bui-Quang-Minh/cgroup-Kill-the-parent-controller-when-its-last-child-is-killed/20220403-215911
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/tj/cgroup.git for-next
+config: arm-mxs_defconfig (https://download.01.org/0day-ci/archive/20220404/202204040103.yTRTggqu-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project c4a1b07d0979e7ff20d7d541af666d822d66b566)
 reproduce (this is a W=1 build):
         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
         chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/42beed649ed9c6674bdb176691f10365f093a82d
+        # install arm cross compiling tool for clang build
+        # apt-get install binutils-arm-linux-gnueabi
+        # https://github.com/intel-lab-lkp/linux/commit/2bc22feae8a913c7f371bc79ef9967122d8d326c
         git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Chuanhong-Guo/spi-add-support-for-Mediatek-SPI-NAND-controller/20220403-211703
-        git checkout 42beed649ed9c6674bdb176691f10365f093a82d
+        git fetch --no-tags linux-review Bui-Quang-Minh/cgroup-Kill-the-parent-controller-when-its-last-child-is-killed/20220403-215911
+        git checkout 2bc22feae8a913c7f371bc79ef9967122d8d326c
         # save the config file to linux build tree
         mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=mips SHELL=/bin/bash
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
 
 If you fix the issue, kindly add following tag as appropriate
 Reported-by: kernel test robot <lkp@intel.com>
 
-All error/warnings (new ones prefixed by >>):
+All errors (new ones prefixed by >>):
 
-   In file included from include/linux/printk.h:555,
-                    from include/linux/kernel.h:29,
-                    from drivers/spi/spi-mtk-snfi.c:70:
-   drivers/spi/spi-mtk-snfi.c: In function 'mtk_snand_mac_io':
->> drivers/spi/spi-mtk-snfi.c:499:27: warning: format '%lu' expects argument of type 'long unsigned int', but argument 4 has type 'size_t' {aka 'unsigned int'} [-Wformat=]
-     499 |         dev_dbg(snf->dev, "SNF TX: %lu RX: %lu", reg_offs, rx_len);
-         |                           ^~~~~~~~~~~~~~~~~~~~~
-   include/linux/dynamic_debug.h:134:29: note: in definition of macro '__dynamic_func_call'
-     134 |                 func(&id, ##__VA_ARGS__);               \
-         |                             ^~~~~~~~~~~
-   include/linux/dynamic_debug.h:166:9: note: in expansion of macro '_dynamic_func_call'
-     166 |         _dynamic_func_call(fmt,__dynamic_dev_dbg,               \
-         |         ^~~~~~~~~~~~~~~~~~
-   include/linux/dev_printk.h:155:9: note: in expansion of macro 'dynamic_dev_dbg'
-     155 |         dynamic_dev_dbg(dev, dev_fmt(fmt), ##__VA_ARGS__)
-         |         ^~~~~~~~~~~~~~~
-   include/linux/dev_printk.h:155:30: note: in expansion of macro 'dev_fmt'
-     155 |         dynamic_dev_dbg(dev, dev_fmt(fmt), ##__VA_ARGS__)
-         |                              ^~~~~~~
-   drivers/spi/spi-mtk-snfi.c:499:9: note: in expansion of macro 'dev_dbg'
-     499 |         dev_dbg(snf->dev, "SNF TX: %lu RX: %lu", reg_offs, rx_len);
-         |         ^~~~~~~
-   drivers/spi/spi-mtk-snfi.c:499:38: note: format string is defined here
-     499 |         dev_dbg(snf->dev, "SNF TX: %lu RX: %lu", reg_offs, rx_len);
-         |                                    ~~^
-         |                                      |
-         |                                      long unsigned int
-         |                                    %u
-   In file included from include/linux/printk.h:555,
-                    from include/linux/kernel.h:29,
-                    from drivers/spi/spi-mtk-snfi.c:70:
-   drivers/spi/spi-mtk-snfi.c:499:27: warning: format '%lu' expects argument of type 'long unsigned int', but argument 5 has type 'size_t' {aka 'unsigned int'} [-Wformat=]
-     499 |         dev_dbg(snf->dev, "SNF TX: %lu RX: %lu", reg_offs, rx_len);
-         |                           ^~~~~~~~~~~~~~~~~~~~~
-   include/linux/dynamic_debug.h:134:29: note: in definition of macro '__dynamic_func_call'
-     134 |                 func(&id, ##__VA_ARGS__);               \
-         |                             ^~~~~~~~~~~
-   include/linux/dynamic_debug.h:166:9: note: in expansion of macro '_dynamic_func_call'
-     166 |         _dynamic_func_call(fmt,__dynamic_dev_dbg,               \
-         |         ^~~~~~~~~~~~~~~~~~
-   include/linux/dev_printk.h:155:9: note: in expansion of macro 'dynamic_dev_dbg'
-     155 |         dynamic_dev_dbg(dev, dev_fmt(fmt), ##__VA_ARGS__)
-         |         ^~~~~~~~~~~~~~~
-   include/linux/dev_printk.h:155:30: note: in expansion of macro 'dev_fmt'
-     155 |         dynamic_dev_dbg(dev, dev_fmt(fmt), ##__VA_ARGS__)
-         |                              ^~~~~~~
-   drivers/spi/spi-mtk-snfi.c:499:9: note: in expansion of macro 'dev_dbg'
-     499 |         dev_dbg(snf->dev, "SNF TX: %lu RX: %lu", reg_offs, rx_len);
-         |         ^~~~~~~
-   drivers/spi/spi-mtk-snfi.c:499:46: note: format string is defined here
-     499 |         dev_dbg(snf->dev, "SNF TX: %lu RX: %lu", reg_offs, rx_len);
-         |                                            ~~^
-         |                                              |
-         |                                              long unsigned int
-         |                                            %u
-   In file included from include/linux/device.h:15,
-                    from drivers/spi/spi-mtk-snfi.c:73:
-   drivers/spi/spi-mtk-snfi.c: In function 'mtk_snand_setup_pagefmt':
-   drivers/spi/spi-mtk-snfi.c:619:27: warning: format '%lu' expects argument of type 'long unsigned int', but argument 3 has type 'size_t' {aka 'unsigned int'} [-Wformat=]
-     619 |         dev_err(snf->dev, "page size %lu+%lu is not supported\n", page_size,
-         |                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/dev_printk.h:110:30: note: in definition of macro 'dev_printk_index_wrap'
-     110 |                 _p_func(dev, fmt, ##__VA_ARGS__);                       \
-         |                              ^~~
-   include/linux/dev_printk.h:144:56: note: in expansion of macro 'dev_fmt'
-     144 |         dev_printk_index_wrap(_dev_err, KERN_ERR, dev, dev_fmt(fmt), ##__VA_ARGS__)
-         |                                                        ^~~~~~~
-   drivers/spi/spi-mtk-snfi.c:619:9: note: in expansion of macro 'dev_err'
-     619 |         dev_err(snf->dev, "page size %lu+%lu is not supported\n", page_size,
-         |         ^~~~~~~
-   drivers/spi/spi-mtk-snfi.c:619:40: note: format string is defined here
-     619 |         dev_err(snf->dev, "page size %lu+%lu is not supported\n", page_size,
-         |                                      ~~^
-         |                                        |
-         |                                        long unsigned int
-         |                                      %u
-   In file included from include/linux/device.h:15,
-                    from drivers/spi/spi-mtk-snfi.c:73:
-   drivers/spi/spi-mtk-snfi.c:619:27: warning: format '%lu' expects argument of type 'long unsigned int', but argument 4 has type 'size_t' {aka 'unsigned int'} [-Wformat=]
-     619 |         dev_err(snf->dev, "page size %lu+%lu is not supported\n", page_size,
-         |                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/dev_printk.h:110:30: note: in definition of macro 'dev_printk_index_wrap'
-     110 |                 _p_func(dev, fmt, ##__VA_ARGS__);                       \
-         |                              ^~~
-   include/linux/dev_printk.h:144:56: note: in expansion of macro 'dev_fmt'
-     144 |         dev_printk_index_wrap(_dev_err, KERN_ERR, dev, dev_fmt(fmt), ##__VA_ARGS__)
-         |                                                        ^~~~~~~
-   drivers/spi/spi-mtk-snfi.c:619:9: note: in expansion of macro 'dev_err'
-     619 |         dev_err(snf->dev, "page size %lu+%lu is not supported\n", page_size,
-         |         ^~~~~~~
-   drivers/spi/spi-mtk-snfi.c:619:44: note: format string is defined here
-     619 |         dev_err(snf->dev, "page size %lu+%lu is not supported\n", page_size,
-         |                                          ~~^
-         |                                            |
-         |                                            long unsigned int
-         |                                          %u
---
->> drivers/spi/spi-mtk-snfi.c:728: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
-    * swap [pagesize] byte on nand with the first fdm byte in the last sector.
-   drivers/spi/spi-mtk-snfi.c:748: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
-    * swap the first fdm byte in the first and the last sector.
-   drivers/spi/spi-mtk-snfi.c:1048: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
-    * Check whether op can be executed with read_from_cache or program_load
---
-   mips-linux-ld: drivers/mtd/nand/ecc-mtk.o: in function `mtk_ecc_driver_exit':
->> ecc-mtk.c:(.exit.text+0x0): multiple definition of `cleanup_module'; drivers/mtd/nand/ecc-mxic.o:ecc-mxic.c:(.exit.text+0x0): first defined here
-   mips-linux-ld: drivers/mtd/nand/ecc-mtk.o: in function `mtk_ecc_driver_init':
->> ecc-mtk.c:(.init.text+0x0): multiple definition of `init_module'; drivers/mtd/nand/ecc-mxic.o:ecc-mxic.c:(.init.text+0x0): first defined here
+>> kernel/cgroup/cgroup.c:5169:39: error: no member named 'refcnt' in 'struct cgroup_bpf'
+                   if (!percpu_ref_is_dying(&cgrp->bpf.refcnt))
+                                             ~~~~~~~~~ ^
+   1 error generated.
 
 
-vim +499 drivers/spi/spi-mtk-snfi.c
+vim +5169 kernel/cgroup/cgroup.c
 
-   437	
-   438	static int mtk_snand_mac_io(struct mtk_snand *snf, const struct spi_mem_op *op)
-   439	{
-   440		size_t rx_len = 0;
-   441		size_t reg_offs = 0;
-   442		u32 val = 0;
-   443		const u8 *tx_buf = NULL;
-   444		u8 *rx_buf = NULL;
-   445		int i, ret;
-   446		u8 b;
-   447	
-   448		if (op->data.dir == SPI_MEM_DATA_IN) {
-   449			rx_len = op->data.nbytes;
-   450			rx_buf = op->data.buf.in;
-   451		} else {
-   452			tx_buf = op->data.buf.out;
-   453		}
-   454	
-   455		mtk_snand_mac_reset(snf);
-   456	
-   457		for (i = 0; i < op->cmd.nbytes; i++, reg_offs++) {
-   458			b = (op->cmd.opcode >> ((op->cmd.nbytes - i - 1) * 8)) & 0xff;
-   459			val |= b << (8 * (reg_offs % 4));
-   460			if (reg_offs % 4 == 3) {
-   461				nfi_write32(snf, SNF_GPRAM + reg_offs - 3, val);
-   462				val = 0;
-   463			}
-   464		}
-   465	
-   466		for (i = 0; i < op->addr.nbytes; i++, reg_offs++) {
-   467			b = (op->addr.val >> ((op->addr.nbytes - i - 1) * 8)) & 0xff;
-   468			val |= b << (8 * (reg_offs % 4));
-   469			if (reg_offs % 4 == 3) {
-   470				nfi_write32(snf, SNF_GPRAM + reg_offs - 3, val);
-   471				val = 0;
-   472			}
-   473		}
-   474	
-   475		for (i = 0; i < op->dummy.nbytes; i++, reg_offs++) {
-   476			if (reg_offs % 4 == 3) {
-   477				nfi_write32(snf, SNF_GPRAM + reg_offs - 3, val);
-   478				val = 0;
-   479			}
-   480		}
-   481	
-   482		if (op->data.dir == SPI_MEM_DATA_OUT) {
-   483			for (i = 0; i < op->data.nbytes; i++, reg_offs++) {
-   484				val |= tx_buf[i] << (8 * (reg_offs % 4));
-   485				if (reg_offs % 4 == 3) {
-   486					nfi_write32(snf, SNF_GPRAM + reg_offs - 3, val);
-   487					val = 0;
-   488				}
-   489			}
-   490		}
-   491	
-   492		if (reg_offs % 4 != 3)
-   493			nfi_write32(snf, SNF_GPRAM + (reg_offs & ~3), val);
-   494	
-   495		for (i = 0; i < reg_offs; i += 4)
-   496			dev_dbg(snf->dev, "%d: %08X", i,
-   497				nfi_read32(snf, SNF_GPRAM + i));
-   498	
- > 499		dev_dbg(snf->dev, "SNF TX: %lu RX: %lu", reg_offs, rx_len);
-   500	
-   501		ret = mtk_snand_mac_trigger(snf, reg_offs, rx_len);
-   502		if (ret)
-   503			return ret;
-   504	
-   505		if (!rx_len)
-   506			return 0;
-   507	
-   508		nfi_read_data(snf, SNF_GPRAM + reg_offs, rx_buf, rx_len);
-   509		return 0;
-   510	}
-   511	
+  5148	
+  5149	static void css_release_work_fn(struct work_struct *work)
+  5150	{
+  5151		struct cgroup_subsys_state *css =
+  5152			container_of(work, struct cgroup_subsys_state, destroy_work);
+  5153		struct cgroup_subsys *ss = css->ss;
+  5154		struct cgroup *cgrp = css->cgroup;
+  5155		struct cgroup *parent = cgroup_parent(cgrp);
+  5156	
+  5157		mutex_lock(&cgroup_mutex);
+  5158	
+  5159		css->flags |= CSS_RELEASED;
+  5160		list_del_rcu(&css->sibling);
+  5161	
+  5162		/*
+  5163		 * If parent doesn't have any children, start killing it.
+  5164		 * And don't kill the default root.
+  5165		 */
+  5166		if (parent && list_empty(&parent->self.children) &&
+  5167		    parent != &cgrp_dfl_root.cgrp &&
+  5168		    !percpu_ref_is_dying(&parent->self.refcnt)) {
+> 5169			if (!percpu_ref_is_dying(&cgrp->bpf.refcnt))
+  5170				cgroup_bpf_offline(parent);
+  5171			percpu_ref_kill(&parent->self.refcnt);
+  5172		}
+  5173	
+  5174		if (ss) {
+  5175			/* css release path */
+  5176			if (!list_empty(&css->rstat_css_node)) {
+  5177				cgroup_rstat_flush(cgrp);
+  5178				list_del_rcu(&css->rstat_css_node);
+  5179			}
+  5180	
+  5181			cgroup_idr_replace(&ss->css_idr, NULL, css->id);
+  5182			if (ss->css_released)
+  5183				ss->css_released(css);
+  5184		} else {
+  5185			struct cgroup *tcgrp;
+  5186	
+  5187			/* cgroup release path */
+  5188			TRACE_CGROUP_PATH(release, cgrp);
+  5189	
+  5190			cgroup_rstat_flush(cgrp);
+  5191	
+  5192			spin_lock_irq(&css_set_lock);
+  5193			for (tcgrp = cgroup_parent(cgrp); tcgrp;
+  5194			     tcgrp = cgroup_parent(tcgrp))
+  5195				tcgrp->nr_dying_descendants--;
+  5196			spin_unlock_irq(&css_set_lock);
+  5197	
+  5198			/*
+  5199			 * There are two control paths which try to determine
+  5200			 * cgroup from dentry without going through kernfs -
+  5201			 * cgroupstats_build() and css_tryget_online_from_dir().
+  5202			 * Those are supported by RCU protecting clearing of
+  5203			 * cgrp->kn->priv backpointer.
+  5204			 */
+  5205			if (cgrp->kn)
+  5206				RCU_INIT_POINTER(*(void __rcu __force **)&cgrp->kn->priv,
+  5207						 NULL);
+  5208		}
+  5209	
+  5210		mutex_unlock(&cgroup_mutex);
+  5211	
+  5212		INIT_RCU_WORK(&css->destroy_rwork, css_free_rwork_fn);
+  5213		queue_rcu_work(cgroup_destroy_wq, &css->destroy_rwork);
+  5214	}
+  5215	
 
 -- 
 0-DAY CI Kernel Test Service
