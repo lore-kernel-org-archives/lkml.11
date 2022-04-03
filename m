@@ -2,106 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC8B5C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  3 Apr 2022 16:31:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCBF3C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  3 Apr 2022 16:32:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359418AbiDCQdf (ORCPT
+        id S1359424AbiDCQeW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 3 Apr 2022 12:33:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58138 "EHLO
+        Sun, 3 Apr 2022 12:34:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238951AbiDCQdb (ORCPT
+        with ESMTP id S240958AbiDCQeT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 3 Apr 2022 12:33:31 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8716725E88
-        for <linux-kernel@vger.kernel.org>; Sun,  3 Apr 2022 09:31:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649003497; x=1680539497;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=wyYxf3wsK4Z8h8k3gsnEfHp8xS0baWcV68/1yd+8EW8=;
-  b=Ih1NijjVSpExHLPumeJkTRBURPKjRjzRvyutoPBaumLpZ5lZ0eUiu78/
-   K5pyhPFL0WdJiQh6j6y4fNZeblp3V2gQwcQr1enhCqU549W6fso+nIp7/
-   8T96MSrltqtcc+/+Z+vcoEjLf9lUzNJuQb2zCd8Mujunm0vxzVjSjGdzc
-   GZ2EdAZbH9rCsYgqFb+HpqMgMldfQh386Lj7gqbhWYdNRmJ6i9HnOkmKb
-   fLSKw/dbeRXTmu/FNyC9J7fHZz9Z1ByGz/5HTdO9lWF2w6RcuyEtSlSZF
-   mEZ1I97dO9JYveUUxVMUOcLFyqgydxorf2yYKjnhKhr6ckLaMzCh4tyB6
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10306"; a="260383464"
-X-IronPort-AV: E=Sophos;i="5.90,231,1643702400"; 
-   d="scan'208";a="260383464"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Apr 2022 09:31:37 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,231,1643702400"; 
-   d="scan'208";a="504668352"
-Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
-  by orsmga003.jf.intel.com with ESMTP; 03 Apr 2022 09:31:35 -0700
-Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nb38Y-00016O-KZ;
-        Sun, 03 Apr 2022 16:31:34 +0000
-Date:   Mon, 4 Apr 2022 00:30:51 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Smita Koralahalli <Smita.KoralahalliChannabasappa@amd.com>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org, Borislav Petkov <bp@suse.de>,
-        Yazen Ghannam <yazen.ghannam@amd.com>
-Subject: [ammarfaizi2-block:bp/bp/test 23/23]
- arch/x86/kernel/cpu/mce/amd.c:726:1: warning: 'inline' is not at beginning
- of declaration
-Message-ID: <202204040044.xPo5Hahu-lkp@intel.com>
+        Sun, 3 Apr 2022 12:34:19 -0400
+Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07EE425E8A
+        for <linux-kernel@vger.kernel.org>; Sun,  3 Apr 2022 09:32:24 -0700 (PDT)
+Received: from dslb-094-219-033-178.094.219.pools.vodafone-ip.de ([94.219.33.178] helo=martin-debian-2.paytec.ch)
+        by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.89)
+        (envelope-from <martin@kaiser.cx>)
+        id 1nb39E-0007x0-1N; Sun, 03 Apr 2022 18:32:16 +0200
+From:   Martin Kaiser <martin@kaiser.cx>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Michael Straube <straube.linux@gmail.com>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Martin Kaiser <martin@kaiser.cx>
+Subject: [PATCH 2/2] staging: r8188eu: remove constant variable
+Date:   Sun,  3 Apr 2022 18:32:06 +0200
+Message-Id: <20220403163206.357004-3-martin@kaiser.cx>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220403163206.357004-1-martin@kaiser.cx>
+References: <20220403163206.357004-1-martin@kaiser.cx>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block bp/bp/test
-head:   aff0e90f2a981e0350187c8a931071d7f35df6e5
-commit: aff0e90f2a981e0350187c8a931071d7f35df6e5 [23/23] x86/mce: Define a function to extract ErrorAddr from MCA_ADDR
-config: x86_64-defconfig (https://download.01.org/0day-ci/archive/20220404/202204040044.xPo5Hahu-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.2.0-19) 11.2.0
-reproduce (this is a W=1 build):
-        # https://github.com/ammarfaizi2/linux-block/commit/aff0e90f2a981e0350187c8a931071d7f35df6e5
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block bp/bp/test
-        git checkout aff0e90f2a981e0350187c8a931071d7f35df6e5
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash arch/x86/kernel/cpu/mce/
+wifi_test_chk_rate is always 1. Remove the variable and the code to
+check it.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Martin Kaiser <martin@kaiser.cx>
+---
+ drivers/staging/r8188eu/core/rtw_mlme_ext.c | 19 ++++++++-----------
+ 1 file changed, 8 insertions(+), 11 deletions(-)
 
-All warnings (new ones prefixed by >>):
-
->> arch/x86/kernel/cpu/mce/amd.c:726:1: warning: 'inline' is not at beginning of declaration [-Wold-style-declaration]
-     726 | void __always_inline smca_extract_err_addr(struct mce *m)
-         | ^~~~
-
-
-vim +/inline +726 arch/x86/kernel/cpu/mce/amd.c
-
-   724	
-   725	/* Extract [55:<lsb>] where lsb is the LS-*valid* bit of the address bits. */
- > 726	void __always_inline smca_extract_err_addr(struct mce *m)
-   727	{
-   728		u8 lsb;
-   729	
-   730		if (!mce_flags.smca)
-   731			return;
-   732	
-   733		lsb = (m->addr >> 56) & 0x3f;
-   734	
-   735		m->addr &= GENMASK_ULL(55, lsb);
-   736	}
-   737	
-
+diff --git a/drivers/staging/r8188eu/core/rtw_mlme_ext.c b/drivers/staging/r8188eu/core/rtw_mlme_ext.c
+index ca415d123cbf..2f85d3a545cd 100644
+--- a/drivers/staging/r8188eu/core/rtw_mlme_ext.c
++++ b/drivers/staging/r8188eu/core/rtw_mlme_ext.c
+@@ -478,7 +478,6 @@ unsigned int OnProbeReq(struct adapter *padapter, struct recv_frame *precv_frame
+ 	u8 is_valid_p2p_probereq = false;
+ 
+ 	struct wifidirect_info	*pwdinfo = &padapter->wdinfo;
+-	u8 wifi_test_chk_rate = 1;
+ 
+ 	if (!rtw_p2p_chk_state(pwdinfo, P2P_STATE_NONE) &&
+ 	    !rtw_p2p_chk_state(pwdinfo, P2P_STATE_IDLE) &&
+@@ -493,16 +492,14 @@ unsigned int OnProbeReq(struct adapter *padapter, struct recv_frame *precv_frame
+ 
+ 		/*	Commented by Kurt 2012/10/16 */
+ 		/*	IOT issue: Google Nexus7 use 1M rate to send p2p_probe_req after GO nego completed and Nexus7 is client */
+-		if (wifi_test_chk_rate == 1) {
+-			is_valid_p2p_probereq = process_probe_req_p2p_ie(pwdinfo, pframe, len);
+-			if (is_valid_p2p_probereq) {
+-				if (rtw_p2p_chk_role(pwdinfo, P2P_ROLE_DEVICE)) {
+-					/*  FIXME */
+-					report_survey_event(padapter, precv_frame);
+-					p2p_listen_state_process(padapter,  get_sa(pframe));
+-
+-					return _SUCCESS;
+-				}
++		is_valid_p2p_probereq = process_probe_req_p2p_ie(pwdinfo, pframe, len);
++		if (is_valid_p2p_probereq) {
++			if (rtw_p2p_chk_role(pwdinfo, P2P_ROLE_DEVICE)) {
++				/*  FIXME */
++				report_survey_event(padapter, precv_frame);
++				p2p_listen_state_process(padapter,  get_sa(pframe));
++
++				return _SUCCESS;
+ 			}
+ 		}
+ 	}
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.30.2
+
