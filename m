@@ -2,108 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98D31C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  3 Apr 2022 14:21:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23268C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  3 Apr 2022 14:31:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357738AbiDCOXp (ORCPT
+        id S1359008AbiDCOdk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 3 Apr 2022 10:23:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56570 "EHLO
+        Sun, 3 Apr 2022 10:33:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236161AbiDCOXn (ORCPT
+        with ESMTP id S236161AbiDCOdg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 3 Apr 2022 10:23:43 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B1199396A5
-        for <linux-kernel@vger.kernel.org>; Sun,  3 Apr 2022 07:21:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648995708;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=2NzOUXV5geNPV1jFPan7KnjsKEym0Ss9ltF3bQDMSJk=;
-        b=UxS4IW4HPgjtWRwM9boaNYf5ScTzXbTB60MzTGVDRa/b01s7lrMv15UTu3t6VRq+nMlmH2
-        cQk7tB711qOSHDosaxN45yuQ4i6NnZolp/luWfcsZzvpupsw0PJ3QoWuB4T0ERHlBum7CX
-        zNJr7SrWBi1HwHBSDJLiYHvUhsaj/do=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-443-LZSLYwDtMmqakd-ceuJ0fw-1; Sun, 03 Apr 2022 10:21:47 -0400
-X-MC-Unique: LZSLYwDtMmqakd-ceuJ0fw-1
-Received: by mail-qk1-f199.google.com with SMTP id 207-20020a3706d8000000b0067b322bef9eso4837920qkg.3
-        for <linux-kernel@vger.kernel.org>; Sun, 03 Apr 2022 07:21:47 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2NzOUXV5geNPV1jFPan7KnjsKEym0Ss9ltF3bQDMSJk=;
-        b=rh9qAhXDZdDmRGoabhuN/GWdlvWpa0mdO9WNxjfXfeZ9lGDPMyrLa5tPtIBSr/TkxP
-         ZQEbx2KdbyC2Re/mpITjvlPVAHW1ukIJGIFPnkhvKKBiGVdQNKhJ7cXMmUIZqo929ybl
-         Dvgxg/xHFaRlMlfAkYAvtUWyB4c9wnTrSwnZUV64A3b65GCw/K5kiaezhjeY8d2n7z6j
-         KiCHj3bDCi4TzBfYdMbVr6SXFoWYXlzg5Jsa4ntKlrf9a53U9jAarLtbXZWuikkEfn2u
-         n4A6CdJM9AhzfPryTo72IzBP03m0hueXtSrLEMFytmZeNHZ6K9OpZLMdmS8Pdh3pUFxl
-         2FAA==
-X-Gm-Message-State: AOAM530gIfvVZKc4LGODA5hineaJgH92h0MWXeh612QaFskTONrP6phF
-        En6HiYy78Odh47Rzww9lg0jMoF9FpmQHnM/jvvbEeMyicPvhzwglShA9Vh3q62Y79D5y4Dop1hm
-        PRE+TM6wuxMlqaBJ3O5unc8jd
-X-Received: by 2002:a05:6214:da9:b0:441:2d37:1fdf with SMTP id h9-20020a0562140da900b004412d371fdfmr14150777qvh.14.1648995707220;
-        Sun, 03 Apr 2022 07:21:47 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzvPjZwizmTlC5AqPbCRYoH/kd4u1WRNzlEq/em0QPB+9sK5Zmh1lXeSdZpIFrdpTz7Zx+Gqg==
-X-Received: by 2002:a05:6214:da9:b0:441:2d37:1fdf with SMTP id h9-20020a0562140da900b004412d371fdfmr14150757qvh.14.1648995707058;
-        Sun, 03 Apr 2022 07:21:47 -0700 (PDT)
-Received: from dell-per740-01.7a2m.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id h6-20020ac85e06000000b002e1e8a98abbsm6194271qtx.41.2022.04.03.07.21.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 03 Apr 2022 07:21:46 -0700 (PDT)
-From:   Tom Rix <trix@redhat.com>
-To:     harry.wentland@amd.com, sunpeng.li@amd.com,
-        Rodrigo.Siqueira@amd.com, alexander.deucher@amd.com,
-        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
-        daniel@ffwll.ch, wenjing.liu@amd.com, waynelin@amd.com,
-        Anson.Jacob@amd.com, Yu-ting.Shen@amd.com, keescook@chromium.org,
-        nicholas.kazlauskas@amd.com
-Cc:     amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, Tom Rix <trix@redhat.com>
-Subject: [PATCH] drm/amd/display: cleanup extern usage in function definition
-Date:   Sun,  3 Apr 2022 10:21:37 -0400
-Message-Id: <20220403142137.2234322-1-trix@redhat.com>
-X-Mailer: git-send-email 2.27.0
+        Sun, 3 Apr 2022 10:33:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CC7B2FFD9
+        for <linux-kernel@vger.kernel.org>; Sun,  3 Apr 2022 07:31:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B69D611A6
+        for <linux-kernel@vger.kernel.org>; Sun,  3 Apr 2022 14:31:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9242C34114;
+        Sun,  3 Apr 2022 14:31:40 +0000 (UTC)
+Received: from rostedt by gandalf.local.home with local (Exim 4.95)
+        (envelope-from <rostedt@goodmis.org>)
+        id 1nb1GV-001Egu-VY;
+        Sun, 03 Apr 2022 10:31:39 -0400
+Message-ID: <20220403143139.819945199@goodmis.org>
+User-Agent: quilt/0.66
+Date:   Sun, 03 Apr 2022 10:25:03 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Beau Belgrave <beaub@linux.microsoft.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>
+Subject: [for-linus][PATCH 3/7] tracing/user_events: Hold event_mutex during dyn_event_add
+References: <20220403142500.388473000@goodmis.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Smatch reports this issue
-hdcp1_execution.c:500:29: warning: function
-  'mod_hdcp_hdcp1_dp_execution' with external linkage
-  has definition
+From: Beau Belgrave <beaub@linux.microsoft.com>
 
-The storage-class-specifier extern is not needed in a
-definition, so remove it.
+Make sure the event_mutex is properly held during dyn_event_add call.
+This is required when adding dynamic events.
 
-Signed-off-by: Tom Rix <trix@redhat.com>
+Link: https://lkml.kernel.org/r/20220328223225.1992-1-beaub@linux.microsoft.com
+
+Reported-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Signed-off-by: Beau Belgrave <beaub@linux.microsoft.com>
+Acked-by: Masami Hiramatsu <mhiramat@kernel.org>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 ---
- drivers/gpu/drm/amd/display/modules/hdcp/hdcp1_execution.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ kernel/trace/trace_events_user.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/display/modules/hdcp/hdcp1_execution.c b/drivers/gpu/drm/amd/display/modules/hdcp/hdcp1_execution.c
-index 6ec918af3bff..1ddb4f5eac8e 100644
---- a/drivers/gpu/drm/amd/display/modules/hdcp/hdcp1_execution.c
-+++ b/drivers/gpu/drm/amd/display/modules/hdcp/hdcp1_execution.c
-@@ -497,9 +497,9 @@ enum mod_hdcp_status mod_hdcp_hdcp1_execution(struct mod_hdcp *hdcp,
- 	return status;
- }
+diff --git a/kernel/trace/trace_events_user.c b/kernel/trace/trace_events_user.c
+index 8b3d241a31c2..61d78d64bdf0 100644
+--- a/kernel/trace/trace_events_user.c
++++ b/kernel/trace/trace_events_user.c
+@@ -1165,11 +1165,11 @@ static int user_event_parse(char *name, char *args, char *flags,
+ #endif
  
--extern enum mod_hdcp_status mod_hdcp_hdcp1_dp_execution(struct mod_hdcp *hdcp,
--		struct mod_hdcp_event_context *event_ctx,
--		struct mod_hdcp_transition_input_hdcp1 *input)
-+enum mod_hdcp_status mod_hdcp_hdcp1_dp_execution(struct mod_hdcp *hdcp,
-+						 struct mod_hdcp_event_context *event_ctx,
-+						 struct mod_hdcp_transition_input_hdcp1 *input)
- {
- 	enum mod_hdcp_status status = MOD_HDCP_STATUS_SUCCESS;
+ 	mutex_lock(&event_mutex);
++
+ 	ret = user_event_trace_register(user);
+-	mutex_unlock(&event_mutex);
  
+ 	if (ret)
+-		goto put_user;
++		goto put_user_lock;
+ 
+ 	user->index = index;
+ 
+@@ -1181,8 +1181,12 @@ static int user_event_parse(char *name, char *args, char *flags,
+ 	set_bit(user->index, page_bitmap);
+ 	hash_add(register_table, &user->node, key);
+ 
++	mutex_unlock(&event_mutex);
++
+ 	*newuser = user;
+ 	return 0;
++put_user_lock:
++	mutex_unlock(&event_mutex);
+ put_user:
+ 	user_event_destroy_fields(user);
+ 	user_event_destroy_validators(user);
 -- 
-2.27.0
-
+2.35.1
