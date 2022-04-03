@@ -2,87 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6938C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  3 Apr 2022 08:57:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 515F1C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  3 Apr 2022 08:59:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234226AbiDCI7f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 3 Apr 2022 04:59:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42454 "EHLO
+        id S1355834AbiDCJBa (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 3 Apr 2022 05:01:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229807AbiDCI7d (ORCPT
+        with ESMTP id S237499AbiDCJBZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 3 Apr 2022 04:59:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E127B3137A
-        for <linux-kernel@vger.kernel.org>; Sun,  3 Apr 2022 01:57:39 -0700 (PDT)
+        Sun, 3 Apr 2022 05:01:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63AD636326
+        for <linux-kernel@vger.kernel.org>; Sun,  3 Apr 2022 01:59:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D55D8B80C6A
-        for <linux-kernel@vger.kernel.org>; Sun,  3 Apr 2022 08:57:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2994CC340ED;
-        Sun,  3 Apr 2022 08:57:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648976256;
-        bh=1mCqVCGJhKXscLciRMEdJ4sz7mlkpG1XFYW0ZKNoZOo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=eSLWoII9l3SD8kDLAdJ4Z716719mB9u/n5ufg73vlRYCSSmdcsZXAtaJRMS/YfAy4
-         46BMjzQOlfOwLhBbJ/FIOZB2KhwcBg5wRpNm5ERre2OV1IlNvJNZtH7Ed3vNSO78+6
-         DSgmm27lAg0hNoagcNSV+j8cdoEAOlzXhr1c9o+Q=
-Date:   Sun, 3 Apr 2022 10:57:33 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
-Cc:     outreachy@lists.linux.dev, Larry.Finger@lwfinger.net,
-        florian.c.schilhabel@googlemail.com, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] staging: rtl8712: Fix Lines shouldn't end with '('
-Message-ID: <YklhfWv8DQlBdM0w@kroah.com>
-References: <8c88829f625f9847a1db18fe467399594dacb064.1648902188.git.eng.alaamohamedsoliman.am@gmail.com>
- <9bb14ea276fd3274900f7aec455174c53ed3a3e9.1648902188.git.eng.alaamohamedsoliman.am@gmail.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D4C0C60FED
+        for <linux-kernel@vger.kernel.org>; Sun,  3 Apr 2022 08:59:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 261E9C36AE3;
+        Sun,  3 Apr 2022 08:59:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648976371;
+        bh=8NKDu5zCu7H/G9k0E5Bk0gLf0mwDJcqOkFVjnVIzf/U=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Q6A3008EXzY+Ctoi7fg8HJhZuPlPKPT2rgVwf8xPIOZMkgp8xjpVi2obAI8fhwlls
+         yHH77Jqfvejwt7sr0biqLKkhCQ6ydg5xIVDhjLtSBvJZ1uI4wldA7IxvI8SsL3/bk7
+         Ii2RLcaES4zIBYuGQJM2TCFeDxAfjz2JQxtoizGj9i6osZSrR747yRPzPbizvJ+f2p
+         1ScWo9XJPtV7hfANnNN7RujQB0XcyH6iES/92qVxCMM404Mfb+nX902OofKEYAKi6M
+         GHkU6qEpl5JfixJsOC/sZYhzO5QFI/vONNbFD7+YJCGJQRHMc4LLF49Si6q2YLdfqJ
+         SmuYiCMrUeftw==
+Received: from mchehab by mail.kernel.org with local (Exim 4.94.2)
+        (envelope-from <mchehab@kernel.org>)
+        id 1naw52-00D6f8-N1; Sun, 03 Apr 2022 10:59:28 +0200
+From:   Mauro Carvalho Chehab <mchehab@kernel.org>
+To:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        "Hans de Goede" <hdegoede@redhat.com>,
+        =?UTF-8?q?P=C3=A9ter=20Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        Cezary Rojewski <cezary.rojewski@intel.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Jie Yang <yang.jie@linux.intel.com>,
+        Liam Girdwood <liam.r.girdwood@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>, Takashi Iwai <tiwai@suse.com>,
+        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
+        Mauro Carvalho Chehab <mchehab@kernel.org>
+Subject: [PATCH RFC 2/2] ASoC: Intel: sof_es8336: Huawei Matebook D15 uses a headphone gpio
+Date:   Sun,  3 Apr 2022 10:59:25 +0200
+Message-Id: <67d97e8a367511bc593395f33edcf2391f8066ef.1648975926.git.mchehab@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <cover.1648975926.git.mchehab@kernel.org>
+References: <cover.1648975926.git.mchehab@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9bb14ea276fd3274900f7aec455174c53ed3a3e9.1648902188.git.eng.alaamohamedsoliman.am@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Apr 02, 2022 at 02:28:17PM +0200, Alaa Mohamed wrote:
-> Fix " CHECK: Lines should not end with a '(' "
-> Reported by checkpatch
-> 
-> Signed-off-by: Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
-> ---
->  drivers/staging/rtl8712/rtl8712_xmit.c | 10 +++-------
->  1 file changed, 3 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/staging/rtl8712/rtl8712_xmit.c b/drivers/staging/rtl8712/rtl8712_xmit.c
-> index 05ba0ca7d627..d43c097f30c3 100644
-> --- a/drivers/staging/rtl8712/rtl8712_xmit.c
-> +++ b/drivers/staging/rtl8712/rtl8712_xmit.c
-> @@ -638,16 +638,12 @@ int r8712_xmitframe_complete(struct _adapter *padapter,
->  		if (p2ndxmitframe) {
->  			u16 total_length;
->  
-> -			total_length = r8712_xmitframe_aggr_next(
-> -				pxmitbuf, p2ndxmitframe);
-> +			total_length = r8712_xmitframe_aggr_next(pxmitbuf, p2ndxmitframe);
->  			do {
-> -				p2ndxmitframe = dequeue_xframe_ex(
-> -					pxmitpriv, phwxmits, hwentry);
-> +				p2ndxmitframe = dequeue_xframe_ex(pxmitpriv, phwxmits, hwentry);
->  				if (p2ndxmitframe)
->  					total_length =
-> -						r8712_xmitframe_aggr_next(
-> -							pxmitbuf,
-> -							p2ndxmitframe);
-> +						r8712_xmitframe_aggr_next(pxmitbuf, p2ndxmitframe);
+From: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 
-And now you went over 80 columns :(
+Based on experimental tests, Huawei Matebook D15 actually uses
+both gpio0 and gpio1: the first one controls the speaker, while
+the other one controls the headphone.
 
-You can do this better so that you still wrap lines, but do not trail
-with a '(' character.
+Add a quirk for that.
 
-thanks,
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+---
 
-greg k-h
+See [PATCH RFC 0/2] at: https://lore.kernel.org/all/cover.1648975926.git.mchehab@kernel.org/
+
+ sound/soc/intel/boards/sof_es8336.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/sound/soc/intel/boards/sof_es8336.c b/sound/soc/intel/boards/sof_es8336.c
+index 96920d3eed8a..fd47aba1bd5d 100644
+--- a/sound/soc/intel/boards/sof_es8336.c
++++ b/sound/soc/intel/boards/sof_es8336.c
+@@ -290,6 +290,14 @@ static const struct dmi_system_id sof_es8336_quirk_table[] = {
+ 		},
+ 		.driver_data = (void *)(SOF_ES8336_TGL_GPIO_QUIRK)
+ 	},
++	{
++		.callback = sof_es8336_quirk_cb,
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "HUAWEI"),
++			DMI_MATCH(DMI_BOARD_NAME, "BOHB-WAX9-PCB-B2"),
++		},
++		.driver_data = (void *)(SOF_ES8336_HEADPHONE_GPIO)
++	},
+ 	{}
+ };
+ 
+-- 
+2.35.1
+
