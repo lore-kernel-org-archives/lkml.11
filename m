@@ -2,105 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3765C433FE
-	for <linux-kernel@archiver.kernel.org>; Sun,  3 Apr 2022 10:21:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E51C6C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  3 Apr 2022 10:25:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356347AbiDCKXv (ORCPT
+        id S1349327AbiDCK05 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 3 Apr 2022 06:23:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34592 "EHLO
+        Sun, 3 Apr 2022 06:26:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234981AbiDCKXt (ORCPT
+        with ESMTP id S229719AbiDCK04 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 3 Apr 2022 06:23:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C3843193D;
-        Sun,  3 Apr 2022 03:21:56 -0700 (PDT)
+        Sun, 3 Apr 2022 06:26:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C37DE3703B;
+        Sun,  3 Apr 2022 03:25:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A834D61006;
-        Sun,  3 Apr 2022 10:21:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3DECC340ED;
-        Sun,  3 Apr 2022 10:21:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648981315;
-        bh=va2wdSIDhigU9l6racetCvNOSAZt+vprXlIct+i0T0k=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 87E5BB80A09;
+        Sun,  3 Apr 2022 10:25:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A416FC340ED;
+        Sun,  3 Apr 2022 10:24:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1648981499;
+        bh=RvHM58+WCVSmdblL+XcB4dmfmhFU3wC8gZT9rrOz3DY=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=rutRab4n813Pxfl1QOm3oCQU5Xw0G5pZcmivt9D8npqu4IeZ4XLNRwF6dQRZdruRS
-         dQsrnuWExDhYQBC0BY4fFx2WUvuUjn+/gNQyEufnl5Thr194LQyTDkIpvzdPXzVfe2
-         Gv7YrSRhK2bJdYj8xSlipwAdkRUOFgih9P1B3sErpDmLLPVUZDBQ89UgGaDF3RV1RQ
-         P772i3/NCOcdOFRMNPBpTmgXdzJeQfB0ykaj1GaNDLLhOlo5sNA9xIIMQJakuFFdAR
-         fw6wsZpyDuioEbDdlPYXoUIcScjf+fI0xwqZYGjenu5uz91SR5iFuK/NlWI580+F20
-         FUdDBek5lAsJw==
-Date:   Sun, 3 Apr 2022 13:23:05 +0300
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Peter Huewe <peterhuewe@gmx.de>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-integrity@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH] char: tpm: Prepare cleanup of powerpc's asm/prom.h
-Message-ID: <Ykl1ibvVxJUBrhfK@kernel.org>
-References: <7a522d9029737d7a1fb513529659321ed62d50d9.1648895070.git.christophe.leroy@csgroup.eu>
- <cfd3a718e147b39620dfa7c779a7ae1af2f6b575.1648895074.git.christophe.leroy@csgroup.eu>
+        b=WtvY7jHbpQ0hk9paN5/seBFJmvgS7OB/skxReyOVy25PKTDkHbZIXjtPyvNtp4efi
+         pH07baedTwQD2WyOQxBiuKoECvft8ECfBQk4gzgQDOHlQFvTF37qBe2plosclWSxLq
+         lJgFirF+EEvFH+1nsHa8v8EAqJShGHYRcDcP55c4=
+Date:   Sun, 3 Apr 2022 12:24:48 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Ammar Faizi <ammarfaizi2@gnuweeb.org>
+Cc:     stable@vger.kernel.org, Daniel Baluta <daniel.baluta@nxp.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
+        Keyon Jie <yang.jie@linux.intel.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Rander Wang <rander.wang@intel.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Takashi Iwai <tiwai@suse.com>,
+        sound-open-firmware@alsa-project.org, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org, gwml@vger.gnuweeb.org
+Subject: Re: [PATCH for-stable] ASoC: SOF: Intel: Fix NULL ptr dereference
+ when ENOMEM
+Message-ID: <Ykl18HLtHn/xwtdC@kroah.com>
+References: <20220402163026.11299-1-ammarfaizi2@gnuweeb.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <cfd3a718e147b39620dfa7c779a7ae1af2f6b575.1648895074.git.christophe.leroy@csgroup.eu>
+In-Reply-To: <20220402163026.11299-1-ammarfaizi2@gnuweeb.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Apr 02, 2022 at 12:29:19PM +0200, Christophe Leroy wrote:
-> powerpc's asm/prom.h brings some headers that it doesn't
-> need itself.
+On Sat, Apr 02, 2022 at 11:30:26PM +0700, Ammar Faizi wrote:
 > 
-> In order to clean it up, first add missing headers in
-> users of asm/prom.h
+> Hello Greg,
 > 
-> Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-
-I don't understand this. It changes nothing as far as kernel is concerned.
-
-> ---
->  drivers/char/tpm/tpm_atmel.h   | 2 --
->  drivers/char/tpm/tpm_ibmvtpm.c | 1 -
->  2 files changed, 3 deletions(-)
+> commit b7fb0ae09009d076964afe4c1a2bde1ee2bd88a9 upstream.
 > 
-> diff --git a/drivers/char/tpm/tpm_atmel.h b/drivers/char/tpm/tpm_atmel.h
-> index ba37e77e8af3..959f7cce8301 100644
-> --- a/drivers/char/tpm/tpm_atmel.h
-> +++ b/drivers/char/tpm/tpm_atmel.h
-> @@ -26,8 +26,6 @@ struct tpm_atmel_priv {
->  
->  #ifdef CONFIG_PPC64
->  
-> -#include <asm/prom.h>
-> -
->  #define atmel_getb(priv, offset) readb(priv->iobase + offset)
->  #define atmel_putb(val, priv, offset) writeb(val, priv->iobase + offset)
->  #define atmel_request_region request_mem_region
-> diff --git a/drivers/char/tpm/tpm_ibmvtpm.c b/drivers/char/tpm/tpm_ibmvtpm.c
-> index 3af4c07a9342..1180cce7067a 100644
-> --- a/drivers/char/tpm/tpm_ibmvtpm.c
-> +++ b/drivers/char/tpm/tpm_ibmvtpm.c
-> @@ -20,7 +20,6 @@
->  #include <linux/spinlock.h>
->  #include <linux/interrupt.h>
->  #include <linux/wait.h>
-> -#include <asm/prom.h>
->  
->  #include "tpm.h"
->  #include "tpm_ibmvtpm.h"
+> Please take these two backport patches:
+> 1. For Linux 5.4 LTS.
+> 2. For Linux 5.10 LTS.
+> 
+> Both will be sent as a reply to this email.
+> 
+> Thank you!
+> 
+> =====
+> 
+> 5.4 failed report:
+> https://lore.kernel.org/stable/164889915082249@kroah.com/
+> 
+> 
+> 5.10 failed report:
+> https://lore.kernel.org/stable/164889914960214@kroah.com/
+> 
 > -- 
-> 2.35.1
+> Ammar Faizi
 > 
 
-BR, Jarkko
+Both now queued up, thanks!
+
+greg k-h
