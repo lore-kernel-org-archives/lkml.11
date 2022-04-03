@@ -2,103 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D48AFC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  3 Apr 2022 16:20:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA01EC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  3 Apr 2022 16:29:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359408AbiDCQWc (ORCPT
+        id S1359413AbiDCQb0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 3 Apr 2022 12:22:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41640 "EHLO
+        Sun, 3 Apr 2022 12:31:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239092AbiDCQWb (ORCPT
+        with ESMTP id S238951AbiDCQbY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 3 Apr 2022 12:22:31 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6EA537A9D
-        for <linux-kernel@vger.kernel.org>; Sun,  3 Apr 2022 09:20:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649002836; x=1680538836;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=Gmkp8AXOIJEwg8UkE1UtAwUzPUka2ylntopXEhVphGA=;
-  b=nh1J7mej4o2h1u27Y8fBvEn4cDMEBEGvafhJtnMWMlw7q7QD6KbR5Db9
-   H0trQTcSgv5TdNhqMCbc5wKDsQOEWbTvFpHO2Ulz7gyOln64JsBLhiDFs
-   KrMYpzr6NXn3J9gphXrBAWoBC0dkCUUnV8KgtR8caup7fFPQBQhtYkBuh
-   cBNybYMOJpa4lKLDIdTTAMHWt6AF66oOJGvaFzjXd+1KzVjHPqQSVjvFd
-   7b9Rg4CLCmDS3Mr0o9c72zAfOAuV5fAJaz4sIr9a0dmVhic4XbZzUEDvM
-   5UxikqzafchPN0Y01hdMIDb4QiHQ5dns/Uxs9jrgr1o2odcOP8pmQUnci
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10306"; a="346834062"
-X-IronPort-AV: E=Sophos;i="5.90,231,1643702400"; 
-   d="scan'208";a="346834062"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Apr 2022 09:20:36 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,231,1643702400"; 
-   d="scan'208";a="523328082"
-Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
-  by orsmga006.jf.intel.com with ESMTP; 03 Apr 2022 09:20:35 -0700
-Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nb2xu-00015w-A7;
-        Sun, 03 Apr 2022 16:20:34 +0000
-Date:   Mon, 4 Apr 2022 00:20:22 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org
-Subject: [ammarfaizi2-block:paulmck/linux-rcu/fastexp.2022.04.01a 109/158]
- WARNING: modpost: vmlinux.o(.text+0xbcac06): Section mismatch in reference
- from the function ieee802154_iface_init() to the variable .init.text:.L0
-Message-ID: <202204040012.4Fu9uBps-lkp@intel.com>
+        Sun, 3 Apr 2022 12:31:24 -0400
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50E7D1ADAA
+        for <linux-kernel@vger.kernel.org>; Sun,  3 Apr 2022 09:29:29 -0700 (PDT)
+Received: by mail-lf1-x12b.google.com with SMTP id p15so13144207lfk.8
+        for <linux-kernel@vger.kernel.org>; Sun, 03 Apr 2022 09:29:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=d2J0F/M8DIzyhTgGvxfaytAbecsNZqv35sEaJSm/sx0=;
+        b=ENlukbJM0kdQRUlborIRKBAU/dBCcX4b5oHma468C8us8C0JDA2lFRaQxUZhIhjonM
+         SvxkMaT0cbi3hgQMiwRZqUZfrlq/FJLqap1YiFqat0sr6bG3vDdDEPMveflyjsfcIgOK
+         w4/ETqdK1k8ck1sA3WeABKSNILWWh6f+y/5KiERlMT2Q7CvRmL9i4FsTB0AE+KJg/iTw
+         /vLm49MG6E7T0DcX5fLmQ7MljtweLCAF1XAAxqnpETTIRqELy1PGliA22pOPhCV5CO+S
+         fUD/rBAiPojxhaFdZTlsc4Y+rpx90JfkSGVd7VZ+9hxjWeVIdvkjj/r7lZuopDeG+5Vq
+         qzcA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=d2J0F/M8DIzyhTgGvxfaytAbecsNZqv35sEaJSm/sx0=;
+        b=kB4LpYtlWu5yOLhrfLc+7jVhX1Qu1Hxu5OnvTQHwmbReGQU8vvOpeiigzmjRzO7cqA
+         hunuASmQWYVVaAS0guXwQ9Pz7rXHgJTCjFWJB2nHqI3V3viTSbwxcnHeYCCz2ZPR1Xgp
+         Bb7qV1p5Inf132lUxexdwJBnvmlmVZMaTqnoxYynJkGsFUPwiG60FAabh+WbPZGcSUqh
+         ze4Lcw0nBN8UXgCUAMU5gECdcjRjzgx/xrrM9RNqO1AFGTnaBBDZkor3N5SHgWBcn8I/
+         /Hvcrd9b5LcDOV6Qzeq2qO01A6CBpqPCwBEG691aHZXtnzUA64jboIBj3yukt3GBiL9p
+         2kDw==
+X-Gm-Message-State: AOAM533l9ztCw9+kuLKoq55cr2hHjXqOV72zlGMTcAjWqIINB78igav4
+        6d7ZG+1lNrKl2XSBuFATSU498SbuefH0TjVLlfE=
+X-Google-Smtp-Source: ABdhPJzspbTWjthhK4DIGjLuINz97YrCBTm+yb0x56rItHjeruKN086joJ/vE7j+WHekkwUciZrHG4Jv+4PJ7eN69oM=
+X-Received: by 2002:a19:7501:0:b0:44a:2f6f:3ae8 with SMTP id
+ y1-20020a197501000000b0044a2f6f3ae8mr19313960lfe.143.1649003368137; Sun, 03
+ Apr 2022 09:29:28 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220403155111.GA333187@euclid> <ed0e9f7b-9ba9-b0c8-8261-397bf793b9b9@gmail.com>
+ <CAMWRUK6K77KpRkCkruL=RQcmA1opbvapyPJOA-EFpYdXxY8ujQ@mail.gmail.com> <4ccc9ac3-c542-cd32-0cbb-7cdabbf0dbf9@gmail.com>
+In-Reply-To: <4ccc9ac3-c542-cd32-0cbb-7cdabbf0dbf9@gmail.com>
+From:   Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
+Date:   Sun, 3 Apr 2022 12:29:16 -0400
+Message-ID: <CAMWRUK7g7BqUL1NziBfbc6Epx7G8Xos47sKAtcimDZYmG-hVgA@mail.gmail.com>
+Subject: Re: [PATCH] staging: r8188eu: simplify control flow
+To:     Pavel Skripkin <paskripkin@gmail.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        outreachy@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block paulmck/linux-rcu/fastexp.2022.04.01a
-head:   d9f3e7d671416fdf5b61f094765754269b652db0
-commit: c1468fd1496363a0b2b2cb89e8ec2ba5e1dce9ba [109/158] rcu: Add polled expedited grace-period primitives
-config: riscv-randconfig-r002-20220403 (https://download.01.org/0day-ci/archive/20220404/202204040012.4Fu9uBps-lkp@intel.com/config)
-compiler: riscv32-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/c1468fd1496363a0b2b2cb89e8ec2ba5e1dce9ba
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block paulmck/linux-rcu/fastexp.2022.04.01a
-        git checkout c1468fd1496363a0b2b2cb89e8ec2ba5e1dce9ba
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=riscv SHELL=/bin/bash
+On Sun, Apr 3, 2022 at 12:16 PM Pavel Skripkin <paskripkin@gmail.com> wrote=
+:
+>
+> Hi Sevinj,
+>
+> On 4/3/22 19:12, Sevinj Aghayeva wrote:
+> >>
+> >> Looks good, but let's not introduce new checkpatch issue:
+> >>
+> >> CHECK: Alignment should match open parenthesis
+> >> #62: FILE: drivers/staging/r8188eu/core/rtw_mlme.c:1645:
+> >> +               if ((p->PMKIDList[i].bUsed) &&
+> >> +                               (!memcmp(p->PMKIDList[i].Bssid, bssid,=
+ ETH_ALEN)))
+> >
+> > Thanks for catching this. I wasn't seeing this in my checkpatch
+> > output, and after some digging, I could reproduce it with --strict
+> > option. I think the tutorial at
+> > https://kernelnewbies.org/PatchPhilosophy doesn't mention this option,
+> > so perhaps we should update it?!
+> >
+>
+> To be honest, I am not checkpatch expert, but checkpatch on my PC shows
+> this warning w/o any additional options:
+>
+> =E2=94=94=E2=94=80=E2=94=80$ ./scripts/checkpatch.pl
+> ./20220403_sevinj_aghayeva_staging_r8188eu_simplify_control_flow.mbx |
+> rg Alignment
+> CHECK: Alignment should match open parenthesis
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Ah, I see. You run it on an email file that contains the patch. I
+could reproduce what you saw when I ran checkpatch without any options
+on an email file. But my usual workflow is to modify a file, e.g.
+rtw_mlme.c and then run "checkpatch.pl -f rtw_mlme.c", in which case I
+cannot see the "Alignment should match" error. So it looks like if you
+do not specify -f then checkpatch.pl enables --strict option.
 
-All warnings (new ones prefixed by >>, old ones prefixed by <<):
+>
+>
+>
+>
+>
+> With regards,
+> Pavel Skripkin
 
->> WARNING: modpost: vmlinux.o(.text+0xbcac06): Section mismatch in reference from the function ieee802154_iface_init() to the variable .init.text:.L0
-The function ieee802154_iface_init() references
-the variable __init .L0 .
-This is often because ieee802154_iface_init lacks a __init
-annotation or the annotation of .L0 is wrong.
 
-Note: the below error/warnings can be found in parent commit:
-<< WARNING: modpost: vmlinux.o(.text+0x432e6): Section mismatch in reference from the function dma_get_required_mask() to the variable .init.text:.L0
-<< WARNING: modpost: vmlinux.o(.text+0xe35ca): Section mismatch in reference from the function mlock_page_drain() to the variable .init.text:.LVL125
-<< WARNING: modpost: vmlinux.o(.text+0x96a46e): Section mismatch in reference from the function rpmsg_create_ept() to the variable .init.text:.L0
-<< WARNING: modpost: vmlinux.o(.text+0x96a5b4): Section mismatch in reference from the function rpmsg_destroy_ept() to the variable .init.text:.L0
-<< WARNING: modpost: vmlinux.o(.text+0x96a5c0): Section mismatch in reference from the function rpmsg_send() to the variable .init.text:.L0
-<< WARNING: modpost: vmlinux.o(.text+0x96a5d4): Section mismatch in reference from the function rpmsg_sendto() to the variable .init.text:.L0
-<< WARNING: modpost: vmlinux.o(.text+0x96a5e8): Section mismatch in reference from the function rpmsg_send_offchannel() to the variable .init.text:.L0
-<< WARNING: modpost: vmlinux.o(.text+0x96a5fc): Section mismatch in reference from the function rpmsg_trysend() to the variable .init.text:.L0
-<< WARNING: modpost: vmlinux.o(.text+0x96a610): Section mismatch in reference from the function rpmsg_trysendto() to the variable .init.text:.L0
-<< WARNING: modpost: vmlinux.o(.text+0x96a624): Section mismatch in reference from the function rpmsg_poll() to the variable .init.text:.L0
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+--=20
+
+Sevinj.Aghayeva
