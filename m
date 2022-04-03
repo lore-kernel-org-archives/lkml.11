@@ -2,66 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B57DC433FE
-	for <linux-kernel@archiver.kernel.org>; Sun,  3 Apr 2022 20:30:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A943C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  3 Apr 2022 20:30:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376470AbiDCUb7 (ORCPT
+        id S1376479AbiDCUcD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 3 Apr 2022 16:31:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52304 "EHLO
+        Sun, 3 Apr 2022 16:32:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376458AbiDCUb4 (ORCPT
+        with ESMTP id S1376460AbiDCUb4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sun, 3 Apr 2022 16:31:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D48A933893
-        for <linux-kernel@vger.kernel.org>; Sun,  3 Apr 2022 13:30:01 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 386AE33896
+        for <linux-kernel@vger.kernel.org>; Sun,  3 Apr 2022 13:30:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 703E460B91
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C466C60C79
         for <linux-kernel@vger.kernel.org>; Sun,  3 Apr 2022 20:30:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D4EB2C340F2;
-        Sun,  3 Apr 2022 20:30:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 2C7FCC34113;
+        Sun,  3 Apr 2022 20:30:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649017800;
-        bh=l2TlrE4d00wzGx4AP47XC26CUIDmqS2zIcjMMRmYoZ4=;
+        s=k20201202; t=1649017801;
+        bh=hJ+cR2dw6A3aiR2haiOBgAqyQy8RWgeFsCXoLvdoK9c=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=Yi05j6QcwndB0PI8PPBI02HH19Xdqu9G/sZjgU5oPt5ljTxtCn/DjXfkv5ZVF+oy/
-         9zOnlvSYZ0YfHPRo/B7xbtdHEGo5pYoBm4tg8ASlWb8aDku7Xxa7tt4T5gAT+xVPTD
-         QQ9bktgQ1c43v4f0MGSonvKUVdmHwIL/bAlhaG3cOwmg8Vb+b7l/D5NVOTCUEWQQkw
-         7FtdGLH7DVrqSMCp/lNBVL3J9USGwIY/UCPQ3FgKanvWGH2cSZ8REPBawYQ9NH9ceI
-         negAorY62LNuqXQU+6zjfg8QptgX5aSJN+TSXsYAojebHU6UbojNPbedFcejmYi2E5
-         pVnRqoLH6oPNQ==
+        b=RjlVOKy0AZcWo3BwYr1tRw7dZlOG6RM0fVQaf+JuQalq5l3YOAVcJ+7A7JV6iCVcJ
+         XBjGF7stJUmXby1VIqXtisBydkMhjea/m7nFRN1Ol3cLofi9/nHUUzd4j+bChneD4C
+         cWoFw6Ap4mcivN53wpDNFDLb+Ri3wUnOVW8GHkklS9XG8IcNDnBs11BWIlW/3lx3P7
+         yDHuSeAvx/2HjK6wCHsFmhCb85aUyj6q6BD2icI/boFYYKb6E4acwWlYoLCrI95IYJ
+         SP9yyE4dLxZNjKmGiapC2gk8QK3pcDXK6Y0FWOYLZ7KUxP/BlkxNieW2DpXLa8OMPp
+         QgQ2SarNvhc+A==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id BBFD8E7BB0B;
-        Sun,  3 Apr 2022 20:30:00 +0000 (UTC)
-Subject: Re: [GIT pull] core/urgent for v5.18-rc1
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 17D98F03839;
+        Sun,  3 Apr 2022 20:30:01 +0000 (UTC)
+Subject: Re: [GIT PULL] tracing: Updates to tracing 5.18 pull request
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <164897466883.360450.8070511660014503126.tglx@xen13>
-References: <164897466883.360450.8070511660014503126.tglx@xen13>
+In-Reply-To: <20220403105030.3968c6d3@rorschach.local.home>
+References: <20220403105030.3968c6d3@rorschach.local.home>
 X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <164897466883.360450.8070511660014503126.tglx@xen13>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git core-urgent-2022-04-03
-X-PR-Tracked-Commit-Id: 7dd5ad2d3e82fb55229e3fe18e09160878e77e20
+X-PR-Tracked-Message-Id: <20220403105030.3968c6d3@rorschach.local.home>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/rostedt/linux-trace.git trace-v5.18-2
+X-PR-Tracked-Commit-Id: 5cfff569cab8bf544bab62c911c5d6efd5af5e05
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: e235f4192f4f5689ac7aa8a7a320fe157f1bb803
-Message-Id: <164901780076.22329.168385904607397602.pr-tracker-bot@kernel.org>
-Date:   Sun, 03 Apr 2022 20:30:00 +0000
-To:     Thomas Gleixner <tglx@linutronix.de>
+X-PR-Merge-Commit-Id: 09bb8856d4a7cf3128dedd79cd07d75bbf4a9f04
+Message-Id: <164901780109.22329.12856364381839252268.pr-tracker-bot@kernel.org>
+Date:   Sun, 03 Apr 2022 20:30:01 +0000
+To:     Steven Rostedt <rostedt@goodmis.org>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, x86@kernel.org
+        LKML <linux-kernel@vger.kernel.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Beau Belgrave <beaub@linux.microsoft.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Lv Ruyi <lv.ruyi@zte.com.cn>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Sun,  3 Apr 2022 10:44:12 +0200 (CEST):
+The pull request you sent on Sun, 3 Apr 2022 10:50:30 -0400:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git core-urgent-2022-04-03
+> git://git.kernel.org/pub/scm/linux/kernel/git/rostedt/linux-trace.git trace-v5.18-2
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/e235f4192f4f5689ac7aa8a7a320fe157f1bb803
+https://git.kernel.org/torvalds/c/09bb8856d4a7cf3128dedd79cd07d75bbf4a9f04
 
 Thank you!
 
