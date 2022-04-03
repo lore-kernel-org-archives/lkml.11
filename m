@@ -2,25 +2,25 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82C8DC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  3 Apr 2022 16:46:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3512EC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  3 Apr 2022 16:46:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359487AbiDCQsK (ORCPT
+        id S1359505AbiDCQsS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 3 Apr 2022 12:48:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55664 "EHLO
+        Sun, 3 Apr 2022 12:48:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359480AbiDCQrv (ORCPT
+        with ESMTP id S1359490AbiDCQrx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 3 Apr 2022 12:47:51 -0400
+        Sun, 3 Apr 2022 12:47:53 -0400
 Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CB7A5FEE
-        for <linux-kernel@vger.kernel.org>; Sun,  3 Apr 2022 09:45:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77078B872
+        for <linux-kernel@vger.kernel.org>; Sun,  3 Apr 2022 09:45:59 -0700 (PDT)
 Received: from dslb-094-219-033-178.094.219.pools.vodafone-ip.de ([94.219.33.178] helo=martin-debian-2.paytec.ch)
         by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
         (Exim 4.89)
         (envelope-from <martin@kaiser.cx>)
-        id 1nb3ME-00085T-PF; Sun, 03 Apr 2022 18:45:42 +0200
+        id 1nb3MD-00085T-0i; Sun, 03 Apr 2022 18:45:41 +0200
 From:   Martin Kaiser <martin@kaiser.cx>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
@@ -28,9 +28,9 @@ Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
         Michael Straube <straube.linux@gmail.com>,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Martin Kaiser <martin@kaiser.cx>
-Subject: [PATCH 4/5] staging: r8188eu: use ieee80211 structs for addresses
-Date:   Sun,  3 Apr 2022 18:45:25 +0200
-Message-Id: <20220403164526.357371-5-martin@kaiser.cx>
+Subject: [PATCH 2/5] staging: r8188eu: use ieee80211 helper to check for pspoll
+Date:   Sun,  3 Apr 2022 18:45:23 +0200
+Message-Id: <20220403164526.357371-3-martin@kaiser.cx>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220403164526.357371-1-martin@kaiser.cx>
 References: <20220403164526.357371-1-martin@kaiser.cx>
@@ -40,45 +40,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Map the incoming frame data to a struct ieee80211_hdr and extract
-the addresses.
+Use the ieee80211 helper to check if our incoming ctrl frame is a
+pspoll frame.
+
+We can drop the initial ctrl frame check as ieee80211_is_pspoll
+checks for a control frame with subtype pspoll.
 
 Signed-off-by: Martin Kaiser <martin@kaiser.cx>
 ---
- drivers/staging/r8188eu/core/rtw_recv.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+ drivers/staging/r8188eu/core/rtw_recv.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
 diff --git a/drivers/staging/r8188eu/core/rtw_recv.c b/drivers/staging/r8188eu/core/rtw_recv.c
-index 39834771519f..a8ab1be33cfb 100644
+index 931bd81b0886..74fe2d7011fc 100644
 --- a/drivers/staging/r8188eu/core/rtw_recv.c
 +++ b/drivers/staging/r8188eu/core/rtw_recv.c
-@@ -801,22 +801,21 @@ static void validate_recv_ctrl_frame(struct adapter *padapter,
- 	struct rx_pkt_attrib *pattrib = &precv_frame->attrib;
- 	struct sta_priv *pstapriv = &padapter->stapriv;
- 	u8 *pframe = precv_frame->rx_data;
--	__le16 fc = *(__le16 *)pframe;
--	/* uint len = precv_frame->len; */
- 	u16 aid;
-+	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)precv_frame->rx_data;
- 	u8 wmmps_ac;
- 	struct sta_info *psta;
+@@ -804,15 +804,12 @@ static void validate_recv_ctrl_frame(struct adapter *padapter,
+ 	__le16 fc = *(__le16 *)pframe;
+ 	/* uint len = precv_frame->len; */
  
+-	if (!ieee80211_is_ctl(fc))
+-		return;
+-
  	/* receive the frames that ra(a1) is my address */
--	if (memcmp(GetAddr1Ptr(pframe), myid(&padapter->eeprompriv), ETH_ALEN))
-+	if (memcmp(hdr->addr1, myid(&padapter->eeprompriv), ETH_ALEN))
+ 	if (memcmp(GetAddr1Ptr(pframe), myid(&padapter->eeprompriv), ETH_ALEN))
  		return;
  
  	/* only handle ps-poll */
--	if (!ieee80211_is_pspoll(fc))
-+	if (!ieee80211_is_pspoll(hdr->frame_control))
- 		return;
- 
- 	aid = GetAid(pframe);
--	psta = rtw_get_stainfo(pstapriv, GetAddr2Ptr(pframe));
-+	psta = rtw_get_stainfo(pstapriv, hdr->addr2);
- 
- 	if (!psta || psta->aid != aid)
- 		return;
+-	if (GetFrameSubType(pframe) == WIFI_PSPOLL) {
++	if (ieee80211_is_pspoll(fc)) {
+ 		u16 aid;
+ 		u8 wmmps_ac = 0;
+ 		struct sta_info *psta = NULL;
 -- 
 2.30.2
 
