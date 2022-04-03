@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1604C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  3 Apr 2022 15:40:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B74F6C433FE
+	for <linux-kernel@archiver.kernel.org>; Sun,  3 Apr 2022 15:40:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359247AbiDCPmh (ORCPT
+        id S1359236AbiDCPmp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 3 Apr 2022 11:42:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40040 "EHLO
+        Sun, 3 Apr 2022 11:42:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359249AbiDCPm1 (ORCPT
+        with ESMTP id S1359249AbiDCPmk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 3 Apr 2022 11:42:27 -0400
+        Sun, 3 Apr 2022 11:42:40 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9B3462C10F
-        for <linux-kernel@vger.kernel.org>; Sun,  3 Apr 2022 08:40:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5B4D82DD73
+        for <linux-kernel@vger.kernel.org>; Sun,  3 Apr 2022 08:40:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649000431;
+        s=mimecast20190719; t=1649000439;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=N2/VYgb8BwuXP4gy6xwNWoMfI+WOYmTAaqXhSYXVe7M=;
-        b=Q3XnzyJf1fnmfhGOLxF4UYVL5MB+OB+RVkMnZpLqR7iqP/7v24T/EaLT6XNnfw4BlEo7hl
-        98Pq5laP7cEdMtRPFB6mYoPYCR7VbrKsXHO13bz5W9YGsRvBdCAkrwPmoytHeaZoDh89u9
-        jIsslxZVSB9O3yBcu8ILAvX2WuEKhYw=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=QPJ7EOqeZUrySKOLSIq4ZqIIqhcyL/M32ntmRWvplbQ=;
+        b=dMQWb96ZDyJpI8IW58ibBSA3JrWpYqxslDT28NZ1mLnhsgkXQocPSWHlNdH7UljrlxEpnq
+        e1yw1iM2Wynw2MKAqOjEXB18+vbxt+nX4ioDe72ihbXy4ZDmR9fgLzanFZsJ104Xk2qMOm
+        1Ns+sIHiZIy++Lb7Wz0VVhopy/xOOy8=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-480-KrJb2otjMy6i2P7h8Ij8lw-1; Sun, 03 Apr 2022 11:40:07 -0400
-X-MC-Unique: KrJb2otjMy6i2P7h8Ij8lw-1
+ us-mta-22-Hrln5-3WPI-AnSeRkhAVAQ-1; Sun, 03 Apr 2022 11:40:34 -0400
+X-MC-Unique: Hrln5-3WPI-AnSeRkhAVAQ-1
 Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 891473C02B6F;
-        Sun,  3 Apr 2022 15:40:06 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id AC6AF82A6C2;
+        Sun,  3 Apr 2022 15:40:33 +0000 (UTC)
 Received: from gshan.redhat.com (ovpn-12-82.pek2.redhat.com [10.72.12.82])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 7BB6C403172;
-        Sun,  3 Apr 2022 15:40:00 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 9CE004538D7;
+        Sun,  3 Apr 2022 15:40:27 +0000 (UTC)
 From:   Gavin Shan <gshan@redhat.com>
 To:     kvmarm@lists.cs.columbia.edu
 Cc:     linux-kernel@vger.kernel.org, eauger@redhat.com, oupton@google.com,
@@ -46,9 +46,9 @@ Cc:     linux-kernel@vger.kernel.org, eauger@redhat.com, oupton@google.com,
         shannon.zhaosl@gmail.com, james.morse@arm.com,
         mark.rutland@arm.com, maz@kernel.org, pbonzini@redhat.com,
         shan.gavin@gmail.com
-Subject: [PATCH v6 05/18] KVM: arm64: Support SDEI_EVENT_{ENABLE, DISABLE}
-Date:   Sun,  3 Apr 2022 23:38:58 +0800
-Message-Id: <20220403153911.12332-6-gshan@redhat.com>
+Subject: [PATCH v6 09/18] KVM: arm64: Support SDEI_EVENT_GET_INFO hypercall
+Date:   Sun,  3 Apr 2022 23:39:02 +0800
+Message-Id: <20220403153911.12332-10-gshan@redhat.com>
 In-Reply-To: <20220403153911.12332-1-gshan@redhat.com>
 References: <20220403153911.12332-1-gshan@redhat.com>
 MIME-Version: 1.0
@@ -59,29 +59,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This supports SDEI_EVENT_{ENABLE, DISABLE} hypercall. After the
-event is registered, it won't be raised and delivered to guest
-until it's enabled. On other hand, the event won't be delivered
-to guest if it's disabled.
+This supports SDEI_EVENT_GET_INFO hypercall. It's used by guest
+to retrieve various information about the event: type, signaled,
+priority, routing mode and affinity. SDEI_INVALID_PARAMETERS is
+returned for the requests about routing mode and affinity as
+they are only valid for the shared event, which isn't supported.
 
 Signed-off-by: Gavin Shan <gshan@redhat.com>
 ---
- arch/arm64/kvm/sdei.c | 45 +++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 45 insertions(+)
+ arch/arm64/kvm/sdei.c | 54 +++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 54 insertions(+)
 
 diff --git a/arch/arm64/kvm/sdei.c b/arch/arm64/kvm/sdei.c
-index 89c1b231cb60..941263578b30 100644
+index b847c6028b74..9e642d01e303 100644
 --- a/arch/arm64/kvm/sdei.c
 +++ b/arch/arm64/kvm/sdei.c
-@@ -101,6 +101,45 @@ static unsigned long hypercall_register(struct kvm_vcpu *vcpu)
+@@ -289,6 +289,57 @@ static unsigned long hypercall_status(struct kvm_vcpu *vcpu)
  	return ret;
  }
  
-+static unsigned long hypercall_enable(struct kvm_vcpu *vcpu, bool enable)
++static unsigned long hypercall_info(struct kvm_vcpu *vcpu)
 +{
 +	struct kvm_sdei_vcpu *vsdei = vcpu->arch.sdei;
++	struct kvm_sdei_exposed_event *exposed_event;
 +	struct kvm_sdei_event *event;
-+	unsigned long num = smccc_get_arg(vcpu, 1);
++	unsigned int num = smccc_get_arg(vcpu, 1);
++	unsigned long info = smccc_get_arg(vcpu, 2);
 +	unsigned long ret = SDEI_SUCCESS;
 +
 +	if (!kvm_sdei_is_supported(num)) {
@@ -94,21 +97,31 @@ index 89c1b231cb60..941263578b30 100644
 +	/* Check if the event exists */
 +	event = find_event(vcpu, num);
 +	if (!event) {
-+		ret = SDEI_DENIED;
++		ret = SDEI_INVALID_PARAMETERS;
 +		goto unlock;
 +	}
 +
-+	/* Check the event state */
-+	if (!kvm_sdei_is_registered(event) ||
-+	    kvm_sdei_is_unregister_pending(event)) {
-+		ret = SDEI_DENIED;
-+		goto unlock;
++	/*
++	 * Retrieve the requested information. The shared events aren't
++	 * supported yet. So the requests to retrieve routing mode and
++	 * affinity should fail for now.
++	 */
++	exposed_event = event->exposed_event;
++	switch (info) {
++	case SDEI_EVENT_INFO_EV_TYPE:
++		ret = exposed_event->type;
++		break;
++	case SDEI_EVENT_INFO_EV_SIGNALED:
++		ret = exposed_event->signaled;
++		break;
++	case SDEI_EVENT_INFO_EV_PRIORITY:
++		ret = exposed_event->priority;
++		break;
++	case SDEI_EVENT_INFO_EV_ROUTING_MODE:
++	case SDEI_EVENT_INFO_EV_ROUTING_AFF:
++	default:
++		ret = SDEI_INVALID_PARAMETERS;
 +	}
-+
-+	if (enable)
-+		kvm_sdei_set_enabled(event);
-+	else
-+		kvm_sdei_clear_enabled(event);
 +
 +unlock:
 +	spin_unlock(&vsdei->lock);
@@ -119,15 +132,12 @@ index 89c1b231cb60..941263578b30 100644
  int kvm_sdei_call(struct kvm_vcpu *vcpu)
  {
  	struct kvm_sdei_vcpu *vsdei = vcpu->arch.sdei;
-@@ -125,6 +164,12 @@ int kvm_sdei_call(struct kvm_vcpu *vcpu)
- 	case SDEI_1_0_FN_SDEI_EVENT_REGISTER:
- 		ret = hypercall_register(vcpu);
+@@ -328,6 +379,9 @@ int kvm_sdei_call(struct kvm_vcpu *vcpu)
+ 	case SDEI_1_0_FN_SDEI_EVENT_STATUS:
+ 		ret = hypercall_status(vcpu);
  		break;
-+	case SDEI_1_0_FN_SDEI_EVENT_ENABLE:
-+		ret = hypercall_enable(vcpu, true);
-+		break;
-+	case SDEI_1_0_FN_SDEI_EVENT_DISABLE:
-+		ret = hypercall_enable(vcpu, false);
++	case SDEI_1_0_FN_SDEI_EVENT_GET_INFO:
++		ret = hypercall_info(vcpu);
 +		break;
  	default:
  		ret = SDEI_NOT_SUPPORTED;
