@@ -2,79 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2654DC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  3 Apr 2022 12:27:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1B53C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  3 Apr 2022 12:29:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357878AbiDCM3D (ORCPT
+        id S1357925AbiDCMav (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 3 Apr 2022 08:29:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35936 "EHLO
+        Sun, 3 Apr 2022 08:30:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357503AbiDCM3B (ORCPT
+        with ESMTP id S240845AbiDCMao (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 3 Apr 2022 08:29:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 973D32F032;
-        Sun,  3 Apr 2022 05:27:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 50675B80D2F;
-        Sun,  3 Apr 2022 12:27:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F5D3C340ED;
-        Sun,  3 Apr 2022 12:27:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648988825;
-        bh=zgNS5JeSbvVeyXlQEZUIkye/6ihd4vVdw1KPp14kaTs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=n+N8X/elFnsdYCqzpfMNBDMYvA5W1lReaL39kP7Wp5RJXJ3FyskXLre8avFb4JFj/
-         U6HN5f1ABQTY6yTniQ+8+pdyVjJOWMZK5VBQmmWq88jQVx/4oZIh8dKfCYi5Vo3QIe
-         SupHOqxiqpE3OMChHVS4FlSF4exL826aoe7p13JQ=
-Date:   Sun, 3 Apr 2022 14:26:34 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc:     "stable@vger.kernel.org" <stable@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        Chen Jingwen <chenjingwen6@huawei.com>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: Re: [PATCH] [Rebased for 5.4] powerpc/kasan: Fix early region not
- updated correctly
-Message-ID: <YkmSeqRUjqbH9dcX@kroah.com>
-References: <fc39c36ea92e03ed5eb218ddbe83b34361034d9d.1648915982.git.christophe.leroy@csgroup.eu>
- <Ykl2C6DmSKWxlOWE@kroah.com>
- <fd2c0d7a-e194-1ce4-4a5f-2d66ae0d350a@csgroup.eu>
+        Sun, 3 Apr 2022 08:30:44 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE85234B85;
+        Sun,  3 Apr 2022 05:28:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648988928; x=1680524928;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=Ykhv0PHM2+QYmFYUxNK1v3kWBps7WbMwukEDYifJB/Y=;
+  b=RELnGWHM5YwJyn38W3I6Ni7k5PAW9PeWBprQl9/SlGurIj9wUYalCSQR
+   XsUDxTMFLRC+btS6sG0npWZg8kbAuT+JgD9WlW+TeWTflFIXVijN/ZfV+
+   Wjj1o4j4wajO3DgRGJ9QHwEHa6vMQbIichgDDZl/sgtYOu6V5iNWVpvGh
+   C37XyD3sCRHN8C1D9Sb0aEYPzmGaOgT35QVD644l0+9sVY0WylL/PVIsD
+   Qj/HnyJtCKtV4dPQcRxulnYeXR3DrBFvxrbtppoxscqD2OAKBNDWI6wcI
+   aL1dXjop06qFfglZgkZBXzcoE4AhrJIE6Pgp9RVduIH2vSaFn543Z7euB
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10305"; a="285326415"
+X-IronPort-AV: E=Sophos;i="5.90,231,1643702400"; 
+   d="scan'208";a="285326415"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Apr 2022 05:28:48 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,231,1643702400"; 
+   d="scan'208";a="568943543"
+Received: from npg-dpdk-haiyue-2.sh.intel.com ([10.67.111.4])
+  by orsmga008.jf.intel.com with ESMTP; 03 Apr 2022 05:28:45 -0700
+From:   Haiyue Wang <haiyue.wang@intel.com>
+To:     bpf@vger.kernel.org
+Cc:     Haiyue Wang <haiyue.wang@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        netdev@vger.kernel.org (open list:BPF (Safe dynamic programs and tools)),
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH v2] bpf: correct the comment for BTF kind bitfield
+Date:   Sun,  3 Apr 2022 19:53:26 +0800
+Message-Id: <20220403115327.205964-1-haiyue.wang@intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220403084433.200701-1-haiyue.wang@intel.com>
+References: <20220403084433.200701-1-haiyue.wang@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <fd2c0d7a-e194-1ce4-4a5f-2d66ae0d350a@csgroup.eu>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Apr 03, 2022 at 11:54:55AM +0000, Christophe Leroy wrote:
-> 
-> 
-> Le 03/04/2022 à 12:25, Greg KH a écrit :
-> > On Sat, Apr 02, 2022 at 06:13:31PM +0200, Christophe Leroy wrote:
-> >> From: Chen Jingwen <chenjingwen6@huawei.com>
-> >>
-> >> This is backport for 5.4
-> >>
-> >> Upstream commit 5647a94a26e352beed61788b46e035d9d12664cd
-> > 
-> > This is not a commit in Linus's tree :(
-> > 
-> 
-> Oops. Don't know what I did, that's indeed the commit after I 
-> cherry-picked it on top of 5.4.188 and before I modified it.
-> 
-> According to the mail you sent me yesterday to tell it FAILED to apply 
-> on 5.4, the upstream commit is dd75080aa8409ce10d50fb58981c6b59bf8707d3
+The commit 8fd886911a6a ("bpf: Add BTF_KIND_FLOAT to uapi") has extended
+the BTF kind bitfield from 4 to 5 bits, correct the comment.
 
-Can you resend with this fixed up please?
+Signed-off-by: Haiyue Wang <haiyue.wang@intel.com>
+---
+v2: update the btf.h under tools directory.
+---
+ include/uapi/linux/btf.h       | 4 ++--
+ tools/include/uapi/linux/btf.h | 4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
-thanks,
+diff --git a/include/uapi/linux/btf.h b/include/uapi/linux/btf.h
+index b0d8fea1951d..a9162a6c0284 100644
+--- a/include/uapi/linux/btf.h
++++ b/include/uapi/linux/btf.h
+@@ -33,8 +33,8 @@ struct btf_type {
+ 	/* "info" bits arrangement
+ 	 * bits  0-15: vlen (e.g. # of struct's members)
+ 	 * bits 16-23: unused
+-	 * bits 24-27: kind (e.g. int, ptr, array...etc)
+-	 * bits 28-30: unused
++	 * bits 24-28: kind (e.g. int, ptr, array...etc)
++	 * bits 29-30: unused
+ 	 * bit     31: kind_flag, currently used by
+ 	 *             struct, union and fwd
+ 	 */
+diff --git a/tools/include/uapi/linux/btf.h b/tools/include/uapi/linux/btf.h
+index b0d8fea1951d..a9162a6c0284 100644
+--- a/tools/include/uapi/linux/btf.h
++++ b/tools/include/uapi/linux/btf.h
+@@ -33,8 +33,8 @@ struct btf_type {
+ 	/* "info" bits arrangement
+ 	 * bits  0-15: vlen (e.g. # of struct's members)
+ 	 * bits 16-23: unused
+-	 * bits 24-27: kind (e.g. int, ptr, array...etc)
+-	 * bits 28-30: unused
++	 * bits 24-28: kind (e.g. int, ptr, array...etc)
++	 * bits 29-30: unused
+ 	 * bit     31: kind_flag, currently used by
+ 	 *             struct, union and fwd
+ 	 */
+-- 
+2.35.1
 
-greg k-h
