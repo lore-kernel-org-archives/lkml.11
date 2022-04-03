@@ -2,61 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67705C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D18B6C43217
 	for <linux-kernel@archiver.kernel.org>; Sun,  3 Apr 2022 10:38:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356526AbiDCKja (ORCPT
+        id S1350655AbiDCKjW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 3 Apr 2022 06:39:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55848 "EHLO
+        Sun, 3 Apr 2022 06:39:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346899AbiDCKjV (ORCPT
+        with ESMTP id S231582AbiDCKjS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 3 Apr 2022 06:39:21 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD35839800
-        for <linux-kernel@vger.kernel.org>; Sun,  3 Apr 2022 03:37:27 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id k2so571599edj.9
-        for <linux-kernel@vger.kernel.org>; Sun, 03 Apr 2022 03:37:27 -0700 (PDT)
+        Sun, 3 Apr 2022 06:39:18 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 688012AE3C
+        for <linux-kernel@vger.kernel.org>; Sun,  3 Apr 2022 03:37:25 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id u28so1480245eda.12
+        for <linux-kernel@vger.kernel.org>; Sun, 03 Apr 2022 03:37:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=CeHrH9AyErjOsSwe0qHXd6MCPAxnuljDNt3j8YpWHW4=;
-        b=kUyL8cKCkOZ0e5nCDshMc557Qc2wIOMDmGkTTdIq6raZwFSbxRIzb2YMHyJwoPDR3o
-         ZJNuGJdmPBFKAhDc840JPL55XWgVusoyesyYZ2iPqxWWjgsUqDFDC8w3Hz8FCUZwCawM
-         vANH1ceuBnK6Y15Di8Y2QyxBB9vbHYGBUQY4dW3QuOXom0R5MkuvkSxBu3fUedqfoCvU
-         y+6b5XGlR88956WUWo/t4ejbgSezOMBhBm7nlZNa2kCft/40BGouGdcoh5zKynxp0rNt
-         WkqKmDaeSoUVUQGigBKu/u187PhM9/hT16TvK/0qQhe0ZRnXJC4yv8NRIUAvrmCOBasW
-         e9Dw==
+        bh=K6tvqdTFA299G8+SEfu7H95L5YODhmmKREl6BdiE8C0=;
+        b=NBK9/HAFdazkxZGmYF6Fn6jseabDHnPMzOakAWAPjIKaNZd3XXLfQrZFIX3lPPSSAK
+         eSvM2MiyarScp6nDjelzMcVd4wRkilZBvjtYOQE/J3SQ9l0zAoOsiZ6kgHKODBxmihee
+         Vv5K1BxjUARzwmmcXpjWnjTHi6/DOg9cAJy1QecKts/fbKchwaELnFkjmHR31D20ra5z
+         CXxvrEi/L2sBfoAOeZA7E3J1OX0/bzMqGtLB1IaKcclc0YbQpwjpmG4hNpd+Pm7dEe+W
+         j/mvuf5luIGaU7y27OSJQ60CzaqSwthG8GiniphFZgPxaUOdgBiQvTp7Ac8ctaUSJDC8
+         b2NQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=CeHrH9AyErjOsSwe0qHXd6MCPAxnuljDNt3j8YpWHW4=;
-        b=qqyA7vHxKovSKE+++wjCFwk9qTnp57gIPCqZ3pacvo3LUnLAP5DOZFArYgDDmB028s
-         6ORpwEFfkd3isX4Mo8ltriIZnPWnBDtGDR14s10qSJjuqad2p3szDeozuIXvclhDksCi
-         fLcaxncYVuavvylJkUViL5urjk/QR/EO6EUJTi/5vAD2ut946lvSrWjkJGiw5+ECGmRA
-         mCFZ4OEDO7Vh90WE9CS6/S3VgtdH1MMUFWoNClNnRAOW+GWkWaY4zVCzGPVg0Ho03wYc
-         WVHhuDlVU6woTzI/gxIBCDOxLJfQ6v/Wzw66NsBaPgiKF4LrVyIyenHMNlsb213Jza9+
-         sm1A==
-X-Gm-Message-State: AOAM532SXCQk2cDqWb/pWeqpareSBvjrc5gvhKb1eVWd9C8owFTVweHH
-        MsqobSYz8CuYaE2gESP0BA0=
-X-Google-Smtp-Source: ABdhPJyE4Mr9xQ2xQrzByTeSXfvfEmBs7u/fI5qQoOQqH70vroHVLQXum6JVW+ex58k8kUVFptLIng==
-X-Received: by 2002:a05:6402:3495:b0:419:1ff6:95d9 with SMTP id v21-20020a056402349500b004191ff695d9mr28492140edc.249.1648982246535;
-        Sun, 03 Apr 2022 03:37:26 -0700 (PDT)
+        bh=K6tvqdTFA299G8+SEfu7H95L5YODhmmKREl6BdiE8C0=;
+        b=1J4LDJ+w6++4u6XlmAMrqZHwsN/81Phfqk6tsREJ5NaMYkktG2iDyKdoQKWn5TWQID
+         tVIGqIfHeQXa1mNTEYgdr12DnawTfPI58+zEV3y6aliajavjmdU4PW2BzQNRuF2e9Pvu
+         bWCxiZpQZa4DzZymnG14JTP17oyw9aWLPX6GX026D5ASYmqLUnBGjvubIShOYhjAZdmn
+         KgLpAdoQH1SZ+HMdleRqBYTL6XRCQod1xkONzDGp90dXdecI2VJSKSeQbCywIxnpEVqC
+         uEqc+Y0BZLZa+7TH6m2nrT5O4Jm09oklfXYrNykbv1rwSBvlH9ouYg8lS0jxeRZHE22T
+         3o1A==
+X-Gm-Message-State: AOAM533IOqXxUkxAFzSHlpwIHxbZZ71h+4M/Cb71qcAzucZAanEUoNGx
+        x9T63vb5ZkhYOuZCU+GrZIE=
+X-Google-Smtp-Source: ABdhPJwaTtSI8eNsOGZM/dGErV1jUOJ1c1ciYhAcjWV9qLeFQx6qSztziaGdrs531JRjPB2O2YVKtg==
+X-Received: by 2002:a05:6402:6c2:b0:419:1a14:8fb2 with SMTP id n2-20020a05640206c200b004191a148fb2mr29041775edy.415.1648982243942;
+        Sun, 03 Apr 2022 03:37:23 -0700 (PDT)
 Received: from localhost.localdomain (ip5f5abb55.dynamic.kabel-deutschland.de. [95.90.187.85])
-        by smtp.gmail.com with ESMTPSA id kx5-20020a170907774500b006e1382b8192sm3130751ejc.147.2022.04.03.03.37.25
+        by smtp.gmail.com with ESMTPSA id kx5-20020a170907774500b006e1382b8192sm3130751ejc.147.2022.04.03.03.37.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 03 Apr 2022 03:37:26 -0700 (PDT)
+        Sun, 03 Apr 2022 03:37:23 -0700 (PDT)
 From:   Michael Straube <straube.linux@gmail.com>
 To:     gregkh@linuxfoundation.org
 Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Michael Straube <straube.linux@gmail.com>
-Subject: [PATCH 4/4] staging: r8188eu: clean up comment for rtw_pwr_wakeup()
-Date:   Sun,  3 Apr 2022 12:37:13 +0200
-Message-Id: <20220403103713.12883-5-straube.linux@gmail.com>
+Subject: [PATCH 1/4] staging: r8188eu: remove unused parameter from _rtw_pwr_wakeup()
+Date:   Sun,  3 Apr 2022 12:37:10 +0200
+Message-Id: <20220403103713.12883-2-straube.linux@gmail.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220403103713.12883-1-straube.linux@gmail.com>
 References: <20220403103713.12883-1-straube.linux@gmail.com>
@@ -66,32 +66,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Clean up the comment for rtw_pwr_wakeup() by removing obvious
-information.
+The parameter 'caller' of _rtw_pwr_wakeup() is not used. Remove it.
 
 Signed-off-by: Michael Straube <straube.linux@gmail.com>
 ---
- drivers/staging/r8188eu/core/rtw_pwrctrl.c | 7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
+ drivers/staging/r8188eu/core/rtw_pwrctrl.c    | 2 +-
+ drivers/staging/r8188eu/include/rtw_pwrctrl.h | 5 ++---
+ 2 files changed, 3 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/staging/r8188eu/core/rtw_pwrctrl.c b/drivers/staging/r8188eu/core/rtw_pwrctrl.c
-index 6f97c7a879a5..ac54cfb63fa3 100644
+index 7beabf82eb92..08e8a5efba5e 100644
 --- a/drivers/staging/r8188eu/core/rtw_pwrctrl.c
 +++ b/drivers/staging/r8188eu/core/rtw_pwrctrl.c
-@@ -346,12 +346,7 @@ void rtw_init_pwrctrl_priv(struct adapter *padapter)
- 	timer_setup(&pwrctrlpriv->pwr_state_check_timer, pwr_state_check_handler, 0);
- }
+@@ -353,7 +353,7 @@ void rtw_init_pwrctrl_priv(struct adapter *padapter)
+ * Return _SUCCESS or _FAIL
+ */
  
--/*
--* rtw_pwr_wakeup - Wake the NIC up from: 1)IPS. 2)USB autosuspend
--* @adapter: pointer to struct adapter structure
--* Return _SUCCESS or _FAIL
--*/
--
-+/* Wake the NIC up from: 1)IPS 2)USB autosuspend */
- int rtw_pwr_wakeup(struct adapter *padapter)
+-int _rtw_pwr_wakeup(struct adapter *padapter, u32 ips_deffer_ms, const char *caller)
++int _rtw_pwr_wakeup(struct adapter *padapter, u32 ips_deffer_ms)
  {
  	struct pwrctrl_priv *pwrpriv = &padapter->pwrctrlpriv;
+ 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
+diff --git a/drivers/staging/r8188eu/include/rtw_pwrctrl.h b/drivers/staging/r8188eu/include/rtw_pwrctrl.h
+index 7c3cb895c3cd..0a0f7a4c4052 100644
+--- a/drivers/staging/r8188eu/include/rtw_pwrctrl.h
++++ b/drivers/staging/r8188eu/include/rtw_pwrctrl.h
+@@ -121,10 +121,9 @@ s32 LPS_RF_ON_check(struct adapter *adapter, u32 delay_ms);
+ void LPS_Enter(struct adapter *adapter);
+ void LPS_Leave(struct adapter *adapter);
+ 
+-int _rtw_pwr_wakeup(struct adapter *adapter, u32 ips_defer_ms,
+-		    const char *caller);
++int _rtw_pwr_wakeup(struct adapter *adapter, u32 ips_defer_ms);
+ #define rtw_pwr_wakeup(adapter)						\
+-	 _rtw_pwr_wakeup(adapter, RTW_PWR_STATE_CHK_INTERVAL, __func__)
++	 _rtw_pwr_wakeup(adapter, RTW_PWR_STATE_CHK_INTERVAL)
+ int rtw_pm_set_ips(struct adapter *adapter, u8 mode);
+ int rtw_pm_set_lps(struct adapter *adapter, u8 mode);
+ 
 -- 
 2.35.1
 
