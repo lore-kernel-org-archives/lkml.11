@@ -2,96 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FE3CC433FE
-	for <linux-kernel@archiver.kernel.org>; Sun,  3 Apr 2022 03:07:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0851BC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  3 Apr 2022 03:14:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234622AbiDCDJC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Apr 2022 23:09:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53756 "EHLO
+        id S232555AbiDCDP7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 2 Apr 2022 23:15:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234482AbiDCDI4 (ORCPT
+        with ESMTP id S231280AbiDCDPz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Apr 2022 23:08:56 -0400
-X-Greylist: delayed 415 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 02 Apr 2022 20:06:50 PDT
-Received: from mail.tintel.eu (mail.tintel.eu [51.83.127.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB97E38DAF;
-        Sat,  2 Apr 2022 20:06:50 -0700 (PDT)
-Received: from localhost (localhost [IPv6:::1])
-        by mail.tintel.eu (Postfix) with ESMTP id 93436443B963;
-        Sun,  3 Apr 2022 04:59:52 +0200 (CEST)
-Received: from mail.tintel.eu ([IPv6:::1])
-        by localhost (mail.tintel.eu [IPv6:::1]) (amavisd-new, port 10032)
-        with ESMTP id CuXfQFQux2ea; Sun,  3 Apr 2022 04:59:52 +0200 (CEST)
-Received: from localhost (localhost [IPv6:::1])
-        by mail.tintel.eu (Postfix) with ESMTP id 1A5EC4407628;
-        Sun,  3 Apr 2022 04:59:52 +0200 (CEST)
-DKIM-Filter: OpenDKIM Filter v2.10.3 mail.tintel.eu 1A5EC4407628
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux-ipv6.be;
-        s=502B7754-045F-11E5-BBC5-64595FD46BE8; t=1648954792;
-        bh=NB63kV2iVRK0aO2l931FJgETcLzKN2fr5wWYFpZPrSc=;
-        h=From:To:Date:Message-Id:MIME-Version;
-        b=kROjGDT/7E7FhZEkku8DfmNfFhQvb4rAgv50wdx5dEAuxonn8MOytFygXbZ9Io2nL
-         cPzXN3MJ0CcaDQBqMaMLPgN6hjkNPbFoRcIo92Be1rQV13aPXAfAvWgx1GgqHIJMvN
-         9197vEj+dUIha/mZH1cX0PZOouqxQQRlBTAXqoiQ=
-X-Virus-Scanned: amavisd-new at mail.tintel.eu
-Received: from mail.tintel.eu ([IPv6:::1])
-        by localhost (mail.tintel.eu [IPv6:::1]) (amavisd-new, port 10026)
-        with ESMTP id YkEFaBaNcsiX; Sun,  3 Apr 2022 04:59:52 +0200 (CEST)
-Received: from taz.sof.bg.adlevio.net (unknown [IPv6:2001:67c:21bc:20::10])
-        by mail.tintel.eu (Postfix) with ESMTPS id BF5E0443A8BC;
-        Sun,  3 Apr 2022 04:59:51 +0200 (CEST)
-From:   Stijn Tintel <stijn@linux-ipv6.be>
-To:     linux-mips@vger.kernel.org
-Cc:     tsbogend@alpha.franken.de, rdunlap@infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 1/2] MIPS: Octeon: fix CN6640 hang on XAUI init
-Date:   Sun,  3 Apr 2022 05:59:49 +0300
-Message-Id: <20220403025950.837085-1-stijn@linux-ipv6.be>
-X-Mailer: git-send-email 2.35.1
+        Sat, 2 Apr 2022 23:15:55 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5191E12A88;
+        Sat,  2 Apr 2022 20:13:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+        Content-ID:Content-Description:In-Reply-To:References;
+        bh=45+PtY2KxLSf5ox+zJPh8dG5t1TTtpukHGJp11Nd5pA=; b=YSSNmTVTKaN8rHdY0ufjHHfZfp
+        b4ja/MhUhjU1AqLmOKgiKgLRjmctKLE257t18zSYl7tIqjsyNuTo8mhEdSsBWheEL47yIlWPwkZbu
+        642lWTGiV31EZtDnMlW+fHV9fVuzoLTUuXFVZ7pG/t5g28nMiHmYGFahSDpFs8WcCpNdU90pw6vbb
+        czc5wUKXD/PcD/a0S8Pa4mJfn4UXSPE56TxZGw/RYJI0/6O0rmRERYVJS/pAGyT4vQ53jJzO0GdiO
+        yK/hD05h0aXVfyNGT9bWuDXGCh44Wvl+9bj+fm2BYVDoocCphJkJo4QHH9U7CMxdyVDpqslOEz3n4
+        geeGXQSg==;
+Received: from [2601:1c0:6280:3f0::aa0b] (helo=bombadil.infradead.org)
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1naqge-00AZ3b-Je; Sun, 03 Apr 2022 03:13:56 +0000
+From:   Randy Dunlap <rdunlap@infradead.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        kernel test robot <lkp@intel.com>,
+        Anup Patel <anup.patel@wdc.com>,
+        Anup Patel <anup@brainfault.org>,
+        Anup Patel <apatel@ventanamicro.com>,
+        Atish Patra <atishp@rivosinc.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>, linux-pm@vger.kernel.org,
+        linux-riscv@lists.infradead.org,
+        Palmer Dabbelt <palmer@rivosinc.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>
+Subject: [PATCH -next] cpuidle: riscv: support non-SMP config
+Date:   Sat,  2 Apr 2022 20:13:55 -0700
+Message-Id: <20220403031355.20894-1-rdunlap@infradead.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-X-Rspamd-Pre-Result: action=no action;
-        module=multimap;
-        Matched map: IP_WHITELIST
-X-Rspamd-Queue-Id: BF5E0443A8BC
-X-Rspamd-Pre-Result: action=no action;
-        module=multimap;
-        Matched map: IP_WHITELIST
-X-Spamd-Result: default: False [0.00 / 15.00];
-        IP_WHITELIST(0.00)[2001:67c:21bc:20::10];
-        ASN(0.00)[asn:200533, ipnet:2001:67c:21bc::/48, country:BG]
-X-Rspamd-Server: skulls
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some CN66XX series Octeon II chips seem to hang if a reset is issued on
-XAUI initialization. Avoid the hang by disabling the reset.
+Add <asm/smp.h> for cpuid_to_hartid_map etc.
+This is needed for both SMP and non-SMP builds, but not having it
+causes a build error for non-SMP:
 
-Tested on SNIC10E.
+drivers/cpuidle/cpuidle-riscv-sbi.c: In function 'sbi_cpuidle_init_cpu':
+drivers/cpuidle/cpuidle-riscv-sbi.c:350:26: error: implicit declaration of function 'cpuid_to_hartid_map' [-Werror=implicit-function-declaration]
 
-Signed-off-by: Stijn Tintel <stijn@linux-ipv6.be>
+Fixes: 6abf32f1d9c5 ("cpuidle: Add RISC-V SBI CPU idle driver")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Cc: Anup Patel <anup.patel@wdc.com>
+Cc: Anup Patel <anup@brainfault.org>
+Cc: Anup Patel <apatel@ventanamicro.com>
+Cc: Atish Patra <atishp@rivosinc.com>
+Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
+Cc: "Rafael J. Wysocki" <rafael@kernel.org>
+Cc: linux-pm@vger.kernel.org
+Cc: linux-riscv@lists.infradead.org
+Cc: Palmer Dabbelt <palmer@rivosinc.com>
+Cc: Paul Walmsley <paul.walmsley@sifive.com>
+Cc: Albert Ou <aou@eecs.berkeley.edu>
 ---
- arch/mips/cavium-octeon/executive/cvmx-helper-xaui.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/cpuidle/cpuidle-riscv-sbi.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/mips/cavium-octeon/executive/cvmx-helper-xaui.c b/arch/=
-mips/cavium-octeon/executive/cvmx-helper-xaui.c
-index fea71a85bb29..a92632223497 100644
---- a/arch/mips/cavium-octeon/executive/cvmx-helper-xaui.c
-+++ b/arch/mips/cavium-octeon/executive/cvmx-helper-xaui.c
-@@ -156,8 +156,9 @@ int __cvmx_helper_xaui_enable(int interface)
- 	xauiCtl.u64 =3D cvmx_read_csr(CVMX_PCSXX_CONTROL1_REG(interface));
- 	xauiCtl.s.lo_pwr =3D 0;
-=20
--	/* Issuing a reset here seems to hang some CN68XX chips. */
--	if (!OCTEON_IS_MODEL(OCTEON_CN68XX_PASS1_X) &&
-+	/* Issuing a reset here seems to hang some CN66XX/CN68XX chips. */
-+	if (!OCTEON_IS_MODEL(OCTEON_CN66XX) &&
-+	    !OCTEON_IS_MODEL(OCTEON_CN68XX_PASS1_X) &&
- 	    !OCTEON_IS_MODEL(OCTEON_CN68XX_PASS2_X))
- 		xauiCtl.s.reset =3D 1;
-=20
---=20
-2.35.1
-
+--- linux-next-20220401.orig/drivers/cpuidle/cpuidle-riscv-sbi.c
++++ linux-next-20220401/drivers/cpuidle/cpuidle-riscv-sbi.c
+@@ -22,6 +22,7 @@
+ #include <linux/pm_runtime.h>
+ #include <asm/cpuidle.h>
+ #include <asm/sbi.h>
++#include <asm/smp.h>
+ #include <asm/suspend.h>
+ 
+ #include "dt_idle_states.h"
