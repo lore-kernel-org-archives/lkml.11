@@ -2,118 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECC92C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  3 Apr 2022 15:27:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C045DC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  3 Apr 2022 15:30:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359162AbiDCP3B (ORCPT
+        id S1354316AbiDCPcI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 3 Apr 2022 11:29:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40856 "EHLO
+        Sun, 3 Apr 2022 11:32:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359157AbiDCP26 (ORCPT
+        with ESMTP id S236269AbiDCPcF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 3 Apr 2022 11:28:58 -0400
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83E9138BFA
-        for <linux-kernel@vger.kernel.org>; Sun,  3 Apr 2022 08:27:03 -0700 (PDT)
-Received: by mail-wm1-x333.google.com with SMTP id bi13-20020a05600c3d8d00b0038c2c33d8f3so6228943wmb.4
-        for <linux-kernel@vger.kernel.org>; Sun, 03 Apr 2022 08:27:03 -0700 (PDT)
+        Sun, 3 Apr 2022 11:32:05 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4210F393DD
+        for <linux-kernel@vger.kernel.org>; Sun,  3 Apr 2022 08:30:10 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id d29so4872876wra.10
+        for <linux-kernel@vger.kernel.org>; Sun, 03 Apr 2022 08:30:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=PFOxZJSIkEuRH7+x+0E7FGzZMvu81a++E+04w4EdYOo=;
-        b=mLe1nqkQm/WYDjmgYHzH1IzfEKGbK1xN5PwsgbVBKMBp1HHksMKX75/H3nsXQvyf7P
-         kN0TerGSv75TtEEYvCTLz09V/2NoU90j/dKSesSkNNfZTVSTa6aVueIBe0yBwEJtmBJD
-         piKKhWpRPhw9PjRK6w+X/yINhjKBK0Pqymkp3FxLe1SKwsLFL7wWY0KTTc9KhQz1gJMe
-         Jp/vHm3A2DlN5EGLconoPDU8nzasfLDrSaazxcs1Y5+kHljBxuR80JuUCssK4bLXdebJ
-         sAGeD2wK/7qGaJ5kV1YyDVLk8ukOGSGuewKmAFG/iBCVMtvO9ibA/jtMnNBGunuwlQpw
-         VWkQ==
+        bh=g/pOdUoD+aSLxOxunI/HD3X3dn118+KcjklCC+A61c0=;
+        b=KiRNvDwwTy7V/nXZ51s+7PKUgpf7mFtIMQ1I7yvBHvWorPgiupKGZgboDKlU0bycRG
+         zhCmA9IuNbrJbX5Ziyy0JodN4D6xJeZE1AxUpGEQyRd3sZEZyH0hC0WMIiFkMoNd1dm8
+         mxR3odG/lCPYWhk4Ncixk/5MXMBub4wCE/jytzG//QrD+ggjRmNUtaLfPQhJXwKmHpCN
+         hgllZLArzcs3h+mseXpNju2E9sMzdo3DxVj3YqZFSREbpQSkhLWXcEakjevm8YmH7Wts
+         vyw7p+Ft4793ob07zsV91d7ja40sQ0LxxnySXcGcy4YdqGeeE4XIsv8vtMKMviw4ik9E
+         9C5g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=PFOxZJSIkEuRH7+x+0E7FGzZMvu81a++E+04w4EdYOo=;
-        b=6Y2OktsU48Irs05CuuT5MOnFBjQgNamLeMD67uzuAh8cNIequfUoKcCn3hN2pAfla5
-         zO7hRS4NUEwsZmrw8MiHcN5bmUfZkbHY31vQxZPA1J3jymE2Fp9DfNb7iCHu5E2YgBbI
-         NmxItjYjd9l6guFV+OwBnAxy/IHsXY8SOsfOyFnE2NxBXkdNEqeqoEjMtXMQ1nmyNZGf
-         rm0jWsSUgkIkDvh51svMBYyBb7BY4r9HMtSphpvzA94zI/J59AGKIHrN6xGG7hcIEtEI
-         P1GfKSTRSFmAevCjz2jKTR0BRhS4o5Zk0Pq/jiG9GveBeeRjY8mPfC+0JInPn6O/FsW0
-         BTxw==
-X-Gm-Message-State: AOAM530xz3Krh9N1TMiek27p96rAAiShohAhH3uVGq4ru/j94g5w8p50
-        ARzsRYAZW9serw/Edwto2JKlfw==
-X-Google-Smtp-Source: ABdhPJztd+cseoQHkVMvguQ0dw29taCQ0Lt/J3+7YmYNbllOxEZX5RY+QxuLkxBYOKT1w2v/60agvg==
-X-Received: by 2002:a05:600c:2304:b0:38e:4748:d902 with SMTP id 4-20020a05600c230400b0038e4748d902mr14136111wmo.177.1648999621575;
-        Sun, 03 Apr 2022 08:27:01 -0700 (PDT)
+        bh=g/pOdUoD+aSLxOxunI/HD3X3dn118+KcjklCC+A61c0=;
+        b=vqsO3Oy/fNqI86QDZzcqthgM+Tmeqvt7brEzxLlbRNWUxyZQO5d9A6XPOrx4C0e10X
+         1epAVeqLkrsWhdC/2MU6pFbpDv2xwZYzOeGQfAMx1KG+n+6vB/HnfWrFJyF/Ils0T+ED
+         lM2NndMljCnutUq90uZak2N2Zqkt0TEqLOcgMlWrkBcPiOuuVJZ/bbvH9+xlQ1irYqIB
+         4fHzseG0gxjFgzD9w8cRALNWjkxJfQegS83NBxy2m+2e2OelLkbTYu/tMFUq7798Ho8n
+         /uRPgsyyGJLN1GOOTp62PUgkvFXz9c33E2jdth1pvnBGTnG17RsupTSA6xoc1VkPx13o
+         4OFw==
+X-Gm-Message-State: AOAM532i34eyCXCAw13xRiaCgfFi/2RidMbXN1CIuXCK7WX/h2hSySAv
+        +S70R3cXmu3VAFIPdkiW2WWIUw==
+X-Google-Smtp-Source: ABdhPJwwB+OVtGxMkpj7zQX5eTLsSBfBcwUVIx+fSag8zqpUp3Pma2boS8iBSUv1j9j0vft+N7t+Lw==
+X-Received: by 2002:adf:e0ce:0:b0:1ef:706d:d6b9 with SMTP id m14-20020adfe0ce000000b001ef706dd6b9mr14723279wri.71.1648999808830;
+        Sun, 03 Apr 2022 08:30:08 -0700 (PDT)
 Received: from [192.168.0.172] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id i15-20020a5d584f000000b00204171ba528sm6876940wrf.109.2022.04.03.08.27.00
+        by smtp.gmail.com with ESMTPSA id r14-20020a0560001b8e00b00205918bd86esm7025492wru.78.2022.04.03.08.30.07
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 03 Apr 2022 08:27:01 -0700 (PDT)
-Message-ID: <5ef9de4c-59e0-5652-1755-6ec373c34fff@linaro.org>
-Date:   Sun, 3 Apr 2022 17:27:00 +0200
+        Sun, 03 Apr 2022 08:30:08 -0700 (PDT)
+Message-ID: <99f1181b-fde2-43a5-9b6a-c0c3a8b3933f@linaro.org>
+Date:   Sun, 3 Apr 2022 17:30:07 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
-Subject: Re: [PATCH v3 7/9] dt-bindings: serial: qcom,msm-uartdm: convert to
- dtschema
+Subject: Re: [PATCH 6/6] dt-bindings: power: supply: qcom,smb2: add bindings
+ for smb2 driver
 Content-Language: en-US
-To:     Rob Herring <robh@kernel.org>
-Cc:     Mark Brown <broonie@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        linux-spi@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        Kuldeep Singh <singh.kuldeep87k@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org, Andy Gross <agross@kernel.org>,
-        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+To:     Kuldeep Singh <singh.kuldeep87k@gmail.com>
+Cc:     Caleb Connolly <caleb.connolly@linaro.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org
-References: <20220402184011.132465-1-krzysztof.kozlowski@linaro.org>
- <20220402184011.132465-8-krzysztof.kozlowski@linaro.org>
- <1648995636.595500.3013369.nullmailer@robh.at.kernel.org>
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        Amit Pundir <amit.pundir@linaro.org>,
+        Sumit Semwal <sumit.semwal@linaro.org>
+References: <20220401202643.877609-1-caleb.connolly@linaro.org>
+ <20220401202643.877609-7-caleb.connolly@linaro.org>
+ <20220403071426.GA49153@9a2d8922b8f1>
+ <798f0244-95dd-cf2d-7bc5-02c72c7fa327@linaro.org>
+ <20220403133122.GA49428@9a2d8922b8f1>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <1648995636.595500.3013369.nullmailer@robh.at.kernel.org>
+In-Reply-To: <20220403133122.GA49428@9a2d8922b8f1>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 03/04/2022 16:20, Rob Herring wrote:
-> On Sat, 02 Apr 2022 20:40:09 +0200, Krzysztof Kozlowski wrote:
->> Convert the Qualcomm MSM Serial UARTDM bindings to DT Schema.
+On 03/04/2022 15:31, Kuldeep Singh wrote:
+> On Sun, Apr 03, 2022 at 09:56:25AM +0200, Krzysztof Kozlowski wrote:
+>> On 03/04/2022 09:14, Kuldeep Singh wrote:
+>>> On Fri, Apr 01, 2022 at 09:26:43PM +0100, Caleb Connolly wrote:
+>>>> Add devicetree bindings for the Qualcomm PMI8998/PM660 SMB2 charger
+>>>> drivers.
+>>>>
 >>
->> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
->> ---
->>  .../bindings/serial/qcom,msm-uartdm.txt       |  81 -------------
->>  .../bindings/serial/qcom,msm-uartdm.yaml      | 112 ++++++++++++++++++
->>  2 files changed, 112 insertions(+), 81 deletions(-)
->>  delete mode 100644 Documentation/devicetree/bindings/serial/qcom,msm-uartdm.txt
->>  create mode 100644 Documentation/devicetree/bindings/serial/qcom,msm-uartdm.yaml
+>> (...)
 >>
+>>>
+>>>> +    pmic {
+>>>> +      #address-cells = <1>;
+>>>> +      #size-cells = <0>;
+>>>> +      #interrupt-cells = <4>;
+>>>> +
+>>>> +      smb2@1000 {
+>>>> +        compatible = "qcom,pmi8998-smb2";
+>>>> +        reg = <0x1000>;
+>>>> +
+>>>> +        interrupts = <0x2 0x13 0x4 IRQ_TYPE_EDGE_BOTH>;
+>>>> +        interrupt-names = "usb-plugin";
+>>>> +
+>>>
+>>> In-between new lines may not be required.
+>>> And DTs use tabs instead of 2 spaces, we can follow that here also.
+>>
+>> The DT examples in bindings use spaces. Either two (like YAML) or four
+>> (for easier reading).
 > 
-> My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-> on your patch (DT_CHECKER_FLAGS is new in v5.13):
-> 
-> yamllint warnings/errors:
-> 
-> dtschema/dtc warnings/errors:
-> /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/serial/qcom,msm-uartdm.example.dt.yaml: serial@f991e000: dma-names:0: 'tx' was expected
-> 	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/serial/qcom,msm-uartdm.yaml
-> /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/serial/qcom,msm-uartdm.example.dt.yaml: serial@f991e000: dma-names:1: 'rx' was expected
-> 	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/serial/qcom,msm-uartdm.yaml
+> ok, since example snippet is taken from DT that's why I said four
+> spaces(tab) as it will be closest to actual env.
 
-My bad, I'll fix it.
+You said "use tabs", which is 8 spaces in Linux. So to clarify - we do
+not use tabs here, so do not use tabs.
 
+>>>> +        io-channels = <&pmi8998_rradc 3>,
+>>>> +                      <&pmi8998_rradc 4>;
+>>>> +        io-channel-names = "usbin_i",
+>>>> +                           "usbin_v";
+>>>
+>>> Channel-names can be written in one line.
+>>
+>> They match the format of io-channels, so this is quite readable.
 > 
-> doc reference errors (make refcheckdocs):
-> Warning: Documentation/devicetree/bindings/soc/qcom/qcom,gsbi.txt references a file that doesn't exist: Documentation/devicetree/bindings/spi/qcom,spi-qup.txt
-> Warning: Documentation/devicetree/bindings/soc/qcom/qcom,gsbi.txt references a file that doesn't exist: Documentation/devicetree/bindings/serial/qcom,msm-uartdm.txt
-> Documentation/devicetree/bindings/soc/qcom/qcom,gsbi.txt: Documentation/devicetree/bindings/spi/qcom,spi-qup.txt
-> Documentation/devicetree/bindings/soc/qcom/qcom,gsbi.txt: Documentation/devicetree/bindings/serial/qcom,msm-uartdm.txt
+> io-channels doesn't exceed max characters in line(i.e 75) even after
+> being clubbed. Won't be better if kept in one line?
+> This might be personal perspective but I thought it's worth mentioning.
 
-These should be fixed in last patch in series where I convert the
-qcom,gsbi.txt to YAML.
+I find current code readable. The other option would be fine as well,
+kind of does not matter to me much.
 
 Best regards,
 Krzysztof
