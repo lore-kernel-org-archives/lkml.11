@@ -2,162 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A6A4C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBC97C47089
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:23:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380803AbiDDVWF (ORCPT
+        id S1380911AbiDDVWL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:22:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36580 "EHLO
+        Mon, 4 Apr 2022 17:22:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379006AbiDDQRx (ORCPT
+        with ESMTP id S1379166AbiDDQiD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 12:17:53 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1364381A7
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 09:15:57 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id nt14-20020a17090b248e00b001ca601046a4so5519694pjb.0
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 09:15:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Ng6DcmM5tFKWfxali81J0mfMImmzHiLurj6u/+uziLk=;
-        b=HXOmZE1RtYgubAH+EbMo3I6hVyTda0n3RvWQxbxKNH9WsRFKu7ffxKRotQeemfaTy+
-         WG93q2P5TZkBtIjyvteBW1gY4EKU+e3KpS9DVwKTTVZTeml5hMnQUgt3bk5gpOBLemRS
-         ZIOtol1sPS1wc9qkY9x4s4R2dIVxjC141YGfSby1pY4lS6Ms5gekCEtxaIz1pKQ9j5Pn
-         WERkByf/F8DiINZ4MxSYYF2EIUnuJRY4SDLhGN3Ftl9xIe97pX/973mh2CqajJK+ufJa
-         9DW70uFOQ0kB5ih/FliBHjPYO9oXFC0gJGaxMmUtKDB2KuLJMmUWzCV2gqV6hEECZHQ5
-         SjUQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Ng6DcmM5tFKWfxali81J0mfMImmzHiLurj6u/+uziLk=;
-        b=WtvmYHgy8p+w5/Itw2xSb55ZRr6P7XwWc18cdMFao1OxIIOV0MyVInEbl1BDxAF34h
-         VBOLITE6tJ6vwH3yu/aBc4xSSSeAS3TumzqJn4y/L49QZ4lpweLZXqX9ol5TgwCfgCLH
-         GVwzGByn5gPy/EgTBr2iTxC4JGn8X8c4V2S8UfeyEcFCXE7eJKUkS8We6Na04Vhi1m8E
-         hBUcHE6LieRXYQ0zIpWSA6bBpKOVQtwTpAMVEJFAxfxdquapdjajtQ8FMRx2CSt0sbUq
-         7bUGOuo9EecW16JaU1jR+m4TXHcWfpbkxtHpaic7ahSQkfqw0lqUbh6vy2rV3rnQGrRx
-         62Hw==
-X-Gm-Message-State: AOAM530db+1hqbNuLKH9/HyXSmhoo2XB+Q1NniWFzh9Rt2tnvKJKDWWD
-        TzjcvbiTy4unAkbemFzHg7t06w==
-X-Google-Smtp-Source: ABdhPJw0bHkRyQrMEI8u1Kx/EMowdX9JWrk1FT5MCnF8rKx/ah4P1uTx38JgRaEc8jLyOH5+qO/ukg==
-X-Received: by 2002:a17:90b:713:b0:1c6:c8f5:6138 with SMTP id s19-20020a17090b071300b001c6c8f56138mr27342669pjz.138.1649088957115;
-        Mon, 04 Apr 2022 09:15:57 -0700 (PDT)
-Received: from p14s (S0106889e681aac74.cg.shawcable.net. [68.147.0.187])
-        by smtp.gmail.com with ESMTPSA id p4-20020a637404000000b00375948e63d6sm10641282pgc.91.2022.04.04.09.15.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 09:15:56 -0700 (PDT)
-Date:   Mon, 4 Apr 2022 10:15:54 -0600
-From:   Mathieu Poirier <mathieu.poirier@linaro.org>
-To:     Mike Leach <mike.leach@linaro.org>
-Cc:     suzuki.poulose@arm.com, coresight@lists.linaro.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        peterz@infradead.org, mingo@redhat.com, acme@kernel.org,
-        linux-perf-users@vger.kernel.org, leo.yan@linaro.org
-Subject: Re: [PATCH 00/10] coresight: Add new API to allocate trace source ID
- values
-Message-ID: <20220404161554.GA4079910@p14s>
-References: <20220308205000.27646-1-mike.leach@linaro.org>
+        Mon, 4 Apr 2022 12:38:03 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 626472C11C
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 09:36:07 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 293D41480;
+        Mon,  4 Apr 2022 09:36:07 -0700 (PDT)
+Received: from [10.57.24.6] (unknown [10.57.24.6])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2F6D93F73B;
+        Mon,  4 Apr 2022 09:36:04 -0700 (PDT)
+Message-ID: <30d85009-f4be-25b1-7eb8-eea4b3058e27@arm.com>
+Date:   Mon, 4 Apr 2022 17:36:02 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220308205000.27646-1-mike.leach@linaro.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v3 21/21] x86/resctrl: Make resctrl_arch_rmid_read()
+ return values in bytes
+Content-Language: en-US
+To:     Rob Herring <robh@kernel.org>
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
+        Fenghua Yu <fenghua.yu@intel.com>,
+        Reinette Chatre <reinette.chatre@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        H Peter Anvin <hpa@zytor.com>,
+        Babu Moger <Babu.Moger@amd.com>,
+        shameerali.kolothum.thodi@huawei.com,
+        Jamie Iles <jamie@nuviainc.com>,
+        D Scott Phillips OS <scott@os.amperecomputing.com>,
+        lcherian@marvell.com, bobo.shaobowang@huawei.com,
+        tan.shaopeng@fujitsu.com
+References: <20220217182110.7176-1-james.morse@arm.com>
+ <20220217182110.7176-22-james.morse@arm.com>
+ <YjuOWpqLfiP4u2AT@robh.at.kernel.org>
+From:   James Morse <james.morse@arm.com>
+In-Reply-To: <YjuOWpqLfiP4u2AT@robh.at.kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Good morning,
+Hi Rob,
 
-On Tue, Mar 08, 2022 at 08:49:50PM +0000, Mike Leach wrote:
-> The current method for allocating trace source ID values to sources is
-> to use a fixed algorithm for CPU based sources of (cpu_num * 2 + 0x10).
-> The STM is allocated ID 0x1.
-> 
-> This fixed algorithm is used in both the CoreSight driver code, and by
-> perf when writing the trace metadata in the AUXTRACE_INFO record.
-> 
-> The method needs replacing as currently:-
-> 1. It is inefficient in using available IDs.
-> 2. Does not scale to larger systems with many cores and the algorithm
-> has no limits so will generate invalid trace IDs for cpu number > 44.
-> 
-> Additionally requirements to allocate additional system IDs on some
-> systems have been seen.
-> 
-> This patch set  introduces an API that allows the allocation of trace IDs
-> in a dynamic manner.
-> 
-> Architecturally reserved IDs are never allocated, and the system is
-> limited to allocating only valid IDs.
-> 
-> Each of the current trace sources ETM3.x, ETM4.x and STM is updated to use
-> the new API.
-> 
-> perf handling is changed so that the ID associated with the CPU is read
-> from sysfs. The ID allocator is notified when perf events start and stop
-> so CPU based IDs are kept constant throughout any perf session.
-> 
-> For the ETMx.x devices IDs are allocated on certain events
-> a) When using sysfs, an ID will be allocated on hardware enable, and freed
-> when the sysfs reset is written.
-> b) When using perf, ID is allocated on hardware enable, and freed on
-> hardware disable.
-> 
-> For both cases the ID is allocated when sysfs is read to get the current
-> trace ID. This ensures that consistent decode metadata can be extracted
-> from the system where this read occurs before device enable.
-> 
-> Note: This patchset breaks backward compatibility for perf record.
-> Because the method for generating the AUXTRACE_INFO meta data has
-> changed, using an older perf record will result in metadata that
-> does not match the trace IDs used in the recorded trace data.
-> This mismatch will cause subsequent decode to fail. Older versions of
-> perf will still be able to decode data generated by the updated system.
-> 
+On 3/23/22 21:17, Rob Herring wrote:
+> On Thu, Feb 17, 2022 at 06:21:10PM +0000, James Morse wrote:
+>> resctrl_arch_rmid_read() returns a value in chunks, as read from the
+>> hardware. This needs scaling to bytes by mon_scale, as provided by
+>> the architecture code.
+>>
+>> Now that resctrl_arch_rmid_read() performs the overflow and corrections
+>> itself, it may as well return a value in bytes directly. This allows
+>> the accesses to the architecture specific 'hw' structure to be removed.
+>>
+>> Move the mon_scale conversion into resctrl_arch_rmid_read().
+>> mbm_bw_count() is updated to calculate bandwidth from bytes.
 
-I have started looking at this set, comments to follow shortly.
+>> diff --git a/arch/x86/kernel/cpu/resctrl/monitor.c b/arch/x86/kernel/cpu/resctrl/monitor.c
+>> index 3a6555f49720..437e7db77f93 100644
+>> --- a/arch/x86/kernel/cpu/resctrl/monitor.c
+>> +++ b/arch/x86/kernel/cpu/resctrl/monitor.c
+>> @@ -211,10 +211,11 @@ int resctrl_arch_rmid_read(struct rdt_resource *r, struct rdt_domain *d,
+>>   	if (am) {
+>>   		am->chunks += mbm_overflow_count(am->prev_msr, msr_val,
+>>   						 hw_res->mbm_width);
+>> -		*val = get_corrected_mbm_count(rmid, am->chunks);
+>> +		chunks = get_corrected_mbm_count(rmid, am->chunks);
+>> +		*val = chunks * hw_res->mon_scale;
+> 
+> This can be moved out of the if/else if you make the following change:
+> 
+>>   		am->prev_msr = msr_val;
+>>   	} else {
+>> -		*val = msr_val;
+>> +		*val = msr_val * hw_res->mon_scale;
+> 
+> chunks = msr_val;
+> 
+>>   	}
+
+Sure, I guess it makes sense to only set *val in one place.
+
+>>   
+>>   	return 0;
+>> @@ -400,15 +397,14 @@ static u64 __mon_event_count(u32 rmid, struct rmid_read *rr)
+>>    */
+>>   static void mbm_bw_count(u32 rmid, struct rmid_read *rr)
+>>   {
+>> -	struct rdt_hw_resource *hw_res = resctrl_to_arch_res(rr->r);
+>>   	struct mbm_state *m = &rr->d->mbm_local[rmid];
+>> -	u64 cur_bw, chunks, cur_chunks;
+>> +	u64 cur_bw, bytes, cur_bytes;
+>>   
+>> -	cur_chunks = rr->val;
+>> -	chunks = cur_chunks - m->prev_bw_chunks;
+>> -	m->prev_bw_chunks = cur_chunks;
+>> +	cur_bytes = rr->val;
+>> +	bytes = cur_bytes - m->prev_bw_bytes;
+>> +	m->prev_bw_bytes = cur_bytes;
+>>   
+>> -	cur_bw = (chunks * hw_res->mon_scale) >> 20;
+>> +	cur_bw = bytes >> 20;
+> 
+> 'bytes / SZ_1M' would be more readable and any decent compiler should
+> optimize a power of 2 divide. But maybe that's a separate change as
+> there are other cases of bytes to MB.
+
+I agree its more readable. As I've touched this one, I'll change it.
+
 
 Thanks,
-Mathieu
 
-> 
-> Applies to coresight/next [b54f53bc11a5]
-> Tested on DB410c
-> 
-> Mike Leach (10):
->   coresight: trace-id: Add API to dynamically assign trace ID values
->   coresight: trace-id: Set up source trace ID map for system
->   coresight: stm: Update STM driver to use Trace ID api
->   coresight: etm4x: Use trace ID API to dynamically allocate trace ID
->   coresight: etm3x: Use trace ID API to allocate IDs
->   coresight: perf: traceid: Add perf notifiers for trace ID
->   perf: cs-etm: Update event to read trace ID from sysfs
->   coresight: Remove legacy Trace ID allocation mechanism
->   coresight: etmX.X: stm: Remove unused legacy source trace ID ops
->   coresight: trace-id: Add debug & test macros to trace id allocation
-> 
->  drivers/hwtracing/coresight/Makefile          |   2 +-
->  drivers/hwtracing/coresight/coresight-core.c  |  64 ++---
->  .../hwtracing/coresight/coresight-etm-perf.c  |  16 +-
->  drivers/hwtracing/coresight/coresight-etm.h   |   3 +-
->  .../coresight/coresight-etm3x-core.c          |  93 ++++---
->  .../coresight/coresight-etm3x-sysfs.c         |  28 +-
->  .../coresight/coresight-etm4x-core.c          |  63 ++++-
->  .../coresight/coresight-etm4x-sysfs.c         |  32 ++-
->  drivers/hwtracing/coresight/coresight-etm4x.h |   3 +
->  drivers/hwtracing/coresight/coresight-priv.h  |   1 +
->  drivers/hwtracing/coresight/coresight-stm.c   |  49 +---
->  .../hwtracing/coresight/coresight-trace-id.c  | 255 ++++++++++++++++++
->  .../hwtracing/coresight/coresight-trace-id.h  |  69 +++++
->  include/linux/coresight-pmu.h                 |  12 -
->  include/linux/coresight.h                     |   3 -
->  tools/perf/arch/arm/util/cs-etm.c             |  12 +-
->  16 files changed, 530 insertions(+), 175 deletions(-)
->  create mode 100644 drivers/hwtracing/coresight/coresight-trace-id.c
->  create mode 100644 drivers/hwtracing/coresight/coresight-trace-id.h
-> 
-> -- 
-> 2.17.1
-> 
+James
