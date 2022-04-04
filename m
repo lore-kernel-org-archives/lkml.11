@@ -2,143 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C9D4C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:18:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FFFFC4167B
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:18:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379614AbiDDVUK (ORCPT
+        id S1356493AbiDDVUQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:20:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49270 "EHLO
+        Mon, 4 Apr 2022 17:20:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379284AbiDDQxM (ORCPT
+        with ESMTP id S1379260AbiDDQvu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 12:53:12 -0400
-Received: from vps-vb.mhejs.net (vps-vb.mhejs.net [37.28.154.113])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63EBD3B032;
-        Mon,  4 Apr 2022 09:51:14 -0700 (PDT)
-Received: from MUA
-        by vps-vb.mhejs.net with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <mail@maciej.szmigiero.name>)
-        id 1nbPuw-0002t4-DU; Mon, 04 Apr 2022 18:51:02 +0200
-Message-ID: <112c2108-7548-f5bd-493d-19b944701f1b@maciej.szmigiero.name>
-Date:   Mon, 4 Apr 2022 18:50:54 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Content-Language: en-US
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        Mon, 4 Apr 2022 12:51:50 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B907F2F027;
+        Mon,  4 Apr 2022 09:49:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649090993; x=1680626993;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=q1gzI1p7lYlJM1ES/b7kTxpDoldvcsTYjSPg9p/YXLo=;
+  b=JqlDy1MP2/LHUb9/n1NM1CpSPVRsP1d+cOlmDIzopIzH3a+ZnHojM2Uc
+   DG0nWCd2l4JEqZCswO2fxMm/RQOscE1WIcSlyI0+59G246veDZNZHGT+d
+   AOKP7znpt+4ZNPPkJ2nlc3OtJW1Eym+v/GgR/aiucICWLrREjQXxspnil
+   wmpe36yI9WcJaAsSjyc0Cdj8I0w4YKsdYX0jBTbhXQBePTF73Jmex//++
+   30sxDxZ+lZET/yh+PKeqImqZppNC1MscD9ZZeDtIY//zD6XUMaGToNo7s
+   A56J2VZh87WjEhmUYk3Ql+RQCD+zUaSY6r9ZMuio8FrLHuWwV5bHhj1Q6
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="259390782"
+X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
+   d="scan'208";a="259390782"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:49:51 -0700
+X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
+   d="scan'208";a="523105183"
+Received: from rchatre-ws.ostc.intel.com ([10.54.69.144])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:49:50 -0700
+From:   Reinette Chatre <reinette.chatre@intel.com>
+To:     dave.hansen@linux.intel.com, jarkko@kernel.org, tglx@linutronix.de,
+        bp@alien8.de, luto@kernel.org, mingo@redhat.com,
+        linux-sgx@vger.kernel.org, x86@kernel.org
+Cc:     seanjc@google.com, kai.huang@intel.com, cathy.zhang@intel.com,
+        cedric.xing@intel.com, haitao.huang@intel.com,
+        mark.shanahan@intel.com, hpa@zytor.com,
         linux-kernel@vger.kernel.org
-References: <20220402010903.727604-1-seanjc@google.com>
- <20220402010903.727604-2-seanjc@google.com>
-From:   "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
-Subject: Re: [PATCH 1/8] KVM: nSVM: Sync next_rip field from vmcb12 to vmcb02
-In-Reply-To: <20220402010903.727604-2-seanjc@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Subject: [PATCH V3 12/30] x86/sgx: Export sgx_encl_{grow,shrink}()
+Date:   Mon,  4 Apr 2022 09:49:20 -0700
+Message-Id: <97f03b1ad11ff70839bdf239609a62957c804523.1648847675.git.reinette.chatre@intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cover.1648847675.git.reinette.chatre@intel.com>
+References: <cover.1648847675.git.reinette.chatre@intel.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2.04.2022 03:08, Sean Christopherson wrote:
-> From: Maciej S. Szmigiero <maciej.szmigiero@oracle.com>
-> 
-> The next_rip field of a VMCB is *not* an output-only field for a VMRUN.
-> This field value (instead of the saved guest RIP) in used by the CPU for
-> the return address pushed on stack when injecting a software interrupt or
-> INT3 or INTO exception.
-> 
-> Make sure this field gets synced from vmcb12 to vmcb02 when entering L2 or
-> loading a nested state and NRIPS is exposed to L1.  If NRIPS is supported
-> in hardware but not exposed to L1 (nrips=0 or hidden by userspace), stuff
-> vmcb02's next_rip from the new L2 RIP to emulate a !NRIPS CPU (which
-> saves RIP on the stack as-is).
-> 
-> Signed-off-by: Maciej S. Szmigiero <maciej.szmigiero@oracle.com>
-> Co-developed-by: Sean Christopherson <seanjc@google.com>
-> Signed-off-by: Sean Christopherson <seanjc@google.com>
-> ---
->   arch/x86/kvm/svm/nested.c | 22 +++++++++++++++++++---
->   arch/x86/kvm/svm/svm.h    |  1 +
->   2 files changed, 20 insertions(+), 3 deletions(-)
-> 
-> diff --git a/arch/x86/kvm/svm/nested.c b/arch/x86/kvm/svm/nested.c
-> index 73b545278f5f..9a6dc2b38fcf 100644
-> --- a/arch/x86/kvm/svm/nested.c
-> +++ b/arch/x86/kvm/svm/nested.c
-> @@ -369,6 +369,7 @@ void __nested_copy_vmcb_control_to_cache(struct kvm_vcpu *vcpu,
->   	to->nested_ctl          = from->nested_ctl;
->   	to->event_inj           = from->event_inj;
->   	to->event_inj_err       = from->event_inj_err;
-> +	to->next_rip            = from->next_rip;
->   	to->nested_cr3          = from->nested_cr3;
->   	to->virt_ext            = from->virt_ext;
->   	to->pause_filter_count  = from->pause_filter_count;
-> @@ -606,7 +607,8 @@ static void nested_vmcb02_prepare_save(struct vcpu_svm *svm, struct vmcb *vmcb12
->   	}
->   }
->   
-> -static void nested_vmcb02_prepare_control(struct vcpu_svm *svm)
-> +static void nested_vmcb02_prepare_control(struct vcpu_svm *svm,
-> +					  unsigned long vmcb12_rip)
->   {
->   	u32 int_ctl_vmcb01_bits = V_INTR_MASKING_MASK;
->   	u32 int_ctl_vmcb12_bits = V_TPR_MASK | V_IRQ_INJECTION_BITS_MASK;
-> @@ -660,6 +662,19 @@ static void nested_vmcb02_prepare_control(struct vcpu_svm *svm)
->   	vmcb02->control.event_inj           = svm->nested.ctl.event_inj;
->   	vmcb02->control.event_inj_err       = svm->nested.ctl.event_inj_err;
->   
-> +	/*
-> +	 * next_rip is consumed on VMRUN as the return address pushed on the
-> +	 * stack for injected soft exceptions/interrupts.  If nrips is exposed
-> +	 * to L1, take it verbatim from vmcb12.  If nrips is supported in
-> +	 * hardware but not exposed to L1, stuff the actual L2 RIP to emulate
-> +	 * what a nrips=0 CPU would do (L1 is responsible for advancing RIP
-> +	 * prior to injecting the event).
-> +	 */
-> +	if (svm->nrips_enabled)
-> +		vmcb02->control.next_rip    = svm->nested.ctl.next_rip;
-> +	else if (boot_cpu_has(X86_FEATURE_NRIPS))
-> +		vmcb02->control.next_rip    = vmcb12_rip;
-> +
->   	vmcb02->control.virt_ext            = vmcb01->control.virt_ext &
->   					      LBR_CTL_ENABLE_MASK;
->   	if (svm->lbrv_enabled)
-> @@ -743,7 +758,7 @@ int enter_svm_guest_mode(struct kvm_vcpu *vcpu, u64 vmcb12_gpa,
->   	nested_svm_copy_common_state(svm->vmcb01.ptr, svm->nested.vmcb02.ptr);
->   
->   	svm_switch_vmcb(svm, &svm->nested.vmcb02);
-> -	nested_vmcb02_prepare_control(svm);
-> +	nested_vmcb02_prepare_control(svm, vmcb12->save.rip);
->   	nested_vmcb02_prepare_save(svm, vmcb12);
->   
->   	ret = nested_svm_load_cr3(&svm->vcpu, svm->nested.save.cr3,
-> @@ -1422,6 +1437,7 @@ static void nested_copy_vmcb_cache_to_control(struct vmcb_control_area *dst,
->   	dst->nested_ctl           = from->nested_ctl;
->   	dst->event_inj            = from->event_inj;
->   	dst->event_inj_err        = from->event_inj_err;
-> +	dst->next_rip             = from->next_rip;
->   	dst->nested_cr3           = from->nested_cr3;
->   	dst->virt_ext              = from->virt_ext;
->   	dst->pause_filter_count   = from->pause_filter_count;
-> @@ -1606,7 +1622,7 @@ static int svm_set_nested_state(struct kvm_vcpu *vcpu,
->   	nested_copy_vmcb_control_to_cache(svm, ctl);
->   
->   	svm_switch_vmcb(svm, &svm->nested.vmcb02);
-> -	nested_vmcb02_prepare_control(svm);
-> +	nested_vmcb02_prepare_control(svm, save->rip);
->   
+In order to use sgx_encl_{grow,shrink}() in the page augmentation code
+located in encl.c, export these functions.
 
-					   ^
-I guess this should be "svm->vmcb->save.rip", since
-KVM_{GET,SET}_NESTED_STATE "save" field contains vmcb01 data,
-not vmcb{0,1}2 (in contrast to the "control" field).
+Suggested-by: Jarkko Sakkinen <jarkko@kernel.org>
+Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
+---
+Changes since V2:
+- New patch.
 
+ arch/x86/kernel/cpu/sgx/encl.h  | 2 ++
+ arch/x86/kernel/cpu/sgx/ioctl.c | 4 ++--
+ 2 files changed, 4 insertions(+), 2 deletions(-)
 
-Thanks,
-Maciej
+diff --git a/arch/x86/kernel/cpu/sgx/encl.h b/arch/x86/kernel/cpu/sgx/encl.h
+index 07abfc70c8e3..9d673d9531f0 100644
+--- a/arch/x86/kernel/cpu/sgx/encl.h
++++ b/arch/x86/kernel/cpu/sgx/encl.h
+@@ -120,5 +120,7 @@ bool sgx_va_page_full(struct sgx_va_page *va_page);
+ void sgx_encl_free_epc_page(struct sgx_epc_page *page);
+ struct sgx_encl_page *sgx_encl_load_page(struct sgx_encl *encl,
+ 					 unsigned long addr);
++struct sgx_va_page *sgx_encl_grow(struct sgx_encl *encl);
++void sgx_encl_shrink(struct sgx_encl *encl, struct sgx_va_page *va_page);
+ 
+ #endif /* _X86_ENCL_H */
+diff --git a/arch/x86/kernel/cpu/sgx/ioctl.c b/arch/x86/kernel/cpu/sgx/ioctl.c
+index 0c211af8e948..746acddbb774 100644
+--- a/arch/x86/kernel/cpu/sgx/ioctl.c
++++ b/arch/x86/kernel/cpu/sgx/ioctl.c
+@@ -17,7 +17,7 @@
+ #include "encl.h"
+ #include "encls.h"
+ 
+-static struct sgx_va_page *sgx_encl_grow(struct sgx_encl *encl)
++struct sgx_va_page *sgx_encl_grow(struct sgx_encl *encl)
+ {
+ 	struct sgx_va_page *va_page = NULL;
+ 	void *err;
+@@ -43,7 +43,7 @@ static struct sgx_va_page *sgx_encl_grow(struct sgx_encl *encl)
+ 	return va_page;
+ }
+ 
+-static void sgx_encl_shrink(struct sgx_encl *encl, struct sgx_va_page *va_page)
++void sgx_encl_shrink(struct sgx_encl *encl, struct sgx_va_page *va_page)
+ {
+ 	encl->page_cnt--;
+ 
+-- 
+2.25.1
+
