@@ -2,93 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1317DC43219
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:50:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D341AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:50:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233931AbiDDVvl convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:51:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43922 "EHLO
+        id S240880AbiDDVwJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 17:52:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379415AbiDDRJO (ORCPT
+        with ESMTP id S1379592AbiDDRng (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 13:09:14 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 69EB340A22
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 10:07:17 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-170-mCYWs2NyMrqY9YLkljzOvg-1; Mon, 04 Apr 2022 18:07:14 +0100
-X-MC-Unique: mCYWs2NyMrqY9YLkljzOvg-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.32; Mon, 4 Apr 2022 18:07:11 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.033; Mon, 4 Apr 2022 18:07:11 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     "'Maciej W. Rozycki'" <macro@orcam.me.uk>,
-        Kees Cook <keescook@chromium.org>
-CC:     James Jones <linux@theinnocuous.com>,
-        "bp@alien8.de" <bp@alien8.de>, "x86@kernel.org" <x86@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH] x86: Remove a.out support
-Thread-Topic: [PATCH] x86: Remove a.out support
-Thread-Index: AQHYSBOog1urTOlT506l8VY6NMoEJKzf++oQ
-Date:   Mon, 4 Apr 2022 17:07:11 +0000
-Message-ID: <08c095230941445f9139ab89bc70da43@AcuMS.aculab.com>
-References: <4c449fab-8135-5057-7d2c-7b948ce130cc@theinnocuous.com>
- <0b31b1d3-852d-6cab-82ae-5eecaec05679@theinnocuous.com>
- <202203151150.1CDB1D8DA@keescook>
- <bfbd9394-161b-0e70-00c5-79d0dd722e08@theinnocuous.com>
- <alpine.DEB.2.21.2204022255430.47162@angie.orcam.me.uk>
- <67CF27C5-5013-4EF4-B24C-8D9EB52536FB@chromium.org>
- <alpine.DEB.2.21.2204041135210.47162@angie.orcam.me.uk>
-In-Reply-To: <alpine.DEB.2.21.2204041135210.47162@angie.orcam.me.uk>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Mon, 4 Apr 2022 13:43:36 -0400
+Received: from mail-oi1-f173.google.com (mail-oi1-f173.google.com [209.85.167.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29ADE31DE7;
+        Mon,  4 Apr 2022 10:41:39 -0700 (PDT)
+Received: by mail-oi1-f173.google.com with SMTP id 12so10784259oix.12;
+        Mon, 04 Apr 2022 10:41:39 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=Gm8Q9IkyRhAeqdPU+N8JCDzIc1jnZK1MiElDRAVrowg=;
+        b=IUBHRZUR1CP3Z09zzwDN8OLdIU3U07bDFgwfp9DzAfLqHZSjUyvTkYVKDifPWhJDEY
+         HgqG9FLdyQi2fqiXqgbicwQbZMmFUM11LmAPO+n2SXPgHr9O0D6HSBmpoCMoVhyBIZDn
+         9Sk/WyQ9G4n2IGYP5rlMdVnx/1qlvpb293G/i8NtkNHMXb8KdLkxdaSJo6IUeLf3tmuX
+         W+qOksGIRnDK41UUGBq8Y1YP+Uw1AGiHGySiPenYLMiCZr5mthIBFSUOAKJS7CO2oFe3
+         enx5ldHm+i9K15O0+x0RXLqcupcO+9KdXHTvYIMcm+F4ueuvTVb3F5ifLAlJJTqOvAe9
+         RBvQ==
+X-Gm-Message-State: AOAM531zyOtAi5B5SKJweFoAFCSTnnHGT4vx/JXULeGC/nShkQWZ+4Ns
+        A8ISAZey8ULra68Ig6B0Mw==
+X-Google-Smtp-Source: ABdhPJzSZ9WfFV7feWqE4tE2BP8FLwzfupkBO4Pv3m1nUPLK+RrkI1IoCe9ioNTKSDmYmbnfBAqL3Q==
+X-Received: by 2002:a05:6808:b0f:b0:2ec:f51d:ae0b with SMTP id s15-20020a0568080b0f00b002ecf51dae0bmr131491oij.67.1649094098466;
+        Mon, 04 Apr 2022 10:41:38 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id r37-20020a05687108a500b000e20bfd86casm901587oaq.11.2022.04.04.10.41.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Apr 2022 10:41:37 -0700 (PDT)
+Received: (nullmailer pid 1597042 invoked by uid 1000);
+        Mon, 04 Apr 2022 17:41:37 -0000
+Date:   Mon, 4 Apr 2022 12:41:37 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
+Cc:     Philipp Zabel <p.zabel@pengutronix.de>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        UNGLinuxDriver@microchip.com,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Allan Nielsen <allan.nielsen@microchip.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH v2 0/3] add fwnode support to reset subsystem
+Message-ID: <Ykst0Vb4fk+iALzc@robh.at.kernel.org>
+References: <20220324141237.297207-1-clement.leger@bootlin.com>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220324141237.297207-1-clement.leger@bootlin.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maciej W. Rozycki
-> Sent: 04 April 2022 12:04
-> 
-> On Sat, 2 Apr 2022, Kees Cook wrote:
-> 
-> > > Chiming in late as I'm scanning outstanding mailing list traffic: if this
-> > >is as you say all statically linked stuff, then converting from a.out to
-> > >ELF might be as easy as:
-> > >
-> > >$ objcopy -I a.out-i386-linux -O elf32-i386 a.out-binary elf-binary
-> >
-> > Based on my research (and the wrapper I ended up writing), I don't think
-> > this is sufficient because entry point handling is different between ELF
-> > and a.out (specifically the stack layout and initial sp register value).
-> 
->  Fair enough.  I guess the exact value of %esp doesn't matter that much
-> (why would it?), but the arguments and environment may well be structured
-> differently (and indeed based on a glance over binfmt_aout.c there's extra
-> indirection involved compared to the ELF i386 psABI).
+On Thu, Mar 24, 2022 at 03:12:34PM +0100, Clément Léger wrote:
+> This series is part of a larger series which aims at adding fwnode
+> support in multiple subsystems [1]. The goal of this series was to
+> add support for software node in various subsystem but in a first
+> time only the fwnode support had gained consensus and will be added
+> to multiple subsystems.
 
-You could write a custom 'elf interpreter'.
-Hacking at those isn't for the faint-hearted :-)
+The goal is describing a solution. What is the problem?
 
-	David
+What's the scenario where you have a reset provider not described by 
+firmware providing resets to devices (consumers) also not described by 
+firmware.
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+> For the moment ACPI node support is excluded from the fwnode support
+> to avoid creating an unspecified ACPI reset device description. With
+> these modifications, both driver that uses the fwnode_ API or the of_
+> API to register the reset controller will be usable by consumer
+> whatever the type of node that is used.
 
+Good, because controlling reset lines directly isn't how the ACPI device 
+model works AFAIK.
+
+> One question raised by this series is that I'm not sure if all reset
+> drivers should be modified to use the new fwnode support or keep the
+> existing device-tree support. Maintainer advice on that particular
+> question will be welcome.
+
+That would be pointless churn IMO. Why do we need to convert drivers 
+which the vast majority will never use anything but DT?
+
+Rob
