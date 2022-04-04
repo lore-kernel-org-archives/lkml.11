@@ -2,186 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03D72C43219
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:27:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F2A5C46467
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:27:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382384AbiDDV2P (ORCPT
+        id S1379729AbiDDV2l (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:28:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46952 "EHLO
+        Mon, 4 Apr 2022 17:28:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379282AbiDDQv7 (ORCPT
+        with ESMTP id S1379402AbiDDRFy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 12:51:59 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 827E7340C8;
-        Mon,  4 Apr 2022 09:50:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649091002; x=1680627002;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=JlQpBrTSyXEjeBh87xDxYpVmcxl36/xgnNFlSZ8cVfc=;
-  b=IG5hreymrkWuyv7d/johwIO4iT0BU+PQ/SaM2X9gcGythT8Eya+2hhT0
-   YxFNDUFhT2u1PjW+uqtYSJ/mWsdRyG+kJNFHTNGYT/xXjqIMitHixNf9C
-   qPphBrs8TSUgMrZTXzKuE1VJThnkgFJ7HB5/f5vbajM8slMK1yIANi99V
-   hFEg5Kz+hRvsMZgcEeISQHc904GabHY5PT+0wgogOCTxFMThlkEq0BYDu
-   u0QDGbC80BiPfIp0Bb1JKVTlT8l9JUGTzrtycLlileq7Hvj6yr1vPsCuD
-   Ah3YE7yPnxU5yplY5sok7JYFP+jftXJdV/RCvOjwPVW3Xl7VcNFL/3YB+
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="323734062"
-X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
-   d="scan'208";a="323734062"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:49:51 -0700
-X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
-   d="scan'208";a="523105237"
-Received: from rchatre-ws.ostc.intel.com ([10.54.69.144])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:49:51 -0700
-From:   Reinette Chatre <reinette.chatre@intel.com>
-To:     dave.hansen@linux.intel.com, jarkko@kernel.org, tglx@linutronix.de,
-        bp@alien8.de, luto@kernel.org, mingo@redhat.com,
-        linux-sgx@vger.kernel.org, x86@kernel.org
-Cc:     seanjc@google.com, kai.huang@intel.com, cathy.zhang@intel.com,
-        cedric.xing@intel.com, haitao.huang@intel.com,
-        mark.shanahan@intel.com, hpa@zytor.com,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH V3 29/30] selftests/sgx: Test reclaiming of untouched page
-Date:   Mon,  4 Apr 2022 09:49:37 -0700
-Message-Id: <aba52a4fadba4347d6ba3321c9ae2924c39ca27a.1648847675.git.reinette.chatre@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1648847675.git.reinette.chatre@intel.com>
-References: <cover.1648847675.git.reinette.chatre@intel.com>
+        Mon, 4 Apr 2022 13:05:54 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FCAF12086;
+        Mon,  4 Apr 2022 10:03:57 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id bu29so18600074lfb.0;
+        Mon, 04 Apr 2022 10:03:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=JweidwxrjFhAI/2v7P1YrxPew3638Ty2dzeJpVrQWYE=;
+        b=I8pC/miIU61OHd5dqRJenQe4iwqEMNWcbRRJquHcwqrA41pIdbn+rDkftP4Wgy8De6
+         l2P/kMX+m1AlHndTCFw3I9e8C2PbWnptwDkLhCKGENUjppP00s+oaSpn30odJADOWz80
+         gZ8aVgizdoRJMD3T6AeNpo8DIwPDr87SzDVdFiM8OdSG4AmvAn65FA0Q/pYGDN1oIlao
+         +YKcox4/vRA3RiBKPCUROakAioTHX5ZKNwEvMn7A4BVVjmQPgHDz09Xezqhs7kUtDDfY
+         rUW3RKJYgdzLAkmjcApGuwZWiQMC6aAEsIC1HT66RK9v0vxmMklonMMLr9nzl3HGoQcI
+         8TDg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=JweidwxrjFhAI/2v7P1YrxPew3638Ty2dzeJpVrQWYE=;
+        b=nWUf9C3SEGVmGBxXGgqgOjKzTw5U8BMB1Ivzx6o7pKMu0Rv2z6cTt1h77mlrzvNYAm
+         2sg0tVAYvE5dTv+Rn9I9o1IwcT7k5/9CpbNYE0MFDq6Bo3dgz8gj0CBUd9l7pqHNMzbH
+         qZjCwV+PiiemdMDpIQzn+8Nt1mp15MtAvFkIEkX59Xm81fqARBQaSAcKgNiKUDBCnIA9
+         MIGr3RQXfyGJUfF7Pn3ifinQ3EaYkL4/Drh6g3JXt3jiwpI5mmV9E4QD6Eu3GcviZyYR
+         fwsSi9OspxO/y7ldlyC9hXvXzqFAPUPjpEFX/GMbIqCq1nfhRXn84j496BHrJ2AZ5x3L
+         WbkA==
+X-Gm-Message-State: AOAM5334RbHfa900H78JbYhacd6y6ejmGa2uu8LQCfFpsEQn/CCixLU+
+        6Ek5G9edFNbYcADMYqF4uCVLIYqyTueH/ZS+kzbGOaYq1A==
+X-Google-Smtp-Source: ABdhPJyWHkLML0CW+orqZVMU399DWfiqN//krw23FbqOQO+YZ/LLJNNX0j1rbJvWijFJbBpeNZJnAR2Kqa0Pofh74F8=
+X-Received: by 2002:ac2:4203:0:b0:448:8053:d402 with SMTP id
+ y3-20020ac24203000000b004488053d402mr252549lfh.687.1649091835467; Mon, 04 Apr
+ 2022 10:03:55 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220303083141.8742-1-warp5tw@gmail.com> <20220303083141.8742-10-warp5tw@gmail.com>
+ <YiCaSSbbszm3qYIQ@smile.fi.intel.com> <CAHb3i=sStqdSpLKtF_UGmTsOssR_swssTd3pv6c2-z_kiUPTTA@mail.gmail.com>
+ <YiDNDsPWKyaIUlQR@smile.fi.intel.com>
+In-Reply-To: <YiDNDsPWKyaIUlQR@smile.fi.intel.com>
+From:   Avi Fishman <avifishman70@gmail.com>
+Date:   Mon, 4 Apr 2022 20:03:44 +0300
+Message-ID: <CAKKbWA5FyCKTjEUw8rqtkoL7aw6f7Fa_QzcAkgaRnnUMTe0SKg@mail.gmail.com>
+Subject: Re: [PATCH v3 09/11] i2c: npcm: Handle spurious interrupts
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Tali Perry <tali.perry1@gmail.com>,
+        Tyrone Ting <warp5tw@gmail.com>,
+        Tomer Maimon <tmaimon77@gmail.com>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        yangyicong@hisilicon.com, semen.protsenko@linaro.org,
+        Wolfram Sang <wsa@kernel.org>, jie.deng@intel.com,
+        sven@svenpeter.dev, bence98@sch.bme.hu,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>, olof@lixom.net,
+        Tali Perry <tali.perry@nuvoton.com>,
+        Avi Fishman <Avi.Fishman@nuvoton.com>,
+        Tomer Maimon <tomer.maimon@nuvoton.com>, KWLIU@nuvoton.com,
+        JJLIU0@nuvoton.com, kfting@nuvoton.com,
+        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
+        Linux I2C <linux-i2c@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Removing a page from an initialized enclave involves three steps:
-(1) the user requests changing the page type to PT_TRIM via the
-    SGX_IOC_ENCLAVE_MODIFY_TYPE ioctl()
-(2) on success the ENCLU[EACCEPT] instruction is run from within
-    the enclave to accept the page removal
-(3) the user initiates the actual removal of the page via the
-    SGX_IOC_ENCLAVE_REMOVE_PAGES ioctl().
+On Thu, Mar 3, 2022 at 4:14 PM Andy Shevchenko
+<andriy.shevchenko@linux.intel.com> wrote:
+>
+> On Thu, Mar 03, 2022 at 02:48:20PM +0200, Tali Perry wrote:
+> > > On Thu, Mar 3, 2022 at 12:37 PM Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+> > > >
+> > > > On Thu, Mar 03, 2022 at 04:31:39PM +0800, Tyrone Ting wrote:
+> > > > > From: Tali Perry <tali.perry1@gmail.com>
+> > > > >
+> > > > > In order to better handle spurious interrupts:
+> > > > > 1. Disable incoming interrupts in master only mode.
+> > > > > 2. Clear end of busy (EOB) after every interrupt.
+> > > > > 3. Return correct status during interrupt.
+> > > >
+> > > > This is bad commit message, it doesn't explain "why" you are doing these.
+>
+> ...
+>
+> > BMC users connect a huge tree of i2c devices and muxes.
+> > This tree suffers from spikes, noise and double clocks.
+> > All these may cause spurious interrupts to the BMC.
+> >
+> > If the driver gets an IRQ which was not expected and was not handled
+> > by the IRQ handler,
+> > there is nothing left to do but to clear the interrupt and move on.
+>
+> Yes, the problem is what "move on" means in your case.
+> If you get a spurious interrupts there are possibilities what's wrong:
+> 1) HW bug(s)
+> 2) FW bug(s)
+> 3) Missed IRQ mask in the driver
+> 4) Improper IRQ mask in the driver
+>
+> The below approach seems incorrect to me.
+>
 
-Remove a page that has never been accessed. This means that when the
-first ioctl() requesting page removal arrives, there will be no page
-table entry, yet a valid page table entry needs to exist for the
-ENCLU[EACCEPT] function to succeed. In this test it is verified that
-a page table entry can still be installed for a page that is in the
-process of being removed.
+Andy, What about this explanation:
+On rare cases the i2c gets a spurious interrupt which means that we
+enter an interrupt but in
+the interrupt handler we don't find any status bit that points to the
+reason we got this interrupt.
+This may be a rare case of HW issue that is still under investigation.
+In order to overcome this we are doing the following:
+1. Disable incoming interrupts in master mode only when slave mode is
+not enabled.
+2. Clear end of busy (EOB) after every interrupt.
+3. Clear other status bits (just in case since we found them cleared)
+4. Return correct status during the interrupt that will finish the transaction.
+On next xmit transaction if the bus is still busy the master will
+issue a recovery process before issuing the new transaction.
+> > If the transaction failed, driver has a recovery function.
+> > After that, user may retry to send the message.
+> >
+> > Indeed the commit message doesn't explain all this.
+> > We will fix and add to the next patchset.
+> >
+> > > > > +     /*
+> > > > > +      * if irq is not one of the above, make sure EOB is disabled and all
+> > > > > +      * status bits are cleared.
+> > > >
+> > > > This does not explain why you hide the spurious interrupt.
+> > > >
+> > > > > +      */
+> > > > > +     if (ret == IRQ_NONE) {
+> > > > > +             npcm_i2c_eob_int(bus, false);
+> > > > > +             npcm_i2c_clear_master_status(bus);
+> > > > > +     }
+> > > > > +
+> > > > > +     return IRQ_HANDLED;
+>
+> --
+> With Best Regards,
+> Andy Shevchenko
+>
+>
 
-Suggested-by: Haitao Huang <haitao.huang@intel.com>
-Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
----
-Changes since V2:
-- Rename struct sgx_enclave_modt -> struct sgx_enclave_modify_type
 
-Changes since V1:
-- Update to support ioctl() name change (SGX_IOC_PAGE_MODT ->
-  SGX_IOC_ENCLAVE_MODIFY_TYPE) and provide secinfo as parameter instead
-  of just page type (Jarkko).
-- Update test to reflect page removal ioctl() and struct name change:
-  SGX_IOC_PAGE_REMOVE->SGX_IOC_ENCLAVE_REMOVE_PAGES,
-  struct sgx_page_remove -> struct sgx_enclave_remove_pages (Jarkko).
-- Ensure test is skipped when SGX2 not supported by kernel.
-
- tools/testing/selftests/sgx/main.c | 82 ++++++++++++++++++++++++++++++
- 1 file changed, 82 insertions(+)
-
-diff --git a/tools/testing/selftests/sgx/main.c b/tools/testing/selftests/sgx/main.c
-index f9f8e3697fa6..82cc2283be03 100644
---- a/tools/testing/selftests/sgx/main.c
-+++ b/tools/testing/selftests/sgx/main.c
-@@ -1807,4 +1807,86 @@ TEST_F(enclave, remove_added_page_invalid_access_after_eaccept)
- 	EXPECT_EQ(self->run.exception_addr, data_start);
- }
- 
-+TEST_F(enclave, remove_untouched_page)
-+{
-+	struct sgx_enclave_remove_pages remove_ioc;
-+	struct sgx_enclave_modify_type modt_ioc;
-+	struct encl_op_eaccept eaccept_op;
-+	struct sgx_secinfo secinfo;
-+	unsigned long data_start;
-+	int ret, errno_save;
-+
-+	ASSERT_TRUE(setup_test_encl(ENCL_HEAP_SIZE_DEFAULT, &self->encl, _metadata));
-+
-+	/*
-+	 * Hardware (SGX2) and kernel support is needed for this test. Start
-+	 * with check that test has a chance of succeeding.
-+	 */
-+	memset(&modt_ioc, 0, sizeof(modt_ioc));
-+	ret = ioctl(self->encl.fd, SGX_IOC_ENCLAVE_MODIFY_TYPE, &modt_ioc);
-+
-+	if (ret == -1) {
-+		if (errno == ENOTTY)
-+			SKIP(return, "Kernel does not support SGX_IOC_ENCLAVE_MODIFY_TYPE ioctl()");
-+		else if (errno == ENODEV)
-+			SKIP(return, "System does not support SGX2");
-+	}
-+
-+	/*
-+	 * Invalid parameters were provided during sanity check,
-+	 * expect command to fail.
-+	 */
-+	EXPECT_EQ(ret, -1);
-+
-+	/* SGX2 is supported by kernel and hardware, test can proceed. */
-+	memset(&self->run, 0, sizeof(self->run));
-+	self->run.tcs = self->encl.encl_base;
-+
-+	data_start = self->encl.encl_base +
-+			 encl_get_data_offset(&self->encl) + PAGE_SIZE;
-+
-+	memset(&modt_ioc, 0, sizeof(modt_ioc));
-+	memset(&secinfo, 0, sizeof(secinfo));
-+
-+	secinfo.flags = SGX_PAGE_TYPE_TRIM << 8;
-+	modt_ioc.offset = encl_get_data_offset(&self->encl) + PAGE_SIZE;
-+	modt_ioc.length = PAGE_SIZE;
-+	modt_ioc.secinfo = (unsigned long)&secinfo;
-+	ret = ioctl(self->encl.fd, SGX_IOC_ENCLAVE_MODIFY_TYPE, &modt_ioc);
-+	errno_save = ret == -1 ? errno : 0;
-+
-+	EXPECT_EQ(ret, 0);
-+	EXPECT_EQ(errno_save, 0);
-+	EXPECT_EQ(modt_ioc.result, 0);
-+	EXPECT_EQ(modt_ioc.count, 4096);
-+
-+	/*
-+	 * Enter enclave via TCS #1 and approve page removal by sending
-+	 * EACCEPT for removed page.
-+	 */
-+
-+	eaccept_op.epc_addr = data_start;
-+	eaccept_op.flags = SGX_SECINFO_TRIM | SGX_SECINFO_MODIFIED;
-+	eaccept_op.ret = 0;
-+	eaccept_op.header.type = ENCL_OP_EACCEPT;
-+
-+	EXPECT_EQ(ENCL_CALL(&eaccept_op, &self->run, true), 0);
-+	EXPECT_EEXIT(&self->run);
-+	EXPECT_EQ(self->run.exception_vector, 0);
-+	EXPECT_EQ(self->run.exception_error_code, 0);
-+	EXPECT_EQ(self->run.exception_addr, 0);
-+	EXPECT_EQ(eaccept_op.ret, 0);
-+
-+	memset(&remove_ioc, 0, sizeof(remove_ioc));
-+
-+	remove_ioc.offset = encl_get_data_offset(&self->encl) + PAGE_SIZE;
-+	remove_ioc.length = PAGE_SIZE;
-+	ret = ioctl(self->encl.fd, SGX_IOC_ENCLAVE_REMOVE_PAGES, &remove_ioc);
-+	errno_save = ret == -1 ? errno : 0;
-+
-+	EXPECT_EQ(ret, 0);
-+	EXPECT_EQ(errno_save, 0);
-+	EXPECT_EQ(remove_ioc.count, 4096);
-+}
-+
- TEST_HARNESS_MAIN
 -- 
-2.25.1
-
+Regards,
+Avi
