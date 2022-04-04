@@ -2,63 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BB09C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 04:58:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D70FC4167B
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 05:04:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377265AbiDDFAd (ORCPT
+        id S1377282AbiDDFGe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 01:00:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56050 "EHLO
+        Mon, 4 Apr 2022 01:06:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355325AbiDDFA3 (ORCPT
+        with ESMTP id S232689AbiDDFGb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 01:00:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBE59D9B
-        for <linux-kernel@vger.kernel.org>; Sun,  3 Apr 2022 21:58:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0C106B80E76
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 04:58:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 627DAC340F2;
-        Mon,  4 Apr 2022 04:58:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649048310;
-        bh=y7a1KzrMsaHOSdBHFzdNdrtAM5WIC8VqSSnGE+cL0aI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=hUQrGoK8OlcdeAiWPfXxuLMDMvojF0LZQuT7Dvy6Nls4xgUsAh9QgCv2CHIguykZ5
-         isYCs4v2iWMClOjBpMZtC7dNZoqvkfJIGj8QGPVeTsjF1tnVymgM5uaoNjg4J2oEi9
-         bocGkMPt/N5H30C+mwCBOFsYeNkbiXoAqpvz2yFY=
-Date:   Mon, 4 Apr 2022 06:58:26 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Yusuf Khan <yusisamerican@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, jasowang@redhat.com,
-        mikelley@microsoft.com, mst@redhat.com, javier@javigon.com,
-        arnd@arndb.de, will@kernel.org, axboe@kernel.dk,
-        Christoph Grenz <christophg+lkml@grenz-bonn.de>
-Subject: Re: [PATCH v10 1/3] drivers: ddcci: add drivers for DDCCI
-Message-ID: <Ykp68hTQF1a8EpTj@kroah.com>
-References: <20220403230850.2986-1-yusisamerican@gmail.com>
- <20220403230850.2986-2-yusisamerican@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220403230850.2986-2-yusisamerican@gmail.com>
+        Mon, 4 Apr 2022 01:06:31 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56725329B5;
+        Sun,  3 Apr 2022 22:04:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1649048676; x=1680584676;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references;
+  bh=LtXc+BMMIF66L9dPpPSWxaiUiDGxUjHQfNaESczVJyw=;
+  b=Iez/9+yzUHGNQCwRyk1GLD/I41uYWPwOkCJf8+59kipfRlR1a+tbRv/R
+   1EI/EUUZEovDMQPigT+kmGSiFNqIBZe2ljmIPLYxQzPGzVtbIgIpOUAFk
+   oCZNo3nasZrZsi4tes02AiDIvMMvcuDzp5SnLGRr74R/qbrMrM8AhLx0a
+   g=;
+Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
+  by alexa-out.qualcomm.com with ESMTP; 03 Apr 2022 22:04:36 -0700
+X-QCInternal: smtphost
+Received: from ironmsg01-blr.qualcomm.com ([10.86.208.130])
+  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 03 Apr 2022 22:04:33 -0700
+X-QCInternal: smtphost
+Received: from hu-rohiagar-hyd.qualcomm.com (HELO hu-sgudaval-hyd.qualcomm.com) ([10.213.106.138])
+  by ironmsg01-blr.qualcomm.com with ESMTP; 04 Apr 2022 10:34:21 +0530
+Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 3970568)
+        id 5A4703960; Mon,  4 Apr 2022 10:34:20 +0530 (+0530)
+From:   Rohit Agarwal <quic_rohiagar@quicinc.com>
+To:     agross@kernel.org, bjorn.andersson@linaro.org,
+        linus.walleij@linaro.org, robh+dt@kernel.org, krzk+dt@kernel.org
+Cc:     linux-arm-msm@vger.kernel.org, linux-gpio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Rohit Agarwal <quic_rohiagar@quicinc.com>
+Subject: [PATCH 2/2] pinctrl: qcom-pmic-gpio: Add support for pmx65
+Date:   Mon,  4 Apr 2022 10:34:10 +0530
+Message-Id: <1649048650-14059-3-git-send-email-quic_rohiagar@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1649048650-14059-1-git-send-email-quic_rohiagar@quicinc.com>
+References: <1649048650-14059-1-git-send-email-quic_rohiagar@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Apr 03, 2022 at 04:08:49PM -0700, Yusuf Khan wrote:
-> This patch adds the main DDCCI driver. This interfaces with I2C to allow the
-> kernel to communicate with DDCCI supporting monitors, it exports a chardev
-> and sysfs interface for userspace.
+PMX65 pmic support gpio controller so add compatible.
 
-Where is the Documentation/ABI/ entries for the sysfs code, and where is
-the userspace code that uses the chardev interface?  And why chardev?
+Signed-off-by: Rohit Agarwal <quic_rohiagar@quicinc.com>
+---
+ drivers/pinctrl/qcom/pinctrl-spmi-gpio.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-This text says _what_ you are doing, but not _why_ you are doing it.
+diff --git a/drivers/pinctrl/qcom/pinctrl-spmi-gpio.c b/drivers/pinctrl/qcom/pinctrl-spmi-gpio.c
+index 4fbf8d3..a0c45b3 100644
+--- a/drivers/pinctrl/qcom/pinctrl-spmi-gpio.c
++++ b/drivers/pinctrl/qcom/pinctrl-spmi-gpio.c
+@@ -1183,6 +1183,7 @@ static const struct of_device_id pmic_gpio_of_match[] = {
+ 	{ .compatible = "qcom,pms405-gpio", .data = (void *) 12 },
+ 	/* pmx55 has 11 GPIOs with holes on 3, 7, 10, 11 */
+ 	{ .compatible = "qcom,pmx55-gpio", .data = (void *) 11 },
++	{ .compatible = "qcom,pmx65-gpio", .data = (void *) 16 },
+ 	{ },
+ };
+ 
+-- 
+2.7.4
 
-thanks,
-
-greg k-h
