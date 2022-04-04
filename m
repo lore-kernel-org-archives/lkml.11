@@ -2,166 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50558C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:40:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02C18C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:45:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234616AbiDDWmx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 18:42:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48232 "EHLO
+        id S236634AbiDDWrY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 18:47:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231694AbiDDWmW (ORCPT
+        with ESMTP id S1344328AbiDDWqy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 18:42:22 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41F2656439
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 14:53:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=MoHK6CDLxM8OKokZRtLof+OJ17ZVmNTtNJ4h0pYEAC0=; b=hxBa3lsW/sg50L70Js2RoegUKA
-        jhhISe0FgFbpAk5zn77bHe7IqUj4mo3REKHjGWMVKNGZ+bil/ldB3mIL7iyaGiFxjSeA6eCAouyRV
-        ASpHWa9mnncA2d0Hs9F4SJc87dBaSmqUCBF71B8I6ghocsvH+FLhIsHbkkruaU+whE97RcsbBQLvg
-        8ihE9Y1YDZDbS0va11SrJgKn/+IDijiqALqL9LQQ++mRwpVTvCAwmpsYQC3bJ/6fP5GKfTPCQsRR3
-        EpKe2rd3gAumTqvfVYD8g1w3JAHBz6bYIlMIj6wGd6jyJHp7Ji/d7VZphhej6Z2j5fPl2x3ClJOnQ
-        NSkaScGg==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nbUdg-00658B-SP; Mon, 04 Apr 2022 21:53:35 +0000
-Message-ID: <d5c831f3-91db-4ba7-fa30-51847588c305@infradead.org>
-Date:   Mon, 4 Apr 2022 14:53:28 -0700
+        Mon, 4 Apr 2022 18:46:54 -0400
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6C5B037BC0;
+        Mon,  4 Apr 2022 14:56:58 -0700 (PDT)
+Received: from sequoia (162-237-133-238.lightspeed.rcsntx.sbcglobal.net [162.237.133.238])
+        by linux.microsoft.com (Postfix) with ESMTPSA id 43C0A20DFD57;
+        Mon,  4 Apr 2022 14:56:57 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 43C0A20DFD57
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1649109418;
+        bh=wNfTyQ0SC36j/wUbbN5U+OxggsGjrkK87ERhY/VNu3c=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=kGygIAxVJ5W7hFUPl2Hl83I78rz5tvoUcXvk2nYbbbr7x5stmKlG4Wwbgt1+8BJlJ
+         tf/xDB7QHJCZiQRHh7gmmkaQCuDUrvJulWQH9+aHBRr/4h4IhPWU5Rp9RZrvbwMxfk
+         eJuji+vCAPk65uyd925d1qRrxF5ZZIbQ5WexhL6M=
+Date:   Mon, 4 Apr 2022 16:56:40 -0500
+From:   Tyler Hicks <tyhicks@linux.microsoft.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Borislav Petkov <bp@alien8.de>
+Cc:     Sasha Levin <sashal@kernel.org>, Lei Wang <lewan@microsoft.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sinan Kaya <okaya@kernel.org>,
+        Shiping Ji <shiping.linux@gmail.com>,
+        James Morse <james.morse@arm.com>,
+        Robert Richter <rric@kernel.org>, linux-edac@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] EDAC/dmc520: Don't print an error for each unconfigured
+ interrupt line
+Message-ID: <20220404215640.GA626436@sequoia>
+References: <20220111163800.22362-1-tyhicks@linux.microsoft.com>
+ <YeRkGvestiloCAUV@zn.tnic>
+ <20220118152816.GA89184@sequoia>
+ <Yeb4sK+ZmSHjWPWL@zn.tnic>
+ <20220118195401.GB89184@sequoia>
+ <YecrXidqecoYI/xg@zn.tnic>
+ <YefXQHXNlsxk8yUc@kroah.com>
+ <Yefb7zO9p1iPF3Jm@zn.tnic>
+ <YefnuCPwMq5V2lgl@kroah.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2] sound/oss/dmasound: fix build when drivers are mixed
- =y/=m
-Content-Language: en-US
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        kernel test robot <lkp@intel.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>
-References: <20220403222510.12670-1-rdunlap@infradead.org>
- <CAMuHMdUCdGKE04U4yMqv7TPUztwfih7aLwoTfEP5vcATW=CCxw@mail.gmail.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <CAMuHMdUCdGKE04U4yMqv7TPUztwfih7aLwoTfEP5vcATW=CCxw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YefnuCPwMq5V2lgl@kroah.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Geert,
+On 2022-01-19 11:28:08, Greg Kroah-Hartman wrote:
+> On Wed, Jan 19, 2022 at 10:37:51AM +0100, Borislav Petkov wrote:
+> > On Wed, Jan 19, 2022 at 10:17:52AM +0100, Greg Kroah-Hartman wrote:
+> > > For this specific change, I do NOT think it should be backported at all,
+> > > mostly for the reason that people are still arguing over the whole
+> > > platform_get_*_optional() mess that we currently have.  Let's not go and
+> > > backport anything right now to stable trees until we have all of that
+> > > sorted out, as it looks like it all might be changing again.  See:
+> > > 	https://lore.kernel.org/r/20220110195449.12448-1-s.shtylyov@omp.ru
+> > > for all of the gory details and the 300+ emails written on the topic so
+> > > far.
+> > 
+> > It sounds to me I should not even take this patch upstream yet,
+> > considering that's still ongoing...
+> 
+> Yes, I would not take that just yet at all.  Let's let the api argument
+> settle down a bit first.
 
-On 4/4/22 06:57, Geert Uytterhoeven wrote:
-> Hi Randy,
-> 
-> On Mon, Apr 4, 2022 at 12:25 AM Randy Dunlap <rdunlap@infradead.org> wrote:
->> When CONFIG_DMASOUND_ATARI=m and CONFIG_DMASOUND_Q40=y (or vice versa),
->> dmasound_core.o can be built without dmasound_deinit() being defined,
->> causing a build error:
->>
->> ERROR: modpost: "dmasound_deinit" [sound/oss/dmasound/dmasound_atari.ko] undefined!
->>
->> Modify dmasound_core.c so that dmasound_deinit() is always available.
->>
->> Suggested-by: Arnd Bergmann <arnd@arndb.de>
->> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> 
-> Thanks for spending more time on this ;-)
+The API argument seems to have fizzled out in v2:
 
-Well that bot keeps reporting this problem, although I suppose
-that we could ask for it to be ignored...
+ https://lore.kernel.org/lkml/20220212201631.12648-1-s.shtylyov@omp.ru/
 
->> --- linux-next-20220401.orig/sound/oss/dmasound/dmasound_core.c
->> +++ linux-next-20220401/sound/oss/dmasound/dmasound_core.c
->> @@ -1424,27 +1424,29 @@ int dmasound_init(void)
->>         return 0;
->>  }
->>
->> -#ifdef MODULE
->> -
->>  void dmasound_deinit(void)
->>  {
->> +#ifdef MODULE
-> 
-> I think this #ifdef must not be added: if the modular subdriver
-> calls dmasound_deinit(), the resources should be freed, else a subsequent
-> reload of the subdriver will not work.  This does mean all variables
-> protected by "#ifdef MODULE" must exist unconditionally.
+Can this fix be merged since there seem to be no API changes coming
+soon? Boris, feel free to strip off the cc stable tag.
 
-OK, I like that simplification.
+Tyler
 
-> Alternatively, the test can be replaced by "#ifdef CONFIG_MODULES".
 > 
-> One big caveat below...
+> thanks,
 > 
->>         if (irq_installed) {
->>                 sound_silence();
->>                 dmasound.mach.irqcleanup();
->>                 irq_installed = 0;
->>         }
->> +#endif
->>
->>         write_sq_release_buffers();
->>
->> +#ifdef MODULE
+> greg k-h
 > 
-> Likewise.
-> 
->>         if (mixer_unit >= 0)
->>                 unregister_sound_mixer(mixer_unit);
->>         if (state_unit >= 0)
->>                 unregister_sound_special(state_unit);
->>         if (sq_unit >= 0)
->>                 unregister_sound_dsp(sq_unit);
->> +#endif
->>  }
->>
->> -#else /* !MODULE */
->> +#ifndef MODULE
->>
->>  static int dmasound_setup(char *str)
->>  {
-> 
->> --- linux-next-20220401.orig/sound/oss/dmasound/dmasound.h
->> +++ linux-next-20220401/sound/oss/dmasound/dmasound.h
->> @@ -88,11 +88,7 @@ static inline int ioctl_return(int __use
->>       */
->>
->>  extern int dmasound_init(void);
->> -#ifdef MODULE
->>  extern void dmasound_deinit(void);
->> -#else
->> -#define dmasound_deinit()      do { } while (0)
->> -#endif
->>
->>  /* description of the set-up applies to either hard or soft settings */
-> 
-> ... Below, there is:
-> 
->     typedef struct {
->         [...]
->     #ifdef MODULE
->         void (*irqcleanup)(void);
->     #endif
->         [...]
->     } MACHINE;
-> 
-> This means the MACHINE struct is not compatible between builtin
-> and modular code :-(  Hence the "#ifdef MODULE" should be removed,
-> or replaced by "#ifdef CONFIG_MODULES", too.
-
-ditto
-
-> P.S. I think the younger myself is responsible for this mess.
->      Please accept my apologies, after +25 years...
-
-:)
-
-I'll see how it goes.  Thanks.
-
--- 
-~Randy
