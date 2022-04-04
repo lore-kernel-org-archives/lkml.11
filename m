@@ -2,197 +2,483 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3865AC4743E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AEACC41535
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:23:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381685AbiDDVXn (ORCPT
+        id S1381700AbiDDVXs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:23:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60388 "EHLO
+        Mon, 4 Apr 2022 17:23:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380352AbiDDTly (ORCPT
+        with ESMTP id S1379660AbiDDRqY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 15:41:54 -0400
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2066.outbound.protection.outlook.com [40.107.94.66])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CFBC22B37;
-        Mon,  4 Apr 2022 12:39:57 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QGhLU4Pu5M/PEdtTyvyhegjH/lQ4rJKP5ddiSURtsqs0uOmbHsFRY+szID2fL5fvUBsq3ZPS3Q65J/2CMz0COhR4D2nL235MeqLRWZgb5Lny3brz1jo06ZelfeQbdv7apAlORnn5CTRgL6n4e6hBCo4Z02iecfWQCPoeyyWupAGLxaG9W63A4HNSenxsKtDe58nENjaky2GvWutY2xsYzqyqS2B7+fAMIP4Pe0zPBuLCvBUQGEcTdBUyO1ZHWyxELKsRL9AZV78vhY4L/A5anPJMZnkoc6qtFsT7PoBGL7e60/fGyhbuxCppKBJKSyhwnEm1FHk1YOwzdUk+eMkfCg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=at07lX3FxytbILMDH5EKqAxRMij9E92qt+TB6Wku2P0=;
- b=LvhtcjkPxrBJvfBcpnx4rya80+FzGIQP5V9nsDOQ4tHsPg3OYRmhMNvMQhRVccaoQKnZHaRKq/rHxYN358MTLRD4198mPG2rAvy/6K28m64S94mWx3NJ1w6kOmQdQlwwZOlKGxmhz1ZSDLukmqtLWGDqlkuNOMt2nNHzX4/WZJK9tvuHZGQi5Ilk8TJN4UzpCHPPuMc0bipV3qllC4o8vOXrZucEovt0dQQ0+andGAaT/rGF7poSga73mb4skOaHB2FvUuJz+NAvxWtXiuerShJUjvBukuaEnFajQJc66wvojU+35bDPjapzqSCG9cAPdPyT4f1rcfksJ/D5z1BtJw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=at07lX3FxytbILMDH5EKqAxRMij9E92qt+TB6Wku2P0=;
- b=wmCQALL75esRdr+r9QzjFxchtY2fe1WH1GxbJE4XpdjfHcSKizuT6GECZS0DhWgKDoqBqpDkGUjFzvih5SRPgZjtFJmNY1Q4XXfep7g6+QW0IzW9CsTfcIEuC76meVY4LGt6h/tNqvPWCYwJ5VcKVRE67z0f0ez4lcvLj+rHe/w=
-Received: from BL1PR12MB5157.namprd12.prod.outlook.com (2603:10b6:208:308::15)
- by CY4PR1201MB0023.namprd12.prod.outlook.com (2603:10b6:910:1f::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Mon, 4 Apr
- 2022 19:39:54 +0000
-Received: from BL1PR12MB5157.namprd12.prod.outlook.com
- ([fe80::70d6:f6dd:3e14:3c2d]) by BL1PR12MB5157.namprd12.prod.outlook.com
- ([fe80::70d6:f6dd:3e14:3c2d%5]) with mapi id 15.20.5123.031; Mon, 4 Apr 2022
- 19:39:54 +0000
-From:   "Limonciello, Mario" <Mario.Limonciello@amd.com>
-To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>
-CC:     "open list:LIBATA SUBSYSTEM (Serial and Parallel ATA drivers)" 
-        <linux-ide@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "hdegoede@redhat.com" <hdegoede@redhat.com>
-Subject: RE: [PATCH v2 2/2] ata: ahci: Protect users from setting policies
- their drives don't support
-Thread-Topic: [PATCH v2 2/2] ata: ahci: Protect users from setting policies
- their drives don't support
-Thread-Index: AQHYLrH7kpm3AkPxAE2eIMYLz1fgLqzfJECAgAE1rIA=
-Date:   Mon, 4 Apr 2022 19:39:54 +0000
-Message-ID: <BL1PR12MB51570E1C17A122179CCB0625E2E59@BL1PR12MB5157.namprd12.prod.outlook.com>
-References: <20220303034912.3615390-1-mario.limonciello@amd.com>
- <20220303034912.3615390-2-mario.limonciello@amd.com>
- <a6a17a22-0cde-9c46-0cd7-127be2cd2792@opensource.wdc.com>
-In-Reply-To: <a6a17a22-0cde-9c46-0cd7-127be2cd2792@opensource.wdc.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_88914ebd-7e6c-4e12-a031-a9906be2db14_Enabled=true;
- MSIP_Label_88914ebd-7e6c-4e12-a031-a9906be2db14_SetDate=2022-04-04T19:39:52Z;
- MSIP_Label_88914ebd-7e6c-4e12-a031-a9906be2db14_Method=Standard;
- MSIP_Label_88914ebd-7e6c-4e12-a031-a9906be2db14_Name=AMD Official Use
- Only-AIP 2.0;
- MSIP_Label_88914ebd-7e6c-4e12-a031-a9906be2db14_SiteId=3dd8961f-e488-4e60-8e11-a82d994e183d;
- MSIP_Label_88914ebd-7e6c-4e12-a031-a9906be2db14_ActionId=fb553fde-5c4a-4d58-acb2-0dc3d52926f3;
- MSIP_Label_88914ebd-7e6c-4e12-a031-a9906be2db14_ContentBits=1
-msip_label_88914ebd-7e6c-4e12-a031-a9906be2db14_enabled: true
-msip_label_88914ebd-7e6c-4e12-a031-a9906be2db14_setdate: 2022-04-04T19:39:52Z
-msip_label_88914ebd-7e6c-4e12-a031-a9906be2db14_method: Standard
-msip_label_88914ebd-7e6c-4e12-a031-a9906be2db14_name: AMD Official Use
- Only-AIP 2.0
-msip_label_88914ebd-7e6c-4e12-a031-a9906be2db14_siteid: 3dd8961f-e488-4e60-8e11-a82d994e183d
-msip_label_88914ebd-7e6c-4e12-a031-a9906be2db14_actionid: 991f7053-713f-44f7-9392-2d20fee1c0f1
-msip_label_88914ebd-7e6c-4e12-a031-a9906be2db14_contentbits: 0
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: e76f68e3-a366-4a9f-c751-08da1672e49d
-x-ms-traffictypediagnostic: CY4PR1201MB0023:EE_
-x-microsoft-antispam-prvs: <CY4PR1201MB00233AA0F1B6C814877C33B4E2E59@CY4PR1201MB0023.namprd12.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 46Rv12HIdZNppGNP8KawzH8RtqVRCtmptLLQl7d7zHP1A3oWopoTYTUpRdoc9OBAZ71l31tHSQS+O/o4e0A3BmUdk2uBXcHaN24786qKY9OP0lS9rnXZwAMRJIzgeiE3BireWfLik1+0oLqRPJPxC3vCBz2lwMkqLh4UcWdU9Rv9emSwi08QdxVEAabqoNP9PGAjhOqEH/DQuORkjBWFlLJI6A0McKdudDG2oQ+1wP74+b2sxra+43KYUgJAoYIDewUj3QCIoAIBinRfSzDvSnRgANPOSzqP7YUx4cCmUQlh0Horw2UWXaMC0IDGfX2akufn7XfmQe1gaQP/YITczgmlXzgA76XzodPuOQDNWfn/LR4nfoZQ24/J13SZyHO5aeExu2hecXcu6ua7d/ktzOKyIybUxOxbaYakmgYjWCHiJwAbxAjLIyl2IoMUhyecWAGLW3lX1zwyEMgXq46T3XaetHcS8AoV4rVLjnBO/tFQS+VJR1Y/YTsergeW8tfHGPls0JIaghCrO6coNYerGtuXHpHiD/lhM5aiMIktPV0AEXh2u/Taqq6g1BjLUR7z6/BZQBtsFM7OyNYp42XciLeQOO2ZXLBFbFp8dV9AXemj8Nu3RQrL8FJ0aix+zMs75iF6fA+fJ0DllH/mhoRULuOXxhXmPzzjOiAqQnz6CfhFh6K00urNSKdAawLLGy16dlZTF4NLp+hv61+SxZU8xA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL1PR12MB5157.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(508600001)(76116006)(5660300002)(71200400001)(54906003)(6916009)(316002)(86362001)(66946007)(66446008)(4326008)(66556008)(64756008)(8676002)(66476007)(52536014)(8936002)(6506007)(2906002)(7696005)(53546011)(38070700005)(55016003)(83380400001)(186003)(9686003)(122000001)(38100700002)(33656002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 2
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?NVIzWlJjWk4wOEZlcEpmSFFzSnJJWUJZbVIrVVdjRjlpcXBwWk1mdHpHQWRL?=
- =?utf-8?B?cWk4ZE55UExoNWdzL292KzhNRWRNakpqcFJTSmVScFVZVndJNGt0cHRSdEt4?=
- =?utf-8?B?Z2R3SzgzVkZrZlphSGpOeTM5alJRM3BGUER5MjZndHFUTFpLL0Q0T3U0cHZU?=
- =?utf-8?B?RWNaNEVZKzdUMXBaZEZ5eGU0Q1JPTU5CSVA5WkcxMllDRVFOTnFveldYbDRa?=
- =?utf-8?B?anorSHlkWm9XK05NZDVPMnM0WnNCWGRpOVRTbUVrUVZoZTdsM01BYm9pa1BZ?=
- =?utf-8?B?MXdIanYxM0Z5UnY1V2RGbHEyblVJeGhWWGRRREFwaWpNWDZUdkc0d1lDUXgw?=
- =?utf-8?B?S3Nxa3FUYno4NFJveFYvU0FKRXBwYTJsUjlqalpZQmFOSVNYWVgyYVhlc1Na?=
- =?utf-8?B?UFNlQlRTVGJsdUpPUXUwbU0rSTZ1dzRDWUpxNDcvaFNMZldDWGYxUjZ2ZlJk?=
- =?utf-8?B?NGFrRm1KK1E2N0c3UlZUd0lmeEpjQnJNMi9GL0NPZFJoU0VlUy96TVplQWpi?=
- =?utf-8?B?cEt6RVMzTkgwQks4TUZBVmlkaFUvVDNITWVNb2VBMk4yTnF3ZlRQbWpCS0ls?=
- =?utf-8?B?ODZtTnM4RmJkSjZQUFdtR0RVQnRUdEhmcjZpdit2cERjQWxWRUxlWThmV2RI?=
- =?utf-8?B?ZithcEgwWFh4OEJieFZNOUdyVURuUVo4NFF6UzFndzQ0QldJVkFmRlRsemtH?=
- =?utf-8?B?Ny9kdFhTcjFKcGJwWFp1WjBESmE3STZQZzF5VHZ0SkdJcDBWbU1TQjFDUjQ3?=
- =?utf-8?B?dFZBNUJwMGxrT1N5SW8yMXlRTW9TQ2hOMWwzaUJmTXdTQVNzdHg3TkF2WmNz?=
- =?utf-8?B?K2ljK3dlNFJsUHQyL0tKL2NZdXNtLzFNRlEwdlZabFdjd2tNb1N2T0VQaDlm?=
- =?utf-8?B?NGlkS1pOeDd4M1ZDRW9mWkVmVzJOYUV2VjN5VXV5NjlRUnRXOVlnUU9CSXN5?=
- =?utf-8?B?ZFk2QVRkbXF5ZlFLbFcrdWRhdENrdXV5aFJWNStSNGVqSytEc2V0UDQ4NUNS?=
- =?utf-8?B?RytiTzc5aTg1bjdOTGtjVGhabDRpcjdzRTFPZlE0a3M2YllNbExmZ24xR2RY?=
- =?utf-8?B?TUtFZVlTQUpqa0lZclBVb1ZmakRzcExtOHZvWlRnamtIZ3Q3NUFnQ1o0YkVy?=
- =?utf-8?B?RnZYU3FwRlZLeDNyR29Bb1JoTHkvbXFoVTVjci9KN2lmQ0Fxdnpmdi9tUHZM?=
- =?utf-8?B?MTloVWd0SlR3QkhJazJxdURoQjcvRUZVVU1vaTl4VG1vcnlhQ0hwcEF2OHI3?=
- =?utf-8?B?VlRyY3NNSWUrSWZwZUl3VDRoUEdmUEFjMW5VanNucVQvQzlZRjY0QnBiWFZN?=
- =?utf-8?B?SERZYmljbGR4d0tlNGpxNVhPRmxvU24rbUl5ekt5QWVjaWlIb2s0R1BnTGFH?=
- =?utf-8?B?YjNkYi90SmV4YmZoUUNmUm9QSjdBdkFWWDQzcmlsRURhK3hCZ2lDRXlpNFZV?=
- =?utf-8?B?TlhJTk5tYTF5dHEvMC96dFRyeFNmVnpzUUtqWDk3TUtlbzZHbUxzejRQaVhq?=
- =?utf-8?B?aEk4OHA0NnBPYmZhM01sU29nakMyeGFtWUxFOHk3T2phZG4wKzQ0MG5rQlRh?=
- =?utf-8?B?amNiTjFnSlFFeE9JUHdnRGhGOHNSUzNqQm9PbFBncWM2VFh6RndvVlNmNXR5?=
- =?utf-8?B?QlFRWFFkWEl3ZXJ3eGdSMSs5T1IzWDMrSTFkQk9WSlYzTEcrZWVCRXRCS2lL?=
- =?utf-8?B?WlR0Q0Y0MW5IOCt5Um4vR3pqOWtkTVpLTFZiZFlvOEYrVkNsczdDRjhXdFhE?=
- =?utf-8?B?amk2NVYvQWI4ejROU0hqWHE2bDdRVDlpanZhQTNGbWczaVFtU2FPcHZEdzYy?=
- =?utf-8?B?b2pYSWR5UXdUdGRyMTFCR1RCZ3I2NXlFYkQrWXF3ZWUwSkRrNk1qazV5QTcr?=
- =?utf-8?B?WUEwUEJIclp2UHhRWkJpZnFLcjRLeEZsbXdia2hnVC9RN3Z1aDNvc0RBTDFG?=
- =?utf-8?B?aGkrMmlGTUpzZE9uc2UyWk5zdXkxVmZieHRCSyttMldjNThQRU0vbER3aVVW?=
- =?utf-8?B?WUN1bGJod1dQL2lWbXp2eXh5R0QwMkhBdjhSQUZYUEY3cGZMdE9zcDQ5SFFW?=
- =?utf-8?B?R1h0aldRMmxkcjVEdjYrY0dwUDdTeUo0WFRLQjdkK2dvSlo2S2dVU1hlMVlu?=
- =?utf-8?B?aEpWYWhlL1dhTWFBbE5PQ1RkQkFjb1REclFlWEdxamZnSHI2a3RqeFpLWHQ0?=
- =?utf-8?B?bkN0VlovMWhSN1FkanlHVEpndGxIK1ZrNjlRR1lxbVYyMHc5OHc5ekRaUjdL?=
- =?utf-8?B?OGlMNFRUeFlQTTZLRmliTVpVNDNZTXFKTnA1SWw1emhreU5BNlV5SVJiaDRi?=
- =?utf-8?B?bWxmN1UyZXF6c0taYmppMW1oaVRabXltSGphdlBQYk55dTNKOTY2ZDNmK212?=
- =?utf-8?Q?fhlDdC9QPttM3xfl7ADMBTa9heB53L5bhwLSobgYi9Vgj?=
-x-ms-exchange-antispam-messagedata-1: nnUnfLuAbDRSFA==
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        Mon, 4 Apr 2022 13:46:24 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDE6017AB9;
+        Mon,  4 Apr 2022 10:44:26 -0700 (PDT)
+Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 234GdxJF016498;
+        Mon, 4 Apr 2022 17:44:25 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=65uBOfPBRIZ+TJrQTz4bghtwORc3kWH5b6uayqixe3U=;
+ b=mz1hTBaSBM9aaNRwNXNL0tEJkNfQfdUi1Th77/NHcBwZXxYFr1DR21Wybvof+oT9tSal
+ 7iC64BsOP7vtkoQ2gkjHZ7pfulrjVU2M9ulmGdrVxTsWtZmIHA64apXpXnIgDsK91h6V
+ aQq21TT6qFWzFf/r/eE3UumtDOpIlHuYOcOyzSuPUI6b346fxIW8d6S3TOY4HOmUHT1d
+ URjhX4U4kH7ot8SG3gUcUqXbqhMBlKaytuOjGo/7SUdE5n4H3brl2RyERuaid6VtSJoT
+ ULhAVAPzrnGH0IfDQ1KFBy4l0cYla//AlQCNvxiHP/yR96Zzz9sspcaj2ZmoWS81DVMH +Q== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3f6ywj3bqk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 04 Apr 2022 17:44:25 +0000
+Received: from m0098416.ppops.net (m0098416.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 234HUE6e008018;
+        Mon, 4 Apr 2022 17:44:24 GMT
+Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3f6ywj3bq3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 04 Apr 2022 17:44:24 +0000
+Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
+        by ppma01dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 234HhLKP026081;
+        Mon, 4 Apr 2022 17:44:23 GMT
+Received: from b03cxnp08025.gho.boulder.ibm.com (b03cxnp08025.gho.boulder.ibm.com [9.17.130.17])
+        by ppma01dal.us.ibm.com with ESMTP id 3f6e49ng70-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 04 Apr 2022 17:44:23 +0000
+Received: from b03ledav002.gho.boulder.ibm.com (b03ledav002.gho.boulder.ibm.com [9.17.130.233])
+        by b03cxnp08025.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 234HiMh132965008
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 4 Apr 2022 17:44:22 GMT
+Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 2D36613604F;
+        Mon,  4 Apr 2022 17:44:22 +0000 (GMT)
+Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 27608136051;
+        Mon,  4 Apr 2022 17:44:20 +0000 (GMT)
+Received: from li-c92d2ccc-254b-11b2-a85c-a700b5bfb098.ibm.com.com (unknown [9.211.32.125])
+        by b03ledav002.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Mon,  4 Apr 2022 17:44:20 +0000 (GMT)
+From:   Matthew Rosato <mjrosato@linux.ibm.com>
+To:     linux-s390@vger.kernel.org
+Cc:     alex.williamson@redhat.com, cohuck@redhat.com,
+        schnelle@linux.ibm.com, farman@linux.ibm.com, pmorel@linux.ibm.com,
+        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
+        svens@linux.ibm.com, frankja@linux.ibm.com, david@redhat.com,
+        imbrenda@linux.ibm.com, vneethv@linux.ibm.com,
+        oberpar@linux.ibm.com, freude@linux.ibm.com, thuth@redhat.com,
+        pasic@linux.ibm.com, pbonzini@redhat.com, corbet@lwn.net,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org
+Subject: [PATCH v5 11/21] KVM: s390: pci: do initial setup for AEN interpretation
+Date:   Mon,  4 Apr 2022 13:43:39 -0400
+Message-Id: <20220404174349.58530-12-mjrosato@linux.ibm.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220404174349.58530-1-mjrosato@linux.ibm.com>
+References: <20220404174349.58530-1-mjrosato@linux.ibm.com>
 MIME-Version: 1.0
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BL1PR12MB5157.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e76f68e3-a366-4a9f-c751-08da1672e49d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Apr 2022 19:39:54.2412
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Y5zV0T1vBI/lXngPfM1eUisbGaxo3Q+fd1BV0DbLWBZu+ly7ePeFVGAR/mbrPG7U/q2kitW3hX1Yt9hDF00pcQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR1201MB0023
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: FpEiy_y17bGbYWVZQTFu6QwFJRYJCPjc
+X-Proofpoint-ORIG-GUID: p2ilfW7jX1Ze-RZQbsq8Y4h4vZ-M5J19
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-04-04_06,2022-03-31_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 mlxscore=0
+ mlxlogscore=999 suspectscore=0 spamscore=0 adultscore=0 impostorscore=0
+ bulkscore=0 lowpriorityscore=0 phishscore=0 malwarescore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2204040099
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-W0FNRCBPZmZpY2lhbCBVc2UgT25seV0NCg0KDQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0t
-LS0NCj4gRnJvbTogRGFtaWVuIExlIE1vYWwgPGRhbWllbi5sZW1vYWxAb3BlbnNvdXJjZS53ZGMu
-Y29tPg0KPiBTZW50OiBTdW5kYXksIEFwcmlsIDMsIDIwMjIgMjA6MTENCj4gVG86IExpbW9uY2ll
-bGxvLCBNYXJpbyA8TWFyaW8uTGltb25jaWVsbG9AYW1kLmNvbT4NCj4gQ2M6IG9wZW4gbGlzdDpM
-SUJBVEEgU1VCU1lTVEVNIChTZXJpYWwgYW5kIFBhcmFsbGVsIEFUQSBkcml2ZXJzKSA8bGludXgt
-DQo+IGlkZUB2Z2VyLmtlcm5lbC5vcmc+OyBvcGVuIGxpc3QgPGxpbnV4LWtlcm5lbEB2Z2VyLmtl
-cm5lbC5vcmc+Ow0KPiBoZGVnb2VkZUByZWRoYXQuY29tDQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0gg
-djIgMi8yXSBhdGE6IGFoY2k6IFByb3RlY3QgdXNlcnMgZnJvbSBzZXR0aW5nIHBvbGljaWVzIHRo
-ZWlyDQo+IGRyaXZlcyBkb24ndCBzdXBwb3J0DQo+IA0KPiBPbiAzLzMvMjIgMTI6NDksIE1hcmlv
-IExpbW9uY2llbGxvIHdyb3RlOg0KPiA+IEFzIHRoZSBkZWZhdWx0IGxvdyBwb3dlciBwb2xpY3kg
-YXBwbGllcyB0byBtb3JlIGNoaXBzZXRzIGFuZCBkcml2ZXMsIGl0J3MNCj4gPiBpbXBvcnRhbnQg
-dG8gbWFrZSBzdXJlIHRoYXQgZHJpdmVzIGFjdHVhbGx5IHN1cHBvcnQgdGhlIHBvbGljeSB0aGF0
-IGEgdXNlcg0KPiA+IHNlbGVjdGVkIGluIHRoZWlyIGtlcm5lbCBjb25maWd1cmF0aW9uLg0KPiA+
-DQo+ID4gSWYgdGhlIGRyaXZlIGRvZXNuJ3Qgc3VwcG9ydCBzbHVtYmVyLCBkb24ndCBsZXQgdGhl
-IGRlZmF1bHQgcG9saWNpZXMNCj4gPiBkZXBlbmRlbnQgdXBvbiBzbHVtYmVyIChgbWluX3Bvd2Vy
-YCBvciBgbWluX3Bvd2VyX3dpdGhfcGFydGlhbGApIGFmZmVjdA0KPiB0aGUNCj4gPiBkaXNrLg0K
-PiA+DQo+ID4gU2lnbmVkLW9mZi1ieTogTWFyaW8gTGltb25jaWVsbG8gPG1hcmlvLmxpbW9uY2ll
-bGxvQGFtZC5jb20+DQo+IA0KPiBNYXJpbywNCj4gDQo+IENhbiB5b3UgcmVzZW5kIGEgcmViYXNl
-ZCB2ZXJzaW9uIG9mIHRoaXMsIG9uIHRvcCBvZiBsaWJhdGEgZm9yLTUuMTkgYnJhbmNoID8NCg0K
-DQpPSy4NCg0KPiANCj4gPiAtLS0NCj4gPiBDaGFuZ2VzIGZyb20gdjEtPnYyOg0KPiA+ICogTW92
-ZSBkZWVwZXIgaW50byBjb2RlcGF0aHMNCj4gPiAqIFJlc2V0IHRvIE1FRF9QT1dFUiByYXRoZXIg
-dGhhbiBpZ25vcmUNCj4gPiAgIGRyaXZlcnMvYXRhL2xpYmF0YS1zYXRhLmMgfCAxMSArKysrKysr
-KysrKw0KPiA+ICAgMSBmaWxlIGNoYW5nZWQsIDExIGluc2VydGlvbnMoKykNCj4gPg0KPiA+IGRp
-ZmYgLS1naXQgYS9kcml2ZXJzL2F0YS9saWJhdGEtc2F0YS5jIGIvZHJpdmVycy9hdGEvbGliYXRh
-LXNhdGEuYw0KPiA+IGluZGV4IDA3MTE1OGMwYzQ0Yy4uMGRjMDM4ODhjNjJiIDEwMDY0NA0KPiA+
-IC0tLSBhL2RyaXZlcnMvYXRhL2xpYmF0YS1zYXRhLmMNCj4gPiArKysgYi9kcml2ZXJzL2F0YS9s
-aWJhdGEtc2F0YS5jDQo+ID4gQEAgLTEzLDYgKzEzLDcgQEANCj4gPiAgICNpbmNsdWRlIDxzY3Np
-L3Njc2lfZGV2aWNlLmg+DQo+ID4gICAjaW5jbHVkZSA8bGludXgvbGliYXRhLmg+DQo+ID4NCj4g
-PiArI2luY2x1ZGUgImFoY2kuaCINCj4gPiAgICNpbmNsdWRlICJsaWJhdGEuaCINCj4gPiAgICNp
-bmNsdWRlICJsaWJhdGEtdHJhbnNwb3J0LmgiDQo+ID4NCj4gPiBAQCAtMzY4LDEwICszNjksMjAg
-QEAgaW50IHNhdGFfbGlua19zY3JfbHBtKHN0cnVjdCBhdGFfbGluayAqbGluaywgZW51bQ0KPiBh
-dGFfbHBtX3BvbGljeSBwb2xpY3ksDQo+ID4gICAJCSAgICAgIGJvb2wgc3BtX3dha2V1cCkNCj4g
-PiAgIHsNCj4gPiAgIAlzdHJ1Y3QgYXRhX2VoX2NvbnRleHQgKmVoYyA9ICZsaW5rLT5laF9jb250
-ZXh0Ow0KPiA+ICsJc3RydWN0IGF0YV9wb3J0ICphcCA9IGxpbmstPmFwOw0KPiA+ICsJc3RydWN0
-IGFoY2lfaG9zdF9wcml2ICpocHJpdjsNCj4gPiAgIAlib29sIHdva2VuX3VwID0gZmFsc2U7DQo+
-ID4gICAJdTMyIHNjb250cm9sOw0KPiA+ICAgCWludCByYzsNCj4gPg0KPiA+ICsJaHByaXYgPSBh
-cC0+aG9zdC0+cHJpdmF0ZV9kYXRhOw0KPiA+ICsJaWYgKHBvbGljeSA+PSBBVEFfTFBNX01JTl9Q
-T1dFUl9XSVRIX1BBUlRJQUwgJiYNCj4gPiArCSAgIShocHJpdi0+Y2FwICYgSE9TVF9DQVBfU1ND
-KSkgew0KPiA+ICsJCWRldl93YXJuKGFwLT5ob3N0LT5kZXYsDQo+ID4gKwkJCSJUaGlzIGRyaXZl
-IGRvZXNuJ3Qgc3VwcG9ydCBzbHVtYmVyOyByZXN0dGluZyBwb2xpY3kgdG8NCj4gTUVEX1BPV0VS
-XG4iKTsNCj4gDQo+IFR5cG8gaGVyZTogcy9yZXN0dGluZy9yZXNldHRpbmcuIEFsc28sIHMvZG9l
-c24ndC9kb2VzIG5vdC4NCj4gDQo+ID4gKwkJcG9saWN5ID0gQVRBX0xQTV9NRURfUE9XRVI7DQo+
-IA0KPiBIZXJlLCBzaG91bGRuJ3Qgd2UgdXNlIHRoZSBkZWZhdWx0IHBvbGljeSBkZWZpbmVkIGJ5
-DQo+IENPTkZJR19TQVRBX0xQTV9QT0xJQ1kgPw0KDQpJZiB0aGV5IHNldCBpdCB0b28gYWdncmVz
-c2l2ZWx5IHdlIHN0aWxsIGRvbid0IHdhbnQgdG8gaG9ub3IgaXQgaWYgdGhlIGRyaXZlDQpjYW4n
-dCBkbyBzbHVtYmVyIEkgd291bGQgZXhwZWN0Lg0KDQo+IA0KPiA+ICsJfQ0KPiA+ICsNCj4gPiAg
-IAlyYyA9IHNhdGFfc2NyX3JlYWQobGluaywgU0NSX0NPTlRST0wsICZzY29udHJvbCk7DQo+ID4g
-ICAJaWYgKHJjKQ0KPiA+ICAgCQlyZXR1cm4gcmM7DQo+IA0KPiANCj4gLS0NCj4gRGFtaWVuIExl
-IE1vYWwNCj4gV2VzdGVybiBEaWdpdGFsIFJlc2VhcmNoDQo=
+Initial setup for Adapter Event Notification Interpretation for zPCI
+passthrough devices.  Specifically, allocate a structure for forwarding of
+adapter events and pass the address of this structure to firmware.
+
+Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
+---
+ arch/s390/include/asm/pci.h      |   4 +
+ arch/s390/include/asm/pci_insn.h |  12 +++
+ arch/s390/kvm/interrupt.c        |  14 +++
+ arch/s390/kvm/kvm-s390.c         |   9 ++
+ arch/s390/kvm/pci.c              | 153 +++++++++++++++++++++++++++++++
+ arch/s390/kvm/pci.h              |  47 ++++++++++
+ arch/s390/pci/pci.c              |   6 ++
+ 7 files changed, 245 insertions(+)
+
+diff --git a/arch/s390/include/asm/pci.h b/arch/s390/include/asm/pci.h
+index 9eb20cebaa18..557b0ffb32d2 100644
+--- a/arch/s390/include/asm/pci.h
++++ b/arch/s390/include/asm/pci.h
+@@ -9,6 +9,7 @@
+ #include <asm-generic/pci.h>
+ #include <asm/pci_clp.h>
+ #include <asm/pci_debug.h>
++#include <asm/pci_insn.h>
+ #include <asm/sclp.h>
+ 
+ #define PCIBIOS_MIN_IO		0x1000
+@@ -204,6 +205,9 @@ extern const struct attribute_group *zpci_attr_groups[];
+ extern unsigned int s390_pci_force_floating __initdata;
+ extern unsigned int s390_pci_no_rid;
+ 
++extern union zpci_sic_iib *zpci_aipb;
++extern struct airq_iv *zpci_aif_sbv;
++
+ /* -----------------------------------------------------------------------------
+   Prototypes
+ ----------------------------------------------------------------------------- */
+diff --git a/arch/s390/include/asm/pci_insn.h b/arch/s390/include/asm/pci_insn.h
+index 5331082fa516..e5f57cfe1d45 100644
+--- a/arch/s390/include/asm/pci_insn.h
++++ b/arch/s390/include/asm/pci_insn.h
+@@ -101,6 +101,7 @@ struct zpci_fib {
+ /* Set Interruption Controls Operation Controls  */
+ #define	SIC_IRQ_MODE_ALL		0
+ #define	SIC_IRQ_MODE_SINGLE		1
++#define	SIC_SET_AENI_CONTROLS		2
+ #define	SIC_IRQ_MODE_DIRECT		4
+ #define	SIC_IRQ_MODE_D_ALL		16
+ #define	SIC_IRQ_MODE_D_SINGLE		17
+@@ -127,9 +128,20 @@ struct zpci_cdiib {
+ 	u64 : 64;
+ } __packed __aligned(8);
+ 
++/* adapter interruption parameters block */
++struct zpci_aipb {
++	u64 faisb;
++	u64 gait;
++	u16 : 13;
++	u16 afi : 3;
++	u32 : 32;
++	u16 faal;
++} __packed __aligned(8);
++
+ union zpci_sic_iib {
+ 	struct zpci_diib diib;
+ 	struct zpci_cdiib cdiib;
++	struct zpci_aipb aipb;
+ };
+ 
+ DECLARE_STATIC_KEY_FALSE(have_mio);
+diff --git a/arch/s390/kvm/interrupt.c b/arch/s390/kvm/interrupt.c
+index 250119a26c60..57a27dfc85ea 100644
+--- a/arch/s390/kvm/interrupt.c
++++ b/arch/s390/kvm/interrupt.c
+@@ -32,6 +32,7 @@
+ #include "kvm-s390.h"
+ #include "gaccess.h"
+ #include "trace-s390.h"
++#include "pci.h"
+ 
+ #define PFAULT_INIT 0x0600
+ #define PFAULT_DONE 0x0680
+@@ -3328,6 +3329,11 @@ void kvm_s390_gib_destroy(void)
+ {
+ 	if (!gib)
+ 		return;
++	if (kvm_s390_pci_interp_allowed() && aift) {
++		mutex_lock(&aift->aift_lock);
++		kvm_s390_pci_aen_exit();
++		mutex_unlock(&aift->aift_lock);
++	}
+ 	chsc_sgib(0);
+ 	unregister_adapter_interrupt(&gib_alert_irq);
+ 	free_page((unsigned long)gib);
+@@ -3365,6 +3371,14 @@ int kvm_s390_gib_init(u8 nisc)
+ 		goto out_unreg_gal;
+ 	}
+ 
++	if (kvm_s390_pci_interp_allowed()) {
++		if (kvm_s390_pci_aen_init(nisc)) {
++			pr_err("Initializing AEN for PCI failed\n");
++			rc = -EIO;
++			goto out_unreg_gal;
++		}
++	}
++
+ 	KVM_EVENT(3, "gib 0x%pK (nisc=%d) initialized", gib, gib->nisc);
+ 	goto out;
+ 
+diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
+index 156d1c25a3c1..9db6f8080f71 100644
+--- a/arch/s390/kvm/kvm-s390.c
++++ b/arch/s390/kvm/kvm-s390.c
+@@ -47,6 +47,7 @@
+ #include <asm/fpu/api.h>
+ #include "kvm-s390.h"
+ #include "gaccess.h"
++#include "pci.h"
+ 
+ #define CREATE_TRACE_POINTS
+ #include "trace.h"
+@@ -502,6 +503,14 @@ int kvm_arch_init(void *opaque)
+ 		goto out;
+ 	}
+ 
++	if (kvm_s390_pci_interp_allowed()) {
++		rc = kvm_s390_pci_init();
++		if (rc) {
++			pr_err("Unable to allocate AIFT for PCI\n");
++			goto out;
++		}
++	}
++
+ 	rc = kvm_s390_gib_init(GAL_ISC);
+ 	if (rc)
+ 		goto out;
+diff --git a/arch/s390/kvm/pci.c b/arch/s390/kvm/pci.c
+index 213be236c05a..01bd8a2f503b 100644
+--- a/arch/s390/kvm/pci.c
++++ b/arch/s390/kvm/pci.c
+@@ -9,8 +9,149 @@
+ 
+ #include <linux/kvm_host.h>
+ #include <linux/pci.h>
++#include <asm/pci.h>
++#include <asm/pci_insn.h>
+ #include "pci.h"
+ 
++struct zpci_aift *aift;
++
++static inline int __set_irq_noiib(u16 ctl, u8 isc)
++{
++	union zpci_sic_iib iib = {{0}};
++
++	return zpci_set_irq_ctrl(ctl, isc, &iib);
++}
++
++/* Caller must hold the aift lock before calling this function */
++void kvm_s390_pci_aen_exit(void)
++{
++	unsigned long flags;
++	struct kvm_zdev **gait_kzdev;
++
++	/*
++	 * Contents of the aipb remain registered for the life of the host
++	 * kernel, the information preserved in zpci_aipb and zpci_aif_sbv
++	 * in case we insert the KVM module again later.  Clear the AIFT
++	 * information and free anything not registered with underlying
++	 * firmware.
++	 */
++	spin_lock_irqsave(&aift->gait_lock, flags);
++	gait_kzdev = aift->kzdev;
++	aift->gait = 0;
++	aift->sbv = 0;
++	aift->kzdev = 0;
++	spin_unlock_irqrestore(&aift->gait_lock, flags);
++
++	kfree(gait_kzdev);
++}
++
++static int zpci_setup_aipb(u8 nisc)
++{
++	struct page *page;
++	int size, rc;
++
++	zpci_aipb = kzalloc(sizeof(union zpci_sic_iib), GFP_KERNEL);
++	if (!zpci_aipb)
++		return -ENOMEM;
++
++	aift->sbv = airq_iv_create(ZPCI_NR_DEVICES, AIRQ_IV_ALLOC, 0);
++	if (!aift->sbv) {
++		rc = -ENOMEM;
++		goto free_aipb;
++	}
++	zpci_aif_sbv = aift->sbv;
++	size = get_order(PAGE_ALIGN(ZPCI_NR_DEVICES *
++						sizeof(struct zpci_gaite)));
++	page = alloc_pages(GFP_KERNEL | __GFP_ZERO, size);
++	if (!page) {
++		rc = -ENOMEM;
++		goto free_sbv;
++	}
++	aift->gait = (struct zpci_gaite *)page_to_phys(page);
++
++	zpci_aipb->aipb.faisb = virt_to_phys(aift->sbv->vector);
++	zpci_aipb->aipb.gait = virt_to_phys(aift->gait);
++	zpci_aipb->aipb.afi = nisc;
++	zpci_aipb->aipb.faal = ZPCI_NR_DEVICES;
++
++	/* Setup Adapter Event Notification Interpretation */
++	if (zpci_set_irq_ctrl(SIC_SET_AENI_CONTROLS, 0, zpci_aipb)) {
++		rc = -EIO;
++		goto free_gait;
++	}
++
++	return 0;
++
++free_gait:
++	size = get_order(PAGE_ALIGN(ZPCI_NR_DEVICES *
++				    sizeof(struct zpci_gaite)));
++	free_pages((unsigned long)aift->gait, size);
++free_sbv:
++	airq_iv_release(aift->sbv);
++	zpci_aif_sbv = 0;
++free_aipb:
++	kfree(zpci_aipb);
++	zpci_aipb = 0;
++
++	return rc;
++}
++
++static int zpci_reset_aipb(u8 nisc)
++{
++	/*
++	 * AEN registration can only happen once per system boot.  If
++	 * an aipb already exists then AEN was already registered and
++	 * we can re-use the aipb contents.  This can only happen if
++	 * the KVM module was removed and re-inserted.
++	 */
++	if (zpci_aipb->aipb.faal != ZPCI_NR_DEVICES ||
++	    zpci_aipb->aipb.afi != nisc) {
++		return -EINVAL;
++	}
++	aift->sbv = zpci_aif_sbv;
++	aift->gait = (struct zpci_gaite *)zpci_aipb->aipb.gait;
++
++	return 0;
++}
++
++int kvm_s390_pci_aen_init(u8 nisc)
++{
++	int rc = 0;
++
++	/* If already enabled for AEN, bail out now */
++	if (aift->gait || aift->sbv)
++		return -EPERM;
++
++	mutex_lock(&aift->aift_lock);
++	aift->kzdev = kcalloc(ZPCI_NR_DEVICES, sizeof(struct kvm_zdev),
++			      GFP_KERNEL);
++	if (!aift->kzdev) {
++		rc = -ENOMEM;
++		goto unlock;
++	}
++
++	if (!zpci_aipb)
++		rc = zpci_setup_aipb(nisc);
++	else
++		rc = zpci_reset_aipb(nisc);
++	if (rc)
++		goto free_zdev;
++
++	/* Enable floating IRQs */
++	if (__set_irq_noiib(SIC_IRQ_MODE_SINGLE, nisc)) {
++		rc = -EIO;
++		kvm_s390_pci_aen_exit();
++	}
++
++	goto unlock;
++
++free_zdev:
++	kfree(aift->kzdev);
++unlock:
++	mutex_unlock(&aift->aift_lock);
++	return rc;
++}
++
+ int kvm_s390_pci_dev_open(struct zpci_dev *zdev)
+ {
+ 	struct kvm_zdev *kzdev;
+@@ -36,3 +177,15 @@ void kvm_s390_pci_dev_release(struct zpci_dev *zdev)
+ 	kfree(kzdev);
+ }
+ EXPORT_SYMBOL_GPL(kvm_s390_pci_dev_release);
++
++int kvm_s390_pci_init(void)
++{
++	aift = kzalloc(sizeof(struct zpci_aift), GFP_KERNEL);
++	if (!aift)
++		return -ENOMEM;
++
++	spin_lock_init(&aift->gait_lock);
++	mutex_init(&aift->aift_lock);
++
++	return 0;
++}
+diff --git a/arch/s390/kvm/pci.h b/arch/s390/kvm/pci.h
+index ce93978e8913..a6a62db792b6 100644
+--- a/arch/s390/kvm/pci.h
++++ b/arch/s390/kvm/pci.h
+@@ -12,10 +12,57 @@
+ 
+ #include <linux/kvm_host.h>
+ #include <linux/pci.h>
++#include <linux/mutex.h>
++#include <asm/airq.h>
++#include <asm/cpu.h>
+ 
+ struct kvm_zdev {
+ 	struct zpci_dev *zdev;
+ 	struct kvm *kvm;
+ };
+ 
++struct zpci_gaite {
++	u32 gisa;
++	u8 gisc;
++	u8 count;
++	u8 reserved;
++	u8 aisbo;
++	u64 aisb;
++};
++
++struct zpci_aift {
++	struct zpci_gaite *gait;
++	struct airq_iv *sbv;
++	struct kvm_zdev **kzdev;
++	spinlock_t gait_lock; /* Protects the gait, used during AEN forward */
++	struct mutex aift_lock; /* Protects the other structures in aift */
++};
++
++extern struct zpci_aift *aift;
++
++int kvm_s390_pci_aen_init(u8 nisc);
++void kvm_s390_pci_aen_exit(void);
++
++int kvm_s390_pci_init(void);
++
++static inline bool kvm_s390_pci_interp_allowed(void)
++{
++	struct cpuid cpu_id;
++
++	get_cpu_id(&cpu_id);
++	switch (cpu_id.machine) {
++	case 0x2817:
++	case 0x2818:
++	case 0x2827:
++	case 0x2828:
++	case 0x2964:
++	case 0x2965:
++		/* No SHM on certain machines */
++		return false;
++	default:
++		return (IS_ENABLED(CONFIG_VFIO_PCI) && sclp.has_zpci_lsi &&
++			sclp.has_aeni && sclp.has_aisi && sclp.has_aisii);
++	}
++}
++
+ #endif /* __KVM_S390_PCI_H */
+diff --git a/arch/s390/pci/pci.c b/arch/s390/pci/pci.c
+index a86cd1cbb80e..f0a439c43395 100644
+--- a/arch/s390/pci/pci.c
++++ b/arch/s390/pci/pci.c
+@@ -61,6 +61,12 @@ DEFINE_STATIC_KEY_FALSE(have_mio);
+ 
+ static struct kmem_cache *zdev_fmb_cache;
+ 
++/* AEN structures that must be preserved over KVM module re-insertion */
++union zpci_sic_iib *zpci_aipb;
++EXPORT_SYMBOL_GPL(zpci_aipb);
++struct airq_iv *zpci_aif_sbv;
++EXPORT_SYMBOL_GPL(zpci_aif_sbv);
++
+ struct zpci_dev *get_zdev_by_fid(u32 fid)
+ {
+ 	struct zpci_dev *tmp, *zdev = NULL;
+-- 
+2.27.0
+
