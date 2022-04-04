@@ -2,115 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60FC6C49EA4
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:25:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 793B8C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:27:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379138AbiDDV1Y (ORCPT
+        id S1345405AbiDDV2e (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:27:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46518 "EHLO
+        Mon, 4 Apr 2022 17:28:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379269AbiDDQvw (ORCPT
+        with ESMTP id S1379991AbiDDSfO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 12:51:52 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25ED73204D;
-        Mon,  4 Apr 2022 09:49:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649090996; x=1680626996;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=JOqZTO9BJ6ZBD3WRZCWK3rVS9xdulCCUAXpq8W/WH40=;
-  b=hFrZsM81Nvfea9jNYWSTj4tZ8Shzue1Ggcd/XsJxn3b6TM5f6oVIDbXJ
-   88O3weVjhnBsOtuNswrC4U6eKqIYw6HaRidrT8PQ3BXm8lPWyMdVfYFZe
-   Efb7E4j76oA/Moqt0KcDiJN0IBLQhWz6h4GGy2XkiULktP0l1UCJYqPCj
-   8LIFu74dSt2Es7XXnfGZZvE1Cx7DCnRnDRdr0gM7u4gO6WA5QMXXNXjkR
-   5LwsYMzvyJQoGIO41yq9z2h4oCeWVub0mRrzwzkmRiyNeuGD3dl6/C3Pr
-   KIzCAM43p/77kPGY4+w2gGhjymU02tUGGJsVyYcRZvVsDPw0R3msfhF3D
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="323734051"
-X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
-   d="scan'208";a="323734051"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:49:51 -0700
-X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
-   d="scan'208";a="523105195"
-Received: from rchatre-ws.ostc.intel.com ([10.54.69.144])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:49:50 -0700
-From:   Reinette Chatre <reinette.chatre@intel.com>
-To:     dave.hansen@linux.intel.com, jarkko@kernel.org, tglx@linutronix.de,
-        bp@alien8.de, luto@kernel.org, mingo@redhat.com,
-        linux-sgx@vger.kernel.org, x86@kernel.org
-Cc:     seanjc@google.com, kai.huang@intel.com, cathy.zhang@intel.com,
-        cedric.xing@intel.com, haitao.huang@intel.com,
-        mark.shanahan@intel.com, hpa@zytor.com,
+        Mon, 4 Apr 2022 14:35:14 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7498B2E0AA;
+        Mon,  4 Apr 2022 11:33:17 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id nt14-20020a17090b248e00b001ca601046a4so171417pjb.0;
+        Mon, 04 Apr 2022 11:33:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=VX36O/eZvePOVXNXSBF6wdkEoqZXyVTUQTus33r+ZLM=;
+        b=Jhi/m3HKdiGTMNmkPf5/IrS8tqIn7BB3PQz4dCz8wsIKHrcI9VonrT+jshZjvR1D2Y
+         gZQIvWaiPpb0+mDRElRwfXipdX2RNh+Jb/3ctTU4NdbRWYZI7cGDUSfaA/USDvArb4ig
+         +xUxqpbegNbNMvXnHaXweqbb6lqWE4t2JOK8VNGBALOD30nLnDdfsggKqKKzKRScLH1q
+         U61hO7U2Z13BDegN5qKzi2eNImhkSOJEg0ghkPe0Eq0KB37+cFM8xT+R42EuZV9Hl56d
+         mCoQO+x0AmxMO58teRYmy8LIg9qOM4MbboSebePuOJuSi+M1iGUqeETmyBFMNAOfQm7I
+         gORw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=VX36O/eZvePOVXNXSBF6wdkEoqZXyVTUQTus33r+ZLM=;
+        b=kEK2JAPNokFrDWMG+cAjTIUNajiwcz68/kow+O9bygDkYg5O50y4DkhddADyic0rL/
+         /FqdNnMN0JavuaE6/7TOT826vMwYR2KfQyOAiiC5oYhrj37hrD13LGNdKqYd9q/l9PaV
+         iW6ap3rKhHrM+F5Tb/9ORTI5lWkLUpp5tHKau6YKCY9loV3rTe03rIDu3Z/Flwm1WwC3
+         0PGWDzHFipPucHOU1TI9TYbs0bOwU2pKMF+WmpkGhQJgQa2qwgpcSrHYs6xrLp591xK/
+         UW1GU8298uiIF2Qb4uZhqVCDDmthto6V9m7siBimusgingV4dnnSsGvDAzo/BTHPgC+7
+         0/Sg==
+X-Gm-Message-State: AOAM5312S0fheYwp7O7Uh9VtIR2FIf3WZ8yBy8nBzBqNYCijXBZ1uUkA
+        AJ+kxW5KVr9PYLqM/S0sqgU=
+X-Google-Smtp-Source: ABdhPJyjzPk/Y9vMf+i8TBGcz920f/PKNrlqh4kdhA3wSJBIHQ0Ba38XDLX3ubdJQZyY3wZP6/PISg==
+X-Received: by 2002:a17:90b:3b8c:b0:1c6:eb72:24b4 with SMTP id pc12-20020a17090b3b8c00b001c6eb7224b4mr510870pjb.171.1649097196928;
+        Mon, 04 Apr 2022 11:33:16 -0700 (PDT)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id b7-20020a056a00114700b004f7be3231d6sm13069546pfm.7.2022.04.04.11.33.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Apr 2022 11:33:16 -0700 (PDT)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     bcm-kernel-feedback-list@broadcom.com,
+        Kuldeep Singh <singh.kuldeep87k@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>, Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>
+Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH V3 16/30] x86/sgx: Tighten accessible memory range after enclave initialization
-Date:   Mon,  4 Apr 2022 09:49:24 -0700
-Message-Id: <9f9e9582029dee93b5b37f2fb4dc062be9fe1fde.1648847675.git.reinette.chatre@intel.com>
+Subject: Re: [PATCH] ARM: dts: bcm-cygnus: Update spi clock properties
+Date:   Mon,  4 Apr 2022 11:33:14 -0700
+Message-Id: <20220404183314.2316058-1-f.fainelli@gmail.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1648847675.git.reinette.chatre@intel.com>
-References: <cover.1648847675.git.reinette.chatre@intel.com>
+In-Reply-To: <20220311084114.16408-1-singh.kuldeep87k@gmail.com>
+References: <20220311084114.16408-1-singh.kuldeep87k@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Before an enclave is initialized the enclave's memory range is unknown.
-The enclave's memory range is learned at the time it is created via the
-SGX_IOC_ENCLAVE_CREATE ioctl() where the provided memory range is
-obtained from an earlier mmap() of /dev/sgx_enclave. After an enclave
-is initialized its memory can be mapped into user space (mmap()) from
-where it can be entered at its defined entry points.
+On Fri, 11 Mar 2022 14:11:14 +0530, Kuldeep Singh <singh.kuldeep87k@gmail.com> wrote:
+> PL022 binding require two clocks to be defined but broadcom cygnus
+> platform doesn't comply with bindings and define only one clock.
+> 
+> Update spi clocks and clocks-names property by adding appropriate clock
+> reference to make it compliant with bindings.
+> 
+> CC: Florian Fainelli <f.fainelli@gmail.com>
+> Signed-off-by: Kuldeep Singh <singh.kuldeep87k@gmail.com>
+> ---
 
-With the enclave's memory range known after it is initialized there is
-no reason why it should be possible to map memory outside this range.
-
-Lock down access to the initialized enclave's memory range by denying
-any attempt to map memory outside its memory range.
-
-Locking down the memory range also makes adding pages to an initialized
-enclave more efficient. Pages are added to an initialized enclave by
-accessing memory that belongs to the enclave's memory range but not yet
-backed by an enclave page. If it is possible for user space to map
-memory that does not form part of the enclave then an access to this
-memory would eventually fail. Failures range from a prompt general
-protection fault if the access was an ENCLU[EACCEPT] from within the
-enclave, or a page fault via the vDSO if it was another access from
-within the enclave, or a SIGBUS (also resulting from a page fault) if
-the access was from outside the enclave.
-
-Disallowing invalid memory to be mapped in the first place avoids
-preventable failures.
-
-Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
----
-No changes since V2
-
-Changes since V1:
-- Add comment (Jarkko).
-
- arch/x86/kernel/cpu/sgx/encl.c | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/arch/x86/kernel/cpu/sgx/encl.c b/arch/x86/kernel/cpu/sgx/encl.c
-index fa4f947f8496..7909570736a0 100644
---- a/arch/x86/kernel/cpu/sgx/encl.c
-+++ b/arch/x86/kernel/cpu/sgx/encl.c
-@@ -409,6 +409,11 @@ int sgx_encl_may_map(struct sgx_encl *encl, unsigned long start,
- 
- 	XA_STATE(xas, &encl->page_array, PFN_DOWN(start));
- 
-+	/* Disallow mapping outside enclave's address range. */
-+	if (test_bit(SGX_ENCL_INITIALIZED, &encl->flags) &&
-+	    (start < encl->base || end > encl->base + encl->size))
-+		return -EACCES;
-+
- 	/*
- 	 * Disallow READ_IMPLIES_EXEC tasks as their VMA permissions might
- 	 * conflict with the enclave page permissions.
--- 
-2.25.1
-
+Applied to https://github.com/Broadcom/stblinux/commits/devicetree/next, thanks!
+--
+Florian
