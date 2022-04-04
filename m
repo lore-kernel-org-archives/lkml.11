@@ -2,336 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27755C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D351C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:50:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381511AbiDDVuI (ORCPT
+        id S1381578AbiDDVuM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:50:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47822 "EHLO
+        Mon, 4 Apr 2022 17:50:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379589AbiDDRmI (ORCPT
+        with ESMTP id S1380405AbiDDUFA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 13:42:08 -0400
-X-Greylist: delayed 11588 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 04 Apr 2022 10:40:11 PDT
-Received: from mail-4325.protonmail.ch (mail-4325.protonmail.ch [185.70.43.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4106B31DE3;
-        Mon,  4 Apr 2022 10:40:11 -0700 (PDT)
-Date:   Mon, 04 Apr 2022 17:40:00 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
-        s=protonmail; t=1649094008;
-        bh=Abj/f7lL3h7XnhObd7VBg4DhV/bWNl/cvotUhP1u5T8=;
-        h=Date:To:From:Cc:Reply-To:Subject:Message-ID:In-Reply-To:
-         References:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
-         Message-ID;
-        b=3zwPnEvMbMsRufQ4rkq/plkvyH4UTTC+wCAjxwm1qROB63BFurVZOSl9DjEddPlH1
-         ML0RCDqePpTF7NnbABDwUsqFtHbWRNhTmX6x56uG71l24aYpVFnr0KpdnhMvK2OQZ3
-         vfaJcfMHXqIVz4yAZyE8N4zzzgPwjYLOwrb2DiqWzSl7zUMpwTNqCxC51yMHMsZY8V
-         MXOAdrV1mn8S+/xZFcjV/oq3fiS85tNkHDPQFazOT/Fzil9BXweVNqRZjpFuNt+Xxq
-         gXV6wir5MiuHIj1uf59qZQxDz9Vr/htCYnaygN3gfzyGntVIMQEbR2z3LEYKmof2FW
-         c4L5ElgyA954w==
-To:     regressions@leemhuis.info, Basavaraj.Natikar@amd.com,
-        bnatikar@amd.com
-From:   Marco <rodomar705@protonmail.com>
-Cc:     linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
-        regressions@lists.linux.dev, jkosina@suse.cz,
-        benjamin.tissoires@redhat.com
-Reply-To: Marco <rodomar705@protonmail.com>
-Subject: Re: Bug 215744 - input from the accelerometer disappeared, regression on amd_sfh on kernel 5.17
-Message-ID: <xZsLVmWExSSYgHXHsfOKkB7SbLy-bltitpJznKV1HHsv2-_ZcSFArnir30v-7Eg8zqmGSMmZi3Cr7YHpB8tD_FVnBvf2W-VsmmFGdc7hlWw=@protonmail.com>
-In-Reply-To: <-IeN6GQXuvFeZGmf-HSltWI3MN3V02oQzXAW0XR74vD62w_Fo_A6lSfJXrDgV2MTrHs9Id2Ce_r9J_zZCKx67DnVAWeFg3-ULIZ2GSm_ITQ=@protonmail.com>
-References: <048ef583-4a8f-96b0-68a3-45ab9ec8d6df@leemhuis.info> <0499f8ae-6966-be4b-5af8-e7e568bfcd5f@amd.com> <6fe27103-5e35-5f16-d213-29bd71412f5b@leemhuis.info> <7dfb121f-848c-873e-f3cc-43239c264f21@amd.com> <0a33735c-dd43-4305-ff92-7b9ac2c6a0d9@leemhuis.info> <539ff0c5-a95b-836d-e1c6-39f64ee2a418@leemhuis.info> <056621a6-b6ac-90d9-c409-ba5d9404c868@amd.com> <-IeN6GQXuvFeZGmf-HSltWI3MN3V02oQzXAW0XR74vD62w_Fo_A6lSfJXrDgV2MTrHs9Id2Ce_r9J_zZCKx67DnVAWeFg3-ULIZ2GSm_ITQ=@protonmail.com>
+        Mon, 4 Apr 2022 16:05:00 -0400
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECCE030576;
+        Mon,  4 Apr 2022 13:03:02 -0700 (PDT)
+Received: by mail-pg1-x530.google.com with SMTP id w21so9217259pgm.7;
+        Mon, 04 Apr 2022 13:03:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=g1/S18NSrxN6AWy6KL3HCZnERr6pCTHzLQu/VSnzK2M=;
+        b=Mwnt+Nq2EZKGxVmu8ajENw2WLVM+PMP8Pob4xNoQ9sJszM+9hd34t1sIDnV/JVKWc5
+         aIDg3KNtFuuL8pds0a0t4HMMv6NdG8/Ob2k3eOaVEzLQu/lgBUbaSwJM8lQH851qPI2C
+         Uvu2USNa1ts9IlrQGSu6wJ7ucpOBHLBcZogtcuYedGIWWrd56NR35kHqBt12SIP00A9W
+         6K9FokVb73EcTl/zPpH9YSjS6HsTO1dCfJIFaweMLYOHR7XOoBohWAPOTz8QKw47pABm
+         LXEX7pa4IRUch8OMc+3f+1TxlVdWQrjf/xVdlfeCiIUJaGvPRLBDiCy1GWcowr8GQ5qL
+         cMvA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=g1/S18NSrxN6AWy6KL3HCZnERr6pCTHzLQu/VSnzK2M=;
+        b=xKHZgLMeQoEoNYVI/2Yz3rXV9Lwwhh6Y9i7jZiI2cr6Ug+wHjGOMmaGDoyk5hJ2l3Q
+         ouWh78qMBrYt9ws2RExyPeRNF3jZxvaWvMOQP7g/PveIpbEPpYwpd9XD4cDZlZ5EpYdV
+         79PfH0O8p1FL5ZbADQEdbRpQQvFXmIjRUyYqValFjeSZw++yfmKNfbIvTYzqYMAKP5CR
+         FIpPgbpiJqRQQvImVdTYZq8q6GEMqXcVYlNadRKu1ml91c5V32L0ZPCjM9MgPMCkw1Ug
+         xIEm6/aaYXf4H1pgdrvM7BvTxnafN/k31Ih9fq72JTqZyBjt9ivBKMrZl+yeXgAFnRcO
+         i0iA==
+X-Gm-Message-State: AOAM5330MWJYmo7eEH9F4JStnbeMg0I/havqO0dC3+6lesNHGgDPcGhV
+        lM//JrDfNtoO3wmZzk3lFdE=
+X-Google-Smtp-Source: ABdhPJzPk7RPw96v5iy70ANgZhWcNVAx23WdjIeS0iVP13r1Jp4hzjPAyCQz5SV25F0Q678GhpbdCQ==
+X-Received: by 2002:a65:6d06:0:b0:399:1485:6288 with SMTP id bf6-20020a656d06000000b0039914856288mr1331167pgb.346.1649102582351;
+        Mon, 04 Apr 2022 13:03:02 -0700 (PDT)
+Received: from localhost.localdomain (c-67-174-241-145.hsd1.ca.comcast.net. [67.174.241.145])
+        by smtp.gmail.com with ESMTPSA id bw17-20020a056a00409100b004fadad3b93esm12779295pfb.142.2022.04.04.13.03.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Apr 2022 13:03:01 -0700 (PDT)
+From:   Yang Shi <shy828301@gmail.com>
+To:     vbabka@suse.cz, kirill.shutemov@linux.intel.com,
+        linmiaohe@huawei.com, songliubraving@fb.com, riel@surriel.com,
+        willy@infradead.org, ziy@nvidia.com, tytso@mit.edu,
+        akpm@linux-foundation.org
+Cc:     shy828301@gmail.com, linux-mm@kvack.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [v3 PATCH 0/8] Make khugepaged collapse readonly FS THP more consistent
+Date:   Mon,  4 Apr 2022 13:02:42 -0700
+Message-Id: <20220404200250.321455-1-shy828301@gmail.com>
+X-Mailer: git-send-email 2.26.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I've added the three test cases (dmesg + sudo monitor-sensor on all three t=
-ests) on the bug report on bugzilla.kernel.org. One is with the stock kerne=
-l from arch, 5.17.1. The other two is using zen patches on top of 5.17. One=
- is without the three reverts above mentioned. Sensor is missing still. The=
-n my same custom configuration only with the three reverts applied. The sen=
-sor is back and working.
 
-If you need anything more, just let me know.
+Changelog
+v3: * Register mm to khugepaged in common mmap path instead of touching
+      filesystem code (patch 8/8) suggested by Ted.
+    * New patch 7/8 cleaned up and renamed khugepaged_enter_vma_merge()
+      to khugepaged_enter_vma().
+    * Collected acked-by from Song Liu for patch 1 ~ 6.
+    * Rebased on top of 5.18-rc1.
+    * Excluded linux-xfs and linux-ext4 list since the series doesn't
+      touch fs code anymore, but keep linux-fsdevel posted. 
+v2: * Collected reviewed-by tags from Miaohe Lin.
+    * Fixed build error for patch 4/8.
 
-Link to bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=3D215744
+The readonly FS THP relies on khugepaged to collapse THP for suitable
+vmas.  But it is kind of "random luck" for khugepaged to see the
+readonly FS vmas (see report: https://lore.kernel.org/linux-mm/00f195d4-d039-3cf2-d3a1-a2c88de397a0@suse.cz/) since currently the vmas are registered to khugepaged when:
+  - Anon huge pmd page fault
+  - VMA merge
+  - MADV_HUGEPAGE
+  - Shmem mmap
 
-Marco.
+If the above conditions are not met, even though khugepaged is enabled
+it won't see readonly FS vmas at all.  MADV_HUGEPAGE could be specified
+explicitly to tell khugepaged to collapse this area, but when khugepaged
+mode is "always" it should scan suitable vmas as long as VM_NOHUGEPAGE
+is not set.
 
-Inviato con l'email sicura di ProtonMail.
-------- Original Message -------
-Il luned=C3=AC 4 aprile 2022 16:26, Marco <rodomar705@protonmail.com> ha sc=
-ritto:
+So make sure readonly FS vmas are registered to khugepaged to make the
+behavior more consistent.
+
+Registering suitable vmas in common mmap path, that could cover both
+readonly FS vmas and shmem vmas, so removed the khugepaged calls in
+shmem.c.
+
+The patch 1 ~ 7 are minor bug fixes, clean up and preparation patches.
+The patch 8 is the real meat. 
 
 
-> I haven't tested this on the tip of the git tree, I can do this probably =
-wednesday if it is needed.
->
-> I'll post the output from sensors-detect shortly.
->
-> Marco.
->
->
-> Inviato da ProtonMail mobile
->
->
->
-> -------- Messaggio originale --------
-> On 4 apr 2022, 16:04, Basavaraj Natikar < bnatikar@amd.com> ha scritto:
->
-> >
-> >
-> > >
-> > >
-> > > On 4/4/2022 7:23 PM, Thorsten Leemhuis wrote:
-> > > > On 04.04.22 09:25, Thorsten Leemhuis wrote:
-> > > >> On 04.04.22 09:18, Basavaraj Natikar wrote:
-> > > >>>
-> > > >>> On 4/4/2022 12:05 PM, Thorsten Leemhuis wrote:
-> > > >>>> On 01.04.22 21:47, Basavaraj Natikar wrote:
-> > > >>>>> Committed patch is disabling the interrupt mode and does not ca=
-use any
-> > > >>>>> functionality or working issues.
-> > > >>>> Well, for the reporter it clearly does cause problems, unless so=
-mething
-> > > >>>> in testing went sideways.
-> > > >>>>
-> > > >>>>> I also cross verified on 3 system and working fine on 5.17 and =
-not able
-> > > >>>>> to reproduce or recreate.
-> > > >>>>> [...]
-> > > >>>>> ------------------------------------------------
-> > > >>>>>
-> > > >>>>> Looks like this is not regression. May be some hardware/firmwar=
-e bug.
-> > > >>>> Well, from the point of the kernel development process it afaics=
- is a
-> > > >>>> regression, unless the testing went sideways. It doesn't matter =
-if the
-> > > >>>> root cause is in fact a hardware/firmware bug, as what matters i=
-n the
-> > > >>>> scope of the kernel development is: things worked, and now they =
-don't.
-> > > >>>> For details please check this file and read the quotes from Linu=
-s:
-> > > >>> can you help to answer the below questions:
-> > > >> Me? No, I'm just the Linux kernels regression tracker trying to ma=
-ke
-> > > >> sure all regressions are handled appropriately. :-D
-> > > >>
-> > > >> Marco, can you help out here?
-> > > > Marco replied in private and allowed me to forward his reply:
-> > > >
-> > > > ```
-> > > > I can't since, as mentioned previously, this is the only AMD laptop
-> > > > device that I have.
-> > > > I am sure this is a regression for me, even if the issue is firmwar=
-e
-> > > > related. I have tested the 5.17 stock arch kernel and the sensor is
-> > > > gone. With the last three patches reverted the sensor is back and
-> > > > working fine.
-> > > >
-> > > > I would love to verify if the issue is hardware or software related=
-, but
-> > > > being outside of AMD and with AMD not releasing any public informat=
-ion
-> > > > with datasheet/specification on their Sensor Fusion Hub I really ca=
-n't
-> > > > say anything specific.
-> > > >
-> > > > This still remains a regression, since the hardware was working bef=
-ore
-> > > > and now it doesn't.
-> > > >
-> > > > By the way, I already have seen also this rework of this specific d=
-river
-> > > > https://nam11.safelinks.protection.outlook.com/?url=3Dhttps%3A%2F%2=
-Fgithub.com%2Fconqp%2Famd-sfh-hid-dkms&amp;data=3D04%7C01%7CBasavaraj.Natik=
-ar%40amd.com%7C05891d0582f94d68e7f908da164272ca%7C3dd8961fe4884e608e11a82d9=
-94e183d%7C0%7C0%7C637846771908092322%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLj=
-AwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&amp;sdata=3DnAm=
-JdcP2ALl9cEaejWezLb9B3bU5Omp72Z6kjTbaBRY%3D&amp;reserved=3D0 that even adde=
-d a still
-> > > > missing handler for the lid sensor switch for disabling touchpad an=
-d
-> > > > keyboard, and all efforts tried to merge it upstream with all sorts=
- of
-> > > > issues.
-> > > >
-> > > > Regardless of everything, this is a driver supported in kernel by A=
-MD
-> > > > engineers, so all of this doesn't matter. On my hardware this three
-> > > > patches break a previously working hardware.
-> > > > ```
-> > >
-> > > Thank=C2=A0You Marco for the information.
-> > >
-> > > Could you please provide me below results for acceleration
-> > > by re-applying and reverting patch once again on same laptop.
-> > >
-> > > Did you attempt to test it multiple times on the tip of the git to se=
-e
-> > > if the problems goes away?
-> > >
-> > > if same test is performed multiple times with or without reverting pa=
-tch
-> > > on same laptop on which issue is observed
-> > > we may see same working/issue behavior. if it is regressing then alwa=
-ys
-> > > it should work with or without reverting patches on same laptop. is t=
-his
-> > > the case here?
-> > >
-> > > Thanks,
-> > >
-> > > Basavaraj
-> > >
-> > > > Ciao, Thorsten
-> > > >
-> > > >> Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker=
-' hat)
-> > > >>
-> > > >> P.S.: As the Linux kernel's regression tracker I'm getting a lot o=
-f
-> > > >> reports on my table. I can only look briefly into most of them and=
- lack
-> > > >> knowledge about most of the areas they concern. I thus unfortunate=
-ly
-> > > >> will sometimes get things wrong or miss something important. I hop=
-e
-> > > >> that's not the case here; if you think it is, don't hesitate to te=
-ll me
-> > > >> in a public reply, it's in everyone's interest to set the public r=
-ecord
-> > > >> straight.
-> > > >>
-> > > >>> Did you attempt to test it multiple times on the tip of the git t=
-o see
-> > > >>> if the problems goes away?
-> > > >>>
-> > > >>> if same test is performed multiple times with or without revertin=
-g patch
-> > > >>> on same platform (laptop/hardware/firmware) on which issue is obs=
-erved
-> > > >>> we may see same working/issue behavior. if it is regressing then =
-always
-> > > >>> it should work with or without reverting patches on same laptop. =
-is this
-> > > >>> the case here?
-> > > >>>
-> > > >>> I don't see any regression here. I requested to retest with other
-> > > >>> hardware/platform/system also as per my above test (output) all w=
-orking
-> > > >>> fine in 3 different platforms and not able to reproduce or recrea=
-te for
-> > > >>> my side on 5.17.
-> > > >>>
-> > > >>> Thanks,
-> > > >>>
-> > > >>> Basavaraj
-> > > >>>
-> > > >>>> https://nam11.safelinks.protection.outlook.com/?url=3Dhttps%3A%2=
-F%2Fgit.kernel.org%2Fpub%2Fscm%2Flinux%2Fkernel%2Fgit%2Fnext%2Flinux-next.g=
-it%2Fplain%2FDocumentation%2Fprocess%2Fhandling-regressions.rst&amp;data=3D=
-04%7C01%7CBasavaraj.Natikar%40amd.com%7C05891d0582f94d68e7f908da164272ca%7C=
-3dd8961fe4884e608e11a82d994e183d%7C0%7C0%7C637846771908092322%7CUnknown%7CT=
-WFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%=
-3D%7C3000&amp;sdata=3D9ORA2inmfocvEJ%2FXOov67q2ebzZrcuguViSPV%2B58yA0%3D&am=
-p;reserved=3D0
-> > > >>>>
-> > > >>>> Ciao, Thorsten
-> > > >>>>
-> > > >>>>> Just curious reverting this patch how it is working just suspec=
-ting
-> > > >>>>> firmware undefined behavior.
-> > > >>>>>
-> > > >>>>> If possible, please check on other platform/system also if same=
- behavior
-> > > >>>>> occurs.
-> > > >>>>>
-> > > >>>>> Could you please provide me platform/system details so that I c=
-an check
-> > > >>>>> this behavior?
-> > > >>>>>
-> > > >>>>> Thanks,
-> > > >>>>> Basavaraj
-> > > >>>>>
-> > > >>>>> On 4/1/2022 1:36 PM, Thorsten Leemhuis wrote:
-> > > >>>>>> Hi, this is your Linux kernel regression tracker.
-> > > >>>>>>
-> > > >>>>>> I noticed a regression report in bugzilla.kernel.org that afai=
-cs nobody
-> > > >>>>>> acted upon since it was reported about a week ago, that's why =
-I decided
-> > > >>>>>> to forward it to the lists and all people that seemed to be re=
-levant
-> > > >>>>>> here. It looks to me like this is something for Basavaraj, as =
-it seems
-> > > >>>>>> to be caused by b300667b33b2 ("HID: amd_sfh: Disable the inter=
-rupt for
-> > > >>>>>> all command"). But I'm not totally sure, I only looked briefly=
- into the
-> > > >>>>>> details. Or was this discussed somewhere else already? Or even=
- fixed?
-> > > >>>>>>
-> > > >>>>>> To quote from https://nam11.safelinks.protection.outlook.com/?=
-url=3Dhttps%3A%2F%2Fbugzilla.kernel.org%2Fshow_bug.cgi%3Fid%3D215744&amp;da=
-ta=3D04%7C01%7CBasavaraj.Natikar%40amd.com%7C05891d0582f94d68e7f908da164272=
-ca%7C3dd8961fe4884e608e11a82d994e183d%7C0%7C0%7C637846771908092322%7CUnknow=
-n%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI=
-6Mn0%3D%7C3000&amp;sdata=3DpLGKHCV1ZNrXghGdDFG16sguRA8xi0VzUSG%2Fbw%2FQsBw%=
-3D&amp;reserved=3D0 :
-> > > >>>>>>
-> > > >>>>>>> Marco 2022-03-25 15:22:19 UTC
-> > > >>>>>>>
-> > > >>>>>>> After updating to 5.17, the input from the accelerometer disa=
-ppeared, completely. No devices available from IIO tree. First bad commit c=
-ausing it is https://nam11.safelinks.protection.outlook.com/?url=3Dhttps%3A=
-%2F%2Fgit.kernel.org%2Fpub%2Fscm%2Flinux%2Fkernel%2Fgit%2Ftorvalds%2Flinux.=
-git%2Fcommit%2Fdrivers%2Fhid%2Famd-sfh-hid%2Famd_sfh_pcie.c%3Fid%3Db300667b=
-33b2b5a2c8e5f8f22826befb3d7f4f2b&amp;data=3D04%7C01%7CBasavaraj.Natikar%40a=
-md.com%7C05891d0582f94d68e7f908da164272ca%7C3dd8961fe4884e608e11a82d994e183=
-d%7C0%7C0%7C637846771908092322%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAi=
-LCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&amp;sdata=3DL36JFc%2B=
-nejM4bJXfNui49v2uJKrS4cJnU93dpEhXPms%3D&amp;reserved=3D0. Reverting this an=
-d the the other two on top fixed this. Tried to not revert only the above m=
-entioned commit, but it's still not working.
-> > > >>>>>>>
-> > > >>>>>>> Marco.
-> > > >>>>>> Anyway, to get this tracked:
-> > > >>>>>>
-> > > >>>>>> #regzbot introduced: b300667b33b2b5a2c8e5f8f22826befb3d7f4
-> > > >>>>>> #regzbot from: Marco <rodomar705@protonmail.com>
-> > > >>>>>> #regzbot title: input: hid: input from the accelerometer disap=
-peared due
-> > > >>>>>> to changes to amd_sfh
-> > > >>>>>> #regzbot link: https://nam11.safelinks.protection.outlook.com/=
-?url=3Dhttps%3A%2F%2Fbugzilla.kernel.org%2Fshow_bug.cgi%3Fid%3D215744&amp;d=
-ata=3D04%7C01%7CBasavaraj.Natikar%40amd.com%7C05891d0582f94d68e7f908da16427=
-2ca%7C3dd8961fe4884e608e11a82d994e183d%7C0%7C0%7C637846771908092322%7CUnkno=
-wn%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVC=
-I6Mn0%3D%7C3000&amp;sdata=3DpLGKHCV1ZNrXghGdDFG16sguRA8xi0VzUSG%2Fbw%2FQsBw=
-%3D&amp;reserved=3D0
-> > > >>>>>>
-> > > >>>>>> Ciao, Thorsten (wearing his 'the Linux kernel's regression tra=
-cker' hat)
-> > > >>>>>>
-> > > >>>>>> P.S.: As the Linux kernel's regression tracker I'm getting a l=
-ot of
-> > > >>>>>> reports on my table. I can only look briefly into most of them=
- and lack
-> > > >>>>>> knowledge about most of the areas they concern. I thus unfortu=
-nately
-> > > >>>>>> will sometimes get things wrong or miss something important. I=
- hope
-> > > >>>>>> that's not the case here; if you think it is, don't hesitate t=
-o tell me
-> > > >>>>>> in a public reply, it's in everyone's interest to set the publ=
-ic record
-> > > >>>>>> straight.
-> > > >>>>>>
-> > > >>>
-> > > >>>
+Tested with khugepaged test in selftests and the testcase provided by
+Vlastimil Babka in https://lore.kernel.org/lkml/df3b5d1c-a36b-2c73-3e27-99e74983de3a@suse.cz/
+by commenting out MADV_HUGEPAGE call.
+
+
+Yang Shi (8):
+      sched: coredump.h: clarify the use of MMF_VM_HUGEPAGE
+      mm: khugepaged: remove redundant check for VM_NO_KHUGEPAGED
+      mm: khugepaged: skip DAX vma
+      mm: thp: only regular file could be THP eligible
+      mm: khugepaged: make khugepaged_enter() void function
+      mm: khugepaged: move some khugepaged_* functions to khugepaged.c
+      mm: khugepaged: introduce khugepaged_enter_vma() helper
+      mm: mmap: register suitable readonly file vmas for khugepaged
+
+ include/linux/huge_mm.h        | 14 ++++++++++++
+ include/linux/khugepaged.h     | 59 ++++++++++++---------------------------------------
+ include/linux/sched/coredump.h |  3 ++-
+ kernel/fork.c                  |  4 +---
+ mm/huge_memory.c               | 15 ++++---------
+ mm/khugepaged.c                | 76 +++++++++++++++++++++++++++++++++++++-----------------------------
+ mm/mmap.c                      | 14 ++++++++----
+ mm/shmem.c                     | 12 -----------
+ 8 files changed, 88 insertions(+), 109 deletions(-)
+
+
