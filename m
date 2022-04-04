@@ -2,173 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A62EEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 13:22:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 618B8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 13:24:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351393AbiDDNYb (ORCPT
+        id S1351440AbiDDN0I (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 09:24:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54842 "EHLO
+        Mon, 4 Apr 2022 09:26:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241154AbiDDNY3 (ORCPT
+        with ESMTP id S241154AbiDDN0G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 09:24:29 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84B433DA68;
-        Mon,  4 Apr 2022 06:22:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649078553; x=1680614553;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=Brz0s4RVmiMzt+dQ6G1J1x2m39pVMxu2cjfDv6ZP0GY=;
-  b=V8uuSgVueNzgtiss+RJHWC9yRUETh8f3X8B1BGXy3dDQn0cARQUDqKf0
-   OiaMBVK3CD1j5bi06k9BQCBYwyb5A+iNK5vsMUzk2YrOrLaa6+yox0j5h
-   89esj7ZRGL5HXlKE8/phfGKg5SiFKN6LqOiyP1QYbbSZH0Hu0vzNP42Pt
-   4wOCb22pVzjHY6GcAaNGfhBmdUdB0aKuMDqrEbn5PGYLnPgfgMPPmN3TT
-   dXKJNoJldE4tPxzBmsTPXu6qKjE0ydzAVYa8dyR8UBn+LiV+Pf7dI4Isl
-   nirmhReLgDEMpLKzK6W/LOmzoPtOmhbAJFUDcVThBb6eHpCkW6x6RnqYi
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10306"; a="285461893"
-X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
-   d="scan'208";a="285461893"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 06:22:32 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
-   d="scan'208";a="696568285"
-Received: from kuha.fi.intel.com ([10.237.72.185])
-  by fmsmga001.fm.intel.com with SMTP; 04 Apr 2022 06:22:25 -0700
-Received: by kuha.fi.intel.com (sSMTP sendmail emulation); Mon, 04 Apr 2022 16:22:25 +0300
-Date:   Mon, 4 Apr 2022 16:22:25 +0300
-From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
-To:     Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>
-Cc:     linux-usb@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sven Peter <sven@svenpeter.dev>,
-        Guido =?iso-8859-1?Q?G=FCnther?= <agx@sigxcpu.org>,
-        Angus Ainslie <angus@akkea.ca>,
-        Hector Martin <marcan@marcan.st>,
-        Bryan O'Donoghue <bryan.odonoghue@linaro.org>,
-        linux-kernel@vger.kernel.org, kernel@puri.sm
-Subject: Re: [PATCH 1/7] usb: typec: tipd: Only update power status on IRQ
-Message-ID: <YkrxEU8nZxkY8txk@kuha.fi.intel.com>
-References: <20220317154518.4082046-1-sebastian.krzyszkowiak@puri.sm>
- <20220317154518.4082046-2-sebastian.krzyszkowiak@puri.sm>
+        Mon, 4 Apr 2022 09:26:06 -0400
+Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8078BF4
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 06:24:08 -0700 (PDT)
+Received: by mail-qk1-x72d.google.com with SMTP id q200so7552209qke.7
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 06:24:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Dj909oRaNRb7301+COOAr97OsAL18eivV1Pl1t4/Y+Y=;
+        b=R2BOiI73bs4bhzycM+H031R9LnpSNDl9hKlfXb/Dsoc/YoMnaNNRKuQM34krIxm7bA
+         UdsRcGSrXdyKB/quZlwiHCdQaKXaV+f12rnrSF+IMmSYVRVeRgWOr1Rs7fay6xmOVLY8
+         gSTwID3IsnJpPaf4UShy9BcWjNLRqILCMZ+ILJ3BbBwQLna9/74cnfwKsp8+RXQ6WYz9
+         dITlk4nDyLpanZaCHbh4P8ed9NWhbgc+yoMtAyXPlBDSHqcsPyowJ4JOOSG3rDrQZvfw
+         sFTcXv/Ie18QUyJRu8j5PZ+bBcdiGYnl/hzo2dqUc/Yc3Pwe1Ut+ImfYz41fTLY4VEPS
+         sT9A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Dj909oRaNRb7301+COOAr97OsAL18eivV1Pl1t4/Y+Y=;
+        b=8JJO1VagTtySTKI1xARiU4cbqzIygDROW9/97ElmxK4hxHNgHdpuLWhaDNJetpjvXW
+         qi57n36sPxL7W/eP9jprPiEcEfZBB1yL/pmirFsJjPZJVgRmnpDv2P5yJ9xlZlqvLEN0
+         bAMLK7uvF9iyKcIVYejLy1B8S43zjyhNX/WPULJBgjE67vKM/Ug8phFQbEvEcYixDWRq
+         u2hcrg1j0PbqMUPb9mNywC4NUerdP9eM46IeUd7gA7Y46T5GE2n0mArPYkARlJOdyD/G
+         NmP71tQoaw3w6FQ8ICpYuzmCIz1W5OcfCqZb8ZCnYctBya95oRY48HHrWcRCIJp4HVYg
+         o9oQ==
+X-Gm-Message-State: AOAM532YHObsEFrwLeItdzmtSLI12Xg+pui68XkXtADgavflcLhtqzi3
+        LiQKkZ6AL0DI7QkU/d4+0xrG/g==
+X-Google-Smtp-Source: ABdhPJwd0cXQeoez8xJ261ZBrwRTk36GjcX534AnDsLUP+ScvuOwmJyyalnuuG5orGBA0Q0zQDNBsg==
+X-Received: by 2002:a37:c4c:0:b0:67b:2b35:762 with SMTP id 73-20020a370c4c000000b0067b2b350762mr13415114qkm.6.1649078647740;
+        Mon, 04 Apr 2022 06:24:07 -0700 (PDT)
+Received: from ziepe.ca ([206.223.160.26])
+        by smtp.gmail.com with ESMTPSA id d126-20020a37b484000000b0067e60283d08sm6476475qkf.40.2022.04.04.06.24.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Apr 2022 06:24:07 -0700 (PDT)
+Received: from jgg by mlx with local (Exim 4.94)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1nbMgf-00CAIu-Pe; Mon, 04 Apr 2022 10:24:05 -0300
+Date:   Mon, 4 Apr 2022 10:24:05 -0300
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Marc Zyngier <maz@kernel.org>
+Cc:     xieming <xieming@kylinos.cn>, sashal@kernel.org,
+        catalin.marinas@arm.com, linux@armlinux.org.uk,
+        linux-kernel@vger.kernel.org, alex.williamson@redhat.com,
+        will@kernel.org, kvmarm@lists.cs.columbia.edu,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v2] kvm/arm64: fixed passthrough gpu into vm on arm64
+Message-ID: <20220404132405.GQ64706@ziepe.ca>
+References: <20220401090828.614167-1-xieming@kylinos.cn>
+ <87tubcbvgk.wl-maz@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220317154518.4082046-2-sebastian.krzyszkowiak@puri.sm>
+In-Reply-To: <87tubcbvgk.wl-maz@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 17, 2022 at 04:45:12PM +0100, Sebastian Krzyszkowiak wrote:
-> From: Guido Günther <agx@sigxcpu.org>
-> 
-> Instead of refetching power status cache it and only update it when a
-> change is signalled via irq. This simplifies tracing and adding more
-> supply properties in follow up patches.
-> 
-> Signed-off-by: Guido Günther <agx@sigxcpu.org>
-> Signed-off-by: Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>
+On Fri, Apr 01, 2022 at 05:48:59PM +0100, Marc Zyngier wrote:
 
-Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-
-> ---
->  drivers/usb/typec/tipd/core.c | 32 ++++++++++++--------------------
->  1 file changed, 12 insertions(+), 20 deletions(-)
+> NAK. For a start, there is no such thing as 'write-combine' in the ARM
+> architecture, and I'm not convinced you can equate WC to Normal-NC.
+> See the previous discussion at [1].
 > 
-> diff --git a/drivers/usb/typec/tipd/core.c b/drivers/usb/typec/tipd/core.c
-> index 16b4560216ba..dfbba5ae9487 100644
-> --- a/drivers/usb/typec/tipd/core.c
-> +++ b/drivers/usb/typec/tipd/core.c
-> @@ -93,6 +93,8 @@ struct tps6598x {
->  	struct power_supply *psy;
->  	struct power_supply_desc psy_desc;
->  	enum power_supply_usb_type usb_type;
-> +
-> +	u16 pwr_status;
->  };
->  
->  static enum power_supply_property tps6598x_psy_props[] = {
-> @@ -230,17 +232,12 @@ static int tps6598x_connect(struct tps6598x *tps, u32 status)
->  {
->  	struct typec_partner_desc desc;
->  	enum typec_pwr_opmode mode;
-> -	u16 pwr_status;
->  	int ret;
->  
->  	if (tps->partner)
->  		return 0;
->  
-> -	ret = tps6598x_read16(tps, TPS_REG_POWER_STATUS, &pwr_status);
-> -	if (ret < 0)
-> -		return ret;
-> -
-> -	mode = TPS_POWER_STATUS_PWROPMODE(pwr_status);
-> +	mode = TPS_POWER_STATUS_PWROPMODE(tps->pwr_status);
->  
->  	desc.usb_pd = mode == TYPEC_PWR_MODE_PD;
->  	desc.accessory = TYPEC_ACCESSORY_NONE; /* XXX: handle accessories */
-> @@ -455,6 +452,7 @@ static bool tps6598x_read_power_status(struct tps6598x *tps)
->  		dev_err(tps->dev, "failed to read power status: %d\n", ret);
->  		return false;
->  	}
-> +	tps->pwr_status = pwr_status;
->  	trace_tps6598x_power_status(pwr_status);
->  
->  	return true;
-> @@ -601,15 +599,8 @@ static const struct regmap_config tps6598x_regmap_config = {
->  static int tps6598x_psy_get_online(struct tps6598x *tps,
->  				   union power_supply_propval *val)
->  {
-> -	int ret;
-> -	u16 pwr_status;
-> -
-> -	ret = tps6598x_read16(tps, TPS_REG_POWER_STATUS, &pwr_status);
-> -	if (ret < 0)
-> -		return ret;
-> -
-> -	if (TPS_POWER_STATUS_CONNECTION(pwr_status) &&
-> -	    TPS_POWER_STATUS_SOURCESINK(pwr_status)) {
-> +	if (TPS_POWER_STATUS_CONNECTION(tps->pwr_status) &&
-> +	    TPS_POWER_STATUS_SOURCESINK(tps->pwr_status)) {
->  		val->intval = 1;
->  	} else {
->  		val->intval = 0;
-> @@ -622,15 +613,11 @@ static int tps6598x_psy_get_prop(struct power_supply *psy,
->  				 union power_supply_propval *val)
->  {
->  	struct tps6598x *tps = power_supply_get_drvdata(psy);
-> -	u16 pwr_status;
->  	int ret = 0;
->  
->  	switch (psp) {
->  	case POWER_SUPPLY_PROP_USB_TYPE:
-> -		ret = tps6598x_read16(tps, TPS_REG_POWER_STATUS, &pwr_status);
-> -		if (ret < 0)
-> -			return ret;
-> -		if (TPS_POWER_STATUS_PWROPMODE(pwr_status) == TYPEC_PWR_MODE_PD)
-> +		if (TPS_POWER_STATUS_PWROPMODE(tps->pwr_status) == TYPEC_PWR_MODE_PD)
->  			val->intval = POWER_SUPPLY_USB_TYPE_PD;
->  		else
->  			val->intval = POWER_SUPPLY_USB_TYPE_C;
-> @@ -837,6 +824,11 @@ static int tps6598x_probe(struct i2c_client *client)
->  	fwnode_handle_put(fwnode);
->  
->  	if (status & TPS_STATUS_PLUG_PRESENT) {
-> +		ret = tps6598x_read16(tps, TPS_REG_POWER_STATUS, &tps->pwr_status);
-> +		if (ret < 0) {
-> +			dev_err(tps->dev, "failed to read power status: %d\n", ret);
-> +			goto err_role_put;
-> +		}
->  		ret = tps6598x_connect(tps, status);
->  		if (ret)
->  			dev_err(&client->dev, "failed to register partner\n");
-> -- 
-> 2.35.1
+> [1] https://lore.kernel.org/r/20210429162906.32742-1-sdonthineni@nvidia.com
 
--- 
-heikki
+We've had a lot of discussions with ARM related to how this works with
+drivers like mlx5 that use WC.
+
+ARM has now published some guidance on this:
+
+https://community.arm.com/arm-research/m/resources/1012
+
+As an ecosystem we seem to be drifting toward Normal-NC for this
+behavior (largely because it is what Linux does). At least that is
+what we are testing and qualifing ARM CPUs against mlx5 with.
+
+I'm guessing it will turn into a SBSA like thing where the ARM ARM is
+kind of vauge but a SOC has to implement Normal-NC in a certain way to
+be functional for the server market.
+
+Jason
