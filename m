@@ -2,81 +2,211 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5A2CC4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FA0AC352A7
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:49:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380833AbiDDVtE (ORCPT
+        id S1380721AbiDDVsw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:49:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36492 "EHLO
+        Mon, 4 Apr 2022 17:48:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379385AbiDDRD7 (ORCPT
+        with ESMTP id S1379750AbiDDSAr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 13:03:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87C9A40A24
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 10:02:03 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CA000B818A1
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 17:02:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 58778C34112;
-        Mon,  4 Apr 2022 17:02:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649091720;
-        bh=YISYXXxoAD17WcxlmzCJ3mnM23WX0zpwVW60yCzPmQ8=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=poeecA4hteXyJG8MbL8NaV8xPS6O9EBoqfosWl2v2yZzD3Ub46yIKsQrytD0nf1Bj
-         Dti7YqFLKqjgJcG4BWhL8aXymFqNJfRGj51R8sgcZRuktbkMT+WZRywEAhbm3nc5/Y
-         VgWVVNHy8IyzwHnY2tbbTaEVs8+f3mhHQlv28veJ+VdRM9Y48Ao4KrK4kSGL01fz4U
-         TW3+dKpSbEzdLkA70vYLGqChUAYyv7+rzOGpuzBQlvro8ZcljRxrsBRLypZQiIHNHB
-         YfAVJXbrW87UdIKuHnV9wqtFnyExrX9I6AN+ykHoSVmHjgGnmSgCDNN3WMiPausy8g
-         uoKm+XzJ9h2nQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3820FE85D53;
-        Mon,  4 Apr 2022 17:02:00 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Mon, 4 Apr 2022 14:00:47 -0400
+Received: from mail-yw1-x112f.google.com (mail-yw1-x112f.google.com [IPv6:2607:f8b0:4864:20::112f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15D1D1CB3E
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 10:58:50 -0700 (PDT)
+Received: by mail-yw1-x112f.google.com with SMTP id 00721157ae682-2e64a6b20eeso109115607b3.3
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 10:58:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=zDeo6fXGhg6EAiuUbbF5arvW/VwJQGLFv7Esfpjiwxc=;
+        b=KkEd+zIJGYIpQxzBTpFyiBcZU0CtUucN0HlhH1+mWsOgvtliSRhxHGU01qfdjbCPXl
+         M+v6/rlX3V4kkx8NjJq3uUWjXpldT9HlQVluNXz3M5q4+zltAsteY2zHJ7CHhD+7C4jd
+         9DsoRA18YEYvpvnmQLejLB222cRfZzYRzyHeynvrLqjXN7jB2aPftkAWcR0MHd+ZGrj+
+         tLjiXyoOmVjheLm+2ITrQY1UT50HKL9+OE1VDcE5OgnGX7gVbwJQkx31e8wpgZSVLcRp
+         aFcNh7up3NffSS18OMap4bOELYj+gM+QY2nbCRTmyhnpV+N9rZo6ktiNa1zr/9TlaHNA
+         JDlQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=zDeo6fXGhg6EAiuUbbF5arvW/VwJQGLFv7Esfpjiwxc=;
+        b=iSNHmr5ykqdagJ/nabY9MJe2TRROi37ZGjwN9iQRN4jUP0rcLQzl0dZE3rvYfAhHYG
+         NkXe0pesJksHs83A6IziPBanDHjGlkTVPhS84PkQm6cAXSZCgnYfo3L5IrFePagfwxyX
+         E9qCTUGXtrfDIDWmWO3r4vXeZQDuw+NvHBUbLmNaToXUER8SFs2Rs7nb+d1994Af1XIP
+         3e4FizAVZV9yxmP1adH4+n4KRlJuuM9a8z+AAANxEFtP/3XnNyvTrXDwKEKnbb3VNMyc
+         xHcwVUiAOe7B5HZ9xpavIECggPMINsrRAtJa15oOSBjuziQg0bxffnd9TE5fce7fTt27
+         juRA==
+X-Gm-Message-State: AOAM5335nl9r5CFA5uq8ZpaHYTbJW4b8uKZBNd8ytrZgT4Xfr2MggHwE
+        0kath+DSGIahGMtvGrqeaMMZ9FHYHnhX75at4ul+/VXGHek=
+X-Google-Smtp-Source: ABdhPJyTF9OVOfpvezGKNXupF8hmRYE///GfHCK9sr2nsheioCf9CrdPzSGJAhtIalNOhxQfvb3IlDmJuJmulPVIYKk=
+X-Received: by 2002:a81:15ce:0:b0:2e5:e189:7366 with SMTP id
+ 197-20020a8115ce000000b002e5e1897366mr1163853ywv.188.1649095129129; Mon, 04
+ Apr 2022 10:58:49 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [GIT PULL] chrome-platform changes for v5.18
-From:   patchwork-bot+chrome-platform@kernel.org
-Message-Id: <164909172022.14329.16783451358670227711.git-patchwork-notify@kernel.org>
-Date:   Mon, 04 Apr 2022 17:02:00 +0000
-References: <YkekVRh9Ixdfa5qL@google.com>
-In-Reply-To: <YkekVRh9Ixdfa5qL@google.com>
-To:     Benson Leung <bleung@google.com>
-Cc:     torvalds@linux-foundation.org, pmalani@chromium.org,
-        bleung@chromium.org, bleung@kernel.org,
-        chrome-platform@lists.linux.dev, linux-kernel@vger.kernel.org,
-        tzungbi@kernel.org
+References: <20220401063636.2414200-1-mizhang@google.com> <20220401063636.2414200-2-mizhang@google.com>
+In-Reply-To: <20220401063636.2414200-2-mizhang@google.com>
+From:   Ben Gardon <bgardon@google.com>
+Date:   Mon, 4 Apr 2022 10:58:38 -0700
+Message-ID: <CANgfPd9OqV35BGfRCvJZNK_kemgqDWPx8TKKObfyGb0iiC-uxg@mail.gmail.com>
+Subject: Re: [PATCH v3 1/6] KVM: x86/mmu: Set lpage_disallowed in TDP MMU
+ before setting SPTE
+To:     Mingwei Zhang <mizhang@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm <kvm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Yosry Ahmed <yosryahmed@google.com>,
+        David Matlack <dmatlack@google.com>,
+        Jing Zhang <jingzhangos@google.com>,
+        Peter Xu <peterx@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+On Thu, Mar 31, 2022 at 11:36 PM Mingwei Zhang <mizhang@google.com> wrote:
+>
+> From: Sean Christopherson <seanjc@google.com>
+>
+> Set lpage_disallowed in TDP MMU shadow pages before making the SP visible
+> to other readers, i.e. before setting its SPTE.  This will allow KVM to
+> query lpage_disallowed when determining if a shadow page can be replaced
+> by a NX huge page without violating the rules of the mitigation.
+>
+> Reviewed-by: Mingwei Zhang <mizhang@google.com>
+> Signed-off-by: Sean Christopherson <seanjc@google.com>
+> ---
+>  arch/x86/kvm/mmu/mmu.c          | 14 ++++++++++----
+>  arch/x86/kvm/mmu/mmu_internal.h |  2 +-
+>  arch/x86/kvm/mmu/tdp_mmu.c      | 20 ++++++++++++--------
+>  3 files changed, 23 insertions(+), 13 deletions(-)
+>
+> diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+> index 1361eb4599b4..5cb845fae56e 100644
+> --- a/arch/x86/kvm/mmu/mmu.c
+> +++ b/arch/x86/kvm/mmu/mmu.c
+> @@ -812,14 +812,20 @@ static void account_shadowed(struct kvm *kvm, struct kvm_mmu_page *sp)
+>         kvm_mmu_gfn_disallow_lpage(slot, gfn);
+>  }
+>
+> -void account_huge_nx_page(struct kvm *kvm, struct kvm_mmu_page *sp)
+> +void __account_huge_nx_page(struct kvm *kvm, struct kvm_mmu_page *sp)
+>  {
+> -       if (sp->lpage_disallowed)
+> -               return;
+> -
+>         ++kvm->stat.nx_lpage_splits;
+>         list_add_tail(&sp->lpage_disallowed_link,
+>                       &kvm->arch.lpage_disallowed_mmu_pages);
+> +}
+> +
+> +static void account_huge_nx_page(struct kvm *kvm, struct kvm_mmu_page *sp)
+> +{
+> +       if (sp->lpage_disallowed)
+> +               return;
+> +
+> +       __account_huge_nx_page(kvm, sp);
+> +
+>         sp->lpage_disallowed = true;
+>  }
+>
+> diff --git a/arch/x86/kvm/mmu/mmu_internal.h b/arch/x86/kvm/mmu/mmu_internal.h
+> index 1bff453f7cbe..4a0087efa1e3 100644
+> --- a/arch/x86/kvm/mmu/mmu_internal.h
+> +++ b/arch/x86/kvm/mmu/mmu_internal.h
+> @@ -168,7 +168,7 @@ void disallowed_hugepage_adjust(struct kvm_page_fault *fault, u64 spte, int cur_
+>
+>  void *mmu_memory_cache_alloc(struct kvm_mmu_memory_cache *mc);
+>
+> -void account_huge_nx_page(struct kvm *kvm, struct kvm_mmu_page *sp);
+> +void __account_huge_nx_page(struct kvm *kvm, struct kvm_mmu_page *sp);
 
-This pull request was applied to chrome-platform/linux.git (for-kernelci)
-by Linus Torvalds <torvalds@linux-foundation.org>:
-
-On Fri, 1 Apr 2022 18:18:13 -0700 you wrote:
-> Hi Linus,
-> 
-> Here's chrome-platform's changes for v5.18-rc1.
-> 
-> Of note, the last two commits of this PR had to be reworded (actually just
-> the second to last one) since it hit linux-next for a minor commit message
-> fixup. Content wise, the two are the same as they are on linux-next right now.
-> 
-> [...]
-
-Here is the summary with links:
-  - [GIT,PULL] chrome-platform changes for v5.18
-    https://git.kernel.org/chrome-platform/c/02d4f8a3e05b
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+I believe we need to modify the usage of this function in
+paging_tmpl.h as well, at which point there should be no users of
+account_huge_nx_page, so we can just modify the function directly
+instead of adding a __helper.
+(Disregard if the source I was looking at was out of date. Lots of
+churn in this code recently.)
 
 
+>  void unaccount_huge_nx_page(struct kvm *kvm, struct kvm_mmu_page *sp);
+>
+>  #endif /* __KVM_X86_MMU_INTERNAL_H */
+> diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
+> index b3b6426725d4..f05423545e6d 100644
+> --- a/arch/x86/kvm/mmu/tdp_mmu.c
+> +++ b/arch/x86/kvm/mmu/tdp_mmu.c
+> @@ -1122,16 +1122,13 @@ static int tdp_mmu_map_handle_target_level(struct kvm_vcpu *vcpu,
+>   * @kvm: kvm instance
+>   * @iter: a tdp_iter instance currently on the SPTE that should be set
+>   * @sp: The new TDP page table to install.
+> - * @account_nx: True if this page table is being installed to split a
+> - *              non-executable huge page.
+>   * @shared: This operation is running under the MMU lock in read mode.
+>   *
+>   * Returns: 0 if the new page table was installed. Non-0 if the page table
+>   *          could not be installed (e.g. the atomic compare-exchange failed).
+>   */
+>  static int tdp_mmu_link_sp(struct kvm *kvm, struct tdp_iter *iter,
+> -                          struct kvm_mmu_page *sp, bool account_nx,
+> -                          bool shared)
+> +                          struct kvm_mmu_page *sp, bool shared)
+>  {
+>         u64 spte = make_nonleaf_spte(sp->spt, !shadow_accessed_mask);
+>         int ret = 0;
+> @@ -1146,8 +1143,6 @@ static int tdp_mmu_link_sp(struct kvm *kvm, struct tdp_iter *iter,
+>
+>         spin_lock(&kvm->arch.tdp_mmu_pages_lock);
+>         list_add(&sp->link, &kvm->arch.tdp_mmu_pages);
+> -       if (account_nx)
+> -               account_huge_nx_page(kvm, sp);
+>         spin_unlock(&kvm->arch.tdp_mmu_pages_lock);
+>
+>         return 0;
+> @@ -1160,6 +1155,7 @@ static int tdp_mmu_link_sp(struct kvm *kvm, struct tdp_iter *iter,
+>  int kvm_tdp_mmu_map(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault)
+>  {
+>         struct kvm_mmu *mmu = vcpu->arch.mmu;
+> +       struct kvm *kvm = vcpu->kvm;
+>         struct tdp_iter iter;
+>         struct kvm_mmu_page *sp;
+>         int ret;
+> @@ -1210,10 +1206,18 @@ int kvm_tdp_mmu_map(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault)
+>                         sp = tdp_mmu_alloc_sp(vcpu);
+>                         tdp_mmu_init_child_sp(sp, &iter);
+>
+> -                       if (tdp_mmu_link_sp(vcpu->kvm, &iter, sp, account_nx, true)) {
+> +                       sp->lpage_disallowed = account_nx;
+> +
+> +                       if (tdp_mmu_link_sp(kvm, &iter, sp, true)) {
+>                                 tdp_mmu_free_sp(sp);
+>                                 break;
+>                         }
+> +
+> +                       if (account_nx) {
+> +                               spin_lock(&kvm->arch.tdp_mmu_pages_lock);
+> +                               __account_huge_nx_page(kvm, sp);
+> +                               spin_unlock(&kvm->arch.tdp_mmu_pages_lock);
+> +                       }
+>                 }
+>         }
+>
+> @@ -1501,7 +1505,7 @@ static int tdp_mmu_split_huge_page(struct kvm *kvm, struct tdp_iter *iter,
+>          * correctness standpoint since the translation will be the same either
+>          * way.
+>          */
+> -       ret = tdp_mmu_link_sp(kvm, iter, sp, false, shared);
+> +       ret = tdp_mmu_link_sp(kvm, iter, sp, shared);
+>         if (ret)
+>                 goto out;
+>
+> --
+> 2.35.1.1094.g7c7d902a7c-goog
+>
