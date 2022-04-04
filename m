@@ -2,120 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C199C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A772C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:01:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244056AbiDDWDk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 18:03:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49498 "EHLO
+        id S1358394AbiDDWDc (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 18:03:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379597AbiDDRoL (ORCPT
+        with ESMTP id S1379360AbiDDRDu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 13:44:11 -0400
-Received: from mx0a-002e3701.pphosted.com (mx0a-002e3701.pphosted.com [148.163.147.86])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38A8A31DF0;
-        Mon,  4 Apr 2022 10:42:14 -0700 (PDT)
-Received: from pps.filterd (m0150242.ppops.net [127.0.0.1])
-        by mx0a-002e3701.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 234GjdVc003316;
-        Mon, 4 Apr 2022 17:41:39 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pps0720;
- bh=EqEV7oOPRCwvP9zFRtxS2amJ0sojOOK340QCkQmT5GQ=;
- b=EV0Vr4+6eloFzWx5Y1ZMrKC5Px9evjvYC7Z4dxkoQLYxRnv7UzMwAxlrsr7NnwpOKpnV
- VoW37agoBOd20YXvRgnY3Mx6POmmLawnAg2RhtvBOe6m/HoRB+YWLzIdkw0d+N5sdLWN
- k6t2X6heFO1Tvtj/8UP0zNwh7Kd93QcU9jaOD6xLa6To6yBNg8zawkMVnM75dnd31xdZ
- aLxL9jzgW+EGdD8omvyPhF6rwHEm8YCBxywmt4zRgMbLLxwVQBVW8V1EdcqJoFDbx5Ec
- mMAvm28AiG6/OyB4213RhN2m/0LhMrDWX8VkuP073MHNT6RQnbyCQ4vkJOx4wgvcyXhz SA== 
-Received: from g9t5009.houston.hpe.com (g9t5009.houston.hpe.com [15.241.48.73])
-        by mx0a-002e3701.pphosted.com (PPS) with ESMTPS id 3f84f6rmjf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 04 Apr 2022 17:41:38 +0000
-Received: from g9t2301.houston.hpecorp.net (g9t2301.houston.hpecorp.net [16.220.97.129])
-        by g9t5009.houston.hpe.com (Postfix) with ESMTP id 038E755;
-        Mon,  4 Apr 2022 17:41:38 +0000 (UTC)
-Received: from dog.eag.rdlabs.hpecorp.net (dog.eag.rdlabs.hpecorp.net [128.162.243.181])
-        by g9t2301.houston.hpecorp.net (Postfix) with ESMTP id 2682C5C;
-        Mon,  4 Apr 2022 17:41:37 +0000 (UTC)
-From:   Mike Travis <mike.travis@hpe.com>
-To:     Borislav Petkov <bp@alien8.de>, Ingo Molnar <mingo@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Steve Wahl <steve.wahl@hpe.com>, x86@kernel.org
-Cc:     Mike Travis <mike.travis@hpe.com>,
-        Andy Shevchenko <andy@infradead.org>,
-        Darren Hart <dvhart@infradead.org>,
-        Dimitri Sivanich <dimitri.sivanich@hpe.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Russ Anderson <russ.anderson@hpe.com>,
-        linux-kernel@vger.kernel.org, platform-driver-x86@vger.kernel.org
-Subject: [PATCH v3 3/3] x86/platform/uv: Log gap hole end size
-Date:   Mon,  4 Apr 2022 12:41:11 -0500
-Message-Id: <20220404174111.262414-4-mike.travis@hpe.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20220404174111.262414-1-mike.travis@hpe.com>
-References: <20220404174111.262414-1-mike.travis@hpe.com>
+        Mon, 4 Apr 2022 13:03:50 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F7A740A24
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 10:01:53 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id a6so10379996ejk.0
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 10:01:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=UdkDEqkIYPJe0IiYUAZgG3drRMBxCNYZ0wWJB+F1HJ0=;
+        b=yacEimsDx6EtXhSWHR/u21DYYeYT9nBoPDXNwwFSAu4BxrNH/02l8Jf0vS2eCMbpIU
+         4nU6ssTnMI8IBH7ITy6CMY9Rqpn2XqqHD/Qv5Pk7XP1v84UzIGqgJRGjPtUZVyxRIDtL
+         Qii4Bl6kloDFcqMAfmZM9+RN2dGVyQEAYYhY2TeDm6TThDumjRSwNzzPv7rIXafodpsO
+         2l2Ez3vbAS0i3rrootsn44qWArjG0w0/lWvCNbjtG5I6jyTGp2Z6DbLIH0xp8EsIJR1m
+         pl7hOkTknGWEnYZDkxd5/hebWcXvVqzn/23EXFD/rPqGB+fC00wHdTC/AZHMzzPaesAU
+         Dj1A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=UdkDEqkIYPJe0IiYUAZgG3drRMBxCNYZ0wWJB+F1HJ0=;
+        b=y9Koasz3RiegectCW4wMmVrk9gZ+ObnZv1Z4WOo32Qn42tJfXSrgynXUmo1KGymA49
+         3NXcMD/ozTVlSQmYDoBHgrhlw/FL3vTvPddi2sTb1cI1rxNk2NRoSFd4e5hnVG7biXpL
+         UBE5HV+QyfRq6jIwyH1KZUAgsy+ao0n07btnTO48dJdR4YslVpu9nL0VSH456eXLSk7G
+         hV53J2aHMZjp1f4yHyQ3vSBv0QV4zMFCf6XnEWCftuVGzleLBX/B1GDv46ShPJNRgXpI
+         cCQUib+SQ6M0bQhZQitAHDlz7kshHoWC+vPaNbS/fLeqoJ0ZdavOTp/yR+2xf3oKzs5Y
+         61tw==
+X-Gm-Message-State: AOAM533UYq8ewaJxb5+12q1spSPT5anr08KDopgvBZ1AVc3wAdpzfvDx
+        7Chgh/FlX+8Y5ndP5qG5qpCr1A==
+X-Google-Smtp-Source: ABdhPJwO8zEjm4+YadazUoXaa5sFLCdT/YW3MQ4yRm1ptx5qUf09HRh8cZszFmuXUB+1t5biovDWKA==
+X-Received: by 2002:a17:906:280b:b0:6ce:f3c7:688f with SMTP id r11-20020a170906280b00b006cef3c7688fmr1079563ejc.468.1649091710942;
+        Mon, 04 Apr 2022 10:01:50 -0700 (PDT)
+Received: from localhost.localdomain (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id c5-20020a170906d18500b006ce371f09d4sm4557770ejz.57.2022.04.04.10.01.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Apr 2022 10:01:50 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Russell King <linux@armlinux.org.uk>,
+        Julia Lawall <Julia.Lawall@inria.fr>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        kernel-janitors@vger.kernel.org,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Alim Akhtar <alim.akhtar@samsung.com>
+Subject: Re: [PATCH] ARM: s3c: fix typos in comments
+Date:   Mon,  4 Apr 2022 19:01:41 +0200
+Message-Id: <164909169269.1688455.7499660640126725885.b4-ty@linaro.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220318103729.157574-31-Julia.Lawall@inria.fr>
+References: <20220318103729.157574-31-Julia.Lawall@inria.fr>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-Proofpoint-ORIG-GUID: kTl_aozcDXnjKZ6sWmQ_-q3atMRYhzkm
-X-Proofpoint-GUID: kTl_aozcDXnjKZ6sWmQ_-q3atMRYhzkm
-X-HPE-SCL: -1
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-04-04_06,2022-03-31_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
- lowpriorityscore=0 suspectscore=0 priorityscore=1501 clxscore=1015
- spamscore=0 mlxlogscore=911 phishscore=0 mlxscore=0 bulkscore=0
- malwarescore=0 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2202240000 definitions=main-2204040100
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Show value of gap end in the kernel log which equates to number of physical
-address bits used by system.  The end address of the gap holds PA bits 56:26
-which gives the range up to 64PB max size with 64MB of granularity.
+On Fri, 18 Mar 2022 11:37:26 +0100, Julia Lawall wrote:
+> Various spelling mistakes in comments.
+> Detected with the help of Coccinelle.
+> 
+> 
 
-Signed-off-by: Mike Travis <mike.travis@hpe.com>
-Reviewed-by: Steve Wahl <steve.wahl@hpe.com>
----
-v2: Update patch description to be more explanatory.
----
- arch/x86/kernel/apic/x2apic_uv_x.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+Applied, thanks!
 
-diff --git a/arch/x86/kernel/apic/x2apic_uv_x.c b/arch/x86/kernel/apic/x2apic_uv_x.c
-index 387d6533549a..146f0f63a43b 100644
---- a/arch/x86/kernel/apic/x2apic_uv_x.c
-+++ b/arch/x86/kernel/apic/x2apic_uv_x.c
-@@ -1346,7 +1346,7 @@ static void __init decode_gam_params(unsigned long ptr)
- static void __init decode_gam_rng_tbl(unsigned long ptr)
- {
- 	struct uv_gam_range_entry *gre = (struct uv_gam_range_entry *)ptr;
--	unsigned long lgre = 0;
-+	unsigned long lgre = 0, gend = 0;
- 	int index = 0;
- 	int sock_min = 999999, pnode_min = 99999;
- 	int sock_max = -1, pnode_max = -1;
-@@ -1380,6 +1380,9 @@ static void __init decode_gam_rng_tbl(unsigned long ptr)
- 			flag, size, suffix[order],
- 			gre->type, gre->nasid, gre->sockid, gre->pnode);
- 
-+		if (gre->type == UV_GAM_RANGE_TYPE_HOLE)
-+			gend = (unsigned long)gre->limit << UV_GAM_RANGE_SHFT;
-+
- 		/* update to next range start */
- 		lgre = gre->limit;
- 		if (sock_min > gre->sockid)
-@@ -1397,7 +1400,8 @@ static void __init decode_gam_rng_tbl(unsigned long ptr)
- 	_max_pnode	= pnode_max;
- 	_gr_table_len	= index;
- 
--	pr_info("UV: GRT: %d entries, sockets(min:%x,max:%x) pnodes(min:%x,max:%x)\n", index, _min_socket, _max_socket, _min_pnode, _max_pnode);
-+	pr_info("UV: GRT: %d entries, sockets(min:%x,max:%x), pnodes(min:%x,max:%x), gap_end(%d)\n",
-+	  index, _min_socket, _max_socket, _min_pnode, _max_pnode, fls64(gend));
- }
- 
- /* Walk through UVsystab decoding the fields */
+[1/1] ARM: s3c: fix typos in comments
+      commit: 170a0c56c5ec597fa15447e63272827a80a19be1
+
+Best regards,
 -- 
-2.26.2
-
+Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
