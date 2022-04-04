@@ -2,183 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7F80C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 09:53:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B05F5C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 09:53:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354912AbiDDJzD (ORCPT
+        id S1354926AbiDDJzY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 05:55:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46518 "EHLO
+        Mon, 4 Apr 2022 05:55:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236084AbiDDJzA (ORCPT
+        with ESMTP id S1355176AbiDDJzR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 05:55:00 -0400
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FD313AA44
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 02:53:04 -0700 (PDT)
-Received: by mail-lf1-x132.google.com with SMTP id 5so16244200lfp.1
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 02:53:04 -0700 (PDT)
+        Mon, 4 Apr 2022 05:55:17 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 752EA3C4AD
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 02:53:18 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id k2so3123138edj.9
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 02:53:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=l9AE95uUctgpJ2Ztw4T/0G1d2ZfGrjEvIvqQC9xYXFY=;
-        b=XCwBuvynzYD3NaViA5kVBbsBLcSF/T11BqYr07glF1nuRIcZZqxo9rPsvwTv4BucbN
-         wER5U0sLZLxlSSefnnMx4tA9SqjSRMtHCzAj0Zu7YFyUGPIXhtFn4Rtwj8tfuWRiyeCv
-         fcJGCwX5i6lCWO4e5fBREBDHw6SeP1CrzDl03w1sq6qCIfeoEkD+XUBy3VEnuvHhm+mX
-         M5aDPgKNE3mJkINZe7C0BCIqW2szfAMCxps7Vt5hJjK3FxOObtji+iK222O1G0gRxO5H
-         p7md8VAXoXHlrKko2wo4vUoYVAPg5UxVU5QkGkx6hkU2Dz9Nm1RMhiL2dLwsQt3OfasM
-         Tu3A==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=fIqsgVmiktE8nQPETLlrdHCC3xjtZXql3azcjqVoLik=;
+        b=FFLhGV5KmQAibazuXkUZhQcRnTUIz252x+BPSbMrhLXfVEtTWghn9Mcgqcsj74hWvf
+         D/KButuDBlljQb+VuwI+GnIEii7NqirbmNxQFIePhWLErcKcnFHjx36fVMSw8bbtIzCQ
+         nxPLSOMYL3i70zeVRh1ySNOEcxUIwrlFHV0lQjpj9vfH8rbsARYOyf94zyRFpJpLo80f
+         INf57ax+75M68vLt0c+6u9LwWbdawPeKLJyxRQgRVLcHA2c4spXX0nwAoigoHdO0KvbM
+         oZWeLta0Wa7pX3lHUt/yV0cSeii1726nQwYStZV5x455pc2koXrnVBcOQfWNL2IPm/+e
+         T4Bg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=l9AE95uUctgpJ2Ztw4T/0G1d2ZfGrjEvIvqQC9xYXFY=;
-        b=520pzgq2xgLoN8YTxqw2I/yXdv/7KJFKPiRyNjqTnVsr9lIm1Y1/LX3n0yEvTDd8Sr
-         LZ3KaWW6ai9chY/MBLvxWwo24gsHWsoBnORfxIrxElDTnyK1tTYUk7MiF2HANRrHgQZq
-         lIzFZOIXhHN32PXYXC7KyqBkokphPWdeVPRyvWMDQqN0JPhrAtLcuZvGJwBRcdgCnHN4
-         TeZDiapBAutV5v64BKv9ao4ZGIndDt77WgcN1HUWXNqjYZ3EstOL/GqeoSAeL+R+XG0I
-         k+HMd6JoKxSR5HhUrDSH8HdyLttP9Gia/KuLd2p3dTCa4GL/7S3xvY3230j+e+BTIrma
-         ORXA==
-X-Gm-Message-State: AOAM531JfbA3MAiGOlXLGQrZxZQje8+89RuVaQNC1aAm2krIH+aTxbef
-        dWxZiEF6qQI3iDqbh5u0JFTd3F8ANcCsHAiVizf+kQ==
-X-Google-Smtp-Source: ABdhPJwGitnLgnZiI9JjKisnMrZ7/XNl7rW/Q0iSPsRm0XivW5wgWiQFR/cul0erMvu4E9LJH7DNtICHK3o0TXPdv4I=
-X-Received: by 2002:a19:3801:0:b0:444:150b:9ef5 with SMTP id
- f1-20020a193801000000b00444150b9ef5mr21185111lfa.523.1649065982714; Mon, 04
- Apr 2022 02:53:02 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=fIqsgVmiktE8nQPETLlrdHCC3xjtZXql3azcjqVoLik=;
+        b=C3V0EIVglvrCpOH+/kAwz0A/Jdi/LBFf4KbtoKhZLE59HjGhpOUbMqsB7LTxTw/6VR
+         YcIOoohIakgGkGfalKSKP8LiQYNR6X+wnBTakRtHKWIfrkit59u6BpED6nBr/svi36wG
+         sfIJV0RQ+0vCOYY8W85ZRQ0Myj7/ph6lQRdJlNHnfDoZMXyU4aNUFrF6AHR3KY9IEZii
+         r11Lo1Hs6lvlRVXIlhpYoE4ATxHvvEVZVb/mWrqlPrKT/V65CMBpiC8Ye7BO2VBmJHwT
+         j8Io+zLbLEa5Ajd1eUgRgL8PsL+/iFHcbhulB85zE058k3gXFzzWU1NVZsfHVbcN+s1W
+         etGQ==
+X-Gm-Message-State: AOAM530+Kwpuag6aN4rE4DemtAElGJ+MVexvXJ+Rg7U4Ano4iXdDe50X
+        JgbdzMlrRqQyZ1DbWpt1FS92SA==
+X-Google-Smtp-Source: ABdhPJwUPyb8x56zcOzkevoWgOQMo4j5Vb1clSPdFyvxJeCVe5hEtXGnQTaITHDlCmKTHv8rtaLB6w==
+X-Received: by 2002:a05:6402:1107:b0:416:439a:6a9e with SMTP id u7-20020a056402110700b00416439a6a9emr31675509edv.382.1649065997066;
+        Mon, 04 Apr 2022 02:53:17 -0700 (PDT)
+Received: from [192.168.0.174] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id f3-20020a1709067f8300b006ce051bf215sm4101741ejr.192.2022.04.04.02.53.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 04 Apr 2022 02:53:16 -0700 (PDT)
+Message-ID: <bdbf104b-2300-0ea6-bbc4-51d6fb96124a@linaro.org>
+Date:   Mon, 4 Apr 2022 11:53:15 +0200
 MIME-Version: 1.0
-References: <20220204141941.GE4077@xsang-OptiPlex-9020> <CADjb_WT0fcP2QBjYpsCAJEcVYWKNw1rQ6XZNz33i+KCbD8jB-A@mail.gmail.com>
- <CAKfTPtDFhORUyOfqr==ZrOSgBd8=vzvYgWMxw87bvq3pQmq7DQ@mail.gmail.com> <CADjb_WQL7ZTSrThgFHtoF2apwwqio8wgwGYmCOq9LBfamo3D0Q@mail.gmail.com>
-In-Reply-To: <CADjb_WQL7ZTSrThgFHtoF2apwwqio8wgwGYmCOq9LBfamo3D0Q@mail.gmail.com>
-From:   Vincent Guittot <vincent.guittot@linaro.org>
-Date:   Mon, 4 Apr 2022 11:52:51 +0200
-Message-ID: <CAKfTPtBEcbiqaOjY9jEAWoJH5VSixunQ_r6DcDHcp2cej9QFVA@mail.gmail.com>
-Subject: Re: [sched/pelt] 2d02fa8cc2: stress-ng.pipeherd.ops_per_sec -9.7% regression
-To:     Chen Yu <yu.chen.surf@gmail.com>
-Cc:     kernel test robot <oliver.sang@intel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Sachin Sant <sachinp@linux.ibm.com>,
-        LKML <linux-kernel@vger.kernel.org>, lkp@lists.01.org,
-        lkp@intel.com, Huang Ying <ying.huang@intel.com>,
-        feng.tang@intel.com, zhengjun.xing@linux.intel.com,
-        fengwei.yin@intel.com, Aubrey Li <aubrey.li@linux.intel.com>,
-        Chen Yu <yu.c.chen@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v2 4/4] spi: dt-bindings: qcom,spi-qup: convert to
+ dtschema
+Content-Language: en-US
+To:     Mark Brown <broonie@kernel.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
+        Kuldeep Singh <singh.kuldeep87k@gmail.com>
+References: <20220331155320.714754-1-krzysztof.kozlowski@linaro.org>
+ <20220331155425.714946-4-krzysztof.kozlowski@linaro.org>
+ <YkqkJgLd4LdxF883@sirena.org.uk>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <YkqkJgLd4LdxF883@sirena.org.uk>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 1 Apr 2022 at 20:32, Chen Yu <yu.chen.surf@gmail.com> wrote:
->
-> On Fri, Apr 1, 2022 at 12:17 AM Vincent Guittot
-> <vincent.guittot@linaro.org> wrote:
-> >
-> > On Thu, 31 Mar 2022 at 16:19, Chen Yu <yu.chen.surf@gmail.com> wrote:
-> > >
-> > > Hi Vincent,
-> > >
-> > > On Wed, Feb 9, 2022 at 1:17 PM kernel test robot <oliver.sang@intel.com> wrote:
-> > > >
-> > > >
-> > > >
-> > > > Greeting,
-> > > >
-> > > > FYI, we noticed a -9.7% regression of stress-ng.pipeherd.ops_per_sec due to commit:
-> > > >
-> > > >
-> > > > commit: 2d02fa8cc21a93da35cfba462bf8ab87bf2db651 ("sched/pelt: Relax the sync of load_sum with load_avg")
-> > > > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
-> > > >
-> > > > in testcase: stress-ng
-> > > > on test machine: 128 threads 2 sockets Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz with 128G memory
-> > > > with following parameters:
-> > > >
-> > > >         nr_threads: 100%
-> > > >         testtime: 60s
-> > > >         class: memory
-> > > >         test: pipeherd
-> > > >         cpufreq_governor: performance
-> > > >         ucode: 0xd000280
-> > > >
-> > > This week we have re-run the test result and it seems that this
-> > > regression is still there.
-> > > As we are evaluating whether this report is valid or if the
-> > > downgrading is expected, appreciated
-> > > if you could give suggestion on further steps:
-> > >
-> > > 1.  If I understand correctly,
-> > > 2d02fa8cc21a93da35cfba462bf8ab87bf2db651 ("sched/pelt: Relax the sync
-> > > of load_sum with load_avg")
-> > >      fixed the calculating of  load_sum.  Before this patch  the
-> > > contribution part would be 'skipped' and caused the load_sum
-> > >      to be lower than expected.
-> >
-> > Yes, you understand it correctly
-> >
-> > > 2. If above is true, after this patch, the load_sum becomes higher. Is
-> > > there a scenario that higher load_sum added to 1 cfs_rq brings
-> > >     more imbalance between this group and other sched_group, thus
-> > > brings more task migration/wake up? (because in below perf result,
-> > >     it seems that, with this patch applied, there are slightly more
-> > > take wake up)
-> >
-> > This change should not impact load balance as it only does comparison
-> > and I expect the load increase to happen on all cfs rq.
-> > The only place that could be impacted, would be wake_affine_weight()
-> > because it removes task load from previous cfs rq load before
-> > comparing.
-> > The task's load was not impacted by the underestimate which means that
-> > the load of prev cfs  might be seen lower than current cfs after
-> > subtracting the task's load whereas both cfs rqs were similarly
-> > underestimated.
-> > Now the load of prev cfs rq is not underestimated and becomes
-> > comparable or slightly higher than the current cfs and the task
-> > migrate on current cfs instead of staying on prev one at wakeup
-> >
-> Could you please elaborate a little more on this scenario, since both current
-> and previous cfs rqs were underestimated, how could previous cfs rq has
-> lower load than the current one before applying this patch?
->
-> Say, suppose the previous cfs rq has a load of L1, and current cfs rq has
-> a load of L2, the waken task has a load of h, then wake_affine_weight()
-> compares L1 - h  with L2 + h ,  when L1 < L2 + 2h, the task will remain on
-> previous CPU.  Since L1 and L2 were underestimated in the same scale,
-> I'm not quite sure how this patch would affect the choice between
-> prev and current CPU.
+On 04/04/2022 09:54, Mark Brown wrote:
+> On Thu, Mar 31, 2022 at 05:54:25PM +0200, Krzysztof Kozlowski wrote:
+>> Convert the Qualcomm Universal Peripheral (QUP) Serial Peripheral
+>> Interface (SPI) bindings to DT Schema.
+> 
+> This doesn't apply against current code, please check and resend.
 
-Let's take the example of  this_cpu load L1 = 0 and prev_cpu load L2 =
-2h'+d. h' reflects h in the cpu load and d is a small delta load. The
-task will migrate if we have the condition below:
+The v2 was superseded with:
+https://lore.kernel.org/linux-devicetree/20220402184011.132465-1-krzysztof.kozlowski@linaro.org/
 
-    h < 2h'-h+d
+The v3 needs a fix (in different place, not v3), so I will send a v4.
 
-With this patch, we assume that h' == h as we don't underestimate the
-load of cfs rqs anymore. The condition for migrating the task is :
-    h < h+d
-And the task will migrate on this cpu as soon as there is a small load
-on prev_cpu in addition to the 2h.
+The SPI patch is now dependency for final schema conversion, so I think
+would be better if you ack/review it.
 
-Without the patch, the load of cfs_rqs are underestimated which means
-that the task's load is underestimated in the cfs rq. This can be
-described as h'  == h-U. U being the underestimated part. In this case
-the condition to migrate the task becomes:
-    h < h-2U+d
-The task will migrate on this cpu is d is large enough to compensate
-the underestimation so we will migrate less often
 
-> > One possible test would be to run the test with WA_WEIGHT features
-> > disable and check if there is still a difference
-> >
-> Yes, after disabling WA_WEIGHT, the performance came back.
-> The following score is the output of stress-ng.pipeherd.ops_per_sec
->
-> WA_WEIGHT                 yes                        no
-> -------------------
-> patched
->         yes                      58069733.01          69940547.7*
->         no                        64591593.69          73503396.9
->
-> --
-> Thanks,
-> Chenyu
+Best regards,
+Krzysztof
