@@ -2,164 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23B86C4167B
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:50:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1EFBC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:50:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347782AbiDDVvr (ORCPT
+        id S1382670AbiDDVve (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:51:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51452 "EHLO
+        Mon, 4 Apr 2022 17:51:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379984AbiDDScQ (ORCPT
+        with ESMTP id S1379529AbiDDRXj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 14:32:16 -0400
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C1A728E28;
-        Mon,  4 Apr 2022 11:30:20 -0700 (PDT)
-Received: by mail-pg1-x52d.google.com with SMTP id k14so9088490pga.0;
-        Mon, 04 Apr 2022 11:30:20 -0700 (PDT)
+        Mon, 4 Apr 2022 13:23:39 -0400
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 452B6240A9
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 10:21:43 -0700 (PDT)
+Received: by mail-pg1-x536.google.com with SMTP id t4so8905790pgc.1
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 10:21:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=yU/npQkA3tjufXIoz/2Bj10BQJGtOZiLPnmEjB7l/dM=;
-        b=ICgAi3qviwX7vleQkAxB61BLj3mLfdEss7OzH78FZDGf35Cpga1E+CqY+p2e1zQDcw
-         qeKn0CA1rU6pnk8CoQVs3hfU2TUpj7aUCHEKopnGWEetguKqcmY3xd5c6f1mPnp/5jmx
-         FZkEMskFvUsZzr6WU19y/XWgAQZ0cF2gRDCaa3Zoj29RrPgdtayt+STm9jzxLes6Retk
-         5XnMiWmPxSsOjOEYekNdacc7aQiXcDSss807fWkZ8oIGDjJ/pS0M5zphnN+KvWYiUnd9
-         olDzikcWwL1XQK5ek0xaidSf+q+62l0IrsXO5Lgm3S+CucHteoVTrw4+ecxQjY6biyFl
-         cvZA==
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=085CFCikZI0ZSlSyHC8HLU/h1P8XbTcUdfdIfFSc4n0=;
+        b=OOV2xbEit2y/RdYNm23+xuyCZl8Z+T2ls0EsFdAXySz9w2s48E/Xs73MadwVN1p+JK
+         HMfcSM84pXVwBFVgA7/8Tr4hMDCeyWPh3HmkbAHNTzdnWt96Y9rN6/i8uqMqRTgsHeMh
+         chxXW3tMK9KMN1XT3Yqny19YyY2aErNbS8NMXMjQxGtUruOzKCflQ0CMr+4Y+e0iopSN
+         7WdNTl8v1DadN1I9QAgp5Jk8Z8APtXIRMiaeFjeRmua6x7K7eSFhOLn9dw4AqXF+HJDI
+         67g6u0kcNlZ/VL+qeK0e2Q8xal2YZZTBIqQ2daUc/bx7LECIxOTNjADyu4lJyg7TUTev
+         BbrA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=yU/npQkA3tjufXIoz/2Bj10BQJGtOZiLPnmEjB7l/dM=;
-        b=unRFdMMJp6GocyvLGLfai4fPSCYLr0h2TwBYC5Da7qwMbTcqcyn0GRb61ryrOI1CUy
-         0q9pYdnrA547WdkSiZ67MYPdktJYuRju0nbfUn2pFuwZKO1uQG7MisMpL8RSnTA/JKrN
-         B4t7U4ui6sbGbpR2w8S2FqyuLUWZVmgm6XOOyjJL09fYx15/+M7h13/c1iiTvdTivLO/
-         vMVKfWVOs3l93WToZAWjObr649stbaiJw459cfv0IWPwNnsq46463ffIE3mQaRT+QUwP
-         iVtHZ8rJUvlsnwh2lsnoYWUcHjqz/sxkqAJuLmYHozeHCNJDzSGeTO9JtLYbDaCVw5UV
-         2ywA==
-X-Gm-Message-State: AOAM53137IF1LRkGzmib7acQ8HGTWM0HAt69wgPsYPosu7zyxTmuxpOc
-        ThWZjcK1/2Vy1KvnLrLeFFk=
-X-Google-Smtp-Source: ABdhPJxWF7mQvPZJfqXvzCtthm6voXtsVkttbFSl2dJZgRQnAFhQWVCu0L0KurK5VHKVI0UQ4LOOJg==
-X-Received: by 2002:a63:5317:0:b0:399:58e9:882b with SMTP id h23-20020a635317000000b0039958e9882bmr165065pgb.306.1649097019502;
-        Mon, 04 Apr 2022 11:30:19 -0700 (PDT)
-Received: from localhost.localdomain ([122.161.51.18])
-        by smtp.gmail.com with ESMTPSA id kk11-20020a17090b4a0b00b001c73933d803sm162656pjb.10.2022.04.04.11.30.16
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=085CFCikZI0ZSlSyHC8HLU/h1P8XbTcUdfdIfFSc4n0=;
+        b=K4ZkHXaINqo9p0tF8p3d9gB2EUjRhV3bRxpiLt0fwq56INOJH2aeETnTgkqYnEjI0u
+         lATVtoY6mg+YDmfWyrs0TPsKDOYap69WVdH4KL+cDiiW0Gfms40yCAnzYYBCVvzqvNNd
+         glSThRp0gFpPquFANbkmzyfeD/zGkShH2Pbz7N+lm04rPYINCX4kNK2VMJ5iRmN1BpbV
+         40McOUGbxVYXMj5RvfvS72IeQTZyLps8KvW68VsBwBJl5nkv2PNl3ojP1951YBiYyd+t
+         0AihqtMFM1N97er9MVX9FThoriaXNzkXaG3V486ATFhmuUe2NKizYeWr5VCWC6dXbw4K
+         oFRg==
+X-Gm-Message-State: AOAM533EqIQc52Qv8sO2MtIGrw4t0JK/M/zccJKg8YZSGY7IkGxyCtf1
+        cuWi7lMi7WqTlv7WnO/9mZOGiw==
+X-Google-Smtp-Source: ABdhPJz+k9OiS7nNrV1t2/FVdiyJdJ0vcSykh+CdQ2uQEEAf6z7TVQrDn/IqrEkPX4yKHwxbwEqLJA==
+X-Received: by 2002:a05:6a00:e8e:b0:4fa:a52f:59cf with SMTP id bo14-20020a056a000e8e00b004faa52f59cfmr1098319pfb.84.1649092902528;
+        Mon, 04 Apr 2022 10:21:42 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id n14-20020a17090a394e00b001c670d67b8esm66687pjf.32.2022.04.04.10.21.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 11:30:19 -0700 (PDT)
-From:   Kuldeep Singh <singh.kuldeep87k@gmail.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mukesh Savaliya <msavaliy@codeaurora.org>,
-        Akash Asthana <akashast@codeaurora.org>
-Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        Kuldeep Singh <singh.kuldeep87k@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        linux-arm-msm@vger.kernel.org
-Subject: [PATCH v2 4/4] dt-bindings: qcom: geni-se: Update UART schema reference
-Date:   Mon,  4 Apr 2022 23:59:37 +0530
-Message-Id: <20220404182938.29492-5-singh.kuldeep87k@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220404182938.29492-1-singh.kuldeep87k@gmail.com>
-References: <20220404182938.29492-1-singh.kuldeep87k@gmail.com>
+        Mon, 04 Apr 2022 10:21:41 -0700 (PDT)
+Date:   Mon, 4 Apr 2022 17:21:38 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/8] KVM: nSVM: Sync next_rip field from vmcb12 to vmcb02
+Message-ID: <YkspIjFMwpMYWV05@google.com>
+References: <20220402010903.727604-1-seanjc@google.com>
+ <20220402010903.727604-2-seanjc@google.com>
+ <112c2108-7548-f5bd-493d-19b944701f1b@maciej.szmigiero.name>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <112c2108-7548-f5bd-493d-19b944701f1b@maciej.szmigiero.name>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We now have geni based QUP UART controller individual binding, update
-reference in parent schema and remove properties from common wrapper.
+On Mon, Apr 04, 2022, Maciej S. Szmigiero wrote:
+> > @@ -1606,7 +1622,7 @@ static int svm_set_nested_state(struct kvm_vcpu *vcpu,
+> >   	nested_copy_vmcb_control_to_cache(svm, ctl);
+> >   	svm_switch_vmcb(svm, &svm->nested.vmcb02);
+> > -	nested_vmcb02_prepare_control(svm);
+> > +	nested_vmcb02_prepare_control(svm, save->rip);
+> 
+> 					   ^
+> I guess this should be "svm->vmcb->save.rip", since
+> KVM_{GET,SET}_NESTED_STATE "save" field contains vmcb01 data,
+> not vmcb{0,1}2 (in contrast to the "control" field).
 
-With removal of last child node schema, remove common properties of all
-the controllers as they have become obsolete now.
-
-Signed-off-by: Kuldeep Singh <singh.kuldeep87k@gmail.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
-v2:
-- s/uart/UART
-- Reword commit description
-- Add Krzysztof's Rb tag
-- Merge patch 5/5 of v1 series to this one:
-  https://lore.kernel.org/lkml/20220402051206.6115-6-singh.kuldeep87k@gmail.com/
----
- .../bindings/soc/qcom/qcom,geni-se.yaml       | 51 +------------------
- 1 file changed, 1 insertion(+), 50 deletions(-)
-
-diff --git a/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.yaml b/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.yaml
-index e6073923e03a..c8e1a4a87ba8 100644
---- a/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.yaml
-+++ b/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.yaml
-@@ -64,39 +64,6 @@ required:
-   - ranges
- 
- patternProperties:
--  "^.*@[0-9a-f]+$":
--    type: object
--    description: Common properties for GENI Serial Engine based I2C, SPI and
--                 UART controller.
--
--    properties:
--      reg:
--        description: GENI Serial Engine register address and length.
--        maxItems: 1
--
--      clock-names:
--        const: se
--
--      clocks:
--        description: Serial engine core clock needed by the device.
--        maxItems: 1
--
--      interconnects:
--        minItems: 2
--        maxItems: 3
--
--      interconnect-names:
--        minItems: 2
--        items:
--          - const: qup-core
--          - const: qup-config
--          - const: qup-memory
--
--    required:
--      - reg
--      - clock-names
--      - clocks
--
-   "spi@[0-9a-f]+$":
-     type: object
-     description: GENI serial engine based SPI controller. SPI in master mode
-@@ -133,23 +100,7 @@ patternProperties:
-   "serial@[0-9a-f]+$":
-     type: object
-     description: GENI Serial Engine based UART Controller.
--    $ref: /schemas/serial.yaml#
--
--    properties:
--      compatible:
--        enum:
--          - qcom,geni-uart
--          - qcom,geni-debug-uart
--
--      interrupts:
--        minItems: 1
--        items:
--          - description: UART core irq
--          - description: Wakeup irq (RX GPIO)
--
--    required:
--      - compatible
--      - interrupts
-+    $ref: /schemas/serial/qcom,serial-geni-qcom.yaml#
- 
- additionalProperties: false
- 
--- 
-2.25.1
-
+Argh, yes.  Is userspace required to set L2 guest state prior to KVM_SET_NESTED_STATE?
+If not, this will result in garbage being loaded into vmcb02.
