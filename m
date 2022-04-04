@@ -2,120 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB788C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 03:39:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F48AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 03:39:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345511AbiDDDjG (ORCPT
+        id S1348326AbiDDDlQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 3 Apr 2022 23:39:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42330 "EHLO
+        Sun, 3 Apr 2022 23:41:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233007AbiDDDjB (ORCPT
+        with ESMTP id S233007AbiDDDlL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 3 Apr 2022 23:39:01 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3623D39804;
-        Sun,  3 Apr 2022 20:37:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=OsXUKgbByLP4TKkrJlWQ1fr5jaRQNDMGQxiR3xsP4gk=; b=j6fT7PRt5ERAIShbgcp9AWcOZ8
-        1YgOr7nwAS2RAmAQcosXBk6WyXYfaTa3yrKIqUuQutil8rQsKXg3gbCC2S74KQ0WHmtnkzZkbTe55
-        mAUjjP71kz+ZiUKCeljZ8AJEvqT1XKzSCcFzQtvpNe3onoQYF9oPs8zoZsexQHMQQDqfnOgq4iLoc
-        RnhhvmxyXNnpX1/ROM7g+xtljRMC0QZv4V5vtD9M3kQwsvkkf2PTnzJm4UggfcECMvf8pe3bGauEv
-        vCCp3k6Vv5P4fF84ahq0nzeE4dfY4rYqX8kr9LV8iBiTioqiN8FMLQI8otSNI9OJo2XBQR1P8l4Nv
-        Tv+RzHYg==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nbDWT-005O7U-1b; Mon, 04 Apr 2022 03:36:57 +0000
-Message-ID: <61196f88-7306-058d-7b9b-21e32f1fca92@infradead.org>
-Date:   Sun, 3 Apr 2022 20:36:50 -0700
+        Sun, 3 Apr 2022 23:41:11 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADC8439805;
+        Sun,  3 Apr 2022 20:39:16 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KWxN25d4Mz4xL3;
+        Mon,  4 Apr 2022 13:39:14 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1649043555;
+        bh=Xv/VYrN3nnzwh73foVTRVc0CU1Gv4Sr+YLzYnCdE+9M=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=druhi48TJmt4+Y4HoUuNnEQ/FyKzqgFdsHSWf8oy33E+4LPx/J0uJtyFgjJwTzYaR
+         TwRssAGv6tWysu9PP9PhJYuWNCIzFZMEWtILOsnu+MN6tu0n6mqJYLxo4ybpzxJ2bX
+         t3/wEyFH2yt/s7912WwLKh5sxpW3eAUt7vntP3O4UzgPvevb5E3ea92bruFjBIpO78
+         65S/rTsxipjamcNPyOe9aDMBF/V3TcUa7ES5S8KA3/maapZZy883lqLxJD8mGAJxPy
+         cZ/hd9/VGv9aQ6lTIrYTYbm0cXSpHnCzb0CVGCK7UVfS9vCdPBvVyp4sfVKdgSNm6l
+         0kzJSFu2gXRzQ==
+Date:   Mon, 4 Apr 2022 13:39:14 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Luis Chamberlain <mcgrof@kernel.org>
+Cc:     Wei Xiao <xiaowei66@huawei.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: build failure after merge of the sysctl tree
+Message-ID: <20220404133914.09f23f65@canb.auug.org.au>
+In-Reply-To: <YkpOBykNOI6YjMon@bombadil.infradead.org>
+References: <20220330115617.4d694d11@canb.auug.org.au>
+        <20220404102617.572de1d8@canb.auug.org.au>
+        <YkpOBykNOI6YjMon@bombadil.infradead.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH -next] cpuidle: riscv: support non-SMP config
-Content-Language: en-US
-To:     Anup Patel <anup@brainfault.org>
-Cc:     "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>,
-        kernel test robot <lkp@intel.com>,
-        Anup Patel <apatel@ventanamicro.com>,
-        Atish Patra <atishp@rivosinc.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        "open list:THERMAL" <linux-pm@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        Palmer Dabbelt <palmer@rivosinc.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>
-References: <20220403031355.20894-1-rdunlap@infradead.org>
- <CAAhSdy2CJMeD_JhvwkEKShtYxyLGVRme8rE4cmCcDFfO90_D-Q@mail.gmail.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <CAAhSdy2CJMeD_JhvwkEKShtYxyLGVRme8rE4cmCcDFfO90_D-Q@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; boundary="Sig_//yZav+sQmN2xonWSV/CNKp7";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+--Sig_//yZav+sQmN2xonWSV/CNKp7
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
+Hi Luis,
 
-On 4/3/22 20:05, Anup Patel wrote:
-> (Removed my WDC email because it does not exist anymore)
-> 
-> On Sun, Apr 3, 2022 at 8:44 AM Randy Dunlap <rdunlap@infradead.org> wrote:
->>
->> Add <asm/smp.h> for cpuid_to_hartid_map etc.
->> This is needed for both SMP and non-SMP builds, but not having it
->> causes a build error for non-SMP:
->>
->> drivers/cpuidle/cpuidle-riscv-sbi.c: In function 'sbi_cpuidle_init_cpu':
->> drivers/cpuidle/cpuidle-riscv-sbi.c:350:26: error: implicit declaration of function 'cpuid_to_hartid_map' [-Werror=implicit-function-declaration]
->>
->> Fixes: 6abf32f1d9c5 ("cpuidle: Add RISC-V SBI CPU idle driver")
->> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
->> Reported-by: kernel test robot <lkp@intel.com>
->> Cc: Anup Patel <anup.patel@wdc.com>
->> Cc: Anup Patel <anup@brainfault.org>
->> Cc: Anup Patel <apatel@ventanamicro.com>
->> Cc: Atish Patra <atishp@rivosinc.com>
->> Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
->> Cc: "Rafael J. Wysocki" <rafael@kernel.org>
->> Cc: linux-pm@vger.kernel.org
->> Cc: linux-riscv@lists.infradead.org
->> Cc: Palmer Dabbelt <palmer@rivosinc.com>
->> Cc: Paul Walmsley <paul.walmsley@sifive.com>
->> Cc: Albert Ou <aou@eecs.berkeley.edu>
->> ---
->>  drivers/cpuidle/cpuidle-riscv-sbi.c |    1 +
->>  1 file changed, 1 insertion(+)
->>
->> --- linux-next-20220401.orig/drivers/cpuidle/cpuidle-riscv-sbi.c
->> +++ linux-next-20220401/drivers/cpuidle/cpuidle-riscv-sbi.c
->> @@ -22,6 +22,7 @@
->>  #include <linux/pm_runtime.h>
->>  #include <asm/cpuidle.h>
->>  #include <asm/sbi.h>
->> +#include <asm/smp.h>
-> 
-> I suggest include linux/smp.h here instead of asm/smp.h
-> 
-> Otherwise it looks good to me.
-> 
-> Reviewed-by: Anup Patel <anup@brainfault.org>
-> 
+On Sun, 3 Apr 2022 18:46:47 -0700 Luis Chamberlain <mcgrof@kernel.org> wrot=
+e:
+>
+> I have fixed these issues in a new push to sysctl-next just now.
+> This all goes tested through 0-day with no issues found there.
+> Sorry for the delay in fixing this.
 
-Yeah, checkpatch also suggested that but it does not work.
-Yes, I tested it.
+OK, thanks.  I will pick it up tomorrow.
 
-linux/smp.h only #includes <asm/smp.h> if CONFIG_SMP is enabled,
-and this patch needs <asm/smp.h> for the non-SMP case.
+--=20
+Cheers,
+Stephen Rothwell
 
-> 
->>  #include <asm/suspend.h>
->>
->>  #include "dt_idle_states.h"
+--Sig_//yZav+sQmN2xonWSV/CNKp7
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
 
-thanks.
--- 
-~Randy
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJKaGIACgkQAVBC80lX
+0Gwplwf+Mlrg2R7W7zYQQZ1cOGCgefMTLx+FQTz88KBh+cO3mq2F0Xj7mFI4bZNQ
+zBSud0iOSmKuvf+IHOB1u7CtJDuSLj6j8vXLNCu3WyxqjuzV86/MUFNIU3RHe6nZ
+jNzC7XOUcBpqS8KEncN1L9/sa/eu8vUwrmWBHuipoxpQwIXgMfMDzCZKDsBAr3YJ
+aYUEdm4cDBU3f1V/cq/wzAZhe0Tq21toMIOgkwY6657D5CVnZaMWT4LJEezdb1Lt
+3U14e7sVgM8lID3mVEaw1FneuDbDrIHFKiQqZnPwqiQ8ccJRHfDLxnL3Wt0+thw4
+v4wn1MNwD0GencF58qmET5daYhfNmw==
+=28fX
+-----END PGP SIGNATURE-----
+
+--Sig_//yZav+sQmN2xonWSV/CNKp7--
