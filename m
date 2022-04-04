@@ -2,87 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03197C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1317DC43219
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:50:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382156AbiDDVuq (ORCPT
+        id S233931AbiDDVvl convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:50:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50900 "EHLO
+        Mon, 4 Apr 2022 17:51:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380443AbiDDUH3 (ORCPT
+        with ESMTP id S1379415AbiDDRJO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 16:07:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D686013FAC;
-        Mon,  4 Apr 2022 13:05:32 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4C00BB819E1;
-        Mon,  4 Apr 2022 20:05:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F406C340F3;
-        Mon,  4 Apr 2022 20:05:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649102730;
-        bh=WPYWTY5BYrb49/S6MqrWmKHCLgSFZHgeBgSL+0PtGSY=;
-        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
-        b=ErB1Qr8fVgbsn6iyOwokf1BAc9rTXHYwHULQPZFGssew2MFFqylx36cJGPl+45os8
-         8l0CFtMv9Gq/K8f4/V/vYTWFHcmmK/zaUichl8aPoub/wrbyntaUYqfhtW2/zwYwPh
-         CWmoYnddJDNdiZ+/dhSsBZ4QvgZiasBy6QtCjnUIoBq1WasTyXpWv+4IXimoGYEvIF
-         t/6Wp31teXOeK2wNr1ODHmJ8n7sJS1avcT9bsJbyuRaz+SqkVi+P+G1aN4Moj1gVJt
-         iQ+HLX02qKK2K7WXXlqqA7/yxSSD9EfU/7OdrtYfOsjrIKhjdTca5JWTZBL0CJ76+q
-         XvSMLe/rDTdQg==
-Content-Type: text/plain; charset="utf-8"
+        Mon, 4 Apr 2022 13:09:14 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 69EB340A22
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 10:07:17 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-170-mCYWs2NyMrqY9YLkljzOvg-1; Mon, 04 Apr 2022 18:07:14 +0100
+X-MC-Unique: mCYWs2NyMrqY9YLkljzOvg-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.32; Mon, 4 Apr 2022 18:07:11 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.033; Mon, 4 Apr 2022 18:07:11 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     "'Maciej W. Rozycki'" <macro@orcam.me.uk>,
+        Kees Cook <keescook@chromium.org>
+CC:     James Jones <linux@theinnocuous.com>,
+        "bp@alien8.de" <bp@alien8.de>, "x86@kernel.org" <x86@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH] x86: Remove a.out support
+Thread-Topic: [PATCH] x86: Remove a.out support
+Thread-Index: AQHYSBOog1urTOlT506l8VY6NMoEJKzf++oQ
+Date:   Mon, 4 Apr 2022 17:07:11 +0000
+Message-ID: <08c095230941445f9139ab89bc70da43@AcuMS.aculab.com>
+References: <4c449fab-8135-5057-7d2c-7b948ce130cc@theinnocuous.com>
+ <0b31b1d3-852d-6cab-82ae-5eecaec05679@theinnocuous.com>
+ <202203151150.1CDB1D8DA@keescook>
+ <bfbd9394-161b-0e70-00c5-79d0dd722e08@theinnocuous.com>
+ <alpine.DEB.2.21.2204022255430.47162@angie.orcam.me.uk>
+ <67CF27C5-5013-4EF4-B24C-8D9EB52536FB@chromium.org>
+ <alpine.DEB.2.21.2204041135210.47162@angie.orcam.me.uk>
+In-Reply-To: <alpine.DEB.2.21.2204041135210.47162@angie.orcam.me.uk>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20220404072900.35jca2o26gopi2qb@houat>
-References: <20220403022818.39572-1-sboyd@kernel.org> <20220404072900.35jca2o26gopi2qb@houat>
-Subject: Re: [PATCH] Revert "clk: Drop the rate range on clk_put()"
-From:   Stephen Boyd <sboyd@kernel.org>
-Cc:     Michael Turquette <mturquette@baylibre.com>,
-        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Alexander Stein <alexander.stein@ew.tq-group.com>,
-        Naresh Kamboju <naresh.kamboju@linaro.org>
-To:     Maxime Ripard <maxime@cerno.tech>
-Date:   Mon, 04 Apr 2022 13:05:28 -0700
-User-Agent: alot/0.10
-Message-Id: <20220404200530.0F406C340F3@smtp.kernel.org>
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Maxime Ripard (2022-04-04 00:29:00)
-> On Sat, Apr 02, 2022 at 07:28:18PM -0700, Stephen Boyd wrote:
-> > This reverts commit 7dabfa2bc4803eed83d6f22bd6f045495f40636b. There are
-> > multiple reports that this breaks boot on various systems. The common
-> > theme is that orphan clks are having rates set on them when that isn't
-> > expected. Let's revert it out for now so that -rc1 boots.
-> >=20
-> > Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
-> > Reported-by: Tony Lindgren <tony@atomide.com>
-> > Reported-by: Alexander Stein <alexander.stein@ew.tq-group.com>
-> > Reported-by: Naresh Kamboju <naresh.kamboju@linaro.org>
-> > Link: https://lore.kernel.org/r/366a0232-bb4a-c357-6aa8-636e398e05eb@sa=
-msung.com
-> > Cc: Maxime Ripard <maxime@cerno.tech>
-> > Signed-off-by: Stephen Boyd <sboyd@kernel.org>
->=20
-> I really like the attention it's getting now that it's broken, we can
-> fix a lot of things :)
+From: Maciej W. Rozycki
+> Sent: 04 April 2022 12:04
+> 
+> On Sat, 2 Apr 2022, Kees Cook wrote:
+> 
+> > > Chiming in late as I'm scanning outstanding mailing list traffic: if this
+> > >is as you say all statically linked stuff, then converting from a.out to
+> > >ELF might be as easy as:
+> > >
+> > >$ objcopy -I a.out-i386-linux -O elf32-i386 a.out-binary elf-binary
+> >
+> > Based on my research (and the wrapper I ended up writing), I don't think
+> > this is sufficient because entry point handling is different between ELF
+> > and a.out (specifically the stack layout and initial sp register value).
+> 
+>  Fair enough.  I guess the exact value of %esp doesn't matter that much
+> (why would it?), but the arguments and environment may well be structured
+> differently (and indeed based on a glance over binfmt_aout.c there's extra
+> indirection involved compared to the ELF i386 psABI).
 
-Sure! Except that can quickly turn into other attention.
+You could write a custom 'elf interpreter'.
+Hacking at those isn't for the faint-hearted :-)
 
->=20
-> It doesn't seem to be restricted to orphan clocks though :/
+	David
 
-Oof ok. I was busy last week so couldn't pay much attention.
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
->=20
-> But obviously,
-> Acked-by: Maxime Ripard <maxime@cerno.tech>
-
-Thanks. Looks like it just made -rc1 so we can work through the fix at a
-more leisurely pace now.
