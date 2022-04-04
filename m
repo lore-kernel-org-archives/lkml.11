@@ -2,142 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 087DAC43219
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:50:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDD5CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:50:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382085AbiDDVul (ORCPT
+        id S1381622AbiDDVuT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:50:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37676 "EHLO
+        Mon, 4 Apr 2022 17:50:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379024AbiDDQUe (ORCPT
+        with ESMTP id S1379598AbiDDRoM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 12:20:34 -0400
-Received: from mail-ot1-f54.google.com (mail-ot1-f54.google.com [209.85.210.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B5D2112E;
-        Mon,  4 Apr 2022 09:18:36 -0700 (PDT)
-Received: by mail-ot1-f54.google.com with SMTP id n19-20020a9d7113000000b005cd9cff76c3so7581519otj.1;
-        Mon, 04 Apr 2022 09:18:36 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Hu9KSkDZSHDARPuS6OeF/SFHVgom3OphqHB/ovTTyyc=;
-        b=rEaGG6jwUE28L+dcEtV9mHLkGqBquyalA5Iixe7C4WljBSp4w6f1Q8eZrpDQcriDK1
-         kvBv5is/3GH7VYZpWSTfu+kfBwAYICqp2RxKsEWXw7allgtizzeaUFRQPjhTWJr/9I0e
-         ipybAk2l62P8//XVnNXv5WeriMtWocQLxNiXqglX+PYCLmhyq6zl3DQaJeDXePBi3gEQ
-         8U1Kpk7VT02nrws1YvE9g14/R7xvMjRYb3hPVgNGAWzbgbCnKTWmgDQo48heZlzGDag0
-         GaiS3sObAuaFhruhi354WvRY6xUWSaUY7RzY+UQlo2G9e5YcCrJtlAnPC6baHpDlmpBJ
-         6UOA==
-X-Gm-Message-State: AOAM53106+EtfBtGYQ16Qb52+1j4scUrrIzMyXex6omqvqWtZ7WIYTTo
-        4Qle0MRXdMSAxqFM++5Tl6LWwy0dIw==
-X-Google-Smtp-Source: ABdhPJzlbcqlUcevY+LJogN60SKhl43Gre7Qq49OUTHTWjhy5AnY9jLygJLT1/DvKJka+infgFVneA==
-X-Received: by 2002:a05:6830:1605:b0:5c9:4fde:ba63 with SMTP id g5-20020a056830160500b005c94fdeba63mr114325otr.84.1649089112766;
-        Mon, 04 Apr 2022 09:18:32 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id d12-20020a056871040c00b000d9eed0f8fdsm4334114oag.14.2022.04.04.09.18.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 09:18:32 -0700 (PDT)
-Received: (nullmailer pid 1453992 invoked by uid 1000);
-        Mon, 04 Apr 2022 16:18:31 -0000
-Date:   Mon, 4 Apr 2022 11:18:31 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Johannes Holland <johannes.holland@infineon.com>
-Cc:     peterhuewe@gmx.de, jarkko@kernel.org, jgg@ziepe.ca,
-        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, amirmizi6@gmail.com
-Subject: Re: [PATCH 4/4] tpm: Add YAML schema for the TPM TIS I2C options
-Message-ID: <YksaVw74Eotowyse@robh.at.kernel.org>
-References: <20220404081835.495-1-johannes.holland@infineon.com>
- <20220404081835.495-4-johannes.holland@infineon.com>
+        Mon, 4 Apr 2022 13:44:12 -0400
+Received: from mx0b-002e3701.pphosted.com (mx0b-002e3701.pphosted.com [148.163.143.35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A980431DE7;
+        Mon,  4 Apr 2022 10:42:15 -0700 (PDT)
+Received: from pps.filterd (m0150245.ppops.net [127.0.0.1])
+        by mx0b-002e3701.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 234D8Kdg016032;
+        Mon, 4 Apr 2022 17:41:36 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pps0720;
+ bh=PpctgGHHZ4DF//2UP3E/MPy26iNRxSNOmTkDvxyr8t4=;
+ b=gmmHpUnlfCL7s3ICxAfhNj4jwf2p5PREI9AczYbRh9sYr1ItW/M8ZteQC6QVUh8iMDho
+ 28m2YzAyVs3jPDaqiUGnc28sFHFI6ySQ/LYNl1ROqg0szjK4eQXosnumF3oBU6a/LXh2
+ MsYXM3LCRgypx8iPjhZbdcARzDQVMUwQCU/xu0vTUqxt6LImtX/yZ2L+LyKOZI66oBvp
+ zlXtJWX9cijB9oO6xA0O3nryOP5y4TrBzdJKDEzWFCj/jT8WcjxnirNeOuwIrEdjQ60t
+ kR0dQG3GNTNcXXzsrIGWqSt2gRh8KMUhsDVAhPiYHtrD+6O4LntWRkhTmM5cCafFhQ1C PA== 
+Received: from g9t5009.houston.hpe.com (g9t5009.houston.hpe.com [15.241.48.73])
+        by mx0b-002e3701.pphosted.com (PPS) with ESMTPS id 3f819q2r08-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 04 Apr 2022 17:41:36 +0000
+Received: from g9t2301.houston.hpecorp.net (g9t2301.houston.hpecorp.net [16.220.97.129])
+        by g9t5009.houston.hpe.com (Postfix) with ESMTP id D53EF5C;
+        Mon,  4 Apr 2022 17:41:35 +0000 (UTC)
+Received: from dog.eag.rdlabs.hpecorp.net (dog.eag.rdlabs.hpecorp.net [128.162.243.181])
+        by g9t2301.houston.hpecorp.net (Postfix) with ESMTP id 34FCD48;
+        Mon,  4 Apr 2022 17:41:32 +0000 (UTC)
+From:   Mike Travis <mike.travis@hpe.com>
+To:     Borislav Petkov <bp@alien8.de>, Ingo Molnar <mingo@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Steve Wahl <steve.wahl@hpe.com>, x86@kernel.org
+Cc:     Mike Travis <mike.travis@hpe.com>,
+        Andy Shevchenko <andy@infradead.org>,
+        Darren Hart <dvhart@infradead.org>,
+        Dimitri Sivanich <dimitri.sivanich@hpe.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Russ Anderson <russ.anderson@hpe.com>,
+        linux-kernel@vger.kernel.org, platform-driver-x86@vger.kernel.org
+Subject: [PATCH v3 0/3] x86/platform/uv: UV Kernel support for UV5
+Date:   Mon,  4 Apr 2022 12:41:08 -0500
+Message-Id: <20220404174111.262414-1-mike.travis@hpe.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220404081835.495-4-johannes.holland@infineon.com>
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-GUID: hr38WTG2GIu1LwBLlVXGqpY74WYOF1aA
+X-Proofpoint-ORIG-GUID: hr38WTG2GIu1LwBLlVXGqpY74WYOF1aA
+X-HPE-SCL: -1
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-04-04_06,2022-03-31_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 adultscore=0
+ mlxscore=0 spamscore=0 impostorscore=0 bulkscore=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 clxscore=1011 mlxlogscore=603
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2204040100
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 04, 2022 at 10:18:35AM +0200, Johannes Holland wrote:
-> Add a YAML schema to support device tree bindings for the generic I2C
-> physical layer. Refer to the TCG PC Client Platform TPM Profile (PTP)
-> Specification for TPM 2.0 v1.04 Revision 14.
+Send a second time on 04/04/22, sent first time on 03/18/22.
 
-Bindings are for devices. A protocol layer does not make a device.
+v2: Delete patch to remove SCRATCH 5 NMI support check for
+    UV2 and UV3k systems with old NMI support function.
 
-> 
-> Signed-off-by: Johannes Holland <johannes.holland@infineon.com>
-> ---
->  .../bindings/security/tpm/tpm-tis-i2c.yaml    | 48 +++++++++++++++++++
->  1 file changed, 48 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/security/tpm/tpm-tis-i2c.yaml
+v3: Fix check BIOS NMI support mistake in Patch 1.
 
-We already have a binding for I2C TPM. That one should be converted.
+    Update NMI setup for UV5
+	Update NMI handler to interface with UV5 hardware. This involves
+	changing the EVENT_OCCURRED MMR used by the hardware and removes
+	the check for which NMI function is supported by UV BIOS.  The
+	newer NMI function is assumed supported on UV5 and above.
 
-> 
-> diff --git a/Documentation/devicetree/bindings/security/tpm/tpm-tis-i2c.yaml b/Documentation/devicetree/bindings/security/tpm/tpm-tis-i2c.yaml
-> new file mode 100644
-> index 000000000000..7948867ff3f7
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/security/tpm/tpm-tis-i2c.yaml
-> @@ -0,0 +1,48 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/security/tpm/tpm-tis-i2c.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: I2C PTP based TPM Device Tree Bindings
-> +
-> +maintainers:
-> +  - Johannes Holland <johannes.holland@infineon.com>
-> +
-> +description:
-> +  Device Tree Bindings for I2C based Trusted Platform Module (TPM).
-> +
-> +properties:
-> +  compatible:
-> +    items:
-> +      - enum:
-> +          # Infineon's Trusted Platform Module (TPM) (SLB9673)
-> +          - infineon,slb9673
-> +          # Nuvoton's Trusted Platform Module (TPM) (NPCT75x)
-> +          - nuvoton,npct75x
+    Update TSC sync check for UV5
+	Update TSC to not check TSC sync state for uv5+ as it is not
+	available.  It is assumed that TSC will always be in sync for
+	multiple chassis and will pass the tests for the kernel to
+	accept it as the clocksource.  To disable this check use the
+	kernel start options tsc=reliable clocksource=tsc.
 
-I see this is already used, but in general wildcards should not be used 
-in device compatibles.
+    Log gap hole end size
+	Show value of gap end in the kernel log which equates to number
+	of physical address bits used by system.  The end address of
+	the gap holds PA bits 56:26 which gives the range up to 64PB
+	max size with 64MB of granularity.
 
-> +      - const: tcg,tpm-tis-i2c
+Mike Travis (3):
+  x86/platform/uv: Update NMI Handler for UV5
+  x86/platform/uv: Update TSC sync state for UV5
+  x86/platform/uv: Log gap hole end size
 
-Pretty sure I killed this off when originally reviewing the TPM I2C 
-binding.
+ arch/x86/kernel/apic/x2apic_uv_x.c | 20 +++++++++++++++-----
+ arch/x86/platform/uv/uv_nmi.c      | 21 +++++++++++----------
+ 2 files changed, 26 insertions(+), 15 deletions(-)
 
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupt:
-> +    maxItems: 1
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    i2c {
-> +      #address-cells = <1>;
-> +      #size-cells = <0>;
-> +
-> +      tpm@2e {
-> +        compatible = "infineon,slb9673", "nuvoton,npct75x", "tcg,tpm-tis-i2c";
-> +        reg = <0x2e>;
-> +      };
-> +    };
-> +...
-> -- 
-> 2.31.1.windows.1
-> 
-> 
+-- 
+2.26.2
+
