@@ -2,83 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81536C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 14:29:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C243BC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 14:29:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377235AbiDDObV (ORCPT
+        id S1355780AbiDDObo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 10:31:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55480 "EHLO
+        Mon, 4 Apr 2022 10:31:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377366AbiDDObS (ORCPT
+        with ESMTP id S1377345AbiDDObX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 10:31:18 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1D22222AA
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 07:29:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=XpS5aZQkcSL10p2MN2J1N7nVQsjQzVnvWn1ELX+BXSY=; b=bvAU1XgLDOVwe2ywssCcBJ6i7y
-        girD+4D7WObAaZhLv/bNsnHQ96firOrDf3CVewm3tb5IbUSQTQaMxbBlHEwZVI19MYh5jsEZPqilU
-        Q1i/bqz4cnyuQYuJ1Zh/wHNzVPqofZhj6dW5kUtLIFB7v1ICO9qBmGcR0dzzhGXeREm0oOa133xbe
-        ZmXPv0sc1pB/cFhAim5noIwDvvfv6Fr3Gc/Ds6diOFYU/qoMDBPdor5PMTHPhZf/LPukm+Q5wRJeW
-        J+Eqx9cF9+WHHGale+r+CJTrNzqRtUS2+bY3xla17aQiNptNaFiF2Mv/Uh49Mh6RXP7zzE1Bhp/VE
-        rNuCDg1Q==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nbNhh-005ng0-Os; Mon, 04 Apr 2022 14:29:13 +0000
-Date:   Mon, 4 Apr 2022 15:29:13 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Zi Yan <ziy@nvidia.com>
-Cc:     Naoya Horiguchi <naoya.horiguchi@linux.dev>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Naoya Horiguchi <naoya.horiguchi@nec.com>
-Subject: Re: v5.18-rc1: migratepages triggers
- VM_BUG_ON_FOLIO(folio_nr_pages(old) != nr_pages)
-Message-ID: <YksAub9UccPZa9DI@casper.infradead.org>
-References: <20220404132908.GA785673@u2004>
- <F3E3F1AE-B421-4463-B032-3F58DF89A5E2@nvidia.com>
+        Mon, 4 Apr 2022 10:31:23 -0400
+Received: from out03.mta.xmission.com (out03.mta.xmission.com [166.70.13.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15FF61EC6B
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 07:29:25 -0700 (PDT)
+Received: from in01.mta.xmission.com ([166.70.13.51]:52758)
+        by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nbNhq-004PiG-Oc; Mon, 04 Apr 2022 08:29:22 -0600
+Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:42064 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nbNhp-0034L9-N7; Mon, 04 Apr 2022 08:29:22 -0600
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
+        Oleg Nesterov <oleg@redhat.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Ben Segall <bsegall@google.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Mel Gorman <mgorman@suse.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Vincent Guittot <vincent.guittot@linaro.org>
+In-Reply-To: <Ykblv2aKh3ekqpi4@linutronix.de> (Sebastian Andrzej Siewior's
+        message of "Fri, 1 Apr 2022 13:45:03 +0200")
+References: <Ygq5aBB/qMQw6aP5@linutronix.de>
+        <8735j2xigt.fsf@email.froward.int.ebiederm.org>
+        <YkHfokLO1UGCISGc@linutronix.de>
+        <87zgl9pw82.fsf@email.froward.int.ebiederm.org>
+        <YkLR3rGTayl/6qIm@linutronix.de>
+        <87o81nl3b6.fsf@email.froward.int.ebiederm.org>
+        <Ykblv2aKh3ekqpi4@linutronix.de>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+Date:   Mon, 04 Apr 2022 09:29:10 -0500
+Message-ID: <87y20kkjm1.fsf@email.froward.int.ebiederm.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <F3E3F1AE-B421-4463-B032-3F58DF89A5E2@nvidia.com>
+Content-Type: text/plain
+X-XM-SPF: eid=1nbNhp-0034L9-N7;;;mid=<87y20kkjm1.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=neutral
+X-XM-AID: U2FsdGVkX1/G4MNkZODmgwk3F1qHE7FMnKz+BZ2J9Ok=
+X-SA-Exim-Connect-IP: 68.227.174.4
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: Re: [PATCH] signal/x86: Delay calling signals in atomic
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 04, 2022 at 10:05:00AM -0400, Zi Yan wrote:
-> On 4 Apr 2022, at 9:29, Naoya Horiguchi wrote:
-> > I found that the below VM_BUG_ON_FOLIO is triggered on v5.18-rc1
-> > (and also reproducible with mmotm on 3/31).
-> > I have no idea about the bug's mechanism, but it seems not to be
-> > shared in LKML yet, so let me just share. config.gz is attached.
-> >
-> > [   48.206424] page:0000000021452e3a refcount:6 mapcount:0 mapping:000000003aaf5253 index:0x0 pfn:0x14e600
-> > [   48.213316] head:0000000021452e3a order:9 compound_mapcount:0 compound_pincount:0
-> > [   48.218830] aops:xfs_address_space_operations [xfs] ino:dee dentry name:"libc.so.6"
-> > [   48.225098] flags: 0x57ffffc0012027(locked|referenced|uptodate|active|private|head|node=1|zone=2|lastcpupid=0x1fffff)
-> > [   48.232792] raw: 0057ffffc0012027 0000000000000000 dead000000000122 ffff8a0dc9a376b8
-> > [   48.238464] raw: 0000000000000000 ffff8a0dc6b23d20 00000006ffffffff 0000000000000000
-> > [   48.244109] page dumped because: VM_BUG_ON_FOLIO(folio_nr_pages(old) != nr_pages)
-> > [   48.249196] ------------[ cut here ]------------
-> > [   48.251240] kernel BUG at mm/memcontrol.c:6857!
-> > [   48.260535] RIP: 0010:mem_cgroup_migrate+0x217/0x320
-> > [   48.286942] Call Trace:
-> > [   48.287665]  <TASK>
-> > [   48.288255]  iomap_migrate_page+0x64/0x190
-> > [   48.289366]  move_to_new_page+0xa3/0x470
-> 
-> Is it because migration code assumes all THPs have order=HPAGE_PMD_ORDER?
-> Would the patch below fix the issue?
+Sebastian Andrzej Siewior <bigeasy@linutronix.de> writes:
 
-This looks entirely plausible to me!  I do have changes in this area,
-but clearly I should have submitted them earlier.  Let's get these fixes
-in as they are.
+> On 2022-03-30 13:10:05 [-0500], Eric W. Biederman wrote:
+>> But it looks like if we are coming from userspace then we use the same
+>> stack as any other time we would come from userspace.  AKA a stack
+>> that allows the kernel to sleep.
+>> 
+>> So I don't see what the problem is that is trying to be fixed.
+>
+> It is not only the stack. In atomic context / disabled interrupts it is
+> not possible to acquire a spinlock_t (sighand_struct::siglock) which is
+> done later.
 
-Is there a test suite that tests page migration?  I usually use xfstests
-and it does no page migration at all (at least 'git grep migrate'
-finds nothing useful).
+Looking at do_int3_user the interrupts must be enabled.
+>
+>> I know that code has been changed over the years, perhaps this is
+>> something that was fixed upstream and the real time tree didn't realize
+>> there was no longer a need to fix anything?
+>> 
+>> Or am I missing something subtle when reading the idtentry assembly?
+>
+> It certainly is true that the code changed over the years. The per-CPU
+> stack is one problem, the siglock in atomic context is the other one.
+> Thank you for the input. Let me digest the informations I have here and
+> get back.
 
+Certainly.  I case it helps this is the relevant bit of code:
+
+static void do_int3_user(struct pt_regs *regs)
+{
+	if (do_int3(regs))
+		return;
+
+	cond_local_irq_enable(regs);
+	do_trap(X86_TRAP_BP, SIGTRAP, "int3", regs, 0, 0, NULL);
+	cond_local_irq_disable(regs);
+}
+
+The signal delivery where siglock is take happens inside of do_trap.  If
+we are coming from kernel mode only do_int3 is called.
+
+Coming from user_mode we switch to the task stack and
+enable interrupts.
+
+Unless I am misreading the code the cond_local_irq_{enable/disable} can
+correctly be replaced local_irq_{enable/disable} as coming from user
+mode interrupts are always enabled.
+
+Unless I am misreading cond_local_irq_enable.  If for some reason
+cond_local_irq_enable doesn't enable interrupts when come from user
+mode fixing that appears to be the fix that is needed.
+
+
+Eric
