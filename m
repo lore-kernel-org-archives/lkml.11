@@ -2,140 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92521C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 15:48:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FACAC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 15:48:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378715AbiDDPuU (ORCPT
+        id S1378723AbiDDPuY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 11:50:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36102 "EHLO
+        Mon, 4 Apr 2022 11:50:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378663AbiDDPuQ (ORCPT
+        with ESMTP id S1378713AbiDDPuU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 11:50:16 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D096A60E7
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 08:48:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649087298;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ACaAB1t0vMWb3pX2ELgBqL+jg9CnsBzljXi5Wr6J60o=;
-        b=ahQIZJveoaR+Y6dsDE5k2DBuix4glwxgmWuUbkU0t6K4znyfEdZbQU0DnSa5F71Xd5sait
-        JYdGNQBlf25YwkWQPb2M6fY5lX/sqaQucXMv7nxKHSdttWiCSza4IweLIWkf7wOz7rCqeN
-        W5yW13uy+n5yMyAAHFYJZPiq4Sals0o=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-515-yjwlPog5NYGEaFUPCdV_gg-1; Mon, 04 Apr 2022 11:48:17 -0400
-X-MC-Unique: yjwlPog5NYGEaFUPCdV_gg-1
-Received: by mail-wr1-f70.google.com with SMTP id e4-20020adfa444000000b002060b7347f8so986263wra.6
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 08:48:17 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=ACaAB1t0vMWb3pX2ELgBqL+jg9CnsBzljXi5Wr6J60o=;
-        b=PiIxbbsfc6Ikq9gaOCcYpL/TFewqWJOjQNJVje0NwfaU+t0GRIlSru/DN63L8MjfP5
-         WzzMSEhfw17jmbywLFK/fU9SLcxRdG8gx9rQgC6b5t++OinhSW0cmSEWEiIixyrXlO7t
-         FMdKMjTKTWMAKFaWLFSgvYk9zJzaeHFJNM8A45pZwdqo7jnVUCBMcKBkCwAXeZn8In8Z
-         6/YWsSfNLqvq6tzAZusOFrXTdeCEZtiZDyqoAZnSv3Ndvr8k9FtBOH7rvUzKQwhOXRhK
-         zx5xa+wq4KK0zqXIAvjvQO+GvBL7wCMK65arwI1kNvKyjA28D0YtOj4RzIKJc8xvx/QF
-         6zSg==
-X-Gm-Message-State: AOAM531YEoS+4MKpukkimLug+mGlNz6dIU+YUNjuEh8xMbFzp7t201IB
-        Phwl005QYLQNKYRKm8GwazCTWuCBGPMe07busjOj3Ri6QWD2ZcrexlTZajekb/uO66BSXs4O/0e
-        Cl0rz8VyXswbbuyh2Z2QOtKrF
-X-Received: by 2002:adf:f188:0:b0:206:e20:1b65 with SMTP id h8-20020adff188000000b002060e201b65mr259493wro.363.1649087296377;
-        Mon, 04 Apr 2022 08:48:16 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJz+jBXSnytEUbHzPD7PrJYBhDtVRIkCeBYl9hIqrrHNXMn+EkEqSV4Kzkt4zlwuYyU9ugLZaA==
-X-Received: by 2002:adf:f188:0:b0:206:e20:1b65 with SMTP id h8-20020adff188000000b002060e201b65mr259479wro.363.1649087296112;
-        Mon, 04 Apr 2022 08:48:16 -0700 (PDT)
-Received: from [192.168.1.102] ([92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id v14-20020a7bcb4e000000b0034492fa24c6sm9737099wmj.34.2022.04.04.08.48.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 04 Apr 2022 08:48:15 -0700 (PDT)
-Message-ID: <92a46ea2-e23e-b7c8-ea5f-35d458ee1b76@redhat.com>
-Date:   Mon, 4 Apr 2022 17:48:14 +0200
+        Mon, 4 Apr 2022 11:50:20 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75B116377
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 08:48:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649087303; x=1680623303;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=2e6RRJXiZGJCCuHS7LAbElUrJbiygHgNUYLUeLNW8+I=;
+  b=I+Y/o01CoxZ18YC9RDELGrJ8yplQNGsPAd7itDsahZIoQcFu4+m2+1kG
+   jidydED8wGu2N/33EZx5lLie7FdDyOnqGc8p6EU6VqKpf0oZjTikN+vZk
+   vY3iNAiHlmutcbToY4AYq27dOeaj8TmhoJh6DoazGnhISVK0WMjp8wZYV
+   as8BE2YkJJJ3+wErFJZStF5cTKtPl1QPQzV2Zk5U/X97AuCfnV2hq1hOJ
+   Yjyb9HFgn9oA2tZWmvj3tP0jzh4SrkC2CG2EoaHeya7jLumpdHVgwJKgW
+   aaaxSYjwCnfVzfHu2P+b5uunh10dFTyTZvsCRTWttyecXxUsgGzOxV/RM
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="346984230"
+X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
+   d="scan'208";a="346984230"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 08:48:21 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
+   d="scan'208";a="721692059"
+Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
+  by orsmga005.jf.intel.com with ESMTP; 04 Apr 2022 08:48:19 -0700
+Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nbOwE-0002AP-9k;
+        Mon, 04 Apr 2022 15:48:18 +0000
+Date:   Mon, 4 Apr 2022 23:47:38 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Evan Quan <evan.quan@amd.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Lijo Lazar <lijo.lazar@amd.com>
+Subject: drivers/gpu/drm/amd/amdgpu/../pm/swsmu/inc/smu_v11_0_pptable.h:163:17:
+ warning: field smc_pptable within 'struct smu_11_0_powerplay_table' is less
+ aligned than 'PPTable_t' and is usually due to 'struct
+ smu_11_0_powerplay_table' being packed, which can lea...
+Message-ID: <202204042335.TdQcPTRO-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [PATCH 2/4] dt-bindings: display: ssd1307fb: Add entry for SINO
- WEALTH SH1106
-Content-Language: en-US
-To:     wens@kernel.org, Javier Martinez Canillas <javier@dowhile0.org>
-Cc:     Maxime Ripard <mripard@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel <linux-kernel@vger.kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>
-References: <20220330190846.13997-1-wens@kernel.org>
- <20220330190846.13997-3-wens@kernel.org>
- <CABxcv==csvqsxM46ce2LecDh4E-UxxD2DG+3E-hCFoyrdtRv7A@mail.gmail.com>
- <CAGb2v64VQPjan=EUkd8UhRZfV0g1GqBwPqhxQakS=7YhgvVDQA@mail.gmail.com>
-From:   Javier Martinez Canillas <javierm@redhat.com>
-In-Reply-To: <CAGb2v64VQPjan=EUkd8UhRZfV0g1GqBwPqhxQakS=7YhgvVDQA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Chen-Yu,
+Hi Evan,
 
-On 4/4/22 17:06, Chen-Yu Tsai wrote:
+FYI, the error/warning still remains.
 
-[snip]
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   3123109284176b1532874591f7c81f3837bbdc17
+commit: 837d542a09cd533055423dfca7e621a9c1d13c5b drm/amd/pm: relocate the power related headers
+date:   3 months ago
+config: arm-buildonly-randconfig-r006-20220404 (https://download.01.org/0day-ci/archive/20220404/202204042335.TdQcPTRO-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project c4a1b07d0979e7ff20d7d541af666d822d66b566)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm cross compiling tool for clang build
+        # apt-get install binutils-arm-linux-gnueabi
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=837d542a09cd533055423dfca7e621a9c1d13c5b
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 837d542a09cd533055423dfca7e621a9c1d13c5b
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash arch/arm/ drivers/gpu/drm/
 
->>>      enum:
->>> +      - sinowealth,sh1106-i2c
->>
->> I like that you didn't include a "fb" suffix for this, the existing
->> ones are cargo culting from the previous fbdev driver to make existing
->> DTBs compatible with the DRM driver.
->>
->> I've been thinking if I should post a patch to compatible strings
->> without the "fb" and mark the current ones as deprecated...
->>
->> Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
-> 
-> I also thought about dropping the "-i2c" suffix, but then thought
-> there might be a case where someone wanted to search the device
-> tree specifically for an I2C connected node using said compatible
-> string.
-> 
-> What do you think?
-> 
->
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-tl; dr: unfortunately we can't do it due how SPI and I2C report module
-aliases. Otherwise module auto loading will not work. I wrote a much
-longer explanation with some details not so long ago:
+All warnings (new ones prefixed by >>):
 
-https://patchwork.kernel.org/project/dri-devel/patch/20220209091204.2513437-1-javierm@redhat.com/#24730793
+   In file included from drivers/gpu/drm/amd/amdgpu/../pm/swsmu/smu11/arcturus_ppt.c:37:
+>> drivers/gpu/drm/amd/amdgpu/../pm/swsmu/inc/smu_v11_0_pptable.h:163:17: warning: field smc_pptable within 'struct smu_11_0_powerplay_table' is less aligned than 'PPTable_t' and is usually due to 'struct smu_11_0_powerplay_table' being packed, which can lead to unaligned accesses [-Wunaligned-access]
+         PPTable_t smc_pptable;                        //PPTable_t in smu11_driver_if.h
+                   ^
+   1 warning generated.
+--
+   In file included from drivers/gpu/drm/amd/amdgpu/../pm/swsmu/smu11/sienna_cichlid_ppt.c:39:
+>> drivers/gpu/drm/amd/amdgpu/../pm/swsmu/inc/smu_v11_0_7_pptable.h:193:17: warning: field smc_pptable within 'struct smu_11_0_7_powerplay_table' is less aligned than 'PPTable_t' and is usually due to 'struct smu_11_0_7_powerplay_table' being packed, which can lead to unaligned accesses [-Wunaligned-access]
+         PPTable_t smc_pptable;                        //PPTable_t in smu11_driver_if.h
+                   ^
+   1 warning generated.
+--
+   In file included from drivers/gpu/drm/amd/amdgpu/../pm/swsmu/smu13/aldebaran_ppt.c:37:
+>> drivers/gpu/drm/amd/amdgpu/../pm/swsmu/inc/smu_v13_0_pptable.h:161:12: warning: field smc_pptable within 'struct smu_13_0_powerplay_table' is less aligned than 'PPTable_t' and is usually due to 'struct smu_13_0_powerplay_table' being packed, which can lead to unaligned accesses [-Wunaligned-access]
+           PPTable_t smc_pptable;                        //PPTable_t in driver_if.h
+                     ^
+   1 warning generated.
 
-BTW, I bought a SSD1306 SPI controller and go it working this weekend.
 
-I plan to post the patches once yours land, to avoid in-flight series
-that may conflict. And what I did is mark the -fb as deprecated, then
-added "ssd130x-i2c" and "ssd130x-spi" compatibles strings.
+vim +163 drivers/gpu/drm/amd/amdgpu/../pm/swsmu/inc/smu_v11_0_pptable.h
 
-The WIP patches can be found here in case you are interested:
+ae35cd6a480f9c drivers/gpu/drm/amd/powerplay/inc/smu_v11_0_pptable.h Huang Rui    2018-12-12  137  
+ae35cd6a480f9c drivers/gpu/drm/amd/powerplay/inc/smu_v11_0_pptable.h Huang Rui    2018-12-12  138  struct smu_11_0_powerplay_table
+ae35cd6a480f9c drivers/gpu/drm/amd/powerplay/inc/smu_v11_0_pptable.h Huang Rui    2018-12-12  139  {
+ae35cd6a480f9c drivers/gpu/drm/amd/powerplay/inc/smu_v11_0_pptable.h Huang Rui    2018-12-12  140        struct atom_common_table_header header;
+ae35cd6a480f9c drivers/gpu/drm/amd/powerplay/inc/smu_v11_0_pptable.h Huang Rui    2018-12-12  141        uint8_t  table_revision;
+4b2bb705a0b72f drivers/gpu/drm/amd/powerplay/inc/smu_v11_0_pptable.h Kenneth Feng 2019-04-04  142        uint16_t table_size;                          //Driver portion table size. The offset to smc_pptable including header size
+ae35cd6a480f9c drivers/gpu/drm/amd/powerplay/inc/smu_v11_0_pptable.h Huang Rui    2018-12-12  143        uint32_t golden_pp_id;
+ae35cd6a480f9c drivers/gpu/drm/amd/powerplay/inc/smu_v11_0_pptable.h Huang Rui    2018-12-12  144        uint32_t golden_revision;
+ae35cd6a480f9c drivers/gpu/drm/amd/powerplay/inc/smu_v11_0_pptable.h Huang Rui    2018-12-12  145        uint16_t format_id;
+ae35cd6a480f9c drivers/gpu/drm/amd/powerplay/inc/smu_v11_0_pptable.h Huang Rui    2018-12-12  146        uint32_t platform_caps;                       //POWERPLAYABLE::ulPlatformCaps
+ae35cd6a480f9c drivers/gpu/drm/amd/powerplay/inc/smu_v11_0_pptable.h Huang Rui    2018-12-12  147                                                      
+ae35cd6a480f9c drivers/gpu/drm/amd/powerplay/inc/smu_v11_0_pptable.h Huang Rui    2018-12-12  148        uint8_t  thermal_controller_type;             //one of SMU_11_0_PP_THERMALCONTROLLER
+ae35cd6a480f9c drivers/gpu/drm/amd/powerplay/inc/smu_v11_0_pptable.h Huang Rui    2018-12-12  149  
+ae35cd6a480f9c drivers/gpu/drm/amd/powerplay/inc/smu_v11_0_pptable.h Huang Rui    2018-12-12  150        uint16_t small_power_limit1;
+ae35cd6a480f9c drivers/gpu/drm/amd/powerplay/inc/smu_v11_0_pptable.h Huang Rui    2018-12-12  151        uint16_t small_power_limit2;
+ae35cd6a480f9c drivers/gpu/drm/amd/powerplay/inc/smu_v11_0_pptable.h Huang Rui    2018-12-12  152        uint16_t boost_power_limit;
+ae35cd6a480f9c drivers/gpu/drm/amd/powerplay/inc/smu_v11_0_pptable.h Huang Rui    2018-12-12  153        uint16_t od_turbo_power_limit;                //Power limit setting for Turbo mode in Performance UI Tuning. 
+ae35cd6a480f9c drivers/gpu/drm/amd/powerplay/inc/smu_v11_0_pptable.h Huang Rui    2018-12-12  154        uint16_t od_power_save_power_limit;           //Power limit setting for PowerSave/Optimal mode in Performance UI Tuning. 
+ae35cd6a480f9c drivers/gpu/drm/amd/powerplay/inc/smu_v11_0_pptable.h Huang Rui    2018-12-12  155        uint16_t software_shutdown_temp;
+ae35cd6a480f9c drivers/gpu/drm/amd/powerplay/inc/smu_v11_0_pptable.h Huang Rui    2018-12-12  156  
+ae35cd6a480f9c drivers/gpu/drm/amd/powerplay/inc/smu_v11_0_pptable.h Huang Rui    2018-12-12  157        uint16_t reserve[6];                          //Zero filled field reserved for future use
+ae35cd6a480f9c drivers/gpu/drm/amd/powerplay/inc/smu_v11_0_pptable.h Huang Rui    2018-12-12  158  
+ae35cd6a480f9c drivers/gpu/drm/amd/powerplay/inc/smu_v11_0_pptable.h Huang Rui    2018-12-12  159        struct smu_11_0_power_saving_clock_table      power_saving_clock;
+ae35cd6a480f9c drivers/gpu/drm/amd/powerplay/inc/smu_v11_0_pptable.h Huang Rui    2018-12-12  160        struct smu_11_0_overdrive_table               overdrive_table;
+ae35cd6a480f9c drivers/gpu/drm/amd/powerplay/inc/smu_v11_0_pptable.h Huang Rui    2018-12-12  161  
+73abde4d864b38 drivers/gpu/drm/amd/powerplay/inc/smu_v11_0_pptable.h Matt Coffin  2019-11-11  162  #ifndef SMU_11_0_PARTIAL_PPTABLE
+ae35cd6a480f9c drivers/gpu/drm/amd/powerplay/inc/smu_v11_0_pptable.h Huang Rui    2018-12-12 @163        PPTable_t smc_pptable;                        //PPTable_t in smu11_driver_if.h
+73abde4d864b38 drivers/gpu/drm/amd/powerplay/inc/smu_v11_0_pptable.h Matt Coffin  2019-11-11  164  #endif
+2dd1209e576068 drivers/gpu/drm/amd/powerplay/inc/smu_v11_0_pptable.h Huang Rui    2019-02-12  165  } __attribute__((packed));
+ae35cd6a480f9c drivers/gpu/drm/amd/powerplay/inc/smu_v11_0_pptable.h Huang Rui    2018-12-12  166  
 
-https://github.com/martinezjavier/linux/tree/drm-ssd130x-spi
+:::::: The code at line 163 was first introduced by commit
+:::::: ae35cd6a480f9c2ac356f792c9a9321a5863776a drm/amd/powerplay: add pptable header for smu11
 
-> ChenYu
-> 
+:::::: TO: Huang Rui <ray.huang@amd.com>
+:::::: CC: Alex Deucher <alexander.deucher@amd.com>
 
 -- 
-Best regards,
-
-Javier Martinez Canillas
-Linux Engineering
-Red Hat
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
