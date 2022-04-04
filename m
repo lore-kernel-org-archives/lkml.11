@@ -2,115 +2,212 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6149C47085
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:23:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70902C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:23:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381103AbiDDVWZ (ORCPT
+        id S1381318AbiDDVWv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:22:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49438 "EHLO
+        Mon, 4 Apr 2022 17:22:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379594AbiDDRn6 (ORCPT
+        with ESMTP id S1379663AbiDDRq1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 13:43:58 -0400
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A183131DE7;
-        Mon,  4 Apr 2022 10:41:59 -0700 (PDT)
-Received: by mail-pl1-x62f.google.com with SMTP id c23so8798407plo.0;
-        Mon, 04 Apr 2022 10:41:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=cN+cryxrTnBG0VJoafZ3s+TyTmI2BuJ8Y3SjnOF9NwE=;
-        b=q3aN/qFotQnWnl+DjEG8MO6ne2oneqFucG+YMqB8k3tZY4ziHRZjt9uG5kk2ucPSyJ
-         B3t4mekt0LtHaY6B2DxdS9ITSE1r5EeeAd/rhW1xKoa1wo3vU4K2S8P61apUpP5h4bNm
-         Ie0A7GhmrIV13SapWYC+pBHHxcMfzG1xl5pi5A5mA6QQacPLxq32GEg+r615aQjVj0cM
-         ScAvsigcU1WuLyjMICOCbYf7dvvMMcfNL5CZ9k+EEuJADXpZ4eKJcbWnBjSBr+bT6AiL
-         7lCs1XU5CcdliX4j+yjAr9C7RGzTsxJzZ3oMolqcxQoEMANHXQ/CG9u/lINvdUreaUZ7
-         6UmQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=cN+cryxrTnBG0VJoafZ3s+TyTmI2BuJ8Y3SjnOF9NwE=;
-        b=QdVh3ys8cFAljnWrNfGGglggY5h1xoDIxaOprUekNAFGSNWkd6hSUvVM2lSzQcTXzo
-         ahncuo08SmmAfa2LteG7sS5i+51QOknbxQXhCAryc9aGkQ9WPNR1l4zXIeZpxc/0nafY
-         cknp3egJa1ftVFGL088yX84jzZhfoZY4BzeKFHV4HsR0ujkejp8QEKHPQJzPA8AFzm6c
-         69Gkt36moJekCV3JI9dwtqHkNZBAUyJwe99fE9YZlFZMeb0SozM/X1qr6EsV/9UOVBe6
-         cTOKzRl0VVIjrfyIkjqtVNbuhWRRUaAA8jyH4xw+vB10ApqreQGm/n3OdPOHGAbzKXL0
-         LeSQ==
-X-Gm-Message-State: AOAM532bwbgJBJ9f3YDXP6a6SnOuMp9cnaUq1TZQfZljuozQOEtMXLhT
-        8LfFnn8KvNEN0iVtD3fStpU=
-X-Google-Smtp-Source: ABdhPJzKUk4qJcY2Yl04uIk073pVWVy0TAgu29TjkZGtqRzd2GqD3mnxPAiabi9k3biaI+nz18T1DA==
-X-Received: by 2002:a17:903:110c:b0:14d:8859:5c8 with SMTP id n12-20020a170903110c00b0014d885905c8mr1112876plh.156.1649094118990;
-        Mon, 04 Apr 2022 10:41:58 -0700 (PDT)
-Received: from localhost ([2620:10d:c090:400::5:baee])
-        by smtp.gmail.com with ESMTPSA id v17-20020a63b951000000b0038644f62aeesm10984699pgo.68.2022.04.04.10.41.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 10:41:58 -0700 (PDT)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Mon, 4 Apr 2022 07:41:56 -1000
-From:   Tejun Heo <tj@kernel.org>
-To:     "T.J. Mercier" <tjmercier@google.com>
-Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Arve =?iso-8859-1?B?SGr4bm5lduVn?= <arve@android.com>,
-        Todd Kjos <tkjos@android.com>,
-        Martijn Coenen <maco@android.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Hridya Valsaraju <hridya@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-        Benjamin Gaignard <benjamin.gaignard@linaro.org>,
-        Liam Mark <lmark@codeaurora.org>,
-        Laura Abbott <labbott@redhat.com>,
-        Brian Starkey <Brian.Starkey@arm.com>,
-        John Stultz <john.stultz@linaro.org>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Kalesh Singh <kaleshsingh@google.com>, Kenny.Ho@amd.com,
-        Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        dri-devel@lists.freedesktop.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
-        linaro-mm-sig@lists.linaro.org, cgroups@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Subject: Re: [RFC v4 2/8] cgroup: gpu: Add a cgroup controller for allocator
- attribution of GPU memory
-Message-ID: <Ykst5K/cI+DUVc94@slm.duckdns.org>
-References: <20220328035951.1817417-1-tjmercier@google.com>
- <20220328035951.1817417-3-tjmercier@google.com>
- <YkM6/57mVxoNfSvm@slm.duckdns.org>
- <CABdmKX2Gxg35k7QiL2Vn4zWhmQ4UnM-Z8cnOXR0fwBWyJnZ+Ng@mail.gmail.com>
+        Mon, 4 Apr 2022 13:46:27 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C37817077;
+        Mon,  4 Apr 2022 10:44:30 -0700 (PDT)
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 234GXR7Q002493;
+        Mon, 4 Apr 2022 17:44:29 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=Gy1yl0bL6hxrWlYqP6IhnqV6LjI7MGPXuF4DqxDIgrk=;
+ b=iy1g/XLfPxpmWa+doJPgwDDaRfVATrx2Ef9Ew/DcdnwIvOhOOBi1QLG+WucoAvnUXUuF
+ EdAsvmABhkKneHCbPVPZXwmL3f7k4K/niv8PH/+fyCxDchXInK22fYFrvhfPiHQSuj0y
+ fMAUcc53p+x90KVOhKqN6dlCNezgtm3yGyJiipVUKz809YaEIt3faGTe09wVyFNVtS1B
+ eE/WoL2bafQT2VuTCEI5rAxQIdh1uzbSJlLewaEy7aTPgSw+F2lI0lxYveBUjv7hyi8i
+ E8r3Qh8yqJPvq2EsoFG8S/ljgHZhySD2ZGyZI1vQ6VAmsB8gMW6fZUZ/beJ40d+W8v+6 vA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3f6yv6c95g-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 04 Apr 2022 17:44:28 +0000
+Received: from m0098420.ppops.net (m0098420.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 234HEgtk030568;
+        Mon, 4 Apr 2022 17:44:28 GMT
+Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3f6yv6c954-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 04 Apr 2022 17:44:28 +0000
+Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
+        by ppma03wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 234Hh3vA002370;
+        Mon, 4 Apr 2022 17:44:27 GMT
+Received: from b03cxnp08027.gho.boulder.ibm.com (b03cxnp08027.gho.boulder.ibm.com [9.17.130.19])
+        by ppma03wdc.us.ibm.com with ESMTP id 3f6e48s694-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 04 Apr 2022 17:44:27 +0000
+Received: from b03ledav002.gho.boulder.ibm.com (b03ledav002.gho.boulder.ibm.com [9.17.130.233])
+        by b03cxnp08027.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 234HiQH112124488
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 4 Apr 2022 17:44:26 GMT
+Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 9691D136053;
+        Mon,  4 Apr 2022 17:44:26 +0000 (GMT)
+Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 8960C136060;
+        Mon,  4 Apr 2022 17:44:24 +0000 (GMT)
+Received: from li-c92d2ccc-254b-11b2-a85c-a700b5bfb098.ibm.com.com (unknown [9.211.32.125])
+        by b03ledav002.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Mon,  4 Apr 2022 17:44:24 +0000 (GMT)
+From:   Matthew Rosato <mjrosato@linux.ibm.com>
+To:     linux-s390@vger.kernel.org
+Cc:     alex.williamson@redhat.com, cohuck@redhat.com,
+        schnelle@linux.ibm.com, farman@linux.ibm.com, pmorel@linux.ibm.com,
+        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
+        svens@linux.ibm.com, frankja@linux.ibm.com, david@redhat.com,
+        imbrenda@linux.ibm.com, vneethv@linux.ibm.com,
+        oberpar@linux.ibm.com, freude@linux.ibm.com, thuth@redhat.com,
+        pasic@linux.ibm.com, pbonzini@redhat.com, corbet@lwn.net,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org
+Subject: [PATCH v5 13/21] KVM: s390: mechanism to enable guest zPCI Interpretation
+Date:   Mon,  4 Apr 2022 13:43:41 -0400
+Message-Id: <20220404174349.58530-14-mjrosato@linux.ibm.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220404174349.58530-1-mjrosato@linux.ibm.com>
+References: <20220404174349.58530-1-mjrosato@linux.ibm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CABdmKX2Gxg35k7QiL2Vn4zWhmQ4UnM-Z8cnOXR0fwBWyJnZ+Ng@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: LzANiZft-v5hrapsiHNwB1866GrR3nZ_
+X-Proofpoint-GUID: knmzdSR7GD2EfFBEqxWdlxSzUpt2Jz9q
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-04-04_06,2022-03-31_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999
+ lowpriorityscore=0 clxscore=1015 suspectscore=0 phishscore=0 adultscore=0
+ mlxscore=0 bulkscore=0 malwarescore=0 impostorscore=0 spamscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2204040099
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+The guest must have access to certain facilities in order to allow
+interpretive execution of zPCI instructions and adapter event
+notifications.  However, there are some cases where a guest might
+disable interpretation -- provide a mechanism via which we can defer
+enabling the associated zPCI interpretation facilities until the guest
+indicates it wishes to use them.
 
-On Wed, Mar 30, 2022 at 01:56:09PM -0700, T.J. Mercier wrote:
-> The use case we have for accounting the total (separate from the
-> individual devices) is to include the value as part of bugreports, for
-> understanding the system-wide amount of dmabuf allocations. I'm not
-> aware of an existing need to limit the total. Admittedly this is just
-> the sum over the devices, but we currently maintain out of tree code
-> to do this sort of thing today. [1]
+Acked-by: Pierre Morel <pmorel@linux.ibm.com>
+Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
+---
+ arch/s390/include/asm/kvm_host.h |  4 ++++
+ arch/s390/kvm/kvm-s390.c         | 37 ++++++++++++++++++++++++++++++++
+ arch/s390/kvm/kvm-s390.h         | 10 +++++++++
+ 3 files changed, 51 insertions(+)
 
-So, drop this part?
-
-Thanks.
-
+diff --git a/arch/s390/include/asm/kvm_host.h b/arch/s390/include/asm/kvm_host.h
+index c1518a505060..8e381603b6a7 100644
+--- a/arch/s390/include/asm/kvm_host.h
++++ b/arch/s390/include/asm/kvm_host.h
+@@ -254,7 +254,10 @@ struct kvm_s390_sie_block {
+ #define ECB2_IEP	0x20
+ #define ECB2_PFMFI	0x08
+ #define ECB2_ESCA	0x04
++#define ECB2_ZPCI_LSI	0x02
+ 	__u8    ecb2;                   /* 0x0062 */
++#define ECB3_AISI	0x20
++#define ECB3_AISII	0x10
+ #define ECB3_DEA 0x08
+ #define ECB3_AES 0x04
+ #define ECB3_RI  0x01
+@@ -940,6 +943,7 @@ struct kvm_arch{
+ 	int use_cmma;
+ 	int use_pfmfi;
+ 	int use_skf;
++	int use_zpci_interp;
+ 	int user_cpu_state_ctrl;
+ 	int user_sigp;
+ 	int user_stsi;
+diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
+index a9eb8b75af93..327649ddddce 100644
+--- a/arch/s390/kvm/kvm-s390.c
++++ b/arch/s390/kvm/kvm-s390.c
+@@ -1029,6 +1029,41 @@ static int kvm_s390_vm_set_crypto(struct kvm *kvm, struct kvm_device_attr *attr)
+ 	return 0;
+ }
+ 
++static void kvm_s390_vcpu_pci_setup(struct kvm_vcpu *vcpu)
++{
++	/* Only set the ECB bits after guest requests zPCI interpretation */
++	if (!vcpu->kvm->arch.use_zpci_interp)
++		return;
++
++	vcpu->arch.sie_block->ecb2 |= ECB2_ZPCI_LSI;
++	vcpu->arch.sie_block->ecb3 |= ECB3_AISII + ECB3_AISI;
++}
++
++/* Must be called with kvm->lock held */
++void kvm_s390_vcpu_pci_enable_interp(struct kvm *kvm)
++{
++	struct kvm_vcpu *vcpu;
++	unsigned long i;
++
++	/*
++	 * If host is configured for PCI and the necessary facilities are
++	 * available, turn on interpretation for the life of this guest
++	 */
++	if (!kvm_s390_pci_interp_allowed())
++		return;
++
++	kvm->arch.use_zpci_interp = 1;
++
++	kvm_s390_vcpu_block_all(kvm);
++
++	kvm_for_each_vcpu(i, vcpu, kvm) {
++		kvm_s390_vcpu_pci_setup(vcpu);
++		kvm_s390_sync_request(KVM_REQ_VSIE_RESTART, vcpu);
++	}
++
++	kvm_s390_vcpu_unblock_all(kvm);
++}
++
+ static void kvm_s390_sync_request_broadcast(struct kvm *kvm, int req)
+ {
+ 	unsigned long cx;
+@@ -3329,6 +3364,8 @@ static int kvm_s390_vcpu_setup(struct kvm_vcpu *vcpu)
+ 
+ 	kvm_s390_vcpu_crypto_setup(vcpu);
+ 
++	kvm_s390_vcpu_pci_setup(vcpu);
++
+ 	mutex_lock(&vcpu->kvm->lock);
+ 	if (kvm_s390_pv_is_protected(vcpu->kvm)) {
+ 		rc = kvm_s390_pv_create_cpu(vcpu, &uvrc, &uvrrc);
+diff --git a/arch/s390/kvm/kvm-s390.h b/arch/s390/kvm/kvm-s390.h
+index 497d52a83c78..975cffaf13de 100644
+--- a/arch/s390/kvm/kvm-s390.h
++++ b/arch/s390/kvm/kvm-s390.h
+@@ -507,6 +507,16 @@ void kvm_s390_reinject_machine_check(struct kvm_vcpu *vcpu,
+  */
+ void kvm_s390_vcpu_crypto_reset_all(struct kvm *kvm);
+ 
++/**
++ * kvm_s390_vcpu_pci_enable_interp
++ *
++ * Set the associated PCI attributes for each vcpu to allow for zPCI Load/Store
++ * interpretation as well as adapter interruption forwarding.
++ *
++ * @kvm: the KVM guest
++ */
++void kvm_s390_vcpu_pci_enable_interp(struct kvm *kvm);
++
+ /**
+  * diag9c_forwarding_hz
+  *
 -- 
-tejun
+2.27.0
+
