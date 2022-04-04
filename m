@@ -2,141 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D14EC43217
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 15:01:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13B08C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 15:01:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377787AbiDDPD0 (ORCPT
+        id S1378348AbiDDPDc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 11:03:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47544 "EHLO
+        Mon, 4 Apr 2022 11:03:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378422AbiDDPDP (ORCPT
+        with ESMTP id S1358345AbiDDPDX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 11:03:15 -0400
-Received: from mail.marcansoft.com (marcansoft.com [212.63.210.85])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 921112F033;
-        Mon,  4 Apr 2022 08:01:18 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: marcan@marcan.st)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id 6981F419BC;
-        Mon,  4 Apr 2022 15:01:12 +0000 (UTC)
-Subject: Re: [PATCH 4/9] soc: apple: Add SART driver
-To:     Rob Herring <robh@kernel.org>, Arnd Bergmann <arnd@arndb.de>
-Cc:     Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Keith Busch <kbusch@kernel.org>, "axboe@fb.com" <axboe@fb.com>,
-        "hch@lst.de" <hch@lst.de>, "sagi@grimberg.me" <sagi@grimberg.me>,
-        Marc Zyngier <maz@kernel.org>,
-        DTML <devicetree@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Mon, 4 Apr 2022 11:03:23 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDC352F382
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 08:01:26 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id x20so3578065edi.12
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 08:01:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=i+zr5M68aloOJzDo2BfmM/AByzuuaBC8sU7HTQ424Ng=;
+        b=P1lRqzuiE1i5AQgVXMAadjQxuZaNvOCmKCWVC7NoAosWtxg6O6uGhV1Fs5d9UThrZ1
+         zNrRtXos2DqCwVW5VD+GKbPk1i42rM9aiUb9yc0F+sIK7PRpivdnddQGLO7YoWG7oZmw
+         1x+zSzZfSodiP6Ntsi6OzrVuazT7b0XFcTsGnlR/cfyiEBMAvlIIi+by8VcRPuSXfbaq
+         jvnXsXf/ijVmNTh2jlG406awsf8vRVsNEmYxTWAk77H/Jd0WSG835ZDrosun+PmVeAme
+         A2bgEVeBBvzo/mxIlfxdxxqbrAD3YyIIefiix/stRu7ICwOCzguPsSvKzSzjE2W+YgM+
+         7sjg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=i+zr5M68aloOJzDo2BfmM/AByzuuaBC8sU7HTQ424Ng=;
+        b=F2XnFfyRsEu6V1FubK4wOGanIoQQ8VoPsoivJpH07sQgHAFJUerCWLVMZMqsqb98wi
+         fxM6TDC8hcG04Etf8VKLF2LuumN25q9KDCvWC7wk3mHcOlQywKuKQ+NAqsnuYoto+4TB
+         kJ/hZAsAMg53e/dB3gZkxpfY37qDgAszM+2EncNpv7lUoV0fDyxxNDMUfkJlmTxWEHXu
+         fQLP+PmpAChWRnviNmTzjV0ccCXTPyQ7+Sg3fKn6B8oWoGJ0uIVEDgVo3MiKH2IbX5EI
+         5x9j0u2RWb5jWwbLPrb0La4HpiLJdwCjb9jKIKIDm5nyzEW4/FAUbpVZc3OxhV3Rrhaf
+         9Ljw==
+X-Gm-Message-State: AOAM533CiG6ymnfMc0fRPvx1FespxJiDghIK0sLwXM6Z940i1CVfYnVL
+        s7SbbYADtiNTA+dbi+d4Fz+ZJQ==
+X-Google-Smtp-Source: ABdhPJwdjQe3XZ1e4GuiLZkjz2XSDy8kccxsDVifb45M/0aMy9MY01MBSRkMjNi/1qqoMOzRLXd9XA==
+X-Received: by 2002:aa7:cdc9:0:b0:419:197e:14d9 with SMTP id h9-20020aa7cdc9000000b00419197e14d9mr498264edw.375.1649084485024;
+        Mon, 04 Apr 2022 08:01:25 -0700 (PDT)
+Received: from google.com (30.171.91.34.bc.googleusercontent.com. [34.91.171.30])
+        by smtp.gmail.com with ESMTPSA id y14-20020a056402440e00b00416046b623csm5690519eda.2.2022.04.04.08.01.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Apr 2022 08:01:24 -0700 (PDT)
+Date:   Mon, 4 Apr 2022 15:01:21 +0000
+From:   Quentin Perret <qperret@google.com>
+To:     Andy Lutomirski <luto@kernel.org>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Steven Price <steven.price@arm.com>,
+        Chao Peng <chao.p.peng@linux.intel.com>,
+        kvm list <kvm@vger.kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-nvme@lists.infradead.org
-References: <20220321165049.35985-1-sven@svenpeter.dev>
- <20220321165049.35985-5-sven@svenpeter.dev>
- <CAK8P3a19F8K0MvZV_R6HrmmR+WBsDge+u6U3iEVEjZ74i6+nEg@mail.gmail.com>
- <f06576c8-76c6-41ae-874d-81ea0b5b5603@www.fastmail.com>
- <CAK8P3a3xioqJDb7hQ3dvxQyHPg2hgJbeJywEP+N4cDzpo=8VhQ@mail.gmail.com>
- <YksHoQvDqXOK70EX@robh.at.kernel.org>
-From:   Hector Martin <marcan@marcan.st>
-Message-ID: <15ace529-1fea-1141-b87f-598e9bfa12dc@marcan.st>
-Date:   Tue, 5 Apr 2022 00:01:09 +0900
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
+        Linux API <linux-api@vger.kernel.org>, qemu-devel@nongnu.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        the arch/x86 maintainers <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>, Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Vishal Annapurve <vannapurve@google.com>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        "Nakajima, Jun" <jun.nakajima@intel.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        David Hildenbrand <david@redhat.com>,
+        Marc Zyngier <maz@kernel.org>, Will Deacon <will@kernel.org>
+Subject: Re: [PATCH v5 00/13] KVM: mm: fd-based approach for supporting KVM
+ guest private memory
+Message-ID: <YksIQYdG41v3KWkr@google.com>
+References: <YkHspg+YzOsbUaCf@google.com>
+ <YkH32nx+YsJuUbmZ@google.com>
+ <YkIFW25WgV2WIQHb@google.com>
+ <YkM7eHCHEBe5NkNH@google.com>
+ <88620519-029e-342b-0a85-ce2a20eaf41b@arm.com>
+ <YkQzfjgTQaDd2E2T@google.com>
+ <YkSaUQX89ZEojsQb@google.com>
+ <80aad2f9-9612-4e87-a27a-755d3fa97c92@www.fastmail.com>
+ <YkcTTY4YjQs5BRhE@google.com>
+ <83fd55f8-cd42-4588-9bf6-199cbce70f33@www.fastmail.com>
 MIME-Version: 1.0
-In-Reply-To: <YksHoQvDqXOK70EX@robh.at.kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: es-ES
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <83fd55f8-cd42-4588-9bf6-199cbce70f33@www.fastmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 04/04/2022 23.58, Rob Herring wrote:
-> On Sat, Apr 02, 2022 at 09:07:17PM +0200, Arnd Bergmann wrote:
->> On Sat, Apr 2, 2022 at 2:38 PM Sven Peter <sven@svenpeter.dev> wrote:
->>> On Mon, Mar 21, 2022, at 18:07, Arnd Bergmann wrote:
->>>> On Mon, Mar 21, 2022 at 5:50 PM Sven Peter <sven@svenpeter.dev> wrote:
->>>>> The NVMe co-processor on the Apple M1 uses a DMA address filter called
->>>>> SART for some DMA transactions. This adds a simple driver used to
->>>>> configure the memory regions from which DMA transactions are allowed.
->>>>>
->>>>> Co-developed-by: Hector Martin <marcan@marcan.st>
->>>>> Signed-off-by: Hector Martin <marcan@marcan.st>
->>>>> Signed-off-by: Sven Peter <sven@svenpeter.dev>
->>>>
->>>> Can you add some explanation about why this uses a custom interface
->>>> instead of hooking into the dma_map_ops?
->>>
->>> Sure.
->>> In a perfect world this would just be an IOMMU implementation but since
->>> SART can't create any real IOVA space using pagetables it doesn't fit
->>> inside that subsytem.
->>>
->>> In a slightly less perfect world I could just implement dma_map_ops here
->>> but that won't work either because not all DMA buffers of the NVMe
->>> device have to go through SART and those allocations happen
->>> inside the same device and would use the same dma_map_ops.
->>>
->>> The NVMe controller has two separate DMA filters:
->>>
->>>    - NVMMU, which must be set up for any command that uses PRPs and
->>>      ensures that the DMA transactions only touch the pages listed
->>>      inside the PRP structure. NVMMU itself is tightly coupled
->>>      to the NVMe controller: The list of allowed pages is configured
->>>      based on command's tag id and even commands that require no DMA
->>>      transactions must be listed inside NVMMU before they are started.
->>>    - SART, which must be set up for some shared memory buffers (e.g.
->>>      log messages from the NVMe firmware) and for some NVMe debug
->>>      commands that don't use PRPs.
->>>      SART is only loosely coupled to the NVMe controller and could
->>>      also be used together with other devices. It's also the only
->>>      thing that changed between M1 and M1 Pro/Max/Ultra and that's
->>>      why I decided to separate it from the NVMe driver.
->>>
->>> I'll add this explanation to the commit message.
->>
->> Ok, thanks.
->>
->>>>> +static void sart2_get_entry(struct apple_sart *sart, int index, u8 *flags,
->>>>> +                           phys_addr_t *paddr, size_t *size)
->>>>> +{
->>>>> +       u32 cfg = readl_relaxed(sart->regs + APPLE_SART2_CONFIG(index));
->>>>> +       u32 paddr_ = readl_relaxed(sart->regs + APPLE_SART2_PADDR(index));
->>>>
->>>> Why do you use the _relaxed() accessors here and elsewhere in the driver?
->>>
->>> This device itself doesn't do any DMA transactions so it needs no memory
->>> synchronization barriers. Only the consumer (i.e. rtkit and nvme) read/write
->>> from/to these buffers (multiple times) and they have the required barriers
->>> in place whenever they are used.
->>>
->>> These buffers so far are only allocated at probe time though so even using
->>> the normal writel/readl here won't hurt performance at all. I can just use
->>> those if you prefer or alternatively add a comment why _relaxed is fine here.
->>>
->>> This is a bit similar to the discussion for the pinctrl series last year [1].
->>
->> I think it's better to only use the _relaxed version where it actually helps,
->> with a comment about it, and use the normal version elsewhere, in
->> particular in functions that you have copied from the normal nvme driver.
->> I had tried to compare some of your code with the other version and
->> was rather confused by that.
+On Friday 01 Apr 2022 at 12:56:50 (-0700), Andy Lutomirski wrote:
+> On Fri, Apr 1, 2022, at 7:59 AM, Quentin Perret wrote:
+> > On Thursday 31 Mar 2022 at 09:04:56 (-0700), Andy Lutomirski wrote:
 > 
-> Oh good, I tell folks the opposite (and others do too). We don't accept 
-> random explicit barriers without explanation, but implicit ones are 
-> okay? The resulting code on arm32 is also pretty horrible with the L2x0 
-> and OMAP sync hooks not that that matters here.
 > 
-> I don't really care too much which way we go, but we should document one 
-> rule and follow that.
+> > To answer your original question about memory 'conversion', the key
+> > thing is that the pKVM hypervisor controls the stage-2 page-tables for
+> > everyone in the system, all guests as well as the host. As such, a page
+> > 'conversion' is nothing more than a permission change in the relevant
+> > page-tables.
+> >
+> 
+> So I can see two different ways to approach this.
+> 
+> One is that you split the whole address space in half and, just like SEV and TDX, allocate one bit to indicate the shared/private status of a page.  This makes it work a lot like SEV and TDX.
+>
+> The other is to have shared and private pages be distinguished only by their hypercall history and the (protected) page tables.  This saves some address space and some page table allocations, but it opens some cans of worms too.  In particular, the guest and the hypervisor need to coordinate, in a way that the guest can trust, to ensure that the guest's idea of which pages are private match the host's.  This model seems a bit harder to support nicely with the private memory fd model, but not necessarily impossible.
 
-I'm sure maz@ has an opinion here too :-)
+Right. Perhaps one thing I should clarify as well: pKVM (as opposed to
+TDX) has only _one_ page-table per guest, and it is controllex by the
+hypervisor only. So the hypervisor needs to be involved for both shared
+and private mappings. As such, shared pages have relatively similar
+constraints when it comes to host mm stuff --  we can't migrate shared
+pages or swap them out without getting the hypervisor involved.
 
-(3... 2... 1... fight!)
+> Also, what are you trying to accomplish by having the host userspace mmap private pages?
 
--- 
-Hector Martin (marcan@marcan.st)
-Public Key: https://mrcn.st/pub
+What I would really like to have is non-destructive in-place conversions
+of pages. mmap-ing the pages that have been shared back felt like a good
+fit for the private=>shared conversion, but in fact I'm not all that
+opinionated about the API as long as the behaviour and the performance
+are there. Happy to look into alternatives.
+
+FWIW, there are a couple of reasons why I'd like to have in-place
+conversions:
+
+ - one goal of pKVM is to migrate some things away from the Arm
+   Trustzone environment (e.g. DRM and the likes) and into protected VMs
+   instead. This will give Linux a fighting chance to defend itself
+   against these things -- they currently have access to _all_ memory.
+   And transitioning pages between Linux and Trustzone (donations and
+   shares) is fast and non-destructive, so we really do not want pKVM to
+   regress by requiring the hypervisor to memcpy things;
+
+ - it can be very useful for protected VMs to do shared=>private
+   conversions. Think of a VM receiving some data from the host in a
+   shared buffer, and then it wants to operate on that buffer without
+   risking to leak confidential informations in a transient state. In
+   that case the most logical thing to do is to convert the buffer back
+   to private, do whatever needs to be done on that buffer (decrypting a
+   frame, ...), and then share it back with the host to consume it;
+
+ - similar to the previous point, a protected VM might want to
+   temporarily turn a buffer private to avoid ToCToU issues;
+
+ - once we're able to do device assignment to protected VMs, this might
+   allow DMA-ing to a private buffer, and make it shared later w/o
+   bouncing.
+
+And there is probably more.
+
+IIUC, the private fd proposal as it stands requires shared and private
+pages to come from entirely distinct places. So it's not entirely clear
+to me how any of the above could be supported without having the
+hypervisor memcpy the data during conversions, which I really don't want
+to do for performance reasons.
+
+> Is the idea that multiple guest could share the same page until such time as one of them tries to write to it?
+
+That would certainly be possible to implement in the pKVM
+environment with the right tracking, so I think it is worth considering
+as a future goal.
+
+Thanks,
+Quentin
