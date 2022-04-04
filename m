@@ -2,181 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0ED3C35295
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B49E6C43217
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:49:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380330AbiDDVsV (ORCPT
+        id S1380303AbiDDVsT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:48:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42384 "EHLO
+        Mon, 4 Apr 2022 17:48:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380040AbiDDSpp (ORCPT
+        with ESMTP id S1379936AbiDDSYR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 14:45:45 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AEEFAE6C;
-        Mon,  4 Apr 2022 11:43:49 -0700 (PDT)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id D1D2B22246;
-        Mon,  4 Apr 2022 20:43:46 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1649097827;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
+        Mon, 4 Apr 2022 14:24:17 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D450F22B20;
+        Mon,  4 Apr 2022 11:22:20 -0700 (PDT)
+Date:   Mon, 04 Apr 2022 18:22:18 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649096539;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ATzKng0Bo6d19J8plCRK65PNpfkaclCPCJA7+STwAtE=;
-        b=YcB+7nYNg5LEAv8sXheBqu6L7iD3m8TrMhLYmt8B2rO1PI1+EQmvvuL4u8mXBpptKvTqzr
-        h3h1V8bG2JpBEopdv76Q0ZuTymd88RR3eXuQn1vgBsNn6EfriXHYUCLUrgKF4l+ZYBAc7X
-        SC2yh4Az2Rg14RFwarsbOmPrwbY2WYo=
-From:   Michael Walle <michael@walle.cc>
-To:     Xu Yilun <yilun.xu@intel.com>, Tom Rix <trix@redhat.com>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, David Laight <David.Laight@ACULAB.COM>,
-        Michael Walle <michael@walle.cc>
-Subject: [PATCH v3 1/2] hwmon: introduce hwmon_sanitize_name()
-Date:   Mon,  4 Apr 2022 20:43:39 +0200
-Message-Id: <20220404184340.3973329-2-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220404184340.3973329-1-michael@walle.cc>
-References: <20220404184340.3973329-1-michael@walle.cc>
+        bh=C3w/yAJpOjhAW4Wz4L7tzqhvuIJL/yoS7z64bdUfVlo=;
+        b=fM2IqwhWVs5WEO4dPP2InNrIDr6iPi8W3+eXYVQ/jDFTNoJBvDMHNsT5cgktCBAcnLgHVj
+        I/dt7TpFrlI6+euW2C2LSJr5YtWee3O1ngtjoSTgKX4lIysF5A9TX220wxoIBhrOPyGihq
+        KOgkD5+ye9PemR1+jzzFn78KVgw9Jvqs7xuFyZhvKUojzW29lhLF3VFhil+mDJwViyGxBK
+        5jzZEgWQvynFDPzrcy5M8Nr/PQ4RNIME99pF6gVbBSwLBGwc2ApHL+fBUiS8ZUQUMM5o5H
+        BkyHHHRX1d/28fClqGYjPwH3Z86HKdjL6qS4KEAAw4xf42/bog4EkCiwfftigg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649096539;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=C3w/yAJpOjhAW4Wz4L7tzqhvuIJL/yoS7z64bdUfVlo=;
+        b=edx0y1BQwJYFEZA/+QGVlmu5NUBQYqfIOvgtAaaIiW8bFMJnzTHsczLp30WbEdR3pMZpXS
+        onjZTfSuS9lJ5OBA==
+From:   "tip-bot2 for Borislav Petkov" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: x86/cpu] x86/cpu: Remove "nosmep"
+Cc:     Borislav Petkov <bp@suse.de>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Kees Cook <keescook@chromium.org>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220127115626.14179-5-bp@alien8.de>
+References: <20220127115626.14179-5-bp@alien8.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Message-ID: <164909653849.389.15352587748803921438.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-More and more drivers will check for bad characters in the hwmon name
-and all are using the same code snippet. Consolidate that code by adding
-a new hwmon_sanitize_name() function.
+The following commit has been merged into the x86/cpu branch of tip:
 
-Signed-off-by: Michael Walle <michael@walle.cc>
+Commit-ID:     385d2ae0a1b5efacb30e13a0f0e521490441d9bb
+Gitweb:        https://git.kernel.org/tip/385d2ae0a1b5efacb30e13a0f0e521490441d9bb
+Author:        Borislav Petkov <bp@suse.de>
+AuthorDate:    Thu, 27 Jan 2022 12:56:24 +01:00
+Committer:     Borislav Petkov <bp@suse.de>
+CommitterDate: Mon, 04 Apr 2022 10:17:00 +02:00
+
+x86/cpu: Remove "nosmep"
+
+There should be no need to disable SMEP anymore.
+
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Lai Jiangshan <jiangshanlai@gmail.com>
+Reviewed-by: Kees Cook <keescook@chromium.org>
+Link: https://lore.kernel.org/r/20220127115626.14179-5-bp@alien8.de
 ---
- Documentation/hwmon/hwmon-kernel-api.rst | 16 ++++++++
- drivers/hwmon/hwmon.c                    | 50 ++++++++++++++++++++++++
- include/linux/hwmon.h                    |  3 ++
- 3 files changed, 69 insertions(+)
+ Documentation/admin-guide/kernel-parameters.txt | 2 +-
+ Documentation/x86/cpuinfo.rst                   | 4 ++--
+ arch/x86/kernel/cpu/common.c                    | 7 -------
+ 3 files changed, 3 insertions(+), 10 deletions(-)
 
-diff --git a/Documentation/hwmon/hwmon-kernel-api.rst b/Documentation/hwmon/hwmon-kernel-api.rst
-index c41eb6108103..e2975d5caf34 100644
---- a/Documentation/hwmon/hwmon-kernel-api.rst
-+++ b/Documentation/hwmon/hwmon-kernel-api.rst
-@@ -50,6 +50,10 @@ register/unregister functions::
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index e0bb710..39ac2c1 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -3465,7 +3465,7 @@
+ 			Disable SMAP (Supervisor Mode Access Prevention)
+ 			even if it is supported by processor.
  
-   void devm_hwmon_device_unregister(struct device *dev);
+-	nosmep		[X86,PPC64s]
++	nosmep		[PPC64s]
+ 			Disable SMEP (Supervisor Mode Execution Prevention)
+ 			even if it is supported by processor.
  
-+  char *hwmon_sanitize_name(const char *name);
-+
-+  char *devm_hwmon_sanitize_name(struct device *dev, const char *name);
-+
- hwmon_device_register_with_groups registers a hardware monitoring device.
- The first parameter of this function is a pointer to the parent device.
- The name parameter is a pointer to the hwmon device name. The registration
-@@ -95,6 +99,18 @@ All supported hwmon device registration functions only accept valid device
- names. Device names including invalid characters (whitespace, '*', or '-')
- will be rejected. The 'name' parameter is mandatory.
+diff --git a/Documentation/x86/cpuinfo.rst b/Documentation/x86/cpuinfo.rst
+index 12fbe2b..08246e8 100644
+--- a/Documentation/x86/cpuinfo.rst
++++ b/Documentation/x86/cpuinfo.rst
+@@ -140,8 +140,8 @@ from #define X86_FEATURE_UMIP (16*32 + 2).
  
-+If the driver doesn't use a static device name (for example it uses
-+dev_name()), and therefore cannot make sure the name only contains valid
-+characters, hwmon_sanitize_name can be used. This convenience function
-+will duplicate the string and replace any invalid characters with an
-+underscore. It will allocate memory for the new string and it is the
-+responsibility of the caller to release the memory when the device is
-+removed.
-+
-+devm_hwmon_sanitize_name is the resource managed version of
-+hwmon_sanitize_name; the memory will be freed automatically on device
-+removal.
-+
- Using devm_hwmon_device_register_with_info()
- --------------------------------------------
+ In addition, there exists a variety of custom command-line parameters that
+ disable specific features. The list of parameters includes, but is not limited
+-to, nofsgsbase, and nosmep. 5-level paging can also be disabled using
+-"no5lvl". SMEP is disabled with the aforementioned parameter.
++to, nofsgsbase, nosgx, noxsave, etc. 5-level paging can also be disabled using
++"no5lvl".
  
-diff --git a/drivers/hwmon/hwmon.c b/drivers/hwmon/hwmon.c
-index 989e2c8496dd..cc4a16a466a0 100644
---- a/drivers/hwmon/hwmon.c
-+++ b/drivers/hwmon/hwmon.c
-@@ -1057,6 +1057,56 @@ void devm_hwmon_device_unregister(struct device *dev)
+ e: The feature was known to be non-functional.
+ ----------------------------------------------
+diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
+index 747df07..5791f69 100644
+--- a/arch/x86/kernel/cpu/common.c
++++ b/arch/x86/kernel/cpu/common.c
+@@ -369,13 +369,6 @@ static inline void squash_the_stupid_serial_number(struct cpuinfo_x86 *c)
  }
- EXPORT_SYMBOL_GPL(devm_hwmon_device_unregister);
+ #endif
  
-+static char *__hwmon_sanitize_name(struct device *dev, const char *old_name)
-+{
-+	char *name, *p;
-+
-+	if (dev)
-+		name = devm_kstrdup(dev, old_name, GFP_KERNEL);
-+	else
-+		name = kstrdup(old_name, GFP_KERNEL);
-+	if (!name)
-+		return NULL;
-+
-+	for (p = name; *p; p++)
-+		if (hwmon_is_bad_char(*p))
-+			*p = '_';
-+
-+	return name;
-+}
-+
-+/**
-+ * hwmon_sanitize_name - Replaces invalid characters in a hwmon name
-+ * @name: NUL-terminated name
-+ *
-+ * Allocates a new string where any invalid characters will be replaced
-+ * by an underscore. It is the responsibility of the caller to release
-+ * the memory.
-+ *
-+ * Returns newly allocated name or %NULL in case of error.
-+ */
-+char *hwmon_sanitize_name(const char *name)
-+{
-+	return __hwmon_sanitize_name(NULL, name);
-+}
-+EXPORT_SYMBOL_GPL(hwmon_sanitize_name);
-+
-+/**
-+ * devm_hwmon_sanitize_name - resource managed hwmon_sanitize_name()
-+ * @dev: device to allocate memory for
-+ * @name: NUL-terminated name
-+ *
-+ * Allocates a new string where any invalid characters will be replaced
-+ * by an underscore.
-+ *
-+ * Returns newly allocated name or %NULL in case of error.
-+ */
-+char *devm_hwmon_sanitize_name(struct device *dev, const char *name)
-+{
-+	return __hwmon_sanitize_name(dev, name);
-+}
-+EXPORT_SYMBOL_GPL(devm_hwmon_sanitize_name);
-+
- static void __init hwmon_pci_quirks(void)
+-static __init int setup_disable_smep(char *arg)
+-{
+-	setup_clear_cpu_cap(X86_FEATURE_SMEP);
+-	return 1;
+-}
+-__setup("nosmep", setup_disable_smep);
+-
+ static __always_inline void setup_smep(struct cpuinfo_x86 *c)
  {
- #if defined CONFIG_X86 && defined CONFIG_PCI
-diff --git a/include/linux/hwmon.h b/include/linux/hwmon.h
-index eba380b76d15..4efaf06fd2b8 100644
---- a/include/linux/hwmon.h
-+++ b/include/linux/hwmon.h
-@@ -461,6 +461,9 @@ void devm_hwmon_device_unregister(struct device *dev);
- int hwmon_notify_event(struct device *dev, enum hwmon_sensor_types type,
- 		       u32 attr, int channel);
- 
-+char *hwmon_sanitize_name(const char *name);
-+char *devm_hwmon_sanitize_name(struct device *dev, const char *name);
-+
- /**
-  * hwmon_is_bad_char - Is the char invalid in a hwmon name
-  * @ch: the char to be considered
--- 
-2.30.2
-
+ 	if (cpu_has(c, X86_FEATURE_SMEP))
