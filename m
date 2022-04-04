@@ -2,153 +2,282 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4947BC3527B
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:16:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 064BEC352A8
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:16:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378941AbiDDVSa (ORCPT
+        id S1378989AbiDDVSc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:18:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46686 "EHLO
+        Mon, 4 Apr 2022 17:18:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379275AbiDDQvz (ORCPT
+        with ESMTP id S1380659AbiDDUug (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 12:51:55 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C57032EFA;
-        Mon,  4 Apr 2022 09:49:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649090998; x=1680626998;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=AoqvpDl3RGtX95Geb1KswNUgV1ft9Qx6e310xvJAQTs=;
-  b=bvmLUXqSWe6xe3sLPNLOb4qSDB5sWMYs+73YbOd6a2QGiBOSa0ODuOBY
-   U6Iit4n05VWnpBSAEjJQoUzI4RGYYpfK+gHdxn6SvkR1rVbBSWTbZkG3P
-   F25FkR6Bom/xUDBhpmpUL3ywhviS8YKQS72sX+6Zuno1yvd9wnWMlqEk0
-   g7yoN3eTwueoLbPBbcZrymH05FhghNkQq1EMKdJ4zLQhkXQbLW6ifSwXv
-   OpuSjZqwg/zHS9PjNjDTbV/WPdWJ3mxBamyqPlId8obMc2y6fc/AJe57E
-   FTRbd5WOdFJz0c1gmyg7tIrcVU38TuN8idjev+mcgiD79R1D2QjjMsJnL
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="323734053"
-X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
-   d="scan'208";a="323734053"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:49:51 -0700
-X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
-   d="scan'208";a="523105204"
-Received: from rchatre-ws.ostc.intel.com ([10.54.69.144])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:49:50 -0700
-From:   Reinette Chatre <reinette.chatre@intel.com>
-To:     dave.hansen@linux.intel.com, jarkko@kernel.org, tglx@linutronix.de,
-        bp@alien8.de, luto@kernel.org, mingo@redhat.com,
-        linux-sgx@vger.kernel.org, x86@kernel.org
-Cc:     seanjc@google.com, kai.huang@intel.com, cathy.zhang@intel.com,
-        cedric.xing@intel.com, haitao.huang@intel.com,
-        mark.shanahan@intel.com, hpa@zytor.com,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH V3 19/30] x86/sgx: Free up EPC pages directly to support large page ranges
-Date:   Mon,  4 Apr 2022 09:49:27 -0700
-Message-Id: <b3a17e1ce7bcd14db3c28903e8a97f094998ae74.1648847675.git.reinette.chatre@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1648847675.git.reinette.chatre@intel.com>
-References: <cover.1648847675.git.reinette.chatre@intel.com>
+        Mon, 4 Apr 2022 16:50:36 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2ED0BE3D
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 13:48:38 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id ot30so12552402ejb.12
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 13:48:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=/DCTfmFnsCW6CmRyecYd9kX39hqliOdp491MdVfso5g=;
+        b=bWxC1Y22FmwVfdcBonget0iVkMXSjt/KdvaDX92OdaYjAW3YBevMMC8HvrTUY6JiVH
+         eP8BhbWw90akIHKJmstXdVwaYAbrKgV1pF8BaPpl8GORABUvb5KKtl9PbX/yHYxEka0f
+         nh/VQkQuCZ6fZHjsJC3SwaR5vPVyF/351XDN3u5610vKrsm9hMGsfmoZNtaA3beo3NX+
+         Q0zzy6kofRl4HkkIuSTygTxcXD4Y1ykItLYOjnq1Ih9Tf2dgVhqv/vhqLwbq6XvOwcCH
+         oDdVVlFFtCzcTafYcuTvPrYOBlFoUaED3V4CdTwME1+a8g5WRdWwn4djpKilCkLsXFdU
+         0qNg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=/DCTfmFnsCW6CmRyecYd9kX39hqliOdp491MdVfso5g=;
+        b=qfzJADIQpfSQ3QQhmx3bvhw6l3kwAXN/q1jNw0d9SHj/H+KwXS8+opSbXp+fSaLmri
+         wO8lSGKVmZ5+4eUTSuLPHZ0dhozvnO93StzywQd5HUqVBpnv0F8qUXBWVjAKgaYhuqpg
+         iyl/5SSMlcGBhyoNSA/Rl8KI2i5/QofSaRNwGfP6wFjZgWGBsPqwahgkK6Vu8f6/kW6R
+         iteKD3yRCpxerqBKnvDl0DLddsitJGJCOCRkRv/kp+Gf3ev/nu6Fn3OSxU2RriNjHnVg
+         2RF8k38I3DATAG6D/xQa8Fiah8OaBKSitZ0cP/zLqtrNLEEw1pZHo0sjN15Z7X5WzcC/
+         6kwQ==
+X-Gm-Message-State: AOAM531iTSI9Prh8+PhjRgPvoopTFVeP4Z+0ETO7hwytmBS1H+tyxbCC
+        96BapnVwjWojEP/rczKzSfI=
+X-Google-Smtp-Source: ABdhPJwJ6dim7l0HBfsKEpnDkESDuj1aS+iYOTW5QpQumXtQTW6yj3XhjhEPxbhpkEZ2GBfgqVZVJg==
+X-Received: by 2002:a17:906:c103:b0:6e0:df50:7f52 with SMTP id do3-20020a170906c10300b006e0df507f52mr8027ejc.501.1649105317561;
+        Mon, 04 Apr 2022 13:48:37 -0700 (PDT)
+Received: from matrix-ESPRIMO-P710 (p54a074e9.dip0.t-ipconnect.de. [84.160.116.233])
+        by smtp.gmail.com with ESMTPSA id h7-20020a1709066d8700b006d4b4d137fbsm4821903ejt.50.2022.04.04.13.48.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Apr 2022 13:48:37 -0700 (PDT)
+Date:   Mon, 4 Apr 2022 22:48:35 +0200
+From:   Philipp Hortmann <philipp.g.hortmann@gmail.com>
+To:     Forest Bond <forest@alittletooquiet.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 1/6] staging: vt6655: Remove unused macros in mac.h
+Message-ID: <78f72d0aa3d1bdddf3c415fd4c458399aa5e7cbf.1649103348.git.philipp.g.hortmann@gmail.com>
+References: <cover.1649103348.git.philipp.g.hortmann@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cover.1649103348.git.philipp.g.hortmann@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The page reclaimer ensures availability of EPC pages across all
-enclaves. In support of this it runs independently from the
-individual enclaves in order to take locks from the different
-enclaves as it writes pages to swap.
+Remove unused macros with do-while(0) loop or CamelCase in mac.h as
+they are not accepted by checkpatch.pl
 
-When needing to load a page from swap an EPC page needs to be
-available for its contents to be loaded into. Loading an existing
-enclave page from swap does not reclaim EPC pages directly if
-none are available, instead the reclaimer is woken when the
-available EPC pages are found to be below a watermark.
-
-When iterating over a large number of pages in an oversubscribed
-environment there is a race between the reclaimer woken up and
-EPC pages reclaimed fast enough for the page operations to proceed.
-
-Ensure there are EPC pages available before attempting to load
-a page that may potentially be pulled from swap into an available
-EPC page.
-
-Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
+Signed-off-by: Philipp Hortmann <philipp.g.hortmann@gmail.com>
 ---
-No changes since V2
+V1 -> V2: Merged two patches 1/7 and 2/7 into one.
+---
+ drivers/staging/vt6655/mac.h | 133 -----------------------------------
+ 1 file changed, 133 deletions(-)
 
-Changes since v1:
-- Reword commit message.
-
- arch/x86/kernel/cpu/sgx/ioctl.c | 6 ++++++
- arch/x86/kernel/cpu/sgx/main.c  | 6 ++++++
- arch/x86/kernel/cpu/sgx/sgx.h   | 1 +
- 3 files changed, 13 insertions(+)
-
-diff --git a/arch/x86/kernel/cpu/sgx/ioctl.c b/arch/x86/kernel/cpu/sgx/ioctl.c
-index 515e1961cc02..f88bc1236276 100644
---- a/arch/x86/kernel/cpu/sgx/ioctl.c
-+++ b/arch/x86/kernel/cpu/sgx/ioctl.c
-@@ -777,6 +777,8 @@ sgx_enclave_restrict_permissions(struct sgx_encl *encl,
- 	for (c = 0 ; c < modp->length; c += PAGE_SIZE) {
- 		addr = encl->base + modp->offset + c;
+diff --git a/drivers/staging/vt6655/mac.h b/drivers/staging/vt6655/mac.h
+index 550dc4da80a9..a1576e006d69 100644
+--- a/drivers/staging/vt6655/mac.h
++++ b/drivers/staging/vt6655/mac.h
+@@ -552,21 +552,6 @@ do {									\
+ 	VNSvOutPortW(iobase + byRegOfs, wData | (wBits));		\
+ } while (0)
  
-+		sgx_direct_reclaim();
-+
- 		mutex_lock(&encl->lock);
+-#define MACvDWordRegBitsOn(iobase, byRegOfs, dwBits)			\
+-do {									\
+-	unsigned long dwData;						\
+-	VNSvInPortD(iobase + byRegOfs, &dwData);			\
+-	VNSvOutPortD(iobase + byRegOfs, dwData | (dwBits));		\
+-} while (0)
+-
+-#define MACvRegBitsOnEx(iobase, byRegOfs, byMask, byBits)		\
+-do {									\
+-	unsigned char byData;						\
+-	VNSvInPortB(iobase + byRegOfs, &byData);			\
+-	byData &= byMask;						\
+-	VNSvOutPortB(iobase + byRegOfs, byData | (byBits));		\
+-} while (0)
+-
+ #define MACvRegBitsOff(iobase, byRegOfs, byBits)			\
+ do {									\
+ 	unsigned char byData;						\
+@@ -581,37 +566,6 @@ do {									\
+ 	VNSvOutPortW(iobase + byRegOfs, wData & ~(wBits));		\
+ } while (0)
  
- 		entry = sgx_encl_load_page(encl, addr);
-@@ -934,6 +936,8 @@ static long sgx_enclave_modify_type(struct sgx_encl *encl,
- 	for (c = 0 ; c < modt->length; c += PAGE_SIZE) {
- 		addr = encl->base + modt->offset + c;
+-#define MACvDWordRegBitsOff(iobase, byRegOfs, dwBits)			\
+-do {									\
+-	unsigned long dwData;						\
+-	VNSvInPortD(iobase + byRegOfs, &dwData);			\
+-	VNSvOutPortD(iobase + byRegOfs, dwData & ~(dwBits));		\
+-} while (0)
+-
+-#define MACvGetCurrRx0DescAddr(iobase, pdwCurrDescAddr)	\
+-	VNSvInPortD(iobase + MAC_REG_RXDMAPTR0,		\
+-		    (unsigned long *)pdwCurrDescAddr)
+-
+-#define MACvGetCurrRx1DescAddr(iobase, pdwCurrDescAddr)	\
+-	VNSvInPortD(iobase + MAC_REG_RXDMAPTR1,		\
+-		    (unsigned long *)pdwCurrDescAddr)
+-
+-#define MACvGetCurrTx0DescAddr(iobase, pdwCurrDescAddr)	\
+-	VNSvInPortD(iobase + MAC_REG_TXDMAPTR0,		\
+-		    (unsigned long *)pdwCurrDescAddr)
+-
+-#define MACvGetCurrAC0DescAddr(iobase, pdwCurrDescAddr)	\
+-	VNSvInPortD(iobase + MAC_REG_AC0DMAPTR,		\
+-		    (unsigned long *)pdwCurrDescAddr)
+-
+-#define MACvGetCurrSyncDescAddr(iobase, pdwCurrDescAddr)	\
+-	VNSvInPortD(iobase + MAC_REG_SYNCDMAPTR,		\
+-		    (unsigned long *)pdwCurrDescAddr)
+-
+-#define MACvGetCurrATIMDescAddr(iobase, pdwCurrDescAddr)	\
+-	VNSvInPortD(iobase + MAC_REG_ATIMDMAPTR,		\
+-		    (unsigned long *)pdwCurrDescAddr)
+-
+ /* set the chip with current BCN tx descriptor address */
+ #define MACvSetCurrBCNTxDescAddr(iobase, dwCurrDescAddr)	\
+ 	VNSvOutPortD(iobase + MAC_REG_BCNDMAPTR,		\
+@@ -622,24 +576,6 @@ do {									\
+ 	VNSvOutPortW(iobase + MAC_REG_BCNDMACTL + 2,		\
+ 		     wCurrBCNLength)
  
-+		sgx_direct_reclaim();
-+
- 		mutex_lock(&encl->lock);
+-#define MACvReadBSSIDAddress(iobase, pbyEtherAddr)		\
+-do {								\
+-	VNSvOutPortB(iobase + MAC_REG_PAGE1SEL, 1);		\
+-	VNSvInPortB(iobase + MAC_REG_BSSID0,			\
+-		    (unsigned char *)pbyEtherAddr);		\
+-	VNSvInPortB(iobase + MAC_REG_BSSID0 + 1,		\
+-		    pbyEtherAddr + 1);				\
+-	VNSvInPortB(iobase + MAC_REG_BSSID0 + 2,		\
+-		    pbyEtherAddr + 2);				\
+-	VNSvInPortB(iobase + MAC_REG_BSSID0 + 3,		\
+-		    pbyEtherAddr + 3);				\
+-	VNSvInPortB(iobase + MAC_REG_BSSID0 + 4,		\
+-		    pbyEtherAddr + 4);				\
+-	VNSvInPortB(iobase + MAC_REG_BSSID0 + 5,		\
+-		    pbyEtherAddr + 5);				\
+-	VNSvOutPortB(iobase + MAC_REG_PAGE1SEL, 0);		\
+-} while (0)
+-
+ #define MACvWriteBSSIDAddress(iobase, pbyEtherAddr)		\
+ do {								\
+ 	VNSvOutPortB(iobase + MAC_REG_PAGE1SEL, 1);		\
+@@ -676,27 +612,6 @@ do {								\
+ 	VNSvOutPortB(iobase + MAC_REG_PAGE1SEL, 0);		\
+ } while (0)
  
- 		entry = sgx_encl_load_page(encl, addr);
-@@ -1129,6 +1133,8 @@ static long sgx_encl_remove_pages(struct sgx_encl *encl,
- 	for (c = 0 ; c < params->length; c += PAGE_SIZE) {
- 		addr = encl->base + params->offset + c;
+-#define MACvWriteEtherAddress(iobase, pbyEtherAddr)		\
+-do {								\
+-	VNSvOutPortB(iobase + MAC_REG_PAGE1SEL, 1);		\
+-	VNSvOutPortB(iobase + MAC_REG_PAR0,			\
+-		     *pbyEtherAddr);				\
+-	VNSvOutPortB(iobase + MAC_REG_PAR0 + 1,		\
+-		     *(pbyEtherAddr + 1));			\
+-	VNSvOutPortB(iobase + MAC_REG_PAR0 + 2,		\
+-		     *(pbyEtherAddr + 2));			\
+-	VNSvOutPortB(iobase + MAC_REG_PAR0 + 3,		\
+-		     *(pbyEtherAddr + 3));			\
+-	VNSvOutPortB(iobase + MAC_REG_PAR0 + 4,		\
+-		     *(pbyEtherAddr + 4));			\
+-	VNSvOutPortB(iobase + MAC_REG_PAR0 + 5,		\
+-		     *(pbyEtherAddr + 5));			\
+-	VNSvOutPortB(iobase + MAC_REG_PAGE1SEL, 0);		\
+-} while (0)
+-
+-#define MACvClearISR(iobase)						\
+-	VNSvOutPortD(iobase + MAC_REG_ISR, IMR_MASK_VALUE)
+-
+ #define MACvStart(iobase)						\
+ 	VNSvOutPortB(iobase + MAC_REG_HOSTCR,				\
+ 		     (HOSTCR_MACEN | HOSTCR_RXON | HOSTCR_TXON))
+@@ -704,18 +619,9 @@ do {								\
+ #define MACvRx0PerPktMode(iobase)					\
+ 	VNSvOutPortD(iobase + MAC_REG_RXDMACTL0, RX_PERPKT)
  
-+		sgx_direct_reclaim();
-+
- 		mutex_lock(&encl->lock);
+-#define MACvRx0BufferFillMode(iobase)					\
+-	VNSvOutPortD(iobase + MAC_REG_RXDMACTL0, RX_PERPKTCLR)
+-
+ #define MACvRx1PerPktMode(iobase)					\
+ 	VNSvOutPortD(iobase + MAC_REG_RXDMACTL1, RX_PERPKT)
  
- 		entry = sgx_encl_load_page(encl, addr);
-diff --git a/arch/x86/kernel/cpu/sgx/main.c b/arch/x86/kernel/cpu/sgx/main.c
-index 6e2cb7564080..545da16bb3ea 100644
---- a/arch/x86/kernel/cpu/sgx/main.c
-+++ b/arch/x86/kernel/cpu/sgx/main.c
-@@ -370,6 +370,12 @@ static bool sgx_should_reclaim(unsigned long watermark)
- 	       !list_empty(&sgx_active_page_list);
- }
+-#define MACvRx1BufferFillMode(iobase)					\
+-	VNSvOutPortD(iobase + MAC_REG_RXDMACTL1, RX_PERPKTCLR)
+-
+-#define MACvRxOn(iobase)						\
+-	MACvRegBitsOn(iobase, MAC_REG_HOSTCR, HOSTCR_RXON)
+-
+ #define MACvReceive0(iobase)						\
+ do {									\
+ 	unsigned long dwData;						\
+@@ -736,9 +642,6 @@ do {									\
+ 		VNSvOutPortD(iobase + MAC_REG_RXDMACTL1, DMACTL_RUN); \
+ } while (0)
  
-+void sgx_direct_reclaim(void)
-+{
-+	if (sgx_should_reclaim(SGX_NR_LOW_PAGES))
-+		sgx_reclaim_pages();
-+}
-+
- static int ksgxd(void *p)
- {
- 	set_freezable();
-diff --git a/arch/x86/kernel/cpu/sgx/sgx.h b/arch/x86/kernel/cpu/sgx/sgx.h
-index b30cee4de903..85cbf103b0dd 100644
---- a/arch/x86/kernel/cpu/sgx/sgx.h
-+++ b/arch/x86/kernel/cpu/sgx/sgx.h
-@@ -86,6 +86,7 @@ static inline void *sgx_get_epc_virt_addr(struct sgx_epc_page *page)
- struct sgx_epc_page *__sgx_alloc_epc_page(void);
- void sgx_free_epc_page(struct sgx_epc_page *page);
+-#define MACvTxOn(iobase)						\
+-	MACvRegBitsOn(iobase, MAC_REG_HOSTCR, HOSTCR_TXON)
+-
+ #define MACvTransmit0(iobase)						\
+ do {									\
+ 	unsigned long dwData;						\
+@@ -759,26 +662,6 @@ do {									\
+ 		VNSvOutPortD(iobase + MAC_REG_AC0DMACTL, DMACTL_RUN); \
+ } while (0)
  
-+void sgx_direct_reclaim(void);
- void sgx_mark_page_reclaimable(struct sgx_epc_page *page);
- int sgx_unmark_page_reclaimable(struct sgx_epc_page *page);
- struct sgx_epc_page *sgx_alloc_epc_page(void *owner, bool reclaim);
+-#define MACvTransmitSYNC(iobase)					\
+-do {									\
+-	unsigned long dwData;						\
+-	VNSvInPortD(iobase + MAC_REG_SYNCDMACTL, &dwData);		\
+-	if (dwData & DMACTL_RUN)					\
+-		VNSvOutPortD(iobase + MAC_REG_SYNCDMACTL, DMACTL_WAKE); \
+-	else								\
+-		VNSvOutPortD(iobase + MAC_REG_SYNCDMACTL, DMACTL_RUN); \
+-} while (0)
+-
+-#define MACvTransmitATIM(iobase)					\
+-do {									\
+-	unsigned long dwData;						\
+-	VNSvInPortD(iobase + MAC_REG_ATIMDMACTL, &dwData);		\
+-	if (dwData & DMACTL_RUN)					\
+-		VNSvOutPortD(iobase + MAC_REG_ATIMDMACTL, DMACTL_WAKE); \
+-	else								\
+-		VNSvOutPortD(iobase + MAC_REG_ATIMDMACTL, DMACTL_RUN); \
+-} while (0)
+-
+ #define MACvTransmitBCN(iobase)					\
+ 	VNSvOutPortB(iobase + MAC_REG_BCNDMACTL, BEACON_READY)
+ 
+@@ -811,9 +694,6 @@ do {									\
+ #define MACvReadMIBCounter(iobase, pdwCounter)			\
+ 	VNSvInPortD(iobase + MAC_REG_MIBCNTR, pdwCounter)
+ 
+-#define MACvPwrEvntDisable(iobase)					\
+-	VNSvOutPortW(iobase + MAC_REG_WAKEUPEN0, 0x0000)
+-
+ #define MACvEnableProtectMD(iobase)					\
+ do {									\
+ 	unsigned long dwOrgValue;					\
+@@ -855,19 +735,6 @@ do {									\
+ 	VNSvOutPortD(iobase + MAC_REG_ENCFG, dwOrgValue);		\
+ } while (0)
+ 
+-#define MACvReadATIMW(iobase, pwCounter)				\
+-	VNSvInPortW(iobase + MAC_REG_AIDATIM, pwCounter)
+-
+-#define MACvWriteATIMW(iobase, wCounter)				\
+-	VNSvOutPortW(iobase + MAC_REG_AIDATIM, wCounter)
+-
+-#define MACvWriteCRC16_128(iobase, byRegOfs, wCRC)		\
+-do {								\
+-	VNSvOutPortB(iobase + MAC_REG_PAGE1SEL, 1);		\
+-	VNSvOutPortW(iobase + byRegOfs, wCRC);		\
+-	VNSvOutPortB(iobase + MAC_REG_PAGE1SEL, 0);		\
+-} while (0)
+-
+ #define MACvGPIOIn(iobase, pbyValue)					\
+ 	VNSvInPortB(iobase + MAC_REG_GPIOCTL1, pbyValue)
+ 
 -- 
 2.25.1
 
