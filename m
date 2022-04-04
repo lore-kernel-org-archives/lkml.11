@@ -2,133 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7291C4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC002C38A2E
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:23:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379818AbiDDVVF (ORCPT
+        id S1379891AbiDDVVL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:21:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44558 "EHLO
+        Mon, 4 Apr 2022 17:21:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379139AbiDDQhY (ORCPT
+        with ESMTP id S1379982AbiDDScI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 12:37:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6C65E094;
-        Mon,  4 Apr 2022 09:35:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 737A960C96;
-        Mon,  4 Apr 2022 16:35:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49A89C34111;
-        Mon,  4 Apr 2022 16:35:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649090126;
-        bh=97AuxegGoUll1qcITUP5BRc/wzaj9s6TR3mxBS6KHjs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dt4ZAHDziKrl6lZcmy9oeTCD8kMvxquz43HyPNvGKwBDaod/CTG6eWy2DNpfVCpV1
-         WILnlVJWtbzOhY9pfZMMXVfElbPStzWuQoquGrm4OhKgoGqVzaaT3Hyoib0IasTPl3
-         OncG1pGznzYyxpJiQDwoqyTBStMODBsNmzwijPsngjE1qtHy+KIitnT2f/NilJ+R6X
-         4fffYBXxZWOgwIotfHbIYu8iMPbEwjtf/Q6TzGDvwklvzGyFModzIRtQzGueIhP2NO
-         7jkAGh1cMYGCWkgmSs27B398o8L4kH9qejkey8h6+5oZB9ZXXz945x6dCSD81ZzDkN
-         id2iFhRwgM9Pw==
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Rob Clark <robdclark@gmail.com>
-Cc:     linux-arm-msm@vger.kernel.org,
+        Mon, 4 Apr 2022 14:32:08 -0400
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D50DB27140;
+        Mon,  4 Apr 2022 11:30:11 -0700 (PDT)
+Received: by mail-pg1-x52a.google.com with SMTP id 125so717879pgc.11;
+        Mon, 04 Apr 2022 11:30:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=ubM6yE8s5KFTTdGWzLX7PCg+ggj3jnfE6br2EOILqJs=;
+        b=SEiruXEDNOqF6ZfpjU0/b1JmMYV0Clzw+Uy/WO0eaXmFX7obSz1S8eHea02bJNY94f
+         7bDnk61uTfJg/72+qdDvineNznaN8dUh5DY2LSKajhmkdEgNvEV0wOveNmsoZ2gCV+5X
+         2GaXX9cjsuXUiE8dAtp1v2MulHsgfz0AlBlQMaKsaQgWjAaFflrWLdaeTI1qRj2dnnRU
+         JzXL27CGQuhH6QQ/qrLfxIr2vAZXU1gvaS7mb9OqhxSwdbVDGSBNuocbFBfFZRDFvW2/
+         cKmGKz0r1KmVm1XhpvsBArxL7shZEtDIHy2DwlzkBKjAX71PpOoJ3t5SB+ppJr91HVfQ
+         riaA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=ubM6yE8s5KFTTdGWzLX7PCg+ggj3jnfE6br2EOILqJs=;
+        b=0UKacWHuEh1rcTSo0nbVFr8KXO7DAshuNO6PUwW5ZqxS47ENz3DM1ysqjjUbrnntlk
+         NzDp1UNVz7w7qI+iyx5UerHJ9Vmt2CO5WV99F+8KSHBNe9sBwMZP/3Hv9o9px05B42n8
+         Fa0nw/Pkzamhxu2jXpdOYcpl+uSq9GwHK8mpZlHQLUJnGLCYjsJ5l+pN0BlKqjVAQ3yD
+         fe1i4GUALqxn8EOhN/G8NAeWsEb4TyK4XDLUvNDoxbUSWS7VdfoM8cb/ZpYD5T7CtQ6s
+         vyiXOyzOnDUoVjZMmPo6TcFe3Av3kC8lOgCTDsS8avoUCngFPEwJIWegaav1D+yM8pZk
+         3QPg==
+X-Gm-Message-State: AOAM532hsbBvDSNf/J10Ngb/zmnn6JPcECI+y0JBKxBiEuafTgv2NNRt
+        JQrKWtJKeFVQby0T5qwBTBB94hAMmxY=
+X-Google-Smtp-Source: ABdhPJzcm1PUVP1ZJTdIm+DBbSl2kycenvTsaA10TaAEjxQt+4tzSjQ3uLkoIDR/uQlgAQQAkdcsWw==
+X-Received: by 2002:a63:cc53:0:b0:372:7d69:49fb with SMTP id q19-20020a63cc53000000b003727d6949fbmr1018357pgi.21.1649097011331;
+        Mon, 04 Apr 2022 11:30:11 -0700 (PDT)
+Received: from localhost.localdomain ([122.161.51.18])
+        by smtp.gmail.com with ESMTPSA id kk11-20020a17090b4a0b00b001c73933d803sm162656pjb.10.2022.04.04.11.30.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Apr 2022 11:30:11 -0700 (PDT)
+From:   Kuldeep Singh <singh.kuldeep87k@gmail.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jonathan Marek <jonathan@marek.ca>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        freedreno@lists.freedesktop.org, Vinod Koul <vkoul@kernel.org>
-Subject: [PATCH v6 08/14] drm/msm/dpu: don't use merge_3d if DSC merge topology is used
-Date:   Mon,  4 Apr 2022 22:04:30 +0530
-Message-Id: <20220404163436.956875-9-vkoul@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220404163436.956875-1-vkoul@kernel.org>
-References: <20220404163436.956875-1-vkoul@kernel.org>
+        Mukesh Savaliya <msavaliy@codeaurora.org>,
+        Akash Asthana <akashast@codeaurora.org>
+Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        Kuldeep Singh <singh.kuldeep87k@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        linux-arm-msm@vger.kernel.org
+Subject: [PATCH v2 2/4] dt-bindings: qcom: geni-se: Update I2C schema reference
+Date:   Mon,  4 Apr 2022 23:59:35 +0530
+Message-Id: <20220404182938.29492-3-singh.kuldeep87k@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220404182938.29492-1-singh.kuldeep87k@gmail.com>
+References: <20220404182938.29492-1-singh.kuldeep87k@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+We now have geni based QUP I2C controller binding in place as
+dt-bindigs/i2c/qcom,i2c-geni-qcom.yaml similar to other controllers,
+update reference in parent schema and while at it, also remove
+properties defined for the controller from common wrapper.
 
-DPU supports different topologies for the case when multiple INTFs are
-being driven by the single phys_enc. The driver defaults to using 3DMux
-in such cases. Don't use it if DSC merge is used instead.
-
-Suggested-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Signed-off-by: Kuldeep Singh <singh.kuldeep87k@gmail.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c      | 16 ++++++++++++++++
- drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.h      |  6 ++++++
- drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys.h |  4 +++-
- 3 files changed, 25 insertions(+), 1 deletion(-)
+v2:
+- s/i2c/I2C
+- s/commown/common
+- Add Krzysztof's R-b tag
+---
+ .../bindings/soc/qcom/qcom,geni-se.yaml       | 26 +------------------
+ 1 file changed, 1 insertion(+), 25 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
-index 4052486f19d8..95d1588f3bb6 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
-@@ -511,6 +511,22 @@ void dpu_encoder_helper_split_config(
- 	}
- }
+diff --git a/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.yaml b/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.yaml
+index 95fcb43675d6..e6073923e03a 100644
+--- a/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.yaml
++++ b/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.yaml
+@@ -128,31 +128,7 @@ patternProperties:
+   "i2c@[0-9a-f]+$":
+     type: object
+     description: GENI serial engine based I2C controller.
+-    $ref: /schemas/i2c/i2c-controller.yaml#
+-
+-    properties:
+-      compatible:
+-        enum:
+-          - qcom,geni-i2c
+-
+-      interrupts:
+-        maxItems: 1
+-
+-      "#address-cells":
+-        const: 1
+-
+-      "#size-cells":
+-        const: 0
+-
+-      clock-frequency:
+-        description: Desired I2C bus clock frequency in Hz.
+-        default: 100000
+-
+-    required:
+-      - compatible
+-      - interrupts
+-      - "#address-cells"
+-      - "#size-cells"
++    $ref: /schemas/i2c/qcom,i2c-geni-qcom.yaml#
  
-+bool dpu_encoder_use_dsc_merge(struct drm_encoder *drm_enc)
-+{
-+	struct dpu_encoder_virt *dpu_enc = to_dpu_encoder_virt(drm_enc);
-+	int i, intf_count = 0, num_dsc = 0;
-+
-+	for (i = 0; i < MAX_PHYS_ENCODERS_PER_VIRTUAL; i++)
-+		if (dpu_enc->phys_encs[i])
-+			intf_count++;
-+
-+	/* See dpu_encoder_get_topology, we only support 2:2:1 topology */
-+	if (dpu_enc->dsc)
-+		num_dsc = 2;
-+
-+	return (num_dsc > 0) && (num_dsc > intf_count);
-+}
-+
- static struct msm_display_topology dpu_encoder_get_topology(
- 			struct dpu_encoder_virt *dpu_enc,
- 			struct dpu_kms *dpu_kms,
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.h b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.h
-index ef873e5285a0..084c5265d7e5 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.h
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.h
-@@ -172,4 +172,10 @@ int dpu_encoder_get_linecount(struct drm_encoder *drm_enc);
-  */
- int dpu_encoder_get_vsync_count(struct drm_encoder *drm_enc);
- 
-+/**
-+ * dpu_encoder_use_dsc_merge - returns true if the encoder uses DSC merge topology.
-+ * @drm_enc:    Pointer to previously created drm encoder structure
-+ */
-+bool dpu_encoder_use_dsc_merge(struct drm_encoder *drm_enc);
-+
- #endif /* __DPU_ENCODER_H__ */
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys.h b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys.h
-index 4842070fdfa8..b5ad43b8a19b 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys.h
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys.h
-@@ -314,8 +314,10 @@ static inline enum dpu_3d_blend_mode dpu_encoder_helper_get_3d_blend_mode(
- 
- 	dpu_cstate = to_dpu_crtc_state(phys_enc->parent->crtc->state);
- 
-+	/* Use merge_3d unless DSC MERGE topology is used */
- 	if (phys_enc->split_role == ENC_ROLE_SOLO &&
--	    dpu_cstate->num_mixers == CRTC_DUAL_MIXERS)
-+	    dpu_cstate->num_mixers == CRTC_DUAL_MIXERS &&
-+	    !dpu_encoder_use_dsc_merge(phys_enc->parent))
- 		return BLEND_3D_H_ROW_INT;
- 
- 	return BLEND_3D_NONE;
+   "serial@[0-9a-f]+$":
+     type: object
 -- 
-2.34.1
+2.25.1
 
