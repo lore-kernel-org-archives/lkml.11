@@ -2,150 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F3D3C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 11:26:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F758C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 11:31:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359554AbiDDL23 (ORCPT
+        id S1359502AbiDDLdN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 07:28:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34666 "EHLO
+        Mon, 4 Apr 2022 07:33:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235756AbiDDL2Z (ORCPT
+        with ESMTP id S235756AbiDDLdL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 07:28:25 -0400
-Received: from metanate.com (unknown [IPv6:2001:8b0:1628:5005::111])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60B78286F4;
-        Mon,  4 Apr 2022 04:26:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=metanate.com; s=stronger; h=In-Reply-To:Content-Type:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description; bh=LnoUpy8pxIXgWxR6IblJWmslcB05NK68pxcDoWJlSfk=; b=DS0Ou
-        KQrIxO23qLzQ+DvY1bPnIzGjxCX+gnmtE3eBpqcpIXxFZjFSi0XgG2mnhdIc4Ik7fv8qpH+1Rgp+N
-        bQAnGfv54pnAWgdwYR1UMrCb9NdGt+QiiVIqgiNUo92tROAqdINZ3OmjptNRJAHgYZjzg5ApcVHgF
-        8qi5gA8zjgnPzlvpFLmA4qADwJOYI+N1gZVF1k9AmJVnnNoySJHIcnq0XUMJuDM7rDIdn+zyxYOyP
-        WRSJp0L+JBAhncHRrGKPhcBvUAs4WOLn31lJ2K4mOzr81hAXgB6yJ+DI8y9+qs/yI9COakF74xcid
-        XUYRM30D38syFfuDQtjFlGRJoQvXw==;
-Received: from [81.174.171.191] (helo=donbot)
-        by email.metanate.com with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <john@metanate.com>)
-        id 1nbKqe-0004ue-SJ; Mon, 04 Apr 2022 12:26:16 +0100
-Date:   Mon, 4 Apr 2022 12:26:15 +0100
-From:   John Keeping <john@metanate.com>
-To:     Corentin Labbe <clabbe@baylibre.com>
-Cc:     heiko@sntech.de, herbert@gondor.apana.org.au, krzk+dt@kernel.org,
-        robh+dt@kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-crypto@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-rockchip@lists.infradead.org
-Subject: Re: [PATCH v4 06/33] crypto: rockchip: add fallback for cipher
-Message-ID: <YkrV1z5GPVXc+d/X@donbot>
-References: <20220401201804.2867154-1-clabbe@baylibre.com>
- <20220401201804.2867154-7-clabbe@baylibre.com>
+        Mon, 4 Apr 2022 07:33:11 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 382AC3C732;
+        Mon,  4 Apr 2022 04:31:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649071875; x=1680607875;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=ErXKJwnxX8hclXQqvYKDIF2ZZ3KufEcKMWs1slKVfPY=;
+  b=aqWWVANRfW6tRnubDWdO6j7jy0kxKl8xbvrBYM3sb5UJWB9VkrF7AeTM
+   rSxVJ8PFembyJom9T3RiOFtLPXdAiZoGxZ5MUeEhRPoyAPz5bkGwuI4ht
+   Ijev9M+w2dM2ZFTkRyrJ9cjxeJLJnMtvnbKYrJyLurkEAZBE169fIVe77
+   R9313lQ1DcxqcDW3FdJIwpUaCkkBZ/6Y/IRsOFz5oc6mw2GLJ/qkpx66y
+   TX9qUwnC4CWqob1avAVXWWoU7Twdt9muazRRpVX6kGf5esjDWrEfchcJe
+   uLvwuduWMgTV7Q5PEJ6gL6UC96wRMEt7KvO+L1vKxPqiSpptUmbj7QyEO
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10306"; a="242634145"
+X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
+   d="scan'208";a="242634145"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 04:31:14 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
+   d="scan'208";a="556127945"
+Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
+  by fmsmga007.fm.intel.com with ESMTP; 04 Apr 2022 04:31:12 -0700
+Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nbKvP-00020N-Ri;
+        Mon, 04 Apr 2022 11:31:11 +0000
+Date:   Mon, 4 Apr 2022 19:30:47 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Masahiro Yamada <masahiroy@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kbuild@vger.kernel.org, linux-arch@vger.kernel.org,
+        Masahiro Yamada <masahiroy@kernel.org>
+Subject: Re: [PATCH 7/8] posix_types.h: add __kernel_uintptr_t to UAPI
+ posix_types.h
+Message-ID: <202204041919.bIUKxOch-lkp@intel.com>
+References: <20220404061948.2111820-8-masahiroy@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220401201804.2867154-7-clabbe@baylibre.com>
-X-Authenticated: YES
+In-Reply-To: <20220404061948.2111820-8-masahiroy@kernel.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 01, 2022 at 08:17:37PM +0000, Corentin Labbe wrote:
-> The hardware does not handle 0 size length request, let's add a
-> fallback.
-> Furthermore fallback will be used for all unaligned case the hardware
-> cannot handle.
-> 
-> Fixes: ce0183cb6464b ("crypto: rockchip - switch to skcipher API")
-> Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
-> ---
-> diff --git a/drivers/crypto/rockchip/rk3288_crypto_skcipher.c b/drivers/crypto/rockchip/rk3288_crypto_skcipher.c
-> index bbd0bf52bf07..c6b601086c04 100644
-> --- a/drivers/crypto/rockchip/rk3288_crypto_skcipher.c
-> +++ b/drivers/crypto/rockchip/rk3288_crypto_skcipher.c
-> @@ -13,6 +13,71 @@
->  
->  #define RK_CRYPTO_DEC			BIT(0)
->  
-> +static int rk_cipher_need_fallback(struct skcipher_request *req)
-> +{
-> +	struct scatterlist *sgs, *sgd;
-> +	unsigned int todo, len;
-> +	unsigned int bs = crypto_skcipher_blocksize(tfm);
-> +
-> +	if (!req->cryptlen)
-> +		return true;
-> +
-> +	len = req->cryptlen;
-> +	sgs = req->src;
-> +	while (sgs) {
-> +		if (!IS_ALIGNED(sgs->offset, sizeof(u32))) {
-> +			return true;
-> +		}
-> +		todo = min(len, sgs->length);
-> +		if (todo % bs) {
-> +			return true;
-> +		}
-> +		len -= todo;
-> +		sgs = sg_next(sgs);
-> +	}
-> +	len = req->cryptlen;
-> +	sgd = req->dst;
-> +	while (sgd) {
-> +		if (!IS_ALIGNED(sgd->offset, sizeof(u32))) {
-> +			return true;
-> +		}
-> +		todo = min(len, sgd->length);
-> +		if (todo % bs) {
-> +			return true;
-> +		}
-> +		len -= todo;
-> +		sgd = sg_next(sgd);
-> +	}
-> +	sgs = req->src;
-> +	sgd = req->dst;
-> +	while (sgs && sgd) {
-> +		if (sgs->length != sgd->length)
+Hi Masahiro,
 
-This check still seems to be triggering the fallback when it is not
-needed.
+I love your patch! Perhaps something to improve:
 
-I've done some testing with fscrypt and the series is working great, but
-the stats show the fallback triggering more than I'd expect.  With some
-extra logging here I see output like:
+[auto build test WARNING on linus/master]
+[also build test WARNING on linux/master v5.18-rc1 next-20220404]
+[cannot apply to soc/for-next drm/drm-next powerpc/next uclinux-h8/h8300-next s390/features arnd-asm-generic/master]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-	sgs->length=32 sgd->length=255 req->cryptlen=16
+url:    https://github.com/intel-lab-lkp/linux/commits/Masahiro-Yamada/UAPI-make-more-exported-headers-self-contained-and-put-them-into-test-coverage/20220404-142226
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git be2d3ecedd9911fbfd7e55cc9ceac5f8b79ae4cf
+config: i386-randconfig-a006 (https://download.01.org/0day-ci/archive/20220404/202204041919.bIUKxOch-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project c4a1b07d0979e7ff20d7d541af666d822d66b566)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/e8154d995f34b79843e473d85645fb543d554e7f
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Masahiro-Yamada/UAPI-make-more-exported-headers-self-contained-and-put-them-into-test-coverage/20220404-142226
+        git checkout e8154d995f34b79843e473d85645fb543d554e7f
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash sound/soc/fsl/
 
-In this case sgs and sgd are both the first (and only) entries in the
-list.  Should this take account of req->cryptlen as well?
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-In fact, can't this whole function be folded into one loop over src and
-dst at the same time, since all the checks must be the same?  Something
-like this (untested):
+All warnings (new ones prefixed by >>):
 
-	while (sgs && sgd) {
-		if (!IS_ALIGNED(sgs->offset, sizeof(u32)) ||
-		    !IS_ALIGNED(sgd->offset, sizeof(u32)))
-			return true;
+>> sound/soc/fsl/imx-audmux.c:148:40: warning: format specifies type 'unsigned long' but the argument has type 'uintptr_t' (aka 'unsigned int') [-Wformat]
+                   snprintf(buf, sizeof(buf), "ssi%lu", i);
+                                                  ~~~   ^
+                                                  %u
+   1 warning generated.
 
-		todo = min(len, sgs->length);
-		if (todo % bs)
-			return true;
 
-		if (sgd->length < todo)
-			return true;
+vim +148 sound/soc/fsl/imx-audmux.c
 
-		len -= todo;
-		sgs = sg_next(sgs);
-		sgd = sg_next(sgd);
-	}
+7b4e08a77f0cbf arch/arm/plat-mxc/audmux-v2.c Mark Brown         2010-01-11  139  
+b8909783a22b4f sound/soc/fsl/imx-audmux.c    Lars-Peter Clausen 2014-04-24  140  static void audmux_debugfs_init(void)
+7b4e08a77f0cbf arch/arm/plat-mxc/audmux-v2.c Mark Brown         2010-01-11  141  {
+e5f89768e9bc1f sound/soc/fsl/imx-audmux.c    Mark Brown         2014-08-01  142  	uintptr_t i;
+7b4e08a77f0cbf arch/arm/plat-mxc/audmux-v2.c Mark Brown         2010-01-11  143  	char buf[20];
+7b4e08a77f0cbf arch/arm/plat-mxc/audmux-v2.c Mark Brown         2010-01-11  144  
+7b4e08a77f0cbf arch/arm/plat-mxc/audmux-v2.c Mark Brown         2010-01-11  145  	audmux_debugfs_root = debugfs_create_dir("audmux", NULL);
+7b4e08a77f0cbf arch/arm/plat-mxc/audmux-v2.c Mark Brown         2010-01-11  146  
+409b78cc17a4a3 sound/soc/fsl/imx-audmux.c    Torben Hohn        2012-07-18  147  	for (i = 0; i < MX31_AUDMUX_PORT7_SSI_PINS_7 + 1; i++) {
+e5f89768e9bc1f sound/soc/fsl/imx-audmux.c    Mark Brown         2014-08-01 @148  		snprintf(buf, sizeof(buf), "ssi%lu", i);
+227ab8baa15bdd sound/soc/fsl/imx-audmux.c    Greg Kroah-Hartman 2019-06-14  149  		debugfs_create_file(buf, 0444, audmux_debugfs_root,
+227ab8baa15bdd sound/soc/fsl/imx-audmux.c    Greg Kroah-Hartman 2019-06-14  150  				    (void *)i, &audmux_debugfs_fops);
+7b4e08a77f0cbf arch/arm/plat-mxc/audmux-v2.c Mark Brown         2010-01-11  151  	}
+7b4e08a77f0cbf arch/arm/plat-mxc/audmux-v2.c Mark Brown         2010-01-11  152  }
+3bc34a6143359d arch/arm/plat-mxc/audmux.c    Richard Zhao       2012-03-05  153  
 
-	if (len)
-		return true;
-
-> +			return true;
-> +		sgs = sg_next(sgs);
-> +		sgd = sg_next(sgd);
-> +	}
-> +	return false;
-> +}
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
