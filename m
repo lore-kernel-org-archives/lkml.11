@@ -2,130 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C457C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:37:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A86DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:38:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383169AbiDDVc6 (ORCPT
+        id S1383337AbiDDVdV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:32:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47504 "EHLO
+        Mon, 4 Apr 2022 17:33:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380145AbiDDTBd (ORCPT
+        with ESMTP id S1379310AbiDDQ7T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 15:01:33 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 010C624598;
-        Mon,  4 Apr 2022 11:59:36 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id n6-20020a17090a670600b001caa71a9c4aso227007pjj.1;
-        Mon, 04 Apr 2022 11:59:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=oMVaKBgzoQqc7gxkYgb60MlXgXZZVMwR1kc99VQvjLA=;
-        b=KLeLuThRs2MiFPARUNGy9/wBt8j9oC4NUv6OA1qkh3wwKwWqn1v2WyHaHbvNXtD81r
-         hYeMB992L8FGwLeeJF1kmQQpQATlZpit/BeXgxxOM7Py4pf+9zG3UGbFG6RLkP/VbOGq
-         Rf/m+hXlWg8JGM5Jh78VeO/JhNKm/mL2HaGt9eflIiQjLHgvYzqpI+3EwrASr1zzNsWR
-         XjQ8MdY6p9tlCbundm5SciMoRUGjammmsPomk1CAqLqrX08sAU0fWqHUEVt4NoYtgG4m
-         hcmR4RFRoEtQCNFGUZQUh6lGGfHEqcAy8WF70FfMglzOyQNApCqTtGhwpyCVCcagPntV
-         0s0A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=oMVaKBgzoQqc7gxkYgb60MlXgXZZVMwR1kc99VQvjLA=;
-        b=cFX0QwakqoWrTScEuIVaReSAvInGxNB2lW0JRRp4GhXRmNJFtp7bVh5DBzYUzXiZ3O
-         rz/54rbMvRgkajXUo+RkbStUqjWyGBoJnro6mV+QQvsuuRhkqI0UDEsP3mUqCytD9kHk
-         FmWxa/NBaIPtFYFyvDWjde6elXFIu3y9NeGqaJ8OI76EHVu5PnOGojJ7I93rFyv/mzyy
-         ECYKcPUovUxF/gYuGUAUTK0KExYDxfyVZzkAqvKiKfMb7ewRXQu/NurYdWpDZ630x0Xw
-         y7s9lOf3W+vV4ZbFPz2G7v0efcjM/J1+bxYBgsONjOrGoQ0Dx76EsUZ/QSHfq4WFw9Ic
-         pHCA==
-X-Gm-Message-State: AOAM530vVsUpVJVDDzCEoc1ez/6IZcZH7Qst+TpN9ukv+B37t9p5rajU
-        h8bpUUxNgbzlDUxjaJC+eks=
-X-Google-Smtp-Source: ABdhPJyoHAxIXDgPuzQYSYXmM0MUfvH0ZIPUhBbJtiYgDk4sxbS9KpnJ46j0O8SLg92GcaWMP+hUWw==
-X-Received: by 2002:a17:902:7245:b0:156:20aa:1534 with SMTP id c5-20020a170902724500b0015620aa1534mr1450307pll.94.1649098776500;
-        Mon, 04 Apr 2022 11:59:36 -0700 (PDT)
-Received: from [192.168.66.3] (p912131-ipoe.ipoe.ocn.ne.jp. [153.243.13.130])
-        by smtp.gmail.com with ESMTPSA id f16-20020a056a001ad000b004fb358ffe86sm13116733pfv.137.2022.04.04.11.59.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 04 Apr 2022 11:59:35 -0700 (PDT)
-Message-ID: <91357075-d8d0-fc0b-5264-4f5cfe368250@gmail.com>
-Date:   Tue, 5 Apr 2022 03:59:30 +0900
+        Mon, 4 Apr 2022 12:59:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBD8A3B3EC;
+        Mon,  4 Apr 2022 09:57:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8988160C95;
+        Mon,  4 Apr 2022 16:57:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 235B7C2BBE4;
+        Mon,  4 Apr 2022 16:57:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649091441;
+        bh=3DwgQQibm4QtCGLBPHzzEvuy5aoVnSuQo3AjjdM3vbs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=fk4AO+Sm8xS1TVN83Ht+dupzgBCUyMwmk3BdxRedx7gSUjUC8tNpe6fkePJnDCgvn
+         6z1ffAw+tRmbJc42ieFu4+y8g6Py2fjyb6A9BWRheaeI2tn5z4tAHTbLbEp2080+S9
+         CxB1WsVq5EIoeUe1he75gyGAxOSSKUfgy6CHbfw+TkSwcXK04OcBTqJ0zH0UGN8jud
+         gmLhXFq4Iv4cp4M9T+2ayVMUt/M0PSzt/xTjSrezEkmuwfcU4AMwGoj8W8UL1mjetC
+         QdQOK6sowskP4tRwiSnLlB0DFDguDCHON0Eg949oEq3JMuR6oVLAgcBK5/sITPY06j
+         QtceSyWGBreOw==
+Date:   Mon, 4 Apr 2022 09:57:19 -0700
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Naresh Kamboju <naresh.kamboju@linaro.org>
+Cc:     Linux-Next Mailing List <linux-next@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        lkft-triage@lists.linaro.org, regressions@lists.linux.dev,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Guo Ren <guoren@linux.alibaba.com>,
+        Guo Ren <guoren@kernel.org>,
+        Palmer Dabbelt <palmer@rivosinc.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>
+Subject: Re: [next] riscv: Linux next-20220404 riscv defconfig builds failed.
+Message-ID: <Yksjb9Mkq658k4YJ@dev-arch.thelio-3990X>
+References: <CA+G9fYu_ZHOeOPDiwzXGL6Re8aFYW3K+JSL2Dozw=VHwaUFxyQ@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] Revert "ACPI: processor: idle: Only flush cache on
- entering C3"
-Content-Language: en-US
-To:     "Rafael J. Wysocki" <rafael@kernel.org>
-Cc:     "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Kuppuswamy Sathyanarayanan <knsathya@kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Tony Luck <tony.luck@intel.com>,
-        the arch/x86 maintainers <x86@kernel.org>
-References: <20220403062322.3168-1-akihiko.odaki@gmail.com>
- <CAJZ5v0gaRr-r8VFCEGSP1nTX0CwrOi35DXZB5Z8A9tiLufNxPg@mail.gmail.com>
- <4d6307d0-cd67-dfb2-6d6d-2f37bf4a271b@gmail.com>
- <CAJZ5v0gu4VsC7P6276p=S3ZyOg-BWP_dG6rzou2GDYA4TTMsSw@mail.gmail.com>
-From:   Akihiko Odaki <akihiko.odaki@gmail.com>
-In-Reply-To: <CAJZ5v0gu4VsC7P6276p=S3ZyOg-BWP_dG6rzou2GDYA4TTMsSw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+G9fYu_ZHOeOPDiwzXGL6Re8aFYW3K+JSL2Dozw=VHwaUFxyQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/04/05 3:56, Rafael J. Wysocki wrote:
-> On Mon, Apr 4, 2022 at 8:25 PM Akihiko Odaki <akihiko.odaki@gmail.com> wrote:
->>
->> On 2022/04/05 3:13, Rafael J. Wysocki wrote:
->>> On Sun, Apr 3, 2022 at 8:25 AM Akihiko Odaki <akihiko.odaki@gmail.com> wrote:
->>>>
->>>> This reverts commit 87ebbb8c612b1214f227ebb8f25442c6d163e802.
->>>>
->>>> ACPI processor power states can be transitioned in two distinct
->>>> situations: 1. when CPU goes idle and 2. before CPU goes offline
->>>> ("playing dead") to suspend or hibernate. Case 1 is handled by
->>>> acpi_idle_enter or acpi_idle_enter_s2idle. Case 2 is handled by
->>>> acpi_idle_play_dead.
->>>>
->>>> It is necessary to flush CPU caches in case 2 even if it is not
->>>> required to transit ACPI processor power states as CPU will go
->>>> offline soon. However, the reverted commit incorrectly removed CPU
->>>> cache flushing in such a condition.
->>>
->>> I think what you mean is that the CPU cache must always be flushed in
->>> acpi_idle_play_dead(), regardless of the target C-state that is going
->>> to be requested, because this is likely to be part of a CPU offline
->>> procedure or preparation for entering a system-wide sleep state and
->>> the stale cache contents may lead to problems going forward, for
->>> example when the CPU is taken back online.
->>>
->>> If so, I will put the above information into the patch changelog.
->>
->> I guess it is causing problems because the dirty caches will not get
->> written back and the RAM becomes stale if they are not flushed. From my
->> understanding, the CPU should have an empty cache and read back contents
->> from RAM when it is taken back online.
+On Mon, Apr 04, 2022 at 03:28:41PM +0530, Naresh Kamboju wrote:
+> Linux next-20220404 riscv defconfig builds failed.
 > 
-> OK, please see if the changelog I've added to the patch is looking good:
+> Regressions found on riscv:
+>    - riscv-riscv-clang-14-defconfig
+>    - riscv-riscv-gcc-10-defconfig
+>    - riscv-riscv-clang-13-defconfig
+>    - riscv-riscv-clang-12-defconfig
+>    - riscv-riscv-clang-11-defconfig
+>    - riscv-riscv-gcc-11-defconfig
+>    - riscv-riscv-gcc-8-defconfig
+>    - riscv-riscv-gcc-9-defconfig
+>    - riscv-riscv-clang-nightly-defconfig
 > 
-> https://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git/commit/?h=bleeding-edge&id=dfbba2518aac4204203b0697a894d3b2f80134d3
+> 
+> arch/riscv/kernel/compat_signal.c:7:10: fatal error:
+> linux/tracehook.h: No such file or directory
+>   7 | #include <linux/tracehook.h>
+>     |          ^~~~~~~~~~~~~~~~~~~
+> compilation terminated.
+> make[3]: *** [scripts/Makefile.build:289:
+> arch/riscv/kernel/compat_signal.o] Error 1
 
-It looks good for me.
+For what it's worth, I also see:
 
-Thanks,
-Akihiko Odaki
+$ make -skj"$(nproc)" ARCH=riscv CROSS_COMPILE=riscv64-linux-gnu- defconfig all
+arch/riscv/kernel/compat_vdso/compat_vdso.lds.S:3:10: fatal error: ../vdso/vdso.lds.S: No such file or directory
+    3 | #include <../vdso/vdso.lds.S>
+      |          ^~~~~~~~~~~~~~~~~~~~
+compilation terminated.
+make[2]: *** [scripts/Makefile.build:462: arch/riscv/kernel/compat_vdso/compat_vdso.lds] Error 1
+arch/riscv/kernel/compat_vdso/rt_sigreturn.S:3:10: fatal error: ../vdso/rt_sigreturn.S: No such file or directory
+    3 | #include <../vdso/rt_sigreturn.S>
+      |          ^~~~~~~~~~~~~~~~~~~~~~~~
+compilation terminated.
+arch/riscv/kernel/compat_vdso/note.S:3:10: fatal error: ../vdso/note.S: No such file or directory
+    3 | #include <../vdso/note.S>
+      |          ^~~~~~~~~~~~~~~~
+compilation terminated.
+arch/riscv/kernel/compat_vdso/getcpu.S:3:10: fatal error: ../vdso/getcpu.S: No such file or directory
+    3 | #include <../vdso/getcpu.S>
+      |          ^~~~~~~~~~~~~~~~~~
+compilation terminated.
+make[2]: *** [arch/riscv/kernel/compat_vdso/Makefile:43: arch/riscv/kernel/compat_vdso/rt_sigreturn.o] Error 1
+make[2]: *** [arch/riscv/kernel/compat_vdso/Makefile:43: arch/riscv/kernel/compat_vdso/note.o] Error 1
+make[2]: *** [arch/riscv/kernel/compat_vdso/Makefile:43: arch/riscv/kernel/compat_vdso/getcpu.o] Error 1
+arch/riscv/kernel/compat_vdso/flush_icache.S:3:10: fatal error: ../vdso/flush_icache.S: No such file or directory
+    3 | #include <../vdso/flush_icache.S>
+      |          ^~~~~~~~~~~~~~~~~~~~~~~~
+compilation terminated.
+make[2]: *** [arch/riscv/kernel/compat_vdso/Makefile:43: arch/riscv/kernel/compat_vdso/flush_icache.o] Error 1
+
+I am guessing this code was never tested with $(srctree) == $(objtree).
+
+Cheers,
+Nathan
