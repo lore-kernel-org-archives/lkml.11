@@ -2,272 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93C98C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 14:45:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0296C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 14:45:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378227AbiDDOqz (ORCPT
+        id S1378232AbiDDOrA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 10:46:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59704 "EHLO
+        Mon, 4 Apr 2022 10:47:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379104AbiDDOoS (ORCPT
+        with ESMTP id S1378247AbiDDOmv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 10:44:18 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9FE61EECC
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 07:39:25 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id h4so14777530wrc.13
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 07:39:25 -0700 (PDT)
+        Mon, 4 Apr 2022 10:42:51 -0400
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5DB340A2F
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 07:37:15 -0700 (PDT)
+Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 234DlLQL001019;
+        Mon, 4 Apr 2022 14:37:11 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : subject :
+ date : message-id : references : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=corp-2021-07-09;
+ bh=ALBrevdHJUjszYt9Gr9p7ExUeyPxC6eupHjMVzGUNcw=;
+ b=HeuwVWvZyfaBIm5a6r4Mt1kmZ9nz+N6RUyPQy9v6uV+tovTrK/LXNPIu8iBXRXLAt9L7
+ S6HtZNYdicLUh4NdTPC59dLV/hLdto/SG/FmJhSojaVqz1OKxbsUUyEb2D3c3DSkGNUm
+ VdDm1KRtb2eO5tkNIarKxM0rW07NDjf8e3DhbviauyG8LVKnCl1Jm4VnU6j4bvZVQ8Jv
+ yAwCDTd6/iOFUNS0wSODs8umnfdgMPcm8ULZWWFnZNbO6ULeKEZQxPuyv+zJ3+EA6Bqx
+ w3n3Yh0NYjiQZefuzqJaiESCNJcggeNdRQnqlHz2umANTvWLTpllWlNJxFj78Wv9CYUg tA== 
+Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3f6e3skbpv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 04 Apr 2022 14:37:11 +0000
+Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 234Eajob011889;
+        Mon, 4 Apr 2022 14:37:10 GMT
+Received: from nam11-co1-obe.outbound.protection.outlook.com (mail-co1nam11lp2177.outbound.protection.outlook.com [104.47.56.177])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3f6cx2gw9p-8
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 04 Apr 2022 14:37:10 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=GZJACXK49daSPMJIqgdlgrHm8O9dp9IyV8d2iT0uPx7SgfxAKan6ru3t5I4CetsC7ovF/VZRfXVmS+bhJ0uZCy+PXsC8e3IijtHe5F1G7ipQb93nJb2EDYC7ut0h81CWfzvP+z1PGqSfEUd8i95RiPRNHsDuwW+C++Fw7uUPrPf4vs9Umrp0zEtNoS+D+tNnQ/UuEcE3wBTVwSOKE+332N5pLjcJGIju5a6v/uHMTfuvkfxwCMuklmGV2PUzA2mBarNstlo/xtuIbeDfrxkcK5uKcY70nK3HsEv9oUj8E8FixieZRtNwaGP3OMQBGNMy3sOAEpkJBgroW254ucPeeg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ALBrevdHJUjszYt9Gr9p7ExUeyPxC6eupHjMVzGUNcw=;
+ b=D5JRcfMaH6IXcJBtNgC2bEa1UykpW81nZ8jPg1S/yIfEwOMCUbLeFsqs4SGUn16keHOv9/B476r7PcOYysh6COXCmLFqu4DJrnbbeDCA/W5PvjVe0XOYJQpDzOyp9TJ3qGlfI5YfWDw5rf18Odb4txkLhNWyR3gr9rdrgTgOThwyQGxkcdIWYM3y7MSGN/9pDxIDpH331dchIyagTHmecQOCCGDccuHPlBQZ2t3663KEXcobnWzFP5DAcch8oxHAV/oUMjjpRE44LjfVdhhXysx7EQAX8OjVFBdlmG6C4iZHmqfHeYgGxEUxngo+YmS/ODHyNpcavQZW9UR/YDuoaQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4e0THtH7HznDcWSwiMPH5m54e1RQzNhsqL65CUDNWCc=;
-        b=m0FPiCI/2iSJfaW0JLY1BQ9yaPDiWcVCMxC48R1jFyV2Uo2PXe6Jb59KM+IefL9Fzg
-         N9jM86q5XZM2sIY2NZ9YlzvheAs1NPUjPPEvknZo1dQeLCydt+xvhGDxPRnyV0/qE/jJ
-         eUYo3lSpV7S8M9QddHSnBde1ZGqO5c7q5u0CJudSNTfWONtA9zxQZ1tZRyyXDplUjYt9
-         l7e1TXq50hZRaQO7tAka/ww/U+bK+witTmF7RZKjO3x5mVMbr2xgfV4cBA0btVqK2q3K
-         et3nYXPGsOxW1VTIzDeAujQSghd5ZiokrlZk3h18kotHEAPxk68uU+qGVXIMAGiX46ui
-         byiA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4e0THtH7HznDcWSwiMPH5m54e1RQzNhsqL65CUDNWCc=;
-        b=Dh2Wfk67bQD/Rvx3s4At9vFK2CTvGwFa6nOijMcwCLg3Fv1tVA6ypwDS1ZFa5q7ymP
-         bhjFHSvvnDArkj504cHQnWIEwzkVFuyskkjVzGsmQmusLwygMy5Z8wu54FORmt+ul9m6
-         mCp1hckgvE2OJ8JNKfkkQIB+i/orpoopX4MNoeuuaxhZzfMuGnmB9JdkSbhKDff/CzEc
-         aolQdjfm+2KeZAMS2MdzeFfJO1TLiHTlUqEXlc9FgUGFsiQ+S10J4nY7a28gaIx3Ie6C
-         f+xYjj1KFwaX7ypCu5rRNbw3p4zVigollZnXUPcZixpnQiI7QNTuJB0F3u4oo8A6IKeY
-         66XQ==
-X-Gm-Message-State: AOAM5338k13bnii8jPc2cXayNHHFdO6jFtf6aa/yInVstVT6GZ3onBuO
-        x7v68EYcMzxVK7AiW+i+3kKeTpZfgcQ=
-X-Google-Smtp-Source: ABdhPJz/cBmXoYIm2iieMeipG7my0PpjLNQJYJJOye42uAfdsxGGcgrk3YvBbBAk1w64GHs+C+Fq9w==
-X-Received: by 2002:a05:6000:1687:b0:205:80b7:afca with SMTP id y7-20020a056000168700b0020580b7afcamr16584445wrd.665.1649083164246;
-        Mon, 04 Apr 2022 07:39:24 -0700 (PDT)
-Received: from alaa-emad ([41.42.174.117])
-        by smtp.gmail.com with ESMTPSA id g6-20020a5d5406000000b001f049726044sm9447984wrv.79.2022.04.04.07.39.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 07:39:23 -0700 (PDT)
-From:   Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
-To:     outreachy@lists.linux.dev
-Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
-        gregkh@linuxfoundation.org, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org, eng.alaamohamedsoliman.am@gmail.com
-Subject: [PATCH 1/2] staging: r8188eu: add space around arithmatic sign
-Date:   Mon,  4 Apr 2022 16:39:16 +0200
-Message-Id: <860d8e222e2b695ce5cb4f48aa46a7f66e05d8e4.1649082939.git.eng.alaamohamedsoliman.am@gmail.com>
-X-Mailer: git-send-email 2.35.1
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ALBrevdHJUjszYt9Gr9p7ExUeyPxC6eupHjMVzGUNcw=;
+ b=C8XHiWAgF6eel9WYOk595QS0YMn/hAQQ6ozLszmSusBy9xOAvTNqawDlpIeTklAQ4JlfbWRl+5tjfaK1NR+F2tMJUrKr6chCCTwPk2asXAEpM2Rf2fX0EvNrlmWSzO4CU4E7w4X1M9fJ33UjrN1/d5meDLwsp7b9yM2n9bwmHuU=
+Received: from SN6PR10MB3022.namprd10.prod.outlook.com (2603:10b6:805:d8::25)
+ by SJ0PR10MB5742.namprd10.prod.outlook.com (2603:10b6:a03:3ed::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Mon, 4 Apr
+ 2022 14:37:07 +0000
+Received: from SN6PR10MB3022.namprd10.prod.outlook.com
+ ([fe80::74fd:df41:4c93:24a5]) by SN6PR10MB3022.namprd10.prod.outlook.com
+ ([fe80::74fd:df41:4c93:24a5%6]) with mapi id 15.20.5123.031; Mon, 4 Apr 2022
+ 14:37:07 +0000
+From:   Liam Howlett <liam.howlett@oracle.com>
+To:     "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH v7 67/70] riscv: Use vma iterator for vdso
+Thread-Topic: [PATCH v7 67/70] riscv: Use vma iterator for vdso
+Thread-Index: AQHYSDFMJUy5BS2Cm0abIY1qdEaJyg==
+Date:   Mon, 4 Apr 2022 14:35:58 +0000
+Message-ID: <20220404143501.2016403-68-Liam.Howlett@oracle.com>
+References: <20220404143501.2016403-1-Liam.Howlett@oracle.com>
+In-Reply-To: <20220404143501.2016403-1-Liam.Howlett@oracle.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: git-send-email 2.34.1
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 425104b5-1d86-4555-8fe2-08da16489870
+x-ms-traffictypediagnostic: SJ0PR10MB5742:EE_
+x-microsoft-antispam-prvs: <SJ0PR10MB574201E66C82C07EDACF5D27FDE59@SJ0PR10MB5742.namprd10.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: y3KU8XqBuwe6qE6O1kr5XToREn+PZmkaCYVCoz8/XIxFH4inkCcmo/p8igDVy/suXO0b9nglbSIg/fMQCst+9j2EH6wbXdiKVRWJ9gEGCdem5hguwiFD9MGgbZZI8ZJtzHIiNgjaaCpgDlMYoX5O/ibMnRBOu3XcHDvOKE+xdY/5wZJEK59vieXM+4CU63QWKEAGHGRZPeRkJAgP5+faJWLUIWsHub8YExWOWW8aZuRQT6y/jLzOD1OMZNcOvKPEwR+eagyO2xCJVZBgJeKa4i6OqYiytCjN+PnJ33rncam8yIxvPEwd0lM+4RyP13t1yIsaHPyyXurzt0vfwHIIEKf+p+UEGrcO6WL59ypuaqGDPeKXCziqUvLx4ZY60VapJ/zzUCfgDx4CSnjiK7b6I7RLBYZCZFS1vo8fmPtCi48Ezv5MMhTqNwEZlMzDifmrH4Bl0On9bJlSceZrz8dmKZxDVKRMYUaLgIqwbNG1KuJaGBBMMHU6xQmH+jUkbGYBVu3xEAATX/Nga3ACs6i05m1RY0yvoUUWt03A3n6hJgXis/YOKewgBcHW3/0Tz30tZXnjyTBte49Sd5wbITZQV2sH5pmI0P3l8LYsIny0zJUnHU9Mbm2MI5JtWLBeq1JmsBX1pen9gEG8WzzlOOxpiF1UeWz+L4yYF1+29CvJkR5ToAtI26kDWmA1IcHn2kNCy/+q3LDdX1SUI85WigA3Og==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR10MB3022.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(26005)(122000001)(2906002)(44832011)(71200400001)(83380400001)(5660300002)(64756008)(66476007)(186003)(38070700005)(4744005)(8936002)(316002)(1076003)(38100700002)(36756003)(2616005)(110136005)(66556008)(66446008)(86362001)(6506007)(91956017)(6512007)(508600001)(6486002)(8676002)(66946007)(76116006)(6666004);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?mC2zqIAMZ9JYlTirnheDXk8StxpGxgt1CPNS6qzwqEfZH/rFJtaaMNfOJ6?=
+ =?iso-8859-1?Q?9m0ZKiXv9XFTmPglYV+v9wef3BzEqqd8Be/Wj8tSwp8s4gWBTBccXelK5H?=
+ =?iso-8859-1?Q?oY/aY7SPk16mfcwWmWrUNPpEYSNfWm4NF40eboAtI33uQbdPyrFrzKzUsZ?=
+ =?iso-8859-1?Q?V50LlRim3v2nj1nUXevca9hK6HkyOwT+wWdGfWZTYKGiI6bM1x0AEokPzw?=
+ =?iso-8859-1?Q?Tj5cBnqTClw+xf74yFcGU4/1ng2ypLevlNb3xerXrKE1kSZm2GgTDAiVOX?=
+ =?iso-8859-1?Q?ERumOoZJE96LiWgK+u0+tvlH5oDZ9jSkNTGaYfHWAUn7pFoz+b/DAKxaYn?=
+ =?iso-8859-1?Q?2th7V4YdOIIGhkSrV7jTJ51TYdmPICrPK4iOboaF+0u8SUWnmtemNGwcjZ?=
+ =?iso-8859-1?Q?syzeFAvqx3LsqQuvv65C6YX56x8xyGcSMz9j69gaK3wwMIVgS2Puju0xBj?=
+ =?iso-8859-1?Q?KsSddCHZ/T+gBYvT2ZehR1DrJqMZxv3T5tdK32g9tfb1IpGtJqYl90FlHX?=
+ =?iso-8859-1?Q?Qb3lNJFuJxGPrp7OB19+g1HLSlUc9ISm2NuHgsz1hOJqtigXN0e30SItEH?=
+ =?iso-8859-1?Q?i1JQVoqo4s2D9DWdy2Pw/SFwdrVP5sUDqJKWzxLZ2ZeMWpwk4CarU9BGDf?=
+ =?iso-8859-1?Q?nMT91Xeq1KOcqIE0QRHJWBQnG+POgVU9z7DU4pa0+3+xYfRNW6rlv3Ajv1?=
+ =?iso-8859-1?Q?lXDp5tI1AAf9VI1cTf7Q0JZLiACGdCr/jr+HiPWDW1oc9LR9WlcKECE4fq?=
+ =?iso-8859-1?Q?Df4yJNE9KF3SBKn06so3EEdvjvbL3fg+RIr1f53YxwMCR418R9xOsGGoiH?=
+ =?iso-8859-1?Q?yKoGAtSdONb0wFDniODJ0i2qLqArugFA5AkSARSDTRULISy0r49ITQxk0B?=
+ =?iso-8859-1?Q?328aoUf/z3udOdldh9urCg2JT3jmUwunVCvzajdNQxGQjlR1zIKXlo7FtI?=
+ =?iso-8859-1?Q?xvgPAOBho7UtTwsdbPFYoK3UC+43UGulbYVapI8I8UOSNjhds/msK8hXg/?=
+ =?iso-8859-1?Q?viZiL0VY/owxmy6p++sSsTytUuoxXkfq37BeLv83fIMwceOjvzml5FrXC8?=
+ =?iso-8859-1?Q?A1oOrMn6ZYB8gsIlOx0gnxJO+YeBdO1590tX+wHEjRadLf7LIY/H2aeGBJ?=
+ =?iso-8859-1?Q?S6H8TmjqcjsawV1Kb569JzAejUJgO/nb8dt0S7KXX037udpqK68FVWSOKk?=
+ =?iso-8859-1?Q?QD9JGe+xQ4A12IMP/GuB43o0F+s1/SZWroPK4nq9adLoKdJmyobiDBr7is?=
+ =?iso-8859-1?Q?eQXOjxgMN36HS0sfzUboyPEti6M6ZSaebDGh6D+BiJfVgw6zYShLf7vgch?=
+ =?iso-8859-1?Q?xKrQz14MkTpvxyGBjW90s74Nxyy0KcFoKmffcD5lVXNetTG6WAPpbfK97C?=
+ =?iso-8859-1?Q?Jle+AzzPbDxTLwy5NPCbt15WunwMNgvnXI4+fgjPiGTnihfWrsFXiDLovB?=
+ =?iso-8859-1?Q?P6xvVoI3LK1PQCpSlJC0sBgEawt2DKY8wwPgYQr2+TohakjPy0HUNmVpBU?=
+ =?iso-8859-1?Q?bXYeCwUqA8PafGo6HMUXFumR7Sx0Fop018reFe3vTkORM9T6+DZiLNYmF9?=
+ =?iso-8859-1?Q?PFrXUTG3ooE4XcWqF6O1JNbwR4YJYyAagy2OwUmtodE3ZVuUifzaOaLG7p?=
+ =?iso-8859-1?Q?99E9j9CP2AxmM30gnV6H7+dYZLHY8oH8UMe3fiRT/MonuY3KlamPYpwA37?=
+ =?iso-8859-1?Q?isUutDNONzMAofmB8cqcYWAwbjk+ZiZHvC4wQmbUp+tfxdpv02MspLahBL?=
+ =?iso-8859-1?Q?xtAhzqe65tBc/TpoVebrbchO6iAO5iIHw6O2l/GtN6pwZssOyZbSCX+oYP?=
+ =?iso-8859-1?Q?CoBTcTXJF2jAkbKAf8ljM+EkZXlE98g=3D?=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR10MB3022.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 425104b5-1d86-4555-8fe2-08da16489870
+X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Apr 2022 14:35:58.5644
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: vr5JLJ7mZS1tqSCYg91bl0FWuoeaTIaftkDTsJ5rAeX4CJd2etFrXd87IiBLJVf08wqn4otYoPHbRZNaqggBqQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR10MB5742
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.425,18.0.850
+ definitions=2022-04-04_06:2022-03-30,2022-04-04 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 malwarescore=0 spamscore=0
+ phishscore=0 mlxscore=0 mlxlogscore=862 bulkscore=0 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
+ definitions=main-2204040083
+X-Proofpoint-ORIG-GUID: Sa7degHJpOH8VkRyMtrv5M0LyAGdo8oN
+X-Proofpoint-GUID: Sa7degHJpOH8VkRyMtrv5M0LyAGdo8oN
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Reported by checkpatch:
+Remove the linked list use in favour of the vma iterator.
 
-CHECK: spaces preferred around that '+' , '-' and '*'
-
-Signed-off-by: Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
+Signed-off-by: Liam R. Howlett <Liam.Howlett@oracle.com>
 ---
- drivers/staging/r8188eu/core/rtw_br_ext.c | 58 +++++++++++------------
- 1 file changed, 29 insertions(+), 29 deletions(-)
+ arch/riscv/kernel/vdso.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/staging/r8188eu/core/rtw_br_ext.c b/drivers/staging/r8188eu/core/rtw_br_ext.c
-index d68611ef22f8..7c664f80fa99 100644
---- a/drivers/staging/r8188eu/core/rtw_br_ext.c
-+++ b/drivers/staging/r8188eu/core/rtw_br_ext.c
-@@ -87,19 +87,19 @@ static int skb_pull_and_merge(struct sk_buff *skb, unsigned char *src, int len)
- 	int tail_len;
- 	unsigned long end, tail;
- 
--	if ((src+len) > skb_tail_pointer(skb) || skb->len < len)
-+	if ((src + len) > skb_tail_pointer(skb) || skb->len < len)
- 		return -1;
- 
- 	tail = (unsigned long)skb_tail_pointer(skb);
--	end = (unsigned long)src+len;
-+	end = (unsigned long)src + len;
- 	if (tail < end)
- 		return -1;
- 
--	tail_len = (int)(tail-end);
-+	tail_len = (int)(tail - end);
- 	if (tail_len > 0)
--		memmove(src, src+len, tail_len);
-+		memmove(src, src + len, tail_len);
- 
--	skb_trim(skb, skb->len-len);
-+	skb_trim(skb, skb->len - len);
- 	return 0;
- }
- 
-@@ -117,7 +117,7 @@ static void __nat25_generate_ipv4_network_addr(unsigned char *networkAddr,
- 	memset(networkAddr, 0, MAX_NETWORK_ADDR_LEN);
- 
- 	networkAddr[0] = NAT25_IPV4;
--	memcpy(networkAddr+7, (unsigned char *)ipAddr, 4);
-+	memcpy(networkAddr + 7, (unsigned char *)ipAddr, 4);
- }
- 
- static void __nat25_generate_pppoe_network_addr(unsigned char *networkAddr,
-@@ -126,8 +126,8 @@ static void __nat25_generate_pppoe_network_addr(unsigned char *networkAddr,
- 	memset(networkAddr, 0, MAX_NETWORK_ADDR_LEN);
- 
- 	networkAddr[0] = NAT25_PPPOE;
--	memcpy(networkAddr+1, (unsigned char *)sid, 2);
--	memcpy(networkAddr+3, (unsigned char *)ac_mac, 6);
-+	memcpy(networkAddr + 1, (unsigned char *)sid, 2);
-+	memcpy(networkAddr + 3, (unsigned char *)ac_mac, 6);
- }
- 
- static  void __nat25_generate_ipv6_network_addr(unsigned char *networkAddr,
-@@ -136,17 +136,17 @@ static  void __nat25_generate_ipv6_network_addr(unsigned char *networkAddr,
- 	memset(networkAddr, 0, MAX_NETWORK_ADDR_LEN);
- 
- 	networkAddr[0] = NAT25_IPV6;
--	memcpy(networkAddr+1, (unsigned char *)ipAddr, 16);
-+	memcpy(networkAddr + 1, (unsigned char *)ipAddr, 16);
- }
- 
- static unsigned char *scan_tlv(unsigned char *data, int len, unsigned char tag, unsigned char len8b)
+diff --git a/arch/riscv/kernel/vdso.c b/arch/riscv/kernel/vdso.c
+index a9436a65161a..20e2ae135fb9 100644
+--- a/arch/riscv/kernel/vdso.c
++++ b/arch/riscv/kernel/vdso.c
+@@ -116,10 +116,11 @@ int vdso_join_timens(struct task_struct *task, struct=
+ time_namespace *ns)
  {
- 	while (len > 0) {
--		if (*data == tag && *(data+1) == len8b && len >= len8b*8)
--			return data+2;
-+		if (*data == tag && *(data + 1) == len8b && len >= len8b * 8)
-+			return data + 2;
- 
--		len -= (*(data+1))*8;
--		data += (*(data+1))*8;
-+		len -= (*(data + 1)) * 8;
-+		data += (*(data + 1)) * 8;
- 	}
- 	return NULL;
- }
-@@ -158,7 +158,7 @@ static int update_nd_link_layer_addr(unsigned char *data, int len, unsigned char
- 
- 	if (icmphdr->icmp6_type == NDISC_ROUTER_SOLICITATION) {
- 		if (len >= 8) {
--			mac = scan_tlv(&data[8], len-8, 1, 1);
-+			mac = scan_tlv(&data[8], len - 8, 1, 1);
- 			if (mac) {
- 				memcpy(mac, replace_mac, 6);
- 				return 1;
-@@ -166,7 +166,7 @@ static int update_nd_link_layer_addr(unsigned char *data, int len, unsigned char
- 		}
- 	} else if (icmphdr->icmp6_type == NDISC_ROUTER_ADVERTISEMENT) {
- 		if (len >= 16) {
--			mac = scan_tlv(&data[16], len-16, 1, 1);
-+			mac = scan_tlv(&data[16], len - 16, 1, 1);
- 			if (mac) {
- 				memcpy(mac, replace_mac, 6);
- 				return 1;
-@@ -174,7 +174,7 @@ static int update_nd_link_layer_addr(unsigned char *data, int len, unsigned char
- 		}
- 	} else if (icmphdr->icmp6_type == NDISC_NEIGHBOUR_SOLICITATION) {
- 		if (len >= 24) {
--			mac = scan_tlv(&data[24], len-24, 1, 1);
-+			mac = scan_tlv(&data[24], len - 24, 1, 1);
- 			if (mac) {
- 				memcpy(mac, replace_mac, 6);
- 				return 1;
-@@ -182,7 +182,7 @@ static int update_nd_link_layer_addr(unsigned char *data, int len, unsigned char
- 		}
- 	} else if (icmphdr->icmp6_type == NDISC_NEIGHBOUR_ADVERTISEMENT) {
- 		if (len >= 24) {
--			mac = scan_tlv(&data[24], len-24, 2, 1);
-+			mac = scan_tlv(&data[24], len - 24, 2, 1);
- 			if (mac) {
- 				memcpy(mac, replace_mac, 6);
- 				return 1;
-@@ -190,7 +190,7 @@ static int update_nd_link_layer_addr(unsigned char *data, int len, unsigned char
- 		}
- 	} else if (icmphdr->icmp6_type == NDISC_REDIRECT) {
- 		if (len >= 40) {
--			mac = scan_tlv(&data[40], len-40, 2, 1);
-+			mac = scan_tlv(&data[40], len - 40, 2, 1);
- 			if (mac) {
- 				memcpy(mac, replace_mac, 6);
- 				return 1;
-@@ -396,7 +396,7 @@ int nat25_db_handle(struct adapter *priv, struct sk_buff *skb, int method)
- 			tmp = be32_to_cpu(iph->saddr);
- 			__nat25_generate_ipv4_network_addr(networkAddr, &tmp);
- 			/* record source IP address and , source mac address into db */
--			__nat25_db_network_insert(priv, skb->data+ETH_ALEN, networkAddr);
-+			__nat25_db_network_insert(priv, skb->data + ETH_ALEN, networkAddr);
- 			return 0;
- 		default:
- 			return -1;
-@@ -421,7 +421,7 @@ int nat25_db_handle(struct adapter *priv, struct sk_buff *skb, int method)
- 			arp_ptr += arp->ar_hln;
- 			sender = (unsigned int *)arp_ptr;
- 			__nat25_generate_ipv4_network_addr(networkAddr, sender);
--			__nat25_db_network_insert(priv, skb->data+ETH_ALEN, networkAddr);
-+			__nat25_db_network_insert(priv, skb->data + ETH_ALEN, networkAddr);
- 			return 0;
- 		default:
- 			return -1;
-@@ -458,22 +458,22 @@ int nat25_db_handle(struct adapter *priv, struct sk_buff *skb, int method)
- 							    sizeof(tag_buf))
- 								return -1;
- 
--							memcpy(tag->tag_data+MAGIC_CODE_LEN+RTL_RELAY_TAG_LEN,
-+							memcpy(tag->tag_data + MAGIC_CODE_LEN + RTL_RELAY_TAG_LEN,
- 								pOldTag->tag_data, old_tag_len);
- 
--							if (skb_pull_and_merge(skb, (unsigned char *)pOldTag, TAG_HDR_LEN+old_tag_len) < 0)
-+							if (skb_pull_and_merge(skb, (unsigned char *)pOldTag, TAG_HDR_LEN + old_tag_len) < 0)
- 								return -1;
- 
--							ph->length = htons(ntohs(ph->length)-TAG_HDR_LEN-old_tag_len);
-+							ph->length = htons(ntohs(ph->length) - TAG_HDR_LEN - old_tag_len);
- 						}
- 
- 						tag->tag_type = PTT_RELAY_SID;
--						tag->tag_len = htons(MAGIC_CODE_LEN+RTL_RELAY_TAG_LEN+old_tag_len);
-+						tag->tag_len = htons(MAGIC_CODE_LEN + RTL_RELAY_TAG_LEN + old_tag_len);
- 
- 						/*  insert the magic_code+client mac in relay tag */
- 						pMagic = (unsigned short *)tag->tag_data;
- 						*pMagic = htons(MAGIC_CODE);
--						memcpy(tag->tag_data+MAGIC_CODE_LEN, skb->data+ETH_ALEN, ETH_ALEN);
-+						memcpy(tag->tag_data + MAGIC_CODE_LEN, skb->data + ETH_ALEN, ETH_ALEN);
- 
- 						/* Add relay tag */
- 						if (__nat25_add_pppoe_tag(skb, tag) < 0)
-@@ -486,7 +486,7 @@ int nat25_db_handle(struct adapter *priv, struct sk_buff *skb, int method)
- 							return -2;
- 
- 						if (priv->pppoe_connection_in_progress == 0)
--							memcpy(priv->pppoe_addr, skb->data+ETH_ALEN, ETH_ALEN);
-+							memcpy(priv->pppoe_addr, skb->data + ETH_ALEN, ETH_ALEN);
- 
- 						priv->pppoe_connection_in_progress = WAIT_TIME_PPPOE;
- 					}
-@@ -496,11 +496,11 @@ int nat25_db_handle(struct adapter *priv, struct sk_buff *skb, int method)
- 			} else {	/*  session phase */
- 				__nat25_generate_pppoe_network_addr(networkAddr, skb->data, &ph->sid);
- 
--				__nat25_db_network_insert(priv, skb->data+ETH_ALEN, networkAddr);
-+				__nat25_db_network_insert(priv, skb->data + ETH_ALEN, networkAddr);
- 
- 				if (!priv->ethBrExtInfo.addPPPoETag &&
- 				    priv->pppoe_connection_in_progress &&
--				    !memcmp(skb->data+ETH_ALEN, priv->pppoe_addr, ETH_ALEN))
-+				    !memcmp(skb->data + ETH_ALEN, priv->pppoe_addr, ETH_ALEN))
- 					priv->pppoe_connection_in_progress = 0;
- 			}
- 			return 0;
-@@ -548,7 +548,7 @@ int nat25_db_handle(struct adapter *priv, struct sk_buff *skb, int method)
- 		case NAT25_INSERT:
- 			if (memcmp(&iph->saddr, "\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0", 16)) {
- 				__nat25_generate_ipv6_network_addr(networkAddr, (unsigned int *)&iph->saddr);
--				__nat25_db_network_insert(priv, skb->data+ETH_ALEN, networkAddr);
-+				__nat25_db_network_insert(priv, skb->data + ETH_ALEN, networkAddr);
- 
- 				if (iph->nexthdr == IPPROTO_ICMPV6 &&
- 						skb->len > (ETH_HLEN +  sizeof(*iph) + 4)) {
--- 
-2.35.1
-
+ 	struct mm_struct *mm =3D task->mm;
+ 	struct vm_area_struct *vma;
++	VMA_ITERATOR(vmi, mm, 0);
+=20
+ 	mmap_read_lock(mm);
+=20
+-	for (vma =3D mm->mmap; vma; vma =3D vma->vm_next) {
++	for_each_vma(vmi, vma) {
+ 		unsigned long size =3D vma->vm_end - vma->vm_start;
+=20
+ 		if (vma_is_special_mapping(vma, vdso_info.dm))
+--=20
+2.34.1
