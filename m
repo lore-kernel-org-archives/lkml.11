@@ -2,136 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0B4EC3527E
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:59:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A975C35294
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:59:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379979AbiDDV7J (ORCPT
+        id S1380144AbiDDV7Y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:59:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59726 "EHLO
+        Mon, 4 Apr 2022 17:59:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379203AbiDDQnS (ORCPT
+        with ESMTP id S1380060AbiDDSvT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 12:43:18 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A053A35855
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 09:41:22 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id E843121110;
-        Mon,  4 Apr 2022 16:41:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1649090480; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8KmIpmO8YqXFupMJe70SE4ST4S5v6JXlyjUwSJMcLP8=;
-        b=TVTTVGBGcLRn7CeaaMh2C17Xjn0XKxhFq614E6Xpexe+8p9ZeTX0735WHz7q4R2JFLpE8G
-        mJBXgopXf/XUbIdCE/nCMEfHl0PjzmeTEKz21nE4L2f82bNuUz7rVa/nKJj6NefkB6K0QZ
-        9WuQc9MeADaearI10OPax4gwG//IRq4=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1649090480;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8KmIpmO8YqXFupMJe70SE4ST4S5v6JXlyjUwSJMcLP8=;
-        b=ATZhY4H6/PBegfP9r6vtIlKmb29/JpHLT/dEFJTF/Wa0cHS4scHRvlIq7ObkFlJXwLcX45
-        7i4sjjq+qiHdJvDw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id B8C1713A89;
-        Mon,  4 Apr 2022 16:41:20 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id gPx5LLAfS2LjfAAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Mon, 04 Apr 2022 16:41:20 +0000
-From:   Vlastimil Babka <vbabka@suse.cz>
-To:     David Rientjes <rientjes@google.com>,
-        Christoph Lameter <cl@linux.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>
-Cc:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        patches@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Oliver Glitta <glittao@gmail.com>,
-        Marco Elver <elver@google.com>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
-        Imran Khan <imran.f.khan@oracle.com>,
-        Vlastimil Babka <vbabka@suse.cz>
-Subject: [PATCH v3 5/6] mm/slub: sort debugfs output by frequency of stack traces
-Date:   Mon,  4 Apr 2022 18:41:11 +0200
-Message-Id: <20220404164112.18372-6-vbabka@suse.cz>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220404164112.18372-1-vbabka@suse.cz>
-References: <20220404164112.18372-1-vbabka@suse.cz>
+        Mon, 4 Apr 2022 14:51:19 -0400
+Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43D053137D
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 11:49:23 -0700 (PDT)
+Received: by mail-oi1-x22e.google.com with SMTP id 12so10978263oix.12
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 11:49:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=+x8xeE7VdwyEBg9gBJjb/VSkL3ctOrEYGykxx0ig/m0=;
+        b=aIIJqQOlgGEaPFjQYKZkBfSoalRDYuXCqe3vleD+YoMT6FyQdOFPNf+S+9sxlwUq54
+         NmltyIWDy33kTR0OTRadOhK77QdqSl8Vr+QvqTOBdxzTwwZoyooJtH7PAoM4B6VuHvOb
+         mnKMngV7nKSgJ1NYzzG0jE2zETbUAFXGphzJoGcUTTRIAspUa2tNMrIYjM7MWIWIy/8E
+         NjJS7bznd7wBf5/40L9ymVkjSitPiflm5WaSfgHVSllrk9/yCcHtgWJ+KTmIMLY7VEhr
+         o2TpSk48hwsKaRx3fAQt2RGKCujfvasVxP9JLA++ZfvQi49nDSq+okk9BBSdlu/rffvk
+         cO1Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=+x8xeE7VdwyEBg9gBJjb/VSkL3ctOrEYGykxx0ig/m0=;
+        b=R3FbIAvaNstONR5LrL0tNQIVWBNxZqtoiGMXiZQZTBUFbUmcfnzLgznNP42LJfDgjX
+         jOSGidS+c5GcLjySTf63M5ZAYYpL+C1CzxrqyV8zL3XG+7troMaPPX41KCFix7O+CqIu
+         QdCCthreqQW2fPtOUxl5ksK6Y1iiXuA5lH34mUp77vSripFlrM3KbJrSfrz8Nildf07U
+         ZfhSx0z4IskLfaH7wo+FHKJFxR48EiRHrQNSFY4y/UA8/Ias6CsoHrGY03CkKqE+/PpZ
+         kqSW7j6T6N5BHeFp27959sJFpfgnjJNMAPP5LBv7Fqlj1AgCELKEIXw2b0NX3ClH48cx
+         5D3w==
+X-Gm-Message-State: AOAM530l5ilR9gOGJH0lLThQ9nsxnVavAJPAq2hHE+s2Y9wgpTUFkYY+
+        DBPja6WLZQLqWVDAv9PT9Ao=
+X-Google-Smtp-Source: ABdhPJy1vzaNMEa6qR1jv8tDRSZiMxYpeg4RNjKExhY59rCu0Q+CxA5CqAv26vovX2cZDXQXs4yhBg==
+X-Received: by 2002:a05:6808:9ae:b0:2d9:a01a:4bf4 with SMTP id e14-20020a05680809ae00b002d9a01a4bf4mr238080oig.283.1649098162576;
+        Mon, 04 Apr 2022 11:49:22 -0700 (PDT)
+Received: from ?IPV6:2603:8090:2005:39b3::1004? (2603-8090-2005-39b3-0000-0000-0000-1004.res6.spectrum.com. [2603:8090:2005:39b3::1004])
+        by smtp.gmail.com with ESMTPSA id m17-20020a0568301e7100b005b256697d7csm4795089otr.72.2022.04.04.11.49.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 04 Apr 2022 11:49:21 -0700 (PDT)
+Sender: Larry Finger <larry.finger@gmail.com>
+Message-ID: <547963ab-4922-3208-fe63-07e0756890d9@lwfinger.net>
+Date:   Mon, 4 Apr 2022 13:49:20 -0500
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1585; i=vbabka@suse.cz; h=from:subject; bh=VWFnnyqmJ3+H/KNgJI+ywlf8rteatjMmjGdFv2ZRZAw=; b=owEBbQGS/pANAwAIAeAhynPxiakQAcsmYgBiSx+mYi5UGPiEavlh5JxH0UiWzCBiobPIgKlRfrvu b+85Wi2JATMEAAEIAB0WIQSNS5MBqTXjGL5IXszgIcpz8YmpEAUCYksfpgAKCRDgIcpz8YmpEEOdB/ 9jpr5TWCnpmgEh6Z2MrAz9Xj9T/goJ6+Zgnoln8bhAP12iksWj7XdGTFTK8rwf05YRYaIfHeI1+Vvl LD1DPs0SJFixbeWW0DB2A0EniuqfNgsJ7liONNz1xxioOnkZ8AJFXS8kDyJ2wCjgGLmbMc7I9RSg9/ CuzAJ4CD2x1YoP1GV9e9Gfk0UnaxONR5i0UQZDUU9LXbOx3lOpDUUU129+9gplokFWIFz9PoHtbIXu E95Md+iEzYsS3tUN9gecEJLHPESQsDYrZculV45wdlwyFYLK8VycXMun1fd5I4bPo9pIcEBFNN+g17 juUwhdYTPOxnJHR3nf8kpPtCI7HZMB
-X-Developer-Key: i=vbabka@suse.cz; a=openpgp; fpr=A940D434992C2E8E99103D50224FA7E7CC82A664
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] staging: r8188eu: remove unnecessary blank lines
+Content-Language: en-US
+To:     Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>,
+        outreachy@lists.linux.dev
+Cc:     phil@philpotter.co.uk, gregkh@linuxfoundation.org,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20220404145217.15069-1-eng.alaamohamedsoliman.am@gmail.com>
+From:   Larry Finger <Larry.Finger@lwfinger.net>
+In-Reply-To: <20220404145217.15069-1-eng.alaamohamedsoliman.am@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oliver Glitta <glittao@gmail.com>
+On 4/4/22 09:52, Alaa Mohamed wrote:
+> Reported by checkpatch:
+> 
+> CHECK: Blank lines aren't necessary before a close brace '}'
+> 
+> Signed-off-by: Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
+> ---
+>   drivers/staging/r8188eu/core/rtw_ap.c | 3 ---
+>   1 file changed, 3 deletions(-)
+> 
+> diff --git a/drivers/staging/r8188eu/core/rtw_ap.c b/drivers/staging/r8188eu/core/rtw_ap.c
+> index 2ff78ed1faab..ac6effbecf6d 100644
+> --- a/drivers/staging/r8188eu/core/rtw_ap.c
+> +++ b/drivers/staging/r8188eu/core/rtw_ap.c
+> @@ -188,7 +188,6 @@ void	expire_timeout_chk(struct adapter *padapter)
+>   				spin_lock_bh(&pstapriv->auth_list_lock);
+>   			}
+>   		}
+> -
+>   	}
+>   	spin_unlock_bh(&pstapriv->auth_list_lock);
+>   
+> @@ -381,7 +380,6 @@ void add_RATid(struct adapter *padapter, struct sta_info *psta, u8 rssi_level)
+>   		/* set ra_id, init_rate */
+>   		psta->raid = raid;
+>   		psta->init_rate = init_rate;
+> -
+>   	}
+>   }
+>   
+> @@ -455,7 +453,6 @@ void update_bmc_sta(struct adapter *padapter)
+>   		spin_lock_bh(&psta->lock);
+>   		psta->state = _FW_LINKED;
+>   		spin_unlock_bh(&psta->lock);
+> -
+>   	}
+>   }
+>   
 
-Sort the output of debugfs alloc_traces and free_traces by the frequency
-of allocation/freeing stack traces. Most frequently used stack traces
-will be printed first, e.g. for easier memory leak debugging.
+Acked_by: Larry Finger <Larry.Finger@lwfinger.net>
 
-Signed-off-by: Oliver Glitta <glittao@gmail.com>
-Signed-off-by: Vlastimil Babka <vbabka@suse.cz>
-Reviewed-and-tested-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
----
- mm/slub.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+Thanks,
 
-diff --git a/mm/slub.c b/mm/slub.c
-index f2e550e1adf0..2963dc123336 100644
---- a/mm/slub.c
-+++ b/mm/slub.c
-@@ -38,6 +38,7 @@
- #include <linux/memcontrol.h>
- #include <linux/random.h>
- #include <kunit/test.h>
-+#include <linux/sort.h>
- 
- #include <linux/debugfs.h>
- #include <trace/events/kmem.h>
-@@ -6137,6 +6138,17 @@ static void *slab_debugfs_next(struct seq_file *seq, void *v, loff_t *ppos)
- 	return NULL;
- }
- 
-+static int cmp_loc_by_count(const void *a, const void *b, const void *data)
-+{
-+	struct location *loc1 = (struct location *)a;
-+	struct location *loc2 = (struct location *)b;
-+
-+	if (loc1->count > loc2->count)
-+		return -1;
-+	else
-+		return 1;
-+}
-+
- static void *slab_debugfs_start(struct seq_file *seq, loff_t *ppos)
- {
- 	struct loc_track *t = seq->private;
-@@ -6198,6 +6210,10 @@ static int slab_debug_trace_open(struct inode *inode, struct file *filep)
- 		spin_unlock_irqrestore(&n->list_lock, flags);
- 	}
- 
-+	/* Sort locations by count */
-+	sort_r(t->loc, t->count, sizeof(struct location),
-+		cmp_loc_by_count, NULL, NULL);
-+
- 	bitmap_free(obj_map);
- 	return 0;
- }
--- 
-2.35.1
+Larry
 
