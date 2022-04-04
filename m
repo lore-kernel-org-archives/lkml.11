@@ -2,131 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46E84C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BC9CC43219
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:49:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381188AbiDDVta (ORCPT
+        id S1381226AbiDDVtg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:49:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40558 "EHLO
+        Mon, 4 Apr 2022 17:49:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379585AbiDDRjX (ORCPT
+        with ESMTP id S1379676AbiDDRss (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 13:39:23 -0400
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68308B7F1;
-        Mon,  4 Apr 2022 10:37:27 -0700 (PDT)
-Received: by mail-pl1-x62b.google.com with SMTP id o10so2834365ple.7;
-        Mon, 04 Apr 2022 10:37:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=GF6jYnbv+1XzUXRiGnhvotzYBkOK/c7/Q8J5sZsBF/I=;
-        b=NMBYADdu0/CesKqHTLEl52yzW4yrtN8zu7Y7cc+5VzNIEomJlvDWGHG1C0qoy1lwLj
-         ncb1Ec9VBU27yDfmdH0eFLwFs6g3KWejO19Ptfi+s92r1Y4IeCUYyxuiGS1eGBKsHnHm
-         6xaxAA9nYogWlYhOKKxqb/tc+bU68zDVnK4MgF98bjAbi8CFe7hEjYKOSNBQKZSAjzqt
-         M1rQZfeFWzlbSlReJ2801hwI9WOJSeNmfEOloxqbQ0YuhcMlpmp9s45vg/zanmaIXz+Y
-         x64Kk+bocsKiVr3v4YCkg9clHIkO4cTMTjIFORyBh7hu1BH7r1rtZV8d5AQSIQ5qJQpP
-         0kSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=GF6jYnbv+1XzUXRiGnhvotzYBkOK/c7/Q8J5sZsBF/I=;
-        b=XQA0IARyGFWxlKc1s+bUnY5qJM69g8qqyUDLAWT3W3Ja2JdV2hr1xsO10NwvHofA5I
-         J51ZmxonsdKp+OoFVRHCh9SqhcDmnD5x53tMgbAuOgXqQ270uyiwyFmmIXRuHudNn2fq
-         07F/iut35tHPF7YFxYD1FUPR+QHNfTmYJgpL9OOLD/R2A+2bEDpuZdM4lanEoPwnf4hf
-         RvnLZVia+sgg3ywRH+tlJzroBmbr9OGABmKBhgvLeNnjQBljYmV4GnUcc9xp+3W3SM6w
-         LDjS9sT0cBvPr98F9igr6mrkzbZIAJv9FGkI1amVtWAPtyDxQfXFZ52OggHoQuGj9xMP
-         a+bw==
-X-Gm-Message-State: AOAM5336TQ8EyBdHQDlnYsmx4h44LzQatrNCmmKWQZ7Vrh5tCj3cI+fc
-        8cePjOt0XRwL35vAf8gcWRg=
-X-Google-Smtp-Source: ABdhPJx4rdta2NfR/b+BcIMgdN7ZCIgKnXj+l1MBFsdppb0BKNRqz5eKEwlXfIBRDhaiiKADs//iwA==
-X-Received: by 2002:a17:902:e743:b0:153:a902:8d8c with SMTP id p3-20020a170902e74300b00153a9028d8cmr750828plf.150.1649093846584;
-        Mon, 04 Apr 2022 10:37:26 -0700 (PDT)
-Received: from localhost ([2620:10d:c090:400::5:baee])
-        by smtp.gmail.com with ESMTPSA id f6-20020a056a00238600b004fae79a3cbfsm13629265pfc.100.2022.04.04.10.37.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 10:37:25 -0700 (PDT)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Mon, 4 Apr 2022 07:37:24 -1000
-From:   Tejun Heo <tj@kernel.org>
-To:     Bui Quang Minh <minhquangbui99@gmail.com>
-Cc:     cgroups@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH v2] cgroup: Kill the parent controller when its last
- child is killed
-Message-ID: <Ykss1N/VYX7femqw@slm.duckdns.org>
-References: <20220404142535.145975-1-minhquangbui99@gmail.com>
+        Mon, 4 Apr 2022 13:48:48 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B37D2E9E4;
+        Mon,  4 Apr 2022 10:46:52 -0700 (PDT)
+Date:   Mon, 04 Apr 2022 17:46:49 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649094410;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=KSkOvNqNnOs7E3KoKgoyjVwtYUhEAwIsq0ehhLiyF0E=;
+        b=D6yt3LMA9H2vLnriSeGV/XTJf9rajAdJpyugw6Db+1VWWBsmtdsG38+eAbOZgGozJv8hkO
+        zzRoIBOFOy8S6KG2y832cJiUQD+yG4vbye2uSnNNmtszGEDOF9a637ofAJWDJTRJBX4Hg5
+        TU4/BjvMTevgtGD4pQQNhqtYsqWdsZ7QpaMQoYUy5YIbozan5PJbLdneDHwViXuOVfh1PQ
+        pUREEMY7pptW02CqG6kSMJ6R97jUBEuK28cbDXDkm3Hqdw8vMgTfJcZM98H+WZMfUTKGDv
+        EKWKKIpciFFhkEL6NpME5SRaFJcC1TQmyHYJGx4ZUlY8eY82U0q9pK4y/5Rf6g==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649094410;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=KSkOvNqNnOs7E3KoKgoyjVwtYUhEAwIsq0ehhLiyF0E=;
+        b=5wXAgsvKjtIfrgOjOfFU3gpYHLGSbj+gWE+d57m2EbikkhhmLy6785gXN9H0bej6fJWNLq
+        PXvjJVE1aVPHgiDA==
+From:   "tip-bot2 for Borislav Petkov" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: locking/core] task_stack, x86/cea: Force-inline stack helpers
+Cc:     Borislav Petkov <bp@suse.de>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220324183607.31717-2-bp@alien8.de>
+References: <20220324183607.31717-2-bp@alien8.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220404142535.145975-1-minhquangbui99@gmail.com>
+Message-ID: <164909440991.389.11468639429597148624.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+The following commit has been merged into the locking/core branch of tip:
 
-On Mon, Apr 04, 2022 at 09:25:34PM +0700, Bui Quang Minh wrote:
-> When umounting a cgroup controller, in case the controller has no children,
-> the initial ref will be dropped in cgroup_kill_sb. In cgroup_rmdir path,
-> the controller is deleted from the parent's children list in
-> css_release_work_fn, which is run on a kernel worker.
-> 
-> With this simple script
-> 
-> 	#!/bin/sh
-> 
-> 	mount -t cgroup -o none,name=test test ./tmp
-> 	mkdir -p ./tmp/abc
-> 
-> 	rmdir ./tmp/abc
-> 	umount ./tmp
-> 
-> 	sleep 5
-> 	cat /proc/self/cgroup
-> 
-> The rmdir will remove the last child and umount is expected to kill the
-> parent controller. However, when running the above script, we may get
-> 
-> 	1:name=test:/
+Commit-ID:     e87f4152e542610d0b4c6c8548964a68a59d2040
+Gitweb:        https://git.kernel.org/tip/e87f4152e542610d0b4c6c8548964a68a59d2040
+Author:        Borislav Petkov <bp@suse.de>
+AuthorDate:    Wed, 23 Mar 2022 20:02:41 +01:00
+Committer:     Borislav Petkov <bp@suse.de>
+CommitterDate: Mon, 04 Apr 2022 10:13:07 +02:00
 
-First of all, remounting after active use isn't a well-supported use case as
-documented in the admin doc. The problem is that there's no finite time
-horizon around when all the references are gonna go away - some references
-may be held in cache which may not be released unless certain conditions are
-met. So, while changing hierarchy configuration is useful for system setup,
-development and debugging, for production use, it's a boot time
-configuration mechanism.
+task_stack, x86/cea: Force-inline stack helpers
 
-> This shows that the parent controller has not been killed. The reason is
-> after rmdir is completed, it is not guaranteed that the parent's children
-> list is empty as css_release_work_fn is deferred to run on a worker. In
-> case cgroup_kill_sb is run before that work, it does not drop the initial
-> ref. Later in the worker, it just removes the child from the list without
-> checking the list is empty to kill the parent controller. As a result, the
-> parent controller still has the initial ref but without any logical refs
-> (children ref, mount ref).
-> 
-> This commit adds a free parent controller path into the worker function to
-> free up the parent controller when the last child is killed.
+Force-inline two stack helpers to fix the following objtool warnings:
 
-And the suggested behavior doesn't make much sense to me. It doesn't
-actually solve the underlying problem but instead always make css
-destructions recursive which can lead to surprises for normal use cases.
+  vmlinux.o: warning: objtool: in_task_stack()+0xc: call to task_stack_page() leaves .noinstr.text section
+  vmlinux.o: warning: objtool: in_entry_stack()+0x10: call to cpu_entry_stack() leaves .noinstr.text section
 
-Thanks.
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lore.kernel.org/r/20220324183607.31717-2-bp@alien8.de
+---
+ arch/x86/include/asm/cpu_entry_area.h | 2 +-
+ include/linux/sched/task_stack.h      | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
--- 
-tejun
+diff --git a/arch/x86/include/asm/cpu_entry_area.h b/arch/x86/include/asm/cpu_entry_area.h
+index dd5ea1b..75efc4c 100644
+--- a/arch/x86/include/asm/cpu_entry_area.h
++++ b/arch/x86/include/asm/cpu_entry_area.h
+@@ -143,7 +143,7 @@ extern void cea_set_pte(void *cea_vaddr, phys_addr_t pa, pgprot_t flags);
+ 
+ extern struct cpu_entry_area *get_cpu_entry_area(int cpu);
+ 
+-static inline struct entry_stack *cpu_entry_stack(int cpu)
++static __always_inline struct entry_stack *cpu_entry_stack(int cpu)
+ {
+ 	return &get_cpu_entry_area(cpu)->entry_stack_page.stack;
+ }
+diff --git a/include/linux/sched/task_stack.h b/include/linux/sched/task_stack.h
+index 892562e..5e799a4 100644
+--- a/include/linux/sched/task_stack.h
++++ b/include/linux/sched/task_stack.h
+@@ -16,7 +16,7 @@
+  * try_get_task_stack() instead.  task_stack_page will return a pointer
+  * that could get freed out from under you.
+  */
+-static inline void *task_stack_page(const struct task_struct *task)
++static __always_inline void *task_stack_page(const struct task_struct *task)
+ {
+ 	return task->stack;
+ }
