@@ -2,107 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3C64C4708A
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:25:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43DE2C47090
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:25:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380767AbiDDV0W (ORCPT
+        id S1382183AbiDDV0a (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:26:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46472 "EHLO
+        Mon, 4 Apr 2022 17:26:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379266AbiDDQvv (ORCPT
+        with ESMTP id S1379841AbiDDSQZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 12:51:51 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F0DE3135B;
-        Mon,  4 Apr 2022 09:49:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649090994; x=1680626994;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=m4/HuKY7IlIZ1WPP9o98DA/8FnlmNMaQ5SjeGB/v9kw=;
-  b=Uf/YH24IJr0PAevLGgz5daig1Tj1sz9kOOZE8evuLzVuDnikPPsejIMM
-   +xVQhEXIYhcabKMyiH73y1ozu5a4FK/Z4Rkcyo1FB/pZqbO4ixJI3IElQ
-   fLD1hm8PLkuEB6gj8MGroS8Z5GRAUgOrJgfUIUGyBkEzDh6Tc/xDVSVFe
-   GdnwWrIu8Vzt5PahgDiHXjn69fCJi36p5PyDBJu9+Sw11l42rtADB5IPN
-   7keRW69PK74CSzIgWUSSh5mS2UlGS9FCiYf28dyPE2msR0wpRojeLr6x5
-   mF3vX25TZChLlAB3h+S1lkiZbhQV3wRB/mYmxFwC/91jO9VqsPtIaTaoi
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="259390789"
-X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
-   d="scan'208";a="259390789"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:49:51 -0700
-X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
-   d="scan'208";a="523105220"
-Received: from rchatre-ws.ostc.intel.com ([10.54.69.144])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:49:50 -0700
-From:   Reinette Chatre <reinette.chatre@intel.com>
-To:     dave.hansen@linux.intel.com, jarkko@kernel.org, tglx@linutronix.de,
-        bp@alien8.de, luto@kernel.org, mingo@redhat.com,
-        linux-sgx@vger.kernel.org, x86@kernel.org
-Cc:     seanjc@google.com, kai.huang@intel.com, cathy.zhang@intel.com,
-        cedric.xing@intel.com, haitao.huang@intel.com,
-        mark.shanahan@intel.com, hpa@zytor.com,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH V3 24/30] selftests/sgx: Introduce dynamic entry point
-Date:   Mon,  4 Apr 2022 09:49:32 -0700
-Message-Id: <a3fe0be22afdde289966b87861ff1c141f9ef512.1648847675.git.reinette.chatre@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1648847675.git.reinette.chatre@intel.com>
-References: <cover.1648847675.git.reinette.chatre@intel.com>
+        Mon, 4 Apr 2022 14:16:25 -0400
+Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3860E3EA98
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 11:14:27 -0700 (PDT)
+Received: by mail-lj1-x231.google.com with SMTP id b43so13982321ljr.10
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 11:14:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=jA9O88Cl7Cj3DV9YqV3pxHKzHcpN0w127uH0DJrDu6A=;
+        b=cSyT5s8jfuk/1JR9/fI/Gqs9xQ74yToQSFVeEVZE16CzTs4y1cTOu7dQy0iEotcwpp
+         QXie2PHfvs7leMvJi+X5kQ9GgPivCzeYCJMWlKDtfiv2fOJIgHccPOImyRc3tPvaXTWK
+         I8gGR4josMrjK3iFj9rmn3/SieCQXjuOAEUL34WHsC4u4g2N1HZD+eDal9zVcALYiNGD
+         z97IvYhjqplonvMwwlZxugT2/f2yTjszKbrnzmJxMKd/56uQxqNMRguv/Obf8GOX+7v/
+         dUVZIvh+sRDUDSFPb/VkLSB7RsQkgdLAVyXMGApGh89rPO6CofiKvMSSLJXP4dWDEbfD
+         A3bQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=jA9O88Cl7Cj3DV9YqV3pxHKzHcpN0w127uH0DJrDu6A=;
+        b=O63aWE+1ALzMX+A5QfvXmZpGunH9RJhcKRXbnBbulXjRGXXqvZp7Wq23phUTc3GtCg
+         O1yADUs7RCD0w48jvHpX5xpNLw11ivJoZF8QiZHG+SC51ZrdzYe2Noj+3lhH9JbiPAt6
+         wkUUaHwxYj1pdERGtCVi91yHLIoMnPQig9W8erxupyv848M0cTTSgtjgNBieSNO6MQ5b
+         ZJMMhNeeja2ilb0TgC+M1Tpp0aF7K9Ajlz+cQ++JX0d6DTveKqcsMBMxlIUjLvDS2m2F
+         RFRwfkK/jTdaktsenUsEaim715lknByrSbVu0mVoOGPLL4cyed3+hrtqSmlmv2/9SRwB
+         FV5w==
+X-Gm-Message-State: AOAM532lzcKe0gC/sdfQ8UmRJboEMl5tlGHUcMvjNCMCbe+NZqc9KhTq
+        A5FtMzfTTHHzA8mnFgp1NEN1ReE903A3Us6ajIljjA==
+X-Google-Smtp-Source: ABdhPJy6X4VfItY0Exvmm9zT3KLeOkR4u/yRf3ZAF3nadtPeZPD3a5V5gvnOVvP+rwxXW2K1ofGissW4GbSk2e/aaR8=
+X-Received: by 2002:a2e:611a:0:b0:249:83e5:9f9b with SMTP id
+ v26-20020a2e611a000000b0024983e59f9bmr546393ljb.165.1649096065187; Mon, 04
+ Apr 2022 11:14:25 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220318003927.81471-1-colin.i.king@gmail.com>
+In-Reply-To: <20220318003927.81471-1-colin.i.king@gmail.com>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Mon, 4 Apr 2022 11:14:13 -0700
+Message-ID: <CAKwvOd=jyrdkMHPR3ZNQHattOxXcS1SseAHvrXWQC2H6tDB-Xw@mail.gmail.com>
+Subject: Re: [PATCH] scsi: message: fusion: mptbase: remove redundant variable dmp
+To:     Colin Ian King <colin.i.king@gmail.com>
+Cc:     Sathya Prakash <sathya.prakash@broadcom.com>,
+        Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
+        Suganath Prabu Subramani 
+        <suganath-prabu.subramani@broadcom.com>,
+        MPT-FusionLinux.pdl@broadcom.com, linux-scsi@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The test enclave (test_encl.elf) is built with two initialized
-Thread Control Structures (TCS) included in the binary. Both TCS are
-initialized with the same entry point, encl_entry, that correctly
-computes the absolute address of the stack based on the stack of each
-TCS that is also built into the binary.
+On Thu, Mar 17, 2022 at 5:39 PM Colin Ian King <colin.i.king@gmail.com> wrote:
+>
+> Variable dmp is being assigned a value that is never read, the
+> variable is redundant and can be removed.
+>
+> Cleans up clang scan build warning:
+> drivers/message/fusion/mptbase.c:6667:39: warning: Although
+> the value stored to 'dmp' is used in the enclosing expression,
+> the value is never actually read from 'dmp' [deadcode.DeadStores]
+>
+> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
 
-A new TCS can be added dynamically to the enclave and requires to be
-initialized with an entry point used to enter the enclave. Since the
-existing entry point, encl_entry, assumes that the TCS and its stack
-exists at particular offsets within the binary it is not able to handle
-a dynamically added TCS and its stack.
+Thanks for the patch!
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
 
-Introduce a new entry point, encl_dyn_entry, that initializes the
-absolute address of that thread's stack to the address immediately
-preceding the TCS itself. It is now possible to dynamically add a
-contiguous memory region to the enclave with the new stack preceding
-the new TCS. With the new TCS initialized with encl_dyn_entry as entry
-point the absolute address of the stack is computed correctly on entry.
+> ---
+>  drivers/message/fusion/mptbase.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/message/fusion/mptbase.c b/drivers/message/fusion/mptbase.c
+> index e90adfa57950..9b3ba2df71c7 100644
+> --- a/drivers/message/fusion/mptbase.c
+> +++ b/drivers/message/fusion/mptbase.c
+> @@ -6658,13 +6658,13 @@ static int mpt_summary_proc_show(struct seq_file *m, void *v)
+>  static int mpt_version_proc_show(struct seq_file *m, void *v)
+>  {
+>         u8       cb_idx;
+> -       int      scsi, fc, sas, lan, ctl, targ, dmp;
+> +       int      scsi, fc, sas, lan, ctl, targ;
+>         char    *drvname;
+>
+>         seq_printf(m, "%s-%s\n", "mptlinux", MPT_LINUX_VERSION_COMMON);
+>         seq_printf(m, "  Fusion MPT base driver\n");
+>
+> -       scsi = fc = sas = lan = ctl = targ = dmp = 0;
+> +       scsi = fc = sas = lan = ctl = targ = 0;
+>         for (cb_idx = MPT_MAX_PROTOCOL_DRIVERS-1; cb_idx; cb_idx--) {
+>                 drvname = NULL;
+>                 if (MptCallbacks[cb_idx]) {
+> --
+> 2.35.1
+>
+>
 
-Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
----
-No changes since V2
 
-No changes since V1
-
- tools/testing/selftests/sgx/test_encl_bootstrap.S | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/tools/testing/selftests/sgx/test_encl_bootstrap.S b/tools/testing/selftests/sgx/test_encl_bootstrap.S
-index 82fb0dfcbd23..03ae0f57e29d 100644
---- a/tools/testing/selftests/sgx/test_encl_bootstrap.S
-+++ b/tools/testing/selftests/sgx/test_encl_bootstrap.S
-@@ -45,6 +45,12 @@ encl_entry:
- 	# TCS #2. By adding the value of encl_stack to it, we get
- 	# the absolute address for the stack.
- 	lea	(encl_stack)(%rbx), %rax
-+	jmp encl_entry_core
-+encl_dyn_entry:
-+	# Entry point for dynamically created TCS page expected to follow
-+	# its stack directly.
-+	lea -1(%rbx), %rax
-+encl_entry_core:
- 	xchg	%rsp, %rax
- 	push	%rax
- 
 -- 
-2.25.1
-
+Thanks,
+~Nick Desaulniers
