@@ -2,219 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82317C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 11:47:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A8DDC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 11:47:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376575AbiDDLt3 (ORCPT
+        id S1376605AbiDDLtf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 07:49:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49454 "EHLO
+        Mon, 4 Apr 2022 07:49:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376579AbiDDLt1 (ORCPT
+        with ESMTP id S1376615AbiDDLtd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 07:49:27 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF291DEE7
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 04:47:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649072851; x=1680608851;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=Va4qYWMppawm/Zz/8SwdMk5TNxzvgUdJnvXhPz6uw/4=;
-  b=cl0EX+I52/YQQrMRgOw4sFauBY6rzSMwL2/K4UQ2LyHv74g1+GlCvSPV
-   +BvNnuDy9P3EDnl5Ouhf0W3MJbTEbx41fkdrF/GnM0bx7QIlPOIEyOC1T
-   OugfdyfPL3VSvz6w47pEVED9DaXV6ApkJQbwFpffDKLHaAVAPY8hKnrfv
-   ODelmzBX6wL5VGog6pjFcZtdSmTK9DjHBAnVyWqrxkMR8TX9EdHq15iIK
-   4xDIRJ4IM7mvNTbMyBDX07OUwFvz4cPZKE8xXOMGdYfgnI6t4ZF+uQpuu
-   MgggqQzF/XbR+zzAlZias5YWkyP5ZdQlwOPkN6eb2CZmORIbwju0jUZom
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10306"; a="248007589"
-X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
-   d="scan'208";a="248007589"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 04:47:14 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
-   d="scan'208";a="587542036"
-Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
-  by orsmga001.jf.intel.com with ESMTP; 04 Apr 2022 04:47:13 -0700
-Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nbLAu-00021E-Ao;
-        Mon, 04 Apr 2022 11:47:12 +0000
-Date:   Mon, 04 Apr 2022 19:46:42 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [paulmck-rcu:dev.2022.03.30a] BUILD SUCCESS
- c5bf22d44924f7b839e4750d78e9c30c9687e8b3
-Message-ID: <624adaa2.T8zdNFjBDF493yhS%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Mon, 4 Apr 2022 07:49:33 -0400
+Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF0E63D1FF;
+        Mon,  4 Apr 2022 04:47:37 -0700 (PDT)
+Received: by mail-qt1-f173.google.com with SMTP id s11so7424037qtc.3;
+        Mon, 04 Apr 2022 04:47:37 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=pkI30un2e+aw5iEZT5SxMrRKH4N5lxurp/14o6OWyKM=;
+        b=fCC2dFneILSnm5DV9D6VKz6qs14B5AdEQ1gxjpAvUe37gELThHGbyuMXa/ImGlIEve
+         Phf4z6WO9JAoEHTEMsdsy8Q9OrwFbz5fSxsj2N1b8L/Vv9YV7dekyVrO44F7IzA0WYjx
+         4CDpN4v0t26Je2kIeD8+OIsCYV5U8fUPhF0kKxJFugI9bWVrzL/Ni42nqT6XFMlp9da0
+         e0uaK5CvZvDoJqgOtJvVzjHRXl5WpYODooWc3prYrFhNhApa4Ch2R7Dz4yhTVMOL6zVZ
+         M85Vy01l3XTy99W9L8iPUg7SIAn3NTuMjHzBECGvK29P1OhMFCIn7jXiyBRi0r0zwHfe
+         j19w==
+X-Gm-Message-State: AOAM533EkJIpjPTQMAX1fYw2r1MYVXfIZHHIaHB2ffET7REZFKbFEAyB
+        WHRN8Jip+YMgrFteYKV2q/z+CPmNKkzkcg==
+X-Google-Smtp-Source: ABdhPJxfxEaxyN8Bxm2G0DLsPYOHGiYYi26ZUqCHFyu0+LfiYP4i7Hpceuka3oDJp/7TzfL4LldBsQ==
+X-Received: by 2002:ac8:5c4e:0:b0:2e2:104f:7257 with SMTP id j14-20020ac85c4e000000b002e2104f7257mr16988105qtj.544.1649072856476;
+        Mon, 04 Apr 2022 04:47:36 -0700 (PDT)
+Received: from mail-yb1-f174.google.com (mail-yb1-f174.google.com. [209.85.219.174])
+        by smtp.gmail.com with ESMTPSA id p13-20020a05622a048d00b002e1ce0c627csm8536883qtx.58.2022.04.04.04.47.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 04 Apr 2022 04:47:36 -0700 (PDT)
+Received: by mail-yb1-f174.google.com with SMTP id f23so17039599ybj.7;
+        Mon, 04 Apr 2022 04:47:36 -0700 (PDT)
+X-Received: by 2002:a25:45:0:b0:633:96e2:2179 with SMTP id 66-20020a250045000000b0063396e22179mr20536043yba.393.1649072855895;
+ Mon, 04 Apr 2022 04:47:35 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+References: <20220404084723.79089-1-zheyuma97@gmail.com> <20220404084723.79089-5-zheyuma97@gmail.com>
+In-Reply-To: <20220404084723.79089-5-zheyuma97@gmail.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 4 Apr 2022 13:47:24 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdWs6DwoKmEBFiwwMWDNLFS4Ow6V0YWWSU-jy3mvK2M4bw@mail.gmail.com>
+Message-ID: <CAMuHMdWs6DwoKmEBFiwwMWDNLFS4Ow6V0YWWSU-jy3mvK2M4bw@mail.gmail.com>
+Subject: Re: [PATCH 4/7] video: fbdev: vt8623fb: Error out if 'pixclock'
+ equals zero
+To:     Zheyu Ma <zheyuma97@gmail.com>
+Cc:     Helge Deller <deller@gmx.de>,
+        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git dev.2022.03.30a
-branch HEAD: c5bf22d44924f7b839e4750d78e9c30c9687e8b3  squash! rcutorture: Allow rcutorture without RCU Tasks Trace
+Hi Zheyu,
 
-elapsed time: 724m
+On Mon, Apr 4, 2022 at 1:07 PM Zheyu Ma <zheyuma97@gmail.com> wrote:
+> The userspace program could pass any values to the driver through
+> ioctl() interface. If the driver doesn't check the value of 'pixclock',
+> it may cause divide error.
+>
+> Fix this by checking whether 'pixclock' is zero in the function
+> vt8623fb_check_var().
+>
+> The following log reveals it:
+>
+> [   47.778727] divide error: 0000 [#1] PREEMPT SMP KASAN PTI
+> [   47.778803] RIP: 0010:vt8623fb_set_par+0xecd/0x2210
+> [   47.778870] Call Trace:
+> [   47.778872]  <TASK>
+> [   47.778909]  fb_set_var+0x604/0xeb0
+> [   47.778995]  do_fb_ioctl+0x234/0x670
+> [   47.779041]  fb_ioctl+0xdd/0x130
+> [   47.779048]  do_syscall_64+0x3b/0x90
+>
+> Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
 
-configs tested: 140
-configs skipped: 3
+Thanks for your patch!
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+> --- a/drivers/video/fbdev/vt8623fb.c
+> +++ b/drivers/video/fbdev/vt8623fb.c
+> @@ -321,6 +321,9 @@ static int vt8623fb_check_var(struct fb_var_screeninfo *var, struct fb_info *inf
+>  {
+>         int rv, mem, step;
+>
+> +       if (!var->pixclock)
+> +               return -EINVAL;
+> +
 
-gcc tested configs:
-arm64                               defconfig
-arm64                            allyesconfig
-arm                              allmodconfig
-arm                                 defconfig
-arm                              allyesconfig
-i386                          randconfig-c001
-arm                          gemini_defconfig
-mips                        vocore2_defconfig
-powerpc                           allnoconfig
-sh                          rsk7269_defconfig
-sh                 kfr2r09-romimage_defconfig
-parisc64                         alldefconfig
-sh                          rsk7264_defconfig
-arm                           sama5_defconfig
-powerpc                    klondike_defconfig
-sh                        edosk7705_defconfig
-m68k                          hp300_defconfig
-sh                           se7722_defconfig
-arm                           h3600_defconfig
-arm                          simpad_defconfig
-arm                           stm32_defconfig
-parisc                           alldefconfig
-alpha                               defconfig
-sh                             sh03_defconfig
-powerpc                     taishan_defconfig
-ia64                        generic_defconfig
-arc                            hsdk_defconfig
-sh                     sh7710voipgw_defconfig
-arm                        oxnas_v6_defconfig
-sh                        sh7763rdp_defconfig
-arc                              alldefconfig
-powerpc                      ppc6xx_defconfig
-powerpc                 mpc834x_itx_defconfig
-sh                          r7785rp_defconfig
-sh                            migor_defconfig
-xtensa                generic_kc705_defconfig
-arm                        spear6xx_defconfig
-parisc                generic-64bit_defconfig
-x86_64                              defconfig
-sh                         ecovec24_defconfig
-sh                   sh7770_generic_defconfig
-arm                         cm_x300_defconfig
-arm                        mvebu_v7_defconfig
-mips                         rt305x_defconfig
-mips                    maltaup_xpa_defconfig
-sh                   secureedge5410_defconfig
-sh                               j2_defconfig
-i386                 randconfig-c001-20220404
-x86_64               randconfig-c001-20220404
-arm                  randconfig-c002-20220404
-arm                  randconfig-c002-20220403
-ia64                             allmodconfig
-ia64                             allyesconfig
-ia64                                defconfig
-m68k                             allyesconfig
-m68k                             allmodconfig
-m68k                                defconfig
-nios2                               defconfig
-arc                              allyesconfig
-csky                                defconfig
-nios2                            allyesconfig
-alpha                            allyesconfig
-h8300                            allyesconfig
-xtensa                           allyesconfig
-arc                                 defconfig
-sh                               allmodconfig
-s390                                defconfig
-s390                             allmodconfig
-parisc                              defconfig
-parisc64                            defconfig
-parisc                           allyesconfig
-s390                             allyesconfig
-sparc                               defconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-i386                                defconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                          allyesconfig
-powerpc                          allmodconfig
-x86_64               randconfig-a011-20220404
-x86_64               randconfig-a013-20220404
-x86_64               randconfig-a015-20220404
-x86_64               randconfig-a012-20220404
-x86_64               randconfig-a016-20220404
-x86_64               randconfig-a014-20220404
-i386                          randconfig-a012
-i386                          randconfig-a014
-i386                          randconfig-a016
-i386                 randconfig-a014-20220404
-i386                 randconfig-a013-20220404
-i386                 randconfig-a016-20220404
-i386                 randconfig-a015-20220404
-i386                 randconfig-a011-20220404
-i386                 randconfig-a012-20220404
-riscv                randconfig-r042-20220404
-arc                  randconfig-r043-20220403
-arc                  randconfig-r043-20220404
-s390                 randconfig-r044-20220404
-riscv                            allmodconfig
-riscv                    nommu_k210_defconfig
-riscv                    nommu_virt_defconfig
-riscv                             allnoconfig
-riscv                          rv32_defconfig
-riscv                            allyesconfig
-riscv                               defconfig
-x86_64                    rhel-8.3-kselftests
-um                             i386_defconfig
-um                           x86_64_defconfig
-x86_64                          rhel-8.3-func
-x86_64                                  kexec
-x86_64                           allyesconfig
-x86_64                         rhel-8.3-kunit
-x86_64                               rhel-8.3
+When passed an invalid value, .check_var() is supposed to
+round up the invalid to a valid value, if possible.
 
-clang tested configs:
-x86_64                        randconfig-c007
-i386                          randconfig-c001
-powerpc              randconfig-c003-20220403
-riscv                randconfig-c006-20220403
-mips                 randconfig-c004-20220403
-arm                  randconfig-c002-20220403
-mips                   sb1250_swarm_defconfig
-arm                         socfpga_defconfig
-x86_64               randconfig-a006-20220404
-x86_64               randconfig-a002-20220404
-x86_64               randconfig-a001-20220404
-x86_64               randconfig-a005-20220404
-x86_64               randconfig-a003-20220404
-x86_64               randconfig-a004-20220404
-i386                 randconfig-a006-20220404
-i386                 randconfig-a002-20220404
-i386                 randconfig-a001-20220404
-i386                 randconfig-a004-20220404
-i386                 randconfig-a003-20220404
-i386                 randconfig-a005-20220404
-hexagon              randconfig-r045-20220403
-riscv                randconfig-r042-20220403
-hexagon              randconfig-r041-20220403
-hexagon              randconfig-r045-20220404
-hexagon              randconfig-r041-20220404
-s390                 randconfig-r044-20220403
+>         /* Find appropriate format */
+>         rv = svga_match_format (vt8623fb_formats, var, NULL);
+>         if (rv < 0)
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
