@@ -2,160 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4FD1C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94454C4167D
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:49:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379487AbiDDVrP (ORCPT
+        id S1379369AbiDDVrM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:47:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60574 "EHLO
+        Mon, 4 Apr 2022 17:47:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379350AbiDDRBu (ORCPT
+        with ESMTP id S1379221AbiDDQrL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 13:01:50 -0400
-Received: from vps-vb.mhejs.net (vps-vb.mhejs.net [37.28.154.113])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8548C3FD99;
-        Mon,  4 Apr 2022 09:59:53 -0700 (PDT)
-Received: from MUA
-        by vps-vb.mhejs.net with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <mail@maciej.szmigiero.name>)
-        id 1nbQ3J-0002uy-3w; Mon, 04 Apr 2022 18:59:41 +0200
-Message-ID: <eecfc868-d217-198f-5752-3f59aad59de6@maciej.szmigiero.name>
-Date:   Mon, 4 Apr 2022 18:59:35 +0200
+        Mon, 4 Apr 2022 12:47:11 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E6C535DFF;
+        Mon,  4 Apr 2022 09:45:14 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id dr20so21081794ejc.6;
+        Mon, 04 Apr 2022 09:45:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=WYOOnPbn2RmEaHen3xtS2MJr0dYPX1i1sJyDMjOr0AU=;
+        b=QMcDsPvIRuHi/WpJFJSoj5Z10CCm1Oo4x4A560Z5jTXDssFzvPFge568Rzbldy/2MQ
+         S4nGAfN+tf8CRXW7HcSYn0wzdxLIQB9xjNqQWtnYw2e/Rbq1rCgklrfKYoDp/pX/CBl+
+         BNw8Uz5EyE3p8DLCmGJ5Hi2Y+Jx/4X8JsRSrUcwdEsUkyx924f5ryrDaebgr/HfxG13U
+         aDuTXOVLkR8Vg3PmOVfUtomcPwUCRhSgg3ZckjS56UXycmGS0Xz0/K0WbbykW9ZTRzer
+         C0rm3kJEdSLJaEh6elf9JHT15ndrGpxJnLukoJ8LJPYYQ+dtQ4oQE5+3t0SBAPNfApT0
+         XCNg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=WYOOnPbn2RmEaHen3xtS2MJr0dYPX1i1sJyDMjOr0AU=;
+        b=XcsgZZoG7z4zLByPE6nIjqiBOnPSIUoS/7Nj2ie/+XTOaSy3oQ1oK20HKFf4DykuBu
+         vMkglmnAF6o0GiBVMnczhPkV4K4hhyPOjTdr+hih3CqWxDaaQRThoVLdf/OFOMk3mATL
+         /+aaVpG6p/Akvc01dVbs9a2XaN6uEX5WBLE3ZnVLECa+lfKgNl9GsuZaeCsl0QM6CJnv
+         zL7CUprgMhq3IMcPn+CTM/A++7pzYCz2edY6RQd3uorFZ4NR0RyutZ2FmAJhm4K8XB66
+         jBX5dOh/NFvehLfh2lhUJN2VSxboQWV+rXULKxM1Sws+0MDSIuByXtYf0Ud+42yjJUkt
+         aj6w==
+X-Gm-Message-State: AOAM531XnR3HNa3BNjgxeEJZrilEEQ0Yuc8WyD/NRV+2Tt19fUAzivKM
+        tkcweIkPPffcKS1PpnztY3Q=
+X-Google-Smtp-Source: ABdhPJyZ1hv37A/0H7OrNN/66SRFU5MG2iN3PNyU2k0zTQ2HJwYjX+VdJpPd1V52Z/uY0Mx4q+lnPA==
+X-Received: by 2002:a17:906:cf99:b0:6e7:9ff0:38d9 with SMTP id um25-20020a170906cf9900b006e79ff038d9mr992994ejb.646.1649090712908;
+        Mon, 04 Apr 2022 09:45:12 -0700 (PDT)
+Received: from [192.168.0.253] (ip5f5abb55.dynamic.kabel-deutschland.de. [95.90.187.85])
+        by smtp.gmail.com with ESMTPSA id yy18-20020a170906dc1200b006d6e5c75029sm4555841ejb.187.2022.04.04.09.45.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 04 Apr 2022 09:45:12 -0700 (PDT)
+Message-ID: <1bd30dce-4046-721b-2207-32ace83af441@gmail.com>
+Date:   Mon, 4 Apr 2022 18:45:11 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
-Subject: Re: [PATCH 8/8] KVM: selftests: nSVM: Add svm_nested_soft_inject_test
+Subject: Re: [PATCH] ath11k: do not return random value
 Content-Language: en-US
-To:     Maxim Levitsky <mlevitsk@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220402010903.727604-1-seanjc@google.com>
- <20220402010903.727604-9-seanjc@google.com>
- <2401bf729beab6d9348fda18f55e90ed9c1f7583.camel@redhat.com>
-From:   "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
-In-Reply-To: <2401bf729beab6d9348fda18f55e90ed9c1f7583.camel@redhat.com>
+To:     Robert Marko <robert.marko@sartura.hr>
+Cc:     kvalo@kernel.org, David Miller <davem@davemloft.net>,
+        kuba@kernel.org, ath11k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <20220404105324.13810-1-straube.linux@gmail.com>
+ <CA+HBbNHEK=CbyeeyPG=s=D2xofdSbk8Lxx5R9nij_cp6t7ybDA@mail.gmail.com>
+From:   Michael Straube <straube.linux@gmail.com>
+In-Reply-To: <CA+HBbNHEK=CbyeeyPG=s=D2xofdSbk8Lxx5R9nij_cp6t7ybDA@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4.04.2022 14:27, Maxim Levitsky wrote:
-> On Sat, 2022-04-02 at 01:09 +0000, Sean Christopherson wrote:
->> From: Maciej S. Szmigiero <maciej.szmigiero@oracle.com>
+On 4/4/22 18:35, Robert Marko wrote:
+> On Mon, Apr 4, 2022 at 12:54 PM Michael Straube <straube.linux@gmail.com> wrote:
 >>
->> Add a KVM self-test that checks whether a nSVM L1 is able to successfully
->> inject a software interrupt and a soft exception into its L2 guest.
+>> Function ath11k_qmi_assign_target_mem_chunk() returns a random value
+>> if of_parse_phandle() fails because the return variable ret is not
+>> initialized before calling of_parse_phandle(). Return -EINVAL to avoid
+>> possibly returning 0, which would be wrong here.
 >>
->> In practice, this tests both the next_rip field consistency and
->> L1-injected event with intervening L0 VMEXIT during its delivery:
->> the first nested VMRUN (that's also trying to inject a software interrupt)
->> will immediately trigger a L0 NPF.
->> This L0 NPF will have zero in its CPU-returned next_rip field, which if
->> incorrectly reused by KVM will trigger a #PF when trying to return to
->> such address 0 from the interrupt handler.
+>> Issue found by smatch.
 >>
->> Signed-off-by: Maciej S. Szmigiero <maciej.szmigiero@oracle.com>
->> Signed-off-by: Sean Christopherson <seanjc@google.com>
+>> Signed-off-by: Michael Straube <straube.linux@gmail.com>
 >> ---
->>   tools/testing/selftests/kvm/.gitignore        |   1 +
->>   tools/testing/selftests/kvm/Makefile          |   1 +
->>   .../selftests/kvm/include/x86_64/svm_util.h   |   2 +
->>   .../kvm/x86_64/svm_nested_soft_inject_test.c  | 147 ++++++++++++++++++
->>   4 files changed, 151 insertions(+)
->>   create mode 100644 tools/testing/selftests/kvm/x86_64/svm_nested_soft_inject_test.c
+>>   drivers/net/wireless/ath/ath11k/qmi.c | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
 >>
-(..)
->> diff --git a/tools/testing/selftests/kvm/x86_64/svm_nested_soft_inject_test.c b/tools/testing/selftests/kvm/x86_64/svm_nested_soft_inject_test.c
->> new file mode 100644
->> index 000000000000..d39be5d885c1
->> --- /dev/null
->> +++ b/tools/testing/selftests/kvm/x86_64/svm_nested_soft_inject_test.c
->> @@ -0,0 +1,147 @@
->> +// SPDX-License-Identifier: GPL-2.0-only
->> +/*
->> + * Copyright (C) 2022 Oracle and/or its affiliates.
->> + *
->> + * Based on:
->> + *   svm_int_ctl_test
->> + *
->> + *   Copyright (C) 2021, Red Hat, Inc.
->> + *
->> + */
->> +
->> +#include "test_util.h"
->> +#include "kvm_util.h"
->> +#include "processor.h"
->> +#include "svm_util.h"
->> +
->> +#define VCPU_ID		0
->> +#define INT_NR			0x20
->> +#define X86_FEATURE_NRIPS	BIT(3)
->> +
->> +#define vmcall()		\
->> +	__asm__ __volatile__(	\
->> +		"vmmcall\n"	\
->> +		)
->> +
->> +#define ud2()			\
->> +	__asm__ __volatile__(	\
->> +		"ud2\n"	\
->> +		)
->> +
->> +#define hlt()			\
->> +	__asm__ __volatile__(	\
->> +		"hlt\n"	\
->> +		)
+>> diff --git a/drivers/net/wireless/ath/ath11k/qmi.c b/drivers/net/wireless/ath/ath11k/qmi.c
+>> index 65d3c6ba35ae..81b2304b1fde 100644
+>> --- a/drivers/net/wireless/ath/ath11k/qmi.c
+>> +++ b/drivers/net/wireless/ath/ath11k/qmi.c
+>> @@ -1932,7 +1932,7 @@ static int ath11k_qmi_assign_target_mem_chunk(struct ath11k_base *ab)
+>>                          if (!hremote_node) {
+>>                                  ath11k_dbg(ab, ATH11K_DBG_QMI,
+>>                                             "qmi fail to get hremote_node\n");
+>> -                               return ret;
+>> +                               return -EINVAL;
+>>                          }
+>>
+>>                          ret = of_address_to_resource(hremote_node, 0, &res);
+>> --
+>> 2.35.1
 > 
-> Minor nitpick: I guess it would be nice to put these in some common header file.
-
-Will move these to include/x86_64/processor.h (that's probably the most
-matching header file).
-
->> +
->> +static void l1_guest_code(struct svm_test_data *svm)
->> +{
->> +	#define L2_GUEST_STACK_SIZE 64
->> +	unsigned long l2_guest_stack[L2_GUEST_STACK_SIZE];
->> +	struct vmcb *vmcb = svm->vmcb;
->> +
->> +	/* Prepare for L2 execution. */
->> +	generic_svm_setup(svm, l2_guest_code,
->> +			  &l2_guest_stack[L2_GUEST_STACK_SIZE]);
->> +
->> +	vmcb->control.intercept_exceptions |= BIT(PF_VECTOR) | BIT(UD_VECTOR);
->> +	vmcb->control.intercept |= BIT(INTERCEPT_HLT);
->> +
->> +	vmcb->control.event_inj = INT_NR | SVM_EVTINJ_VALID | SVM_EVTINJ_TYPE_SOFT;
->> +	/* The return address pushed on stack */
->> +	vmcb->control.next_rip = vmcb->save.rip;
-> 
-> I'll would be putting even something more spicy here just to see that KVM preserves this field
-> like say put two ud2 in the start of guest code, and here have
-> 
-> vmcb->control.next_rip = vmcb->save.rip + 4; // skip over two ud2 instructions.
-> 
-> That way KVM won't be able to skip over a single instruction to get correct next_rip
-
-Good point, will add these two additional ud2s at the start of L2 guest code.
-
-> 
-> 
-> Other that nitpicks:
-> 
-> Reviewed-by: Maxim levitsky <mlevitsk@redhat.com>
-> 
-> Best regards,
-> 	Maxim Levitsky
-> 
+> Hi Michael,
+> This is already solved in ath-next and 5.18-rc1:
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/drivers/net/wireless/ath/ath11k/qmi.c?h=v5.18-rc1&id=c9b41832dc080fa59bad597de94865b3ea2d5bab
 > 
 
-Thanks,
-Maciej
+Hi Robert,
+
+Ah ok, then I worked with the wrong tree (wireless-drivers-next).
+Sorry for the noise.
+
+regards,
+Michael
+
+
