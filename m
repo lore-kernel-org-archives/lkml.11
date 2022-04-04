@@ -2,95 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 794C4C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:09:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F0A9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:12:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350770AbiDDWLO (ORCPT
+        id S1355674AbiDDWLk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 18:11:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36018 "EHLO
+        Mon, 4 Apr 2022 18:11:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241092AbiDDVat (ORCPT
+        with ESMTP id S1383010AbiDDVcj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 17:30:49 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2AD79FEA
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 14:14:00 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id b15so12642052edn.4
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 14:14:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=S5JDtmIs58TRR3YM1MH2n9ydceKzu8ZMJYE0EAd1fdA=;
-        b=mXu+kbIOllUFvjcA3fMxHjtto4SRHNogC5DNMGt298LCEFBZj/4pCFusAyxJJwXDFE
-         aknCc84+LN9asN3z8ABlK1Neu52RGYbDbxQ/x7wMjt8hgDbCi8gC3h63ehV3//RUcjEQ
-         uXd8VnYduxNmDzxwkqs5cArm2NvcR5NWQ29lBNGTdYvQoscK7mpNXBKQ0tLJIvZZx8EK
-         UHAQPh+V4qvmOeqTkgtiZtN6T1lQfPOOloeTXFuwpCBWe7cbtmQqJ4Ou8yw7CeR2UsF3
-         4uTo3/Qh87ML1kHT+0XUbhJ3pDx3kqchZRWH52MVse9/W3tOmLVYxXkyLWDShcPe6WYR
-         SzQQ==
+        Mon, 4 Apr 2022 17:32:39 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B1C8125C5
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 14:23:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649107401;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=DfDyjcnnLyc2bSZ6jJAVhGllQHcKHgp84LgGIl4EXgM=;
+        b=O/xKp+aaN01eINcwTDKyUl7NxBl5p8xF0gD53R5bsy6IveDGmG5wJhuJ1FY8pX4TQNnSEF
+        BY09Z92CyZkTnant4pRtPKTIUgibfxGkyCJmn0gXOYOxJiI5fG7nh7tryVBjjLADr6vDDe
+        zS0WUN6tlzAVqVXbH0JbuJGTUYEs2KE=
+Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
+ [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-91-XgC7n7FANbSBzhYDzNhhrg-1; Mon, 04 Apr 2022 17:23:20 -0400
+X-MC-Unique: XgC7n7FANbSBzhYDzNhhrg-1
+Received: by mail-qv1-f72.google.com with SMTP id ke13-20020a056214300d00b00443901b0386so8912364qvb.14
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 14:23:20 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=S5JDtmIs58TRR3YM1MH2n9ydceKzu8ZMJYE0EAd1fdA=;
-        b=FYo0ptW9J9lodM0KqAEDb2aBZE9Y0gPVMsaf27lai586I+Z9LK6ktU4bVpNMy/iPvK
-         ZTiCkU2ZynCl5qGZUUjPQhg+t0KZz+XyHFZh6IfI0FBHGIkfDz6zVJZG6ejN1DjxXRUn
-         hzlFq/7p6GNP+fytmaBsVSXt6Fjyg2lKqyAzCchcLfu63wTS2Soq7lOr5TOnO5NcEmNs
-         dqAvfrd5LuTT0nYhPBq1xdp1nX/t4wTRDw+jfaI+Tnku8ovKjmpf1CTDkIOGoNZtExom
-         PUXNii/ao1p/v4xLomRYTVxOmY7OHGLExwK4oOWm5XngwFIzCJc7rf2vECYPOmY4IDVV
-         4+cw==
-X-Gm-Message-State: AOAM532BFCyrIAmVUfq52JZPzUKzl5o5f8vm6pl5I1ymnFuXCKp0ZrJ+
-        FxCh3aS2OnfaORjPM+78yuUuSdkRIIxfraIz7Z5PEQ==
-X-Google-Smtp-Source: ABdhPJyMO0ydKmS0siYdaHdVOwsHoBm4w6Sf5vzl64BwKlS1ZlQJjG/60KDSEZUZzhTTg4BvzwEuDDfUH50t+IgZaN8=
-X-Received: by 2002:a05:6402:d0a:b0:418:ec3b:2242 with SMTP id
- eb10-20020a0564020d0a00b00418ec3b2242mr83168edb.229.1649106839033; Mon, 04
- Apr 2022 14:13:59 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220318021314.3225240-1-davidgow@google.com> <20220318021314.3225240-3-davidgow@google.com>
-In-Reply-To: <20220318021314.3225240-3-davidgow@google.com>
-From:   Daniel Latypov <dlatypov@google.com>
-Date:   Mon, 4 Apr 2022 16:13:47 -0500
-Message-ID: <CAGS_qxqtMpjKX+CMF6eBUWfsc-TKR9-Bk+hYM=PHa0_wUtQQuA@mail.gmail.com>
-Subject: Re: [RFC PATCH 2/2] kunit: expose ftrace-based API for stubbing out
- functions during tests
-To:     David Gow <davidgow@google.com>
-Cc:     Brendan Higgins <brendanhiggins@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        kunit-dev@googlegroups.com, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:organization:user-agent:mime-version
+         :content-transfer-encoding;
+        bh=DfDyjcnnLyc2bSZ6jJAVhGllQHcKHgp84LgGIl4EXgM=;
+        b=SPGxmuT8uTmfTYtt/hf3O05wPTzleezG5xeXXVTeqOxZn2OotkH8PhIBR/HbgdIYJ0
+         UUAP8SQH11JW0jjzFkB9unnN767fH+RjvlXAKomQu2AF9PPIrly9f8xxRAruyRo3neH0
+         9LQqrX1P7l4QHNt0/974PZgxLCXlNnD/aKkTnVzQkERlXucXQ7jOq2whRzH5LRmldbqQ
+         fuJokKXhNQnIQRsDX/yTNHFbtrIN+z8nAeiM3eA1BsRYRjqEJWTwd9a7EJOm5mFCAvMt
+         nmlI6BfPuS5DmU4b2JWy3CpUmDjpLo1M+W/rGd6I2Js2pZdTDi3rA9Z1klTd1IN2Wh0O
+         4uIw==
+X-Gm-Message-State: AOAM533z+JhDEBcKlYWtm4W0p+vyf8qfvOYOSmq4shy98RJH0gWO2jGO
+        3E7bZLMw8VtlHIaM5Y/Z5qfwHulwVXeYeRdYruqfWtICkZz2yF9dUM/jEGYOKIVy1iREsDkCMbd
+        aRLy8kWfhk6zcztX9vqzfPOba
+X-Received: by 2002:a05:620a:2487:b0:67b:3113:f83f with SMTP id i7-20020a05620a248700b0067b3113f83fmr179301qkn.604.1649107399545;
+        Mon, 04 Apr 2022 14:23:19 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwA/j5T9RBShOaLAqidOK7ozpdzXqamqb+Gc1f+d2xjbvub/SnKUIk0rJFYk2A/f+j9+SQqNg==
+X-Received: by 2002:a05:620a:2487:b0:67b:3113:f83f with SMTP id i7-20020a05620a248700b0067b3113f83fmr179283qkn.604.1649107399340;
+        Mon, 04 Apr 2022 14:23:19 -0700 (PDT)
+Received: from [192.168.8.138] (pool-71-126-244-162.bstnma.fios.verizon.net. [71.126.244.162])
+        by smtp.gmail.com with ESMTPSA id x6-20020ac86b46000000b002e02be9c0easm8354800qts.69.2022.04.04.14.23.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Apr 2022 14:23:18 -0700 (PDT)
+Message-ID: <74509d19d84b879b624fa9f40bc8186fd09e750a.camel@redhat.com>
+Subject: Re: [PATCH] clk: base: fix an incorrect NULL check on list iterator
+From:   Lyude Paul <lyude@redhat.com>
+To:     Xiaomeng Tong <xiam0nd.tong@gmail.com>, bskeggs@redhat.com,
+        kherbst@redhat.com, airlied@linux.ie, daniel@ffwll.ch
+Cc:     martin.peres@free.fr, dri-devel@lists.freedesktop.org,
+        nouveau@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Date:   Mon, 04 Apr 2022 17:23:17 -0400
+In-Reply-To: <20220327075824.11806-1-xiam0nd.tong@gmail.com>
+References: <20220327075824.11806-1-xiam0nd.tong@gmail.com>
+Organization: Red Hat Inc.
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.DarkModeFix.fc35) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 17, 2022 at 9:13 PM David Gow <davidgow@google.com> wrote:
-> +
-> +/** KUNIT_STUBBABLE - marks a function as stubbable when stubbing support is
-> + * enabled.
-> + *
-> + * Stubbing uses ftrace internally, so we can only stub out functions when they
-> + * are not inlined. This macro eavlautes to noinline when stubbing support is
+This should probably be prefixed with the title "drm/nouveau/clk:", but I can
+fix that before pushing it.
 
-Just noting a couple typos lest they be forgotten:
-*evaluates
+Reviewed-by: Lyude Paul <lyude@redhat.com>
 
-> + * enabled to thus make it safe.
-> + *
+Will push it to the appropriate repository shortly
 
-<snip>
 
-> + *
-> + *     void replacement_func(int n)
-> + *     {
-> + *             pr_info("replacement_func() called with %d", n);
-> + *             return 42;
-> + *     }
-> + *
-> + *     void example_test(struct kunit *test)
-> + *     {
-> + *             kunit_active_ftrace_stub(test, real_func, replacement_func);
+On Sun, 2022-03-27 at 15:58 +0800, Xiaomeng Tong wrote:
+> The bug is here:
+>         if (nvkm_cstate_valid(clk, cstate, max_volt, clk->temp))
+>                 return cstate;
+> 
+> The list iterator value 'cstate' will *always* be set and non-NULL
+> by list_for_each_entry_from_reverse(), so it is incorrect to assume
+> that the iterator value will be unchanged if the list is empty or no
+> element is found (In fact, it will be a bogus pointer to an invalid
+> structure object containing the HEAD). Also it missed a NULL check
+> at callsite and may lead to invalid memory access after that.
+> 
+> To fix this bug, just return 'encoder' when found, otherwise return
+> NULL. And add the NULL check.
+> 
+> Cc: stable@vger.kernel.org
+> Fixes: 1f7f3d91ad38a ("drm/nouveau/clk: Respect voltage limits in
+> nvkm_cstate_prog")
+> Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+> ---
+>  drivers/gpu/drm/nouveau/nvkm/subdev/clk/base.c | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/gpu/drm/nouveau/nvkm/subdev/clk/base.c
+> b/drivers/gpu/drm/nouveau/nvkm/subdev/clk/base.c
+> index 57199be082fd..c2b5cc5f97ed 100644
+> --- a/drivers/gpu/drm/nouveau/nvkm/subdev/clk/base.c
+> +++ b/drivers/gpu/drm/nouveau/nvkm/subdev/clk/base.c
+> @@ -135,10 +135,10 @@ nvkm_cstate_find_best(struct nvkm_clk *clk, struct
+> nvkm_pstate *pstate,
+>  
+>         list_for_each_entry_from_reverse(cstate, &pstate->list, head) {
+>                 if (nvkm_cstate_valid(clk, cstate, max_volt, clk->temp))
+> -                       break;
+> +                       return cstate;
+>         }
+>  
+> -       return cstate;
+> +       return NULL;
+>  }
+>  
+>  static struct nvkm_cstate *
+> @@ -169,6 +169,8 @@ nvkm_cstate_prog(struct nvkm_clk *clk, struct
+> nvkm_pstate *pstate, int cstatei)
+>         if (!list_empty(&pstate->list)) {
+>                 cstate = nvkm_cstate_get(clk, pstate, cstatei);
+>                 cstate = nvkm_cstate_find_best(clk, pstate, cstate);
+> +               if (!cstate)
+> +                       return -EINVAL;
+>         } else {
+>                 cstate = &pstate->base;
+>         }
 
-*activate
+-- 
+Cheers,
+ Lyude Paul (she/her)
+ Software Engineer at Red Hat
+
