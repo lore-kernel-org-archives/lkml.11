@@ -2,94 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2794CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 14:01:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D664C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 14:02:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376745AbiDDODG convert rfc822-to-8bit (ORCPT
+        id S1376766AbiDDOEs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 10:03:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50044 "EHLO
+        Mon, 4 Apr 2022 10:04:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376760AbiDDOCv (ORCPT
+        with ESMTP id S1358744AbiDDOEo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 10:02:51 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 222B621AA
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 07:00:55 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1nbNGD-0002dJ-IU; Mon, 04 Apr 2022 16:00:49 +0200
-Received: from [2a0a:edc0:0:900:1d::4e] (helo=lupine)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1nbNGE-0012SW-7j; Mon, 04 Apr 2022 16:00:48 +0200
-Received: from pza by lupine with local (Exim 4.94.2)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1nbNGC-0009Jb-16; Mon, 04 Apr 2022 16:00:48 +0200
-Message-ID: <4a60a46820858adbd9de3b41d37fbc8ddc6c6549.camel@pengutronix.de>
-Subject: Re: [pza:reset/next 11/11] drivers/reset/core.c:1114:22: error:
- implicit declaration of function 'acpi_has_method'; did you mean
- 'acpi_has_watchdog'?
-From:   Philipp Zabel <p.zabel@pengutronix.de>
-To:     kernel test robot <lkp@intel.com>,
-        Krishna Yarlagadda <kyarlagadda@nvidia.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Date:   Mon, 04 Apr 2022 16:00:47 +0200
-In-Reply-To: <202204042122.vBjzQg7a-lkp@intel.com>
-References: <202204042122.vBjzQg7a-lkp@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-User-Agent: Evolution 3.38.3-1 
+        Mon, 4 Apr 2022 10:04:44 -0400
+Received: from wout4-smtp.messagingengine.com (wout4-smtp.messagingengine.com [64.147.123.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 676CB3335E;
+        Mon,  4 Apr 2022 07:02:48 -0700 (PDT)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.west.internal (Postfix) with ESMTP id F11D132008FD;
+        Mon,  4 Apr 2022 10:02:44 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Mon, 04 Apr 2022 10:02:46 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm1; bh=6KOpj6HHf7ZdB/fmMbJ1eNtVMkAmnCG9g1i8uG
+        nnAxw=; b=Ep8uRukAD+PvFuRP3HUgmxLUnNuZN+8on28NTktsQbQoBO7NYQRStn
+        4ObvWEk4uma4CE/Dua8gmWTsQJPjkLm8bsyRbBfD5xK8TKWz5GdLN9Nx6dhdfjxP
+        mKIPJ4NEPKR8posPN7ZtH+wNTZmMso3evm6X8o1ejBg2lDel1SDG1bIB+acdVgN5
+        B65u9hLpb69+Y3vwBNiv+TFdOyeMEl0oC/5/CDkTc52t3MbTMaUl5w9L19tqlF2o
+        xHYrdFfj9fr6vBO4xK7ym/Fd1vLNoqjArqTeVl9xSLfM3RsUPCxIz+u1epbYFPQW
+        hESgvNX7vtemhvZt1/4tiVcsUmRJYN0A==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=6KOpj6HHf7ZdB/fmM
+        bJ1eNtVMkAmnCG9g1i8uGnnAxw=; b=gmxdqIrmKPq6asef4ARj1i7AgGlEko5ri
+        RKq3hc9S0d3GmTbBA18cdqEVwDRIRPEI3IBqEv5obDTEL3x81ySRxjcxAkwpTxaV
+        DV8lxEMZ7Dqz/y+V62F4Wwa+7OMgp29Ej6EGVLHSUcpl58/S/U0fL1uoaAK4kRf8
+        Wwz/em2nYSFLuZZV1N0bMtpagGyUufTjoxvV25BFy5RfdNQIzChjIM7qukM/Tg6e
+        zJr0LI5LXOmOPXoz/erlrc0NLszRwhp/pfU2ykrLtn5DGy+PxFm2sX9PQFwMmLOv
+        h0deFPurXdqM3HNIkR1kQzMaUer4EwiQ2hPC+rVvWHFHOrG5jK9Jg==
+X-ME-Sender: <xms:g_pKYtTK17tecqsSQJLT5t0OoMnwrwcNrieVtSbaj2SnAqINQ9e0Wg>
+    <xme:g_pKYmzwgfal3FN8e1yqwT8MRM7c1e3ZltWv-H7VB4uQWoJyC1fY5bdDjlQk--VT-
+    WFkGLPc0AgK4w>
+X-ME-Received: <xmr:g_pKYi2-RPbaLRzpPTkLW2YG1nIo817xfEjVCx-9zlw07xB485126jt0QKzvh3WvFtfoPH6zcnE47M_MC2YZBWONtMaUjJ5M>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudejvddgieeiucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefirhgvghcu
+    mffjuceoghhrvghgsehkrhhorghhrdgtohhmqeenucggtffrrghtthgvrhhnpeevueehje
+    fgfffgiedvudekvdektdelleelgefhleejieeugeegveeuuddukedvteenucevlhhushht
+    vghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehgrhgvgheskhhrohgrhh
+    drtghomh
+X-ME-Proxy: <xmx:g_pKYlDTgDqR65f_Sjjk4S3U8SHqaS-r-Ku-XTWWCUEF5iVOij2z2Q>
+    <xmx:g_pKYmidtxAWOyQTUm5B6Ka2UsoXJ8pIlmvN4n4kjEMojHo75nhKgQ>
+    <xmx:g_pKYpoRYOJnQ50UemFTIv44MIEcWshECIxFBmQTt3Bak65YXNS17w>
+    <xmx:hPpKYvaLNvfa1nFKM1pA96u2Mwj9eN1F1fpe9qr2MgTJtVUaFXiV8A>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 4 Apr 2022 10:02:42 -0400 (EDT)
+Date:   Mon, 4 Apr 2022 16:02:40 +0200
+From:   Greg KH <greg@kroah.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        stable@vger.kernel.org, Qiuhao Li <qiuhao@sysec.org>,
+        Gaoning Pan <pgn@zju.edu.cn>, Yongkang Jia <kangel@zju.edu.cn>,
+        syzbot+6cde2282daa792c49ab8@syzkaller.appspotmail.com,
+        Tadeusz Struk <tadeusz.struk@linaro.org>,
+        Maxim Levitsky <mlevitsk@redhat.com>
+Subject: Re: [PATCH 5.4] KVM: x86/mmu: do compare-and-exchange of gPTE via
+ the user address
+Message-ID: <Ykr6gA6o+oLqDXMi@kroah.com>
+References: <20220404134141.427397-4-pbonzini@redhat.com>
 MIME-Version: 1.0
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: p.zabel@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220404134141.427397-4-pbonzini@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mo, 2022-04-04 at 21:25 +0800, kernel test robot wrote:
-> tree:   https://git.pengutronix.de/git/pza/linux reset/next
-> head:   7272ce0fa39b66aa91c934a27e9196082a3ffc40
-> commit: 7272ce0fa39b66aa91c934a27e9196082a3ffc40 [11/11] reset: ACPI
-> reset support
-> config: h8300-randconfig-m031-20220404 (
-> https://download.01.org/0day-ci/archive/20220404/202204042122.vBjzQg7a-lkp@intel.com/config
-> )
-> compiler: h8300-linux-gcc (GCC) 11.2.0
-> reproduce (this is a W=1 build):
->         wget 
-> https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross
->  -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         git remote add pza https://git.pengutronix.de/git/pza/linux
->         git fetch --no-tags pza reset/next
->         git checkout 7272ce0fa39b66aa91c934a27e9196082a3ffc40
->         # save the config file to linux build tree
->         mkdir build_dir
->         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0
-> make.cross O=build_dir ARCH=h8300 SHELL=/bin/bash drivers/reset/
+On Mon, Apr 04, 2022 at 09:41:41AM -0400, Paolo Bonzini wrote:
+> commit 2a8859f373b0a86f0ece8ec8312607eacf12485d upstream.
 > 
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
+> FNAME(cmpxchg_gpte) is an inefficient mess.  It is at least decent if it
+> can go through get_user_pages_fast(), but if it cannot then it tries to
+> use memremap(); that is not just terribly slow, it is also wrong because
+> it assumes that the VM_PFNMAP VMA is contiguous.
 > 
-> All errors (new ones prefixed by >>):
+> The right way to do it would be to do the same thing as
+> hva_to_pfn_remapped() does since commit add6a0cd1c5b ("KVM: MMU: try to
+> fix up page faults before giving up", 2016-07-05), using follow_pte()
+> and fixup_user_fault() to determine the correct address to use for
+> memremap().  To do this, one could for example extract hva_to_pfn()
+> for use outside virt/kvm/kvm_main.c.  But really there is no reason to
+> do that either, because there is already a perfectly valid address to
+> do the cmpxchg() on, only it is a userspace address.  That means doing
+> user_access_begin()/user_access_end() and writing the code in assembly
+> to handle any exception correctly.  Worse, the guest PTE can be 8-byte
+> even on i686 so there is the extra complication of using cmpxchg8b to
+> account for.  But at least it is an efficient mess.
 > 
->    drivers/reset/core.c: In function '__device_reset':
-> > > drivers/reset/core.c:1114:22: error: implicit declaration of
-> > > function 'acpi_has_method'; did you mean 'acpi_has_watchdog'? [-
-> > > Werror=implicit-function-declaration]
->     1114 |                 if (!acpi_has_method(handle, "_RST"))
->          |                      ^~~~~~~~~~~~~~~
->          |                      acpi_has_watchdog
->    cc1: some warnings being treated as errors
+> Reported-by: Qiuhao Li <qiuhao@sysec.org>
+> Reported-by: Gaoning Pan <pgn@zju.edu.cn>
+> Reported-by: Yongkang Jia <kangel@zju.edu.cn>
+> Reported-by: syzbot+6cde2282daa792c49ab8@syzkaller.appspotmail.com
+> Debugged-by: Tadeusz Struk <tadeusz.struk@linaro.org>
+> Tested-by: Maxim Levitsky <mlevitsk@redhat.com>
+> Cc: stable@vger.kernel.org
+> Fixes: bd53cb35a3e9 ("X86/KVM: Handle PFNs outside of kernel reach when touching GPTEs")
+> Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+> ---
+>  arch/x86/kvm/paging_tmpl.h | 77 ++++++++++++++++++--------------------
+>  1 file changed, 37 insertions(+), 40 deletions(-)
+> 
+> diff --git a/arch/x86/kvm/paging_tmpl.h b/arch/x86/kvm/paging_tmpl.h
+> index 97b21e7fd013..13b5c424adb2 100644
+> --- a/arch/x86/kvm/paging_tmpl.h
+> +++ b/arch/x86/kvm/paging_tmpl.h
+> @@ -34,9 +34,8 @@
+>  	#define PT_HAVE_ACCESSED_DIRTY(mmu) true
+>  	#ifdef CONFIG_X86_64
+>  	#define PT_MAX_FULL_LEVELS 4
+> -	#define CMPXCHG cmpxchg
+> +	#define CMPXCHG "cmpxchgq"
+>  	#else
+> -	#define CMPXCHG cmpxchg64
+>  	#define PT_MAX_FULL_LEVELS 2
+>  	#endif
+>  #elif PTTYPE == 32
+> @@ -52,7 +51,7 @@
 
-Apologies, I should have caught this. Unfortunately we are missing
-stubs for the ACPI functions. I'll fix it up by wrapping the new code
-in #ifdef CONFIG_ACPI.
+This chunk does not apply, are you sure you made this against 5.4.y?
 
-regards
-Philipp
+thanks,
+
+greg k-h
