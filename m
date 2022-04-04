@@ -2,56 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67D5AC4707F
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:23:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DA27C35280
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:23:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234554AbiDDVZJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:25:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41526 "EHLO
+        id S1382090AbiDDVYt (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 17:24:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380199AbiDDTMG (ORCPT
+        with ESMTP id S1379537AbiDDR0W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 15:12:06 -0400
-Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 576A233E9D
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 12:10:09 -0700 (PDT)
-Date:   Mon, 4 Apr 2022 12:10:02 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1649099407;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=aFvgM5NfOebxDDUuuHdtiZjWiL2k8D65MO0wbzsRCYg=;
-        b=ql2tN95cfc7u+wPhC0kENNn24vZb3lVeqzCTUmJam3h9qW1fEQrbKa/dsQyjf9mgc0DmBX
-        XpO2fOJD348nJ31+6gQRXCjl62yZRZyCKwDNrevZ9bt99DcrkWRxl8CwUMGoOowULtpaBn
-        pvthJgRu34J/o/9TC57V07iwmxwGdvA=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Roman Gushchin <roman.gushchin@linux.dev>
-To:     Miaohe Lin <linmiaohe@huawei.com>
-Cc:     cl@linux.com, penberg@kernel.org, rientjes@google.com,
-        iamjoonsoo.kim@lge.com, akpm@linux-foundation.org, vbabka@suse.cz,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] mm/slab: remove some unused functions
-Message-ID: <YktCirLdFJx7P/T/@carbon.dhcp.thefacebook.com>
-References: <20220322091421.25285-1-linmiaohe@huawei.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220322091421.25285-1-linmiaohe@huawei.com>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+        Mon, 4 Apr 2022 13:26:22 -0400
+Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 98F9A31909;
+        Mon,  4 Apr 2022 10:24:25 -0700 (PDT)
+X-IronPort-AV: E=Sophos;i="5.90,234,1643641200"; 
+   d="scan'208";a="115687572"
+Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
+  by relmlie5.idc.renesas.com with ESMTP; 05 Apr 2022 02:24:24 +0900
+Received: from localhost.localdomain (unknown [10.226.36.204])
+        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 74ED940B0B0A;
+        Tue,  5 Apr 2022 02:24:22 +0900 (JST)
+From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+To:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        linux-mmc@vger.kernel.org
+Cc:     Pavel Machek <pavel@denx.de>, linux-kernel@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [PATCH 0/2] mmc: renesas: Trivial fixes
+Date:   Mon,  4 Apr 2022 18:23:20 +0100
+Message-Id: <20220404172322.32578-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 22, 2022 at 05:14:21PM +0800, Miaohe Lin wrote:
-> alternate_node_alloc and ____cache_alloc_node are always called when
-> CONFIG_NUMA. So we can remove the unused !CONFIG_NUMA variant. Also
-> forward declaration for alternate_node_alloc is unnecessary. Remove
-> it too.
-> 
-> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+Hi All,
 
-Reviewed-by: Roman Gushchin <roman.gushchin@linux.dev>
+This patch series adds trivial fixes to renesas mmc driver.
 
-Thanks!
+Cheers,
+Prabhakar
+
+Lad Prabhakar (2):
+  mmc: renesas_sdhi: Jump to error path instead of returning directly
+  mmc: renesas_internal_dmac: Fix typo's
+
+ drivers/mmc/host/renesas_sdhi_core.c          | 6 ++++--
+ drivers/mmc/host/renesas_sdhi_internal_dmac.c | 4 ++--
+ 2 files changed, 6 insertions(+), 4 deletions(-)
+
+-- 
+2.17.1
+
