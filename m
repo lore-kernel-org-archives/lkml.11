@@ -2,105 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ABBCC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 11:57:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8CD9C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 11:58:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233266AbiDDL7D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 07:59:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43408 "EHLO
+        id S233290AbiDDMA2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 08:00:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229459AbiDDL7C (ORCPT
+        with ESMTP id S229459AbiDDMAZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 07:59:02 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54FE93D1F9;
-        Mon,  4 Apr 2022 04:57:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649073426; x=1680609426;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=cKBDLLuOv+dWVKAI7ODe9hrQ39baEJrrNVpI0RZSqZI=;
-  b=IeTl+Gfmmtc5CA8V1zI20M+VNYZRPAKkuj50MtJnJdioBrd6tDn+TWpU
-   OcOJs7RQAjxTgZpqh16DRs2fVWlxstNe1daQhvQjUXE8uWEvp5nz+Ftlh
-   yv4O8KaN1dYTbrKhhfAGUDQxIYPJ2bBas6AvBw3pMl6rMaxV641gtQM4W
-   t9oHNpQiyQf/lNH2+f9tvvkSR6b7HFKdIg+HcKg2rdXLfeosUkFaVNr5E
-   HN6W5AMFcnvn/33rW25a7DUVOoLLc851epN7rqj8CU+aWHPBnLAvgFlPh
-   dYMm4GHszBOD2y6nWRboYUd3zaEgp8CbgnUhutVXvuN2cydkaj1EX/yDg
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10306"; a="260485246"
-X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
-   d="scan'208";a="260485246"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 04:57:05 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
-   d="scan'208";a="608014017"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by fmsmga008.fm.intel.com with ESMTP; 04 Apr 2022 04:57:02 -0700
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 234Bv0u5012668;
-        Mon, 4 Apr 2022 12:57:00 +0100
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Alexander Lobakin <alexandr.lobakin@intel.com>
-Subject: [PATCH bpf-next] samples: bpf: fix linking xdp_router_ipv4 after migration
-Date:   Mon,  4 Apr 2022 13:54:51 +0200
-Message-Id: <20220404115451.1116478-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.35.1
+        Mon, 4 Apr 2022 08:00:25 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5AF4B73;
+        Mon,  4 Apr 2022 04:58:28 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id kw18so2299024pjb.5;
+        Mon, 04 Apr 2022 04:58:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:content-language:to:from
+         :subject:cc:content-transfer-encoding;
+        bh=Ryz34qEMQ5WdkUF9th9E6KFUWpiEza21IKgfS/GNkQE=;
+        b=JSIdWcPZQ+LozQNtd4kT3V98R6r+cz6WCggkYyRRSVOnlnjUMoTJwc1s+IGN0NYHXC
+         GO0GSmfjSOBgafLwp7qSrTk3HdJapXbgDHCdO7IVt/nqCYxlP7adq0wv1CpVnvznnZXQ
+         yzjuERvFKvSjCZRMaM2e2JESz+aeVDHkwmyyNU7r4HMckXgsqQdLpSMCpPr+rYWnirYf
+         0ryYVr4okzz19UhDiCBt+aJxZB9/S6O6D8Y6fmlWmHoiwYbdRjWt9lKXEkS8W9rg7RTo
+         7v1aRCZTtQsNq2xoRSBcwX6j9NhkIh1svKNHdgyReqaVpcYtAxZfUq9ym1PfVqUSCW0P
+         QV+g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:from:subject:cc:content-transfer-encoding;
+        bh=Ryz34qEMQ5WdkUF9th9E6KFUWpiEza21IKgfS/GNkQE=;
+        b=X09Mpefbv1ZaRKYEJw5Ss1UrS/6+RfWE1mneG5HFSlcG/9JkiTTB7PUo8m+3GOSJ48
+         2Cby3ZdVRrE6L49xYTUccLQBnuDs6JvibTeiiHzecHRnYPyDKQWy0gAQSkP6MNcsrBcV
+         apVXNsDhAnP4HHqZZms56d4YGXe73W5A9BhqL3m7XyV9MdSeaAYFn8QvF5u5yz4z0HfY
+         Lu2ORrMTNNZtsXoHD2X3Rzmhg44crRLh+X3qEduH1GtdQWmTQNsFn2jnkGsg4P3kZJQX
+         8g2BWjplKeiiD7Rl0nIiI1NAwTinvcXxbTY9wslMgAD+YlDm6lqZlfZwRIfe0ejfpyp+
+         eUiQ==
+X-Gm-Message-State: AOAM531zBvXb5QTyMQ+DVTxrkfuFjt/5tVJSIXa6OvuitjGECJfsbnf+
+        K/HaEP/fbgPaB54dCg6+Hagkdf463b2qXfHR
+X-Google-Smtp-Source: ABdhPJxpbrLNB8v/iWD/bPLPFGjZ59ZyPHfn79PXsZ4wc0t5WF8z3pTGefWr97MmLVEidel4StveYQ==
+X-Received: by 2002:a17:90b:250f:b0:1ca:b9fa:efcd with SMTP id ns15-20020a17090b250f00b001cab9faefcdmr730685pjb.123.1649073507672;
+        Mon, 04 Apr 2022 04:58:27 -0700 (PDT)
+Received: from [192.168.43.80] (subs03-180-214-233-68.three.co.id. [180.214.233.68])
+        by smtp.gmail.com with ESMTPSA id h12-20020a056a00230c00b004faf2563bcasm12588934pfh.114.2022.04.04.04.58.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 04 Apr 2022 04:58:26 -0700 (PDT)
+Message-ID: <564f87a9-dd57-d3a1-d476-d81350baf75d@gmail.com>
+Date:   Mon, 4 Apr 2022 18:58:16 +0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Content-Language: en-US
+To:     linux-doc@vger.kernel.org,
+        'Linux Kernel' <linux-kernel@vger.kernel.org>,
+        platform-driver-x86@vger.kernel.org, Dell.Client.Kernel@dell.com,
+        linux-iio@vger.kernel.org
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+Subject: unexpected indentation warning in Documentation/ABI/testing/sysfs-*
+Cc:     Gao Xiang <hsiangkao@linux.alibaba.com>,
+        Huang Jianan <huangjianan@oppo.com>, Chao Yu <chao@kernel.org>,
+        Divya Bharathi <divya.bharathi@dell.com>,
+        Mark Pearson <markpearson@lenovo.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Gwendal Grignou <gwendal@chromium.org>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "David E. Box" <david.e.box@linux.intel.com>,
+        Mark Gross <markgross@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Users of the xdp_sample_user infra should be explicitly linked
-with the standard math library (`-lm`). Otherwise, the following
-happens:
+Hi,
 
-/usr/bin/ld: xdp_sample_user.c:(.text+0x59fc): undefined reference to `ceil'
-/usr/bin/ld: xdp_sample_user.c:(.text+0x5a0d): undefined reference to `ceil'
-/usr/bin/ld: xdp_sample_user.c:(.text+0x5adc): undefined reference to `floor'
-/usr/bin/ld: xdp_sample_user.c:(.text+0x5b01): undefined reference to `ceil'
-/usr/bin/ld: xdp_sample_user.c:(.text+0x5c1e): undefined reference to `floor'
-/usr/bin/ld: xdp_sample_user.c:(.text+0x5c43): undefined reference to `ceil
-[...]
+Doing "make htmldocs" for Linux v5.18-rc1, I get new warnings:
 
-That happened previously, so there's a block of linkage flags in the
-Makefile. xdp_router_ipv4 has been transferred to this infra quite
-recently, but hasn't been added to it. Fix.
+<path/to/linux>/Documentation/ABI/testing/sysfs-driver-intel_sdsi:2: WARNING: Unexpected indentation.
+<path/to/linux>/Documentation/ABI/testing/sysfs-driver-intel_sdsi:2: WARNING: Block quote ends without a blank line; unexpected unindent.
+<path/to/linux>/Documentation/ABI/testing/sysfs-driver-intel_sdsi:2: WARNING: Definition list ends without a blank line; unexpected unindent.
+<path/to/linux>/Documentation/ABI/testing/sysfs-bus-nvdimm:11: WARNING: Unexpected indentation.
+<path/to/linux>/Documentation/ABI/testing/sysfs-bus-iio-sx9324:2: WARNING: Unexpected indentation.
+<path/to/linux>/Documentation/ABI/testing/sysfs-class-firmware-attributes:130: WARNING: Unexpected indentation.
+<path/to/linux>/Documentation/ABI/testing/sysfs-class-firmware-attributes:130: WARNING: Unexpected indentation.
+<path/to/linux>/Documentation/ABI/testing/sysfs-class-firmware-attributes:130: WARNING: Unexpected indentation.
+<path/to/linux>/Documentation/ABI/testing/sysfs-fs-erofs:10: WARNING: Unexpected indentation.
+<path/to/linux>/Documentation/ABI/testing/sysfs-fs-erofs:10: WARNING: Block quote ends without a blank line; unexpected unindent.
 
-Fixes: 85bf1f51691c ("samples: bpf: Convert xdp_router_ipv4 to XDP samples helper")
-Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
----
- samples/bpf/Makefile | 1 +
- 1 file changed, 1 insertion(+)
+Introduced by 2546c60004309e (platform/x86: Add Intel Software Defined
+Silicon driver, 2022-02-11), 2bec6d9aa89cbe (docs: ABI: sysfs-bus-nvdimm:
+Document sysfs event format entries for nvdimm pmu, 2022-02-25),
+e8a60aa7404bfe (platform/x86: Introduce support for Systems Management
+Driver over WMI for Dell Systems), 40452ffca3c1a0 (erofs: add sysfs
+node to control sync decompression strategy, 2021-12-06), and
+4c18a890dff8d9 (iio:proximity:sx9324: Add SX9324 support, 2022-01-01).
 
-diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
-index b4fa0e69aa14..342a41a10356 100644
---- a/samples/bpf/Makefile
-+++ b/samples/bpf/Makefile
-@@ -219,6 +219,7 @@ TPROGLDLIBS_xdp_redirect	+= -lm
- TPROGLDLIBS_xdp_redirect_cpu	+= -lm
- TPROGLDLIBS_xdp_redirect_map	+= -lm
- TPROGLDLIBS_xdp_redirect_map_multi += -lm
-+TPROGLDLIBS_xdp_router_ipv4	+= -lm
- TPROGLDLIBS_tracex4		+= -lrt
- TPROGLDLIBS_trace_output	+= -lrt
- TPROGLDLIBS_map_perf_test	+= -lrt
+Presumably because Sphinx mistakes these documentation files without
+extensions for .rst files? I dunno.
+
+Reported-by: Bagas Sanjaya <bagasdotme@gmail.com>
+
 -- 
-2.35.1
-
+An old man doll... just what I always wanted! - Clara
