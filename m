@@ -2,118 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A975C35294
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51182C35280
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:59:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380144AbiDDV7Y (ORCPT
+        id S1380198AbiDDV73 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:59:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55558 "EHLO
+        Mon, 4 Apr 2022 17:59:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380060AbiDDSvT (ORCPT
+        with ESMTP id S1380030AbiDDSlV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 14:51:19 -0400
-Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43D053137D
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 11:49:23 -0700 (PDT)
-Received: by mail-oi1-x22e.google.com with SMTP id 12so10978263oix.12
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 11:49:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=+x8xeE7VdwyEBg9gBJjb/VSkL3ctOrEYGykxx0ig/m0=;
-        b=aIIJqQOlgGEaPFjQYKZkBfSoalRDYuXCqe3vleD+YoMT6FyQdOFPNf+S+9sxlwUq54
-         NmltyIWDy33kTR0OTRadOhK77QdqSl8Vr+QvqTOBdxzTwwZoyooJtH7PAoM4B6VuHvOb
-         mnKMngV7nKSgJ1NYzzG0jE2zETbUAFXGphzJoGcUTTRIAspUa2tNMrIYjM7MWIWIy/8E
-         NjJS7bznd7wBf5/40L9ymVkjSitPiflm5WaSfgHVSllrk9/yCcHtgWJ+KTmIMLY7VEhr
-         o2TpSk48hwsKaRx3fAQt2RGKCujfvasVxP9JLA++ZfvQi49nDSq+okk9BBSdlu/rffvk
-         cO1Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :subject:content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=+x8xeE7VdwyEBg9gBJjb/VSkL3ctOrEYGykxx0ig/m0=;
-        b=R3FbIAvaNstONR5LrL0tNQIVWBNxZqtoiGMXiZQZTBUFbUmcfnzLgznNP42LJfDgjX
-         jOSGidS+c5GcLjySTf63M5ZAYYpL+C1CzxrqyV8zL3XG+7troMaPPX41KCFix7O+CqIu
-         QdCCthreqQW2fPtOUxl5ksK6Y1iiXuA5lH34mUp77vSripFlrM3KbJrSfrz8Nildf07U
-         ZfhSx0z4IskLfaH7wo+FHKJFxR48EiRHrQNSFY4y/UA8/Ias6CsoHrGY03CkKqE+/PpZ
-         kqSW7j6T6N5BHeFp27959sJFpfgnjJNMAPP5LBv7Fqlj1AgCELKEIXw2b0NX3ClH48cx
-         5D3w==
-X-Gm-Message-State: AOAM530l5ilR9gOGJH0lLThQ9nsxnVavAJPAq2hHE+s2Y9wgpTUFkYY+
-        DBPja6WLZQLqWVDAv9PT9Ao=
-X-Google-Smtp-Source: ABdhPJy1vzaNMEa6qR1jv8tDRSZiMxYpeg4RNjKExhY59rCu0Q+CxA5CqAv26vovX2cZDXQXs4yhBg==
-X-Received: by 2002:a05:6808:9ae:b0:2d9:a01a:4bf4 with SMTP id e14-20020a05680809ae00b002d9a01a4bf4mr238080oig.283.1649098162576;
-        Mon, 04 Apr 2022 11:49:22 -0700 (PDT)
-Received: from ?IPV6:2603:8090:2005:39b3::1004? (2603-8090-2005-39b3-0000-0000-0000-1004.res6.spectrum.com. [2603:8090:2005:39b3::1004])
-        by smtp.gmail.com with ESMTPSA id m17-20020a0568301e7100b005b256697d7csm4795089otr.72.2022.04.04.11.49.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 04 Apr 2022 11:49:21 -0700 (PDT)
-Sender: Larry Finger <larry.finger@gmail.com>
-Message-ID: <547963ab-4922-3208-fe63-07e0756890d9@lwfinger.net>
-Date:   Mon, 4 Apr 2022 13:49:20 -0500
+        Mon, 4 Apr 2022 14:41:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 959D85F99;
+        Mon,  4 Apr 2022 11:39:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 42A3FB818D8;
+        Mon,  4 Apr 2022 18:39:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81B0EC340F3;
+        Mon,  4 Apr 2022 18:39:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649097561;
+        bh=uoCUt9kRip3xmuGeLGDqglk9GEPAPCSc46dVFwVFFvs=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=pWjK8T/SiEbCNPFdLabaKBhPZF8HEsxpYiFOPoj11AhzUzWc0mFSTNoTlb44mzjIt
+         F3UZs1LSUjPo/vOdjOWkHWODjT6vCZV4ZDdN74DxYDMI5v/o8GBHU2fLfKRNJyKNv7
+         gtUzy0Kf5ojn5swpmgVLnbCnNNgCbQO7w0i9dnoCj/kzOzhXBF6WNWKxFi9motkxV1
+         mAZPq5pTW07Pv3EOFvaB4dD/VUmByyweb+IizmotBRaNxe2OECt5SeCdq2GbRkzw8s
+         AQKJTPhJozQ/0jP8eneP9qLPjEAktInngDlNV+gUc4cd2uHWA+D6yPbPP1WfCZEgV2
+         5G+GoDEs7Lu2A==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     linux-kernel@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
+        linux-parisc@vger.kernel.org, sparclinux@vger.kernel.org,
+        dri-devel@lists.freedesktop.org,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
+        linux-rdma@vger.kernel.org, linux-um@lists.infradead.org,
+        linux-media@vger.kernel.org, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org, linux-scsi@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-xfs@vger.kernel.org, alsa-devel@alsa-project.org,
+        linux-s390@vger.kernel.org
+Subject: Re: Build regressions/improvements in v5.18-rc1
+References: <CAHk-=wg6FWL1xjVyHx7DdjD2dHZETA5_=FqqW17Z19X-WTfWSg@mail.gmail.com>
+        <20220404074734.1092959-1-geert@linux-m68k.org>
+        <alpine.DEB.2.22.394.2204041006230.1941618@ramsan.of.borg>
+Date:   Mon, 04 Apr 2022 21:39:15 +0300
+In-Reply-To: <alpine.DEB.2.22.394.2204041006230.1941618@ramsan.of.borg> (Geert
+        Uytterhoeven's message of "Mon, 4 Apr 2022 10:16:08 +0200 (CEST)")
+Message-ID: <874k38u20c.fsf@tynnyri.adurom.net>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] staging: r8188eu: remove unnecessary blank lines
-Content-Language: en-US
-To:     Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>,
-        outreachy@lists.linux.dev
-Cc:     phil@philpotter.co.uk, gregkh@linuxfoundation.org,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20220404145217.15069-1-eng.alaamohamedsoliman.am@gmail.com>
-From:   Larry Finger <Larry.Finger@lwfinger.net>
-In-Reply-To: <20220404145217.15069-1-eng.alaamohamedsoliman.am@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/4/22 09:52, Alaa Mohamed wrote:
-> Reported by checkpatch:
-> 
-> CHECK: Blank lines aren't necessary before a close brace '}'
-> 
-> Signed-off-by: Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
-> ---
->   drivers/staging/r8188eu/core/rtw_ap.c | 3 ---
->   1 file changed, 3 deletions(-)
-> 
-> diff --git a/drivers/staging/r8188eu/core/rtw_ap.c b/drivers/staging/r8188eu/core/rtw_ap.c
-> index 2ff78ed1faab..ac6effbecf6d 100644
-> --- a/drivers/staging/r8188eu/core/rtw_ap.c
-> +++ b/drivers/staging/r8188eu/core/rtw_ap.c
-> @@ -188,7 +188,6 @@ void	expire_timeout_chk(struct adapter *padapter)
->   				spin_lock_bh(&pstapriv->auth_list_lock);
->   			}
->   		}
-> -
->   	}
->   	spin_unlock_bh(&pstapriv->auth_list_lock);
->   
-> @@ -381,7 +380,6 @@ void add_RATid(struct adapter *padapter, struct sta_info *psta, u8 rssi_level)
->   		/* set ra_id, init_rate */
->   		psta->raid = raid;
->   		psta->init_rate = init_rate;
-> -
->   	}
->   }
->   
-> @@ -455,7 +453,6 @@ void update_bmc_sta(struct adapter *padapter)
->   		spin_lock_bh(&psta->lock);
->   		psta->state = _FW_LINKED;
->   		spin_unlock_bh(&psta->lock);
-> -
->   	}
->   }
->   
+Geert Uytterhoeven <geert@linux-m68k.org> writes:
 
-Acked_by: Larry Finger <Larry.Finger@lwfinger.net>
+>> /kisskb/src/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c:
+>> error: case label does not reduce to an integer constant: => 3798:2,
+>> 3809:2
+>
+> arm64-gcc5.4/arm64-allmodconfig
+> powerpc-gcc5/powerpc-allmodconfig
+> powerpc-gcc5/ppc64_book3e_allmodconfig
 
-Thanks,
+After v5.17 there were two commits to brcmfmac/sdio.c:
 
-Larry
+$ git log --oneline v5.17.. drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+ed26edf7bfd9 brcmfmac: Add BCM43454/6 support
+6d766d8cb505 brcmfmac: pcie: Declare missing firmware files in pcie.c
 
+I can't see how either of them could cause this warning. Could something
+else cause this or am I missing something?
+
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
