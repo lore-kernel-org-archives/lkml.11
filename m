@@ -2,106 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79424C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CDD6C4167E
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:49:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381296AbiDDVtq (ORCPT
+        id S1381374AbiDDVtw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:49:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40192 "EHLO
+        Mon, 4 Apr 2022 17:49:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378934AbiDDQFr (ORCPT
+        with ESMTP id S1379584AbiDDRgd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 12:05:47 -0400
-Received: from wout5-smtp.messagingengine.com (wout5-smtp.messagingengine.com [64.147.123.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC5A65FCF;
-        Mon,  4 Apr 2022 09:03:50 -0700 (PDT)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.west.internal (Postfix) with ESMTP id 833493202095;
-        Mon,  4 Apr 2022 12:03:49 -0400 (EDT)
-Received: from imap47 ([10.202.2.97])
-  by compute2.internal (MEProxy); Mon, 04 Apr 2022 12:03:50 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
-         h=cc:cc:content-type:date:date:from:from:in-reply-to
-        :in-reply-to:message-id:mime-version:references:reply-to:sender
-        :subject:subject:to:to; s=fm1; bh=Y6KHhDh8XVbITNKpPkBdfRMqiixqEi
-        mY4/vwsj86fOY=; b=Wtpvwzu9NelImDQlw+nG7GantCLueWJRosM6qGR2PtbZiN
-        XbVKQ23pDtKfWOVOSNGB4CoP4M9TwjGuV2sb+VRA+TEIpczs/odES+yA0EW6gxRe
-        3SR9p/F4L5CeX0yMtQYO5TxxWX0L69gztC+OaEQ6mIyAwdDpYwhrBHx1DThd9UJJ
-        c5VAWqnJNX50IAc3UOyk1rk5rfDnhnUypProCJL7Gx1OuGTOA+w9ODbqrLVrUFB4
-        RPmFTkL8W6/c6ggtQvwX4kiEdfUKTnmcDJFW2mv/yAU2p+VeLhEx3uAkjpce8FLJ
-        iH+maBYgBCyvYZ+e7exFwAYbrTbUpydBKUrGNJsw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=Y6KHhDh8XVbITNKpP
-        kBdfRMqiixqEimY4/vwsj86fOY=; b=k8uYT3/KIGaYjbi3384GuWSMawdmLMMGN
-        eQZzj5VIP0HsjkKU9kEXOckaeGlmXLigB+ZvSPoOtUduzaoxgEvqBP+veI+Q+4Br
-        3rZ6svyRpy1gHJOi/cI+HjQblGTaj3J1Dlim1FT5AWGH0aQsvKrVAbO0LiLfKpLP
-        eWFY+HKd95YUsmooHA6h6UrUh3xJ0/w6/Or5t+X2cuimR5kltaZzyNFfrm3KUO84
-        kVGRs2rRtBM3nP1dptQJda3gTEBZJs6Duo7HmR6yLldNpmWiOQ//mqTlJiTdeVjR
-        BNsd6dP27wkhMaNbTnK65THDUXCOSYGx+MpnIY09NudPqpY8ErHbQ==
-X-ME-Sender: <xms:5BZLYrB0oVJ_AdOhl7MT6nrFvkfMW_RlXzByJuDmXqcyQ8ychIzVrg>
-    <xme:5BZLYhjryrcYA1Eouncutb2VbkL4KxL_SOikEWMe8c8P5IY-0qVracCqxSwr8RUfP
-    p_crC2GZvPmpyRT6Qo>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudejvddgledvucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepofgfggfkjghffffhvffutgesthdtredtreertdenucfhrhhomhepfdfuvhgv
-    nhcurfgvthgvrhdfuceoshhvvghnsehsvhgvnhhpvghtvghrrdguvghvqeenucggtffrrg
-    htthgvrhhnpefgieegieffuefhtedtjefgteejteefleefgfefgfdvvddtgffhffduhedv
-    feekffenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
-    hsvhgvnhesshhvvghnphgvthgvrhdruggvvh
-X-ME-Proxy: <xmx:5BZLYmkBHhLTBnEtix5ByuVEMab4gE2T1jt6AdMcN81BwXQaqBpfGQ>
-    <xmx:5BZLYtxbukuoYftzS7EwAPtDtQHMfx7nJPg9aZq0MdsI07v5dqdL9g>
-    <xmx:5BZLYgSJ9F99zjKbe4bUYU0cSkk5aRGteqYtigjMjygVG_Tlo9r87A>
-    <xmx:5RZLYlJkX2yDbzm3X31BJFrmxiMMjjHySRlCWZqkyMDI8OOhZUpvEw>
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id 73F2827407D4; Mon,  4 Apr 2022 12:03:48 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.7.0-alpha0-382-g88b93171a9-fm-20220330.001-g88b93171
-Mime-Version: 1.0
-Message-Id: <cc74471b-8077-4c52-8607-eb7d2ecccd7a@www.fastmail.com>
-In-Reply-To: <20220404155924.GA9764@lst.de>
-References: <20220321165049.35985-1-sven@svenpeter.dev>
- <20220321165049.35985-7-sven@svenpeter.dev> <20220324061620.GA12330@lst.de>
- <18f3a7e6-16d1-2037-90e7-1c0b1b2fbb1c@marcan.st>
- <20220404155924.GA9764@lst.de>
-Date:   Mon, 04 Apr 2022 18:03:28 +0200
-From:   "Sven Peter" <sven@svenpeter.dev>
-To:     "hch@lst.de" <hch@lst.de>, "Hector Martin" <marcan@marcan.st>
-Cc:     "Keith Busch" <kbusch@kernel.org>, "axboe@fb.com" <axboe@fb.com>,
-        "sagi@grimberg.me" <sagi@grimberg.me>,
-        "Alyssa Rosenzweig" <alyssa@rosenzweig.io>,
-        "Rob Herring" <robh+dt@kernel.org>,
-        "Arnd Bergmann" <arnd@arndb.de>, "Marc Zyngier" <maz@kernel.org>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org
-Subject: Re: [PATCH 6/9] nvme-apple: Add initial Apple SoC NVMe driver
-Content-Type: text/plain
+        Mon, 4 Apr 2022 13:36:33 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB7AE28E20
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 10:34:36 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id u14so5619822pjj.0
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 10:34:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=V1fiQ+TpCWz9aW9batEAHSpfr5r9dyK3Q/lTwaH3lR0=;
+        b=n5mRgSQ8y20acZ/nK6OhYxxGJzwZSGfgcaIV5gwWcarOIpZUaCExb23hDcba/FfujR
+         xFNvpv34nq2Hj6fGtwvQQenG/CsfvSWly7w85pOa2sG503FmKvshqI9P5cFMoVE3Aar/
+         UQu5P8WN1WRQr6qVnpL2fGXvjFr5cmxhUxxebpUNcv68zXidJPUkPwuQpB2cgSdry9M0
+         eLkTMCOhfou4kVQgZxaauYZqxvKoMSlmivMsJ7IiJDCkOcBgoxX2LkJHmM3A/XGrPuQZ
+         2pPiCkDFuX+TqlPuqM3RY9B1nPG/O5uu9L/f2k9jXWu9RJ6qGXKz05KdOk77e14RcYjY
+         VMzQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=V1fiQ+TpCWz9aW9batEAHSpfr5r9dyK3Q/lTwaH3lR0=;
+        b=V48zJMWFDViA9Vb+sOdAGjmI+DEfY5Og7trgyRRtkxOxz4jXxWDWh+Tu4ht5ffPxBI
+         HwnyWOlJoUlB3HQRBJ9dmTQu649SqCJgBGxb56xoRzPVNsZOjY4AHRvsm2lUn29/sXKn
+         /xp4jNF4oAvTx2S1fLL6ybDR2XuUT0sVYhHoVhCwPYvLGOrI7j1+gre20/LlyefG+6Py
+         KDqmpdMZvDzEI7gu9N5yLJxM9ZVqJPwtBGb+oKm5Mh8R8kT5pOaTMz2eMZGq4UQXy3dv
+         aANlRJmSPYxyrKy6mlD8xHB3M7E1FyRRHhj9sri9H4dwy172pYkyjqK7yLY5k1mgW/2e
+         R3kg==
+X-Gm-Message-State: AOAM530rgoGv5oTW6u+jaDSYHVPG5Sp/pGcdv+lVRJnUhgfuEMsVooU7
+        CZawFDQKtmO6s27W7Y9/L90yc7/9CVafejhM
+X-Google-Smtp-Source: ABdhPJwHq/HMWfqJNWl3Tmj7ZD7tbsm4BjEdWB/ICSYcy3kVA2KslfNYCV0z25OGCfSV48YcTJj1nA==
+X-Received: by 2002:a17:903:20c:b0:154:b58:d424 with SMTP id r12-20020a170903020c00b001540b58d424mr704902plh.45.1649093675449;
+        Mon, 04 Apr 2022 10:34:35 -0700 (PDT)
+Received: from google.com ([2620:15c:211:202:9d5:9b93:ffb4:574a])
+        by smtp.gmail.com with ESMTPSA id f66-20020a62db45000000b004fa8a7b8ad3sm12748136pfg.77.2022.04.04.10.34.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Apr 2022 10:34:34 -0700 (PDT)
+Date:   Mon, 4 Apr 2022 10:34:27 -0700
+From:   Nick Desaulniers <ndesaulniers@google.com>
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     Masahiro Yamada <masahiroy@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org,
+        linux-kbuild@vger.kernel.org, linux-arch@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH 2/8] kbuild: prevent exported headers from including
+ <stdlib.h>, <stdbool.h>
+Message-ID: <YkssI2uDHRq41zjw@google.com>
+References: <20220404061948.2111820-1-masahiroy@kernel.org>
+ <20220404061948.2111820-3-masahiroy@kernel.org>
+ <YkqhQhJIQEL2qh8C@infradead.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YkqhQhJIQEL2qh8C@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, Apr 04, 2022 at 12:41:54AM -0700, Christoph Hellwig wrote:
+> On Mon, Apr 04, 2022 at 03:19:42PM +0900, Masahiro Yamada wrote:
+> > If we can make kernel headers self-contained (that is, none of exported
+> > kernel headers includes system headers), we will be able to add the
+> > -nostdinc flag, but that is much far from where we stand now.
 
+This is something I'd like to see done. IMO, the kernel headers should
+be the independent variable of which the libc is the dependendent
+variable.
 
-On Mon, Apr 4, 2022, at 17:59, Christoph Hellwig wrote:
-> On Tue, Apr 05, 2022 at 12:57:33AM +0900, Hector Martin wrote:
->> The kernel hard limit is 100-character lines, not 80-character lines.
->> Maintainers for existing drivers are certainly free to stick to 80 chars
->> if they like it that way, but I don't see why we should still be
->> enforcing that for new code. See bdc48fa11e46.
->
-> Because 100 is completely utterly unreadable if is not for individual
-> lines like strings, and that is actually how Linus stated it in CodingStyle.
->
-> Your code as-is is completely unreadable and will not go into
-> drivers/nvme/ in that form.
+Android's libc, Bionic, is making use of the UAPI headers. They are
+doing some rewriting of UAPI headers, but I'd like to see what needs to
+be upstreamed from there. I just noticed
+include/uapi/linux/libc-compat.h, which seems like a good place for such
+compat related issues.
 
-fwiw, I wrote that code and I just forgot to check the line length
-after some last minute changes again.
-It's already been reduced to 80 chars in my local tree.
+In particular, having UAPI_HEADER_TESTS depend on CC_CAN_LINK is
+something I think we can works towards removing. The header tests
+themselves don't link; they force a dependency on a prebuilt libc
+sysroot, and they only need the headers from the sysroot because of this
+existing circular dependency between kernel headers and libc headers.
 
+I'd be happy to be explicitly cc'ed on changes like this series, going
+forward. Masahiro, if there's parts you'd like me to help with besides
+just code review, please let me know how I can help.
 
-Sven
+> 
+> What is still missing for that?
