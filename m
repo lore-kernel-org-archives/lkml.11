@@ -2,83 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D9DAC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 23:06:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA25BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 23:06:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239792AbiDDXIT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 19:08:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38592 "EHLO
+        id S231575AbiDDXIy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 19:08:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241437AbiDDXF7 (ORCPT
+        with ESMTP id S236768AbiDDXIU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 19:05:59 -0400
-Received: from mail-oo1-f48.google.com (mail-oo1-f48.google.com [209.85.161.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C8DC2F3A6;
-        Mon,  4 Apr 2022 15:29:19 -0700 (PDT)
-Received: by mail-oo1-f48.google.com with SMTP id i8-20020a4a6f48000000b00324ada4b9d9so1979529oof.11;
-        Mon, 04 Apr 2022 15:29:19 -0700 (PDT)
+        Mon, 4 Apr 2022 19:08:20 -0400
+Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27CBF55740
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 15:37:18 -0700 (PDT)
+Received: by mail-io1-xd35.google.com with SMTP id x4so13128706iop.7
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 15:37:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=8RkDTj+tVN/WuUnfdI9iKChyCQMganXuCI7qsE2bz9c=;
+        b=fl075IfJf1jFfYAqt/jIkBDHdk2V+ognrp14WSdgOENUk0zwZkldU73FG4kjEG89nQ
+         AC2rm+mA8uK7mf+rlpMteKCHFgukgBdjtbeeGfDHXFWJhphX1/uWlqMSjzSwaDkucHs1
+         8MV8GXFEyLyB4ljN2AUCdsxJgPXhamItAKzxs=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Hcqcr6DsY0jbNBseNOXuHsSGPGJX3FdjWyZUvr4jyj4=;
-        b=xZLC0cOsq/ya9rxJjOW7pKMehnUk5ZWPXSws1CpyScHwCQO4OMhinpNaEoWSnot/54
-         c0qQaWm2Y65xYxJsPnEIh1/0h6Wh6FuEvMCpP9snPSQ/LAPC903ZD2VcDcHufgGwXjDq
-         ARjntrV1vEakD6bT1P60ZgN3L5aylMlzMuGk7NqU9JqLmk34tThFY3DzuBKgQr3cHe6J
-         dOasLdgv6gdGu8MmxV9jos4xPy63boO5AXOk8CVurj8ZGfckUXH4hZXRnAYwp3O/78Hr
-         e6p6QDn+rOMIS8UFN90oo6K1Ck9SBNGIcQuffoPbLVrYKW5CSu3reBaXwY+wsAtvtLhS
-         Y/Bw==
-X-Gm-Message-State: AOAM532BN1MxMGgGDRDIb2MukhmNcPC7D2jm0b1UvWl30tL+6pQZrTiY
-        Lp67bF2uMQzHSNr9WMsKHmSrtIm8dQ==
-X-Google-Smtp-Source: ABdhPJw5IVcpdqsjnK+gPbZ7XDuhJYkMMuqN3iKMDxzwQ355XSVgAMlF3aGZHs/wS4VSzeKSUdLXjg==
-X-Received: by 2002:a4a:d747:0:b0:320:d7c2:4357 with SMTP id h7-20020a4ad747000000b00320d7c24357mr141931oot.92.1649111358353;
-        Mon, 04 Apr 2022 15:29:18 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id m24-20020a9d73d8000000b005c942e2281dsm5025927otk.76.2022.04.04.15.29.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 15:29:17 -0700 (PDT)
-Received: (nullmailer pid 2115788 invoked by uid 1000);
-        Mon, 04 Apr 2022 22:29:16 -0000
-Date:   Mon, 4 Apr 2022 17:29:16 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, Mark Brown <broonie@kernel.org>,
-        linux-remoteproc@vger.kernel.org,
-        Michael Turquette <mturquette@baylibre.com>,
-        Andy Gross <agross@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        linux-clk@vger.kernel.org,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        linux-arm-msm@vger.kernel.org,
-        Kathiravan T <kathirav@codeaurora.org>,
-        Stephen Boyd <sboyd@kernel.org>
-Subject: Re: [PATCH 09/10] dt-bindings: clock: qcom,rpmcc: convert to dtschema
-Message-ID: <YktxPB6e2O8HC6nI@robh.at.kernel.org>
-References: <20220401201035.189106-1-krzysztof.kozlowski@linaro.org>
- <20220401201035.189106-10-krzysztof.kozlowski@linaro.org>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=8RkDTj+tVN/WuUnfdI9iKChyCQMganXuCI7qsE2bz9c=;
+        b=qaC0tXM4smMpGgEG5DYmGpmjJI/6Z+sQcf6CUrfOEePSUjRk9LStnSy71XkKG3Jjoh
+         DnvmIa26Zm67rtr2n3Yp+09XgrKigZqJodqUTHZP0UkvLU4AFfC6bJNlXMojJM/vnEV1
+         EA7ExhBQsSa6JleGtW9cQNh2TlYynatCY92U7j3krykXgDWtj5GlSl/WuAFKJXPBfwmr
+         C5El27rAiHJ3V/SrEby6oevjYBkCmNDMCOyfm2OdtLJT8JxswgzlGLH6m5B4duoO92B3
+         9r1RSOWsQ57S+1pDz6qWorFVUq1+Rpa29yMAetAgj6amlsh2RA21YpN7IkpPvmmFrmlq
+         V4gA==
+X-Gm-Message-State: AOAM531/SlGCvP5NqN9kQdr+WFzCuoYE38WSlm+XwG67ER2KEwk4lOP+
+        hbTAuk7mIsBfV2x23K6oMStR+A==
+X-Google-Smtp-Source: ABdhPJxq1S3ZTjvUQA+jVJjFM/ASzkVMPIFn4zHDxx7UmXfInOKsSjD8OUTK2yJCqULxYcOkISjnkA==
+X-Received: by 2002:a05:6602:122a:b0:649:5df1:36f0 with SMTP id z10-20020a056602122a00b006495df136f0mr268677iot.214.1649111837395;
+        Mon, 04 Apr 2022 15:37:17 -0700 (PDT)
+Received: from [192.168.1.128] ([71.205.29.0])
+        by smtp.gmail.com with ESMTPSA id x3-20020a056e021ca300b002ca049c9530sm6663151ill.7.2022.04.04.15.37.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 04 Apr 2022 15:37:17 -0700 (PDT)
+Subject: Re: [PATCH v1] kunit: add support for kunit_suites that reference
+ init code
+To:     Brendan Higgins <brendanhiggins@google.com>, shuah@kernel.org,
+        davidgow@google.com, dlatypov@google.com,
+        martin.fernandez@eclypsium.com, daniel.gutson@eclypsium.com
+Cc:     linux-kselftest@vger.kernel.org, kunit-dev@googlegroups.com,
+        linux-kernel@vger.kernel.org, keescook@chromium.org,
+        jk@codeconstruct.com.au, Shuah Khan <skhan@linuxfoundation.org>
+References: <20220311072859.2174624-1-brendanhiggins@google.com>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <1e1472e8-1813-3903-f934-cb0ae7f09864@linuxfoundation.org>
+Date:   Mon, 4 Apr 2022 16:37:15 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220401201035.189106-10-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220311072859.2174624-1-brendanhiggins@google.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 01 Apr 2022 22:10:34 +0200, Krzysztof Kozlowski wrote:
-> Convert the Qualcomm RPM Clock Controller bindings to DT schema and
-> include it in parent's schema (SMD RPM).
+Hi Brendan,
+
+On 3/11/22 12:28 AM, Brendan Higgins wrote:
+> Add support for a new kind of kunit_suite registration macro called
+> kunit_test_init_suite(); this new registration macro allows the
+> registration of kunit_suites that reference functions marked __init and
+> data marked __initdata.
 > 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> Signed-off-by: Brendan Higgins <brendanhiggins@google.com>
+> Tested-by: Martin Fernandez <martin.fernandez@eclypsium.com>
+> Reviewed-by: Kees Cook <keescook@chromium.org>
+> Reviewed-by: David Gow <davidgow@google.com>
 > ---
->  .../devicetree/bindings/clock/qcom,rpmcc.txt  | 63 -----------------
->  .../devicetree/bindings/clock/qcom,rpmcc.yaml | 69 +++++++++++++++++++
->  .../bindings/soc/qcom/qcom,smd-rpm.yaml       |  4 ++
->  3 files changed, 73 insertions(+), 63 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/clock/qcom,rpmcc.txt
->  create mode 100644 Documentation/devicetree/bindings/clock/qcom,rpmcc.yaml
 > 
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+I almost applied it ...
+
+> This is a follow-up to the RFC here[1].
+> 
+> This patch is in response to a KUnit user issue[2] in which the user was
+> attempting to test some init functions; although this is a functional
+> solution as long as KUnit tests only run during the init phase, we will
+> need to do more work if we ever allow tests to run after the init phase
+> is over; it is for this reason that this patch adds a new registration
+> macro rather than simply modifying the existing macros.
+> 
+> Changes since last version:
+>   - I added more to the kunit_test_init_suites() kernel-doc comment
+>     detailing "how" the modpost warnings are suppressed in addition to
+>     the existing information regarding "why" it is OK for the modpost
+>     warnings to be suppressed.
+> 
+> [1] https://lore.kernel.org/linux-kselftest/20220310210210.2124637-1-brendanhiggins@google.com/
+> [2] https://groups.google.com/g/kunit-dev/c/XDjieRHEneg/m/D0rFCwVABgAJ
+> 
+> ---
+>   include/kunit/test.h | 26 ++++++++++++++++++++++++++
+>   1 file changed, 26 insertions(+)
+> 
+> diff --git a/include/kunit/test.h b/include/kunit/test.h
+> index b26400731c02..7f303a06bc97 100644
+> --- a/include/kunit/test.h
+> +++ b/include/kunit/test.h
+> @@ -379,6 +379,32 @@ static inline int kunit_run_all_tests(void)
+>   
+>   #define kunit_test_suite(suite)	kunit_test_suites(&suite)
+>   
+> +/**
+> + * kunit_test_init_suites() - used to register one or more &struct kunit_suite
+> + *			      containing init functions or init data.
+> + *
+> + * @__suites: a statically allocated list of &struct kunit_suite.
+> + *
+> + * This functions identically as &kunit_test_suites() except that it suppresses
+> + * modpost warnings for referencing functions marked __init or data marked
+> + * __initdata; this is OK because currently KUnit only runs tests upon boot
+> + * during the init phase or upon loading a module during the init phase.
+> + *
+> + * NOTE TO KUNIT DEVS: If we ever allow KUnit tests to be run after boot, these
+> + * tests must be excluded.
+> + *
+> + * The only thing this macro does that's different from kunit_test_suites is
+> + * that it suffixes the array and suite declarations it makes with _probe;
+> + * modpost suppresses warnings about referencing init data for symbols named in
+> + * this manner.
+> + */
+> +#define kunit_test_init_suites(__suites...)				\
+> +	__kunit_test_suites(CONCATENATE(__UNIQUE_ID(array), _probe),	\
+> +			    CONCATENATE(__UNIQUE_ID(suites), _probe),	\
+> +			    ##__suites)
+> +
+> +#define kunit_test_init_suite(suite)	kunit_test_init_suites(&suite)
+> +
+>   #define kunit_suite_for_each_test_case(suite, test_case)		\
+>   	for (test_case = suite->test_cases; test_case->run_case; test_case++)
+>   
+> 
+
+The naming of the function and macro are rather confusing and can become
+error prone. Let's find better naming scheme.
+
+> base-commit: 330f4c53d3c2d8b11d86ec03a964b86dc81452f5
+> 
+
+thanks,
+-- Shuah
