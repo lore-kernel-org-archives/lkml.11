@@ -2,203 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 057CBC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 13:42:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14ED4C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 13:42:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357611AbiDDNoD (ORCPT
+        id S1358263AbiDDNoL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 09:44:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33964 "EHLO
+        Mon, 4 Apr 2022 09:44:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357034AbiDDNns (ORCPT
+        with ESMTP id S1357763AbiDDNoA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 09:43:48 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 084C524BFB
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 06:41:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649079711;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=4bOihAtxWA5gH7wl340CWf7ewvtlOQTkR3o4IBWLBdw=;
-        b=TbsUsYuqSoDlpCz9znt2mkTezavHflexv4XyMlW9X0mSDryijsxmV2uOAlCcn20g3iSzZ8
-        H4lxDRDCCc8+xdDRnaTs2+32HbpoQ3m4TXAMxLrV5ttYqRq3jdpz19QggwFG8BTlr+OeLL
-        DZ69Udt7wPs6Ao+e7dnxb1oYlKQDbSs=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-373-h2YF4-WBN0S_U0P4BSJCxA-1; Mon, 04 Apr 2022 09:41:44 -0400
-X-MC-Unique: h2YF4-WBN0S_U0P4BSJCxA-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Mon, 4 Apr 2022 09:44:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFBE63E0DC;
+        Mon,  4 Apr 2022 06:41:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 17F443800524;
-        Mon,  4 Apr 2022 13:41:43 +0000 (UTC)
-Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4E803468A4B;
-        Mon,  4 Apr 2022 13:41:42 +0000 (UTC)
-From:   Paolo Bonzini <pbonzini@redhat.com>
-To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     stable@vger.kernel.org, Qiuhao Li <qiuhao@sysec.org>,
-        Gaoning Pan <pgn@zju.edu.cn>, Yongkang Jia <kangel@zju.edu.cn>,
-        syzbot+6cde2282daa792c49ab8@syzkaller.appspotmail.com,
-        Tadeusz Struk <tadeusz.struk@linaro.org>,
-        Maxim Levitsky <mlevitsk@redhat.com>
-Subject: [PATCH 5.10] KVM: x86/mmu: do compare-and-exchange of gPTE via the user address
-Date:   Mon,  4 Apr 2022 09:41:38 -0400
-Message-Id: <20220404134141.427397-1-pbonzini@redhat.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 814E761305;
+        Mon,  4 Apr 2022 13:41:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3653C34114;
+        Mon,  4 Apr 2022 13:41:54 +0000 (UTC)
+Message-ID: <6a38e8b8-7ccc-afba-6826-cb6e4f92af83@linux-m68k.org>
+Date:   Mon, 4 Apr 2022 23:41:51 +1000
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [RFC PULL] remove arch/h8300
+Content-Language: en-US
+To:     Arnd Bergmann <arnd@arndb.de>,
+        Christoph Hellwig <hch@infradead.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        "moderated list:H8/300 ARCHITECTURE" 
+        <uclinux-h8-devel@lists.sourceforge.jp>,
+        "open list:TENSILICA XTENSA PORT (xtensa)" 
+        <linux-xtensa@linux-xtensa.org>, Max Filippov <jcmvbkbc@gmail.com>,
+        Linux-sh list <linux-sh@vger.kernel.org>,
+        linux-m68k <linux-m68k@lists.linux-m68k.org>,
+        Damien Le Moal <damien.lemoal@wdc.com>,
+        linux-riscv <linux-riscv@lists.infradead.org>
+References: <Yib9F5SqKda/nH9c@infradead.org>
+ <CAK8P3a1dUVsZzhAe81usLSkvH29zHgiV9fhEkWdq7_W+nQBWbg@mail.gmail.com>
+ <YkmWh2tss8nXKqc5@infradead.org>
+ <CAK8P3a0QdFOJbM72geYTWOKumeKPSCVD8Nje5pBpZWazX0GEnQ@mail.gmail.com>
+From:   Greg Ungerer <gerg@linux-m68k.org>
+In-Reply-To: <CAK8P3a0QdFOJbM72geYTWOKumeKPSCVD8Nje5pBpZWazX0GEnQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-commit 2a8859f373b0a86f0ece8ec8312607eacf12485d upstream.
+Hi Arnd,
 
-FNAME(cmpxchg_gpte) is an inefficient mess.  It is at least decent if it
-can go through get_user_pages_fast(), but if it cannot then it tries to
-use memremap(); that is not just terribly slow, it is also wrong because
-it assumes that the VM_PFNMAP VMA is contiguous.
+On 4/4/22 23:07, Arnd Bergmann wrote:
+> On Sun, Apr 3, 2022 at 2:43 PM Christoph Hellwig <hch@infradead.org> wrote:
+>>
+>> On Tue, Mar 08, 2022 at 09:19:16AM +0100, Arnd Bergmann wrote:
+>>> If there are no other objections, I'll just queue this up for 5.18 in
+>>> the asm-generic
+>>> tree along with the nds32 removal.
+>>
+>> So it is the last day of te merge window and arch/h8300 is till there.
+>> And checking nw the removal has also not made it to linux-next.  Looks
+>> like it is so stale that even the removal gets ignored :(
+> 
+> I was really hoping that someone else would at least comment.
+> I've queued it up now for 5.19.
+> 
+> Should we garbage-collect some of the other nommu platforms where
+> we're here? Some of them are just as stale:
+> 
+> 1. xtensa nommu has does not compile in mainline and as far as I can
+> tell never did
+>     (there was https://github.com/jcmvbkbc/linux-xtensa/tree/xtensa-5.6-esp32,
+> which
+>     worked at some point, but I don't think there was enough interest
+> to get in merged)
+> 
+> 2. arch/sh Hitachi/Renesas sh2 (non-j2) support appears to be in a similar state
+>      to h8300, I don't think anyone would miss it
+> 
+> 8<----- This may we where we want to draw the line ----
+> 
+> 3. arch/sh j2 support was added in 2016 and doesn't see a lot of
+> changes, but I think
+>      Rich still cares about it and wants to add J32 support (with MMU)
+> in the future
+> 
+> 4. m68k Dragonball, Coldfire v2 and Coldfire v3 are just as obsolete as SH2 as
+>     hardware is concerned, but Greg Ungerer keeps maintaining it, along with the
+>     newer Coldfire v4 (with MMU)
 
-The right way to do it would be to do the same thing as
-hva_to_pfn_remapped() does since commit add6a0cd1c5b ("KVM: MMU: try to
-fix up page faults before giving up", 2016-07-05), using follow_pte()
-and fixup_user_fault() to determine the correct address to use for
-memremap().  To do this, one could for example extract hva_to_pfn()
-for use outside virt/kvm/kvm_main.c.  But really there is no reason to
-do that either, because there is already a perfectly valid address to
-do the cmpxchg() on, only it is a userspace address.  That means doing
-user_access_begin()/user_access_end() and writing the code in assembly
-to handle any exception correctly.  Worse, the guest PTE can be 8-byte
-even on i686 so there is the extra complication of using cmpxchg8b to
-account for.  But at least it is an efficient mess.
+I have no plans to stop maintaining ColdFire v2 and v3 (and v4), FWIW.
 
-Reported-by: Qiuhao Li <qiuhao@sysec.org>
-Reported-by: Gaoning Pan <pgn@zju.edu.cn>
-Reported-by: Yongkang Jia <kangel@zju.edu.cn>
-Reported-by: syzbot+6cde2282daa792c49ab8@syzkaller.appspotmail.com
-Debugged-by: Tadeusz Struk <tadeusz.struk@linaro.org>
-Tested-by: Maxim Levitsky <mlevitsk@redhat.com>
-Cc: stable@vger.kernel.org
-Fixes: bd53cb35a3e9 ("X86/KVM: Handle PFNs outside of kernel reach when touching GPTEs")
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
----
- arch/x86/kvm/mmu/paging_tmpl.h | 77 ++++++++++++++++------------------
- 1 file changed, 37 insertions(+), 40 deletions(-)
+But we could consider the Dragonball support for removal. I keep it compiling,
+but I don't use it and can't test that it actually works. Not sure that it
+has been used for a very long time now. And I didn't even realize but its
+serial driver (68328serial.c) was removed in 2015. No one seems too have
+noticed and complained.
 
-diff --git a/arch/x86/kvm/mmu/paging_tmpl.h b/arch/x86/kvm/mmu/paging_tmpl.h
-index 50e268eb8e1a..5b54247f4de4 100644
---- a/arch/x86/kvm/mmu/paging_tmpl.h
-+++ b/arch/x86/kvm/mmu/paging_tmpl.h
-@@ -34,9 +34,8 @@
- 	#define PT_HAVE_ACCESSED_DIRTY(mmu) true
- 	#ifdef CONFIG_X86_64
- 	#define PT_MAX_FULL_LEVELS PT64_ROOT_MAX_LEVEL
--	#define CMPXCHG cmpxchg
-+	#define CMPXCHG "cmpxchgq"
- 	#else
--	#define CMPXCHG cmpxchg64
- 	#define PT_MAX_FULL_LEVELS 2
- 	#endif
- #elif PTTYPE == 32
-@@ -52,7 +51,7 @@
- 	#define PT_GUEST_DIRTY_SHIFT PT_DIRTY_SHIFT
- 	#define PT_GUEST_ACCESSED_SHIFT PT_ACCESSED_SHIFT
- 	#define PT_HAVE_ACCESSED_DIRTY(mmu) true
--	#define CMPXCHG cmpxchg
-+	#define CMPXCHG "cmpxchgl"
- #elif PTTYPE == PTTYPE_EPT
- 	#define pt_element_t u64
- 	#define guest_walker guest_walkerEPT
-@@ -65,7 +64,9 @@
- 	#define PT_GUEST_DIRTY_SHIFT 9
- 	#define PT_GUEST_ACCESSED_SHIFT 8
- 	#define PT_HAVE_ACCESSED_DIRTY(mmu) ((mmu)->ept_ad)
--	#define CMPXCHG cmpxchg64
-+	#ifdef CONFIG_X86_64
-+	#define CMPXCHG "cmpxchgq"
-+	#endif
- 	#define PT_MAX_FULL_LEVELS PT64_ROOT_MAX_LEVEL
- #else
- 	#error Invalid PTTYPE value
-@@ -147,43 +148,39 @@ static int FNAME(cmpxchg_gpte)(struct kvm_vcpu *vcpu, struct kvm_mmu *mmu,
- 			       pt_element_t __user *ptep_user, unsigned index,
- 			       pt_element_t orig_pte, pt_element_t new_pte)
- {
--	int npages;
--	pt_element_t ret;
--	pt_element_t *table;
--	struct page *page;
--
--	npages = get_user_pages_fast((unsigned long)ptep_user, 1, FOLL_WRITE, &page);
--	if (likely(npages == 1)) {
--		table = kmap_atomic(page);
--		ret = CMPXCHG(&table[index], orig_pte, new_pte);
--		kunmap_atomic(table);
--
--		kvm_release_page_dirty(page);
--	} else {
--		struct vm_area_struct *vma;
--		unsigned long vaddr = (unsigned long)ptep_user & PAGE_MASK;
--		unsigned long pfn;
--		unsigned long paddr;
--
--		mmap_read_lock(current->mm);
--		vma = find_vma_intersection(current->mm, vaddr, vaddr + PAGE_SIZE);
--		if (!vma || !(vma->vm_flags & VM_PFNMAP)) {
--			mmap_read_unlock(current->mm);
--			return -EFAULT;
--		}
--		pfn = ((vaddr - vma->vm_start) >> PAGE_SHIFT) + vma->vm_pgoff;
--		paddr = pfn << PAGE_SHIFT;
--		table = memremap(paddr, PAGE_SIZE, MEMREMAP_WB);
--		if (!table) {
--			mmap_read_unlock(current->mm);
--			return -EFAULT;
--		}
--		ret = CMPXCHG(&table[index], orig_pte, new_pte);
--		memunmap(table);
--		mmap_read_unlock(current->mm);
--	}
-+	int r = -EFAULT;
-+
-+	if (!user_access_begin(ptep_user, sizeof(pt_element_t)))
-+		return -EFAULT;
-+
-+#ifdef CMPXCHG
-+	asm volatile("1:" LOCK_PREFIX CMPXCHG " %[new], %[ptr]\n"
-+		     "mov $0, %[r]\n"
-+		     "setnz %b[r]\n"
-+		     "2:"
-+		     _ASM_EXTABLE_UA(1b, 2b)
-+		     : [ptr] "+m" (*ptep_user),
-+		       [old] "+a" (orig_pte),
-+		       [r] "+q" (r)
-+		     : [new] "r" (new_pte)
-+		     : "memory");
-+#else
-+	asm volatile("1:" LOCK_PREFIX "cmpxchg8b %[ptr]\n"
-+		     "movl $0, %[r]\n"
-+		     "jz 2f\n"
-+		     "incl %[r]\n"
-+		     "2:"
-+		     _ASM_EXTABLE_UA(1b, 2b)
-+		     : [ptr] "+m" (*ptep_user),
-+		       [old] "+A" (orig_pte),
-+		       [r] "+rm" (r)
-+		     : [new_lo] "b" ((u32)new_pte),
-+		       [new_hi] "c" ((u32)(new_pte >> 32))
-+		     : "memory");
-+#endif
- 
--	return (ret != orig_pte);
-+	user_access_end();
-+	return r;
- }
- 
- static bool FNAME(prefetch_invalid_gpte)(struct kvm_vcpu *vcpu,
--- 
-2.31.1
+Regards
+Greg
+  
 
+
+> 5. K210 was added in 2020. I assume you still want to keep it.
+> 
+> 7. Arm32 has several Cortex-M based platforms that are mainly kept for
+>      legacy users (in particular stm32) or educational value.
+> 
+> 
+>         Arnd
