@@ -2,97 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C66C3C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 15:07:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 046D4C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 15:09:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378433AbiDDPJ2 (ORCPT
+        id S1378439AbiDDPLl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 11:09:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59468 "EHLO
+        Mon, 4 Apr 2022 11:11:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378221AbiDDPJZ (ORCPT
+        with ESMTP id S238001AbiDDPLj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 11:09:25 -0400
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99F3F38BE7
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 08:07:28 -0700 (PDT)
-Received: by mail-lf1-x12d.google.com with SMTP id p10so17812501lfa.12
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 08:07:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=l4K0SPmrnpSn+fuUk7g4we7BJ74/J43n2XWdTPtmJBY=;
-        b=Ad07ZzvunE3vZQtLzo5oDTRUrzKUmJcuBL0FbcbaEl0KGYWarSn0QKuZZQYbwuSSuZ
-         wtcBtSCHTQCgVtySsb2f4cNXXgfmVXK9iMYOf7MZ8y2nj2EgEjxwxeNHht4iVplfXfs/
-         nUa+TtF0GebuFRkL+TKr16ROoQMr5Yz3by+75gob+fzrIq9suL3OQa6U983SQWsxerHL
-         bVKih6bEwFv0tyn/gswydnIFA9qXCvebjlDigAgglaUW4OGpSYAjXGPZrj5u3ErtP7AF
-         P7gtJ6ROBlM1en4GGhJ2seEKlMov16qqLwWSW0E22p+H8rehyhyy8EXaywJ9Xd5E5+i5
-         CZSQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=l4K0SPmrnpSn+fuUk7g4we7BJ74/J43n2XWdTPtmJBY=;
-        b=I6XUGr5xX0CJpNYCDrnQxRE2T0mjAXqmEtVm7tD+MJY5wjcq/QaT8rdWIJumGs4WCH
-         qmKuerdpKoYog4pDW7yc5gXYtHs7MZL+2YdG3zs3D8sjy/ZjytXAA43T6fOWb2c9K273
-         jdLmoxK+WSpBaq0sOx+vmQJHpPAl7yELBydDD3Y48RFcxuW4Zl3o4bM6ibhrmIhmk4e3
-         OTfYldZzpOpD3C7lvcxnc9fRwzcgO1DBT+tNVlOX6t3qtvCOBhFJK2CoqCA31Earho1z
-         1DcFWiBKNtGaWIR7w2Lh8bl51gixt674JZsu7s4Oi4Rjm/IaF1i9We4fr8h2VQIxqXNT
-         D3tw==
-X-Gm-Message-State: AOAM530eT6KVK+LZT37OOuM27hEn/gfRk6zIFLMLdVzaiHccnXxwj48i
-        fl5rMaNSFWOZngK5Mr6xohE=
-X-Google-Smtp-Source: ABdhPJwRKTX9sNlZWMzdB6xUQCUTu18lQdxp4IePtSAY9nUucUvvosWFtS7ZPo9Md4LR3rZGocfQTg==
-X-Received: by 2002:a05:6512:280d:b0:44f:5af8:1958 with SMTP id cf13-20020a056512280d00b0044f5af81958mr76653lfb.533.1649084846725;
-        Mon, 04 Apr 2022 08:07:26 -0700 (PDT)
-Received: from freyja.wlan (dzx1kfyjwg96s--vr8cxy-3.rev.dnainternet.fi. [2001:14ba:a4ea:8200:f22f:74ff:fe2e:e0a6])
-        by smtp.gmail.com with ESMTPSA id bi2-20020a0565120e8200b0044826a117bcsm1163279lfb.44.2022.04.04.08.07.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 08:07:26 -0700 (PDT)
-From:   Jan Varho <jan.varho@gmail.com>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        "Theodore Ts'o" <tytso@mit.edu>
-Cc:     linux-kernel@vger.kernel.org, Jan Varho <jan.varho@gmail.com>
-Subject: [PATCH] random: fix add_hwgenerator_randomness entropy accounting
-Date:   Mon,  4 Apr 2022 18:04:42 +0300
-Message-Id: <20220404150442.934496-1-jan.varho@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 4 Apr 2022 11:11:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AEC31263C;
+        Mon,  4 Apr 2022 08:09:44 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AB1A0615B5;
+        Mon,  4 Apr 2022 15:09:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2849C340EE;
+        Mon,  4 Apr 2022 15:09:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649084983;
+        bh=BWDMZT5MsnbaX8sYS7b8jZF3jfpkUR2RMrgmsUgYSAQ=;
+        h=Date:Subject:To:References:From:In-Reply-To:From;
+        b=V06joN+06bBR1JkcLJvQixcfa0SoyM2wR/CA4iZVFHSruxOVAzEGxRVcU2P3qcihF
+         6mFMgFZ/lS9oSDCOZTqG9UMV4G9wygWKU/PLOtMHxQ82PC0pZR/J7/3OlmZPTujNk6
+         07Csiex+hGdEdE9H9Si2bdgMzoJqKRbgsjhDQHOqb/rjTDkcUGiLB/ru5iR6gE2BNq
+         U3VZHw9k89VQPBQnkw4RpiaiVklfB8gB/XC5T5VNxhrFeouLi915YwCiDcA+reyGTf
+         /JjijME2pAs6mZTc0dWS1ux7zsWQb36O6AT+ArrC6F6PAHp5W3WOq+a4kHKlzIcIgl
+         PyzSNEoj0IkpQ==
+Message-ID: <284ba579-7d5a-2bf4-2640-951d5e5829b6@kernel.org>
+Date:   Mon, 4 Apr 2022 09:09:40 -0600
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.7.0
+Subject: Re: This counter "ip6InNoRoutes" does not follow the RFC4293
+ specification implementation
+Content-Language: en-US
+To:     "Pudak, Filip" <Filip.Pudak@windriver.com>,
+        "Xiao, Jiguang" <Jiguang.Xiao@windriver.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "yoshfuji@linux-ipv6.org" <yoshfuji@linux-ipv6.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <SJ0PR11MB51207CBDB5145A89B8A0A15393359@SJ0PR11MB5120.namprd11.prod.outlook.com>
+ <SJ0PR11MB51202FA2365341740048A64593359@SJ0PR11MB5120.namprd11.prod.outlook.com>
+ <SJ0PR11MB51209200786235187572EE0D93359@SJ0PR11MB5120.namprd11.prod.outlook.com>
+ <SJ0PR11MB5120426D474963E08936DD2493359@SJ0PR11MB5120.namprd11.prod.outlook.com>
+ <bcc98227-b99f-5b2f-1745-922c13fe6089@kernel.org>
+ <SJ0PR11MB5120EBCF140B940C8FF712B9933D9@SJ0PR11MB5120.namprd11.prod.outlook.com>
+ <SJ0PR11MB51209DA3F7CAAB45A609633A930A9@SJ0PR11MB5120.namprd11.prod.outlook.com>
+ <3f6540b8-aeab-02f8-27bc-d78c9eba588c@kernel.org>
+ <PH0PR11MB5096F84F64CF00C996F219DAE4E19@PH0PR11MB5096.namprd11.prod.outlook.com>
+ <47987a0e-0626-04f8-b181-ff3bc257a269@kernel.org>
+ <PH0PR11MB50964D048E779CD7B71088F6E4E59@PH0PR11MB5096.namprd11.prod.outlook.com>
+From:   David Ahern <dsahern@kernel.org>
+In-Reply-To: <PH0PR11MB50964D048E779CD7B71088F6E4E59@PH0PR11MB5096.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-add_hwgenerator_randomness tries to only use the required amound of input
-for fast init, but credits all the entropy if even a byte was left over.
+On 4/4/22 1:09 AM, Pudak, Filip wrote:
+> It was indeed a bug. We've retested with '||' and the counter is incremented properly.
+> 
+> How do we go about including this change to the kernel? Will you perform the update?
 
-Fix by not crediting entropy if any input was consumed for fast init.
-
-Signed-off-by: Jan Varho <jan.varho@gmail.com>
----
- drivers/char/random.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index 1d8242969751..fb20178f1044 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -1141,12 +1141,10 @@ void add_hwgenerator_randomness(const void *buffer, size_t count,
- 				size_t entropy)
- {
- 	if (unlikely(crng_init == 0 && entropy < POOL_MIN_BITS)) {
--		size_t ret = crng_pre_init_inject(buffer, count, true);
--		mix_pool_bytes(buffer, ret);
--		count -= ret;
--		buffer += ret;
--		if (!count || crng_init == 0)
-+		if (crng_pre_init_inject(buffer, count, true) > 0) {
-+			mix_pool_bytes(buffer, count);
- 			return;
-+		}
- 	}
- 
- 	/*
--- 
-2.25.1
-
+patch sent.
