@@ -2,135 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89F79C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A001C3526F
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:59:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379270AbiDDV6X (ORCPT
+        id S1379367AbiDDV63 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:58:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57102 "EHLO
+        Mon, 4 Apr 2022 17:58:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378971AbiDDQNP (ORCPT
+        with ESMTP id S1379696AbiDDRyO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 12:13:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 347A22F007;
-        Mon,  4 Apr 2022 09:11:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E5981B816F4;
-        Mon,  4 Apr 2022 16:11:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B083AC34114;
-        Mon,  4 Apr 2022 16:11:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649088676;
-        bh=g1nATVvrfRA9UAWKcn8TEmGbzT1FkE4IRDRHu7qz7aY=;
-        h=References:In-Reply-To:Reply-To:From:Date:Subject:To:Cc:From;
-        b=VSwR8cvth3rhQoDHXpPFJOTOxqEMHXQlSUTLUXb6RU4wYcgV0/JdJTLvfUj+2GHvt
-         DH9Z/OFmu4v3KNmFPlfRokAjww5feArkOCxkKzSAtIlwEdW/MPKcdUhxU5pC4f0WMR
-         oDYrDEEzr6HfdW8z9VvnabvqiUuTBQqNyblE/ngmsW27V/1IfZPTW6V8gV5nNyY3vn
-         2jl4u5TdOtN8U3UnSPCjJBl+8KZJ/izn2Yg6xTdxx7vorsB8uoS9taApuSBSjWpMHa
-         kTxb3m+TgOLzQXTk7xka6axCXQRtEXwjdnxPtAHSfOB4c9S6rjWOKQeDZodyzVz9ys
-         qiCFE3gOxbjNw==
-Received: by mail-vk1-f178.google.com with SMTP id g41so5082020vkd.4;
-        Mon, 04 Apr 2022 09:11:16 -0700 (PDT)
-X-Gm-Message-State: AOAM5310VxWnTeTw8D4wTKZEJSAf1T+YA90tsWQ89pAg9dBu5ZBL+8EG
-        4GdWFwGT0ltl05xL2HDrS1ZFPMVp7KAKhyCxuFQ=
-X-Google-Smtp-Source: ABdhPJw9D7xPURqCUzoTlu6KIHOEiOsweC/UpZ/sYIxrlCQYGzUkCyEMyxVMLWLuRCg1LkZf9inwiirxn0cn5uiwIiU=
-X-Received: by 2002:a1f:6a82:0:b0:33f:7eeb:5989 with SMTP id
- f124-20020a1f6a82000000b0033f7eeb5989mr276390vkc.29.1649088675514; Mon, 04
- Apr 2022 09:11:15 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220330190846.13997-1-wens@kernel.org> <20220330190846.13997-3-wens@kernel.org>
- <CABxcv==csvqsxM46ce2LecDh4E-UxxD2DG+3E-hCFoyrdtRv7A@mail.gmail.com>
- <CAGb2v64VQPjan=EUkd8UhRZfV0g1GqBwPqhxQakS=7YhgvVDQA@mail.gmail.com> <92a46ea2-e23e-b7c8-ea5f-35d458ee1b76@redhat.com>
-In-Reply-To: <92a46ea2-e23e-b7c8-ea5f-35d458ee1b76@redhat.com>
-Reply-To: wens@kernel.org
-From:   Chen-Yu Tsai <wens@kernel.org>
-Date:   Tue, 5 Apr 2022 00:11:05 +0800
-X-Gmail-Original-Message-ID: <CAGb2v66zj4x7zx4ht+6ojjKRxEe+M4bTc_mKRgf8wd_TK+Wf4g@mail.gmail.com>
-Message-ID: <CAGb2v66zj4x7zx4ht+6ojjKRxEe+M4bTc_mKRgf8wd_TK+Wf4g@mail.gmail.com>
-Subject: Re: [PATCH 2/4] dt-bindings: display: ssd1307fb: Add entry for SINO
- WEALTH SH1106
-To:     Javier Martinez Canillas <javierm@redhat.com>
-Cc:     Javier Martinez Canillas <javier@dowhile0.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Mon, 4 Apr 2022 13:54:14 -0400
+Received: from mail-oa1-f54.google.com (mail-oa1-f54.google.com [209.85.160.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E83D245BD;
+        Mon,  4 Apr 2022 10:52:17 -0700 (PDT)
+Received: by mail-oa1-f54.google.com with SMTP id 586e51a60fabf-df0940c4eeso11573155fac.8;
+        Mon, 04 Apr 2022 10:52:17 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=FaqwoOuFdp3mYFpYfAC7s77bL5XItpmi/AKqa1/L498=;
+        b=HJIkUYGUz0R9/743r41NHZlRXjqhUI8LLz6GdSgS2cmPXBwBQRtbXZ3aozaFkaolBE
+         w4PeU8SJ/gBvfcKzR4fv3f8sbHRHtD11EWRyRK7IFHiTAt1XySnaFyOuY4z4/qwlq1kR
+         A6MN3I1+CXgA1V3HwBr3UVdxr7M0Fxtcb3dZBTcK/LgFMUIOtqUYW4BGDmJoFfvlPRvK
+         6bCeDxSu/LNigCQSoankHCyOb0oFk05XEszPPhuiBw2U4Ubqv0Em+ev13c+LCbCiYHq+
+         R8OwL0t2WQOcs7uROYgfgEEX/anvWiJJPzhUkgB2gjjSzyX9ELZgP2nvRvk2A5pXQTjG
+         gEiA==
+X-Gm-Message-State: AOAM533wUirifyNxnZ9GeSjk1AgVpKtE8B3RsZ0B7lP0yVVVkT4Z/Jsl
+        CrOtOCCCrvf9kxxP2CpghQ==
+X-Google-Smtp-Source: ABdhPJyJ/DcWKiZZQ7wjgJ2leztwWA9q+1hZSIYfCI7fzuMeDtYG0jTryrPTAl4WfoKgFuZA7Rc+1Q==
+X-Received: by 2002:a05:6870:a688:b0:e1:e71b:c385 with SMTP id i8-20020a056870a68800b000e1e71bc385mr183324oam.173.1649094736527;
+        Mon, 04 Apr 2022 10:52:16 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id a17-20020a4ae931000000b0032933be7230sm3212352ooe.4.2022.04.04.10.52.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Apr 2022 10:52:15 -0700 (PDT)
+Received: (nullmailer pid 1615596 invoked by uid 1000);
+        Mon, 04 Apr 2022 17:52:14 -0000
+Date:   Mon, 4 Apr 2022 12:52:14 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Xin Ji <xji@analogixsemi.com>
+Cc:     Andrzej Hajda <andrzej.hajda@intel.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
         David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel <linux-kernel@vger.kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>
-Content-Type: text/plain; charset="UTF-8"
+        Daniel Vetter <daniel@ffwll.ch>, bliang@analogixsemi.com,
+        qwen@analogixsemi.com, dri-devel@lists.freedesktop.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/4] dt-bindings: drm/bridge: anx7625: Change bus-type to
+ 7 (DPI)
+Message-ID: <YkswTpDiPYfdIFtE@robh.at.kernel.org>
+References: <20220328120956.1848795-1-xji@analogixsemi.com>
+ <20220328120956.1848795-3-xji@analogixsemi.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220328120956.1848795-3-xji@analogixsemi.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 4, 2022 at 11:48 PM Javier Martinez Canillas
-<javierm@redhat.com> wrote:
->
-> Hello Chen-Yu,
->
-> On 4/4/22 17:06, Chen-Yu Tsai wrote:
->
-> [snip]
->
-> >>>      enum:
-> >>> +      - sinowealth,sh1106-i2c
-> >>
-> >> I like that you didn't include a "fb" suffix for this, the existing
-> >> ones are cargo culting from the previous fbdev driver to make existing
-> >> DTBs compatible with the DRM driver.
-> >>
-> >> I've been thinking if I should post a patch to compatible strings
-> >> without the "fb" and mark the current ones as deprecated...
-> >>
-> >> Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
-> >
-> > I also thought about dropping the "-i2c" suffix, but then thought
-> > there might be a case where someone wanted to search the device
-> > tree specifically for an I2C connected node using said compatible
-> > string.
-> >
-> > What do you think?
-> >
-> >
->
-> tl; dr: unfortunately we can't do it due how SPI and I2C report module
-> aliases. Otherwise module auto loading will not work. I wrote a much
-> longer explanation with some details not so long ago:
->
-> https://patchwork.kernel.org/project/dri-devel/patch/20220209091204.2513437-1-javierm@redhat.com/#24730793
+On Mon, Mar 28, 2022 at 08:09:54PM +0800, Xin Ji wrote:
+> Change bus-type define for DPI.
+> 
+> Fixes: a43661e7e819 ("dt-bindings:drm/bridge:anx7625:add vendor define")
+> 
+> Signed-off-by: Xin Ji <xji@analogixsemi.com>
+> ---
+>  .../devicetree/bindings/display/bridge/analogix,anx7625.yaml  | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml b/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml
+> index 0d38d6fe3983..4590186c4a0b 100644
+> --- a/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml
+> +++ b/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml
+> @@ -106,7 +106,7 @@ properties:
+>                remote-endpoint: true
+>  
+>                bus-type:
+> -                enum: [1, 5]
+> +                enum: [7]
 
-Right. I think that crossed my mind at some point, but didn't stick.
-Thanks for raising it again. :)
+Changing is an ABI break, but didn't we revert adding this?
 
-> BTW, I bought a SSD1306 SPI controller and go it working this weekend.
->
-> I plan to post the patches once yours land, to avoid in-flight series
-> that may conflict. And what I did is mark the -fb as deprecated, then
-> added "ssd130x-i2c" and "ssd130x-spi" compatibles strings.
->
-> The WIP patches can be found here in case you are interested:
->
-> https://github.com/martinezjavier/linux/tree/drm-ssd130x-spi
-
-I took a quick look and a couple things stood out:
-
-1. Would 3-wire SPI ever be considered? If so, might want to
-   rename some of variables/functions as *_spi_4wire_* to
-   begin with.
-
-2. Maybe we should move the ssd130x_deviceinfo stuff into the
-   core module, and define an enum to use for matching compatible
-   strings across the modules to their respective device info
-   entries? FYI we are doing this in drivers/mfd/axp20x* .
-
-I think a friend of mine has a SPI based SH1106 module that I
-could borrow and test/work on, but that's a big if.
-
-
-Regards
-ChenYu
+>                  default: 1
+>  
+>                data-lanes: true
+> @@ -158,7 +158,7 @@ examples:
+>                      reg = <0>;
+>                      anx7625_in: endpoint {
+>                          remote-endpoint = <&mipi_dsi>;
+> -                        bus-type = <5>;
+> +                        bus-type = <7>;
+>                          data-lanes = <0 1 2 3>;
+>                      };
+>                  };
+> -- 
+> 2.25.1
+> 
+> 
