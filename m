@@ -2,110 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB0E3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:49:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C453C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:50:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229692AbiDDWvx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 18:51:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39196 "EHLO
+        id S230442AbiDDWwM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 18:52:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236500AbiDDWvL (ORCPT
+        with ESMTP id S238042AbiDDWvw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 18:51:11 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E368860AB3;
-        Mon,  4 Apr 2022 15:04:23 -0700 (PDT)
-Received: from mail-wr1-f52.google.com ([209.85.221.52]) by
- mrelayeu.kundenserver.de (mreue012 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1MD5fd-1njz7M38Cn-009C2u; Tue, 05 Apr 2022 00:04:21 +0200
-Received: by mail-wr1-f52.google.com with SMTP id d3so5744377wrb.7;
-        Mon, 04 Apr 2022 15:04:21 -0700 (PDT)
-X-Gm-Message-State: AOAM533QYF+EyWTSfyR8ZiDNfwEG+BhLFmBlNEZSpZN6IHOzlOEcS2Xz
-        7UM4LdInLrK6AQeCHtIxWDqunivIu7cRtSViggE=
-X-Google-Smtp-Source: ABdhPJxdB4SXEExhGLOnNOou5PzL8CTbrHl2NxdVHZQrrPYcJQIoUaGDfpVns8hWsOV0sMm8eIe8VQFd/8q9TF2PhCI=
-X-Received: by 2002:adf:cd02:0:b0:206:ff2:236 with SMTP id w2-20020adfcd02000000b002060ff20236mr254545wrm.192.1649109861434;
- Mon, 04 Apr 2022 15:04:21 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220310195229.109477-1-nick.hawkins@hpe.com> <20220310195229.109477-9-nick.hawkins@hpe.com>
- <eb66cc83-2da9-8e19-db69-633e34fef946@canonical.com> <PH0PR84MB1718C31DB71AA2A67FEC5F6E88119@PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM>
- <b1cc2566-cd78-7cb4-f8a5-d6fc8065fe6e@canonical.com> <PH0PR84MB1718292B1C11F4FE83326A5388119@PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM>
- <fb4def96-4b20-604f-d15d-fef87eb2232d@canonical.com> <PH0PR84MB1718A2CFBFC90C9C0CAA5515881E9@PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM>
- <CAK8P3a0fCE_NM=z68d1m9BTfuKixh1pKLw3gn+Sr7SxKb6UJAg@mail.gmail.com>
- <PH0PR84MB17181C316E55073EBC28C386881E9@PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM>
- <PH0PR84MB17185ADBA824F9CC9EB3E022881F9@PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM>
- <CAK8P3a1080yz9jggOrwz2iQ1sAB2Xe2Emh22uCuqRok60BQSiA@mail.gmail.com>
- <PH0PR84MB17186189F5025374AA39584D88E19@PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM>
- <CAK8P3a2b+ESAAkc=_2hqx0kOxwYVS6mNjMGBKhhipaSj_5jV9g@mail.gmail.com>
- <PH0PR84MB17182115D57EF6032782659C88E09@PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM>
- <CAK8P3a1Cc+2oY9djdp11PuOW+TBQ0zf+p8QaDY3aerk1QqaG-g@mail.gmail.com> <PH0PR84MB1718925AA3C8FA998C486D7C88E59@PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM>
-In-Reply-To: <PH0PR84MB1718925AA3C8FA998C486D7C88E59@PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Tue, 5 Apr 2022 00:02:10 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a3RSST6yvv8Oy13RFd6eZ6cS5yX9TOuK6wxXKUO-qdQ=Q@mail.gmail.com>
-Message-ID: <CAK8P3a3RSST6yvv8Oy13RFd6eZ6cS5yX9TOuK6wxXKUO-qdQ=Q@mail.gmail.com>
-Subject: Re: [PATCH v3 09/10] arch: arm: boot: dts: Introduce HPE GXP Device tree
-To:     "Hawkins, Nick" <nick.hawkins@hpe.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        "Verdun, Jean-Marie" <verdun@hpe.com>,
-        Olof Johansson <olof@lixom.net>,
-        "soc@kernel.org" <soc@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:5mTdGkH/49wqOo83wH+vgQVSb0gA/5UG3vD+/btypz62HoNOEGM
- kx3NCgQlGT5qR0EfyLQUU54zAdqX1dqWIY++F2lw4OXnYvIi3QZtLa3h7FNADk73m54HPr8
- gHsJBnEwWPfhIJj1gKUH9QoaLd5+k1cCDJOrgLwoyFPt8wfRx0GFcSE/iehSEKUxZNnR2uB
- qTat294ukRn9bFlKYWUFA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:k4SWwC7ut8s=:L1ttrIkbRe2fOl4oXOy+YD
- 9Jh4orANoVF+dc6ZUffgwzHoi1UoXHzAowT3QvYzu2T+l4YOZdpjcjVLxLYeXdlSmrj5rYZNj
- q6C5nTmFENHhJGZj47TUcTPPKZLlAq+fN581y8XdIxCLDF0RBBsw4PuUZM0PdRLtWPQrYpTTj
- pZyP6D9IZgCMkxAm0EWJryIyg9xX5L/TV0bqzlKviICl9k1CizcaA1tXlhs9Zj6lAKhgcvtoU
- bfQHSkswd2wyMM84EmLIq+ctAYnJ/B2xKMCUniSY3uF2HKj4Ggq7zUxxCX1VoPD4dMyoqh/C3
- 4i0XlibTzoko5PI8env/1uk3JVTAypSsa0rK9gtz+UhRyht1IT5AnjSxX0XP36ez9KVyTV08v
- +xIaGzNK9WoYMh/5iyzmcTVs02MKeWLgoZHeVYUghgOGlUbkxsnxppZaIVQxhmgIPcQS8ZpRN
- S3waWSJl9Ig3wM0yz51TVsdX6I6XUpkNY5N9JpsQ+pAqXl2iGiRqngyDk7EnQRDusphtJSRZw
- Vt/CCWxmwhZ1P4FQj6c9MO+Km2WCI8LEidVmTq+jev70JVSQcC0zdcRMr25Hiyb/a/sj27Y/i
- qYbYcrckJBtunXVseQQjpzP/pupsybjiZ/aOC2VabHQIiZoPWmFeaePIgKjOPW8bG4fWpT9K/
- ziumd4ohmDNMduGDYF6IyZB1UVnpxsLo9/stlcS1xPVH/O+o8u4Hx5v8t+Zws1u8L/gw=
+        Mon, 4 Apr 2022 18:51:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F25B162105;
+        Mon,  4 Apr 2022 15:05:03 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F63E615E9;
+        Mon,  4 Apr 2022 22:05:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 527C5C34110;
+        Mon,  4 Apr 2022 22:05:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649109902;
+        bh=crI8OWa/ILQsosVqMgWDeCCHWKp1heV2rpDD9+ltpjk=;
+        h=In-Reply-To:References:Date:From:To:Cc:Subject:From;
+        b=VSS0WYvCh8U/wTA1tky+XNuhgT9ZBOQSihN2yC977jGLr7A4FIdpX8DHWg3Xwp+94
+         4mnoqR12GB1qEYr4lsd2B0DWz0J7J+6xxdg1XLixgxZZfw7318LkINdU3v8BPjvGJ7
+         DArHMpmCjlvsLUTajVXcgDPMxNYV0xVSyCHhluHKuMFkYjr640tISjOj3dKwiy2rgX
+         S1/PXqn3kPkcqjNn62evu/NVfVHISL+lgZEnNdXsayL5cm7khfiVfUS6F2h/kIoOA4
+         VJ5scAYLwR0ySDPXZx0xV5V5spGuHRNORpc3PFFnnQT0h0zKa483p5VIQnW08XKVcK
+         A5ySxn3g4LBxQ==
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailauth.nyi.internal (Postfix) with ESMTP id E91D827C005C;
+        Mon,  4 Apr 2022 18:04:59 -0400 (EDT)
+Received: from imap48 ([10.202.2.98])
+  by compute2.internal (MEProxy); Mon, 04 Apr 2022 18:04:59 -0400
+X-ME-Sender: <xms:imtLYtbmuXBb-CR_X_doiTrPKcKWg4NNZfEo0QSYuGGNzrWlFCh8ag>
+    <xme:imtLYkapya1yCRkOmevv2zLb3QY9mqtqV1FsUEiD7QcwgBazL00LiEzuVdvBBAFMk
+    SMuE79NU7zn4AMtg_I>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudejfedgtdejucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepofgfggfkjghffffhvffutgesthdtredtreertdenucfhrhhomhepfdetnhgu
+    hicunfhuthhomhhirhhskhhifdcuoehluhhtoheskhgvrhhnvghlrdhorhhgqeenucggtf
+    frrghtthgvrhhnpedthfehtedtvdetvdetudfgueeuhfdtudegvdelveelfedvteelfffg
+    fedvkeegfeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhroh
+    hmpegrnhguhidomhgvshhmthhprghuthhhphgvrhhsohhnrghlihhthidqudduiedukeeh
+    ieefvddqvdeifeduieeitdekqdhluhhtoheppehkvghrnhgvlhdrohhrgheslhhinhhugi
+    drlhhuthhordhush
+X-ME-Proxy: <xmx:imtLYv9O2uTJPGfIAprEk78SSKii49ihDteleFopSC9LOBdDLc7JNA>
+    <xmx:imtLYroo5M1o1eUy4GHtpHG0qQT3ccZnrnE5qrgORNPjETQmuS01Zg>
+    <xmx:imtLYoo3eLpLZOIqK255uDXkBNwKmkll3HfP2NPulU8SHrKPTL1f2Q>
+    <xmx:i2tLYlLE5fv_MDSQnedDEY1S9wLK9aHDsm-OZcMYWBwQp1uIEZI2kg>
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id B623D21E0073; Mon,  4 Apr 2022 18:04:58 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.7.0-alpha0-385-g3a17909f9e-fm-20220404.001-g3a17909f
+Mime-Version: 1.0
+Message-Id: <eefc3c74-acca-419c-8947-726ce2458446@www.fastmail.com>
+In-Reply-To: <Ykslo2eo2eRXrpFR@google.com>
+References: <YkH32nx+YsJuUbmZ@google.com> <YkIFW25WgV2WIQHb@google.com>
+ <YkM7eHCHEBe5NkNH@google.com> <88620519-029e-342b-0a85-ce2a20eaf41b@arm.com>
+ <YkQzfjgTQaDd2E2T@google.com> <YkSaUQX89ZEojsQb@google.com>
+ <80aad2f9-9612-4e87-a27a-755d3fa97c92@www.fastmail.com>
+ <YkcTTY4YjQs5BRhE@google.com>
+ <83fd55f8-cd42-4588-9bf6-199cbce70f33@www.fastmail.com>
+ <YksIQYdG41v3KWkr@google.com> <Ykslo2eo2eRXrpFR@google.com>
+Date:   Mon, 04 Apr 2022 15:04:17 -0700
+From:   "Andy Lutomirski" <luto@kernel.org>
+To:     "Sean Christopherson" <seanjc@google.com>,
+        "Quentin Perret" <qperret@google.com>
+Cc:     "Steven Price" <steven.price@arm.com>,
+        "Chao Peng" <chao.p.peng@linux.intel.com>,
+        "kvm list" <kvm@vger.kernel.org>,
+        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
+        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
+        "Linux API" <linux-api@vger.kernel.org>, qemu-devel@nongnu.org,
+        "Paolo Bonzini" <pbonzini@redhat.com>,
+        "Jonathan Corbet" <corbet@lwn.net>,
+        "Vitaly Kuznetsov" <vkuznets@redhat.com>,
+        "Wanpeng Li" <wanpengli@tencent.com>,
+        "Jim Mattson" <jmattson@google.com>,
+        "Joerg Roedel" <joro@8bytes.org>,
+        "Thomas Gleixner" <tglx@linutronix.de>,
+        "Ingo Molnar" <mingo@redhat.com>, "Borislav Petkov" <bp@alien8.de>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        "Hugh Dickins" <hughd@google.com>,
+        "Jeff Layton" <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        "Andrew Morton" <akpm@linux-foundation.org>,
+        "Mike Rapoport" <rppt@kernel.org>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        "Vlastimil Babka" <vbabka@suse.cz>,
+        "Vishal Annapurve" <vannapurve@google.com>,
+        "Yu Zhang" <yu.c.zhang@linux.intel.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        "Nakajima, Jun" <jun.nakajima@intel.com>,
+        "Dave Hansen" <dave.hansen@intel.com>,
+        "Andi Kleen" <ak@linux.intel.com>,
+        "David Hildenbrand" <david@redhat.com>,
+        "Marc Zyngier" <maz@kernel.org>, "Will Deacon" <will@kernel.org>
+Subject: Re: [PATCH v5 00/13] KVM: mm: fd-based approach for supporting KVM guest
+ private memory
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 4, 2022 at 10:22 PM Hawkins, Nick <nick.hawkins@hpe.com> wrote:
-> > > I would put it into drivers/clocksource/, I don't think drivers/mtd would be any better, but there is a chance that the clocksource maintainers don't want to have the watchdog code in their tree.
->
-> While trying to discover how to creating two devices in one driver I ran across an interesting .dtsi and I was wondering if this would be a valid approach for my situation as well. The pertinent files are:
-> 1) drivers/clocksource/timer-digicolor.c
-> 2) arch/arm/boot/dts/cx92755.dtsi
-> 3) drivers/watchdog/digicolor_wdt.c
->
-> Here they are just sharing the same register area:
->
-> timer@f0000fc0 {
->         compatible = "cnxt,cx92755-timer";
->         reg = <0xf0000fc0 0x40>;
->         interrupts = <19>, <31>, <34>, <35>, <52>, <53>, <54>, <55>;
->         clocks = <&main_clk>;
-> };
->
-> rtc@f0000c30 {
->         compatible = "cnxt,cx92755-rtc";
->         reg = <0xf0000c30 0x18>;
->         interrupts = <25>;
-> };
->
-> watchdog@f0000fc0 {
->         compatible = "cnxt,cx92755-wdt";
->         reg = <0xf0000fc0 0x8>;
->         clocks = <&main_clk>;
->         timeout-sec = <15>;
-> };
 
-Right, it is possible to make this work, but it's not recommended, and you have
-to work around the sanity checks in the code that try to keep you from doing it
-wrong, as well as any tooling that tries to check for these in the DT.
 
-         Arnd
+On Mon, Apr 4, 2022, at 10:06 AM, Sean Christopherson wrote:
+> On Mon, Apr 04, 2022, Quentin Perret wrote:
+>> On Friday 01 Apr 2022 at 12:56:50 (-0700), Andy Lutomirski wrote:
+>> FWIW, there are a couple of reasons why I'd like to have in-place
+>> conversions:
+>> 
+>>  - one goal of pKVM is to migrate some things away from the Arm
+>>    Trustzone environment (e.g. DRM and the likes) and into protected VMs
+>>    instead. This will give Linux a fighting chance to defend itself
+>>    against these things -- they currently have access to _all_ memory.
+>>    And transitioning pages between Linux and Trustzone (donations and
+>>    shares) is fast and non-destructive, so we really do not want pKVM to
+>>    regress by requiring the hypervisor to memcpy things;
+>
+> Is there actually a _need_ for the conversion to be non-destructive?  
+> E.g. I assume
+> the "trusted" side of things will need to be reworked to run as a pKVM 
+> guest, at
+> which point reworking its logic to understand that conversions are 
+> destructive and
+> slow-ish doesn't seem too onerous.
+>
+>>  - it can be very useful for protected VMs to do shared=>private
+>>    conversions. Think of a VM receiving some data from the host in a
+>>    shared buffer, and then it wants to operate on that buffer without
+>>    risking to leak confidential informations in a transient state. In
+>>    that case the most logical thing to do is to convert the buffer back
+>>    to private, do whatever needs to be done on that buffer (decrypting a
+>>    frame, ...), and then share it back with the host to consume it;
+>
+> If performance is a motivation, why would the guest want to do two 
+> conversions
+> instead of just doing internal memcpy() to/from a private page?  I 
+> would be quite
+> surprised if multiple exits and TLB shootdowns is actually faster, 
+> especially at
+> any kind of scale where zapping stage-2 PTEs will cause lock contention 
+> and IPIs.
+
+I don't know the numbers or all the details, but this is arm64, which is a rather better architecture than x86 in this regard.  So maybe it's not so bad, at least in very simple cases, ignoring all implementation details.  (But see below.)  Also the systems in question tend to have fewer CPUs than some of the massive x86 systems out there.
+
+If we actually wanted to support transitioning the same page between shared and private, though, we have a bit of an awkward situation.  Private to shared is conceptually easy -- do some bookkeeping, reconstitute the direct map entry, and it's done.  The other direction is a mess: all existing uses of the page need to be torn down.  If the page has been recently used for DMA, this includes IOMMU entries.
+
+Quentin: let's ignore any API issues for now.  Do you have a concept of how a nondestructive shared -> private transition could work well, even in principle?  The best I can come up with is a special type of shared page that is not GUP-able and maybe not even mmappable, having a clear option for transitions to fail, and generally preventing the nasty cases from happening in the first place.
+
+Maybe there could be a special mode for the private memory fds in which specific pages are marked as "managed by this fd but actually shared".  pread() and pwrite() would work on those pages, but not mmap().  (Or maybe mmap() but the resulting mappings would not permit GUP.)  And transitioning them would be a special operation on the fd that is specific to pKVM and wouldn't work on TDX or SEV.
+
+Hmm.  Sean and Chao, are we making a bit of a mistake by making these fds technology-agnostic?  That is, would we want to distinguish between a TDX backing fd, a SEV backing fd, a software-based backing fd, etc?  API-wise this could work by requiring the fd to be bound to a KVM VM instance and possibly even configured a bit before any other operations would be allowed.
+
+(Destructive transitions nicely avoid all the nasty cases.  If something is still pinning a shared page when it's "transitioned" to private (really just replaced with a new page), then the old page continues existing for as long as needed as a separate object.)
