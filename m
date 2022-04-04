@@ -2,128 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD937C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:52:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35B04C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:52:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356070AbiDDVyR (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:54:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41330 "EHLO
+        id S235867AbiDDVyc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 17:54:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380361AbiDDTqo (ORCPT
+        with ESMTP id S1380404AbiDDUFA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 15:46:44 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BB5C31225;
-        Mon,  4 Apr 2022 12:44:47 -0700 (PDT)
-Received: from mail-wr1-f43.google.com ([209.85.221.43]) by
- mrelayeu.kundenserver.de (mreue108 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1N17cq-1nzCXH2wKw-012bHf; Mon, 04 Apr 2022 21:44:45 +0200
-Received: by mail-wr1-f43.google.com with SMTP id w4so16093476wrg.12;
-        Mon, 04 Apr 2022 12:44:45 -0700 (PDT)
-X-Gm-Message-State: AOAM531bPpPiXsyBuu1Yr8dOuiJWOEbyTNC5wCcidziOUplTMbkUXomW
-        wRILfUd3mFBk2LOwTW6lxnZEaQTZU7t70MvZnAk=
-X-Google-Smtp-Source: ABdhPJyRqH0qibkfjPRGnJDcURrE8ZPrQIGLNSwn/9l1FUg/Sz1o5iKs76jxTh4W551VdZ+S32lMVfdTx28z5w2iC30=
-X-Received: by 2002:a05:6000:10c7:b0:206:135e:c84e with SMTP id
- b7-20020a05600010c700b00206135ec84emr984244wrx.12.1649101485314; Mon, 04 Apr
- 2022 12:44:45 -0700 (PDT)
+        Mon, 4 Apr 2022 16:05:00 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8014E30F6A;
+        Mon,  4 Apr 2022 13:03:04 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id nt14-20020a17090b248e00b001ca601046a4so396610pjb.0;
+        Mon, 04 Apr 2022 13:03:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=NCkHW7qdKf6bzLGj3j7v6pAZ5FXathduMO1XmoapD2w=;
+        b=NCYcMbdBRvRn+XRjiGfIxN2tcqtf3m28j6Ss9IzYKdTVClDjf3RZa3dGeoRDcblFz7
+         lpG/BEu5k3wkLaxvKPQeQaLes4MrBITFco3y2M+Kp347fIot9hIiXvKKmF+dJigCPYG4
+         B/q/jRSOjGQXfPhlJmn3+5voL7xHCn5jGOPR8dpHxjDGbtAlGbfMNyDprgwmJKVJm4zv
+         PHkwsPH645GSCAosRwop6qgP6Nb5WtrIINCwtfEALkz+5PaTyaRoMErryMtRF30s22oU
+         EDxOpJKcFLVvu9HhhIjSytflYUAOLG73XjN8C5QEmVPurGV9Incx69Dw9oqg2WXRtzQE
+         Rjuw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=NCkHW7qdKf6bzLGj3j7v6pAZ5FXathduMO1XmoapD2w=;
+        b=vZBvg8M0BhC4VwlSp9BiwplDKsNOn8WqUWGO6hQasPiPJxOwNJpTwXV5KfFx8b4Mal
+         O2j2VUf0vYTVmECbF5NJdeBT/zv2slsNgK2NytBNU6b6zEV8yIJwKIn15ayXY6300UHM
+         9MwjG37yDsYaa9TRJkIeGWirEyDrIJf3unoVrnCkNIcMNE7tkZ43CSUkhzRoAmfDx2NZ
+         jYRDttqNqzDBOK2ne7c3NzsK/sSp/43f67BT8U2bHBULPimiqlTrjZ2U3xGroWivvb3P
+         5mXLJC2DuUlGCrBKy/gEtiq4z7mNxO9xqWrmZqwr/VM/gxRe9kbQDmDmf+cbF/aMr9Xy
+         +kKg==
+X-Gm-Message-State: AOAM5339geaSuOXWF2j4nZkt1mbDhJi6euW0RFmRD+Ox8dtedF4o0e2a
+        1gElhO7G8S6p1gog5sfryN0=
+X-Google-Smtp-Source: ABdhPJwwyRU/9G37xXjcgkqkjgM4U7jgrGc/4YgXWVgLfx/3lCnWccRDoLxMFlr3jYl/E2J/XSzSHw==
+X-Received: by 2002:a17:902:bf07:b0:150:9b8a:a14f with SMTP id bi7-20020a170902bf0700b001509b8aa14fmr1450757plb.127.1649102584016;
+        Mon, 04 Apr 2022 13:03:04 -0700 (PDT)
+Received: from localhost.localdomain (c-67-174-241-145.hsd1.ca.comcast.net. [67.174.241.145])
+        by smtp.gmail.com with ESMTPSA id bw17-20020a056a00409100b004fadad3b93esm12779295pfb.142.2022.04.04.13.03.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Apr 2022 13:03:03 -0700 (PDT)
+From:   Yang Shi <shy828301@gmail.com>
+To:     vbabka@suse.cz, kirill.shutemov@linux.intel.com,
+        linmiaohe@huawei.com, songliubraving@fb.com, riel@surriel.com,
+        willy@infradead.org, ziy@nvidia.com, tytso@mit.edu,
+        akpm@linux-foundation.org
+Cc:     shy828301@gmail.com, linux-mm@kvack.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [v3 PATCH 1/8] sched: coredump.h: clarify the use of MMF_VM_HUGEPAGE
+Date:   Mon,  4 Apr 2022 13:02:43 -0700
+Message-Id: <20220404200250.321455-2-shy828301@gmail.com>
+X-Mailer: git-send-email 2.26.3
+In-Reply-To: <20220404200250.321455-1-shy828301@gmail.com>
+References: <20220404200250.321455-1-shy828301@gmail.com>
 MIME-Version: 1.0
-References: <Yib9F5SqKda/nH9c@infradead.org> <CAK8P3a1dUVsZzhAe81usLSkvH29zHgiV9fhEkWdq7_W+nQBWbg@mail.gmail.com>
- <YkmWh2tss8nXKqc5@infradead.org> <CAK8P3a0QdFOJbM72geYTWOKumeKPSCVD8Nje5pBpZWazX0GEnQ@mail.gmail.com>
- <CAMo8BfKgn0T5RtUTb89fPvygNJJYLy7r1=RZTmTTm=jiDfx1hQ@mail.gmail.com>
- <CAK8P3a0J1--WSyWY+TptFa0nn5d-mOxapadCE1csGRkfhSPbVw@mail.gmail.com>
- <CAMo8BfLT8vMw3aGQPs1+9ry7W63SQphmDc4Tt4A3JvADHJhxiQ@mail.gmail.com> <CAK8P3a3iFb+ZacZ40d8PC_xcJpLVFXT0Qc-oYEZNkFqXdsfNZw@mail.gmail.com>
-In-Reply-To: <CAK8P3a3iFb+ZacZ40d8PC_xcJpLVFXT0Qc-oYEZNkFqXdsfNZw@mail.gmail.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Mon, 4 Apr 2022 21:44:29 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a1goN3c772xiFtz13kHZs0XEDSxfXX=ub7OH3S98Mddsw@mail.gmail.com>
-Message-ID: <CAK8P3a1goN3c772xiFtz13kHZs0XEDSxfXX=ub7OH3S98Mddsw@mail.gmail.com>
-Subject: Re: [RFC PULL] remove arch/h8300
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Max Filippov <jcmvbkbc@gmail.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        "moderated list:H8/300 ARCHITECTURE" 
-        <uclinux-h8-devel@lists.sourceforge.jp>,
-        "open list:TENSILICA XTENSA PORT (xtensa)" 
-        <linux-xtensa@linux-xtensa.org>,
-        Linux-sh list <linux-sh@vger.kernel.org>,
-        linux-m68k <linux-m68k@lists.linux-m68k.org>,
-        Greg Ungerer <gerg@linux-m68k.org>,
-        Damien Le Moal <damien.lemoal@wdc.com>,
-        linux-riscv <linux-riscv@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:Qw+lTynQ9FdEIf/dV0Hp8dxBMWgXsLK2Hu91jlgCSXci/9G/4Qc
- LhhlwV8BuRehAQq6IqnNWf8tdRoO1iPeJrjM21R41fRtfu83xVpvU2pqw5CdITVmh8XS0Lk
- 3XNIJxiYBwAGyXKzZWz0mIOxTUV7ApES9AyWxPi+JQCvTVxx4xxA2YAu9KCgIyADBkf8RPP
- 15kIpgfD1xMa9hbZDD3KA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:8B+XYFobVuQ=:9dNh0l+zhbsBsyfsmjDetF
- t09Tnj6ird7kCuEKoLpCBUo6Sl+7KzqmNJ4Fb4YmFJevUKFBA9NKFYIrSnGRMnauCp40cULvm
- Diw38BGNYWCiKoAhXJbz0RKPtHdq+zqx58oWsFwIZ/Lbgh4UiOY0g0V925e8eQWaj/4iVajN8
- 9sUo4HkUcRFFYS0ax+5bwB6CO87e06MRTmYFzS9f+3VlRcqKDxejmGvelEuDASJ0bfSLgDDR3
- mKvnax+e/VNeWOlp2yBPwLztUTEXo81O+oeh6UTiVJemBAduOef3K7oUTfrjoNyrmvlKsDXb5
- v6kS8Kxm/TITqpnCsk4QpIp/GHF86SYKemT9E5gslt3Jom7Ii9rgFYoMqQXFnVgPRe8kDkxfN
- Om5DxEjB9KrDYBJSlFw+vCtsxj+GNK4RUToFDC6nR9bXRVu02Kljr30xaQCMbo7sor6+q2PMh
- aas5WrGIjG8nFxN7Z/hIA+kq4vDggcfEFoFwUQ6Njg1JGHlSxig3mep/yGI414qOMetQ55Q+u
- Pb+C5yFR6sMBsVt8nwV4KQKxHId8/MYTVIcsHq2KuwGFud/CeFPqmUMWewDZoB0Fe8VjhZFhx
- Ih2QrOtLgE4w1p62yki7mhccVS5LTWPCU5FKuu6lEuD8eMU7I7DSVjm8bjdkxfNYduU72ZTkB
- LbULHP7j1Ox/UCi9AHHW10IXpLthI1elT++Kev+3GlaQyu7y2DriiMAwF2LqHj+o9+9CT2UAn
- TgX3/N46OXL/SnWHuY00AV62H3sBOSblleHiMTwEPwWkv3IEuAHGYMUn5tn0ouDUpLkOIwkH4
- /kgor7hwSb5nKlOgx6S8Ht5+fpC6oARD8C8QLTR/JvkZZtDxoA=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 4, 2022 at 9:35 PM Arnd Bergmann <arnd@arndb.de> wrote:
->
-> On Mon, Apr 4, 2022 at 9:14 PM Max Filippov <jcmvbkbc@gmail.com> wrote:
-> > On Mon, Apr 4, 2022 at 12:01 PM Arnd Bergmann <arnd@arndb.de> wrote:
-> > > On Mon, Apr 4, 2022 at 7:57 PM Max Filippov <jcmvbkbc@gmail.com> wrote:
-> > > > Please let me know if you observe any specific build/runtime issues.
-> > > xtensa-linux-gcc-11.1.0 -DKCONFIG_SEED=
-> > ...
-> > > /git/arm-soc/arch/xtensa/kernel/head.S: Assembler messages:
-> > > /git/arm-soc/arch/xtensa/kernel/head.S:87: Error: invalid register
-> > > 'atomctl' for 'wsr' instruction
-> >
-> > Sure, one cannot use an arbitrary xtensa compiler for the kernel
-> > build, the compiler configuration must match the core variant selected
-> > in the linux configuration. Specifically, for the nommu_kc705_defconfig
-> > the following compiler can be used:
-> >
-> > https://github.com/foss-xtensa/toolchain/releases/download/2020.07/x86_64-2020.07-xtensa-de212-elf.tar.gz
-> >
-> > If you build the toolchain yourself using crosstool-ng or buildroot they
-> > accept the 'configuration overlay' parameter that does the compiler
-> > customization.
-> >
-> > Perhaps the documentation for this part is what needs to be improved.
->
-> It sounds like a bug in the kernel Makefile. On all other architectures,
-> you can generally just pick any (recent) compiler and build any kernel,
-> as the compiler arguments set the exact target machine type based
-> on the kernel config. You can't normally rely on the compiler defaults
-> for kernel builds.
+MMF_VM_HUGEPAGE is set as long as the mm is available for khugepaged by
+khugepaged_enter(), not only when VM_HUGEPAGE is set on vma.  Correct
+the comment to avoid confusion.
 
-FWIW, the compiler I used is the one I built for kernel.org [1] using unmodified
-upstream sources The config I used for this is
+Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
+Acked-by: Song Liu <song@kernel.org>
+Signed-off-by: Yang Shi <shy828301@gmail.com>
+---
+ include/linux/sched/coredump.h | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-${SRCTREE}/configure ../log-gcc-configure /home/arnd/git/gcc/configure
---target=xtensa-linux --enable-targets=all
---prefix=/home/arnd/cross/x86_64/gcc-11.1.0-nolibc/xtensa-linux
---enable-languages=c --without-headers --disable-bootstrap
---disable-nls --disable-threads --disable-shared --disable-libmudflap
---disable-libssp --disable-libgomp --disable-decimal-float
---disable-libquadmath --disable-libatomic --disable-libcc1
---disable-libmpx --enable-checking=release
+diff --git a/include/linux/sched/coredump.h b/include/linux/sched/coredump.h
+index 4d9e3a656875..4d0a5be28b70 100644
+--- a/include/linux/sched/coredump.h
++++ b/include/linux/sched/coredump.h
+@@ -57,7 +57,8 @@ static inline int get_dumpable(struct mm_struct *mm)
+ #endif
+ 					/* leave room for more dump flags */
+ #define MMF_VM_MERGEABLE	16	/* KSM may merge identical pages */
+-#define MMF_VM_HUGEPAGE		17	/* set when VM_HUGEPAGE is set on vma */
++#define MMF_VM_HUGEPAGE		17	/* set when mm is available for
++					   khugepaged */
+ /*
+  * This one-shot flag is dropped due to necessity of changing exe once again
+  * on NFS restore
+-- 
+2.26.3
 
-Let me know if I need to enable additional options to get a compiler
-that works for all xtensa targets. Usually the --enable-targets=all
-is meant to be sufficient.
-
-        Arnd
-
-[1] https://mirrors.edge.kernel.org/pub/tools/crosstool/files/bin/x86_64/11.1.0/
