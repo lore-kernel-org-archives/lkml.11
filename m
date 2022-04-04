@@ -2,107 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8584DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:23:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CD06C43217
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:23:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379026AbiDDVSf (ORCPT
+        id S1381920AbiDDVYZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:18:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53950 "EHLO
+        Mon, 4 Apr 2022 17:24:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380344AbiDDTiD (ORCPT
+        with ESMTP id S1379983AbiDDScM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 15:38:03 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0C9E13F10;
-        Mon,  4 Apr 2022 12:36:05 -0700 (PDT)
-Received: from mail-wm1-f51.google.com ([209.85.128.51]) by
- mrelayeu.kundenserver.de (mreue009 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1MCbMx-1njTEW44DD-009jfe; Mon, 04 Apr 2022 21:36:04 +0200
-Received: by mail-wm1-f51.google.com with SMTP id n38-20020a05600c502600b0038e4a0fc5easo213006wmr.3;
-        Mon, 04 Apr 2022 12:36:03 -0700 (PDT)
-X-Gm-Message-State: AOAM530e3QZh9j+3Ooh3C0vd1rJqdVrpEYpJ4xevEjcsg9wHhQ/FD8IZ
-        EK41q4GhFhMNvGHap+YyW6nhSnhr8aPX/mbmF/4=
-X-Google-Smtp-Source: ABdhPJxpqVUnzSThWxFis0+czy1waV2fEyvClqHAXtfCqV11EeZgFuDvKELwz3h19yH6dPE8NNhk9binn9y/5RzmubM=
-X-Received: by 2002:a7b:cd13:0:b0:38b:f39c:1181 with SMTP id
- f19-20020a7bcd13000000b0038bf39c1181mr626838wmj.20.1649100963560; Mon, 04 Apr
- 2022 12:36:03 -0700 (PDT)
+        Mon, 4 Apr 2022 14:32:12 -0400
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B51327FFB;
+        Mon,  4 Apr 2022 11:30:16 -0700 (PDT)
+Received: by mail-pg1-x52b.google.com with SMTP id s21so1384384pgs.4;
+        Mon, 04 Apr 2022 11:30:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Us6wl0q/gwpRDfhlxNog2kgLvXIfSCvVL7Nr5vhLBX8=;
+        b=mB4WyIQGue7DvaUx4D9COiqiKi0aII624/cqdrNZJlThXAmTEreD6QUdvmieq6VdtJ
+         2YODxJtQ6TzJJO5qnUxXBPO5u4oiMekkSLfUoxFrJh34IocF4Ps9aqIQeYVkCox0Rg5j
+         bqCuDju3NmeirJ0h/qIfHZ8PO8ImWf7brggesYsPW0Bhb/G5PpMU/7FT6HGWJZrL7TPZ
+         F7cl+8zwrBW/U0fwak2MYExbLnPdVNksh0dfx9WIRzN0UEXUSy1h4pC6jpRPMgFHjbS6
+         iEUQslZrsCik1TP3xEJel6dHS15Ixq93DFyhCpxUSK/yLJwDwPcCvkLgVHtfP2H94Vx3
+         FKvA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Us6wl0q/gwpRDfhlxNog2kgLvXIfSCvVL7Nr5vhLBX8=;
+        b=enqiYt1DmSvbAJmKNTa6MpiZprt8yAgWCsETwyglH11Mp4KI4mENjRdsEDVRlDUxlI
+         USm4cJXNbGU3aTE4EGRwrQCkPSSLC7FpW79hW8WmiN3xHXMN9J0r78672iCdTO8kpDtI
+         UfnZKXhBeFuevBAus2abvhgSkOvBE6BOSBia+qc5NDNpEwmQmEplreVBichDGSUuXZzm
+         AWD8xJD/hHjhzMBLFzUQsl40n33fNyc+jwAbYB5DbqHsA/Gde2B1xRf7BC4K2a8z7dAG
+         kBAoz+IWrhylMUrh2Rdfq8j7tmO52YkbgkqQ/0QtXfUdvKpvX3RcwYBHOTqEpI7EZYRg
+         maQQ==
+X-Gm-Message-State: AOAM530jbnl0PrIh1u13CiWIrUF0XLkTPB0LQgyKwOYUcP+T5yxNH9iK
+        414B6aKnMzzdh67g+auE4LI=
+X-Google-Smtp-Source: ABdhPJzTxAnneoPAFMDLgXiuo+NRQ2lyhuVefbgbtFbo8F/6GMQz2MlZF5WVGGeySrDhRcHJIjPiAA==
+X-Received: by 2002:a05:6a00:b8e:b0:4fa:de88:9fc7 with SMTP id g14-20020a056a000b8e00b004fade889fc7mr929643pfj.56.1649097015518;
+        Mon, 04 Apr 2022 11:30:15 -0700 (PDT)
+Received: from localhost.localdomain ([122.161.51.18])
+        by smtp.gmail.com with ESMTPSA id kk11-20020a17090b4a0b00b001c73933d803sm162656pjb.10.2022.04.04.11.30.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Apr 2022 11:30:15 -0700 (PDT)
+From:   Kuldeep Singh <singh.kuldeep87k@gmail.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        Kuldeep Singh <singh.kuldeep87k@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [PATCH v2 3/4] dt-bindings: serial: Update Qualcomm geni based QUP UART bindings
+Date:   Mon,  4 Apr 2022 23:59:36 +0530
+Message-Id: <20220404182938.29492-4-singh.kuldeep87k@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220404182938.29492-1-singh.kuldeep87k@gmail.com>
+References: <20220404182938.29492-1-singh.kuldeep87k@gmail.com>
 MIME-Version: 1.0
-References: <Yib9F5SqKda/nH9c@infradead.org> <CAK8P3a1dUVsZzhAe81usLSkvH29zHgiV9fhEkWdq7_W+nQBWbg@mail.gmail.com>
- <YkmWh2tss8nXKqc5@infradead.org> <CAK8P3a0QdFOJbM72geYTWOKumeKPSCVD8Nje5pBpZWazX0GEnQ@mail.gmail.com>
- <CAMo8BfKgn0T5RtUTb89fPvygNJJYLy7r1=RZTmTTm=jiDfx1hQ@mail.gmail.com>
- <CAK8P3a0J1--WSyWY+TptFa0nn5d-mOxapadCE1csGRkfhSPbVw@mail.gmail.com> <CAMo8BfLT8vMw3aGQPs1+9ry7W63SQphmDc4Tt4A3JvADHJhxiQ@mail.gmail.com>
-In-Reply-To: <CAMo8BfLT8vMw3aGQPs1+9ry7W63SQphmDc4Tt4A3JvADHJhxiQ@mail.gmail.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Mon, 4 Apr 2022 21:35:47 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a3iFb+ZacZ40d8PC_xcJpLVFXT0Qc-oYEZNkFqXdsfNZw@mail.gmail.com>
-Message-ID: <CAK8P3a3iFb+ZacZ40d8PC_xcJpLVFXT0Qc-oYEZNkFqXdsfNZw@mail.gmail.com>
-Subject: Re: [RFC PULL] remove arch/h8300
-To:     Max Filippov <jcmvbkbc@gmail.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Christoph Hellwig <hch@infradead.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        "moderated list:H8/300 ARCHITECTURE" 
-        <uclinux-h8-devel@lists.sourceforge.jp>,
-        "open list:TENSILICA XTENSA PORT (xtensa)" 
-        <linux-xtensa@linux-xtensa.org>,
-        Linux-sh list <linux-sh@vger.kernel.org>,
-        linux-m68k <linux-m68k@lists.linux-m68k.org>,
-        Greg Ungerer <gerg@linux-m68k.org>,
-        Damien Le Moal <damien.lemoal@wdc.com>,
-        linux-riscv <linux-riscv@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:Na3Qbp5Gp6zqpmOBXFOCu/SbbvSoNPqbD2qfv/xtPRYs5dDgRg8
- mIdvfyyz7e473bmnPVXYgmko/IBAFkN0E/0D7L82k9H4z0qRYeIYCVhV+iBQaif2iegOb1n
- G5GibOdTpi5drETUpiRkAyzxuEliV1e4OIvYnLs7V+EvzmsZHy+EQlKk4xe7MwQlb5by+Gj
- apal2zq108Xa8Zht5qXpA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:48eYd4DVt+g=:4SxC9dH5qGnv0NPa9/lmmK
- UAUr1kr+bxQ+cT9ipiNeobPoYMARqZ1sXLPPb3RBuM/FeNM7LQl77+5LxFq0kVfxe8KDYB4vN
- Z8JggpZz9US2JF8u4D1euzH3LMC0rUGjLA6xk2QeqlKzQNxztcyfiaKL7kCPK5lvF7/NhjJjm
- Swp1pisPzQ9HvqHjNeMJkJ2a4rD3LV4/lQCYUUTteh05i3GBs1z3KUY9h+u4vOJsahunt9u/7
- UEWXIJ5FHaY+Kg5OddLjsQNqdG/IzYDl2M90gSCz3do1klkpweaHIPLfcDxJ0vetqH/Vggist
- 5lDFBLF4Wo25IJOCBa18M/BKIdtH8rl23rqLFf5Fvcet2m0VvUD7U8HP6yKV8ymGG6/ov8aZe
- gQxJKJbIENHMLnE5megUW5rVZtr354v9QVUuFdzh9dagMhLLpKUEKs8vTJ7BN+3gE8GYdZGpL
- Bo/xYSaz0uLLPNOpOqG1kfthmEe7l3+plFBLCIIazo+4Mcqx+7ZNShmqkypDmA/xIcKtBQ8dc
- NmzLqnCgrQ9/2IVEmwctfWzPjKTtnUCedPdKJSdQ/qssI4tEDRqVpkxp1acvz5NNBTgTxUELX
- uqB979KDMIR3cGeZugP1tN4TZ38aXn7B5irg5iPGIrQPRCO1/vd6dfEbrSnw5BZRpfnYXyDcq
- u3A3XldZFbTmEWmghOVIWe9qIjVUliUudF01SMdQYIT6uzOIqWyXXpOOsCI+qcaB35QVCkt9O
- uF4Lu3l3rij+1BQ33ZXHCR2EL9GONZ8qmcUv3u8ZH3cy1aJCehhrzUJ5EUkg2iRvthWeHiHVf
- YjqmX4js+KyPmAuMSzHGB2eGmBBtP1KClfsYLfBtY2d0HB90eQ=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 4, 2022 at 9:14 PM Max Filippov <jcmvbkbc@gmail.com> wrote:
-> On Mon, Apr 4, 2022 at 12:01 PM Arnd Bergmann <arnd@arndb.de> wrote:
-> > On Mon, Apr 4, 2022 at 7:57 PM Max Filippov <jcmvbkbc@gmail.com> wrote:
-> > > Please let me know if you observe any specific build/runtime issues.
-> > xtensa-linux-gcc-11.1.0 -DKCONFIG_SEED=
-> ...
-> > /git/arm-soc/arch/xtensa/kernel/head.S: Assembler messages:
-> > /git/arm-soc/arch/xtensa/kernel/head.S:87: Error: invalid register
-> > 'atomctl' for 'wsr' instruction
->
-> Sure, one cannot use an arbitrary xtensa compiler for the kernel
-> build, the compiler configuration must match the core variant selected
-> in the linux configuration. Specifically, for the nommu_kc705_defconfig
-> the following compiler can be used:
->
-> https://github.com/foss-xtensa/toolchain/releases/download/2020.07/x86_64-2020.07-xtensa-de212-elf.tar.gz
->
-> If you build the toolchain yourself using crosstool-ng or buildroot they
-> accept the 'configuration overlay' parameter that does the compiler
-> customization.
->
-> Perhaps the documentation for this part is what needs to be improved.
+Similar to I2C controller, move geni based QUP UART controller binding
+out from parent schema to an individual binding and let parent refer to
+child schema later on. UART binding also stand incomplete right now
+similar to I2C, complete it along this process.
 
-It sounds like a bug in the kernel Makefile. On all other architectures,
-you can generally just pick any (recent) compiler and build any kernel,
-as the compiler arguments set the exact target machine type based
-on the kernel config. You can't normally rely on the compiler defaults
-for kernel builds.
+Signed-off-by: Kuldeep Singh <singh.kuldeep87k@gmail.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+v2:
+- s/i2c/I2C
+- s/uart/UART
+- Sort nodes alphabetically
+- Add Krzystof's Rb tag
+---
+ .../serial/qcom,serial-geni-qcom.yaml         | 86 +++++++++++++++++++
+ 1 file changed, 86 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml
 
-         Arnd
+diff --git a/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml b/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml
+new file mode 100644
+index 000000000000..05a6999808d1
+--- /dev/null
++++ b/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml
+@@ -0,0 +1,86 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: "http://devicetree.org/schemas/serial/qcom,serial-geni-qcom.yaml#"
++$schema: "http://devicetree.org/meta-schemas/core.yaml#"
++
++title: Qualcomm Geni based QUP UART interface
++
++maintainers:
++  - Andy Gross <agross@kernel.org>
++  - Bjorn Andersson <bjorn.andersson@linaro.org>
++
++allOf:
++  - $ref: /schemas/serial/serial.yaml#
++
++properties:
++  compatible:
++    enum:
++      - qcom,geni-uart
++      - qcom,geni-debug-uart
++
++  clocks:
++    maxItems: 1
++
++  clock-names:
++    const: se
++
++  interconnects:
++    maxItems: 2
++
++  interconnect-names:
++    items:
++      - const: qup-core
++      - const: qup-config
++
++  interrupts:
++    minItems: 1
++    items:
++      - description: UART core irq
++      - description: Wakeup irq (RX GPIO)
++
++  operating-points-v2: true
++
++  pinctrl-0: true
++  pinctrl-1: true
++
++  pinctrl-names:
++    minItems: 1
++    items:
++      - const: default
++      - const: sleep
++
++  power-domains:
++    maxItems: 1
++
++  reg:
++    maxItems: 1
++
++required:
++  - compatible
++  - clocks
++  - clock-names
++  - interrupts
++  - reg
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++    #include <dt-bindings/clock/qcom,gcc-sc7180.h>
++    #include <dt-bindings/interconnect/qcom,sc7180.h>
++
++    serial@a88000 {
++        compatible = "qcom,geni-uart";
++        reg = <0xa88000 0x7000>;
++        interrupts = <GIC_SPI 355 IRQ_TYPE_LEVEL_HIGH>;
++        clock-names = "se";
++        clocks = <&gcc GCC_QUPV3_WRAP0_S0_CLK>;
++        pinctrl-0 = <&qup_uart0_default>;
++        pinctrl-names = "default";
++        interconnects = <&qup_virt MASTER_QUP_CORE_0 0 &qup_virt SLAVE_QUP_CORE_0 0>,
++                        <&gem_noc MASTER_APPSS_PROC 0 &config_noc SLAVE_QUP_0 0>;
++        interconnect-names = "qup-core", "qup-config";
++    };
++...
+-- 
+2.25.1
+
