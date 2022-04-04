@@ -2,133 +2,262 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 487ACC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2321BC35294
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:37:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382793AbiDDVcF (ORCPT
+        id S1382691AbiDDVbw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:32:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51856 "EHLO
+        Mon, 4 Apr 2022 17:31:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379621AbiDDRqG (ORCPT
+        with ESMTP id S1379270AbiDDQvx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 13:46:06 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEEC211A14;
-        Mon,  4 Apr 2022 10:44:06 -0700 (PDT)
-Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 234HHlOl002740;
-        Mon, 4 Apr 2022 17:44:05 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=H6p70Z1YMgrjJTkx+Yf17li7R+Rru0mRUfffXX/t7wc=;
- b=enbvl2cxL2p5+ZrxK8352RZipfMUzC0iob4A++ZakUqF3Y4IJ7+x8gU1j6fuLrRaYZBz
- LgQl0QounU0EprRG68+C2Be8sxe3oiWJRKyGBDZXpdoZmD4F8x/kxbHSPkFh35+aIiSM
- h+L6zOR3pwPujt5j3gMo+YaQuE77XCLkkl/ac82J/lLFnje0l53Tbgvave1kj/5ROsdT
- LSkupXfO+isnbZu9snj71Q1OYeuX6csIMr0U9wZqyd6EtPAZsV1UERBhu3kdRgHO5Xl9
- oX+3KKs9V41hFe5MG9sMAxxm5JFiHGS7TbKiBH/Bfp7/tLOittsPg99NMObEIVt9rROa Ug== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3f6yv6c8sk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 04 Apr 2022 17:44:05 +0000
-Received: from m0098420.ppops.net (m0098420.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 234HUZqr023479;
-        Mon, 4 Apr 2022 17:44:04 GMT
-Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3f6yv6c8s5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 04 Apr 2022 17:44:04 +0000
-Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
-        by ppma04dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 234Hh2bQ011081;
-        Mon, 4 Apr 2022 17:44:04 GMT
-Received: from b03cxnp08025.gho.boulder.ibm.com (b03cxnp08025.gho.boulder.ibm.com [9.17.130.17])
-        by ppma04dal.us.ibm.com with ESMTP id 3f6e49neuc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 04 Apr 2022 17:44:03 +0000
-Received: from b03ledav002.gho.boulder.ibm.com (b03ledav002.gho.boulder.ibm.com [9.17.130.233])
-        by b03cxnp08025.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 234Hi2Zf27590922
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 4 Apr 2022 17:44:02 GMT
-Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 837E2136061;
-        Mon,  4 Apr 2022 17:44:02 +0000 (GMT)
-Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 5EB0413604F;
-        Mon,  4 Apr 2022 17:44:00 +0000 (GMT)
-Received: from li-c92d2ccc-254b-11b2-a85c-a700b5bfb098.ibm.com.com (unknown [9.211.32.125])
-        by b03ledav002.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Mon,  4 Apr 2022 17:44:00 +0000 (GMT)
-From:   Matthew Rosato <mjrosato@linux.ibm.com>
-To:     linux-s390@vger.kernel.org
-Cc:     alex.williamson@redhat.com, cohuck@redhat.com,
-        schnelle@linux.ibm.com, farman@linux.ibm.com, pmorel@linux.ibm.com,
-        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
-        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
-        svens@linux.ibm.com, frankja@linux.ibm.com, david@redhat.com,
-        imbrenda@linux.ibm.com, vneethv@linux.ibm.com,
-        oberpar@linux.ibm.com, freude@linux.ibm.com, thuth@redhat.com,
-        pasic@linux.ibm.com, pbonzini@redhat.com, corbet@lwn.net,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org
-Subject: [PATCH v5 02/21] s390/sclp: detect the AISII facility
-Date:   Mon,  4 Apr 2022 13:43:30 -0400
-Message-Id: <20220404174349.58530-3-mjrosato@linux.ibm.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220404174349.58530-1-mjrosato@linux.ibm.com>
-References: <20220404174349.58530-1-mjrosato@linux.ibm.com>
+        Mon, 4 Apr 2022 12:51:53 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25E2C31356;
+        Mon,  4 Apr 2022 09:49:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649090996; x=1680626996;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=d1SJNvP8v9eXa3w1Wjuwy/XMdEhGgiSStSIhrE7ENyk=;
+  b=nWK80rC3YaB2cbs2qdiEq1ticoyqGqaSL+3BXL70cHhRyMOCXgAjW5h1
+   QbDutUUgLCWwvebYoF2zuvtLfOSd/FLrvMzaSZNoNl3B8/NI6mXiR+W/g
+   AY4Yj5b3uxOkdHh31HE0z1GIvDCHUgLRdRhsVP7z4R170hpWphUZbKlVu
+   aNJZEhhYB1hjJkJE2EhLgvxSbR/aMGt09k/wbqcK1h4N0dfSXdyRnSYRm
+   tDjCCofAle2RSz7CrW7RILq/eU1lj+SuZi5eMHi8tgpnORpbY17z0bv5o
+   eLdi3zk93eDHOcoACiNZ2fZp0kFnKWb1oFWUtuoM+wa6RMLK0GVDSZG6N
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="323734050"
+X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
+   d="scan'208";a="323734050"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:49:51 -0700
+X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
+   d="scan'208";a="523105192"
+Received: from rchatre-ws.ostc.intel.com ([10.54.69.144])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:49:50 -0700
+From:   Reinette Chatre <reinette.chatre@intel.com>
+To:     dave.hansen@linux.intel.com, jarkko@kernel.org, tglx@linutronix.de,
+        bp@alien8.de, luto@kernel.org, mingo@redhat.com,
+        linux-sgx@vger.kernel.org, x86@kernel.org
+Cc:     seanjc@google.com, kai.huang@intel.com, cathy.zhang@intel.com,
+        cedric.xing@intel.com, haitao.huang@intel.com,
+        mark.shanahan@intel.com, hpa@zytor.com,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH V3 15/30] x86/sgx: Support adding of pages to an initialized enclave
+Date:   Mon,  4 Apr 2022 09:49:23 -0700
+Message-Id: <50b9da1f491eb31d9b038afa0d75871965f474eb.1648847675.git.reinette.chatre@intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cover.1648847675.git.reinette.chatre@intel.com>
+References: <cover.1648847675.git.reinette.chatre@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: eOH8UAh3dYxpF4Z_plv_cAjhPT_STSzT
-X-Proofpoint-GUID: pIl7OOQfG4mCT-hiVYaT6DB6iIDqvN4k
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-04-04_06,2022-03-31_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=846
- lowpriorityscore=0 clxscore=1015 suspectscore=0 phishscore=0 adultscore=0
- mlxscore=0 bulkscore=0 malwarescore=0 impostorscore=0 spamscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2204040099
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Detect the Adapter Interruption Source ID Interpretation facility.
+With SGX1 an enclave needs to be created with its maximum memory demands
+allocated. Pages cannot be added to an enclave after it is initialized.
+SGX2 introduces a new function, ENCLS[EAUG], that can be used to add
+pages to an initialized enclave. With SGX2 the enclave still needs to
+set aside address space for its maximum memory demands during enclave
+creation, but all pages need not be added before enclave initialization.
+Pages can be added during enclave runtime.
 
-Reviewed-by: Eric Farman <farman@linux.ibm.com>
-Reviewed-by: Christian Borntraeger <borntraeger@linux.ibm.com>
-Reviewed-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
-Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
+Add support for dynamically adding pages to an initialized enclave,
+architecturally limited to RW permission at creation but allowed to
+obtain RWX permissions after enclave runs EMODPE. Add pages via the
+page fault handler at the time an enclave address without a backing
+enclave page is accessed, potentially directly reclaiming pages if
+no free pages are available.
+
+The enclave is still required to run ENCLU[EACCEPT] on the page before
+it can be used. A useful flow is for the enclave to run ENCLU[EACCEPT]
+on an uninitialized address. This will trigger the page fault handler
+that will add the enclave page and return execution to the enclave to
+repeat the ENCLU[EACCEPT] instruction, this time successful.
+
+If the enclave accesses an uninitialized address in another way, for
+example by expanding the enclave stack to a page that has not yet been
+added, then the page fault handler would add the page on the first
+write but upon returning to the enclave the instruction that triggered
+the page fault would be repeated and since ENCLU[EACCEPT] was not run
+yet it would trigger a second page fault, this time with the SGX flag
+set in the page fault error code. This can only be recovered by entering
+the enclave again and directly running the ENCLU[EACCEPT] instruction on
+the now initialized address.
+
+Accessing an uninitialized address from outside the enclave also
+triggers this flow but the page will remain inaccessible (access will
+result in #PF) until accepted from within the enclave via
+ENCLU[EACCEPT].
+
+Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
 ---
- arch/s390/include/asm/sclp.h   | 1 +
- drivers/s390/char/sclp_early.c | 1 +
- 2 files changed, 2 insertions(+)
+Changes since V2:
+- Remove runtime tracking of EPCM permissions
+  (sgx_encl_page->vm_run_prot_bits) (Jarkko).
+- Move export of sgx_encl_{grow,shrink}() to separate patch. (Jarkko)
+- Use sgx_encl_page_alloc(). (Jarkko)
+- Set max allowed permissions to be RWX (Jarkko). Update changelog
+  to indicate the change and use comment in code as
+  created by Jarkko in:
+https://lore.kernel.org/linux-sgx/20220306053211.135762-4-jarkko@kernel.org
+- Do not set protection bits but let it be inherited by VMA (Jarkko)
 
-diff --git a/arch/s390/include/asm/sclp.h b/arch/s390/include/asm/sclp.h
-index 06c0b5eb8ef5..be14644fe113 100644
---- a/arch/s390/include/asm/sclp.h
-+++ b/arch/s390/include/asm/sclp.h
-@@ -88,6 +88,7 @@ struct sclp_info {
- 	unsigned char has_sipl : 1;
- 	unsigned char has_dirq : 1;
- 	unsigned char has_zpci_lsi : 1;
-+	unsigned char has_aisii : 1;
- 	unsigned int ibc;
- 	unsigned int mtid;
- 	unsigned int mtid_cp;
-diff --git a/drivers/s390/char/sclp_early.c b/drivers/s390/char/sclp_early.c
-index b88dd0da1231..29fee179e197 100644
---- a/drivers/s390/char/sclp_early.c
-+++ b/drivers/s390/char/sclp_early.c
-@@ -45,6 +45,7 @@ static void __init sclp_early_facilities_detect(void)
- 	sclp.has_gisaf = !!(sccb->fac118 & 0x08);
- 	sclp.has_hvs = !!(sccb->fac119 & 0x80);
- 	sclp.has_kss = !!(sccb->fac98 & 0x01);
-+	sclp.has_aisii = !!(sccb->fac118 & 0x40);
- 	sclp.has_zpci_lsi = !!(sccb->fac118 & 0x01);
- 	if (sccb->fac85 & 0x02)
- 		S390_lowcore.machine_flags |= MACHINE_FLAG_ESOP;
+Changes since V1:
+- Fix subject line "to initialized" -> "to an initialized" (Jarkko).
+- Move text about hardware's PENDING state to the patch that introduces
+  the ENCLS[EAUG] wrapper (Jarkko).
+- Ensure kernel-doc uses brackets when referring to function.
+
+ arch/x86/kernel/cpu/sgx/encl.c | 124 +++++++++++++++++++++++++++++++++
+ 1 file changed, 124 insertions(+)
+
+diff --git a/arch/x86/kernel/cpu/sgx/encl.c b/arch/x86/kernel/cpu/sgx/encl.c
+index 546423753e4c..fa4f947f8496 100644
+--- a/arch/x86/kernel/cpu/sgx/encl.c
++++ b/arch/x86/kernel/cpu/sgx/encl.c
+@@ -194,6 +194,119 @@ struct sgx_encl_page *sgx_encl_load_page(struct sgx_encl *encl,
+ 	return __sgx_encl_load_page(encl, entry);
+ }
+ 
++/**
++ * sgx_encl_eaug_page() - Dynamically add page to initialized enclave
++ * @vma:	VMA obtained from fault info from where page is accessed
++ * @encl:	enclave accessing the page
++ * @addr:	address that triggered the page fault
++ *
++ * When an initialized enclave accesses a page with no backing EPC page
++ * on a SGX2 system then the EPC can be added dynamically via the SGX2
++ * ENCLS[EAUG] instruction.
++ *
++ * Returns: Appropriate vm_fault_t: VM_FAULT_NOPAGE when PTE was installed
++ * successfully, VM_FAULT_SIGBUS or VM_FAULT_OOM as error otherwise.
++ */
++static vm_fault_t sgx_encl_eaug_page(struct vm_area_struct *vma,
++				     struct sgx_encl *encl, unsigned long addr)
++{
++	struct sgx_pageinfo pginfo = {0};
++	struct sgx_encl_page *encl_page;
++	struct sgx_epc_page *epc_page;
++	struct sgx_va_page *va_page;
++	unsigned long phys_addr;
++	u64 secinfo_flags;
++	vm_fault_t vmret;
++	int ret;
++
++	if (!test_bit(SGX_ENCL_INITIALIZED, &encl->flags))
++		return VM_FAULT_SIGBUS;
++
++	/*
++	 * Ignore internal permission checking for dynamically added pages.
++	 * They matter only for data added during the pre-initialization
++	 * phase. The enclave decides the permissions by the means of
++	 * EACCEPT, EACCEPTCOPY and EMODPE.
++	 */
++	secinfo_flags = SGX_SECINFO_R | SGX_SECINFO_W | SGX_SECINFO_X;
++	encl_page = sgx_encl_page_alloc(encl, addr - encl->base, secinfo_flags);
++	if (IS_ERR(encl_page))
++		return VM_FAULT_OOM;
++
++	epc_page = sgx_alloc_epc_page(encl_page, true);
++	if (IS_ERR(epc_page)) {
++		kfree(encl_page);
++		return VM_FAULT_SIGBUS;
++	}
++
++	va_page = sgx_encl_grow(encl);
++	if (IS_ERR(va_page)) {
++		ret = PTR_ERR(va_page);
++		goto err_out_free;
++	}
++
++	mutex_lock(&encl->lock);
++
++	/*
++	 * Copy comment from sgx_encl_add_page() to maintain guidance in
++	 * this similar flow:
++	 * Adding to encl->va_pages must be done under encl->lock.  Ditto for
++	 * deleting (via sgx_encl_shrink()) in the error path.
++	 */
++	if (va_page)
++		list_add(&va_page->list, &encl->va_pages);
++
++	ret = xa_insert(&encl->page_array, PFN_DOWN(encl_page->desc),
++			encl_page, GFP_KERNEL);
++	/*
++	 * If ret == -EBUSY then page was created in another flow while
++	 * running without encl->lock
++	 */
++	if (ret)
++		goto err_out_unlock;
++
++	pginfo.secs = (unsigned long)sgx_get_epc_virt_addr(encl->secs.epc_page);
++	pginfo.addr = encl_page->desc & PAGE_MASK;
++	pginfo.metadata = 0;
++
++	ret = __eaug(&pginfo, sgx_get_epc_virt_addr(epc_page));
++	if (ret)
++		goto err_out;
++
++	encl_page->encl = encl;
++	encl_page->epc_page = epc_page;
++	encl_page->type = SGX_PAGE_TYPE_REG;
++	encl->secs_child_cnt++;
++
++	sgx_mark_page_reclaimable(encl_page->epc_page);
++
++	phys_addr = sgx_get_epc_phys_addr(epc_page);
++	/*
++	 * Do not undo everything when creating PTE entry fails - next #PF
++	 * would find page ready for a PTE.
++	 */
++	vmret = vmf_insert_pfn(vma, addr, PFN_DOWN(phys_addr));
++	if (vmret != VM_FAULT_NOPAGE) {
++		mutex_unlock(&encl->lock);
++		return VM_FAULT_SIGBUS;
++	}
++	mutex_unlock(&encl->lock);
++	return VM_FAULT_NOPAGE;
++
++err_out:
++	xa_erase(&encl->page_array, PFN_DOWN(encl_page->desc));
++
++err_out_unlock:
++	sgx_encl_shrink(encl, va_page);
++	mutex_unlock(&encl->lock);
++
++err_out_free:
++	sgx_encl_free_epc_page(epc_page);
++	kfree(encl_page);
++
++	return VM_FAULT_SIGBUS;
++}
++
+ static vm_fault_t sgx_vma_fault(struct vm_fault *vmf)
+ {
+ 	unsigned long addr = (unsigned long)vmf->address;
+@@ -213,6 +326,17 @@ static vm_fault_t sgx_vma_fault(struct vm_fault *vmf)
+ 	if (unlikely(!encl))
+ 		return VM_FAULT_SIGBUS;
+ 
++	/*
++	 * The page_array keeps track of all enclave pages, whether they
++	 * are swapped out or not. If there is no entry for this page and
++	 * the system supports SGX2 then it is possible to dynamically add
++	 * a new enclave page. This is only possible for an initialized
++	 * enclave that will be checked for right away.
++	 */
++	if (cpu_feature_enabled(X86_FEATURE_SGX2) &&
++	    (!xa_load(&encl->page_array, PFN_DOWN(addr))))
++		return sgx_encl_eaug_page(vma, encl, addr);
++
+ 	mutex_lock(&encl->lock);
+ 
+ 	entry = sgx_encl_load_page_in_vma(encl, addr, vma->vm_flags);
 -- 
-2.27.0
+2.25.1
 
