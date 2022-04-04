@@ -2,114 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAEECC35280
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:08:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46EFAC3527D
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:08:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381454AbiDDWIV (ORCPT
+        id S1381235AbiDDWIG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 18:08:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49046 "EHLO
+        Mon, 4 Apr 2022 18:08:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379541AbiDDR1S (ORCPT
+        with ESMTP id S1379815AbiDDSKn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 13:27:18 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AC9A31909
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 10:25:22 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id i11so8686332plg.12
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 10:25:22 -0700 (PDT)
+        Mon, 4 Apr 2022 14:10:43 -0400
+Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED3B263C8;
+        Mon,  4 Apr 2022 11:08:45 -0700 (PDT)
+Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-2eb46d33db9so56222287b3.12;
+        Mon, 04 Apr 2022 11:08:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=mgnV7xI4qUCKfrqlWFwfqK4AIab4DaYNplYu5ZnU12A=;
-        b=h6IOoYbeGqsTOT85hNSp30Z6S3z/0oyrH77ylDcQCzYqAx2ZHRLm2YfmqSFB6NClJu
-         kJcZx7FPEq1+GT1+BVhpf6hwXjOBLbp1YTYM8YeAerFOwniYHATjFWcncbG6zs4uc6lH
-         D88N/qv4s8ZVGSl86KP8gRLyF0TEI/eJIvNpSlCtRlVqEnCJ37G+eGGqZ6VKZiksrR7/
-         f975k9mhAdFYWZ6szHTXhJ8FN8tFh7MppB6ZV6jJSdiwgzfuf9i/XV/f4wxmXlEauKwx
-         Jdu6TE4dO0MoCr/z3O/HM6LiRiNFGaXRzJlLG1c4sNEbtr1FVbATJkiOaKRHQaYmNWJG
-         QSpw==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=EOXzNn8YJXSBSPBTfEilUNoggTZ9fchh0UKh2uaYCkg=;
+        b=kAwacWRlbua9Upr4P4y0HifVnz+enwieMp9UuW7TasoWWdBMX2U1ohTaSBrWezI3J4
+         n8Y4/cnYmT1N5OVNnylsiVtO6xKHI0MRuTuJS1fgouuJ8TeX+ppvsGKAlvAyRLmkJJBg
+         ikjG+PwSNdCzzWi8FuMpWlnjrJQqZwsLh19qWQh2Xuex9MvgE4RIICVNs/JpWawpigvy
+         HLW0LKiUj7j8CdpRNQdOmvXk1DXFGpZvgZHNB7aKQxfGq643HieiLatKxO0S0EHIgK9E
+         ApgQB6v2DcSfa0DJqSPnvW8XZE/CJP/ykJcn89IfSqAMBeb0T690o7Nx9p6lUGpZM4d5
+         z81w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=mgnV7xI4qUCKfrqlWFwfqK4AIab4DaYNplYu5ZnU12A=;
-        b=uTfwXtvSGoW/AeDF0Ln6A1kDN7+CuADSbrsajJOjc/CuRGRzWxxHED8ZauE3gCL/vm
-         1iy+FyISdsdfPj2O06bNKQFkjgItWfmytivNSWrORMrnSGsX+havCmciF8m4uBojInM6
-         kGIrTGjWd2VOERCts1DMh1du0X/hcE251nZfQ2TxbYiWUQD4b+PgJrER4FelHYzNXZQD
-         m2Ler/BCwiX4oB8oeX9E/ZJK2sXBb+oVFg5dyf6/asaDiqNi2exXwseO0lcYpPiuoQ+b
-         dR27Skw9kGHYaMTevdsR4cmg9K66ZVtYi8n38xrtrIrEdpcqczXKSrYei9hyKZslhSKL
-         sC8g==
-X-Gm-Message-State: AOAM530s8Wiho4eaJjfMnxMFunoKs58cKaf6Usuy5hvDwPVoSYvaoiaC
-        yAuAmjb9KzbfNvSZPfMjJyiaPA==
-X-Google-Smtp-Source: ABdhPJyLI0a6Ip/thHpTPRIhpEWNh1fk6lFS2o3mWz/SM4TxmeP+4fejjowg5XpABQqXkGYoEg44EQ==
-X-Received: by 2002:a17:90b:38cd:b0:1ca:64dd:4747 with SMTP id nn13-20020a17090b38cd00b001ca64dd4747mr232081pjb.55.1649093121770;
-        Mon, 04 Apr 2022 10:25:21 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id bx22-20020a056a00429600b004fa936a64b0sm12144176pfb.196.2022.04.04.10.25.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 10:25:20 -0700 (PDT)
-Date:   Mon, 4 Apr 2022 17:25:17 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Zeng Guang <guang.zeng@intel.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "Luck, Tony" <tony.luck@intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Kim Phillips <kim.phillips@amd.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Jethro Beekman <jethro@fortanix.com>,
-        "Huang, Kai" <kai.huang@intel.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Hu, Robert" <robert.hu@intel.com>,
-        "Gao, Chao" <chao.gao@intel.com>
-Subject: Re: [PATCH v7 7/8] KVM: x86: Allow userspace set maximum VCPU id for
- VM
-Message-ID: <Yksp/Q1a24r85wAY@google.com>
-References: <20220304080725.18135-1-guang.zeng@intel.com>
- <20220304080725.18135-8-guang.zeng@intel.com>
- <YkZc7cMsDaR5S2hM@google.com>
- <60879468-c54f-e7f1-2123-ba4cf4128ac3@intel.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=EOXzNn8YJXSBSPBTfEilUNoggTZ9fchh0UKh2uaYCkg=;
+        b=G2C0nKfLgbw7gwcL+90Q/aVsOfWDic1DYBhmWxXd2aMKyd1GgnbQXpu4XGeMdVVsJd
+         u94gZl/6dK1EWxPHtqfvPBmzDS1cspsE34s935HSd+M72G9l4gTzPVcDWLH5KpKfsCUo
+         gLb2ndG4QtPcF/lmiJBoZLqe1rFBEBmlKfHPt7OFADKah2ykFHENbJ6rNlAVb6Wv8K6b
+         fYBIDOcsH6deBOmKmFPYfnG+9zDaBJ3f1uZJLEbBICYJnm33weHEr19YM1l0o7wLluDo
+         q49TWCY5VnhvvGnlkDnx2MCYy/+2VrbdWWIebKS0hdKSc//4FInzXEklrjGQIZjdNghd
+         6FIg==
+X-Gm-Message-State: AOAM53053lOXLSO8DoVoTvgGAWa7dUzgK7MXIt/es2BGOripESEsqVx0
+        3FgkoM0rQzPfojybpUIn+JMn/+tAsCef8I3SXXo=
+X-Google-Smtp-Source: ABdhPJwHTThe++LzZaFuJJpiBj0G7KqdzDNbWhNKwST/OCct//gzRJbyQFkNoyVVqsf/wWrhLf7CMN5kZJcG5A4F2gc=
+X-Received: by 2002:a0d:e212:0:b0:2eb:4f2b:6e91 with SMTP id
+ l18-20020a0de212000000b002eb4f2b6e91mr1221175ywe.78.1649095724281; Mon, 04
+ Apr 2022 11:08:44 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <60879468-c54f-e7f1-2123-ba4cf4128ac3@intel.com>
+References: <20220404172322.32578-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20220404172322.32578-2-prabhakar.mahadev-lad.rj@bp.renesas.com> <OS0PR01MB5922182F6302386EFF2ED66B86E59@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+In-Reply-To: <OS0PR01MB5922182F6302386EFF2ED66B86E59@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
+Date:   Mon, 4 Apr 2022 19:08:18 +0100
+Message-ID: <CA+V-a8tdkw8-dUfrFG9kZizok8OQdcGHitAdb4E2tsBW3Xrh-g@mail.gmail.com>
+Subject: Re: [PATCH 1/2] mmc: renesas_sdhi: Jump to error path instead of
+ returning directly
+To:     Biju Das <biju.das.jz@bp.renesas.com>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>
+Cc:     Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
+        Pavel Machek <pavel@denx.de>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Apr 03, 2022, Zeng Guang wrote:
-> 
-> On 4/1/2022 10:01 AM, Sean Christopherson wrote:
-> > Amusingly, I think we also need a capability to enumerate that KVM_CAP_MAX_VCPU_ID
-> > is writable.
-> 
-> IIUC, KVM_CAP_*  has intrinsic writable attribute. KVM will return invalid
-> If not implemented.
+Hi Biju,
 
-Yes, but forcing userspace to do a dummy write to detect support is rather ugly.
-I'm not totally opposed to it.  Probably a Paolo question.
+Thank you for the review.
 
-Paolo?
+On Mon, Apr 4, 2022 at 7:02 PM Biju Das <biju.das.jz@bp.renesas.com> wrote:
+>
+> Hi Prabhakar and Pavel,
+>
+> Thanks for the patch.
+>
+> > Subject: [PATCH 1/2] mmc: renesas_sdhi: Jump to error path instead of
+> > returning directly
+> >
+> > Jump to error path "edisclk" instead of returning directly in case of
+> > devm_reset_control_get_optional_exclusive() failure.
+> >
+> > Fixes: b4d86f37eacb7 ("mmc: renesas_sdhi: do hard reset if possible")
+> > Reported-by: Pavel Machek <pavel@denx.de>
+> > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> > ---
+> >  drivers/mmc/host/renesas_sdhi_core.c | 6 ++++--
+> >  1 file changed, 4 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/drivers/mmc/host/renesas_sdhi_core.c
+> > b/drivers/mmc/host/renesas_sdhi_core.c
+> > index 2797a9c0f17d..cddb0185f5fb 100644
+> > --- a/drivers/mmc/host/renesas_sdhi_core.c
+> > +++ b/drivers/mmc/host/renesas_sdhi_core.c
+> > @@ -1033,8 +1033,10 @@ int renesas_sdhi_probe(struct platform_device
+> > *pdev,
+> >               goto efree;
+> >
+> >       priv->rstc = devm_reset_control_get_optional_exclusive(&pdev->dev,
+> > NULL);
+> > -     if (IS_ERR(priv->rstc))
+> > -             return PTR_ERR(priv->rstc);
+> > +     if (IS_ERR(priv->rstc)) {
+> > +             ret = PTR_ERR(priv->rstc);
+> > +             goto edisclk;
+> > +     }
+>
+> Why can't devm_reset_control_get_optional_exclusive to be moved up before devm_clk_get?
+>
+In that case we will have to jump to the "efree" label Or if you don't
+want goto at all this can be moved to the very beginning of the probe.
 
-> > > +		if (cap->args[0] <= KVM_MAX_VCPU_IDS) {
-> > > +			kvm->arch.max_vcpu_id = cap->args[0];
-> > This needs to be rejected if kvm->created_vcpus > 0, and that check needs to be
-> > done under kvm_lock, otherwise userspace can bump the max ID after KVM allocates
-> > per-VM structures and trigger buffer overflow.
-> 
-> Is it necessary to use kvm_lock ? Seems no use case to call it from multi-threads.
+Wolfram, what is your preference on the above?
 
-There's no sane use case, but userspace is untrusted, i.e. KVM can't assume that
-userspace will do the right/desired thing.
+Cheers,
+Prabhakar
