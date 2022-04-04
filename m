@@ -2,94 +2,190 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A0BBC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:00:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9D2FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:01:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354684AbiDDWCh (ORCPT
+        id S1359851AbiDDWCp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 18:02:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51334 "EHLO
+        Mon, 4 Apr 2022 18:02:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380382AbiDDTxd (ORCPT
+        with ESMTP id S1379715AbiDDR4u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 15:53:33 -0400
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AFE4559A
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 12:51:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649101895; x=1680637895;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=/HVzOeZPMJuBHL5DEIwgDSINs2bBsLD/bwyEI+HlSzE=;
-  b=ETb2hV2KrjUxGXEe9MaibqjF7ZFYjbuD56bPZPVBmwHemGczYhQz6stF
-   s/LlFHdYtSHoeg+QYAQS2+i2Q6Z96R1Z3nTidE7qxWKZYgUBj0vZQyA8Q
-   OrJIrrS9+msYdSvxUwIJrPTR0HAjtOTvLDSDZNCsI06F/rjCcEfFmzrpj
-   MWOmFZgjPWJOLdT8Je3ruUNJ2P8uT6vorCiLfAszbfRuqfiSbHBWrfuA9
-   LLPIyccgWpFkW9FDsIT2hwJIatVr9+WqsC5SkElC1FlfKT0fN+DZWv3+i
-   pn2fr0c6B6Kg1VinZHc9xdFDf4CXAPgEP4KRqaaqbhdIPZkK/AFltNVVU
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="321291117"
-X-IronPort-AV: E=Sophos;i="5.90,235,1643702400"; 
-   d="scan'208";a="321291117"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 12:51:34 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,235,1643702400"; 
-   d="scan'208";a="505019686"
-Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
-  by orsmga003.jf.intel.com with ESMTP; 04 Apr 2022 12:51:32 -0700
-Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nbSjb-0002Jb-Qi;
-        Mon, 04 Apr 2022 19:51:31 +0000
-Date:   Tue, 5 Apr 2022 03:50:36 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Mon, 4 Apr 2022 13:56:50 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7290D34BBA
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 10:54:53 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id y32-20020a25ad20000000b006339fb8e18cso8425371ybi.9
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 10:54:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=kD3wL+jXoZgMtS0viPnco/UYxkyMbtIPzARqoAqPbwY=;
+        b=WYo4HNZAwXrwLP0qlAd0FABk6y96oJiOctkOErnmhDQFAekOv4v7chWVr3f3Qh0Q9T
+         z4+llx0o/F8GBC5LLGld2hRsUZ0d7d70OML12Z2Gf9ONiXcZ+h7GRzw7lkBOnNJCT8Jd
+         D2eTdW04fjZ4NoYfKwg2OvTNQ+JqBoHwp2r6V8EI+3NYn3q6hbIk2lvyg/vAf2UHj74c
+         QS6Xw6+Y6NJa1Oc3Jcg5I/3svmOw6OyLTSyWVihA0RA0Sji0kWha3sDRnqlwT6I8bjZQ
+         rzHPjsJNeWt5BOXV3ux12mHTGwOyvLdNaYgSko1VHVagAeHgO81rFnVfwhieejciHJ28
+         bSeg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=kD3wL+jXoZgMtS0viPnco/UYxkyMbtIPzARqoAqPbwY=;
+        b=bIvSKghHZqgs2w3QIddhFFvo8IEDzgAmy0yVWFye4VBGP8tZ2sAmT9wnAaMDdQ07sY
+         4k1Cb89CHB8lOgOkZmkTBzaJxz9a4PzvpFFve9yXwFoEoiY8sZ1IA41JaqQ+ds3YzS2e
+         3ywVaPItf0BLElkBDZWZFhFsa0KrgWtEGFbt2R3LRG1Hs4sS0DjTr+XvuCefuBP716oh
+         IT6HebWQaZt4MxUu6TFfOILOGS9tHMqwlUi1FywGkWsnnTLNGS0jtJAX7qJzp/ZH3HFZ
+         AMItmZJI1/7O2m3FNfKuvm74MpcWsLpbkEHClR639kKhdKPtWAk8rmeVJAYJsWqvDQaQ
+         MzXA==
+X-Gm-Message-State: AOAM533zV/5xlTR0d8OYC8paoLtx1U03E+z2P69DuyBo9JYU9OVG6lGH
+        +5oVPzWIF0f3jCO7iO/tA4ziGb86xOb3AWC0GrU=
+X-Google-Smtp-Source: ABdhPJxTVi5OZotbfZSehOWa3aQ3MEEZMwR3jw8243Jt0T0zjDz/WMGViBbOCa9jjUde+gYSrzLROK2KV7SsMPWmNTg=
+X-Received: from ndesaulniers1.mtv.corp.google.com ([2620:15c:211:202:9d5:9b93:ffb4:574a])
+ (user=ndesaulniers job=sendgmr) by 2002:a25:1585:0:b0:63d:de88:5aa6 with SMTP
+ id 127-20020a251585000000b0063dde885aa6mr882284ybv.201.1649094892610; Mon, 04
+ Apr 2022 10:54:52 -0700 (PDT)
+Date:   Mon,  4 Apr 2022 10:54:47 -0700
+In-Reply-To: <20220329160137.0708b1ef@kernel.org>
+Message-Id: <20220404175448.46200-1-ndesaulniers@google.com>
+Mime-Version: 1.0
+References: <20220329160137.0708b1ef@kernel.org>
+X-Developer-Key: i=ndesaulniers@google.com; a=ed25519; pk=lvO/pmg+aaCb6dPhyGC1GyOCvPueDrrc8Zeso5CaGKE=
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1649094887; l=4089;
+ s=20211004; h=from:subject; bh=khSjrHk7nW4o9cbWWjQxFTbsHtqXeG+OBf0183HZoTY=;
+ b=efrzYgGo+h+jeE0KwRYGDhyUzYY804nMchdq+L44+8D1q0L3AXuRd6BNdlWb1zJz8J0kE30bAyoV
+ LUECkyb8AYFVzKTBFw3MxBGTORsUeBNwq9oW3d6c/k29j/bqMMDB
+X-Mailer: git-send-email 2.35.1.1094.g7c7d902a7c-goog
+Subject: [PATCH net-next v3] net, uapi: remove inclusion of arpa/inet.h
+From:   Nick Desaulniers <ndesaulniers@google.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Jon Maloy <jmaloy@redhat.com>, Ying Xue <ying.xue@windriver.com>,
+        Arnd Bergmann <arnd@arndb.de>,
         Masahiro Yamada <masahiroy@kernel.org>,
-        Alex Shi <alexs@kernel.org>,
+        David Howells <dhowells@redhat.com>,
         Nick Desaulniers <ndesaulniers@google.com>,
-        Miguel Ojeda <ojeda@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>
-Subject: cc1: warning: result of '-117440512 << 16' requires 44 bits to
- represent, but 'int' only has 32 bits
-Message-ID: <202204050337.o0LrtuSN-lkp@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        netdev@vger.kernel.org, tipc-discussion@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   3123109284176b1532874591f7c81f3837bbdc17
-commit: e8c07082a810fbb9db303a2b66b66b8d7e588b53 Kbuild: move to -std=gnu11
-date:   3 weeks ago
-config: mips-rb532_defconfig (https://download.01.org/0day-ci/archive/20220405/202204050337.o0LrtuSN-lkp@intel.com/config)
-compiler: mipsel-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=e8c07082a810fbb9db303a2b66b66b8d7e588b53
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout e8c07082a810fbb9db303a2b66b66b8d7e588b53
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=mips SHELL=/bin/bash
+In include/uapi/linux/tipc_config.h, there's a comment that it includes
+arpa/inet.h for ntohs; but ntohs is not defined in any UAPI header. For
+now, reuse the definitions from include/linux/byteorder/generic.h, since
+the various conversion functions do exist in UAPI headers:
+include/uapi/linux/byteorder/big_endian.h
+include/uapi/linux/byteorder/little_endian.h
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+We would like to get to the point where we can build UAPI header tests
+with -nostdinc, meaning that kernel UAPI headers should not have a
+circular dependency on libc headers.
 
-All warnings (new ones prefixed by >>):
+Link: https://android-review.googlesource.com/c/platform/bionic/+/2048127
+Suggested-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
+---
+Changes V2 -> V3:
+* Use __be16_to_cpu and friends directly.
+* Rebase on net-next now that the merge window is closed.
+* Cut down commit message.
+Changes V1 -> V2:
+* Fix broken patch.
 
->> cc1: warning: result of '-117440512 << 16' requires 44 bits to represent, but 'int' only has 32 bits [-Wshift-overflow=]
-   arch/mips/pci/pci-rc32434.c: In function 'rc32434_pcibridge_init':
-   arch/mips/pci/pci-rc32434.c:111:22: warning: variable 'dummyread' set but not used [-Wunused-but-set-variable]
-     111 |         unsigned int dummyread, pcicntlval;
-         |                      ^~~~~~~~~
+ include/uapi/linux/tipc_config.h | 28 ++++++++++++----------------
+ 1 file changed, 12 insertions(+), 16 deletions(-)
 
+diff --git a/include/uapi/linux/tipc_config.h b/include/uapi/linux/tipc_config.h
+index 4dfc05651c98..c00adf2fe868 100644
+--- a/include/uapi/linux/tipc_config.h
++++ b/include/uapi/linux/tipc_config.h
+@@ -43,10 +43,6 @@
+ #include <linux/tipc.h>
+ #include <asm/byteorder.h>
+ 
+-#ifndef __KERNEL__
+-#include <arpa/inet.h> /* for ntohs etc. */
+-#endif
+-
+ /*
+  * Configuration
+  *
+@@ -269,33 +265,33 @@ static inline int TLV_OK(const void *tlv, __u16 space)
+ 	 */
+ 
+ 	return (space >= TLV_SPACE(0)) &&
+-		(ntohs(((struct tlv_desc *)tlv)->tlv_len) <= space);
++		(__be16_to_cpu(((struct tlv_desc *)tlv)->tlv_len) <= space);
+ }
+ 
+ static inline int TLV_CHECK(const void *tlv, __u16 space, __u16 exp_type)
+ {
+ 	return TLV_OK(tlv, space) &&
+-		(ntohs(((struct tlv_desc *)tlv)->tlv_type) == exp_type);
++		(__be16_to_cpu(((struct tlv_desc *)tlv)->tlv_type) == exp_type);
+ }
+ 
+ static inline int TLV_GET_LEN(struct tlv_desc *tlv)
+ {
+-	return ntohs(tlv->tlv_len);
++	return __be16_to_cpu(tlv->tlv_len);
+ }
+ 
+ static inline void TLV_SET_LEN(struct tlv_desc *tlv, __u16 len)
+ {
+-	tlv->tlv_len = htons(len);
++	tlv->tlv_len = __cpu_to_be16(len);
+ }
+ 
+ static inline int TLV_CHECK_TYPE(struct tlv_desc *tlv,  __u16 type)
+ {
+-	return (ntohs(tlv->tlv_type) == type);
++	return (__be16_to_cpu(tlv->tlv_type) == type);
+ }
+ 
+ static inline void TLV_SET_TYPE(struct tlv_desc *tlv, __u16 type)
+ {
+-	tlv->tlv_type = htons(type);
++	tlv->tlv_type = __cpu_to_be16(type);
+ }
+ 
+ static inline int TLV_SET(void *tlv, __u16 type, void *data, __u16 len)
+@@ -305,8 +301,8 @@ static inline int TLV_SET(void *tlv, __u16 type, void *data, __u16 len)
+ 
+ 	tlv_len = TLV_LENGTH(len);
+ 	tlv_ptr = (struct tlv_desc *)tlv;
+-	tlv_ptr->tlv_type = htons(type);
+-	tlv_ptr->tlv_len  = htons(tlv_len);
++	tlv_ptr->tlv_type = __cpu_to_be16(type);
++	tlv_ptr->tlv_len  = __cpu_to_be16(tlv_len);
+ 	if (len && data) {
+ 		memcpy(TLV_DATA(tlv_ptr), data, len);
+ 		memset((char *)TLV_DATA(tlv_ptr) + len, 0, TLV_SPACE(len) - tlv_len);
+@@ -348,7 +344,7 @@ static inline void *TLV_LIST_DATA(struct tlv_list_desc *list)
+ 
+ static inline void TLV_LIST_STEP(struct tlv_list_desc *list)
+ {
+-	__u16 tlv_space = TLV_ALIGN(ntohs(list->tlv_ptr->tlv_len));
++	__u16 tlv_space = TLV_ALIGN(__be16_to_cpu(list->tlv_ptr->tlv_len));
+ 
+ 	list->tlv_ptr = (struct tlv_desc *)((char *)list->tlv_ptr + tlv_space);
+ 	list->tlv_space -= tlv_space;
+@@ -404,9 +400,9 @@ static inline int TCM_SET(void *msg, __u16 cmd, __u16 flags,
+ 
+ 	msg_len = TCM_LENGTH(data_len);
+ 	tcm_hdr = (struct tipc_cfg_msg_hdr *)msg;
+-	tcm_hdr->tcm_len   = htonl(msg_len);
+-	tcm_hdr->tcm_type  = htons(cmd);
+-	tcm_hdr->tcm_flags = htons(flags);
++	tcm_hdr->tcm_len   = __cpu_to_be32(msg_len);
++	tcm_hdr->tcm_type  = __cpu_to_be16(cmd);
++	tcm_hdr->tcm_flags = __cpu_to_be16(flags);
+ 	if (data_len && data) {
+ 		memcpy(TCM_DATA(msg), data, data_len);
+ 		memset((char *)TCM_DATA(msg) + data_len, 0, TCM_SPACE(data_len) - msg_len);
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.35.1.1094.g7c7d902a7c-goog
+
