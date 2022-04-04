@@ -2,78 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61A70C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AF2AC352A8
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:49:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380651AbiDDVsr convert rfc822-to-8bit (ORCPT
+        id S1380771AbiDDVs6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:48:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37804 "EHLO
+        Mon, 4 Apr 2022 17:48:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380278AbiDDT1M (ORCPT
+        with ESMTP id S1379367AbiDDRDv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 15:27:12 -0400
-Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D4F03B295
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 12:25:15 -0700 (PDT)
-Received: by mail-il1-f197.google.com with SMTP id m3-20020a056e02158300b002b6e3d1f97cso6706421ilu.19
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 12:25:15 -0700 (PDT)
+        Mon, 4 Apr 2022 13:03:51 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED12440A24
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 10:01:54 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id g20so11880364edw.6
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 10:01:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=RGptGrNZelR9JKVq1BWhBKbQVjZd3/xj3o182YDaEYw=;
+        b=wN0B3I2YMUijNaCS0FdGQMC+UAGANBqZaFbHGHxTQaPGpkyRHmL3zhQYem4MOz0rFv
+         ufE7ADvxR67DZR2Kzcd+QT1fghipuHYwzts0PSbyQRrJ9SZdTDca6c12zhPhVe7X7CW4
+         6zVCL7YnMdprtCIV6y01V0x+DVDFyERgRbTnBMqnnIdBd1sJE/xMvRX+vtkKu8pqZOKt
+         r9tmsLb+opNydRn3mR/AfZlEipGmw1jew7HVS6Q0Q3vC4ZVELgQm3C2qrETBWVd0WUSS
+         KiFJSY3g1viYg46qfo85XSEIppSh+7RjK8qxYIMelmBjKW4vwClQYT1BZcjNmwh8L3AS
+         4yOg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to:content-transfer-encoding;
-        bh=kmWFJFj34/4zFHaivaN7YD9rve+XHxpxZd65FGGyjrQ=;
-        b=tsNPEjtePJorrjxM7MEGsJBY+p0P1C/qHyLGBVzt/A2RO1lN6v+rfnvA1pYw9grNo6
-         +B3T+yIkBFsjGod213nLPyoFA4YZlGX+Vwe3ehIGshStYmkR/MrIZ6qvMn31ELVwj0rW
-         Jl1uPJNoCjGPsos9A232rhCCTnhUsd/7NGyAldFT3rbeerWCbCTpKZtuqFGCtgVLuY9+
-         n6jyDakjdsmVSPJGFx+pg/0YxiNGwbfaxrgYhh5ADoDRe0GQO7M/0wmTX9VMwGyp9Di8
-         ATKPl9qijt0Z20gbUbTjwzivgQGYzexmLMkZ+A8zur9fRlRD+0XttCEXwRrLJXcHJ02m
-         QtTw==
-X-Gm-Message-State: AOAM5326hsF6ah5P030REGGLaRU3Y9aTtskJpbfKc3TpeahpPsiluPhT
-        EiL5VFo9++sp868F0t0Sss/xHntE1/1JjHZB2Or6qm5mAry7
-X-Google-Smtp-Source: ABdhPJwu0I+tkB37kU2Qzn6gi2n1zL0hp4u1Zi1zgPa4Zh1RdJP9BTUrQKrvjyQW2pqi/qB2v0WNoXpnUj34T7J5r8Tmxqtwtswv
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=RGptGrNZelR9JKVq1BWhBKbQVjZd3/xj3o182YDaEYw=;
+        b=ryidkN/hjPtx4Iq7sGJjVgL1FhoxxbTDjNGCdQ7+qs/kRkii5Y8v82v25wTAO9RHkl
+         8SsJIM7xupc4/Gqj63cyCUew5tzodx+0Dz6eHSAFh5LZdvxVvdrESehJYqTO4sFg8t+t
+         0TGivm5DxwHkOdgkjQQlr+5L/GkOfF7DykXfris8hQ7OYTDcacdS/rNTP1ijf/aMhbxG
+         vU8HphLWCrlURfgKyb7KS6Or72FriMMPXOpS4eKbDpu20OqC87Au/Qvk9nqP952yh8jp
+         IUQ77w4LckKI3YaPIGEMmx02NivySqhn3GZ40u59uT83ylPdiMhMrMwlw3PivRLg2ItF
+         o+Cw==
+X-Gm-Message-State: AOAM5320fxn6WIMKG7SOUlCVyzVZor97edYkTEsQSk8FvvJcteYji9Ze
+        O5LcovJtlsWNwN9Mxg4L3ZYH1A==
+X-Google-Smtp-Source: ABdhPJwVUc2KM4C9VsdYwbL7pQninjHatsNdC1AkoZOIkqVtasAdFBDiVq03mTdn+fuTxNI032mzwQ==
+X-Received: by 2002:a05:6402:40ce:b0:41a:6817:5b07 with SMTP id z14-20020a05640240ce00b0041a68175b07mr1159480edb.7.1649091713286;
+        Mon, 04 Apr 2022 10:01:53 -0700 (PDT)
+Received: from localhost.localdomain (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id c5-20020a170906d18500b006ce371f09d4sm4557770ejz.57.2022.04.04.10.01.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Apr 2022 10:01:52 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     linux-usb@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        linux-samsung-soc@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: Re: (subset) [PATCH 1/5] ARM: dts: exynos: align EHCI/OHCI nodes with dtschema on Exynos4
+Date:   Mon,  4 Apr 2022 19:01:43 +0200
+Message-Id: <164909169269.1688455.8158070235970871603.b4-ty@linaro.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220314181948.246434-1-krzysztof.kozlowski@canonical.com>
+References: <20220314181948.246434-1-krzysztof.kozlowski@canonical.com>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1aa7:b0:2ca:52e8:b500 with SMTP id
- l7-20020a056e021aa700b002ca52e8b500mr676538ilv.34.1649100314393; Mon, 04 Apr
- 2022 12:25:14 -0700 (PDT)
-Date:   Mon, 04 Apr 2022 12:25:14 -0700
-In-Reply-To: <000000000000264b2a05d44bca80@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000070561105dbd91673@google.com>
-Subject: Re: [syzbot] WARNING in cpuset_write_resmask
-From:   syzbot <syzbot+568dc81cd20b72d4a49f@syzkaller.appspotmail.com>
-To:     cgroups@vger.kernel.org, changbin.du@intel.com,
-        christian.brauner@ubuntu.com, davem@davemloft.net,
-        edumazet@google.com, hannes@cmpxchg.org, hkallweit1@gmail.com,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        lizefan.x@bytedance.com, longman@redhat.com, mkoutny@suse.com,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        tj@kernel.org, yajun.deng@linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-syzbot suspects this issue was fixed by commit:
+On Mon, 14 Mar 2022 19:19:44 +0100, Krzysztof Kozlowski wrote:
+> The node names should be generic and USB DT schema expects "usb" names.
+> 
+> 
 
-commit d068eebbd4822b6c14a7ea375dfe53ca5c69c776
-Author: Michal Koutný <mkoutny@suse.com>
-Date:   Fri Dec 17 15:48:54 2021 +0000
+Applied, thanks!
 
-    cgroup/cpuset: Make child cpusets restrict parents on v1 hierarchy
+[1/5] ARM: dts: exynos: align EHCI/OHCI nodes with dtschema on Exynos4
+      commit: b412be7d3c0a248db0de4b7b53ee6ad44d49c71b
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=142f17f7700000
-start commit:   e5313968c41b Merge branch 'Split bpf_sk_lookup remote_port..
-git tree:       bpf-next
-kernel config:  https://syzkaller.appspot.com/x/.config?x=c40b67275bfe2a58
-dashboard link: https://syzkaller.appspot.com/bug?extid=568dc81cd20b72d4a49f
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13bb97ce700000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12062c8e700000
-
-If the result looks correct, please mark the issue as fixed by replying with:
-
-#syz fix: cgroup/cpuset: Make child cpusets restrict parents on v1 hierarchy
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+Best regards,
+-- 
+Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
