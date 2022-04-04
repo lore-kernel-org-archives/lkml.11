@@ -2,476 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41498C4167E
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:28:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 732E0C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:28:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382499AbiDDVaQ (ORCPT
+        id S1382518AbiDDVaf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:30:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46268 "EHLO
+        Mon, 4 Apr 2022 17:30:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380492AbiDDUTn (ORCPT
+        with ESMTP id S1379503AbiDDRQy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 16:19:43 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73C9B33EB2
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 13:17:46 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id i27so15245023ejd.9
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 13:17:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=zsSUvsY9SzwJEYqdwBFeI4UwQOoO3Yq1eYmqteZX3dI=;
-        b=BmfJ45/ORWXN0Qzasl32gkezjCQcfkxMY9Km93amhndzyhTRxrkYq0sR18guu0AtKv
-         M7FqTP5jYyHd2F3ChUkxHXqiQ9iYbsfE/kKlQyaTVTO05U12XzCzBj/Js4/BBg9UXKsm
-         Bw7i/7BF72XE0Lp9p5ElQKr/itwWtQW8i4VBwCZU0CjhCS1/CX3CvRVikbFwyn2RMqjb
-         ABrp7YZlJGwY4HKRae8a/kZ+7i6ij7Bv/smV3LLtMVfrXwm+ztVCci1ndH8iKE6teDCf
-         HQyDF/CXfTs292KEnS0h7GxZmdDQWQMUFtBMOgNcqq5T5tOfvHj5T0ri7MV7M3Yf/VWX
-         m8sA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zsSUvsY9SzwJEYqdwBFeI4UwQOoO3Yq1eYmqteZX3dI=;
-        b=KA0lyq6BMZw/G07kZivAVYwPvEJ22bbA7e7yt++xiz3lJyU0TdZfPf1jUYJwqIwNV4
-         Cb6Kf0DxQvtXizYMGzJYiZkh9yTlNyiAyEwKhAHG8UmpkBGwIhYPQTs2y0uyWqd2WNVB
-         lv0T4/QfBFp4Nt7XoZ0zMT3FCNKHgiauTK6Ro+IQomPFqmAKSpl3Vd7p9GNV9QceJhlD
-         eFlviYCVNeDY5QEn4Hb2mhdtzGooW5r53YajbRklEmzAOUzbcfSzZBFg3Adl84C4kyHB
-         k8lP4Xe4VLbN7/GiPx4Dc2wS0mXG9T12BFrYw7Bd8R+7kj+2hbfYTSmSlohdTIow7wUH
-         4eWg==
-X-Gm-Message-State: AOAM531NvAXGVRubhSSkF+ZEoasmHGh8WA2QMX46iA2JSSAtMTWNS4r/
-        rk/HEQZIUszw/l9nRSsyTvXXqzY8gqXqTHMRfkKrfg==
-X-Google-Smtp-Source: ABdhPJxMYk+0yiY1+uAN+2mR0TjRGfTRWiGsjhIzJJS/53uf49SpN6sE5K220PSk+vYgi8cn8nGDEdIplUiTLUJ81Hw=
-X-Received: by 2002:a17:906:37cd:b0:6e0:bdb6:f309 with SMTP id
- o13-20020a17090637cd00b006e0bdb6f309mr1842468ejc.394.1649103464328; Mon, 04
- Apr 2022 13:17:44 -0700 (PDT)
+        Mon, 4 Apr 2022 13:16:54 -0400
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2105.outbound.protection.outlook.com [40.107.92.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97E4613F77;
+        Mon,  4 Apr 2022 10:14:57 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=P3KWSJi8i39kNEXn9Mt7+CMS0kni/zH9aYL/hFnaY7ZDaCCmdswE8ItRZdK0TLUmp5iQwitvvhoY0Rf449xghX8yM/XlFu0OaHucxVC3RKh2CX+WYU2JnyMeCRWlf3O3uQj18jJOajYsaUZ8bGklUCgHAjAlpcvKKeUC5LyH9cdOrLU6yvnQG5GeQtBU/cVqL9Q47SdybF8A5U/QUw+I5RcvV0YJiVYfp/TJbiwvzCqGgPJbuFsp5NqIMeHaNV4mTo9t5o52ffOXr+edZONLnDuTgZ8G4dhq3mCGNWXEj8tw5lYZMqouPp0D4qx/LoCEEnJGTYKuDVMm8FqXBXoYtQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=0P9+yzcrOb7RRv18J7mcoDmo57+zBpBKXRPwRsZPGaE=;
+ b=CgHzCC8i1YXosiMaRg5r7iWmkRx8dBNZTIb03NusSZ0gGl+akeCGMpTCCjZDC0J73+1T9XK1dLYWQdsvxlUUxK6AYbc2Wa3qRb60EeTn0WPZ2yRbQn5PBITwDK8btWMDWGxi4kZzHT0uoMb3xdraXn8644RyVt0V2dFWd3une5e/kHJN5Kq1+9JplF/tbn08nkLqS1LKLdsQWOVSRoQt3CzkTlJ/bGQcTUAaFKqD7pJ3FACm74F/qaXIfMd7zfEnfLf3AxYKiS5St85Zi6DYQ0HGTcWY20HCImjq3x4NwEUks9auzeTpidC5R1+fO6gDQI4nm4+P+eY/2xpiK3zE2A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=cornelisnetworks.com; dmarc=pass action=none
+ header.from=cornelisnetworks.com; dkim=pass header.d=cornelisnetworks.com;
+ arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cornelisnetworks.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=0P9+yzcrOb7RRv18J7mcoDmo57+zBpBKXRPwRsZPGaE=;
+ b=HeEQ6meS7g9XDvXX5fossfsWwCnuEZVVOLbixZaP+vO+YWkEVeaUn3BZIdeOiHcYj9+yFM3AXR8EY5sa0eL5PTX2AfWdDjmlDBscRfwXT0R+kMU4OT+n6roggSSOPDviTEbQ6jbg4awYYM/TNp4ni3GZ57eES1cGfipUBHcxjGUaVcReuAT0I6Ng/T9xtlfG4cQBjrP2F2Csp0UlfZZfRDNwGRirpf53BNXfl8lbs0HEjC/wlep4pHMZuanLNl7dvgP56jpJBUDxeMX124KPWYbVxGldaoRUJbkHVe8pxQJYk1Ss9Ha389Ar+V2LI9dkLz8YAGVvMApuCuMnoapTYg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=cornelisnetworks.com;
+Received: from PH0PR01MB6439.prod.exchangelabs.com (2603:10b6:510:d::22) by
+ BN6PR01MB2835.prod.exchangelabs.com (2603:10b6:404:d1::20) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5123.16; Mon, 4 Apr 2022 17:14:54 +0000
+Received: from PH0PR01MB6439.prod.exchangelabs.com ([fe80::98bd:3eac:d0e:875])
+ by PH0PR01MB6439.prod.exchangelabs.com ([fe80::98bd:3eac:d0e:875%6]) with
+ mapi id 15.20.5123.031; Mon, 4 Apr 2022 17:14:54 +0000
+Message-ID: <36cfda2f-f35a-c86e-4d65-76d0956a8c6a@cornelisnetworks.com>
+Date:   Mon, 4 Apr 2022 13:14:49 -0400
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.7.0
+Subject: Re: [PATCH] IB/rdmavt: add lock to call to rvt_error_qp to prevent a
+ race condition
+Content-Language: en-US
+To:     Jason Gunthorpe <jgg@nvidia.com>,
+        Niels Dossche <dossche.niels@gmail.com>
+Cc:     linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220228165330.41546-1-dossche.niels@gmail.com>
+ <20220404134209.GA2905506@nvidia.com>
+From:   Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
+In-Reply-To: <20220404134209.GA2905506@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BL1PR13CA0134.namprd13.prod.outlook.com
+ (2603:10b6:208:2bb::19) To PH0PR01MB6439.prod.exchangelabs.com
+ (2603:10b6:510:d::22)
 MIME-Version: 1.0
-References: <20220318021314.3225240-1-davidgow@google.com> <20220318021314.3225240-3-davidgow@google.com>
-In-Reply-To: <20220318021314.3225240-3-davidgow@google.com>
-From:   Brendan Higgins <brendanhiggins@google.com>
-Date:   Mon, 4 Apr 2022 16:17:33 -0400
-Message-ID: <CAFd5g47Fu5cyn_DzZJZQGLkrGqUO4FURdje0iw+efMt=z+aJZQ@mail.gmail.com>
-Subject: Re: [RFC PATCH 2/2] kunit: expose ftrace-based API for stubbing out
- functions during tests
-To:     David Gow <davidgow@google.com>, Steve Muckle <smuckle@google.com>
-Cc:     Daniel Latypov <dlatypov@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        kunit-dev@googlegroups.com, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 6b33ea2e-54ce-428e-d770-08da165ea2b2
+X-MS-TrafficTypeDiagnostic: BN6PR01MB2835:EE_
+X-Microsoft-Antispam-PRVS: <BN6PR01MB283512CFEA15A886A04726F2F4E59@BN6PR01MB2835.prod.exchangelabs.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: T7f7yyrL/iHyttywCy5PMYWmCWw866rs8zTzz9Ox7v1j3gF8HOBHnoZRRsisDo8R517l3p0dVz3z30DDJt4RjMT71nZd5MUA27HhstD8cALkG/blwMzqPjx3MnIq4HbawQM6O1q/9aftg2gj6+ScvwwRDRNlTZyMRBwzl1F21SoVQ7/GjqwFQDO/TdIWFKvjNEUI1GwANXvfVFX2ohLyph0St8H4UfiDyXgyVYqnRNBOV/04+6t0FM2O7wClj7kjgUIrfToZO748CpyO1M6/vGXIR45P7ETKHWh/R+X7O3JoRq9w6kOfttp5t6KpnWk7FdjRmQBnLPrFV3scQdsWfM8ADdBXRqF4b3ePLL2AONGmeltJROXhzBRjTTWJwkdZUXvmoKrBhG0Ev3SFrTfGZQIrLiXqDZAxww2TYFpU+NZ/C3oaPx/B7Lgq+hHA+Ssv9MnwvGyBUVNlF/YpoZNV/UqPeE0PB0tZMWzY9Nu5jXDx7N13nX713fWUtFRY/re1m16V71Dv4BbL+AG+T64bvjrQk7fsvFqO/dPM60Vo+ZZ5kt/O+fk/KzTv9ssn5TZe3t9IYiARtJ+qpl4QkuWHKfciknB0K9SoDQiJyP2sH8XxbCemyCaMWy8dlYEbV6GkKTumnR8MCP1exBLen9MWPuzwxK8kVD93m4woibCbszMoK6hmw9iAxV+23nTle5cfeteNbO6YGKUiKsoPIFATaCl0Rjo46pymezPZ2L1yixRY7Wr30yeqDzxXtovT3OnHziK8lmXfo2zAmDOd6ueCCgSXTGS47gCNELjmC4uJ7pwVEyyPCV4nb6wAxtSaJ/Uc
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR01MB6439.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(346002)(376002)(136003)(366004)(39830400003)(396003)(8676002)(53546011)(52116002)(8936002)(66946007)(66556008)(83380400001)(6506007)(2616005)(44832011)(5660300002)(26005)(186003)(2906002)(4326008)(6512007)(66476007)(86362001)(38100700002)(38350700002)(31686004)(110136005)(508600001)(6666004)(6486002)(966005)(36756003)(31696002)(316002)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?K3FJS004N0J3aHdPbGhIQ0Y0ZzhlR0JsQ0NadVVibGZDWmlDS3dNYWUwMk9T?=
+ =?utf-8?B?OWRzcllzZXBzYnE4SmM5VVQ4YWNqelQ5VWdxbE1kMnVndmYxUDNGaWR5M25x?=
+ =?utf-8?B?YXN0aEw5bUZGeGk4dGFtTWZ3UTJjTUlBYmo3K0hCRU9aWG1oaGlEVlZNOXFn?=
+ =?utf-8?B?OXA3c2pQU3IvQlV4YmI0eHBrUzZCdXZMWU5Za2NoWnluYU1yWUhFZ1JibDZ1?=
+ =?utf-8?B?R3A1VDUvclhlUFVROGtXU3NYNWN2UzlnMWZLZmRsaXMvNG02NllZVU90blJv?=
+ =?utf-8?B?cmNlUGNQMWlhVm03SmxaWGtLeXVTNEhpT01KK2VxNk1iak00d001N1dybVor?=
+ =?utf-8?B?aWxwbWNBVGp2S1lmT2FSakdSKzdyL1MxWEphVlg0WXFzRHBxVjM3UThVS0pD?=
+ =?utf-8?B?bUJTbFlvQmx0dndoSVprV2NXNXIzR1BqdlRMTDd2OWhXdUg1MDJ6NmphNWVq?=
+ =?utf-8?B?UWtKZUhSa0hSSVBmWDRDclgyRlFNTzE5MUJDWE1OQkkyZ3Fsa2ZGRE1KSVZz?=
+ =?utf-8?B?UjRRcGwwVUMwMWIwQmY4Y21hWDR4WjNpcXJ6akJxdzZSTFpqbDFJTThpK1NL?=
+ =?utf-8?B?a01UNngxam9lSUFtTU52STZwOElnRWkrc24rUHN3ZWZWZG1IY051UEpJb2ZH?=
+ =?utf-8?B?NWhNN08vWkpUWitPVXE0cW1PbkduZDR6U3BrZkdBNlo3ekxjVU9YWURYQkdx?=
+ =?utf-8?B?YzBqUnB0Lzc2ejhSWkM2SnRHeXhrUEM1NjFzbUplcWliblJjZk1ZdWJCNTJv?=
+ =?utf-8?B?cDhBaHZRaG5wakhaeVNYdkI3K0J3SnJ4bW5Qb0dGeExEdGQ3K2htR2p1cjVM?=
+ =?utf-8?B?ZFBZUmZtQmhTUVljcTllZ1hoK0FvbmpEMjhFaGRod1kxemVNTms2QnJZYmdP?=
+ =?utf-8?B?bHhwb1hyZHJhSUMxS09mMU8yNEhQSUFYc0k1S0pLNUNFdml2QlozQzYrbER2?=
+ =?utf-8?B?UHQ1TWZvVmJiUmtRa21KMUVzaE9wbTNnckF5cGcwZVRyZXcxcE5Uc3EvZjE3?=
+ =?utf-8?B?L3FrV3M5SVI2NFdZS094N0JGNEE5eEExS3ZwK0Q0cG9qRVlweWFmbG5yNlMr?=
+ =?utf-8?B?ckdtMEl0Rmh1RXZhTEN4MFR0RHlZMXBGS2VWVEZldWdxUTM2VWQyZVg5NWlD?=
+ =?utf-8?B?b005ZGxWQVlZandRR1JWU1hIWWNqTThBZTk2MytXWGZIVTY4ZStGeVVWdDJh?=
+ =?utf-8?B?dWNOdENTb2Q1dWxKQ1hmVmo1T2pjaExUV2ZabWw5d0NtdVRuZFJwemRlV2Jr?=
+ =?utf-8?B?OVlSNlM0NW9TRnY3NnJZMVF6L05CV2E3WmtMdHhoNnpWMWFyNUNvNlN1VXp2?=
+ =?utf-8?B?NEE1M3pvRllsRGtYOERhTEFGbDEydm45eHVEWG5PT2VhaXJKYlRVUzJNRWRE?=
+ =?utf-8?B?c1o0b3BucUVCNWU0ZlUrZXlINnROK1lQc2QrdkhCbTBKYWZqdG1BT2NyVW1t?=
+ =?utf-8?B?WmNkcVErNVVuRCsyNjJBS0dNQWJoZ1l6VC9jdlVrekNEKzJJVDR4QlJHTGg3?=
+ =?utf-8?B?eWgwSUZvcXZQaGhvd0M5TFhyQ1BSSkJRZmhrZGlnSmxzelZycG9ZOGRPSzU4?=
+ =?utf-8?B?MmVXNDN3MS9IazQzQjV4ZGh2TjlaQ3IyaDQ5clNKYmd1TGpmM29oZGF6YWRR?=
+ =?utf-8?B?UCtSYnRxZTNJUVJES3UwOFdvTXh3THFURU9Ub0lLaGMvbTVpMGt4WFN6TEhL?=
+ =?utf-8?B?c3duWXJqSVZ2clZ1QVRJUUlCSWVMNmlKVldjRmNxMkpCME11SzR6cG51N1E3?=
+ =?utf-8?B?bjM3QmZqZUxNMHBOcWxUcFA1dStidXRMaU04dUJqYzZ1NTZuZzlpSUNlOStn?=
+ =?utf-8?B?dkxtRDlxOUcyRVJVWlJrWGkrM2hhbnM1OEhscUxtTmNRdTNxWGlpc0NmTURt?=
+ =?utf-8?B?ckxsVzRhTVAwc1ZXam9yeHNVRjQ4WjJtNE9iS0RMS3Q2TXArTGkwaGhtWm9o?=
+ =?utf-8?B?VklBR2QzV01FOUt6YkZUL1ZTV0tBSWptM0hXNWJUWVh0RGNLTko2NFF5dHUx?=
+ =?utf-8?B?K01VZTY2L1JrdGNxUkFpanVoNGNlTTVDcG5HUWFRT2N4ZWFrWXFVNlB1Q1ZJ?=
+ =?utf-8?B?WEUxVjFCdzBOYWxBWjBSN3FsT202bmRzN3k2blVwbmovOFpTTTVqdjhkSUU2?=
+ =?utf-8?B?bWs5ZUJJbG1HbFVlRDloVHRVSWs4QmF4RnJIKzBpaEk4Mk9ZSngrR0s5bWpQ?=
+ =?utf-8?B?aXFJL0dmQkM5b0FXOUtNMEphWWxHa0tjT2Exakk5dnlvbG83eWwvNnVaaTVy?=
+ =?utf-8?B?RjYyV2d1QjFFQTFyOXlVdUtxQ1ByZ3dHZS9jMU9ybWFzb1NqbjNGMGhwQlNI?=
+ =?utf-8?B?TzFmdUFwQ3BueTVuRVFOUHp2TEpLdEk3SE40ck8vcEZNRFpDcGdhdjNsaUtQ?=
+ =?utf-8?Q?bRs4VLFzch/MYCXDO6h4UMSjv5K39wbG5fiyh?=
+X-OriginatorOrg: cornelisnetworks.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6b33ea2e-54ce-428e-d770-08da165ea2b2
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR01MB6439.prod.exchangelabs.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Apr 2022 17:14:54.2295
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4dbdb7da-74ee-4b45-8747-ef5ce5ebe68a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: vkWVbkA74XIDopc68Vz0/uDhtYJiRtWvpvqvkzCPCnQZlnHOhgl8VTgQy1xEdgOdTEvNc0WO6qQBChABBmbnWgT4nakRqd/gVZKfJPMgM05oj2TCBHXsHsoQEpTIgUy4
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR01MB2835
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-+Steve Muckle
+On 4/4/22 9:42 AM, Jason Gunthorpe wrote:
+> On Mon, Feb 28, 2022 at 05:53:30PM +0100, Niels Dossche wrote:
+>> The documentation of the function rvt_error_qp says both r_lock and
+>> s_lock need to be held when calling that function.
+>> It also asserts using lockdep that both of those locks are held.
+>> However, the commit I referenced in Fixes accidentally makes the call
+>> to rvt_error_qp in rvt_ruc_loopback no longer covered by r_lock.
+>> This results in the lockdep assertion failing and also possibly in a
+>> race condition.
+>>
+>> Fixes: d757c60eca9b ("IB/rdmavt: Fix concurrency panics in QP post_send and modify to error")
+>> Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
+>> ---
+>>  drivers/infiniband/sw/rdmavt/qp.c | 6 +++++-
+>>  1 file changed, 5 insertions(+), 1 deletion(-)
+> 
+> Dennis?
 
-On Thu, Mar 17, 2022 at 10:13 PM David Gow <davidgow@google.com> wrote:
->
-> From: Daniel Latypov <dlatypov@google.com>
->
-> Allow function redirection using ftrace and kernel livepatch. This is
-> basically equivalent to the static_stub support in the previous patch,
-> but does not require the function being replaced to be modified (save
-> for the addition of KUNIT_STUBBABLE/noinline).
->
-> This is hidden behind the CONFIG_KUNIT_FTRACE_STUBS option, and has a
-> number of dependencies, including ftrace, livepatch and
-> CONFIG_KALLSYMS_ALL. As a result, it only works on architectures where
-> these are available.
->
-> You can run the KUnit example tests with the following:
-> $ ./tools/testing/kunit/kunit.py run --kunitconfig lib/kunit/stubs_example.kunitconfig --arch=x86_64
->
-> To the end user, replacing a function is very simple, e.g.
->   KUNIT_STUBBABLE void real_func(int n);
->   void replacement_func(int n);
->
->   /* in tests */
->   kunit_activate_ftrace_stub(test, real_func, replacement_func);
->
-> The implementation is inspired by Steven's snippet here [1].
->
-> Some more details:
-> * stubbing is automatically undone at the end of tests
-> * it can also be manually undone with kunit_deactive_ftrace_stub()
-> * stubbing only applies when current->kunit_test == test
->   * note: currently can't have more than one test running at a time
-> * KUNIT_STUBBABLE marks tests as noinline when CONFIG_KUNIT_STUBS is set
->   * this ensures we can actually stub all calls
-> * KUNIT_STUBBABLE_TRAMPOLINE is a version that evaluates to
->   __always_inline when stubbing is not enabled
->   * This may need to be used with a wrapper function.
->   * See the doc comment for more details.
->
-> Sharp-edges:
-> * kernel livepatch only works on some arches (not UML)
-> * if you don't use noinline/KUNIT_STUBBABLE, functions might be inlined
->   and thus none of this works:
->   * if it's always inlined, at least the attempt to stub will fail
->   * if it's sometimes inlined, then the stub silently won't work
->
-> [1] https://lore.kernel.org/lkml/20220224091550.2b7e8784@gandalf.local.home
->
-> Co-developed-by: David Gow <davidgow@google.com>
-> Signed-off-by: David Gow <davidgow@google.com>
-> Signed-off-by: Daniel Latypov <dlatypov@google.com>
-> ---
->  include/kunit/ftrace_stub.h         |  84 +++++++++++++++++
->  lib/kunit/Kconfig                   |  11 +++
->  lib/kunit/Makefile                  |   4 +
->  lib/kunit/ftrace_stub.c             | 138 ++++++++++++++++++++++++++++
->  lib/kunit/kunit-example-test.c      |  27 +++++-
->  lib/kunit/stubs_example.kunitconfig |  11 +++
->  6 files changed, 274 insertions(+), 1 deletion(-)
->  create mode 100644 include/kunit/ftrace_stub.h
->  create mode 100644 lib/kunit/ftrace_stub.c
->  create mode 100644 lib/kunit/stubs_example.kunitconfig
->
-> diff --git a/include/kunit/ftrace_stub.h b/include/kunit/ftrace_stub.h
-> new file mode 100644
-> index 000000000000..54c053b7e9c1
-> --- /dev/null
-> +++ b/include/kunit/ftrace_stub.h
-> @@ -0,0 +1,84 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +#ifndef _KUNIT_FTRACE_STUB_H
-> +#define _KUNIT_FTRACE_STUB_H
-> +
-> +/** KUNIT_STUBBABLE - marks a function as stubbable when stubbing support is
-> + * enabled.
-> + *
-> + * Stubbing uses ftrace internally, so we can only stub out functions when they
-> + * are not inlined. This macro eavlautes to noinline when stubbing support is
-> + * enabled to thus make it safe.
-> + *
-> + * If you cannot add this annotation to the function, you can instead use
-> + * KUNIT_STUBBABLE_TRAMPOLINE, which is the same, but evaluates to
-> + * __always_inline when stubbing is not enabled.
-> + *
-> + * Consider copy_to_user, which is marked as __always_inline:
-> + *
-> + * .. code-block:: c
-> + *     static KUNIT_STUBBABLE_TRAMPOLINE unsigned long
-> + *     copy_to_user_trampoline(void __user *to, const void *from, unsigned long n)
-> + *     {
-> + *             return copy_to_user(to, from, n);
-> + *     }
-> + *
-> + * Then we simply need to update our code to go through this function instead
-> + * (in the places where we want to stub it out).
-> + */
-> +#if IS_ENABLED(CONFIG_KUNIT_FTRACE_STUBS)
-> +#define KUNIT_STUBBABLE noinline
-> +#define KUNIT_STUBBABLE_TRAMPOLINE noinline
-> +#else
-> +#define KUNIT_STUBBABLE
-> +#define KUNIT_STUBBABLE_TRAMPOLINE __always_inline
-> +#endif
-> +
-> +struct kunit;
-> +
-> +/**
-> + * kunit_activate_ftrace_stub() - makes all calls to @func go to @replacement during @test.
-> + * @test: The test context object.
-> + * @func: The function to stub out, must be annotated with KUNIT_STUBBABLE.
-> + * @replacement: The function to replace @func with.
-> + *
-> + * All calls to @func will instead call @replacement for the duration of the
-> + * current test. If called from outside the test's thread, the function will
-> + * not be redirected.
-> + *
-> + * The redirection can be disabled again with kunit_deactivate_ftrace_stub().
-> + *
-> + * Example:
-> + *
-> + * .. code-block:: c
-> + *     KUNIT_STUBBABLE int real_func(int n)
-> + *     {
-> + *             pr_info("real_func() called with %d", n);
-> + *             return 0;
-> + *     }
-> + *
-> + *     void replacement_func(int n)
-> + *     {
-> + *             pr_info("replacement_func() called with %d", n);
-> + *             return 42;
-> + *     }
-> + *
-> + *     void example_test(struct kunit *test)
-> + *     {
-> + *             kunit_active_ftrace_stub(test, real_func, replacement_func);
-> + *             KUNIT_EXPECT_EQ(test, real_func(1), 42);
-> + *     }
-> + *
-> + */
-> +#define kunit_activate_ftrace_stub(test, func, replacement) do { \
-> +       typecheck(typeof(func), replacement); \
-> +       __kunit_activate_ftrace_stub(test, #func, func, replacement); \
-> +} while (0)
-> +
-> +void __kunit_activate_ftrace_stub(struct kunit *test,
-> +                                 const char *name,
-> +                                 void *real_fn_addr,
-> +                                 void *replacement_addr);
-> +
-> +
-> +void kunit_deactivate_ftrace_stub(struct kunit *test, void *real_fn_addr);
-> +#endif  /* _KUNIT_STUB_H */
-> diff --git a/lib/kunit/Kconfig b/lib/kunit/Kconfig
-> index 0b5dfb001bac..978e4f72bae0 100644
-> --- a/lib/kunit/Kconfig
-> +++ b/lib/kunit/Kconfig
-> @@ -59,4 +59,15 @@ config KUNIT_ALL_TESTS
->
->           If unsure, say N.
->
-> +config KUNIT_FTRACE_STUBS
-> +       bool "Support for stubbing out functions in KUnit tests with ftrace and kernel livepatch"
-> +       depends on FTRACE=y && FUNCTION_TRACER=y && MODULES=y && DEBUG_KERNEL=y && KALLSYMS_ALL=y && LIVEPATCH=y
-> +       help
-> +         Builds support for stubbing out functions for the duration of KUnit
-> +         test cases or suites using ftrace and kernel livepatch.
-> +         See KUNIT_EXAMPLE_TEST for an example.
-> +
-> +         NOTE: this does not work on all architectures (like UML, arm64) and
-> +         relies on a lot of magic (see the dependencies list).
-> +
->  endif # KUNIT
-> diff --git a/lib/kunit/Makefile b/lib/kunit/Makefile
-> index f9e929700782..75092c12c3d0 100644
-> --- a/lib/kunit/Makefile
-> +++ b/lib/kunit/Makefile
-> @@ -19,3 +19,7 @@ obj-$(CONFIG_KUNIT_TEST) +=           string-stream-test.o
->  endif
->
->  obj-$(CONFIG_KUNIT_EXAMPLE_TEST) +=    kunit-example-test.o
-> +
-> +ifeq ($(CONFIG_KUNIT_FTRACE_STUBS),y)
-> +kunit-objs +=                          ftrace_stub.o
-> +endif
-> diff --git a/lib/kunit/ftrace_stub.c b/lib/kunit/ftrace_stub.c
-> new file mode 100644
-> index 000000000000..13207e1c7aff
-> --- /dev/null
-> +++ b/lib/kunit/ftrace_stub.c
-> @@ -0,0 +1,138 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +#include <kunit/test.h>
-> +
-> +#include <linux/typecheck.h>
-> +
-> +#include <linux/ftrace.h>
-> +#include <linux/livepatch.h>
-> +#include <linux/sched.h>
-> +
-> +struct kunit_ftrace_stub_ctx {
-> +       struct kunit *test;
-> +       unsigned long real_fn_addr; /* used as a key to lookup the stub */
-> +       unsigned long replacement_addr;
-> +       struct ftrace_ops ops; /* a copy of kunit_stub_base_ops with .private set */
-> +};
-> +
-> +static void kunit_stub_trampoline(unsigned long ip, unsigned long parent_ip,
-> +                                 struct ftrace_ops *ops,
-> +                                 struct ftrace_regs *fregs)
-> +{
-> +       struct kunit_ftrace_stub_ctx *ctx = ops->private;
-> +       int lock_bit;
-> +
-> +       if (current->kunit_test != ctx->test)
-> +               return;
-> +
-> +       lock_bit = ftrace_test_recursion_trylock(ip, parent_ip);
-> +       KUNIT_ASSERT_GE(ctx->test, lock_bit, 0);
-> +
-> +       klp_arch_set_pc(fregs, ctx->replacement_addr);
-> +
-> +       ftrace_test_recursion_unlock(lock_bit);
-> +}
-> +
-> +static struct ftrace_ops kunit_stub_base_ops = {
-> +       .func = &kunit_stub_trampoline,
-> +       .flags = FTRACE_OPS_FL_IPMODIFY |
-> +#ifndef CONFIG_HAVE_DYNAMIC_FTRACE_WITH_ARGS
-> +               FTRACE_OPS_FL_SAVE_REGS |
-> +#endif
-> +               FTRACE_OPS_FL_DYNAMIC
-> +};
-> +
-> +static void __kunit_ftrace_stub_resource_free(struct kunit_resource *res)
-> +{
-> +       struct kunit_ftrace_stub_ctx *ctx = res->data;
-> +
-> +       unregister_ftrace_function(&ctx->ops);
-> +       kfree(ctx);
-> +}
-> +
-> +/* Matching function for kunit_find_resource(). match_data is real_fn_addr. */
-> +static bool __kunit_static_stub_resource_match(struct kunit *test,
-> +                                               struct kunit_resource *res,
-> +                                               void *match_real_fn_addr)
-> +{
-> +       /* This pointer is only valid if res is a static stub resource. */
-> +       struct kunit_ftrace_stub_ctx *ctx = res->data;
-> +
-> +       /* Make sure the resource is a static stub resource. */
-> +       if (res->free != &__kunit_ftrace_stub_resource_free)
-> +               return false;
-> +
-> +       return ctx->real_fn_addr == (unsigned long)match_real_fn_addr;
-> +}
-> +
-> +void kunit_deactivate_ftrace_stub(struct kunit *test, void *real_fn_addr)
-> +{
-> +       struct kunit_resource *res;
-> +
-> +       KUNIT_ASSERT_PTR_NE_MSG(test, real_fn_addr, NULL,
-> +                               "Tried to deactivate a NULL stub.");
-> +
-> +       /* Look up the existing stub for this function. */
-> +       res = kunit_find_resource(test,
-> +                                 __kunit_static_stub_resource_match,
-> +                                 real_fn_addr);
-> +
-> +       /* Error out if the stub doesn't exist. */
-> +       KUNIT_ASSERT_PTR_NE_MSG(test, res, NULL,
-> +                               "Tried to deactivate a nonexistent stub.");
-> +
-> +       /* Free the stub. We 'put' twice, as we got a reference
-> +        * from kunit_find_resource(). The free function will deactivate the
-> +        * ftrace stub.
-> +        */
-> +       kunit_remove_resource(test, res);
-> +       kunit_put_resource(res);
-> +}
-> +EXPORT_SYMBOL_GPL(kunit_deactivate_ftrace_stub);
-> +
-> +void __kunit_activate_ftrace_stub(struct kunit *test,
-> +                                 const char *name,
-> +                                 void *real_fn_addr,
-> +                                 void *replacement_addr)
-> +{
-> +       unsigned long ftrace_ip;
-> +       struct kunit_ftrace_stub_ctx *ctx;
-> +       int ret;
-> +
-> +       ftrace_ip = ftrace_location((unsigned long)real_fn_addr);
-> +       if (!ftrace_ip)
-> +               KUNIT_ASSERT_FAILURE(test, "%s ip is invalid: not a function, or is marked notrace or inline", name);
-> +
-> +       /* Allocate the stub context, which contains pointers to the replacement
-> +        * function and the test object. It's also registered as a KUnit
-> +        * resource which can be looked up by address (to deactivate manually)
-> +        * and is destroyed automatically on test exit.
-> +        */
-> +       ctx = kmalloc(sizeof(*ctx), GFP_KERNEL);
-> +       KUNIT_ASSERT_NOT_ERR_OR_NULL_MSG(test, ctx, "failed to allocate kunit stub for %s", name);
-> +
-> +       ctx->test = test;
-> +       ctx->ops = kunit_stub_base_ops;
-> +       ctx->ops.private = ctx;
-> +       ctx->real_fn_addr = (unsigned long)real_fn_addr;
-> +       ctx->replacement_addr = (unsigned long)replacement_addr;
-> +
-> +       ret = ftrace_set_filter_ip(&ctx->ops, ftrace_ip, 0, 0);
-> +       if (ret) {
-> +               kfree(ctx);
-> +               KUNIT_ASSERT_FAILURE(test, "failed to set filter ip for %s: %d", name, ret);
-> +       }
-> +
-> +       ret = register_ftrace_function(&ctx->ops);
-> +       if (ret) {
-> +               kfree(ctx);
-> +               if (ret == -EBUSY)
-> +                       KUNIT_ASSERT_FAILURE(test, "failed to register stub (-EBUSY) for %s, likely due to already stubbing it?", name);
-> +               KUNIT_ASSERT_FAILURE(test, "failed to register stub for %s: %d", name, ret);
-> +       }
-> +
-> +       /* Register the stub as a resource with a cleanup function */
-> +       kunit_alloc_resource(test, NULL,
-> +                            __kunit_ftrace_stub_resource_free,
-> +                            GFP_KERNEL, ctx);
-> +}
-> +EXPORT_SYMBOL_GPL(__kunit_activate_ftrace_stub);
-> diff --git a/lib/kunit/kunit-example-test.c b/lib/kunit/kunit-example-test.c
-> index 670c21e74446..7f20b132343b 100644
-> --- a/lib/kunit/kunit-example-test.c
-> +++ b/lib/kunit/kunit-example-test.c
-> @@ -8,6 +8,7 @@
->
->  #include <kunit/test.h>
->  #include <kunit/static_stub.h>
-> +#include <kunit/ftrace_stub.h>
->
->  /*
->   * This is the most fundamental element of KUnit, the test case. A test case
-> @@ -72,7 +73,7 @@ static void example_mark_skipped_test(struct kunit *test)
->  }
->
->  /* This is a function we'll replace with static stubs. */
-> -static int add_one(int i)
-> +static KUNIT_STUBBABLE int add_one(int i)
->  {
->         /* This will trigger the stub if active. */
->         KUNIT_STATIC_STUB_REDIRECT(add_one, i);
-> @@ -107,6 +108,29 @@ static void example_static_stub_test(struct kunit *test)
->         KUNIT_EXPECT_EQ(test, add_one(1), 2);
->  }
->
-> +/*
-> + * This test shows the use of static stubs.
-> + */
-> +static void example_ftrace_stub_test(struct kunit *test)
-> +{
-> +#if !IS_ENABLED(CONFIG_KUNIT_FTRACE_STUBS)
-> +       kunit_skip(test, "KUNIT_FTRACE_STUBS not enabled");
-> +#else
-> +       /* By default, function is not stubbed. */
-> +       KUNIT_EXPECT_EQ(test, add_one(1), 2);
-> +
-> +       /* Replace add_one() with subtract_one(). */
-> +       kunit_activate_ftrace_stub(test, add_one, subtract_one);
-> +
-> +       /* add_one() is now replaced. */
-> +       KUNIT_EXPECT_EQ(test, add_one(1), 0);
-> +
-> +       /* Return add_one() to normal. */
-> +       kunit_deactivate_ftrace_stub(test, add_one);
-> +       KUNIT_EXPECT_EQ(test, add_one(1), 2);
-> +#endif
-> +}
-> +
->  /*
->   * Here we make a list of all the test cases we want to add to the test suite
->   * below.
-> @@ -122,6 +146,7 @@ static struct kunit_case example_test_cases[] = {
->         KUNIT_CASE(example_skip_test),
->         KUNIT_CASE(example_mark_skipped_test),
->         KUNIT_CASE(example_static_stub_test),
-> +       KUNIT_CASE(example_ftrace_stub_test),
->         {}
->  };
->
-> diff --git a/lib/kunit/stubs_example.kunitconfig b/lib/kunit/stubs_example.kunitconfig
-> new file mode 100644
-> index 000000000000..a47369199fb9
-> --- /dev/null
-> +++ b/lib/kunit/stubs_example.kunitconfig
-> @@ -0,0 +1,11 @@
-> +CONFIG_KUNIT=y
-> +CONFIG_KUNIT_FTRACE_STUBS=y
-> +CONFIG_KUNIT_EXAMPLE_TEST=y
-> +
-> +# Depedencies
-> +CONFIG_FTRACE=y
-> +CONFIG_FUNCTION_TRACER=y
-> +CONFIG_MODULES=y
-> +CONFIG_DEBUG_KERNEL=y
-> +CONFIG_KALLSYMS_ALL=y
-> +CONFIG_LIVEPATCH=y
-> --
-> 2.35.1.894.gb6a874cedc-goog
->
+For this one:
+
+Acked-by: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
+
+> And this too:
+> 
+> https://patchwork.kernel.org/project/linux-rdma/patch/20220228195144.71946-1-dossche.niels@gmail.com/
+
+I think is correct as well. Not thrilled with the lock, unlock, lock. Stuff, but
+this whole unwind code needs a once-over so for this patch as well:
+
+Acked-by: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
+
+Thanks Niels for finding and fixing these issues!
+
+-Denny
+
