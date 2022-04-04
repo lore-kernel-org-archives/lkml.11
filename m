@@ -2,156 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C930C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5CB7C4167B
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:12:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357409AbiDDWLt (ORCPT
+        id S1379168AbiDDWMT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 18:11:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56282 "EHLO
+        Mon, 4 Apr 2022 18:12:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384453AbiDDVfp (ORCPT
+        with ESMTP id S1386739AbiDDVjR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 17:35:45 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BE8A48335;
-        Mon,  4 Apr 2022 14:26:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1649107514;
-        bh=Ro4B9BImMndeuI5KT1TcwaX2nQXOXMqp5IujRLN9o60=;
-        h=X-UI-Sender-Class:Date:From:To:Cc:Subject:In-Reply-To:References;
-        b=Q+UG0XJUFefJviD9xFpD2w/hLKt8PtLpC5JXKtomSoqPbnaKMOdUdjI2aXg5odyYO
-         HoE4i99Gu85QGXAD+TQHdZJLZn3inhtM8KHDu+pgqooCSjhqaZyn3NFR0ZfmPnhcOO
-         Iix0rQ4oyJEYp2RVJqrJtGELhsv6dsSWIRzqv0X8=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from localhost ([62.216.209.4]) by mail.gmx.net (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MqJm5-1oNB4T0I9z-00nPsq; Mon, 04
- Apr 2022 23:25:14 +0200
-Date:   Mon, 4 Apr 2022 23:25:12 +0200
-From:   Peter Seiderer <ps.report@gmx.net>
-To:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@toke.dk>
-Cc:     linux-wireless@vger.kernel.org, Kalle Valo <kvalo@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Felix Fietkau <nbd@nbd.name>
-Subject: Re: [PATCH v1 2/2] mac80211: minstrel_ht: fill all requested rates
-Message-ID: <20220404232512.4fdd7eb9@gmx.net>
-In-Reply-To: <87fsmseml7.fsf@toke.dk>
-References: <20220402153014.31332-1-ps.report@gmx.net>
-        <20220402153014.31332-2-ps.report@gmx.net>
-        <87fsmseml7.fsf@toke.dk>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-suse-linux-gnu)
+        Mon, 4 Apr 2022 17:39:17 -0400
+Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9AC64D9C0
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 14:30:33 -0700 (PDT)
+Received: by mail-qk1-x735.google.com with SMTP id w141so8824101qkb.6
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 14:30:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=IxUdjcC4It/JwdPOTj9qf8Z2Z9qsMxlLajpUd7Bfk/o=;
+        b=POnOfkKB5D3FdXZ3FUx89riusD8I3RIEffDsh+KNc9BBUacT82hSW46tJsWf5CUr4Z
+         9tCpUVA2vzJ6RNSV/hyhPsGW4fXWyimM+aqGrXtvHqFWENOgXa0eSohh92R0UixG7UKr
+         1bjSfBJUFUZn1kS8Ji0hY0DtdpXo4oXUVxihn5JotQ+VNqNImvdCWoCrPC97P5Sn1i66
+         EM927H4AOz07RCNVWrzp6LqIsP/DQjPaOUctdkXuIL4EbpcA1zIiGPByFm/qCWWMZg3F
+         ImgWoGm+3GVLuS8Nr1Bt8asoBnKLtm3VyUMwZrECsO5hKNb4WDBZrLmIQDDHYNzG+3fS
+         VnTg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=IxUdjcC4It/JwdPOTj9qf8Z2Z9qsMxlLajpUd7Bfk/o=;
+        b=kwnhbHbv2pi0FLmlg/IifjKmFgwwueiwxPTrdB8+yu+7lCb5ZyiusSEYwJNToXe0LS
+         Lh4V8pZQDnMMav/r15BfI/WsVCSUVHJlQC4AjXZEDHGIlnJ7lSoS+x0v0xTd6kEBZ1WA
+         xiQ7p/XRPsBjibvkeq1/nDZYgqYA8mFoxCqrqmlYOSlixmhFdKHKZ+x8m+x1Dm00oq89
+         U5w70YbpjvM3tqSOYOU+8NSZmPRHPTI7J4D9ZRayAlQ8YGCxC4J2ZPf8JaHghp4MWg2Q
+         D+31XRsNQ+aKqQ4rPskX8hKt4nBvJZQYDDTOzgNFnXmkOApxADmsvQkGh+lt68KI5tKT
+         JENg==
+X-Gm-Message-State: AOAM532qVu4wmeC8+gTbeHSv0zu8JXoQGjtf9Ng3MSHP2frDJLnD1o9F
+        b+6sWvNs6NxhZQK5LxlWwOpuPkpnoJQBlEiniUPeGA==
+X-Google-Smtp-Source: ABdhPJyyRMlOkHW8q1Mhm5p13Qfm1ifyp2XYVK5SyJAhakAFTtHNbQGpzkKzG2wqiZ5LZOfnuNwc68wkA3oO+hVOi0A=
+X-Received: by 2002:a05:620a:2453:b0:67d:9539:495c with SMTP id
+ h19-20020a05620a245300b0067d9539495cmr215335qkn.30.1649107782604; Mon, 04 Apr
+ 2022 14:29:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:KZKJ2B/82F/1PI1nVtiO1SFg08+X1scy2oosau6ElqX5HcXlYRR
- 7aFO78O4JQX2wXL16Pd8iuXAZDyrfMiHqzbgKpRmhhLmpnSwS85TVVBGUzBl/OvVTKZ9qvJ
- cyibel71SBEkWUsQdvmwnLlP6vdkMo1IWaN82rtvcpe+9p+kD7wNrZzfn5ejPrVV4+GUnYE
- hlb1aWqtyKSmDYu47Eo2Q==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:SzPVeetkwDI=:aW9kEi57qgJAIiTgaZjWIL
- V8gq/L9Adw4YrEXegqCIVPfMJt6qi/lM5lQWYUdYzDajnOaa1DGNHPIONZriS/mOAHVSoS3P7
- CgzUJtdenZx/F6f1IOy/XutSWCVWh9qsS8+7Olv0uG+5DSLe0AQpjb0agSP3oMRQbCcKlUvku
- u5DO5+foiEeeWAO2C+GJzyBDoozcMNo8xovd9FK+GbdSYr88rAU+sjoa1GymiBo53J5fUVUq/
- X6gkNs4VcFqs9nvz4E1HUfVWGXqqEzCjaVYFmRbEsrnizQ2J7zX0RSPYawPyr7+nHoTXfteOH
- mKB7z4TIUBo8ssLX+3kJzUQpx1JJxiAPfwxbM7bzUdOWLZbLV4D+jvwCM9gjKz5tVwhWqmtso
- BV6tUNQT1KtzuLaZ05OKbsJCIJJ2n8GizzjUkvTOfK2POZ0CJPxach1mFOJQ2nn9UVA9p/f9s
- P58I9IFiP1eWuFl6xD1veWMm5B4qeYUNEvA+1kUV/N6zOwZwwWZov3hSD+yKdLApz+gQYapy7
- O4gkkPutObcAeZkDPmAYsjgj+LvZGpyLtNXyk7Fx8PUf8YLlkG4Lj+mAARnQFSSHRoDow+IeJ
- YUE0FETs0sG90g3TUsMnou8LAqWVY8BJj2o7Vc++WgT4laPg16Jlw1vbDiYFfUx3/9C+UXIxp
- aUJjp32KcH9/5GhUdBpSil28uKj1h2d/V6/aIvssuRiAxjEaAKNj9XAvsCc/O+ls3eTtML+Y9
- q03+UM2QaMzbR6uqAWoT0uNboM/h1Zotje1FpiTNt4lDdSaXEb6L5zvQqLthNAfcU5tf6RIwB
- U+CPNEPhvRpgrwvDqv8xru8hvwp5kJAP59WNS4qv//rwI8FSzbYwH3e9RB8Xo5jDkZaEq4unw
- gY/EEPGoclZZLMqBtceH6/+RE1JDIsu4wwnXO5MuZACpFwiF1srhB43UP2vyijLzl3IW42Ldr
- g0OuDqJwRm4tZQkb8ly7Rek/O+JhKGEh7hDxLqCkZzYEn1kN/IeQ79aF8msjiZQN8R1nLsR+o
- j95FjOePmEakOLJxi1wa5/GOwPphWWbruk0GKh8ditPIa4XD8967KdJIUT2em00hqO93Quijl
- 51HtC25MRhq59Q=
+References: <1648656179-10347-1-git-send-email-quic_sbillaka@quicinc.com>
+ <1648656179-10347-9-git-send-email-quic_sbillaka@quicinc.com>
+ <CAA8EJprvE31ex3fCQHZ-=x+EWHK4UZ0qqHRh+rH4dk5TPhmVyw@mail.gmail.com>
+ <MW4PR02MB71867220A90FCFED295830D0E1E19@MW4PR02MB7186.namprd02.prod.outlook.com>
+ <CAD=FV=VK0D_GzYBv+u+o6-ks-UAsw97__0mWsSn9OycX72LJFg@mail.gmail.com> <MW4PR02MB71865B8E17F3D194B05013EDE1E59@MW4PR02MB7186.namprd02.prod.outlook.com>
+In-Reply-To: <MW4PR02MB71865B8E17F3D194B05013EDE1E59@MW4PR02MB7186.namprd02.prod.outlook.com>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Date:   Tue, 5 Apr 2022 00:29:31 +0300
+Message-ID: <CAA8EJpqFh7c9ohDbR_0kG5t106-djE7TYfaoAbiT-W4-294jTw@mail.gmail.com>
+Subject: Re: [PATCH v6 8/8] drm/msm/dp: Handle eDP mode_valid differently from dp
+To:     "Sankeerth Billakanti (QUIC)" <quic_sbillaka@quicinc.com>
+Cc:     Doug Anderson <dianders@chromium.org>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>,
+        "freedreno@lists.freedesktop.org" <freedreno@lists.freedesktop.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "robdclark@gmail.com" <robdclark@gmail.com>,
+        "seanpaul@chromium.org" <seanpaul@chromium.org>,
+        "swboyd@chromium.org" <swboyd@chromium.org>,
+        quic_kalyant <quic_kalyant@quicinc.com>,
+        "Abhinav Kumar (QUIC)" <quic_abhinavk@quicinc.com>,
+        "Kuogee Hsieh (QUIC)" <quic_khsieh@quicinc.com>,
+        "bjorn.andersson@linaro.org" <bjorn.andersson@linaro.org>,
+        "sean@poorly.run" <sean@poorly.run>,
+        "airlied@linux.ie" <airlied@linux.ie>,
+        "daniel@ffwll.ch" <daniel@ffwll.ch>,
+        quic_vproddut <quic_vproddut@quicinc.com>,
+        "Aravind Venkateswaran (QUIC)" <quic_aravindh@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Toke, Felix,
-
-On Mon, 04 Apr 2022 20:21:24 +0200, Toke H=C3=B8iland-J=C3=B8rgensen <toke@=
-toke.dk> wrote:
-
-> +Felix
->=20
-> Peter Seiderer <ps.report@gmx.net> writes:
->=20
-> > Fill all requested rates (in case of ath9k 4 rate slots are
-> > available, so fill all 4 instead of only 3), improves throughput in
-> > noisy environment. =20
->=20
-> How did you test this? Could you quantify the gains in throughput you saw?
-
-Investigating some performance degradation of a wifi system original with a=
-th5k
-cards using a legacy kernel and madwifi driver compared against the=20
-performance using a ath9k card running IBSS mode over long distance/with
-additional amplifier and using iperf for measurement...
-
-With the ath5k cards under bad conditions the throughput is going down below
-10 Mbits/s but with stable throughput..., with the ath9k card and the exact=
- same
-setup there are short periods with good throughput values and periods up to=
- 10-15
-seconds with 0 Mbits/s...
-
-The actual in-door/laboratory test setup is a wired connection between the
-two wifi systems (with fixed attenuators in between) and an adjustable nois=
-e/
-disturb signal induced by a signal generator...
-
-Without this patch the 0 Mbits/s periods from the field test are reproducib=
-le,
-with this patch applied we see a more or less stable throughput of 1-5 Mbit=
-s/s...
-
-Regards,
-Peter
-
->=20
-> -Toke
->=20
-> > Signed-off-by: Peter Seiderer <ps.report@gmx.net>
-> > ---
-> >  net/mac80211/rc80211_minstrel_ht.c | 14 +++++++-------
-> >  1 file changed, 7 insertions(+), 7 deletions(-)
+On Mon, 4 Apr 2022 at 21:21, Sankeerth Billakanti (QUIC)
+<quic_sbillaka@quicinc.com> wrote:
+>
+> Hi Doug,
+>
+> > On Wed, Mar 30, 2022 at 11:02 PM Sankeerth Billakanti (QUIC)
+> > <quic_sbillaka@quicinc.com> wrote:
+> > >
+> > > Hi Dmitry,
+> > >
+> > > > On Wed, 30 Mar 2022 at 19:04, Sankeerth Billakanti
+> > > > <quic_sbillaka@quicinc.com> wrote:
+> > > > >
+> > > > > The panel-edp driver modes needs to be validated differently from
+> > > > > DP because the link capabilities are not available for EDP by that time.
+> > > > >
+> > > > > Signed-off-by: Sankeerth Billakanti <quic_sbillaka@quicinc.com>
+> > > >
+> > > > This should not be necessary after
+> > > >
+> > https://patchwork.freedesktop.org/patch/479261/?series=101682&rev=1.
+> > > > Could you please check?
+> > > >
+> > >
+> > > The check for DP_MAX_PIXEL_CLK_KHZ is not necessary anymore but we
+> > > need to return early for eDP because unlike DP, eDP context will not
+> > > have the information about the number of lanes and link clock.
+> > >
+> > > So, I will modify the patch to return after the DP_MAX_PIXEL_CLK_KHZ
+> > check if is_eDP is set.
 > >
-> > diff --git a/net/mac80211/rc80211_minstrel_ht.c b/net/mac80211/rc80211_=
-minstrel_ht.c
-> > index 9c6ace858107..cd6a0f153688 100644
-> > --- a/net/mac80211/rc80211_minstrel_ht.c
-> > +++ b/net/mac80211/rc80211_minstrel_ht.c
-> > @@ -1436,17 +1436,17 @@ minstrel_ht_update_rates(struct minstrel_priv *=
-mp, struct minstrel_ht_sta *mi)
-> >  	/* Start with max_tp_rate[0] */
-> >  	minstrel_ht_set_rate(mp, mi, rates, i++, mi->max_tp_rate[0]);
-> > =20
-> > -	if (mp->hw->max_rates >=3D 3) {
-> > -		/* At least 3 tx rates supported, use max_tp_rate[1] next */
-> > -		minstrel_ht_set_rate(mp, mi, rates, i++, mi->max_tp_rate[1]);
-> > -	}
-> > +	/* Fill up remaining, keep one entry for max_probe_rate */
-> > +	for (; i < (mp->hw->max_rates - 1); i++)
-> > +		minstrel_ht_set_rate(mp, mi, rates, i, mi->max_tp_rate[i]);
-> > =20
-> > -	if (mp->hw->max_rates >=3D 2) {
-> > +	if (i < mp->hw->max_rates)
-> >  		minstrel_ht_set_rate(mp, mi, rates, i++, mi->max_prob_rate);
-> > -	}
-> > +
-> > +	if (i < IEEE80211_TX_RATE_TABLE_SIZE)
-> > +		rates->rate[i].idx =3D -1;
-> > =20
-> >  	mi->sta->max_rc_amsdu_len =3D minstrel_ht_get_max_amsdu_len(mi);
-> > -	rates->rate[i].idx =3D -1;
-> >  	rate_control_set_rates(mp->hw, mi->sta, rates);
-> >  }
-> > =20
-> > --=20
-> > 2.35.1 =20
+> > I haven't walked through all the relevant code but something you said above
+> > sounds strange. You say that for eDP we don't have info about the number
+> > of lanes? We _should_.
+> >
+> > It's certainly possible to have a panel that supports _either_ 1 or 2 lanes but
+> > then only physically connect 1 lane to it. ...or you could have a panel that
+> > supports 2 or 4 lanes and you only connect 1 lane.
+> > See, for instance, ti_sn_bridge_parse_lanes. There we assume 4 lanes but if
+> > a "data-lanes" property is present then we can use that to know that fewer
+> > lanes are physically connected.
+> >
+> > It's also possible to connect more lanes to a panel than it supports.
+> > You could connect 2 lanes to it but then it only supports 1. This case needs to
+> > be handled as well...
+> >
+>
+> I was referring to the checks we do for DP in dp_bridge_mode_valid. We check if the
+> Link bandwidth can support the pixel bandwidth. For an external DP connection, the
+> Initial DPCD/EDID read after cable connection will return the sink capabilities like link
+> rate, lane count and bpp information that are used to we filter out the unsupported
+> modes from the list of modes from EDID.
+>
+> For eDP case, the dp driver performs the first dpcd read during bridge_enable. The
+> dp_bridge_mode_valid function is executed before bridge_enable and hence does
+> not have the full link or the sink capabilities information like external DP connection,
+> by then.
 
+It sounds to me like we should emulate the HPD event for eDP to be
+handled earlier than the get_modes()/prepare() calls are attempted.
+However this might open another can of worms.
+
+> So, we need to proceed with the reported mode for eDP.
+
+Well... Even if during the first call to get_modes() the DPCD is not
+read, during subsequent calls the driver has necessary information, so
+it can proceed with all the checks, can't it?
+
+-- 
+With best wishes
+Dmitry
