@@ -2,210 +2,225 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA708C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:03:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DB25C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:03:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355198AbiDDWFf (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 18:05:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57750 "EHLO
+        id S238104AbiDDWFl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 18:05:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380062AbiDDSvu (ORCPT
+        with ESMTP id S1379258AbiDDQvt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 14:51:50 -0400
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A28931501
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 11:49:52 -0700 (PDT)
-Received: by mail-pf1-x431.google.com with SMTP id p8so9804568pfh.8
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 11:49:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=OgBmai9kBCjlr9aFO4p03+ZvCT3qEl4N4BMmkwU41WQ=;
-        b=LTyjDcUYrrGKFD7zBZax9Kejc3M/VxotNH1SBr++BxXDPlIByWs5a8wElJ4CvLKUjn
-         JyRCaI0dzCSpvP/ALFTbNMuJKz1OE+gnZT2yLPLFrixzAKAECrJRPEHlCeASyItdvWGg
-         5xsPixVA5PWT4eWxCZ6OapeXiV8KI2KpoPsxA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=OgBmai9kBCjlr9aFO4p03+ZvCT3qEl4N4BMmkwU41WQ=;
-        b=YFGrzZeCdtXKeajfeq8B6sSONQBI0lbYdv/fshUBKqdF0/b5BpGUrb4oV7vqlfx6I+
-         +lCdH1bAujiJ6CNrRVd3bOOcr7tdtbrOUSqwPxkFMXrF+Dd2ef+4hPIATroH8FR6qB8n
-         W4saK4FK4oeoXilrBmmetF+f4BWN52B6tfrfKFq0mN2ccmVFdkoJNIKEC3cbAfxamY0I
-         9vYEahnGq8uhEkxgxKDaroe9y8DnArtikSYbq214HCsjyTCAPWvJbCaq/0TNTSZ26CEh
-         1vqL2AQbbRZPVL7R285JfPDCe0/szuFgcHNnGWrqNjlkRlDjQIoA9T0sUHGG3uk9Ny0S
-         2faA==
-X-Gm-Message-State: AOAM533W7Eg3y89ipNy9oWBfpOkkDhX1qSWGuzOjn+UCQlFZ3R0WwScw
-        juYIFO8Mwcl0VBScHpkdVuQThw==
-X-Google-Smtp-Source: ABdhPJy+Asj1IhIbA7G/rhnlb2Kxzq17/p8QVmR/14Zr/TJmyt+KN+/Wq9xSl0Xoz+XlLAUuAApNng==
-X-Received: by 2002:a63:5756:0:b0:36c:67bc:7f3f with SMTP id h22-20020a635756000000b0036c67bc7f3fmr1042587pgm.389.1649098191979;
-        Mon, 04 Apr 2022 11:49:51 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id c63-20020a624e42000000b004fa9ee41b7bsm12701353pfb.217.2022.04.04.11.49.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 11:49:51 -0700 (PDT)
-Date:   Mon, 4 Apr 2022 11:49:50 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     linux-hardening@vger.kernel.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org, PaX Team <pageexec@freemail.hu>
-Subject: Re: [PATCH v2] gcc-plugins: latent_entropy: use /dev/urandom
-Message-ID: <202204041144.96FC64A8@keescook>
-References: <CAHmME9otYi4pCzZwSGnK40dp1QMRVPxp+DBysVuLXUKkXinAxg@mail.gmail.com>
- <20220403204036.1269562-1-Jason@zx2c4.com>
+        Mon, 4 Apr 2022 12:51:49 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1C382DAA1;
+        Mon,  4 Apr 2022 09:49:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649090992; x=1680626992;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=9a9K+tWtE8LPpkDvBp2rFINxF37F6Ff4NooRYQeIg8k=;
+  b=OcMLC/5tlKOUSacRVHGF1a2IV7GJT2jwrSkuPHBhrFLsiBHgdF7nDdSt
+   S/7M52bc1kbkYLkf1nqUsnp71dkPH6Q92s9+M383LOlHv6ah2ofNXNgMd
+   R2EuD7/K1UhoqW7zGtgYRWgRKS/PzQ1RrT2Nu+XThtqXXb3IAlPtw6w8C
+   kVrw6SlBc8sHJjwl8aemyppp8PKs7OJUyQxJrS+1s40Mb1xJZg6ZwcVwo
+   NNvp8YfExRAodJK3thQOMSOtE0CDljb3AdhdG9OwbeFfrEk9AYf+eafsZ
+   KN1RaptqfraRnpJDjE9faU4EjFbjrscRsyou8ebAqaOCdveNg1yUbRsgf
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="323734041"
+X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
+   d="scan'208";a="323734041"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:49:51 -0700
+X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
+   d="scan'208";a="523105165"
+Received: from rchatre-ws.ostc.intel.com ([10.54.69.144])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:49:50 -0700
+From:   Reinette Chatre <reinette.chatre@intel.com>
+To:     dave.hansen@linux.intel.com, jarkko@kernel.org, tglx@linutronix.de,
+        bp@alien8.de, luto@kernel.org, mingo@redhat.com,
+        linux-sgx@vger.kernel.org, x86@kernel.org
+Cc:     seanjc@google.com, kai.huang@intel.com, cathy.zhang@intel.com,
+        cedric.xing@intel.com, haitao.huang@intel.com,
+        mark.shanahan@intel.com, hpa@zytor.com,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH V3 06/30] x86/sgx: Export sgx_encl_ewb_cpumask()
+Date:   Mon,  4 Apr 2022 09:49:14 -0700
+Message-Id: <ad3a21d0e332ac2cc465ef8c5de318962e2db6bc.1648847675.git.reinette.chatre@intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cover.1648847675.git.reinette.chatre@intel.com>
+References: <cover.1648847675.git.reinette.chatre@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220403204036.1269562-1-Jason@zx2c4.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Apr 03, 2022 at 10:40:36PM +0200, Jason A. Donenfeld wrote:
-> While the latent entropy plugin mostly doesn't derive entropy from
-> get_random_const() for measuring the call graph, when __latent_entropy is
-> applied to a constant, then it's initialized statically to output from
-> get_random_const(). In that case, this data is derived from a 64-bit
-> seed, which means a buffer of 512 bits doesn't really have that amount
-> of compile-time entropy.
-> 
-> This patch fixes that shortcoming by just buffering chunks of
-> /dev/urandom output and doling it out as requested.
-> 
-> At the same time, it's important that we don't break the use of
-> -frandom-seed, for people who want the runtime benefits of the latent
-> entropy plugin, while still having compile-time determinism. In that
-> case, we detect whether gcc's set_random_seed() has been called by
-> making a call to get_random_seed(noinit=true) in the plugin init
-> function, which is called after set_random_seed() is called but before
-> anything that calls get_random_seed(noinit=false), and seeing if it's
-> zero or not. If it's not zero, we're in deterministic mode, and so we
-> just generate numbers with a basic xorshift prng.
+Using sgx_encl_ewb_cpumask() to learn which CPUs might have executed
+an enclave is useful to ensure that TLBs are cleared when changes are
+made to enclave pages.
 
-This mixes two changes: the pRNG change and the "use urandom if
-non-deterministic" change. I think these should be split, so the pRNG
-change can be explicitly justified.
+sgx_encl_ewb_cpumask() is used within the reclaimer when an enclave
+page is evicted. The upcoming SGX2 support enables changes to be
+made to enclave pages and will require TLBs to not refer to the
+changed pages and thus will be needing sgx_encl_ewb_cpumask().
 
-More notes below...
+Relocate sgx_encl_ewb_cpumask() to be with the rest of the enclave
+code in encl.c now that it is no longer unique to the reclaimer.
 
-> 
-> Fixes: 38addce8b600 ("gcc-plugins: Add latent_entropy plugin")
-> Cc: stable@vger.kernel.org
-> Cc: PaX Team <pageexec@freemail.hu>
-> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-> ---
-> Changes v1->v2:
-> - Pipacs pointed out that using /dev/urandom unconditionally would break
->   the use of -frandom-seed, so now we check for that and keep with
->   something deterministic in that case.
-> 
-> I'm not super familiar with this plugin or its conventions, so pointers
-> would be most welcome if something here looks amiss. The decision to
-> buffer 2k at a time is pretty arbitrary too; I haven't measured usage.
-> 
->  scripts/gcc-plugins/latent_entropy_plugin.c | 48 +++++++++++++--------
->  1 file changed, 30 insertions(+), 18 deletions(-)
-> 
-> diff --git a/scripts/gcc-plugins/latent_entropy_plugin.c b/scripts/gcc-plugins/latent_entropy_plugin.c
-> index 589454bce930..042442013ae1 100644
-> --- a/scripts/gcc-plugins/latent_entropy_plugin.c
-> +++ b/scripts/gcc-plugins/latent_entropy_plugin.c
-> @@ -82,29 +82,37 @@ __visible int plugin_is_GPL_compatible;
->  static GTY(()) tree latent_entropy_decl;
->  
->  static struct plugin_info latent_entropy_plugin_info = {
-> -	.version	= "201606141920vanilla",
-> +	.version	= "202203311920vanilla",
+Take care to ensure that any future usage maintains the
+current context requirement that ETRACK has been called first.
+Expand the existing comments to highlight this while moving them
+to a more prominent location before the function.
 
-This doesn't really need to be versioned. We can change this to just
-"vanilla", IMO.
+No functional change.
 
->  	.help		= "disable\tturn off latent entropy instrumentation\n",
->  };
->  
-> -static unsigned HOST_WIDE_INT seed;
-> -/*
-> - * get_random_seed() (this is a GCC function) generates the seed.
-> - * This is a simple random generator without any cryptographic security because
-> - * the entropy doesn't come from here.
-> - */
-> +static unsigned HOST_WIDE_INT deterministic_seed;
-> +static unsigned HOST_WIDE_INT rnd_buf[256];
-> +static size_t rnd_idx = ARRAY_SIZE(rnd_buf);
-> +static int urandom_fd = -1;
-> +
->  static unsigned HOST_WIDE_INT get_random_const(void)
->  {
-> -	unsigned int i;
-> -	unsigned HOST_WIDE_INT ret = 0;
-> -
-> -	for (i = 0; i < 8 * sizeof(ret); i++) {
-> -		ret = (ret << 1) | (seed & 1);
-> -		seed >>= 1;
-> -		if (ret & 1)
-> -			seed ^= 0xD800000000000000ULL;
-> +	if (deterministic_seed) {
-> +		unsigned HOST_WIDE_INT w = deterministic_seed;
-> +		w ^= w << 13;
-> +		w ^= w >> 7;
-> +		w ^= w << 17;
-> +		deterministic_seed = w;
-> +		return deterministic_seed;
+Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
+---
+No changes since V2
 
-While seemingly impossible, perhaps don't reset "deterministic_seed",
-and just continue to use "seed", so that it can never become "0" again.
+Changes since V1:
+- New patch split from original "x86/sgx: Use more generic name for
+  enclave cpumask function" (Jarkko).
+- Change subject line (Jarkko).
+- Fixup kernel-doc to use brackets in function name.
 
->  	}
->  
-> -	return ret;
-> +	if (urandom_fd < 0) {
-> +		urandom_fd = open("/dev/urandom", O_RDONLY);
-> +		if (urandom_fd < 0)
-> +			abort();
-> +	}
-> +	if (rnd_idx >= ARRAY_SIZE(rnd_buf)) {
-> +		if (read(urandom_fd, rnd_buf, sizeof(rnd_buf)) != sizeof(rnd_buf))
-> +			abort();
-> +		rnd_idx = 0;
-> +	}
-> +	return rnd_buf[rnd_idx++];
->  }
->  
->  static tree tree_get_random_const(tree type)
-> @@ -537,8 +545,6 @@ static void latent_entropy_start_unit(void *gcc_data __unused,
->  	tree type, id;
->  	int quals;
->  
-> -	seed = get_random_seed(false);
-> -
->  	if (in_lto_p)
->  		return;
->  
-> @@ -573,6 +579,12 @@ __visible int plugin_init(struct plugin_name_args *plugin_info,
->  	const struct plugin_argument * const argv = plugin_info->argv;
->  	int i;
->  
-> +	/*
-> +	 * Call get_random_seed() with noinit=true, so that this returns
-> +	 * 0 in the case where no seed has been passed via -frandom-seed.
-> +	 */
-> +	deterministic_seed = get_random_seed(true);
+ arch/x86/kernel/cpu/sgx/encl.c | 67 ++++++++++++++++++++++++++++++++++
+ arch/x86/kernel/cpu/sgx/encl.h |  1 +
+ arch/x86/kernel/cpu/sgx/main.c | 29 ---------------
+ 3 files changed, 68 insertions(+), 29 deletions(-)
 
-i.e. have this be:
-
-	deterministic_seed = get_random_seed(true);
-	if (deterministic_seed)
-		seed = get_random_seed(false);
-
-> +
->  	static const struct ggc_root_tab gt_ggc_r_gt_latent_entropy[] = {
->  		{
->  			.base = &latent_entropy_decl,
-> -- 
-> 2.35.1
-> 
-
+diff --git a/arch/x86/kernel/cpu/sgx/encl.c b/arch/x86/kernel/cpu/sgx/encl.c
+index 05ae1168391c..c6525eba74e8 100644
+--- a/arch/x86/kernel/cpu/sgx/encl.c
++++ b/arch/x86/kernel/cpu/sgx/encl.c
+@@ -613,6 +613,73 @@ int sgx_encl_mm_add(struct sgx_encl *encl, struct mm_struct *mm)
+ 	return 0;
+ }
+ 
++/**
++ * sgx_encl_ewb_cpumask() - Query which CPUs might be accessing the enclave
++ * @encl: the enclave
++ *
++ * Some SGX functions require that no cached linear-to-physical address
++ * mappings are present before they can succeed. For example, ENCLS[EWB]
++ * copies a page from the enclave page cache to regular main memory but
++ * it fails if it cannot ensure that there are no cached
++ * linear-to-physical address mappings referring to the page.
++ *
++ * SGX hardware flushes all cached linear-to-physical mappings on a CPU
++ * when an enclave is exited via ENCLU[EEXIT] or an Asynchronous Enclave
++ * Exit (AEX). Exiting an enclave will thus ensure cached linear-to-physical
++ * address mappings are cleared but coordination with the tracking done within
++ * the SGX hardware is needed to support the SGX functions that depend on this
++ * cache clearing.
++ *
++ * When the ENCLS[ETRACK] function is issued on an enclave the hardware
++ * tracks threads operating inside the enclave at that time. The SGX
++ * hardware tracking require that all the identified threads must have
++ * exited the enclave in order to flush the mappings before a function such
++ * as ENCLS[EWB] will be permitted
++ *
++ * The following flow is used to support SGX functions that require that
++ * no cached linear-to-physical address mappings are present:
++ * 1) Execute ENCLS[ETRACK] to initiate hardware tracking.
++ * 2) Use this function (sgx_encl_ewb_cpumask()) to query which CPUs might be
++ *    accessing the enclave.
++ * 3) Send IPI to identified CPUs, kicking them out of the enclave and
++ *    thus flushing all locally cached linear-to-physical address mappings.
++ * 4) Execute SGX function.
++ *
++ * Context: It is required to call this function after ENCLS[ETRACK].
++ *          This will ensure that if any new mm appears (racing with
++ *          sgx_encl_mm_add()) then the new mm will enter into the
++ *          enclave with fresh linear-to-physical address mappings.
++ *
++ *          It is required that all IPIs are completed before a new
++ *          ENCLS[ETRACK] is issued so be sure to protect steps 1 to 3
++ *          of the above flow with the enclave's mutex.
++ *
++ * Return: cpumask of CPUs that might be accessing @encl
++ */
++const cpumask_t *sgx_encl_ewb_cpumask(struct sgx_encl *encl)
++{
++	cpumask_t *cpumask = &encl->cpumask;
++	struct sgx_encl_mm *encl_mm;
++	int idx;
++
++	cpumask_clear(cpumask);
++
++	idx = srcu_read_lock(&encl->srcu);
++
++	list_for_each_entry_rcu(encl_mm, &encl->mm_list, list) {
++		if (!mmget_not_zero(encl_mm->mm))
++			continue;
++
++		cpumask_or(cpumask, cpumask, mm_cpumask(encl_mm->mm));
++
++		mmput_async(encl_mm->mm);
++	}
++
++	srcu_read_unlock(&encl->srcu, idx);
++
++	return cpumask;
++}
++
+ static struct page *sgx_encl_get_backing_page(struct sgx_encl *encl,
+ 					      pgoff_t index)
+ {
+diff --git a/arch/x86/kernel/cpu/sgx/encl.h b/arch/x86/kernel/cpu/sgx/encl.h
+index 6b34efba1602..d2acb4debde5 100644
+--- a/arch/x86/kernel/cpu/sgx/encl.h
++++ b/arch/x86/kernel/cpu/sgx/encl.h
+@@ -105,6 +105,7 @@ int sgx_encl_may_map(struct sgx_encl *encl, unsigned long start,
+ 
+ void sgx_encl_release(struct kref *ref);
+ int sgx_encl_mm_add(struct sgx_encl *encl, struct mm_struct *mm);
++const cpumask_t *sgx_encl_ewb_cpumask(struct sgx_encl *encl);
+ int sgx_encl_get_backing(struct sgx_encl *encl, unsigned long page_index,
+ 			 struct sgx_backing *backing);
+ void sgx_encl_put_backing(struct sgx_backing *backing, bool do_write);
+diff --git a/arch/x86/kernel/cpu/sgx/main.c b/arch/x86/kernel/cpu/sgx/main.c
+index 8e4bc6453d26..2de85f459492 100644
+--- a/arch/x86/kernel/cpu/sgx/main.c
++++ b/arch/x86/kernel/cpu/sgx/main.c
+@@ -203,35 +203,6 @@ static void sgx_ipi_cb(void *info)
+ {
+ }
+ 
+-static const cpumask_t *sgx_encl_ewb_cpumask(struct sgx_encl *encl)
+-{
+-	cpumask_t *cpumask = &encl->cpumask;
+-	struct sgx_encl_mm *encl_mm;
+-	int idx;
+-
+-	/*
+-	 * Can race with sgx_encl_mm_add(), but ETRACK has already been
+-	 * executed, which means that the CPUs running in the new mm will enter
+-	 * into the enclave with a fresh epoch.
+-	 */
+-	cpumask_clear(cpumask);
+-
+-	idx = srcu_read_lock(&encl->srcu);
+-
+-	list_for_each_entry_rcu(encl_mm, &encl->mm_list, list) {
+-		if (!mmget_not_zero(encl_mm->mm))
+-			continue;
+-
+-		cpumask_or(cpumask, cpumask, mm_cpumask(encl_mm->mm));
+-
+-		mmput_async(encl_mm->mm);
+-	}
+-
+-	srcu_read_unlock(&encl->srcu, idx);
+-
+-	return cpumask;
+-}
+-
+ /*
+  * Swap page to the regular memory transformed to the blocked state by using
+  * EBLOCK, which means that it can no longer be referenced (no new TLB entries).
 -- 
-Kees Cook
+2.25.1
+
