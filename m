@@ -2,131 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D351C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE40CC43217
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:50:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381578AbiDDVuM (ORCPT
+        id S1381831AbiDDVuY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:50:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43674 "EHLO
+        Mon, 4 Apr 2022 17:50:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380405AbiDDUFA (ORCPT
+        with ESMTP id S1379225AbiDDQta (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 16:05:00 -0400
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECCE030576;
-        Mon,  4 Apr 2022 13:03:02 -0700 (PDT)
-Received: by mail-pg1-x530.google.com with SMTP id w21so9217259pgm.7;
-        Mon, 04 Apr 2022 13:03:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=g1/S18NSrxN6AWy6KL3HCZnERr6pCTHzLQu/VSnzK2M=;
-        b=Mwnt+Nq2EZKGxVmu8ajENw2WLVM+PMP8Pob4xNoQ9sJszM+9hd34t1sIDnV/JVKWc5
-         aIDg3KNtFuuL8pds0a0t4HMMv6NdG8/Ob2k3eOaVEzLQu/lgBUbaSwJM8lQH851qPI2C
-         Uvu2USNa1ts9IlrQGSu6wJ7ucpOBHLBcZogtcuYedGIWWrd56NR35kHqBt12SIP00A9W
-         6K9FokVb73EcTl/zPpH9YSjS6HsTO1dCfJIFaweMLYOHR7XOoBohWAPOTz8QKw47pABm
-         LXEX7pa4IRUch8OMc+3f+1TxlVdWQrjf/xVdlfeCiIUJaGvPRLBDiCy1GWcowr8GQ5qL
-         cMvA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=g1/S18NSrxN6AWy6KL3HCZnERr6pCTHzLQu/VSnzK2M=;
-        b=xKHZgLMeQoEoNYVI/2Yz3rXV9Lwwhh6Y9i7jZiI2cr6Ug+wHjGOMmaGDoyk5hJ2l3Q
-         ouWh78qMBrYt9ws2RExyPeRNF3jZxvaWvMOQP7g/PveIpbEPpYwpd9XD4cDZlZ5EpYdV
-         79PfH0O8p1FL5ZbADQEdbRpQQvFXmIjRUyYqValFjeSZw++yfmKNfbIvTYzqYMAKP5CR
-         FIpPgbpiJqRQQvImVdTYZq8q6GEMqXcVYlNadRKu1ml91c5V32L0ZPCjM9MgPMCkw1Ug
-         xIEm6/aaYXf4H1pgdrvM7BvTxnafN/k31Ih9fq72JTqZyBjt9ivBKMrZl+yeXgAFnRcO
-         i0iA==
-X-Gm-Message-State: AOAM5330MWJYmo7eEH9F4JStnbeMg0I/havqO0dC3+6lesNHGgDPcGhV
-        lM//JrDfNtoO3wmZzk3lFdE=
-X-Google-Smtp-Source: ABdhPJzPk7RPw96v5iy70ANgZhWcNVAx23WdjIeS0iVP13r1Jp4hzjPAyCQz5SV25F0Q678GhpbdCQ==
-X-Received: by 2002:a65:6d06:0:b0:399:1485:6288 with SMTP id bf6-20020a656d06000000b0039914856288mr1331167pgb.346.1649102582351;
-        Mon, 04 Apr 2022 13:03:02 -0700 (PDT)
-Received: from localhost.localdomain (c-67-174-241-145.hsd1.ca.comcast.net. [67.174.241.145])
-        by smtp.gmail.com with ESMTPSA id bw17-20020a056a00409100b004fadad3b93esm12779295pfb.142.2022.04.04.13.03.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 13:03:01 -0700 (PDT)
-From:   Yang Shi <shy828301@gmail.com>
-To:     vbabka@suse.cz, kirill.shutemov@linux.intel.com,
-        linmiaohe@huawei.com, songliubraving@fb.com, riel@surriel.com,
-        willy@infradead.org, ziy@nvidia.com, tytso@mit.edu,
-        akpm@linux-foundation.org
-Cc:     shy828301@gmail.com, linux-mm@kvack.org,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [v3 PATCH 0/8] Make khugepaged collapse readonly FS THP more consistent
-Date:   Mon,  4 Apr 2022 13:02:42 -0700
-Message-Id: <20220404200250.321455-1-shy828301@gmail.com>
-X-Mailer: git-send-email 2.26.3
+        Mon, 4 Apr 2022 12:49:30 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2077.outbound.protection.outlook.com [40.107.220.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBC5C35DFF
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 09:47:32 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=QfzNfsFxyTgkYz4mCp0kYUL5jQXzA34/Uu449ruGff3J2h11/nc1FqsHW8EuxFIQyNifOrcLe2iknJSPQztBI/9VILeR5nyKq80C4MtoXTPCWfwPvVfBDSLNwiKOF0ZBpECeUPnHiYjhA6tSkFGX997syRS2zQbT+xXqEgG6Qwsn3Vgzks64BKvwvzWcUrCk3TmmJDGQBIzYEHEd6DKPpWo8wsG1T44xQGirUPgImKMVYPS9L+E6LZP9ZqBBCH3Rhh45+MzqkG3hzPWoDo0ct/kBX+nDTy3C4gZKOcbc7Au0eS+SPw0YUbpgpgZ6SifDi9cd1MSEqToWjLNt9kZL2A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=eEd8QmK3Y1nSAMnzZe3OZ627GVk9DCTl1dw4qnU8vPY=;
+ b=kUGAv8F9mbt83FL2QujwDN9tBK2+8IEcdSWShsrRdieQ5l9HjFcIJtW5O+4hJvKnuTdLESJCW0YwddTOAoSCy+utuCLIOfNkWCl22e6GmVXNbdRrDANS0Gfu5QeHr2luUnby9J94WOpcZA2iaEnczqU2hvrA1YslwTPBhyIDLpy89LyR2JJKX9fey8nxwdOyBl98k1/r8zzeVa9dgscxTyJfEHze+Lctd5BdXxWCQQCzO0m05Brc1DCt/RVMjW68XwwajfUE3c7x7fur2M6oIabt6cdTeyLN+G3+PqVQD1Stg0nYbl63hMvCUfkUEFXDIa25Gp2hR12EEqi9SNBCEg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=8bytes.org smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=eEd8QmK3Y1nSAMnzZe3OZ627GVk9DCTl1dw4qnU8vPY=;
+ b=WWnL2Bqxjo65DzLOz0f9Cbm7M5DMJ5QLysjnLlaac3wGmvZzBtgycCwqVULGpNLsmAw0+t5agQBheSF3ptEB6dvSpDpemR5V/0T9Xe2vueB8UnvtjIpOgaqatuKWE9c57Qg5YkfNJywl0VTJLxmlCR8RYhecSF4gzS6+WvK3q1k=
+Received: from BN6PR19CA0079.namprd19.prod.outlook.com (2603:10b6:404:133::17)
+ by MW3PR12MB4396.namprd12.prod.outlook.com (2603:10b6:303:59::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Mon, 4 Apr
+ 2022 16:47:29 +0000
+Received: from BN8NAM11FT017.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:404:133:cafe::90) by BN6PR19CA0079.outlook.office365.com
+ (2603:10b6:404:133::17) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31 via Frontend
+ Transport; Mon, 4 Apr 2022 16:47:28 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ BN8NAM11FT017.mail.protection.outlook.com (10.13.177.93) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5123.19 via Frontend Transport; Mon, 4 Apr 2022 16:47:28 +0000
+Received: from AUS-LX-MLIMONCI.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 4 Apr
+ 2022 11:47:25 -0500
+From:   Mario Limonciello <mario.limonciello@amd.com>
+To:     Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
+CC:     Christoph Hellwig <hch@infradead.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+        Suthikulpanit Suravee <Suravee.Suthikulpanit@amd.com>,
+        Hegde Vasant <Vasant.Hegde@amd.com>,
+        "open list" <linux-kernel@vger.kernel.org>,
+        Mario Limonciello <mario.limonciello@amd.com>
+Subject: [PATCH 0/2] Fix issues with untrusted devices and AMD IOMMU
+Date:   Mon, 4 Apr 2022 11:47:05 -0500
+Message-ID: <20220404164707.1128-1-mario.limonciello@amd.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: b94de659-901d-46eb-fa7a-08da165acdfd
+X-MS-TrafficTypeDiagnostic: MW3PR12MB4396:EE_
+X-Microsoft-Antispam-PRVS: <MW3PR12MB4396BFA0D52BFDBE12E913EFE2E59@MW3PR12MB4396.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: UrBsskV5TlLTwbiLExPPZhjngvNOjkxVCaCR6xgtnjauw00x22xTFKZniozO6eEcVSmTSYuudHreXur/07El7GwN1tU4YHGQaoaHoNPwoGa9uA1Ru6NXoyljcosFw6tv3YOOaMH6QJD3gtugzU4FmexfTIusMixq77melQmKN57anrFFqZfONFquERhqAIsskGkerFI9lIllwSx2F0ugLcYN6ncAsMe9Sd1yyTa55E3uHUr3clVNWuG279lVtuTXukxYpCP48eeWzRl87PZ0qktRx9WncFM0+yKdimWHcZ4WgufKGmMPZRlm4bUfLLJ11rRYSqrwWuzaoi3m4zU6o7DLUGmx9OBfJ0C15FSjez1jsh3IApyOo4uLUtNwHzO3Aw0FQj9LudMvgjhPjYX2ZqDWSFbwKx9Z7ubuVZlnQ4K69zzggYh75Ujq/tdjmiO0BNTiJ/zziCHuSreJQw6WFqdoAEbe/cIchFge3h+120+9ub2EU9nO74DSP/02whN4hkLa/41SdtX3CtKCm/K2EAy50OaaL3FQKSfndve38iV4q+56LGfmDWaZCtNVTQlIBdLnw9aR0oLobeuQaWAmwWgZnXHmfb4ii5iyPBfkPg5RfazS1nVbSjKyAwNWFV/tGFiO55Nyj6kUiH3jEypohG78zeX/4hqLZ0FxK6+6BBDaZefRbWNikJx7WuwiEX0OCtR7y+zWjVdLqYQa06zhzQ==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(40470700004)(2616005)(1076003)(110136005)(36860700001)(44832011)(82310400004)(54906003)(316002)(83380400001)(356005)(2906002)(8676002)(26005)(4326008)(186003)(47076005)(16526019)(70586007)(70206006)(426003)(7696005)(508600001)(36756003)(81166007)(336012)(6666004)(8936002)(40460700003)(5660300002)(86362001)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Apr 2022 16:47:28.4563
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: b94de659-901d-46eb-fa7a-08da165acdfd
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT017.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR12MB4396
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+It's been observed that plugging in a TBT3 NVME device to a port marked
+with ExternalFacingPort that some DMA transactions occur that are not a
+full page and so the DMA API attempts to use software bounce buffers
+instead of relying upon the IOMMU translation.
 
-Changelog
-v3: * Register mm to khugepaged in common mmap path instead of touching
-      filesystem code (patch 8/8) suggested by Ted.
-    * New patch 7/8 cleaned up and renamed khugepaged_enter_vma_merge()
-      to khugepaged_enter_vma().
-    * Collected acked-by from Song Liu for patch 1 ~ 6.
-    * Rebased on top of 5.18-rc1.
-    * Excluded linux-xfs and linux-ext4 list since the series doesn't
-      touch fs code anymore, but keep linux-fsdevel posted. 
-v2: * Collected reviewed-by tags from Miaohe Lin.
-    * Fixed build error for patch 4/8.
+This doesn't work and leads to messaging like:
 
-The readonly FS THP relies on khugepaged to collapse THP for suitable
-vmas.  But it is kind of "random luck" for khugepaged to see the
-readonly FS vmas (see report: https://lore.kernel.org/linux-mm/00f195d4-d039-3cf2-d3a1-a2c88de397a0@suse.cz/) since currently the vmas are registered to khugepaged when:
-  - Anon huge pmd page fault
-  - VMA merge
-  - MADV_HUGEPAGE
-  - Shmem mmap
+swiotlb buffer is full (sz: 4096 bytes), total 0 (slots), used 0 (slots)
 
-If the above conditions are not met, even though khugepaged is enabled
-it won't see readonly FS vmas at all.  MADV_HUGEPAGE could be specified
-explicitly to tell khugepaged to collapse this area, but when khugepaged
-mode is "always" it should scan suitable vmas as long as VM_NOHUGEPAGE
-is not set.
+The bounce buffers were originally set up, but torn down during
+the boot process.
+* This happens because as part of IOMMU initialization
+  `amd_iommu_init_dma_ops` gets called and resets the global swiotlb to 0.
+* When late_init gets called `pci_swiotlb_late_init` `swiotlb_exit` is
+  called and the buffers are torn down.
 
-So make sure readonly FS vmas are registered to khugepaged to make the
-behavior more consistent.
+This can be observed in the logs:
+```
+[    0.407286] AMD-Vi: Extended features (0x246577efa2254afa): PPR NX GT [5] IA GA PC GA_vAPIC
+[    0.407291] AMD-Vi: Interrupt remapping enabled
+[    0.407292] AMD-Vi: Virtual APIC enabled
+[    0.407872] software IO TLB: tearing down default memory pool
+```
 
-Registering suitable vmas in common mmap path, that could cover both
-readonly FS vmas and shmem vmas, so removed the khugepaged calls in
-shmem.c.
+This series adds some better messaging in case something like this comes
+up again and also adds checks that swiotlb really is active before
+trying to use it.
 
-The patch 1 ~ 7 are minor bug fixes, clean up and preparation patches.
-The patch 8 is the real meat. 
+Mario Limonciello (2):
+  swiotlb: Check that slabs have been allocated when requested
+  iommu: Don't use swiotlb unless it's active
 
+ drivers/iommu/dma-iommu.c | 3 ++-
+ kernel/dma/swiotlb.c      | 5 +++++
+ 2 files changed, 7 insertions(+), 1 deletion(-)
 
-Tested with khugepaged test in selftests and the testcase provided by
-Vlastimil Babka in https://lore.kernel.org/lkml/df3b5d1c-a36b-2c73-3e27-99e74983de3a@suse.cz/
-by commenting out MADV_HUGEPAGE call.
-
-
-Yang Shi (8):
-      sched: coredump.h: clarify the use of MMF_VM_HUGEPAGE
-      mm: khugepaged: remove redundant check for VM_NO_KHUGEPAGED
-      mm: khugepaged: skip DAX vma
-      mm: thp: only regular file could be THP eligible
-      mm: khugepaged: make khugepaged_enter() void function
-      mm: khugepaged: move some khugepaged_* functions to khugepaged.c
-      mm: khugepaged: introduce khugepaged_enter_vma() helper
-      mm: mmap: register suitable readonly file vmas for khugepaged
-
- include/linux/huge_mm.h        | 14 ++++++++++++
- include/linux/khugepaged.h     | 59 ++++++++++++---------------------------------------
- include/linux/sched/coredump.h |  3 ++-
- kernel/fork.c                  |  4 +---
- mm/huge_memory.c               | 15 ++++---------
- mm/khugepaged.c                | 76 +++++++++++++++++++++++++++++++++++++-----------------------------
- mm/mmap.c                      | 14 ++++++++----
- mm/shmem.c                     | 12 -----------
- 8 files changed, 88 insertions(+), 109 deletions(-)
-
+-- 
+2.34.1
 
