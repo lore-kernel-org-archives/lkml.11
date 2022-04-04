@@ -2,265 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 756FAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 06:40:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88694C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 06:41:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377532AbiDDGm2 (ORCPT
+        id S1377539AbiDDGnx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 02:42:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51426 "EHLO
+        Mon, 4 Apr 2022 02:43:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377531AbiDDGmY (ORCPT
+        with ESMTP id S1352121AbiDDGnw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 02:42:24 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB0C42B246
-        for <linux-kernel@vger.kernel.org>; Sun,  3 Apr 2022 23:40:28 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id ot30so7841590ejb.12
-        for <linux-kernel@vger.kernel.org>; Sun, 03 Apr 2022 23:40:28 -0700 (PDT)
+        Mon, 4 Apr 2022 02:43:52 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86A5D2B25D
+        for <linux-kernel@vger.kernel.org>; Sun,  3 Apr 2022 23:41:56 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id o5-20020a17090ad20500b001ca8a1dc47aso2397505pju.1
+        for <linux-kernel@vger.kernel.org>; Sun, 03 Apr 2022 23:41:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=8gCgi9p6TQq4anxDc6yg6qvIn2LRBKe/bblZh/HGFbI=;
-        b=D3wXcsYlnjTOFVZAZ55nRd97pR9b05nmrThFjbi/X+vRgaCEOgRUfOSYCQ/64n7ery
-         xyXa+ZAxEX9u29ExhayG/++ZyLvlGDitznAuSsSZ0+PUC061DP7Elrw8YPW0HoIen2ZH
-         ZehLlWOUgAqK+DDGnvje7RFhyh1WcguupVArAohM2LzTX1SQV5xE5N3XzGya7km/P76T
-         IyESDXJsFeKcEJ96r0yhpJTJgdHtvF0XhfgUIRX/2UeeFIrhDaqQV4L0RGEAS3K6qWTo
-         7YnE6O/d3rAIR6lbsp76Ri3y0RNSdpw9VJqiCJLxN9jXGq/FJnZzqHmeZRXHWnamGDuy
-         Pxyw==
+        bh=H3W01VymVDs0COr3eR7ZYNGagSlCtWPeaS90Ia+pCnQ=;
+        b=HmEsVfgq0A+7eOcB4BnudSM7EvSYxXpV7awtlzzAS/97TEqDO4nNv0HepfTATpopCz
+         dq1bSwgpNc3qhSPWhHq+6hyf3tV8MhCTF78n7WY/VDrRUx38rBcRaXMwSIe6hkiuqnP2
+         JFUnwQrcoG1VUUKZBNCn0TzuA/ssNfym6bM36RTObsjR42VGiBHolgZbBy/FpCanenu+
+         XlI7Lh27mkx0moVPP4QfN8CMukMmhxdKm3yytkz9wKEsxr8nejdLAy35lMNMSM0D5CsA
+         Sa5YnbABfEVK57peEKUX9NDSJvwEYQBC6D/kpyDQqb4neYN0SUdxnYSoWvzYe/3Qic5V
+         zpLQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=8gCgi9p6TQq4anxDc6yg6qvIn2LRBKe/bblZh/HGFbI=;
-        b=LrPvw1ubtx/5fZNWuP3mirD6mhV1i88NMYYJabmIC4juZbTzihV0ndA68oGXwL18QX
-         wV1Vkh4NKDWDVKubkOIaTGdyasJIKnUfx8bcDax1zFJdIwzhF8/uziShCDP6pasMfnYn
-         nVW929wjD0/9PLFpJus/FLXSOw+XmEEtKsNTCqNHclniNT19060x0rn9Th12ZArilWqF
-         DZ6+DyS2WomAkXKivljLKXzgKx+nV/4Ir0MKKY5A6XYDc/9i4YLaEUSZTVSjYcme4M0f
-         LrUUKWSqqQ0g0HlpcZ2LfsnPzSTM9au45IBsAD6tIAmF2wg7q7GglVL4DICJS6SQ32LC
-         HZ5g==
-X-Gm-Message-State: AOAM532yczwtOF4s8BQRzp5F4G5Vyld1wVfhl3shQEckWHhB/nUag0fm
-        VOan7oAdu7BJ2caPZed7QzfkIg==
-X-Google-Smtp-Source: ABdhPJxx4XA9m4Y0ezx+xMbqpjNDdZ4/b0rLJQGyTSRnV7VNL8h3tZTlWBj7fdxRpU/0WLK5BggX8g==
-X-Received: by 2002:a17:906:2f97:b0:6ce:3ef6:94be with SMTP id w23-20020a1709062f9700b006ce3ef694bemr9704339eji.136.1649054422386;
-        Sun, 03 Apr 2022 23:40:22 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id i14-20020a50cfce000000b0041cbaba8743sm2676515edk.56.2022.04.03.23.40.21
+        bh=H3W01VymVDs0COr3eR7ZYNGagSlCtWPeaS90Ia+pCnQ=;
+        b=4hGoX4Z8eOWP3oKXtQigRzm8waQtx2N6Wz4wV7qWm/mxWYvSbr4ovuE6wEGOmwycrT
+         kF6lnJCYL3MYLVsThMokT4gRGKZz/MPY2te+wGZo93d2ApUxJt33kbrN2ZhVURRqZahJ
+         GSqAJlANRlZRSRfsEiX0DNMV5Xoj6EjQ6ae9XYiiS0P7wxACJgefgeKF2wsGfmVClwcC
+         g1E2G/GQ7izPpzgaabfl/yRbMtkYc/uCiLhaFI91l2mGGF4JdgT62A7yUHojUWzWuWOX
+         qrNNxz6vcfhMew7AW07mCuIqdmVfMictXD9QPimodKUCC9GdRE0YTvHOfGDuKAO6NMNl
+         +8hQ==
+X-Gm-Message-State: AOAM531lREqenGFCmMYMPlncvYzowbYrcdnJOZ/WqoUcEapAfrfhQbG/
+        AjYiwb23unFK25A5zMOX5opz
+X-Google-Smtp-Source: ABdhPJxn6ub5ARRtRWc9EBKVEVPL2IlboiXysb8PEsNqUNtyfewDC/cWlFq219J0f/+ZB3ZkxuiX3A==
+X-Received: by 2002:a17:90a:8c2:b0:1ca:a4a3:6833 with SMTP id 2-20020a17090a08c200b001caa4a36833mr2954493pjn.161.1649054515977;
+        Sun, 03 Apr 2022 23:41:55 -0700 (PDT)
+Received: from localhost.localdomain ([27.111.75.184])
+        by smtp.gmail.com with ESMTPSA id b2-20020a056a000a8200b004f1111c66afsm11637442pfl.148.2022.04.03.23.41.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 03 Apr 2022 23:40:21 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Mark Brown <broonie@kernel.org>, linux-arm-msm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-spi@vger.kernel.org
-Cc:     Kuldeep Singh <singh.kuldeep87k@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v3 1/2] spi: dt-bindings: qcom,spi-geni-qcom: convert to dtschema
-Date:   Mon,  4 Apr 2022 08:40:16 +0200
-Message-Id: <20220404064017.68634-1-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.32.0
+        Sun, 03 Apr 2022 23:41:55 -0700 (PDT)
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     mhi@lists.linux.dev
+Cc:     quic_hemantk@quicinc.com, quic_bbhatt@quicinc.com,
+        loic.poulain@linaro.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        stable@vger.kernel.org
+Subject: [PATCH] bus: mhi: host: pci_generic: Add missing poweroff() PM callback
+Date:   Mon,  4 Apr 2022 12:11:49 +0530
+Message-Id: <20220404064149.59634-1-manivannan.sadhasivam@linaro.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert the GENI based Qualcomm Universal Peripheral (QUP) Serial
-Peripheral Interface (SPI) bindings to DT Schema.
+During hibernation process, once thaw() stage completes, the MHI endpoint
+devices will be in M0 state post recovery. After that, the devices will be
+powered down so that the system can enter the target sleep state. During
+this stage, the PCI core will put the devices in D3hot. But this transition
+is allowed by the MHI spec. The devices can only enter D3hot when it is in
+M3 state.
 
-The original bindings in TXT were not complete, so add during conversion
-properties already used in DTS and/or in the driver: dmas,
-interconnects, operating points and power-domains.
+So for fixing this issue, let's add the poweroff() callback that will get
+executed before putting the system in target sleep state during
+hibernation. This callback will put the device in M3 state and that would
+allow it to receive the D3hot afterwards.
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
+Cc: stable@vger.kernel.org
+Fixes: 5f0c2ee1fe8d ("bus: mhi: pci-generic: Fix hibernation")
+Reported-by: Hemant Kumar <quic_hemantk@quicinc.com>
+Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 ---
+ drivers/bus/mhi/host/pci_generic.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Changes since v2:
-1. Drop reg-names.
-
-Changes since v1:
-1. Correct $ref path and remove interconnect minItems (Kuldeep).
-2. Remove child tpm device from example.
-3. Pad reg hex addresses with 00.
----
- .../bindings/spi/qcom,spi-geni-qcom.txt       |  39 ------
- .../bindings/spi/qcom,spi-geni-qcom.yaml      | 116 ++++++++++++++++++
- 2 files changed, 116 insertions(+), 39 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/spi/qcom,spi-geni-qcom.txt
- create mode 100644 Documentation/devicetree/bindings/spi/qcom,spi-geni-qcom.yaml
-
-diff --git a/Documentation/devicetree/bindings/spi/qcom,spi-geni-qcom.txt b/Documentation/devicetree/bindings/spi/qcom,spi-geni-qcom.txt
-deleted file mode 100644
-index c8c1e913f4e7..000000000000
---- a/Documentation/devicetree/bindings/spi/qcom,spi-geni-qcom.txt
-+++ /dev/null
-@@ -1,39 +0,0 @@
--GENI based Qualcomm Universal Peripheral (QUP) Serial Peripheral Interface (SPI)
--
--The QUP v3 core is a GENI based AHB slave that provides a common data path
--(an output FIFO and an input FIFO) for serial peripheral interface (SPI)
--mini-core.
--
--SPI in master mode supports up to 50MHz, up to four chip selects, programmable
--data path from 4 bits to 32 bits and numerous protocol variants.
--
--Required properties:
--- compatible:		Must contain "qcom,geni-spi".
--- reg:			Must contain SPI register location and length.
--- interrupts:		Must contain SPI controller interrupts.
--- clock-names:		Must contain "se".
--- clocks:		Serial engine core clock needed by the device.
--- #address-cells:	Must be <1> to define a chip select address on
--			the SPI bus.
--- #size-cells:		Must be <0>.
--
--SPI Controller nodes must be child of GENI based Qualcomm Universal
--Peripharal. Please refer GENI based QUP wrapper controller node bindings
--described in Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.yaml.
--
--SPI slave nodes must be children of the SPI master node and conform to SPI bus
--binding as described in Documentation/devicetree/bindings/spi/spi-bus.txt.
--
--Example:
--	spi0: spi@a84000 {
--		compatible = "qcom,geni-spi";
--		reg = <0xa84000 0x4000>;
--		interrupts = <GIC_SPI 354 IRQ_TYPE_LEVEL_HIGH>;
--		clock-names = "se";
--		clocks = <&clock_gcc GCC_QUPV3_WRAP0_S0_CLK>;
--		pinctrl-names = "default", "sleep";
--		pinctrl-0 = <&qup_1_spi_2_active>;
--		pinctrl-1 = <&qup_1_spi_2_sleep>;
--		#address-cells = <1>;
--		#size-cells = <0>;
--	};
-diff --git a/Documentation/devicetree/bindings/spi/qcom,spi-geni-qcom.yaml b/Documentation/devicetree/bindings/spi/qcom,spi-geni-qcom.yaml
-new file mode 100644
-index 000000000000..e2c7b934c50d
---- /dev/null
-+++ b/Documentation/devicetree/bindings/spi/qcom,spi-geni-qcom.yaml
-@@ -0,0 +1,116 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/spi/qcom,spi-geni-qcom.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: GENI based Qualcomm Universal Peripheral (QUP) Serial Peripheral Interface (SPI)
-+
-+maintainers:
-+  - Andy Gross <agross@kernel.org>
-+  - Bjorn Andersson <bjorn.andersson@linaro.org>
-+  - Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-+
-+description:
-+  The QUP v3 core is a GENI based AHB slave that provides a common data path
-+  (an output FIFO and an input FIFO) for serial peripheral interface (SPI)
-+  mini-core.
-+
-+  SPI in master mode supports up to 50MHz, up to four chip selects,
-+  programmable data path from 4 bits to 32 bits and numerous protocol variants.
-+
-+  SPI Controller nodes must be child of GENI based Qualcomm Universal
-+  Peripharal. Please refer GENI based QUP wrapper controller node bindings
-+  described in Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.yaml.
-+
-+allOf:
-+  - $ref: /schemas/spi/spi-controller.yaml#
-+
-+properties:
-+  compatible:
-+    const: qcom,geni-spi
-+
-+  clocks:
-+    maxItems: 1
-+
-+  clock-names:
-+    const: se
-+
-+  dmas:
-+    maxItems: 2
-+
-+  dma-names:
-+    items:
-+      - const: tx
-+      - const: rx
-+
-+  interconnects:
-+    maxItems: 2
-+
-+  interconnect-names:
-+    items:
-+      - const: qup-core
-+      - const: qup-config
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  operating-points-v2: true
-+
-+  power-domains:
-+    maxItems: 1
-+
-+  reg:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - clocks
-+  - clock-names
-+  - interrupts
-+  - reg
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/clock/qcom,gcc-sc7180.h>
-+    #include <dt-bindings/interconnect/qcom,sc7180.h>
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/power/qcom-rpmpd.h>
-+
-+    spi@880000 {
-+        compatible = "qcom,geni-spi";
-+        reg = <0x00880000 0x4000>;
-+        clock-names = "se";
-+        clocks = <&gcc GCC_QUPV3_WRAP0_S0_CLK>;
-+        pinctrl-names = "default";
-+        pinctrl-0 = <&qup_spi0_default>;
-+        interrupts = <GIC_SPI 601 IRQ_TYPE_LEVEL_HIGH>;
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+        power-domains = <&rpmhpd SC7180_CX>;
-+        operating-points-v2 = <&qup_opp_table>;
-+        interconnects = <&qup_virt MASTER_QUP_CORE_0 0 &qup_virt SLAVE_QUP_CORE_0 0>,
-+                        <&gem_noc MASTER_APPSS_PROC 0 &config_noc SLAVE_QUP_0 0>;
-+        interconnect-names = "qup-core", "qup-config";
-+    };
-+
-+  - |
-+    #include <dt-bindings/dma/qcom-gpi.h>
-+
-+    spi@884000 {
-+        compatible = "qcom,geni-spi";
-+        reg = <0x00884000 0x4000>;
-+        clock-names = "se";
-+        clocks = <&gcc GCC_QUPV3_WRAP0_S1_CLK>;
-+        dmas = <&gpi_dma0 0 1 QCOM_GPI_SPI>,
-+               <&gpi_dma0 1 1 QCOM_GPI_SPI>;
-+        dma-names = "tx", "rx";
-+        pinctrl-names = "default";
-+        pinctrl-0 = <&qup_spi1_default>;
-+        interrupts = <GIC_SPI 602 IRQ_TYPE_LEVEL_HIGH>;
-+        spi-max-frequency = <50000000>;
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+    };
+diff --git a/drivers/bus/mhi/host/pci_generic.c b/drivers/bus/mhi/host/pci_generic.c
+index 9527b7d63840..b1c0a8887496 100644
+--- a/drivers/bus/mhi/host/pci_generic.c
++++ b/drivers/bus/mhi/host/pci_generic.c
+@@ -1085,6 +1085,7 @@ static const struct dev_pm_ops mhi_pci_pm_ops = {
+ 	.resume = mhi_pci_resume,
+ 	.freeze = mhi_pci_freeze,
+ 	.thaw = mhi_pci_restore,
++	.poweroff = mhi_pci_suspend,
+ 	.restore = mhi_pci_restore,
+ #endif
+ };
 -- 
-2.32.0
+2.25.1
 
