@@ -2,111 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BC9CC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35EE3C433FE
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:49:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381226AbiDDVtg (ORCPT
+        id S1381157AbiDDVtV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:49:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60218 "EHLO
+        Mon, 4 Apr 2022 17:49:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379676AbiDDRss (ORCPT
+        with ESMTP id S1379094AbiDDQfD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 13:48:48 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B37D2E9E4;
-        Mon,  4 Apr 2022 10:46:52 -0700 (PDT)
-Date:   Mon, 04 Apr 2022 17:46:49 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649094410;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=KSkOvNqNnOs7E3KoKgoyjVwtYUhEAwIsq0ehhLiyF0E=;
-        b=D6yt3LMA9H2vLnriSeGV/XTJf9rajAdJpyugw6Db+1VWWBsmtdsG38+eAbOZgGozJv8hkO
-        zzRoIBOFOy8S6KG2y832cJiUQD+yG4vbye2uSnNNmtszGEDOF9a637ofAJWDJTRJBX4Hg5
-        TU4/BjvMTevgtGD4pQQNhqtYsqWdsZ7QpaMQoYUy5YIbozan5PJbLdneDHwViXuOVfh1PQ
-        pUREEMY7pptW02CqG6kSMJ6R97jUBEuK28cbDXDkm3Hqdw8vMgTfJcZM98H+WZMfUTKGDv
-        EKWKKIpciFFhkEL6NpME5SRaFJcC1TQmyHYJGx4ZUlY8eY82U0q9pK4y/5Rf6g==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649094410;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=KSkOvNqNnOs7E3KoKgoyjVwtYUhEAwIsq0ehhLiyF0E=;
-        b=5wXAgsvKjtIfrgOjOfFU3gpYHLGSbj+gWE+d57m2EbikkhhmLy6785gXN9H0bej6fJWNLq
-        PXvjJVE1aVPHgiDA==
-From:   "tip-bot2 for Borislav Petkov" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: locking/core] task_stack, x86/cea: Force-inline stack helpers
-Cc:     Borislav Petkov <bp@suse.de>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220324183607.31717-2-bp@alien8.de>
-References: <20220324183607.31717-2-bp@alien8.de>
+        Mon, 4 Apr 2022 12:35:03 -0400
+Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBCDF37ABA
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 09:33:06 -0700 (PDT)
+Received: by mail-lj1-x22e.google.com with SMTP id q14so13592300ljc.12
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 09:33:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to;
+        bh=rjLGczWizbWUdGnSt0vDUWu3PXooLXjZ1ROSEOwEXPw=;
+        b=DNZ2DwfWAf4BHizBXbAlRFMmpWXTQ2dudtm88Dc1mxCOpZPp4IPiKKcuATTK+vA1IR
+         sJLz24EaEP/06uYuX/G5rx/17ig/SKqLLsWsyHS4IjPL+VRjFNLFGdMJVYYzrxZQpEzR
+         Nznc0wmV91LXxMs1YjC6pxoV8IWA1FbbRNBIz12Y7jVwAHDlunrvFSLb01SjkTeb1PNw
+         9tjrAOCZCF8zE9YaL8H/5/Yd/9euGu6w1of16YDyjOApo4sL7sGMzFsOP1rFRpGBEIi7
+         8wWxgpMUbFgKEZ1oejWLcEn8OP2wulupUyAqgruzcMTysgJotHP1xvx6Bo8sQmUe7Kll
+         z5eg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to;
+        bh=rjLGczWizbWUdGnSt0vDUWu3PXooLXjZ1ROSEOwEXPw=;
+        b=zJthJbZ0Wleo8UCvh7e1dfeAPAzjc/ppDpWmxff56r1EUNfcIHRW2B42fe8mfustSu
+         cTj2VVYTsbzXzhg3/EBd1lfXC5LvD8ZEfC5cBxx4pOBxFSqnSaoNC5SPQFPBHFWL9tFh
+         mlSAahhRcKi7ORI/2iBRyln5bcaBYr5woM/eERuqu+Zwk6G9qpl/qNWJ9HxfMMzNhVzJ
+         n2npcYNFVqnwuTRRqwvfcL5C2+BnC8BgJn9eXC9LwI4GprfRFO4Tztq4MKYwtmGpQj8O
+         wk2RmZ0GxSGuTquzUCJJCQ6i/3+Z5O6t/4wTfgt447PrbrkmtZs/386KVcW3xSTP1b58
+         fn7w==
+X-Gm-Message-State: AOAM531yzp7vzzcHA8/HX0fEhTyD5WfKRyxXIeouh9EpsWC1KkRuYp5S
+        IvIu6Y2yrownSclOctueYLQ=
+X-Google-Smtp-Source: ABdhPJyLRVGEt3HCyLJ4WVcpR4rBK6a3Sq7xwxEjLpfYkIlc1sPj4VpSgi2qlbHvfZkrR4WV0I4f9A==
+X-Received: by 2002:a2e:9886:0:b0:24a:c13b:5337 with SMTP id b6-20020a2e9886000000b0024ac13b5337mr238380ljj.409.1649089983374;
+        Mon, 04 Apr 2022 09:33:03 -0700 (PDT)
+Received: from [192.168.1.11] ([46.235.67.247])
+        by smtp.gmail.com with ESMTPSA id e9-20020ac25ca9000000b0044aa5a3ee87sm1178514lfq.216.2022.04.04.09.33.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 04 Apr 2022 09:33:02 -0700 (PDT)
+Message-ID: <c14c23a0-6b0b-04b3-e58d-786c77726874@gmail.com>
+Date:   Mon, 4 Apr 2022 19:33:01 +0300
 MIME-Version: 1.0
-Message-ID: <164909440991.389.11468639429597148624.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH V2] Fix unsafe memory access by memcmp
+Content-Language: en-US
+To:     Charlie Sands <sandsch@northvilleschools.net>,
+        gregkh@linuxfoundation.org
+Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <YkpdVyuQguGzPSNE@sckzor-linux.localdomain>
+From:   Pavel Skripkin <paskripkin@gmail.com>
+In-Reply-To: <YkpdVyuQguGzPSNE@sckzor-linux.localdomain>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------0keD35HDBLORUGAFMhGHGDNw"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the locking/core branch of tip:
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------0keD35HDBLORUGAFMhGHGDNw
+Content-Type: multipart/mixed; boundary="------------hiTqVXIq4pvg0wCRJw8hfCxM";
+ protected-headers="v1"
+From: Pavel Skripkin <paskripkin@gmail.com>
+To: Charlie Sands <sandsch@northvilleschools.net>, gregkh@linuxfoundation.org
+Cc: Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
+ linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Message-ID: <c14c23a0-6b0b-04b3-e58d-786c77726874@gmail.com>
+Subject: Re: [PATCH V2] Fix unsafe memory access by memcmp
+References: <YkpdVyuQguGzPSNE@sckzor-linux.localdomain>
+In-Reply-To: <YkpdVyuQguGzPSNE@sckzor-linux.localdomain>
 
-Commit-ID:     e87f4152e542610d0b4c6c8548964a68a59d2040
-Gitweb:        https://git.kernel.org/tip/e87f4152e542610d0b4c6c8548964a68a59d2040
-Author:        Borislav Petkov <bp@suse.de>
-AuthorDate:    Wed, 23 Mar 2022 20:02:41 +01:00
-Committer:     Borislav Petkov <bp@suse.de>
-CommitterDate: Mon, 04 Apr 2022 10:13:07 +02:00
+--------------hiTqVXIq4pvg0wCRJw8hfCxM
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
 
-task_stack, x86/cea: Force-inline stack helpers
+SGkgQ2hhcmxpZSwNCg0KT24gNC80LzIyIDA1OjUyLCBDaGFybGllIFNhbmRzIHdyb3RlOg0K
+PiBUaGlzIHBhdGNoIGZpeGVzIHNwYXJzZSB3YXJuaW5ncyBhYm91dCB0aGUgbWVtY21wIGZ1
+bmN0aW9uIHVuc2FmZWx5DQo+IGFjY2Vzc2luZyB1c2Vyc3BhY2UgbWVtb3J5IHdpdGhvdXQg
+Zmlyc3QgY29weWluZyBpdCB0byBrZXJuZWwgc3BhY2UuDQo+IA0KPiBTaWduZWQtb2ZmLWJ5
+OiBDaGFybGllIFNhbmRzIDxzYW5kc2NoQG5vcnRodmlsbGVzY2hvb2xzLm5ldD4NCj4gLS0t
+DQo+IA0KPiBWMjogRml4ZWQgY2hlY2twYXRjaC5wbCB3YXJuaW5nIGFuZCBjaGFuZ2VkIHZh
+cmlhYmxlIG5hbWUgYXMgc3VnZ2VzdGVkDQo+IGJ5IEdyZWcgSy4gSC4gYW5kIGltcHJvdmVk
+IGVycm9yIGNoZWNraW5nIG9uIHRoZSAiY29weV9mcm9tX3VzZXIiIGZ1bmN0aW9uIGFzDQo+
+IHN1Z2dlc3RlZCBieSBQYXZlbCBTa3JpcGtpbi4NCj4gDQoNCllvdSBkaWQgbm90IGltcHJv
+dmVkIGVycm9yIGhhbmRsaW5nIG9mIGNvcHlfZnJvbV91c2VyKCkgYXMgSSBzdWdnZXN0ZWQu
+IA0KaWYgKGV4cHIpIGFuZCBpZiAoZXhwciAhPSAwKSBhcmUgZXhhY3RseSB0aGUgc2FtZQ0K
+DQo+ICAgZHJpdmVycy9zdGFnaW5nL3I4MTg4ZXUvb3NfZGVwL2lvY3RsX2xpbnV4LmMgfCAy
+MSArKysrKysrKysrKystLS0tLS0tLQ0KPiAgIDEgZmlsZSBjaGFuZ2VkLCAxMyBpbnNlcnRp
+b25zKCspLCA4IGRlbGV0aW9ucygtKQ0KPiANCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvc3Rh
+Z2luZy9yODE4OGV1L29zX2RlcC9pb2N0bF9saW51eC5jIGIvZHJpdmVycy9zdGFnaW5nL3I4
+MTg4ZXUvb3NfZGVwL2lvY3RsX2xpbnV4LmMNCj4gaW5kZXggN2RmMjEzODU2ZDY2Li40YjRl
+ZWMyYmRlOTYgMTAwNjQ0DQo+IC0tLSBhL2RyaXZlcnMvc3RhZ2luZy9yODE4OGV1L29zX2Rl
+cC9pb2N0bF9saW51eC5jDQo+ICsrKyBiL2RyaXZlcnMvc3RhZ2luZy9yODE4OGV1L29zX2Rl
+cC9pb2N0bF9saW51eC5jDQo+IEBAIC0zMjMzLDIzICszMjMzLDI4IEBAIHN0YXRpYyBpbnQg
+cnR3X3AycF9nZXQoc3RydWN0IG5ldF9kZXZpY2UgKmRldiwNCj4gICAJCQkgICAgICAgc3Ry
+dWN0IGl3X3JlcXVlc3RfaW5mbyAqaW5mbywNCj4gICAJCQkgICAgICAgdW5pb24gaXdyZXFf
+ZGF0YSAqd3JxdSwgY2hhciAqZXh0cmEpDQo+ICAgew0KPiAtCWlmICghbWVtY21wKHdycXUt
+PmRhdGEucG9pbnRlciwgInN0YXR1cyIsIDYpKSB7DQo+ICsJY2hhciB3cnF1X2RhdGFbOV07
+DQo+ICsNCj4gKwlpZiAoY29weV9mcm9tX3VzZXIod3JxdV9kYXRhLCB3cnF1LT5kYXRhLnBv
+aW50ZXIsIDkpICE9IDApDQo+ICsJCXJldHVybiAwOw0KPiArDQoNCkkndmUgc3VnZ2VzdGVk
+IHRvIHJldHVybiAtRUZBVUxUIGhlcmUNCg0KDQoNCg0KV2l0aCByZWdhcmRzLA0KUGF2ZWwg
+U2tyaXBraW4NCg==
 
-Force-inline two stack helpers to fix the following objtool warnings:
+--------------hiTqVXIq4pvg0wCRJw8hfCxM--
 
-  vmlinux.o: warning: objtool: in_task_stack()+0xc: call to task_stack_page() leaves .noinstr.text section
-  vmlinux.o: warning: objtool: in_entry_stack()+0x10: call to cpu_entry_stack() leaves .noinstr.text section
+--------------0keD35HDBLORUGAFMhGHGDNw
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
 
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lore.kernel.org/r/20220324183607.31717-2-bp@alien8.de
----
- arch/x86/include/asm/cpu_entry_area.h | 2 +-
- include/linux/sched/task_stack.h      | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+-----BEGIN PGP SIGNATURE-----
 
-diff --git a/arch/x86/include/asm/cpu_entry_area.h b/arch/x86/include/asm/cpu_entry_area.h
-index dd5ea1b..75efc4c 100644
---- a/arch/x86/include/asm/cpu_entry_area.h
-+++ b/arch/x86/include/asm/cpu_entry_area.h
-@@ -143,7 +143,7 @@ extern void cea_set_pte(void *cea_vaddr, phys_addr_t pa, pgprot_t flags);
- 
- extern struct cpu_entry_area *get_cpu_entry_area(int cpu);
- 
--static inline struct entry_stack *cpu_entry_stack(int cpu)
-+static __always_inline struct entry_stack *cpu_entry_stack(int cpu)
- {
- 	return &get_cpu_entry_area(cpu)->entry_stack_page.stack;
- }
-diff --git a/include/linux/sched/task_stack.h b/include/linux/sched/task_stack.h
-index 892562e..5e799a4 100644
---- a/include/linux/sched/task_stack.h
-+++ b/include/linux/sched/task_stack.h
-@@ -16,7 +16,7 @@
-  * try_get_task_stack() instead.  task_stack_page will return a pointer
-  * that could get freed out from under you.
-  */
--static inline void *task_stack_page(const struct task_struct *task)
-+static __always_inline void *task_stack_page(const struct task_struct *task)
- {
- 	return task->stack;
- }
+wsF5BAABCAAjFiEER3XL3TplLQE8Qi40bk1w61LbBA0FAmJLHb0FAwAAAAAACgkQbk1w61LbBA3z
+pQ//Wde8u9034ulRbYOwjNRUgTJcxoSK95ldwvPteBws9c6XsRzvo6DIFMyWalcMphgdfPiC7xHT
+yeamsXXp13pe6i9gnF7r49OBzgoIeM4KH5bBX/fgNHC/nJHr06qpTsjoyTWP2gcM7D+3UNY72bNi
+MFBdxGE9qNqO/wsduSYeDEk9835xsFDx/2W818+m6moper/jnxUTuOGIpaomBU0cX1g7ZWs/2hG0
+TT1CbZ5Sh+VQDhvcewC1rka7zG4jgmNwksVHv9NYfqqsR/HDygAUggjbeMwvJPVgUgyoqMisp3Zn
+AaNYnxZvmKJ/9iPfbVXX2ZHDFnahIyDpISB8YmGf7LC01wrR7Ls0Gvjw0s3hi4NacOkDUvwr/VMq
+OqDO1JBWEzWHbbYnOhqRFgu45AfjiiiGdpHd/gpxYrQWkpEnCaJYpKlhsm9/N/d+PgO/kGA1wibK
+4YDlVoO1PZYN+vuuzmdX9dftpXBo6KS3di5qU2152Xk5RmYMe090BPXtAkR1O/d/N8anhaK9zUBk
+v6qyEhFJpiivNl7Bh1Sddq3oTrTAg+wIl66RL6dPBd1Ju26ZUp6jYDBTY9nFYA/LPmIqoEC3JnaR
+eJQIFlp0/qiMz7n6u/sqYv7MTT7N14jYZPDfhsJN8cL8yi0cxj3AW/SxKCMGPD30Fgq3iU/AZsM5
+tME=
+=381l
+-----END PGP SIGNATURE-----
+
+--------------0keD35HDBLORUGAFMhGHGDNw--
