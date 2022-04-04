@@ -2,151 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8BC9C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:48:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB0E3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:49:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239230AbiDDWu2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 18:50:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37780 "EHLO
+        id S229692AbiDDWvx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 18:51:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241870AbiDDWuH (ORCPT
+        with ESMTP id S236500AbiDDWvL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 18:50:07 -0400
-Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com [209.85.218.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 645685FF31;
-        Mon,  4 Apr 2022 15:03:22 -0700 (PDT)
-Received: by mail-ej1-f43.google.com with SMTP id qh7so12790956ejb.11;
-        Mon, 04 Apr 2022 15:03:22 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=hmBtyCSBQacoipPmCsuxywFD7dGIDZdmjd0lU4ylOC0=;
-        b=pazOs1LZxFd2QSm53DZDOmnlSGL7KVTCzaflxn6GZaEfIhOmBo2eYNSD3QyaUBlMmF
-         PDvUVKoKWwkTjbOfqyeXnfh9Jgb82xStxac7ZU875JYlSRaNL589m0Eag3qEXKtfl0Rt
-         u3jfzSQdgDMP49rqHXDyezikswxxal3NDEn2EC3i1e+ZnwP+8OW4gIJAU20PTAye15h1
-         jJ4guY3Hh9bfSmL6OtBSx96yWxu6cVNe54f7A1DuQn2NdDa2gTWtnqlvzq0PIH6p3Jx8
-         GsYc4yBDYZTLS7lPy2kRe/oLtBaTn3OdMYAmbUjkb6mC0CMBRlKFcb3b7uDsDCA7fP7c
-         fQug==
-X-Gm-Message-State: AOAM533VVEVS3sx303nMNd4gvHwft/JbswCrWXKcHggDLOF3Z9HWFSjU
-        Wj6L3Kj/MBrQMbMntLG8cJ3gixiuGD0=
-X-Google-Smtp-Source: ABdhPJxKA6fBw682sFl4Rl5c6DEScQABE7R7uLVGQ9ljvzFS17MEqGICnW1ZnXnU+j/LkFmf4Gl7rw==
-X-Received: by 2002:a17:907:9482:b0:6da:a24e:e767 with SMTP id dm2-20020a170907948200b006daa24ee767mr292233ejc.479.1649109800676;
-        Mon, 04 Apr 2022 15:03:20 -0700 (PDT)
-Received: from t490s.teknoraver.net (net-93-144-169-96.cust.dsl.teletu.it. [93.144.169.96])
-        by smtp.gmail.com with ESMTPSA id q16-20020a170906145000b006bdaf981589sm4806743ejc.81.2022.04.04.15.03.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 15:03:20 -0700 (PDT)
-From:   Matteo Croce <mcroce@linux.microsoft.com>
-To:     bpf@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] bpf: make unprivileged BPF a compile time choice
-Date:   Tue,  5 Apr 2022 00:03:14 +0200
-Message-Id: <20220404220314.112912-1-mcroce@linux.microsoft.com>
-X-Mailer: git-send-email 2.35.1
+        Mon, 4 Apr 2022 18:51:11 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E368860AB3;
+        Mon,  4 Apr 2022 15:04:23 -0700 (PDT)
+Received: from mail-wr1-f52.google.com ([209.85.221.52]) by
+ mrelayeu.kundenserver.de (mreue012 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1MD5fd-1njz7M38Cn-009C2u; Tue, 05 Apr 2022 00:04:21 +0200
+Received: by mail-wr1-f52.google.com with SMTP id d3so5744377wrb.7;
+        Mon, 04 Apr 2022 15:04:21 -0700 (PDT)
+X-Gm-Message-State: AOAM533QYF+EyWTSfyR8ZiDNfwEG+BhLFmBlNEZSpZN6IHOzlOEcS2Xz
+        7UM4LdInLrK6AQeCHtIxWDqunivIu7cRtSViggE=
+X-Google-Smtp-Source: ABdhPJxdB4SXEExhGLOnNOou5PzL8CTbrHl2NxdVHZQrrPYcJQIoUaGDfpVns8hWsOV0sMm8eIe8VQFd/8q9TF2PhCI=
+X-Received: by 2002:adf:cd02:0:b0:206:ff2:236 with SMTP id w2-20020adfcd02000000b002060ff20236mr254545wrm.192.1649109861434;
+ Mon, 04 Apr 2022 15:04:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220310195229.109477-1-nick.hawkins@hpe.com> <20220310195229.109477-9-nick.hawkins@hpe.com>
+ <eb66cc83-2da9-8e19-db69-633e34fef946@canonical.com> <PH0PR84MB1718C31DB71AA2A67FEC5F6E88119@PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM>
+ <b1cc2566-cd78-7cb4-f8a5-d6fc8065fe6e@canonical.com> <PH0PR84MB1718292B1C11F4FE83326A5388119@PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM>
+ <fb4def96-4b20-604f-d15d-fef87eb2232d@canonical.com> <PH0PR84MB1718A2CFBFC90C9C0CAA5515881E9@PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM>
+ <CAK8P3a0fCE_NM=z68d1m9BTfuKixh1pKLw3gn+Sr7SxKb6UJAg@mail.gmail.com>
+ <PH0PR84MB17181C316E55073EBC28C386881E9@PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM>
+ <PH0PR84MB17185ADBA824F9CC9EB3E022881F9@PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM>
+ <CAK8P3a1080yz9jggOrwz2iQ1sAB2Xe2Emh22uCuqRok60BQSiA@mail.gmail.com>
+ <PH0PR84MB17186189F5025374AA39584D88E19@PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM>
+ <CAK8P3a2b+ESAAkc=_2hqx0kOxwYVS6mNjMGBKhhipaSj_5jV9g@mail.gmail.com>
+ <PH0PR84MB17182115D57EF6032782659C88E09@PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM>
+ <CAK8P3a1Cc+2oY9djdp11PuOW+TBQ0zf+p8QaDY3aerk1QqaG-g@mail.gmail.com> <PH0PR84MB1718925AA3C8FA998C486D7C88E59@PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM>
+In-Reply-To: <PH0PR84MB1718925AA3C8FA998C486D7C88E59@PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Tue, 5 Apr 2022 00:02:10 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a3RSST6yvv8Oy13RFd6eZ6cS5yX9TOuK6wxXKUO-qdQ=Q@mail.gmail.com>
+Message-ID: <CAK8P3a3RSST6yvv8Oy13RFd6eZ6cS5yX9TOuK6wxXKUO-qdQ=Q@mail.gmail.com>
+Subject: Re: [PATCH v3 09/10] arch: arm: boot: dts: Introduce HPE GXP Device tree
+To:     "Hawkins, Nick" <nick.hawkins@hpe.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        "Verdun, Jean-Marie" <verdun@hpe.com>,
+        Olof Johansson <olof@lixom.net>,
+        "soc@kernel.org" <soc@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:5mTdGkH/49wqOo83wH+vgQVSb0gA/5UG3vD+/btypz62HoNOEGM
+ kx3NCgQlGT5qR0EfyLQUU54zAdqX1dqWIY++F2lw4OXnYvIi3QZtLa3h7FNADk73m54HPr8
+ gHsJBnEwWPfhIJj1gKUH9QoaLd5+k1cCDJOrgLwoyFPt8wfRx0GFcSE/iehSEKUxZNnR2uB
+ qTat294ukRn9bFlKYWUFA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:k4SWwC7ut8s=:L1ttrIkbRe2fOl4oXOy+YD
+ 9Jh4orANoVF+dc6ZUffgwzHoi1UoXHzAowT3QvYzu2T+l4YOZdpjcjVLxLYeXdlSmrj5rYZNj
+ q6C5nTmFENHhJGZj47TUcTPPKZLlAq+fN581y8XdIxCLDF0RBBsw4PuUZM0PdRLtWPQrYpTTj
+ pZyP6D9IZgCMkxAm0EWJryIyg9xX5L/TV0bqzlKviICl9k1CizcaA1tXlhs9Zj6lAKhgcvtoU
+ bfQHSkswd2wyMM84EmLIq+ctAYnJ/B2xKMCUniSY3uF2HKj4Ggq7zUxxCX1VoPD4dMyoqh/C3
+ 4i0XlibTzoko5PI8env/1uk3JVTAypSsa0rK9gtz+UhRyht1IT5AnjSxX0XP36ez9KVyTV08v
+ +xIaGzNK9WoYMh/5iyzmcTVs02MKeWLgoZHeVYUghgOGlUbkxsnxppZaIVQxhmgIPcQS8ZpRN
+ S3waWSJl9Ig3wM0yz51TVsdX6I6XUpkNY5N9JpsQ+pAqXl2iGiRqngyDk7EnQRDusphtJSRZw
+ Vt/CCWxmwhZ1P4FQj6c9MO+Km2WCI8LEidVmTq+jev70JVSQcC0zdcRMr25Hiyb/a/sj27Y/i
+ qYbYcrckJBtunXVseQQjpzP/pupsybjiZ/aOC2VabHQIiZoPWmFeaePIgKjOPW8bG4fWpT9K/
+ ziumd4ohmDNMduGDYF6IyZB1UVnpxsLo9/stlcS1xPVH/O+o8u4Hx5v8t+Zws1u8L/gw=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matteo Croce <mcroce@microsoft.com>
+On Mon, Apr 4, 2022 at 10:22 PM Hawkins, Nick <nick.hawkins@hpe.com> wrote:
+> > > I would put it into drivers/clocksource/, I don't think drivers/mtd would be any better, but there is a chance that the clocksource maintainers don't want to have the watchdog code in their tree.
+>
+> While trying to discover how to creating two devices in one driver I ran across an interesting .dtsi and I was wondering if this would be a valid approach for my situation as well. The pertinent files are:
+> 1) drivers/clocksource/timer-digicolor.c
+> 2) arch/arm/boot/dts/cx92755.dtsi
+> 3) drivers/watchdog/digicolor_wdt.c
+>
+> Here they are just sharing the same register area:
+>
+> timer@f0000fc0 {
+>         compatible = "cnxt,cx92755-timer";
+>         reg = <0xf0000fc0 0x40>;
+>         interrupts = <19>, <31>, <34>, <35>, <52>, <53>, <54>, <55>;
+>         clocks = <&main_clk>;
+> };
+>
+> rtc@f0000c30 {
+>         compatible = "cnxt,cx92755-rtc";
+>         reg = <0xf0000c30 0x18>;
+>         interrupts = <25>;
+> };
+>
+> watchdog@f0000fc0 {
+>         compatible = "cnxt,cx92755-wdt";
+>         reg = <0xf0000fc0 0x8>;
+>         clocks = <&main_clk>;
+>         timeout-sec = <15>;
+> };
 
-Add a compile time option to permanently disable unprivileged BPF and
-the corresponding sysctl handler so that there's absolutely no
-concern about unprivileged BPF being enabled from userspace during
-runtime. Special purpose kernels can benefit from the build-time
-assurance that unprivileged eBPF is disabled in all of their kernel
-builds rather than having to rely on userspace to permanently disable
-it at boot time.
-The default behaviour is left unchanged, which is: unprivileged BPF
-compiled in but disabled at boot.
+Right, it is possible to make this work, but it's not recommended, and you have
+to work around the sanity checks in the code that try to keep you from doing it
+wrong, as well as any tooling that tries to check for these in the DT.
 
-Signed-off-by: Matteo Croce <mcroce@microsoft.com>
----
- kernel/bpf/Kconfig   | 10 +++++++++-
- kernel/bpf/syscall.c |  4 +++-
- kernel/sysctl.c      |  4 ++++
- 3 files changed, 16 insertions(+), 2 deletions(-)
-
-diff --git a/kernel/bpf/Kconfig b/kernel/bpf/Kconfig
-index d56ee177d5f8..dfaef1ac1516 100644
---- a/kernel/bpf/Kconfig
-+++ b/kernel/bpf/Kconfig
-@@ -67,10 +67,18 @@ config BPF_JIT_DEFAULT_ON
- 	def_bool ARCH_WANT_DEFAULT_BPF_JIT || BPF_JIT_ALWAYS_ON
- 	depends on HAVE_EBPF_JIT && BPF_JIT
- 
-+config BPF_UNPRIV
-+	bool "Unprivileged BPF"
-+	default y
-+	depends on BPF_SYSCALL
-+	help
-+	  Enables unprivileged BPF and the corresponding
-+	  /proc/sys/kernel/unprivileged_bpf_disabled knob.
-+
- config BPF_UNPRIV_DEFAULT_OFF
- 	bool "Disable unprivileged BPF by default"
- 	default y
--	depends on BPF_SYSCALL
-+	depends on BPF_UNPRIV
- 	help
- 	  Disables unprivileged BPF by default by setting the corresponding
- 	  /proc/sys/kernel/unprivileged_bpf_disabled knob to 2. An admin can
-diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index cdaa1152436a..b7e6aca87a18 100644
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -53,7 +53,9 @@ static DEFINE_IDR(link_idr);
- static DEFINE_SPINLOCK(link_idr_lock);
- 
- int sysctl_unprivileged_bpf_disabled __read_mostly =
--	IS_BUILTIN(CONFIG_BPF_UNPRIV_DEFAULT_OFF) ? 2 : 0;
-+	IS_BUILTIN(CONFIG_BPF_UNPRIV) ?
-+		(IS_BUILTIN(CONFIG_BPF_UNPRIV_DEFAULT_OFF) ? 2 : 0)
-+		: 1;
- 
- static const struct bpf_map_ops * const bpf_map_types[] = {
- #define BPF_PROG_TYPE(_id, _name, prog_ctx_type, kern_ctx_type)
-diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index 830aaf8ca08e..a5b6e960ca58 100644
---- a/kernel/sysctl.c
-+++ b/kernel/sysctl.c
-@@ -184,6 +184,7 @@ void __weak unpriv_ebpf_notify(int new_state)
- {
- }
- 
-+#ifdef CONFIG_BPF_UNPRIV
- static int bpf_unpriv_handler(struct ctl_table *table, int write,
- 			      void *buffer, size_t *lenp, loff_t *ppos)
- {
-@@ -206,6 +207,7 @@ static int bpf_unpriv_handler(struct ctl_table *table, int write,
- 
- 	return ret;
- }
-+#endif /* CONFIG_BPF_UNPRIV */
- #endif /* CONFIG_BPF_SYSCALL && CONFIG_SYSCTL */
- 
- /*
-@@ -2300,6 +2302,7 @@ static struct ctl_table kern_table[] = {
- 	},
- #endif
- #ifdef CONFIG_BPF_SYSCALL
-+#ifdef CONFIG_BPF_UNPRIV
- 	{
- 		.procname	= "unprivileged_bpf_disabled",
- 		.data		= &sysctl_unprivileged_bpf_disabled,
-@@ -2309,6 +2312,7 @@ static struct ctl_table kern_table[] = {
- 		.extra1		= SYSCTL_ZERO,
- 		.extra2		= SYSCTL_TWO,
- 	},
-+#endif
- 	{
- 		.procname	= "bpf_stats_enabled",
- 		.data		= &bpf_stats_enabled_key.key,
--- 
-2.35.1
-
+         Arnd
