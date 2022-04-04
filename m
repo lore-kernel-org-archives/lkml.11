@@ -2,104 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45D1DC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:52:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DED0C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:52:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354886AbiDDVxr (ORCPT
+        id S1355025AbiDDVyB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:53:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36546 "EHLO
+        Mon, 4 Apr 2022 17:54:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380127AbiDDS4c (ORCPT
+        with ESMTP id S1379586AbiDDRjd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 14:56:32 -0400
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 377E513D6E
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 11:54:35 -0700 (PDT)
-Received: by mail-yb1-xb31.google.com with SMTP id l36so11848831ybj.12
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 11:54:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=i8mit+XlQ6apyh1F4jfrqqHIA4eEylIGf1MuyIy7G0w=;
-        b=PM4i8G7PuyPWh/Jh9WnN4Tc/zwjQEad3lXcESc58rdhEMEtNtrfp3EvtKDzn33YGLL
-         Ah9HMvzVmk+19QgvIdPGm2Qy8B+5Bhymxchtuhd4gi3ACCM9Vk6ox4xbJUDzI844mU3o
-         fI3DGkcyZEWjORi53NCXSOrNZ3mBIVSmiqvn2RR4iWr5D66CHx+vr0yBBrDtXk03BVF3
-         uPByraxCdF6tH8BpXS/H5eUklX5UmhgLB8rhQBRdrCCrvLc58/EOzFLiJqDDoYunDsnW
-         OGBag5j0nhEE+u/AshEBp5mRkboIy4PSRoM3H5qXf5bRGE7sehTqwo1Q/y/kjMEki0+b
-         GJ3g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=i8mit+XlQ6apyh1F4jfrqqHIA4eEylIGf1MuyIy7G0w=;
-        b=yiL3eFiEhPz6U5QSIMKN5nNIRIp5TMkiXehJhLP5bB4Ay7Ldik9U8Gk/l1zwRaSpsf
-         hOx5TktSHXenb+YdU2EzV6EFxp/WxHHRuSXJF8+WBMJZxZqWJbxEn3FSki1/GAsXr5pe
-         PdPYdV1dBCVtokG8iweaCfJPOFlKkerP53JfenHCrZT6S8mqZIpLYG5WAQiY0yAdg1XK
-         T6MwPTe+vzbRT6N+Oi0qCpld3uRcQOlM9Z0mkUvUCZvgACIOTm0dsLQtfrCY0sVZZfuv
-         /j8yng12VGVKSJc6ilUyekNgXO65qSxwS8HmGKeD+vFNdXEMUEPK3oyY3/6hqNFYCr9E
-         CMWg==
-X-Gm-Message-State: AOAM531caGMuDQf+1EUYgGAd9/o+prGi+iOxOyJcDwnOSvbnTsza7Moe
-        u+corik3dbc8f3DsNyAaUOC8zeDJTVYu40v5xSBypw==
-X-Google-Smtp-Source: ABdhPJwjJQ5m+emITxY/LAnT5oJzYuka5uam0lN2TpPbt6LFR63y589nSovGkoW5FpbIS60tBIHHrrrIU9o7chH6ft4=
-X-Received: by 2002:a25:ab6b:0:b0:63d:a27b:8bcd with SMTP id
- u98-20020a25ab6b000000b0063da27b8bcdmr1033768ybi.391.1649098474246; Mon, 04
- Apr 2022 11:54:34 -0700 (PDT)
+        Mon, 4 Apr 2022 13:39:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 614B2B7F1
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 10:37:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 06785B818BF
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 17:37:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4610DC2BBE4
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 17:37:34 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="YGT7BojP"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1649093851;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=yZVI1KAOo1mIBeRHAVz7zVPMeySuOMMLVutZjfFGwmA=;
+        b=YGT7BojP7UhaK1QBT/H6nRsBMWzPvvoguKJvfMepZsZCWsexGttYt41qXsW74j6M/EfrQx
+        WjjcPSZMzDixI5TaOZRpbmw8sxljUct9zUjh1rmFWUb030gyTNn5r0NZvPL2eVl1h+fiRl
+        +L67bEbKJTiPQGi1qDslrH2tG/FHiu8=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id f3643630 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO)
+        for <linux-kernel@vger.kernel.org>;
+        Mon, 4 Apr 2022 17:37:31 +0000 (UTC)
+Received: by mail-yw1-f169.google.com with SMTP id 00721157ae682-2db2add4516so108651807b3.1
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 10:37:31 -0700 (PDT)
+X-Gm-Message-State: AOAM5331MfzYd5HVNIT4VqF0hhm0LQSgG5rS6//ZqFZ+4BRr2PgfUJZ5
+        wDMBDJdxlUbEs+63R5DETGY24q6Xc1Uo5tRC21o=
+X-Google-Smtp-Source: ABdhPJxMSD0Fg//duXs1NqBFDgEau1qxkscj0IJ/Sh+Bs2C+0BqS3hWuh/BOXZms4G7YRDAg+ztp17SRwMOCaeHwP/Q=
+X-Received: by 2002:a81:f00c:0:b0:2e9:d949:c189 with SMTP id
+ p12-20020a81f00c000000b002e9d949c189mr1023301ywm.2.1649093850853; Mon, 04 Apr
+ 2022 10:37:30 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220401063636.2414200-1-mizhang@google.com> <20220401063636.2414200-2-mizhang@google.com>
- <CANgfPd9OqV35BGfRCvJZNK_kemgqDWPx8TKKObfyGb0iiC-uxg@mail.gmail.com> <Yks2ymJzY4S9x4zx@google.com>
-In-Reply-To: <Yks2ymJzY4S9x4zx@google.com>
-From:   Ben Gardon <bgardon@google.com>
-Date:   Mon, 4 Apr 2022 11:54:23 -0700
-Message-ID: <CANgfPd-rOActegQ-c2frr0RnseT5am1tfvswhWqDRWWgW+9RqQ@mail.gmail.com>
-Subject: Re: [PATCH v3 1/6] KVM: x86/mmu: Set lpage_disallowed in TDP MMU
- before setting SPTE
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Mingwei Zhang <mizhang@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm <kvm@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Yosry Ahmed <yosryahmed@google.com>,
-        David Matlack <dmatlack@google.com>,
-        Jing Zhang <jingzhangos@google.com>,
-        Peter Xu <peterx@redhat.com>
+References: <20220404162039.961926-1-jan.varho@gmail.com> <20220404164230.968514-1-jan.varho@gmail.com>
+In-Reply-To: <20220404164230.968514-1-jan.varho@gmail.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Mon, 4 Apr 2022 19:37:19 +0200
+X-Gmail-Original-Message-ID: <CAHmME9o9JE4TA8_h0AKPCHStE4Sy7XxLc4wUwA=BjHsjRjeOkg@mail.gmail.com>
+Message-ID: <CAHmME9o9JE4TA8_h0AKPCHStE4Sy7XxLc4wUwA=BjHsjRjeOkg@mail.gmail.com>
+Subject: Re: [PATCH v3] random: fix add_hwgenerator_randomness entropy accounting
+To:     Jan Varho <jan.varho@gmail.com>
+Cc:     "Theodore Ts'o" <tytso@mit.edu>,
+        LKML <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 4, 2022 at 11:20 AM Sean Christopherson <seanjc@google.com> wrote:
->
-> On Mon, Apr 04, 2022, Ben Gardon wrote:
-> > On Thu, Mar 31, 2022 at 11:36 PM Mingwei Zhang <mizhang@google.com> wrote:
-> > > diff --git a/arch/x86/kvm/mmu/mmu_internal.h b/arch/x86/kvm/mmu/mmu_internal.h
-> > > index 1bff453f7cbe..4a0087efa1e3 100644
-> > > --- a/arch/x86/kvm/mmu/mmu_internal.h
-> > > +++ b/arch/x86/kvm/mmu/mmu_internal.h
-> > > @@ -168,7 +168,7 @@ void disallowed_hugepage_adjust(struct kvm_page_fault *fault, u64 spte, int cur_
-> > >
-> > >  void *mmu_memory_cache_alloc(struct kvm_mmu_memory_cache *mc);
-> > >
-> > > -void account_huge_nx_page(struct kvm *kvm, struct kvm_mmu_page *sp);
-> > > +void __account_huge_nx_page(struct kvm *kvm, struct kvm_mmu_page *sp);
-> >
-> > I believe we need to modify the usage of this function in
-> > paging_tmpl.h as well, at which point there should be no users of
-> > account_huge_nx_page, so we can just modify the function directly
-> > instead of adding a __helper.
-> > (Disregard if the source I was looking at was out of date. Lots of
-> > churn in this code recently.)
->
-> paging_tmpl.h is shadow paging only, i.e. will always handled page faults with
-> mmu_lock held for write and it also needs the check for sp->lpage_disallowed
-> already being set.  Only the TDP MMU code is special in that (a) it holds mmu_lock
-> for read and (b) never reuses shadow pages when inserting into the page tables.
->
-> Or did I completely misunderstand what you meant by "need to modify the usage"?
+Hi Jan,
 
-Ah right duh. For some reason I thought we were modifying __direct_map
-in this commit too. Nevermind, no change needed.
+On Mon, Apr 4, 2022 at 6:43 PM Jan Varho <jan.varho@gmail.com> wrote:
+>
+> add_hwgenerator_randomness tries to only use the required amound of input
+> for fast init, but credits all the entropy if even a byte was left over.
+>
+> Fix by not crediting entropy when using the input for fast init.
+
+Looks good, thanks. Applied as
+https://git.kernel.org/pub/scm/linux/kernel/git/crng/random.git/commit/?id=527a9867
+
+Jason
