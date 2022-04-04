@@ -2,99 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE730C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 11:33:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC639C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 11:33:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376364AbiDDLfR (ORCPT
+        id S1359792AbiDDLf1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 07:35:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46200 "EHLO
+        Mon, 4 Apr 2022 07:35:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359830AbiDDLfM (ORCPT
+        with ESMTP id S1376275AbiDDLfO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 07:35:12 -0400
-Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECF593C73F
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 04:33:14 -0700 (PDT)
-Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
-        by mx0b-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 234ARsRs021747;
-        Mon, 4 Apr 2022 06:32:57 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=PODMain02222019;
- bh=H63J8bNo1U5sBmx2P4okC9/PwTimoEy0MqDW58hghvE=;
- b=jSWvRvoKOAi7WQU7VmBMfGcTKFHk4avxW2Im1ogeHTSiUC/RN0Gc79PFIvWzpezFNCvO
- HUAPp0x8BSNqLsP7e08h+BU03EZzxOtKq1Dl/m/T+2ztc+ekrX3t6qNIHVLRjcWGucPh
- qM50cVOXgavEGupm68sPUEHSIK07TONSC0jLIWfk3EmtvUPI0sL/5MDbW57UtfsULyNK
- V6SEnnpD/oUXTajdkDi8NBon3LbJmw3eHl6yP3Lj7FuhdpCxeJ53m3/rXvxy3Ig3jAj7
- ZQD78iFjuIP7VhSjKwmoXmDNwAxWvi2rXJrE5hJHj5MQzBGWL1zc5kJyoYEf5IXYjkc3 Vg== 
-Received: from ediex01.ad.cirrus.com ([84.19.233.68])
-        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3f6jwnt2sf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Mon, 04 Apr 2022 06:32:57 -0500
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 4 Apr
- 2022 12:32:55 +0100
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.24 via Frontend
- Transport; Mon, 4 Apr 2022 12:32:55 +0100
-Received: from AUSNPC0LSNW1-debian.cirrus.com (AUSNPC0LSNW1.ad.cirrus.com [198.61.65.88])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 9687FB10;
-        Mon,  4 Apr 2022 11:32:55 +0000 (UTC)
-From:   Richard Fitzgerald <rf@opensource.cirrus.com>
-To:     <broonie@kernel.org>
-CC:     <alsa-devel@alsa-project.org>, <linux-kernel@vger.kernel.org>,
-        <patches@opensource.cirrus.com>,
-        Richard Fitzgerald <rf@opensource.cirrus.com>,
-        kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>
-Subject: [PATCH] ASoC: simple-card-utils: Avoid NULL deref in asoc_simple_set_tdm()
-Date:   Mon, 4 Apr 2022 12:32:52 +0100
-Message-ID: <20220404113252.1152659-1-rf@opensource.cirrus.com>
-X-Mailer: git-send-email 2.30.2
+        Mon, 4 Apr 2022 07:35:14 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 858E53D1FA
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 04:33:17 -0700 (PDT)
+Received: from fraeml745-chm.china.huawei.com (unknown [172.18.147.200])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KX7qh0hzfz67tf3;
+        Mon,  4 Apr 2022 19:30:24 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml745-chm.china.huawei.com (10.206.15.226) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 4 Apr 2022 13:33:15 +0200
+Received: from localhost.localdomain (10.69.192.58) by
+ lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 4 Apr 2022 12:33:11 +0100
+From:   John Garry <john.garry@huawei.com>
+To:     <joro@8bytes.org>, <will@kernel.org>, <robin.murphy@arm.com>
+CC:     <mst@redhat.com>, <jasowang@redhat.com>,
+        <iommu@lists.linux-foundation.org>, <linux-kernel@vger.kernel.org>,
+        <virtualization@lists.linux-foundation.org>,
+        <chenxiang66@hisilicon.com>, <thunder.leizhen@huawei.com>,
+        <jean-philippe@linaro.org>, <linuxarm@huawei.com>,
+        John Garry <john.garry@huawei.com>
+Subject: [PATCH RESEND v5 5/5] iova: Add iova_len argument to iova_domain_init_rcaches()
+Date:   Mon, 4 Apr 2022 19:27:14 +0800
+Message-ID: <1649071634-188535-6-git-send-email-john.garry@huawei.com>
+X-Mailer: git-send-email 2.8.1
+In-Reply-To: <1649071634-188535-1-git-send-email-john.garry@huawei.com>
+References: <1649071634-188535-1-git-send-email-john.garry@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: -H8KNmp3Gh51xxtvDil9ArkdgQVvLksO
-X-Proofpoint-GUID: -H8KNmp3Gh51xxtvDil9ArkdgQVvLksO
-X-Proofpoint-Spam-Reason: safe
+X-Originating-IP: [10.69.192.58]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Don't dereference simple_dai before it has been checked for NULL.
+Add max opt argument to iova_domain_init_rcaches(), and use it to set the
+rcaches range.
 
-Signed-off-by: Richard Fitzgerald <rf@opensource.cirrus.com>
-Fixes: 1e974e5b82b3 ("ASoC: audio_graph_card2: Add support for variable slot widths")
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Also fix up all users to set this value (at 0, meaning use default),
+including a wrapper for that, iova_domain_init_rcaches_default().
+
+For dma-iommu.c we derive the iova_len argument from the IOMMU group
+max opt DMA size.
+
+Signed-off-by: John Garry <john.garry@huawei.com>
 ---
- sound/soc/generic/simple-card-utils.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/iommu/dma-iommu.c            | 15 ++++++++++++++-
+ drivers/iommu/iova.c                 | 19 ++++++++++++++++---
+ drivers/vdpa/vdpa_user/iova_domain.c |  4 ++--
+ include/linux/iova.h                 |  3 ++-
+ 4 files changed, 34 insertions(+), 7 deletions(-)
 
-diff --git a/sound/soc/generic/simple-card-utils.c b/sound/soc/generic/simple-card-utils.c
-index 8e037835bc58..f2157944247f 100644
---- a/sound/soc/generic/simple-card-utils.c
-+++ b/sound/soc/generic/simple-card-utils.c
-@@ -364,13 +364,15 @@ static int asoc_simple_set_tdm(struct snd_soc_dai *dai,
- 				struct snd_pcm_hw_params *params)
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index 42ca42ff1b5d..19f35624611c 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -525,6 +525,8 @@ static int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
+ 	struct iommu_dma_cookie *cookie = domain->iova_cookie;
+ 	unsigned long order, base_pfn;
+ 	struct iova_domain *iovad;
++	size_t max_opt_dma_size;
++	unsigned long iova_len = 0;
+ 	int ret;
+ 
+ 	if (!cookie || cookie->type != IOMMU_DMA_IOVA_COOKIE)
+@@ -560,7 +562,18 @@ static int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
+ 	}
+ 
+ 	init_iova_domain(iovad, 1UL << order, base_pfn);
+-	ret = iova_domain_init_rcaches(iovad);
++
++	max_opt_dma_size = iommu_group_get_max_opt_dma_size(dev->iommu_group);
++	if (max_opt_dma_size) {
++		unsigned long shift = __ffs(1UL << order);
++
++		iova_len = roundup_pow_of_two(max_opt_dma_size);
++		iova_len >>= shift;
++		if (!iova_len)
++			iova_len = 1;
++	}
++
++	ret = iova_domain_init_rcaches(iovad, iova_len);
+ 	if (ret)
+ 		return ret;
+ 
+diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+index 5c22b9187b79..d65e79e132ee 100644
+--- a/drivers/iommu/iova.c
++++ b/drivers/iommu/iova.c
+@@ -706,12 +706,20 @@ static void iova_magazine_push(struct iova_magazine *mag, unsigned long pfn)
+ 	mag->pfns[mag->size++] = pfn;
+ }
+ 
+-int iova_domain_init_rcaches(struct iova_domain *iovad)
++static unsigned long iova_len_to_rcache_max(unsigned long iova_len)
++{
++	return order_base_2(iova_len) + 1;
++}
++
++int iova_domain_init_rcaches(struct iova_domain *iovad, unsigned long iova_len)
  {
- 	int sample_bits = params_width(params);
--	int slot_width = simple_dai->slot_width;
--	int slot_count = simple_dai->slots;
-+	int slot_width, slot_count;
+ 	unsigned int cpu;
  	int i, ret;
  
- 	if (!simple_dai || !simple_dai->tdm_width_map)
- 		return 0;
+-	iovad->rcache_max_size = 6; /* Arbitrarily high default */
++	if (iova_len)
++		iovad->rcache_max_size = iova_len_to_rcache_max(iova_len);
++	else
++		iovad->rcache_max_size = 6; /* Arbitrarily high default */
  
-+	slot_width = simple_dai->slot_width;
-+	slot_count = simple_dai->slots;
+ 	iovad->rcaches = kcalloc(iovad->rcache_max_size,
+ 				 sizeof(struct iova_rcache),
+@@ -755,7 +763,12 @@ int iova_domain_init_rcaches(struct iova_domain *iovad)
+ 	free_iova_rcaches(iovad);
+ 	return ret;
+ }
+-EXPORT_SYMBOL_GPL(iova_domain_init_rcaches);
 +
- 	if (slot_width == 0)
- 		slot_width = sample_bits;
++int iova_domain_init_rcaches_default(struct iova_domain *iovad)
++{
++	return iova_domain_init_rcaches(iovad, 0);
++}
++EXPORT_SYMBOL_GPL(iova_domain_init_rcaches_default);
  
+ /*
+  * Try inserting IOVA range starting with 'iova_pfn' into 'rcache', and
+diff --git a/drivers/vdpa/vdpa_user/iova_domain.c b/drivers/vdpa/vdpa_user/iova_domain.c
+index 6daa3978d290..3a2acef98a4a 100644
+--- a/drivers/vdpa/vdpa_user/iova_domain.c
++++ b/drivers/vdpa/vdpa_user/iova_domain.c
+@@ -514,12 +514,12 @@ vduse_domain_create(unsigned long iova_limit, size_t bounce_size)
+ 	spin_lock_init(&domain->iotlb_lock);
+ 	init_iova_domain(&domain->stream_iovad,
+ 			PAGE_SIZE, IOVA_START_PFN);
+-	ret = iova_domain_init_rcaches(&domain->stream_iovad);
++	ret = iova_domain_init_rcaches_default(&domain->stream_iovad);
+ 	if (ret)
+ 		goto err_iovad_stream;
+ 	init_iova_domain(&domain->consistent_iovad,
+ 			PAGE_SIZE, bounce_pfns);
+-	ret = iova_domain_init_rcaches(&domain->consistent_iovad);
++	ret = iova_domain_init_rcaches_default(&domain->consistent_iovad);
+ 	if (ret)
+ 		goto err_iovad_consistent;
+ 
+diff --git a/include/linux/iova.h b/include/linux/iova.h
+index 02f7222fa85a..56281434ce0c 100644
+--- a/include/linux/iova.h
++++ b/include/linux/iova.h
+@@ -95,7 +95,8 @@ struct iova *reserve_iova(struct iova_domain *iovad, unsigned long pfn_lo,
+ 	unsigned long pfn_hi);
+ void init_iova_domain(struct iova_domain *iovad, unsigned long granule,
+ 	unsigned long start_pfn);
+-int iova_domain_init_rcaches(struct iova_domain *iovad);
++int iova_domain_init_rcaches(struct iova_domain *iovad, unsigned long iova_len);
++int iova_domain_init_rcaches_default(struct iova_domain *iovad);
+ struct iova *find_iova(struct iova_domain *iovad, unsigned long pfn);
+ void put_iova_domain(struct iova_domain *iovad);
+ #else
 -- 
-2.30.2
+2.26.2
 
