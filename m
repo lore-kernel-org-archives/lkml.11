@@ -2,78 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38A72C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 23:11:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58DB5C43217
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 23:11:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240890AbiDDXLO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 19:11:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45382 "EHLO
+        id S239461AbiDDXN2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 19:13:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242878AbiDDXKA (ORCPT
+        with ESMTP id S1344430AbiDDXL7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 19:10:00 -0400
-Received: from mail-oa1-f49.google.com (mail-oa1-f49.google.com [209.85.160.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A000F10FD4;
-        Mon,  4 Apr 2022 15:45:54 -0700 (PDT)
-Received: by mail-oa1-f49.google.com with SMTP id 586e51a60fabf-d39f741ba0so12460340fac.13;
-        Mon, 04 Apr 2022 15:45:54 -0700 (PDT)
+        Mon, 4 Apr 2022 19:11:59 -0400
+Received: from mail-oa1-f50.google.com (mail-oa1-f50.google.com [209.85.160.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 538DC22BDD;
+        Mon,  4 Apr 2022 15:52:05 -0700 (PDT)
+Received: by mail-oa1-f50.google.com with SMTP id 586e51a60fabf-dacc470e03so12515171fac.5;
+        Mon, 04 Apr 2022 15:52:05 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=WRM9WzB5Qz/K6aETNGyEI4dOK6iqW4l8bvHxC450j9Q=;
-        b=1E1bzpo6wmOpNppuvvD+iAYDAhdWIZoD0Rgv5PP/YZXCmcYcg/IjAb9NHZj0ZuiHTn
-         GI7tiJa+yaD1qi0bNLBeVjUiYc33e8Evu67oFqv2akB0Q99nhoJidWyqlyRAJFnRrEH7
-         /Nl1Q1uRjpaPypz6YPIHXa/XhCObH65KuLAvpDyJmdsQN43EbH9xmC+5KD1nj+z06/hE
-         l/wn33HH0unV2dWZEcUDhRDYkTsYIdKpvEumOt5zamHjMcrtXjBgPZoE8OsqX8RGGahU
-         SOSc7FvD/2drPTnUshNJ5GQvyp7lfujTUHHAR57ycMyAwhEIxTHM64DCmIexU+tCN9R+
-         IdYg==
-X-Gm-Message-State: AOAM530vmpddR7oM0S4A8BOTSN3Ve3fTUrdZODPUMY64SYQKv0Z8UVyR
-        dHssUTSwb1/0N1RFSGo3MQ==
-X-Google-Smtp-Source: ABdhPJyy1avjwHAHjLhqQGywAap8haKayzoOtloxVtYd8OqawU5I4S9geqI6mUPzZDscxTQgxtNLTg==
-X-Received: by 2002:a05:6871:822:b0:e2:10ff:b84e with SMTP id q34-20020a056871082200b000e210ffb84emr245837oap.103.1649112353731;
-        Mon, 04 Apr 2022 15:45:53 -0700 (PDT)
+        bh=3oWZY+Z6UGSCijTzt5Cq0VUhlgpsnDNsKp/vR2785K4=;
+        b=PWBOuFtO2vbArAGoO/rjT3sy0B9/WpiqCYpg+aTgaFAb0ObQWNLGDcHGSJukEeugNK
+         VQpu02+MPgqisNYEn+tt5ixLcJFKasnVS4ggir6UgZy2wP3S3KFS19bc0WLAGjmUX/j7
+         dOUPdrZLYjQdiSoQY1lPprr5CKtocySo6acpoP+vDG06Gp3OwaF/MvmSYZcF0IxB1etM
+         aEKlql5IBauYdEQ2kzTozuY/lhFQtxDW/4k1hhRTbEgnxADCg9dLQoQpgUgpYOCxndax
+         2w05ZXTbaKfA/i6xburmJ+My0nyx6JK6YwKZ6s/O2oIgLOWm7nvcVMcFiWd3WtyAVNiy
+         QNgw==
+X-Gm-Message-State: AOAM532900ogRlS3S4GB0GB4AskfvqyhxdfUJhXazAQQ1BCCnhFWEdsW
+        To4gK1oma/RskUJTCCIJHWBzeI7Kzw==
+X-Google-Smtp-Source: ABdhPJxGpRqnhPcje+xwduWWUv41om4lAa5vr/NSF5MkKO41yeFF2I/yIaa4F5F7O649/GCoAQvSEg==
+X-Received: by 2002:a05:6870:c69a:b0:e1:ec74:e8a7 with SMTP id cv26-20020a056870c69a00b000e1ec74e8a7mr281091oab.184.1649112724598;
+        Mon, 04 Apr 2022 15:52:04 -0700 (PDT)
 Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id p1-20020a05683003c100b005c927b6e645sm5115082otc.20.2022.04.04.15.45.52
+        by smtp.gmail.com with ESMTPSA id v20-20020a056870e29400b000da4a0089c9sm4735868oad.27.2022.04.04.15.52.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 15:45:53 -0700 (PDT)
-Received: (nullmailer pid 2143767 invoked by uid 1000);
-        Mon, 04 Apr 2022 22:45:52 -0000
-Date:   Mon, 4 Apr 2022 17:45:52 -0500
+        Mon, 04 Apr 2022 15:52:04 -0700 (PDT)
+Received: (nullmailer pid 2154303 invoked by uid 1000);
+        Mon, 04 Apr 2022 22:52:03 -0000
+Date:   Mon, 4 Apr 2022 17:52:03 -0500
 From:   Rob Herring <robh@kernel.org>
 To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Jassi Brar <jassisinghbrar@gmail.com>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+Cc:     devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
         Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        netdev@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Alex Elder <elder@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        Manivannan Sadhasivam <mani@kernel.org>
-Subject: Re: [PATCH 2/2] dt-bindings: net: qcom,ipa: finish the qcom,smp2p
- example
-Message-ID: <Ykt1IPcba+z1oX74@robh.at.kernel.org>
-References: <20220402155551.16509-1-krzysztof.kozlowski@linaro.org>
- <20220402155551.16509-2-krzysztof.kozlowski@linaro.org>
+        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        Rob Herring <robh+dt@kernel.org>
+Subject: Re: [PATCH 2/2] docs: dt: writing-schema: mention coding style
+Message-ID: <Ykt2k1v7IHopnlK0@robh.at.kernel.org>
+References: <20220403081849.8051-1-krzysztof.kozlowski@linaro.org>
+ <20220403081849.8051-2-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220402155551.16509-2-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220403081849.8051-2-krzysztof.kozlowski@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 02 Apr 2022 17:55:51 +0200, Krzysztof Kozlowski wrote:
-> The example using qcom,smp2p should have all necessary properties, to
-> avoid DT schema validation warnings.
+On Sun, 03 Apr 2022 10:18:49 +0200, Krzysztof Kozlowski wrote:
+> Mention the usage of YAML coding style.  Describe explicitly that
+> four-space indentation in DTS examples is preferred, because:
+> 1. The YAML's default two-space indentation for DTS code makes it
+>    significantly less readable.
+> 2. Linux coding style tabs would introduce inconsistency (entire file is
+>    indented with spaces).
+> 3. On the other hand, eight spaces would not align with example's
+>    opening '  - |' part.  Four spaces makes the code nicely aligned with
+>    it.
 > 
-> Reported-by: Rob Herring <robh@kernel.org>
 > Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 > ---
->  Documentation/devicetree/bindings/net/qcom,ipa.yaml | 7 +++++++
->  1 file changed, 7 insertions(+)
+>  .../devicetree/bindings/example-schema.yaml        | 14 +++++++-------
+>  .../devicetree/bindings/writing-schema.rst         |  6 ++++++
+>  2 files changed, 13 insertions(+), 7 deletions(-)
 > 
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Applied, thanks!
