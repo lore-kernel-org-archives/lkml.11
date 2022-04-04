@@ -2,126 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBC97C47089
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:23:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3200EC38A2C
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:23:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380911AbiDDVWL (ORCPT
+        id S1380971AbiDDVWP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:22:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47574 "EHLO
+        Mon, 4 Apr 2022 17:22:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379166AbiDDQiD (ORCPT
+        with ESMTP id S1380392AbiDDT6d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 12:38:03 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 626472C11C
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 09:36:07 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 293D41480;
-        Mon,  4 Apr 2022 09:36:07 -0700 (PDT)
-Received: from [10.57.24.6] (unknown [10.57.24.6])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2F6D93F73B;
-        Mon,  4 Apr 2022 09:36:04 -0700 (PDT)
-Message-ID: <30d85009-f4be-25b1-7eb8-eea4b3058e27@arm.com>
-Date:   Mon, 4 Apr 2022 17:36:02 +0100
+        Mon, 4 Apr 2022 15:58:33 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DC9B2FE42;
+        Mon,  4 Apr 2022 12:56:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649102196; x=1680638196;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=qVd2+lCgjElgVwX9Ld2sTZVzh1JVcgMBp6qK+c5LCoo=;
+  b=cCdp8jrmCBythpZyyT6LT89aC5fwDremHSG/wm+26i64/4TyA8S+31Cg
+   cQtlBlHddCIOlAbrBjUHGwwImYJmVAZOBJbavQWHIxpgKcsQIxaZvOjly
+   kx/K7fHyHIVBXOsLm/n1l7fF7UeWC3kLn/+DKcKx/EWCrOrPB/IEFXDKf
+   U6EK/YGD/0fatA4/Kkp0vj0w+SZ995FwAflTTZU0IWNi0XfEVPpAHIres
+   yMDjhz7TvvK7YL4OeMGw36BXLPibzVsH4Bq3gvtjDsCp+GR1WpxTTwFtL
+   vD4yrZAFAafHJIQYhvL5aTVH7Is9eiFlhLYJ3FBOkVZtBW6uUAuAUNx75
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="241183795"
+X-IronPort-AV: E=Sophos;i="5.90,235,1643702400"; 
+   d="scan'208";a="241183795"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 12:56:36 -0700
+X-IronPort-AV: E=Sophos;i="5.90,235,1643702400"; 
+   d="scan'208";a="721773941"
+Received: from skokoori-mobl1.amr.corp.intel.com (HELO [10.209.7.74]) ([10.209.7.74])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 12:56:35 -0700
+Message-ID: <aece84e1-2c90-2c18-993a-96f8fed7bb46@linux.intel.com>
+Date:   Mon, 4 Apr 2022 12:56:35 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v3 21/21] x86/resctrl: Make resctrl_arch_rmid_read()
- return values in bytes
+ Firefox/91.0 Thunderbird/91.5.0
+Subject: Re: [PATCH v2 5/6] platform/x86: intel_tdx_attest: Add TDX Guest
+ attestation interface driver
 Content-Language: en-US
-To:     Rob Herring <robh@kernel.org>
-Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
-        Fenghua Yu <fenghua.yu@intel.com>,
-        Reinette Chatre <reinette.chatre@intel.com>,
+To:     Hans de Goede <hdegoede@redhat.com>,
         Thomas Gleixner <tglx@linutronix.de>,
         Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        H Peter Anvin <hpa@zytor.com>,
-        Babu Moger <Babu.Moger@amd.com>,
-        shameerali.kolothum.thodi@huawei.com,
-        Jamie Iles <jamie@nuviainc.com>,
-        D Scott Phillips OS <scott@os.amperecomputing.com>,
-        lcherian@marvell.com, bobo.shaobowang@huawei.com,
-        tan.shaopeng@fujitsu.com
-References: <20220217182110.7176-1-james.morse@arm.com>
- <20220217182110.7176-22-james.morse@arm.com>
- <YjuOWpqLfiP4u2AT@robh.at.kernel.org>
-From:   James Morse <james.morse@arm.com>
-In-Reply-To: <YjuOWpqLfiP4u2AT@robh.at.kernel.org>
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        Mark Gross <mgross@linux.intel.com>
+Cc:     "H . Peter Anvin" <hpa@zytor.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Andi Kleen <ak@linux.intel.com>, linux-kernel@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org
+References: <cover.1648664666.git.sathyanarayanan.kuppuswamy@intel.com>
+ <054b22e81e88379a5a8459c19e89a335531c1bdd.1648664666.git.sathyanarayanan.kuppuswamy@intel.com>
+ <8308a830-3096-3f94-4f12-5fd2c290524e@redhat.com>
+From:   Sathyanarayanan Kuppuswamy 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>
+In-Reply-To: <8308a830-3096-3f94-4f12-5fd2c290524e@redhat.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Rob,
+Hi Hans,
 
-On 3/23/22 21:17, Rob Herring wrote:
-> On Thu, Feb 17, 2022 at 06:21:10PM +0000, James Morse wrote:
->> resctrl_arch_rmid_read() returns a value in chunks, as read from the
->> hardware. This needs scaling to bytes by mon_scale, as provided by
->> the architecture code.
->>
->> Now that resctrl_arch_rmid_read() performs the overflow and corrections
->> itself, it may as well return a value in bytes directly. This allows
->> the accesses to the architecture specific 'hw' structure to be removed.
->>
->> Move the mon_scale conversion into resctrl_arch_rmid_read().
->> mbm_bw_count() is updated to calculate bandwidth from bytes.
+On 4/4/22 3:07 AM, Hans de Goede wrote:
+>> +static int __init tdx_attest_init(void)
+>> +{
+>> +	dma_addr_t handle;
+>> +	long ret = 0;
+>> +
+>> +	mutex_lock(&attestation_lock);
+>> +
+>> +	ret = misc_register(&tdx_attest_device);
+>> +	if (ret) {
+>> +		pr_err("misc device registration failed\n");
+>> +		mutex_unlock(&attestation_lock);
+>> +		return ret;
+>> +	}
+> Why not do this as the last thing of the probe?
 
->> diff --git a/arch/x86/kernel/cpu/resctrl/monitor.c b/arch/x86/kernel/cpu/resctrl/monitor.c
->> index 3a6555f49720..437e7db77f93 100644
->> --- a/arch/x86/kernel/cpu/resctrl/monitor.c
->> +++ b/arch/x86/kernel/cpu/resctrl/monitor.c
->> @@ -211,10 +211,11 @@ int resctrl_arch_rmid_read(struct rdt_resource *r, struct rdt_domain *d,
->>   	if (am) {
->>   		am->chunks += mbm_overflow_count(am->prev_msr, msr_val,
->>   						 hw_res->mbm_width);
->> -		*val = get_corrected_mbm_count(rmid, am->chunks);
->> +		chunks = get_corrected_mbm_count(rmid, am->chunks);
->> +		*val = chunks * hw_res->mon_scale;
+We need misc device reference in dma_alloc_coherent() and
+dma_set_coherent_mask() calls. This is the reason for keeping
+misc_register() at the beginining of the init function.
+
 > 
-> This can be moved out of the if/else if you make the following change:
+> That will avoid the need to unregister this again in all
+> the error-exit paths and also fixes a possible deadlock.
 > 
->>   		am->prev_msr = msr_val;
->>   	} else {
->> -		*val = msr_val;
->> +		*val = msr_val * hw_res->mon_scale;
+
+Agree. But, unless we create another device locally, I don't
+think we can avoid this. Do you prefer this approach?
+
+> Right now you possibly have:
 > 
-> chunks = msr_val;
+> 1. probe() locks attestation_lock
+> 2. probe() registers misc-device
+> 3. userspace calls tdx_attest_ioctl
+> 4. tdx_attest_ioctl blocks waiting for attestastion_lock
+> 5. Something goes wrong in probe, probe calls
+>     misc_deregister()
+> 6. misc_deregister waits for the ioctl to finish
+> 7. deadlock
 > 
->>   	}
+> I'm not sure about 6, but if 6 does not happen then
+> instead we now have tdx_attest_ioctl running
+> after the misc_deregister, with tdquote_data and
+> tdreport_data as NULL, or pointing to free-ed memory
+> leading to various crash scenarios.
 
-Sure, I guess it makes sense to only set *val in one place.
+Makes sense. But as I have mentioned above, we have reason
+for keeping the misc_register() at the begining of the
+init function.
 
->>   
->>   	return 0;
->> @@ -400,15 +397,14 @@ static u64 __mon_event_count(u32 rmid, struct rmid_read *rr)
->>    */
->>   static void mbm_bw_count(u32 rmid, struct rmid_read *rr)
->>   {
->> -	struct rdt_hw_resource *hw_res = resctrl_to_arch_res(rr->r);
->>   	struct mbm_state *m = &rr->d->mbm_local[rmid];
->> -	u64 cur_bw, chunks, cur_chunks;
->> +	u64 cur_bw, bytes, cur_bytes;
->>   
->> -	cur_chunks = rr->val;
->> -	chunks = cur_chunks - m->prev_bw_chunks;
->> -	m->prev_bw_chunks = cur_chunks;
->> +	cur_bytes = rr->val;
->> +	bytes = cur_bytes - m->prev_bw_bytes;
->> +	m->prev_bw_bytes = cur_bytes;
->>   
->> -	cur_bw = (chunks * hw_res->mon_scale) >> 20;
->> +	cur_bw = bytes >> 20;
+One way to avoid this deadlock is to use global initalization
+check.
+
+--- a/drivers/platform/x86/intel/tdx/intel_tdx_attest.c
++++ b/drivers/platform/x86/intel/tdx/intel_tdx_attest.c
+@@ -48,6 +48,8 @@ static void *tdreport_data;
+  /* DMA handle used to allocate and free tdquote DMA buffer */
+  dma_addr_t tdquote_dma_handle;
+
++static bool device_initialized;
++
+  static void attestation_callback_handler(void)
+  {
+         complete(&attestation_done);
+@@ -60,6 +62,9 @@ static long tdx_attest_ioctl(struct file *file, 
+unsigned int cmd,
+         struct tdx_gen_quote tdquote_req;
+         long ret = 0;
+
++       if (!device_initialized)
++               return -ENODEV;
++
+         mutex_lock(&attestation_lock);
+
+         switch (cmd) {
+@@ -191,6 +196,8 @@ static int __init tdx_attest_init(void)
+
+         mutex_unlock(&attestation_lock);
+
++       device_initialized = true;
++
+         pr_debug("module initialization success\n");
+
+         return 0;
+
+Please let me know your comment on above solution.
+
 > 
-> 'bytes / SZ_1M' would be more readable and any decent compiler should
-> optimize a power of 2 divide. But maybe that's a separate change as
-> there are other cases of bytes to MB.
+> TL;DR: you must always delay registering any
+> interfaces for userspace until your code is
+> ready to deal with userspace calls.
+> 
+> Regards,
+> 
+> Hans
+> 
+> p.s.
+> 
+> As I mentioned with v1:
+> 
+> 
 
-I agree its more readable. As I've touched this one, I'll change it.
-
-
-Thanks,
-
-James
+-- 
+Sathyanarayanan Kuppuswamy
+Linux Kernel Developer
