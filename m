@@ -2,116 +2,243 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3109C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:08:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D902C4167B
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:08:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379597AbiDDWGt (ORCPT
+        id S1379988AbiDDWHF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 18:06:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44084 "EHLO
+        Mon, 4 Apr 2022 18:07:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380204AbiDDTOO (ORCPT
+        with ESMTP id S1380061AbiDDSvc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 15:14:14 -0400
-Received: from mail-ot1-x334.google.com (mail-ot1-x334.google.com [IPv6:2607:f8b0:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A660377E3
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 12:12:17 -0700 (PDT)
-Received: by mail-ot1-x334.google.com with SMTP id i11-20020a9d4a8b000000b005cda3b9754aso7870526otf.12
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 12:12:17 -0700 (PDT)
+        Mon, 4 Apr 2022 14:51:32 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D9693137D;
+        Mon,  4 Apr 2022 11:49:34 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id r13so21892350ejd.5;
+        Mon, 04 Apr 2022 11:49:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=HaBSCtvM0Wy0SP5zUFXCSh2FNwBC2ZpaaXakEoGwFXA=;
-        b=QRbaJLGqfSytgeLDMDaMo3pFIvgnJhK7msg48BshQ/1jFwC2lmeFIpeANmoKV1C0Dh
-         QmZjrgbS5ILg8xTOkr/r9cRrhri5vMI0bOo6Sj7Zhay+EAnjeM5tHaAHiSDnO6ippfYC
-         SNuYSPC01YTnGkFxL2M9JzpVppdEvEyc1sd+n9sMfgFDDEeH2msq14bKRtHb3gUfpuM4
-         j6QBQ4pB3LUxFwi1zJmuMLj30FRsqd1iGipjHqua8F0j9obgvzV+H8yVvYb1Y/IOSpCd
-         KL37R65BysmpaksgZOIkWdkcLEcTXU0SFFWmWBDUrla9NhEuBcGpoqSgC+Rh7RKfq7M7
-         GAyA==
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=3ZJa7P2AbXCXeW6xvXsCiP3LWm5yyogWWr/a7zJOtNM=;
+        b=Z2O7Cf61jq3MA+6JmnvTQucNZTDvkuC3L31nRoKLs+MYgic7gmyFaIZd/dkFh5aBSy
+         yybjMXv34DiHGp70+T/er+yow225iYtDeGfvYYHH7UtDRGN3mabZEzCR9lIHvxz4c+E7
+         SYW9CCKPeFKOWv6xQBwvAynEKPQ+Eow2WweiX3V6MS0T7jNQpEuWY9sc5o6SgK42iIOh
+         /OJbRv6fF4KO96xoSVcUArV9dohPkNn0SpXXnfLHufCv3crlrdc5rLXY/u8kjI98G1oV
+         yOYovniIhXr838pa8UYXLhCPqpW+4Cda0gOXT5SGG+hbrzmo+UMSB7R3QxkcybHRe5dy
+         SmPw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=HaBSCtvM0Wy0SP5zUFXCSh2FNwBC2ZpaaXakEoGwFXA=;
-        b=Wa8G+9gFcaB+l56ZhlzVsOUZ6RX7oDn+pY4Kzh+V475upOBNqcJtcemBUfnnV/nyAz
-         sY2kR4PNiRhvII+7n15XtMGHxprihwUgwBRWcOHQmlq0cRUHk4zPP3lM8N9SipbhvUEp
-         LujlgABS+AC/b60S07ipX0Ny3ZwueJtd2/WvqZLkrpiak9D5E9kQMaGRMMmqumBYM+oy
-         4REnjgxhRgORRLOnHlGNQLP+gzHv28rHLHNnYGQq6C5k+gGHJgpWWsNxG6LPpaMbGANI
-         vkf2I5J7jW8G8WeiIxHlN4sHJxH3fP51g+bG1uywGafrFEbQEIjoHgNEoR5iiy5ibqLe
-         wW/A==
-X-Gm-Message-State: AOAM530UOMh83Uqh2wyxBWghIsEmNlh/dvCUdzF+riZprcatpSygOUUK
-        vEBV9jABrXvNNuHAgceH9Kv3u9t+G5k3kLRZ17JJoA==
-X-Google-Smtp-Source: ABdhPJx53qVjugPFtagCZ/vg5SciUqxZhWJ8+WqD50ec1zmxvdqxeCVjEmx4wXSm3ZFYN/d0UAvZ/O81KzKS1ewGUc0=
-X-Received: by 2002:a9d:1729:0:b0:5b2:3828:c84c with SMTP id
- i41-20020a9d1729000000b005b23828c84cmr406189ota.362.1649099535465; Mon, 04
- Apr 2022 12:12:15 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=3ZJa7P2AbXCXeW6xvXsCiP3LWm5yyogWWr/a7zJOtNM=;
+        b=BrxjOJwOfNrScpflHofERFa6FUHY53GlXbQnWlr65H3uXXm0X6uCF61Tqh6GW+0RQ8
+         sD0UPRT9j+iyPuQvhcyGJUfhwOZe3jEFNPdUnMPVnbwr9wZUKX8Xa8121Y13Gfqoi6Oj
+         M7Oi8V4ncCObKXxFh9ye5WHeryGFXXFfXaUAVHnFOHf7MzXbdeaebfCE3y0RJs2EAqYx
+         GfYs47q2c2M9rInlVS+uCtoKPD3X9MfWLZE+2h2mIh9AefslnV4+SZOzA89la3QyU4z7
+         2udSjbjcrN/rvPB8B3q8xRBzBK/s07HsqQGmA9FIo9pkXGLJLCZAWOlaRmtq6Kz3OA9f
+         J6rQ==
+X-Gm-Message-State: AOAM533OpsgQPuenpmXD6eai4CyA5PUNAfQLJxyzfYYdPGFRRP2Ssmcs
+        1OBSSTtVMFMC/kRf5YxHWSI=
+X-Google-Smtp-Source: ABdhPJy3+nGdpgaPHslQ1iHZwzN+x4swcFMaonp/MMXGm2yUuNXTbNdm6Ti54jFv3tSh8i1d4eM73w==
+X-Received: by 2002:a17:907:8a01:b0:6e5:1f4:afa with SMTP id sc1-20020a1709078a0100b006e501f40afamr1452481ejc.691.1649098172495;
+        Mon, 04 Apr 2022 11:49:32 -0700 (PDT)
+Received: from darkstar.example.org (host-79-21-204-193.retail.telecomitalia.it. [79.21.204.193])
+        by smtp.gmail.com with ESMTPSA id b14-20020a170906d10e00b006e803595901sm375275ejz.172.2022.04.04.11.49.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Apr 2022 11:49:31 -0700 (PDT)
+Date:   Mon, 4 Apr 2022 20:49:30 +0200
+From:   Michele Ballabio <ballabio.m@gmail.com>
+To:     Thorsten Leemhuis <regressions@leemhuis.info>
+Cc:     linux-kernel@vger.kernel.org, regressions@lists.linux.dev,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>
+Subject: Re: Possible regression in 5.16-stable
+Message-ID: <20220404204854.22338b7d@darkstar.example.org>
+In-Reply-To: <9fd4d3df-ef82-4a9b-1ba9-289181eb0d0a@leemhuis.info>
+References: <20220403132152.23330380@darkstar.example.org>
+        <9fd4d3df-ef82-4a9b-1ba9-289181eb0d0a@leemhuis.info>
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-slackware-linux-gnu)
 MIME-Version: 1.0
-From:   Evan Green <evgreen@google.com>
-Date:   Mon, 4 Apr 2022 12:11:39 -0700
-Message-ID: <CAE=gft4a-QL82iFJE_xRQ3JrMmz-KZKWREtz=MghhjFbJeK=8A@mail.gmail.com>
-Subject: Lost MSIs during hibernate
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Rajat Jain <rajatja@chromium.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Thomas et al,
-To my surprise, I'm back with another MSI problem, and hoping to get
-some advice on how to approach fixing it.
+On Mon, 4 Apr 2022 09:12:41 +0200
+Thorsten Leemhuis <regressions@leemhuis.info> wrote:
 
-Summary: I think MSIs are lost across the hibernate freeze/thaw
-transition on the way down because __pci_write_msi_msg() drops the
-write if the device is not in D0.
+> > Kernels 5.16.10 do not have the following regression, 5.16.11-16  
+> 
+> 5.16.11-16 sounds like this is a distro kernel that might or might not
+> be patched. Or is 11-16 just meant as a range. Could you clarify?
 
-Details:
-I've been playing with hibernation on an Alderlake device, and have
-been running into problems where the freeze/thaw transition that
-should generate the hibernate image ends up hanging (eg before we even
-start writing the image out to disk). When it hangs I find it in
-usb_kill_urb(), an error path that comes out of a failed attempt to
-send a control packet to a hub port coming from usb_resume().
-Occasionally, I see the classic "HC died; cleaning up" message
-instead. XHCI in general appears to be very sensitive to lost MSIs, so
-I started down that road.
+Sorry, I meant the problem occurred on 5.16.11, .12 and .16.
 
-I printed the three major paths through __pci_write_msi_msg() so I
-could see what the XHCI controller was ending up with when it hung.
-You can see a full boot and hibernate attempt sequence that results in
-a hang here (sorry there's other cruft in there):
+> > do. My machine would freeze completely about once a week, no oops in
+> > the logs, sysrq won't work either. I managed to log only the
+> > following (and only once) with netconsole, while running kernel
+> > 5.16.16. I could not reproduce the problem since.  
+> 
+> Hmmm. Of course ideally all regressions get fixed, but that beeing
+> said: 5.16 will likely be EOL in round about two weeks anway and
+> getting to the root of this problem might take some time and effort.
+> That's why I'm not sure myself what's the best way forward here.
 
-https://pastebin.com/PFd3x1k0
+I'm aware of this, but given the nature of the problem and how difficult
+it is to reproduce, I thought it was better to report it.
+Meanwhile I'm now on 5.17.1: let's say this is on hold until someone
+has a similar problem with 5.17.x.
 
-What worries me is those IRQ "no longer affine" messages, as well as
-my "EVAN don't touch hw" prints, indicating that requests to change
-the MSI are being dropped. These ignored requests are coming in when
-we try to migrate all IRQs off of the non-boot CPU, and they get
-ignored because all devices are "frozen" at this point, and presumably
-not in D0.
+> Maybe testing 5.17 to see if the problem still shows up would be
+> good; bisection would help, but I guess that will be hard here. But I
+> guess there is one thing that could help: could you maybe decode the
+> panic you have as described in this document:
+> https://www.kernel.org/doc/html/latest/admin-guide/reporting-issues.html
 
-So my theory is XHCI for whatever reason boots affinitized to a
-non-boot CPU. We go through pci_pm_freeze(), then try to take the
-non-boot CPUs down. The request to move the MSI off of the dead CPU is
-ignored, and then XHCI generates an interrupt during the period while
-that non-boot CPU is dead.
+Thanks, I tried but I'm not sure it's of any help:
 
-To further try and prove that theory, I wrote a script to do the
-hibernate prepare image step in a loop, but messed with XHCI's IRQ
-affinity beforehand. If I move the IRQ to core 0, so far I have never
-seen a hang. But if I move it to another core, I can usually get a
-hang in the first attempt. I also very occasionally see wifi splats
-when trying this, and those "no longer affine" prints are all the wifi
-queue IRQs. So I think a wifi packet coming in at the wrong time can
-do the same thing.
+----------
+0,1493,12767657117,-;traps: PANIC: double fault, error_code: 0x0
+4,1494,12767657121,-;double fault: 0000 [#1] PREEMPT SMP NOPTI
+4,1496,12767657126,-;Hardware name: System manufacturer System Product Name/PRIME B350-PLUS, BIOS 4011 04/19/2018
+4,1497,12767657127,-;RIP: entry_SYSCALL_64+0x3/0x29 
+4,1498,12767657133,-;Code: cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc 0f 01 f8 <65> 48 89 24 25 14 60 00 00 eb 12 0f 20 dc 0f 1f 44 00 00 48 81 e4
+All code
+========
+   0:	cc                   	int3   
+   1:	cc                   	int3   
+   2:	cc                   	int3   
+   3:	cc                   	int3   
+   4:	cc                   	int3   
+   5:	cc                   	int3   
+   6:	cc                   	int3   
+   7:	cc                   	int3   
+   8:	cc                   	int3   
+   9:	cc                   	int3   
+   a:	cc                   	int3   
+   b:	cc                   	int3   
+   c:	cc                   	int3   
+   d:	cc                   	int3   
+   e:	cc                   	int3   
+   f:	cc                   	int3   
+  10:	cc                   	int3   
+  11:	cc                   	int3   
+  12:	cc                   	int3   
+  13:	cc                   	int3   
+  14:	cc                   	int3   
+  15:	cc                   	int3   
+  16:	cc                   	int3   
+  17:	cc                   	int3   
+  18:	cc                   	int3   
+  19:	cc                   	int3   
+  1a:	cc                   	int3   
+  1b:	cc                   	int3   
+  1c:	cc                   	int3   
+  1d:	cc                   	int3   
+  1e:	cc                   	int3   
+  1f:	cc                   	int3   
+  20:	cc                   	int3   
+  21:	cc                   	int3   
+  22:	cc                   	int3   
+  23:	cc                   	int3   
+  24:	cc                   	int3   
+  25:	cc                   	int3   
+  26:	cc                   	int3   
+  27:	0f 01 f8             	swapgs 
+  2a:*	65 48 89 24 25 14 60 	mov    %rsp,%gs:0x6014		<-- trapping instruction
+  31:	00 00 
+  33:	eb 12                	jmp    0x47
+  35:	0f 20 dc             	mov    %cr3,%rsp
+  38:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
+  3d:	48                   	rex.W
+  3e:	81                   	.byte 0x81
+  3f:	e4                   	.byte 0xe4
 
-I wanted to see what thoughts you might have on this. Should I try to
-make a patch that moves all IRQs to CPU 0 *before* the devices all
-freeze? Sounds a little unpleasant. Or should PCI be doing something
-different to avoid this combination of "you're not allowed to modify
-my MSIs, but I might still generate interrupts that must not be lost"?
+Code starting with the faulting instruction
+===========================================
+   0:	65 48 89 24 25 14 60 	mov    %rsp,%gs:0x6014
+   7:	00 00 
+   9:	eb 12                	jmp    0x1d
+   b:	0f 20 dc             	mov    %cr3,%rsp
+   e:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
+  13:	48                   	rex.W
+  14:	81                   	.byte 0x81
+  15:	e4                   	.byte 0xe4
+4,1499,12767657134,-;RSP: 0018:00007f2a8bcbd438 EFLAGS: 00010002
+4,1500,12767657136,-;RAX: 00000000000000ca RBX: 000000000000005d RCX: 00007f2aa45e8aab
+4,1501,12767657138,-;RDX: 0000000000000002 RSI: 0000000000000080 RDI: 00007f2aa4400018
+4,1502,12767657139,-;RBP: 00007f2aa4400018 R08: 0000000000000000 R09: 00007f2a8ed00000
+4,1503,12767657140,-;R10: 0000000000000000 R11: 0000000000000282 R12: 00000000000000a8
+4,1504,12767657141,-;R13: 0000000000000003 R14: 0000000000000030 R15: 00007f2aa4400000
+4,1505,12767657142,-;FS:  00007f2a8bcbe640(0000) GS:ffff8b110ed00000(0000) knlGS:0000000000000000
+4,1506,12767657143,-;CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+4,1507,12767657144,-;CR2: 00007f2a8bcbd428 CR3: 00000002953f2000 CR4: 00000000003506e0
+4,1508,12767657146,-;Call Trace:
+4,1509,12767657146,-,ncfrag=0/986;Modules linked in: nfnetlink_queue nfnetlink_log nfnetlink bluetooth ecdh_generic ecc netconsole uas usb_storage snd_seq_dummy snd_hrtimer snd_seq snd_seq_device iptable_filter xt_tcpudp ip_tables
+ x_tables hwmon_vid 8021q garp mrp stp llc ipv6 fuse rt73usb rt2x00usb rt2x00lib mac80211 hid_logitech cfg80211 joydev hid_generic usbhid hid amdgpu intel_rapl_msr iommu_v2 intel_rapl_common gpu_sched eeepc_wmi asus_wmi drm_ttm_helper
+ ttm platform_profile battery drm_kms_helper sparse_keymap edac_mce_amd rfkill drm kvm_amd snd_hda_codec_realtek video snd_hda_codec_generic ledtrig_audio kvm snd_hda_codec_hdmi snd_hda_intel agpgart snd_intel_dspcfg snd_intel_sdw_acpi
+ wmi_bmof snd_hda_codec evdev i2c_algo_bit snd_hda_core fb_sys_fops syscopyarea sysfillrect sysimgblt snd_hwdep mfd_core snd_pcm r8169 irqbypass snd_timer realtek snd xhci_pci xhci_pci_renesas xhci_hcd mdio_devres crct10dif_pclmul
+ crc32_pclmul i2c_piix4 soundcore ccp libphy ghash_clmulni_intel i2c_co4,1509,12767657146,-,ncfrag=966/986;re rapl k10temp wmi
+4,1510,12767657189,c; acpi_cpufreq gpio_amdpt button gpio_generic loop [last unloaded: netconsole]
+4,1511,12767657207,-;------------[ cut here ]------------
+4,1512,12767657207,-;WARNING: CPU: 4 PID: 16786 at kernel/softirq.c:362 __local_bh_enable_ip+0x43/0x70 
+4,1513,12767657212,-,ncfrag=0/986;Modules linked in: nfnetlink_queue nfnetlink_log nfnetlink bluetooth ecdh_generic ecc netconsole uas usb_storage snd_seq_dummy snd_hrtimer snd_seq snd_seq_device iptable_filter xt_tcpudp ip_tables
+ x_tables hwmon_vid 8021q garp mrp stp llc ipv6 fuse rt73usb rt2x00usb rt2x00lib mac80211 hid_logitech cfg80211 joydev hid_generic usbhid hid amdgpu intel_rapl_msr iommu_v2 intel_rapl_common gpu_sched eeepc_wmi asus_wmi drm_ttm_helper
+ ttm platform_profile battery drm_kms_helper sparse_keymap edac_mce_amd rfkill drm kvm_amd snd_hda_codec_realtek video snd_hda_codec_generic ledtrig_audio kvm snd_hda_codec_hdmi snd_hda_intel agpgart snd_intel_dspcfg snd_intel_sdw_acpi
+ wmi_bmof snd_hda_codec evdev i2c_algo_bit snd_hda_core fb_sys_fops syscopyarea sysfillrect sysimgblt snd_hwdep mfd_core snd_pcm r8169 irqbypass snd_timer realtek snd xhci_pci xhci_pci_renesas xhci_hcd mdio_devres crct10dif_pclmul
+ crc32_pclmul i2c_piix4 soundcore ccp libphy ghash_clmulni_intel i2c_co4,1513,12767657212,-,ncfrag=966/986;re rapl k10temp wmi
+4,1514,12767657248,c; acpi_cpufreq gpio_amdpt button gpio_generic loop [last unloaded: netconsole]
+4,1516,12767657254,-;Hardware name: System manufacturer System Product Name/PRIME B350-PLUS, BIOS 4011 04/19/2018
+4,1517,12767657255,-;RIP: __local_bh_enable_ip+0x43/0x70 
+4,1518,12767657257,-;Code: 01 35 61 1d f3 7d 65 8b 05 5a 1d f3 7d a9 00 ff ff 00 74 1a bf 01 00 00 00 e8 99 b5 02 00 65 8b 05 42 1d f3 7d 85 c0 74 25 c3 <0f> 0b eb cc 48 c7 c7 d9 53 42 83 e8 4d ec a6 00 65 66 8b 05 25 19
+All code
+========
+   0:	01 35 61 1d f3 7d    	add    %esi,0x7df31d61(%rip)        # 0x7df31d67
+   6:	65 8b 05 5a 1d f3 7d 	mov    %gs:0x7df31d5a(%rip),%eax        # 0x7df31d67
+   d:	a9 00 ff ff 00       	test   $0xffff00,%eax
+  12:	74 1a                	je     0x2e
+  14:	bf 01 00 00 00       	mov    $0x1,%edi
+  19:	e8 99 b5 02 00       	call   0x2b5b7
+  1e:	65 8b 05 42 1d f3 7d 	mov    %gs:0x7df31d42(%rip),%eax        # 0x7df31d67
+  25:	85 c0                	test   %eax,%eax
+  27:	74 25                	je     0x4e
+  29:	c3                   	ret    
+  2a:*	0f 0b                	ud2    		<-- trapping instruction
+  2c:	eb cc                	jmp    0xfffffffffffffffa
+  2e:	48 c7 c7 d9 53 42 83 	mov    $0xffffffff834253d9,%rdi
+  35:	e8 4d ec a6 00       	call   0xa6ec87
+  3a:	65                   	gs
+  3b:	66                   	data16
+  3c:	8b                   	.byte 0x8b
+  3d:	05                   	.byte 0x5
+  3e:	25                   	.byte 0x25
+  3f:	19                   	.byte 0x19
 
--Evan
+Code starting with the faulting instruction
+===========================================
+   0:	0f 0b                	ud2    
+   2:	eb cc                	jmp    0xffffffffffffffd0
+   4:	48 c7 c7 d9 53 42 83 	mov    $0xffffffff834253d9,%rdi
+   b:	e8 4d ec a6 00       	call   0xa6ec5d
+  10:	65                   	gs
+  11:	66                   	data16
+  12:	8b                   	.byte 0x8b
+  13:	05                   	.byte 0x5
+  14:	25                   	.byte 0x25
+  15:	19                   	.byte 0x19
+4,1519,12767657259,-;RSP: 0018:fffffe00000f69a0 EFLAGS: 00010006
+4,1520,12767657260,-;RAX: 0000000080110203 RBX: ffff8b0e05bd2000 RCX: ffff8b0e05bd2000
+4,1521,12767657261,-;RDX: ffff8b0e0ac28000 RSI: 0000000000000201 RDI: ffffffffc12f12c3
+4,1522,12767657262,-;RBP: ffff8b0e0c977a30 R08: fffffe00000f69e8 R09: ffff8b0e0d085000
+4,1523,12767657263,-;R10: ffff8b0e03234300 R11: 0000000000000fff R12: ffff8b0e0d0850d0
+4,1524,12767657264,-;R13: fffffe00000f69e8 R14: ffff8b0e0ddfc980 R15: ffff8b0e0d085a58
+4,1525,12767657265,-;FS:  00007f2a8bcbe640(0000) GS:ffff8b110ed00000(0000) knlGS:0000000000000000
+4,1526,12767657266,-;CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+----------
+
+Thanks,
+    Michele Ballabio
+
