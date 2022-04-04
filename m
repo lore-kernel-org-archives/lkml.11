@@ -2,134 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E38CC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84A6AC43219
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:49:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378783AbiDDVqs (ORCPT
+        id S1379260AbiDDVrE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:46:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43506 "EHLO
+        Mon, 4 Apr 2022 17:47:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380403AbiDDUER (ORCPT
+        with ESMTP id S1378994AbiDDQQ7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 16:04:17 -0400
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam07on2077.outbound.protection.outlook.com [40.107.212.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8802B30F57;
-        Mon,  4 Apr 2022 13:02:19 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=aed1xY76nschRfiHriCNKQacMsb/uQ5xwmsxvXID+ixQPAV3U2+GENsR1Wt/PREqu/IKxW+lRhEmJyme6C/TZMNfSMg359QKJdD10akYsaoeUUwqIzNNU3yCmQedCu8sRgqps4b+L1rz5kLhLUpVTbNLrx86fMPH1rxTigeLiIY7HY6AfWESpgVwQx73E6stjEHabtkK4Sc0z/qRdVEGehcbK6/ovkJSKCmIX+4DnxHaHwNbxwFrrq8xdzLsLMDwQP9vNwQEBW3wWWZMHZBIww8NepC2LZnBn7bWIArffV1oeYxfmLn6VGYI8wVU1GtEnWfAj5aGdLMaybVyKZMebQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=KvKJUxGCVwCOv/sIfseWhgW89G83DX52GAsINugKg+w=;
- b=KBM4UhKn2WcHUWDtTmIoaydzDO98RfceTIV7Tffa8pB3sMGN1F72BDb9x0yqqCNumZ5MM+NrGjy1oYoXC+Sk9ki0PDU/8vF3f3koVhAng58I38tfL40G/ur+3x3c2yVzlFsiNPTJBY5XpUhYZosWm+6Rt2B0yt0OTuiQaz9q+pq3veQUnCG4EJ6rvX2Mq2Ahaf5o8NRr0No9IBfhaVvC9GHtTcSfOtUvA8kFVpRTtux9i8WLyku+XKrI9rUJB2ln64NxKmkDSNnoa3k+l4lNSIdt57K4ptjMSc5Qth/OctMihZjlsrUvUp9yVVNDGgpd3Z+lnM+EZeV4agSa4SuHHQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=opensource.wdc.com smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KvKJUxGCVwCOv/sIfseWhgW89G83DX52GAsINugKg+w=;
- b=N9ZPa2GwhmgkLZcSeVKgtpC7/skIQAJEQM4klcatAWH3j70C8I9GN9y5GU3ErVJ11n3naD3Dea2kK3fuLeB7TbMy3G/701KzIEPnNPVAiYk39oyC97SPV9LKiiGne4R5QG/llO00zvmCHUU6bTnA30SUauTTCRPh5xPR5/H2tRk=
-Received: from DS7PR07CA0023.namprd07.prod.outlook.com (2603:10b6:5:3af::28)
- by CH0PR12MB5137.namprd12.prod.outlook.com (2603:10b6:610:bc::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Mon, 4 Apr
- 2022 20:02:16 +0000
-Received: from DM6NAM11FT068.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:3af:cafe::35) by DS7PR07CA0023.outlook.office365.com
- (2603:10b6:5:3af::28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31 via Frontend
- Transport; Mon, 4 Apr 2022 20:02:16 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- DM6NAM11FT068.mail.protection.outlook.com (10.13.173.67) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5123.19 via Frontend Transport; Mon, 4 Apr 2022 20:02:16 +0000
-Received: from AUS-LX-MLIMONCI.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 4 Apr
- 2022 15:02:15 -0500
-From:   Mario Limonciello <mario.limonciello@amd.com>
-To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>
-CC:     "open list:LIBATA SUBSYSTEM (Serial and Parallel ATA drivers)" 
-        <linux-ide@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        <hdegoede@redhat.com>,
-        Mario Limonciello <mario.limonciello@amd.com>
-Subject: [PATCH v2 1/2] ata: Kconfig: Update SATA_LPM_POLICY default to "3"
-Date:   Mon, 4 Apr 2022 15:02:01 -0500
-Message-ID: <20220404200202.9388-1-mario.limonciello@amd.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 4 Apr 2022 12:16:59 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EEC131922
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 09:15:00 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id nt14-20020a17090b248e00b001ca601046a4so5516631pjb.0
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 09:15:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=UDaFc/gCWuOOIEIKSF8jU4oDzdusj5ZcLS5tUBZDl7k=;
+        b=frLsqAzRoYQqPwY+LRr2+HLI4jsKjK8C88V/3rKXepEUVWcXYPUnN5f9Pbs3dFMgDM
+         Fc30h7pCDhpRwEn5077MIjbu8eQViUZ4qp9RmklJtufdy1qVzWiDv1Gf/LObmGzWqjTS
+         HCWymOlS/s7S1a2yT6yWZEAkvMUp+M3Hn8h4fTif3xSBCHn8nTYGCaCA67mey8IOTRKj
+         vgrzwhMT9QUNrAUPk8GLVatbpq5t5kFHea5ElJA4/aZLkOiQZjJu3Isr9yB1FhxvX0wn
+         zipj7LrlHsMAnXmylLn31UO3wAqFnLGS4noeL4O/zzmPw6SE2DvaX+X/D9LvxWpUoqdH
+         nPfQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=UDaFc/gCWuOOIEIKSF8jU4oDzdusj5ZcLS5tUBZDl7k=;
+        b=Plm0ijT7p7uOnrS3LzJ7bxIfCG150rqP4mCftTBDAUmmWwAStskTDjNkJXL8PNR1RF
+         MQ1P02Rq5zV8enmNOWA0UxJYEjaiXAl2ryvAWOfe3U3oZZKxqgCHp655UCR+QzY5K+Io
+         F1W9uXG3NpwMOpj77sZfZYrWnUEQK122WCR5acCpI0F9v+lI84okp+SHQqLCXBsVOO/b
+         SQMThI5gP9UNfGvN1NNmLf7mzQUHfcVmLV2NJEC3sVaZEDPpZm6MlGOFMmFuq951mq5P
+         59OEbLaFe40P+scmEK3C/jSzAxYz6rEcu5Ruz9TUICI+/kXj2M04nIyE3OO0jnqPkc6B
+         oF4A==
+X-Gm-Message-State: AOAM533jkM2nS3tCy0KkzRVOUsmJYubWrUhTs/7USMO+tVYnrPKgXiQq
+        WthyN3Z13d1SERq31rVoaBRI1w==
+X-Google-Smtp-Source: ABdhPJxce26+IV6N/hp+MS7aKDXMfZboRNVcH0s2b8IdhwQqCgufgWGYQ6gNex6ufjHM6ZKhk0Gwlg==
+X-Received: by 2002:a17:902:7615:b0:156:1859:2d00 with SMTP id k21-20020a170902761500b0015618592d00mr612139pll.126.1649088898855;
+        Mon, 04 Apr 2022 09:14:58 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id q18-20020aa78432000000b004fb0a5aa2c7sm13195487pfn.183.2022.04.04.09.14.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Apr 2022 09:14:58 -0700 (PDT)
+Date:   Mon, 4 Apr 2022 16:14:54 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Maxim Levitsky <mlevitsk@redhat.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Maciej S . Szmigiero" <maciej.szmigiero@oracle.com>
+Subject: Re: [PATCH 7/8] KVM: x86: Trace re-injected exceptions
+Message-ID: <YksZfqZr4SyEUk6H@google.com>
+References: <20220402010903.727604-1-seanjc@google.com>
+ <20220402010903.727604-8-seanjc@google.com>
+ <df8e53474fb161f83c8cb8b9816995b23798545b.camel@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: dba1677e-7ae1-42f2-0f25-08da167604a0
-X-MS-TrafficTypeDiagnostic: CH0PR12MB5137:EE_
-X-Microsoft-Antispam-PRVS: <CH0PR12MB51371CDE56AEC785729FD44AE2E59@CH0PR12MB5137.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: FmN9DVfXttgWzrmFI/3UCIpTntwYdxZE/jBvV630w83y6D7gxDeHbM5h1kjIrA9H31sSFoVEPdK1xOrXONOMXTEJ5WaDgHHxMB92Z3/DyVLPy9Tgt6fGx5IJ3tpw2cp7h1QHUA6N4dmuTzN0NGSgxUANonsO33VOf9wAPLxLJIeuKLTdJkMpx2ox83lDSJsNaDSmDzHPrvowqB6lsqeKUPoHnlVjAd9yhikxnnw2tReq3yXGeMS/Y4XJOo0zlwE3tmwi5zjB2DdsVj+nVf4igDrI2u8Xd4UViH2dSxPewmMY2BQeOSXefGjWQT8H+xw2LXK983M+zxofblXWZ5BHDTqtqLEg2Up7Px/xqClTfsFUNpXutPe49USKmCxt+tTFBfZwGBLMW4G3WrZyV7RzwraPUu3A6wqVn0grwlJJxOWSUplDKzVrU+aYL5aLBtHqnv31QD7HFHD3i6ziuq0f62WRzwgNT9pnbpeCetX0LwK1+IA6HKjGqmekkPspLE1C/8q3cvd9GZFlQy0d5Q8aNesOGB6m3wwhE0lj0lbM32A1iCRaTKeQpdOJYqmKffjrZ1sqynoYJQm7+Pj5fL90ZKscIbuBp9cqGreZmP4o3nCHdhtTOHmWXb3Ut0UrqWBv0PZUYTtXA5icNMZlzsmeEufOS80gG3/AAmGNSmMbx4tcO4H2vZs9jlHfrmvU1Pb4ZoW7FV0rZtpX18mq5RKOBg==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(36840700001)(46966006)(4326008)(356005)(40460700003)(8676002)(426003)(336012)(81166007)(70586007)(70206006)(2616005)(8936002)(86362001)(7696005)(316002)(16526019)(82310400004)(15650500001)(2906002)(5660300002)(508600001)(44832011)(1076003)(6916009)(36756003)(54906003)(47076005)(6666004)(83380400001)(26005)(186003)(36860700001)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Apr 2022 20:02:16.4803
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: dba1677e-7ae1-42f2-0f25-08da167604a0
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT068.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR12MB5137
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <df8e53474fb161f83c8cb8b9816995b23798545b.camel@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SATA_LPM_POLICY is a "new" configuration item, but it was renamed from
-SATA_LPM_MOBILE_POLICY in commit 4dd4d3deb502 ("ata: ahci: Rename
-CONFIG_SATA_LPM_MOBILE_POLICY configuration item")
+On Mon, Apr 04, 2022, Maxim Levitsky wrote:
+> On Sat, 2022-04-02 at 01:09 +0000, Sean Christopherson wrote:
+> > Trace exceptions that are re-injected, not just those that KVM is
+> > injecting for the first time.  Debugging re-injection bugs is painful
+> > enough as is, not having visibility into what KVM is doing only makes
+> > things worse.
+> > 
+> > Signed-off-by: Sean Christopherson <seanjc@google.com>
+> > ---
+> >  arch/x86/kvm/x86.c | 8 ++++----
+> >  1 file changed, 4 insertions(+), 4 deletions(-)
+> > 
+> > diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+> > index 7a066cf92692..384091600bc2 100644
+> > --- a/arch/x86/kvm/x86.c
+> > +++ b/arch/x86/kvm/x86.c
+> > @@ -9382,6 +9382,10 @@ int kvm_check_nested_events(struct kvm_vcpu *vcpu)
+> >  
+> >  static void kvm_inject_exception(struct kvm_vcpu *vcpu)
+> >  {
+> > +	trace_kvm_inj_exception(vcpu->arch.exception.nr,
+> > +				vcpu->arch.exception.has_error_code,
+> > +				vcpu->arch.exception.error_code);
+> > +
+> 
+> Can we use a {new tracepoint / new parameter for this tracepoint} for this to
+> avoid confusion?
 
-Since the configuration item was renamed it was mentioned that people
-might invisibly lose their chosen defaults for it.  This means it's a
-good time to evaluate whether those defaults make sense still.
-
-Historically this was set to "0" to prevent problems with power management
-on very old drives.  However it's been observed that almost all modern
-Linux distributions either set the policy to "3" in the kernel
-configuration or update it to this via userspace policy changes. Update
-the policy default in the kernel to "3" to match that behavior as well.
-
-Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
----
-v1->v2:
- * Rebase on 5.18-rc1
- drivers/ata/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/ata/Kconfig b/drivers/ata/Kconfig
-index e5641e6c52ee..3ffe14057ed2 100644
---- a/drivers/ata/Kconfig
-+++ b/drivers/ata/Kconfig
-@@ -118,7 +118,7 @@ config SATA_AHCI
- config SATA_LPM_POLICY
- 	int "Default SATA Link Power Management policy for low power chipsets"
- 	range 0 4
--	default 0
-+	default 3
- 	depends on SATA_AHCI
- 	help
- 	  Select the Default SATA Link Power Management (LPM) policy to use
--- 
-2.34.1
-
+Good idea, a param to capture re-injection would be very helpful.
