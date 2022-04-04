@@ -2,280 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15C48C35276
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6964DC47093
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:23:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381381AbiDDVW4 (ORCPT
+        id S1381492AbiDDVXM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:22:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36726 "EHLO
+        Mon, 4 Apr 2022 17:23:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379008AbiDDQSd (ORCPT
+        with ESMTP id S1379176AbiDDQk6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 12:18:33 -0400
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BDBB31922
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 09:16:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649088997; x=1680624997;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=RhaIORVqgtJXoKDihME/LCeLAa94zMaiZuSGp63+DmE=;
-  b=dBgxGgHiiZIm5pgE9yRNpn3J9WSmUK6XkUH92PHzCMbW69Phdfm/dmKp
-   v/pb0QJmMlmYf38Oc2+eorMpbHWBvShtQ4lnUYtd236OsLzz+N1pHIaAX
-   gaTpO+dlCMbwI5mk0naz1pt+3kLgjjx40OQU0hfv7RhkjNjI66r1i+flV
-   AkwenL/1u0412YZp10ZyxETjrY3qOFS8PzoyyoAppQaX8ghrrkYsCq5zc
-   vPAUbGNqjdY/jdEdzNg+EspwSffR4jSqrxgFLYr+smIm0fgIk5ydJngtq
-   0TR6VHZdzWMpNk3DWFvl+DTSxhw4T7CRmx1ZOrEdN4jDeIAztjTEFT0nV
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="321247707"
-X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
-   d="scan'208";a="321247707"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:16:22 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
-   d="scan'208";a="523637231"
-Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
-  by orsmga006.jf.intel.com with ESMTP; 04 Apr 2022 09:16:20 -0700
-Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nbPNL-0002Bt-J6;
-        Mon, 04 Apr 2022 16:16:19 +0000
-Date:   Tue, 05 Apr 2022 00:15:45 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [paulmck-rcu:rcu/next] BUILD SUCCESS
- 4a5e50667c63697dbbf9099419ce4ac8d376b099
-Message-ID: <624b19b1.7YYEzQQXRtDXPsR3%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Mon, 4 Apr 2022 12:40:58 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70D551CB09
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 09:39:00 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id d5so18331602lfj.9
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 09:39:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to;
+        bh=f48IzbdBz845MsLZuGRp0JSze2mRq5AWOQgZcmuy9m8=;
+        b=oqABKViXVOmRRp3lNfNO/U0mipIFONFrxC+FmzokdpIugTQFWYCd9A0gdMvNuwvbGv
+         I0SR5USGwRM01uG6iascMUnnpC637ZzqUIIJ81pudOKgF8VhY55akFTBmhO38aGkQRgc
+         fyC1cnVSHkmHv+xfbTCYUm9U2vNtsebL/KAfcC6gBzFUtHrETL60Szk9AFgXFRQkGJrT
+         77GEKMY7s94yNanf8wzo6KcmrgLqNLwCfjzU8zWP67WX9QU7feQwtEY99nGNhg8/ojvv
+         JDh7VLuxGpoWTiE6+p17c49ktcOBdHsI6nSZV2143QKkG7mWE3DXy8JU6X6iwXE7MNAY
+         QarQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to;
+        bh=f48IzbdBz845MsLZuGRp0JSze2mRq5AWOQgZcmuy9m8=;
+        b=Tw3fHqPDw658oZwyTB+Ezhq+VNtPKVqnhFX9KDgRDxzitg/2jNAxncUdVJitV6CWst
+         rkJ+NaCzFoPCIz5Tg65Qyn6slPO2Y5DM67RHMObWvJYO99FC5zlhQ6w7yNb5SJP+xYo1
+         OhgWZS5JxPCq3gHCJ+0LRlDBsfIiHqNpvAjpA67vFz2rAfCOTCtew2AZi1aenucwScvK
+         BYbrsczkptk8hTbgqG0CnBt4RxvZ0TR5mTjvdHR2nbke/sO8fmSlY2N/jD1qQGu4hqmF
+         ebC0Rs46slmVZ9VPMJzan2F3I5ztm5W5Tfcexqk2F92v//5UeXHWvPkqrmEajmAEt/cC
+         Bu4g==
+X-Gm-Message-State: AOAM531dfFilU7xGPqFAIYkS+jtED8MjZYXGM3Gr+kRgm3WFo99z4Uxs
+        opNpSxosGLSmBi3ksG6GO9Q=
+X-Google-Smtp-Source: ABdhPJyhDsVJM31ary8b+4NPbVlKXCSWqF8poo6kekmka4GL7V0gVe226UZh9QzWOMxMj0dm4s5Ueg==
+X-Received: by 2002:a05:6512:4006:b0:44a:7434:9829 with SMTP id br6-20020a056512400600b0044a74349829mr187616lfb.661.1649090338007;
+        Mon, 04 Apr 2022 09:38:58 -0700 (PDT)
+Received: from [192.168.1.11] ([46.235.67.247])
+        by smtp.gmail.com with ESMTPSA id h14-20020a2e900e000000b0024b14fa6038sm513048ljg.12.2022.04.04.09.38.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 04 Apr 2022 09:38:57 -0700 (PDT)
+Message-ID: <3c8b6454-6b52-fe62-8db1-c76bdbeb2df0@gmail.com>
+Date:   Mon, 4 Apr 2022 19:38:55 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: staging: r8188eu: how to handle nested mutex under spinlock
+Content-Language: en-US
+To:     David Laight <David.Laight@ACULAB.COM>,
+        Michael Straube <straube.linux@gmail.com>,
+        "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        Larry Finger <Larry.Finger@lwfinger.net>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        "open list:STAGING SUBSYSTEM" <linux-staging@lists.linux.dev>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <356c24cf-625b-eea2-2c04-ce132d881cac@gmail.com>
+ <4412825.cEBGB3zze1@leap> <26ac4c2d-91cf-656d-2b7e-21a95e500e70@gmail.com>
+ <2029549.KlZ2vcFHjT@leap> <7d3d23c3-1839-3e6a-27bf-85bad384e5e4@gmail.com>
+ <942c0fbd-f8b2-4cae-dd21-79bc55c54902@gmail.com>
+ <26a91705-f721-03d1-f4c8-7f00ce0e65a8@gmail.com>
+ <4ef1e90716e64fd78ebbc222bbb7e597@AcuMS.aculab.com>
+From:   Pavel Skripkin <paskripkin@gmail.com>
+In-Reply-To: <4ef1e90716e64fd78ebbc222bbb7e597@AcuMS.aculab.com>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------TSUrFrVmzrfCzbLpC7evl2Y1"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git rcu/next
-branch HEAD: 4a5e50667c63697dbbf9099419ce4ac8d376b099  tools/include/string: Implement `strdup()` and `strndup()`
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------TSUrFrVmzrfCzbLpC7evl2Y1
+Content-Type: multipart/mixed; boundary="------------ne0JqlCpjJz5NLvN4rBcfCm9";
+ protected-headers="v1"
+From: Pavel Skripkin <paskripkin@gmail.com>
+To: David Laight <David.Laight@ACULAB.COM>,
+ Michael Straube <straube.linux@gmail.com>,
+ "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+Cc: Greg KH <gregkh@linuxfoundation.org>,
+ Larry Finger <Larry.Finger@lwfinger.net>,
+ Phillip Potter <phil@philpotter.co.uk>,
+ "open list:STAGING SUBSYSTEM" <linux-staging@lists.linux.dev>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Message-ID: <3c8b6454-6b52-fe62-8db1-c76bdbeb2df0@gmail.com>
+Subject: Re: staging: r8188eu: how to handle nested mutex under spinlock
+References: <356c24cf-625b-eea2-2c04-ce132d881cac@gmail.com>
+ <4412825.cEBGB3zze1@leap> <26ac4c2d-91cf-656d-2b7e-21a95e500e70@gmail.com>
+ <2029549.KlZ2vcFHjT@leap> <7d3d23c3-1839-3e6a-27bf-85bad384e5e4@gmail.com>
+ <942c0fbd-f8b2-4cae-dd21-79bc55c54902@gmail.com>
+ <26a91705-f721-03d1-f4c8-7f00ce0e65a8@gmail.com>
+ <4ef1e90716e64fd78ebbc222bbb7e597@AcuMS.aculab.com>
+In-Reply-To: <4ef1e90716e64fd78ebbc222bbb7e597@AcuMS.aculab.com>
 
-elapsed time: 993m
+--------------ne0JqlCpjJz5NLvN4rBcfCm9
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
 
-configs tested: 198
-configs skipped: 4
+SGkgRGF2aWQsDQoNCk9uIDQvNC8yMiAxMTo1MCwgRGF2aWQgTGFpZ2h0IHdyb3RlOg0KPj4g
+DQo+PiA+IAkJd2hpbGUgKHB3cnByaXYtPmJJblN1c3BlbmQgJiYNCj4+IA0KPj4gSSd2ZSBs
+b29rZWQgaW50byB3aGF0IGdjYzExIHByb2R1Y2VkIGZyb20gdGhpcyBmdW5jdGlvbiBhbmQg
+bG9va3MgbGlrZQ0KPj4gbXkgY29tcGlsZXIgaXMgc21hcnQgZW5vdWdoIHRvIG5vdCBjYWNo
+ZSB0aGF0IHZhbHVlLCBidXQgSSBhbSBhZnJhaWQgbm90DQo+PiBhbGwgY29tcGlsZXJzIGFy
+ZSB0aGF0IHNtYXJ0Lg0KPiANCj4gVGhlIGNvbXBpbGVyIGNhbid0IGNhY2hlIHRoZSB2YWx1
+ZSBiZWNhdXNlIG9mIHRoZSBmdW5jdGlvbiBjYWxsLg0KPiANCg0KSG0sIEkgYW0gYSBuZXdi
+aWUgaW4gY29tcGlsZXJzLCBzbyBjYW4geW91LCBwbGVhc2UsIGV4cGxhaW4gKG9yIGdpdmUg
+YSANCmxpbmsgdG8gYW55IHJlc291cmNlIHdoZXJlIEkgY2FuIHJlYWQgYWJvdXQgaXQpIGhv
+dyBmdW5jdGlvbiBjYWxsIGhlcmUgDQpwcmV2ZW50IGNhY2hpbmcuDQoNCklJVUMgY29tcGls
+ZXIgZ2VuZXJhdGVzIGNvZGUgdGhhdCB3b3JrcyB3ZWxsIGluIHNjb3BlIG9mIHNpbmdsZS10
+aHJlYWRlZCANCmFwcGxpY2F0aW9uLCBzbyB3aHkgY2FuJ3QgY29tcGlsZXIgY2FjaGUgdGhh
+dCB2YWx1ZSBpbnN0ZWFkIG9mIGFjY2Vzc2luZyANCm1lbW9yeSBvbiBlYWNoIGl0ZXJhdGlv
+bi4uLiBJc24ndCByZWdpc3RlciBhY2Nlc3MgYSB3YXkgZmFzdGVyIHRoYW4gZXZlbiANCmNh
+Y2hlIGhpdD8NCg0KDQpUaGFua3MhDQoNCldpdGggcmVnYXJkcywNClBhdmVsIFNrcmlwa2lu
+DQo=
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+--------------ne0JqlCpjJz5NLvN4rBcfCm9--
 
-gcc tested configs:
-arm64                               defconfig
-arm64                            allyesconfig
-arm                              allmodconfig
-arm                                 defconfig
-arm                              allyesconfig
-i386                 randconfig-c001-20220404
-i386                          randconfig-c001
-arm                      integrator_defconfig
-m68k                            q40_defconfig
-nios2                         3c120_defconfig
-arm                         vf610m4_defconfig
-arm64                            alldefconfig
-m68k                       m5475evb_defconfig
-arm                     eseries_pxa_defconfig
-arm                        realview_defconfig
-ia64                            zx1_defconfig
-arm                          gemini_defconfig
-mips                        vocore2_defconfig
-powerpc                           allnoconfig
-sh                          rsk7269_defconfig
-sh                 kfr2r09-romimage_defconfig
-parisc64                         alldefconfig
-sh                          rsk7264_defconfig
-arm                           sama5_defconfig
-powerpc                    klondike_defconfig
-sh                        edosk7705_defconfig
-m68k                          hp300_defconfig
-sh                           se7722_defconfig
-arm                           h3600_defconfig
-h8300                               defconfig
-sh                  sh7785lcr_32bit_defconfig
-mips                            ar7_defconfig
-mips                  maltasmvp_eva_defconfig
-arm                          simpad_defconfig
-arm                           stm32_defconfig
-parisc                           alldefconfig
-alpha                               defconfig
-arm                        mvebu_v7_defconfig
-sh                            hp6xx_defconfig
-powerpc                 mpc834x_itx_defconfig
-um                             i386_defconfig
-sh                             sh03_defconfig
-powerpc                     taishan_defconfig
-ia64                        generic_defconfig
-arc                            hsdk_defconfig
-sh                     sh7710voipgw_defconfig
-arm                        oxnas_v6_defconfig
-mips                           jazz_defconfig
-sh                          polaris_defconfig
-powerpc                        cell_defconfig
-sh                          rsk7203_defconfig
-sh                        sh7763rdp_defconfig
-arc                              alldefconfig
-powerpc                      ppc6xx_defconfig
-powerpc                     ep8248e_defconfig
-arc                        nsim_700_defconfig
-powerpc                      cm5200_defconfig
-mips                            gpr_defconfig
-sh                          r7785rp_defconfig
-sh                            migor_defconfig
-xtensa                generic_kc705_defconfig
-arm                        spear6xx_defconfig
-parisc                generic-64bit_defconfig
-x86_64                              defconfig
-sh                         ecovec24_defconfig
-sh                   sh7770_generic_defconfig
-arm                         cm_x300_defconfig
-m68k                          sun3x_defconfig
-h8300                    h8300h-sim_defconfig
-arm                         nhk8815_defconfig
-mips                         rt305x_defconfig
-mips                    maltaup_xpa_defconfig
-powerpc                  iss476-smp_defconfig
-mips                         db1xxx_defconfig
-arm                           viper_defconfig
-mips                           ip32_defconfig
-powerpc                     tqm8548_defconfig
-sh                           se7206_defconfig
-m68k                         apollo_defconfig
-sh                         ap325rxa_defconfig
-m68k                          amiga_defconfig
-sh                           se7705_defconfig
-sh                   secureedge5410_defconfig
-sh                               j2_defconfig
-arm                            lart_defconfig
-mips                  decstation_64_defconfig
-sh                      rts7751r2d1_defconfig
-arm                            qcom_defconfig
-x86_64               randconfig-c001-20220404
-arm                  randconfig-c002-20220404
-arm                  randconfig-c002-20220403
-ia64                             allmodconfig
-ia64                             allyesconfig
-ia64                                defconfig
-m68k                             allyesconfig
-m68k                             allmodconfig
-m68k                                defconfig
-nios2                               defconfig
-arc                              allyesconfig
-csky                                defconfig
-nios2                            allyesconfig
-alpha                            allyesconfig
-h8300                            allyesconfig
-xtensa                           allyesconfig
-arc                                 defconfig
-sh                               allmodconfig
-s390                                defconfig
-s390                             allmodconfig
-parisc                              defconfig
-parisc64                            defconfig
-parisc                           allyesconfig
-s390                             allyesconfig
-sparc                               defconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-i386                                defconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                          allyesconfig
-powerpc                          allmodconfig
-x86_64               randconfig-a015-20220404
-x86_64               randconfig-a011-20220404
-x86_64               randconfig-a014-20220404
-x86_64               randconfig-a016-20220404
-x86_64               randconfig-a012-20220404
-x86_64               randconfig-a013-20220404
-i386                 randconfig-a014-20220404
-i386                 randconfig-a013-20220404
-i386                 randconfig-a016-20220404
-i386                 randconfig-a015-20220404
-i386                 randconfig-a011-20220404
-i386                 randconfig-a012-20220404
-i386                          randconfig-a012
-i386                          randconfig-a014
-i386                          randconfig-a016
-arc                  randconfig-r043-20220404
-s390                 randconfig-r044-20220404
-riscv                randconfig-r042-20220404
-arc                  randconfig-r043-20220403
-riscv                               defconfig
-riscv                    nommu_virt_defconfig
-riscv                          rv32_defconfig
-riscv                    nommu_k210_defconfig
-riscv                             allnoconfig
-riscv                            allmodconfig
-riscv                            allyesconfig
-x86_64                    rhel-8.3-kselftests
-um                           x86_64_defconfig
-x86_64                          rhel-8.3-func
-x86_64                                  kexec
-x86_64                           allyesconfig
-x86_64                         rhel-8.3-kunit
-x86_64                               rhel-8.3
+--------------TSUrFrVmzrfCzbLpC7evl2Y1
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
 
-clang tested configs:
-i386                 randconfig-c001-20220404
-x86_64               randconfig-c007-20220404
-powerpc              randconfig-c003-20220404
-riscv                randconfig-c006-20220404
-mips                 randconfig-c004-20220404
-arm                  randconfig-c002-20220404
-x86_64                        randconfig-c007
-i386                          randconfig-c001
-powerpc              randconfig-c003-20220403
-riscv                randconfig-c006-20220403
-mips                 randconfig-c004-20220403
-arm                  randconfig-c002-20220403
-arm                          ep93xx_defconfig
-arm                       netwinder_defconfig
-mips                      pic32mzda_defconfig
-powerpc                      katmai_defconfig
-mips                   sb1250_swarm_defconfig
-arm                         socfpga_defconfig
-arm                           sama7_defconfig
-mips                        workpad_defconfig
-arm                          pcm027_defconfig
-riscv                             allnoconfig
-mips                         tb0219_defconfig
-powerpc                   bluestone_defconfig
-arm                         bcm2835_defconfig
-powerpc                 mpc8315_rdb_defconfig
-powerpc                      ppc44x_defconfig
-x86_64               randconfig-a006-20220404
-x86_64               randconfig-a002-20220404
-x86_64               randconfig-a001-20220404
-x86_64               randconfig-a005-20220404
-x86_64               randconfig-a003-20220404
-x86_64               randconfig-a004-20220404
-i386                 randconfig-a006-20220404
-i386                 randconfig-a002-20220404
-i386                 randconfig-a001-20220404
-i386                 randconfig-a004-20220404
-i386                 randconfig-a003-20220404
-i386                 randconfig-a005-20220404
-i386                          randconfig-a002
-i386                          randconfig-a006
-i386                          randconfig-a004
-hexagon              randconfig-r045-20220403
-riscv                randconfig-r042-20220403
-hexagon              randconfig-r041-20220403
-hexagon              randconfig-r045-20220404
-hexagon              randconfig-r041-20220404
-s390                 randconfig-r044-20220403
+-----BEGIN PGP SIGNATURE-----
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+wsF5BAABCAAjFiEER3XL3TplLQE8Qi40bk1w61LbBA0FAmJLHx8FAwAAAAAACgkQbk1w61LbBA0g
+mA//UbJy8VwtDJXIQ4H8+xxbbX334f8JocZMMupYuJBcLWs/C87gboedB9e5q9c/vQtMOfzxGXPO
+sF3HDC5S1Xc2aeufi3ibVTvbsKFnGNacbbbpr5Ltwssdgjq+F3pdWWmSEg8XdwCxn6lSQK0FNlUx
+YTXVzl3ojvYY768hSq3c2u2M3y7b4p0/TDmk1oBicZRKeMk5cSbb2foPG70f4464g++gCpTBTywU
+qj0cgtlSAX1kb7A8jiYcZQGQ7wiExEyak+pU47pb5ueA35ttKfqMG6xmLVSc89zw9qwd5xQ6v4qX
+WVnpYxab3s0PeVFr1vf+UQeTBi0vGU4GiBR5x0KAAunJAclcOdpevcd4gRfrzhz5QV9DEMLZM8hm
+OlNzJsWt4EQS/cnogC/PZY0MZaYew8WAy4R3H4Tiw9/5oGtWdcHQyMXcNHwk1v0SoP1++iYWyyMI
+QKFQLzQ3xN2/LeoGMsxsHJEmAUzbqTjAdP+uHuaVmUGaxtLpo+HAjAy8fNEXVWiMwXzX88jLxHSY
+Cm2YJXlis8wf20hPVgEMELesviVAXviSo+S3KckruZlgRQ0p7MNqmQwqKcJy7g9H9rwKLn7Rbebh
+Jg+MfIoWiaWcniNOXJ9+KS16ce035FWBhovFTmG19QXr1QKA5+1u0Ci9gxmH4G0Hz6TtroLv7DXV
+7Uk=
+=OSBD
+-----END PGP SIGNATURE-----
+
+--------------TSUrFrVmzrfCzbLpC7evl2Y1--
