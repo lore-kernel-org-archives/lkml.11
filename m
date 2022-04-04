@@ -2,226 +2,209 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0D83C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 12:11:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CB5FC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 12:12:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239877AbiDDMNh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 08:13:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50214 "EHLO
+        id S240497AbiDDMOq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 08:14:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239076AbiDDMN0 (ORCPT
+        with ESMTP id S238662AbiDDMOo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 08:13:26 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 967CD3DDC2
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 05:11:29 -0700 (PDT)
-Message-ID: <20220404104820.713066297@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649074287;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         references:references; bh=ao8ewpta1h3rBHe+eerTP6dP9fqXfbqWk7GzZd3tujY=;
-        b=ufgtnfyeeDiba+d+6EKLpU3I9fACAe6mSFYME8ao1PGAvRPN+iUPHsdz7aVwLLTH2gFQMv
-        r/N2g9tDW9YT/kG+EgjWHiUHHopPNtjKuef+TqZSR6r5KFbbmctpt50m4uvDMeSSokJoQ/
-        LrZYOtwY2Q24GGj1NCV9Dsquev8VbOgFzdtJjbMZG2Xoxk76sp4YutM/s1M6B44a2BnkcN
-        h+7P3tfHkHXg6UUfpM0iZUGiBDYrAOudWHqQTuQvT2y/Q1yjFjozu1Wmke6FXqnm1OoZtB
-        ZY3Erq8sVRGl0QqfuCmxYOcpS9hP5HwJK44hp1pcRBCTIHqdKqKDdWeD+h41ZQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649074287;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         references:references; bh=ao8ewpta1h3rBHe+eerTP6dP9fqXfbqWk7GzZd3tujY=;
-        b=u5bWR62vuxn6XVr7n1PDxmCCOIeqO4ff8Nc85hqIaqMz9//g97CfMquF/rx1p5p9GVewlH
-        mNwKXxGa2Time/Dg==
-From:   Thomas Gleixner <tglx@linutronix.de>
-To:     LKML <linux-kernel@vger.kernel.org>
-Cc:     x86@kernel.org, Andrew Cooper <andrew.cooper3@citrix.com>,
-        "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>,
-        Andrew Cooper <Andrew.Cooper3@citrix.com>
-Subject: [patch 3/3] x86/fpu/xsave: Optimize XSAVEC/S when XGETBV1 is supported
-References: <20220404103741.809025935@linutronix.de>
+        Mon, 4 Apr 2022 08:14:44 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25EBB3DDC2;
+        Mon,  4 Apr 2022 05:12:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1649074349;
+        bh=v21tH+u/8F6TEa8sT09Fxu0jyYY4D+sWP8+7wd/HBOw=;
+        h=X-UI-Sender-Class:Subject:From:To:Cc:Date:In-Reply-To:References;
+        b=gBFIptL8BOPJ5UEyChdBYa8cmdSim3YYZuKtmPs0GI0aO2oWaW4DNuCPxSI4jxy2g
+         GkDhQHtzRlyJChRrzIB1EWbFdqJVeQVlASJz3Ni7/cupgpxghQUf9pgNezTzrvwS4e
+         ATmSO+NmqPLXxpTZtkTk6Oiym8KNIqIEzOrpTiHo=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from homer.fritz.box ([185.191.216.17]) by mail.gmx.net (mrgmx004
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1Ma20k-1nXxvs3ZbA-00Vy2K; Mon, 04
+ Apr 2022 14:12:28 +0200
+Message-ID: <dacc7a27f5545714f1f9ab51510e7856d5118b88.camel@gmx.de>
+Subject: Re: [PATCH] kasan: Fix sleeping function called from invalid
+ context in PREEMPT_RT
+From:   Mike Galbraith <efault@gmx.de>
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Zqiang <qiang1.zhang@intel.com>
+Cc:     ryabinin.a.a@gmail.com, glider@google.com, andreyknvl@gmail.com,
+        dvyukov@google.com, akpm@linux-foundation.org,
+        kasan-dev@googlegroups.com, linux-kernel@vger.kernel.org,
+        linux-rt-users@vger.kernel.org
+Date:   Mon, 04 Apr 2022 14:12:27 +0200
+In-Reply-To: <YkbFhgN1jZPTMfnS@linutronix.de>
+References: <20220401091006.2100058-1-qiang1.zhang@intel.com>
+         <YkbFhgN1jZPTMfnS@linutronix.de>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Date:   Mon,  4 Apr 2022 14:11:27 +0200 (CEST)
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:yDD/V6srw+dnsfO45M/ZKWZVHJafFapRqtE2OaaAX2pCN96K+vV
+ 0vRIAimIchv/3E0kjJ6JluuH/JWs9THUEvij7tCWIeqHvMI2m/P/F1O3L6RyafgGDswHzgY
+ Fpp9Y3JDqbBrdh24/cKg1vJ+ynmgcOq5qK2HVVuIGPi2ZHPQOz/+5de1Ws7dD3Sobv9az8Q
+ lBYuDXQoDmBFlpaBj3gYQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:jqVeMoJBa8M=:6VrjVN+reFOb2M3+bsb2Vr
+ zw3JsbCCPcpj5plrSTD1u08IFanf95ogTmH5BnDnfuDwtLQt/752WNoOO7t0n+5Hp6RTuIxvI
+ rlQmXLvaUTW3skTKpG1FfzP/NKZ+1m/tN+261ePv26XOZ3AT8r8Gy4hCr3wWQZT+Fo+RF8EjT
+ GJ5Fzk48VSdRMOWC7NbtJUQ3TAFPO39W2OsRAsZKRPsqN1o1faZmjlaPZS3pg7dyKuhGjZNZa
+ YpMp/U9n+jiy+7VsZuRJT/xfGq9vvWxvCU6R/8XlPaEOgNwh91Qxy+MQWumJH0s6AUdVgQfz3
+ CXgSE61bbHlnGFR0JgddC89HP5oC2vIy6z+lRo80IZDlNCeGb7ReKXWZMwqbhnaQ32nxticch
+ x7wgr3QgU6YnOm8UT9+UYrkjYUsAP6lFaYLf5SAF9bsMRoIWWWZ0c/EO8iAInzpt1GIojF6tS
+ oyH/kTbyKgNnIGM/ijh2TAbt4c1gv9OnsKRbYoyODEUcIn+MyQY94eTnvnLy9aERprEm3QZ4w
+ mzKhesiNSm6J6H1/KMERpKM/vnONnk/bpXShZvRbnr+lqaqcsR2lCsmweBk2sEHFFCHihAwnG
+ Zva+5Y1E1QOGiHPDe7aescz5xbmegw/u38lzu8bta9mqd/V3cOX8Sd6AQDT1LSQ+X4x36noMr
+ KQYLosWHvghA62nOP86EpA9hXFvESRg/Q9NW0T8OHU5ZS/96mfw8+HN62wHR05MdK18R2gpMZ
+ gCM0loXqFuu7MYA1Y5fS83p2k7EIkbIgqD9t+I1WyLYgrBv72LvKgzyOjOVZjbm03eTyd1M82
+ miElQL7PAbvU6i+5OD2Wym9JjgtzAq5TUAx7262qDGQk/aDTIzQ9cb0Gzib6oPnL9qsYLeh/1
+ l8sblzdraT+uxle5ePQL4/SlbBFc8eC6qqNMf6HlRBgY03qJ4jIZhynoDDphOkMTKA57sZrAt
+ 3f3aNdbCMDhBFRKzYEk8t3lzcFnrULuuj3WVjOPP2C7fALqMZ9xVhgmyEUFzejXhiibMetopJ
+ GxAEw9DKqskLanw/uIq7u0SZIOo+sqpLEQvMpV/3D/FSg0xPHkNMkmHNu7jeV7oMAFhMOhKIE
+ QNX3FQYEmiW6AI=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-XSAVEC/S store the FPU state in compacted format, which avoids holes in the
-memory image. The kernel uses this feature in a very naive way and just
-avoids holes which come from unsupported features, like PT. That's a
-marginal saving of 128 byte vs. the uncompacted format on a SKL-X.
+On Fri, 2022-04-01 at 11:27 +0200, Sebastian Andrzej Siewior wrote:
+> On 2022-04-01 17:10:06 [+0800], Zqiang wrote:
+> > BUG: sleeping function called from invalid context at kernel/locking/s=
+pinlock_rt.c:46
+> > in_atomic(): 1, irqs_disabled(): 1, non_block: 0, pid: 1, name: swappe=
+r/0
+> > preempt_count: 1, expected: 0
+> > ...........
+> > CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.17.1-rt16-yocto-preempt-rt=
+ #22
+> > Hardware name: QEMU Standard PC (Q35 + ICH9, 2009),
+> > BIOS rel-1.15.0-0-g2dd4b9b3f840-prebuilt.qemu.org 04/01/2014
+> > Call Trace:
+> > <TASK>
+> > dump_stack_lvl+0x60/0x8c
+> > dump_stack+0x10/0x12
+> > =C2=A0__might_resched.cold+0x13b/0x173
+> > rt_spin_lock+0x5b/0xf0
+> > =C2=A0___cache_free+0xa5/0x180
+> > qlist_free_all+0x7a/0x160
+> > per_cpu_remove_cache+0x5f/0x70
+> > smp_call_function_many_cond+0x4c4/0x4f0
+> > on_each_cpu_cond_mask+0x49/0xc0
+> > kasan_quarantine_remove_cache+0x54/0xf0
+> > kasan_cache_shrink+0x9/0x10
+> > kmem_cache_shrink+0x13/0x20
+> > acpi_os_purge_cache+0xe/0x20
+> > acpi_purge_cached_objects+0x21/0x6d
+> > acpi_initialize_objects+0x15/0x3b
+> > acpi_init+0x130/0x5ba
+> > do_one_initcall+0xe5/0x5b0
+> > kernel_init_freeable+0x34f/0x3ad
+> > kernel_init+0x1e/0x140
+> > ret_from_fork+0x22/0x30
+> >
+> > When the kmem_cache_shrink() be called, the IPI was triggered, the
+> > ___cache_free() is called in IPI interrupt context, the local lock
+> > or spin lock will be acquired. on PREEMPT_RT kernel, these lock is
+> > replaced with sleepbale rt spin lock, so the above problem is triggere=
+d.
+> > fix it by migrating the release action from the IPI interrupt context
+> > to the task context on RT kernel.
+>
+> I haven't seen that while playing with kasan. Is this new?
 
-The first 576 bytes are fixed. 512 byte legacy (FP/SSE) and 64 byte XSAVE
-header. On a SKL-X machine the other components are stored at the following
-offsets:
- 
- xstate_offset[2]:  576, xstate_sizes[2]:  256
- xstate_offset[3]:  832, xstate_sizes[3]:   64
- xstate_offset[4]:  896, xstate_sizes[4]:   64
- xstate_offset[5]:  960, xstate_sizes[5]:   64
- xstate_offset[6]: 1024, xstate_sizes[6]:  512
- xstate_offset[7]: 1536, xstate_sizes[7]: 1024
- xstate_offset[9]: 2560, xstate_sizes[9]:    8
+Don't think so, the rock below was apparently first tossed at 5.12.
 
-XSAVEC/S use the init optimization which does not write data of a component
-when the component is in init state. The state is stored in the XSTATE_BV
-bitmap of the XSTATE header.
+=2D--
+ lib/stackdepot.c      |    3 +++
+ mm/kasan/quarantine.c |   49 ++++++++++++++++++++++++++++++++++++++++++++=
++++++
+ 2 files changed, 52 insertions(+)
 
-The kernel requests to save all enabled components, which results in a
-suboptimal write/read pattern when the set of active components is sparse.
+=2D-- a/lib/stackdepot.c
++++ b/lib/stackdepot.c
+@@ -375,6 +375,9 @@ depot_stack_handle_t __stack_depot_save(
+ 	if (found)
+ 		goto exit;
 
-A typical scenario is an active set of 0x202 (PKRU + SSE) out of the full
-supported set of 0x2FF. That means XSAVEC/S writes and XRSTOR[S] reads:
-
-  - SSE in the legacy area (0-511)
-  - Part of the XSTATE header (512-575)
-  - PKRU at offset 2560
-
-which is suboptimal. Prefetch works better when the access is linear. But
-what's worse is that PKRU can be located in a different page which
-obviously affects dTLB.
-
-XSAVEC/S allows to further reduce the memory footprint when the active
-feature set is sparse and the CPU supports XGETBV1. XGETBV1 reads the state
-of the XSTATE components as a bitmap. This bitmap can be fed into XSAVEC/S
-to request only the storage of the active components, which changes the
-layout of the state buffer to:
-
-  - SSE in the legacy area (0-511)
-  - Part of the XSTATE header (512-575)
-  - PKRU at offset 576
-
-This optimization does not gain much for e.g. a kernel build, but for
-context switch heavy applications it's very visible. Perf stats from
-hackbench:
-
-Before:
-
-        242,618.89 msec task-clock                #  102.928 CPUs utilized            ( +-  0.20% )
-         1,038,988      context-switches          #    0.004 M/sec                    ( +-  0.54% )
-           460,081      cpu-migrations            #    0.002 M/sec                    ( +-  0.56% )
-            10,813      page-faults               #    0.045 K/sec                    ( +-  0.62% )
-   506,912,353,968      cycles                    #    2.089 GHz                      ( +-  0.20% )
-   167,267,811,210      instructions              #    0.33  insn per cycle           ( +-  0.04% )
-    34,481,978,727      branches                  #  142.124 M/sec                    ( +-  0.04% )
-       305,975,304      branch-misses             #    0.89% of all branches          ( +-  0.09% )
-
-           2.35717 +- 0.00607 seconds time elapsed  ( +-  0.26% )
-
-   506,064,738,921      cycles                                                        ( +-  0.43% )
-     3,334,160,871      L1-dcache-load-misses                                         ( +-  0.77% )
-       135,271,979      dTLB-load-misses                                              ( +-  2.12% )
-        18,169,634      dTLB-store-misses                                             ( +-  1.78% )
-
-            2.3323 +- 0.0117 seconds time elapsed  ( +-  0.50% )
-
-After:
-
-        222,252.90 msec task-clock                #  103.800 CPUs utilized            ( +-  0.51% )
-         1,004,665      context-switches          #    0.005 M/sec                    ( +-  0.42% )
-           459,123      cpu-migrations            #    0.002 M/sec                    ( +-  0.33% )
-            10,677      page-faults               #    0.048 K/sec                    ( +-  0.79% )
-   464,356,465,870      cycles                    #    2.089 GHz                      ( +-  0.51% )
-   166,615,501,152      instructions              #    0.36  insn per cycle           ( +-  0.05% )
-    34,355,848,663      branches                  #  154.580 M/sec                    ( +-  0.05% )
-       300,049,704      branch-misses             #    0.87% of all branches          ( +-  0.14% )
-
-            2.1412 +- 0.0117 seconds time elapsed  ( +-  0.55% )
-
-   473,864,807,936      cycles                                                        ( +-  0.64% )
-     3,198,078,809      L1-dcache-load-misses                                         ( +-  0.24% )
-        27,798,721      dTLB-load-misses                                              ( +-  2.33% )
-         4,981,069      dTLB-store-misses                                             ( +-  1.80% )
-
-            2.1733 +- 0.0132 seconds time elapsed  ( +-  0.61% )
-
-The most significant change is in dTLB misses.
-
-The effect depends on the application scenario, the kernel configuration
-and the allocation placement of task_struct, so it might be not noticable
-at all. As the XGETBV1 optimization is not introducing a measurable
-overhead it's worth to use it if supported by the hardware.
-
-Enable it when available with a static key and mask out the non-active
-states in the requested bitmap for XSAVEC/S.
-
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
----
- arch/x86/kernel/fpu/xstate.c |   10 ++++++++--
- arch/x86/kernel/fpu/xstate.h |   16 +++++++++++++---
- 2 files changed, 21 insertions(+), 5 deletions(-)
-
---- a/arch/x86/kernel/fpu/xstate.c
-+++ b/arch/x86/kernel/fpu/xstate.c
-@@ -86,6 +86,8 @@ static unsigned int xstate_flags[XFEATUR
- #define XSTATE_FLAG_SUPERVISOR	BIT(0)
- #define XSTATE_FLAG_ALIGNED64	BIT(1)
- 
-+DEFINE_STATIC_KEY_FALSE(__xsave_use_xgetbv1);
++	if (IS_ENABLED(CONFIG_PREEMPT_RT) && can_alloc && !preemptible())
++		can_alloc =3D false;
 +
- /*
-  * Return whether the system supports a given xfeature.
-  *
-@@ -1481,7 +1483,7 @@ void xfd_validate_state(struct fpstate *
- }
- #endif /* CONFIG_X86_DEBUG_FPU */
- 
--static int __init xfd_update_static_branch(void)
-+static int __init fpu_update_static_branches(void)
- {
  	/*
- 	 * If init_fpstate.xfd has bits set then dynamic features are
-@@ -1489,9 +1491,13 @@ static int __init xfd_update_static_bran
- 	 */
- 	if (init_fpstate.xfd)
- 		static_branch_enable(&__fpu_state_size_dynamic);
-+
-+	if (cpu_feature_enabled(X86_FEATURE_XGETBV1) &&
-+	    cpu_feature_enabled(X86_FEATURE_XCOMPACTED))
-+		static_branch_enable(&__xsave_use_xgetbv1);
- 	return 0;
+ 	 * Check if the current or the next stack slab need to be initialized.
+ 	 * If so, allocate the memory - we won't be able to do that under the
+=2D-- a/mm/kasan/quarantine.c
++++ b/mm/kasan/quarantine.c
+@@ -19,6 +19,9 @@
+ #include <linux/srcu.h>
+ #include <linux/string.h>
+ #include <linux/types.h>
++#include <linux/cpu.h>
++#include <linux/mutex.h>
++#include <linux/workqueue.h>
+ #include <linux/cpuhotplug.h>
+
+ #include "../slab.h"
+@@ -319,6 +322,48 @@ static void per_cpu_remove_cache(void *a
+ 	qlist_free_all(&to_free, cache);
  }
--arch_initcall(xfd_update_static_branch)
-+arch_initcall(fpu_update_static_branches)
- 
- void fpstate_free(struct fpu *fpu)
- {
---- a/arch/x86/kernel/fpu/xstate.h
-+++ b/arch/x86/kernel/fpu/xstate.h
-@@ -10,7 +10,12 @@
- DECLARE_PER_CPU(u64, xfd_state);
- #endif
- 
--static inline bool xsave_use_xgetbv1(void) { return false; }
-+DECLARE_STATIC_KEY_FALSE(__xsave_use_xgetbv1);
+
++#ifdef CONFIG_PREEMPT_RT
++struct remove_cache_work {
++	struct work_struct work;
++	struct kmem_cache *cache;
++};
 +
-+static __always_inline __pure bool xsave_use_xgetbv1(void)
++static DEFINE_MUTEX(remove_caches_lock);
++static DEFINE_PER_CPU(struct remove_cache_work, remove_cache_work);
++
++static void per_cpu_remove_cache_work(struct work_struct *w)
 +{
-+	return static_branch_likely(&__xsave_use_xgetbv1);
++	struct remove_cache_work *rcw;
++
++	rcw =3D container_of(w, struct remove_cache_work, work);
++	per_cpu_remove_cache(rcw->cache);
 +}
- 
- static inline void __xstate_init_xcomp_bv(struct xregs_state *xsave, u64 mask)
- {
-@@ -185,13 +190,18 @@ static inline int __xfd_enable_feature(u
- static inline void os_xsave(struct fpstate *fpstate)
- {
- 	u64 mask = fpstate->xfeatures;
--	u32 lmask = mask;
--	u32 hmask = mask >> 32;
-+	u32 lmask, hmask;
- 	int err;
- 
- 	WARN_ON_FPU(!alternatives_patched);
- 	xfd_validate_state(fpstate, mask, false);
- 
-+	if (xsave_use_xgetbv1())
-+		mask &= xgetbv(1);
 +
-+	lmask = mask;
-+	hmask = mask >> 32;
++static void per_cpu_remove_caches_sync(struct kmem_cache *cache)
++{
++	struct remove_cache_work *rcw;
++	unsigned int cpu;
 +
- 	XSTATE_XSAVE(&fpstate->regs.xsave, lmask, hmask, err);
- 
- 	/* We should never fault when copying to a kernel buffer: */
++	cpus_read_lock();
++	mutex_lock(&remove_caches_lock);
++
++	for_each_online_cpu(cpu) {
++		rcw =3D &per_cpu(remove_cache_work, cpu);
++		INIT_WORK(&rcw->work, per_cpu_remove_cache_work);
++		rcw->cache =3D cache;
++		schedule_work_on(cpu, &rcw->work);
++	}
++
++	for_each_online_cpu(cpu) {
++		rcw =3D &per_cpu(remove_cache_work, cpu);
++		flush_work(&rcw->work);
++	}
++
++	mutex_unlock(&remove_caches_lock);
++	cpus_read_unlock();
++}
++#endif
++
+ /* Free all quarantined objects belonging to cache. */
+ void kasan_quarantine_remove_cache(struct kmem_cache *cache)
+ {
+@@ -332,7 +377,11 @@ void kasan_quarantine_remove_cache(struc
+ 	 * achieves the first goal, while synchronize_srcu() achieves the
+ 	 * second.
+ 	 */
++#ifndef CONFIG_PREEMPT_RT
+ 	on_each_cpu(per_cpu_remove_cache, cache, 1);
++#else
++	per_cpu_remove_caches_sync(cache);
++#endif
+
+ 	raw_spin_lock_irqsave(&quarantine_lock, flags);
+ 	for (i =3D 0; i < QUARANTINE_BATCHES; i++) {
 
