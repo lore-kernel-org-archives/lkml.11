@@ -2,173 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F174FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 14:59:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D14EC43217
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 15:01:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378342AbiDDPBT (ORCPT
+        id S1377787AbiDDPD0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 11:01:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39250 "EHLO
+        Mon, 4 Apr 2022 11:03:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378348AbiDDPBF (ORCPT
+        with ESMTP id S1378422AbiDDPDP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 11:01:05 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7EBBCDEFB
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 07:59:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649084347;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=UTGtn1rG1oHnPf4jWqsoBHgFGHb3FmEXtAlPLct00TQ=;
-        b=R4aFSWoTn5iF1iXytUEKQtyHi0xcf4p7I3W1zLatQa4NWktC7Kh0rLN0lOID3tubZenvQa
-        aSNFc9mQbEmZVZ3P6vfAXubXwmbIgc1wdSaOKteDuRffxwvKtI6zPRl4zOaf/Fd9LmqX3/
-        3TCzCT6nbtXT8MByGpT0VGNGNXSNAmM=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-154-TSa6o067PxWz42LA3ERiOg-1; Mon, 04 Apr 2022 10:59:06 -0400
-X-MC-Unique: TSa6o067PxWz42LA3ERiOg-1
-Received: by mail-wm1-f70.google.com with SMTP id r206-20020a1c44d7000000b0038e6a1b25f1so3232876wma.7
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 07:59:06 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=UTGtn1rG1oHnPf4jWqsoBHgFGHb3FmEXtAlPLct00TQ=;
-        b=F+qtBf4Fyf1qDnWCrfXhL1kEcHo40YQlwkHWBVFc+5+YhEGqbSB95krLZD2xRYP7IU
-         +xDNK7sWZcdngJ51fcJu7ab/0ezySoBGPS28NKfn1gIK5Ng0v4j/APhJNhIBcsMZ6wdw
-         lnqaBy6prF59KMU23oufyCIHbhF6E5tpAnde8tfFI+t7quSwVfSlFJHsARg0ldvnOVh3
-         dzSMDBSzxnfIn5tZdw/MdNFPkWBNeMxnCWlRIUUx0nBvtekZ0jkjB21c3GfZGsRd2Ylf
-         3KbEtU9FhQVsgJSv9gm0em6keQwYzj7ST1jDHmBdoIQ20LZsC2Kl5lPeACUuJPGt8AH7
-         OY2Q==
-X-Gm-Message-State: AOAM532GFBD11RlT0WmIZqMgVUhnAJx0rBgKhjdRcDIVrzV1qQcBRvK3
-        iRZZ8KdHce8f3yaZ9SFsuFuiZPH8NhHuczsnSr9ggPR542h06ExLg4mb7wLtY8HbblsrknMqxGB
-        R2AwtrOhq+GjcLgUKVjRkpzaBHoReJQY1GJ8tc6qu
-X-Received: by 2002:a7b:cbc1:0:b0:38e:7c42:fe38 with SMTP id n1-20020a7bcbc1000000b0038e7c42fe38mr972392wmi.51.1649084345328;
-        Mon, 04 Apr 2022 07:59:05 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxuYUVoq7tbnpe6v2K8Vg+lD8MBTb279vFZsP129/zboUn+PR7U05cmYuZ6pqPwC3hRYGrFm8x2cCpEeiOz8+E=
-X-Received: by 2002:a7b:cbc1:0:b0:38e:7c42:fe38 with SMTP id
- n1-20020a7bcbc1000000b0038e7c42fe38mr972374wmi.51.1649084345107; Mon, 04 Apr
- 2022 07:59:05 -0700 (PDT)
+        Mon, 4 Apr 2022 11:03:15 -0400
+Received: from mail.marcansoft.com (marcansoft.com [212.63.210.85])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 921112F033;
+        Mon,  4 Apr 2022 08:01:18 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: marcan@marcan.st)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id 6981F419BC;
+        Mon,  4 Apr 2022 15:01:12 +0000 (UTC)
+Subject: Re: [PATCH 4/9] soc: apple: Add SART driver
+To:     Rob Herring <robh@kernel.org>, Arnd Bergmann <arnd@arndb.de>
+Cc:     Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Keith Busch <kbusch@kernel.org>, "axboe@fb.com" <axboe@fb.com>,
+        "hch@lst.de" <hch@lst.de>, "sagi@grimberg.me" <sagi@grimberg.me>,
+        Marc Zyngier <maz@kernel.org>,
+        DTML <devicetree@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-nvme@lists.infradead.org
+References: <20220321165049.35985-1-sven@svenpeter.dev>
+ <20220321165049.35985-5-sven@svenpeter.dev>
+ <CAK8P3a19F8K0MvZV_R6HrmmR+WBsDge+u6U3iEVEjZ74i6+nEg@mail.gmail.com>
+ <f06576c8-76c6-41ae-874d-81ea0b5b5603@www.fastmail.com>
+ <CAK8P3a3xioqJDb7hQ3dvxQyHPg2hgJbeJywEP+N4cDzpo=8VhQ@mail.gmail.com>
+ <YksHoQvDqXOK70EX@robh.at.kernel.org>
+From:   Hector Martin <marcan@marcan.st>
+Message-ID: <15ace529-1fea-1141-b87f-598e9bfa12dc@marcan.st>
+Date:   Tue, 5 Apr 2022 00:01:09 +0900
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-References: <20220331223857.902911-1-jakobkoschel@gmail.com>
-In-Reply-To: <20220331223857.902911-1-jakobkoschel@gmail.com>
-From:   Andreas Gruenbacher <agruenba@redhat.com>
-Date:   Mon, 4 Apr 2022 16:58:53 +0200
-Message-ID: <CAHc6FU4s952rPPsceefvZER8dPM9RVWyQrmneMyqaW_0oViFSA@mail.gmail.com>
-Subject: Re: [PATCH 1/2] gfs2: remove usage of list iterator variable for list_for_each_entry_continue()
-To:     Jakob Koschel <jakobkoschel@gmail.com>
-Cc:     Bob Peterson <rpeterso@redhat.com>,
-        cluster-devel <cluster-devel@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <YksHoQvDqXOK70EX@robh.at.kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: es-ES
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jakob,
+On 04/04/2022 23.58, Rob Herring wrote:
+> On Sat, Apr 02, 2022 at 09:07:17PM +0200, Arnd Bergmann wrote:
+>> On Sat, Apr 2, 2022 at 2:38 PM Sven Peter <sven@svenpeter.dev> wrote:
+>>> On Mon, Mar 21, 2022, at 18:07, Arnd Bergmann wrote:
+>>>> On Mon, Mar 21, 2022 at 5:50 PM Sven Peter <sven@svenpeter.dev> wrote:
+>>>>> The NVMe co-processor on the Apple M1 uses a DMA address filter called
+>>>>> SART for some DMA transactions. This adds a simple driver used to
+>>>>> configure the memory regions from which DMA transactions are allowed.
+>>>>>
+>>>>> Co-developed-by: Hector Martin <marcan@marcan.st>
+>>>>> Signed-off-by: Hector Martin <marcan@marcan.st>
+>>>>> Signed-off-by: Sven Peter <sven@svenpeter.dev>
+>>>>
+>>>> Can you add some explanation about why this uses a custom interface
+>>>> instead of hooking into the dma_map_ops?
+>>>
+>>> Sure.
+>>> In a perfect world this would just be an IOMMU implementation but since
+>>> SART can't create any real IOVA space using pagetables it doesn't fit
+>>> inside that subsytem.
+>>>
+>>> In a slightly less perfect world I could just implement dma_map_ops here
+>>> but that won't work either because not all DMA buffers of the NVMe
+>>> device have to go through SART and those allocations happen
+>>> inside the same device and would use the same dma_map_ops.
+>>>
+>>> The NVMe controller has two separate DMA filters:
+>>>
+>>>    - NVMMU, which must be set up for any command that uses PRPs and
+>>>      ensures that the DMA transactions only touch the pages listed
+>>>      inside the PRP structure. NVMMU itself is tightly coupled
+>>>      to the NVMe controller: The list of allowed pages is configured
+>>>      based on command's tag id and even commands that require no DMA
+>>>      transactions must be listed inside NVMMU before they are started.
+>>>    - SART, which must be set up for some shared memory buffers (e.g.
+>>>      log messages from the NVMe firmware) and for some NVMe debug
+>>>      commands that don't use PRPs.
+>>>      SART is only loosely coupled to the NVMe controller and could
+>>>      also be used together with other devices. It's also the only
+>>>      thing that changed between M1 and M1 Pro/Max/Ultra and that's
+>>>      why I decided to separate it from the NVMe driver.
+>>>
+>>> I'll add this explanation to the commit message.
+>>
+>> Ok, thanks.
+>>
+>>>>> +static void sart2_get_entry(struct apple_sart *sart, int index, u8 *flags,
+>>>>> +                           phys_addr_t *paddr, size_t *size)
+>>>>> +{
+>>>>> +       u32 cfg = readl_relaxed(sart->regs + APPLE_SART2_CONFIG(index));
+>>>>> +       u32 paddr_ = readl_relaxed(sart->regs + APPLE_SART2_PADDR(index));
+>>>>
+>>>> Why do you use the _relaxed() accessors here and elsewhere in the driver?
+>>>
+>>> This device itself doesn't do any DMA transactions so it needs no memory
+>>> synchronization barriers. Only the consumer (i.e. rtkit and nvme) read/write
+>>> from/to these buffers (multiple times) and they have the required barriers
+>>> in place whenever they are used.
+>>>
+>>> These buffers so far are only allocated at probe time though so even using
+>>> the normal writel/readl here won't hurt performance at all. I can just use
+>>> those if you prefer or alternatively add a comment why _relaxed is fine here.
+>>>
+>>> This is a bit similar to the discussion for the pinctrl series last year [1].
+>>
+>> I think it's better to only use the _relaxed version where it actually helps,
+>> with a comment about it, and use the normal version elsewhere, in
+>> particular in functions that you have copied from the normal nvme driver.
+>> I had tried to compare some of your code with the other version and
+>> was rather confused by that.
+> 
+> Oh good, I tell folks the opposite (and others do too). We don't accept 
+> random explicit barriers without explanation, but implicit ones are 
+> okay? The resulting code on arm32 is also pretty horrible with the L2x0 
+> and OMAP sync hooks not that that matters here.
+> 
+> I don't really care too much which way we go, but we should document one 
+> rule and follow that.
 
-On Fri, Apr 1, 2022 at 12:40 AM Jakob Koschel <jakobkoschel@gmail.com> wrote:
-> In preparation to limiting the scope of a list iterator to the list
-> traversal loop, use a dedicated pointer to iterate through the list [1].
->
-> Since that variable should not be used past the loop iteration, a
-> separate variable is used to 'remember the current location within the
-> loop'.
->
-> To either continue iterating from that position or start a new
-> iteration (if the previous iteration was complete) list_prepare_entry()
-> is used.
+I'm sure maz@ has an opinion here too :-)
 
-I can see how accessing an iterator variable past a for_each_entry
-loop will cause problems when it ends up pointing at the list head.
-Here, the iterator variables are not accessed outside the loops at
-all, though. So this patch is ugly, and it doesn't even help.
+(3... 2... 1... fight!)
 
-> Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/ [1]
-> Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
-> ---
->  fs/gfs2/lops.c | 16 ++++++++++++----
->  1 file changed, 12 insertions(+), 4 deletions(-)
->
-> diff --git a/fs/gfs2/lops.c b/fs/gfs2/lops.c
-> index 6ba51cbb94cf..74e6d05cee2c 100644
-> --- a/fs/gfs2/lops.c
-> +++ b/fs/gfs2/lops.c
-> @@ -653,7 +653,7 @@ static void gfs2_before_commit(struct gfs2_sbd *sdp, unsigned int limit,
->                                 bool is_databuf)
->  {
->         struct gfs2_log_descriptor *ld;
-> -       struct gfs2_bufdata *bd1 = NULL, *bd2;
-> +       struct gfs2_bufdata *bd1 = NULL, *bd2, *tmp1, *tmp2;
->         struct page *page;
->         unsigned int num;
->         unsigned n;
-> @@ -661,7 +661,7 @@ static void gfs2_before_commit(struct gfs2_sbd *sdp, unsigned int limit,
->
->         gfs2_log_lock(sdp);
->         list_sort(NULL, blist, blocknr_cmp);
-> -       bd1 = bd2 = list_prepare_entry(bd1, blist, bd_list);
-> +       tmp1 = tmp2 = list_prepare_entry(bd1, blist, bd_list);
-
-We should actually be using list_entry() here, not list_prepare_entry().
-
->         while(total) {
->                 num = total;
->                 if (total > limit)
-> @@ -675,14 +675,18 @@ static void gfs2_before_commit(struct gfs2_sbd *sdp, unsigned int limit,
->                 ptr = (__be64 *)(ld + 1);
->
->                 n = 0;
-> +               bd1 = list_prepare_entry(tmp1, blist, bd_list);
-> +               tmp1 = NULL;
->                 list_for_each_entry_continue(bd1, blist, bd_list) {
->                         *ptr++ = cpu_to_be64(bd1->bd_bh->b_blocknr);
->                         if (is_databuf) {
->                                 gfs2_check_magic(bd1->bd_bh);
->                                 *ptr++ = cpu_to_be64(buffer_escaped(bd1->bd_bh) ? 1 : 0);
->                         }
-> -                       if (++n >= num)
-> +                       if (++n >= num) {
-> +                               tmp1 = bd1;
->                                 break;
-> +                       }
->                 }
->
->                 gfs2_log_unlock(sdp);
-> @@ -690,6 +694,8 @@ static void gfs2_before_commit(struct gfs2_sbd *sdp, unsigned int limit,
->                 gfs2_log_lock(sdp);
->
->                 n = 0;
-> +               bd2 = list_prepare_entry(tmp2, blist, bd_list);
-> +               tmp2 = NULL;
->                 list_for_each_entry_continue(bd2, blist, bd_list) {
->                         get_bh(bd2->bd_bh);
->                         gfs2_log_unlock(sdp);
-> @@ -712,8 +718,10 @@ static void gfs2_before_commit(struct gfs2_sbd *sdp, unsigned int limit,
->                                 gfs2_log_write_bh(sdp, bd2->bd_bh);
->                         }
->                         gfs2_log_lock(sdp);
-> -                       if (++n >= num)
-> +                       if (++n >= num) {
-> +                               tmp2 = bd2;
->                                 break;
-> +                       }
->                 }
->
->                 BUG_ON(total < num);
->
-> base-commit: f82da161ea75dc4db21b2499e4b1facd36dab275
-> --
-> 2.25.1
->
-
-Thanks,
-Andreas
-
+-- 
+Hector Martin (marcan@marcan.st)
+Public Key: https://mrcn.st/pub
