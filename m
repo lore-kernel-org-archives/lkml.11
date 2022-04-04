@@ -2,197 +2,214 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 543C1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:41:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBE6CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:42:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356152AbiDDVnh (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:43:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46564 "EHLO
+        id S239895AbiDDVn7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 17:43:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379152AbiDDQht (ORCPT
+        with ESMTP id S1379399AbiDDREa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 12:37:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6886E094;
-        Mon,  4 Apr 2022 09:35:52 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 51F1860C88;
-        Mon,  4 Apr 2022 16:35:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D90BC34110;
-        Mon,  4 Apr 2022 16:35:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649090151;
-        bh=47jA1Ev4IsrYaM1Gs1b3o0JyHpaOmmzhpkTOzLXnPfA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=D9VzfeBhCzkblhtFKUarLZIHTKNpC6ACVcRSsTcLYflUQRAMhPjCVHVVPrhzAKnOA
-         Up4KaXd8YC2DfTBgfwsIZQh+2Uzc5chVqPk2HJABC5nH1jFYN+u4QVEhssRA8woG5F
-         McjrVJEtSVrHqypJi/UWj9KDR/oHBgWqHTIlpL1duMTHo0RAizmordAvh6cngr3frk
-         1wRU1zgTR4WJWdy9YuPgfkfSPHVxU408X0kl35CZT0VXYyksMNTpn8ZeRmzJxrtpG5
-         eflMQxottua0/Y4eck35tuiVCHQAtitsAulicC34GXU/Hz09PLLDhWI6up4s8h7ruG
-         A27E3jSPOZkgg==
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Rob Clark <robdclark@gmail.com>
-Cc:     linux-arm-msm@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Vinod Koul <vkoul@kernel.org>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jonathan Marek <jonathan@marek.ca>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        freedreno@lists.freedesktop.org
-Subject: [PATCH v6 14/14] drm/msm/dsi: Add support for DSC configuration
-Date:   Mon,  4 Apr 2022 22:04:36 +0530
-Message-Id: <20220404163436.956875-15-vkoul@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220404163436.956875-1-vkoul@kernel.org>
-References: <20220404163436.956875-1-vkoul@kernel.org>
+        Mon, 4 Apr 2022 13:04:30 -0400
+Received: from na01-obe.outbound.protection.outlook.com (mail-centralusazon11021020.outbound.protection.outlook.com [52.101.62.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5E3640A22;
+        Mon,  4 Apr 2022 10:02:32 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=as8eekxYet7k/OU5m7LBQ8bfeGKOWa6atKzUqIs8UFTjpAtQvRlF0t0kEb9U80V0vqs+jJkf8TKIZvEEsC08Fh6uSCLRbH3lTT0uzAoaYdpSkBUAh8PpzpDRNUHfSlaqUTFatp/3uduX4edbpeu2shYUcpnaUenkXX0QkQ5ubNj6gsHD2XgYchFknWF4BrZ64M5aQ4JyWFZ0keleFKb9vPzij73vMVUxg2YpGeEk1D35JfOy3X3hlKuJ6gIAIWPqEtI/zyCMbOZvgqtYE0+QLvJp9yHDmApY4oM0iRT41wi26SaZ+Vny6KCI1dqhChpOFh+QECL+XT+QdhHXSu/3Sg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=2t6NCciWH3iLieavvJjHOHbTQzDwg/H46l4Lh5q/62U=;
+ b=QlAslsbV1ytf9UlQTLMsWwOuKPx3F+ns4xSUiulcIc7KzR0C28IyES564wUQ7RPDz6/Xg5yT0gZBORTijI4IA5lpvqyOQ5wIRBbmz3JI8xoyM8WEIdx1iKUMLDK+NuXcFrgaREyiqN7ek3A5d55Qw73j1yPD5aVR1V9niCx7ArOOVdG01Lj0VXrJSfsILfqNrJLRsLgGQsdKwfOahtqs2yhOHk89LiJLMRj6yVXG6KUvbI/o8JH63t/fEYo/IHGnp0J1DDvGyM9qbzfkr4WVX6sUu6DS0o01dF4eLfnsQ+4rDbhTArzdgMvPJxCKOSN8szFhGNkbO4Xxt44PcPHFNw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=2t6NCciWH3iLieavvJjHOHbTQzDwg/H46l4Lh5q/62U=;
+ b=FK6pzmxDP+JxHM140i0I3T2EjY1L/nv4e+7arz+3xo+ZYT0V5Uw7tAiQ1B2+tOH27D8ooWI8250JyCW90ERC94LJhJ8OZJoN1+hl59xOLKb8nGBkzcrI8zNs2nhIF5AdBYxys1DSgjCdnxGdycbv5e/jdaVvu3/eMQB0WIondJw=
+Received: from PH0PR21MB3025.namprd21.prod.outlook.com (2603:10b6:510:d2::21)
+ by SA0PR21MB1881.namprd21.prod.outlook.com (2603:10b6:806:e6::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5164.2; Mon, 4 Apr
+ 2022 17:02:29 +0000
+Received: from PH0PR21MB3025.namprd21.prod.outlook.com
+ ([fe80::e516:76e:5421:5b22]) by PH0PR21MB3025.namprd21.prod.outlook.com
+ ([fe80::e516:76e:5421:5b22%5]) with mapi id 15.20.5144.011; Mon, 4 Apr 2022
+ 17:02:29 +0000
+From:   "Michael Kelley (LINUX)" <mikelley@microsoft.com>
+To:     Boqun Feng <boqun.feng@gmail.com>, Wei Liu <wei.liu@kernel.org>
+CC:     vkuznets <vkuznets@redhat.com>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Dexuan Cui <decui@microsoft.com>,
+        David Hildenbrand <david@redhat.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH v2 2/2] Drivers: hv: balloon: Disable balloon and hot-add
+ accordingly
+Thread-Topic: [PATCH v2 2/2] Drivers: hv: balloon: Disable balloon and hot-add
+ accordingly
+Thread-Index: AQHYP/CrxDvs+5wBAE6aSH6mCNoVmazgC21w
+Date:   Mon, 4 Apr 2022 17:02:29 +0000
+Message-ID: <PH0PR21MB30254F9E39AF333E78E1721BD7E59@PH0PR21MB3025.namprd21.prod.outlook.com>
+References: <20220325023212.1570049-1-boqun.feng@gmail.com>
+ <20220325023212.1570049-3-boqun.feng@gmail.com>
+In-Reply-To: <20220325023212.1570049-3-boqun.feng@gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=c25532fb-36b4-45ff-8834-6267264c2114;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-04-04T17:01:40Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: ba1b1ff4-97ab-4363-be0e-08da165ce735
+x-ms-traffictypediagnostic: SA0PR21MB1881:EE_
+x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
+x-ms-exchange-atpmessageproperties: SA|SL
+x-microsoft-antispam-prvs: <SA0PR21MB1881D6A5B17B8EBACE7324FCD7E59@SA0PR21MB1881.namprd21.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: iCW+Vn4tZ54sdVdTGKcb3/PzDqh8WikfiPdEYUaLq6rIbrC3Hb7yeeskOCnqosv7QAKGhnrwaJZbqGsU7DqoL7tmBhOYeI/6kGREafS3MTu3Gd13/ZcuGLaGTgEukEsgM+kJRdttdncGV/iEm7pl6KBnaLxD8AQPum4ot+Kd4PkKt633R0fQ7UPKgfLR19fL75GbN26r7G0e1f5KvgfqMaVUjDP9uiybRsJ+NU54dXodakZNgqucwlu7vKprfb3oI56K7NzlnVM0TPhr9eOy95b85qDnxpePvTKTCYRkm6LwGuHO+YqL4x4c2xImXYKwl1S7/MPuK3SfyyIQmay/7jWoG6N5znOhaoFcxNqyjxEHlqr5BmM3jE3SCIwdeClOE363CrzB3cQe7DChFjj7TgzDo1qZ8lcLixsVVKiKS0jFLaYUwoRrkC11Qx59K1tDZjW8wPpT3RkB/fLJBvgbf628Ga43OforlO4m+9BD98eUtgoQShZlEBIGCzkhsA5/Kb14BsXCQOA07aoEAIzu5Ur9fWb0WiHznWacfoZJwu5ucpYSRUhXrOKNpzkspGefwXmAwkTrFm8nJckFLZ+XIH/Fi5nHsqEivaIwgYHIm9Qhv2sNDUSRMcv03gVn0Ro3soR8f0l0lNyJHflslu0fQX8FV+tuFcBbjAujhePvYPfIim8WEjpEj7Kt3S4xkOhX5hAQj7jrazMe02n7XafdGX+lpLhgO+pcmu777hx8kaUuXtmlFwF+aY3xvdu52BGI
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR21MB3025.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(451199009)(8936002)(5660300002)(9686003)(66446008)(52536014)(82960400001)(82950400001)(64756008)(66946007)(508600001)(122000001)(33656002)(76116006)(71200400001)(4326008)(66476007)(8676002)(66556008)(316002)(38100700002)(10290500003)(54906003)(7696005)(86362001)(55016003)(38070700005)(186003)(26005)(6506007)(83380400001)(2906002)(8990500004)(110136005);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?L8mLupbuycDlIU1f5aZwIgHzsLWhExp2rXPl7L9r4+Iwa7IbIGeCkAIl/x3t?=
+ =?us-ascii?Q?6OROtCqbuwEN+1yAlwVV6PRTCHYPvAPnYcdNe2WFB1xVFtQ7K0oz2xh9S5B9?=
+ =?us-ascii?Q?4TFx5iOkDG/rVQFnyhCDD2108ofX9FhvrnpjvJmZ71vaGUISYv5mqK/dj0HD?=
+ =?us-ascii?Q?fF/AOavL8Az+aGllvU9gp1C1ao/Vuaf7Ouo/ishkvNJnCWELOrcU/ie8RCsg?=
+ =?us-ascii?Q?c1yngEoLK6Za5KGD1P/4KCtu7Cr0xxDV1Yoy6E2MKOM3UZqKI5mSV+LPQtKR?=
+ =?us-ascii?Q?uzk2hDBkr+ZirONo/Sig52vCw8yaE/O6kCTTnMHSnGCtirtryiS4+jienbMY?=
+ =?us-ascii?Q?X7sbCagocl/BJ43ns84Z+rmS4L+vE9NkYHLKUxEetRj4orka6aBUTHzQ44/l?=
+ =?us-ascii?Q?SOllJ3gO2Jw2jpgDgbS9jk12pLVtlSQ+6ni6y4eoaNs/lhnRy8lfLJCHaFrS?=
+ =?us-ascii?Q?3Ma0eOTFOPaWMpE/c73x5GSWIbMe6wDW4Cf028szVyjz9sOjKUDGSq6uiWPO?=
+ =?us-ascii?Q?3bsquKWbsRYt77k0msOnZUW/naMOy4MkunndQmOW76cHI+x0eY86at9mGtyW?=
+ =?us-ascii?Q?+EhnKk1RoK+MCivupCVqhBvSMK7cV+gCrPxmjamZozmln5kx6IAn5L+XEdny?=
+ =?us-ascii?Q?ITciPfziOvJCkHWe9gR4k4mpDozbWjCCQM8+pa71BLlTppit5OGAOe+nmFMh?=
+ =?us-ascii?Q?oX9jE0az9fq+331uy/lpwzXcy918aEW6pniLeSLcQlbIHrMNNITdEcqqcyjF?=
+ =?us-ascii?Q?8yEXS5G84kZbArAtqS4t3UpbQPlUNIjIjv0NdUv2d4KeyDqNrBiyE1pwtvYs?=
+ =?us-ascii?Q?DnzKxCDK2oY4J+VSgrrOsJvVnH6IXT3uN2HGYFroopVoneC8O5OgkCH7f/S5?=
+ =?us-ascii?Q?2WHgUl+DSE26s9IEJD8elSksY2v5nYpIRoH7jvciwrVNaE/87qRsfoir4Jqt?=
+ =?us-ascii?Q?Oyi9XiOipKUZ+dcGFtDC+zeiFtcjqPzwS42CFqNZBl3syuVQyHUYrqLIhKcu?=
+ =?us-ascii?Q?m5PweAYj93a17GJdZ3SyiYt125VpWLZxPTJ0zL5e3/UvmDVHOGk/IoCEh0lI?=
+ =?us-ascii?Q?RyMTBYOb0zHJwJes5dxAXy9JXAUwsqCcTReGQ8faLYHpT/4M4A95e5sdHueD?=
+ =?us-ascii?Q?PEuzODlNrYCfl818rpIEBFkfNLcfN1Lic0QaNXGYssYhnZoCsoTROJl2ojQD?=
+ =?us-ascii?Q?+QxT96rWRCcwlu0NDdTIvBuOr02OiAPvHsrtaelp2YmwVdf9G0dRyYxqXWmK?=
+ =?us-ascii?Q?aYsx+z4b4R+9tLcCu3eqbgzVrCnIUtWf7H5XVlktbs5hIBqzzKZoY07Vp0s2?=
+ =?us-ascii?Q?Lthp0D8si78WEbsTYYOk1kr2TLDH21jO+evhDAB3TFp+kniaKDq1dOJP0l2p?=
+ =?us-ascii?Q?EeZe62fjFwSQBYINRZRFLEUCuoJebwoTBzsTrHTRqHZkmei8f8kBK48QMlyP?=
+ =?us-ascii?Q?nB6XSKUgdLwO+wWbup9/9P+WH99gvuo7Nfx4I+SZnhe2kL3beowbYnpcR0/D?=
+ =?us-ascii?Q?wpUymXjWG9P7qc7/Cf3zPYjHZ4kqiCPrsnUknghAO8D/cY7nF6s+oqjwTB4P?=
+ =?us-ascii?Q?2NwK3hDnphvd/N+kQ5GnuV9DqnuLVdrYe5yIWuQg0Dw0B+60emkL2cEsrXIY?=
+ =?us-ascii?Q?Dt0G38rxFjjqNKG0N1FN5gDltsTRO+MTIs5aPcyVPyYEpafyBwWWJXF1GwO+?=
+ =?us-ascii?Q?msLRLVLut5Faf55iTjdm692q0BAso7KdGQkFve+kk0MUpRQChq1XqSLTlLV1?=
+ =?us-ascii?Q?dcGl63XQXhmGRH4onu9K1ijxTeZY6GI=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR21MB3025.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ba1b1ff4-97ab-4363-be0e-08da165ce735
+X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Apr 2022 17:02:29.5457
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: NvtG8+DAxeLGyDHNYrQ/jCIyKF13VJ0yU0ufD7S95wV7FdrTsG9RPWy83pr6MzIwYyKcahS+TIlcR+5mcuDVrJZL4ZP4Mm4CHQ653jN8j/w=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR21MB1881
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When DSC is enabled, we need to configure DSI registers accordingly and
-configure the respective stream compression registers.
+From: Boqun Feng <boqun.feng@gmail.com> Sent: Thursday, March 24, 2022 7:32=
+ PM
+>=20
+> Currently there are known potential issues for balloon and hot-add on
+> ARM64:
+>=20
+> *	Unballoon requests from Hyper-V should only unballoon ranges
+> 	that are guest page size aligned, otherwise guests cannot handle
+> 	because it's impossible to partially free a page. This is a
+> 	problem when guest page size > 4096 bytes.
+>=20
+> *	Memory hot-add requests from Hyper-V should provide the NUMA
+> 	node id of the added ranges or ARM64 should have a functional
+> 	memory_add_physaddr_to_nid(), otherwise the node id is missing
+> 	for add_memory().
+>=20
+> These issues require discussions on design and implementation. In the
+> meanwhile, post_status() is working and essential to guest monitoring.
+> Therefore instead of disabling the entire hv_balloon driver, the
+> ballooning (when page size > 4096 bytes) and hot-add are disabled
+> accordingly for now. Once the issues are fixed, they can be re-enable in
+> these cases.
+>=20
+> Signed-off-by: Boqun Feng <boqun.feng@gmail.com>
+> ---
+>  drivers/hv/hv_balloon.c | 36 ++++++++++++++++++++++++++++++++++--
+>  1 file changed, 34 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/drivers/hv/hv_balloon.c b/drivers/hv/hv_balloon.c
+> index 062156b88a87..eee7402cfc02 100644
+> --- a/drivers/hv/hv_balloon.c
+> +++ b/drivers/hv/hv_balloon.c
+> @@ -1660,6 +1660,38 @@ static void disable_page_reporting(void)
+>  	}
+>  }
+>=20
+> +static int ballooning_enabled(void)
+> +{
+> +	/*
+> +	 * Disable ballooning if the page size is not 4k (HV_HYP_PAGE_SIZE),
+> +	 * since currently it's unclear to us whether an unballoon request can
+> +	 * make sure all page ranges are guest page size aligned.
+> +	 */
+> +	if (PAGE_SIZE !=3D HV_HYP_PAGE_SIZE) {
+> +		pr_info("Ballooning disabled because page size is not 4096 bytes\n");
+> +		return 0;
+> +	}
+> +
+> +	return 1;
+> +}
+> +
+> +static int hot_add_enabled(void)
+> +{
+> +	/*
+> +	 * Disable hot add on ARM64, because we currently rely on
+> +	 * memory_add_physaddr_to_nid() to get a node id of a hot add range,
+> +	 * however ARM64's memory_add_physaddr_to_nid() always return 0 and
+> +	 * DM_MEM_HOT_ADD_REQUEST doesn't have the NUMA node information for
+> +	 * add_memory().
+> +	 */
+> +	if (IS_ENABLED(CONFIG_ARM64)) {
+> +		pr_info("Memory hot add disabled on ARM64\n");
+> +		return 0;
+> +	}
+> +
+> +	return 1;
+> +}
+> +
+>  static int balloon_connect_vsp(struct hv_device *dev)
+>  {
+>  	struct dm_version_request version_req;
+> @@ -1731,8 +1763,8 @@ static int balloon_connect_vsp(struct hv_device *de=
+v)
+>  	 * currently still requires the bits to be set, so we have to add code
+>  	 * to fail the host's hot-add and balloon up/down requests, if any.
+>  	 */
+> -	cap_msg.caps.cap_bits.balloon =3D 1;
+> -	cap_msg.caps.cap_bits.hot_add =3D 1;
+> +	cap_msg.caps.cap_bits.balloon =3D ballooning_enabled();
+> +	cap_msg.caps.cap_bits.hot_add =3D hot_add_enabled();
+>=20
+>  	/*
+>  	 * Specify our alignment requirements as it relates
+> --
+> 2.35.1
 
-Add support to calculate the register setting based on DSC params and
-timing information and configure these registers.
-
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
----
- drivers/gpu/drm/msm/dsi/dsi_host.c | 98 +++++++++++++++++++++++++++++-
- 1 file changed, 97 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/gpu/drm/msm/dsi/dsi_host.c b/drivers/gpu/drm/msm/dsi/dsi_host.c
-index eb0be34add45..f3ed6c40b9e1 100644
---- a/drivers/gpu/drm/msm/dsi/dsi_host.c
-+++ b/drivers/gpu/drm/msm/dsi/dsi_host.c
-@@ -912,6 +912,65 @@ static void dsi_ctrl_config(struct msm_dsi_host *msm_host, bool enable,
- 		dsi_write(msm_host, REG_DSI_CPHY_MODE_CTRL, BIT(0));
- }
- 
-+static void dsi_update_dsc_timing(struct msm_dsi_host *msm_host, bool is_cmd_mode, u32 hdisplay)
-+{
-+	struct msm_display_dsc_config *dsc = msm_host->dsc;
-+	u32 reg, intf_width, reg_ctrl, reg_ctrl2;
-+	u32 slice_per_intf, total_bytes_per_intf;
-+	u32 pkt_per_line;
-+	u32 bytes_in_slice;
-+	u32 eol_byte_num;
-+
-+	/* first calculate dsc parameters and then program
-+	 * compress mode registers
-+	 */
-+	intf_width = hdisplay;
-+	slice_per_intf = DIV_ROUND_UP(intf_width, dsc->drm->slice_width);
-+
-+	/* If slice_per_pkt is greater than slice_per_intf
-+	 * then default to 1. This can happen during partial
-+	 * update.
-+	 */
-+	if (slice_per_intf > dsc->drm->slice_count)
-+		dsc->drm->slice_count = 1;
-+
-+	slice_per_intf = DIV_ROUND_UP(hdisplay, dsc->drm->slice_width);
-+	bytes_in_slice = DIV_ROUND_UP(dsc->drm->slice_width * dsc->drm->bits_per_pixel, 8);
-+
-+	dsc->drm->slice_chunk_size = bytes_in_slice;
-+
-+	total_bytes_per_intf = bytes_in_slice * slice_per_intf;
-+
-+	eol_byte_num = total_bytes_per_intf % 3;
-+	pkt_per_line = slice_per_intf / dsc->drm->slice_count;
-+
-+	if (is_cmd_mode) /* packet data type */
-+		reg = DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM0_DATATYPE(MIPI_DSI_DCS_LONG_WRITE);
-+	else
-+		reg = DSI_VIDEO_COMPRESSION_MODE_CTRL_DATATYPE(MIPI_DSI_COMPRESSED_PIXEL_STREAM);
-+
-+	/* DSI_VIDEO_COMPRESSION_MODE & DSI_COMMAND_COMPRESSION_MODE
-+	 * registers have similar offsets, so for below common code use
-+	 * DSI_VIDEO_COMPRESSION_MODE_XXXX for setting bits
-+	 */
-+	reg |= DSI_VIDEO_COMPRESSION_MODE_CTRL_PKT_PER_LINE(pkt_per_line >> 1);
-+	reg |= DSI_VIDEO_COMPRESSION_MODE_CTRL_EOL_BYTE_NUM(eol_byte_num);
-+	reg |= DSI_VIDEO_COMPRESSION_MODE_CTRL_EN;
-+
-+	if (is_cmd_mode) {
-+		reg_ctrl = dsi_read(msm_host, REG_DSI_COMMAND_COMPRESSION_MODE_CTRL);
-+		reg_ctrl2 = dsi_read(msm_host, REG_DSI_COMMAND_COMPRESSION_MODE_CTRL2);
-+
-+		reg_ctrl |= reg;
-+		reg_ctrl2 |= DSI_COMMAND_COMPRESSION_MODE_CTRL2_STREAM0_SLICE_WIDTH(bytes_in_slice);
-+
-+		dsi_write(msm_host, REG_DSI_COMMAND_COMPRESSION_MODE_CTRL, reg);
-+		dsi_write(msm_host, REG_DSI_COMMAND_COMPRESSION_MODE_CTRL2, reg_ctrl2);
-+	} else {
-+		dsi_write(msm_host, REG_DSI_VIDEO_COMPRESSION_MODE_CTRL, reg);
-+	}
-+}
-+
- static void dsi_timing_setup(struct msm_dsi_host *msm_host, bool is_bonded_dsi)
- {
- 	struct drm_display_mode *mode = msm_host->mode;
-@@ -944,7 +1003,38 @@ static void dsi_timing_setup(struct msm_dsi_host *msm_host, bool is_bonded_dsi)
- 		hdisplay /= 2;
- 	}
- 
-+	if (msm_host->dsc) {
-+		struct msm_display_dsc_config *dsc = msm_host->dsc;
-+
-+		/* update dsc params with timing params */
-+		if (!dsc || !mode->hdisplay || !mode->vdisplay) {
-+			pr_err("DSI: invalid input: pic_width: %d pic_height: %d\n",
-+			       mode->hdisplay, mode->vdisplay);
-+			return;
-+		}
-+
-+		dsc->drm->pic_width = mode->hdisplay;
-+		dsc->drm->pic_height = mode->vdisplay;
-+		DBG("Mode %dx%d\n", dsc->drm->pic_width, dsc->drm->pic_height);
-+
-+		/* we do the calculations for dsc parameters here so that
-+		 * panel can use these parameters
-+		 */
-+		dsi_populate_dsc_params(dsc);
-+
-+		/* Divide the display by 3 but keep back/font porch and
-+		 * pulse width same
-+		 */
-+		h_total -= hdisplay;
-+		hdisplay /= 3;
-+		h_total += hdisplay;
-+		ha_end = ha_start + hdisplay;
-+	}
-+
- 	if (msm_host->mode_flags & MIPI_DSI_MODE_VIDEO) {
-+		if (msm_host->dsc)
-+			dsi_update_dsc_timing(msm_host, false, mode->hdisplay);
-+
- 		dsi_write(msm_host, REG_DSI_ACTIVE_H,
- 			DSI_ACTIVE_H_START(ha_start) |
- 			DSI_ACTIVE_H_END(ha_end));
-@@ -963,8 +1053,14 @@ static void dsi_timing_setup(struct msm_dsi_host *msm_host, bool is_bonded_dsi)
- 			DSI_ACTIVE_VSYNC_VPOS_START(vs_start) |
- 			DSI_ACTIVE_VSYNC_VPOS_END(vs_end));
- 	} else {		/* command mode */
-+		if (msm_host->dsc)
-+			dsi_update_dsc_timing(msm_host, true, mode->hdisplay);
-+
- 		/* image data and 1 byte write_memory_start cmd */
--		wc = hdisplay * dsi_get_bpp(msm_host->format) / 8 + 1;
-+		if (!msm_host->dsc)
-+			wc = hdisplay * dsi_get_bpp(msm_host->format) / 8 + 1;
-+		else
-+			wc = mode->hdisplay / 2 + 1;
- 
- 		dsi_write(msm_host, REG_DSI_CMD_MDP_STREAM0_CTRL,
- 			DSI_CMD_MDP_STREAM0_CTRL_WORD_COUNT(wc) |
--- 
-2.34.1
-
+Reviewed-by: Michael Kelley <mikelley@microsoft.com>
