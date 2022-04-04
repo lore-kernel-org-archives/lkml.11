@@ -2,50 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20882C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 07:42:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B1D5C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 07:42:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377748AbiDDHoQ (ORCPT
+        id S1377759AbiDDHou (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 03:44:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57178 "EHLO
+        Mon, 4 Apr 2022 03:44:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352836AbiDDHoN (ORCPT
+        with ESMTP id S1352836AbiDDHos (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 03:44:13 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E3103B00B;
-        Mon,  4 Apr 2022 00:42:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=M7NmYC/Iylm9myghHwqILim55SAUt9QrM+UZYk0eJlw=; b=vLAJbXDawzRId4C1Tb9fqvx+JO
-        AktZVEeAOTG38FT11eGuwjUER5A3z+pmMTzwGQYmE+fkntfJ47EU173+RF/nZ2WKyNSVM998N0DqJ
-        0kWgNdxPeAr4tNbkc3ivHDSDoUcEsflAkeDcm24KtJBv+JhS5DQ75a38xY9Ewv/IUmh4X5XcnQNoh
-        SgcYAxwhcrWFPXj8t2ReYQy1/2WfPbGGojmVKMFPsEPcDFDcgSsfyoYJe97bnmfGNtfaYFuPJN7Ih
-        92r78utpr4k85aK+A+h91o288OIn4JFFTsMOB/BG1tn1XLeSBdNjvlW0SImrWBAVJImdnHI9K2dnj
-        NoM6lUBA==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nbHLs-00Df9E-PM; Mon, 04 Apr 2022 07:42:16 +0000
-Date:   Mon, 4 Apr 2022 00:42:16 -0700
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org,
-        linux-kbuild@vger.kernel.org, linux-arch@vger.kernel.org
-Subject: Re: [PATCH 4/8] mips: add asm/stat.h to UAPI compile-test coverage
-Message-ID: <YkqhWKEs5h67IXGi@infradead.org>
-References: <20220404061948.2111820-1-masahiroy@kernel.org>
- <20220404061948.2111820-5-masahiroy@kernel.org>
+        Mon, 4 Apr 2022 03:44:48 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD4CE36169
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 00:42:51 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 76C391F381;
+        Mon,  4 Apr 2022 07:42:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1649058170; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=I+LWlYv9cz7gaJxOzL+xR1zHRqTA1ZXCYk0EA7akS3Q=;
+        b=KJgPqp2gTIdVAhpodnARX8ZFr/hA/T/hJ2qux30lf/agq7dwFaBnIXpiK+zFZlz8lyJ1Jt
+        ZU+LtfJHQOhv+Hc6+/IF5HPURrA3btikua+yTYwXGrd2+Vio7oZFbF+LhNZMOK+8XnXC2a
+        ZaMkenl8WZCubwPR7gcvePE5fAyVufA=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1649058170;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=I+LWlYv9cz7gaJxOzL+xR1zHRqTA1ZXCYk0EA7akS3Q=;
+        b=lVEFLsp17eaJoj062wqgYZ9ktKh/BXwfi4d94DCDyA7HIiF71X3LBdDtPe2Q2mLxdfanAk
+        1QRGCO0ipqB4VqCw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 4E17313216;
+        Mon,  4 Apr 2022 07:42:50 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id yh9YEnqhSmKGbQAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Mon, 04 Apr 2022 07:42:50 +0000
+Message-ID: <191c3fd8-b858-06b7-df1f-f2f40490d1b6@suse.cz>
+Date:   Mon, 4 Apr 2022 09:42:50 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220404061948.2111820-5-masahiroy@kernel.org>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v3 2/2] mm: wrap __find_buddy_pfn() with a necessary buddy
+ page validation.
+Content-Language: en-US
+To:     Zi Yan <ziy@nvidia.com>, linux-mm@kvack.org
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        David Hildenbrand <david@redhat.com>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        Mike Rapoport <rppt@kernel.org>,
+        Oscar Salvador <osalvador@suse.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org
+References: <20220401230804.1658207-1-zi.yan@sent.com>
+ <20220401230804.1658207-2-zi.yan@sent.com>
+From:   Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <20220401230804.1658207-2-zi.yan@sent.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Looks good:
+On 4/2/22 01:08, Zi Yan wrote:
+> From: Zi Yan <ziy@nvidia.com>
+> 
+> Whenever the buddy of a page is found from __find_buddy_pfn(),
+> page_is_buddy() should be used to check its validity. Add a helper
+> function find_buddy_page_pfn() to find the buddy page and do the check
+> together.
+> 
+> Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
+> Link: https://lore.kernel.org/linux-mm/CAHk-=wji_AmYygZMTsPMdJ7XksMt7kOur8oDfDdniBRMjm4VkQ@mail.gmail.com/
+> Signed-off-by: Zi Yan <ziy@nvidia.com>
 
-Reviewed-by: Christoph Hellwig <hch@lst.de>
+Acked-by: Vlastimil Babka <vbabka@suse.cz>
+
+Thanks.
