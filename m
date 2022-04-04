@@ -2,147 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A79ECC352A8
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F553C352A1
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:08:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382615AbiDDWJl (ORCPT
+        id S1382537AbiDDWJh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 18:09:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46854 "EHLO
+        Mon, 4 Apr 2022 18:09:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379161AbiDDQhx (ORCPT
+        with ESMTP id S1378948AbiDDQHQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 12:37:53 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D3BB71B7B5
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 09:35:55 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8B755D6E;
-        Mon,  4 Apr 2022 09:35:55 -0700 (PDT)
-Received: from [10.57.24.6] (unknown [10.57.24.6])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 636063F73B;
-        Mon,  4 Apr 2022 09:35:53 -0700 (PDT)
-Message-ID: <f5f8166e-1831-1fa0-123c-53d3632451a8@arm.com>
-Date:   Mon, 4 Apr 2022 17:35:45 +0100
+        Mon, 4 Apr 2022 12:07:16 -0400
+Received: from mail.marcansoft.com (marcansoft.com [IPv6:2a01:298:fe:f::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA75E13F42;
+        Mon,  4 Apr 2022 09:05:16 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (No client certificate requested)
+        (Authenticated sender: marcan@marcan.st)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id 8A62D41F28;
+        Mon,  4 Apr 2022 16:05:11 +0000 (UTC)
+Subject: Re: [PATCH 6/9] nvme-apple: Add initial Apple SoC NVMe driver
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     Sven Peter <sven@svenpeter.dev>, Keith Busch <kbusch@kernel.org>,
+        Jens Axboe <axboe@fb.com>, Sagi Grimberg <sagi@grimberg.me>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Rob Herring <robh+dt@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Marc Zyngier <maz@kernel.org>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org
+References: <20220321165049.35985-1-sven@svenpeter.dev>
+ <20220321165049.35985-7-sven@svenpeter.dev> <20220324061620.GA12330@lst.de>
+ <18f3a7e6-16d1-2037-90e7-1c0b1b2fbb1c@marcan.st>
+ <20220404155924.GA9764@lst.de>
+From:   Hector Martin <marcan@marcan.st>
+Message-ID: <216d4bde-9463-a7c7-7d0a-57ea157aa280@marcan.st>
+Date:   Tue, 5 Apr 2022 01:05:09 +0900
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v3 07/21] x86/resctrl: Create mba_sc configuration in the
- rdt_domain
-Content-Language: en-US
-To:     Reinette Chatre <reinette.chatre@intel.com>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Fenghua Yu <fenghua.yu@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        H Peter Anvin <hpa@zytor.com>,
-        Babu Moger <Babu.Moger@amd.com>,
-        shameerali.kolothum.thodi@huawei.com,
-        Jamie Iles <jamie@nuviainc.com>,
-        D Scott Phillips OS <scott@os.amperecomputing.com>,
-        lcherian@marvell.com, bobo.shaobowang@huawei.com,
-        tan.shaopeng@fujitsu.com
-References: <20220217182110.7176-1-james.morse@arm.com>
- <20220217182110.7176-8-james.morse@arm.com>
- <01651414-9d4a-409d-9db7-b4b6dde72829@intel.com>
- <d49bdfad-df5e-77e1-4834-266dcd1b9055@arm.com>
- <91a43681-524e-c12d-612d-259e51bde12c@intel.com>
-From:   James Morse <james.morse@arm.com>
-In-Reply-To: <91a43681-524e-c12d-612d-259e51bde12c@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+In-Reply-To: <20220404155924.GA9764@lst.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: es-ES
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Reinette,
-
-On 4/1/22 23:54, Reinette Chatre wrote:
-> On 3/30/2022 9:43 AM, James Morse wrote:
->> On 16/03/2022 21:50, Reinette Chatre wrote:
->>> On 2/17/2022 10:20 AM, James Morse wrote:
->>>> To support resctrl's MBA software controller, the architecture must provide
->>>> a second configuration array to hold the mbps_val[] from user-space.
->>>>
->>>> This complicates the interface between the architecture specific code and
->>>> the filesystem portions of resctrl that will move to /fs/, to allow
->>>> multiple architectures to support resctrl.
->>>>
->>>> Make the filesystem parts of resctrl create an array for the mba_sc
->>>> values when is_mba_sc() is set to true. The software controller
->>>> can be changed to use this, allowing the architecture code to only
->>>> consider the values configured in hardware.
-
-[...]
-
->>> Considering that no domain belonging to RDT_RESOURCE_MBA will have this array this
->>> always ends up being a null pointer de-reference.
->>
->> Ugh. I'm not sure how I managed to miss that. Thanks for debugging it!
->>
->> That loop was added to reset the array when the filesystem is mounted, as it may hold
->> stale values from a previous mount of the filesystem. Its currently done by
->> reset_all_ctrls(), but that function should really belong to the architecture code.
->>
->> Because mbm_handle_overflow() always passes a domain from the L3 to update_mba_bw(), I
->> think the cleanest thing to do is move the reset to a helper that always operates on the
->> L3 array. (and leave some breadcrumbs in the comments).
-
-> I think this points to more than a need to reset the correct array on mount/unmount ... or
-> perhaps I am not understanding this correctly?
+On 05/04/2022 00.59, Christoph Hellwig wrote:
+> On Tue, Apr 05, 2022 at 12:57:33AM +0900, Hector Martin wrote:
+>> The kernel hard limit is 100-character lines, not 80-character lines.
+>> Maintainers for existing drivers are certainly free to stick to 80 chars
+>> if they like it that way, but I don't see why we should still be
+>> enforcing that for new code. See bdc48fa11e46.
 > 
-> As the analysis above shows the mbps_val array only exists for rdt_domains associated
-> with RDT_RESOURCE_L3 but yet mbps_val will contain the MB value provided by user space
-> associated with RDT_RESOURCE_MBA.
+> Because 100 is completely utterly unreadable if is not for individual
+> lines like strings, and that is actually how Linus stated it in CodingStyle.
+> 
+> Your code as-is is completely unreadable and will not go into
+> drivers/nvme/ in that form.
 
-I've finally got my head round what is going on here: I've muddled up whether mon_capable
-is a resource or system property. mba_sc depends on the L3 being mon_capable, but the
-configuration should be associated with MBA (wherever that is).
-(basically ignore my previous reply!)
+That line is 81 characters. I'm sure Sven doesn't mind fixing it, but
+"your code as-is is completely unreadable" seems uncalled for here, and
+rather unreasonable.
 
-The creation of the mbps_val[] should depend on supports_mba_mbps(), which uses
-is_mbm_enabled() to check whether the L3 is mon_capable. I'll check the rid too
-to make it clear its only MBA that has this.
-The call to allocate the domain in resctrl_online_domain() should be above the mon_capable
-check. (which is still needed to avoid the work guarded by is_mbm_enabled() and friends
-running for each domain).
-
-
-Thanks,
-
-James
-
------------------------%<-----------------------
-diff --git a/arch/x86/kernel/cpu/resctrl/rdtgroup.c b/arch/x86/kernel/cpu/resctrl/rdtgroup.c
-index e3c90f33baf2..ad0411eb2147 100644
---- a/arch/x86/kernel/cpu/resctrl/rdtgroup.c
-+++ b/arch/x86/kernel/cpu/resctrl/rdtgroup.c
-@@ -3345,6 +3345,14 @@ int resctrl_online_domain(struct rdt_resource *r, struct rdt_domain *d)
-  
-         lockdep_assert_held(&rdtgroup_mutex);
-  
-+       if (is_mbm_enabled() && r->rid == RDT_RESOURCE_MBA) {
-+               err = mba_sc_domain_allocate(r, d);
-+               if (err) {
-+                       domain_destroy_mon_state(d);
-+                       return err;
-+               }
-+       }
-+
-         if (!r->mon_capable)
-                 return 0;
-  
-@@ -3352,12 +3360,6 @@ int resctrl_online_domain(struct rdt_resource *r, struct rdt_domain *d)
-         if (err)
-                 return err;
-  
--       err = mba_sc_domain_allocate(r, d);
--       if (err) {
--               domain_destroy_mon_state(d);
--               return err;
--       }
--
-         if (is_mbm_enabled()) {
-                 INIT_DELAYED_WORK(&d->mbm_over, mbm_handle_overflow);
-                 mbm_setup_overflow_handler(d, MBM_OVERFLOW_INTERVAL);
------------------------%<-----------------------
+-- 
+Hector Martin (marcan@marcan.st)
+Public Key: https://mrcn.st/pub
