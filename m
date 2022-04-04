@@ -2,141 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C1D4C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B3EFC35296
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:39:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378034AbiDDVkq (ORCPT
+        id S1386819AbiDDVja (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:40:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47006 "EHLO
+        Mon, 4 Apr 2022 17:39:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380667AbiDDUyX (ORCPT
+        with ESMTP id S1380032AbiDDSl6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 16:54:23 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0516A2D1F3;
-        Mon,  4 Apr 2022 13:52:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1649105533;
-        bh=BRKu84tk/JvDo38djPwWov/dR2ILWXWhz5k0A0S7YxU=;
-        h=X-UI-Sender-Class:Date:From:To:Cc:Subject:In-Reply-To:References;
-        b=NjjsN5DTj0nPw4L1Ik74rVE35L1w1U32M/99gYi0opd0MsznEcZvKi/h+tZGBbUMH
-         KVOnrG6pd4xJp1tta5bw+0S+MeB80gYMrJatKQX9I9CNJNaZERA79GbpXHWtYmv633
-         lrItyuAK97GCdZnHvLw8dlrP3NXk+ayUkEtcRVA0=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from localhost ([62.216.209.4]) by mail.gmx.net (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MQ5vW-1nOBzB3Hbk-00M32k; Mon, 04
- Apr 2022 22:52:13 +0200
-Date:   Mon, 4 Apr 2022 22:52:12 +0200
-From:   Peter Seiderer <ps.report@gmx.net>
-To:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@toke.dk>
-Cc:     linux-wireless@vger.kernel.org, Kalle Valo <kvalo@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1 1/2] ath9k: fix ath_get_rate_txpower() to respect the
- rate list end tag
-Message-ID: <20220404225212.2876091a@gmx.net>
-In-Reply-To: <87ilroemo4.fsf@toke.dk>
-References: <20220402153014.31332-1-ps.report@gmx.net>
-        <87ilroemo4.fsf@toke.dk>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-suse-linux-gnu)
+        Mon, 4 Apr 2022 14:41:58 -0400
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E88DB5F85
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 11:40:01 -0700 (PDT)
+Received: by mail-pf1-x42a.google.com with SMTP id s8so9750547pfk.12
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 11:40:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=dVG8SdKJh3lNF5aMlMn0lGtL8TsUuGiy0ylcJGnwrLQ=;
+        b=mX37UAkizZPJSLK5nuleOQGUHlnzGzVIX7n8Ey1L438YuOI2RXx1GF5cjewpiTeFfb
+         NEZ5/iVMlRh6ZJghqjttF4FVrgeWQQRSBDnKhGJlGSusXLPVP9/IzJTcC6cJyGhipMEZ
+         NN5pT8S0RD/wR/TL2mC3KHhfGSWO55u10Bk6M=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=dVG8SdKJh3lNF5aMlMn0lGtL8TsUuGiy0ylcJGnwrLQ=;
+        b=XyJfA3xX9dJin6dsS4mv6AohJh1LBDlijvtT9TKV8yRSbaUg3lVL5SolOVGIxaM1y/
+         aoB4yWjxK/DtDUasjnTda8Z6S3mkJdJQEJ0no1dkthMT4rGcV2IsgfQyFK/qk+FVoZvl
+         op2iE+YdyJns9vrZsE7Z3Bfc8xva7Kf+pKiTCvpv7RCaasusHR4BwzcDjqO1tevOj4XU
+         8LJZP9uVviV3szwyr6atFRO9TSMRchEFOuFs76herLYNnBeg1VpfCZkK9/rwPbnHqyep
+         GnfqcdwjBUER5yyuGALz8PYc7m0eTN8mZm6CRGiaBPw4VNLgJwjuOeR4BSIGtKgkoljV
+         MfSw==
+X-Gm-Message-State: AOAM530Dp43lgtptUPCszcDVvsRwlDHr1qWRgVUEum1GB/1jac976TDy
+        PKhv6opZrugizIzBf6kBK4hJXw==
+X-Google-Smtp-Source: ABdhPJx3WYIgYP8Ex9on1q2aw9dCFrPaAv+SqDaCN+xEoGXLlI1AISWPm+KJ14/yd+3EV0nxg5JGCg==
+X-Received: by 2002:a05:6a00:1252:b0:4fa:afcc:7d24 with SMTP id u18-20020a056a00125200b004faafcc7d24mr911536pfi.85.1649097601437;
+        Mon, 04 Apr 2022 11:40:01 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id ay9-20020a056a00300900b004fae1346aa1sm12196740pfb.122.2022.04.04.11.40.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Apr 2022 11:40:01 -0700 (PDT)
+Date:   Mon, 4 Apr 2022 11:40:00 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     =?iso-8859-1?Q?Micka=EBl_Sala=FCn?= <mic@digikod.net>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Christian Heimes <christian@python.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        James Morris <jmorris@namei.org>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        Muhammad Usama Anjum <usama.anjum@collabora.com>,
+        Paul Moore <paul@paul-moore.com>,
+        Philippe =?iso-8859-1?Q?Tr=E9buchet?= 
+        <philippe.trebuchet@ssi.gouv.fr>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Steve Dower <steve.dower@python.org>,
+        Thibaut Sautereau <thibaut.sautereau@ssi.gouv.fr>,
+        Vincent Strubel <vincent.strubel@ssi.gouv.fr>,
+        linux-fsdevel@vger.kernel.org, linux-integrity@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-security-module@vger.kernel.org
+Subject: Re: [GIT PULL] Add trusted_for(2) (was O_MAYEXEC)
+Message-ID: <202204041130.F649632@keescook>
+References: <20220321161557.495388-1-mic@digikod.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:NnPRZIjfNaVJZkTj7ApVieAk1MB2agUzzNV92mwZAI+hi5wjXJS
- jXCOhQXmMkBnmA8a6EDqUodUItITKqTePCSDfD/C0oTbzpg9SuZfWNaV41go8A9cJzyPxN1
- LKabCB9n+YuWnOECdwZ9jqua5cI3qDgSSIS+Uhg5wBofAem10ndrzZrVqZKyxx/VSauoE1k
- 40e/m6+fDRIIEMawHmSRg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:WwctLXs7RJo=:8ukKxlh0/t1eW2vnPQLVZE
- 8e1had8xvP0OL0tFnV5qXHRWSTxwk4O3YP7CBnvJ2moBYpvwNhDnnGyzreIDugHLbWFqsHvpE
- OLpDQj5wby7wkzPqr9iDRTNUY96lTcAMq6z8nHQNtvYuxUW6gXkV1lzlrnbMTu4xKqJTwBWSs
- 199cHzaBCCiJ63qvuI8SsnB0OivkeOznG1/9l9z6f/6OE/Y8PqhR4gon6NhRPnPNUUhJw03GV
- hnTpBzGfTWowaEqChXrRM8uiDrDUS8Qa53inyULcc7eiO08hb+YBdTkQ5WBY7+dLyCQUeZjEC
- tP/qXPaHABq7doy1v28EG6zjewSIV2ClND+mR8Jp8CkAK4exBfQUKsAnby4g9dS4jvIApFLB7
- COQH4Q6fGyg6ddpAiFkWvmK4kPwWsnbI5Io5ECOJ2e/shgwD6iCh6AhZCDS7gh+FV+cvZbBrB
- pm3A//PzqnNbWB2TatArebUxVmlGLiDjiVu4yfPkajQjbV15A2yUuYrj6U8gB1dEdBvJn24CN
- Cp73w6TtwH1oWtnnL07NRO9eS5cfY4JhJi3nzNJDmiLLs6wUoa90xCHtuiKVO16RVwGxj/M9G
- g3bd1+uJouwcx09w0aSKOu564BWHVQhtWmCdCiOa0Yxs0gSRiFRRcC2BXs3Z2FtCRz8FeWLTO
- CyofkFDZCqWeGy5jg193fHMcEqtP9//J0UvsgEdMd5zBlT3QhmD6cgLN6w4xiDEvJ23k/idtq
- Xg/IHhbkqQHRxulde8QpwRMiFncur3yRMIYUu3mdDZhZAZqYGCFaYf2t6URE3StrEVb2Rmx1L
- uLAqG5F3r0/RHlYuoFplFl605bwh8t9csic35YcAxTdm/BnX+m7s46+dlRGR3TzCE/1VSo4+a
- SSXkEJi3cTBCQy7pXB/GFld/21EWJ/FDYO8rXLTtEfqPr37rCbg/StC50cJvG5QiAwvPPJOCm
- 82GaXuSOFvlIwg0AwETSW4sUPLaEQbfVLRwZV3h9k7oqaqshgfS7b+RuPh++ac+OuD8v/GkFl
- ag9nAiv0sf3lpqIOlQnpG5Otc+UONeePTMNk8zihAVBuuVlArnJbgE/y2qDV8/tN+7YY/WcxB
- 42bLxPrumSJz5U=
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220321161557.495388-1-mic@digikod.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Toke,
+On Mon, Mar 21, 2022 at 05:15:57PM +0100, Mickaël Salaün wrote:
+> [...]
+> For further details, please see the latest cover letter:
+> https://lore.kernel.org/r/20220104155024.48023-1-mic@digikod.net
+> 
+> Commit dae71698b6c5 ("printk: Move back proc_dointvec_minmax_sysadmin()
+> to sysctl.c") was recently added due to the sysctl refactoring.
+> 
+> Commit e674341a90b9 ("selftests/interpreter: fix separate directory
+> build") will fix some test build cases as explained here:
+> https://lore.kernel.org/r/20220119101531.2850400-1-usama.anjum@collabora.com
+> Merging this commit without the new KHDR_INCLUDES is not an issue.
+> The upcoming kselftest pull request is ready:
+> https://git.kernel.org/pub/scm/linux/kernel/git/shuah/linux-kselftest.git/log/?h=next
+> 
+> This patch series has been open for review for more than three years and
+> got a lot of feedbacks (and bikeshedding) which were all considered.
+> Since I heard no objection, please consider to pull this code for
+> v5.18-rc1 .  These five patches have been successfully tested in the
+> latest linux-next releases for several weeks.
 
-On Mon, 04 Apr 2022 20:19:39 +0200, Toke H=C3=B8iland-J=C3=B8rgensen <toke@=
-toke.dk> wrote:
+Hi Linus,
 
-> Peter Seiderer <ps.report@gmx.net> writes:
->=20
-> > Stop reading (and copying) from ieee80211_tx_rate to ath_tx_info.rates
-> > after list end tag (count =3D=3D 0, idx < 0), prevents copying of garba=
-ge
-> > to card registers. =20
->=20
-> In the normal case I don't think this patch does anything, since any
-> invalid rate entries will already be skipped (just one at a time instead
-> of all at once). So this comment is a bit misleading.
+It looks like this didn't get pulled for -rc1 even though it was sent
+during the merge window and has been in -next for a while. It would be
+really nice to get this landed since userspace can't make any forward
+progress without the kernel support.
 
-Save some (minimal) compute time? Found it something misleading while
-debugging to see random values written out to the card and found this
-comment in net/mac80211/rate.c:
+Was there some issue blocking this from being merged? All the feedback I
+can find on prior versions was addressed.
 
- 648                 /*
- 649                  * make sure there's no valid rate following
- 650                  * an invalid one, just in case drivers don't
- 651                  * take the API seriously to stop at -1.
- 652                  */
+-Kees
 
-and multiple places doing the same check (count =3D=3D 0, idx < 0) for vali=
-dation
-e.g.:
-
- 723                 if (i < ARRAY_SIZE(info->control.rates) &&
- 724                     info->control.rates[i].idx >=3D 0 &&
- 725                     info->control.rates[i].count) {
-
-or=20
-
- 742                 if (rates[i].idx < 0 || !rates[i].count)
- 743                         break;
-
->=20
-> Also, Minstrel could in principle produce a rate sequence where the
-> indexes are all positive, but there's one in the middle with a count of
-> 0, couldn't it? With this patch, the last entries of such a sequence
-> would now be skipped...
-
-According to net/mac80211/rc80211_minstrel_ht.c:
-
-1128 static bool
-1129 minstrel_ht_txstat_valid(struct minstrel_priv *mp, struct minstrel_ht_=
-sta *     mi,
-1130                          struct ieee80211_tx_rate *rate)
-1131 {
-1132         int i;
-1133=20
-1134         if (rate->idx < 0)
-1135                 return false;
-1136=20
-1137         if (!rate->count)
-1138                 return false;
-1139=20
-
-minstrel although evaluates a rate count of zero as invalid...
-
-Regards,
-Peter
-
->=20
-> -Toke
-
+-- 
+Kees Cook
