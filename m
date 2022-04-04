@@ -2,287 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 043EBC47086
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8AAEC388F3
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:23:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380641AbiDDVVw (ORCPT
+        id S1380761AbiDDVWC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:21:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35448 "EHLO
+        Mon, 4 Apr 2022 17:22:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379935AbiDDSYR (ORCPT
+        with ESMTP id S1379223AbiDDQro (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 14:24:17 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D798D22B37;
-        Mon,  4 Apr 2022 11:22:19 -0700 (PDT)
-Date:   Mon, 04 Apr 2022 18:22:17 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649096538;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ZakpqfaTx6lO1VIWJ0OCzSwvivmkKgp+Du7SeMUvK2c=;
-        b=cBCoj8ciMjLvzRkb+ThdEDvEHyvzXVlqs6TKiA06UCOEaoT3VqgDGSHNf6nby1jNEbXyvI
-        gfxre6H179OqxVvCz7rOVwW9wlaXZAyMeRdymLHxJZNWQRuA9tZK0zKtYu1x3B/MOnc5i+
-        m8dYfvIUBiPiP0SkAOFWzBRUl10e0fm4lDJzGbOfxF6Eh9L8awNo/jqH0ME8H5Jc+RpwKK
-        7mFl0rmJVKVPuW931ldFFkSDCK8CO9fqALY17O4z0SAUNOEm1cyoi64wNk++rrrh9qLrSV
-        jq/VJWNhu1RADNeTLgyEriULQY5wWtKWm7CIFa3sVJIQQr1ib2oVOEtAvhtyvQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649096538;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ZakpqfaTx6lO1VIWJ0OCzSwvivmkKgp+Du7SeMUvK2c=;
-        b=x4la8kf/Yb/H8rueyVxWPuVjbXIcRHcEMdUv1d4DLhVmb1a9i+Zzzbg254xnYA2M1oCJxo
-        iuqaX7FK8Cs9hkCg==
-From:   "tip-bot2 for Borislav Petkov" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/cpu] x86/cpu: Remove "noexec"
-Cc:     Borislav Petkov <bp@suse.de>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Kees Cook <keescook@chromium.org>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220127115626.14179-6-bp@alien8.de>
-References: <20220127115626.14179-6-bp@alien8.de>
+        Mon, 4 Apr 2022 12:47:44 -0400
+Received: from gateway33.websitewelcome.com (gateway33.websitewelcome.com [192.185.146.97])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6342635DFF
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 09:45:48 -0700 (PDT)
+Received: from cm17.websitewelcome.com (cm17.websitewelcome.com [100.42.49.20])
+        by gateway33.websitewelcome.com (Postfix) with ESMTP id D043FD847F8
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 11:45:47 -0500 (CDT)
+Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
+        by cmsmtp with SMTP
+        id bPprn4FwC22u3bPprnBDnR; Mon, 04 Apr 2022 11:45:47 -0500
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=roeck-us.net; s=default; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:Subject:From:References:Cc:To:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=PvOuKe3VYlx98pU3fvtPHpnIy8LCRmoajzdinROj5NE=; b=Xu8onfvEDpQdIZ3BVod020rxdk
+        tQMu8IrsOWj9aZFbzzsFOZnlmA29iNKCQ6c1nMx79xcLNdnlK7J91JWQU/E0Yiq4KMSzVa42m6wS4
+        oARlfvK6KKH6KbmihrQcVYSM9/xDxnLCcKlQ01Y7MqpU7UNS4hCRUsBcK7hgVfKnDNWJY0sdMQfER
+        aI5afOQSQbSl1aQGH1puQRYg9WCO1Gkhkt4w3u/F6zTDYwvzWLCmymt4xDLbaE2soHpQN54duS1+l
+        qy+mOCrPCSNzHPNvk3MM29YZoZsMu1Rpyghp+9/Na5H8UdWxfskJG6C5eTZZqjhnmh1m88KOjC2Vj
+        nqXc5fUA==;
+Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:54722)
+        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@roeck-us.net>)
+        id 1nbPpr-002TwF-Fk; Mon, 04 Apr 2022 16:45:47 +0000
+Message-ID: <ea840ab9-0c20-8c06-f7d4-bb9642a63500@roeck-us.net>
+Date:   Mon, 4 Apr 2022 09:45:46 -0700
 MIME-Version: 1.0
-Message-ID: <164909653744.389.3722817751612158002.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Content-Language: en-US
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
+        Oded Gabbay <ogabbay@kernel.org>, Jiri Slaby <jslaby@suse.cz>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+References: <CAHk-=wg6FWL1xjVyHx7DdjD2dHZETA5_=FqqW17Z19X-WTfWSg@mail.gmail.com>
+ <20220404022239.GA1186352@roeck-us.net>
+ <CAHk-=wimc7V9mi=P+6p2nnctPYtSM55OSPVERUeJor7fkD_EVg@mail.gmail.com>
+ <aba387bd-9799-e0b5-40e3-1bcb552ac74c@roeck-us.net>
+ <CAHk-=witgMUS8To6wijxdbQ+QEH0gcHSYV6Y=yzOdb=Q4h9PJA@mail.gmail.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+Subject: Re: Linux 5.18-rc1
+In-Reply-To: <CAHk-=witgMUS8To6wijxdbQ+QEH0gcHSYV6Y=yzOdb=Q4h9PJA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - roeck-us.net
+X-BWhitelist: no
+X-Source-IP: 108.223.40.66
+X-Source-L: No
+X-Exim-ID: 1nbPpr-002TwF-Fk
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net [108.223.40.66]:54722
+X-Source-Auth: linux@roeck-us.net
+X-Email-Count: 7
+X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the x86/cpu branch of tip:
+On 4/4/22 08:32, Linus Torvalds wrote:
+> On Sun, Apr 3, 2022 at 9:23 PM Guenter Roeck <linux@roeck-us.net> wrote:
+>>
+>> Oops. Sorry, I thought it was big endian. No idea why. I'll update
+>> subject and description and resend.
+> 
+> I see your updated patch, but for some reason 'b4' is unhappy about it, with
+> 
+>    $ b4 am 20220404134338.3276991-1-linux@roeck-us.net
+> 
+> causing
+> 
+>    ✗ [PATCH v3] staging: r8188eu: Fix PPPoE tag insertion on little
+> endian systems
+>    ---
+>    ✗ BADSIG: DKIM/roeck-us.net
+> 
+> your DKIM looks fine on the messages I see, but now that I look at it
+> on the mailing list, I notice that your DKIM really is very wrong, and
+> has a lot of headers that a DKIM signature should *not* have.
+> 
+> Your DKIM signature includes header names that are very much for list
+> management, so by definition DKIM will fail for any email you send
+> through a mailing list. Headers like
+> "Resent-From:Resent-Sender:Resent-To:Resent-Cc
+> :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe" etc.
+> 
+> The DKIM setup should protect the meaningful headers that matter to
+> the sender, not things that the mail system will validly add when it
+> passes through.
+> 
+> So the DKIM header list should be things like
+> ":To:From:Cc:Message-Id:Date:Subject:"
+> 
+> Not things like "Sender" or mailing list things.
 
-Commit-ID:     76ea0025a214cdf0d2c204f4c21cbffa9fb57c32
-Gitweb:        https://git.kernel.org/tip/76ea0025a214cdf0d2c204f4c21cbffa9fb57c32
-Author:        Borislav Petkov <bp@suse.de>
-AuthorDate:    Thu, 27 Jan 2022 12:56:25 +01:00
-Committer:     Borislav Petkov <bp@suse.de>
-CommitterDate: Mon, 04 Apr 2022 10:17:03 +02:00
+I tried to tell my provider, but to no avail. Until now I used gmail,
+but gmail will disable that ability by end of this month, leaving me
+in the dark. Lose-lose situation for me. Right now I don't have a
+useful alternative that doesn't require me to change my e-mail
+address completely (or setting up my own e-mail server which
+is a pita).
 
-x86/cpu: Remove "noexec"
+> 
+> Anyway, I was going to just commit it directly, but with the DKIM
+> verification failing, I was a bit less eager to. And then I noticed
+> that you used "be16_to_cpu()" - which is technically correct - which
+> doesn't match the other code in that file.
+> 
+Another lose-lose situation. Larry tells me I should use
+be16_to_cpu(), you tell me I should not.
 
-It doesn't make any sense to disable non-executable mappings -
-security-wise or else.
+Either case, https://lore.kernel.org/r/YkPK/QmLAp3BkygY@sckzor-linux.localdomain
+is a more complete solution, so you might want to pick that one.
 
-So rip out that switch and move the remaining code into setup.c and
-delete setup_nx.c
-
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Lai Jiangshan <jiangshanlai@gmail.com>
-Reviewed-by: Kees Cook <keescook@chromium.org>
-Link: https://lore.kernel.org/r/20220127115626.14179-6-bp@alien8.de
----
- Documentation/admin-guide/kernel-parameters.txt |  5 +-
- Documentation/x86/x86_64/boot-options.rst       |  9 +--
- arch/x86/include/asm/proto.h                    |  1 +-
- arch/x86/kernel/setup.c                         | 28 ++++++-
- arch/x86/mm/Makefile                            |  3 +-
- arch/x86/mm/init_64.c                           |  1 +-
- arch/x86/mm/setup_nx.c                          | 62 +----------------
- 7 files changed, 26 insertions(+), 83 deletions(-)
- delete mode 100644 arch/x86/mm/setup_nx.c
-
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 39ac2c1..a2299b2 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -3456,11 +3456,6 @@
- 
- 	noexec		[IA-64]
- 
--	noexec		[X86]
--			On X86-32 available only on PAE configured kernels.
--			noexec=on: enable non-executable mappings (default)
--			noexec=off: disable non-executable mappings
--
- 	nosmap		[PPC]
- 			Disable SMAP (Supervisor Mode Access Prevention)
- 			even if it is supported by processor.
-diff --git a/Documentation/x86/x86_64/boot-options.rst b/Documentation/x86/x86_64/boot-options.rst
-index 07aa000..fb6030a 100644
---- a/Documentation/x86/x86_64/boot-options.rst
-+++ b/Documentation/x86/x86_64/boot-options.rst
-@@ -157,15 +157,6 @@ Rebooting
-      newer BIOS, or newer board) using this option will ignore the built-in
-      quirk table, and use the generic default reboot actions.
- 
--Non Executable Mappings
--=======================
--
--  noexec=on|off
--    on
--      Enable(default)
--    off
--      Disable
--
- NUMA
- ====
- 
-diff --git a/arch/x86/include/asm/proto.h b/arch/x86/include/asm/proto.h
-index feed36d..0f899c8 100644
---- a/arch/x86/include/asm/proto.h
-+++ b/arch/x86/include/asm/proto.h
-@@ -35,7 +35,6 @@ void xen_entry_INT80_compat(void);
- #endif
- 
- void x86_configure_nx(void);
--void x86_report_nx(void);
- 
- extern int reboot_force;
- 
-diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index c95b9ac..249981b 100644
---- a/arch/x86/kernel/setup.c
-+++ b/arch/x86/kernel/setup.c
-@@ -756,6 +756,30 @@ dump_kernel_offset(struct notifier_block *self, unsigned long v, void *p)
- 	return 0;
- }
- 
-+void x86_configure_nx(void)
-+{
-+	if (boot_cpu_has(X86_FEATURE_NX))
-+		__supported_pte_mask |= _PAGE_NX;
-+	else
-+		__supported_pte_mask &= ~_PAGE_NX;
-+}
-+
-+static void __init x86_report_nx(void)
-+{
-+	if (!boot_cpu_has(X86_FEATURE_NX)) {
-+		printk(KERN_NOTICE "Notice: NX (Execute Disable) protection "
-+		       "missing in CPU!\n");
-+	} else {
-+#if defined(CONFIG_X86_64) || defined(CONFIG_X86_PAE)
-+		printk(KERN_INFO "NX (Execute Disable) protection: active\n");
-+#else
-+		/* 32bit non-PAE kernel, NX cannot be used */
-+		printk(KERN_NOTICE "Notice: NX (Execute Disable) protection "
-+		       "cannot be enabled: non-PAE kernel!\n");
-+#endif
-+	}
-+}
-+
- /*
-  * Determine if we were loaded by an EFI loader.  If so, then we have also been
-  * passed the efi memmap, systab, etc., so we should use these data structures
-@@ -896,9 +920,7 @@ void __init setup_arch(char **cmdline_p)
- 	/*
- 	 * x86_configure_nx() is called before parse_early_param() to detect
- 	 * whether hardware doesn't support NX (so that the early EHCI debug
--	 * console setup can safely call set_fixmap()). It may then be called
--	 * again from within noexec_setup() during parsing early parameters
--	 * to honor the respective command line option.
-+	 * console setup can safely call set_fixmap()).
- 	 */
- 	x86_configure_nx();
- 
-diff --git a/arch/x86/mm/Makefile b/arch/x86/mm/Makefile
-index fe3d306..d957dc1 100644
---- a/arch/x86/mm/Makefile
-+++ b/arch/x86/mm/Makefile
-@@ -20,13 +20,12 @@ CFLAGS_REMOVE_mem_encrypt_identity.o	= -pg
- endif
- 
- obj-y				:=  init.o init_$(BITS).o fault.o ioremap.o extable.o mmap.o \
--				    pgtable.o physaddr.o setup_nx.o tlb.o cpu_entry_area.o maccess.o
-+				    pgtable.o physaddr.o tlb.o cpu_entry_area.o maccess.o
- 
- obj-y				+= pat/
- 
- # Make sure __phys_addr has no stackprotector
- CFLAGS_physaddr.o		:= -fno-stack-protector
--CFLAGS_setup_nx.o		:= -fno-stack-protector
- CFLAGS_mem_encrypt_identity.o	:= -fno-stack-protector
- 
- CFLAGS_fault.o := -I $(srctree)/$(src)/../include/asm/trace
-diff --git a/arch/x86/mm/init_64.c b/arch/x86/mm/init_64.c
-index 96d34eb..d2e484e 100644
---- a/arch/x86/mm/init_64.c
-+++ b/arch/x86/mm/init_64.c
-@@ -110,7 +110,6 @@ int force_personality32;
- /*
-  * noexec32=on|off
-  * Control non executable heap for 32bit processes.
-- * To control the stack too use noexec=off
-  *
-  * on	PROT_READ does not imply PROT_EXEC for 32-bit processes (default)
-  * off	PROT_READ implies PROT_EXEC
-diff --git a/arch/x86/mm/setup_nx.c b/arch/x86/mm/setup_nx.c
-deleted file mode 100644
-index ed5667f..0000000
---- a/arch/x86/mm/setup_nx.c
-+++ /dev/null
-@@ -1,62 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0
--#include <linux/spinlock.h>
--#include <linux/errno.h>
--#include <linux/init.h>
--#include <linux/pgtable.h>
--
--#include <asm/proto.h>
--#include <asm/cpufeature.h>
--
--static int disable_nx;
--
--/*
-- * noexec = on|off
-- *
-- * Control non-executable mappings for processes.
-- *
-- * on      Enable
-- * off     Disable
-- */
--static int __init noexec_setup(char *str)
--{
--	if (!str)
--		return -EINVAL;
--	if (!strncmp(str, "on", 2)) {
--		disable_nx = 0;
--	} else if (!strncmp(str, "off", 3)) {
--		disable_nx = 1;
--	}
--	x86_configure_nx();
--	return 0;
--}
--early_param("noexec", noexec_setup);
--
--void x86_configure_nx(void)
--{
--	if (boot_cpu_has(X86_FEATURE_NX) && !disable_nx)
--		__supported_pte_mask |= _PAGE_NX;
--	else
--		__supported_pte_mask &= ~_PAGE_NX;
--}
--
--void __init x86_report_nx(void)
--{
--	if (!boot_cpu_has(X86_FEATURE_NX)) {
--		printk(KERN_NOTICE "Notice: NX (Execute Disable) protection "
--		       "missing in CPU!\n");
--	} else {
--#if defined(CONFIG_X86_64) || defined(CONFIG_X86_PAE)
--		if (disable_nx) {
--			printk(KERN_INFO "NX (Execute Disable) protection: "
--			       "disabled by kernel command line option\n");
--		} else {
--			printk(KERN_INFO "NX (Execute Disable) protection: "
--			       "active\n");
--		}
--#else
--		/* 32bit non-PAE kernel, NX cannot be used */
--		printk(KERN_NOTICE "Notice: NX (Execute Disable) protection "
--		       "cannot be enabled: non-PAE kernel!\n");
--#endif
--	}
--}
+Thanks,
+Guenter
