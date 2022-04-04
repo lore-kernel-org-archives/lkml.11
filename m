@@ -2,144 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96114C47081
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:23:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6149C47085
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:23:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379994AbiDDVVQ (ORCPT
+        id S1381103AbiDDVWZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:21:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35256 "EHLO
+        Mon, 4 Apr 2022 17:22:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379517AbiDDRVQ (ORCPT
+        with ESMTP id S1379594AbiDDRn6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 13:21:16 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D72B6E098
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 10:19:19 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id y6so8713492plg.2
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 10:19:19 -0700 (PDT)
+        Mon, 4 Apr 2022 13:43:58 -0400
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A183131DE7;
+        Mon,  4 Apr 2022 10:41:59 -0700 (PDT)
+Received: by mail-pl1-x62f.google.com with SMTP id c23so8798407plo.0;
+        Mon, 04 Apr 2022 10:41:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=uhZvWBIYSPxrHtL/UXP4sOCKqMqAgTQ5cHbzprIzUlI=;
-        b=rzW4aaUe8wJHBTW/ExLvJddgYRg1t4YhtSpQVQScLfUwXMUjqtSxLLNi52Rpn5/B9e
-         4fm33kwEjNNC8PObxWVWNVFke/MshRfAUZolEP0oeRGIcWs1cMZ8dqnCMHUOTSSXF2R+
-         Nxc7bj+ITBZAcBUCg6yEKcw6zz2obIN/RDEpBS+4YLPJ4AjvRWmQYm9ga69a1RiY4EDX
-         oGzty137ABa8Ztyvwr1RlrkdXRpVcepr1eO0rJxfGr76K3XVs6VQ3L6PIza3Wro/7erv
-         oZSbbPlhDhdZagCPj0TuB4euNN0h0a1bfMWvh80WoOYfDkjShCEByhv1m6HFJ/OrDhaM
-         E/NQ==
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=cN+cryxrTnBG0VJoafZ3s+TyTmI2BuJ8Y3SjnOF9NwE=;
+        b=q3aN/qFotQnWnl+DjEG8MO6ne2oneqFucG+YMqB8k3tZY4ziHRZjt9uG5kk2ucPSyJ
+         B3t4mekt0LtHaY6B2DxdS9ITSE1r5EeeAd/rhW1xKoa1wo3vU4K2S8P61apUpP5h4bNm
+         Ie0A7GhmrIV13SapWYC+pBHHxcMfzG1xl5pi5A5mA6QQacPLxq32GEg+r615aQjVj0cM
+         ScAvsigcU1WuLyjMICOCbYf7dvvMMcfNL5CZ9k+EEuJADXpZ4eKJcbWnBjSBr+bT6AiL
+         7lCs1XU5CcdliX4j+yjAr9C7RGzTsxJzZ3oMolqcxQoEMANHXQ/CG9u/lINvdUreaUZ7
+         6UmQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=uhZvWBIYSPxrHtL/UXP4sOCKqMqAgTQ5cHbzprIzUlI=;
-        b=pM66YnWM8SHnkgDiqATaY1RBFeNN2dFvjerTM2zOmrj2Rq5MkMu7IhigSXLm4ntf2A
-         GBvmUJCG0kTTMevSZ9mcRhY5VhnN9dKMYU/le2QisR0ZsrdYCXVrp/WA8PEX5lfttq9S
-         wQrPQK0SJJS3VTcN/Y8TJ/SnWL8p8j39qYjKMfYph/qZXtW13nQc5HztlAh6vRhiR0ZC
-         KNpG9KAdTDUBAMZBTOJ7rP/B9V/bzycf42IjucncNu0MK8ZVENoeLG4QSR/p0+Y4KWVp
-         K3MADm967jX8ozeJdk4UHJnrX0b/9N3LRnBAj0/iJSbtGXZ0nT/yF2u5fTZRtJJ8tMMO
-         4hWA==
-X-Gm-Message-State: AOAM532+9NfYQnfN3HStcPM7gM5/JCjhdxN/3YFJpD53WhHwFrinBkUn
-        i4cZYDYyWXPyXtQLKUI3hwc0XV9sA0w4WcRG8doBcA==
-X-Google-Smtp-Source: ABdhPJz50EolXnmloOFRdflV7luhmQEbXQ6TLx1sRiAzjczB5dC9hpz0y8SCGJwdMY8U2thvWleWIxvnBRXFYbPjKbA=
-X-Received: by 2002:a17:903:2351:b0:156:a562:b3f8 with SMTP id
- c17-20020a170903235100b00156a562b3f8mr670651plh.81.1649092759112; Mon, 04 Apr
- 2022 10:19:19 -0700 (PDT)
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=cN+cryxrTnBG0VJoafZ3s+TyTmI2BuJ8Y3SjnOF9NwE=;
+        b=QdVh3ys8cFAljnWrNfGGglggY5h1xoDIxaOprUekNAFGSNWkd6hSUvVM2lSzQcTXzo
+         ahncuo08SmmAfa2LteG7sS5i+51QOknbxQXhCAryc9aGkQ9WPNR1l4zXIeZpxc/0nafY
+         cknp3egJa1ftVFGL088yX84jzZhfoZY4BzeKFHV4HsR0ujkejp8QEKHPQJzPA8AFzm6c
+         69Gkt36moJekCV3JI9dwtqHkNZBAUyJwe99fE9YZlFZMeb0SozM/X1qr6EsV/9UOVBe6
+         cTOKzRl0VVIjrfyIkjqtVNbuhWRRUaAA8jyH4xw+vB10ApqreQGm/n3OdPOHGAbzKXL0
+         LeSQ==
+X-Gm-Message-State: AOAM532bwbgJBJ9f3YDXP6a6SnOuMp9cnaUq1TZQfZljuozQOEtMXLhT
+        8LfFnn8KvNEN0iVtD3fStpU=
+X-Google-Smtp-Source: ABdhPJzKUk4qJcY2Yl04uIk073pVWVy0TAgu29TjkZGtqRzd2GqD3mnxPAiabi9k3biaI+nz18T1DA==
+X-Received: by 2002:a17:903:110c:b0:14d:8859:5c8 with SMTP id n12-20020a170903110c00b0014d885905c8mr1112876plh.156.1649094118990;
+        Mon, 04 Apr 2022 10:41:58 -0700 (PDT)
+Received: from localhost ([2620:10d:c090:400::5:baee])
+        by smtp.gmail.com with ESMTPSA id v17-20020a63b951000000b0038644f62aeesm10984699pgo.68.2022.04.04.10.41.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Apr 2022 10:41:58 -0700 (PDT)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Mon, 4 Apr 2022 07:41:56 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     "T.J. Mercier" <tjmercier@google.com>
+Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Arve =?iso-8859-1?B?SGr4bm5lduVn?= <arve@android.com>,
+        Todd Kjos <tkjos@android.com>,
+        Martijn Coenen <maco@android.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Hridya Valsaraju <hridya@google.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        Benjamin Gaignard <benjamin.gaignard@linaro.org>,
+        Liam Mark <lmark@codeaurora.org>,
+        Laura Abbott <labbott@redhat.com>,
+        Brian Starkey <Brian.Starkey@arm.com>,
+        John Stultz <john.stultz@linaro.org>,
+        Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Kalesh Singh <kaleshsingh@google.com>, Kenny.Ho@amd.com,
+        Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        dri-devel@lists.freedesktop.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+        linaro-mm-sig@lists.linaro.org, cgroups@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: Re: [RFC v4 2/8] cgroup: gpu: Add a cgroup controller for allocator
+ attribution of GPU memory
+Message-ID: <Ykst5K/cI+DUVc94@slm.duckdns.org>
+References: <20220328035951.1817417-1-tjmercier@google.com>
+ <20220328035951.1817417-3-tjmercier@google.com>
+ <YkM6/57mVxoNfSvm@slm.duckdns.org>
+ <CABdmKX2Gxg35k7QiL2Vn4zWhmQ4UnM-Z8cnOXR0fwBWyJnZ+Ng@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220331084151.2600229-1-yosryahmed@google.com>
- <874k3d6vuq.fsf@vajain21.in.ibm.com> <CAJD7tka1UstKYBVrie-_1CgvtaLtVD1uwgzfk5SifxW4FQbOVw@mail.gmail.com>
- <871qyd7bif.fsf@vajain21.in.ibm.com>
-In-Reply-To: <871qyd7bif.fsf@vajain21.in.ibm.com>
-From:   Yosry Ahmed <yosryahmed@google.com>
-Date:   Mon, 4 Apr 2022 10:18:42 -0700
-Message-ID: <CAJD7tka01bKnxQuizxTN7MtHj_hYu+dSztC2fY0jUPCcvk-9JA@mail.gmail.com>
-Subject: Re: [PATCH resend] memcg: introduce per-memcg reclaim interface
-To:     Vaibhav Jain <vaibhav@linux.ibm.com>
-Cc:     Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Shakeel Butt <shakeelb@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Rientjes <rientjes@google.com>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        cgroups@vger.kernel.org, linux-doc@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>, Jonathan Corbet <corbet@lwn.net>,
-        Yu Zhao <yuzhao@google.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Wei Xu <weixugc@google.com>, Greg Thelen <gthelen@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CABdmKX2Gxg35k7QiL2Vn4zWhmQ4UnM-Z8cnOXR0fwBWyJnZ+Ng@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Apr 3, 2022 at 8:50 PM Vaibhav Jain <vaibhav@linux.ibm.com> wrote:
->
->
-> Apologies for the delayed response,
->
-> Yosry Ahmed <yosryahmed@google.com> writes:
->
-> > On Fri, Apr 1, 2022 at 1:39 AM Vaibhav Jain <vaibhav@linux.ibm.com> wrote:
-> >>
-> >>
-> >> Yosry Ahmed <yosryahmed@google.com> writes:
-> >> > From: Shakeel Butt <shakeelb@google.com>
-> >> >
-> >> > Introduce an memcg interface to trigger memory reclaim on a memory cgroup.
-> >> <snip>
-> >>
-> >> > +
-> >> > +     while (nr_reclaimed < nr_to_reclaim) {
-> >> > +             unsigned long reclaimed;
-> >> > +
-> >> > +             if (signal_pending(current))
-> >> > +                     break;
-> >> > +
-> >> > +             reclaimed = try_to_free_mem_cgroup_pages(memcg,
-> >> > +                                             nr_to_reclaim - nr_reclaimed,
-> >> > +                                             GFP_KERNEL, true);
-> >> > +
-> >> > +             if (!reclaimed && !nr_retries--)
-> >> > +                     break;
-> >> > +
-> >> > +             nr_reclaimed += reclaimed;
-> >>
-> >> I think there should be a cond_resched() in this loop before
-> >> try_to_free_mem_cgroup_pages() to have better chances of reclaim
-> >> succeding early.
-> >>
-> > Thanks for taking the time to look at this!
-> >
-> > I believe this loop is modeled after the loop in memory_high_write()
-> > for the memory.high interface. Is there a reason why it should be
-> > needed here but not there?
-> >
->
-> memory_high_write() calls drain_all_stock() atleast once before calling
-> try_to_free_mem_cgroup_pages(). This would drain all percpu stocks
-> for the given memcg and its descendents, giving a high chance
-> try_to_free_mem_cgroup_pages() to succeed quickly. Such a functionality
-> is missing from this patch.
->
-> Adding a cond_resched() would atleast give chance to other processess
-> within the memcg to run and make forward progress thereby making more
-> pages available for reclaim.
->
-> Suggestion is partly based on __perform_reclaim() issues a cond_resche()
-> as it may get called repeatedly during direct reclaim path.
->
-As Michal pointed out, there is already a call to cond_resched() in
-shrink_node_memcgs().
->
-> >> <snip>
-> >>
-> >> --
-> >> Cheers
-> >> ~ Vaibhav
-> >
->
-> --
-> Cheers
-> ~ Vaibhav
+Hello,
+
+On Wed, Mar 30, 2022 at 01:56:09PM -0700, T.J. Mercier wrote:
+> The use case we have for accounting the total (separate from the
+> individual devices) is to include the value as part of bugreports, for
+> understanding the system-wide amount of dmabuf allocations. I'm not
+> aware of an existing need to limit the total. Admittedly this is just
+> the sum over the devices, but we currently maintain out of tree code
+> to do this sort of thing today. [1]
+
+So, drop this part?
+
+Thanks.
+
+-- 
+tejun
