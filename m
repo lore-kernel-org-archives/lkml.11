@@ -2,166 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BC5BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:02:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBBDDC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:02:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245507AbiDDWE2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 18:04:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40258 "EHLO
+        id S243345AbiDDWEf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 18:04:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379522AbiDDRW3 (ORCPT
+        with ESMTP id S1379205AbiDDQnx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 13:22:29 -0400
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38EC32C104
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 10:20:32 -0700 (PDT)
-Received: by mail-pg1-x52c.google.com with SMTP id t13so8859736pgn.8
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 10:20:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=hJ8bbjWFJKjLu66jwXccFuALP/4fGo0kGnkSd+Oc2dM=;
-        b=gT7JmKKPtC5bb7aW02zGlFlbOq2qYMtLpTeaNDwP8oJxKlpEq6HHzVJJb8Ql9VeSrg
-         nBTknQJpidDl7HSvy3jFJTstwMh/K1G+H+5IAAxNrYKncecQcR7mhYsBGKmLQcBPzvw0
-         xA+UkJlbohJaWxUMAVilVLqv8mmygao6QeCKEC+GjqOu+jda5o/ROaTRns5aFHUUmbe1
-         AvWl8OogjmIdpAtND4C72NXmUjS2qYm1JxO0fZrS728772lAZk9OSbTko/hRgRKVeUKf
-         LjXmMG8QvfKVkN9/UWbOALY80lxTKFUlu55b8N5fqD5JA6dCTS58g+MYUeRER+FkQJ1l
-         9/uA==
+        Mon, 4 Apr 2022 12:43:53 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9F28F35256
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 09:41:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649090515;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=3+kz6I7pZcPAimiB8rQ2Jr3SdDzFgYoJ+V2mHrMniJg=;
+        b=XAqaE1jvXNaqFzmCMVx0kp1WfLhFR4Q06JJ/AjQrRbeOFe1wrPoQ38DU7T8q2XPnBdILSd
+        gM8PSFqCsgaAsEf5X1ra2X0GRAMLO6/WqS3qyplYYdGsboeDzk8YMtmKZlMBrg1cyjpD3A
+        nqjd3bGnTjREw6hNHCd6Uht6EPs9Vkc=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-434-x8wqMrIgODGueqkltvEd4g-1; Mon, 04 Apr 2022 12:41:54 -0400
+X-MC-Unique: x8wqMrIgODGueqkltvEd4g-1
+Received: by mail-wm1-f71.google.com with SMTP id z16-20020a05600c0a1000b0038bebbd8548so7154410wmp.3
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 09:41:53 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=hJ8bbjWFJKjLu66jwXccFuALP/4fGo0kGnkSd+Oc2dM=;
-        b=LEkFaaiq60G+ayE/DcLbKLSX3xx5BckH4gxwicZH2+O95uGD4Co3aEuCF8eJQ05YnC
-         orqTvalFcJ9VbHdn+hr7qWoFQPEm1xHbr0RE+GEH/Tuk1NQywU6xlgkGPfD8aI4NWUc6
-         0v045jIYfDMvdTeMcnOXuQhYQli5kHqfDzG579G2knizuHx+oQbnHdVkCRPOaZxEmOuS
-         cOzzA6PaO2yjVr4wlQ+qie+2l4QTn061hYiDHMGko5w3vsUrj5dGQnnDkhmwYN3qk776
-         NjXaSqC07e3XS7k3dBcHhArBRxNWdd4qGD+W15TLt/5ahWbV8eXJGEJKqzIQ1HJAHPE2
-         hlbA==
-X-Gm-Message-State: AOAM533fvspNb+xFbo5wTXimrHKd51/J+ib0Bz+HujiNAI0jy2j8agup
-        yLGDQoad8dGPqKG5eCUX1zik9gDaU0f/cg==
-X-Google-Smtp-Source: ABdhPJy0T1LDIICCzyUvPFRaeCnlxx6MSrx04MSkZMmC5V1lnbZfDroyBvKkf2nhxU1uxIFeQ8tbuA==
-X-Received: by 2002:a63:451b:0:b0:380:b9f8:13f4 with SMTP id s27-20020a63451b000000b00380b9f813f4mr753130pga.367.1649092831283;
-        Mon, 04 Apr 2022 10:20:31 -0700 (PDT)
-Received: from google.com ([2620:15c:202:201:737a:249f:720b:a0a2])
-        by smtp.gmail.com with ESMTPSA id j8-20020a17090a060800b001c7936791d1sm74019pjj.7.2022.04.04.10.20.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 10:20:30 -0700 (PDT)
-Date:   Mon, 4 Apr 2022 10:20:23 -0700
-From:   Benson Leung <bleung@google.com>
-To:     Heiko =?iso-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        patchwork-bot+chrome-platform@kernel.org, lee.jones@linaro.org,
-        robh+dt@kernel.org, bleung@chromium.org, groeck@chromium.org,
-        thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de,
-        matthias.bgg@gmail.com, agross@kernel.org,
-        bjorn.andersson@linaro.org, dianders@chromium.org,
-        devicetree@vger.kernel.org, chrome-platform@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-        linux-rockchip@lists.infradead.org, pmalani@chromium.org
-Subject: Re: [PATCH 0/4] mfd/pwm: dt-bindings: google,cros-ec: include
- generic pwm schema
-Message-ID: <Ykso11bQLqJS1+jU@google.com>
-References: <20220214081916.162014-1-krzysztof.kozlowski@canonical.com>
- <164909246180.14329.3397709419938843373.git-patchwork-notify@kernel.org>
- <2259298.ElGaqSPkdT@diego>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=3+kz6I7pZcPAimiB8rQ2Jr3SdDzFgYoJ+V2mHrMniJg=;
+        b=hCGSNe9L9d6vNN4HePuMCBOGZ2OGZY0vuCgo0/4Uhu9qJoH95YKP02QeEWoYbjIGZq
+         CslYBC2uZ9LDn74vSrhp3XoKGNbOsBcvQVsjaaklU5i1gtnqB4Nqw9QpuLR2p+GRFW9F
+         QyCBVSJSVrPjjJ1mkIx3EwO+LnwFCb5ZpJQznrnkpJaxk0lZTPQWg7FuVFG4MJVIomLS
+         7zjiKwzyZMaLS/hWtEvm3IxqWL1SWsU2sSvnqtIgJ8qdxQAJrv3GibFnAW8IncwR2gSL
+         dBg3ErxFTdOB+J2rY1lzNMQxbbeDPa+yOhzoDPksNHVdUMJgOR87VifRVDarbsDvjr/U
+         p0SA==
+X-Gm-Message-State: AOAM530r9P6E3M7Ut7jdQsxyhUvPKpvmltLbN+PeOD7YZK/uQ3DLSero
+        cyyudX+QPhhWK1S0x8E0oUdDXYbb9+B3sxMUlwve18Lz74of767IbJdVAxVi615DuQjtbslZnzP
+        HtDnRv21yCCDj4dt3k7lZwr5R
+X-Received: by 2002:a05:6000:1862:b0:204:e417:9cf8 with SMTP id d2-20020a056000186200b00204e4179cf8mr440306wri.593.1649090513079;
+        Mon, 04 Apr 2022 09:41:53 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzXgci/ibeaKSvR6+nnoR/49t/2UDaGcl0TznmfMjMts0usoK/oXTo+u2Q1uulF0rg7yFs3hA==
+X-Received: by 2002:a05:6000:1862:b0:204:e417:9cf8 with SMTP id d2-20020a056000186200b00204e4179cf8mr440289wri.593.1649090512856;
+        Mon, 04 Apr 2022 09:41:52 -0700 (PDT)
+Received: from [192.168.1.102] ([92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id e13-20020a05600c4e4d00b0038e44e316c1sm32402wmq.6.2022.04.04.09.41.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 04 Apr 2022 09:41:52 -0700 (PDT)
+Message-ID: <4e53008a-c758-90dd-251e-f1668c52b10b@redhat.com>
+Date:   Mon, 4 Apr 2022 18:41:51 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="I++PcjqoBe2chj7C"
-Content-Disposition: inline
-In-Reply-To: <2259298.ElGaqSPkdT@diego>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH 4/4] drm: ssd130x: Add support for SINO WEALTH SH1106
+Content-Language: en-US
+To:     wens@kernel.org, Javier Martinez Canillas <javier@dowhile0.org>
+Cc:     Maxime Ripard <mripard@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel <linux-kernel@vger.kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>
+References: <20220330190846.13997-1-wens@kernel.org>
+ <20220330190846.13997-5-wens@kernel.org>
+ <CABxcv=nLQdz9bVrfqw1MaKREh0uRBvc4wX14AORETaDJAin-Fw@mail.gmail.com>
+ <CAGb2v66P+5Tj7BgUJCayWjB6UZhQ5wSFdX=RcwRqX4bYw3UOBg@mail.gmail.com>
+From:   Javier Martinez Canillas <javierm@redhat.com>
+In-Reply-To: <CAGb2v66P+5Tj7BgUJCayWjB6UZhQ5wSFdX=RcwRqX4bYw3UOBg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 4/4/22 18:35, Chen-Yu Tsai wrote:
+> On Fri, Apr 1, 2022 at 6:10 PM Javier Martinez Canillas
+> <javier@dowhile0.org> wrote:
 
---I++PcjqoBe2chj7C
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+[snip]
 
-Hi Heiko,
+>>
+>> I wonder if we should also list SH1106 in the
+>> drivers/gpu/drm/solomon/Kconfig file so people can find it ?
+> 
+> I can add it to the help text if that helps?
+>
 
-On Mon, Apr 04, 2022 at 07:16:03PM +0200, Heiko St=FCbner wrote:
-> Am Montag, 4. April 2022, 19:14:21 CEST schrieb patchwork-bot+chrome-plat=
-form@kernel.org:
-> > Hello:
-> >=20
-> > This series was applied to chrome-platform/linux.git (for-next)
-> > by Heiko Stuebner <heiko@sntech.de>:
->=20
-> does someone know what goes on here?
->=20
-> I did apply only patch4 back in feburary and I definitly don't have any
-> access to a chrome-platform tree ;-)
->=20
+No strong opinion really, it was an honest question.
+ 
+> Recently someone mentioned that users are more likely to find drivers
+> via compatible strings though. And I believe there's also a tool in-tree
+> that finds all drivers given a device tree.
+> 
 
-Sorry for the extra noise. It looks like patchwork-bot did this once I upda=
-ted
-chrome-platform's for-next branch to the newly created v5.18-rc1, which
-contains this series now.
+Yeah I guess so. Looking at existing DTS and drivers' device tables is
+certainly what I personally do when searching it a device is supported.
 
-I'll look into quieting this in the future.
+-- 
+Best regards,
 
-Benson
+Javier Martinez Canillas
+Linux Engineering
+Red Hat
 
->=20
-> Heiko
->=20
-> > On Mon, 14 Feb 2022 09:19:12 +0100 you wrote:
-> > > Hi,
-> > >=20
-> > > DTS patches are independent. Not tested, but I really hope no downstr=
-eam kernel
-> > > depends on pwm node naming... If it does, please change it to compati=
-ble. :)
-> > >=20
-> > > Best regards,
-> > > Krzysztof
-> > >=20
-> > > [...]
-> >=20
-> > Here is the summary with links:
-> >   - [1/4] dt-bindings: pwm: google,cros-ec: include generic pwm schema
-> >     https://git.kernel.org/chrome-platform/c/6b94ee669e8a
-> >   - [2/4] arm64: dts: mt8183: align Google CROS EC PWM node name with d=
-tschema
-> >     (no matching commit)
-> >   - [3/4] arm64: dts: qcom: align Google CROS EC PWM node name with dts=
-chema
-> >     https://git.kernel.org/chrome-platform/c/1e49defb8636
-> >   - [4/4] arm64: dts: rk3399: align Google CROS EC PWM node name with d=
-tschema
-> >     https://git.kernel.org/chrome-platform/c/a0024f55eb5b
-> >=20
-> > You are awesome, thank you!
-> >=20
->=20
->=20
->=20
->=20
-
---=20
-Benson Leung
-Staff Software Engineer
-Chrome OS Kernel
-Google Inc.
-bleung@google.com
-Chromium OS Project
-bleung@chromium.org
-
---I++PcjqoBe2chj7C
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQQCtZK6p/AktxXfkOlzbaomhzOwwgUCYkso1wAKCRBzbaomhzOw
-wqOHAPoDrc7kOcLWzZJ2QaFbD5e9sHTDrFveD2rboH94WtDKdAEAwCFF72Jc2NWP
-VqsIhq74lcj3+0HrIDsVeRyNJ3A5twM=
-=TGfb
------END PGP SIGNATURE-----
-
---I++PcjqoBe2chj7C--
