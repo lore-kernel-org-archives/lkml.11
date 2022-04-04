@@ -2,153 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAEE5C3527B
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:25:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17714C38161
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:25:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379131AbiDDVZq (ORCPT
+        id S1379926AbiDDV0C (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:25:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45806 "EHLO
+        Mon, 4 Apr 2022 17:26:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379146AbiDDQhk (ORCPT
+        with ESMTP id S1379184AbiDDQmu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 12:37:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68A29E094;
-        Mon,  4 Apr 2022 09:35:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 04AA460C88;
-        Mon,  4 Apr 2022 16:35:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBDA4C34110;
-        Mon,  4 Apr 2022 16:35:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649090143;
-        bh=rzOQqeQjTPMlc735N7xJrYNzCHkjJGD3CLA4kWFFXVc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sNNk1iPR8zGcjUZ3rPovnqCsMdigf9WY0l+h+xt4j4UbX6MAglAahjh4LT69jBUqw
-         5P7vYrqGuPTlyZR54nmgJU9Ab8z5ZNJ8B8pRPQhuxiKAAhfgkNq8QeYG8dX3xK3I1Y
-         ZnANlWBv2WB8AXvtIJqGpXo/7BpMpUg6GKtQkJr4fM+NScEyDbDzbNjcGHbsHayMCR
-         D1Rqi9bILbEYn4ibgj4pVYnvQ4z511fjqbJhMinsObDneDhmoXPiD/+VF89DwI15JG
-         CPUtymsCr9xT71hd+6WgrCkRaood8o4DMc+GeuQzejYPVUonvA3Z8vsGu/MJ4qqZuc
-         hgPPFeVDFg2eQ==
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Rob Clark <robdclark@gmail.com>
-Cc:     linux-arm-msm@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Vinod Koul <vkoul@kernel.org>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jonathan Marek <jonathan@marek.ca>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        freedreno@lists.freedesktop.org
-Subject: [PATCH v6 12/14] drm/msm/dsi: add mode valid callback for dsi_mgr
-Date:   Mon,  4 Apr 2022 22:04:34 +0530
-Message-Id: <20220404163436.956875-13-vkoul@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220404163436.956875-1-vkoul@kernel.org>
-References: <20220404163436.956875-1-vkoul@kernel.org>
+        Mon, 4 Apr 2022 12:42:50 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE7E435856
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 09:40:53 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id r10so6089620eda.1
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 09:40:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=9ZqvkPw3Hjyi4guP02Qxx6l3xEam/WU15QhmnpKxTbA=;
+        b=giIzCO1vBg7bdLXYJ0jHXWpMyuBAPdR/crAo7hdQl76bbonFJ/KpJa9sqrQeG+eShV
+         OSuWw3bVC1JBb4raXTUMtkkpWZBqnJYUJI9NE9Fs6suiXNBgGFTIm1vm0Szyo2N7NPAs
+         m09XFd0REdtCLingfc8O1k2ipntxCAdK5Xwi6IwoUoAzfAT1RqtlTNZW73pWLXpMYgM1
+         872n72c2L2sD+Fq/W26z6S97OQfrdpdAX/AwW8z1kVB+fi0AfvECnStJ6m+y4T7wKlHC
+         Aa5rImUCWKsC76cOaOfqEZnww1whGheyVEMa9S9pQtIlIGZJiLwul8ocoDo6Z9i/4uV2
+         eokA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=9ZqvkPw3Hjyi4guP02Qxx6l3xEam/WU15QhmnpKxTbA=;
+        b=MY9Rkijpbm7WQ5e2DkBU3I7Y6abHRSxveypyHVr/gZ+dN1bfVmBEij3T/ImH27hZDs
+         rGGXeuJDOWC9dzDex63T/iVK6BT/k11C2qLkSsGi04tBZb4tGEL14XVX30R3z9s/DMpm
+         Tf5Kfo+6ANF44xkRESyziJNufPLJxmz4djYxKz5TseHH58Y5E9UoOdo6fV6clhIk4Ui2
+         MoJpG8K3ICw8E1c24dOjryfDtvSU95g8Rwltwv417RDAkvpdK1vvC/X7t/cWsjt8UFaf
+         e/t/rlY0P2gMV4Tyx73iG5cvNURnHlRIMMq68ab01lPJiqNX0QImpKcTU0my9tiBgMi2
+         UmnA==
+X-Gm-Message-State: AOAM532RTAL1vbahIZ8O1pHdZ1pDXEHzaLF6r5zKdPkxx68r+YjxyFMB
+        m8NvfEZqdGjdt6ZOk5V9z7FS2g==
+X-Google-Smtp-Source: ABdhPJygljYbgi62MuSIHPxfZNrGxKsv/yrrADdG2l5X1N2m213B0uch95wM9MHAqG+Z9mZJYOs6Dw==
+X-Received: by 2002:a50:9358:0:b0:41c:bcf0:3a95 with SMTP id n24-20020a509358000000b0041cbcf03a95mr1086251eda.20.1649090451998;
+        Mon, 04 Apr 2022 09:40:51 -0700 (PDT)
+Received: from localhost.localdomain (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id pk9-20020a170906d7a900b006e05b7ce40csm4548231ejb.221.2022.04.04.09.40.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Apr 2022 09:40:51 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Sascha Hauer <s.hauer@pengutronix.de>,
+        Rob Herring <robh+dt@kernel.org>, Ray Jui <rjui@broadcom.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        =?UTF-8?q?Beno=C3=AEt=20Cousson?= <bcousson@baylibre.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Scott Branden <sbranden@broadcom.com>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        linux-samsung-soc@vger.kernel.org, linux-tegra@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com, devicetree@vger.kernel.org,
+        kernel@pengutronix.de, linux-omap@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-rpi-kernel@lists.infradead.org
+Subject: Re: (subset) [PATCH v5 5/9] ARM: dts: exynos: fix ethernet node name for different odroid boards
+Date:   Mon,  4 Apr 2022 18:40:47 +0200
+Message-Id: <164909044624.1097466.11264335549854460793.b4-ty@linaro.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220216074927.3619425-6-o.rempel@pengutronix.de>
+References: <20220216074927.3619425-1-o.rempel@pengutronix.de> <20220216074927.3619425-6-o.rempel@pengutronix.de>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a mode valid callback for dsi_mgr for checking mode being valid in
-case of DSC. For DSC the height and width needs to be multiple of slice,
-so we check that here
+On Wed, 16 Feb 2022 08:49:23 +0100, Oleksij Rempel wrote:
+> The node name of Ethernet controller should be "ethernet" instead of
+> "usbether" as required by Ethernet controller devicetree schema:
+>  Documentation/devicetree/bindings/net/ethernet-controller.yaml
+> 
+> This patch can potentially affect boot loaders patching against full
+> node path instead of using device aliases.
+> 
+> [...]
 
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
----
- drivers/gpu/drm/msm/dsi/dsi.h         |  2 ++
- drivers/gpu/drm/msm/dsi/dsi_host.c    | 26 ++++++++++++++++++++++++++
- drivers/gpu/drm/msm/dsi/dsi_manager.c | 12 ++++++++++++
- 3 files changed, 40 insertions(+)
+Applied, thanks!
 
-diff --git a/drivers/gpu/drm/msm/dsi/dsi.h b/drivers/gpu/drm/msm/dsi/dsi.h
-index 16cd9b2fce86..580a1e6358bf 100644
---- a/drivers/gpu/drm/msm/dsi/dsi.h
-+++ b/drivers/gpu/drm/msm/dsi/dsi.h
-@@ -114,6 +114,8 @@ int msm_dsi_host_power_on(struct mipi_dsi_host *host,
- int msm_dsi_host_power_off(struct mipi_dsi_host *host);
- int msm_dsi_host_set_display_mode(struct mipi_dsi_host *host,
- 				  const struct drm_display_mode *mode);
-+enum drm_mode_status msm_dsi_host_check_dsc(struct mipi_dsi_host *host,
-+					    const struct drm_display_mode *mode);
- struct drm_panel *msm_dsi_host_get_panel(struct mipi_dsi_host *host);
- unsigned long msm_dsi_host_get_mode_flags(struct mipi_dsi_host *host);
- struct drm_bridge *msm_dsi_host_get_bridge(struct mipi_dsi_host *host);
-diff --git a/drivers/gpu/drm/msm/dsi/dsi_host.c b/drivers/gpu/drm/msm/dsi/dsi_host.c
-index cb2e179127ea..eb0be34add45 100644
---- a/drivers/gpu/drm/msm/dsi/dsi_host.c
-+++ b/drivers/gpu/drm/msm/dsi/dsi_host.c
-@@ -2554,6 +2554,32 @@ int msm_dsi_host_set_display_mode(struct mipi_dsi_host *host,
- 	return 0;
- }
- 
-+enum drm_mode_status msm_dsi_host_check_dsc(struct mipi_dsi_host *host,
-+					    const struct drm_display_mode *mode)
-+{
-+	struct msm_dsi_host *msm_host = to_msm_dsi_host(host);
-+	struct msm_display_dsc_config *dsc = msm_host->dsc;
-+	int pic_width = mode->hdisplay;
-+	int pic_height = mode->vdisplay;
-+
-+	if (!msm_host->dsc)
-+		return MODE_OK;
-+
-+	if (pic_width % dsc->drm->slice_width) {
-+		pr_err("DSI: pic_width %d has to be multiple of slice %d\n",
-+		       pic_width, dsc->drm->slice_width);
-+		return MODE_H_ILLEGAL;
-+	}
-+
-+	if (pic_height % dsc->drm->slice_height) {
-+		pr_err("DSI: pic_height %d has to be multiple of slice %d\n",
-+		       pic_height, dsc->drm->slice_height);
-+		return MODE_V_ILLEGAL;
-+	}
-+
-+	return MODE_OK;
-+}
-+
- struct drm_panel *msm_dsi_host_get_panel(struct mipi_dsi_host *host)
- {
- 	return of_drm_find_panel(to_msm_dsi_host(host)->device_node);
-diff --git a/drivers/gpu/drm/msm/dsi/dsi_manager.c b/drivers/gpu/drm/msm/dsi/dsi_manager.c
-index 0c1b7dde377c..100a8fcbddee 100644
---- a/drivers/gpu/drm/msm/dsi/dsi_manager.c
-+++ b/drivers/gpu/drm/msm/dsi/dsi_manager.c
-@@ -573,6 +573,17 @@ static void dsi_mgr_bridge_mode_set(struct drm_bridge *bridge,
- 	dsi_mgr_bridge_power_on(bridge);
- }
- 
-+static enum drm_mode_status dsi_mgr_bridge_mode_valid(struct drm_bridge *bridge,
-+						      const struct drm_display_info *info,
-+						      const struct drm_display_mode *mode)
-+{
-+	int id = dsi_mgr_bridge_get_id(bridge);
-+	struct msm_dsi *msm_dsi = dsi_mgr_get_dsi(id);
-+	struct mipi_dsi_host *host = msm_dsi->host;
-+
-+	return msm_dsi_host_check_dsc(host, mode);
-+}
-+
- static const struct drm_connector_funcs dsi_mgr_connector_funcs = {
- 	.detect = dsi_mgr_connector_detect,
- 	.fill_modes = drm_helper_probe_single_connector_modes,
-@@ -593,6 +604,7 @@ static const struct drm_bridge_funcs dsi_mgr_bridge_funcs = {
- 	.disable = dsi_mgr_bridge_disable,
- 	.post_disable = dsi_mgr_bridge_post_disable,
- 	.mode_set = dsi_mgr_bridge_mode_set,
-+	.mode_valid = dsi_mgr_bridge_mode_valid,
- };
- 
- /* initialize connector when we're connected to a drm_panel */
+[5/9] ARM: dts: exynos: fix ethernet node name for different odroid boards
+      commit: c1ed0f41032f54e47c03088f096f8b37cae40d8e
+
+Best regards,
 -- 
-2.34.1
-
+Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
