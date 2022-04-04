@@ -2,137 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D962C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CC94C433FE
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:49:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234639AbiDDVqR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:46:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49138 "EHLO
+        id S1355978AbiDDVq1 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 17:46:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380527AbiDDUVM (ORCPT
+        with ESMTP id S1379469AbiDDRLc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 16:21:12 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D40117E35;
-        Mon,  4 Apr 2022 13:19:15 -0700 (PDT)
-Date:   Mon, 04 Apr 2022 20:19:13 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649103554;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=85Z+l0B/Lj9CU4s/mFSaflkVGrA6AqdwHS9uRiRp8VI=;
-        b=JejzUKuEAcasSDsxDENPvC40qk6tXtnHSy0YPGnGu0zz7TIyedDnpyrTBruN+R40EiL1jD
-        0RYmlAS/HKMYDddhN3+iSo1Cj/ARUiJoqpOeLL31So66QHu7if//f5YSWG+45Fyz/hNotH
-        +Lfvo0n0B3gevZjpo5i1WH+ZnNqoTksDKOujk7U9WY6oPFfoEbOefUQeUa0TVxHoLUrILb
-        CzjtI6OrDDtAyYe1p7WrW3U2zIm89Ij6UTCn00FA0HkKUYW4b3R1e2IVIWYJYD6UoNMPnY
-        Zw8XUdylutEwfzhXKpp5MEtXvTXTxtZt8+U+3x7d3E1qZbNo6XSN2TJe+Pg4pQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649103554;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=85Z+l0B/Lj9CU4s/mFSaflkVGrA6AqdwHS9uRiRp8VI=;
-        b=Dhymt3PXCGvOyJoQ9WDctUoe/ooMTOsPfeH87NULWzSJUu4WrJZbeh1qNniruIAkSWxTXY
-        1RKetKyQn6+WroAA==
-From:   "tip-bot2 for Mike Travis" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/platform] x86/platform/uv: Update NMI Handler for UV5
-Cc:     Mike Travis <mike.travis@hpe.com>, Borislav Petkov <bp@suse.de>,
-        Dimitri Sivanich <dimitri.sivanich@hpe.com>,
-        Steve Wahl <steve.wahl@hpe.com>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220318224304.174967-2-mike.travis@hpe.com>
-References: <20220318224304.174967-2-mike.travis@hpe.com>
+        Mon, 4 Apr 2022 13:11:32 -0400
+Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53D8E13D16;
+        Mon,  4 Apr 2022 10:09:35 -0700 (PDT)
+Received: by mail-lf1-x143.google.com with SMTP id p10so18475000lfa.12;
+        Mon, 04 Apr 2022 10:09:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :in-reply-to;
+        bh=gwfWMGKfVs8N4QDtqO/np4tSwyUv3PJ9EpKeZ9+Gmts=;
+        b=iYGYvS4JUYRKeQVLHnI6WjDuv2/uD5+Hux77BOMXCf+m6zchU8QfKW+oePlxqttUZ6
+         IsZ6aozT0IWKNLzLj9dzNjnGXMOn6NvCZ+uh7bfenLfhi4gt0+4niGSY6BjbDAR0nfF2
+         Y02Hh2qPh62Ac7xFbNOBaU3AMGJNzZZlIOJ0qIrVngJ5Vhldxgz36rnEbQsoGtzP+nYE
+         mteSKaDdgLYnMZBt/d85T2UaaM1UU2bSW1len+ZGmYoapr4Qsofq9/u5xpZ8rWzB8yKi
+         bTvy4m13FDOTzVLG6D4ZzQ32fA3FeCZxXdii3P/Gp9p15lXpmLa+g9Q5CggHfp8sk7FI
+         036w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:in-reply-to;
+        bh=gwfWMGKfVs8N4QDtqO/np4tSwyUv3PJ9EpKeZ9+Gmts=;
+        b=pfm9p5ZaAwelSPQzFssxKnZLVbiSu8SzCO7NkLEegboeIauOQqkiXRAFdFTI7VvqT6
+         8Uoutw2ArKSm/u7t5WsMT8wKaAbIHJ7e/zf5QmWPFgymRx2t6dNfVDkZaFDOlAHVgF5N
+         ewBV4H/YV3csDrMyZOQY9QvX3iJsKBVQDs4LqiTKOY7RzrZSmA11xvvxGBq/fX918SxC
+         OLBl5cPE+lWdfWCDnHIM5d4avgAkMWBN8S2xlMxRiAUFwf0wKE09kbpxQwagX57Skkw4
+         8B0695XxUcPuk8HZACZK7CLpJmADBTA3CwPWqwiakGduzI95NFqSwT29r0J1BedfKms5
+         lFqg==
+X-Gm-Message-State: AOAM531JwdiyrSLCiXfrE1XODoCP7fjD6mOV9tLpgkmRIsTX+x5XKA5u
+        nBW6kG8ui7XsB5wgShWK0Ig=
+X-Google-Smtp-Source: ABdhPJymPq1jnMf+wQecstTGdV1RK252ztorAixRVQDiZYwqgawOyGxf5Bq24+2Usv9dC1mnBao0rA==
+X-Received: by 2002:a05:6512:3b90:b0:450:829f:6047 with SMTP id g16-20020a0565123b9000b00450829f6047mr321971lfv.418.1649092173442;
+        Mon, 04 Apr 2022 10:09:33 -0700 (PDT)
+Received: from mainframe.localdomain ([118.137.7.161])
+        by smtp.gmail.com with ESMTPSA id d9-20020a193849000000b0044a54c2ed94sm1189857lfj.300.2022.04.04.10.09.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Apr 2022 10:09:32 -0700 (PDT)
+Date:   Tue, 5 Apr 2022 00:09:20 +0700
+From:   Ketsui <esgwpl@gmail.com>
+To:     akihiko.odaki@gmail.com
+Cc:     ak@linux.intel.com, bp@alien8.de, dan.j.williams@intel.com,
+        dave.hansen@linux.intel.com, hpa@zytor.com,
+        kirill.shutemov@linux.intel.com, knsathya@kernel.org,
+        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        mingo@redhat.com, rafael.j.wysocki@intel.com, rjw@rjwysocki.net,
+        sathyanarayanan.kuppuswamy@linux.intel.com, tglx@linutronix.de,
+        tony.luck@intel.com, x86@kernel.org
+Subject: Re: [PATCH] Revert "ACPI: processor: idle: Only flush cache on
+ entering C3"
+Message-ID: <Yksl5f4J5S8RWINS@mainframe.localdomain>
 MIME-Version: 1.0
-Message-ID: <164910355342.389.4879516551285813736.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220403062322.3168-1-akihiko.odaki@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the x86/platform branch of tip:
+I can confirm that this reversion fixes a very similar issue I have with kernel
+5.17 (only difference is resume always fails on my desktop), here's the bisect
+log:
 
-Commit-ID:     419074a49f3343004a8bf5122e2a9a7259d7e4dd
-Gitweb:        https://git.kernel.org/tip/419074a49f3343004a8bf5122e2a9a7259d7e4dd
-Author:        Mike Travis <mike.travis@hpe.com>
-AuthorDate:    Fri, 18 Mar 2022 17:43:02 -05:00
-Committer:     Borislav Petkov <bp@suse.de>
-CommitterDate: Mon, 04 Apr 2022 20:21:41 +02:00
-
-x86/platform/uv: Update NMI Handler for UV5
-
-Update NMI handler to interface with UV5 hardware. This involves changing
-the EVENT_OCCURRED MMR used by the hardware and removes the check for
-which NMI function is supported by UV BIOS.  The newer NMI function is
-assumed supported on UV5 and above.
-
-Signed-off-by: Mike Travis <mike.travis@hpe.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Dimitri Sivanich <dimitri.sivanich@hpe.com>
-Reviewed-by: Steve Wahl <steve.wahl@hpe.com>
-Link: https://lore.kernel.org/r/20220318224304.174967-2-mike.travis@hpe.com
----
- arch/x86/platform/uv/uv_nmi.c | 21 +++++++++++----------
- 1 file changed, 11 insertions(+), 10 deletions(-)
-
-diff --git a/arch/x86/platform/uv/uv_nmi.c b/arch/x86/platform/uv/uv_nmi.c
-index 1e9ff28..6d2e9ae 100644
---- a/arch/x86/platform/uv/uv_nmi.c
-+++ b/arch/x86/platform/uv/uv_nmi.c
-@@ -244,8 +244,10 @@ static inline bool uv_nmi_action_is(const char *action)
- /* Setup which NMI support is present in system */
- static void uv_nmi_setup_mmrs(void)
- {
-+	bool nmi_supported = false;
-+
- 	/* First determine arch specific MMRs to handshake with BIOS */
--	if (UVH_EVENT_OCCURRED0_EXTIO_INT0_MASK) {
-+	if (UVH_EVENT_OCCURRED0_EXTIO_INT0_MASK) {	/* UV2,3,4 setup */
- 		uvh_nmi_mmrx = UVH_EVENT_OCCURRED0;
- 		uvh_nmi_mmrx_clear = UVH_EVENT_OCCURRED0_ALIAS;
- 		uvh_nmi_mmrx_shift = UVH_EVENT_OCCURRED0_EXTIO_INT0_SHFT;
-@@ -255,26 +257,25 @@ static void uv_nmi_setup_mmrs(void)
- 		uvh_nmi_mmrx_req = UVH_BIOS_KERNEL_MMR_ALIAS_2;
- 		uvh_nmi_mmrx_req_shift = 62;
- 
--	} else if (UVH_EVENT_OCCURRED1_EXTIO_INT0_MASK) {
-+	} else if (UVH_EVENT_OCCURRED1_EXTIO_INT0_MASK) { /* UV5+ setup */
- 		uvh_nmi_mmrx = UVH_EVENT_OCCURRED1;
- 		uvh_nmi_mmrx_clear = UVH_EVENT_OCCURRED1_ALIAS;
- 		uvh_nmi_mmrx_shift = UVH_EVENT_OCCURRED1_EXTIO_INT0_SHFT;
- 		uvh_nmi_mmrx_type = "OCRD1-EXTIO_INT0";
- 
--		uvh_nmi_mmrx_supported = UVH_EXTIO_INT0_BROADCAST;
--		uvh_nmi_mmrx_req = UVH_BIOS_KERNEL_MMR_ALIAS_2;
--		uvh_nmi_mmrx_req_shift = 62;
-+		nmi_supported = true;		/* assume sync valid on UV5+ */
-+		uvh_nmi_mmrx_req = 0;		/* no request bit to clear */
- 
- 	} else {
--		pr_err("UV:%s:cannot find EVENT_OCCURRED*_EXTIO_INT0\n",
--			__func__);
-+		pr_err("UV:%s:NMI support not available on this system\n", __func__);
- 		return;
- 	}
- 
- 	/* Then find out if new NMI is supported */
--	if (likely(uv_read_local_mmr(uvh_nmi_mmrx_supported))) {
--		uv_write_local_mmr(uvh_nmi_mmrx_req,
--					1UL << uvh_nmi_mmrx_req_shift);
-+	if (likely(nmi_supported) || (uv_read_local_mmr(uvh_nmi_mmrx_supported))) {
-+		if (uvh_nmi_mmrx_req)
-+			uv_write_local_mmr(uvh_nmi_mmrx_req,
-+						1UL << uvh_nmi_mmrx_req_shift);
- 		nmi_mmr = uvh_nmi_mmrx;
- 		nmi_mmr_clear = uvh_nmi_mmrx_clear;
- 		nmi_mmr_pending = 1UL << uvh_nmi_mmrx_shift;
+# bad: [f443e374ae131c168a065ea1748feac6b2e76613] Linux 5.17
+# good: [df0cc57e057f18e44dac8e6c18aba47ab53202f9] Linux 5.16
+git bisect start 'v5.17' 'v5.16'
+# bad: [22ef12195e13c5ec58320dbf99ef85059a2c0820] Merge tag 'staging-5.17-rc1' of git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/staging
+git bisect bad 22ef12195e13c5ec58320dbf99ef85059a2c0820
+# good: [9bcbf894b6872216ef61faf17248ec234e3db6bc] Merge tag 'media/v5.17-1' of git://git.kernel.org/pub/scm/linux/kernel/git/mchehab/linux-media
+git bisect good 9bcbf894b6872216ef61faf17248ec234e3db6bc
+# good: [208dd45d8d050360b46ded439a057bcc7cbf3b09] tcp: tcp_send_challenge_ack delete useless param `skb`
+git bisect good 208dd45d8d050360b46ded439a057bcc7cbf3b09
+# bad: [c288ea679840de4dee2ce6da5d0f139e3774ad86] Merge tag 'gpio-updates-for-v5.17' of git://git.kernel.org/pub/scm/linux/kernel/git/brgl/linux
+git bisect bad c288ea679840de4dee2ce6da5d0f139e3774ad86
+# bad: [5c947d0dbae8038ec1c8b538891f6475350542ee] Merge branch 'linus' of git://git.kernel.org/pub/scm/linux/kernel/git/herbert/crypto-2.6
+git bisect bad 5c947d0dbae8038ec1c8b538891f6475350542ee
+# bad: [a229327733b86aa585effdb0d27a87b12aa51597] Merge tag 'printk-for-5.17' of git://git.kernel.org/pub/scm/linux/kernel/git/printk/linux
+git bisect bad a229327733b86aa585effdb0d27a87b12aa51597
+# bad: [bca21755b9fc00dbe371994b53389eb5d70b8e72] Merge tag 'acpi-5.17-rc1' of git://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm
+git bisect bad bca21755b9fc00dbe371994b53389eb5d70b8e72
+# bad: [af8fefd7444480bb8fd8d74f977dbac4693ac3ed] Merge branches 'acpi-x86', 'acpi-pmic' and 'acpi-dptf'
+git bisect bad af8fefd7444480bb8fd8d74f977dbac4693ac3ed
+# good: [b659ea768ae372e2f82c6346120f2e7272a42ac9] Merge branches 'acpi-scan', 'acpi-pm', 'acpi-power' and 'acpi-pci'
+git bisect good b659ea768ae372e2f82c6346120f2e7272a42ac9
+# bad: [5847d2d2efaab724b7ab374b6fca105e24509c92] Merge branches 'acpi-ec' and 'acpi-processor'
+git bisect bad 5847d2d2efaab724b7ab374b6fca105e24509c92
+# good: [c793570d8725e44b64dbe466eb8ecda34c5eb8ac] ACPI: EC: Avoid queuing unnecessary work in acpi_ec_submit_event()
+git bisect good c793570d8725e44b64dbe466eb8ecda34c5eb8ac
+# bad: [8120832d8f82aa7316c578fbccf11e385a5b3601] ACPI: processor: thermal: avoid cpufreq_get_policy()
+git bisect bad 8120832d8f82aa7316c578fbccf11e385a5b3601
+# good: [0e6078c3c6737df7d0bd0c890fbadf24a27fffbb] ACPI: processor idle: Use swap() instead of open coding it
+git bisect good 0e6078c3c6737df7d0bd0c890fbadf24a27fffbb
+# bad: [87ebbb8c612b1214f227ebb8f25442c6d163e802] ACPI: processor: idle: Only flush cache on entering C3
+git bisect bad 87ebbb8c612b1214f227ebb8f25442c6d163e802
+# first bad commit: [87ebbb8c612b1214f227ebb8f25442c6d163e802] ACPI: processor: idle: Only flush cache on entering C3
