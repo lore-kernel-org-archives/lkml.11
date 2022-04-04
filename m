@@ -2,59 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7386DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 14:30:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7D9CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 14:30:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377510AbiDDOcT (ORCPT
+        id S1377461AbiDDOcl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 10:32:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58544 "EHLO
+        Mon, 4 Apr 2022 10:32:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377461AbiDDOcI (ORCPT
+        with ESMTP id S1377491AbiDDOcT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 10:32:08 -0400
-X-Greylist: delayed 567 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 04 Apr 2022 07:30:04 PDT
-Received: from antispam.asistech.com.mx (antispam.asistech.com.mx [74.208.220.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9170823BD9
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 07:30:04 -0700 (PDT)
-Received: from localhost (localhost.localdomain [127.0.0.1])
-        by antispam.asistech.com.mx (Postfix) with ESMTP id 64BB836643C
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 09:20:34 -0500 (CDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=asistech.com.mx;
-         h=content-type:content-type:mime-version:message-id:reply-to
-        :from:from:date:date:subject:subject:received:received:received;
-         s=dkim; t=1649082034; x=1650896435; bh=2ZNqXj+9qnM+UamLvM7VEZuP
-        E8PN3B4GPPdQn1KCDCw=; b=WrdXE4A5ZbmmfpFeGgNk6VBqO+GZnekNcxOzM9sD
-        oN9E5MotSgn/u0KGfiVcvIUQQMJVWDavjx3xYGxUPXyQY2/IP6YeYDL7AK8UQ1j9
-        HnxwVUnVMvjoHYINzAIC3Qpcd4X66Hd3veYZODKuaGDDu7q4GlYUgY3w/qcc+5fZ
-        tA4=
-X-Virus-Scanned: Asistech-antispam amavisd-new at asistech.com.mx
-Received: from antispam.asistech.com.mx ([127.0.0.1])
-        by localhost (antispam.asistech.com.mx [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id 4f4Va-9ja_t8 for <linux-kernel@vger.kernel.org>;
-        Mon,  4 Apr 2022 09:20:34 -0500 (CDT)
-Received: from ubuntuprod (unknown [192.168.100.160])
-        by antispam.asistech.com.mx (Postfix) with ESMTP id 6EB4D366444
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 09:20:11 -0500 (CDT)
-Received: by ubuntuprod (Postfix, from userid 33)
-        id 1D8ED1069A4; Mon,  4 Apr 2022 09:15:53 -0500 (CDT)
-To:     linux-kernel@vger.kernel.org
-Subject: Intermediary needed (urgent)
-X-PHP-Originating-Script: 33:fqgniqgire.php(1) : eval()'d code(1) : eval()'d code(286) : eval()'d code(1) : eval()'d code
-Date:   Mon, 4 Apr 2022 09:15:53 -0500
-From:   Andrei Sergeinovich <support@asistech.com.mx>
-Reply-To: llgaztechmoscow@yandex.ru
-Message-ID: <f48d44ea110c059b50e479d6fc5d079e@www.asistech.com.mx>
+        Mon, 4 Apr 2022 10:32:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 042D132ECB
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 07:30:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B0ABFB8172B
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 14:30:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23C47C2BBE4;
+        Mon,  4 Apr 2022 14:30:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649082620;
+        bh=IcyeBgAAHvxYwTuDheUzskHb8csMKwWLHu5b7gmdrPc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=GsTHmvgfz6NoHTcPiSkjvpj1w8YRqu+NyMyFORt01iwcWnSjP52tpYcBJcznduvEx
+         SCTXFaChc89lRt6EoZJAaQ1apaHvnHqX6QlieQR3l1CfIh9jMs5yjNfGR7DHU/p17s
+         sk+WrsCppy8BXrs0P4eYX/lbJc8C8viaEHTnVARs=
+Date:   Mon, 4 Apr 2022 16:30:17 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     xkernel.wang@foxmail.com
+Cc:     Larry.Finger@lwfinger.net, florian.c.schilhabel@googlemail.com,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/3] staging: rtl8712: change the type of
+ _r8712_init_recv_priv()
+Message-ID: <YksA+X5ip+sdrDjV@kroah.com>
+References: <tencent_0A1273526E1E87150578F8B752CF7F178806@qq.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <tencent_0A1273526E1E87150578F8B752CF7F178806@qq.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+On Fri, Apr 01, 2022 at 01:06:35AM +0800, xkernel.wang@foxmail.com wrote:
+> From: Xiaoke Wang <xkernel.wang@foxmail.com>
+> 
+> There is a memory allocation in _r8712_init_recv_priv(). Since the
+> original type of this function is void, now it is changed to int to
+> make the error of allocation failures propagate to its caller easily.
+> 
+> Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+> ---
+>  drivers/staging/rtl8712/recv_osdep.h   | 2 +-
+>  drivers/staging/rtl8712/rtl871x_recv.c | 5 +++--
+>  2 files changed, 4 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/staging/rtl8712/recv_osdep.h b/drivers/staging/rtl8712/recv_osdep.h
+> index d8c1fa7..f5b97c5 100644
+> --- a/drivers/staging/rtl8712/recv_osdep.h
+> +++ b/drivers/staging/rtl8712/recv_osdep.h
+> @@ -18,7 +18,7 @@
+>  #include "drv_types.h"
+>  #include <linux/skbuff.h>
+>  
+> -void _r8712_init_recv_priv(struct recv_priv *precvpriv,
+> +int _r8712_init_recv_priv(struct recv_priv *precvpriv,
+>  			   struct _adapter *padapter);
+>  void _r8712_free_recv_priv(struct recv_priv *precvpriv);
+>  void r8712_recv_entry(union recv_frame *precv_frame);
+> diff --git a/drivers/staging/rtl8712/rtl871x_recv.c b/drivers/staging/rtl8712/rtl871x_recv.c
+> index c23f6b3..dd8cb07 100644
+> --- a/drivers/staging/rtl8712/rtl871x_recv.c
+> +++ b/drivers/staging/rtl8712/rtl871x_recv.c
+> @@ -44,7 +44,7 @@ void _r8712_init_sta_recv_priv(struct sta_recv_priv *psta_recvpriv)
+>  	_init_queue(&psta_recvpriv->defrag_q);
+>  }
+>  
+> -void _r8712_init_recv_priv(struct recv_priv *precvpriv,
+> +int _r8712_init_recv_priv(struct recv_priv *precvpriv,
+>  			   struct _adapter *padapter)
+>  {
+>  	sint i;
+> @@ -60,7 +60,7 @@ void _r8712_init_recv_priv(struct recv_priv *precvpriv,
+>  				sizeof(union recv_frame) + RXFRAME_ALIGN_SZ,
+>  				GFP_ATOMIC);
+>  	if (!precvpriv->pallocated_frame_buf)
+> -		return;
+> +		return -ENOMEM;
+>  	kmemleak_not_leak(precvpriv->pallocated_frame_buf);
 
-Can you help me claim a huge amount of money in Russia? It's urgent.
+Why are you still telling kmemleak that this was not a leak if you
+properly handle it?
 
-Regards,
-Andrei.
+thanks,
 
+greg k-h
