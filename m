@@ -2,83 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BEF7C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 08:00:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0073CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 08:01:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377868AbiDDICP (ORCPT
+        id S1377869AbiDDIDK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 04:02:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36438 "EHLO
+        Mon, 4 Apr 2022 04:03:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353440AbiDDICI (ORCPT
+        with ESMTP id S1377899AbiDDIDC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 04:02:08 -0400
-Received: from conssluserg-05.nifty.com (conssluserg-05.nifty.com [210.131.2.90])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A11926543;
-        Mon,  4 Apr 2022 01:00:10 -0700 (PDT)
-Received: from mail-pj1-f52.google.com (mail-pj1-f52.google.com [209.85.216.52]) (authenticated)
-        by conssluserg-05.nifty.com with ESMTP id 2347xkju028714;
-        Mon, 4 Apr 2022 16:59:47 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-05.nifty.com 2347xkju028714
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1649059187;
-        bh=mRSrkl88X6MPyUAl/G0UVHx8GrAX6GCuLVL7n0u+/ks=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=XEAirzYSvqXnDJqrLgp4H8t+QJ30ttADeuv5waGEL42bT5H0cwMkMVZDrRG7EWmTc
-         L3JnwkAXuMp586fIHrHavJCA/UNVR7YD5EsxleotrQliVEh3i6vub1xedO4hh/Z0b5
-         nor+h0koPf2cij/37DnyQb+UrGRnCeTzOib7F2xr52/RpUIyqfkgNpJqjlM37g2OtK
-         GgHL7NmgeuHw/7NoUsyesadmRhGWcrq/OEGkgzqK/uOazeHVqCD9Uj6e06bkg7tBpC
-         SBx6ZDF894Z9YmLBPUTi6PC3zJSS8lfGtlq8bL/kt+3pNFPm3eTmzVQgRcrzuHd39w
-         1gJdvmSAmhglw==
-X-Nifty-SrcIP: [209.85.216.52]
-Received: by mail-pj1-f52.google.com with SMTP id a16-20020a17090a6d9000b001c7d6c1bb13so8251327pjk.4;
-        Mon, 04 Apr 2022 00:59:47 -0700 (PDT)
-X-Gm-Message-State: AOAM532FizoPOVqg6hE0b8U+rD7caXr3iCr30Gl0ShgbeHob8xVy/O7h
-        uiLN5occlLPCF4JlKmaCp1JMI94M2S2uw7C4TvQ=
-X-Google-Smtp-Source: ABdhPJxWnaBSrXHahM+56O5LXG8u4laGr8U6/HeCvi57cqRV167+0SlYBPqTAxVEWfYmucoiIW1o0t3MVpVnl+FRCVY=
-X-Received: by 2002:a17:902:9887:b0:151:6e1c:7082 with SMTP id
- s7-20020a170902988700b001516e1c7082mr21554760plp.162.1649059186351; Mon, 04
- Apr 2022 00:59:46 -0700 (PDT)
+        Mon, 4 Apr 2022 04:03:02 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5AE12FE47
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 01:01:06 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id d29so7090724wra.10
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 01:01:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=Fchq955hbINLxP1mfvpxKWtqMLR29zfsjFGO0tToAUc=;
+        b=3kCbDAxruWLN43MM2kRlB4Gp+rcWnHK1FlJNINZdCpVw9O5zlIrvIad52lO+tYJzIv
+         xj/VH2a9SXY4/53T7yF8x/p7TtX18Bp58ouR6Kdphjc6OA6aInZhSIF0wklOprZfgjUu
+         VolqyD+gBeRHMN09uVqYaH66HnemWGcVyJEYLFGPITL55dtYt9JToehywBwKCZQuqCsE
+         J1yyv5mCGH8MYKKl1f0b4p9sfBv+tGrbyFjSgfI3sxlWUeA2bqi9VnTcrVsbBdu0HSNy
+         CzhPFlKxpyqM+POwVHH3QqjZnJWklwkNbKm2mzmB9Fep3r2kanhWq0rH6oREg8YmblkW
+         CVdw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=Fchq955hbINLxP1mfvpxKWtqMLR29zfsjFGO0tToAUc=;
+        b=0nmE05+64pn9/sI70gMowrLglKNLA+gHeGuElu+gGMP3c5AIQWoAe1y1m8nv/2/Ty1
+         mXjrLGZgya4gxaqwqYnVG7APi3pCmZrgiWm57xHr2XKyiXCfFLKrZxI41W4ZMiWxe4Wg
+         R1Hj2mTp3yWdhDXWKoTvgel2zKhS75RJ6Ly1IpSU9qevD2WdKHLl3MMdHsiFs+9QVIa6
+         S0STX2pN51YHNzWXpGgXU1TQN9yrMNSLzZwTgic2QXTpSBS4QmsUE5h4GsRKp0y+Ou/y
+         R/bnrNz8s2jzDHRNs2llY5FqapnGQaLVPaT5dKuAsEWTETPsLnta2fXAoVa2bcchgGv7
+         t1Ww==
+X-Gm-Message-State: AOAM532bPy977h1sgWwZ7QFnIcB5cu14Uhz1S7HiJiwAjxSuhmzf4y0c
+        9tXlP178Ac3fZxzhCNYj3PQu/g==
+X-Google-Smtp-Source: ABdhPJw8Y+rzIATLf/wu5PrpGYSpAlB9L5KuCHMGGdLeH+iefS3uvrM9XgZfxeA/DFgCXhCdpQnV3Q==
+X-Received: by 2002:a05:6000:156e:b0:206:1205:166c with SMTP id 14-20020a056000156e00b002061205166cmr2588330wrz.37.1649059264921;
+        Mon, 04 Apr 2022 01:01:04 -0700 (PDT)
+Received: from ?IPV6:2001:861:44c0:66c0:1add:1b28:2457:eb46? ([2001:861:44c0:66c0:1add:1b28:2457:eb46])
+        by smtp.gmail.com with ESMTPSA id l3-20020a1ced03000000b0038ce57d28a1sm8563313wmh.26.2022.04.04.01.01.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 04 Apr 2022 01:01:04 -0700 (PDT)
+Message-ID: <8986ec34-616b-d497-29d1-6f7896c26e37@baylibre.com>
+Date:   Mon, 4 Apr 2022 10:01:03 +0200
 MIME-Version: 1.0
-References: <20220404061948.2111820-1-masahiroy@kernel.org>
- <20220404061948.2111820-9-masahiroy@kernel.org> <Ykqh3mEy5uY8spe8@infradead.org>
-In-Reply-To: <Ykqh3mEy5uY8spe8@infradead.org>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Mon, 4 Apr 2022 16:58:57 +0900
-X-Gmail-Original-Message-ID: <CAK7LNARb41OvLx0qV-C-CFZHXGp59Q68vxMCLC1RsZzSBibSiw@mail.gmail.com>
-Message-ID: <CAK7LNARb41OvLx0qV-C-CFZHXGp59Q68vxMCLC1RsZzSBibSiw@mail.gmail.com>
-Subject: Re: [PATCH 8/8] virtio_ring.h: do not include <stdint.h> from
- exported header
-To:     Christoph Hellwig <hch@infradead.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 0/3] Ensure Low period of SCL is correct
+Content-Language: en-US
+To:     tanure@linux.com, Kevin Hilman <khilman@baylibre.com>
+Cc:     Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        linux-i2c@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Vyacheslav Bocharov <adeep@lexina.in>
+References: <20220326102229.421718-1-tanure@linux.com>
+ <7hee2lu82n.fsf@baylibre.com>
+ <CAJX_Q+1tz7BYL+CvXnc=zAamPiZDEFAASv9a7YoWGmzqYL+cUg@mail.gmail.com>
+From:   Neil Armstrong <narmstrong@baylibre.com>
+Organization: Baylibre
+In-Reply-To: <CAJX_Q+1tz7BYL+CvXnc=zAamPiZDEFAASv9a7YoWGmzqYL+cUg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 4, 2022 at 4:44 PM Christoph Hellwig <hch@infradead.org> wrote:
->
-> On Mon, Apr 04, 2022 at 03:19:48PM +0900, Masahiro Yamada wrote:
-> >       vr->num = num;
-> >       vr->desc = p;
-> >       vr->avail = (struct vring_avail *)((char *)p + num * sizeof(struct vring_desc));
-> > -     vr->used = (void *)(((uintptr_t)&vr->avail->ring[num] + sizeof(__virtio16)
-> > +     vr->used = (void *)(((__kernel_uintptr_t)&vr->avail->ring[num] + sizeof(__virtio16)
-> >               + align-1) & ~(align - 1));
->
-> This really does not look like it should be in a uapi header to start
-> with.
+Hi,
 
+On 29/03/2022 00:31, Lucas Tanure wrote:
+> On Mon, 28 Mar 2022, 21:37 Kevin Hilman, <khilman@baylibre.com> wrote:
+>>
+>> Hi Lucas,
+>>
+>> Lucas Tanure <tanure@linux.com> writes:
+>>
+>>> The default duty cycle of 33% is less than the required
+>>> by the I2C specs for the LOW period of the SCL clock.
+>>>
+>>> So, for 100Khz or less, use 50%H/50%L duty cycle, and
+>>> for the clock above 100Khz, use 40%H/60%L duty cycle.
+>>> That ensures the low period of SCL is always more than
+>>> the minimum required by the specs at any given frequency.
+>>
+>> Thanks for the fixes!
+>>
+>> This is going to affect all SoCs, so ould you please summarize how your
+>> changes were tested, and on which SoCs & boards?
+>>
+>> Thanks,
+>>
+>> Kevin
+> 
+> Hi,
+> 
+> I only tested against the vim3 board, measured the bus with a Saleae
+> logic pro 16.
+> The measurements were with 100k, 400k, and a few in-between frequencies.
 
-Then, could you send a proper fix?
+Thanks, it's a great addition to have !
 
-I have no idea how to do this...
+> 
+> Is that enough?
 
+A test on GXL/GXM (VIM1 or VIM2) & GXBB (Odroid-C2) devices is lacking before we
+can merge this.
 
+If I find some time, I'll have a try, but everyone is welcome testing this serie
+and report if it still works fine for them.
 
--- 
-Best Regards
-Masahiro Yamada
+Vyacheslav, do you think you can test on your JetHub devices ? it would validate GXL & AXG.
+
+Neil
+
+> 
+> Thanks
+> Lucas
+
