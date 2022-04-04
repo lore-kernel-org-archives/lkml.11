@@ -2,86 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6391BC35276
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:41:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88CF0C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:41:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383067AbiDDVlV (ORCPT
+        id S1383244AbiDDVlh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:41:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59198 "EHLO
+        Mon, 4 Apr 2022 17:41:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380264AbiDDTYy (ORCPT
+        with ESMTP id S1379199AbiDDQnS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 15:24:54 -0400
-Received: from mail-oi1-f179.google.com (mail-oi1-f179.google.com [209.85.167.179])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC7CF3B037;
-        Mon,  4 Apr 2022 12:22:57 -0700 (PDT)
-Received: by mail-oi1-f179.google.com with SMTP id w127so11078382oig.10;
-        Mon, 04 Apr 2022 12:22:57 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=WKBlTF79XqHlzgtuNtv6275CX0xRJ50HbuzrT91tU8g=;
-        b=1XzltYTbOqIKgR0+3guu+vdsDTDJKkIRHPN+I1GYsx/C3zOyU/spkYDlprDm+90IH8
-         7OA7oYKA4mv1OIJk5HlAsMU6CgD8PvmosneN8qrq6FI/+8oWAMadrkJxhlR9jA0jaDJH
-         aolcQu6YNPTVnyCeio3h8yiWvhXsApQ5mezpjHZyim0bLdy19Zx/PJbp15Qdqd1CEByb
-         dnnR4izsN+l/Wuk4FRz8d543ToKfCjsac7A0ibs/2/dR/rfmK14aRF+s8sSHaPuZsnFb
-         BZ0pPfOLFyoSfh+QPQjFzHAZ5PHf9AO9AaB0nNbcKzOZkUzoG6t2KxA5Y0546Lh2KclS
-         KHtQ==
-X-Gm-Message-State: AOAM5315zJbgKj3c8PnZJai2B35DqPGDXAq7HG2IWdYOnZk1utI+Gm/c
-        nJkxNPShIt8JqQQRj5qwXg==
-X-Google-Smtp-Source: ABdhPJyYU5ZN20QO1onZaEwEsB+CVkebLQ3zOpRklJ6Pq/HgZ2AgQsr/pu9Qk30S2Wn7qSTJgjGIRw==
-X-Received: by 2002:a05:6808:de0:b0:2ec:c2ab:50b9 with SMTP id g32-20020a0568080de000b002ecc2ab50b9mr298493oic.254.1649100177005;
-        Mon, 04 Apr 2022 12:22:57 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id d12-20020a056871040c00b000d9eed0f8fdsm4545924oag.14.2022.04.04.12.22.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 12:22:56 -0700 (PDT)
-Received: (nullmailer pid 1802031 invoked by uid 1000);
-        Mon, 04 Apr 2022 19:22:55 -0000
-Date:   Mon, 4 Apr 2022 14:22:55 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Tinghan Shen <tinghan.shen@mediatek.com>
-Cc:     devicetree@vger.kernel.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com,
-        ryder.lee@kernel.org, linux-mmc@vger.kernel.org,
-        wenst@chromium.org, chunfeng.yun@mediatek.com,
-        linux-mediatek@lists.infradead.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        linux-kernel@vger.kernel.org, Wenbin Mei <wenbin.mei@mediatek.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Chaotian Jing <chaotian.jing@mediatek.com>
-Subject: Re: [PATCH v13 1/2] dt-bindings: mmc: mtk-sd: increase reg items
-Message-ID: <YktFjwb6ZqfOyqUe@robh.at.kernel.org>
-References: <20220330094532.21721-1-tinghan.shen@mediatek.com>
- <20220330094532.21721-2-tinghan.shen@mediatek.com>
+        Mon, 4 Apr 2022 12:43:18 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC8F835853
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 09:41:21 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 52825210FC;
+        Mon,  4 Apr 2022 16:41:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1649090480; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=iaE2YvQWImFfSU0vpFQAVEvFm93nlCxWB9zb2gu0sPw=;
+        b=Aq4DwyFirzDpf643d6LaNTryRKgg7O+NS/BhX6awzui5v67ahbF167x2uJ4IVhlqqB1Qhi
+        I546Ma+WaIhbgy0P6wzM9k3qdJHuuc4qMYKDuWzkGSApqOUr5eG9GjQnQnEfJqldefGCdX
+        0n/qQKfOFnFxjqL/wSYI4V4vxsTBTy0=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1649090480;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=iaE2YvQWImFfSU0vpFQAVEvFm93nlCxWB9zb2gu0sPw=;
+        b=eK5U25dTPANluiZzRfIbMte9s4p29IJQoGQ84fGRIy3pMoj0hICHeDPHIVww0a44zz0/Yp
+        aIy7jm9OOTEOSADg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 228CB12FC5;
+        Mon,  4 Apr 2022 16:41:20 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id wOviB7AfS2LjfAAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Mon, 04 Apr 2022 16:41:20 +0000
+From:   Vlastimil Babka <vbabka@suse.cz>
+To:     David Rientjes <rientjes@google.com>,
+        Christoph Lameter <cl@linux.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>
+Cc:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        patches@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Oliver Glitta <glittao@gmail.com>,
+        Marco Elver <elver@google.com>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+        Imran Khan <imran.f.khan@oracle.com>,
+        Vlastimil Babka <vbabka@suse.cz>
+Subject: [PATCH v3 2/6] mm/slub: move struct track init out of set_track()
+Date:   Mon,  4 Apr 2022 18:41:08 +0200
+Message-Id: <20220404164112.18372-3-vbabka@suse.cz>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220404164112.18372-1-vbabka@suse.cz>
+References: <20220404164112.18372-1-vbabka@suse.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220330094532.21721-2-tinghan.shen@mediatek.com>
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2040; h=from:subject; bh=zs3eo+rtqVSox6il95y1GSalLVpmki26s9979QfrOMU=; b=owEBbQGS/pANAwAIAeAhynPxiakQAcsmYgBiSx+kjPN+TrSQnc6TZ653XW3JCx/kwZAczK0EOz/c Ron6iIiJATMEAAEIAB0WIQSNS5MBqTXjGL5IXszgIcpz8YmpEAUCYksfpAAKCRDgIcpz8YmpEG23B/ 9nhTJhIIp33l1sFVO1vFJMQhAgm86MyxIu8FsrjB2606GdpWRVtTw2z5YRfxr9SPAT+ReeGrYbV2jH nRw1BKaEn2uaI7dmtMJbS8A02vJdQ81IYbuog734gHEBPcnwHGknA3EWHFvfoB+FuEWvVj8eYVTePg koaBMTKgjQf6C0oUAob9QxCeZNMZxFRYMyPk2BYwHsYT9cCKcq6URNkfdXkWZQn9BQaSvQDkwS90Vm 2BQDZOmCZkevFucPzODgaZ/2gBDNw6L0TUnwn3B8Fx3rrfyVFyDUB4K04DudJn1hy2SdwNvCOay3LY ejOVai4fUxxfY4gg4sqxTUB8XJXgxh
+X-Developer-Key: i=vbabka@suse.cz; a=openpgp; fpr=A940D434992C2E8E99103D50224FA7E7CC82A664
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 30 Mar 2022 17:45:31 +0800, Tinghan Shen wrote:
-> MediaTek has a new version of mmc IP since mt8183. Some IO registers
-> are moved to top to improve hardware design and named as "host top
-> registers".
-> 
-> Add host top register in the reg binding description for mt8183 and
-> successors.
-> 
-> Signed-off-by: Wenbin Mei <wenbin.mei@mediatek.com>
-> Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
-> ---
->  Documentation/devicetree/bindings/mmc/mtk-sd.yaml | 15 ++++++++++++++-
->  1 file changed, 14 insertions(+), 1 deletion(-)
-> 
+set_track() either zeroes out the struct track or fills it, depending on
+the addr parameter. This is unnecessary as there's only one place that
+calls it for the initialization - init_tracking(). We can simply do the
+zeroing there, with a single memset() that covers both TRACK_ALLOC and
+TRACK_FREE as they are adjacent.
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Vlastimil Babka <vbabka@suse.cz>
+Reviewed-and-tested-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+---
+ mm/slub.c | 32 +++++++++++++++-----------------
+ 1 file changed, 15 insertions(+), 17 deletions(-)
+
+diff --git a/mm/slub.c b/mm/slub.c
+index 74d92aa4a3a2..cd4fd0159911 100644
+--- a/mm/slub.c
++++ b/mm/slub.c
+@@ -729,34 +729,32 @@ static void set_track(struct kmem_cache *s, void *object,
+ {
+ 	struct track *p = get_track(s, object, alloc);
+ 
+-	if (addr) {
+ #ifdef CONFIG_STACKTRACE
+-		unsigned int nr_entries;
++	unsigned int nr_entries;
+ 
+-		metadata_access_enable();
+-		nr_entries = stack_trace_save(kasan_reset_tag(p->addrs),
+-					      TRACK_ADDRS_COUNT, 3);
+-		metadata_access_disable();
++	metadata_access_enable();
++	nr_entries = stack_trace_save(kasan_reset_tag(p->addrs),
++				      TRACK_ADDRS_COUNT, 3);
++	metadata_access_disable();
+ 
+-		if (nr_entries < TRACK_ADDRS_COUNT)
+-			p->addrs[nr_entries] = 0;
++	if (nr_entries < TRACK_ADDRS_COUNT)
++		p->addrs[nr_entries] = 0;
+ #endif
+-		p->addr = addr;
+-		p->cpu = smp_processor_id();
+-		p->pid = current->pid;
+-		p->when = jiffies;
+-	} else {
+-		memset(p, 0, sizeof(struct track));
+-	}
++	p->addr = addr;
++	p->cpu = smp_processor_id();
++	p->pid = current->pid;
++	p->when = jiffies;
+ }
+ 
+ static void init_tracking(struct kmem_cache *s, void *object)
+ {
++	struct track *p;
++
+ 	if (!(s->flags & SLAB_STORE_USER))
+ 		return;
+ 
+-	set_track(s, object, TRACK_FREE, 0UL);
+-	set_track(s, object, TRACK_ALLOC, 0UL);
++	p = get_track(s, object, TRACK_ALLOC);
++	memset(p, 0, 2*sizeof(struct track));
+ }
+ 
+ static void print_track(const char *s, struct track *t, unsigned long pr_time)
+-- 
+2.35.1
+
