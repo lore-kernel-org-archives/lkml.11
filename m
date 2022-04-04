@@ -2,354 +2,200 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 187B9C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 14:55:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 117F7C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 14:55:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378127AbiDDO5M (ORCPT
+        id S1378225AbiDDO5n convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 10:57:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33576 "EHLO
+        Mon, 4 Apr 2022 10:57:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231419AbiDDO5K (ORCPT
+        with ESMTP id S231419AbiDDO5l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 10:57:10 -0400
-X-Greylist: delayed 1480 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 04 Apr 2022 07:55:14 PDT
-Received: from gateway34.websitewelcome.com (gateway34.websitewelcome.com [192.185.150.114])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EA37165B3
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 07:55:14 -0700 (PDT)
-Received: from cm14.websitewelcome.com (cm14.websitewelcome.com [100.42.49.7])
-        by gateway34.websitewelcome.com (Postfix) with ESMTP id 013721490C7
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 09:30:33 -0500 (CDT)
-Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
-        by cmsmtp with SMTP
-        id bNh1ndszsHnotbNh1nOnzE; Mon, 04 Apr 2022 09:28:31 -0500
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=roeck-us.net; s=default; h=In-Reply-To:Content-Type:MIME-Version:References
-        :Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding
-        :Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=I0ejtF0yR/US82f6Xt9NVKMVByQ4/2cDCdichhKuyNE=; b=men7yeV7H17hmZWVRbeQhnZDXR
-        azWuPPZjYBX9M+R4MgazGkFvwT/siyOXJxyNKw92RZxLEWSWrsQgTAmIv4pOhgmWa8vmgSymngoOf
-        LsMfqhULmwAlfZvIklbyKWMKZs0vy5qQlRajI7OLsSGDyusCOfpOCDI+gh5KIAxbSUF/pyFLSzSIC
-        48Y6o10a6Gp/bTwAdN11EC0tLWf1A2+EpAjD0YucNBgvpxYCVg6T9SZTWYUiZhwo08skGMBlifyEK
-        GsWzUyl851huky+358/7M0VHE8hJzCMQvggTaIZMxzn09cNarY6heBxvzDk5fOM7IDzJHSbx0CWi7
-        POepmEwA==;
-Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:57854 helo=localhost)
-        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@roeck-us.net>)
-        id 1nbNh1-001AMs-Fh; Mon, 04 Apr 2022 14:28:31 +0000
-Date:   Mon, 4 Apr 2022 07:28:30 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     nick.hawkins@hpe.com
-Cc:     verdun@hpe.com, Wim Van Sebroeck <wim@linux-watchdog.org>,
-        linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org
-Subject: Re: [PATCH v3 03/10] drivers: wdt: Introduce HPE GXP SoC Watchdog
-Message-ID: <20220404142830.GA3289074@roeck-us.net>
-References: <20220310195229.109477-1-nick.hawkins@hpe.com>
- <20220310195229.109477-3-nick.hawkins@hpe.com>
+        Mon, 4 Apr 2022 10:57:41 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2EF3117044;
+        Mon,  4 Apr 2022 07:55:45 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 98C72D6E;
+        Mon,  4 Apr 2022 07:55:44 -0700 (PDT)
+Received: from FVFF77S0Q05N (unknown [10.57.8.163])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 255133F5A1;
+        Mon,  4 Apr 2022 07:55:43 -0700 (PDT)
+Date:   Mon, 4 Apr 2022 15:55:36 +0100
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Sebastian Fricke <sebastian.fricke@collabora.com>,
+        linux-trace-devel@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        Ard Biesheuvel <ard.biesheuvel@linaro.org>,
+        Amit Daniel Kachhap <amit.kachhap@arm.com>,
+        Torsten Duwe <duwe@suse.de>
+Subject: Re: Corrupted function tracer in 5.17.0-rc1
+Message-ID: <YksG6LXUCwIZhK8k@FVFF77S0Q05N>
+References: <20220404125212.tuby556kara5t56c@basti-XPS-13-9310>
+ <20220404102607.5c9cb515@gandalf.local.home>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220310195229.109477-3-nick.hawkins@hpe.com>
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - roeck-us.net
-X-BWhitelist: no
-X-Source-IP: 108.223.40.66
-X-Source-L: No
-X-Exim-ID: 1nbNh1-001AMs-Fh
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net (localhost) [108.223.40.66]:57854
-X-Source-Auth: guenter@roeck-us.net
-X-Email-Count: 19
-X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
-X-Local-Domain: yes
+Content-Transfer-Encoding: 8BIT
+In-Reply-To: <20220404102607.5c9cb515@gandalf.local.home>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 10, 2022 at 01:52:22PM -0600, nick.hawkins@hpe.com wrote:
-> From: Nick Hawkins <nick.hawkins@hpe.com>
+On Mon, Apr 04, 2022 at 10:26:07AM -0400, Steven Rostedt wrote:
 > 
-> Adding support for the HPE GXP Watchdog. It is new to the linux
-> community and this along with several other patches is the first
-> support for it. The GXP asic contains a full compliment of
-> timers one of which is the watchdog timer. The watchdog timer
-> is 16 bit and has 10ms resolution.
+> I added arm64 folks that maintain this code.
 > 
-> Signed-off-by: Nick Hawkins <nick.hawkins@hpe.com>
-> ---
->  drivers/watchdog/Kconfig   |   8 ++
->  drivers/watchdog/Makefile  |   1 +
->  drivers/watchdog/gxp-wdt.c | 191 +++++++++++++++++++++++++++++++++++++
->  3 files changed, 200 insertions(+)
->  create mode 100644 drivers/watchdog/gxp-wdt.c
+> On Mon, 4 Apr 2022 14:52:12 +0200
+> Sebastian Fricke <sebastian.fricke@collabora.com> wrote:
 > 
-> diff --git a/drivers/watchdog/Kconfig b/drivers/watchdog/Kconfig
-> index c8fa79da23b3..cb210d2978d2 100644
-> --- a/drivers/watchdog/Kconfig
-> +++ b/drivers/watchdog/Kconfig
-> @@ -1820,6 +1820,14 @@ config RALINK_WDT
->  	help
->  	  Hardware driver for the Ralink SoC Watchdog Timer.
->  
-> +config GXP_WATCHDOG
-> +	tristate "HPE GXP watchdog support"
-> +	depends on ARCH_HPE_GXP
-> +	select WATCHDOG_CORE
-> +	help
-> +	  Say Y here to include support for the watchdog timer
-> +	  in HPE GXP SoCs.
-> +
->  config MT7621_WDT
->  	tristate "Mediatek SoC watchdog"
->  	select WATCHDOG_CORE
-> diff --git a/drivers/watchdog/Makefile b/drivers/watchdog/Makefile
-> index f7da867e8782..e2acf3a0d0fc 100644
-> --- a/drivers/watchdog/Makefile
-> +++ b/drivers/watchdog/Makefile
-> @@ -92,6 +92,7 @@ obj-$(CONFIG_RTD119X_WATCHDOG) += rtd119x_wdt.o
->  obj-$(CONFIG_SPRD_WATCHDOG) += sprd_wdt.o
->  obj-$(CONFIG_PM8916_WATCHDOG) += pm8916_wdt.o
->  obj-$(CONFIG_ARM_SMC_WATCHDOG) += arm_smc_wdt.o
-> +obj-$(CONFIG_GXP_WATCHDOG) += gxp-wdt.o
->  obj-$(CONFIG_VISCONTI_WATCHDOG) += visconti_wdt.o
->  obj-$(CONFIG_MSC313E_WATCHDOG) += msc313e_wdt.o
->  obj-$(CONFIG_APPLE_WATCHDOG) += apple_wdt.o
-> diff --git a/drivers/watchdog/gxp-wdt.c b/drivers/watchdog/gxp-wdt.c
-> new file mode 100644
-> index 000000000000..d2b489cb4774
-> --- /dev/null
-> +++ b/drivers/watchdog/gxp-wdt.c
-> @@ -0,0 +1,191 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/* Copyright (C) 2022 Hewlett-Packard Enterprise Development Company, L.P.
-> + *
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License version 2 as
-> + * published by the Free Software Foundation.
-> + */
-> +
-> +#include <linux/delay.h>
-> +#include <linux/io.h>
-> +#include <linux/module.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/of_address.h>
-> +#include <linux/of_platform.h>
-> +#include <linux/types.h>
-> +#include <linux/watchdog.h>
-> +
-> +#define MASK_WDGCS_ENABLE	0x01
-> +#define MASK_WDGCS_RELOAD	0x04
-> +#define MASK_WDGCS_NMIEN	0x08
-> +#define MASK_WDGCS_WARN		0x80
-> +
-> +#define WDT_MAX_TIMEOUT_MS	655000
-> +#define WDT_DEFAULT_TIMEOUT	30
-> +#define SECS_TO_WDOG_TICKS(x) ((x) * 100)
-> +#define WDOG_TICKS_TO_SECS(x) ((x) / 100)
-> +
-> +struct gxp_wdt {
-> +	void __iomem	*counter;
-> +	void __iomem	*control;
-> +	struct watchdog_device	wdd;
+> > Good day,
+> > 
+> > Maybe you can help me out with this, I am currently unsure if I cannot
+> > use the function tracer due to some regression in the Kernel version I
+> > am using or because I configured the kernel incorrectly.
 
-Odd variable alignment. Might as well just use spaces before the
-variable names.
+From the title, this is v5.17-rc1, which is known broken due to the mcount sort
+issue that was subsequently fixed in commit:
 
-> +};
-> +
-> +static void gxp_wdt_enable_reload(struct gxp_wdt *drvdata)
-> +{
-> +	uint8_t val;
-> +
-> +	val = readb(drvdata->control);
-> +	val |= (MASK_WDGCS_ENABLE | MASK_WDGCS_RELOAD);
-> +	writeb(val, drvdata->control);
-> +}
-> +
-> +static int gxp_wdt_start(struct watchdog_device *wdd)
-> +{
-> +	struct gxp_wdt *drvdata = watchdog_get_drvdata(wdd);
-> +
-> +	writew((SECS_TO_WDOG_TICKS(wdd->timeout)), drvdata->counter);
+  4ed308c445a1e3ab ("ftrace: Have architectures opt-in for mcount build time sorting")
 
-Unnecessary iand confusing () around SECS_TO_WDOG_TICKS().
+Is it possible to try with the final v5.17? Or at least try with that patch
+cherry-picked?
 
-> +	gxp_wdt_enable_reload(drvdata);
-> +	return 0;
-> +}
-> +
-> +static int gxp_wdt_stop(struct watchdog_device *wdd)
-> +{
-> +	struct gxp_wdt *drvdata = watchdog_get_drvdata(wdd);
-> +	uint8_t val;
-> +
-> +	val = readb_relaxed(drvdata->control);
-> +	val &= ~MASK_WDGCS_ENABLE;
-> +	writeb(val, drvdata->control);
-> +	return 0;
-> +}
-> +
-> +static int gxp_wdt_set_timeout(struct watchdog_device *wdd,
-> +			       unsigned int timeout)
-> +{
-> +	struct gxp_wdt *drvdata = watchdog_get_drvdata(wdd);
-> +	uint32_t actual;
+I didn't think that led to this problem specifically, but in my testing the
+problem was detected earlier, so maybe this is a secondary problem.
 
-Please use u32 as suggested by checkpatch. Same everywhere.
+> > I have added the configuration as attachment.
+> > 
+> > Here is what I try to do:
+> > ```
+> > # cd /sys/kernel/tracing/
+> > # ls
+> > available_events            per_cpu                 stack_trace
+> > available_filter_functions  printk_formats          stack_trace_filter
+> > available_tracers           README                  timestamp_mode
+> > buffer_percent              recursed_functions      trace
+> > buffer_size_kb              saved_cmdlines          trace_clock
+> > buffer_total_size_kb        saved_cmdlines_size     trace_marker
+> > current_tracer              saved_tgids             trace_marker_raw
+> > dyn_ftrace_total_info       set_event               trace_options
+> > dynamic_events              set_event_notrace_pid   trace_pipe
+> > enabled_functions           set_event_pid           trace_stat
+> > error_log                   set_ftrace_filter       tracing_cpumask
+> > events                      set_ftrace_notrace      tracing_on
+> > free_buffer                 set_ftrace_notrace_pid  tracing_thresh
+> > function_profile_enabled    set_ftrace_pid          uprobe_events
+> > instances                   set_graph_function      uprobe_profile
+> > max_graph_depth             set_graph_notrace       
+> > options                     stack_max_size          
+> > # echo function > current_tracer
+> 
+> So you enabled function tracing first before setting the filter. That means
+> all functions that ftrace knows about will be modified.
+> 
+> > # echo do_page_fault > set_ftrace_filter 
+> > -ash: can't create set_ftrace_filter: No such device
+> 
+> Looks like the setting of all functions faulted, and that would disable
+> ftrace and give the above error messag. So the filter never took place. I
+> wonder if you had set the filter first, and then tried to update if it
+> would have worked. This would let us know if it is all function updates
+> that's the problem or just a specific few.
 
-> +
-> +	wdd->timeout = timeout;
-> +	actual = min(timeout, wdd->max_hw_heartbeat_ms / 1000);
-> +	writew((SECS_TO_WDOG_TICKS(actual)), drvdata->counter);
+Could that be caused by what I suggested above, with the ftrace locations not
+being sorted?
 
-Unnecessary ()
+> > ```
+> > 
+> > In the kernel log I can see that a ftrace bug is reported:
+> > ```
+> > [  173.064893] ------------[ ftrace bug ]------------
+> > [  173.064918] ftrace faulted on modifying 
+> 
+> The above shows that ftrace faulted when it tried to modify a function. 
+> 
+> > [  173.064923] [<ffff8000096003dc>] set_reset_devices+0x4/0x20
+> 
+> The above is what it tried to update. I'm guessing you will see
+> "set_reset_devices" in the list of functions in
+> "available_filter_functions".
+> 
+> > [  173.064957] Setting ftrace call site to call ftrace function
+> > [  173.064962] ftrace record flags: 80000001
+> 
+> The above is that a trampoline is in use (as shown below) with one user.
+> 
+> 
+> Mark, et.al. Any changes that would cause ftrace not to be able to update
+> the code.
 
-> +
-> +	return 0;
-> +}
-> +
-> +static unsigned int gxp_wdt_get_timeleft(struct watchdog_device *wdd)
-> +{
-> +	struct gxp_wdt *drvdata = watchdog_get_drvdata(wdd);
-> +	uint32_t val = readw(drvdata->counter);
-> +
-> +	return WDOG_TICKS_TO_SECS(val);
-> +}
-> +
-> +static int gxp_wdt_ping(struct watchdog_device *wdd)
-> +{
-> +	struct gxp_wdt *drvdata = watchdog_get_drvdata(wdd);
-> +
-> +	gxp_wdt_enable_reload(drvdata);
-> +	return 0;
-> +}
-> +
-> +static int gxp_restart(struct watchdog_device *wdd, unsigned long action,
-> +		       void *data)
-> +{
-> +	struct gxp_wdt *drvdata = watchdog_get_drvdata(wdd);
-> +
-> +	writew(10, drvdata->counter);
-> +	gxp_wdt_enable_reload(drvdata);
-> +	mdelay(100);
-> +	return 0;
-> +}
-> +
-> +static const struct watchdog_ops gxp_wdt_ops = {
-> +	.owner =	THIS_MODULE,
-> +	.start =	gxp_wdt_start,
-> +	.stop =		gxp_wdt_stop,
-> +	.ping = gxp_wdt_ping,
-> +	.set_timeout	= gxp_wdt_set_timeout,
-> +	.get_timeleft =	gxp_wdt_get_timeleft,
-> +	.restart =	gxp_restart,
+Only as above. If we rule that out I can have a go investigating this locally.
 
-Please be consistent with alignments.
+Thanks,
+Mark.
 
-> +};
-> +
-> +static const struct watchdog_info gxp_wdt_info = {
-> +	.options = WDIOF_SETTIMEOUT | WDIOF_MAGICCLOSE | WDIOF_KEEPALIVEPING,
-> +	.identity = "HPE GXP Watchdog timer",
-> +};
-> +
-> +static int gxp_wdt_probe(struct platform_device *pdev)
-> +{
-> +	struct resource *res;
-> +	struct device *dev = &pdev->dev;
-> +	struct gxp_wdt *drvdata;
-> +	int err;
-> +	uint8_t val;
-
-Please use u8.
-
-> +
-> +	drvdata = devm_kzalloc(dev, sizeof(struct gxp_wdt), GFP_KERNEL);
-> +	if (!drvdata)
-> +		return -ENOMEM;
-> +	platform_set_drvdata(pdev, drvdata);
-> +
-> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> +	drvdata->counter = devm_ioremap_resource(dev, res);
-> +	if (IS_ERR(drvdata->counter))
-> +		return PTR_ERR(drvdata->counter);
-> +
-> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
-> +	drvdata->control = devm_ioremap_resource(dev, res);
-> +	if (IS_ERR(drvdata->control))
-> +		return PTR_ERR(drvdata->control);
-
-Please use a single resource and offsets, or explain in a comment
-why that does not work for this driver.
-
-> +
-> +	drvdata->wdd.info = &gxp_wdt_info;
-> +	drvdata->wdd.ops = &gxp_wdt_ops;
-> +	drvdata->wdd.max_hw_heartbeat_ms = WDT_MAX_TIMEOUT_MS;
-> +	drvdata->wdd.parent = &pdev->dev;
-> +
-> +	watchdog_set_drvdata(&drvdata->wdd, drvdata);
-> +	watchdog_init_timeout(&drvdata->wdd, WDT_DEFAULT_TIMEOUT, dev);
-
-That disables setting the watchdog timeout through devicetree, and is thus
-mostly pointless. It is better to set the default timeout via variable
-assignment above if you don't want to use devicetree to set the timeout,
-or pass a timeout value of 0 to get the timeout from devicetree (if
-configured).
-
-> +	watchdog_set_nowayout(&drvdata->wdd, WATCHDOG_NOWAYOUT);
-> +
-> +	val = readb(drvdata->control);
-> +	if (val & MASK_WDGCS_ENABLE)
-> +		set_bit(WDOG_HW_RUNNING, &drvdata->wdd.status);
-> +
-> +	watchdog_set_restart_priority(&drvdata->wdd, 128);
-> +
-> +	watchdog_stop_on_reboot(&drvdata->wdd);
-> +	err = devm_watchdog_register_device(dev, &drvdata->wdd);
-> +	if (err) {
-> +		dev_err(dev, "Failed to register watchdog device");
-> +		return err;
-> +	}
-> +
-> +	dev_info(dev, "HPE GXP watchdog timer");
-> +	return 0;
-> +}
-> +
-> +static int gxp_wdt_remove(struct platform_device *pdev)
-> +{
-> +	return 0;
-> +}
-
-Pointless remove function.
-
-> +
-> +static const struct of_device_id gxp_wdt_of_match[] = {
-> +	{ .compatible = "hpe,gxp-wdt", },
-> +	{},
-> +};
-> +MODULE_DEVICE_TABLE(of, gxp_wdt_of_match);
-> +
-> +static struct platform_driver gxp_wdt_driver = {
-> +	.probe		= gxp_wdt_probe,
-> +	.remove		= gxp_wdt_remove,
-> +	.driver = {
-> +		.name =		"gxp-wdt",
-> +		.of_match_table = gxp_wdt_of_match,
-> +	},
-> +};
-> +module_platform_driver(gxp_wdt_driver);
-> +
-> +MODULE_AUTHOR("Nick Hawkins <nick.hawkins@hpe.com>");
-> +MODULE_AUTHOR("Jean-Marie Verdun <verdun@hpe.com>");
-> +MODULE_DESCRIPTION("Driver for GXP watchdog timer");
+> 
+> Sebastian, can you reply with the .config you used.
+> 
+> Thanks,
+> 
+> -- Steve
+> 
+> 
+> > [  173.064968]  (1)  
+> >                  expected tramp: ffff80000802a96c
+> > [  173.065004] ------------[ cut here ]------------
+> > [  173.065009] WARNING: CPU: 1 PID: 592 at kernel/trace/ftrace.c:2068 ftrace_bug+0x218/0x250
+> > [  173.065032] Modules linked in: rpcsec_gss_krb5 auth_rpcgss nfsv4 nfs lockd grace fscache netfs iptable_nat nf_nat iptable_mangle bpfilter iptable_filter ip6t_REJECT nf_reject_ipv6 ipt_REJECT nf_reject_ipv4 xt_tcpudp xt_state xt_conntrack nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 nft_compat nf_tables nfnetlink hantro_vpu(C) rockchip_vdec(C) btsdio hci_uart v4l2_vp9 rockchip_rga snd_soc_simple_card snd_soc_audio_graph_card brcmfmac snd_soc_es8316 v4l2_h264 snd_soc_hdmi_codec btqca snd_soc_spdif_tx snd_soc_rockchip_i2s videobuf2_dma_contig snd_soc_simple_card_utils btrtl brcmutil v4l2_mem2mem videobuf2_dma_sg snd_soc_core btbcm videobuf2_memops cfg80211 btintel videobuf2_v4l2 snd_pcm_dmaengine snd_pcm videobuf2_common bluetooth videodev snd_timer mc snd rfkill dw_hdmi_i2s_audio dw_hdmi_cec soundcore cpufreq_dt sunrpc ip_tables x_tables autofs4 cls_cgroup panfrost drm_shmem_helper gpu_sched rockchipdrm drm_cma_helper dw_hdmi dw_mipi_dsi analogix_dp drm_kms_helper cec rc_cor
+>  e drm
+> > [  173.065467]  drm_panel_orientation_quirks realtek(E)
+> > [  173.065487] CPU: 1 PID: 592 Comm: ash Tainted: G         C  E     5.17.0-rc1-rockpidebug2 #70
+> > [  173.065501] Hardware name: Radxa ROCK Pi 4B (DT)
+> > [  173.065508] pstate: 60000005 (nZCv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+> > [  173.065521] pc : ftrace_bug+0x218/0x250
+> > [  173.065533] lr : ftrace_bug+0x218/0x250
+> > [  173.065545] sp : ffff80000b433b30
+> > [  173.065550] x29: ffff80000b433b30 x28: ffff000006ae0000 x27: 0000000000000000
+> > [  173.065571] x26: 0000000000000000 x25: 0000000000000000 x24: ffff800009eb1f58
+> > [  173.065591] x23: 00000000fffffff2 x22: ffff8000093e1ba0 x21: ffff8000093e1a70
+> > [  173.065611] x20: ffff8000096003dc x19: ffff000000480030 x18: 0000000000000020
+> > [  173.065631] x17: 0000000000000000 x16: 0000000000000009 x15: ffff000006ae04a0
+> > [  173.065651] x14: 0000000000000000 x13: 6336396132303830 x12: 3030303866666666
+> > [  173.065671] x11: ffff800009c7f1b0 x10: ffff800009c67170 x9 : ffff800008116dc8
+> > [  173.065691] x8 : 0000000000017fe8 x7 : c0000000ffffefff x6 : 0000000000000001
+> > [  173.065711] x5 : 0000000000000001 x4 : 0000000000000000 x3 : 0000000000000027
+> > [  173.065730] x2 : 0000000000000000 x1 : 0000000000000000 x0 : 0000000000000022
+> > [  173.065749] Call trace:
+> > [  173.065755]  ftrace_bug+0x218/0x250
+> > [  173.065767]  ftrace_replace_code+0x94/0xa0
+> > [  173.065783]  ftrace_modify_all_code+0xb8/0x150
+> > [  173.065796]  arch_ftrace_update_code+0x14/0x20
+> > [  173.065808]  ftrace_run_update_code+0x24/0x78
+> > [  173.065820]  ftrace_startup_enable+0x44/0x58
+> > [  173.065832]  ftrace_startup+0xcc/0x160
+> > [  173.065846]  register_ftrace_function+0x38/0x90
+> > [  173.065859]  function_trace_init+0x7c/0xd0
+> > [  173.065873]  tracing_set_tracer+0xe8/0x170
+> > [  173.065883]  tracing_set_trace_write+0x10c/0x178
+> > [  173.065894]  vfs_write+0xc8/0x378
+> > [  173.065909]  ksys_write+0x74/0x108
+> > [  173.065921]  __arm64_sys_write+0x24/0x30
+> > [  173.065934]  invoke_syscall+0x4c/0x110
+> > [  173.065948]  el0_svc_common.constprop.0+0x4c/0xf8
+> > [  173.065962]  do_el0_svc+0x2c/0x90
+> > [  173.065974]  el0_svc+0x20/0x60
+> > [  173.065988]  el0t_64_sync_handler+0xb0/0xb8
+> > [  173.065998]  el0t_64_sync+0x1a0/0x1a4
+> > [  173.066010] ---[ end trace 0000000000000000 ]---
+> > ```
+> > (full kernel log here: https://paste.debian.net/1236750/)
+> > 
+> > Thanks in advance for any help!
+> > 
+> > Greetings,
+> > Sebastian
+> 
