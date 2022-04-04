@@ -2,1134 +2,213 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9310C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 13:09:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72F70C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 13:09:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349660AbiDDNL2 (ORCPT
+        id S1349755AbiDDNLb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 09:11:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53152 "EHLO
+        Mon, 4 Apr 2022 09:11:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348922AbiDDNLU (ORCPT
+        with ESMTP id S1349446AbiDDNL0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 09:11:20 -0400
-Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E259F659A
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 06:09:19 -0700 (PDT)
-Received: by mail-oi1-x232.google.com with SMTP id e4so10007543oif.2
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 06:09:19 -0700 (PDT)
+        Mon, 4 Apr 2022 09:11:26 -0400
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 372A89FCE
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 06:09:29 -0700 (PDT)
+Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 234ATxeu012558;
+        Mon, 4 Apr 2022 13:09:22 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=corp-2021-07-09;
+ bh=loHCxqXH0ogFmuV50HpyOA9Xsq4B9sLAD0/EptvEz+U=;
+ b=AW8WJ9T98wCTVYuye0/uRw7mI9a4NSK8/XBkSVCz+DaXVBjVWBivusk6n8pNoHx43UQX
+ jiSXzxLpjgtumP8C4q8692y4HasjodEyXyhdDU1Ir1h1Wdrr8fKNUT6/wQWu3JsIsiwI
+ zdqiz1OYKjV6BLmih2qkbztyK+FmO0ymgklt5HIy5pAZrDnHvu27CW11RPWokBgH/h9a
+ CnlDucNROkGu9QbAtzeyBBOJIfBXpvnOveoE5pbxgYe/tucgN0A+IK58YB8pPz5J61Ie
+ f+SePa+c9NdR9se8FCAtTj3ci2vi0zjVOHAOp7M4uyT227yZjYQD6+T0nzdA8BCSXY/Y Ug== 
+Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3f6cwcb3qw-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 04 Apr 2022 13:09:20 +0000
+Received: from pps.filterd (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 234D6cn9002327;
+        Mon, 4 Apr 2022 13:09:19 GMT
+Received: from nam02-dm3-obe.outbound.protection.outlook.com (mail-dm3nam07lp2047.outbound.protection.outlook.com [104.47.56.47])
+        by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3f6cx2d8d5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 04 Apr 2022 13:09:19 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZuwIuKBQYwyw4aBYbmUl6kirH1sbBHCS3BJs05y5w60vA7tPUYaJhJhLLppNQXn1o9HSh3/D3ptdACp7tzw9B7UCxXVj3sO3Q82ZXgZZJ5bYEkxX3F21r5K6cu52QgYpb+zUXFzWrB7inAgF6oN6qtuIwwciE51M3S4yt9fnIikHmF38f2wIgX1RJlFlGSkt2ZZxj/HLCfskNbGo9zuDPOURfF9gL4QGQamqxy99jFX8F/WCVIgU95ckmF99tGX+QtLrE+sdPkPyt5szXm/Rxf5zhKcTr8IraagP+uuigs7sMI5K2ktLiDtThKZSwTT2oyE8DCZbJAnUIPvnGExfmQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=loHCxqXH0ogFmuV50HpyOA9Xsq4B9sLAD0/EptvEz+U=;
+ b=dDcw9/gGn/sFRaBaMYaMiySQxHdTf3mttKM4g2BihSrM8piMeTKYT90u3I3FVncEC/UvfneOxbklVngxEa+bZCmNNry+MUW9JwUOsNTC3b2FevO8E9vkqyBNlzRdcEXe8hUadqKNSICE7jgkq70b0kL2GwRdOMdHlX21LSSLgRFwL3yz4FSkwhtDRExOsVopZiKBwrlvX0OIA7rDIPzT3px5pjaYdtur26miY35uZQi47Z2bvO5N3m+xKqONX33QVuZa1vNJD6fOu64jL2gc/mRAYXZI/FPbzUMbQKqIWpO2U+Ji3ipwPJ8ip2gfyiUuKw4miIn2TCL5kup/KLQZwQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=1oYs04A3Jb1lbFNUp4F1PnBBp7o2/pOQcGkWkwIu0m4=;
-        b=MqauwuLmGVPr/5nUx3yPLkVz/2h3ngE5byV6O+u3RZTssdkW7q7+zThJX34BTB1rzl
-         sXVl7NobQ8xYzIvXyXQSaxafkzTbgKDGO0M6J1DXs0eWFmN6AJKzV34cVv0y1keG60jA
-         lDHQ2Rasar8kBTegA9aufvzgD2BisCGdyGEljclFJMNSJDGcFj9QIUuh14Uendkvw1RX
-         aOL5b6jawJ2g46Xo2hQyWW8izuLwdQgDNNhRgClTuzKZaxEq05T1bsfGMZk/NZwacGMD
-         EJMM5WG6fekHJ7ZLNrJaqpN1Q0fR1wtpNFDowDrhXVnsdsL0w3jlLnFxECAOTOC5p9B3
-         P94A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=1oYs04A3Jb1lbFNUp4F1PnBBp7o2/pOQcGkWkwIu0m4=;
-        b=rrKInRMSHcL0Bqz6zaUzeZpM46fbtDJRDsspF23nhwXGSesuNPLRYmnzk00SU80auI
-         HIQCov8O30QvhL4b+CcEfuJxDUksT70zzJ50+XvSgCu5ma1ideQZFys0XbIZTQgOpvsZ
-         BawDJVQbPhSFrlJDr3+5x6KwaA/JgxrduTHf84r90msRFFhZAOw6BWGb8C0Y/Tm/n+IF
-         ZK7yxe8AQK3Q9qcLEVVRwDEalikWf0qfU63yvYJLvSzDL9hfdP8mZOy/oSn+lnT7t03j
-         4yTK/qyrh+k131DiJjpdygG/6Io/oiDR2Bx1AVbcg/+rEsMexzk5WC5tLUCglfAR1mQT
-         rkGA==
-X-Gm-Message-State: AOAM532k9V1xyXi6DmSo9+BgKvRStv7azMJywntl43E2xZkU91nl+KIQ
-        y8C3YCc5uQFgfpz+Uw3tUmFAwwQ4o/cHgQ==
-X-Google-Smtp-Source: ABdhPJy8lN9gsM41Z2i8P4yUsfJpBYJj+xvWPjqo4vZfWxPhCgdugHV4IVSSF44XI67prrx6ED5zfw==
-X-Received: by 2002:a05:6808:302a:b0:2f7:6aa3:63b8 with SMTP id ay42-20020a056808302a00b002f76aa363b8mr9951854oib.31.1649077758714;
-        Mon, 04 Apr 2022 06:09:18 -0700 (PDT)
-Received: from ripper ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
-        by smtp.gmail.com with ESMTPSA id q203-20020acad9d4000000b002f8ee3f69e2sm4212425oig.52.2022.04.04.06.09.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 06:09:17 -0700 (PDT)
-Date:   Mon, 4 Apr 2022 06:11:42 -0700
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Caleb Connolly <caleb.connolly@linaro.org>
-Cc:     Sebastian Reichel <sre@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Andy Gross <agross@kernel.org>, linux-pm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org,
-        Amit Pundir <amit.pundir@linaro.org>,
-        Sumit Semwal <sumit.semwal@linaro.org>
-Subject: Re: [PATCH 1/6] power: supply: add Qualcomm SMB2 driver
-Message-ID: <YkrujtaASHpphkM5@ripper>
-References: <20220401202643.877609-1-caleb.connolly@linaro.org>
- <20220401202643.877609-2-caleb.connolly@linaro.org>
-MIME-Version: 1.0
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=loHCxqXH0ogFmuV50HpyOA9Xsq4B9sLAD0/EptvEz+U=;
+ b=q7wtwfE+UKWQzZU8YRX3An3t904SFqmQx8eIUx+M4p/uIQis0u/Iuzv5zMQw/WPYUe3sf91H+RN7kJ9IhMZVG/7Z3m7VpYM+Atp11bfJzkXWUPB2fXIkfUzCZv4TGesxkDqcLyG1WSEB85My5aBH4wDKldbUNCNVJzZPQRMcScg=
+Received: from CY4PR1001MB2358.namprd10.prod.outlook.com
+ (2603:10b6:910:4a::32) by SA2PR10MB4665.namprd10.prod.outlook.com
+ (2603:10b6:806:fb::17) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Mon, 4 Apr
+ 2022 13:09:17 +0000
+Received: from CY4PR1001MB2358.namprd10.prod.outlook.com
+ ([fe80::ddcf:9371:2380:d00f]) by CY4PR1001MB2358.namprd10.prod.outlook.com
+ ([fe80::ddcf:9371:2380:d00f%7]) with mapi id 15.20.5123.030; Mon, 4 Apr 2022
+ 13:09:17 +0000
+Date:   Mon, 4 Apr 2022 16:08:54 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Michael Straube <straube.linux@gmail.com>
+Cc:     gregkh@linuxfoundation.org, Larry.Finger@lwfinger.net,
+        phil@philpotter.co.uk, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] staging: r8188eu: remove unncessary ternary operator
+Message-ID: <20220404130854.GB3293@kadam>
+References: <20220402173835.7560-1-straube.linux@gmail.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220401202643.877609-2-caleb.connolly@linaro.org>
+In-Reply-To: <20220402173835.7560-1-straube.linux@gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: JNAP275CA0050.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:4e::10)
+ To CY4PR1001MB2358.namprd10.prod.outlook.com (2603:10b6:910:4a::32)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 3309f857-2ab9-4ea5-f546-08da163c52b8
+X-MS-TrafficTypeDiagnostic: SA2PR10MB4665:EE_
+X-Microsoft-Antispam-PRVS: <SA2PR10MB46652A79EF3BCE216E3C33B18EE59@SA2PR10MB4665.namprd10.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: MhB7av/Bj9rLcKRvozH9SmsKKVub+jfhVKwTtS4ZR9R4IjqMozaUK9TIZx6S/Rlv5edppi2cF/GaEmagX7PhS6TLqYbkNoOxI8PgouhvJCMwkQpRGkABUX575pOTAKjFR+4yZyEOse4GbVErvfyDbFBTGMOR9XfKGr8uGg6uMrbBnsgdGiupJWdzPnLPFS7ulsD9bndMbBPHPeEiutGlK+62W2VaWRP883jFQctCvETwjlMxJhRoSVn7P3pGfMIQAzc6mzFsYEb3uqInsZ6FarhT0lpgicPx6LLMt1Xbh10FgufSdnAR1oo4uIPJ9Dg/E8tO/JLpu3KmRFmZdOpBNLA+WgUFuk/FxcwL+uUVwtsEdn+dp3TPW5f1ow2BoaVU0c7m0PP+dldV3KDv3MMyfl2NloiwW0WQTzFY5z9UZqfSL41qUStZI3xpmbf94XoaLg9IkaVsDe7aWxk5oOjyROvaBZ89Js1ZEnBmtiFnY2ZWnhr3z3Wtj23evekf/IYln0+KDfOtIz7Skb1GXjBEzJw9ElNgnGBhENJjX2Ih4VwrFyj/CXnY0sPk1i99Y+dpNoNjtUr+zVfypeBRZp5j7FBLnKQA6TdGbAZ/8wk99D2HpP6TIk5Ri2b2PZ/Udzt1tMZ7YP3X3ZP55mo6n1otnJeHHqk9vkBGwcvWkRzGNDrYnq2799n9i7ZUCDZ+DsAo1RyJaZrt5TLGeqHSYWyD3g==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY4PR1001MB2358.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(8936002)(508600001)(2906002)(6486002)(86362001)(33656002)(9686003)(52116002)(6506007)(6666004)(6512007)(44832011)(5660300002)(38100700002)(38350700002)(1076003)(26005)(186003)(33716001)(316002)(66556008)(8676002)(66946007)(66476007)(6916009)(4326008);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ZcmBWQTstDQJy/vul17b2cWUCzs0AP6RGYt1rE20zNn5fvh3lT3Y9sHDENKw?=
+ =?us-ascii?Q?nzqS4VKTcZfTUPn068sD9YAJ9YHRhP+iYrhkgyvNy7d94lOeHuzgE4rynW6c?=
+ =?us-ascii?Q?FGbgAZaEHoEFnjj582dlfF2hZUhpSpoP1Ei/OPLcOG6FyY64mlhv7vYEGdAB?=
+ =?us-ascii?Q?5oSjg3fWQlDnZFs7VT24Lx57YzpxbKBFNtBiA8mmZ2QqJkjeKZZj13FUUUoc?=
+ =?us-ascii?Q?/Fp8vqvMRurrCVaWIy3aFipk8u036vmz4JZCfzne29Cvb+1Qscpw2irgarI0?=
+ =?us-ascii?Q?yvjub79YmyDgeiX68r9CmYqk1jDQCLwLibdnEsBNLjtyktuD4caCU/6JlRhs?=
+ =?us-ascii?Q?67r/WKJJ2EPrpSjfYn0QiR3w2URRpzagngnVPFY8a00NUVX++FsNatXiYaXF?=
+ =?us-ascii?Q?rD/BInl96+0QGdi2xYlbn4SQglYIVbVUBMOZ7ewT7v7FSNGvIBa2E5f0UKoV?=
+ =?us-ascii?Q?9MzjfRisxRBAizm03nJbCXe63DFHJYkSO9qzpZFhmiDHc6RXA5cuQpCuRBhE?=
+ =?us-ascii?Q?OAdTMSSu9qB7PcVcYvcTz+JGN/OGmiE0skxzCvjGlK+5JbDbt8EwG+W6JxXo?=
+ =?us-ascii?Q?UzJtFNPfK/HweZ8q4yTlmJqiCLg55cJfQPJ+uN2WhvaLEzQ/FFBvXNXY1DGG?=
+ =?us-ascii?Q?orLLhKsqbdv4Nz6z7V+0O+DKIgV3U6SqOPKeUq9xiqsTRmswOkXk0XwXstTG?=
+ =?us-ascii?Q?OooO9WKlheBpWNc1ETODIGlbfKvU24uhXkKKFJJxsxb5waHplX2BV/q41sVO?=
+ =?us-ascii?Q?Rm+tg1e9p3GsGDXek0HejAxhQOQ5nEHTZfOr9J6osD1Vjanj0zI0F8Xtvk+t?=
+ =?us-ascii?Q?wmgWepGAteicwpoO/fTMRnbEE/JlCF1H6e9EDM5Rkdbt0j8SStYsBFOr73oA?=
+ =?us-ascii?Q?+iL7gHeXyDA47McFQurK+B3f+POe2W+qD40meIWFX3kPUbs+4zgsmXpcv9hp?=
+ =?us-ascii?Q?kc5ujZY6sZmPE09CCjHmflreaV69btXKlStndum3OYOlqQJWndCfbfGOqexh?=
+ =?us-ascii?Q?zLXtA9N4zpR3J015D2AxkjV7DdGf9y/nokLT/vHp71epM8z/zewjQYilOVlm?=
+ =?us-ascii?Q?sxaJgQq/FKDJSDavslIaiyrslXzLGRTVnnKQm/wS03KCuEGFfkQ5Zs55tXV0?=
+ =?us-ascii?Q?0WSxvYlNKvOsQbncOuxjvKGsIe/AT3jWbuA/XD53FiMw934LmmFCFJqsVlKT?=
+ =?us-ascii?Q?4qs8cHOM1955aQslyjNhWTL2yUoFzrArXpPMnTRpSuc5jYLX51CrKonCNzx/?=
+ =?us-ascii?Q?oWgAmRbU2py9cNhQpWXBKW1ibBMZyuSHngWASHj6XdMfLC8FeFSJlp/RuGE1?=
+ =?us-ascii?Q?drWNuNdIYOpIObbc88K7E8cWFHBWfZrRqMpMqgB3VPjKG0cvAV9LLQJMIzm4?=
+ =?us-ascii?Q?YGLKMuwkxWBKT63DD4RwLmr1ZvNSejzE7v6n838FAIoX2b9f2SzA1vgVi44d?=
+ =?us-ascii?Q?Fxxm4QLfZOiWRsfs7xvguNPPC/2hx55dsmvf8tMGv5tJTkniXHuD0mXJ5NHK?=
+ =?us-ascii?Q?jgaZTU4uKRf2w7dKYBHmxKkv4hQaOJG7UNmsyDXSUDyMz1ael6eIVtNdqhGq?=
+ =?us-ascii?Q?momfwDyK6VMJnUJ9Xg+HN8U9sRfNBj2SxfWPccANt9zfoJGTGVziHfa+CKnH?=
+ =?us-ascii?Q?ZW9Lm+pft1VxgQMlp5o4ma8n++I32aj2Bt6kfARQVSbKifTNHj4TOeHd7RAV?=
+ =?us-ascii?Q?86K8S5LGMe7QHL6MXy+QJDIL07x4zYv58cf8M/nzS+k4LPG5ftkZZxJbf4Dr?=
+ =?us-ascii?Q?mOFWn1DnmCaCvATOAg26Uq0PyUjGRCE=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3309f857-2ab9-4ea5-f546-08da163c52b8
+X-MS-Exchange-CrossTenant-AuthSource: CY4PR1001MB2358.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Apr 2022 13:09:17.3985
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: fLhH9XnjfNE0fWkBTJEKgahWl8m0qREw+kP0aRypmW6GixPdh7+tRjDcniHRITUj2SVy3RP7TRcOAeJi3xL+UROKaDKGy9T2fCaE48C1Qn4=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA2PR10MB4665
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.425,18.0.850
+ definitions=2022-04-04_05:2022-03-30,2022-04-04 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 spamscore=0 adultscore=0
+ bulkscore=0 mlxlogscore=999 phishscore=0 suspectscore=0 mlxscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
+ definitions=main-2204040075
+X-Proofpoint-ORIG-GUID: ZG3rVk71ChNakfHKx9mCYw_cK_Z-EUwS
+X-Proofpoint-GUID: ZG3rVk71ChNakfHKx9mCYw_cK_Z-EUwS
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri 01 Apr 13:26 PDT 2022, Caleb Connolly wrote:
-
-> Add a driver for the SMB2 charger block found in the Qualcomm PMI8998
-> and PM660.
-
-Are there any differences between the two? Or would it be warranted to
-add pm660 in the match table?
-
-> 
-> Signed-off-by: Caleb Connolly <caleb.connolly@linaro.org>
-> ---
->  drivers/power/supply/Kconfig     |   9 +
->  drivers/power/supply/Makefile    |   1 +
->  drivers/power/supply/qcom_smb2.c | 930 +++++++++++++++++++++++++++++++
->  3 files changed, 940 insertions(+)
->  create mode 100644 drivers/power/supply/qcom_smb2.c
-> 
-> diff --git a/drivers/power/supply/Kconfig b/drivers/power/supply/Kconfig
-> index 1aa8323ad9f6..c72da3d75258 100644
-> --- a/drivers/power/supply/Kconfig
-> +++ b/drivers/power/supply/Kconfig
-> @@ -897,4 +897,13 @@ config BATTERY_UG3105
->  	  device is off or suspended, the functionality of this driver is
->  	  limited to reporting capacity only.
+On Sat, Apr 02, 2022 at 07:38:35PM +0200, Michael Straube wrote:
+> diff --git a/drivers/staging/r8188eu/hal/rtl8188e_cmd.c b/drivers/staging/r8188eu/hal/rtl8188e_cmd.c
+> index 45b788212628..18650cd96f09 100644
+> --- a/drivers/staging/r8188eu/hal/rtl8188e_cmd.c
+> +++ b/drivers/staging/r8188eu/hal/rtl8188e_cmd.c
+> @@ -137,7 +137,7 @@ void rtl8188e_Add_RateATid(struct adapter *pAdapter, u32 bitmap, u8 arg, u8 rssi
 >  
-> +config CHARGER_QCOM_SMB2
-> +	tristate "Qualcomm PMIC charger driver"
-> +	depends on MFD_SPMI_PMIC
-> +	depends on IIO
-> +	help
-> +	  Say Y here to enable the Qualcomm PMIC Charger driver. This
-> +	  adds support for the SMB2 switch mode battery charger found
-> +	  in PMI8998 and related PMICs.
-> +
->  endif # POWER_SUPPLY
-> diff --git a/drivers/power/supply/Makefile b/drivers/power/supply/Makefile
-> index 7f02f36aea55..e5db9eda6a9b 100644
-> --- a/drivers/power/supply/Makefile
-> +++ b/drivers/power/supply/Makefile
-> @@ -108,3 +108,4 @@ obj-$(CONFIG_BATTERY_ACER_A500)	+= acer_a500_battery.o
->  obj-$(CONFIG_BATTERY_SURFACE)	+= surface_battery.o
->  obj-$(CONFIG_CHARGER_SURFACE)	+= surface_charger.o
->  obj-$(CONFIG_BATTERY_UG3105)	+= ug3105_battery.o
-> +obj-$(CONFIG_CHARGER_QCOM_SMB2)	+= qcom_smb2.o
-> diff --git a/drivers/power/supply/qcom_smb2.c b/drivers/power/supply/qcom_smb2.c
-> new file mode 100644
-> index 000000000000..63100cfc3300
-> --- /dev/null
-> +++ b/drivers/power/supply/qcom_smb2.c
-> @@ -0,0 +1,930 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/*
-> + * Copyright (c) 2016-2019 The Linux Foundation. All rights reserved.
-> + * Copyright (c) 2021, Linaro Ltd.
+>  	bitmap |= ((raid << 28) & 0xf0000000);
+>  
+> -	short_gi_rate = (arg & BIT(5)) ? true : false;
+> +	short_gi_rate = arg & BIT(5);
+>  
 
-2021-2022
+This is a bug.  Valid values of short_gi_rate are 0 and 1 but this sets
+it to BIT(5) so it will break odm_RateUp_8188E() which tests for:
 
-> + *  Author: Caleb Connolly <caleb.connolly@linaro.org>
+	else if ((pRaInfo->SGIEnable) != 1)
 
-There's two spaces before Author...
+>  	raid = (bitmap >> 28) & 0x0f;
+>  
+> diff --git a/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c b/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c
+> index 6811be95da9a..ffc82d17ddbe 100644
+> --- a/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c
+> +++ b/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c
+> @@ -747,7 +747,7 @@ void Hal_ReadPowerSavingMode88E(struct adapter *padapter, u8 *hwinfo, bool AutoL
+>  
+>  		/*  decide hw if support remote wakeup function */
+>  		/*  if hw supported, 8051 (SIE) will generate WeakUP signal(D+/D- toggle) when autoresume */
+> -		padapter->pwrctrlpriv.bSupportRemoteWakeup = (hwinfo[EEPROM_USB_OPTIONAL_FUNCTION0] & BIT(1)) ? true : false;
+> +		padapter->pwrctrlpriv.bSupportRemoteWakeup = hwinfo[EEPROM_USB_OPTIONAL_FUNCTION0] & BIT(1);
 
-> + *
-> + * This driver is for the switch-mode battery charger and boost
-> + * hardware found in pmi8998 and related PMICs.
-> + */
-> +
-> +#include <linux/bits.h>
-> +#include <linux/kernel.h>
-> +#include <linux/minmax.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/of_address.h>
-> +#include <linux/regmap.h>
-> +#include <linux/regulator/driver.h>
-> +#include <linux/device.h>
-> +#include <linux/iio/consumer.h>
-> +#include <linux/mutex.h>
-> +#include <linux/types.h>
-> +#include <linux/power_supply.h>
-> +#include <linux/module.h>
-> +#include <linux/math64.h>
-> +#include <linux/of_irq.h>
-> +#include <linux/interrupt.h>
-> +#include <linux/workqueue.h>
-> +
-> +#define BATTERY_CHARGER_STATUS_2_REG 0x07
+I have not looked at this one to see if has a similar issue...  I don't
+necessarily want to audit all of these.  I guess I will, but could you
+do it first and then I will check?
 
-It would be nice if the value of all these defines where indented, to
-make these easier to read.
+> diff --git a/drivers/staging/r8188eu/include/ieee80211.h b/drivers/staging/r8188eu/include/ieee80211.h
+> index 8c20363cdd31..03d63257797a 100644
+> --- a/drivers/staging/r8188eu/include/ieee80211.h
+> +++ b/drivers/staging/r8188eu/include/ieee80211.h
+> @@ -127,7 +127,7 @@ enum NETWORK_TYPE {
+>  	 (WIRELESS_11B | WIRELESS_11G | WIRELESS_11_24N)
+>  
+>  #define IsSupported24G(NetType)					\
+> -	((NetType) & SUPPORTED_24G_NETTYPE_MSK ? true : false)
+> +	((NetType) & SUPPORTED_24G_NETTYPE_MSK)
 
-> +#define INPUT_CURRENT_LIMITED_BIT BIT(7)
-> +#define CHARGER_ERROR_STATUS_SFT_EXPIRE_BIT BIT(6)
-> +#define CHARGER_ERROR_STATUS_BAT_OV_BIT BIT(5)
-> +#define CHARGER_ERROR_STATUS_BAT_TERM_MISSING_BIT BIT(4)
-> +#define BAT_TEMP_STATUS_MASK GENMASK(3, 0)
-> +#define BAT_TEMP_STATUS_SOFT_LIMIT_MASK GENMASK(3, 2)
-> +#define BAT_TEMP_STATUS_HOT_SOFT_LIMIT_BIT BIT(3)
-> +#define BAT_TEMP_STATUS_COLD_SOFT_LIMIT_BIT BIT(2)
-> +#define BAT_TEMP_STATUS_TOO_HOT_BIT BIT(1)
-> +#define BAT_TEMP_STATUS_TOO_COLD_BIT BIT(0)
-> +
-> +#define CHARGING_ENABLE_CMD_REG 0x42
-> +#define CHARGING_ENABLE_CMD_BIT BIT(0)
-> +
-> +#define CHGR_CFG2_REG 0x51
-> +#define CHG_EN_SRC_BIT BIT(7)
-> +#define CHG_EN_POLARITY_BIT BIT(6)
-> +#define PRETOFAST_TRANSITION_CFG_BIT BIT(5)
-> +#define BAT_OV_ECC_BIT BIT(4)
-> +#define I_TERM_BIT BIT(3)
-> +#define AUTO_RECHG_BIT BIT(2)
-> +#define EN_ANALOG_DROP_IN_VBATT_BIT BIT(1)
-> +#define CHARGER_INHIBIT_BIT BIT(0)
-> +
-> +#define FAST_CHARGE_CURRENT_CFG_REG 0x61
-> +#define FAST_CHARGE_CURRENT_SETTING_MASK GENMASK(7, 0)
-> +
-> +#define FLOAT_VOLTAGE_CFG_REG 0x70
-> +#define FLOAT_VOLTAGE_SETTING_MASK GENMASK(7, 0)
-> +
-> +#define FG_UPDATE_CFG_2_SEL_REG 0x7D
-> +#define SOC_LT_OTG_THRESH_SEL_BIT BIT(3)
-> +#define SOC_LT_CHG_RECHARGE_THRESH_SEL_BIT BIT(2)
-> +#define VBT_LT_CHG_RECHARGE_THRESH_SEL_BIT BIT(1)
-> +#define IBT_LT_CHG_TERM_THRESH_SEL_BIT BIT(0)
-> +
-> +#define JEITA_EN_CFG_REG 0x90
-> +#define JEITA_EN_HARDLIMIT_BIT BIT(4)
-> +#define JEITA_EN_HOT_SL_FCV_BIT BIT(3)
-> +#define JEITA_EN_COLD_SL_FCV_BIT BIT(2)
-> +#define JEITA_EN_HOT_SL_CCC_BIT BIT(1)
-> +#define JEITA_EN_COLD_SL_CCC_BIT BIT(0)
-> +
-> +#define INT_RT_STS 0x310
-> +#define TYPE_C_CHANGE_RT_STS_BIT BIT(7)
-> +#define USBIN_ICL_CHANGE_RT_STS_BIT BIT(6)
-> +#define USBIN_SOURCE_CHANGE_RT_STS_BIT BIT(5)
-> +#define USBIN_PLUGIN_RT_STS_BIT BIT(4)
-> +#define USBIN_OV_RT_STS_BIT BIT(3)
-> +#define USBIN_UV_RT_STS_BIT BIT(2)
-> +#define USBIN_LT_3P6V_RT_STS_BIT BIT(1)
-> +#define USBIN_COLLAPSE_RT_STS_BIT BIT(0)
-> +
-> +#define BATTERY_CHARGER_STATUS_1_REG 0x06
-> +#define BVR_INITIAL_RAMP_BIT BIT(7)
-> +#define CC_SOFT_TERMINATE_BIT BIT(6)
-> +#define STEP_CHARGING_STATUS_SHIFT 3
-> +#define STEP_CHARGING_STATUS_MASK GENMASK(5, 3)
-> +#define BATTERY_CHARGER_STATUS_MASK GENMASK(2, 0)
-> +
-> +#define BATTERY_HEALTH_STATUS_REG 0x07
-> +
-> +#define OTG_CFG_REG 0x153
-> +#define OTG_RESERVED_MASK GENMASK(7, 6)
-> +#define DIS_OTG_ON_TLIM_BIT BIT(5)
-> +#define QUICKSTART_OTG_FASTROLESWAP_BIT BIT(4)
-> +#define INCREASE_DFP_TIME_BIT BIT(3)
-> +#define ENABLE_OTG_IN_DEBUG_MODE_BIT BIT(2)
-> +#define OTG_EN_SRC_CFG_BIT BIT(1)
-> +#define CONCURRENT_MODE_CFG_BIT BIT(0)
-> +
-> +#define OTG_ENG_OTG_CFG_REG 0x1C0
-> +#define ENG_BUCKBOOST_HALT1_8_MODE_BIT BIT(0)
-> +
-> +#define APSD_STATUS_REG 0x307
-> +#define APSD_STATUS_7_BIT BIT(7)
-> +#define HVDCP_CHECK_TIMEOUT_BIT BIT(6)
-> +#define SLOW_PLUGIN_TIMEOUT_BIT BIT(5)
-> +#define ENUMERATION_DONE_BIT BIT(4)
-> +#define VADP_CHANGE_DONE_AFTER_AUTH_BIT BIT(3)
-> +#define QC_AUTH_DONE_STATUS_BIT BIT(2)
-> +#define QC_CHARGER_BIT BIT(1)
-> +#define APSD_DTC_STATUS_DONE_BIT BIT(0)
-> +
-> +#define APSD_RESULT_STATUS_REG 0x308
-> +#define ICL_OVERRIDE_LATCH_BIT BIT(7)
-> +#define APSD_RESULT_STATUS_MASK GENMASK(6, 0)
-> +#define QC_3P0_BIT BIT(6)
-> +#define QC_2P0_BIT BIT(5)
-> +#define FLOAT_CHARGER_BIT BIT(4)
-> +#define DCP_CHARGER_BIT BIT(3)
-> +#define CDP_CHARGER_BIT BIT(2)
-> +#define OCP_CHARGER_BIT BIT(1)
-> +#define SDP_CHARGER_BIT BIT(0)
-> +
-> +#define TYPE_C_STATUS_1_REG 0x30B
-> +#define UFP_TYPEC_MASK GENMASK(7, 5)
-> +#define UFP_TYPEC_RDSTD_BIT BIT(7)
-> +#define UFP_TYPEC_RD1P5_BIT BIT(6)
-> +#define UFP_TYPEC_RD3P0_BIT BIT(5)
-> +#define UFP_TYPEC_FMB_255K_BIT BIT(4)
-> +#define UFP_TYPEC_FMB_301K_BIT BIT(3)
-> +#define UFP_TYPEC_FMB_523K_BIT BIT(2)
-> +#define UFP_TYPEC_FMB_619K_BIT BIT(1)
-> +#define UFP_TYPEC_OPEN_OPEN_BIT BIT(0)
-> +
-> +#define TYPE_C_STATUS_2_REG 0x30C
-> +#define DFP_RA_OPEN_BIT BIT(7)
-> +#define TIMER_STAGE_BIT BIT(6)
-> +#define EXIT_UFP_MODE_BIT BIT(5)
-> +#define EXIT_DFP_MODE_BIT BIT(4)
-> +#define DFP_TYPEC_MASK GENMASK(3, 0)
-> +#define DFP_RD_OPEN_BIT BIT(3)
-> +#define DFP_RD_RA_VCONN_BIT BIT(2)
-> +#define DFP_RD_RD_BIT BIT(1)
-> +#define DFP_RA_RA_BIT BIT(0)
-> +
-> +#define TYPE_C_STATUS_3_REG 0x30D
-> +#define ENABLE_BANDGAP_BIT BIT(7)
-> +#define U_USB_GND_NOVBUS_BIT BIT(6)
-> +#define U_USB_FLOAT_NOVBUS_BIT BIT(5)
-> +#define U_USB_GND_BIT BIT(4)
-> +#define U_USB_FMB1_BIT BIT(3)
-> +#define U_USB_FLOAT1_BIT BIT(2)
-> +#define U_USB_FMB2_BIT BIT(1)
-> +#define U_USB_FLOAT2_BIT BIT(0)
-> +
-> +#define TYPE_C_STATUS_4_REG 0x30E
-> +#define UFP_DFP_MODE_STATUS_BIT BIT(7)
-> +#define TYPEC_VBUS_STATUS_BIT BIT(6)
-> +#define TYPEC_VBUS_ERROR_STATUS_BIT BIT(5)
-> +#define TYPEC_DEBOUNCE_DONE_STATUS_BIT BIT(4)
-> +#define TYPEC_UFP_AUDIO_ADAPT_STATUS_BIT BIT(3)
-> +#define TYPEC_VCONN_OVERCURR_STATUS_BIT BIT(2)
-> +#define CC_ORIENTATION_BIT BIT(1)
-> +#define CC_ATTACHED_BIT BIT(0)
-> +
-> +#define TYPE_C_STATUS_5_REG 0x30F
-> +#define TRY_SOURCE_FAILED_BIT BIT(6)
-> +#define TRY_SINK_FAILED_BIT BIT(5)
-> +#define TIMER_STAGE_2_BIT BIT(4)
-> +#define TYPEC_LEGACY_CABLE_STATUS_BIT BIT(3)
-> +#define TYPEC_NONCOMP_LEGACY_CABLE_STATUS_BIT BIT(2)
-> +#define TYPEC_TRYSOURCE_DETECT_STATUS_BIT BIT(1)
-> +#define TYPEC_TRYSINK_DETECT_STATUS_BIT BIT(0)
-> +
-> +#define CMD_APSD_REG 0x341
-> +#define ICL_OVERRIDE_BIT BIT(1)
-> +#define APSD_RERUN_BIT BIT(0)
-> +
-> +#define TYPE_C_CFG_REG 0x358
-> +#define APSD_START_ON_CC_BIT BIT(7)
-> +#define WAIT_FOR_APSD_BIT BIT(6)
-> +#define FACTORY_MODE_DETECTION_EN_BIT BIT(5)
-> +#define FACTORY_MODE_ICL_3A_4A_BIT BIT(4)
-> +#define FACTORY_MODE_DIS_CHGING_CFG_BIT BIT(3)
-> +#define SUSPEND_NON_COMPLIANT_CFG_BIT BIT(2)
-> +#define VCONN_OC_CFG_BIT BIT(1)
-> +#define TYPE_C_OR_U_USB_BIT BIT(0)
-> +
-> +#define TYPE_C_CFG_2_REG 0x359
-> +#define TYPE_C_DFP_CURRSRC_MODE_BIT BIT(7)
-> +#define DFP_CC_1P4V_OR_1P6V_BIT BIT(6)
-> +#define VCONN_SOFTSTART_CFG_MASK GENMASK(5, 4)
-> +#define EN_TRY_SOURCE_MODE_BIT BIT(3)
-> +#define USB_FACTORY_MODE_ENABLE_BIT BIT(2)
-> +#define TYPE_C_UFP_MODE_BIT BIT(1)
-> +#define EN_80UA_180UA_CUR_SOURCE_BIT BIT(0)
-> +
-> +#define TYPE_C_CFG_3_REG 0x35A
-> +#define TVBUS_DEBOUNCE_BIT BIT(7)
-> +#define TYPEC_LEGACY_CABLE_INT_EN_BIT BIT(6)
-> +#define TYPEC_NONCOMPLIANT_LEGACY_CABLE_INT_EN_BIT BIT(5)
-> +#define TYPEC_TRYSOURCE_DETECT_INT_EN_BIT BIT(4)
-> +#define TYPEC_TRYSINK_DETECT_INT_EN_BIT BIT(3)
-> +#define EN_TRYSINK_MODE_BIT BIT(2)
-> +#define EN_LEGACY_CABLE_DETECTION_BIT BIT(1)
-> +#define ALLOW_PD_DRING_UFP_TCCDB_BIT BIT(0)
-> +
-> +#define USBIN_OPTIONS_1_CFG_REG 0x362
-> +#define CABLE_R_SEL_BIT BIT(7)
-> +#define HVDCP_AUTH_ALG_EN_CFG_BIT BIT(6)
-> +#define HVDCP_AUTONOMOUS_MODE_EN_CFG_BIT BIT(5)
-> +#define INPUT_PRIORITY_BIT BIT(4)
-> +#define AUTO_SRC_DETECT_BIT BIT(3)
-> +#define HVDCP_EN_BIT BIT(2)
-> +#define VADP_INCREMENT_VOLTAGE_LIMIT_BIT BIT(1)
-> +#define VADP_TAPER_TIMER_EN_BIT BIT(0)
-> +
-> +#define USBIN_OPTIONS_2_CFG_REG 0x363
-> +#define WIPWR_RST_EUD_CFG_BIT BIT(7)
-> +#define SWITCHER_START_CFG_BIT BIT(6)
-> +#define DCD_TIMEOUT_SEL_BIT BIT(5)
-> +#define OCD_CURRENT_SEL_BIT BIT(4)
-> +#define SLOW_PLUGIN_TIMER_EN_CFG_BIT BIT(3)
-> +#define FLOAT_OPTIONS_MASK GENMASK(2, 0)
-> +#define FLOAT_DIS_CHGING_CFG_BIT BIT(2)
-> +#define SUSPEND_FLOAT_CFG_BIT BIT(1)
-> +#define FORCE_FLOAT_SDP_CFG_BIT BIT(0)
-> +
-> +#define TAPER_TIMER_SEL_CFG_REG 0x364
-> +#define TYPEC_SPARE_CFG_BIT BIT(7)
-> +#define TYPEC_DRP_DFP_TIME_CFG_BIT BIT(5)
-> +#define TAPER_TIMER_SEL_MASK GENMASK(1, 0)
-> +
-> +#define USBIN_LOAD_CFG_REG 0x365
-> +#define USBIN_OV_CH_LOAD_OPTION_BIT BIT(7)
-> +#define ICL_OVERRIDE_AFTER_APSD_BIT BIT(4)
-> +
-> +#define USBIN_ICL_OPTIONS_REG 0x366
-> +#define CFG_USB3P0_SEL_BIT BIT(2)
-> +#define USB51_MODE_BIT BIT(1)
-> +#define USBIN_MODE_CHG_BIT BIT(0)
-> +
-> +#define TYPE_C_INTRPT_ENB_SOFTWARE_CTRL_REG 0x368
-> +#define EXIT_SNK_BASED_ON_CC_BIT BIT(7)
-> +#define VCONN_EN_ORIENTATION_BIT BIT(6)
-> +#define TYPEC_VCONN_OVERCURR_INT_EN_BIT BIT(5)
-> +#define VCONN_EN_SRC_BIT BIT(4)
-> +#define VCONN_EN_VALUE_BIT BIT(3)
-> +#define TYPEC_POWER_ROLE_CMD_MASK GENMASK(2, 0)
-> +#define UFP_EN_CMD_BIT BIT(2)
-> +#define DFP_EN_CMD_BIT BIT(1)
-> +#define TYPEC_DISABLE_CMD_BIT BIT(0)
-> +
-> +#define USBIN_CURRENT_LIMIT_CFG_REG 0x370
-> +#define USBIN_CURRENT_LIMIT_MASK GENMASK(7, 0)
-> +
-> +#define USBIN_AICL_OPTIONS_CFG_REG 0x380
-> +#define SUSPEND_ON_COLLAPSE_USBIN_BIT BIT(7)
-> +#define USBIN_AICL_HDC_EN_BIT BIT(6)
-> +#define USBIN_AICL_START_AT_MAX_BIT BIT(5)
-> +#define USBIN_AICL_RERUN_EN_BIT BIT(4)
-> +#define USBIN_AICL_ADC_EN_BIT BIT(3)
-> +#define USBIN_AICL_EN_BIT BIT(2)
-> +#define USBIN_HV_COLLAPSE_RESPONSE_BIT BIT(1)
-> +#define USBIN_LV_COLLAPSE_RESPONSE_BIT BIT(0)
-> +
-> +#define DC_ENG_SSUPPLY_CFG2_REG 0x4C1
-> +#define ENG_SSUPPLY_IVREF_OTG_SS_MASK GENMASK(2, 0)
-> +#define OTG_SS_SLOW 0x3
-> +
-> +#define DCIN_AICL_REF_SEL_CFG_REG 0x481
-> +#define DCIN_CONT_AICL_THRESHOLD_CFG_MASK GENMASK(5, 0)
-> +
-> +#define WI_PWR_OPTIONS_REG 0x495
-> +#define CHG_OK_BIT BIT(7)
-> +#define WIPWR_UVLO_IRQ_OPT_BIT BIT(6)
-> +#define BUCK_HOLDOFF_ENABLE_BIT BIT(5)
-> +#define CHG_OK_HW_SW_SELECT_BIT BIT(4)
-> +#define WIPWR_RST_ENABLE_BIT BIT(3)
-> +#define DCIN_WIPWR_IRQ_SELECT_BIT BIT(2)
-> +#define AICL_SWITCH_ENABLE_BIT BIT(1)
-> +#define ZIN_ICL_ENABLE_BIT BIT(0)
-> +
-> +#define ICL_STATUS_REG 0x607
-> +#define INPUT_CURRENT_LIMIT_MASK GENMASK(7, 0)
-> +
-> +#define POWER_PATH_STATUS_REG 0x60B
-> +#define P_PATH_INPUT_SS_DONE_BIT BIT(7)
-> +#define P_PATH_USBIN_SUSPEND_STS_BIT BIT(6)
-> +#define P_PATH_DCIN_SUSPEND_STS_BIT BIT(5)
-> +#define P_PATH_USE_USBIN_BIT BIT(4)
-> +#define P_PATH_USE_DCIN_BIT BIT(3)
-> +#define P_PATH_POWER_PATH_MASK GENMASK(2, 1)
-> +#define P_PATH_VALID_INPUT_POWER_SOURCE_STS_BIT BIT(0)
-> +
-> +#define WD_CFG_REG 0x651
-> +#define WATCHDOG_TRIGGER_AFP_EN_BIT BIT(7)
-> +#define BARK_WDOG_INT_EN_BIT BIT(6)
-> +#define BITE_WDOG_INT_EN_BIT BIT(5)
-> +#define SFT_AFTER_WDOG_IRQ_MASK GENMASK(4, 3)
-> +#define WDOG_IRQ_SFT_BIT BIT(2)
-> +#define WDOG_TIMER_EN_ON_PLUGIN_BIT BIT(1)
-> +#define WDOG_TIMER_EN_BIT BIT(0)
-> +
-> +#define AICL_RERUN_TIME_CFG_REG 0x661
-> +#define AICL_RERUN_TIME_MASK GENMASK(1, 0)
-> +
-> +#define SDP_CURRENT_UA 500000
-> +#define CDP_CURRENT_UA 1500000
-> +#define DCP_CURRENT_UA 1500000
-> +
-> +enum charger_status {
-> +	TRICKLE_CHARGE = 0,
-> +	PRE_CHARGE,
-> +	FAST_CHARGE,
-> +	FULLON_CHARGE,
-> +	TAPER_CHARGE,
-> +	TERMINATE_CHARGE,
-> +	INHIBIT_CHARGE,
-> +	DISABLE_CHARGE,
-> +};
-> +
-> +struct smb2_register {
-> +	u16 addr;
-> +	u8 mask;
-> +	u8 val;
-> +};
-> +
-> +/**
-> + * struct smb2_chip - smb2 chip structure
-> + * @dev:		Device reference for power_supply
+This too.
 
-@name
+>  
+>  #define IsEnableHWCCK(NetType)					\
+>  	IsSupported24G(NetType)
+> @@ -135,11 +135,11 @@ enum NETWORK_TYPE {
+>  #define IsSupportedRxCCK(NetType) IsEnableHWCCK(NetType)
+>  
+>  #define IsSupportedTxCCK(NetType)				\
+> -	((NetType) & (WIRELESS_11B) ? true : false)
+> +	((NetType) & WIRELESS_11B)
+>  #define IsSupportedTxOFDM(NetType)				\
+> -	((NetType) & (WIRELESS_11G) ? true : false)
+> +	((NetType) & WIRELESS_11G)
+>  #define IsSupportedTxMCS(NetType)				\
+> -	((NetType) & (WIRELESS_11_24N) ? true : false)
+> +	((NetType) & WIRELESS_11_24N)
+>  
 
-> + * @base:		Base address for smb2 registers
-> + * @regmap:		Register map
-> + * @reg_lock:		Mutex for register access
-> + * @batt_info:		Battery data from DT
+And this.
 
-status_change_work
+regards,
+dan carpenter
 
-> + * @usbin_i_chan:	USBIN current measurement channel
-> + * @usbin_v_chan:	USBIN voltage measurement channel
-> + * @chg_psy:		Charger power supply instance
-> + * @usb_present:	True if a charger is attached
-> + */
-> +struct smb2_chip {
-> +	struct device *dev;
-> +	const char *name;
-> +	unsigned int base;
-> +	struct regmap *regmap;
-> +	struct mutex reg_lock;
-> +	struct power_supply_battery_info *batt_info;
-> +
-> +	struct delayed_work status_change_work;
-> +
-> +	struct iio_channel *usbin_i_chan;
-> +	struct iio_channel *usbin_v_chan;
-> +
-> +	struct power_supply *chg_psy;
-> +
-> +	bool usb_present;
-> +};
-> +
-> +static enum power_supply_property smb2_properties[] = {
-> +	POWER_SUPPLY_PROP_MANUFACTURER, POWER_SUPPLY_PROP_MODEL_NAME,
-> +	POWER_SUPPLY_PROP_CURRENT_MAX,	POWER_SUPPLY_PROP_CURRENT_NOW,
-> +	POWER_SUPPLY_PROP_VOLTAGE_NOW,	POWER_SUPPLY_PROP_STATUS,
-> +	POWER_SUPPLY_PROP_HEALTH,	POWER_SUPPLY_PROP_ONLINE,
-> +	POWER_SUPPLY_PROP_USB_TYPE,
-> +};
-> +
-> +static enum power_supply_usb_type smb2_usb_types[] = {
-> +	POWER_SUPPLY_USB_TYPE_SDP, POWER_SUPPLY_USB_TYPE_DCP,
-> +	POWER_SUPPLY_USB_TYPE_CDP, POWER_SUPPLY_USB_TYPE_C,
-> +	POWER_SUPPLY_USB_TYPE_PD_DRP
-> +};
-> +
-> +/*
-> + * Qualcomm "automatic power source detection" aka APSD
-> + * tells us what type of charger we're connected to.
-> + */
-> +static int smb2_apsd_get_charger_type(struct smb2_chip *chip, int *val)
-> +{
-> +	int rc;
-> +	unsigned int apsd_stat, stat;
-> +
-> +	mutex_lock(&chip->reg_lock);
-> +
-> +	rc = regmap_read(chip->regmap, chip->base + APSD_STATUS_REG,
-> +			 &apsd_stat);
-> +	if (rc < 0) {
-> +		dev_err(chip->dev, "Failed to read apsd status, rc = %d", rc);
-> +		return rc;
-> +	}
-> +	if (!(apsd_stat & APSD_DTC_STATUS_DONE_BIT)) {
-> +		dev_err(chip->dev, "Apsd not ready");
-> +		return -EAGAIN;
-> +	}
-> +
-> +	rc = regmap_read(chip->regmap, chip->base + APSD_RESULT_STATUS_REG,
-> +			 &stat);
-> +	if (rc < 0) {
-> +		dev_err(chip->dev, "Failed to read apsd result, rc = %d", rc);
-> +		return rc;
-> +	}
-> +
-> +	mutex_unlock(&chip->reg_lock);
-> +
-> +	stat &= APSD_RESULT_STATUS_MASK;
-> +
-> +	if (stat & CDP_CHARGER_BIT) {
-> +		*val = POWER_SUPPLY_USB_TYPE_CDP;
-> +	} else if (stat &
-> +		   (DCP_CHARGER_BIT | OCP_CHARGER_BIT | FLOAT_CHARGER_BIT)) {
-> +		*val = POWER_SUPPLY_USB_TYPE_DCP;
-> +	} else { /* SDP_CHARGER_BIT (or others) */
-> +		*val = POWER_SUPPLY_USB_TYPE_SDP;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +int smb2_get_prop_usb_online(struct smb2_chip *chip, int *val)
-> +{
-> +	unsigned int stat;
-> +	int rc;
-> +
-> +	rc = regmap_read(chip->regmap, chip->base + POWER_PATH_STATUS_REG,
-> +			 &stat);
-> +	if (rc < 0) {
-> +		dev_err(chip->dev, "Couldn't read POWER_PATH_STATUS! ret=%d\n",
-> +			rc);
-> +		return rc;
-> +	}
-> +
-> +	*val = (stat & P_PATH_USE_USBIN_BIT) &&
-> +	       (stat & P_PATH_VALID_INPUT_POWER_SOURCE_STS_BIT);
-> +	return rc;
-
-return 0;
-
-> +}
-> +
-> +int smb2_get_prop_status(struct smb2_chip *chip, int *val)
-> +{
-> +	int usb_online_val;
-> +	unsigned int stat;
-> +	int rc;
-> +	bool usb_online;
-> +
-> +	mutex_lock(&chip->reg_lock);
-> +
-> +	rc = smb2_get_prop_usb_online(chip, &usb_online_val);
-> +	if (rc < 0) {
-> +		dev_err(chip->dev, "Couldn't get usb online property rc = %d\n",
-> +			rc);
-> +		return rc;
-> +	}
-> +	usb_online = (bool)usb_online_val;
-
-No need to move this value over to a bool variable, just to check if
-it's 0.
-
-> +
-> +	if (!usb_online) {
-> +		*val = POWER_SUPPLY_STATUS_DISCHARGING;
-> +		return rc;
-> +	}
-> +
-> +	rc = regmap_read(chip->regmap,
-> +			 chip->base + BATTERY_CHARGER_STATUS_1_REG, &stat);
-> +	if (rc < 0) {
-> +		dev_err(chip->dev,
-> +			"Failed to read charging status ret=%d\n", rc);
-> +		return rc;
-> +	}
-> +
-> +	mutex_unlock(&chip->reg_lock);
-> +
-> +	stat = stat & BATTERY_CHARGER_STATUS_MASK;
-> +
-> +	switch (stat) {
-> +	case TRICKLE_CHARGE:
-> +	case PRE_CHARGE:
-> +	case FAST_CHARGE:
-> +	case FULLON_CHARGE:
-> +	case TAPER_CHARGE:
-> +		*val = POWER_SUPPLY_STATUS_CHARGING;
-> +		return rc;
-> +	case DISABLE_CHARGE:
-> +		*val = POWER_SUPPLY_STATUS_NOT_CHARGING;
-> +		return rc;
-> +	case TERMINATE_CHARGE:
-> +		*val = POWER_SUPPLY_STATUS_FULL;
-> +		return rc;
-> +	case INHIBIT_CHARGE:
-> +	default:
-> +		*val = POWER_SUPPLY_STATUS_UNKNOWN;
-> +		return rc;
-> +	}
-> +}
-> +
-> +static inline int smb2_get_current_limit(struct smb2_chip *chip,
-> +					 unsigned int *val)
-> +{
-> +	int rc = regmap_read(chip->regmap, chip->base + ICL_STATUS_REG, val);
-> +
-> +	if (rc >= 0)
-> +		*val *= 25000;
-> +	return rc;
-> +}
-> +
-> +static inline int smb2_set_current_limit(struct smb2_chip *chip,
-> +					 unsigned int val)
-> +{
-> +	unsigned char val_raw;
-> +
-> +	if (val > 4800000) {
-> +		dev_err(chip->dev,
-> +			"Can't set current limit higher than 4800000uA");
-> +		return -EINVAL;
-> +	}
-> +	val_raw = val / 25000;
-> +	return regmap_write(chip->regmap,
-> +			    chip->base + USBIN_CURRENT_LIMIT_CFG_REG, val_raw);
-> +}
-> +
-> +void smb2_status_change_work(struct work_struct *work)
-> +{
-> +	struct smb2_chip *chip =
-> +		container_of(work, struct smb2_chip, status_change_work.work);
-> +	unsigned int charger_type, current_ua;
-> +	int usb_online, count, rc;
-> +
-> +	mutex_lock(&chip->reg_lock);
-> +
-> +	smb2_get_prop_usb_online(chip, &usb_online);
-> +	if (usb_online == 0)
-
-reg_lock is held here.
-
-> +		return;
-> +
-> +	for (count = 0; count < 3; count++) {
-> +		dev_info(chip->dev, "get charger type retry %d\n", count);
-> +		rc = smb2_apsd_get_charger_type(chip, &charger_type);
-> +		if (rc == 0)
-> +			break;
-> +		msleep(100);
-> +	}
-> +
-> +	if (rc < 0) {
-> +		rc = regmap_update_bits(chip->regmap, chip->base + CMD_APSD_REG,
-> +					APSD_RERUN_BIT, APSD_RERUN_BIT);
-> +		schedule_delayed_work(&chip->status_change_work,
-> +				      msecs_to_jiffies(1500));
-
-reg_lock is held here.
-
-> +		return;
-> +	}
-> +
-> +	switch (charger_type) {
-> +	case POWER_SUPPLY_USB_TYPE_CDP:
-> +		current_ua = CDP_CURRENT_UA;
-> +		break;
-> +	case POWER_SUPPLY_USB_TYPE_DCP:
-> +		current_ua = DCP_CURRENT_UA;
-> +		break;
-> +	case POWER_SUPPLY_USB_TYPE_SDP:
-> +	default:
-> +		current_ua = SDP_CURRENT_UA;
-> +		break;
-> +	}
-> +
-> +	smb2_set_current_limit(chip, current_ua);
-> +	mutex_unlock(&chip->reg_lock);
-> +	power_supply_changed(chip->chg_psy);
-> +}
-> +
-> +int smb2_get_iio_chan(struct smb2_chip *chip, struct iio_channel *chan,
-> +		      int *val)
-> +{
-> +	int rc = 0;
-
-First use of "rc" is an assignment, no need to initialize it here.
-
-> +	union power_supply_propval status;
-> +
-> +	rc = power_supply_get_property(chip->chg_psy, POWER_SUPPLY_PROP_STATUS,
-> +				       &status);
-> +	if (rc < 0 || status.intval != POWER_SUPPLY_STATUS_CHARGING) {
-> +		*val = 0;
-> +		return 0;
-> +	}
-> +
-> +	if (IS_ERR(chan)) {
-> +		dev_err(chip->dev, "Failed to chan, err = %li", PTR_ERR(chan));
-> +		return PTR_ERR(chan);
-> +	}
-> +
-> +	rc = iio_read_channel_processed(chan, val);
-
-return iio_read_channel_processed()
-
-> +	return rc;
-> +}
-> +
-> +int smb2_get_prop_health(struct smb2_chip *chip, int *val)
-> +{
-> +	int rc;
-> +	unsigned int stat;
-> +
-> +	*val = POWER_SUPPLY_HEALTH_UNKNOWN;
-> +
-> +	rc = regmap_read(chip->regmap,
-> +			 chip->base + BATTERY_CHARGER_STATUS_2_REG, &stat);
-> +	if (rc < 0) {
-> +		dev_err(chip->dev, "Couldn't read charger status rc=%d\n", rc);
-> +		return rc;
-> +	}
-> +
-> +	switch (stat & BATTERY_CHARGER_STATUS_MASK) {
-> +	case CHARGER_ERROR_STATUS_BAT_OV_BIT:
-> +		*val = POWER_SUPPLY_HEALTH_OVERVOLTAGE;
-> +		return 0;
-> +	case BAT_TEMP_STATUS_TOO_COLD_BIT:
-> +		*val = POWER_SUPPLY_HEALTH_COLD;
-> +		return 0;
-> +	case BAT_TEMP_STATUS_TOO_HOT_BIT:
-> +		*val = POWER_SUPPLY_HEALTH_OVERHEAT;
-> +		return 0;
-> +	case BAT_TEMP_STATUS_COLD_SOFT_LIMIT_BIT:
-> +		*val = POWER_SUPPLY_HEALTH_COOL;
-> +		return 0;
-> +	case BAT_TEMP_STATUS_HOT_SOFT_LIMIT_BIT:
-> +		*val = POWER_SUPPLY_HEALTH_WARM;
-> +		return 0;
-> +	default:
-> +		*val = POWER_SUPPLY_HEALTH_GOOD;
-> +		return 0;
-> +	}
-> +}
-> +
-> +static int smb2_get_property(struct power_supply *psy,
-> +			     enum power_supply_property psp,
-> +			     union power_supply_propval *val)
-> +{
-> +	struct smb2_chip *chip = power_supply_get_drvdata(psy);
-> +	int error = 0;
-
-error is only ever assigned, never used. Perhaps drop it?
-
-> +
-> +	switch (psp) {
-> +	case POWER_SUPPLY_PROP_MANUFACTURER:
-> +		val->strval = "Qualcomm";
-> +		return 0;
-> +	case POWER_SUPPLY_PROP_MODEL_NAME:
-> +		val->strval = chip->name;
-> +		return 0;
-> +	case POWER_SUPPLY_PROP_CURRENT_MAX:
-> +		error = smb2_get_current_limit(chip, &val->intval);
-> +		return 0;
-> +	case POWER_SUPPLY_PROP_CURRENT_NOW:
-> +		error = smb2_get_iio_chan(chip, chip->usbin_i_chan,
-> +					  &val->intval);
-> +		return 0;
-> +	case POWER_SUPPLY_PROP_VOLTAGE_NOW:
-> +		error = smb2_get_iio_chan(chip, chip->usbin_v_chan,
-> +					  &val->intval);
-> +		return 0;
-> +	case POWER_SUPPLY_PROP_ONLINE:
-> +		error = smb2_get_prop_usb_online(chip, &val->intval);
-> +		return 0;
-> +	case POWER_SUPPLY_PROP_STATUS:
-> +		error = smb2_get_prop_status(chip, &val->intval);
-> +		return 0;
-> +	case POWER_SUPPLY_PROP_HEALTH:
-> +		error = smb2_get_prop_health(chip, &val->intval);
-> +		return 0;
-> +	case POWER_SUPPLY_PROP_USB_TYPE:
-> +		error = smb2_apsd_get_charger_type(chip, &val->intval);
-> +		return 0;
-> +	default:
-> +		dev_err(chip->dev, "invalid property: %d\n", psp);
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static int smb2_set_property(struct power_supply *psy,
-> +			     enum power_supply_property psp,
-> +			     const union power_supply_propval *val)
-> +{
-> +	struct smb2_chip *chip = power_supply_get_drvdata(psy);
-> +	int error = 0;
-
-All code paths to return assigned error, no need to assign it here.
-
-> +
-> +	dev_info(chip->dev, "Setting property: %d", psp);
-> +
-> +	mutex_lock(&chip->reg_lock);
-> +
-> +	switch (psp) {
-> +	case POWER_SUPPLY_PROP_CURRENT_MAX:
-> +		error = smb2_set_current_limit(chip, val->intval);
-> +		break;
-> +	default:
-> +		dev_err(chip->dev, "No setter for property: %d\n", psp);
-> +		error = -EINVAL;
-> +	}
-> +
-> +	mutex_unlock(&chip->reg_lock);
-> +
-> +	return error;
-> +}
-> +
-> +static int smb2_property_is_writable(struct power_supply *psy,
-> +				     enum power_supply_property psp)
-> +{
-> +	switch (psp) {
-> +	case POWER_SUPPLY_PROP_CURRENT_MAX:
-> +		return 1;
-> +	default:
-> +		return 0;
-> +	}
-> +}
-> +
-> +irqreturn_t smb2_handle_usb_plugin(int irq, void *data)
-> +{
-> +	struct smb2_chip *chip = data;
-> +	int rc;
-> +	unsigned int intrt_stat;
-> +
-> +	rc = regmap_read(chip->regmap, chip->base + INT_RT_STS, &intrt_stat);
-> +	if (rc < 0) {
-> +		dev_err(chip->dev,
-> +			"Couldn't read USB status from reg! ret=%d\n", rc);
-> +		return rc;
-> +	}
-> +
-> +	chip->usb_present = (bool)(intrt_stat & USBIN_PLUGIN_RT_STS_BIT);
-
-No need to explicitly cast this to bool.
-
-> +
-> +	power_supply_changed(chip->chg_psy);
-> +
-> +	schedule_delayed_work(&chip->status_change_work,
-> +			      msecs_to_jiffies(1000));
-> +
-> +	return IRQ_HANDLED;
-> +}
-> +
-> +static const struct power_supply_desc smb2_psy_desc = {
-> +	.name = "usb",
-> +	.type = POWER_SUPPLY_TYPE_USB,
-> +	.usb_types = smb2_usb_types,
-> +	.num_usb_types = ARRAY_SIZE(smb2_usb_types),
-> +	.properties = smb2_properties,
-> +	.num_properties = ARRAY_SIZE(smb2_properties),
-> +	.get_property = smb2_get_property,
-> +	.set_property = smb2_set_property,
-> +	.property_is_writeable = smb2_property_is_writable,
-> +};
-> +
-> +/* Init sequence derived from downstream driver */
-> +static struct smb2_register smb2_init_seq[] = {
-> +	{ .addr = AICL_RERUN_TIME_CFG_REG,
-> +	  .mask = AICL_RERUN_TIME_MASK,
-> +	  .val = 0 },
-> +	{ .addr = USBIN_AICL_OPTIONS_CFG_REG,
-> +	  .mask = USBIN_AICL_START_AT_MAX_BIT | USBIN_AICL_ADC_EN_BIT,
-> +	  .val = 0 },
-> +	/*
-> +	 * By default configure us as an upstream facing port
-> +	 * FIXME: for OTG we should set UFP_EN_CMD_BIT and DFP_EN_CMD_BIT both to 0
-> +	 */
-> +	{ .addr = TYPE_C_INTRPT_ENB_SOFTWARE_CTRL_REG,
-> +	  .mask = TYPEC_POWER_ROLE_CMD_MASK | VCONN_EN_SRC_BIT |
-> +		  VCONN_EN_VALUE_BIT,
-> +	  .val = VCONN_EN_SRC_BIT | UFP_EN_CMD_BIT },
-> +	/*
-> +	 * disable Type-C factory mode and stay in Attached.SRC state when VCONN
-> +	 * over-current happens
-> +	 */
-> +	{ .addr = TYPE_C_CFG_REG,
-> +	  .mask = FACTORY_MODE_DETECTION_EN_BIT | VCONN_OC_CFG_BIT,
-> +	  .val = 0 },
-> +	/* Configure VBUS for software control */
-> +	{ .addr = OTG_CFG_REG, .mask = OTG_EN_SRC_CFG_BIT, .val = 0 },
-> +	{ .addr = FG_UPDATE_CFG_2_SEL_REG,
-> +	  .mask = SOC_LT_CHG_RECHARGE_THRESH_SEL_BIT |
-> +		  VBT_LT_CHG_RECHARGE_THRESH_SEL_BIT,
-> +	  .val = VBT_LT_CHG_RECHARGE_THRESH_SEL_BIT },
-> +	/* Enable automatic input current limit */
-> +	{ .addr = USBIN_AICL_OPTIONS_CFG_REG,
-> +	  .mask = USBIN_AICL_EN_BIT,
-> +	  .val = 1 },
-> +	{ .addr = USBIN_OPTIONS_1_CFG_REG, .mask = HVDCP_EN_BIT, .val = 0 },
-> +	{ .addr = CHARGING_ENABLE_CMD_REG,
-> +	  .mask = CHARGING_ENABLE_CMD_BIT,
-> +	  .val = CHARGING_ENABLE_CMD_BIT },
-> +	{ .addr = USBIN_LOAD_CFG_REG,
-> +	  .mask = ICL_OVERRIDE_AFTER_APSD_BIT,
-> +	  .val = ICL_OVERRIDE_AFTER_APSD_BIT },
-> +	{ .addr = CHGR_CFG2_REG,
-> +	  .mask = CHG_EN_POLARITY_BIT | CHG_EN_SRC_BIT,
-> +	  .val = 0 },
-> +	{ .addr = TYPE_C_INTRPT_ENB_SOFTWARE_CTRL_REG,
-> +	  .mask = UFP_EN_CMD_BIT,
-> +	  .val = UFP_EN_CMD_BIT },
-> +	/* Set the default SDP charger type to a 500ma USB 2.0 port
-> +	 * and apply ICL override? (OnePlus 6 hack??)
-> +	 */
-> +	{ .addr = USBIN_ICL_OPTIONS_REG,
-> +	  .mask = USB51_MODE_BIT | USBIN_MODE_CHG_BIT,
-> +	  .val = USB51_MODE_BIT }, //| USBIN_MODE_CHG_BIT },
-> +};
-> +
-> +static int smb2_init_hw(struct smb2_chip *chip)
-> +{
-> +	int rc, i;
-> +
-> +	for (i = 0; i < ARRAY_SIZE(smb2_init_seq); i++) {
-> +		dev_info(chip->dev, "%d: Writing 0x%02x to 0x%02x\n", i,
-> +			 smb2_init_seq[i].val, smb2_init_seq[i].addr);
-> +		rc = regmap_update_bits(chip->regmap,
-> +					chip->base + smb2_init_seq[i].addr,
-> +					smb2_init_seq[i].mask,
-> +					smb2_init_seq[i].val);
-> +		if (rc < 0) {
-> +			dev_err(chip->dev,
-> +				"%s: Failed to write 0x%02x to 0x%02x: %d\n",
-> +				__func__, smb2_init_seq[i].val,
-> +				smb2_init_seq[i].addr, rc);
-> +			return rc;
-> +		}
-> +	}
-> +
-> +	smb2_set_current_limit(chip, 1950 * 1000);
-> +	return rc;
-
-rc is 0, so return 0;
-
-> +}
-> +
-> +static int smb2_probe(struct platform_device *pdev)
-> +{
-> +	struct power_supply_config supply_config = {};
-> +	struct smb2_chip *chip;
-> +	int rc = 0, irq;
-
-First use of rc is assignment, no need to initialize it here.
-
-> +
-> +	chip = devm_kzalloc(&pdev->dev, sizeof(*chip), GFP_KERNEL);
-> +	if (!chip)
-> +		return -ENOMEM;
-> +
-> +	chip->dev = &pdev->dev;
-> +	chip->name = pdev->name;
-> +	mutex_init(&chip->reg_lock);
-> +
-> +	chip->regmap = dev_get_regmap(pdev->dev.parent, NULL);
-> +	if (!chip->regmap) {
-> +		dev_err(chip->dev, "failed to locate the regmap\n");
-> +		return -ENODEV;
-> +	}
-> +
-> +	rc = device_property_read_u32(chip->dev, "reg", &chip->base);
-> +	if (rc < 0) {
-> +		dev_err(chip->dev, "Couldn't read base address from dt: %d\n",
-> +			rc);
-> +		return rc;
-> +	}
-> +
-> +	irq = of_irq_get_byname(pdev->dev.of_node, "usb-plugin");
-> +	if (irq < 0) {
-> +		dev_err(&pdev->dev, "Couldn't get irq usb-plugin byname\n");
-
-Using dev_err_probe() instead is quite useful in that it leaves the
-message in /sys/kernel/debug/devices_deferred, so please use that
-whenever applicable.
-
-> +		return irq;
-> +	}
-> +
-> +	rc = devm_request_threaded_irq(chip->dev, irq, NULL,
-> +				       smb2_handle_usb_plugin, IRQF_ONESHOT,
-> +				       "usb-plugin", chip);
-> +	if (rc < 0) {
-> +		dev_err(chip->dev, "Couldn't request irq %d\n", irq);
-> +		return rc;
-> +	}
-> +
-> +	chip->usbin_v_chan = iio_channel_get(chip->dev, "usbin_v");
-> +	chip->usbin_i_chan = iio_channel_get(chip->dev, "usbin_i");
-> +
-> +	/* RRADC should probe before us, but just in case it doesn't */
-> +	if (PTR_ERR(chip->usbin_v_chan) == -EPROBE_DEFER ||
-> +	    PTR_ERR(chip->usbin_i_chan) == -EPROBE_DEFER) {
-> +		return -EPROBE_DEFER;
-
-Don't you need to iio_channel_release(usbin_v_chan), in the case where
-usbin_i_chan was the one deferring?
-
-> +	}
-> +
-> +	rc = smb2_init_hw(chip);
-> +	if (rc < 0) {
-> +		dev_err(chip->dev, "Couldn't init hw %d\n", rc);
-
-You already printed a more specific error in smb2_init_hw(), no need for
-another.
-
-> +		return rc;
-> +	}
-> +
-> +	supply_config.drv_data = chip;
-> +	supply_config.of_node = pdev->dev.of_node;
-> +
-> +	chip->chg_psy = devm_power_supply_register(chip->dev, &smb2_psy_desc,
-> +						   &supply_config);
-> +	if (IS_ERR(chip->chg_psy)) {
-> +		dev_err(&pdev->dev, "failed to register power supply\n");
-> +		return PTR_ERR(chip->chg_psy);
-> +	}
-> +
-> +	rc = power_supply_get_battery_info(chip->chg_psy, &chip->batt_info);
-> +	if (rc) {
-> +		dev_err(&pdev->dev, "Failed to get battery info: %d\n", rc);
-> +		return rc;
-> +	}
-> +
-> +	INIT_DELAYED_WORK(&chip->status_change_work, smb2_status_change_work);
-> +
-> +	rc = chip->batt_info->voltage_max_design_uv;
-> +	rc = regmap_update_bits(chip->regmap,
-> +				chip->base + FLOAT_VOLTAGE_CFG_REG,
-> +				FLOAT_VOLTAGE_SETTING_MASK, rc / 1000);
-> +	if (rc < 0)
-> +		dev_err(chip->dev, "Couldn't set vbat max rc = %d\n", rc);
-> +
-> +	platform_set_drvdata(pdev, chip);
-> +
-> +	/* trigger the IRQ to set up initial state */
-> +	smb2_handle_usb_plugin(irq, chip);
-> +
-> +	return 0;
-> +}
-> +
-> +static int smb2_remove(struct platform_device *pdev)
-> +{
-> +	struct smb2_chip *chip = platform_get_drvdata(pdev);
-> +
-> +	power_supply_put_battery_info(chip->chg_psy, chip->batt_info);
-
-power_supply_put_battery_info() only consists of devm_kfree() calls,
-which in practice means that this shouldn't be needed. But neither the
-name "power_supply_get_battery_info" or the (absent) kernel-doc
-describes that.
-
-So I would prefer that power_supply_get_battery_info() was improved and
-this call to be dropped.
-
-> +	return 0;
-> +}
-> +
-> +static const struct of_device_id fg_match_id_table[] = {
-
-Why is this the "fuel gauge" match table?
-
-Regards,
-Bjorn
-
-> +	{ .compatible = "qcom,pmi8998-smb2" },
-> +	{ /* sentinal */ }
-> +};
-> +MODULE_DEVICE_TABLE(of, fg_match_id_table);
-> +
-> +static struct platform_driver qcom_spmi_smb2 = {
-> +	.probe = smb2_probe,
-> +	.remove = smb2_remove,
-> +	.driver = {
-> +		.name = "qcom-spmi-smb2",
-> +		.of_match_table = fg_match_id_table,
-> +	},
-> +};
-> +
-> +module_platform_driver(qcom_spmi_smb2);
-> +
-> +MODULE_AUTHOR("Caleb Connolly <caleb.connolly@linaro.org>");
-> +MODULE_DESCRIPTION("Qualcomm SMB2 Charger Driver");
-> +MODULE_LICENSE("GPL");
-> -- 
-> 2.35.1
-> 
