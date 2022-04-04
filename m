@@ -2,431 +2,251 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2410AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:00:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F9EEC43217
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:00:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232165AbiDDWBR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 18:01:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46714 "EHLO
+        id S1381829AbiDDWBu (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 18:01:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379276AbiDDQvz (ORCPT
+        with ESMTP id S1379129AbiDDQg5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 12:51:55 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 966C231356;
-        Mon,  4 Apr 2022 09:49:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649090998; x=1680626998;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=eaLYtRhJACCIFDK4aYDwT1XUmSPpq+QQ/bK1qzIU2AE=;
-  b=d9Fgs8jNWePIgJf3CnWt6J1H4hbKJXzzKsswavlGvfDTT8EA3tC7sZ9x
-   XvB9Tl7j3Zh23Znips5tWzcTrfIra4m75fSjWUjdMjcA0XgG4KQXIihqL
-   XvYpozzBC6tlipCbswlo1Z9HFU4IYoSQvFQmiW7guueZkKldvXhW4XJD6
-   S4aSpP4PDkpHEBGgTZvNNNbc2UJWVEd8IXTkfKhhZC+BcXYqBsTuU+Z/Z
-   VvCd2561uUlsza3uhpyjML/EyKlpe4FS7pnH68VrDqwtYSCciXrkrEzr+
-   Zy2xqKwtdrWTUUrfep7UsuaFQ12fsRKA+3RkZ02GB6uQOD5JDbQPIAWXB
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="323734055"
-X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
-   d="scan'208";a="323734055"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:49:51 -0700
-X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
-   d="scan'208";a="523105212"
-Received: from rchatre-ws.ostc.intel.com ([10.54.69.144])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:49:50 -0700
-From:   Reinette Chatre <reinette.chatre@intel.com>
-To:     dave.hansen@linux.intel.com, jarkko@kernel.org, tglx@linutronix.de,
-        bp@alien8.de, luto@kernel.org, mingo@redhat.com,
-        linux-sgx@vger.kernel.org, x86@kernel.org
-Cc:     seanjc@google.com, kai.huang@intel.com, cathy.zhang@intel.com,
-        cedric.xing@intel.com, haitao.huang@intel.com,
-        mark.shanahan@intel.com, hpa@zytor.com,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH V3 21/30] selftests/sgx: Add test for EPCM permission changes
-Date:   Mon,  4 Apr 2022 09:49:29 -0700
-Message-Id: <b2304ac0322d945b4bfdce36d3aae654f6ed35a0.1648847675.git.reinette.chatre@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1648847675.git.reinette.chatre@intel.com>
-References: <cover.1648847675.git.reinette.chatre@intel.com>
+        Mon, 4 Apr 2022 12:36:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AE57E094;
+        Mon,  4 Apr 2022 09:35:00 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 23016B81857;
+        Mon,  4 Apr 2022 16:34:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3CF9DC34111;
+        Mon,  4 Apr 2022 16:34:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649090097;
+        bh=kAu78CSJDeKbZgMj9byXPQ2IEqEHhEHD2g/49GWMnMM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=pZj6XvdbHirQF9jsGrZRc4K6oGSCIWNOQ9060XB/bkQ6c2mtuo7cMVf4XClNB7Zz3
+         tIu8OfPBNq7a2SrYGl7zUB4ijjkEtkhPthcE4Ew/3TZ6DdrmAoprPibE6iBAM0jSLl
+         Y09l7TxGU3i+/1xDICXcQBdVmZkAGQHBt7FndCCVz3Ivug9/U5ADwt0+UkWfuFrXtP
+         EQP5kK9TS3w0qtuzQaNq5EJl514v69jqLamavT+V5pXvVYutVQj/vlekjupsdjfrNz
+         9GRaLQPZnwqSQxI0YI9mj6/P4btHQOqZJmjC/QVds/fgxMAXuNv4dipiKUHwZigC1J
+         gt92lfINDntnA==
+From:   Vinod Koul <vkoul@kernel.org>
+To:     Rob Clark <robdclark@gmail.com>
+Cc:     linux-arm-msm@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Jonathan Marek <jonathan@marek.ca>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        freedreno@lists.freedesktop.org
+Subject: [PATCH v6 01/14] drm/msm/dsi: add support for dsc data
+Date:   Mon,  4 Apr 2022 22:04:23 +0530
+Message-Id: <20220404163436.956875-2-vkoul@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220404163436.956875-1-vkoul@kernel.org>
+References: <20220404163436.956875-1-vkoul@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-EPCM permission changes could be made from within (to relax
-permissions) or out (to restrict permissions) the enclave. Kernel
-support is needed when permissions are restricted to be able to
-call the privileged ENCLS[EMODPR] instruction. EPCM permissions
-can be relaxed via ENCLU[EMODPE] from within the enclave but the
-enclave still depends on the kernel to install PTEs with the needed
-permissions.
+Display Stream Compression (DSC) parameters need to be calculated. Add
+helpers and struct msm_display_dsc_config in msm_drv for this
+msm_display_dsc_config uses drm_dsc_config for DSC parameters.
 
-Add a test that exercises a few of the enclave page permission flows:
-1) Test starts with a RW (from enclave and kernel perspective)
-   enclave page that is mapped via a RW VMA.
-2) Use the SGX_IOC_ENCLAVE_RESTRICT_PERMISSIONS ioctl() to restrict
-   the enclave (EPCM) page permissions to read-only.
-3) Run ENCLU[EACCEPT] from within the enclave to accept the new page
-   permissions.
-4) Attempt to write to the enclave page from within the enclave - this
-   should fail with a page fault on the EPCM permissions since the page
-   table entry continues to allow RW access.
-5) Restore EPCM permissions to RW by running ENCLU[EMODPE] from within
-   the enclave.
-6) Attempt to write to the enclave page from within the enclave - this
-   should succeed since both EPCM and PTE permissions allow this access.
-
-Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 ---
-Changes since V2:
-- Modify test to support separation between EPCM and PTE/VMA permissions
-  - Fix changelog and comments to reflect new relationship between
-    EPCM and PTE/VMA permissions.
-  - With EPCM permissions controlling access instead of PTE permissions,
-    check for SGX error code now encountered in page fault.
-  - Stop calling SGX_IOC_ENCLAVE_RELAX_PERMISSIONS and ensure that
-    only calling ENCLU[EMODPE] from within enclave is necessary to restore
-    access to the enclave page.
-- Update to use new struct name struct sgx_enclave_restrict_perm -> struct
-  sgx_enclave_restrict_permissions. (Jarkko)
+ drivers/gpu/drm/msm/dsi/dsi_host.c | 130 +++++++++++++++++++++++++++++
+ drivers/gpu/drm/msm/msm_drv.h      |   6 ++
+ 2 files changed, 136 insertions(+)
 
-Changes since V1:
-- Adapt test to the kernel interface changes: the ioctl() name change
-  and providing entire secinfo as parameter.
-- Remove the ENCLU[EACCEPT] call after permissions are relaxed since
-  the new flow no longer results in the EPCM PR bit being set.
-- Rewrite error path to reduce line lengths.
-
- tools/testing/selftests/sgx/defines.h   |  15 ++
- tools/testing/selftests/sgx/main.c      | 218 ++++++++++++++++++++++++
- tools/testing/selftests/sgx/test_encl.c |  38 +++++
- 3 files changed, 271 insertions(+)
-
-diff --git a/tools/testing/selftests/sgx/defines.h b/tools/testing/selftests/sgx/defines.h
-index 02d775789ea7..b638eb98c80c 100644
---- a/tools/testing/selftests/sgx/defines.h
-+++ b/tools/testing/selftests/sgx/defines.h
-@@ -24,6 +24,8 @@ enum encl_op_type {
- 	ENCL_OP_PUT_TO_ADDRESS,
- 	ENCL_OP_GET_FROM_ADDRESS,
- 	ENCL_OP_NOP,
-+	ENCL_OP_EACCEPT,
-+	ENCL_OP_EMODPE,
- 	ENCL_OP_MAX,
- };
+diff --git a/drivers/gpu/drm/msm/dsi/dsi_host.c b/drivers/gpu/drm/msm/dsi/dsi_host.c
+index d51e70fab93d..4a8a9b31ce1d 100644
+--- a/drivers/gpu/drm/msm/dsi/dsi_host.c
++++ b/drivers/gpu/drm/msm/dsi/dsi_host.c
+@@ -31,6 +31,8 @@
  
-@@ -53,4 +55,17 @@ struct encl_op_get_from_addr {
- 	uint64_t addr;
- };
+ #define DSI_RESET_TOGGLE_DELAY_MS 20
  
-+struct encl_op_eaccept {
-+	struct encl_op_header header;
-+	uint64_t epc_addr;
-+	uint64_t flags;
-+	uint64_t ret;
-+};
++static int dsi_populate_dsc_params(struct msm_display_dsc_config *dsc);
 +
-+struct encl_op_emodpe {
-+	struct encl_op_header header;
-+	uint64_t epc_addr;
-+	uint64_t flags;
-+};
-+
- #endif /* DEFINES_H */
-diff --git a/tools/testing/selftests/sgx/main.c b/tools/testing/selftests/sgx/main.c
-index dd74fa42302e..0e0bd1c4d702 100644
---- a/tools/testing/selftests/sgx/main.c
-+++ b/tools/testing/selftests/sgx/main.c
-@@ -25,6 +25,18 @@ static const uint64_t MAGIC = 0x1122334455667788ULL;
- static const uint64_t MAGIC2 = 0x8877665544332211ULL;
- vdso_sgx_enter_enclave_t vdso_sgx_enter_enclave;
+ static int dsi_get_version(const void __iomem *base, u32 *major, u32 *minor)
+ {
+ 	u32 ver;
+@@ -157,6 +159,7 @@ struct msm_dsi_host {
+ 	struct regmap *sfpb;
  
-+/*
-+ * Security Information (SECINFO) data structure needed by a few SGX
-+ * instructions (eg. ENCLU[EACCEPT] and ENCLU[EMODPE]) holds meta-data
-+ * about an enclave page. &enum sgx_secinfo_page_state specifies the
-+ * secinfo flags used for page state.
-+ */
-+enum sgx_secinfo_page_state {
-+	SGX_SECINFO_PENDING = (1 << 3),
-+	SGX_SECINFO_MODIFIED = (1 << 4),
-+	SGX_SECINFO_PR = (1 << 5),
-+};
-+
- struct vdso_symtab {
- 	Elf64_Sym *elf_symtab;
- 	const char *elf_symstrtab;
-@@ -555,4 +567,210 @@ TEST_F(enclave, pte_permissions)
- 	EXPECT_EQ(self->run.exception_addr, 0);
+ 	struct drm_display_mode *mode;
++	struct msm_display_dsc_config *dsc;
+ 
+ 	/* connected device info */
+ 	struct device_node *device_node;
+@@ -1722,6 +1725,133 @@ static int dsi_host_parse_lane_data(struct msm_dsi_host *msm_host,
+ 	return -EINVAL;
  }
  
-+/*
-+ * Enclave page permission test.
-+ *
-+ * Modify and restore enclave page's EPCM (enclave) permissions from
-+ * outside enclave (ENCLS[EMODPR] via kernel) as well as from within
-+ * enclave (via ENCLU[EMODPE]). Check for page fault if
-+ * VMA allows access but EPCM permissions do not.
-+ */
-+TEST_F(enclave, epcm_permissions)
-+{
-+	struct sgx_enclave_restrict_permissions restrict_ioc;
-+	struct encl_op_get_from_addr get_addr_op;
-+	struct encl_op_put_to_addr put_addr_op;
-+	struct encl_op_eaccept eaccept_op;
-+	struct encl_op_emodpe emodpe_op;
-+	struct sgx_secinfo secinfo;
-+	unsigned long data_start;
-+	int ret, errno_save;
-+
-+	ASSERT_TRUE(setup_test_encl(ENCL_HEAP_SIZE_DEFAULT, &self->encl, _metadata));
-+
-+	memset(&self->run, 0, sizeof(self->run));
-+	self->run.tcs = self->encl.encl_base;
-+
-+	/*
-+	 * Ensure kernel supports needed ioctl() and system supports needed
-+	 * commands.
-+	 */
-+	memset(&restrict_ioc, 0, sizeof(restrict_ioc));
-+	memset(&secinfo, 0, sizeof(secinfo));
-+
-+	ret = ioctl(self->encl.fd, SGX_IOC_ENCLAVE_RESTRICT_PERMISSIONS,
-+		    &restrict_ioc);
-+	errno_save = ret == -1 ? errno : 0;
-+
-+	/*
-+	 * Invalid parameters were provided during sanity check,
-+	 * expect command to fail.
-+	 */
-+	ASSERT_EQ(ret, -1);
-+
-+	/* ret == -1 */
-+	if (errno_save == ENOTTY)
-+		SKIP(return,
-+		     "Kernel does not support SGX_IOC_ENCLAVE_RESTRICT_PERMISSIONS ioctl()");
-+	else if (errno_save == ENODEV)
-+		SKIP(return, "System does not support SGX2");
-+
-+	/*
-+	 * Page that will have its permissions changed is the second data
-+	 * page in the .data segment. This forms part of the local encl_buffer
-+	 * within the enclave.
-+	 *
-+	 * At start of test @data_start should have EPCM as well as PTE and
-+	 * VMA permissions of RW.
-+	 */
-+
-+	data_start = self->encl.encl_base +
-+		     encl_get_data_offset(&self->encl) + PAGE_SIZE;
-+
-+	/*
-+	 * Sanity check that page at @data_start is writable before making
-+	 * any changes to page permissions.
-+	 *
-+	 * Start by writing MAGIC to test page.
-+	 */
-+	put_addr_op.value = MAGIC;
-+	put_addr_op.addr = data_start;
-+	put_addr_op.header.type = ENCL_OP_PUT_TO_ADDRESS;
-+
-+	EXPECT_EQ(ENCL_CALL(&put_addr_op, &self->run, true), 0);
-+
-+	EXPECT_EEXIT(&self->run);
-+	EXPECT_EQ(self->run.exception_vector, 0);
-+	EXPECT_EQ(self->run.exception_error_code, 0);
-+	EXPECT_EQ(self->run.exception_addr, 0);
-+
-+	/*
-+	 * Read memory that was just written to, confirming that
-+	 * page is writable.
-+	 */
-+	get_addr_op.value = 0;
-+	get_addr_op.addr = data_start;
-+	get_addr_op.header.type = ENCL_OP_GET_FROM_ADDRESS;
-+
-+	EXPECT_EQ(ENCL_CALL(&get_addr_op, &self->run, true), 0);
-+
-+	EXPECT_EQ(get_addr_op.value, MAGIC);
-+	EXPECT_EEXIT(&self->run);
-+	EXPECT_EQ(self->run.exception_vector, 0);
-+	EXPECT_EQ(self->run.exception_error_code, 0);
-+	EXPECT_EQ(self->run.exception_addr, 0);
-+
-+	/*
-+	 * Change EPCM permissions to read-only. Kernel still considers
-+	 * the page writable.
-+	 */
-+	memset(&restrict_ioc, 0, sizeof(restrict_ioc));
-+	memset(&secinfo, 0, sizeof(secinfo));
-+
-+	secinfo.flags = PROT_READ;
-+	restrict_ioc.offset = encl_get_data_offset(&self->encl) + PAGE_SIZE;
-+	restrict_ioc.length = PAGE_SIZE;
-+	restrict_ioc.secinfo = (unsigned long)&secinfo;
-+
-+	ret = ioctl(self->encl.fd, SGX_IOC_ENCLAVE_RESTRICT_PERMISSIONS,
-+		    &restrict_ioc);
-+	errno_save = ret == -1 ? errno : 0;
-+
-+	EXPECT_EQ(ret, 0);
-+	EXPECT_EQ(errno_save, 0);
-+	EXPECT_EQ(restrict_ioc.result, 0);
-+	EXPECT_EQ(restrict_ioc.count, 4096);
-+
-+	/*
-+	 * EPCM permissions changed from kernel, need to EACCEPT from enclave.
-+	 */
-+	eaccept_op.epc_addr = data_start;
-+	eaccept_op.flags = PROT_READ | SGX_SECINFO_REG | SGX_SECINFO_PR;
-+	eaccept_op.ret = 0;
-+	eaccept_op.header.type = ENCL_OP_EACCEPT;
-+
-+	EXPECT_EQ(ENCL_CALL(&eaccept_op, &self->run, true), 0);
-+
-+	EXPECT_EEXIT(&self->run);
-+	EXPECT_EQ(self->run.exception_vector, 0);
-+	EXPECT_EQ(self->run.exception_error_code, 0);
-+	EXPECT_EQ(self->run.exception_addr, 0);
-+	EXPECT_EQ(eaccept_op.ret, 0);
-+
-+	/*
-+	 * EPCM permissions of page is now read-only, expect #PF
-+	 * on EPCM when attempting to write to page from within enclave.
-+	 */
-+	put_addr_op.value = MAGIC2;
-+
-+	EXPECT_EQ(ENCL_CALL(&put_addr_op, &self->run, true), 0);
-+
-+	EXPECT_EQ(self->run.function, ERESUME);
-+	EXPECT_EQ(self->run.exception_vector, 14);
-+	EXPECT_EQ(self->run.exception_error_code, 0x8007);
-+	EXPECT_EQ(self->run.exception_addr, data_start);
-+
-+	self->run.exception_vector = 0;
-+	self->run.exception_error_code = 0;
-+	self->run.exception_addr = 0;
-+
-+	/*
-+	 * Received AEX but cannot return to enclave at same entrypoint,
-+	 * need different TCS from where EPCM permission can be made writable
-+	 * again.
-+	 */
-+	self->run.tcs = self->encl.encl_base + PAGE_SIZE;
-+
-+	/*
-+	 * Enter enclave at new TCS to change EPCM permissions to be
-+	 * writable again and thus fix the page fault that triggered the
-+	 * AEX.
-+	 */
-+
-+	emodpe_op.epc_addr = data_start;
-+	emodpe_op.flags = PROT_READ | PROT_WRITE;
-+	emodpe_op.header.type = ENCL_OP_EMODPE;
-+
-+	EXPECT_EQ(ENCL_CALL(&emodpe_op, &self->run, true), 0);
-+
-+	EXPECT_EEXIT(&self->run);
-+	EXPECT_EQ(self->run.exception_vector, 0);
-+	EXPECT_EQ(self->run.exception_error_code, 0);
-+	EXPECT_EQ(self->run.exception_addr, 0);
-+
-+	/*
-+	 * Attempt to return to main TCS to resume execution at faulting
-+	 * instruction, PTE should continue to allow writing to the page.
-+	 */
-+	self->run.tcs = self->encl.encl_base;
-+
-+	/*
-+	 * Wrong page permissions that caused original fault has
-+	 * now been fixed via EPCM permissions.
-+	 * Resume execution in main TCS to re-attempt the memory access.
-+	 */
-+	self->run.tcs = self->encl.encl_base;
-+
-+	EXPECT_EQ(vdso_sgx_enter_enclave((unsigned long)&put_addr_op, 0, 0,
-+					 ERESUME, 0, 0,
-+					 &self->run),
-+		  0);
-+
-+	EXPECT_EEXIT(&self->run);
-+	EXPECT_EQ(self->run.exception_vector, 0);
-+	EXPECT_EQ(self->run.exception_error_code, 0);
-+	EXPECT_EQ(self->run.exception_addr, 0);
-+
-+	get_addr_op.value = 0;
-+
-+	EXPECT_EQ(ENCL_CALL(&get_addr_op, &self->run, true), 0);
-+
-+	EXPECT_EQ(get_addr_op.value, MAGIC2);
-+	EXPECT_EEXIT(&self->run);
-+	EXPECT_EQ(self->run.user_data, 0);
-+	EXPECT_EQ(self->run.exception_vector, 0);
-+	EXPECT_EQ(self->run.exception_error_code, 0);
-+	EXPECT_EQ(self->run.exception_addr, 0);
-+}
-+
- TEST_HARNESS_MAIN
-diff --git a/tools/testing/selftests/sgx/test_encl.c b/tools/testing/selftests/sgx/test_encl.c
-index 4fca01cfd898..5b6c65331527 100644
---- a/tools/testing/selftests/sgx/test_encl.c
-+++ b/tools/testing/selftests/sgx/test_encl.c
-@@ -11,6 +11,42 @@
-  */
- static uint8_t encl_buffer[8192] = { 1 };
- 
-+enum sgx_enclu_function {
-+	EACCEPT = 0x5,
-+	EMODPE = 0x6,
++static u32 dsi_dsc_rc_buf_thresh[DSC_NUM_BUF_RANGES - 1] = {
++	0x0e, 0x1c, 0x2a, 0x38, 0x46, 0x54, 0x62,
++	0x69, 0x70, 0x77, 0x79, 0x7b, 0x7d, 0x7e
 +};
 +
-+static void do_encl_emodpe(void *_op)
++/* only 8bpc, 8bpp added */
++static char min_qp[DSC_NUM_BUF_RANGES] = {
++	0, 0, 1, 1, 3, 3, 3, 3, 3, 3, 5, 5, 5, 7, 13
++};
++
++static char max_qp[DSC_NUM_BUF_RANGES] = {
++	4, 4, 5, 6, 7, 7, 7, 8, 9, 10, 11, 12, 13, 13, 15
++};
++
++static char bpg_offset[DSC_NUM_BUF_RANGES] = {
++	2, 0, 0, -2, -4, -6, -8, -8, -8, -10, -10, -12, -12, -12, -12
++};
++
++static int dsi_populate_dsc_params(struct msm_display_dsc_config *dsc)
 +{
-+	struct sgx_secinfo secinfo __aligned(sizeof(struct sgx_secinfo)) = {0};
-+	struct encl_op_emodpe *op = _op;
++	int mux_words_size;
++	int groups_per_line, groups_total;
++	int min_rate_buffer_size;
++	int hrd_delay;
++	int pre_num_extra_mux_bits, num_extra_mux_bits;
++	int slice_bits;
++	int target_bpp_x16;
++	int data;
++	int final_value, final_scale;
++	int i;
 +
-+	secinfo.flags = op->flags;
++	dsc->drm->rc_model_size = 8192;
++	dsc->drm->first_line_bpg_offset = 12;
++	dsc->drm->rc_edge_factor = 6;
++	dsc->drm->rc_tgt_offset_high = 3;
++	dsc->drm->rc_tgt_offset_low = 3;
++	dsc->drm->simple_422 = 0;
++	dsc->drm->convert_rgb = 1;
++	dsc->drm->vbr_enable = 0;
 +
-+	asm volatile(".byte 0x0f, 0x01, 0xd7"
-+				:
-+				: "a" (EMODPE),
-+				  "b" (&secinfo),
-+				  "c" (op->epc_addr));
++	/* handle only bpp = bpc = 8 */
++	for (i = 0; i < DSC_NUM_BUF_RANGES - 1 ; i++)
++		dsc->drm->rc_buf_thresh[i] = dsi_dsc_rc_buf_thresh[i];
++
++	for (i = 0; i < DSC_NUM_BUF_RANGES; i++) {
++		dsc->drm->rc_range_params[i].range_min_qp = min_qp[i];
++		dsc->drm->rc_range_params[i].range_max_qp = max_qp[i];
++		dsc->drm->rc_range_params[i].range_bpg_offset = bpg_offset[i];
++	}
++
++	dsc->drm->initial_offset = 6144; /* Not bpp 12 */
++	if (dsc->drm->bits_per_pixel != 8)
++		dsc->drm->initial_offset = 2048;	/* bpp = 12 */
++
++	mux_words_size = 48;		/* bpc == 8/10 */
++	if (dsc->drm->bits_per_component == 12)
++		mux_words_size = 64;
++
++	dsc->drm->initial_xmit_delay = 512;
++	dsc->drm->initial_scale_value = 32;
++	dsc->drm->first_line_bpg_offset = 12;
++	dsc->drm->line_buf_depth = dsc->drm->bits_per_component + 1;
++
++	/* bpc 8 */
++	dsc->drm->flatness_min_qp = 3;
++	dsc->drm->flatness_max_qp = 12;
++	dsc->drm->rc_quant_incr_limit0 = 11;
++	dsc->drm->rc_quant_incr_limit1 = 11;
++	dsc->drm->mux_word_size = DSC_MUX_WORD_SIZE_8_10_BPC;
++
++	/* FIXME: need to call drm_dsc_compute_rc_parameters() so that rest of
++	 * params are calculated
++	 */
++	groups_per_line = DIV_ROUND_UP(dsc->drm->slice_width, 3);
++	dsc->drm->slice_chunk_size = dsc->drm->slice_width * dsc->drm->bits_per_pixel / 8;
++	if ((dsc->drm->slice_width * dsc->drm->bits_per_pixel) % 8)
++		dsc->drm->slice_chunk_size++;
++
++	/* rbs-min */
++	min_rate_buffer_size =  dsc->drm->rc_model_size - dsc->drm->initial_offset +
++				dsc->drm->initial_xmit_delay * dsc->drm->bits_per_pixel +
++				groups_per_line * dsc->drm->first_line_bpg_offset;
++
++	hrd_delay = DIV_ROUND_UP(min_rate_buffer_size, dsc->drm->bits_per_pixel);
++
++	dsc->drm->initial_dec_delay = hrd_delay - dsc->drm->initial_xmit_delay;
++
++	dsc->drm->initial_scale_value = 8 * dsc->drm->rc_model_size /
++				       (dsc->drm->rc_model_size - dsc->drm->initial_offset);
++
++	slice_bits = 8 * dsc->drm->slice_chunk_size * dsc->drm->slice_height;
++
++	groups_total = groups_per_line * dsc->drm->slice_height;
++
++	data = dsc->drm->first_line_bpg_offset * 2048;
++
++	dsc->drm->nfl_bpg_offset = DIV_ROUND_UP(data, (dsc->drm->slice_height - 1));
++
++	pre_num_extra_mux_bits = 3 * (mux_words_size + (4 * dsc->drm->bits_per_component + 4) - 2);
++
++	num_extra_mux_bits = pre_num_extra_mux_bits - (mux_words_size -
++			     ((slice_bits - pre_num_extra_mux_bits) % mux_words_size));
++
++	data = 2048 * (dsc->drm->rc_model_size - dsc->drm->initial_offset + num_extra_mux_bits);
++	dsc->drm->slice_bpg_offset = DIV_ROUND_UP(data, groups_total);
++
++	/* bpp * 16 + 0.5 */
++	data = dsc->drm->bits_per_pixel * 16;
++	data *= 2;
++	data++;
++	data /= 2;
++	target_bpp_x16 = data;
++
++	data = (dsc->drm->initial_xmit_delay * target_bpp_x16) / 16;
++	final_value =  dsc->drm->rc_model_size - data + num_extra_mux_bits;
++	dsc->drm->final_offset = final_value;
++
++	final_scale = 8 * dsc->drm->rc_model_size / (dsc->drm->rc_model_size - final_value);
++
++	data = (final_scale - 9) * (dsc->drm->nfl_bpg_offset + dsc->drm->slice_bpg_offset);
++	dsc->drm->scale_increment_interval = (2048 * dsc->drm->final_offset) / data;
++
++	dsc->drm->scale_decrement_interval = groups_per_line / (dsc->drm->initial_scale_value - 8);
++
++	return 0;
 +}
 +
-+static void do_encl_eaccept(void *_op)
-+{
-+	struct sgx_secinfo secinfo __aligned(sizeof(struct sgx_secinfo)) = {0};
-+	struct encl_op_eaccept *op = _op;
-+	int rax;
-+
-+	secinfo.flags = op->flags;
-+
-+	asm volatile(".byte 0x0f, 0x01, 0xd7"
-+				: "=a" (rax)
-+				: "a" (EACCEPT),
-+				  "b" (&secinfo),
-+				  "c" (op->epc_addr));
-+
-+	op->ret = rax;
-+}
-+
- static void *memcpy(void *dest, const void *src, size_t n)
+ static int dsi_host_parse_dt(struct msm_dsi_host *msm_host)
  {
- 	size_t i;
-@@ -62,6 +98,8 @@ void encl_body(void *rdi,  void *rsi)
- 		do_encl_op_put_to_addr,
- 		do_encl_op_get_from_addr,
- 		do_encl_op_nop,
-+		do_encl_eaccept,
-+		do_encl_emodpe,
- 	};
+ 	struct device *dev = &msm_host->pdev->dev;
+diff --git a/drivers/gpu/drm/msm/msm_drv.h b/drivers/gpu/drm/msm/msm_drv.h
+index 9f68aa685ed7..57aee75f5022 100644
+--- a/drivers/gpu/drm/msm/msm_drv.h
++++ b/drivers/gpu/drm/msm/msm_drv.h
+@@ -30,6 +30,7 @@
+ #include <drm/drm_plane_helper.h>
+ #include <drm/drm_probe_helper.h>
+ #include <drm/drm_fb_helper.h>
++#include <drm/drm_dsc.h>
+ #include <drm/msm_drm.h>
+ #include <drm/drm_gem.h>
  
- 	struct encl_op_header *op = (struct encl_op_header *)rdi;
+@@ -116,6 +117,11 @@ struct msm_drm_thread {
+ 	struct kthread_worker *worker;
+ };
+ 
++/* DSC config */
++struct msm_display_dsc_config {
++	struct drm_dsc_config *drm;
++};
++
+ struct msm_drm_private {
+ 
+ 	struct drm_device *dev;
 -- 
-2.25.1
+2.34.1
 
