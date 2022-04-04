@@ -2,86 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 716AAC4707E
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:37:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F32FC47080
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:37:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382587AbiDDVba (ORCPT
+        id S1382618AbiDDVbj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:31:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50204 "EHLO
+        Mon, 4 Apr 2022 17:31:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379295AbiDDQzb (ORCPT
+        with ESMTP id S1379525AbiDDRWz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 12:55:31 -0400
-Received: from vps-vb.mhejs.net (vps-vb.mhejs.net [37.28.154.113])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2459214;
-        Mon,  4 Apr 2022 09:53:33 -0700 (PDT)
-Received: from MUA
-        by vps-vb.mhejs.net with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <mail@maciej.szmigiero.name>)
-        id 1nbPxB-0002ta-TY; Mon, 04 Apr 2022 18:53:21 +0200
-Message-ID: <a3cf781b-0b1a-0bba-6b37-12666c7fc154@maciej.szmigiero.name>
-Date:   Mon, 4 Apr 2022 18:53:16 +0200
+        Mon, 4 Apr 2022 13:22:55 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BDDE1E3E9;
+        Mon,  4 Apr 2022 10:20:58 -0700 (PDT)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 8AE2C22246;
+        Mon,  4 Apr 2022 19:20:56 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1649092856;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=fiuc10BmQ8FCYumv3/mTGwuX/cjcFoEPXhSP8kK6PCg=;
+        b=WVy6B8bxp6qvBT9VjDxW2ZwquzLSrYjAOaw3xmKLS/jVoUOlRTtrgZFLao794Zl5r5UdDt
+        CfbCFnR/Y5tmllb2MyALaL24UBOwDe+7ueZemyqdS/yD6uyd3a/g56rwQ0mZ5BNoMsDXZ1
+        GyzpR8lu64sWFOFj+d/FMrx8z1WzLts=
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 5/8] KVM: SVM: Re-inject INT3/INTO instead of retrying the
- instruction
-Content-Language: en-US
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Maxim Levitsky <mlevitsk@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220402010903.727604-1-seanjc@google.com>
- <20220402010903.727604-6-seanjc@google.com>
- <a47217da0b6db4f1b6b6c69a9dc38350b13ac17c.camel@redhat.com>
- <YkshgrUaF4+MrrXf@google.com>
-From:   "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
-In-Reply-To: <YkshgrUaF4+MrrXf@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
 Content-Transfer-Encoding: 7bit
+Date:   Mon, 04 Apr 2022 19:20:56 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        UNGLinuxDriver@microchip.com, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com
+Subject: Re: [PATCH net-next v3 0/4] net: lan966x: Add support for FDMA
+In-Reply-To: <20220404130655.4004204-1-horatiu.vultur@microchip.com>
+References: <20220404130655.4004204-1-horatiu.vultur@microchip.com>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <57b1a196d25cf5d989611fea4f590333@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
->>> index 47e7427d0395..a770a1c7ddd2 100644
->>> --- a/arch/x86/kvm/svm/svm.h
->>> +++ b/arch/x86/kvm/svm/svm.h
->>> @@ -230,8 +230,8 @@ struct vcpu_svm {
->>>   	bool nmi_singlestep;
->>>   	u64 nmi_singlestep_guest_rflags;
->>>   
->>> -	unsigned int3_injected;
->>> -	unsigned long int3_rip;
->>> +	unsigned soft_int_injected;
->>> +	unsigned long soft_int_linear_rip;
->>>   
->>>   	/* optional nested SVM features that are enabled for this guest  */
->>>   	bool nrips_enabled                : 1;
->>
->>
->> I mostly agree with this patch, but think that it doesn't address the
->> original issue that Maciej wanted to address:
->>
->> Suppose that there is *no* instruction in L2 code which caused the software
->> exception, but rather L1 set arbitrary next_rip, and set EVENTINJ to software
->> exception with some vector, and that injection got interrupted.
->>
->> I don't think that this code will support this.
+Am 2022-04-04 15:06, schrieb Horatiu Vultur:
+> Currently when injecting or extracting a frame from CPU, the frame
+> is given to the HW each word at a time. There is another way to
+> inject/extract frames from CPU using FDMA(Frame Direct Memory Access).
+> In this way the entire frame is given to the HW. This improves both
+> RX and TX bitrate.
 > 
-> Argh, you're right.  Maciej's selftest injects without an instruction, but it doesn't
-> configure the scenario where that injection fails due to an exception+VM-Exit that
-> isn't intercepted by L1 and is handled by L0.  The event_inj test gets the coverage
-> for the latter, but always has a backing instruction.
+> v2->v3:
+> - move skb_tx_timestamp before the IFH is inserted, because in case of 
+> PHY
+>   timestamping, the PHY should not see the IFH.
+> - use lower/upper_32_bits()
+> - reimplement the RX path in case of memory pressure.
+> - use devm_request_irq instead of devm_request_threaded_irq
+> - add various checks for return values.
+> 
+> v1->v2:
+> - fix typo in commit message in last patch
+> - remove first patch as the changes are already there
+> - make sure that there is space in skb to put the FCS
+> - move skb_tx_timestamp closer to the handover of the frame to the HW
+> 
+> Horatiu Vultur (4):
+>   net: lan966x: Add registers that are used for FDMA.
+>   net: lan966x: Expose functions that are needed by FDMA
+>   net: lan966x: Add FDMA functionality
+>   net: lan966x: Update FDMA to change MTU.
+> 
+>  .../net/ethernet/microchip/lan966x/Makefile   |   2 +-
+>  .../ethernet/microchip/lan966x/lan966x_fdma.c | 783 ++++++++++++++++++
+>  .../ethernet/microchip/lan966x/lan966x_main.c |  49 +-
+>  .../ethernet/microchip/lan966x/lan966x_main.h | 121 +++
+>  .../ethernet/microchip/lan966x/lan966x_port.c |   3 +
+>  .../ethernet/microchip/lan966x/lan966x_regs.h | 106 +++
+>  6 files changed, 1052 insertions(+), 12 deletions(-)
+>  create mode 100644 
+> drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
 
-Still reviewing the whole patch set, but want to clear this point quickly:
-The selftest does have an implicit intervening NPF (handled by L0) while
-injecting the first L1 -> L2 event.
+For this series:
+Tested-by: Michael Walle <michael@walle.cc> # on kontron-kswitch-d10
 
-Thanks,
-Maciej
+-michael
