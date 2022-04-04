@@ -2,395 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC7E3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 09:53:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13793C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 09:54:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355114AbiDDJzg (ORCPT
+        id S1355149AbiDDJz7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 05:55:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47340 "EHLO
+        Mon, 4 Apr 2022 05:55:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355261AbiDDJzc (ORCPT
+        with ESMTP id S1355064AbiDDJz5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 05:55:32 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D8FD7C4D
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 02:53:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649066014;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=RGMeyAN5/fZhptvJr5oegmOOt6H0eY64pK6ZfswttPc=;
-        b=XQDEmVIcIht1ajz1+VP3R8AYk1Sds5dRLe0ZTU56A+kSPwDYSuTjhWS1pkiQOcLBH03m69
-        C7U3CYfyMrLYs+j453OsXc9VqA9A/Oo42s+h3NmkjxLjdEn9rn9TG5lB/xyVEWgAdCa98j
-        9kQXC3uF3QPkharRydU+ArS2ctX7EfI=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-440-nE00Rh14MMa3IRoaPmkfVw-1; Mon, 04 Apr 2022 05:53:31 -0400
-X-MC-Unique: nE00Rh14MMa3IRoaPmkfVw-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B77C280A0AD;
-        Mon,  4 Apr 2022 09:53:30 +0000 (UTC)
-Received: from starship (unknown [10.40.194.231])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 669974644E2;
-        Mon,  4 Apr 2022 09:53:27 +0000 (UTC)
-Message-ID: <4f5234ac2c6d91d90b1c85ccb3081a91a6d3be2a.camel@redhat.com>
-Subject: Re: [PATCH 3/5] KVM: nSVM: Don't forget about L1-injected events
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        Jon Grimm <Jon.Grimm@amd.com>,
-        David Kaplan <David.Kaplan@amd.com>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Liam Merwick <liam.merwick@oracle.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Mon, 04 Apr 2022 12:53:26 +0300
-In-Reply-To: <a28577564a7583c32f0029f2307f63ca8869cf22.1646944472.git.maciej.szmigiero@oracle.com>
-References: <cover.1646944472.git.maciej.szmigiero@oracle.com>
-         <a28577564a7583c32f0029f2307f63ca8869cf22.1646944472.git.maciej.szmigiero@oracle.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        Mon, 4 Apr 2022 05:55:57 -0400
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61D84E09
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 02:54:01 -0700 (PDT)
+Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 23479L8f018751;
+        Mon, 4 Apr 2022 09:53:39 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=corp-2021-07-09;
+ bh=CgxQcO0hjFoXye075R1ySgzx/BfF+eni5ej7fNNhHXs=;
+ b=tlcBu0RpHkC+5muMJ3FVcdxiVuXRhH/YMRK9nxl5q800Cz5bWabVaqAHN4n2MXy+uZLS
+ hQy+MqTT9e5whpz49hvPQk7X8mQmTsfkxzsDnAL5W1brTS1jYqX0PzWFlWGORPLRn5vr
+ /ECDrtXliaUy7ivGCDMcLI04RmfqjwObtkieBbTBtY7nkLNzRKFtyWVH27WWucl2MN/T
+ f29KUow6EBetcU70dM5cxBfXLv4eE3NhCi4ydF04hkzQ8jRpTKNjBR33HMPzady0yRWK
+ 08XWzpZe11RAhg5tdXJ9zi+/2M6kEJwaMoXOvskokSt18qr180ouMuUlT7+Lvi/DQ0f7 9A== 
+Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3f6e3sjn87-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 04 Apr 2022 09:53:38 +0000
+Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 2349okd6020359;
+        Mon, 4 Apr 2022 09:53:38 GMT
+Received: from nam10-dm6-obe.outbound.protection.outlook.com (mail-dm6nam10lp2100.outbound.protection.outlook.com [104.47.58.100])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3f6cx26x0p-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 04 Apr 2022 09:53:38 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=gLirbK6V3xGlHwA/fOXEMxgJO8ThzRMgCGn9pkN1HblwCr/5BAC2GsDwRO2cCpTIxcjpf8y48JJXyBZreM7faliV3TRljlEKiQMmUn5RwRFdOaWEzs3rbi2Rnt1sfa7/U8s3dQP3WKiXN4tu8QHjsqlh3fsnpGA5LEeo8A9mx+bukN3VGkFNyKtklOQ7N2W0xOxCtTX2sEzrAiHdFcltC5MKtO4iomkxEt4IV0+wiDsV1ll316249aRuj4xX/NJ4Svqf+Dp2Pq5LtMkeou3tG/7HWAJshPzc6szKeaBjk7vTsOwgPT0dDNXSiPYxs7ArRatOgI5ec745gEXAB+nz9A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=CgxQcO0hjFoXye075R1ySgzx/BfF+eni5ej7fNNhHXs=;
+ b=g4sWKVxj+dVX+vehWCpBhpetLxBtldeM3JNh5pvnEk8S3wcJtTX5LkS7ZIaVyGnWZJUsDSsFyw52VR6uIdFA3ajNDePeTIdIUw+4gBBOd66XMXzb9UVW6ckTZOom7Sia4QPg1Ywb1RRy8e1jHuWAeYD6fyuqs2HnmL8FMZ9iIUEaorXFNquq3xPctA7o5dK4IID9YoJmDi9WKAcm2GMd7O9R8t9YdQrAalqNDlkGtAEQL4HP6BEZi3pVUZu7YOke9iYQOokihHHijmHobOTalJw7bmzApBVAYGH7LgcNZ3UbQzSNt1dQcAzyxyNi6JT2KU5H03WdWqc6UUBbHG0krQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=CgxQcO0hjFoXye075R1ySgzx/BfF+eni5ej7fNNhHXs=;
+ b=Y14W9NLuCR3GxOPY9rSYzf6POhCl1CfU5beWohYprTxbno+OgoXfQBjaYsNgQvSzJYfFY0Q3DJ4cs9Ro2LYGt5TdcvO4SEH1GpUPs/BHCXlPf1dbJHqtsslsqm7a0jrdRR8Q1w1v7cH/SOAw17dhNbj+WYSNPnaeVbRunsxhoW0=
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ (2603:10b6:301:2d::28) by MN2PR10MB3806.namprd10.prod.outlook.com
+ (2603:10b6:208:1b7::28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Mon, 4 Apr
+ 2022 09:53:36 +0000
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::d4e7:ee60:f060:e20c]) by MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::d4e7:ee60:f060:e20c%7]) with mapi id 15.20.5081.025; Mon, 4 Apr 2022
+ 09:53:35 +0000
+Date:   Mon, 4 Apr 2022 12:53:12 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] staging: r8188eu: Fix PPPoE tag insertion on big endian
+ systems
+Message-ID: <20220404095312.GV3293@kadam>
+References: <20220401151257.3414576-1-linux@roeck-us.net>
+ <782f0115-e45f-1aff-a152-5d403c990b31@lwfinger.net>
+ <dcba377b-1fce-92e6-680a-77c5567cd06c@roeck-us.net>
+ <8e68501c-24fd-cfbc-60f2-ec3e277159ab@lwfinger.net>
+ <0c646d80-3198-06c1-e8aa-442b245ffb3e@roeck-us.net>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0c646d80-3198-06c1-e8aa-442b245ffb3e@roeck-us.net>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: JNXP275CA0025.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:18::13)
+ To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 2294739f-a776-4c3e-941c-08da1620fbd3
+X-MS-TrafficTypeDiagnostic: MN2PR10MB3806:EE_
+X-Microsoft-Antispam-PRVS: <MN2PR10MB38067A703E893C852959D84E8EE59@MN2PR10MB3806.namprd10.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 6iulcn76C8ZvPNjl652zyrFw/dIL+8KuPu0ioz1l1UDKxPcef+PBXc0Y8rddhIXkBmoEMVfpUy7DoWcDD6BjAy4FEu1JaucsxtRoG/d04pCmLiVtjh1zhU1o4tVwsY24oiXLuwyL+oVpWLXOoTiWMsVy3rt1VPVA0ShQAvM8c5SSvTzDw2NRHTmv5/kMGqO1LAUFrZO39KLiBPGDg/ArUr6+A8ixCIjx5AI5oHKEHqvh5SPT6yng5RnWZGzxzPI/aeZa2JmLEthFM1hFZ+dkaCmzZULrJZPMJ6QMBC2kZv+LhNexzrdONhL4yhCjByhAoAWql0iEOf9Lbp/+/duztk0bx3vkGUDwpZmwtd9mdCHkW5VufKs1/0RGJsCNgDLFCKuCHzb4mFFRAl1ujPrXVsNQlmP4bDawj4d9te1AV+3xdlS+2N3oivkuplWtXldRwfBer9iGzqacL9OuItorIp12vmxet2KeYGf4/x2O3MqCJdw3MKdLq2fpDXnX6wv5fHBtCDqGqQ0oHBMexCQ+QUD1wGcpjjFGvgNYT3F5FqRCFpINRjs8kX9ku62IZ/YuPvW914yYm0x/Ca2RMTBRTWz4mhv2BV1FGByVQAFKePxsuIb6hpCnkMYP3hMY+0X+3qu21bevVthhgWxGm3tfFwSS7ExXXWvZ1VetT9rEGtrzFA88bIlIFrQ0sJjhdtIgA9LtZYJUaLAgQl3d8xCTYMA2k/K0zw7oN+XR9WUyiC+/1MdJe+zh5Tloa7rKBTaL2zYcX2sJ5qZq4q/RjCzlBp3JaYSljmXkIKX5VvyuK8U=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(66556008)(4326008)(66476007)(66946007)(8676002)(83380400001)(86362001)(44832011)(5660300002)(2906002)(38100700002)(38350700002)(8936002)(6666004)(316002)(6506007)(9686003)(186003)(26005)(33716001)(1076003)(6512007)(53546011)(52116002)(54906003)(6486002)(966005)(6916009)(508600001)(33656002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?CmfdSf8qgwJxZ/Q0gN/9UMcBwoZHdoWTKrWNRREWlkGvmw+p/W6Kc76baxB0?=
+ =?us-ascii?Q?HGZVkM65tMvWgc7yHtYdHhdi0g6c5nhgHNP/HU+kyqf0Lz09P+mCgUSWdAH0?=
+ =?us-ascii?Q?6YXoen18RPGQGn2aAQ6gIKxm0bN8FK85nUWWqbu9phvOz860H1a6lgHPrLsn?=
+ =?us-ascii?Q?rVQr3nkNA+P3iYBrNXcc4sGmo52ZL7EzbJaYMz0wZlAabiRzxOXFA8FsGOr/?=
+ =?us-ascii?Q?+4NEaWGskY7CNGQMqzHN9zya4pU0++isVI4A5W1a27Q6mxhip/OoJOXvt9eu?=
+ =?us-ascii?Q?2QBwKopJhYQEZahmEIE1ggPPzaUnc4bYusjPPmohydWE+cXo5DC6/yYKCV2K?=
+ =?us-ascii?Q?TdDXu9W3ykO5hqGTt92jpPkDYky3qNM+ciu/eE3bsOEoLv0IkVSY6UJogLgm?=
+ =?us-ascii?Q?bS8qatCyv1qSbokVuSuUQCWcS1ECTSA73pjQIYF+1bth/NAxLZYNDuotMrPR?=
+ =?us-ascii?Q?WK2En6Juz9C2pGHNNqBCe+QpYI0Z8g3O7dLOvP8RxYFg1Lf6pFfL202plon6?=
+ =?us-ascii?Q?OJAc0QXjiEoFwGkFpykBRyveXcZAygjkVJQhIAH04xLve0wnQe5doLYNtXfh?=
+ =?us-ascii?Q?PC6oN523WVNGjsRmJY0b7P/EYjigTNToLNc/1bGIFSWGwhdMq8ez2ChB9FJh?=
+ =?us-ascii?Q?PVujjsMZEZ2TlGLw4TK+y9vWyrPbamETBij1P8Ms/PXjnYDjFRetxuMkwuUA?=
+ =?us-ascii?Q?8ygyqWYA5YkYwSruvC+Qcdyxyi4OadqVvwE4oHHeITMmBxPpTT+xp1HZJo7N?=
+ =?us-ascii?Q?4SSuJrMNkj1fJsO1HpWu0CBAb1N1TyqRpfg4fr4glN51Vz2/9nzK/x5D1Ju0?=
+ =?us-ascii?Q?Q8v7HsVPljtFclmB4K56fTU3gZprkAsV+WXncBWdwp4r+U8ySbiuGBOW993M?=
+ =?us-ascii?Q?orkEEQep8zKSQh2gtFQCAk3y8wUGchTnFjekn2nZvW9/ZI5jqFuCzJ6RG+AV?=
+ =?us-ascii?Q?PClkRkqzp+R/eC/5DHPIXZWOGgCNmBUuXBsnW20aJPMcHuHP6VjiQlQeKjtG?=
+ =?us-ascii?Q?9ghVEhhNQwOSOCUqP5v2o8ELIHfgNiEozwe4vStiYqljZZQDTEVysw0GT9QW?=
+ =?us-ascii?Q?UKT2oK0CtekDBIQ6IVmjfcNCkJZgUlQjDjLqwVjcaxXV2zA9hbYWsEC0GWUl?=
+ =?us-ascii?Q?tXFtTxcW0paGVaRoZU/mW1yR/PDw+uvE4439Pf0W4lAlQU6dCDwzDQTIgz5f?=
+ =?us-ascii?Q?+OxP//a0SHqfbQyX7xTOIQTDDo+rKKB+4p783JA+JWheW4l/EwZ0S6N/dcJC?=
+ =?us-ascii?Q?un1FX5/Efn+PnxlK9jBayDs58FTIT9fe1gQY9cKWsyWRLeH3TArY12tkVhwa?=
+ =?us-ascii?Q?cCnrgrJjR9CpQT9FihaZ2av2CivpAvXspVXwc+qi705FJPwnevQdQngigrG6?=
+ =?us-ascii?Q?ejLhcvAxqQds1NPP1Ijlym0SIkI5zwl1YI6t1K10FAocUR9JtpLcH03bwjHm?=
+ =?us-ascii?Q?+nn7A17k9jXX2tbqwd4eS34htUf0oug3kp7hAWzGAQghY+X/3iJ8OZUik6SX?=
+ =?us-ascii?Q?Toa4joBiUgcqlcNd7mu7eXepbAf7JAliCM5O8fBSp0KEKlYP1n3FfT4KmlyZ?=
+ =?us-ascii?Q?MCcIR9EqSEFH3zGlMFLyvJeYgODSg838ny+P6bxnGv3jTCuzFUPr2ggDwdvg?=
+ =?us-ascii?Q?0Lw9NFAmOqTCW2stMWCm0pvL6jZnaq/3tASLv/hXo6+MMj1hjqYiKPm5mGPH?=
+ =?us-ascii?Q?0uLFT1lILUKT8EfTrlfXBFH5Gup31VwJALqCaYX5gKAvjVC/Lm45ZlG8x8N0?=
+ =?us-ascii?Q?8LybN0JAMWn9Jv6/W742IHDgEFuvFtQ=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2294739f-a776-4c3e-941c-08da1620fbd3
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Apr 2022 09:53:35.1839
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: XFvEPzPNA0Iy9NkjzfJHrmQugVTJaqaK5incMkRqmQm5gs2MXzW7EJFxJKjuOSrxGeJOnANrnSMQqrMgmBEWwRbRCscueBuSYoJXrDTis7c=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR10MB3806
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.425,18.0.850
+ definitions=2022-04-04_03:2022-03-30,2022-04-04 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 malwarescore=0 spamscore=0
+ phishscore=0 mlxscore=0 mlxlogscore=889 bulkscore=0 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
+ definitions=main-2204040055
+X-Proofpoint-ORIG-GUID: dRxsdTXTRpa9C1iowko5XqCGyOGv5y7J
+X-Proofpoint-GUID: dRxsdTXTRpa9C1iowko5XqCGyOGv5y7J
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-03-10 at 22:38 +0100, Maciej S. Szmigiero wrote:
-> From: "Maciej S. Szmigiero" <maciej.szmigiero@oracle.com>
+On Sat, Apr 02, 2022 at 02:18:22PM -0700, Guenter Roeck wrote:
+> On 4/1/22 13:25, Larry Finger wrote:
+> > On 4/1/22 14:25, Guenter Roeck wrote:
+> > > The rest of the code uses htons/ntohs, so I prefer to follow that lead.
+> > 
+> > You just proved my point. It is hard to get be16_to_cpu() wrong. Sparse will flag the error when you use cpu_to_be16() instead. I expect that your htons/ntohs problem would also have shown up with Sparse.
+> > 
 > 
-> In SVM synthetic software interrupts or INT3 or INTO exception that L1
-> wants to inject into its L2 guest are forgotten if there is an intervening
-> L0 VMEXIT during their delivery.
+> Ok, you made your point. I'll use be16_to_cpu() - the driver
+> already uses it elsewhere anyway. As for the other problems,
+> I am not sure if the driver ever worked. The function we are
+> looking at can't really have worked on a little endian system
+> because of the missing conversion, and the same is true for the
+> other code flagged by sparse. I think I'll just add a note
+> to this patch and let the driver authors decide what to do
+> about those problems.
 > 
-> They are re-injected correctly with VMX, however.
-> 
-> This is because there is an assumption in SVM that such exceptions will be
-> re-delivered by simply re-executing the current instruction.
-> Which might not be true if this is a synthetic exception injected by L1,
-> since in this case the re-executed instruction will be one already in L2,
-> not the VMRUN instruction in L1 that attempted the injection.
-> 
-> Leave the pending L1 -> L2 event in svm->nested.ctl.event_inj{,err} until
-> it is either re-injected successfully or returned to L1 upon a nested
-> VMEXIT.
-> Make sure to always re-queue such event if returned in EXITINTINFO.
-> 
-> The handling of L0 -> {L1, L2} event re-injection is left as-is to avoid
-> unforeseen regressions.
+> Guenter
 
-Some time ago I noticed this too, but haven't dug into this too much.
-I rememeber I even had some half-baked patch for this I never posted,
-because I didn't think about the possibility of this syntetic injection. 
+This is already fixed along with a couple related bugs in commit
+2d959a842a8f ("staging: r8188eu: Fix sparse endianness warnings.").
 
-Just to be clear that I understand this correctly:
+https://lore.kernel.org/r/YkPK/QmLAp3BkygY@sckzor-linux.localdomain
 
-1. What is happening is that L1 is injecting INTn/INTO/INT3 but L2 code
-   doesn't actualy contain an INTn/INTO/INT3 instruction.
-   This is wierd but legal thing to do.
-   Again, if L2 actually contained the instruction, it would have worked?
+It's in staging-next but hasn't hit linux-next yet.
 
-
-2. When actual INTn/INT0/INT3 are intercepted on SVM, then
-   save.RIP points to address of the instruction, and control.next_rip
-   points to address of next instruction after (as expected)
-
-3. When EVENTINJ is used with '(TYPE = 3) with vectors 3 or 4'
-   or 'TYPE=4', then next_rip is pushed on the stack, while save.RIP is
-   pretty much ignored, and exectution jumps to the handler in the IDT.
-   also at least for INT3/INTO, PRM states that IDT's DPL field is checked
-   before dispatch, meaning that we can get legit #GP during delivery.
-   (this looks like another legit reason to fix exception merging in KVM)
-
-
-Best regards,
-	Maxim Levitsky
-
-
-> 
-> Signed-off-by: Maciej S. Szmigiero <maciej.szmigiero@oracle.com>
-> ---
->  arch/x86/kvm/svm/nested.c | 65 +++++++++++++++++++++++++++++++++++++--
->  arch/x86/kvm/svm/svm.c    | 17 ++++++++--
->  arch/x86/kvm/svm/svm.h    | 47 ++++++++++++++++++++++++++++
->  3 files changed, 125 insertions(+), 4 deletions(-)
-> 
-> diff --git a/arch/x86/kvm/svm/nested.c b/arch/x86/kvm/svm/nested.c
-> index 9656f0d6815c..75017bf77955 100644
-> --- a/arch/x86/kvm/svm/nested.c
-> +++ b/arch/x86/kvm/svm/nested.c
-> @@ -420,8 +420,17 @@ void nested_copy_vmcb_save_to_cache(struct vcpu_svm *svm,
->  void nested_sync_control_from_vmcb02(struct vcpu_svm *svm)
->  {
->  	u32 mask;
-> -	svm->nested.ctl.event_inj      = svm->vmcb->control.event_inj;
-> -	svm->nested.ctl.event_inj_err  = svm->vmcb->control.event_inj_err;
-> +
-> +	/*
-> +	 * Leave the pending L1 -> L2 event in svm->nested.ctl.event_inj{,err}
-> +	 * if its re-injection is needed
-> +	 */
-> +	if (!exit_during_event_injection(svm, svm->nested.ctl.event_inj,
-> +					 svm->nested.ctl.event_inj_err)) {
-> +		WARN_ON_ONCE(svm->vmcb->control.event_inj & SVM_EVTINJ_VALID);
-> +		svm->nested.ctl.event_inj      = svm->vmcb->control.event_inj;
-> +		svm->nested.ctl.event_inj_err  = svm->vmcb->control.event_inj_err;
-> +	}
-
-Beware that this could backfire in regard to nested migration.
-
-I once chased a nasty bug related to this.
-
-The bug was:
-
-- L1 does VMRUN with injection (EVENTINJ set)
-
-- VMRUN exit handler is 'executed' by KVM,
-  This copies EVENINJ fields from VMCB12 to VMCB02
-
-- Once VMRUN exit handler is done executing, we exit to userspace to start migration
-  (basically static_call(kvm_x86_handle_exit)(...) handles the SVM_EXIT_VMRUN,
-   and that is all, vcpu_enter_guest isn't called again, so injection is not canceled)
-
-- migration happens and it migrates the control area of vmcb02 with EVENTINJ fields set.
-
-- on migration target, we inject another interrupt to the guest via EVENTINJ
-  because svm_check_nested_events checks nested_run_pending to avoid doing this
-  but nested_run_pending was not migrated correctly, 
-  and overwrites the EVENTINJ - injection is lost.
-
-Paolo back then proposed to me that instead of doing direct copy from VMCB12 to VMCB02
-we should instead go through 'vcpu->arch.interrupt' and such.
-I had a prototype of this but never gotten to clean it up to be accepted upstream,
-knowing that current way also works.
-
-  
-
-
->  
->  	/* Only a few fields of int_ctl are written by the processor.  */
->  	mask = V_IRQ_MASK | V_TPR_MASK;
-> @@ -669,6 +678,54 @@ static void nested_svm_copy_common_state(struct vmcb *from_vmcb, struct vmcb *to
->  	to_vmcb->save.spec_ctrl = from_vmcb->save.spec_ctrl;
->  }
->  
-> +void nested_svm_maybe_reinject(struct kvm_vcpu *vcpu)
-
-A personal taste note: I don't like the 'maybe' for some reason.
-But I won't fight over this.
-
-> +{
-> +	struct vcpu_svm *svm = to_svm(vcpu);
-> +	unsigned int vector, type;
-> +	u32 exitintinfo = svm->vmcb->control.exit_int_info;
-> +
-> +	if (WARN_ON_ONCE(!is_guest_mode(vcpu)))
-> +		return;
-> +
-> +	/*
-> +	 * No L1 -> L2 event to re-inject?
-> +	 *
-> +	 * In this case event_inj will be cleared by
-> +	 * nested_sync_control_from_vmcb02().
-> +	 */
-> +	if (!(svm->nested.ctl.event_inj & SVM_EVTINJ_VALID))
-> +		return;
-> +
-> +	/* If the last event injection was successful there shouldn't be any pending event */
-> +	if (WARN_ON_ONCE(!(exitintinfo & SVM_EXITINTINFO_VALID)))
-> +		return;
-> +
-> +	kvm_make_request(KVM_REQ_EVENT, vcpu);
-> +
-> +	vector = exitintinfo & SVM_EXITINTINFO_VEC_MASK;
-> +	type = exitintinfo & SVM_EXITINTINFO_TYPE_MASK;
-> +
-> +	switch (type) {
-> +	case SVM_EXITINTINFO_TYPE_NMI:
-> +		vcpu->arch.nmi_injected = true;
-> +		break;
-> +	case SVM_EXITINTINFO_TYPE_EXEPT:
-> +		if (exitintinfo & SVM_EXITINTINFO_VALID_ERR)
-> +			kvm_requeue_exception_e(vcpu, vector,
-> +						svm->vmcb->control.exit_int_info_err);
-> +		else
-> +			kvm_requeue_exception(vcpu, vector);
-> +		break;
-> +	case SVM_EXITINTINFO_TYPE_SOFT:
-
-Note that AFAIK, SVM_EXITINTINFO_TYPE_SOFT is only for INTn instructions,
-while INT3 and INTO are considered normal exceptions but EVENTINJ
-handling has special case for them.
-
-
-On VMX it is a bit cleaner:
-It has:
-
-3 - normal stock exception caused by CPU itself, like #PF and such
-      
-4 - INTn
-      * does DPL check and uses VM_EXIT_INSTRUCTION_LEN
-       
-5 - ICEBP/INT1, which SVM doesnt support to re-inject
-      * doesn't do DPL check, but uses VM_EXIT_INSTRUCTION_LEN I think
-
-6 - software exception (INT3/INTO)
-      * does DPL check and uses VM_EXIT_INSTRUCTION_LEN as well
-
-I don't know if there is any difference between 4 and 6.
-
-
-
-
-> +	case SVM_EXITINTINFO_TYPE_INTR:
-> +		kvm_queue_interrupt(vcpu, vector, type == SVM_EXITINTINFO_TYPE_SOFT);
-> +		break;
-> +	default:
-> +		vcpu_unimpl(vcpu, "unknown L1 -> L2 exitintinfo type 0x%x\n", type);
-> +		break;
-> +	}
-> +}
-> +
->  int enter_svm_guest_mode(struct kvm_vcpu *vcpu, u64 vmcb12_gpa,
->  			 struct vmcb *vmcb12, bool from_vmrun)
->  {
-> @@ -898,6 +955,10 @@ int nested_svm_vmexit(struct vcpu_svm *svm)
->  	if (svm->nrips_enabled)
->  		vmcb12->control.next_rip  = vmcb->control.next_rip;
->  
-> +	/* Forget about any pending L1 event injection since it's a L1 worry now */
-> +	svm->nested.ctl.event_inj = 0;
-> +	svm->nested.ctl.event_inj_err = 0;
-> +
->  	vmcb12->control.int_ctl           = svm->nested.ctl.int_ctl;
->  	vmcb12->control.tlb_ctl           = svm->nested.ctl.tlb_ctl;
->  	vmcb12->control.event_inj         = svm->nested.ctl.event_inj;
-> diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-> index 1e5d904aeec3..5b128baa5e57 100644
-> --- a/arch/x86/kvm/svm/svm.c
-> +++ b/arch/x86/kvm/svm/svm.c
-> @@ -3322,13 +3322,18 @@ static void svm_inject_irq(struct kvm_vcpu *vcpu)
->  {
->  	struct vcpu_svm *svm = to_svm(vcpu);
->  
-> -	WARN_ON(!gif_set(svm));
-> +	WARN_ON(!(vcpu->arch.interrupt.soft || gif_set(svm)));
->  
->  	trace_kvm_inj_virq(vcpu->arch.interrupt.nr);
->  	++vcpu->stat.irq_injections;
->  
->  	svm->vmcb->control.event_inj = vcpu->arch.interrupt.nr |
-> -		SVM_EVTINJ_VALID | SVM_EVTINJ_TYPE_INTR;
-> +		SVM_EVTINJ_VALID;
-> +	if (vcpu->arch.interrupt.soft) {
-> +		svm->vmcb->control.event_inj |= SVM_EVTINJ_TYPE_SOFT;
-> +	} else {
-> +		svm->vmcb->control.event_inj |= SVM_EVTINJ_TYPE_INTR;
-> +	}
->  }
->  
->  void svm_complete_interrupt_delivery(struct kvm_vcpu *vcpu, int delivery_mode,
-> @@ -3627,6 +3632,14 @@ static void svm_complete_interrupts(struct kvm_vcpu *vcpu)
->  	if (!(exitintinfo & SVM_EXITINTINFO_VALID))
->  		return;
->  
-> +	/* L1 -> L2 event re-injection needs a different handling */
-> +	if (is_guest_mode(vcpu) &&
-> +	    exit_during_event_injection(svm, svm->nested.ctl.event_inj,
-> +					svm->nested.ctl.event_inj_err)) {
-> +		nested_svm_maybe_reinject(vcpu);
-> +		return;
-> +	}
-> +
->  	kvm_make_request(KVM_REQ_EVENT, vcpu);
->  
->  	vector = exitintinfo & SVM_EXITINTINFO_VEC_MASK;
-> diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
-> index f757400fc933..7cafc2e6c82a 100644
-> --- a/arch/x86/kvm/svm/svm.h
-> +++ b/arch/x86/kvm/svm/svm.h
-> @@ -488,6 +488,52 @@ static inline bool nested_npt_enabled(struct vcpu_svm *svm)
->  	return svm->nested.ctl.nested_ctl & SVM_NESTED_CTL_NP_ENABLE;
->  }
->  
-> +static inline bool event_inj_same(u32 event_inj1, u32 event_inj_err1,
-> +				  u32 event_inj2, u32 event_inj_err2)
-> +{
-> +	unsigned int vector_1, vector_2, type_1, type_2;
-> +
-> +	/* Either of them not valid? */
-> +	if (!(event_inj1 & SVM_EVTINJ_VALID) ||
-> +	    !(event_inj2 & SVM_EVTINJ_VALID))
-> +		return false;
-> +
-> +	vector_1 = event_inj1 & SVM_EVTINJ_VEC_MASK;
-> +	type_1 = event_inj1 & SVM_EVTINJ_TYPE_MASK;
-> +	vector_2 = event_inj2 & SVM_EVTINJ_VEC_MASK;
-> +	type_2 = event_inj2 & SVM_EVTINJ_TYPE_MASK;
-> +
-> +	/* Different vector or type? */
-> +	if (vector_1 != vector_2 || type_1 != type_2)
-> +		return false;
-> +
-> +	/* Different error code presence flag? */
-> +	if ((event_inj1 & SVM_EVTINJ_VALID_ERR) !=
-> +	    (event_inj2 & SVM_EVTINJ_VALID_ERR))
-> +		return false;
-> +
-> +	/* No error code? */
-> +	if (!(event_inj1 & SVM_EVTINJ_VALID_ERR))
-> +		return true;
-> +
-> +	/* Same error code? */
-> +	return event_inj_err1 == event_inj_err2;
-> +}
-> +
-> +/* Did the last VMEXIT happen when attempting to inject that event? */
-> +static inline bool exit_during_event_injection(struct vcpu_svm *svm,
-> +					       u32 event_inj, u32 event_inj_err)
-> +{
-> +	BUILD_BUG_ON(SVM_EXITINTINFO_VEC_MASK != SVM_EVTINJ_VEC_MASK ||
-> +		     SVM_EXITINTINFO_TYPE_MASK != SVM_EVTINJ_TYPE_MASK ||
-> +		     SVM_EXITINTINFO_VALID != SVM_EVTINJ_VALID ||
-> +		     SVM_EXITINTINFO_VALID_ERR != SVM_EVTINJ_VALID_ERR);
-> +
-> +	return event_inj_same(svm->vmcb->control.exit_int_info,
-> +			      svm->vmcb->control.exit_int_info_err,
-> +			      event_inj, event_inj_err);
-> +}
-> +
->  /* svm.c */
->  #define MSR_INVALID				0xffffffffU
->  
-> @@ -540,6 +586,7 @@ static inline bool nested_exit_on_nmi(struct vcpu_svm *svm)
->  	return vmcb12_is_intercept(&svm->nested.ctl, INTERCEPT_NMI);
->  }
->  
-> +void nested_svm_maybe_reinject(struct kvm_vcpu *vcpu);
->  int enter_svm_guest_mode(struct kvm_vcpu *vcpu,
->  			 u64 vmcb_gpa, struct vmcb *vmcb12, bool from_vmrun);
->  void svm_leave_nested(struct kvm_vcpu *vcpu);
-> 
-
-
-I will also review Sean's take on this, let see which one is simplier.
-
-
-Best regards,
-	Maxim Levitsky
-
-
-
+regards,
+dan carpenter
