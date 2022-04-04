@@ -2,111 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9168AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 14:15:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE855C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 14:16:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376970AbiDDORc (ORCPT
+        id S1377000AbiDDOSf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 10:17:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53788 "EHLO
+        Mon, 4 Apr 2022 10:18:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237149AbiDDORa (ORCPT
+        with ESMTP id S237149AbiDDOSc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 10:17:30 -0400
-Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D26F51FCDE;
-        Mon,  4 Apr 2022 07:15:34 -0700 (PDT)
-Received: by mail-io1-xd32.google.com with SMTP id z7so11419359iom.1;
-        Mon, 04 Apr 2022 07:15:34 -0700 (PDT)
+        Mon, 4 Apr 2022 10:18:32 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 596AF3B033
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 07:16:34 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id bh17so20244760ejb.8
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 07:16:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5E21fn+577TVIeU8kFomfMeng4iJST9d5OAfTwxTna4=;
-        b=WLjYGWfI8NieOzOaszwCD3go3mVW5B5I2+6Yg+OjcgoBVT7LMgFMz6W9axdgJItbWS
-         kcNOl5cStadfExLLKu1xE9sG/bZt6/C3t0E0rkMUhT97PYyBmtMH6qcC8UJoejnKPJSW
-         zUyrXFK85nzQBkDjkerQYx7AfBEO8Ed1TWxT4udvEf1T5G+3EPY4EACkL4d0Kp7UB+Ll
-         zKiPdNxmZwIOuItE+UUMShHUPUoGhjVPS21SyhceuXkqX0zhq2MCbu1hMm0b2oYm6sCC
-         Zi2FjqPaGKGlZSm3r6Ep1XtWCIDha1NmDS1Es3E2ck8hZA+Msy/JGHviUvTH1Awt+9QW
-         puDQ==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=Yrk+LsPAZj6NgBL9bPWTDL2JqqAIRaC05jfjs6HeV6M=;
+        b=C0CQSnrkT94LDeC4aymHxJuLO2rX5kVxd1bwalPdQCHCPhlzw9BgtNCNqGvLj/5NzH
+         +kmPzX98/bS8hRL1+b36hhL1ZLFlcZSqIzfQMQXlaWyMdgFmSsh9Ldf3i2QFiU5DgQOW
+         fQnguE6E2ed4f3QSkRHe613J4wOhuVpuCgoj8YyalA5UcKmsgod7XbwQ+CLmyCvrMSrv
+         khfEP4OlSKcps0B1Vfh70wLkcguDLSLhp9Zc72rDKGCs6sSLadBxPeoUs+tt+dmLS/rn
+         0ecsQV34R94NtDo1QbGSK6Uob16u/gBZHB1OpULpjjj1SZ/aZqA6CVHTNlV9v0+PwFh+
+         l+GQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5E21fn+577TVIeU8kFomfMeng4iJST9d5OAfTwxTna4=;
-        b=RtI3Hy3XQlmpXXnsM4b47SM2ZKmUi8zoYYufleBQCCOZGgy8/2MZsEz3xH3gz3G6am
-         DgsTEPPaiS3wSaa0taFzmSpg3gdYxa1fns4aEvPNt8VnfgBubb6x6A0HV/nNlJeMOcnl
-         ghKWKWaRNSdfmuxusIVPuvh4ig4OLXegfUOehBXKl9L/0A/ey30SSzD8VdCc/etv6vJ3
-         eahOEo2MY4RQczw5ODH2XlxPkmi+we4FjRfTq+hR8midiZTJiZzrtdxm2BTINKLh6EVM
-         szJ39qdiUKpPVeZVNrqX2Uhx79F8LkIWVGEpPArHtHrpBijWxhQ8fA0OLuCLhuEreUeG
-         lAwA==
-X-Gm-Message-State: AOAM531pPX66foVxdXEwq+Y4Nv4HmNoyn+AwZBXzgkQ/jPM/fkybdrLJ
-        RhkRvVqMC9EIBhSPA4opA6HovGBLaPmsGadpLa0=
-X-Google-Smtp-Source: ABdhPJxbrZxaxxa23c8KuLbVlw6fjbA5zoUQwfxTtjRwR9H1HCw24823wBw9jzwWM0Oe8D9H9Q79Z4l3QqfPkd0Fz5k=
-X-Received: by 2002:a6b:8e91:0:b0:645:c11f:e322 with SMTP id
- q139-20020a6b8e91000000b00645c11fe322mr113988iod.162.1649081734248; Mon, 04
- Apr 2022 07:15:34 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Yrk+LsPAZj6NgBL9bPWTDL2JqqAIRaC05jfjs6HeV6M=;
+        b=F8pV+DCi0IJKIgc8+Zpq73YvOrhkHjWmVYP14m3gxi2dh4gNafpyDJ1QCHFNWzwiNx
+         JbBGah8OzE76MuXRv7+7MWJLXcZKUrNNUa9jFrEb2XuTVNeZ9nZuyS0Bo6uSenSGF9sj
+         kR4bO0TrjMGgPJ3vxEwpeg9DKS5aJGvYJhC+xX0Rd3bl50NrgaQyIpqWIcXLhDdacor1
+         jzvHAFVeeXrVotMvClO2yPoS+pp79T8ODsJ9LI3XanIzz360M+4kQqxUmVCTl0Jqw3rT
+         drvNxvPRw2YN5DqpPeAvw2XuqHz8dqAIA2WyQtZ7BPlKGxC1KrmNyo3C9BfN1YTIbTmP
+         S0FQ==
+X-Gm-Message-State: AOAM530DlA3rLP3xOrTXfCVI9M1u7h9WIGhWmXZ4ZzwoqZNxcc0FyQCt
+        /0wmyRqazZjpuaHNqVx2DMg=
+X-Google-Smtp-Source: ABdhPJwvxYyF0JUDpmRlQHyz90MqCDt9VyxoPybNjJQvz6+gMQG4EbL38QpAT2rrxotiAAc0RzaZoA==
+X-Received: by 2002:a17:907:7e94:b0:6e4:9d72:a784 with SMTP id qb20-20020a1709077e9400b006e49d72a784mr260209ejc.346.1649081792880;
+        Mon, 04 Apr 2022 07:16:32 -0700 (PDT)
+Received: from [192.168.0.253] (ip5f5abb55.dynamic.kabel-deutschland.de. [95.90.187.85])
+        by smtp.gmail.com with ESMTPSA id ga10-20020a1709070c0a00b006dfc7c089f7sm4389965ejc.1.2022.04.04.07.16.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 04 Apr 2022 07:16:32 -0700 (PDT)
+Message-ID: <66efc2d7-ec85-25af-1499-0dce2a09c3cd@gmail.com>
+Date:   Mon, 4 Apr 2022 16:16:31 +0200
 MIME-Version: 1.0
-References: <20220404131818.1817794-1-gch981213@gmail.com> <20220404131818.1817794-5-gch981213@gmail.com>
- <14c921b5-4240-a026-252a-d5fb60836b34@linaro.org>
-In-Reply-To: <14c921b5-4240-a026-252a-d5fb60836b34@linaro.org>
-From:   Chuanhong Guo <gch981213@gmail.com>
-Date:   Mon, 4 Apr 2022 22:15:23 +0800
-Message-ID: <CAJsYDVLY7HByymtd8kbdNGQ-oHMvpvU+CkWQgz+jOoANEwuKPQ@mail.gmail.com>
-Subject: Re: [PATCH v3 4/5] dt-bindings: spi: add binding doc for spi-mtk-snfi
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     linux-spi@vger.kernel.org, Mark Brown <broonie@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Roger Quadros <rogerq@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Cai Huoqing <cai.huoqing@linux.dev>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Colin Ian King <colin.king@intel.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Paul Cercueil <paul@crapouillou.net>,
-        Pratyush Yadav <p.yadav@ti.com>, Yu Kuai <yukuai3@huawei.com>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:NAND FLASH SUBSYSTEM" <linux-mtd@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: staging: r8188eu: how to handle nested mutex under spinlock
+Content-Language: en-US
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Larry Finger <Larry.Finger@lwfinger.net>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        "open list:STAGING SUBSYSTEM" <linux-staging@lists.linux.dev>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <356c24cf-625b-eea2-2c04-ce132d881cac@gmail.com>
+ <bf1137fa-5051-a834-0c1f-042c5a8074a3@gmail.com> <1858641.taCxCBeP46@leap>
+ <2366209.jE0xQCEvom@leap> <617af7b6-eeac-372a-7bbb-828db11a2aa9@gmail.com>
+ <20220404133312.GC3293@kadam>
+From:   Michael Straube <straube.linux@gmail.com>
+In-Reply-To: <20220404133312.GC3293@kadam>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi!
+On 4/4/22 15:33, Dan Carpenter wrote:
+> On Sun, Apr 03, 2022 at 02:18:04PM +0200, Michael Straube wrote:
+>> On 4/3/22 14:10, Fabio M. De Francesco wrote:
+>>> For a list of all the paths to a given function you may use Smatch:
+>>>
+>>> ./smatch/smatch_data/db/smdb.py ips_leave
+>>>
+>>> or
+>>>
+>>> ./smatch/smatch_data/db/smdb.py call_tree ips_leave
+>>>
+>>> But perhaps you already know how to do it.
+>>
+>> Yes, but thank you anyway. :)
+>>
+> 
+> My email (gmail account) has been so weird recently.  I don't know why
+> I'm not getting Fabio's emails...  Presumably they will show up in a few
+> days.
+> 
+> The other command to use is:
+> 
+> $ ./smatch/smatch_data/db/smdb.py preempt ips_leave
+> rtw_set_802_11_disassociate() <- disables preempt
+> -> _rtw_pwr_wakeup()
+>     -> LeaveAllPowerSaveMode()
+>        -> ips_leave()
+> 
+> I save that to a file, open it with with vim and run a vim function
+> `hall` (for highlight all) from my .vimrc file.
+> 
+> " Use :hall to highlight all the words in a file (for debugging sleeping bugs)
+> function HLall()
+>    let a=[]
+>    %s/\w\+/\=add(a, submatch(0))/gn
+>    let @/ = join(a, "\\|")
+> endfunction
+> cnoreabbrev hall call HLall() <CR>:set hls<CR>
+> 
+> That highlights all the functions is the call tree, then I use cscope to
+> jump to rtw_set_802_11_disassociate and follow the highlighted functions
+> to ips_leave().
 
-On Mon, Apr 4, 2022 at 9:52 PM Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
-> [...]
-> > +required:
-> > +  - compatible
-> > +  - reg
-> > +  - interrupts
-> > +  - clocks
-> > +  - clock-names
-> > +  - ecc-engine
->
-> Slightly slow down resends (max 1 per day). You sent v3 without giving a
-> chance to review this.
+Thank you for this hint Dan. :)
 
-I made some big changes to the driver for other review comments so I
-decided to send v3 for a review of the new version. I'll wait a bit next
-time.
+thanks,
+Michael
 
-> Wrong name here.
-
-Oops. I'll fix this in the next version.
-
---
-Regards,
-Chuanhong Guo
