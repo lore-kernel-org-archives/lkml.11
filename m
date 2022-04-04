@@ -2,93 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C8FAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 13:45:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A726C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 13:46:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358438AbiDDNrM (ORCPT
+        id S1358489AbiDDNsl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 09:47:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42202 "EHLO
+        Mon, 4 Apr 2022 09:48:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358273AbiDDNrD (ORCPT
+        with ESMTP id S1346734AbiDDNsh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 09:47:03 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6270031215
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 06:45:06 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id d10so6350310edj.0
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 06:45:06 -0700 (PDT)
+        Mon, 4 Apr 2022 09:48:37 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44DAF31360
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 06:46:41 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id bg10so20085826ejb.4
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 06:46:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ag4NtuXcd337V7EAqGGmB9o5JEXFbkeH+3FIqIGxGO0=;
-        b=F0mJ7WcX4xs/jOWKodEod/6QWP7Ws2vdXT+KJwA3bipp69Y294eucyZJIPupeUKJ8N
-         6Aq2+S80bx6u/ZqROwVieqoEL5yAoKEH0GMrrOc4VbJ9BcKW8Jlm02idcWjg1ImRzOjO
-         bu38z/dqyZkTVu0lEJFBfXU6zPJWisFE+Rj1f4OhydFYaC40Ih+a1Q9WitQg/0+CTKmk
-         Z2zFcgSVry7N1yP7lLhh0JOUzlHQkLPivo6PVGj2GbDIV88pXNWs4sa8Yq54kyIHdF3G
-         mVquOW9lHC2ZyikW2VMY0M8K7F7859m/dHqLXvahTivFjkmaMXM3nusALXtOVmLfj7Ln
-         k5Tg==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=vfQJmcM0qrYi49vcCG2B2KxC0x5r/jsGZIFrh4niQZc=;
+        b=sfdjINLCI7yuAvcOi9KAnb6V86j9QN3KifvcftXLDut+PGBdMIQThW4FvRrmxJqLmd
+         QFcTxZRQ3/UbrId+SsClV+HVS1KzpmLCM2iKMQm+JCVEAxQeVapEVO9WQ+rT8ObVNev7
+         KfCdHN00ZjbcQy9yqhVrf3I2SJ/F+dmwz3zIFy0oqzrcW71CB/ivFoNuFmhqUffhA/tF
+         RSYMJEB6NKp33l3dBxF5Sj1vhQ7Ooe9UViHI7cN2Aihf9Jxvww4j0ktZo9tacyj/mqbn
+         p0hwt93y85vKyrVBkxArcMZb04g9v7UAG9oFrpm5lZHdMCgdetLR7WnUUFPuG30IBR7W
+         Ye7g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ag4NtuXcd337V7EAqGGmB9o5JEXFbkeH+3FIqIGxGO0=;
-        b=uGX2G1xEs2jz4dwOxdAy131okKZeSujKCXD4MI5XISojZpYaRWw/h3twwp/NomBoin
-         /ZS8qvwYE+NEk4EyEZeS+5S1KZdFucbyjkNv7Ld4uFhjs7/s1lxnMT/wvBrxwZonrFe3
-         dfIksGIFTyOwp89EvmUfjBvEan8njbEjfzTJRyXY6KI+4xWmpzvGIfk622o64P088X5F
-         eAeSE9op5fGqjbiSdJqr65OKncLOBSpfWn6Unq0nHduv7KBQh8YzpQuxWCzSAL29xeNG
-         FC/BX3mnJgEYWbYLGROWq8sw866FLzSPDZWt62VBTBXJsVYsE0n8QCiki9I5OOaoDfVi
-         INfQ==
-X-Gm-Message-State: AOAM5313p+vRooGc5a2IqooS/P63oKRg4jHye4XSJo8gQvNz7Dl6H8DL
-        r/seh4pvaU4uHDBaPGjAED9C4w==
-X-Google-Smtp-Source: ABdhPJwys+HV9TUCHNVVEmCAx3DDsJ2cNjVstxGVCnIgM8Bc/ms4M+z4PvyJ39/sEk8Lu/e3YL4/Mg==
-X-Received: by 2002:a05:6402:5201:b0:419:4c82:8f11 with SMTP id s1-20020a056402520100b004194c828f11mr77514edd.133.1649079905006;
-        Mon, 04 Apr 2022 06:45:05 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id hs12-20020a1709073e8c00b006dfdfdac005sm4409273ejc.174.2022.04.04.06.45.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 06:45:04 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     netdev@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-        devicetree@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        linux-kernel@vger.kernel.org, linux-nfc@lists.01.org
-Cc:     Krzysztof Kozlowski <krzk@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>
-Subject: Re: [PATCH 0/2] MAINTAINERS/dt-bindings: changes to my emails
-Date:   Mon,  4 Apr 2022 15:45:02 +0200
-Message-Id: <164907989905.809631.16161802401962719876.b4-ty@linaro.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220330074016.12896-1-krzysztof.kozlowski@linaro.org>
-References: <20220330074016.12896-1-krzysztof.kozlowski@linaro.org>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=vfQJmcM0qrYi49vcCG2B2KxC0x5r/jsGZIFrh4niQZc=;
+        b=cQA9FCAavZcEoMMpVRWWHbwd6Fk7vpBzTuEjyEAacV/CtYwaaEHso7l8AgMpdVdsix
+         X9mnC3YlJfpcoKCvoREOuy57niM+PPu5qaWCgPbN5De3FnPAEwJuSuuOcMb3kiKDuPv0
+         6G/NOffsJNqq9Jk7ibF1K1KTffxpsAOrNkkvV4dW9Ct80MdZZmQJXZH3Ka+n2oqxBLJc
+         fF1A2zuxMyBAjrOfTUNaJ48DW3LGLTuDVG/FBwLuctT5LTJF4UB1fCX3Ww1Np6egglRx
+         SH4JdryiE+kv3WeV8c/jhm75pIYgvljQC9SNSyrqosBGyh2kpZXqxXYPc7W3seucaDEN
+         F9rw==
+X-Gm-Message-State: AOAM531JCOkyJUGaar7LSoQ/0K3hxWiIq1bpi8bD9toapkDoTvFpOi6y
+        2TEB9CW4iyW3AB9NEaTk74/QSw==
+X-Google-Smtp-Source: ABdhPJz/Fl/ycPt27uPD1jfBCnT7L/KvY41FuL5OomKqLLI6JcbOroETTemTgVbLNByEEPw/1Ty4xQ==
+X-Received: by 2002:a17:907:6d11:b0:6df:f38b:b698 with SMTP id sa17-20020a1709076d1100b006dff38bb698mr48232ejc.711.1649079999583;
+        Mon, 04 Apr 2022 06:46:39 -0700 (PDT)
+Received: from [192.168.0.176] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id ke11-20020a17090798eb00b006e7fbf53398sm697669ejc.129.2022.04.04.06.46.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 04 Apr 2022 06:46:39 -0700 (PDT)
+Message-ID: <d470dd28-8084-2cda-10b4-006bb90c552a@linaro.org>
+Date:   Mon, 4 Apr 2022 15:46:38 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 0/2] MAINTAINERS/dt-bindings: changes to my emails
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        netdev@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-nfc@lists.01.org
+Cc:     Rob Herring <robh+dt@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Olof Johansson <olof@lixom.net>
+References: <20220330074016.12896-1-krzysztof.kozlowski@linaro.org>
+ <164907989905.809631.16161802401962719876.b4-ty@linaro.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <164907989905.809631.16161802401962719876.b4-ty@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 30 Mar 2022 09:40:14 +0200, Krzysztof Kozlowski wrote:
-> From: Krzysztof Kozlowski <krzk@kernel.org>
+On 04/04/2022 15:45, Krzysztof Kozlowski wrote:
+> On Wed, 30 Mar 2022 09:40:14 +0200, Krzysztof Kozlowski wrote:
+>> From: Krzysztof Kozlowski <krzk@kernel.org>
+>>
+>> Hi,
+>>
+>> I can take both patches via my Samsung SoC tree, if that's ok.
+>>
+>> Best regards,
+>> Krzysztof
+>>
+>> [...]
 > 
-> Hi,
-> 
-> I can take both patches via my Samsung SoC tree, if that's ok.
-> 
-> Best regards,
-> Krzysztof
-> 
-> [...]
+> Applied, thanks!
 
-Applied, thanks!
+Applied to fixes, as Rob asked for.
 
-[1/2] dt-bindings: update Krzysztof Kozlowski's email
-      commit: 8a1e6bb3f78f06432e095758476358d8cb63c03d
-[2/2] MAINTAINERS: update Krzysztof Kozlowski's email to Linaro
-      commit: 1a9f338f9cf96f8338d5592dee5fce222929e4f7
 
 Best regards,
--- 
-Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Krzysztof
