@@ -2,75 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DED0C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:52:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD937C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:52:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355025AbiDDVyB (ORCPT
+        id S1356070AbiDDVyR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:54:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40598 "EHLO
+        Mon, 4 Apr 2022 17:54:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379586AbiDDRjd (ORCPT
+        with ESMTP id S1380361AbiDDTqo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 13:39:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 614B2B7F1
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 10:37:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 06785B818BF
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 17:37:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4610DC2BBE4
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 17:37:34 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="YGT7BojP"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1649093851;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=yZVI1KAOo1mIBeRHAVz7zVPMeySuOMMLVutZjfFGwmA=;
-        b=YGT7BojP7UhaK1QBT/H6nRsBMWzPvvoguKJvfMepZsZCWsexGttYt41qXsW74j6M/EfrQx
-        WjjcPSZMzDixI5TaOZRpbmw8sxljUct9zUjh1rmFWUb030gyTNn5r0NZvPL2eVl1h+fiRl
-        +L67bEbKJTiPQGi1qDslrH2tG/FHiu8=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id f3643630 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO)
-        for <linux-kernel@vger.kernel.org>;
-        Mon, 4 Apr 2022 17:37:31 +0000 (UTC)
-Received: by mail-yw1-f169.google.com with SMTP id 00721157ae682-2db2add4516so108651807b3.1
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 10:37:31 -0700 (PDT)
-X-Gm-Message-State: AOAM5331MfzYd5HVNIT4VqF0hhm0LQSgG5rS6//ZqFZ+4BRr2PgfUJZ5
-        wDMBDJdxlUbEs+63R5DETGY24q6Xc1Uo5tRC21o=
-X-Google-Smtp-Source: ABdhPJxMSD0Fg//duXs1NqBFDgEau1qxkscj0IJ/Sh+Bs2C+0BqS3hWuh/BOXZms4G7YRDAg+ztp17SRwMOCaeHwP/Q=
-X-Received: by 2002:a81:f00c:0:b0:2e9:d949:c189 with SMTP id
- p12-20020a81f00c000000b002e9d949c189mr1023301ywm.2.1649093850853; Mon, 04 Apr
- 2022 10:37:30 -0700 (PDT)
+        Mon, 4 Apr 2022 15:46:44 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BB5C31225;
+        Mon,  4 Apr 2022 12:44:47 -0700 (PDT)
+Received: from mail-wr1-f43.google.com ([209.85.221.43]) by
+ mrelayeu.kundenserver.de (mreue108 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1N17cq-1nzCXH2wKw-012bHf; Mon, 04 Apr 2022 21:44:45 +0200
+Received: by mail-wr1-f43.google.com with SMTP id w4so16093476wrg.12;
+        Mon, 04 Apr 2022 12:44:45 -0700 (PDT)
+X-Gm-Message-State: AOAM531bPpPiXsyBuu1Yr8dOuiJWOEbyTNC5wCcidziOUplTMbkUXomW
+        wRILfUd3mFBk2LOwTW6lxnZEaQTZU7t70MvZnAk=
+X-Google-Smtp-Source: ABdhPJyRqH0qibkfjPRGnJDcURrE8ZPrQIGLNSwn/9l1FUg/Sz1o5iKs76jxTh4W551VdZ+S32lMVfdTx28z5w2iC30=
+X-Received: by 2002:a05:6000:10c7:b0:206:135e:c84e with SMTP id
+ b7-20020a05600010c700b00206135ec84emr984244wrx.12.1649101485314; Mon, 04 Apr
+ 2022 12:44:45 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220404162039.961926-1-jan.varho@gmail.com> <20220404164230.968514-1-jan.varho@gmail.com>
-In-Reply-To: <20220404164230.968514-1-jan.varho@gmail.com>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Mon, 4 Apr 2022 19:37:19 +0200
-X-Gmail-Original-Message-ID: <CAHmME9o9JE4TA8_h0AKPCHStE4Sy7XxLc4wUwA=BjHsjRjeOkg@mail.gmail.com>
-Message-ID: <CAHmME9o9JE4TA8_h0AKPCHStE4Sy7XxLc4wUwA=BjHsjRjeOkg@mail.gmail.com>
-Subject: Re: [PATCH v3] random: fix add_hwgenerator_randomness entropy accounting
-To:     Jan Varho <jan.varho@gmail.com>
-Cc:     "Theodore Ts'o" <tytso@mit.edu>,
-        LKML <linux-kernel@vger.kernel.org>
+References: <Yib9F5SqKda/nH9c@infradead.org> <CAK8P3a1dUVsZzhAe81usLSkvH29zHgiV9fhEkWdq7_W+nQBWbg@mail.gmail.com>
+ <YkmWh2tss8nXKqc5@infradead.org> <CAK8P3a0QdFOJbM72geYTWOKumeKPSCVD8Nje5pBpZWazX0GEnQ@mail.gmail.com>
+ <CAMo8BfKgn0T5RtUTb89fPvygNJJYLy7r1=RZTmTTm=jiDfx1hQ@mail.gmail.com>
+ <CAK8P3a0J1--WSyWY+TptFa0nn5d-mOxapadCE1csGRkfhSPbVw@mail.gmail.com>
+ <CAMo8BfLT8vMw3aGQPs1+9ry7W63SQphmDc4Tt4A3JvADHJhxiQ@mail.gmail.com> <CAK8P3a3iFb+ZacZ40d8PC_xcJpLVFXT0Qc-oYEZNkFqXdsfNZw@mail.gmail.com>
+In-Reply-To: <CAK8P3a3iFb+ZacZ40d8PC_xcJpLVFXT0Qc-oYEZNkFqXdsfNZw@mail.gmail.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Mon, 4 Apr 2022 21:44:29 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a1goN3c772xiFtz13kHZs0XEDSxfXX=ub7OH3S98Mddsw@mail.gmail.com>
+Message-ID: <CAK8P3a1goN3c772xiFtz13kHZs0XEDSxfXX=ub7OH3S98Mddsw@mail.gmail.com>
+Subject: Re: [RFC PULL] remove arch/h8300
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Max Filippov <jcmvbkbc@gmail.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        "moderated list:H8/300 ARCHITECTURE" 
+        <uclinux-h8-devel@lists.sourceforge.jp>,
+        "open list:TENSILICA XTENSA PORT (xtensa)" 
+        <linux-xtensa@linux-xtensa.org>,
+        Linux-sh list <linux-sh@vger.kernel.org>,
+        linux-m68k <linux-m68k@lists.linux-m68k.org>,
+        Greg Ungerer <gerg@linux-m68k.org>,
+        Damien Le Moal <damien.lemoal@wdc.com>,
+        linux-riscv <linux-riscv@lists.infradead.org>
 Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:Qw+lTynQ9FdEIf/dV0Hp8dxBMWgXsLK2Hu91jlgCSXci/9G/4Qc
+ LhhlwV8BuRehAQq6IqnNWf8tdRoO1iPeJrjM21R41fRtfu83xVpvU2pqw5CdITVmh8XS0Lk
+ 3XNIJxiYBwAGyXKzZWz0mIOxTUV7ApES9AyWxPi+JQCvTVxx4xxA2YAu9KCgIyADBkf8RPP
+ 15kIpgfD1xMa9hbZDD3KA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:8B+XYFobVuQ=:9dNh0l+zhbsBsyfsmjDetF
+ t09Tnj6ird7kCuEKoLpCBUo6Sl+7KzqmNJ4Fb4YmFJevUKFBA9NKFYIrSnGRMnauCp40cULvm
+ Diw38BGNYWCiKoAhXJbz0RKPtHdq+zqx58oWsFwIZ/Lbgh4UiOY0g0V925e8eQWaj/4iVajN8
+ 9sUo4HkUcRFFYS0ax+5bwB6CO87e06MRTmYFzS9f+3VlRcqKDxejmGvelEuDASJ0bfSLgDDR3
+ mKvnax+e/VNeWOlp2yBPwLztUTEXo81O+oeh6UTiVJemBAduOef3K7oUTfrjoNyrmvlKsDXb5
+ v6kS8Kxm/TITqpnCsk4QpIp/GHF86SYKemT9E5gslt3Jom7Ii9rgFYoMqQXFnVgPRe8kDkxfN
+ Om5DxEjB9KrDYBJSlFw+vCtsxj+GNK4RUToFDC6nR9bXRVu02Kljr30xaQCMbo7sor6+q2PMh
+ aas5WrGIjG8nFxN7Z/hIA+kq4vDggcfEFoFwUQ6Njg1JGHlSxig3mep/yGI414qOMetQ55Q+u
+ Pb+C5yFR6sMBsVt8nwV4KQKxHId8/MYTVIcsHq2KuwGFud/CeFPqmUMWewDZoB0Fe8VjhZFhx
+ Ih2QrOtLgE4w1p62yki7mhccVS5LTWPCU5FKuu6lEuD8eMU7I7DSVjm8bjdkxfNYduU72ZTkB
+ LbULHP7j1Ox/UCi9AHHW10IXpLthI1elT++Kev+3GlaQyu7y2DriiMAwF2LqHj+o9+9CT2UAn
+ TgX3/N46OXL/SnWHuY00AV62H3sBOSblleHiMTwEPwWkv3IEuAHGYMUn5tn0ouDUpLkOIwkH4
+ /kgor7hwSb5nKlOgx6S8Ht5+fpC6oARD8C8QLTR/JvkZZtDxoA=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jan,
-
-On Mon, Apr 4, 2022 at 6:43 PM Jan Varho <jan.varho@gmail.com> wrote:
+On Mon, Apr 4, 2022 at 9:35 PM Arnd Bergmann <arnd@arndb.de> wrote:
 >
-> add_hwgenerator_randomness tries to only use the required amound of input
-> for fast init, but credits all the entropy if even a byte was left over.
+> On Mon, Apr 4, 2022 at 9:14 PM Max Filippov <jcmvbkbc@gmail.com> wrote:
+> > On Mon, Apr 4, 2022 at 12:01 PM Arnd Bergmann <arnd@arndb.de> wrote:
+> > > On Mon, Apr 4, 2022 at 7:57 PM Max Filippov <jcmvbkbc@gmail.com> wrote:
+> > > > Please let me know if you observe any specific build/runtime issues.
+> > > xtensa-linux-gcc-11.1.0 -DKCONFIG_SEED=
+> > ...
+> > > /git/arm-soc/arch/xtensa/kernel/head.S: Assembler messages:
+> > > /git/arm-soc/arch/xtensa/kernel/head.S:87: Error: invalid register
+> > > 'atomctl' for 'wsr' instruction
+> >
+> > Sure, one cannot use an arbitrary xtensa compiler for the kernel
+> > build, the compiler configuration must match the core variant selected
+> > in the linux configuration. Specifically, for the nommu_kc705_defconfig
+> > the following compiler can be used:
+> >
+> > https://github.com/foss-xtensa/toolchain/releases/download/2020.07/x86_64-2020.07-xtensa-de212-elf.tar.gz
+> >
+> > If you build the toolchain yourself using crosstool-ng or buildroot they
+> > accept the 'configuration overlay' parameter that does the compiler
+> > customization.
+> >
+> > Perhaps the documentation for this part is what needs to be improved.
 >
-> Fix by not crediting entropy when using the input for fast init.
+> It sounds like a bug in the kernel Makefile. On all other architectures,
+> you can generally just pick any (recent) compiler and build any kernel,
+> as the compiler arguments set the exact target machine type based
+> on the kernel config. You can't normally rely on the compiler defaults
+> for kernel builds.
 
-Looks good, thanks. Applied as
-https://git.kernel.org/pub/scm/linux/kernel/git/crng/random.git/commit/?id=527a9867
+FWIW, the compiler I used is the one I built for kernel.org [1] using unmodified
+upstream sources The config I used for this is
 
-Jason
+${SRCTREE}/configure ../log-gcc-configure /home/arnd/git/gcc/configure
+--target=xtensa-linux --enable-targets=all
+--prefix=/home/arnd/cross/x86_64/gcc-11.1.0-nolibc/xtensa-linux
+--enable-languages=c --without-headers --disable-bootstrap
+--disable-nls --disable-threads --disable-shared --disable-libmudflap
+--disable-libssp --disable-libgomp --disable-decimal-float
+--disable-libquadmath --disable-libatomic --disable-libcc1
+--disable-libmpx --enable-checking=release
+
+Let me know if I need to enable additional options to get a compiler
+that works for all xtensa targets. Usually the --enable-targets=all
+is meant to be sufficient.
+
+        Arnd
+
+[1] https://mirrors.edge.kernel.org/pub/tools/crosstool/files/bin/x86_64/11.1.0/
