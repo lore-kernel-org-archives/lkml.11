@@ -2,108 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 270E1C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1236AC433EF
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:49:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381075AbiDDVtP (ORCPT
+        id S1381000AbiDDVtN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:49:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50388 "EHLO
+        Mon, 4 Apr 2022 17:49:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379980AbiDDScB (ORCPT
+        with ESMTP id S1380378AbiDDTvF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 14:32:01 -0400
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16DF124F04;
-        Mon,  4 Apr 2022 11:30:04 -0700 (PDT)
-Received: by mail-pg1-x52c.google.com with SMTP id s72so9042772pgc.5;
-        Mon, 04 Apr 2022 11:30:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=sXct9/UnBXMq+1V+NeSI5DaC797wzrUVGTBB5CZgJK4=;
-        b=O4n4HHZ1iTWjUoNulBokaM1Tk+bfGHplhpd09tks/e88MkgwfEChGl36kou9YP70y+
-         ADqvCbYk/1DZ4uNprSiaJWrw3xFl5uUfu5BUbDCwuUZxlpOvTDNFz+jxIhOIpQqFaENv
-         OyGP3+qfsUZ7vmSnDqQ43oMmYvwRyVkWWDI6eDGpIkWJLTC6DzTjIQO0pkBA4OFRV9RO
-         v03btkBpjvxcpPijSikZVLV4T8KG+gSXIuB5ufpbSXdn+ylaNPh+n6CQBadxTCTW3xys
-         KDpUd4grxVtLZLiU1TmhXOclexi9U3Ao6xiwwQZ7nE+wir0T5FtkA9PFo0FXeo/nLrt+
-         c40A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=sXct9/UnBXMq+1V+NeSI5DaC797wzrUVGTBB5CZgJK4=;
-        b=JK8WE0wFrdc8YMyhlKkbygyWfr38fF1usL2DYPgSkzcTF3ND6Gy4Pv+5Wst6+lLu7j
-         UwVwl/7uMTblx/+ELAowvm+KQ9ltnJFgIOfdrKIvsPQz7mBuFPzANb52Ag7ee9cPCjpg
-         fqdDBpsvtyfshmUaMPAcsj6G83fM7eQ4ScTcmDApf5BnsuXZ5WGPk4Beo3i9M3mhnMiW
-         M7dw6x6lUWphPQH7WtQi3T67T+1+xBbAsYidOCNg6lu31FkWD0X/yVAxrVS6RXQPDbD1
-         AdnWtwqbmKP0+lFyDzw02nVbOoFOoZouPNn9M6WR8pk3MICtY87w4dvAY6a6JnyvgWoJ
-         7qAg==
-X-Gm-Message-State: AOAM533rwEeJJlht/9v8jj5ccGxAMh/4KBRXM8VvZih2W98oaED3zOOE
-        gT7vFsuHVXr6CBnFfygI22U=
-X-Google-Smtp-Source: ABdhPJxUFLj8SBQkou46eeuvtSZYmCkSQT5K5V3rX6S5Ghw3vNpzc9mgyF8k18fVmDPpVyi//3hDIQ==
-X-Received: by 2002:a63:b20e:0:b0:398:5b28:e54a with SMTP id x14-20020a63b20e000000b003985b28e54amr978946pge.443.1649097003500;
-        Mon, 04 Apr 2022 11:30:03 -0700 (PDT)
-Received: from localhost.localdomain ([122.161.51.18])
-        by smtp.gmail.com with ESMTPSA id kk11-20020a17090b4a0b00b001c73933d803sm162656pjb.10.2022.04.04.11.30.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 11:30:03 -0700 (PDT)
-From:   Kuldeep Singh <singh.kuldeep87k@gmail.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        Kuldeep Singh <singh.kuldeep87k@gmail.com>
-Subject: [PATCH v2 0/4] Geni based QUP controller binding cleanups
-Date:   Mon,  4 Apr 2022 23:59:33 +0530
-Message-Id: <20220404182938.29492-1-singh.kuldeep87k@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 4 Apr 2022 15:51:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0C3C559A
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 12:49:08 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 367CC60E2C
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 19:49:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9EE5CC340F3;
+        Mon,  4 Apr 2022 19:49:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649101747;
+        bh=4nne+0xo3HzeHab2dyKdi13sxHLq2lRKM4wjOgC56CA=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=Ux4OdoOfyenToZ88WA0AcmvBseEZGnfqTlD4Rz4Y50tWafo9+Inn5HKQ2p47uEn6Y
+         XGcl9YZENcaXKEvD0uVBLBeu8TlNRovgawgq/rPzcdt3UHnQ7EiwkvgILc2DWNm3z8
+         gFX3s9ep+fU+N099/BSyowflvX5o6diDZXnesh5bQNuNTIH2WzLPZOjQarJZZELzsa
+         Xqfnm8NXuD48WUNIdWjnbF1Du3EitY/mM4oTw/O8/4/Wz9x+UQ+WNGun1g5P3fu0S3
+         g151tYhMqMtH/Jdp0Ytjg04sjGrB5dXX+nkylF8+xjlicTcXaPZE1UUnTMNCzsMMWX
+         Gh+iJGE4yWqoA==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 341565C0555; Mon,  4 Apr 2022 12:49:07 -0700 (PDT)
+Date:   Mon, 4 Apr 2022 12:49:07 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [BUG] rcu-tasks : should take care of sparse cpu masks
+Message-ID: <20220404194907.GA133884@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <CANn89iKaNEwyNZ=L_PQnkH0LP_XjLYrr_dpyRKNNoDJaWKdrmg@mail.gmail.com>
+ <20220331224222.GY4285@paulmck-ThinkPad-P17-Gen-1>
+ <CANn89iJjyp7s1fYB6VCqLhUnF+mmEXyw8GMpFC9Vi22usBsgAQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CANn89iJjyp7s1fYB6VCqLhUnF+mmEXyw8GMpFC9Vi22usBsgAQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-v1 link:
-https://lore.kernel.org/lkml/20220402051206.6115-1-singh.kuldeep87k@gmail.com/
+On Thu, Mar 31, 2022 at 03:54:02PM -0700, Eric Dumazet wrote:
+> On Thu, Mar 31, 2022 at 3:42 PM Paul E. McKenney <paulmck@kernel.org> wrote:
+> >
+> > On Thu, Mar 31, 2022 at 02:45:25PM -0700, Eric Dumazet wrote:
+> > > Hi Paul
+> > >
+> > > It seems you assume per cpu ptr for arbitrary indexes (< nr_cpu_ids) are valid.
+> >
+> > Gah!  I knew I was forgetting something...
+> >
+> > But just to check, is this a theoretical problem or something you hit
+> > on real hardware?  (For the rest of this email, I am assuming the latter.)
+> 
+> Code review really...
+> 
+> >
+> > > What do you think of the (untested) following patch ?
+> >
+> > One issue with this patch is that the contention could be unpredictable,
+> > or worse, vary among CPU, especially if the cpu_possible_mask was oddly
+> > distributed.
+> >
+> > So might it be better to restrict this to all on CPU 0 on the one hand
+> > and completely per-CPU on the other?  (Or all on the boot CPU, in case
+> > I am forgetting some misbegotten architecture that can run without a
+> > CPU 0.)
+> 
+> If I understand correctly, cblist_init_generic() could setup
+> percpu_enqueue_shift
+> to something smaller than order_base_2(nr_cpu_ids)
+> 
+> Meaning that we could reach a non zero idx in (smp_processor_id() >>
+> percpu_enqueue_shift)
+> 
+> So even if CPU0 is always present (I am not sure this is guaranteed,
+> but this seems reasonable),
+> we could still attempt a per_cpu_ptr(PTR,  not_present_cpu), and get garbage.
 
-Updates:
-- Address Krzysztof's comments
-- Drop patch 5/5 and merge with 4/5 of v1
-- In-patch updates
----
+And the problem with my wish to provide load balancing is that a
+sparse cpumask could be sparse any which way that it wants to be.
+Another problem is that, unlike TREE SRCU, Tasks RCU doesn't have an
+efficient way to find all the CPUs with callbacks queued.  Yes, I could
+add that information, but the benefit does not seem worth the complexity.
 
-Geni based QUP controller currently has child nodes bindings defined in
-same parent schema. Documentation of few other properties were also
-omitted intially. The list becomes too long with addition of these
-properties. Therefore, move out child bindings from parent schema to
-respective places as a part of cleanup process and update reference for
-it. Please note, individual bindings will now stand complete as
-previously some properties were defined in core and rest in parent
-schema.
+So I took your patch after all, but changed from cpu_online_mask to
+cpu_possible_mask.  Thank you for bearing with me on this one!
 
-This patchset adds individual bindings for uart and i2c controller, spi
-controller is taken care by Krzystof. SPI patches[1] are required for
-complete changes. Once all bindings gets places correctly, remove common
-properties defined in parent as the final step.
+Are you OK with your Signed-off-by on this patch as shown below?
 
-[1] https://lore.kernel.org/linux-devicetree/20220404064017.68634-1-krzysztof.kozlowski@linaro.org/
+						Thanx, Paul
 
-Looking forward for feeback and review comments. Thanks!
+------------------------------------------------------------------------
 
-Kuldeep Singh (4):
-  dt-bindings: I2C: Add Qualcomm Geni based QUP I2C bindings
-  dt-bindings: qcom: geni-se: Update I2C schema reference
-  dt-bindings: serial: Update Qualcomm geni based QUP UART bindings
-  dt-bindings: qcom: geni-se: Update UART schema reference
+commit b77b2981bb22c4449a0a6e86eeb9fbab36a2beae
+Author: Eric Dumazet <edumazet@google.com>
+Date:   Mon Apr 4 12:30:18 2022 -0700
 
- .../bindings/i2c/qcom,i2c-geni-qcom.yaml      | 100 ++++++++++++++++++
- .../serial/qcom,serial-geni-qcom.yaml         |  86 +++++++++++++++
- .../bindings/soc/qcom/qcom,geni-se.yaml       |  77 +-------------
- 3 files changed, 188 insertions(+), 75 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/i2c/qcom,i2c-geni-qcom.yaml
- create mode 100644 Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml
+    rcu-tasks: Handle sparse cpu_possible_mask
+    
+    If the rcupdate.rcu_task_enqueue_lim kernel boot parameter is set to
+    something greater than 1 and less than nr_cpu_ids, the code attempts to
+    use a subset of the CPU's RCU Tasks callback lists.  This works, but only
+    if the cpu_possible_mask is contiguous.  If there are "holes" in this
+    mask, the callback-enqueue code might attempt to access a non-existent
+    per-CPU ->rtcpu variable for a non-existent CPU.  For example, if only
+    CPUs 0, 4, 8, 12, 16 and so on are in cpu_possible_mask, specifying
+    rcupdate.rcu_task_enqueue_lim=4 would cause the code to attempt to
+    use callback queues for non-existent CPUs 1, 2, and 3.  Because such
+    systems have existed in the past and might still exist, the code needs
+    to gracefully handle this situation.
+    
+    This commit therefore checks to see whether the desired CPU is present
+    in cpu_possible_mask, and, if not, searches for the next CPU.  This means
+    that the systems administrator of a system with a sparse cpu_possible_mask
+    will need to account for this sparsity when specifying the value of
+    the rcupdate.rcu_task_enqueue_lim kernel boot parameter.  For example,
+    setting this parameter to the value 4 will use only CPUs 0 and 4, which
+    CPU 4 getting three times the callback load of CPU 0.
+    
+    This commit assumes that bit (nr_cpu_ids - 1) is always set in
+    cpu_possible_mask.
+    
+    Link: https://lore.kernel.org/lkml/CANn89iKaNEwyNZ=L_PQnkH0LP_XjLYrr_dpyRKNNoDJaWKdrmg@mail.gmail.com/
+    Signed-off-by: Eric Dumazet <edumazet@google.com>
+    Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 
--- 
-2.25.1
-
+diff --git a/kernel/rcu/tasks.h b/kernel/rcu/tasks.h
+index 65d6e21a607a..44977c6a1cb8 100644
+--- a/kernel/rcu/tasks.h
++++ b/kernel/rcu/tasks.h
+@@ -273,7 +273,9 @@ static void call_rcu_tasks_iw_wakeup(struct irq_work *iwp)
+ static void call_rcu_tasks_generic(struct rcu_head *rhp, rcu_callback_t func,
+ 				   struct rcu_tasks *rtp)
+ {
++	int chosen_cpu;
+ 	unsigned long flags;
++	int ideal_cpu;
+ 	unsigned long j;
+ 	bool needadjust = false;
+ 	bool needwake;
+@@ -283,8 +285,9 @@ static void call_rcu_tasks_generic(struct rcu_head *rhp, rcu_callback_t func,
+ 	rhp->func = func;
+ 	local_irq_save(flags);
+ 	rcu_read_lock();
+-	rtpcp = per_cpu_ptr(rtp->rtpcpu,
+-			    smp_processor_id() >> READ_ONCE(rtp->percpu_enqueue_shift));
++	ideal_cpu = smp_processor_id() >> READ_ONCE(rtp->percpu_enqueue_shift);
++	chosen_cpu = cpumask_next(ideal_cpu - 1, cpu_possible_mask);
++	rtpcp = per_cpu_ptr(rtp->rtpcpu, chosen_cpu);
+ 	if (!raw_spin_trylock_rcu_node(rtpcp)) { // irqs already disabled.
+ 		raw_spin_lock_rcu_node(rtpcp); // irqs already disabled.
+ 		j = jiffies;
