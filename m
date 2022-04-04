@@ -2,593 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B0E0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 10:12:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44343C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 10:15:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239858AbiDDKOH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 06:14:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55608 "EHLO
+        id S1356551AbiDDKRA (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 06:17:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356283AbiDDKNz (ORCPT
+        with ESMTP id S244282AbiDDKQ5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 06:13:55 -0400
-Received: from baptiste.telenet-ops.be (baptiste.telenet-ops.be [IPv6:2a02:1800:120:4::f00:13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C5F22983A
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 03:11:50 -0700 (PDT)
-Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed40:6d4d:d9ec:3c70:7c2c])
-        by baptiste.telenet-ops.be with bizsmtp
-        id EaBp2700240M8zK01aBpRd; Mon, 04 Apr 2022 12:11:49 +0200
-Received: from rox.of.borg ([192.168.97.57])
-        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1nbJga-008HMT-MP; Mon, 04 Apr 2022 12:11:48 +0200
-Received: from geert by rox.of.borg with local (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1nbJga-00C5v8-1H; Mon, 04 Apr 2022 12:11:48 +0200
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-To:     linux-m68k@lists.linux-m68k.org
-Cc:     linux-kernel@vger.kernel.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: [PATCH] m68k: defconfig: Update defconfigs for v5.18-rc1
-Date:   Mon,  4 Apr 2022 12:11:46 +0200
-Message-Id: <2ca38d8de70fc9fad5ad17fb81d04736effa181d.1649066720.git.geert@linux-m68k.org>
-X-Mailer: git-send-email 2.25.1
+        Mon, 4 Apr 2022 06:16:57 -0400
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75D472B1A6
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 03:15:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649067301; x=1680603301;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=k9Gtv0W+HeVk4XEfSmpLwR30gXASasolOPnIV5u/vYM=;
+  b=OMWT0p2s1tzajfkz3ka66TG/Uya4WqHT4g+1tcuHjrF+OWs2yu8Pd0ct
+   hkCsqrGS8Eo87pOEupZGZBj8legHLV4y/V3AetIxncGC2UYvf3YssFy3y
+   qStMA1pj46CtRhK4ajlB7KD+86hGCwmtAO3weRxxEx1v1zm4I9ZXRHDCu
+   29i40pw0OHv65YfbKax2ApfSSM3nwcgbLLEYzlX1TNDmh39qkX6GQRvKs
+   sanfpeCbX89zVqH3nVlLAAH8D5H0ISFo0MSCncrhWCLE7koed/iq+Lk3J
+   M/KqL1lgaZ7lDd/bUv/DUkNAUD6dGzGAIiZNOq82NhwsQaexCXomdPSOO
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10306"; a="321176853"
+X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
+   d="scan'208";a="321176853"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 03:15:01 -0700
+X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
+   d="scan'208";a="522973803"
+Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 03:14:59 -0700
+Received: by lahna (sSMTP sendmail emulation); Mon, 04 Apr 2022 13:10:27 +0300
+Date:   Mon, 4 Apr 2022 13:10:27 +0300
+From:   Mika Westerberg <mika.westerberg@linux.intel.com>
+To:     Brad Campbell <lists2009@fnarfbargle.com>
+Cc:     linux-kernel@vger.kernel.org
+Subject: Re: Apple Thunderbolt Display chaining
+Message-ID: <YkrEE0uh9EVCchfl@lahna>
+References: <YkQuk7E8AbSEiw59@lahna>
+ <b35e4054-4f22-72a2-4313-77299697af7b@fnarfbargle.com>
+ <YkRebADER3J9ooPM@lahna>
+ <d40f02e5-7274-e834-6e13-82b3dbe11284@fnarfbargle.com>
+ <YkRtf2HiXBOWGjna@lahna>
+ <eacc22dc-e650-a208-9484-62edd98d5778@fnarfbargle.com>
+ <YkXYdcUZ1E18ENle@lahna>
+ <5dcee6f7-cc8c-e3ce-920c-4ad3f5d77e14@fnarfbargle.com>
+ <YkcMofXKr/ZmOSwH@lahna>
+ <7ea44c20-6c65-224f-af7b-aa1bd310d038@fnarfbargle.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7ea44c20-6c65-224f-af7b-aa1bd310d038@fnarfbargle.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-  - Drop CONFIG_BINFMT_AOUT=m (no longer available since commit
-    19e8b701e258701b ("a.out: Stop building a.out/osf1 support on alpha
-    and m68k")),
-  - Enable modular build of the SM3 digest algorithm (no longer
-    auto-selected since commit 114004696bf23499 ("crypto: sm2 - make
-    dependent on sm3 library")),
-  - Drop CONFIG_CRC64=m (auto-selected since commit a7d4383f17e10f33
-    ("block: add pi for extended integrity")),
-  - Drop CONFIG_TEST_OVERFLOW=m (replaced by auto-modular
-    CONFIG_OVERFLOW_KUNIT_TEST in commit 617f55e20743fc50 ("lib:
-    overflow: Convert to Kunit")),
-  - Drop CONFIG_TEST_STACKINIT=m (replaced by auto-modular
-    CONFIG_STACKINIT_KUNIT_TEST in commit 02788ebcf521fe78 ("lib:
-    stackinit: Convert to KUnit")).
+On Fri, Apr 01, 2022 at 11:05:27PM +0800, Brad Campbell wrote:
+> On 1/4/22 22:30, Mika Westerberg wrote:
+> > Hi,
+> > 
+> > On Fri, Apr 01, 2022 at 01:48:13PM +0800, Brad Campbell wrote:
+> > > That I can do. I didn't crop or grep as I wasn't sure what might be additionally relevant.
+> > > 2 machines, 2 ports, 4 cold boots. Each time just the Thnuderbolt displays chained.
+> > 
+> > Thanks for the logs! It looks like the Apple EFI CM always uses the lane
+> > 1 adapter.
+> 
+> Thanks for sticking with me. This must be a minuscule corner case that
+> is buried in a dark room behind a filing cabinet.
 
-Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
----
-To be queued in the m68k for-v5.19 branch.
+Well, it is just that nobody else reported the issue before ;-) I don't
+have Light Ridge or Falcon Ridge based Apple hardware anymore so these
+won't show up in my regular testing.
 
- arch/m68k/configs/amiga_defconfig    | 5 +----
- arch/m68k/configs/apollo_defconfig   | 5 +----
- arch/m68k/configs/atari_defconfig    | 5 +----
- arch/m68k/configs/bvme6000_defconfig | 5 +----
- arch/m68k/configs/hp300_defconfig    | 5 +----
- arch/m68k/configs/mac_defconfig      | 5 +----
- arch/m68k/configs/multi_defconfig    | 5 +----
- arch/m68k/configs/mvme147_defconfig  | 5 +----
- arch/m68k/configs/mvme16x_defconfig  | 5 +----
- arch/m68k/configs/q40_defconfig      | 5 +----
- arch/m68k/configs/sun3_defconfig     | 5 +----
- arch/m68k/configs/sun3x_defconfig    | 5 +----
- 12 files changed, 12 insertions(+), 48 deletions(-)
+> > Can you try the below patch? Fingers crossed that it solves the
+> > chaining issue for both ;-) I had to patch the test.c because otherwise
+> > unit tests fail to compile when enabled.
+> > 
+> > This should now setup the second tunnel always through the lane 0
+> > adapter and thus share the bandwidth equally between the two lanes.
+> > 
+> > @@ -1604,7 +1604,7 @@ static void tb_test_tunnel_3dp(struct kunit *test)
+> >   	KUNIT_ASSERT_EQ(test, tunnel1->npaths, 3);
+> >   	KUNIT_ASSERT_EQ(test, tunnel1->paths[0]->path_length, 3);
+> > -	tunnel2 = tb_tunnel_alloc_dp(NULL, in2, out2, 0, 0);
+> > +	tunnel2 = tb_tunnel_alloc_dp(NULL, in2, out2, 1, 0, 0);
+> >   	KUNIT_ASSERT_TRUE(test, tunnel2 != NULL);
+> >   	KUNIT_EXPECT_EQ(test, tunnel2->type, TB_TUNNEL_DP);
+> >   	KUNIT_EXPECT_PTR_EQ(test, tunnel2->src_port, in2);
+> > @@ -1612,7 +1612,7 @@ static void tb_test_tunnel_3dp(struct kunit *test)
+> >   	KUNIT_ASSERT_EQ(test, tunnel2->npaths, 3);
+> >   	KUNIT_ASSERT_EQ(test, tunnel2->paths[0]->path_length, 4);
+> > -	tunnel3 = tb_tunnel_alloc_dp(NULL, in3, out3, 0, 0);
+> > +	tunnel3 = tb_tunnel_alloc_dp(NULL, in3, out3, 1, 0, 0);
+> >   	KUNIT_ASSERT_TRUE(test, tunnel3 != NULL);
+> >   	KUNIT_EXPECT_EQ(test, tunnel3->type, TB_TUNNEL_DP);
+> >   	KUNIT_EXPECT_PTR_EQ(test, tunnel3->src_port, in3);
+> 
+> These 2 chunks don't apply.
+> I can't find a tb_test_tunnel_3dp in any of the trees I have (either
+> head or stable). In any case I've updated to current head and applied
+> without those chunks.
 
-diff --git a/arch/m68k/configs/amiga_defconfig b/arch/m68k/configs/amiga_defconfig
-index 114aaa3f955a387d..c181030218bf29db 100644
---- a/arch/m68k/configs/amiga_defconfig
-+++ b/arch/m68k/configs/amiga_defconfig
-@@ -42,7 +42,6 @@ CONFIG_MQ_IOSCHED_DEADLINE=m
- CONFIG_MQ_IOSCHED_KYBER=m
- CONFIG_IOSCHED_BFQ=m
- # CONFIG_CORE_DUMP_DEFAULT_ELF_HEADERS is not set
--CONFIG_BINFMT_AOUT=m
- CONFIG_BINFMT_MISC=m
- # CONFIG_COMPACTION is not set
- CONFIG_ZPOOL=m
-@@ -581,6 +580,7 @@ CONFIG_CRYPTO_MD4=m
- CONFIG_CRYPTO_MICHAEL_MIC=m
- CONFIG_CRYPTO_RMD160=m
- CONFIG_CRYPTO_SHA3=m
-+CONFIG_CRYPTO_SM3=m
- CONFIG_CRYPTO_WP512=m
- CONFIG_CRYPTO_AES=y
- CONFIG_CRYPTO_AES_TI=m
-@@ -613,7 +613,6 @@ CONFIG_CRYPTO_USER_API_AEAD=m
- # CONFIG_CRYPTO_HW is not set
- CONFIG_PRIME_NUMBERS=m
- CONFIG_CRC32_SELFTEST=m
--CONFIG_CRC64=m
- CONFIG_XZ_DEC_TEST=m
- CONFIG_GLOB_SELFTEST=m
- # CONFIG_SECTION_MISMATCH_WARN_ONLY is not set
-@@ -638,7 +637,6 @@ CONFIG_TEST_SCANF=m
- CONFIG_TEST_BITMAP=m
- CONFIG_TEST_UUID=m
- CONFIG_TEST_XARRAY=m
--CONFIG_TEST_OVERFLOW=m
- CONFIG_TEST_RHASHTABLE=m
- CONFIG_TEST_SIPHASH=m
- CONFIG_TEST_IDA=m
-@@ -659,6 +657,5 @@ CONFIG_TEST_UDELAY=m
- CONFIG_TEST_STATIC_KEYS=m
- CONFIG_TEST_KMOD=m
- CONFIG_TEST_MEMCAT_P=m
--CONFIG_TEST_STACKINIT=m
- CONFIG_TEST_MEMINIT=m
- CONFIG_TEST_FREE_PAGES=m
-diff --git a/arch/m68k/configs/apollo_defconfig b/arch/m68k/configs/apollo_defconfig
-index 30b9d932b930bc27..40755648fb6ce7a7 100644
---- a/arch/m68k/configs/apollo_defconfig
-+++ b/arch/m68k/configs/apollo_defconfig
-@@ -38,7 +38,6 @@ CONFIG_MQ_IOSCHED_DEADLINE=m
- CONFIG_MQ_IOSCHED_KYBER=m
- CONFIG_IOSCHED_BFQ=m
- # CONFIG_CORE_DUMP_DEFAULT_ELF_HEADERS is not set
--CONFIG_BINFMT_AOUT=m
- CONFIG_BINFMT_MISC=m
- # CONFIG_COMPACTION is not set
- CONFIG_ZPOOL=m
-@@ -538,6 +537,7 @@ CONFIG_CRYPTO_MD4=m
- CONFIG_CRYPTO_MICHAEL_MIC=m
- CONFIG_CRYPTO_RMD160=m
- CONFIG_CRYPTO_SHA3=m
-+CONFIG_CRYPTO_SM3=m
- CONFIG_CRYPTO_WP512=m
- CONFIG_CRYPTO_AES=y
- CONFIG_CRYPTO_AES_TI=m
-@@ -570,7 +570,6 @@ CONFIG_CRYPTO_USER_API_AEAD=m
- # CONFIG_CRYPTO_HW is not set
- CONFIG_PRIME_NUMBERS=m
- CONFIG_CRC32_SELFTEST=m
--CONFIG_CRC64=m
- CONFIG_XZ_DEC_TEST=m
- # CONFIG_SECTION_MISMATCH_WARN_ONLY is not set
- CONFIG_MAGIC_SYSRQ=y
-@@ -594,7 +593,6 @@ CONFIG_TEST_SCANF=m
- CONFIG_TEST_BITMAP=m
- CONFIG_TEST_UUID=m
- CONFIG_TEST_XARRAY=m
--CONFIG_TEST_OVERFLOW=m
- CONFIG_TEST_RHASHTABLE=m
- CONFIG_TEST_SIPHASH=m
- CONFIG_TEST_IDA=m
-@@ -615,6 +613,5 @@ CONFIG_TEST_UDELAY=m
- CONFIG_TEST_STATIC_KEYS=m
- CONFIG_TEST_KMOD=m
- CONFIG_TEST_MEMCAT_P=m
--CONFIG_TEST_STACKINIT=m
- CONFIG_TEST_MEMINIT=m
- CONFIG_TEST_FREE_PAGES=m
-diff --git a/arch/m68k/configs/atari_defconfig b/arch/m68k/configs/atari_defconfig
-index a5031375c029fce9..48320e3786ddab5f 100644
---- a/arch/m68k/configs/atari_defconfig
-+++ b/arch/m68k/configs/atari_defconfig
-@@ -45,7 +45,6 @@ CONFIG_MQ_IOSCHED_DEADLINE=m
- CONFIG_MQ_IOSCHED_KYBER=m
- CONFIG_IOSCHED_BFQ=m
- # CONFIG_CORE_DUMP_DEFAULT_ELF_HEADERS is not set
--CONFIG_BINFMT_AOUT=m
- CONFIG_BINFMT_MISC=m
- # CONFIG_COMPACTION is not set
- CONFIG_ZPOOL=m
-@@ -569,6 +568,7 @@ CONFIG_CRYPTO_MD4=m
- CONFIG_CRYPTO_MICHAEL_MIC=m
- CONFIG_CRYPTO_RMD160=m
- CONFIG_CRYPTO_SHA3=m
-+CONFIG_CRYPTO_SM3=m
- CONFIG_CRYPTO_WP512=m
- CONFIG_CRYPTO_AES=y
- CONFIG_CRYPTO_AES_TI=m
-@@ -601,7 +601,6 @@ CONFIG_CRYPTO_USER_API_AEAD=m
- # CONFIG_CRYPTO_HW is not set
- CONFIG_PRIME_NUMBERS=m
- CONFIG_CRC32_SELFTEST=m
--CONFIG_CRC64=m
- CONFIG_XZ_DEC_TEST=m
- CONFIG_GLOB_SELFTEST=m
- # CONFIG_SECTION_MISMATCH_WARN_ONLY is not set
-@@ -626,7 +625,6 @@ CONFIG_TEST_SCANF=m
- CONFIG_TEST_BITMAP=m
- CONFIG_TEST_UUID=m
- CONFIG_TEST_XARRAY=m
--CONFIG_TEST_OVERFLOW=m
- CONFIG_TEST_RHASHTABLE=m
- CONFIG_TEST_SIPHASH=m
- CONFIG_TEST_IDA=m
-@@ -647,6 +645,5 @@ CONFIG_TEST_UDELAY=m
- CONFIG_TEST_STATIC_KEYS=m
- CONFIG_TEST_KMOD=m
- CONFIG_TEST_MEMCAT_P=m
--CONFIG_TEST_STACKINIT=m
- CONFIG_TEST_MEMINIT=m
- CONFIG_TEST_FREE_PAGES=m
-diff --git a/arch/m68k/configs/bvme6000_defconfig b/arch/m68k/configs/bvme6000_defconfig
-index 7d95ca4366e4d30d..9af0e2d0d153be63 100644
---- a/arch/m68k/configs/bvme6000_defconfig
-+++ b/arch/m68k/configs/bvme6000_defconfig
-@@ -35,7 +35,6 @@ CONFIG_MQ_IOSCHED_DEADLINE=m
- CONFIG_MQ_IOSCHED_KYBER=m
- CONFIG_IOSCHED_BFQ=m
- # CONFIG_CORE_DUMP_DEFAULT_ELF_HEADERS is not set
--CONFIG_BINFMT_AOUT=m
- CONFIG_BINFMT_MISC=m
- # CONFIG_COMPACTION is not set
- CONFIG_ZPOOL=m
-@@ -530,6 +529,7 @@ CONFIG_CRYPTO_MD4=m
- CONFIG_CRYPTO_MICHAEL_MIC=m
- CONFIG_CRYPTO_RMD160=m
- CONFIG_CRYPTO_SHA3=m
-+CONFIG_CRYPTO_SM3=m
- CONFIG_CRYPTO_WP512=m
- CONFIG_CRYPTO_AES=y
- CONFIG_CRYPTO_AES_TI=m
-@@ -562,7 +562,6 @@ CONFIG_CRYPTO_USER_API_AEAD=m
- # CONFIG_CRYPTO_HW is not set
- CONFIG_PRIME_NUMBERS=m
- CONFIG_CRC32_SELFTEST=m
--CONFIG_CRC64=m
- CONFIG_XZ_DEC_TEST=m
- # CONFIG_SECTION_MISMATCH_WARN_ONLY is not set
- CONFIG_MAGIC_SYSRQ=y
-@@ -586,7 +585,6 @@ CONFIG_TEST_SCANF=m
- CONFIG_TEST_BITMAP=m
- CONFIG_TEST_UUID=m
- CONFIG_TEST_XARRAY=m
--CONFIG_TEST_OVERFLOW=m
- CONFIG_TEST_RHASHTABLE=m
- CONFIG_TEST_SIPHASH=m
- CONFIG_TEST_IDA=m
-@@ -607,6 +605,5 @@ CONFIG_TEST_UDELAY=m
- CONFIG_TEST_STATIC_KEYS=m
- CONFIG_TEST_KMOD=m
- CONFIG_TEST_MEMCAT_P=m
--CONFIG_TEST_STACKINIT=m
- CONFIG_TEST_MEMINIT=m
- CONFIG_TEST_FREE_PAGES=m
-diff --git a/arch/m68k/configs/hp300_defconfig b/arch/m68k/configs/hp300_defconfig
-index e306e38136071962..49341d66feb6a6b5 100644
---- a/arch/m68k/configs/hp300_defconfig
-+++ b/arch/m68k/configs/hp300_defconfig
-@@ -37,7 +37,6 @@ CONFIG_MQ_IOSCHED_DEADLINE=m
- CONFIG_MQ_IOSCHED_KYBER=m
- CONFIG_IOSCHED_BFQ=m
- # CONFIG_CORE_DUMP_DEFAULT_ELF_HEADERS is not set
--CONFIG_BINFMT_AOUT=m
- CONFIG_BINFMT_MISC=m
- # CONFIG_COMPACTION is not set
- CONFIG_ZPOOL=m
-@@ -540,6 +539,7 @@ CONFIG_CRYPTO_MD4=m
- CONFIG_CRYPTO_MICHAEL_MIC=m
- CONFIG_CRYPTO_RMD160=m
- CONFIG_CRYPTO_SHA3=m
-+CONFIG_CRYPTO_SM3=m
- CONFIG_CRYPTO_WP512=m
- CONFIG_CRYPTO_AES=y
- CONFIG_CRYPTO_AES_TI=m
-@@ -572,7 +572,6 @@ CONFIG_CRYPTO_USER_API_AEAD=m
- # CONFIG_CRYPTO_HW is not set
- CONFIG_PRIME_NUMBERS=m
- CONFIG_CRC32_SELFTEST=m
--CONFIG_CRC64=m
- CONFIG_XZ_DEC_TEST=m
- # CONFIG_SECTION_MISMATCH_WARN_ONLY is not set
- CONFIG_MAGIC_SYSRQ=y
-@@ -596,7 +595,6 @@ CONFIG_TEST_SCANF=m
- CONFIG_TEST_BITMAP=m
- CONFIG_TEST_UUID=m
- CONFIG_TEST_XARRAY=m
--CONFIG_TEST_OVERFLOW=m
- CONFIG_TEST_RHASHTABLE=m
- CONFIG_TEST_SIPHASH=m
- CONFIG_TEST_IDA=m
-@@ -617,6 +615,5 @@ CONFIG_TEST_UDELAY=m
- CONFIG_TEST_STATIC_KEYS=m
- CONFIG_TEST_KMOD=m
- CONFIG_TEST_MEMCAT_P=m
--CONFIG_TEST_STACKINIT=m
- CONFIG_TEST_MEMINIT=m
- CONFIG_TEST_FREE_PAGES=m
-diff --git a/arch/m68k/configs/mac_defconfig b/arch/m68k/configs/mac_defconfig
-index 41316cf0244121aa..92b33d5ffab190f7 100644
---- a/arch/m68k/configs/mac_defconfig
-+++ b/arch/m68k/configs/mac_defconfig
-@@ -36,7 +36,6 @@ CONFIG_MQ_IOSCHED_DEADLINE=m
- CONFIG_MQ_IOSCHED_KYBER=m
- CONFIG_IOSCHED_BFQ=m
- # CONFIG_CORE_DUMP_DEFAULT_ELF_HEADERS is not set
--CONFIG_BINFMT_AOUT=m
- CONFIG_BINFMT_MISC=m
- # CONFIG_COMPACTION is not set
- CONFIG_ZPOOL=m
-@@ -560,6 +559,7 @@ CONFIG_CRYPTO_MD4=m
- CONFIG_CRYPTO_MICHAEL_MIC=m
- CONFIG_CRYPTO_RMD160=m
- CONFIG_CRYPTO_SHA3=m
-+CONFIG_CRYPTO_SM3=m
- CONFIG_CRYPTO_WP512=m
- CONFIG_CRYPTO_AES=y
- CONFIG_CRYPTO_AES_TI=m
-@@ -592,7 +592,6 @@ CONFIG_CRYPTO_USER_API_AEAD=m
- # CONFIG_CRYPTO_HW is not set
- CONFIG_PRIME_NUMBERS=m
- CONFIG_CRC32_SELFTEST=m
--CONFIG_CRC64=m
- CONFIG_XZ_DEC_TEST=m
- CONFIG_GLOB_SELFTEST=m
- # CONFIG_SECTION_MISMATCH_WARN_ONLY is not set
-@@ -617,7 +616,6 @@ CONFIG_TEST_SCANF=m
- CONFIG_TEST_BITMAP=m
- CONFIG_TEST_UUID=m
- CONFIG_TEST_XARRAY=m
--CONFIG_TEST_OVERFLOW=m
- CONFIG_TEST_RHASHTABLE=m
- CONFIG_TEST_SIPHASH=m
- CONFIG_TEST_IDA=m
-@@ -638,6 +636,5 @@ CONFIG_TEST_UDELAY=m
- CONFIG_TEST_STATIC_KEYS=m
- CONFIG_TEST_KMOD=m
- CONFIG_TEST_MEMCAT_P=m
--CONFIG_TEST_STACKINIT=m
- CONFIG_TEST_MEMINIT=m
- CONFIG_TEST_FREE_PAGES=m
-diff --git a/arch/m68k/configs/multi_defconfig b/arch/m68k/configs/multi_defconfig
-index 2fc3f0df6d434f2f..6aaa947bc8491a58 100644
---- a/arch/m68k/configs/multi_defconfig
-+++ b/arch/m68k/configs/multi_defconfig
-@@ -56,7 +56,6 @@ CONFIG_MQ_IOSCHED_DEADLINE=m
- CONFIG_MQ_IOSCHED_KYBER=m
- CONFIG_IOSCHED_BFQ=m
- # CONFIG_CORE_DUMP_DEFAULT_ELF_HEADERS is not set
--CONFIG_BINFMT_AOUT=m
- CONFIG_BINFMT_MISC=m
- # CONFIG_COMPACTION is not set
- CONFIG_ZPOOL=m
-@@ -646,6 +645,7 @@ CONFIG_CRYPTO_MD4=m
- CONFIG_CRYPTO_MICHAEL_MIC=m
- CONFIG_CRYPTO_RMD160=m
- CONFIG_CRYPTO_SHA3=m
-+CONFIG_CRYPTO_SM3=m
- CONFIG_CRYPTO_WP512=m
- CONFIG_CRYPTO_AES=y
- CONFIG_CRYPTO_AES_TI=m
-@@ -678,7 +678,6 @@ CONFIG_CRYPTO_USER_API_AEAD=m
- # CONFIG_CRYPTO_HW is not set
- CONFIG_PRIME_NUMBERS=m
- CONFIG_CRC32_SELFTEST=m
--CONFIG_CRC64=m
- CONFIG_XZ_DEC_TEST=m
- CONFIG_GLOB_SELFTEST=m
- # CONFIG_SECTION_MISMATCH_WARN_ONLY is not set
-@@ -703,7 +702,6 @@ CONFIG_TEST_SCANF=m
- CONFIG_TEST_BITMAP=m
- CONFIG_TEST_UUID=m
- CONFIG_TEST_XARRAY=m
--CONFIG_TEST_OVERFLOW=m
- CONFIG_TEST_RHASHTABLE=m
- CONFIG_TEST_SIPHASH=m
- CONFIG_TEST_IDA=m
-@@ -724,6 +722,5 @@ CONFIG_TEST_UDELAY=m
- CONFIG_TEST_STATIC_KEYS=m
- CONFIG_TEST_KMOD=m
- CONFIG_TEST_MEMCAT_P=m
--CONFIG_TEST_STACKINIT=m
- CONFIG_TEST_MEMINIT=m
- CONFIG_TEST_FREE_PAGES=m
-diff --git a/arch/m68k/configs/mvme147_defconfig b/arch/m68k/configs/mvme147_defconfig
-index 9603f4396469d198..b62d65e5993838aa 100644
---- a/arch/m68k/configs/mvme147_defconfig
-+++ b/arch/m68k/configs/mvme147_defconfig
-@@ -34,7 +34,6 @@ CONFIG_MQ_IOSCHED_DEADLINE=m
- CONFIG_MQ_IOSCHED_KYBER=m
- CONFIG_IOSCHED_BFQ=m
- # CONFIG_CORE_DUMP_DEFAULT_ELF_HEADERS is not set
--CONFIG_BINFMT_AOUT=m
- CONFIG_BINFMT_MISC=m
- # CONFIG_COMPACTION is not set
- CONFIG_ZPOOL=m
-@@ -529,6 +528,7 @@ CONFIG_CRYPTO_MD4=m
- CONFIG_CRYPTO_MICHAEL_MIC=m
- CONFIG_CRYPTO_RMD160=m
- CONFIG_CRYPTO_SHA3=m
-+CONFIG_CRYPTO_SM3=m
- CONFIG_CRYPTO_WP512=m
- CONFIG_CRYPTO_AES=y
- CONFIG_CRYPTO_AES_TI=m
-@@ -561,7 +561,6 @@ CONFIG_CRYPTO_USER_API_AEAD=m
- # CONFIG_CRYPTO_HW is not set
- CONFIG_PRIME_NUMBERS=m
- CONFIG_CRC32_SELFTEST=m
--CONFIG_CRC64=m
- CONFIG_XZ_DEC_TEST=m
- # CONFIG_SECTION_MISMATCH_WARN_ONLY is not set
- CONFIG_MAGIC_SYSRQ=y
-@@ -585,7 +584,6 @@ CONFIG_TEST_SCANF=m
- CONFIG_TEST_BITMAP=m
- CONFIG_TEST_UUID=m
- CONFIG_TEST_XARRAY=m
--CONFIG_TEST_OVERFLOW=m
- CONFIG_TEST_RHASHTABLE=m
- CONFIG_TEST_SIPHASH=m
- CONFIG_TEST_IDA=m
-@@ -606,6 +604,5 @@ CONFIG_TEST_UDELAY=m
- CONFIG_TEST_STATIC_KEYS=m
- CONFIG_TEST_KMOD=m
- CONFIG_TEST_MEMCAT_P=m
--CONFIG_TEST_STACKINIT=m
- CONFIG_TEST_MEMINIT=m
- CONFIG_TEST_FREE_PAGES=m
-diff --git a/arch/m68k/configs/mvme16x_defconfig b/arch/m68k/configs/mvme16x_defconfig
-index c9cabd3344df8537..8ecf261487d4262e 100644
---- a/arch/m68k/configs/mvme16x_defconfig
-+++ b/arch/m68k/configs/mvme16x_defconfig
-@@ -35,7 +35,6 @@ CONFIG_MQ_IOSCHED_DEADLINE=m
- CONFIG_MQ_IOSCHED_KYBER=m
- CONFIG_IOSCHED_BFQ=m
- # CONFIG_CORE_DUMP_DEFAULT_ELF_HEADERS is not set
--CONFIG_BINFMT_AOUT=m
- CONFIG_BINFMT_MISC=m
- # CONFIG_COMPACTION is not set
- CONFIG_ZPOOL=m
-@@ -530,6 +529,7 @@ CONFIG_CRYPTO_MD4=m
- CONFIG_CRYPTO_MICHAEL_MIC=m
- CONFIG_CRYPTO_RMD160=m
- CONFIG_CRYPTO_SHA3=m
-+CONFIG_CRYPTO_SM3=m
- CONFIG_CRYPTO_WP512=m
- CONFIG_CRYPTO_AES=y
- CONFIG_CRYPTO_AES_TI=m
-@@ -562,7 +562,6 @@ CONFIG_CRYPTO_USER_API_AEAD=m
- # CONFIG_CRYPTO_HW is not set
- CONFIG_PRIME_NUMBERS=m
- CONFIG_CRC32_SELFTEST=m
--CONFIG_CRC64=m
- CONFIG_XZ_DEC_TEST=m
- # CONFIG_SECTION_MISMATCH_WARN_ONLY is not set
- CONFIG_MAGIC_SYSRQ=y
-@@ -586,7 +585,6 @@ CONFIG_TEST_SCANF=m
- CONFIG_TEST_BITMAP=m
- CONFIG_TEST_UUID=m
- CONFIG_TEST_XARRAY=m
--CONFIG_TEST_OVERFLOW=m
- CONFIG_TEST_RHASHTABLE=m
- CONFIG_TEST_SIPHASH=m
- CONFIG_TEST_IDA=m
-@@ -607,6 +605,5 @@ CONFIG_TEST_UDELAY=m
- CONFIG_TEST_STATIC_KEYS=m
- CONFIG_TEST_KMOD=m
- CONFIG_TEST_MEMCAT_P=m
--CONFIG_TEST_STACKINIT=m
- CONFIG_TEST_MEMINIT=m
- CONFIG_TEST_FREE_PAGES=m
-diff --git a/arch/m68k/configs/q40_defconfig b/arch/m68k/configs/q40_defconfig
-index 5f994bf44fb8353b..7540d908897bca83 100644
---- a/arch/m68k/configs/q40_defconfig
-+++ b/arch/m68k/configs/q40_defconfig
-@@ -36,7 +36,6 @@ CONFIG_MQ_IOSCHED_DEADLINE=m
- CONFIG_MQ_IOSCHED_KYBER=m
- CONFIG_IOSCHED_BFQ=m
- # CONFIG_CORE_DUMP_DEFAULT_ELF_HEADERS is not set
--CONFIG_BINFMT_AOUT=m
- CONFIG_BINFMT_MISC=m
- # CONFIG_COMPACTION is not set
- CONFIG_ZPOOL=m
-@@ -547,6 +546,7 @@ CONFIG_CRYPTO_MD4=m
- CONFIG_CRYPTO_MICHAEL_MIC=m
- CONFIG_CRYPTO_RMD160=m
- CONFIG_CRYPTO_SHA3=m
-+CONFIG_CRYPTO_SM3=m
- CONFIG_CRYPTO_WP512=m
- CONFIG_CRYPTO_AES=y
- CONFIG_CRYPTO_AES_TI=m
-@@ -579,7 +579,6 @@ CONFIG_CRYPTO_USER_API_AEAD=m
- # CONFIG_CRYPTO_HW is not set
- CONFIG_PRIME_NUMBERS=m
- CONFIG_CRC32_SELFTEST=m
--CONFIG_CRC64=m
- CONFIG_XZ_DEC_TEST=m
- CONFIG_GLOB_SELFTEST=m
- # CONFIG_SECTION_MISMATCH_WARN_ONLY is not set
-@@ -604,7 +603,6 @@ CONFIG_TEST_SCANF=m
- CONFIG_TEST_BITMAP=m
- CONFIG_TEST_UUID=m
- CONFIG_TEST_XARRAY=m
--CONFIG_TEST_OVERFLOW=m
- CONFIG_TEST_RHASHTABLE=m
- CONFIG_TEST_SIPHASH=m
- CONFIG_TEST_IDA=m
-@@ -625,6 +623,5 @@ CONFIG_TEST_UDELAY=m
- CONFIG_TEST_STATIC_KEYS=m
- CONFIG_TEST_KMOD=m
- CONFIG_TEST_MEMCAT_P=m
--CONFIG_TEST_STACKINIT=m
- CONFIG_TEST_MEMINIT=m
- CONFIG_TEST_FREE_PAGES=m
-diff --git a/arch/m68k/configs/sun3_defconfig b/arch/m68k/configs/sun3_defconfig
-index 183e33f7d4a07b74..832b45944617c6c3 100644
---- a/arch/m68k/configs/sun3_defconfig
-+++ b/arch/m68k/configs/sun3_defconfig
-@@ -32,7 +32,6 @@ CONFIG_MQ_IOSCHED_DEADLINE=m
- CONFIG_MQ_IOSCHED_KYBER=m
- CONFIG_IOSCHED_BFQ=m
- # CONFIG_CORE_DUMP_DEFAULT_ELF_HEADERS is not set
--CONFIG_BINFMT_AOUT=m
- CONFIG_BINFMT_MISC=m
- # CONFIG_COMPACTION is not set
- CONFIG_ZPOOL=m
-@@ -529,6 +528,7 @@ CONFIG_CRYPTO_MD4=m
- CONFIG_CRYPTO_MICHAEL_MIC=m
- CONFIG_CRYPTO_RMD160=m
- CONFIG_CRYPTO_SHA3=m
-+CONFIG_CRYPTO_SM3=m
- CONFIG_CRYPTO_WP512=m
- CONFIG_CRYPTO_AES=y
- CONFIG_CRYPTO_AES_TI=m
-@@ -561,7 +561,6 @@ CONFIG_CRYPTO_USER_API_AEAD=m
- # CONFIG_CRYPTO_HW is not set
- CONFIG_PRIME_NUMBERS=m
- CONFIG_CRC32_SELFTEST=m
--CONFIG_CRC64=m
- CONFIG_XZ_DEC_TEST=m
- # CONFIG_SECTION_MISMATCH_WARN_ONLY is not set
- CONFIG_MAGIC_SYSRQ=y
-@@ -584,7 +583,6 @@ CONFIG_TEST_SCANF=m
- CONFIG_TEST_BITMAP=m
- CONFIG_TEST_UUID=m
- CONFIG_TEST_XARRAY=m
--CONFIG_TEST_OVERFLOW=m
- CONFIG_TEST_RHASHTABLE=m
- CONFIG_TEST_SIPHASH=m
- CONFIG_TEST_IDA=m
-@@ -605,6 +603,5 @@ CONFIG_TEST_UDELAY=m
- CONFIG_TEST_STATIC_KEYS=m
- CONFIG_TEST_KMOD=m
- CONFIG_TEST_MEMCAT_P=m
--CONFIG_TEST_STACKINIT=m
- CONFIG_TEST_MEMINIT=m
- CONFIG_TEST_FREE_PAGES=m
-diff --git a/arch/m68k/configs/sun3x_defconfig b/arch/m68k/configs/sun3x_defconfig
-index 8214263b9ab8dc4b..9171b687e565e2f1 100644
---- a/arch/m68k/configs/sun3x_defconfig
-+++ b/arch/m68k/configs/sun3x_defconfig
-@@ -32,7 +32,6 @@ CONFIG_MQ_IOSCHED_DEADLINE=m
- CONFIG_MQ_IOSCHED_KYBER=m
- CONFIG_IOSCHED_BFQ=m
- # CONFIG_CORE_DUMP_DEFAULT_ELF_HEADERS is not set
--CONFIG_BINFMT_AOUT=m
- CONFIG_BINFMT_MISC=m
- # CONFIG_COMPACTION is not set
- CONFIG_ZPOOL=m
-@@ -528,6 +527,7 @@ CONFIG_CRYPTO_MD4=m
- CONFIG_CRYPTO_MICHAEL_MIC=m
- CONFIG_CRYPTO_RMD160=m
- CONFIG_CRYPTO_SHA3=m
-+CONFIG_CRYPTO_SM3=m
- CONFIG_CRYPTO_WP512=m
- CONFIG_CRYPTO_AES=y
- CONFIG_CRYPTO_AES_TI=m
-@@ -560,7 +560,6 @@ CONFIG_CRYPTO_USER_API_AEAD=m
- # CONFIG_CRYPTO_HW is not set
- CONFIG_PRIME_NUMBERS=m
- CONFIG_CRC32_SELFTEST=m
--CONFIG_CRC64=m
- CONFIG_XZ_DEC_TEST=m
- # CONFIG_SECTION_MISMATCH_WARN_ONLY is not set
- CONFIG_MAGIC_SYSRQ=y
-@@ -584,7 +583,6 @@ CONFIG_TEST_SCANF=m
- CONFIG_TEST_BITMAP=m
- CONFIG_TEST_UUID=m
- CONFIG_TEST_XARRAY=m
--CONFIG_TEST_OVERFLOW=m
- CONFIG_TEST_RHASHTABLE=m
- CONFIG_TEST_SIPHASH=m
- CONFIG_TEST_IDA=m
-@@ -605,6 +603,5 @@ CONFIG_TEST_UDELAY=m
- CONFIG_TEST_STATIC_KEYS=m
- CONFIG_TEST_KMOD=m
- CONFIG_TEST_MEMCAT_P=m
--CONFIG_TEST_STACKINIT=m
- CONFIG_TEST_MEMINIT=m
- CONFIG_TEST_FREE_PAGES=m
--- 
-2.25.1
+Indeed, I forgot to drop that hunk. It is based on my local branch that
+has some additional code but good that you managed to work it around.
 
+> This fixes *all* cases on the MacBookPro. Cold boot on either port, and hot plug likewise
+
+That's great!
+
+> On the iMac it cold boots on either port. If I boot with the displays plugged in, then unplug-replug we get :
+> 
+> Apr  1 22:49:41 bkmac kernel: [   24.480306] [drm:radeon_dp_link_train [radeon]] *ERROR* displayport link status failed
+> Apr  1 22:49:41 bkmac kernel: [   24.481309] [drm:radeon_dp_link_train [radeon]] *ERROR* clock recovery failed
+> 
+> The last head on the chain comes up, the first doesn't.
+> 
+> If I plug the displays in *after* the chime and before the kernel starts up, then both heads come up and hotplug works fine excepting after the second unplug we get lots of this :
+> 
+> Apr  1 22:52:54 bkmac kernel: [   37.313493] thunderbolt 0000:07:00.0: 0: timeout reading config space 1 from 0x39
+> Apr  1 22:52:54 bkmac kernel: [   37.313513] thunderbolt 0000:07:00.0: 0:c: DP IN available
+> Apr  1 22:52:54 bkmac kernel: [   37.763482] thunderbolt 0000:07:00.0: 0: timeout reading config space 1 from 0x39
+> Apr  1 22:52:54 bkmac kernel: [   37.763489] thunderbolt 0000:07:00.0: 0:d: DP IN available
+> Apr  1 22:52:54 bkmac kernel: [   37.763491] thunderbolt 0000:07:00.0: no suitable DP IN adapter available, not tunneling
+> Apr  1 22:52:54 bkmac kernel: [   37.763495] thunderbolt 0000:07:00.0: 0:4: got unplug event for disconnected port, ignoring
+> Apr  1 22:52:54 bkmac kernel: [   37.763496] thunderbolt 0000:07:00.0: 0:3: got unplug event for disconnected port, ignoring
+> Apr  1 22:52:54 bkmac kernel: [   37.763498] thunderbolt 0000:07:00.0: 0:3: got unplug event for disconnected port, ignoring
+> 
+> And the thunderbolt ports then fail to respond to any plug event until rebooted.
+
+This makes me suspect that there is something else still going on with
+the Light Ridge controller that we are missing in the Linux driver.
+
+> Feels like it's nailed excepting some DP routing on the Radeon, but
+> I've not been able to put my finger on how that works.
+> With your very first patch, hotplug works on the iMac.
+
+Hm, you mean you don't see the timeout errors and stuff with the first
+patch applied?
+
+I think I will make this current one a proper patch and submit upstream
+later this week (will CC you too). For the iMac issue we may need to
+debug it further. Not sure if you answered this one already but on iMac
+on macOS does it work always when you plug in the whole chain?
