@@ -2,80 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E44CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:01:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C199C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:01:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237180AbiDDWC4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 18:02:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48828 "EHLO
+        id S244056AbiDDWDk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 18:03:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379470AbiDDRLt (ORCPT
+        with ESMTP id S1379597AbiDDRoL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 13:11:49 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FE1B13D16
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 10:09:51 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id d5so18487055lfj.9
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 10:09:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=xqfahCfQspBfoK65a4hfr+hSofOu1wW+gpiKNcZisYQ=;
-        b=biW4T4KbcnBUKe0V+odxlHEjPidwu45How8OVgfeUkCpUjNCyIK/YwfVb6wbHbAqgq
-         U0852oL6QhdYowEUdxOyhcPL6qxZGFbYohWnK59WCeg4BAM2fc2Lj7MGqfc7AHjkYqJL
-         GPbLMXZXE8Jdq5uRMGsJdekbOICtnWQ5IZp14=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xqfahCfQspBfoK65a4hfr+hSofOu1wW+gpiKNcZisYQ=;
-        b=bKHDEi07caIxFuuLGlXeg33FAljmtVPQBFIPrQk7ul/M2RJD7NQ7nkXtOh8TQ5byPj
-         piZ0hYqEcZlOnxRAdw4GdZ63oRHbo45lmCI+dDspUCXmPpqFNY8bPEBeVE3nkM59jFaI
-         qb4oCONo2zeoEzozGjWqhc/kOVhl7hcqX7Ykl+sgiOe48mjCaCOdBb7qdKOE28FTC6cA
-         1B7KyP2bRPWhAYeLKyVmggdAELRjgT1MZYlZL2jsyaoHLjvok8Atwr1XLkdrrscXZKnV
-         NG411kN9aZTYQhPkr7RZfl4+/cEDahHB9w1sxdS3UOb6Wq4W3vnlvU5VRa+YEKt2eDZs
-         xy7w==
-X-Gm-Message-State: AOAM533t9VydCp40LmyLza3DjxaL4KfK3GvfrjsoaW16LnS6cBJyV01P
-        waYhjmA6KiXtCddyzi9mAH2Nf24swNG/3GpX
-X-Google-Smtp-Source: ABdhPJymaKb024Frng4tTYJFozUp/bLMX4HXfAaTxBSeYmLDFKGBkvgMykb5XOefSRNm5Bza7X9vpw==
-X-Received: by 2002:a05:6512:108e:b0:44a:7147:984a with SMTP id j14-20020a056512108e00b0044a7147984amr326905lfg.220.1649092189291;
-        Mon, 04 Apr 2022 10:09:49 -0700 (PDT)
-Received: from mail-lj1-f178.google.com (mail-lj1-f178.google.com. [209.85.208.178])
-        by smtp.gmail.com with ESMTPSA id d25-20020a194f19000000b0044a2ad98dcasm1192124lfb.167.2022.04.04.10.09.47
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 04 Apr 2022 10:09:47 -0700 (PDT)
-Received: by mail-lj1-f178.google.com with SMTP id q14so13732787ljc.12
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 10:09:47 -0700 (PDT)
-X-Received: by 2002:a2e:9041:0:b0:24a:ce83:dcb4 with SMTP id
- n1-20020a2e9041000000b0024ace83dcb4mr358339ljg.291.1649092187476; Mon, 04 Apr
- 2022 10:09:47 -0700 (PDT)
+        Mon, 4 Apr 2022 13:44:11 -0400
+Received: from mx0a-002e3701.pphosted.com (mx0a-002e3701.pphosted.com [148.163.147.86])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38A8A31DF0;
+        Mon,  4 Apr 2022 10:42:14 -0700 (PDT)
+Received: from pps.filterd (m0150242.ppops.net [127.0.0.1])
+        by mx0a-002e3701.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 234GjdVc003316;
+        Mon, 4 Apr 2022 17:41:39 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pps0720;
+ bh=EqEV7oOPRCwvP9zFRtxS2amJ0sojOOK340QCkQmT5GQ=;
+ b=EV0Vr4+6eloFzWx5Y1ZMrKC5Px9evjvYC7Z4dxkoQLYxRnv7UzMwAxlrsr7NnwpOKpnV
+ VoW37agoBOd20YXvRgnY3Mx6POmmLawnAg2RhtvBOe6m/HoRB+YWLzIdkw0d+N5sdLWN
+ k6t2X6heFO1Tvtj/8UP0zNwh7Kd93QcU9jaOD6xLa6To6yBNg8zawkMVnM75dnd31xdZ
+ aLxL9jzgW+EGdD8omvyPhF6rwHEm8YCBxywmt4zRgMbLLxwVQBVW8V1EdcqJoFDbx5Ec
+ mMAvm28AiG6/OyB4213RhN2m/0LhMrDWX8VkuP073MHNT6RQnbyCQ4vkJOx4wgvcyXhz SA== 
+Received: from g9t5009.houston.hpe.com (g9t5009.houston.hpe.com [15.241.48.73])
+        by mx0a-002e3701.pphosted.com (PPS) with ESMTPS id 3f84f6rmjf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 04 Apr 2022 17:41:38 +0000
+Received: from g9t2301.houston.hpecorp.net (g9t2301.houston.hpecorp.net [16.220.97.129])
+        by g9t5009.houston.hpe.com (Postfix) with ESMTP id 038E755;
+        Mon,  4 Apr 2022 17:41:38 +0000 (UTC)
+Received: from dog.eag.rdlabs.hpecorp.net (dog.eag.rdlabs.hpecorp.net [128.162.243.181])
+        by g9t2301.houston.hpecorp.net (Postfix) with ESMTP id 2682C5C;
+        Mon,  4 Apr 2022 17:41:37 +0000 (UTC)
+From:   Mike Travis <mike.travis@hpe.com>
+To:     Borislav Petkov <bp@alien8.de>, Ingo Molnar <mingo@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Steve Wahl <steve.wahl@hpe.com>, x86@kernel.org
+Cc:     Mike Travis <mike.travis@hpe.com>,
+        Andy Shevchenko <andy@infradead.org>,
+        Darren Hart <dvhart@infradead.org>,
+        Dimitri Sivanich <dimitri.sivanich@hpe.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Russ Anderson <russ.anderson@hpe.com>,
+        linux-kernel@vger.kernel.org, platform-driver-x86@vger.kernel.org
+Subject: [PATCH v3 3/3] x86/platform/uv: Log gap hole end size
+Date:   Mon,  4 Apr 2022 12:41:11 -0500
+Message-Id: <20220404174111.262414-4-mike.travis@hpe.com>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20220404174111.262414-1-mike.travis@hpe.com>
+References: <20220404174111.262414-1-mike.travis@hpe.com>
 MIME-Version: 1.0
-References: <CAHk-=wg6FWL1xjVyHx7DdjD2dHZETA5_=FqqW17Z19X-WTfWSg@mail.gmail.com>
- <20220404022239.GA1186352@roeck-us.net> <CAHk-=wimc7V9mi=P+6p2nnctPYtSM55OSPVERUeJor7fkD_EVg@mail.gmail.com>
- <aba387bd-9799-e0b5-40e3-1bcb552ac74c@roeck-us.net> <CAHk-=witgMUS8To6wijxdbQ+QEH0gcHSYV6Y=yzOdb=Q4h9PJA@mail.gmail.com>
- <ea840ab9-0c20-8c06-f7d4-bb9642a63500@roeck-us.net>
-In-Reply-To: <ea840ab9-0c20-8c06-f7d4-bb9642a63500@roeck-us.net>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Mon, 4 Apr 2022 10:09:31 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wheNvagyYfd1HbH80tysHtJtifDbAwQW9S_Ye+6YZU_uw@mail.gmail.com>
-Message-ID: <CAHk-=wheNvagyYfd1HbH80tysHtJtifDbAwQW9S_Ye+6YZU_uw@mail.gmail.com>
-Subject: Re: Linux 5.18-rc1
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
-        Oded Gabbay <ogabbay@kernel.org>, Jiri Slaby <jslaby@suse.cz>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-ORIG-GUID: kTl_aozcDXnjKZ6sWmQ_-q3atMRYhzkm
+X-Proofpoint-GUID: kTl_aozcDXnjKZ6sWmQ_-q3atMRYhzkm
+X-HPE-SCL: -1
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-04-04_06,2022-03-31_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
+ lowpriorityscore=0 suspectscore=0 priorityscore=1501 clxscore=1015
+ spamscore=0 mlxlogscore=911 phishscore=0 mlxscore=0 bulkscore=0
+ malwarescore=0 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2202240000 definitions=main-2204040100
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 4, 2022 at 9:45 AM Guenter Roeck <linux@roeck-us.net> wrote:
->
-> I tried to tell my provider, but to no avail.
+Show value of gap end in the kernel log which equates to number of physical
+address bits used by system.  The end address of the gap holds PA bits 56:26
+which gives the range up to 64PB max size with 64MB of granularity.
 
-Sad. Email providers that are clueless about email? Incompetent.
+Signed-off-by: Mike Travis <mike.travis@hpe.com>
+Reviewed-by: Steve Wahl <steve.wahl@hpe.com>
+---
+v2: Update patch description to be more explanatory.
+---
+ arch/x86/kernel/apic/x2apic_uv_x.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-             Linus
+diff --git a/arch/x86/kernel/apic/x2apic_uv_x.c b/arch/x86/kernel/apic/x2apic_uv_x.c
+index 387d6533549a..146f0f63a43b 100644
+--- a/arch/x86/kernel/apic/x2apic_uv_x.c
++++ b/arch/x86/kernel/apic/x2apic_uv_x.c
+@@ -1346,7 +1346,7 @@ static void __init decode_gam_params(unsigned long ptr)
+ static void __init decode_gam_rng_tbl(unsigned long ptr)
+ {
+ 	struct uv_gam_range_entry *gre = (struct uv_gam_range_entry *)ptr;
+-	unsigned long lgre = 0;
++	unsigned long lgre = 0, gend = 0;
+ 	int index = 0;
+ 	int sock_min = 999999, pnode_min = 99999;
+ 	int sock_max = -1, pnode_max = -1;
+@@ -1380,6 +1380,9 @@ static void __init decode_gam_rng_tbl(unsigned long ptr)
+ 			flag, size, suffix[order],
+ 			gre->type, gre->nasid, gre->sockid, gre->pnode);
+ 
++		if (gre->type == UV_GAM_RANGE_TYPE_HOLE)
++			gend = (unsigned long)gre->limit << UV_GAM_RANGE_SHFT;
++
+ 		/* update to next range start */
+ 		lgre = gre->limit;
+ 		if (sock_min > gre->sockid)
+@@ -1397,7 +1400,8 @@ static void __init decode_gam_rng_tbl(unsigned long ptr)
+ 	_max_pnode	= pnode_max;
+ 	_gr_table_len	= index;
+ 
+-	pr_info("UV: GRT: %d entries, sockets(min:%x,max:%x) pnodes(min:%x,max:%x)\n", index, _min_socket, _max_socket, _min_pnode, _max_pnode);
++	pr_info("UV: GRT: %d entries, sockets(min:%x,max:%x), pnodes(min:%x,max:%x), gap_end(%d)\n",
++	  index, _min_socket, _max_socket, _min_pnode, _max_pnode, fls64(gend));
+ }
+ 
+ /* Walk through UVsystab decoding the fields */
+-- 
+2.26.2
+
