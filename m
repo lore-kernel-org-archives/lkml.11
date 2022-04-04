@@ -2,119 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63B51C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 15:06:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C66C3C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 15:07:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378426AbiDDPIu (ORCPT
+        id S1378433AbiDDPJ2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 11:08:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58942 "EHLO
+        Mon, 4 Apr 2022 11:09:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378427AbiDDPIo (ORCPT
+        with ESMTP id S1378221AbiDDPJZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 11:08:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89D7D3B3C2;
-        Mon,  4 Apr 2022 08:06:48 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2686E615BC;
-        Mon,  4 Apr 2022 15:06:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B663C34110;
-        Mon,  4 Apr 2022 15:06:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649084807;
-        bh=D5SqivvBcrkLIAlJEKoRxR7gXZmRxdwZIlV/L7hNxSE=;
-        h=References:In-Reply-To:Reply-To:From:Date:Subject:To:Cc:From;
-        b=F7MMaRlNg6erqL7nmAoLc8zssL9GQmA3OR3XLnWqKXIlJi3nMtzPaciAVYc0vnYTV
-         ooAFaMiOLutbCl1TNMFQGAe+y7RD9bX2FYb7QC9pwEOb269Ftj61MtYs+NuNg2ndff
-         TcU3Nhr65sAmZIETGGBdtlpqX/div6ssRsmTDc/wprwT4ph5aW8p4ndBKVMvhZ0wFh
-         PCP+cq4S2XZQHQQjxRschY3RJvXVIknmKiE6fRB5eB4cwZ/t2fmkCy49lELIF7jrib
-         bW2X8Af8UdCeEUmJu8zkMMCjfAydcV0NAD+5/rKYMahkrqwZiDBmvHVHndz3uIPjk/
-         ONMNYZUAARHMA==
-Received: by mail-vs1-f48.google.com with SMTP id k15so9488633vsr.11;
-        Mon, 04 Apr 2022 08:06:47 -0700 (PDT)
-X-Gm-Message-State: AOAM531kgvf8P1/Rx9vSuQfMZ74FKAeh6ndrf32sqRoKzt2Qduo7KnU5
-        PIgqxbCTv34X/u40Zf0yewb3cOLVk/12A24hDJg=
-X-Google-Smtp-Source: ABdhPJwmU7gIASrjGhhrLCfmfAPZc/p/+8NdSNqqSQ5KLV2TpnqKxuegUxeFQJKUlzKa/LtOa2j5Pm6Ktk5vKczG3pA=
-X-Received: by 2002:a05:6102:3a52:b0:325:5520:d16c with SMTP id
- c18-20020a0561023a5200b003255520d16cmr120679vsu.22.1649084806482; Mon, 04 Apr
- 2022 08:06:46 -0700 (PDT)
+        Mon, 4 Apr 2022 11:09:25 -0400
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99F3F38BE7
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 08:07:28 -0700 (PDT)
+Received: by mail-lf1-x12d.google.com with SMTP id p10so17812501lfa.12
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 08:07:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=l4K0SPmrnpSn+fuUk7g4we7BJ74/J43n2XWdTPtmJBY=;
+        b=Ad07ZzvunE3vZQtLzo5oDTRUrzKUmJcuBL0FbcbaEl0KGYWarSn0QKuZZQYbwuSSuZ
+         wtcBtSCHTQCgVtySsb2f4cNXXgfmVXK9iMYOf7MZ8y2nj2EgEjxwxeNHht4iVplfXfs/
+         nUa+TtF0GebuFRkL+TKr16ROoQMr5Yz3by+75gob+fzrIq9suL3OQa6U983SQWsxerHL
+         bVKih6bEwFv0tyn/gswydnIFA9qXCvebjlDigAgglaUW4OGpSYAjXGPZrj5u3ErtP7AF
+         P7gtJ6ROBlM1en4GGhJ2seEKlMov16qqLwWSW0E22p+H8rehyhyy8EXaywJ9Xd5E5+i5
+         CZSQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=l4K0SPmrnpSn+fuUk7g4we7BJ74/J43n2XWdTPtmJBY=;
+        b=I6XUGr5xX0CJpNYCDrnQxRE2T0mjAXqmEtVm7tD+MJY5wjcq/QaT8rdWIJumGs4WCH
+         qmKuerdpKoYog4pDW7yc5gXYtHs7MZL+2YdG3zs3D8sjy/ZjytXAA43T6fOWb2c9K273
+         jdLmoxK+WSpBaq0sOx+vmQJHpPAl7yELBydDD3Y48RFcxuW4Zl3o4bM6ibhrmIhmk4e3
+         OTfYldZzpOpD3C7lvcxnc9fRwzcgO1DBT+tNVlOX6t3qtvCOBhFJK2CoqCA31Earho1z
+         1DcFWiBKNtGaWIR7w2Lh8bl51gixt674JZsu7s4Oi4Rjm/IaF1i9We4fr8h2VQIxqXNT
+         D3tw==
+X-Gm-Message-State: AOAM530eT6KVK+LZT37OOuM27hEn/gfRk6zIFLMLdVzaiHccnXxwj48i
+        fl5rMaNSFWOZngK5Mr6xohE=
+X-Google-Smtp-Source: ABdhPJwRKTX9sNlZWMzdB6xUQCUTu18lQdxp4IePtSAY9nUucUvvosWFtS7ZPo9Md4LR3rZGocfQTg==
+X-Received: by 2002:a05:6512:280d:b0:44f:5af8:1958 with SMTP id cf13-20020a056512280d00b0044f5af81958mr76653lfb.533.1649084846725;
+        Mon, 04 Apr 2022 08:07:26 -0700 (PDT)
+Received: from freyja.wlan (dzx1kfyjwg96s--vr8cxy-3.rev.dnainternet.fi. [2001:14ba:a4ea:8200:f22f:74ff:fe2e:e0a6])
+        by smtp.gmail.com with ESMTPSA id bi2-20020a0565120e8200b0044826a117bcsm1163279lfb.44.2022.04.04.08.07.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Apr 2022 08:07:26 -0700 (PDT)
+From:   Jan Varho <jan.varho@gmail.com>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        "Theodore Ts'o" <tytso@mit.edu>
+Cc:     linux-kernel@vger.kernel.org, Jan Varho <jan.varho@gmail.com>
+Subject: [PATCH] random: fix add_hwgenerator_randomness entropy accounting
+Date:   Mon,  4 Apr 2022 18:04:42 +0300
+Message-Id: <20220404150442.934496-1-jan.varho@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220330190846.13997-1-wens@kernel.org> <20220330190846.13997-3-wens@kernel.org>
- <CABxcv==csvqsxM46ce2LecDh4E-UxxD2DG+3E-hCFoyrdtRv7A@mail.gmail.com>
-In-Reply-To: <CABxcv==csvqsxM46ce2LecDh4E-UxxD2DG+3E-hCFoyrdtRv7A@mail.gmail.com>
-Reply-To: wens@kernel.org
-From:   Chen-Yu Tsai <wens@kernel.org>
-Date:   Mon, 4 Apr 2022 23:06:36 +0800
-X-Gmail-Original-Message-ID: <CAGb2v64VQPjan=EUkd8UhRZfV0g1GqBwPqhxQakS=7YhgvVDQA@mail.gmail.com>
-Message-ID: <CAGb2v64VQPjan=EUkd8UhRZfV0g1GqBwPqhxQakS=7YhgvVDQA@mail.gmail.com>
-Subject: Re: [PATCH 2/4] dt-bindings: display: ssd1307fb: Add entry for SINO
- WEALTH SH1106
-To:     Javier Martinez Canillas <javier@dowhile0.org>
-Cc:     Javier Martinez Canillas <javierm@redhat.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel <linux-kernel@vger.kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 1, 2022 at 5:32 PM Javier Martinez Canillas
-<javier@dowhile0.org> wrote:
->
-> Hello Chen-Yu,
->
-> Thanks a lot for your patch.
->
-> On Wed, Mar 30, 2022 at 9:09 PM Chen-Yu Tsai <wens@kernel.org> wrote:
-> >
-> > From: Chen-Yu Tsai <wens@csie.org>
-> >
-> > The SINO WEALTH SH1106 is an OLED display driver that is somewhat
-> > compatible with the SSD1306. It supports a slightly wider display,
-> > at 132 instead of 128 pixels. The basic commands are the same, but
-> > the SH1106 doesn't support the horizontal or vertical address modes.
-> >
-> > Add a compatible string for it.
-> >
-> > Signed-off-by: Chen-Yu Tsai <wens@csie.org>
-> > ---
-> >  Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml | 1 +
-> >  1 file changed, 1 insertion(+)
-> >
-> > diff --git a/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml b/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
-> > index 9baafd0c42dd..1ac016a2d847 100644
-> > --- a/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
-> > +++ b/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
-> > @@ -13,6 +13,7 @@ maintainers:
-> >  properties:
-> >    compatible:
-> >      enum:
-> > +      - sinowealth,sh1106-i2c
->
-> I like that you didn't include a "fb" suffix for this, the existing
-> ones are cargo culting from the previous fbdev driver to make existing
-> DTBs compatible with the DRM driver.
->
-> I've been thinking if I should post a patch to compatible strings
-> without the "fb" and mark the current ones as deprecated...
->
-> Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
+add_hwgenerator_randomness tries to only use the required amound of input
+for fast init, but credits all the entropy if even a byte was left over.
 
-I also thought about dropping the "-i2c" suffix, but then thought
-there might be a case where someone wanted to search the device
-tree specifically for an I2C connected node using said compatible
-string.
+Fix by not crediting entropy if any input was consumed for fast init.
 
-What do you think?
+Signed-off-by: Jan Varho <jan.varho@gmail.com>
+---
+ drivers/char/random.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
+diff --git a/drivers/char/random.c b/drivers/char/random.c
+index 1d8242969751..fb20178f1044 100644
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -1141,12 +1141,10 @@ void add_hwgenerator_randomness(const void *buffer, size_t count,
+ 				size_t entropy)
+ {
+ 	if (unlikely(crng_init == 0 && entropy < POOL_MIN_BITS)) {
+-		size_t ret = crng_pre_init_inject(buffer, count, true);
+-		mix_pool_bytes(buffer, ret);
+-		count -= ret;
+-		buffer += ret;
+-		if (!count || crng_init == 0)
++		if (crng_pre_init_inject(buffer, count, true) > 0) {
++			mix_pool_bytes(buffer, count);
+ 			return;
++		}
+ 	}
+ 
+ 	/*
+-- 
+2.25.1
 
-ChenYu
