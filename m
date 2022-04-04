@@ -2,315 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37C89C4707E
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:08:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62DE2C35295
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:08:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381139AbiDDWIC (ORCPT
+        id S1381556AbiDDWIe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 18:08:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35468 "EHLO
+        Mon, 4 Apr 2022 18:08:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379937AbiDDSYS (ORCPT
+        with ESMTP id S1379202AbiDDQnS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 14:24:18 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1454E22B39;
-        Mon,  4 Apr 2022 11:22:21 -0700 (PDT)
-Date:   Mon, 04 Apr 2022 18:22:19 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649096540;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
+        Mon, 4 Apr 2022 12:43:18 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68C0535256
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 09:41:22 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id B766F21100;
+        Mon,  4 Apr 2022 16:41:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1649090480; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=xDIM4Cos2tbwzCb31rfLiWuVjwuxyUy9LIUQtWRwmf8=;
-        b=wTNkCxcK1Go4i162/UhVT5Y6k5khf0tLLygX6yXXz/BHLTpy3xTzqbMkU9k6MEQcIGotr3
-        ZawOaUNbFaLsAuCmsMDXFKhYBD4hlb2lXndUOXoAXieAxTEOvbnn0ITFaAuLBfZBLMcR+E
-        Pst8m8TQxsBFpYHvtkqf3sA8TPjmzg4KO/KI2ltGLs3H8kicNq9vISFxv0MPy7Vx92xayO
-        D6WnXbF2+6z3qzELULcUKvAL9W2ZwTdzZgOusbtm0Tk6Rpf2VyAUPSn0mcj+9BQtEwKmM+
-        Uvd2JMrt0+Uc+FwoskKTcl4hY0AG5MIiFf52h14KaMgxw4jhR2CAH3klSwmRWg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649096540;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
+        bh=FcNvCr26VJpdX7oyGqii89Cwpfix4yCPyYMQI1flsJw=;
+        b=x9FaROwQP77uLqIKZOoSlI3OTwBphZaHdP0q2puFfZdaqsGYbCiQdR7rIijJrNVkueGJoA
+        bgjmv+bFQuNclKeIBDN8sc1LfF3Sk03dM5UJU0HVfDwKK9RZU0zd9YujqzIGCOqEdkfyaa
+        T6kXGFzBiFPuq7f0/BXIlmjeu13ELiA=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1649090480;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=xDIM4Cos2tbwzCb31rfLiWuVjwuxyUy9LIUQtWRwmf8=;
-        b=X8ac+OEx4MvZGqI7Kj0U179cSP8tHx0ZSJ998w4mquGIonzZlyTy8PEZVysDYNnn0t4t9U
-        scrNRTW4CLP0ayAQ==
-From:   "tip-bot2 for Borislav Petkov" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/cpu] x86/cpu: Remove CONFIG_X86_SMAP and "nosmap"
-Cc:     Borislav Petkov <bp@suse.de>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Kees Cook <keescook@chromium.org>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220127115626.14179-4-bp@alien8.de>
-References: <20220127115626.14179-4-bp@alien8.de>
+        bh=FcNvCr26VJpdX7oyGqii89Cwpfix4yCPyYMQI1flsJw=;
+        b=d49e9uB+Jyc2beWWaOwHjc46S4kPYXvSYW9aLKpvhxbDVqZox1KFT/E3SB/JoclUd7Qo+E
+        whqFaXTb9ppELdBA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 88E7D12FC5;
+        Mon,  4 Apr 2022 16:41:20 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id gG3EILAfS2LjfAAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Mon, 04 Apr 2022 16:41:20 +0000
+From:   Vlastimil Babka <vbabka@suse.cz>
+To:     David Rientjes <rientjes@google.com>,
+        Christoph Lameter <cl@linux.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>
+Cc:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        patches@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Oliver Glitta <glittao@gmail.com>,
+        Marco Elver <elver@google.com>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+        Imran Khan <imran.f.khan@oracle.com>,
+        Vlastimil Babka <vbabka@suse.cz>
+Subject: [PATCH v3 4/6] mm/slub: distinguish and print stack traces in debugfs files
+Date:   Mon,  4 Apr 2022 18:41:10 +0200
+Message-Id: <20220404164112.18372-5-vbabka@suse.cz>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220404164112.18372-1-vbabka@suse.cz>
+References: <20220404164112.18372-1-vbabka@suse.cz>
 MIME-Version: 1.0
-Message-ID: <164909653949.389.11692542693797938034.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2691; i=vbabka@suse.cz; h=from:subject; bh=TYBaV9Bpt1W9CRWxPFEGgUeXoCCN9uIpTjzA+mehKao=; b=owEBbQGS/pANAwAIAeAhynPxiakQAcsmYgBiSx+l4rujDPLMqAaci99S+uU3nVbrVpdi1Mha9UXq y+iVjpGJATMEAAEIAB0WIQSNS5MBqTXjGL5IXszgIcpz8YmpEAUCYksfpQAKCRDgIcpz8YmpEOHICA C1HKyC20o4z3ebpWfjUW2hruI+y8Bq8UBSziz87nv9/7++lyUuk63UBiQGd8O3XB/7ODR83ord0qQ+ ksExeB3w9cLOl0iV1K2DFclkVMgjCoFnKSvatK4bAwW4hnaX62t2LJZL+sm6XEA4KtuQ6BUcgoIAzM 3vquw0pYZ2lBPHTHoU6geu+EI53qoSEcKl6U+ShepJ3tX6iK8Kr9RHl9IF2ihs4r9Sl3p8FH0nIaWM pDZieOmyJ7sT4tG0psuJ6TlppyoP69c57vH/z4WTbX8HLbBFOijhcZTAYlOf3fXETVPKR5P0X5PBvd LHMZK37e2KomEkgwq26UnDtHMqDfS8
+X-Developer-Key: i=vbabka@suse.cz; a=openpgp; fpr=A940D434992C2E8E99103D50224FA7E7CC82A664
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the x86/cpu branch of tip:
+From: Oliver Glitta <glittao@gmail.com>
 
-Commit-ID:     dbae0a934f09208075ec3e73491bd0844e1397b3
-Gitweb:        https://git.kernel.org/tip/dbae0a934f09208075ec3e73491bd0844e1397b3
-Author:        Borislav Petkov <bp@suse.de>
-AuthorDate:    Thu, 27 Jan 2022 12:56:23 +01:00
-Committer:     Borislav Petkov <bp@suse.de>
-CommitterDate: Mon, 04 Apr 2022 10:16:57 +02:00
+Aggregate objects in slub cache by unique stack trace in addition to
+caller address when producing contents of debugfs files alloc_traces and
+free_traces in debugfs. Also add the stack traces to the debugfs output.
+This makes it much more useful to e.g. debug memory leaks.
 
-x86/cpu: Remove CONFIG_X86_SMAP and "nosmap"
-
-Those were added as part of the SMAP enablement but SMAP is currently
-an integral part of kernel proper and there's no need to disable it
-anymore.
-
-Rip out that functionality. Leave --uaccess default on for objtool as
-this is what objtool should do by default anyway.
-
-If still needed - clearcpuid=smap.
-
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Lai Jiangshan <jiangshanlai@gmail.com>
-Reviewed-by: Kees Cook <keescook@chromium.org>
-Link: https://lore.kernel.org/r/20220127115626.14179-4-bp@alien8.de
+Signed-off-by: Oliver Glitta <glittao@gmail.com>
+Signed-off-by: Vlastimil Babka <vbabka@suse.cz>
+Reviewed-and-tested-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
 ---
- Documentation/admin-guide/kernel-parameters.txt |  2 +-
- Documentation/x86/cpuinfo.rst                   |  5 +--
- arch/x86/Kconfig                                | 11 +-------
- arch/x86/include/asm/disabled-features.h        |  8 +-----
- arch/x86/include/asm/smap.h                     | 24 +----------------
- arch/x86/kernel/cpu/common.c                    | 15 +----------
- scripts/Makefile.build                          |  2 +-
- scripts/link-vmlinux.sh                         |  6 ++--
- tools/arch/x86/include/asm/disabled-features.h  |  8 +-----
- 9 files changed, 10 insertions(+), 71 deletions(-)
+ mm/slub.c | 28 ++++++++++++++++++++++++++--
+ 1 file changed, 26 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index a9f3d31..e0bb710 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -3461,7 +3461,7 @@
- 			noexec=on: enable non-executable mappings (default)
- 			noexec=off: disable non-executable mappings
- 
--	nosmap		[X86,PPC]
-+	nosmap		[PPC]
- 			Disable SMAP (Supervisor Mode Access Prevention)
- 			even if it is supported by processor.
- 
-diff --git a/Documentation/x86/cpuinfo.rst b/Documentation/x86/cpuinfo.rst
-index 5d54c39..12fbe2b 100644
---- a/Documentation/x86/cpuinfo.rst
-+++ b/Documentation/x86/cpuinfo.rst
-@@ -140,9 +140,8 @@ from #define X86_FEATURE_UMIP (16*32 + 2).
- 
- In addition, there exists a variety of custom command-line parameters that
- disable specific features. The list of parameters includes, but is not limited
--to, nofsgsbase, nosmap, and nosmep. 5-level paging can also be disabled using
--"no5lvl". SMAP and SMEP are disabled with the aforementioned parameters,
--respectively.
-+to, nofsgsbase, and nosmep. 5-level paging can also be disabled using
-+"no5lvl". SMEP is disabled with the aforementioned parameter.
- 
- e: The feature was known to be non-functional.
- ----------------------------------------------
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index b0142e0..5bc8bee 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -1816,17 +1816,6 @@ config ARCH_RANDOM
- 	  If supported, this is a high bandwidth, cryptographically
- 	  secure hardware random number generator.
- 
--config X86_SMAP
--	def_bool y
--	prompt "Supervisor Mode Access Prevention" if EXPERT
--	help
--	  Supervisor Mode Access Prevention (SMAP) is a security
--	  feature in newer Intel processors.  There is a small
--	  performance cost if this enabled and turned on; there is
--	  also a small increase in the kernel size if this is enabled.
--
--	  If unsure, say Y.
--
- config X86_UMIP
- 	def_bool y
- 	prompt "User Mode Instruction Prevention" if EXPERT
-diff --git a/arch/x86/include/asm/disabled-features.h b/arch/x86/include/asm/disabled-features.h
-index 1231d63..1ae0fab 100644
---- a/arch/x86/include/asm/disabled-features.h
-+++ b/arch/x86/include/asm/disabled-features.h
-@@ -10,12 +10,6 @@
-  * cpu_feature_enabled().
+diff --git a/mm/slub.c b/mm/slub.c
+index 98c1450c23f0..f2e550e1adf0 100644
+--- a/mm/slub.c
++++ b/mm/slub.c
+@@ -5064,6 +5064,7 @@ EXPORT_SYMBOL(validate_slab_cache);
   */
  
--#ifdef CONFIG_X86_SMAP
--# define DISABLE_SMAP	0
--#else
--# define DISABLE_SMAP	(1<<(X86_FEATURE_SMAP & 31))
--#endif
--
- #ifdef CONFIG_X86_UMIP
- # define DISABLE_UMIP	0
- #else
-@@ -80,7 +74,7 @@
- #define DISABLED_MASK6	0
- #define DISABLED_MASK7	(DISABLE_PTI)
- #define DISABLED_MASK8	0
--#define DISABLED_MASK9	(DISABLE_SMAP|DISABLE_SGX)
-+#define DISABLED_MASK9	(DISABLE_SGX)
- #define DISABLED_MASK10	0
- #define DISABLED_MASK11	0
- #define DISABLED_MASK12	0
-diff --git a/arch/x86/include/asm/smap.h b/arch/x86/include/asm/smap.h
-index d17b398..bab4903 100644
---- a/arch/x86/include/asm/smap.h
-+++ b/arch/x86/include/asm/smap.h
-@@ -19,25 +19,14 @@
- 
- #ifdef __ASSEMBLY__
- 
--#ifdef CONFIG_X86_SMAP
--
- #define ASM_CLAC \
- 	ALTERNATIVE "", __ASM_CLAC, X86_FEATURE_SMAP
- 
- #define ASM_STAC \
- 	ALTERNATIVE "", __ASM_STAC, X86_FEATURE_SMAP
- 
--#else /* CONFIG_X86_SMAP */
--
--#define ASM_CLAC
--#define ASM_STAC
--
--#endif /* CONFIG_X86_SMAP */
--
- #else /* __ASSEMBLY__ */
- 
--#ifdef CONFIG_X86_SMAP
--
- static __always_inline void clac(void)
+ struct location {
++	depot_stack_handle_t handle;
+ 	unsigned long count;
+ 	unsigned long addr;
+ 	long long sum_time;
+@@ -5116,9 +5117,13 @@ static int add_location(struct loc_track *t, struct kmem_cache *s,
  {
- 	/* Note: a barrier is implicit in alternative() */
-@@ -76,19 +65,6 @@ static __always_inline void smap_restore(unsigned long flags)
- #define ASM_STAC \
- 	ALTERNATIVE("", __ASM_STAC, X86_FEATURE_SMAP)
+ 	long start, end, pos;
+ 	struct location *l;
+-	unsigned long caddr;
++	unsigned long caddr, chandle;
+ 	unsigned long age = jiffies - track->when;
++	depot_stack_handle_t handle = 0;
  
--#else /* CONFIG_X86_SMAP */
--
--static inline void clac(void) { }
--static inline void stac(void) { }
--
--static inline unsigned long smap_save(void) { return 0; }
--static inline void smap_restore(unsigned long flags) { }
--
--#define ASM_CLAC
--#define ASM_STAC
--
--#endif /* CONFIG_X86_SMAP */
--
- #endif /* __ASSEMBLY__ */
++#ifdef CONFIG_STACKDEPOT
++	handle = READ_ONCE(track->handle);
++#endif
+ 	start = -1;
+ 	end = t->count;
  
- #endif /* _ASM_X86_SMAP_H */
-diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index c71d107..747df07 100644
---- a/arch/x86/kernel/cpu/common.c
-+++ b/arch/x86/kernel/cpu/common.c
-@@ -382,13 +382,6 @@ static __always_inline void setup_smep(struct cpuinfo_x86 *c)
- 		cr4_set_bits(X86_CR4_SMEP);
- }
+@@ -5133,7 +5138,8 @@ static int add_location(struct loc_track *t, struct kmem_cache *s,
+ 			break;
  
--static __init int setup_disable_smap(char *arg)
--{
--	setup_clear_cpu_cap(X86_FEATURE_SMAP);
--	return 1;
--}
--__setup("nosmap", setup_disable_smap);
--
- static __always_inline void setup_smap(struct cpuinfo_x86 *c)
- {
- 	unsigned long eflags = native_save_fl();
-@@ -396,14 +389,8 @@ static __always_inline void setup_smap(struct cpuinfo_x86 *c)
- 	/* This should have been cleared long ago */
- 	BUG_ON(eflags & X86_EFLAGS_AC);
+ 		caddr = t->loc[pos].addr;
+-		if (track->addr == caddr) {
++		chandle = t->loc[pos].handle;
++		if ((track->addr == caddr) && (handle == chandle)) {
  
--	if (cpu_has(c, X86_FEATURE_SMAP)) {
--#ifdef CONFIG_X86_SMAP
-+	if (cpu_has(c, X86_FEATURE_SMAP))
- 		cr4_set_bits(X86_CR4_SMAP);
--#else
--		clear_cpu_cap(c, X86_FEATURE_SMAP);
--		cr4_clear_bits(X86_CR4_SMAP);
--#endif
--	}
- }
+ 			l = &t->loc[pos];
+ 			l->count++;
+@@ -5158,6 +5164,8 @@ static int add_location(struct loc_track *t, struct kmem_cache *s,
  
- static __always_inline void setup_umip(struct cpuinfo_x86 *c)
-diff --git a/scripts/Makefile.build b/scripts/Makefile.build
-index 9717e6f..7e7aa1d 100644
---- a/scripts/Makefile.build
-+++ b/scripts/Makefile.build
-@@ -233,7 +233,7 @@ objtool_args =								\
- 	$(if $(CONFIG_FRAME_POINTER),, --no-fp)				\
- 	$(if $(CONFIG_GCOV_KERNEL)$(CONFIG_LTO_CLANG), --no-unreachable)\
- 	$(if $(CONFIG_RETPOLINE), --retpoline)				\
--	$(if $(CONFIG_X86_SMAP), --uaccess)				\
-+	--uaccess							\
- 	$(if $(CONFIG_FTRACE_MCOUNT_USE_OBJTOOL), --mcount)		\
- 	$(if $(CONFIG_SLS), --sls)
+ 		if (track->addr < caddr)
+ 			end = pos;
++		else if (track->addr == caddr && handle < chandle)
++			end = pos;
+ 		else
+ 			start = pos;
+ 	}
+@@ -5180,6 +5188,7 @@ static int add_location(struct loc_track *t, struct kmem_cache *s,
+ 	l->max_time = age;
+ 	l->min_pid = track->pid;
+ 	l->max_pid = track->pid;
++	l->handle = handle;
+ 	cpumask_clear(to_cpumask(l->cpus));
+ 	cpumask_set_cpu(track->cpu, to_cpumask(l->cpus));
+ 	nodes_clear(l->nodes);
+@@ -6089,6 +6098,21 @@ static int slab_debugfs_show(struct seq_file *seq, void *v)
+ 			seq_printf(seq, " nodes=%*pbl",
+ 				 nodemask_pr_args(&l->nodes));
  
-diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
-index 20f4450..3a2fffd 100755
---- a/scripts/link-vmlinux.sh
-+++ b/scripts/link-vmlinux.sh
-@@ -146,9 +146,9 @@ objtool_link()
- 		if is_enabled CONFIG_RETPOLINE; then
- 			objtoolopt="${objtoolopt} --retpoline"
- 		fi
--		if is_enabled CONFIG_X86_SMAP; then
--			objtoolopt="${objtoolopt} --uaccess"
--		fi
++#ifdef CONFIG_STACKDEPOT
++		{
++			depot_stack_handle_t handle;
++			unsigned long *entries;
++			unsigned int nr_entries, j;
 +
-+		objtoolopt="${objtoolopt} --uaccess"
-+
- 		if is_enabled CONFIG_SLS; then
- 			objtoolopt="${objtoolopt} --sls"
- 		fi
-diff --git a/tools/arch/x86/include/asm/disabled-features.h b/tools/arch/x86/include/asm/disabled-features.h
-index 1231d63..1ae0fab 100644
---- a/tools/arch/x86/include/asm/disabled-features.h
-+++ b/tools/arch/x86/include/asm/disabled-features.h
-@@ -10,12 +10,6 @@
-  * cpu_feature_enabled().
-  */
++			handle = READ_ONCE(l->handle);
++			if (handle) {
++				nr_entries = stack_depot_fetch(handle, &entries);
++				seq_puts(seq, "\n");
++				for (j = 0; j < nr_entries; j++)
++					seq_printf(seq, "        %pS\n", (void *)entries[j]);
++			}
++		}
++#endif
+ 		seq_puts(seq, "\n");
+ 	}
  
--#ifdef CONFIG_X86_SMAP
--# define DISABLE_SMAP	0
--#else
--# define DISABLE_SMAP	(1<<(X86_FEATURE_SMAP & 31))
--#endif
--
- #ifdef CONFIG_X86_UMIP
- # define DISABLE_UMIP	0
- #else
-@@ -80,7 +74,7 @@
- #define DISABLED_MASK6	0
- #define DISABLED_MASK7	(DISABLE_PTI)
- #define DISABLED_MASK8	0
--#define DISABLED_MASK9	(DISABLE_SMAP|DISABLE_SGX)
-+#define DISABLED_MASK9	(DISABLE_SGX)
- #define DISABLED_MASK10	0
- #define DISABLED_MASK11	0
- #define DISABLED_MASK12	0
+-- 
+2.35.1
+
