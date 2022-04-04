@@ -2,89 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17F57C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 08:02:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83536C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 08:02:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377889AbiDDIEG (ORCPT
+        id S1355769AbiDDIE3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 04:04:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40376 "EHLO
+        Mon, 4 Apr 2022 04:04:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377882AbiDDIED (ORCPT
+        with ESMTP id S1377882AbiDDIEQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 04:04:03 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 462963B2BB;
-        Mon,  4 Apr 2022 01:02:07 -0700 (PDT)
-Received: from mail-wr1-f43.google.com ([209.85.221.43]) by
- mrelayeu.kundenserver.de (mreue011 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1MIxJq-1nH0x52y5q-00KLsF; Mon, 04 Apr 2022 10:02:05 +0200
-Received: by mail-wr1-f43.google.com with SMTP id c7so13268308wrd.0;
-        Mon, 04 Apr 2022 01:02:05 -0700 (PDT)
-X-Gm-Message-State: AOAM532517R/lSVGLXAwA+N5AKi/nm029RBFReXMZngAg6CGv5ne444x
-        T8XwKcxBHDYQhah1che4FV8J/iwRIPC/IeBYapk=
-X-Google-Smtp-Source: ABdhPJxfJvKKixoejzphmCX0GQJtCAcdZjnwkNDn/9M06aiYqWjmBipXxJ1GIcogwlUWxIq3sw2sGEnVe8T8dDL1brk=
-X-Received: by 2002:a5d:6505:0:b0:205:9a98:e184 with SMTP id
- x5-20020a5d6505000000b002059a98e184mr15347532wru.317.1649059325250; Mon, 04
- Apr 2022 01:02:05 -0700 (PDT)
+        Mon, 4 Apr 2022 04:04:16 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F5B23B3D6
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 01:02:20 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id g20so10011219edw.6
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 01:02:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=1JgldMjDiu5zvK43QVM+MblMzFJyCLm6wag4GS38NI8=;
+        b=ga3t17CYfB+KE5TsU35ymU7gxz3it957Oe4YUouw/nV0JQpApURccq9lNMFMZlgmex
+         jCH1hxwg5j0DpUWw2a1DWbHQB4XgKTwrjQLTEiZi2wOOW6MxKBUVYR1hDcbLYo1rlNlA
+         VVcEn6ELp11wq8wEBmvX58dV37HR66tsvubuyNwohvs0eIJr2lMksepdj7hQ45NQXcPh
+         TkSJ1HyTe1fD15uHj35aLRr/2cKRM00z4bBP89rwISORGPjxUqwJSivRjVDrtgKQ+smB
+         khIsYorPHxcGCaV0PH/16q+MJeOcAG+AcxMlNGiKD/8fnyBLsO1VkADj1b9Z0B3XcgGU
+         +Q6w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=1JgldMjDiu5zvK43QVM+MblMzFJyCLm6wag4GS38NI8=;
+        b=fSp9NTFBnyirMbAWMbVyDfWc44RgRbjk39X84m41Y/Xt/zrxRDYSubHzZG0kIWFKKd
+         n9Vk548EFnIAHkG70VgFu/nZ7t7irWmsixODAf6asbi+rA06T90EYwmYC/GSYPoLGxDX
+         93K7gqMuRcYsXw9vhcdGsffGOeaWTjLbh7I1qDv0RooLicrNC5guYiJ7+Q1sRuk9CKNn
+         rlXSJ7aus/vX8vf7m/vVg9BWnxi0iiNpfF50RBhxzoXkhuZZPtwve9y1EftvaaJGrHQ5
+         v1c6xvKnPDYMJQl/9vHcaLY6UEobzgcavMrmfxauEz1L6H9vGQ7gMwABCM1GdMTfL0kj
+         KONg==
+X-Gm-Message-State: AOAM532Op6ie3eHBgGBCTscGFg0FEQK1PdfjE6FVsk9dS8YL3fdl7I8X
+        3td2N3LaYQ1iaG+WIGQLR7c=
+X-Google-Smtp-Source: ABdhPJy3Lne0mEdt5P7baRApHpBKwehsF8BbTaFxGRB7bweJOspyVKwdLk40Ri78C0idhxVP+MClyA==
+X-Received: by 2002:a05:6402:4247:b0:419:3990:3db6 with SMTP id g7-20020a056402424700b0041939903db6mr31362069edb.193.1649059338902;
+        Mon, 04 Apr 2022 01:02:18 -0700 (PDT)
+Received: from [192.168.0.253] (ip5f5abb55.dynamic.kabel-deutschland.de. [95.90.187.85])
+        by smtp.gmail.com with ESMTPSA id jt8-20020a170906ca0800b006df9b29eaf1sm4039632ejb.8.2022.04.04.01.02.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 04 Apr 2022 01:02:18 -0700 (PDT)
+Message-ID: <bdd168a8-b260-0653-f835-a7814a8fd4c8@gmail.com>
+Date:   Mon, 4 Apr 2022 10:02:17 +0200
 MIME-Version: 1.0
-References: <20220404061948.2111820-1-masahiroy@kernel.org>
- <20220404061948.2111820-3-masahiroy@kernel.org> <YkqhQhJIQEL2qh8C@infradead.org>
-In-Reply-To: <YkqhQhJIQEL2qh8C@infradead.org>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Mon, 4 Apr 2022 10:01:49 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a0+fxiQGTu_XAOtNMkO91fZ7fQg3MZZahUjdNJCFaUxfw@mail.gmail.com>
-Message-ID: <CAK8P3a0+fxiQGTu_XAOtNMkO91fZ7fQg3MZZahUjdNJCFaUxfw@mail.gmail.com>
-Subject: Re: [PATCH 2/8] kbuild: prevent exported headers from including
- <stdlib.h>, <stdbool.h>
-To:     Christoph Hellwig <hch@infradead.org>
-Cc:     Masahiro Yamada <masahiroy@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:3CUoZQ9i738Pk1BDtFcQ17q6rJoOWZGhlf4AebmA6cuYFvtjqBY
- hWIGBvUybTD30MNo/igW2cL/K2IJWxgooaSR0MaxllcDW6BYCYoTrxem4uxL2+FQwEc8YhX
- ER1VPY7PouqNcWbtdXXbAXaf5bhddZbiGmfbryls7ezODnm7Fl5VrJ631sNPOBRUFyeTuLX
- 9qFnAB9IaO7SrYhhSW8fQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:r/J0NwWuQF8=:oSO9ZQsNRoYQwcgkMf5vQB
- 3cQdSgt4HRCdc0EYK2Po/M1kMIDRxlRecyLaq/jdKrKjCF8xcWCnhPSwoq/Virt8AH1YhpCEM
- 1urqSSOAH3vFaOpY97gPg6sTXDK9yL5uJ2Gw8iBTE1vzY3384dm6Ce3/F0VubMjVppok5pOsx
- 5xtMzj1Gy2Ec76onRuA3eucjqNv3nLjXMqfyDHh9nhzfDeq44FmMP4tPG8z7xe8TtK95SYGQw
- fCD70LEqnQEJVuE4XacWc1+GLbn4YWtCmOiQ1ggSpWUkyAWeUPyH2r4oCqW2iakhcfnLKjUN8
- ZdTOVlVWp0leXJ+Eu9xo4ZtGZXJyLZtjWTyi5scy3xP9AKWl4kAPhOQma4UxdG8d2yCmjnPBg
- cyGaw8vkgW3ZskAAJS2Dn1i277HvS7qYMrTAxqd4hD1ab2dBsUf/9fWb1apZmWbie504wHKNQ
- cJ57zSpgCQz8DpFSJvzwG49zizD9+/8nWM9s0KzB72XWHvTlWRLs3dtPddWoSuhKTipheW8JA
- 2g5DtsmQxUKrWPtOCpoYiT1h0xQATo8I57lihjvRQgNC8Lk92O2FO4w2IX+U7M74B0w5Vs2yN
- RGwsNyDkVOihEkWDbgvgrZsUaI7u7Ru67HUXNPd/l8RG2+zcSkAlexTnDTGIxtAlLCbsMvITM
- D/yYnU2cFzc/SUlO8rcHft6jI0tELUCfZXI0DMvXSum9SXLZBp4+1PUjAux5buoyVGiw=
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH V2] Fix unsafe memory access by memcmp
+Content-Language: en-US
+To:     Charlie Sands <sandsch@northvilleschools.net>,
+        gregkh@linuxfoundation.org
+Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        paskripkin@gmail.com
+References: <YkpdVyuQguGzPSNE@sckzor-linux.localdomain>
+From:   Michael Straube <straube.linux@gmail.com>
+In-Reply-To: <YkpdVyuQguGzPSNE@sckzor-linux.localdomain>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 4, 2022 at 9:41 AM Christoph Hellwig <hch@infradead.org> wrote:
->
-> On Mon, Apr 04, 2022 at 03:19:42PM +0900, Masahiro Yamada wrote:
-> > If we can make kernel headers self-contained (that is, none of exported
-> > kernel headers includes system headers), we will be able to add the
-> > -nostdinc flag, but that is much far from where we stand now.
->
-> What is still missing for that?
+On 4/4/22 04:52, Charlie Sands wrote:
+> This patch fixes sparse warnings about the memcmp function unsafely
+> accessing userspace memory without first copying it to kernel space.
+> 
+> Signed-off-by: Charlie Sands <sandsch@northvilleschools.net>
+> ---
+> 
+> V2: Fixed checkpatch.pl warning and changed variable name as suggested
+> by Greg K. H. and improved error checking on the "copy_from_user" function as
+> suggested by Pavel Skripkin.
+> 
+>   drivers/staging/r8188eu/os_dep/ioctl_linux.c | 21 ++++++++++++--------
+>   1 file changed, 13 insertions(+), 8 deletions(-)
+> 
 
-One case that I don't know how to solve is
+Hi Charlie,
 
-include/uapi/sound/asound.h:typedef struct { unsigned char
-pad[sizeof(time_t) - sizeof(int)]; } __time_pad;
+thanks for your patch. Looks good to me, but you should include
+staging: r8188eu: in the subject line.
 
-Here we define a structure layout based on a libc-provided type. There are two
-possible variants (32-bit and 64-bit time_t), and the kernel interface
-can handle
-both versions because they get different ioctl command numbers, but user space
-must see the one that matches its normal time_t.
+"staging: r8188eu: Fix unsafe memory access by memcmp"
 
-There are a couple of similar cases like this, but I think the other ones don't
-need to define architecture specific padding like this.
-
-       Arnd
+thanks,
+Michael
