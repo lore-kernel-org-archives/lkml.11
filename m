@@ -2,158 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C17CBC3527E
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:38:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8D5DC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:39:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383644AbiDDVdx (ORCPT
+        id S1386968AbiDDVjv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:33:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46838 "EHLO
+        Mon, 4 Apr 2022 17:39:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379278AbiDDQv5 (ORCPT
+        with ESMTP id S1379767AbiDDSDV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 12:51:57 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FD1B340DE;
-        Mon,  4 Apr 2022 09:50:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649091000; x=1680627000;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=gfjfHxX0p+HFa0uHshx5i4jpIGNdzFklRpR0pKy++Zs=;
-  b=jSrPJoCOx65TE1F3N/ZVpMWir3jjS6sPRBDMK5vSXRPTLn+xstqmMCF7
-   I14l/N49JGRFj7xR1wURIa+qYNAThMZG7vQ14R2AmVtYYW+sgwM3VPlj1
-   r3NT7KjzZRotFZBfNjwOXeNsji/a1ISctljH0YLBW/RFfLIWdXo9PXK0k
-   m+531YJNzbJvMvUnTfbJS4RziXYqq9+W83MumZ2Pf6qx0kPfhmklIaBbf
-   i0U77kAste3oTnonYBlISbL+fULQV+sSpXIb6LrFY1wtq5Bhf3RYC/Jzy
-   1wMiFMJ+J3nox6rRT5ZSPBGygcOVPxnRtnFzGNLUReowm6QeHTf/9thZS
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="323734058"
-X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
-   d="scan'208";a="323734058"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:49:51 -0700
-X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
-   d="scan'208";a="523105223"
-Received: from rchatre-ws.ostc.intel.com ([10.54.69.144])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:49:51 -0700
-From:   Reinette Chatre <reinette.chatre@intel.com>
-To:     dave.hansen@linux.intel.com, jarkko@kernel.org, tglx@linutronix.de,
-        bp@alien8.de, luto@kernel.org, mingo@redhat.com,
-        linux-sgx@vger.kernel.org, x86@kernel.org
-Cc:     seanjc@google.com, kai.huang@intel.com, cathy.zhang@intel.com,
-        cedric.xing@intel.com, haitao.huang@intel.com,
-        mark.shanahan@intel.com, hpa@zytor.com,
+        Mon, 4 Apr 2022 14:03:21 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40B3937BCA;
+        Mon,  4 Apr 2022 11:01:25 -0700 (PDT)
+Date:   Mon, 04 Apr 2022 18:01:22 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649095283;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=wX8w8FV4yP7/hACZ/Dkubahfg7SLkix1Wjx+nmRLJUU=;
+        b=LaMADLt/l4qyMI5pC7WKkpqmut6W0mjP5aAozvaZhOgI6Nb/vWEGSLXaX9Ou/ra0VhFFD5
+        JcMdWTtMeyf2Lyoky7F4TMn1QugrvFlxiGVBqj5aLwzGW0ucMdHpCnJzEJI5EaLAf/EkN6
+        Wao2LLBBsVg5AvvSTZf2hqhVVGJJ7DlIvC6EBq1K61sW09GxnGC7X2dAqOWffGw+jR64WA
+        N8Uw3Pl0BgGhaaH3rn54j7vdfztDomPx+mtDVybJrFcU+LgiJn9505PaA3iyySQx4zmPzu
+        G46aDWd2gIJSLx6KPfqbYtg/QkB8PUio8NezQznRxfWtSeiKVW1iprtJ/c34pA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649095283;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=wX8w8FV4yP7/hACZ/Dkubahfg7SLkix1Wjx+nmRLJUU=;
+        b=E+K+bx2uZut2Ke6OKYm5DsmLWzcL8IvtlAaOAcxsvb+LSi85vslkt2jx2Y6XN3OowESBuJ
+        vQ6dK5r6QwggCMDQ==
+From:   "tip-bot2 for Dave Hansen" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: x86/urgent] x86/mm/tlb: Revert retpoline avoidance approach
+Cc:     kernel test robot <oliver.sang@intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Borislav Petkov <bp@suse.de>, Nadav Amit <namit@vmware.com>,
+        <stable@vger.kernel.org>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH V3 25/30] selftests/sgx: Introduce TCS initialization enclave operation
-Date:   Mon,  4 Apr 2022 09:49:33 -0700
-Message-Id: <50dbbe8b53c42d4909f2f4884f63972bfb7bb9a6.1648847675.git.reinette.chatre@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1648847675.git.reinette.chatre@intel.com>
-References: <cover.1648847675.git.reinette.chatre@intel.com>
+In-Reply-To: <164874672286.389.7021457716635788197.tip-bot2@tip-bot2>
+References: <164874672286.389.7021457716635788197.tip-bot2@tip-bot2>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Message-ID: <164909528267.389.5092308187702493426.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The Thread Control Structure (TCS) contains meta-data used by the
-hardware to save and restore thread specific information when
-entering/exiting the enclave. A TCS can be added to an initialized
-enclave by first adding a new regular enclave page, initializing the
-content of the new page from within the enclave, and then changing that
-page's type to a TCS.
+The following commit has been merged into the x86/urgent branch of tip:
 
-Support the initialization of a TCS from within the enclave.
-The variable information needed that should be provided from outside
-the enclave is the address of the TCS, address of the State Save Area
-(SSA), and the entry point that the thread should use to enter the
-enclave. With this information provided all needed fields of a TCS
-can be initialized.
+Commit-ID:     d39268ad24c0fd0665d0c5cf55a7c1a0ebf94766
+Gitweb:        https://git.kernel.org/tip/d39268ad24c0fd0665d0c5cf55a7c1a0ebf94766
+Author:        Dave Hansen <dave.hansen@linux.intel.com>
+AuthorDate:    Fri, 18 Mar 2022 06:52:59 -07:00
+Committer:     Borislav Petkov <bp@suse.de>
+CommitterDate: Mon, 04 Apr 2022 19:41:36 +02:00
 
-Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
+x86/mm/tlb: Revert retpoline avoidance approach
+
+0day reported a regression on a microbenchmark which is intended to
+stress the TLB flushing path:
+
+	https://lore.kernel.org/all/20220317090415.GE735@xsang-OptiPlex-9020/
+
+It pointed at a commit from Nadav which intended to remove retpoline
+overhead in the TLB flushing path by taking the 'cond'-ition in
+on_each_cpu_cond_mask(), pre-calculating it, and incorporating it into
+'cpumask'.  That allowed the code to use a bunch of earlier direct
+calls instead of later indirect calls that need a retpoline.
+
+But, in practice, threads can go idle (and into lazy TLB mode where
+they don't need to flush their TLB) between the early and late calls.
+It works in this direction and not in the other because TLB-flushing
+threads tend to hold mmap_lock for write.  Contention on that lock
+causes threads to _go_ idle right in this early/late window.
+
+There was not any performance data in the original commit specific
+to the retpoline overhead.  I did a few tests on a system with
+retpolines:
+
+	https://lore.kernel.org/all/dd8be93c-ded6-b962-50d4-96b1c3afb2b7@intel.com/
+
+which showed a possible small win.  But, that small win pales in
+comparison with the bigger loss induced on non-retpoline systems.
+
+Revert the patch that removed the retpolines.  This was not a
+clean revert, but it was self-contained enough not to be too painful.
+
+Fixes: 6035152d8eeb ("x86/mm/tlb: Open-code on_each_cpu_cond_mask() for tlb_is_not_lazy()")
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Acked-by: Nadav Amit <namit@vmware.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lkml.kernel.org/r/164874672286.389.7021457716635788197.tip-bot2@tip-bot2
 ---
-No changes since V2
+ arch/x86/mm/tlb.c | 37 +++++--------------------------------
+ 1 file changed, 5 insertions(+), 32 deletions(-)
 
-No changes since V1
-
- tools/testing/selftests/sgx/defines.h   |  8 +++++++
- tools/testing/selftests/sgx/test_encl.c | 30 +++++++++++++++++++++++++
- 2 files changed, 38 insertions(+)
-
-diff --git a/tools/testing/selftests/sgx/defines.h b/tools/testing/selftests/sgx/defines.h
-index b638eb98c80c..d8587c971941 100644
---- a/tools/testing/selftests/sgx/defines.h
-+++ b/tools/testing/selftests/sgx/defines.h
-@@ -26,6 +26,7 @@ enum encl_op_type {
- 	ENCL_OP_NOP,
- 	ENCL_OP_EACCEPT,
- 	ENCL_OP_EMODPE,
-+	ENCL_OP_INIT_TCS_PAGE,
- 	ENCL_OP_MAX,
- };
- 
-@@ -68,4 +69,11 @@ struct encl_op_emodpe {
- 	uint64_t flags;
- };
- 
-+struct encl_op_init_tcs_page {
-+	struct encl_op_header header;
-+	uint64_t tcs_page;
-+	uint64_t ssa;
-+	uint64_t entry;
-+};
-+
- #endif /* DEFINES_H */
-diff --git a/tools/testing/selftests/sgx/test_encl.c b/tools/testing/selftests/sgx/test_encl.c
-index 5b6c65331527..c0d6397295e3 100644
---- a/tools/testing/selftests/sgx/test_encl.c
-+++ b/tools/testing/selftests/sgx/test_encl.c
-@@ -57,6 +57,35 @@ static void *memcpy(void *dest, const void *src, size_t n)
- 	return dest;
+diff --git a/arch/x86/mm/tlb.c b/arch/x86/mm/tlb.c
+index 6eb4d91..d400b6d 100644
+--- a/arch/x86/mm/tlb.c
++++ b/arch/x86/mm/tlb.c
+@@ -855,13 +855,11 @@ done:
+ 			nr_invalidate);
  }
  
-+static void *memset(void *dest, int c, size_t n)
-+{
-+	size_t i;
-+
-+	for (i = 0; i < n; i++)
-+		((char *)dest)[i] = c;
-+
-+	return dest;
-+}
-+
-+static void do_encl_init_tcs_page(void *_op)
-+{
-+	struct encl_op_init_tcs_page *op = _op;
-+	void *tcs = (void *)op->tcs_page;
-+	uint32_t val_32;
-+
-+	memset(tcs, 0, 16);			/* STATE and FLAGS */
-+	memcpy(tcs + 16, &op->ssa, 8);		/* OSSA */
-+	memset(tcs + 24, 0, 4);			/* CSSA */
-+	val_32 = 1;
-+	memcpy(tcs + 28, &val_32, 4);		/* NSSA */
-+	memcpy(tcs + 32, &op->entry, 8);	/* OENTRY */
-+	memset(tcs + 40, 0, 24);		/* AEP, OFSBASE, OGSBASE */
-+	val_32 = 0xFFFFFFFF;
-+	memcpy(tcs + 64, &val_32, 4);		/* FSLIMIT */
-+	memcpy(tcs + 68, &val_32, 4);		/* GSLIMIT */
-+	memset(tcs + 72, 0, 4024);		/* Reserved */
-+}
-+
- static void do_encl_op_put_to_buf(void *op)
+-static bool tlb_is_not_lazy(int cpu)
++static bool tlb_is_not_lazy(int cpu, void *data)
  {
- 	struct encl_op_put_to_buf *op2 = op;
-@@ -100,6 +129,7 @@ void encl_body(void *rdi,  void *rsi)
- 		do_encl_op_nop,
- 		do_encl_eaccept,
- 		do_encl_emodpe,
-+		do_encl_init_tcs_page,
- 	};
+ 	return !per_cpu(cpu_tlbstate_shared.is_lazy, cpu);
+ }
  
- 	struct encl_op_header *op = (struct encl_op_header *)rdi;
--- 
-2.25.1
-
+-static DEFINE_PER_CPU(cpumask_t, flush_tlb_mask);
+-
+ DEFINE_PER_CPU_SHARED_ALIGNED(struct tlb_state_shared, cpu_tlbstate_shared);
+ EXPORT_PER_CPU_SYMBOL(cpu_tlbstate_shared);
+ 
+@@ -890,36 +888,11 @@ STATIC_NOPV void native_flush_tlb_multi(const struct cpumask *cpumask,
+ 	 * up on the new contents of what used to be page tables, while
+ 	 * doing a speculative memory access.
+ 	 */
+-	if (info->freed_tables) {
++	if (info->freed_tables)
+ 		on_each_cpu_mask(cpumask, flush_tlb_func, (void *)info, true);
+-	} else {
+-		/*
+-		 * Although we could have used on_each_cpu_cond_mask(),
+-		 * open-coding it has performance advantages, as it eliminates
+-		 * the need for indirect calls or retpolines. In addition, it
+-		 * allows to use a designated cpumask for evaluating the
+-		 * condition, instead of allocating one.
+-		 *
+-		 * This code works under the assumption that there are no nested
+-		 * TLB flushes, an assumption that is already made in
+-		 * flush_tlb_mm_range().
+-		 *
+-		 * cond_cpumask is logically a stack-local variable, but it is
+-		 * more efficient to have it off the stack and not to allocate
+-		 * it on demand. Preemption is disabled and this code is
+-		 * non-reentrant.
+-		 */
+-		struct cpumask *cond_cpumask = this_cpu_ptr(&flush_tlb_mask);
+-		int cpu;
+-
+-		cpumask_clear(cond_cpumask);
+-
+-		for_each_cpu(cpu, cpumask) {
+-			if (tlb_is_not_lazy(cpu))
+-				__cpumask_set_cpu(cpu, cond_cpumask);
+-		}
+-		on_each_cpu_mask(cond_cpumask, flush_tlb_func, (void *)info, true);
+-	}
++	else
++		on_each_cpu_cond_mask(tlb_is_not_lazy, flush_tlb_func,
++				(void *)info, 1, cpumask);
+ }
+ 
+ void flush_tlb_multi(const struct cpumask *cpumask,
