@@ -2,58 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADC26C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 14:40:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86F91C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 14:40:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378053AbiDDOmT (ORCPT
+        id S1378215AbiDDOmX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 10:42:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45020 "EHLO
+        Mon, 4 Apr 2022 10:42:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378066AbiDDOkJ (ORCPT
+        with ESMTP id S1378064AbiDDOkJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 4 Apr 2022 10:40:09 -0400
 Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A3DD3FD95
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AAD03FD9A
         for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 07:36:38 -0700 (PDT)
 Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 234DlFTS024455;
-        Mon, 4 Apr 2022 14:36:34 GMT
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 234DlFTP024455;
+        Mon, 4 Apr 2022 14:36:33 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : subject :
  date : message-id : references : in-reply-to : content-type :
  content-transfer-encoding : mime-version; s=corp-2021-07-09;
- bh=rmWRLY+NtARVEa6qnelKzwLSj7d7B8eYEBnxdWpzySw=;
- b=sjkMiPfMH4rBuH6ocxxN4dR1pAH8G9+T7ISPgiEqNXRCj1SlRusJrO+vDs4x/zkdhwDV
- AXLXCREEST9OddDQbdXmIY+5zeG72It5eg0tzBInuDqmvdPSBpM5n3FovplTM20cjc+j
- lhUWCKnAKX1QFRPSCCrzjcNrumIWW5bdDAfQSHf9tOeS+2bFKur2/EjU5N69+OfpRMcR
- Mh3Tn/UsKK+AtTaF0I6W5d1GJOrjHKP6Zly8C1YQHmJhbESYyEYpTbV/txnHsop3zxxp
- njDC1smZhLmgF4I+PcTmmsAJupnVijEpk4pMFMUVCVbXxfYEwaql9LbmThULfj8AOBsC 1g== 
+ bh=VCmwu5V5pRY8UR9a6ZUOMfw+WCnEcnLW55u5lIcP7pY=;
+ b=Wx0lbBwecNDabHovLkdU6/17/lWi3eua72dTgbjSIMPhI8ZrvxSJ3vKXoNLgVswuAabp
+ Da7lP7Ls6aheSkXxSH7pGVeTSTV2UqvOUNLP/o2pcLtNpfE2Yb0LDX5pTNBfgrECh4wk
+ F+ocnb1NObG9pceBBGniXMzP12TQflLxywQjOTtPKb1CCZOv45OKyUF1m3jyGZMgG+J3
+ qkICclau9en2r+waQsiAVcPKzLspnExSuI2GoyzcxBu9XXFQfDBs2/2WD29OvGJUVrPR
+ CcfO9MJziwbiBVJ2EO7BfoRi4emy1O7KxF7cebfaJfp6se67E8km41zbjQKm+J0j1h+S 3w== 
 Received: from phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta02.appoci.oracle.com [147.154.114.232])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3f6f1t3cw2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 04 Apr 2022 14:36:33 +0000
-Received: from pps.filterd (phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 234EZaZ6034331;
-        Mon, 4 Apr 2022 14:36:32 GMT
-Received: from nam12-bn8-obe.outbound.protection.outlook.com (mail-bn8nam12lp2168.outbound.protection.outlook.com [104.47.55.168])
-        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3f6cx2mj48-3
+        by mx0b-00069f02.pphosted.com with ESMTP id 3f6f1t3cw1-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
         Mon, 04 Apr 2022 14:36:32 +0000
+Received: from pps.filterd (phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 234EZaZ5034331;
+        Mon, 4 Apr 2022 14:36:31 GMT
+Received: from nam12-bn8-obe.outbound.protection.outlook.com (mail-bn8nam12lp2168.outbound.protection.outlook.com [104.47.55.168])
+        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3f6cx2mj48-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 04 Apr 2022 14:36:31 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=C17ybKV6aKOgwvpksW3+Amj/QNQACCFMkaPEs9GQnQmolFGBMVAT/yzghfCSp4zzPlpCVd0QGMQH0XNpQbh5F5mcNycSmClErUtA5ttTOi+n2Vj0nLqgmDNXACTjqdPnFgcrdz/vsj0rhrBgLf2uPw0kJKOJSZoqvgi6DbnmZBfNMPWGnC87ZUj6RNVTcaI8aI5yEyGYhR2C4mP3jg+Tb2wNo+XXcFOlqDY7tysCqK7xOtNdI+yMJYrJ9xvPRtsYySadG0Mp14Q77lvrcbjyyU7A6YW5xRxLW+xsG1v+inO7iCTa+mVvSJqYVztbc4EVoaGN/lTs3jf3nUOO89WjKg==
+ b=aMLsTr2AIOTIZ7DPx8eQb9TRFInS0JN/IH6jldHNPmSLfh6T0d1dXNvZL76d9b3IxmQvC5lOxscqXPKN+8qjgTA3ejlky5mvg4k1OSmsjouCnavOuBOOOhaR1/lTcRb1a3lNOsAf03BkICMzhxG1BXyywKF8PW6IWnhLgJIbPxS+sXduSFXlQPo6umPgmZ0MF1fp+4sk/HWsyUxZRE7YnuclttZoliwvghdOMKdmBAG8crOqtBYLEkDWbJOO1QOgcn8sYin9r6Ar+tNrHNn9dwZs12TcLOrfEfw2nVRLqQyYXH9BGDSSCXvKeU1oIw+EFpl3ob9fIn1YvGGtzO364g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=rmWRLY+NtARVEa6qnelKzwLSj7d7B8eYEBnxdWpzySw=;
- b=oMfCV1sTTwvqhWn/NFpT4SyuSa6viRkWWHdnW4Z/6/Ezxr1UFVTEWpLR2UFlwb4stV1ePaSj7VqIl+zJe/9qAFINFRayNxqwxiZ8q5UySRQAUhTHAMFgPKAclbWQ22aBVFDElDsqXKKEjDLLrpBWht2ok8sKj19GlfE1paX5n1Yn0GvVzyvDLDPqonSyJ0gM6M87TYtVDfyGmhOgHmT7B4AqV/Do+bORn9WfUNpa+wcj7qAaYBClUCxxAJEnkVEfq+L+f2jCKRHoS9LbZEeSQCfy9Co0rJVs9QWYMMkK00wEJxLcEJxGXlf1Ko9zeJ+QD0i4KN2USFP2k3OJ87BGFQ==
+ bh=VCmwu5V5pRY8UR9a6ZUOMfw+WCnEcnLW55u5lIcP7pY=;
+ b=H4o86Klccph90O0Hra+h68QuGQQ1yeuGINxJubdHiXfQccKf54r3jb/TpU4qCrBISMBoyegyQHGbgxo6QDCvmu/gWutsF3zsBiXvSzq3fgAqi4EUR6gieKgKgn9Pshwwb5+FR42pMBM+HmBoSEXOu4Xw2G4bR/gkz2gh1KpL2W+6MnG2rY1HXrqNvkbxdA+7UBbB3E+k5rpi8Duh/mXLJarSyCyqC5wyMC/vLMOGrCH2j3PWVwZ491y6BkelmwCGq8HZOSfvsXne4eyJEzRiKTKseBCI8z+ouJmeJxdB63lKDrW18HCeM9cOwNuBSlyszDIRoTysXRC129XpyMQ7pQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
  dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rmWRLY+NtARVEa6qnelKzwLSj7d7B8eYEBnxdWpzySw=;
- b=FIj2v0C2QTzzwSk6V3gyE2cf/jwkIaOf99aA0lm64P/u/x4QMdRgFiJFU+M56y+5hly+w/rUGEb5944NeIiN6NwKrDmnyP2wgZjMzemkjDVU6d5L9gRT4IFyVnK2ZIb2V0hdQxTNqrBwr32fQzvAVpGDii+4m9QhFHjnGBxVzVU=
+ bh=VCmwu5V5pRY8UR9a6ZUOMfw+WCnEcnLW55u5lIcP7pY=;
+ b=W5cgmPA6xhn3Hvbj8uyfKhyzB7Xm4AEekx9utwnom6M1tBGIZgofAQfyHL0/e4cGgucZDKAL+KSrRpRYXO6zQTmRrdNfUQDMbG2aeedoqktwiHRmyNxNNO4XOhLbaYhgvPJ+YLk/mNZerPyIZpEwnlilz4US0/Gx0gBMfU27XE0=
 Received: from SN6PR10MB3022.namprd10.prod.outlook.com (2603:10b6:805:d8::25)
  by BLAPR10MB5329.namprd10.prod.outlook.com (2603:10b6:208:307::24) with
  Microsoft SMTP Server (version=TLS1_2,
@@ -62,19 +62,18 @@ Received: from SN6PR10MB3022.namprd10.prod.outlook.com (2603:10b6:805:d8::25)
 Received: from SN6PR10MB3022.namprd10.prod.outlook.com
  ([fe80::74fd:df41:4c93:24a5]) by SN6PR10MB3022.namprd10.prod.outlook.com
  ([fe80::74fd:df41:4c93:24a5%6]) with mapi id 15.20.5123.031; Mon, 4 Apr 2022
- 14:36:30 +0000
+ 14:36:29 +0000
 From:   Liam Howlett <liam.howlett@oracle.com>
 To:     "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
         "linux-mm@kvack.org" <linux-mm@kvack.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH v7 55/70] mm/madvise: Use vma_find() instead of vma linked
+Subject: [PATCH v7 54/70] mm/ksm: Use vma iterators instead of vma linked list
+Thread-Topic: [PATCH v7 54/70] mm/ksm: Use vma iterators instead of vma linked
  list
-Thread-Topic: [PATCH v7 55/70] mm/madvise: Use vma_find() instead of vma
- linked list
-Thread-Index: AQHYSDFKRVO4MUaaX0eYKzJeXibXfQ==
-Date:   Mon, 4 Apr 2022 14:35:54 +0000
-Message-ID: <20220404143501.2016403-56-Liam.Howlett@oracle.com>
+Thread-Index: AQHYSDFJZWd9QCG/skaRv/RMmrDyKg==
+Date:   Mon, 4 Apr 2022 14:35:53 +0000
+Message-ID: <20220404143501.2016403-55-Liam.Howlett@oracle.com>
 References: <20220404143501.2016403-1-Liam.Howlett@oracle.com>
 In-Reply-To: <20220404143501.2016403-1-Liam.Howlett@oracle.com>
 Accept-Language: en-US
@@ -83,59 +82,59 @@ X-MS-Has-Attach:
 X-MS-TNEF-Correlator: 
 x-mailer: git-send-email 2.34.1
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 5092fb60-4b1e-4cba-be0a-08da1648822e
+x-ms-office365-filtering-correlation-id: 135b4709-9907-4685-c1f7-08da164881f0
 x-ms-traffictypediagnostic: BLAPR10MB5329:EE_
-x-microsoft-antispam-prvs: <BLAPR10MB5329C0D309E135C1EB5DB895FDE59@BLAPR10MB5329.namprd10.prod.outlook.com>
+x-microsoft-antispam-prvs: <BLAPR10MB5329AB8BE8D0C620BC104862FDE59@BLAPR10MB5329.namprd10.prod.outlook.com>
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 8VUFpv4FIpLT1eE0OeI6uVdhZscex2bZVWcedImxX+UsshpAiLI6AkVlDMlgJ8nl4aO1UJBQlHvLUOD9elgek8k29ZNQlXzTqWAXCE0blXJtpZzoOxjx0FVMuIHge+9jQnXTI7YRMTeuDtdHBSJ+DBRJZJTuU7bJDvrgUjzPcT1GYEHs9Q+Cwfuo3XUuobaVVKMzxKZnAFMJH7o1F9nrgCsQYJY9uFUtpOws46O+3EIVUPFvpzOSgVdqzbWYFO+AW4147AlADRc9sJ/qgWt1F/aoUjwkYQVj380wT2nVJbbpvK76yLF/VEcKh7kVJ7tHw8+BhPRGnumXqgBi+ZMkv4muujl/EfHLoT2+J2YnYs1vJM2cd8asKagFubjKe1D4iQael0L0PeuyJFYAZpXYS7dZyduO2bOXD5hFGMAkFQWe6nvzQKiBast0Dhy3Ozs2EIgH7dpK5A+N0cR7fO1MgWbZKL/UvcGBDGYjR4O0z3LMxjVlMX1sVwk6gnYFYW50Nuffsp5UrVRTkbjsVN9Z1PgS5bg0wtButE7lSjSnmFHIWTw2X7vCtVAy7zT3so96R6K5WXoH4QBAJ7wJghFFaC69wOd3AkjnPZ+W5bh+pZPyMOmDc25BR9QAv4QICqv+tXCqvqA0SQuU/UcURGgdTlouKtaE+WXSMI8L5cwRK3pXZ4NcukAdqrWJQFdbMNPfgsQzEflfFdTFIADhatYbtw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR10MB3022.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(508600001)(6506007)(64756008)(76116006)(66946007)(66476007)(66446008)(91956017)(316002)(83380400001)(38100700002)(66556008)(6486002)(110136005)(38070700005)(86362001)(71200400001)(6666004)(6512007)(122000001)(4744005)(44832011)(26005)(2616005)(1076003)(186003)(8676002)(8936002)(36756003)(5660300002)(2906002);DIR:OUT;SFP:1101;
+x-microsoft-antispam-message-info: JTdVWiVJl3AdDu55zF5oxFhfTZ19H/Qqp71X8Gjm96nWgNzz6E6nzNcGlzz1u/mZ6Fa5FEy06fOEHZJrVDE7ugKDZCFWgEv5jIDRR1nLEFJvGZqw9J7ZokHXg8gUIf4zoBO1Ivq8j6Kx9O4EpYXPCVMHbRKp1s+7ZkF5ZvA7BOSsHSU0YP65csgWYaDjAhP1cWIqavrvOJHTQtbut5VjLqdQWxKmCLtZc/8f3SUDAsdA7Og/xUgGv23pHGFVUxmIzWRL0cBWGFzPtk8tIuhK0ekhix9AJhg28zybRNekyPfJZsbBPLD3x5yCuYGqtPZyv0RLDEDuou1oKbTU0oBohTX9EPUYwKym3STmU0DaSVJEsK4S1UpSyO8owT7deHOghRoilvXaVWSEuYmQ3KsgfvyNP5JHaK+8aXhq4Vyu1GrM0X/lX534tfdSN1eLV2Nft9cYLeokicISvan4KvU/fFs2kwEkpOgKUPKJEfzE7K+ZVbYxqgLsw0XFDPRTdS40Lpcenzk9RDXOOIkrnPz3eFFdlZKzWBL18Xl828VZl4On3z8hq9L2ClmOScXA6cRXQWn3cqhZDicmlYCq0Ae5VuFDv6OImNsFfkFpRisc2DLjzmIpfE/IpWLt5Dbv8tmFXOyJAnJI7DTjGFP5vUrFP0S2ZNXfMM9xB4bVGA1SZIVea92BiJnjGhXvhMnoOrgHIC7LOPL/ejdonyjZOQ1bQw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR10MB3022.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(508600001)(6506007)(64756008)(76116006)(66946007)(66476007)(66446008)(91956017)(316002)(83380400001)(38100700002)(66556008)(6486002)(110136005)(38070700005)(86362001)(71200400001)(6666004)(6512007)(122000001)(44832011)(26005)(2616005)(1076003)(186003)(8676002)(8936002)(36756003)(5660300002)(2906002);DIR:OUT;SFP:1101;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?q8VCGAWxUWf3Hr3ZfREE7u3rQno5X/hGe8lITGWghTLWoobpncWOr30r1F?=
- =?iso-8859-1?Q?xgDa0OZjpSbedP/hg80n0ikjwMbZcP/XG+L31Xw0M/oEd7b8FfGA3NQjD7?=
- =?iso-8859-1?Q?XGq4sLmlhImQH7OyMQtFwAI1ueJP3ylz1/x87wVymthO1gHIFHJoZPk7sv?=
- =?iso-8859-1?Q?NlkAB+snuR6J/mMwo/7EQMxqRkIF3a+vFq4evLWRFEe0Tesa/fmYOTp8tm?=
- =?iso-8859-1?Q?uMkrm/74Na6TLRPGfEyKMiAgDSEP1FTx/Idm2bHAoeY4rOJCZ854YIdGYE?=
- =?iso-8859-1?Q?F3DOwe4tu/bp8PWQOMhRBeC3oc2U7US+o0NGMxL19WEdSKh+Pg0K2AaNR7?=
- =?iso-8859-1?Q?SvqU8Q+8KlW/gy/XpezY4unL+kNxQVPBltzOrbN1sSHSE1EcLO7xb3UysR?=
- =?iso-8859-1?Q?4SwvDfqMPH1tK4W3aUxFsjYTgtm36TxG5JNQrgLyKUMEzCZhOlFz4C+RRn?=
- =?iso-8859-1?Q?U5rMTWXwDMoL1PzfghE/oMWxboKjIS2y3iYqazBN9biGZYSUDxjCHluN7s?=
- =?iso-8859-1?Q?3g4AyRRjCwObKG9UNpQItkRqfR9dvMkyZXEaKgUUdVbaJOJsTJgmE+WwMW?=
- =?iso-8859-1?Q?jYoetmhtM2L57DrYOTUBW8LZZJasLNt5a8UzrWnLNpdLwngHqlB1a4KAd1?=
- =?iso-8859-1?Q?BgGgBX+UpCOnA7sjsH17okFHvHy0Oh0NulMXWMBqB9SfJDH9fqy37R95Uf?=
- =?iso-8859-1?Q?ywmcdoHsOvfXjRUCCkeunw339iIoq8NZagILCXSfqOhBrmNCimh7BX8X5+?=
- =?iso-8859-1?Q?ubeA5UHug10FUNWXhpXpxH/zSeGTa9mDC9AY/DLifVu7be8G24m7Us+n7x?=
- =?iso-8859-1?Q?KgWeIRVRkxaP9O1NCiZjXuk1XHYgXehNkGV7BP2c+Tf8Y8rD5xu4zIe/JH?=
- =?iso-8859-1?Q?KevbMaPKAgLk/KIxAYnSUJGvoAZ1DMK1+TcbGnGEz+5oNgNl/cA8hbCLST?=
- =?iso-8859-1?Q?hXby8ybfsSJUTKQoV3NppqAOn0h75nPvryLbSYdnIjBLrdFRQJk+BfOIkm?=
- =?iso-8859-1?Q?h2QouH5Kg/jV4rBVSG3ceCOwNQpLTLWDZIa2FiXBJNn8jQNsEnUHh2BfRG?=
- =?iso-8859-1?Q?Qd9KKK4Psgxk1dauFq1A0UO9awhZI9l37V2cZ5FdZfwNAuFi6I8SyCxq9R?=
- =?iso-8859-1?Q?uwcVwcOab+k4IUJGnjcitjgc4Bn5GC8OO9+irABa1I62Axd7gU42UYuXhY?=
- =?iso-8859-1?Q?NW7FLzWhcpo9zmwfmu7lo0v6bBJwr6uLz8CBscKYsYeZOOw9XsqJFtLfSk?=
- =?iso-8859-1?Q?o+ALOH6wxSG8dxRSZyQqKwonmalYPgJb994IeM6G+t9XH7JOleGIRF8kJD?=
- =?iso-8859-1?Q?jWOnzeSCG/MrJU90TI9lXZHwBd3VR/G0wpuyR2GhcscskRjXl7PZ5I8uUz?=
- =?iso-8859-1?Q?zjc/+9TMoqgtMPY886Xl5ubSXt0+b0ncDKsZsKswzdKGS/x5AmN7d6HByS?=
- =?iso-8859-1?Q?rNfEy9JpFrmUsJwbk9TqZ0URbQxbjDtmNy5Jf4CETIFFsEifgyQsYapTPT?=
- =?iso-8859-1?Q?nh3cOX7TM5X2hlQK3c+8g9LbUD4TLhxckaqVtWYR1+M5OxYEmgu4HQ3v2Q?=
- =?iso-8859-1?Q?EPoSxIl7qM3o/cTHU5LVp1dsst2rHKlAIISoK3vp3ZCUEgtrr8jY35dY7f?=
- =?iso-8859-1?Q?Cx95pK5izRVHTzpoYyM0LjNe6eTxaSD469xuyKX+MNKecHDZLkoqd8fRbN?=
- =?iso-8859-1?Q?K3bamx3DcyVSF9Cb/fc50C6coPA/1QsRkuorqSStH3jT2PU27/m/EAW2BB?=
- =?iso-8859-1?Q?d4zXCPl4xme0+HPmqGZgpru4Uv283YUz6PjcDNubyE7DjJB1638Y0rmx2z?=
- =?iso-8859-1?Q?SzvPv3I0DNx88AtEoIh/7ayptyND3mQ=3D?=
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?82d290078A5Lav6LtMoSMQwZ8aL4fROOJklaxlL+03omoZDA5VNCiKhpyN?=
+ =?iso-8859-1?Q?OHDF+FgBw9TRUtp2aGyLqqsro90fiNgE9k8R69OpuVojZsgC//5HU9DJxz?=
+ =?iso-8859-1?Q?FlFqKHx7B90T78e6uAWr4JtMQPF7zkatGcFQGcoi7pnwHqJz+xdzkkR/x2?=
+ =?iso-8859-1?Q?KPx9sGihp7Ctw9FtLCPn854llukhzJWXDLaGbToXAy/TsQZCKtx1cM47rd?=
+ =?iso-8859-1?Q?Ae3P0fJvyO30bs9I4JbS/Vz+in4UKMxwLknUJkf1q2MBdiqVTPoF1M/0m0?=
+ =?iso-8859-1?Q?yDJWtFhGWI79PgprJ16tJx0UnEL9Nt46t9EJ2wjK6032wRiR+uY6MleQX3?=
+ =?iso-8859-1?Q?cw1BXZS+aspTfLkf6RsydsndxGk+bTJPcVWlwJSd6HZP+Sxm8YQ2dw43Rd?=
+ =?iso-8859-1?Q?qMQm8tFEDU/C3nzrXVgiCj8J40NC8AUtDyqDURB+FQzfRwejMW08XzL73v?=
+ =?iso-8859-1?Q?AlByKx55H3Y+hJAUeN8kxES3fBqPithfjg1jb+OQHTFcG8Sdgle1nHf2/8?=
+ =?iso-8859-1?Q?KIdRvSgAEagQZXT68CTdwBW4fxOuHht6caUWxGKYJaWEbhNRt/I1hH778e?=
+ =?iso-8859-1?Q?/nM5PbfScsW1cQqEufzuc3Rq4djdFRMB2blFDr+6bKQYjCCfj5OEqaxEBA?=
+ =?iso-8859-1?Q?R4MrkC9eQPpoVd6IHvCRFg5vL6mJn1dQsJq7yYMgJuTHNrN+MBHGXoank5?=
+ =?iso-8859-1?Q?ArDLKIu4jbJWvtTl9lm3EIDnT6srC+mV5YvHJNleVDWpnJGTElH6CgCaCA?=
+ =?iso-8859-1?Q?/lA4rimhv7xHPm/qFUZLwqkpATy50nAloac0DneJKRmSAptqDGlzYPlpQf?=
+ =?iso-8859-1?Q?SeU5qQpFfy2J2bdlYgVBq+dAYVmErVhNTFfRihuvl/zUlgnsbJUOIWRvf/?=
+ =?iso-8859-1?Q?NgI0Ks8I3vzeiCOsltzqmOq5Rv2gMdLHrs6VjfN07QUCGzTDvyuHQsf1ip?=
+ =?iso-8859-1?Q?kI3/J7x+kk2AtLqvfWzYyRfkNMjGgc7gh3uBpbM0ndWv41L3s6qN2cSPrl?=
+ =?iso-8859-1?Q?LHjqtKw0FNqQiP8G4W67cpazu4CbVTO2LmLUBw70DRh26Co52LhyfdBOz+?=
+ =?iso-8859-1?Q?KapH4Nxdu7Y8wt7Z1omDCFK2ClrDZgi+QGqf963sBDf12wfSVB6QTI6oJj?=
+ =?iso-8859-1?Q?ZieAHsOvxNO747xO/RHypY6ZYLTTk/xTcMAWdhWWkg/toZWhicE13p2grm?=
+ =?iso-8859-1?Q?FWgUQ1NXnvIeUARKwclxOuzGVqnmSbJGzD1wwPElWlQPHchAzOVTA9Fr4v?=
+ =?iso-8859-1?Q?cOH5zBupcRhMEgNXGHHSnKDFVr2+fKEPWEzjvtJORClU4hWnJov3fAHNrM?=
+ =?iso-8859-1?Q?RYnCHij9EMML4fTeGPmrHRvLVY6jzn2GEDr2nAIAUo1MuU1AxJ7BKwToqx?=
+ =?iso-8859-1?Q?Leinsog/tBHiezuw8VT+uEBA108xiBL6nNtiZbqNfp/wTu1++nPZJ8HO40?=
+ =?iso-8859-1?Q?iMMZpt1ZkKnoEF73mL97sd/8I9JAkT+W+Nyp8oXWKqPJxIEMh6tDjc3986?=
+ =?iso-8859-1?Q?sCt1+B3a/2ayYXJVpahXKrbr1Eu9doxxsbweLiD+0tJ4oZNNfgoJu133by?=
+ =?iso-8859-1?Q?QKMOnYFFYvh74smLuzwnvdWtm7Y7RMsGP6kN3hd84/RtfLLV2QZRxSPHuU?=
+ =?iso-8859-1?Q?JwDX9leVjIhRYVZ6kad/ieRGGVL2/GCyIMzZunmqHvGj6Z32kL74ix6mkO?=
+ =?iso-8859-1?Q?FkpJ79zQ4uUsTwyThMYm+6BJ3h2SQ1Zx/WZXdfta1Wwj3b9EfiSEnny/p1?=
+ =?iso-8859-1?Q?6w8bjAnH0VkcSc3Kjupgaxlwjim/KRIh+QebeEyKOQrG3zhSzyOIH+uyTb?=
+ =?iso-8859-1?Q?Yi5qJpw4wjaG6/uVjtsqm+RiBOxIOhg=3D?=
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: oracle.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: SN6PR10MB3022.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5092fb60-4b1e-4cba-be0a-08da1648822e
-X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Apr 2022 14:35:54.2366
+X-MS-Exchange-CrossTenant-Network-Message-Id: 135b4709-9907-4685-c1f7-08da164881f0
+X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Apr 2022 14:35:53.8928
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Ygd9scFGaY4piFWnRIziKaoPvzjo4vdgUF5F+KVwl7ltwpGwpcWw75flYrg5nHzJAOmEzLDUoEO4f/Jee8e+0w==
+X-MS-Exchange-CrossTenant-userprincipalname: t5RLBkMxjcEgIkJjQxLNQSXkZK+ebmKWbRQpAOgTjzgmTjw4kATRzrDzi+bFEwoCJXW0RSyCVr8iaf6oGFEgGA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: BLAPR10MB5329
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.425,18.0.850
  definitions=2022-04-04_06:2022-03-30,2022-04-04 signatures=0
@@ -143,35 +142,79 @@ X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 ma
  mlxlogscore=999 phishscore=0 spamscore=0 adultscore=0 bulkscore=0
  mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2202240000 definitions=main-2204040083
-X-Proofpoint-ORIG-GUID: ucljDROkJCcXyHUvEYzVB1j6zmvgZzl2
-X-Proofpoint-GUID: ucljDROkJCcXyHUvEYzVB1j6zmvgZzl2
+X-Proofpoint-ORIG-GUID: cm9kXOtZdMv4CQo0Sh3z_Dz2bSh932MJ
+X-Proofpoint-GUID: cm9kXOtZdMv4CQo0Sh3z_Dz2bSh932MJ
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Liam R. Howlett" <Liam.Howlett@Oracle.com>
 
-madvise_walk_vmas() no longer uses linked list.
+Remove the use of the linked list for eventual removal.
 
+Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 Signed-off-by: Liam R. Howlett <Liam.Howlett@Oracle.com>
-Acked-by: Vlastimil Babka <vbabka@suse.cz>
 ---
- mm/madvise.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ mm/ksm.c | 18 +++++++++++-------
+ 1 file changed, 11 insertions(+), 7 deletions(-)
 
-diff --git a/mm/madvise.c b/mm/madvise.c
-index 1873616a37d2..7d5d5d7f0005 100644
---- a/mm/madvise.c
-+++ b/mm/madvise.c
-@@ -1227,7 +1227,7 @@ int madvise_walk_vmas(struct mm_struct *mm, unsigned =
-long start,
- 		if (start >=3D end)
- 			break;
- 		if (prev)
--			vma =3D prev->vm_next;
-+			vma =3D find_vma(mm, prev->vm_end);
- 		else	/* madvise_remove dropped mmap_lock */
- 			vma =3D find_vma(mm, start);
+diff --git a/mm/ksm.c b/mm/ksm.c
+index 063a48eeb5ee..c60c313d6052 100644
+--- a/mm/ksm.c
++++ b/mm/ksm.c
+@@ -974,11 +974,13 @@ static int unmerge_and_remove_all_rmap_items(void)
+ 						struct mm_slot, mm_list);
+ 	spin_unlock(&ksm_mmlist_lock);
+=20
+-	for (mm_slot =3D ksm_scan.mm_slot;
+-			mm_slot !=3D &ksm_mm_head; mm_slot =3D ksm_scan.mm_slot) {
++	for (mm_slot =3D ksm_scan.mm_slot; mm_slot !=3D &ksm_mm_head;
++	     mm_slot =3D ksm_scan.mm_slot) {
++		VMA_ITERATOR(vmi, mm_slot->mm, 0);
++
+ 		mm =3D mm_slot->mm;
+ 		mmap_read_lock(mm);
+-		for (vma =3D mm->mmap; vma; vma =3D vma->vm_next) {
++		for_each_vma(vmi, vma) {
+ 			if (ksm_test_exit(mm))
+ 				break;
+ 			if (!(vma->vm_flags & VM_MERGEABLE) || !vma->anon_vma)
+@@ -2213,6 +2215,7 @@ static struct rmap_item *scan_get_next_rmap_item(stru=
+ct page **page)
+ 	struct mm_slot *slot;
+ 	struct vm_area_struct *vma;
+ 	struct rmap_item *rmap_item;
++	struct vma_iterator vmi;
+ 	int nid;
+=20
+ 	if (list_empty(&ksm_mm_head.mm_list))
+@@ -2271,13 +2274,13 @@ static struct rmap_item *scan_get_next_rmap_item(st=
+ruct page **page)
+ 	}
+=20
+ 	mm =3D slot->mm;
++	vma_iter_init(&vmi, mm, ksm_scan.address);
++
+ 	mmap_read_lock(mm);
+ 	if (ksm_test_exit(mm))
+-		vma =3D NULL;
+-	else
+-		vma =3D find_vma(mm, ksm_scan.address);
++		goto no_vmas;
+=20
+-	for (; vma; vma =3D vma->vm_next) {
++	for_each_vma(vmi, vma) {
+ 		if (!(vma->vm_flags & VM_MERGEABLE))
+ 			continue;
+ 		if (ksm_scan.address < vma->vm_start)
+@@ -2315,6 +2318,7 @@ static struct rmap_item *scan_get_next_rmap_item(stru=
+ct page **page)
+ 	}
+=20
+ 	if (ksm_test_exit(mm)) {
++no_vmas:
+ 		ksm_scan.address =3D 0;
+ 		ksm_scan.rmap_list =3D &slot->rmap_list;
  	}
 --=20
 2.34.1
