@@ -2,93 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A104C352AA
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:08:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A79ECC352A8
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:08:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382706AbiDDWJ4 (ORCPT
+        id S1382615AbiDDWJl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 18:09:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59624 "EHLO
+        Mon, 4 Apr 2022 18:09:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379349AbiDDRBi (ORCPT
+        with ESMTP id S1379161AbiDDQhx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 13:01:38 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EC693ED39
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 09:59:41 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id b15so11885390edn.4
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 09:59:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=K9yJQc0wkhnwMDhgXpgCEfPM9bu3vOLPPiNhGs87tdw=;
-        b=cgzwMQNJrkEkuA/TSpVw6ciE+AieAtsIUBAX0inodIP9kosF+epgt0L0EnhY8Z9Dq9
-         kXrcX81qBx3Q7UBgZbAOjmYZrAOZGfpwoQF1NvDKCCGvlkvhvcuHO4WrBHhz2U74SaEY
-         yGz9bYq2L1EQDNZ8orhmVvYivWFaRt8lrvnUF+f0K4ElLK6f4wUydgxDANLzF3m5Ygcx
-         0nO5acxv0nuE1jwJcjwhow5VDytwsOkLCOobrY5Yl+b1js/TQF1HfysRSxsxIc6Oics8
-         j1ITZLN/ltYeBvypuH7UAWz5bTKtDIVObpgrMNbtPPy1wtf/uHmOzEGEB886B+n8kAh5
-         Vctw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=K9yJQc0wkhnwMDhgXpgCEfPM9bu3vOLPPiNhGs87tdw=;
-        b=0Mpu/SjGFZ68EQd1TgjYB8rZ1ULiGVwjpbbF7qDy2fLil3C9YGbISRd2/6Qd3wDhVw
-         +pIznzPgytaKKA0p8ZyzawF/U8NGCZFrdvX0HXkiOy+BEQPoyo9Flk98E/KSUhEnrl1O
-         ApnWL5cMzd8Q4bL2fdMyRnHRFlizCt9dVWOQX6qaRZB9ytA5lr/UXSpj2i8JLoO2xrEM
-         e0nC8eSRmEB3h0iC/Y1a6mfJBvCXBDGpDDGu0AgKXYNY4d8GZDn1i08vCrjgFF+5lzUD
-         Ci/4LbNMCOXDIT1H/pVjTN2JUS5vlNKteMB6o9KeCc2dn4I435OXx0Zr98V3slq65jg0
-         JSgA==
-X-Gm-Message-State: AOAM532J9XRdh7ASP7Bkr0PQq7qGf5/AzqxZEdKoCGkZrnBK85Kft51C
-        tQmyQaSfUIMGqiFVqC0KdgxQrw==
-X-Google-Smtp-Source: ABdhPJzBhdE3FgiK+1M2zu1kC8mpq7C8emkC1dljmr9hgg9ou7CPhZBlTrACZ/AtTHyx2qnVlgtpJg==
-X-Received: by 2002:aa7:c1cd:0:b0:419:fdb:e17e with SMTP id d13-20020aa7c1cd000000b004190fdbe17emr1156256edp.364.1649091579797;
-        Mon, 04 Apr 2022 09:59:39 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id bp11-20020a170907918b00b006e6d451dc36sm2938072ejb.49.2022.04.04.09.59.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 09:59:39 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Alim Akhtar <alim.akhtar@samsung.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Tomasz Figa <tomasz.figa@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        linux-samsung-soc@vger.kernel.org,
-        Sylwester Nawrocki <s.nawrocki@samsung.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Ajay Kumar <ajaykumar.rs@samsung.com>,
-        linux-gpio@vger.kernel.org, Krzysztof Kozlowski <krzk@kernel.org>,
-        linux-kernel@vger.kernel.org
-Cc:     kernel test robot <lkp@intel.com>
-Subject: Re: [PATCH] pinctrl: samsung: staticize fsd_pin_ctrl
-Date:   Mon,  4 Apr 2022 18:59:33 +0200
-Message-Id: <164909156896.1676419.11230425886960608496.b4-ty@linaro.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220331194526.52444-1-krzysztof.kozlowski@linaro.org>
-References: <20220331194526.52444-1-krzysztof.kozlowski@linaro.org>
+        Mon, 4 Apr 2022 12:37:53 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D3BB71B7B5
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 09:35:55 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8B755D6E;
+        Mon,  4 Apr 2022 09:35:55 -0700 (PDT)
+Received: from [10.57.24.6] (unknown [10.57.24.6])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 636063F73B;
+        Mon,  4 Apr 2022 09:35:53 -0700 (PDT)
+Message-ID: <f5f8166e-1831-1fa0-123c-53d3632451a8@arm.com>
+Date:   Mon, 4 Apr 2022 17:35:45 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v3 07/21] x86/resctrl: Create mba_sc configuration in the
+ rdt_domain
+Content-Language: en-US
+To:     Reinette Chatre <reinette.chatre@intel.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Fenghua Yu <fenghua.yu@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        H Peter Anvin <hpa@zytor.com>,
+        Babu Moger <Babu.Moger@amd.com>,
+        shameerali.kolothum.thodi@huawei.com,
+        Jamie Iles <jamie@nuviainc.com>,
+        D Scott Phillips OS <scott@os.amperecomputing.com>,
+        lcherian@marvell.com, bobo.shaobowang@huawei.com,
+        tan.shaopeng@fujitsu.com
+References: <20220217182110.7176-1-james.morse@arm.com>
+ <20220217182110.7176-8-james.morse@arm.com>
+ <01651414-9d4a-409d-9db7-b4b6dde72829@intel.com>
+ <d49bdfad-df5e-77e1-4834-266dcd1b9055@arm.com>
+ <91a43681-524e-c12d-612d-259e51bde12c@intel.com>
+From:   James Morse <james.morse@arm.com>
+In-Reply-To: <91a43681-524e-c12d-612d-259e51bde12c@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 31 Mar 2022 21:45:26 +0200, Krzysztof Kozlowski wrote:
-> struct fsd_pin_ctrl is not used outside of the file, so it can be made
-> static.  This fixes sparse warning:
-> 
->   drivers/pinctrl/samsung/pinctrl-exynos-arm64.c:773:31: sparse:
->     symbol 'fsd_pin_ctrl' was not declared. Should it be static?
-> 
-> 
-> [...]
+Hi Reinette,
 
-Applied, thanks!
+On 4/1/22 23:54, Reinette Chatre wrote:
+> On 3/30/2022 9:43 AM, James Morse wrote:
+>> On 16/03/2022 21:50, Reinette Chatre wrote:
+>>> On 2/17/2022 10:20 AM, James Morse wrote:
+>>>> To support resctrl's MBA software controller, the architecture must provide
+>>>> a second configuration array to hold the mbps_val[] from user-space.
+>>>>
+>>>> This complicates the interface between the architecture specific code and
+>>>> the filesystem portions of resctrl that will move to /fs/, to allow
+>>>> multiple architectures to support resctrl.
+>>>>
+>>>> Make the filesystem parts of resctrl create an array for the mba_sc
+>>>> values when is_mba_sc() is set to true. The software controller
+>>>> can be changed to use this, allowing the architecture code to only
+>>>> consider the values configured in hardware.
 
-[1/1] pinctrl: samsung: staticize fsd_pin_ctrl
-      commit: abb860ac7e3f022a233f34b12d035d49abfc114d
+[...]
 
-Best regards,
--- 
-Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>>> Considering that no domain belonging to RDT_RESOURCE_MBA will have this array this
+>>> always ends up being a null pointer de-reference.
+>>
+>> Ugh. I'm not sure how I managed to miss that. Thanks for debugging it!
+>>
+>> That loop was added to reset the array when the filesystem is mounted, as it may hold
+>> stale values from a previous mount of the filesystem. Its currently done by
+>> reset_all_ctrls(), but that function should really belong to the architecture code.
+>>
+>> Because mbm_handle_overflow() always passes a domain from the L3 to update_mba_bw(), I
+>> think the cleanest thing to do is move the reset to a helper that always operates on the
+>> L3 array. (and leave some breadcrumbs in the comments).
+
+> I think this points to more than a need to reset the correct array on mount/unmount ... or
+> perhaps I am not understanding this correctly?
+> 
+> As the analysis above shows the mbps_val array only exists for rdt_domains associated
+> with RDT_RESOURCE_L3 but yet mbps_val will contain the MB value provided by user space
+> associated with RDT_RESOURCE_MBA.
+
+I've finally got my head round what is going on here: I've muddled up whether mon_capable
+is a resource or system property. mba_sc depends on the L3 being mon_capable, but the
+configuration should be associated with MBA (wherever that is).
+(basically ignore my previous reply!)
+
+The creation of the mbps_val[] should depend on supports_mba_mbps(), which uses
+is_mbm_enabled() to check whether the L3 is mon_capable. I'll check the rid too
+to make it clear its only MBA that has this.
+The call to allocate the domain in resctrl_online_domain() should be above the mon_capable
+check. (which is still needed to avoid the work guarded by is_mbm_enabled() and friends
+running for each domain).
+
+
+Thanks,
+
+James
+
+-----------------------%<-----------------------
+diff --git a/arch/x86/kernel/cpu/resctrl/rdtgroup.c b/arch/x86/kernel/cpu/resctrl/rdtgroup.c
+index e3c90f33baf2..ad0411eb2147 100644
+--- a/arch/x86/kernel/cpu/resctrl/rdtgroup.c
++++ b/arch/x86/kernel/cpu/resctrl/rdtgroup.c
+@@ -3345,6 +3345,14 @@ int resctrl_online_domain(struct rdt_resource *r, struct rdt_domain *d)
+  
+         lockdep_assert_held(&rdtgroup_mutex);
+  
++       if (is_mbm_enabled() && r->rid == RDT_RESOURCE_MBA) {
++               err = mba_sc_domain_allocate(r, d);
++               if (err) {
++                       domain_destroy_mon_state(d);
++                       return err;
++               }
++       }
++
+         if (!r->mon_capable)
+                 return 0;
+  
+@@ -3352,12 +3360,6 @@ int resctrl_online_domain(struct rdt_resource *r, struct rdt_domain *d)
+         if (err)
+                 return err;
+  
+-       err = mba_sc_domain_allocate(r, d);
+-       if (err) {
+-               domain_destroy_mon_state(d);
+-               return err;
+-       }
+-
+         if (is_mbm_enabled()) {
+                 INIT_DELAYED_WORK(&d->mbm_over, mbm_handle_overflow);
+                 mbm_setup_overflow_handler(d, MBM_OVERFLOW_INTERVAL);
+-----------------------%<-----------------------
