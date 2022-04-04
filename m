@@ -2,150 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6411C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3109C433F5
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:08:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379094AbiDDWGg (ORCPT
+        id S1379597AbiDDWGt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 18:06:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43802 "EHLO
+        Mon, 4 Apr 2022 18:06:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379412AbiDDRIp (ORCPT
+        with ESMTP id S1380204AbiDDTOO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 13:08:45 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF75F40A23
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 10:06:48 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id m12-20020a17090b068c00b001cabe30a98dso1057530pjz.4
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 10:06:48 -0700 (PDT)
+        Mon, 4 Apr 2022 15:14:14 -0400
+Received: from mail-ot1-x334.google.com (mail-ot1-x334.google.com [IPv6:2607:f8b0:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A660377E3
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 12:12:17 -0700 (PDT)
+Received: by mail-ot1-x334.google.com with SMTP id i11-20020a9d4a8b000000b005cda3b9754aso7870526otf.12
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 12:12:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=gIH+kCrSXmFI+fUc29mzPw+H1akkAs2ZuFoVFSP0vxU=;
-        b=Rr+FaoMffwErSOq6pRJ5Va7RKsFxClc5D23MZTexTKDgRmNLw+QXPH7HgVaF+gPlsH
-         VVR7VJA+skjtzQ0GECeuU2WVaa0asrNgHkDBl6tstbwCf7C6oMyBne0DAlcAXCdcVL7g
-         YrXAno9IHlxoD/YmxzSY5HC12atdMPGZ+Q8N6kZHZabK4TNxokJ7fJfCa2Z4Dji8u6pl
-         3dHXlOPQbLuOhlHnPj7HtE/XDcufKULa7gV7RWaa0It/x7X/ULWQS6QyjSSWicyoNFMA
-         ahGu94J7u389AK59eb7k4Mps25d3P18aXb3oZxp/f/pFl16fpYmLG3tkL22HLs/vsOZL
-         l1Tg==
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=HaBSCtvM0Wy0SP5zUFXCSh2FNwBC2ZpaaXakEoGwFXA=;
+        b=QRbaJLGqfSytgeLDMDaMo3pFIvgnJhK7msg48BshQ/1jFwC2lmeFIpeANmoKV1C0Dh
+         QmZjrgbS5ILg8xTOkr/r9cRrhri5vMI0bOo6Sj7Zhay+EAnjeM5tHaAHiSDnO6ippfYC
+         SNuYSPC01YTnGkFxL2M9JzpVppdEvEyc1sd+n9sMfgFDDEeH2msq14bKRtHb3gUfpuM4
+         j6QBQ4pB3LUxFwi1zJmuMLj30FRsqd1iGipjHqua8F0j9obgvzV+H8yVvYb1Y/IOSpCd
+         KL37R65BysmpaksgZOIkWdkcLEcTXU0SFFWmWBDUrla9NhEuBcGpoqSgC+Rh7RKfq7M7
+         GAyA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=gIH+kCrSXmFI+fUc29mzPw+H1akkAs2ZuFoVFSP0vxU=;
-        b=JNEdSVc7vul+D6OCtvDj8qcP3Oz/Bxu2EwSV+cEB9WB5Z2UztFuUIrqb4r+DboS8Wm
-         KO53dfkXgEd9WpYCjdtQ7EWRV7qq6eFKggMwTzU/p0qwzc64jooY28eRkW5GK7wyYdzV
-         2jEcbZew6pvXLZ1rzAwKUwm6w9i8WTyiIzrYOsb0rAd5yqGVJIyEqYwqTHYeLwLkBTE+
-         8vM2BrNM4QmORY9rOMnduUkovoz6N+kGtHhP+dPKsVDfzjxDqonFMHtbC16wue/GPyte
-         Tp8k05LARD6nhSTL8NwtZ7cemKsEbBB5s3+u6JSvUwgrcW6CM4/3pRdpgm85z5VQ20d0
-         6Diw==
-X-Gm-Message-State: AOAM530Ffk5JBDPGIPPm4XSH5O6yjvmu7zth3iA7Ma9aDtuWAsVi+1Wu
-        zH6M4Nl0HtlOM8B+mO3tcTRZVw==
-X-Google-Smtp-Source: ABdhPJxR0cMYn6++nMtTapD/RTNavycubKSgeugDdrZDDJ6GPqebAjtiOfHHZgX3JbxNGnvGjPUvmw==
-X-Received: by 2002:a17:902:7247:b0:156:9d3d:756d with SMTP id c7-20020a170902724700b001569d3d756dmr687366pll.6.1649092007999;
-        Mon, 04 Apr 2022 10:06:47 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id x9-20020a17090a970900b001ca6c59b350sm428753pjo.2.2022.04.04.10.06.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 10:06:47 -0700 (PDT)
-Date:   Mon, 4 Apr 2022 17:06:43 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Quentin Perret <qperret@google.com>
-Cc:     Andy Lutomirski <luto@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        Chao Peng <chao.p.peng@linux.intel.com>,
-        kvm list <kvm@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
-        Linux API <linux-api@vger.kernel.org>, qemu-devel@nongnu.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        the arch/x86 maintainers <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>, Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Vishal Annapurve <vannapurve@google.com>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        "Nakajima, Jun" <jun.nakajima@intel.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        David Hildenbrand <david@redhat.com>,
-        Marc Zyngier <maz@kernel.org>, Will Deacon <will@kernel.org>
-Subject: Re: [PATCH v5 00/13] KVM: mm: fd-based approach for supporting KVM
- guest private memory
-Message-ID: <Ykslo2eo2eRXrpFR@google.com>
-References: <YkH32nx+YsJuUbmZ@google.com>
- <YkIFW25WgV2WIQHb@google.com>
- <YkM7eHCHEBe5NkNH@google.com>
- <88620519-029e-342b-0a85-ce2a20eaf41b@arm.com>
- <YkQzfjgTQaDd2E2T@google.com>
- <YkSaUQX89ZEojsQb@google.com>
- <80aad2f9-9612-4e87-a27a-755d3fa97c92@www.fastmail.com>
- <YkcTTY4YjQs5BRhE@google.com>
- <83fd55f8-cd42-4588-9bf6-199cbce70f33@www.fastmail.com>
- <YksIQYdG41v3KWkr@google.com>
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=HaBSCtvM0Wy0SP5zUFXCSh2FNwBC2ZpaaXakEoGwFXA=;
+        b=Wa8G+9gFcaB+l56ZhlzVsOUZ6RX7oDn+pY4Kzh+V475upOBNqcJtcemBUfnnV/nyAz
+         sY2kR4PNiRhvII+7n15XtMGHxprihwUgwBRWcOHQmlq0cRUHk4zPP3lM8N9SipbhvUEp
+         LujlgABS+AC/b60S07ipX0Ny3ZwueJtd2/WvqZLkrpiak9D5E9kQMaGRMMmqumBYM+oy
+         4REnjgxhRgORRLOnHlGNQLP+gzHv28rHLHNnYGQq6C5k+gGHJgpWWsNxG6LPpaMbGANI
+         vkf2I5J7jW8G8WeiIxHlN4sHJxH3fP51g+bG1uywGafrFEbQEIjoHgNEoR5iiy5ibqLe
+         wW/A==
+X-Gm-Message-State: AOAM530UOMh83Uqh2wyxBWghIsEmNlh/dvCUdzF+riZprcatpSygOUUK
+        vEBV9jABrXvNNuHAgceH9Kv3u9t+G5k3kLRZ17JJoA==
+X-Google-Smtp-Source: ABdhPJx53qVjugPFtagCZ/vg5SciUqxZhWJ8+WqD50ec1zmxvdqxeCVjEmx4wXSm3ZFYN/d0UAvZ/O81KzKS1ewGUc0=
+X-Received: by 2002:a9d:1729:0:b0:5b2:3828:c84c with SMTP id
+ i41-20020a9d1729000000b005b23828c84cmr406189ota.362.1649099535465; Mon, 04
+ Apr 2022 12:12:15 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YksIQYdG41v3KWkr@google.com>
+From:   Evan Green <evgreen@google.com>
+Date:   Mon, 4 Apr 2022 12:11:39 -0700
+Message-ID: <CAE=gft4a-QL82iFJE_xRQ3JrMmz-KZKWREtz=MghhjFbJeK=8A@mail.gmail.com>
+Subject: Lost MSIs during hibernate
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Rajat Jain <rajatja@chromium.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 04, 2022, Quentin Perret wrote:
-> On Friday 01 Apr 2022 at 12:56:50 (-0700), Andy Lutomirski wrote:
-> FWIW, there are a couple of reasons why I'd like to have in-place
-> conversions:
-> 
->  - one goal of pKVM is to migrate some things away from the Arm
->    Trustzone environment (e.g. DRM and the likes) and into protected VMs
->    instead. This will give Linux a fighting chance to defend itself
->    against these things -- they currently have access to _all_ memory.
->    And transitioning pages between Linux and Trustzone (donations and
->    shares) is fast and non-destructive, so we really do not want pKVM to
->    regress by requiring the hypervisor to memcpy things;
+Hi Thomas et al,
+To my surprise, I'm back with another MSI problem, and hoping to get
+some advice on how to approach fixing it.
 
-Is there actually a _need_ for the conversion to be non-destructive?  E.g. I assume
-the "trusted" side of things will need to be reworked to run as a pKVM guest, at
-which point reworking its logic to understand that conversions are destructive and
-slow-ish doesn't seem too onerous.
+Summary: I think MSIs are lost across the hibernate freeze/thaw
+transition on the way down because __pci_write_msi_msg() drops the
+write if the device is not in D0.
 
->  - it can be very useful for protected VMs to do shared=>private
->    conversions. Think of a VM receiving some data from the host in a
->    shared buffer, and then it wants to operate on that buffer without
->    risking to leak confidential informations in a transient state. In
->    that case the most logical thing to do is to convert the buffer back
->    to private, do whatever needs to be done on that buffer (decrypting a
->    frame, ...), and then share it back with the host to consume it;
+Details:
+I've been playing with hibernation on an Alderlake device, and have
+been running into problems where the freeze/thaw transition that
+should generate the hibernate image ends up hanging (eg before we even
+start writing the image out to disk). When it hangs I find it in
+usb_kill_urb(), an error path that comes out of a failed attempt to
+send a control packet to a hub port coming from usb_resume().
+Occasionally, I see the classic "HC died; cleaning up" message
+instead. XHCI in general appears to be very sensitive to lost MSIs, so
+I started down that road.
 
-If performance is a motivation, why would the guest want to do two conversions
-instead of just doing internal memcpy() to/from a private page?  I would be quite
-surprised if multiple exits and TLB shootdowns is actually faster, especially at
-any kind of scale where zapping stage-2 PTEs will cause lock contention and IPIs.
+I printed the three major paths through __pci_write_msi_msg() so I
+could see what the XHCI controller was ending up with when it hung.
+You can see a full boot and hibernate attempt sequence that results in
+a hang here (sorry there's other cruft in there):
 
->  - similar to the previous point, a protected VM might want to
->    temporarily turn a buffer private to avoid ToCToU issues;
+https://pastebin.com/PFd3x1k0
 
-Again, bounce buffer the page in the guest.
+What worries me is those IRQ "no longer affine" messages, as well as
+my "EVAN don't touch hw" prints, indicating that requests to change
+the MSI are being dropped. These ignored requests are coming in when
+we try to migrate all IRQs off of the non-boot CPU, and they get
+ignored because all devices are "frozen" at this point, and presumably
+not in D0.
 
->  - once we're able to do device assignment to protected VMs, this might
->    allow DMA-ing to a private buffer, and make it shared later w/o
->    bouncing.
+So my theory is XHCI for whatever reason boots affinitized to a
+non-boot CPU. We go through pci_pm_freeze(), then try to take the
+non-boot CPUs down. The request to move the MSI off of the dead CPU is
+ignored, and then XHCI generates an interrupt during the period while
+that non-boot CPU is dead.
 
-Exposing a private buffer to a device doesn't requring in-place conversion.  The
-proper way to handle this would be to teach e.g. VFIO to retrieve the PFN from
-the backing store.  I don't understand the use case for sharing a DMA'd page at a
-later time; with whom would the guest share the page?  E.g. if a NIC has access to
-guest private data then there should never be a need to convert/bounce the page.
+To further try and prove that theory, I wrote a script to do the
+hibernate prepare image step in a loop, but messed with XHCI's IRQ
+affinity beforehand. If I move the IRQ to core 0, so far I have never
+seen a hang. But if I move it to another core, I can usually get a
+hang in the first attempt. I also very occasionally see wifi splats
+when trying this, and those "no longer affine" prints are all the wifi
+queue IRQs. So I think a wifi packet coming in at the wrong time can
+do the same thing.
+
+I wanted to see what thoughts you might have on this. Should I try to
+make a patch that moves all IRQs to CPU 0 *before* the devices all
+freeze? Sounds a little unpleasant. Or should PCI be doing something
+different to avoid this combination of "you're not allowed to modify
+my MSIs, but I might still generate interrupts that must not be lost"?
+
+-Evan
