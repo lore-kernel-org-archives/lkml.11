@@ -2,112 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F064C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB3B7C35276
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:59:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378954AbiDDV6P (ORCPT
+        id S1379473AbiDDV6c (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:58:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49074 "EHLO
+        Mon, 4 Apr 2022 17:58:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380526AbiDDUVM (ORCPT
+        with ESMTP id S1379619AbiDDRqD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 16:21:12 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09CC317E19;
-        Mon,  4 Apr 2022 13:19:14 -0700 (PDT)
-Date:   Mon, 04 Apr 2022 20:19:12 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649103553;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=QZQaYr09f3K/gGOi6unzAYjbezIKt+jwMzKppsteJ8g=;
-        b=di7iGq60peohiF1pGjIv56WNkKgziqE8Wge457uTEcrV+4r33kTjcbKK416KzLj6jKutKi
-        akPJGxr+Xjop0R6Ij/OV2cwyVVv7jpxg52rO784tx0OnWSOXcrseXW4L4qx7SFEjx5bqVw
-        QqD+LaTP0bXiRh3fF3Vrw9TjK3LTbMQhjeDCtlNgOj8tKuHjiVfwHXqFnSs8rr3pGxBBqN
-        e+KIb7C09JzZ/4/B7H0qJUlgbynHM1fo4duneeqk0I5v/1IuR3EaCmVY0+qtVPUBics1Fl
-        DgOQaiNzXa7xsQGDVE6HnbCLBVL7Czlx9HDLsV4kBMX88gN70ndSkXpl4KUblw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649103553;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=QZQaYr09f3K/gGOi6unzAYjbezIKt+jwMzKppsteJ8g=;
-        b=SgycpArjwOUpnjfW/PUk1RLKscUzwcYD9WsWHR12s51VvMpG8xytI1Knbvggq8u+z8fMBO
-        awZzRGTNCWR1PLBg==
-From:   "tip-bot2 for Mike Travis" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/platform] x86/platform/uv: Update TSC sync state for UV5
-Cc:     Mike Travis <mike.travis@hpe.com>, Borislav Petkov <bp@suse.de>,
-        Dimitri Sivanich <dimitri.sivanich@hpe.com>,
-        Steve Wahl <steve.wahl@hpe.com>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220318224304.174967-3-mike.travis@hpe.com>
-References: <20220318224304.174967-3-mike.travis@hpe.com>
+        Mon, 4 Apr 2022 13:46:03 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC2A1FD09;
+        Mon,  4 Apr 2022 10:44:03 -0700 (PDT)
+Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 234ElGnF032776;
+        Mon, 4 Apr 2022 17:44:03 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=ShNBro6g9YDFBfPnEFSuqAGYDfTXcS0GIMpWkrLl5DI=;
+ b=HKyx9oRmkp/pjTkl4id4Uof91HSGpJ5Hw+TsxA0kMEV0WeJjRhS/WbCOAiZ2SM2FKLC8
+ Ymp04WfG1U24SWvSEYiVRJZwozQ7qpKct3qC5F7fsrggv3pZA3rho49jdeRV4xHaSAQH
+ LAeW1EtuCviaUsAntTHF0vAQpZvCyolEqiu+PH9RI92Srqp99+uzERivwIEHUr7PjPNo
+ 9HJ/stQj9Eeb/kL4qw9BM8H0EQcZjQNkLIE3iZbnKTpCZjWvpEn+p0ruaeI+VDUWW7X2
+ pLpYt+JG2/QNLWjtYUO14hJktVc0A1JOidkEFh+3vRWt9CcjNeJBGD1oTJtmGLrbKY4N VQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3f82rbwk9x-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 04 Apr 2022 17:44:03 +0000
+Received: from m0187473.ppops.net (m0187473.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 234GTUSi016251;
+        Mon, 4 Apr 2022 17:44:02 GMT
+Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3f82rbwk99-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 04 Apr 2022 17:44:02 +0000
+Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
+        by ppma02dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 234Hh26h004941;
+        Mon, 4 Apr 2022 17:44:01 GMT
+Received: from b03cxnp07027.gho.boulder.ibm.com (b03cxnp07027.gho.boulder.ibm.com [9.17.130.14])
+        by ppma02dal.us.ibm.com with ESMTP id 3f6e4a5fb9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 04 Apr 2022 17:44:01 +0000
+Received: from b03ledav002.gho.boulder.ibm.com (b03ledav002.gho.boulder.ibm.com [9.17.130.233])
+        by b03cxnp07027.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 234Hi0qF14942710
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 4 Apr 2022 17:44:00 GMT
+Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 3CD0E13605E;
+        Mon,  4 Apr 2022 17:44:00 +0000 (GMT)
+Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 1D47713604F;
+        Mon,  4 Apr 2022 17:43:58 +0000 (GMT)
+Received: from li-c92d2ccc-254b-11b2-a85c-a700b5bfb098.ibm.com.com (unknown [9.211.32.125])
+        by b03ledav002.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Mon,  4 Apr 2022 17:43:58 +0000 (GMT)
+From:   Matthew Rosato <mjrosato@linux.ibm.com>
+To:     linux-s390@vger.kernel.org
+Cc:     alex.williamson@redhat.com, cohuck@redhat.com,
+        schnelle@linux.ibm.com, farman@linux.ibm.com, pmorel@linux.ibm.com,
+        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
+        svens@linux.ibm.com, frankja@linux.ibm.com, david@redhat.com,
+        imbrenda@linux.ibm.com, vneethv@linux.ibm.com,
+        oberpar@linux.ibm.com, freude@linux.ibm.com, thuth@redhat.com,
+        pasic@linux.ibm.com, pbonzini@redhat.com, corbet@lwn.net,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org
+Subject: [PATCH v5 01/21] s390/sclp: detect the zPCI load/store interpretation facility
+Date:   Mon,  4 Apr 2022 13:43:29 -0400
+Message-Id: <20220404174349.58530-2-mjrosato@linux.ibm.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220404174349.58530-1-mjrosato@linux.ibm.com>
+References: <20220404174349.58530-1-mjrosato@linux.ibm.com>
 MIME-Version: 1.0
-Message-ID: <164910355241.389.1602942943819019467.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: ALKXFnERttemEjdzLR74APFzkdi6gLGx
+X-Proofpoint-ORIG-GUID: rY_QENMcYmLzS_wOi7nltzSMmBAKwE1B
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-04-04_06,2022-03-31_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011
+ priorityscore=1501 lowpriorityscore=0 malwarescore=0 phishscore=0
+ suspectscore=0 mlxlogscore=999 mlxscore=0 impostorscore=0 bulkscore=0
+ adultscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2204040099
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the x86/platform branch of tip:
+Detect the zPCI Load/Store Interpretation facility.
 
-Commit-ID:     4395de040d24b40fb3cd7fb4f0b013748abe0a72
-Gitweb:        https://git.kernel.org/tip/4395de040d24b40fb3cd7fb4f0b013748abe0a72
-Author:        Mike Travis <mike.travis@hpe.com>
-AuthorDate:    Fri, 18 Mar 2022 17:43:03 -05:00
-Committer:     Borislav Petkov <bp@suse.de>
-CommitterDate: Mon, 04 Apr 2022 20:21:44 +02:00
-
-x86/platform/uv: Update TSC sync state for UV5
-
-Update TSC to not check TSC sync state for uv5+ as it is not available.
-It is assumed that TSC will always be in sync for multiple chassis and
-will pass the tests for the kernel to accept it as the clocksource.
-To disable this check use the kernel start options tsc=reliable
-clocksource=tsc.
-
-Signed-off-by: Mike Travis <mike.travis@hpe.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Dimitri Sivanich <dimitri.sivanich@hpe.com>
-Reviewed-by: Steve Wahl <steve.wahl@hpe.com>
-Link: https://lore.kernel.org/r/20220318224304.174967-3-mike.travis@hpe.com
+Reviewed-by: Eric Farman <farman@linux.ibm.com>
+Reviewed-by: Christian Borntraeger <borntraeger@linux.ibm.com>
+Reviewed-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
+Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
 ---
- arch/x86/kernel/apic/x2apic_uv_x.c | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+ arch/s390/include/asm/sclp.h   | 1 +
+ drivers/s390/char/sclp_early.c | 1 +
+ 2 files changed, 2 insertions(+)
 
-diff --git a/arch/x86/kernel/apic/x2apic_uv_x.c b/arch/x86/kernel/apic/x2apic_uv_x.c
-index f5a48e6..387d653 100644
---- a/arch/x86/kernel/apic/x2apic_uv_x.c
-+++ b/arch/x86/kernel/apic/x2apic_uv_x.c
-@@ -199,10 +199,16 @@ static void __init uv_tsc_check_sync(void)
- 	int mmr_shift;
- 	char *state;
- 
--	/* Different returns from different UV BIOS versions */
-+	/* UV5+, sync state from bios not available, assumed valid */
-+	if (!is_uv(UV2|UV3|UV4)) {
-+		pr_debug("UV: TSC sync state for UV5+ assumed valid\n");
-+		mark_tsc_async_resets("UV5+");
-+		return;
-+	}
-+
-+	/* UV2,3,4, UV BIOS TSC sync state available */
- 	mmr = uv_early_read_mmr(UVH_TSC_SYNC_MMR);
--	mmr_shift =
--		is_uv2_hub() ? UVH_TSC_SYNC_SHIFT_UV2K : UVH_TSC_SYNC_SHIFT;
-+	mmr_shift = is_uv2_hub() ? UVH_TSC_SYNC_SHIFT_UV2K : UVH_TSC_SYNC_SHIFT;
- 	sync_state = (mmr >> mmr_shift) & UVH_TSC_SYNC_MASK;
- 
- 	/* Check if TSC is valid for all sockets */
+diff --git a/arch/s390/include/asm/sclp.h b/arch/s390/include/asm/sclp.h
+index 04cb1e7582a6..06c0b5eb8ef5 100644
+--- a/arch/s390/include/asm/sclp.h
++++ b/arch/s390/include/asm/sclp.h
+@@ -87,6 +87,7 @@ struct sclp_info {
+ 	unsigned char has_diag318 : 1;
+ 	unsigned char has_sipl : 1;
+ 	unsigned char has_dirq : 1;
++	unsigned char has_zpci_lsi : 1;
+ 	unsigned int ibc;
+ 	unsigned int mtid;
+ 	unsigned int mtid_cp;
+diff --git a/drivers/s390/char/sclp_early.c b/drivers/s390/char/sclp_early.c
+index e9943a86c361..b88dd0da1231 100644
+--- a/drivers/s390/char/sclp_early.c
++++ b/drivers/s390/char/sclp_early.c
+@@ -45,6 +45,7 @@ static void __init sclp_early_facilities_detect(void)
+ 	sclp.has_gisaf = !!(sccb->fac118 & 0x08);
+ 	sclp.has_hvs = !!(sccb->fac119 & 0x80);
+ 	sclp.has_kss = !!(sccb->fac98 & 0x01);
++	sclp.has_zpci_lsi = !!(sccb->fac118 & 0x01);
+ 	if (sccb->fac85 & 0x02)
+ 		S390_lowcore.machine_flags |= MACHINE_FLAG_ESOP;
+ 	if (sccb->fac91 & 0x40)
+-- 
+2.27.0
+
