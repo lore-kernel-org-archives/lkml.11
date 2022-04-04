@@ -2,183 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A4C7C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:18:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7979EC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:18:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379650AbiDDVU0 (ORCPT
+        id S1355943AbiDDVUj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:20:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52488 "EHLO
+        Mon, 4 Apr 2022 17:20:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379725AbiDDR7a (ORCPT
+        with ESMTP id S1380494AbiDDUTx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 13:59:30 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C5A234BB9
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 10:57:33 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id m18so8786031plx.3
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 10:57:33 -0700 (PDT)
+        Mon, 4 Apr 2022 16:19:53 -0400
+Received: from mail-oa1-x30.google.com (mail-oa1-x30.google.com [IPv6:2001:4860:4864:20::30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CB6E33EB0
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 13:17:56 -0700 (PDT)
+Received: by mail-oa1-x30.google.com with SMTP id 586e51a60fabf-df22f50e0cso12112970fac.3
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 13:17:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=o6hLZdUb/ReT0m7dHtzUEMCrOQA61jDt0sJYjNLeFrM=;
-        b=bjGFzmKzBzOkEsGB0baOcb7bfray3F9t5FC2XDPDR25MOdKcPAtOKZplJ3FsM9Myko
-         pvDpp5tbpgIb2RTE5S5CLdctjR75ngAbg2862ZMtImR4p5Dm5g/dHuDVoE+W5X4ThfUr
-         x+bSrUBWZtWfGJeSUyWeVJwmucmfsgVn1QCkhnuD19SifeUUzCHtBWa8M7oGW9wyBnSL
-         X85uNUvUkXpoMyy1BhPAdP5QABgg0bWooDgCUrZPW1OKXzuVYi5SSLBx3QRJZgk522Vo
-         Y0bXK4820hvyI+0ks5eoz1oa8mYPmQd8uc96lHBRf86w48NziVyW2Z9bdXfHNCeUW2UQ
-         hwTg==
+        d=chromium.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=nEvcII0ovuM4EzEotmtCSIUih83HD7CSYw1Kvs+WzIU=;
+        b=DNx1sG4uPUCc9NNECa/VtJQv3bn+9r5mWeFUqZuhgqr22wHPeG4YWrVwltutzc6xTT
+         Ld6bfJhKBW69G7FjflRdszEome3zN6HKxJzUkW4pnIvoR/7P1G72IywwhiYnot96Huir
+         coB4Vou6i38DNyzwwrvTuEf21xWIpkcVZiVDo=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=o6hLZdUb/ReT0m7dHtzUEMCrOQA61jDt0sJYjNLeFrM=;
-        b=qqsErYonQRQfIJZbZL94+pWr00P0Rvd62h+B0DsU4aCOMdln5YFCSkWcRV3Y+udH/W
-         iNjT9mxtc3g57XU8QWO+KgdlqfqZCbCdvPJN98svsEl0kWSyxqj8URSqYFOhDN2IjFdN
-         K2NV+WuhtW1+dD6Y5K+9L2N2xjsJyKVtSiOEkshw9fqDFZ1kec4v7rR7pbDnMhgHFR6u
-         SL8jXPmWE2cmarqXWeFAljen0bOAFmENHBpWMsg4/30SyaWt6jJizyo104MrYpR+cX73
-         a0qHuYLZX2t6R1y/6SonqCg8YClAlVMxUQ5dFXZHxBWG6N9+wfJwZTIyK0A3VeyMqAEY
-         g1wQ==
-X-Gm-Message-State: AOAM531UH+DhrI8xrkekOY0+6bKmuFXbSscw2pUFqlEaa3h6EQjkh4Bu
-        NQqJSWNrnr4cb9G0Su++WjQahA==
-X-Google-Smtp-Source: ABdhPJxGWxMtvYIkXrWp3S8TgNg54CUcJ7KsRzi4hwRORB9mUYDQrIppA9nyHmO18bePjSyjyq/LQA==
-X-Received: by 2002:a17:90a:4604:b0:1bc:8bdd:4a63 with SMTP id w4-20020a17090a460400b001bc8bdd4a63mr361154pjg.147.1649095052573;
-        Mon, 04 Apr 2022 10:57:32 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id 21-20020a630115000000b00382a0895661sm11019145pgb.11.2022.04.04.10.57.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 10:57:31 -0700 (PDT)
-Date:   Mon, 4 Apr 2022 17:57:28 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Zeng Guang <guang.zeng@intel.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "Luck, Tony" <tony.luck@intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Kim Phillips <kim.phillips@amd.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Jethro Beekman <jethro@fortanix.com>,
-        "Huang, Kai" <kai.huang@intel.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Hu, Robert" <robert.hu@intel.com>,
-        "Gao, Chao" <chao.gao@intel.com>
-Subject: Re: [PATCH v7 8/8] KVM: VMX: enable IPI virtualization
-Message-ID: <YksxiAnNmdR2q65S@google.com>
-References: <20220304080725.18135-1-guang.zeng@intel.com>
- <20220304080725.18135-9-guang.zeng@intel.com>
- <YkZlhI7nAAqDhT0D@google.com>
- <54df6da8-ad68-cc75-48db-d18fc87430e9@intel.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=nEvcII0ovuM4EzEotmtCSIUih83HD7CSYw1Kvs+WzIU=;
+        b=4DSV9KmZINT8D6Fhu7GBnwZcRb2/NSGC2OvrY3uL/fftOW5qqE/5QBgKUdG3eqMJCD
+         giI/SRXKccDcrcNrdSjBZSHLi3GsQ7U2NltlpOcKNQLps5LpezDd3aVAkrBPpsCBUbyG
+         04POC3SEvFZ8dLFtM7Os2mJPrk2JOdneUFwiEno1ADC6hyusYrhX+N5IsFPRfXCtQC/B
+         1tHI1ANNmejSHLuWVShZy8z8+shfmBhaxeV4iN2+2ZR7m3aLIxHVwpDCtWsh6JJgeL9l
+         u5smlH4gViGcYuDESqyFeHewgd9gMt2XFSI96KNUs5kgnM1N0dVOTTVlRAIgn6/Xgd4I
+         bvrg==
+X-Gm-Message-State: AOAM530wLSCztz1mTGVPTmqNyYeOfDHH9/tgscg73VFIazCOUsrbd0KH
+        ZpcjbfPgAfjwQWnhY7pzhPa2JL8+0iWG2cxr
+X-Google-Smtp-Source: ABdhPJy1YASaOHaUF4GOT3ncSWR8x+K6ei6LQgfbD/4/uRe89U3T65lKldkMBMKGA9E3uchldp5AzQ==
+X-Received: by 2002:a05:6870:c10b:b0:da:40b:9d92 with SMTP id f11-20020a056870c10b00b000da040b9d92mr517126oad.31.1649103476013;
+        Mon, 04 Apr 2022 13:17:56 -0700 (PDT)
+Received: from [192.168.86.32] (71-218-50-127.hlrn.qwest.net. [71.218.50.127])
+        by smtp.gmail.com with ESMTPSA id m38-20020a056870562600b000e1f4a4ed9dsm2067908oao.51.2022.04.04.13.17.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 04 Apr 2022 13:17:55 -0700 (PDT)
+Message-ID: <51b21470-cd72-7ae3-6f33-2dd2e1d6b716@chromium.org>
+Date:   Mon, 4 Apr 2022 16:17:54 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <54df6da8-ad68-cc75-48db-d18fc87430e9@intel.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: sched_core_balance() releasing interrupts with pi_lock held
+Content-Language: en-US
+To:     Steven Rostedt <rostedt@goodmis.org>,
+        Peter Zijlstra <peterz@infradead.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        joel@joelfernandes.org
+References: <20220308161455.036e9933@gandalf.local.home>
+ <20220315174606.02959816@gandalf.local.home>
+ <20220316202734.GJ8939@worktop.programming.kicks-ass.net>
+ <20220316210341.GD14330@worktop.programming.kicks-ass.net>
+ <20220321133037.7d0d0c7f@gandalf.local.home>
+ <20220329172236.48683eb5@gandalf.local.home>
+From:   "T.J. Alumbaugh" <talumbau@chromium.org>
+In-Reply-To: <20220329172236.48683eb5@gandalf.local.home>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Apr 03, 2022, Zeng Guang wrote:
-> 
-> On 4/1/2022 10:37 AM, Sean Christopherson wrote:
-> > > @@ -4219,14 +4226,21 @@ static void vmx_refresh_apicv_exec_ctrl(struct kvm_vcpu *vcpu)
-> > >   	pin_controls_set(vmx, vmx_pin_based_exec_ctrl(vmx));
-> > >   	if (cpu_has_secondary_exec_ctrls()) {
-> > > -		if (kvm_vcpu_apicv_active(vcpu))
-> > > +		if (kvm_vcpu_apicv_active(vcpu)) {
-> > >   			secondary_exec_controls_setbit(vmx,
-> > >   				      SECONDARY_EXEC_APIC_REGISTER_VIRT |
-> > >   				      SECONDARY_EXEC_VIRTUAL_INTR_DELIVERY);
-> > > -		else
-> > > +			if (enable_ipiv)
-> > > +				tertiary_exec_controls_setbit(vmx,
-> > > +						TERTIARY_EXEC_IPI_VIRT);
-> > > +		} else {
-> > >   			secondary_exec_controls_clearbit(vmx,
-> > >   					SECONDARY_EXEC_APIC_REGISTER_VIRT |
-> > >   					SECONDARY_EXEC_VIRTUAL_INTR_DELIVERY);
-> > > +			if (enable_ipiv)
-> > > +				tertiary_exec_controls_clearbit(vmx,
-> > > +						TERTIARY_EXEC_IPI_VIRT);
-> > Oof.  The existing code is kludgy.  We should never reach this point without
-> > enable_apicv=true, and enable_apicv should be forced off if APICv isn't supported,
-> > let alone seconary exec being support.
-> > 
-> > Unless I'm missing something, throw a prep patch earlier in the series to drop
-> > the cpu_has_secondary_exec_ctrls() check, that will clean this code up a smidge.
-> 
-> cpu_has_secondary_exec_ctrls() check can avoid wrong vmcs write in case mistaken
-> invocation.
 
-KVM has far bigger problems on buggy invocation, and in that case the resulting
-printk + WARN from the failed VMWRITE is a good thing.
+On 3/29/22 17:22, Steven Rostedt wrote:
+> On Mon, 21 Mar 2022 13:30:37 -0400
+> Steven Rostedt <rostedt@goodmis.org> wrote:
+>
+>> On Wed, 16 Mar 2022 22:03:41 +0100
+>> Peter Zijlstra <peterz@infradead.org> wrote:
+>>
+>>> Does something like the below (untested in the extreme) help?
+>> Hi Peter,
+>>
+>> This has been tested extensively by the ChromeOS team and said that it does
+>> appear to fix the problem.
+>>
+>> Could you get this into mainline, and tag it for stable so that it can be
+>> backported to the appropriate stable releases?
+>>
+>> Thanks for the fix!
+>>
+> Hi Peter,
+>
+> I just don't want you to forget about this :-)
+>
+> -- Steve
+>
+Hi Peter,
 
-> > > +
-> > > +	if (!pages)
-> > > +		return -ENOMEM;
-> > > +
-> > > +	kvm_vmx->pid_table = (void *)page_address(pages);
-> > > +	kvm_vmx->pid_last_index = kvm_vmx->kvm.arch.max_vcpu_id - 1;
-> > No need to cache pid_last_index, it's only used in one place (initializing the
-> > VMCS field).  The allocation/free paths can use max_vcpu_id directly.  Actually,
-> 
-> In previous design, we don't forbid to change max_vcpu_id after vCPU creation
-> or for other purpose in future. Thus it's safe to decouple them and make ipiv
-> usage independent. If it can be sure that max_vcpu_id won't be modified , we
-> can totally remove pid_last_index and use max_vcpu_id directly even for
-> initializing the VMCD field.
+Just a note that if/when you send this out as a patch, feel free to add:
 
-max_vcpu_id asolutely needs to be constant after the first vCPU is created.
+Tested-by: T.J. Alumbaugh <talumbau@chromium.org>
 
-> > > @@ -7123,6 +7176,22 @@ static int vmx_create_vcpu(struct kvm_vcpu *vcpu)
-> > >   			goto free_vmcs;
-> > >   	}
-> > > +	/*
-> > > +	 * Allocate PID-table and program this vCPU's PID-table
-> > > +	 * entry if IPI virtualization can be enabled.
-> > Please wrap comments at 80 chars.  But I'd just drop this one entirely, the code
-> > is self-explanatory once the allocation and setting of the vCPU's entry are split.
-> > 
-> > > +	 */
-> > > +	if (vmx_can_use_ipiv(vcpu->kvm)) {
-> > > +		struct kvm_vmx *kvm_vmx = to_kvm_vmx(vcpu->kvm);
-> > > +
-> > > +		mutex_lock(&vcpu->kvm->lock);
-> > > +		err = vmx_alloc_pid_table(kvm_vmx);
-> > > +		mutex_unlock(&vcpu->kvm->lock);
-> > This belongs in vmx_vm_init(), doing it in vCPU creation is a remnant of the
-> > dynamic resize approach that's no longer needed.
-> 
-> We cannot allocate pid table in vmx_vm_init() as userspace has no chance to
-> set max_vcpu_ids at this stage. That's the reason we do it in vCPU creation
-> instead.
+Thanks,
 
-Ah, right.  Hrm.  And that's going to be a recurring problem if we try to use the
-dynamic kvm->max_vcpu_ids to reduce other kernel allocations.
+- T.J.
 
-Argh, and even kvm_arch_vcpu_precreate() isn't protected by kvm->lock.
-
-Taking kvm->lock isn't problematic per se, I just hate doing it so deep in a
-per-vCPU flow like this.
-
-A really gross hack/idea would be to make this 64-bit only and steal the upper
-32 bits of @type in kvm_create_vm() for the max ID.
-
-I think my first choice would be to move kvm_arch_vcpu_precreate() under kvm->lock.
-None of the architectures that have a non-nop implemenation (s390, arm64 and x86)
-do significant work, so holding kvm->lock shouldn't harm performance.  s390 has to
-acquire kvm->lock in its implementation, so we could drop that.  And looking at
-arm64, I believe its logic should also be done under kvm->lock.
-
-It'll mean adding yet another kvm_x86_ops, but I like that more than burying the
-code deep in vCPU creation.
-
-Paolo, any thoughts on this?
