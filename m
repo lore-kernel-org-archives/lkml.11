@@ -2,203 +2,210 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A590CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:03:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA708C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:03:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232637AbiDDWFW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 18:05:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45620 "EHLO
+        id S1355198AbiDDWFf (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 18:05:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379145AbiDDQhi (ORCPT
+        with ESMTP id S1380062AbiDDSvu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 12:37:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1D81E094;
-        Mon,  4 Apr 2022 09:35:41 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7AEAFB81857;
-        Mon,  4 Apr 2022 16:35:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8359C2BBE4;
-        Mon,  4 Apr 2022 16:35:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649090139;
-        bh=U5Bqi3NaVVv4LuUNQNUHVGlc3p2darzi8Idayz0D3lY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d+wTIb4+5TuoS0UAmf4GBoCJ8uIIRF3vC8PTZmos7ZakD/x2NYAr2ouHWz6eNbx8n
-         35qm+31uih7L4aSbP602leDorL7r/loYiTXsU4t8ZQj6NdrCClw+LeZONXp4WquI/X
-         TC9F9xDEVURKgVUUx3U9NZUSjoHyVh6iyOHLUupQqApqfea5IIsVSSJqKmxIPNJgDn
-         etpYk8nKR6BlaOwBEEro8r8a0LW94ggonu4fosJxfTmN87Dgf5cguFHmG28gSA/iyf
-         yYF+Llsz+dNCCQHqeBV5ixYWd3qAjmYw4zdeA6JOKpZDgt2UsjkShwpUkt0nuOEDYZ
-         XGYv2IIXDLlhg==
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Rob Clark <robdclark@gmail.com>
-Cc:     linux-arm-msm@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Vinod Koul <vkoul@kernel.org>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jonathan Marek <jonathan@marek.ca>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        freedreno@lists.freedesktop.org
-Subject: [PATCH v6 11/14] drm/msm/disp/dpu1: Add DSC support in RM
-Date:   Mon,  4 Apr 2022 22:04:33 +0530
-Message-Id: <20220404163436.956875-12-vkoul@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220404163436.956875-1-vkoul@kernel.org>
-References: <20220404163436.956875-1-vkoul@kernel.org>
+        Mon, 4 Apr 2022 14:51:50 -0400
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A28931501
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 11:49:52 -0700 (PDT)
+Received: by mail-pf1-x431.google.com with SMTP id p8so9804568pfh.8
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 11:49:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=OgBmai9kBCjlr9aFO4p03+ZvCT3qEl4N4BMmkwU41WQ=;
+        b=LTyjDcUYrrGKFD7zBZax9Kejc3M/VxotNH1SBr++BxXDPlIByWs5a8wElJ4CvLKUjn
+         JyRCaI0dzCSpvP/ALFTbNMuJKz1OE+gnZT2yLPLFrixzAKAECrJRPEHlCeASyItdvWGg
+         5xsPixVA5PWT4eWxCZ6OapeXiV8KI2KpoPsxA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=OgBmai9kBCjlr9aFO4p03+ZvCT3qEl4N4BMmkwU41WQ=;
+        b=YFGrzZeCdtXKeajfeq8B6sSONQBI0lbYdv/fshUBKqdF0/b5BpGUrb4oV7vqlfx6I+
+         +lCdH1bAujiJ6CNrRVd3bOOcr7tdtbrOUSqwPxkFMXrF+Dd2ef+4hPIATroH8FR6qB8n
+         W4saK4FK4oeoXilrBmmetF+f4BWN52B6tfrfKFq0mN2ccmVFdkoJNIKEC3cbAfxamY0I
+         9vYEahnGq8uhEkxgxKDaroe9y8DnArtikSYbq214HCsjyTCAPWvJbCaq/0TNTSZ26CEh
+         1vqL2AQbbRZPVL7R285JfPDCe0/szuFgcHNnGWrqNjlkRlDjQIoA9T0sUHGG3uk9Ny0S
+         2faA==
+X-Gm-Message-State: AOAM533W7Eg3y89ipNy9oWBfpOkkDhX1qSWGuzOjn+UCQlFZ3R0WwScw
+        juYIFO8Mwcl0VBScHpkdVuQThw==
+X-Google-Smtp-Source: ABdhPJy+Asj1IhIbA7G/rhnlb2Kxzq17/p8QVmR/14Zr/TJmyt+KN+/Wq9xSl0Xoz+XlLAUuAApNng==
+X-Received: by 2002:a63:5756:0:b0:36c:67bc:7f3f with SMTP id h22-20020a635756000000b0036c67bc7f3fmr1042587pgm.389.1649098191979;
+        Mon, 04 Apr 2022 11:49:51 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id c63-20020a624e42000000b004fa9ee41b7bsm12701353pfb.217.2022.04.04.11.49.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Apr 2022 11:49:51 -0700 (PDT)
+Date:   Mon, 4 Apr 2022 11:49:50 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     linux-hardening@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org, PaX Team <pageexec@freemail.hu>
+Subject: Re: [PATCH v2] gcc-plugins: latent_entropy: use /dev/urandom
+Message-ID: <202204041144.96FC64A8@keescook>
+References: <CAHmME9otYi4pCzZwSGnK40dp1QMRVPxp+DBysVuLXUKkXinAxg@mail.gmail.com>
+ <20220403204036.1269562-1-Jason@zx2c4.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220403204036.1269562-1-Jason@zx2c4.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This add the bits in RM to enable the DSC blocks
+On Sun, Apr 03, 2022 at 10:40:36PM +0200, Jason A. Donenfeld wrote:
+> While the latent entropy plugin mostly doesn't derive entropy from
+> get_random_const() for measuring the call graph, when __latent_entropy is
+> applied to a constant, then it's initialized statically to output from
+> get_random_const(). In that case, this data is derived from a 64-bit
+> seed, which means a buffer of 512 bits doesn't really have that amount
+> of compile-time entropy.
+> 
+> This patch fixes that shortcoming by just buffering chunks of
+> /dev/urandom output and doling it out as requested.
+> 
+> At the same time, it's important that we don't break the use of
+> -frandom-seed, for people who want the runtime benefits of the latent
+> entropy plugin, while still having compile-time determinism. In that
+> case, we detect whether gcc's set_random_seed() has been called by
+> making a call to get_random_seed(noinit=true) in the plugin init
+> function, which is called after set_random_seed() is called but before
+> anything that calls get_random_seed(noinit=false), and seeing if it's
+> zero or not. If it's not zero, we're in deterministic mode, and so we
+> just generate numbers with a basic xorshift prng.
 
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
----
- drivers/gpu/drm/msm/disp/dpu1/dpu_kms.h |  1 +
- drivers/gpu/drm/msm/disp/dpu1/dpu_rm.c  | 56 +++++++++++++++++++++++++
- drivers/gpu/drm/msm/disp/dpu1/dpu_rm.h  |  1 +
- 3 files changed, 58 insertions(+)
+This mixes two changes: the pRNG change and the "use urandom if
+non-deterministic" change. I think these should be split, so the pRNG
+change can be explicitly justified.
 
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.h b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.h
-index 779e7bd01efd..a41f0eb2761b 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.h
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.h
-@@ -145,6 +145,7 @@ struct dpu_global_state {
- 	uint32_t mixer_to_enc_id[LM_MAX - LM_0];
- 	uint32_t ctl_to_enc_id[CTL_MAX - CTL_0];
- 	uint32_t dspp_to_enc_id[DSPP_MAX - DSPP_0];
-+	uint32_t dsc_to_enc_id[DSC_MAX - DSC_0];
- };
- 
- struct dpu_global_state
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.c
-index 7497538adae1..0e6634b217aa 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.c
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.c
-@@ -11,6 +11,7 @@
- #include "dpu_hw_intf.h"
- #include "dpu_hw_dspp.h"
- #include "dpu_hw_merge3d.h"
-+#include "dpu_hw_dsc.h"
- #include "dpu_encoder.h"
- #include "dpu_trace.h"
- 
-@@ -77,6 +78,15 @@ int dpu_rm_destroy(struct dpu_rm *rm)
- 	for (i = 0; i < ARRAY_SIZE(rm->hw_intf); i++)
- 		dpu_hw_intf_destroy(rm->hw_intf[i]);
- 
-+	for (i = 0; i < ARRAY_SIZE(rm->dsc_blks); i++) {
-+		struct dpu_hw_dsc *hw;
-+
-+		if (rm->dsc_blks[i]) {
-+			hw = to_dpu_hw_dsc(rm->dsc_blks[i]);
-+			dpu_hw_dsc_destroy(hw);
-+		}
-+	}
-+
- 	return 0;
- }
- 
-@@ -210,6 +220,19 @@ int dpu_rm_init(struct dpu_rm *rm,
- 		rm->dspp_blks[dspp->id - DSPP_0] = &hw->base;
- 	}
- 
-+	for (i = 0; i < cat->dsc_count; i++) {
-+		struct dpu_hw_dsc *hw;
-+		const struct dpu_dsc_cfg *dsc = &cat->dsc[i];
-+
-+		hw = dpu_hw_dsc_init(dsc->id, mmio, cat);
-+		if (IS_ERR_OR_NULL(hw)) {
-+			rc = PTR_ERR(hw);
-+			DPU_ERROR("failed dsc object creation: err %d\n", rc);
-+			goto fail;
-+		}
-+		rm->dsc_blks[dsc->id - DSC_0] = &hw->base;
-+	}
-+
- 	return 0;
- 
- fail:
-@@ -441,6 +464,28 @@ static int _dpu_rm_reserve_ctls(
- 	return 0;
- }
- 
-+static int _dpu_rm_reserve_dsc(struct dpu_rm *rm,
-+			       struct dpu_global_state *global_state,
-+			       struct drm_encoder *enc,
-+			       const struct msm_display_topology *top)
-+{
-+	int num_dsc = top->num_dsc;
-+	int i;
-+
-+	/* check if DSC required are allocated or not */
-+	for (i = 0; i < num_dsc; i++) {
-+		if (global_state->dsc_to_enc_id[i]) {
-+			DPU_ERROR("DSC %d is already allocated\n", i);
-+			return -EIO;
-+		}
-+	}
-+
-+	for (i = 0; i < num_dsc; i++)
-+		global_state->dsc_to_enc_id[i] = enc->base.id;
-+
-+	return 0;
-+}
-+
- static int _dpu_rm_make_reservation(
- 		struct dpu_rm *rm,
- 		struct dpu_global_state *global_state,
-@@ -462,6 +507,10 @@ static int _dpu_rm_make_reservation(
- 		return ret;
- 	}
- 
-+	ret  = _dpu_rm_reserve_dsc(rm, global_state, enc, &reqs->topology);
-+	if (ret)
-+		return ret;
-+
- 	return ret;
- }
- 
-@@ -499,6 +548,8 @@ void dpu_rm_release(struct dpu_global_state *global_state,
- 		ARRAY_SIZE(global_state->mixer_to_enc_id), enc->base.id);
- 	_dpu_rm_clear_mapping(global_state->ctl_to_enc_id,
- 		ARRAY_SIZE(global_state->ctl_to_enc_id), enc->base.id);
-+	_dpu_rm_clear_mapping(global_state->dsc_to_enc_id,
-+		ARRAY_SIZE(global_state->dsc_to_enc_id), enc->base.id);
- }
- 
- int dpu_rm_reserve(
-@@ -567,6 +618,11 @@ int dpu_rm_get_assigned_resources(struct dpu_rm *rm,
- 		hw_to_enc_id = global_state->dspp_to_enc_id;
- 		max_blks = ARRAY_SIZE(rm->dspp_blks);
- 		break;
-+	case DPU_HW_BLK_DSC:
-+		hw_blks = rm->dsc_blks;
-+		hw_to_enc_id = global_state->dsc_to_enc_id;
-+		max_blks = ARRAY_SIZE(rm->dsc_blks);
-+		break;
- 	default:
- 		DPU_ERROR("blk type %d not managed by rm\n", type);
- 		return 0;
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.h b/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.h
-index 9b13200a050a..32e0d8aa65ab 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.h
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.h
-@@ -28,6 +28,7 @@ struct dpu_rm {
- 	struct dpu_hw_intf *hw_intf[INTF_MAX - INTF_0];
- 	struct dpu_hw_blk *dspp_blks[DSPP_MAX - DSPP_0];
- 	struct dpu_hw_blk *merge_3d_blks[MERGE_3D_MAX - MERGE_3D_0];
-+	struct dpu_hw_blk *dsc_blks[DSC_MAX - DSC_0];
- };
- 
- /**
+More notes below...
+
+> 
+> Fixes: 38addce8b600 ("gcc-plugins: Add latent_entropy plugin")
+> Cc: stable@vger.kernel.org
+> Cc: PaX Team <pageexec@freemail.hu>
+> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+> ---
+> Changes v1->v2:
+> - Pipacs pointed out that using /dev/urandom unconditionally would break
+>   the use of -frandom-seed, so now we check for that and keep with
+>   something deterministic in that case.
+> 
+> I'm not super familiar with this plugin or its conventions, so pointers
+> would be most welcome if something here looks amiss. The decision to
+> buffer 2k at a time is pretty arbitrary too; I haven't measured usage.
+> 
+>  scripts/gcc-plugins/latent_entropy_plugin.c | 48 +++++++++++++--------
+>  1 file changed, 30 insertions(+), 18 deletions(-)
+> 
+> diff --git a/scripts/gcc-plugins/latent_entropy_plugin.c b/scripts/gcc-plugins/latent_entropy_plugin.c
+> index 589454bce930..042442013ae1 100644
+> --- a/scripts/gcc-plugins/latent_entropy_plugin.c
+> +++ b/scripts/gcc-plugins/latent_entropy_plugin.c
+> @@ -82,29 +82,37 @@ __visible int plugin_is_GPL_compatible;
+>  static GTY(()) tree latent_entropy_decl;
+>  
+>  static struct plugin_info latent_entropy_plugin_info = {
+> -	.version	= "201606141920vanilla",
+> +	.version	= "202203311920vanilla",
+
+This doesn't really need to be versioned. We can change this to just
+"vanilla", IMO.
+
+>  	.help		= "disable\tturn off latent entropy instrumentation\n",
+>  };
+>  
+> -static unsigned HOST_WIDE_INT seed;
+> -/*
+> - * get_random_seed() (this is a GCC function) generates the seed.
+> - * This is a simple random generator without any cryptographic security because
+> - * the entropy doesn't come from here.
+> - */
+> +static unsigned HOST_WIDE_INT deterministic_seed;
+> +static unsigned HOST_WIDE_INT rnd_buf[256];
+> +static size_t rnd_idx = ARRAY_SIZE(rnd_buf);
+> +static int urandom_fd = -1;
+> +
+>  static unsigned HOST_WIDE_INT get_random_const(void)
+>  {
+> -	unsigned int i;
+> -	unsigned HOST_WIDE_INT ret = 0;
+> -
+> -	for (i = 0; i < 8 * sizeof(ret); i++) {
+> -		ret = (ret << 1) | (seed & 1);
+> -		seed >>= 1;
+> -		if (ret & 1)
+> -			seed ^= 0xD800000000000000ULL;
+> +	if (deterministic_seed) {
+> +		unsigned HOST_WIDE_INT w = deterministic_seed;
+> +		w ^= w << 13;
+> +		w ^= w >> 7;
+> +		w ^= w << 17;
+> +		deterministic_seed = w;
+> +		return deterministic_seed;
+
+While seemingly impossible, perhaps don't reset "deterministic_seed",
+and just continue to use "seed", so that it can never become "0" again.
+
+>  	}
+>  
+> -	return ret;
+> +	if (urandom_fd < 0) {
+> +		urandom_fd = open("/dev/urandom", O_RDONLY);
+> +		if (urandom_fd < 0)
+> +			abort();
+> +	}
+> +	if (rnd_idx >= ARRAY_SIZE(rnd_buf)) {
+> +		if (read(urandom_fd, rnd_buf, sizeof(rnd_buf)) != sizeof(rnd_buf))
+> +			abort();
+> +		rnd_idx = 0;
+> +	}
+> +	return rnd_buf[rnd_idx++];
+>  }
+>  
+>  static tree tree_get_random_const(tree type)
+> @@ -537,8 +545,6 @@ static void latent_entropy_start_unit(void *gcc_data __unused,
+>  	tree type, id;
+>  	int quals;
+>  
+> -	seed = get_random_seed(false);
+> -
+>  	if (in_lto_p)
+>  		return;
+>  
+> @@ -573,6 +579,12 @@ __visible int plugin_init(struct plugin_name_args *plugin_info,
+>  	const struct plugin_argument * const argv = plugin_info->argv;
+>  	int i;
+>  
+> +	/*
+> +	 * Call get_random_seed() with noinit=true, so that this returns
+> +	 * 0 in the case where no seed has been passed via -frandom-seed.
+> +	 */
+> +	deterministic_seed = get_random_seed(true);
+
+i.e. have this be:
+
+	deterministic_seed = get_random_seed(true);
+	if (deterministic_seed)
+		seed = get_random_seed(false);
+
+> +
+>  	static const struct ggc_root_tab gt_ggc_r_gt_latent_entropy[] = {
+>  		{
+>  			.base = &latent_entropy_decl,
+> -- 
+> 2.35.1
+> 
+
 -- 
-2.34.1
-
+Kees Cook
