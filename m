@@ -2,124 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9F73C4707E
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:23:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ABECC47081
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:23:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380196AbiDDVVe (ORCPT
+        id S1380305AbiDDVVi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:21:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45326 "EHLO
+        Mon, 4 Apr 2022 17:21:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379144AbiDDQhe (ORCPT
+        with ESMTP id S1379726AbiDDR7y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 12:37:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E210DE094;
-        Mon,  4 Apr 2022 09:35:37 -0700 (PDT)
+        Mon, 4 Apr 2022 13:59:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C4FF34BB9
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 10:57:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 90681B81857;
-        Mon,  4 Apr 2022 16:35:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 952ACC34114;
-        Mon,  4 Apr 2022 16:35:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B5F1260DC4
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 17:57:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3646C2BBE4;
+        Mon,  4 Apr 2022 17:57:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649090135;
-        bh=n3Wkk5bm16a05lN7V/okcIiS7mgAL2qB7YWgC48E5A4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GQa8RgE/Wpy5P1VNso6g/dWmEeVxk0r29TV+jZ0mxz3wEb0OBhQeJOr2GKs8vdKjg
-         H8tpMF9KgbUNjIZNQIW8uPXBAd5lJY8v/sy+y2X47qBOn2DFWcm26QLt0pLxbTBR5i
-         x5BpEGfwaAWrEII+aiJ6chPNg7GKbM9NnnbssBcZGqMtkaFNYMJ/vhdJZF7GjFDYoo
-         T7mjc6eHKj54Aq09FN1cYAgF0J5hY+dF685OcMX40/fZ7siePYIL73fpblc/0VYTJ+
-         V1Y/W3YRVmRdztqLdcFWQI4lTUZ0ghqFeltdGAvqeGDw6diUs4S2l9CkJ7jDkh/EPz
-         XqopggPDVqW8A==
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Rob Clark <robdclark@gmail.com>
-Cc:     linux-arm-msm@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Vinod Koul <vkoul@kernel.org>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jonathan Marek <jonathan@marek.ca>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        freedreno@lists.freedesktop.org
-Subject: [PATCH v6 10/14] drm/msm/disp/dpu1: Add support for DSC in topology
-Date:   Mon,  4 Apr 2022 22:04:32 +0530
-Message-Id: <20220404163436.956875-11-vkoul@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220404163436.956875-1-vkoul@kernel.org>
-References: <20220404163436.956875-1-vkoul@kernel.org>
+        s=k20201202; t=1649095077;
+        bh=80bTl5vvvHrdNwh0hzRyV7X+VwRq0OLEE8K3/p30eT4=;
+        h=Date:From:To:Cc:Subject:From;
+        b=TiJpc6RpKGWs+b6fNEHdHum/cCv5zhWLBHT8so7KcIrVQAnKWS/EHayBm+cbXJWt4
+         GYjeqEbGsDZHXrDVmlUFOLy+PXxH7m4GVhmCO/BxA+m5ySm9k+U3j5mCrCKFVxpKlB
+         4EvYIJjwWA5fAzK0ryXyqyEQa0uKrSGnCNk3RLgDXwWtzk+Ta7yLa25AclbPuB3rvB
+         7BawJn56BcR9OzqTvNyupXYXDH7661XTk7+INZ3jXffsgHEBMrq0KgPjQq6Uu+waWV
+         azAkfbjzPRpyps+wedADI6F3wzEM4DCKpKuy/Bf79GBmXbUcd7WhQ2CB/HzO1hXFHX
+         gMb3iqgL3liig==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id B1D8E40407; Mon,  4 Apr 2022 14:57:52 -0300 (-03)
+Date:   Mon, 4 Apr 2022 14:57:52 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Longpeng <longpeng2@huawei.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [PATCH 1/1] tools include UAPI: Sync linux/vhost.h with the kernel
+ sources
+Message-ID: <YksxoFcOARk/ldev@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For DSC to work we typically need a 2,2,1 configuration. This should
-suffice for resolutions up to 4k. For more resolutions like 8k this won't
-work.
+Just FYI, I'm carrying this on the perf tools tree.
 
-Also, it is better to use 2 LMs and DSC instances as half width results
-in lesser power consumption as compared to single LM, DSC at full width.
+- Arnaldo
 
-The panel has been tested only with 2,2,1 configuration, so for
-now we blindly create 2,2,1 topology when DSC is enabled
-
-Co-developed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
-Signed-off-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
 ---
- drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c | 13 +++++++++++++
- drivers/gpu/drm/msm/msm_drv.h               |  2 ++
- 2 files changed, 15 insertions(+)
 
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
-index 95d1588f3bb6..51f24ba68375 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
-@@ -567,8 +567,21 @@ static struct msm_display_topology dpu_encoder_get_topology(
- 	topology.num_enc = 0;
- 	topology.num_intf = intf_count;
- 
-+	if (dpu_enc->dsc) {
-+		/* In case of Display Stream Compression (DSC), we would use
-+		 * 2 encoders, 2 layer mixers and 1 interface
-+		 * this is power optimal and can drive up to (including) 4k
-+		 * screens
-+		 */
-+		topology.num_enc = 2;
-+		topology.num_dsc = 2;
-+		topology.num_intf = 1;
-+		topology.num_lm = 2;
-+	}
+To get the changes in:
+
+  b04d910af330b55e ("vdpa: support exposing the count of vqs to userspace")
+  a61280ddddaa45f9 ("vdpa: support exposing the config size to userspace")
+
+Silencing this perf build warning:
+
+  Warning: Kernel ABI header at 'tools/include/uapi/linux/vhost.h' differs from latest version at 'include/uapi/linux/vhost.h'
+  diff -u tools/include/uapi/linux/vhost.h include/uapi/linux/vhost.h
+
+  $ diff -u tools/include/uapi/linux/vhost.h include/uapi/linux/vhost.h
+  --- tools/include/uapi/linux/vhost.h	2021-07-15 16:17:01.840818309 -0300
+  +++ include/uapi/linux/vhost.h	2022-04-02 18:55:05.702522387 -0300
+  @@ -150,4 +150,11 @@
+   /* Get the valid iova range */
+   #define VHOST_VDPA_GET_IOVA_RANGE	_IOR(VHOST_VIRTIO, 0x78, \
+   					     struct vhost_vdpa_iova_range)
+  +
+  +/* Get the config size */
+  +#define VHOST_VDPA_GET_CONFIG_SIZE	_IOR(VHOST_VIRTIO, 0x79, __u32)
+  +
+  +/* Get the count of all virtqueues */
+  +#define VHOST_VDPA_GET_VQS_COUNT	_IOR(VHOST_VIRTIO, 0x80, __u32)
+  +
+   #endif
+  $ tools/perf/trace/beauty/vhost_virtio_ioctl.sh > before
+  $ cp include/uapi/linux/vhost.h tools/include/uapi/linux/vhost.h
+  $ tools/perf/trace/beauty/vhost_virtio_ioctl.sh > after
+  $ diff -u before after
+  --- before	2022-04-04 14:52:25.036375145 -0300
+  +++ after	2022-04-04 14:52:31.906549976 -0300
+  @@ -38,4 +38,6 @@
+   	[0x73] = "VDPA_GET_CONFIG",
+   	[0x76] = "VDPA_GET_VRING_NUM",
+   	[0x78] = "VDPA_GET_IOVA_RANGE",
+  +	[0x79] = "VDPA_GET_CONFIG_SIZE",
+  +	[0x80] = "VDPA_GET_VQS_COUNT",
+   };
+  $
+
+Cc: Longpeng <longpeng2@huawei.com>
+Cc: Michael S. Tsirkin <mst@redhat.com>
+Link: http://lore.kernel.org/lkml/
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+---
+ tools/include/uapi/linux/vhost.h | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/tools/include/uapi/linux/vhost.h b/tools/include/uapi/linux/vhost.h
+index c998860d7bbc4351..5d99e7c242a25e11 100644
+--- a/tools/include/uapi/linux/vhost.h
++++ b/tools/include/uapi/linux/vhost.h
+@@ -150,4 +150,11 @@
+ /* Get the valid iova range */
+ #define VHOST_VDPA_GET_IOVA_RANGE	_IOR(VHOST_VIRTIO, 0x78, \
+ 					     struct vhost_vdpa_iova_range)
 +
- 	return topology;
- }
++/* Get the config size */
++#define VHOST_VDPA_GET_CONFIG_SIZE	_IOR(VHOST_VIRTIO, 0x79, __u32)
 +
- static int dpu_encoder_virt_atomic_check(
- 		struct drm_encoder *drm_enc,
- 		struct drm_crtc_state *crtc_state,
-diff --git a/drivers/gpu/drm/msm/msm_drv.h b/drivers/gpu/drm/msm/msm_drv.h
-index bf2ccff97562..0ace9b0549a4 100644
---- a/drivers/gpu/drm/msm/msm_drv.h
-+++ b/drivers/gpu/drm/msm/msm_drv.h
-@@ -103,12 +103,14 @@ enum msm_event_wait {
-  * @num_enc:      number of compression encoder blocks used
-  * @num_intf:     number of interfaces the panel is mounted on
-  * @num_dspp:     number of dspp blocks used
-+ * @num_dsc:      number of Display Stream Compression (DSC) blocks used
-  */
- struct msm_display_topology {
- 	u32 num_lm;
- 	u32 num_enc;
- 	u32 num_intf;
- 	u32 num_dspp;
-+	u32 num_dsc;
- };
- 
- /* Commit/Event thread specific structure */
++/* Get the count of all virtqueues */
++#define VHOST_VDPA_GET_VQS_COUNT	_IOR(VHOST_VIRTIO, 0x80, __u32)
++
+ #endif
 -- 
-2.34.1
+2.35.1
 
