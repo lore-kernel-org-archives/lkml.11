@@ -2,142 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD134C48BCD
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:23:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7730AC48BE6
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:23:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381859AbiDDVYN (ORCPT
+        id S1381905AbiDDVYT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:24:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44896 "EHLO
+        Mon, 4 Apr 2022 17:24:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379041AbiDDQXj (ORCPT
+        with ESMTP id S1380472AbiDDUPf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 12:23:39 -0400
-Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88DA5BC0B
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 09:21:43 -0700 (PDT)
-Received: by mail-lj1-x22b.google.com with SMTP id c15so13579610ljr.9
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 09:21:43 -0700 (PDT)
+        Mon, 4 Apr 2022 16:15:35 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 993846140
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 13:13:35 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id w18so6221693edi.13
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 13:13:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=sSjPy3nGUVZuHRzOUz/UszBOtl2V7S/yzI9P7KRgl08=;
-        b=HT3V6nbpnDpfDTKzKnyd3jCoZaWwLF+bSGbOHokpeV/VvSEORsMHvGZW/9HQi0/7Ox
-         LqVOzNucmEEn3FWgzl4veF9IGo13mhSYpKxHnakDzMIuUAmctXkMYt3FnGVq+e5Qf77+
-         EDk3VKZQZKZk3Xznf/HZXc+7I5eqagDWebo+q9RWadNJSpe8YaDZvP02A5OUwKwRrldI
-         uAZc0JQU8T70xON49+6b5rF4vx4OKY2Wrto17BRYlh8C8c0xtyrLQ9jP5Otaiv0Q6WIY
-         Xgo/HgpqoSe+dXth94omVmmfFQ0yjfbe0cKVZFmeccyTXHJECOE8/fl+pRTqhS0w7r94
-         LH4A==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=k3ub90YIQCH3gVrlC+XZhiwoGcv8qRMkkwg5XV6TGpo=;
+        b=H8bLkWFNt5QHQ76VwX26EiXKepq0WEvr0SAsN5VcU6JoU2U22Jvh1dCkBgEZ+teAZk
+         +D6lIkRKH3VV/XRKQCdelK4pPgvqM2wheT6odsr7hMaTQH8zYx6knH1OY6lJjYkTNbd1
+         u7qldbMjS0MWp8b2+sb0oR+qEwuEYIrEHSHfF2fGq78+I820yKFRFdZfVJATm2lIuaGt
+         Yuqh86WPFLtTS8V8vg9qrUL6gYCuUp82urNfzo7EUsSNkRczA5DKgSshbbhdfDw7hEg7
+         u4DX6v3j6OIKy9eAtaltaRyw4jleQqcwHm1/GxWk6m+P/od6CD6c7JgOEQ7S127KKGR1
+         lpAw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=sSjPy3nGUVZuHRzOUz/UszBOtl2V7S/yzI9P7KRgl08=;
-        b=ICwsq/wONwKfu9zkvEajIgGL3e/Eae07JqXN5qlBOlTHjSU+CZD1PgoWa76Pw8p+Oz
-         xnm/kB4Lox6//pCkaPO9j/1G+Y3JzL3xZxAGUAgu7XDSUPvKx9Iqmf6r7N+mYSMx8jOI
-         +3K8eX/4B+DB/GJuegwNgMuK8XhA2MEOQrXjAHF0tZVHjDCunclvG1mbdXOwO1OuQEdb
-         rKSDrVpZywCtRovD+/P/XAwyOwNFtyn0RAh2s2nRehAQT9rUjeiXl4fsNCjFrRqkzTRz
-         +aDgH7gOmCfoGbQzNLx/pn9ftBGy2803bNNYrZqjWqAqnjq5oplZcTL6m0Oi5uReYIe/
-         a29w==
-X-Gm-Message-State: AOAM5305r4tMqjqZzdGBV63LPVUeNSAspEyekiQewiVEnKp931wxj50b
-        IuugWDS+QrTWEWlbEuYSdhM=
-X-Google-Smtp-Source: ABdhPJyyjkuETwqhDr1WVuvE7FvEc0DZAx9rddAx8mSnRsJnPnd1aCoRVc11fSMUqzv02rxS6jXnDA==
-X-Received: by 2002:a05:651c:a0d:b0:24b:12da:335a with SMTP id k13-20020a05651c0a0d00b0024b12da335amr206367ljq.397.1649089300445;
-        Mon, 04 Apr 2022 09:21:40 -0700 (PDT)
-Received: from localhost.localdomain (dzx1kfyjwg96s--vr8cxy-3.rev.dnainternet.fi. [2001:14ba:a4ea:8200:f22f:74ff:fe2e:e0a6])
-        by smtp.gmail.com with ESMTPSA id z23-20020a2e8857000000b00249a15d93b8sm1090291ljj.125.2022.04.04.09.21.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 09:21:39 -0700 (PDT)
-From:   Jan Varho <jan.varho@gmail.com>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     "Theodore Ts'o" <tytso@mit.edu>, linux-kernel@vger.kernel.org,
-        Jan Varho <jan.varho@gmail.com>
-Subject: [PATCH v2] random: fix add_hwgenerator_randomness entropy accounting
-Date:   Mon,  4 Apr 2022 19:20:40 +0300
-Message-Id: <20220404162039.961926-1-jan.varho@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <YksMxDLxPZtuYlFm@zx2c4.com>
-References: <YksMxDLxPZtuYlFm@zx2c4.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=k3ub90YIQCH3gVrlC+XZhiwoGcv8qRMkkwg5XV6TGpo=;
+        b=ZkMuNjSl4lu5pZtilM8Sig0KmllpwsE5XEMrefwP3L2MhmuEEeOnvjR4tmmD4yD9ua
+         5JdEK9rS/GTT0N+TXWVmegrVZj+fM4EsUB/hs05g6PFQtXfoGyT6/Xd7ZbA1PmS4eU+c
+         nTq6SkvZP2rFOV9h7pqyY8OoVkaCjoZf5QoXw38j2f2G5TCfHriUI/0g4sIFH/f9BuQQ
+         SRu44ET0teR9ti56ZcUJlT6x8TK2WacZfbLrg90nTHPV6bxHCHgLiNK4BOue2BSlxlL0
+         uZHzAD+SMp5MfbI4RmbGJCPfWReNuE1x8vo1jHS/NcLodXIuPGg3KoX6dR1H8o2YEQNH
+         qNIw==
+X-Gm-Message-State: AOAM531Hc+eC2ODGZe/4RD7NlGlx1U7FtXeUINceF/yTRi7zzkRXdOyW
+        YoZSQi0MxZ8PvJqFynZ/LofuZiXAri/iIRSq0rVWmA==
+X-Google-Smtp-Source: ABdhPJyjaZPLJ2IAcUnO0PWdbzDgVf1qeADw4rh2FnfnjirXie9zljRk+Niv/kP5VX3HBauIFJFTem64EluRa1ybc3o=
+X-Received: by 2002:a05:6402:1c1e:b0:416:5b93:eacf with SMTP id
+ ck30-20020a0564021c1e00b004165b93eacfmr1998410edb.302.1649103213975; Mon, 04
+ Apr 2022 13:13:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220318021314.3225240-1-davidgow@google.com> <20220318092159.6f275782@gandalf.local.home>
+In-Reply-To: <20220318092159.6f275782@gandalf.local.home>
+From:   Brendan Higgins <brendanhiggins@google.com>
+Date:   Mon, 4 Apr 2022 16:13:22 -0400
+Message-ID: <CAFd5g461Poh37o=3m6EXppdX7oS0D5vZxvFAEtzJMwtBD1VJEw@mail.gmail.com>
+Subject: Re: [RFC PATCH 0/2] kunit: Support redirecting function calls
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     David Gow <davidgow@google.com>,
+        Daniel Latypov <dlatypov@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        kunit-dev@googlegroups.com, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Steve Muckle <smuckle@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-add_hwgenerator_randomness tries to only use the required amound of input
-for fast init, but credits all the entropy if even a byte was left over.
+On Fri, Mar 18, 2022 at 9:22 AM Steven Rostedt <rostedt@goodmis.org> wrote:
+>
+> On Fri, 18 Mar 2022 10:13:12 +0800
+> David Gow <davidgow@google.com> wrote:
+>
+> > Does either (or both) of these features sound useful, and is this
+> > sort-of API the right model? (Personally, I think there's a reasonable
+> > scope for both.) Is anything obviously missing or wrong? Do the names,
+> > descriptions etc. make any sense?
+>
+> Obviously I'm biased toward the ftrace solution ;-)
 
-Fix by not crediting entropy when using the input for fast init.
+Personally, I like providing both - as long as we can keep the
+interface the same.
 
-Signed-off-by: Jan Varho <jan.varho@gmail.com>
----
- drivers/char/random.c | 23 ++++++-----------------
- 1 file changed, 6 insertions(+), 17 deletions(-)
-
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index 1d8242969751..4d77de688016 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -437,11 +437,8 @@ static void crng_make_state(u32 chacha_state[CHACHA_STATE_WORDS],
-  * This shouldn't be set by functions like add_device_randomness(),
-  * where we can't trust the buffer passed to it is guaranteed to be
-  * unpredictable (so it might not have any entropy at all).
-- *
-- * Returns the number of bytes processed from input, which is bounded
-- * by CRNG_INIT_CNT_THRESH if account is true.
-  */
--static size_t crng_pre_init_inject(const void *input, size_t len, bool account)
-+static void crng_pre_init_inject(const void *input, size_t len, bool account)
- {
- 	static int crng_init_cnt = 0;
- 	struct blake2s_state hash;
-@@ -452,18 +449,15 @@ static size_t crng_pre_init_inject(const void *input, size_t len, bool account)
- 	spin_lock_irqsave(&base_crng.lock, flags);
- 	if (crng_init != 0) {
- 		spin_unlock_irqrestore(&base_crng.lock, flags);
--		return 0;
-+		return;
- 	}
- 
--	if (account)
--		len = min_t(size_t, len, CRNG_INIT_CNT_THRESH - crng_init_cnt);
--
- 	blake2s_update(&hash, base_crng.key, sizeof(base_crng.key));
- 	blake2s_update(&hash, input, len);
- 	blake2s_final(&hash, base_crng.key);
- 
- 	if (account) {
--		crng_init_cnt += len;
-+		crng_init_cnt = min_t(size_t, len, CRNG_INIT_CNT_THRESH - crng_init_cnt);
- 		if (crng_init_cnt >= CRNG_INIT_CNT_THRESH) {
- 			++base_crng.generation;
- 			crng_init = 1;
-@@ -474,8 +468,6 @@ static size_t crng_pre_init_inject(const void *input, size_t len, bool account)
- 
- 	if (crng_init == 1)
- 		pr_notice("fast init done\n");
--
--	return len;
- }
- 
- static void _get_random_bytes(void *buf, size_t nbytes)
-@@ -1141,12 +1133,9 @@ void add_hwgenerator_randomness(const void *buffer, size_t count,
- 				size_t entropy)
- {
- 	if (unlikely(crng_init == 0 && entropy < POOL_MIN_BITS)) {
--		size_t ret = crng_pre_init_inject(buffer, count, true);
--		mix_pool_bytes(buffer, ret);
--		count -= ret;
--		buffer += ret;
--		if (!count || crng_init == 0)
--			return;
-+		crng_pre_init_inject(buffer, count, true);
-+		mix_pool_bytes(buffer, count);
-+		return;
- 	}
- 
- 	/*
--- 
-2.25.1
-
+Ftrace is less visually invasive, but it is also less flexible in
+capabilities, and requires substantial work to support on new
+architectures.
