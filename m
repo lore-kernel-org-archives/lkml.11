@@ -2,172 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 014A6C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 08:01:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A051EC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 08:01:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377880AbiDDIDO (ORCPT
+        id S1377875AbiDDIDx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 04:03:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39578 "EHLO
+        Mon, 4 Apr 2022 04:03:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377901AbiDDIDD (ORCPT
+        with ESMTP id S243172AbiDDIDv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 04:03:03 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29CFD3B2AA
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 01:01:07 -0700 (PDT)
-Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 2345KvRv002639;
-        Mon, 4 Apr 2022 08:00:59 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=xuMZoxCiAoHdrJQTSKdHoan5/3cQAMgl75sbQBjFMSc=;
- b=OUG6uPioXK0r6rZtFNVUp0cIKtexHa2E6p/8vODLeiZLOZZFOew97CCm85fcKR+Tb278
- eVPLSj2qNavCyqf3IKZgLc+MaYphNopsESaWidxCB9cgD24PuwpxOwrRXSdoCAL2pxRq
- zzupyyTEKtLPBho1L+VP15yadcdiA511E/VoSTbNZl54qArMqrqv03KoKIyEBFYUB8HM
- Y5S8ypvvnXFBHwWrpFay0z9DdPMTTcjPiwVz2ExzlA3rOz1LVs/hd08F+RoHY7xFuM+0
- 7U5dkWHDWYevSJpWgq3wvqzkdtKUj5aoJKvYkXZFMH6IDDF9ksrRG1K5jZRnoWzbFv5Q Sw== 
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3f705gkk74-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 04 Apr 2022 08:00:58 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2347r7P0022360;
-        Mon, 4 Apr 2022 08:00:57 GMT
-Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
-        by ppma04ams.nl.ibm.com with ESMTP id 3f6e48u580-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 04 Apr 2022 08:00:57 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
-        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23480sa314287238
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 4 Apr 2022 08:00:54 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 0D82042045;
-        Mon,  4 Apr 2022 08:00:54 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C71A742041;
-        Mon,  4 Apr 2022 08:00:53 +0000 (GMT)
-Received: from [9.101.4.33] (unknown [9.101.4.33])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon,  4 Apr 2022 08:00:53 +0000 (GMT)
-Message-ID: <02d1e060-e0e4-92e0-ef88-7f237e36fa5c@linux.ibm.com>
-Date:   Mon, 4 Apr 2022 10:00:53 +0200
+        Mon, 4 Apr 2022 04:03:51 -0400
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 308AC3B2B3
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 01:01:56 -0700 (PDT)
+Received: by mail-wm1-x32c.google.com with SMTP id l7-20020a05600c1d0700b0038c99618859so7201711wms.2
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 01:01:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=FMlxUg9R4XMvayD2D6tTORqQnMzt34ahkr+1IIPpZrk=;
+        b=xugZeTvVg5ASBCvLguGnDYkmRLxgPUfEhleySeiR9uFXVQxx+Hr8V1YFRV2BUDwXuI
+         msyLtkIgyC7A9wWhZKlYg1anDc7Iju+x8iRBqTwy1j04UnbSuIirNEPkFu/6wO3m9p+8
+         f9FNRYu3HOXNXKLbfoHYTVT8BjqQSPtatuRKgSDo1ThJlVmi2Cf6K0R+mHxPQDeVQiO1
+         5Q9uZ5ZqJIlBr+OZp1InjMQUi4L0ZN4pffk5D9B3CuQWx8vFmdgArsfM1r28PSbPAdSQ
+         0AZ8PH4SLfYjtyoicGP5lMaqZakfDhZxLmz8PVAO4yltGyK4EexIuhCNYPgYcRtX9540
+         XzYw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=FMlxUg9R4XMvayD2D6tTORqQnMzt34ahkr+1IIPpZrk=;
+        b=pvGDLcTBtMZm9NOL298gDGStEXKkVVRfvo//pTM4RsCazdnRPOTCjxqgUlX03UGpAf
+         56jCU6LqzQMv4ZfY2cfpykqznyQ0YX76xqOpdnYyi7h8qrorl6FXrY3ITFEN9TUUtCX4
+         CQ76t/bXtRBfywjfTtiEsi4PnBdZ92e4EhEcong/iuoOh48L8D6RFudG0rWxzXPclk+O
+         JdnEZyJnN5l0KhfAWf91FznTbdgyl5IivD4VB8+6FhSgGsrAwUMPeD237AoUWJXenBO4
+         VWP5Y7Ycwpk+NVGofpiRkfE+f5Bdw4bpRRxy89hN8drBD/gZY2ZrviessJ9Z+f1/NvQN
+         GpcA==
+X-Gm-Message-State: AOAM533qvEym1ULuIAZpf+Gckkun+yzoiR2h20YDNI2v74K8qMYn1q8S
+        yZ8uQ2gYHfJ+EaJrgW4cU0nnVQ2XMKS+OseS
+X-Google-Smtp-Source: ABdhPJwnvBXWc2QrklzwJsBhpREtyKwtTZ8QEHMMLvvJRy0/5hd+0G+oXty5theGkKG3n7Y3e+KiFw==
+X-Received: by 2002:a05:600c:1d8e:b0:389:d079:cc0 with SMTP id p14-20020a05600c1d8e00b00389d0790cc0mr18377684wms.98.1649059314426;
+        Mon, 04 Apr 2022 01:01:54 -0700 (PDT)
+Received: from localhost.localdomain ([2001:861:44c0:66c0:1add:1b28:2457:eb46])
+        by smtp.gmail.com with ESMTPSA id q14-20020a1cf30e000000b0038986a18ec8sm8586159wmq.46.2022.04.04.01.01.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Apr 2022 01:01:53 -0700 (PDT)
+From:   Neil Armstrong <narmstrong@baylibre.com>
+To:     linux-kernel@vger.kernel.org, linux-amlogic@lists.infradead.org,
+        Kevin Hilman <khilman@baylibre.com>,
+        Vyacheslav Bocharov <adeep@lexina.in>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc:     Neil Armstrong <narmstrong@baylibre.com>
+Subject: Re: [PATCH v2 0/4] arm64: meson: update dts for JetHub devices
+Date:   Mon,  4 Apr 2022 10:01:52 +0200
+Message-Id: <164905930207.1797085.9678466232916244683.b4-ty@baylibre.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220326075110.1462301-1-adeep@lexina.in>
+References: <20220326075110.1462301-1-adeep@lexina.in>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.7.0
-Subject: Re: [PATCH v2] powerpc/drmem: Don't compute the NUMA node for each
- LMB
-Content-Language: en-US
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Cc:     nathanl@linux.ibm.com, cheloha@linux.ibm.com
-References: <202008051807.Vi8NDJtX%lkp@intel.com>
- <20200805133502.33723-1-ldufour@linux.ibm.com>
- <9d02405a-793e-bcf5-a424-470d9c82ec7d@csgroup.eu>
-From:   Laurent Dufour <ldufour@linux.ibm.com>
-In-Reply-To: <9d02405a-793e-bcf5-a424-470d9c82ec7d@csgroup.eu>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 7dCaxTUBNO8YZmlyL818tKVKjP05Kwqh
-X-Proofpoint-ORIG-GUID: 7dCaxTUBNO8YZmlyL818tKVKjP05Kwqh
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-04-04_02,2022-03-31_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 clxscore=1011
- spamscore=0 priorityscore=1501 impostorscore=0 mlxlogscore=999
- adultscore=0 bulkscore=0 lowpriorityscore=0 phishscore=0 mlxscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2204040043
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 02/04/2022, 18:35:15, Christophe Leroy wrote:
-> 
-> 
-> Le 05/08/2020 à 15:35, Laurent Dufour a écrit :
->> All the LMB from the same set of ibm,dynamic-memory-v2 property are
->> sharing the same NUMA node. Don't compute that node for each one.
->>
->> Tested on a system with 1022 LMBs spread on 4 NUMA nodes, only 4 calls to
->> lmb_set_nid() have been made instead of 1022.
->>
->> This should prevent some soft lockups when starting large guests
->>
->> Code has meaning only if CONFIG_MEMORY_HOTPLUG is set, otherwise the nid
->> field is not present in the drmem_lmb structure.
->>
->> Signed-off-by: Laurent Dufour <ldufour@linux.ibm.com>
-> 
-> It looks like this patch was superseded by e5e179aa3a39 ("pseries/drmem:
-> don't cache node id in drmem_lmb struct").
+Hi,
 
-That patch has been superseded and can be dropped.
-
-Thanks,
-Laurent.
-
-
-> If not, anyway it conflicts with that patch so it has to be rebased.
+On Sat, 26 Mar 2022 10:51:06 +0300, Vyacheslav Bocharov wrote:
+> Update dts for JetHub H1:
+> - add bluetooth node for RTL8822CS uart port
 > 
-> Thanks
-> Christophe
+> Update dts for JetHub D1:
+> - add ZigBee serial alias (ttyAML2) for backward compatibility
+> - update voltage regulators and SDIO config to match board's reference design
+> - update max freq for WiFi SDIO
 > 
-> 
->> ---
->>   arch/powerpc/mm/drmem.c | 25 ++++++++++++++++++++++++-
->>   1 file changed, 24 insertions(+), 1 deletion(-)
->>
->> diff --git a/arch/powerpc/mm/drmem.c b/arch/powerpc/mm/drmem.c
->> index b2eeea39684c..c11b6ec99ea3 100644
->> --- a/arch/powerpc/mm/drmem.c
->> +++ b/arch/powerpc/mm/drmem.c
->> @@ -402,6 +402,9 @@ static void __init init_drmem_v2_lmbs(const __be32
->> *prop)
->>       const __be32 *p;
->>       u32 i, j, lmb_sets;
->>       int lmb_index;
->> +#ifdef CONFIG_MEMORY_HOTPLUG
->> +    struct drmem_lmb *first = NULL;
->> +#endif
->>         lmb_sets = of_read_number(prop++, 1);
->>       if (lmb_sets == 0)
->> @@ -426,6 +429,15 @@ static void __init init_drmem_v2_lmbs(const __be32
->> *prop)
->>       for (i = 0; i < lmb_sets; i++) {
->>           read_drconf_v2_cell(&dr_cell, &p);
->>   +#ifdef CONFIG_MEMORY_HOTPLUG
->> +        /*
->> +         * Fetch the NUMA node id for the fist set or if the
->> +         * associativity index is different from the previous set.
->> +         */
->> +        if (first && dr_cell.aa_index != first->aa_index)
->> +            first = NULL;
->> +#endif
->> +
->>           for (j = 0; j < dr_cell.seq_lmbs; j++) {
->>               lmb = &drmem_info->lmbs[lmb_index++];
->>   @@ -438,7 +450,18 @@ static void __init init_drmem_v2_lmbs(const __be32
->> *prop)
->>               lmb->aa_index = dr_cell.aa_index;
->>               lmb->flags = dr_cell.flags;
->>   -            lmb_set_nid(lmb);
->> +#ifdef CONFIG_MEMORY_HOTPLUG
->> +            /*
->> +             * All the LMB in the set share the same NUMA
->> +             * associativity property. So read that node only once.
->> +             */
->> +            if (!first) {
->> +                lmb_set_nid(lmb);
->> +                first = lmb;
->> +            } else {
->> +                lmb->nid = first->nid;
->> +            }
->> +#endif
->>           }
->>       }
->>   }
+> [...]
 
+Thanks, Applied to https://git.kernel.org/pub/scm/linux/kernel/git/amlogic/linux.git (v5.19/dt64)
+
+[1/4] arm64: meson: add dts bluetooth node for JetHub H1
+      https://git.kernel.org/amlogic/c/2bda08dfc501967a7a7bd6f77f04afef14dc7271
+[2/4] arm64: meson: dts: update serial alias in dts for JetHub D1
+      https://git.kernel.org/amlogic/c/cf94e26508ad411c2a618b00dfaae515affd0ca7
+[3/4] arm64: meson: update SDIO voltage in dts for JetHub D1
+      https://git.kernel.org/amlogic/c/81bbd2bd24a9ebac3871b293060df50445458c79
+[4/4] arm64: meson: update WiFi SDIO in dts for JetHub D1
+      https://git.kernel.org/amlogic/c/87a87657249316616138c103c2bdb7525c34d987
+
+-- 
+Neil
