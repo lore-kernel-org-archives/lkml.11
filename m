@@ -2,244 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C1C0C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 13:31:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A9A9C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 13:32:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353382AbiDDNct (ORCPT
+        id S1353483AbiDDNel (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 09:32:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42090 "EHLO
+        Mon, 4 Apr 2022 09:34:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243632AbiDDNcp (ORCPT
+        with ESMTP id S243632AbiDDNej (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 09:32:45 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39A041EACE;
-        Mon,  4 Apr 2022 06:30:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649079049; x=1680615049;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=cjuK6YuB7DvTu+1ibjzsUPC9QtPmDTctVpzqH1N2zAk=;
-  b=lI+0e2E8+fEd5Pt6AEVpkJdn+h8UzAWD7R7yyel4sIIdrAQ8LUcyVfFz
-   7SZ+2ctyka1dpMF1DRoCBdERlQlvQjqw3wuJs+vuYo4HtV9RQK97ldAqv
-   n9qnAA05l6/3eSEvzcn4e2Uhhf6gQ1m+UbkYUOlRDkxYccXmX/6bzxz/0
-   O5K+mWz0LzCmLpIaX8pZpWsb2tmK0hRIhvCpT/pJdlD6iH5GrPZV4sFBj
-   mR+l97Fgc/2J999aHmE3M97UFGO49r9Jx20cCesxmNGbPbq4UkTNK4pRP
-   E4J5VF1p20xxTsyF3J39rfxnjdXPZayLlzvpXStAxm/K/0pYOYi2a3En+
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10306"; a="241100827"
-X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
-   d="scan'208";a="241100827"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 06:30:45 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
-   d="scan'208";a="651494441"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by fmsmga002.fm.intel.com with ESMTP; 04 Apr 2022 06:30:42 -0700
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 234DUerE005936;
-        Mon, 4 Apr 2022 14:30:40 +0100
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Madhu Chittim <madhu.chittim@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        Brett Creeley <brett@pensando.io>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Ivan Vecera <ivecera@redhat.com>
-Subject: [PATCH net] ice: arfs: fix use-after-free when freeing @rx_cpu_rmap
-Date:   Mon,  4 Apr 2022 15:28:32 +0200
-Message-Id: <20220404132832.1936529-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.35.1
+        Mon, 4 Apr 2022 09:34:39 -0400
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2105.outbound.protection.outlook.com [40.107.92.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8E5E20F62;
+        Mon,  4 Apr 2022 06:32:41 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=cztaZX12QTffQ/Kr5cpCt/3Ue5SWZh+1UVFrWdCAHM5g9Y6EGcQCfgFreSfJo4q32mCI+Smg4oFcl3y3zz0oQDLi3dBRDzeUEPxVMH1nVtaRr2Z7uCNQdQsBKEU2zyoiIXEabvf5PeJY4HZuYv1icPpbZ8YNZuItZnQyX5AMrBNDtbl7ffw8Inn3oN8tgF40Bfahw9VJJNX/SAtDgMuXXde9now/p1WHecy5SKtTuKkHfYitXuuSf1Fms6UToXxMHpNB7CBushO2nZG/0Rxhw2U0AsCzm1nD6vY60QV5JiWiSq8auu8naczLQau3Vu49mrfbaalusLBPXKQgLuXE9Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=lvE5/XeSZSAgu0PSiEPP3dVEldibvyXKfyXWR5jPXBk=;
+ b=WUROCeqHqUtzxN0k60R1TmJrKR40r2qsr4lqCeRIzTbqoyQQVAa5f60HrXKgCiyWsJd9x40aXekM0NozLsiLzM1jWOFAQkghTgdVEQ5csYUYX7WuElDpnUvYcykXqog/Hgn3V+aapKSjdr2J4spzlaT8DfE+AXun+qFlQzpPTCCjPDTbDNQfwPKNTEmWjQMzMV3Ei2i6qwQwNaIslt3DfdbYKCJ9PNUqwS7Ifg2y5FgJHQll4TS4iHdFzwAcpqfUMq8x4o2zxQA2pz9ZX/iRJf3jwPcHB0gR6fXdSRECyMRBgN3RF6eh/Q0lbAC1Sea3XnFce0Jf6p7STMUtegzGVA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=hammerspace.com; dmarc=pass action=none
+ header.from=hammerspace.com; dkim=pass header.d=hammerspace.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hammerspace.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=lvE5/XeSZSAgu0PSiEPP3dVEldibvyXKfyXWR5jPXBk=;
+ b=TMQ8WjVxmZ9N7SJHCdHzGy6bQr6Pms8fWZdxKlwHjM0aS0GhBcLqGEF9TplUchoqerd1lyCSY2bejahF2PTlsWdY3kxZBEpVVfltjXtUF17Nfd/u+3ovaHJ4vfjvptgkwWUYYwlUQNydStOH/R3gRZIi27yeLCkx8EOeu1WqaXE=
+Received: from CH0PR13MB5084.namprd13.prod.outlook.com (2603:10b6:610:111::7)
+ by BY5PR13MB2936.namprd13.prod.outlook.com (2603:10b6:a03:183::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.16; Mon, 4 Apr
+ 2022 13:32:37 +0000
+Received: from CH0PR13MB5084.namprd13.prod.outlook.com
+ ([fe80::c0b:4fda:5713:9006]) by CH0PR13MB5084.namprd13.prod.outlook.com
+ ([fe80::c0b:4fda:5713:9006%6]) with mapi id 15.20.5144.016; Mon, 4 Apr 2022
+ 13:32:37 +0000
+From:   Trond Myklebust <trondmy@hammerspace.com>
+To:     "smfrench@gmail.com" <smfrench@gmail.com>,
+        "linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "viro@zeniv.linux.org.uk" <viro@zeniv.linux.org.uk>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: UBSAN shitf-out-of-bounds regression in NFS in 5.18-rc1
+Thread-Topic: UBSAN shitf-out-of-bounds regression in NFS in 5.18-rc1
+Thread-Index: AQHYR9d+7u50LO74q0i8GQ6f5TJV/KzfwTUA
+Date:   Mon, 4 Apr 2022 13:32:37 +0000
+Message-ID: <c5e15aae628558d6da286a8a846821ae9009c0f7.camel@hammerspace.com>
+References: <CAH2r5msa7ZW3j+oO1JvKA0OLgaP2thyviRDGxTiK6gz2H9r-jA@mail.gmail.com>
+In-Reply-To: <CAH2r5msa7ZW3j+oO1JvKA0OLgaP2thyviRDGxTiK6gz2H9r-jA@mail.gmail.com>
+Accept-Language: en-US, en-GB
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=hammerspace.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: c2baafe0-578d-4844-3dd8-08da163f95c7
+x-ms-traffictypediagnostic: BY5PR13MB2936:EE_
+x-microsoft-antispam-prvs: <BY5PR13MB2936F7F440D38740F35BC85CB8E59@BY5PR13MB2936.namprd13.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: UGhAwW7ExtBr88F6Ksff4W+7YgP1yXIatCjQWWScMztCJYzPDFlluqBD9v5+ZeBHjeEdJud8Qoff68y+RfLhJhYjHbzrDEKQUUd2QBQqxZe5jAqOdelZigp1mrsCMsoMdzDcKcy/nnV7ioc4t3GcQcxaNV4YRRjIe/CrExESMPTGPbgjHBx5Dypi8xyf/NPDK9jI2QE0wgUpFY5Qex3Cx/NbQus83X8khUEaNsW+JzQpxCBgUoqObCpQW690fnsDxENTYragkDNRcRSNH081YT2o0hgU7W4gxwykapvaihFC0vwVKR11TVydFuBMd3V7qdRNueZnJ8e4MuX8/b6YvoVnewpI3UNyRfS6p2UmG4/fXtUjP4UmwZyuWSxp3RygGLVzEpxu+Wg2cgdgvQzn2ZhHgC7xVSaX2QtsKtW37hWSauKIOivSoV1oA/gsElBvlRiDg07ERnITDD1NBFobntfx0Xk2jnsW7WTfCjKxM5KMF7yCaLHBWeLk29DZRmaub5DaNpXnKII8QGApiJmNwMU21lBJ6Hms1wBkGHmEx/OQ/cyah5422heyVJ3eWALbgN/beXXoGCkKywZrcue7fs5vGAqn+CNy9vlhVCZ1WfGbQIIYNzKSeF5VH+gcRsYSiCL+0cocTC0HX9yTYly3WJ5myReqCPVSwdod89wfuhfgEFqre0dESoMmSEwbi0Sua7EdhpSHAqlF+F78qJ5A8w==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH0PR13MB5084.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(8936002)(76116006)(66946007)(66556008)(8676002)(66476007)(64756008)(6486002)(66446008)(6512007)(83380400001)(508600001)(316002)(36756003)(26005)(186003)(6506007)(110136005)(86362001)(71200400001)(2616005)(122000001)(38100700002)(38070700005)(5660300002)(2906002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?RkNuTTRSMlRBUnFSbW1WVHlwSEJCUUNHTWRsSStaWmZTa2szYXZGUUJwOVJU?=
+ =?utf-8?B?QVJDa2hLOE1rYVd4VnhkY21yTkJzeU11ZzBNbGsvdUZPTEdWY2FTTVJDV2Zw?=
+ =?utf-8?B?VHBaTm9yamhFc1l1ZDZ4K2FiZ3d6SXY2SnVnajFNYUxmVDZkTjdpWlFzeCtZ?=
+ =?utf-8?B?Z0xEeklXanZPTlFtUXNjRGx2VWtkN05vcnpQY1pmWm50NTVqWnJzMHFDR0Jx?=
+ =?utf-8?B?RlNldk81bjJRWkJMUU1RRHY1UVdtQ1ppNFRwUDZpTi9adFd6QmMwTkpCQk83?=
+ =?utf-8?B?K1QzbVlKRTJTTUx1TzNJSFE1V25EcUtiOE0wRUQvN3UxRlV1WWxDK0sxd2h5?=
+ =?utf-8?B?dXVnZVFiVG5PRVc1NW9PUUZZWmdkRlh5Sk1qL04xZmZxanExdHlReXd3ZnRw?=
+ =?utf-8?B?R0o0eDIzN3RhcFRldzlwdThDSEduYnJJMWdaMHcrY1ltb1hDNW5ERGVEYkFv?=
+ =?utf-8?B?MUVqeGdTY2dMbHdBQm5aODdlWEN0ajVBMkJUYzR2SkNrMWlsVGUyVkJYRVY2?=
+ =?utf-8?B?LzBuNFNWQ0NEbEV0a3FwVWdvSUFtTFlQRUZIUVBLUVlzVWhlRE5WT05JaWVD?=
+ =?utf-8?B?cEJMaVFmeVFVRStWdVd3blhRSEgvV3JQR3FuYWhkc1drLy9CaU5mK3dPdVU5?=
+ =?utf-8?B?T01OYS9mTmRLejFLREdmYWd3MFZlemxyMnNtVnBENU1idW1YLzkwdzVnNUh5?=
+ =?utf-8?B?Y0tDK2p6dThNODNDdk1VZGdoVzEvZTltclFsNzBEUDM4V1l2WVhSTGhoNmJy?=
+ =?utf-8?B?SmNLWXlUVHBKZmZLVTUwR0hoNXltR056MzllQ0lMZUFLYXdVR0dmQlFHME5M?=
+ =?utf-8?B?ZGtLM3U4WEVjdC8xdWJvVzZaSkdXS3BYNThjejZmZktWdEhYSGVLK1NBcUN4?=
+ =?utf-8?B?TzJKY1pKQ0tXRzVWa0t2T3JqQVl0aTYyTElXQWk5MXRodDBIN2Ixd0ovY3hn?=
+ =?utf-8?B?UEtERE41RGVRZStOK3JCeExRZUcrdkpCVTRNNmdtSnBHdmh0bnRLM2lVN0Vp?=
+ =?utf-8?B?YnUwZFVxelBnMSt6SlZtc2hXdnoraFNueVVENk52N2NMYjJ3Q2tSYTFDaTE1?=
+ =?utf-8?B?VFdMVzZNdnhhejV2S0p6bEJ5T0VnWW9Xek16aHNFekgyaTNSTDIyaFErTzZt?=
+ =?utf-8?B?Y2JTOEkzMFIxZktPUFNhOVJKMFlOd3JNUDN0UFJVYnFhb2d3WjRnZ1M3Zmc2?=
+ =?utf-8?B?QWh1SzVGa3kyQlFESkhVRytpWU5wU1JkcHp6ZHNGdjFsZnRXUWZPMGNVSklw?=
+ =?utf-8?B?MGF4eFAycHVvaHk3ZE1PaDBTcjQ0dk85V3hRNThocnlwRWhVSXhPNVZqd1d5?=
+ =?utf-8?B?eHlKNStIRndQektTL1RnNHoxbHVLVGpMaFgrbXlJYVFOdHdYS2txZ3BBQit6?=
+ =?utf-8?B?MkJEL2xMamdLZ3NVdlU5L3RWcEdJdHA1aGlHaGR1cE1yakpnT05rSU51MVBo?=
+ =?utf-8?B?M2pxaHU3UFRtaTVJNnpmUVF1ZHIvNW9tc3RJekhza2s2S2VyRUxacXhMWVRZ?=
+ =?utf-8?B?a1dvcitmTGsyQ1loUlRMOTVXcHJIYitwZVpQOG9FODRMMUN1M1RiRFZNY0p4?=
+ =?utf-8?B?Zkg0ZnlOUlEySmpWbjE5YTRoTHFTcllpc3lVU3JocXRmMDFhZ3RGeGs0VDFX?=
+ =?utf-8?B?R2c2NE8wdUdUVGlBaG5qU0RYUFBMdDFia2FBd3h0eFFqM21TaWppZHo4cU9V?=
+ =?utf-8?B?OUY4R3c2MHI4VnhjU1FVakpldjdrb0ZvTVUwb0hBQ2tlMGQ2MExNQVNFTTBw?=
+ =?utf-8?B?VHJKYnBTY3E0RTN0SlhlWDVzbytuWng5dVBsclBFQm9qR2kweHEvVEN2Ny9U?=
+ =?utf-8?B?dlhOVDA2Q3U3ZWJPVVN1QTdpY2ZMYkhQcnV5UG1SMi9lZlBsTWh3aUNXeWpV?=
+ =?utf-8?B?OWhpRVZHN3NxeHhXbkt3MTN1WDB3VkhpQkVRdGE5OGkvcTJWT3Y2QzI2ZWhk?=
+ =?utf-8?B?UFNPUDVoVzRtUnFubldaUmlvaXBIMVB4NDFpaXU1NndQRDFQSFJsdWFIamZI?=
+ =?utf-8?B?RkdpR3RBREdMcS9ha1cyd0l6dFI1VEJhb1FzMzBDdkZhemdtM2ozYWR6ditV?=
+ =?utf-8?B?d2J1MzY2NGdOUXRCOVd3WGtSaEcwK0p1ZDNTbEYzTUFnTGZqa1J0V3Y0bUt2?=
+ =?utf-8?B?N21iN0FncnoyWkx3UHhXTlA4bU9yamdBeXFtcEE5eUNFeVVibUhxSHlKRWNF?=
+ =?utf-8?B?cnplcDIra2l5R2thQVNaSGJyV0dwRXc3RVhoUFBZaURxMFFzZFdRRUxyZ0l4?=
+ =?utf-8?B?cGhLblZjb0hNZFFmMzN3a2ZnZFNTc2RaeXFnbUNLUGNaNTZuQTNKb3RpNHFy?=
+ =?utf-8?B?MSsxc21HaDNORUNSalJlTEZreSt0Rlh5YWQ4NmxpR3BWNzlVVUNtQlVMVmor?=
+ =?utf-8?Q?SM3rilBNDLiTUae0=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <41D7A453EB30BC4984D9A63D37D97A97@namprd13.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: hammerspace.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CH0PR13MB5084.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c2baafe0-578d-4844-3dd8-08da163f95c7
+X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Apr 2022 13:32:37.6710
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 0d4fed5c-3a70-46fe-9430-ece41741f59e
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 1w+uNfzOqygx9NaTfhxb+6Lps5QGEytSn2TjHOSBYHPzQ92eYYupMS3dCoCyR1zx6VNH7pmApd4vtR1ZMJ4etg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR13MB2936
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The CI testing bots triggered the following splat:
-
-[  718.203054] BUG: KASAN: use-after-free in free_irq_cpu_rmap+0x53/0x80
-[  718.206349] Read of size 4 at addr ffff8881bd127e00 by task sh/20834
-[  718.212852] CPU: 28 PID: 20834 Comm: sh Kdump: loaded Tainted: G S      W IOE     5.17.0-rc8_nextqueue-devqueue-02643-g23f3121aca93 #1
-[  718.219695] Hardware name: Intel Corporation S2600WFT/S2600WFT, BIOS SE5C620.86B.02.01.0012.070720200218 07/07/2020
-[  718.223418] Call Trace:
-[  718.227139]
-[  718.230783]  dump_stack_lvl+0x33/0x42
-[  718.234431]  print_address_description.constprop.9+0x21/0x170
-[  718.238177]  ? free_irq_cpu_rmap+0x53/0x80
-[  718.241885]  ? free_irq_cpu_rmap+0x53/0x80
-[  718.245539]  kasan_report.cold.18+0x7f/0x11b
-[  718.249197]  ? free_irq_cpu_rmap+0x53/0x80
-[  718.252852]  free_irq_cpu_rmap+0x53/0x80
-[  718.256471]  ice_free_cpu_rx_rmap.part.11+0x37/0x50 [ice]
-[  718.260174]  ice_remove_arfs+0x5f/0x70 [ice]
-[  718.263810]  ice_rebuild_arfs+0x3b/0x70 [ice]
-[  718.267419]  ice_rebuild+0x39c/0xb60 [ice]
-[  718.270974]  ? asm_sysvec_apic_timer_interrupt+0x12/0x20
-[  718.274472]  ? ice_init_phy_user_cfg+0x360/0x360 [ice]
-[  718.278033]  ? delay_tsc+0x4a/0xb0
-[  718.281513]  ? preempt_count_sub+0x14/0xc0
-[  718.284984]  ? delay_tsc+0x8f/0xb0
-[  718.288463]  ice_do_reset+0x92/0xf0 [ice]
-[  718.292014]  ice_pci_err_resume+0x91/0xf0 [ice]
-[  718.295561]  pci_reset_function+0x53/0x80
-<...>
-[  718.393035] Allocated by task 690:
-[  718.433497] Freed by task 20834:
-[  718.495688] Last potentially related work creation:
-[  718.568966] The buggy address belongs to the object at ffff8881bd127e00
-                which belongs to the cache kmalloc-96 of size 96
-[  718.574085] The buggy address is located 0 bytes inside of
-                96-byte region [ffff8881bd127e00, ffff8881bd127e60)
-[  718.579265] The buggy address belongs to the page:
-[  718.598905] Memory state around the buggy address:
-[  718.601809]  ffff8881bd127d00: fa fb fb fb fb fb fb fb fb fb fb fb fc fc fc fc
-[  718.604796]  ffff8881bd127d80: 00 00 00 00 00 00 00 00 00 00 fc fc fc fc fc fc
-[  718.607794] >ffff8881bd127e00: fa fb fb fb fb fb fb fb fb fb fb fb fc fc fc fc
-[  718.610811]                    ^
-[  718.613819]  ffff8881bd127e80: 00 00 00 00 00 00 00 00 00 00 00 00 fc fc fc fc
-[  718.617107]  ffff8881bd127f00: fa fb fb fb fb fb fb fb fb fb fb fb fc fc fc fc
-
-This is due to that free_irq_cpu_rmap() is always being called
-*after* (devm_)free_irq() and thus it tries to work with IRQ descs
-already freed. For example, on device reset the driver frees the
-rmap right before allocating a new one (the splat above).
-Make rmap creation and freeing function symmetrical with
-{request,free}_irq() calls i.e. do that on ifup/ifdown instead
-of device probe/remove/resume. These operations can be performed
-independently from the actual device aRFS configuration.
-Also, make sure ice_vsi_free_irq() clears IRQ affinity notifiers
-only when aRFS is disabled -- otherwise, CPU rmap sets and clears
-its own and they must not be touched manually.
-
-Fixes: 28bf26724fdb0 ("ice: Implement aRFS")
-Co-developed-by: Ivan Vecera <ivecera@redhat.com>
-Signed-off-by: Ivan Vecera <ivecera@redhat.com>
-Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
----
-Netdev folks, some more urgent stuff, would like to have this in
--net directly.
-
-Ivan, I probably should've waited for your response regarding
-signatures, hope you'll approve this one :p Feel free to review
-and/or test.
----
- drivers/net/ethernet/intel/ice/ice_arfs.c |  7 +------
- drivers/net/ethernet/intel/ice/ice_lib.c  |  5 ++++-
- drivers/net/ethernet/intel/ice/ice_main.c | 18 ++++++++----------
- 3 files changed, 13 insertions(+), 17 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/ice/ice_arfs.c b/drivers/net/ethernet/intel/ice/ice_arfs.c
-index 5daade32ea62..97347b796066 100644
---- a/drivers/net/ethernet/intel/ice/ice_arfs.c
-+++ b/drivers/net/ethernet/intel/ice/ice_arfs.c
-@@ -599,7 +599,7 @@ int ice_set_cpu_rx_rmap(struct ice_vsi *vsi)
- 	int base_idx, i;
- 
- 	if (!vsi || vsi->type != ICE_VSI_PF)
--		return -EINVAL;
-+		return 0;
- 
- 	pf = vsi->back;
- 	netdev = vsi->netdev;
-@@ -636,7 +636,6 @@ void ice_remove_arfs(struct ice_pf *pf)
- 	if (!pf_vsi)
- 		return;
- 
--	ice_free_cpu_rx_rmap(pf_vsi);
- 	ice_clear_arfs(pf_vsi);
- }
- 
-@@ -653,9 +652,5 @@ void ice_rebuild_arfs(struct ice_pf *pf)
- 		return;
- 
- 	ice_remove_arfs(pf);
--	if (ice_set_cpu_rx_rmap(pf_vsi)) {
--		dev_err(ice_pf_to_dev(pf), "Failed to rebuild aRFS\n");
--		return;
--	}
- 	ice_init_arfs(pf_vsi);
- }
-diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
-index 6d6233204388..7fe4bfd7882a 100644
---- a/drivers/net/ethernet/intel/ice/ice_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_lib.c
-@@ -2688,6 +2688,8 @@ void ice_vsi_free_irq(struct ice_vsi *vsi)
- 		return;
- 
- 	vsi->irqs_ready = false;
-+	ice_free_cpu_rx_rmap(vsi);
-+
- 	ice_for_each_q_vector(vsi, i) {
- 		u16 vector = i + base;
- 		int irq_num;
-@@ -2701,7 +2703,8 @@ void ice_vsi_free_irq(struct ice_vsi *vsi)
- 			continue;
- 
- 		/* clear the affinity notifier in the IRQ descriptor */
--		irq_set_affinity_notifier(irq_num, NULL);
-+		if (!IS_ENABLED(CONFIG_RFS_ACCEL))
-+			irq_set_affinity_notifier(irq_num, NULL);
- 
- 		/* clear the affinity_mask in the IRQ descriptor */
- 		irq_set_affinity_hint(irq_num, NULL);
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 1d2ca39add95..24d3279df231 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -2510,6 +2510,13 @@ static int ice_vsi_req_irq_msix(struct ice_vsi *vsi, char *basename)
- 		irq_set_affinity_hint(irq_num, &q_vector->affinity_mask);
- 	}
- 
-+	err = ice_set_cpu_rx_rmap(vsi);
-+	if (err) {
-+		netdev_err(vsi->netdev, "Failed to setup CPU RMAP on VSI %u: %pe\n",
-+			   vsi->vsi_num, ERR_PTR(err));
-+		goto free_q_irqs;
-+	}
-+
- 	vsi->irqs_ready = true;
- 	return 0;
- 
-@@ -3690,20 +3697,12 @@ static int ice_setup_pf_sw(struct ice_pf *pf)
- 	 */
- 	ice_napi_add(vsi);
- 
--	status = ice_set_cpu_rx_rmap(vsi);
--	if (status) {
--		dev_err(dev, "Failed to set CPU Rx map VSI %d error %d\n",
--			vsi->vsi_num, status);
--		goto unroll_napi_add;
--	}
- 	status = ice_init_mac_fltr(pf);
- 	if (status)
--		goto free_cpu_rx_map;
-+		goto unroll_napi_add;
- 
- 	return 0;
- 
--free_cpu_rx_map:
--	ice_free_cpu_rx_rmap(vsi);
- unroll_napi_add:
- 	ice_tc_indir_block_unregister(vsi);
- unroll_cfg_netdev:
-@@ -5165,7 +5164,6 @@ static int __maybe_unused ice_suspend(struct device *dev)
- 			continue;
- 		ice_vsi_free_q_vectors(pf->vsi[v]);
- 	}
--	ice_free_cpu_rx_rmap(ice_get_main_vsi(pf));
- 	ice_clear_interrupt_scheme(pf);
- 
- 	pci_save_state(pdev);
--- 
-2.35.1
-
+VGhhbmtzIFN0ZXZlIQ0KDQpPbiBTdW4sIDIwMjItMDQtMDMgYXQgMjI6NTIgLTA1MDAsIFN0ZXZl
+IEZyZW5jaCB3cm90ZToNCj4gTm90aWNlZCB0aGlzIHNoaWZ0LW91dC1vZi1ib3VuZHMgZXJyb3Ig
+aW4gTkZTLCBhbmQgYWxzbyBzaW1pbGFyDQo+IG1lc3NhZ2VzIGxvZ2dlZCBpbiBhIGZldyBvdGhl
+ciBkcml2ZXJzIHdoZW4gcnVubmluZyA1LjE4LXJjMS7CoCBJdA0KPiBzZWVtcyB0byBoYXZlIHJl
+Z3Jlc3NlZCBpbiB0aGUgbGFzdCB0ZW4gZGF5cyBiZWNhdXNlIEkgZGlkbid0IHNlZSBpdA0KPiBp
+biB0aGUgc2FtZSBzZXR1cCB3aGVuIHJ1bm5pbmcgYW4gZWFybGllciB2ZXJzaW9uIG9mIHRoZSBy
+YyAoYWJvdXQgMTANCj4gZGF5cyBhZ28pLsKgIEFueSBpZGVhcz8NCj4gDQo+IFtTdW4gQXByIDMg
+MjI6MTY6NTcgMjAyMl0gVUJTQU46IHNoaWZ0LW91dC1vZi1ib3VuZHMgaW4NCj4gbGliL3BlcmNw
+dS1yZWZjb3VudC5jOjE0MDo2Mw0KPiBbU3VuIEFwciAzIDIyOjE2OjU3IDIwMjJdIGxlZnQgc2hp
+ZnQgb2YgbmVnYXRpdmUgdmFsdWUgLQ0KPiA5MjIzMzcyMDM2ODU0Nzc1ODA3DQo+IFtTdW4gQXBy
+IDMgMjI6MTY6NTcgMjAyMl0gQ1BVOiA3IFBJRDogMTAyMzAgQ29tbTogYWlvLWZyZWUtcmluZy13
+IE5vdA0KPiB0YWludGVkIDUuMTguMC1yYzEgIzENCj4gW1N1biBBcHIgMyAyMjoxNjo1NyAyMDIy
+XSBIYXJkd2FyZSBuYW1lOiBSZWQgSGF0IEtWTSwgQklPUyAwLjUuMQ0KPiAwMS8wMS8yMDExDQo+
+IFtTdW4gQXByIDMgMjI6MTY6NTcgMjAyMl0gQ2FsbCBUcmFjZToNCj4gW1N1biBBcHIgMyAyMjox
+Njo1NyAyMDIyXSA8VEFTSz4NCj4gW1N1biBBcHIgMyAyMjoxNjo1NyAyMDIyXSBkdW1wX3N0YWNr
+X2x2bCsweDU1LzB4NmQNCj4gW1N1biBBcHIgMyAyMjoxNjo1NyAyMDIyXSB1YnNhbl9lcGlsb2d1
+ZSsweDUvMHg0MA0KPiBbU3VuIEFwciAzIDIyOjE2OjU3IDIwMjJdDQo+IF9fdWJzYW5faGFuZGxl
+X3NoaWZ0X291dF9vZl9ib3VuZHMrMHhmYS8weDE0MA0KPiBbU3VuIEFwciAzIDIyOjE2OjU3IDIw
+MjJdID8gbG9ja19hY3F1aXJlKzB4Mjc1LzB4MzIwDQo+IFtTdW4gQXByIDMgMjI6MTY6NTcgMjAy
+Ml0gPyBfcmF3X3NwaW5fdW5sb2NrX2lycXJlc3RvcmUrMHg0MC8weDYwDQo+IFtTdW4gQXByIDMg
+MjI6MTY6NTcgMjAyMl0gPyBwZXJjcHVfcmVmX2V4aXQrMHg4Ny8weDkwDQo+IFtTdW4gQXByIDMg
+MjI6MTY6NTcgMjAyMl0gcGVyY3B1X3JlZl9leGl0KzB4ODcvMHg5MA0KPiBbU3VuIEFwciAzIDIy
+OjE2OjU3IDIwMjJdIGlvY3R4X2FsbG9jKzB4NTAwLzB4OGYwDQo+IFtTdW4gQXByIDMgMjI6MTY6
+NTcgMjAyMl0gX194NjRfc3lzX2lvX3NldHVwKzB4NTgvMHgyNDANCj4gW1N1biBBcHIgMyAyMjox
+Njo1NyAyMDIyXSBkb19zeXNjYWxsXzY0KzB4M2EvMHg4MA0KPiBbU3VuIEFwciAzIDIyOjE2OjU3
+IDIwMjJdIGVudHJ5X1NZU0NBTExfNjRfYWZ0ZXJfaHdmcmFtZSsweDQ0LzB4YWUNCj4gW1N1biBB
+cHIgMyAyMjoxNjo1NyAyMDIyXSBSSVA6IDAwMzM6MHg3ZjBjMzJjNTJkNmQNCj4gW1N1biBBcHIg
+MyAyMjoxNjo1NyAyMDIyXSBDb2RlOiAwMCBjMyA2NiAyZSAwZiAxZiA4NCAwMCAwMCAwMCAwMCAw
+MA0KPiA5MA0KPiBmMyAwZiAxZSBmYSA0OCA4OSBmOCA0OCA4OSBmNyA0OCA4OSBkNiA0OCA4OSBj
+YSA0ZCA4OSBjMiA0ZCA4OSBjOCA0Yw0KPiA4YiA0YyAyNCAwOCAwZiAwNSA8NDg+IDNkIDAxIGYw
+IGZmIGZmIDczIDAxIGMzIDQ4IDhiIDBkIGViIDgwIDBjIDAwDQo+IGY3DQo+IGQ4IDY0IDg5IDAx
+IDQ4DQo+IFtTdW4gQXByIDMgMjI6MTY6NTcgMjAyMl0gUlNQOiAwMDJiOjAwMDA3ZmZmZmYzZmVk
+YzggRUZMQUdTOiAwMDAwMDIwMg0KPiBPUklHX1JBWDogMDAwMDAwMDAwMDAwMDBjZQ0KPiBbU3Vu
+IEFwciAzIDIyOjE2OjU3IDIwMjJdIFJBWDogZmZmZmZmZmZmZmZmZmZkYSBSQlg6IDAwMDAwMDAw
+MDAwMDI3MTANCj4gUkNYOiAwMDAwN2YwYzMyYzUyZDZkDQo+IFtTdW4gQXByIDMgMjI6MTY6NTcg
+MjAyMl0gUkRYOiAwMDAwN2YwYzMyYzUyZjQ3IFJTSTogMDAwMDdmZmZmZjNmZWUwOA0KPiBSREk6
+IDAwMDAwMDAwMDAwMDI3MTANCj4gW1N1biBBcHIgMyAyMjoxNjo1NyAyMDIyXSBSQlA6IDAwMDA3
+ZjBjMzJiNTg2YzAgUjA4OiAwMDAwMDAwMDAwMDAwMDAwDQo+IFIwOTogMDAwMDdmZmZmZjNmZWYw
+OA0KPiBbU3VuIEFwciAzIDIyOjE2OjU3IDIwMjJdIFIxMDogMDAwMDAwMDAwMDAwMDAwMCBSMTE6
+IDAwMDAwMDAwMDAwMDAyMDINCj4gUjEyOiAwMDAwMDAwMDAwMDAwMDBjDQo+IFtTdW4gQXByIDMg
+MjI6MTY6NTcgMjAyMl0gUjEzOiAwMDAwN2ZmZmZmM2ZlZTA4IFIxNDogMDAwMDAwMDAwMDAwMDAw
+MA0KPiBSMTU6IDAwMDAwMDAwMDAwMDAwMDANCj4gW1N1biBBcHLCoCAzIDIyOjE2OjU3IDIwMjJd
+wqAgPC9UQVNLPg0KPiBbU3VuIEFwcsKgIDMgMjI6MTY6NTcgMjAyMl0NCj4gPT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+DQo+ID09PT09PT09PT09DQo+IFtTdW4gQXBywqAgMyAyMjoxNjo1NyAyMDIyXQ0KPiA9PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT0NCj4gPT09PT09PT09PT0NCj4gW1N1biBBcHLCoCAzIDIyOjE2OjU3IDIwMjJdIFVCU0FO
+OiBzaGlmdC1vdXQtb2YtYm91bmRzIGluDQo+IC4vaW5jbHVkZS9saW51eC9uZnNfZnMuaDo2MDY6
+OQ0KPiBbU3VuIEFwcsKgIDMgMjI6MTY6NTcgMjAyMl0gbGVmdCBzaGlmdCBvZiAxIGJ5IDYzIHBs
+YWNlcyBjYW5ub3QgYmUNCj4gcmVwcmVzZW50ZWQgaW4gdHlwZSAnbG9uZyBsb25nIGludCcNCg0K
+SG1tLi4uIEl0IGxvb2tzIGxpa2UgaXQgaXMgYWN0dWFsbHkgY29tcGxhaW5pbmcgYWJvdXQgdGhl
+IGRlZmluaXRpb24gb2YNCk9GRlNFVF9NQVggaW4gZnMuaDoNCg0KI2lmbmRlZiBPRkZTRVRfTUFY
+DQojZGVmaW5lIElOVF9MSU1JVCh4KSAgICAofigoeCkxIDw8IChzaXplb2YoeCkqOCAtIDEpKSkN
+CiNkZWZpbmUgT0ZGU0VUX01BWCAgICAgIElOVF9MSU1JVChsb2ZmX3QpDQojZGVmaW5lIE9GRlRf
+T0ZGU0VUX01BWCBJTlRfTElNSVQob2ZmX3QpDQojZW5kaWYNCg0KU2luY2UgbG9mZl90IGlzIHNp
+Z25lZCwgSSBzdXNwZWN0IGl0IGlzIHVuaGFwcHkgdGhhdCB0aGUgc2hpZnQgYnkgNjMNCm92ZXJm
+bG93cyBpbnRvIGEgbmVnYXRpdmUgdmFsdWUuDQpJIGRvbid0IGtub3cgd2hvIHdyb3RlIHRoaXMg
+Y29kZSAoaXQgcHJlZGF0ZXMgZ2l0KSBzbyBwdW50aW5nIHRvIEFsLg0KDQotLSANClRyb25kIE15
+a2xlYnVzdA0KTGludXggTkZTIGNsaWVudCBtYWludGFpbmVyLCBIYW1tZXJzcGFjZQ0KdHJvbmQu
+bXlrbGVidXN0QGhhbW1lcnNwYWNlLmNvbQ0KDQoNCg==
