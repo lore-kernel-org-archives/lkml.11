@@ -2,181 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC908C4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE7A1C46467
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:23:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381257AbiDDVWq (ORCPT
+        id S1381351AbiDDVWy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:22:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46590 "EHLO
+        Mon, 4 Apr 2022 17:22:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379272AbiDDQvx (ORCPT
+        with ESMTP id S1380379AbiDDTxG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 12:51:53 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C60A83206F;
-        Mon,  4 Apr 2022 09:49:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649090996; x=1680626996;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=mmcZSIlJkv/9k53+32pFDDB02AXmc/mojSxyVAU4Ycg=;
-  b=QckznjSltzWUfdN+fbzweFp+rod5jfHHsQjZiBGhh5ufm5icc0nKKupz
-   ix63v2nmCgs7GO+d1PURJkwKbeiX3mQ/NCd3PRBVXP+6hS31uM8qRe8T1
-   n7p9fj0BZmqn2D0NTduIG9ZoJ/VMysPkP+paEVDUbjHVLZ+NKxH4SRH7m
-   PwS5v81Jvbr4o7h9QE7e8Rvs1Bj85eNXoWQGLwEVgklU/4KUEw17b+VTi
-   UFp/4Zknog6Bc/kl+dKCStM2VzIvfQoD4rS/PVNeMCvlpqTu8ZcPZOHXR
-   C9p4JoEW8laUqnpFXADY85MUaAsCTSX/dVA7p+sb3GDcD1arBBbsT0sYH
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="323734049"
-X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
-   d="scan'208";a="323734049"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:49:51 -0700
-X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
-   d="scan'208";a="523105186"
-Received: from rchatre-ws.ostc.intel.com ([10.54.69.144])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:49:50 -0700
-From:   Reinette Chatre <reinette.chatre@intel.com>
-To:     dave.hansen@linux.intel.com, jarkko@kernel.org, tglx@linutronix.de,
-        bp@alien8.de, luto@kernel.org, mingo@redhat.com,
-        linux-sgx@vger.kernel.org, x86@kernel.org
-Cc:     seanjc@google.com, kai.huang@intel.com, cathy.zhang@intel.com,
-        cedric.xing@intel.com, haitao.huang@intel.com,
-        mark.shanahan@intel.com, hpa@zytor.com,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH V3 13/30] x86/sgx: Export sgx_encl_page_alloc()
-Date:   Mon,  4 Apr 2022 09:49:21 -0700
-Message-Id: <794f92c110f79c94b6aa969d9ddc7a73a4c5b67b.1648847675.git.reinette.chatre@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1648847675.git.reinette.chatre@intel.com>
-References: <cover.1648847675.git.reinette.chatre@intel.com>
+        Mon, 4 Apr 2022 15:53:06 -0400
+Received: from vps-vb.mhejs.net (vps-vb.mhejs.net [37.28.154.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FC18559A;
+        Mon,  4 Apr 2022 12:51:08 -0700 (PDT)
+Received: from MUA
+        by vps-vb.mhejs.net with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <mail@maciej.szmigiero.name>)
+        id 1nbSj5-0003Uu-05; Mon, 04 Apr 2022 21:50:59 +0200
+Message-ID: <53a9ac0a-fce5-69a0-41e5-9a1a2dab9317@maciej.szmigiero.name>
+Date:   Mon, 4 Apr 2022 21:50:53 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Content-Language: en-US
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Maxim Levitsky <mlevitsk@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220402010903.727604-1-seanjc@google.com>
+ <20220402010903.727604-6-seanjc@google.com>
+ <a47217da0b6db4f1b6b6c69a9dc38350b13ac17c.camel@redhat.com>
+ <YkshgrUaF4+MrrXf@google.com>
+ <a3cf781b-0b1a-0bba-6b37-12666c7fc154@maciej.szmigiero.name>
+ <YktIGHM86jHkzGdF@google.com>
+From:   "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
+Subject: Re: [PATCH 5/8] KVM: SVM: Re-inject INT3/INTO instead of retrying the
+ instruction
+In-Reply-To: <YktIGHM86jHkzGdF@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jarkko Sakkinen <jarkko@kernel.org>
+On 4.04.2022 21:33, Sean Christopherson wrote:
+> On Mon, Apr 04, 2022, Maciej S. Szmigiero wrote:
+>>>>> index 47e7427d0395..a770a1c7ddd2 100644
+>>>>> --- a/arch/x86/kvm/svm/svm.h
+>>>>> +++ b/arch/x86/kvm/svm/svm.h
+>>>>> @@ -230,8 +230,8 @@ struct vcpu_svm {
+>>>>>    	bool nmi_singlestep;
+>>>>>    	u64 nmi_singlestep_guest_rflags;
+>>>>> -	unsigned int3_injected;
+>>>>> -	unsigned long int3_rip;
+>>>>> +	unsigned soft_int_injected;
+>>>>> +	unsigned long soft_int_linear_rip;
+>>>>>    	/* optional nested SVM features that are enabled for this guest  */
+>>>>>    	bool nrips_enabled                : 1;
+>>>>
+>>>>
+>>>> I mostly agree with this patch, but think that it doesn't address the
+>>>> original issue that Maciej wanted to address:
+>>>>
+>>>> Suppose that there is *no* instruction in L2 code which caused the software
+>>>> exception, but rather L1 set arbitrary next_rip, and set EVENTINJ to software
+>>>> exception with some vector, and that injection got interrupted.
+>>>>
+>>>> I don't think that this code will support this.
+>>>
+>>> Argh, you're right.  Maciej's selftest injects without an instruction, but it doesn't
+>>> configure the scenario where that injection fails due to an exception+VM-Exit that
+>>> isn't intercepted by L1 and is handled by L0.  The event_inj test gets the coverage
+>>> for the latter, but always has a backing instruction.
+>>
+>> Still reviewing the whole patch set, but want to clear this point quickly:
+>> The selftest does have an implicit intervening NPF (handled by L0) while
+>> injecting the first L1 -> L2 event.
+> 
+> I'll do some debug to figure out why the test passes for me.  I'm guessing I either
+> got lucky, e.g. IDT was faulted in already, or I screwed up and the test doesn't
+> actually pass.
 
-Move sgx_encl_page_alloc() to encl.c and export it so that it can be
-used in the implementation for support of adding pages to initialized
-enclaves, which requires to allocate new enclave pages.
+Try applying Maxim's proposed change to this test (adding two additional ud2s at the
+start of L2 guest code and adjusting just the next_rip field accordingly).
 
-Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
-Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
----
-Changes since V2:
-- New patch
-  Originally submitted at:
-  https://lore.kernel.org/linux-sgx/20220308112833.262805-3-jarkko@kernel.org/
+We might have been lucky in the patched KVM code and have next_rip = rip at this
+re-injection case now (the next_rip field was zero in the original KVM code).
 
- arch/x86/kernel/cpu/sgx/encl.c  | 32 ++++++++++++++++++++++++++++++++
- arch/x86/kernel/cpu/sgx/encl.h  |  3 +++
- arch/x86/kernel/cpu/sgx/ioctl.c | 32 --------------------------------
- 3 files changed, 35 insertions(+), 32 deletions(-)
-
-diff --git a/arch/x86/kernel/cpu/sgx/encl.c b/arch/x86/kernel/cpu/sgx/encl.c
-index c77a62432862..546423753e4c 100644
---- a/arch/x86/kernel/cpu/sgx/encl.c
-+++ b/arch/x86/kernel/cpu/sgx/encl.c
-@@ -792,6 +792,38 @@ int sgx_encl_test_and_clear_young(struct mm_struct *mm,
- 	return ret;
- }
- 
-+struct sgx_encl_page *sgx_encl_page_alloc(struct sgx_encl *encl,
-+					  unsigned long offset,
-+					  u64 secinfo_flags)
-+{
-+	struct sgx_encl_page *encl_page;
-+	unsigned long prot;
-+
-+	encl_page = kzalloc(sizeof(*encl_page), GFP_KERNEL);
-+	if (!encl_page)
-+		return ERR_PTR(-ENOMEM);
-+
-+	encl_page->desc = encl->base + offset;
-+	encl_page->encl = encl;
-+
-+	prot = _calc_vm_trans(secinfo_flags, SGX_SECINFO_R, PROT_READ)  |
-+	       _calc_vm_trans(secinfo_flags, SGX_SECINFO_W, PROT_WRITE) |
-+	       _calc_vm_trans(secinfo_flags, SGX_SECINFO_X, PROT_EXEC);
-+
-+	/*
-+	 * TCS pages must always RW set for CPU access while the SECINFO
-+	 * permissions are *always* zero - the CPU ignores the user provided
-+	 * values and silently overwrites them with zero permissions.
-+	 */
-+	if ((secinfo_flags & SGX_SECINFO_PAGE_TYPE_MASK) == SGX_SECINFO_TCS)
-+		prot |= PROT_READ | PROT_WRITE;
-+
-+	/* Calculate maximum of the VM flags for the page. */
-+	encl_page->vm_max_prot_bits = calc_vm_prot_bits(prot, 0);
-+
-+	return encl_page;
-+}
-+
- /**
-  * sgx_zap_enclave_ptes() - remove PTEs mapping the address from enclave
-  * @encl: the enclave
-diff --git a/arch/x86/kernel/cpu/sgx/encl.h b/arch/x86/kernel/cpu/sgx/encl.h
-index 9d673d9531f0..253ebdd1c5be 100644
---- a/arch/x86/kernel/cpu/sgx/encl.h
-+++ b/arch/x86/kernel/cpu/sgx/encl.h
-@@ -112,6 +112,9 @@ int sgx_encl_get_backing(struct sgx_encl *encl, unsigned long page_index,
- void sgx_encl_put_backing(struct sgx_backing *backing, bool do_write);
- int sgx_encl_test_and_clear_young(struct mm_struct *mm,
- 				  struct sgx_encl_page *page);
-+struct sgx_encl_page *sgx_encl_page_alloc(struct sgx_encl *encl,
-+					  unsigned long offset,
-+					  u64 secinfo_flags);
- void sgx_zap_enclave_ptes(struct sgx_encl *encl, unsigned long addr);
- struct sgx_epc_page *sgx_alloc_va_page(void);
- unsigned int sgx_alloc_va_slot(struct sgx_va_page *va_page);
-diff --git a/arch/x86/kernel/cpu/sgx/ioctl.c b/arch/x86/kernel/cpu/sgx/ioctl.c
-index 746acddbb774..0460fd224a05 100644
---- a/arch/x86/kernel/cpu/sgx/ioctl.c
-+++ b/arch/x86/kernel/cpu/sgx/ioctl.c
-@@ -169,38 +169,6 @@ static long sgx_ioc_enclave_create(struct sgx_encl *encl, void __user *arg)
- 	return ret;
- }
- 
--static struct sgx_encl_page *sgx_encl_page_alloc(struct sgx_encl *encl,
--						 unsigned long offset,
--						 u64 secinfo_flags)
--{
--	struct sgx_encl_page *encl_page;
--	unsigned long prot;
--
--	encl_page = kzalloc(sizeof(*encl_page), GFP_KERNEL);
--	if (!encl_page)
--		return ERR_PTR(-ENOMEM);
--
--	encl_page->desc = encl->base + offset;
--	encl_page->encl = encl;
--
--	prot = _calc_vm_trans(secinfo_flags, SGX_SECINFO_R, PROT_READ)  |
--	       _calc_vm_trans(secinfo_flags, SGX_SECINFO_W, PROT_WRITE) |
--	       _calc_vm_trans(secinfo_flags, SGX_SECINFO_X, PROT_EXEC);
--
--	/*
--	 * TCS pages must always RW set for CPU access while the SECINFO
--	 * permissions are *always* zero - the CPU ignores the user provided
--	 * values and silently overwrites them with zero permissions.
--	 */
--	if ((secinfo_flags & SGX_SECINFO_PAGE_TYPE_MASK) == SGX_SECINFO_TCS)
--		prot |= PROT_READ | PROT_WRITE;
--
--	/* Calculate maximum of the VM flags for the page. */
--	encl_page->vm_max_prot_bits = calc_vm_prot_bits(prot, 0);
--
--	return encl_page;
--}
--
- static int sgx_validate_secinfo(struct sgx_secinfo *secinfo)
- {
- 	u64 perm = secinfo->flags & SGX_SECINFO_PERMISSION_MASK;
--- 
-2.25.1
-
+Thanks,
+Maciej
