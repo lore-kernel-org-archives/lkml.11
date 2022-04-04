@@ -2,100 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B323C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:41:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BEC0C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:41:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387370AbiDDVnF (ORCPT
+        id S1384651AbiDDVmU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:43:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53756 "EHLO
+        Mon, 4 Apr 2022 17:42:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380720AbiDDVMW (ORCPT
+        with ESMTP id S1379502AbiDDRQp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 17:12:22 -0400
-Received: from smtp.gentoo.org (dev.gentoo.org [IPv6:2001:470:ea4a:1:5054:ff:fec7:86e4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 171882F3B4;
-        Mon,  4 Apr 2022 14:10:25 -0700 (PDT)
-Subject: Re: [PATCH] MIPS: pgalloc: fix memory leak caused by pgd_free()
-To:     "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Andrew Holmes <aholmes@omnom.net>
-Cc:     yaliang.wang@windriver.com, rppt@kernel.org,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        huangpei@loongson.cn, Andrew Morton <akpm@linux-foundation.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        anshuman.khandual@arm.com, penberg@kernel.org,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Greg KH <gregkh@linuxfoundation.org>
-References: <20220310113116.2068859-1-yaliang.wang@windriver.com>
- <alpine.DEB.2.21.2204021446370.47162@angie.orcam.me.uk>
- <9cc88b1c-8a8c-95ea-2cf7-31be3b771495@omnom.net>
- <alpine.DEB.2.21.2204031122020.47162@angie.orcam.me.uk>
-From:   Joshua Kinard <kumba@gentoo.org>
-Message-ID: <4094bbe0-27b0-d83b-3b22-36d0d53769b5@gentoo.org>
-Date:   Mon, 4 Apr 2022 17:10:19 -0400
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Firefox/68.0 Thunderbird/68.12.1
+        Mon, 4 Apr 2022 13:16:45 -0400
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80E6B1401B
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 10:14:48 -0700 (PDT)
+Received: by mail-pg1-x529.google.com with SMTP id q142so7104761pgq.9
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 10:14:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=9G0a90Ep/Bz5OOoDZhbBO26Y5kHqZZt4pCiJoHTyyw4=;
+        b=dbsKFhi7Qrtq/Rq9OZDWGOfaDFXlehFA5Dvy8IhvRrLeU0T4wP85YNiBqYaU9XUcaR
+         eUVN69DjjMnifijLW25m+YKzc/I0odbx2wV1tPCdU+KBxslLKSqFwvkD4pVvTF50IUQa
+         +QaIH7XLXTeNMaw7eguYI4S17J2ihOJkhUqbubb0twU+NF44WOBEs4KEZwuyI2cQ1OWg
+         DjvmsdfzKYHIffEOCxLZBCluUxcZ7//A9FO1lCcnt+AcAMATqSVWgw8Xu0BUE/Jl7VQw
+         rtUspdPnkhbICsCmzGy+IMML4dl30xRIEscdXvevjnn2tvTt7h6mqDEkiKuyZ7Z/UY9Z
+         FpEA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=9G0a90Ep/Bz5OOoDZhbBO26Y5kHqZZt4pCiJoHTyyw4=;
+        b=knhSi6cZXcrKy0ITyZbC738w3bCGej8/NdG8UTUoo0oUOqsOBe+bt+KwVPV5D9uQFt
+         RcpjFfltWX7sPM9P438axio0xVkGnGflAMDYf3vSXsbzgX4P5CSlNwX0k4fWuqbU3mhX
+         n3EiI+G88XIe+3djuauQvBD7U2/Y9w5g/iFQxrGAHHYmw1y8Kj4a8Qi0bx9odpGvY7av
+         I6Mu6gwc30R7ZJQocfsRd3lcKd6b5AqelU49HZyXhh3NA7BPzP0LviZDQNtdzxBGaI+o
+         0l4GwXxP6Ndx+FdqxCpogyY3BzJBXsPQCT0XgBqw7ZxnAZDZkdCHyhQ631L18tRgfT6k
+         /7FQ==
+X-Gm-Message-State: AOAM530anDVOaGyIbXPNLKu+qVO8g6263UCrflHA6g7nR7KatM8BeR5I
+        +ObsJI138mbeKBYZ+Jflxo723otag4XqWmOCaSpGug==
+X-Google-Smtp-Source: ABdhPJwExpdEGnyWDK69sFVEHi5zDLcGulVNorqTNcKNzqhC2Qfdem89xzMoC4eHonTJ3Nemx/2dgOoEjbxz5HBpdFw=
+X-Received: by 2002:a05:6a00:bd1:b0:4fa:a5d7:c082 with SMTP id
+ x17-20020a056a000bd100b004faa5d7c082mr520472pfu.85.1649092487680; Mon, 04 Apr
+ 2022 10:14:47 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.21.2204031122020.47162@angie.orcam.me.uk>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <YkdrEG5FlL7Gq2Vi@cmpxchg.org> <243A0156-D26A-47C9-982A-C8B0CDD69DA2@linux.dev>
+ <Ykdz7fiMFZeFltYy@cmpxchg.org>
+In-Reply-To: <Ykdz7fiMFZeFltYy@cmpxchg.org>
+From:   Shakeel Butt <shakeelb@google.com>
+Date:   Mon, 4 Apr 2022 10:14:36 -0700
+Message-ID: <CALvZod466jLN8Bb67X9=iF5TvjOo-oEsHA-mGhpHnywGCP+WvA@mail.gmail.com>
+Subject: Re: [PATCH resend] memcg: introduce per-memcg reclaim interface
+To:     Johannes Weiner <hannes@cmpxchg.org>
+Cc:     Roman Gushchin <roman.gushchin@linux.dev>,
+        Yosry Ahmed <yosryahmed@google.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Rientjes <rientjes@google.com>,
+        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        Cgroups <cgroups@vger.kernel.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>, Jonathan Corbet <corbet@lwn.net>,
+        Yu Zhao <yuzhao@google.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Wei Xu <weixugc@google.com>, Greg Thelen <gthelen@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/3/2022 06:37, Maciej W. Rozycki wrote:
-> On Sun, 3 Apr 2022, Andrew Holmes wrote:
-> 
->> MIPS64 has essentially been broken/unusable for 8 kernel releases,
->> including two LTS kernels, since the original commit landed. Should
->> there not have been CI/tests that caught this? It's pretty major!
-> 
->  AFAIK the MIPS port is only maintained on the best effort basis nowadays 
-> I'm afraid.  I.e. it's enthusiasts investing their free time for the joy 
-> of fiddling with things.  So things are bound to break from time to time 
-> and remain unnoticed for a while.  We're doing our best, but our resources 
-> are limited.
-> 
->  Taking these limitations into account I think Thomas has been doing a 
-> tremendous job maintaining the MIPS port, but he hasn't been cc-ed on the 
-> submission of the original change and it's very easy to miss stuff in the 
-> flood that has only been posted to a mailing list.
-> 
->   Maciej
-> 
+On Fri, Apr 1, 2022 at 2:51 PM Johannes Weiner <hannes@cmpxchg.org> wrote:
+>
+> On Fri, Apr 01, 2022 at 02:21:52PM -0700, Roman Gushchin wrote:
+> > > On Apr 1, 2022, at 2:13 PM, Johannes Weiner <hannes@cmpxchg.org> wrot=
+e:
+> > >
+> > > =EF=BB=BFOn Fri, Apr 01, 2022 at 11:39:30AM -0700, Roman Gushchin wro=
+te:
+> > >> The interface you're proposing is not really extensible, so we'll li=
+kely need to
+> > >> introduce a new interface like memory.reclaim_ext very soon. Why not=
+ create
+> > >> an extensible API from scratch?
+> > >>
+> > >> I'm looking at cgroup v2 documentation which describes various inter=
+face files
+> > >> formats and it seems like given the number of potential optional arg=
+uments
+> > >> the best option is nested keyed (please, refer to the Interface File=
+s section).
+> > >>
+> > >> E.g. the format can be:
+> > >> echo "1G type=3Dfile nodemask=3D1-2 timeout=3D30s" > memory.reclaim
+> > >
+> > > Yeah, that syntax looks perfect.
+> > >
+> > > But why do you think it's not extensible from the current patch? We
+> > > can add those arguments one by one as we agree on them, and return
+> > > -EINVAL if somebody passes an unknown parameter.
+> > >
+> > > It seems to me the current proposal is forward-compatible that way
+> > > (with the current set of keyword pararms being the empty set :-))
+> >
+> > It wasn=E2=80=99t obvious to me. We spoke about positional arguments an=
+d then it wasn=E2=80=99t clear how to add them in a backward-compatible way=
+. The last thing we want is a bunch of memory.reclaim* interfaces :)
+> >
+> > So yeah, let=E2=80=99s just describe it properly in the documentation, =
+no code changes are needed.
+>
+> Sounds good to me!
 
-FWIW, hot off the presses is RFC9225:
-https://datatracker.ietf.org/doc/html/rfc9225
+To summarize for next version:
 
-4.  Best Current Practises
+1) Add selftests.
+2) Add documentation for potential future extension, so whoever adds
+those features in future should follow the key-value format Roman is
+suggesting.
 
-   1.  Authors MUST NOT implement bugs.
-
-   2.  If bugs are introduced in code, they MUST be clearly documented.
-
-   3.  When implementing specifications that are broken by design, it is
-       RECOMMENDED to aggregate multiple smaller bugs into one larger
-       bug.  This will be easier to document: rather than having a lot
-       of hard-to-track inconsequential bugs, there will be only a few
-       easy-to-recognise significant bugs.
-
-   4.  The aphorism "It's not a bug, it's a feature" is considered rude.
-
-   5.  Assume all external input is the result of (a series of) bugs.
-       (Especially in machine-to-machine applications such as
-       implementations of network protocols.)
-
-   6.  In fact, assume all internal inputs also are the result of bugs.
-
--- 
-Joshua Kinard
-Gentoo/MIPS
-kumba@gentoo.org
-rsa6144/5C63F4E3F5C6C943 2015-04-27
-177C 1972 1FB8 F254 BAD0 3E72 5C63 F4E3 F5C6 C943
-
-"The past tempts us, the present confuses us, the future frightens us.  And
-our lives slip away, moment by moment, lost in that vast, terrible in-between."
-
---Emperor Turhan, Centauri Republic
+Yosry, once we have agreement on the return value, please send the
+next version resolving these three points.
