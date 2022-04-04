@@ -2,141 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FBB9C3527D
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:59:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9AC3C3527B
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:59:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379799AbiDDV67 (ORCPT
+        id S1379719AbiDDV6m (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:58:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44170 "EHLO
+        Mon, 4 Apr 2022 17:58:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379137AbiDDQhR (ORCPT
+        with ESMTP id S1379273AbiDDQvy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 12:37:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F97AE094;
-        Mon,  4 Apr 2022 09:35:21 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D288CB8185A;
-        Mon,  4 Apr 2022 16:35:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01641C340EE;
-        Mon,  4 Apr 2022 16:35:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649090118;
-        bh=t1R7yY7ERx45DK/Kh01d2HvOQlzbGo2a7CpMAwLKtzE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BIbYevOXpAE5cWe8PHnRfvfbi/ss6FsOa+tFMHytERdciuYr8Jsl2e+29uATUUgZc
-         O094MyF1ENciMCi6csVSV4IaQZ9JjAVLEd7FVjAaiU3DOU2ZdR4WWcmNPyBDo5LGrX
-         4WLitQWjC04enQ++V97VGzOP6CbsG9YPZRll2OZrQWXmS6x/PBJhRVXIu6UdcVXM7a
-         IUUlWcU9puBkM0mwraQw0V8itW/vzu/316k0MpYlKEwxZDc8K5acul3MNITcFs5qFm
-         FG7xqnREInseFwgUth5m43LGmcLJ7Vg8kjDye6hMgemQi11zFVBcz1z2nXSRkaChkY
-         IcZ+LffLiTImw==
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Rob Clark <robdclark@gmail.com>
-Cc:     linux-arm-msm@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Vinod Koul <vkoul@kernel.org>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jonathan Marek <jonathan@marek.ca>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        freedreno@lists.freedesktop.org
-Subject: [PATCH v6 06/14] drm/msm/disp/dpu1: Add DSC support in hw_ctl
-Date:   Mon,  4 Apr 2022 22:04:28 +0530
-Message-Id: <20220404163436.956875-7-vkoul@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220404163436.956875-1-vkoul@kernel.org>
-References: <20220404163436.956875-1-vkoul@kernel.org>
+        Mon, 4 Apr 2022 12:51:54 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C7BA32EFC;
+        Mon,  4 Apr 2022 09:49:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649090998; x=1680626998;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=vuiYB7GNAiZzi/L3xQ+rg1rPAiEtD4lkxIoabAf2iG4=;
+  b=jzpuT+4t4AlxzDWqeOqnYGHfdezO/SF/hB7H9NEYQyDE143XvQ6CGktD
+   sETgR/NRSkPPJXiJZjGfQjns701/KnLUAo6SDAUQIBpAU4SWBi2fossL2
+   /gjMLwzHCi8RrKGMBA9SaAObRxY7kmfMozrKs5ef8etg4DS1qBViuMuQD
+   P2qjj9s+n+0WclRN06/0JZmV1Nv0VmT79HBZTjS0Tesy+5aEiRKTQwVEf
+   kfBC2UKDKKg0kmVZdo5dHRIdZWUjzXDAG+X1XLi9jkJPpgu427pa/+idE
+   70LSKdsa4cYlWTCMVTYdBX4PrgGGY8qwx64C0I7C259yszWFKSfdcaOCL
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="323734054"
+X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
+   d="scan'208";a="323734054"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:49:51 -0700
+X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
+   d="scan'208";a="523105207"
+Received: from rchatre-ws.ostc.intel.com ([10.54.69.144])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:49:50 -0700
+From:   Reinette Chatre <reinette.chatre@intel.com>
+To:     dave.hansen@linux.intel.com, jarkko@kernel.org, tglx@linutronix.de,
+        bp@alien8.de, luto@kernel.org, mingo@redhat.com,
+        linux-sgx@vger.kernel.org, x86@kernel.org
+Cc:     seanjc@google.com, kai.huang@intel.com, cathy.zhang@intel.com,
+        cedric.xing@intel.com, haitao.huang@intel.com,
+        mark.shanahan@intel.com, hpa@zytor.com,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH V3 20/30] Documentation/x86: Introduce enclave runtime management section
+Date:   Mon,  4 Apr 2022 09:49:28 -0700
+Message-Id: <62293b26013445a37eec927e6797985d62abfec7.1648847675.git.reinette.chatre@intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cover.1648847675.git.reinette.chatre@intel.com>
+References: <cover.1648847675.git.reinette.chatre@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Later gens of hardware have DSC bits moved to hw_ctl, so configure these
-bits so that DSC would work there as well
+Enclave runtime management is introduced following the pattern
+of the section describing enclave building. Provide a brief
+summary of enclave runtime management, pointing to the functions
+implementing the ioctl()s that will contain details within their
+kernel-doc.
 
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
 ---
- drivers/gpu/drm/msm/disp/dpu1/dpu_hw_ctl.c | 11 ++++++++++-
- drivers/gpu/drm/msm/disp/dpu1/dpu_hw_ctl.h |  2 ++
- 2 files changed, 12 insertions(+), 1 deletion(-)
+Changes since V2:
+- Remove references to ioctl() to relax permissions and update to reflect
+  function renaming sgx_ioc_enclave_restrict_perm() ->
+  sgx_ioc_enclave_restrict_permissions().
+- Rename sgx_ioc_enclave_modt -> sgx_ioc_enclave_modify_type
 
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_ctl.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_ctl.c
-index 3584f5ee6bb3..dc27579bb5f6 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_ctl.c
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_ctl.c
-@@ -25,6 +25,8 @@
- #define   CTL_MERGE_3D_ACTIVE           0x0E4
- #define   CTL_INTF_ACTIVE               0x0F4
- #define   CTL_MERGE_3D_FLUSH            0x100
-+#define   CTL_DSC_ACTIVE                0x0E8
-+#define   CTL_DSC_FLUSH                0x104
- #define   CTL_INTF_FLUSH                0x110
- #define   CTL_INTF_MASTER               0x134
- #define   CTL_FETCH_PIPE_ACTIVE         0x0FC
-@@ -34,6 +36,7 @@
+Changes since V1:
+- New patch.
+
+ Documentation/x86/sgx.rst | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
+
+diff --git a/Documentation/x86/sgx.rst b/Documentation/x86/sgx.rst
+index 265568a9292c..10287c558485 100644
+--- a/Documentation/x86/sgx.rst
++++ b/Documentation/x86/sgx.rst
+@@ -100,6 +100,21 @@ pages and establish enclave page permissions.
+                sgx_ioc_enclave_init
+                sgx_ioc_enclave_provision
  
- #define DPU_REG_RESET_TIMEOUT_US        2000
- #define  MERGE_3D_IDX   23
-+#define  DSC_IDX        22
- #define  INTF_IDX       31
- #define CTL_INVALID_BIT                 0xffff
- #define CTL_DEFAULT_GROUP_ID		0xf
-@@ -126,7 +129,6 @@ static u32 dpu_hw_ctl_get_pending_flush(struct dpu_hw_ctl *ctx)
- 
- static inline void dpu_hw_ctl_trigger_flush_v1(struct dpu_hw_ctl *ctx)
- {
--
- 	if (ctx->pending_flush_mask & BIT(MERGE_3D_IDX))
- 		DPU_REG_WRITE(&ctx->hw, CTL_MERGE_3D_FLUSH,
- 				ctx->pending_merge_3d_flush_mask);
-@@ -511,6 +513,9 @@ static void dpu_hw_ctl_intf_cfg_v1(struct dpu_hw_ctl *ctx,
- 	if ((test_bit(DPU_CTL_VM_CFG, &ctx->caps->features)))
- 		mode_sel = CTL_DEFAULT_GROUP_ID  << 28;
- 
-+	if (cfg->dsc)
-+		DPU_REG_WRITE(&ctx->hw, CTL_DSC_FLUSH, cfg->dsc);
++Enclave runtime management
++--------------------------
 +
- 	if (cfg->intf_mode_sel == DPU_CTL_MODE_SEL_CMD)
- 		mode_sel |= BIT(17);
++Systems supporting SGX2 additionally support changes to initialized
++enclaves: modifying enclave page permissions and type, and dynamically
++adding and removing of enclave pages. When an enclave accesses an address
++within its address range that does not have a backing page then a new
++regular page will be dynamically added to the enclave. The enclave is
++still required to run EACCEPT on the new page before it can be used.
++
++.. kernel-doc:: arch/x86/kernel/cpu/sgx/ioctl.c
++   :functions: sgx_ioc_enclave_restrict_permissions
++               sgx_ioc_enclave_modify_type
++               sgx_ioc_enclave_remove_pages
++
+ Enclave vDSO
+ ------------
  
-@@ -522,6 +527,10 @@ static void dpu_hw_ctl_intf_cfg_v1(struct dpu_hw_ctl *ctx,
- 	if (cfg->merge_3d)
- 		DPU_REG_WRITE(c, CTL_MERGE_3D_ACTIVE,
- 			      BIT(cfg->merge_3d - MERGE_3D_0));
-+	if (cfg->dsc) {
-+		DPU_REG_WRITE(&ctx->hw, CTL_FLUSH, DSC_IDX);
-+		DPU_REG_WRITE(c, CTL_DSC_ACTIVE, cfg->dsc);
-+	}
- }
- 
- static void dpu_hw_ctl_intf_cfg(struct dpu_hw_ctl *ctx,
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_ctl.h b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_ctl.h
-index ac1544474022..97f326dff0af 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_ctl.h
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_ctl.h
-@@ -40,6 +40,7 @@ struct dpu_hw_stage_cfg {
-  * @merge_3d:              3d merge block used
-  * @intf_mode_sel:         Interface mode, cmd / vid
-  * @stream_sel:            Stream selection for multi-stream interfaces
-+ * @dsc:                   DSC BIT masks used
-  */
- struct dpu_hw_intf_cfg {
- 	enum dpu_intf intf;
-@@ -47,6 +48,7 @@ struct dpu_hw_intf_cfg {
- 	enum dpu_merge_3d merge_3d;
- 	enum dpu_ctl_mode_sel intf_mode_sel;
- 	int stream_sel;
-+	unsigned int dsc;
- };
- 
- /**
 -- 
-2.34.1
+2.25.1
 
