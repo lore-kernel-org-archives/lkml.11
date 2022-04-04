@@ -2,77 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65859C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 14:59:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F174FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 14:59:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378350AbiDDPBG (ORCPT
+        id S1378342AbiDDPBT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 11:01:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38494 "EHLO
+        Mon, 4 Apr 2022 11:01:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378318AbiDDPAy (ORCPT
+        with ESMTP id S1378348AbiDDPBF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 11:00:54 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54C62DEE2;
-        Mon,  4 Apr 2022 07:58:54 -0700 (PDT)
-Received: from fraeml741-chm.china.huawei.com (unknown [172.18.147.201])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KXDQH0Xx4z67ms2;
-        Mon,  4 Apr 2022 22:57:11 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml741-chm.china.huawei.com (10.206.15.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 4 Apr 2022 16:58:52 +0200
-Received: from localhost.localdomain (10.69.192.58) by
- lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 4 Apr 2022 15:58:50 +0100
-From:   John Garry <john.garry@huawei.com>
-To:     <damien.lemoal@opensource.wdc.com>, <hch@lst.de>
-CC:     <linux-kernel@vger.kernel.org>, <linux-ide@vger.kernel.org>,
-        <linux-doc@vger.kernel.org>, <linux-scsi@vger.kernel.org>,
-        John Garry <john.garry@huawei.com>
-Subject: [PATCH v2 0/2] libata: A tagging improvement and related code reorg
-Date:   Mon, 4 Apr 2022 22:53:08 +0800
-Message-ID: <1649083990-207133-1-git-send-email-john.garry@huawei.com>
-X-Mailer: git-send-email 2.8.1
+        Mon, 4 Apr 2022 11:01:05 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7EBBCDEFB
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 07:59:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649084347;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=UTGtn1rG1oHnPf4jWqsoBHgFGHb3FmEXtAlPLct00TQ=;
+        b=R4aFSWoTn5iF1iXytUEKQtyHi0xcf4p7I3W1zLatQa4NWktC7Kh0rLN0lOID3tubZenvQa
+        aSNFc9mQbEmZVZ3P6vfAXubXwmbIgc1wdSaOKteDuRffxwvKtI6zPRl4zOaf/Fd9LmqX3/
+        3TCzCT6nbtXT8MByGpT0VGNGNXSNAmM=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-154-TSa6o067PxWz42LA3ERiOg-1; Mon, 04 Apr 2022 10:59:06 -0400
+X-MC-Unique: TSa6o067PxWz42LA3ERiOg-1
+Received: by mail-wm1-f70.google.com with SMTP id r206-20020a1c44d7000000b0038e6a1b25f1so3232876wma.7
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 07:59:06 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=UTGtn1rG1oHnPf4jWqsoBHgFGHb3FmEXtAlPLct00TQ=;
+        b=F+qtBf4Fyf1qDnWCrfXhL1kEcHo40YQlwkHWBVFc+5+YhEGqbSB95krLZD2xRYP7IU
+         +xDNK7sWZcdngJ51fcJu7ab/0ezySoBGPS28NKfn1gIK5Ng0v4j/APhJNhIBcsMZ6wdw
+         lnqaBy6prF59KMU23oufyCIHbhF6E5tpAnde8tfFI+t7quSwVfSlFJHsARg0ldvnOVh3
+         dzSMDBSzxnfIn5tZdw/MdNFPkWBNeMxnCWlRIUUx0nBvtekZ0jkjB21c3GfZGsRd2Ylf
+         3KbEtU9FhQVsgJSv9gm0em6keQwYzj7ST1jDHmBdoIQ20LZsC2Kl5lPeACUuJPGt8AH7
+         OY2Q==
+X-Gm-Message-State: AOAM532GFBD11RlT0WmIZqMgVUhnAJx0rBgKhjdRcDIVrzV1qQcBRvK3
+        iRZZ8KdHce8f3yaZ9SFsuFuiZPH8NhHuczsnSr9ggPR542h06ExLg4mb7wLtY8HbblsrknMqxGB
+        R2AwtrOhq+GjcLgUKVjRkpzaBHoReJQY1GJ8tc6qu
+X-Received: by 2002:a7b:cbc1:0:b0:38e:7c42:fe38 with SMTP id n1-20020a7bcbc1000000b0038e7c42fe38mr972392wmi.51.1649084345328;
+        Mon, 04 Apr 2022 07:59:05 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxuYUVoq7tbnpe6v2K8Vg+lD8MBTb279vFZsP129/zboUn+PR7U05cmYuZ6pqPwC3hRYGrFm8x2cCpEeiOz8+E=
+X-Received: by 2002:a7b:cbc1:0:b0:38e:7c42:fe38 with SMTP id
+ n1-20020a7bcbc1000000b0038e7c42fe38mr972374wmi.51.1649084345107; Mon, 04 Apr
+ 2022 07:59:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.58]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+References: <20220331223857.902911-1-jakobkoschel@gmail.com>
+In-Reply-To: <20220331223857.902911-1-jakobkoschel@gmail.com>
+From:   Andreas Gruenbacher <agruenba@redhat.com>
+Date:   Mon, 4 Apr 2022 16:58:53 +0200
+Message-ID: <CAHc6FU4s952rPPsceefvZER8dPM9RVWyQrmneMyqaW_0oViFSA@mail.gmail.com>
+Subject: Re: [PATCH 1/2] gfs2: remove usage of list iterator variable for list_for_each_entry_continue()
+To:     Jakob Koschel <jakobkoschel@gmail.com>
+Cc:     Bob Peterson <rpeterso@redhat.com>,
+        cluster-devel <cluster-devel@redhat.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is a follow-up to the series at [0] to fix SCSI device tagging and
-use the per-device token as the libata qc tag.
+Hi Jakob,
 
-I added the changes Christoph shared on the list to move
-the functionality from ata_qc_new_init() into libata-scsi.c
+On Fri, Apr 1, 2022 at 12:40 AM Jakob Koschel <jakobkoschel@gmail.com> wrote:
+> In preparation to limiting the scope of a list iterator to the list
+> traversal loop, use a dedicated pointer to iterate through the list [1].
+>
+> Since that variable should not be used past the loop iteration, a
+> separate variable is used to 'remember the current location within the
+> loop'.
+>
+> To either continue iterating from that position or start a new
+> iteration (if the previous iteration was complete) list_prepare_entry()
+> is used.
 
-Please do not apply on a kernel which does not include
-"scsi: core: Fix sbitmap depth in scsi_realloc_sdev_budget_map()"
+I can see how accessing an iterator variable past a for_each_entry
+loop will cause problems when it ends up pointing at the list head.
+Here, the iterator variables are not accessed outside the loops at
+all, though. So this patch is ugly, and it doesn't even help.
 
-v5.18-rc2 should be the release to include that patch.
+> Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/ [1]
+> Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
+> ---
+>  fs/gfs2/lops.c | 16 ++++++++++++----
+>  1 file changed, 12 insertions(+), 4 deletions(-)
+>
+> diff --git a/fs/gfs2/lops.c b/fs/gfs2/lops.c
+> index 6ba51cbb94cf..74e6d05cee2c 100644
+> --- a/fs/gfs2/lops.c
+> +++ b/fs/gfs2/lops.c
+> @@ -653,7 +653,7 @@ static void gfs2_before_commit(struct gfs2_sbd *sdp, unsigned int limit,
+>                                 bool is_databuf)
+>  {
+>         struct gfs2_log_descriptor *ld;
+> -       struct gfs2_bufdata *bd1 = NULL, *bd2;
+> +       struct gfs2_bufdata *bd1 = NULL, *bd2, *tmp1, *tmp2;
+>         struct page *page;
+>         unsigned int num;
+>         unsigned n;
+> @@ -661,7 +661,7 @@ static void gfs2_before_commit(struct gfs2_sbd *sdp, unsigned int limit,
+>
+>         gfs2_log_lock(sdp);
+>         list_sort(NULL, blist, blocknr_cmp);
+> -       bd1 = bd2 = list_prepare_entry(bd1, blist, bd_list);
+> +       tmp1 = tmp2 = list_prepare_entry(bd1, blist, bd_list);
 
-[0] https://lore.kernel.org/linux-ide/1647340746-17600-1-git-send-email-john.garry@huawei.com/
+We should actually be using list_entry() here, not list_prepare_entry().
 
-Christoph Hellwig (1):
-  libata: Inline ata_qc_new_init() in ata_scsi_qc_new()
+>         while(total) {
+>                 num = total;
+>                 if (total > limit)
+> @@ -675,14 +675,18 @@ static void gfs2_before_commit(struct gfs2_sbd *sdp, unsigned int limit,
+>                 ptr = (__be64 *)(ld + 1);
+>
+>                 n = 0;
+> +               bd1 = list_prepare_entry(tmp1, blist, bd_list);
+> +               tmp1 = NULL;
+>                 list_for_each_entry_continue(bd1, blist, bd_list) {
+>                         *ptr++ = cpu_to_be64(bd1->bd_bh->b_blocknr);
+>                         if (is_databuf) {
+>                                 gfs2_check_magic(bd1->bd_bh);
+>                                 *ptr++ = cpu_to_be64(buffer_escaped(bd1->bd_bh) ? 1 : 0);
+>                         }
+> -                       if (++n >= num)
+> +                       if (++n >= num) {
+> +                               tmp1 = bd1;
+>                                 break;
+> +                       }
+>                 }
+>
+>                 gfs2_log_unlock(sdp);
+> @@ -690,6 +694,8 @@ static void gfs2_before_commit(struct gfs2_sbd *sdp, unsigned int limit,
+>                 gfs2_log_lock(sdp);
+>
+>                 n = 0;
+> +               bd2 = list_prepare_entry(tmp2, blist, bd_list);
+> +               tmp2 = NULL;
+>                 list_for_each_entry_continue(bd2, blist, bd_list) {
+>                         get_bh(bd2->bd_bh);
+>                         gfs2_log_unlock(sdp);
+> @@ -712,8 +718,10 @@ static void gfs2_before_commit(struct gfs2_sbd *sdp, unsigned int limit,
+>                                 gfs2_log_write_bh(sdp, bd2->bd_bh);
+>                         }
+>                         gfs2_log_lock(sdp);
+> -                       if (++n >= num)
+> +                       if (++n >= num) {
+> +                               tmp2 = bd2;
+>                                 break;
+> +                       }
+>                 }
+>
+>                 BUG_ON(total < num);
+>
+> base-commit: f82da161ea75dc4db21b2499e4b1facd36dab275
+> --
+> 2.25.1
+>
 
-John Garry (1):
-  libata: Use scsi cmnd budget token for qc tag for SAS host
-
- Documentation/driver-api/libata.rst | 11 -------
- drivers/ata/libata-core.c           | 48 +----------------------------
- drivers/ata/libata-sata.c           | 25 ---------------
- drivers/ata/libata-scsi.c           | 45 ++++++++++++++++++++-------
- drivers/ata/libata.h                | 13 --------
- include/linux/libata.h              |  1 -
- 6 files changed, 35 insertions(+), 108 deletions(-)
-
--- 
-2.26.2
+Thanks,
+Andreas
 
