@@ -2,145 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A54E3C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 23:11:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62D2DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 23:11:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242013AbiDDXNj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 19:13:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57918 "EHLO
+        id S241672AbiDDXNm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 19:13:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243817AbiDDXLn (ORCPT
+        with ESMTP id S1345218AbiDDXMN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 19:11:43 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 162182CCBE;
-        Mon,  4 Apr 2022 15:49:21 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id n18so9354987plg.5;
-        Mon, 04 Apr 2022 15:49:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=DiZpMTn/EVNY/pnuPoizyqHMne6cPx1y5mye2ibx/ok=;
-        b=bgnp+RZ4/8nfeh0NMWErXmEtEshX86JerNFp8dq/RD44FxWiFAl972gOEJDqV++XyA
-         By4VZtAU4QVALrso+XOALjElN48YFB3TiZeU9RcQxb+9XSdszdEltEwvn9K8oecLmXTQ
-         TQQfzdCYgQyp4jsdjY5EwU/Uh3faCKJvnJbzu8VpGOGyjkhm+VjdOWOKNFg2CdC9WIHu
-         9qKlg3mhSFcqJlntThMyi4VG3ISf3oNk+2Ry4A/oRGT+IxjxU5e24QVPCkZiEspbB6Ae
-         CcLSJd1INuQNNkvMz1KILSOVf2EODqUP+szWpO3DLZgvPGzGiBVeiL6R9WCUXhOUmtMv
-         ed7Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=DiZpMTn/EVNY/pnuPoizyqHMne6cPx1y5mye2ibx/ok=;
-        b=nSCgURZ9JtxcJTR+gACePQ7grQ99Rs3SQJCalGLbJ+at5C/uDs3SiSxMp25l1hEy06
-         vLzTo/Y4/4+bIaiHf4ryPBEyur+gKx+PC6L1CE8BwZbRj1v33J5h6stAYgHNs1dQyC27
-         EEtaLda69g5EbVG5ZavTivO78JyH/thLvgSkEkgkS8KiWK07yg4GpV91nWfONClwId0q
-         9gakhqxUbknXKhWvStYfxRkG8VVJuWJl/HfEUAlN7dB0bXdiq4uehDEUDTQ9HW9oMQky
-         VTbYsyEOuNUHHJAhDmZoN2BXvagxwZnZel7ozHsvqg5F45QmItecDpsHPAcLpBw+DDDh
-         5Puw==
-X-Gm-Message-State: AOAM531MhNqDQmgeDTREiYYf8WTj6/maWDYT/GssIs2GpwqiBtA595Yi
-        lPvLCizoW27lrkeKoGvYVMEs47HZn3ALs1YRYD0=
-X-Google-Smtp-Source: ABdhPJw6yLez+Pola3pnCcu1X++dRI9Dtud1fwRlNqRru6KsE9kQoMKYHIIF+h1m/5FNxuqFspqfjNyXq2uiHfs7URQ=
-X-Received: by 2002:a17:902:ba83:b0:154:727e:5fc5 with SMTP id
- k3-20020a170902ba8300b00154727e5fc5mr475882pls.55.1649112560582; Mon, 04 Apr
- 2022 15:49:20 -0700 (PDT)
+        Mon, 4 Apr 2022 19:12:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D9CA393C7
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 15:52:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AF2C7B81A62
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 22:52:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFCC6C2BBE4;
+        Mon,  4 Apr 2022 22:52:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649112733;
+        bh=54rQNEoc5ehhks896JDl4yq3WCx9/eYdhiBhR9iefCc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=bF3QJRnbcjc8y6fPNoXkVkRgf5gEx3NVFnuts+9skTbjtP9eot8cnBXlFI8pw4fuE
+         GDxPaF9NNC+WKlfDsnXfLMOEPfRc4SbvvzHprSmilCsuJiNcMP9TXgJX0wirB2EJU0
+         1jt2jv3o/4kcckKRO0ZLqHFrWfTjDbf8Uy9BGbXRYBZHFHKIj0GPlWBKZvOJgZqbm9
+         5c2ejL+9CkNE5w62Iy313yMgPWNfOLxHEqB+RZKw2gQBiiajiu/lpyCo/x+BlNMkoK
+         HVm2lhF8OwyNiL9R63NGAXx12znc6NTHCGZABalsH/d85DkPbOIyGTj3JVExakaPjy
+         Smyk9vwpAPC8Q==
+Date:   Mon, 4 Apr 2022 15:52:11 -0700
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Sami Tolvanen <samitolvanen@google.com>
+Cc:     Masahiro Yamada <masahiroy@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Will Deacon <will@kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        llvm@lists.linux.dev
+Subject: Re: [PATCH 1/3] kbuild: Change CFI_CLANG to depend on
+ __builtin_function_start
+Message-ID: <Ykt2mz3gBTAyu9pL@dev-arch.thelio-3990X>
+References: <20220401201916.1487500-1-samitolvanen@google.com>
+ <20220401201916.1487500-2-samitolvanen@google.com>
+ <CAK7LNAQoJWUscyxXVnOQ9924MYZwaZGgfBYSzmjJxKH_UC0Pkw@mail.gmail.com>
+ <CABCJKudaQJ0_e290gD+rG8SwEembd33ua1MG-w2OKRq3es8Kjw@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220328175033.2437312-1-roberto.sassu@huawei.com>
- <20220331022727.ybj4rui4raxmsdpu@MBP-98dd607d3435.dhcp.thefacebook.com>
- <b9f5995f96da447c851f7c9db8232a9b@huawei.com> <20220401235537.mwziwuo4n53m5cxp@MBP-98dd607d3435.dhcp.thefacebook.com>
- <CACYkzJ5QgkucL3HZ4bY5Rcme4ey6U3FW4w2Gz-9rdWq0_RHvgA@mail.gmail.com>
- <CAEiveUcx1KHoJ421Cv+52t=0U+Uy2VF51VC_zfTSftQ4wVYOPw@mail.gmail.com> <c2e57f10b62940eba3cfcae996e20e3c@huawei.com>
-In-Reply-To: <c2e57f10b62940eba3cfcae996e20e3c@huawei.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Mon, 4 Apr 2022 15:49:09 -0700
-Message-ID: <CAADnVQJSso+GSXC-QmNmj0GBPZzxRCRfqAcQbqD-6y0CtMSopQ@mail.gmail.com>
-Subject: Re: [PATCH 00/18] bpf: Secure and authenticated preloading of eBPF programs
-To:     Roberto Sassu <roberto.sassu@huawei.com>
-Cc:     Djalal Harouni <tixxdz@gmail.com>, KP Singh <kpsingh@kernel.org>,
-        "corbet@lwn.net" <corbet@lwn.net>,
-        "viro@zeniv.linux.org.uk" <viro@zeniv.linux.org.uk>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "andrii@kernel.org" <andrii@kernel.org>,
-        "shuah@kernel.org" <shuah@kernel.org>,
-        "mcoquelin.stm32@gmail.com" <mcoquelin.stm32@gmail.com>,
-        "alexandre.torgue@foss.st.com" <alexandre.torgue@foss.st.com>,
-        "zohar@linux.ibm.com" <zohar@linux.ibm.com>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-        "linux-stm32@st-md-mailman.stormreply.com" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
-        "linux-security-module@vger.kernel.org" 
-        <linux-security-module@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CABCJKudaQJ0_e290gD+rG8SwEembd33ua1MG-w2OKRq3es8Kjw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 4, 2022 at 10:21 AM Roberto Sassu <roberto.sassu@huawei.com> wrote:
->
-> > From: Djalal Harouni [mailto:tixxdz@gmail.com]
-> > Sent: Monday, April 4, 2022 9:45 AM
-> > On Sun, Apr 3, 2022 at 5:42 PM KP Singh <kpsingh@kernel.org> wrote:
-> > >
-> > > On Sat, Apr 2, 2022 at 1:55 AM Alexei Starovoitov
-> > > <alexei.starovoitov@gmail.com> wrote:
-> > ...
-> > > >
-> > > > > Pinning
-> > > > > them to unreachable inodes intuitively looked the
-> > > > > way to go for achieving the stated goal.
-> > > >
-> > > > We can consider inodes in bpffs that are not unlinkable by root
-> > > > in the future, but certainly not for this use case.
-> > >
-> > > Can this not be already done by adding a BPF_LSM program to the
-> > > inode_unlink LSM hook?
-> > >
+On Mon, Apr 04, 2022 at 12:40:46PM -0700, Sami Tolvanen wrote:
+> On Sat, Apr 2, 2022 at 6:32 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
 > >
-> > Also, beside of the inode_unlink... and out of curiosity: making sysfs/bpffs/
-> > readonly after pinning, then using bpf LSM hooks
-> > sb_mount|remount|unmount...
-> > family combining bpf() LSM hook... isn't this enough to:
-> > 1. Restrict who can pin to bpffs without using a full MAC
-> > 2. Restrict who can delete or unmount bpf filesystem
+> > On Sat, Apr 2, 2022 at 5:19 AM Sami Tolvanen <samitolvanen@google.com> wrote:
+> > >
+> > > Clang 14 added support for the __builtin_function_start()
+> > > built-in function, which allows us to implement function_nocfi()
+> > > without architecture-specific inline assembly. This patch changes
+> > > CONFIG_CFI_CLANG to depend on the built-in and effectively upgrades
+> > > the minimum supported compiler version for CFI to Clang 14.
 > >
-> > ?
->
-> I'm thinking to implement something like this.
->
-> First, I add a new program flag called
-> BPF_F_STOP_ONCONFIRM, which causes the ref count
-> of the link to increase twice at creation time. In this way,
-> user space cannot make the link disappear, unless a
-> confirmation is explicitly sent via the bpf() system call.
->
-> Another advantage is that other LSMs can decide
-> whether or not they allow a program with this flag
-> (in the bpf security hook).
->
-> This would work regardless of the method used to
-> load the eBPF program (user space or kernel space).
->
-> Second, I extend the bpf() system call with a new
-> subcommand, BPF_LINK_CONFIRM_STOP, which
-> decreases the ref count for the link of the programs
-> with the BPF_F_STOP_ONCONFIRM flag. I will also
-> introduce a new security hook (something like
-> security_link_confirm_stop), so that an LSM has the
-> opportunity to deny the stop (the bpf security hook
-> would not be sufficient to determine exactly for
-> which link the confirmation is given, an LSM should
-> be able to deny the stop for its own programs).
->
-> What do you think?
+> > From this description, I think the straight-forward change would be:
+> >
+> >     depends on CLANG_VERSION >= 120000
+> > -->
+> >     depends on CLANG_VERSION >= 140000
+> >
+> > Any reason to avoid this?
+> 
+> I thought testing for the compiler feature was preferred, but I can
+> certainly just increase the minimum version number here too.
 
-Hack upon a hack? Makes no sense.
+I think we have been somewhat inconsistent with feature versus version
+checking. It might be nice to hash out when a feature check should be
+done instead of a version one.
+
+Generally, I think we tend to prefer version checks, as they are
+"cheaper" since we do not have to call the compiler again because we
+already cached the version code. When adding version checks, our policy
+has always been use the upstream version of LLVM that the feature in
+question shipped in, even if it is a top of tree version, as people who
+are using prereleased versions of LLVM should be frequently updating
+them.
+
+Unfortunately, that does not always match reality. For example,
+Android's LLVM tracks the main branch but they are almost always behind
+by a few months. For example, the latest release is 14.0.4, based on a
+version of LLVM from January 28th:
+
+https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+/ab73cd180863dbd17fdb8f20e39b33ab38030cf9/clang-r450784b/clang_source_info.md
+https://github.com/llvm/llvm-project/commits/282c83c32384cb2f37030c28650fef4150a8b67c
+
+Normally, I would say "who cares?" but Android's LLVM is used by the
+Android kernel team both downstream and upstream, so I would argue it is
+important to take that into account when deciding to do a feature check
+versus a version check. In other words, by moving to a version check,
+will we knowingly break a version of clang that is relatively widely
+used?
+
+In this case, 14.0.4 has __builtin_function_start(), so I think it is
+okay to use a version check instead of a feature one.
+
+There are times where feature or problem checking is not always
+possible:
+
+https://lore.kernel.org/r/20220318230747.3900772-1-nathan@kernel.org/
+
+In cases like these, we can work to upgrade the compiler before changing
+the feature check ot a version one, which helps minimize the window for
+breakage.
+
+Another aspect of feature versus version checks is that it is easier to
+clean up stale versions checks when we bump the minimum supported
+version of the compiler (as we can just look for "CLANG_VERSION" across
+the tree) compared to stale feature checks. We could fix this by adding
+some sort of common keyword, like
+
+Compiler check: <compiler> <comparison> <version>
+
+like
+
+Compiler check: clang <= 14.0.0
+
+Cheers,
+Nathan
