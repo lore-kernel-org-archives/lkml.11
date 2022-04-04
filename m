@@ -2,123 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93D13C4707F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A302CC3527D
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:38:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383425AbiDDVd2 (ORCPT
+        id S1383555AbiDDVdm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:33:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43756 "EHLO
+        Mon, 4 Apr 2022 17:33:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379967AbiDDS3p (ORCPT
+        with ESMTP id S1380643AbiDDUso (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 14:29:45 -0400
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 066CD13F48
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 11:27:49 -0700 (PDT)
-Received: by mail-pf1-x433.google.com with SMTP id h24so5424885pfo.6
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 11:27:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=dGtvKHWRRXFlrf1Rt/BvAKG1RHxC0aWz145KvZzrENo=;
-        b=nOfZU7x2UnIeCLknzPKi2K2NV/GRMgJqR38o8eG4/fpHwDyU5NLRishBCI8R5tjwOn
-         lM/HErpHngCQl4W2rBNP/zSGb6EYTNxwK2jdFtZuROZ8ePSlsVb1j5jwf6CesMV/4gB0
-         DwE8KQ9K5lEVfJlTC7Vosrkhd4fNIHxeGuJlI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=dGtvKHWRRXFlrf1Rt/BvAKG1RHxC0aWz145KvZzrENo=;
-        b=mfuAgoZdLz1eowS2TQ028yaSwUacuzT2zd+dLn5ZeeRgKVKts/8soDSTe8gwMAwqwd
-         k72cGmaue+GyJW4wgWTsSE3n3FjcDdHbaak7CR+9wqCpg0LTKX+a9SeZ8D6UKmYHpqBj
-         249HvJo3AlMqXdJkKcLI82QoSbjX/Uz0wVgcooU2K1TwazKl2dQf9BmH9M7qvEfFsTz8
-         BB4bQ0e/xIqkMgifKv5bsu7rD1I0ee6NfX2T4vyVoPDqww9T6z+qvSBzZ5+ovseapZ/4
-         zeUzo1g1twZ+Xf5x/nqLqga5Dso3r3sU4UDuCD7CqOCTSlC5Ew9Mq7uXEBpofUglYDOT
-         km9A==
-X-Gm-Message-State: AOAM533XHXNxvyYqyFFZGdHLdThelAUoLR7O9xYlKiw/OfI3QBUxpOHF
-        43Ps48AEeCksQ/2Fbt2HU6zrIQ==
-X-Google-Smtp-Source: ABdhPJyEKpYSYX+aJEAUcFsXAVjGdJnhLZ8D24RyP/mW6pNStwMpTRZI+qrEsFPngRZtlTUwPYtkVg==
-X-Received: by 2002:a62:1c8d:0:b0:4fa:8dcb:6da2 with SMTP id c135-20020a621c8d000000b004fa8dcb6da2mr885282pfc.19.1649096868412;
-        Mon, 04 Apr 2022 11:27:48 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id w79-20020a627b52000000b004fd8d1e5489sm12543463pfc.87.2022.04.04.11.27.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 11:27:47 -0700 (PDT)
-Date:   Mon, 4 Apr 2022 11:27:47 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Steven Rostedt <rostedt@goodmis.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        kernel test robot <lkp@intel.com>
-Subject: Re: vmlinux.o: warning: objtool: stackleak_erase()+0x35: call to
- ftrace_likely_update() leaves .noinstr.text section
-Message-ID: <202204041125.500C28FD8@keescook>
-References: <202204042008.sCQbEmVS-lkp@intel.com>
+        Mon, 4 Apr 2022 16:48:44 -0400
+Received: from vps-vb.mhejs.net (vps-vb.mhejs.net [37.28.154.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B3D713E9A;
+        Mon,  4 Apr 2022 13:46:47 -0700 (PDT)
+Received: from MUA
+        by vps-vb.mhejs.net with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <mail@maciej.szmigiero.name>)
+        id 1nbTav-0003dN-Sm; Mon, 04 Apr 2022 22:46:37 +0200
+Message-ID: <fde9cf47-b420-23c7-f974-480eb95da221@maciej.szmigiero.name>
+Date:   Mon, 4 Apr 2022 22:46:32 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202204042008.sCQbEmVS-lkp@intel.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 5/8] KVM: SVM: Re-inject INT3/INTO instead of retrying the
+ instruction
+Content-Language: en-US
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Maxim Levitsky <mlevitsk@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220402010903.727604-1-seanjc@google.com>
+ <20220402010903.727604-6-seanjc@google.com>
+ <a47217da0b6db4f1b6b6c69a9dc38350b13ac17c.camel@redhat.com>
+ <YkshgrUaF4+MrrXf@google.com>
+ <a3cf781b-0b1a-0bba-6b37-12666c7fc154@maciej.szmigiero.name>
+ <YktIGHM86jHkzGdF@google.com> <YktM9bnq5HaTMKkV@google.com>
+From:   "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
+In-Reply-To: <YktM9bnq5HaTMKkV@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
-
-On Mon, Apr 04, 2022 at 08:22:33PM +0800, kernel test robot wrote:
-> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-> head:   3123109284176b1532874591f7c81f3837bbdc17
-> commit: dcb85f85fa6f142aae1fe86f399d4503d49f2b60 gcc-plugins/stackleak: Use noinstr in favor of notrace
-> date:   8 weeks ago
-> config: x86_64-randconfig-r012-20220404 (https://download.01.org/0day-ci/archive/20220404/202204042008.sCQbEmVS-lkp@intel.com/config)
-> compiler: gcc-11 (Debian 11.2.0-19) 11.2.0
-> reproduce (this is a W=1 build):
->         # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=dcb85f85fa6f142aae1fe86f399d4503d49f2b60
->         git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
->         git fetch --no-tags linus master
->         git checkout dcb85f85fa6f142aae1fe86f399d4503d49f2b60
->         # save the config file to linux build tree
->         mkdir build_dir
->         make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+On 4.04.2022 21:54, Sean Christopherson wrote:
+> On Mon, Apr 04, 2022, Sean Christopherson wrote:
+>> On Mon, Apr 04, 2022, Maciej S. Szmigiero wrote:
+>>>>>> index 47e7427d0395..a770a1c7ddd2 100644
+>>>>>> --- a/arch/x86/kvm/svm/svm.h
+>>>>>> +++ b/arch/x86/kvm/svm/svm.h
+>>>>>> @@ -230,8 +230,8 @@ struct vcpu_svm {
+>>>>>>    	bool nmi_singlestep;
+>>>>>>    	u64 nmi_singlestep_guest_rflags;
+>>>>>> -	unsigned int3_injected;
+>>>>>> -	unsigned long int3_rip;
+>>>>>> +	unsigned soft_int_injected;
+>>>>>> +	unsigned long soft_int_linear_rip;
+>>>>>>    	/* optional nested SVM features that are enabled for this guest  */
+>>>>>>    	bool nrips_enabled                : 1;
+>>>>>
+>>>>>
+>>>>> I mostly agree with this patch, but think that it doesn't address the
+>>>>> original issue that Maciej wanted to address:
+>>>>>
+>>>>> Suppose that there is *no* instruction in L2 code which caused the software
+>>>>> exception, but rather L1 set arbitrary next_rip, and set EVENTINJ to software
+>>>>> exception with some vector, and that injection got interrupted.
+>>>>>
+>>>>> I don't think that this code will support this.
+>>>>
+>>>> Argh, you're right.  Maciej's selftest injects without an instruction, but it doesn't
+>>>> configure the scenario where that injection fails due to an exception+VM-Exit that
+>>>> isn't intercepted by L1 and is handled by L0.  The event_inj test gets the coverage
+>>>> for the latter, but always has a backing instruction.
+>>>
+>>> Still reviewing the whole patch set, but want to clear this point quickly:
+>>> The selftest does have an implicit intervening NPF (handled by L0) while
+>>> injecting the first L1 -> L2 event.
+>>
+>> I'll do some debug to figure out why the test passes for me.  I'm guessing I either
+>> got lucky, e.g. IDT was faulted in already, or I screwed up and the test doesn't
+>> actually pass.
 > 
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
+> Well that was easy.  My code is indeed flawed and skips the wrong instruction,
+> the skipped instruction just so happens to be a (spurious?) adjustment of RSP.  The
+> L2 guest function never runs to completion and so the "bad" RSP is never consumed.
+>   
+>     KVM: incomplete injection for L2, vector 32 @ 401c70.  next_rip = 0
+>     KVM: injecting for L2, vector 0 @ 401c70.  next_rip = 401c74
 > 
-> All warnings (new ones prefixed by >>):
+> 0000000000401c70 <l2_guest_code>:
+>    401c70:       48 83 ec 08             sub    $0x8,%rsp
+>    401c74:       83 3d 75 a7 0e 00 01    cmpl   $0x1,0xea775(%rip)        # 4ec3f0 <int_fired>
+>    401c7b:       74 1e                   je     401c9b <l2_guest_code+0x2b>
+>    401c7d:       45 31 c0                xor    %r8d,%r8d
+>    401c80:       b9 32 00 00 00          mov    $0x32,%ecx
+>    401c85:       ba 90 40 4b 00          mov    $0x4b4090,%edx
+>    401c8a:       31 c0                   xor    %eax,%eax
+>    401c8c:       be 02 00 00 00          mov    $0x2,%esi
+>    401c91:       bf 02 00 00 00          mov    $0x2,%edi
+>    401c96:       e8 05 ae 00 00          call   40caa0 <ucall>
+>    401c9b:       0f 01 d9                vmmcall
+>    401c9e:       0f 0b                   ud2
+>    401ca0:       83 3d 4d a7 0e 00 01    cmpl   $0x1,0xea74d(%rip)        # 4ec3f4 <bp_fired>
+>    401ca7:       74 1e                   je     401cc7 <l2_guest_code+0x57>
+>    401ca9:       45 31 c0                xor    %r8d,%r8d
+>    401cac:       b9 36 00 00 00          mov    $0x36,%ecx
+>    401cb1:       ba b8 40 4b 00          mov    $0x4b40b8,%edx
+>    401cb6:       31 c0                   xor    %eax,%eax
+>    401cb8:       be 02 00 00 00          mov    $0x2,%esi
+>    401cbd:       bf 02 00 00 00          mov    $0x2,%edi
+>    401cc2:       e8 d9 ad 00 00          call   40caa0 <ucall>
+>    401cc7:       f4                      hlt
+>    401cc8:       48 83 c4 08             add    $0x8,%rsp
+>    401ccc:       c3                      ret
+>    401ccd:       0f 1f 00                nopl   (%rax)
 > 
->    vmlinux.o: warning: objtool: __wrgsbase_inactive()+0x26: call to ftrace_likely_update() leaves .noinstr.text section
->    vmlinux.o: warning: objtool: __rdgsbase_inactive()+0x23: call to ftrace_likely_update() leaves .noinstr.text section
->    vmlinux.o: warning: objtool: fixup_bad_iret()+0x76: call to ftrace_likely_update() leaves .noinstr.text section
->    vmlinux.o: warning: objtool: noist_exc_debug()+0x3c: call to ftrace_likely_update() leaves .noinstr.text section
->    vmlinux.o: warning: objtool: exc_nmi()+0xaa: call to ftrace_likely_update() leaves .noinstr.text section
->    vmlinux.o: warning: objtool: poke_int3_handler()+0x3e: call to ftrace_likely_update() leaves .noinstr.text section
->    vmlinux.o: warning: objtool: mce_check_crashing_cpu()+0x15: call to ftrace_likely_update() leaves .noinstr.text section
->    vmlinux.o: warning: objtool: mce_start()+0x4e: call to __kcsan_check_access() leaves .noinstr.text section
->    vmlinux.o: warning: objtool: mce_gather_info()+0x5f: call to v8086_mode.constprop.0() leaves .noinstr.text section
->    vmlinux.o: warning: objtool: mce_read_aux()+0x93: call to mca_msr_reg() leaves .noinstr.text section
->    vmlinux.o: warning: objtool: do_machine_check()+0x5f: call to ftrace_likely_update() leaves .noinstr.text section
->    vmlinux.o: warning: objtool: exc_machine_check()+0x8e: call to ftrace_likely_update() leaves .noinstr.text section
->    vmlinux.o: warning: objtool: mce_severity_amd.constprop.0()+0xca: call to mce_severity_amd_smca() leaves .noinstr.text section
->    vmlinux.o: warning: objtool: irqentry_nmi_enter()+0x45: call to ftrace_likely_update() leaves .noinstr.text section
->    vmlinux.o: warning: objtool: irqentry_nmi_exit()+0x38: call to ftrace_likely_update() leaves .noinstr.text section
->    vmlinux.o: warning: objtool: enter_from_user_mode()+0x15: call to test_bit() leaves .noinstr.text section
->    vmlinux.o: warning: objtool: syscall_enter_from_user_mode()+0x1a: call to test_bit() leaves .noinstr.text section
->    vmlinux.o: warning: objtool: syscall_enter_from_user_mode_prepare()+0x15: call to test_bit() leaves .noinstr.text section
->    vmlinux.o: warning: objtool: irqentry_enter_from_user_mode()+0x15: call to test_bit() leaves .noinstr.text section
->    vmlinux.o: warning: objtool: irqentry_exit()+0x28: call to ftrace_likely_update() leaves .noinstr.text section
->    vmlinux.o: warning: objtool: context_tracking_recursion_enter()+0x103: call to ftrace_likely_update() leaves .noinstr.text section
->    vmlinux.o: warning: objtool: __context_tracking_enter()+0x30: call to ftrace_likely_update() leaves .noinstr.text section
-> >> vmlinux.o: warning: objtool: stackleak_erase()+0x35: call to ftrace_likely_update() leaves .noinstr.text section
+> I don't see why the compiler is creating room for a single variable, but it doesn't
+> really matter, the easiest way to detect this bug is to assert that the return RIP
+> in the INT 0x20 handler points at l2_guest_code, e.g. this fails:
+> 
+> diff --git a/tools/testing/selftests/kvm/x86_64/svm_nested_soft_inject_test.c b/tools/testing/selftests/kvm/x86_64/svm_nested_soft_inject_test.c
+> index d39be5d885c1..257aa2280b5c 100644
+> --- a/tools/testing/selftests/kvm/x86_64/svm_nested_soft_inject_test.c
+> +++ b/tools/testing/selftests/kvm/x86_64/svm_nested_soft_inject_test.c
+> @@ -40,9 +40,13 @@ static void guest_bp_handler(struct ex_regs *regs)
+>   }
+> 
+>   static unsigned int int_fired;
+> +static void l2_guest_code(void);
+> +
+>   static void guest_int_handler(struct ex_regs *regs)
+>   {
+>          int_fired++;
+> +       GUEST_ASSERT_2(regs->rip == (unsigned long)l2_guest_code,
+> +                      regs->rip, (unsigned long)l2_guest_code);
+>   }
+> 
+>   static void l2_guest_code(void)
 
-I got CCed on this because of stackleak_erase() triggering, this, but it
-appears to be an existing issue for other callers too. It looks like
-__branch_check__() shouldn't be emitting ftrace_likely_update() calls
-for noinstr functions...
+It totally makes sense to add the above as an additional assert to the
+self test - the more checks the test have the better at catching bugs
+it is.
 
-I have no idea how a macro is meant to check for function attributes,
-though... :(
-
--- 
-Kees Cook
+Thanks,
+Maciej
