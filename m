@@ -2,174 +2,255 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8D5DC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2E15C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:39:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386968AbiDDVjv (ORCPT
+        id S1386880AbiDDVjk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:39:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33206 "EHLO
+        Mon, 4 Apr 2022 17:39:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379767AbiDDSDV (ORCPT
+        with ESMTP id S1379485AbiDDRPh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 14:03:21 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40B3937BCA;
-        Mon,  4 Apr 2022 11:01:25 -0700 (PDT)
-Date:   Mon, 04 Apr 2022 18:01:22 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649095283;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=wX8w8FV4yP7/hACZ/Dkubahfg7SLkix1Wjx+nmRLJUU=;
-        b=LaMADLt/l4qyMI5pC7WKkpqmut6W0mjP5aAozvaZhOgI6Nb/vWEGSLXaX9Ou/ra0VhFFD5
-        JcMdWTtMeyf2Lyoky7F4TMn1QugrvFlxiGVBqj5aLwzGW0ucMdHpCnJzEJI5EaLAf/EkN6
-        Wao2LLBBsVg5AvvSTZf2hqhVVGJJ7DlIvC6EBq1K61sW09GxnGC7X2dAqOWffGw+jR64WA
-        N8Uw3Pl0BgGhaaH3rn54j7vdfztDomPx+mtDVybJrFcU+LgiJn9505PaA3iyySQx4zmPzu
-        G46aDWd2gIJSLx6KPfqbYtg/QkB8PUio8NezQznRxfWtSeiKVW1iprtJ/c34pA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649095283;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=wX8w8FV4yP7/hACZ/Dkubahfg7SLkix1Wjx+nmRLJUU=;
-        b=E+K+bx2uZut2Ke6OKYm5DsmLWzcL8IvtlAaOAcxsvb+LSi85vslkt2jx2Y6XN3OowESBuJ
-        vQ6dK5r6QwggCMDQ==
-From:   "tip-bot2 for Dave Hansen" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/urgent] x86/mm/tlb: Revert retpoline avoidance approach
-Cc:     kernel test robot <oliver.sang@intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Borislav Petkov <bp@suse.de>, Nadav Amit <namit@vmware.com>,
-        <stable@vger.kernel.org>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <164874672286.389.7021457716635788197.tip-bot2@tip-bot2>
-References: <164874672286.389.7021457716635788197.tip-bot2@tip-bot2>
+        Mon, 4 Apr 2022 13:15:37 -0400
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D5143897
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 10:13:40 -0700 (PDT)
+Received: by mail-pf1-x42d.google.com with SMTP id b13so9639478pfv.0
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 10:13:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=m38/12Co8lnGxgHoM6vnWNg4ad6Andt8Rs4/699+CWs=;
+        b=pIdMpKrV6i9HUchmI7dmjRGExVq9Zj0QpRdFezQG0IebUZiT3647IxJbAN4TofCN6C
+         MLDF/W4k3lYM7ECFW20RyKsHhNybWvEWKripeeIn5GlFUxY+2NRFZm7cJcspbIeo6Exv
+         gzD+YjIfV61mFAu4pyfZfRSmZOq57RYWlB/IO3fqaVSFHb5kK5MPGv50toNdoRxxbv+0
+         NyhY1u4vCKHpEYxWEKs4sy0lzo+skg9U5+TbfWy2dKLhPwbATSo8X9hrEgjiw8OANWG9
+         S0sWm5Qt9Dh0te26XSNC2j3XduY0WWRkTSCpYDxVwcfiD2vBC7JgDLhy4Uecj0zNCHIX
+         vC4g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=m38/12Co8lnGxgHoM6vnWNg4ad6Andt8Rs4/699+CWs=;
+        b=N+rx4FUOPh6SI+udCdXNnMKLxijgT7+ZlVcKZnOfAW4Z0lFl8wInPbFzvl9myHVpyl
+         UbW++5b0rjTvZY7veepHOW0VXvda4EyCFnhCF69XJA9bjBb8W5OomTAqOSuoBUiet/Ze
+         ib5cy8yiGvRkScyuNPAbM0aIirZY2W3ICGfObnnA24Xbu/FLIEOmfDMoxaomAQ9XSLXZ
+         diBRsb6IcaBBzgQIFbIGBSB6267drhkFa41JfV9GyXBLxOtipG2rnbBqvRMK+C277pmr
+         0hFpL9FC1+lE1Hw9K09mEFJw10Kvn1+s44XJknmpOfKoOEd4JKl3xaWrpZlkuEQ6aQbe
+         eGMg==
+X-Gm-Message-State: AOAM530X13Wh+1UErepqy/p2T+Ua2MVF86F/lxrprsOMiwGU2X13qqsB
+        HmECl2KvQiVTqj1Nab5NBMjps/Kd3wbwNUVyap5hLQ==
+X-Google-Smtp-Source: ABdhPJwoBB6MEYE8amu5Bo7xFUCXoZwnvfLWLnRODTdB6B7EEik61lNYCo75LcQjgWcMvWBcfksGMRAfDP4NjpkSlcc=
+X-Received: by 2002:a63:3e8d:0:b0:398:5222:3a3 with SMTP id
+ l135-20020a633e8d000000b00398522203a3mr715630pga.561.1649092419363; Mon, 04
+ Apr 2022 10:13:39 -0700 (PDT)
 MIME-Version: 1.0
-Message-ID: <164909528267.389.5092308187702493426.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+References: <20220331084151.2600229-1-yosryahmed@google.com>
+ <YkXkA+Oh1Bx33PrU@carbon.dhcp.thefacebook.com> <CAJD7tkYVpnf1+sa9vRAQCw5H0LUH6zE6_yhNAFwKF3sW0BLzEA@mail.gmail.com>
+ <YkdG4nv/uKI0EtMp@carbon.dhcp.thefacebook.com>
+In-Reply-To: <YkdG4nv/uKI0EtMp@carbon.dhcp.thefacebook.com>
+From:   Yosry Ahmed <yosryahmed@google.com>
+Date:   Mon, 4 Apr 2022 10:13:03 -0700
+Message-ID: <CAJD7tkZLdqFvoZzZMY860hxn-Fht2nyatF6Y1io6dTnhC8+xcg@mail.gmail.com>
+Subject: Re: [PATCH resend] memcg: introduce per-memcg reclaim interface
+To:     Roman Gushchin <roman.gushchin@linux.dev>
+Cc:     Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Shakeel Butt <shakeelb@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Rientjes <rientjes@google.com>,
+        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        cgroups@vger.kernel.org, linux-doc@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>, Jonathan Corbet <corbet@lwn.net>,
+        Yu Zhao <yuzhao@google.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Wei Xu <weixugc@google.com>, Greg Thelen <gthelen@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the x86/urgent branch of tip:
+On Fri, Apr 1, 2022 at 11:39 AM Roman Gushchin <roman.gushchin@linux.dev> wrote:
+>
+> On Fri, Apr 01, 2022 at 02:11:51AM -0700, Yosry Ahmed wrote:
+> > On Thu, Mar 31, 2022 at 10:25 AM Roman Gushchin
+> > <roman.gushchin@linux.dev> wrote:
+> > >
+> > > On Thu, Mar 31, 2022 at 08:41:51AM +0000, Yosry Ahmed wrote:
+> > > > From: Shakeel Butt <shakeelb@google.com>
+> > > >
+> > > > Introduce an memcg interface to trigger memory reclaim on a memory cgroup.
+> > > >
+> > > > Use case: Proactive Reclaim
+> > > > ---------------------------
+> > > >
+> > > > A userspace proactive reclaimer can continuously probe the memcg to
+> > > > reclaim a small amount of memory. This gives more accurate and
+> > > > up-to-date workingset estimation as the LRUs are continuously
+> > > > sorted and can potentially provide more deterministic memory
+> > > > overcommit behavior. The memory overcommit controller can provide
+> > > > more proactive response to the changing behavior of the running
+> > > > applications instead of being reactive.
+> > > >
+> > > > A userspace reclaimer's purpose in this case is not a complete replacement
+> > > > for kswapd or direct reclaim, it is to proactively identify memory savings
+> > > > opportunities and reclaim some amount of cold pages set by the policy
+> > > > to free up the memory for more demanding jobs or scheduling new jobs.
+> > > >
+> > > > A user space proactive reclaimer is used in Google data centers.
+> > > > Additionally, Meta's TMO paper recently referenced a very similar
+> > > > interface used for user space proactive reclaim:
+> > > > https://dl.acm.org/doi/pdf/10.1145/3503222.3507731
+> > > >
+> > > > Benefits of a user space reclaimer:
+> > > > -----------------------------------
+> > > >
+> > > > 1) More flexible on who should be charged for the cpu of the memory
+> > > > reclaim. For proactive reclaim, it makes more sense to be centralized.
+> > > >
+> > > > 2) More flexible on dedicating the resources (like cpu). The memory
+> > > > overcommit controller can balance the cost between the cpu usage and
+> > > > the memory reclaimed.
+> > > >
+> > > > 3) Provides a way to the applications to keep their LRUs sorted, so,
+> > > > under memory pressure better reclaim candidates are selected. This also
+> > > > gives more accurate and uptodate notion of working set for an
+> > > > application.
+> > > >
+> > > > Why memory.high is not enough?
+> > > > ------------------------------
+> > > >
+> > > > - memory.high can be used to trigger reclaim in a memcg and can
+> > > >   potentially be used for proactive reclaim.
+> > > >   However there is a big downside in using memory.high. It can potentially
+> > > >   introduce high reclaim stalls in the target application as the
+> > > >   allocations from the processes or the threads of the application can hit
+> > > >   the temporary memory.high limit.
+> > > >
+> > > > - Userspace proactive reclaimers usually use feedback loops to decide
+> > > >   how much memory to proactively reclaim from a workload. The metrics
+> > > >   used for this are usually either refaults or PSI, and these metrics
+> > > >   will become messy if the application gets throttled by hitting the
+> > > >   high limit.
+> > > >
+> > > > - memory.high is a stateful interface, if the userspace proactive
+> > > >   reclaimer crashes for any reason while triggering reclaim it can leave
+> > > >   the application in a bad state.
+> > > >
+> > > > - If a workload is rapidly expanding, setting memory.high to proactively
+> > > >   reclaim memory can result in actually reclaiming more memory than
+> > > >   intended.
+> > > >
+> > > > The benefits of such interface and shortcomings of existing interface
+> > > > were further discussed in this RFC thread:
+> > > > https://lore.kernel.org/linux-mm/5df21376-7dd1-bf81-8414-32a73cea45dd@google.com/
+> > >
+> > > Hello!
+> > >
+> > > I'm totally up for the proposed feature! It makes total sense and is proved
+> > > to be useful, let's add it.
+> > >
+> > > >
+> > > > Interface:
+> > > > ----------
+> > > >
+> > > > Introducing a very simple memcg interface 'echo 10M > memory.reclaim' to
+> > > > trigger reclaim in the target memory cgroup.
+> > > >
+> > > >
+> > > > Possible Extensions:
+> > > > --------------------
+> > > >
+> > > > - This interface can be extended with an additional parameter or flags
+> > > >   to allow specifying one or more types of memory to reclaim from (e.g.
+> > > >   file, anon, ..).
+> > > >
+> > > > - The interface can also be extended with a node mask to reclaim from
+> > > >   specific nodes. This has use cases for reclaim-based demotion in memory
+> > > >   tiering systens.
+> > > >
+> > > > - A similar per-node interface can also be added to support proactive
+> > > >   reclaim and reclaim-based demotion in systems without memcg.
+> > >
+> > > Maybe an option to specify a timeout? That might simplify the userspace part.
+> > > Also, please please add a test to selftests/cgroup/memcg tests.
+> > > It will also provide an example on how the userspace can use the feature.
+> > >
+> >
+> > Hi Roman, thanks for taking the time to review this!
+> >
+> > A timeout can be a good extension, I will add it to the commit message
+> > in the next version in possible extensions.
+> >
+> > I will add a test in v2, thanks!
+>
+> Great, thank you!
+>
+> >
+> > >
+> > > >
+> > > > For now, let's keep things simple by adding the basic functionality.
+> > >
+> > > What I'm worried about is how we gonna extend it? How do you see the interface
+> > > with 2-3 extensions from the list above? All these extensions look very
+> > > reasonable to me, so we'll likely have to implement them soon. So let's think
+> > > about the extensibility now.
+> > >
+> >
+> > My idea is to have these extensions as optional positional arguments
+> > (like Wei suggested), so that the interface does not get too
+> > complicated for users who don't care about tuning these options. If
+> > this is the case then I think there is nothing to worry about.
+> > Otherwise, if you think some of these options make sense to be a
+> > required argument instead, we can rethink the initial interface.
+>
+> The interface you're proposing is not really extensible, so we'll likely need to
+> introduce a new interface like memory.reclaim_ext very soon. Why not create
+> an extensible API from scratch?
+>
+> I'm looking at cgroup v2 documentation which describes various interface files
+> formats and it seems like given the number of potential optional arguments
+> the best option is nested keyed (please, refer to the Interface Files section).
+>
+> E.g. the format can be:
+> echo "1G type=file nodemask=1-2 timeout=30s" > memory.reclaim
+>
+> We can say that now we don't support any keyed arguments, but they can be
+> added in the future.
+>
+> Basically you don't even need to change any code, only document the interface
+> properly, so we can extend it later without breaking the API.
+>
 
-Commit-ID:     d39268ad24c0fd0665d0c5cf55a7c1a0ebf94766
-Gitweb:        https://git.kernel.org/tip/d39268ad24c0fd0665d0c5cf55a7c1a0ebf94766
-Author:        Dave Hansen <dave.hansen@linux.intel.com>
-AuthorDate:    Fri, 18 Mar 2022 06:52:59 -07:00
-Committer:     Borislav Petkov <bp@suse.de>
-CommitterDate: Mon, 04 Apr 2022 19:41:36 +02:00
+Thanks a lot for suggesting this, it indeed looks very much cleaner.
 
-x86/mm/tlb: Revert retpoline avoidance approach
+I will make sure to document the interface properly as suggested in v2.
 
-0day reported a regression on a microbenchmark which is intended to
-stress the TLB flushing path:
+> >
+> > > I wonder if it makes more sense to introduce a sys_reclaim() syscall instead?
+> > > In the end, such a feature might make sense on the system level too.
+> > > Yes, there is the drop_caches sysctl, but it's too radical for many cases.
+> > >
+> >
+> > I think in the RFC discussion there was consensus to add both a
+> > per-memcg knob, as well as per-node / per-system knobs (through sysfs
+> > or syscalls) later. Wei also points out that it's not common for a
+> > syscall to have a cgroup argument.
+>
+> Actually there are examples (e.g. sys_bpf), but my only point is to make
+> the API extensible, so maybe syscall is not the best idea.
+>
+> I'd add the root level interface from scratch: the code change is simple
+> and it makes sense as a feature. Then likely we don't really need another
+> system-level interface at all.
+>
 
-	https://lore.kernel.org/all/20220317090415.GE735@xsang-OptiPlex-9020/
+I think we would still need a system-level interface anyway for
+systems with no memcg that wish to make use of proactive memory
+reclaim. We can still make the memory.reclaim interface available for
+root as well if you think this is desirable.
 
-It pointed at a commit from Nadav which intended to remove retpoline
-overhead in the TLB flushing path by taking the 'cond'-ition in
-on_each_cpu_cond_mask(), pre-calculating it, and incorporating it into
-'cpumask'.  That allowed the code to use a bunch of earlier direct
-calls instead of later indirect calls that need a retpoline.
-
-But, in practice, threads can go idle (and into lazy TLB mode where
-they don't need to flush their TLB) between the early and late calls.
-It works in this direction and not in the other because TLB-flushing
-threads tend to hold mmap_lock for write.  Contention on that lock
-causes threads to _go_ idle right in this early/late window.
-
-There was not any performance data in the original commit specific
-to the retpoline overhead.  I did a few tests on a system with
-retpolines:
-
-	https://lore.kernel.org/all/dd8be93c-ded6-b962-50d4-96b1c3afb2b7@intel.com/
-
-which showed a possible small win.  But, that small win pales in
-comparison with the bigger loss induced on non-retpoline systems.
-
-Revert the patch that removed the retpolines.  This was not a
-clean revert, but it was self-contained enough not to be too painful.
-
-Fixes: 6035152d8eeb ("x86/mm/tlb: Open-code on_each_cpu_cond_mask() for tlb_is_not_lazy()")
-Reported-by: kernel test robot <oliver.sang@intel.com>
-Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Acked-by: Nadav Amit <namit@vmware.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lkml.kernel.org/r/164874672286.389.7021457716635788197.tip-bot2@tip-bot2
----
- arch/x86/mm/tlb.c | 37 +++++--------------------------------
- 1 file changed, 5 insertions(+), 32 deletions(-)
-
-diff --git a/arch/x86/mm/tlb.c b/arch/x86/mm/tlb.c
-index 6eb4d91..d400b6d 100644
---- a/arch/x86/mm/tlb.c
-+++ b/arch/x86/mm/tlb.c
-@@ -855,13 +855,11 @@ done:
- 			nr_invalidate);
- }
- 
--static bool tlb_is_not_lazy(int cpu)
-+static bool tlb_is_not_lazy(int cpu, void *data)
- {
- 	return !per_cpu(cpu_tlbstate_shared.is_lazy, cpu);
- }
- 
--static DEFINE_PER_CPU(cpumask_t, flush_tlb_mask);
--
- DEFINE_PER_CPU_SHARED_ALIGNED(struct tlb_state_shared, cpu_tlbstate_shared);
- EXPORT_PER_CPU_SYMBOL(cpu_tlbstate_shared);
- 
-@@ -890,36 +888,11 @@ STATIC_NOPV void native_flush_tlb_multi(const struct cpumask *cpumask,
- 	 * up on the new contents of what used to be page tables, while
- 	 * doing a speculative memory access.
- 	 */
--	if (info->freed_tables) {
-+	if (info->freed_tables)
- 		on_each_cpu_mask(cpumask, flush_tlb_func, (void *)info, true);
--	} else {
--		/*
--		 * Although we could have used on_each_cpu_cond_mask(),
--		 * open-coding it has performance advantages, as it eliminates
--		 * the need for indirect calls or retpolines. In addition, it
--		 * allows to use a designated cpumask for evaluating the
--		 * condition, instead of allocating one.
--		 *
--		 * This code works under the assumption that there are no nested
--		 * TLB flushes, an assumption that is already made in
--		 * flush_tlb_mm_range().
--		 *
--		 * cond_cpumask is logically a stack-local variable, but it is
--		 * more efficient to have it off the stack and not to allocate
--		 * it on demand. Preemption is disabled and this code is
--		 * non-reentrant.
--		 */
--		struct cpumask *cond_cpumask = this_cpu_ptr(&flush_tlb_mask);
--		int cpu;
--
--		cpumask_clear(cond_cpumask);
--
--		for_each_cpu(cpu, cpumask) {
--			if (tlb_is_not_lazy(cpu))
--				__cpumask_set_cpu(cpu, cond_cpumask);
--		}
--		on_each_cpu_mask(cond_cpumask, flush_tlb_func, (void *)info, true);
--	}
-+	else
-+		on_each_cpu_cond_mask(tlb_is_not_lazy, flush_tlb_func,
-+				(void *)info, 1, cpumask);
- }
- 
- void flush_tlb_multi(const struct cpumask *cpumask,
+> Thanks!
