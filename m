@@ -2,190 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9D2FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:01:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45E21C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:01:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359851AbiDDWCp (ORCPT
+        id S1348198AbiDDWDL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 18:02:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49732 "EHLO
+        Mon, 4 Apr 2022 18:03:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379715AbiDDR4u (ORCPT
+        with ESMTP id S1379494AbiDDRQT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 13:56:50 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7290D34BBA
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 10:54:53 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id y32-20020a25ad20000000b006339fb8e18cso8425371ybi.9
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 10:54:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=kD3wL+jXoZgMtS0viPnco/UYxkyMbtIPzARqoAqPbwY=;
-        b=WYo4HNZAwXrwLP0qlAd0FABk6y96oJiOctkOErnmhDQFAekOv4v7chWVr3f3Qh0Q9T
-         z4+llx0o/F8GBC5LLGld2hRsUZ0d7d70OML12Z2Gf9ONiXcZ+h7GRzw7lkBOnNJCT8Jd
-         D2eTdW04fjZ4NoYfKwg2OvTNQ+JqBoHwp2r6V8EI+3NYn3q6hbIk2lvyg/vAf2UHj74c
-         QS6Xw6+Y6NJa1Oc3Jcg5I/3svmOw6OyLTSyWVihA0RA0Sji0kWha3sDRnqlwT6I8bjZQ
-         rzHPjsJNeWt5BOXV3ux12mHTGwOyvLdNaYgSko1VHVagAeHgO81rFnVfwhieejciHJ28
-         bSeg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=kD3wL+jXoZgMtS0viPnco/UYxkyMbtIPzARqoAqPbwY=;
-        b=bIvSKghHZqgs2w3QIddhFFvo8IEDzgAmy0yVWFye4VBGP8tZ2sAmT9wnAaMDdQ07sY
-         4k1Cb89CHB8lOgOkZmkTBzaJxz9a4PzvpFFve9yXwFoEoiY8sZ1IA41JaqQ+ds3YzS2e
-         3ywVaPItf0BLElkBDZWZFhFsa0KrgWtEGFbt2R3LRG1Hs4sS0DjTr+XvuCefuBP716oh
-         IT6HebWQaZt4MxUu6TFfOILOGS9tHMqwlUi1FywGkWsnnTLNGS0jtJAX7qJzp/ZH3HFZ
-         AMItmZJI1/7O2m3FNfKuvm74MpcWsLpbkEHClR639kKhdKPtWAk8rmeVJAYJsWqvDQaQ
-         MzXA==
-X-Gm-Message-State: AOAM533zV/5xlTR0d8OYC8paoLtx1U03E+z2P69DuyBo9JYU9OVG6lGH
-        +5oVPzWIF0f3jCO7iO/tA4ziGb86xOb3AWC0GrU=
-X-Google-Smtp-Source: ABdhPJxTVi5OZotbfZSehOWa3aQ3MEEZMwR3jw8243Jt0T0zjDz/WMGViBbOCa9jjUde+gYSrzLROK2KV7SsMPWmNTg=
-X-Received: from ndesaulniers1.mtv.corp.google.com ([2620:15c:211:202:9d5:9b93:ffb4:574a])
- (user=ndesaulniers job=sendgmr) by 2002:a25:1585:0:b0:63d:de88:5aa6 with SMTP
- id 127-20020a251585000000b0063dde885aa6mr882284ybv.201.1649094892610; Mon, 04
- Apr 2022 10:54:52 -0700 (PDT)
-Date:   Mon,  4 Apr 2022 10:54:47 -0700
-In-Reply-To: <20220329160137.0708b1ef@kernel.org>
-Message-Id: <20220404175448.46200-1-ndesaulniers@google.com>
-Mime-Version: 1.0
-References: <20220329160137.0708b1ef@kernel.org>
-X-Developer-Key: i=ndesaulniers@google.com; a=ed25519; pk=lvO/pmg+aaCb6dPhyGC1GyOCvPueDrrc8Zeso5CaGKE=
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1649094887; l=4089;
- s=20211004; h=from:subject; bh=khSjrHk7nW4o9cbWWjQxFTbsHtqXeG+OBf0183HZoTY=;
- b=efrzYgGo+h+jeE0KwRYGDhyUzYY804nMchdq+L44+8D1q0L3AXuRd6BNdlWb1zJz8J0kE30bAyoV
- LUECkyb8AYFVzKTBFw3MxBGTORsUeBNwq9oW3d6c/k29j/bqMMDB
-X-Mailer: git-send-email 2.35.1.1094.g7c7d902a7c-goog
-Subject: [PATCH net-next v3] net, uapi: remove inclusion of arpa/inet.h
-From:   Nick Desaulniers <ndesaulniers@google.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Jon Maloy <jmaloy@redhat.com>, Ying Xue <ying.xue@windriver.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        David Howells <dhowells@redhat.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        netdev@vger.kernel.org, tipc-discussion@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Mon, 4 Apr 2022 13:16:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1056914019;
+        Mon,  4 Apr 2022 10:14:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9CF5C60DDD;
+        Mon,  4 Apr 2022 17:14:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E3919C3410F;
+        Mon,  4 Apr 2022 17:14:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649092462;
+        bh=RvGj2Q18LJfQT9XlPp3IkvaWjSaTqyvITK0kRJD8u9Q=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=UXPYPaMHgSRwaVFvCkHj2vb20E9SLLRr7qYSmd1t2Pp64ld5EJLNs6jp6f6syeEJ3
+         O2tjaIF+Jles/YBIhjLBLdjEHvDwg4bv9Q/1++Ro5JHPWrdlOA3yx6U+Mta/6YtM5t
+         oA8Fs2sopE/LDLB0XfZUsrXovAv9VDP334L6x0PtooO3iE42BCnKpFrlvwj5g5ZLSa
+         OVQXxQTJwDHuME0PD3rRb8Kt27OOvFoVEjchpbQQOuUJU8obz4vaJ8dFFKckzVjDuL
+         bBLZZ2Rq89wtyoMtfekJ6zngldJQVsYtOmg1jjOuhlzaaPMny1ZgKR0kmYxUFYbhTT
+         ZjYkpjbHMRh7g==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C68F5E85AE7;
+        Mon,  4 Apr 2022 17:14:21 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH 0/4] mfd/pwm: dt-bindings: google,cros-ec: include generic pwm
+ schema
+From:   patchwork-bot+chrome-platform@kernel.org
+Message-Id: <164909246180.14329.3397709419938843373.git-patchwork-notify@kernel.org>
+Date:   Mon, 04 Apr 2022 17:14:21 +0000
+References: <20220214081916.162014-1-krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220214081916.162014-1-krzysztof.kozlowski@canonical.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     lee.jones@linaro.org, robh+dt@kernel.org, bleung@chromium.org,
+        groeck@chromium.org, thierry.reding@gmail.com,
+        u.kleine-koenig@pengutronix.de, matthias.bgg@gmail.com,
+        agross@kernel.org, bjorn.andersson@linaro.org, heiko@sntech.de,
+        dianders@chromium.org, devicetree@vger.kernel.org,
+        chrome-platform@lists.linux.dev, linux-kernel@vger.kernel.org,
+        linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+        linux-rockchip@lists.infradead.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In include/uapi/linux/tipc_config.h, there's a comment that it includes
-arpa/inet.h for ntohs; but ntohs is not defined in any UAPI header. For
-now, reuse the definitions from include/linux/byteorder/generic.h, since
-the various conversion functions do exist in UAPI headers:
-include/uapi/linux/byteorder/big_endian.h
-include/uapi/linux/byteorder/little_endian.h
+Hello:
 
-We would like to get to the point where we can build UAPI header tests
-with -nostdinc, meaning that kernel UAPI headers should not have a
-circular dependency on libc headers.
+This series was applied to chrome-platform/linux.git (for-next)
+by Heiko Stuebner <heiko@sntech.de>:
 
-Link: https://android-review.googlesource.com/c/platform/bionic/+/2048127
-Suggested-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
----
-Changes V2 -> V3:
-* Use __be16_to_cpu and friends directly.
-* Rebase on net-next now that the merge window is closed.
-* Cut down commit message.
-Changes V1 -> V2:
-* Fix broken patch.
+On Mon, 14 Feb 2022 09:19:12 +0100 you wrote:
+> Hi,
+> 
+> DTS patches are independent. Not tested, but I really hope no downstream kernel
+> depends on pwm node naming... If it does, please change it to compatible. :)
+> 
+> Best regards,
+> Krzysztof
+> 
+> [...]
 
- include/uapi/linux/tipc_config.h | 28 ++++++++++++----------------
- 1 file changed, 12 insertions(+), 16 deletions(-)
+Here is the summary with links:
+  - [1/4] dt-bindings: pwm: google,cros-ec: include generic pwm schema
+    https://git.kernel.org/chrome-platform/c/6b94ee669e8a
+  - [2/4] arm64: dts: mt8183: align Google CROS EC PWM node name with dtschema
+    (no matching commit)
+  - [3/4] arm64: dts: qcom: align Google CROS EC PWM node name with dtschema
+    https://git.kernel.org/chrome-platform/c/1e49defb8636
+  - [4/4] arm64: dts: rk3399: align Google CROS EC PWM node name with dtschema
+    https://git.kernel.org/chrome-platform/c/a0024f55eb5b
 
-diff --git a/include/uapi/linux/tipc_config.h b/include/uapi/linux/tipc_config.h
-index 4dfc05651c98..c00adf2fe868 100644
---- a/include/uapi/linux/tipc_config.h
-+++ b/include/uapi/linux/tipc_config.h
-@@ -43,10 +43,6 @@
- #include <linux/tipc.h>
- #include <asm/byteorder.h>
- 
--#ifndef __KERNEL__
--#include <arpa/inet.h> /* for ntohs etc. */
--#endif
--
- /*
-  * Configuration
-  *
-@@ -269,33 +265,33 @@ static inline int TLV_OK(const void *tlv, __u16 space)
- 	 */
- 
- 	return (space >= TLV_SPACE(0)) &&
--		(ntohs(((struct tlv_desc *)tlv)->tlv_len) <= space);
-+		(__be16_to_cpu(((struct tlv_desc *)tlv)->tlv_len) <= space);
- }
- 
- static inline int TLV_CHECK(const void *tlv, __u16 space, __u16 exp_type)
- {
- 	return TLV_OK(tlv, space) &&
--		(ntohs(((struct tlv_desc *)tlv)->tlv_type) == exp_type);
-+		(__be16_to_cpu(((struct tlv_desc *)tlv)->tlv_type) == exp_type);
- }
- 
- static inline int TLV_GET_LEN(struct tlv_desc *tlv)
- {
--	return ntohs(tlv->tlv_len);
-+	return __be16_to_cpu(tlv->tlv_len);
- }
- 
- static inline void TLV_SET_LEN(struct tlv_desc *tlv, __u16 len)
- {
--	tlv->tlv_len = htons(len);
-+	tlv->tlv_len = __cpu_to_be16(len);
- }
- 
- static inline int TLV_CHECK_TYPE(struct tlv_desc *tlv,  __u16 type)
- {
--	return (ntohs(tlv->tlv_type) == type);
-+	return (__be16_to_cpu(tlv->tlv_type) == type);
- }
- 
- static inline void TLV_SET_TYPE(struct tlv_desc *tlv, __u16 type)
- {
--	tlv->tlv_type = htons(type);
-+	tlv->tlv_type = __cpu_to_be16(type);
- }
- 
- static inline int TLV_SET(void *tlv, __u16 type, void *data, __u16 len)
-@@ -305,8 +301,8 @@ static inline int TLV_SET(void *tlv, __u16 type, void *data, __u16 len)
- 
- 	tlv_len = TLV_LENGTH(len);
- 	tlv_ptr = (struct tlv_desc *)tlv;
--	tlv_ptr->tlv_type = htons(type);
--	tlv_ptr->tlv_len  = htons(tlv_len);
-+	tlv_ptr->tlv_type = __cpu_to_be16(type);
-+	tlv_ptr->tlv_len  = __cpu_to_be16(tlv_len);
- 	if (len && data) {
- 		memcpy(TLV_DATA(tlv_ptr), data, len);
- 		memset((char *)TLV_DATA(tlv_ptr) + len, 0, TLV_SPACE(len) - tlv_len);
-@@ -348,7 +344,7 @@ static inline void *TLV_LIST_DATA(struct tlv_list_desc *list)
- 
- static inline void TLV_LIST_STEP(struct tlv_list_desc *list)
- {
--	__u16 tlv_space = TLV_ALIGN(ntohs(list->tlv_ptr->tlv_len));
-+	__u16 tlv_space = TLV_ALIGN(__be16_to_cpu(list->tlv_ptr->tlv_len));
- 
- 	list->tlv_ptr = (struct tlv_desc *)((char *)list->tlv_ptr + tlv_space);
- 	list->tlv_space -= tlv_space;
-@@ -404,9 +400,9 @@ static inline int TCM_SET(void *msg, __u16 cmd, __u16 flags,
- 
- 	msg_len = TCM_LENGTH(data_len);
- 	tcm_hdr = (struct tipc_cfg_msg_hdr *)msg;
--	tcm_hdr->tcm_len   = htonl(msg_len);
--	tcm_hdr->tcm_type  = htons(cmd);
--	tcm_hdr->tcm_flags = htons(flags);
-+	tcm_hdr->tcm_len   = __cpu_to_be32(msg_len);
-+	tcm_hdr->tcm_type  = __cpu_to_be16(cmd);
-+	tcm_hdr->tcm_flags = __cpu_to_be16(flags);
- 	if (data_len && data) {
- 		memcpy(TCM_DATA(msg), data, data_len);
- 		memset((char *)TCM_DATA(msg) + data_len, 0, TCM_SPACE(data_len) - msg_len);
+You are awesome, thank you!
 -- 
-2.35.1.1094.g7c7d902a7c-goog
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
