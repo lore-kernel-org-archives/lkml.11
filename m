@@ -2,80 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38F8EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:59:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66222C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:59:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348764AbiDDV4U (ORCPT
+        id S1351430AbiDDV4i (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:56:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45718 "EHLO
+        Mon, 4 Apr 2022 17:56:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379539AbiDDR00 (ORCPT
+        with ESMTP id S1378970AbiDDQNJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 13:26:26 -0400
-Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 10BCE31909;
-        Mon,  4 Apr 2022 10:24:29 -0700 (PDT)
-X-IronPort-AV: E=Sophos;i="5.90,234,1643641200"; 
-   d="scan'208";a="116711391"
-Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
-  by relmlie6.idc.renesas.com with ESMTP; 05 Apr 2022 02:24:29 +0900
-Received: from localhost.localdomain (unknown [10.226.36.204])
-        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 9E2D440B0B0A;
-        Tue,  5 Apr 2022 02:24:27 +0900 (JST)
-From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-To:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        linux-mmc@vger.kernel.org
-Cc:     Pavel Machek <pavel@denx.de>, linux-kernel@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: [PATCH 2/2] mmc: renesas_internal_dmac: Fix typo's
-Date:   Mon,  4 Apr 2022 18:23:22 +0100
-Message-Id: <20220404172322.32578-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220404172322.32578-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-References: <20220404172322.32578-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+        Mon, 4 Apr 2022 12:13:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9580D2F007
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 09:11:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3E551B816F4
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 16:11:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F04BC34110
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 16:11:09 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="UiBloJww"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1649088667;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=NJXEF3IT+pXVPI757TmAQZ63PIEB107aaHAXmSZApdA=;
+        b=UiBloJwwzBVApHwYa+P/BIi+LDxEXw/bj00uKat7KRCe04nnT9lq14rta88deTd9vjqCTY
+        8kuQFBUDCwXhWgE6+fDyV17DpPsMqb+7vT9WeCQVjdDXa5/UG+k+KR9isAoCv28gprsQHe
+        3ONTdVtTN12e0NzluZAX4brsELyQY3c=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 688b90e3 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO)
+        for <linux-kernel@vger.kernel.org>;
+        Mon, 4 Apr 2022 16:11:07 +0000 (UTC)
+Received: by mail-yw1-f179.google.com with SMTP id 00721157ae682-2e5e31c34bfso104906177b3.10
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 09:11:07 -0700 (PDT)
+X-Gm-Message-State: AOAM530JoDWq+cbLB4c7NdwZqA8c6hiZeuoVwrMelGhQGbo2/6/a+LHw
+        PukhvOUmgt2zEjviegWlQ3FBKo28J3qDU3BdDwo=
+X-Google-Smtp-Source: ABdhPJys4bTOGYhdA6Lwe2omy+aFz3OCJNZLCiqERsWITDHI+UjOx5nuE5bWDEn0Xu/ktUuKRhXjedzl2MbVG/YQbDM=
+X-Received: by 2002:a81:1d4:0:b0:2eb:1b10:f43e with SMTP id
+ 203-20020a8101d4000000b002eb1b10f43emr690974ywb.100.1649088666148; Mon, 04
+ Apr 2022 09:11:06 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220404150442.934496-1-jan.varho@gmail.com> <YksMxDLxPZtuYlFm@zx2c4.com>
+ <CAE2X=SxCwoKa1OpNAsy5FN1Ugeos3gaM4YX4K4uTWfkKBEr0pA@mail.gmail.com>
+In-Reply-To: <CAE2X=SxCwoKa1OpNAsy5FN1Ugeos3gaM4YX4K4uTWfkKBEr0pA@mail.gmail.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Mon, 4 Apr 2022 18:10:55 +0200
+X-Gmail-Original-Message-ID: <CAHmME9rKFfv+=Yvu2HZEjLZs1MPLrkHQTA1iLikVf2dxC998YQ@mail.gmail.com>
+Message-ID: <CAHmME9rKFfv+=Yvu2HZEjLZs1MPLrkHQTA1iLikVf2dxC998YQ@mail.gmail.com>
+Subject: Re: [PATCH] random: fix add_hwgenerator_randomness entropy accounting
+To:     Jan Varho <jan.varho@gmail.com>
+Cc:     "Theodore Ts'o" <tytso@mit.edu>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix typo's,
-* difference -> different
-* alignment -> aligned
+Hi Jan,
 
-Reported-by: Pavel Machek <pavel@denx.de>
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
----
- drivers/mmc/host/renesas_sdhi_internal_dmac.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+On Mon, Apr 4, 2022 at 5:29 PM Jan Varho <jan.varho@gmail.com> wrote:
+> I thought about doing it that way, but the return value allows
+> checking that any input was actually used instead of fast init
+> completing in the mean time.
 
-diff --git a/drivers/mmc/host/renesas_sdhi_internal_dmac.c b/drivers/mmc/host/renesas_sdhi_internal_dmac.c
-index 1685df00863b..b468368a4539 100644
---- a/drivers/mmc/host/renesas_sdhi_internal_dmac.c
-+++ b/drivers/mmc/host/renesas_sdhi_internal_dmac.c
-@@ -310,7 +310,7 @@ renesas_sdhi_internal_dmac_dataend_dma(struct tmio_mmc_host *host) {
- }
- 
- /*
-- * renesas_sdhi_internal_dmac_map() will be called with two difference
-+ * renesas_sdhi_internal_dmac_map() will be called with two different
-  * sg pointers in two mmc_data by .pre_req(), but tmio host can have a single
-  * sg_ptr only. So, renesas_sdhi_internal_dmac_{un}map() should use a sg
-  * pointer in a mmc_data instead of host->sg_ptr.
-@@ -344,7 +344,7 @@ renesas_sdhi_internal_dmac_map(struct tmio_mmc_host *host,
- 
- 	data->host_cookie = cookie;
- 
--	/* This DMAC cannot handle if buffer is not 128-bytes alignment */
-+	/* This DMAC cannot handle if buffer is not 128-bytes aligned */
- 	if (!IS_ALIGNED(sg_dma_address(data->sg), 128)) {
- 		renesas_sdhi_internal_dmac_unmap(host, data, cookie);
- 		return false;
--- 
-2.17.1
+I'm not too worried about races here. If lots of things are fighting
+to inject entropy here, we're not in a starved situation. Also, the
+other callers aren't looking at the return value. Let's keep it
+simple; there's little harm in doing so in this instance.
 
+Jason
