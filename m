@@ -2,89 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A9E2C352A7
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C502C35296
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:23:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382171AbiDDVZF (ORCPT
+        id S1382137AbiDDVY4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:25:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36436 "EHLO
+        Mon, 4 Apr 2022 17:24:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379378AbiDDRD5 (ORCPT
+        with ESMTP id S1379253AbiDDQvs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 13:03:57 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5ABA40A24
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 10:02:00 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id u9so6775402edd.11
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 10:02:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=rHmGrV07kY5BqUXebpd1I+1++leGw0LEdhJA+STF0QY=;
-        b=mWRHtZ3f4vPDUnyB7eySxcxqsansrCtiWjuIJ3r+F6cnVW4zUoJva6WGvoeppDWMCW
-         nsaQFV5wHgpVtmP8L9SL5OyCjYheHThCyYGnwuQfqo4SbwdoY/xQXJ88RHAf+5zBkyBv
-         I2iql4tDCNwqWZGXxpqwpT+w8XeM1Vqy7w3O7cNu8JQ/+jqvWUdkpYtlultkUPilmEsB
-         M4ZbZB9lXtBWG/9nOB52ozEAA+auNbZ5Teb9Hu+xT/+vUJxwJZBPgtbHq/0nz63s9DsU
-         8IUmACMePV1l/9ZhcYRTvGuLYhb8GbPdG8EhdwE4lj3r0IJ33PzF+64fcQtkGFXurccD
-         4PWw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=rHmGrV07kY5BqUXebpd1I+1++leGw0LEdhJA+STF0QY=;
-        b=nL4t1MX5pYUjyZ9WuJdWtKxtEz72LEnpdKSUvr+EF368FVZ7itAVdivum7q33UhbM1
-         zt/4TXxswj49EjCE5N9CjkovL2Tg2zCvPgTrZUdnq+4lU8cKp12pmf1zIliWrO4/pVjF
-         +WPhXqK02+wktXwTYGwAd0LxqTC6RVE0AIdCMMtPlvg/Fm5yalc1hxGm6jYIKqkDILXR
-         AHA1QjKIi1K6XJOaisr0ujjBT/3neDCQ+4gFWR9FjnUsNdjHkunUAKuEqZKsr+cTTAw/
-         FlsOfIUBbyvfpMM34Ibl5iqUH6pQ/XTvR8ADVxDz8FdhSDjrw8QaCk/EPTUyR+y704VW
-         K2iw==
-X-Gm-Message-State: AOAM533rAPOXXhwmdvpeTkX4WaJLVcbXb2xS6dNEZxqMAOXGgZBiz6sY
-        vcDNa7VAG/7LirfVtPtRhCd13PGnsFt28v5k
-X-Google-Smtp-Source: ABdhPJyuhVzymu7WwGGXOzOLD6Z5dLjpPgNSkngxJvWAbzaQD7pGZY20Z0k0EhNSCGkxF1H3IodfIQ==
-X-Received: by 2002:a05:6402:510c:b0:419:3fe5:15f with SMTP id m12-20020a056402510c00b004193fe5015fmr1176806edd.274.1649091719415;
-        Mon, 04 Apr 2022 10:01:59 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id c5-20020a170906d18500b006ce371f09d4sm4557770ejz.57.2022.04.04.10.01.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 10:01:58 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Rob Herring <robh+dt@kernel.org>,
-        linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        linux-arm-kernel@lists.infradead.org,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Thomas Gleixner <tglx@linutronix.de>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: Re: (subset) [PATCH v2 2/4] ARM: dts: exynos: add a specific compatible to MCT
-Date:   Mon,  4 Apr 2022 19:01:47 +0200
-Message-Id: <164909169270.1688455.3672791121533721760.b4-ty@linaro.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220304122424.307885-3-krzysztof.kozlowski@canonical.com>
-References: <20220304122424.307885-1-krzysztof.kozlowski@canonical.com> <20220304122424.307885-3-krzysztof.kozlowski@canonical.com>
+        Mon, 4 Apr 2022 12:51:48 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B11C52B1B0;
+        Mon,  4 Apr 2022 09:49:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649090991; x=1680626991;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=nUCxoYXpaLcMuFF2b8VDSWzuYcUmFDOIEehMew72cCE=;
+  b=UIt//fUOf9TmtNF2OO1vwsDoNuoMdpRsQxZA4ewEHfn9Ma2yvblsimnE
+   kobQFpSVBeFZesIklacYnzDbSQFzJyEAQpLHz9ToUBE793qILat4WbQJS
+   XG3W9M0hDSgyh+qb+sTpq7LC/HuI6U9LJ/ExuqTXrzGDjOZ7HCz5UJhX9
+   j7rQXl8fq17DvAl2ooLYUXBo7TnTaTAp2p3P81gkI8BWrMBq4ZucqQn8G
+   zV3HEHQZLnVro2BmHZLrAGuqiapeTBW5VWkcJjo9aJFdNVBtXRtRmfUeJ
+   wFXSgvbTMYhMns8SjGU2HOMf3g//FDAMSpFZEqxCTTOgYtf7dlmpRrH9v
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="323734039"
+X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
+   d="scan'208";a="323734039"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:49:51 -0700
+X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
+   d="scan'208";a="523105162"
+Received: from rchatre-ws.ostc.intel.com ([10.54.69.144])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:49:50 -0700
+From:   Reinette Chatre <reinette.chatre@intel.com>
+To:     dave.hansen@linux.intel.com, jarkko@kernel.org, tglx@linutronix.de,
+        bp@alien8.de, luto@kernel.org, mingo@redhat.com,
+        linux-sgx@vger.kernel.org, x86@kernel.org
+Cc:     seanjc@google.com, kai.huang@intel.com, cathy.zhang@intel.com,
+        cedric.xing@intel.com, haitao.huang@intel.com,
+        mark.shanahan@intel.com, hpa@zytor.com,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH V3 05/30] x86/sgx: Support loading enclave page without VMA permissions check
+Date:   Mon,  4 Apr 2022 09:49:13 -0700
+Message-Id: <c9a81f8a2b3f582a906c750e2221f98ca36731e4.1648847675.git.reinette.chatre@intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cover.1648847675.git.reinette.chatre@intel.com>
+References: <cover.1648847675.git.reinette.chatre@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 4 Mar 2022 13:24:22 +0100, Krzysztof Kozlowski wrote:
-> One compatible is used for the Multi-Core Timer on most of the Samsung
-> Exynos SoCs, which is correct but not specific enough.  These MCT blocks
-> have different number of interrupts, so add a second specific
-> compatible to Exynos3250 and all Exynos5 SoCs.
-> 
-> 
+sgx_encl_load_page() is used to find and load an enclave page into
+enclave (EPC) memory, potentially loading it from the backing storage.
+Both usages of sgx_encl_load_page() are during an access to the
+enclave page from a VMA and thus the permissions of the VMA are
+considered before the enclave page is loaded.
 
-Applied, thanks!
+SGX2 functions operating on enclave pages belonging to an initialized
+enclave requiring the page to be in EPC. It is thus required to
+support loading enclave pages into the EPC independent from a VMA.
 
-[2/4] ARM: dts: exynos: add a specific compatible to MCT
-      commit: cca50a59f60a6b2b5aa2c90d8c173da89f567ee3
+Split the current sgx_encl_load_page() to support the two usages:
+A new call, sgx_encl_load_page_in_vma(), behaves exactly like the
+current sgx_encl_load_page() that takes VMA permissions into account,
+while sgx_encl_load_page() just loads an enclave page into EPC.
 
-Best regards,
+VMA, PTE, and EPCM permissions would continue to dictate whether
+the pages can be accessed from within an enclave.
+
+Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
+---
+Changes since V2:
+- New patch
+
+ arch/x86/kernel/cpu/sgx/encl.c | 57 ++++++++++++++++++++++------------
+ arch/x86/kernel/cpu/sgx/encl.h |  2 ++
+ 2 files changed, 40 insertions(+), 19 deletions(-)
+
+diff --git a/arch/x86/kernel/cpu/sgx/encl.c b/arch/x86/kernel/cpu/sgx/encl.c
+index 7c63a1911fae..05ae1168391c 100644
+--- a/arch/x86/kernel/cpu/sgx/encl.c
++++ b/arch/x86/kernel/cpu/sgx/encl.c
+@@ -131,25 +131,10 @@ static struct sgx_epc_page *sgx_encl_eldu(struct sgx_encl_page *encl_page,
+ 	return epc_page;
+ }
+ 
+-static struct sgx_encl_page *sgx_encl_load_page(struct sgx_encl *encl,
+-						unsigned long addr,
+-						unsigned long vm_flags)
++static struct sgx_encl_page *__sgx_encl_load_page(struct sgx_encl *encl,
++						  struct sgx_encl_page *entry)
+ {
+-	unsigned long vm_prot_bits = vm_flags & (VM_READ | VM_WRITE | VM_EXEC);
+ 	struct sgx_epc_page *epc_page;
+-	struct sgx_encl_page *entry;
+-
+-	entry = xa_load(&encl->page_array, PFN_DOWN(addr));
+-	if (!entry)
+-		return ERR_PTR(-EFAULT);
+-
+-	/*
+-	 * Verify that the faulted page has equal or higher build time
+-	 * permissions than the VMA permissions (i.e. the subset of {VM_READ,
+-	 * VM_WRITE, VM_EXECUTE} in vma->vm_flags).
+-	 */
+-	if ((entry->vm_max_prot_bits & vm_prot_bits) != vm_prot_bits)
+-		return ERR_PTR(-EFAULT);
+ 
+ 	/* Entry successfully located. */
+ 	if (entry->epc_page) {
+@@ -175,6 +160,40 @@ static struct sgx_encl_page *sgx_encl_load_page(struct sgx_encl *encl,
+ 	return entry;
+ }
+ 
++static struct sgx_encl_page *sgx_encl_load_page_in_vma(struct sgx_encl *encl,
++						       unsigned long addr,
++						       unsigned long vm_flags)
++{
++	unsigned long vm_prot_bits = vm_flags & (VM_READ | VM_WRITE | VM_EXEC);
++	struct sgx_encl_page *entry;
++
++	entry = xa_load(&encl->page_array, PFN_DOWN(addr));
++	if (!entry)
++		return ERR_PTR(-EFAULT);
++
++	/*
++	 * Verify that the page has equal or higher build time
++	 * permissions than the VMA permissions (i.e. the subset of {VM_READ,
++	 * VM_WRITE, VM_EXECUTE} in vma->vm_flags).
++	 */
++	if ((entry->vm_max_prot_bits & vm_prot_bits) != vm_prot_bits)
++		return ERR_PTR(-EFAULT);
++
++	return __sgx_encl_load_page(encl, entry);
++}
++
++struct sgx_encl_page *sgx_encl_load_page(struct sgx_encl *encl,
++					 unsigned long addr)
++{
++	struct sgx_encl_page *entry;
++
++	entry = xa_load(&encl->page_array, PFN_DOWN(addr));
++	if (!entry)
++		return ERR_PTR(-EFAULT);
++
++	return __sgx_encl_load_page(encl, entry);
++}
++
+ static vm_fault_t sgx_vma_fault(struct vm_fault *vmf)
+ {
+ 	unsigned long addr = (unsigned long)vmf->address;
+@@ -196,7 +215,7 @@ static vm_fault_t sgx_vma_fault(struct vm_fault *vmf)
+ 
+ 	mutex_lock(&encl->lock);
+ 
+-	entry = sgx_encl_load_page(encl, addr, vma->vm_flags);
++	entry = sgx_encl_load_page_in_vma(encl, addr, vma->vm_flags);
+ 	if (IS_ERR(entry)) {
+ 		mutex_unlock(&encl->lock);
+ 
+@@ -344,7 +363,7 @@ static struct sgx_encl_page *sgx_encl_reserve_page(struct sgx_encl *encl,
+ 	for ( ; ; ) {
+ 		mutex_lock(&encl->lock);
+ 
+-		entry = sgx_encl_load_page(encl, addr, vm_flags);
++		entry = sgx_encl_load_page_in_vma(encl, addr, vm_flags);
+ 		if (PTR_ERR(entry) != -EBUSY)
+ 			break;
+ 
+diff --git a/arch/x86/kernel/cpu/sgx/encl.h b/arch/x86/kernel/cpu/sgx/encl.h
+index fec43ca65065..6b34efba1602 100644
+--- a/arch/x86/kernel/cpu/sgx/encl.h
++++ b/arch/x86/kernel/cpu/sgx/encl.h
+@@ -116,5 +116,7 @@ unsigned int sgx_alloc_va_slot(struct sgx_va_page *va_page);
+ void sgx_free_va_slot(struct sgx_va_page *va_page, unsigned int offset);
+ bool sgx_va_page_full(struct sgx_va_page *va_page);
+ void sgx_encl_free_epc_page(struct sgx_epc_page *page);
++struct sgx_encl_page *sgx_encl_load_page(struct sgx_encl *encl,
++					 unsigned long addr);
+ 
+ #endif /* _X86_ENCL_H */
 -- 
-Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+2.25.1
+
