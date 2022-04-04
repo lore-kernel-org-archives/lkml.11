@@ -2,188 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7595C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:42:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8630BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:43:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353631AbiDDVoo (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:44:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35494 "EHLO
+        id S232328AbiDDVpA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 17:45:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380174AbiDDTKc (ORCPT
+        with ESMTP id S1380583AbiDDUh6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 15:10:32 -0400
-Received: from out1.migadu.com (out1.migadu.com [IPv6:2001:41d0:2:863f::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BDEFB93
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 12:08:33 -0700 (PDT)
-Date:   Mon, 4 Apr 2022 12:08:25 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1649099311;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=yHousyzC3FU6OH50zh8PHJ35RyiTGL+iOjn1Iy2qNF8=;
-        b=kcZ1LoeeOmG16dUAKruhnFD/9tejvdhAa0KF6/6HUxRp4IOrzhWQEq5ISZAFobojmDY55n
-        xk84eo1lk0mSPUprPiOJ2wXgV6To2ezWzMOQ2wAvQeOqJsJi5q0DHLq1xFRn6jxBw0/Ao8
-        NmSb+ismXYw2QI7oPu0UA16Z4IZULeE=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Roman Gushchin <roman.gushchin@linux.dev>
-To:     Dave Chinner <david@fromorbit.com>
-Cc:     Hillf Danton <hdanton@sina.com>, MM <linux-mm@kvack.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Stephen Brennan <stephen.s.brennan@oracle.com>,
-        Yu Zhao <yuzhao@google.com>,
-        David Hildenbrand <david@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC] mm/vmscan: add periodic slab shrinker
-Message-ID: <YktCKVbChtC+YjOk@carbon.dhcp.thefacebook.com>
-References: <20220402072103.5140-1-hdanton@sina.com>
- <20220403005618.5263-1-hdanton@sina.com>
- <20220404010948.GV1609613@dread.disaster.area>
+        Mon, 4 Apr 2022 16:37:58 -0400
+Received: from mail-ot1-x333.google.com (mail-ot1-x333.google.com [IPv6:2607:f8b0:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4907625EB8
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 13:36:00 -0700 (PDT)
+Received: by mail-ot1-x333.google.com with SMTP id w17-20020a056830111100b005b22c584b93so8013035otq.11
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 13:36:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=kg/HA+QVDj4BE3Pqgs7Z5r8nQIoSf5HmU9Y6IMHvcQ4=;
+        b=UVy/2H9XcZxhjUlG0pYTnPvMihiwPuXQOj7n67eXl88rrzpXlhojBgVlnVFlDpSu4L
+         CrXdTnuAdKochmYTpKdEYeBgTUI5N0by54eD0eZz37TSdHUNjKnsLDZK2XXj6SPQtxZ1
+         fJu3eDe/uIOk1oFujxuRIgdsO2/npaXmdg/KE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=kg/HA+QVDj4BE3Pqgs7Z5r8nQIoSf5HmU9Y6IMHvcQ4=;
+        b=gTuxP8CBv+PIEktOrVnnE7UC8VJ9SwkiPBRqYcVRPvgu6055NyFS4C1h0+hMiRyBkb
+         XKEhnOgJixebV50eeGLU1CerReJcrmYxoCukrKTBZeyscQvzhKKCkG8fUVzWYxkacTjG
+         5FwwmhRsyN2BCuw4Wu4w6puBW+37GaEXYbEAfR0Xp+HKBtzBVozCxH+gTh4Co+/VmKRh
+         Bb8E4QVqgmch8qBx7MkNohjtuiMTq2wx1Bac8ldFKTvY8Mojbjp9Gek22xhIP8LVFZnB
+         a134eTlXnDeNQ2rFBnkCunPJgiSkA2eIZe871+9xKNYxdIpCwmXgGD+O9qeTU+PV9ors
+         k1Fw==
+X-Gm-Message-State: AOAM530df2wNgGK+nw3ErAh6TMVUV+zB+JyezrxalFwdg7zSDM1An+kc
+        6i72aw+06Q5L+gpE4wB+vLeCI5MJPa620bZvVDtT22/ZEXk=
+X-Google-Smtp-Source: ABdhPJx/Lq/nxMT92DUF/KzpDcHBIOBMR/7Ec7G1dTVR2ng1S2RYXmK8ST+N3xxfbiKsvwc+yRZ4cDCJFzXmSyQu4NM=
+X-Received: by 2002:a05:6830:61b:b0:5cc:e44:7dc3 with SMTP id
+ w27-20020a056830061b00b005cc0e447dc3mr36332oti.159.1649104559265; Mon, 04 Apr
+ 2022 13:35:59 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Mon, 4 Apr 2022 15:35:58 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220404010948.GV1609613@dread.disaster.area>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+In-Reply-To: <20220402175131.75bb95de@jic23-huawei>
+References: <20220324222928.874522-1-swboyd@chromium.org> <20220327155147.52e898b4@jic23-huawei>
+ <CAE-0n50T9uqcB9EK-RnGXPGhd6RWdrsE9pA5FJY9yC58xd=05A@mail.gmail.com> <20220402175131.75bb95de@jic23-huawei>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Mon, 4 Apr 2022 15:35:58 -0500
+Message-ID: <CAE-0n53iU+Wne7Tvxr_ivwdqLVd3Mg-FNM7xLJ=ztsAF3QEALg@mail.gmail.com>
+Subject: Re: [PATCH v2] iio:proximity:sx9324: Fix hardware gain read/write
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org, Gwendal Grignou <gwendal@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 04, 2022 at 11:09:48AM +1000, Dave Chinner wrote:
-> On Sun, Apr 03, 2022 at 08:56:18AM +0800, Hillf Danton wrote:
-> > On Sat, 2 Apr 2022 10:54:36 -0700 Roman Gushchin wrote:
-> > > Hello Hillf!
-> > > 
-> > Hello Roman,
-> > 
-> > > Thank you for sharing it, really interesting! I=E2=80=99m actually working o=
-> > > n the same problem.=20
-> > 
-> > Good to know you have some interest in it.
-> > Feel free to let me know you would like to take it over to avoid
-> > repeated works on both sides.
-> > 
-> > > 
-> > > No code to share yet, but here are some of my thoughts:
-> > > 1) If there is a =E2=80=9Cnatural=E2=80=9D memory pressure, no additional sl=
-> > > ab scanning is needed.
-> > 
-> > Agree - the periodic shrinker can be canceled once kswapd wakes up.
-> 
-> I think we should be waking up per-node kswapd to do the periodic
-> shrinking, not adding yet another way of executing (thousands of)
-> shrinkers (across hundreds of nodes) from a single threaded context.
+Quoting Jonathan Cameron (2022-04-02 09:51:31)
+> On Tue, 29 Mar 2022 22:25:31 +0200
+> Stephen Boyd <swboyd@chromium.org> wrote:
+>
+> > Quoting Jonathan Cameron (2022-03-27 07:51:47)
+> > > On Thu, 24 Mar 2022 15:29:28 -0700
+> > > Stephen Boyd <swboyd@chromium.org> wrote:
+> > >
+> > > > There are four possible gain values according to 'sx9324_gain_vals[]':
+> > > >
+> > > >       1, 2, 4, and 8
+> > > >
+> > > > The values are off by one when writing and reading the register. The
+> > > > bits should be set according to this equation:
+> > > >
+> > > >       ilog2(<gain>) + 1
+> > > >
+> > > > so that a gain of 8 is 0x3 in the register field and a gain of 4 is 0x2
+> > > > in the register field, etc
+> > >
+> > > Example seems wrong...
+> > >
+> > > ilog2(8) + 1 = 3 + 1 = 0x4
+> > > ilog2(4) + 1 = 2 + 1 = 0x3
+> > > ilog2(2) + 1 = 1 + 1 = 0x2
+> > > ilog2(1) + 1 = 0 + 1 = 0x1
+> > >                        0x0 reserved.
+> > >
+> > > or have I misunderstood?
+> >
+> > Nope. I hit the wrong key but your table is correct. Can you fix it when
+> > applying?
+>
+> Done and applied to the fixes-togreg branch of iio.git but I haven't pushed
+> it out yet as I want to rebase that tree on rc1 when it comes out.
+>
+> After that, please take a quick look check I didn't mess up.
+>
 
-I'm on the same page here. Ideally we just need to set somewhere an
-"extra" slab scanning target and wake kswapd.
-
-> 
-> Indeed, the problem of "no reclaim when there is no memory
-> pressure" also affects the page cache, not just shrinkable caches
-> and we really don't want periodic reclaim to have a compeltely
-> different behaviour to general memory reclaim.
-
-I agree. Slabs are a worse because they fragment the memory with unmovable
-pages and are generally slower/more expensive to reclaim. But in general
-it's the same problem.
-
-> 
-> i.e. the amount of work that shrinkers need to do in a periodic scan
-> is largerly determined by the rate of shrinkable cache memory usage
-> growth rather than memory reclaim priority as it is now. Hence there
-> needs to be different high level "shrinker needs to do X amount of
-> work" calculation for periodic reclaim than there is now.
-> 
-> e.g. we calculate a rolling average of the size of the cache and a
-> rate of change over a series of polling operations (i.e. calling
-> ->scan_count) and then when sustained growth is detected we start
-> trying to shrink the cache to limit the rate of growth of the cache.
-> 
-> If the cache keeps growing, then it's objects are being repeatedly
-> referenced and it *should* keep growing. If it's one-off objects
-> that are causing the growth of the cache and so objects are being
-> reclaimed by the shrinker, then matching the periodic shrink scan to
-> the growth rate will substantially reduce the rate of growth of that
-> cache.
-
-A clever idea!
-
-It seems like we need to add some stats to the list_lru API or maybe to
-the shrinker API (and let list_lru to use it).
-E.g. total/scanned/reclaimed, maybe with a time decay
-
-I'm also thinking about:
-1) adding a sysfs/debugfs interface to expose shrinkers current size and
-   statistics, with an ability to call into the reclaim manually.
-2) formalizing a reference bit/counter API on the shrinkers level, so that
-   shrinker users can explicitly mark objects (re)-"activation".
-3) _maybe_ we need to change the shrinkers API from a number of objects to
-   bytes, so that releasing a small number of large objects can compete with
-   a releasing on many small objects. But I'm not sure.
-4) also some shrinkers (e.g. shadow nodes) lying about the total size of
-   objects and I have an uneasy feeling about this approach.
-
-Dave, what are your thoughts on these ideas/issues?
-
-> 
-> And if it's integrated into the existing do_shrink_slab
-> calculations, the moment actual memory reclaim calls the shrinker
-> the periodic scan calculations can be reset back to zero and it
-> starts again...
-> 
-> > > 2) =46rom a power perspective it=E2=80=99s better to scan more at once, but l=
-> > > ess often.
-> > 
-> > The shrinker proposed is a catapult on the vmscan side without knowing
-> > where the cold slab objects are piling up in Dave's backyard but he is
-> > free to take different actions than the regular shrinker - IOW this
-> > shrinker alone does not make much sense wrt shooting six birds without
-> > the stone on the slab owner side.
-> > 
-> > It is currently scanning *every* slab cache at an arbitrary frequency,
-> > once 30 seconds - I am open to a minute or whatever.
-> 
-> Sorry, I don't understand what "Dave's backyard" is or why it would
-> ever need to be special cased?
-
-Me neither.
-
-Also 30s seconds sound like a perfect way to drain the laptop's battery,
-I'd say 1h is a more reasonable scale, but of course it's a pure speculation.
-
-> 
-> > > 3) Maybe we need a feedback loop with the slab allocator: e.g. if slabs are a=
-> > > lmost full there is more sense to do a proactive scanning and free up some m=
-> > > emory, otherwise we=E2=80=99ll end up allocating more slabs. But it=E2=80=99=
-> > > s tricky.
-> > 
-> > There are 31 bits available in the periodic flag added to shrink control.
-> > 
-> > > 4) If the scanning is not resulting in any memory reclaim, maybe we should (=
-> > > temporarily) exclude the corresponding shrinker from the scanning.
-> > 
-> > Given the periodic flag, Dave is free to ignore the scan request and the
-> > scan result is currently dropped on the vmscan side because what is
-> > considered is the cold slab objects that for instance have been inactive
-> > for more than 30 seconds in every slab cache, rather than kswapd's cake.
-> 
-> I don't understand how passing a "periodic" flag to individual
-> shrinkers is really useful here. How does the shrinker
-> implementation use this to determine how much work it needs to do?
-> 
-> i.e. The amount of work a shrinker needs to perform is calculated by
-> the high level slab scanning code based on relative cache size and
-> reclaim priority.  If there's a periodic scanner, it should be
-> calculating a specific amount of work for the shrinkers to do way up
-> in do_shrink_slab() and then asking the shrinker to perform that
-> work in exactly the way it does now - the shrinker itself doesn't
-> need to know anything about whether it's a periodic memory reclaim
-> scan or whether there's actual memory pressure - it just needs to
-> scan the oldest objects in it's cache to try to reclaim them.
-
-Again I'm on the same page here. We have a mechanism for a deferred work,
-it or something similar can be reused to schedule an extra work.
-
-Thanks!
+Thanks. Looks good.
