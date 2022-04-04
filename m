@@ -2,185 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAA72C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 14:47:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D884EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 14:48:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378310AbiDDOtB (ORCPT
+        id S1378367AbiDDOuO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 10:49:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43610 "EHLO
+        Mon, 4 Apr 2022 10:50:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378639AbiDDOsr (ORCPT
+        with ESMTP id S1378332AbiDDOtz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 10:48:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B442740907;
-        Mon,  4 Apr 2022 07:44:47 -0700 (PDT)
+        Mon, 4 Apr 2022 10:49:55 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63682433A0
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 07:46:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 32424B8171B;
-        Mon,  4 Apr 2022 14:44:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E2E7C340EE;
-        Mon,  4 Apr 2022 14:44:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649083485;
-        bh=hfIqoM3h/gz+tByTCRoRc0EQZSOX5qfDE+fO89hWlj0=;
-        h=From:To:Cc:Subject:Date:From;
-        b=GcAaiI9iWaGMwggzARvbZP6s+jScCgB92HITxahAIxTos8ySrkjWS/7/FF8ZEgcsI
-         iR1iTIb8FgwbkVquVEBOtQI7RnuJdMJaAAs2yW5z1XXNcZPBIe54tKTE51YhV+ry/U
-         4nt4LiXVwXc5U+Nkj76JzQlY+Miq7LOtFet/isPZZD+ymi87TzMk0L+x5wPwzspAdR
-         7+FT2JnNqfSQ6jse9ENuHWnJEft40JBlld49Oa54b8FAQ4z0mzISE0u1z0WUbVnJUR
-         vnGs81zo/1e4dYke+kN6l3AtWJ6vn2Nqq7DswY/BATuMfM8AdO56sn2o3E8VcMNG2Z
-         kt8P09vYiulWQ==
-From:   guoren@kernel.org
-To:     guoren@kernel.org, arnd@arndb.de
-Cc:     linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-csky@vger.kernel.org, Guo Ren <guoren@linux.alibaba.com>
-Subject: [PATCH] csky: optimize memcpy_{from,to}io() and memset_io()
-Date:   Mon,  4 Apr 2022 22:44:27 +0800
-Message-Id: <20220404144427.2793051-1-guoren@kernel.org>
-X-Mailer: git-send-email 2.25.1
+        by sin.source.kernel.org (Postfix) with ESMTPS id A17BBCE1919
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 14:46:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B94A3C340EE;
+        Mon,  4 Apr 2022 14:46:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649083567;
+        bh=6BjvLqLK5huibZiMoA91irs5s+j40MAVQWToi9BRA/g=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=HgXCvny8tJRaJ5WGxlkCkfAPfj502Er7VT25588NLB9RGD1E5W5i+p08W1inYpWBm
+         6lD6gb6gKx4yu+52uXSuauG7FPeCaFgBJlYxSjMCoBPjPK9VoLW5KDVcysQhi2x+bh
+         1ytgoX6n8dDcqoYcj4EINC1a5A5hLqOvLf12Ur3w=
+Date:   Mon, 4 Apr 2022 16:46:04 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Oded Gabbay <ogabbay@kernel.org>
+Cc:     Guenter Roeck <linux@roeck-us.net>, Arnd Bergmann <arnd@arndb.de>,
+        "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>,
+        Ohad Sharabi <osharabi@habana.ai>
+Subject: Re: [PATCH v2] habanalabs: Fix test build failures
+Message-ID: <YksErB5hwrQGIiIO@kroah.com>
+References: <20220404134859.3278599-1-linux@roeck-us.net>
+ <CAFCwf10Nbpr1H1-qTx4kSyC6YFdeAb=xOfq6uKzejJKLuyKw5A@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAFCwf10Nbpr1H1-qTx4kSyC6YFdeAb=xOfq6uKzejJKLuyKw5A@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guo Ren <guoren@linux.alibaba.com>
+On Mon, Apr 04, 2022 at 05:38:29PM +0300, Oded Gabbay wrote:
+> On Mon, Apr 4, 2022 at 4:49 PM Guenter Roeck <linux@roeck-us.net> wrote:
+> >
+> > allmodconfig builds on 32-bit architectures fail with the following error.
+> >
+> > drivers/misc/habanalabs/common/memory.c: In function 'alloc_device_memory':
+> > drivers/misc/habanalabs/common/memory.c:153:49: error:
+> >         cast from pointer to integer of different size
+> >
+> > Fix the typecast. While at it, drop other unnecessary typecasts associated
+> > with the same commit.
+> >
+> > Fixes: e8458e20e0a3c ("habanalabs: make sure device mem alloc is page aligned")
+> > Cc: Ohad Sharabi <osharabi@habana.ai>
+> > Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+> > ---
+> > v2: Drop unnecessary (u64) typecasts
+> >
+> >  drivers/misc/habanalabs/common/memory.c | 16 ++++++++--------
+> >  1 file changed, 8 insertions(+), 8 deletions(-)
+> >
+> > diff --git a/drivers/misc/habanalabs/common/memory.c b/drivers/misc/habanalabs/common/memory.c
+> > index e008d82e4ba3..a13506dd8119 100644
+> > --- a/drivers/misc/habanalabs/common/memory.c
+> > +++ b/drivers/misc/habanalabs/common/memory.c
+> > @@ -111,10 +111,10 @@ static int alloc_device_memory(struct hl_ctx *ctx, struct hl_mem_in *args,
+> >
+> >         if (contiguous) {
+> >                 if (is_power_of_2(page_size))
+> > -                       paddr = (u64) (uintptr_t) gen_pool_dma_alloc_align(vm->dram_pg_pool,
+> > -                                                               total_size, NULL, page_size);
+> > +                       paddr = (uintptr_t) gen_pool_dma_alloc_align(vm->dram_pg_pool,
+> > +                                                                    total_size, NULL, page_size);
+> >                 else
+> > -                       paddr = (u64) (uintptr_t) gen_pool_alloc(vm->dram_pg_pool, total_size);
+> > +                       paddr = gen_pool_alloc(vm->dram_pg_pool, total_size);
+> >                 if (!paddr) {
+> >                         dev_err(hdev->dev,
+> >                                 "failed to allocate %llu contiguous pages with total size of %llu\n",
+> > @@ -150,12 +150,12 @@ static int alloc_device_memory(struct hl_ctx *ctx, struct hl_mem_in *args,
+> >                 for (i = 0 ; i < num_pgs ; i++) {
+> >                         if (is_power_of_2(page_size))
+> >                                 phys_pg_pack->pages[i] =
+> > -                                               (u64) gen_pool_dma_alloc_align(vm->dram_pg_pool,
+> > -                                                                               page_size, NULL,
+> > -                                                                               page_size);
+> > +                                       (uintptr_t)gen_pool_dma_alloc_align(vm->dram_pg_pool,
+> > +                                                                           page_size, NULL,
+> > +                                                                           page_size);
+> >                         else
+> > -                               phys_pg_pack->pages[i] = (u64) gen_pool_alloc(vm->dram_pg_pool,
+> > -                                                                               page_size);
+> > +                               phys_pg_pack->pages[i] = gen_pool_alloc(vm->dram_pg_pool,
+> > +                                                                       page_size);
+> >                         if (!phys_pg_pack->pages[i]) {
+> >                                 dev_err(hdev->dev,
+> >                                         "Failed to allocate device memory (out of memory)\n");
+> > --
+> > 2.35.1
+> >
+> 
+> Hi Guenter,
+> Thanks for the patch, but Greg already merged a patch that was sent to him.
 
-Optimize memcpy_{from,to}io() and memset_io() by transferring in
-64 bit as much as possible with minimized barrier usage.  This
-simplest optimization brings faster throughput compare to current
-byte-by-byte read and write with barrier in the loop. Code's
-skeleton is taken from the powerpc & arm64.
-
-Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
----
- arch/csky/include/asm/io.h | 11 +++++
- arch/csky/kernel/io.c      | 91 ++++++++++++++++++++++++++++++++++++++
- 2 files changed, 102 insertions(+)
- create mode 100644 arch/csky/kernel/io.c
-
-diff --git a/arch/csky/include/asm/io.h b/arch/csky/include/asm/io.h
-index f82654053dc0..adb64e26194f 100644
---- a/arch/csky/include/asm/io.h
-+++ b/arch/csky/include/asm/io.h
-@@ -32,6 +32,17 @@
- #define writel(v,c)		({ wmb(); writel_relaxed((v),(c)); mb(); })
- #endif
- 
-+/*
-+ * String version of I/O memory access operations.
-+ */
-+extern void __memcpy_fromio(void *, const volatile void __iomem *, size_t);
-+extern void __memcpy_toio(volatile void __iomem *, const void *, size_t);
-+extern void __memset_io(volatile void __iomem *, int, size_t);
-+
-+#define memset_io(c,v,l)        __memset_io((c),(v),(l))
-+#define memcpy_fromio(a,c,l)    __memcpy_fromio((a),(c),(l))
-+#define memcpy_toio(c,a,l)      __memcpy_toio((c),(a),(l))
-+
- /*
-  * I/O memory mapping functions.
-  */
-diff --git a/arch/csky/kernel/io.c b/arch/csky/kernel/io.c
-new file mode 100644
-index 000000000000..5883f13fa2b1
---- /dev/null
-+++ b/arch/csky/kernel/io.c
-@@ -0,0 +1,91 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+#include <linux/export.h>
-+#include <linux/types.h>
-+#include <linux/io.h>
-+
-+/*
-+ * Copy data from IO memory space to "real" memory space.
-+ */
-+void __memcpy_fromio(void *to, const volatile void __iomem *from, size_t count)
-+{
-+	while (count && !IS_ALIGNED((unsigned long)from, 4)) {
-+		*(u8 *)to = __raw_readb(from);
-+		from++;
-+		to++;
-+		count--;
-+	}
-+
-+	while (count >= 4) {
-+		*(u32 *)to = __raw_readl(from);
-+		from += 4;
-+		to += 4;
-+		count -= 4;
-+	}
-+
-+	while (count) {
-+		*(u8 *)to = __raw_readb(from);
-+		from++;
-+		to++;
-+		count--;
-+	}
-+}
-+EXPORT_SYMBOL(__memcpy_fromio);
-+
-+/*
-+ * Copy data from "real" memory space to IO memory space.
-+ */
-+void __memcpy_toio(volatile void __iomem *to, const void *from, size_t count)
-+{
-+	while (count && !IS_ALIGNED((unsigned long)to, 4)) {
-+		__raw_writeb(*(u8 *)from, to);
-+		from++;
-+		to++;
-+		count--;
-+	}
-+
-+	while (count >= 4) {
-+		__raw_writel(*(u32 *)from, to);
-+		from += 4;
-+		to += 4;
-+		count -= 4;
-+	}
-+
-+	while (count) {
-+		__raw_writeb(*(u8 *)from, to);
-+		from++;
-+		to++;
-+		count--;
-+	}
-+}
-+EXPORT_SYMBOL(__memcpy_toio);
-+
-+/*
-+ * "memset" on IO memory space.
-+ */
-+void __memset_io(volatile void __iomem *dst, int c, size_t count)
-+{
-+	u32 qc = (u8)c;
-+
-+	qc |= qc << 8;
-+	qc |= qc << 16;
-+
-+	while (count && !IS_ALIGNED((unsigned long)dst, 4)) {
-+		__raw_writeb(c, dst);
-+		dst++;
-+		count--;
-+	}
-+
-+	while (count >= 4) {
-+		__raw_writel(qc, dst);
-+		dst += 4;
-+		count -= 4;
-+	}
-+
-+	while (count) {
-+		__raw_writeb(c, dst);
-+		dst++;
-+		count--;
-+	}
-+}
-+EXPORT_SYMBOL(__memset_io);
--- 
-2.25.1
-
+I did?  Where?
