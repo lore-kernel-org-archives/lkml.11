@@ -2,133 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB3B7C35276
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89F79C41535
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:59:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379473AbiDDV6c (ORCPT
+        id S1379270AbiDDV6X (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:58:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51698 "EHLO
+        Mon, 4 Apr 2022 17:58:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379619AbiDDRqD (ORCPT
+        with ESMTP id S1378971AbiDDQNP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 13:46:03 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC2A1FD09;
-        Mon,  4 Apr 2022 10:44:03 -0700 (PDT)
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 234ElGnF032776;
-        Mon, 4 Apr 2022 17:44:03 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=ShNBro6g9YDFBfPnEFSuqAGYDfTXcS0GIMpWkrLl5DI=;
- b=HKyx9oRmkp/pjTkl4id4Uof91HSGpJ5Hw+TsxA0kMEV0WeJjRhS/WbCOAiZ2SM2FKLC8
- Ymp04WfG1U24SWvSEYiVRJZwozQ7qpKct3qC5F7fsrggv3pZA3rho49jdeRV4xHaSAQH
- LAeW1EtuCviaUsAntTHF0vAQpZvCyolEqiu+PH9RI92Srqp99+uzERivwIEHUr7PjPNo
- 9HJ/stQj9Eeb/kL4qw9BM8H0EQcZjQNkLIE3iZbnKTpCZjWvpEn+p0ruaeI+VDUWW7X2
- pLpYt+JG2/QNLWjtYUO14hJktVc0A1JOidkEFh+3vRWt9CcjNeJBGD1oTJtmGLrbKY4N VQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3f82rbwk9x-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 04 Apr 2022 17:44:03 +0000
-Received: from m0187473.ppops.net (m0187473.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 234GTUSi016251;
-        Mon, 4 Apr 2022 17:44:02 GMT
-Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3f82rbwk99-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 04 Apr 2022 17:44:02 +0000
-Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
-        by ppma02dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 234Hh26h004941;
-        Mon, 4 Apr 2022 17:44:01 GMT
-Received: from b03cxnp07027.gho.boulder.ibm.com (b03cxnp07027.gho.boulder.ibm.com [9.17.130.14])
-        by ppma02dal.us.ibm.com with ESMTP id 3f6e4a5fb9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 04 Apr 2022 17:44:01 +0000
-Received: from b03ledav002.gho.boulder.ibm.com (b03ledav002.gho.boulder.ibm.com [9.17.130.233])
-        by b03cxnp07027.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 234Hi0qF14942710
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 4 Apr 2022 17:44:00 GMT
-Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 3CD0E13605E;
-        Mon,  4 Apr 2022 17:44:00 +0000 (GMT)
-Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 1D47713604F;
-        Mon,  4 Apr 2022 17:43:58 +0000 (GMT)
-Received: from li-c92d2ccc-254b-11b2-a85c-a700b5bfb098.ibm.com.com (unknown [9.211.32.125])
-        by b03ledav002.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Mon,  4 Apr 2022 17:43:58 +0000 (GMT)
-From:   Matthew Rosato <mjrosato@linux.ibm.com>
-To:     linux-s390@vger.kernel.org
-Cc:     alex.williamson@redhat.com, cohuck@redhat.com,
-        schnelle@linux.ibm.com, farman@linux.ibm.com, pmorel@linux.ibm.com,
-        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
-        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
-        svens@linux.ibm.com, frankja@linux.ibm.com, david@redhat.com,
-        imbrenda@linux.ibm.com, vneethv@linux.ibm.com,
-        oberpar@linux.ibm.com, freude@linux.ibm.com, thuth@redhat.com,
-        pasic@linux.ibm.com, pbonzini@redhat.com, corbet@lwn.net,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org
-Subject: [PATCH v5 01/21] s390/sclp: detect the zPCI load/store interpretation facility
-Date:   Mon,  4 Apr 2022 13:43:29 -0400
-Message-Id: <20220404174349.58530-2-mjrosato@linux.ibm.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220404174349.58530-1-mjrosato@linux.ibm.com>
-References: <20220404174349.58530-1-mjrosato@linux.ibm.com>
+        Mon, 4 Apr 2022 12:13:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 347A22F007;
+        Mon,  4 Apr 2022 09:11:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E5981B816F4;
+        Mon,  4 Apr 2022 16:11:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B083AC34114;
+        Mon,  4 Apr 2022 16:11:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649088676;
+        bh=g1nATVvrfRA9UAWKcn8TEmGbzT1FkE4IRDRHu7qz7aY=;
+        h=References:In-Reply-To:Reply-To:From:Date:Subject:To:Cc:From;
+        b=VSwR8cvth3rhQoDHXpPFJOTOxqEMHXQlSUTLUXb6RU4wYcgV0/JdJTLvfUj+2GHvt
+         DH9Z/OFmu4v3KNmFPlfRokAjww5feArkOCxkKzSAtIlwEdW/MPKcdUhxU5pC4f0WMR
+         oDYrDEEzr6HfdW8z9VvnabvqiUuTBQqNyblE/ngmsW27V/1IfZPTW6V8gV5nNyY3vn
+         2jl4u5TdOtN8U3UnSPCjJBl+8KZJ/izn2Yg6xTdxx7vorsB8uoS9taApuSBSjWpMHa
+         kTxb3m+TgOLzQXTk7xka6axCXQRtEXwjdnxPtAHSfOB4c9S6rjWOKQeDZodyzVz9ys
+         qiCFE3gOxbjNw==
+Received: by mail-vk1-f178.google.com with SMTP id g41so5082020vkd.4;
+        Mon, 04 Apr 2022 09:11:16 -0700 (PDT)
+X-Gm-Message-State: AOAM5310VxWnTeTw8D4wTKZEJSAf1T+YA90tsWQ89pAg9dBu5ZBL+8EG
+        4GdWFwGT0ltl05xL2HDrS1ZFPMVp7KAKhyCxuFQ=
+X-Google-Smtp-Source: ABdhPJw9D7xPURqCUzoTlu6KIHOEiOsweC/UpZ/sYIxrlCQYGzUkCyEMyxVMLWLuRCg1LkZf9inwiirxn0cn5uiwIiU=
+X-Received: by 2002:a1f:6a82:0:b0:33f:7eeb:5989 with SMTP id
+ f124-20020a1f6a82000000b0033f7eeb5989mr276390vkc.29.1649088675514; Mon, 04
+ Apr 2022 09:11:15 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: ALKXFnERttemEjdzLR74APFzkdi6gLGx
-X-Proofpoint-ORIG-GUID: rY_QENMcYmLzS_wOi7nltzSMmBAKwE1B
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-04-04_06,2022-03-31_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011
- priorityscore=1501 lowpriorityscore=0 malwarescore=0 phishscore=0
- suspectscore=0 mlxlogscore=999 mlxscore=0 impostorscore=0 bulkscore=0
- adultscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2204040099
+References: <20220330190846.13997-1-wens@kernel.org> <20220330190846.13997-3-wens@kernel.org>
+ <CABxcv==csvqsxM46ce2LecDh4E-UxxD2DG+3E-hCFoyrdtRv7A@mail.gmail.com>
+ <CAGb2v64VQPjan=EUkd8UhRZfV0g1GqBwPqhxQakS=7YhgvVDQA@mail.gmail.com> <92a46ea2-e23e-b7c8-ea5f-35d458ee1b76@redhat.com>
+In-Reply-To: <92a46ea2-e23e-b7c8-ea5f-35d458ee1b76@redhat.com>
+Reply-To: wens@kernel.org
+From:   Chen-Yu Tsai <wens@kernel.org>
+Date:   Tue, 5 Apr 2022 00:11:05 +0800
+X-Gmail-Original-Message-ID: <CAGb2v66zj4x7zx4ht+6ojjKRxEe+M4bTc_mKRgf8wd_TK+Wf4g@mail.gmail.com>
+Message-ID: <CAGb2v66zj4x7zx4ht+6ojjKRxEe+M4bTc_mKRgf8wd_TK+Wf4g@mail.gmail.com>
+Subject: Re: [PATCH 2/4] dt-bindings: display: ssd1307fb: Add entry for SINO
+ WEALTH SH1106
+To:     Javier Martinez Canillas <javierm@redhat.com>
+Cc:     Javier Martinez Canillas <javier@dowhile0.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel <linux-kernel@vger.kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Detect the zPCI Load/Store Interpretation facility.
+On Mon, Apr 4, 2022 at 11:48 PM Javier Martinez Canillas
+<javierm@redhat.com> wrote:
+>
+> Hello Chen-Yu,
+>
+> On 4/4/22 17:06, Chen-Yu Tsai wrote:
+>
+> [snip]
+>
+> >>>      enum:
+> >>> +      - sinowealth,sh1106-i2c
+> >>
+> >> I like that you didn't include a "fb" suffix for this, the existing
+> >> ones are cargo culting from the previous fbdev driver to make existing
+> >> DTBs compatible with the DRM driver.
+> >>
+> >> I've been thinking if I should post a patch to compatible strings
+> >> without the "fb" and mark the current ones as deprecated...
+> >>
+> >> Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
+> >
+> > I also thought about dropping the "-i2c" suffix, but then thought
+> > there might be a case where someone wanted to search the device
+> > tree specifically for an I2C connected node using said compatible
+> > string.
+> >
+> > What do you think?
+> >
+> >
+>
+> tl; dr: unfortunately we can't do it due how SPI and I2C report module
+> aliases. Otherwise module auto loading will not work. I wrote a much
+> longer explanation with some details not so long ago:
+>
+> https://patchwork.kernel.org/project/dri-devel/patch/20220209091204.2513437-1-javierm@redhat.com/#24730793
 
-Reviewed-by: Eric Farman <farman@linux.ibm.com>
-Reviewed-by: Christian Borntraeger <borntraeger@linux.ibm.com>
-Reviewed-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
-Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
----
- arch/s390/include/asm/sclp.h   | 1 +
- drivers/s390/char/sclp_early.c | 1 +
- 2 files changed, 2 insertions(+)
+Right. I think that crossed my mind at some point, but didn't stick.
+Thanks for raising it again. :)
 
-diff --git a/arch/s390/include/asm/sclp.h b/arch/s390/include/asm/sclp.h
-index 04cb1e7582a6..06c0b5eb8ef5 100644
---- a/arch/s390/include/asm/sclp.h
-+++ b/arch/s390/include/asm/sclp.h
-@@ -87,6 +87,7 @@ struct sclp_info {
- 	unsigned char has_diag318 : 1;
- 	unsigned char has_sipl : 1;
- 	unsigned char has_dirq : 1;
-+	unsigned char has_zpci_lsi : 1;
- 	unsigned int ibc;
- 	unsigned int mtid;
- 	unsigned int mtid_cp;
-diff --git a/drivers/s390/char/sclp_early.c b/drivers/s390/char/sclp_early.c
-index e9943a86c361..b88dd0da1231 100644
---- a/drivers/s390/char/sclp_early.c
-+++ b/drivers/s390/char/sclp_early.c
-@@ -45,6 +45,7 @@ static void __init sclp_early_facilities_detect(void)
- 	sclp.has_gisaf = !!(sccb->fac118 & 0x08);
- 	sclp.has_hvs = !!(sccb->fac119 & 0x80);
- 	sclp.has_kss = !!(sccb->fac98 & 0x01);
-+	sclp.has_zpci_lsi = !!(sccb->fac118 & 0x01);
- 	if (sccb->fac85 & 0x02)
- 		S390_lowcore.machine_flags |= MACHINE_FLAG_ESOP;
- 	if (sccb->fac91 & 0x40)
--- 
-2.27.0
+> BTW, I bought a SSD1306 SPI controller and go it working this weekend.
+>
+> I plan to post the patches once yours land, to avoid in-flight series
+> that may conflict. And what I did is mark the -fb as deprecated, then
+> added "ssd130x-i2c" and "ssd130x-spi" compatibles strings.
+>
+> The WIP patches can be found here in case you are interested:
+>
+> https://github.com/martinezjavier/linux/tree/drm-ssd130x-spi
 
+I took a quick look and a couple things stood out:
+
+1. Would 3-wire SPI ever be considered? If so, might want to
+   rename some of variables/functions as *_spi_4wire_* to
+   begin with.
+
+2. Maybe we should move the ssd130x_deviceinfo stuff into the
+   core module, and define an enum to use for matching compatible
+   strings across the modules to their respective device info
+   entries? FYI we are doing this in drivers/mfd/axp20x* .
+
+I think a friend of mine has a SPI based SH1106 module that I
+could borrow and test/work on, but that's a big if.
+
+
+Regards
+ChenYu
