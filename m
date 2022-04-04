@@ -2,167 +2,287 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7B23C352AA
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:23:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 043EBC47086
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:23:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380564AbiDDVVt (ORCPT
+        id S1380641AbiDDVVw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:21:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48798 "EHLO
+        Mon, 4 Apr 2022 17:21:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379977AbiDDSbk (ORCPT
+        with ESMTP id S1379935AbiDDSYR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 14:31:40 -0400
-Received: from mx0b-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA0F61DA75;
-        Mon,  4 Apr 2022 11:29:40 -0700 (PDT)
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 234HjwM5030450;
-        Mon, 4 Apr 2022 11:29:13 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=MURoIyQhx23B/+bd+ZMHi6qQ0R/BJaFJ9CZQtuCwtOs=;
- b=Syw6t9C2whxuC/dslmV/UmvSw81RWGu9WJKJk7WiShzbXAeDYv65vc7ue/pHWcF3JFAN
- BExfq8iP7Pi9TNn8OUHN5FhT+nAQzSZgzRh45LutMGc4xp0fy9ScyeZE5soEBJDLjJpe
- 1t4iHv/niHQpgbnJJIt3OKzKllMlBun817o= 
-Received: from nam12-bn8-obe.outbound.protection.outlook.com (mail-bn8nam12lp2170.outbound.protection.outlook.com [104.47.55.170])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3f827025jc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 04 Apr 2022 11:29:13 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YjbI6EkKaH6/HSmZ3U9hThTZj+Ny3MSr0yG29m/s2R8XOFsC4Cw280huO6rQk/b37PT4RERZM3U97hBCbwT6FEgi77NXmNtHQ0vFtx+aJkRBLPOXyGqcIjY/CfAuFIYQ+E5UlrYdVX7tgnvax0CWfl44s/PxAWriolAbwuaJ8uwlEUkPWge1Glph+YKc+J+Yu6AdDwqpYVVNeoXEJVI1hyOT8eIYd3plcKM+ZlYal8aDPaEssUbdM3mBDI6opz65OVr03lkktb90D1dmncelbvbFdQUhJFrombe40zgSrkhStsH5oJxkLCVbbkiJ1tEzKWSEkkJDqzbTlZJSw07v6A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=MURoIyQhx23B/+bd+ZMHi6qQ0R/BJaFJ9CZQtuCwtOs=;
- b=ASJ1EqXE9nRwi/SS1HWBO+JvuL3fjDC6MjwpoMUHbwCZTrzkwbPAMAV5r+s9R8aEift3hlCTjBlOv9NEr0tZPRUZ4Lk8zjsj+fmM+ZbKePXpVs/qewpO1W8tOq1AIgOy/orFw9sC04R3PmNaAIjYv4AKRjSfYSwiBrYfdiVyN1t4zryBbYyj7OCozZ+O6dHEd/xPl3S0Z8v2FTH6Fsdx0xP+4MURr/rRoqAl4XIqgBqsZEWxtc1+zWOku/z7R+D9xKpLivFBjXHd35oH7HC30NemP0tZzC3cspEmf0vFhag8jypmK1O49T8BWxgNa4dwPipe+KDI9r1Zw3XYTitSMw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Received: from BYAPR15MB2566.namprd15.prod.outlook.com (2603:10b6:a03:150::24)
- by MWHPR15MB1231.namprd15.prod.outlook.com (2603:10b6:320:24::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Mon, 4 Apr
- 2022 18:29:11 +0000
-Received: from BYAPR15MB2566.namprd15.prod.outlook.com
- ([fe80::28fa:187e:11eb:4c47]) by BYAPR15MB2566.namprd15.prod.outlook.com
- ([fe80::28fa:187e:11eb:4c47%7]) with mapi id 15.20.5123.031; Mon, 4 Apr 2022
- 18:29:11 +0000
-Message-ID: <367fe64f-0e57-b264-969a-c7cee6344f05@fb.com>
-Date:   Mon, 4 Apr 2022 12:29:08 -0600
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 6/9] nvme-apple: Add initial Apple SoC NVMe driver
-Content-Language: en-US
-To:     Christoph Hellwig <hch@lst.de>, Hector Martin <marcan@marcan.st>
-Cc:     Sven Peter <sven@svenpeter.dev>, Keith Busch <kbusch@kernel.org>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Rob Herring <robh+dt@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Marc Zyngier <maz@kernel.org>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org
-References: <20220321165049.35985-1-sven@svenpeter.dev>
- <20220321165049.35985-7-sven@svenpeter.dev> <20220324061620.GA12330@lst.de>
- <18f3a7e6-16d1-2037-90e7-1c0b1b2fbb1c@marcan.st>
- <20220404155924.GA9764@lst.de>
-From:   Jens Axboe <axboe@fb.com>
-In-Reply-To: <20220404155924.GA9764@lst.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: CY4PR1701CA0024.namprd17.prod.outlook.com
- (2603:10b6:910:5e::34) To BYAPR15MB2566.namprd15.prod.outlook.com
- (2603:10b6:a03:150::24)
+        Mon, 4 Apr 2022 14:24:17 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D798D22B37;
+        Mon,  4 Apr 2022 11:22:19 -0700 (PDT)
+Date:   Mon, 04 Apr 2022 18:22:17 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649096538;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZakpqfaTx6lO1VIWJ0OCzSwvivmkKgp+Du7SeMUvK2c=;
+        b=cBCoj8ciMjLvzRkb+ThdEDvEHyvzXVlqs6TKiA06UCOEaoT3VqgDGSHNf6nby1jNEbXyvI
+        gfxre6H179OqxVvCz7rOVwW9wlaXZAyMeRdymLHxJZNWQRuA9tZK0zKtYu1x3B/MOnc5i+
+        m8dYfvIUBiPiP0SkAOFWzBRUl10e0fm4lDJzGbOfxF6Eh9L8awNo/jqH0ME8H5Jc+RpwKK
+        7mFl0rmJVKVPuW931ldFFkSDCK8CO9fqALY17O4z0SAUNOEm1cyoi64wNk++rrrh9qLrSV
+        jq/VJWNhu1RADNeTLgyEriULQY5wWtKWm7CIFa3sVJIQQr1ib2oVOEtAvhtyvQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649096538;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZakpqfaTx6lO1VIWJ0OCzSwvivmkKgp+Du7SeMUvK2c=;
+        b=x4la8kf/Yb/H8rueyVxWPuVjbXIcRHcEMdUv1d4DLhVmb1a9i+Zzzbg254xnYA2M1oCJxo
+        iuqaX7FK8Cs9hkCg==
+From:   "tip-bot2 for Borislav Petkov" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: x86/cpu] x86/cpu: Remove "noexec"
+Cc:     Borislav Petkov <bp@suse.de>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Kees Cook <keescook@chromium.org>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220127115626.14179-6-bp@alien8.de>
+References: <20220127115626.14179-6-bp@alien8.de>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: aa109fd4-a04d-4747-658a-08da16690363
-X-MS-TrafficTypeDiagnostic: MWHPR15MB1231:EE_
-X-Microsoft-Antispam-PRVS: <MWHPR15MB12318B8A90D24338BED0D711C0E59@MWHPR15MB1231.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: qL7/ej1vYftXPBg77esv4AHOTXZESGITDBDzWejncXSNLiNJ2NUyGQ9UJXZtG7DCY0/amCTSkFXIwGUddsJQU/4BuWtGJMJ1YDBO0NLhCrPCx6BtgYihy724jH/0+B0paJH4Hpj25hJApUvJMaO1nSZtom+wkQ1YApis0EjF9YyYHwCRbxJ5PFiErL51N7r6YKzCBQqJCNyQ8H6gm9R/LVYaHTssbssikUtDTT4CykIe9Y6pIwoBOATS1115bDwQG0vCFjO0axYYOZ2H5RYccT8m6dIDEIh59kOyJoIg5HXDVqo+Zhy3JcCM8LTvvrGnXrOnUYq2UWJLLm6dEIlXGgkd9LmNMWnypuJuLJm6N3fDY6Y2L7HcM7KEwjhAEnhGNBoErOMLK2JCvskWLgxt7skggda2nOx6evne88GtRPrQl0rnxdry1nXFW2jIU51mqKRQeWdD9QNriQCnG+OiCSKWpYhXNFIYJKiT1WRp2/arjPpPF9ku3y2DqnZqFocf2qbxUiCWLskkWcan+Nbs8ynZJvfzNzIeek4EjkQYS4UEO28Up7ENe1CRJ3JWTSyhixk3+VJidECHLJzSD9k5Ek7doSuglzYQjhuPv0ZjrsaaJr6U0w0JXn5mRH+Qnbu8mGCrHMG3XYgbCF8xsOF6QFYtilZnU2osQ0Y3iIOvYnnUDuaUe6GsBEQOUeDM9wOODsWWV3lHvjYGkLb5DqJXJPyQwFLDeZqjN50NwB9UC8cXQ+Np5tdYVn2tZgHQfkBBmD7xoLZc5skXWR9BWVQw1w==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB2566.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(47660400002)(6486002)(53546011)(508600001)(4326008)(66476007)(6506007)(8676002)(7416002)(66946007)(66556008)(4744005)(83380400001)(31696002)(54906003)(2906002)(2616005)(86362001)(38100700002)(31686004)(8936002)(36756003)(110136005)(316002)(186003)(26005)(6512007)(6666004)(5660300002)(46800400005)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?QXVUcFVPZjc0K1RpVDRRS3R2Tnk1YlQzWVJtZ0NPVnFKUFBjaFVFaE9mSUNi?=
- =?utf-8?B?WGZvN01BMGtFRjBkd1JVdkdQeWExaUE0d215Qm1DUWFyQllFMHJIZTR6aHJm?=
- =?utf-8?B?ak5XME9RR0hjbGNSeFAyb2IvdmJFRFY2MEsxNVZsUUU3aElMRW5uWXBXd29y?=
- =?utf-8?B?T1VYMzQxU2RZODBzL1hQdzNIZk9iRHZDUEJlWEJLTEJRU1V2NWxaWWd0U2th?=
- =?utf-8?B?eTlxTW9BekZEbXQrbUkrS25ENjdxamxjK2dGTlVzQ29uZ1k0NUpGMmlXK3Nn?=
- =?utf-8?B?a1ZUSmQ0bWZrWUkyT1BLZXhjN2pYR0JnMTVqKy9qSWxrVlpYZi9UNHRLd2ho?=
- =?utf-8?B?MVZPRG11QzJiSlFqVTdzUHRZZnNENVFjd1dyV1pNVzJEZXN3NGx2NkR6VkVq?=
- =?utf-8?B?WGQ0RWlYT0JDUEl5azNqY1lGR1k0QzhESjdLMkJlckRMYzNSbnhZcU1sNWZv?=
- =?utf-8?B?UEpibW9YUWsxQjBkd1lKdWpuS2lINWQzS29PcWRKVTlhQVRSckswWE1GMkwz?=
- =?utf-8?B?N1JIMEhkMCs0TzVxUEU3WmlJWWg4YmVxWXNnSzNpRHQxTzV6eXpLdThGMXhx?=
- =?utf-8?B?OHptenlob0xIa2l2WU9LOG96UGhwSTJsRERYcWRVM3F4eEhoam4yZG9MdzJm?=
- =?utf-8?B?Qmwwblc1bDRPekFlVk9vd3NrVUdKV0tCaDRNSC9GdisyZ0NyUkNYem4wWGww?=
- =?utf-8?B?WVgvL1RGcHg2ZHoxcXVXTnVjQzdPaERjNTl0eTMwRDdLcHp5ellDYXptbWJJ?=
- =?utf-8?B?dWdyN0huMk94dldCQ2VpSGU0c0grckpqbEN3ZU1UQm5DNW4wb2F1d1ZRa3dx?=
- =?utf-8?B?aW1hWTJOZWVCZzJ5aGhhRXEzS1RFajdraHFWRktCc1VjTWpKSk01ZXlMVmVu?=
- =?utf-8?B?UURzd09yOXRqcWN3dHhRWHd4SHlpMVM3STF0aUNrRUpaZHhxRW1vNUpuZTBv?=
- =?utf-8?B?djY3Ynh5SFpGdlg0cjdsQnlFTmRaWGhDdEhiL080K2ZXckVRWDdHZWJKSjU0?=
- =?utf-8?B?bDVydldVRmpYVEVsOGRWaHB2aFRXdEFqWFFMOGlhVTB6NEpDamZEL1VuMHhv?=
- =?utf-8?B?ckJpZmZ6RUh3cy9YOVQxTkhWUGVZaDU3WC9OOEgwTVZ4b3BZQ1VZbHIxUTdK?=
- =?utf-8?B?eEd0L1ZVOWthMVVhS3Y2bWpyQ2Y0RVoyRlNKN3lTaCtDbjlyVzRndHM3a0Q5?=
- =?utf-8?B?MGdtWW1UTFVUUGp6NXI5NG54YmphYzBreXRvTVZUWEJvTGFQNzVCcDhKaEdQ?=
- =?utf-8?B?STMxU2tHZ1luTEs0UG04SzRUN2cwOWY3UWFFSy9nckNuNlRqeXJrMllqZzdx?=
- =?utf-8?B?Q2NzMmlVZ2ZLbGxrcDBkVlRKeDlJenIwcFB2QmtQNnZuN1JKeFd2MExwUTFt?=
- =?utf-8?B?NXBrOUpzTnN4NXFlc29MMmxKczEvbEUvNDBETVFzT3ppTkRNYjNzQnJWMWlY?=
- =?utf-8?B?VE9pT3hyV3ZERFNyWDBybmllZlZybEJjUGVEc2tJbEYwSzloZXgwY2tYV3BS?=
- =?utf-8?B?YWVNMDNEU2d2VWtuaUhUQnFWSUhXNGJ4UWxDNFRLc0lja2ZzdEp4bERyV0VE?=
- =?utf-8?B?enUrcE5JL2FrSW5tT1hubG5sLzZYanFlVExuYnd3MU1Fb3h5b1JnUENUQk9U?=
- =?utf-8?B?dVdmNTFsNmtBcDZONWlaUUVUQmVsbmhvMDlDbTRnL3V0Uk5scXdabjh1Q1BC?=
- =?utf-8?B?WmdxV0kzM3FLTEk0R2ZONnhQNGd1S2RyVXM0ajQrTlRYUkQyTTZQYWxXTEhn?=
- =?utf-8?B?cWpCWVJIV05tVzQ0R3BLV2lmTi9kWlhDd2duL3Nha0diN3B3SWxQMTBVUVN1?=
- =?utf-8?B?TUR5dXRoNXovTjQzdklNRkpyWDBZc3lvc0I3UFI2b25rcFlpeE9OM091bDJZ?=
- =?utf-8?B?Umw4cEJLWGc1eGgzenlJeGlhbnd3UDVUa3lFaFRmY2dGUzdzZ2hQUlpSL1hM?=
- =?utf-8?B?QXFpVGxqZGVnOTJUNWdrMW8wNGl1NDVDTUc3MWI1emhWNFUxQU9VTitrTktG?=
- =?utf-8?B?dmZxcmdvcDJ5Sit6Q3d3TDUrOGNHb1Y3OU9JZFpDSXRKRjF5eEl6VXhTU05j?=
- =?utf-8?B?R2NCbDRtZlZ2SWRvTE9oemNGUlB4Ky9lWHdBTnExUyt5SWUrRkZ6cUVmYjFJ?=
- =?utf-8?B?WTNQejZpTkZYRGRRNWtkaExBTytTVkxPcGxSMHpNQ2FPZURGWGkvRFB5LzA3?=
- =?utf-8?B?R0tXOEdmak9IMHZpSW1YQ1grMXBaMFlESG1RaXRvdkZaaUVrbVpkdjhYOFhk?=
- =?utf-8?B?bGE3OWVOOGNIQXhsMU82UU1NUmUrempidDJMT01veUNwU0NLMHdMMVY2MTkr?=
- =?utf-8?B?UG92OWxHRmhNVHFJaFdMdmNkVDE5TmxWU09Wdm1vUGYzS0N1SHpkZz09?=
-X-OriginatorOrg: fb.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: aa109fd4-a04d-4747-658a-08da16690363
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB2566.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Apr 2022 18:29:11.2912
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: zKyNv2ud3fBG3IZ7MFRm1bDlXrHlTg5epCxzj6j6+HwDlvDPWDKeAZvg1hY6qji6
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR15MB1231
-X-Proofpoint-ORIG-GUID: ezGfk3q64oJIw73xfL8NJtJNgSX6lKXP
-X-Proofpoint-GUID: ezGfk3q64oJIw73xfL8NJtJNgSX6lKXP
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-04-04_08,2022-03-31_01,2022-02-23_01
+Message-ID: <164909653744.389.3722817751612158002.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/4/22 9:59 AM, Christoph Hellwig wrote:
-> On Tue, Apr 05, 2022 at 12:57:33AM +0900, Hector Martin wrote:
->> The kernel hard limit is 100-character lines, not 80-character lines.
->> Maintainers for existing drivers are certainly free to stick to 80 chars
->> if they like it that way, but I don't see why we should still be
->> enforcing that for new code. See bdc48fa11e46.
-> 
-> Because 100 is completely utterly unreadable if is not for individual
-> lines like strings, and that is actually how Linus stated it in
-> CodingStyle.
-> 
-> Your code as-is is completely unreadable and will not go into
-> drivers/nvme/ in that form.
+The following commit has been merged into the x86/cpu branch of tip:
 
-Please reconsider how you phrase these objections. Saying the code is
-"completely unreadable" because it's _1_ character over your hard limit
-is just nonsense, and not a very productive way to deal with this.
+Commit-ID:     76ea0025a214cdf0d2c204f4c21cbffa9fb57c32
+Gitweb:        https://git.kernel.org/tip/76ea0025a214cdf0d2c204f4c21cbffa9fb57c32
+Author:        Borislav Petkov <bp@suse.de>
+AuthorDate:    Thu, 27 Jan 2022 12:56:25 +01:00
+Committer:     Borislav Petkov <bp@suse.de>
+CommitterDate: Mon, 04 Apr 2022 10:17:03 +02:00
 
--- 
-Jens Axboe
+x86/cpu: Remove "noexec"
 
+It doesn't make any sense to disable non-executable mappings -
+security-wise or else.
+
+So rip out that switch and move the remaining code into setup.c and
+delete setup_nx.c
+
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Lai Jiangshan <jiangshanlai@gmail.com>
+Reviewed-by: Kees Cook <keescook@chromium.org>
+Link: https://lore.kernel.org/r/20220127115626.14179-6-bp@alien8.de
+---
+ Documentation/admin-guide/kernel-parameters.txt |  5 +-
+ Documentation/x86/x86_64/boot-options.rst       |  9 +--
+ arch/x86/include/asm/proto.h                    |  1 +-
+ arch/x86/kernel/setup.c                         | 28 ++++++-
+ arch/x86/mm/Makefile                            |  3 +-
+ arch/x86/mm/init_64.c                           |  1 +-
+ arch/x86/mm/setup_nx.c                          | 62 +----------------
+ 7 files changed, 26 insertions(+), 83 deletions(-)
+ delete mode 100644 arch/x86/mm/setup_nx.c
+
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index 39ac2c1..a2299b2 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -3456,11 +3456,6 @@
+ 
+ 	noexec		[IA-64]
+ 
+-	noexec		[X86]
+-			On X86-32 available only on PAE configured kernels.
+-			noexec=on: enable non-executable mappings (default)
+-			noexec=off: disable non-executable mappings
+-
+ 	nosmap		[PPC]
+ 			Disable SMAP (Supervisor Mode Access Prevention)
+ 			even if it is supported by processor.
+diff --git a/Documentation/x86/x86_64/boot-options.rst b/Documentation/x86/x86_64/boot-options.rst
+index 07aa000..fb6030a 100644
+--- a/Documentation/x86/x86_64/boot-options.rst
++++ b/Documentation/x86/x86_64/boot-options.rst
+@@ -157,15 +157,6 @@ Rebooting
+      newer BIOS, or newer board) using this option will ignore the built-in
+      quirk table, and use the generic default reboot actions.
+ 
+-Non Executable Mappings
+-=======================
+-
+-  noexec=on|off
+-    on
+-      Enable(default)
+-    off
+-      Disable
+-
+ NUMA
+ ====
+ 
+diff --git a/arch/x86/include/asm/proto.h b/arch/x86/include/asm/proto.h
+index feed36d..0f899c8 100644
+--- a/arch/x86/include/asm/proto.h
++++ b/arch/x86/include/asm/proto.h
+@@ -35,7 +35,6 @@ void xen_entry_INT80_compat(void);
+ #endif
+ 
+ void x86_configure_nx(void);
+-void x86_report_nx(void);
+ 
+ extern int reboot_force;
+ 
+diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
+index c95b9ac..249981b 100644
+--- a/arch/x86/kernel/setup.c
++++ b/arch/x86/kernel/setup.c
+@@ -756,6 +756,30 @@ dump_kernel_offset(struct notifier_block *self, unsigned long v, void *p)
+ 	return 0;
+ }
+ 
++void x86_configure_nx(void)
++{
++	if (boot_cpu_has(X86_FEATURE_NX))
++		__supported_pte_mask |= _PAGE_NX;
++	else
++		__supported_pte_mask &= ~_PAGE_NX;
++}
++
++static void __init x86_report_nx(void)
++{
++	if (!boot_cpu_has(X86_FEATURE_NX)) {
++		printk(KERN_NOTICE "Notice: NX (Execute Disable) protection "
++		       "missing in CPU!\n");
++	} else {
++#if defined(CONFIG_X86_64) || defined(CONFIG_X86_PAE)
++		printk(KERN_INFO "NX (Execute Disable) protection: active\n");
++#else
++		/* 32bit non-PAE kernel, NX cannot be used */
++		printk(KERN_NOTICE "Notice: NX (Execute Disable) protection "
++		       "cannot be enabled: non-PAE kernel!\n");
++#endif
++	}
++}
++
+ /*
+  * Determine if we were loaded by an EFI loader.  If so, then we have also been
+  * passed the efi memmap, systab, etc., so we should use these data structures
+@@ -896,9 +920,7 @@ void __init setup_arch(char **cmdline_p)
+ 	/*
+ 	 * x86_configure_nx() is called before parse_early_param() to detect
+ 	 * whether hardware doesn't support NX (so that the early EHCI debug
+-	 * console setup can safely call set_fixmap()). It may then be called
+-	 * again from within noexec_setup() during parsing early parameters
+-	 * to honor the respective command line option.
++	 * console setup can safely call set_fixmap()).
+ 	 */
+ 	x86_configure_nx();
+ 
+diff --git a/arch/x86/mm/Makefile b/arch/x86/mm/Makefile
+index fe3d306..d957dc1 100644
+--- a/arch/x86/mm/Makefile
++++ b/arch/x86/mm/Makefile
+@@ -20,13 +20,12 @@ CFLAGS_REMOVE_mem_encrypt_identity.o	= -pg
+ endif
+ 
+ obj-y				:=  init.o init_$(BITS).o fault.o ioremap.o extable.o mmap.o \
+-				    pgtable.o physaddr.o setup_nx.o tlb.o cpu_entry_area.o maccess.o
++				    pgtable.o physaddr.o tlb.o cpu_entry_area.o maccess.o
+ 
+ obj-y				+= pat/
+ 
+ # Make sure __phys_addr has no stackprotector
+ CFLAGS_physaddr.o		:= -fno-stack-protector
+-CFLAGS_setup_nx.o		:= -fno-stack-protector
+ CFLAGS_mem_encrypt_identity.o	:= -fno-stack-protector
+ 
+ CFLAGS_fault.o := -I $(srctree)/$(src)/../include/asm/trace
+diff --git a/arch/x86/mm/init_64.c b/arch/x86/mm/init_64.c
+index 96d34eb..d2e484e 100644
+--- a/arch/x86/mm/init_64.c
++++ b/arch/x86/mm/init_64.c
+@@ -110,7 +110,6 @@ int force_personality32;
+ /*
+  * noexec32=on|off
+  * Control non executable heap for 32bit processes.
+- * To control the stack too use noexec=off
+  *
+  * on	PROT_READ does not imply PROT_EXEC for 32-bit processes (default)
+  * off	PROT_READ implies PROT_EXEC
+diff --git a/arch/x86/mm/setup_nx.c b/arch/x86/mm/setup_nx.c
+deleted file mode 100644
+index ed5667f..0000000
+--- a/arch/x86/mm/setup_nx.c
++++ /dev/null
+@@ -1,62 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0
+-#include <linux/spinlock.h>
+-#include <linux/errno.h>
+-#include <linux/init.h>
+-#include <linux/pgtable.h>
+-
+-#include <asm/proto.h>
+-#include <asm/cpufeature.h>
+-
+-static int disable_nx;
+-
+-/*
+- * noexec = on|off
+- *
+- * Control non-executable mappings for processes.
+- *
+- * on      Enable
+- * off     Disable
+- */
+-static int __init noexec_setup(char *str)
+-{
+-	if (!str)
+-		return -EINVAL;
+-	if (!strncmp(str, "on", 2)) {
+-		disable_nx = 0;
+-	} else if (!strncmp(str, "off", 3)) {
+-		disable_nx = 1;
+-	}
+-	x86_configure_nx();
+-	return 0;
+-}
+-early_param("noexec", noexec_setup);
+-
+-void x86_configure_nx(void)
+-{
+-	if (boot_cpu_has(X86_FEATURE_NX) && !disable_nx)
+-		__supported_pte_mask |= _PAGE_NX;
+-	else
+-		__supported_pte_mask &= ~_PAGE_NX;
+-}
+-
+-void __init x86_report_nx(void)
+-{
+-	if (!boot_cpu_has(X86_FEATURE_NX)) {
+-		printk(KERN_NOTICE "Notice: NX (Execute Disable) protection "
+-		       "missing in CPU!\n");
+-	} else {
+-#if defined(CONFIG_X86_64) || defined(CONFIG_X86_PAE)
+-		if (disable_nx) {
+-			printk(KERN_INFO "NX (Execute Disable) protection: "
+-			       "disabled by kernel command line option\n");
+-		} else {
+-			printk(KERN_INFO "NX (Execute Disable) protection: "
+-			       "active\n");
+-		}
+-#else
+-		/* 32bit non-PAE kernel, NX cannot be used */
+-		printk(KERN_NOTICE "Notice: NX (Execute Disable) protection "
+-		       "cannot be enabled: non-PAE kernel!\n");
+-#endif
+-	}
+-}
