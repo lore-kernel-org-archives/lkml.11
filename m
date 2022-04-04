@@ -2,143 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93DAAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 15:20:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC12FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 15:20:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378508AbiDDPWn (ORCPT
+        id S1378519AbiDDPWw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 11:22:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35024 "EHLO
+        Mon, 4 Apr 2022 11:22:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378000AbiDDPWl (ORCPT
+        with ESMTP id S1344613AbiDDPWu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 11:22:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23F8A3C4A6
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 08:20:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DB53EB8170E
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 15:20:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22C28C34111;
-        Mon,  4 Apr 2022 15:20:42 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="gttvBvkg"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1649085640;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=cPXw+SF6oh/aSPAZ/FK2hYnXFRdhBrMdSKRafLKv0CI=;
-        b=gttvBvkg85rGdk42xtoKHtRtOJzVW8WMtbU+3ep8mgX1/g/2QJTgN07FA5PAUTjwu26cgB
-        YACE9SSMrQz1T1/HXhpSb4L1i1WNmtXycP0bYTDxDcz/Js27XOLaI9Y+Lco99lnGy9NecC
-        wFJrAr8DhWnYaqsdZkEY58RKu5rm6JU=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 54a69155 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Mon, 4 Apr 2022 15:20:40 +0000 (UTC)
-Date:   Mon, 4 Apr 2022 17:20:36 +0200
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     Jan Varho <jan.varho@gmail.com>
-Cc:     Theodore Ts'o <tytso@mit.edu>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] random: fix add_hwgenerator_randomness entropy accounting
-Message-ID: <YksMxDLxPZtuYlFm@zx2c4.com>
-References: <20220404150442.934496-1-jan.varho@gmail.com>
+        Mon, 4 Apr 2022 11:22:50 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00BDA3CA67;
+        Mon,  4 Apr 2022 08:20:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=eRnVwLqxvaZkK5inK6QPhoSx1abWW++tjzz4e/jN0cE=; b=N/SwS967cwXIhNIsdZEPKbcl50
+        NlGBxBsYqBz63vqSTe9mXa0WoNV0H7lRX7/D3hloi5zAWd+s3g7s6qTesZfoGdq5esU9xpPpNXPAJ
+        q52nGl5oyYJh7yT0bLAtL+4RRKDo2RbSOumUM/GJWZUBXtsKqAxFBlLih495I6Hi8vmY=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nbOVI-00E6md-Fl; Mon, 04 Apr 2022 17:20:28 +0200
+Date:   Mon, 4 Apr 2022 17:20:28 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Michael Walle <michael@walle.cc>
+Cc:     richardcochran@gmail.com, davem@davemloft.net,
+        grygorii.strashko@ti.com, kuba@kernel.org, kurt@linutronix.de,
+        linux-kernel@vger.kernel.org, linux@armlinux.org.uk,
+        mlichvar@redhat.com, netdev@vger.kernel.org,
+        qiangqing.zhang@nxp.com, vladimir.oltean@nxp.com
+Subject: Re: [PATCH RFC V1 net-next 3/4] net: Let the active time stamping
+ layer be selectable.
+Message-ID: <YksMvHgXZxA+YZci@lunn.ch>
+References: <20220104014215.GA20062@hoboy.vegasvil.org>
+ <20220404150508.3945833-1-michael@walle.cc>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220404150442.934496-1-jan.varho@gmail.com>
+In-Reply-To: <20220404150508.3945833-1-michael@walle.cc>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jan,
+On Mon, Apr 04, 2022 at 05:05:08PM +0200, Michael Walle wrote:
+> Sorry for digging out this older thread, but it seems to be discussed
+> in [1].
+> 
+> > IMO, the default should be PHY because up until now the PHY layer was
+> > prefered.
+> > 
+> > Or would you say the MAC layer should take default priority?
+> > 
+> > (that may well break some existing systems)
+> 
+> Correct me if I'm wrong, but for systems with multiple interfaces,
+> in particular switches, you'd need external circuits to synchronize
+> the PHCs within in the PHYs.
 
-On Mon, Apr 4, 2022 at 5:07 PM Jan Varho <jan.varho@gmail.com> wrote:
-> add_hwgenerator_randomness tries to only use the required amound of input
-> for fast init, but credits all the entropy if even a byte was left over.
->
-> Fix by not crediting entropy if any input was consumed for fast init.
+If the PHYs are external. There are switches with internal PHYs, so
+they might already have the needed synchronisation.
 
-Yea, I'd seen this and wasn't really sure what the correct fix was. My
-recent addition of `&& entropy < POOL_MIN_BITS` is a step in the right
-direction of making your fix the desirable path, since it makes it less
-likely that we'd wind up throwing away "good" entropy. So maybe it's
-time we do that.
+> (And if you use a time aware scheduler
+> you'd need to synchronize the MAC, too). Whereas for switches there
+> is usually just one PHC in the MAC which just works.
 
-The alternative I had considered was something like `entropy -= ret *
-entropy / buf`, with some additional care around rounding in the right
-direction. But even then, that makes a big assumption about the
-distribution of the entropy within the buffer bitstring. What if it's
-all at the beginning and none at the end? The fact that entropy might
-not be equal to count means all bets are off the table and we might well
-be facing pretty meh input.
+And there could be switches with the MACs being totally
+independent. In theory.
 
-Anyway, if your approach is indeed the way forward, the fuller version
-of this patch is probably something like the below, where we just get
-rid of the now-useless return value, and then since we're now doing
-partial mixing, we can change the way the account parameter bounds it.
-This is untested, but if you want to test it and submit it at v2, I
-think it might be an okay incarnation of the lazy approach.
+> On these systems, pushing the timestamping to the PHY would mean
+> that this external circuitry must exist and have to be in use/
+> supported. MAC timestamping will work in all cases without any
+> external dependencies.
 
-Jason
+And if the MAC are independent, you need the external dependency.
 
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index 1d8242969751..de8040db426e 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -437,11 +437,8 @@ static void crng_make_state(u32 chacha_state[CHACHA_STATE_WORDS],
-  * This shouldn't be set by functions like add_device_randomness(),
-  * where we can't trust the buffer passed to it is guaranteed to be
-  * unpredictable (so it might not have any entropy at all).
-- *
-- * Returns the number of bytes processed from input, which is bounded
-- * by CRNG_INIT_CNT_THRESH if account is true.
-  */
--static size_t crng_pre_init_inject(const void *input, size_t len, bool account)
-+static void crng_pre_init_inject(const void *input, size_t len, bool account)
- {
- 	static int crng_init_cnt = 0;
- 	struct blake2s_state hash;
-@@ -455,15 +452,12 @@ static size_t crng_pre_init_inject(const void *input, size_t len, bool account)
- 		return 0;
- 	}
- 
--	if (account)
--		len = min_t(size_t, len, CRNG_INIT_CNT_THRESH - crng_init_cnt);
--
- 	blake2s_update(&hash, base_crng.key, sizeof(base_crng.key));
- 	blake2s_update(&hash, input, len);
- 	blake2s_final(&hash, base_crng.key);
- 
- 	if (account) {
--		crng_init_cnt += len;
-+		crng_init_cnt += min_t(size_t, len, CRNG_INIT_CNT_THRESH - crng_init_cnt);
- 		if (crng_init_cnt >= CRNG_INIT_CNT_THRESH) {
- 			++base_crng.generation;
- 			crng_init = 1;
-@@ -474,8 +468,6 @@ static size_t crng_pre_init_inject(const void *input, size_t len, bool account)
- 
- 	if (crng_init == 1)
- 		pr_notice("fast init done\n");
--
--	return len;
- }
- 
- static void _get_random_bytes(void *buf, size_t nbytes)
-@@ -1141,12 +1133,9 @@ void add_hwgenerator_randomness(const void *buffer, size_t count,
- 				size_t entropy)
- {
- 	if (unlikely(crng_init == 0 && entropy < POOL_MIN_BITS)) {
--		size_t ret = crng_pre_init_inject(buffer, count, true);
--		mix_pool_bytes(buffer, ret);
--		count -= ret;
--		buffer += ret;
--		if (!count || crng_init == 0)
--			return;
-+		crng_pre_init_inject(buffer, count, true);
-+		mix_pool_bytes(buffer, count);
-+		return;
- 	}
- 
- 	/*
+> I'm working on a board with the LAN9668 switch which has one LAN8814
+> PHY and two GPY215 PHYs and two internal PHYs. The LAN9668 driver
+> will forward all timestamping ioctls to the PHY if it supports
+> timestamping (unconditionally). As soon as the patches to add ptp
+> support to the LAN8814 will be accepted, I guess it will break the
+> PTP/TAS support because there is no synchronization between all the
+> PHCs on that board. Thus, IMHO MAC timestamping should be the default.
 
+There are arguments for MAC being the defaults. But we must have the
+option to do different, see above. But the real problem here is
+history. It is very hard to change a default without breaking systems
+which depend on that default. I believe Russell has a system which
+will break if the default is changed.
+
+So i suspect the default cannot be changed, but maybe we need a
+mechanism where an interface or a board can express a preference it
+would prefer be used when there are multiple choices, in addition to
+the user space API to make the selection.
+
+   Andrew
