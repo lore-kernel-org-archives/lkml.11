@@ -2,103 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACDA3C46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB24CC4707A
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:08:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380942AbiDDWHh (ORCPT
+        id S1381056AbiDDWHx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 18:07:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44942 "EHLO
+        Mon, 4 Apr 2022 18:07:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379042AbiDDQXp (ORCPT
+        with ESMTP id S1379675AbiDDRss (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 12:23:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 819A2BC0B
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 09:21:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 46B8AB8182F
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 16:21:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E8ECC2BBE4;
-        Mon,  4 Apr 2022 16:21:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649089307;
-        bh=12OqAgUFqo0o0nuRsjoOTKREg/x8VwVcYoOLde88fz8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=LwWB/0q9+NvxDslstiuPLQ3SRqHNZAv1ybSR1/YtRUtS4E6SdC5geH9/JV3SkXo29
-         RE1fmiDc8vAP9AyVDSP+VWhhAzyRhkGHOnIlWCoy0AGFZCUrhjMkTWOjm6gdbPvrUY
-         tw8MdE3Jfprd/JMoRgO1sq6EE9vSewPWXlbQsm8Y=
-Date:   Mon, 4 Apr 2022 18:21:43 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Guenter Roeck <linux@roeck-us.net>,
-        Larry Finger <Larry.Finger@lwfinger.net>,
-        Oded Gabbay <ogabbay@kernel.org>, Jiri Slaby <jslaby@suse.cz>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: Linux 5.18-rc1
-Message-ID: <YksbF4BIy3ZoEZCB@kroah.com>
-References: <CAHk-=wg6FWL1xjVyHx7DdjD2dHZETA5_=FqqW17Z19X-WTfWSg@mail.gmail.com>
- <20220404022239.GA1186352@roeck-us.net>
- <CAHk-=wimc7V9mi=P+6p2nnctPYtSM55OSPVERUeJor7fkD_EVg@mail.gmail.com>
- <aba387bd-9799-e0b5-40e3-1bcb552ac74c@roeck-us.net>
- <CAHk-=witgMUS8To6wijxdbQ+QEH0gcHSYV6Y=yzOdb=Q4h9PJA@mail.gmail.com>
+        Mon, 4 Apr 2022 13:48:48 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 068242E9CD;
+        Mon,  4 Apr 2022 10:46:51 -0700 (PDT)
+Date:   Mon, 04 Apr 2022 17:46:49 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649094410;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=wJBenbDWedPtd9MAznsgJpCiB+SUlSLxMzf0WLmp1dA=;
+        b=p2KehHnmGlk02itz5eVOD5ncMFXrOshvbTPOt7fFyaHsOCTbRUP9Q7y0BnYDDwfPP/1/u3
+        r2sBcIibkfmwt0AGijg3fC2GBjBTtqiKkVCpCOwMEiuk8X0Daur5VJ9SkPJJ7IdjtyIvRC
+        rsit98WjzgEe8OdCUq7MiNKivFJHQSfkwiKiEECp7GQtU6QB4wqJ+Wt5weN7I5znsC26HZ
+        bFFUUU7jvgZZqWBrq1/CB9PtzerVmcagg0CLDxQs6ZTBXqIJ8VADHyf98J+xvIojH7pWkl
+        dCGZ/Le+X1dj7KMQyb3KFv71pLqBvyVbn6UvwfRMuUKRsdkE4z2fUy6NOzDJLg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649094410;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=wJBenbDWedPtd9MAznsgJpCiB+SUlSLxMzf0WLmp1dA=;
+        b=xIpwR38qxOUcyaXrcgvEGlsWwg2wMDVl7ZEl07Z+M0wyVM1xkICyN+vmwpcZ4MiRpyrAL2
+        CNu4015it3f96pCg==
+From:   "tip-bot2 for Borislav Petkov" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: locking/core] x86/kvm/svm: Force-inline GHCB accessors
+Cc:     Borislav Petkov <bp@suse.de>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220324183607.31717-3-bp@alien8.de>
+References: <20220324183607.31717-3-bp@alien8.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAHk-=witgMUS8To6wijxdbQ+QEH0gcHSYV6Y=yzOdb=Q4h9PJA@mail.gmail.com>
+Message-ID: <164909440907.389.708776734897898729.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 04, 2022 at 08:32:16AM -0700, Linus Torvalds wrote:
-> On Sun, Apr 3, 2022 at 9:23 PM Guenter Roeck <linux@roeck-us.net> wrote:
-> >
-> > Oops. Sorry, I thought it was big endian. No idea why. I'll update
-> > subject and description and resend.
-> 
-> I see your updated patch, but for some reason 'b4' is unhappy about it, with
-> 
->   $ b4 am 20220404134338.3276991-1-linux@roeck-us.net
-> 
-> causing
-> 
->   ✗ [PATCH v3] staging: r8188eu: Fix PPPoE tag insertion on little
-> endian systems
->   ---
->   ✗ BADSIG: DKIM/roeck-us.net
-> 
-> your DKIM looks fine on the messages I see, but now that I look at it
-> on the mailing list, I notice that your DKIM really is very wrong, and
-> has a lot of headers that a DKIM signature should *not* have.
-> 
-> Your DKIM signature includes header names that are very much for list
-> management, so by definition DKIM will fail for any email you send
-> through a mailing list. Headers like
-> "Resent-From:Resent-Sender:Resent-To:Resent-Cc
-> :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe" etc.
-> 
-> The DKIM setup should protect the meaningful headers that matter to
-> the sender, not things that the mail system will validly add when it
-> passes through.
-> 
-> So the DKIM header list should be things like
-> ":To:From:Cc:Message-Id:Date:Subject:"
-> 
-> Not things like "Sender" or mailing list things.
-> 
-> Anyway, I was going to just commit it directly, but with the DKIM
-> verification failing, I was a bit less eager to. And then I noticed
-> that you used "be16_to_cpu()" - which is technically correct - which
-> doesn't match the other code in that file.
+The following commit has been merged into the locking/core branch of tip:
 
-I've taken this in my tree now and will get it to you for -rc2 if you
-don't want to take it.  And yes, I see the dkim issue as well, I haven't
-started complaining about to people yet as lots of people have problem
-email setups.  Should we start pushing back?
+Commit-ID:     6b91ec4ad290a808a894e7d3448eb82d0b8ef8d5
+Gitweb:        https://git.kernel.org/tip/6b91ec4ad290a808a894e7d3448eb82d0b8ef8d5
+Author:        Borislav Petkov <bp@suse.de>
+AuthorDate:    Wed, 23 Mar 2022 21:52:44 +01:00
+Committer:     Borislav Petkov <bp@suse.de>
+CommitterDate: Mon, 04 Apr 2022 10:13:20 +02:00
 
-thanks,
+x86/kvm/svm: Force-inline GHCB accessors
 
-greg k-h
+In order to fix:
+
+  vmlinux.o: warning: objtool: __sev_es_nmi_complete()+0x4c: call to ghcb_set_sw_exit_code() leaves .noinstr.text section
+
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lore.kernel.org/r/20220324183607.31717-3-bp@alien8.de
+---
+ arch/x86/include/asm/svm.h | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/arch/x86/include/asm/svm.h b/arch/x86/include/asm/svm.h
+index f70a510..e255039 100644
+--- a/arch/x86/include/asm/svm.h
++++ b/arch/x86/include/asm/svm.h
+@@ -444,23 +444,23 @@ struct vmcb {
+ 	(offsetof(struct vmcb_save_area, field) / sizeof(u64))
+ 
+ #define DEFINE_GHCB_ACCESSORS(field)						\
+-	static inline bool ghcb_##field##_is_valid(const struct ghcb *ghcb)	\
++	static __always_inline bool ghcb_##field##_is_valid(const struct ghcb *ghcb) \
+ 	{									\
+ 		return test_bit(GHCB_BITMAP_IDX(field),				\
+ 				(unsigned long *)&ghcb->save.valid_bitmap);	\
+ 	}									\
+ 										\
+-	static inline u64 ghcb_get_##field(struct ghcb *ghcb)			\
++	static __always_inline u64 ghcb_get_##field(struct ghcb *ghcb)		\
+ 	{									\
+ 		return ghcb->save.field;					\
+ 	}									\
+ 										\
+-	static inline u64 ghcb_get_##field##_if_valid(struct ghcb *ghcb)	\
++	static __always_inline u64 ghcb_get_##field##_if_valid(struct ghcb *ghcb) \
+ 	{									\
+ 		return ghcb_##field##_is_valid(ghcb) ? ghcb->save.field : 0;	\
+ 	}									\
+ 										\
+-	static inline void ghcb_set_##field(struct ghcb *ghcb, u64 value)	\
++	static __always_inline void ghcb_set_##field(struct ghcb *ghcb, u64 value) \
+ 	{									\
+ 		__set_bit(GHCB_BITMAP_IDX(field),				\
+ 			  (unsigned long *)&ghcb->save.valid_bitmap);		\
