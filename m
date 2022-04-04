@@ -2,56 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EF87C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 15:03:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8CA7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 15:05:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378414AbiDDPFn (ORCPT
+        id S1378408AbiDDPHS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 11:05:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50374 "EHLO
+        Mon, 4 Apr 2022 11:07:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378409AbiDDPFd (ORCPT
+        with ESMTP id S236667AbiDDPHN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 11:05:33 -0400
-Received: from cloudserver094114.home.pl (cloudserver094114.home.pl [79.96.170.134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 145FB182;
-        Mon,  4 Apr 2022 08:03:28 -0700 (PDT)
-Received: from localhost (127.0.0.1) (HELO v370.home.net.pl)
- by /usr/run/smtp (/usr/run/postfix/private/idea_relay_lmtp) via UNIX with SMTP (IdeaSmtpServer 5.0.0)
- id b63ea9db5d456a56; Mon, 4 Apr 2022 17:03:27 +0200
-Received: from kreacher.localnet (unknown [213.134.181.62])
+        Mon, 4 Apr 2022 11:07:13 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57F2024F30;
+        Mon,  4 Apr 2022 08:05:17 -0700 (PDT)
+Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by v370.home.net.pl (Postfix) with ESMTPSA id D25D466BCD2;
-        Mon,  4 Apr 2022 17:03:25 +0200 (CEST)
-From:   "Rafael J. Wysocki" <rjw@rjwysocki.net>
-To:     Linux ACPI <linux-acpi@vger.kernel.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>
-Subject: [PATCH v1 0/3] ACPI: PM: Debug improvements
-Date:   Mon, 04 Apr 2022 16:59:23 +0200
-Message-ID: <5575732.DvuYhMxLoT@kreacher>
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 167CF221D4;
+        Mon,  4 Apr 2022 17:05:13 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1649084714;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=vFi7yXUyhEvuyEPAaB5PJBj31x6UAMrx11hHIwLpdNw=;
+        b=dc6JR3Kh1Ky3QpzM5AVH203vP79qpSRIe0/7KFPStc93uVzLA6hMlEPEl7+mjlOxUUQm5N
+        s9pNBuWORJiOmTMckn+4ooQE8mRVMNiYtpgDX5TFNKNcHP/PVUlWNuQAxyqLeNzAafgFs1
+        9HQ+CQBtpNZYNCqrUyrqASCM2kV4p6Q=
+From:   Michael Walle <michael@walle.cc>
+To:     richardcochran@gmail.com
+Cc:     andrew@lunn.ch, davem@davemloft.net, grygorii.strashko@ti.com,
+        kuba@kernel.org, kurt@linutronix.de, linux-kernel@vger.kernel.org,
+        linux@armlinux.org.uk, mlichvar@redhat.com, netdev@vger.kernel.org,
+        qiangqing.zhang@nxp.com, vladimir.oltean@nxp.com,
+        Michael Walle <michael@walle.cc>
+Subject: Re: [PATCH RFC V1 net-next 3/4] net: Let the active time stamping layer be selectable.
+Date:   Mon,  4 Apr 2022 17:05:08 +0200
+Message-Id: <20220404150508.3945833-1-michael@walle.cc>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220104014215.GA20062@hoboy.vegasvil.org>
+References: <20220104014215.GA20062@hoboy.vegasvil.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="UTF-8"
-X-CLIENT-IP: 213.134.181.62
-X-CLIENT-HOSTNAME: 213.134.181.62
-X-VADE-SPAMSTATE: clean
-X-VADE-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudejvddgjeelucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecujffqoffgrffnpdggtffipffknecuuegrihhlohhuthemucduhedtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvffufffkggfgtgesthfuredttddtjeenucfhrhhomhepfdftrghfrggvlhculfdrucghhihsohgtkhhifdcuoehrjhifsehrjhifhihsohgtkhhirdhnvghtqeenucggtffrrghtthgvrhhnpefhgedtffejheekgeeljeevvedtuefgffeiieejuddutdekgfejvdehueejjeetvdenucfkphepvddufedrudefgedrudekuddriedvnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepvddufedrudefgedrudekuddriedvpdhhvghlohepkhhrvggrtghhvghrrdhlohgtrghlnhgvthdpmhgrihhlfhhrohhmpedftfgrfhgrvghlucflrdcuhgihshhotghkihdfuceorhhjfiesrhhjfiihshhotghkihdrnhgvtheqpdhnsggprhgtphhtthhopeefpdhrtghpthhtoheplhhinhhugidqrggtphhisehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqphhmsehvghgvrhdrkhgvrhhnvghlrdhorhhg
-X-DCC--Metrics: v370.home.net.pl 1024; Body=3 Fuz1=3 Fuz2=3
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi All,
+Sorry for digging out this older thread, but it seems to be discussed
+in [1].
 
-This patch series improves messaging related to ACPI device power management
-debug.
+> IMO, the default should be PHY because up until now the PHY layer was
+> prefered.
+> 
+> Or would you say the MAC layer should take default priority?
+> 
+> (that may well break some existing systems)
 
-Please refer to the patch changelogs for details.
+Correct me if I'm wrong, but for systems with multiple interfaces,
+in particular switches, you'd need external circuits to synchronize
+the PHCs within in the PHYs. (And if you use a time aware scheduler
+you'd need to synchronize the MAC, too). Whereas for switches there
+is usually just one PHC in the MAC which just works.
 
-Thanks!
+On these systems, pushing the timestamping to the PHY would mean
+that this external circuitry must exist and have to be in use/
+supported. MAC timestamping will work in all cases without any
+external dependencies.
 
+I'm working on a board with the LAN9668 switch which has one LAN8814
+PHY and two GPY215 PHYs and two internal PHYs. The LAN9668 driver
+will forward all timestamping ioctls to the PHY if it supports
+timestamping (unconditionally). As soon as the patches to add ptp
+support to the LAN8814 will be accepted, I guess it will break the
+PTP/TAS support because there is no synchronization between all the
+PHCs on that board. Thus, IMHO MAC timestamping should be the default.
 
+-michael
 
+[1] https://lore.kernel.org/netdev/20220308145405.GD29063@hoboy.vegasvil.org/
