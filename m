@@ -2,1065 +2,231 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75F18C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 13:04:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BD01C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 13:04:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349108AbiDDNGM (ORCPT
+        id S1348789AbiDDNGp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 09:06:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38794 "EHLO
+        Mon, 4 Apr 2022 09:06:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348837AbiDDNGD (ORCPT
+        with ESMTP id S240415AbiDDNGi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 09:06:03 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33F483E0EA;
-        Mon,  4 Apr 2022 06:04:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1649077445; x=1680613445;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Et2+8Mn7Nt40NW2RGO4PF+dKQnd0+LWEieTNcHdvpTw=;
-  b=faiH1vnJweLvYdaOfF+K1oSe8xS6th8tCKijUWZxDcj2Ru5oiQQY17XO
-   h1X2FxRkHgNXePyyD3uury6nSerlZNPqbRXsal7KgVb7ybLqz/NSzhMPR
-   eVG5vKsRhtvUPdpCWiSJyBCq4FHK/BSruNOEna6RRVHGk2BpvHShJt/1H
-   t36az4m2UqTqCsDD56eyQCNbjAlSv6qyBObnDi9P/uhYpgul14J3AELxH
-   jDRpY3EeDp7F4br5Ogb2GrjA3+NFAghmD4Il2CNINTWIu/Ks6OVApi07B
-   mLLBRK/o3HOobjzbsbr48/IYZNz+nHEzxR7hkkFIslZkSUC/k5e6Tdt36
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.90,234,1643698800"; 
-   d="scan'208";a="154281301"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 Apr 2022 06:04:04 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 4 Apr 2022 06:04:04 -0700
-Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Mon, 4 Apr 2022 06:04:02 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     <UNGLinuxDriver@microchip.com>, <davem@davemloft.net>,
-        <kuba@kernel.org>, <pabeni@redhat.com>, <michael@walle.cc>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net-next v3 3/4] net: lan966x: Add FDMA functionality
-Date:   Mon, 4 Apr 2022 15:06:54 +0200
-Message-ID: <20220404130655.4004204-4-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220404130655.4004204-1-horatiu.vultur@microchip.com>
-References: <20220404130655.4004204-1-horatiu.vultur@microchip.com>
+        Mon, 4 Apr 2022 09:06:38 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2685FB9D
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 06:04:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649077481;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=bKLcnrXpl+KcZQr63lS1etgImM+Jisa8A4Tv6u94WeY=;
+        b=LpZpYnJWLfiBRI5iwOr6GsZvvPjrrVRniAK7Pn6w/9e+J361t/68NyNr+e3ZKNzgdrUPyl
+        h7nnAuXnGhiASXS5/E5Hkjt0j8sNU7rjYbKGBh70UEPOXBbCN9u+NCu/JknPLVS7D4Cv6J
+        901qOBSdcR5/XC8Y5ctcffnkeuT1L+Q=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-57-Oo_20ewZPt6HHbMiceYzhg-1; Mon, 04 Apr 2022 09:04:31 -0400
+X-MC-Unique: Oo_20ewZPt6HHbMiceYzhg-1
+Received: by mail-wr1-f70.google.com with SMTP id i64-20020adf90c6000000b00203f2b5e090so1719825wri.9
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 06:04:30 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:organization:subject
+         :in-reply-to:content-transfer-encoding;
+        bh=bKLcnrXpl+KcZQr63lS1etgImM+Jisa8A4Tv6u94WeY=;
+        b=qQ0u97ZGY6tYpVTzSxwkelM3hPynxjppnppe81URqqwBiVLZJY6gJnneCpqmpqJCfo
+         KnLwy5RZWDh+ItnxxtYLJJ9V9kglnIz2SCOGDO9EcvZDxcQSM/h8Eez1jQ+BuSjyjeCq
+         3m7zn423KTX72zCZDgt6a9sDjSJY6qeBsnlE4IfxWacIeQfk/GL4C7QkBa5CdtEXaF7N
+         C9BtMQkTWzp3HpRFmnNSPweK6/K3dZrdsDkbrUVKldj0DZeZvr6veJZoXzJ6Uz5uGSHU
+         utLTjoIbdHpyrO5JqRLo+QldFNhZkuTyUUnvdpi/tKgZd0Ru9PWViarH41rbTjzQCXr7
+         Vutw==
+X-Gm-Message-State: AOAM532hgsKuvqdsikstU3dHO/WJvTGVR4CdNiujMdiNptjJHI+wIns7
+        spKqWQFO+wkStUIYokcpyaEcYcvZ9s1Hg92jJIPS2gDNmkfuu4WVNuWPp8s84HdODfDUIv4i/fc
+        p0G1PBaJ18Q/RQCuZGB4T10zp
+X-Received: by 2002:a5d:6b0f:0:b0:1e7:9432:ee8c with SMTP id v15-20020a5d6b0f000000b001e79432ee8cmr16587423wrw.216.1649077469856;
+        Mon, 04 Apr 2022 06:04:29 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwxtY/OPGax1qO/sx2WuexL7oOLf1eJuj6oF4bfJe58bEmh/NxbXjXnOtYCPACR/NKBsTM8ZA==
+X-Received: by 2002:a5d:6b0f:0:b0:1e7:9432:ee8c with SMTP id v15-20020a5d6b0f000000b001e79432ee8cmr16587382wrw.216.1649077469430;
+        Mon, 04 Apr 2022 06:04:29 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c704:4100:c220:ede7:17d4:6ff4? (p200300cbc7044100c220ede717d46ff4.dip0.t-ipconnect.de. [2003:cb:c704:4100:c220:ede7:17d4:6ff4])
+        by smtp.gmail.com with ESMTPSA id u7-20020a5d6da7000000b00203d9d1875bsm10501373wrs.73.2022.04.04.06.04.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 04 Apr 2022 06:04:28 -0700 (PDT)
+Message-ID: <99cf9e14-7608-8e72-0c8e-0dd9b0047319@redhat.com>
+Date:   Mon, 4 Apr 2022 15:04:28 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Content-Language: en-US
+To:     Nadav Amit <nadav.amit@gmail.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>, linux-mm <linux-mm@kvack.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Peter Xu <peterx@redhat.com>, Yang Shi <shy828301@gmail.com>,
+        Hugh Dickins <hughd@google.com>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>
+References: <20220401101334.68859-1-david@redhat.com>
+ <8A6AF878-D5D7-4D88-A736-0FEF71439D44@gmail.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+Subject: Re: [PATCH v1 mmotm] mm/mprotect: try avoiding write faults for
+ exclusive anonynmous pages when changing protection
+In-Reply-To: <8A6AF878-D5D7-4D88-A736-0FEF71439D44@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Ethernet frames can be extracted or injected to or from the device's
-DDR memory. There is one channel for injection and one channel for
-extraction. Each of these channels contain a linked list of DCBs which
-contains DB. The DCB contains only 1 DB for both the injection and
-extraction. Each DB contains a frame. Every time when a frame is received
-or transmitted an interrupt is generated.
+On 01.04.22 21:15, Nadav Amit wrote:
+> [ +Rick ]
+> 
+>> On Apr 1, 2022, at 3:13 AM, David Hildenbrand <david@redhat.com> wrote:
+>>
+>> Similar to our MM_CP_DIRTY_ACCT handling for shared, writable mappings, we
+>> can try mapping anonymous pages writable if they are exclusive,
+>> the PTE is already dirty, and no special handling applies. Mapping the
+>> PTE writable is essentially the same thing the write fault handler would do
+>> in this case.
+> 
+> In general I am all supportive for such a change.
+> 
+> I do have some mostly-minor concerns.
 
-It is not possible to use both the FDMA and the manual
-injection/extraction of the frames. Therefore the FDMA has priority over
-the manual because of better performance values.
+Hi Nadav,
 
-FDMA:
-iperf -c 192.168.1.1
-[  5]   0.00-10.02  sec   420 MBytes   352 Mbits/sec    0 sender
-[  5]   0.00-10.03  sec   420 MBytes   351 Mbits/sec      receiver
+thanks a lot for your review!
 
-iperf -c 192.168.1.1 -R
-[  5]   0.00-10.01  sec   528 MBytes   442 Mbits/sec    0 sender
-[  5]   0.00-10.00  sec   524 MBytes   440 Mbits/sec      receiver
+> 
+>>
+>> +static inline bool can_change_pte_writable(struct vm_area_struct *vma,
+>> +					   unsigned long addr, pte_t pte,
+>> +					   unsigned long cp_flags)
+>> +{
+>> +	struct page *page;
+>> +
+>> +	if ((vma->vm_flags & VM_SHARED) && !(cp_flags & MM_CP_DIRTY_ACCT))
+>> +		/*
+>> +		 * MM_CP_DIRTY_ACCT is only expressive for shared mappings;
+>> +		 * without MM_CP_DIRTY_ACCT, there is nothing to do.
+>> +		 */
+>> +		return false;
+>> +
+>> +	if (!(vma->vm_flags & VM_WRITE))
+>> +		return false;
+>> +
+>> +	if (pte_write(pte) || pte_protnone(pte) || !pte_dirty(pte))
+>> +		return false;
+> 
+> If pte_write() is already try then return false? I understand you want
+> to do so because the page is already writable, but it is confusing.
 
-Manual:
-iperf -c 192.168.1.1
-[  5]   0.00-10.02  sec  93.8 MBytes  78.5 Mbits/sec    0 sender
-[  5]   0.00-10.03  sec  93.8 MBytes  78.4 Mbits/sec      receiver
 
-ipers -c 192.168.1.1 -R
-[  5]   0.00-10.03  sec   121 MBytes   101 Mbits/sec    0 sender
-[  5]   0.00-10.01  sec   118 MBytes  99.0 Mbits/sec      receiver
+I thought about just doing outside of the function
 
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
----
- .../net/ethernet/microchip/lan966x/Makefile   |   2 +-
- .../ethernet/microchip/lan966x/lan966x_fdma.c | 688 ++++++++++++++++++
- .../ethernet/microchip/lan966x/lan966x_main.c |  36 +-
- .../ethernet/microchip/lan966x/lan966x_main.h | 112 +++
- .../ethernet/microchip/lan966x/lan966x_port.c |   3 +
- 5 files changed, 837 insertions(+), 4 deletions(-)
- create mode 100644 drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
+if ((vma->vm_flags & VM_WRITE) && !pte_write(pte) &&
+    can_change_pte_writable()...
 
-diff --git a/drivers/net/ethernet/microchip/lan966x/Makefile b/drivers/net/ethernet/microchip/lan966x/Makefile
-index a9ffc719aa0e..fd2e0ebb2427 100644
---- a/drivers/net/ethernet/microchip/lan966x/Makefile
-+++ b/drivers/net/ethernet/microchip/lan966x/Makefile
-@@ -8,4 +8,4 @@ obj-$(CONFIG_LAN966X_SWITCH) += lan966x-switch.o
- lan966x-switch-objs  := lan966x_main.o lan966x_phylink.o lan966x_port.o \
- 			lan966x_mac.o lan966x_ethtool.o lan966x_switchdev.o \
- 			lan966x_vlan.o lan966x_fdb.o lan966x_mdb.o \
--			lan966x_ptp.o
-+			lan966x_ptp.o lan966x_fdma.o
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c b/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
-new file mode 100644
-index 000000000000..9cccb5f5f8e5
---- /dev/null
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
-@@ -0,0 +1,688 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+
-+#include "lan966x_main.h"
-+
-+static int lan966x_fdma_channel_active(struct lan966x *lan966x)
-+{
-+	return lan_rd(lan966x, FDMA_CH_ACTIVE);
-+}
-+
-+static struct sk_buff *lan966x_fdma_rx_alloc_skb(struct lan966x_rx *rx,
-+						 struct lan966x_db *db)
-+{
-+	struct lan966x *lan966x = rx->lan966x;
-+	struct sk_buff *skb;
-+	dma_addr_t dma_addr;
-+	struct page *page;
-+	void *buff_addr;
-+
-+	page = dev_alloc_pages(rx->page_order);
-+	if (unlikely(!page))
-+		return NULL;
-+
-+	dma_addr = dma_map_page(lan966x->dev, page, 0,
-+				PAGE_SIZE << rx->page_order,
-+				DMA_FROM_DEVICE);
-+	if (unlikely(dma_mapping_error(lan966x->dev, dma_addr)))
-+		goto free_page;
-+
-+	buff_addr = page_address(page);
-+	skb = build_skb(buff_addr, PAGE_SIZE << rx->page_order);
-+	if (unlikely(!skb))
-+		goto unmap_page;
-+
-+	db->dataptr = dma_addr;
-+
-+	return skb;
-+
-+unmap_page:
-+	dma_unmap_page(lan966x->dev, dma_addr,
-+		       PAGE_SIZE << rx->page_order,
-+		       DMA_FROM_DEVICE);
-+
-+free_page:
-+	__free_pages(page, rx->page_order);
-+	return NULL;
-+}
-+
-+static void lan966x_fdma_rx_free_skbs(struct lan966x_rx *rx)
-+{
-+	struct lan966x *lan966x = rx->lan966x;
-+	struct lan966x_rx_dcb *dcb;
-+	struct lan966x_db *db;
-+	int i, j;
-+
-+	for (i = 0; i < FDMA_DCB_MAX; ++i) {
-+		dcb = &rx->dcbs[i];
-+
-+		for (j = 0; j < FDMA_RX_DCB_MAX_DBS; ++j) {
-+			db = &dcb->db[j];
-+			dma_unmap_single(lan966x->dev,
-+					 (dma_addr_t)db->dataptr,
-+					 PAGE_SIZE << rx->page_order,
-+					 DMA_FROM_DEVICE);
-+			kfree_skb(rx->skb[i][j]);
-+		}
-+	}
-+}
-+
-+static void lan966x_fdma_rx_add_dcb(struct lan966x_rx *rx,
-+				    struct lan966x_rx_dcb *dcb,
-+				    u64 nextptr)
-+{
-+	struct lan966x_db *db;
-+	int i;
-+
-+	for (i = 0; i < FDMA_RX_DCB_MAX_DBS; ++i) {
-+		db = &dcb->db[i];
-+		db->status = FDMA_DCB_STATUS_INTR;
-+	}
-+
-+	dcb->nextptr = FDMA_DCB_INVALID_DATA;
-+	dcb->info = FDMA_DCB_INFO_DATAL(PAGE_SIZE << rx->page_order);
-+
-+	rx->last_entry->nextptr = nextptr;
-+	rx->last_entry = dcb;
-+}
-+
-+static int lan966x_fdma_rx_alloc(struct lan966x_rx *rx)
-+{
-+	struct lan966x *lan966x = rx->lan966x;
-+	struct lan966x_rx_dcb *dcb;
-+	struct lan966x_db *db;
-+	struct sk_buff *skb;
-+	int i, j;
-+	int size;
-+
-+	/* calculate how many pages are needed to allocate the dcbs */
-+	size = sizeof(struct lan966x_rx_dcb) * FDMA_DCB_MAX;
-+	size = ALIGN(size, PAGE_SIZE);
-+
-+	rx->dcbs = dma_alloc_coherent(lan966x->dev, size, &rx->dma, GFP_KERNEL);
-+	if (!rx->dcbs)
-+		return -ENOMEM;
-+
-+	rx->last_entry = rx->dcbs;
-+	rx->db_index = 0;
-+	rx->dcb_index = 0;
-+
-+	/* Now for each dcb allocate the dbs */
-+	for (i = 0; i < FDMA_DCB_MAX; ++i) {
-+		dcb = &rx->dcbs[i];
-+		dcb->info = 0;
-+
-+		/* For each db allocate a skb and map skb data pointer to the DB
-+		 * dataptr. In this way when the frame is received the skb->data
-+		 * will contain the frame, so it is not needed any memcpy
-+		 */
-+		for (j = 0; j < FDMA_RX_DCB_MAX_DBS; ++j) {
-+			db = &dcb->db[j];
-+			skb = lan966x_fdma_rx_alloc_skb(rx, db);
-+			if (!skb)
-+				return -ENOMEM;
-+
-+			db->status = 0;
-+			rx->skb[i][j] = skb;
-+		}
-+
-+		lan966x_fdma_rx_add_dcb(rx, dcb, rx->dma + sizeof(*dcb) * i);
-+	}
-+
-+	return 0;
-+}
-+
-+static void lan966x_fdma_rx_free(struct lan966x_rx *rx)
-+{
-+	struct lan966x *lan966x = rx->lan966x;
-+	u32 size;
-+
-+	/* Now it is possible to do the cleanup of dcb */
-+	size = sizeof(struct lan966x_tx_dcb) * FDMA_DCB_MAX;
-+	size = ALIGN(size, PAGE_SIZE);
-+	dma_free_coherent(lan966x->dev, size, rx->dcbs, rx->dma);
-+}
-+
-+static void lan966x_fdma_rx_start(struct lan966x_rx *rx)
-+{
-+	struct lan966x *lan966x = rx->lan966x;
-+	u32 mask;
-+
-+	/* When activating a channel, first is required to write the first DCB
-+	 * address and then to activate it
-+	 */
-+	lan_wr(lower_32_bits((u64)rx->dma), lan966x,
-+	       FDMA_DCB_LLP(rx->channel_id));
-+	lan_wr(upper_32_bits((u64)rx->dma), lan966x,
-+	       FDMA_DCB_LLP1(rx->channel_id));
-+
-+	lan_wr(FDMA_CH_CFG_CH_DCB_DB_CNT_SET(FDMA_RX_DCB_MAX_DBS) |
-+	       FDMA_CH_CFG_CH_INTR_DB_EOF_ONLY_SET(1) |
-+	       FDMA_CH_CFG_CH_INJ_PORT_SET(0) |
-+	       FDMA_CH_CFG_CH_MEM_SET(1),
-+	       lan966x, FDMA_CH_CFG(rx->channel_id));
-+
-+	/* Start fdma */
-+	lan_rmw(FDMA_PORT_CTRL_XTR_STOP_SET(0),
-+		FDMA_PORT_CTRL_XTR_STOP,
-+		lan966x, FDMA_PORT_CTRL(0));
-+
-+	/* Enable interrupts */
-+	mask = lan_rd(lan966x, FDMA_INTR_DB_ENA);
-+	mask = FDMA_INTR_DB_ENA_INTR_DB_ENA_GET(mask);
-+	mask |= BIT(rx->channel_id);
-+	lan_rmw(FDMA_INTR_DB_ENA_INTR_DB_ENA_SET(mask),
-+		FDMA_INTR_DB_ENA_INTR_DB_ENA,
-+		lan966x, FDMA_INTR_DB_ENA);
-+
-+	/* Activate the channel */
-+	lan_rmw(FDMA_CH_ACTIVATE_CH_ACTIVATE_SET(BIT(rx->channel_id)),
-+		FDMA_CH_ACTIVATE_CH_ACTIVATE,
-+		lan966x, FDMA_CH_ACTIVATE);
-+}
-+
-+static void lan966x_fdma_rx_disable(struct lan966x_rx *rx)
-+{
-+	struct lan966x *lan966x = rx->lan966x;
-+	u32 val;
-+
-+	/* Disable the channel */
-+	lan_rmw(FDMA_CH_DISABLE_CH_DISABLE_SET(BIT(rx->channel_id)),
-+		FDMA_CH_DISABLE_CH_DISABLE,
-+		lan966x, FDMA_CH_DISABLE);
-+
-+	readx_poll_timeout_atomic(lan966x_fdma_channel_active, lan966x,
-+				  val, !(val & BIT(rx->channel_id)),
-+				  READL_SLEEP_US, READL_TIMEOUT_US);
-+
-+	lan_rmw(FDMA_CH_DB_DISCARD_DB_DISCARD_SET(BIT(rx->channel_id)),
-+		FDMA_CH_DB_DISCARD_DB_DISCARD,
-+		lan966x, FDMA_CH_DB_DISCARD);
-+}
-+
-+static void lan966x_fdma_rx_reload(struct lan966x_rx *rx)
-+{
-+	struct lan966x *lan966x = rx->lan966x;
-+
-+	lan_rmw(FDMA_CH_RELOAD_CH_RELOAD_SET(BIT(rx->channel_id)),
-+		FDMA_CH_RELOAD_CH_RELOAD,
-+		lan966x, FDMA_CH_RELOAD);
-+}
-+
-+static void lan966x_fdma_tx_add_dcb(struct lan966x_tx *tx,
-+				    struct lan966x_tx_dcb *dcb)
-+{
-+	dcb->nextptr = FDMA_DCB_INVALID_DATA;
-+	dcb->info = 0;
-+}
-+
-+static int lan966x_fdma_tx_alloc(struct lan966x_tx *tx)
-+{
-+	struct lan966x *lan966x = tx->lan966x;
-+	struct lan966x_tx_dcb *dcb;
-+	struct lan966x_db *db;
-+	int size;
-+	int i, j;
-+
-+	tx->dcbs_buf = kcalloc(FDMA_DCB_MAX, sizeof(struct lan966x_tx_dcb_buf),
-+			       GFP_ATOMIC);
-+	if (!tx->dcbs_buf)
-+		return -ENOMEM;
-+
-+	/* calculate how many pages are needed to allocate the dcbs */
-+	size = sizeof(struct lan966x_tx_dcb) * FDMA_DCB_MAX;
-+	size = ALIGN(size, PAGE_SIZE);
-+	tx->dcbs = dma_alloc_coherent(lan966x->dev, size, &tx->dma, GFP_ATOMIC);
-+	if (!tx->dcbs)
-+		goto out;
-+
-+	/* Now for each dcb allocate the db */
-+	for (i = 0; i < FDMA_DCB_MAX; ++i) {
-+		dcb = &tx->dcbs[i];
-+
-+		for (j = 0; j < FDMA_TX_DCB_MAX_DBS; ++j) {
-+			db = &dcb->db[j];
-+			db->dataptr = 0;
-+			db->status = 0;
-+		}
-+
-+		lan966x_fdma_tx_add_dcb(tx, dcb);
-+	}
-+
-+	return 0;
-+
-+out:
-+	kfree(tx->dcbs_buf);
-+	return -ENOMEM;
-+}
-+
-+static void lan966x_fdma_tx_free(struct lan966x_tx *tx)
-+{
-+	struct lan966x *lan966x = tx->lan966x;
-+	int size;
-+
-+	kfree(tx->dcbs_buf);
-+
-+	size = sizeof(struct lan966x_tx_dcb) * FDMA_DCB_MAX;
-+	size = ALIGN(size, PAGE_SIZE);
-+	dma_free_coherent(lan966x->dev, size, tx->dcbs, tx->dma);
-+}
-+
-+static void lan966x_fdma_tx_activate(struct lan966x_tx *tx)
-+{
-+	struct lan966x *lan966x = tx->lan966x;
-+	u32 mask;
-+
-+	/* When activating a channel, first is required to write the first DCB
-+	 * address and then to activate it
-+	 */
-+	lan_wr(lower_32_bits((u64)tx->dma), lan966x,
-+	       FDMA_DCB_LLP(tx->channel_id));
-+	lan_wr(upper_32_bits((u64)tx->dma), lan966x,
-+	       FDMA_DCB_LLP1(tx->channel_id));
-+
-+	lan_wr(FDMA_CH_CFG_CH_DCB_DB_CNT_SET(FDMA_TX_DCB_MAX_DBS) |
-+	       FDMA_CH_CFG_CH_INTR_DB_EOF_ONLY_SET(1) |
-+	       FDMA_CH_CFG_CH_INJ_PORT_SET(0) |
-+	       FDMA_CH_CFG_CH_MEM_SET(1),
-+	       lan966x, FDMA_CH_CFG(tx->channel_id));
-+
-+	/* Start fdma */
-+	lan_rmw(FDMA_PORT_CTRL_INJ_STOP_SET(0),
-+		FDMA_PORT_CTRL_INJ_STOP,
-+		lan966x, FDMA_PORT_CTRL(0));
-+
-+	/* Enable interrupts */
-+	mask = lan_rd(lan966x, FDMA_INTR_DB_ENA);
-+	mask = FDMA_INTR_DB_ENA_INTR_DB_ENA_GET(mask);
-+	mask |= BIT(tx->channel_id);
-+	lan_rmw(FDMA_INTR_DB_ENA_INTR_DB_ENA_SET(mask),
-+		FDMA_INTR_DB_ENA_INTR_DB_ENA,
-+		lan966x, FDMA_INTR_DB_ENA);
-+
-+	/* Activate the channel */
-+	lan_rmw(FDMA_CH_ACTIVATE_CH_ACTIVATE_SET(BIT(tx->channel_id)),
-+		FDMA_CH_ACTIVATE_CH_ACTIVATE,
-+		lan966x, FDMA_CH_ACTIVATE);
-+}
-+
-+static void lan966x_fdma_tx_disable(struct lan966x_tx *tx)
-+{
-+	struct lan966x *lan966x = tx->lan966x;
-+	u32 val;
-+
-+	/* Disable the channel */
-+	lan_rmw(FDMA_CH_DISABLE_CH_DISABLE_SET(BIT(tx->channel_id)),
-+		FDMA_CH_DISABLE_CH_DISABLE,
-+		lan966x, FDMA_CH_DISABLE);
-+
-+	readx_poll_timeout_atomic(lan966x_fdma_channel_active, lan966x,
-+				  val, !(val & BIT(tx->channel_id)),
-+				  READL_SLEEP_US, READL_TIMEOUT_US);
-+
-+	lan_rmw(FDMA_CH_DB_DISCARD_DB_DISCARD_SET(BIT(tx->channel_id)),
-+		FDMA_CH_DB_DISCARD_DB_DISCARD,
-+		lan966x, FDMA_CH_DB_DISCARD);
-+
-+	tx->activated = false;
-+}
-+
-+static void lan966x_fdma_tx_reload(struct lan966x_tx *tx)
-+{
-+	struct lan966x *lan966x = tx->lan966x;
-+
-+	/* Write the registers to reload the channel */
-+	lan_rmw(FDMA_CH_RELOAD_CH_RELOAD_SET(BIT(tx->channel_id)),
-+		FDMA_CH_RELOAD_CH_RELOAD,
-+		lan966x, FDMA_CH_RELOAD);
-+}
-+
-+static void lan966x_fdma_wakeup_netdev(struct lan966x *lan966x)
-+{
-+	struct lan966x_port *port;
-+	int i;
-+
-+	for (i = 0; i < lan966x->num_phys_ports; ++i) {
-+		port = lan966x->ports[i];
-+		if (!port)
-+			continue;
-+
-+		if (netif_queue_stopped(port->dev))
-+			netif_wake_queue(port->dev);
-+	}
-+}
-+
-+static void lan966x_fdma_tx_clear_buf(struct lan966x *lan966x, int weight)
-+{
-+	struct lan966x_tx *tx = &lan966x->tx;
-+	struct lan966x_tx_dcb_buf *dcb_buf;
-+	struct lan966x_db *db;
-+	unsigned long flags;
-+	bool clear = false;
-+	int i;
-+
-+	spin_lock_irqsave(&lan966x->tx_lock, flags);
-+	for (i = 0; i < FDMA_DCB_MAX; ++i) {
-+		dcb_buf = &tx->dcbs_buf[i];
-+
-+		if (!dcb_buf->used)
-+			continue;
-+
-+		db = &tx->dcbs[i].db[0];
-+		if (!(db->status & FDMA_DCB_STATUS_DONE))
-+			continue;
-+
-+		dcb_buf->dev->stats.tx_packets++;
-+		dcb_buf->dev->stats.tx_bytes += dcb_buf->skb->len;
-+
-+		dcb_buf->used = false;
-+		dma_unmap_single(lan966x->dev,
-+				 dcb_buf->dma_addr,
-+				 dcb_buf->skb->len,
-+				 DMA_TO_DEVICE);
-+		if (!dcb_buf->ptp)
-+			dev_kfree_skb_any(dcb_buf->skb);
-+
-+		clear = true;
-+	}
-+	spin_unlock_irqrestore(&lan966x->tx_lock, flags);
-+
-+	if (clear)
-+		lan966x_fdma_wakeup_netdev(lan966x);
-+}
-+
-+static struct sk_buff *lan966x_fdma_rx_get_frame(struct lan966x_rx *rx)
-+{
-+	struct lan966x *lan966x = rx->lan966x;
-+	u64 src_port, timestamp;
-+	struct lan966x_db *db;
-+	struct sk_buff *skb;
-+
-+	/* Check if there is any data */
-+	db = &rx->dcbs[rx->dcb_index].db[rx->db_index];
-+	if (unlikely(!(db->status & FDMA_DCB_STATUS_DONE)))
-+		return NULL;
-+
-+	/* Get the received frame and unmap it */
-+	skb = rx->skb[rx->dcb_index][rx->db_index];
-+	dma_unmap_single(lan966x->dev, (dma_addr_t)db->dataptr,
-+			 FDMA_DCB_STATUS_BLOCKL(db->status),
-+			 DMA_FROM_DEVICE);
-+
-+	skb_put(skb, FDMA_DCB_STATUS_BLOCKL(db->status));
-+
-+	lan966x_ifh_get_src_port(skb->data, &src_port);
-+	lan966x_ifh_get_timestamp(skb->data, &timestamp);
-+
-+	WARN_ON(src_port >= lan966x->num_phys_ports);
-+
-+	skb->dev = lan966x->ports[src_port]->dev;
-+	skb_pull(skb, IFH_LEN * sizeof(u32));
-+
-+	if (likely(!(skb->dev->features & NETIF_F_RXFCS)))
-+		skb_trim(skb, skb->len - ETH_FCS_LEN);
-+
-+	lan966x_ptp_rxtstamp(lan966x, skb, timestamp);
-+	skb->protocol = eth_type_trans(skb, skb->dev);
-+
-+	if (lan966x->bridge_mask & BIT(src_port)) {
-+		skb->offload_fwd_mark = 1;
-+
-+		skb_reset_network_header(skb);
-+		if (!lan966x_hw_offload(lan966x, src_port, skb))
-+			skb->offload_fwd_mark = 0;
-+	}
-+
-+	skb->dev->stats.rx_bytes += skb->len;
-+	skb->dev->stats.rx_packets++;
-+
-+	return skb;
-+}
-+
-+static int lan966x_fdma_napi_poll(struct napi_struct *napi, int weight)
-+{
-+	struct lan966x *lan966x = container_of(napi, struct lan966x, napi);
-+	struct lan966x_rx *rx = &lan966x->rx;
-+	int dcb_reload = rx->dcb_index;
-+	struct lan966x_rx_dcb *old_dcb;
-+	struct lan966x_db *db;
-+	struct sk_buff *skb;
-+	int counter = 0;
-+	u64 nextptr;
-+
-+	lan966x_fdma_tx_clear_buf(lan966x, weight);
-+
-+	/* Get all received skb */
-+	while (counter < weight) {
-+		skb = lan966x_fdma_rx_get_frame(rx);
-+		if (!skb)
-+			break;
-+		napi_gro_receive(&lan966x->napi, skb);
-+
-+		rx->skb[rx->dcb_index][rx->db_index] = NULL;
-+
-+		rx->dcb_index++;
-+		rx->dcb_index &= FDMA_DCB_MAX - 1;
-+		counter++;
-+	}
-+
-+	/* Allocate new skbs and map them */
-+	while (dcb_reload != rx->dcb_index) {
-+		db = &rx->dcbs[dcb_reload].db[rx->db_index];
-+		skb = lan966x_fdma_rx_alloc_skb(rx, db);
-+		if (unlikely(!skb))
-+			break;
-+		rx->skb[dcb_reload][rx->db_index] = skb;
-+
-+		old_dcb = &rx->dcbs[dcb_reload];
-+		dcb_reload++;
-+		dcb_reload &= FDMA_DCB_MAX - 1;
-+
-+		nextptr = rx->dma + ((unsigned long)old_dcb -
-+				     (unsigned long)rx->dcbs);
-+		lan966x_fdma_rx_add_dcb(rx, old_dcb, nextptr);
-+		lan966x_fdma_rx_reload(rx);
-+	}
-+
-+	if (counter < weight && napi_complete_done(napi, counter))
-+		lan_wr(0xff, lan966x, FDMA_INTR_DB_ENA);
-+
-+	return counter;
-+}
-+
-+irqreturn_t lan966x_fdma_irq_handler(int irq, void *args)
-+{
-+	struct lan966x *lan966x = args;
-+	u32 db, err, err_type;
-+
-+	db = lan_rd(lan966x, FDMA_INTR_DB);
-+	err = lan_rd(lan966x, FDMA_INTR_ERR);
-+
-+	if (db) {
-+		lan_wr(0, lan966x, FDMA_INTR_DB_ENA);
-+		lan_wr(db, lan966x, FDMA_INTR_DB);
-+
-+		napi_schedule(&lan966x->napi);
-+	}
-+
-+	if (err) {
-+		err_type = lan_rd(lan966x, FDMA_ERRORS);
-+
-+		WARN(1, "Unexpected error: %d, error_type: %d\n", err, err_type);
-+
-+		lan_wr(err, lan966x, FDMA_INTR_ERR);
-+		lan_wr(err_type, lan966x, FDMA_ERRORS);
-+	}
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static int lan966x_fdma_get_next_dcb(struct lan966x_tx *tx)
-+{
-+	struct lan966x_tx_dcb_buf *dcb_buf;
-+	int i;
-+
-+	for (i = 0; i < FDMA_DCB_MAX; ++i) {
-+		dcb_buf = &tx->dcbs_buf[i];
-+		if (!dcb_buf->used && i != tx->last_in_use)
-+			return i;
-+	}
-+
-+	return -1;
-+}
-+
-+int lan966x_fdma_xmit(struct sk_buff *skb, __be32 *ifh, struct net_device *dev)
-+{
-+	struct lan966x_port *port = netdev_priv(dev);
-+	struct lan966x *lan966x = port->lan966x;
-+	struct lan966x_tx_dcb_buf *next_dcb_buf;
-+	struct lan966x_tx_dcb *next_dcb, *dcb;
-+	struct lan966x_tx *tx = &lan966x->tx;
-+	struct lan966x_db *next_db;
-+	int needed_headroom;
-+	int needed_tailroom;
-+	dma_addr_t dma_addr;
-+	int next_to_use;
-+	int err;
-+
-+	/* Get next index */
-+	next_to_use = lan966x_fdma_get_next_dcb(tx);
-+	if (next_to_use < 0) {
-+		netif_stop_queue(dev);
-+		return NETDEV_TX_BUSY;
-+	}
-+
-+	if (skb_put_padto(skb, ETH_ZLEN)) {
-+		dev->stats.tx_dropped++;
-+		return NETDEV_TX_OK;
-+	}
-+
-+	/* skb processing */
-+	needed_headroom = max_t(int, IFH_LEN * sizeof(u32) - skb_headroom(skb), 0);
-+	needed_tailroom = max_t(int, ETH_FCS_LEN - skb_tailroom(skb), 0);
-+	if (needed_headroom || needed_tailroom || skb_header_cloned(skb)) {
-+		err = pskb_expand_head(skb, needed_headroom, needed_tailroom,
-+				       GFP_ATOMIC);
-+		if (unlikely(err)) {
-+			dev->stats.tx_dropped++;
-+			err = NETDEV_TX_OK;
-+			goto release;
-+		}
-+	}
-+
-+	skb_tx_timestamp(skb);
-+	skb_push(skb, IFH_LEN * sizeof(u32));
-+	memcpy(skb->data, ifh, IFH_LEN * sizeof(u32));
-+	skb_put(skb, 4);
-+
-+	dma_addr = dma_map_single(lan966x->dev, skb->data, skb->len,
-+				  DMA_TO_DEVICE);
-+	if (dma_mapping_error(lan966x->dev, dma_addr)) {
-+		dev->stats.tx_dropped++;
-+		err = NETDEV_TX_OK;
-+		goto release;
-+	}
-+
-+	/* Setup next dcb */
-+	next_dcb = &tx->dcbs[next_to_use];
-+	next_dcb->nextptr = FDMA_DCB_INVALID_DATA;
-+
-+	next_db = &next_dcb->db[0];
-+	next_db->dataptr = dma_addr;
-+	next_db->status = FDMA_DCB_STATUS_SOF |
-+			  FDMA_DCB_STATUS_EOF |
-+			  FDMA_DCB_STATUS_INTR |
-+			  FDMA_DCB_STATUS_BLOCKO(0) |
-+			  FDMA_DCB_STATUS_BLOCKL(skb->len);
-+
-+	/* Fill up the buffer */
-+	next_dcb_buf = &tx->dcbs_buf[next_to_use];
-+	next_dcb_buf->skb = skb;
-+	next_dcb_buf->dma_addr = dma_addr;
-+	next_dcb_buf->used = true;
-+	next_dcb_buf->ptp = false;
-+	next_dcb_buf->dev = dev;
-+
-+	if (skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP &&
-+	    LAN966X_SKB_CB(skb)->rew_op == IFH_REW_OP_TWO_STEP_PTP)
-+		next_dcb_buf->ptp = true;
-+
-+	if (likely(lan966x->tx.activated)) {
-+		/* Connect current dcb to the next db */
-+		dcb = &tx->dcbs[tx->last_in_use];
-+		dcb->nextptr = tx->dma + (next_to_use *
-+					  sizeof(struct lan966x_tx_dcb));
-+
-+		lan966x_fdma_tx_reload(tx);
-+	} else {
-+		/* Because it is first time, then just activate */
-+		lan966x->tx.activated = true;
-+		lan966x_fdma_tx_activate(tx);
-+	}
-+
-+	/* Move to next dcb because this last in use */
-+	tx->last_in_use = next_to_use;
-+
-+	return NETDEV_TX_OK;
-+
-+release:
-+	if (skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP &&
-+	    LAN966X_SKB_CB(skb)->rew_op == IFH_REW_OP_TWO_STEP_PTP)
-+		lan966x_ptp_txtstamp_release(port, skb);
-+
-+	dev_kfree_skb_any(skb);
-+	return err;
-+}
-+
-+void lan966x_fdma_netdev_init(struct lan966x *lan966x, struct net_device *dev)
-+{
-+	if (lan966x->fdma_ndev)
-+		return;
-+
-+	lan966x->fdma_ndev = dev;
-+	netif_napi_add(dev, &lan966x->napi, lan966x_fdma_napi_poll,
-+		       FDMA_WEIGHT);
-+	napi_enable(&lan966x->napi);
-+}
-+
-+void lan966x_fdma_netdev_deinit(struct lan966x *lan966x, struct net_device *dev)
-+{
-+	if (lan966x->fdma_ndev == dev) {
-+		netif_napi_del(&lan966x->napi);
-+		lan966x->fdma_ndev = NULL;
-+	}
-+}
-+
-+int lan966x_fdma_init(struct lan966x *lan966x)
-+{
-+	int err;
-+
-+	lan966x->rx.lan966x = lan966x;
-+	lan966x->rx.channel_id = FDMA_XTR_CHANNEL;
-+	lan966x->tx.lan966x = lan966x;
-+	lan966x->tx.channel_id = FDMA_INJ_CHANNEL;
-+	lan966x->tx.last_in_use = -1;
-+
-+	err = lan966x_fdma_rx_alloc(&lan966x->rx);
-+	if (err)
-+		return err;
-+
-+	err = lan966x_fdma_tx_alloc(&lan966x->tx);
-+	if (err) {
-+		lan966x_fdma_rx_free(&lan966x->rx);
-+		return err;
-+	}
-+
-+	lan966x_fdma_rx_start(&lan966x->rx);
-+
-+	return 0;
-+}
-+
-+void lan966x_fdma_deinit(struct lan966x *lan966x)
-+{
-+	lan966x_fdma_rx_disable(&lan966x->rx);
-+	lan966x_fdma_tx_disable(&lan966x->tx);
-+
-+	lan966x_fdma_rx_free_skbs(&lan966x->rx);
-+	lan966x_fdma_rx_free(&lan966x->rx);
-+	lan966x_fdma_tx_free(&lan966x->tx);
-+}
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-index 03f0d149a80b..245cf4168de0 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-@@ -341,7 +341,10 @@ static int lan966x_port_xmit(struct sk_buff *skb, struct net_device *dev)
- 	}
- 
- 	spin_lock(&lan966x->tx_lock);
--	err = lan966x_port_ifh_xmit(skb, ifh, dev);
-+	if (port->lan966x->fdma)
-+		err = lan966x_fdma_xmit(skb, ifh, dev);
-+	else
-+		err = lan966x_port_ifh_xmit(skb, ifh, dev);
- 	spin_unlock(&lan966x->tx_lock);
- 
- 	return err;
-@@ -643,6 +646,9 @@ static void lan966x_cleanup_ports(struct lan966x *lan966x)
- 		if (port->dev)
- 			unregister_netdev(port->dev);
- 
-+		if (lan966x->fdma && lan966x->fdma_ndev == port->dev)
-+			lan966x_fdma_netdev_deinit(lan966x, port->dev);
-+
- 		if (port->phylink) {
- 			rtnl_lock();
- 			lan966x_port_stop(port->dev);
-@@ -662,6 +668,11 @@ static void lan966x_cleanup_ports(struct lan966x *lan966x)
- 		disable_irq(lan966x->ana_irq);
- 		lan966x->ana_irq = -ENXIO;
- 	}
-+
-+	if (lan966x->fdma_irq) {
-+		disable_irq(lan966x->fdma_irq);
-+		lan966x->fdma_irq = -ENXIO;
-+	}
- }
- 
- static int lan966x_probe_port(struct lan966x *lan966x, u32 p,
-@@ -790,12 +801,12 @@ static void lan966x_init(struct lan966x *lan966x)
- 	/* Do byte-swap and expect status after last data word
- 	 * Extraction: Mode: manual extraction) | Byte_swap
- 	 */
--	lan_wr(QS_XTR_GRP_CFG_MODE_SET(1) |
-+	lan_wr(QS_XTR_GRP_CFG_MODE_SET(lan966x->fdma ? 2 : 1) |
- 	       QS_XTR_GRP_CFG_BYTE_SWAP_SET(1),
- 	       lan966x, QS_XTR_GRP_CFG(0));
- 
- 	/* Injection: Mode: manual injection | Byte_swap */
--	lan_wr(QS_INJ_GRP_CFG_MODE_SET(1) |
-+	lan_wr(QS_INJ_GRP_CFG_MODE_SET(lan966x->fdma ? 2 : 1) |
- 	       QS_INJ_GRP_CFG_BYTE_SWAP_SET(1),
- 	       lan966x, QS_INJ_GRP_CFG(0));
- 
-@@ -1017,6 +1028,17 @@ static int lan966x_probe(struct platform_device *pdev)
- 		lan966x->ptp = 1;
- 	}
- 
-+	lan966x->fdma_irq = platform_get_irq_byname(pdev, "fdma");
-+	if (lan966x->fdma_irq > 0) {
-+		err = devm_request_irq(&pdev->dev, lan966x->fdma_irq,
-+				       lan966x_fdma_irq_handler, 0,
-+				       "fdma irq", lan966x);
-+		if (err)
-+			return dev_err_probe(&pdev->dev, err, "Unable to use fdma irq");
-+
-+		lan966x->fdma = true;
-+	}
-+
- 	/* init switch */
- 	lan966x_init(lan966x);
- 	lan966x_stats_init(lan966x);
-@@ -1055,8 +1077,15 @@ static int lan966x_probe(struct platform_device *pdev)
- 	if (err)
- 		goto cleanup_fdb;
- 
-+	err = lan966x_fdma_init(lan966x);
-+	if (err)
-+		goto cleanup_ptp;
-+
- 	return 0;
- 
-+cleanup_ptp:
-+	lan966x_ptp_deinit(lan966x);
-+
- cleanup_fdb:
- 	lan966x_fdb_deinit(lan966x);
- 
-@@ -1076,6 +1105,7 @@ static int lan966x_remove(struct platform_device *pdev)
- {
- 	struct lan966x *lan966x = platform_get_drvdata(pdev);
- 
-+	lan966x_fdma_deinit(lan966x);
- 	lan966x_cleanup_ports(lan966x);
- 
- 	cancel_delayed_work_sync(&lan966x->stats_work);
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-index b692c612f235..47f42087b78d 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-@@ -61,6 +61,23 @@
- #define IFH_REW_OP_ONE_STEP_PTP		0x3
- #define IFH_REW_OP_TWO_STEP_PTP		0x4
- 
-+#define FDMA_RX_DCB_MAX_DBS		1
-+#define FDMA_TX_DCB_MAX_DBS		1
-+#define FDMA_DCB_INFO_DATAL(x)		((x) & GENMASK(15, 0))
-+
-+#define FDMA_DCB_STATUS_BLOCKL(x)	((x) & GENMASK(15, 0))
-+#define FDMA_DCB_STATUS_SOF		BIT(16)
-+#define FDMA_DCB_STATUS_EOF		BIT(17)
-+#define FDMA_DCB_STATUS_INTR		BIT(18)
-+#define FDMA_DCB_STATUS_DONE		BIT(19)
-+#define FDMA_DCB_STATUS_BLOCKO(x)	(((x) << 20) & GENMASK(31, 20))
-+#define FDMA_DCB_INVALID_DATA		0x1
-+
-+#define FDMA_XTR_CHANNEL		6
-+#define FDMA_INJ_CHANNEL		0
-+#define FDMA_DCB_MAX			512
-+#define FDMA_WEIGHT			64
-+
- /* MAC table entry types.
-  * ENTRYTYPE_NORMAL is subject to aging.
-  * ENTRYTYPE_LOCKED is not subject to aging.
-@@ -76,6 +93,86 @@ enum macaccess_entry_type {
- 
- struct lan966x_port;
- 
-+struct lan966x_db {
-+	u64 dataptr;
-+	u64 status;
-+};
-+
-+struct lan966x_rx_dcb {
-+	u64 nextptr;
-+	u64 info;
-+	struct lan966x_db db[FDMA_RX_DCB_MAX_DBS];
-+};
-+
-+struct lan966x_tx_dcb {
-+	u64 nextptr;
-+	u64 info;
-+	struct lan966x_db db[FDMA_TX_DCB_MAX_DBS];
-+};
-+
-+struct lan966x_rx {
-+	struct lan966x *lan966x;
-+
-+	/* Pointer to the array of hardware dcbs. */
-+	struct lan966x_rx_dcb *dcbs;
-+
-+	/* Pointer to the last address in the dcbs. */
-+	struct lan966x_rx_dcb *last_entry;
-+
-+	/* For each DB, there is a skb, and the skb data pointer is mapped in
-+	 * the DB. Once a frame is received the skb is given to the upper layers
-+	 * and a new skb is added to the db.
-+	 */
-+	struct sk_buff *skb[FDMA_DCB_MAX][FDMA_RX_DCB_MAX_DBS];
-+
-+	/* Represents the db_index, it can have a value between 0 and
-+	 * FDMA_RX_DCB_MAX_DBS, once it reaches the value of FDMA_RX_DCB_MAX_DBS
-+	 * it means that the DCB can be reused.
-+	 */
-+	int db_index;
-+
-+	/* Represents the index in the dcbs. It has a value between 0 and
-+	 * FDMA_DCB_MAX
-+	 */
-+	int dcb_index;
-+
-+	/* Represents the dma address to the dcbs array */
-+	dma_addr_t dma;
-+
-+	/* Represents the page order that is used to allocate the pages for the
-+	 * RX buffers. This value is calculated based on max MTU of the devices.
-+	 */
-+	u8 page_order;
-+
-+	u8 channel_id;
-+};
-+
-+struct lan966x_tx_dcb_buf {
-+	struct net_device *dev;
-+	struct sk_buff *skb;
-+	dma_addr_t dma_addr;
-+	bool used;
-+	bool ptp;
-+};
-+
-+struct lan966x_tx {
-+	struct lan966x *lan966x;
-+
-+	/* Pointer to the dcb list */
-+	struct lan966x_tx_dcb *dcbs;
-+	u16 last_in_use;
-+
-+	/* Represents the DMA address to the first entry of the dcb entries. */
-+	dma_addr_t dma;
-+
-+	/* Array of dcbs that are given to the HW */
-+	struct lan966x_tx_dcb_buf *dcbs_buf;
-+
-+	u8 channel_id;
-+
-+	bool activated;
-+};
-+
- struct lan966x_stat_layout {
- 	u32 offset;
- 	char name[ETH_GSTRING_LEN];
-@@ -137,6 +234,7 @@ struct lan966x {
- 	int xtr_irq;
- 	int ana_irq;
- 	int ptp_irq;
-+	int fdma_irq;
- 
- 	/* worqueue for fdb */
- 	struct workqueue_struct *fdb_work;
-@@ -153,6 +251,13 @@ struct lan966x {
- 	spinlock_t ptp_ts_id_lock; /* lock for ts_id */
- 	struct mutex ptp_lock; /* lock for ptp interface state */
- 	u16 ptp_skbs;
-+
-+	/* fdma */
-+	bool fdma;
-+	struct net_device *fdma_ndev;
-+	struct lan966x_rx rx;
-+	struct lan966x_tx tx;
-+	struct napi_struct napi;
- };
- 
- struct lan966x_port_config {
-@@ -292,6 +397,13 @@ void lan966x_ptp_txtstamp_release(struct lan966x_port *port,
- 				  struct sk_buff *skb);
- irqreturn_t lan966x_ptp_irq_handler(int irq, void *args);
- 
-+int lan966x_fdma_xmit(struct sk_buff *skb, __be32 *ifh, struct net_device *dev);
-+void lan966x_fdma_netdev_init(struct lan966x *lan966x, struct net_device *dev);
-+void lan966x_fdma_netdev_deinit(struct lan966x *lan966x, struct net_device *dev);
-+int lan966x_fdma_init(struct lan966x *lan966x);
-+void lan966x_fdma_deinit(struct lan966x *lan966x);
-+irqreturn_t lan966x_fdma_irq_handler(int irq, void *args);
-+
- static inline void __iomem *lan_addr(void __iomem *base[],
- 				     int id, int tinst, int tcnt,
- 				     int gbase, int ginst,
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_port.c b/drivers/net/ethernet/microchip/lan966x/lan966x_port.c
-index 237555845a52..f141644e4372 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_port.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_port.c
-@@ -393,6 +393,9 @@ void lan966x_port_init(struct lan966x_port *port)
- 
- 	lan966x_port_config_down(port);
- 
-+	if (lan966x->fdma)
-+		lan966x_fdma_netdev_init(lan966x, port->dev);
-+
- 	if (config->portmode != PHY_INTERFACE_MODE_QSGMII)
- 		return;
- 
+	
+I refrained from doing so because the sequence of checks might be
+sub-optimal. But most probably we don't really care about that and it
+might make the code easier to grasp.
+
+Would that make it clearer?
+
+> 
+> In addition, I am not sure about the pte_dirty() check is really robust.
+> I mean I think it is ok, but is there any issue with shadow-stack? 
+
+Judging that it's already used that way for VMAs with dirty tracking, I
+assume it's ok. Without checking that the PTE is dirty, we'd have to do a:
+
+pte_mkwrite(pte_mkwrite(ptent));
+
+Which would set the pte and consequently the page dirty, although there
+might not even be a write access. That's what we want to avoid here.
+
+> 
+> And this also assumes the kernel does not clear the dirty bit without
+> clearing the present, as otherwise the note in Intel SDM section 4.8
+> ("Accessed and Dirty Flags”) will be relevant and dirty bit might be
+> set unnecessarily. I think it is ok.
+
+Yeah, I think so as well.
+
+> 
+>> +
+>> +	/* Do we need write faults for softdirty tracking? */
+>> +	if (IS_ENABLED(CONFIG_MEM_SOFT_DIRTY) && !pte_soft_dirty(pte) &&
+>> +	    (vma->vm_flags & VM_SOFTDIRTY))
+> 
+> If !IS_ENABLED(CONFIG_MEM_SOFT_DIRTY) then VM_SOFTDIRTY == 0. So I do not
+> think the IS_ENABLED() is necessary (unless you think it is clearer this
+> way).
+
+Right, we can just do
+
+if ((vma->vm_flags & VM_SOFTDIRTY) && !pte_soft_dirty(pte))
+
+and it should get fully optimized out. Thanks!
+
+> 
+>> +		return false;
+>> +
+>> +	/* Do we need write faults for uffd-wp tracking? */
+>> +	if (userfaultfd_pte_wp(vma, pte))
+>> +		return false;
+>> +
+>> +	if (!(vma->vm_flags & VM_SHARED)) {
+>> +		/*
+>> +		 * We can only special-case on exclusive anonymous pages,
+>> +		 * because we know that our write-fault handler similarly would
+>> +		 * map them writable without any additional checks while holding
+>> +		 * the PT lock.
+>> +		 */
+>> +		page = vm_normal_page(vma, addr, pte);
+> 
+> I guess we cannot call vm_normal_page() twice, once for prot_numa and once
+> here, in practice...
+
+I guess we could, but it doesn't necessarily make the code easier to
+read :) And we want to skip protnone either way.
+
+> 
+>> +		if (!page || !PageAnon(page) || !PageAnonExclusive(page))
+>> +			return false;
+>> +	}
+>> +
+>> +	return true;
+>> +}
+> 
+> Note that there is a small downside to all of that. Assume you mprotect()
+> a single page from RO to RW and you have many threads.
+> 
+> With my pending patch you would avoid the TLB shootdown (and get a PF).
+> With this patch you would get a TLB shootdown and save the PF. IOW, I
+> think it is worthy to skip the shootdown as well in such a case and
+> instead flush the TLB on spurious page-faults. But I guess that’s for
+> another patch.
+
+Just so I understand correctly: your optimization avoids the flush when
+effectively, nothing changed (R/O -> R/O).
+
+And the optimization for this case here would be, to avoid the TLB flush
+when similarly not required (R/O -> R/W).
+
+Correct?
+
 -- 
-2.33.0
+Thanks,
+
+David / dhildenb
 
