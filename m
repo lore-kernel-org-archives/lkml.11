@@ -2,77 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80170C352A1
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:23:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67D5AC4707F
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:23:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382154AbiDDVZC (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:25:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43764 "EHLO
+        id S234554AbiDDVZJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 17:25:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380049AbiDDSqP (ORCPT
+        with ESMTP id S1380199AbiDDTMG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 14:46:15 -0400
-Received: from mail-oa1-f46.google.com (mail-oa1-f46.google.com [209.85.160.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 413411C117;
-        Mon,  4 Apr 2022 11:44:18 -0700 (PDT)
-Received: by mail-oa1-f46.google.com with SMTP id 586e51a60fabf-df02f7e2c9so11733934fac.10;
-        Mon, 04 Apr 2022 11:44:18 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=+DVZa9rgC7XCqVmwQpif8MjcfgqohlHJqzZVbT4NdPA=;
-        b=6JF+JH6wd0/7ywTfr5v3ryTISkOXdlpaCcfqq+v+gSqf6hBI+8vk8ngOOlYaDhAbb4
-         WAy3YTXsYLkb1vr+wbPrDfOsGJfX3f+9W9bHS9uLBVL5MZY00DQ9MZCrEU7Ls0vJ4m0z
-         72hpsvSSTG+VINgD/AfqXSudkPVbKrNNyb5Gmz8/SnMgmR7yyL6xzU3T8eZC1oqqavmB
-         ZPWoP/q3+pS1OtwM0s71ApPn5GFqc2Mbytkvjze2+3hPAhLDiGmSwm3ezOUseinYdxRR
-         hDE7GZh5u59AgOui+SX1NM9BhXol1Wx/eP0/kHfd6EZJg8sI3hyUfmNV7Lw6uqrXD+DP
-         1U2g==
-X-Gm-Message-State: AOAM530hZi/cwbYGnskuyb3YyqLikeh4mmXx3JWiXYwGQOiUrpvfSLnd
-        3xNLPVVPw3NXJbBciNqLfA==
-X-Google-Smtp-Source: ABdhPJxQfrcUZKKhBzVlnqfwkA2XRgYhsqJUmARYpgm43Nh3Hvc35k/tV+fKp7H5hXzW0gHNQ64G6g==
-X-Received: by 2002:a05:6870:c353:b0:de:d908:3e6d with SMTP id e19-20020a056870c35300b000ded9083e6dmr323176oak.190.1649097857541;
-        Mon, 04 Apr 2022 11:44:17 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id t3-20020a05680800c300b002f935a7daa9sm4505802oic.19.2022.04.04.11.44.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 11:44:17 -0700 (PDT)
-Received: (nullmailer pid 1703057 invoked by uid 1000);
-        Mon, 04 Apr 2022 18:44:16 -0000
-Date:   Mon, 4 Apr 2022 13:44:16 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-Cc:     Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] dt-bindings: PCI: uniphier: Convert
- uniphier-pcie.txt to json-schema
-Message-ID: <Yks8gNN0wp7xJDST@robh.at.kernel.org>
-References: <1648617814-9217-1-git-send-email-hayashi.kunihiko@socionext.com>
- <1648617814-9217-2-git-send-email-hayashi.kunihiko@socionext.com>
+        Mon, 4 Apr 2022 15:12:06 -0400
+Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 576A233E9D
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 12:10:09 -0700 (PDT)
+Date:   Mon, 4 Apr 2022 12:10:02 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1649099407;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=aFvgM5NfOebxDDUuuHdtiZjWiL2k8D65MO0wbzsRCYg=;
+        b=ql2tN95cfc7u+wPhC0kENNn24vZb3lVeqzCTUmJam3h9qW1fEQrbKa/dsQyjf9mgc0DmBX
+        XpO2fOJD348nJ31+6gQRXCjl62yZRZyCKwDNrevZ9bt99DcrkWRxl8CwUMGoOowULtpaBn
+        pvthJgRu34J/o/9TC57V07iwmxwGdvA=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Roman Gushchin <roman.gushchin@linux.dev>
+To:     Miaohe Lin <linmiaohe@huawei.com>
+Cc:     cl@linux.com, penberg@kernel.org, rientjes@google.com,
+        iamjoonsoo.kim@lge.com, akpm@linux-foundation.org, vbabka@suse.cz,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] mm/slab: remove some unused functions
+Message-ID: <YktCirLdFJx7P/T/@carbon.dhcp.thefacebook.com>
+References: <20220322091421.25285-1-linmiaohe@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1648617814-9217-2-git-send-email-hayashi.kunihiko@socionext.com>
+In-Reply-To: <20220322091421.25285-1-linmiaohe@huawei.com>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 30 Mar 2022 14:23:33 +0900, Kunihiko Hayashi wrote:
-> Convert the file into a JSON description at the yaml format.
+On Tue, Mar 22, 2022 at 05:14:21PM +0800, Miaohe Lin wrote:
+> alternate_node_alloc and ____cache_alloc_node are always called when
+> CONFIG_NUMA. So we can remove the unused !CONFIG_NUMA variant. Also
+> forward declaration for alternate_node_alloc is unnecessary. Remove
+> it too.
 > 
-> Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-> ---
->  .../bindings/pci/socionext,uniphier-pcie.yaml | 96 +++++++++++++++++++
->  .../devicetree/bindings/pci/uniphier-pcie.txt | 82 ----------------
->  MAINTAINERS                                   |  2 +-
->  3 files changed, 97 insertions(+), 83 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/pci/socionext,uniphier-pcie.yaml
->  delete mode 100644 Documentation/devicetree/bindings/pci/uniphier-pcie.txt
-> 
+> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
 
-Applied, thanks!
+Reviewed-by: Roman Gushchin <roman.gushchin@linux.dev>
+
+Thanks!
