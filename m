@@ -2,148 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15B6DC4167B
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:50:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2902AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:50:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382238AbiDDVuy (ORCPT
+        id S1382202AbiDDVuu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:50:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46240 "EHLO
+        Mon, 4 Apr 2022 17:50:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380713AbiDDVKc (ORCPT
+        with ESMTP id S1379263AbiDDQvu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 17:10:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 790EE1136;
-        Mon,  4 Apr 2022 14:08:32 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 733BC60ED7;
-        Mon,  4 Apr 2022 21:08:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58EE7C340F3;
-        Mon,  4 Apr 2022 21:08:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649106511;
-        bh=lMFZzJK3d7b7zCNL7PVAqXkEUtWjmCH9N34EDxdccbc=;
-        h=From:To:Cc:Subject:Date:From;
-        b=bVbvEY29tdsfqT/5ETEFVDzbQ12LdDJo1+j+PrvKJA2Vvlera/X/BqrspOXXgONOL
-         r0u/ZV0rcxAmNgs8dxItcaluZwy+eMg4VcT1ix24MXSIyBT3s2qVgIrd3K5LiXHuBR
-         gRRA+DXvABmxagsDWSXMsGS3B21HI0xY7Ao8OZgTS5QD/86Ubu7/d9S2EI5bmsxCUL
-         jU2Ov8h1iH2g4ihtAHV8eMUPdDYs5jqs8sMNQ23pHMDar+RKy7FRslRQfuUz4fqfJz
-         dAWLtN9q1K0hxmJ5f+rx091lsztNv+7tTi5CBf6MnLJKSnMLDE5NaUgGpYOJuyVKgm
-         9+x3xsOvqRH6w==
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Masahiro Yamada <masahiroy@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Cc:     linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev, patches@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org,
-        Nathan Chancellor <nathan@kernel.org>
-Subject: [PATCH] lib/raid6: Add -Wno-declaration-after-statement to NEON_FLAGS for clang < 14.0.1
-Date:   Mon,  4 Apr 2022 14:08:05 -0700
-Message-Id: <20220404210804.3537324-1-nathan@kernel.org>
-X-Mailer: git-send-email 2.35.1
+        Mon, 4 Apr 2022 12:51:50 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89EF231356;
+        Mon,  4 Apr 2022 09:49:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649090994; x=1680626994;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=tnKhEovJ3wJbqNrvgmlmqHErG5QsGMJ66jmnS8oB3JI=;
+  b=GrLC0xdWwvW5BIHPZaPGVCyBRRkNOyK26DxEbLsDGB8I9a7xsrpZz/go
+   xoqjq+R0r4gc1KWF4kRzMXyAAK3MvAzE/7zKDDIBDyBl1eVbzo7RgjK3r
+   qAekJkv1kj83/oWJlZfcpPDRwapOJHr5dtbF0bUu5wkBmrOLsGNsw/BV0
+   DQ/nrwFX61dfdqYZ0tSaV6Km4B0cQklgGtx/JqUtPJIMJoxRwWr8WhFlF
+   bFufnDV9fTazI5quq6nh1lY6BODfmCPcGE0s+SbO7ezQb6C3G1Iz/weDo
+   MKekppQHEbilJr3VoEqPUGNMYDMLMc/KZ39+wFIql4JahCnN7aEYyBNxL
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="323734046"
+X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
+   d="scan'208";a="323734046"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:49:51 -0700
+X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
+   d="scan'208";a="523105180"
+Received: from rchatre-ws.ostc.intel.com ([10.54.69.144])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:49:50 -0700
+From:   Reinette Chatre <reinette.chatre@intel.com>
+To:     dave.hansen@linux.intel.com, jarkko@kernel.org, tglx@linutronix.de,
+        bp@alien8.de, luto@kernel.org, mingo@redhat.com,
+        linux-sgx@vger.kernel.org, x86@kernel.org
+Cc:     seanjc@google.com, kai.huang@intel.com, cathy.zhang@intel.com,
+        cedric.xing@intel.com, haitao.huang@intel.com,
+        mark.shanahan@intel.com, hpa@zytor.com,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH V3 11/30] x86/sgx: Keep record of SGX page type
+Date:   Mon,  4 Apr 2022 09:49:19 -0700
+Message-Id: <ddd25a12cc1d593f6560fa1cbc4c8018cb04a4ae.1648847675.git.reinette.chatre@intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cover.1648847675.git.reinette.chatre@intel.com>
+References: <cover.1648847675.git.reinette.chatre@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-After commit e8c07082a810 ("Kbuild: move to -std=gnu11"), there is a
-spew of warnings in lib/raid6/ when building arm64 defconfig plus
-CONFIG_CPU_BIG_ENDIAN=y with clang 14.0.0, which come from its
-arm_neon.h header:
+SGX2 functions are not allowed on all page types. For example,
+ENCLS[EMODPR] is only allowed on regular SGX enclave pages and
+ENCLS[EMODPT] is only allowed on TCS and regular pages. If these
+functions are attempted on another type of page the hardware would
+trigger a fault.
 
-lib/raid6/recov_neon_inner.c:55:8: warning: mixing declarations and code is incompatible with standards before C99 [-Wdeclaration-after-statement]
-                vy = vshrq_n_u8(vx, 4);
-                     ^
-.../lib/clang/14.0.0/include/arm_neon.h:25231:14: note: expanded from macro 'vshrq_n_u8'
-  uint8x16_t __ret; \
-             ^
+Keep a record of the SGX page type so that there is more
+certainty whether an SGX2 instruction can succeed and faults
+can be treated as real failures.
 
-Looking at the header, the big endian version does mix declarations and
-code, due to the reversal of the first argument:
+The page type is a property of struct sgx_encl_page
+and thus does not cover the VA page type. VA pages are maintained
+in separate structures and their type can be determined in
+a different way. The SGX2 instructions needing the page type do not
+operate on VA pages and this is thus not a scenario needing to
+be covered at this time.
 
-  #ifdef __LITTLE_ENDIAN__
-  #define vshrq_n_u8(__p0, __p1) __extension__ ({ \
-    uint8x16_t __s0 = __p0; \
-    uint8x16_t __ret; \
-    __ret = (uint8x16_t) __builtin_neon_vshrq_n_v((int8x16_t)__s0, __p1, 48); \
-    __ret; \
-  })
-  #else
-  #define vshrq_n_u8(__p0, __p1) __extension__ ({ \
-    uint8x16_t __s0 = __p0; \
-    uint8x16_t __rev0;  __rev0 = __builtin_shufflevector(__s0, __s0, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0); \
-    uint8x16_t __ret; \
-    __ret = (uint8x16_t) __builtin_neon_vshrq_n_v((int8x16_t)__rev0, __p1, 48); \
-    __ret = __builtin_shufflevector(__ret, __ret, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0); \
-    __ret; \
-  })
-  #endif
+struct sgx_encl_page hosting this information is maintained for each
+enclave page so the space consumed by the struct is important.
+The existing sgx_encl_page->vm_max_prot_bits is already unsigned long
+while only using three bits. Transition to a bitfield for the two
+members to support the additional information without increasing
+the space consumed by the struct.
 
-It was initially surprising that clang warned about a macro that
-originates from a system header, as this deviates from GCC. The
-machinery in clang to ignore warnings in macros from system headers is
-relatively new in clang (January 2022). When that change was landed, the
-code owner of clang was not confident that clang's diagnostic system
-provided enough information to avoid falsely disabling warnings that
-originated from user controlled code that was mixed with system macros,
-so the default behavior of warning within system macros remained
-unchanged. This deficiency is unlikely to further impact the kernel, as
-it does not use any system headers aside from SIMD intrinsic headers
-after commit 04e85bbf71c9 ("isystem: delete global -isystem compile
-option").
-
-Another interesting aspect of this warning's appearance is how it only
-appeared when moving from gnu89 to gnu11, as the above problem has
-always been relevant for clang, regardless of the C standard version
-used to build the kernel. In clang 14.0.0, -Wdeclaration-after-statement
-was made available under newer C standard versions; prior to that
-change, it was only available for C standard versions older than C99.
-
-https://github.com/llvm/llvm-project/commit/118f966b46cfb60897b56a9878e1c68fd0e2afa4
-
-When compiling for a C standard older than C99,
--Wdeclaration-after-statement is an extension warning, which means it
-can be silenced with '__extension__', as the macro above does. However,
-starting with C99, using '__extension__' to silence the warning does not
-work, as mixing declarations and code is no longer an extension, which
-is why the warning appears for gnu11 and gnu89.
-
-Ultimately, this issue is resolved in clang 14.0.1 and 15.0.0 by making
-arm_neon.h fully compliant with -Wdeclaration-after-statement for all C
-standard versions. For older versions of clang, hide this warning for
-32-bit and 64-bit ARM big endian in files that use arm_neon.h.
-
-Link: https://github.com/ClangBuiltLinux/linux/issues/1603
-Link: https://github.com/llvm/llvm-project/issues/54062
-Link: https://github.com/llvm/llvm-project/commit/5a2e56b70e2fa7ad0d82e54bc4c741b16f05e475
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+Acked-by: Jarkko Sakkinen <jarkko@kernel.org>
+Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
 ---
- lib/raid6/Makefile | 6 ++++++
- 1 file changed, 6 insertions(+)
+Changes since V2:
+- Update changelog to motivate transition to bitfield that
+  was previously done when (now removed) vm_run_prot_bits was
+  added.
 
-diff --git a/lib/raid6/Makefile b/lib/raid6/Makefile
-index 45e17619422b..f0a17bc7bd1d 100644
---- a/lib/raid6/Makefile
-+++ b/lib/raid6/Makefile
-@@ -41,6 +41,12 @@ NEON_FLAGS += -isystem $(shell $(CC) -print-file-name=include)
- ifeq ($(ARCH),arm)
- NEON_FLAGS += -march=armv7-a -mfloat-abi=softfp -mfpu=neon
- endif
-+# https://github.com/ClangBuiltLinux/linux/issues/1603
-+ifdef CONFIG_CPU_BIG_ENDIAN
-+ifeq ($(shell test $(CONFIG_CLANG_VERSION) -lt 140001; echo $$?),0)
-+NEON_FLAGS += -Wno-declaration-after-statement
-+endif
-+endif
- CFLAGS_recov_neon_inner.o += $(NEON_FLAGS)
- ifeq ($(ARCH),arm64)
- CFLAGS_REMOVE_recov_neon_inner.o += -mgeneral-regs-only
+Changes since V1:
+- Add Acked-by from Jarkko.
 
-base-commit: 3123109284176b1532874591f7c81f3837bbdc17
+ arch/x86/include/asm/sgx.h      | 3 +++
+ arch/x86/kernel/cpu/sgx/encl.h  | 3 ++-
+ arch/x86/kernel/cpu/sgx/ioctl.c | 2 ++
+ 3 files changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/include/asm/sgx.h b/arch/x86/include/asm/sgx.h
+index d67810b50a81..eae20fa52b93 100644
+--- a/arch/x86/include/asm/sgx.h
++++ b/arch/x86/include/asm/sgx.h
+@@ -239,6 +239,9 @@ struct sgx_pageinfo {
+  * %SGX_PAGE_TYPE_REG:	a regular page
+  * %SGX_PAGE_TYPE_VA:	a VA page
+  * %SGX_PAGE_TYPE_TRIM:	a page in trimmed state
++ *
++ * Make sure when making changes to this enum that its values can still fit
++ * in the bitfield within &struct sgx_encl_page
+  */
+ enum sgx_page_type {
+ 	SGX_PAGE_TYPE_SECS,
+diff --git a/arch/x86/kernel/cpu/sgx/encl.h b/arch/x86/kernel/cpu/sgx/encl.h
+index 1b15d22f6757..07abfc70c8e3 100644
+--- a/arch/x86/kernel/cpu/sgx/encl.h
++++ b/arch/x86/kernel/cpu/sgx/encl.h
+@@ -27,7 +27,8 @@
+ 
+ struct sgx_encl_page {
+ 	unsigned long desc;
+-	unsigned long vm_max_prot_bits;
++	unsigned long vm_max_prot_bits:8;
++	enum sgx_page_type type:16;
+ 	struct sgx_epc_page *epc_page;
+ 	struct sgx_encl *encl;
+ 	struct sgx_va_page *va_page;
+diff --git a/arch/x86/kernel/cpu/sgx/ioctl.c b/arch/x86/kernel/cpu/sgx/ioctl.c
+index f487549bccba..0c211af8e948 100644
+--- a/arch/x86/kernel/cpu/sgx/ioctl.c
++++ b/arch/x86/kernel/cpu/sgx/ioctl.c
+@@ -107,6 +107,7 @@ static int sgx_encl_create(struct sgx_encl *encl, struct sgx_secs *secs)
+ 		set_bit(SGX_ENCL_DEBUG, &encl->flags);
+ 
+ 	encl->secs.encl = encl;
++	encl->secs.type = SGX_PAGE_TYPE_SECS;
+ 	encl->base = secs->base;
+ 	encl->size = secs->size;
+ 	encl->attributes = secs->attributes;
+@@ -344,6 +345,7 @@ static int sgx_encl_add_page(struct sgx_encl *encl, unsigned long src,
+ 	 */
+ 	encl_page->encl = encl;
+ 	encl_page->epc_page = epc_page;
++	encl_page->type = (secinfo->flags & SGX_SECINFO_PAGE_TYPE_MASK) >> 8;
+ 	encl->secs_child_cnt++;
+ 
+ 	if (flags & SGX_PAGE_MEASURE) {
 -- 
-2.35.1
+2.25.1
 
