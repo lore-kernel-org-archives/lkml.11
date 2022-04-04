@@ -2,96 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFAD7C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B27AAC433FE
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:59:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358775AbiDDV5t (ORCPT
+        id S1358570AbiDDV5m (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:57:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60216 "EHLO
+        Mon, 4 Apr 2022 17:57:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379674AbiDDRss (ORCPT
+        with ESMTP id S1379387AbiDDREA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 13:48:48 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 075AF2E9E3;
-        Mon,  4 Apr 2022 10:46:51 -0700 (PDT)
-Date:   Mon, 04 Apr 2022 17:46:48 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649094409;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=3N+jev8SrzDa0Nmjae+hY+7VOcQ8L94Nkcq/fRv8hE4=;
-        b=z7uy41kdBd0niNlzn2C0RFv0woCttoi1EHX1fgBM7qwIBGn9+4EA6hqUepZBcvdrLrKTkg
-        7ZHruqs8H920XnO7sMFr3wFhWEsqP5CBgJPxseE506lXofhZHM244cbYAMQIG157ZrGKQy
-        ndjbCFDl0/TYodYbu2QmbhZXicNuTLUlc7vMajvVWXeLUc8TwOr+gV82WJ953b+i0Xm4GJ
-        RYG10BhkpZ2yuw4wG17/rQ4z8W3TOV4EybLdtUDbv1xONYK4FsiXP4CC5UZ0PVY9FNCp1A
-        JMZDXVXIPTNkEacVdoO52nogucfsEcjLBHjPcbu9wbb/9SyXYgqBCWsZGdmORw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649094409;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=3N+jev8SrzDa0Nmjae+hY+7VOcQ8L94Nkcq/fRv8hE4=;
-        b=+iXnKMOetcgyuxYv8LhjjC2kXPJRmG8C5fF33zfFpR6DU7pasO9piQ6DQF1nyxx0eopCw+
-        xYwTsKHdJ8aALYDA==
-From:   "tip-bot2 for Borislav Petkov" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: locking/core] x86/mm: Force-inline __phys_addr_nodebug()
-Cc:     Borislav Petkov <bp@suse.de>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220324183607.31717-4-bp@alien8.de>
-References: <20220324183607.31717-4-bp@alien8.de>
+        Mon, 4 Apr 2022 13:04:00 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92D1640A25
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 10:02:03 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id dr20so21180502ejc.6
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 10:02:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=fTtmY+6kEY48dXDt92pAxKFA5nufZVaGUszJn2KSj7Q=;
+        b=UoomhqtwgUrejeY/SCN+1Dep4CWzZhUfhrmtVDDBEt4UhRyFQ3a9DQY0HZGJxfZ8h3
+         1eiFIoyW3Ezepg4hYMtIES9QgFXXqVeuQJjAHGIRNr2GE9htsMnv4tRL1bBQnpRbwMHL
+         GJGHJrvuDF0Pfymdr8RHYq4aIdeZWIcVtJkjNpBBa3P2oZhKtbHX01oKUUDk2wwxWaNy
+         OypSqHrPAo9MHrKZa8GKblq5dRgkRTocm2oA7GEr1/nwzT4Voo5ugca4Rgn0w+xvHDFD
+         apQvJb8YLhrDxvABOX6lb+F3IA6zeuwokQsrXGQwaw7IuXoCzSXeqCSMyJmGV5h7uMDk
+         HiIw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=fTtmY+6kEY48dXDt92pAxKFA5nufZVaGUszJn2KSj7Q=;
+        b=Xte8g7Nx5oqyMHd9nzkK4fxohqPO8w9UpYqcNncjjbwQi3r5tLgGQ+trbOsjYEwN+Z
+         gp6ysNdkhL7MTmwLYGlyfIOewnpQS1CfgEV2BoQ9GvHhxlfWd3LYumqrnbXg1DgEa7RX
+         sYXo1oBZ+YQvLTqWr+FZ7o1FJR2UBr0QzNZZmeNuMG363/3FCjHGJo7kk2aztdnX2c9V
+         WnSLm2DM9bbY6jfsVBp6vjudRpx6VD9IdArwvCjaMQ3VKMJQNMnPJ4TK3HdDYopkjxOh
+         sAUS1ScQFDIRf6BiWeOH/AfblctNCTUdcNDObdl94Z+HvUPs5JNBLx7rqCZQiYFn4AEa
+         yeDg==
+X-Gm-Message-State: AOAM533ustT768ZRd9iGHo5TrnjynehWEtTNc15rEnlJTD07BWnC1eNG
+        pZNA9OS6zMqfZ0nyOp8tnVw6MQ==
+X-Google-Smtp-Source: ABdhPJzNNWr2tpPZJ5TXhj+1dMy4Ij5a4dyOvyKFovCPsbkyQci20MirVmatIhBwjLaXk1L0KkhiYg==
+X-Received: by 2002:a17:907:608f:b0:6e8:395:43fe with SMTP id ht15-20020a170907608f00b006e8039543femr1005391ejc.439.1649091722097;
+        Mon, 04 Apr 2022 10:02:02 -0700 (PDT)
+Received: from localhost.localdomain (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id c5-20020a170906d18500b006ce371f09d4sm4557770ejz.57.2022.04.04.10.02.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Apr 2022 10:02:01 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Rob Herring <robh+dt@kernel.org>,
+        linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        linux-arm-kernel@lists.infradead.org,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Thomas Gleixner <tglx@linutronix.de>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: Re: (subset) [PATCH v2 4/4] arm64: dts: tesla: add a specific compatible to MCT on FSD
+Date:   Mon,  4 Apr 2022 19:01:49 +0200
+Message-Id: <164909169269.1688455.2895247009152071238.b4-ty@linaro.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220304122424.307885-5-krzysztof.kozlowski@canonical.com>
+References: <20220304122424.307885-1-krzysztof.kozlowski@canonical.com> <20220304122424.307885-5-krzysztof.kozlowski@canonical.com>
 MIME-Version: 1.0
-Message-ID: <164909440815.389.8658129440289890986.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the locking/core branch of tip:
+On Fri, 4 Mar 2022 13:24:24 +0100, Krzysztof Kozlowski wrote:
+> One compatible is used for the Multi-Core Timer on Tesla FSD SoC, which
+> is correct but not specific enough.  The MCT blocks have different
+> number of interrupts, so add a second specific compatible to Tesla FSD.
+> 
+> 
 
-Commit-ID:     ace1a98519270c586c0d4179419292df67441cd1
-Gitweb:        https://git.kernel.org/tip/ace1a98519270c586c0d4179419292df67441cd1
-Author:        Borislav Petkov <bp@suse.de>
-AuthorDate:    Wed, 23 Mar 2022 23:24:12 +01:00
-Committer:     Borislav Petkov <bp@suse.de>
-CommitterDate: Mon, 04 Apr 2022 10:13:25 +02:00
+Applied, thanks!
 
-x86/mm: Force-inline __phys_addr_nodebug()
+[4/4] arm64: dts: tesla: add a specific compatible to MCT on FSD
+      commit: 22cbcb8f4a17c194d208f686fc3ea37fc860bd71
 
-Fix:
-
-  vmlinux.o: warning: objtool: __sev_es_nmi_complete()+0x8b: call to __phys_addr_nodebug() leaves .noinstr.text section
-
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lore.kernel.org/r/20220324183607.31717-4-bp@alien8.de
----
- arch/x86/include/asm/page_64.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/arch/x86/include/asm/page_64.h b/arch/x86/include/asm/page_64.h
-index e9c8629..baa7045 100644
---- a/arch/x86/include/asm/page_64.h
-+++ b/arch/x86/include/asm/page_64.h
-@@ -16,7 +16,7 @@ extern unsigned long page_offset_base;
- extern unsigned long vmalloc_base;
- extern unsigned long vmemmap_base;
- 
--static inline unsigned long __phys_addr_nodebug(unsigned long x)
-+static __always_inline unsigned long __phys_addr_nodebug(unsigned long x)
- {
- 	unsigned long y = x - __START_KERNEL_map;
- 
+Best regards,
+-- 
+Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
