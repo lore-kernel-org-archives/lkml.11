@@ -2,115 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43DE2C47090
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:25:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53E76C47094
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:25:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382183AbiDDV0a (ORCPT
+        id S1382253AbiDDV0h (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:26:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52360 "EHLO
+        Mon, 4 Apr 2022 17:26:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379841AbiDDSQZ (ORCPT
+        with ESMTP id S1379419AbiDDRKT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 14:16:25 -0400
-Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3860E3EA98
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 11:14:27 -0700 (PDT)
-Received: by mail-lj1-x231.google.com with SMTP id b43so13982321ljr.10
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 11:14:27 -0700 (PDT)
+        Mon, 4 Apr 2022 13:10:19 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E281E40A25
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 10:08:22 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id ot30so11392306ejb.12
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 10:08:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=jA9O88Cl7Cj3DV9YqV3pxHKzHcpN0w127uH0DJrDu6A=;
-        b=cSyT5s8jfuk/1JR9/fI/Gqs9xQ74yToQSFVeEVZE16CzTs4y1cTOu7dQy0iEotcwpp
-         QXie2PHfvs7leMvJi+X5kQ9GgPivCzeYCJMWlKDtfiv2fOJIgHccPOImyRc3tPvaXTWK
-         I8gGR4josMrjK3iFj9rmn3/SieCQXjuOAEUL34WHsC4u4g2N1HZD+eDal9zVcALYiNGD
-         z97IvYhjqplonvMwwlZxugT2/f2yTjszKbrnzmJxMKd/56uQxqNMRguv/Obf8GOX+7v/
-         dUVZIvh+sRDUDSFPb/VkLSB7RsQkgdLAVyXMGApGh89rPO6CofiKvMSSLJXP4dWDEbfD
-         A3bQ==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=LXXr7F0cW3RTrkA8M6uuznqZSvmvR1TGt0LOYkCfNSQ=;
+        b=wBUWd1KOHSXpqah/8BaOgmo8qLPdZf1sdgt0au6YhBPtGFBBh2rBCHyFSGtQaXNZe7
+         khGltgNxaO32X6qwHt4slyv3JWF+NX5P+dHNeemg4Dp4Rj2oEKD1T3M7L+jBkvG0cEaj
+         XWzBID2cjpeX8s/+1fc7UvWjmeXe7cRskPgFVjXw5x5VHbcBDjc3bg59jDMUgbQMp0QD
+         LFBiJ6j2JSV6MBnkz8TAYalVInVz6tEnJZIX0E2/DYb+fBpSM+arJRv+VD6RXlRi6b5Y
+         Ek8TgLsFU9b5Qf6uMfaf/Q6xTn5QkVOkUzkmJD5P8m3DccA+TDLPfosr3ptDA05BQWii
+         dHCQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=jA9O88Cl7Cj3DV9YqV3pxHKzHcpN0w127uH0DJrDu6A=;
-        b=O63aWE+1ALzMX+A5QfvXmZpGunH9RJhcKRXbnBbulXjRGXXqvZp7Wq23phUTc3GtCg
-         O1yADUs7RCD0w48jvHpX5xpNLw11ivJoZF8QiZHG+SC51ZrdzYe2Noj+3lhH9JbiPAt6
-         wkUUaHwxYj1pdERGtCVi91yHLIoMnPQig9W8erxupyv848M0cTTSgtjgNBieSNO6MQ5b
-         ZJMMhNeeja2ilb0TgC+M1Tpp0aF7K9Ajlz+cQ++JX0d6DTveKqcsMBMxlIUjLvDS2m2F
-         RFRwfkK/jTdaktsenUsEaim715lknByrSbVu0mVoOGPLL4cyed3+hrtqSmlmv2/9SRwB
-         FV5w==
-X-Gm-Message-State: AOAM532lzcKe0gC/sdfQ8UmRJboEMl5tlGHUcMvjNCMCbe+NZqc9KhTq
-        A5FtMzfTTHHzA8mnFgp1NEN1ReE903A3Us6ajIljjA==
-X-Google-Smtp-Source: ABdhPJy6X4VfItY0Exvmm9zT3KLeOkR4u/yRf3ZAF3nadtPeZPD3a5V5gvnOVvP+rwxXW2K1ofGissW4GbSk2e/aaR8=
-X-Received: by 2002:a2e:611a:0:b0:249:83e5:9f9b with SMTP id
- v26-20020a2e611a000000b0024983e59f9bmr546393ljb.165.1649096065187; Mon, 04
- Apr 2022 11:14:25 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=LXXr7F0cW3RTrkA8M6uuznqZSvmvR1TGt0LOYkCfNSQ=;
+        b=vcKkHev3ADuEjZkbBn685rmVtfJJDBznQVepxhnsnbKUy6cJEjRFlm8DfGZglTVH5C
+         Mlbg8YlhGpKDsESk8CCwAKJX/TsnCi3/iKgC8SlxLPvC+X4ATzVy3+cjQP2QE9xQ6mKH
+         +XxtEkGot4NLRB6pEVL5a/AgkVW3MfOsOpR3wui3gounecKh8jmqq/sVPmLQwUlWqxLE
+         1kgZLnp/pggCo1eO3DJM7/iJKTrueBL8ms+m3vwolWeHgY8Pec2xirVcbxRsce0x7UR4
+         BIDAkF+jVbK3F19h/JNRiOTfPfHnjriTfYAqlH2o1naoEfXdxOlgEdeZDFro6qbDA/DB
+         1HXg==
+X-Gm-Message-State: AOAM532tjEB3bDzpsriElFJGUbMBqbFnLFKfA3+cKPQNCzuy5jzMvOvB
+        ErN9f+hp90dZ8/KMDYNeaJRCxQ==
+X-Google-Smtp-Source: ABdhPJx2qo4HGcrJqr114ZtIIY4ckwTEFuRMwUlvOaFJCAC2pEj4AzRRvX7sa3sEZVcPo8HyRUAHlA==
+X-Received: by 2002:a17:907:a41e:b0:6e7:9ea9:8350 with SMTP id sg30-20020a170907a41e00b006e79ea98350mr1021136ejc.377.1649092101002;
+        Mon, 04 Apr 2022 10:08:21 -0700 (PDT)
+Received: from localhost.localdomain (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id u25-20020a170906b11900b006e08588afedsm4565827ejy.132.2022.04.04.10.08.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Apr 2022 10:08:20 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Lukasz Luba <lukasz.luba@arm.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        linux-samsung-soc@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH] memory: samsung: exynos5422-dmc: Avoid some over memory allocation
+Date:   Mon,  4 Apr 2022 19:08:14 +0200
+Message-Id: <164909209237.1690243.6125620782539753539.b4-ty@linaro.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <69d7e69346986e2fdb994d4382954c932f9f0993.1647760213.git.christophe.jaillet@wanadoo.fr>
+References: <69d7e69346986e2fdb994d4382954c932f9f0993.1647760213.git.christophe.jaillet@wanadoo.fr>
 MIME-Version: 1.0
-References: <20220318003927.81471-1-colin.i.king@gmail.com>
-In-Reply-To: <20220318003927.81471-1-colin.i.king@gmail.com>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Mon, 4 Apr 2022 11:14:13 -0700
-Message-ID: <CAKwvOd=jyrdkMHPR3ZNQHattOxXcS1SseAHvrXWQC2H6tDB-Xw@mail.gmail.com>
-Subject: Re: [PATCH] scsi: message: fusion: mptbase: remove redundant variable dmp
-To:     Colin Ian King <colin.i.king@gmail.com>
-Cc:     Sathya Prakash <sathya.prakash@broadcom.com>,
-        Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
-        Suganath Prabu Subramani 
-        <suganath-prabu.subramani@broadcom.com>,
-        MPT-FusionLinux.pdl@broadcom.com, linux-scsi@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 17, 2022 at 5:39 PM Colin Ian King <colin.i.king@gmail.com> wrote:
->
-> Variable dmp is being assigned a value that is never read, the
-> variable is redundant and can be removed.
->
-> Cleans up clang scan build warning:
-> drivers/message/fusion/mptbase.c:6667:39: warning: Although
-> the value stored to 'dmp' is used in the enclosing expression,
-> the value is never actually read from 'dmp' [deadcode.DeadStores]
->
-> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+On Sun, 20 Mar 2022 08:10:30 +0100, Christophe JAILLET wrote:
+> 'dmc->counter' is a 'struct devfreq_event_dev **', so there is some
+> over memory allocation. 'counters_size' should be computed with
+> 'sizeof(struct devfreq_event_dev *)'.
+> 
+> Use 'sizeof(*dmc->counter)' instead to fix it.
+> 
+> While at it, use devm_kcalloc() instead of devm_kzalloc()+open coded
+> multiplication.
+> 
+> [...]
 
-Thanks for the patch!
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Applied, thanks!
 
-> ---
->  drivers/message/fusion/mptbase.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/message/fusion/mptbase.c b/drivers/message/fusion/mptbase.c
-> index e90adfa57950..9b3ba2df71c7 100644
-> --- a/drivers/message/fusion/mptbase.c
-> +++ b/drivers/message/fusion/mptbase.c
-> @@ -6658,13 +6658,13 @@ static int mpt_summary_proc_show(struct seq_file *m, void *v)
->  static int mpt_version_proc_show(struct seq_file *m, void *v)
->  {
->         u8       cb_idx;
-> -       int      scsi, fc, sas, lan, ctl, targ, dmp;
-> +       int      scsi, fc, sas, lan, ctl, targ;
->         char    *drvname;
->
->         seq_printf(m, "%s-%s\n", "mptlinux", MPT_LINUX_VERSION_COMMON);
->         seq_printf(m, "  Fusion MPT base driver\n");
->
-> -       scsi = fc = sas = lan = ctl = targ = dmp = 0;
-> +       scsi = fc = sas = lan = ctl = targ = 0;
->         for (cb_idx = MPT_MAX_PROTOCOL_DRIVERS-1; cb_idx; cb_idx--) {
->                 drvname = NULL;
->                 if (MptCallbacks[cb_idx]) {
-> --
-> 2.35.1
->
->
+[1/1] memory: samsung: exynos5422-dmc: Avoid some over memory allocation
+      commit: 56653827f0d7bc7c2d8bac0e119fd1521fa9990a
 
-
+Best regards,
 -- 
-Thanks,
-~Nick Desaulniers
+Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
