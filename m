@@ -2,171 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A017C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BAAAC4167D
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:23:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382009AbiDDVYj (ORCPT
+        id S1381979AbiDDVYe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:24:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55376 "EHLO
+        Mon, 4 Apr 2022 17:24:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380390AbiDDT4b (ORCPT
+        with ESMTP id S1380146AbiDDTDV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 15:56:31 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A68D26557
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 12:54:34 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id ch16-20020a17090af41000b001ca867ef52bso642174pjb.0
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 12:54:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=wSGFvmojAE5Wwgdbskjebmb4GWisI7pCGYJOHtj8+hU=;
-        b=Qz5IOLZhPNYeCPsVpAhskFI+r2Iuy3QXVCHEY1QCqMYBRhOwgYmS0AMm99n3NnRPia
-         Yjper3dbJkfse7JwU1MKcByxmmwW8PzSJ5JxCcGfnp13TIeQLlVzucqsPhD6A6mCt+9L
-         o12xQLwyBe70MNcbJV3eUQn29qKrr2D1HMqueaAHU4MmsigisnbZPFNGDEa7QVAftA69
-         fqbgrLxQ+xR62z7sxtVv2KCOsywxnM1S00uow9DPnu85svo7TYWl6X9/S6ovR/or5mTO
-         C2Futupmxny7LGpRDZjjiQo2MdvKNgUJL1nAbv/7IO14t0jo28GgjAr8WAcxduaN+gXJ
-         vM7g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=wSGFvmojAE5Wwgdbskjebmb4GWisI7pCGYJOHtj8+hU=;
-        b=4T0lzJ2UrK7tzqaHbZuvCgzneQ5y3XzY4iI/NWGdBjTqmuySlBqnG/duwKk0/i2BjN
-         RNkb+07dDyRgIQShHZIH1BpoXH1LdlETZDhQlBv/mTAP+W0jgOp+e14ViTb9SnXt/auo
-         A5yv4AxHDRJ/pFZ0sJGj7Hj8L13GBqCpfjg1b/ePuv+8DOhU/uJD5zzNKoq/kxU8NOXI
-         3VQlrahPqhiLuZDum5UYzb2ykZ52EFKia6+gwyEQXBQhj8azxoAHQkeseADQNjwf2TIQ
-         7yc4IhhbgTV0hPHZ+GPj4oShGsKWgyyFY1Ztmt5Os1KtByWLDIZkMaET+N9uMRwaVXxR
-         yKRg==
-X-Gm-Message-State: AOAM531rjOSbQGWPrKQd1f4i4DaAcmEeLFSSk5tEd80++th7qSYXIkEo
-        OMProoke/do5zOiRoNnDkA7WaA==
-X-Google-Smtp-Source: ABdhPJzYd5qGqcdcbgXRffJjoqjRSzQKEO+Ppnb1RMDP/Ru/Ihpz61dNyUTO8sZaJa00jsz5bvvgbA==
-X-Received: by 2002:a17:90b:3ec3:b0:1c7:24c4:e28f with SMTP id rm3-20020a17090b3ec300b001c724c4e28fmr840341pjb.191.1649102073832;
-        Mon, 04 Apr 2022 12:54:33 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id y16-20020a17090a6c9000b001c993d935e7sm245836pjj.56.2022.04.04.12.54.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 12:54:33 -0700 (PDT)
-Date:   Mon, 4 Apr 2022 19:54:29 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
-Cc:     Maxim Levitsky <mlevitsk@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 5/8] KVM: SVM: Re-inject INT3/INTO instead of retrying
- the instruction
-Message-ID: <YktM9bnq5HaTMKkV@google.com>
-References: <20220402010903.727604-1-seanjc@google.com>
- <20220402010903.727604-6-seanjc@google.com>
- <a47217da0b6db4f1b6b6c69a9dc38350b13ac17c.camel@redhat.com>
- <YkshgrUaF4+MrrXf@google.com>
- <a3cf781b-0b1a-0bba-6b37-12666c7fc154@maciej.szmigiero.name>
- <YktIGHM86jHkzGdF@google.com>
+        Mon, 4 Apr 2022 15:03:21 -0400
+X-Greylist: delayed 21239 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 04 Apr 2022 12:01:23 PDT
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9140533E00;
+        Mon,  4 Apr 2022 12:01:23 -0700 (PDT)
+Received: from mail-wm1-f47.google.com ([209.85.128.47]) by
+ mrelayeu.kundenserver.de (mreue009 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1N7iKo-1o5ov53WEc-014k9c; Mon, 04 Apr 2022 21:01:21 +0200
+Received: by mail-wm1-f47.google.com with SMTP id l7-20020a05600c1d0700b0038c99618859so132869wms.2;
+        Mon, 04 Apr 2022 12:01:21 -0700 (PDT)
+X-Gm-Message-State: AOAM530TCueyV+FE0/vD8O7Tks5eio/TulFAQL32gRmctjU+/8nvFrNF
+        KFSh5/xopwSQWgXFW9JjfVvb+9DK7+W/9PU1u64=
+X-Google-Smtp-Source: ABdhPJwz/M4LKrm3IRclV8UgrUcDHyP4nLiAeM9chnwMC8xte+ec0eWR310JC5CzRN6KPW7x0SBYcBjNd+/TV08TLsg=
+X-Received: by 2002:a1c:f219:0:b0:38c:782c:3bb with SMTP id
+ s25-20020a1cf219000000b0038c782c03bbmr474508wmc.94.1649098881420; Mon, 04 Apr
+ 2022 12:01:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YktIGHM86jHkzGdF@google.com>
+References: <Yib9F5SqKda/nH9c@infradead.org> <CAK8P3a1dUVsZzhAe81usLSkvH29zHgiV9fhEkWdq7_W+nQBWbg@mail.gmail.com>
+ <YkmWh2tss8nXKqc5@infradead.org> <CAK8P3a0QdFOJbM72geYTWOKumeKPSCVD8Nje5pBpZWazX0GEnQ@mail.gmail.com>
+ <CAMo8BfKgn0T5RtUTb89fPvygNJJYLy7r1=RZTmTTm=jiDfx1hQ@mail.gmail.com>
+In-Reply-To: <CAMo8BfKgn0T5RtUTb89fPvygNJJYLy7r1=RZTmTTm=jiDfx1hQ@mail.gmail.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Mon, 4 Apr 2022 21:01:05 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a0J1--WSyWY+TptFa0nn5d-mOxapadCE1csGRkfhSPbVw@mail.gmail.com>
+Message-ID: <CAK8P3a0J1--WSyWY+TptFa0nn5d-mOxapadCE1csGRkfhSPbVw@mail.gmail.com>
+Subject: Re: [RFC PULL] remove arch/h8300
+To:     Max Filippov <jcmvbkbc@gmail.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Christoph Hellwig <hch@infradead.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        "moderated list:H8/300 ARCHITECTURE" 
+        <uclinux-h8-devel@lists.sourceforge.jp>,
+        "open list:TENSILICA XTENSA PORT (xtensa)" 
+        <linux-xtensa@linux-xtensa.org>,
+        Linux-sh list <linux-sh@vger.kernel.org>,
+        linux-m68k <linux-m68k@lists.linux-m68k.org>,
+        Greg Ungerer <gerg@linux-m68k.org>,
+        Damien Le Moal <damien.lemoal@wdc.com>,
+        linux-riscv <linux-riscv@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:jGFNqhM4dIFnhH1crk1UVV07OPTBQhiimiupzrSkXwuZ9o/RtZS
+ ce2dWxclh3NM1z+dTa6dUW5EB7GOpkfiFOrifVIv77uNICEOMvNHFgfWVNZ0zabYqXRE7xj
+ W8C2lKOwuzjEyX2b7dI9CfnLS/EPgqD/wVS4o+rUFE5ecWCwjtz020QwqHijVQ6dpL4VUQq
+ Zy09C+JPFQXysIgVsD8cA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:1YIjIfRsLSU=:o6rIvbCNXNxPzEMBqlC6My
+ cGC6pjjrV8zzpIG0GVfRRpzUuIFG4cRUNwBD02Ia0ZXJPf3ivH3keNqJiDI2HOD6kPGGpRuhj
+ tanw5nu6j67GnRnOql5sRPnkuDV1MXTSGhWnRaVuIcH9W97RTE4rtbNOp7xxqMv/D2IvP4V4c
+ pZLOlQmWR+botrOZ0Ia2doWK9qNmkIHcLUXjPBGWhVU2anjz0w3Ra8ADa//msEI1pXxzB85ir
+ K8XSBWOE1t6EV7L2V7TvaUZ5tu3zHidzRNCuBthiJNOw7Z/ZQi/wNlrc7EGDHMGbhygSVrdDI
+ nm8NW10HFriS7YhLQy39UT1ks0OU9RWCQgjv04SdYXcZjwQLevxuwLKtXwPYQ2GMSiYodPTh/
+ xTMj2Uvc5dIhdTtbko9lHOpMy/8vETJj0vvd0nSYey7GUxGZxN/t9YYaF+Mc4c/DyB4qijL0L
+ zqqcBV5WbH9L0QwBpVeYW4BW73lVhNLD16g1Ac0A15TbpTw7VH01H97P0mkL21b3toUyXw7pq
+ KHCYwEywOrVDV2aKAVTotDFDi034wNf0kcdVHO10rYdfoTUg5ZpRY+IAfQOhDdqQqKGAqhQzA
+ rlQqq0NoKYDuRIRIR0ktUDDzC24EGb5+BiMk9x51otUWQfuAdXO7QMAskumMtM6rN4BNUvFqH
+ cCE/zRPTtpRnmFPevpIpkVRHn5ExpMCflw//4O42zqh1RiuKJ9Bgz7wCxdKQ0gZ10Fe8=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 04, 2022, Sean Christopherson wrote:
-> On Mon, Apr 04, 2022, Maciej S. Szmigiero wrote:
-> > > > > index 47e7427d0395..a770a1c7ddd2 100644
-> > > > > --- a/arch/x86/kvm/svm/svm.h
-> > > > > +++ b/arch/x86/kvm/svm/svm.h
-> > > > > @@ -230,8 +230,8 @@ struct vcpu_svm {
-> > > > >   	bool nmi_singlestep;
-> > > > >   	u64 nmi_singlestep_guest_rflags;
-> > > > > -	unsigned int3_injected;
-> > > > > -	unsigned long int3_rip;
-> > > > > +	unsigned soft_int_injected;
-> > > > > +	unsigned long soft_int_linear_rip;
-> > > > >   	/* optional nested SVM features that are enabled for this guest  */
-> > > > >   	bool nrips_enabled                : 1;
-> > > > 
-> > > > 
-> > > > I mostly agree with this patch, but think that it doesn't address the
-> > > > original issue that Maciej wanted to address:
-> > > > 
-> > > > Suppose that there is *no* instruction in L2 code which caused the software
-> > > > exception, but rather L1 set arbitrary next_rip, and set EVENTINJ to software
-> > > > exception with some vector, and that injection got interrupted.
-> > > > 
-> > > > I don't think that this code will support this.
-> > > 
-> > > Argh, you're right.  Maciej's selftest injects without an instruction, but it doesn't
-> > > configure the scenario where that injection fails due to an exception+VM-Exit that
-> > > isn't intercepted by L1 and is handled by L0.  The event_inj test gets the coverage
-> > > for the latter, but always has a backing instruction.
-> > 
-> > Still reviewing the whole patch set, but want to clear this point quickly:
-> > The selftest does have an implicit intervening NPF (handled by L0) while
-> > injecting the first L1 -> L2 event.
-> 
-> I'll do some debug to figure out why the test passes for me.  I'm guessing I either
-> got lucky, e.g. IDT was faulted in already, or I screwed up and the test doesn't
-> actually pass.
+On Mon, Apr 4, 2022 at 7:57 PM Max Filippov <jcmvbkbc@gmail.com> wrote:
+>
+> Hi Arnd,
+>
+> On Mon, Apr 4, 2022 at 6:07 AM Arnd Bergmann <arnd@arndb.de> wrote:
+> > 1. xtensa nommu has does not compile in mainline and as far as I can
+> > tell never did
+>
+> I have a different picture here. If you look at the logs at
+>   https://kerneltests.org/builders/qemu-xtensa-master/
+>
+> there's a line for noMMU config in every one of them:
+>   Building xtensa:de212:kc705-nommu:nommu_kc705_defconfig ... running
+> ............ passed
+>
+> Please let me know if you observe any specific build/runtime issues.
 
-Well that was easy.  My code is indeed flawed and skips the wrong instruction,
-the skipped instruction just so happens to be a (spurious?) adjustment of RSP.  The
-L2 guest function never runs to completion and so the "bad" RSP is never consumed.
- 
-   KVM: incomplete injection for L2, vector 32 @ 401c70.  next_rip = 0
-   KVM: injecting for L2, vector 0 @ 401c70.  next_rip = 401c74
+This is what I get:
 
-0000000000401c70 <l2_guest_code>:
-  401c70:       48 83 ec 08             sub    $0x8,%rsp
-  401c74:       83 3d 75 a7 0e 00 01    cmpl   $0x1,0xea775(%rip)        # 4ec3f0 <int_fired>
-  401c7b:       74 1e                   je     401c9b <l2_guest_code+0x2b>
-  401c7d:       45 31 c0                xor    %r8d,%r8d
-  401c80:       b9 32 00 00 00          mov    $0x32,%ecx
-  401c85:       ba 90 40 4b 00          mov    $0x4b4090,%edx
-  401c8a:       31 c0                   xor    %eax,%eax
-  401c8c:       be 02 00 00 00          mov    $0x2,%esi
-  401c91:       bf 02 00 00 00          mov    $0x2,%edi
-  401c96:       e8 05 ae 00 00          call   40caa0 <ucall>
-  401c9b:       0f 01 d9                vmmcall 
-  401c9e:       0f 0b                   ud2    
-  401ca0:       83 3d 4d a7 0e 00 01    cmpl   $0x1,0xea74d(%rip)        # 4ec3f4 <bp_fired>
-  401ca7:       74 1e                   je     401cc7 <l2_guest_code+0x57>
-  401ca9:       45 31 c0                xor    %r8d,%r8d
-  401cac:       b9 36 00 00 00          mov    $0x36,%ecx
-  401cb1:       ba b8 40 4b 00          mov    $0x4b40b8,%edx
-  401cb6:       31 c0                   xor    %eax,%eax
-  401cb8:       be 02 00 00 00          mov    $0x2,%esi
-  401cbd:       bf 02 00 00 00          mov    $0x2,%edi
-  401cc2:       e8 d9 ad 00 00          call   40caa0 <ucall>
-  401cc7:       f4                      hlt    
-  401cc8:       48 83 c4 08             add    $0x8,%rsp
-  401ccc:       c3                      ret    
-  401ccd:       0f 1f 00                nopl   (%rax)
+$ make ARCH=xtensa O=build/xtensa nommu_kc705_defconfig vmlinux V=1
+....
+xtensa-linux-gcc-11.1.0 -DKCONFIG_SEED=
+-Wp,-MMD,arch/xtensa/kernel/.head.o.d -nostdinc
+-I/git/arm-soc/arch/xtensa/include -I./arch/xtensa/include/generated
+-I/git/arm-soc/include -I./include
+-I/git/arm-soc/arch/xtensa/include/uapi
+-I./arch/xtensa/include/generated/uapi -I/git/arm-soc/include/uapi
+-I./include/generated/uapi -include
+/git/arm-soc/include/linux/compiler-version.h -include
+/git/arm-soc/include/linux/kconfig.h -D__KERNEL__
+-I/git/arm-soc/arch/xtensa/variants/de212/include
+-I/git/arm-soc/arch/xtensa/platforms/xtfpga/include
+-fmacro-prefix-map=/git/arm-soc/= -D__ASSEMBLY__ -fno-PIE -mlongcalls
+-mtext-section-literals -Wa,--fatal-warnings -I
+/git/arm-soc/arch/xtensa/kernel -I ./arch/xtensa/kernel    -c -o
+arch/xtensa/kernel/head.o /git/arm-soc/arch/xtensa/kernel/head.S
+/git/arm-soc/arch/xtensa/kernel/head.S: Assembler messages:
+/git/arm-soc/arch/xtensa/kernel/head.S:87: Error: invalid register
+'atomctl' for 'wsr' instruction
 
-I don't see why the compiler is creating room for a single variable, but it doesn't
-really matter, the easiest way to detect this bug is to assert that the return RIP
-in the INT 0x20 handler points at l2_guest_code, e.g. this fails:
+I think there were other errors in the past, but every time I tried
+it, the build failed for me.
 
-diff --git a/tools/testing/selftests/kvm/x86_64/svm_nested_soft_inject_test.c b/tools/testing/selftests/kvm/x86_64/svm_nested_soft_inject_test.c
-index d39be5d885c1..257aa2280b5c 100644
---- a/tools/testing/selftests/kvm/x86_64/svm_nested_soft_inject_test.c
-+++ b/tools/testing/selftests/kvm/x86_64/svm_nested_soft_inject_test.c
-@@ -40,9 +40,13 @@ static void guest_bp_handler(struct ex_regs *regs)
- }
-
- static unsigned int int_fired;
-+static void l2_guest_code(void);
-+
- static void guest_int_handler(struct ex_regs *regs)
- {
-        int_fired++;
-+       GUEST_ASSERT_2(regs->rip == (unsigned long)l2_guest_code,
-+                      regs->rip, (unsigned long)l2_guest_code);
- }
-
- static void l2_guest_code(void)
+        Arnd
