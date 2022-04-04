@@ -2,158 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9504C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 09:32:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 197ACC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 09:34:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354179AbiDDJej (ORCPT
+        id S1354266AbiDDJg3 convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 05:34:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59110 "EHLO
+        Mon, 4 Apr 2022 05:36:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354189AbiDDJeh (ORCPT
+        with ESMTP id S237909AbiDDJg1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 05:34:37 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3F413BF98;
-        Mon,  4 Apr 2022 02:32:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649064761; x=1680600761;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Jy1xBW1BgIX5lMNSOseMdp/EtP27vGCho0iLE98NMKs=;
-  b=mxgsymapJUMnkQHz64yiFTBtnkjSordmdxzi/owWbf9tPEZOxuDF3Nmf
-   ieh3knLEs03NaS2haySYs6h1DzzifOHA/gtMnT30+uVTL1CI4Qt6FGwly
-   APAcHOtoLFQvIQJ/w40mG2jof6sPjYqQBLUDh7YN5hC14PGWZRc1X3TQ9
-   eTGTrQkeQ5qrBuMxyuqyww1g3i9/IoYVUU9ZSNO7QyQxPplmJWZhL9RLF
-   hQ2dwAp2MnvzVLDwJFyMpoTB2RnFOxGy7cVfGnCNiBCsUXivklABVdjCD
-   TQlhi5mXPypGs96gKNib6k62E5fnphpYIyQBqIhiP9tUxq1ayGfw5uKOd
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10306"; a="260463957"
-X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
-   d="scan'208";a="260463957"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 02:32:41 -0700
-X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
-   d="scan'208";a="641167689"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 02:32:37 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nbJ49-00CUUY-Rl;
-        Mon, 04 Apr 2022 12:32:05 +0300
-Date:   Mon, 4 Apr 2022 12:32:05 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Wander Lairson Costa <wander@redhat.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Lukas Wunner <lukas@wunner.de>,
-        Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        ilpo.jarvinen@linux.intel.com, rostedt@goodmis.org,
-        senozhatsky@chromium.org, andre.goddard@gmail.com,
-        sudipm.mukherjee@gmail.com, David.Laight@aculab.com,
-        jonathanh@nvidia.com, phil@raspberrypi.com
-Subject: Re: [PATCH v6] serial/8250: Use fifo in 8250 console driver
-Message-ID: <Ykq7FXhQfsvr9TtC@smile.fi.intel.com>
-References: <20220401194645.1738747-1-wander@redhat.com>
- <20220401194645.1738747-2-wander@redhat.com>
+        Mon, 4 Apr 2022 05:36:27 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3CAC25C72
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 02:34:31 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <p.zabel@pengutronix.de>)
+        id 1nbJ6D-000624-TH; Mon, 04 Apr 2022 11:34:13 +0200
+Received: from [2a0a:edc0:0:900:1d::4e] (helo=lupine)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <p.zabel@pengutronix.de>)
+        id 1nbJ6D-00101n-4r; Mon, 04 Apr 2022 11:34:11 +0200
+Received: from pza by lupine with local (Exim 4.94.2)
+        (envelope-from <p.zabel@pengutronix.de>)
+        id 1nbJ6B-0004fp-0u; Mon, 04 Apr 2022 11:34:11 +0200
+Message-ID: <c967e6bdb586c273c187e4892b03aa82064af4ab.camel@pengutronix.de>
+Subject: Re: [PATCH v2 1/7] reset: imx7: Add the iMX8MP PCIe PHY PERST
+ support
+From:   Philipp Zabel <p.zabel@pengutronix.de>
+To:     Richard Zhu <hongxing.zhu@nxp.com>, l.stach@pengutronix.de,
+        bhelgaas@google.com, lorenzo.pieralisi@arm.com, robh@kernel.org,
+        shawnguo@kernel.org, vkoul@kernel.org,
+        alexander.stein@ew.tq-group.com
+Cc:     linux-phy@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
+        linux-imx@nxp.com
+Date:   Mon, 04 Apr 2022 11:34:10 +0200
+In-Reply-To: <1646644054-24421-2-git-send-email-hongxing.zhu@nxp.com>
+References: <1646644054-24421-1-git-send-email-hongxing.zhu@nxp.com>
+         <1646644054-24421-2-git-send-email-hongxing.zhu@nxp.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+User-Agent: Evolution 3.38.3-1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220401194645.1738747-2-wander@redhat.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: p.zabel@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 01, 2022 at 04:46:42PM -0300, Wander Lairson Costa wrote:
-> Note: I am using a small test app + driver located at [0] for the
-> problem description. serco is a driver whose write function dispatches
-> to the serial controller. sertest is a user-mode app that writes n bytes
-> to the serial console using the serco driver.
-> 
-> While investigating a bug in the RHEL kernel, I noticed that the serial
-> console throughput is way below the configured speed of 115200 bps in
-> a HP Proliant DL380 Gen9. I was expecting something above 10KB/s, but
-> I got 2.5KB/s.
-> 
-> $ time ./sertest -n 2500 /tmp/serco
-> 
-> real    0m0.997s
-> user    0m0.000s
-> sys     0m0.997s
-> 
-> With the help of the function tracer, I then noticed the serial
-> controller was taking around 410us seconds to dispatch one single byte:
-> 
-> $ trace-cmd record -p function_graph -g serial8250_console_write \
->    ./sertest -n 1 /tmp/serco
-> 
-> $ trace-cmd report
-> 
->             |  serial8250_console_write() {
->  0.384 us   |    _raw_spin_lock_irqsave();
->  1.836 us   |    io_serial_in();
->  1.667 us   |    io_serial_out();
->             |    uart_console_write() {
->             |      serial8250_console_putchar() {
->             |        wait_for_xmitr() {
->  1.870 us   |          io_serial_in();
->  2.238 us   |        }
->  1.737 us   |        io_serial_out();
->  4.318 us   |      }
->  4.675 us   |    }
->             |    wait_for_xmitr() {
->  1.635 us   |      io_serial_in();
->             |      __const_udelay() {
->  1.125 us   |        delay_tsc();
->  1.429 us   |      }
-> ...
-> ...
-> ...
->  1.683 us   |      io_serial_in();
->             |      __const_udelay() {
->  1.248 us   |        delay_tsc();
->  1.486 us   |      }
->  1.671 us   |      io_serial_in();
->  411.342 us |    }
-> 
-> In another machine, I measured a throughput of 11.5KB/s, with the serial
-> controller taking between 80-90us to send each byte. That matches the
-> expected throughput for a configuration of 115200 bps.
-> 
-> This patch changes the serial8250_console_write to use the 16550 fifo
-> if available. In my benchmarks I got around 25% improvement in the slow
-> machine, and no performance penalty in the fast machine.
+Hi Richard,
 
-...
+On Mo, 2022-03-07 at 17:07 +0800, Richard Zhu wrote:
+> Add the i.MX8MP PCIe PHY PERST support.
+> 
+> Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
+> ---
+>  drivers/reset/reset-imx7.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/reset/reset-imx7.c b/drivers/reset/reset-imx7.c
+> index 185a333df66c..d2408725eb2c 100644
+> --- a/drivers/reset/reset-imx7.c
+> +++ b/drivers/reset/reset-imx7.c
+> @@ -329,6 +329,7 @@ static int imx8mp_reset_set(struct
+> reset_controller_dev *rcdev,
+>                 break;
+>  
+>         case IMX8MP_RESET_PCIE_CTRL_APPS_EN:
+> +       case IMX8MP_RESET_PCIEPHY_PERST:
+>                 value = assert ? 0 : bit;
+>                 break;
+>         }
 
-> +	use_fifo = (up->capabilities & UART_CAP_FIFO) &&
-> +		/*
-> +		 * BCM283x requires to check the fifo
-> +		 * after each byte.
-> +		 */
-> +		!(up->capabilities & UART_CAP_MINI) &&
+This doesn't do what the commit description says.
 
-Perhaps you need to also comment why we are using tx_loadsz and not fifosize.
+The PCIEPHY_PERST bit is already supported by the driver (albeit
+incorrectly?) - this patch just inverts the bit.
 
-> +		up->tx_loadsz > 1 &&
-> +		(up->fcr & UART_FCR_ENABLE_FIFO) &&
-> +		port->state &&
-> +		test_bit(TTY_PORT_INITIALIZED, &port->state->port.iflags) &&
-> +		/*
-> +		 * After we put a data in the fifo, the controller will send
-> +		 * it regardless of the CTS state. Therefore, only use fifo
-> +		 * if we don't use control flow.
-> +		 */
-> +		!(up->port.flags & UPF_CONS_FLOW);
+Since this bit is not inverted on the other platforms, and the i.MX8MP
+reference manual says nothing about this, please explicitly state why
+this needs to be inverted and call it a fix in the commit description.
 
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+regards
+Philipp
