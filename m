@@ -2,119 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76070C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 13:51:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 803CBC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 13:51:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357004AbiDDNxp (ORCPT
+        id S1359712AbiDDNxw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 09:53:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57222 "EHLO
+        Mon, 4 Apr 2022 09:53:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359315AbiDDNwt (ORCPT
+        with ESMTP id S1376998AbiDDNxU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 09:52:49 -0400
-Received: from mail-oa1-x2f.google.com (mail-oa1-x2f.google.com [IPv6:2001:4860:4864:20::2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2C992A71B
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 06:50:52 -0700 (PDT)
-Received: by mail-oa1-x2f.google.com with SMTP id 586e51a60fabf-d6e29fb3d7so10689132fac.7
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 06:50:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=UJ7ifLL/vt7TzqWMHfr/T5EroEWr8e059AicCh65jwE=;
-        b=XdBxqwZ6hlXamq+EWOsWwZc2zeRgoCwCqOUQwsgb5NTwPspoxxb1w0Onbn4/IwsWXN
-         oBhYY2EniOXswlpd6EFCV4DGAHPIQoHZ4DR9HBGivSxgA1BXhRRqli935/RvYWgb2xGu
-         wKKnsPEUP/7Be2RBiFDzI2nwvmjM4sKPcBRZVZE/WeAQnxANwpd002AeQ5K8cbw+HO8t
-         YP+jzRVuWISNKa0QLHasAEGOQSW1OHcw16BCf77kPpieQPPywEnX0F5Ea/fD/sdno8B3
-         0sQ6zqlIs0nnhgLJgZtSec5Ze8eEOxP/sIVmHUuseH9VJYI5LkYMD2Aq/496qBPfXQm5
-         gzDQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=UJ7ifLL/vt7TzqWMHfr/T5EroEWr8e059AicCh65jwE=;
-        b=Hnuodn08n50OzL//dC1emFK/y24oX8SRl1Nqes7Un8wihCd6m6whBULVq3w+a8X1tu
-         I8bVKl7ugrx5r2HyNRByei/p2zpP1xPlJt10PloqiIPmSU+Q1iGDD7wFyYxi/0Pk1zL1
-         r5XLGS76HjK7WgZ5JBFS6xyXLg0q9RCubAtAxs3OGny5pfvXaLFVyVIEWu96CLuM/lgu
-         IP0mjZycjSUmtb13M32HzX2156Ps/Et8MtWakDqMq4b4i8vJJfuGOr3Sy/XzNuEqgfbD
-         tTvZnpjszHIaiLutjkbVI5PchumyFNOkygNBI1SX2xGb7+/zZNZn7I5E3hXePUZLwM+9
-         IPMA==
-X-Gm-Message-State: AOAM533u1fYYX7s7OJov2jl+QJnUcvgxjlKf5c2McsweO1kGfyqZZudi
-        ffv/IJ4SCWhFD9tC+ZPVNZCjcw==
-X-Google-Smtp-Source: ABdhPJz20MpJx7LSy5moQ816FyGIBvEreDKN4HMKOHtNCOu/4APRQAt0B1hh6o4oY3S/Sn+csHU31g==
-X-Received: by 2002:a05:6870:3113:b0:d3:473b:3f1d with SMTP id v19-20020a056870311300b000d3473b3f1dmr3732oaa.116.1649080251783;
-        Mon, 04 Apr 2022 06:50:51 -0700 (PDT)
-Received: from ripper ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
-        by smtp.gmail.com with ESMTPSA id 14-20020a056870134e00b000ddaf3927b1sm4218569oac.32.2022.04.04.06.50.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 06:50:51 -0700 (PDT)
-Date:   Mon, 4 Apr 2022 06:53:16 -0700
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Johan Hovold <johan+linaro@kernel.org>
-Cc:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Stanimir Varbanov <svarbanov@mm-sol.com>,
-        Andy Gross <agross@kernel.org>, Rob Herring <robh@kernel.org>,
-        Krzysztof Wilczy??ski <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        linux-pci@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH v2] PCI: qcom: Fix pipe clock imbalance
-Message-ID: <Ykr4TOYYh4X8o02E@ripper>
-References: <20220401133351.10113-1-johan+linaro@kernel.org>
+        Mon, 4 Apr 2022 09:53:20 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 549D23EA9D
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 06:51:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649080284; x=1680616284;
+  h=message-id:date:mime-version:to:cc:references:from:
+   subject:in-reply-to:content-transfer-encoding;
+  bh=/CyzTMyNUaleC6oJHeCvq7JBm6K65IzCRsT3znkbvNY=;
+  b=dqvnDPzIYUUBkn25As3VyysZWjl6CdhG+n34NucnGRMnKCqyu8yg9bla
+   Y3vzEjYydnBLDiGyyeIL9K+Po+bOwyA8RtB3fOb3UXGpujuM6eCvZYktL
+   S8LUyBhDu3WoKVaCT+YtzTWM5fz7tSXHwEDOLiDAZSnlH8FWynRq/jaYn
+   ERq6+Z8rl9YUwIOufmeOyOmdqGEtI3ZW37r2PDjCeste9MJ0y0wc2oCF+
+   1tMUzuvl8+YmqsRxa3UW1zFdVYX63ic6DaaRO/tatmMv4yu20WruXy3nq
+   ij4LYvBQumYMGDn7BEA3whnIUGwtnZDIM2Ey6avv0wrKbkkbxzOgUqvBY
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10306"; a="242658638"
+X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
+   d="scan'208";a="242658638"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 06:51:24 -0700
+X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
+   d="scan'208";a="523035203"
+Received: from petersun-mobl1.amr.corp.intel.com (HELO [10.209.86.175]) ([10.209.86.175])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 06:51:23 -0700
+Message-ID: <dd5c52ad-9c61-54c3-6654-7a30c56b1917@intel.com>
+Date:   Mon, 4 Apr 2022 06:51:25 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220401133351.10113-1-johan+linaro@kernel.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Content-Language: en-US
+To:     Kai Huang <kai.huang@intel.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        bp@alien8.de
+Cc:     aarcange@redhat.com, ak@linux.intel.com, brijesh.singh@amd.com,
+        dan.j.williams@intel.com, dave.hansen@linux.intel.com,
+        david@redhat.com, hpa@zytor.com, jgross@suse.com,
+        jmattson@google.com, joro@8bytes.org, jpoimboe@redhat.com,
+        knsathya@kernel.org, linux-kernel@vger.kernel.org, luto@kernel.org,
+        mingo@redhat.com, pbonzini@redhat.com, peterz@infradead.org,
+        sathyanarayanan.kuppuswamy@linux.intel.com, sdeep@vmware.com,
+        seanjc@google.com, tglx@linutronix.de, thomas.lendacky@amd.com,
+        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
+        x86@kernel.org
+References: <YjXtK4awY6utz3wE@zn.tnic>
+ <20220321160245.42886-1-kirill.shutemov@linux.intel.com>
+ <9f8f57fdbbf76e70471541dc42b04f8a89be4a56.camel@intel.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+Subject: Re: [PATCHv7.1 02/30] x86/tdx: Provide common base for SEAMCALL and
+ TDCALL C wrappers
+In-Reply-To: <9f8f57fdbbf76e70471541dc42b04f8a89be4a56.camel@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri 01 Apr 06:33 PDT 2022, Johan Hovold wrote:
+On 4/3/22 20:19, Kai Huang wrote:
+> Btw, I previous suggested perhaps we can just use -1ULL instead of above value
+> for TDX_SEAMCALL_VMFAILINVALID, but didn't get response.  The reason is this
+> value will only be used when detecting P-SEAMLDR using P-SEAMLDR's SEAMLDR.INFO
+> SEAMCALL.  Note your above SW-defined error codes is based on error code
+> definition for TDX module, but actually P-SEAMLDR has different error code
+> definition:
 
-> Commit ed8cc3b1fc84 ("PCI: qcom: Add support for SDM845 PCIe
-> controller") introduced a clock imbalance by enabling the pipe clock
-> both in init() and in post_init() but only disabling in post_deinit().
-> 
-> Note that the pipe clock was also never disabled in the init() error
-> paths and that enabling the clock before powering up the PHY looks
-> questionable.
-> 
-> Fixes: ed8cc3b1fc84 ("PCI: qcom: Add support for SDM845 PCIe controller")
-> Cc: stable@vger.kernel.org      # 5.6
-> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+I suggested moving away from the -1 because it didn't really carry any
+additional information.  For folks that have the spec open day in and
+day out, it's easy for you to go look up what the components of that -1
+_mean_.
 
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+It sounds like there's a bug here (mixing up the P-SEAMLDR and TDX
+module error ABIs), but that doesn't mean that moving to -1 is the right
+answer.
 
-> Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
-> ---
-> 
-> Changes in v2
->  - Capitalise "Fix" in subject line according to PCI subsystem
->    convention
-> 
-> 
->  drivers/pci/controller/dwc/pcie-qcom.c | 6 ------
->  1 file changed, 6 deletions(-)
-> 
-> diff --git a/drivers/pci/controller/dwc/pcie-qcom.c b/drivers/pci/controller/dwc/pcie-qcom.c
-> index b79d98e5e228..20a0e6533a1c 100644
-> --- a/drivers/pci/controller/dwc/pcie-qcom.c
-> +++ b/drivers/pci/controller/dwc/pcie-qcom.c
-> @@ -1238,12 +1238,6 @@ static int qcom_pcie_init_2_7_0(struct qcom_pcie *pcie)
->  		goto err_disable_clocks;
->  	}
->  
-> -	ret = clk_prepare_enable(res->pipe_clk);
-> -	if (ret) {
-> -		dev_err(dev, "cannot prepare/enable pipe clock\n");
-> -		goto err_disable_clocks;
-> -	}
-> -
->  	/* Wait for reset to complete, required on SM8450 */
->  	usleep_range(1000, 1500);
->  
-> -- 
-> 2.35.1
-> 
+Please just build up an error value the same way it was done for the
+software-defined TDX module error codes.
