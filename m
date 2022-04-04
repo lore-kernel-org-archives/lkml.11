@@ -2,96 +2,209 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7301C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 09:01:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1545C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 09:01:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346578AbiDDJDA (ORCPT
+        id S1347417AbiDDJDZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 05:03:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52366 "EHLO
+        Mon, 4 Apr 2022 05:03:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345697AbiDDJC6 (ORCPT
+        with ESMTP id S1347940AbiDDJDW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 05:02:58 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2677F2AE13
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 02:01:02 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1nbIZz-0000K2-4A; Mon, 04 Apr 2022 11:00:55 +0200
-Received: from pengutronix.de (2a03-f580-87bc-d400-26f0-2eea-19ae-c646.ip6.dokom21.de [IPv6:2a03:f580:87bc:d400:26f0:2eea:19ae:c646])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id BA0D6592C0;
-        Sun,  3 Apr 2022 10:47:41 +0000 (UTC)
-Date:   Sun, 3 Apr 2022 12:47:41 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc:     Wolfgang Grandegger <wg@grandegger.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-can@vger.kernel.org
-Subject: Re: [PATCH] can: mscan: mpc5xxx_can: Prepare cleanup of powerpc's
- asm/prom.h
-Message-ID: <20220403104741.q7tipocsbevxgysj@pengutronix.de>
-References: <878888f9057ad2f66ca0621a0007472bf57f3e3d.1648833432.git.christophe.leroy@csgroup.eu>
+        Mon, 4 Apr 2022 05:03:22 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 846E42AE21;
+        Mon,  4 Apr 2022 02:01:26 -0700 (PDT)
+Received: from benjamin-XPS-13-9310.. (unknown [IPv6:2a01:e0a:120:3210:52e1:bbc1:ca8:7fa9])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: benjamin.gaignard)
+        by bhuna.collabora.co.uk (Postfix) with ESMTPSA id E276F1F459EE;
+        Mon,  4 Apr 2022 10:01:24 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1649062885;
+        bh=eQtNSGmGa1pYpJmMUFL5G2DikWxM7q2G3a/sHXYemxc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=WZIs6MwWroWsHpqJigxYLbozMdK2SMgLjTSqduxV2REGxMJzM/u+DD2LsCVMaXvIo
+         PoBlZLPKn7FnGBU4BVEwci0Q8N7o4OuZkx3WLMxjRhn4lihdTPu6flA0K4W634HTn+
+         o8jiRimu6tvGJqcYFc7yUsV97mJIT/IOw4/tCMLJcb8/1t/hV+Bah32ArGSIt7Xl/0
+         bd+rB6vUSC9kw4iM2+12dUYIN9vdpm6v0jRpQB8zU9KLWOmWn+/ZsxToj95TJflLMR
+         2ceVUmrMKwLnFJL99Qgs/FkBXFdA0TNtiQvRQsH/k6S5GHNlaWTsZHi0T5dzECNndt
+         XJTpXYt/W7xiw==
+From:   Benjamin Gaignard <benjamin.gaignard@collabora.com>
+To:     mchehab@kernel.org, hverkuil@xs4all.nl,
+        ezequiel@vanguardiasur.com.ar
+Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jernej.skrabec@gmail.com, p.zabel@pengutronix.de,
+        nicolas@ndufresne.ca, kernel@collabora.com,
+        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+        Nicolas Dufresne <nicolas.dufresne@collabora.com>
+Subject: [PATCH] media: Add P010 video format
+Date:   Mon,  4 Apr 2022 11:01:16 +0200
+Message-Id: <20220404090116.353034-1-benjamin.gaignard@collabora.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="knw3u4zwelprxguh"
-Content-Disposition: inline
-In-Reply-To: <878888f9057ad2f66ca0621a0007472bf57f3e3d.1648833432.git.christophe.leroy@csgroup.eu>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+P010 is a YUV format with 10-bits per pixel with interleaved UV.
 
---knw3u4zwelprxguh
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+Acked-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
+---
+Note that P010 is already known in GStreamer, only the mapping with
+v4l2 pixel format is missing.
 
-On 01.04.2022 19:21:20, Christophe Leroy wrote:
-> powerpc's asm/prom.h brings some headers that it doesn't
-> need itself.
->=20
-> In order to clean it up, first add missing headers in
-> users of asm/prom.h
->=20
-> Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+This patch has been acked in this series but never merged:
+https://patchwork.kernel.org/project/linux-rockchip/patch/20210618131526.566762-5-benjamin.gaignard@collabora.com/
+After rebased it on v5.18-rc1, resend in standalone mode.
 
-Added to linux-can-next/testing.
+ .../media/v4l/pixfmt-yuv-planar.rst           | 76 +++++++++++++++++++
+ drivers/media/v4l2-core/v4l2-common.c         |  1 +
+ drivers/media/v4l2-core/v4l2-ioctl.c          |  1 +
+ include/uapi/linux/videodev2.h                |  1 +
+ 4 files changed, 79 insertions(+)
 
-Thanks,
-Marc
+diff --git a/Documentation/userspace-api/media/v4l/pixfmt-yuv-planar.rst b/Documentation/userspace-api/media/v4l/pixfmt-yuv-planar.rst
+index 8dff5906639b..6d65c8ac44f0 100644
+--- a/Documentation/userspace-api/media/v4l/pixfmt-yuv-planar.rst
++++ b/Documentation/userspace-api/media/v4l/pixfmt-yuv-planar.rst
+@@ -102,6 +102,13 @@ All components are stored with the same number of bits per component.
+       - 64x32 tiles
+ 
+         Horizontal Z order
++    * - V4L2_PIX_FMT_P010
++      - 'P010'
++      - 16
++      - 4:2:0
++      - Cb, Cr
++      - No
++      - Linear
+     * - V4L2_PIX_FMT_NV12MT_16X16
+       - 'VM12'
+       - 8
+@@ -171,6 +178,7 @@ horizontally.
+ .. _V4L2-PIX-FMT-NV21:
+ .. _V4L2-PIX-FMT-NV12M:
+ .. _V4L2-PIX-FMT-NV21M:
++.. _V4L2-PIX-FMT-P010:
+ 
+ NV12, NV21, NV12M and NV21M
+ ---------------------------
+@@ -519,6 +527,74 @@ number of lines as the luma plane.
+       - Cb\ :sub:`33`
+       - Cr\ :sub:`33`
+ 
++.. _V4L2_PIX_FMT_P010:
++
++P010
++----
++
++The number of bytes in one luminance row must be divisible by 16,
++which means there will be padded 0 in the right edge when necessary.
++
++.. raw:: latex
++
++    \begingroup
++    \small
++    \setlength{\tabcolsep}{2pt}
++
++.. tabularcolumns:: |p{2.6cm}|p{0.70cm}|p{0.22cm}|p{0.22cm}|p{0.22cm}|p{0.22cm}|p{0.22cm}|p{0.22cm}|p{0.22cm}|p{0.22cm}|p{0.22cm}|p{0.22cm}|p{0.22cm}|p{0.22cm}|p{0.22cm}|p{0.22cm}|p{0.22cm}|p{0.22cm}|
++
++.. flat-table:: P010 16 Bits per component
++    :header-rows:  2
++    :stub-columns: 0
++
++    * - Identifier
++      - Code
++      - :cspan:`7` Byte 0 in memory
++
++      - :cspan:`7` Byte 1
++    * -
++      -
++      - 7
++      - 6
++      - 5
++      - 4
++      - 3
++      - 2
++      - 1
++      - 0
++
++      - 7
++      - 6
++      - 5
++      - 4
++      - 3
++      - 2
++      - 1
++      - 0
++    * - ``V4L2_PIX_FMT_P010``
++      - 'P010'
++
++      - Y\ :sub:`9`
++      - Y\ :sub:`8`
++      - Y\ :sub:`7`
++      - Y\ :sub:`6`
++      - Y\ :sub:`5`
++      - Y\ :sub:`4`
++      - Y\ :sub:`3`
++      - Y\ :sub:`2`
++
++      - Y\ :sub:`1`
++      - Y\ :sub:`0`
++      - 0
++      - 0
++      - 0
++      - 0
++      - 0
++      - 0
++
++.. raw:: latex
++
++    \endgroup
+ 
+ Fully Planar YUV Formats
+ ========================
+diff --git a/drivers/media/v4l2-core/v4l2-common.c b/drivers/media/v4l2-core/v4l2-common.c
+index df34b2a283bc..1e38ad8906a2 100644
+--- a/drivers/media/v4l2-core/v4l2-common.c
++++ b/drivers/media/v4l2-core/v4l2-common.c
+@@ -266,6 +266,7 @@ const struct v4l2_format_info *v4l2_format_info(u32 format)
+ 		{ .format = V4L2_PIX_FMT_NV61,    .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 2, .bpp = { 1, 2, 0, 0 }, .hdiv = 2, .vdiv = 1 },
+ 		{ .format = V4L2_PIX_FMT_NV24,    .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 2, .bpp = { 1, 2, 0, 0 }, .hdiv = 1, .vdiv = 1 },
+ 		{ .format = V4L2_PIX_FMT_NV42,    .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 2, .bpp = { 1, 2, 0, 0 }, .hdiv = 1, .vdiv = 1 },
++		{ .format = V4L2_PIX_FMT_P010,    .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 2, .bpp = { 2, 2, 0, 0 }, .hdiv = 2, .vdiv = 1 },
+ 
+ 		{ .format = V4L2_PIX_FMT_YUV410,  .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 3, .bpp = { 1, 1, 1, 0 }, .hdiv = 4, .vdiv = 4 },
+ 		{ .format = V4L2_PIX_FMT_YVU410,  .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 3, .bpp = { 1, 1, 1, 0 }, .hdiv = 4, .vdiv = 4 },
+diff --git a/drivers/media/v4l2-core/v4l2-ioctl.c b/drivers/media/v4l2-core/v4l2-ioctl.c
+index 96e307fe3aab..e14d7e1a038e 100644
+--- a/drivers/media/v4l2-core/v4l2-ioctl.c
++++ b/drivers/media/v4l2-core/v4l2-ioctl.c
+@@ -1301,6 +1301,7 @@ static void v4l_fill_fmtdesc(struct v4l2_fmtdesc *fmt)
+ 	case V4L2_PIX_FMT_NV61:		descr = "Y/CrCb 4:2:2"; break;
+ 	case V4L2_PIX_FMT_NV24:		descr = "Y/CbCr 4:4:4"; break;
+ 	case V4L2_PIX_FMT_NV42:		descr = "Y/CrCb 4:4:4"; break;
++	case V4L2_PIX_FMT_P010:		descr = "10-bit Y/CrCb 4:2:0"; break;
+ 	case V4L2_PIX_FMT_NV12_4L4:	descr = "Y/CbCr 4:2:0 (4x4 Linear)"; break;
+ 	case V4L2_PIX_FMT_NV12_16L16:	descr = "Y/CbCr 4:2:0 (16x16 Linear)"; break;
+ 	case V4L2_PIX_FMT_NV12_32L32:   descr = "Y/CbCr 4:2:0 (32x32 Linear)"; break;
+diff --git a/include/uapi/linux/videodev2.h b/include/uapi/linux/videodev2.h
+index 4c09969e7112..2e451c454db3 100644
+--- a/include/uapi/linux/videodev2.h
++++ b/include/uapi/linux/videodev2.h
+@@ -601,6 +601,7 @@ struct v4l2_pix_format {
+ #define V4L2_PIX_FMT_NV61    v4l2_fourcc('N', 'V', '6', '1') /* 16  Y/CrCb 4:2:2  */
+ #define V4L2_PIX_FMT_NV24    v4l2_fourcc('N', 'V', '2', '4') /* 24  Y/CbCr 4:4:4  */
+ #define V4L2_PIX_FMT_NV42    v4l2_fourcc('N', 'V', '4', '2') /* 24  Y/CrCb 4:4:4  */
++#define V4L2_PIX_FMT_P010    v4l2_fourcc('P', '0', '1', '0') /* 15  Y/CbCr 4:2:0 10-bit per pixel*/
+ 
+ /* two non contiguous planes - one Y, one Cr + Cb interleaved  */
+ #define V4L2_PIX_FMT_NV12M   v4l2_fourcc('N', 'M', '1', '2') /* 12  Y/CbCr 4:2:0  */
+-- 
+2.32.0
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---knw3u4zwelprxguh
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmJJe0oACgkQrX5LkNig
-012lzwf/Yz+UaYPfBv2dN7kBgYRlV7/S/l4MY3od+KXKQPOkYoXXbu2KnK+E/qsU
-I19Dqm9VbvPZzUYMbkBS5cs6rO0mtvLtBnXlSmYQ+MiEsJ9YOExzEzovQqAvPBbo
-xX1ahek6ZpfugefWTTZS56BELMeiuo9lC00qucRxsC0UHBzS6/HKTQfS7JanWmX5
-mlt+YmHwnCj5IQHj6AvbTsb2VHtyfwFwLKr3CsOZXcLjSPJU5nHYJl400+p5YnKz
-/kRVaoXynLiCCYUIUWW3nveWcfab4Wuh+qJq0LUDKF/RtqkGJmnvjc6Gw3v1+ZW4
-elOAfCQUIwNVE06Ud9XV9LxG435kwA==
-=glTo
------END PGP SIGNATURE-----
-
---knw3u4zwelprxguh--
