@@ -2,112 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5280BC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:37:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABC61C47084
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:37:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383273AbiDDVdO (ORCPT
+        id S1383046AbiDDVcl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:33:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46302 "EHLO
+        Mon, 4 Apr 2022 17:32:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379256AbiDDQvt (ORCPT
+        with ESMTP id S1379693AbiDDRwQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 12:51:49 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2CBF2E086;
-        Mon,  4 Apr 2022 09:49:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649090992; x=1680626992;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=7soraypShUzq59PRY96Ss2w9MzztKJRkAjurCflHILo=;
-  b=erKfRQM3ULdd7ZRjZxK2CnmQkvgmgeV3PRhAqXIPNwiMkC9YcvNHS/nY
-   dqR/G+TzOcVsjFGmM3mWDXp3lFo2RAtcjuDTQB/tmHcOpZO9DumgLUf6n
-   J0FS4hpz0LawYEI7kxcFd9WnFsAEJ+jBZaQSBDkva/gS7S67yZWlmhVY/
-   Bof1j0xxJzSQBYWVjTHt6tHicXNjIr6XSUhMzfvJw8BdLf/C3iUEhm+ng
-   GTpHK4Zd6LLt/oQOEArHL7l3/P0zA3oYLDkIGJKbF67JhryOLnYiR4K9t
-   DsTbzojjKsFkqo358i4tWH8ruu/sxQgzmzEuP6fDE5vfHPDavmEbeaD7f
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="259390770"
-X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
-   d="scan'208";a="259390770"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:49:50 -0700
-X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
-   d="scan'208";a="523105156"
-Received: from rchatre-ws.ostc.intel.com ([10.54.69.144])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:49:50 -0700
-From:   Reinette Chatre <reinette.chatre@intel.com>
-To:     dave.hansen@linux.intel.com, jarkko@kernel.org, tglx@linutronix.de,
-        bp@alien8.de, luto@kernel.org, mingo@redhat.com,
-        linux-sgx@vger.kernel.org, x86@kernel.org
-Cc:     seanjc@google.com, kai.huang@intel.com, cathy.zhang@intel.com,
-        cedric.xing@intel.com, haitao.huang@intel.com,
-        mark.shanahan@intel.com, hpa@zytor.com,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH V3 03/30] x86/sgx: Add wrapper for SGX2 EMODT function
-Date:   Mon,  4 Apr 2022 09:49:11 -0700
-Message-Id: <b99fcb7d39062dab80c612b32db4a4894c66ed39.1648847675.git.reinette.chatre@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1648847675.git.reinette.chatre@intel.com>
-References: <cover.1648847675.git.reinette.chatre@intel.com>
+        Mon, 4 Apr 2022 13:52:16 -0400
+Received: from mail-oo1-f46.google.com (mail-oo1-f46.google.com [209.85.161.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DC4D27142;
+        Mon,  4 Apr 2022 10:50:20 -0700 (PDT)
+Received: by mail-oo1-f46.google.com with SMTP id h3-20020a4ae8c3000000b00324b9ae6ff2so1871797ooe.10;
+        Mon, 04 Apr 2022 10:50:20 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=00wJuMFju4M2Mlh4UvXveyZxAyuzzgzHODF3ZJjSU0M=;
+        b=VBGLGRvuDSI+VaFWq6KK7Qh5rzCUulijWFtzGQcGtbXMnabJefproWPcqOskBKRFJ4
+         G6BSuujiraHt+LILqMEBVfJQ1EydCGGHAV3l7mtmBL/otpQMTbkwknW/6KrSSQeqgLhk
+         maGTsdxoEDmL1TmjqJjcaSwaVwcZvY3kqt9BWmxa/mNoaw0jjdNz9plW4wMHL/VkcusT
+         5V13zQKgf9ycQoqwsVbT5Ykk1xUypiXpz+v4rj56zDAyVMTau79rYLLeFgEsxt065/4e
+         4MRanuWNEHjSnMAk9JIKgEETwQxXbR9UO7J/qudEm1tCmV5mTOmaX0nHrFDEY6HnLLGB
+         5D5A==
+X-Gm-Message-State: AOAM532YGK4cFiSQJqEJYt/E9J0bVKwWEKDq6dKZbAHPjMr9ljtFA53h
+        h6LkZ2kKYp7lfoTQye56j6B8jdZ80A==
+X-Google-Smtp-Source: ABdhPJzZgD4gLpmDxNxhb+yy7bA8P4mluzAI2ZE7CKPXMCutUZS5iH9XYSp9kYhIVljdV2j16Pja6A==
+X-Received: by 2002:a4a:c449:0:b0:320:f8ac:8f88 with SMTP id h9-20020a4ac449000000b00320f8ac8f88mr281201ooq.94.1649094619516;
+        Mon, 04 Apr 2022 10:50:19 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id r81-20020acaf354000000b002ecf46e8016sm4407510oih.51.2022.04.04.10.50.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Apr 2022 10:50:18 -0700 (PDT)
+Received: (nullmailer pid 1612125 invoked by uid 1000);
+        Mon, 04 Apr 2022 17:50:18 -0000
+Date:   Mon, 4 Apr 2022 12:50:18 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Xin Ji <xji@analogixsemi.com>
+Cc:     devicetree@vger.kernel.org, qwen@analogixsemi.com,
+        Rob Herring <robh+dt@kernel.org>, robert.foss@linaro.org,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        linux-kernel@vger.kernel.org,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        linux-media@vger.kernel.org, bliang@analogixsemi.com
+Subject: Re: [PATCH 2/4] dt-bindings: media: video-interfaces: Add new
+ bus-type
+Message-ID: <Yksv2voEepz6WPpO@robh.at.kernel.org>
+References: <20220328120956.1848795-1-xji@analogixsemi.com>
+ <20220328120956.1848795-2-xji@analogixsemi.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220328120956.1848795-2-xji@analogixsemi.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a wrapper for the EMODT ENCLS leaf function used to
-change the type of an enclave page as maintained in the
-SGX hardware's Enclave Page Cache Map (EPCM).
+On Mon, 28 Mar 2022 20:09:53 +0800, Xin Ji wrote:
+> No properly bus-type for DPI video bus, add bus-type 7 for it.
+> 
+> Signed-off-by: Xin Ji <xji@analogixsemi.com>
+> ---
+>  Documentation/devicetree/bindings/media/video-interfaces.yaml | 1 +
+>  1 file changed, 1 insertion(+)
+> 
 
-EMODT:
-1) Updates the EPCM page type of the enclave page.
-2) Sets the MODIFIED bit in the EPCM entry of the enclave page.
-   This bit is reset by the enclave by invoking ENCLU leaf
-   function EACCEPT or EACCEPTCOPY.
-
-Access from within the enclave to the enclave page is not possible
-while the MODIFIED bit is set.
-
-After changing the enclave page type by issuing EMODT the kernel
-needs to collaborate with the hardware to ensure that no logical
-processor continues to hold a reference to the changed page. This
-is required to ensure no required security checks are circumvented
-and is required for the enclave's EACCEPT/EACCEPTCOPY to succeed.
-Ensuring that no references to the changed page remain is
-accomplished with the ETRACK flow.
-
-Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
----
-No changes since V2
-
-Changes since V1:
-- Split original patch ("x86/sgx: Add wrappers for SGX2 functions")
-  in three to introduce the SGX2 functions separately (Jarkko).
-- Rewrite commit message to include how the EPCM within the hardware
-  is changed by the SGX2 function as well as the calling
-  conditions (Jarkko).
-
- arch/x86/kernel/cpu/sgx/encls.h | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/arch/x86/kernel/cpu/sgx/encls.h b/arch/x86/kernel/cpu/sgx/encls.h
-index 2b091912f038..7a1ecf704ec1 100644
---- a/arch/x86/kernel/cpu/sgx/encls.h
-+++ b/arch/x86/kernel/cpu/sgx/encls.h
-@@ -221,4 +221,10 @@ static inline int __emodpr(struct sgx_secinfo *secinfo, void *addr)
- 	return __encls_ret_2(EMODPR, secinfo, addr);
- }
- 
-+/* Change the type of an EPC page. */
-+static inline int __emodt(struct sgx_secinfo *secinfo, void *addr)
-+{
-+	return __encls_ret_2(EMODT, secinfo, addr);
-+}
-+
- #endif /* _X86_ENCLS_H */
--- 
-2.25.1
-
+Acked-by: Rob Herring <robh@kernel.org>
