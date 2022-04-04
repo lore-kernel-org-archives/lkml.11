@@ -2,150 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7913C47094
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5D51C47096
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:23:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381638AbiDDVXd (ORCPT
+        id S1381624AbiDDVX3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:23:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43752 "EHLO
+        Mon, 4 Apr 2022 17:23:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380412AbiDDUFL (ORCPT
+        with ESMTP id S1380525AbiDDUVM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 16:05:11 -0400
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9906130576;
-        Mon,  4 Apr 2022 13:03:15 -0700 (PDT)
-Received: by mail-pf1-x42e.google.com with SMTP id w7so9961097pfu.11;
-        Mon, 04 Apr 2022 13:03:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=UG1sy1iNDRLB0uN0cB6h3KgifvWMYW6S1PnONIaP3Qs=;
-        b=bnyhwFA2JenCWTOWzQqWYVxa9U6bgYLgMEzDgfNWHGyZsV/BIcrzi093QQp94ckdhr
-         Uw8gXhPnm8EuKl/5kb5GqXeC3lGRqiOLu9IvMiBPkwR4H0Ox20Wgtkdm7WK4E0FFoW7p
-         wBwJ4LVJJbbzN5VkYE7c1wBpW+agLiIyWjn4uBQfG9gXmt4xRAypdwfzxiB5ZaojQqk2
-         miEKZA17rtUekHkwxJf4j57ZKUr/cvVqaMRt1mi5xuwpogTpPjzRWKaLpFWJfAafCj5H
-         izyLOdxXzfD3wtidP2aNkn5eO5R5SVaFkrQE9Hxs7MyYzSHQ6jXu89Vin4glfydzoCMV
-         9u6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=UG1sy1iNDRLB0uN0cB6h3KgifvWMYW6S1PnONIaP3Qs=;
-        b=b01SCSKJCIDu0g1WqRvbUB/8PYI0DlnevFlUkgpF/O3c3EkAbY24elPny1hWOrKFQl
-         qR+T+Ny/nkNDKhni7EF/hmpcAPaKsd2gLKCMqFz5LSeUEMGEs/KEF6M+mi147ybq8xz6
-         D4/z2oX8OFPFzuefiGyZa9RpsgWdehCSEktfdCm/7CzLWH2EhpLMzxIkNkMAsUlS9Nft
-         is+LraH7GirgUc7Z2GN8j870gukWCaMCKmDuhY7kOMCDLT55WTyIu6MOpuSOAE34uIVI
-         vIEK6gzzOWrNv54i2hMSwsQU/r+f0fF08qfuNhKiUQ3PJjNdOSZOKvMaS1iP8vBfNPPB
-         HrfA==
-X-Gm-Message-State: AOAM530n8JS3toJHrf40dLrbqVHhc2tgOGm4KYQrWBwKbWNe+c4cvxhl
-        xxmoGTRZ5uHX2zBDXPRuHmk=
-X-Google-Smtp-Source: ABdhPJyDNRgC+2cRPyN77hk18FFO+ZRAYgMHHVdxa0JbddzqzK8q+SgHKF/+4FYmXT2hQ1FHod/anw==
-X-Received: by 2002:a63:4862:0:b0:385:fb1d:fc54 with SMTP id x34-20020a634862000000b00385fb1dfc54mr1284620pgk.57.1649102595118;
-        Mon, 04 Apr 2022 13:03:15 -0700 (PDT)
-Received: from localhost.localdomain (c-67-174-241-145.hsd1.ca.comcast.net. [67.174.241.145])
-        by smtp.gmail.com with ESMTPSA id bw17-20020a056a00409100b004fadad3b93esm12779295pfb.142.2022.04.04.13.03.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 13:03:14 -0700 (PDT)
-From:   Yang Shi <shy828301@gmail.com>
-To:     vbabka@suse.cz, kirill.shutemov@linux.intel.com,
-        linmiaohe@huawei.com, songliubraving@fb.com, riel@surriel.com,
-        willy@infradead.org, ziy@nvidia.com, tytso@mit.edu,
-        akpm@linux-foundation.org
-Cc:     shy828301@gmail.com, linux-mm@kvack.org,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [v3 PATCH 8/8] mm: mmap: register suitable readonly file vmas for khugepaged
-Date:   Mon,  4 Apr 2022 13:02:50 -0700
-Message-Id: <20220404200250.321455-9-shy828301@gmail.com>
-X-Mailer: git-send-email 2.26.3
-In-Reply-To: <20220404200250.321455-1-shy828301@gmail.com>
-References: <20220404200250.321455-1-shy828301@gmail.com>
+        Mon, 4 Apr 2022 16:21:12 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09A832AE9;
+        Mon,  4 Apr 2022 13:19:14 -0700 (PDT)
+Date:   Mon, 04 Apr 2022 20:19:11 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649103552;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=WNOBe1vWppvbexr1o50poyMJPOCbE2eiR5qK3R+vlbI=;
+        b=T067flIDohX2+TyixlVRL8HA7ygMbllJ/gZcGsZfe8mZPfN79lqkR9KxUfpTGzmqjJetPf
+        NQQlklPvSYAdShldT+ZnRCizyZqt/Bq3yhbKU3yNf3XtWHLBNyGpPVMi01N9OFJDTXtbnl
+        gTJJ0qn8JBntelxYiYhT2+Ap2NrMLSYRiMspZ5Z33caZEvi8BMHHJv4ACfFCf/ub6l9OPR
+        J6CA/x/gXgKPaoXNeGfy0ay2Lc0Eo22fjmzIfC/1SjmYPIFtMIS+EDpIyUk8nMAqbKqWQ9
+        Poe2552ePa/NNrGfzq+hPCWA4voDqbYvXehoWtSq1HA9zRYgnKzRnVg7ZvtHzg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649103552;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=WNOBe1vWppvbexr1o50poyMJPOCbE2eiR5qK3R+vlbI=;
+        b=Gc1nLM+EMvKNKUZ3Taubma8zjwasPWNQuC5Pm7+tt1Ye65s0W1SoLAV2JwtHnydm6+E3Q9
+        Fyy7DMYiOsP1miCQ==
+From:   "tip-bot2 for Mike Travis" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: x86/platform] x86/platform/uv: Log gap hole end size
+Cc:     Mike Travis <mike.travis@hpe.com>, Borislav Petkov <bp@suse.de>,
+        Steve Wahl <steve.wahl@hpe.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220318224304.174967-4-mike.travis@hpe.com>
+References: <20220318224304.174967-4-mike.travis@hpe.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Message-ID: <164910355134.389.13915883561213298641.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The readonly FS THP relies on khugepaged to collapse THP for suitable
-vmas.  But it is kind of "random luck" for khugepaged to see the
-readonly FS vmas (https://lore.kernel.org/linux-mm/00f195d4-d039-3cf2-d3a1-a2c88de397a0@suse.cz/)
-since currently the vmas are registered to khugepaged when:
-  - Anon huge pmd page fault
-  - VMA merge
-  - MADV_HUGEPAGE
-  - Shmem mmap
+The following commit has been merged into the x86/platform branch of tip:
 
-If the above conditions are not met, even though khugepaged is enabled
-it won't see readonly FS vmas at all.  MADV_HUGEPAGE could be specified
-explicitly to tell khugepaged to collapse this area, but when khugepaged
-mode is "always" it should scan suitable vmas as long as VM_NOHUGEPAGE
-is not set.
+Commit-ID:     f93ba85de0d1ce1924b0752b6a7a784c11c36414
+Gitweb:        https://git.kernel.org/tip/f93ba85de0d1ce1924b0752b6a7a784c11c36414
+Author:        Mike Travis <mike.travis@hpe.com>
+AuthorDate:    Fri, 18 Mar 2022 17:43:04 -05:00
+Committer:     Borislav Petkov <bp@suse.de>
+CommitterDate: Mon, 04 Apr 2022 20:21:47 +02:00
 
-So make sure readonly FS vmas are registered to khugepaged to make the
-behavior more consistent.
+x86/platform/uv: Log gap hole end size
 
-Registering suitable vmas in common mmap path, that could cover both
-readonly FS vmas and shmem vmas, so removed the khugepaged calls in
-shmem.c.
+Show value of gap end in the kernel log which equates to number of physical
+address bits used by system.  The end address of the gap holds PA bits 56:26
+which gives the range up to 64PB max size with 64MB of granularity.
 
-Still need to keep the khugepaged call in vma_merge() since vma_merge()
-is called in a lot of places, for example, madvise, mprotect, etc.
-
-Reported-by: Vlastimil Babka <vbabka@suse.cz>
-Signed-off-by: Yang Shi <shy828301@gmail.com>
+Signed-off-by: Mike Travis <mike.travis@hpe.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Steve Wahl <steve.wahl@hpe.com>
+Link: https://lore.kernel.org/r/20220318224304.174967-4-mike.travis@hpe.com
 ---
- mm/mmap.c  | 6 ++++++
- mm/shmem.c | 4 ----
- 2 files changed, 6 insertions(+), 4 deletions(-)
+ arch/x86/kernel/apic/x2apic_uv_x.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/mm/mmap.c b/mm/mmap.c
-index 604c8dece5dd..616ebbc2d052 100644
---- a/mm/mmap.c
-+++ b/mm/mmap.c
-@@ -1842,6 +1842,12 @@ unsigned long mmap_region(struct file *file, unsigned long addr,
- 	}
+diff --git a/arch/x86/kernel/apic/x2apic_uv_x.c b/arch/x86/kernel/apic/x2apic_uv_x.c
+index 387d653..146f0f6 100644
+--- a/arch/x86/kernel/apic/x2apic_uv_x.c
++++ b/arch/x86/kernel/apic/x2apic_uv_x.c
+@@ -1346,7 +1346,7 @@ static void __init decode_gam_params(unsigned long ptr)
+ static void __init decode_gam_rng_tbl(unsigned long ptr)
+ {
+ 	struct uv_gam_range_entry *gre = (struct uv_gam_range_entry *)ptr;
+-	unsigned long lgre = 0;
++	unsigned long lgre = 0, gend = 0;
+ 	int index = 0;
+ 	int sock_min = 999999, pnode_min = 99999;
+ 	int sock_max = -1, pnode_max = -1;
+@@ -1380,6 +1380,9 @@ static void __init decode_gam_rng_tbl(unsigned long ptr)
+ 			flag, size, suffix[order],
+ 			gre->type, gre->nasid, gre->sockid, gre->pnode);
  
- 	vma_link(mm, vma, prev, rb_link, rb_parent);
++		if (gre->type == UV_GAM_RANGE_TYPE_HOLE)
++			gend = (unsigned long)gre->limit << UV_GAM_RANGE_SHFT;
 +
-+	/*
-+	 * vma_merge() calls khugepaged_enter_vma() either, the below
-+	 * call covers the non-merge case.
-+	 */
-+	khugepaged_enter_vma(vma, vma->vm_flags);
- 	/* Once vma denies write, undo our temporary denial count */
- unmap_writable:
- 	if (file && vm_flags & VM_SHARED)
-diff --git a/mm/shmem.c b/mm/shmem.c
-index 92eca974771d..0c448080d210 100644
---- a/mm/shmem.c
-+++ b/mm/shmem.c
-@@ -34,7 +34,6 @@
- #include <linux/export.h>
- #include <linux/swap.h>
- #include <linux/uio.h>
--#include <linux/khugepaged.h>
- #include <linux/hugetlb.h>
- #include <linux/fs_parser.h>
- #include <linux/swapfile.h>
-@@ -2239,7 +2238,6 @@ static int shmem_mmap(struct file *file, struct vm_area_struct *vma)
+ 		/* update to next range start */
+ 		lgre = gre->limit;
+ 		if (sock_min > gre->sockid)
+@@ -1397,7 +1400,8 @@ static void __init decode_gam_rng_tbl(unsigned long ptr)
+ 	_max_pnode	= pnode_max;
+ 	_gr_table_len	= index;
  
- 	file_accessed(file);
- 	vma->vm_ops = &shmem_vm_ops;
--	khugepaged_enter_vma(vma, vma->vm_flags);
- 	return 0;
+-	pr_info("UV: GRT: %d entries, sockets(min:%x,max:%x) pnodes(min:%x,max:%x)\n", index, _min_socket, _max_socket, _min_pnode, _max_pnode);
++	pr_info("UV: GRT: %d entries, sockets(min:%x,max:%x), pnodes(min:%x,max:%x), gap_end(%d)\n",
++	  index, _min_socket, _max_socket, _min_pnode, _max_pnode, fls64(gend));
  }
  
-@@ -4132,8 +4130,6 @@ int shmem_zero_setup(struct vm_area_struct *vma)
- 	vma->vm_file = file;
- 	vma->vm_ops = &shmem_vm_ops;
- 
--	khugepaged_enter_vma(vma, vma->vm_flags);
--
- 	return 0;
- }
- 
--- 
-2.26.3
-
+ /* Walk through UVsystab decoding the fields */
