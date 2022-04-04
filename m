@@ -2,115 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBBDDC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:02:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75CCDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:02:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243345AbiDDWEf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 18:04:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59866 "EHLO
+        id S243611AbiDDWEt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 18:04:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379205AbiDDQnx (ORCPT
+        with ESMTP id S1379274AbiDDQvz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 12:43:53 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9F28F35256
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 09:41:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649090515;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=3+kz6I7pZcPAimiB8rQ2Jr3SdDzFgYoJ+V2mHrMniJg=;
-        b=XAqaE1jvXNaqFzmCMVx0kp1WfLhFR4Q06JJ/AjQrRbeOFe1wrPoQ38DU7T8q2XPnBdILSd
-        gM8PSFqCsgaAsEf5X1ra2X0GRAMLO6/WqS3qyplYYdGsboeDzk8YMtmKZlMBrg1cyjpD3A
-        nqjd3bGnTjREw6hNHCd6Uht6EPs9Vkc=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-434-x8wqMrIgODGueqkltvEd4g-1; Mon, 04 Apr 2022 12:41:54 -0400
-X-MC-Unique: x8wqMrIgODGueqkltvEd4g-1
-Received: by mail-wm1-f71.google.com with SMTP id z16-20020a05600c0a1000b0038bebbd8548so7154410wmp.3
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 09:41:53 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=3+kz6I7pZcPAimiB8rQ2Jr3SdDzFgYoJ+V2mHrMniJg=;
-        b=hCGSNe9L9d6vNN4HePuMCBOGZ2OGZY0vuCgo0/4Uhu9qJoH95YKP02QeEWoYbjIGZq
-         CslYBC2uZ9LDn74vSrhp3XoKGNbOsBcvQVsjaaklU5i1gtnqB4Nqw9QpuLR2p+GRFW9F
-         QyCBVSJSVrPjjJ1mkIx3EwO+LnwFCb5ZpJQznrnkpJaxk0lZTPQWg7FuVFG4MJVIomLS
-         7zjiKwzyZMaLS/hWtEvm3IxqWL1SWsU2sSvnqtIgJ8qdxQAJrv3GibFnAW8IncwR2gSL
-         dBg3ErxFTdOB+J2rY1lzNMQxbbeDPa+yOhzoDPksNHVdUMJgOR87VifRVDarbsDvjr/U
-         p0SA==
-X-Gm-Message-State: AOAM530r9P6E3M7Ut7jdQsxyhUvPKpvmltLbN+PeOD7YZK/uQ3DLSero
-        cyyudX+QPhhWK1S0x8E0oUdDXYbb9+B3sxMUlwve18Lz74of767IbJdVAxVi615DuQjtbslZnzP
-        HtDnRv21yCCDj4dt3k7lZwr5R
-X-Received: by 2002:a05:6000:1862:b0:204:e417:9cf8 with SMTP id d2-20020a056000186200b00204e4179cf8mr440306wri.593.1649090513079;
-        Mon, 04 Apr 2022 09:41:53 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzXgci/ibeaKSvR6+nnoR/49t/2UDaGcl0TznmfMjMts0usoK/oXTo+u2Q1uulF0rg7yFs3hA==
-X-Received: by 2002:a05:6000:1862:b0:204:e417:9cf8 with SMTP id d2-20020a056000186200b00204e4179cf8mr440289wri.593.1649090512856;
-        Mon, 04 Apr 2022 09:41:52 -0700 (PDT)
-Received: from [192.168.1.102] ([92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id e13-20020a05600c4e4d00b0038e44e316c1sm32402wmq.6.2022.04.04.09.41.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 04 Apr 2022 09:41:52 -0700 (PDT)
-Message-ID: <4e53008a-c758-90dd-251e-f1668c52b10b@redhat.com>
-Date:   Mon, 4 Apr 2022 18:41:51 +0200
+        Mon, 4 Apr 2022 12:51:55 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1646E338AA;
+        Mon,  4 Apr 2022 09:49:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649090999; x=1680626999;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=RLenEGRyRkGnPHbe+3ya/9vd5y8mNvmWzZIkUE5GP2Q=;
+  b=f1FeONCAXxzEiJa96ibH89WK2aQsPFEN83B9PBTKwtG2AHqAtbQoMqSb
+   hJYvEYM7FsVX+TmnLaSqQ/mkwQDegJZLkYjKVofPMlnaHFjZ1nzXtay3v
+   A+1fnuR4vG1n3mIWe9eE1+vQYw9wkXd4zNyb3W4jXFIQw7QVtXflX/24E
+   IGZ4fTCz19oLBmWeCwwVt+etTE93sUDf4vRX4ZcZyHZxE0YqDpJmxDGwn
+   vPJ9h4RoFFzXNTNXLFvkFL7HdCfIiiKuS/+RZDkxruu9+4jEQxdmYZuMI
+   mUbcXJJ5a+NKQE2dOnboNs3/TPVyE7EiWVy09xS6wd6IjnYn0eOYqqpU9
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="323734056"
+X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
+   d="scan'208";a="323734056"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:49:51 -0700
+X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
+   d="scan'208";a="523105214"
+Received: from rchatre-ws.ostc.intel.com ([10.54.69.144])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:49:50 -0700
+From:   Reinette Chatre <reinette.chatre@intel.com>
+To:     dave.hansen@linux.intel.com, jarkko@kernel.org, tglx@linutronix.de,
+        bp@alien8.de, luto@kernel.org, mingo@redhat.com,
+        linux-sgx@vger.kernel.org, x86@kernel.org
+Cc:     seanjc@google.com, kai.huang@intel.com, cathy.zhang@intel.com,
+        cedric.xing@intel.com, haitao.huang@intel.com,
+        mark.shanahan@intel.com, hpa@zytor.com,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH V3 22/30] selftests/sgx: Add test for TCS page permission changes
+Date:   Mon,  4 Apr 2022 09:49:30 -0700
+Message-Id: <e1dd2c5f49043c43f71036d3abcb97fd30eec603.1648847675.git.reinette.chatre@intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cover.1648847675.git.reinette.chatre@intel.com>
+References: <cover.1648847675.git.reinette.chatre@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [PATCH 4/4] drm: ssd130x: Add support for SINO WEALTH SH1106
-Content-Language: en-US
-To:     wens@kernel.org, Javier Martinez Canillas <javier@dowhile0.org>
-Cc:     Maxime Ripard <mripard@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel <linux-kernel@vger.kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>
-References: <20220330190846.13997-1-wens@kernel.org>
- <20220330190846.13997-5-wens@kernel.org>
- <CABxcv=nLQdz9bVrfqw1MaKREh0uRBvc4wX14AORETaDJAin-Fw@mail.gmail.com>
- <CAGb2v66P+5Tj7BgUJCayWjB6UZhQ5wSFdX=RcwRqX4bYw3UOBg@mail.gmail.com>
-From:   Javier Martinez Canillas <javierm@redhat.com>
-In-Reply-To: <CAGb2v66P+5Tj7BgUJCayWjB6UZhQ5wSFdX=RcwRqX4bYw3UOBg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/4/22 18:35, Chen-Yu Tsai wrote:
-> On Fri, Apr 1, 2022 at 6:10 PM Javier Martinez Canillas
-> <javier@dowhile0.org> wrote:
+Kernel should not allow permission changes on TCS pages. Add test to
+confirm this behavior.
 
-[snip]
+Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
+---
+Changes since V2:
+- Update to use new struct name struct sgx_enclave_restrict_perm -> struct
+  sgx_enclave_restrict_permissions. (Jarkko)
 
->>
->> I wonder if we should also list SH1106 in the
->> drivers/gpu/drm/solomon/Kconfig file so people can find it ?
-> 
-> I can add it to the help text if that helps?
->
+Changes since V1:
+- Adapt test to the kernel interface changes: the ioctl() name change
+  and providing entire secinfo as parameter.
+- Rewrite error path to reduce line lengths.
 
-No strong opinion really, it was an honest question.
+ tools/testing/selftests/sgx/main.c | 74 ++++++++++++++++++++++++++++++
+ 1 file changed, 74 insertions(+)
+
+diff --git a/tools/testing/selftests/sgx/main.c b/tools/testing/selftests/sgx/main.c
+index 0e0bd1c4d702..59573c1128c8 100644
+--- a/tools/testing/selftests/sgx/main.c
++++ b/tools/testing/selftests/sgx/main.c
+@@ -121,6 +121,24 @@ static Elf64_Sym *vdso_symtab_get(struct vdso_symtab *symtab, const char *name)
+ 	return NULL;
+ }
  
-> Recently someone mentioned that users are more likely to find drivers
-> via compatible strings though. And I believe there's also a tool in-tree
-> that finds all drivers given a device tree.
-> 
-
-Yeah I guess so. Looking at existing DTS and drivers' device tables is
-certainly what I personally do when searching it a device is supported.
-
++/*
++ * Return the offset in the enclave where the TCS segment can be found.
++ * The first RW segment loaded is the TCS.
++ */
++static off_t encl_get_tcs_offset(struct encl *encl)
++{
++	int i;
++
++	for (i = 0; i < encl->nr_segments; i++) {
++		struct encl_segment *seg = &encl->segment_tbl[i];
++
++		if (i == 0 && seg->prot == (PROT_READ | PROT_WRITE))
++			return seg->offset;
++	}
++
++	return -1;
++}
++
+ /*
+  * Return the offset in the enclave where the data segment can be found.
+  * The first RW segment loaded is the TCS, skip that to get info on the
+@@ -567,6 +585,62 @@ TEST_F(enclave, pte_permissions)
+ 	EXPECT_EQ(self->run.exception_addr, 0);
+ }
+ 
++/*
++ * Modifying permissions of TCS page should not be possible.
++ */
++TEST_F(enclave, tcs_permissions)
++{
++	struct sgx_enclave_restrict_permissions ioc;
++	struct sgx_secinfo secinfo;
++	int ret, errno_save;
++
++	ASSERT_TRUE(setup_test_encl(ENCL_HEAP_SIZE_DEFAULT, &self->encl, _metadata));
++
++	memset(&self->run, 0, sizeof(self->run));
++	self->run.tcs = self->encl.encl_base;
++
++	memset(&ioc, 0, sizeof(ioc));
++	memset(&secinfo, 0, sizeof(secinfo));
++
++	/*
++	 * Ensure kernel supports needed ioctl() and system supports needed
++	 * commands.
++	 */
++
++	ret = ioctl(self->encl.fd, SGX_IOC_ENCLAVE_RESTRICT_PERMISSIONS, &ioc);
++	errno_save = ret == -1 ? errno : 0;
++
++	/*
++	 * Invalid parameters were provided during sanity check,
++	 * expect command to fail.
++	 */
++	ASSERT_EQ(ret, -1);
++
++	/* ret == -1 */
++	if (errno_save == ENOTTY)
++		SKIP(return,
++		     "Kernel does not support SGX_IOC_ENCLAVE_RESTRICT_PERMISSIONS ioctl()");
++	else if (errno_save == ENODEV)
++		SKIP(return, "System does not support SGX2");
++
++	/*
++	 * Attempt to make TCS page read-only. This is not allowed and
++	 * should be prevented by the kernel.
++	 */
++	secinfo.flags = PROT_READ;
++	ioc.offset = encl_get_tcs_offset(&self->encl);
++	ioc.length = PAGE_SIZE;
++	ioc.secinfo = (unsigned long)&secinfo;
++
++	ret = ioctl(self->encl.fd, SGX_IOC_ENCLAVE_RESTRICT_PERMISSIONS, &ioc);
++	errno_save = ret == -1 ? errno : 0;
++
++	EXPECT_EQ(ret, -1);
++	EXPECT_EQ(errno_save, EINVAL);
++	EXPECT_EQ(ioc.result, 0);
++	EXPECT_EQ(ioc.count, 0);
++}
++
+ /*
+  * Enclave page permission test.
+  *
 -- 
-Best regards,
-
-Javier Martinez Canillas
-Linux Engineering
-Red Hat
+2.25.1
 
