@@ -2,139 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDD39C4167D
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:12:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09C7AC4167E
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:12:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380664AbiDDWMh (ORCPT
+        id S1381583AbiDDWMp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 18:12:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45268 "EHLO
+        Mon, 4 Apr 2022 18:12:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386832AbiDDVjg (ORCPT
+        with ESMTP id S1386311AbiDDVmo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 17:39:36 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98E264F9CF
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 14:31:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        Content-Type:MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
-        Content-ID:Content-Description:In-Reply-To:References;
-        bh=1hcHq3+jtoL5KI3F2TXnvjIRLzfezUI/ZzvP2fdXzK8=; b=eOATVfRMpJ/59wHBVZdU1fcZGi
-        bu9a2mhF+aplohuk+fjg4G27QNxVjFJ4KiPunSIa8K9qqxtySfOIxoLX8iWyqbVbQztoqxca8VfrH
-        ZikJBe50X02hySLGJG27bymW34LnGZWUSPjlRMAhq8G7oPhq5s5lGX2oui1ZGfKSky1Fn+zCnR8zj
-        oJBjm6lCRbPI6j72s/nbf+Kc4NObJefjyV/wPa0M0Q2cbNIiATKh7wlUpeTEA7aWAGzsNrzjmkYnN
-        VnADdg0lBY6B/FDR8Fs0eviZL/hibJkM3JuIJXceRym7zGwscM4hNThWa5tBg7/Ngp2TJrMynFQD7
-        oYnAO3Xw==;
-Received: from [2601:1c0:6280:3f0::aa0b] (helo=bombadil.infradead.org)
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nbUHZ-00GSRY-Ai; Mon, 04 Apr 2022 21:30:41 +0000
-From:   Randy Dunlap <rdunlap@infradead.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Andrey Grodzovsky <andrey.grodzovsky@amd.com>,
-        Nayan Deshmukh <nayan26deshmukh@gmail.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Jiawei Gu <Jiawei.Gu@amd.com>, dri-devel@lists.freedesktop.org
-Subject: [PATCH v2] drm/scheduler: quieten kernel-doc warnings
-Date:   Mon,  4 Apr 2022 14:30:40 -0700
-Message-Id: <20220404213040.12912-1-rdunlap@infradead.org>
-X-Mailer: git-send-email 2.34.1
+        Mon, 4 Apr 2022 17:42:44 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8345BAE7E;
+        Mon,  4 Apr 2022 14:34:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1649108034;
+        bh=7pBH/QTJ4K2fdCD9q+U67btQCRzR9hRO991I2DZKjOg=;
+        h=X-UI-Sender-Class:Date:From:To:Cc:Subject:In-Reply-To:References;
+        b=fPiI8WSIvhnY2eYzKH3G+8kOIH69YAbJLtEAz1x3F7p5LFTZPTj5/cMgttplO59FA
+         +F5jkqUHuogpsPMrpzoD3KLdwiELqbohuibbuz4FZD58yBY3pJp8iAXsgh82JlUBRd
+         alVAgJygCNjKIjf24/0xmDIBsina6AEGE5O5iVrI=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from localhost ([62.216.209.4]) by mail.gmx.net (mrgmx004
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MhU9Z-1oEQ3W3oG3-00eaxt; Mon, 04
+ Apr 2022 23:33:54 +0200
+Date:   Mon, 4 Apr 2022 23:33:52 +0200
+From:   Peter Seiderer <ps.report@gmx.net>
+To:     linux-wireless@vger.kernel.org
+Cc:     Johannes Berg <johannes@sipsolutions.net>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Felix Fietkau <nbd@nbd.name>
+Subject: Re: [PATCH v1] mac80211: minstrel_ht: fix where rate stats are
+ stored (fixes debugfs output)
+Message-ID: <20220404233352.015c466d@gmx.net>
+In-Reply-To: <20220404165414.1036-1-ps.report@gmx.net>
+References: <20220404165414.1036-1-ps.report@gmx.net>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-suse-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:cgac7zs78FX8fY5Aa49qEpPlxy5uOGFoENtF+BbX9fV7jWveeVe
+ 3KGFnIjV1+SsvHQzxW9/YjP4MpxEogFZu4SkirmkahXVhke9yn7camcSlO6selYHh8Or5kq
+ 59vwB86Ch7NRfdKH2u9f55GMJ7QsvX8V0QKLUUJ6nxecX1RH56qj/z+8TdGBMeH6aGoEVZK
+ /VQZZlbPHISWwpyNzW/Wg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:LzUmXy3axEo=:XHAx0L/RxKqYFylh5BsEYG
+ IX3NqFxW1SQ3vtVl9d6OzpZWhK6hJ+4Ggv3avalmawWGzFh+htjm54+dKsmicY8VaLSw8mZsj
+ zly0SluDHPeL97EWfxwVzMmlUQtRRpDmss2CWYz7AK00O8i+U+QBI6vE8ou501IWsnIo9xP7O
+ q3ljSHobd1YXz35e3jzMepVfYki3rNdvluRxV38SZo8iG8aP4iqaplMDih3jMcVuz8fQuJTwV
+ vJXE6d3mRtQ8jmYHMe6TxiPwstfaEdsZpVYMcH9YwOiSB4VCTLV3wCcGGZlrPAumdA5RW/Mpp
+ LJsmMg1ly0V2gkcJxew/rC8x7tmjr7MeWaVPCyB7YAxQu9r+IVgbMYCEcXYzjhMfZBliJS7wK
+ QYDL3brzRsqN8VO7T8nmc8aLy5AbgYCa2O+wj9LeuKO9vBcVEDeUWS2WKvUSqPBunRuAvIhfG
+ vTV+rWSZ+/T+dMKL+xsVrVPdE646CWx/rXrQRuqKQobrYYFKjHFlSBGgOad9I9Megv8n/2ohS
+ JLW8opSEF6f0mRGycIYSJSwaZId7Wfjl8QPRK5FMG30ccECTV3TE94dD17tFiA81iFsv3TMGi
+ Zca7rIDXRh/0lrmSp1muC1roxPEmN/aG6RDHDLvIlcQ7bTJ9BUPKJfVQwHFqA7I8ZpNudcSXE
+ i36LCVm7Sr+Tqa7GplW1YJhbE+AZ2Wo2wJvD2ABH8rrrfIvXaEuk4puyFqf0CimZRO8/U506b
+ BI58vqhMfSjHVxq5tjMPFR9N+RTjxtLvmICLPMjybAF4h+jcdSMfiN+kDQEfLwiNgOsVzNzy0
+ QRrgXBXGhqSZVJ3XmI7N3SN7wuzLEnUPHkl5ZVNkskigowenT0Jt/1m1jEBvDB9SSxpt+Y6so
+ Wxid+S/KvY4cTuOTAlknJeQvWAI3pKGCAp5ug6d9gkgMEiQGo8jRlx8s1riaj3han6VgkTfV8
+ Dzf0AxuZsrXLaUWZMxZc2OR7AG5QBJGwFHQDdMfVQNsfVq8rmXpadGUnBZh1egtYWIOqSeolf
+ 0j9wd+DzZfTVboBoTWm5y9t1RROvwYBsQlz8ctOCwMKs6SFQJKHoMsQFDOdeZBTfPcQytI28/
+ 80/XUlHor1bFgs=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix kernel-doc warnings in gpu_scheduler.h and sched_main.c.
 
-Quashes these warnings:
++ CC: Felix Fietkau
 
-include/drm/gpu_scheduler.h:332: warning: missing initial short description on line:
- * struct drm_sched_backend_ops
-include/drm/gpu_scheduler.h:412: warning: missing initial short description on line:
- * struct drm_gpu_scheduler
-include/drm/gpu_scheduler.h:461: warning: Function parameter or member 'dev' not described in 'drm_gpu_scheduler'
+On Mon,  4 Apr 2022 18:54:14 +0200, Peter Seiderer <ps.report@gmx.net> wro=
+te:
 
-drivers/gpu/drm/scheduler/sched_main.c:201: warning: missing initial short description on line:
- * drm_sched_dependency_optimized
-drivers/gpu/drm/scheduler/sched_main.c:995: warning: Function parameter or member 'dev' not described in 'drm_sched_init'
+> Using an ath9k card the debugfs output of minstrel_ht looks like the fol=
+lowing
+> (note the zero values for the first four rates sum-of success/attempts):
+>
+>              best    ____________rate__________    ____statistics___    =
+_____last____    ______sum-of________
+> mode guard #  rate   [name   idx airtime  max_tp]  [avg(tp) avg(prob)]  =
+[retry|suc|att]  [#success | #attempts]
+> OFDM       1    DP     6.0M  272    1640     5.2       3.1      53.8    =
+   3     0 0             0   0
+> OFDM       1   C       9.0M  273    1104     7.7       4.6      53.8    =
+   4     0 0             0   0
+> OFDM       1  B       12.0M  274     836    10.0       6.0      53.8    =
+   4     0 0             0   0
+> OFDM       1 A    S   18.0M  275     568    14.3       8.5      53.8    =
+   5     0 0             0   0
+> OFDM       1      S   24.0M  276     436    18.1       0.0       0.0    =
+   5     0 1            80   1778
+> OFDM       1          36.0M  277     300    24.9       0.0       0.0    =
+   0     0 1             0   107
+> OFDM       1      S   48.0M  278     236    30.4       0.0       0.0    =
+   0     0 0             0   75
+> OFDM       1          54.0M  279     212    33.0       0.0       0.0    =
+   0     0 0             0   72
+>
+> Total packet count::    ideal 16582      lookaround 885
+> Average # of aggregated frames per A-MPDU: 1.0
+>
+> Debugging showed that the rate statistics for the first four rates where
+> stored in the MINSTREL_CCK_GROUP instead of the MINSTREL_OFDM_GROUP beca=
+use
+> in minstrel_ht_get_stats() the supported check was not honoured as done =
+in
+> various other places, e.g net/mac80211/rc80211_minstrel_ht_debugfs.c:
+>
+>  74                 if (!(mi->supported[i] & BIT(j)))
+>  75                         continue;
+>
+> With the patch applied the output looks good:
+>
+>               best    ____________rate__________    ____statistics___   =
+ _____last____    ______sum-of________
+> mode guard #  rate   [name   idx airtime  max_tp]  [avg(tp) avg(prob)]  =
+[retry|suc|att]  [#success | #attempts]
+> OFDM       1    D      6.0M  272    1640     5.2       5.2     100.0    =
+   3     0 0             1   1
+> OFDM       1   C       9.0M  273    1104     7.7       7.7     100.0    =
+   4     0 0            38   38
+> OFDM       1  B       12.0M  274     836    10.0       9.9      89.5    =
+   4     2 2           372   395
+> OFDM       1 A   P    18.0M  275     568    14.3      14.3      97.2    =
+   5    52 53         6956   7181
+> OFDM       1      S   24.0M  276     436    18.1       0.0       0.0    =
+   0     0 1             6   163
+> OFDM       1          36.0M  277     300    24.9       0.0       0.0    =
+   0     0 1             0   35
+> OFDM       1      S   48.0M  278     236    30.4       0.0       0.0    =
+   0     0 0             0   38
+> OFDM       1      S   54.0M  279     212    33.0       0.0       0.0    =
+   0     0 0             0   38
+>
+> Total packet count::    ideal 7097      lookaround 287
+> Average # of aggregated frames per A-MPDU: 1.0
+>
+> Signed-off-by: Peter Seiderer <ps.report@gmx.net>
+> ---
+>  net/mac80211/rc80211_minstrel_ht.c | 3 +++
+>  1 file changed, 3 insertions(+)
+>
+> diff --git a/net/mac80211/rc80211_minstrel_ht.c b/net/mac80211/rc80211_m=
+instrel_ht.c
+> index 9c6ace858107..5a6bf46a4248 100644
+> --- a/net/mac80211/rc80211_minstrel_ht.c
+> +++ b/net/mac80211/rc80211_minstrel_ht.c
+> @@ -362,6 +362,9 @@ minstrel_ht_get_stats(struct minstrel_priv *mp, stru=
+ct minstrel_ht_sta *mi,
+>
+>  	group =3D MINSTREL_CCK_GROUP;
+>  	for (idx =3D 0; idx < ARRAY_SIZE(mp->cck_rates); idx++) {
+> +		if (!(mi->supported[group] & BIT(idx)))
+> +			continue;
+> +
+>  		if (rate->idx !=3D mp->cck_rates[idx])
+>  			continue;
+>
 
-Fixes: 2d33948e4e00 ("drm/scheduler: add documentation")
-Fixes: 8ab62eda177b ("drm/sched: Add device pointer to drm_gpu_scheduler")
-Fixes: 542cff7893a3 ("drm/sched: Avoid lockdep spalt on killing a processes")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: David Airlie <airlied@linux.ie>
-Cc: Daniel Vetter <daniel@ffwll.ch>
-Cc: Andrey Grodzovsky <andrey.grodzovsky@amd.com>
-Cc: Nayan Deshmukh <nayan26deshmukh@gmail.com>
-Cc: Alex Deucher <alexander.deucher@amd.com>
-Cc: Christian König <christian.koenig@amd.com>
-Cc: Jiawei Gu <Jiawei.Gu@amd.com>
-Cc: dri-devel@lists.freedesktop.org
-Acked-by: Christian König <christian.koenig@amd.com>
----
-Feel free to make changes or suggest changes...
-
-v2: drop @work description (already done by Andrey)
-
- drivers/gpu/drm/scheduler/sched_main.c |    3 ++-
- include/drm/gpu_scheduler.h            |    9 +++++----
- 2 files changed, 7 insertions(+), 5 deletions(-)
-
---- linux-next-20220404.orig/drivers/gpu/drm/scheduler/sched_main.c
-+++ linux-next-20220404/drivers/gpu/drm/scheduler/sched_main.c
-@@ -198,7 +198,7 @@ static void drm_sched_job_done_cb(struct
- }
- 
- /**
-- * drm_sched_dependency_optimized
-+ * drm_sched_dependency_optimized - test if the dependency can be optimized
-  *
-  * @fence: the dependency fence
-  * @entity: the entity which depends on the above fence
-@@ -984,6 +984,7 @@ static int drm_sched_main(void *param)
-  *		used
-  * @score: optional score atomic shared with other schedulers
-  * @name: name used for debugging
-+ * @dev: target &struct device
-  *
-  * Return 0 on success, otherwise error code.
-  */
---- linux-next-20220404.orig/include/drm/gpu_scheduler.h
-+++ linux-next-20220404/include/drm/gpu_scheduler.h
-@@ -328,10 +328,10 @@ enum drm_gpu_sched_stat {
- };
- 
- /**
-- * struct drm_sched_backend_ops
-+ * struct drm_sched_backend_ops - Define the backend operations
-+ *	called by the scheduler
-  *
-- * Define the backend operations called by the scheduler,
-- * these functions should be implemented in driver side.
-+ * These functions should be implemented in the driver side.
-  */
- struct drm_sched_backend_ops {
- 	/**
-@@ -408,7 +408,7 @@ struct drm_sched_backend_ops {
- };
- 
- /**
-- * struct drm_gpu_scheduler
-+ * struct drm_gpu_scheduler - scheduler instance-specific data
-  *
-  * @ops: backend operations provided by the driver.
-  * @hw_submission_limit: the max size of the hardware queue.
-@@ -434,6 +434,7 @@ struct drm_sched_backend_ops {
-  * @_score: score used when the driver doesn't provide one
-  * @ready: marks if the underlying HW is ready to work
-  * @free_guilty: A hit to time out handler to free the guilty job.
-+ * @dev: system &struct device
-  *
-  * One scheduler is implemented for each hardware ring.
-  */
