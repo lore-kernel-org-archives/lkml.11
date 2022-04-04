@@ -2,42 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 999A3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 10:17:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 364A3C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 10:18:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343889AbiDDKTr convert rfc822-to-8bit (ORCPT
+        id S1357078AbiDDKUQ convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 06:19:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37598 "EHLO
+        Mon, 4 Apr 2022 06:20:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356886AbiDDKTo (ORCPT
+        with ESMTP id S1356962AbiDDKUO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 06:19:44 -0400
+        Mon, 4 Apr 2022 06:20:14 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DBD633353
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 03:17:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 901ED3C717
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 03:18:18 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <p.zabel@pengutronix.de>)
-        id 1nbJmH-00029M-M6; Mon, 04 Apr 2022 12:17:41 +0200
+        id 1nbJmo-0002A5-Ki; Mon, 04 Apr 2022 12:18:14 +0200
 Received: from [2a0a:edc0:0:900:1d::4e] (helo=lupine)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <p.zabel@pengutronix.de>)
-        id 1nbJmI-0010WQ-AD; Mon, 04 Apr 2022 12:17:40 +0200
+        id 1nbJmm-0010WZ-M1; Mon, 04 Apr 2022 12:18:11 +0200
 Received: from pza by lupine with local (Exim 4.94.2)
         (envelope-from <p.zabel@pengutronix.de>)
-        id 1nbJmG-0006iU-1T; Mon, 04 Apr 2022 12:17:40 +0200
-Message-ID: <1459128bf981342c79170f32c95ff09d0fbaa7fa.camel@pengutronix.de>
-Subject: Re: [PATCH] reset: tegra-bpmp: Restore Handle errors in BPMP
- response
+        id 1nbJmk-0006k3-H6; Mon, 04 Apr 2022 12:18:10 +0200
+Message-ID: <b8ca583f3fbd4e0a25181d2ccdd0c05034561c74.camel@pengutronix.de>
+Subject: Re: [PATCH] reset: simple: Add AST2600 compatible
 From:   Philipp Zabel <p.zabel@pengutronix.de>
-To:     Sameer Pujar <spujar@nvidia.com>, thierry.reding@gmail.com,
-        jonathanh@nvidia.com, mperttunen@nvidia.com
-Cc:     linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Mon, 04 Apr 2022 12:17:39 +0200
-In-Reply-To: <1641995806-15245-1-git-send-email-spujar@nvidia.com>
-References: <1641995806-15245-1-git-send-email-spujar@nvidia.com>
+To:     Joel Stanley <joel@jms.id.au>, Andrew Jeffery <andrew@aj.id.au>
+Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Date:   Mon, 04 Apr 2022 12:18:10 +0200
+In-Reply-To: <20220221072650.129348-1-joel@jms.id.au>
+References: <20220221072650.129348-1-joel@jms.id.au>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8BIT
 User-Agent: Evolution 3.38.3-1 
@@ -50,56 +48,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mi, 2022-01-12 at 19:26 +0530, Sameer Pujar wrote:
-> This reverts following commit 69125b4b9440 ("reset: tegra-bpmp:
-> Revert
-> Handle errors in BPMP response").
+On Mo, 2022-02-21 at 17:56 +1030, Joel Stanley wrote:
+> Similar to the 2400 and 2500, the LPC controller has some simple
+> reset
+> lines that are used by the UART devices.
 > 
-> The Tegra194 HDA reset failure is fixed by commit d278dc9151a0
-> ("ALSA:
-> hda/tegra: Fix Tegra194 HDA reset failure"). The temporary revert of
-> original commit c045ceb5a145 ("reset: tegra-bpmp: Handle errors in
-> BPMP
-> response") can be removed now.
+> This is already documented in LPC bindings document.
 > 
-> Signed-off-by: Sameer Pujar <spujar@nvidia.com>
+> Signed-off-by: Joel Stanley <joel@jms.id.au>
 > ---
->  drivers/reset/tegra/reset-bpmp.c | 9 ++++++++-
->  1 file changed, 8 insertions(+), 1 deletion(-)
+>  drivers/reset/reset-simple.c | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> diff --git a/drivers/reset/tegra/reset-bpmp.c
-> b/drivers/reset/tegra/reset-bpmp.c
-> index 24d3395..4c5bba5 100644
-> --- a/drivers/reset/tegra/reset-bpmp.c
-> +++ b/drivers/reset/tegra/reset-bpmp.c
-> @@ -20,6 +20,7 @@ static int tegra_bpmp_reset_common(struct
-> reset_controller_dev *rstc,
->         struct tegra_bpmp *bpmp = to_tegra_bpmp(rstc);
->         struct mrq_reset_request request;
->         struct tegra_bpmp_message msg;
-> +       int err;
->  
->         memset(&request, 0, sizeof(request));
->         request.cmd = command;
-> @@ -30,7 +31,13 @@ static int tegra_bpmp_reset_common(struct
-> reset_controller_dev *rstc,
->         msg.tx.data = &request;
->         msg.tx.size = sizeof(request);
->  
-> -       return tegra_bpmp_transfer(bpmp, &msg);
-> +       err = tegra_bpmp_transfer(bpmp, &msg);
-> +       if (err)
-> +               return err;
-> +       if (msg.rx.ret)
-> +               return -EINVAL;
-> +
-> +       return 0;
->  }
->  
->  static int tegra_bpmp_reset_module(struct reset_controller_dev
-> *rstc,
+> diff --git a/drivers/reset/reset-simple.c b/drivers/reset/reset-
+> simple.c
+> index 4dda0daf2c6f..361a68314265 100644
+> --- a/drivers/reset/reset-simple.c
+> +++ b/drivers/reset/reset-simple.c
+> @@ -144,6 +144,7 @@ static const struct of_device_id
+> reset_simple_dt_ids[] = {
+>                 .data = &reset_simple_active_low },
+>         { .compatible = "aspeed,ast2400-lpc-reset" },
+>         { .compatible = "aspeed,ast2500-lpc-reset" },
+> +       { .compatible = "aspeed,ast2600-lpc-reset" },
+>         { .compatible = "bitmain,bm1880-reset",
+>                 .data = &reset_simple_active_low },
+>         { .compatible = "brcm,bcm4908-misc-pcie-reset",
 
-Thank you, applied to reset/fixes.
+Thank you, applied to reset/next.
 
 regards
 Philipp
