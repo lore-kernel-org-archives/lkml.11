@@ -2,133 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEA50C47087
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 996B8C47088
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:23:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381744AbiDDVX5 (ORCPT
+        id S1381609AbiDDVX0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:23:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43258 "EHLO
+        Mon, 4 Apr 2022 17:23:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380365AbiDDTsF (ORCPT
+        with ESMTP id S1379259AbiDDQvt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 15:48:05 -0400
-Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3C7830F6A
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 12:46:08 -0700 (PDT)
-Received: by mail-pf1-x44a.google.com with SMTP id g145-20020a625297000000b004fb2cf9d380so6483618pfb.22
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 12:46:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=pT/6Qdmm3tGb7HLrr7GqjKevauNrm0C8oEo/kdSI0ug=;
-        b=DX180veywuwX26kBGb4IS3QvBU35h9XvsRIASvum61dFNYnZS7OLefgyf3qPP6lGa4
-         XxRYSgT9bKas8WCz2qeYHpQgwwHAvjjwMV/0RkSxZZDuGBbLyCWfeG2wsJNDLl8Q0mOw
-         xnWozmkr/vUAQX1nIDMRbYoIXIDdxhBtPqaE9y91l1qaKqWp1k6cIXnK5YT738jdyKGv
-         TNpopmpt42kRQfuoCfxV7Az+dss4alEDWfSv07wkZcFASxV4k0ByUOxrNcpLR3mf35hi
-         Y8DfkY9vRnLwM9bVRvbJih55QTFyzYqcAKzs2z4cuYO+exrc0fD59Y/+lIajydhE/0vH
-         2PwA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=pT/6Qdmm3tGb7HLrr7GqjKevauNrm0C8oEo/kdSI0ug=;
-        b=x8KuJ0mvYdksFP9/LwR9OfQArhXVzGkJcBzyyBDwIYXmG9SbPzNWMAyHQerf/XfxhZ
-         whRbQvQd4LdH69VpxpldoMbgWPakvRyqr7yp9xxae9C6fMCdO//bS+6kIwJ6AeuHqPNH
-         3cteeWbIW2EZKlFAm+La6K4FN2LcdH1oqllEUsc0sEWNEDsObMivALo97L1NuV6lmVvZ
-         LDI1jDGzCWGPbxOMoQwTfIB1SDmqD+MhoOIUXUmY/zWpU43DXYPn4gLSi9YgcbM9wTbW
-         jOXBq/LBVGuuXNmxAKtBBZZTreKNTWxu6Ep7ZrCUwFWFsspTgrVl5Gx8eDqyJV2MlQkP
-         fz2w==
-X-Gm-Message-State: AOAM533oP19T7nxGKRAx61OYYo2VlrV5qn9c19inVjDT6UWLpdTX6hnC
-        3YgFOIzIeDQKu6uABBkXVo8iVZZzPdw=
-X-Google-Smtp-Source: ABdhPJwfcqk6KaaBz0Oi+OSkD69vCvSBFe18Kal7m0AgXBWa7DktPfr3Jda+1wNf7qEamm9U33+gjllt6Hs=
-X-Received: from pgonda1.kir.corp.google.com ([2620:15c:29:203:805:a056:1a51:2b9e])
- (user=pgonda job=sendgmr) by 2002:a17:902:f54c:b0:154:6794:ab18 with SMTP id
- h12-20020a170902f54c00b001546794ab18mr1280283plf.118.1649101568063; Mon, 04
- Apr 2022 12:46:08 -0700 (PDT)
-Date:   Mon,  4 Apr 2022 12:46:05 -0700
-Message-Id: <20220404194605.1569855-1-pgonda@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.35.1.1094.g7c7d902a7c-goog
-Subject: [PATCH] KVM: SEV: Mark nested locking of vcpu->lock
-From:   Peter Gonda <pgonda@google.com>
-To:     kvm@vger.kernel.org
-Cc:     Peter Gonda <pgonda@google.com>,
-        John Sperbeck <jsperbeck@google.com>,
-        David Rientjes <rientjes@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
+        Mon, 4 Apr 2022 12:51:49 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 304CF2ED52;
+        Mon,  4 Apr 2022 09:49:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649090993; x=1680626993;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=PUpr19v5lvN0gy5NGEhNyzwrdrgI+hKU2VLmutHw1IM=;
+  b=ldp6nHF5eKCFrb+joEr5V7d3e4d9k4vXr+LgWdStBMHjd1uMAj8rmw+o
+   Yjb7rcMrSGiWxDDvyYmztNJRzCI0VflUB2jqZjda6PML0gTgv6LGmZcLg
+   49LbMQWYgAPfeTB2KCUdWDBbQylFsoIjawNwjlvlsnXBTtq8M6RUoa5gb
+   8GCMF17YB5/TXcATiNarS8tXvFbtSDEgisUitAUB9BBei+5qLfP+rNkeO
+   VlUdNJ8ZQeOSwVErk0hv0umdGdHhXyycjjLj7RONPEdsotATttejMMUw2
+   4vVCB3zfi8jKjuiPqOjG+xhCZHEkOvnDcMmi0fL1/a3GiBjEgrHqmualA
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="259390773"
+X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
+   d="scan'208";a="259390773"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:49:51 -0700
+X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
+   d="scan'208";a="523105159"
+Received: from rchatre-ws.ostc.intel.com ([10.54.69.144])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:49:50 -0700
+From:   Reinette Chatre <reinette.chatre@intel.com>
+To:     dave.hansen@linux.intel.com, jarkko@kernel.org, tglx@linutronix.de,
+        bp@alien8.de, luto@kernel.org, mingo@redhat.com,
+        linux-sgx@vger.kernel.org, x86@kernel.org
+Cc:     seanjc@google.com, kai.huang@intel.com, cathy.zhang@intel.com,
+        cedric.xing@intel.com, haitao.huang@intel.com,
+        mark.shanahan@intel.com, hpa@zytor.com,
         linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Subject: [PATCH V3 04/30] x86/sgx: Add wrapper for SGX2 EAUG function
+Date:   Mon,  4 Apr 2022 09:49:12 -0700
+Message-Id: <db6a2a6b394d9900ce8e3abb1b471b61b7e25c53.1648847675.git.reinette.chatre@intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cover.1648847675.git.reinette.chatre@intel.com>
+References: <cover.1648847675.git.reinette.chatre@intel.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-svm_vm_migrate_from() uses sev_lock_vcpus_for_migration() to lock all
-source and target vcpu->locks. Mark the nested subclasses to avoid false
-positives from lockdep.
+Add a wrapper for the EAUG ENCLS leaf function used to
+add a page to an initialized enclave.
 
-Fixes: b56639318bb2b ("KVM: SEV: Add support for SEV intra host migration")
-Reported-by: John Sperbeck<jsperbeck@google.com>
-Suggested-by: David Rientjes <rientjes@google.com>
-Signed-off-by: Peter Gonda <pgonda@google.com>
-Cc: Paolo Bonzini <pbonzini@redhat.com>
-Cc: Sean Christopherson <seanjc@google.com>
-Cc: kvm@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
+EAUG:
+1) Stores all properties of the new enclave page in the SGX
+   hardware's Enclave Page Cache Map (EPCM).
+2) Sets the PENDING bit in the EPCM entry of the enclave page.
+   This bit is cleared by the enclave by invoking ENCLU leaf
+   function EACCEPT or EACCEPTCOPY.
+
+Access from within the enclave to the new enclave page is not
+possible until the PENDING bit is cleared.
+
+Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
 ---
+No changes since V2
 
-Tested by running sev_migrate_tests with lockdep enabled. Before we see
-a warning from sev_lock_vcpus_for_migration(). After we get no warnings.
+Changes since V1:
+- Split original patch ("x86/sgx: Add wrappers for SGX2 functions")
+  in three to introduce the SGX2 functions separately (Jarkko).
+- Rewrite commit message to include how the EPCM within the hardware
+  is changed by the SGX2 function as well as any calling
+  conditions (Jarkko).
 
----
- arch/x86/kvm/svm/sev.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+ arch/x86/kernel/cpu/sgx/encls.h | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
-index 75fa6dd268f0..8f77421c1c4b 100644
---- a/arch/x86/kvm/svm/sev.c
-+++ b/arch/x86/kvm/svm/sev.c
-@@ -1591,15 +1591,16 @@ static void sev_unlock_two_vms(struct kvm *dst_kvm, struct kvm *src_kvm)
- 	atomic_set_release(&src_sev->migration_in_progress, 0);
+diff --git a/arch/x86/kernel/cpu/sgx/encls.h b/arch/x86/kernel/cpu/sgx/encls.h
+index 7a1ecf704ec1..99004b02e2ed 100644
+--- a/arch/x86/kernel/cpu/sgx/encls.h
++++ b/arch/x86/kernel/cpu/sgx/encls.h
+@@ -227,4 +227,10 @@ static inline int __emodt(struct sgx_secinfo *secinfo, void *addr)
+ 	return __encls_ret_2(EMODT, secinfo, addr);
  }
  
--
--static int sev_lock_vcpus_for_migration(struct kvm *kvm)
-+static int sev_lock_vcpus_for_migration(struct kvm *kvm, unsigned int *subclass)
- {
- 	struct kvm_vcpu *vcpu;
- 	unsigned long i, j;
- 
- 	kvm_for_each_vcpu(i, vcpu, kvm) {
--		if (mutex_lock_killable(&vcpu->mutex))
-+		if (mutex_lock_killable_nested(&vcpu->mutex, *subclass))
- 			goto out_unlock;
++/* Zero a page of EPC memory and add it to an initialized enclave. */
++static inline int __eaug(struct sgx_pageinfo *pginfo, void *addr)
++{
++	return __encls_2(EAUG, pginfo, addr);
++}
 +
-+		++(*subclass);
- 	}
- 
- 	return 0;
-@@ -1717,6 +1718,7 @@ int sev_vm_move_enc_context_from(struct kvm *kvm, unsigned int source_fd)
- 	struct kvm *source_kvm;
- 	bool charged = false;
- 	int ret;
-+	unsigned int vcpu_mutex_subclass = 0;
- 
- 	source_kvm_file = fget(source_fd);
- 	if (!file_is_kvm(source_kvm_file)) {
-@@ -1745,10 +1747,10 @@ int sev_vm_move_enc_context_from(struct kvm *kvm, unsigned int source_fd)
- 		charged = true;
- 	}
- 
--	ret = sev_lock_vcpus_for_migration(kvm);
-+	ret = sev_lock_vcpus_for_migration(kvm, &vcpu_mutex_subclass);
- 	if (ret)
- 		goto out_dst_cgroup;
--	ret = sev_lock_vcpus_for_migration(source_kvm);
-+	ret = sev_lock_vcpus_for_migration(source_kvm, &vcpu_mutex_subclass);
- 	if (ret)
- 		goto out_dst_vcpu;
- 
+ #endif /* _X86_ENCLS_H */
 -- 
-2.35.1.1094.g7c7d902a7c-goog
+2.25.1
 
