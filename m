@@ -2,85 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFDE9C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FBA9C4167B
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:08:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382310AbiDDWJR (ORCPT
+        id S1381988AbiDDWJF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 18:09:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36310 "EHLO
+        Mon, 4 Apr 2022 18:09:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379363AbiDDRDu (ORCPT
+        with ESMTP id S1380664AbiDDUvI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 13:03:50 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6A8C40A27
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 10:01:53 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id g22so11915431edz.2
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 10:01:53 -0700 (PDT)
+        Mon, 4 Apr 2022 16:51:08 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BDA6BE3D
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 13:49:11 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id d10so7782633edj.0
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 13:49:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=eaDWQWz1kiQwWpxivLYYrV+X0cEZrsrmIAZxsaFLj0s=;
-        b=gAScoclBpW6c8jHDTbBeFYVOa8Vb+lZKB19UpeLijcAa46WH1Ox68XOcWSaAUa6OBV
-         regey1nP+Y3uKapqeAPAX4mWaPulwjzHqwqatwf8SxMB4kos9WXVww5xOBhuXmjC13Jg
-         9LDRvPL3S9pXoljZ8d3MmIY96mHXRSlQc0i/huBbI0IptKdGmuAe8HbMgFq0jCVbJQL9
-         k92n27ryfAkqptSU5w4CditBkdG1Qciyzig70GNy9Bafz2/+PS6+2XTB19NdgaENJ6f1
-         OS1hhUufxYUb3RelMQPm/CTPokqCVWknj9w5a+Rl5K2SdT1rIIasATZT5878meuX85RI
-         OTcw==
+        d=gmail.com; s=20210112;
+        h=date:from:to:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=HHEmg+fr5p/zbKaGECq76obXrCQuZc+PpCxxd81H4xU=;
+        b=Cz54hptYqES688DjAAbK5czO5dvQwJXWybrVQUz2Hjpdayu4G9M+aKsH7cxy9316PJ
+         U5WPwk6AVeK1i6n+mfHJ3fgkI3nDdpE09BI+O7d0ohSkx5ulHnWgLYlfzYqfjcMWndct
+         Qj95V8Zo9hVqxFJ67G54ZJb3yXKA+AEF1+3RkEDPoG6NXkNxORQgUkf45FAOOcMVjnbT
+         sDxvb6XKnn+mzi1/lmklPLH/oUCf3qaXfeTzlDdq3UZ8IcGBMoX5LBX7CR+gOhoUZNEa
+         R9QYqtUVG7z11/VyDetgl3jWUS44DonGWFnopeCzI7rRvluX24Axc783zpChiPtMwUse
+         qUIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=eaDWQWz1kiQwWpxivLYYrV+X0cEZrsrmIAZxsaFLj0s=;
-        b=GSYUD/6c0f+m+rFHtpn7bJICjneOUV1QNt4Qt4OslAN0UF2rMDrmTl6BrqzOJGmBF8
-         x9Mo/NUlxq9RNLigWxuJ/7dBm/PaM4CqmRDcHTno+ibpVWU5rK+/ajc6fOqbJNhwTeHO
-         aH6f3UCKIskP8yqmBzxHqYVABzh5L6e1ltLCYk8C3SMVN6SnRGPxuSBV4Cmb61WEy3rz
-         XhxRMZckKscqCblP+wdZN43n1cFm5050tXvtYwzR5WF/QpVOgXnJXCpeq9bTYxxDuTGx
-         cnTbWdyfhDrIwgx2fM/Z3VoYkbnTqixchVdKDpOdB/0P9fyaDdRTQ+fpxJtgCpa0GNWM
-         x/1g==
-X-Gm-Message-State: AOAM530ecqObc5ny86V8Vjxv4dQ/CHM8ZvC5PgS+guZs93PCWZLKl0Xr
-        8RiP6Fy8n/6q0/OBoBk49W5VEg==
-X-Google-Smtp-Source: ABdhPJztm/eMGvOu12ArL6gqzftWaXUdqGzWTTBrItmoOSsRyFaBAtJtYP+WVN7AQinWoayC6HgN7A==
-X-Received: by 2002:a05:6402:2043:b0:41c:da2c:2d5a with SMTP id bc3-20020a056402204300b0041cda2c2d5amr1132137edb.373.1649091712122;
-        Mon, 04 Apr 2022 10:01:52 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id c5-20020a170906d18500b006ce371f09d4sm4557770ejz.57.2022.04.04.10.01.51
+        h=x-gm-message-state:date:from:to:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=HHEmg+fr5p/zbKaGECq76obXrCQuZc+PpCxxd81H4xU=;
+        b=YreoIYSbBYPSVQ7aK9HFF+ayCBpejuKw107IAu3qcS3icO+DP8l+0AJjfya6ypSoIL
+         hqwQHg+ZOCu9h3OcKxNzHcLi8T0Oad8JrH3Xf12WnYtt9zFqPlMfsuG3x6BKEja+tBG1
+         Wmormoxz+xdgmhvXzOtjOOsTluhIKmt+4zAx9McQR+BUzEsXvv82qsTVU9tS/707EedN
+         c/TQq9VXm/ovZ2IZAH8DAkrYLQ0nGSbRSWZPRgVm6YRDXinMj+foUThdx9RnV4jJ+ApQ
+         OjMP+oZ1BTXX59hnEqnLN2e0wPwTP8+FhwO1sRbP+pySLIb7IjmXY4smit8TELxVmG0Y
+         2bkw==
+X-Gm-Message-State: AOAM5310r/q5Xeb7TrRfXt6Q4JhCbIk5ma3YXAu0QXHGVGX2o2Jm+Joa
+        Wev7zo3xPXKBz8zTlWkmNv4=
+X-Google-Smtp-Source: ABdhPJzb0rUG+QU53FfEw54N6apRT/DD8Nwd8qgh5DuPSeWrgOt5+lJkNPBtiQ8TL7lv8frvx1EFLg==
+X-Received: by 2002:a05:6402:4248:b0:419:4583:eaa2 with SMTP id g8-20020a056402424800b004194583eaa2mr3706edb.376.1649105349707;
+        Mon, 04 Apr 2022 13:49:09 -0700 (PDT)
+Received: from matrix-ESPRIMO-P710 (p54a074e9.dip0.t-ipconnect.de. [84.160.116.233])
+        by smtp.gmail.com with ESMTPSA id p14-20020a05640210ce00b00413211746d4sm5799012edu.51.2022.04.04.13.49.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 10:01:51 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Julia Lawall <Julia.Lawall@inria.fr>,
-        Krzysztof Kozlowski <krzk@kernel.org>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Russell King <linux@armlinux.org.uk>,
-        kernel-janitors@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Alim Akhtar <alim.akhtar@samsung.com>
-Subject: Re: [PATCH] ARM: s3c: s3c24xx: fix typos in comments
-Date:   Mon,  4 Apr 2022 19:01:42 +0200
-Message-Id: <164909169269.1688455.6988886329557682550.b4-ty@linaro.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220318103729.157574-5-Julia.Lawall@inria.fr>
-References: <20220318103729.157574-5-Julia.Lawall@inria.fr>
+        Mon, 04 Apr 2022 13:49:05 -0700 (PDT)
+Date:   Mon, 4 Apr 2022 22:49:04 +0200
+From:   Philipp Hortmann <philipp.g.hortmann@gmail.com>
+To:     Forest Bond <forest@alittletooquiet.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 6/6] staging: vt6655: Remove macro PCAvDelayByIO
+Message-ID: <af62ac8613e7c8ee236572d46137e8e202abf446.1649103348.git.philipp.g.hortmann@gmail.com>
+References: <cover.1649103348.git.philipp.g.hortmann@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cover.1649103348.git.philipp.g.hortmann@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 18 Mar 2022 11:37:00 +0100, Julia Lawall wrote:
-> Various spelling mistakes in comments.
-> Detected with the help of Coccinelle.
-> 
-> 
+Remove do-while(0) and CamelCase macro PCAvDelayByIO as
+it is not accepted by checkpatch.pl
+As the macro is just used once with a constant <= 50 the
+functionality of the macro is implemented by using
+udelay() directly.
 
-Applied, thanks!
+Signed-off-by: Philipp Hortmann <philipp.g.hortmann@gmail.com>
+---
+V1 -> V2: Changed converting macro to function to delete macro
+          This patch was 7/7 and is now 6/6
+---
+ drivers/staging/vt6655/srom.c |  2 +-
+ drivers/staging/vt6655/upc.h  | 13 -------------
+ 2 files changed, 1 insertion(+), 14 deletions(-)
 
-[1/1] ARM: s3c: s3c24xx: fix typos in comments
-      (squashed)
-
-Best regards,
+diff --git a/drivers/staging/vt6655/srom.c b/drivers/staging/vt6655/srom.c
+index 1612c9702e31..2719046f1ac0 100644
+--- a/drivers/staging/vt6655/srom.c
++++ b/drivers/staging/vt6655/srom.c
+@@ -80,7 +80,7 @@ unsigned char SROMbyReadEmbedded(void __iomem *iobase,
+ 			VNS_IN_PORTB(iobase + MAC_REG_I2MCSR, &byWait);
+ 			if (byWait & (I2MCSR_DONE | I2MCSR_NACK))
+ 				break;
+-			PCAvDelayByIO(CB_DELAY_LOOP_WAIT);
++			udelay(CB_DELAY_LOOP_WAIT);
+ 		}
+ 		if ((wDelay < W_MAX_TIMEOUT) &&
+ 		    (!(byWait & I2MCSR_NACK))) {
+diff --git a/drivers/staging/vt6655/upc.h b/drivers/staging/vt6655/upc.h
+index 7d5075ec3162..05e0cf2e7d97 100644
+--- a/drivers/staging/vt6655/upc.h
++++ b/drivers/staging/vt6655/upc.h
+@@ -38,19 +38,6 @@
+ #define VNS_OUT_PORTD(io_address, data) \
+ 	iowrite32((u32)(data), io_address)
+ 
+-#define PCAvDelayByIO(u_delay_unit)				\
+-do {								\
+-	unsigned char __maybe_unused data;			\
+-	unsigned long ii;					\
+-								\
+-	if (u_delay_unit <= 50) {					\
+-		udelay(u_delay_unit);				\
+-	} else {						\
+-		for (ii = 0; ii < (u_delay_unit); ii++)		\
+-			data = inb(0x61);			\
+-	}							\
+-} while (0)
+-
+ /*---------------------  Export Classes  ----------------------------*/
+ 
+ /*---------------------  Export Variables  --------------------------*/
 -- 
-Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+2.25.1
+
