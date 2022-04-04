@@ -2,112 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C548C352A1
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:49:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0ED3C35295
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:49:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380603AbiDDVsn (ORCPT
+        id S1380330AbiDDVsV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:48:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47510 "EHLO
+        Mon, 4 Apr 2022 17:48:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380339AbiDDTfs (ORCPT
+        with ESMTP id S1380040AbiDDSpp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 15:35:48 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B9A763FF
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 12:33:50 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id c23so9031894plo.0
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 12:33:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=kB7kulErLH1kl+/AkfN+Aryh9y9jz6Qw47u7OIjWlmM=;
-        b=T8vdp5Vd2LrsNPs6YvCZuqgogEONB0T2IO+VEUWJ5yMRSwDYr2kk/GwmMrzzCucSes
-         q82jwU9p39/ooLngHkw4d+W43XpFKkGy96Hcx7DwKvdeowr0P5edl3Kgaep0e8G7CWYb
-         CKOvtOPXCZrbiLi/l5lwqLW3NZLzfl2HLXZZfa1ptnEWSs/Bv0w9PqXVw5xCh0GOoZce
-         ZWHzLFMb2mak0znwGeqe+emmfKTPk7lf7qXOTaTUZRRqfz7b13htM5P0HRUWfu1j4sC/
-         8QCGQSmdY5ivg+WrU5Q9LuCPBcLlcZC5hMOkVd4osPzd3V06zpXl6JGW6mIJanhMmdnT
-         jD3Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=kB7kulErLH1kl+/AkfN+Aryh9y9jz6Qw47u7OIjWlmM=;
-        b=YRjykHHfFDKVxr4e9yNve6wVluBTUgHVc7B831NU00Uj9btBP6NHDFUaHICOAg9dZm
-         jRI1gvanSLn4HphCdxgXfmnzksEC0OBFy+UP143sYsTEtyIUYesJ3Sp0cyMjv8NmpVpE
-         5lLOKMLRkFfz7C77+hm0KK+zo3SN6Jye8oQGiSTAoJtoHlKKEiUyCVhZxLkcGX62Fyix
-         MoZA9gcEezFOD6a3+5LJftn6N6L2VANZt9/Rs2XKrpqqhPKKg/5O+8zPzjbMD9/L49HR
-         QH+VeSCAOi9imFAfFGB8WGyUmUxUEIsOqe/RwhC/8DDfW/ol7/lUgsz+bKQUOdPnzLiU
-         vhWA==
-X-Gm-Message-State: AOAM530QtUv2qpUrdTSHujdXienMg+Mtt8SM8WRNrf1nLy+ps2ViecM9
-        nrxuAbPxeNkIOqo4tgiZtFJGFQ==
-X-Google-Smtp-Source: ABdhPJxC/X5ZTY4Tf/eOli9bCS5k8iEBk8BofOU/FLMR8VrlKPxKF25FGRMVYBJMtdAi5f5RjwQLSQ==
-X-Received: by 2002:a17:902:b613:b0:156:7d82:c09b with SMTP id b19-20020a170902b61300b001567d82c09bmr1229152pls.80.1649100829838;
-        Mon, 04 Apr 2022 12:33:49 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id 77-20020a621450000000b004fa923bb57asm12500493pfu.201.2022.04.04.12.33.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 12:33:49 -0700 (PDT)
-Date:   Mon, 4 Apr 2022 19:33:44 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
-Cc:     Maxim Levitsky <mlevitsk@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 5/8] KVM: SVM: Re-inject INT3/INTO instead of retrying
- the instruction
-Message-ID: <YktIGHM86jHkzGdF@google.com>
-References: <20220402010903.727604-1-seanjc@google.com>
- <20220402010903.727604-6-seanjc@google.com>
- <a47217da0b6db4f1b6b6c69a9dc38350b13ac17c.camel@redhat.com>
- <YkshgrUaF4+MrrXf@google.com>
- <a3cf781b-0b1a-0bba-6b37-12666c7fc154@maciej.szmigiero.name>
+        Mon, 4 Apr 2022 14:45:45 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AEEFAE6C;
+        Mon,  4 Apr 2022 11:43:49 -0700 (PDT)
+Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id D1D2B22246;
+        Mon,  4 Apr 2022 20:43:46 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1649097827;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ATzKng0Bo6d19J8plCRK65PNpfkaclCPCJA7+STwAtE=;
+        b=YcB+7nYNg5LEAv8sXheBqu6L7iD3m8TrMhLYmt8B2rO1PI1+EQmvvuL4u8mXBpptKvTqzr
+        h3h1V8bG2JpBEopdv76Q0ZuTymd88RR3eXuQn1vgBsNn6EfriXHYUCLUrgKF4l+ZYBAc7X
+        SC2yh4Az2Rg14RFwarsbOmPrwbY2WYo=
+From:   Michael Walle <michael@walle.cc>
+To:     Xu Yilun <yilun.xu@intel.com>, Tom Rix <trix@redhat.com>,
+        Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, David Laight <David.Laight@ACULAB.COM>,
+        Michael Walle <michael@walle.cc>
+Subject: [PATCH v3 1/2] hwmon: introduce hwmon_sanitize_name()
+Date:   Mon,  4 Apr 2022 20:43:39 +0200
+Message-Id: <20220404184340.3973329-2-michael@walle.cc>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220404184340.3973329-1-michael@walle.cc>
+References: <20220404184340.3973329-1-michael@walle.cc>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <a3cf781b-0b1a-0bba-6b37-12666c7fc154@maciej.szmigiero.name>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 04, 2022, Maciej S. Szmigiero wrote:
-> > > > index 47e7427d0395..a770a1c7ddd2 100644
-> > > > --- a/arch/x86/kvm/svm/svm.h
-> > > > +++ b/arch/x86/kvm/svm/svm.h
-> > > > @@ -230,8 +230,8 @@ struct vcpu_svm {
-> > > >   	bool nmi_singlestep;
-> > > >   	u64 nmi_singlestep_guest_rflags;
-> > > > -	unsigned int3_injected;
-> > > > -	unsigned long int3_rip;
-> > > > +	unsigned soft_int_injected;
-> > > > +	unsigned long soft_int_linear_rip;
-> > > >   	/* optional nested SVM features that are enabled for this guest  */
-> > > >   	bool nrips_enabled                : 1;
-> > > 
-> > > 
-> > > I mostly agree with this patch, but think that it doesn't address the
-> > > original issue that Maciej wanted to address:
-> > > 
-> > > Suppose that there is *no* instruction in L2 code which caused the software
-> > > exception, but rather L1 set arbitrary next_rip, and set EVENTINJ to software
-> > > exception with some vector, and that injection got interrupted.
-> > > 
-> > > I don't think that this code will support this.
-> > 
-> > Argh, you're right.  Maciej's selftest injects without an instruction, but it doesn't
-> > configure the scenario where that injection fails due to an exception+VM-Exit that
-> > isn't intercepted by L1 and is handled by L0.  The event_inj test gets the coverage
-> > for the latter, but always has a backing instruction.
-> 
-> Still reviewing the whole patch set, but want to clear this point quickly:
-> The selftest does have an implicit intervening NPF (handled by L0) while
-> injecting the first L1 -> L2 event.
+More and more drivers will check for bad characters in the hwmon name
+and all are using the same code snippet. Consolidate that code by adding
+a new hwmon_sanitize_name() function.
 
-I'll do some debug to figure out why the test passes for me.  I'm guessing I either
-got lucky, e.g. IDT was faulted in already, or I screwed up and the test doesn't
-actually pass.
+Signed-off-by: Michael Walle <michael@walle.cc>
+---
+ Documentation/hwmon/hwmon-kernel-api.rst | 16 ++++++++
+ drivers/hwmon/hwmon.c                    | 50 ++++++++++++++++++++++++
+ include/linux/hwmon.h                    |  3 ++
+ 3 files changed, 69 insertions(+)
+
+diff --git a/Documentation/hwmon/hwmon-kernel-api.rst b/Documentation/hwmon/hwmon-kernel-api.rst
+index c41eb6108103..e2975d5caf34 100644
+--- a/Documentation/hwmon/hwmon-kernel-api.rst
++++ b/Documentation/hwmon/hwmon-kernel-api.rst
+@@ -50,6 +50,10 @@ register/unregister functions::
+ 
+   void devm_hwmon_device_unregister(struct device *dev);
+ 
++  char *hwmon_sanitize_name(const char *name);
++
++  char *devm_hwmon_sanitize_name(struct device *dev, const char *name);
++
+ hwmon_device_register_with_groups registers a hardware monitoring device.
+ The first parameter of this function is a pointer to the parent device.
+ The name parameter is a pointer to the hwmon device name. The registration
+@@ -95,6 +99,18 @@ All supported hwmon device registration functions only accept valid device
+ names. Device names including invalid characters (whitespace, '*', or '-')
+ will be rejected. The 'name' parameter is mandatory.
+ 
++If the driver doesn't use a static device name (for example it uses
++dev_name()), and therefore cannot make sure the name only contains valid
++characters, hwmon_sanitize_name can be used. This convenience function
++will duplicate the string and replace any invalid characters with an
++underscore. It will allocate memory for the new string and it is the
++responsibility of the caller to release the memory when the device is
++removed.
++
++devm_hwmon_sanitize_name is the resource managed version of
++hwmon_sanitize_name; the memory will be freed automatically on device
++removal.
++
+ Using devm_hwmon_device_register_with_info()
+ --------------------------------------------
+ 
+diff --git a/drivers/hwmon/hwmon.c b/drivers/hwmon/hwmon.c
+index 989e2c8496dd..cc4a16a466a0 100644
+--- a/drivers/hwmon/hwmon.c
++++ b/drivers/hwmon/hwmon.c
+@@ -1057,6 +1057,56 @@ void devm_hwmon_device_unregister(struct device *dev)
+ }
+ EXPORT_SYMBOL_GPL(devm_hwmon_device_unregister);
+ 
++static char *__hwmon_sanitize_name(struct device *dev, const char *old_name)
++{
++	char *name, *p;
++
++	if (dev)
++		name = devm_kstrdup(dev, old_name, GFP_KERNEL);
++	else
++		name = kstrdup(old_name, GFP_KERNEL);
++	if (!name)
++		return NULL;
++
++	for (p = name; *p; p++)
++		if (hwmon_is_bad_char(*p))
++			*p = '_';
++
++	return name;
++}
++
++/**
++ * hwmon_sanitize_name - Replaces invalid characters in a hwmon name
++ * @name: NUL-terminated name
++ *
++ * Allocates a new string where any invalid characters will be replaced
++ * by an underscore. It is the responsibility of the caller to release
++ * the memory.
++ *
++ * Returns newly allocated name or %NULL in case of error.
++ */
++char *hwmon_sanitize_name(const char *name)
++{
++	return __hwmon_sanitize_name(NULL, name);
++}
++EXPORT_SYMBOL_GPL(hwmon_sanitize_name);
++
++/**
++ * devm_hwmon_sanitize_name - resource managed hwmon_sanitize_name()
++ * @dev: device to allocate memory for
++ * @name: NUL-terminated name
++ *
++ * Allocates a new string where any invalid characters will be replaced
++ * by an underscore.
++ *
++ * Returns newly allocated name or %NULL in case of error.
++ */
++char *devm_hwmon_sanitize_name(struct device *dev, const char *name)
++{
++	return __hwmon_sanitize_name(dev, name);
++}
++EXPORT_SYMBOL_GPL(devm_hwmon_sanitize_name);
++
+ static void __init hwmon_pci_quirks(void)
+ {
+ #if defined CONFIG_X86 && defined CONFIG_PCI
+diff --git a/include/linux/hwmon.h b/include/linux/hwmon.h
+index eba380b76d15..4efaf06fd2b8 100644
+--- a/include/linux/hwmon.h
++++ b/include/linux/hwmon.h
+@@ -461,6 +461,9 @@ void devm_hwmon_device_unregister(struct device *dev);
+ int hwmon_notify_event(struct device *dev, enum hwmon_sensor_types type,
+ 		       u32 attr, int channel);
+ 
++char *hwmon_sanitize_name(const char *name);
++char *devm_hwmon_sanitize_name(struct device *dev, const char *name);
++
+ /**
+  * hwmon_is_bad_char - Is the char invalid in a hwmon name
+  * @ch: the char to be considered
+-- 
+2.30.2
+
