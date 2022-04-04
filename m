@@ -2,122 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46EFAC3527D
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:08:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB35BC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:08:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381235AbiDDWIG (ORCPT
+        id S1381409AbiDDWIR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 18:08:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39518 "EHLO
+        Mon, 4 Apr 2022 18:08:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379815AbiDDSKn (ORCPT
+        with ESMTP id S1379423AbiDDRKW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 14:10:43 -0400
-Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED3B263C8;
-        Mon,  4 Apr 2022 11:08:45 -0700 (PDT)
-Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-2eb46d33db9so56222287b3.12;
-        Mon, 04 Apr 2022 11:08:45 -0700 (PDT)
+        Mon, 4 Apr 2022 13:10:22 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEF0E40A23
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 10:08:25 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id ot30so11392685ejb.12
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 10:08:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=EOXzNn8YJXSBSPBTfEilUNoggTZ9fchh0UKh2uaYCkg=;
-        b=kAwacWRlbua9Upr4P4y0HifVnz+enwieMp9UuW7TasoWWdBMX2U1ohTaSBrWezI3J4
-         n8Y4/cnYmT1N5OVNnylsiVtO6xKHI0MRuTuJS1fgouuJ8TeX+ppvsGKAlvAyRLmkJJBg
-         ikjG+PwSNdCzzWi8FuMpWlnjrJQqZwsLh19qWQh2Xuex9MvgE4RIICVNs/JpWawpigvy
-         HLW0LKiUj7j8CdpRNQdOmvXk1DXFGpZvgZHNB7aKQxfGq643HieiLatKxO0S0EHIgK9E
-         ApgQB6v2DcSfa0DJqSPnvW8XZE/CJP/ykJcn89IfSqAMBeb0T690o7Nx9p6lUGpZM4d5
-         z81w==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=gE+w/j83z+j5pFEpkVfRt65zDyjwfQWBfmU3yi7pNz4=;
+        b=Z5ajhx0rAWO0B+WgSD8sPn72nbeudyCmwS5vob1s31OX28awvdfYeRSUPWxQ83CYqN
+         hypRsAR6KiJfB/q/j8/zF3XgpOot7kIuVUpOVaos4vDb3/Hj0NKYvIxsexoTTbAnn0NP
+         n5dFL7RqPfSwOOzeLar2e31X+N6WjT2x+Jb+pEYdCSwLxFNQAS/qhYlgfy8wFsRMnVR7
+         YOEcS69a37c86FD4YIPkA8JVYdhNMcrU8OhTtspKIRAJy05kRQeWe8wPYMXb9+GxLOuY
+         J4DRavI2x8ieDtRP6MOIdyyB3+GBSVET6KMXhaJZw9fAxWPz82aJlC8OGaD6VK8+DYpX
+         onhw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=EOXzNn8YJXSBSPBTfEilUNoggTZ9fchh0UKh2uaYCkg=;
-        b=G2C0nKfLgbw7gwcL+90Q/aVsOfWDic1DYBhmWxXd2aMKyd1GgnbQXpu4XGeMdVVsJd
-         u94gZl/6dK1EWxPHtqfvPBmzDS1cspsE34s935HSd+M72G9l4gTzPVcDWLH5KpKfsCUo
-         gLb2ndG4QtPcF/lmiJBoZLqe1rFBEBmlKfHPt7OFADKah2ykFHENbJ6rNlAVb6Wv8K6b
-         fYBIDOcsH6deBOmKmFPYfnG+9zDaBJ3f1uZJLEbBICYJnm33weHEr19YM1l0o7wLluDo
-         q49TWCY5VnhvvGnlkDnx2MCYy/+2VrbdWWIebKS0hdKSc//4FInzXEklrjGQIZjdNghd
-         6FIg==
-X-Gm-Message-State: AOAM53053lOXLSO8DoVoTvgGAWa7dUzgK7MXIt/es2BGOripESEsqVx0
-        3FgkoM0rQzPfojybpUIn+JMn/+tAsCef8I3SXXo=
-X-Google-Smtp-Source: ABdhPJwHTThe++LzZaFuJJpiBj0G7KqdzDNbWhNKwST/OCct//gzRJbyQFkNoyVVqsf/wWrhLf7CMN5kZJcG5A4F2gc=
-X-Received: by 2002:a0d:e212:0:b0:2eb:4f2b:6e91 with SMTP id
- l18-20020a0de212000000b002eb4f2b6e91mr1221175ywe.78.1649095724281; Mon, 04
- Apr 2022 11:08:44 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=gE+w/j83z+j5pFEpkVfRt65zDyjwfQWBfmU3yi7pNz4=;
+        b=dyIVsrvNGYA4KYQVXeXlSioHef5TtcUYRIoi0WIwZW6cZTpR8T7kX1e1bGFOyEdwam
+         V14oGRnKguQX1ewLpUL7WVZOfLwuYc8v+3rO870xUHXFMPIHNLOJAly/TRwuVOO9TIa0
+         YPQ2tkaKV2xCY/CxxOfwgwZXeQrIVLq8aG1fh4DFUUA28PvNizWpcrd+1iWcAqH9ExZs
+         TjsOQw1jejbja8F+7YRx0CA/jAbdMZPm2Nw8Ou+R1ZfCGLb8FNf+u4xO3s00FsXO1Q2k
+         Nunopk0fKkArRv9fYcJDB6kowKok6T0fqLmgYutyHSzRgyBiYjjTN4Q1jMfXfNgm+gTi
+         BzaA==
+X-Gm-Message-State: AOAM530J7h1XuSmLo3/bPS85BLi/0UZZDxFgf/DaB6yvjTjKV1Tvl5hd
+        kCAmkHR/8nTx47uQtTSQv+FymQ==
+X-Google-Smtp-Source: ABdhPJyIutBGaqFTl0dav6T/02/aRGrIX5ffFX87pkIS7/d7sWASJJUMEmE2oijmlP3Ba3tWeflKPA==
+X-Received: by 2002:a17:906:c111:b0:6db:cf0e:3146 with SMTP id do17-20020a170906c11100b006dbcf0e3146mr1108050ejc.280.1649092104286;
+        Mon, 04 Apr 2022 10:08:24 -0700 (PDT)
+Received: from localhost.localdomain (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id u25-20020a170906b11900b006e08588afedsm4565827ejy.132.2022.04.04.10.08.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Apr 2022 10:08:23 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     dinguyen@kernel.org, s.hauer@pengutronix.de,
+        Sherry Sun <sherry.sun@nxp.com>, michal.simek@xilinx.com,
+        shawnguo@kernel.org, bp@suse.de, robh+dt@kernel.org,
+        manish.narani@xilinx.com, krzk+dt@kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        linux-imx@nxp.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: Re: (subset) [PATCH V2 1/2] dt-bindings: memory: snps,ddrc-3.80a compatible also need interrupts
+Date:   Mon,  4 Apr 2022 19:08:17 +0200
+Message-Id: <164909209237.1690243.4980500786689807223.b4-ty@linaro.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220321075131.17811-2-sherry.sun@nxp.com>
+References: <20220321075131.17811-1-sherry.sun@nxp.com> <20220321075131.17811-2-sherry.sun@nxp.com>
 MIME-Version: 1.0
-References: <20220404172322.32578-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20220404172322.32578-2-prabhakar.mahadev-lad.rj@bp.renesas.com> <OS0PR01MB5922182F6302386EFF2ED66B86E59@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-In-Reply-To: <OS0PR01MB5922182F6302386EFF2ED66B86E59@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Date:   Mon, 4 Apr 2022 19:08:18 +0100
-Message-ID: <CA+V-a8tdkw8-dUfrFG9kZizok8OQdcGHitAdb4E2tsBW3Xrh-g@mail.gmail.com>
-Subject: Re: [PATCH 1/2] mmc: renesas_sdhi: Jump to error path instead of
- returning directly
-To:     Biju Das <biju.das.jz@bp.renesas.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>
-Cc:     Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
-        Pavel Machek <pavel@denx.de>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Biju,
+On Mon, 21 Mar 2022 15:51:30 +0800, Sherry Sun wrote:
+> For the snps,ddrc-3.80a compatible, the interrupts property is also
+> required, also order the compatibles by name (s goes before x).
+> 
+> 
 
-Thank you for the review.
+Applied, thanks!
 
-On Mon, Apr 4, 2022 at 7:02 PM Biju Das <biju.das.jz@bp.renesas.com> wrote:
->
-> Hi Prabhakar and Pavel,
->
-> Thanks for the patch.
->
-> > Subject: [PATCH 1/2] mmc: renesas_sdhi: Jump to error path instead of
-> > returning directly
-> >
-> > Jump to error path "edisclk" instead of returning directly in case of
-> > devm_reset_control_get_optional_exclusive() failure.
-> >
-> > Fixes: b4d86f37eacb7 ("mmc: renesas_sdhi: do hard reset if possible")
-> > Reported-by: Pavel Machek <pavel@denx.de>
-> > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> > ---
-> >  drivers/mmc/host/renesas_sdhi_core.c | 6 ++++--
-> >  1 file changed, 4 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/drivers/mmc/host/renesas_sdhi_core.c
-> > b/drivers/mmc/host/renesas_sdhi_core.c
-> > index 2797a9c0f17d..cddb0185f5fb 100644
-> > --- a/drivers/mmc/host/renesas_sdhi_core.c
-> > +++ b/drivers/mmc/host/renesas_sdhi_core.c
-> > @@ -1033,8 +1033,10 @@ int renesas_sdhi_probe(struct platform_device
-> > *pdev,
-> >               goto efree;
-> >
-> >       priv->rstc = devm_reset_control_get_optional_exclusive(&pdev->dev,
-> > NULL);
-> > -     if (IS_ERR(priv->rstc))
-> > -             return PTR_ERR(priv->rstc);
-> > +     if (IS_ERR(priv->rstc)) {
-> > +             ret = PTR_ERR(priv->rstc);
-> > +             goto edisclk;
-> > +     }
->
-> Why can't devm_reset_control_get_optional_exclusive to be moved up before devm_clk_get?
->
-In that case we will have to jump to the "efree" label Or if you don't
-want goto at all this can be moved to the very beginning of the probe.
+[1/2] dt-bindings: memory: snps,ddrc-3.80a compatible also need interrupts
+      commit: 4f9f45d0eb0e7d449bc9294459df79b9c66edfac
 
-Wolfram, what is your preference on the above?
-
-Cheers,
-Prabhakar
+Best regards,
+-- 
+Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
