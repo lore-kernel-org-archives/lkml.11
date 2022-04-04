@@ -2,117 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 333D2C47090
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:23:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 162F1C3E8A8
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:23:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381135AbiDDVW3 (ORCPT
+        id S1381203AbiDDVWl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:22:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49468 "EHLO
+        Mon, 4 Apr 2022 17:22:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379546AbiDDR3J (ORCPT
+        with ESMTP id S1380014AbiDDSkP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 13:29:09 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B9B03190C
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 10:27:12 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id gt4so3533771pjb.4
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 10:27:11 -0700 (PDT)
+        Mon, 4 Apr 2022 14:40:15 -0400
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D3A731376;
+        Mon,  4 Apr 2022 11:38:19 -0700 (PDT)
+Received: by mail-pg1-x535.google.com with SMTP id t4so9075993pgc.1;
+        Mon, 04 Apr 2022 11:38:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=VYvPl145gx1NnQ2E3OJKFVQPxapHGXttn5rOGVj8YXo=;
-        b=hd+vUeBK2jke4Z79gSu5EYlGJK/30+8ZPm5vusOwihjccMo+JYQaFziQAAtCID0e5b
-         qiLbaSXJpB5nRDykwDoLmPmHeyaA4U3mO1aNEDIrpBI1y7KWpUIIYaKFkz1sQOFACAOc
-         aM6lCqWr9wZwWsklSOxLwTatnC3eKJ1E18Cyxx8CEA5zLgAe9sm4oTFjzF7SzNxlrSY7
-         5YCfCpDy23ULHUPSewKuWau9wE833jCsfozeqx9dNss7+g86jPjfaK+eh0C/KKY3VLXw
-         f3jp5vi8jNmhQOZlIPVusBowj6XA96wM7engEJdtxH6nw+nNIUhWc7hzzmvwmP0aO5k+
-         ThIw==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=YmPEcdivL57AHBLd508ovnXtC12+S9213cbQAz9S8ic=;
+        b=M6CalxvceL4+5dUPlDgTcpz+SZHVr2Iup8ARhfwK52cBEwckqeILRI4pJeg65UYsOw
+         rGm6pmRFiXrLVRLgUkPjH8HQgtpslRTtQ2pvKH8Q8PPPhy1A4KBqfcAkM+eIWBGiWu+d
+         8aXbODxZYc0VNW4GXXVPeOTNpZfaGPn50UF2cDg6A2YDkph6SmBs2FidhUKnRI0Y58As
+         kK5YPSjmQ9EgFhaMkEwwFF6yONhkfHDLbctyde06l5jImpAarQRxYvz+QGwL0nwSkqfF
+         GblDI3EV69YBSJxLmarZNmYtzULvTZwny87406fgVCe9ygIWHYiUFo9lcPhU9hAz/oxz
+         FuOQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=VYvPl145gx1NnQ2E3OJKFVQPxapHGXttn5rOGVj8YXo=;
-        b=mKOyhYD6sg0Xh7d+14VLygMxAYwHN54vbi9eFUgIN7NAWkl0XVkVBbF6qk2ITSv/cK
-         0ieT7AdMoq2IgejN4cxFgtw3fnSCN+V3AJ1Wv/Q04/q4YFuDYwW3pZj13A42U39022Pa
-         +CR6yilkUxoGcPHjl3pXNRzMQ/SSGuNu5oeO4R5ohdnjzhC7KDQXml488Fiptl+WToq3
-         /9JYwUm/by154fBKh600vM68kMHzadw80WXaAH/VFu2T2ZG0rtnlvdfpGe7L7TN7DVzg
-         pL06QytDUqpIGVNb5kAvm7hKeKAXWojl+hgrj9QEo1mGsG37rNTqvVuRMxNO8giOwnrr
-         osMw==
-X-Gm-Message-State: AOAM5332XW2uw1ENuclfMrVwPE+AEizi7gf7E0wVc4vjmuIuIJZiYKev
-        xHA+CZY08gRLYHKYuzLZgo5fCw==
-X-Google-Smtp-Source: ABdhPJzIn8VUPSw0kXUgBANdTlP1KbT/bIOfaGMgMZZeENIi+FbBiFh+hZ3dFMto7+s4V24GWdOQ6w==
-X-Received: by 2002:a17:90b:1c07:b0:1c7:5324:c68e with SMTP id oc7-20020a17090b1c0700b001c75324c68emr255680pjb.202.1649093231294;
-        Mon, 04 Apr 2022 10:27:11 -0700 (PDT)
-Received: from google.com ([2620:15c:211:202:9d5:9b93:ffb4:574a])
-        by smtp.gmail.com with ESMTPSA id gt14-20020a17090af2ce00b001c701e0a129sm73834pjb.38.2022.04.04.10.27.09
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=YmPEcdivL57AHBLd508ovnXtC12+S9213cbQAz9S8ic=;
+        b=dCTZSBSAQ2h2JcP/PY8soG7gc9gDMfMr9mUEU0bHgV6qYfEmMX4fxikUbRBxqZq+8k
+         IN9vC6EEbZSO/7Ne3ogmNXdWkqJZSzWiZcw4lXgx2kqKsq+t9IKT0IzWA+jv6HoV9CaW
+         R2q8h/v19hzXgkEDg+/BoTHSRSe/3A7atR6SzjI8sdUhztbC4HmTAacJp4Wunwf6U6XG
+         yMfdr3bxdH84qIT5frbDcRr/pLVeuqpOlgcgGyVjrVW5RKZP50GpdNS/oJ0+SRNpxR9r
+         BsfdhlLdVWoaVP+Yk6s+PHqydBzjUbcm364ltOJ+FoBuhU+KnAvNEKqMSLQU4GfAqv97
+         Xf5A==
+X-Gm-Message-State: AOAM530km6pzIiazRAvVeG8ivtXxKQx/zy9X+v8KNXh0MvB3R7Nc2qC/
+        Gfcq/89SV/Sz5EwVSLR/+zA=
+X-Google-Smtp-Source: ABdhPJzPaf4VTLpNukbM1Yv1qb2p3n0hHcWEmlyRo2W9YT4jfy4ViSIoxPmsm+GnzOWRndKWXEFgtA==
+X-Received: by 2002:a63:af06:0:b0:378:3582:a49f with SMTP id w6-20020a63af06000000b003783582a49fmr1025532pge.125.1649097499045;
+        Mon, 04 Apr 2022 11:38:19 -0700 (PDT)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id f31-20020a631f1f000000b003742e45f7d7sm11148281pgf.32.2022.04.04.11.38.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 10:27:09 -0700 (PDT)
-Date:   Mon, 4 Apr 2022 10:27:02 -0700
-From:   Nick Desaulniers <ndesaulniers@google.com>
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org,
-        linux-kbuild@vger.kernel.org, linux-arch@vger.kernel.org
-Subject: Re: [PATCH 1/8] agpgart.h: do not include <stdlib.h> from exported
- header
-Message-ID: <YksqZv5IqECbFB7a@google.com>
-References: <20220404061948.2111820-1-masahiroy@kernel.org>
- <20220404061948.2111820-2-masahiroy@kernel.org>
+        Mon, 04 Apr 2022 11:38:18 -0700 (PDT)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     bcm-kernel-feedback-list@broadcom.com,
+        =?iso-8859-9?b?QXL9bucg3E5BTA==?= <arinc.unal@arinc9.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        =?iso-8859-2?q?Rafa=B3_Mi=B3ecki?= <rafal@milecki.pl>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Scott Branden <scott.branden@broadcom.com>,
+        Christian Lamparter <chunkeey@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH v2 3/4] ARM: dts: BCM5301X: Fix compatible strings for BCM53012 and BCM53016 SoC
+Date:   Mon,  4 Apr 2022 11:38:16 -0700
+Message-Id: <20220404183816.2317832-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220402204622.3360-3-arinc.unal@arinc9.com>
+References: <20220402204622.3360-1-arinc.unal@arinc9.com> <20220402204622.3360-3-arinc.unal@arinc9.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220404061948.2111820-2-masahiroy@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 04, 2022 at 03:19:41PM +0900, Masahiro Yamada wrote:
-> Commit 35d0f1d54ecd ("include/uapi/linux/agpgart.h: include stdlib.h in
-> userspace") included <stdlib.h> to fix the unknown size_t error, but
-> I do not think it is the right fix.
+On Sat,  2 Apr 2022 23:46:21 +0300, Arınç ÜNAL <arinc.unal@arinc9.com> wrote:
+> Fix compatible strings for devicetrees using the BCM53012 and BCM53016 SoC.
 > 
-> This header already uses __kernel_size_t a few lines below.
-> 
-> Replace the remaining size_t, and stop including <stdlib.h>.
-> 
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-
-Thanks for the patch.
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
-
+> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
 > ---
-> 
->  include/uapi/linux/agpgart.h | 9 ++++-----
->  1 file changed, 4 insertions(+), 5 deletions(-)
-> 
-> diff --git a/include/uapi/linux/agpgart.h b/include/uapi/linux/agpgart.h
-> index f5251045181a..9cc3448c0b5b 100644
-> --- a/include/uapi/linux/agpgart.h
-> +++ b/include/uapi/linux/agpgart.h
-> @@ -52,7 +52,6 @@
->  
->  #ifndef __KERNEL__
->  #include <linux/types.h>
-> -#include <stdlib.h>
->  
->  struct agp_version {
->  	__u16 major;
-> @@ -64,10 +63,10 @@ typedef struct _agp_info {
->  	__u32 bridge_id;	/* bridge vendor/device         */
->  	__u32 agp_mode;		/* mode info of bridge          */
->  	unsigned long aper_base;/* base of aperture             */
-> -	size_t aper_size;	/* size of aperture             */
-> -	size_t pg_total;	/* max pages (swap + system)    */
-> -	size_t pg_system;	/* max pages (system)           */
-> -	size_t pg_used;		/* current pages used           */
-> +	__kernel_size_t aper_size;	/* size of aperture             */
-> +	__kernel_size_t pg_total;	/* max pages (swap + system)    */
-> +	__kernel_size_t pg_system;	/* max pages (system)           */
-> +	__kernel_size_t pg_used;	/* current pages used           */
->  } agp_info;
->  
->  typedef struct _agp_setup {
-> -- 
-> 2.32.0
-> 
+
+Applied to https://github.com/Broadcom/stblinux/commits/devicetree/next, thanks!
+--
+Florian
