@@ -2,104 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AFBEC35296
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2453EC4707A
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:49:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380441AbiDDVsc (ORCPT
+        id S1380523AbiDDVsh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:48:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36578 "EHLO
+        Mon, 4 Apr 2022 17:48:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379391AbiDDRES (ORCPT
+        with ESMTP id S1378924AbiDDQFD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 13:04:18 -0400
-Received: from mail-oi1-f176.google.com (mail-oi1-f176.google.com [209.85.167.176])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2687140A22;
-        Mon,  4 Apr 2022 10:02:22 -0700 (PDT)
-Received: by mail-oi1-f176.google.com with SMTP id q129so10701409oif.4;
-        Mon, 04 Apr 2022 10:02:22 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=KnM/3DeRUkghGL3B228lv8tjJAJo66tZo/nzV6jVUL8=;
-        b=woe382QyJMhl9DaVmJVTx67a5NzPogC7+6pfXXLFKQcIQwagapfi0LCRzNCsJ8hVVn
-         rp8m5FJ7/vohg747dNQ0s8hxMe0f4APnpVxpZm73WxCrkrv5rZBhmx4jJKF+36b1h9bP
-         +m663ZgDm09R3bt0QW212tlvzQRFx7IaPaRBUM6c4+qTnw+/Cj8AkLTJi5b+0v4tNvZR
-         dyXGiX4KmQcWUJrbFeXr4JSD99f6LvU/s9zbfc7Rb54iyWvDCoh7DLylB6SG+UpSsDDo
-         aJJkP+im1EoyySgsxVHYln/G2vLUMfk9ESKJ/a8P+6xshBN5n3j8a408TfoAE8q7g1sm
-         yIvA==
-X-Gm-Message-State: AOAM533mlrFkfObwvFKtL7oG0x1y9RrBF/+E0llbgMl9/IKK+EV8wxzf
-        uuhKkr8u2qqvd7Tm9OzM0tac9U28xg==
-X-Google-Smtp-Source: ABdhPJwjAxbJ3KU0l9+VXRjxGhhRZm4agoSKxhMj4f9qcCrMs2dDJ+nBsX6ziJpkXNEm3ZrMKCAzUA==
-X-Received: by 2002:a05:6808:2008:b0:2da:5b12:83ff with SMTP id q8-20020a056808200800b002da5b1283ffmr47508oiw.216.1649091740535;
-        Mon, 04 Apr 2022 10:02:20 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id t3-20020a05680800c300b002f935a7daa9sm4403437oic.19.2022.04.04.10.02.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 10:02:19 -0700 (PDT)
-Received: (nullmailer pid 1527750 invoked by uid 1000);
-        Mon, 04 Apr 2022 17:02:19 -0000
-Date:   Mon, 4 Apr 2022 12:02:19 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        Tony Lindgren <tony@atomide.com>, linux-pm@vger.kernel.org,
-        linux-gpio@vger.kernel.org, - <patches@opensource.cirrus.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Yunfei Dong <yunfei.dong@mediatek.com>,
-        alsa-devel@alsa-project.org,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        linux-media@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Sebastian Reichel <sre@kernel.org>
-Subject: Re: [PATCH] dt-bindings: Fix 'enum' lists with duplicate entries
-Message-ID: <Ykskm27aWyHMGk5v@robh.at.kernel.org>
-References: <20220401141247.2993925-1-robh@kernel.org>
+        Mon, 4 Apr 2022 12:05:03 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 71930427D2;
+        Mon,  4 Apr 2022 09:03:07 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3CFA21474;
+        Mon,  4 Apr 2022 09:03:07 -0700 (PDT)
+Received: from localhost (ionvoi01-desktop.cambridge.arm.com [10.1.196.65])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D6ED33F73B;
+        Mon,  4 Apr 2022 09:03:06 -0700 (PDT)
+Date:   Mon, 4 Apr 2022 17:03:05 +0100
+From:   Ionela Voinescu <ionela.voinescu@arm.com>
+To:     Lukasz Luba <lukasz.luba@arm.com>
+Cc:     linux-kernel@vger.kernel.org, dietmar.eggemann@arm.com,
+        Pierre.Gondois@arm.com, viresh.kumar@linaro.org, rafael@kernel.org,
+        daniel.lezcano@linaro.org, linux-pm@vger.kernel.org,
+        mka@chromium.org, nm@ti.com, sboyd@kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, cristian.marussi@arm.com,
+        sudeep.holla@arm.com, matthias.bgg@gmail.com
+Subject: Re: [RESEND][PATCH 8/8] powercap: DTPM: Check for Energy Model type
+Message-ID: <YksWubveJv2ei2pp@arm.com>
+References: <20220321095729.20655-1-lukasz.luba@arm.com>
+ <20220321095729.20655-9-lukasz.luba@arm.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220401141247.2993925-1-robh@kernel.org>
+In-Reply-To: <20220321095729.20655-9-lukasz.luba@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 01 Apr 2022 09:12:47 -0500, Rob Herring wrote:
-> There's no reason to list the same value twice in an 'enum'. Fix all the
-> occurrences in the tree. A meta-schema change will catch future ones.
+On Monday 21 Mar 2022 at 09:57:29 (+0000), Lukasz Luba wrote:
+> The Energy Model power values might be artificial. In such case
+> it's safe to bail out during the registration, since the PowerCap
+> framework supports only micro-Watts.
 > 
-> Cc: Krzysztof Kozlowski <krzk+dt@kernel.org>
-> Cc: Thierry Reding <thierry.reding@gmail.com>
-> Cc: Jonathan Hunter <jonathanh@nvidia.com>
-> Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
-> Cc: Charles Keepax <ckeepax@opensource.cirrus.com>
-> Cc: Linus Walleij <linus.walleij@linaro.org>
-> Cc: Sebastian Reichel <sre@kernel.org>
-> Cc: Tony Lindgren <tony@atomide.com>
-> Cc: Yunfei Dong <yunfei.dong@mediatek.com>
-> Cc: - <patches@opensource.cirrus.com>
-> Cc: linux-media@vger.kernel.org
-> Cc: alsa-devel@alsa-project.org
-> Cc: linux-gpio@vger.kernel.org
-> Cc: linux-pm@vger.kernel.org
-> Signed-off-by: Rob Herring <robh@kernel.org>
+> Signed-off-by: Lukasz Luba <lukasz.luba@arm.com>
 > ---
-> There's also one other occurrence in snps,dwmac.yaml I didn't fix as
-> there's a patch[1] for it which prompted this patch.
+>  drivers/powercap/dtpm_cpu.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> Rob
-> 
-> [1] https://lore.kernel.org/r/20220401030847epcms1p8cf7a8e1d8cd7d325dacf30f78da36328@epcms1p8
-> 
->  .../bindings/arm/tegra/nvidia,tegra20-pmc.yaml        |  1 -
->  Documentation/devicetree/bindings/bus/ti-sysc.yaml    |  1 -
->  .../bindings/media/mediatek,vcodec-encoder.yaml       |  1 -
->  .../devicetree/bindings/pinctrl/cirrus,madera.yaml    | 11 +++++------
->  .../devicetree/bindings/power/supply/bq2415x.yaml     |  1 -
->  5 files changed, 5 insertions(+), 10 deletions(-)
-> 
+> diff --git a/drivers/powercap/dtpm_cpu.c b/drivers/powercap/dtpm_cpu.c
+> index bca2f912d349..f5eced0842b3 100644
+> --- a/drivers/powercap/dtpm_cpu.c
+> +++ b/drivers/powercap/dtpm_cpu.c
+> @@ -211,7 +211,7 @@ static int __dtpm_cpu_setup(int cpu, struct dtpm *parent)
+>  		return 0;
+>  
+>  	pd = em_cpu_get(cpu);
+> -	if (!pd)
+> +	if (!pd || em_is_artificial(pd))
+>  		return -EINVAL;
+>  
+>  	dtpm_cpu = kzalloc(sizeof(*dtpm_cpu), GFP_KERNEL);
 
-Applied, thanks!
+Reviewed-by: Ionela Voinescu <ionela.voinescu@arm.com>
+
+> -- 
+> 2.17.1
+> 
