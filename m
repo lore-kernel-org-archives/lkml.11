@@ -2,293 +2,260 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E115C4321E
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:49:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76797C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:50:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381336AbiDDVtu (ORCPT
+        id S1381422AbiDDVt5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:49:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59712 "EHLO
+        Mon, 4 Apr 2022 17:49:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379200AbiDDQnS (ORCPT
+        with ESMTP id S1380409AbiDDUFH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 12:43:18 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9802635851
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 09:41:21 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 1FA1D210F4;
-        Mon,  4 Apr 2022 16:41:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1649090480; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Msvh6m+t5rYoB11gb9lJtAm2YmxtlamKtBfXfIOctHA=;
-        b=tlOMGI7kNSNyy2XuejrBGFf836Qy3z44eiz/mZrTq/6EQLL8eEbwOBjEmkdymnHKzzl7I+
-        xg/MpwhH6iO+cOh6iLRJzp4+I9UgBPv6jG1Fuyof3z/QdP2HRknjDjBeYO+NOfHTPgIplf
-        BZaZyWwz+Fzfk6IjO7o2gNtz4TwDExw=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1649090480;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Msvh6m+t5rYoB11gb9lJtAm2YmxtlamKtBfXfIOctHA=;
-        b=sMZ/KEKgA+a21s2WOtHvaiFSM98e28VjkRdAIhCVcH9KoppIuFRW+5wPIwkKTxNicqWQMO
-        fo1IelcSJgf646Dw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id E0FBC13A89;
-        Mon,  4 Apr 2022 16:41:19 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id GLNTNq8fS2LjfAAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Mon, 04 Apr 2022 16:41:19 +0000
-From:   Vlastimil Babka <vbabka@suse.cz>
-To:     David Rientjes <rientjes@google.com>,
-        Christoph Lameter <cl@linux.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>
-Cc:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        patches@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Oliver Glitta <glittao@gmail.com>,
-        Marco Elver <elver@google.com>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
-        Imran Khan <imran.f.khan@oracle.com>,
-        Vlastimil Babka <vbabka@suse.cz>
-Subject: [PATCH v3 1/6] lib/stackdepot: allow requesting early initialization dynamically
-Date:   Mon,  4 Apr 2022 18:41:07 +0200
-Message-Id: <20220404164112.18372-2-vbabka@suse.cz>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220404164112.18372-1-vbabka@suse.cz>
-References: <20220404164112.18372-1-vbabka@suse.cz>
+        Mon, 4 Apr 2022 16:05:07 -0400
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE01530576;
+        Mon,  4 Apr 2022 13:03:10 -0700 (PDT)
+Received: by mail-pl1-x632.google.com with SMTP id m18so9046697plx.3;
+        Mon, 04 Apr 2022 13:03:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=s/lBuFlDBU1GRGFU9YRcAqT+yGPT0++0CD70PJQOVug=;
+        b=jV2+yjJwu1XGCS/IRhjcd4DZs/IJskOYfgOFxua1OeyC9E1XiBQ1wmird8bypPrcZd
+         MoGBN5NQmHruIHbraHzI416gKP9u1Rk/wCKqGnIARi5LArpYMbo9qrGE7m+wZIrMYgB7
+         sQCOXxRoKp6iGqfMZBH/dbXVaI7kIT84aRYJK1SkaC2+vsBgI3iSqVcH8CfF7R8x9LgO
+         WnRl0woQcCgIkuorfpvG3+oj8JjHG/unaFUIs1HTA9jTUoUOhNUCfrzFgi9TP0Lbt06K
+         Ut85ccYdHygANYMcQX+k3Qz+za4rSK9z6yduraH5Uf2d5HYFHkA6SkVP4GD+n5IbvCPJ
+         UC2A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=s/lBuFlDBU1GRGFU9YRcAqT+yGPT0++0CD70PJQOVug=;
+        b=B+guag9GMmgsdMyNDdnW9ymXyMqp1yv8qw5DL8C7a1QOWsXzYDBIj8Ei795WuNVxze
+         /SEOchA4bT7rjl6PdiF+9AFyiS3Xg0IUHlHIMKkkoA7NnaKSxtaK2x+x9pl0Oh46n1iV
+         KyNjciiBzWEfTmoSEne6fJ21AdaEEGTbCTmKkYMzkQF6Ud4CjYWetzJ1SXCgKjMfHUDu
+         ImQpqot+A39ehmQNVXhqEA3wjVqoSbqJpWuIQ/A/Fpx17BQmU7zQMXTHP4ahAXRtIXyu
+         5SbEbHJHpJCP976hl6PULDjHspuwOW2FNfpt4dxwPXDns0yPbiSZCEH06mF/r6OHPqRw
+         UVeA==
+X-Gm-Message-State: AOAM530d58xQHA6ydf+T65Me3tmkJkru11/hBRpqq1pQexQj6qjnp078
+        MAB7fy/AbPSVmbQdaRo7QsI=
+X-Google-Smtp-Source: ABdhPJzg9Vfz5QEnjinv2EOkeMGgWfDWMGTZSI+KOlHEC65AKTLMoaowQLItcjuPWMR/DDhthX79vA==
+X-Received: by 2002:a17:902:7245:b0:156:20aa:1534 with SMTP id c5-20020a170902724500b0015620aa1534mr1673619pll.94.1649102590218;
+        Mon, 04 Apr 2022 13:03:10 -0700 (PDT)
+Received: from localhost.localdomain (c-67-174-241-145.hsd1.ca.comcast.net. [67.174.241.145])
+        by smtp.gmail.com with ESMTPSA id bw17-20020a056a00409100b004fadad3b93esm12779295pfb.142.2022.04.04.13.03.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Apr 2022 13:03:09 -0700 (PDT)
+From:   Yang Shi <shy828301@gmail.com>
+To:     vbabka@suse.cz, kirill.shutemov@linux.intel.com,
+        linmiaohe@huawei.com, songliubraving@fb.com, riel@surriel.com,
+        willy@infradead.org, ziy@nvidia.com, tytso@mit.edu,
+        akpm@linux-foundation.org
+Cc:     shy828301@gmail.com, linux-mm@kvack.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [v3 PATCH 5/8] mm: khugepaged: make khugepaged_enter() void function
+Date:   Mon,  4 Apr 2022 13:02:47 -0700
+Message-Id: <20220404200250.321455-6-shy828301@gmail.com>
+X-Mailer: git-send-email 2.26.3
+In-Reply-To: <20220404200250.321455-1-shy828301@gmail.com>
+References: <20220404200250.321455-1-shy828301@gmail.com>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=7886; h=from:subject; bh=g13raqQ+rnG6rknZ2M+4fuKo89TMDIRw3HFuYCzSfK0=; b=owEBbQGS/pANAwAIAeAhynPxiakQAcsmYgBiSx+jaLlmGkFJ39Gr8G3pJl5+AE10txtNwpy9PXCs wtDx4X6JATMEAAEIAB0WIQSNS5MBqTXjGL5IXszgIcpz8YmpEAUCYksfowAKCRDgIcpz8YmpEGy9B/ 4ye/zmHC7nUHoPB5v5Z7YbJbuhVSD6qAUUS3grCPUqL+fy7gCmlAmYGuHShuU9+cZYEdJi54QV5bvs j0UsAgImm33hsWBUSlBtveKek6TtHefdzgefKxlDo8EGtA7CaHfffAFGHhEWJ/7OKv1wPlo3nwU9S1 FtULwgfLmU0GD/me12NCb22pFYJfr4/5QD34m9HBu/vxo+YHMNd6HbNHlWB1I1HFrzml7s8cOY5JkZ QpopD9eqRDO8Xhh9Bcmo0Wopbrd3gHQbQSMl8VbaG4C7yWz5cHcxFRqMnHZldbh1i2ouG3sGL2+P9k DkhMxTEEo9dBtz12zcBamASZce5ml9
-X-Developer-Key: i=vbabka@suse.cz; a=openpgp; fpr=A940D434992C2E8E99103D50224FA7E7CC82A664
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In a later patch we want to add stackdepot support for object owner
-tracking in slub caches, which is enabled by slub_debug boot parameter.
-This creates a bootstrap problem as some caches are created early in
-boot when slab_is_available() is false and thus stack_depot_init()
-tries to use memblock. But, as reported by Hyeonggon Yoo [1] we are
-already beyond memblock_free_all(). Ideally memblock allocation should
-fail, yet it succeeds, but later the system crashes, which is a
-separately handled issue.
+The most callers of khugepaged_enter() don't care about the return
+value.  Only dup_mmap(), anonymous THP page fault and MADV_HUGEPAGE handle
+the error by returning -ENOMEM.  Actually it is not harmful for them to
+ignore the error case either.  It also sounds overkilling to fail fork()
+and page fault early due to khugepaged_enter() error, and MADV_HUGEPAGE
+does set VM_HUGEPAGE flag regardless of the error.
 
-To resolve this boostrap issue in a robust way, this patch adds another
-way to request stack_depot_early_init(), which happens at a well-defined
-point of time. In addition to build-time CONFIG_STACKDEPOT_ALWAYS_INIT,
-code that's e.g. processing boot parameters (which happens early enough)
-can call a new function stack_depot_want_early_init(), which sets a flag
-that stack_depot_early_init() will check.
-
-In this patch we also convert page_owner to this approach. While it
-doesn't have the bootstrap issue as slub, it's also a functionality
-enabled by a boot param and can thus request stack_depot_early_init()
-with memblock allocation instead of later initialization with
-kvmalloc().
-
-As suggested by Mike, make stack_depot_early_init() only attempt
-memblock allocation and stack_depot_init() only attempt kvmalloc().
-Also change the latter to kvcalloc(). In both cases we can lose the
-explicit array zeroing, which the allocations do already.
-
-As suggested by Marco, provide empty implementations of the init
-functions for !CONFIG_STACKDEPOT builds to simplify the callers.
-
-[1] https://lore.kernel.org/all/YhnUcqyeMgCrWZbd@ip-172-31-19-208.ap-northeast-1.compute.internal/
-
-Reported-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
-Suggested-by: Mike Rapoport <rppt@linux.ibm.com>
-Suggested-by: Marco Elver <elver@google.com>
-Signed-off-by: Vlastimil Babka <vbabka@suse.cz>
-Reviewed-by: Marco Elver <elver@google.com>
-Reviewed-and-tested-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
-Reviewed-by: Mike Rapoport <rppt@linux.ibm.com>
+Acked-by: Song Liu <song@kernel.org>
+Signed-off-by: Yang Shi <shy828301@gmail.com>
 ---
- include/linux/stackdepot.h | 26 ++++++++++++---
- lib/stackdepot.c           | 66 +++++++++++++++++++++++++-------------
- mm/page_owner.c            |  9 ++++--
- 3 files changed, 72 insertions(+), 29 deletions(-)
+ include/linux/khugepaged.h | 30 ++++++++++++------------------
+ kernel/fork.c              |  4 +---
+ mm/huge_memory.c           |  4 ++--
+ mm/khugepaged.c            | 18 +++++++-----------
+ 4 files changed, 22 insertions(+), 34 deletions(-)
 
-diff --git a/include/linux/stackdepot.h b/include/linux/stackdepot.h
-index 17f992fe6355..bc2797955de9 100644
---- a/include/linux/stackdepot.h
-+++ b/include/linux/stackdepot.h
-@@ -20,18 +20,36 @@ depot_stack_handle_t __stack_depot_save(unsigned long *entries,
- 					gfp_t gfp_flags, bool can_alloc);
+diff --git a/include/linux/khugepaged.h b/include/linux/khugepaged.h
+index 2fcc01891b47..0423d3619f26 100644
+--- a/include/linux/khugepaged.h
++++ b/include/linux/khugepaged.h
+@@ -12,10 +12,10 @@ extern struct attribute_group khugepaged_attr_group;
+ extern int khugepaged_init(void);
+ extern void khugepaged_destroy(void);
+ extern int start_stop_khugepaged(void);
+-extern int __khugepaged_enter(struct mm_struct *mm);
++extern void __khugepaged_enter(struct mm_struct *mm);
+ extern void __khugepaged_exit(struct mm_struct *mm);
+-extern int khugepaged_enter_vma_merge(struct vm_area_struct *vma,
+-				      unsigned long vm_flags);
++extern void khugepaged_enter_vma_merge(struct vm_area_struct *vma,
++				       unsigned long vm_flags);
+ extern void khugepaged_min_free_kbytes_update(void);
+ #ifdef CONFIG_SHMEM
+ extern void collapse_pte_mapped_thp(struct mm_struct *mm, unsigned long addr);
+@@ -40,11 +40,10 @@ static inline void collapse_pte_mapped_thp(struct mm_struct *mm,
+ 	(transparent_hugepage_flags &				\
+ 	 (1<<TRANSPARENT_HUGEPAGE_DEFRAG_KHUGEPAGED_FLAG))
  
- /*
-- * Every user of stack depot has to call this during its own init when it's
-- * decided that it will be calling stack_depot_save() later.
-+ * Every user of stack depot has to call stack_depot_init() during its own init
-+ * when it's decided that it will be calling stack_depot_save() later. This is
-+ * recommended for e.g. modules initialized later in the boot process, when
-+ * slab_is_available() is true.
-  *
-  * The alternative is to select STACKDEPOT_ALWAYS_INIT to have stack depot
-  * enabled as part of mm_init(), for subsystems where it's known at compile time
-  * that stack depot will be used.
-+ *
-+ * Another alternative is to call stack_depot_want_early_init(), when the
-+ * decision to use stack depot is taken e.g. when evaluating kernel boot
-+ * parameters, which precedes the enablement point in mm_init().
-+ *
-+ * stack_depot_init() and stack_depot_want_early_init() can be called regardless
-+ * of CONFIG_STACKDEPOT and are no-op when disabled. The actual save/fetch/print
-+ * functions should only be called from code that makes sure CONFIG_STACKDEPOT
-+ * is enabled.
-  */
-+#ifdef CONFIG_STACKDEPOT
- int stack_depot_init(void);
- 
--#ifdef CONFIG_STACKDEPOT_ALWAYS_INIT
--static inline int stack_depot_early_init(void)	{ return stack_depot_init(); }
-+void __init stack_depot_want_early_init(void);
-+
-+/* This is supposed to be called only from mm_init() */
-+int __init stack_depot_early_init(void);
- #else
-+static inline int stack_depot_init(void) { return 0; }
-+
-+static inline void stack_depot_want_early_init(void) { }
-+
- static inline int stack_depot_early_init(void)	{ return 0; }
- #endif
- 
-diff --git a/lib/stackdepot.c b/lib/stackdepot.c
-index bf5ba9af0500..6c4644c9ed44 100644
---- a/lib/stackdepot.c
-+++ b/lib/stackdepot.c
-@@ -66,6 +66,9 @@ struct stack_record {
- 	unsigned long entries[];	/* Variable-sized array of entries. */
- };
- 
-+static bool __stack_depot_want_early_init __initdata = IS_ENABLED(CONFIG_STACKDEPOT_ALWAYS_INIT);
-+static bool __stack_depot_early_init_passed __initdata;
-+
- static void *stack_slabs[STACK_ALLOC_MAX_SLABS];
- 
- static int depot_index;
-@@ -162,38 +165,57 @@ static int __init is_stack_depot_disabled(char *str)
- }
- early_param("stack_depot_disable", is_stack_depot_disabled);
- 
--/*
-- * __ref because of memblock_alloc(), which will not be actually called after
-- * the __init code is gone, because at that point slab_is_available() is true
-- */
--__ref int stack_depot_init(void)
-+void __init stack_depot_want_early_init(void)
-+{
-+	/* Too late to request early init now */
-+	WARN_ON(__stack_depot_early_init_passed);
-+
-+	__stack_depot_want_early_init = true;
-+}
-+
-+int __init stack_depot_early_init(void)
-+{
-+	size_t size;
-+
-+	/* This is supposed to be called only once, from mm_init() */
-+	if (WARN_ON(__stack_depot_early_init_passed))
-+		return 0;
-+
-+	__stack_depot_early_init_passed = true;
-+
-+	if (!__stack_depot_want_early_init || stack_depot_disable)
-+		return 0;
-+
-+	pr_info("Stack Depot early init allocating hash table with memblock_alloc\n");
-+	size = (STACK_HASH_SIZE * sizeof(struct stack_record *));
-+	stack_table = memblock_alloc(size, SMP_CACHE_BYTES);
-+
-+	if (!stack_table) {
-+		pr_err("Stack Depot hash table allocation failed, disabling\n");
-+		stack_depot_disable = true;
-+		return -ENOMEM;
-+	}
-+
-+	return 0;
-+}
-+
-+int stack_depot_init(void)
+-static inline int khugepaged_fork(struct mm_struct *mm, struct mm_struct *oldmm)
++static inline void khugepaged_fork(struct mm_struct *mm, struct mm_struct *oldmm)
  {
- 	static DEFINE_MUTEX(stack_depot_init_mutex);
-+	int ret = 0;
- 
- 	mutex_lock(&stack_depot_init_mutex);
- 	if (!stack_depot_disable && !stack_table) {
--		size_t size = (STACK_HASH_SIZE * sizeof(struct stack_record *));
--		int i;
--
--		if (slab_is_available()) {
--			pr_info("Stack Depot allocating hash table with kvmalloc\n");
--			stack_table = kvmalloc(size, GFP_KERNEL);
--		} else {
--			pr_info("Stack Depot allocating hash table with memblock_alloc\n");
--			stack_table = memblock_alloc(size, SMP_CACHE_BYTES);
--		}
--		if (stack_table) {
--			for (i = 0; i < STACK_HASH_SIZE;  i++)
--				stack_table[i] = NULL;
--		} else {
-+		pr_info("Stack Depot allocating hash table with kvcalloc\n");
-+		stack_table = kvcalloc(STACK_HASH_SIZE, sizeof(struct stack_record *), GFP_KERNEL);
-+		if (!stack_table) {
- 			pr_err("Stack Depot hash table allocation failed, disabling\n");
- 			stack_depot_disable = true;
--			mutex_unlock(&stack_depot_init_mutex);
--			return -ENOMEM;
-+			ret = -ENOMEM;
- 		}
- 	}
- 	mutex_unlock(&stack_depot_init_mutex);
+ 	if (test_bit(MMF_VM_HUGEPAGE, &oldmm->flags))
+-		return __khugepaged_enter(mm);
 -	return 0;
-+	return ret;
++		__khugepaged_enter(mm);
  }
- EXPORT_SYMBOL_GPL(stack_depot_init);
  
-diff --git a/mm/page_owner.c b/mm/page_owner.c
-index fb3a05fdebdb..2743062e92c2 100644
---- a/mm/page_owner.c
-+++ b/mm/page_owner.c
-@@ -45,7 +45,12 @@ static void init_early_allocated_pages(void);
+ static inline void khugepaged_exit(struct mm_struct *mm)
+@@ -53,7 +52,7 @@ static inline void khugepaged_exit(struct mm_struct *mm)
+ 		__khugepaged_exit(mm);
+ }
  
- static int __init early_page_owner_param(char *buf)
+-static inline int khugepaged_enter(struct vm_area_struct *vma,
++static inline void khugepaged_enter(struct vm_area_struct *vma,
+ 				   unsigned long vm_flags)
  {
--	return kstrtobool(buf, &page_owner_enabled);
-+	int ret = kstrtobool(buf, &page_owner_enabled);
-+
-+	if (page_owner_enabled)
-+		stack_depot_want_early_init();
-+
-+	return ret;
+ 	if (!test_bit(MMF_VM_HUGEPAGE, &vma->vm_mm->flags))
+@@ -62,27 +61,22 @@ static inline int khugepaged_enter(struct vm_area_struct *vma,
+ 		     (khugepaged_req_madv() && (vm_flags & VM_HUGEPAGE))) &&
+ 		    !(vm_flags & VM_NOHUGEPAGE) &&
+ 		    !test_bit(MMF_DISABLE_THP, &vma->vm_mm->flags))
+-			if (__khugepaged_enter(vma->vm_mm))
+-				return -ENOMEM;
+-	return 0;
++			__khugepaged_enter(vma->vm_mm);
  }
- early_param("page_owner", early_page_owner_param);
+ #else /* CONFIG_TRANSPARENT_HUGEPAGE */
+-static inline int khugepaged_fork(struct mm_struct *mm, struct mm_struct *oldmm)
++static inline void khugepaged_fork(struct mm_struct *mm, struct mm_struct *oldmm)
+ {
+-	return 0;
+ }
+ static inline void khugepaged_exit(struct mm_struct *mm)
+ {
+ }
+-static inline int khugepaged_enter(struct vm_area_struct *vma,
+-				   unsigned long vm_flags)
++static inline void khugepaged_enter(struct vm_area_struct *vma,
++				    unsigned long vm_flags)
+ {
+-	return 0;
+ }
+-static inline int khugepaged_enter_vma_merge(struct vm_area_struct *vma,
+-					     unsigned long vm_flags)
++static inline void khugepaged_enter_vma_merge(struct vm_area_struct *vma,
++					      unsigned long vm_flags)
+ {
+-	return 0;
+ }
+ static inline void collapse_pte_mapped_thp(struct mm_struct *mm,
+ 					   unsigned long addr)
+diff --git a/kernel/fork.c b/kernel/fork.c
+index 9796897560ab..0d13baf86650 100644
+--- a/kernel/fork.c
++++ b/kernel/fork.c
+@@ -612,9 +612,7 @@ static __latent_entropy int dup_mmap(struct mm_struct *mm,
+ 	retval = ksm_fork(mm, oldmm);
+ 	if (retval)
+ 		goto out;
+-	retval = khugepaged_fork(mm, oldmm);
+-	if (retval)
+-		goto out;
++	khugepaged_fork(mm, oldmm);
  
-@@ -83,8 +88,6 @@ static __init void init_page_owner(void)
- 	if (!page_owner_enabled)
- 		return;
+ 	prev = NULL;
+ 	for (mpnt = oldmm->mmap; mpnt; mpnt = mpnt->vm_next) {
+diff --git a/mm/huge_memory.c b/mm/huge_memory.c
+index 183b793fd28e..4fd5a6a79d44 100644
+--- a/mm/huge_memory.c
++++ b/mm/huge_memory.c
+@@ -725,8 +725,8 @@ vm_fault_t do_huge_pmd_anonymous_page(struct vm_fault *vmf)
+ 		return VM_FAULT_FALLBACK;
+ 	if (unlikely(anon_vma_prepare(vma)))
+ 		return VM_FAULT_OOM;
+-	if (unlikely(khugepaged_enter(vma, vma->vm_flags)))
+-		return VM_FAULT_OOM;
++	khugepaged_enter(vma, vma->vm_flags);
++
+ 	if (!(vmf->flags & FAULT_FLAG_WRITE) &&
+ 			!mm_forbids_zeropage(vma->vm_mm) &&
+ 			transparent_hugepage_use_zero_page()) {
+diff --git a/mm/khugepaged.c b/mm/khugepaged.c
+index 609c1bc0a027..b69eda934d70 100644
+--- a/mm/khugepaged.c
++++ b/mm/khugepaged.c
+@@ -365,8 +365,7 @@ int hugepage_madvise(struct vm_area_struct *vma,
+ 		 * register it here without waiting a page fault that
+ 		 * may not happen any time soon.
+ 		 */
+-		if (khugepaged_enter_vma_merge(vma, *vm_flags))
+-			return -ENOMEM;
++		khugepaged_enter_vma_merge(vma, *vm_flags);
+ 		break;
+ 	case MADV_NOHUGEPAGE:
+ 		*vm_flags &= ~VM_HUGEPAGE;
+@@ -475,20 +474,20 @@ static bool hugepage_vma_check(struct vm_area_struct *vma,
+ 	return true;
+ }
  
--	stack_depot_init();
+-int __khugepaged_enter(struct mm_struct *mm)
++void __khugepaged_enter(struct mm_struct *mm)
+ {
+ 	struct mm_slot *mm_slot;
+ 	int wakeup;
+ 
+ 	mm_slot = alloc_mm_slot();
+ 	if (!mm_slot)
+-		return -ENOMEM;
++		return;
+ 
+ 	/* __khugepaged_exit() must not run from under us */
+ 	VM_BUG_ON_MM(khugepaged_test_exit(mm), mm);
+ 	if (unlikely(test_and_set_bit(MMF_VM_HUGEPAGE, &mm->flags))) {
+ 		free_mm_slot(mm_slot);
+-		return 0;
++		return;
+ 	}
+ 
+ 	spin_lock(&khugepaged_mm_lock);
+@@ -504,11 +503,9 @@ int __khugepaged_enter(struct mm_struct *mm)
+ 	mmgrab(mm);
+ 	if (wakeup)
+ 		wake_up_interruptible(&khugepaged_wait);
 -
- 	register_dummy_stack();
- 	register_failure_stack();
- 	register_early_stack();
+-	return 0;
+ }
+ 
+-int khugepaged_enter_vma_merge(struct vm_area_struct *vma,
++void khugepaged_enter_vma_merge(struct vm_area_struct *vma,
+ 			       unsigned long vm_flags)
+ {
+ 	unsigned long hstart, hend;
+@@ -519,13 +516,12 @@ int khugepaged_enter_vma_merge(struct vm_area_struct *vma,
+ 	 * file-private shmem THP is not supported.
+ 	 */
+ 	if (!hugepage_vma_check(vma, vm_flags))
+-		return 0;
++		return;
+ 
+ 	hstart = (vma->vm_start + ~HPAGE_PMD_MASK) & HPAGE_PMD_MASK;
+ 	hend = vma->vm_end & HPAGE_PMD_MASK;
+ 	if (hstart < hend)
+-		return khugepaged_enter(vma, vm_flags);
+-	return 0;
++		khugepaged_enter(vma, vm_flags);
+ }
+ 
+ void __khugepaged_exit(struct mm_struct *mm)
 -- 
-2.35.1
+2.26.3
 
