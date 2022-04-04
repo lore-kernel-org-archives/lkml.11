@@ -2,140 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17092C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:18:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C9D4C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:18:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379603AbiDDVUE (ORCPT
+        id S1379614AbiDDVUK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:20:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38380 "EHLO
+        Mon, 4 Apr 2022 17:20:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380661AbiDDUus (ORCPT
+        with ESMTP id S1379284AbiDDQxM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 16:50:48 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B824BE3D
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 13:48:51 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id bq8so22459212ejb.10
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 13:48:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=J4LkMGmqh/IpZ1iCRfWTzUc90cCZBJCLLtl1EUpG/xY=;
-        b=ZQN200a6cw/b5AfpR3Dx+RPgXMa7VenkpOgBGHkNCRIdT7BMrcE0L9W5n6V1sqV/GN
-         VEjoVu8+TawE4B49MAioeNQyQLC/a897Fb1sB9R1KZuQUS3OlvyDSbc5eAKznWJj8PK7
-         jSNFpYCDeMwCo9Qds7kiuAe30vY6FftnulC1FY/DcibM1/4NwlaCB99KMPb9vY3Uq9EY
-         9sFAOKc5yrHx0I/XzPoj6ymiCprXHlzBc/gIgtxhURExOL4+jiBD8up6omNaJlQzZSJ9
-         LFQH5DJZkK9mKsQlf094jh1SEs39EQjlHqoakvAbhg9dykYq9DUfruVI3jSlCGiezjIw
-         qw7A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=J4LkMGmqh/IpZ1iCRfWTzUc90cCZBJCLLtl1EUpG/xY=;
-        b=ow1yFeRpF6fhpmXqG+AAtrq/oKrSxeQfZg8kerB5JHS/xffQUXJKCZd/c/QMqOjZSp
-         RTa+x79yk3GHu5mt2tO6eZEiDFQGJhFBhewwUaEbFRa+4GKS3a1T/cMajw+AhgjgAsqD
-         CeejOD6x8zxoDLqGCAj1gb+mCIUvQ3TCYWtF7yXhuRypVKPR2onxyd6DmtKuHCuy56Xt
-         gU6EN8REN1VH2Ifk5BKc+r4//qiRPHIdNqkMOQxQURDmUop9KKkMxpa61+D+7ChoCuWO
-         lpE4opC4WL1f69PGi/m5qDpHMM5JNYf6vepNv8BTOhY6PkygO38MDJ5PpProMQTm4HTK
-         V6RA==
-X-Gm-Message-State: AOAM530rpGo+WOrz6s+hFPUIWTrWMnqayCAZ4tPbWQOF1YrWpFnqL7Wr
-        zifVwVtpE17wcdZmsB/hqZs=
-X-Google-Smtp-Source: ABdhPJyOceuk4zKyHG56ftwcYbV0B24dltyTGZZA6cCalDmcC0XzzoKQDp1oRM93oXIPqNXKlmUrlQ==
-X-Received: by 2002:a17:907:7ea6:b0:6db:ca53:9b0a with SMTP id qb38-20020a1709077ea600b006dbca539b0amr1857492ejc.763.1649105329789;
-        Mon, 04 Apr 2022 13:48:49 -0700 (PDT)
-Received: from matrix-ESPRIMO-P710 (p54a074e9.dip0.t-ipconnect.de. [84.160.116.233])
-        by smtp.gmail.com with ESMTPSA id x3-20020a50d9c3000000b0041c8ce4bcd7sm4529339edj.63.2022.04.04.13.48.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 13:48:49 -0700 (PDT)
-Date:   Mon, 4 Apr 2022 22:48:47 +0200
-From:   Philipp Hortmann <philipp.g.hortmann@gmail.com>
-To:     Forest Bond <forest@alittletooquiet.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 3/6] staging: vt6655: Rename macro arguments with CamelCase
-Message-ID: <70cce6671976e454830c12d6d7977a5fe816a287.1649103348.git.philipp.g.hortmann@gmail.com>
-References: <cover.1649103348.git.philipp.g.hortmann@gmail.com>
+        Mon, 4 Apr 2022 12:53:12 -0400
+Received: from vps-vb.mhejs.net (vps-vb.mhejs.net [37.28.154.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63EBD3B032;
+        Mon,  4 Apr 2022 09:51:14 -0700 (PDT)
+Received: from MUA
+        by vps-vb.mhejs.net with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <mail@maciej.szmigiero.name>)
+        id 1nbPuw-0002t4-DU; Mon, 04 Apr 2022 18:51:02 +0200
+Message-ID: <112c2108-7548-f5bd-493d-19b944701f1b@maciej.szmigiero.name>
+Date:   Mon, 4 Apr 2022 18:50:54 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1649103348.git.philipp.g.hortmann@gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Content-Language: en-US
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220402010903.727604-1-seanjc@google.com>
+ <20220402010903.727604-2-seanjc@google.com>
+From:   "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
+Subject: Re: [PATCH 1/8] KVM: nSVM: Sync next_rip field from vmcb12 to vmcb02
+In-Reply-To: <20220402010903.727604-2-seanjc@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Rename macro arguments with CamelCase in upc.h as
-they are not accepted by checkpatch.pl
-Removed datatype in macro arguments.
+On 2.04.2022 03:08, Sean Christopherson wrote:
+> From: Maciej S. Szmigiero <maciej.szmigiero@oracle.com>
+> 
+> The next_rip field of a VMCB is *not* an output-only field for a VMRUN.
+> This field value (instead of the saved guest RIP) in used by the CPU for
+> the return address pushed on stack when injecting a software interrupt or
+> INT3 or INTO exception.
+> 
+> Make sure this field gets synced from vmcb12 to vmcb02 when entering L2 or
+> loading a nested state and NRIPS is exposed to L1.  If NRIPS is supported
+> in hardware but not exposed to L1 (nrips=0 or hidden by userspace), stuff
+> vmcb02's next_rip from the new L2 RIP to emulate a !NRIPS CPU (which
+> saves RIP on the stack as-is).
+> 
+> Signed-off-by: Maciej S. Szmigiero <maciej.szmigiero@oracle.com>
+> Co-developed-by: Sean Christopherson <seanjc@google.com>
+> Signed-off-by: Sean Christopherson <seanjc@google.com>
+> ---
+>   arch/x86/kvm/svm/nested.c | 22 +++++++++++++++++++---
+>   arch/x86/kvm/svm/svm.h    |  1 +
+>   2 files changed, 20 insertions(+), 3 deletions(-)
+> 
+> diff --git a/arch/x86/kvm/svm/nested.c b/arch/x86/kvm/svm/nested.c
+> index 73b545278f5f..9a6dc2b38fcf 100644
+> --- a/arch/x86/kvm/svm/nested.c
+> +++ b/arch/x86/kvm/svm/nested.c
+> @@ -369,6 +369,7 @@ void __nested_copy_vmcb_control_to_cache(struct kvm_vcpu *vcpu,
+>   	to->nested_ctl          = from->nested_ctl;
+>   	to->event_inj           = from->event_inj;
+>   	to->event_inj_err       = from->event_inj_err;
+> +	to->next_rip            = from->next_rip;
+>   	to->nested_cr3          = from->nested_cr3;
+>   	to->virt_ext            = from->virt_ext;
+>   	to->pause_filter_count  = from->pause_filter_count;
+> @@ -606,7 +607,8 @@ static void nested_vmcb02_prepare_save(struct vcpu_svm *svm, struct vmcb *vmcb12
+>   	}
+>   }
+>   
+> -static void nested_vmcb02_prepare_control(struct vcpu_svm *svm)
+> +static void nested_vmcb02_prepare_control(struct vcpu_svm *svm,
+> +					  unsigned long vmcb12_rip)
+>   {
+>   	u32 int_ctl_vmcb01_bits = V_INTR_MASKING_MASK;
+>   	u32 int_ctl_vmcb12_bits = V_TPR_MASK | V_IRQ_INJECTION_BITS_MASK;
+> @@ -660,6 +662,19 @@ static void nested_vmcb02_prepare_control(struct vcpu_svm *svm)
+>   	vmcb02->control.event_inj           = svm->nested.ctl.event_inj;
+>   	vmcb02->control.event_inj_err       = svm->nested.ctl.event_inj_err;
+>   
+> +	/*
+> +	 * next_rip is consumed on VMRUN as the return address pushed on the
+> +	 * stack for injected soft exceptions/interrupts.  If nrips is exposed
+> +	 * to L1, take it verbatim from vmcb12.  If nrips is supported in
+> +	 * hardware but not exposed to L1, stuff the actual L2 RIP to emulate
+> +	 * what a nrips=0 CPU would do (L1 is responsible for advancing RIP
+> +	 * prior to injecting the event).
+> +	 */
+> +	if (svm->nrips_enabled)
+> +		vmcb02->control.next_rip    = svm->nested.ctl.next_rip;
+> +	else if (boot_cpu_has(X86_FEATURE_NRIPS))
+> +		vmcb02->control.next_rip    = vmcb12_rip;
+> +
+>   	vmcb02->control.virt_ext            = vmcb01->control.virt_ext &
+>   					      LBR_CTL_ENABLE_MASK;
+>   	if (svm->lbrv_enabled)
+> @@ -743,7 +758,7 @@ int enter_svm_guest_mode(struct kvm_vcpu *vcpu, u64 vmcb12_gpa,
+>   	nested_svm_copy_common_state(svm->vmcb01.ptr, svm->nested.vmcb02.ptr);
+>   
+>   	svm_switch_vmcb(svm, &svm->nested.vmcb02);
+> -	nested_vmcb02_prepare_control(svm);
+> +	nested_vmcb02_prepare_control(svm, vmcb12->save.rip);
+>   	nested_vmcb02_prepare_save(svm, vmcb12);
+>   
+>   	ret = nested_svm_load_cr3(&svm->vcpu, svm->nested.save.cr3,
+> @@ -1422,6 +1437,7 @@ static void nested_copy_vmcb_cache_to_control(struct vmcb_control_area *dst,
+>   	dst->nested_ctl           = from->nested_ctl;
+>   	dst->event_inj            = from->event_inj;
+>   	dst->event_inj_err        = from->event_inj_err;
+> +	dst->next_rip             = from->next_rip;
+>   	dst->nested_cr3           = from->nested_cr3;
+>   	dst->virt_ext              = from->virt_ext;
+>   	dst->pause_filter_count   = from->pause_filter_count;
+> @@ -1606,7 +1622,7 @@ static int svm_set_nested_state(struct kvm_vcpu *vcpu,
+>   	nested_copy_vmcb_control_to_cache(svm, ctl);
+>   
+>   	svm_switch_vmcb(svm, &svm->nested.vmcb02);
+> -	nested_vmcb02_prepare_control(svm);
+> +	nested_vmcb02_prepare_control(svm, save->rip);
+>   
 
-Since there are more than one checkpatch issue per line,
-more steps are rquired to fix.
+					   ^
+I guess this should be "svm->vmcb->save.rip", since
+KVM_{GET,SET}_NESTED_STATE "save" field contains vmcb01 data,
+not vmcb{0,1}2 (in contrast to the "control" field).
 
-Signed-off-by: Philipp Hortmann <philipp.g.hortmann@gmail.com>
----
-V1 -> V2: This patch was 4/7 and is now 3/6
----
- drivers/staging/vt6655/upc.h | 36 ++++++++++++++++++------------------
- 1 file changed, 18 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/staging/vt6655/upc.h b/drivers/staging/vt6655/upc.h
-index b374db5fca81..f080a25e6cdf 100644
---- a/drivers/staging/vt6655/upc.h
-+++ b/drivers/staging/vt6655/upc.h
-@@ -20,34 +20,34 @@
- 
- /* For memory mapped IO */
- 
--#define VNSvInPortB(dwIOAddress, pbyData) \
--	(*(pbyData) = ioread8(dwIOAddress))
-+#define VNSvInPortB(io_address, data) \
-+	(*(data) = ioread8(io_address))
- 
--#define VNSvInPortW(dwIOAddress, pwData) \
--	(*(pwData) = ioread16(dwIOAddress))
-+#define VNSvInPortW(io_address, data) \
-+	(*(data) = ioread16(io_address))
- 
--#define VNSvInPortD(dwIOAddress, pdwData) \
--	(*(pdwData) = ioread32(dwIOAddress))
-+#define VNSvInPortD(io_address, data) \
-+	(*(data) = ioread32(io_address))
- 
--#define VNSvOutPortB(dwIOAddress, byData) \
--	iowrite8((u8)(byData), dwIOAddress)
-+#define VNSvOutPortB(io_address, data) \
-+	iowrite8((u8)(data), io_address)
- 
--#define VNSvOutPortW(dwIOAddress, wData) \
--	iowrite16((u16)(wData), dwIOAddress)
-+#define VNSvOutPortW(io_address, data) \
-+	iowrite16((u16)(data), io_address)
- 
--#define VNSvOutPortD(dwIOAddress, dwData) \
--	iowrite32((u32)(dwData), dwIOAddress)
-+#define VNSvOutPortD(io_address, data) \
-+	iowrite32((u32)(data), io_address)
- 
--#define PCAvDelayByIO(uDelayUnit)				\
-+#define PCAvDelayByIO(u_delay_unit)				\
- do {								\
--	unsigned char __maybe_unused byData;			\
-+	unsigned char __maybe_unused data;			\
- 	unsigned long ii;					\
- 								\
--	if (uDelayUnit <= 50) {					\
--		udelay(uDelayUnit);				\
-+	if (u_delay_unit <= 50) {					\
-+		udelay(u_delay_unit);				\
- 	} else {						\
--		for (ii = 0; ii < (uDelayUnit); ii++)		\
--			byData = inb(0x61);			\
-+		for (ii = 0; ii < (u_delay_unit); ii++)		\
-+			data = inb(0x61);			\
- 	}							\
- } while (0)
- 
--- 
-2.25.1
-
+Thanks,
+Maciej
