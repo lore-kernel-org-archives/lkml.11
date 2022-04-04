@@ -2,306 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18F6EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 07:24:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA3FEC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 07:25:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377660AbiDDH0l (ORCPT
+        id S1377674AbiDDH1f (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 03:26:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54658 "EHLO
+        Mon, 4 Apr 2022 03:27:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238908AbiDDH0i (ORCPT
+        with ESMTP id S238908AbiDDH1c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 03:26:38 -0400
-Received: from 9.mo552.mail-out.ovh.net (9.mo552.mail-out.ovh.net [87.98.180.222])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67D033616C
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 00:24:40 -0700 (PDT)
-Received: from mxplan5.mail.ovh.net (unknown [10.108.1.93])
-        by mo552.mail-out.ovh.net (Postfix) with ESMTPS id 74BD722AA4;
-        Mon,  4 Apr 2022 07:07:09 +0000 (UTC)
-Received: from kaod.org (37.59.142.102) by DAG4EX1.mxp5.local (172.16.2.31)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 4 Apr
- 2022 09:07:08 +0200
-Authentication-Results: garm.ovh; auth=pass (GARM-102R0043f1c04d9-24e1-4a64-8174-b0226c23ff7b,
-                    193BEDB8EED17CFBFC1316EE01F9191BF107EB6B) smtp.auth=clg@kaod.org
-X-OVh-ClientIp: 82.64.250.170
-Message-ID: <3b7ecaa4-1de9-3a4c-b057-805a5e6d2e48@kaod.org>
-Date:   Mon, 4 Apr 2022 09:06:51 +0200
+        Mon, 4 Apr 2022 03:27:32 -0400
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5180E3616D;
+        Mon,  4 Apr 2022 00:25:36 -0700 (PDT)
+Received: from ip4d144895.dynamic.kabel-deutschland.de ([77.20.72.149] helo=[192.168.66.200]); authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1nbH5i-0006xr-Om; Mon, 04 Apr 2022 09:25:34 +0200
+Message-ID: <0a33735c-dd43-4305-ff92-7b9ac2c6a0d9@leemhuis.info>
+Date:   Mon, 4 Apr 2022 09:25:34 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
-Subject: Re: [PATCH v4 03/11] spi: spi-mem: Convert Aspeed SMC driver to
- spi-mem
+Subject: Re: Bug 215744 - input from the accelerometer disappeared, regression
+ on amd_sfh on kernel 5.17
 Content-Language: en-US
-To:     Pratyush Yadav <p.yadav@ti.com>
-CC:     <linux-spi@vger.kernel.org>, <linux-mtd@lists.infradead.org>,
-        Mark Brown <broonie@kernel.org>,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        <linux-aspeed@lists.ozlabs.org>, Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Chin-Ting Kuo <chin-ting_kuo@aspeedtech.com>,
-        <devicetree@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, Tao Ren <rentao.bupt@gmail.com>
-References: <20220325100849.2019209-1-clg@kaod.org>
- <20220325100849.2019209-4-clg@kaod.org>
- <20220330193343.qg5kcr6twerde6ho@ti.com>
-From:   =?UTF-8?Q?C=c3=a9dric_Le_Goater?= <clg@kaod.org>
-In-Reply-To: <20220330193343.qg5kcr6twerde6ho@ti.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [37.59.142.102]
-X-ClientProxiedBy: DAG4EX2.mxp5.local (172.16.2.32) To DAG4EX1.mxp5.local
- (172.16.2.31)
-X-Ovh-Tracer-GUID: e382a813-ab73-414e-b3c8-ba9556f6581c
-X-Ovh-Tracer-Id: 11032974666386082631
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudejuddguddujecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefkffggfgfuvfhfhfgjtgfgihesthekredttdefjeenucfhrhhomhepveorughrihgtpgfnvggpifhorghtvghruceotghlgheskhgrohgurdhorhhgqeenucggtffrrghtthgvrhhnpeekleejfeevjeehiefhgeelgeeludduleeuvdffteduieegvdfgteevfeetkeetfeenucffohhmrghinhepsghufhdrihhnnecukfhppedtrddtrddtrddtpdefjedrheelrddugedvrddutddvnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehmgihplhgrnhehrdhmrghilhdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomheptghlgheskhgrohgurdhorhhgpdhnsggprhgtphhtthhopedupdhrtghpthhtoheprhgvnhhtrghordgsuhhpthesghhmrghilhdrtghomh
+To:     Basavaraj Natikar <bnatikar@amd.com>,
+        Basavaraj Natikar <Basavaraj.Natikar@amd.com>
+Cc:     Jiri Kosina <jkosina@suse.cz>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        linux-input@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "regressions@lists.linux.dev" <regressions@lists.linux.dev>,
+        Marco <rodomar705@protonmail.com>
+References: <048ef583-4a8f-96b0-68a3-45ab9ec8d6df@leemhuis.info>
+ <0499f8ae-6966-be4b-5af8-e7e568bfcd5f@amd.com>
+ <6fe27103-5e35-5f16-d213-29bd71412f5b@leemhuis.info>
+ <7dfb121f-848c-873e-f3cc-43239c264f21@amd.com>
+From:   Thorsten Leemhuis <regressions@leemhuis.info>
+In-Reply-To: <7dfb121f-848c-873e-f3cc-43239c264f21@amd.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1649057136;58c1d5bd;
+X-HE-SMSGID: 1nbH5i-0006xr-Om
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/30/22 21:33, Pratyush Yadav wrote:
-> Hi Cedric,
+On 04.04.22 09:18, Basavaraj Natikar wrote:
 > 
-> Thanks for doing the conversion.
 > 
-> On 25/03/22 11:08AM, Cédric Le Goater wrote:
->> This SPI driver adds support for the Aspeed static memory controllers
->> of the AST2600, AST2500 and AST2400 SoCs using the spi-mem interface.
+> On 4/4/2022 12:05 PM, Thorsten Leemhuis wrote:
+>> On 01.04.22 21:47, Basavaraj Natikar wrote:
+>>> Committed patch is disabling the interrupt mode and does not cause any
+>>> functionality or working issues.
+>> Well, for the reporter it clearly does cause problems, unless something
+>> in testing went sideways.
 >>
->>   * AST2600 Firmware SPI Memory Controller (FMC)
->>     . BMC firmware
->>     . 3 chip select pins (CE0 ~ CE2)
->>     . Only supports SPI type flash memory
->>     . different segment register interface
->>     . single, dual and quad mode.
->>
->>   * AST2600 SPI Flash Controller (SPI1 and SPI2)
->>     . host firmware
->>     . 2 chip select pins (CE0 ~ CE1)
->>     . different segment register interface
->>     . single, dual and quad mode.
->>
->>   * AST2500 Firmware SPI Memory Controller (FMC)
->>     . BMC firmware
->>     . 3 chip select pins (CE0 ~ CE2)
->>     . supports SPI type flash memory (CE0-CE1)
->>     . CE2 can be of NOR type flash but this is not supported by the driver
->>     . single, dual mode.
->>
->>   * AST2500 SPI Flash Controller (SPI1 and SPI2)
->>     . host firmware
->>     . 2 chip select pins (CE0 ~ CE1)
->>     . single, dual mode.
->>
->>   * AST2400 New Static Memory Controller (also referred as FMC)
->>     . BMC firmware
->>     . New register set
->>     . 5 chip select pins (CE0 ∼ CE4)
->>     . supports NOR flash, NAND flash and SPI flash memory.
->>     . single, dual and quad mode.
->>
->> Each controller has a memory range on which flash devices contents are
->> mapped. Each device is assigned a window that can be changed at bootime
->> with the Segment Address Registers.
->>
->> Each SPI flash device can then be accessed in two modes: Command and
->> User. When in User mode, SPI transfers are initiated with accesses to
->> the memory segment of a device. When in Command mode, memory
->> operations on the memory segment of a device generate SPI commands
->> automatically using a Control Register for the settings.
->>
->> This initial patch adds support for User mode. Command mode needs a little
->> more work to check that the memory window on the AHB bus fits the device
->> size. It will come later when support for direct mapping is added.
->>
->> Single and dual mode RX transfers are supported. Other types than SPI
->> are not supported.
->>
->> Reviewed-by: Joel Stanley <joel@jms.id.au>
->> Tested-by: Joel Stanley <joel@jms.id.au>
->> Tested-by: Tao Ren <rentao.bupt@gmail.com>
->> Signed-off-by: Chin-Ting Kuo <chin-ting_kuo@aspeedtech.com>
->> Signed-off-by: Cédric Le Goater <clg@kaod.org>
->> ---
->>   drivers/mtd/spi-nor/controllers/aspeed-smc.c  | 910 ------------------
->>   drivers/spi/spi-aspeed-smc.c                  | 709 ++++++++++++++
->>   .../devicetree/bindings/mtd/aspeed-smc.txt    |  51 -
->>   MAINTAINERS                                   |   1 +
->>   drivers/mtd/spi-nor/controllers/Kconfig       |  10 -
->>   drivers/mtd/spi-nor/controllers/Makefile      |   1 -
->>   drivers/spi/Kconfig                           |  11 +
->>   drivers/spi/Makefile                          |   1 +
->>   8 files changed, 722 insertions(+), 972 deletions(-)
->>   delete mode 100644 drivers/mtd/spi-nor/controllers/aspeed-smc.c
->>   create mode 100644 drivers/spi/spi-aspeed-smc.c
->>   delete mode 100644 Documentation/devicetree/bindings/mtd/aspeed-smc.txt
->>
-> [...]
->> +static void aspeed_spi_send_cmd_addr(struct aspeed_spi_chip *chip, u8 addr_nbytes,
->> +				     u64 offset, u32 opcode)
->> +{
->> +	struct aspeed_spi *aspi = chip->aspi;
->> +	__be32 temp;
->> +	u32 cmdaddr;
->> +
->> +	switch (addr_nbytes) {
->> +	default:
->> +		dev_warn_once(aspi->dev, "Unexpected address width %u, defaulting to 3",
->> +			      addr_nbytes);
->> +		fallthrough;
+>>> I also cross verified on 3 system and working fine on 5.17 and not able
+>>> to reproduce or recreate.
+>>> [...]
+>>> ------------------------------------------------
+>>>
+>>> Looks like this is not regression. May be some hardware/firmware bug.
+>> Well, from the point of the kernel development process it afaics is a
+>> regression, unless the testing went sideways. It doesn't matter if the
+>> root cause is in fact a hardware/firmware bug, as what matters in the
+>> scope of the kernel development is: things worked, and now they don't.
+>> For details please check this file and read the quotes from Linus:
 > 
-> I think it is better if you reject ops where addr width is not 3 or 4.
-> This you can drop this. Or if you really want to keep it, you can change
-> it to a WARN_ON() and return an error.
+> can you help to answer the below questions:
 
-OK. This is a left over from the initial driver.
+Me? No, I'm just the Linux kernels regression tracker trying to make
+sure all regressions are handled appropriately. :-D
 
-I have added both at WARN_ONCE() and a 'return -EOPNOTSUPP'
+Marco, can you help out here?
 
->> +	case 3:
->> +		cmdaddr = offset & 0xFFFFFF;
->> +		cmdaddr |= opcode << 24;
->> +
->> +		temp = cpu_to_be32(cmdaddr);
->> +		aspeed_spi_write_to_ahb(chip->ahb_base, &temp, 4);
->> +		break;
->> +	case 4:
->> +		temp = cpu_to_be32(offset);
->> +		aspeed_spi_write_to_ahb(chip->ahb_base, &opcode, 1);
->> +		aspeed_spi_write_to_ahb(chip->ahb_base, &temp, 4);
->> +		break;
->> +	}
->> +}
->> +
-> [...]
->> +/* support for 1-1-1, 1-1-2 or 1-1-4 */
->> +static bool aspeed_spi_supports_op(struct spi_mem *mem, const struct spi_mem_op *op)
->> +{
->> +	if (op->cmd.buswidth > 1)
->> +		return false;
->> +
->> +	if (op->addr.nbytes != 0) {
->> +		if (op->addr.buswidth > 1 || op->addr.nbytes > 4)
+Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
+
+P.S.: As the Linux kernel's regression tracker I'm getting a lot of
+reports on my table. I can only look briefly into most of them and lack
+knowledge about most of the areas they concern. I thus unfortunately
+will sometimes get things wrong or miss something important. I hope
+that's not the case here; if you think it is, don't hesitate to tell me
+in a public reply, it's in everyone's interest to set the public record
+straight.
+
+> Did you attempt to test it multiple times on the tip of the git to see
+> if the problems goes away?
 > 
-> As mentioned above, this should reject ops with addr width 1 and 2.
-
-yes
-
->> +			return false;
->> +	}
->> +
->> +	if (op->dummy.nbytes != 0) {
->> +		if (op->dummy.buswidth > 1 || op->dummy.nbytes > 7)
->> +			return false;
->> +	}
->> +
->> +	if (op->data.nbytes != 0 && op->data.buswidth > 4)
->> +		return false;
->> +
->> +	return spi_mem_default_supports_op(mem, op);
->> +}
->> +
->> +static int do_aspeed_spi_exec_op(struct spi_mem *mem, const struct spi_mem_op *op)
->> +{
->> +	struct aspeed_spi *aspi = spi_controller_get_devdata(mem->spi->master);
->> +	struct aspeed_spi_chip *chip = &aspi->chips[mem->spi->chip_select];
->> +	u32 addr_mode, addr_mode_backup;
->> +	u32 ctl_val;
->> +	int ret = 0;
->> +
->> +	dev_dbg(aspi->dev,
->> +		"CE%d %s OP %#x mode:%d.%d.%d.%d naddr:%#x ndummies:%#x len:%#x",
->> +		chip->cs, op->data.dir == SPI_MEM_DATA_IN ? "read" : "write",
->> +		op->cmd.opcode, op->cmd.buswidth, op->addr.buswidth,
->> +		op->dummy.buswidth, op->data.buswidth,
->> +		op->addr.nbytes, op->dummy.nbytes, op->data.nbytes);
->> +
->> +	addr_mode = readl(aspi->regs + CE_CTRL_REG);
->> +	addr_mode_backup = addr_mode;
->> +
->> +	ctl_val = chip->ctl_val[ASPEED_SPI_BASE];
->> +	ctl_val &= ~CTRL_IO_CMD_MASK;
->> +
->> +	ctl_val |= op->cmd.opcode << CTRL_COMMAND_SHIFT;
->> +
->> +	/* 4BYTE address mode */
->> +	if (op->addr.nbytes) {
->> +		if (op->addr.nbytes == 4)
->> +			addr_mode |= (0x11 << chip->cs);
->> +		else
->> +			addr_mode &= ~(0x11 << chip->cs);
->> +	}
->> +
->> +	if (op->dummy.buswidth && op->dummy.nbytes)
+> if same test is performed multiple times with or without reverting patch
+> on same platform (laptop/hardware/firmware) on which issue is observed
+> we may see same working/issue behavior. if it is regressing then always
+> it should work with or without reverting patches on same laptop. is this
+> the case here?
 > 
-> Nitpick: op->dummy.nbytes being set should imply op->dummy.buswidth > 0.
+> I don't see any regression here. I requested to retest with other
+> hardware/platform/system also as per my above test (output) all working
+> fine in 3 different platforms and not able to reproduce or recreate for
+> my side on 5.17.
 > 
->> +		ctl_val |= CTRL_IO_DUMMY_SET(op->dummy.nbytes / op->dummy.buswidth);
->> +
->> +	if (op->data.nbytes != 0) {
->> +		if (op->data.buswidth)
+> Thanks,
 > 
-> Nitpick: op->data.nbytes != 0 should imply op->data.buswidth > 0.
-
-Indeed. Fixed both.
-
->> +			ctl_val |= aspeed_spi_get_io_mode(op);
->> +	}
->> +
->> +	if (op->data.dir == SPI_MEM_DATA_OUT)
->> +		ctl_val |= CTRL_IO_MODE_WRITE;
->> +	else
->> +		ctl_val |= CTRL_IO_MODE_READ;
->> +
->> +	if (addr_mode != addr_mode_backup)
->> +		writel(addr_mode, aspi->regs + CE_CTRL_REG);
->> +	writel(ctl_val, chip->ctl);
->> +
->> +	if (op->data.dir == SPI_MEM_DATA_IN) {
->> +		if (!op->addr.nbytes)
->> +			ret = aspeed_spi_read_reg(chip, op);
->> +		else
->> +			ret = aspeed_spi_read_user(chip, op, op->addr.val,
->> +						   op->data.nbytes, op->data.buf.in);
->> +	} else {
->> +		if (!op->addr.nbytes)
->> +			ret = aspeed_spi_write_reg(chip, op);
->> +		else
->> +			ret = aspeed_spi_write_user(chip, op);
->> +	}
->> +
->> +	/* Restore defaults */
->> +	if (addr_mode != addr_mode_backup)
->> +		writel(addr_mode_backup, aspi->regs + CE_CTRL_REG);
->> +	writel(chip->ctl_val[ASPEED_SPI_READ], chip->ctl);
+> Basavaraj
 > 
-> Why do you need to restore defaults here? Do you expect some other piece
-> of software to use it as well?
-
-We expect the controller to be correctly set when dirmap_read() is called.
-But it is only required in the next patch.
-
+>>
+>> https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Fgit.kernel.org%2Fpub%2Fscm%2Flinux%2Fkernel%2Fgit%2Fnext%2Flinux-next.git%2Fplain%2FDocumentation%2Fprocess%2Fhandling-regressions.rst&amp;data=04%7C01%7CBasavaraj.Natikar%40amd.com%7Ca64876e42c174bf2df5608da16054550%7C3dd8961fe4884e608e11a82d994e183d%7C0%7C0%7C637846509153638366%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&amp;sdata=nv4ZzNeRgRCrjnEgh5wHGcqSAHaCffdWxGm%2BsjiPu0Y%3D&amp;reserved=0
+>>
+>> Ciao, Thorsten
+>>
+>>> Just curious reverting this patch how it is working just suspecting
+>>> firmware undefined behavior.
+>>>
+>>> If possible, please check on other platform/system also if same behavior
+>>> occurs.
+>>>
+>>> Could you please provide me platform/system details so that I can check
+>>> this behavior?
+>>>
+>>> Thanks,
+>>> Basavaraj
+>>>
+>>> On 4/1/2022 1:36 PM, Thorsten Leemhuis wrote:
+>>>> Hi, this is your Linux kernel regression tracker.
+>>>>
+>>>> I noticed a regression report in bugzilla.kernel.org that afaics nobody
+>>>> acted upon since it was reported about a week ago, that's why I decided
+>>>> to forward it to the lists and all people that seemed to be relevant
+>>>> here. It looks to me like this is something for Basavaraj, as it seems
+>>>> to be caused by	b300667b33b2 ("HID: amd_sfh: Disable the interrupt for
+>>>> all command"). But I'm not totally sure, I only looked briefly into the
+>>>> details. Or was this discussed somewhere else already? Or even fixed?
+>>>>
+>>>> To quote from https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Fbugzilla.kernel.org%2Fshow_bug.cgi%3Fid%3D215744&amp;data=04%7C01%7CBasavaraj.Natikar%40amd.com%7Ca64876e42c174bf2df5608da16054550%7C3dd8961fe4884e608e11a82d994e183d%7C0%7C0%7C637846509153638366%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&amp;sdata=jXu50hKBHkHzjOrfEQ0sXme3%2BdliBd%2FleA%2F9oE61EpI%3D&amp;reserved=0 :
+>>>>
+>>>>>  Marco 2022-03-25 15:22:19 UTC
+>>>>>
+>>>>> After updating to 5.17, the input from the accelerometer disappeared, completely. No devices available from IIO tree. First bad commit causing it is https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Fgit.kernel.org%2Fpub%2Fscm%2Flinux%2Fkernel%2Fgit%2Ftorvalds%2Flinux.git%2Fcommit%2Fdrivers%2Fhid%2Famd-sfh-hid%2Famd_sfh_pcie.c%3Fid%3Db300667b33b2b5a2c8e5f8f22826befb3d7f4f2b&amp;data=04%7C01%7CBasavaraj.Natikar%40amd.com%7Ca64876e42c174bf2df5608da16054550%7C3dd8961fe4884e608e11a82d994e183d%7C0%7C0%7C637846509153638366%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&amp;sdata=o443EB8xRW%2BwEi7pxB82A8B0oty64pBSQwAEU4sF2UA%3D&amp;reserved=0. Reverting this and the the other two on top fixed this. Tried to not revert only the above mentioned commit, but it's still not working.
+>>>>>
+>>>>> Marco.
+>>>> Anyway, to get this tracked:
+>>>>
+>>>> #regzbot introduced: b300667b33b2b5a2c8e5f8f22826befb3d7f4
+>>>> #regzbot from: Marco <rodomar705@protonmail.com>
+>>>> #regzbot title: input: hid: input from the accelerometer disappeared due
+>>>> to changes to amd_sfh
+>>>> #regzbot link: https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Fbugzilla.kernel.org%2Fshow_bug.cgi%3Fid%3D215744&amp;data=04%7C01%7CBasavaraj.Natikar%40amd.com%7Ca64876e42c174bf2df5608da16054550%7C3dd8961fe4884e608e11a82d994e183d%7C0%7C0%7C637846509153638366%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&amp;sdata=jXu50hKBHkHzjOrfEQ0sXme3%2BdliBd%2FleA%2F9oE61EpI%3D&amp;reserved=0
+>>>>
+>>>> Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
+>>>>
+>>>> P.S.: As the Linux kernel's regression tracker I'm getting a lot of
+>>>> reports on my table. I can only look briefly into most of them and lack
+>>>> knowledge about most of the areas they concern. I thus unfortunately
+>>>> will sometimes get things wrong or miss something important. I hope
+>>>> that's not the case here; if you think it is, don't hesitate to tell me
+>>>> in a public reply, it's in everyone's interest to set the public record
+>>>> straight.
+>>>>
+>>>
 > 
-> The patch looks good to me apart from these.
-
-
-Thanks,
-
-C.
-
-
-
 > 
->> +	return ret;
->> +}
->> +
-> [...]
 > 
-
