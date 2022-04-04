@@ -2,97 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 618B8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 13:24:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80694C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 13:26:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351440AbiDDN0I (ORCPT
+        id S1347701AbiDDN2L (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 09:26:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57650 "EHLO
+        Mon, 4 Apr 2022 09:28:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241154AbiDDN0G (ORCPT
+        with ESMTP id S1352518AbiDDN1z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 09:26:06 -0400
-Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8078BF4
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 06:24:08 -0700 (PDT)
-Received: by mail-qk1-x72d.google.com with SMTP id q200so7552209qke.7
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 06:24:08 -0700 (PDT)
+        Mon, 4 Apr 2022 09:27:55 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0457AC0B;
+        Mon,  4 Apr 2022 06:26:00 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id m12-20020a17090b068c00b001cabe30a98dso403055pjz.4;
+        Mon, 04 Apr 2022 06:25:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Dj909oRaNRb7301+COOAr97OsAL18eivV1Pl1t4/Y+Y=;
-        b=R2BOiI73bs4bhzycM+H031R9LnpSNDl9hKlfXb/Dsoc/YoMnaNNRKuQM34krIxm7bA
-         UdsRcGSrXdyKB/quZlwiHCdQaKXaV+f12rnrSF+IMmSYVRVeRgWOr1Rs7fay6xmOVLY8
-         gSTwID3IsnJpPaf4UShy9BcWjNLRqILCMZ+ILJ3BbBwQLna9/74cnfwKsp8+RXQ6WYz9
-         dITlk4nDyLpanZaCHbh4P8ed9NWhbgc+yoMtAyXPlBDSHqcsPyowJ4JOOSG3rDrQZvfw
-         sFTcXv/Ie18QUyJRu8j5PZ+bBcdiGYnl/hzo2dqUc/Yc3Pwe1Ut+ImfYz41fTLY4VEPS
-         sT9A==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=FlBsVFEKh4j3VAt6LeTKFsoKsuruo0DcZ5wQSPKgGVo=;
+        b=gZxNZUcVpHlb+PC0mU029qi8y3yaBV33LkmOZB+zCVqsXIYEND5s0ftLAFjpG+DSvG
+         3fre2ImlaHs0IToAEnvx8Ge+DDk9/z+wpD4ZGw38SCtRfsEbEO4pjAklfsQgrWcCtlq+
+         /NChUBrxhCdkVoxZCR6VfOXHeSigso1sRZ7Fc/pZ1khBXeg8xEX1EpjsMh7+AVabZYn2
+         8yv09bnMza+Qfv1P1GRodT8QGwJ1rbgkjTpmC0siV2jwaa8Rslz2GWkomEftev/V7mHa
+         ewRE3nXenMD+InkvCKfXlyVm/K04usRxrRtQbfpqdnt9H2c9hJBLDrzbLpkOlOI6OBTZ
+         IbFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Dj909oRaNRb7301+COOAr97OsAL18eivV1Pl1t4/Y+Y=;
-        b=8JJO1VagTtySTKI1xARiU4cbqzIygDROW9/97ElmxK4hxHNgHdpuLWhaDNJetpjvXW
-         qi57n36sPxL7W/eP9jprPiEcEfZBB1yL/pmirFsJjPZJVgRmnpDv2P5yJ9xlZlqvLEN0
-         bAMLK7uvF9iyKcIVYejLy1B8S43zjyhNX/WPULJBgjE67vKM/Ug8phFQbEvEcYixDWRq
-         u2hcrg1j0PbqMUPb9mNywC4NUerdP9eM46IeUd7gA7Y46T5GE2n0mArPYkARlJOdyD/G
-         NmP71tQoaw3w6FQ8ICpYuzmCIz1W5OcfCqZb8ZCnYctBya95oRY48HHrWcRCIJp4HVYg
-         o9oQ==
-X-Gm-Message-State: AOAM532YHObsEFrwLeItdzmtSLI12Xg+pui68XkXtADgavflcLhtqzi3
-        LiQKkZ6AL0DI7QkU/d4+0xrG/g==
-X-Google-Smtp-Source: ABdhPJwd0cXQeoez8xJ261ZBrwRTk36GjcX534AnDsLUP+ScvuOwmJyyalnuuG5orGBA0Q0zQDNBsg==
-X-Received: by 2002:a37:c4c:0:b0:67b:2b35:762 with SMTP id 73-20020a370c4c000000b0067b2b350762mr13415114qkm.6.1649078647740;
-        Mon, 04 Apr 2022 06:24:07 -0700 (PDT)
-Received: from ziepe.ca ([206.223.160.26])
-        by smtp.gmail.com with ESMTPSA id d126-20020a37b484000000b0067e60283d08sm6476475qkf.40.2022.04.04.06.24.06
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=FlBsVFEKh4j3VAt6LeTKFsoKsuruo0DcZ5wQSPKgGVo=;
+        b=rQLpjFALmkhmS1/49E/nqSYWvAcdDnsufbH9Bc6slIsBpZNpj5d290oNE5fHxUKAUk
+         HkBVEuXqcQ1Z/sgK0o5ytiz5QxTBq/5GsCR14YrTSKU/IBACkZNrTwtkSOlyiJH9/xBT
+         PGawEr472JJStNUfA/lMuXP705f6SafmjVutCnW4SYkF7Zv85+zIW8ARzfpjz/C9s14d
+         u28D7Fk+MZm1E8jb+smS4krkGMjfIAq6l18fBrZ9MJ5qktWN1xyI+c3wh3I3p3hlohGE
+         t1Khvl/G4qme3UeEZVFIzStWxaenQroxwiDktUdswIyXsrHdwYcXzq2Gf6Xp0YjQ4YEf
+         FAXw==
+X-Gm-Message-State: AOAM532L2ivPLpW7mRQv2jvd4QkoqtB3JHx5CTYg1S/u8nx37ncvidc9
+        XVQlN4WFVescEBDDSgVuyMyu6LCD7sAv2R5VN58=
+X-Google-Smtp-Source: ABdhPJx3+zSJdu5DehSeyrC7q6wpVT/4HVSBzcFwjxsrzsTyJC0b4HFVuDHkH2ecj14ojRx2BF95tA==
+X-Received: by 2002:a17:903:2285:b0:154:c94:c5b7 with SMTP id b5-20020a170903228500b001540c94c5b7mr22253plh.64.1649078759509;
+        Mon, 04 Apr 2022 06:25:59 -0700 (PDT)
+Received: from localhost.localdomain ([159.226.95.43])
+        by smtp.googlemail.com with ESMTPSA id j3-20020a056a00234300b004faabba358fsm12617039pfj.14.2022.04.04.06.25.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 06:24:07 -0700 (PDT)
-Received: from jgg by mlx with local (Exim 4.94)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1nbMgf-00CAIu-Pe; Mon, 04 Apr 2022 10:24:05 -0300
-Date:   Mon, 4 Apr 2022 10:24:05 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     xieming <xieming@kylinos.cn>, sashal@kernel.org,
-        catalin.marinas@arm.com, linux@armlinux.org.uk,
-        linux-kernel@vger.kernel.org, alex.williamson@redhat.com,
-        will@kernel.org, kvmarm@lists.cs.columbia.edu,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v2] kvm/arm64: fixed passthrough gpu into vm on arm64
-Message-ID: <20220404132405.GQ64706@ziepe.ca>
-References: <20220401090828.614167-1-xieming@kylinos.cn>
- <87tubcbvgk.wl-maz@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87tubcbvgk.wl-maz@kernel.org>
+        Mon, 04 Apr 2022 06:25:59 -0700 (PDT)
+From:   Miaoqian Lin <linmq006@gmail.com>
+To:     Eddie Huang <eddie.huang@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Tianping Fang <tianping.fang@mediatek.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-rtc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     linmq006@gmail.com
+Subject: [PATCH] rtc: mt6397: Fix potential NULL dereference in mtk_rtc_probe
+Date:   Mon,  4 Apr 2022 13:25:53 +0000
+Message-Id: <20220404132553.28064-1-linmq006@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 01, 2022 at 05:48:59PM +0100, Marc Zyngier wrote:
+platform_get_resource() may return NULL, add proper check to
+avoid potential NULL dereferencing.
 
-> NAK. For a start, there is no such thing as 'write-combine' in the ARM
-> architecture, and I'm not convinced you can equate WC to Normal-NC.
-> See the previous discussion at [1].
-> 
-> [1] https://lore.kernel.org/r/20210429162906.32742-1-sdonthineni@nvidia.com
+Fixes: fc2979118f3f ("rtc: mediatek: Add MT6397 RTC driver")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+---
+ drivers/rtc/rtc-mt6397.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-We've had a lot of discussions with ARM related to how this works with
-drivers like mlx5 that use WC.
+diff --git a/drivers/rtc/rtc-mt6397.c b/drivers/rtc/rtc-mt6397.c
+index 80dc479a6ff0..07c6679366e0 100644
+--- a/drivers/rtc/rtc-mt6397.c
++++ b/drivers/rtc/rtc-mt6397.c
+@@ -269,6 +269,9 @@ static int mtk_rtc_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
+ 
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	if (!res)
++		return -EINVAL;
++
+ 	rtc->addr_base = res->start;
+ 
+ 	rtc->data = of_device_get_match_data(&pdev->dev);
+-- 
+2.17.1
 
-ARM has now published some guidance on this:
-
-https://community.arm.com/arm-research/m/resources/1012
-
-As an ecosystem we seem to be drifting toward Normal-NC for this
-behavior (largely because it is what Linux does). At least that is
-what we are testing and qualifing ARM CPUs against mlx5 with.
-
-I'm guessing it will turn into a SBSA like thing where the ARM ARM is
-kind of vauge but a SOC has to implement Normal-NC in a certain way to
-be functional for the server market.
-
-Jason
