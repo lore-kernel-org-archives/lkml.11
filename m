@@ -2,96 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83536C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 08:02:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0985C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 08:03:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355769AbiDDIE3 (ORCPT
+        id S1377890AbiDDIFr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 04:04:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40708 "EHLO
+        Mon, 4 Apr 2022 04:05:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377882AbiDDIEQ (ORCPT
+        with ESMTP id S1343920AbiDDIFn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 04:04:16 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F5B23B3D6
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 01:02:20 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id g20so10011219edw.6
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 01:02:20 -0700 (PDT)
+        Mon, 4 Apr 2022 04:05:43 -0400
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7483B186D1
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 01:03:45 -0700 (PDT)
+Received: by mail-wr1-x42b.google.com with SMTP id k23so595603wrd.8
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 01:03:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=1JgldMjDiu5zvK43QVM+MblMzFJyCLm6wag4GS38NI8=;
-        b=ga3t17CYfB+KE5TsU35ymU7gxz3it957Oe4YUouw/nV0JQpApURccq9lNMFMZlgmex
-         jCH1hxwg5j0DpUWw2a1DWbHQB4XgKTwrjQLTEiZi2wOOW6MxKBUVYR1hDcbLYo1rlNlA
-         VVcEn6ELp11wq8wEBmvX58dV37HR66tsvubuyNwohvs0eIJr2lMksepdj7hQ45NQXcPh
-         TkSJ1HyTe1fD15uHj35aLRr/2cKRM00z4bBP89rwISORGPjxUqwJSivRjVDrtgKQ+smB
-         khIsYorPHxcGCaV0PH/16q+MJeOcAG+AcxMlNGiKD/8fnyBLsO1VkADj1b9Z0B3XcgGU
-         +Q6w==
+         :cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=8SQNSCl1uQRFQcDuyQdlt7wBlezOf9jiirA2VzBwlTs=;
+        b=r7qbe0tbTjLNBedoiJzvlcd0MyQzMz89evtKZ45Moj8D2/wG66KyV1n8k8DOp8d6fj
+         Y0/NgMDCFdJPZjLhXBd4X6t3IqVMTtFYcYv2xlc7qmKvB0o2rTaFxJew1fRY5ydikaoS
+         6pYJ5mxtpL2IQCKXQFbETsgSOkfwesqVrUGv58cr8VVT9WkvP0TMrVlzJStclZNlCTbz
+         xrcCnJX2m6T/5mVZExDIjRN68VcearoFIBnQTINBtWZmuVBnJayyYD5i6SYCZocu/pkl
+         MeRSYCNnaT2X2SFZ8LpiktDFhRqmWYVftCc11bmOWdbR2kCUeiJSMftZcE2+RoRqb/XS
+         OcTA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+         :content-language:to:cc:references:from:organization:in-reply-to
          :content-transfer-encoding;
-        bh=1JgldMjDiu5zvK43QVM+MblMzFJyCLm6wag4GS38NI8=;
-        b=fSp9NTFBnyirMbAWMbVyDfWc44RgRbjk39X84m41Y/Xt/zrxRDYSubHzZG0kIWFKKd
-         n9Vk548EFnIAHkG70VgFu/nZ7t7irWmsixODAf6asbi+rA06T90EYwmYC/GSYPoLGxDX
-         93K7gqMuRcYsXw9vhcdGsffGOeaWTjLbh7I1qDv0RooLicrNC5guYiJ7+Q1sRuk9CKNn
-         rlXSJ7aus/vX8vf7m/vVg9BWnxi0iiNpfF50RBhxzoXkhuZZPtwve9y1EftvaaJGrHQ5
-         v1c6xvKnPDYMJQl/9vHcaLY6UEobzgcavMrmfxauEz1L6H9vGQ7gMwABCM1GdMTfL0kj
-         KONg==
-X-Gm-Message-State: AOAM532Op6ie3eHBgGBCTscGFg0FEQK1PdfjE6FVsk9dS8YL3fdl7I8X
-        3td2N3LaYQ1iaG+WIGQLR7c=
-X-Google-Smtp-Source: ABdhPJy3Lne0mEdt5P7baRApHpBKwehsF8BbTaFxGRB7bweJOspyVKwdLk40Ri78C0idhxVP+MClyA==
-X-Received: by 2002:a05:6402:4247:b0:419:3990:3db6 with SMTP id g7-20020a056402424700b0041939903db6mr31362069edb.193.1649059338902;
-        Mon, 04 Apr 2022 01:02:18 -0700 (PDT)
-Received: from [192.168.0.253] (ip5f5abb55.dynamic.kabel-deutschland.de. [95.90.187.85])
-        by smtp.gmail.com with ESMTPSA id jt8-20020a170906ca0800b006df9b29eaf1sm4039632ejb.8.2022.04.04.01.02.17
+        bh=8SQNSCl1uQRFQcDuyQdlt7wBlezOf9jiirA2VzBwlTs=;
+        b=4ojzYqPaosVJr8cHMMzXLulm6X7UiRiMt5e7ZJEBWgQZc+zL+gLUkhjKPyJW7mKKvG
+         KwXKamiZUlkhG3O7jqIEoZFTj0rAjXbOwjh6MRTCeQ3dHBfVNEfEwXHWma+tb0ulP4Pd
+         E1qHnRSfT83iF4NQshixvfiSFNCrWZoUjN/BkG9Hokj4GIIf7uFI/MWm5muLgaiebx7/
+         u4eJsDDlnGmE8VAUm+7M1m1u5PW63UFYH386ItVGXeWbOh5HxytNi8hE1KaCojdwfQ6d
+         uLDRnUsQtvoNLOQRZutd1I1hOBigZaPMfICKZp/qJD4FZHAjhfIhMXTzS9i3t9vpDNzd
+         UzYA==
+X-Gm-Message-State: AOAM530NDBvsAmjAJoNZ2s+tPITWCSrTLTXvum7jwn5irIvbjcxNk+P1
+        AcBXAckJG1iMbG1mc/EZA6YnpQ==
+X-Google-Smtp-Source: ABdhPJwnzzQCrd/ul/KUoS0o1nlGzDCH/uXy9DdlPxkD6ROj6GeaZpPH1NaKlI/9Hbf7XDWlF5NnvQ==
+X-Received: by 2002:a5d:6d8f:0:b0:204:101e:753f with SMTP id l15-20020a5d6d8f000000b00204101e753fmr16529793wrs.707.1649059423757;
+        Mon, 04 Apr 2022 01:03:43 -0700 (PDT)
+Received: from ?IPV6:2001:861:44c0:66c0:1add:1b28:2457:eb46? ([2001:861:44c0:66c0:1add:1b28:2457:eb46])
+        by smtp.gmail.com with ESMTPSA id 2-20020a1c1902000000b00380d3873d6asm8814162wmz.43.2022.04.04.01.03.42
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 04 Apr 2022 01:02:18 -0700 (PDT)
-Message-ID: <bdd168a8-b260-0653-f835-a7814a8fd4c8@gmail.com>
-Date:   Mon, 4 Apr 2022 10:02:17 +0200
+        Mon, 04 Apr 2022 01:03:43 -0700 (PDT)
+Message-ID: <048b9b97-62b9-5add-9d37-0f91f708a3dd@baylibre.com>
+Date:   Mon, 4 Apr 2022 10:03:42 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH V2] Fix unsafe memory access by memcmp
+ Thunderbird/91.5.0
+Subject: Re: [PATCH V0] arm64: dts: add support for S4 power domain controller
 Content-Language: en-US
-To:     Charlie Sands <sandsch@northvilleschools.net>,
-        gregkh@linuxfoundation.org
-Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        paskripkin@gmail.com
-References: <YkpdVyuQguGzPSNE@sckzor-linux.localdomain>
-From:   Michael Straube <straube.linux@gmail.com>
-In-Reply-To: <YkpdVyuQguGzPSNE@sckzor-linux.localdomain>
+To:     Shunzhou Jiang <shunzhou.jiang@amlogic.com>, robh+dt@kernel.org,
+        krzk+dt@kernel.org, khilman@baylibre.com
+Cc:     jbrunet@baylibre.com, martin.blumenstingl@googlemail.com,
+        devicetree@vger.kernel.org, linux-amlogic@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+References: <20220401110306.3364551-1-shunzhou.jiang@amlogic.com>
+From:   Neil Armstrong <narmstrong@baylibre.com>
+Organization: Baylibre
+In-Reply-To: <20220401110306.3364551-1-shunzhou.jiang@amlogic.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/4/22 04:52, Charlie Sands wrote:
-> This patch fixes sparse warnings about the memcmp function unsafely
-> accessing userspace memory without first copying it to kernel space.
+On 01/04/2022 13:03, Shunzhou Jiang wrote:
+> Enable power domain controller for Meson s4 SoC
 > 
-> Signed-off-by: Charlie Sands <sandsch@northvilleschools.net>
+> Signed-off-by: Shunzhou Jiang <shunzhou.jiang@amlogic.com>
 > ---
+>   arch/arm64/boot/dts/amlogic/meson-s4.dtsi | 6 ++++++
+>   1 file changed, 6 insertions(+)
 > 
-> V2: Fixed checkpatch.pl warning and changed variable name as suggested
-> by Greg K. H. and improved error checking on the "copy_from_user" function as
-> suggested by Pavel Skripkin.
+> diff --git a/arch/arm64/boot/dts/amlogic/meson-s4.dtsi b/arch/arm64/boot/dts/amlogic/meson-s4.dtsi
+> index bf9ae1e1016b..96ea95ea5eb9 100644
+> --- a/arch/arm64/boot/dts/amlogic/meson-s4.dtsi
+> +++ b/arch/arm64/boot/dts/amlogic/meson-s4.dtsi
+> @@ -60,6 +60,12 @@ xtal: xtal-clk {
+>   		#clock-cells = <0>;
+>   	};
+>   
+> +	pwrc: power-controller {
+> +		compatible = "amlogic,meson-s4-pwrc";
+> +		#power-domain-cells = <1>;
+> +		status = "okay";
+> +	};
+> +
+>   	soc {
+>   		compatible = "simple-bus";
+>   		#address-cells = <2>;
 > 
->   drivers/staging/r8188eu/os_dep/ioctl_linux.c | 21 ++++++++++++--------
->   1 file changed, 13 insertions(+), 8 deletions(-)
-> 
+> base-commit: 1930a6e739c4b4a654a69164dbe39e554d228915
 
-Hi Charlie,
-
-thanks for your patch. Looks good to me, but you should include
-staging: r8188eu: in the subject line.
-
-"staging: r8188eu: Fix unsafe memory access by memcmp"
-
-thanks,
-Michael
+Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
