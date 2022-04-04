@@ -2,115 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C715EC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6411C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:08:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379205AbiDDWGn (ORCPT
+        id S1379094AbiDDWGg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 18:06:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49494 "EHLO
+        Mon, 4 Apr 2022 18:06:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379595AbiDDRoK (ORCPT
+        with ESMTP id S1379412AbiDDRIp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 13:44:10 -0400
-Received: from mx0a-002e3701.pphosted.com (mx0a-002e3701.pphosted.com [148.163.147.86])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCF2A31DE7;
-        Mon,  4 Apr 2022 10:42:13 -0700 (PDT)
-Received: from pps.filterd (m0134422.ppops.net [127.0.0.1])
-        by mx0b-002e3701.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 234E2gkY030861;
-        Mon, 4 Apr 2022 17:41:38 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pps0720;
- bh=lQMbAI0WUSuh5F+0VfEzQy0lsk/SJtkm5QIg+JH7Q08=;
- b=R2S9vpmT+QtF3R2OehXzBc1NiaJbxXxsRSxvF7sX9x2noB0HBmR9tWcYteSYDCS65yso
- 4+bPhKEAVCvT5OaCWxnl5G1zbCS4z0WHt3B/NwwobOtzYCX4xllOmrm8UhTkmGJoZeeI
- EKKVRsDN3wehvbAkzVyKVTjQw5bQRB8VqhHXvZiylZ8hlv3mfge+gTStfzBDZSYwvRS1
- LoTXnYiT7ZlIemgpTaWGRMN+z77ayDyD8OiJ2b3hzhQWL/8R/1nfnobuVRzVArFUSXjT
- zDgKFVIovD8ynSHGApXzoHLVv7VH2oAL1ZHWsolasQUYq58r/PelSKYW6BeFmwO10J+i ZA== 
-Received: from g4t3427.houston.hpe.com (g4t3427.houston.hpe.com [15.241.140.73])
-        by mx0b-002e3701.pphosted.com (PPS) with ESMTPS id 3f7tbexfnt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 04 Apr 2022 17:41:38 +0000
-Received: from g9t2301.houston.hpecorp.net (g9t2301.houston.hpecorp.net [16.220.97.129])
-        by g4t3427.houston.hpe.com (Postfix) with ESMTP id 135A25C;
-        Mon,  4 Apr 2022 17:41:37 +0000 (UTC)
-Received: from dog.eag.rdlabs.hpecorp.net (dog.eag.rdlabs.hpecorp.net [128.162.243.181])
-        by g9t2301.houston.hpecorp.net (Postfix) with ESMTP id 3608352;
-        Mon,  4 Apr 2022 17:41:36 +0000 (UTC)
-From:   Mike Travis <mike.travis@hpe.com>
-To:     Borislav Petkov <bp@alien8.de>, Ingo Molnar <mingo@redhat.com>,
+        Mon, 4 Apr 2022 13:08:45 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF75F40A23
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 10:06:48 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id m12-20020a17090b068c00b001cabe30a98dso1057530pjz.4
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 10:06:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=gIH+kCrSXmFI+fUc29mzPw+H1akkAs2ZuFoVFSP0vxU=;
+        b=Rr+FaoMffwErSOq6pRJ5Va7RKsFxClc5D23MZTexTKDgRmNLw+QXPH7HgVaF+gPlsH
+         VVR7VJA+skjtzQ0GECeuU2WVaa0asrNgHkDBl6tstbwCf7C6oMyBne0DAlcAXCdcVL7g
+         YrXAno9IHlxoD/YmxzSY5HC12atdMPGZ+Q8N6kZHZabK4TNxokJ7fJfCa2Z4Dji8u6pl
+         3dHXlOPQbLuOhlHnPj7HtE/XDcufKULa7gV7RWaa0It/x7X/ULWQS6QyjSSWicyoNFMA
+         ahGu94J7u389AK59eb7k4Mps25d3P18aXb3oZxp/f/pFl16fpYmLG3tkL22HLs/vsOZL
+         l1Tg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=gIH+kCrSXmFI+fUc29mzPw+H1akkAs2ZuFoVFSP0vxU=;
+        b=JNEdSVc7vul+D6OCtvDj8qcP3Oz/Bxu2EwSV+cEB9WB5Z2UztFuUIrqb4r+DboS8Wm
+         KO53dfkXgEd9WpYCjdtQ7EWRV7qq6eFKggMwTzU/p0qwzc64jooY28eRkW5GK7wyYdzV
+         2jEcbZew6pvXLZ1rzAwKUwm6w9i8WTyiIzrYOsb0rAd5yqGVJIyEqYwqTHYeLwLkBTE+
+         8vM2BrNM4QmORY9rOMnduUkovoz6N+kGtHhP+dPKsVDfzjxDqonFMHtbC16wue/GPyte
+         Tp8k05LARD6nhSTL8NwtZ7cemKsEbBB5s3+u6JSvUwgrcW6CM4/3pRdpgm85z5VQ20d0
+         6Diw==
+X-Gm-Message-State: AOAM530Ffk5JBDPGIPPm4XSH5O6yjvmu7zth3iA7Ma9aDtuWAsVi+1Wu
+        zH6M4Nl0HtlOM8B+mO3tcTRZVw==
+X-Google-Smtp-Source: ABdhPJxR0cMYn6++nMtTapD/RTNavycubKSgeugDdrZDDJ6GPqebAjtiOfHHZgX3JbxNGnvGjPUvmw==
+X-Received: by 2002:a17:902:7247:b0:156:9d3d:756d with SMTP id c7-20020a170902724700b001569d3d756dmr687366pll.6.1649092007999;
+        Mon, 04 Apr 2022 10:06:47 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id x9-20020a17090a970900b001ca6c59b350sm428753pjo.2.2022.04.04.10.06.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Apr 2022 10:06:47 -0700 (PDT)
+Date:   Mon, 4 Apr 2022 17:06:43 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Quentin Perret <qperret@google.com>
+Cc:     Andy Lutomirski <luto@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        Chao Peng <chao.p.peng@linux.intel.com>,
+        kvm list <kvm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
+        Linux API <linux-api@vger.kernel.org>, qemu-devel@nongnu.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
         Thomas Gleixner <tglx@linutronix.de>,
-        Steve Wahl <steve.wahl@hpe.com>, x86@kernel.org
-Cc:     Mike Travis <mike.travis@hpe.com>,
-        Dimitri Sivanich <dimitri.sivanich@hpe.com>,
-        Andy Shevchenko <andy@infradead.org>,
-        Darren Hart <dvhart@infradead.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Russ Anderson <russ.anderson@hpe.com>,
-        linux-kernel@vger.kernel.org, platform-driver-x86@vger.kernel.org
-Subject: [PATCH v3 2/3] x86/platform/uv: Update TSC sync state for UV5
-Date:   Mon,  4 Apr 2022 12:41:10 -0500
-Message-Id: <20220404174111.262414-3-mike.travis@hpe.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20220404174111.262414-1-mike.travis@hpe.com>
-References: <20220404174111.262414-1-mike.travis@hpe.com>
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        the arch/x86 maintainers <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>, Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Vishal Annapurve <vannapurve@google.com>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        "Nakajima, Jun" <jun.nakajima@intel.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        David Hildenbrand <david@redhat.com>,
+        Marc Zyngier <maz@kernel.org>, Will Deacon <will@kernel.org>
+Subject: Re: [PATCH v5 00/13] KVM: mm: fd-based approach for supporting KVM
+ guest private memory
+Message-ID: <Ykslo2eo2eRXrpFR@google.com>
+References: <YkH32nx+YsJuUbmZ@google.com>
+ <YkIFW25WgV2WIQHb@google.com>
+ <YkM7eHCHEBe5NkNH@google.com>
+ <88620519-029e-342b-0a85-ce2a20eaf41b@arm.com>
+ <YkQzfjgTQaDd2E2T@google.com>
+ <YkSaUQX89ZEojsQb@google.com>
+ <80aad2f9-9612-4e87-a27a-755d3fa97c92@www.fastmail.com>
+ <YkcTTY4YjQs5BRhE@google.com>
+ <83fd55f8-cd42-4588-9bf6-199cbce70f33@www.fastmail.com>
+ <YksIQYdG41v3KWkr@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-GUID: k9v-34RVMVa6jXVCWMkjmyP7IkYKhrKH
-X-Proofpoint-ORIG-GUID: k9v-34RVMVa6jXVCWMkjmyP7IkYKhrKH
-X-HPE-SCL: -1
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-04-04_06,2022-03-31_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
- suspectscore=0 adultscore=0 bulkscore=0 spamscore=0 lowpriorityscore=0
- phishscore=0 priorityscore=1501 mlxscore=0 malwarescore=0 clxscore=1015
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2204040100
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YksIQYdG41v3KWkr@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Update to not check TSC sync state for uv5+ as it is not available.
-It is assumed that TSC will always be in sync for multiple chassis and
-will pass the tests for the kernel to accept it as the clocksource.
-To disable this check use the kernel start options tsc=reliable
-clocksource=tsc.
+On Mon, Apr 04, 2022, Quentin Perret wrote:
+> On Friday 01 Apr 2022 at 12:56:50 (-0700), Andy Lutomirski wrote:
+> FWIW, there are a couple of reasons why I'd like to have in-place
+> conversions:
+> 
+>  - one goal of pKVM is to migrate some things away from the Arm
+>    Trustzone environment (e.g. DRM and the likes) and into protected VMs
+>    instead. This will give Linux a fighting chance to defend itself
+>    against these things -- they currently have access to _all_ memory.
+>    And transitioning pages between Linux and Trustzone (donations and
+>    shares) is fast and non-destructive, so we really do not want pKVM to
+>    regress by requiring the hypervisor to memcpy things;
 
-Signed-off-by: Mike Travis <mike.travis@hpe.com>
-Reviewed-by: Dimitri Sivanich <dimitri.sivanich@hpe.com>
-Reviewed-by: Steve Wahl <steve.wahl@hpe.com>
----
-v2: Update patch description to be more explanatory.
----
- arch/x86/kernel/apic/x2apic_uv_x.c | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+Is there actually a _need_ for the conversion to be non-destructive?  E.g. I assume
+the "trusted" side of things will need to be reworked to run as a pKVM guest, at
+which point reworking its logic to understand that conversions are destructive and
+slow-ish doesn't seem too onerous.
 
-diff --git a/arch/x86/kernel/apic/x2apic_uv_x.c b/arch/x86/kernel/apic/x2apic_uv_x.c
-index f5a48e66e4f5..387d6533549a 100644
---- a/arch/x86/kernel/apic/x2apic_uv_x.c
-+++ b/arch/x86/kernel/apic/x2apic_uv_x.c
-@@ -199,10 +199,16 @@ static void __init uv_tsc_check_sync(void)
- 	int mmr_shift;
- 	char *state;
- 
--	/* Different returns from different UV BIOS versions */
-+	/* UV5+, sync state from bios not available, assumed valid */
-+	if (!is_uv(UV2|UV3|UV4)) {
-+		pr_debug("UV: TSC sync state for UV5+ assumed valid\n");
-+		mark_tsc_async_resets("UV5+");
-+		return;
-+	}
-+
-+	/* UV2,3,4, UV BIOS TSC sync state available */
- 	mmr = uv_early_read_mmr(UVH_TSC_SYNC_MMR);
--	mmr_shift =
--		is_uv2_hub() ? UVH_TSC_SYNC_SHIFT_UV2K : UVH_TSC_SYNC_SHIFT;
-+	mmr_shift = is_uv2_hub() ? UVH_TSC_SYNC_SHIFT_UV2K : UVH_TSC_SYNC_SHIFT;
- 	sync_state = (mmr >> mmr_shift) & UVH_TSC_SYNC_MASK;
- 
- 	/* Check if TSC is valid for all sockets */
--- 
-2.26.2
+>  - it can be very useful for protected VMs to do shared=>private
+>    conversions. Think of a VM receiving some data from the host in a
+>    shared buffer, and then it wants to operate on that buffer without
+>    risking to leak confidential informations in a transient state. In
+>    that case the most logical thing to do is to convert the buffer back
+>    to private, do whatever needs to be done on that buffer (decrypting a
+>    frame, ...), and then share it back with the host to consume it;
 
+If performance is a motivation, why would the guest want to do two conversions
+instead of just doing internal memcpy() to/from a private page?  I would be quite
+surprised if multiple exits and TLB shootdowns is actually faster, especially at
+any kind of scale where zapping stage-2 PTEs will cause lock contention and IPIs.
+
+>  - similar to the previous point, a protected VM might want to
+>    temporarily turn a buffer private to avoid ToCToU issues;
+
+Again, bounce buffer the page in the guest.
+
+>  - once we're able to do device assignment to protected VMs, this might
+>    allow DMA-ing to a private buffer, and make it shared later w/o
+>    bouncing.
+
+Exposing a private buffer to a device doesn't requring in-place conversion.  The
+proper way to handle this would be to teach e.g. VFIO to retrieve the PFN from
+the backing store.  I don't understand the use case for sharing a DMA'd page at a
+later time; with whom would the guest share the page?  E.g. if a NIC has access to
+guest private data then there should never be a need to convert/bounce the page.
