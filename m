@@ -2,110 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57C19C48BD2
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:25:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60FC6C49EA4
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:25:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347023AbiDDV1M (ORCPT
+        id S1379138AbiDDV1Y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:27:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49312 "EHLO
+        Mon, 4 Apr 2022 17:27:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379285AbiDDQxV (ORCPT
+        with ESMTP id S1379269AbiDDQvw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 12:53:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2E023B032;
-        Mon,  4 Apr 2022 09:51:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E82160DBC;
-        Mon,  4 Apr 2022 16:51:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CF3AC340EE;
-        Mon,  4 Apr 2022 16:51:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649091083;
-        bh=0bh6tgeWrV6jjXz4an0tH+2Fm7IC79r94QHSjTTYizg=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=SzHqFfKCWYDzEtYwvxuBw1O026/x4UNrHPbqWBBvEqsH3XKPeaigYqDfzDfeR6y1f
-         /KYDcs8Jnyu/qmti7lJGLW3C0eONEUZ1cp10t+8pzJQ9qW4bfHF8QAyEDQ0fUCp+Zq
-         B7Sucg4RitfcjnrTsF0JrY1W1SJ1F2WdHFhHVBxNZJ10EX7YIGcRRfYsxZGUMG+xhO
-         kxRG6LgacZEjeNY97G0Vcglq+E3XoA0SU54X6izDtzeA26Cdf9btWB8RbHod1uhdKT
-         98svNsanspmPNPf3m6w2CxrEc02b2htKumn7+vzILhZkqDlB9xvyUMilKsOGVl9Mok
-         ZIpI9SQsylqSA==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Michael Straube <straube.linux@gmail.com>
-Cc:     Robert Marko <robert.marko@sartura.hr>,
-        David Miller <davem@davemloft.net>, kuba@kernel.org,
-        ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] ath11k: do not return random value
-References: <20220404105324.13810-1-straube.linux@gmail.com>
-        <CA+HBbNHEK=CbyeeyPG=s=D2xofdSbk8Lxx5R9nij_cp6t7ybDA@mail.gmail.com>
-        <1bd30dce-4046-721b-2207-32ace83af441@gmail.com>
-Date:   Mon, 04 Apr 2022 19:51:16 +0300
-In-Reply-To: <1bd30dce-4046-721b-2207-32ace83af441@gmail.com> (Michael
-        Straube's message of "Mon, 4 Apr 2022 18:45:11 +0200")
-Message-ID: <87ilrossfv.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        Mon, 4 Apr 2022 12:51:52 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25ED73204D;
+        Mon,  4 Apr 2022 09:49:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649090996; x=1680626996;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=JOqZTO9BJ6ZBD3WRZCWK3rVS9xdulCCUAXpq8W/WH40=;
+  b=hFrZsM81Nvfea9jNYWSTj4tZ8Shzue1Ggcd/XsJxn3b6TM5f6oVIDbXJ
+   88O3weVjhnBsOtuNswrC4U6eKqIYw6HaRidrT8PQ3BXm8lPWyMdVfYFZe
+   Efb7E4j76oA/Moqt0KcDiJN0IBLQhWz6h4GGy2XkiULktP0l1UCJYqPCj
+   8LIFu74dSt2Es7XXnfGZZvE1Cx7DCnRnDRdr0gM7u4gO6WA5QMXXNXjkR
+   5LwsYMzvyJQoGIO41yq9z2h4oCeWVub0mRrzwzkmRiyNeuGD3dl6/C3Pr
+   KIzCAM43p/77kPGY4+w2gGhjymU02tUGGJsVyYcRZvVsDPw0R3msfhF3D
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="323734051"
+X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
+   d="scan'208";a="323734051"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:49:51 -0700
+X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
+   d="scan'208";a="523105195"
+Received: from rchatre-ws.ostc.intel.com ([10.54.69.144])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:49:50 -0700
+From:   Reinette Chatre <reinette.chatre@intel.com>
+To:     dave.hansen@linux.intel.com, jarkko@kernel.org, tglx@linutronix.de,
+        bp@alien8.de, luto@kernel.org, mingo@redhat.com,
+        linux-sgx@vger.kernel.org, x86@kernel.org
+Cc:     seanjc@google.com, kai.huang@intel.com, cathy.zhang@intel.com,
+        cedric.xing@intel.com, haitao.huang@intel.com,
+        mark.shanahan@intel.com, hpa@zytor.com,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH V3 16/30] x86/sgx: Tighten accessible memory range after enclave initialization
+Date:   Mon,  4 Apr 2022 09:49:24 -0700
+Message-Id: <9f9e9582029dee93b5b37f2fb4dc062be9fe1fde.1648847675.git.reinette.chatre@intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cover.1648847675.git.reinette.chatre@intel.com>
+References: <cover.1648847675.git.reinette.chatre@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Michael Straube <straube.linux@gmail.com> writes:
+Before an enclave is initialized the enclave's memory range is unknown.
+The enclave's memory range is learned at the time it is created via the
+SGX_IOC_ENCLAVE_CREATE ioctl() where the provided memory range is
+obtained from an earlier mmap() of /dev/sgx_enclave. After an enclave
+is initialized its memory can be mapped into user space (mmap()) from
+where it can be entered at its defined entry points.
 
-> On 4/4/22 18:35, Robert Marko wrote:
->> On Mon, Apr 4, 2022 at 12:54 PM Michael Straube <straube.linux@gmail.com> wrote:
->>>
->>> Function ath11k_qmi_assign_target_mem_chunk() returns a random value
->>> if of_parse_phandle() fails because the return variable ret is not
->>> initialized before calling of_parse_phandle(). Return -EINVAL to avoid
->>> possibly returning 0, which would be wrong here.
->>>
->>> Issue found by smatch.
->>>
->>> Signed-off-by: Michael Straube <straube.linux@gmail.com>
->>> ---
->>>   drivers/net/wireless/ath/ath11k/qmi.c | 2 +-
->>>   1 file changed, 1 insertion(+), 1 deletion(-)
->>>
->>> diff --git a/drivers/net/wireless/ath/ath11k/qmi.c b/drivers/net/wireless/ath/ath11k/qmi.c
->>> index 65d3c6ba35ae..81b2304b1fde 100644
->>> --- a/drivers/net/wireless/ath/ath11k/qmi.c
->>> +++ b/drivers/net/wireless/ath/ath11k/qmi.c
->>> @@ -1932,7 +1932,7 @@ static int ath11k_qmi_assign_target_mem_chunk(struct ath11k_base *ab)
->>>                          if (!hremote_node) {
->>>                                  ath11k_dbg(ab, ATH11K_DBG_QMI,
->>>                                             "qmi fail to get hremote_node\n");
->>> -                               return ret;
->>> +                               return -EINVAL;
->>>                          }
->>>
->>>                          ret = of_address_to_resource(hremote_node, 0, &res);
->>> --
->>> 2.35.1
->>
->> Hi Michael,
->> This is already solved in ath-next and 5.18-rc1:
->> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/drivers/net/wireless/ath/ath11k/qmi.c?h=v5.18-rc1&id=c9b41832dc080fa59bad597de94865b3ea2d5bab
->>
->
-> Hi Robert,
->
-> Ah ok, then I worked with the wrong tree (wireless-drivers-next).
-> Sorry for the noise.
+With the enclave's memory range known after it is initialized there is
+no reason why it should be possible to map memory outside this range.
 
-wireless-drivers[-next] and mac80211[-next] trees are not in use
-anymore, we switched to using a common wireless and wireless-next trees:
+Lock down access to the initialized enclave's memory range by denying
+any attempt to map memory outside its memory range.
 
-https://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless.git/
+Locking down the memory range also makes adding pages to an initialized
+enclave more efficient. Pages are added to an initialized enclave by
+accessing memory that belongs to the enclave's memory range but not yet
+backed by an enclave page. If it is possible for user space to map
+memory that does not form part of the enclave then an access to this
+memory would eventually fail. Failures range from a prompt general
+protection fault if the access was an ENCLU[EACCEPT] from within the
+enclave, or a page fault via the vDSO if it was another access from
+within the enclave, or a SIGBUS (also resulting from a page fault) if
+the access was from outside the enclave.
 
-https://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless-next.git/
+Disallowing invalid memory to be mapped in the first place avoids
+preventable failures.
 
+Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
+---
+No changes since V2
+
+Changes since V1:
+- Add comment (Jarkko).
+
+ arch/x86/kernel/cpu/sgx/encl.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/arch/x86/kernel/cpu/sgx/encl.c b/arch/x86/kernel/cpu/sgx/encl.c
+index fa4f947f8496..7909570736a0 100644
+--- a/arch/x86/kernel/cpu/sgx/encl.c
++++ b/arch/x86/kernel/cpu/sgx/encl.c
+@@ -409,6 +409,11 @@ int sgx_encl_may_map(struct sgx_encl *encl, unsigned long start,
+ 
+ 	XA_STATE(xas, &encl->page_array, PFN_DOWN(start));
+ 
++	/* Disallow mapping outside enclave's address range. */
++	if (test_bit(SGX_ENCL_INITIALIZED, &encl->flags) &&
++	    (start < encl->base || end > encl->base + encl->size))
++		return -EACCES;
++
+ 	/*
+ 	 * Disallow READ_IMPLIES_EXEC tasks as their VMA permissions might
+ 	 * conflict with the enclave page permissions.
 -- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+2.25.1
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
