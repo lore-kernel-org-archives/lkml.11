@@ -2,75 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEE5EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 13:50:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76070C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 13:51:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359290AbiDDNwG (ORCPT
+        id S1357004AbiDDNxp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 09:52:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54460 "EHLO
+        Mon, 4 Apr 2022 09:53:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358481AbiDDNwE (ORCPT
+        with ESMTP id S1359315AbiDDNwt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 09:52:04 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F8151DA6B
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 06:50:08 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 0C2341F385;
-        Mon,  4 Apr 2022 13:50:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1649080207; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=MbFj/eiu3go+zCzrfYe6IvNnLjC0hQFhm9FhjPLNudY=;
-        b=Isz09+/dUd8S3Z2gXYQeaV+P7u+vnqqZCUZcdbu+DLjSp8NryOwoCXoKCNARhTgsbHDMuU
-        FRxAXCojxjuFWDTZPj8BbHQh+6ZIeeThnnr1gO66KNxh3s6u0/0NXJ4cDZRFeu9NIX7gy0
-        TBpjVCh5+oJdm+TEy6zP5Mfoi2fSbnQ=
-Received: from suse.cz (pathway.suse.cz [10.100.12.24])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id AECEFA3B96;
-        Mon,  4 Apr 2022 13:50:04 +0000 (UTC)
-Date:   Mon, 4 Apr 2022 15:50:04 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     Jonathan Lassoff <jof@thejof.com>
-Cc:     OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Chris Down <chris@chrisdown.name>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4] Add FAT messages to printk index
-Message-ID: <20220404135003.GA22550@pathway.suse.cz>
-References: <8aaa2dd7995e820292bb40d2120ab69756662c65.1648687832.git.jof@thejof.com>
- <8aaa2dd7995e820292bb40d2120ab69756662c65.1648688136.git.jof@thejof.com>
+        Mon, 4 Apr 2022 09:52:49 -0400
+Received: from mail-oa1-x2f.google.com (mail-oa1-x2f.google.com [IPv6:2001:4860:4864:20::2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2C992A71B
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 06:50:52 -0700 (PDT)
+Received: by mail-oa1-x2f.google.com with SMTP id 586e51a60fabf-d6e29fb3d7so10689132fac.7
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 06:50:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=UJ7ifLL/vt7TzqWMHfr/T5EroEWr8e059AicCh65jwE=;
+        b=XdBxqwZ6hlXamq+EWOsWwZc2zeRgoCwCqOUQwsgb5NTwPspoxxb1w0Onbn4/IwsWXN
+         oBhYY2EniOXswlpd6EFCV4DGAHPIQoHZ4DR9HBGivSxgA1BXhRRqli935/RvYWgb2xGu
+         wKKnsPEUP/7Be2RBiFDzI2nwvmjM4sKPcBRZVZE/WeAQnxANwpd002AeQ5K8cbw+HO8t
+         YP+jzRVuWISNKa0QLHasAEGOQSW1OHcw16BCf77kPpieQPPywEnX0F5Ea/fD/sdno8B3
+         0sQ6zqlIs0nnhgLJgZtSec5Ze8eEOxP/sIVmHUuseH9VJYI5LkYMD2Aq/496qBPfXQm5
+         gzDQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=UJ7ifLL/vt7TzqWMHfr/T5EroEWr8e059AicCh65jwE=;
+        b=Hnuodn08n50OzL//dC1emFK/y24oX8SRl1Nqes7Un8wihCd6m6whBULVq3w+a8X1tu
+         I8bVKl7ugrx5r2HyNRByei/p2zpP1xPlJt10PloqiIPmSU+Q1iGDD7wFyYxi/0Pk1zL1
+         r5XLGS76HjK7WgZ5JBFS6xyXLg0q9RCubAtAxs3OGny5pfvXaLFVyVIEWu96CLuM/lgu
+         IP0mjZycjSUmtb13M32HzX2156Ps/Et8MtWakDqMq4b4i8vJJfuGOr3Sy/XzNuEqgfbD
+         tTvZnpjszHIaiLutjkbVI5PchumyFNOkygNBI1SX2xGb7+/zZNZn7I5E3hXePUZLwM+9
+         IPMA==
+X-Gm-Message-State: AOAM533u1fYYX7s7OJov2jl+QJnUcvgxjlKf5c2McsweO1kGfyqZZudi
+        ffv/IJ4SCWhFD9tC+ZPVNZCjcw==
+X-Google-Smtp-Source: ABdhPJz20MpJx7LSy5moQ816FyGIBvEreDKN4HMKOHtNCOu/4APRQAt0B1hh6o4oY3S/Sn+csHU31g==
+X-Received: by 2002:a05:6870:3113:b0:d3:473b:3f1d with SMTP id v19-20020a056870311300b000d3473b3f1dmr3732oaa.116.1649080251783;
+        Mon, 04 Apr 2022 06:50:51 -0700 (PDT)
+Received: from ripper ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
+        by smtp.gmail.com with ESMTPSA id 14-20020a056870134e00b000ddaf3927b1sm4218569oac.32.2022.04.04.06.50.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Apr 2022 06:50:51 -0700 (PDT)
+Date:   Mon, 4 Apr 2022 06:53:16 -0700
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Johan Hovold <johan+linaro@kernel.org>
+Cc:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Stanimir Varbanov <svarbanov@mm-sol.com>,
+        Andy Gross <agross@kernel.org>, Rob Herring <robh@kernel.org>,
+        Krzysztof Wilczy??ski <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        linux-pci@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH v2] PCI: qcom: Fix pipe clock imbalance
+Message-ID: <Ykr4TOYYh4X8o02E@ripper>
+References: <20220401133351.10113-1-johan+linaro@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <8aaa2dd7995e820292bb40d2120ab69756662c65.1648688136.git.jof@thejof.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220401133351.10113-1-johan+linaro@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed 2022-03-30 17:58:00, Jonathan Lassoff wrote:
-> In order for end users to quickly react to new issues that come up in
-> production, it is proving useful to leverage the printk indexing system.
-> This printk index enables kernel developers to use calls to printk()
-> with changable ad-hoc format strings (as they always have; no change
-> of expectations), while enabling end users to examine format strings to
-> detect changes.
-> Since end users are using regular expressions to match messages printed
-> through printk(), being able to detect changes in chosen format strings
-> from release to release provides a useful signal to review
-> printk()-matching regular expressions for any necessary updates.
-> 
-> So that detailed FAT messages are captured by this printk index, this patch
-> wraps fat_msg with a macro.
-> 
-> Signed-off-by: Jonathan Lassoff <jof@thejof.com>
-> Acked-by: OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
+On Fri 01 Apr 06:33 PDT 2022, Johan Hovold wrote:
 
-Reviewed-by: Petr Mladek <pmladek@suse.com>
-Tested-by: Petr Mladek <pmladek@suse.com>
+> Commit ed8cc3b1fc84 ("PCI: qcom: Add support for SDM845 PCIe
+> controller") introduced a clock imbalance by enabling the pipe clock
+> both in init() and in post_init() but only disabling in post_deinit().
+> 
+> Note that the pipe clock was also never disabled in the init() error
+> paths and that enabling the clock before powering up the PHY looks
+> questionable.
+> 
+> Fixes: ed8cc3b1fc84 ("PCI: qcom: Add support for SDM845 PCIe controller")
+> Cc: stable@vger.kernel.org      # 5.6
+> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
 
-Best Regards,
-Petr
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+
+> Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+> ---
+> 
+> Changes in v2
+>  - Capitalise "Fix" in subject line according to PCI subsystem
+>    convention
+> 
+> 
+>  drivers/pci/controller/dwc/pcie-qcom.c | 6 ------
+>  1 file changed, 6 deletions(-)
+> 
+> diff --git a/drivers/pci/controller/dwc/pcie-qcom.c b/drivers/pci/controller/dwc/pcie-qcom.c
+> index b79d98e5e228..20a0e6533a1c 100644
+> --- a/drivers/pci/controller/dwc/pcie-qcom.c
+> +++ b/drivers/pci/controller/dwc/pcie-qcom.c
+> @@ -1238,12 +1238,6 @@ static int qcom_pcie_init_2_7_0(struct qcom_pcie *pcie)
+>  		goto err_disable_clocks;
+>  	}
+>  
+> -	ret = clk_prepare_enable(res->pipe_clk);
+> -	if (ret) {
+> -		dev_err(dev, "cannot prepare/enable pipe clock\n");
+> -		goto err_disable_clocks;
+> -	}
+> -
+>  	/* Wait for reset to complete, required on SM8450 */
+>  	usleep_range(1000, 1500);
+>  
+> -- 
+> 2.35.1
+> 
