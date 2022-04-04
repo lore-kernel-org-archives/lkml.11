@@ -2,98 +2,306 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D403C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 07:24:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18F6EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 07:24:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377654AbiDDH0A (ORCPT
+        id S1377660AbiDDH0l (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 03:26:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51610 "EHLO
+        Mon, 4 Apr 2022 03:26:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238908AbiDDHZ6 (ORCPT
+        with ESMTP id S238908AbiDDH0i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 03:25:58 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61BF81D30E
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 00:24:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649057042; x=1680593042;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=6S6H9m506Zflqt/ahZ8IYpB9GrSU0XZnufsomsoR+nc=;
-  b=RJPP5K8iwlQDSXHHvsbhTB9wnlEaUgxVh7Ntk5o6Tsx3W1K0fl8/XTGo
-   +SLvWYqwOFG7SNiAZQIwujm3Os77jfDzWxiU7zW6YG4zuM20eUHOAfyuW
-   l6R50V3LH7SuEztUK6Rinh8od70UtvEqqW7YyPCkqR17qQeBpPPn7aEC4
-   1GUqJAvfLMLd6MIqbFoXd6LYPi7CSoUafQxzxy/wrjnO2qDnA9n80P7qI
-   0fpOVcSMYlIv1SFXCHx5bPwTj515vhcE83nCptytC1L1Rkz8GSjE8PMop
-   zzpmuhH3qTx3Tv/zIii7MUpXUfdYSXgdsAPLr+xcktYmO/bMeWkIVx0+2
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10306"; a="260154570"
-X-IronPort-AV: E=Sophos;i="5.90,233,1643702400"; 
-   d="scan'208";a="260154570"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 00:23:53 -0700
-X-IronPort-AV: E=Sophos;i="5.90,233,1643702400"; 
-   d="scan'208";a="587484445"
-Received: from vlee3-mobl1.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.254.28.97])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 00:23:47 -0700
-Message-ID: <4605b7ba6ed1197b3f58fffc56be1c7250b5e79c.camel@intel.com>
-Subject: Re: [PATCHv7 30/30] Documentation/x86: Document TDX kernel
- architecture
-From:   Kai Huang <kai.huang@intel.com>
-To:     Dave Hansen <dave.hansen@intel.com>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        luto@kernel.org, peterz@infradead.org
-Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
-        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
-        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
-        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
-        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
-        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
-        thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
-        linux-kernel@vger.kernel.org,
-        Dave Hansen <dave.hansen@linux.intel.com>
-Date:   Mon, 04 Apr 2022 19:23:45 +1200
-In-Reply-To: <faee19b5-5ee2-d6e1-63fe-c8a7fb1f9d32@intel.com>
-References: <20220318153048.51177-1-kirill.shutemov@linux.intel.com>
-         <20220318153048.51177-31-kirill.shutemov@linux.intel.com>
-         <7c507b609a6e742ebdcd61ea204d5f05ee0b3b35.camel@intel.com>
-         <faee19b5-5ee2-d6e1-63fe-c8a7fb1f9d32@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
+        Mon, 4 Apr 2022 03:26:38 -0400
+Received: from 9.mo552.mail-out.ovh.net (9.mo552.mail-out.ovh.net [87.98.180.222])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67D033616C
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 00:24:40 -0700 (PDT)
+Received: from mxplan5.mail.ovh.net (unknown [10.108.1.93])
+        by mo552.mail-out.ovh.net (Postfix) with ESMTPS id 74BD722AA4;
+        Mon,  4 Apr 2022 07:07:09 +0000 (UTC)
+Received: from kaod.org (37.59.142.102) by DAG4EX1.mxp5.local (172.16.2.31)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 4 Apr
+ 2022 09:07:08 +0200
+Authentication-Results: garm.ovh; auth=pass (GARM-102R0043f1c04d9-24e1-4a64-8174-b0226c23ff7b,
+                    193BEDB8EED17CFBFC1316EE01F9191BF107EB6B) smtp.auth=clg@kaod.org
+X-OVh-ClientIp: 82.64.250.170
+Message-ID: <3b7ecaa4-1de9-3a4c-b057-805a5e6d2e48@kaod.org>
+Date:   Mon, 4 Apr 2022 09:06:51 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v4 03/11] spi: spi-mem: Convert Aspeed SMC driver to
+ spi-mem
+Content-Language: en-US
+To:     Pratyush Yadav <p.yadav@ti.com>
+CC:     <linux-spi@vger.kernel.org>, <linux-mtd@lists.infradead.org>,
+        Mark Brown <broonie@kernel.org>,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        <linux-aspeed@lists.ozlabs.org>, Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Chin-Ting Kuo <chin-ting_kuo@aspeedtech.com>,
+        <devicetree@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, Tao Ren <rentao.bupt@gmail.com>
+References: <20220325100849.2019209-1-clg@kaod.org>
+ <20220325100849.2019209-4-clg@kaod.org>
+ <20220330193343.qg5kcr6twerde6ho@ti.com>
+From:   =?UTF-8?Q?C=c3=a9dric_Le_Goater?= <clg@kaod.org>
+In-Reply-To: <20220330193343.qg5kcr6twerde6ho@ti.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
+X-Originating-IP: [37.59.142.102]
+X-ClientProxiedBy: DAG4EX2.mxp5.local (172.16.2.32) To DAG4EX1.mxp5.local
+ (172.16.2.31)
+X-Ovh-Tracer-GUID: e382a813-ab73-414e-b3c8-ba9556f6581c
+X-Ovh-Tracer-Id: 11032974666386082631
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudejuddguddujecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefkffggfgfuvfhfhfgjtgfgihesthekredttdefjeenucfhrhhomhepveorughrihgtpgfnvggpifhorghtvghruceotghlgheskhgrohgurdhorhhgqeenucggtffrrghtthgvrhhnpeekleejfeevjeehiefhgeelgeeludduleeuvdffteduieegvdfgteevfeetkeetfeenucffohhmrghinhepsghufhdrihhnnecukfhppedtrddtrddtrddtpdefjedrheelrddugedvrddutddvnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehmgihplhgrnhehrdhmrghilhdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomheptghlgheskhgrohgurdhorhhgpdhnsggprhgtphhtthhopedupdhrtghpthhtoheprhgvnhhtrghordgsuhhpthesghhmrghilhdrtghomh
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 2022-04-03 at 23:25 -0700, Dave Hansen wrote:
-> On 4/3/22 21:32, Kai Huang wrote:
-> > This is not the best way I believe.  I think we have two options here:
-> > 1) Having dedicated tdx_guest.rst and tdx_host.rst
-> > 2) Having a single tdx.rst to cover both TDX guest and host materials.
-> > 
-> > I don't know which way is better, perhaps 2).  
-> > 
-> > Kirill,
-> > 
-> > If 2) is better, could we add an additional level of menu to represent "TDX
-> > guest support" and make all materials as sub-menu of it, if you need to send out
-> > v8?
+On 3/30/22 21:33, Pratyush Yadav wrote:
+> Hi Cedric,
 > 
-> If the host support means that this needs to be reorganized, then the
-> host support patches can do that.  Let's not make this more complicated
-> than it has to be.
+> Thanks for doing the conversion.
+> 
+> On 25/03/22 11:08AM, Cédric Le Goater wrote:
+>> This SPI driver adds support for the Aspeed static memory controllers
+>> of the AST2600, AST2500 and AST2400 SoCs using the spi-mem interface.
+>>
+>>   * AST2600 Firmware SPI Memory Controller (FMC)
+>>     . BMC firmware
+>>     . 3 chip select pins (CE0 ~ CE2)
+>>     . Only supports SPI type flash memory
+>>     . different segment register interface
+>>     . single, dual and quad mode.
+>>
+>>   * AST2600 SPI Flash Controller (SPI1 and SPI2)
+>>     . host firmware
+>>     . 2 chip select pins (CE0 ~ CE1)
+>>     . different segment register interface
+>>     . single, dual and quad mode.
+>>
+>>   * AST2500 Firmware SPI Memory Controller (FMC)
+>>     . BMC firmware
+>>     . 3 chip select pins (CE0 ~ CE2)
+>>     . supports SPI type flash memory (CE0-CE1)
+>>     . CE2 can be of NOR type flash but this is not supported by the driver
+>>     . single, dual mode.
+>>
+>>   * AST2500 SPI Flash Controller (SPI1 and SPI2)
+>>     . host firmware
+>>     . 2 chip select pins (CE0 ~ CE1)
+>>     . single, dual mode.
+>>
+>>   * AST2400 New Static Memory Controller (also referred as FMC)
+>>     . BMC firmware
+>>     . New register set
+>>     . 5 chip select pins (CE0 ∼ CE4)
+>>     . supports NOR flash, NAND flash and SPI flash memory.
+>>     . single, dual and quad mode.
+>>
+>> Each controller has a memory range on which flash devices contents are
+>> mapped. Each device is assigned a window that can be changed at bootime
+>> with the Segment Address Registers.
+>>
+>> Each SPI flash device can then be accessed in two modes: Command and
+>> User. When in User mode, SPI transfers are initiated with accesses to
+>> the memory segment of a device. When in Command mode, memory
+>> operations on the memory segment of a device generate SPI commands
+>> automatically using a Control Register for the settings.
+>>
+>> This initial patch adds support for User mode. Command mode needs a little
+>> more work to check that the memory window on the AHB bus fits the device
+>> size. It will come later when support for direct mapping is added.
+>>
+>> Single and dual mode RX transfers are supported. Other types than SPI
+>> are not supported.
+>>
+>> Reviewed-by: Joel Stanley <joel@jms.id.au>
+>> Tested-by: Joel Stanley <joel@jms.id.au>
+>> Tested-by: Tao Ren <rentao.bupt@gmail.com>
+>> Signed-off-by: Chin-Ting Kuo <chin-ting_kuo@aspeedtech.com>
+>> Signed-off-by: Cédric Le Goater <clg@kaod.org>
+>> ---
+>>   drivers/mtd/spi-nor/controllers/aspeed-smc.c  | 910 ------------------
+>>   drivers/spi/spi-aspeed-smc.c                  | 709 ++++++++++++++
+>>   .../devicetree/bindings/mtd/aspeed-smc.txt    |  51 -
+>>   MAINTAINERS                                   |   1 +
+>>   drivers/mtd/spi-nor/controllers/Kconfig       |  10 -
+>>   drivers/mtd/spi-nor/controllers/Makefile      |   1 -
+>>   drivers/spi/Kconfig                           |  11 +
+>>   drivers/spi/Makefile                          |   1 +
+>>   8 files changed, 722 insertions(+), 972 deletions(-)
+>>   delete mode 100644 drivers/mtd/spi-nor/controllers/aspeed-smc.c
+>>   create mode 100644 drivers/spi/spi-aspeed-smc.c
+>>   delete mode 100644 Documentation/devicetree/bindings/mtd/aspeed-smc.txt
+>>
+> [...]
+>> +static void aspeed_spi_send_cmd_addr(struct aspeed_spi_chip *chip, u8 addr_nbytes,
+>> +				     u64 offset, u32 opcode)
+>> +{
+>> +	struct aspeed_spi *aspi = chip->aspi;
+>> +	__be32 temp;
+>> +	u32 cmdaddr;
+>> +
+>> +	switch (addr_nbytes) {
+>> +	default:
+>> +		dev_warn_once(aspi->dev, "Unexpected address width %u, defaulting to 3",
+>> +			      addr_nbytes);
+>> +		fallthrough;
+> 
+> I think it is better if you reject ops where addr width is not 3 or 4.
+> This you can drop this. Or if you really want to keep it, you can change
+> it to a WARN_ON() and return an error.
 
-Sure. I'll do the change.
+OK. This is a left over from the initial driver.
 
-Still it would be appreciated if you guys can provide comments on which is
-better.  Thanks.
- 
--- 
+I have added both at WARN_ONCE() and a 'return -EOPNOTSUPP'
+
+>> +	case 3:
+>> +		cmdaddr = offset & 0xFFFFFF;
+>> +		cmdaddr |= opcode << 24;
+>> +
+>> +		temp = cpu_to_be32(cmdaddr);
+>> +		aspeed_spi_write_to_ahb(chip->ahb_base, &temp, 4);
+>> +		break;
+>> +	case 4:
+>> +		temp = cpu_to_be32(offset);
+>> +		aspeed_spi_write_to_ahb(chip->ahb_base, &opcode, 1);
+>> +		aspeed_spi_write_to_ahb(chip->ahb_base, &temp, 4);
+>> +		break;
+>> +	}
+>> +}
+>> +
+> [...]
+>> +/* support for 1-1-1, 1-1-2 or 1-1-4 */
+>> +static bool aspeed_spi_supports_op(struct spi_mem *mem, const struct spi_mem_op *op)
+>> +{
+>> +	if (op->cmd.buswidth > 1)
+>> +		return false;
+>> +
+>> +	if (op->addr.nbytes != 0) {
+>> +		if (op->addr.buswidth > 1 || op->addr.nbytes > 4)
+> 
+> As mentioned above, this should reject ops with addr width 1 and 2.
+
+yes
+
+>> +			return false;
+>> +	}
+>> +
+>> +	if (op->dummy.nbytes != 0) {
+>> +		if (op->dummy.buswidth > 1 || op->dummy.nbytes > 7)
+>> +			return false;
+>> +	}
+>> +
+>> +	if (op->data.nbytes != 0 && op->data.buswidth > 4)
+>> +		return false;
+>> +
+>> +	return spi_mem_default_supports_op(mem, op);
+>> +}
+>> +
+>> +static int do_aspeed_spi_exec_op(struct spi_mem *mem, const struct spi_mem_op *op)
+>> +{
+>> +	struct aspeed_spi *aspi = spi_controller_get_devdata(mem->spi->master);
+>> +	struct aspeed_spi_chip *chip = &aspi->chips[mem->spi->chip_select];
+>> +	u32 addr_mode, addr_mode_backup;
+>> +	u32 ctl_val;
+>> +	int ret = 0;
+>> +
+>> +	dev_dbg(aspi->dev,
+>> +		"CE%d %s OP %#x mode:%d.%d.%d.%d naddr:%#x ndummies:%#x len:%#x",
+>> +		chip->cs, op->data.dir == SPI_MEM_DATA_IN ? "read" : "write",
+>> +		op->cmd.opcode, op->cmd.buswidth, op->addr.buswidth,
+>> +		op->dummy.buswidth, op->data.buswidth,
+>> +		op->addr.nbytes, op->dummy.nbytes, op->data.nbytes);
+>> +
+>> +	addr_mode = readl(aspi->regs + CE_CTRL_REG);
+>> +	addr_mode_backup = addr_mode;
+>> +
+>> +	ctl_val = chip->ctl_val[ASPEED_SPI_BASE];
+>> +	ctl_val &= ~CTRL_IO_CMD_MASK;
+>> +
+>> +	ctl_val |= op->cmd.opcode << CTRL_COMMAND_SHIFT;
+>> +
+>> +	/* 4BYTE address mode */
+>> +	if (op->addr.nbytes) {
+>> +		if (op->addr.nbytes == 4)
+>> +			addr_mode |= (0x11 << chip->cs);
+>> +		else
+>> +			addr_mode &= ~(0x11 << chip->cs);
+>> +	}
+>> +
+>> +	if (op->dummy.buswidth && op->dummy.nbytes)
+> 
+> Nitpick: op->dummy.nbytes being set should imply op->dummy.buswidth > 0.
+> 
+>> +		ctl_val |= CTRL_IO_DUMMY_SET(op->dummy.nbytes / op->dummy.buswidth);
+>> +
+>> +	if (op->data.nbytes != 0) {
+>> +		if (op->data.buswidth)
+> 
+> Nitpick: op->data.nbytes != 0 should imply op->data.buswidth > 0.
+
+Indeed. Fixed both.
+
+>> +			ctl_val |= aspeed_spi_get_io_mode(op);
+>> +	}
+>> +
+>> +	if (op->data.dir == SPI_MEM_DATA_OUT)
+>> +		ctl_val |= CTRL_IO_MODE_WRITE;
+>> +	else
+>> +		ctl_val |= CTRL_IO_MODE_READ;
+>> +
+>> +	if (addr_mode != addr_mode_backup)
+>> +		writel(addr_mode, aspi->regs + CE_CTRL_REG);
+>> +	writel(ctl_val, chip->ctl);
+>> +
+>> +	if (op->data.dir == SPI_MEM_DATA_IN) {
+>> +		if (!op->addr.nbytes)
+>> +			ret = aspeed_spi_read_reg(chip, op);
+>> +		else
+>> +			ret = aspeed_spi_read_user(chip, op, op->addr.val,
+>> +						   op->data.nbytes, op->data.buf.in);
+>> +	} else {
+>> +		if (!op->addr.nbytes)
+>> +			ret = aspeed_spi_write_reg(chip, op);
+>> +		else
+>> +			ret = aspeed_spi_write_user(chip, op);
+>> +	}
+>> +
+>> +	/* Restore defaults */
+>> +	if (addr_mode != addr_mode_backup)
+>> +		writel(addr_mode_backup, aspi->regs + CE_CTRL_REG);
+>> +	writel(chip->ctl_val[ASPEED_SPI_READ], chip->ctl);
+> 
+> Why do you need to restore defaults here? Do you expect some other piece
+> of software to use it as well?
+
+We expect the controller to be correctly set when dirmap_read() is called.
+But it is only required in the next patch.
+
+> 
+> The patch looks good to me apart from these.
+
+
 Thanks,
--Kai
 
+C.
+
+
+
+> 
+>> +	return ret;
+>> +}
+>> +
+> [...]
+> 
 
