@@ -2,72 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 561BBC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:08:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 794C4C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:09:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245202AbiDDWKa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 18:10:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45388 "EHLO
+        id S1350770AbiDDWLO (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 18:11:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380507AbiDDVVp (ORCPT
+        with ESMTP id S241092AbiDDVat (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 17:21:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8E1A31357;
-        Mon,  4 Apr 2022 14:19:29 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1DB6AB819DB;
-        Mon,  4 Apr 2022 21:18:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7EF6C34111;
-        Mon,  4 Apr 2022 21:18:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649107110;
-        bh=2MFBSXfZ3tqekRBgiYDJufp0daex8Cm6j3gRGmigYc8=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=aA/qpq3/DjEcJdSppyeto3ZRmFM0a8WjC9n9jVNNvBw15zoxpXgzFqQR39jcQASC6
-         ePU2vamYPT/j39J/05ZpBOBZuIfasCs7j6Q4R1UMqVTE6P3329sdW9i5PR6QAujIHH
-         HDlBaOostsy/CJKKirYrFBxbyn0x3WdUPkW3f0M5L0XtTnnLSgyISsEVdB3mqI0MZp
-         KLZsjjMF/SRDmoNDystXRXJKOIIM4wDelwoNAQQXW0Sjnw8xH7NbLQfM/MBDAaSXgL
-         +K0N/f7OC3Ji8E/sihBt4x0Bl7waUHV8M0Z8ZPP+fiERNkqCSJ/H4LoeiIE3ZgD0sk
-         RW9JiI+8yvQbw==
-Received: by mail-io1-f46.google.com with SMTP id z7so12966029iom.1;
-        Mon, 04 Apr 2022 14:18:30 -0700 (PDT)
-X-Gm-Message-State: AOAM533tHn3V9zonrRtuYyXFB+SkmRJcxmhocjXrwZS9pXdxELMHcuqK
-        kRpzxgWuXeKeZEk4MiTBRkL1HM+OaCdSBezujg==
-X-Google-Smtp-Source: ABdhPJwATjUBuVkxonnV8pK5+2/qD+WTsPj3L7mqbhvekuXa465j73EULKK5S8ov3InZONGcDfsngm0ogv9Ext2ciys=
-X-Received: by 2002:a05:6638:1301:b0:323:3b47:8b3f with SMTP id
- r1-20020a056638130100b003233b478b3fmr150659jad.291.1649107109921; Mon, 04 Apr
- 2022 14:18:29 -0700 (PDT)
+        Mon, 4 Apr 2022 17:30:49 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2AD79FEA
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 14:14:00 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id b15so12642052edn.4
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 14:14:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=S5JDtmIs58TRR3YM1MH2n9ydceKzu8ZMJYE0EAd1fdA=;
+        b=mXu+kbIOllUFvjcA3fMxHjtto4SRHNogC5DNMGt298LCEFBZj/4pCFusAyxJJwXDFE
+         aknCc84+LN9asN3z8ABlK1Neu52RGYbDbxQ/x7wMjt8hgDbCi8gC3h63ehV3//RUcjEQ
+         uXd8VnYduxNmDzxwkqs5cArm2NvcR5NWQ29lBNGTdYvQoscK7mpNXBKQ0tLJIvZZx8EK
+         UHAQPh+V4qvmOeqTkgtiZtN6T1lQfPOOloeTXFuwpCBWe7cbtmQqJ4Ou8yw7CeR2UsF3
+         4uTo3/Qh87ML1kHT+0XUbhJ3pDx3kqchZRWH52MVse9/W3tOmLVYxXkyLWDShcPe6WYR
+         SzQQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=S5JDtmIs58TRR3YM1MH2n9ydceKzu8ZMJYE0EAd1fdA=;
+        b=FYo0ptW9J9lodM0KqAEDb2aBZE9Y0gPVMsaf27lai586I+Z9LK6ktU4bVpNMy/iPvK
+         ZTiCkU2ZynCl5qGZUUjPQhg+t0KZz+XyHFZh6IfI0FBHGIkfDz6zVJZG6ejN1DjxXRUn
+         hzlFq/7p6GNP+fytmaBsVSXt6Fjyg2lKqyAzCchcLfu63wTS2Soq7lOr5TOnO5NcEmNs
+         dqAvfrd5LuTT0nYhPBq1xdp1nX/t4wTRDw+jfaI+Tnku8ovKjmpf1CTDkIOGoNZtExom
+         PUXNii/ao1p/v4xLomRYTVxOmY7OHGLExwK4oOWm5XngwFIzCJc7rf2vECYPOmY4IDVV
+         4+cw==
+X-Gm-Message-State: AOAM532BFCyrIAmVUfq52JZPzUKzl5o5f8vm6pl5I1ymnFuXCKp0ZrJ+
+        FxCh3aS2OnfaORjPM+78yuUuSdkRIIxfraIz7Z5PEQ==
+X-Google-Smtp-Source: ABdhPJyMO0ydKmS0siYdaHdVOwsHoBm4w6Sf5vzl64BwKlS1ZlQJjG/60KDSEZUZzhTTg4BvzwEuDDfUH50t+IgZaN8=
+X-Received: by 2002:a05:6402:d0a:b0:418:ec3b:2242 with SMTP id
+ eb10-20020a0564020d0a00b00418ec3b2242mr83168edb.229.1649106839033; Mon, 04
+ Apr 2022 14:13:59 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220402192819.154691-1-krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220402192819.154691-1-krzysztof.kozlowski@linaro.org>
-From:   Rob Herring <robh+dt@kernel.org>
-Date:   Mon, 4 Apr 2022 16:18:19 -0500
-X-Gmail-Original-Message-ID: <CAL_JsqKuFAY4QENRb3dKETKcaJm-fcguoCFOgUnzf0Pwmf1Ezg@mail.gmail.com>
-Message-ID: <CAL_JsqKuFAY4QENRb3dKETKcaJm-fcguoCFOgUnzf0Pwmf1Ezg@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: white-space cleanups
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        devicetree@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "open list:HARDWARE RANDOM NUMBER GENERATOR CORE" 
-        <linux-crypto@vger.kernel.org>,
-        Corentin Labbe <clabbe@baylibre.com>
+References: <20220318021314.3225240-1-davidgow@google.com> <20220318021314.3225240-3-davidgow@google.com>
+In-Reply-To: <20220318021314.3225240-3-davidgow@google.com>
+From:   Daniel Latypov <dlatypov@google.com>
+Date:   Mon, 4 Apr 2022 16:13:47 -0500
+Message-ID: <CAGS_qxqtMpjKX+CMF6eBUWfsc-TKR9-Bk+hYM=PHa0_wUtQQuA@mail.gmail.com>
+Subject: Re: [RFC PATCH 2/2] kunit: expose ftrace-based API for stubbing out
+ functions during tests
+To:     David Gow <davidgow@google.com>
+Cc:     Brendan Higgins <brendanhiggins@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        kunit-dev@googlegroups.com, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Apr 2, 2022 at 2:28 PM Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
->
-> Remove trailing white-spaces and trailing blank lines (yamllint when run
-> manually does not like them).
+On Thu, Mar 17, 2022 at 9:13 PM David Gow <davidgow@google.com> wrote:
+> +
+> +/** KUNIT_STUBBABLE - marks a function as stubbable when stubbing support is
+> + * enabled.
+> + *
+> + * Stubbing uses ftrace internally, so we can only stub out functions when they
+> + * are not inlined. This macro eavlautes to noinline when stubbing support is
 
-I assume you mean run without our configuration file. I probably
-disabled the check because I didn't want to go fix everywhere. If we
-are going to fix, then we should enable the check to not get more.
+Just noting a couple typos lest they be forgotten:
+*evaluates
 
-Rob
+> + * enabled to thus make it safe.
+> + *
+
+<snip>
+
+> + *
+> + *     void replacement_func(int n)
+> + *     {
+> + *             pr_info("replacement_func() called with %d", n);
+> + *             return 42;
+> + *     }
+> + *
+> + *     void example_test(struct kunit *test)
+> + *     {
+> + *             kunit_active_ftrace_stub(test, real_func, replacement_func);
+
+*activate
