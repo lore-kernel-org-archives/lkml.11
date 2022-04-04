@@ -2,180 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D944C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C930C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:12:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377640AbiDDWML (ORCPT
+        id S1357409AbiDDWLt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 18:12:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45108 "EHLO
+        Mon, 4 Apr 2022 18:11:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386715AbiDDVjP (ORCPT
+        with ESMTP id S1384453AbiDDVfp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 17:39:15 -0400
-Received: from mail-lj1-f177.google.com (mail-lj1-f177.google.com [209.85.208.177])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA0054D627
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 14:30:30 -0700 (PDT)
-Received: by mail-lj1-f177.google.com with SMTP id bn33so14649438ljb.6
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 14:30:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=1bAt6TBAHHEmy348lJLTOOvTLaiSv+TPTdYgy4I0MYg=;
-        b=E1NpQ4P1JCYLIm1H9ndx7S+bR3N92nar4xieVmugUkT6Cx5jg1i6+kdx6U9ToEInPx
-         DlMzWwsy0K1TW1TUuLGfn9IByiIXEgm4qoKAaF9cTvDdVu4Py81nrFtW2CvjxbTluuDS
-         cQcatiB/Kd2loHgbmaSShiD8lq4pMIa5yFk/Y=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=1bAt6TBAHHEmy348lJLTOOvTLaiSv+TPTdYgy4I0MYg=;
-        b=OmxQcUnAcUlhxD1W+KOFs0NsdOUhhi15iUT6YBcFbG9xjLBFpZ/Sm1GvieeyBfCxdo
-         a2sAaVhB1XBoPNdXHS3FQU8FAUaymfUbqGORkkGOYb3XIJwn1/bc5dTvQqvj7burQKGO
-         ySpano6a9Kt76JY59RpoPJ5R0MpxSVxT0peRNOz54nyCBUEtYuMnzWRfYnEKWZo2M9rg
-         Ay0estIrbN0E3E9UpQHJxfkBEqJoj3uBfZnBr2FZR4RiMZtUTSSiav3DkuH817XoU8lx
-         xuqCKlvsYJ3Esv0Mc5PTVufLaB5i2eA/l9aK163Gbj5UbRV3LhET/+Xuq/yGt4lh0EOy
-         JtUQ==
-X-Gm-Message-State: AOAM533m8gDNNH6ASiyKvpky7R7F74Gu/0rRqbLHHaiz1/ohwTLxIFKx
-        t9ei6ELBQo6ricGu7editdsopZGIIt797vB8jXc=
-X-Google-Smtp-Source: ABdhPJxyOOwvk0G5ACI4xZRr/ld+UT8WZPVEwFzTwzwtT+fiZocuN/FZLY6JQONBF2pK/A81awHrIg==
-X-Received: by 2002:a2e:9183:0:b0:24b:1220:a4d8 with SMTP id f3-20020a2e9183000000b0024b1220a4d8mr40033ljg.259.1649107719750;
-        Mon, 04 Apr 2022 14:28:39 -0700 (PDT)
-Received: from mail-lf1-f50.google.com (mail-lf1-f50.google.com. [209.85.167.50])
-        by smtp.gmail.com with ESMTPSA id cf19-20020a056512281300b0044aee581708sm890643lfb.261.2022.04.04.14.28.36
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 04 Apr 2022 14:28:36 -0700 (PDT)
-Received: by mail-lf1-f50.google.com with SMTP id z12so19713270lfu.10
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 14:28:36 -0700 (PDT)
-X-Received: by 2002:ac2:4203:0:b0:448:8053:d402 with SMTP id
- y3-20020ac24203000000b004488053d402mr195601lfh.687.1649107715765; Mon, 04 Apr
- 2022 14:28:35 -0700 (PDT)
+        Mon, 4 Apr 2022 17:35:45 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BE8A48335;
+        Mon,  4 Apr 2022 14:26:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1649107514;
+        bh=Ro4B9BImMndeuI5KT1TcwaX2nQXOXMqp5IujRLN9o60=;
+        h=X-UI-Sender-Class:Date:From:To:Cc:Subject:In-Reply-To:References;
+        b=Q+UG0XJUFefJviD9xFpD2w/hLKt8PtLpC5JXKtomSoqPbnaKMOdUdjI2aXg5odyYO
+         HoE4i99Gu85QGXAD+TQHdZJLZn3inhtM8KHDu+pgqooCSjhqaZyn3NFR0ZfmPnhcOO
+         Iix0rQ4oyJEYp2RVJqrJtGELhsv6dsSWIRzqv0X8=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from localhost ([62.216.209.4]) by mail.gmx.net (mrgmx005
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MqJm5-1oNB4T0I9z-00nPsq; Mon, 04
+ Apr 2022 23:25:14 +0200
+Date:   Mon, 4 Apr 2022 23:25:12 +0200
+From:   Peter Seiderer <ps.report@gmx.net>
+To:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@toke.dk>
+Cc:     linux-wireless@vger.kernel.org, Kalle Valo <kvalo@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Felix Fietkau <nbd@nbd.name>
+Subject: Re: [PATCH v1 2/2] mac80211: minstrel_ht: fill all requested rates
+Message-ID: <20220404232512.4fdd7eb9@gmx.net>
+In-Reply-To: <87fsmseml7.fsf@toke.dk>
+References: <20220402153014.31332-1-ps.report@gmx.net>
+        <20220402153014.31332-2-ps.report@gmx.net>
+        <87fsmseml7.fsf@toke.dk>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-suse-linux-gnu)
 MIME-Version: 1.0
-References: <20220321161557.495388-1-mic@digikod.net> <202204041130.F649632@keescook>
- <CAHk-=wgoC76v-4s0xVr1Xvnx-8xZ8M+LWgyq5qGLA5UBimEXtQ@mail.gmail.com> <816667d8-2a6c-6334-94a4-6127699d4144@digikod.net>
-In-Reply-To: <816667d8-2a6c-6334-94a4-6127699d4144@digikod.net>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Mon, 4 Apr 2022 14:28:19 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wjPuRi5uYs9SuQ2Xn+8+RnhoKgjPEwNm42+AGKDrjTU5g@mail.gmail.com>
-Message-ID: <CAHk-=wjPuRi5uYs9SuQ2Xn+8+RnhoKgjPEwNm42+AGKDrjTU5g@mail.gmail.com>
-Subject: Re: [GIT PULL] Add trusted_for(2) (was O_MAYEXEC)
-To:     =?UTF-8?B?TWlja2HDq2wgU2FsYcO8bg==?= <mic@digikod.net>
-Cc:     Kees Cook <keescook@chromium.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Christian Heimes <christian@python.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        James Morris <jmorris@namei.org>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        Muhammad Usama Anjum <usama.anjum@collabora.com>,
-        Paul Moore <paul@paul-moore.com>,
-        =?UTF-8?Q?Philippe_Tr=C3=A9buchet?= 
-        <philippe.trebuchet@ssi.gouv.fr>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Steve Dower <steve.dower@python.org>,
-        Thibaut Sautereau <thibaut.sautereau@ssi.gouv.fr>,
-        Vincent Strubel <vincent.strubel@ssi.gouv.fr>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        linux-integrity <linux-integrity@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        LSM List <linux-security-module@vger.kernel.org>,
-        Christian Brauner <brauner@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:KZKJ2B/82F/1PI1nVtiO1SFg08+X1scy2oosau6ElqX5HcXlYRR
+ 7aFO78O4JQX2wXL16Pd8iuXAZDyrfMiHqzbgKpRmhhLmpnSwS85TVVBGUzBl/OvVTKZ9qvJ
+ cyibel71SBEkWUsQdvmwnLlP6vdkMo1IWaN82rtvcpe+9p+kD7wNrZzfn5ejPrVV4+GUnYE
+ hlb1aWqtyKSmDYu47Eo2Q==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:SzPVeetkwDI=:aW9kEi57qgJAIiTgaZjWIL
+ V8gq/L9Adw4YrEXegqCIVPfMJt6qi/lM5lQWYUdYzDajnOaa1DGNHPIONZriS/mOAHVSoS3P7
+ CgzUJtdenZx/F6f1IOy/XutSWCVWh9qsS8+7Olv0uG+5DSLe0AQpjb0agSP3oMRQbCcKlUvku
+ u5DO5+foiEeeWAO2C+GJzyBDoozcMNo8xovd9FK+GbdSYr88rAU+sjoa1GymiBo53J5fUVUq/
+ X6gkNs4VcFqs9nvz4E1HUfVWGXqqEzCjaVYFmRbEsrnizQ2J7zX0RSPYawPyr7+nHoTXfteOH
+ mKB7z4TIUBo8ssLX+3kJzUQpx1JJxiAPfwxbM7bzUdOWLZbLV4D+jvwCM9gjKz5tVwhWqmtso
+ BV6tUNQT1KtzuLaZ05OKbsJCIJJ2n8GizzjUkvTOfK2POZ0CJPxach1mFOJQ2nn9UVA9p/f9s
+ P58I9IFiP1eWuFl6xD1veWMm5B4qeYUNEvA+1kUV/N6zOwZwwWZov3hSD+yKdLApz+gQYapy7
+ O4gkkPutObcAeZkDPmAYsjgj+LvZGpyLtNXyk7Fx8PUf8YLlkG4Lj+mAARnQFSSHRoDow+IeJ
+ YUE0FETs0sG90g3TUsMnou8LAqWVY8BJj2o7Vc++WgT4laPg16Jlw1vbDiYFfUx3/9C+UXIxp
+ aUJjp32KcH9/5GhUdBpSil28uKj1h2d/V6/aIvssuRiAxjEaAKNj9XAvsCc/O+ls3eTtML+Y9
+ q03+UM2QaMzbR6uqAWoT0uNboM/h1Zotje1FpiTNt4lDdSaXEb6L5zvQqLthNAfcU5tf6RIwB
+ U+CPNEPhvRpgrwvDqv8xru8hvwp5kJAP59WNS4qv//rwI8FSzbYwH3e9RB8Xo5jDkZaEq4unw
+ gY/EEPGoclZZLMqBtceH6/+RE1JDIsu4wwnXO5MuZACpFwiF1srhB43UP2vyijLzl3IW42Ldr
+ g0OuDqJwRm4tZQkb8ly7Rek/O+JhKGEh7hDxLqCkZzYEn1kN/IeQ79aF8msjiZQN8R1nLsR+o
+ j95FjOePmEakOLJxi1wa5/GOwPphWWbruk0GKh8ditPIa4XD8967KdJIUT2em00hqO93Quijl
+ 51HtC25MRhq59Q=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 4, 2022 at 1:29 PM Micka=C3=ABl Sala=C3=BCn <mic@digikod.net> w=
-rote:
->
-> This initial proposal was using a new faccessat2(2) flag:
-> AT_INTERPRETED, see
-> https://lore.kernel.org/all/20200908075956.1069018-2-mic@digikod.net/
-> What do you think about that? I'm happy to get back to this version if
-> everyone is OK with it.
+Hello Toke, Felix,
 
-I'm certainly happi_er_ with that, but I find that particular patch
-odd for other reasons.
+On Mon, 04 Apr 2022 20:21:24 +0200, Toke H=C3=B8iland-J=C3=B8rgensen <toke@=
+toke.dk> wrote:
 
-In no particular order:
+> +Felix
+>=20
+> Peter Seiderer <ps.report@gmx.net> writes:
+>=20
+> > Fill all requested rates (in case of ath9k 4 rate slots are
+> > available, so fill all 4 instead of only 3), improves throughput in
+> > noisy environment. =20
+>=20
+> How did you test this? Could you quantify the gains in throughput you saw?
 
- - what's with the insane non-C syntax? Double parentheses have no
-actual meaning in C:
+Investigating some performance degradation of a wifi system original with a=
+th5k
+cards using a legacy kernel and madwifi driver compared against the=20
+performance using a ath9k card running IBSS mode over long distance/with
+additional amplifier and using iperf for measurement...
 
-     if ((flags & AT_INTERPRETED)) {
-         if ((mode & MAY_EXEC)) {
+With the ath5k cards under bad conditions the throughput is going down below
+10 Mbits/s but with stable throughput..., with the ath9k card and the exact=
+ same
+setup there are short periods with good throughput values and periods up to=
+ 10-15
+seconds with 0 Mbits/s...
 
-   so I don't understand why you'd use that strance thing.
+The actual in-door/laboratory test setup is a wired connection between the
+two wifi systems (with fixed attenuators in between) and an adjustable nois=
+e/
+disturb signal induced by a signal generator...
 
- - why is this an AT_INTERPRETED flag? I don't understand the name, I
-don't understand the semantics.
+Without this patch the 0 Mbits/s periods from the field test are reproducib=
+le,
+with this patch applied we see a more or less stable throughput of 1-5 Mbit=
+s/s...
 
-   Why would that flag have the same value as AT_SYMLINK_FOLLOW?
+Regards,
+Peter
 
-   Why isn't this just a new _mode_ bit, which is what I feel is
-sensible? We only use three bits (with no bits set meaning
-"existence"), so we have *tons* of bits left in that namespace, and it
-would make much more sense to me to have
+>=20
+> -Toke
+>=20
+> > Signed-off-by: Peter Seiderer <ps.report@gmx.net>
+> > ---
+> >  net/mac80211/rc80211_minstrel_ht.c | 14 +++++++-------
+> >  1 file changed, 7 insertions(+), 7 deletions(-)
+> >
+> > diff --git a/net/mac80211/rc80211_minstrel_ht.c b/net/mac80211/rc80211_=
+minstrel_ht.c
+> > index 9c6ace858107..cd6a0f153688 100644
+> > --- a/net/mac80211/rc80211_minstrel_ht.c
+> > +++ b/net/mac80211/rc80211_minstrel_ht.c
+> > @@ -1436,17 +1436,17 @@ minstrel_ht_update_rates(struct minstrel_priv *=
+mp, struct minstrel_ht_sta *mi)
+> >  	/* Start with max_tp_rate[0] */
+> >  	minstrel_ht_set_rate(mp, mi, rates, i++, mi->max_tp_rate[0]);
+> > =20
+> > -	if (mp->hw->max_rates >=3D 3) {
+> > -		/* At least 3 tx rates supported, use max_tp_rate[1] next */
+> > -		minstrel_ht_set_rate(mp, mi, rates, i++, mi->max_tp_rate[1]);
+> > -	}
+> > +	/* Fill up remaining, keep one entry for max_probe_rate */
+> > +	for (; i < (mp->hw->max_rates - 1); i++)
+> > +		minstrel_ht_set_rate(mp, mi, rates, i, mi->max_tp_rate[i]);
+> > =20
+> > -	if (mp->hw->max_rates >=3D 2) {
+> > +	if (i < mp->hw->max_rates)
+> >  		minstrel_ht_set_rate(mp, mi, rates, i++, mi->max_prob_rate);
+> > -	}
+> > +
+> > +	if (i < IEEE80211_TX_RATE_TABLE_SIZE)
+> > +		rates->rate[i].idx =3D -1;
+> > =20
+> >  	mi->sta->max_rc_amsdu_len =3D minstrel_ht_get_max_amsdu_len(mi);
+> > -	rates->rate[i].idx =3D -1;
+> >  	rate_control_set_rates(mp->hw, mi->sta, rates);
+> >  }
+> > =20
+> > --=20
+> > 2.35.1 =20
 
-        #define EXECVE_OK 8
-
-    which is the same as the "group exec" bit, so it actually makes
-some kind of sense too.
-
- - related to that "I don't understand the semantics", the
-"documentation" for that thing doesn't make sense either:
-
-    +         The
-    +    main usage is for script
-    +    interpreters to enforce a policy
-    +    consistent with the kernel's one
-    +    (through sysctl configuration or LSM
-    +    policy).  */
-
-Now, what I *think* you mean is
-
- (1) user-space executable loaders want to be able to test the *same*
-policy as the kernel does for execve()
-
- (2) access(path, EXECVE_OK) will do the same permission checks as
-"execve()" would do for that path
-
- (3) if you already have the fd open, use "faccess(fd, NULL,
-F_OK_TO_EXECUTE, AT_EMPTY_PATH)"
-
- (4) maybe we want to add a flag for the "euid vs real uid", and that
-would be in the "flags" field, since that changes the actual *lookup*
-semantics
-
-Note that that (4) is something that some normal user space has wanted
-in the past too (GNU libcs has a "eaccess()" thing for "effective uid
-access").
-
-And yes, we still need to talk details:
-
- - no backwards compatibility issues, because we've happily always
-checked 'mode' for being valid, so old kernels will always return
--EINVAL.
-
- - POSIX namespace issues for EXECVE_OK means that the name probably
-needs some thinking (maybe we just need to call it __ACCESS_OK_EXECVE
-internally or something - the kernel actually doesn't even export the
-existing [FRWX]_OK values, because we "know" they map tho the usual
-"owner RWX" bits, with F being "no bit set")
-
- - I really want the exact semantics very clearly defined. I think
-it's ok to say "exact same security check as for 'execve()'", but even
-then we need to have that discussion about
-
-    (a) "what about suid bits that user space cannot react to"
-    (b) that whole "effective vs real" discussion
-
-So to recap: I'm very much ok with some access() extension, but I
-think even that very much needs clarification, and the existing patch
-is just odd in many many ways.
-
-                  Linus
