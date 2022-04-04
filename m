@@ -2,91 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD976C4167B
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:37:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 716AAC4707E
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:37:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378762AbiDDVbN (ORCPT
+        id S1382587AbiDDVba (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:31:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35358 "EHLO
+        Mon, 4 Apr 2022 17:31:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379932AbiDDSX6 (ORCPT
+        with ESMTP id S1379295AbiDDQzb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 14:23:58 -0400
-Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1B8422B20
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 11:21:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=k1; bh=DB+oqqX2BdWPTg/dtocUXs3l7PC4
-        0npL8K8kL0ZHmzQ=; b=lohcyTOHrTWVIEDzzR9KnDU0oDhuv9u0in73/MFITsOl
-        ldUu6LI1W0gEOuriBB60kN3DPEvGF5zyQKMjv4UFC/xtG9rYDGT9NY6doa0aLisL
-        9McdJh34OVe0R6C/uuh+YbIcxwoK549IxilHRB4yLXP7JGvGRrxkPA+KiF2Jx88=
-Received: (qmail 1971161 invoked from network); 4 Apr 2022 20:21:56 +0200
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 4 Apr 2022 20:21:56 +0200
-X-UD-Smtp-Session: l3s3148p1@2roINNjbrKwgAQnoAHNmALK3JllQBOZM
-Date:   Mon, 4 Apr 2022 20:21:55 +0200
-From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
-To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Cc:     Ulf Hansson <ulf.hansson@linaro.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        linux-mmc@vger.kernel.org, Pavel Machek <pavel@denx.de>,
-        linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>
-Subject: Re: [PATCH 2/2] mmc: renesas_internal_dmac: Fix typo's
-Message-ID: <Yks3Q75ZrUkXSjwz@ninjato>
-Mail-Followup-To: Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        linux-mmc@vger.kernel.org, Pavel Machek <pavel@denx.de>,
-        linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>
-References: <20220404172322.32578-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20220404172322.32578-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
+        Mon, 4 Apr 2022 12:55:31 -0400
+Received: from vps-vb.mhejs.net (vps-vb.mhejs.net [37.28.154.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2459214;
+        Mon,  4 Apr 2022 09:53:33 -0700 (PDT)
+Received: from MUA
+        by vps-vb.mhejs.net with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <mail@maciej.szmigiero.name>)
+        id 1nbPxB-0002ta-TY; Mon, 04 Apr 2022 18:53:21 +0200
+Message-ID: <a3cf781b-0b1a-0bba-6b37-12666c7fc154@maciej.szmigiero.name>
+Date:   Mon, 4 Apr 2022 18:53:16 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="z7c7psLg3iS6VUgr"
-Content-Disposition: inline
-In-Reply-To: <20220404172322.32578-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 5/8] KVM: SVM: Re-inject INT3/INTO instead of retrying the
+ instruction
+Content-Language: en-US
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Maxim Levitsky <mlevitsk@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220402010903.727604-1-seanjc@google.com>
+ <20220402010903.727604-6-seanjc@google.com>
+ <a47217da0b6db4f1b6b6c69a9dc38350b13ac17c.camel@redhat.com>
+ <YkshgrUaF4+MrrXf@google.com>
+From:   "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
+In-Reply-To: <YkshgrUaF4+MrrXf@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+>>> index 47e7427d0395..a770a1c7ddd2 100644
+>>> --- a/arch/x86/kvm/svm/svm.h
+>>> +++ b/arch/x86/kvm/svm/svm.h
+>>> @@ -230,8 +230,8 @@ struct vcpu_svm {
+>>>   	bool nmi_singlestep;
+>>>   	u64 nmi_singlestep_guest_rflags;
+>>>   
+>>> -	unsigned int3_injected;
+>>> -	unsigned long int3_rip;
+>>> +	unsigned soft_int_injected;
+>>> +	unsigned long soft_int_linear_rip;
+>>>   
+>>>   	/* optional nested SVM features that are enabled for this guest  */
+>>>   	bool nrips_enabled                : 1;
+>>
+>>
+>> I mostly agree with this patch, but think that it doesn't address the
+>> original issue that Maciej wanted to address:
+>>
+>> Suppose that there is *no* instruction in L2 code which caused the software
+>> exception, but rather L1 set arbitrary next_rip, and set EVENTINJ to software
+>> exception with some vector, and that injection got interrupted.
+>>
+>> I don't think that this code will support this.
+> 
+> Argh, you're right.  Maciej's selftest injects without an instruction, but it doesn't
+> configure the scenario where that injection fails due to an exception+VM-Exit that
+> isn't intercepted by L1 and is handled by L0.  The event_inj test gets the coverage
+> for the latter, but always has a backing instruction.
 
---z7c7psLg3iS6VUgr
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Still reviewing the whole patch set, but want to clear this point quickly:
+The selftest does have an implicit intervening NPF (handled by L0) while
+injecting the first L1 -> L2 event.
 
-
-> -	/* This DMAC cannot handle if buffer is not 128-bytes alignment */
-> +	/* This DMAC cannot handle if buffer is not 128-bytes aligned */
-
-Well, as we are here now, I think this can be further improved.
-
-
---z7c7psLg3iS6VUgr
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmJLNz8ACgkQFA3kzBSg
-KbYEJxAAgE3tWV3U+f4TTD+KxfEn+jkr4asi2WSlwCxNMIJ3tQJ1VMrQzRAcU7S9
-nFzV/FPLtE+Tz2etKMfQ6S/sF+nl85sA/KL7FxC/pycOjN5CRAT1JpkLuVUaZeNx
-ZaLWoVSCd3sEyKjkRWkOlZIH3nmIbc9/t7eMf3ra8ZyWektqy5G8gLo/IL4P8+y2
-YX8ZDCD7wrA7mHnCjx6lNc20InEAdmfqB5nFHIoLxD6+HaDxuWlwkI2l2NpADwkb
-xM0O9e21nJs0LckiBppmOka5uEBqMRRtsGpRq0vloHDnyURq2xv/Qa9mFmam2CXM
-UniXvARbZ0hoZymwJ0rUA1BDSNoTtdyO72urAEt4RqhxpXpAw09h4n/Lu9dXh+NF
-RFzehHeCmmqTY/Otq0ADbnKccLrjZvfvwPqynMBHRcKY9b6MkY5Z5kE/mFkUFN8J
-fhG9TLY7xHz/nXDCXjhDtNyxPjT1Eldp924STlqJPBjjEueckjNfy5p38ET8RxDZ
-415PVK/E3rzuxLnBFSd0yUE1Zhwb93jLd4KDy6xILFSmw8R6Z58pyMBr3QsNLNjZ
-S+gWLvg/LwLvZLPMQ7JwE15RhHsLaiHFD73VT6qPIWH/TB18pXmWIg3IrZr+2+Ac
-szhLdZv35LfVSybUITCqJpvnOQWng1HlvtuRZ1xgjBjklDax64E=
-=gpu9
------END PGP SIGNATURE-----
-
---z7c7psLg3iS6VUgr--
+Thanks,
+Maciej
