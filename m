@@ -2,120 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C345FC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:08:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92793C352A7
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:08:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381367AbiDDWIO (ORCPT
+        id S1382028AbiDDWJJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 18:08:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50820 "EHLO
+        Mon, 4 Apr 2022 18:09:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379837AbiDDSQA (ORCPT
+        with ESMTP id S1380675AbiDDU6p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 14:16:00 -0400
-Received: from mail-yb1-f180.google.com (mail-yb1-f180.google.com [209.85.219.180])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FF8A3EA8F;
-        Mon,  4 Apr 2022 11:14:03 -0700 (PDT)
-Received: by mail-yb1-f180.google.com with SMTP id j2so19249419ybu.0;
-        Mon, 04 Apr 2022 11:14:03 -0700 (PDT)
+        Mon, 4 Apr 2022 16:58:45 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C62430F6D;
+        Mon,  4 Apr 2022 13:56:49 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id bg10so22574945ejb.4;
+        Mon, 04 Apr 2022 13:56:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=bVlKvULZm2JgZ5AGytzLrLB0CSLrK0ggDRTo65+yxyA=;
+        b=ku1Mni2YP6skEb4UzKwM1qgc933zwKLIlMM21YZAd7k4Ios0mzpOc/rIaiQVjhFQSY
+         G+txssoqd3A6QKy5AZVACJTlGPSO1le+tQYos/vc/E2PB8bCCueGVPQ5Scvt5bZZ0s2f
+         I52BoNzvPo67Aqv6eXqqyFzU1vQDqrs2VWVcVapC6o/pGzwkb1H3txizNNHwVD4d6ScG
+         2eIDS0ScxBnD2FZzrF1d1lKbTPDJ8/l3KKd8gewI19+L9UviMfXxa0WaQTj9+PHYcB7I
+         7cJb+/UH9X0jvg07Ut3LmEkLNSOS7IFE/S9dHP7d26coaZhJq40PwzaU1UKeGEFNTonV
+         YiIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=VwHSUD6VUk1+NHBKnrS20gEcYVbH13xq7tQUR/JhwtI=;
-        b=uxXwz462nDHL9H4S23fQk4nA3pYOvJipgRNUZsONr35hK4E95Q2rW+3X5POPFTvpS8
-         k+p6Kgi2UCdEDTNfH/ULwhTZnDlLPXLy0/DvBgl2XzqeSBJxzT1OmF2s/23QyQ3MC9WJ
-         E9iEb1pFeH3vW/DpD5RYzcxZpuybdCl+6/TWs3A5YoJRijl7To+t9DvscqnG+7mP2Fmh
-         kVC7myK1V6YJmnb/LpNRTZDT2m66UxnuZIm3Ua9FypIPCXoFhRtWj7L5YsZVRv3jgwpb
-         9gIPc1vSq53oyx8uUvObKBvUTSsWHYvVWZ2kcOxHKzwZp6PdKP1DRukX1bdJEK2lIb/a
-         GTOg==
-X-Gm-Message-State: AOAM530lU7IorsfAxetoDgAlO0ZQ/yIkG9NJS0eKzKYINDhWAmOHPSk2
-        c8Ufu8yPjaZoxmc2AoU+ywWtKncbfLzvvVegnZmmiC/5IuM=
-X-Google-Smtp-Source: ABdhPJx0SLx3DhI+llrFMerwvLB50TYDoOAuIhNbaiF8shFY+nPZtKAy1GbxINWtrFXBVlb54ABU4pOsrncrwgXXNHU=
-X-Received: by 2002:a05:6902:352:b0:63e:94c:883c with SMTP id
- e18-20020a056902035200b0063e094c883cmr929660ybs.365.1649096042539; Mon, 04
- Apr 2022 11:14:02 -0700 (PDT)
+        bh=bVlKvULZm2JgZ5AGytzLrLB0CSLrK0ggDRTo65+yxyA=;
+        b=ADpGwSD2J3Ly+6ODxHl337T+g8oWZTx2PZ3zU49l6o/xvzRODv9nx9nQV+abr+jPK1
+         4QgB1M0hR+TJfiCil8X6v+le+V+njcTlHPlXbj+nA6716xVsQTlEXW1j8GrE1Ex7hmXV
+         BAqxTavkO759OTbrW6hw66hWZqz6TfRQiCpm0pCwfOkyLWd+NAg1RmFs0WFGi9tnyLBk
+         sT4Y/dHaPudG7t/kX1chw8OURNqnuWm8lX3n8Z8WmBPRsXL2Qrg7tetTEz58Cz3o+VqN
+         HjQ12vjDbhJpdR61SLFixyEd31HkkoberI2vJKeVogTwj0QkUk3+T7xGOOTZLrOVrCx1
+         9N6g==
+X-Gm-Message-State: AOAM532p0QLx0Om0oA3qug+ZlJ/gCGkAqDEjIGu6xPgI3hcu5ix33ik9
+        X65GOOYNZ8mAVMLJISe0Kde6e+u6wL4RnYTQ/ClAfvlb7Vc=
+X-Google-Smtp-Source: ABdhPJxR6ykDRFXeBPhlCfq09GQEDxUi37N3Qk4mgFJMv7QLL7sMtSVvzSM8nSllVj9W6nUE0impfg7PMyukPyB4+IQ=
+X-Received: by 2002:a17:906:f75a:b0:6e6:e3f1:c946 with SMTP id
+ jp26-20020a170906f75a00b006e6e3f1c946mr67964ejb.676.1649105807881; Mon, 04
+ Apr 2022 13:56:47 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220403062322.3168-1-akihiko.odaki@gmail.com>
-In-Reply-To: <20220403062322.3168-1-akihiko.odaki@gmail.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Mon, 4 Apr 2022 20:13:51 +0200
-Message-ID: <CAJZ5v0gaRr-r8VFCEGSP1nTX0CwrOi35DXZB5Z8A9tiLufNxPg@mail.gmail.com>
-Subject: Re: [PATCH] Revert "ACPI: processor: idle: Only flush cache on
- entering C3"
-To:     Akihiko Odaki <akihiko.odaki@gmail.com>
-Cc:     "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Kuppuswamy Sathyanarayanan <knsathya@kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+References: <Yib9F5SqKda/nH9c@infradead.org> <CAK8P3a1dUVsZzhAe81usLSkvH29zHgiV9fhEkWdq7_W+nQBWbg@mail.gmail.com>
+ <YkmWh2tss8nXKqc5@infradead.org> <CAK8P3a0QdFOJbM72geYTWOKumeKPSCVD8Nje5pBpZWazX0GEnQ@mail.gmail.com>
+ <CAMo8BfKgn0T5RtUTb89fPvygNJJYLy7r1=RZTmTTm=jiDfx1hQ@mail.gmail.com>
+ <CAK8P3a0J1--WSyWY+TptFa0nn5d-mOxapadCE1csGRkfhSPbVw@mail.gmail.com>
+ <CAMo8BfLT8vMw3aGQPs1+9ry7W63SQphmDc4Tt4A3JvADHJhxiQ@mail.gmail.com>
+ <CAK8P3a3iFb+ZacZ40d8PC_xcJpLVFXT0Qc-oYEZNkFqXdsfNZw@mail.gmail.com> <CAK8P3a1goN3c772xiFtz13kHZs0XEDSxfXX=ub7OH3S98Mddsw@mail.gmail.com>
+In-Reply-To: <CAK8P3a1goN3c772xiFtz13kHZs0XEDSxfXX=ub7OH3S98Mddsw@mail.gmail.com>
+From:   Max Filippov <jcmvbkbc@gmail.com>
+Date:   Mon, 4 Apr 2022 13:56:36 -0700
+Message-ID: <CAMo8BfJ5oqq3DXGf31uy8ab01EXqfzsO8hA2Tia=F1fBGiznKw@mail.gmail.com>
+Subject: Re: [RFC PULL] remove arch/h8300
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Christoph Hellwig <hch@infradead.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Tony Luck <tony.luck@intel.com>,
-        "the arch/x86 maintainers" <x86@kernel.org>
+        linux-arch <linux-arch@vger.kernel.org>,
+        "moderated list:H8/300 ARCHITECTURE" 
+        <uclinux-h8-devel@lists.sourceforge.jp>,
+        "open list:TENSILICA XTENSA PORT (xtensa)" 
+        <linux-xtensa@linux-xtensa.org>,
+        Linux-sh list <linux-sh@vger.kernel.org>,
+        linux-m68k <linux-m68k@lists.linux-m68k.org>,
+        Greg Ungerer <gerg@linux-m68k.org>,
+        Damien Le Moal <damien.lemoal@wdc.com>,
+        linux-riscv <linux-riscv@lists.infradead.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Apr 3, 2022 at 8:25 AM Akihiko Odaki <akihiko.odaki@gmail.com> wrote:
->
-> This reverts commit 87ebbb8c612b1214f227ebb8f25442c6d163e802.
->
-> ACPI processor power states can be transitioned in two distinct
-> situations: 1. when CPU goes idle and 2. before CPU goes offline
-> ("playing dead") to suspend or hibernate. Case 1 is handled by
-> acpi_idle_enter or acpi_idle_enter_s2idle. Case 2 is handled by
-> acpi_idle_play_dead.
->
-> It is necessary to flush CPU caches in case 2 even if it is not
-> required to transit ACPI processor power states as CPU will go
-> offline soon. However, the reverted commit incorrectly removed CPU
-> cache flushing in such a condition.
+On Mon, Apr 4, 2022 at 12:44 PM Arnd Bergmann <arnd@arndb.de> wrote:
+> Let me know if I need to enable additional options to get a compiler
+> that works for all xtensa targets. Usually the --enable-targets=all
+> is meant to be sufficient.
 
-I think what you mean is that the CPU cache must always be flushed in
-acpi_idle_play_dead(), regardless of the target C-state that is going
-to be requested, because this is likely to be part of a CPU offline
-procedure or preparation for entering a system-wide sleep state and
-the stale cache contents may lead to problems going forward, for
-example when the CPU is taken back online.
+This is not possible with the current design of the xtensa toolchain port.
+There's an effort to make switching between the core configurations easy
+(without the whole toolchain rebuild:
+ https://github.com/jcmvbkbc/xtensa-dynconfig
+ https://github.com/jcmvbkbc/gcc-xtensa/tree/xtensa-dynconfig
+ https://github.com/jcmvbkbc/binutils-gdb-xtensa/tree/xtensa-plugin-env ),
+but it still involves building plugins for the parts of the toolchain
+for each new xtensa core.
 
-If so, I will put the above information into the patch changelog.
-
-> In fact, it made resuming from
-> suspend-to-RAM occasionally fail on Lenovo ThinkPad C13 Yoga.
-
-So this probably means that resume from suspend-to-RAM occasionally
-fails on Lenovo ThinkPad C13 Yoga and reverting the commit in question
-fixes this problem.  Is that correct?
-
-> Signed-off-by: Akihiko Odaki <akihiko.odaki@gmail.com>
-> ---
->  drivers/acpi/processor_idle.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
->
-> diff --git a/drivers/acpi/processor_idle.c b/drivers/acpi/processor_idle.c
-> index f8e9fa82cb9b..05b3985a1984 100644
-> --- a/drivers/acpi/processor_idle.c
-> +++ b/drivers/acpi/processor_idle.c
-> @@ -570,8 +570,7 @@ static int acpi_idle_play_dead(struct cpuidle_device *dev, int index)
->  {
->         struct acpi_processor_cx *cx = per_cpu(acpi_cstate[index], dev->cpu);
->
-> -       if (cx->type == ACPI_STATE_C3)
-> -               ACPI_FLUSH_CPU_CACHE();
-> +       ACPI_FLUSH_CPU_CACHE();
->
->         while (1) {
->
-> --
-> 2.35.1
->
+-- 
+Thanks.
+-- Max
