@@ -2,231 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96DA6C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:23:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A6A4C43217
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:23:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380737AbiDDVV4 (ORCPT
+        id S1380803AbiDDVWF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:21:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49298 "EHLO
+        Mon, 4 Apr 2022 17:22:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379591AbiDDRnZ (ORCPT
+        with ESMTP id S1379006AbiDDQRx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 13:43:25 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1158931DE7
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 10:41:29 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id n6-20020a17090a670600b001caa71a9c4aso2632421pjj.1
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 10:41:29 -0700 (PDT)
+        Mon, 4 Apr 2022 12:17:53 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1364381A7
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 09:15:57 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id nt14-20020a17090b248e00b001ca601046a4so5519694pjb.0
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 09:15:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=gRG4DzaFxaS3i3D5Dn6lXKx0bh0DkudE7AH+todWZpo=;
-        b=cULjnfUnYWUX1Kg8zxZdjfzMD7GQL25bJU0W7pJg5yaFBuUqoHyNwMXZrfQNYHw34E
-         gAyJ8Jjc7T6oZcOQxl6EKSBqurXC8Lbcjz6DXcDiYHAdqiU9X/W4p/FlLgIeDnChPz1+
-         K20FIwaCbqf88OMjvi2m2hfEfUeVijLQcS1u7vuVzxZ7Ydo9gQiSSF++k/Ok2yEbMGKB
-         /hFAwGaCE3pHDw4nSdIwKbqwSRIQ0GrNqdvEf86f7wi3kb5MIsxGw42+92GBllJGo6Di
-         wRWqcSXeUxZrUlr7IzQXEdKQG975PgJqSVDZXWIXsvACbOE27ihyAZco2A1Xl84JlR1+
-         lWoA==
+        bh=Ng6DcmM5tFKWfxali81J0mfMImmzHiLurj6u/+uziLk=;
+        b=HXOmZE1RtYgubAH+EbMo3I6hVyTda0n3RvWQxbxKNH9WsRFKu7ffxKRotQeemfaTy+
+         WG93q2P5TZkBtIjyvteBW1gY4EKU+e3KpS9DVwKTTVZTeml5hMnQUgt3bk5gpOBLemRS
+         ZIOtol1sPS1wc9qkY9x4s4R2dIVxjC141YGfSby1pY4lS6Ms5gekCEtxaIz1pKQ9j5Pn
+         WERkByf/F8DiINZ4MxSYYF2EIUnuJRY4SDLhGN3Ftl9xIe97pX/973mh2CqajJK+ufJa
+         9DW70uFOQ0kB5ih/FliBHjPYO9oXFC0gJGaxMmUtKDB2KuLJMmUWzCV2gqV6hEECZHQ5
+         SjUQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=gRG4DzaFxaS3i3D5Dn6lXKx0bh0DkudE7AH+todWZpo=;
-        b=aRckqpOCd2MKg+pZrRSDDT7ZmU3AeO775LsYm2BY4/DYI7EZVXXwJFt8eDXQUNaA7L
-         uOKB1i5Z+fogpcMAhALVSrhfeiF4u7Rw1ueBOp3yEsQb2yNVVgJnIWLSg0B9wmSQSiCt
-         fMqGZ+APDWOame/7xDb0/BrepgHkX/0/4REx/PwvvYBnYb9ES8tcLbSJTT7EJQW7ePow
-         NF+so0K0l3hWapxD6zY5IUgwSqlZUS5FRMsf4CMiTSVv+LNUR38yY7cdtY5chd/Nm/h/
-         vrSeQKsXw/a208D7ess82fgKfOiLoRoXLCqIqhwR1Jl3Llr3Rh3Aj2KwEGqJurRsyMp5
-         ApsQ==
-X-Gm-Message-State: AOAM5328eUEffoPs1G+3lgBFr8cUvs+V7pQZb04A5R357h1Lx0BrpMhe
-        er4OB2Kvtzcj6lsuCnvp5pbbsP8L+dk=
-X-Google-Smtp-Source: ABdhPJyMZI05fy3SbjyPwUvOf+KODslEq3a0Y3XuRzUGsI83V2UmKZwOthdU6F2UIUaGckP+kXcj2w==
-X-Received: by 2002:a17:903:230a:b0:156:9c66:5cd2 with SMTP id d10-20020a170903230a00b001569c665cd2mr742397plh.57.1649094088348;
-        Mon, 04 Apr 2022 10:41:28 -0700 (PDT)
-Received: from google.com ([2620:15c:211:201:f271:5160:86de:f889])
-        by smtp.gmail.com with ESMTPSA id a38-20020a056a001d2600b004fae885424dsm13324657pfx.72.2022.04.04.10.41.26
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Ng6DcmM5tFKWfxali81J0mfMImmzHiLurj6u/+uziLk=;
+        b=WtvmYHgy8p+w5/Itw2xSb55ZRr6P7XwWc18cdMFao1OxIIOV0MyVInEbl1BDxAF34h
+         VBOLITE6tJ6vwH3yu/aBc4xSSSeAS3TumzqJn4y/L49QZ4lpweLZXqX9ol5TgwCfgCLH
+         GVwzGByn5gPy/EgTBr2iTxC4JGn8X8c4V2S8UfeyEcFCXE7eJKUkS8We6Na04Vhi1m8E
+         hBUcHE6LieRXYQ0zIpWSA6bBpKOVQtwTpAMVEJFAxfxdquapdjajtQ8FMRx2CSt0sbUq
+         7bUGOuo9EecW16JaU1jR+m4TXHcWfpbkxtHpaic7ahSQkfqw0lqUbh6vy2rV3rnQGrRx
+         62Hw==
+X-Gm-Message-State: AOAM530db+1hqbNuLKH9/HyXSmhoo2XB+Q1NniWFzh9Rt2tnvKJKDWWD
+        TzjcvbiTy4unAkbemFzHg7t06w==
+X-Google-Smtp-Source: ABdhPJw0bHkRyQrMEI8u1Kx/EMowdX9JWrk1FT5MCnF8rKx/ah4P1uTx38JgRaEc8jLyOH5+qO/ukg==
+X-Received: by 2002:a17:90b:713:b0:1c6:c8f5:6138 with SMTP id s19-20020a17090b071300b001c6c8f56138mr27342669pjz.138.1649088957115;
+        Mon, 04 Apr 2022 09:15:57 -0700 (PDT)
+Received: from p14s (S0106889e681aac74.cg.shawcable.net. [68.147.0.187])
+        by smtp.gmail.com with ESMTPSA id p4-20020a637404000000b00375948e63d6sm10641282pgc.91.2022.04.04.09.15.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 10:41:27 -0700 (PDT)
-Sender: Minchan Kim <minchan.kim@gmail.com>
-Date:   Mon, 4 Apr 2022 10:41:25 -0700
-From:   Minchan Kim <minchan@kernel.org>
-To:     Jirka Hladky <jhladky@redhat.com>, tj@kernel.org,
-        gregkh@linuxfoundation.org
-Cc:     tj@kernel.org, linux-kernel <linux-kernel@vger.kernel.org>,
-        regressions@lists.linux.dev,
-        Thorsten Leemhuis <regressions@leemhuis.info>,
-        Justin Forbes <jforbes@fedoraproject.org>
-Subject: Re: PANIC: "Oops: 0000 [#1] PREEMPT SMP PTI" starting from 5.17 on
- dual socket Intel Xeon Gold servers
-Message-ID: <YkstxbC3OfzYnSRw@google.com>
-References: <CAE4VaGDZr_4wzRn2___eDYRtmdPaGGJdzu_LCSkJYuY9BEO3cw@mail.gmail.com>
- <536eca11-b4b9-c1a8-6e6b-fcd0c339a3ec@leemhuis.info>
- <CAE4VaGBZk2NL6Tn2fGxmGMR-n8KFNqgPOktY_sQ1vjViLDNhhg@mail.gmail.com>
- <CAE4VaGB4=aCd8iDb4EduR+-5QTSgVWd5sxrnBA4e3g9dPrnuBg@mail.gmail.com>
- <YkTxox8ZQIDtojfU@google.com>
- <CAFxkdAq6r2WnwML-pPfdZiajaYZCEcUU3GrXW=+wsA7CxGnJdQ@mail.gmail.com>
- <CAE4VaGBchOMWeHQ8GKiGFv_aCaNGLEvSdLWXZTpE+qC=0bgM3A@mail.gmail.com>
- <YkY6W1NS+1RTw0VB@google.com>
- <CAE4VaGDAMZqjwumyvbityzEiK30=5a5vuDMjaS+UHM39R-oPRw@mail.gmail.com>
+        Mon, 04 Apr 2022 09:15:56 -0700 (PDT)
+Date:   Mon, 4 Apr 2022 10:15:54 -0600
+From:   Mathieu Poirier <mathieu.poirier@linaro.org>
+To:     Mike Leach <mike.leach@linaro.org>
+Cc:     suzuki.poulose@arm.com, coresight@lists.linaro.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        peterz@infradead.org, mingo@redhat.com, acme@kernel.org,
+        linux-perf-users@vger.kernel.org, leo.yan@linaro.org
+Subject: Re: [PATCH 00/10] coresight: Add new API to allocate trace source ID
+ values
+Message-ID: <20220404161554.GA4079910@p14s>
+References: <20220308205000.27646-1-mike.leach@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAE4VaGDAMZqjwumyvbityzEiK30=5a5vuDMjaS+UHM39R-oPRw@mail.gmail.com>
+In-Reply-To: <20220308205000.27646-1-mike.leach@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 01, 2022 at 02:04:03PM +0200, Jirka Hladky wrote:
-> > Could you decode exact source code line from the oops?
-> 
-> Yes - please see below [1].
+Good morning,
 
-Thanks.
+On Tue, Mar 08, 2022 at 08:49:50PM +0000, Mike Leach wrote:
+> The current method for allocating trace source ID values to sources is
+> to use a fixed algorithm for CPU based sources of (cpu_num * 2 + 0x10).
+> The STM is allocated ID 0x1.
+> 
+> This fixed algorithm is used in both the CoreSight driver code, and by
+> perf when writing the trace metadata in the AUXTRACE_INFO record.
+> 
+> The method needs replacing as currently:-
+> 1. It is inefficient in using available IDs.
+> 2. Does not scale to larger systems with many cores and the algorithm
+> has no limits so will generate invalid trace IDs for cpu number > 44.
+> 
+> Additionally requirements to allocate additional system IDs on some
+> systems have been seen.
+> 
+> This patch set  introduces an API that allows the allocation of trace IDs
+> in a dynamic manner.
+> 
+> Architecturally reserved IDs are never allocated, and the system is
+> limited to allocating only valid IDs.
+> 
+> Each of the current trace sources ETM3.x, ETM4.x and STM is updated to use
+> the new API.
+> 
+> perf handling is changed so that the ID associated with the CPU is read
+> from sysfs. The ID allocator is notified when perf events start and stop
+> so CPU based IDs are kept constant throughout any perf session.
+> 
+> For the ETMx.x devices IDs are allocated on certain events
+> a) When using sysfs, an ID will be allocated on hardware enable, and freed
+> when the sysfs reset is written.
+> b) When using perf, ID is allocated on hardware enable, and freed on
+> hardware disable.
+> 
+> For both cases the ID is allocated when sysfs is read to get the current
+> trace ID. This ensures that consistent decode metadata can be extracted
+> from the system where this read occurs before device enable.
+> 
+> Note: This patchset breaks backward compatibility for perf record.
+> Because the method for generating the AUXTRACE_INFO meta data has
+> changed, using an older perf record will result in metadata that
+> does not match the trace IDs used in the recorded trace data.
+> This mismatch will cause subsequent decode to fail. Older versions of
+> perf will still be able to decode data generated by the updated system.
+> 
+
+I have started looking at this set, comments to follow shortly.
+
+Thanks,
+Mathieu
 
 > 
-> > I think it's fine to attach in the reply because kernel test bot
+> Applies to coresight/next [b54f53bc11a5]
+> Tested on DB410c
 > 
-> OK. The reproducer is attached. Please unpack it and follow the
-> instructions in the README file. [2]
-
-Unfortunately, I failed to run the script in my machine.
-
+> Mike Leach (10):
+>   coresight: trace-id: Add API to dynamically assign trace ID values
+>   coresight: trace-id: Set up source trace ID map for system
+>   coresight: stm: Update STM driver to use Trace ID api
+>   coresight: etm4x: Use trace ID API to dynamically allocate trace ID
+>   coresight: etm3x: Use trace ID API to allocate IDs
+>   coresight: perf: traceid: Add perf notifiers for trace ID
+>   perf: cs-etm: Update event to read trace ID from sysfs
+>   coresight: Remove legacy Trace ID allocation mechanism
+>   coresight: etmX.X: stm: Remove unused legacy source trace ID ops
+>   coresight: trace-id: Add debug & test macros to trace id allocation
 > 
-> Thanks a lot for looking into it!
-> Jirka
+>  drivers/hwtracing/coresight/Makefile          |   2 +-
+>  drivers/hwtracing/coresight/coresight-core.c  |  64 ++---
+>  .../hwtracing/coresight/coresight-etm-perf.c  |  16 +-
+>  drivers/hwtracing/coresight/coresight-etm.h   |   3 +-
+>  .../coresight/coresight-etm3x-core.c          |  93 ++++---
+>  .../coresight/coresight-etm3x-sysfs.c         |  28 +-
+>  .../coresight/coresight-etm4x-core.c          |  63 ++++-
+>  .../coresight/coresight-etm4x-sysfs.c         |  32 ++-
+>  drivers/hwtracing/coresight/coresight-etm4x.h |   3 +
+>  drivers/hwtracing/coresight/coresight-priv.h  |   1 +
+>  drivers/hwtracing/coresight/coresight-stm.c   |  49 +---
+>  .../hwtracing/coresight/coresight-trace-id.c  | 255 ++++++++++++++++++
+>  .../hwtracing/coresight/coresight-trace-id.h  |  69 +++++
+>  include/linux/coresight-pmu.h                 |  12 -
+>  include/linux/coresight.h                     |   3 -
+>  tools/perf/arch/arm/util/cs-etm.c             |  12 +-
+>  16 files changed, 530 insertions(+), 175 deletions(-)
+>  create mode 100644 drivers/hwtracing/coresight/coresight-trace-id.c
+>  create mode 100644 drivers/hwtracing/coresight/coresight-trace-id.h
 > 
-> [1]
-> =============================================
-> Source code line numbers for the Oops message
-> =============================================
+> -- 
+> 2.17.1
 > 
-> 1) RIP: 0010:kernfs_remove+0x8/0x50:
-> (gdb) l *kernfs_remove+0x8
-> 0xffffffff81418588 is in kernfs_remove (fs/kernfs/kernfs-internal.h:48).
-> 43       * Return the kernfs_root @kn belongs to.
-> 44       */
-> 45      static inline struct kernfs_root *kernfs_root(struct kernfs_node *kn)
-> 46      {
-> 47              /* if parent exists, it's always a dir; otherwise, @sd
-> is a dir */
-> 48              if (kn->parent)
-> 49                      kn = kn->parent;
-> 50              return kn->dir.root;
-> 51      }
-> 
-> And here are source code lines from the 5 first functions in call trace:
-> [ 8563.366280] Call Trace:
-> [ 8563.366280]  <TASK>
-> [ 8563.366280]  rdt_kill_sb+0x29d/0x350
-> [ 8563.366280]  deactivate_locked_super+0x36/0xa0
-> [ 8563.366280]  cleanup_mnt+0x131/0x190
-> [ 8563.366280]  task_work_run+0x5c/0x90
-> [ 8563.366280]  exit_to_user_mode_prepare+0x229/0x230
-> [ 8563.366280]  syscall_exit_to_user_mode+0x18/0x40
-> [ 8563.366280]  do_syscall_64+0x48/0x90
-> [ 8563.366280]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-> 
-> 2)(gdb) l *rdt_kill_sb+0x29d
-> 0xffffffff810506bd is in rdt_kill_sb
-> (arch/x86/kernel/cpu/resctrl/rdtgroup.c:2442).
-> 2437            /* Notify online CPUs to update per cpu storage and
-> PQR_ASSOC MSR */
-> 2438            update_closid_rmid(cpu_online_mask, &rdtgroup_default);
-> 2439
-> 2440            kernfs_remove(kn_info);
-> 2441            kernfs_remove(kn_mongrp);
-> 2442            kernfs_remove(kn_mondata);
-> 2443    }
-> 
-> 3)(gdb) l *deactivate_locked_super+0x36
-> 0xffffffff813650f6 is in deactivate_locked_super (fs/super.c:342).
-> 337                     /*
-> 338                      * Since list_lru_destroy() may sleep, we
-> cannot call it from
-> 339                      * put_super(), where we hold the sb_lock.
-> Therefore we destroy
-> 340                      * the lru lists right now.
-> 341                      */
-> 342                     list_lru_destroy(&s->s_dentry_lru);
-> 343                     list_lru_destroy(&s->s_inode_lru);
-> 344
-> 345                     put_filesystem(fs);
-> 346                     put_super(s);
-> 
-> 4) (gdb) l *cleanup_mnt+0x131
-> 0xffffffff813890a1 is in cleanup_mnt (fs/namespace.c:137).
-> 132             return 0;
-> 133     }
-> 134
-> 135     static void mnt_free_id(struct mount *mnt)
-> 136     {
-> 137             ida_free(&mnt_id_ida, mnt->mnt_id);
-> 138     }
-> 
-> 5) (gdb) l *task_work_run+0x5c
-> 0xffffffff8110620c is in task_work_run (./include/linux/sched.h:2017).
-> 2012
-> 2013    DECLARE_STATIC_CALL(cond_resched, __cond_resched);
-> 2014
-> 2015    static __always_inline int _cond_resched(void)
-> 2016    {
-> 2017            return static_call_mod(cond_resched)();
-> 2018    }
-> 
-> 6) (gdb) l *exit_to_user_mode_prepare+0x229
-> 0xffffffff81176d19 is in exit_to_user_mode_prepare
-> (./include/linux/tracehook.h:189).
-> 184              * This barrier pairs with
-> task_work_add()->set_notify_resume() after
-> 185              * hlist_add_head(task->task_works);
-> 186              */
-> 187             smp_mb__after_atomic();
-> 188             if (unlikely(current->task_works))
-> 189                     task_work_run();
-> 190
-> 191     #ifdef CONFIG_KEYS_REQUEST_CACHE
-> 192             if (unlikely(current->cached_requested_key)) {
-> 193                     key_put(current->cached_requested_key);
-> 
-> [2]
-> =============================================
-> Reproducer - README
-> =============================================
-> 
-> 1) HW
-> This issue seems to be platform specific. I was not able to reproduce
-> it on AMD Zen and also not on Intel Ice Lake platform.
-> I see the issue on dual socket Intel Skylake systems. Reproduced on a
-> Supermicro Super Server/X11DDW-L with 2x Xeon Gold 6126 CPU.
-
-Based on your report, kernel was crashed due to kn_mondata was NULL
-
-  rdt_kill_sb
-    rmdir_all_sub
-      ..
-      kernfs_remove(kn_mondata);
-        struct kernfs_root *root = kernfs_root(kn); <-- crashed
-
-
-Before the my patch[1], it worked like this.
-
-  rdt_kill_sb
-    rmdir_all_sub
-      ..
-      kernfs_remove(kn_mondata);
-        down_write(&kernfs_rwsem);
-          if (!kn)
-            return;
-        up_write(&kernfs_rwsem);
-
-IOW, before, kernfs_remove worked with NULL argument via just bailing
-but with the my patch[1], it doesn't work any longer.
-
-It makes me have questions for kernfs maintainers:
-
-Should kernfs_remove API support NULL parameter? If so, can we support
-it atomically without old global kernfs_rwsem?
-
-[1] 393c3714081a, kernfs: switch global kernfs_rwsem lock to per-fs lock
