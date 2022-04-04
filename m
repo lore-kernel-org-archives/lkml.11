@@ -2,129 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC002C38A2E
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:23:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96114C47081
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:23:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379891AbiDDVVL (ORCPT
+        id S1379994AbiDDVVQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:21:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50872 "EHLO
+        Mon, 4 Apr 2022 17:21:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379982AbiDDScI (ORCPT
+        with ESMTP id S1379517AbiDDRVQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 14:32:08 -0400
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D50DB27140;
-        Mon,  4 Apr 2022 11:30:11 -0700 (PDT)
-Received: by mail-pg1-x52a.google.com with SMTP id 125so717879pgc.11;
-        Mon, 04 Apr 2022 11:30:11 -0700 (PDT)
+        Mon, 4 Apr 2022 13:21:16 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D72B6E098
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 10:19:19 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id y6so8713492plg.2
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 10:19:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ubM6yE8s5KFTTdGWzLX7PCg+ggj3jnfE6br2EOILqJs=;
-        b=SEiruXEDNOqF6ZfpjU0/b1JmMYV0Clzw+Uy/WO0eaXmFX7obSz1S8eHea02bJNY94f
-         7bDnk61uTfJg/72+qdDvineNznaN8dUh5DY2LSKajhmkdEgNvEV0wOveNmsoZ2gCV+5X
-         2GaXX9cjsuXUiE8dAtp1v2MulHsgfz0AlBlQMaKsaQgWjAaFflrWLdaeTI1qRj2dnnRU
-         JzXL27CGQuhH6QQ/qrLfxIr2vAZXU1gvaS7mb9OqhxSwdbVDGSBNuocbFBfFZRDFvW2/
-         cKmGKz0r1KmVm1XhpvsBArxL7shZEtDIHy2DwlzkBKjAX71PpOoJ3t5SB+ppJr91HVfQ
-         riaA==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=uhZvWBIYSPxrHtL/UXP4sOCKqMqAgTQ5cHbzprIzUlI=;
+        b=rzW4aaUe8wJHBTW/ExLvJddgYRg1t4YhtSpQVQScLfUwXMUjqtSxLLNi52Rpn5/B9e
+         4fm33kwEjNNC8PObxWVWNVFke/MshRfAUZolEP0oeRGIcWs1cMZ8dqnCMHUOTSSXF2R+
+         Nxc7bj+ITBZAcBUCg6yEKcw6zz2obIN/RDEpBS+4YLPJ4AjvRWmQYm9ga69a1RiY4EDX
+         oGzty137ABa8Ztyvwr1RlrkdXRpVcepr1eO0rJxfGr76K3XVs6VQ3L6PIza3Wro/7erv
+         oZSbbPlhDhdZagCPj0TuB4euNN0h0a1bfMWvh80WoOYfDkjShCEByhv1m6HFJ/OrDhaM
+         E/NQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ubM6yE8s5KFTTdGWzLX7PCg+ggj3jnfE6br2EOILqJs=;
-        b=0UKacWHuEh1rcTSo0nbVFr8KXO7DAshuNO6PUwW5ZqxS47ENz3DM1ysqjjUbrnntlk
-         NzDp1UNVz7w7qI+iyx5UerHJ9Vmt2CO5WV99F+8KSHBNe9sBwMZP/3Hv9o9px05B42n8
-         Fa0nw/Pkzamhxu2jXpdOYcpl+uSq9GwHK8mpZlHQLUJnGLCYjsJ5l+pN0BlKqjVAQ3yD
-         fe1i4GUALqxn8EOhN/G8NAeWsEb4TyK4XDLUvNDoxbUSWS7VdfoM8cb/ZpYD5T7CtQ6s
-         vyiXOyzOnDUoVjZMmPo6TcFe3Av3kC8lOgCTDsS8avoUCngFPEwJIWegaav1D+yM8pZk
-         3QPg==
-X-Gm-Message-State: AOAM532hsbBvDSNf/J10Ngb/zmnn6JPcECI+y0JBKxBiEuafTgv2NNRt
-        JQrKWtJKeFVQby0T5qwBTBB94hAMmxY=
-X-Google-Smtp-Source: ABdhPJzcm1PUVP1ZJTdIm+DBbSl2kycenvTsaA10TaAEjxQt+4tzSjQ3uLkoIDR/uQlgAQQAkdcsWw==
-X-Received: by 2002:a63:cc53:0:b0:372:7d69:49fb with SMTP id q19-20020a63cc53000000b003727d6949fbmr1018357pgi.21.1649097011331;
-        Mon, 04 Apr 2022 11:30:11 -0700 (PDT)
-Received: from localhost.localdomain ([122.161.51.18])
-        by smtp.gmail.com with ESMTPSA id kk11-20020a17090b4a0b00b001c73933d803sm162656pjb.10.2022.04.04.11.30.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 11:30:11 -0700 (PDT)
-From:   Kuldeep Singh <singh.kuldeep87k@gmail.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mukesh Savaliya <msavaliy@codeaurora.org>,
-        Akash Asthana <akashast@codeaurora.org>
-Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        Kuldeep Singh <singh.kuldeep87k@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        linux-arm-msm@vger.kernel.org
-Subject: [PATCH v2 2/4] dt-bindings: qcom: geni-se: Update I2C schema reference
-Date:   Mon,  4 Apr 2022 23:59:35 +0530
-Message-Id: <20220404182938.29492-3-singh.kuldeep87k@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220404182938.29492-1-singh.kuldeep87k@gmail.com>
-References: <20220404182938.29492-1-singh.kuldeep87k@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=uhZvWBIYSPxrHtL/UXP4sOCKqMqAgTQ5cHbzprIzUlI=;
+        b=pM66YnWM8SHnkgDiqATaY1RBFeNN2dFvjerTM2zOmrj2Rq5MkMu7IhigSXLm4ntf2A
+         GBvmUJCG0kTTMevSZ9mcRhY5VhnN9dKMYU/le2QisR0ZsrdYCXVrp/WA8PEX5lfttq9S
+         wQrPQK0SJJS3VTcN/Y8TJ/SnWL8p8j39qYjKMfYph/qZXtW13nQc5HztlAh6vRhiR0ZC
+         KNpG9KAdTDUBAMZBTOJ7rP/B9V/bzycf42IjucncNu0MK8ZVENoeLG4QSR/p0+Y4KWVp
+         K3MADm967jX8ozeJdk4UHJnrX0b/9N3LRnBAj0/iJSbtGXZ0nT/yF2u5fTZRtJJ8tMMO
+         4hWA==
+X-Gm-Message-State: AOAM532+9NfYQnfN3HStcPM7gM5/JCjhdxN/3YFJpD53WhHwFrinBkUn
+        i4cZYDYyWXPyXtQLKUI3hwc0XV9sA0w4WcRG8doBcA==
+X-Google-Smtp-Source: ABdhPJz50EolXnmloOFRdflV7luhmQEbXQ6TLx1sRiAzjczB5dC9hpz0y8SCGJwdMY8U2thvWleWIxvnBRXFYbPjKbA=
+X-Received: by 2002:a17:903:2351:b0:156:a562:b3f8 with SMTP id
+ c17-20020a170903235100b00156a562b3f8mr670651plh.81.1649092759112; Mon, 04 Apr
+ 2022 10:19:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220331084151.2600229-1-yosryahmed@google.com>
+ <874k3d6vuq.fsf@vajain21.in.ibm.com> <CAJD7tka1UstKYBVrie-_1CgvtaLtVD1uwgzfk5SifxW4FQbOVw@mail.gmail.com>
+ <871qyd7bif.fsf@vajain21.in.ibm.com>
+In-Reply-To: <871qyd7bif.fsf@vajain21.in.ibm.com>
+From:   Yosry Ahmed <yosryahmed@google.com>
+Date:   Mon, 4 Apr 2022 10:18:42 -0700
+Message-ID: <CAJD7tka01bKnxQuizxTN7MtHj_hYu+dSztC2fY0jUPCcvk-9JA@mail.gmail.com>
+Subject: Re: [PATCH resend] memcg: introduce per-memcg reclaim interface
+To:     Vaibhav Jain <vaibhav@linux.ibm.com>
+Cc:     Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Shakeel Butt <shakeelb@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Rientjes <rientjes@google.com>,
+        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        cgroups@vger.kernel.org, linux-doc@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>, Jonathan Corbet <corbet@lwn.net>,
+        Yu Zhao <yuzhao@google.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Wei Xu <weixugc@google.com>, Greg Thelen <gthelen@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We now have geni based QUP I2C controller binding in place as
-dt-bindigs/i2c/qcom,i2c-geni-qcom.yaml similar to other controllers,
-update reference in parent schema and while at it, also remove
-properties defined for the controller from common wrapper.
-
-Signed-off-by: Kuldeep Singh <singh.kuldeep87k@gmail.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
-v2:
-- s/i2c/I2C
-- s/commown/common
-- Add Krzysztof's R-b tag
----
- .../bindings/soc/qcom/qcom,geni-se.yaml       | 26 +------------------
- 1 file changed, 1 insertion(+), 25 deletions(-)
-
-diff --git a/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.yaml b/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.yaml
-index 95fcb43675d6..e6073923e03a 100644
---- a/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.yaml
-+++ b/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.yaml
-@@ -128,31 +128,7 @@ patternProperties:
-   "i2c@[0-9a-f]+$":
-     type: object
-     description: GENI serial engine based I2C controller.
--    $ref: /schemas/i2c/i2c-controller.yaml#
--
--    properties:
--      compatible:
--        enum:
--          - qcom,geni-i2c
--
--      interrupts:
--        maxItems: 1
--
--      "#address-cells":
--        const: 1
--
--      "#size-cells":
--        const: 0
--
--      clock-frequency:
--        description: Desired I2C bus clock frequency in Hz.
--        default: 100000
--
--    required:
--      - compatible
--      - interrupts
--      - "#address-cells"
--      - "#size-cells"
-+    $ref: /schemas/i2c/qcom,i2c-geni-qcom.yaml#
- 
-   "serial@[0-9a-f]+$":
-     type: object
--- 
-2.25.1
-
+On Sun, Apr 3, 2022 at 8:50 PM Vaibhav Jain <vaibhav@linux.ibm.com> wrote:
+>
+>
+> Apologies for the delayed response,
+>
+> Yosry Ahmed <yosryahmed@google.com> writes:
+>
+> > On Fri, Apr 1, 2022 at 1:39 AM Vaibhav Jain <vaibhav@linux.ibm.com> wrote:
+> >>
+> >>
+> >> Yosry Ahmed <yosryahmed@google.com> writes:
+> >> > From: Shakeel Butt <shakeelb@google.com>
+> >> >
+> >> > Introduce an memcg interface to trigger memory reclaim on a memory cgroup.
+> >> <snip>
+> >>
+> >> > +
+> >> > +     while (nr_reclaimed < nr_to_reclaim) {
+> >> > +             unsigned long reclaimed;
+> >> > +
+> >> > +             if (signal_pending(current))
+> >> > +                     break;
+> >> > +
+> >> > +             reclaimed = try_to_free_mem_cgroup_pages(memcg,
+> >> > +                                             nr_to_reclaim - nr_reclaimed,
+> >> > +                                             GFP_KERNEL, true);
+> >> > +
+> >> > +             if (!reclaimed && !nr_retries--)
+> >> > +                     break;
+> >> > +
+> >> > +             nr_reclaimed += reclaimed;
+> >>
+> >> I think there should be a cond_resched() in this loop before
+> >> try_to_free_mem_cgroup_pages() to have better chances of reclaim
+> >> succeding early.
+> >>
+> > Thanks for taking the time to look at this!
+> >
+> > I believe this loop is modeled after the loop in memory_high_write()
+> > for the memory.high interface. Is there a reason why it should be
+> > needed here but not there?
+> >
+>
+> memory_high_write() calls drain_all_stock() atleast once before calling
+> try_to_free_mem_cgroup_pages(). This would drain all percpu stocks
+> for the given memcg and its descendents, giving a high chance
+> try_to_free_mem_cgroup_pages() to succeed quickly. Such a functionality
+> is missing from this patch.
+>
+> Adding a cond_resched() would atleast give chance to other processess
+> within the memcg to run and make forward progress thereby making more
+> pages available for reclaim.
+>
+> Suggestion is partly based on __perform_reclaim() issues a cond_resche()
+> as it may get called repeatedly during direct reclaim path.
+>
+As Michal pointed out, there is already a call to cond_resched() in
+shrink_node_memcgs().
+>
+> >> <snip>
+> >>
+> >> --
+> >> Cheers
+> >> ~ Vaibhav
+> >
+>
+> --
+> Cheers
+> ~ Vaibhav
