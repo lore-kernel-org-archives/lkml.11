@@ -2,53 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CC5AC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 15:59:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA4B5C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 16:01:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378799AbiDDQB2 (ORCPT
+        id S1378811AbiDDQDR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 12:01:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60772 "EHLO
+        Mon, 4 Apr 2022 12:03:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242759AbiDDQB0 (ORCPT
+        with ESMTP id S1378808AbiDDQCq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 12:01:26 -0400
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C66401AD85;
-        Mon,  4 Apr 2022 08:59:28 -0700 (PDT)
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id AB6CB68AFE; Mon,  4 Apr 2022 17:59:24 +0200 (CEST)
-Date:   Mon, 4 Apr 2022 17:59:24 +0200
-From:   Christoph Hellwig <hch@lst.de>
-To:     Hector Martin <marcan@marcan.st>
-Cc:     Christoph Hellwig <hch@lst.de>, Sven Peter <sven@svenpeter.dev>,
-        Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@fb.com>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Rob Herring <robh+dt@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Marc Zyngier <maz@kernel.org>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org
-Subject: Re: [PATCH 6/9] nvme-apple: Add initial Apple SoC NVMe driver
-Message-ID: <20220404155924.GA9764@lst.de>
-References: <20220321165049.35985-1-sven@svenpeter.dev> <20220321165049.35985-7-sven@svenpeter.dev> <20220324061620.GA12330@lst.de> <18f3a7e6-16d1-2037-90e7-1c0b1b2fbb1c@marcan.st>
+        Mon, 4 Apr 2022 12:02:46 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5AA4A245A5;
+        Mon,  4 Apr 2022 09:00:50 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E3756D6E;
+        Mon,  4 Apr 2022 09:00:49 -0700 (PDT)
+Received: from localhost (ionvoi01-desktop.cambridge.arm.com [10.1.196.65])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 888053F73B;
+        Mon,  4 Apr 2022 09:00:49 -0700 (PDT)
+Date:   Mon, 4 Apr 2022 17:00:47 +0100
+From:   Ionela Voinescu <ionela.voinescu@arm.com>
+To:     Lukasz Luba <lukasz.luba@arm.com>
+Cc:     linux-kernel@vger.kernel.org, dietmar.eggemann@arm.com,
+        Pierre.Gondois@arm.com, viresh.kumar@linaro.org, rafael@kernel.org,
+        daniel.lezcano@linaro.org, linux-pm@vger.kernel.org,
+        mka@chromium.org, nm@ti.com, sboyd@kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, cristian.marussi@arm.com,
+        sudeep.holla@arm.com, matthias.bgg@gmail.com
+Subject: Re: [RESEND][PATCH 1/8] PM: EM: Add .get_cost() callback
+Message-ID: <YksWL2cWQDXPCuKv@arm.com>
+References: <20220321095729.20655-1-lukasz.luba@arm.com>
+ <20220321095729.20655-2-lukasz.luba@arm.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <18f3a7e6-16d1-2037-90e7-1c0b1b2fbb1c@marcan.st>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+In-Reply-To: <20220321095729.20655-2-lukasz.luba@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 12:57:33AM +0900, Hector Martin wrote:
-> The kernel hard limit is 100-character lines, not 80-character lines.
-> Maintainers for existing drivers are certainly free to stick to 80 chars
-> if they like it that way, but I don't see why we should still be
-> enforcing that for new code. See bdc48fa11e46.
+On Monday 21 Mar 2022 at 09:57:22 (+0000), Lukasz Luba wrote:
+> The Energy Model (EM) supports devices which report abstract power scale,
+> not only real Watts. The primary goal for EM is to enable the Energy Aware
+> Scheduler (EAS) for a given platform. Some of the platforms might not be
+> able to deliver proper power values. The only information that they might
+> have is the relative efficiency between CPU types.
+> 
+> Thus, it makes sense to remove some restrictions in the EM framework and
+> introduce a mechanism which would support those platforms. What is crucial
+> for EAS to operate is the 'cost' field in the EM. The 'cost' is calculated
+> internally in EM framework based on knowledge from 'power' values.
+> The 'cost' values must be strictly increasing. The existing API with its
+> 'power' value size restrictions cannot guarantee that the 'cost' will meet
+> this requirement.
+> 
+> Since the platform is missing this detailed information, but has only
+> efficiency details, introduce a new custom callback in the EM framework.
+> The new callback would allow to provide the 'cost' values which reflect
+> efficiency of the CPUs. This would allow to provide EAS information which
+> has different relation than what would be forced by the EM internal
+> formulas calculating 'cost' values. Thanks to this new callback it is
+> possible to create a system view for EAS which has no overlapping
+> performance states across many Performance Domains.
+> 
+> Signed-off-by: Lukasz Luba <lukasz.luba@arm.com>
+> ---
+>  include/linux/energy_model.h | 24 +++++++++++++++++++++++-
+>  1 file changed, 23 insertions(+), 1 deletion(-)
+> 
+> diff --git a/include/linux/energy_model.h b/include/linux/energy_model.h
+> index 9f3c400bc52d..0a3a5663177b 100644
+> --- a/include/linux/energy_model.h
+> +++ b/include/linux/energy_model.h
+> @@ -114,9 +114,30 @@ struct em_data_callback {
+>  	 */
+>  	int (*active_power)(unsigned long *power, unsigned long *freq,
+>  			    struct device *dev);
+> +
+> +	/**
+> +	 * get_cost() - Provide the cost at the given performance state of
+> +	 *		a device
+> +	 * @dev		: Device for which we do this operation (can be a CPU)
+> +	 * @freq	: Frequency at the performance state in kHz
+> +	 * @cost	: The cost value for the performance state
+> +	 *		(modified)
+> +	 *
+> +	 * In case of CPUs, the cost is the one of a single CPU in the domain.
+> +	 * It is expected to fit in the [0, EM_MAX_POWER] range due to internal
+> +	 * usage in EAS calculation.
+> +	 *
+> +	 * Return 0 on success, or appropriate error value in case of failure.
+> +	 */
+> +	int (*get_cost)(struct device *dev, unsigned long freq,
+> +			unsigned long *cost);
+>  };
+> -#define EM_DATA_CB(_active_power_cb) { .active_power = &_active_power_cb }
+>  #define EM_SET_ACTIVE_POWER_CB(em_cb, cb) ((em_cb).active_power = cb)
+> +#define EM_ADV_DATA_CB(_active_power_cb, _cost_cb)	\
+> +	{ .active_power = _active_power_cb,		\
+> +	  .get_cost = _cost_cb }
+> +#define EM_DATA_CB(_active_power_cb)			\
+> +		EM_ADV_DATA_CB(_active_power_cb, NULL)
+>  
+>  struct em_perf_domain *em_cpu_get(int cpu);
+>  struct em_perf_domain *em_pd_get(struct device *dev);
+> @@ -264,6 +285,7 @@ static inline int em_pd_nr_perf_states(struct em_perf_domain *pd)
+>  
+>  #else
+>  struct em_data_callback {};
+> +#define EM_ADV_DATA_CB(_active_power_cb, _cost_cb) { }
+>  #define EM_DATA_CB(_active_power_cb) { }
+>  #define EM_SET_ACTIVE_POWER_CB(em_cb, cb) do { } while (0)
+>  
 
-Because 100 is completely utterly unreadable if is not for individual
-lines like strings, and that is actually how Linus stated it in CodingStyle.
+Reviewed-by: Ionela Voinescu <ionela.voinescu@arm.com>
 
-Your code as-is is completely unreadable and will not go into
-drivers/nvme/ in that form.
+Thanks,
+Ionela.
+
+> -- 
+> 2.17.1
+> 
