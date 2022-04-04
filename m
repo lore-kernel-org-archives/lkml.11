@@ -2,27 +2,27 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45049C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 15:56:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0638CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 15:56:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378764AbiDDP6V (ORCPT
+        id S1378775AbiDDP6X (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 11:58:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55158 "EHLO
+        Mon, 4 Apr 2022 11:58:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351269AbiDDP6S (ORCPT
+        with ESMTP id S1347294AbiDDP6R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 11:58:18 -0400
+        Mon, 4 Apr 2022 11:58:17 -0400
 Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0067515A17;
-        Mon,  4 Apr 2022 08:56:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0EB9F140B3;
+        Mon,  4 Apr 2022 08:56:19 -0700 (PDT)
 X-IronPort-AV: E=Sophos;i="5.90,234,1643641200"; 
-   d="scan'208";a="116706764"
+   d="scan'208";a="116706761"
 Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie6.idc.renesas.com with ESMTP; 05 Apr 2022 00:56:21 +0900
+  by relmlie6.idc.renesas.com with ESMTP; 05 Apr 2022 00:56:19 +0900
 Received: from localhost.localdomain (unknown [10.226.36.204])
-        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 81701400941E;
-        Tue,  5 Apr 2022 00:56:19 +0900 (JST)
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 467014009643;
+        Tue,  5 Apr 2022 00:56:17 +0900 (JST)
 From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 To:     Sean Wang <sean.wang@mediatek.com>, Vinod Koul <vkoul@kernel.org>,
         Matthias Brugger <matthias.bgg@gmail.com>,
@@ -31,67 +31,44 @@ Cc:     linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
         Prabhakar <prabhakar.csengg@gmail.com>,
         Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: [PATCH v3 1/3] dmaengine: nbpfaxi: Use platform_get_irq_optional() to get the interrupt
-Date:   Mon,  4 Apr 2022 16:55:55 +0100
-Message-Id: <20220404155557.27316-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [PATCH v3 0/3] dmaengine: Use platform_get_irq*() variants to fetch IRQ's
+Date:   Mon,  4 Apr 2022 16:55:54 +0100
+Message-Id: <20220404155557.27316-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220404155557.27316-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-References: <20220404155557.27316-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-platform_get_resource(pdev, IORESOURCE_IRQ, ..) relies on static
-allocation of IRQ resources in DT core code, this causes an issue
-when using hierarchical interrupt domains using "interrupts" property
-in the node as this bypasses the hierarchical setup and messes up the
-irq chaining.
+Hi All,
 
-In preparation for removal of static setup of IRQ resource from DT core
-code use platform_get_irq_optional().
+This patch series aims to drop using platform_get_resource() for IRQ types
+in preparation for removal of static setup of IRQ resource from DT core
+code.
 
-There are no non-DT users for this driver so interrupt range
-(irq_res->start-irq_res->end) is no longer required and with DT we will
-be sure it will be a single IRQ resource for each index.
+Dropping usage of platform_get_resource() was agreed based on
+the discussion [0].
 
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
----
- drivers/dma/nbpfaxi.c | 14 ++++++--------
- 1 file changed, 6 insertions(+), 8 deletions(-)
+[0] https://patchwork.kernel.org/project/linux-renesas-soc/
+patch/20211209001056.29774-1-prabhakar.mahadev-lad.rj@bp.renesas.com/
 
-diff --git a/drivers/dma/nbpfaxi.c b/drivers/dma/nbpfaxi.c
-index 9c52c57919c6..a7063e9cd551 100644
---- a/drivers/dma/nbpfaxi.c
-+++ b/drivers/dma/nbpfaxi.c
-@@ -1294,7 +1294,7 @@ static int nbpf_probe(struct platform_device *pdev)
- 	struct device_node *np = dev->of_node;
- 	struct nbpf_device *nbpf;
- 	struct dma_device *dma_dev;
--	struct resource *iomem, *irq_res;
-+	struct resource *iomem;
- 	const struct nbpf_config *cfg;
- 	int num_channels;
- 	int ret, irq, eirq, i;
-@@ -1335,13 +1335,11 @@ static int nbpf_probe(struct platform_device *pdev)
- 	nbpf->config = cfg;
- 
- 	for (i = 0; irqs < ARRAY_SIZE(irqbuf); i++) {
--		irq_res = platform_get_resource(pdev, IORESOURCE_IRQ, i);
--		if (!irq_res)
--			break;
--
--		for (irq = irq_res->start; irq <= irq_res->end;
--		     irq++, irqs++)
--			irqbuf[irqs] = irq;
-+		irq = platform_get_irq_optional(pdev, i);
-+		if (irq < 0 && irq != -ENXIO)
-+			return irq;
-+		if (irq > 0)
-+			irqbuf[irqs++] = irq;
- 	}
- 
- 	/*
+Changes for v3:
+* Included Ack from Andy.
+
+Cheers,
+Prabhakar
+
+Lad Prabhakar (3):
+  dmaengine: nbpfaxi: Use platform_get_irq_optional() to get the
+    interrupt
+  dmaengine: mediatek: mtk-hsdma: Use platform_get_irq() to get the
+    interrupt
+  dmaengine: mediatek-cqdma: Use platform_get_irq() to get the interrupt
+
+ drivers/dma/mediatek/mtk-cqdma.c | 12 ++++--------
+ drivers/dma/mediatek/mtk-hsdma.c | 11 ++++-------
+ drivers/dma/nbpfaxi.c            | 14 ++++++--------
+ 3 files changed, 14 insertions(+), 23 deletions(-)
+
 -- 
 2.17.1
 
