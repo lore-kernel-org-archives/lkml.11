@@ -2,95 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE1C6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 13:12:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D0D6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 13:12:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349790AbiDDNOR (ORCPT
+        id S1350031AbiDDNO1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 09:14:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33890 "EHLO
+        Mon, 4 Apr 2022 09:14:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230064AbiDDNOP (ORCPT
+        with ESMTP id S1349514AbiDDNOW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 09:14:15 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E74338798
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 06:12:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649077938; x=1680613938;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=mLeLk+TY9IQjm7utjonSWTga6wHL4SBIewhETDaa6f0=;
-  b=jy7cG2efMba/g6Q0BCKtx+/TRDSvbJYAtKcbxoYbzx509GvB9qPOmZ0O
-   j5wsYKHvoYuSbT7L+JONLB2wU3+NUS2Dq+/f+bI0b88N7F2+AyAWOjZhf
-   AexeVBsdLyJ7RPsmI1vZygUr+whwTWV4+ayiwYTvYG/s0zWe4MbMEGUfL
-   Mdl2bZXXPIWIUgMZ1C2JCSzIqIWysldmFqQBnp6Cpb3OC6UzkvmpTy5Cw
-   /86JuQCKn1yRFrmXq7XjyPsWM78mm28trSAHnS3Rm05P15JI7AlPy7+MB
-   mwoDUcVUWCR1njSVLY4NsbTiu/t9X0FfwAS60gOTMMVe/VHsOPnofCONK
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10306"; a="260208155"
-X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
-   d="scan'208";a="260208155"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 06:12:17 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
-   d="scan'208";a="721641949"
-Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
-  by orsmga005.jf.intel.com with ESMTP; 04 Apr 2022 06:12:14 -0700
-Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nbMVC-00024L-4j;
-        Mon, 04 Apr 2022 13:12:14 +0000
-Date:   Mon, 4 Apr 2022 21:11:30 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Yusuf Khan <yusisamerican@gmail.com>, linux-kernel@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, jasowang@redhat.com,
-        mikelley@microsoft.com, mst@redhat.com, gregkh@linuxfoundation.org,
-        javier@javigon.com, arnd@arndb.de, will@kernel.org,
-        axboe@kernel.dk, Yusuf Khan <yusisamerican@gmail.com>,
-        Christoph Grenz <christophg+lkml@grenz-bonn.de>
-Subject: [PATCH] drivers: ddcci: fix platform_no_drv_owner.cocci warnings
-Message-ID: <YkrugvQSZY0CDZlK@998e223f1083>
-References: <20220403230850.2986-2-yusisamerican@gmail.com>
+        Mon, 4 Apr 2022 09:14:22 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C40B3A186
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 06:12:26 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id r10so5295120eda.1
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 06:12:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=QmcosJ0awvDxQa0wViF9xFspilUbHFNWDRIzA6YRAYc=;
+        b=cHeWBkvDqpk6gM5OtQBV1AQ2CcgskHZNbkbu9z8QFjxmF7eatwS5PLikWHc6HPpmP1
+         tv12HLMBBZ80ZLDuLTPf2fSMeQa4E9z1SYlSAP1BUuoNhc37cjpX+MF1n5/t2wLVZFqL
+         d08B0tTV4SlH2quTJBbPIpJyuRNTZRiGTfIZUIVUSi2F4JADuWx51aw0qlShwH5CqVkx
+         HxYCbeW5CXmoi6ikZ8lj+hBeaR998l0j4N6m4hsnp4CeJN5rvzIPWMcdWgeY63T6Sfii
+         AjNK7qYwq35ZsDdPwQdCTRejxvJIWvkU1HQnVtyHVpyostVNC/jUu/PM9bmY1B+6X0Na
+         S40Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=QmcosJ0awvDxQa0wViF9xFspilUbHFNWDRIzA6YRAYc=;
+        b=eOTm+Z7V/3QuzqLmm6jPEDGA39+Ikb7QYly4cyNUvcfZD+E8tYFHD8/xJh8Fbq8ist
+         3i/1Fc9aV3aVja302Qk+UhP+i4I2cG91CjTy264ExH8SNtMuoXntuYOs8fOvacJuTPwx
+         aHL+w9affXXcUxCuLbJ26uaSRRC5PqqAVfhCe2Tgmv/2ucKJPkIASpTbqddS2vC7C4ae
+         kR9PNdACU8i2vV2Mf6K2uhQtnzWYrdB/bOcI4Cod4MjBT601TpQYw66bywMjvKqlms2Y
+         Dm1i3SOus5XGkLvxoAc5bUz/1OFdd1l9JQvk5v6mpJihMttvH00H1U93ARS3ZLPUnZan
+         6Nbw==
+X-Gm-Message-State: AOAM5310yrcRyb4N8B5bzwF9+SCH5geqy5MB/SBi5ucNTk7r+hMXlAy8
+        pD2mCp9Relf6nisxTLbtVwyHxWRAWk79U0W224UM4/hGrg==
+X-Google-Smtp-Source: ABdhPJzN1FMjrk/6In/zmo4L2tEiDyBdXxhGK6DXu35yVN7V5CTGZfY8ya4cR+Ra29rH8moZQ66KuIJ4MpqvVv6TUZM=
+X-Received: by 2002:a05:6402:350d:b0:419:547f:134a with SMTP id
+ b13-20020a056402350d00b00419547f134amr33564821edd.405.1649077944906; Mon, 04
+ Apr 2022 06:12:24 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220403230850.2986-2-yusisamerican@gmail.com>
-X-Patchwork-Hint: ignore
+References: <20220404022317.2449865-1-yang.yang29@zte.com.cn>
+In-Reply-To: <20220404022317.2449865-1-yang.yang29@zte.com.cn>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Mon, 4 Apr 2022 09:12:13 -0400
+Message-ID: <CAHC9VhQYJuira79eEpGFSGz=63gu7RdT3i3sSzPh_tbmMKo5vA@mail.gmail.com>
+Subject: Re: [PATCH v2] audit: do a quick exit when syscall number is less
+ than 0
+To:     cgel.zte@gmail.com
+Cc:     eparis@redhat.com, linux-audit@redhat.com, rth@twiddle.net,
+        sgrubb@redhat.com, linux-kernel@vger.kernel.org,
+        ink@jurassic.park.msu.ru, mattst88@gmail.com,
+        Yang Yang <yang.yang29@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: kernel test robot <lkp@intel.com>
+On Sun, Apr 3, 2022 at 10:23 PM <cgel.zte@gmail.com> wrote:
+>
+> From: Yang Yang <yang.yang29@zte.com.cn>
+>
+> Userspace may use syscall with syscall number less than 0 by calling
+> syscall(syscall_num,..). This kind of syscall could never be audited,
+> because auditctl requires rule with syscall number >=0. Therefore we
+> better do a quick handle no need to gohead with this situation.
+>
+> Note that auditctl may set rules auditing invalid syscall with syscall
+> number bigger than NR_syscalls, to keep this mechanism working, we do
+> no more check(context->major bigger than NR_syscalls or not).
+>
+> Signed-off-by: Yang Yang <yang.yang29@zte.com.cn>
+> Reported-by: Zeal Robot <zealci@zte.com.cn>
+> ---
+> v2:
+> - cancel checking against NR_syscalls
+> ---
+>  kernel/auditsc.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
 
-drivers/char/ddcci.c:1721:3-8: No need to set .owner here. The core will do it.
+As discussed previously, this is not something I want to merge
+upstream at this time.
 
- Remove .owner field if calls are used which set it automatically
-
-Generated by: scripts/coccinelle/api/platform_no_drv_owner.cocci
-
-CC: Yusuf Khan <yusisamerican@gmail.com>
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: kernel test robot <lkp@intel.com>
----
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Yusuf-Khan/drivers-ddcci-add-drivers-for-DDCCI/20220404-080905
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/char-misc.git 37fd83916da2e4cae03d350015c82a67b1b334c4
-:::::: branch date: 13 hours ago
-:::::: commit date: 13 hours ago
-
- drivers/char/ddcci.c |    1 -
- 1 file changed, 1 deletion(-)
-
---- a/drivers/char/ddcci.c
-+++ b/drivers/char/ddcci.c
-@@ -1718,7 +1718,6 @@ MODULE_DEVICE_TABLE(i2c, ddcci_idtable);
- static struct i2c_driver ddcci_driver = {
- 	.driver = {
- 		.name	= "ddcci",
--		.owner	= THIS_MODULE,
- 	},
- 
- 	.id_table	= ddcci_idtable,
+-- 
+paul-moore.com
