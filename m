@@ -2,132 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 614E4C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 15:44:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C5DFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 15:44:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378681AbiDDPqU (ORCPT
+        id S1349706AbiDDPq3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 11:46:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58066 "EHLO
+        Mon, 4 Apr 2022 11:46:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378213AbiDDPpx (ORCPT
+        with ESMTP id S1378649AbiDDPpy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 11:45:53 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 59FE2C5A
+        Mon, 4 Apr 2022 11:45:54 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59AB7C48
         for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 08:43:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649087036;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=mwNp5wKi4sCpy/JwyVCVYtgRdExp7ZcRrflxIJ6FsDA=;
-        b=Bz1+aDBqBy+aL0xq/nPkTd9n6TmgYi2qzdUFy2/SmP0SjBK4D07mJGIdf3SyvACvIyLnNg
-        WhX6bUAa09byNdHKenZ5yw0iZE0GhDtoNk3NIMtGJi5YIxEUhqPTVOr+fi2W1TivIJbGjy
-        SnlQKTjXf97YCt5fJJAAuMkkAWoIFKQ=
-Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
- [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-616-UbuEe_gQNzSXqCpdMwa8FA-1; Mon, 04 Apr 2022 11:43:55 -0400
-X-MC-Unique: UbuEe_gQNzSXqCpdMwa8FA-1
-Received: by mail-qt1-f199.google.com with SMTP id o15-20020ac8698f000000b002e1db0c88d0so6533527qtq.17
+Received: from mail-wr1-f49.google.com ([209.85.221.49]) by
+ mrelayeu.kundenserver.de (mreue010 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1MGiAs-1no42T2Ib4-00Drjl for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022
+ 17:43:55 +0200
+Received: by mail-wr1-f49.google.com with SMTP id r13so15097213wrr.9
         for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 08:43:55 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=mwNp5wKi4sCpy/JwyVCVYtgRdExp7ZcRrflxIJ6FsDA=;
-        b=b20huPwcK0kEzqEY6zznb2gtk4yuOqxBTJtiCUziyFcCBB+Yo4Z81lnZSejQ4UzVG7
-         WFcfTSLnP+jDp4v0HAizPgDJuNIX84NtXHq3q6gRKmKCVBG4hg0FIoXAoSIQ6t3bRyRF
-         5T24l3FVUnMcKm90oRpsOXwg64IKGsULtzcgnP6Klp/pFFi0y00xo5uKJ5cnGQ0giJI1
-         CUEyi5SQiXce3upUUqeKk+jNUGi/ON1vC04U4a8fY6qddPXUitQVOY3aAcsrb3dqKBXw
-         zNT9Ljjv0cYtWdIynDesRhIFCwWa2fhgCNPh5ljEZc4TojSx82mxu6cvXOx6klQpnCtX
-         3lbQ==
-X-Gm-Message-State: AOAM533qJbDItABRPZN4a/C3phkByFd316tjGGuRFRDI5kPrcwrhduBS
-        NKlqnoE2Q8yuqfZqAhUCS4z3mZ0yQAGyWt5jTQrSaJDLG8ghxbwWkWIs4C3Onh8+ypIYYoCFsBM
-        B87XNNRlpG+4IAY1oGbSVyLKYiyoUk9cj9uz9XZxLhGu+MYQoMtWsiZaFtEqJqQmPLte2XdM=
-X-Received: by 2002:a37:6504:0:b0:67e:3194:db63 with SMTP id z4-20020a376504000000b0067e3194db63mr289803qkb.127.1649087034567;
-        Mon, 04 Apr 2022 08:43:54 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJybZ7GEppWMSjwP+Dw95nhG/D+6y4DJjms9Bgretl3gqv1QkhXx47I5wVPODts8wMYZWebucw==
-X-Received: by 2002:a37:6504:0:b0:67e:3194:db63 with SMTP id z4-20020a376504000000b0067e3194db63mr289769qkb.127.1649087034272;
-        Mon, 04 Apr 2022 08:43:54 -0700 (PDT)
-Received: from localhost.localdomain (024-205-208-113.res.spectrum.com. [24.205.208.113])
-        by smtp.gmail.com with ESMTPSA id az17-20020a05620a171100b00680af0db559sm6776261qkb.127.2022.04.04.08.43.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 04 Apr 2022 08:43:53 -0700 (PDT)
-Subject: Re: [PATCH] drm/amd/display: cleanup extern usage in function
- definition
-To:     Harry Wentland <harry.wentland@amd.com>, sunpeng.li@amd.com,
-        Rodrigo.Siqueira@amd.com, alexander.deucher@amd.com,
-        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
-        daniel@ffwll.ch, wenjing.liu@amd.com, waynelin@amd.com,
-        Anson.Jacob@amd.com, Yu-ting.Shen@amd.com, keescook@chromium.org,
-        nicholas.kazlauskas@amd.com
-Cc:     amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-References: <20220403142137.2234322-1-trix@redhat.com>
- <513a5993-2cc5-54fa-2d6c-f4162d76ab0e@amd.com>
-From:   Tom Rix <trix@redhat.com>
-Message-ID: <462e2f2a-0cc8-2e2e-93b6-504cc12aa768@redhat.com>
-Date:   Mon, 4 Apr 2022 08:43:50 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+X-Gm-Message-State: AOAM531TEQEtQj2zKROmXjtTZkpN4oeoqCSmGYpwXaBfQDhCiRVp8rsr
+        1TCyunSyFTRRFP0qYKSpL1K2E7ZJBzBzf5EYZB8=
+X-Google-Smtp-Source: ABdhPJz95bfb2fOoyj6Q5qs/8Hlh7qY+u+ORQ+G5WmUvO6RPdGrvGR5f0giccvQ1ZWG0hhIHbPt887/HlHfq5Cxk8X8=
+X-Received: by 2002:a5d:6505:0:b0:205:9a98:e184 with SMTP id
+ x5-20020a5d6505000000b002059a98e184mr237866wru.317.1649087035187; Mon, 04 Apr
+ 2022 08:43:55 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <513a5993-2cc5-54fa-2d6c-f4162d76ab0e@amd.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+References: <202204042312.fVSuandr-lkp@intel.com>
+In-Reply-To: <202204042312.fVSuandr-lkp@intel.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Mon, 4 Apr 2022 17:43:39 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a0RmaSpWrRANa6Us162GPPhptJAhGWpKsVvW4OkfYP2eA@mail.gmail.com>
+Message-ID: <CAK8P3a0RmaSpWrRANa6Us162GPPhptJAhGWpKsVvW4OkfYP2eA@mail.gmail.com>
+Subject: Re: arch/arm/mach-iop32x/cp6.c:10:6: warning: no previous prototype
+ for 'iop_enable_cp6'
+To:     kernel test robot <lkp@intel.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>, kbuild-all@lists.01.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Ard Biesheuvel <ardb@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:kjsG/8s+OS5ZFhk/IFGS5RzVziUuQtRY/1TSQ8gXR7THz4jGH/R
+ mtdGs1EYJjStJKPxfdH2uvSHd0fBCsjSK/1qAQJhtY7iRhwG04D/KaNZdNOgF6fPBFGk9IT
+ BHeNnb4IcjFnH3DQazO0dR6Ynlvc3fs4JlHGcecZ3agHcrTzm7qR5KAjKqlpU76xglsHxtI
+ jXl6jjU3pxBbsTMlVvfAQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:NkifR6pKLVg=:fAqCh90BcqxwlZvn9F7zG9
+ OMU70y7QrQKama7/Vpvq4Xvt+mgVwsQrKrRVe337kIrNH6I4y8H6oJyJ8kliAMDtcGYVdZjzu
+ AElXTdMtcz461rLWsHq87xN29zHR4Txx4BNgPQWvC9ucjiXTxl5QtqWao5OxMkuu10ZTLIRD/
+ S2uC51HVMFxh43pSTdY550ATYJllEYCmawR4J28iFIxfHl+kvqF70v9UDjezfsqqfTEKCzGA6
+ 3yNU7/cJzl+EzYfwKHFMd4EVUndvFEnLHwNuzhC/1m60K1Z3ttpW2QtHqGRVjQ/YdM783SQAC
+ npfWFHo4PKwGX7TxntsBnY2bDYGPLeg02VuMuS7UxvChemX1hDEq6i4o/9gBCNeWqNW/Wil0d
+ eGWD4FCA3kBYpKDE5MJJwsRlJ+GdHBlPijnZ+yNE+CCR0jEQ+hOQwBIb/wnusSKgu1reHz90+
+ Haxn0+2dvuES38+y7RmMspV0Fg7DAhFFQ4qJO2a0GJ6oxw3W67+0N1gyTzYlw7KpCXmGf89u6
+ 6RyralpqWxKnxwK93q2PiaQ2sEqBqva5oM5IRzbJVBPuHFrIEWOeJcFamcKTkRpSXI124+p9F
+ 2G/sTNqigjLDHSaFOx/raXDLIPpCiIEFBWMHI+JHyoNomTr6+bu/h7Hk7b20xzWTl2Lvja9Bv
+ zTGhtja+l4Pc7aqCrI3iK+F35cBJ/wjqeVtQf/0Qcyok5sfbnF9Mg+uow8l4b+Pnf8DQ=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-On 4/4/22 8:22 AM, Harry Wentland wrote:
+On Mon, Apr 4, 2022 at 5:27 PM kernel test robot <lkp@intel.com> wrote:
 >
-> On 2022-04-03 10:21, Tom Rix wrote:
->> Smatch reports this issue
->> hdcp1_execution.c:500:29: warning: function
->>    'mod_hdcp_hdcp1_dp_execution' with external linkage
->>    has definition
->>
-> Which branch are you using?
-
-linux-next from 4/1
-
-Tom
-
+> Hi Arnd,
 >
-> I don't see the 'extern' on
-> https://gitlab.freedesktop.org/agd5f/linux/-/blob/amd-staging-drm-next/drivers/gpu/drm/amd/display/modules/hdcp/hdcp1_execution.c
+> FYI, the error/warning still remains.
 >
-> Harry
+> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+> head:   3123109284176b1532874591f7c81f3837bbdc17
+> commit: 6f5d248d05db9c4991366154f1a657a630faa583 ARM: iop32x: use GENERIC_IRQ_MULTI_HANDLER
+> date:   4 months ago
+> config: arm-randconfig-r002-20220404 (https://download.01.org/0day-ci/archive/20220404/202204042312.fVSuandr-lkp@intel.com/config)
+> compiler: arm-linux-gnueabi-gcc (GCC) 11.2.0
+> reproduce (this is a W=1 build):
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=6f5d248d05db9c4991366154f1a657a630faa583
+>         git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+>         git fetch --no-tags linus master
+>         git checkout 6f5d248d05db9c4991366154f1a657a630faa583
+>         # save the config file to linux build tree
+>         mkdir build_dir
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm SHELL=/bin/bash
 >
->
->> The storage-class-specifier extern is not needed in a
->> definition, so remove it.
->>
->> Signed-off-by: Tom Rix <trix@redhat.com>
->> ---
->>   drivers/gpu/drm/amd/display/modules/hdcp/hdcp1_execution.c | 6 +++---
->>   1 file changed, 3 insertions(+), 3 deletions(-)
->>
->> diff --git a/drivers/gpu/drm/amd/display/modules/hdcp/hdcp1_execution.c b/drivers/gpu/drm/amd/display/modules/hdcp/hdcp1_execution.c
->> index 6ec918af3bff..1ddb4f5eac8e 100644
->> --- a/drivers/gpu/drm/amd/display/modules/hdcp/hdcp1_execution.c
->> +++ b/drivers/gpu/drm/amd/display/modules/hdcp/hdcp1_execution.c
->> @@ -497,9 +497,9 @@ enum mod_hdcp_status mod_hdcp_hdcp1_execution(struct mod_hdcp *hdcp,
->>   	return status;
->>   }
->>   
->> -extern enum mod_hdcp_status mod_hdcp_hdcp1_dp_execution(struct mod_hdcp *hdcp,
->> -		struct mod_hdcp_event_context *event_ctx,
->> -		struct mod_hdcp_transition_input_hdcp1 *input)
->> +enum mod_hdcp_status mod_hdcp_hdcp1_dp_execution(struct mod_hdcp *hdcp,
->> +						 struct mod_hdcp_event_context *event_ctx,
->> +						 struct mod_hdcp_transition_input_hdcp1 *input)
->>   {
->>   	enum mod_hdcp_status status = MOD_HDCP_STATUS_SUCCESS;
->>   
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
 
+I've added a fix to the arm/fixes branch now, thanks for the report.
+
+        Arnd
