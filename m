@@ -2,102 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8630BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:43:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3802DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:43:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232328AbiDDVpA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:45:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49002 "EHLO
+        id S229507AbiDDVpW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 17:45:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380583AbiDDUh6 (ORCPT
+        with ESMTP id S1379254AbiDDQvs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 16:37:58 -0400
-Received: from mail-ot1-x333.google.com (mail-ot1-x333.google.com [IPv6:2607:f8b0:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4907625EB8
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 13:36:00 -0700 (PDT)
-Received: by mail-ot1-x333.google.com with SMTP id w17-20020a056830111100b005b22c584b93so8013035otq.11
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 13:36:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
-         :subject:to:cc;
-        bh=kg/HA+QVDj4BE3Pqgs7Z5r8nQIoSf5HmU9Y6IMHvcQ4=;
-        b=UVy/2H9XcZxhjUlG0pYTnPvMihiwPuXQOj7n67eXl88rrzpXlhojBgVlnVFlDpSu4L
-         CrXdTnuAdKochmYTpKdEYeBgTUI5N0by54eD0eZz37TSdHUNjKnsLDZK2XXj6SPQtxZ1
-         fJu3eDe/uIOk1oFujxuRIgdsO2/npaXmdg/KE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from
-         :user-agent:date:message-id:subject:to:cc;
-        bh=kg/HA+QVDj4BE3Pqgs7Z5r8nQIoSf5HmU9Y6IMHvcQ4=;
-        b=gTuxP8CBv+PIEktOrVnnE7UC8VJ9SwkiPBRqYcVRPvgu6055NyFS4C1h0+hMiRyBkb
-         XKEhnOgJixebV50eeGLU1CerReJcrmYxoCukrKTBZeyscQvzhKKCkG8fUVzWYxkacTjG
-         5FwwmhRsyN2BCuw4Wu4w6puBW+37GaEXYbEAfR0Xp+HKBtzBVozCxH+gTh4Co+/VmKRh
-         Bb8E4QVqgmch8qBx7MkNohjtuiMTq2wx1Bac8ldFKTvY8Mojbjp9Gek22xhIP8LVFZnB
-         a134eTlXnDeNQ2rFBnkCunPJgiSkA2eIZe871+9xKNYxdIpCwmXgGD+O9qeTU+PV9ors
-         k1Fw==
-X-Gm-Message-State: AOAM530df2wNgGK+nw3ErAh6TMVUV+zB+JyezrxalFwdg7zSDM1An+kc
-        6i72aw+06Q5L+gpE4wB+vLeCI5MJPa620bZvVDtT22/ZEXk=
-X-Google-Smtp-Source: ABdhPJx/Lq/nxMT92DUF/KzpDcHBIOBMR/7Ec7G1dTVR2ng1S2RYXmK8ST+N3xxfbiKsvwc+yRZ4cDCJFzXmSyQu4NM=
-X-Received: by 2002:a05:6830:61b:b0:5cc:e44:7dc3 with SMTP id
- w27-20020a056830061b00b005cc0e447dc3mr36332oti.159.1649104559265; Mon, 04 Apr
- 2022 13:35:59 -0700 (PDT)
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Mon, 4 Apr 2022 15:35:58 -0500
+        Mon, 4 Apr 2022 12:51:48 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF7082CC89;
+        Mon,  4 Apr 2022 09:49:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649090991; x=1680626991;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=IJ18KFcJREttG/DQft6OGwRLrrnlqhfaLHHGr5bKWmA=;
+  b=L+N6w165ze1JxFhWJZplB23EelTCOWl3+utnMi1WQPdTlVrBuxOnW/Hw
+   Kg1w+NUJik60AiixSMeil29/9mSd88cnbmLxXY1Uv6ldwHXfMDlOepM7D
+   Q8Wt1nnW5cxK0POReA8hQScdFwW8MofWK0gefgJG92kvj4JlPD6KV/DLw
+   KUn6xYulisVfBdc+54/Ed+GAY6R8/6K7GCTiXuqey5C51F4PpT1Zo2YVe
+   ZpZKbORMKrImgZu6ELkFeG8Y4ISHLCuQ6iNTfmjLgNxkRfnSlZeHMICDh
+   bt/doK/BB2K5qoQvdE+zdz511fffsRQLzQwPRxgntC7W9EurdB0xsc0i5
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="259390764"
+X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
+   d="scan'208";a="259390764"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:49:50 -0700
+X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
+   d="scan'208";a="523105150"
+Received: from rchatre-ws.ostc.intel.com ([10.54.69.144])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:49:50 -0700
+From:   Reinette Chatre <reinette.chatre@intel.com>
+To:     dave.hansen@linux.intel.com, jarkko@kernel.org, tglx@linutronix.de,
+        bp@alien8.de, luto@kernel.org, mingo@redhat.com,
+        linux-sgx@vger.kernel.org, x86@kernel.org
+Cc:     seanjc@google.com, kai.huang@intel.com, cathy.zhang@intel.com,
+        cedric.xing@intel.com, haitao.huang@intel.com,
+        mark.shanahan@intel.com, hpa@zytor.com,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH V3 01/30] x86/sgx: Add short descriptions to ENCLS wrappers
+Date:   Mon,  4 Apr 2022 09:49:09 -0700
+Message-Id: <5f8eaad96d85f78b80da47c2b851d6d8af9fc878.1648847675.git.reinette.chatre@intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cover.1648847675.git.reinette.chatre@intel.com>
+References: <cover.1648847675.git.reinette.chatre@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20220402175131.75bb95de@jic23-huawei>
-References: <20220324222928.874522-1-swboyd@chromium.org> <20220327155147.52e898b4@jic23-huawei>
- <CAE-0n50T9uqcB9EK-RnGXPGhd6RWdrsE9pA5FJY9yC58xd=05A@mail.gmail.com> <20220402175131.75bb95de@jic23-huawei>
-From:   Stephen Boyd <swboyd@chromium.org>
-User-Agent: alot/0.10
-Date:   Mon, 4 Apr 2022 15:35:58 -0500
-Message-ID: <CAE-0n53iU+Wne7Tvxr_ivwdqLVd3Mg-FNM7xLJ=ztsAF3QEALg@mail.gmail.com>
-Subject: Re: [PATCH v2] iio:proximity:sx9324: Fix hardware gain read/write
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org, Gwendal Grignou <gwendal@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Jonathan Cameron (2022-04-02 09:51:31)
-> On Tue, 29 Mar 2022 22:25:31 +0200
-> Stephen Boyd <swboyd@chromium.org> wrote:
->
-> > Quoting Jonathan Cameron (2022-03-27 07:51:47)
-> > > On Thu, 24 Mar 2022 15:29:28 -0700
-> > > Stephen Boyd <swboyd@chromium.org> wrote:
-> > >
-> > > > There are four possible gain values according to 'sx9324_gain_vals[]':
-> > > >
-> > > >       1, 2, 4, and 8
-> > > >
-> > > > The values are off by one when writing and reading the register. The
-> > > > bits should be set according to this equation:
-> > > >
-> > > >       ilog2(<gain>) + 1
-> > > >
-> > > > so that a gain of 8 is 0x3 in the register field and a gain of 4 is 0x2
-> > > > in the register field, etc
-> > >
-> > > Example seems wrong...
-> > >
-> > > ilog2(8) + 1 = 3 + 1 = 0x4
-> > > ilog2(4) + 1 = 2 + 1 = 0x3
-> > > ilog2(2) + 1 = 1 + 1 = 0x2
-> > > ilog2(1) + 1 = 0 + 1 = 0x1
-> > >                        0x0 reserved.
-> > >
-> > > or have I misunderstood?
-> >
-> > Nope. I hit the wrong key but your table is correct. Can you fix it when
-> > applying?
->
-> Done and applied to the fixes-togreg branch of iio.git but I haven't pushed
-> it out yet as I want to rebase that tree on rc1 when it comes out.
->
-> After that, please take a quick look check I didn't mess up.
->
+The SGX ENCLS instruction uses EAX to specify an SGX function and
+may require additional registers, depending on the SGX function.
+ENCLS invokes the specified privileged SGX function for managing
+and debugging enclaves. Macros are used to wrap the ENCLS
+functionality and several wrappers are used to wrap the macros to
+make the different SGX functions accessible in the code.
 
-Thanks. Looks good.
+The wrappers of the supported SGX functions are cryptic. Add short
+descriptions of each as a comment.
+
+Suggested-by: Dave Hansen <dave.hansen@linux.intel.com>
+Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
+---
+No changes since V2
+
+Changes since V1:
+- Fix commit message and subject to not refer to descriptions as
+"changelog descriptions" or "shortlog descriptions" (Jarkko).
+- Improve all descriptions with guidance from Jarkko.
+
+ arch/x86/kernel/cpu/sgx/encls.h | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
+
+diff --git a/arch/x86/kernel/cpu/sgx/encls.h b/arch/x86/kernel/cpu/sgx/encls.h
+index fa04a73daf9c..0e22fa8f77c5 100644
+--- a/arch/x86/kernel/cpu/sgx/encls.h
++++ b/arch/x86/kernel/cpu/sgx/encls.h
+@@ -136,57 +136,71 @@ static inline bool encls_failed(int ret)
+ 	ret;						\
+ 	})
+ 
++/* Initialize an EPC page into an SGX Enclave Control Structure (SECS) page. */
+ static inline int __ecreate(struct sgx_pageinfo *pginfo, void *secs)
+ {
+ 	return __encls_2(ECREATE, pginfo, secs);
+ }
+ 
++/* Hash a 256 byte region of an enclave page to SECS:MRENCLAVE. */
+ static inline int __eextend(void *secs, void *addr)
+ {
+ 	return __encls_2(EEXTEND, secs, addr);
+ }
+ 
++/*
++ * Associate an EPC page to an enclave either as a REG or TCS page
++ * populated with the provided data.
++ */
+ static inline int __eadd(struct sgx_pageinfo *pginfo, void *addr)
+ {
+ 	return __encls_2(EADD, pginfo, addr);
+ }
+ 
++/* Finalize enclave build, initialize enclave for user code execution. */
+ static inline int __einit(void *sigstruct, void *token, void *secs)
+ {
+ 	return __encls_ret_3(EINIT, sigstruct, secs, token);
+ }
+ 
++/* Disassociate EPC page from its enclave and mark it as unused. */
+ static inline int __eremove(void *addr)
+ {
+ 	return __encls_ret_1(EREMOVE, addr);
+ }
+ 
++/* Copy data to an EPC page belonging to a debug enclave. */
+ static inline int __edbgwr(void *addr, unsigned long *data)
+ {
+ 	return __encls_2(EDGBWR, *data, addr);
+ }
+ 
++/* Copy data from an EPC page belonging to a debug enclave. */
+ static inline int __edbgrd(void *addr, unsigned long *data)
+ {
+ 	return __encls_1_1(EDGBRD, *data, addr);
+ }
+ 
++/* Track that software has completed the required TLB address clears. */
+ static inline int __etrack(void *addr)
+ {
+ 	return __encls_ret_1(ETRACK, addr);
+ }
+ 
++/* Load, verify, and unblock an EPC page. */
+ static inline int __eldu(struct sgx_pageinfo *pginfo, void *addr,
+ 			 void *va)
+ {
+ 	return __encls_ret_3(ELDU, pginfo, addr, va);
+ }
+ 
++/* Make EPC page inaccessible to enclave, ready to be written to memory. */
+ static inline int __eblock(void *addr)
+ {
+ 	return __encls_ret_1(EBLOCK, addr);
+ }
+ 
++/* Initialize an EPC page into a Version Array (VA) page. */
+ static inline int __epa(void *addr)
+ {
+ 	unsigned long rbx = SGX_PAGE_TYPE_VA;
+@@ -194,6 +208,7 @@ static inline int __epa(void *addr)
+ 	return __encls_2(EPA, rbx, addr);
+ }
+ 
++/* Invalidate an EPC page and write it out to main memory. */
+ static inline int __ewb(struct sgx_pageinfo *pginfo, void *addr,
+ 			void *va)
+ {
+-- 
+2.25.1
+
