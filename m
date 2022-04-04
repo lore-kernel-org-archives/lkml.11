@@ -2,231 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA02CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 13:47:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57CECC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 13:49:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359802AbiDDNtr (ORCPT
+        id S1358692AbiDDNvC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 09:49:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46498 "EHLO
+        Mon, 4 Apr 2022 09:51:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358744AbiDDNtE (ORCPT
+        with ESMTP id S1356949AbiDDNvA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 09:49:04 -0400
-Received: from EUR03-DB5-obe.outbound.protection.outlook.com (mail-eopbgr40040.outbound.protection.outlook.com [40.107.4.40])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 568273EA8F;
-        Mon,  4 Apr 2022 06:46:48 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kwG5rAht2xuJtYFtS/8ejETARX+Y0pMa6/5t1qWnyFqFtjOwIUH41EJpjHdUH/n4+VeE4DmCqOS12LtgkY+K0h6D7XRKwZguo0k7q2a5G78mmufPoRP6JTcfZEgZJPpvOPWFqk7KIWIezHPGzEMNYMcGPHcSwwZAtgxlg/qv/s69W84wCw43jZdnekOT8adZeGBdoNtDhbW7/MhhE9OjmKR+ol7gNrRPV6OhUbT2zBmDLC02+2mAXbYH8XELtjnoCOliexYF8wYpe4cfO0NU60GA4bzmPokUJbq9FnH82+M4mRdJhrXpeSQVzISoqICZ4PPAgMN4m5lTbvdjeKKEOw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=jrvOL/YvVa8Wzn+G/TTec9zgBEcDk3Bpou98FWiloWk=;
- b=kkofMr50ansDeO1rtnDM2YXfCQuNC+AXnpsbcA6Kp2b1Xu1W+pdc3pEyqdhyXejCQY1LOBphh9KfxgY01dLSwZxXVVSSAO41KpdajFvIBM0JV9QoSfuN3+cSab9uu2CXYDTjG7Y2zqvSZPkIG40I4Myg153+g3CTOxmtcv/gePAHjrL/brhqX2k+wKqL6zNQwwoaRdKO7KcCNckbEz19FBcc9BO/kFxnD+OhP/CU1aD0bq9flJT6M/vkdgejk4OWMGBC6Ac95CygRznuAP+YKK8LFWHjKB/zKmUNXFdWl7T1Bzfxur7ld5mdIHtpqucltK+Jd1DUAxvraJS6+GMtaA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jrvOL/YvVa8Wzn+G/TTec9zgBEcDk3Bpou98FWiloWk=;
- b=NWwtucYdRkaInJaeFB6R8At5cHo7sTYXGME5YoAA/ns1LEpqZMq6Hilzf2kKOTOksFFjxOTfD8iyM/K6r+q99C8df5zsG5I3PQz6eZ3Vc6WdHi/A6FtopBFURUBZc8d7cxVWVW+lOPsypllRivFK+f+SdqbO+1vXFD/ODDy6SVk=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB4688.eurprd04.prod.outlook.com (2603:10a6:803:6a::30)
- by PAXPR04MB9218.eurprd04.prod.outlook.com (2603:10a6:102:221::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Mon, 4 Apr
- 2022 13:46:41 +0000
-Received: from VI1PR04MB4688.eurprd04.prod.outlook.com
- ([fe80::a9d1:199:574b:502f]) by VI1PR04MB4688.eurprd04.prod.outlook.com
- ([fe80::a9d1:199:574b:502f%6]) with mapi id 15.20.5123.031; Mon, 4 Apr 2022
- 13:46:41 +0000
-From:   Abel Vesa <abel.vesa@nxp.com>
-To:     Rob Herring <robh@kernel.org>, Dong Aisheng <aisheng.dong@nxp.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Shawn Guo <shawnguo@kernel.org>
-Cc:     Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        devicetree@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>, Jacky Bai <ping.bai@nxp.com>
-Subject: [PATCH v5 5/8] arm64: dts: freescale: Add lsio subsys dtsi for imx8dxl
-Date:   Mon,  4 Apr 2022 16:46:06 +0300
-Message-Id: <20220404134609.2676793-6-abel.vesa@nxp.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220404134609.2676793-1-abel.vesa@nxp.com>
-References: <20220404134609.2676793-1-abel.vesa@nxp.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: VI1PR0102CA0021.eurprd01.prod.exchangelabs.com
- (2603:10a6:802::34) To VI1PR04MB4688.eurprd04.prod.outlook.com
- (2603:10a6:803:6a::30)
+        Mon, 4 Apr 2022 09:51:00 -0400
+Received: from gateway31.websitewelcome.com (gateway31.websitewelcome.com [192.185.144.96])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 181EE29829
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 06:49:04 -0700 (PDT)
+Received: from cm12.websitewelcome.com (cm12.websitewelcome.com [100.42.49.8])
+        by gateway31.websitewelcome.com (Postfix) with ESMTP id 8A2E5129A4D
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 08:49:03 -0500 (CDT)
+Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
+        by cmsmtp with SMTP
+        id bN4pnuLj19AGSbN4pnXqco; Mon, 04 Apr 2022 08:49:03 -0500
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=roeck-us.net; s=default; h=Content-Transfer-Encoding:MIME-Version:
+        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=uf3+N2Jmm9SwnY5qhYETfam054vBqdkvozLaomc7hz0=; b=1ZT/r09h8QC0WMF3tvhhrgVcmJ
+        IUkUaJYBk+5iwqB4YLez8EuFK7D6NweQ+hnWA1uW9U4CTT4OSz2ARj4FjZpruhiLhBzGx6jHb+kfv
+        Rg80cdduBZX7QjW8sZGpQ0AtN7GRxjtBHUD+Y5t7EA7Ub9CZb2BODO7XtH/eZAWV+9ZkK1vegt1vR
+        BMDdGBAjujj01kFD3nzAmn8cTIRzFjWKGCElTtIZVVQqaQVdp3QYASA4bSnHzSicij9HoAItIYFo5
+        SO3vHDOYzquB+tfXiX2NUpqgU+/jgQr5sToxdNQOjEghujsOOHGehOCsfU3K5K3y+PRnkxsbqrKWR
+        /M81Z62Q==;
+Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:57846 helo=localhost)
+        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@roeck-us.net>)
+        id 1nbN4p-000gqQ-2P; Mon, 04 Apr 2022 13:49:03 +0000
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Oded Gabbay <ogabbay@kernel.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
+        Ohad Sharabi <osharabi@habana.ai>
+Subject: [PATCH v2] habanalabs: Fix test build failures
+Date:   Mon,  4 Apr 2022 06:48:59 -0700
+Message-Id: <20220404134859.3278599-1-linux@roeck-us.net>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 5e56526b-1ec2-417a-f7bc-08da16418cb8
-X-MS-TrafficTypeDiagnostic: PAXPR04MB9218:EE_
-X-Microsoft-Antispam-PRVS: <PAXPR04MB9218E702B64C0929A2A504B1F6E59@PAXPR04MB9218.eurprd04.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: MxMczNbgtuIK9MMSLIWc+kzbhch2q9StWx9eHBRc5B4ffyxA2Pd94ZUVRxb6ovIy/qLW36glxWJWi5TOu0bapC9WFFHo9AawSyuQ5vzYAQXRUsEqnNS5owMoKi/GN3mM19+us5CaTjXBCLKMXUlBtxlW112j2+mvYYNVz2C0pyp5Ua1kCeVqLwXq2/j4bAFfng7oByTKt/J3oyUWPKqd3BbLcO0ERmAwSZSmEGs9nn2/biWjuCqnygVW8tD7qukXq/sRPUcgROgeqaeKPibLIRIzuFOOctswPymjIUEiB+/1/96I/EQ008wmk2o7Cnt+lUtAcWdbnTGCnG4ZQqWnJZT6Iz8aU5B2yo+t4fgXq8lGYgU9myofIDe8uNxcSAIkJI2g62xVJI/nYyQUfUwr0ke1BTDHKoxCjNnCFYsryRqWy+OtMAPOt6E/4jbnNXOGIW2L6m2VRdQeUNDJF+Rx8CWtgNgnYfImgQZsEAIuSlOmjoZl7I3EP1m3TkbBYT7cKPQHKIZ8P925RRQFceI3FN6MNXmHHEORZyqnn95zeVeyNR+rItNyYMNqKhUP6iu2iRViu1HdusTV5iBUtbLf/YiYRvDxekbkyPOAawnRAzhOX2xmJ4yjeF1DyDGIhSFozZqEBBtleZ/cc5/RAMMlftKpHV2BMTYDWxRTgc7rtlxkAqwKAvUChbfSJQcvoKPfR+GP7IZyGo2a94cvKn6xxqud1zNdsi5ejA4fwHJO/lY=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB4688.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(26005)(52116002)(86362001)(6486002)(2906002)(36756003)(6506007)(6512007)(316002)(66556008)(66946007)(186003)(66476007)(6666004)(5660300002)(44832011)(8676002)(508600001)(110136005)(4326008)(38350700002)(54906003)(8936002)(2616005)(7416002)(1076003)(83380400001)(38100700002)(32563001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?WPGEJ7N3mZsU9/TK2lh85ERBaxkTTqspLsG9z546h4vKtFOVbniZWU3UcvHI?=
- =?us-ascii?Q?BPQLXDfnhHZGZZKlCU7KrRPY35WZqwGjt5FN5jVAn5yi4y6RNHAijXHmvGj0?=
- =?us-ascii?Q?AjXnsRR5NzYj7NINfIsubJGJf+YLu+/kw8BngSqzCMgHqlbmjKlVrctOmDUK?=
- =?us-ascii?Q?fmtrO0Aotrq4QRnPRHZSk9FJlCA8OT1Ft3mdtzweQDzUxD/RssGlYFWpGTL3?=
- =?us-ascii?Q?P48YabE5b8pl4hHtH2tUeNhszF3ThAS8XdsuB/XKVmy245ilx2r/TzIrEXRO?=
- =?us-ascii?Q?zEatipxHMx7p5QRm7ApCnEkQsg5uZYalPUr7Tr6Mmj/fMXglPyIgMapW5Qnj?=
- =?us-ascii?Q?hBEBT6M28iRMRREw4GWuM5EpZvS/U3si078KWe5Tdn0pWgF+TxurT3O2smMQ?=
- =?us-ascii?Q?seFwebcFwubEM1H49VUtfrGvpQRBCdCqrxOrmiHS5/ik7acYlo3o5CcOw78R?=
- =?us-ascii?Q?liBTt96pp0+XOF1lj05wnzD8KP6Zq0E3Ddq8W5pAKSXfsUQRnjzUuRMxqAel?=
- =?us-ascii?Q?j3ix51W8d6P4PwCQZzVGaiTWDXBvs/vx2ACj/9nHVzQA06QPdhD3bey2OmOI?=
- =?us-ascii?Q?RD8rFCTyazZVBTtKI4nzqB/mUCRhIRKfehf1efHgd0e/jtsxSxZ4vMFGXUNZ?=
- =?us-ascii?Q?IKYZryZ/jL+LynIlqUg2HG9Drb5IUNWNcN0YFwFLDHXJGoF0dnQknIkdfwXD?=
- =?us-ascii?Q?NmJSYcyEyDjVgZR6h3xv1QcJ5p4t0Q8+6AEUUQqAqH1jAEYKPF6lXlQWf5Da?=
- =?us-ascii?Q?Bgyz4Be5x0Trp3RDJ1WCF3/iNnRtnrCIEdlHQlZAmR6Y0ujs8D8ad31VpCNk?=
- =?us-ascii?Q?EUdNvsanycDSt2zXzTFt/ct7sWvo/5HQ+ziY3S5VAxNJb9Uy7nXJjVdR4Fif?=
- =?us-ascii?Q?n6ixwf4LbK5NjSTSaG3V46g9hkSL4Sbshu9KeApzc3d8k/P4EYxeE1WHaJmG?=
- =?us-ascii?Q?TQ1QITYcVFdKNtC2bP6puXtGaLX1fZKWNexktmTIwXXU35O28ZL4RDOfUfk7?=
- =?us-ascii?Q?oxdNI1/OS6sNdOKbdpzFeNa8OajcIfdnIOCjvCa/uUQ6/rX6+E29OuBcHXKu?=
- =?us-ascii?Q?PmPz/d0BnjydHnvqbJ3lfW7w3z1AiTA8XK/Gmmt8JZEHh+ALEIGueYpGIcS4?=
- =?us-ascii?Q?mZ1eIoT2ybWEmBM6AnwQFsgIzOttmfBzAkuQdKD6CG9ry31BbuU6pigk5jjC?=
- =?us-ascii?Q?CRq607Epd1YOya/oG22YmokVMltNRxKfc0ozSErpNQyDSWVec2PokPFASVk3?=
- =?us-ascii?Q?5tYfuOc1Jdo0vgpv8KEbS/PzqhTG9PfnoKaKLTG/RfOOww7+Sko89pzjSpyZ?=
- =?us-ascii?Q?wlNmiQh2ZOeKI/hLEr5vSx3k1pfl9iUPwwmzDRBI41bFLh+tgVzeup8oxTGp?=
- =?us-ascii?Q?zpjt5GGZ5znNZhX06p91G56XnFmdu0tpC1uj0GPg82P66wy8vSLBJEgXTXCE?=
- =?us-ascii?Q?etK+OyvDCn599LW1NxdjKtqNFyrBNsh0KvM3Nw172jgAYC4wPL1zhqquzmMZ?=
- =?us-ascii?Q?zzybC8I/J5+Ws4bAnTFC9YTEolQ3bVsuztAtb10VaSPbL8yLunXTZe9WkmOq?=
- =?us-ascii?Q?unhXAk0xzP6SyMdEzZLn9XQ2djV4ngYw2DNXSw/yTPG8db1fw5dq6lumSecJ?=
- =?us-ascii?Q?wyd+boLWWN1lc7ipBN9z4V0EbTuadOT5BDCb/6D0bMWGLV16SKpB9BRi+b57?=
- =?us-ascii?Q?XmsiDDdjSjoc2g5bU3h1zAEzbukjntzgK3FqUD5Uk1tBFx6gkiMulvVYDpXY?=
- =?us-ascii?Q?wiLH15DPJA=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5e56526b-1ec2-417a-f7bc-08da16418cb8
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB4688.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Apr 2022 13:46:41.7995
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: s9PgbXALDccvXeHPPgpQxmzFaUulw2SCZbAgPDO92/hkrk7S4TzU4WZO+Drp5ybgu1sEwLFZ1ogGtDjHBvoN6A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR04MB9218
+Content-Transfer-Encoding: 8bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - roeck-us.net
+X-BWhitelist: no
+X-Source-IP: 108.223.40.66
+X-Source-L: No
+X-Exim-ID: 1nbN4p-000gqQ-2P
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net (localhost) [108.223.40.66]:57846
+X-Source-Auth: guenter@roeck-us.net
+X-Email-Count: 13
+X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jacky Bai <ping.bai@nxp.com>
+allmodconfig builds on 32-bit architectures fail with the following error.
 
-On i.MX8DXL, the LSIO subsystem includes below devices:
+drivers/misc/habanalabs/common/memory.c: In function 'alloc_device_memory':
+drivers/misc/habanalabs/common/memory.c:153:49: error:
+	cast from pointer to integer of different size
 
-1x Inline Encryption Engine (IEE)
-1x FlexSPI
-4x Pulse Width Modulator (PWM)
-5x General Purpose Timer (GPT)
-8x GPIO
-14x Message Unit (MU)
-256KB On-Chip Memory (OCRAM)
+Fix the typecast. While at it, drop other unnecessary typecasts associated
+with the same commit.
 
-compared to the common imx8-ss-lsio dtsi, some nodes' interrupt
-property need to be updated.
-
-Signed-off-by: Jacky Bai <ping.bai@nxp.com>
-Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
+Fixes: e8458e20e0a3c ("habanalabs: make sure device mem alloc is page aligned")
+Cc: Ohad Sharabi <osharabi@habana.ai>
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 ---
- .../boot/dts/freescale/imx8dxl-ss-lsio.dtsi   | 78 +++++++++++++++++++
- 1 file changed, 78 insertions(+)
- create mode 100644 arch/arm64/boot/dts/freescale/imx8dxl-ss-lsio.dtsi
+v2: Drop unnecessary (u64) typecasts
 
-diff --git a/arch/arm64/boot/dts/freescale/imx8dxl-ss-lsio.dtsi b/arch/arm64/boot/dts/freescale/imx8dxl-ss-lsio.dtsi
-new file mode 100644
-index 000000000000..d90602bab384
---- /dev/null
-+++ b/arch/arm64/boot/dts/freescale/imx8dxl-ss-lsio.dtsi
-@@ -0,0 +1,78 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+/*
-+ * Copyright 2019-2021 NXP
-+ */
-+&lsio_gpio0 {
-+	compatible = "fsl,imx8dxl-gpio", "fsl,imx35-gpio";
-+	interrupts = <GIC_SPI 78 IRQ_TYPE_LEVEL_HIGH>;
-+};
-+
-+&lsio_gpio1 {
-+	compatible = "fsl,imx8dxl-gpio", "fsl,imx35-gpio";
-+	interrupts = <GIC_SPI 79 IRQ_TYPE_LEVEL_HIGH>;
-+};
-+
-+&lsio_gpio2 {
-+	compatible = "fsl,imx8dxl-gpio", "fsl,imx35-gpio";
-+	interrupts = <GIC_SPI 80 IRQ_TYPE_LEVEL_HIGH>;
-+};
-+
-+&lsio_gpio3 {
-+	compatible = "fsl,imx8dxl-gpio", "fsl,imx35-gpio";
-+	interrupts = <GIC_SPI 81 IRQ_TYPE_LEVEL_HIGH>;
-+};
-+
-+&lsio_gpio4 {
-+	compatible = "fsl,imx8dxl-gpio", "fsl,imx35-gpio";
-+	interrupts = <GIC_SPI 82 IRQ_TYPE_LEVEL_HIGH>;
-+};
-+
-+&lsio_gpio5 {
-+	compatible = "fsl,imx8dxl-gpio", "fsl,imx35-gpio";
-+	interrupts = <GIC_SPI 83 IRQ_TYPE_LEVEL_HIGH>;
-+};
-+
-+&lsio_gpio6 {
-+	compatible = "fsl,imx8dxl-gpio", "fsl,imx35-gpio";
-+	interrupts = <GIC_SPI 84 IRQ_TYPE_LEVEL_HIGH>;
-+};
-+
-+&lsio_gpio7 {
-+	compatible = "fsl,imx8dxl-gpio", "fsl,imx35-gpio";
-+	interrupts = <GIC_SPI 85 IRQ_TYPE_LEVEL_HIGH>;
-+};
-+
-+&lsio_mu0 {
-+	compatible = "fsl,imx8dxl-mu", "fsl,imx8qxp-mu", "fsl,imx6sx-mu";
-+	interrupts = <GIC_SPI 86 IRQ_TYPE_LEVEL_HIGH>;
-+};
-+
-+&lsio_mu1 {
-+	compatible = "fsl,imx8-mu-scu", "fsl,imx8qxp-mu", "fsl,imx6sx-mu";
-+	interrupts = <GIC_SPI 87 IRQ_TYPE_LEVEL_HIGH>;
-+};
-+
-+&lsio_mu2 {
-+	compatible = "fsl,imx8-mu-scu", "fsl,imx8qxp-mu", "fsl,imx6sx-mu";
-+	interrupts = <GIC_SPI 88 IRQ_TYPE_LEVEL_HIGH>;
-+};
-+
-+&lsio_mu3 {
-+	compatible = "fsl,imx8-mu-scu", "fsl,imx8qxp-mu", "fsl,imx6sx-mu";
-+	interrupts = <GIC_SPI 89 IRQ_TYPE_LEVEL_HIGH>;
-+};
-+
-+&lsio_mu4 {
-+	compatible = "fsl,imx8-mu-scu", "fsl,imx8qxp-mu", "fsl,imx6sx-mu";
-+	interrupts = <GIC_SPI 90 IRQ_TYPE_LEVEL_HIGH>;
-+};
-+
-+&lsio_mu5 {
-+	compatible = "fsl,imx8-mu-scu", "fsl,imx8qxp-mu", "fsl,imx6sx-mu";
-+	interrupts = <GIC_SPI 94 IRQ_TYPE_LEVEL_HIGH>;
-+};
-+
-+&lsio_mu13 {
-+	compatible = "fsl,imx8-mu-scu", "fsl,imx8qxp-mu", "fsl,imx6sx-mu";
-+	interrupts = <GIC_SPI 98 IRQ_TYPE_LEVEL_HIGH>;
-+};
+ drivers/misc/habanalabs/common/memory.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/misc/habanalabs/common/memory.c b/drivers/misc/habanalabs/common/memory.c
+index e008d82e4ba3..a13506dd8119 100644
+--- a/drivers/misc/habanalabs/common/memory.c
++++ b/drivers/misc/habanalabs/common/memory.c
+@@ -111,10 +111,10 @@ static int alloc_device_memory(struct hl_ctx *ctx, struct hl_mem_in *args,
+ 
+ 	if (contiguous) {
+ 		if (is_power_of_2(page_size))
+-			paddr = (u64) (uintptr_t) gen_pool_dma_alloc_align(vm->dram_pg_pool,
+-								total_size, NULL, page_size);
++			paddr = (uintptr_t) gen_pool_dma_alloc_align(vm->dram_pg_pool,
++								     total_size, NULL, page_size);
+ 		else
+-			paddr = (u64) (uintptr_t) gen_pool_alloc(vm->dram_pg_pool, total_size);
++			paddr = gen_pool_alloc(vm->dram_pg_pool, total_size);
+ 		if (!paddr) {
+ 			dev_err(hdev->dev,
+ 				"failed to allocate %llu contiguous pages with total size of %llu\n",
+@@ -150,12 +150,12 @@ static int alloc_device_memory(struct hl_ctx *ctx, struct hl_mem_in *args,
+ 		for (i = 0 ; i < num_pgs ; i++) {
+ 			if (is_power_of_2(page_size))
+ 				phys_pg_pack->pages[i] =
+-						(u64) gen_pool_dma_alloc_align(vm->dram_pg_pool,
+-										page_size, NULL,
+-										page_size);
++					(uintptr_t)gen_pool_dma_alloc_align(vm->dram_pg_pool,
++									    page_size, NULL,
++									    page_size);
+ 			else
+-				phys_pg_pack->pages[i] = (u64) gen_pool_alloc(vm->dram_pg_pool,
+-										page_size);
++				phys_pg_pack->pages[i] = gen_pool_alloc(vm->dram_pg_pool,
++									page_size);
+ 			if (!phys_pg_pack->pages[i]) {
+ 				dev_err(hdev->dev,
+ 					"Failed to allocate device memory (out of memory)\n");
 -- 
-2.34.1
+2.35.1
 
