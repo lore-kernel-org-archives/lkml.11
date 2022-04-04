@@ -2,91 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A577C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:25:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAEE5C3527B
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:25:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354879AbiDDVZP (ORCPT
+        id S1379131AbiDDVZq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:25:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36438 "EHLO
+        Mon, 4 Apr 2022 17:25:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379376AbiDDRD5 (ORCPT
+        with ESMTP id S1379146AbiDDQhk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 13:03:57 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 225B840A25
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 10:02:01 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id ot30so11354507ejb.12
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 10:02:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=XDRai04CA05RswVKu5alUWJtGVzhDwT89lcIpEMtwKM=;
-        b=YGjEVbKrxaCj2fiISbwvOvVSLZ42rj3jHDAPpX+ykNsk90fFh/VsuaFoFMNYtyxuzF
-         nVi1FnYccUZfV3/L6BEPiJ0lmNO/JN8Kl/CXMB+yUcnqfXIsneiUpStjBd+YralAyO8R
-         JLRIj8Rz1nEW9LenHRh9+U+poKxEmfIx3v0EhYx8lPOK7IVh+YyBW2M/utkM2TUi6YtW
-         ecN1C1KwqD/KkxPnoqCS1NdxfskdpaEB08QOhOK7NFRh4ccuynpl9jFvSDFIFCiqBGEg
-         hD9fv5XB7Jz+vbUMOAPD6yJO7KoPbmdn4G0J5eypih98p+tNOvZfhExy67YIyPuCt1Y7
-         P6SA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=XDRai04CA05RswVKu5alUWJtGVzhDwT89lcIpEMtwKM=;
-        b=aYkCxuf2IdRy6ayUdWC0mpswW58Bf7zYC6BIzRLMBVag0vOgJQXztHsKYLQ80JC7MT
-         iZapY235dZLDziHswT1XdWX0YT5Jxyp44EBbmg7nmtePhITdS4AP3hsZAKzCWkKPtg/x
-         l9XymfqhFtYPAXc/3jvwgZ+AKlC5/t7Ew3j2AZTXAU9ZxfUTsBJdEh7c5rOTyArwRHcP
-         VFqaTAEZxahAnPitKjTPU6eizkZdajyFwrtb7AMdVb9wM+CCd7Cyy3F+0MZDzVLREdEZ
-         s+GIpJM5C/9z3r82le5mmtJN14cpLhQJSQdOKe2gKQ4xDvPGgOuLKiqPf/x6MLP51Vb7
-         f2lQ==
-X-Gm-Message-State: AOAM533lxPzTMY1LmMWNmcepBfiW05YLBqCzJDatiZXpytJKGcIRo1el
-        zHSv485DaNu5jN3TAqaJPY0seBDRldPTGmNu
-X-Google-Smtp-Source: ABdhPJxjxE1555uF2gVoe5qYPFLZ+9GXlrvyiQUh8yEYi1nxgJCJ+oxDdo2NSpOk6a60bL6TomwbSQ==
-X-Received: by 2002:a17:907:96a8:b0:6e7:c54e:66e4 with SMTP id hd40-20020a17090796a800b006e7c54e66e4mr1100334ejc.322.1649091717687;
-        Mon, 04 Apr 2022 10:01:57 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id c5-20020a170906d18500b006ce371f09d4sm4557770ejz.57.2022.04.04.10.01.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 10:01:56 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Sylwester Nawrocki <snawrocki@kernel.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: Re: [PATCH] ARM: dts: exynos: drop deprecated SFR region from MIPI phy
-Date:   Mon,  4 Apr 2022 19:01:46 +0200
-Message-Id: <164909169269.1688455.14606590160258224493.b4-ty@linaro.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220314184113.251013-1-krzysztof.kozlowski@canonical.com>
-References: <20220314184113.251013-1-krzysztof.kozlowski@canonical.com>
+        Mon, 4 Apr 2022 12:37:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68A29E094;
+        Mon,  4 Apr 2022 09:35:44 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 04AA460C88;
+        Mon,  4 Apr 2022 16:35:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBDA4C34110;
+        Mon,  4 Apr 2022 16:35:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649090143;
+        bh=rzOQqeQjTPMlc735N7xJrYNzCHkjJGD3CLA4kWFFXVc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=sNNk1iPR8zGcjUZ3rPovnqCsMdigf9WY0l+h+xt4j4UbX6MAglAahjh4LT69jBUqw
+         5P7vYrqGuPTlyZR54nmgJU9Ab8z5ZNJ8B8pRPQhuxiKAAhfgkNq8QeYG8dX3xK3I1Y
+         ZnANlWBv2WB8AXvtIJqGpXo/7BpMpUg6GKtQkJr4fM+NScEyDbDzbNjcGHbsHayMCR
+         D1Rqi9bILbEYn4ibgj4pVYnvQ4z511fjqbJhMinsObDneDhmoXPiD/+VF89DwI15JG
+         CPUtymsCr9xT71hd+6WgrCkRaood8o4DMc+GeuQzejYPVUonvA3Z8vsGu/MJ4qqZuc
+         hgPPFeVDFg2eQ==
+From:   Vinod Koul <vkoul@kernel.org>
+To:     Rob Clark <robdclark@gmail.com>
+Cc:     linux-arm-msm@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Jonathan Marek <jonathan@marek.ca>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        freedreno@lists.freedesktop.org
+Subject: [PATCH v6 12/14] drm/msm/dsi: add mode valid callback for dsi_mgr
+Date:   Mon,  4 Apr 2022 22:04:34 +0530
+Message-Id: <20220404163436.956875-13-vkoul@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220404163436.956875-1-vkoul@kernel.org>
+References: <20220404163436.956875-1-vkoul@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 14 Mar 2022 19:41:13 +0100, Krzysztof Kozlowski wrote:
-> Commit e4b3d38088df ("phy: exynos-video-mipi: Fix regression by adding
-> support for PMU regmap") deprecated the usage of unit address in MIPI
-> phy node, in favor of a syscon phandle.  Deprecating was a correct
-> approach because that unit address was actually coming from Power
-> Management Unit SFR range so its usage here caused overlapped memory
-> mapping.
-> 
-> [...]
+Add a mode valid callback for dsi_mgr for checking mode being valid in
+case of DSC. For DSC the height and width needs to be multiple of slice,
+so we check that here
 
-Applied, thanks!
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
+---
+ drivers/gpu/drm/msm/dsi/dsi.h         |  2 ++
+ drivers/gpu/drm/msm/dsi/dsi_host.c    | 26 ++++++++++++++++++++++++++
+ drivers/gpu/drm/msm/dsi/dsi_manager.c | 12 ++++++++++++
+ 3 files changed, 40 insertions(+)
 
-[1/1] ARM: dts: exynos: drop deprecated SFR region from MIPI phy
-      commit: 04398e04173f1be0b21d7cd50c54e8affcebe106
-
-Best regards,
+diff --git a/drivers/gpu/drm/msm/dsi/dsi.h b/drivers/gpu/drm/msm/dsi/dsi.h
+index 16cd9b2fce86..580a1e6358bf 100644
+--- a/drivers/gpu/drm/msm/dsi/dsi.h
++++ b/drivers/gpu/drm/msm/dsi/dsi.h
+@@ -114,6 +114,8 @@ int msm_dsi_host_power_on(struct mipi_dsi_host *host,
+ int msm_dsi_host_power_off(struct mipi_dsi_host *host);
+ int msm_dsi_host_set_display_mode(struct mipi_dsi_host *host,
+ 				  const struct drm_display_mode *mode);
++enum drm_mode_status msm_dsi_host_check_dsc(struct mipi_dsi_host *host,
++					    const struct drm_display_mode *mode);
+ struct drm_panel *msm_dsi_host_get_panel(struct mipi_dsi_host *host);
+ unsigned long msm_dsi_host_get_mode_flags(struct mipi_dsi_host *host);
+ struct drm_bridge *msm_dsi_host_get_bridge(struct mipi_dsi_host *host);
+diff --git a/drivers/gpu/drm/msm/dsi/dsi_host.c b/drivers/gpu/drm/msm/dsi/dsi_host.c
+index cb2e179127ea..eb0be34add45 100644
+--- a/drivers/gpu/drm/msm/dsi/dsi_host.c
++++ b/drivers/gpu/drm/msm/dsi/dsi_host.c
+@@ -2554,6 +2554,32 @@ int msm_dsi_host_set_display_mode(struct mipi_dsi_host *host,
+ 	return 0;
+ }
+ 
++enum drm_mode_status msm_dsi_host_check_dsc(struct mipi_dsi_host *host,
++					    const struct drm_display_mode *mode)
++{
++	struct msm_dsi_host *msm_host = to_msm_dsi_host(host);
++	struct msm_display_dsc_config *dsc = msm_host->dsc;
++	int pic_width = mode->hdisplay;
++	int pic_height = mode->vdisplay;
++
++	if (!msm_host->dsc)
++		return MODE_OK;
++
++	if (pic_width % dsc->drm->slice_width) {
++		pr_err("DSI: pic_width %d has to be multiple of slice %d\n",
++		       pic_width, dsc->drm->slice_width);
++		return MODE_H_ILLEGAL;
++	}
++
++	if (pic_height % dsc->drm->slice_height) {
++		pr_err("DSI: pic_height %d has to be multiple of slice %d\n",
++		       pic_height, dsc->drm->slice_height);
++		return MODE_V_ILLEGAL;
++	}
++
++	return MODE_OK;
++}
++
+ struct drm_panel *msm_dsi_host_get_panel(struct mipi_dsi_host *host)
+ {
+ 	return of_drm_find_panel(to_msm_dsi_host(host)->device_node);
+diff --git a/drivers/gpu/drm/msm/dsi/dsi_manager.c b/drivers/gpu/drm/msm/dsi/dsi_manager.c
+index 0c1b7dde377c..100a8fcbddee 100644
+--- a/drivers/gpu/drm/msm/dsi/dsi_manager.c
++++ b/drivers/gpu/drm/msm/dsi/dsi_manager.c
+@@ -573,6 +573,17 @@ static void dsi_mgr_bridge_mode_set(struct drm_bridge *bridge,
+ 	dsi_mgr_bridge_power_on(bridge);
+ }
+ 
++static enum drm_mode_status dsi_mgr_bridge_mode_valid(struct drm_bridge *bridge,
++						      const struct drm_display_info *info,
++						      const struct drm_display_mode *mode)
++{
++	int id = dsi_mgr_bridge_get_id(bridge);
++	struct msm_dsi *msm_dsi = dsi_mgr_get_dsi(id);
++	struct mipi_dsi_host *host = msm_dsi->host;
++
++	return msm_dsi_host_check_dsc(host, mode);
++}
++
+ static const struct drm_connector_funcs dsi_mgr_connector_funcs = {
+ 	.detect = dsi_mgr_connector_detect,
+ 	.fill_modes = drm_helper_probe_single_connector_modes,
+@@ -593,6 +604,7 @@ static const struct drm_bridge_funcs dsi_mgr_bridge_funcs = {
+ 	.disable = dsi_mgr_bridge_disable,
+ 	.post_disable = dsi_mgr_bridge_post_disable,
+ 	.mode_set = dsi_mgr_bridge_mode_set,
++	.mode_valid = dsi_mgr_bridge_mode_valid,
+ };
+ 
+ /* initialize connector when we're connected to a drm_panel */
 -- 
-Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+2.34.1
+
