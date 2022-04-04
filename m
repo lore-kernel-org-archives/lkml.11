@@ -2,117 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FB2CC38161
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5377BC47084
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:08:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382723AbiDDWKB (ORCPT
+        id S1382739AbiDDWKF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 18:10:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44798 "EHLO
+        Mon, 4 Apr 2022 18:10:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379142AbiDDQh0 (ORCPT
+        with ESMTP id S1381078AbiDDVWX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 12:37:26 -0400
-Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06B6C15A3C
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 09:35:30 -0700 (PDT)
-Received: by mail-io1-xd2c.google.com with SMTP id z6so12020935iot.0
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 09:35:30 -0700 (PDT)
+        Mon, 4 Apr 2022 17:22:23 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7680E1AF27
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 14:20:15 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id b6-20020a5b0b46000000b0063dcbfa6dd3so3203152ybr.2
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 14:20:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sartura-hr.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=u2tjCgL5q60NGSsrT51lKaR05T0paQW81C5vQQ853wY=;
-        b=LU/LuEgYuinqEj95G4H6JtZIbQpHE6Wkox3vsqOb7m7lngKeo8ezZjUZB4v+fMzrXu
-         i7Mox9Hha2YBG2+eHgJc2l9JEC4zF8ZM6xXEbdc37VoB58K8gfNWoq8c3Odp3BA/21Wj
-         8xx8CnXdvah5jZ4gGbPfynV1of+K7wveZu6ohsinc1J4F7G1fu9EQEwU4GwH50u0dX/R
-         tIVVPOC3JjPkru7Ee/eKnl5+bJQJ3/AshfySEgepXYEt9Ba7CQGsGL2IeBF9/KuX9IrP
-         JbX5rZg2SYWlWHW9g+t4sfQ+vuvn6EP/KTcrv8ic5QexGre+YCX3K/iPVS+gp28DNVr7
-         JX+g==
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=DBbP7cPmiHpe5TN1/LJtSaqk7J0plWu8gjlZ5CS5rhk=;
+        b=TZ0NkmLInAy4kYp/+n01zKn7zzlAQwYbOYU6jY1KwnR3G5n4mVA4WMp89xHymMNtfP
+         0tsioSzKKpVGh67W/c1oyCZw3dCUqaR2fQfw96LIJgjhSjM95BmdvEizNAM9WtPEkVRr
+         DtPgeu6pBu0zAl/vnsNkAlAedpxW1AbHCIIlZNKZ5PhYuY4Jiq195R0OGaA2XuKtrUMO
+         qnziyHF0S9GwK33CJbi7GF24qNjf1bt3oMgloRa3IvwBBBe70DLX2iqKTlCePVN/MzQT
+         72VosHjFPeonT+rgF2nwR4hz9j+vV4BAGXKPlqp54r6c2l1MfTmTcFNXu2qmhZxWkFUO
+         UFaQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=u2tjCgL5q60NGSsrT51lKaR05T0paQW81C5vQQ853wY=;
-        b=GKDdG4O7eb2NJvt/pLjqf0v68c1tSend6atfV71/tt0GXUfXTR/P52Pa7KZSxyygUY
-         ZGYroRc+M8IBXA6ga6vD1+9g7PpAO9TpPLwvTIe1prReR679brRKowFxzxu8lEIfxBTn
-         mHv6CuV4+Gq850yVv2mowvyR+aJAAqlrqLNJj/UOfkaA4RLtm7L9x306zrpn/SNVbZ1u
-         bxlkqVgi1tgqMZqXx/AFYEAC9e+z+7cI8jvaYCT/FpvEKjXql32cwB9+Qz44I/Y8cxTw
-         M9OQ6IETqIF3HRtv3y4YYdENplw1blk6dqCmhnO7yEydenNYaCECZxZNxxpUsSMXaFis
-         HB2g==
-X-Gm-Message-State: AOAM532gu8CuIPf2pT/fLPyVuNTDkZeGmB+nb+YIw0TTVaQHb2J0TbnW
-        OjpInD5nIjnwhM8L2GU43E0Rh0eRMjKEp/WslBPzjTvDRbRFVtxOub4=
-X-Google-Smtp-Source: ABdhPJxGPGo6ZeYMtrmrzTqcFfxOkAJo2j1ZjwZE5kyqJVyLQGVWZDw37xIK3ZrpEfi7IjV6VOZwuUlNmhvG7sZ1KNI=
-X-Received: by 2002:a05:6602:15d1:b0:649:1ed6:edcf with SMTP id
- f17-20020a05660215d100b006491ed6edcfmr506912iow.74.1649090129391; Mon, 04 Apr
- 2022 09:35:29 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220404105324.13810-1-straube.linux@gmail.com>
-In-Reply-To: <20220404105324.13810-1-straube.linux@gmail.com>
-From:   Robert Marko <robert.marko@sartura.hr>
-Date:   Mon, 4 Apr 2022 18:35:18 +0200
-Message-ID: <CA+HBbNHEK=CbyeeyPG=s=D2xofdSbk8Lxx5R9nij_cp6t7ybDA@mail.gmail.com>
-Subject: Re: [PATCH] ath11k: do not return random value
-To:     Michael Straube <straube.linux@gmail.com>
-Cc:     kvalo@kernel.org, David Miller <davem@davemloft.net>,
-        kuba@kernel.org, ath11k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=DBbP7cPmiHpe5TN1/LJtSaqk7J0plWu8gjlZ5CS5rhk=;
+        b=Yj+WgCAk36jtgyOiiW5Jyxz7D0hvA2r4dXuEghq04VZ437PdxGEh5NsdXto6lTn3h2
+         QhZXunxXFZUlEaFlwt6v1FdHuNApzI0SF4krqaZgx39NMBgNaMAU04GI4pQ6q2tBJNlg
+         grCsSZlXgGPpqojYZ87v9cxTdp2OMEH6AQ4fVO2yr0vJ6wcrFyNrpqGpdpgPdUz1yAV+
+         kprOuTlGVYz8Lm3A+22ruY+o2C4Lr81e8w1VNCb4Gn/+TFbCs07vnrOhcAmYszLEK8Sp
+         vWXdF8apoRFvV94lJDPytMZMRqFQK3CML69oPqnuv8fefL6fuoFw5V+Nf9tCFRWZ+EfK
+         CSHw==
+X-Gm-Message-State: AOAM531Q2f5ETZV3+9pGFkhohr8P9VqystvQbFeUNKiCL2xYlEZyhSnb
+        ofnQjIkr/B2MUDpagt/lfmTmH0E=
+X-Google-Smtp-Source: ABdhPJwynxzOo1uDL3PwMweufxLtr415yHT/T9PLgILZC1tllY8xKXYrs4PdKMB9UD3Be3KOTlIn+Bs=
+X-Received: from pcc-desktop.svl.corp.google.com ([2620:15c:2ce:200:e34c:522f:9edd:2978])
+ (user=pcc job=sendgmr) by 2002:a05:690c:13:b0:2dc:50bc:c975 with SMTP id
+ bc19-20020a05690c001300b002dc50bcc975mr17931ywb.173.1649107144995; Mon, 04
+ Apr 2022 14:19:04 -0700 (PDT)
+Date:   Mon,  4 Apr 2022 14:18:58 -0700
+Message-Id: <20220404211858.968452-1-pcc@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.35.1.1094.g7c7d902a7c-goog
+Subject: [PATCH] arm64: document the boot requirements for MTE
+From:   Peter Collingbourne <pcc@google.com>
+To:     Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Mark Brown <broonie@kernel.org>
+Cc:     Peter Collingbourne <pcc@google.com>,
+        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 4, 2022 at 12:54 PM Michael Straube <straube.linux@gmail.com> wrote:
->
-> Function ath11k_qmi_assign_target_mem_chunk() returns a random value
-> if of_parse_phandle() fails because the return variable ret is not
-> initialized before calling of_parse_phandle(). Return -EINVAL to avoid
-> possibly returning 0, which would be wrong here.
->
-> Issue found by smatch.
->
-> Signed-off-by: Michael Straube <straube.linux@gmail.com>
-> ---
->  drivers/net/wireless/ath/ath11k/qmi.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/net/wireless/ath/ath11k/qmi.c b/drivers/net/wireless/ath/ath11k/qmi.c
-> index 65d3c6ba35ae..81b2304b1fde 100644
-> --- a/drivers/net/wireless/ath/ath11k/qmi.c
-> +++ b/drivers/net/wireless/ath/ath11k/qmi.c
-> @@ -1932,7 +1932,7 @@ static int ath11k_qmi_assign_target_mem_chunk(struct ath11k_base *ab)
->                         if (!hremote_node) {
->                                 ath11k_dbg(ab, ATH11K_DBG_QMI,
->                                            "qmi fail to get hremote_node\n");
-> -                               return ret;
-> +                               return -EINVAL;
->                         }
->
->                         ret = of_address_to_resource(hremote_node, 0, &res);
-> --
-> 2.35.1
+When booting the kernel we access system registers such as GCR_EL1
+if MTE is supported. These accesses are defined to trap to EL3 if
+SCR_EL3.ATA is disabled. Furthermore, tag accesses will not behave
+as expected if SCR_EL3.ATA is not set, or if HCR_EL2.ATA is not set
+and we were booted at EL1. Therefore, require that these bits are
+enabled when appropriate.
 
-Hi Michael,
-This is already solved in ath-next and 5.18-rc1:
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/drivers/net/wireless/ath/ath11k/qmi.c?h=v5.18-rc1&id=c9b41832dc080fa59bad597de94865b3ea2d5bab
+Signed-off-by: Peter Collingbourne <pcc@google.com>
+Link: https://linux-review.googlesource.com/id/Iadcfd4dcd9ba3279b2813970b44d7485b0116709
+---
+ Documentation/arm64/booting.rst | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-Regards,
-Robert
->
->
-> --
-> ath11k mailing list
-> ath11k@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/ath11k
-
-
-
+diff --git a/Documentation/arm64/booting.rst b/Documentation/arm64/booting.rst
+index 29884b261aa9..833af981b667 100644
+--- a/Documentation/arm64/booting.rst
++++ b/Documentation/arm64/booting.rst
+@@ -350,6 +350,16 @@ Before jumping into the kernel, the following conditions must be met:
+ 
+     - SMCR_EL2.FA64 (bit 31) must be initialised to 0b1.
+ 
++  For CPUs with the Memory Tagging Extension feature:
++
++  - If EL3 is present:
++
++    - SCR_EL3.ATA (bit 26) must be initialised to 0b1.
++
++  - If the kernel is entered at EL1 and EL2 is present:
++
++    - HCR_EL2.ATA (bit 56) must be initialised to 0b1.
++
+ The requirements described above for CPU mode, caches, MMUs, architected
+ timers, coherency and system registers apply to all CPUs.  All CPUs must
+ enter the kernel in the same exception level.  Where the values documented
 -- 
-Robert Marko
-Staff Embedded Linux Engineer
-Sartura Ltd.
-Lendavska ulica 16a
-10000 Zagreb, Croatia
-Email: robert.marko@sartura.hr
-Web: www.sartura.hr
+2.35.1.1094.g7c7d902a7c-goog
+
