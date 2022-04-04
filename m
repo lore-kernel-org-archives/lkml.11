@@ -2,96 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D341AC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE369C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:50:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240880AbiDDVwJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:52:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49346 "EHLO
+        id S1356046AbiDDVvw (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 17:51:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379592AbiDDRng (ORCPT
+        with ESMTP id S1379265AbiDDQvv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 13:43:36 -0400
-Received: from mail-oi1-f173.google.com (mail-oi1-f173.google.com [209.85.167.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29ADE31DE7;
-        Mon,  4 Apr 2022 10:41:39 -0700 (PDT)
-Received: by mail-oi1-f173.google.com with SMTP id 12so10784259oix.12;
-        Mon, 04 Apr 2022 10:41:39 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=Gm8Q9IkyRhAeqdPU+N8JCDzIc1jnZK1MiElDRAVrowg=;
-        b=IUBHRZUR1CP3Z09zzwDN8OLdIU3U07bDFgwfp9DzAfLqHZSjUyvTkYVKDifPWhJDEY
-         HgqG9FLdyQi2fqiXqgbicwQbZMmFUM11LmAPO+n2SXPgHr9O0D6HSBmpoCMoVhyBIZDn
-         9Sk/WyQ9G4n2IGYP5rlMdVnx/1qlvpb293G/i8NtkNHMXb8KdLkxdaSJo6IUeLf3tmuX
-         W+qOksGIRnDK41UUGBq8Y1YP+Uw1AGiHGySiPenYLMiCZr5mthIBFSUOAKJS7CO2oFe3
-         enx5ldHm+i9K15O0+x0RXLqcupcO+9KdXHTvYIMcm+F4ueuvTVb3F5ifLAlJJTqOvAe9
-         RBvQ==
-X-Gm-Message-State: AOAM531zyOtAi5B5SKJweFoAFCSTnnHGT4vx/JXULeGC/nShkQWZ+4Ns
-        A8ISAZey8ULra68Ig6B0Mw==
-X-Google-Smtp-Source: ABdhPJzSZ9WfFV7feWqE4tE2BP8FLwzfupkBO4Pv3m1nUPLK+RrkI1IoCe9ioNTKSDmYmbnfBAqL3Q==
-X-Received: by 2002:a05:6808:b0f:b0:2ec:f51d:ae0b with SMTP id s15-20020a0568080b0f00b002ecf51dae0bmr131491oij.67.1649094098466;
-        Mon, 04 Apr 2022 10:41:38 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id r37-20020a05687108a500b000e20bfd86casm901587oaq.11.2022.04.04.10.41.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 10:41:37 -0700 (PDT)
-Received: (nullmailer pid 1597042 invoked by uid 1000);
-        Mon, 04 Apr 2022 17:41:37 -0000
-Date:   Mon, 4 Apr 2022 12:41:37 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
-Cc:     Philipp Zabel <p.zabel@pengutronix.de>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Allan Nielsen <allan.nielsen@microchip.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v2 0/3] add fwnode support to reset subsystem
-Message-ID: <Ykst0Vb4fk+iALzc@robh.at.kernel.org>
-References: <20220324141237.297207-1-clement.leger@bootlin.com>
+        Mon, 4 Apr 2022 12:51:51 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89E4031351;
+        Mon,  4 Apr 2022 09:49:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649090994; x=1680626994;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=xH8w381o5s9LdRaAo69RH2L/TkEmuKrGS0d+mIcmEIk=;
+  b=SYGHptqt6rX4BfHNGQVa/7hZA0VwvMCJNG23xUPOOTimn3gRvSYvLCVY
+   ayiVWkpRhbp9NZpwyW+aBO1LghUybsMAA6xCLA9If/p/+E4wQukHuvcL6
+   cA7fU0fv5d+fQ5og8T+SLClC7UrRNvC7lSb7PC/VZNgY5pQQE2Ti5cukm
+   +98OPZLNqJqbyeyBjNUbUlx36wcOWzrX8Is+3vB4FLt9MfdHq0SngGB1S
+   bD8WAraj9zQSTFOC8MF3erpKE2GuIrn4FtuDk8QxEj6Du1wgNj1hlKEfw
+   vUCLTz+mrNMZjdK2OxzDiqEgVbQ0aExaKfykVbNk3xqt8cK+Jb9oH3Rbv
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="323734045"
+X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
+   d="scan'208";a="323734045"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:49:51 -0700
+X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
+   d="scan'208";a="523105177"
+Received: from rchatre-ws.ostc.intel.com ([10.54.69.144])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:49:50 -0700
+From:   Reinette Chatre <reinette.chatre@intel.com>
+To:     dave.hansen@linux.intel.com, jarkko@kernel.org, tglx@linutronix.de,
+        bp@alien8.de, luto@kernel.org, mingo@redhat.com,
+        linux-sgx@vger.kernel.org, x86@kernel.org
+Cc:     seanjc@google.com, kai.huang@intel.com, cathy.zhang@intel.com,
+        cedric.xing@intel.com, haitao.huang@intel.com,
+        mark.shanahan@intel.com, hpa@zytor.com,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH V3 10/30] x86/sgx: Create utility to validate user provided offset and length
+Date:   Mon,  4 Apr 2022 09:49:18 -0700
+Message-Id: <7ebe0aa8cc6ce11eaf032c3796823bcc08df27fe.1648847675.git.reinette.chatre@intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cover.1648847675.git.reinette.chatre@intel.com>
+References: <cover.1648847675.git.reinette.chatre@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220324141237.297207-1-clement.leger@bootlin.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 24, 2022 at 03:12:34PM +0100, Clément Léger wrote:
-> This series is part of a larger series which aims at adding fwnode
-> support in multiple subsystems [1]. The goal of this series was to
-> add support for software node in various subsystem but in a first
-> time only the fwnode support had gained consensus and will be added
-> to multiple subsystems.
+User provided offset and length is validated when parsing the parameters
+of the SGX_IOC_ENCLAVE_ADD_PAGES ioctl(). Extract this validation
+into a utility that can be used by the SGX2 ioctl()s that will
+also provide these values.
 
-The goal is describing a solution. What is the problem?
+Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
+---
+No changes since V2
 
-What's the scenario where you have a reset provider not described by 
-firmware providing resets to devices (consumers) also not described by 
-firmware.
+Changes since V1:
+- New patch
 
-> For the moment ACPI node support is excluded from the fwnode support
-> to avoid creating an unspecified ACPI reset device description. With
-> these modifications, both driver that uses the fwnode_ API or the of_
-> API to register the reset controller will be usable by consumer
-> whatever the type of node that is used.
+ arch/x86/kernel/cpu/sgx/ioctl.c | 28 ++++++++++++++++++++++------
+ 1 file changed, 22 insertions(+), 6 deletions(-)
 
-Good, because controlling reset lines directly isn't how the ACPI device 
-model works AFAIK.
+diff --git a/arch/x86/kernel/cpu/sgx/ioctl.c b/arch/x86/kernel/cpu/sgx/ioctl.c
+index 83df20e3e633..f487549bccba 100644
+--- a/arch/x86/kernel/cpu/sgx/ioctl.c
++++ b/arch/x86/kernel/cpu/sgx/ioctl.c
+@@ -372,6 +372,26 @@ static int sgx_encl_add_page(struct sgx_encl *encl, unsigned long src,
+ 	return ret;
+ }
+ 
++/*
++ * Ensure user provided offset and length values are valid for
++ * an enclave.
++ */
++static int sgx_validate_offset_length(struct sgx_encl *encl,
++				      unsigned long offset,
++				      unsigned long length)
++{
++	if (!IS_ALIGNED(offset, PAGE_SIZE))
++		return -EINVAL;
++
++	if (!length || length & (PAGE_SIZE - 1))
++		return -EINVAL;
++
++	if (offset + length - PAGE_SIZE >= encl->size)
++		return -EINVAL;
++
++	return 0;
++}
++
+ /**
+  * sgx_ioc_enclave_add_pages() - The handler for %SGX_IOC_ENCLAVE_ADD_PAGES
+  * @encl:       an enclave pointer
+@@ -425,14 +445,10 @@ static long sgx_ioc_enclave_add_pages(struct sgx_encl *encl, void __user *arg)
+ 	if (copy_from_user(&add_arg, arg, sizeof(add_arg)))
+ 		return -EFAULT;
+ 
+-	if (!IS_ALIGNED(add_arg.offset, PAGE_SIZE) ||
+-	    !IS_ALIGNED(add_arg.src, PAGE_SIZE))
+-		return -EINVAL;
+-
+-	if (!add_arg.length || add_arg.length & (PAGE_SIZE - 1))
++	if (!IS_ALIGNED(add_arg.src, PAGE_SIZE))
+ 		return -EINVAL;
+ 
+-	if (add_arg.offset + add_arg.length - PAGE_SIZE >= encl->size)
++	if (sgx_validate_offset_length(encl, add_arg.offset, add_arg.length))
+ 		return -EINVAL;
+ 
+ 	if (copy_from_user(&secinfo, (void __user *)add_arg.secinfo,
+-- 
+2.25.1
 
-> One question raised by this series is that I'm not sure if all reset
-> drivers should be modified to use the new fwnode support or keep the
-> existing device-tree support. Maintainer advice on that particular
-> question will be welcome.
-
-That would be pointless churn IMO. Why do we need to convert drivers 
-which the vast majority will never use anything but DT?
-
-Rob
