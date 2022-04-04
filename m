@@ -2,114 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0171C4321E
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:17:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE49EC35276
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:17:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379326AbiDDVTO (ORCPT
+        id S1379375AbiDDVTX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:19:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51676 "EHLO
+        Mon, 4 Apr 2022 17:19:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379477AbiDDROL (ORCPT
+        with ESMTP id S1379404AbiDDRGE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 13:14:11 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E28513D16;
-        Mon,  4 Apr 2022 10:12:14 -0700 (PDT)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id B2D27221D4;
-        Mon,  4 Apr 2022 19:12:11 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1649092332;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=r1V391gXkrq+wObnVOltoNfX4nAIN03QikBJ+WLh+HA=;
-        b=hiHm2MFMnw2dS46c9Bx40pbU3T9Oh6eRxc5v8NhA0omQRL9qVl9YftXxiVzQdFk+QCntjR
-        PbUnAPOSLZQV73qG0DGGmcLb+2AmkZxUwjxa7fxWKLUd1xUS1/e1jJHIV/ZYNJ2par2R7n
-        nCgN1ChQj27AQitOJ8boPhF5BN6k14M=
+        Mon, 4 Apr 2022 13:06:04 -0400
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5C0C40A22
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 10:04:07 -0700 (PDT)
+Received: by mail-lf1-x129.google.com with SMTP id p15so18487876lfk.8
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 10:04:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=J334O5uYapL/nSov6BZAzFIp7kzwsiEjIccb8+5N22c=;
+        b=f07uA2nRdSeYaV6J0y8FPL4bPtqDnXuBCANsO8bx0j7F5mJV3d8FyIxuXDZ9mY5LHa
+         GoDjtp8ZFIHxrYd+1KbhjEWgk6q38scATXBkxvTL5bimRO/FxE7oFoKFaFK5u1UPQjhh
+         yEM/yzy4sxr3ObXCNh3tJOi5lsE6MzpZKvwQ1xVizV3wq1ht6lmCPkB336REFQ2Da/8i
+         uAoPQcV5M7F2YHxdHjtPSeiYJBFRtF8s3C/Hk27Qb+29HmpBV0Cj8mXRMJnMoHGZmClv
+         rJJSSIdGGvoR7Lz/ratpwdJS1KfBOdXQfV3LiCnu9zg8jpoJMcCfwSKIEUJWD8/vEuqq
+         NP0w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=J334O5uYapL/nSov6BZAzFIp7kzwsiEjIccb8+5N22c=;
+        b=4GOnkExjl7j2S+UGqPtJWyFp1XWes68oSJ6cJrLuS3iz5dfBpy6JLLly7FCH4ZqSel
+         U3grYCygAiAyX2xGesIACKYFmmf+5JL1uZgQPgx70E6jMKcRADGcyt9uBy6sCepbzklu
+         bw1woH3jNL5RJstOPYwOArOgspkylgbmX1OEgmxKGLppRwUthT80rIar4lz++gzF6gBt
+         +mmpGpgP/y2XIMf/LK77MxfRp/uk3mhZ7RnYxMUslAAY9Q7dHDeQX8dlQ2qtiVCIWE+I
+         cYkz8qtIWTXXEAiyrNgORXnxsnbpTmy52e2CNBGGaetAEPcbWGwLCh4LHxYIbyvEusox
+         +6DA==
+X-Gm-Message-State: AOAM533yPBnpcssOFwBD0R/sUZIghPj4dUPbew+fcR+iw6Rv7AWKJZ1a
+        0SK11Mqp4aCc+ptAviwXjmZNdg+Hl8oT9qpoHCDk6Wmyqc88FQ==
+X-Google-Smtp-Source: ABdhPJxSX/N/OBaPWataxe8f7C/8UA4YyOws9Udkg9tB+MjsWXVgKMGfJd5zUxPlMjvU6XV3jv/PVlgrCvTkFoyV5Jc=
+X-Received: by 2002:a05:6512:3092:b0:44a:e7bb:e961 with SMTP id
+ z18-20020a056512309200b0044ae7bbe961mr314645lfd.190.1649091843129; Mon, 04
+ Apr 2022 10:04:03 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Mon, 04 Apr 2022 19:12:11 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     richardcochran@gmail.com, davem@davemloft.net,
-        grygorii.strashko@ti.com, kuba@kernel.org, kurt@linutronix.de,
-        linux-kernel@vger.kernel.org, linux@armlinux.org.uk,
-        mlichvar@redhat.com, netdev@vger.kernel.org,
-        qiangqing.zhang@nxp.com, vladimir.oltean@nxp.com
-Subject: Re: [PATCH RFC V1 net-next 3/4] net: Let the active time stamping
- layer be selectable.
-In-Reply-To: <YksMvHgXZxA+YZci@lunn.ch>
-References: <20220104014215.GA20062@hoboy.vegasvil.org>
- <20220404150508.3945833-1-michael@walle.cc> <YksMvHgXZxA+YZci@lunn.ch>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <e5a6f6193b86388ed7a081939b8745be@walle.cc>
-X-Sender: michael@walle.cc
+References: <20220402130014.1417773-1-masahiroy@kernel.org> <20220402130014.1417773-2-masahiroy@kernel.org>
+In-Reply-To: <20220402130014.1417773-2-masahiroy@kernel.org>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Mon, 4 Apr 2022 10:03:51 -0700
+Message-ID: <CAKwvOd=r4JQ0p1xRix934oTaF-7zQJiaNo7Er7ExH0_R3AnmZw@mail.gmail.com>
+Subject: Re: [PATCH 2/2] modpost: move export_from_secname() call to more
+ relevant place
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Michal Marek <michal.lkml@markovi.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 2022-04-04 17:20, schrieb Andrew Lunn:
-> On Mon, Apr 04, 2022 at 05:05:08PM +0200, Michael Walle wrote:
->> Sorry for digging out this older thread, but it seems to be discussed
->> in [1].
->> 
->> > IMO, the default should be PHY because up until now the PHY layer was
->> > prefered.
->> >
->> > Or would you say the MAC layer should take default priority?
->> >
->> > (that may well break some existing systems)
->> 
->> Correct me if I'm wrong, but for systems with multiple interfaces,
->> in particular switches, you'd need external circuits to synchronize
->> the PHCs within in the PHYs.
-> 
-> If the PHYs are external. There are switches with internal PHYs, so
-> they might already have the needed synchronisation.
-> 
->> (And if you use a time aware scheduler
->> you'd need to synchronize the MAC, too). Whereas for switches there
->> is usually just one PHC in the MAC which just works.
-> 
-> And there could be switches with the MACs being totally
-> independent. In theory.
-> 
->> On these systems, pushing the timestamping to the PHY would mean
->> that this external circuitry must exist and have to be in use/
->> supported. MAC timestamping will work in all cases without any
->> external dependencies.
-> 
-> And if the MAC are independent, you need the external dependency.
-> 
->> I'm working on a board with the LAN9668 switch which has one LAN8814
->> PHY and two GPY215 PHYs and two internal PHYs. The LAN9668 driver
->> will forward all timestamping ioctls to the PHY if it supports
->> timestamping (unconditionally). As soon as the patches to add ptp
->> support to the LAN8814 will be accepted, I guess it will break the
->> PTP/TAS support because there is no synchronization between all the
->> PHCs on that board. Thus, IMHO MAC timestamping should be the default.
-> 
-> There are arguments for MAC being the defaults. But we must have the
-> option to do different, see above. But the real problem here is
-> history. It is very hard to change a default without breaking systems
-> which depend on that default. I believe Russell has a system which
-> will break if the default is changed.
-> 
-> So i suspect the default cannot be changed, but maybe we need a
-> mechanism where an interface or a board can express a preference it
-> would prefer be used when there are multiple choices, in addition to
-> the user space API to make the selection.
+On Sat, Apr 2, 2022 at 6:00 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
+>
+> The value returned by export_from_secname() is only used by
+> sym_add_exported().
+>
+> Move export_from_secname() just above sym_add_exported().
+>
+> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 
-That would make sense. I guess what bothers me with the current
-mechanism is that a feature addition to the PHY in the *future* (the
-timestamping support) might break a board - or at least changes the
-behavior by suddenly using PHY timestamping.
+Thanks for the patch!
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
 
--michael
+> ---
+>
+>  scripts/mod/modpost.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+>
+> diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
+> index 194ca9083c7a..f9e54247ae1d 100644
+> --- a/scripts/mod/modpost.c
+> +++ b/scripts/mod/modpost.c
+> @@ -684,12 +684,8 @@ static void handle_modversion(const struct module *mod,
+>  static void handle_symbol(struct module *mod, struct elf_info *info,
+>                           const Elf_Sym *sym, const char *symname)
+>  {
+> -       enum export export;
+>         const char *name;
+>
+> -       if (strstarts(symname, "__ksymtab"))
+> -               export = export_from_secname(info, get_secindex(info, sym));
+> -
+>         switch (sym->st_shndx) {
+>         case SHN_COMMON:
+>                 if (strstarts(symname, "__gnu_lto_")) {
+> @@ -724,7 +720,11 @@ static void handle_symbol(struct module *mod, struct elf_info *info,
+>         default:
+>                 /* All exported symbols */
+>                 if (strstarts(symname, "__ksymtab_")) {
+> +                       enum export export;
+> +
+>                         name = symname + strlen("__ksymtab_");
+> +                       export = export_from_secname(info,
+> +                                                    get_secindex(info, sym));
+>                         sym_add_exported(name, mod, export);
+>                 }
+>                 if (strcmp(symname, "init_module") == 0)
+> --
+> 2.32.0
+>
+
+
+-- 
+Thanks,
+~Nick Desaulniers
