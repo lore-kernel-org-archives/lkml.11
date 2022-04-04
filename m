@@ -2,110 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7339EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 12:02:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 388FDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 12:02:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234866AbiDDMD4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 08:03:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56984 "EHLO
+        id S235661AbiDDMEX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 08:04:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234569AbiDDMDy (ORCPT
+        with ESMTP id S234569AbiDDMES (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 08:03:54 -0400
-Received: from mail-yw1-x112d.google.com (mail-yw1-x112d.google.com [IPv6:2607:f8b0:4864:20::112d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A67D93526B
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 05:01:58 -0700 (PDT)
-Received: by mail-yw1-x112d.google.com with SMTP id 00721157ae682-2eb3db5b172so50099777b3.6
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 05:01:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=qiD2DiGzP9w26sYqe+Qe9/hDnbh5oNwQt5iQwmO4JSw=;
-        b=f0Q/WVKIXSIDfrftxANHLkiSt8cLGcIxC2CKNOOHR1qG5zVRc6lm6AKe9sz79acMOl
-         o2eMNhB+4khUHjghxea1XC3y2YB/ZKAHo4/aJv2HQQ9m83CByvZyEP3G64oxzlG0vO8F
-         8/8Ni0EIF6svCJYvrABjqP3Mq8lJdQZyK7M9voCo8A2QF5/wy7cXX6n689kSTuEHQdsy
-         uWkaq+Px33gmCtC/pZB7GE7Qf+EoxpvqsZfCo1fEZiBVFvFKk/CQ76EHwjgohkYr2HIs
-         df/HzJZ3KqkcSOVJP+cMXxOA9vRoUvH+IybMVW0g+ol8aymnpDd2O6/4MFMaaEG5q/rP
-         gSSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=qiD2DiGzP9w26sYqe+Qe9/hDnbh5oNwQt5iQwmO4JSw=;
-        b=cUVnXdbfuzes5MAT9iYwmj8+qecxX5FAdgjov+EW/cb4yD1RjXX1X3cyuXN/ADl6BJ
-         i42T720l+kmO6pJ3vTT0Nq/ScryT2fEPs6Ru8sftziMizzpxhj4OLzileIT6rKyGl1pv
-         JOhHjyDOJn43JoYjFzXNbtWp2BHApf2Cwe8MxzXdzg0FTK2+AxVdO752t9SdvBS6xMJz
-         nn3fS9jozcRVclsxVqkZ/KBt0Pw7WqYROtdlEyjcuh9x9rYeIht7ZdFtuy6bSz4RNXPx
-         dOsIbue/v0+brierku/z3Xm8nMg4LnRLm+46qTris9Z1KlyedCCCKR4hoDKDQ8BfdbXU
-         EE7w==
-X-Gm-Message-State: AOAM532dN8TnW+a8IcMzQ2J5VqsevUwlJrnxRUdHQOoqQZ1jCeJK0FuX
-        EVmr+GxeL0u3Q3HRkqI+tDAVujbLwgkJ2dHfWiQghw==
-X-Google-Smtp-Source: ABdhPJzlpsN0VsnXmKmAJkc1075L7eWicj13X0fkmppuQ3CoZUy2le5DGuweiF9leR/SLew6G9M1rG+BHnj3ZDFxaTU=
-X-Received: by 2002:a81:1196:0:b0:2eb:897a:7b5 with SMTP id
- 144-20020a811196000000b002eb897a07b5mr868948ywr.31.1649073716376; Mon, 04 Apr
- 2022 05:01:56 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220331065640.5777-1-songmuchun@bytedance.com>
- <20220331065640.5777-2-songmuchun@bytedance.com> <dd980687-a1ef-f4b5-bb29-da14f89c087e@arm.com>
-In-Reply-To: <dd980687-a1ef-f4b5-bb29-da14f89c087e@arm.com>
-From:   Muchun Song <songmuchun@bytedance.com>
-Date:   Mon, 4 Apr 2022 20:01:20 +0800
-Message-ID: <CAMZfGtX5NXudeAsYKU8mDtPn0+bw_3FhCsAW0PMBTqTTkp-fQQ@mail.gmail.com>
-Subject: Re: [PATCH v4 2/2] arm64: mm: hugetlb: Enable HUGETLB_PAGE_FREE_VMEMMAP
- for arm64
-To:     Anshuman Khandual <anshuman.khandual@arm.com>
-Cc:     Will Deacon <will@kernel.org>,
+        Mon, 4 Apr 2022 08:04:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D78943527B;
+        Mon,  4 Apr 2022 05:02:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 88DE1B81608;
+        Mon,  4 Apr 2022 12:02:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1CFCC340EE;
+        Mon,  4 Apr 2022 12:02:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649073740;
+        bh=D/Vuu1Efh10DrjnfMeFaJx5tjWBKjQcsLECUsZvdKqM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=TFDhCUePm0ddXfoqny4l8DyDXi4vHw5bzwZ1ifeeo/2XY8mUGypdbbcu5F8zLy798
+         6x0TBU2vIESELoL5esXnXn7H/ZUOPtPtqu7k1/ccKhKEQgB4islWjUp5Afb69vgooB
+         LrZBVEusFqXoO92vlrVRIz+QslnbRt0d6PsuhPN0=
+Date:   Mon, 4 Apr 2022 14:02:17 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Bagas Sanjaya <bagasdotme@gmail.com>
+Cc:     linux-doc@vger.kernel.org,
+        'Linux Kernel' <linux-kernel@vger.kernel.org>,
+        platform-driver-x86@vger.kernel.org, Dell.Client.Kernel@dell.com,
+        linux-iio@vger.kernel.org, Gao Xiang <hsiangkao@linux.alibaba.com>,
+        Huang Jianan <huangjianan@oppo.com>, Chao Yu <chao@kernel.org>,
+        Divya Bharathi <divya.bharathi@dell.com>,
+        Mark Pearson <markpearson@lenovo.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Gwendal Grignou <gwendal@chromium.org>,
+        Kajol Jain <kjain@linux.ibm.com>,
         Andrew Morton <akpm@linux-foundation.org>,
-        David Hildenbrand <david@redhat.com>,
-        "Bodeddula, Balasubramaniam" <bodeddub@amazon.com>,
-        Oscar Salvador <osalvador@suse.de>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        David Rientjes <rientjes@google.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>, james.morse@arm.com,
-        Barry Song <21cnbao@gmail.com>,
-        LAK <linux-arm-kernel@lists.infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Xiongchun duan <duanxiongchun@bytedance.com>,
-        Fam Zheng <fam.zheng@bytedance.com>,
-        Muchun Song <smuchun@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        "David E. Box" <david.e.box@linux.intel.com>,
+        Mark Gross <markgross@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>
+Subject: Re: unexpected indentation warning in
+ Documentation/ABI/testing/sysfs-*
+Message-ID: <YkreSbV4+KmW1/zV@kroah.com>
+References: <564f87a9-dd57-d3a1-d476-d81350baf75d@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <564f87a9-dd57-d3a1-d476-d81350baf75d@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 4, 2022 at 5:25 PM Anshuman Khandual
-<anshuman.khandual@arm.com> wrote:
->
-> Hello Muchun,
->
-> On 3/31/22 12:26, Muchun Song wrote:
-> > The feature of minimizing overhead of struct page associated with each
-> > HugeTLB page aims to free its vmemmap pages (used as struct page) to
-> > save memory, where is ~14GB/16GB per 1TB HugeTLB pages (2MB/1GB type).
->
-> Enabling this feature saves us around 1.4/1.6 % memory but looking from
-> other way around, unavailability of vmemmap backing pages (~1.4GB) when
-> freeing up a corresponding HugeTLB page, could prevent ~1TB memory from
-> being used as normal page form (requiring their own struct pages), thus
-> forcing the HugeTLB page to remain as such ? Is not this problematic ?
->
-> These additional 1TB memory in normal pages, from a HugeTLB dissolution
-> could have eased the system's memory pressure without this feature being
-> enabled.
+On Mon, Apr 04, 2022 at 06:58:16PM +0700, Bagas Sanjaya wrote:
+> Hi,
+> 
+> Doing "make htmldocs" for Linux v5.18-rc1, I get new warnings:
+> 
+> <path/to/linux>/Documentation/ABI/testing/sysfs-driver-intel_sdsi:2: WARNING: Unexpected indentation.
+> <path/to/linux>/Documentation/ABI/testing/sysfs-driver-intel_sdsi:2: WARNING: Block quote ends without a blank line; unexpected unindent.
+> <path/to/linux>/Documentation/ABI/testing/sysfs-driver-intel_sdsi:2: WARNING: Definition list ends without a blank line; unexpected unindent.
+> <path/to/linux>/Documentation/ABI/testing/sysfs-bus-nvdimm:11: WARNING: Unexpected indentation.
+> <path/to/linux>/Documentation/ABI/testing/sysfs-bus-iio-sx9324:2: WARNING: Unexpected indentation.
+> <path/to/linux>/Documentation/ABI/testing/sysfs-class-firmware-attributes:130: WARNING: Unexpected indentation.
+> <path/to/linux>/Documentation/ABI/testing/sysfs-class-firmware-attributes:130: WARNING: Unexpected indentation.
+> <path/to/linux>/Documentation/ABI/testing/sysfs-class-firmware-attributes:130: WARNING: Unexpected indentation.
+> <path/to/linux>/Documentation/ABI/testing/sysfs-fs-erofs:10: WARNING: Unexpected indentation.
+> <path/to/linux>/Documentation/ABI/testing/sysfs-fs-erofs:10: WARNING: Block quote ends without a blank line; unexpected unindent.
+> 
+> Introduced by 2546c60004309e (platform/x86: Add Intel Software Defined
+> Silicon driver, 2022-02-11), 2bec6d9aa89cbe (docs: ABI: sysfs-bus-nvdimm:
+> Document sysfs event format entries for nvdimm pmu, 2022-02-25),
+> e8a60aa7404bfe (platform/x86: Introduce support for Systems Management
+> Driver over WMI for Dell Systems), 40452ffca3c1a0 (erofs: add sysfs
+> node to control sync decompression strategy, 2021-12-06), and
+> 4c18a890dff8d9 (iio:proximity:sx9324: Add SX9324 support, 2022-01-01).
+> 
+> Presumably because Sphinx mistakes these documentation files without
+> extensions for .rst files? I dunno.
+> 
+> Reported-by: Bagas Sanjaya <bagasdotme@gmail.com>
 
-You are right. If the system is already under heavy memory pressure, it could
-prevent the user from freeing HugeTLB pages to the buddy allocator. If the
-HugeTLB page are allocated from non-movable zone, this scenario may be
-not problematic since once a HugeTLB page is freed, then the system will
-have memory to be allocated to be used as vmemmap pages, subsequent
-freeing of HugeTLB pages may be getting easier.  However, if the HUgeTLB
-pages are allocated from the movable zone, then the thing becomes terrible,
-which is documented in Documentation/admin-guide/mm/memory-hotplug.rst.
+Care to send patches to fix these up?
 
-So there is a cmdline "hugetlb_free_vmemmap" to control if enabling this
-feature.  The user should enable/disable this depending on their workload.
+thanks,
 
-Thanks.
+greg k-h
