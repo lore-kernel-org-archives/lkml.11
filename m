@@ -2,142 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89B4DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 14:45:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAA72C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 14:47:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378267AbiDDOrl (ORCPT
+        id S1378310AbiDDOtB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 10:47:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51776 "EHLO
+        Mon, 4 Apr 2022 10:49:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379155AbiDDOoZ (ORCPT
+        with ESMTP id S1378639AbiDDOsr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 10:44:25 -0400
-Received: from mail-oi1-f181.google.com (mail-oi1-f181.google.com [209.85.167.181])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 620663FD81;
-        Mon,  4 Apr 2022 07:39:35 -0700 (PDT)
-Received: by mail-oi1-f181.google.com with SMTP id k10so10326948oia.0;
-        Mon, 04 Apr 2022 07:39:35 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=0vlRFIroYhAxAtt8b1uV208IEJmMxWXEuymzJQC0hzs=;
-        b=vOvkCwwENwRzsAqMwcDLhswRPtOybFEb5TQnwVkNSz+XUfgbwIXvfBgkaOW1RHFy/Z
-         SL7uXML9vqr+52iJEWsFH3IFexCQ/pfBAjMgPYSt/xxBOIO5YmQlHv8gblokzbkfnhFZ
-         0NpT47hOPkIV6MventGN0YdY3V/uqd07Vu+76BqyzNPhsJjz4DBU7mBY7IADdo1ok2zS
-         Q6r8NOQdUKWksQ+ZzEvrFg4vKAI8XETGztVjBSXqjUva6fBo9iOsDOQ0ejQnlVf/lBd/
-         Vk82f/GAMfRpFLlhADz0YX5AXjpa5UdCrhfbc9OwQpsAMiY+WtQJvQiRHb/q6BcWfgLj
-         n3AQ==
-X-Gm-Message-State: AOAM531z5YZYxKRtrrJvUJfUaOfrdYHjLEZ4Uqgqj7/8r6NRw7TVGvzd
-        Pdtkkwk8ZvMVh+baUYbghw==
-X-Google-Smtp-Source: ABdhPJw3vbnKQcMaVYmulaeEK3Kx4XuELdAzMXUc+g7jTSfRuo70GHTY7tIsrfoDltxuhFYzholOKQ==
-X-Received: by 2002:a05:6808:1a29:b0:2da:4dd3:a024 with SMTP id bk41-20020a0568081a2900b002da4dd3a024mr67329oib.35.1649083174445;
-        Mon, 04 Apr 2022 07:39:34 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id m13-20020a056820050d00b003297b35bc63sm205368ooj.40.2022.04.04.07.39.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 07:39:33 -0700 (PDT)
-Received: (nullmailer pid 1281753 invoked by uid 1000);
-        Mon, 04 Apr 2022 14:39:33 -0000
-Date:   Mon, 4 Apr 2022 09:39:33 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Hongxing Zhu <hongxing.zhu@nxp.com>
-Cc:     "l.stach@pengutronix.de" <l.stach@pengutronix.de>,
-        "bhelgaas@google.com" <bhelgaas@google.com>,
-        "broonie@kernel.org" <broonie@kernel.org>,
-        "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>,
-        "jingoohan1@gmail.com" <jingoohan1@gmail.com>,
-        "festevam@gmail.com" <festevam@gmail.com>,
-        "francesco.dolcini@toradex.com" <francesco.dolcini@toradex.com>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        dl-linux-imx <linux-imx@nxp.com>
-Subject: Re: [PATCH v8 6/8] PCI: dwc: Add dw_pcie_host_ops.host_exit()
- callback
-Message-ID: <YksDJfterGl9uPjs@robh.at.kernel.org>
-References: <1645760667-10510-1-git-send-email-hongxing.zhu@nxp.com>
- <1645760667-10510-7-git-send-email-hongxing.zhu@nxp.com>
- <Ykdj+oJ+0k8UZCwK@robh.at.kernel.org>
- <AS8PR04MB8676A8E85BBDA507481E12C78CE39@AS8PR04MB8676.eurprd04.prod.outlook.com>
+        Mon, 4 Apr 2022 10:48:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B442740907;
+        Mon,  4 Apr 2022 07:44:47 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 32424B8171B;
+        Mon,  4 Apr 2022 14:44:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E2E7C340EE;
+        Mon,  4 Apr 2022 14:44:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649083485;
+        bh=hfIqoM3h/gz+tByTCRoRc0EQZSOX5qfDE+fO89hWlj0=;
+        h=From:To:Cc:Subject:Date:From;
+        b=GcAaiI9iWaGMwggzARvbZP6s+jScCgB92HITxahAIxTos8ySrkjWS/7/FF8ZEgcsI
+         iR1iTIb8FgwbkVquVEBOtQI7RnuJdMJaAAs2yW5z1XXNcZPBIe54tKTE51YhV+ry/U
+         4nt4LiXVwXc5U+Nkj76JzQlY+Miq7LOtFet/isPZZD+ymi87TzMk0L+x5wPwzspAdR
+         7+FT2JnNqfSQ6jse9ENuHWnJEft40JBlld49Oa54b8FAQ4z0mzISE0u1z0WUbVnJUR
+         vnGs81zo/1e4dYke+kN6l3AtWJ6vn2Nqq7DswY/BATuMfM8AdO56sn2o3E8VcMNG2Z
+         kt8P09vYiulWQ==
+From:   guoren@kernel.org
+To:     guoren@kernel.org, arnd@arndb.de
+Cc:     linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-csky@vger.kernel.org, Guo Ren <guoren@linux.alibaba.com>
+Subject: [PATCH] csky: optimize memcpy_{from,to}io() and memset_io()
+Date:   Mon,  4 Apr 2022 22:44:27 +0800
+Message-Id: <20220404144427.2793051-1-guoren@kernel.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <AS8PR04MB8676A8E85BBDA507481E12C78CE39@AS8PR04MB8676.eurprd04.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Apr 02, 2022 at 03:03:00AM +0000, Hongxing Zhu wrote:
-> > -----Original Message-----
-> > From: Rob Herring <robh@kernel.org>
-> > Sent: 2022年4月2日 4:44
-> > To: Hongxing Zhu <hongxing.zhu@nxp.com>
-> > Cc: l.stach@pengutronix.de; bhelgaas@google.com; broonie@kernel.org;
-> > lorenzo.pieralisi@arm.com; jingoohan1@gmail.com; festevam@gmail.com;
-> > francesco.dolcini@toradex.com; linux-pci@vger.kernel.org;
-> > linux-arm-kernel@lists.infradead.org; linux-kernel@vger.kernel.org;
-> > kernel@pengutronix.de; dl-linux-imx <linux-imx@nxp.com>
-> > Subject: Re: [PATCH v8 6/8] PCI: dwc: Add dw_pcie_host_ops.host_exit()
-> > callback
-> > 
-> > On Fri, Feb 25, 2022 at 11:44:25AM +0800, Richard Zhu wrote:
-> > > When the link never comes up after ->host_init(), some drivers,
-> > > especially those that don't support hotplug, want to turn off clocks
-> > > and power supplies.
-> > 
-> > Isn't supporting hotplug or not a board level decision? And hotplug doesn't
-> > have to mean physical plug/unplug. For example, you could have a soldered
-> > down PCIe device which needs regulators, resets, clocks, etc.
-> > for that device to be initialized before the link comes up. If that device is
-> > handled by a module loaded some time later, then the link may be down when
-> > you probe.
-> > 
-> > I think the way this all needs to work is with runtime PM. If that's all in place,
-> > then either you shutdown clocks/power on timeout or via sysfs suspend. If
-> > there's a child device, then that should prevent suspending.
-> Hi Rob:
-> Thanks a lot for your review comments.
-> Understand what you mean.
-> i.MX PCIe doesn't support hot-plug from chip design view.
+From: Guo Ren <guoren@linux.alibaba.com>
 
-The scenario I described is not hotplug.
+Optimize memcpy_{from,to}io() and memset_io() by transferring in
+64 bit as much as possible with minimized barrier usage.  This
+simplest optimization brings faster throughput compare to current
+byte-by-byte read and write with barrier in the loop. Code's
+skeleton is taken from the powerpc & arm64.
 
+Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
+---
+ arch/csky/include/asm/io.h | 11 +++++
+ arch/csky/kernel/io.c      | 91 ++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 102 insertions(+)
+ create mode 100644 arch/csky/kernel/io.c
 
-> The ops.host_exit() callback is invoked only when the iMX PCIe driver hooked
->  callback ops->start_link return an error.
-> For the platforms, that support the hot-plug feature, they can just return one
-> zero from their own ops->start_link.
+diff --git a/arch/csky/include/asm/io.h b/arch/csky/include/asm/io.h
+index f82654053dc0..adb64e26194f 100644
+--- a/arch/csky/include/asm/io.h
++++ b/arch/csky/include/asm/io.h
+@@ -32,6 +32,17 @@
+ #define writel(v,c)		({ wmb(); writel_relaxed((v),(c)); mb(); })
+ #endif
+ 
++/*
++ * String version of I/O memory access operations.
++ */
++extern void __memcpy_fromio(void *, const volatile void __iomem *, size_t);
++extern void __memcpy_toio(volatile void __iomem *, const void *, size_t);
++extern void __memset_io(volatile void __iomem *, int, size_t);
++
++#define memset_io(c,v,l)        __memset_io((c),(v),(l))
++#define memcpy_fromio(a,c,l)    __memcpy_fromio((a),(c),(l))
++#define memcpy_toio(c,a,l)      __memcpy_toio((c),(a),(l))
++
+ /*
+  * I/O memory mapping functions.
+  */
+diff --git a/arch/csky/kernel/io.c b/arch/csky/kernel/io.c
+new file mode 100644
+index 000000000000..5883f13fa2b1
+--- /dev/null
++++ b/arch/csky/kernel/io.c
+@@ -0,0 +1,91 @@
++// SPDX-License-Identifier: GPL-2.0
++
++#include <linux/export.h>
++#include <linux/types.h>
++#include <linux/io.h>
++
++/*
++ * Copy data from IO memory space to "real" memory space.
++ */
++void __memcpy_fromio(void *to, const volatile void __iomem *from, size_t count)
++{
++	while (count && !IS_ALIGNED((unsigned long)from, 4)) {
++		*(u8 *)to = __raw_readb(from);
++		from++;
++		to++;
++		count--;
++	}
++
++	while (count >= 4) {
++		*(u32 *)to = __raw_readl(from);
++		from += 4;
++		to += 4;
++		count -= 4;
++	}
++
++	while (count) {
++		*(u8 *)to = __raw_readb(from);
++		from++;
++		to++;
++		count--;
++	}
++}
++EXPORT_SYMBOL(__memcpy_fromio);
++
++/*
++ * Copy data from "real" memory space to IO memory space.
++ */
++void __memcpy_toio(volatile void __iomem *to, const void *from, size_t count)
++{
++	while (count && !IS_ALIGNED((unsigned long)to, 4)) {
++		__raw_writeb(*(u8 *)from, to);
++		from++;
++		to++;
++		count--;
++	}
++
++	while (count >= 4) {
++		__raw_writel(*(u32 *)from, to);
++		from += 4;
++		to += 4;
++		count -= 4;
++	}
++
++	while (count) {
++		__raw_writeb(*(u8 *)from, to);
++		from++;
++		to++;
++		count--;
++	}
++}
++EXPORT_SYMBOL(__memcpy_toio);
++
++/*
++ * "memset" on IO memory space.
++ */
++void __memset_io(volatile void __iomem *dst, int c, size_t count)
++{
++	u32 qc = (u8)c;
++
++	qc |= qc << 8;
++	qc |= qc << 16;
++
++	while (count && !IS_ALIGNED((unsigned long)dst, 4)) {
++		__raw_writeb(c, dst);
++		dst++;
++		count--;
++	}
++
++	while (count >= 4) {
++		__raw_writel(qc, dst);
++		dst += 4;
++		count -= 4;
++	}
++
++	while (count) {
++		__raw_writeb(c, dst);
++		dst++;
++		count--;
++	}
++}
++EXPORT_SYMBOL(__memset_io);
+-- 
+2.25.1
 
-You cannot have a per board start_link().
-
-> In the current situation, i.MX PCIe does just return one zero when probe failed.
-> See the discussion and commit issued by Fabio below.
-> https://patchwork.kernel.org/project/linux-pci/patch/1641368602-20401-6-git-send-email-hongxing.zhu@nxp.com/
-> https://patchwork.ozlabs.org/project/linux-pci/patch/20220106103645.2790803-1-festevam@gmail.com/
-
-That's a stable fix and different discussion.
-
-> > > Add a new ->host_exit() callback in dw_pcie_host_ops so these drivers
-> > > can clean up if ->host_init() fails.
-> > 
-> > I'm not really a fan of adding more ops nor the ops which aren't too specific
-> > about what they do. 'init' and 'exit' can be anything. I'd rather see more
-> > specific ops with the DWC core driver in charge of sequence of operations and
-> > the state.
-> Understand. 
-
-You don't seem to...
-
-> i.MX PCIe can't handle the error exit properly in this case by itself. So I
->  add one more ops.host_exit() in this series.
-> 
-> Best Regards
-> Richard Zhu
-> > 
-> > Rob
