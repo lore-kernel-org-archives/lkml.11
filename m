@@ -2,68 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3E68C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:54:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38F8EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:59:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238074AbiDDVz6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:55:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47140 "EHLO
+        id S1348764AbiDDV4U (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 17:56:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378955AbiDDQIY (ORCPT
+        with ESMTP id S1379539AbiDDR00 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 12:08:24 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3C6313F42
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 09:06:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=DEQK48DTwuMTMNUTpLWwhw+3ZXcCifB/CeMmKRj1wOY=; b=DAFAD08Dvu2jDB3R/moESGFvEY
-        Qm/1sjjfXx8+Dbu/JriCkI2v/nHfqxIR3/zQ14SmSywHcDSXwXuiktZlD/CIbcT1jyYBGUljAV77+
-        1pzvYO/rOvLU9dQDRxCnzq1P++ZpREsTjxFXOHzz+quDx4Mc6MIBYZ9dTflIdAstJXUEhkTf84IP0
-        pJ6RhSlHpWUcsMzoqBMnr+bRMJhxECh9GBRoKgxe/9JtY7xjjaVHq40lvRP4zCpUJHRehexqvCtbx
-        3peHdoR4IikvuNN7WwxM+FUwcHx3YizY9zb166RCLkGfzLZvjtHoJKWLaQ+g0dG+vW1CX9h8xFine
-        5qQ7q7Lg==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nbPDh-005sCJ-7u; Mon, 04 Apr 2022 16:06:21 +0000
-Date:   Mon, 4 Apr 2022 17:06:21 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Zi Yan <ziy@nvidia.com>
-Cc:     Naoya Horiguchi <naoya.horiguchi@linux.dev>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Naoya Horiguchi <naoya.horiguchi@nec.com>
-Subject: Re: v5.18-rc1: migratepages triggers
- VM_BUG_ON_FOLIO(folio_nr_pages(old) != nr_pages)
-Message-ID: <YksXfckGevTN1QD+@casper.infradead.org>
-References: <20220404132908.GA785673@u2004>
- <F3E3F1AE-B421-4463-B032-3F58DF89A5E2@nvidia.com>
- <YksAub9UccPZa9DI@casper.infradead.org>
- <C4792D17-A7F6-4803-B8FC-B8682F50E044@nvidia.com>
- <20220404151805.GA800317@u2004>
- <857E3E12-5C2D-4990-A667-79E1FC000291@nvidia.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <857E3E12-5C2D-4990-A667-79E1FC000291@nvidia.com>
+        Mon, 4 Apr 2022 13:26:26 -0400
+Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 10BCE31909;
+        Mon,  4 Apr 2022 10:24:29 -0700 (PDT)
+X-IronPort-AV: E=Sophos;i="5.90,234,1643641200"; 
+   d="scan'208";a="116711391"
+Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
+  by relmlie6.idc.renesas.com with ESMTP; 05 Apr 2022 02:24:29 +0900
+Received: from localhost.localdomain (unknown [10.226.36.204])
+        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 9E2D440B0B0A;
+        Tue,  5 Apr 2022 02:24:27 +0900 (JST)
+From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+To:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        linux-mmc@vger.kernel.org
+Cc:     Pavel Machek <pavel@denx.de>, linux-kernel@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [PATCH 2/2] mmc: renesas_internal_dmac: Fix typo's
+Date:   Mon,  4 Apr 2022 18:23:22 +0100
+Message-Id: <20220404172322.32578-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220404172322.32578-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+References: <20220404172322.32578-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 04, 2022 at 11:44:39AM -0400, Zi Yan wrote:
-> I am wondering if my change is the right fix or not. folios with order>0
-> are still available when CONFIG_TRANSPARENT_HUGEPAGE is not set, right?
+Fix typo's,
+* difference -> different
+* alignment -> aligned
 
-That's the eventual plan, but it's not possible today.  We need to
-be able to split large folios (eg in truncation) and that functionality
-is still under CONFIG_TRANSPARENT_HUGEPAGE in mm/huge_memory.c.  So
-large folios depend on CONFIG_TRANSPARENT_HUGEPAGE instead of having a
-clean separation between functionality-to-support-PMD-mapping and
-functionality-to-support-order>0.
+Reported-by: Pavel Machek <pavel@denx.de>
+Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+---
+ drivers/mmc/host/renesas_sdhi_internal_dmac.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-So I preferred your earlier patch because it's more obvious.  I mean,
-we could pull in the two or three patches from my tree that convert
-these functions and their callers to folios ... we're only at rc1.
-I can post them and see what others think.
+diff --git a/drivers/mmc/host/renesas_sdhi_internal_dmac.c b/drivers/mmc/host/renesas_sdhi_internal_dmac.c
+index 1685df00863b..b468368a4539 100644
+--- a/drivers/mmc/host/renesas_sdhi_internal_dmac.c
++++ b/drivers/mmc/host/renesas_sdhi_internal_dmac.c
+@@ -310,7 +310,7 @@ renesas_sdhi_internal_dmac_dataend_dma(struct tmio_mmc_host *host) {
+ }
+ 
+ /*
+- * renesas_sdhi_internal_dmac_map() will be called with two difference
++ * renesas_sdhi_internal_dmac_map() will be called with two different
+  * sg pointers in two mmc_data by .pre_req(), but tmio host can have a single
+  * sg_ptr only. So, renesas_sdhi_internal_dmac_{un}map() should use a sg
+  * pointer in a mmc_data instead of host->sg_ptr.
+@@ -344,7 +344,7 @@ renesas_sdhi_internal_dmac_map(struct tmio_mmc_host *host,
+ 
+ 	data->host_cookie = cookie;
+ 
+-	/* This DMAC cannot handle if buffer is not 128-bytes alignment */
++	/* This DMAC cannot handle if buffer is not 128-bytes aligned */
+ 	if (!IS_ALIGNED(sg_dma_address(data->sg), 128)) {
+ 		renesas_sdhi_internal_dmac_unmap(host, data, cookie);
+ 		return false;
+-- 
+2.17.1
+
