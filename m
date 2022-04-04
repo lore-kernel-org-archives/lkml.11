@@ -2,89 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 933CEC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 08:48:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23B2EC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 08:48:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243621AbiDDIt6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 04:49:58 -0400
+        id S240695AbiDDIuE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 04:50:04 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239621AbiDDItf (ORCPT
+        with ESMTP id S240841AbiDDItl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 04:49:35 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA8DB3B56B;
-        Mon,  4 Apr 2022 01:47:39 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id 5E7761F4594A
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1649062058;
-        bh=D6HHjVxkjaNSQYpDgvwEk+llZiTyrRHbdq/ZOoDG6rg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QSIxsE45CjDX7/iYnmGN/pFbmRhviD905KjuKlVkffYcv5c58eojlKlvQIikbufDZ
-         4Qq6xdGxg8yea3Tdv2pU1aQk2lB3P6XkXVSFkl/TDN4igCSP2qft3qx/ZMpO9KuXzB
-         lQO9pH2wpl1my+sgvwuJ8O4fZyXPftI+QuLjQuFtU46bINczce3NXz2KdP9ATDYa5H
-         i87nXRTjXMSMhpGQiPGn1ut9485i77Av5QOLn4miB8VYv/qPBR7dr1FBZGx4vtTdRV
-         LGK2N4pPm6MnmLVV6wJtUL7voEUaIHnRZy+l/B71m7rG5fv37rJGziWDKLEzfHgfkY
-         9UBspO3VLRh8g==
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-To:     lee.jones@linaro.org
-Cc:     robh+dt@kernel.org, krzk+dt@kernel.org, arnd@arndb.de,
-        matthias.bgg@gmail.com, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, nfraprado@collabora.com,
-        kernel@collabora.com, krzysztof.kozlowski@linaro.org,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Subject: [PATCH v2 1/2] mfd: syscon: Allow using spinlocks with regmap fast_io
-Date:   Mon,  4 Apr 2022 10:47:31 +0200
-Message-Id: <20220404084732.14096-2-angelogioacchino.delregno@collabora.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220404084732.14096-1-angelogioacchino.delregno@collabora.com>
-References: <20220404084732.14096-1-angelogioacchino.delregno@collabora.com>
+        Mon, 4 Apr 2022 04:49:41 -0400
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0AC930F64;
+        Mon,  4 Apr 2022 01:47:44 -0700 (PDT)
+Received: by mail-pg1-x536.google.com with SMTP id l129so7790009pga.3;
+        Mon, 04 Apr 2022 01:47:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=iezfqCSLi9aeu9geiwLSpu2ZGrh8RQtJ4hILxdTJPow=;
+        b=YtZhxs5DRluKygjqYGKUkZHGilAsQaQg+/Yh6XhjAIHye3WtPxHz6OVtRzlCw0j2AJ
+         EPD/kRpfj7N4WP1druCEOIr8C5js8jI6h5uIGtsqhj7buJS4KE40uEjZs0uyq4MaPLPc
+         9Lp98IVFB6Sb0PT23Jjm+wQszcBoOuzxaiMyu9RB53sgu2pNXBIiuXzZKnM9fq+5R+T7
+         CznVXqTEM79IapOa7jfCD0H8pp5iZxKudOhjJKTYMLZTGFFZFvQXZh3FeaynGy6j2y4Q
+         RynB/Fbids5KUpCXdFnFQ3HFRGKwf/jBvP59VoEBkmYQ4X1mWi/TCs8/cHjtzlLg9qjd
+         ekCw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=iezfqCSLi9aeu9geiwLSpu2ZGrh8RQtJ4hILxdTJPow=;
+        b=uut79MlEpOHwSFHsGjZsEmYQUeqROGVMMuGFRA6sLyCzCD3gKH4L+zDwcroQGrzi4M
+         9sXSeD14S69yFEvx3Jr/AloSq6jZ5p6q9SGkuXl+k9dGu5ENC1t5bMOe6kJ13OoXVbQ8
+         Rkyweni4qOY1dLyrEOU4A9YsbIgN07ef40R1/sOUnJvFwv6iFq5Y3Y7ia8cMfVSAPLXm
+         pNtQIyDa+/MwwVCCFZZsfKRxpgV22O2zYKK4nJdnd3LCreAn53iK9CgZN/wqUm4TSYPu
+         w5c2TiyMTguT8TA8yV9ZCFwkRTX2Qe41nNarIqhnbWd73mtHvaERmxpC5pHK/9yOoKoq
+         qOAQ==
+X-Gm-Message-State: AOAM533/wL+V2P5x0s/bgwLyZ7YSr0aPCfmHLXoAQNYJGTg+w3XFYBWg
+        yVU8wZ58ZWHS5A3ADt4DSn22ocSw8Itgw6f1Ew==
+X-Google-Smtp-Source: ABdhPJxIscq7kv48PLNHhvQHl4s43/rPzURDjQM7KlkXxVudjUh0+KERzVFVcUn4q3vRY9v3WKhDlA==
+X-Received: by 2002:a05:6a00:4007:b0:4fa:9505:8ac0 with SMTP id by7-20020a056a00400700b004fa95058ac0mr22981759pfb.67.1649062063779;
+        Mon, 04 Apr 2022 01:47:43 -0700 (PDT)
+Received: from localhost.localdomain ([144.202.91.207])
+        by smtp.gmail.com with ESMTPSA id u6-20020a17090a3fc600b001ca88b0bdfesm3991960pjm.13.2022.04.04.01.47.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Apr 2022 01:47:43 -0700 (PDT)
+From:   Zheyu Ma <zheyuma97@gmail.com>
+To:     deller@gmx.de
+Cc:     linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>
+Subject: [PATCH 0/7] Fix divide errors in fbdev drivers
+Date:   Mon,  4 Apr 2022 16:47:16 +0800
+Message-Id: <20220404084723.79089-1-zheyuma97@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On at least some SoCs accessing MMIO regions is very fast and in some
-cases acquiring a mutex for every IO operation brings a significant
-overhead: this is also the rationale of regmap's fast_io configuration
-parameter, which makes it switch to using a spinlock instead.
+None of these framebuffer drivers checks for 'pixclock', leading to many
+divide errors, which we fix by checking the value of 'pixclock' in
+*_check_var(). As discussed before, it is better to keep the check per
+driver rather than in the caller.
 
-Since the typical use-case for syscon is to give access to misc system
-registers (not representing any specific type of device) to one or more
-other drivers, and since this is done via regmap anyway, allow such
-devices to let syscon configure regmap with fast_io enabled and to let
-this happen, add a Devicetree property "fast-io": when this is found,
-syscon will set '.fast_io = true' in the regmap config.
+https://lore.kernel.org/all/YPgbHMtLQqb1kP0l@ravnborg.org/
 
-Of course, it makes little sense to do that if a syscon node declares
-a phandle to a hardware spinlock provider node, so we check for this
-property only if no hwlock is present.
+Zheyu Ma (7):
+  video: fbdev: i740fb: Error out if 'pixclock' equals zero
+  video: fbdev: neofb: Fix the check of 'var->pixclock'
+  video: fbdev: kyro: Error out if 'lineclock' equals zero
+  video: fbdev: vt8623fb: Error out if 'pixclock' equals zero
+  video: fbdev: tridentfb: Error out if 'pixclock' equals zero
+  video: fbdev: arkfb: Error out if 'pixclock' equals zero
+  video: fbdev: s3fb: Error out if 'pixclock' equals zero
 
-Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- drivers/mfd/syscon.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/video/fbdev/arkfb.c      | 3 +++
+ drivers/video/fbdev/i740fb.c     | 3 +++
+ drivers/video/fbdev/kyro/fbdev.c | 2 ++
+ drivers/video/fbdev/neofb.c      | 2 +-
+ drivers/video/fbdev/s3fb.c       | 3 +++
+ drivers/video/fbdev/tridentfb.c  | 3 +++
+ drivers/video/fbdev/vt8623fb.c   | 3 +++
+ 7 files changed, 18 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/mfd/syscon.c b/drivers/mfd/syscon.c
-index 191fdb87c424..3fcd9afdb9ef 100644
---- a/drivers/mfd/syscon.c
-+++ b/drivers/mfd/syscon.c
-@@ -101,6 +101,10 @@ static struct syscon *of_syscon_register(struct device_node *np, bool check_clk)
- 		}
- 	}
- 
-+	/* Checking for fast-io makes sense only if not using hwspinlock */
-+	if (!syscon_config.use_hwlock && of_property_read_bool(np, "fast-io"))
-+		syscon_config.fast_io = true;
-+
- 	syscon_config.name = kasprintf(GFP_KERNEL, "%pOFn@%llx", np,
- 				       (u64)res.start);
- 	syscon_config.reg_stride = reg_io_width;
 -- 
-2.35.1
+2.25.1
 
