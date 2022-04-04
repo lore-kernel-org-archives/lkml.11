@@ -2,76 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66222C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B51DC4332F
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:59:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351430AbiDDV4i (ORCPT
+        id S1353677AbiDDV4t (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:56:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57074 "EHLO
+        Mon, 4 Apr 2022 17:56:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378970AbiDDQNJ (ORCPT
+        with ESMTP id S1379920AbiDDSVk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 12:13:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9580D2F007
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 09:11:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3E551B816F4
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 16:11:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F04BC34110
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 16:11:09 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="UiBloJww"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1649088667;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=NJXEF3IT+pXVPI757TmAQZ63PIEB107aaHAXmSZApdA=;
-        b=UiBloJwwzBVApHwYa+P/BIi+LDxEXw/bj00uKat7KRCe04nnT9lq14rta88deTd9vjqCTY
-        8kuQFBUDCwXhWgE6+fDyV17DpPsMqb+7vT9WeCQVjdDXa5/UG+k+KR9isAoCv28gprsQHe
-        3ONTdVtTN12e0NzluZAX4brsELyQY3c=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 688b90e3 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO)
-        for <linux-kernel@vger.kernel.org>;
-        Mon, 4 Apr 2022 16:11:07 +0000 (UTC)
-Received: by mail-yw1-f179.google.com with SMTP id 00721157ae682-2e5e31c34bfso104906177b3.10
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 09:11:07 -0700 (PDT)
-X-Gm-Message-State: AOAM530JoDWq+cbLB4c7NdwZqA8c6hiZeuoVwrMelGhQGbo2/6/a+LHw
-        PukhvOUmgt2zEjviegWlQ3FBKo28J3qDU3BdDwo=
-X-Google-Smtp-Source: ABdhPJys4bTOGYhdA6Lwe2omy+aFz3OCJNZLCiqERsWITDHI+UjOx5nuE5bWDEn0Xu/ktUuKRhXjedzl2MbVG/YQbDM=
-X-Received: by 2002:a81:1d4:0:b0:2eb:1b10:f43e with SMTP id
- 203-20020a8101d4000000b002eb1b10f43emr690974ywb.100.1649088666148; Mon, 04
- Apr 2022 09:11:06 -0700 (PDT)
+        Mon, 4 Apr 2022 14:21:40 -0400
+Received: from mail.toke.dk (mail.toke.dk [IPv6:2a0c:4d80:42:2001::664])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F340022B37;
+        Mon,  4 Apr 2022 11:19:41 -0700 (PDT)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=toke.dk; s=20161023;
+        t=1649096380; bh=QeGEmumyI0bTa9hQLQemEOhMF26a8yF+DIu+jq5TyfY=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=HrYvVqyGRySL75m2K8ZelMvByGERl3maQTxqymSD5ngY6PMSZtZoYnBE8FgM6o8QM
+         eIg1adhWgbIqFEvCXL113vtpCOxgqtdGHHIM4xwbdrG90Z2j2qguM1JRuJQkCWuakc
+         c2NV6E9tCUBOL1EGDy+CbJ/4ScrbnkPnQ3KXadHutzyI2n+1Si/zRyCJm8i7w252Cs
+         Bjl6+Z0ZZ38DFtbwtVZBIkjVTkqgdfBkd9nPwFFqyw0Rr53yv+Agu33VEqM6KEmHf6
+         Ao3XL2h20VfE24/iLt/y49+1/7QIczHhCrG1iiGB9kw4m6r4vRONdXiLGl4jAs8C3D
+         vYk+BoZAScemg==
+To:     Peter Seiderer <ps.report@gmx.net>, linux-wireless@vger.kernel.org
+Cc:     Kalle Valo <kvalo@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1 1/2] ath9k: fix ath_get_rate_txpower() to respect the
+ rate list end tag
+In-Reply-To: <20220402153014.31332-1-ps.report@gmx.net>
+References: <20220402153014.31332-1-ps.report@gmx.net>
+Date:   Mon, 04 Apr 2022 20:19:39 +0200
+X-Clacks-Overhead: GNU Terry Pratchett
+Message-ID: <87ilroemo4.fsf@toke.dk>
 MIME-Version: 1.0
-References: <20220404150442.934496-1-jan.varho@gmail.com> <YksMxDLxPZtuYlFm@zx2c4.com>
- <CAE2X=SxCwoKa1OpNAsy5FN1Ugeos3gaM4YX4K4uTWfkKBEr0pA@mail.gmail.com>
-In-Reply-To: <CAE2X=SxCwoKa1OpNAsy5FN1Ugeos3gaM4YX4K4uTWfkKBEr0pA@mail.gmail.com>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Mon, 4 Apr 2022 18:10:55 +0200
-X-Gmail-Original-Message-ID: <CAHmME9rKFfv+=Yvu2HZEjLZs1MPLrkHQTA1iLikVf2dxC998YQ@mail.gmail.com>
-Message-ID: <CAHmME9rKFfv+=Yvu2HZEjLZs1MPLrkHQTA1iLikVf2dxC998YQ@mail.gmail.com>
-Subject: Re: [PATCH] random: fix add_hwgenerator_randomness entropy accounting
-To:     Jan Varho <jan.varho@gmail.com>
-Cc:     "Theodore Ts'o" <tytso@mit.edu>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jan,
+Peter Seiderer <ps.report@gmx.net> writes:
 
-On Mon, Apr 4, 2022 at 5:29 PM Jan Varho <jan.varho@gmail.com> wrote:
-> I thought about doing it that way, but the return value allows
-> checking that any input was actually used instead of fast init
-> completing in the mean time.
+> Stop reading (and copying) from ieee80211_tx_rate to ath_tx_info.rates
+> after list end tag (count == 0, idx < 0), prevents copying of garbage
+> to card registers.
 
-I'm not too worried about races here. If lots of things are fighting
-to inject entropy here, we're not in a starved situation. Also, the
-other callers aren't looking at the return value. Let's keep it
-simple; there's little harm in doing so in this instance.
+In the normal case I don't think this patch does anything, since any
+invalid rate entries will already be skipped (just one at a time instead
+of all at once). So this comment is a bit misleading.
 
-Jason
+Also, Minstrel could in principle produce a rate sequence where the
+indexes are all positive, but there's one in the middle with a count of
+0, couldn't it? With this patch, the last entries of such a sequence
+would now be skipped...
+
+-Toke
