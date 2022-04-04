@@ -2,153 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44343C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 10:15:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C420C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 10:15:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356551AbiDDKRA (ORCPT
+        id S1356695AbiDDKR3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 06:17:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34260 "EHLO
+        Mon, 4 Apr 2022 06:17:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244282AbiDDKQ5 (ORCPT
+        with ESMTP id S243260AbiDDKRY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 06:16:57 -0400
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75D472B1A6
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 03:15:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649067301; x=1680603301;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=k9Gtv0W+HeVk4XEfSmpLwR30gXASasolOPnIV5u/vYM=;
-  b=OMWT0p2s1tzajfkz3ka66TG/Uya4WqHT4g+1tcuHjrF+OWs2yu8Pd0ct
-   hkCsqrGS8Eo87pOEupZGZBj8legHLV4y/V3AetIxncGC2UYvf3YssFy3y
-   qStMA1pj46CtRhK4ajlB7KD+86hGCwmtAO3weRxxEx1v1zm4I9ZXRHDCu
-   29i40pw0OHv65YfbKax2ApfSSM3nwcgbLLEYzlX1TNDmh39qkX6GQRvKs
-   sanfpeCbX89zVqH3nVlLAAH8D5H0ISFo0MSCncrhWCLE7koed/iq+Lk3J
-   M/KqL1lgaZ7lDd/bUv/DUkNAUD6dGzGAIiZNOq82NhwsQaexCXomdPSOO
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10306"; a="321176853"
-X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
-   d="scan'208";a="321176853"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 03:15:01 -0700
-X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
-   d="scan'208";a="522973803"
-Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 03:14:59 -0700
-Received: by lahna (sSMTP sendmail emulation); Mon, 04 Apr 2022 13:10:27 +0300
-Date:   Mon, 4 Apr 2022 13:10:27 +0300
-From:   Mika Westerberg <mika.westerberg@linux.intel.com>
-To:     Brad Campbell <lists2009@fnarfbargle.com>
-Cc:     linux-kernel@vger.kernel.org
-Subject: Re: Apple Thunderbolt Display chaining
-Message-ID: <YkrEE0uh9EVCchfl@lahna>
-References: <YkQuk7E8AbSEiw59@lahna>
- <b35e4054-4f22-72a2-4313-77299697af7b@fnarfbargle.com>
- <YkRebADER3J9ooPM@lahna>
- <d40f02e5-7274-e834-6e13-82b3dbe11284@fnarfbargle.com>
- <YkRtf2HiXBOWGjna@lahna>
- <eacc22dc-e650-a208-9484-62edd98d5778@fnarfbargle.com>
- <YkXYdcUZ1E18ENle@lahna>
- <5dcee6f7-cc8c-e3ce-920c-4ad3f5d77e14@fnarfbargle.com>
- <YkcMofXKr/ZmOSwH@lahna>
- <7ea44c20-6c65-224f-af7b-aa1bd310d038@fnarfbargle.com>
+        Mon, 4 Apr 2022 06:17:24 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30D532F38A;
+        Mon,  4 Apr 2022 03:15:28 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id w18so4175901edi.13;
+        Mon, 04 Apr 2022 03:15:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=s/rlqtfSH/+OKtlWbKj/8X8QmPBtgrwTTfh5H/AMmr8=;
+        b=M6UB/xq5U2lez0akpMy5cdYkLpWp5TY7avZOr9EOmD3mOmC7LnKWizhrsWVbS9OYXV
+         WxZR1L3Zip6LzxkB/OPBaxvuvHRQ+I4ccmh7WVg7layXLF9PfwqQYZ+jlB6EvWgmb6tq
+         0lZWCE3uc7LImkbQu2mlfWDe2OdVL/M2gk8b/f83Msuz2BzcI+DWU/n4c03LXmBik2KW
+         KbNMC8korkh/nF0C0QAzLDf4TOGpyF8a6IoEG8l74xBIia5wiIab+cBhjD/6K3P9R06b
+         EK2dkk2s3pESu8s3Lp5ePedMQzZPflgxpC1RgXqt3TXscJmh/VeMBZJdhbyeZhLuCe4J
+         VwFg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=s/rlqtfSH/+OKtlWbKj/8X8QmPBtgrwTTfh5H/AMmr8=;
+        b=kiRMLuFauMnZZ01SYxJ9sfWlLOwmSagcfxoeWjN5ZuDR+SXbbsRmp/TYxTXxOkVIn5
+         Iqhrq8yPTGr+c2dINM2OCjxzfw2xv2EqP0qcIvgiQbXB6CFhupchg7qJS+X0SFW0zi0h
+         10z9rSVGKRM9PyU3/WzwV9S1SorXyBZk8owEoeBF5BvRSX1912zRUBp6h+W2B9/APwbd
+         D1VBLhGr5Lmpbys4MmvMixIj6/oTkawSZx47oYwBvU0AZnh+RMVs6q3g7ZTZ8tokMIJK
+         hXhlcVtD46KCz33aG8ELnbIxXeAfJDYCvDprSuF631kzWu5eMu3BoFQGf+rak9l67Sv2
+         LsgA==
+X-Gm-Message-State: AOAM532mDF0NxFmVYKAjRun0f+rN1TnS8jOMGtuOqGm86aGKsg3CL7QC
+        fBKuXcMCzsvwMkB1Y5qiH18eomqf3gUkvgfkSAFiJObyoq8=
+X-Google-Smtp-Source: ABdhPJxh9T+A1Yt+ILwhaxqoZIRZw7XK7bOr8aWn5QI6DqXoAfRnxar+91mJpxHWbEEB8aKP53yR05gviFAyUrKxBls=
+X-Received: by 2002:a05:6402:b19:b0:41c:d713:5cba with SMTP id
+ bm25-20020a0564020b1900b0041cd7135cbamr2668518edb.270.1649067326747; Mon, 04
+ Apr 2022 03:15:26 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7ea44c20-6c65-224f-af7b-aa1bd310d038@fnarfbargle.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <20220403183758.192236-1-krzysztof.kozlowski@linaro.org>
+ <20220403183758.192236-2-krzysztof.kozlowski@linaro.org> <CAHp75Vczm9f9Bx_w4nW31cnBgwEzPiN-Eqn-7DKZuB+Hew0F=Q@mail.gmail.com>
+ <2976f4f9-4fda-c04f-45cf-351518f88ec0@linaro.org>
+In-Reply-To: <2976f4f9-4fda-c04f-45cf-351518f88ec0@linaro.org>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 4 Apr 2022 13:14:22 +0300
+Message-ID: <CAHp75Vd-=-unRzQPtpfOs80dN=pDSsBaj=10nwOmmyWE8OqDPg@mail.gmail.com>
+Subject: Re: [PATCH v6 01/12] driver: platform: Add helper for safer setting
+ of driver_override
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Stuart Yoder <stuyoder@gmail.com>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Vineeth Vijayan <vneethv@linux.ibm.com>,
+        Peter Oberparleiter <oberpar@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Andy Gross <agross@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        Linux on Hyper-V List <linux-hyperv@vger.kernel.org>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org,
+        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
+        linux-spi <linux-spi@vger.kernel.org>,
+        virtualization@lists.linux-foundation.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 01, 2022 at 11:05:27PM +0800, Brad Campbell wrote:
-> On 1/4/22 22:30, Mika Westerberg wrote:
-> > Hi,
-> > 
-> > On Fri, Apr 01, 2022 at 01:48:13PM +0800, Brad Campbell wrote:
-> > > That I can do. I didn't crop or grep as I wasn't sure what might be additionally relevant.
-> > > 2 machines, 2 ports, 4 cold boots. Each time just the Thnuderbolt displays chained.
-> > 
-> > Thanks for the logs! It looks like the Apple EFI CM always uses the lane
-> > 1 adapter.
-> 
-> Thanks for sticking with me. This must be a minuscule corner case that
-> is buried in a dark room behind a filing cabinet.
+On Mon, Apr 4, 2022 at 12:34 PM Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
+> On 04/04/2022 11:16, Andy Shevchenko wrote:
+> > On Sun, Apr 3, 2022 at 9:38 PM Krzysztof Kozlowski
+> > <krzysztof.kozlowski@linaro.org> wrote:
 
-Well, it is just that nobody else reported the issue before ;-) I don't
-have Light Ridge or Falcon Ridge based Apple hardware anymore so these
-won't show up in my regular testing.
+...
 
-> > Can you try the below patch? Fingers crossed that it solves the
-> > chaining issue for both ;-) I had to patch the test.c because otherwise
-> > unit tests fail to compile when enabled.
-> > 
-> > This should now setup the second tunnel always through the lane 0
-> > adapter and thus share the bandwidth equally between the two lanes.
-> > 
-> > @@ -1604,7 +1604,7 @@ static void tb_test_tunnel_3dp(struct kunit *test)
-> >   	KUNIT_ASSERT_EQ(test, tunnel1->npaths, 3);
-> >   	KUNIT_ASSERT_EQ(test, tunnel1->paths[0]->path_length, 3);
-> > -	tunnel2 = tb_tunnel_alloc_dp(NULL, in2, out2, 0, 0);
-> > +	tunnel2 = tb_tunnel_alloc_dp(NULL, in2, out2, 1, 0, 0);
-> >   	KUNIT_ASSERT_TRUE(test, tunnel2 != NULL);
-> >   	KUNIT_EXPECT_EQ(test, tunnel2->type, TB_TUNNEL_DP);
-> >   	KUNIT_EXPECT_PTR_EQ(test, tunnel2->src_port, in2);
-> > @@ -1612,7 +1612,7 @@ static void tb_test_tunnel_3dp(struct kunit *test)
-> >   	KUNIT_ASSERT_EQ(test, tunnel2->npaths, 3);
-> >   	KUNIT_ASSERT_EQ(test, tunnel2->paths[0]->path_length, 4);
-> > -	tunnel3 = tb_tunnel_alloc_dp(NULL, in3, out3, 0, 0);
-> > +	tunnel3 = tb_tunnel_alloc_dp(NULL, in3, out3, 1, 0, 0);
-> >   	KUNIT_ASSERT_TRUE(test, tunnel3 != NULL);
-> >   	KUNIT_EXPECT_EQ(test, tunnel3->type, TB_TUNNEL_DP);
-> >   	KUNIT_EXPECT_PTR_EQ(test, tunnel3->src_port, in3);
-> 
-> These 2 chunks don't apply.
-> I can't find a tb_test_tunnel_3dp in any of the trees I have (either
-> head or stable). In any case I've updated to current head and applied
-> without those chunks.
+> >> +int driver_set_override(struct device *dev, const char **override,
+> >> +                       const char *s, size_t len)
+> >> +{
+> >> +       const char *new, *old;
+> >> +       char *cp;
+> >
+> >> +       if (!override || !s)
+> >> +               return -EINVAL;
+> >
+> > Still not sure if we should distinguish (s == NULL && len == 0) from
+> > (s != NULL && len == 0).
+> > Supplying the latter seems confusing (yes, I see that in the old code). Perhaps
+> > !s test, in case you want to leave it, should be also commented.
+>
+> The old semantics were focused on sysfs usage, so clearing is by passing
+> an empty string. In the case of sysfs empty string is actually "\n". I
+> intend to keep the semantics also for the in-kernel usage and in such
+> case empty string can be also "".
+>
+> If I understand your comment correctly, you propose to change it to NULL
+> for in-kernel usage, but that would change the semantics.
 
-Indeed, I forgot to drop that hunk. It is based on my local branch that
-has some additional code but good that you managed to work it around.
+Yes. It's also possible to have a wrapper for sysfs use.
 
-> This fixes *all* cases on the MacBookPro. Cold boot on either port, and hot plug likewise
+> > Another approach is to split above to two checks and move !s after !len.
+>
+> I don't follow why... The !override and !s are invalid uses. !len is a
+> valid user for internal callers, just like "\n" is for sysfs.
 
-That's great!
+I understand but always supplying s maybe an overhead for in-kernel usages.
 
-> On the iMac it cold boots on either port. If I boot with the displays plugged in, then unplug-replug we get :
-> 
-> Apr  1 22:49:41 bkmac kernel: [   24.480306] [drm:radeon_dp_link_train [radeon]] *ERROR* displayport link status failed
-> Apr  1 22:49:41 bkmac kernel: [   24.481309] [drm:radeon_dp_link_train [radeon]] *ERROR* clock recovery failed
-> 
-> The last head on the chain comes up, the first doesn't.
-> 
-> If I plug the displays in *after* the chime and before the kernel starts up, then both heads come up and hotplug works fine excepting after the second unplug we get lots of this :
-> 
-> Apr  1 22:52:54 bkmac kernel: [   37.313493] thunderbolt 0000:07:00.0: 0: timeout reading config space 1 from 0x39
-> Apr  1 22:52:54 bkmac kernel: [   37.313513] thunderbolt 0000:07:00.0: 0:c: DP IN available
-> Apr  1 22:52:54 bkmac kernel: [   37.763482] thunderbolt 0000:07:00.0: 0: timeout reading config space 1 from 0x39
-> Apr  1 22:52:54 bkmac kernel: [   37.763489] thunderbolt 0000:07:00.0: 0:d: DP IN available
-> Apr  1 22:52:54 bkmac kernel: [   37.763491] thunderbolt 0000:07:00.0: no suitable DP IN adapter available, not tunneling
-> Apr  1 22:52:54 bkmac kernel: [   37.763495] thunderbolt 0000:07:00.0: 0:4: got unplug event for disconnected port, ignoring
-> Apr  1 22:52:54 bkmac kernel: [   37.763496] thunderbolt 0000:07:00.0: 0:3: got unplug event for disconnected port, ignoring
-> Apr  1 22:52:54 bkmac kernel: [   37.763498] thunderbolt 0000:07:00.0: 0:3: got unplug event for disconnected port, ignoring
-> 
-> And the thunderbolt ports then fail to respond to any plug event until rebooted.
+In any case, it's not critical right now, just a remark that it can be modified.
 
-This makes me suspect that there is something else still going on with
-the Light Ridge controller that we are missing in the Linux driver.
+> >> +       /*
+> >> +        * The stored value will be used in sysfs show callback (sysfs_emit()),
+> >> +        * which has a length limit of PAGE_SIZE and adds a trailing newline.
+> >> +        * Thus we can store one character less to avoid truncation during sysfs
+> >> +        * show.
+> >> +        */
+> >> +       if (len >= (PAGE_SIZE - 1))
+> >> +               return -EINVAL;
+> >
+> > Perhaps explain the case in the comment here?
+>
+> You mean the case we discuss here (to clear override with "")? Sure.
 
-> Feels like it's nailed excepting some DP routing on the Radeon, but
-> I've not been able to put my finger on how that works.
-> With your very first patch, hotplug works on the iMac.
+Yep. Before the below check.
 
-Hm, you mean you don't see the timeout errors and stuff with the first
-patch applied?
+> >> +       if (!len) {
+> >> +               device_lock(dev);
+> >> +               old = *override;
+> >> +               *override = NULL;
+> >
+> >> +               device_unlock(dev);
+> >> +               goto out_free;
+> >
+> > You may deduplicate this one, by
+> >
+> >                goto out_unlock_free;
+> >
+> > But I understand your intention to keep lock-unlock in one place, so
+> > perhaps dropping that label would be even better in this case and
+> > keeping it
+>
+> Yes, exactly.
+>
+> >        kfree(old);
+> >        return 0;
+> >
+> > here instead of goto.
+>
+> Slightly more code, but indeed maybe easier to follow. I'll do like this.
 
-I think I will make this current one a proper patch and submit upstream
-later this week (will CC you too). For the iMac issue we may need to
-debug it further. Not sure if you answered this one already but on iMac
-on macOS does it work always when you plug in the whole chain?
+
+-- 
+With Best Regards,
+Andy Shevchenko
