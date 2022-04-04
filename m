@@ -2,192 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C502C35296
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56307C35295
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:23:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382137AbiDDVY4 (ORCPT
+        id S1382119AbiDDVYy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:24:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46210 "EHLO
+        Mon, 4 Apr 2022 17:24:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379253AbiDDQvs (ORCPT
+        with ESMTP id S1379668AbiDDRqi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 12:51:48 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B11C52B1B0;
-        Mon,  4 Apr 2022 09:49:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649090991; x=1680626991;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=nUCxoYXpaLcMuFF2b8VDSWzuYcUmFDOIEehMew72cCE=;
-  b=UIt//fUOf9TmtNF2OO1vwsDoNuoMdpRsQxZA4ewEHfn9Ma2yvblsimnE
-   kobQFpSVBeFZesIklacYnzDbSQFzJyEAQpLHz9ToUBE793qILat4WbQJS
-   XG3W9M0hDSgyh+qb+sTpq7LC/HuI6U9LJ/ExuqTXrzGDjOZ7HCz5UJhX9
-   j7rQXl8fq17DvAl2ooLYUXBo7TnTaTAp2p3P81gkI8BWrMBq4ZucqQn8G
-   zV3HEHQZLnVro2BmHZLrAGuqiapeTBW5VWkcJjo9aJFdNVBtXRtRmfUeJ
-   wFXSgvbTMYhMns8SjGU2HOMf3g//FDAMSpFZEqxCTTOgYtf7dlmpRrH9v
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="323734039"
-X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
-   d="scan'208";a="323734039"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:49:51 -0700
-X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
-   d="scan'208";a="523105162"
-Received: from rchatre-ws.ostc.intel.com ([10.54.69.144])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:49:50 -0700
-From:   Reinette Chatre <reinette.chatre@intel.com>
-To:     dave.hansen@linux.intel.com, jarkko@kernel.org, tglx@linutronix.de,
-        bp@alien8.de, luto@kernel.org, mingo@redhat.com,
-        linux-sgx@vger.kernel.org, x86@kernel.org
-Cc:     seanjc@google.com, kai.huang@intel.com, cathy.zhang@intel.com,
-        cedric.xing@intel.com, haitao.huang@intel.com,
-        mark.shanahan@intel.com, hpa@zytor.com,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH V3 05/30] x86/sgx: Support loading enclave page without VMA permissions check
-Date:   Mon,  4 Apr 2022 09:49:13 -0700
-Message-Id: <c9a81f8a2b3f582a906c750e2221f98ca36731e4.1648847675.git.reinette.chatre@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1648847675.git.reinette.chatre@intel.com>
-References: <cover.1648847675.git.reinette.chatre@intel.com>
+        Mon, 4 Apr 2022 13:46:38 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CE6A13EBA;
+        Mon,  4 Apr 2022 10:44:42 -0700 (PDT)
+Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 234Ge0KG016546;
+        Mon, 4 Apr 2022 17:44:40 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=pLpK+tEpeWb6HbS5e3cPLiZx014T4uD87VJyuP9P5fo=;
+ b=Gy8CprMQW4NW74Q5b0SgxcteDnmtZDwCFEGEEx/O4mkaJUnYk+ZnxNBg24ZZY/VZPndD
+ ZQA3m9IAKGAGXm5XW0qbUPHBfGH9wsUgABAg1g9opKqvzxAtwrgqi0Bz/LKDMlioig5O
+ o2rsWQvVeiIC7g+nm3gtep/x5Hjvr7fRjMDEFr2fO2jxfxh83HHzeO+SY9MUKJ/3R2k2
+ d8WDIj8xQSXTizobte611NSbEy+Qi0m1Gp6gsHQHCZwm3Zv8jA+v7RgPmm3UgS0GJQeJ
+ MH3w8P4d5eCGRCT/Y92JFer2ycrEHDLEn8sbFRY1b2E8A8nYu33ZhKISNIfHrhJQ6lkz 5A== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3f6ywj3c46-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 04 Apr 2022 17:44:40 +0000
+Received: from m0098416.ppops.net (m0098416.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 234Gh41D029434;
+        Mon, 4 Apr 2022 17:44:40 GMT
+Received: from ppma04wdc.us.ibm.com (1a.90.2fa9.ip4.static.sl-reverse.com [169.47.144.26])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3f6ywj3c35-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 04 Apr 2022 17:44:39 +0000
+Received: from pps.filterd (ppma04wdc.us.ibm.com [127.0.0.1])
+        by ppma04wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 234Hh7dm010703;
+        Mon, 4 Apr 2022 17:44:39 GMT
+Received: from b03cxnp08026.gho.boulder.ibm.com (b03cxnp08026.gho.boulder.ibm.com [9.17.130.18])
+        by ppma04wdc.us.ibm.com with ESMTP id 3f6e49h75j-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 04 Apr 2022 17:44:39 +0000
+Received: from b03ledav002.gho.boulder.ibm.com (b03ledav002.gho.boulder.ibm.com [9.17.130.233])
+        by b03cxnp08026.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 234HicZY32309608
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 4 Apr 2022 17:44:38 GMT
+Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 212AA136051;
+        Mon,  4 Apr 2022 17:44:38 +0000 (GMT)
+Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 05ABC13604F;
+        Mon,  4 Apr 2022 17:44:36 +0000 (GMT)
+Received: from li-c92d2ccc-254b-11b2-a85c-a700b5bfb098.ibm.com.com (unknown [9.211.32.125])
+        by b03ledav002.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Mon,  4 Apr 2022 17:44:35 +0000 (GMT)
+From:   Matthew Rosato <mjrosato@linux.ibm.com>
+To:     linux-s390@vger.kernel.org
+Cc:     alex.williamson@redhat.com, cohuck@redhat.com,
+        schnelle@linux.ibm.com, farman@linux.ibm.com, pmorel@linux.ibm.com,
+        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
+        svens@linux.ibm.com, frankja@linux.ibm.com, david@redhat.com,
+        imbrenda@linux.ibm.com, vneethv@linux.ibm.com,
+        oberpar@linux.ibm.com, freude@linux.ibm.com, thuth@redhat.com,
+        pasic@linux.ibm.com, pbonzini@redhat.com, corbet@lwn.net,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org
+Subject: [PATCH v5 18/21] vfio-pci/zdev: different maxstbl for interpreted devices
+Date:   Mon,  4 Apr 2022 13:43:46 -0400
+Message-Id: <20220404174349.58530-19-mjrosato@linux.ibm.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220404174349.58530-1-mjrosato@linux.ibm.com>
+References: <20220404174349.58530-1-mjrosato@linux.ibm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: mZyiUFYSlim30QOgceMym7_96AiPl-s3
+X-Proofpoint-ORIG-GUID: lB5fQBpHwPhQsNCHpPzGRSDEsxUZUvgx
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-04-04_06,2022-03-31_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 mlxscore=0
+ mlxlogscore=999 suspectscore=0 spamscore=0 adultscore=0 impostorscore=0
+ bulkscore=0 lowpriorityscore=0 phishscore=0 malwarescore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2204040099
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-sgx_encl_load_page() is used to find and load an enclave page into
-enclave (EPC) memory, potentially loading it from the backing storage.
-Both usages of sgx_encl_load_page() are during an access to the
-enclave page from a VMA and thus the permissions of the VMA are
-considered before the enclave page is loaded.
+When doing load/store interpretation, the maximum store block length is
+determined by the underlying firmware, not the host kernel API.  Reflect
+that in the associated Query PCI Function Group clp capability and let
+userspace decide which is appropriate to present to the guest.
 
-SGX2 functions operating on enclave pages belonging to an initialized
-enclave requiring the page to be in EPC. It is thus required to
-support loading enclave pages into the EPC independent from a VMA.
-
-Split the current sgx_encl_load_page() to support the two usages:
-A new call, sgx_encl_load_page_in_vma(), behaves exactly like the
-current sgx_encl_load_page() that takes VMA permissions into account,
-while sgx_encl_load_page() just loads an enclave page into EPC.
-
-VMA, PTE, and EPCM permissions would continue to dictate whether
-the pages can be accessed from within an enclave.
-
-Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
+Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
 ---
-Changes since V2:
-- New patch
+ drivers/vfio/pci/vfio_pci_zdev.c | 6 ++++--
+ include/uapi/linux/vfio_zdev.h   | 4 ++++
+ 2 files changed, 8 insertions(+), 2 deletions(-)
 
- arch/x86/kernel/cpu/sgx/encl.c | 57 ++++++++++++++++++++++------------
- arch/x86/kernel/cpu/sgx/encl.h |  2 ++
- 2 files changed, 40 insertions(+), 19 deletions(-)
-
-diff --git a/arch/x86/kernel/cpu/sgx/encl.c b/arch/x86/kernel/cpu/sgx/encl.c
-index 7c63a1911fae..05ae1168391c 100644
---- a/arch/x86/kernel/cpu/sgx/encl.c
-+++ b/arch/x86/kernel/cpu/sgx/encl.c
-@@ -131,25 +131,10 @@ static struct sgx_epc_page *sgx_encl_eldu(struct sgx_encl_page *encl_page,
- 	return epc_page;
- }
- 
--static struct sgx_encl_page *sgx_encl_load_page(struct sgx_encl *encl,
--						unsigned long addr,
--						unsigned long vm_flags)
-+static struct sgx_encl_page *__sgx_encl_load_page(struct sgx_encl *encl,
-+						  struct sgx_encl_page *entry)
+diff --git a/drivers/vfio/pci/vfio_pci_zdev.c b/drivers/vfio/pci/vfio_pci_zdev.c
+index 4a653ce480c7..d3ca58d9d8ec 100644
+--- a/drivers/vfio/pci/vfio_pci_zdev.c
++++ b/drivers/vfio/pci/vfio_pci_zdev.c
+@@ -44,14 +44,16 @@ static int zpci_group_cap(struct zpci_dev *zdev, struct vfio_info_cap *caps)
  {
--	unsigned long vm_prot_bits = vm_flags & (VM_READ | VM_WRITE | VM_EXEC);
- 	struct sgx_epc_page *epc_page;
--	struct sgx_encl_page *entry;
--
--	entry = xa_load(&encl->page_array, PFN_DOWN(addr));
--	if (!entry)
--		return ERR_PTR(-EFAULT);
--
--	/*
--	 * Verify that the faulted page has equal or higher build time
--	 * permissions than the VMA permissions (i.e. the subset of {VM_READ,
--	 * VM_WRITE, VM_EXECUTE} in vma->vm_flags).
--	 */
--	if ((entry->vm_max_prot_bits & vm_prot_bits) != vm_prot_bits)
--		return ERR_PTR(-EFAULT);
+ 	struct vfio_device_info_cap_zpci_group cap = {
+ 		.header.id = VFIO_DEVICE_INFO_CAP_ZPCI_GROUP,
+-		.header.version = 1,
++		.header.version = 2,
+ 		.dasm = zdev->dma_mask,
+ 		.msi_addr = zdev->msi_addr,
+ 		.flags = VFIO_DEVICE_INFO_ZPCI_FLAG_REFRESH,
+ 		.mui = zdev->fmb_update,
+ 		.noi = zdev->max_msi,
+ 		.maxstbl = ZPCI_MAX_WRITE_SIZE,
+-		.version = zdev->version
++		.version = zdev->version,
++		.reserved = 0,
++		.imaxstbl = zdev->maxstbl
+ 	};
  
- 	/* Entry successfully located. */
- 	if (entry->epc_page) {
-@@ -175,6 +160,40 @@ static struct sgx_encl_page *sgx_encl_load_page(struct sgx_encl *encl,
- 	return entry;
- }
+ 	return vfio_info_add_capability(caps, &cap.header, sizeof(cap));
+diff --git a/include/uapi/linux/vfio_zdev.h b/include/uapi/linux/vfio_zdev.h
+index 78c022af3d29..77f2aff1f27e 100644
+--- a/include/uapi/linux/vfio_zdev.h
++++ b/include/uapi/linux/vfio_zdev.h
+@@ -50,6 +50,10 @@ struct vfio_device_info_cap_zpci_group {
+ 	__u16 noi;		/* Maximum number of MSIs */
+ 	__u16 maxstbl;		/* Maximum Store Block Length */
+ 	__u8 version;		/* Supported PCI Version */
++	/* End of version 1 */
++	__u8 reserved;
++	__u16 imaxstbl;		/* Maximum Interpreted Store Block Length */
++	/* End of version 2 */
+ };
  
-+static struct sgx_encl_page *sgx_encl_load_page_in_vma(struct sgx_encl *encl,
-+						       unsigned long addr,
-+						       unsigned long vm_flags)
-+{
-+	unsigned long vm_prot_bits = vm_flags & (VM_READ | VM_WRITE | VM_EXEC);
-+	struct sgx_encl_page *entry;
-+
-+	entry = xa_load(&encl->page_array, PFN_DOWN(addr));
-+	if (!entry)
-+		return ERR_PTR(-EFAULT);
-+
-+	/*
-+	 * Verify that the page has equal or higher build time
-+	 * permissions than the VMA permissions (i.e. the subset of {VM_READ,
-+	 * VM_WRITE, VM_EXECUTE} in vma->vm_flags).
-+	 */
-+	if ((entry->vm_max_prot_bits & vm_prot_bits) != vm_prot_bits)
-+		return ERR_PTR(-EFAULT);
-+
-+	return __sgx_encl_load_page(encl, entry);
-+}
-+
-+struct sgx_encl_page *sgx_encl_load_page(struct sgx_encl *encl,
-+					 unsigned long addr)
-+{
-+	struct sgx_encl_page *entry;
-+
-+	entry = xa_load(&encl->page_array, PFN_DOWN(addr));
-+	if (!entry)
-+		return ERR_PTR(-EFAULT);
-+
-+	return __sgx_encl_load_page(encl, entry);
-+}
-+
- static vm_fault_t sgx_vma_fault(struct vm_fault *vmf)
- {
- 	unsigned long addr = (unsigned long)vmf->address;
-@@ -196,7 +215,7 @@ static vm_fault_t sgx_vma_fault(struct vm_fault *vmf)
- 
- 	mutex_lock(&encl->lock);
- 
--	entry = sgx_encl_load_page(encl, addr, vma->vm_flags);
-+	entry = sgx_encl_load_page_in_vma(encl, addr, vma->vm_flags);
- 	if (IS_ERR(entry)) {
- 		mutex_unlock(&encl->lock);
- 
-@@ -344,7 +363,7 @@ static struct sgx_encl_page *sgx_encl_reserve_page(struct sgx_encl *encl,
- 	for ( ; ; ) {
- 		mutex_lock(&encl->lock);
- 
--		entry = sgx_encl_load_page(encl, addr, vm_flags);
-+		entry = sgx_encl_load_page_in_vma(encl, addr, vm_flags);
- 		if (PTR_ERR(entry) != -EBUSY)
- 			break;
- 
-diff --git a/arch/x86/kernel/cpu/sgx/encl.h b/arch/x86/kernel/cpu/sgx/encl.h
-index fec43ca65065..6b34efba1602 100644
---- a/arch/x86/kernel/cpu/sgx/encl.h
-+++ b/arch/x86/kernel/cpu/sgx/encl.h
-@@ -116,5 +116,7 @@ unsigned int sgx_alloc_va_slot(struct sgx_va_page *va_page);
- void sgx_free_va_slot(struct sgx_va_page *va_page, unsigned int offset);
- bool sgx_va_page_full(struct sgx_va_page *va_page);
- void sgx_encl_free_epc_page(struct sgx_epc_page *page);
-+struct sgx_encl_page *sgx_encl_load_page(struct sgx_encl *encl,
-+					 unsigned long addr);
- 
- #endif /* _X86_ENCL_H */
+ /**
 -- 
-2.25.1
+2.27.0
 
