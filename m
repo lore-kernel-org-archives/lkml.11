@@ -2,124 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ABECC47081
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D14EC35295
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:23:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380305AbiDDVVi (ORCPT
+        id S1380434AbiDDVVm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:21:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52578 "EHLO
+        Mon, 4 Apr 2022 17:21:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379726AbiDDR7y (ORCPT
+        with ESMTP id S1379208AbiDDQpC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 13:59:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C4FF34BB9
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 10:57:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B5F1260DC4
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 17:57:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3646C2BBE4;
-        Mon,  4 Apr 2022 17:57:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649095077;
-        bh=80bTl5vvvHrdNwh0hzRyV7X+VwRq0OLEE8K3/p30eT4=;
-        h=Date:From:To:Cc:Subject:From;
-        b=TiJpc6RpKGWs+b6fNEHdHum/cCv5zhWLBHT8so7KcIrVQAnKWS/EHayBm+cbXJWt4
-         GYjeqEbGsDZHXrDVmlUFOLy+PXxH7m4GVhmCO/BxA+m5ySm9k+U3j5mCrCKFVxpKlB
-         4EvYIJjwWA5fAzK0ryXyqyEQa0uKrSGnCNk3RLgDXwWtzk+Ta7yLa25AclbPuB3rvB
-         7BawJn56BcR9OzqTvNyupXYXDH7661XTk7+INZ3jXffsgHEBMrq0KgPjQq6Uu+waWV
-         azAkfbjzPRpyps+wedADI6F3wzEM4DCKpKuy/Bf79GBmXbUcd7WhQ2CB/HzO1hXFHX
-         gMb3iqgL3liig==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id B1D8E40407; Mon,  4 Apr 2022 14:57:52 -0300 (-03)
-Date:   Mon, 4 Apr 2022 14:57:52 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Longpeng <longpeng2@huawei.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [PATCH 1/1] tools include UAPI: Sync linux/vhost.h with the kernel
- sources
-Message-ID: <YksxoFcOARk/ldev@kernel.org>
+        Mon, 4 Apr 2022 12:45:02 -0400
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E177935256
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 09:43:05 -0700 (PDT)
+Received: by mail-lj1-x230.google.com with SMTP id bn33so13683245ljb.6
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 09:43:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=pQ5TZYiieLZrQhGgELIDYF6dphl7SxhYApuhFN7PI+E=;
+        b=FN285Qb7LB94UYMrR/LSfA8IBslwbrX7mdJeEbGyHX6LLfJ25Mu0UbdGhWRX9QFaR1
+         rK6G7WuRAFNFQx+S37H3Kpk8qJqHFIfLTy/wsV3orK/SXhLmOqoKRKGS++qG6FFosXWj
+         hiazP/9dVOTMk0GYcLPOGCcRZIIvY2A9XJPlHjixwanQiyWK9g8k3RG9mQPW72Pookyp
+         fga3hMLwEXYYA/FXVS2lCkQSJuwrIFcz8mMMbaI8iFOjjNISF++Oo5zym7gH5IOqGkTi
+         1La1w+aZm3S9TW1PEdnxk28MIaFf/m1mgJN1CbfrL8lgk31VU28IN2vEDFhsOdZy3TwG
+         xkBg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=pQ5TZYiieLZrQhGgELIDYF6dphl7SxhYApuhFN7PI+E=;
+        b=L7r+76JNCbnEScvh38XNA0sOpCInQT5RKxPtSlJe5RfTKSZl7UtKFHQWLTilw8IVni
+         Hy2PdVD/DPJ+BHd/qle+XB+5EI+BnEcW5vuaEUSiO1VtQqoLdgBgrgQu3IRCagCWZ52o
+         WP/7osiGaOgfbh1r2WdM+a+kzH3yEakNwXyif5b10TyAwp2WTKY2MUjGO6POGHEBpkmW
+         ixssd4YUZjFekkAxPYYE+5NIeUkOCrJCd6kJYjS4SngA2e0GC7d8uaJ18Zh0vauoaRUV
+         MofONXVUAADdl6KNGBmnm+EZrJKK+GevjSC9/tCcek8pUtiwTddzHGQhOCSh4Ck0cjbN
+         U4Fg==
+X-Gm-Message-State: AOAM531PPl1J/4EZ6WMnW/X7i46uimPDl52TLIVtQG3jrRpsQs2lgW8j
+        nvdA9ElEzE0AvH+Cv1kgcmU=
+X-Google-Smtp-Source: ABdhPJzqSavRXBB/4BLbjWQelCuYwV2l/ygMZ1+LJnmEBnoC4Iq7UjBbMa7adweQmtGWrDzWZvPIUA==
+X-Received: by 2002:a2e:bf09:0:b0:24b:d55:ad86 with SMTP id c9-20020a2ebf09000000b0024b0d55ad86mr304454ljr.262.1649090583163;
+        Mon, 04 Apr 2022 09:43:03 -0700 (PDT)
+Received: from localhost.localdomain (dzx1kfyjwg96s--vr8cxy-3.rev.dnainternet.fi. [2001:14ba:a4ea:8200:f22f:74ff:fe2e:e0a6])
+        by smtp.gmail.com with ESMTPSA id k9-20020a2ea289000000b0024afe447bc1sm1094677lja.128.2022.04.04.09.43.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Apr 2022 09:43:02 -0700 (PDT)
+From:   Jan Varho <jan.varho@gmail.com>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     "Theodore Ts'o" <tytso@mit.edu>, linux-kernel@vger.kernel.org,
+        Jan Varho <jan.varho@gmail.com>
+Subject: [PATCH v3] random: fix add_hwgenerator_randomness entropy accounting
+Date:   Mon,  4 Apr 2022 19:42:30 +0300
+Message-Id: <20220404164230.968514-1-jan.varho@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220404162039.961926-1-jan.varho@gmail.com>
+References: <20220404162039.961926-1-jan.varho@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Just FYI, I'm carrying this on the perf tools tree.
+add_hwgenerator_randomness tries to only use the required amound of input
+for fast init, but credits all the entropy if even a byte was left over.
 
-- Arnaldo
+Fix by not crediting entropy when using the input for fast init.
 
+Signed-off-by: Jan Varho <jan.varho@gmail.com>
 ---
+ drivers/char/random.c | 23 ++++++-----------------
+ 1 file changed, 6 insertions(+), 17 deletions(-)
 
-To get the changes in:
-
-  b04d910af330b55e ("vdpa: support exposing the count of vqs to userspace")
-  a61280ddddaa45f9 ("vdpa: support exposing the config size to userspace")
-
-Silencing this perf build warning:
-
-  Warning: Kernel ABI header at 'tools/include/uapi/linux/vhost.h' differs from latest version at 'include/uapi/linux/vhost.h'
-  diff -u tools/include/uapi/linux/vhost.h include/uapi/linux/vhost.h
-
-  $ diff -u tools/include/uapi/linux/vhost.h include/uapi/linux/vhost.h
-  --- tools/include/uapi/linux/vhost.h	2021-07-15 16:17:01.840818309 -0300
-  +++ include/uapi/linux/vhost.h	2022-04-02 18:55:05.702522387 -0300
-  @@ -150,4 +150,11 @@
-   /* Get the valid iova range */
-   #define VHOST_VDPA_GET_IOVA_RANGE	_IOR(VHOST_VIRTIO, 0x78, \
-   					     struct vhost_vdpa_iova_range)
-  +
-  +/* Get the config size */
-  +#define VHOST_VDPA_GET_CONFIG_SIZE	_IOR(VHOST_VIRTIO, 0x79, __u32)
-  +
-  +/* Get the count of all virtqueues */
-  +#define VHOST_VDPA_GET_VQS_COUNT	_IOR(VHOST_VIRTIO, 0x80, __u32)
-  +
-   #endif
-  $ tools/perf/trace/beauty/vhost_virtio_ioctl.sh > before
-  $ cp include/uapi/linux/vhost.h tools/include/uapi/linux/vhost.h
-  $ tools/perf/trace/beauty/vhost_virtio_ioctl.sh > after
-  $ diff -u before after
-  --- before	2022-04-04 14:52:25.036375145 -0300
-  +++ after	2022-04-04 14:52:31.906549976 -0300
-  @@ -38,4 +38,6 @@
-   	[0x73] = "VDPA_GET_CONFIG",
-   	[0x76] = "VDPA_GET_VRING_NUM",
-   	[0x78] = "VDPA_GET_IOVA_RANGE",
-  +	[0x79] = "VDPA_GET_CONFIG_SIZE",
-  +	[0x80] = "VDPA_GET_VQS_COUNT",
-   };
-  $
-
-Cc: Longpeng <longpeng2@huawei.com>
-Cc: Michael S. Tsirkin <mst@redhat.com>
-Link: http://lore.kernel.org/lkml/
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
----
- tools/include/uapi/linux/vhost.h | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/tools/include/uapi/linux/vhost.h b/tools/include/uapi/linux/vhost.h
-index c998860d7bbc4351..5d99e7c242a25e11 100644
---- a/tools/include/uapi/linux/vhost.h
-+++ b/tools/include/uapi/linux/vhost.h
-@@ -150,4 +150,11 @@
- /* Get the valid iova range */
- #define VHOST_VDPA_GET_IOVA_RANGE	_IOR(VHOST_VIRTIO, 0x78, \
- 					     struct vhost_vdpa_iova_range)
-+
-+/* Get the config size */
-+#define VHOST_VDPA_GET_CONFIG_SIZE	_IOR(VHOST_VIRTIO, 0x79, __u32)
-+
-+/* Get the count of all virtqueues */
-+#define VHOST_VDPA_GET_VQS_COUNT	_IOR(VHOST_VIRTIO, 0x80, __u32)
-+
- #endif
+diff --git a/drivers/char/random.c b/drivers/char/random.c
+index 1d8242969751..ee3ad2ba0942 100644
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -437,11 +437,8 @@ static void crng_make_state(u32 chacha_state[CHACHA_STATE_WORDS],
+  * This shouldn't be set by functions like add_device_randomness(),
+  * where we can't trust the buffer passed to it is guaranteed to be
+  * unpredictable (so it might not have any entropy at all).
+- *
+- * Returns the number of bytes processed from input, which is bounded
+- * by CRNG_INIT_CNT_THRESH if account is true.
+  */
+-static size_t crng_pre_init_inject(const void *input, size_t len, bool account)
++static void crng_pre_init_inject(const void *input, size_t len, bool account)
+ {
+ 	static int crng_init_cnt = 0;
+ 	struct blake2s_state hash;
+@@ -452,18 +449,15 @@ static size_t crng_pre_init_inject(const void *input, size_t len, bool account)
+ 	spin_lock_irqsave(&base_crng.lock, flags);
+ 	if (crng_init != 0) {
+ 		spin_unlock_irqrestore(&base_crng.lock, flags);
+-		return 0;
++		return;
+ 	}
+ 
+-	if (account)
+-		len = min_t(size_t, len, CRNG_INIT_CNT_THRESH - crng_init_cnt);
+-
+ 	blake2s_update(&hash, base_crng.key, sizeof(base_crng.key));
+ 	blake2s_update(&hash, input, len);
+ 	blake2s_final(&hash, base_crng.key);
+ 
+ 	if (account) {
+-		crng_init_cnt += len;
++		crng_init_cnt += min_t(size_t, len, CRNG_INIT_CNT_THRESH - crng_init_cnt);
+ 		if (crng_init_cnt >= CRNG_INIT_CNT_THRESH) {
+ 			++base_crng.generation;
+ 			crng_init = 1;
+@@ -474,8 +468,6 @@ static size_t crng_pre_init_inject(const void *input, size_t len, bool account)
+ 
+ 	if (crng_init == 1)
+ 		pr_notice("fast init done\n");
+-
+-	return len;
+ }
+ 
+ static void _get_random_bytes(void *buf, size_t nbytes)
+@@ -1141,12 +1133,9 @@ void add_hwgenerator_randomness(const void *buffer, size_t count,
+ 				size_t entropy)
+ {
+ 	if (unlikely(crng_init == 0 && entropy < POOL_MIN_BITS)) {
+-		size_t ret = crng_pre_init_inject(buffer, count, true);
+-		mix_pool_bytes(buffer, ret);
+-		count -= ret;
+-		buffer += ret;
+-		if (!count || crng_init == 0)
+-			return;
++		crng_pre_init_inject(buffer, count, true);
++		mix_pool_bytes(buffer, count);
++		return;
+ 	}
+ 
+ 	/*
 -- 
-2.35.1
+2.25.1
 
