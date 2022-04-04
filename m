@@ -2,161 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFA5DC4707A
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:59:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DC68C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:59:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379776AbiDDV6w (ORCPT
+        id S1379933AbiDDV7F (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:58:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37266 "EHLO
+        Mon, 4 Apr 2022 17:59:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379092AbiDDQeT (ORCPT
+        with ESMTP id S1379135AbiDDQhJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 12:34:19 -0400
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64B6737ABA
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 09:32:23 -0700 (PDT)
-Received: by mail-pf1-x42b.google.com with SMTP id x31so9449635pfh.9
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 09:32:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=2bL0zVy+T84o1RMeqMcnjFfLYjA+GUYGgoiquYSSAHY=;
-        b=QRTuRBVdMggNkZKDKiVvRCfbxLmN/4Scvw/NVPF7mRZ6Ng7eYBz4lEM8ZpODjayuz6
-         fHIj9gn+tCSfkLNwzzluQHLAI2YPvxvzhKEE9MRM0emAM5N+T/84llSb51wruVmWrtvS
-         XEfdi++KzE+e3iOjOVtFEcKg7tUbFt9GjJOMQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=2bL0zVy+T84o1RMeqMcnjFfLYjA+GUYGgoiquYSSAHY=;
-        b=uzjF7QHFuVeUb1i5X20fLRFUw/FCNZQY4MdFFeIVwPYvus9A4xiHAbjaHPBTtdfy9k
-         wmiNWyWMmtMZCX57wymyjFNfgHPdvwNJMWxlnuP53ZqU8UnriYNpYvUbBUsB86jikMfA
-         CcogOtwXWyZMnawkR473tBkv34E2Y3ekIx+/YO04S54hOP7xiuaKDQteYLQTJ5kNP7+s
-         anH/sZP18iKCk/X1SdjcYVvL/vjkk4Ze6gpfamYH5K8oQ+VfnP02xPqCu6sHKLF5SK/u
-         7VGKrTIMdTf75NXmwMiI/wC86pyxuoDZFFUQNbtUXEH6r8tNyIQxmX9D6QM+6POlkAW/
-         JvdQ==
-X-Gm-Message-State: AOAM533xNlFIynawfRLxZ01+Z4sfBYsPgri9o8KQ1ndnKLBpjVOljQNb
-        a+zgYGk95dvH0JtcgKjWxInkOQ==
-X-Google-Smtp-Source: ABdhPJwKOuEHl+BnsbgNxrNKz+t2civ6hhXWxr7p+FhUpmTI1La4qStQ4P50t0JSRmOGG8TiOxxaqA==
-X-Received: by 2002:a05:6a00:10c7:b0:4fd:9ee6:4130 with SMTP id d7-20020a056a0010c700b004fd9ee64130mr375022pfu.84.1649089942793;
-        Mon, 04 Apr 2022 09:32:22 -0700 (PDT)
-Received: from localhost ([2620:15c:202:201:1ebc:cb71:2a38:38db])
-        by smtp.gmail.com with UTF8SMTPSA id s20-20020aa78d54000000b004fac74c83b3sm12466884pfe.186.2022.04.04.09.32.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 04 Apr 2022 09:32:22 -0700 (PDT)
-Date:   Mon, 4 Apr 2022 09:32:19 -0700
-From:   Matthias Kaehlcke <mka@chromium.org>
-To:     Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
-Cc:     agross@kernel.org, bjorn.andersson@linaro.org,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, quic_msavaliy@quicinc.com,
-        dianders@chromium.org
-Subject: Re: [PATCH] drivers/tty/serial/qcom-geni-serial: Do stop_rx in
- suspend path for console if console_suspend is disabled
-Message-ID: <Yksdk+YTxXRDWBbj@google.com>
-References: <1648491444-17137-1-git-send-email-quic_vnivarth@quicinc.com>
+        Mon, 4 Apr 2022 12:37:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE999E094;
+        Mon,  4 Apr 2022 09:35:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 90548B8185A;
+        Mon,  4 Apr 2022 16:35:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAECFC34110;
+        Mon,  4 Apr 2022 16:35:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649090110;
+        bh=RpvkJ8U0VEvDlnAfPxDQLxtSZdt5YWgvrhTLE0lWbvU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=A4VJ+vUOfj7yAMUQtb50Hi7IUqIkY2+nEfCKrGGPbuSuU4bDehvVq8/qUVncdqMxT
+         ang5eX0SKCSabc8pwSGI9QhmSrXcJU/QsYxqiR5D2hSmdQBiMq+ZCUZ7HavDhrF6+c
+         zrxuQlp+gEkN+QItJlgmPKkG+MSIybjnRTe73DasAOXCP7QqD0F7buVzZ9ha9s8VI8
+         lv6Koxm8esrDrgWshhy0o4+bjQZ8z6xr895Hj9ovwaeOSQvuzZZRazI6hgMOlnwAfz
+         rTjgJXYOtRrpGyNioCsPnb5jANOPaUUG09fj89DCio3d87GqkXMB/S/NU14HDzgQ/C
+         aD+pWVAko5ktg==
+From:   Vinod Koul <vkoul@kernel.org>
+To:     Rob Clark <robdclark@gmail.com>
+Cc:     linux-arm-msm@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Jonathan Marek <jonathan@marek.ca>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        freedreno@lists.freedesktop.org
+Subject: [PATCH v6 04/14] drm/msm/disp/dpu1: Add support for DSC in pingpong block
+Date:   Mon,  4 Apr 2022 22:04:26 +0530
+Message-Id: <20220404163436.956875-5-vkoul@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220404163436.956875-1-vkoul@kernel.org>
+References: <20220404163436.956875-1-vkoul@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <1648491444-17137-1-git-send-email-quic_vnivarth@quicinc.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 28, 2022 at 11:47:24PM +0530, Vijaya Krishna Nivarthi wrote:
-> [Why]
-> For the case of console_suspend disabled, if back to back suspend/resume
-> test is executed, at the end of test, sometimes console would appear to
-> be frozen not responding to input. This would happen because, for
-> console_suspend disabled, suspend/resume routines only turn resources
-> off/on but don't do a port close/open.
-> As a result, during resume, some rx transactions come in before system is
-> ready, malfunction of rx happens in turn resulting in console appearing
-> to be stuck.
-> 
-> [How]
+In SDM845, DSC can be enabled by writing to pingpong block registers, so
+add support for DSC in hw_pp
 
-Please drop the [Why] / [How] 'tags'
+Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
+---
+ .../gpu/drm/msm/disp/dpu1/dpu_hw_pingpong.c   | 32 +++++++++++++++++++
+ .../gpu/drm/msm/disp/dpu1/dpu_hw_pingpong.h   | 14 ++++++++
+ 2 files changed, 46 insertions(+)
 
-> Do a stop_rx in suspend sequence to prevent this. start_rx is already
-> present in resume sequence as part of call to set_termios which does a
-> stop_rx/start_rx.
-> Additionally other changes have been made at same place
-> a) replace the hardcoded flags with macros
-> b) perform voting before calling resume_port in resume sequence
-> c) consequently, swap the order in suspend sequence
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_pingpong.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_pingpong.c
+index 55766c97c4c8..47c6ab6caf95 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_pingpong.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_pingpong.c
+@@ -28,6 +28,9 @@
+ #define PP_FBC_MODE                     0x034
+ #define PP_FBC_BUDGET_CTL               0x038
+ #define PP_FBC_LOSSY_MODE               0x03C
++#define PP_DSC_MODE                     0x0a0
++#define PP_DCE_DATA_IN_SWAP             0x0ac
++#define PP_DCE_DATA_OUT_SWAP            0x0c8
+ 
+ #define PP_DITHER_EN			0x000
+ #define PP_DITHER_BITDEPTH		0x004
+@@ -245,6 +248,32 @@ static u32 dpu_hw_pp_get_line_count(struct dpu_hw_pingpong *pp)
+ 	return line;
+ }
+ 
++static int dpu_hw_pp_dsc_enable(struct dpu_hw_pingpong *pp)
++{
++	struct dpu_hw_blk_reg_map *c = &pp->hw;
++
++	DPU_REG_WRITE(c, PP_DSC_MODE, 1);
++	return 0;
++}
++
++static void dpu_hw_pp_dsc_disable(struct dpu_hw_pingpong *pp)
++{
++	struct dpu_hw_blk_reg_map *c = &pp->hw;
++
++	DPU_REG_WRITE(c, PP_DSC_MODE, 0);
++}
++
++static int dpu_hw_pp_setup_dsc(struct dpu_hw_pingpong *pp)
++{
++	struct dpu_hw_blk_reg_map *pp_c = &pp->hw;
++	int data;
++
++	data = DPU_REG_READ(pp_c, PP_DCE_DATA_OUT_SWAP);
++	data |= BIT(18); /* endian flip */
++	DPU_REG_WRITE(pp_c, PP_DCE_DATA_OUT_SWAP, data);
++	return 0;
++}
++
+ static void _setup_pingpong_ops(struct dpu_hw_pingpong *c,
+ 				unsigned long features)
+ {
+@@ -256,6 +285,9 @@ static void _setup_pingpong_ops(struct dpu_hw_pingpong *c,
+ 	c->ops.get_autorefresh = dpu_hw_pp_get_autorefresh_config;
+ 	c->ops.poll_timeout_wr_ptr = dpu_hw_pp_poll_timeout_wr_ptr;
+ 	c->ops.get_line_count = dpu_hw_pp_get_line_count;
++	c->ops.setup_dsc = dpu_hw_pp_setup_dsc;
++	c->ops.enable_dsc = dpu_hw_pp_dsc_enable;
++	c->ops.disable_dsc = dpu_hw_pp_dsc_disable;
+ 
+ 	if (test_bit(DPU_PINGPONG_DITHER, &features))
+ 		c->ops.setup_dither = dpu_hw_pp_setup_dither;
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_pingpong.h b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_pingpong.h
+index 89d08a715c16..12758468d9ca 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_pingpong.h
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_pingpong.h
+@@ -124,6 +124,20 @@ struct dpu_hw_pingpong_ops {
+ 	 */
+ 	void (*setup_dither)(struct dpu_hw_pingpong *pp,
+ 			struct dpu_hw_dither_cfg *cfg);
++	/**
++	 * Enable DSC
++	 */
++	int (*enable_dsc)(struct dpu_hw_pingpong *pp);
++
++	/**
++	 * Disable DSC
++	 */
++	void (*disable_dsc)(struct dpu_hw_pingpong *pp);
++
++	/**
++	 * Setup DSC
++	 */
++	int (*setup_dsc)(struct dpu_hw_pingpong *pp);
+ };
+ 
+ struct dpu_hw_merge_3d;
+-- 
+2.34.1
 
-This patch is short, but IMO it still does too many things at once which
-aren't all directly related. At the very least the change from hardcoded
-flags to macros should be in a separate patch. If the ICC voting order
-isn't direcly related with the console_suspend issue then I'd also suggest
-to split it out into its own patch.
-
-> Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
-> ---
->  drivers/tty/serial/qcom_geni_serial.c | 17 +++++++++++------
->  1 file changed, 11 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-> index aedc388..37d064f 100644
-> --- a/drivers/tty/serial/qcom_geni_serial.c
-> +++ b/drivers/tty/serial/qcom_geni_serial.c
-> @@ -19,6 +19,7 @@
->  #include <linux/slab.h>
->  #include <linux/tty.h>
->  #include <linux/tty_flip.h>
-> +#include <dt-bindings/interconnect/qcom,icc.h>
->  
->  /* UART specific GENI registers */
->  #define SE_UART_LOOPBACK_CFG		0x22c
-> @@ -1477,34 +1478,38 @@ static int qcom_geni_serial_remove(struct platform_device *pdev)
->  
->  static int __maybe_unused qcom_geni_serial_sys_suspend(struct device *dev)
->  {
-> +	int ret;
->  	struct qcom_geni_serial_port *port = dev_get_drvdata(dev);
->  	struct uart_port *uport = &port->uport;
->  	struct qcom_geni_private_data *private_data = uport->private_data;
->  
-> +	/* do a stop_rx here, start_rx is handled in uart_resume_port by call to setermios */
-> +	if (!console_suspend_enabled && uart_console(uport))
-> +		uport->ops->stop_rx(uport);
-> +
->  	/*
->  	 * This is done so we can hit the lowest possible state in suspend
->  	 * even with no_console_suspend
->  	 */
-> +	ret = uart_suspend_port(private_data->drv, uport);
->  	if (uart_console(uport)) {
-> -		geni_icc_set_tag(&port->se, 0x3);
-> +		geni_icc_set_tag(&port->se, QCOM_ICC_TAG_ACTIVE_ONLY);
->  		geni_icc_set_bw(&port->se);
->  	}
-> -	return uart_suspend_port(private_data->drv, uport);
-> +	return ret;
->  }
->  
->  static int __maybe_unused qcom_geni_serial_sys_resume(struct device *dev)
->  {
-> -	int ret;
->  	struct qcom_geni_serial_port *port = dev_get_drvdata(dev);
->  	struct uart_port *uport = &port->uport;
->  	struct qcom_geni_private_data *private_data = uport->private_data;
->  
-> -	ret = uart_resume_port(private_data->drv, uport);
->  	if (uart_console(uport)) {
-> -		geni_icc_set_tag(&port->se, 0x7);
-> +		geni_icc_set_tag(&port->se, QCOM_ICC_TAG_ALWAYS);
->  		geni_icc_set_bw(&port->se);
->  	}
-> -	return ret;
-> +	return uart_resume_port(private_data->drv, uport);
->  }
->  
->  static const struct dev_pm_ops qcom_geni_serial_pm_ops = {
-> -- 
-> Qualcomm INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum, hosted by the Linux Foundation.
-> 
