@@ -2,83 +2,227 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0309C41535
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:28:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BED78C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:28:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245636AbiDDV3v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:29:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54122 "EHLO
+        id S1382463AbiDDVaD (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 17:30:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379298AbiDDQ4r (ORCPT
+        with ESMTP id S1379267AbiDDQvv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 12:56:47 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A53053B3EC
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 09:54:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=juT257hsMDR0kNSqLpseTautg+enIq2U1DAPgu8Wesk=; b=s/vYPj0Nor2v9/P0q0FW0qkQdS
-        //RkASVpogRE49d7MHgaKIv7L75NGdkMsqGz4tgko3CrOzdXyUI81IDqNth8GY32HjluEeiAgDXwP
-        CS3s3rWZV+Uno8cm94Bb3AGHi9cu6tY2tyAdFvn4K5HD66JDcEpjyz0rzpoJNuQQiUFoT4Pm9OArc
-        IOOG2bCYiwDOK26J/YlKuykhePNHMWz08kfsbpLLS6I6J1Viygh6qyt3SOTCj32+Jm9xqVc9xAYkt
-        w4+g+WGp9adapRaa9FjfGqEVZ0Qm9EK1wJ3zdnqTtbOvaDJtt9ae1O48psTeU0SQHTzs5kXP7PrXa
-        j9YnusPA==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nbPyP-00FryS-Ni; Mon, 04 Apr 2022 16:54:37 +0000
-Date:   Mon, 4 Apr 2022 09:54:37 -0700
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Mario Limonciello <mario.limonciello@amd.com>
-Cc:     Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
-        Suthikulpanit Suravee <Suravee.Suthikulpanit@amd.com>,
-        Hegde Vasant <Vasant.Hegde@amd.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 0/2] Fix issues with untrusted devices and AMD IOMMU
-Message-ID: <YksizUJzRgEEdHLJ@infradead.org>
-References: <20220404164707.1128-1-mario.limonciello@amd.com>
+        Mon, 4 Apr 2022 12:51:51 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD4B62DAA1;
+        Mon,  4 Apr 2022 09:49:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649090994; x=1680626994;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=4ED03ebku1o8iobIzAgP7riBruf7KThgs/0tqOMzplc=;
+  b=Z+7tP+IRbi7bDrVj+FB2hdro/eKa13RRR2tVdT20HXoAM4dAyRG0Tp2A
+   QKmIu/MXUO6fjOobRj55oyFfVAwa/dZvOdnV3YXQkLyHeThxTWWi4SSMs
+   Wv0a1NT9x25+5ag2U6mySvTc23Wfc20Ms41D5Z8O2vI6MSGeIvneZ/afK
+   +v98YwhX1H9KUL/vL67I+9odNz2SmvV9FCkUJYG/qL4XuxnV81ZPvEAC8
+   Z6a9b/okvYTODxOFiz4jmJWyltT6rilgAeiKGVSwz27WOsFeEZ/zZTEDg
+   OYfb2pkucor8UCjXlHnBK7IFOAaoK4Gt4zavbkJU7mwcfhKxPEiCrwBLK
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="259390792"
+X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
+   d="scan'208";a="259390792"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:49:51 -0700
+X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
+   d="scan'208";a="523105240"
+Received: from rchatre-ws.ostc.intel.com ([10.54.69.144])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:49:51 -0700
+From:   Reinette Chatre <reinette.chatre@intel.com>
+To:     dave.hansen@linux.intel.com, jarkko@kernel.org, tglx@linutronix.de,
+        bp@alien8.de, luto@kernel.org, mingo@redhat.com,
+        linux-sgx@vger.kernel.org, x86@kernel.org
+Cc:     seanjc@google.com, kai.huang@intel.com, cathy.zhang@intel.com,
+        cedric.xing@intel.com, haitao.huang@intel.com,
+        mark.shanahan@intel.com, hpa@zytor.com,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH V3 30/30] selftests/sgx: Page removal stress test
+Date:   Mon,  4 Apr 2022 09:49:38 -0700
+Message-Id: <5df85109e6b88787ddf31ac42762c9d1dcc0c3e1.1648847675.git.reinette.chatre@intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cover.1648847675.git.reinette.chatre@intel.com>
+References: <cover.1648847675.git.reinette.chatre@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220404164707.1128-1-mario.limonciello@amd.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 04, 2022 at 11:47:05AM -0500, Mario Limonciello wrote:
-> The bounce buffers were originally set up, but torn down during
-> the boot process.
-> * This happens because as part of IOMMU initialization
->   `amd_iommu_init_dma_ops` gets called and resets the global swiotlb to 0.
-> * When late_init gets called `pci_swiotlb_late_init` `swiotlb_exit` is
->   called and the buffers are torn down.
+Create enclave with additional heap that consumes all physical SGX
+memory and then remove it.
 
-I think the proper thing is to do this:
+Depending on the available SGX memory this test could take a
+significant time to run (several minutes) as it (1) creates the
+enclave, (2) changes the type of every page to be trimmed,
+(3) enters the enclave once per page to run EACCEPT, before
+(4) the pages are finally removed.
 
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index a1ada7bff44e6..079694f894b85 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -1838,17 +1838,10 @@ void amd_iommu_domain_update(struct protection_domain *domain)
- 	amd_iommu_domain_flush_complete(domain);
+Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
+---
+Changes since V2:
+- Rename struct sgx_enclave_modt -> struct sgx_enclave_modify_type
+
+Changes since V1:
+- Exit test completely on first failure of EACCEPT of a removed page. Since
+  this is an oversubscribed test the number of pages on which this is
+  attempted can be significant and in case of failure the per-page
+  error logging would overwhelm the system.
+- Update test to call renamed ioctl() (SGX_IOC_PAGE_MODT ->
+  SGX_IOC_ENCLAVE_MODIFY_TYPE) and provide secinfo as parameter (Jarkko).
+- Fixup definitions to be reverse xmas tree.
+- Update test to reflect page removal ioctl() and struct name change:
+  SGX_IOC_PAGE_REMOVE->SGX_IOC_ENCLAVE_REMOVE_PAGES,
+  struct sgx_page_remove -> struct sgx_enclave_remove_pages (Jarkko).
+- Ensure test is skipped when SGX2 not supported by kernel.
+- Cleanup comments.
+
+ tools/testing/selftests/sgx/main.c | 122 +++++++++++++++++++++++++++++
+ 1 file changed, 122 insertions(+)
+
+diff --git a/tools/testing/selftests/sgx/main.c b/tools/testing/selftests/sgx/main.c
+index 82cc2283be03..535f6cd72eb1 100644
+--- a/tools/testing/selftests/sgx/main.c
++++ b/tools/testing/selftests/sgx/main.c
+@@ -378,7 +378,129 @@ TEST_F(enclave, unclobbered_vdso_oversubscribed)
+ 	EXPECT_EQ(get_op.value, MAGIC);
+ 	EXPECT_EEXIT(&self->run);
+ 	EXPECT_EQ(self->run.user_data, 0);
++}
++
++TEST_F_TIMEOUT(enclave, unclobbered_vdso_oversubscribed_remove, 900)
++{
++	struct sgx_enclave_remove_pages remove_ioc;
++	struct sgx_enclave_modify_type modt_ioc;
++	struct encl_op_get_from_buf get_op;
++	struct encl_op_eaccept eaccept_op;
++	struct encl_op_put_to_buf put_op;
++	struct sgx_secinfo secinfo;
++	struct encl_segment *heap;
++	unsigned long total_mem;
++	int ret, errno_save;
++	unsigned long addr;
++	unsigned long i;
++
++	/*
++	 * Create enclave with additional heap that is as big as all
++	 * available physical SGX memory.
++	 */
++	total_mem = get_total_epc_mem();
++	ASSERT_NE(total_mem, 0);
++	TH_LOG("Creating an enclave with %lu bytes heap may take a while ...",
++	       total_mem);
++	ASSERT_TRUE(setup_test_encl(total_mem, &self->encl, _metadata));
++
++	/*
++	 * Hardware (SGX2) and kernel support is needed for this test. Start
++	 * with check that test has a chance of succeeding.
++	 */
++	memset(&modt_ioc, 0, sizeof(modt_ioc));
++	ret = ioctl(self->encl.fd, SGX_IOC_ENCLAVE_MODIFY_TYPE, &modt_ioc);
++
++	if (ret == -1) {
++		if (errno == ENOTTY)
++			SKIP(return, "Kernel does not support SGX_IOC_ENCLAVE_MODIFY_TYPE ioctl()");
++		else if (errno == ENODEV)
++			SKIP(return, "System does not support SGX2");
++	}
++
++	/*
++	 * Invalid parameters were provided during sanity check,
++	 * expect command to fail.
++	 */
++	EXPECT_EQ(ret, -1);
++
++	/* SGX2 is supported by kernel and hardware, test can proceed. */
++	memset(&self->run, 0, sizeof(self->run));
++	self->run.tcs = self->encl.encl_base;
++
++	heap = &self->encl.segment_tbl[self->encl.nr_segments - 1];
++
++	put_op.header.type = ENCL_OP_PUT_TO_BUFFER;
++	put_op.value = MAGIC;
++
++	EXPECT_EQ(ENCL_CALL(&put_op, &self->run, false), 0);
++
++	EXPECT_EEXIT(&self->run);
++	EXPECT_EQ(self->run.user_data, 0);
++
++	get_op.header.type = ENCL_OP_GET_FROM_BUFFER;
++	get_op.value = 0;
++
++	EXPECT_EQ(ENCL_CALL(&get_op, &self->run, false), 0);
++
++	EXPECT_EQ(get_op.value, MAGIC);
++	EXPECT_EEXIT(&self->run);
++	EXPECT_EQ(self->run.user_data, 0);
++
++	/* Trim entire heap. */
++	memset(&modt_ioc, 0, sizeof(modt_ioc));
++	memset(&secinfo, 0, sizeof(secinfo));
++
++	secinfo.flags = SGX_PAGE_TYPE_TRIM << 8;
++	modt_ioc.offset = heap->offset;
++	modt_ioc.length = heap->size;
++	modt_ioc.secinfo = (unsigned long)&secinfo;
++
++	TH_LOG("Changing type of %zd bytes to trimmed may take a while ...",
++	       heap->size);
++	ret = ioctl(self->encl.fd, SGX_IOC_ENCLAVE_MODIFY_TYPE, &modt_ioc);
++	errno_save = ret == -1 ? errno : 0;
++
++	EXPECT_EQ(ret, 0);
++	EXPECT_EQ(errno_save, 0);
++	EXPECT_EQ(modt_ioc.result, 0);
++	EXPECT_EQ(modt_ioc.count, heap->size);
++
++	/* EACCEPT all removed pages. */
++	addr = self->encl.encl_base + heap->offset;
++
++	eaccept_op.flags = SGX_SECINFO_TRIM | SGX_SECINFO_MODIFIED;
++	eaccept_op.header.type = ENCL_OP_EACCEPT;
++
++	TH_LOG("Entering enclave to run EACCEPT for each page of %zd bytes may take a while ...",
++	       heap->size);
++	for (i = 0; i < heap->size; i += 4096) {
++		eaccept_op.epc_addr = addr + i;
++		eaccept_op.ret = 0;
+ 
++		EXPECT_EQ(ENCL_CALL(&eaccept_op, &self->run, true), 0);
++
++		EXPECT_EQ(self->run.exception_vector, 0);
++		EXPECT_EQ(self->run.exception_error_code, 0);
++		EXPECT_EQ(self->run.exception_addr, 0);
++		ASSERT_EQ(eaccept_op.ret, 0);
++		ASSERT_EQ(self->run.function, EEXIT);
++	}
++
++	/* Complete page removal. */
++	memset(&remove_ioc, 0, sizeof(remove_ioc));
++
++	remove_ioc.offset = heap->offset;
++	remove_ioc.length = heap->size;
++
++	TH_LOG("Removing %zd bytes from enclave may take a while ...",
++	       heap->size);
++	ret = ioctl(self->encl.fd, SGX_IOC_ENCLAVE_REMOVE_PAGES, &remove_ioc);
++	errno_save = ret == -1 ? errno : 0;
++
++	EXPECT_EQ(ret, 0);
++	EXPECT_EQ(errno_save, 0);
++	EXPECT_EQ(remove_ioc.count, heap->size);
  }
  
--static void __init amd_iommu_init_dma_ops(void)
--{
--	swiotlb = (iommu_default_passthrough() || sme_me_mask) ? 1 : 0;
--}
--
- int __init amd_iommu_init_api(void)
- {
- 	int err;
- 
--	amd_iommu_init_dma_ops();
--
- 	err = bus_set_iommu(&pci_bus_type, &amd_iommu_ops);
- 	if (err)
- 		return err;
+ TEST_F(enclave, clobbered_vdso)
+-- 
+2.25.1
+
