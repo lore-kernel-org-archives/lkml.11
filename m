@@ -2,94 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F32FC47080
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32F13C35295
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:37:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382618AbiDDVbj (ORCPT
+        id S1382743AbiDDVb7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:31:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41474 "EHLO
+        Mon, 4 Apr 2022 17:31:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379525AbiDDRWz (ORCPT
+        with ESMTP id S1378954AbiDDQHg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 13:22:55 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BDDE1E3E9;
-        Mon,  4 Apr 2022 10:20:58 -0700 (PDT)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 8AE2C22246;
-        Mon,  4 Apr 2022 19:20:56 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1649092856;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=fiuc10BmQ8FCYumv3/mTGwuX/cjcFoEPXhSP8kK6PCg=;
-        b=WVy6B8bxp6qvBT9VjDxW2ZwquzLSrYjAOaw3xmKLS/jVoUOlRTtrgZFLao794Zl5r5UdDt
-        CfbCFnR/Y5tmllb2MyALaL24UBOwDe+7ueZemyqdS/yD6uyd3a/g56rwQ0mZ5BNoMsDXZ1
-        GyzpR8lu64sWFOFj+d/FMrx8z1WzLts=
+        Mon, 4 Apr 2022 12:07:36 -0400
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFA3813F42;
+        Mon,  4 Apr 2022 09:05:40 -0700 (PDT)
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id 9747568AFE; Mon,  4 Apr 2022 18:05:36 +0200 (CEST)
+Date:   Mon, 4 Apr 2022 18:05:36 +0200
+From:   "hch@lst.de" <hch@lst.de>
+To:     Sven Peter <sven@svenpeter.dev>
+Cc:     "hch@lst.de" <hch@lst.de>, Hector Martin <marcan@marcan.st>,
+        Keith Busch <kbusch@kernel.org>, "axboe@fb.com" <axboe@fb.com>,
+        "sagi@grimberg.me" <sagi@grimberg.me>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Rob Herring <robh+dt@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Marc Zyngier <maz@kernel.org>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org
+Subject: Re: [PATCH 6/9] nvme-apple: Add initial Apple SoC NVMe driver
+Message-ID: <20220404160536.GA9948@lst.de>
+References: <20220321165049.35985-1-sven@svenpeter.dev> <20220321165049.35985-7-sven@svenpeter.dev> <20220324061620.GA12330@lst.de> <18f3a7e6-16d1-2037-90e7-1c0b1b2fbb1c@marcan.st> <20220404155924.GA9764@lst.de> <cc74471b-8077-4c52-8607-eb7d2ecccd7a@www.fastmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Mon, 04 Apr 2022 19:20:56 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        UNGLinuxDriver@microchip.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com
-Subject: Re: [PATCH net-next v3 0/4] net: lan966x: Add support for FDMA
-In-Reply-To: <20220404130655.4004204-1-horatiu.vultur@microchip.com>
-References: <20220404130655.4004204-1-horatiu.vultur@microchip.com>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <57b1a196d25cf5d989611fea4f590333@walle.cc>
-X-Sender: michael@walle.cc
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cc74471b-8077-4c52-8607-eb7d2ecccd7a@www.fastmail.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 2022-04-04 15:06, schrieb Horatiu Vultur:
-> Currently when injecting or extracting a frame from CPU, the frame
-> is given to the HW each word at a time. There is another way to
-> inject/extract frames from CPU using FDMA(Frame Direct Memory Access).
-> In this way the entire frame is given to the HW. This improves both
-> RX and TX bitrate.
-> 
-> v2->v3:
-> - move skb_tx_timestamp before the IFH is inserted, because in case of 
-> PHY
->   timestamping, the PHY should not see the IFH.
-> - use lower/upper_32_bits()
-> - reimplement the RX path in case of memory pressure.
-> - use devm_request_irq instead of devm_request_threaded_irq
-> - add various checks for return values.
-> 
-> v1->v2:
-> - fix typo in commit message in last patch
-> - remove first patch as the changes are already there
-> - make sure that there is space in skb to put the FCS
-> - move skb_tx_timestamp closer to the handover of the frame to the HW
-> 
-> Horatiu Vultur (4):
->   net: lan966x: Add registers that are used for FDMA.
->   net: lan966x: Expose functions that are needed by FDMA
->   net: lan966x: Add FDMA functionality
->   net: lan966x: Update FDMA to change MTU.
-> 
->  .../net/ethernet/microchip/lan966x/Makefile   |   2 +-
->  .../ethernet/microchip/lan966x/lan966x_fdma.c | 783 ++++++++++++++++++
->  .../ethernet/microchip/lan966x/lan966x_main.c |  49 +-
->  .../ethernet/microchip/lan966x/lan966x_main.h | 121 +++
->  .../ethernet/microchip/lan966x/lan966x_port.c |   3 +
->  .../ethernet/microchip/lan966x/lan966x_regs.h | 106 +++
->  6 files changed, 1052 insertions(+), 12 deletions(-)
->  create mode 100644 
-> drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
+On Mon, Apr 04, 2022 at 06:03:28PM +0200, Sven Peter wrote:
+> fwiw, I wrote that code and I just forgot to check the line length
+> after some last minute changes again.
+> It's already been reduced to 80 chars in my local tree.
 
-For this series:
-Tested-by: Michael Walle <michael@walle.cc> # on kontron-kswitch-d10
-
--michael
+Awesome!
