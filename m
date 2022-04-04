@@ -2,104 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B275BC47080
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C17CBC3527E
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:38:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383618AbiDDVdt (ORCPT
+        id S1383644AbiDDVdx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:33:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60004 "EHLO
+        Mon, 4 Apr 2022 17:33:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379508AbiDDRSy (ORCPT
+        with ESMTP id S1379278AbiDDQv5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 13:18:54 -0400
-Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AF7814019
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 10:16:58 -0700 (PDT)
-Received: by mail-lj1-x232.google.com with SMTP id by7so13913144ljb.0
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 10:16:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=42+DYObs0d//YPwipHE3d3izqDTdKuFvDHGNlUWoBx4=;
-        b=ryB3WQniryeQTcsabtEMlk77sINOiDMjNnKxQIAPWIDWkgT2HeYr5YNp6DI6AxlrBR
-         8fCQ5/lZHreREixoEVspMKO0H9IWt5XPvMwwVhey1g+3nGovFlOSfkDV0fB+9JHSyYww
-         MfOlG9ttuJqR+MT95v3VjjepW6WKMqyiEifEd4jSbTESt3OkiuCI9dtDpTgNAJdCfa52
-         52rZGeBuik8PbNlp7p70U2xxAl9hUAFZLO3frntLBrwofTgyaMBYv01U5bBe80qh7Dre
-         A5puCYMeYPj9WlgAEVQoKrpAdNhAm82ngof0dDWWwAWwi9Ke06cvxAHP01nxxBjhXxtI
-         /thg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=42+DYObs0d//YPwipHE3d3izqDTdKuFvDHGNlUWoBx4=;
-        b=C/y6XJAAd5hmeIZK5LPpXob1WEX944WHbfhnUhDPxl/VWW0pnjn/QwP5hW1fpm4ZJm
-         aQm+zD7jJP84W7tZY6D/H9wIFKxJCdF4IolhnYzcBOqZHQzQc6edY8OcriPxs8ui52Xr
-         jQ3DdXs3F0AUFSpEyHCkECs4TRm2Qjb4SjJ4OKueBdaWq67RYQPZbUKOLvtR7QAukW13
-         zy7v4fjmcoFvtziR/caKaoEvwIhGqHsJX6WPuPeKHzmEIaGMOfiUUwZ/KCcrm6qtFEFs
-         3FzBHgLOoBZD+LCxSnzpIBQTu180Q9KjfmtlyfcMO2cYENv8/c/O01R8OJYLnHIhQ9D6
-         rqaQ==
-X-Gm-Message-State: AOAM530kG3Hgcf+vD4wi7no2GhRFAQP3vgUI6AGzOIpTaaC3GjjsBJ1n
-        t5iaLaoXa5ICFYnG+4t4EqlHlLQYtpfxLAvXN7Q5SA==
-X-Google-Smtp-Source: ABdhPJzCr2hVN0gAAJB3yXGwvjHdQ4zEVxVEi7K2YofZ59SQ5b8dfqk23Flzm5EuxCaAEcQZt2M7qWFk0KKWja6DeYg=
-X-Received: by 2002:a05:651c:555:b0:24b:15b7:74ad with SMTP id
- q21-20020a05651c055500b0024b15b774admr361740ljp.239.1649092616178; Mon, 04
- Apr 2022 10:16:56 -0700 (PDT)
+        Mon, 4 Apr 2022 12:51:57 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FD1B340DE;
+        Mon,  4 Apr 2022 09:50:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649091000; x=1680627000;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=gfjfHxX0p+HFa0uHshx5i4jpIGNdzFklRpR0pKy++Zs=;
+  b=jSrPJoCOx65TE1F3N/ZVpMWir3jjS6sPRBDMK5vSXRPTLn+xstqmMCF7
+   I14l/N49JGRFj7xR1wURIa+qYNAThMZG7vQ14R2AmVtYYW+sgwM3VPlj1
+   r3NT7KjzZRotFZBfNjwOXeNsji/a1ISctljH0YLBW/RFfLIWdXo9PXK0k
+   m+531YJNzbJvMvUnTfbJS4RziXYqq9+W83MumZ2Pf6qx0kPfhmklIaBbf
+   i0U77kAste3oTnonYBlISbL+fULQV+sSpXIb6LrFY1wtq5Bhf3RYC/Jzy
+   1wMiFMJ+J3nox6rRT5ZSPBGygcOVPxnRtnFzGNLUReowm6QeHTf/9thZS
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="323734058"
+X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
+   d="scan'208";a="323734058"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:49:51 -0700
+X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
+   d="scan'208";a="523105223"
+Received: from rchatre-ws.ostc.intel.com ([10.54.69.144])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:49:51 -0700
+From:   Reinette Chatre <reinette.chatre@intel.com>
+To:     dave.hansen@linux.intel.com, jarkko@kernel.org, tglx@linutronix.de,
+        bp@alien8.de, luto@kernel.org, mingo@redhat.com,
+        linux-sgx@vger.kernel.org, x86@kernel.org
+Cc:     seanjc@google.com, kai.huang@intel.com, cathy.zhang@intel.com,
+        cedric.xing@intel.com, haitao.huang@intel.com,
+        mark.shanahan@intel.com, hpa@zytor.com,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH V3 25/30] selftests/sgx: Introduce TCS initialization enclave operation
+Date:   Mon,  4 Apr 2022 09:49:33 -0700
+Message-Id: <50dbbe8b53c42d4909f2f4884f63972bfb7bb9a6.1648847675.git.reinette.chatre@intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cover.1648847675.git.reinette.chatre@intel.com>
+References: <cover.1648847675.git.reinette.chatre@intel.com>
 MIME-Version: 1.0
-References: <20220402084746.2413549-1-lv.ruyi@zte.com.cn>
-In-Reply-To: <20220402084746.2413549-1-lv.ruyi@zte.com.cn>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Mon, 4 Apr 2022 10:16:44 -0700
-Message-ID: <CAKwvOdk=_a98oaJxmYJsk_sjeBg1yELmpFeOKe1Cbox2vnVi4Q@mail.gmail.com>
-Subject: Re: [PATCH] fs/buffer.c: remove unneeded code
-To:     cgel.zte@gmail.com
-Cc:     viro@zeniv.linux.org.uk, nathan@kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev, Lv Ruyi <lv.ruyi@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Apr 2, 2022 at 1:47 AM <cgel.zte@gmail.com> wrote:
->
-> From: Lv Ruyi <lv.ruyi@zte.com.cn>
->
-> fix clang warning: Value stored to 'err' is never read in line 2944.
->
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+The Thread Control Structure (TCS) contains meta-data used by the
+hardware to save and restore thread specific information when
+entering/exiting the enclave. A TCS can be added to an initialized
+enclave by first adding a new regular enclave page, initializing the
+content of the new page from within the enclave, and then changing that
+page's type to a TCS.
 
-The change LGTM, but next time please consider putting the exact text
-of the warning observed in the commit message.  For instance, it's not
-clear to me whether this was a compiler warning via -W flag, or a
-DeadStore warning from clang-tidy.
+Support the initialization of a TCS from within the enclave.
+The variable information needed that should be provided from outside
+the enclave is the address of the TCS, address of the State Save Area
+(SSA), and the entry point that the thread should use to enter the
+enclave. With this information provided all needed fields of a TCS
+can be initialized.
 
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
+---
+No changes since V2
 
-> ---
->  fs/buffer.c | 1 -
->  1 file changed, 1 deletion(-)
->
-> diff --git a/fs/buffer.c b/fs/buffer.c
-> index bfc566de36e5..b2045871e81c 100644
-> --- a/fs/buffer.c
-> +++ b/fs/buffer.c
-> @@ -2941,7 +2941,6 @@ int block_truncate_page(struct address_space *mapping,
->                 pos += blocksize;
->         }
->
-> -       err = 0;
->         if (!buffer_mapped(bh)) {
->                 WARN_ON(bh->b_size != blocksize);
->                 err = get_block(inode, iblock, bh, 0);
-> --
-> 2.25.1
->
+No changes since V1
 
+ tools/testing/selftests/sgx/defines.h   |  8 +++++++
+ tools/testing/selftests/sgx/test_encl.c | 30 +++++++++++++++++++++++++
+ 2 files changed, 38 insertions(+)
 
+diff --git a/tools/testing/selftests/sgx/defines.h b/tools/testing/selftests/sgx/defines.h
+index b638eb98c80c..d8587c971941 100644
+--- a/tools/testing/selftests/sgx/defines.h
++++ b/tools/testing/selftests/sgx/defines.h
+@@ -26,6 +26,7 @@ enum encl_op_type {
+ 	ENCL_OP_NOP,
+ 	ENCL_OP_EACCEPT,
+ 	ENCL_OP_EMODPE,
++	ENCL_OP_INIT_TCS_PAGE,
+ 	ENCL_OP_MAX,
+ };
+ 
+@@ -68,4 +69,11 @@ struct encl_op_emodpe {
+ 	uint64_t flags;
+ };
+ 
++struct encl_op_init_tcs_page {
++	struct encl_op_header header;
++	uint64_t tcs_page;
++	uint64_t ssa;
++	uint64_t entry;
++};
++
+ #endif /* DEFINES_H */
+diff --git a/tools/testing/selftests/sgx/test_encl.c b/tools/testing/selftests/sgx/test_encl.c
+index 5b6c65331527..c0d6397295e3 100644
+--- a/tools/testing/selftests/sgx/test_encl.c
++++ b/tools/testing/selftests/sgx/test_encl.c
+@@ -57,6 +57,35 @@ static void *memcpy(void *dest, const void *src, size_t n)
+ 	return dest;
+ }
+ 
++static void *memset(void *dest, int c, size_t n)
++{
++	size_t i;
++
++	for (i = 0; i < n; i++)
++		((char *)dest)[i] = c;
++
++	return dest;
++}
++
++static void do_encl_init_tcs_page(void *_op)
++{
++	struct encl_op_init_tcs_page *op = _op;
++	void *tcs = (void *)op->tcs_page;
++	uint32_t val_32;
++
++	memset(tcs, 0, 16);			/* STATE and FLAGS */
++	memcpy(tcs + 16, &op->ssa, 8);		/* OSSA */
++	memset(tcs + 24, 0, 4);			/* CSSA */
++	val_32 = 1;
++	memcpy(tcs + 28, &val_32, 4);		/* NSSA */
++	memcpy(tcs + 32, &op->entry, 8);	/* OENTRY */
++	memset(tcs + 40, 0, 24);		/* AEP, OFSBASE, OGSBASE */
++	val_32 = 0xFFFFFFFF;
++	memcpy(tcs + 64, &val_32, 4);		/* FSLIMIT */
++	memcpy(tcs + 68, &val_32, 4);		/* GSLIMIT */
++	memset(tcs + 72, 0, 4024);		/* Reserved */
++}
++
+ static void do_encl_op_put_to_buf(void *op)
+ {
+ 	struct encl_op_put_to_buf *op2 = op;
+@@ -100,6 +129,7 @@ void encl_body(void *rdi,  void *rsi)
+ 		do_encl_op_nop,
+ 		do_encl_eaccept,
+ 		do_encl_emodpe,
++		do_encl_init_tcs_page,
+ 	};
+ 
+ 	struct encl_op_header *op = (struct encl_op_header *)rdi;
 -- 
-Thanks,
-~Nick Desaulniers
+2.25.1
+
