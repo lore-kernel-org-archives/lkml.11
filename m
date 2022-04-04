@@ -2,154 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A302CC3527D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B275BC47080
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:38:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383555AbiDDVdm (ORCPT
+        id S1383618AbiDDVdt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:33:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36852 "EHLO
+        Mon, 4 Apr 2022 17:33:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380643AbiDDUso (ORCPT
+        with ESMTP id S1379508AbiDDRSy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 16:48:44 -0400
-Received: from vps-vb.mhejs.net (vps-vb.mhejs.net [37.28.154.113])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B3D713E9A;
-        Mon,  4 Apr 2022 13:46:47 -0700 (PDT)
-Received: from MUA
-        by vps-vb.mhejs.net with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <mail@maciej.szmigiero.name>)
-        id 1nbTav-0003dN-Sm; Mon, 04 Apr 2022 22:46:37 +0200
-Message-ID: <fde9cf47-b420-23c7-f974-480eb95da221@maciej.szmigiero.name>
-Date:   Mon, 4 Apr 2022 22:46:32 +0200
+        Mon, 4 Apr 2022 13:18:54 -0400
+Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AF7814019
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 10:16:58 -0700 (PDT)
+Received: by mail-lj1-x232.google.com with SMTP id by7so13913144ljb.0
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 10:16:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=42+DYObs0d//YPwipHE3d3izqDTdKuFvDHGNlUWoBx4=;
+        b=ryB3WQniryeQTcsabtEMlk77sINOiDMjNnKxQIAPWIDWkgT2HeYr5YNp6DI6AxlrBR
+         8fCQ5/lZHreREixoEVspMKO0H9IWt5XPvMwwVhey1g+3nGovFlOSfkDV0fB+9JHSyYww
+         MfOlG9ttuJqR+MT95v3VjjepW6WKMqyiEifEd4jSbTESt3OkiuCI9dtDpTgNAJdCfa52
+         52rZGeBuik8PbNlp7p70U2xxAl9hUAFZLO3frntLBrwofTgyaMBYv01U5bBe80qh7Dre
+         A5puCYMeYPj9WlgAEVQoKrpAdNhAm82ngof0dDWWwAWwi9Ke06cvxAHP01nxxBjhXxtI
+         /thg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=42+DYObs0d//YPwipHE3d3izqDTdKuFvDHGNlUWoBx4=;
+        b=C/y6XJAAd5hmeIZK5LPpXob1WEX944WHbfhnUhDPxl/VWW0pnjn/QwP5hW1fpm4ZJm
+         aQm+zD7jJP84W7tZY6D/H9wIFKxJCdF4IolhnYzcBOqZHQzQc6edY8OcriPxs8ui52Xr
+         jQ3DdXs3F0AUFSpEyHCkECs4TRm2Qjb4SjJ4OKueBdaWq67RYQPZbUKOLvtR7QAukW13
+         zy7v4fjmcoFvtziR/caKaoEvwIhGqHsJX6WPuPeKHzmEIaGMOfiUUwZ/KCcrm6qtFEFs
+         3FzBHgLOoBZD+LCxSnzpIBQTu180Q9KjfmtlyfcMO2cYENv8/c/O01R8OJYLnHIhQ9D6
+         rqaQ==
+X-Gm-Message-State: AOAM530kG3Hgcf+vD4wi7no2GhRFAQP3vgUI6AGzOIpTaaC3GjjsBJ1n
+        t5iaLaoXa5ICFYnG+4t4EqlHlLQYtpfxLAvXN7Q5SA==
+X-Google-Smtp-Source: ABdhPJzCr2hVN0gAAJB3yXGwvjHdQ4zEVxVEi7K2YofZ59SQ5b8dfqk23Flzm5EuxCaAEcQZt2M7qWFk0KKWja6DeYg=
+X-Received: by 2002:a05:651c:555:b0:24b:15b7:74ad with SMTP id
+ q21-20020a05651c055500b0024b15b774admr361740ljp.239.1649092616178; Mon, 04
+ Apr 2022 10:16:56 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 5/8] KVM: SVM: Re-inject INT3/INTO instead of retrying the
- instruction
-Content-Language: en-US
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Maxim Levitsky <mlevitsk@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220402010903.727604-1-seanjc@google.com>
- <20220402010903.727604-6-seanjc@google.com>
- <a47217da0b6db4f1b6b6c69a9dc38350b13ac17c.camel@redhat.com>
- <YkshgrUaF4+MrrXf@google.com>
- <a3cf781b-0b1a-0bba-6b37-12666c7fc154@maciej.szmigiero.name>
- <YktIGHM86jHkzGdF@google.com> <YktM9bnq5HaTMKkV@google.com>
-From:   "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
-In-Reply-To: <YktM9bnq5HaTMKkV@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220402084746.2413549-1-lv.ruyi@zte.com.cn>
+In-Reply-To: <20220402084746.2413549-1-lv.ruyi@zte.com.cn>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Mon, 4 Apr 2022 10:16:44 -0700
+Message-ID: <CAKwvOdk=_a98oaJxmYJsk_sjeBg1yELmpFeOKe1Cbox2vnVi4Q@mail.gmail.com>
+Subject: Re: [PATCH] fs/buffer.c: remove unneeded code
+To:     cgel.zte@gmail.com
+Cc:     viro@zeniv.linux.org.uk, nathan@kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, Lv Ruyi <lv.ruyi@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4.04.2022 21:54, Sean Christopherson wrote:
-> On Mon, Apr 04, 2022, Sean Christopherson wrote:
->> On Mon, Apr 04, 2022, Maciej S. Szmigiero wrote:
->>>>>> index 47e7427d0395..a770a1c7ddd2 100644
->>>>>> --- a/arch/x86/kvm/svm/svm.h
->>>>>> +++ b/arch/x86/kvm/svm/svm.h
->>>>>> @@ -230,8 +230,8 @@ struct vcpu_svm {
->>>>>>    	bool nmi_singlestep;
->>>>>>    	u64 nmi_singlestep_guest_rflags;
->>>>>> -	unsigned int3_injected;
->>>>>> -	unsigned long int3_rip;
->>>>>> +	unsigned soft_int_injected;
->>>>>> +	unsigned long soft_int_linear_rip;
->>>>>>    	/* optional nested SVM features that are enabled for this guest  */
->>>>>>    	bool nrips_enabled                : 1;
->>>>>
->>>>>
->>>>> I mostly agree with this patch, but think that it doesn't address the
->>>>> original issue that Maciej wanted to address:
->>>>>
->>>>> Suppose that there is *no* instruction in L2 code which caused the software
->>>>> exception, but rather L1 set arbitrary next_rip, and set EVENTINJ to software
->>>>> exception with some vector, and that injection got interrupted.
->>>>>
->>>>> I don't think that this code will support this.
->>>>
->>>> Argh, you're right.  Maciej's selftest injects without an instruction, but it doesn't
->>>> configure the scenario where that injection fails due to an exception+VM-Exit that
->>>> isn't intercepted by L1 and is handled by L0.  The event_inj test gets the coverage
->>>> for the latter, but always has a backing instruction.
->>>
->>> Still reviewing the whole patch set, but want to clear this point quickly:
->>> The selftest does have an implicit intervening NPF (handled by L0) while
->>> injecting the first L1 -> L2 event.
->>
->> I'll do some debug to figure out why the test passes for me.  I'm guessing I either
->> got lucky, e.g. IDT was faulted in already, or I screwed up and the test doesn't
->> actually pass.
-> 
-> Well that was easy.  My code is indeed flawed and skips the wrong instruction,
-> the skipped instruction just so happens to be a (spurious?) adjustment of RSP.  The
-> L2 guest function never runs to completion and so the "bad" RSP is never consumed.
->   
->     KVM: incomplete injection for L2, vector 32 @ 401c70.  next_rip = 0
->     KVM: injecting for L2, vector 0 @ 401c70.  next_rip = 401c74
-> 
-> 0000000000401c70 <l2_guest_code>:
->    401c70:       48 83 ec 08             sub    $0x8,%rsp
->    401c74:       83 3d 75 a7 0e 00 01    cmpl   $0x1,0xea775(%rip)        # 4ec3f0 <int_fired>
->    401c7b:       74 1e                   je     401c9b <l2_guest_code+0x2b>
->    401c7d:       45 31 c0                xor    %r8d,%r8d
->    401c80:       b9 32 00 00 00          mov    $0x32,%ecx
->    401c85:       ba 90 40 4b 00          mov    $0x4b4090,%edx
->    401c8a:       31 c0                   xor    %eax,%eax
->    401c8c:       be 02 00 00 00          mov    $0x2,%esi
->    401c91:       bf 02 00 00 00          mov    $0x2,%edi
->    401c96:       e8 05 ae 00 00          call   40caa0 <ucall>
->    401c9b:       0f 01 d9                vmmcall
->    401c9e:       0f 0b                   ud2
->    401ca0:       83 3d 4d a7 0e 00 01    cmpl   $0x1,0xea74d(%rip)        # 4ec3f4 <bp_fired>
->    401ca7:       74 1e                   je     401cc7 <l2_guest_code+0x57>
->    401ca9:       45 31 c0                xor    %r8d,%r8d
->    401cac:       b9 36 00 00 00          mov    $0x36,%ecx
->    401cb1:       ba b8 40 4b 00          mov    $0x4b40b8,%edx
->    401cb6:       31 c0                   xor    %eax,%eax
->    401cb8:       be 02 00 00 00          mov    $0x2,%esi
->    401cbd:       bf 02 00 00 00          mov    $0x2,%edi
->    401cc2:       e8 d9 ad 00 00          call   40caa0 <ucall>
->    401cc7:       f4                      hlt
->    401cc8:       48 83 c4 08             add    $0x8,%rsp
->    401ccc:       c3                      ret
->    401ccd:       0f 1f 00                nopl   (%rax)
-> 
-> I don't see why the compiler is creating room for a single variable, but it doesn't
-> really matter, the easiest way to detect this bug is to assert that the return RIP
-> in the INT 0x20 handler points at l2_guest_code, e.g. this fails:
-> 
-> diff --git a/tools/testing/selftests/kvm/x86_64/svm_nested_soft_inject_test.c b/tools/testing/selftests/kvm/x86_64/svm_nested_soft_inject_test.c
-> index d39be5d885c1..257aa2280b5c 100644
-> --- a/tools/testing/selftests/kvm/x86_64/svm_nested_soft_inject_test.c
-> +++ b/tools/testing/selftests/kvm/x86_64/svm_nested_soft_inject_test.c
-> @@ -40,9 +40,13 @@ static void guest_bp_handler(struct ex_regs *regs)
->   }
-> 
->   static unsigned int int_fired;
-> +static void l2_guest_code(void);
-> +
->   static void guest_int_handler(struct ex_regs *regs)
->   {
->          int_fired++;
-> +       GUEST_ASSERT_2(regs->rip == (unsigned long)l2_guest_code,
-> +                      regs->rip, (unsigned long)l2_guest_code);
->   }
-> 
->   static void l2_guest_code(void)
+On Sat, Apr 2, 2022 at 1:47 AM <cgel.zte@gmail.com> wrote:
+>
+> From: Lv Ruyi <lv.ruyi@zte.com.cn>
+>
+> fix clang warning: Value stored to 'err' is never read in line 2944.
+>
+> Reported-by: Zeal Robot <zealci@zte.com.cn>
+> Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-It totally makes sense to add the above as an additional assert to the
-self test - the more checks the test have the better at catching bugs
-it is.
+The change LGTM, but next time please consider putting the exact text
+of the warning observed in the commit message.  For instance, it's not
+clear to me whether this was a compiler warning via -W flag, or a
+DeadStore warning from clang-tidy.
 
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+
+> ---
+>  fs/buffer.c | 1 -
+>  1 file changed, 1 deletion(-)
+>
+> diff --git a/fs/buffer.c b/fs/buffer.c
+> index bfc566de36e5..b2045871e81c 100644
+> --- a/fs/buffer.c
+> +++ b/fs/buffer.c
+> @@ -2941,7 +2941,6 @@ int block_truncate_page(struct address_space *mapping,
+>                 pos += blocksize;
+>         }
+>
+> -       err = 0;
+>         if (!buffer_mapped(bh)) {
+>                 WARN_ON(bh->b_size != blocksize);
+>                 err = get_block(inode, iblock, bh, 0);
+> --
+> 2.25.1
+>
+
+
+-- 
 Thanks,
-Maciej
+~Nick Desaulniers
