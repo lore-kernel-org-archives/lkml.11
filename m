@@ -2,102 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84A6AC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E9FCC4321E
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:49:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379260AbiDDVrE (ORCPT
+        id S1379132AbiDDVqy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:47:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35168 "EHLO
+        Mon, 4 Apr 2022 17:46:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378994AbiDDQQ7 (ORCPT
+        with ESMTP id S1379979AbiDDSbq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 12:16:59 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EEC131922
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 09:15:00 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id nt14-20020a17090b248e00b001ca601046a4so5516631pjb.0
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 09:15:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=UDaFc/gCWuOOIEIKSF8jU4oDzdusj5ZcLS5tUBZDl7k=;
-        b=frLsqAzRoYQqPwY+LRr2+HLI4jsKjK8C88V/3rKXepEUVWcXYPUnN5f9Pbs3dFMgDM
-         Fc30h7pCDhpRwEn5077MIjbu8eQViUZ4qp9RmklJtufdy1qVzWiDv1Gf/LObmGzWqjTS
-         HCWymOlS/s7S1a2yT6yWZEAkvMUp+M3Hn8h4fTif3xSBCHn8nTYGCaCA67mey8IOTRKj
-         vgrzwhMT9QUNrAUPk8GLVatbpq5t5kFHea5ElJA4/aZLkOiQZjJu3Isr9yB1FhxvX0wn
-         zipj7LrlHsMAnXmylLn31UO3wAqFnLGS4noeL4O/zzmPw6SE2DvaX+X/D9LvxWpUoqdH
-         nPfQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=UDaFc/gCWuOOIEIKSF8jU4oDzdusj5ZcLS5tUBZDl7k=;
-        b=Plm0ijT7p7uOnrS3LzJ7bxIfCG150rqP4mCftTBDAUmmWwAStskTDjNkJXL8PNR1RF
-         MQ1P02Rq5zV8enmNOWA0UxJYEjaiXAl2ryvAWOfe3U3oZZKxqgCHp655UCR+QzY5K+Io
-         F1W9uXG3NpwMOpj77sZfZYrWnUEQK122WCR5acCpI0F9v+lI84okp+SHQqLCXBsVOO/b
-         SQMThI5gP9UNfGvN1NNmLf7mzQUHfcVmLV2NJEC3sVaZEDPpZm6MlGOFMmFuq951mq5P
-         59OEbLaFe40P+scmEK3C/jSzAxYz6rEcu5Ruz9TUICI+/kXj2M04nIyE3OO0jnqPkc6B
-         oF4A==
-X-Gm-Message-State: AOAM533jkM2nS3tCy0KkzRVOUsmJYubWrUhTs/7USMO+tVYnrPKgXiQq
-        WthyN3Z13d1SERq31rVoaBRI1w==
-X-Google-Smtp-Source: ABdhPJxce26+IV6N/hp+MS7aKDXMfZboRNVcH0s2b8IdhwQqCgufgWGYQ6gNex6ufjHM6ZKhk0Gwlg==
-X-Received: by 2002:a17:902:7615:b0:156:1859:2d00 with SMTP id k21-20020a170902761500b0015618592d00mr612139pll.126.1649088898855;
-        Mon, 04 Apr 2022 09:14:58 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id q18-20020aa78432000000b004fb0a5aa2c7sm13195487pfn.183.2022.04.04.09.14.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 09:14:58 -0700 (PDT)
-Date:   Mon, 4 Apr 2022 16:14:54 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Maxim Levitsky <mlevitsk@redhat.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Maciej S . Szmigiero" <maciej.szmigiero@oracle.com>
-Subject: Re: [PATCH 7/8] KVM: x86: Trace re-injected exceptions
-Message-ID: <YksZfqZr4SyEUk6H@google.com>
-References: <20220402010903.727604-1-seanjc@google.com>
- <20220402010903.727604-8-seanjc@google.com>
- <df8e53474fb161f83c8cb8b9816995b23798545b.camel@redhat.com>
+        Mon, 4 Apr 2022 14:31:46 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 040562124F;
+        Mon,  4 Apr 2022 11:29:50 -0700 (PDT)
+Date:   Mon, 04 Apr 2022 18:29:47 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649096988;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=K9EfMuuRqtyS8P2Al6pBaSFlQtqnpeScM1f+WbcKzbs=;
+        b=xIpDlXA8iQhMDtdQ0BssdtIAhyFRpoHdLK81scXP+zYDrs2rB2iIMC7JhKmnqV4Ci6tfan
+        dcjpBHmayGZwKR7R9i1WOHdaA8qJRs0E+0MEElzBs0vXm5pckOlXmZlbFcgRlxgZd+LJ+8
+        LVvig5vReZC3ocyNEZ0tCMfQHGmQ2EgKCKCpvTQ977e6Bg/S5/p6pt/YTea2atH7J7JCRZ
+        F5gL8RAIDrDtSstIw1UttgBKO+X/yhGKiVORojSrz/fy/B9jmlhtQqlEF6Flqs5YwyM8vv
+        lUxMXZUzx/BD3IuvdaSChvOOPSH+89ZLsK8aUDEgCQX8coD843PIoSYkoLPD4Q==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649096988;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=K9EfMuuRqtyS8P2Al6pBaSFlQtqnpeScM1f+WbcKzbs=;
+        b=yCBR+tgPbz4EcaGWRNpwYhdv4H4skG+PQrWJ6D44gEo446AH3Bl6hxssjJNk8YfE0rEg4N
+        QgMrU4wrovrpT3Dw==
+From:   "tip-bot2 for Lukas Bulwahn" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: x86/mm] x86/fault: Cast an argument to the proper address space
+ in prefetch()
+Cc:     Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Borislav Petkov <bp@suse.de>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220201144055.5670-1-lukas.bulwahn@gmail.com>
+References: <20220201144055.5670-1-lukas.bulwahn@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <df8e53474fb161f83c8cb8b9816995b23798545b.camel@redhat.com>
+Message-ID: <164909698735.389.10476346049745259502.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 04, 2022, Maxim Levitsky wrote:
-> On Sat, 2022-04-02 at 01:09 +0000, Sean Christopherson wrote:
-> > Trace exceptions that are re-injected, not just those that KVM is
-> > injecting for the first time.  Debugging re-injection bugs is painful
-> > enough as is, not having visibility into what KVM is doing only makes
-> > things worse.
-> > 
-> > Signed-off-by: Sean Christopherson <seanjc@google.com>
-> > ---
-> >  arch/x86/kvm/x86.c | 8 ++++----
-> >  1 file changed, 4 insertions(+), 4 deletions(-)
-> > 
-> > diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-> > index 7a066cf92692..384091600bc2 100644
-> > --- a/arch/x86/kvm/x86.c
-> > +++ b/arch/x86/kvm/x86.c
-> > @@ -9382,6 +9382,10 @@ int kvm_check_nested_events(struct kvm_vcpu *vcpu)
-> >  
-> >  static void kvm_inject_exception(struct kvm_vcpu *vcpu)
-> >  {
-> > +	trace_kvm_inj_exception(vcpu->arch.exception.nr,
-> > +				vcpu->arch.exception.has_error_code,
-> > +				vcpu->arch.exception.error_code);
-> > +
-> 
-> Can we use a {new tracepoint / new parameter for this tracepoint} for this to
-> avoid confusion?
+The following commit has been merged into the x86/mm branch of tip:
 
-Good idea, a param to capture re-injection would be very helpful.
+Commit-ID:     944fad4583bc8a6d7dd80fbe39db50141da95793
+Gitweb:        https://git.kernel.org/tip/944fad4583bc8a6d7dd80fbe39db50141da95793
+Author:        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+AuthorDate:    Tue, 01 Feb 2022 15:40:55 +01:00
+Committer:     Borislav Petkov <bp@suse.de>
+CommitterDate: Mon, 04 Apr 2022 20:08:26 +02:00
+
+x86/fault: Cast an argument to the proper address space in prefetch()
+
+Commit in Fixes uses accessors based on the access mode, i.e., it
+distinguishes its access if instr carries a user address or a kernel
+address.
+
+Since that commit, sparse complains about passing an argument without
+__user annotation to get_user(), which expects a pointer of the __user
+address space:
+
+  arch/x86/mm/fault.c:152:29: warning: incorrect type in argument 1 (different address spaces)
+  arch/x86/mm/fault.c:152:29:    expected void const volatile [noderef] __user *ptr
+  arch/x86/mm/fault.c:152:29:    got unsigned char *[assigned] instr
+
+Cast instr to __user when accessing user memory.
+
+No functional change. No change in the generated object code.
+
+  [ bp: Simplify commit message. ]
+
+Fixes: 35f1c89b0cce ("x86/fault: Fix AMD erratum #91 errata fixup for user code")
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/20220201144055.5670-1-lukas.bulwahn@gmail.com
+---
+ arch/x86/mm/fault.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/x86/mm/fault.c b/arch/x86/mm/fault.c
+index d0074c6..fad8faa 100644
+--- a/arch/x86/mm/fault.c
++++ b/arch/x86/mm/fault.c
+@@ -149,7 +149,7 @@ is_prefetch(struct pt_regs *regs, unsigned long error_code, unsigned long addr)
+ 		unsigned char opcode;
+ 
+ 		if (user_mode(regs)) {
+-			if (get_user(opcode, instr))
++			if (get_user(opcode, (unsigned char __user *) instr))
+ 				break;
+ 		} else {
+ 			if (get_kernel_nofault(opcode, instr))
