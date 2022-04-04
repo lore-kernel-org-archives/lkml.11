@@ -2,82 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26D13C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 07:50:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CE11C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 07:51:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377826AbiDDHwX (ORCPT
+        id S1377842AbiDDHxm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 03:52:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46156 "EHLO
+        Mon, 4 Apr 2022 03:53:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377823AbiDDHwL (ORCPT
+        with ESMTP id S1377843AbiDDHwr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 03:52:11 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8970D34641;
-        Mon,  4 Apr 2022 00:50:14 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: usama.anjum)
-        with ESMTPSA id D826B1F4575C
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1649058611;
-        bh=wRw+FS/liDk8+4/LHOdlgCTWRsMje4kGNd0ZwHY5Gnk=;
-        h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
-        b=NHqpx3h3QOudoE+UAyxOFAjRtQ7Fele4HRnn0OBhKxSN+omOJGLlH4lcz09TieocE
-         fc50/oAY7+J28KdLLY0ygIOrYwHxQr9HScvmTzxfC7Eaa+GF77Xa2ktfQNXZBDXOcv
-         3Hd+lc539CxodPHwzX+faOrzeY+CbjWWE2Ekg32okJPCU9AmpjNClgrmbZQUetVYmy
-         S6QcqatbmZEVggOZSb0Mtp3C4Tp+RWQy9RypO9CF+6dxUTtlzc784WZH7dHu5FsuUB
-         iZodFN8aklsktKu/UxhsqgXuijImuWa+XBB1W6gBoSYzuBDT3K5NXcapTY5jlHaLJm
-         d3CIZRMXd+Jpw==
-Message-ID: <a9c74cc2-491e-678a-8965-86fa6a6002dc@collabora.com>
-Date:   Mon, 4 Apr 2022 12:50:01 +0500
+        Mon, 4 Apr 2022 03:52:47 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B7E93B29A
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 00:50:39 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id k23so544796wrd.8
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 00:50:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:organization:in-reply-to:content-transfer-encoding;
+        bh=CVOw/LnzR+FU3Wl5ZYv0rtjB0R73JkKUrPjFPYHJa+k=;
+        b=C3LFox7eE6dCp7eKT1/ySVqfeBAwlHmOr0wnCj4BjQtUusIomrrRsNuWhRlewdgW6g
+         T7i0eyLqpTwupDf295JlqdxJqkVPEW/uixETapJQwfHB6ocEXYbA9CY6noSPlJihQfQV
+         9WL1K+IGfG2/hc4IhNdLzqf7DLtz8r7Qfq5Gi0P+iaUcpmq/kHX4BwaDrIte4p3iQ3I3
+         pdV2QqdEqmwrNR1bnJxN4et1gWG29konh4QssyGchU+l3/PXaDeAZ4SRsSsdk0wtWxuX
+         au3dEGTNaTXQfoqNI6czKs6ZNwvhTE98j2NhLgHAPuD3BbFx7bhR1MLqC/o4VUa9PfYp
+         /DOQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=CVOw/LnzR+FU3Wl5ZYv0rtjB0R73JkKUrPjFPYHJa+k=;
+        b=ghWI7KU1THUfueE1/l3N68c2Q51u+j6w/LKBQW7DlHTLjod2uWlOglmUVxZV0lP3H0
+         RBMh3XyrHuTmv+f6+T1H5trNXAJs2lSy/EZ/JqP5FJ7SNc8n3BIX7AvDn4nFII/U8/pd
+         z4v9D0oTN20SImWZGwP9FqmvNlp5HYAb/9qsGRYEud8l9ewQAwpsccl4VIa0vZ5tETYo
+         mbzLSkKS2hcwAtqbWrsVEg5zGGvHLnUot0XlMeBM85MsbqpFuUc/X3jKpTrgka3CDvoO
+         RNDUKNmHt3BRvlOb6aEoiR1cw6Q6QfVE7xc4u9sapBmUFswRIsNz+PnQx4pSVifpO+IG
+         EOmg==
+X-Gm-Message-State: AOAM532MdIIIqhp1u2tTj+g+ndKeeTYR6IRIDPoBV8dnL/uyYNhDsAgE
+        5U2T5If1FTNcCuuyddTl1AjlRQ==
+X-Google-Smtp-Source: ABdhPJw6n7rlU6gSwNroZmpobyR6C2fXEEog4wsvWJs4pRqrcPYltbz1802lWVLzbcF/oLhax9QTow==
+X-Received: by 2002:adf:e2cb:0:b0:203:7564:1076 with SMTP id d11-20020adfe2cb000000b0020375641076mr16279951wrj.199.1649058638174;
+        Mon, 04 Apr 2022 00:50:38 -0700 (PDT)
+Received: from ?IPV6:2001:861:44c0:66c0:1add:1b28:2457:eb46? ([2001:861:44c0:66c0:1add:1b28:2457:eb46])
+        by smtp.gmail.com with ESMTPSA id u7-20020a5d6da7000000b00203d9d1875bsm9526826wrs.73.2022.04.04.00.50.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 04 Apr 2022 00:50:37 -0700 (PDT)
+Message-ID: <ccc45d36-0c87-742c-4105-56820b058040@baylibre.com>
+Date:   Mon, 4 Apr 2022 09:50:37 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Cc:     usama.anjum@collabora.com, Shuah Khan <shuah@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        kernel@collabora.com, kernelci@groups.io,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] selftests/lkdtm: add config
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 2/2] arm64: dts: meson: remove CPU opps below 1GHz for
+ SM1 boards
 Content-Language: en-US
-To:     Kees Cook <keescook@chromium.org>
-References: <20220217205620.2512094-1-usama.anjum@collabora.com>
- <20220217205620.2512094-2-usama.anjum@collabora.com>
- <202203091123.33E89F5@keescook>
- <76529762-1a36-142d-0aa9-beb5fa2bb27b@collabora.com>
- <aaeaefb7-3655-2863-46ae-162bf5ab761c@collabora.com>
-From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
-In-Reply-To: <aaeaefb7-3655-2863-46ae-162bf5ab761c@collabora.com>
-Content-Type: text/plain; charset=UTF-8
+To:     Christian Hewitt <christianshewitt@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220210100638.19130-1-christianshewitt@gmail.com>
+ <20220210100638.19130-3-christianshewitt@gmail.com>
+From:   Neil Armstrong <narmstrong@baylibre.com>
+Organization: Baylibre
+In-Reply-To: <20220210100638.19130-3-christianshewitt@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Kees,
-
-Any thoughts?
-
-On 3/15/22 4:55 PM, Muhammad Usama Anjum wrote:
-> On 3/10/22 10:22 PM, Muhammad Usama Anjum wrote:
->> On 3/10/22 12:23 AM, Kees Cook wrote:
->>> On Fri, Feb 18, 2022 at 01:56:20AM +0500, Muhammad Usama Anjum wrote:
->>>> Add config option which is needed for SLAB_LINEAR_OVERFLOW test. It
->>>> needs KASAN enabled.
->>>
->>> I'd prefer this use the SLAB_DEBUG options -- KASAN is very heavy.
->> I'll test it out and update in the next patch version.
->> I've tested by removing KASAN and adding the following config:
-> CONFIG_SLAB=y
-> CONFIG_DEBUG_SLAB=y
+On 10/02/2022 11:06, Christian Hewitt wrote:
+> Amlogic SM1 devices experience CPU stalls and random board wedges when
+> the system idles and CPU cores clock down to lower opp points. Recent
+> vendor kernels include a change to remove 100-250MHz and other distro
+> sources also remove the 500/667MHz points. Unless all 100-667Mhz opps
+> are removed or the CPU governor forced to performance stalls are still
+> observed, so let's remove them to improve stability and uptime.
 > 
-> The result of SLAB_LINEAR_OVERFLOW test doesn't remain deterministic in
-> this config. The task never crashes and hence stack trace never appears.
-> When executed several times we get "Slab corruption" logs and after some
-> more tries whole kernel crashes. I've not used DEBUG_SLAB before and not
-> sure if this is the expected behavior. If we aren't sure, we can keep
-> KASAN turned on instead.
+> Fixes: 3d9e76483049 ("arm64: dts: meson-sm1-sei610: enable DVFS")
+> Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+> ---
+>   arch/arm64/boot/dts/amlogic/meson-sm1.dtsi | 20 --------------------
+>   1 file changed, 20 deletions(-)
 > 
+> diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi b/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi
+> index 3c07a89bfd27..80737731af3f 100644
+> --- a/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi
+> +++ b/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi
+> @@ -95,26 +95,6 @@
+>   		compatible = "operating-points-v2";
+>   		opp-shared;
+>   
+> -		opp-100000000 {
+> -			opp-hz = /bits/ 64 <100000000>;
+> -			opp-microvolt = <730000>;
+> -		};
+> -
+> -		opp-250000000 {
+> -			opp-hz = /bits/ 64 <250000000>;
+> -			opp-microvolt = <730000>;
+> -		};
+> -
+> -		opp-500000000 {
+> -			opp-hz = /bits/ 64 <500000000>;
+> -			opp-microvolt = <730000>;
+> -		};
+> -
+> -		opp-667000000 {
+> -			opp-hz = /bits/ 64 <666666666>;
+> -			opp-microvolt = <750000>;
+> -		};
+> -
+>   		opp-1000000000 {
+>   			opp-hz = /bits/ 64 <1000000000>;
+>   			opp-microvolt = <770000>;
 
--- 
-Muhammad Usama Anjum
+Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
