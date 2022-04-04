@@ -2,92 +2,218 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7A97C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 06:42:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0B43C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 06:47:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377547AbiDDGoe (ORCPT
+        id S1377572AbiDDGtR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 02:44:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52622 "EHLO
+        Mon, 4 Apr 2022 02:49:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357127AbiDDGo2 (ORCPT
+        with ESMTP id S240418AbiDDGtI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 02:44:28 -0400
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F4D32B244
-        for <linux-kernel@vger.kernel.org>; Sun,  3 Apr 2022 23:42:33 -0700 (PDT)
-Received: by mail-pg1-x52d.google.com with SMTP id 125so2401864pgc.4
-        for <linux-kernel@vger.kernel.org>; Sun, 03 Apr 2022 23:42:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=PegN0LY73qhaXEJ51OmllBB8FerysE5PYKx9aPbALwY=;
-        b=nez2g3GyxqQU5kecDLhnZpTR9ZGLVFMT63horZ9s4lHNE+NaIQedEh1X9iN3+K54kC
-         o8jQuSoqN3jcn+f61rJS2PthoEhIj3rkQdWSUfPzlBNqMldPOGH6ee9Q/veMqeHGN/Zo
-         FvMcJP0NDOR/uL53JSTQ3akA09/SAY06DI3o3LqAPyp0WsW1OnRYa+X19vZd0WLIwvT6
-         GplsXkIZ9EoOvoXFX9g2hwB9/UzNJCXh0erZtQwCZfoNX8l6/HdoAdgcx5HZTONV5ngv
-         RlTnx1Y551M2SvfV0eB5OfMMgGbfaY8oObwqxkIc0imdZhXbSi4Bs/fz9RRTZ/S4yROu
-         HAWg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=PegN0LY73qhaXEJ51OmllBB8FerysE5PYKx9aPbALwY=;
-        b=DJmRutb65V/vzGJLVJd4dRWIfXnJMoSRB4I1AC9n3G1CISuUXbtzVdQ0pf3hQ51TJq
-         n7je30s6y9igIuj337qfOk3YQsceAxvYE7BQDw9Ja9uLemlWbgpnz0K93DqKQPjbOF0K
-         ZqzVA8ii+2GERU5W60lpwch9OjuFk+BUybdgMcScXCs+vdlclE7GZhbMRejHWayLbHW3
-         KdLP/xFTEMS3638KQf8C+9g+OVIt31AJh74kT6O5M+tLvkwIxm7Z1OzzGk79N9jO0MTU
-         ZUy4t2HYBbDx7Acw31RX9mLUpWycq+V6gDwbnjDhhEpEtYa3zpO5ilVYy1100kyo7MPJ
-         sf5g==
-X-Gm-Message-State: AOAM531ESW/xe4JDs206qabG8g0cURXrX5acB6s+tFLLYZ6WNZUibWvA
-        31vPMZCIR0k6E61OP21yeSKgk/Y5yYkt
-X-Google-Smtp-Source: ABdhPJwFU9KB4YkxChyoBR6qa6Aaf6OQbEbszzcy5A4KksDZTTDkHkZp8AKiclccEJ9hyM6tn06cLQ==
-X-Received: by 2002:a63:9502:0:b0:386:3916:ca8e with SMTP id p2-20020a639502000000b003863916ca8emr24408663pgd.357.1649054552805;
-        Sun, 03 Apr 2022 23:42:32 -0700 (PDT)
-Received: from localhost.localdomain ([27.111.75.184])
-        by smtp.gmail.com with ESMTPSA id s3-20020a056a00194300b004f6664d26eesm11071070pfk.88.2022.04.03.23.42.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 03 Apr 2022 23:42:32 -0700 (PDT)
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     mhi@lists.linux.dev
-Cc:     quic_hemantk@quicinc.com, quic_bbhatt@quicinc.com,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Subject: [PATCH] MAINTAINERS: Update Hemant's email id
-Date:   Mon,  4 Apr 2022 12:12:26 +0530
-Message-Id: <20220404064226.59825-1-manivannan.sadhasivam@linaro.org>
-X-Mailer: git-send-email 2.25.1
+        Mon, 4 Apr 2022 02:49:08 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63135381BA
+        for <linux-kernel@vger.kernel.org>; Sun,  3 Apr 2022 23:47:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649054832; x=1680590832;
+  h=message-id:date:mime-version:cc:to:references:from:
+   subject:in-reply-to:content-transfer-encoding;
+  bh=1qb2JwH7lgsujR96fwZNadimhjb2aZ4RRps5Gl3fB8s=;
+  b=hLcWkfAc1WIptqjnxNqFecEaBvtV9g0sa+D3+RdTTih/UJ9fzlr8y5cZ
+   WAoTHBFnM2KhHbE6oCZZc43MZu/yA2vPy27qiKIDI5lTTPXDZ5XpNgjqF
+   FBxNMaGm75KZt4PqoPzsFZ+4CgUWuuY12xmi0+ed7SMXDoNaPsbqWCGPu
+   CwtPoWDjdyeIxkQ2VPyroC83HHnTMwoktLpIyKw/5Z/+GU0rifZEt2YB4
+   K/ejOwjMGUePPyfP3Yqk1We5oZdcaMhSU4L3GKkYYmpbJ8+S9ASAUkd9Z
+   bq9kdq5NnUMPg/CyH4iyX5n5YfKjkmxpau6w9D7WVXZrYmespf4lwSwTp
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10306"; a="247963086"
+X-IronPort-AV: E=Sophos;i="5.90,233,1643702400"; 
+   d="scan'208";a="247963086"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Apr 2022 23:47:11 -0700
+X-IronPort-AV: E=Sophos;i="5.90,233,1643702400"; 
+   d="scan'208";a="548544591"
+Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.214.140]) ([10.254.214.140])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Apr 2022 23:47:08 -0700
+Message-ID: <9958fae3-2918-c1b7-6804-8b840807eb5c@linux.intel.com>
+Date:   Mon, 4 Apr 2022 14:47:05 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Cc:     baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        Liu Yi L <yi.l.liu@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Content-Language: en-US
+To:     Jason Gunthorpe <jgg@nvidia.com>
+References: <20220329053800.3049561-1-baolu.lu@linux.intel.com>
+ <20220329053800.3049561-5-baolu.lu@linux.intel.com>
+ <20220330190852.GC2120790@nvidia.com>
+From:   Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH RFC v2 04/11] iommu: Add attach/detach_dev_pasid domain
+ ops
+In-Reply-To: <20220330190852.GC2120790@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The codeaurora email domain is no longer available for Qualcomm employees.
-Qualcomm employees should now use the new email ids from quicinc domain for
-opensource contributions.
+Hi Jason,
 
-So let's use the new email id for Hemant.
+On 2022/3/31 3:08, Jason Gunthorpe wrote:
+> On Tue, Mar 29, 2022 at 01:37:53PM +0800, Lu Baolu wrote:
+>> Attaching an IOMMU domain to a PASID of a device is a generic operation
+>> for modern IOMMU drivers which support PASID-granular DMA address
+>> translation. Currently visible usage scenarios include (but not limited):
+>>
+>>   - SVA (Shared Virtual Address)
+>>   - kernel DMA with PASID
+>>   - hardware-assist mediated device
+>>
+>> This adds a pair of common domain ops for this purpose and adds some
+>> common helpers to attach/detach a domain to/from a {device, PASID} and
+>> get/put the domain attached to {device, PASID}.
+>>
+>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>>   include/linux/iommu.h | 36 ++++++++++++++++++
+>>   drivers/iommu/iommu.c | 88 +++++++++++++++++++++++++++++++++++++++++++
+>>   2 files changed, 124 insertions(+)
+>>
+>> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+>> index 29c4c2edd706..a46285488a57 100644
+>> +++ b/include/linux/iommu.h
+>> @@ -269,6 +269,8 @@ struct iommu_ops {
+>>    * struct iommu_domain_ops - domain specific operations
+>>    * @attach_dev: attach an iommu domain to a device
+>>    * @detach_dev: detach an iommu domain from a device
+>> + * @attach_dev_pasid: attach an iommu domain to a pasid of device
+>> + * @detach_dev_pasid: detach an iommu domain from a pasid of device
+>>    * @map: map a physically contiguous memory region to an iommu domain
+>>    * @map_pages: map a physically contiguous set of pages of the same size to
+>>    *             an iommu domain.
+>> @@ -286,6 +288,10 @@ struct iommu_ops {
+>>   struct iommu_domain_ops {
+>>   	int (*attach_dev)(struct iommu_domain *domain, struct device *dev);
+>>   	void (*detach_dev)(struct iommu_domain *domain, struct device *dev);
+>> +	int (*attach_dev_pasid)(struct iommu_domain *domain,
+>> +				struct device *dev, ioasid_t id);
+>> +	void (*detach_dev_pasid)(struct iommu_domain *domain,
+>> +				 struct device *dev, ioasid_t id);
+> 
+> ID should be pasid for consistency
 
-Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
----
- MAINTAINERS | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Sure.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index fd768d43e048..d714313d5cb0 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -12793,7 +12793,7 @@ F:	arch/arm64/boot/dts/marvell/armada-3720-uDPU.dts
- 
- MHI BUS
- M:	Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
--R:	Hemant Kumar <hemantk@codeaurora.org>
-+R:	Hemant Kumar <quic_hemantk@quicinc.com>
- L:	mhi@lists.linux.dev
- L:	linux-arm-msm@vger.kernel.org
- S:	Maintained
--- 
-2.25.1
+> 
+>> +int iommu_attach_device_pasid(struct iommu_domain *domain,
+>> +			      struct device *dev, ioasid_t pasid)
+>> +{
+>> +	struct iommu_group *group;
+>> +	int ret = -EINVAL;
+>> +	void *curr;
+>> +
+>> +	if (!domain->ops->attach_dev_pasid)
+>> +		return -EINVAL;
+>> +
+>> +	group = iommu_group_get(dev);
+>> +	if (!group)
+>> +		return -ENODEV;
+>> +
+>> +	mutex_lock(&group->mutex);
+>> +	/*
+>> +	 * To keep things simple, we currently don't support IOMMU groups
+>> +	 * with more than one device. Existing SVA-capable systems are not
+>> +	 * affected by the problems that required IOMMU groups (lack of ACS
+>> +	 * isolation, device ID aliasing and other hardware issues).
+>> +	 */
+>> +	if (!iommu_group_singleton_lockdown(group))
+>> +		goto out_unlock;
+>> +
+>> +	xa_lock(&group->pasid_array);
+>> +	curr = __xa_cmpxchg(&group->pasid_array, pasid, NULL,
+>> +			    domain, GFP_KERNEL);
+>> +	xa_unlock(&group->pasid_array);
+> 
+> Why the xa_lock/unlock? Just call the normal xa_cmpxchg?
 
+I should use xa_cmpxchg() instead.
+
+
+> 
+>> +void iommu_detach_device_pasid(struct iommu_domain *domain,
+>> +			       struct device *dev, ioasid_t pasid)
+>> +{
+>> +	struct iommu_group *group;
+>> +
+>> +	group = iommu_group_get(dev);
+>> +	if (WARN_ON(!group))
+>> +		return;
+> 
+> This group_get stuff really needs some cleaning, this makes no sense
+> at all.
+> 
+> If the kref to group can go to zero within this function then the
+> initial access of the kref is already buggy:
+> 
+> 	if (group)
+> 		kobject_get(group->devices_kobj);
+> 
+> Because it will crash or WARN_ON.
+> 
+> We don't hit this because it is required that a group cannot be
+> destroyed while a struct device has a driver bound, and all these
+> paths are driver bound paths.
+> 
+> So none of these group_get/put patterns have any purpose at all, and
+> now we are adding impossible WARN_ONs to..
+
+The original intention of this check is that the helper is called on the
+correct device. I agree that WARN_ON() is unnecessary because NULL
+pointer reference will be caught automatically.
+
+> 
+>> +struct iommu_domain *
+>> +iommu_get_domain_for_dev_pasid(struct device *dev, ioasid_t pasid)
+>> +{
+>> +	struct iommu_domain *domain;
+>> +	struct iommu_group *group;
+>> +
+>> +	group = iommu_group_get(dev);
+>> +	if (!group)
+>> +		return NULL;
+> 
+> And now we are doing useless things on a performance path!
+
+Agreed.
+
+> 
+>> +	mutex_lock(&group->mutex);
+>> +	domain = xa_load(&group->pasid_array, pasid);
+>> +	if (domain && domain->type == IOMMU_DOMAIN_SVA)
+>> +		iommu_sva_domain_get_user(domain);
+>> +	mutex_unlock(&group->mutex);
+>> +	iommu_group_put(group);
+> 
+> Why do we need so much locking on a performance path? RCU out of the
+> xarray..
+> 
+> Not sure I see how this get_user refcounting can work ?
+
+I should move the refcountering things to iommu_domain and make the
+change easier for review. Will improve this in the new version.
+
+> 
+> Jason
+
+Best regards,
+baolu
