@@ -2,157 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B33AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 12:55:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D94AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 12:55:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348032AbiDDM4z (ORCPT
+        id S1348183AbiDDM5N (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 08:56:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46196 "EHLO
+        Mon, 4 Apr 2022 08:57:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236085AbiDDM4w (ORCPT
+        with ESMTP id S1343812AbiDDM5M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 08:56:52 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7FE92275F7
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 05:54:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649076895;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=J7oPoHpR753mUEaQDFGWtJcBiuJoSf0bjw6p8TVCqQs=;
-        b=fRHty2D6zLCOVkw2FUbbfvlli6Z1M/2oa7Tqzm7VNCYRZeeptalJliu650pkTWo4SWYTof
-        23GLEZconCC/IW0L+1Th41r8GwFSWPGjeRAUyGODFVTo5jZWYodBdaQTVdDaoTNgIV5XMb
-        keFuL8WpDQw1oQVNLoR4xr1rM9E/fto=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-347-SD0pniW2NVy60IPhdQivKg-1; Mon, 04 Apr 2022 08:54:54 -0400
-X-MC-Unique: SD0pniW2NVy60IPhdQivKg-1
-Received: by mail-ed1-f72.google.com with SMTP id l24-20020a056402231800b00410f19a3103so5454138eda.5
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 05:54:54 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=J7oPoHpR753mUEaQDFGWtJcBiuJoSf0bjw6p8TVCqQs=;
-        b=JN6V4vnhtdzHGU+eaRnEUgEN5VOV6wdWM1AYgLCK8z+YoB457U98WPtVKMuJ37aNJW
-         56VtwGV8k8OvaGL+mzgXUmjzIks35PBbt7WoO9OvfKMgdoRbuTp6rz3yyuE+NBcKKR3D
-         /gmuwYEBdZO9yYLfJuA6rTjpE62/75GEEhn5KzVyJ1PRfdpsRQLBkgoDlKX1/lJBjjvS
-         zL680iiOzmycH4+5ZhG9aG0m70n4PkBeCb2cHgJjBz74SBtrOoe9RIpmui6F2aWFPKzo
-         iCYDqv+HGfkHQmwV23cHcDXp7MumdNgLy8awhrtY7+jB3ncPf5qqhF41bWWOyPwKmLEr
-         3AGQ==
-X-Gm-Message-State: AOAM532wNHgFTphxm1fKHSMFaRW5RnH3Wu4m6yq18k2X+OcUQrNDuikC
-        mJDHq8dnysQI7ba+3Z10ElU0VDixBhxan++DSF1PaopnlIpQqWBSIurMiGyNXM3JS6AWl6gABye
-        fJhVk8Yb6rM9gxw48t2nqKA9J
-X-Received: by 2002:a17:906:4786:b0:6e7:f7ec:632 with SMTP id cw6-20020a170906478600b006e7f7ec0632mr2276289ejc.751.1649076892791;
-        Mon, 04 Apr 2022 05:54:52 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzvov1jpOKaeEwyUrj0fOsPGoGjwYppw++2R0YiyHa8nXrQANmD5A66X2w1avIYxZlkSKY/Fw==
-X-Received: by 2002:a17:906:4786:b0:6e7:f7ec:632 with SMTP id cw6-20020a170906478600b006e7f7ec0632mr2276262ejc.751.1649076892536;
-        Mon, 04 Apr 2022 05:54:52 -0700 (PDT)
-Received: from [10.40.98.142] ([78.108.130.194])
-        by smtp.gmail.com with ESMTPSA id 22-20020a17090600d600b006dfbc46efabsm4323463eji.126.2022.04.04.05.54.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 04 Apr 2022 05:54:52 -0700 (PDT)
-Message-ID: <4df1fc93-2a2a-3482-085f-3a88970440ff@redhat.com>
-Date:   Mon, 4 Apr 2022 14:54:51 +0200
+        Mon, 4 Apr 2022 08:57:12 -0400
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BB9732042
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 05:55:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649076916; x=1680612916;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=/CjYIlBlDeK556thkrgohCOdY6pviJ/7+5vySTyCVZg=;
+  b=AP+GzIUqnci8IYk0Di0JYHAS6Obyyo/+a9YPSEInuboleXmHHkCKVDHA
+   UIMXbJxqP6u/eAa5LlqP6Ti3A6mGLy7AH5rHCCW99IOsou/sx/6kaplGb
+   fjRmkChiwnFDeq7sIG3ST9R15nYIqF8Ifv4FWfjSXEiRgdfl+WlYC9GuW
+   4XWvnGNUy/g1FOIvYC4GV5U3QlktTuMVSG5wWagJGZnrppmQOTGKKLQMX
+   Miznvg74Ut59zij3hsFMuhCJU/d0tDBzwqtBASFaMLKnWMyqIqdGBR5zC
+   CF4rNuSeQiQF9y6PmWM2A1ly9/hbW1uXJ9OrXxWZF8DFuf4WaHaNETRwX
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10306"; a="321201856"
+X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
+   d="scan'208";a="321201856"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 05:55:16 -0700
+X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
+   d="scan'208";a="721635917"
+Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 05:55:14 -0700
+Received: by lahna (sSMTP sendmail emulation); Mon, 04 Apr 2022 15:53:03 +0300
+Date:   Mon, 4 Apr 2022 15:53:03 +0300
+From:   Mika Westerberg <mika.westerberg@linux.intel.com>
+To:     Brad Campbell <lists2009@fnarfbargle.com>
+Cc:     linux-kernel@vger.kernel.org
+Subject: Re: Apple Thunderbolt Display chaining
+Message-ID: <YkrqL/wnACNVOpSi@lahna>
+References: <YkRebADER3J9ooPM@lahna>
+ <d40f02e5-7274-e834-6e13-82b3dbe11284@fnarfbargle.com>
+ <YkRtf2HiXBOWGjna@lahna>
+ <eacc22dc-e650-a208-9484-62edd98d5778@fnarfbargle.com>
+ <YkXYdcUZ1E18ENle@lahna>
+ <5dcee6f7-cc8c-e3ce-920c-4ad3f5d77e14@fnarfbargle.com>
+ <YkcMofXKr/ZmOSwH@lahna>
+ <7ea44c20-6c65-224f-af7b-aa1bd310d038@fnarfbargle.com>
+ <YkrEE0uh9EVCchfl@lahna>
+ <d112651d-919d-ce2d-efac-6abbd9de0f07@fnarfbargle.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: unexpected indentation warning in
- Documentation/ABI/testing/sysfs-*
-Content-Language: en-US
-To:     Bagas Sanjaya <bagasdotme@gmail.com>, linux-doc@vger.kernel.org,
-        'Linux Kernel' <linux-kernel@vger.kernel.org>,
-        platform-driver-x86@vger.kernel.org, Dell.Client.Kernel@dell.com,
-        linux-iio@vger.kernel.org
-Cc:     Gao Xiang <hsiangkao@linux.alibaba.com>,
-        Huang Jianan <huangjianan@oppo.com>, Chao Yu <chao@kernel.org>,
-        Divya Bharathi <divya.bharathi@dell.com>,
-        Mark Pearson <markpearson@lenovo.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Gwendal Grignou <gwendal@chromium.org>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        "David E. Box" <david.e.box@linux.intel.com>,
-        Mark Gross <markgross@kernel.org>
-References: <564f87a9-dd57-d3a1-d476-d81350baf75d@gmail.com>
-From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <564f87a9-dd57-d3a1-d476-d81350baf75d@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d112651d-919d-ce2d-efac-6abbd9de0f07@fnarfbargle.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 Hi,
 
-On 4/4/22 13:58, Bagas Sanjaya wrote:
-> Hi,
+On Mon, Apr 04, 2022 at 07:38:06PM +0800, Brad Campbell wrote:
+> > Hm, you mean you don't see the timeout errors and stuff with the first
+> > patch applied?
 > 
-> Doing "make htmldocs" for Linux v5.18-rc1, I get new warnings:
+> I see the config timeout errors and the controller locking up after a
+> couple of unplugs, but when it does configure the DP channels, they
+> both come up every time.
 > 
-> <path/to/linux>/Documentation/ABI/testing/sysfs-driver-intel_sdsi:2: WARNING: Unexpected indentation.
-> <path/to/linux>/Documentation/ABI/testing/sysfs-driver-intel_sdsi:2: WARNING: Block quote ends without a blank line; unexpected unindent.
-> <path/to/linux>/Documentation/ABI/testing/sysfs-driver-intel_sdsi:2: WARNING: Definition list ends without a blank line; unexpected unindent.
-> <path/to/linux>/Documentation/ABI/testing/sysfs-class-firmware-attributes:130: WARNING: Unexpected indentation.
-> <path/to/linux>/Documentation/ABI/testing/sysfs-class-firmware-attributes:130: WARNING: Unexpected indentation.
-> <path/to/linux>/Documentation/ABI/testing/sysfs-class-firmware-attributes:130: WARNING: Unexpected indentation.
-
-These 6 are all fixed in this series:
-
-> <path/to/linux>/Documentation/ABI/testing/sysfs-class-firmware-attributes:130: WARNING: Unexpected indentation.
-> <path/to/linux>/Documentation/ABI/testing/sysfs-class-firmware-attributes:130: WARNING: Unexpected indentation.
-> <path/to/linux>/Documentation/ABI/testing/sysfs-class-firmware-attributes:130: WARNING: Unexpected indentation.
-
-https://lore.kernel.org/platform-driver-x86/20220324164737.21765-1-hdegoede@redhat.com/T/#t
-
-Which will be included in my next fixes pull-req to Linus.
-
-> <path/to/linux>/Documentation/ABI/testing/sysfs-fs-erofs:10: WARNING: Unexpected indentation.
-> <path/to/linux>/Documentation/ABI/testing/sysfs-fs-erofs:10: WARNING: Block quote ends without a blank line; unexpected unindent.
-
-These 2 are fixed by this (pending) patch:
-https://lore.kernel.org/linux-kernel/20220324165918.22005-4-hdegoede@redhat.com/
-
-And I also have this pending patch for a pre-existing warning:
-https://lore.kernel.org/linux-kernel/20220324165918.22005-3-hdegoede@redhat.com/
-
-I'm not sure who should pick these 2 up ?
-
-> <path/to/linux>/Documentation/ABI/testing/sysfs-bus-iio-sx9324:2: WARNING: Unexpected indentation.
-> <path/to/linux>/Documentation/ABI/testing/sysfs-bus-nvdimm:11: WARNING: Unexpected indentation.
-
-These 2 warnings are new to me (I tested with pdx86/for-next, so they probably
-came in through another tree).
-
-Regards,
-
-HaNS
-
-
-
-
-
+> So, with the original patch when thunderbolt discovery works, displays
+> both work. With the latest patch, whether or not the hotplug works,
+> the radeon driver fails to bring up the parent head.
 > 
-> Introduced by 2546c60004309e (platform/x86: Add Intel Software Defined
-> Silicon driver, 2022-02-11), 2bec6d9aa89cbe (docs: ABI: sysfs-bus-nvdimm:
-> Document sysfs event format entries for nvdimm pmu, 2022-02-25),
-> e8a60aa7404bfe (platform/x86: Introduce support for Systems Management
-> Driver over WMI for Dell Systems), 40452ffca3c1a0 (erofs: add sysfs
-> node to control sync decompression strategy, 2021-12-06), and
-> 4c18a890dff8d9 (iio:proximity:sx9324: Add SX9324 support, 2022-01-01).
-> 
-> Presumably because Sphinx mistakes these documentation files without
-> extensions for .rst files? I dunno.
-> 
-> Reported-by: Bagas Sanjaya <bagasdotme@gmail.com>
-> 
+> Both suffer from the controller config timeout reads on unplug causing
+> it to become unresponsive after a couple of re-plug cycles (3 if I'm
+> lucky).
 
+I suspect the same issue is even with the first patch but it just
+manifests differently. I think the timeouts are the key here and we need
+to figure out why they happen.
+
+> > I think I will make this current one a proper patch and submit upstream
+> > later this week (will CC you too). For the iMac issue we may need to
+> > debug it further. Not sure if you answered this one already but on iMac
+> > on macOS does it work always when you plug in the whole chain?
+> > 
+> Yes, MacOS works fine in any order on any port.
+> 
+> There is a difference in the way something is set up between what the
+> EFI does and what Linux does.
+
+Agree.
+
+> If I wait for the Chime, then a bit longer and plug the chain in
+> (before the bootloader starts), Linux sets up both heads and hotplug /
+> replug works.
+> 
+> If I cold boot with the chain plugged in, the EFI sets up one head and
+> Linux configures the other. Replug fails with the clock-recovery error
+> in that case.
+> 
+> The difference seems to be when EFI sets up, on re-plug it sets up the
+> child display first (303 vs 3) and that causes the issue. Repeated
+> tests can get difficult as often on the second or third plug (or
+> unplug) the controller locks up and no longer responds to events.
+> 
+> I'll try and get a couple of clear dmesg with your last debug patch
+> because it appear the chain is being discovered in a different order
+> depending on whether or not the EFI set it up.
+
+That would be helpful.
+
+> I received my brand new Titan Ridge board today (Gigabyte B550
+> Vision-d-p) and with a modified Thunderbolt rom and the last patch it
+> detects and runs both Thunderbolt displays from a cold boot. Hotplug
+> fails, and there are other issues related to warm boot, but they'll
+> all have to wait until I get a serial console up.
+
+Hehe, OK.
+
+> Appreciate the persistence with this.
+
+My pleasure ;-)
