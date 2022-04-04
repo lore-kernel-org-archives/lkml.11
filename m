@@ -2,104 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84EF2C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEA50C47087
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:23:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381574AbiDDVXV (ORCPT
+        id S1381744AbiDDVX5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:23:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33482 "EHLO
+        Mon, 4 Apr 2022 17:23:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379922AbiDDSVz (ORCPT
+        with ESMTP id S1380365AbiDDTsF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 14:21:55 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77C4822B37
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 11:19:59 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id i10-20020a17090a2aca00b001ca56c9ab16so215019pjg.1
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 11:19:59 -0700 (PDT)
+        Mon, 4 Apr 2022 15:48:05 -0400
+Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3C7830F6A
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 12:46:08 -0700 (PDT)
+Received: by mail-pf1-x44a.google.com with SMTP id g145-20020a625297000000b004fb2cf9d380so6483618pfb.22
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 12:46:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=aiqJZ75/YWr0n8WF7lZiF1Fjak6AGRA7UVKN+yFyHrY=;
-        b=k2z4OSa4+eckdOtXVxKvSW/v87vtp2H6bCdPyILueYWMdwy5RcQGTrthmlyRKI+4OI
-         2sFfoLEEM3FAmnL0mNEXE3Acm9HfuUjcbpfBhScTdVTXF1zwpOR5WLjrb4esOqo8U51c
-         MRO2xOQecJogFv+wHld28UDGdrS+XImpNb3ak+kjgOYgkDY5E1tJpt09k0j/w20JCFKK
-         fdFRL1Qe0n5TOiOxwo1d6PTRJnMTSoAPvIXOkJHukg/0rpqorWhDxFiy+zh2v5gLZISk
-         qER49CE71HkRIrMDUar5JrVHSTWu7YLHjN8YokyseXHkbtfnHjLtjLDiW4z6qlk14Hfi
-         wRQQ==
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=pT/6Qdmm3tGb7HLrr7GqjKevauNrm0C8oEo/kdSI0ug=;
+        b=DX180veywuwX26kBGb4IS3QvBU35h9XvsRIASvum61dFNYnZS7OLefgyf3qPP6lGa4
+         XxRYSgT9bKas8WCz2qeYHpQgwwHAvjjwMV/0RkSxZZDuGBbLyCWfeG2wsJNDLl8Q0mOw
+         xnWozmkr/vUAQX1nIDMRbYoIXIDdxhBtPqaE9y91l1qaKqWp1k6cIXnK5YT738jdyKGv
+         TNpopmpt42kRQfuoCfxV7Az+dss4alEDWfSv07wkZcFASxV4k0ByUOxrNcpLR3mf35hi
+         Y8DfkY9vRnLwM9bVRvbJih55QTFyzYqcAKzs2z4cuYO+exrc0fD59Y/+lIajydhE/0vH
+         2PwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=aiqJZ75/YWr0n8WF7lZiF1Fjak6AGRA7UVKN+yFyHrY=;
-        b=u/hLKIN5f+0ayMdCvAsdiHwcyMY7EYyc6GdfaYiVORK48pg5O2yedi3Q4hQ7qjV6ah
-         dIW8VGMwB2rgwBa8NH1LFopw0sS8CY58t85aGh2q7jYBQXgktB9ICYBvT1sMEjtoMHOx
-         MazlWgFRXP1vKHm9xqOve1bYBbiPNXIB+gvkj4vEQoFJSmFV1A0inP4yHKLu+ilw7zg0
-         Pkx6v2//EAyNW5ZPpnYLAdq02l1JMuIdk4/CV6lU09/dKTYwF6gx13YkxfMqT/QhQjzh
-         0l9cJyNIohznO6AXDPALK252ooqgPAzwd1gmnKsNNuZwdEQIQaTXgk0z78Dmzci+9048
-         CN0Q==
-X-Gm-Message-State: AOAM531N1Lafbu5Nj29tXHzR+9Mmu+j+DtWdfwdboRxtZZBwWs6zZB4u
-        w18oq65Wgx0Q/bOwx4yk8PbpNQ==
-X-Google-Smtp-Source: ABdhPJyC0EtrClYW2oXUEDPlR/Xd8c/63XIi9S0t0BKD1jqC8/QGFTPrx8Wl2HvoxKb4M4Nha9hADA==
-X-Received: by 2002:a17:90b:4a12:b0:1c7:5aa4:2a72 with SMTP id kk18-20020a17090b4a1200b001c75aa42a72mr453365pjb.201.1649096398654;
-        Mon, 04 Apr 2022 11:19:58 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id e19-20020a637453000000b003821bdb8103sm11067301pgn.83.2022.04.04.11.19.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 11:19:58 -0700 (PDT)
-Date:   Mon, 4 Apr 2022 18:19:54 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Ben Gardon <bgardon@google.com>
-Cc:     Mingwei Zhang <mizhang@google.com>,
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=pT/6Qdmm3tGb7HLrr7GqjKevauNrm0C8oEo/kdSI0ug=;
+        b=x8KuJ0mvYdksFP9/LwR9OfQArhXVzGkJcBzyyBDwIYXmG9SbPzNWMAyHQerf/XfxhZ
+         whRbQvQd4LdH69VpxpldoMbgWPakvRyqr7yp9xxae9C6fMCdO//bS+6kIwJ6AeuHqPNH
+         3cteeWbIW2EZKlFAm+La6K4FN2LcdH1oqllEUsc0sEWNEDsObMivALo97L1NuV6lmVvZ
+         LDI1jDGzCWGPbxOMoQwTfIB1SDmqD+MhoOIUXUmY/zWpU43DXYPn4gLSi9YgcbM9wTbW
+         jOXBq/LBVGuuXNmxAKtBBZZTreKNTWxu6Ep7ZrCUwFWFsspTgrVl5Gx8eDqyJV2MlQkP
+         fz2w==
+X-Gm-Message-State: AOAM533oP19T7nxGKRAx61OYYo2VlrV5qn9c19inVjDT6UWLpdTX6hnC
+        3YgFOIzIeDQKu6uABBkXVo8iVZZzPdw=
+X-Google-Smtp-Source: ABdhPJwfcqk6KaaBz0Oi+OSkD69vCvSBFe18Kal7m0AgXBWa7DktPfr3Jda+1wNf7qEamm9U33+gjllt6Hs=
+X-Received: from pgonda1.kir.corp.google.com ([2620:15c:29:203:805:a056:1a51:2b9e])
+ (user=pgonda job=sendgmr) by 2002:a17:902:f54c:b0:154:6794:ab18 with SMTP id
+ h12-20020a170902f54c00b001546794ab18mr1280283plf.118.1649101568063; Mon, 04
+ Apr 2022 12:46:08 -0700 (PDT)
+Date:   Mon,  4 Apr 2022 12:46:05 -0700
+Message-Id: <20220404194605.1569855-1-pgonda@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.35.1.1094.g7c7d902a7c-goog
+Subject: [PATCH] KVM: SEV: Mark nested locking of vcpu->lock
+From:   Peter Gonda <pgonda@google.com>
+To:     kvm@vger.kernel.org
+Cc:     Peter Gonda <pgonda@google.com>,
+        John Sperbeck <jsperbeck@google.com>,
+        David Rientjes <rientjes@google.com>,
         Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm <kvm@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Yosry Ahmed <yosryahmed@google.com>,
-        David Matlack <dmatlack@google.com>,
-        Jing Zhang <jingzhangos@google.com>,
-        Peter Xu <peterx@redhat.com>
-Subject: Re: [PATCH v3 1/6] KVM: x86/mmu: Set lpage_disallowed in TDP MMU
- before setting SPTE
-Message-ID: <Yks2ymJzY4S9x4zx@google.com>
-References: <20220401063636.2414200-1-mizhang@google.com>
- <20220401063636.2414200-2-mizhang@google.com>
- <CANgfPd9OqV35BGfRCvJZNK_kemgqDWPx8TKKObfyGb0iiC-uxg@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CANgfPd9OqV35BGfRCvJZNK_kemgqDWPx8TKKObfyGb0iiC-uxg@mail.gmail.com>
+        Sean Christopherson <seanjc@google.com>,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 04, 2022, Ben Gardon wrote:
-> On Thu, Mar 31, 2022 at 11:36 PM Mingwei Zhang <mizhang@google.com> wrote:
-> > diff --git a/arch/x86/kvm/mmu/mmu_internal.h b/arch/x86/kvm/mmu/mmu_internal.h
-> > index 1bff453f7cbe..4a0087efa1e3 100644
-> > --- a/arch/x86/kvm/mmu/mmu_internal.h
-> > +++ b/arch/x86/kvm/mmu/mmu_internal.h
-> > @@ -168,7 +168,7 @@ void disallowed_hugepage_adjust(struct kvm_page_fault *fault, u64 spte, int cur_
-> >
-> >  void *mmu_memory_cache_alloc(struct kvm_mmu_memory_cache *mc);
-> >
-> > -void account_huge_nx_page(struct kvm *kvm, struct kvm_mmu_page *sp);
-> > +void __account_huge_nx_page(struct kvm *kvm, struct kvm_mmu_page *sp);
-> 
-> I believe we need to modify the usage of this function in
-> paging_tmpl.h as well, at which point there should be no users of
-> account_huge_nx_page, so we can just modify the function directly
-> instead of adding a __helper.
-> (Disregard if the source I was looking at was out of date. Lots of
-> churn in this code recently.)
+svm_vm_migrate_from() uses sev_lock_vcpus_for_migration() to lock all
+source and target vcpu->locks. Mark the nested subclasses to avoid false
+positives from lockdep.
 
-paging_tmpl.h is shadow paging only, i.e. will always handled page faults with
-mmu_lock held for write and it also needs the check for sp->lpage_disallowed
-already being set.  Only the TDP MMU code is special in that (a) it holds mmu_lock
-for read and (b) never reuses shadow pages when inserting into the page tables.
+Fixes: b56639318bb2b ("KVM: SEV: Add support for SEV intra host migration")
+Reported-by: John Sperbeck<jsperbeck@google.com>
+Suggested-by: David Rientjes <rientjes@google.com>
+Signed-off-by: Peter Gonda <pgonda@google.com>
+Cc: Paolo Bonzini <pbonzini@redhat.com>
+Cc: Sean Christopherson <seanjc@google.com>
+Cc: kvm@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+---
 
-Or did I completely misunderstand what you meant by "need to modify the usage"?
+Tested by running sev_migrate_tests with lockdep enabled. Before we see
+a warning from sev_lock_vcpus_for_migration(). After we get no warnings.
+
+---
+ arch/x86/kvm/svm/sev.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
+
+diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
+index 75fa6dd268f0..8f77421c1c4b 100644
+--- a/arch/x86/kvm/svm/sev.c
++++ b/arch/x86/kvm/svm/sev.c
+@@ -1591,15 +1591,16 @@ static void sev_unlock_two_vms(struct kvm *dst_kvm, struct kvm *src_kvm)
+ 	atomic_set_release(&src_sev->migration_in_progress, 0);
+ }
+ 
+-
+-static int sev_lock_vcpus_for_migration(struct kvm *kvm)
++static int sev_lock_vcpus_for_migration(struct kvm *kvm, unsigned int *subclass)
+ {
+ 	struct kvm_vcpu *vcpu;
+ 	unsigned long i, j;
+ 
+ 	kvm_for_each_vcpu(i, vcpu, kvm) {
+-		if (mutex_lock_killable(&vcpu->mutex))
++		if (mutex_lock_killable_nested(&vcpu->mutex, *subclass))
+ 			goto out_unlock;
++
++		++(*subclass);
+ 	}
+ 
+ 	return 0;
+@@ -1717,6 +1718,7 @@ int sev_vm_move_enc_context_from(struct kvm *kvm, unsigned int source_fd)
+ 	struct kvm *source_kvm;
+ 	bool charged = false;
+ 	int ret;
++	unsigned int vcpu_mutex_subclass = 0;
+ 
+ 	source_kvm_file = fget(source_fd);
+ 	if (!file_is_kvm(source_kvm_file)) {
+@@ -1745,10 +1747,10 @@ int sev_vm_move_enc_context_from(struct kvm *kvm, unsigned int source_fd)
+ 		charged = true;
+ 	}
+ 
+-	ret = sev_lock_vcpus_for_migration(kvm);
++	ret = sev_lock_vcpus_for_migration(kvm, &vcpu_mutex_subclass);
+ 	if (ret)
+ 		goto out_dst_cgroup;
+-	ret = sev_lock_vcpus_for_migration(source_kvm);
++	ret = sev_lock_vcpus_for_migration(source_kvm, &vcpu_mutex_subclass);
+ 	if (ret)
+ 		goto out_dst_vcpu;
+ 
+-- 
+2.35.1.1094.g7c7d902a7c-goog
+
