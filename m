@@ -2,166 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1236AC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46E84C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:49:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381000AbiDDVtN (ORCPT
+        id S1381188AbiDDVta (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:49:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45848 "EHLO
+        Mon, 4 Apr 2022 17:49:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380378AbiDDTvF (ORCPT
+        with ESMTP id S1379585AbiDDRjX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 15:51:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0C3C559A
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 12:49:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 367CC60E2C
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 19:49:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9EE5CC340F3;
-        Mon,  4 Apr 2022 19:49:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649101747;
-        bh=4nne+0xo3HzeHab2dyKdi13sxHLq2lRKM4wjOgC56CA=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=Ux4OdoOfyenToZ88WA0AcmvBseEZGnfqTlD4Rz4Y50tWafo9+Inn5HKQ2p47uEn6Y
-         XGcl9YZENcaXKEvD0uVBLBeu8TlNRovgawgq/rPzcdt3UHnQ7EiwkvgILc2DWNm3z8
-         gFX3s9ep+fU+N099/BSyowflvX5o6diDZXnesh5bQNuNTIH2WzLPZOjQarJZZELzsa
-         Xqfnm8NXuD48WUNIdWjnbF1Du3EitY/mM4oTw/O8/4/Wz9x+UQ+WNGun1g5P3fu0S3
-         g151tYhMqMtH/Jdp0Ytjg04sjGrB5dXX+nkylF8+xjlicTcXaPZE1UUnTMNCzsMMWX
-         Gh+iJGE4yWqoA==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 341565C0555; Mon,  4 Apr 2022 12:49:07 -0700 (PDT)
-Date:   Mon, 4 Apr 2022 12:49:07 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [BUG] rcu-tasks : should take care of sparse cpu masks
-Message-ID: <20220404194907.GA133884@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
-References: <CANn89iKaNEwyNZ=L_PQnkH0LP_XjLYrr_dpyRKNNoDJaWKdrmg@mail.gmail.com>
- <20220331224222.GY4285@paulmck-ThinkPad-P17-Gen-1>
- <CANn89iJjyp7s1fYB6VCqLhUnF+mmEXyw8GMpFC9Vi22usBsgAQ@mail.gmail.com>
+        Mon, 4 Apr 2022 13:39:23 -0400
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68308B7F1;
+        Mon,  4 Apr 2022 10:37:27 -0700 (PDT)
+Received: by mail-pl1-x62b.google.com with SMTP id o10so2834365ple.7;
+        Mon, 04 Apr 2022 10:37:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=GF6jYnbv+1XzUXRiGnhvotzYBkOK/c7/Q8J5sZsBF/I=;
+        b=NMBYADdu0/CesKqHTLEl52yzW4yrtN8zu7Y7cc+5VzNIEomJlvDWGHG1C0qoy1lwLj
+         ncb1Ec9VBU27yDfmdH0eFLwFs6g3KWejO19Ptfi+s92r1Y4IeCUYyxuiGS1eGBKsHnHm
+         6xaxAA9nYogWlYhOKKxqb/tc+bU68zDVnK4MgF98bjAbi8CFe7hEjYKOSNBQKZSAjzqt
+         M1rQZfeFWzlbSlReJ2801hwI9WOJSeNmfEOloxqbQ0YuhcMlpmp9s45vg/zanmaIXz+Y
+         x64Kk+bocsKiVr3v4YCkg9clHIkO4cTMTjIFORyBh7hu1BH7r1rtZV8d5AQSIQ5qJQpP
+         0kSA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=GF6jYnbv+1XzUXRiGnhvotzYBkOK/c7/Q8J5sZsBF/I=;
+        b=XQA0IARyGFWxlKc1s+bUnY5qJM69g8qqyUDLAWT3W3Ja2JdV2hr1xsO10NwvHofA5I
+         J51ZmxonsdKp+OoFVRHCh9SqhcDmnD5x53tMgbAuOgXqQ270uyiwyFmmIXRuHudNn2fq
+         07F/iut35tHPF7YFxYD1FUPR+QHNfTmYJgpL9OOLD/R2A+2bEDpuZdM4lanEoPwnf4hf
+         RvnLZVia+sgg3ywRH+tlJzroBmbr9OGABmKBhgvLeNnjQBljYmV4GnUcc9xp+3W3SM6w
+         LDjS9sT0cBvPr98F9igr6mrkzbZIAJv9FGkI1amVtWAPtyDxQfXFZ52OggHoQuGj9xMP
+         a+bw==
+X-Gm-Message-State: AOAM5336TQ8EyBdHQDlnYsmx4h44LzQatrNCmmKWQZ7Vrh5tCj3cI+fc
+        8cePjOt0XRwL35vAf8gcWRg=
+X-Google-Smtp-Source: ABdhPJx4rdta2NfR/b+BcIMgdN7ZCIgKnXj+l1MBFsdppb0BKNRqz5eKEwlXfIBRDhaiiKADs//iwA==
+X-Received: by 2002:a17:902:e743:b0:153:a902:8d8c with SMTP id p3-20020a170902e74300b00153a9028d8cmr750828plf.150.1649093846584;
+        Mon, 04 Apr 2022 10:37:26 -0700 (PDT)
+Received: from localhost ([2620:10d:c090:400::5:baee])
+        by smtp.gmail.com with ESMTPSA id f6-20020a056a00238600b004fae79a3cbfsm13629265pfc.100.2022.04.04.10.37.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Apr 2022 10:37:25 -0700 (PDT)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Mon, 4 Apr 2022 07:37:24 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     Bui Quang Minh <minhquangbui99@gmail.com>
+Cc:     cgroups@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [PATCH v2] cgroup: Kill the parent controller when its last
+ child is killed
+Message-ID: <Ykss1N/VYX7femqw@slm.duckdns.org>
+References: <20220404142535.145975-1-minhquangbui99@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CANn89iJjyp7s1fYB6VCqLhUnF+mmEXyw8GMpFC9Vi22usBsgAQ@mail.gmail.com>
+In-Reply-To: <20220404142535.145975-1-minhquangbui99@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 31, 2022 at 03:54:02PM -0700, Eric Dumazet wrote:
-> On Thu, Mar 31, 2022 at 3:42 PM Paul E. McKenney <paulmck@kernel.org> wrote:
-> >
-> > On Thu, Mar 31, 2022 at 02:45:25PM -0700, Eric Dumazet wrote:
-> > > Hi Paul
-> > >
-> > > It seems you assume per cpu ptr for arbitrary indexes (< nr_cpu_ids) are valid.
-> >
-> > Gah!  I knew I was forgetting something...
-> >
-> > But just to check, is this a theoretical problem or something you hit
-> > on real hardware?  (For the rest of this email, I am assuming the latter.)
+Hello,
+
+On Mon, Apr 04, 2022 at 09:25:34PM +0700, Bui Quang Minh wrote:
+> When umounting a cgroup controller, in case the controller has no children,
+> the initial ref will be dropped in cgroup_kill_sb. In cgroup_rmdir path,
+> the controller is deleted from the parent's children list in
+> css_release_work_fn, which is run on a kernel worker.
 > 
-> Code review really...
+> With this simple script
 > 
-> >
-> > > What do you think of the (untested) following patch ?
-> >
-> > One issue with this patch is that the contention could be unpredictable,
-> > or worse, vary among CPU, especially if the cpu_possible_mask was oddly
-> > distributed.
-> >
-> > So might it be better to restrict this to all on CPU 0 on the one hand
-> > and completely per-CPU on the other?  (Or all on the boot CPU, in case
-> > I am forgetting some misbegotten architecture that can run without a
-> > CPU 0.)
+> 	#!/bin/sh
 > 
-> If I understand correctly, cblist_init_generic() could setup
-> percpu_enqueue_shift
-> to something smaller than order_base_2(nr_cpu_ids)
+> 	mount -t cgroup -o none,name=test test ./tmp
+> 	mkdir -p ./tmp/abc
 > 
-> Meaning that we could reach a non zero idx in (smp_processor_id() >>
-> percpu_enqueue_shift)
+> 	rmdir ./tmp/abc
+> 	umount ./tmp
 > 
-> So even if CPU0 is always present (I am not sure this is guaranteed,
-> but this seems reasonable),
-> we could still attempt a per_cpu_ptr(PTR,  not_present_cpu), and get garbage.
+> 	sleep 5
+> 	cat /proc/self/cgroup
+> 
+> The rmdir will remove the last child and umount is expected to kill the
+> parent controller. However, when running the above script, we may get
+> 
+> 	1:name=test:/
 
-And the problem with my wish to provide load balancing is that a
-sparse cpumask could be sparse any which way that it wants to be.
-Another problem is that, unlike TREE SRCU, Tasks RCU doesn't have an
-efficient way to find all the CPUs with callbacks queued.  Yes, I could
-add that information, but the benefit does not seem worth the complexity.
+First of all, remounting after active use isn't a well-supported use case as
+documented in the admin doc. The problem is that there's no finite time
+horizon around when all the references are gonna go away - some references
+may be held in cache which may not be released unless certain conditions are
+met. So, while changing hierarchy configuration is useful for system setup,
+development and debugging, for production use, it's a boot time
+configuration mechanism.
 
-So I took your patch after all, but changed from cpu_online_mask to
-cpu_possible_mask.  Thank you for bearing with me on this one!
+> This shows that the parent controller has not been killed. The reason is
+> after rmdir is completed, it is not guaranteed that the parent's children
+> list is empty as css_release_work_fn is deferred to run on a worker. In
+> case cgroup_kill_sb is run before that work, it does not drop the initial
+> ref. Later in the worker, it just removes the child from the list without
+> checking the list is empty to kill the parent controller. As a result, the
+> parent controller still has the initial ref but without any logical refs
+> (children ref, mount ref).
+> 
+> This commit adds a free parent controller path into the worker function to
+> free up the parent controller when the last child is killed.
 
-Are you OK with your Signed-off-by on this patch as shown below?
+And the suggested behavior doesn't make much sense to me. It doesn't
+actually solve the underlying problem but instead always make css
+destructions recursive which can lead to surprises for normal use cases.
 
-						Thanx, Paul
+Thanks.
 
-------------------------------------------------------------------------
-
-commit b77b2981bb22c4449a0a6e86eeb9fbab36a2beae
-Author: Eric Dumazet <edumazet@google.com>
-Date:   Mon Apr 4 12:30:18 2022 -0700
-
-    rcu-tasks: Handle sparse cpu_possible_mask
-    
-    If the rcupdate.rcu_task_enqueue_lim kernel boot parameter is set to
-    something greater than 1 and less than nr_cpu_ids, the code attempts to
-    use a subset of the CPU's RCU Tasks callback lists.  This works, but only
-    if the cpu_possible_mask is contiguous.  If there are "holes" in this
-    mask, the callback-enqueue code might attempt to access a non-existent
-    per-CPU ->rtcpu variable for a non-existent CPU.  For example, if only
-    CPUs 0, 4, 8, 12, 16 and so on are in cpu_possible_mask, specifying
-    rcupdate.rcu_task_enqueue_lim=4 would cause the code to attempt to
-    use callback queues for non-existent CPUs 1, 2, and 3.  Because such
-    systems have existed in the past and might still exist, the code needs
-    to gracefully handle this situation.
-    
-    This commit therefore checks to see whether the desired CPU is present
-    in cpu_possible_mask, and, if not, searches for the next CPU.  This means
-    that the systems administrator of a system with a sparse cpu_possible_mask
-    will need to account for this sparsity when specifying the value of
-    the rcupdate.rcu_task_enqueue_lim kernel boot parameter.  For example,
-    setting this parameter to the value 4 will use only CPUs 0 and 4, which
-    CPU 4 getting three times the callback load of CPU 0.
-    
-    This commit assumes that bit (nr_cpu_ids - 1) is always set in
-    cpu_possible_mask.
-    
-    Link: https://lore.kernel.org/lkml/CANn89iKaNEwyNZ=L_PQnkH0LP_XjLYrr_dpyRKNNoDJaWKdrmg@mail.gmail.com/
-    Signed-off-by: Eric Dumazet <edumazet@google.com>
-    Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
-
-diff --git a/kernel/rcu/tasks.h b/kernel/rcu/tasks.h
-index 65d6e21a607a..44977c6a1cb8 100644
---- a/kernel/rcu/tasks.h
-+++ b/kernel/rcu/tasks.h
-@@ -273,7 +273,9 @@ static void call_rcu_tasks_iw_wakeup(struct irq_work *iwp)
- static void call_rcu_tasks_generic(struct rcu_head *rhp, rcu_callback_t func,
- 				   struct rcu_tasks *rtp)
- {
-+	int chosen_cpu;
- 	unsigned long flags;
-+	int ideal_cpu;
- 	unsigned long j;
- 	bool needadjust = false;
- 	bool needwake;
-@@ -283,8 +285,9 @@ static void call_rcu_tasks_generic(struct rcu_head *rhp, rcu_callback_t func,
- 	rhp->func = func;
- 	local_irq_save(flags);
- 	rcu_read_lock();
--	rtpcp = per_cpu_ptr(rtp->rtpcpu,
--			    smp_processor_id() >> READ_ONCE(rtp->percpu_enqueue_shift));
-+	ideal_cpu = smp_processor_id() >> READ_ONCE(rtp->percpu_enqueue_shift);
-+	chosen_cpu = cpumask_next(ideal_cpu - 1, cpu_possible_mask);
-+	rtpcp = per_cpu_ptr(rtp->rtpcpu, chosen_cpu);
- 	if (!raw_spin_trylock_rcu_node(rtpcp)) { // irqs already disabled.
- 		raw_spin_lock_rcu_node(rtpcp); // irqs already disabled.
- 		j = jiffies;
+-- 
+tejun
