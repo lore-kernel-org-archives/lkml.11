@@ -2,189 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7367EC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83922C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:08:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356792AbiDDWGT (ORCPT
+        id S1359616AbiDDWG0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 18:06:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43734 "EHLO
+        Mon, 4 Apr 2022 18:06:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380410AbiDDUFJ (ORCPT
+        with ESMTP id S1379495AbiDDRQU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 16:05:09 -0400
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67F6130576;
-        Mon,  4 Apr 2022 13:03:12 -0700 (PDT)
-Received: by mail-pg1-x536.google.com with SMTP id t13so9201615pgn.8;
-        Mon, 04 Apr 2022 13:03:12 -0700 (PDT)
+        Mon, 4 Apr 2022 13:16:20 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A024E13F77
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 10:14:24 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id o5-20020a17090ad20500b001ca8a1dc47aso3995366pju.1
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 10:14:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=299dhLN8fZQaqsT9OGmphjyBEYT6w3EQIbst3RvXrxI=;
-        b=pNHjfPkGU3nk4TyLoHEURVpFplmDQJP/QKBA1MTf9iPA+5O96M5KmGbjPNHgH3kGdo
-         PB8MP/4BFQMW8iZUT0rXAvH6ICgHnflXm0yZiIGUM7ObvsZjlYZ1kOzxdSYTQ8oKUlcD
-         cyxjX9o+hs4GHpbvU7N2kQhZtmPKCBsWlLx0CuJIf+mTLae52Gt2eRcr7K83q0NUB28Y
-         5ztyPyaLXwKf5AcFHDFb/wXTRVMhRIA5p7kNnRPfO85xZkwHO/SKyosZrLqhwLQsDT8W
-         hNrKMR2Ofm3nfe4E6BIpLMjFYbX0PQryTsa8GkPDukq569Dkfw3xpXh7ltx8WWQNiRp9
-         ND+A==
+        d=google.com; s=20210112;
+        h=date:from:to:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=f7CZTXIAAoKnaeTzl2cBEFXf6R/B35g02/GjhJjJB74=;
+        b=eBZWszMfrYAS1A0VrXpWNQWYDljGRJ+69p04Uob5nwN5mkb+RRRbhGQtuSACDJkmvd
+         JzPqoBdgGu43CiEvMKn6MoJcRQCsl7Owmu3MNRPIYKMky87OkSaEID6ZI70cN+xFHfx5
+         ZxAL+FJLp9ve4zSfapVXowsj+6Ldxi2KIv9zTO/Uf8ZtGfgDzG/o8faLsk22qy3LIdgI
+         2FPf//bfqpfCAuXBJpK7xeekXuFiEuJ24MyqK4BXHra2TdclI296/kmZ9f5cwYj4K+7B
+         g9g8MWWBtQB00iQfM4jblH3lazcS3nWsLZzRPoAvtYHlPcGNcHEHkXEhancJVBtgTKuU
+         /Smg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=299dhLN8fZQaqsT9OGmphjyBEYT6w3EQIbst3RvXrxI=;
-        b=oi7OFuwS2vbcJ7nlzWAb2j37XOWPBhzaP+P6IPnxEvLDGIvloDRNXPp7S7SOTuAf/l
-         CaTW6ZXkkiHFIX233/QvhGLa9UcSSFvVUJV7Xh5tASEKnurfED90tDsXM6AlZKbJMyuG
-         0rH4HGJZCgZy6sHjmNrHMjHHJHI2aqebl90ZFIVJ/PhsuvYHHTKgbODy0d35M9gYLmBm
-         7MJp5Eq57Dh8P/ip28sHCmLZOvNrz6l7KSNBaKNSNTXLRolpYWxHTQvaWo3G0GpGhdbi
-         52fO+vNVOVnq0SnT6AJsSndOvombK2sIyw/IPNNFzc/xEj3OTM4OJufXtctKYt9DI3KO
-         aJZg==
-X-Gm-Message-State: AOAM531muh3UC5UgLKjyrhrC5ymtbp62axNTahdrz2p+dRfjexeHoSru
-        2mLer/BSq0KxAQt4+h7bqG4=
-X-Google-Smtp-Source: ABdhPJznJU9yE4ofpoTqB4D8WgSLsYOq7fqnscvbG/DJjVa+BvOJgo1PB6ZgI+8pMnraeasjO3kvtg==
-X-Received: by 2002:a63:4a5d:0:b0:399:5cd:1589 with SMTP id j29-20020a634a5d000000b0039905cd1589mr1293015pgl.22.1649102591800;
-        Mon, 04 Apr 2022 13:03:11 -0700 (PDT)
-Received: from localhost.localdomain (c-67-174-241-145.hsd1.ca.comcast.net. [67.174.241.145])
-        by smtp.gmail.com with ESMTPSA id bw17-20020a056a00409100b004fadad3b93esm12779295pfb.142.2022.04.04.13.03.10
+        h=x-gm-message-state:date:from:to:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=f7CZTXIAAoKnaeTzl2cBEFXf6R/B35g02/GjhJjJB74=;
+        b=lAZSfNGND8uo4mQ+v7Zwv3RT46LTTxHcA1GJChC3kNsQ74Hbi9Ro0F/iKY7OeY0KcB
+         OoJ9WLqUA92P2XN0owP9IFb770qJ5ndUYVo0RRiYDWC5fAfFB1B0wi3HibyK/aHrzqFN
+         wHyzQ9lsyxX7b1Rt4jqyI19FkXs69SbKEuMtMBL8Gtor4wnWMclCHMbvAKI8yxdOfwYs
+         gdELMKETrdqrLjQNfXFg0OtIKUVzucZs7pUUfBrY8qAm++42/Hc7d1Tok7DH7x4PUq7x
+         +gsYEUptu2SXJ4OnOhb/ZJT0YUImcdgmhpaxpOvQ8TxhOFrCKPEm+NFqw/D3AWWQfhgC
+         Lqsw==
+X-Gm-Message-State: AOAM532LCfBUf12h8i6dTibEU/aj/fv1STKtuVP3j4Ws9fjgv1NTSqJv
+        ICzepemHbmZDcc0Yje04loUixA==
+X-Google-Smtp-Source: ABdhPJzu6dtSeMV3rRz4ufVwNX4oy3lmvg6rRBEM4WSW1CYCt5tL39H9tp7VwplJzx+C40xvVWwSwg==
+X-Received: by 2002:a17:90b:713:b0:1c6:c8f5:6138 with SMTP id s19-20020a17090b071300b001c6c8f56138mr207055pjz.138.1649092463964;
+        Mon, 04 Apr 2022 10:14:23 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id o11-20020a17090aac0b00b001cab1712455sm50391pjq.40.2022.04.04.10.14.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 13:03:11 -0700 (PDT)
-From:   Yang Shi <shy828301@gmail.com>
-To:     vbabka@suse.cz, kirill.shutemov@linux.intel.com,
-        linmiaohe@huawei.com, songliubraving@fb.com, riel@surriel.com,
-        willy@infradead.org, ziy@nvidia.com, tytso@mit.edu,
-        akpm@linux-foundation.org
-Cc:     shy828301@gmail.com, linux-mm@kvack.org,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [v3 PATCH 6/8] mm: khugepaged: move some khugepaged_* functions to khugepaged.c
-Date:   Mon,  4 Apr 2022 13:02:48 -0700
-Message-Id: <20220404200250.321455-7-shy828301@gmail.com>
-X-Mailer: git-send-email 2.26.3
-In-Reply-To: <20220404200250.321455-1-shy828301@gmail.com>
-References: <20220404200250.321455-1-shy828301@gmail.com>
+        Mon, 04 Apr 2022 10:14:23 -0700 (PDT)
+Date:   Mon, 4 Apr 2022 17:14:19 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Maciej S . Szmigiero" <maciej.szmigiero@oracle.com>
+Subject: Re: [PATCH 6/8] KVM: SVM: Re-inject INTn instead of retrying the
+ insn on "failure"
+Message-ID: <Yksna20cSyO8MvOq@google.com>
+References: <20220402010903.727604-1-seanjc@google.com>
+ <20220402010903.727604-7-seanjc@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220402010903.727604-7-seanjc@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To reuse hugepage_vma_check() for khugepaged_enter() so that we could
-remove some duplicate code.  But moving hugepage_vma_check() to
-khugepaged.h needs to include huge_mm.h in it, it seems not optimal to
-bloat khugepaged.h.
+On Sat, Apr 02, 2022, Sean Christopherson wrote:
+> Re-inject INTn software interrupts instead of retrying the instruction if
+> the CPU encountered an intercepted exception while vectoring the INTn,
+> e.g. if KVM intercepted a #PF when utilizing shadow paging.  Retrying the
+> instruction is architecturally wrong e.g. will result in a spurious #DB
+> if there's a code breakpoint on the INT3/O, and lack of re-injection also
+> breaks nested virtualization, e.g. if L1 injects a software interrupt and
+> vectoring the injected interrupt encounters an exception that is
+> intercepted by L0 but not L1.
+> 
+> Signed-off-by: Sean Christopherson <seanjc@google.com>
+> ---
+>  arch/x86/kvm/svm/svm.c | 16 +++++++++++++++-
+>  1 file changed, 15 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+> index ecc828d6921e..00b1399681d1 100644
+> --- a/arch/x86/kvm/svm/svm.c
+> +++ b/arch/x86/kvm/svm/svm.c
+> @@ -3425,14 +3425,24 @@ static void svm_inject_nmi(struct kvm_vcpu *vcpu)
+>  static void svm_inject_irq(struct kvm_vcpu *vcpu)
+>  {
+>  	struct vcpu_svm *svm = to_svm(vcpu);
+> +	u32 type;
+>  
+>  	WARN_ON(!gif_set(svm));
+>  
+> +	if (vcpu->arch.interrupt.soft) {
+> +		if (svm_update_soft_interrupt_rip(vcpu))
+> +			return;
+> +
+> +		type = SVM_EVTINJ_TYPE_SOFT;
+> +	} else {
+> +		type = SVM_EVTINJ_TYPE_INTR;
+> +	}
+> +
+>  	trace_kvm_inj_virq(vcpu->arch.interrupt.nr);
+>  	++vcpu->stat.irq_injections;
+>  
+>  	svm->vmcb->control.event_inj = vcpu->arch.interrupt.nr |
+> -		SVM_EVTINJ_VALID | SVM_EVTINJ_TYPE_INTR;
+> +				       SVM_EVTINJ_VALID | type;
+>  }
+>  
+>  void svm_complete_interrupt_delivery(struct kvm_vcpu *vcpu, int delivery_mode,
+> @@ -3787,9 +3797,13 @@ static void svm_complete_interrupts(struct kvm_vcpu *vcpu)
+>  	case SVM_EXITINTINFO_TYPE_INTR:
+>  		kvm_queue_interrupt(vcpu, vector, false);
+>  		break;
+> +	case SVM_EXITINTINFO_TYPE_SOFT:
+> +		kvm_queue_interrupt(vcpu, vector, true);
 
-And the khugepaged_* functions actually are wrappers for some non-inline
-functions, so it seems the benefits are not too much to keep them inline.
+I believe this patch is wrong, it needs to also tweak the soft_int_injected logic
+to look for SVM_EXITINTINFO_TYPE_EXEPT _or_ SVM_EXITINTINFO_TYPE_SOFT, e.g. if the
+SOFT-type interrupt doesn't complete due to a non-legacy-exception exit, e.g. #NPF.
 
-So move the khugepaged_* functions to khugepaged.c, any callers just
-need to include khugepaged.h which is quite small.  For example, the
-following patches will call khugepaged_enter() in filemap page fault path
-for regular filesystems to make readonly FS THP collapse more consistent.
-The  filemap.c just needs to include khugepaged.h.
-
-Acked-by: Song Liu <song@kernel.org>
-Signed-off-by: Yang Shi <shy828301@gmail.com>
----
- include/linux/khugepaged.h | 37 ++++++-------------------------------
- mm/khugepaged.c            | 20 ++++++++++++++++++++
- 2 files changed, 26 insertions(+), 31 deletions(-)
-
-diff --git a/include/linux/khugepaged.h b/include/linux/khugepaged.h
-index 0423d3619f26..6acf9701151e 100644
---- a/include/linux/khugepaged.h
-+++ b/include/linux/khugepaged.h
-@@ -2,10 +2,6 @@
- #ifndef _LINUX_KHUGEPAGED_H
- #define _LINUX_KHUGEPAGED_H
- 
--#include <linux/sched/coredump.h> /* MMF_VM_HUGEPAGE */
--#include <linux/shmem_fs.h>
--
--
- #ifdef CONFIG_TRANSPARENT_HUGEPAGE
- extern struct attribute_group khugepaged_attr_group;
- 
-@@ -16,6 +12,12 @@ extern void __khugepaged_enter(struct mm_struct *mm);
- extern void __khugepaged_exit(struct mm_struct *mm);
- extern void khugepaged_enter_vma_merge(struct vm_area_struct *vma,
- 				       unsigned long vm_flags);
-+extern void khugepaged_fork(struct mm_struct *mm,
-+			    struct mm_struct *oldmm);
-+extern void khugepaged_exit(struct mm_struct *mm);
-+extern void khugepaged_enter(struct vm_area_struct *vma,
-+			     unsigned long vm_flags);
-+
- extern void khugepaged_min_free_kbytes_update(void);
- #ifdef CONFIG_SHMEM
- extern void collapse_pte_mapped_thp(struct mm_struct *mm, unsigned long addr);
-@@ -33,36 +35,9 @@ static inline void collapse_pte_mapped_thp(struct mm_struct *mm,
- #define khugepaged_always()				\
- 	(transparent_hugepage_flags &			\
- 	 (1<<TRANSPARENT_HUGEPAGE_FLAG))
--#define khugepaged_req_madv()					\
--	(transparent_hugepage_flags &				\
--	 (1<<TRANSPARENT_HUGEPAGE_REQ_MADV_FLAG))
- #define khugepaged_defrag()					\
- 	(transparent_hugepage_flags &				\
- 	 (1<<TRANSPARENT_HUGEPAGE_DEFRAG_KHUGEPAGED_FLAG))
--
--static inline void khugepaged_fork(struct mm_struct *mm, struct mm_struct *oldmm)
--{
--	if (test_bit(MMF_VM_HUGEPAGE, &oldmm->flags))
--		__khugepaged_enter(mm);
--}
--
--static inline void khugepaged_exit(struct mm_struct *mm)
--{
--	if (test_bit(MMF_VM_HUGEPAGE, &mm->flags))
--		__khugepaged_exit(mm);
--}
--
--static inline void khugepaged_enter(struct vm_area_struct *vma,
--				   unsigned long vm_flags)
--{
--	if (!test_bit(MMF_VM_HUGEPAGE, &vma->vm_mm->flags))
--		if ((khugepaged_always() ||
--		     (shmem_file(vma->vm_file) && shmem_huge_enabled(vma)) ||
--		     (khugepaged_req_madv() && (vm_flags & VM_HUGEPAGE))) &&
--		    !(vm_flags & VM_NOHUGEPAGE) &&
--		    !test_bit(MMF_DISABLE_THP, &vma->vm_mm->flags))
--			__khugepaged_enter(vma->vm_mm);
--}
- #else /* CONFIG_TRANSPARENT_HUGEPAGE */
- static inline void khugepaged_fork(struct mm_struct *mm, struct mm_struct *oldmm)
- {
-diff --git a/mm/khugepaged.c b/mm/khugepaged.c
-index b69eda934d70..ec5b0a691d87 100644
---- a/mm/khugepaged.c
-+++ b/mm/khugepaged.c
-@@ -556,6 +556,26 @@ void __khugepaged_exit(struct mm_struct *mm)
- 	}
- }
- 
-+void khugepaged_fork(struct mm_struct *mm, struct mm_struct *oldmm)
-+{
-+	if (test_bit(MMF_VM_HUGEPAGE, &oldmm->flags))
-+		__khugepaged_enter(mm);
-+}
-+
-+void khugepaged_exit(struct mm_struct *mm)
-+{
-+	if (test_bit(MMF_VM_HUGEPAGE, &mm->flags))
-+		__khugepaged_exit(mm);
-+}
-+
-+void khugepaged_enter(struct vm_area_struct *vma, unsigned long vm_flags)
-+{
-+	if (!test_bit(MMF_VM_HUGEPAGE, &vma->vm_mm->flags) &&
-+	    khugepaged_enabled())
-+		if (hugepage_vma_check(vma, vm_flags))
-+			__khugepaged_enter(vma->vm_mm);
-+}
-+
- static void release_pte_page(struct page *page)
- {
- 	mod_node_page_state(page_pgdat(page),
--- 
-2.26.3
-
+> +		break;
+>  	default:
+>  		break;
+>  	}
+> +
+>  }
