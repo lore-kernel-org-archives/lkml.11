@@ -2,101 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7743C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:00:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A0BBC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:00:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230020AbiDDWC1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 18:02:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43694 "EHLO
+        id S1354684AbiDDWCh (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 18:02:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380407AbiDDUFE (ORCPT
+        with ESMTP id S1380382AbiDDTxd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 16:05:04 -0400
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F15E30576;
-        Mon,  4 Apr 2022 13:03:07 -0700 (PDT)
-Received: by mail-pl1-x630.google.com with SMTP id p17so9028094plo.9;
-        Mon, 04 Apr 2022 13:03:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=5Byfy9VbIfRqB/lMq9E6coezN6yPt+vkfM62rVKg8Ao=;
-        b=AxElP8EkjsWu9uFPszBvkLOkxsuJWaGma6j/kzg1J45uxCQnKl53MKPLXM3bzLcB+I
-         UwsfPob2VOt2V0XPQHOnu7TAxvVCTNSE6KuScOlC36TWg6HJUDLUHa3UKvMJ9tgVEMxM
-         9mCufQX3uNL8r407B9+wD7q4K36WEcTb94BSQY1zv4p3JQmfLZ+CfjlQOg0dLcMIL1xq
-         u/37RX8brDJ70ogZGKbqWohxUI4JqurrzTqjcOhQQuCP0Ts7lmMczbesU4zwZch+8Nfe
-         YJib5ZcU28w7VIwuyZk4D/d6e8f3uSR1N1molGoJqNfbFIIpiMh3azZJOiAIyidZztZT
-         MxGw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=5Byfy9VbIfRqB/lMq9E6coezN6yPt+vkfM62rVKg8Ao=;
-        b=gTrDsvwfNSMoTrzFwQhih+AcVt3tPnBmEB4wJ9+GP4knSuk0aKIJkqueWChVy//m8h
-         hp8kdQQBEVaVAYG8EDQDgu9eRZGcDD1iYC5sZPaYH2IxmnCBtCfRCDaBEEX6Hg0y3Kwc
-         p9Ei7hD2rSoAKbr3x+BcIW4GPQ1iCEtp8tXT6vfxe78d6VGFinIvObQUjC5yf4a1Unpd
-         w56LxHBHdKjNkrqdhltboyw2nRCT9pTQEU/MdagV7BQHLPbOoQXd1E5nVMZZn5W31e9j
-         SNxEatWZW1Rw4TYbnTy1WhxNYaKcEkU3rdFGTOIe0ijbpiSG7ua20l3uQBkaUiIF0eo/
-         5ckg==
-X-Gm-Message-State: AOAM533aWCqhS4OpLv0r2odYGm3jGVPaedYVkrGJCb8ikTFKLjLl/6S5
-        Im4uP/zCgR7IrrkjxK2PeO0=
-X-Google-Smtp-Source: ABdhPJwDGZ1eLAnRqgsHcj4iCzKkBHl8n8iAS//8VpbDXoJE+obiPqKFFGMKejpUxqvN5w0R05aYZA==
-X-Received: by 2002:a17:90a:888:b0:1ca:a9ac:c866 with SMTP id v8-20020a17090a088800b001caa9acc866mr857483pjc.203.1649102587116;
-        Mon, 04 Apr 2022 13:03:07 -0700 (PDT)
-Received: from localhost.localdomain (c-67-174-241-145.hsd1.ca.comcast.net. [67.174.241.145])
-        by smtp.gmail.com with ESMTPSA id bw17-20020a056a00409100b004fadad3b93esm12779295pfb.142.2022.04.04.13.03.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 13:03:06 -0700 (PDT)
-From:   Yang Shi <shy828301@gmail.com>
-To:     vbabka@suse.cz, kirill.shutemov@linux.intel.com,
-        linmiaohe@huawei.com, songliubraving@fb.com, riel@surriel.com,
-        willy@infradead.org, ziy@nvidia.com, tytso@mit.edu,
-        akpm@linux-foundation.org
-Cc:     shy828301@gmail.com, linux-mm@kvack.org,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [v3 PATCH 3/8] mm: khugepaged: skip DAX vma
-Date:   Mon,  4 Apr 2022 13:02:45 -0700
-Message-Id: <20220404200250.321455-4-shy828301@gmail.com>
-X-Mailer: git-send-email 2.26.3
-In-Reply-To: <20220404200250.321455-1-shy828301@gmail.com>
-References: <20220404200250.321455-1-shy828301@gmail.com>
+        Mon, 4 Apr 2022 15:53:33 -0400
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AFE4559A
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 12:51:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649101895; x=1680637895;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=/HVzOeZPMJuBHL5DEIwgDSINs2bBsLD/bwyEI+HlSzE=;
+  b=ETb2hV2KrjUxGXEe9MaibqjF7ZFYjbuD56bPZPVBmwHemGczYhQz6stF
+   s/LlFHdYtSHoeg+QYAQS2+i2Q6Z96R1Z3nTidE7qxWKZYgUBj0vZQyA8Q
+   OrJIrrS9+msYdSvxUwIJrPTR0HAjtOTvLDSDZNCsI06F/rjCcEfFmzrpj
+   MWOmFZgjPWJOLdT8Je3ruUNJ2P8uT6vorCiLfAszbfRuqfiSbHBWrfuA9
+   LLPIyccgWpFkW9FDsIT2hwJIatVr9+WqsC5SkElC1FlfKT0fN+DZWv3+i
+   pn2fr0c6B6Kg1VinZHc9xdFDf4CXAPgEP4KRqaaqbhdIPZkK/AFltNVVU
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="321291117"
+X-IronPort-AV: E=Sophos;i="5.90,235,1643702400"; 
+   d="scan'208";a="321291117"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 12:51:34 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,235,1643702400"; 
+   d="scan'208";a="505019686"
+Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
+  by orsmga003.jf.intel.com with ESMTP; 04 Apr 2022 12:51:32 -0700
+Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nbSjb-0002Jb-Qi;
+        Mon, 04 Apr 2022 19:51:31 +0000
+Date:   Tue, 5 Apr 2022 03:50:36 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Alex Shi <alexs@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Miguel Ojeda <ojeda@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>
+Subject: cc1: warning: result of '-117440512 << 16' requires 44 bits to
+ represent, but 'int' only has 32 bits
+Message-ID: <202204050337.o0LrtuSN-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The DAX vma may be seen by khugepaged when the mm has other khugepaged
-suitable vmas.  So khugepaged may try to collapse THP for DAX vma, but
-it will fail due to page sanity check, for example, page is not
-on LRU.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   3123109284176b1532874591f7c81f3837bbdc17
+commit: e8c07082a810fbb9db303a2b66b66b8d7e588b53 Kbuild: move to -std=gnu11
+date:   3 weeks ago
+config: mips-rb532_defconfig (https://download.01.org/0day-ci/archive/20220405/202204050337.o0LrtuSN-lkp@intel.com/config)
+compiler: mipsel-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=e8c07082a810fbb9db303a2b66b66b8d7e588b53
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout e8c07082a810fbb9db303a2b66b66b8d7e588b53
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=mips SHELL=/bin/bash
 
-So it is not harmful, but it is definitely pointless to run khugepaged
-against DAX vma, so skip it in early check.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
-Acked-by: Song Liu <song@kernel.org>
-Signed-off-by: Yang Shi <shy828301@gmail.com>
----
- mm/khugepaged.c | 4 ++++
- 1 file changed, 4 insertions(+)
+All warnings (new ones prefixed by >>):
 
-diff --git a/mm/khugepaged.c b/mm/khugepaged.c
-index 7d197d9e3258..964a4d2c942a 100644
---- a/mm/khugepaged.c
-+++ b/mm/khugepaged.c
-@@ -447,6 +447,10 @@ static bool hugepage_vma_check(struct vm_area_struct *vma,
- 	if (vm_flags & VM_NO_KHUGEPAGED)
- 		return false;
- 
-+	/* Don't run khugepaged against DAX vma */
-+	if (vma_is_dax(vma))
-+		return false;
-+
- 	if (vma->vm_file && !IS_ALIGNED((vma->vm_start >> PAGE_SHIFT) -
- 				vma->vm_pgoff, HPAGE_PMD_NR))
- 		return false;
+>> cc1: warning: result of '-117440512 << 16' requires 44 bits to represent, but 'int' only has 32 bits [-Wshift-overflow=]
+   arch/mips/pci/pci-rc32434.c: In function 'rc32434_pcibridge_init':
+   arch/mips/pci/pci-rc32434.c:111:22: warning: variable 'dummyread' set but not used [-Wunused-but-set-variable]
+     111 |         unsigned int dummyread, pcicntlval;
+         |                      ^~~~~~~~~
+
 -- 
-2.26.3
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
