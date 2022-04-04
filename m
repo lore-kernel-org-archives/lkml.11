@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1D35C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:41:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37B93C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:41:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386833AbiDDVmq (ORCPT
+        id S1387213AbiDDVmz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:42:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36514 "EHLO
+        Mon, 4 Apr 2022 17:42:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379389AbiDDREB (ORCPT
+        with ESMTP id S1379373AbiDDRDz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 13:04:01 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C74F40A2D
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 10:02:02 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id bq8so21252831ejb.10
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 10:02:02 -0700 (PDT)
+        Mon, 4 Apr 2022 13:03:55 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7382740A22
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 10:01:59 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id b15so11894029edn.4
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 10:01:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=wlQmbWsbwLY4Jm0uWTn3f9S3+SAlsRt/5TjBscaW/ec=;
-        b=Q++fS72PqHfuYFjBF7/g/8eYmp6uBJVDEGuLQRS6akI68tCD9V7hqUoKuQx8eCMGP2
-         LY111E0bOeFLm1f7/gaAgmur6VHUqL9f+t4L/k2UCtejxKn+AhoPu+s0vZsFqldsCa9Y
-         jiY4+moa33mqZ+Z8MEl4DVy/sxOYPiL/F+3Ua7Xr2zesZuXmPMVQRpaH53WjmQmGjX5E
-         ghG1kjTtNoQxofdWzIUVj98HP8MQIhPj8LIDnwgxfB1576G4uN+iKtqe9fW+SgqvK1CY
-         4RgTKoJZdrU4tcnSGEMZj7gdrGmcwfF+R/nP0xLzY2/r+4C+UsEVAAzEkgwmWOuqjVw7
-         PdVg==
+        bh=3H9g58AlHBPTQrDhIy8bA3VbPYT/p5tUvM0gVBca9kM=;
+        b=CXS8DhcR4gnY7ZaqZuAj1sRKqwIDzdlFemejqYrMwifHuO/DJTGr9skQ0OhQKwolVi
+         IYrbjUrpVFcVTsO/+gwVZbxc3wACQKWMoCliP41cFoxCpTyuRPQ9V2JfrzKUD9xeEBnZ
+         9ASHxQXWKVlokRBzUmroiyaGsZag5M8n4ib220T1KlbMVz2BX+KKvoGboHlN3/zWm7xS
+         RRrCl5YASsx3E8x2+RqCUyUrEcs/Wp8j0Us5ffs+jvy8yJtPKJouPI8qUYP1OLb1Ir2M
+         2GKIAK/R9pTvioW4AJlqijBJj3rb2PUpoli4SgdyI//tldS270UpzzTd33mO50O+7MwV
+         gnKA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=wlQmbWsbwLY4Jm0uWTn3f9S3+SAlsRt/5TjBscaW/ec=;
-        b=SvaQxYHhIQnmBnS99ch3ojnWxZy4Lu5DQsGod5oxCdQMMwGUbQ9JTkjKh2IeI4DNDg
-         4xbTbgbL6LIAzDeHMcQpSUT2bQ42M27NPEbv50sh5wdJkdVX3CFOqBaaoBMsOzjK3qut
-         cK5eoHOx1HxaQo22kqncyaFTnjCwBpdIQVEKCb1gJ7ulJo8eoXfcCZpi3+/xZbzsYMVN
-         +pvB5V4OdrinOkGZQwl3RBJvgqKcNXJGFLlF1YvYchUc14mBFWmRTPpKjYNMiiYrZ1a5
-         jeRLCwhuWPiIFoaYdIIYn7eekep7ORnAFFiXJ4e+8vt+8vK0ojBTe8s+tZ8m1nqd1/JE
-         Pkcw==
-X-Gm-Message-State: AOAM533PCMJqpcLYO20kLbw85Lv+bbprWsvTzZMuF2tRmwnd8AL0jQEX
-        UWuSXLYeW5FSj4ElMK3BwnNPrw==
-X-Google-Smtp-Source: ABdhPJxsy+zfihA7Fi6o4Ei91Fm+4NalCj1W+rFnZ60rDuEKgLQ1M2JebdUfl1JFAwblr1YXiYMxjw==
-X-Received: by 2002:a17:906:4787:b0:6e1:409f:8deb with SMTP id cw7-20020a170906478700b006e1409f8debmr1081940ejc.80.1649091720949;
-        Mon, 04 Apr 2022 10:02:00 -0700 (PDT)
+        bh=3H9g58AlHBPTQrDhIy8bA3VbPYT/p5tUvM0gVBca9kM=;
+        b=3mmidaQkYkKLFrIpvfcZpmuK+wlLM7hWNR1kIgAB2+mMwM5lMd3u2wmfWd8aWJpUtW
+         RgQmmv6UK9juh33z2KlTqHMA6pKpNHm2cHa2ZmNFrgi+kWWqeMReMHtWyjExqsKSVMhO
+         peKBILfkv2AxcvrDDp1evPInJSZVAPraUuLcsBygvCu44YcC/QbZzGDxzgUAAD8BPBjV
+         vhDY/xAtHXmWh4hPo5rZeHw1EnoFW0CNzNEsXHMO0GuDRvZC0LqGEv2cCUp3e2tirB27
+         ATR83M0sdpbb7yvVgTWzReX75L3dePB7Td/Wp2nSQyIWuK5wHOPup6Zgwxo+04dIZg0M
+         uNKg==
+X-Gm-Message-State: AOAM533jDcFJx44n+/Q/NURJqHGPNfthMZbxdMPSmUp6PvZ1F245F9ZP
+        Gg3kwbyRagAh+tcVRS4aZHYgNJpJblwrtnRp
+X-Google-Smtp-Source: ABdhPJwVtuji7QDmg3IAIKiltBHSnjyfm8HAaRf/K80CqRcwNqpO4nk2Qz2pabYVosG1AvuUJmDFCw==
+X-Received: by 2002:a50:d0d5:0:b0:41c:be47:b959 with SMTP id g21-20020a50d0d5000000b0041cbe47b959mr1079093edf.337.1649091714542;
+        Mon, 04 Apr 2022 10:01:54 -0700 (PDT)
 Received: from localhost.localdomain (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id c5-20020a170906d18500b006ce371f09d4sm4557770ejz.57.2022.04.04.10.01.59
+        by smtp.gmail.com with ESMTPSA id c5-20020a170906d18500b006ce371f09d4sm4557770ejz.57.2022.04.04.10.01.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 10:02:00 -0700 (PDT)
+        Mon, 04 Apr 2022 10:01:53 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Rob Herring <robh+dt@kernel.org>,
         linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org,
@@ -59,12 +59,12 @@ To:     Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         Thomas Gleixner <tglx@linutronix.de>
 Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: Re: (subset) [PATCH v2 3/4] arm64: dts: exynos: add a specific compatible to MCT
-Date:   Mon,  4 Apr 2022 19:01:48 +0200
-Message-Id: <164909169270.1688455.15004420209137649762.b4-ty@linaro.org>
+Subject: Re: (subset) [PATCH 2/3] ARM: dts: exynos: add a specific compatible to MCT
+Date:   Mon,  4 Apr 2022 19:01:44 +0200
+Message-Id: <164909169270.1688455.18335841373677729835.b4-ty@linaro.org>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220304122424.307885-4-krzysztof.kozlowski@canonical.com>
-References: <20220304122424.307885-1-krzysztof.kozlowski@canonical.com> <20220304122424.307885-4-krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220225153650.289923-2-krzysztof.kozlowski@canonical.com>
+References: <20220225153650.289923-1-krzysztof.kozlowski@canonical.com> <20220225153650.289923-2-krzysztof.kozlowski@canonical.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -72,18 +72,18 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 4 Mar 2022 13:24:23 +0100, Krzysztof Kozlowski wrote:
+On Fri, 25 Feb 2022 16:36:49 +0100, Krzysztof Kozlowski wrote:
 > One compatible is used for the Multi-Core Timer on most of the Samsung
 > Exynos SoCs, which is correct but not specific enough.  These MCT blocks
 > have different number of interrupts, so add a second specific
-> compatible to Exynos5433 and Exynos850.
+> compatible to Exynos3250 and all Exynos5 SoCs.
 > 
 > 
 
 Applied, thanks!
 
-[3/4] arm64: dts: exynos: add a specific compatible to MCT
-      commit: 2616922241706ec5c2c5ae95d5ac1d3120575ded
+[2/3] ARM: dts: exynos: add a specific compatible to MCT
+      commit: cca50a59f60a6b2b5aa2c90d8c173da89f567ee3
 
 Best regards,
 -- 
