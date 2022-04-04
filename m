@@ -2,74 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0BD1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 14:48:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EDB0C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 14:49:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241378AbiDDOuq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 10:50:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43716 "EHLO
+        id S1377879AbiDDOu6 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 10:50:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378258AbiDDOto (ORCPT
+        with ESMTP id S1378420AbiDDOuH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 10:49:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFA026449;
-        Mon,  4 Apr 2022 07:45:55 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 858B5B815AA;
-        Mon,  4 Apr 2022 14:45:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A597FC340EE;
-        Mon,  4 Apr 2022 14:45:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649083553;
-        bh=k9WAcFBCFfb+3TY2XrOQKaVZhD+Dcxfd/5cZ6RmH+D4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=F4SvhD9u8ufJSVbfTnoJX2D4cS2Z0ggUcxa/IR5dnmJ8NSOTR7xfILZAzjGHcr/JW
-         e4M47qdBhXdxqmjzbckSKIsTr4tjgA70Q7WU5fIEpfD8ffMjmRhz8SnPZkT5nDtksg
-         SsrhO+Iqx038tynbid79VN1Dcu/cAwwcduH2S0nE=
-Date:   Mon, 4 Apr 2022 16:45:50 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Miaoqian Lin <linmq006@gmail.com>
-Cc:     Jiri Slaby <jirislaby@kernel.org>, Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Zev Weiss <zev@bewilderbeest.net>,
-        Johan Hovold <johan@kernel.org>,
-        Yang Guang <yang.guang5@zte.com.cn>,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] serial: 8250_aspeed_vuart: Fix potential NULL
- dereference in aspeed_vuart_probe
-Message-ID: <YksEnnyJDoL+fE5d@kroah.com>
-References: <20220404143842.16960-1-linmq006@gmail.com>
+        Mon, 4 Apr 2022 10:50:07 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CDBF5F4D
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 07:47:57 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649083676;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=Hc+PPX5M4MD7sbTwM3c6soY+sh8HaVD6wZyeehgD76o=;
+        b=tm2fv/GMfo6WffqxuaqhyObnILkQ9hdlRbLmnmQANijZo3tYvIOAtLd7/ju3oIIUMTDvLY
+        v6tHqP/sfeMbd6F6BhcPf+uo+WtH+/f5bOXUYR55nf3osG2sEVDvoxHHYww+snDrtRFOoj
+        7UOhCHW4X/eExCyd1IRCol7mg65R71Q9gxZsZxcEMFepudro+21e7Dwv6sTpEWvSrXIa1w
+        T83OlqYZ8m/TpqnDru0+iwOeTfFfi92Mpf2Mz+OjrR6+TFt9nm60BpOUtron/d41Zz7kaZ
+        BdxJpztYGKD4KDjgUzoY5MmrdE8GfkKNSqIqXGpK2cXMmoCw7/sVOVaaQMx/NA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649083676;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=Hc+PPX5M4MD7sbTwM3c6soY+sh8HaVD6wZyeehgD76o=;
+        b=dHCIaAemvC3N/Iidsv8X1vO6u/3vD05YNpg/b5ZukBmPVTnWjZTx5BK0PO2UiAzskt240S
+        l1OwlcdxISILHJDw==
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     Anna-Maria Behnsen <anna-maria@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Artem Savkov <asavkov@redhat.com>
+Subject: timers: Simplify calc_index()
+Date:   Mon, 04 Apr 2022 16:47:55 +0200
+Message-ID: <87h778j46c.ffs@tglx>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220404143842.16960-1-linmq006@gmail.com>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 04, 2022 at 02:38:40PM +0000, Miaoqian Lin wrote:
-> platform_get_resource() may fail and return NULL, so we should
-> better check it's return value to avoid a NULL pointer dereference.
-> 
-> Fixes: 54da3e381c2b ("serial: 8250_aspeed_vuart: use UPF_IOREMAP to set up register mapping")
-> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-> ---
->  drivers/tty/serial/8250/8250_aspeed_vuart.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_aspeed_vuart.c b/drivers/tty/serial/8250/8250_aspeed_vuart.c
-> index 93fe10c680fb..9d2a7856784f 100644
-> --- a/drivers/tty/serial/8250/8250_aspeed_vuart.c
-> +++ b/drivers/tty/serial/8250/8250_aspeed_vuart.c
-> @@ -429,6 +429,8 @@ static int aspeed_vuart_probe(struct platform_device *pdev)
->  	timer_setup(&vuart->unthrottle_timer, aspeed_vuart_unthrottle_exp, 0);
->  
->  	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> +	if (!res)
-> +		return -EINVAL;
+The level granularity round up of calc_index() does:
 
-How did you test this change was correct?
+   (x + (1 << n)) >> n
+
+which is obviously equivalent to
+
+   (x >> n) + 1
+
+but compilers can't figure that out despite the fact that the input range
+is known to not cause an overflow. It's neither intuitive to read.
+
+Just write out the obvious.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+---
+ kernel/time/timer.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/kernel/time/timer.c
++++ b/kernel/time/timer.c
+@@ -502,7 +502,7 @@ static inline unsigned calc_index(unsign
+ 	 *
+ 	 * Round up with level granularity to prevent this.
+ 	 */
+-	expires = (expires + LVL_GRAN(lvl)) >> LVL_SHIFT(lvl);
++	expires = (expires >> LVL_SHIFT(lvl)) + 1;
+ 	*bucket_expiry = expires << LVL_SHIFT(lvl);
+ 	return LVL_OFFS(lvl) + (expires & LVL_MASK);
+ }
