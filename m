@@ -2,136 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 655B8C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 899DEC433FE
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:38:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383474AbiDDVda (ORCPT
+        id S1383588AbiDDVdp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:33:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37064 "EHLO
+        Mon, 4 Apr 2022 17:33:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380645AbiDDUth (ORCPT
+        with ESMTP id S1380406AbiDDUFC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 16:49:37 -0400
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2077.outbound.protection.outlook.com [40.107.237.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 733C1201B8
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 13:47:40 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BYHwAgtDcgRlOKUhYUGYFYIAW1F8Qy0SyAFamACRjRzr+ZLm6H2Svi1cQbwxodpp/xNdVtGKAudJgr5XlWbucS9VyX27/9PUxeKhRH7ToPTf6skbz83dlVRnK2nnzxjeO676xqZA0hYv8buF3nD3YV5qfGsqJi/G3BAWF6iIWr+l8UkqjEOxDfE2s7+tq1+jUrLMD1fnFBZQd4THGJ/yOEP+jili3NjAr8q12XkperpjsZVdQlsr1vVvZeZyuz28R/PWEGUTGFcKV3irOgCC/lRxBIMH4UEiCHwASTlJLjLAjxamajTV6A2LYy75eYVLSlCTwZBBPVTDkYus+aVZgQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=EbBITJ7FGJJQMBs9O5qbrMcCz4wXr1JylWsng7SjTe8=;
- b=ZKcDWTZGWaRa0SrMw0qrwoBk0R2cwzqseH/8dQq330iBk4x31cIJc6pXce01bSv3fdlR1TwP5T54PMSHMvcK/KdB/tOeGp8NloOh4ImZErT1NK9LSy7uk7ELJERkLbN9bN+ALo9iMLOz/zNMmQYarVWkiSE8n2rAvU6vaiPjrz4jE+J7vrcMIBlb2CXndgSV3pytRyr7YlRXJdKMbiWu9MlhIP+E1ooTSQDCM2b0c0WRksgYMfNFeNfgX0C9ZtuiL9/YIAiR4HNlvr+p2Z1iTv+Pf8TmaYFREFp+30WGTNyM5nXT37BzgDGHRmEoIt9qOviwA+z/mMvWNcrxjPx4GQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=8bytes.org smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=EbBITJ7FGJJQMBs9O5qbrMcCz4wXr1JylWsng7SjTe8=;
- b=EKEjsrRGhgZXuYFroL/NH6KM7o0oBYsqCEEyBFD8r5x2adLLTG6TakANu3HHzchLckKzJS3O/Kfs1otPNuYOSKvH6HU8/sKVjQOhY1CRltHXcVyGLs15WpTLfCW1Mv3lvr56tCHF4wsEZOBSbeyJi8jUkbdS/I1iLgOJBE97pXA=
-Received: from BN9PR03CA0500.namprd03.prod.outlook.com (2603:10b6:408:130::25)
- by BL0PR12MB2340.namprd12.prod.outlook.com (2603:10b6:207:4d::30) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Mon, 4 Apr
- 2022 20:47:38 +0000
-Received: from BN8NAM11FT039.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:130:cafe::46) by BN9PR03CA0500.outlook.office365.com
- (2603:10b6:408:130::25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31 via Frontend
- Transport; Mon, 4 Apr 2022 20:47:38 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- BN8NAM11FT039.mail.protection.outlook.com (10.13.177.169) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5123.19 via Frontend Transport; Mon, 4 Apr 2022 20:47:37 +0000
-Received: from AUS-LX-MLIMONCI.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 4 Apr
- 2022 15:47:34 -0500
-From:   Mario Limonciello <mario.limonciello@amd.com>
-To:     Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
-CC:     Christoph Hellwig <hch@infradead.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
-        Suthikulpanit Suravee <Suravee.Suthikulpanit@amd.com>,
-        Hegde Vasant <Vasant.Hegde@amd.com>,
-        "open list" <linux-kernel@vger.kernel.org>,
-        Mario Limonciello <mario.limonciello@amd.com>
-Subject: [PATCH v2 2/2] dma-iommu: Check that swiotlb is active before trying to use it
-Date:   Mon, 4 Apr 2022 15:47:23 -0500
-Message-ID: <20220404204723.9767-3-mario.limonciello@amd.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220404204723.9767-1-mario.limonciello@amd.com>
-References: <20220404204723.9767-1-mario.limonciello@amd.com>
+        Mon, 4 Apr 2022 16:05:02 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A3A430576;
+        Mon,  4 Apr 2022 13:03:06 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id o20so3309569pla.13;
+        Mon, 04 Apr 2022 13:03:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=pjgpRMK0NYimSGrt6nJpOa6PTGJdKr7+fAKLKjoWSDA=;
+        b=IECkqfJQKLLWFdbYM3okONxP8OCi2B/qhAroDXHSWfm5bYnfJL/3ruGjY7jjefY0Gl
+         L5WjDq/N9jwBTvcrJCsT4J0fzr2xjvuh8bWlexy6BVuINn3TpgJJBr3tFnwRqKaSbXQk
+         UYJi5I759jd55kj8vaDvPYhYuuRuxJrwRLhlVhmuNcZgQQxWNw03wVSIYlfZopIore1n
+         Tt8mE/Gd9OPxT4FZm62VVyFVklJsp0cXJdXN7OoL2bdskeBCGMfODwfLgV3uYuYcubAa
+         Q/M/j+t5uN2t9sdXHQticavAavTRY2vjlqVVwxtzg9HpDw8PcXGrXbh7M9fdlwtfra5I
+         AU1A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=pjgpRMK0NYimSGrt6nJpOa6PTGJdKr7+fAKLKjoWSDA=;
+        b=qakfGMyHe1n3bm/gekWuFWEXJvYp8lZthgoKFlqSCLHzUZgZaU9b3FdBcDdyimQqOp
+         hhEdTzrAn7f8EaKeUhccFiDlTvcTjWucREi34xDt5lQCe21FLfthS0x6DPVsVzRlHXnL
+         rwwRnvE6VnhYtFGVc3uZG3o7B1c2KK4ZGTIK1FJOnXumbQNSi2vNwGajuPdsE7CoqFJG
+         +9413gOWf2a0AhrCQ+iMe1LXiLTYnukjKgNrCYf+VNsmRqE2WXw2ww8duwxGXjUnozk0
+         ckBEi2A0Om7xhwk5dsnWJWv+KKqbeHg9e44zSSgc7yYWJTqPpKzVuvbJlGpt6UDs37tt
+         JzVQ==
+X-Gm-Message-State: AOAM5324Cl7jjK2bIPfh/zaLjzfJt62oL04ZpcVW6jq4PGZYy28ekpfO
+        6wPsYEU7c1N1tYnw5/WAa0SLW7loiOY=
+X-Google-Smtp-Source: ABdhPJwmqyYOoY4I6R15zAUVTjRG2/sPdiZ1ExIttI9HW/6wIEkHQfrDPIEksQO0dehGXzHTVVqHfA==
+X-Received: by 2002:a17:90b:1b4f:b0:1c6:d91b:9d0 with SMTP id nv15-20020a17090b1b4f00b001c6d91b09d0mr920843pjb.72.1649102585569;
+        Mon, 04 Apr 2022 13:03:05 -0700 (PDT)
+Received: from localhost.localdomain (c-67-174-241-145.hsd1.ca.comcast.net. [67.174.241.145])
+        by smtp.gmail.com with ESMTPSA id bw17-20020a056a00409100b004fadad3b93esm12779295pfb.142.2022.04.04.13.03.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Apr 2022 13:03:05 -0700 (PDT)
+From:   Yang Shi <shy828301@gmail.com>
+To:     vbabka@suse.cz, kirill.shutemov@linux.intel.com,
+        linmiaohe@huawei.com, songliubraving@fb.com, riel@surriel.com,
+        willy@infradead.org, ziy@nvidia.com, tytso@mit.edu,
+        akpm@linux-foundation.org
+Cc:     shy828301@gmail.com, linux-mm@kvack.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [v3 PATCH 2/8] mm: khugepaged: remove redundant check for VM_NO_KHUGEPAGED
+Date:   Mon,  4 Apr 2022 13:02:44 -0700
+Message-Id: <20220404200250.321455-3-shy828301@gmail.com>
+X-Mailer: git-send-email 2.26.3
+In-Reply-To: <20220404200250.321455-1-shy828301@gmail.com>
+References: <20220404200250.321455-1-shy828301@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 035c4846-1a97-4499-70c1-08da167c5aa0
-X-MS-TrafficTypeDiagnostic: BL0PR12MB2340:EE_
-X-Microsoft-Antispam-PRVS: <BL0PR12MB2340F3037A9855952B6134A4E2E59@BL0PR12MB2340.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: E/AwmJzkH8mPpMYsKGQroBLSUOLa2b3QL0WrK01y79pZzo3G7S04vqS9Zwbbj7I0N/oJtNSd2I1uZWniKuZANN8xxH432Ahe+djfUOeIPpQoCBwxQWrZgqw+oc1/R+1V7bRXgr5CASbIstbgVHw5X3/oIHGw7RIS7ObRRSurpKSmlDmhfeWtvGxjovoDTQ9E0/+7yq89eCYOxGv9k7bkbGhfbdrzkQa9acjjSe4sdo+J2EUA1o3h4AfOtPBvpj3ParVe+Z8aJT6Dth5H/zKra/Nry9pLyZrspGorl6lgU+DDOtMatKVhJfJ8tTGVBVVLC/qWJ8Su7l6vnv0pCZYUF1WGY9KN3VZPmkkIZ4pRxfajqHNauW9gsYtQfP+2HQBz9sRez0HXLceQQhUmar083rZVBoWcZIxOCxF89NQWwdk3pdW4tPnDjEIpemWCGUFC2w1JnzfRoRsczNiMAijPUqnKIuJcWQv3CGxqBwkcO3xPoh2+dDlat741b5zTui+/Td6J0uGrWMMZjyA4e+aRBf53ybPLeLxwcfftqyD2s5hKzDGPYgJ2wGtZJae7IHmS8eP8Y+Xv32X7Hf9rmR/B+yMvlJUXeazO2J0RBg9HvP4JPeuM2CiMRVfnsK+UkDql5e6TQV62kpXZyZFzf5JgwD5aSbJTP0UxpoNwF0T/Ddpey7vl+ayIrlJ+ZdGR+b41ZSqZQlfg/iW/x1N5KQMxPA==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(46966006)(40470700004)(36840700001)(7696005)(8936002)(44832011)(2906002)(82310400004)(36860700001)(86362001)(6666004)(5660300002)(81166007)(356005)(40460700003)(83380400001)(336012)(2616005)(47076005)(8676002)(426003)(26005)(1076003)(16526019)(186003)(316002)(54906003)(110136005)(70586007)(70206006)(4326008)(36756003)(508600001)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Apr 2022 20:47:37.7941
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 035c4846-1a97-4499-70c1-08da167c5aa0
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT039.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR12MB2340
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If the IOMMU is in use and an untrusted device is connected to an external
-facing port but the address requested isn't page aligned will cause the
-kernel to attempt to use bounce buffers.
+The hugepage_vma_check() called by khugepaged_enter_vma_merge() does
+check VM_NO_KHUGEPAGED. Remove the check from caller and move the check
+in hugepage_vma_check() up.
 
-If for some reason the bounce buffers have not been allocated this is a
-problem that should be made apparent to the user.
+More checks may be run for VM_NO_KHUGEPAGED vmas, but MADV_HUGEPAGE is
+definitely not a hot path, so cleaner code does outweigh.
 
-Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
+Acked-by: Song Liu <song@kernel.org>
+Signed-off-by: Yang Shi <shy828301@gmail.com>
 ---
-v1->v2:
- * Move error message into the caller
+ mm/khugepaged.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
- drivers/iommu/dma-iommu.c | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 09f6e1c0f9c0..1ca85d37eeab 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -971,6 +971,11 @@ static dma_addr_t iommu_dma_map_page(struct device *dev, struct page *page,
- 		void *padding_start;
- 		size_t padding_size, aligned_size;
+diff --git a/mm/khugepaged.c b/mm/khugepaged.c
+index a4e5eaf3eb01..7d197d9e3258 100644
+--- a/mm/khugepaged.c
++++ b/mm/khugepaged.c
+@@ -365,8 +365,7 @@ int hugepage_madvise(struct vm_area_struct *vma,
+ 		 * register it here without waiting a page fault that
+ 		 * may not happen any time soon.
+ 		 */
+-		if (!(*vm_flags & VM_NO_KHUGEPAGED) &&
+-				khugepaged_enter_vma_merge(vma, *vm_flags))
++		if (khugepaged_enter_vma_merge(vma, *vm_flags))
+ 			return -ENOMEM;
+ 		break;
+ 	case MADV_NOHUGEPAGE:
+@@ -445,6 +444,9 @@ static bool hugepage_vma_check(struct vm_area_struct *vma,
+ 	if (!transhuge_vma_enabled(vma, vm_flags))
+ 		return false;
  
-+		if (!is_swiotlb_active(dev)) {
-+			dev_warn_once(dev, "DMA bounce buffers are inactive, unable to map unaligned transaction.\n");
-+			return DMA_MAPPING_ERROR;
-+		}
++	if (vm_flags & VM_NO_KHUGEPAGED)
++		return false;
 +
- 		aligned_size = iova_align(iovad, size);
- 		phys = swiotlb_tbl_map_single(dev, phys, size, aligned_size,
- 					      iova_mask(iovad), dir, attrs);
+ 	if (vma->vm_file && !IS_ALIGNED((vma->vm_start >> PAGE_SHIFT) -
+ 				vma->vm_pgoff, HPAGE_PMD_NR))
+ 		return false;
+@@ -470,7 +472,8 @@ static bool hugepage_vma_check(struct vm_area_struct *vma,
+ 		return false;
+ 	if (vma_is_temporary_stack(vma))
+ 		return false;
+-	return !(vm_flags & VM_NO_KHUGEPAGED);
++
++	return true;
+ }
+ 
+ int __khugepaged_enter(struct mm_struct *mm)
 -- 
-2.34.1
+2.26.3
 
