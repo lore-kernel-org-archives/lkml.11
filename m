@@ -2,186 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AE93C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 14:38:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 564A9C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 14:38:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378091AbiDDOkl (ORCPT
+        id S1356778AbiDDOkt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 10:40:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42908 "EHLO
+        Mon, 4 Apr 2022 10:40:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377995AbiDDOjD (ORCPT
+        with ESMTP id S1377994AbiDDOjD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 4 Apr 2022 10:39:03 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 673853F89E
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 07:36:28 -0700 (PDT)
-Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 234Dj3YN024447;
-        Mon, 4 Apr 2022 14:36:24 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : subject :
- date : message-id : references : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=corp-2021-07-09;
- bh=ThrdqM2l2Ye0kGJPJR28COWU0WDU8BpCLuABqiYrLPM=;
- b=nIem4BfXfVjeOKnVd5NWyUGfXFnRVI9FoyBFowJh9X60SesSnLmVOyE4VVEDWq8j4HxU
- 2969BDGLjWjWuFnaHZKtRK3xPtrmcOl1zwFo793hY/JPzTQr4QGLN25PiOFwETq65rCv
- /XV1PJy/qq+/ejgmyR2R4g5ZZJYDRZ9w5V/02nkN9n5cY74YgfSssTHFywOM6v3276t8
- 3qGZzYx1FR+L4+dHlZ7RWbo0nhRNrNfWG3zOqLU12a02SqeugABRaPRubbwg75aYmwq5
- YZNEQ7c+vm0h5TU9iHkxsynB467D+k5XtPA8LB4LIFCpxDZ7/lDt7bFxzQ1H9+dSJmVi Qg== 
-Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3f6f1t3cuv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 04 Apr 2022 14:36:23 +0000
-Received: from pps.filterd (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 234EGcG7027665;
-        Mon, 4 Apr 2022 14:36:22 GMT
-Received: from nam11-co1-obe.outbound.protection.outlook.com (mail-co1nam11lp2176.outbound.protection.outlook.com [104.47.56.176])
-        by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3f6cx2gn5h-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 04 Apr 2022 14:36:22 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nVRlnxwdx/qW+nj1HVA6WVTdanAWy6HbBPsaD/U/Yl4XNM6FHNdbTbH0N7HqzqxMwRVhKuAp2BBGZLq3cin5XT/dB+LPK8QsVhTUDZoitecut9Elq4LFq3ai6iaeG9jWYfN51+OMsFl/z+1dMLyvixG2BwEbB4Hq0a6D81wFALECUjNRtOk0CGox/Faap2B/NKOogBkf++K7HglhWxkBhAFfPtJVeQbsAONMgDKIj5myx3sSAXsmm2EMaLM71ilbuEz6A3VT8yR4YlIBQxui566CN0O2ELgyuOLKV7JeJNhLUmO84JbKDEib5dPRW/zzmCaMUcAr3wRDR4/QH3pStA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ThrdqM2l2Ye0kGJPJR28COWU0WDU8BpCLuABqiYrLPM=;
- b=oW3UWa5+kxWQaIjEkwa9ZEQB1FXsjXVziiQLaYsLAk9qy9urVBhZqdvPA1lDeT4kvK4cMLoFagk8zIAigI5CmiZebzh1u+Jm68YHpJSQA2XJScbY8k+bCOdBkDH8/yrtFEEBDpGuaXwuhxj0pDOuGlVXOq/zrBiKZjuW+ktbA+/ImjMo1VYyv356Ph69uZg2B1hSgrO+9GsvJahfzVAOAcfL3eF+PMTBoeZp0uuomCDIhRf0TkBlwQhWV59D5+fnM+GthFg9IMZNr5ddTF3xuuVrlzT22cZCk4dl4fGyP76VYUxOpHBQEmruB10OA9z35Tr6O48aj1gEsIeR+/anwg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ThrdqM2l2Ye0kGJPJR28COWU0WDU8BpCLuABqiYrLPM=;
- b=B4k0OA86QHsBd2OKuk85a4OIfH+4Q9QeOGMa8kfmtPTlzsDc113mqE+YmgxJ+yvYw283jLwqtf9qKTUiaRefFTMP3aFU87QvqR4qhNorl9YsTrXyc5yD4vzby7Z7A50V0ySAWnOgIC0ukYXIffDGHIChTxZxQJ268HQHoGUgzls=
-Received: from SN6PR10MB3022.namprd10.prod.outlook.com (2603:10b6:805:d8::25)
- by CY4PR10MB1381.namprd10.prod.outlook.com (2603:10b6:903:29::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Mon, 4 Apr
- 2022 14:36:19 +0000
-Received: from SN6PR10MB3022.namprd10.prod.outlook.com
- ([fe80::74fd:df41:4c93:24a5]) by SN6PR10MB3022.namprd10.prod.outlook.com
- ([fe80::74fd:df41:4c93:24a5%6]) with mapi id 15.20.5123.031; Mon, 4 Apr 2022
- 14:36:19 +0000
-From:   Liam Howlett <liam.howlett@oracle.com>
-To:     "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH v7 31/70] mm/mmap: Change do_brk_munmap() to use
- do_mas_align_munmap()
-Thread-Topic: [PATCH v7 31/70] mm/mmap: Change do_brk_munmap() to use
- do_mas_align_munmap()
-Thread-Index: AQHYSDFEW0cd7zhmd0GjVuKcZnH5qQ==
-Date:   Mon, 4 Apr 2022 14:35:45 +0000
-Message-ID: <20220404143501.2016403-32-Liam.Howlett@oracle.com>
-References: <20220404143501.2016403-1-Liam.Howlett@oracle.com>
-In-Reply-To: <20220404143501.2016403-1-Liam.Howlett@oracle.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: git-send-email 2.34.1
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: a7fd5454-c64c-41db-b15b-08da16487bae
-x-ms-traffictypediagnostic: CY4PR10MB1381:EE_
-x-microsoft-antispam-prvs: <CY4PR10MB13813014A961ADD068E95C18FDE59@CY4PR10MB1381.namprd10.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: jHnGIjpgY5IFv0edAJ9G7SD9OA7dGsu2Eue4/q/8Tbfu3/ToUJIeBSswz7pqXEZjoigigI2VBAF9xCXfXOOek07vH8KpqrQqsyNfkhg7fp6u2qHBWWMuOeItFoI41rge/qdvh2TWK0/BsSaH66nqXz0swdBYbSsDpf61ifWFivYQFdmaFGfF3Cbgjar94MyNggdv1YsOO6tpc94pK3pNdFtDrY+Tv8MZOABzaoW45QV/XykFLZIOOH+CkEp26wjPQoxhvP6YHj7nFJNgw8WURrU/z7rZ7xGX0iaHmjHK7KaqchDr9qXoXLGpOSwaEySTT6+WdZeR7INZQc0Q2mseoxrLDsIH5HPbFktk26iYiZCrEW+tFjD8pXNRUabNnHsTJooTwvOXx+e5pwReitO+9VZHGDPFx9ChxpeMbvDdjJhTIdgncnLVF/ryzZvnuVv3yzm4jH3T0tDiEPHYpM801iWIU7mv0Oy/TGTpJNtT9ELOoChmTMjN+KX4kvMdG4Ud6wj6/ybZovDk63JxPleD/IwMXuqcmFCO2+wsWyeTPeBDOXohZPr2BR398LSJB8WDxGV0T5Yimz9Vw/ctkanigThHi2bYTLrKoYrEEIwZAOgKHj2XKUR8q6c9BlDAUk5R1MCd45DmOxUfx/jynh/5UFPsbQq1oazoaU2OV7VMYABxagueliOcBxpwCGmqk0X657rMFhiJo7PyhU8MAK99wQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR10MB3022.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(122000001)(6506007)(6666004)(2906002)(66446008)(66946007)(110136005)(66556008)(66476007)(36756003)(8676002)(76116006)(91956017)(64756008)(6512007)(316002)(71200400001)(5660300002)(2616005)(38070700005)(38100700002)(4744005)(1076003)(83380400001)(186003)(508600001)(26005)(8936002)(86362001)(6486002)(44832011);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?gCmOilokyiE7D52cod3ndEhHpsmGjn5oUKoKXx0IWIyDlSziUcWoZTIcp0?=
- =?iso-8859-1?Q?fajWddWLf7VoIC8+FKPz9Otk2uIGwAtE979lyyWa0td37tdqQD+6XotV07?=
- =?iso-8859-1?Q?L/A8V844eHpFGtqN8+0rNYGfAMwE6aoXBeFvNHXG82dIiEThCSjUZ/m00k?=
- =?iso-8859-1?Q?fUXbC0cU2fI+z8XyNHGZRMrYzoD1RQDcp8eNJpBsqSrCLGLkaXOGWZwfyx?=
- =?iso-8859-1?Q?qMHxEF9TyTP6rHWDGibywtAmovI7EasUAQGhLjB4udFM1NUkT7v2onSk2W?=
- =?iso-8859-1?Q?cCxjjqsCDafKUsYcDlKSKmV+soQoLeC70/3bppQSUTz2ENth1YrDi+HXnL?=
- =?iso-8859-1?Q?4I+DQRVvCcGfUTOJWHiAe2rTi1ZqvPL/T6ZIGFubz8/7Fr8GVSjk5CTjtw?=
- =?iso-8859-1?Q?t6TLl9E6sKTfwlJ8cPInRPRfM4UotscNFD7WG/2I2Hryqf8492cnDYSI1O?=
- =?iso-8859-1?Q?7ZfAxiiblX2+TAS4CypxmcjCCD1lypOtuBMbY84lOSg1jOcBszW4kJBWTh?=
- =?iso-8859-1?Q?SrTAOatYMzBEgk3DW3fjYjKvugUHeQrZITuL7p8hWgxGUx80XXU8LqVVpV?=
- =?iso-8859-1?Q?i46NrQaluemo6D0boUiZrRqS37EQIIvixuL15GH3jweDrMQLlGKTIDhq0/?=
- =?iso-8859-1?Q?kcXMRvgupfYPoNUm1k/K2c1tfXILZj8APx439mgBuMs0BrG+gY4nn9BPNQ?=
- =?iso-8859-1?Q?gjaK7fdr+xFIakR5tYs5SH0tfkbay3TGICYbRb7FzLpmSY/ZttuJQLDEMO?=
- =?iso-8859-1?Q?hwSNT7UnSRJ5LwEPFDh2o5hKGNac+jTNZNadiBbIZ0yJ032OUklIFb/Xc9?=
- =?iso-8859-1?Q?haPpNTdb/IcRcTN9DZ42468kENOuNYER1KnkLRC8zj5mWzZfXew9EQtfYg?=
- =?iso-8859-1?Q?H5KcyVMZvGr/Tucbm2me2Z19AGSevilFC8GNEyKQaJfMfSV3qIv80qUhSh?=
- =?iso-8859-1?Q?Gh/pWVrHJXYpn2QLLKskcalJO8fJGiO7HxPciksZcjialdK7cLhNJIH/d+?=
- =?iso-8859-1?Q?wlBdCEib4JWmLi7RQ4/Nx0lK0uQliQyyhobaxE/ZWESfFTymDW4FU0Xu0b?=
- =?iso-8859-1?Q?u14jRvof9BL8L66q1zSiaRAe9spQq5NFoTXaaIj41fr14nDqvPRjMQrhfy?=
- =?iso-8859-1?Q?c0cZLVx1EKbln31sKo+QYgw4h1iow3UwY8ns0n9mj70V3nXzQ8GMNPlmpN?=
- =?iso-8859-1?Q?Gc0rxn2uDqv45awWSuCpE5VUu26x3AL7RaW9xo58sMRI/1KJky9nzn5X8b?=
- =?iso-8859-1?Q?2LDLBpJPB4CVjdXr6i4UFO246Cnxw1ZAiFT5/XzzK+cqX1IY4ldjr7RuzI?=
- =?iso-8859-1?Q?MvEAc/udrWGTJeq3k2Yl2HvcOqlTpFSEo5fMA/Pxji5s+d1VjQ2xydjt6p?=
- =?iso-8859-1?Q?BoBncmRIf1U/9BzGzgT7JMtf1nuTkIDxi1wOIRXwOhsnOxlsd/JX0x9KZF?=
- =?iso-8859-1?Q?Ef8rev+MLv0DsE8Uy+bEzRVLfqsmFUBgllqKb5KWnXPGIKjNpTkak6YeRD?=
- =?iso-8859-1?Q?lTcB+IW57Vqba/ovAy5xggOvFsUZSYcpqOQXvEs9mi0E3/KLkYDffBQJbC?=
- =?iso-8859-1?Q?AmbxVo0wD3j8f68yA0zMAbwr5MUt2sTZiKX3+zQzmyKUowifUpO5JhChTG?=
- =?iso-8859-1?Q?fwrVP/JcXYIIiFa9Zz+AI9/u1QtuEBuexAc9mPqmuIcZNQiuo3PFJiJwz7?=
- =?iso-8859-1?Q?A47B+bOUHt3B2WIOkbSQ7BAaeqaQiocGsF4AM6nBqZA8MCVyZZTnOLEq8y?=
- =?iso-8859-1?Q?WthkBgegccvGWwgveh5wXYqElO5IZ23cd3g6Ab47SLCKpTIVaWxdBYES7n?=
- =?iso-8859-1?Q?iDNNR9fbL0RN8E7deuoR/2yq7rt/2BA=3D?=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 622C93F88E
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 07:36:27 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C76F2B817DC
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 14:36:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 165FCC2BBE4;
+        Mon,  4 Apr 2022 14:36:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649082984;
+        bh=73qqUvZ/VQr/pWfWdhrhsVcUa7yrkg0XCAGXIPOUfDk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=P5KGhA/2BqUP1zD/DGNonn6yNZH5xmdobFP3PVt3Rbt9oyX3ANm7ArHHjWwsXEKY+
+         EgLiBJOG2J5kxB1TBwcc1lFIFT2sTCPweTBqAMJa6IblsCJ8FyTCxqgiki4n4OYQEy
+         6KVI14qtuHgedDKfR5tUiyKCWuL+js/S8LJumMxw=
+Date:   Mon, 4 Apr 2022 16:36:21 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
+        Charlie Sands <sandsch@northvilleschools.net>,
+        Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        paskripkin@gmail.com
+Subject: Re: [PATCH V2] Fix unsafe memory access by memcmp
+Message-ID: <YksCZRJWNNcGSLMw@kroah.com>
+References: <YkpdVyuQguGzPSNE@sckzor-linux.localdomain>
+ <4729027.31r3eYUQgx@leap>
+ <20220404120332.GY3293@kadam>
+ <1890716.PYKUYFuaPT@leap>
 MIME-Version: 1.0
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR10MB3022.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a7fd5454-c64c-41db-b15b-08da16487bae
-X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Apr 2022 14:35:45.5965
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Z408GgzY3FhduYMbBoxtA44RfIheOBWOMSs7rVTeWBZ4OHqco11d2NI84nXcemdQ6rxbH9pT3KJ0l0/hzplNKw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR10MB1381
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.425,18.0.850
- definitions=2022-04-04_05:2022-03-30,2022-04-04 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 spamscore=0 adultscore=0
- bulkscore=0 mlxlogscore=999 phishscore=0 suspectscore=0 mlxscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2204040082
-X-Proofpoint-ORIG-GUID: a0ZJNLZ8k0hD2lgZE-3b5ikqxNBlBJ42
-X-Proofpoint-GUID: a0ZJNLZ8k0hD2lgZE-3b5ikqxNBlBJ42
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1890716.PYKUYFuaPT@leap>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Liam R. Howlett" <Liam.Howlett@Oracle.com>
+On Mon, Apr 04, 2022 at 04:29:48PM +0200, Fabio M. De Francesco wrote:
+> On luned? 4 aprile 2022 14:03:32 CEST Dan Carpenter wrote:
+> > On Mon, Apr 04, 2022 at 01:25:37PM +0200, Fabio M. De Francesco wrote:
+> > > On luned? 4 aprile 2022 12:50:41 CEST Dan Carpenter wrote:
+> > > > On Sun, Apr 03, 2022 at 10:52:07PM -0400, Charlie Sands wrote:
+> > > > > This patch fixes sparse warnings about the memcmp function unsafely
+> > > > > accessing userspace memory without first copying it to kernel space.
+> > > > > 
+> > > > > Signed-off-by: Charlie Sands <sandsch@northvilleschools.net>
+> > > > > ---
+> > > > > 
+> > > > > V2: Fixed checkpatch.pl warning and changed variable name as suggested
+> > > > > by Greg K. H. and improved error checking on the "copy_from_user" function as
+> > > > > suggested by Pavel Skripkin.
+> > > > > 
+> > > > >  drivers/staging/r8188eu/os_dep/ioctl_linux.c | 21 ++++++++++++--------
+> > > > >  1 file changed, 13 insertions(+), 8 deletions(-)
+> > > > > 
+> > > > > diff --git a/drivers/staging/r8188eu/os_dep/ioctl_linux.c b/drivers/staging/r8188eu/os_dep/ioctl_linux.c
+> > > > > index 7df213856d66..4b4eec2bde96 100644
+> > > > > --- a/drivers/staging/r8188eu/os_dep/ioctl_linux.c
+> > > > > +++ b/drivers/staging/r8188eu/os_dep/ioctl_linux.c
+> > > > > @@ -3233,23 +3233,28 @@ static int rtw_p2p_get(struct net_device *dev,
+> > > > >  			       struct iw_request_info *info,
+> > > > >  			       union iwreq_data *wrqu, char *extra)
+> > > > >  {
+> > > > > -	if (!memcmp(wrqu->data.pointer, "status", 6)) {
+> > > > > +	char wrqu_data[9];
+> > > > > +
+> > > > > +	if (copy_from_user(wrqu_data, wrqu->data.pointer, 9) != 0)
+> > > > > +		return 0;
+> > > > 
+> > > > return -EFAULT;  We can't assume that that user wants to copy 9 bytes
+> > > > especially when they're passing a 4 character + NUL string.
+> > > > 
+> > > > This is a custom ioctl.  Called from ioctl_private_iw_point().
+> > > > 
+> > > > I think if you try to dereference a user pointer like this then it will
+> > > > cause a crash, right?  So that means no one has ever tested or used this
+> > > > code and we hopefully we can just delete it?
+> > > 
+> > > After a quick look, I'm pretty confident that we can also delete 
+> > > rtw_p2p_get2() and rtw_p2p_set() unless I'm overlooking something.
+> > 
+> > What are the problems with rtw_p2p_get2() and rtw_p2p_set()?
+> > 
+> > regards,
+> > dan carpenter
+> > 
+> Is it safe to access user space pointers without using proper helpers? 
 
-do_brk_munmap() has already aligned the address and has a maple tree
-state to be used.  Use the new do_mas_align_munmap() to avoid
-unnecessary alignment and error checks.
+No.
 
-Signed-off-by: Liam R. Howlett <Liam.Howlett@Oracle.com>
----
- mm/mmap.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/mm/mmap.c b/mm/mmap.c
-index 6770b8a54ce4..0c548c7bbfe7 100644
---- a/mm/mmap.c
-+++ b/mm/mmap.c
-@@ -2972,14 +2972,15 @@ static int do_brk_munmap(struct ma_state *mas, stru=
-ct vm_area_struct *vma,
- 	struct mm_struct *mm =3D vma->vm_mm;
- 	struct vm_area_struct unmap;
- 	unsigned long unmap_pages;
--	int ret =3D 1;
-+	int ret;
-=20
- 	arch_unmap(mm, newbrk, oldbrk);
-=20
- 	if (likely((vma->vm_end < oldbrk) ||
- 		   ((vma->vm_start =3D=3D newbrk) && (vma->vm_end =3D=3D oldbrk)))) {
- 		/* remove entire mapping(s) */
--		ret =3D do_mas_munmap(mas, mm, newbrk, oldbrk-newbrk, uf, true);
-+		ret =3D do_mas_align_munmap(mas, vma, mm, newbrk, oldbrk, uf,
-+					  true);
- 		goto munmap_full_vma;
- 	}
-=20
---=20
-2.34.1
