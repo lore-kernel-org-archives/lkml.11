@@ -2,139 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04F94C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F333C4167D
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:10:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351371AbiDEUCt (ORCPT
+        id S1352550AbiDEUDJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:02:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36680 "EHLO
+        Tue, 5 Apr 2022 16:03:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354225AbiDEKMT (ORCPT
+        with ESMTP id S1444536AbiDEPlj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:12:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B2CA5A5A0;
-        Tue,  5 Apr 2022 02:59:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A4EAEB81BAE;
-        Tue,  5 Apr 2022 09:59:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED431C385A2;
-        Tue,  5 Apr 2022 09:59:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152756;
-        bh=5l6ORz8eE2NVxh7n5XMeTQ77XrdLfW9u905815LIC3s=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UI+Zl7wmKbfGU/6AhVgihqDR87zc6C2WOZin1BqY/VdviVfJRP6EjfDOSu6JapN7d
-         7f+AI4oDLM+t/v+DciMxCHUM959u6x30RlN3tI7UC0sfQ2VVjf0coOqSfvDdGQhzZ5
-         Y4Tq8CNg64rs5M+m94e7pDAxjDlL50REPu5xoTcw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Janusz Krzysztofik <jmkrzyszt@gmail.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>
-Subject: [PATCH 5.15 891/913] media: ov6650: Fix crop rectangle affected by set format
-Date:   Tue,  5 Apr 2022 09:32:33 +0200
-Message-Id: <20220405070406.530053519@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 11:41:39 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FC6D31364
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 07:05:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649167536; x=1680703536;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=RykHeuHfrYKWlYaQCFedGFkCWMVDu/x+vCVK9n5m7R8=;
+  b=M4RloeLrrM5SkpbzfepVSNIEBF6QX/8VSL3ca39daXwf0I3+rKbe96og
+   CU0OsodiSpTIdql5eUpnktzNHMGIFzCt2tCI4t0bJbmijcsIBGvdu7iRv
+   Qq/bJSsDsDrwNpb9PknwhiYdxQqPQ56fgV35o5Va1YN0fPLc1J1PArpza
+   WY/ildP/2/+b9xwEYcaaEUgQV6snf+LPA3+uAV35fX6yoqaZtnXYuGTQE
+   9n/IITSUOjhkzqOPRFIoyMGkgUEl+qndbIwUgaR2Xg5dXrvzD/3YDCtUT
+   woQssGG98c8fy/U3eNpeqxmm5I2ZYZHZkUiWSQ8aqb7MgFua9nGGHSRsa
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="259586402"
+X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
+   d="scan'208";a="259586402"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 07:05:36 -0700
+X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
+   d="scan'208";a="651903446"
+Received: from ctveazey-mobl2.amr.corp.intel.com (HELO [10.255.230.126]) ([10.255.230.126])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 07:05:32 -0700
+Message-ID: <a312c7ea-9ae3-689d-5a23-4d16400bbbf1@linux.intel.com>
+Date:   Mon, 4 Apr 2022 10:58:08 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.5.0
+Subject: Re: [PATCH v1] ASoC: Intel: sof_rt5682: Add support for max98360a
+ speaker amp on SSP2
+Content-Language: en-US
+To:     Ajye Huang <ajye.huang@gmail.com>, linux-kernel@vger.kernel.org
+Cc:     Cezary Rojewski <cezary.rojewski@intel.com>,
+        Liam Girdwood <liam.r.girdwood@linux.intel.com>,
+        Jie Yang <yang.jie@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
+        Daniel Baluta <daniel.baluta@nxp.com>,
+        Brent Lu <brent.lu@intel.com>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        Yong Zhi <yong.zhi@intel.com>,
+        Ajye Huang <ajye_huang@compal.corp-partner.google.com>,
+        Mac Chiang <mac.chiang@intel.com>,
+        Vamshi Krishna Gopal <vamshi.krishna.gopal@intel.com>,
+        alsa-devel@alsa-project.org, sound-open-firmware@alsa-project.org
+References: <20220324084708.2009375-1-ajye_huang@compal.corp-partner.google.com>
+From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+In-Reply-To: <20220324084708.2009375-1-ajye_huang@compal.corp-partner.google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Janusz Krzysztofik <jmkrzyszt@gmail.com>
-
-commit 985d2d7a482e9b64ef9643702b066da9cbd6ae8e upstream.
-
-According to subdevice interface specification found in V4L2 API
-documentation, set format pad operations should not affect image
-geometry set in preceding image processing steps. Unfortunately, that
-requirement is not respected by the driver implementation of set format
-as it was not the case when that code was still implementing a pair of
-now obsolete .s_mbus_fmt() / .try_mbus_fmt() video operations before
-they have been merged and reused as an implementation of .set_fmt() pad
-operation by commit 717fd5b4907a ("[media] v4l2: replace try_mbus_fmt
-by set_fmt").
-
-Exclude non-compliant crop rectangle adjustments from set format try,
-as well as a call to .set_selection() from set format active processing
-path, so only frame scaling is applied as needed and crop rectangle is
-no longer modified.
-
-[Sakari Ailus: Rebase on subdev state patches]
-
-Fixes: 717fd5b4907a ("[media] v4l2: replace try_mbus_fmt by set_fmt")
-Signed-off-by: Janusz Krzysztofik <jmkrzyszt@gmail.com>
-Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/media/i2c/ov6650.c |   28 ++++------------------------
- 1 file changed, 4 insertions(+), 24 deletions(-)
-
---- a/drivers/media/i2c/ov6650.c
-+++ b/drivers/media/i2c/ov6650.c
-@@ -693,11 +693,7 @@ static int ov6650_set_fmt(struct v4l2_su
- 	struct v4l2_mbus_framefmt *mf = &format->format;
- 	struct i2c_client *client = v4l2_get_subdevdata(sd);
- 	struct ov6650 *priv = to_ov6650(client);
--	struct v4l2_subdev_selection sel = {
--		.which = V4L2_SUBDEV_FORMAT_ACTIVE,
--		.target = V4L2_SEL_TGT_CROP,
--	};
--	struct v4l2_rect *crop = &sel.r;
-+	struct v4l2_rect *crop;
- 	bool half_scale;
- 
- 	if (format->pad)
-@@ -721,24 +717,13 @@ static int ov6650_set_fmt(struct v4l2_su
- 	}
- 
- 	if (format->which == V4L2_SUBDEV_FORMAT_TRY)
--		*crop = sd_state->pads->try_crop;
-+		crop = &sd_state->pads->try_crop;
- 	else
--		*crop = priv->rect;
-+		crop = &priv->rect;
- 
- 	half_scale = !is_unscaled_ok(mf->width, mf->height, crop);
- 
--	/* adjust new crop rectangle position against its current center */
--	crop->left += (crop->width - (mf->width << half_scale)) / 2;
--	crop->top += (crop->height - (mf->height << half_scale)) / 2;
--	/* adjust new crop rectangle size */
--	crop->width = mf->width << half_scale;
--	crop->height = mf->height << half_scale;
--
- 	if (format->which == V4L2_SUBDEV_FORMAT_TRY) {
--		/* store new crop rectangle, hadware bound, in pad config */
--		ov6650_bind_align_crop_rectangle(crop);
--		sd_state->pads->try_crop = *crop;
--
- 		/* store new mbus frame format code and size in pad config */
- 		sd_state->pads->try_fmt.width = crop->width >> half_scale;
- 		sd_state->pads->try_fmt.height = crop->height >> half_scale;
-@@ -751,12 +736,7 @@ static int ov6650_set_fmt(struct v4l2_su
- 		mf->code = sd_state->pads->try_fmt.code;
- 
- 	} else {
--		int ret;
--
--		/* apply new crop rectangle */
--		ret = ov6650_set_selection(sd, NULL, &sel);
--		if (ret)
--			return ret;
-+		int ret = 0;
- 
- 		/* apply new media bus frame format and scaling if changed */
- 		if (mf->code != priv->code || half_scale != priv->half_scale)
 
 
+On 3/24/22 03:47, Ajye Huang wrote:
+> Follow Intel's design to replace max98360a amp SSP2 reather than SSP1
+> by judging DMI_OEM_STRING in sof_rt5682_quirk_table struct.
+> And reusing max98357's topology since DAI setting could be leveraged.
+> 
+> Signed-off-by: Ajye Huang <ajye_huang@compal.corp-partner.google.com>
+
+Acked-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+
+> ---
+>   sound/soc/intel/boards/sof_rt5682.c | 13 +++++++++++++
+>   sound/soc/sof/sof-pci-dev.c         |  9 ++++++++-
+>   2 files changed, 21 insertions(+), 1 deletion(-)
+> 
+> diff --git a/sound/soc/intel/boards/sof_rt5682.c b/sound/soc/intel/boards/sof_rt5682.c
+> index ebec4d15edaa..7126fcb63d90 100644
+> --- a/sound/soc/intel/boards/sof_rt5682.c
+> +++ b/sound/soc/intel/boards/sof_rt5682.c
+> @@ -212,6 +212,19 @@ static const struct dmi_system_id sof_rt5682_quirk_table[] = {
+>   					SOF_SSP_BT_OFFLOAD_PRESENT),
+>   
+>   	},
+> +	{
+> +		.callback = sof_rt5682_quirk_cb,
+> +		.matches = {
+> +			DMI_MATCH(DMI_PRODUCT_FAMILY, "Google_Brya"),
+> +			DMI_MATCH(DMI_OEM_STRING, "AUDIO-MAX98360_ALC5682I_I2S_AMP_SSP2"),
+> +		},
+> +		.driver_data = (void *)(SOF_RT5682_MCLK_EN |
+> +					SOF_RT5682_SSP_CODEC(0) |
+> +					SOF_SPEAKER_AMP_PRESENT |
+> +					SOF_MAX98360A_SPEAKER_AMP_PRESENT |
+> +					SOF_RT5682_SSP_AMP(2) |
+> +					SOF_RT5682_NUM_HDMIDEV(4)),
+> +	},
+>   	{}
+>   };
+>   
+> diff --git a/sound/soc/sof/sof-pci-dev.c b/sound/soc/sof/sof-pci-dev.c
+> index 4c9596742844..12f5cff22448 100644
+> --- a/sound/soc/sof/sof-pci-dev.c
+> +++ b/sound/soc/sof/sof-pci-dev.c
+> @@ -83,7 +83,14 @@ static const struct dmi_system_id sof_tplg_table[] = {
+>   		},
+>   		.driver_data = "sof-adl-max98357a-rt5682-2way.tplg",
+>   	},
+> -
+> +	{
+> +		.callback = sof_tplg_cb,
+> +		.matches = {
+> +			DMI_MATCH(DMI_PRODUCT_FAMILY, "Google_Brya"),
+> +			DMI_MATCH(DMI_OEM_STRING, "AUDIO-MAX98360_ALC5682I_I2S_AMP_SSP2"),
+> +		},
+> +		.driver_data = "sof-adl-max98357a-rt5682.tplg",
+> +	},
+>   	{}
+>   };
+>   
