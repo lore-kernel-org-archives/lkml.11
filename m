@@ -2,134 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83922C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C715EC43217
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:08:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359616AbiDDWG0 (ORCPT
+        id S1379205AbiDDWGn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 18:06:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55056 "EHLO
+        Mon, 4 Apr 2022 18:06:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379495AbiDDRQU (ORCPT
+        with ESMTP id S1379595AbiDDRoK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 13:16:20 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A024E13F77
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 10:14:24 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id o5-20020a17090ad20500b001ca8a1dc47aso3995366pju.1
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 10:14:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=f7CZTXIAAoKnaeTzl2cBEFXf6R/B35g02/GjhJjJB74=;
-        b=eBZWszMfrYAS1A0VrXpWNQWYDljGRJ+69p04Uob5nwN5mkb+RRRbhGQtuSACDJkmvd
-         JzPqoBdgGu43CiEvMKn6MoJcRQCsl7Owmu3MNRPIYKMky87OkSaEID6ZI70cN+xFHfx5
-         ZxAL+FJLp9ve4zSfapVXowsj+6Ldxi2KIv9zTO/Uf8ZtGfgDzG/o8faLsk22qy3LIdgI
-         2FPf//bfqpfCAuXBJpK7xeekXuFiEuJ24MyqK4BXHra2TdclI296/kmZ9f5cwYj4K+7B
-         g9g8MWWBtQB00iQfM4jblH3lazcS3nWsLZzRPoAvtYHlPcGNcHEHkXEhancJVBtgTKuU
-         /Smg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=f7CZTXIAAoKnaeTzl2cBEFXf6R/B35g02/GjhJjJB74=;
-        b=lAZSfNGND8uo4mQ+v7Zwv3RT46LTTxHcA1GJChC3kNsQ74Hbi9Ro0F/iKY7OeY0KcB
-         OoJ9WLqUA92P2XN0owP9IFb770qJ5ndUYVo0RRiYDWC5fAfFB1B0wi3HibyK/aHrzqFN
-         wHyzQ9lsyxX7b1Rt4jqyI19FkXs69SbKEuMtMBL8Gtor4wnWMclCHMbvAKI8yxdOfwYs
-         gdELMKETrdqrLjQNfXFg0OtIKUVzucZs7pUUfBrY8qAm++42/Hc7d1Tok7DH7x4PUq7x
-         +gsYEUptu2SXJ4OnOhb/ZJT0YUImcdgmhpaxpOvQ8TxhOFrCKPEm+NFqw/D3AWWQfhgC
-         Lqsw==
-X-Gm-Message-State: AOAM532LCfBUf12h8i6dTibEU/aj/fv1STKtuVP3j4Ws9fjgv1NTSqJv
-        ICzepemHbmZDcc0Yje04loUixA==
-X-Google-Smtp-Source: ABdhPJzu6dtSeMV3rRz4ufVwNX4oy3lmvg6rRBEM4WSW1CYCt5tL39H9tp7VwplJzx+C40xvVWwSwg==
-X-Received: by 2002:a17:90b:713:b0:1c6:c8f5:6138 with SMTP id s19-20020a17090b071300b001c6c8f56138mr207055pjz.138.1649092463964;
-        Mon, 04 Apr 2022 10:14:23 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id o11-20020a17090aac0b00b001cab1712455sm50391pjq.40.2022.04.04.10.14.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 10:14:23 -0700 (PDT)
-Date:   Mon, 4 Apr 2022 17:14:19 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Maciej S . Szmigiero" <maciej.szmigiero@oracle.com>
-Subject: Re: [PATCH 6/8] KVM: SVM: Re-inject INTn instead of retrying the
- insn on "failure"
-Message-ID: <Yksna20cSyO8MvOq@google.com>
-References: <20220402010903.727604-1-seanjc@google.com>
- <20220402010903.727604-7-seanjc@google.com>
+        Mon, 4 Apr 2022 13:44:10 -0400
+Received: from mx0a-002e3701.pphosted.com (mx0a-002e3701.pphosted.com [148.163.147.86])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCF2A31DE7;
+        Mon,  4 Apr 2022 10:42:13 -0700 (PDT)
+Received: from pps.filterd (m0134422.ppops.net [127.0.0.1])
+        by mx0b-002e3701.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 234E2gkY030861;
+        Mon, 4 Apr 2022 17:41:38 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pps0720;
+ bh=lQMbAI0WUSuh5F+0VfEzQy0lsk/SJtkm5QIg+JH7Q08=;
+ b=R2S9vpmT+QtF3R2OehXzBc1NiaJbxXxsRSxvF7sX9x2noB0HBmR9tWcYteSYDCS65yso
+ 4+bPhKEAVCvT5OaCWxnl5G1zbCS4z0WHt3B/NwwobOtzYCX4xllOmrm8UhTkmGJoZeeI
+ EKKVRsDN3wehvbAkzVyKVTjQw5bQRB8VqhHXvZiylZ8hlv3mfge+gTStfzBDZSYwvRS1
+ LoTXnYiT7ZlIemgpTaWGRMN+z77ayDyD8OiJ2b3hzhQWL/8R/1nfnobuVRzVArFUSXjT
+ zDgKFVIovD8ynSHGApXzoHLVv7VH2oAL1ZHWsolasQUYq58r/PelSKYW6BeFmwO10J+i ZA== 
+Received: from g4t3427.houston.hpe.com (g4t3427.houston.hpe.com [15.241.140.73])
+        by mx0b-002e3701.pphosted.com (PPS) with ESMTPS id 3f7tbexfnt-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 04 Apr 2022 17:41:38 +0000
+Received: from g9t2301.houston.hpecorp.net (g9t2301.houston.hpecorp.net [16.220.97.129])
+        by g4t3427.houston.hpe.com (Postfix) with ESMTP id 135A25C;
+        Mon,  4 Apr 2022 17:41:37 +0000 (UTC)
+Received: from dog.eag.rdlabs.hpecorp.net (dog.eag.rdlabs.hpecorp.net [128.162.243.181])
+        by g9t2301.houston.hpecorp.net (Postfix) with ESMTP id 3608352;
+        Mon,  4 Apr 2022 17:41:36 +0000 (UTC)
+From:   Mike Travis <mike.travis@hpe.com>
+To:     Borislav Petkov <bp@alien8.de>, Ingo Molnar <mingo@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Steve Wahl <steve.wahl@hpe.com>, x86@kernel.org
+Cc:     Mike Travis <mike.travis@hpe.com>,
+        Dimitri Sivanich <dimitri.sivanich@hpe.com>,
+        Andy Shevchenko <andy@infradead.org>,
+        Darren Hart <dvhart@infradead.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Russ Anderson <russ.anderson@hpe.com>,
+        linux-kernel@vger.kernel.org, platform-driver-x86@vger.kernel.org
+Subject: [PATCH v3 2/3] x86/platform/uv: Update TSC sync state for UV5
+Date:   Mon,  4 Apr 2022 12:41:10 -0500
+Message-Id: <20220404174111.262414-3-mike.travis@hpe.com>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20220404174111.262414-1-mike.travis@hpe.com>
+References: <20220404174111.262414-1-mike.travis@hpe.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220402010903.727604-7-seanjc@google.com>
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-GUID: k9v-34RVMVa6jXVCWMkjmyP7IkYKhrKH
+X-Proofpoint-ORIG-GUID: k9v-34RVMVa6jXVCWMkjmyP7IkYKhrKH
+X-HPE-SCL: -1
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-04-04_06,2022-03-31_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
+ suspectscore=0 adultscore=0 bulkscore=0 spamscore=0 lowpriorityscore=0
+ phishscore=0 priorityscore=1501 mlxscore=0 malwarescore=0 clxscore=1015
+ mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2204040100
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Apr 02, 2022, Sean Christopherson wrote:
-> Re-inject INTn software interrupts instead of retrying the instruction if
-> the CPU encountered an intercepted exception while vectoring the INTn,
-> e.g. if KVM intercepted a #PF when utilizing shadow paging.  Retrying the
-> instruction is architecturally wrong e.g. will result in a spurious #DB
-> if there's a code breakpoint on the INT3/O, and lack of re-injection also
-> breaks nested virtualization, e.g. if L1 injects a software interrupt and
-> vectoring the injected interrupt encounters an exception that is
-> intercepted by L0 but not L1.
-> 
-> Signed-off-by: Sean Christopherson <seanjc@google.com>
-> ---
->  arch/x86/kvm/svm/svm.c | 16 +++++++++++++++-
->  1 file changed, 15 insertions(+), 1 deletion(-)
-> 
-> diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-> index ecc828d6921e..00b1399681d1 100644
-> --- a/arch/x86/kvm/svm/svm.c
-> +++ b/arch/x86/kvm/svm/svm.c
-> @@ -3425,14 +3425,24 @@ static void svm_inject_nmi(struct kvm_vcpu *vcpu)
->  static void svm_inject_irq(struct kvm_vcpu *vcpu)
->  {
->  	struct vcpu_svm *svm = to_svm(vcpu);
-> +	u32 type;
->  
->  	WARN_ON(!gif_set(svm));
->  
-> +	if (vcpu->arch.interrupt.soft) {
-> +		if (svm_update_soft_interrupt_rip(vcpu))
-> +			return;
-> +
-> +		type = SVM_EVTINJ_TYPE_SOFT;
-> +	} else {
-> +		type = SVM_EVTINJ_TYPE_INTR;
-> +	}
-> +
->  	trace_kvm_inj_virq(vcpu->arch.interrupt.nr);
->  	++vcpu->stat.irq_injections;
->  
->  	svm->vmcb->control.event_inj = vcpu->arch.interrupt.nr |
-> -		SVM_EVTINJ_VALID | SVM_EVTINJ_TYPE_INTR;
-> +				       SVM_EVTINJ_VALID | type;
->  }
->  
->  void svm_complete_interrupt_delivery(struct kvm_vcpu *vcpu, int delivery_mode,
-> @@ -3787,9 +3797,13 @@ static void svm_complete_interrupts(struct kvm_vcpu *vcpu)
->  	case SVM_EXITINTINFO_TYPE_INTR:
->  		kvm_queue_interrupt(vcpu, vector, false);
->  		break;
-> +	case SVM_EXITINTINFO_TYPE_SOFT:
-> +		kvm_queue_interrupt(vcpu, vector, true);
+Update to not check TSC sync state for uv5+ as it is not available.
+It is assumed that TSC will always be in sync for multiple chassis and
+will pass the tests for the kernel to accept it as the clocksource.
+To disable this check use the kernel start options tsc=reliable
+clocksource=tsc.
 
-I believe this patch is wrong, it needs to also tweak the soft_int_injected logic
-to look for SVM_EXITINTINFO_TYPE_EXEPT _or_ SVM_EXITINTINFO_TYPE_SOFT, e.g. if the
-SOFT-type interrupt doesn't complete due to a non-legacy-exception exit, e.g. #NPF.
+Signed-off-by: Mike Travis <mike.travis@hpe.com>
+Reviewed-by: Dimitri Sivanich <dimitri.sivanich@hpe.com>
+Reviewed-by: Steve Wahl <steve.wahl@hpe.com>
+---
+v2: Update patch description to be more explanatory.
+---
+ arch/x86/kernel/apic/x2apic_uv_x.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
-> +		break;
->  	default:
->  		break;
->  	}
-> +
->  }
+diff --git a/arch/x86/kernel/apic/x2apic_uv_x.c b/arch/x86/kernel/apic/x2apic_uv_x.c
+index f5a48e66e4f5..387d6533549a 100644
+--- a/arch/x86/kernel/apic/x2apic_uv_x.c
++++ b/arch/x86/kernel/apic/x2apic_uv_x.c
+@@ -199,10 +199,16 @@ static void __init uv_tsc_check_sync(void)
+ 	int mmr_shift;
+ 	char *state;
+ 
+-	/* Different returns from different UV BIOS versions */
++	/* UV5+, sync state from bios not available, assumed valid */
++	if (!is_uv(UV2|UV3|UV4)) {
++		pr_debug("UV: TSC sync state for UV5+ assumed valid\n");
++		mark_tsc_async_resets("UV5+");
++		return;
++	}
++
++	/* UV2,3,4, UV BIOS TSC sync state available */
+ 	mmr = uv_early_read_mmr(UVH_TSC_SYNC_MMR);
+-	mmr_shift =
+-		is_uv2_hub() ? UVH_TSC_SYNC_SHIFT_UV2K : UVH_TSC_SYNC_SHIFT;
++	mmr_shift = is_uv2_hub() ? UVH_TSC_SYNC_SHIFT_UV2K : UVH_TSC_SYNC_SHIFT;
+ 	sync_state = (mmr >> mmr_shift) & UVH_TSC_SYNC_MASK;
+ 
+ 	/* Check if TSC is valid for all sockets */
+-- 
+2.26.2
+
