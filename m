@@ -2,144 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F0A9C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35216C433F5
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:12:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355674AbiDDWLk (ORCPT
+        id S1350375AbiDDWK5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 18:11:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55914 "EHLO
+        Mon, 4 Apr 2022 18:10:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383010AbiDDVcj (ORCPT
+        with ESMTP id S1382403AbiDDV3e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 17:32:39 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B1C8125C5
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 14:23:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649107401;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=DfDyjcnnLyc2bSZ6jJAVhGllQHcKHgp84LgGIl4EXgM=;
-        b=O/xKp+aaN01eINcwTDKyUl7NxBl5p8xF0gD53R5bsy6IveDGmG5wJhuJ1FY8pX4TQNnSEF
-        BY09Z92CyZkTnant4pRtPKTIUgibfxGkyCJmn0gXOYOxJiI5fG7nh7tryVBjjLADr6vDDe
-        zS0WUN6tlzAVqVXbH0JbuJGTUYEs2KE=
-Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
- [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-91-XgC7n7FANbSBzhYDzNhhrg-1; Mon, 04 Apr 2022 17:23:20 -0400
-X-MC-Unique: XgC7n7FANbSBzhYDzNhhrg-1
-Received: by mail-qv1-f72.google.com with SMTP id ke13-20020a056214300d00b00443901b0386so8912364qvb.14
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 14:23:20 -0700 (PDT)
+        Mon, 4 Apr 2022 17:29:34 -0400
+Received: from mail-oa1-f44.google.com (mail-oa1-f44.google.com [209.85.160.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80C1B12AAB;
+        Mon,  4 Apr 2022 14:14:11 -0700 (PDT)
+Received: by mail-oa1-f44.google.com with SMTP id 586e51a60fabf-e1e5e8d9faso6978535fac.4;
+        Mon, 04 Apr 2022 14:14:11 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:organization:user-agent:mime-version
-         :content-transfer-encoding;
-        bh=DfDyjcnnLyc2bSZ6jJAVhGllQHcKHgp84LgGIl4EXgM=;
-        b=SPGxmuT8uTmfTYtt/hf3O05wPTzleezG5xeXXVTeqOxZn2OotkH8PhIBR/HbgdIYJ0
-         UUAP8SQH11JW0jjzFkB9unnN767fH+RjvlXAKomQu2AF9PPIrly9f8xxRAruyRo3neH0
-         9LQqrX1P7l4QHNt0/974PZgxLCXlNnD/aKkTnVzQkERlXucXQ7jOq2whRzH5LRmldbqQ
-         fuJokKXhNQnIQRsDX/yTNHFbtrIN+z8nAeiM3eA1BsRYRjqEJWTwd9a7EJOm5mFCAvMt
-         nmlI6BfPuS5DmU4b2JWy3CpUmDjpLo1M+W/rGd6I2Js2pZdTDi3rA9Z1klTd1IN2Wh0O
-         4uIw==
-X-Gm-Message-State: AOAM533z+JhDEBcKlYWtm4W0p+vyf8qfvOYOSmq4shy98RJH0gWO2jGO
-        3E7bZLMw8VtlHIaM5Y/Z5qfwHulwVXeYeRdYruqfWtICkZz2yF9dUM/jEGYOKIVy1iREsDkCMbd
-        aRLy8kWfhk6zcztX9vqzfPOba
-X-Received: by 2002:a05:620a:2487:b0:67b:3113:f83f with SMTP id i7-20020a05620a248700b0067b3113f83fmr179301qkn.604.1649107399545;
-        Mon, 04 Apr 2022 14:23:19 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwA/j5T9RBShOaLAqidOK7ozpdzXqamqb+Gc1f+d2xjbvub/SnKUIk0rJFYk2A/f+j9+SQqNg==
-X-Received: by 2002:a05:620a:2487:b0:67b:3113:f83f with SMTP id i7-20020a05620a248700b0067b3113f83fmr179283qkn.604.1649107399340;
-        Mon, 04 Apr 2022 14:23:19 -0700 (PDT)
-Received: from [192.168.8.138] (pool-71-126-244-162.bstnma.fios.verizon.net. [71.126.244.162])
-        by smtp.gmail.com with ESMTPSA id x6-20020ac86b46000000b002e02be9c0easm8354800qts.69.2022.04.04.14.23.17
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=wVuOXu4skO0KO0zRxHy/3ZvkuPFL8d4lBRDXGGDlSqM=;
+        b=1N/9jHG4OVse3UwStL16iBqNh+PTDxtKx1ThGsbLSxpIF/zlCFIQK11ypLb30AvLbi
+         uIBFjivmdF/xgfGIf7mfbAiBxJi0ADpEpuWzDuLpPlodAPdXc6A6Z5vZr2RSbBkSp+ZZ
+         w037bwWptpQXH7cX0S5IIKyDvkn/gASPcp4u5Oj0HH7M43ASQXYcRjs3S4/ZSQB4XccH
+         zjvNrt0MpC57M6PCEeAukKVr1eYZ0XObG0y8GZM3+VpKPTDWzjmhgf3Wu/1sA4/SLfXJ
+         kx0qPXCPombbF97LegaGW/DnTY0GD3NA11sjFHULIHona/yjt4digYVYnEOc7hFYhbww
+         pG9Q==
+X-Gm-Message-State: AOAM532w/KOdXKWsboqlgtKhT4ZJL8DhdRb7KoLnQdLCK1TGfecixCyP
+        5ASPoJE8Ss3xjK/HC0Ecrg==
+X-Google-Smtp-Source: ABdhPJwW06Gh52XovnnLG6nWBopSe+nYPMxX+MAIwfaTGUWYf0ht+tTGTZwWR4mHIt5utIJLPkL5MA==
+X-Received: by 2002:a05:6870:785:b0:da:ac31:3e04 with SMTP id en5-20020a056870078500b000daac313e04mr66117oab.270.1649106850602;
+        Mon, 04 Apr 2022 14:14:10 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id p12-20020a4a95cc000000b003246cd15eaasm4324908ooi.2.2022.04.04.14.14.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 14:23:18 -0700 (PDT)
-Message-ID: <74509d19d84b879b624fa9f40bc8186fd09e750a.camel@redhat.com>
-Subject: Re: [PATCH] clk: base: fix an incorrect NULL check on list iterator
-From:   Lyude Paul <lyude@redhat.com>
-To:     Xiaomeng Tong <xiam0nd.tong@gmail.com>, bskeggs@redhat.com,
-        kherbst@redhat.com, airlied@linux.ie, daniel@ffwll.ch
-Cc:     martin.peres@free.fr, dri-devel@lists.freedesktop.org,
-        nouveau@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Date:   Mon, 04 Apr 2022 17:23:17 -0400
-In-Reply-To: <20220327075824.11806-1-xiam0nd.tong@gmail.com>
-References: <20220327075824.11806-1-xiam0nd.tong@gmail.com>
-Organization: Red Hat Inc.
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.DarkModeFix.fc35) 
+        Mon, 04 Apr 2022 14:14:10 -0700 (PDT)
+Received: (nullmailer pid 1989352 invoked by uid 1000);
+        Mon, 04 Apr 2022 21:14:09 -0000
+Date:   Mon, 4 Apr 2022 16:14:09 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, Corentin Labbe <clabbe@baylibre.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>
+Subject: Re: [PATCH] dt-bindings: white-space cleanups
+Message-ID: <Yktfof9/qSv4wGRw@robh.at.kernel.org>
+References: <20220402192819.154691-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220402192819.154691-1-krzysztof.kozlowski@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This should probably be prefixed with the title "drm/nouveau/clk:", but I can
-fix that before pushing it.
-
-Reviewed-by: Lyude Paul <lyude@redhat.com>
-
-Will push it to the appropriate repository shortly
-
-
-On Sun, 2022-03-27 at 15:58 +0800, Xiaomeng Tong wrote:
-> The bug is here:
->         if (nvkm_cstate_valid(clk, cstate, max_volt, clk->temp))
->                 return cstate;
+On Sat, 02 Apr 2022 21:28:19 +0200, Krzysztof Kozlowski wrote:
+> Remove trailing white-spaces and trailing blank lines (yamllint when run
+> manually does not like them).
 > 
-> The list iterator value 'cstate' will *always* be set and non-NULL
-> by list_for_each_entry_from_reverse(), so it is incorrect to assume
-> that the iterator value will be unchanged if the list is empty or no
-> element is found (In fact, it will be a bogus pointer to an invalid
-> structure object containing the HEAD). Also it missed a NULL check
-> at callsite and may lead to invalid memory access after that.
-> 
-> To fix this bug, just return 'encoder' when found, otherwise return
-> NULL. And add the NULL check.
-> 
-> Cc: stable@vger.kernel.org
-> Fixes: 1f7f3d91ad38a ("drm/nouveau/clk: Respect voltage limits in
-> nvkm_cstate_prog")
-> Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+> Suggested-by: Corentin Labbe <clabbe@baylibre.com>
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 > ---
->  drivers/gpu/drm/nouveau/nvkm/subdev/clk/base.c | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
+>  .../bindings/clock/samsung,exynos4412-isp-clock.yaml          | 1 -
+>  .../devicetree/bindings/crypto/allwinner,sun8i-ce.yaml        | 1 -
+>  .../devicetree/bindings/display/amlogic,meson-dw-hdmi.yaml    | 1 -
+>  .../bindings/display/bridge/google,cros-ec-anx7688.yaml       | 1 -
+>  Documentation/devicetree/bindings/display/bridge/ps8640.yaml  | 1 -
+>  .../devicetree/bindings/display/imx/nxp,imx8mq-dcss.yaml      | 1 -
+>  .../devicetree/bindings/display/mediatek/mediatek,merge.yaml  | 1 -
+>  .../devicetree/bindings/display/panel/ilitek,ili9341.yaml     | 1 -
+>  .../devicetree/bindings/display/panel/orisetech,otm8009a.yaml | 1 -
+>  .../bindings/display/sprd/sprd,display-subsystem.yaml         | 1 -
+>  Documentation/devicetree/bindings/display/st,stm32-ltdc.yaml  | 1 -
+>  Documentation/devicetree/bindings/dma/st,stm32-dmamux.yaml    | 1 -
+>  Documentation/devicetree/bindings/dma/st,stm32-mdma.yaml      | 1 -
+>  Documentation/devicetree/bindings/gpu/samsung-rotator.yaml    | 1 -
+>  Documentation/devicetree/bindings/hwmon/adt7475.yaml          | 1 -
+>  Documentation/devicetree/bindings/i2c/i2c-gate.yaml           | 1 -
+>  Documentation/devicetree/bindings/i2c/i2c-mux-gpmux.yaml      | 1 -
+>  Documentation/devicetree/bindings/iio/adc/adi,ad7291.yaml     | 1 -
+>  Documentation/devicetree/bindings/iio/dac/lltc,ltc1660.yaml   | 2 +-
+>  Documentation/devicetree/bindings/iommu/samsung,sysmmu.yaml   | 1 -
+>  .../devicetree/bindings/leds/backlight/qcom-wled.yaml         | 2 +-
+>  .../devicetree/bindings/mailbox/amlogic,meson-gxbb-mhu.yaml   | 1 -
+>  Documentation/devicetree/bindings/media/microchip,xisc.yaml   | 1 -
+>  Documentation/devicetree/bindings/net/ti,k3-am654-cpts.yaml   | 1 -
+>  .../devicetree/bindings/net/wireless/qcom,ath11k.yaml         | 2 +-
+>  .../devicetree/bindings/power/amlogic,meson-sec-pwrc.yaml     | 1 -
+>  .../devicetree/bindings/power/supply/cw2015_battery.yaml      | 1 -
+>  .../devicetree/bindings/power/supply/power-supply.yaml        | 1 -
+>  Documentation/devicetree/bindings/power/supply/ti,lp8727.yaml | 1 -
+>  .../devicetree/bindings/power/supply/tps65217-charger.yaml    | 2 +-
+>  .../bindings/regulator/socionext,uniphier-regulator.yaml      | 1 -
+>  .../devicetree/bindings/regulator/st,stm32-vrefbuf.yaml       | 1 -
+>  .../devicetree/bindings/reserved-memory/ramoops.yaml          | 1 -
+>  Documentation/devicetree/bindings/reset/microchip,rst.yaml    | 1 -
+>  Documentation/devicetree/bindings/rng/intel,ixp46x-rng.yaml   | 1 -
+>  Documentation/devicetree/bindings/serial/sprd-uart.yaml       | 2 +-
+>  .../devicetree/bindings/soc/amlogic/amlogic,canvas.yaml       | 1 -
+>  Documentation/devicetree/bindings/sound/adi,adau1372.yaml     | 1 -
+>  .../devicetree/bindings/sound/amlogic,gx-sound-card.yaml      | 1 -
+>  Documentation/devicetree/bindings/sound/maxim,max98520.yaml   | 1 -
+>  Documentation/devicetree/bindings/sound/mchp,spdifrx.yaml     | 2 +-
+>  Documentation/devicetree/bindings/sound/mchp,spdiftx.yaml     | 2 +-
+>  .../devicetree/bindings/sound/nvidia,tegra-audio-rt5640.yaml  | 1 -
+>  .../devicetree/bindings/sound/samsung,aries-wm8994.yaml       | 1 -
+>  Documentation/devicetree/bindings/sound/samsung,odroid.yaml   | 1 -
+>  Documentation/devicetree/bindings/sound/tas2562.yaml          | 1 -
+>  Documentation/devicetree/bindings/sound/tas2770.yaml          | 1 -
+>  .../devicetree/bindings/spi/amlogic,meson-gx-spicc.yaml       | 1 -
+>  .../devicetree/bindings/spi/amlogic,meson6-spifc.yaml         | 1 -
+>  Documentation/devicetree/bindings/spi/renesas,hspi.yaml       | 1 -
+>  Documentation/devicetree/bindings/usb/dwc2.yaml               | 4 ++--
+>  Documentation/devicetree/bindings/usb/smsc,usb3503.yaml       | 2 +-
+>  52 files changed, 10 insertions(+), 53 deletions(-)
 > 
-> diff --git a/drivers/gpu/drm/nouveau/nvkm/subdev/clk/base.c
-> b/drivers/gpu/drm/nouveau/nvkm/subdev/clk/base.c
-> index 57199be082fd..c2b5cc5f97ed 100644
-> --- a/drivers/gpu/drm/nouveau/nvkm/subdev/clk/base.c
-> +++ b/drivers/gpu/drm/nouveau/nvkm/subdev/clk/base.c
-> @@ -135,10 +135,10 @@ nvkm_cstate_find_best(struct nvkm_clk *clk, struct
-> nvkm_pstate *pstate,
->  
->         list_for_each_entry_from_reverse(cstate, &pstate->list, head) {
->                 if (nvkm_cstate_valid(clk, cstate, max_volt, clk->temp))
-> -                       break;
-> +                       return cstate;
->         }
->  
-> -       return cstate;
-> +       return NULL;
->  }
->  
->  static struct nvkm_cstate *
-> @@ -169,6 +169,8 @@ nvkm_cstate_prog(struct nvkm_clk *clk, struct
-> nvkm_pstate *pstate, int cstatei)
->         if (!list_empty(&pstate->list)) {
->                 cstate = nvkm_cstate_get(clk, pstate, cstatei);
->                 cstate = nvkm_cstate_find_best(clk, pstate, cstate);
-> +               if (!cstate)
-> +                       return -EINVAL;
->         } else {
->                 cstate = &pstate->base;
->         }
 
--- 
-Cheers,
- Lyude Paul (she/her)
- Software Engineer at Red Hat
-
+Applied, thanks!
