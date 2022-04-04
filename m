@@ -2,93 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6C7DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 15:23:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7683C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 15:24:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378538AbiDDPZN (ORCPT
+        id S1356254AbiDDP0g (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 11:25:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36980 "EHLO
+        Mon, 4 Apr 2022 11:26:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378539AbiDDPZD (ORCPT
+        with ESMTP id S239630AbiDDP0e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 11:25:03 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 452393E5E8;
-        Mon,  4 Apr 2022 08:23:04 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: nfraprado)
-        with ESMTPSA id BB1741F44DDE
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1649085782;
-        bh=qbJezh9FVSlhATk9a76wow3aDuv/GZNqoYfnfWao4EU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=R7qKfLTC3UmDAuTrk7Sdcc/sJ1Lpxi0Ca5GwE67PS2YO22fgBBcDd0D7TpqZadE8o
-         XGDCbTylFJGGnGuT2B1b5F0SyoKVcubPoi/pJOq0/9RPpumwbMmIHknuX6MErUo7PQ
-         sLZZIzPmq2//Lu3qhFR4NxGCkryoWI+uzVu0NcE3TZGh/MYJqcAB1A4V4naOrLYoJ0
-         byW0eSj7opuZOsNgMm1+mAPtiplmrzw0nErUW0A6B93An+DljdSfvKGtMStmEi+3oU
-         XDuDd/hThpRzIbLLMZ3QmMcuh7bvAhDzkh5daBThqVAzEh1FGIbuMa8i2qNTUN1d5j
-         SPd2y3bEPXEmg==
-Date:   Mon, 4 Apr 2022 11:22:56 -0400
-From:   =?utf-8?B?TsOtY29sYXMgRi4gUi4gQS4=?= Prado 
-        <nfraprado@collabora.com>
-To:     Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>, kernel@collabora.com,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Chunfeng Yun <chunfeng.yun@mediatek.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Tinghan Shen <tinghan.shen@mediatek.com>,
-        Yunfei Dong <yunfei.dong@mediatek.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-mediatek@lists.infradead.org,
-        linux-remoteproc@vger.kernel.org, linux-usb@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>
-Subject: Re: [PATCH v1 0/3] Fixes for Mediatek dt-bindings
-Message-ID: <20220404152256.mkksr4oqjt65ytlf@notapiano>
-References: <20220225225854.81038-1-nfraprado@collabora.com>
+        Mon, 4 Apr 2022 11:26:34 -0400
+Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 816C3193EA
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 08:24:38 -0700 (PDT)
+Received: by mail-yb1-xb29.google.com with SMTP id y38so18211732ybi.8
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 08:24:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=GYOFxbnaPkCaL8rvz60xVT97yR/ZBBL4rwrJFtUiBYk=;
+        b=HCQKc+ecg4fdHb/+0UBrcWb9LzzGVNtRzOT37fNF/z9V/H5DyHu/DxS+IXrmYbSPrv
+         leDKgRZBCQqQ2C1bKkyAYSPjo2SfdzzrSBUGbJPnZDYdVNsZsytDrjEOGyiHBTty9YwE
+         G03EQ3IgVey/d8ZfUSa6MoL34bHO/IUM3izC2gZ6714JJjrKAit78+2omvGdyn3fadYC
+         rUGBdtGs6YwOLEebecxbgoBWihHPsimiz/m8v4MNxhvAwjcO57lf6YWtgSS8O18HudDp
+         7795/xu8xMzDyaYUgpEwuhpwJVgFiXiI3HWNnc7crUPTHKkDsVBWp8i+abqteU/zhjwi
+         s1lw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=GYOFxbnaPkCaL8rvz60xVT97yR/ZBBL4rwrJFtUiBYk=;
+        b=rIADeSL/j6F/+YO9xbkvflmyQI90657vIXlcpTKV4p9c2HxZ37ZtqLFHM3sXgWCMHe
+         r7ArzkLjBB7J4UMYqjzOBB0hWTdvOp6xfubfut4znW8QMoF/CDVC2DRrKQlODmnYjJFY
+         y36hm5dB/atROV/ezQpEJIYAEstbF0EfVkn/o6GtiwyXjvprSSu8OGBSHZtjK4Rmo2Y+
+         ZeAdcFIaiLoS5i09Wgu47LP1Pig8/9o6hEjHR8/H1I33sJ/hR36m5by/iogwVmUJkeIA
+         cr/a4Lhh04CYnnlROWQCQSZnLRecdf9bYOcsO9phBNeJ3PNFLK1s+I8F0UP5yXyuqw48
+         NTZA==
+X-Gm-Message-State: AOAM530gL7flxMfT2/bcl2dKFRTZl0mKIb6A/tpM/6AAf7e378HaeBAT
+        y2gQOabGLVg3buUB9SiEGrLqRJjSCixBmtADEEFOaA==
+X-Google-Smtp-Source: ABdhPJxWaXmiS32u6GZgE5itWQUf6xO4YxJteY5qn5GcXvbhiBC7ACm+T1qc3Dw/YD54l3aWcO9r6pbJ5soRPB9o7Gs=
+X-Received: by 2002:a25:e70e:0:b0:634:1a47:4ff2 with SMTP id
+ e14-20020a25e70e000000b006341a474ff2mr275019ybh.89.1649085877745; Mon, 04 Apr
+ 2022 08:24:37 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220225225854.81038-1-nfraprado@collabora.com>
+References: <20220403024928.4125-1-songmuchun@bytedance.com>
+ <20220404091957.GA22790@willie-the-truck> <CAMZfGtU=4aFmbwyyh+5=M3iaqox7X7yaoPP+r=WJO9dReaNb-g@mail.gmail.com>
+ <de6529b0-9360-cf4a-4233-ee1498b44176@linux.ibm.com>
+In-Reply-To: <de6529b0-9360-cf4a-4233-ee1498b44176@linux.ibm.com>
+From:   Muchun Song <songmuchun@bytedance.com>
+Date:   Mon, 4 Apr 2022 23:24:01 +0800
+Message-ID: <CAMZfGtXieqZroJfvgV6eVM+ux0P28sjz6NMtZsNwkvdebBoztQ@mail.gmail.com>
+Subject: Re: [PATCH] arm64: mm: fix pmd_leaf()
+To:     Aneesh Kumar K V <aneesh.kumar@linux.ibm.com>
+Cc:     Will Deacon <will@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        steven.price@arm.com, lengxujun2007@126.com,
+        Arnd Bergmann <arnd@arndb.de>,
+        LAK <linux-arm-kernel@lists.infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Muchun Song <smuchun@gmail.com>,
+        Xiongchun duan <duanxiongchun@bytedance.com>,
+        Qian Cai <quic_qiancai@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Matthias,
+On Mon, Apr 4, 2022 at 10:10 PM Aneesh Kumar K V
+<aneesh.kumar@linux.ibm.com> wrote:
+>
+> On 4/4/22 5:10 PM, Muchun Song wrote:
+> > On Mon, Apr 4, 2022 at 5:20 PM Will Deacon <will@kernel.org> wrote:
+> >>
+> >> On Sun, Apr 03, 2022 at 10:49:28AM +0800, Muchun Song wrote:
+> >>> The pmd_leaf() is used to test a leaf mapped PMD, however, it misses
+> >>> the PROT_NONE mapped PMD on arm64.  Fix it.  A real world issue [1]
+> >>> caused by this was reported by Qian Cai.
+> >>>
+> >>> Link: https://patchwork.kernel.org/comment/24798260/ [1]
+> >>> Fixes: 8aa82df3c123 ("arm64: mm: add p?d_leaf() definitions")
+> >>> Reported-by: Qian Cai <quic_qiancai@quicinc.com>
+> >>> Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+> >>> ---
+> >>>   arch/arm64/include/asm/pgtable.h | 2 +-
+> >>>   1 file changed, 1 insertion(+), 1 deletion(-)
+> >>>
+> >>> diff --git a/arch/arm64/include/asm/pgtable.h b/arch/arm64/include/asm/pgtable.h
+> >>> index 94e147e5456c..09eaae46a19b 100644
+> >>> --- a/arch/arm64/include/asm/pgtable.h
+> >>> +++ b/arch/arm64/include/asm/pgtable.h
+> >>> @@ -535,7 +535,7 @@ extern pgprot_t phys_mem_access_prot(struct file *file, unsigned long pfn,
+> >>>                                 PMD_TYPE_TABLE)
+> >>>   #define pmd_sect(pmd)                ((pmd_val(pmd) & PMD_TYPE_MASK) == \
+> >>>                                 PMD_TYPE_SECT)
+> >>> -#define pmd_leaf(pmd)                pmd_sect(pmd)
+> >>> +#define pmd_leaf(pmd)                (pmd_present(pmd) && !(pmd_val(pmd) & PMD_TABLE_BIT))
+> >>>   #define pmd_bad(pmd)         (!pmd_table(pmd))
+> >>>
+> >>>   #define pmd_leaf_size(pmd)   (pmd_cont(pmd) ? CONT_PMD_SIZE : PMD_SIZE)
+> >>
+> >> A bunch of the users of pmd_leaf() already check pmd_present() -- is it
+> >> documented that we need to handle this check inside the macro? afaict x86
+> >> doesn't do this either.
+>
+>
+> ppc64 also doesn't do a pmd_present check.
+>
+> >>
+> >
+> > arm64 is different from x86 here. pmd_leaf() could return true for
+> > the none pmd without pmd_present() check, the check of
+> > pmd_present() aims to exclude the pmd_none() case.  However,
+> > it could work properly on x86 without pmd_present() or pmd_none().
+> > So we don't see pmd_present() or pmd_none() check in pmd_leaf().
+> > For this reason, I think this check is necessary.
+> >
+> > BTW, there are some users of pmd_leaf() (e.g. apply_to_pmd_range,
+> > walk_pmd_range, ptdump_pmd_entry) which do not check pmd_present()
+> > or pmd_none() before the call of pmd_leaf().  So it is also necessary
+> > to add the check.
+> >
+>
+>
+> I would expect pmd_leaf check to return true, if the said pmd page table
+> entry can point to a leaf page table entry which can also be a not
+> present page table entry?
+>
 
-Maybe you could pick this series through your tree? It addresses some dtc
-warnings that are introduced with the new nodes in mt8192.dtsi that you just
-picked up on your v5.18-next/dts64 branch.
+All right. In order to exclude the pmd_none() case.  How about
+the following code?
 
-Thanks,
-Nícolas
+#define pmd_leaf(pmd)                (pmd_val(pmd) && !(pmd_val(pmd) &
+PMD_TABLE_BIT))
 
-On Fri, Feb 25, 2022 at 05:58:51PM -0500, Nícolas F. R. A. Prado wrote:
-> 
-> This series has some fixes for Mediatek dt-bindings. It solves some
-> warnings printed by dtbs_check, both for already merged Devicetrees, as
-> well as some that would be introduced by the changes to mt8192.dtsi in
-> [1].
-> 
-> [1] https://lore.kernel.org/all/20220218091633.9368-1-allen-kh.cheng@mediatek.com/
-> 
-> 
-> Nícolas F. R. A. Prado (3):
->   dt-bindings: remoteproc: mediatek: Add interrupts property to mtk,scp
->   dt-bindings: usb: mtk-xhci: Allow wakeup interrupt-names to be
->     optional
->   media: dt-bindings: mtk-vcodec-encoder: Add power-domains property
-> 
->  .../devicetree/bindings/media/mediatek,vcodec-encoder.yaml     | 3 +++
->  Documentation/devicetree/bindings/remoteproc/mtk,scp.yaml      | 3 +++
->  Documentation/devicetree/bindings/usb/mediatek,mtk-xhci.yaml   | 1 +
->  3 files changed, 7 insertions(+)
-> 
-> -- 
-> 2.35.1
+Thanks.
