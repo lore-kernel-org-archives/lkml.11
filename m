@@ -2,134 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28210C43217
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 06:21:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3126C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 06:25:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377573AbiDDGXM (ORCPT
+        id S1348144AbiDDG1X (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 02:23:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44506 "EHLO
+        Mon, 4 Apr 2022 02:27:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377432AbiDDGWe (ORCPT
+        with ESMTP id S229571AbiDDG1T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 02:22:34 -0400
-Received: from conuserg-08.nifty.com (conuserg-08.nifty.com [210.131.2.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A2A937A38;
-        Sun,  3 Apr 2022 23:20:34 -0700 (PDT)
-Received: from grover.. (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
-        by conuserg-08.nifty.com with ESMTP id 2346K1Bl008244;
-        Mon, 4 Apr 2022 15:20:03 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-08.nifty.com 2346K1Bl008244
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1649053203;
-        bh=evk6/aYPuF2OY3xkmu3cNWpVgpoeGt39vDeD/Q5in9A=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qN8rma96BAx4qoBdu4TnTxvEqbo++kPrCIAYSURH3m+VD4ye6kWp4TOPDWkN6jIeR
-         2RQzITJQ0Ej5T3duadfncDESM66XaGPayX8VZD5iFApNjWUqrj8Kbl3cYzanZ7R6iD
-         OnHFIMXPiwHTRziYWG5WVafQlzU/RBZgPDY5mIXYt8mjFfvk4v6WIxJvq077XT0+3+
-         LT3IyOny5PRlMyW3yGfuNI0sEYPdQNMd1aGMfPeeWnmSaHL9iAEWqdR8A3GkOUwBvh
-         zxvo6vsPB/pluueOhqDf9pgvXQUBR5wcAlMKsnsZoAZ1pIAVJDL9LhBPDHvOkzBvS8
-         4TjAEecDSY3Rg==
-X-Nifty-SrcIP: [133.32.177.133]
-From:   Masahiro Yamada <masahiroy@kernel.org>
-To:     Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org
-Cc:     linux-kbuild@vger.kernel.org, linux-arch@vger.kernel.org,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH 2/8] kbuild: prevent exported headers from including <stdlib.h>, <stdbool.h>
-Date:   Mon,  4 Apr 2022 15:19:42 +0900
-Message-Id: <20220404061948.2111820-3-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220404061948.2111820-1-masahiroy@kernel.org>
-References: <20220404061948.2111820-1-masahiroy@kernel.org>
+        Mon, 4 Apr 2022 02:27:19 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 671F317ABF
+        for <linux-kernel@vger.kernel.org>; Sun,  3 Apr 2022 23:25:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649053523; x=1680589523;
+  h=message-id:date:mime-version:to:cc:references:from:
+   subject:in-reply-to:content-transfer-encoding;
+  bh=WCWYLbvQWjRu7A6NEoSyQR8/bykm58WyIQUGyczn5Hs=;
+  b=IyG80wh5toRphyd5quYkdl0HbyB8ntwbVTBSJgKdu18sIf+XvmDVe5u5
+   EEdZfdKxr6Alcz2GoFxe7caUQc3eHKE/KmMSQmlvTI6J38DXKofG038Dl
+   ckfyTAXN/wGWIVtTXR/VcjeD4SK3EpOhHwXLIehvP6Gm2aadapV+vUA31
+   ba3F0Vac3sX6M4qNl8zzCGBMr5+qQiETR5RfDCjVD9ffUZ52C9Qu2eo7X
+   6vpz4FqGFb1B/hNgVPreQsNoB1dcs9MAQ9zTVvsZ+ODSaHlgULl5NHEOq
+   m23+rynXHgB79KUjdWpmuV8migQWezo2Q106+1bKSJLCkUaMjwoBKhG2S
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10306"; a="260435797"
+X-IronPort-AV: E=Sophos;i="5.90,233,1643702400"; 
+   d="scan'208";a="260435797"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Apr 2022 23:25:22 -0700
+X-IronPort-AV: E=Sophos;i="5.90,233,1643702400"; 
+   d="scan'208";a="522916384"
+Received: from petersun-mobl1.amr.corp.intel.com (HELO [10.209.86.175]) ([10.209.86.175])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Apr 2022 23:25:22 -0700
+Message-ID: <faee19b5-5ee2-d6e1-63fe-c8a7fb1f9d32@intel.com>
+Date:   Sun, 3 Apr 2022 23:25:23 -0700
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Content-Language: en-US
+To:     Kai Huang <kai.huang@intel.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        luto@kernel.org, peterz@infradead.org
+Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
+        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
+        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
+        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
+        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
+        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
+        thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
+        linux-kernel@vger.kernel.org,
+        Dave Hansen <dave.hansen@linux.intel.com>
+References: <20220318153048.51177-1-kirill.shutemov@linux.intel.com>
+ <20220318153048.51177-31-kirill.shutemov@linux.intel.com>
+ <7c507b609a6e742ebdcd61ea204d5f05ee0b3b35.camel@intel.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+Subject: Re: [PATCHv7 30/30] Documentation/x86: Document TDX kernel
+ architecture
+In-Reply-To: <7c507b609a6e742ebdcd61ea204d5f05ee0b3b35.camel@intel.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some UAPI headers included <stdlib.h>, like this:
+On 4/3/22 21:32, Kai Huang wrote:
+> This is not the best way I believe.  I think we have two options here:
+> 1) Having dedicated tdx_guest.rst and tdx_host.rst
+> 2) Having a single tdx.rst to cover both TDX guest and host materials.
+> 
+> I don't know which way is better, perhaps 2).  
+> 
+> Kirill,
+> 
+> If 2) is better, could we add an additional level of menu to represent "TDX
+> guest support" and make all materials as sub-menu of it, if you need to send out
+> v8?
 
-  #ifndef __KERNEL__
-  #include <stdlib.h>
-  #endif
-
-As it turned out, they just included it for no good reason.
-
-After some fixes, now I can compile-test UAPI headers
-(CONFIG_UAPI_HEADER_TEST=y) without including <stdlib.h> from the
-system header search paths.
-
-To avoid somebody getting it back again, this commit adds the dummy
-header, usr/dummy-include/stdlib.h
-
-I added $(srctree)/usr/dummy-include to the header search paths.
-Because it is searched before the system directories, if someone
-tries to include <stdlib.h>, they will see the error message.
-
-While I am here, I also replaced $(objtree)/usr/include with $(obj),
-but it has no functional change.
-
-If we can make kernel headers self-contained (that is, none of exported
-kernel headers includes system headers), we will be able to add the
--nostdinc flag, but that is much far from where we stand now.
-
-As a realistic solution, we can ban header inclusion individually by
-putting a dummy header into usr/dummy-include/.
-
-Currently, no header include <stdbool.h>. I put it as well before somebody
-attempts to use it.
-
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
-
- usr/dummy-include/stdbool.h | 7 +++++++
- usr/dummy-include/stdlib.h  | 7 +++++++
- usr/include/Makefile        | 2 +-
- 3 files changed, 15 insertions(+), 1 deletion(-)
- create mode 100644 usr/dummy-include/stdbool.h
- create mode 100644 usr/dummy-include/stdlib.h
-
-diff --git a/usr/dummy-include/stdbool.h b/usr/dummy-include/stdbool.h
-new file mode 100644
-index 000000000000..54ff9e9c90ac
---- /dev/null
-+++ b/usr/dummy-include/stdbool.h
-@@ -0,0 +1,7 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+#ifndef _STDBOOL_H
-+#define _STDBOOL_H
-+
-+#error "Please do not include <stdbool.h> from exported headers"
-+
-+#endif /* _STDBOOL_H */
-diff --git a/usr/dummy-include/stdlib.h b/usr/dummy-include/stdlib.h
-new file mode 100644
-index 000000000000..e8c21888e371
---- /dev/null
-+++ b/usr/dummy-include/stdlib.h
-@@ -0,0 +1,7 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+#ifndef _STDLIB_H
-+#define _STDLIB_H
-+
-+#error "Please do not include <stdlib.h> from exported headers"
-+
-+#endif /* _STDLIB_H */
-diff --git a/usr/include/Makefile b/usr/include/Makefile
-index fa9819e022b7..7740777b49f8 100644
---- a/usr/include/Makefile
-+++ b/usr/include/Makefile
-@@ -15,7 +15,7 @@ UAPI_CFLAGS += $(filter -m32 -m64 --target=%, $(KBUILD_CFLAGS))
- # USERCFLAGS might contain sysroot location for CC.
- UAPI_CFLAGS += $(USERCFLAGS)
- 
--override c_flags = $(UAPI_CFLAGS) -Wp,-MMD,$(depfile) -I$(objtree)/usr/include
-+override c_flags = $(UAPI_CFLAGS) -Wp,-MMD,$(depfile) -I $(obj) -I $(srctree)/usr/dummy-include
- 
- # The following are excluded for now because they fail to build.
- #
--- 
-2.32.0
-
+If the host support means that this needs to be reorganized, then the
+host support patches can do that.  Let's not make this more complicated
+than it has to be.
