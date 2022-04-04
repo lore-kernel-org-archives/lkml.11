@@ -2,216 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E0DDC4167B
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:18:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17092C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:18:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379575AbiDDVT5 (ORCPT
+        id S1379603AbiDDVUE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:19:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46926 "EHLO
+        Mon, 4 Apr 2022 17:20:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379281AbiDDQv6 (ORCPT
+        with ESMTP id S1380661AbiDDUus (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 12:51:58 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60D8736147;
-        Mon,  4 Apr 2022 09:50:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649091002; x=1680627002;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=CVIhTfo5JUw9yYQ8zAq568tJnX54tm4gwwEY7XOUi6s=;
-  b=YW9Uw9shhDyAQPyBKzoxS1QKs6u1hZFCNDJIbkMhghXWXEsOueA6P3pn
-   MfJrfNNOrskWkvfPfDmPfovMUZNIVt6c/RWbWvE4GXEEs/fiJtPslGpe9
-   CFvAheJXweGtAOwgrmvuQ5Wh7dlVvMzJh7OBkQLHR8IXcRLfTkvQ5mYNB
-   EXrkUqYRt9EsAZNQ//mqKzFv+V286wiGUFnna+35SbbWthdgwyakMHY9K
-   iSVT/td1Gxfw4QjEqqnqSctAC3kJQHfxgXHjG8V3FWPWyP64FcH1L8Bmj
-   8snYmDyt1OGM6Pje4tWFLXWcfBp0OT8kGXalfBU4lsT9jY8+YRBlEMFBx
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="323734060"
-X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
-   d="scan'208";a="323734060"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:49:51 -0700
-X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
-   d="scan'208";a="523105231"
-Received: from rchatre-ws.ostc.intel.com ([10.54.69.144])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:49:51 -0700
-From:   Reinette Chatre <reinette.chatre@intel.com>
-To:     dave.hansen@linux.intel.com, jarkko@kernel.org, tglx@linutronix.de,
-        bp@alien8.de, luto@kernel.org, mingo@redhat.com,
-        linux-sgx@vger.kernel.org, x86@kernel.org
-Cc:     seanjc@google.com, kai.huang@intel.com, cathy.zhang@intel.com,
-        cedric.xing@intel.com, haitao.huang@intel.com,
-        mark.shanahan@intel.com, hpa@zytor.com,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH V3 27/30] selftests/sgx: Test faulty enclave behavior
-Date:   Mon,  4 Apr 2022 09:49:35 -0700
-Message-Id: <2532238125e82343e26a6610241c7926e620527f.1648847675.git.reinette.chatre@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1648847675.git.reinette.chatre@intel.com>
-References: <cover.1648847675.git.reinette.chatre@intel.com>
+        Mon, 4 Apr 2022 16:50:48 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B824BE3D
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 13:48:51 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id bq8so22459212ejb.10
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 13:48:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=J4LkMGmqh/IpZ1iCRfWTzUc90cCZBJCLLtl1EUpG/xY=;
+        b=ZQN200a6cw/b5AfpR3Dx+RPgXMa7VenkpOgBGHkNCRIdT7BMrcE0L9W5n6V1sqV/GN
+         VEjoVu8+TawE4B49MAioeNQyQLC/a897Fb1sB9R1KZuQUS3OlvyDSbc5eAKznWJj8PK7
+         jSNFpYCDeMwCo9Qds7kiuAe30vY6FftnulC1FY/DcibM1/4NwlaCB99KMPb9vY3Uq9EY
+         9sFAOKc5yrHx0I/XzPoj6ymiCprXHlzBc/gIgtxhURExOL4+jiBD8up6omNaJlQzZSJ9
+         LFQH5DJZkK9mKsQlf094jh1SEs39EQjlHqoakvAbhg9dykYq9DUfruVI3jSlCGiezjIw
+         qw7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=J4LkMGmqh/IpZ1iCRfWTzUc90cCZBJCLLtl1EUpG/xY=;
+        b=ow1yFeRpF6fhpmXqG+AAtrq/oKrSxeQfZg8kerB5JHS/xffQUXJKCZd/c/QMqOjZSp
+         RTa+x79yk3GHu5mt2tO6eZEiDFQGJhFBhewwUaEbFRa+4GKS3a1T/cMajw+AhgjgAsqD
+         CeejOD6x8zxoDLqGCAj1gb+mCIUvQ3TCYWtF7yXhuRypVKPR2onxyd6DmtKuHCuy56Xt
+         gU6EN8REN1VH2Ifk5BKc+r4//qiRPHIdNqkMOQxQURDmUop9KKkMxpa61+D+7ChoCuWO
+         lpE4opC4WL1f69PGi/m5qDpHMM5JNYf6vepNv8BTOhY6PkygO38MDJ5PpProMQTm4HTK
+         V6RA==
+X-Gm-Message-State: AOAM530rpGo+WOrz6s+hFPUIWTrWMnqayCAZ4tPbWQOF1YrWpFnqL7Wr
+        zifVwVtpE17wcdZmsB/hqZs=
+X-Google-Smtp-Source: ABdhPJyOceuk4zKyHG56ftwcYbV0B24dltyTGZZA6cCalDmcC0XzzoKQDp1oRM93oXIPqNXKlmUrlQ==
+X-Received: by 2002:a17:907:7ea6:b0:6db:ca53:9b0a with SMTP id qb38-20020a1709077ea600b006dbca539b0amr1857492ejc.763.1649105329789;
+        Mon, 04 Apr 2022 13:48:49 -0700 (PDT)
+Received: from matrix-ESPRIMO-P710 (p54a074e9.dip0.t-ipconnect.de. [84.160.116.233])
+        by smtp.gmail.com with ESMTPSA id x3-20020a50d9c3000000b0041c8ce4bcd7sm4529339edj.63.2022.04.04.13.48.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Apr 2022 13:48:49 -0700 (PDT)
+Date:   Mon, 4 Apr 2022 22:48:47 +0200
+From:   Philipp Hortmann <philipp.g.hortmann@gmail.com>
+To:     Forest Bond <forest@alittletooquiet.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 3/6] staging: vt6655: Rename macro arguments with CamelCase
+Message-ID: <70cce6671976e454830c12d6d7977a5fe816a287.1649103348.git.philipp.g.hortmann@gmail.com>
+References: <cover.1649103348.git.philipp.g.hortmann@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cover.1649103348.git.philipp.g.hortmann@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Removing a page from an initialized enclave involves three steps:
-first the user requests changing the page type to SGX_PAGE_TYPE_TRIM
-via an ioctl(), on success the ENCLU[EACCEPT] instruction needs to be
-run from within the enclave to accept the page removal, finally the
-user requests page removal to be completed via an ioctl(). Only after
-acceptance (ENCLU[EACCEPT]) from within the enclave can the kernel
-remove the page from a running enclave.
+Rename macro arguments with CamelCase in upc.h as
+they are not accepted by checkpatch.pl
+Removed datatype in macro arguments.
 
-Test the behavior when the user's request to change the page type
-succeeds, but the ENCLU[EACCEPT] instruction is not run before the
-ioctl() requesting page removal is run. This should not be permitted.
+Since there are more than one checkpatch issue per line,
+more steps are rquired to fix.
 
-Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
+Signed-off-by: Philipp Hortmann <philipp.g.hortmann@gmail.com>
 ---
-Changes since V2:
-- Rename struct sgx_enclave_modt -> struct sgx_enclave_modify_type
+V1 -> V2: This patch was 4/7 and is now 3/6
+---
+ drivers/staging/vt6655/upc.h | 36 ++++++++++++++++++------------------
+ 1 file changed, 18 insertions(+), 18 deletions(-)
 
-Changes since V1:
-- Update to support ioctl() name change (SGX_IOC_PAGE_MODT ->
-  SGX_IOC_ENCLAVE_MODIFY_TYPE) and provide secinfo as parameter instead
-  of just page type (Jarkko).
-- Update test to reflect page removal ioctl() and struct name change:
-  SGX_IOC_PAGE_REMOVE->SGX_IOC_ENCLAVE_REMOVE_PAGES,
-  struct sgx_page_remove -> struct sgx_enclave_remove_pages (Jarkko).
-- Use ioctl() instead of ioctl in text (Dave).
-
- tools/testing/selftests/sgx/main.c | 116 +++++++++++++++++++++++++++++
- 1 file changed, 116 insertions(+)
-
-diff --git a/tools/testing/selftests/sgx/main.c b/tools/testing/selftests/sgx/main.c
-index 17ade940425b..f6a8e2dd4a23 100644
---- a/tools/testing/selftests/sgx/main.c
-+++ b/tools/testing/selftests/sgx/main.c
-@@ -1444,4 +1444,120 @@ TEST_F(enclave, tcs_create)
- 	munmap(addr, 3 * PAGE_SIZE);
- }
+diff --git a/drivers/staging/vt6655/upc.h b/drivers/staging/vt6655/upc.h
+index b374db5fca81..f080a25e6cdf 100644
+--- a/drivers/staging/vt6655/upc.h
++++ b/drivers/staging/vt6655/upc.h
+@@ -20,34 +20,34 @@
  
-+/*
-+ * Ensure sane behavior if user requests page removal, does not run
-+ * EACCEPT from within enclave but still attempts to finalize page removal
-+ * with the SGX_IOC_ENCLAVE_REMOVE_PAGES ioctl(). The latter should fail
-+ * because the removal was not EACCEPTed from within the enclave.
-+ */
-+TEST_F(enclave, remove_added_page_no_eaccept)
-+{
-+	struct sgx_enclave_remove_pages remove_ioc;
-+	struct encl_op_get_from_addr get_addr_op;
-+	struct sgx_enclave_modify_type modt_ioc;
-+	struct encl_op_put_to_addr put_addr_op;
-+	struct sgx_secinfo secinfo;
-+	unsigned long data_start;
-+	int ret, errno_save;
-+
-+	ASSERT_TRUE(setup_test_encl(ENCL_HEAP_SIZE_DEFAULT, &self->encl, _metadata));
-+
-+	memset(&self->run, 0, sizeof(self->run));
-+	self->run.tcs = self->encl.encl_base;
-+
-+	/*
-+	 * Hardware (SGX2) and kernel support is needed for this test. Start
-+	 * with check that test has a chance of succeeding.
-+	 */
-+	memset(&modt_ioc, 0, sizeof(modt_ioc));
-+	ret = ioctl(self->encl.fd, SGX_IOC_ENCLAVE_MODIFY_TYPE, &modt_ioc);
-+
-+	if (ret == -1) {
-+		if (errno == ENOTTY)
-+			SKIP(return, "Kernel does not support SGX_IOC_ENCLAVE_MODIFY_TYPE ioctl()");
-+		else if (errno == ENODEV)
-+			SKIP(return, "System does not support SGX2");
-+	}
-+
-+	/*
-+	 * Invalid parameters were provided during sanity check,
-+	 * expect command to fail.
-+	 */
-+	EXPECT_EQ(ret, -1);
-+
-+	/*
-+	 * Page that will be removed is the second data page in the .data
-+	 * segment. This forms part of the local encl_buffer within the
-+	 * enclave.
-+	 */
-+	data_start = self->encl.encl_base +
-+		     encl_get_data_offset(&self->encl) + PAGE_SIZE;
-+
-+	/*
-+	 * Sanity check that page at @data_start is writable before
-+	 * removing it.
-+	 *
-+	 * Start by writing MAGIC to test page.
-+	 */
-+	put_addr_op.value = MAGIC;
-+	put_addr_op.addr = data_start;
-+	put_addr_op.header.type = ENCL_OP_PUT_TO_ADDRESS;
-+
-+	EXPECT_EQ(ENCL_CALL(&put_addr_op, &self->run, true), 0);
-+
-+	EXPECT_EEXIT(&self->run);
-+	EXPECT_EQ(self->run.exception_vector, 0);
-+	EXPECT_EQ(self->run.exception_error_code, 0);
-+	EXPECT_EQ(self->run.exception_addr, 0);
-+
-+	/*
-+	 * Read memory that was just written to, confirming that data
-+	 * previously written (MAGIC) is present.
-+	 */
-+	get_addr_op.value = 0;
-+	get_addr_op.addr = data_start;
-+	get_addr_op.header.type = ENCL_OP_GET_FROM_ADDRESS;
-+
-+	EXPECT_EQ(ENCL_CALL(&get_addr_op, &self->run, true), 0);
-+
-+	EXPECT_EQ(get_addr_op.value, MAGIC);
-+	EXPECT_EEXIT(&self->run);
-+	EXPECT_EQ(self->run.exception_vector, 0);
-+	EXPECT_EQ(self->run.exception_error_code, 0);
-+	EXPECT_EQ(self->run.exception_addr, 0);
-+
-+	/* Start page removal by requesting change of page type to PT_TRIM */
-+	memset(&modt_ioc, 0, sizeof(modt_ioc));
-+	memset(&secinfo, 0, sizeof(secinfo));
-+
-+	secinfo.flags = SGX_PAGE_TYPE_TRIM << 8;
-+	modt_ioc.offset = encl_get_data_offset(&self->encl) + PAGE_SIZE;
-+	modt_ioc.length = PAGE_SIZE;
-+	modt_ioc.secinfo = (unsigned long)&secinfo;
-+
-+	ret = ioctl(self->encl.fd, SGX_IOC_ENCLAVE_MODIFY_TYPE, &modt_ioc);
-+	errno_save = ret == -1 ? errno : 0;
-+
-+	EXPECT_EQ(ret, 0);
-+	EXPECT_EQ(errno_save, 0);
-+	EXPECT_EQ(modt_ioc.result, 0);
-+	EXPECT_EQ(modt_ioc.count, 4096);
-+
-+	/* Skip EACCEPT */
-+
-+	/* Send final ioctl() to complete page removal */
-+	memset(&remove_ioc, 0, sizeof(remove_ioc));
-+
-+	remove_ioc.offset = encl_get_data_offset(&self->encl) + PAGE_SIZE;
-+	remove_ioc.length = PAGE_SIZE;
-+
-+	ret = ioctl(self->encl.fd, SGX_IOC_ENCLAVE_REMOVE_PAGES, &remove_ioc);
-+	errno_save = ret == -1 ? errno : 0;
-+
-+	/* Operation not permitted since EACCEPT was omitted. */
-+	EXPECT_EQ(ret, -1);
-+	EXPECT_EQ(errno_save, EPERM);
-+	EXPECT_EQ(remove_ioc.count, 0);
-+}
-+
- TEST_HARNESS_MAIN
+ /* For memory mapped IO */
+ 
+-#define VNSvInPortB(dwIOAddress, pbyData) \
+-	(*(pbyData) = ioread8(dwIOAddress))
++#define VNSvInPortB(io_address, data) \
++	(*(data) = ioread8(io_address))
+ 
+-#define VNSvInPortW(dwIOAddress, pwData) \
+-	(*(pwData) = ioread16(dwIOAddress))
++#define VNSvInPortW(io_address, data) \
++	(*(data) = ioread16(io_address))
+ 
+-#define VNSvInPortD(dwIOAddress, pdwData) \
+-	(*(pdwData) = ioread32(dwIOAddress))
++#define VNSvInPortD(io_address, data) \
++	(*(data) = ioread32(io_address))
+ 
+-#define VNSvOutPortB(dwIOAddress, byData) \
+-	iowrite8((u8)(byData), dwIOAddress)
++#define VNSvOutPortB(io_address, data) \
++	iowrite8((u8)(data), io_address)
+ 
+-#define VNSvOutPortW(dwIOAddress, wData) \
+-	iowrite16((u16)(wData), dwIOAddress)
++#define VNSvOutPortW(io_address, data) \
++	iowrite16((u16)(data), io_address)
+ 
+-#define VNSvOutPortD(dwIOAddress, dwData) \
+-	iowrite32((u32)(dwData), dwIOAddress)
++#define VNSvOutPortD(io_address, data) \
++	iowrite32((u32)(data), io_address)
+ 
+-#define PCAvDelayByIO(uDelayUnit)				\
++#define PCAvDelayByIO(u_delay_unit)				\
+ do {								\
+-	unsigned char __maybe_unused byData;			\
++	unsigned char __maybe_unused data;			\
+ 	unsigned long ii;					\
+ 								\
+-	if (uDelayUnit <= 50) {					\
+-		udelay(uDelayUnit);				\
++	if (u_delay_unit <= 50) {					\
++		udelay(u_delay_unit);				\
+ 	} else {						\
+-		for (ii = 0; ii < (uDelayUnit); ii++)		\
+-			byData = inb(0x61);			\
++		for (ii = 0; ii < (u_delay_unit); ii++)		\
++			data = inb(0x61);			\
+ 	}							\
+ } while (0)
+ 
 -- 
 2.25.1
 
