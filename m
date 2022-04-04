@@ -2,137 +2,230 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33B50C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:51:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEA1FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:51:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242871AbiDDVwb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:52:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40348 "EHLO
+        id S1350438AbiDDVwy (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 17:52:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379224AbiDDQta (ORCPT
+        with ESMTP id S1379197AbiDDQnH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 12:49:30 -0400
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2066.outbound.protection.outlook.com [40.107.223.66])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D7A936141
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 09:47:33 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UaVLMRNqk1ZWqotDqukAoVBMsIwdUSnuLaqZ4GVwQpuSdY3/fw8vLsINoZtmcbDilobvyh1Yb+BigSNLbFbHsGNlM4O47lfb71X/iJ84nCKnveWAe/S+lbSUTC1iZ+7G8JHWcaHgFT60mq4+e2uK9pFYyQa88bLjWVhMZT5NBgV2E8AX9rUFYeQCI66UQgd8LNlHXv2IavYvrlHk5miMJDA8OJeVBbXWRNkdDCydulOUSWsKu8PR8WsAX7RShuyhzK+h2k5tMTwwI8rcFv/jGKqwXvZNwK9WFEi/V2iU/WKQxvTVflV504UUspl0iVG+3JUU26vnBfEr81KhM25/yg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=9F/SelIyUMGN/DQc2HNe/2kBt5loWYxH6mrOBVOe0ko=;
- b=aL/eIO4ZmWkATSG4NyQB+KszVdPmQK60hreck1krpnoRNdGvJsQwMJbnRo6dYtlYjVscb3Yk/rUeJkn2nFZ4CKm0SnNrT4IPbtgv7cyujqhUFwYno6aMkvzL3GBV58QvMSLKMNMR1wT8IWzRe5fV4woPW/lx+RNcZp8khnTilqBxo8aJD/+7OdaIDVU1GuuoQW99ye86IXBtEtPSrb+G8EBFbtySNonShVCEuMs44Ew/FgciOB4nMurqqkMu7tEowvHbC91tSaI4BVX/NWO0khWrGxi+xWlTSSK+03eUYePEJ0nwAeZbrWbtgPca5T08DPqjIKlvXMcdtdMY69vo4w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=8bytes.org smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9F/SelIyUMGN/DQc2HNe/2kBt5loWYxH6mrOBVOe0ko=;
- b=YCCQiZBIHvkjUSugbb9ocMgHbhKVVe/Kjm83OZFuR12SWIuLvJ5Avh3weVoDuJTGQyJi9WQsymbAsf9+aW8plBdEnOL+JtuQPhv9U6rE1tvDJkHpfPfXGNZ5R6ppaO5mjRuttjBtI3l++cSBkVFFi44SwF4QMIqe5z5rp1IpIdw=
-Received: from BN6PR19CA0091.namprd19.prod.outlook.com (2603:10b6:404:133::29)
- by CH2PR12MB4280.namprd12.prod.outlook.com (2603:10b6:610:ac::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Mon, 4 Apr
- 2022 16:47:31 +0000
-Received: from BN8NAM11FT017.eop-nam11.prod.protection.outlook.com
- (2603:10b6:404:133:cafe::47) by BN6PR19CA0091.outlook.office365.com
- (2603:10b6:404:133::29) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31 via Frontend
- Transport; Mon, 4 Apr 2022 16:47:31 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- BN8NAM11FT017.mail.protection.outlook.com (10.13.177.93) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5123.19 via Frontend Transport; Mon, 4 Apr 2022 16:47:30 +0000
-Received: from AUS-LX-MLIMONCI.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 4 Apr
- 2022 11:47:26 -0500
-From:   Mario Limonciello <mario.limonciello@amd.com>
-To:     Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
-CC:     Christoph Hellwig <hch@infradead.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
-        Suthikulpanit Suravee <Suravee.Suthikulpanit@amd.com>,
-        Hegde Vasant <Vasant.Hegde@amd.com>,
-        "open list" <linux-kernel@vger.kernel.org>,
-        Mario Limonciello <mario.limonciello@amd.com>
-Subject: [PATCH 1/2] swiotlb: Check that slabs have been allocated when requested
-Date:   Mon, 4 Apr 2022 11:47:06 -0500
-Message-ID: <20220404164707.1128-2-mario.limonciello@amd.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220404164707.1128-1-mario.limonciello@amd.com>
-References: <20220404164707.1128-1-mario.limonciello@amd.com>
+        Mon, 4 Apr 2022 12:43:07 -0400
+Received: from gateway23.websitewelcome.com (gateway23.websitewelcome.com [192.185.49.177])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1871D35851
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 09:41:10 -0700 (PDT)
+Received: from cm16.websitewelcome.com (cm16.websitewelcome.com [100.42.49.19])
+        by gateway23.websitewelcome.com (Postfix) with ESMTP id 8356817B0
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 11:41:10 -0500 (CDT)
+Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
+        by cmsmtp with SMTP
+        id bPlOniZjTXvvJbPlOnlmnL; Mon, 04 Apr 2022 11:41:10 -0500
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=roeck-us.net; s=default; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=7WgjofAA6KFtyuYFlmhFU6JlXq3dpm5LRTI1JLbUZtg=; b=FMYEuEthHu16SlxBpkJ9Y62rkl
+        ZAL8MaU5uy/Wxs3EZw1O32MFghfHwIujE26AM+k6K1Co2g9GpdujuFgRaJcPSLrhjUinomr+fdPwo
+        yeHUee7zaDnix6gGkNCSt4JTaooROeu+QBVjeGOUJgyP7d015RpCzh6cMl+0xXxT3IOZnTWpHE831
+        kqVoSgiwpS02FVQX4dJHY5lFaacAQdcfOPDJdGZj9GdAjOnogzqG62lBShqTkvCS2zUTRX+oZ+GSS
+        GZNilg36MeKDFofhJXMTnQi7inTusG7VUfqpGU2dsSQSsFafMipHssDQDMiUJ88S9mu1UOzTLrdPb
+        65MAOlMg==;
+Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:54720)
+        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@roeck-us.net>)
+        id 1nbPlO-002RIp-5r; Mon, 04 Apr 2022 16:41:10 +0000
+Message-ID: <817c20de-3ebc-e444-a14e-b18773da9f19@roeck-us.net>
+Date:   Mon, 4 Apr 2022 09:41:09 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 6ee731ba-e78f-469c-6b0b-08da165acf7b
-X-MS-TrafficTypeDiagnostic: CH2PR12MB4280:EE_
-X-Microsoft-Antispam-PRVS: <CH2PR12MB4280AEC189B6538D31E7AF3CE2E59@CH2PR12MB4280.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ERV4Xiz2H3SOY7IfLKniguquS96CnWD6iOw/948ZWvI6dI9FJyjhz71080KgHAGK4B0UjY5OKaypNgOn5/lZEaw3xUcVavR7b5MYCR/NU5QweJd0WqeT0hPVV2/jbjTcjqXzWIrCBCbVyUXyX57cXOf1QkEUgnLNi0MrCjhncYd6jfu149Y/9NaPytFVC6fC8LWOg6shWThDOkYexKx0/EGhniv6pTTWnl1dsNPY2iZaFnJsn1sRBJBzHYwshdqhKSgvOmlVn06fqeigsncWrc76/DBemmr1MteqlnGdmH9tnljmsYfpQ6i/xVKGVyo81o5ySKVbV9EXVwxWJy3qsf0+sjlgEp0Em4I7H0+HPg54Uk3mmRD/HK/SG8qqi4JkKamDvuqdX6O9zihJqCGFIuK7m0DvPkvoXtt/w2uH634b14oFRvSS0oP7ChhhM1cNiH0fgWfDvqu31YWpZ6rggE1YQh8yOPlRTFqyB6NnxM4dyTd/YH3HgiDo7rAl3L/e61nVbwWSIa73qM+KD7s+VndWPJmbVf7D+A3QKc8iFR9hqiDjJaeotuu9YjHMzFnNyAm86JP4YaeK38nnTg63rNzr/G+bSRKclWubuZkbBwC3oRS+hAefaVYDvFrKyDx4eFxd4YAmxP5cQ/Gwn1VPA/sn3Eeklf65bmVyK1I/b1rKelK8Xnjv3RvER9DZjyn9TQ5zERCdTi98VNTGBo+/qg==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(36840700001)(46966006)(47076005)(36860700001)(2906002)(8936002)(44832011)(36756003)(86362001)(5660300002)(70586007)(70206006)(81166007)(356005)(40460700003)(2616005)(6666004)(110136005)(54906003)(7696005)(82310400004)(316002)(4326008)(8676002)(1076003)(426003)(336012)(508600001)(26005)(16526019)(186003)(83380400001)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Apr 2022 16:47:30.9561
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6ee731ba-e78f-469c-6b0b-08da165acf7b
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT017.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4280
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v3 03/10] drivers: wdt: Introduce HPE GXP SoC Watchdog
+Content-Language: en-US
+To:     "Hawkins, Nick" <nick.hawkins@hpe.com>
+Cc:     "Verdun, Jean-Marie" <verdun@hpe.com>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-watchdog@vger.kernel.org" <linux-watchdog@vger.kernel.org>
+References: <20220310195229.109477-1-nick.hawkins@hpe.com>
+ <20220310195229.109477-3-nick.hawkins@hpe.com>
+ <20220404142830.GA3289074@roeck-us.net>
+ <PH0PR84MB171847EBCFEF79A06434CE8488E59@PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM>
+From:   Guenter Roeck <linux@roeck-us.net>
+In-Reply-To: <PH0PR84MB171847EBCFEF79A06434CE8488E59@PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - roeck-us.net
+X-BWhitelist: no
+X-Source-IP: 108.223.40.66
+X-Source-L: No
+X-Exim-ID: 1nbPlO-002RIp-5r
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net [108.223.40.66]:54720
+X-Source-Auth: linux@roeck-us.net
+X-Email-Count: 2
+X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If the IOMMU is in use and an untrusted device is connected to an external
-facing port but the address requested isn't page aligned will cause the
-kernel to attempt to use bounce buffers.
+On 4/4/22 09:25, Hawkins, Nick wrote:
+> 
+> 
+> -----Original Message-----
+> From: Guenter Roeck [mailto:linux@roeck-us.net]
+> Sent: Monday, April 4, 2022 9:29 AM
+> To: Hawkins, Nick <nick.hawkins@hpe.com>
+> Cc: Verdun, Jean-Marie <verdun@hpe.com>; Wim Van Sebroeck <wim@linux-watchdog.org>; linux-kernel@vger.kernel.org; linux-watchdog@vger.kernel.org
+> Subject: Re: [PATCH v3 03/10] drivers: wdt: Introduce HPE GXP SoC Watchdog
+> 
+> On Thu, Mar 10, 2022 at 01:52:22PM -0600, nick.hawkins@hpe.com wrote:
+>>> From: Nick Hawkins <nick.hawkins@hpe.com>
+>>>
+>>> Adding support for the HPE GXP Watchdog. It is new to the linux
+>>> community and this along with several other patches is the first
+>>> support for it. The GXP asic contains a full compliment of timers one
+>>> of which is the watchdog timer. The watchdog timer is 16 bit and has
+>>> 10ms resolution.
+>>>
+>>> Signed-off-by: Nick Hawkins <nick.hawkins@hpe.com>
+>>> ---
+>>>   drivers/watchdog/Kconfig   |   8 ++
+>>>   drivers/watchdog/Makefile  |   1 +
+>>>   drivers/watchdog/gxp-wdt.c | 191
+>>> +++++++++++++++++++++++++++++++++++++
+>>>   3 files changed, 200 insertions(+)
+>>>   create mode 100644 drivers/watchdog/gxp-wdt.c
+>>>
+>>> diff --git a/drivers/watchdog/Kconfig b/drivers/watchdog/Kconfig index
+>>> c8fa79da23b3..cb210d2978d2 100644
+>>> --- a/drivers/watchdog/Kconfig
+>>> +++ b/drivers/watchdog/Kconfig
+>>> @@ -1820,6 +1820,14 @@ config RALINK_WDT
+>>>   	help
+>>>   	  Hardware driver for the Ralink SoC Watchdog Timer.
+>>>   
+>>> +config GXP_WATCHDOG
+>>> +	tristate "HPE GXP watchdog support"
+>>> +	depends on ARCH_HPE_GXP
+>>> +	select WATCHDOG_CORE
+>>> +	help
+>>> +	  Say Y here to include support for the watchdog timer
+>>> +	  in HPE GXP SoCs.
+>>> +
+>>>   config MT7621_WDT
+>>>   	tristate "Mediatek SoC watchdog"
+>>>   	select WATCHDOG_CORE
+>>> diff --git a/drivers/watchdog/Makefile b/drivers/watchdog/Makefile
+>>> index f7da867e8782..e2acf3a0d0fc 100644
+>>> --- a/drivers/watchdog/Makefile
+>>> +++ b/drivers/watchdog/Makefile
+>>> @@ -92,6 +92,7 @@ obj-$(CONFIG_RTD119X_WATCHDOG) += rtd119x_wdt.o
+>>>   obj-$(CONFIG_SPRD_WATCHDOG) += sprd_wdt.o
+>>>   obj-$(CONFIG_PM8916_WATCHDOG) += pm8916_wdt.o
+>>>   obj-$(CONFIG_ARM_SMC_WATCHDOG) += arm_smc_wdt.o
+>>> +obj-$(CONFIG_GXP_WATCHDOG) += gxp-wdt.o
+>>>   obj-$(CONFIG_VISCONTI_WATCHDOG) += visconti_wdt.o
+>>>   obj-$(CONFIG_MSC313E_WATCHDOG) += msc313e_wdt.o
+>>>   obj-$(CONFIG_APPLE_WATCHDOG) += apple_wdt.o diff --git
+>>> a/drivers/watchdog/gxp-wdt.c b/drivers/watchdog/gxp-wdt.c new file
+>>> mode 100644 index 000000000000..d2b489cb4774
+>>> --- /dev/null
+>>> +++ b/drivers/watchdog/gxp-wdt.c
+>>> @@ -0,0 +1,191 @@
+>>> +// SPDX-License-Identifier: GPL-2.0
+>>> +/* Copyright (C) 2022 Hewlett-Packard Enterprise Development Company, L.P.
+>>> + *
+>>> + *
+>>> + * This program is free software; you can redistribute it and/or
+>>> +modify
+>>> + * it under the terms of the GNU General Public License version 2 as
+>>> + * published by the Free Software Foundation.
+>>> + */
+>>> +
+>>> +#include <linux/delay.h>
+>>> +#include <linux/io.h>
+>>> +#include <linux/module.h>
+>>> +#include <linux/platform_device.h>
+>>> +#include <linux/of_address.h>
+>>> +#include <linux/of_platform.h>
+>>> +#include <linux/types.h>
+>>> +#include <linux/watchdog.h>
+>>> +
+>>> +#define MASK_WDGCS_ENABLE	0x01
+>>> +#define MASK_WDGCS_RELOAD	0x04
+>>> +#define MASK_WDGCS_NMIEN	0x08
+>>> +#define MASK_WDGCS_WARN		0x80
+>>> +
+>>> +#define WDT_MAX_TIMEOUT_MS	655000
+>>> +#define WDT_DEFAULT_TIMEOUT	30
+>>> +#define SECS_TO_WDOG_TICKS(x) ((x) * 100) #define
+>>> +WDOG_TICKS_TO_SECS(x) ((x) / 100)
+>>> +
+>>> +struct gxp_wdt {
+>>> +	void __iomem	*counter;
+>>> +	void __iomem	*control;
+>>> +	struct watchdog_device	wdd;
+> 
+>> Odd variable alignment. Might as well just use spaces before the variable names.
+> 
+> Fixed
+> 
+>>> +};
+>>> +
+>>> +static void gxp_wdt_enable_reload(struct gxp_wdt *drvdata) {
+>>> +	uint8_t val;
+>>> +
+>>> +	val = readb(drvdata->control);
+>>> +	val |= (MASK_WDGCS_ENABLE | MASK_WDGCS_RELOAD);
+>>> +	writeb(val, drvdata->control);
+>>> +}
+>>> +
+>>> +static int gxp_wdt_start(struct watchdog_device *wdd) {
+>>> +	struct gxp_wdt *drvdata = watchdog_get_drvdata(wdd);
+>>> +
+>>> +	writew((SECS_TO_WDOG_TICKS(wdd->timeout)), drvdata->counter);
+> 
+>> Unnecessary iand confusing () around SECS_TO_WDOG_TICKS().
+> 
+> Fixed
+> 
+>>> +	gxp_wdt_enable_reload(drvdata);
+>>> +	return 0;
+>>> +}
+>>> +
+>>> +static int gxp_wdt_stop(struct watchdog_device *wdd) {
+>>> +	struct gxp_wdt *drvdata = watchdog_get_drvdata(wdd);
+>>> +	uint8_t val;
+>>> +
+>>> +	val = readb_relaxed(drvdata->control);
+>>> +	val &= ~MASK_WDGCS_ENABLE;
+>>> +	writeb(val, drvdata->control);
+>>> +	return 0;
+>>> +}
+>>> +
+>>> +static int gxp_wdt_set_timeout(struct watchdog_device *wdd,
+>>> +			       unsigned int timeout)
+>>> +{
+>>> +	struct gxp_wdt *drvdata = watchdog_get_drvdata(wdd);
+>>> +	uint32_t actual;
+> 
+>> Please use u32 as suggested by checkpatch. Same everywhere.
+> 
+> Fixed, checkpatch did not flag this, is there an option I should be using with checkpatch.pl?
 
-If the bounce buffers have not been allocated however, this leads
-to messages like this:
+--strict
 
-swiotlb buffer is full (sz: 4096 bytes), total 0 (slots), used 0 (slots)
-
-Clarify the error message because the buffer isn't full, it doesn't
-exist!
-
-Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
----
- kernel/dma/swiotlb.c | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 73a41cec9e38..d2a20cedf0d2 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -591,6 +591,11 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
- 	if (!mem)
- 		panic("Can not allocate SWIOTLB buffer earlier and can't now provide you with the DMA bounce buffer");
- 
-+	if (!mem->nslabs) {
-+		dev_warn_once(dev, "No slabs have been configured, unable to use SWIOTLB buffer");
-+		return (phys_addr_t)DMA_MAPPING_ERROR;
-+	}
-+
- 	if (cc_platform_has(CC_ATTR_MEM_ENCRYPT))
- 		pr_warn_once("Memory encryption is active and system is using DMA bounce buffers\n");
- 
--- 
-2.34.1
-
+Guenter
