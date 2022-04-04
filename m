@@ -2,152 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4AB5C47082
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 862BCC433FE
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:37:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383144AbiDDVct (ORCPT
+        id S1382943AbiDDVcc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:32:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36046 "EHLO
+        Mon, 4 Apr 2022 17:32:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379355AbiDDRCu (ORCPT
+        with ESMTP id S1380644AbiDDUth (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 13:02:50 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64AD340A1E
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 10:00:53 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id dr20so21173256ejc.6
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 10:00:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=At6V+p98WWM5cl2f18ea78oUqq1fd0MCKDFUe0vUx34=;
-        b=Aq5amcLXoa1xta3fhiqw88Vg7dVh9Q0gabJOkj7Dzik/gqQihPTvqDaJaj2dIj/aOH
-         2w3Ue6XFp8r+zwOGaUZ1kNNE85hQG9dHzxKJQfLgo5nuK4F6mkJZUgVhWHKnpwxjJBBQ
-         r3cxY7UOQbNy8GR7XHuvBQbW2Nj0V4PBpaZxeToaVjWoxblvkouLlzF9N1Ipz3cq+Vmc
-         L9Cc8AS4JXnsqmls3YhbmOtjq5v/NvlDJ3L1Es49PDmHhyX+Zf5d4fzIHkFgX/wmAYSx
-         VX7210Z46K4VC84HTRPoVzz+ACPq0jKrVSB8ncv9XYeetGtn69usXjUvIqang62tpuXk
-         fqJA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=At6V+p98WWM5cl2f18ea78oUqq1fd0MCKDFUe0vUx34=;
-        b=XlHjqDD3mO7aIh0OAf2OZJKFEf7Dp+mXX9Pw5pPK9CUH5A6KWtIvl4pq0Ipo37OvQq
-         LCcJ2t85IcohKlGiLMPpPmNxqER7WmQhgkGJezqOFwYoSKkNbrKAySs9d/oaVOlCT7aQ
-         PqbOfm+87AC14RdNR+hBQWJD7Mfa3UbFfznbW4yrpzBQN0DqZQ5bMpmyTCXRdizd2wje
-         wShWbOkG3wR7+135o6f+wqlRUAR066csXsab5pfudcPFovWdjdUfOpAGpxqM2utWhoWP
-         UTRslWoT/NCE468QGIxRcXpnZZ6Y9ARbO3o2hJgQG4zYW0gUVAENqnqUUdS/qEF+kHYW
-         tIsw==
-X-Gm-Message-State: AOAM533lMKyY1gG5+0Z25G9ChySVy3h/xz/4W+SqiFfEVumopKH6/xem
-        4u26dpLbWYEoAB3pGL77oHE=
-X-Google-Smtp-Source: ABdhPJwf3gGp2dlb23aM6MTrLaWCvwj85fBB2Fe5rbvzOf3UUHr2eXmjzifKz94TBBUkDjDECxscUw==
-X-Received: by 2002:a17:907:3f0a:b0:6e0:7189:cd6 with SMTP id hq10-20020a1709073f0a00b006e071890cd6mr1009892ejc.740.1649091651809;
-        Mon, 04 Apr 2022 10:00:51 -0700 (PDT)
-Received: from [192.168.0.253] (ip5f5abb55.dynamic.kabel-deutschland.de. [95.90.187.85])
-        by smtp.gmail.com with ESMTPSA id z12-20020a17090674cc00b006df9afdda91sm4559495ejl.185.2022.04.04.10.00.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 04 Apr 2022 10:00:51 -0700 (PDT)
-Message-ID: <297f97b5-e7ad-b225-cf58-b901a30ad6de@gmail.com>
-Date:   Mon, 4 Apr 2022 19:00:50 +0200
+        Mon, 4 Apr 2022 16:49:37 -0400
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2040.outbound.protection.outlook.com [40.107.243.40])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3036205C0
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 13:47:40 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=GLNkNBj6HBCKhD5HNgnrm4Sm/dI6RijUz/+a5Jimf/a+s41b0V31ubKYv0LElE1lVS6Hmf0bksNjPplNvD+hLlrnfsSY7kDS71CTOtq0zlnySDFNG6hvRPQg0eRG6lmbVubDuNIwDc+7mt4gvbledjx1WdGH39RRctNwXkhLfzq8f2cAZRyW2WtaYOy8q91TMkoXcL54FMPXc5BAj+7TlWfzB/kXN0npbDXQH31Mq+Fi7kV8TySaNuGdxZvD40Al/YSqLUrnZu7H2tT1cuRa2IV0n3Ahu6W1/gGumuNVueVQVR6nMXOhrJKAZcKmABQjXPaZykijbo4V1gyj3VTb/Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=94JCOCW+fPlUnwlKPkgEWPmXrX+ICQvnUxZJn9I/A7g=;
+ b=ZT1wJKREbohNq2al8bz9/qs5Q/jJOrltl07E3GZuYmmbtwH59KKODqSlMZ5T79DDqtIN/csqqxEtlRFMUOT0mtPA7gwl2UjsdWAv1+mhtZnM+FUOcY8xF5f0JjeXJu1rEa+3in31m5cnbeu11LVo0cRr9TM+eZYGJmnw6NuRKoP3YO4AWcs9iCkehdW4WMJCpBSr0OKvDTxZhPtjOq6e6ijSXeLPdGEl27j+b73rCe4HFOBvUsR3rZj/KtfVt6bY/YXjCKWwKcO2WXyq9LOHxzaf1MNjjvTz7IaVohkvZNTr/oDdc7PwsNW+1CuLOmYbt3P3j+nBi22g5dCDsEpWNA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=8bytes.org smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=94JCOCW+fPlUnwlKPkgEWPmXrX+ICQvnUxZJn9I/A7g=;
+ b=QPOsZL1uqBYRAiG2Hcdzg6x4YGaIOsWkyC9HkZyxUVAV3bM7xjoPabYsUfuMx8FOBLqplNJkrrVR4BlMEPbn0wgYPpNtPXJabXx3gnZx0lNPHZAjdB5QoAYD8zwhEwLnAM7CPbU0Wts1nHD0uSZwlV2cnYd9wI5iv1UlDNlZ890=
+Received: from BN9PR03CA0482.namprd03.prod.outlook.com (2603:10b6:408:130::7)
+ by MW2PR12MB2379.namprd12.prod.outlook.com (2603:10b6:907:9::24) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.30; Mon, 4 Apr
+ 2022 20:47:36 +0000
+Received: from BN8NAM11FT039.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:130:cafe::7f) by BN9PR03CA0482.outlook.office365.com
+ (2603:10b6:408:130::7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31 via Frontend
+ Transport; Mon, 4 Apr 2022 20:47:35 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ BN8NAM11FT039.mail.protection.outlook.com (10.13.177.169) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5123.19 via Frontend Transport; Mon, 4 Apr 2022 20:47:35 +0000
+Received: from AUS-LX-MLIMONCI.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 4 Apr
+ 2022 15:47:33 -0500
+From:   Mario Limonciello <mario.limonciello@amd.com>
+To:     Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
+CC:     Christoph Hellwig <hch@infradead.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+        Suthikulpanit Suravee <Suravee.Suthikulpanit@amd.com>,
+        Hegde Vasant <Vasant.Hegde@amd.com>,
+        "open list" <linux-kernel@vger.kernel.org>,
+        Mario Limonciello <mario.limonciello@amd.com>
+Subject: [PATCH v2 1/2] iommu/amd: Enable swiotlb in all cases
+Date:   Mon, 4 Apr 2022 15:47:22 -0500
+Message-ID: <20220404204723.9767-2-mario.limonciello@amd.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220404204723.9767-1-mario.limonciello@amd.com>
+References: <20220404204723.9767-1-mario.limonciello@amd.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] staging: r8188eu: remove unncessary ternary operator
-Content-Language: en-US
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     gregkh@linuxfoundation.org, Larry.Finger@lwfinger.net,
-        phil@philpotter.co.uk, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-References: <20220402173835.7560-1-straube.linux@gmail.com>
- <20220404130854.GB3293@kadam>
-From:   Michael Straube <straube.linux@gmail.com>
-In-Reply-To: <20220404130854.GB3293@kadam>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: f3dc8a52-0453-4fd9-fdd4-08da167c5941
+X-MS-TrafficTypeDiagnostic: MW2PR12MB2379:EE_
+X-Microsoft-Antispam-PRVS: <MW2PR12MB237903CAEA08DC5F8345666AE2E59@MW2PR12MB2379.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Cpp2Jf31DLwsNwb3AywUGP3b7es8cHmdHzWytPgyqgm+f715CuUrO8A1LftsYs3lBOIkFZbiVbCkgpiUxdHJxadRWnJIIZGr2d9VuZUZAyDZrmJrLrws1W9G8twLh5yxFZLsgnBPy8LUkvUR4vrq+4aw5N9LJWzJ5ZI/jHhHRpvxI6Z8Ak+JCRBxAVPrKkDHBukHInPH9ixTH8DTVJDaGEjt77/EeYWnYRFecfdERPzWjbs5nf8xRAwUHeUafZAUQWJZ320KdmEHC205GdSvEuqr8j/L6Ze0u1e3IztAykjXo1h+k8gtfg+/GTAlVzB68f0g+c5H/dKQyxmhG7Gfp8nz5rGZw/mqyCEzcHrq6yR3XwSOuvgYIXgH+yoLeXYzBmmBrV7GyXzVbNTbpRFvRdS/64VeibSXPJ/9ccC+F0HPdd7Ma7B9T7HBZ00df6vJu618N1NL8yrJ1nAVl4CFblRnvvC4NbkpG1bXKaooycwoGeQmJmbQquDpJX5mWGnh5obTqeQPrPcUQ+w9PGH6Cy52Zt3fQzGsc02tvYL1uIPXoeMdwCzfRNS9HCUDpYQvQkM3CsNiy3fOfdIU8urfpvt85tqGKtDjQlHJpf6ee9qWRxM9fqqzhWps+Fz+faprzkmYFCMfC5L/Mxz2Ls3uwRE+GHHwbwTL4so5760ItcJru+n+7ZN7esJq12cOiaCCD/1I5gfnaYLl2P9rtVIPpw==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(82310400004)(70206006)(70586007)(36860700001)(47076005)(110136005)(8936002)(86362001)(316002)(81166007)(54906003)(44832011)(356005)(26005)(5660300002)(1076003)(83380400001)(40460700003)(2616005)(36756003)(426003)(336012)(16526019)(186003)(7696005)(6666004)(8676002)(2906002)(508600001)(4326008)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Apr 2022 20:47:35.4818
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: f3dc8a52-0453-4fd9-fdd4-08da167c5941
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT039.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW2PR12MB2379
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Dan,
+Previously the AMD IOMMU would only enable SWIOTLB in certain
+circumstances:
+ * IOMMU in passthrough mode
+ * SME enabled
 
-On 4/4/22 15:08, Dan Carpenter wrote:
-> On Sat, Apr 02, 2022 at 07:38:35PM +0200, Michael Straube wrote:
->> diff --git a/drivers/staging/r8188eu/hal/rtl8188e_cmd.c b/drivers/staging/r8188eu/hal/rtl8188e_cmd.c
->> index 45b788212628..18650cd96f09 100644
->> --- a/drivers/staging/r8188eu/hal/rtl8188e_cmd.c
->> +++ b/drivers/staging/r8188eu/hal/rtl8188e_cmd.c
->> @@ -137,7 +137,7 @@ void rtl8188e_Add_RateATid(struct adapter *pAdapter, u32 bitmap, u8 arg, u8 rssi
->>   
->>   	bitmap |= ((raid << 28) & 0xf0000000);
->>   
->> -	short_gi_rate = (arg & BIT(5)) ? true : false;
->> +	short_gi_rate = arg & BIT(5);
->>   
-> 
-> This is a bug.  Valid values of short_gi_rate are 0 and 1 but this sets
-> it to BIT(5) so it will break odm_RateUp_8188E() which tests for:
-> 
-> 	else if ((pRaInfo->SGIEnable) != 1)
-> 
->>   	raid = (bitmap >> 28) & 0x0f;
->>   
->> diff --git a/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c b/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c
->> index 6811be95da9a..ffc82d17ddbe 100644
->> --- a/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c
->> +++ b/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c
->> @@ -747,7 +747,7 @@ void Hal_ReadPowerSavingMode88E(struct adapter *padapter, u8 *hwinfo, bool AutoL
->>   
->>   		/*  decide hw if support remote wakeup function */
->>   		/*  if hw supported, 8051 (SIE) will generate WeakUP signal(D+/D- toggle) when autoresume */
->> -		padapter->pwrctrlpriv.bSupportRemoteWakeup = (hwinfo[EEPROM_USB_OPTIONAL_FUNCTION0] & BIT(1)) ? true : false;
->> +		padapter->pwrctrlpriv.bSupportRemoteWakeup = hwinfo[EEPROM_USB_OPTIONAL_FUNCTION0] & BIT(1);
-> 
-> I have not looked at this one to see if has a similar issue...  I don't
-> necessarily want to audit all of these.  I guess I will, but could you
-> do it first and then I will check?
-> 
+This logic however doesn't work when an untrusted device is plugged in
+that doesn't do page aligned DMA transactions.  The expectation is
+that a bounce buffer is used for those transactions.
 
-It has the same issue. I'll leave these two as is in v2.
+This fails like this:
 
->> diff --git a/drivers/staging/r8188eu/include/ieee80211.h b/drivers/staging/r8188eu/include/ieee80211.h
->> index 8c20363cdd31..03d63257797a 100644
->> --- a/drivers/staging/r8188eu/include/ieee80211.h
->> +++ b/drivers/staging/r8188eu/include/ieee80211.h
->> @@ -127,7 +127,7 @@ enum NETWORK_TYPE {
->>   	 (WIRELESS_11B | WIRELESS_11G | WIRELESS_11_24N)
->>   
->>   #define IsSupported24G(NetType)					\
->> -	((NetType) & SUPPORTED_24G_NETTYPE_MSK ? true : false)
->> +	((NetType) & SUPPORTED_24G_NETTYPE_MSK)
-> 
-> This too.
-> 
->>   
->>   #define IsEnableHWCCK(NetType)					\
->>   	IsSupported24G(NetType)
->> @@ -135,11 +135,11 @@ enum NETWORK_TYPE {
->>   #define IsSupportedRxCCK(NetType) IsEnableHWCCK(NetType)
->>   
->>   #define IsSupportedTxCCK(NetType)				\
->> -	((NetType) & (WIRELESS_11B) ? true : false)
->> +	((NetType) & WIRELESS_11B)
->>   #define IsSupportedTxOFDM(NetType)				\
->> -	((NetType) & (WIRELESS_11G) ? true : false)
->> +	((NetType) & WIRELESS_11G)
->>   #define IsSupportedTxMCS(NetType)				\
->> -	((NetType) & (WIRELESS_11_24N) ? true : false)
->> +	((NetType) & WIRELESS_11_24N)
->>   
-> 
-> And this.
+swiotlb buffer is full (sz: 4096 bytes), total 0 (slots), used 0 (slots)
 
-It turned out that these are all unused and can be removed.
-I should really have looked deeper into this, sorry.
+That happens because the bounce buffers have been allocated, followed by
+freed during startup but the bounce buffering code expects that all IOMMUs
+have left it enabled.
 
-I'll remove them in a separate patch in v2.
+Remove the criteria to set up bounce buffers on AMD systems to ensure
+they're always available for supporting untrusted devices.
 
-thanks,
-Michael
+Fixes: 82612d66d51d ("iommu: Allow the dma-iommu api to use bounce buffers")
+Suggested-by: Christoph Hellwig <hch@infradead.org>
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+---
+v1->v2:
+ * Enable swiotlb for AMD instead of ignoring it for inactive
+
+ drivers/iommu/amd/iommu.c | 7 -------
+ 1 file changed, 7 deletions(-)
+
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index a1ada7bff44e..079694f894b8 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -1838,17 +1838,10 @@ void amd_iommu_domain_update(struct protection_domain *domain)
+ 	amd_iommu_domain_flush_complete(domain);
+ }
+ 
+-static void __init amd_iommu_init_dma_ops(void)
+-{
+-	swiotlb = (iommu_default_passthrough() || sme_me_mask) ? 1 : 0;
+-}
+-
+ int __init amd_iommu_init_api(void)
+ {
+ 	int err;
+ 
+-	amd_iommu_init_dma_ops();
+-
+ 	err = bus_set_iommu(&pci_bus_type, &amd_iommu_ops);
+ 	if (err)
+ 		return err;
+-- 
+2.34.1
+
