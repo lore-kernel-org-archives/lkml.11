@@ -2,65 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3BE3C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 08:47:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBEFBC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 08:47:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240281AbiDDItc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 04:49:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48872 "EHLO
+        id S240106AbiDDIth (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 04:49:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239878AbiDDItY (ORCPT
+        with ESMTP id S240609AbiDDItd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 04:49:24 -0400
-Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [217.70.183.198])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90BBD3AA74
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 01:47:28 -0700 (PDT)
+        Mon, 4 Apr 2022 04:49:33 -0400
+Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::228])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 628043B56E
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 01:47:34 -0700 (PDT)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 1D7D2C0003;
-        Mon,  4 Apr 2022 08:47:26 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id C2C3E1BF209;
+        Mon,  4 Apr 2022 08:47:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1649062047;
+        t=1649062052;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=CN1L5JMzqSJ+k18AcK0l2a4ZU5bLh8AcVNfN1XQQ0W4=;
-        b=R2ej3LROgUy4NFcFjYBZBe2JlZHew4uPRHPCJlb2E68dnyM+RBSvtzwT9tPskEi98Tbibu
-        vrft3h3fLHaYKyX+KGKE4CfjkrycZ+8JFJRPXLgPD60tHCWmd0TH3F+SAprzbCvuZgUlYl
-        donTKVzKkGCKUP/GYI+h+FYB3zbbZXrqGplqfV3Xzk3VpSyLOyG7dQ92GefsWOp1xOQO6o
-        KtzZibzzT6a+rWbnehPL3qtoSh8tu4/YVc7CJ6sN/fnMyYsejLp6fI1KI5UyVXZSpGucvO
-        /QT3O9Yboc0UX6tx61vmLOc0UFWCU5pL5zjM4teo+ovuS0kIVQCpZZglzkKsgQ==
+        bh=HNAxKX1DSgvz6AgiA/E8PDeYrkr/tq8/0jpvO7zkYKA=;
+        b=MWyMzEJux6rUSkSI4iNvYHWv4pptdpWTTAYtJtnj4JYhcFk2awEYuxWRvofXaFDY5GqpqL
+        Reef/ZEeNPsMTmdf6OEp1/CI4ZnnCT3Xo3q2yyMks0DnOB/32eLObnJjQvkSk23aXOfmQW
+        ycmRuTH3eR2LKXQ4xW09xx/nyP9krkRg/4XwZebyPwaW99ojZoquI4ENd5EeGF5axZF34x
+        zTTvmOpzrSDFogMtxoFxCIV5uHrLPxpdgmggi1Jp6zxNk/tUF15cAmfaUdZqsToIOCrOr1
+        WxgUAu52/YJpkI+bWj1Uh3XQjcqiN9pgYB5ppuVj3K1qxKntMg5X4c86gf0xhQ==
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Chuanhong Guo <gch981213@gmail.com>, linux-mtd@lists.infradead.org
-Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Reto Schneider <reto.schneider@husqvarnagroup.com>,
-        Frieder Schrempf <frieder.schrempf@kontron.de>,
-        Stefan Roese <sr@denx.de>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: Re: [PATCH 1/5] mtd: spinand: gigadevice: fix Quad IO for GD5F1GQ5UExxG
-Date:   Mon,  4 Apr 2022 10:47:25 +0200
-Message-Id: <20220404084725.1203270-1-miquel.raynal@bootlin.com>
+To:     Wang Weiyang <wangweiyang2@huawei.com>, miquel.raynal@bootlin.com,
+        richard@nod.at, vigneshr@ti.com, paul@crapouillou.net
+Cc:     linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH -next] mtd: rawnand: davinci: Remove redundant unsigned comparison to zero
+Date:   Mon,  4 Apr 2022 10:47:30 +0200
+Message-Id: <20220404084730.1203812-1-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220320100001.247905-2-gch981213@gmail.com>
+In-Reply-To: <20220317113907.96006-1-wangweiyang2@huawei.com>
 References: 
 MIME-Version: 1.0
 X-linux-mtd-patch-notification: thanks
-X-linux-mtd-patch-commit: b'a4f9dd55c5e1bb951db6f1dee20e62e0103f3438'
+X-linux-mtd-patch-commit: b'6425dd136ddc40fc434156d1957a3adb367dd874'
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 2022-03-20 at 09:59:57 UTC, Chuanhong Guo wrote:
-> Read From Cache Quad IO (EBH) uses 2 dummy bytes on this chip according
-> to page 23 of the datasheet[0].
+On Thu, 2022-03-17 at 11:39:07 UTC, Wang Weiyang wrote:
+> Since core_chipsel is uint32_t, comparison to zero is redundant
 > 
-> [0]: https://www.gigadevice.com/datasheet/gd5f1gq5xexxg/
-> 
-> Fixes: 469b99248985 ("mtd: spinand: gigadevice: Support GD5F1GQ5UExxG")
-> Signed-off-by: Chuanhong Guo <gch981213@gmail.com>
+> Signed-off-by: Wang Weiyang <wangweiyang2@huawei.com>
 
 Applied to https://git.kernel.org/pub/scm/linux/kernel/git/mtd/linux.git nand/next, thanks.
 
