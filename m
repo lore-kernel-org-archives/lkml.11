@@ -2,61 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCFB9C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 08:21:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32D25C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 08:22:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351531AbiDDIXt (ORCPT
+        id S1353709AbiDDIXy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 04:23:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53826 "EHLO
+        Mon, 4 Apr 2022 04:23:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346885AbiDDIXo (ORCPT
+        with ESMTP id S1349065AbiDDIXq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 04:23:44 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D0AB3B3EF
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 01:21:49 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id q26so2452066edc.7
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 01:21:49 -0700 (PDT)
+        Mon, 4 Apr 2022 04:23:46 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E29C43B3FC
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 01:21:50 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id r10so4354749eda.1
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 01:21:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=rPYO2pNz1/bQYKjtDRXcH0Ioe3wPwK7iSBX0zehzbLA=;
-        b=bW+zOzhElyJjyfZ1pCtxqO+5Rxzf71rGe6k+bvGlQw/+vog2QsXeE0jO71lEN2ZPD9
-         NXMw0+4wwcl1726YfkVv/yAyLNHhG6SmZlbej41yuAP4QSuktnxwZyiahDXTXfDJKnpN
-         3/8a8Lu1SYTahPOSi788Pw8lmFh04Nzd+IsdlQ0FzCiBW2VKSSJd6B9M/qsU3+BLzGVN
-         BVlHSlAx5BDrd9kMN69qUdvFCNJQtWr89o05UsNrMIk6mqJvPp8sJm6E9Oaq6ThONREc
-         kVOFnYn23Ct2nhHqqSBPQ7vUUq8OrtiGrx79Tk1iIqCV6Yu1aIEZD4kTcIR1jjemLHRn
-         P1Sw==
+        bh=eYi42idZagF7+PntnhrV7u1NVJ1zH5gAAuFaLqoUChg=;
+        b=JjsmMULs94skPzT6xphNvB4kqywkZnL72/HghLakTvfFcbUjYvX0Z4O/7mNIZGfWEw
+         ONrgKXfIvNmc81bgyIfTtuNsLlaOHKLs/xkV7+5/yyJRRXc0Dzno3BX+au9N1Y0Vd7L1
+         1VHqTMV7EgKErFvvwhs532WZtJCMETyv1yJTHhxE9kx9XhOOBhBFq9Jn2C+dd0nu+h88
+         VhPfT4LdevaT3mqECsz+X/O0uEAimqT3tC/92w9eGHao4Nn25aO20OACQ/hiXIl8kdz2
+         UkF/mOr/KxuZUY7CiOlhF1CtDACs3O5qoUcDgG3cVBmBUFDj/29QoyQQQFY8GAGwxnyx
+         bV8w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=rPYO2pNz1/bQYKjtDRXcH0Ioe3wPwK7iSBX0zehzbLA=;
-        b=r6VCbf6F61CUCfyc9bCU6FvgdWmr/DcXdSFDf5i1sIenfZV3Gtbmc4kW2f0fV97uwu
-         RuW9+RfIO1R/aKrrTR2p5mUDbC5HurV1BZtBhvsMe89MHbDo2JFqPShCdS3SJ9bU1XuS
-         FOHrSGRI7OqPlOcRgLXW7tqVNhv4znYy/XHkpmy9HHVDLOCmSLx8vTuYlDHGDo8Ri+8U
-         52lUlzCXAjiOLFcs+MIrj30Zk1M1HC6Fd1u4me1QJDC5ezuXO3rmddEJvh1Y/bdFQ+mA
-         2qMQ3oxRkivEKYIMNrBKdTxT+upczJJ+No0XEqXIIufSzsbds8WqlEJo4uE6YGD8KPYQ
-         VRVg==
-X-Gm-Message-State: AOAM532+/1Mgd4yJOmTzCoW/bXyxT1Ru0gfEP/6LqNwrYhzod7hTtTvi
-        ur5XXWqVDCUeIXw/Jt9hQb/v0sE+NSU=
-X-Google-Smtp-Source: ABdhPJxjBWCVSr/nrkBPG4q1VP7TIbF432eF+5z2b2SNwo8uaHyxyRcy8peP+Wp4Nz3NPMF2YbhVRw==
-X-Received: by 2002:aa7:d495:0:b0:41c:c46a:550f with SMTP id b21-20020aa7d495000000b0041cc46a550fmr4713672edr.305.1649060507963;
-        Mon, 04 Apr 2022 01:21:47 -0700 (PDT)
+        bh=eYi42idZagF7+PntnhrV7u1NVJ1zH5gAAuFaLqoUChg=;
+        b=T6OZz0NFZZOL//shYgSVGY/OMsSVsFdUt1ABmCm9xm/MgOiQIm63B1DWSGJzkdykI5
+         dKvavQbItItlAeQ8BsjT56KmlmA0wuMkzxYfAgIdRPPwH1uDwqqQo9OEeQBY8YLfHV26
+         Vf/dyvv0dEVsdkYf9vI1qM/cZnwdYlhOn9YoJ9nhEA97Wh7Nxt/J9/dERd63ag883pfg
+         M2mSxk/F25EulgssS0YvHCh9If93AuTSHgTKzufZJL/vQ6M8J9lMX4TUH3ly37G95Nmu
+         jREZn5NXt3p6CbOIiKd6aQ67guvsPffTGsvhT0yyBfbzxnc4trJT09X6lWzoy9NDk6I4
+         RItg==
+X-Gm-Message-State: AOAM532rnAZJwfh6mG2S5c05iDRYy0sI/T+5dhsDh50Acz2MITs9LP4t
+        unDIkiOOPEkEdu8ZoLzjVYI5GdDx1oI=
+X-Google-Smtp-Source: ABdhPJxNjt+nCbqV1xpIeLBTsFp/FnJSPk2UM+b7LWRvSinLDRADDXWo4LlRiMDnzweqhORcZxmCgQ==
+X-Received: by 2002:a50:f092:0:b0:41c:b7dd:cdb5 with SMTP id v18-20020a50f092000000b0041cb7ddcdb5mr7649642edl.225.1649060509500;
+        Mon, 04 Apr 2022 01:21:49 -0700 (PDT)
 Received: from localhost.localdomain (ip5f5abb55.dynamic.kabel-deutschland.de. [95.90.187.85])
-        by smtp.gmail.com with ESMTPSA id n3-20020a1709061d0300b006da94efcc7esm4047336ejh.204.2022.04.04.01.21.47
+        by smtp.gmail.com with ESMTPSA id n3-20020a1709061d0300b006da94efcc7esm4047336ejh.204.2022.04.04.01.21.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 01:21:47 -0700 (PDT)
+        Mon, 04 Apr 2022 01:21:48 -0700 (PDT)
 From:   Michael Straube <straube.linux@gmail.com>
 To:     gregkh@linuxfoundation.org
 Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Michael Straube <straube.linux@gmail.com>
-Subject: [PATCH 2/5] staging: r8188eu: reg_rfoff is never set
-Date:   Mon,  4 Apr 2022 10:21:39 +0200
-Message-Id: <20220404082142.4639-3-straube.linux@gmail.com>
+Subject: [PATCH 4/5] staging: r8188eu: pwr_state_check_cnts is always zero
+Date:   Mon,  4 Apr 2022 10:21:41 +0200
+Message-Id: <20220404082142.4639-5-straube.linux@gmail.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220404082142.4639-1-straube.linux@gmail.com>
 References: <20220404082142.4639-1-straube.linux@gmail.com>
@@ -66,42 +66,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The field reg_rfoff in struct pwrctrl_priv is never set. It stays at
-its default value 0. Remove it and remove related dead code.
+The field pwr_state_check_cnts in struct pwrctrl_priv is set to 0 and
+never changed. Remove it and remove related dead code.
 
 Signed-off-by: Michael Straube <straube.linux@gmail.com>
 ---
- drivers/staging/r8188eu/hal/usb_halinit.c     | 4 ----
- drivers/staging/r8188eu/include/rtw_pwrctrl.h | 2 --
- 2 files changed, 6 deletions(-)
+ drivers/staging/r8188eu/core/rtw_pwrctrl.c    | 4 +---
+ drivers/staging/r8188eu/include/rtw_pwrctrl.h | 1 -
+ drivers/staging/r8188eu/os_dep/os_intfs.c     | 3 ---
+ 3 files changed, 1 insertion(+), 7 deletions(-)
 
-diff --git a/drivers/staging/r8188eu/hal/usb_halinit.c b/drivers/staging/r8188eu/hal/usb_halinit.c
-index 4bc6b08fb282..21ab6881796e 100644
---- a/drivers/staging/r8188eu/hal/usb_halinit.c
-+++ b/drivers/staging/r8188eu/hal/usb_halinit.c
-@@ -539,10 +539,6 @@ u32 rtl8188eu_hal_init(struct adapter *Adapter)
- 	/*  Save target channel */
- 	haldata->CurrentChannel = 6;/* default set to 6 */
+diff --git a/drivers/staging/r8188eu/core/rtw_pwrctrl.c b/drivers/staging/r8188eu/core/rtw_pwrctrl.c
+index 5d468e8b4920..939909e5316f 100644
+--- a/drivers/staging/r8188eu/core/rtw_pwrctrl.c
++++ b/drivers/staging/r8188eu/core/rtw_pwrctrl.c
+@@ -133,9 +133,8 @@ void rtw_ps_processor(struct adapter *padapter)
+ 	if (!rtw_pwr_unassociated_idle(padapter))
+ 		goto exit;
  
--	if (pwrctrlpriv->reg_rfoff) {
--		pwrctrlpriv->rf_pwrstate = rf_off;
--	}
+-	if ((pwrpriv->rf_pwrstate == rf_on) && ((pwrpriv->pwr_state_check_cnts % 4) == 0)) {
++	if (pwrpriv->rf_pwrstate == rf_on) {
+ 		pwrpriv->change_rfpwrstate = rf_off;
 -
- 	/*  2010/08/09 MH We need to check if we need to turnon or off RF after detecting */
- 	/*  HW GPIO pin. Before PHY_RFConfig8192C. */
- 	/*  2010/08/26 MH If Efuse does not support sective suspend then disable the function. */
+ 		ips_enter(padapter);
+ 	}
+ exit:
+@@ -342,7 +341,6 @@ void rtw_init_pwrctrl_priv(struct adapter *padapter)
+ 	pwrctrlpriv->ips_mode_req = padapter->registrypriv.ips_mode;
+ 
+ 	pwrctrlpriv->pwr_state_check_interval = RTW_PWR_STATE_CHK_INTERVAL;
+-	pwrctrlpriv->pwr_state_check_cnts = 0;
+ 	pwrctrlpriv->bInSuspend = false;
+ 	pwrctrlpriv->bkeepfwalive = false;
+ 
 diff --git a/drivers/staging/r8188eu/include/rtw_pwrctrl.h b/drivers/staging/r8188eu/include/rtw_pwrctrl.h
-index b0d48106fe56..3efcc65b2f6e 100644
+index 94a65056a77e..162792988910 100644
 --- a/drivers/staging/r8188eu/include/rtw_pwrctrl.h
 +++ b/drivers/staging/r8188eu/include/rtw_pwrctrl.h
-@@ -49,8 +49,6 @@ struct pwrctrl_priv {
+@@ -69,7 +69,6 @@ struct pwrctrl_priv {
+ 	u8		bSupportRemoteWakeup;
+ 	struct timer_list pwr_state_check_timer;
+ 	int		pwr_state_check_interval;
+-	u8		pwr_state_check_cnts;
  
- 	bool	bpower_saving;
+ 	int		ps_flag;
  
--	u8	reg_rfoff;
+diff --git a/drivers/staging/r8188eu/os_dep/os_intfs.c b/drivers/staging/r8188eu/os_dep/os_intfs.c
+index c531504acc9e..5a9374957e3a 100644
+--- a/drivers/staging/r8188eu/os_dep/os_intfs.c
++++ b/drivers/staging/r8188eu/os_dep/os_intfs.c
+@@ -441,7 +441,6 @@ static void rtw_init_default_value(struct adapter *padapter)
+ u8 rtw_reset_drv_sw(struct adapter *padapter)
+ {
+ 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
+-	struct pwrctrl_priv *pwrctrlpriv = &padapter->pwrctrlpriv;
+ 
+ 	/* hal_priv */
+ 	rtl8188eu_init_default_value(padapter);
+@@ -457,8 +456,6 @@ u8 rtw_reset_drv_sw(struct adapter *padapter)
+ 
+ 	_clr_fwstate_(pmlmepriv, _FW_UNDER_SURVEY | _FW_UNDER_LINKING);
+ 
+-	pwrctrlpriv->pwr_state_check_cnts = 0;
 -
- 	uint	ips_enter_cnts;
- 	uint	ips_leave_cnts;
+ 	/* mlmeextpriv */
+ 	padapter->mlmeextpriv.sitesurvey_res.state = SCAN_DISABLE;
  
 -- 
 2.35.1
