@@ -2,132 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 240FCC46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C6BFC35276
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:38:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379673AbiDDVj1 (ORCPT
+        id S1382999AbiDDVcj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:39:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46364 "EHLO
+        Mon, 4 Apr 2022 17:32:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380495AbiDDUUH (ORCPT
+        with ESMTP id S1379720AbiDDR7B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 16:20:07 -0400
-Received: from mail1.bemta35.messagelabs.com (mail1.bemta35.messagelabs.com [67.219.250.3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A169F33EB0;
-        Mon,  4 Apr 2022 13:18:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=motorola.com;
-        s=Selector; t=1649103490; i=@motorola.com;
-        bh=HjU38nkBnog1s1+qEhVPWweGItlXZ0yZ/MkTX/2KKcY=;
-        h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-         Content-Type:In-Reply-To;
-        b=JgxHpzXeRX/rEomq+ceeQwd2OF5dFASmLTkx26pv8MT/4AIPg2vezlmBGGVygv/vH
-         Xuj107OJZxTk7rmVjlPemvaM/2sh5VM1ySvmszMxkmleGDFAEJiq+eUN0cmr8ECHpc
-         MetP6tMMHy7ALrwmcvUgCeB8XEpQ4UeuYeTx3t5e4D+tkPGqJAiAEvUPwB+BBXCNQX
-         cyQZcmWmuDB2aBB4kGyQkiBfs24F6S67m5XZgdiQnW7k5fmwqoPff8PlO7ikr/+Re7
-         +krbywpJyYX2Ycx/952q25W/Kh3OjAzE7kqy/DvXFrPJp1U7nKy3+eKRIzjuM2RuYq
-         y97Vjl0zUU/4A==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrGIsWRWlGSWpSXmKPExsUyYU+Ds25jkHe
-  SQfNsIYupjYwWx9qesFvM2Rxt8eRAO6NF8+L1bBadE5ewWyxsW8JicXnXHDaLRctamS0ezr7K
-  aPH2znQWB26PnbPusnvM7pjJ6rF5hZbHplWdbB77565h91jcN5nV4/MmOY9D29+wBXBEsWbmJ
-  eVXJLBmPP5XWPCDr+L73z2sDYzTeLoYuTiEBKYxSey985wZwlnEJPFh+gGmLkZODhYBFYlN3T
-  +ZQWw2ATWJBa9XgdkiAhoSJzf/YAexmQX+M0l0f3QBsYUFQiVmTp7ECGLzCihLnH54khXEFhL
-  IlJizv5cFIi4ocXLmExaIXi2JG/9eAu3iALKlJZb/4wAJcwrYSrx9tIxlAiPvLCQds5B0zELo
-  WMDIvIrRJqkoMz2jJDcxM0fX0MBA19DQBEgb6hoZGuolVukm6pUW65anFpfoGukllhfrpRYX6
-  xVX5ibnpOjlpZZsYgRGR0pR6uUdjDP6f+odYpTkYFIS5T3j6p0kxJeUn1KZkVicEV9UmpNafI
-  hRhoNDSYL3uy9QTrAoNT21Ii0zBxipMGkJDh4lEV5xR6A0b3FBYm5xZjpE6hSjopQ4768AoIQ
-  ASCKjNA+uDZYcLjHKSgnzMjIwMAjxFKQW5WaWoMq/YhTnYFQS5tUHmcKTmVcCN/0V0GImoMXv
-  zniCLC5JREhJNTBN+mQj6qo1jWcfS8ycCd8Y/l5U3bTD+I1lWOmHB1aS8TPPPdlyUGDri+UZb
-  /4uiuQ/KVK2cKqYy6EJ0wI6v31RPxL7osRe/EP5rBLV8xl/NJze+WzuiZIy5YrWsdr1Sbvf+v
-  GH37dnF6adMpmwLfmHnEvxue/K1yutJF5H2mk8rvTpbbM8sds7/MaVLwGr2Bdv1xHa69jJvEa
-  Q/Sbf46lb43WCFrDks2cI73E0uZ+90X922pdjU++0v1lwpv3bot4IJjn7K0v4Gm3unTj+5NKf
-  ZTPmMzuLFgdrpPs0yJstuaiww+PLabfWZSyKMyyz93qkf7hxdy+rvxT791cqF8UOq6d9kfidv
-  PyJ0A6BL6yxSizFGYmGWsxFxYkAbteYz4kDAAA=
-X-Env-Sender: w36195@motorola.com
-X-Msg-Ref: server-15.tower-636.messagelabs.com!1649103488!14751!1
-X-Originating-IP: [144.188.128.67]
-X-SYMC-ESS-Client-Auth: outbound-route-from=pass
-X-StarScan-Received: 
-X-StarScan-Version: 9.85.5; banners=-,-,-
-X-VirusChecked: Checked
-Received: (qmail 1481 invoked from network); 4 Apr 2022 20:18:09 -0000
-Received: from unknown (HELO ilclpfpp01.lenovo.com) (144.188.128.67)
-  by server-15.tower-636.messagelabs.com with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP; 4 Apr 2022 20:18:09 -0000
-Received: from va32lmmrp01.lenovo.com (va32lmmrp01.mot.com [10.62.177.113])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by ilclpfpp01.lenovo.com (Postfix) with ESMTPS id 4KXMXb5SCYzfBZq;
-        Mon,  4 Apr 2022 20:18:07 +0000 (UTC)
-Received: from p1g3 (unknown [10.45.5.14])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: w36195)
-        by va32lmmrp01.lenovo.com (Postfix) with ESMTPSA id 4KXMXb19QPzf6f0;
-        Mon,  4 Apr 2022 20:18:07 +0000 (UTC)
-Date:   Mon, 4 Apr 2022 15:17:48 -0500
-From:   Dan Vacura <w36195@motorola.com>
-To:     Bagas Sanjaya <bagasdotme@gmail.com>
-Cc:     linux-usb@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Felipe Balbi <balbi@kernel.org>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Carlos Bilbao <bilbao@vt.edu>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org
-Subject: Re: [PATCH v2] usb: gadget: uvc: allow changing interface name via
- configfs
-Message-ID: <YktSbDcPLhaUycE+@p1g3>
-References: <20220401160447.5919-1-w36195@motorola.com>
- <f4377408-ace7-a041-084f-5863bcfb7184@gmail.com>
+        Mon, 4 Apr 2022 13:59:01 -0400
+Received: from mail-oa1-x29.google.com (mail-oa1-x29.google.com [IPv6:2001:4860:4864:20::29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA2C234BB9;
+        Mon,  4 Apr 2022 10:57:04 -0700 (PDT)
+Received: by mail-oa1-x29.google.com with SMTP id 586e51a60fabf-df22f50e0cso11624114fac.3;
+        Mon, 04 Apr 2022 10:57:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=AEWP21GM4E9cyOoL3qIS0CoFdLbJpmk5WXVV+auexAQ=;
+        b=A8fxSPNmIfaWYKrHBlZaLXcvOYLu9Vrcb+u7TNHqeRxaF/O8WR7cLJCST+Tc1H7is6
+         K61aviSX1tCeV7jaQPXPb4zsKtFjWO9V4ZXkcZMWTBJbX5E7+DtBaM2KQaQxQ4NXy12M
+         VggI/cg9xK/1reYGYov8SHIDOSbJxUe7LPJ70ptMywxwLmYO7nPkjdCIwb76sGskIGsH
+         uALkaOGEGL7Osw6CrmiCAlUGaa+Ld0GAWKTdFSdsJJFtyGoF9Cedmf4VX1KsJR0DU3WP
+         lSoHhWrB/Lqqtfj3cJlLUISYxaA/U8U70C+up7rODwk8A65eKh/FQz1Nf3MoeGSfayNz
+         4a9w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=AEWP21GM4E9cyOoL3qIS0CoFdLbJpmk5WXVV+auexAQ=;
+        b=gE96Z0MC6NmgPP/v47aYW3XQgJdH0McAT5AHeornhtrL32tWtJ9+JKKgwQVN/Ywjl3
+         KV2rpbe9/U9rHQo+U0IFvXubIZ276ygcFvPAjSAKhj4c5sK469k9lHwOFnhj6MqGnwrG
+         qu828fLS8W6Vq21PurYpALr07EuIu/Z2SeGNgTEGa1BRrmNk1m4y5cBtHiT8QcTyNG68
+         KyrbyVOULaBt6pXj97gft2Css1Xb/jXmoukrSWEwhVSUhf0Q7uQWgPcY/idsSDwK1eCX
+         uPt/p+77Q5+DFxMWo/yEUM/hJ70Al+2BonwBtislWkWxtMHNYH85fI2q4rCUmUrb+5CP
+         GHrQ==
+X-Gm-Message-State: AOAM532r/aPrPeXZzol95uJSoqNyZ5a3F/nsgGq6KqSCCzkNLxmSrjdc
+        7OhPDja/kkN3pENK2+ldQ08=
+X-Google-Smtp-Source: ABdhPJx18shL1wpUax/xhz8105BoWa0G7HpdbNUzdvsDRLqA5/2ZEilu8wWMeQGrEG3upCgBtBI+yA==
+X-Received: by 2002:a05:6870:f719:b0:d6:e0c0:af42 with SMTP id ej25-20020a056870f71900b000d6e0c0af42mr187736oab.165.1649095024221;
+        Mon, 04 Apr 2022 10:57:04 -0700 (PDT)
+Received: from t14s.localdomain ([2001:1284:f013:bc01:5a2:a886:8487:b8de])
+        by smtp.gmail.com with ESMTPSA id r23-20020a056830237700b005b2610517c8sm4930201oth.56.2022.04.04.10.57.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Apr 2022 10:57:03 -0700 (PDT)
+Received: by t14s.localdomain (Postfix, from userid 1000)
+        id 1B7191DB7C2; Mon,  4 Apr 2022 14:57:02 -0300 (-03)
+Date:   Mon, 4 Apr 2022 14:57:02 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Jamie Bainbridge <jamie.bainbridge@gmail.com>
+Cc:     Vlad Yasevich <vyasevich@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-sctp@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 net] sctp: count singleton chunks in assoc user stats
+Message-ID: <YksxbrRhtngGlERY@t14s.localdomain>
+References: <c9ba8785789880cf07923b8a5051e174442ea9ee.1649029663.git.jamie.bainbridge@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <f4377408-ace7-a041-084f-5863bcfb7184@gmail.com>
+In-Reply-To: <c9ba8785789880cf07923b8a5051e174442ea9ee.1649029663.git.jamie.bainbridge@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Apr 03, 2022 at 01:13:02PM +0700, Bagas Sanjaya wrote:
-> On 01/04/22 23.04, Dan Vacura wrote:
-> > Add a configfs entry, "function_name", to change the iInterface field
-> > for VideoControl. This name is used on host devices for user selection,
-> > useful when multiple cameras are present. The default will remain "UVC
-> > Camera".
-> > 
-> > Signed-off-by: Dan Vacura <w36195@motorola.com>
-> > ---
-> > Changes in v2:
-> > - remove stable cc
-> > 
-> >   .../ABI/testing/configfs-usb-gadget-uvc       |  1 +
-> >   Documentation/usb/gadget-testing.rst          |  1 +
-> >   drivers/usb/gadget/function/f_uvc.c           |  4 +-
-> >   drivers/usb/gadget/function/u_uvc.h           |  1 +
-> >   drivers/usb/gadget/function/uvc_configfs.c    | 41 +++++++++++++++++++
-> >   5 files changed, 47 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/Documentation/ABI/testing/configfs-usb-gadget-uvc b/Documentation/ABI/testing/configfs-usb-gadget-uvc
-> > index 889ed45be4ca..611b23e6488d 100644
-> > --- a/Documentation/ABI/testing/configfs-usb-gadget-uvc
-> > +++ b/Documentation/ABI/testing/configfs-usb-gadget-uvc
-> > @@ -7,6 +7,7 @@ Description:	UVC function directory
-> >   		streaming_maxburst	0..15 (ss only)
-> >   		streaming_maxpacket	1..1023 (fs), 1..3072 (hs/ss)
-> >   		streaming_interval	1..16
-> > +		function_name		string [32]
-> >   		===================	=============================
+On Mon, Apr 04, 2022 at 09:47:48AM +1000, Jamie Bainbridge wrote:
+> Singleton chunks (INIT, HEARTBEAT PMTU probes, and SHUTDOWN-
+> COMPLETE) are not counted in SCTP_GET_ASOC_STATS "sas_octrlchunks"
+> counter available to the assoc owner.
 > 
-> Since you mention that default function_name is "UVC Camera", why don't you
-> mention it in the documentation?
-
-Good question. The rest of the file didn't contain any default values
-and I wasn't sure what the process is for keeping things like this in
-sync between source and documentation. Looking through most of the other
-usb function files I don't see any mention of the hardcoded default
-values either, so maybe it's intentional to not include.
-
+> These are all control chunks so they should be counted as such.
 > 
-> -- 
-> An old man doll... just what I always wanted! - Clara
+> Add counting of singleton chunks so they are properly accounted for.
+> 
+> Fixes: 196d67593439 ("sctp: Add support to per-association statistics via a new SCTP_GET_ASSOC_STATS call")
+> Signed-off-by: Jamie Bainbridge <jamie.bainbridge@gmail.com>
+
+Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+
+Thanks Jamie.
