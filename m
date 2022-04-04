@@ -2,177 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF9ACC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:50:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA1E4C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:50:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382343AbiDDVvK (ORCPT
+        id S1382424AbiDDVvO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:51:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48514 "EHLO
+        Mon, 4 Apr 2022 17:51:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379834AbiDDSOp (ORCPT
+        with ESMTP id S1379204AbiDDQnT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 14:14:45 -0400
-Received: from JPN01-OS0-obe.outbound.protection.outlook.com (mail-os0jpn01on2127.outbound.protection.outlook.com [40.107.113.127])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79E4F3EA8F;
-        Mon,  4 Apr 2022 11:12:48 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=iMdr7BMvEv/4hcFYWkpjrekF9KLTfaLZOFkvBtF6uPDz48u2P8KZ0oG0EMTsjDIfydzVkXD9S1xXlrYTLfvK0e+mNpcYXYIkeaN1oT9oKBsIsFlJyKu2V12Act/kKLaN84l0nYNgCYad8R+P2nWKoCmojIkh1N8srUZtIfHTL1TTwLKweJ9jBb2gtQTasKFzWCHVDXlmxgAJXVRwPwY0/UEiHOEkltX6fqATJ1L2vqST4i5C3UsiVr16rFvfUpKBUBds5yG1akZGKEj4fPnWSIu6LztRLAHA+qVpDJgYQSzyzd7PJnX/IQ1JRIe+0lESQTi5RIgE0NtcbEoSK/lSfQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=pIMt5qdMyJ87InQgXWgbuwsg5dUM5SgsrTPyXhDQQUg=;
- b=QerDW9mkhJARxPDhibHL1CLvFh9uC578/ePw+GksTlY+tx8nVF6d5F1bAm0TLYi90R0cpXELBVhPVS8xs5MJeBT899AISPs8gA4vDQ7ZreA1y+b7fzW11GI1BZQssn+sjqkBua1vdylIaopAKrulPKX280R/Cn/KyALH9ha2+0X4dfG3gA0y3OligNXgUa2ojaAWIy+MKPeJXoQ6qcZ2S3PeJw3unYCZJS9myhFWkPIFpSExXne9ZRD87n7x9GzqJExUVVZk4nedl8sNfv9M02Fsu8+5adOb3s2dOrcxh4zPmouOjFTRi0fCUc3FQAaWKKj2t4ts/dtLDKpiBhKpQA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=bp.renesas.com; dmarc=pass action=none
- header.from=bp.renesas.com; dkim=pass header.d=bp.renesas.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bp.renesas.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pIMt5qdMyJ87InQgXWgbuwsg5dUM5SgsrTPyXhDQQUg=;
- b=UA4uUKoMLRbcs5omR/Wia3juke6udLcLpSrmN68liYm0q1ZLZwIWkITpHlXo7wy+EPS/Rz28iQtg6hhkSOkToBu2GSeO7EG+Itde3kcHdlBwyyiPMNh5VGXWm5OQBsvGpprnmANY6HnUGWQGKH+0nNprXwU4n70cY7jyFFlZKcg=
-Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com (2603:1096:604:bb::5)
- by TYAPR01MB2510.jpnprd01.prod.outlook.com (2603:1096:404:87::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Mon, 4 Apr
- 2022 18:12:45 +0000
-Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com
- ([fe80::7ccd:4eb0:e2ae:fca8]) by OS0PR01MB5922.jpnprd01.prod.outlook.com
- ([fe80::7ccd:4eb0:e2ae:fca8%3]) with mapi id 15.20.5123.031; Mon, 4 Apr 2022
- 18:12:45 +0000
-From:   Biju Das <biju.das.jz@bp.renesas.com>
-To:     "Lad, Prabhakar" <prabhakar.csengg@gmail.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>
-CC:     Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
-        Pavel Machek <pavel@denx.de>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>
-Subject: RE: [PATCH 1/2] mmc: renesas_sdhi: Jump to error path instead of
- returning directly
-Thread-Topic: [PATCH 1/2] mmc: renesas_sdhi: Jump to error path instead of
- returning directly
-Thread-Index: AQHYSEjXOMLpIeOQFkaJsJDtWSjZC6zgCvxggAACXgCAAABMoA==
-Date:   Mon, 4 Apr 2022 18:12:45 +0000
-Message-ID: <OS0PR01MB5922C35E8C5259C3DA2A951A86E59@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-References: <20220404172322.32578-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20220404172322.32578-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <OS0PR01MB5922182F6302386EFF2ED66B86E59@OS0PR01MB5922.jpnprd01.prod.outlook.com>
- <CA+V-a8tdkw8-dUfrFG9kZizok8OQdcGHitAdb4E2tsBW3Xrh-g@mail.gmail.com>
-In-Reply-To: <CA+V-a8tdkw8-dUfrFG9kZizok8OQdcGHitAdb4E2tsBW3Xrh-g@mail.gmail.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=bp.renesas.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: f455d2ae-5872-4ada-a4dc-08da1666b82d
-x-ms-traffictypediagnostic: TYAPR01MB2510:EE_
-x-microsoft-antispam-prvs: <TYAPR01MB25107925AA35309E6E089C1C86E59@TYAPR01MB2510.jpnprd01.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 7J8dHcZHhRA1604Bp/88imez1DKDadygXWaWMbDctuyx68uNOKmQd/sru84fKfmzFGU/myLVIYT+0NZ6CnHWsWpqmLhA/pc5ajst437fh2vzDZJgGc87H4hdPjMTFo8nIxUzBVgDDU4wJTSuHbgvT/b2FRE0QVkDHgTJcUGz+NNLgcs5v6emof8k/M5OeCSEAimlGZpC1YPl/6bt/LgJGFLBCYJI5OFHA4ThJk80SfiljU8CmQhBlmMmxObrLndYC/eeEyjK432i7R6dq7IZNg5v2wS+DOXisEBUvXF8oO8G7cGYpJboNOyh54ERf1/T7bl049tiT8yafAlL2AvKt672kBo0Mj2UlWwUeitcnG325Xvuib+/xVhRXuHrcwtt0CRQE3yudBRZW16iR3+Q3zeB4yP4A93QTGpULOZ1rPsg4Ov59YYXCbj9xLGzaBXWYzWYUsberxgyvBP01oScuwZRmJIx2DZmuhSQeWYIIUxdjd9qmwiG0QRzgEcuZHwUcsa3X3zjwa3R16xcf8OQ1KkKszPHyzlIFfmqigS7uzozdG+wEv/h1RtiI7txe7qcRsVZwjlCetf4aMXynEsJOuEWX2kNiYPbcfYZeb9mMHyveL5JRay5UHFFvZGVVUEcJ580MNy7B0SS9qQaUh8eSlbU8rXq6bidoand9g1MB7a8KrNuCePnd+qA2BnS+revOEsOv8aNNzdtDSzTWyOzew==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OS0PR01MB5922.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(38100700002)(2906002)(508600001)(5660300002)(55016003)(33656002)(8936002)(26005)(186003)(38070700005)(83380400001)(8676002)(66476007)(76116006)(66946007)(66556008)(86362001)(110136005)(54906003)(52536014)(4326008)(64756008)(66446008)(316002)(7696005)(53546011)(6506007)(71200400001)(122000001)(9686003);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?U0piRE9TWXhqVUZyZkZ5ZXF3YXk5RU84NXJXMitxbVRocmF1WC9QV3p4Qytn?=
- =?utf-8?B?QUdYZGRKU1B3MVVMTzhtNHVNZGhnaVZsUUUyVy9tcmZ1M1duWFpHV3h1bXpi?=
- =?utf-8?B?cWJmQ29EV0NKMGxRei9xSGJDQzdkWlJkTk9uODBjMzFnSy92NXV6OU8rS0hE?=
- =?utf-8?B?TGRQeW9ITHNLYWR0VXdIa3pjMzdNVTJ6Y1VsSDdvOTlsZ1FtbEl1SUpvQUJt?=
- =?utf-8?B?WlFsTEtnMFN1a2U3QVd3TlVMY1hsLzNhdE9GZEhEL1lHWmRCY1VuT1BVbzNP?=
- =?utf-8?B?Zy9CU1VEZUZ4L1Q2Z2RSYXhWZ295Nm1sUXB6bmVndE5Sd2d6bXBKbUZHZmVT?=
- =?utf-8?B?N2psNnEvUVora2MzWGJOdVg2d1prWmdRcXBEcEhnVkI3ejVJQlVwbm5hYUtE?=
- =?utf-8?B?d3p2UHVHTlRqRSsxWEhSQy9FUW5qeE1ReTJaTjBmYkcvNnJ1VkZKZVpNbFl1?=
- =?utf-8?B?TDAvN3Y3L1FqVSsvV2szNDZlbVVtVXB0b1M0S3IwSWgxd3BaVlAxQjVrUEdu?=
- =?utf-8?B?MzArcXpjaVFreXBtQ3V4QkIyb2xxMTliUXkrMTFNWUtzbkpoRExWMG5sdTJN?=
- =?utf-8?B?eDgxY05VTTVkNEdoMUxCZ015UlR4N2c5VFdTbVpIN08zVTJLNDZtUUtncGJ2?=
- =?utf-8?B?b3FSMk4rZmdZK1ZFSlRvcDJRVDhnTFlzd3dGSk5pVkZYRkdVVkdTcDJpUFFh?=
- =?utf-8?B?c2Z4aFQ2czg5dzdTNTBmUzBQV3RQRHpjWkdBYTRteEkvMk1aMWhmekNERjVi?=
- =?utf-8?B?Zkk1VGJycWhsMFAzTEl3RENsbDJKY25KYnp6YWg5MnZQS0xCRGRLV0lqcWtx?=
- =?utf-8?B?SXRTK0xVd0F3VmszNkl5UGtyZE40eXhxK3pQUDk4dVc1T3NDaG1KL2RKdTFQ?=
- =?utf-8?B?c0JtcW5ZUWlWTkR1VFN2VkJIbWl5b1Y3UFEzc0xYR0luMVFlYUdkVWJxRnlx?=
- =?utf-8?B?eTY2TXBuaGdXV05QNkkrcld0MzJhU1YxcFhZeTBvMnVNK1NZZEcxeWpQOTdL?=
- =?utf-8?B?cFlEeGdKMFArNCs1eXhXNmRlVm9SV1R3cDQyK1Q5S2FTdzgrTEh6OW9RLzdU?=
- =?utf-8?B?aEhaMUoxSitxYXpoK0lmcTFWOVUxblA3Nzk0OUQ3YXJ6K2NUMCtRbUdBTXNv?=
- =?utf-8?B?ZmNvV2ZIeXViM3AvZ2FTVUduMFNyeEROUVU1U2duN1lsdHk5Z1gzWmhGU0Mz?=
- =?utf-8?B?WU00ZzlvU2ZFM2l2cmJRY0dzdWNaMUE5TVdrQnYzTlZRc3lFeVQ2YTZEU1Rr?=
- =?utf-8?B?WCs0RFF4UXYyTGVYLzdnM1lWNGZ1b2lsWUVjTE9XQ2NwR05KQTI2RzhURnFj?=
- =?utf-8?B?a05vWXVTVXNxR240dFExc3N6N3dwVUdFdk5kR1orTHZIMmlqaG5pYzF1RFVK?=
- =?utf-8?B?MWdTam5leUx2QUhJaDQrL21zLzl3dzdkNjVkUkhOdXRacms3dGRJL29SYXEw?=
- =?utf-8?B?NXYwcjNqL0FVK2pML3hheFQ0SFovYkZNRE9rSmVXV0FOWDdoREM1c2dMWWVY?=
- =?utf-8?B?YzkydWZJNG05enFrSWJhejFvbnVZa0ZQK1R0NHc1a1dqcE5XS3AvVDZKRm45?=
- =?utf-8?B?YVF4dXRZbnd0RFpiem5aN05HdVJ4UFYzV0dRTUhTVnhVdmtCaXU5Y05uRk85?=
- =?utf-8?B?WGJFb0xmWW5LVmt5VXprY3l6aUZZQ1lLTE5LZyttZndLQ28vR044YklCdmVC?=
- =?utf-8?B?bzhGUjdWTkl5MjAxNzE3MTJPK0FMZ1Q2cHVwRTM0Zk51UHl6Nms5cHRVcStk?=
- =?utf-8?B?MU9lZHU2ZnRHUDF1MWhQRUFGTVhOZTBhRnE3R21SNGgybG1mOXJpcFZYUE5T?=
- =?utf-8?B?U2RjOGgyNWNrS3UreHBFYUFLeEZrVGF5Rk8yejR2Qm9HM255OVJON2IzSThm?=
- =?utf-8?B?Z0pjUmIyT2Q5TW9POVZIMFZmRzcwYzhDclY5cGlsVncyL0RJZS8zNy9VWVdS?=
- =?utf-8?B?UGpLeW0vaCt1ZmpFUHBOZzc3U1kxMFdzdU9HeVdIOGNzbit0K0ZSbXhleFZ6?=
- =?utf-8?B?Y3NpWDNSU2I1WXhjU3lHUEpjTFZycjcrZ3kxcm1vZjJRaW9zV2NTUWhYakJ4?=
- =?utf-8?B?VW0yTnUvV0VYeFR0N0kxM3ZZRkRFRzBmdjhBM1dBeVR1RnU1WDNORzJtUWlj?=
- =?utf-8?B?a1JDNjV2L0lxOW9sRkc0VHRpc3hIcmFUcnorUGtzSklFaWJZNGlJSS9uRW1l?=
- =?utf-8?B?a2QxQzQwQmVMeEhURk4zZzZUdVNDSGlSZEhSa1BvdHRIVzZOK245dGJ1SVZl?=
- =?utf-8?B?clRibEk3Z25OUlovWHYwekxhRHpDM2RkYXpSNnM1OWNRaER4dFNDQlJQZDVN?=
- =?utf-8?B?UGk1KzViUk90VDlCM05IOUpxMUhPaE5mNng0TVUrN0V5UHNzeDJickhpb2NS?=
- =?utf-8?Q?r+S+Z7zuaRZPW6xQ=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        Mon, 4 Apr 2022 12:43:19 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A450F35856;
+        Mon,  4 Apr 2022 09:41:22 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 2E1961F390;
+        Mon,  4 Apr 2022 16:41:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1649090481; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=bei0JZDnlsbNqP4J+qIzBne1zsUAj2g0RJqQ6r2Qiqw=;
+        b=i0ObrEE+b2RebhFzMnlcKdL0BqgE865TCRWCuhUnAv17qBxbGvIcJplUrQaMTs8YblHn+x
+        JVYozogrIS2Flhw1EeDSlj69/ISgAxaOJXo8Mn306ngj4wFWuSk/ION7LdkcmFuho1kt6R
+        AVD9SLP//1+twgSKqikQFnTX4ieiAgM=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1649090481;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=bei0JZDnlsbNqP4J+qIzBne1zsUAj2g0RJqQ6r2Qiqw=;
+        b=pjR4WFPCNtrEDWu4FIUpx1x9XcuuyDgEQPSsLzovOSperD09sJK2XCWlVGiXuHNbagn1dx
+        JIOhyrVxO5bavqCQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id EC0B112FC5;
+        Mon,  4 Apr 2022 16:41:20 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id yPnrOLAfS2LjfAAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Mon, 04 Apr 2022 16:41:20 +0000
+From:   Vlastimil Babka <vbabka@suse.cz>
+To:     David Rientjes <rientjes@google.com>,
+        Christoph Lameter <cl@linux.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>
+Cc:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        patches@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Oliver Glitta <glittao@gmail.com>,
+        Marco Elver <elver@google.com>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+        Imran Khan <imran.f.khan@oracle.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Randy Dunlap <rdunlap@infradead.org>, linux-doc@vger.kernel.org
+Subject: [PATCH v3 6/6] slab, documentation: add description of debugfs files for SLUB caches
+Date:   Mon,  4 Apr 2022 18:41:12 +0200
+Message-Id: <20220404164112.18372-7-vbabka@suse.cz>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220404164112.18372-1-vbabka@suse.cz>
+References: <20220404164112.18372-1-vbabka@suse.cz>
 MIME-Version: 1.0
-X-OriginatorOrg: bp.renesas.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: OS0PR01MB5922.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f455d2ae-5872-4ada-a4dc-08da1666b82d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Apr 2022 18:12:45.8195
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: +W+z/ZS28iQmyp8U7TpafOdwNr+N5BtGtsHLTkX3sVbW6yaCUX24UDDOXfgCI/HLgFN7/tI7VBtqVRqFpviOPlfSH+z4aFEAfQy8T7uBvxk=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYAPR01MB2510
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3418; i=vbabka@suse.cz; h=from:subject; bh=aiEHhTlwaPsxqCPnZoF+zACTkJmNyiCa8U4FMIlm4hU=; b=owEBbQGS/pANAwAIAeAhynPxiakQAcsmYgBiSx+n9eEtd8BOf/2A9Gbbt9oR1Y/79g1fBU4U6ywZ pM9StUiJATMEAAEIAB0WIQSNS5MBqTXjGL5IXszgIcpz8YmpEAUCYksfpwAKCRDgIcpz8YmpEECtB/ 9deLfjoG4HXeZchPe/4/vX8Z2LlMjZ83wdxrA0d76J0Ln8c9FtzXuvRCjAhEdYj2UCH80jXW7fMBWF NDqQnwSChm4yVLEyZ9tpycx4qYoRFuoLCug2IVu6YKqglXKFFdMelZXfeqQT7YszkiDYbUTrfmShc/ fZp5U2dZ32SnH3TCbuM+x9Pe8K1tl9FEX0d4pl7xGrHArnPkyB3cA2wLoFleb0C/ZnuJ8R8cCuZQfG 9VHsYtj7qeRn1sgF6cqJ/ycMZf443uHFR6U/7Up+st7X33szxhjIQPP0hto8IlaHBeI2PS+sRU8viJ kT0X6iWUw5xO/W47QkjQckQ7Ozq0xe
+X-Developer-Key: i=vbabka@suse.cz; a=openpgp; fpr=A940D434992C2E8E99103D50224FA7E7CC82A664
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SGkgUHJhYmhrYXIsDQoNCj4gU3ViamVjdDogUmU6IFtQQVRDSCAxLzJdIG1tYzogcmVuZXNhc19z
-ZGhpOiBKdW1wIHRvIGVycm9yIHBhdGggaW5zdGVhZCBvZg0KPiByZXR1cm5pbmcgZGlyZWN0bHkN
-Cj4gDQo+IEhpIEJpanUsDQo+IA0KPiBUaGFuayB5b3UgZm9yIHRoZSByZXZpZXcuDQo+IA0KPiBP
-biBNb24sIEFwciA0LCAyMDIyIGF0IDc6MDIgUE0gQmlqdSBEYXMgPGJpanUuZGFzLmp6QGJwLnJl
-bmVzYXMuY29tPg0KPiB3cm90ZToNCj4gPg0KPiA+IEhpIFByYWJoYWthciBhbmQgUGF2ZWwsDQo+
-ID4NCj4gPiBUaGFua3MgZm9yIHRoZSBwYXRjaC4NCj4gPg0KPiA+ID4gU3ViamVjdDogW1BBVENI
-IDEvMl0gbW1jOiByZW5lc2FzX3NkaGk6IEp1bXAgdG8gZXJyb3IgcGF0aCBpbnN0ZWFkDQo+ID4g
-PiBvZiByZXR1cm5pbmcgZGlyZWN0bHkNCj4gPiA+DQo+ID4gPiBKdW1wIHRvIGVycm9yIHBhdGgg
-ImVkaXNjbGsiIGluc3RlYWQgb2YgcmV0dXJuaW5nIGRpcmVjdGx5IGluIGNhc2UNCj4gPiA+IG9m
-DQo+ID4gPiBkZXZtX3Jlc2V0X2NvbnRyb2xfZ2V0X29wdGlvbmFsX2V4Y2x1c2l2ZSgpIGZhaWx1
-cmUuDQo+ID4gPg0KPiA+ID4gRml4ZXM6IGI0ZDg2ZjM3ZWFjYjcgKCJtbWM6IHJlbmVzYXNfc2Ro
-aTogZG8gaGFyZCByZXNldCBpZg0KPiA+ID4gcG9zc2libGUiKQ0KPiA+ID4gUmVwb3J0ZWQtYnk6
-IFBhdmVsIE1hY2hlayA8cGF2ZWxAZGVueC5kZT4NCj4gPiA+IFNpZ25lZC1vZmYtYnk6IExhZCBQ
-cmFiaGFrYXINCj4gPiA+IDxwcmFiaGFrYXIubWFoYWRldi1sYWQucmpAYnAucmVuZXNhcy5jb20+
-DQo+ID4gPiAtLS0NCj4gPiA+ICBkcml2ZXJzL21tYy9ob3N0L3JlbmVzYXNfc2RoaV9jb3JlLmMg
-fCA2ICsrKystLQ0KPiA+ID4gIDEgZmlsZSBjaGFuZ2VkLCA0IGluc2VydGlvbnMoKyksIDIgZGVs
-ZXRpb25zKC0pDQo+ID4gPg0KPiA+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvbW1jL2hvc3QvcmVu
-ZXNhc19zZGhpX2NvcmUuYw0KPiA+ID4gYi9kcml2ZXJzL21tYy9ob3N0L3JlbmVzYXNfc2RoaV9j
-b3JlLmMNCj4gPiA+IGluZGV4IDI3OTdhOWMwZjE3ZC4uY2RkYjAxODVmNWZiIDEwMDY0NA0KPiA+
-ID4gLS0tIGEvZHJpdmVycy9tbWMvaG9zdC9yZW5lc2FzX3NkaGlfY29yZS5jDQo+ID4gPiArKysg
-Yi9kcml2ZXJzL21tYy9ob3N0L3JlbmVzYXNfc2RoaV9jb3JlLmMNCj4gPiA+IEBAIC0xMDMzLDgg
-KzEwMzMsMTAgQEAgaW50IHJlbmVzYXNfc2RoaV9wcm9iZShzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNl
-DQo+ID4gPiAqcGRldiwNCj4gPiA+ICAgICAgICAgICAgICAgZ290byBlZnJlZTsNCj4gPiA+DQo+
-ID4gPiAgICAgICBwcml2LT5yc3RjID0NCj4gPiA+IGRldm1fcmVzZXRfY29udHJvbF9nZXRfb3B0
-aW9uYWxfZXhjbHVzaXZlKCZwZGV2LT5kZXYsDQo+ID4gPiBOVUxMKTsNCj4gPiA+IC0gICAgIGlm
-IChJU19FUlIocHJpdi0+cnN0YykpDQo+ID4gPiAtICAgICAgICAgICAgIHJldHVybiBQVFJfRVJS
-KHByaXYtPnJzdGMpOw0KPiA+ID4gKyAgICAgaWYgKElTX0VSUihwcml2LT5yc3RjKSkgew0KPiA+
-ID4gKyAgICAgICAgICAgICByZXQgPSBQVFJfRVJSKHByaXYtPnJzdGMpOw0KPiA+ID4gKyAgICAg
-ICAgICAgICBnb3RvIGVkaXNjbGs7DQo+ID4gPiArICAgICB9DQo+ID4NCj4gPiBXaHkgY2FuJ3Qg
-ZGV2bV9yZXNldF9jb250cm9sX2dldF9vcHRpb25hbF9leGNsdXNpdmUgdG8gYmUgbW92ZWQgdXAN
-Cj4gYmVmb3JlIGRldm1fY2xrX2dldD8NCj4gPg0KPiBJbiB0aGF0IGNhc2Ugd2Ugd2lsbCBoYXZl
-IHRvIGp1bXAgdG8gdGhlICJlZnJlZSIgbGFiZWwgT3IgaWYgeW91IGRvbid0DQo+IHdhbnQgZ290
-byBhdCBhbGwgdGhpcyBjYW4gYmUgbW92ZWQgdG8gdGhlIHZlcnkgYmVnaW5uaW5nIG9mIHRoZSBw
-cm9iZS4NCg0KSSBndWVzcyBpdCBoYXMgdG8gbW92ZSB1cCwgZmlyc3QgZ2V0IHJlc2V0IGhhbmRs
-ZSBhbmQgY2xvY2sgaGFuZGxlIGFuZCByZXR1cm4gZXJyb3INCmRpcmVjdGx5IGluIGNhc2Ugb2Yg
-ZXJyb3IsIFRoZW4gZG8gY2xrL3Jlc2V0IG9wcy4gDQoNCj4gDQo+IFdvbGZyYW0sIHdoYXQgaXMg
-eW91ciBwcmVmZXJlbmNlIG9uIHRoZSBhYm92ZT8NCj4gDQo+IENoZWVycywNCj4gUHJhYmhha2Fy
-DQo=
+From: Oliver Glitta <glittao@gmail.com>
+
+Add description of debugfs files alloc_traces and free_traces
+to SLUB cache documentation.
+
+[ vbabka@suse.cz: some rewording ]
+
+Signed-off-by: Oliver Glitta <glittao@gmail.com>
+Signed-off-by: Vlastimil Babka <vbabka@suse.cz>
+Cc: Jonathan Corbet <corbet@lwn.net>
+Cc: Randy Dunlap <rdunlap@infradead.org>
+Cc: linux-doc@vger.kernel.org
+Reviewed-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+Acked-by: Mike Rapoport <rppt@linux.ibm.com>
+---
+ Documentation/vm/slub.rst | 64 +++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 64 insertions(+)
+
+diff --git a/Documentation/vm/slub.rst b/Documentation/vm/slub.rst
+index d3028554b1e9..43063ade737a 100644
+--- a/Documentation/vm/slub.rst
++++ b/Documentation/vm/slub.rst
+@@ -384,5 +384,69 @@ c) Execute ``slabinfo-gnuplot.sh`` in '-t' mode, passing all of the
+       40,60`` range will plot only samples collected between 40th and
+       60th seconds).
+ 
++
++DebugFS files for SLUB
++======================
++
++For more information about current state of SLUB caches with the user tracking
++debug option enabled, debugfs files are available, typically under
++/sys/kernel/debug/slab/<cache>/ (created only for caches with enabled user
++tracking). There are 2 types of these files with the following debug
++information:
++
++1. alloc_traces::
++
++    Prints information about unique allocation traces of the currently
++    allocated objects. The output is sorted by frequency of each trace.
++
++    Information in the output:
++    Number of objects, allocating function, minimal/average/maximal jiffies since alloc,
++    pid range of the allocating processes, cpu mask of allocating cpus, and stack trace.
++
++    Example:::
++
++    1085 populate_error_injection_list+0x97/0x110 age=166678/166680/166682 pid=1 cpus=1::
++	__slab_alloc+0x6d/0x90
++	kmem_cache_alloc_trace+0x2eb/0x300
++	populate_error_injection_list+0x97/0x110
++	init_error_injection+0x1b/0x71
++	do_one_initcall+0x5f/0x2d0
++	kernel_init_freeable+0x26f/0x2d7
++	kernel_init+0xe/0x118
++	ret_from_fork+0x22/0x30
++
++
++2. free_traces::
++
++    Prints information about unique freeing traces of the currently allocated
++    objects. The freeing traces thus come from the previous life-cycle of the
++    objects and are reported as not available for objects allocated for the first
++    time. The output is sorted by frequency of each trace.
++
++    Information in the output:
++    Number of objects, freeing function, minimal/average/maximal jiffies since free,
++    pid range of the freeing processes, cpu mask of freeing cpus, and stack trace.
++
++    Example:::
++
++    1980 <not-available> age=4294912290 pid=0 cpus=0
++    51 acpi_ut_update_ref_count+0x6a6/0x782 age=236886/237027/237772 pid=1 cpus=1
++	kfree+0x2db/0x420
++	acpi_ut_update_ref_count+0x6a6/0x782
++	acpi_ut_update_object_reference+0x1ad/0x234
++	acpi_ut_remove_reference+0x7d/0x84
++	acpi_rs_get_prt_method_data+0x97/0xd6
++	acpi_get_irq_routing_table+0x82/0xc4
++	acpi_pci_irq_find_prt_entry+0x8e/0x2e0
++	acpi_pci_irq_lookup+0x3a/0x1e0
++	acpi_pci_irq_enable+0x77/0x240
++	pcibios_enable_device+0x39/0x40
++	do_pci_enable_device.part.0+0x5d/0xe0
++	pci_enable_device_flags+0xfc/0x120
++	pci_enable_device+0x13/0x20
++	virtio_pci_probe+0x9e/0x170
++	local_pci_probe+0x48/0x80
++	pci_device_probe+0x105/0x1c0
++
+ Christoph Lameter, May 30, 2007
+ Sergey Senozhatsky, October 23, 2015
+-- 
+2.35.1
+
