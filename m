@@ -2,93 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D65EC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 10:30:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83C62C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 10:31:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357904AbiDDKcR (ORCPT
+        id S1357109AbiDDKdT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 06:32:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38222 "EHLO
+        Mon, 4 Apr 2022 06:33:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357109AbiDDKcO (ORCPT
+        with ESMTP id S1358378AbiDDKdJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 06:32:14 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD77C9FCB
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 03:30:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649068218; x=1680604218;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=3RN1otC0NPrOipqgJl3sDhiojlobhjW+sltWEzivqII=;
-  b=jfKEJV53OhY2Br1F2paX4yqR4sRLQqzTbGTETEEhpnSCnTHgUmqmi6jn
-   48yv8uR3GMqhB0SRFuk8kjJouV/D0fea6uw+OT9QIBGOELl6CQmEzs9bA
-   eexqoxABrQvGUqnI+SWfmEyzQTCEoM29PEps3ZAJooq2QjVLaPN53uI86
-   zpmY/mIXneH+GH2dScuJisiCoJdx2/AZss13qLRhqi4PKD1C1Eh7ex9tN
-   wBsuWvoBudVMWWBs+yzoX18MAo9YAhfCq9eLbYvHzb4fxB5gWoA/vcpUq
-   k+EFzUqw8ZCMhbH2wVezMk552XMX1d4qqBh0mJDMeAG5nG6HU7Qy5+Kxw
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10306"; a="241070993"
-X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
-   d="scan'208";a="241070993"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 03:30:14 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
-   d="scan'208";a="607993640"
-Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
-  by fmsmga008.fm.intel.com with ESMTP; 04 Apr 2022 03:30:11 -0700
-Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nbJyM-0001y9-Jc;
-        Mon, 04 Apr 2022 10:30:10 +0000
-Date:   Mon, 4 Apr 2022 18:29:28 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Gavin Shan <gshan@redhat.com>, kvmarm@lists.cs.columbia.edu
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        eauger@redhat.com, oupton@google.com, Jonathan.Cameron@huawei.com,
-        vkuznets@redhat.com, will@kernel.org, shannon.zhaosl@gmail.com,
-        james.morse@arm.com, mark.rutland@arm.com, maz@kernel.org,
-        pbonzini@redhat.com, shan.gavin@gmail.com
-Subject: Re: [PATCH v6 10/18] KVM: arm64: Support SDEI_PE_{MASK, UNMASK}
- hypercall
-Message-ID: <202204041802.MNEvTtnJ-lkp@intel.com>
-References: <20220403153911.12332-11-gshan@redhat.com>
+        Mon, 4 Apr 2022 06:33:09 -0400
+Received: from 189.cn (ptr.189.cn [183.61.185.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9601A1F626
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 03:31:13 -0700 (PDT)
+HMM_SOURCE_IP: 10.64.8.31:33812.235363298
+HMM_ATTACHE_NUM: 0000
+HMM_SOURCE_TYPE: SMTP
+Received: from clientip-114.242.206.180 (unknown [10.64.8.31])
+        by 189.cn (HERMES) with SMTP id DF00610023C;
+        Mon,  4 Apr 2022 18:31:09 +0800 (CST)
+Received: from  ([114.242.206.180])
+        by gateway-151646-dep-b7fbf7d79-bwdqx with ESMTP id 2b9191eb79c44448a4c6aff011bdcdc0 for l.stach@pengutronix.de;
+        Mon, 04 Apr 2022 18:31:11 CST
+X-Transaction-ID: 2b9191eb79c44448a4c6aff011bdcdc0
+X-Real-From: 15330273260@189.cn
+X-Receive-IP: 114.242.206.180
+X-MEDUSA-Status: 0
+Sender: 15330273260@189.cn
+From:   Sui Jingfeng <15330273260@189.cn>
+To:     Lucas Stach <l.stach@pengutronix.de>,
+        Russell King <linux+etnaviv@armlinux.org.uk>,
+        Christian Gmeiner <christian.gmeiner@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+Cc:     etnaviv@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 2/3] drm/etnaviv: split clock acquirement code to a separate function
+Date:   Mon,  4 Apr 2022 18:31:05 +0800
+Message-Id: <20220404103106.1970456-2-15330273260@189.cn>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220404103106.1970456-1-15330273260@189.cn>
+References: <20220404103106.1970456-1-15330273260@189.cn>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220403153911.12332-11-gshan@redhat.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Gavin,
+ This patch add a function (etnaviv_gpu_clk_get()) which is separated
+ from the etnaviv_gpu_platform_probe() function.
 
-Thank you for the patch! Perhaps something to improve:
+Signed-off-by: Sui Jingfeng <15330273260@189.cn>
+---
+ drivers/gpu/drm/etnaviv/etnaviv_gpu.c | 48 +++++++++++++++------------
+ 1 file changed, 27 insertions(+), 21 deletions(-)
 
-[auto build test WARNING on linus/master]
-[also build test WARNING on v5.18-rc1 next-20220404]
-[cannot apply to kvmarm/next kvm/master linux/master]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Gavin-Shan/Support-SDEI-Virtualization/20220403-234350
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git be2d3ecedd9911fbfd7e55cc9ceac5f8b79ae4cf
-config: arm64-randconfig-c004-20220404 (https://download.01.org/0day-ci/archive/20220404/202204041802.MNEvTtnJ-lkp@intel.com/config)
-compiler: aarch64-linux-gcc (GCC) 11.2.0
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-
-cocci warnings: (new ones prefixed by >>)
->> arch/arm64/kvm/sdei.c:346:15-18: Unneeded variable: "ret". Return "SDEI_SUCCESS" on line 352
-
-Please review and possibly fold the followup patch.
-
+diff --git a/drivers/gpu/drm/etnaviv/etnaviv_gpu.c b/drivers/gpu/drm/etnaviv/etnaviv_gpu.c
+index 37018bc55810..d607be474aeb 100644
+--- a/drivers/gpu/drm/etnaviv/etnaviv_gpu.c
++++ b/drivers/gpu/drm/etnaviv/etnaviv_gpu.c
+@@ -1561,6 +1561,32 @@ static int etnaviv_gpu_clk_disable(struct etnaviv_gpu *gpu)
+ 	return 0;
+ }
+ 
++static void etnaviv_gpu_clk_get(struct etnaviv_gpu *gpu, struct device *dev)
++{
++	/* Get Clocks: */
++	gpu->clk_reg = devm_clk_get(dev, "reg");
++	DBG("clk_reg: %p", gpu->clk_reg);
++	if (IS_ERR(gpu->clk_reg))
++		gpu->clk_reg = NULL;
++
++	gpu->clk_bus = devm_clk_get(dev, "bus");
++	DBG("clk_bus: %p", gpu->clk_bus);
++	if (IS_ERR(gpu->clk_bus))
++		gpu->clk_bus = NULL;
++
++	gpu->clk_core = devm_clk_get(dev, "core");
++	DBG("clk_core: %p", gpu->clk_core);
++	if (IS_ERR(gpu->clk_core))
++		gpu->clk_core = NULL;
++	gpu->base_rate_core = clk_get_rate(gpu->clk_core);
++
++	gpu->clk_shader = devm_clk_get(dev, "shader");
++	DBG("clk_shader: %p", gpu->clk_shader);
++	if (IS_ERR(gpu->clk_shader))
++		gpu->clk_shader = NULL;
++	gpu->base_rate_shader = clk_get_rate(gpu->clk_shader);
++}
++
+ int etnaviv_gpu_wait_idle(struct etnaviv_gpu *gpu, unsigned int timeout_ms)
+ {
+ 	unsigned long timeout = jiffies + msecs_to_jiffies(timeout_ms);
+@@ -1806,27 +1832,7 @@ static int etnaviv_gpu_platform_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	/* Get Clocks: */
+-	gpu->clk_reg = devm_clk_get_optional(&pdev->dev, "reg");
+-	DBG("clk_reg: %p", gpu->clk_reg);
+-	if (IS_ERR(gpu->clk_reg))
+-		return PTR_ERR(gpu->clk_reg);
+-
+-	gpu->clk_bus = devm_clk_get_optional(&pdev->dev, "bus");
+-	DBG("clk_bus: %p", gpu->clk_bus);
+-	if (IS_ERR(gpu->clk_bus))
+-		return PTR_ERR(gpu->clk_bus);
+-
+-	gpu->clk_core = devm_clk_get(&pdev->dev, "core");
+-	DBG("clk_core: %p", gpu->clk_core);
+-	if (IS_ERR(gpu->clk_core))
+-		return PTR_ERR(gpu->clk_core);
+-	gpu->base_rate_core = clk_get_rate(gpu->clk_core);
+-
+-	gpu->clk_shader = devm_clk_get_optional(&pdev->dev, "shader");
+-	DBG("clk_shader: %p", gpu->clk_shader);
+-	if (IS_ERR(gpu->clk_shader))
+-		return PTR_ERR(gpu->clk_shader);
+-	gpu->base_rate_shader = clk_get_rate(gpu->clk_shader);
++	etnaviv_gpu_clk_get(gpu, dev);
+ 
+ 	/* TODO: figure out max mapped size */
+ 	dev_set_drvdata(dev, gpu);
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.25.1
+
