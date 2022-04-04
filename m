@@ -2,63 +2,210 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C20F2C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 15:42:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A601EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 15:43:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378669AbiDDPoo (ORCPT
+        id S1378380AbiDDPpx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 11:44:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55564 "EHLO
+        Mon, 4 Apr 2022 11:45:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347003AbiDDPoh (ORCPT
+        with ESMTP id S238450AbiDDPpu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 11:44:37 -0400
-Received: from cloudserver094114.home.pl (cloudserver094114.home.pl [79.96.170.134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F11143EAA7;
-        Mon,  4 Apr 2022 08:42:40 -0700 (PDT)
-Received: from localhost (127.0.0.1) (HELO v370.home.net.pl)
- by /usr/run/smtp (/usr/run/postfix/private/idea_relay_lmtp) via UNIX with SMTP (IdeaSmtpServer 5.0.0)
- id 010ffbb855258a31; Mon, 4 Apr 2022 17:42:39 +0200
-Received: from kreacher.localnet (unknown [213.134.181.62])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by v370.home.net.pl (Postfix) with ESMTPSA id A7E7066BCD3;
-        Mon,  4 Apr 2022 17:42:38 +0200 (CEST)
-From:   "Rafael J. Wysocki" <rjw@rjwysocki.net>
-To:     Linux PCI <linux-pci@vger.kernel.org>
-Cc:     Linux PM <linux-pm@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Bjorn Helgaas <helgaas@kernel.org>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>
-Subject: [PATCH v1 0/2]: PCI: PM: Improvements related to D3cold -> D0 transitions
-Date:   Mon, 04 Apr 2022 17:38:58 +0200
-Message-ID: <4198163.ejJDZkT8p0@kreacher>
+        Mon, 4 Apr 2022 11:45:50 -0400
+Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::225])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41EA2BB3;
+        Mon,  4 Apr 2022 08:43:53 -0700 (PDT)
+Received: (Authenticated sender: i.maximets@ovn.org)
+        by mail.gandi.net (Postfix) with ESMTPSA id C0B1A1C000C;
+        Mon,  4 Apr 2022 15:43:47 +0000 (UTC)
+From:   Ilya Maximets <i.maximets@ovn.org>
+To:     netdev@vger.kernel.org
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, dev@openvswitch.org,
+        linux-kernel@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Pravin B Shelar <pshelar@ovn.org>,
+        Thomas Graf <tgraf@suug.ch>,
+        Ilya Maximets <i.maximets@ovn.org>,
+        =?UTF-8?q?St=C3=A9phane=20Graber?= <stgraber@ubuntu.com>
+Subject: [PATCH net] net: openvswitch: fix leak of nested actions
+Date:   Mon,  4 Apr 2022 17:43:45 +0200
+Message-Id: <20220404154345.2980792-1-i.maximets@ovn.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="UTF-8"
-X-CLIENT-IP: 213.134.181.62
-X-CLIENT-HOSTNAME: 213.134.181.62
-X-VADE-SPAMSTATE: clean
-X-VADE-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudejvddgkeejucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecujffqoffgrffnpdggtffipffknecuuegrihhlohhuthemucduhedtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvffufffkggfgtgesthfuredttddtjeenucfhrhhomhepfdftrghfrggvlhculfdrucghhihsohgtkhhifdcuoehrjhifsehrjhifhihsohgtkhhirdhnvghtqeenucggtffrrghtthgvrhhnpefhgedtffejheekgeeljeevvedtuefgffeiieejuddutdekgfejvdehueejjeetvdenucfkphepvddufedrudefgedrudekuddriedvnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepvddufedrudefgedrudekuddriedvpdhhvghlohepkhhrvggrtghhvghrrdhlohgtrghlnhgvthdpmhgrihhlfhhrohhmpedftfgrfhgrvghlucflrdcuhgihshhotghkihdfuceorhhjfiesrhhjfiihshhotghkihdrnhgvtheqpdhnsggprhgtphhtthhopeehpdhrtghpthhtoheplhhinhhugidqphgtihesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdhpmhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehhvghlghgrrghssehkvghrnhgvlhdrohhrghdprhgtphhtthhopehmihhkrgdr
- figvshhtvghrsggvrhhgsehlihhnuhigrdhinhhtvghlrdgtohhm
-X-DCC--Metrics: v370.home.net.pl 1024; Body=5 Fuz1=5 Fuz2=5
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi All,
+While parsing user-provided actions, openvswitch module may dynamically
+allocate memory and store pointers in the internal copy of the actions.
+So this memory has to be freed while destroying the actions.
 
-This series of two patches addresses potential issues related to transitions
-of PCI devices from D3cold to D0.
+Currently there are only two such actions: ct() and set().  However,
+there are many actions that can hold nested lists of actions and
+ovs_nla_free_flow_actions() just jumps over them leaking the memory.
 
-The first one is that devices initially in D3cold may be left in D0-uninitialized
-by pci_power_up() in some cases and the second one is that attempting to resume
-PCI devices under a bridge that fails to go from D3cold to D0 is pointless.
+For example, removal of the flow with the following actions will lead
+to a leak of the memory allocated by nf_ct_tmpl_alloc():
 
-Please refer to the patch changelogs for details.
+  actions:clone(ct(commit),0)
 
-Thanks!
+Non-freed set() action may also leak the 'dst' structure for the
+tunnel info including device references.
 
+Under certain conditions with a high rate of flow rotation that may
+cause significant memory leak problem (2MB per second in reporter's
+case).  The problem is also hard to mitigate, because the user doesn't
+have direct control over the datapath flows generated by OVS.
 
+Fix that by iterating over all the nested actions and freeing
+everything that needs to be freed recursively.
+
+New build time assertion should protect us from this problem if new
+actions will be added in the future.
+
+Unfortunately, openvswitch module doesn't use NLA_F_NESTED, so all
+attributes has to be explicitly checked.  sample() and clone() actions
+are mixing extra attributes into the user-provided action list.  That
+prevents some code generalization too.
+
+Fixes: 34ae932a4036 ("openvswitch: Make tunnel set action attach a metadata dst")
+Link: https://mail.openvswitch.org/pipermail/ovs-dev/2022-March/392922.html
+Reported-by: Stéphane Graber <stgraber@ubuntu.com>
+Signed-off-by: Ilya Maximets <i.maximets@ovn.org>
+---
+ net/openvswitch/flow_netlink.c | 95 ++++++++++++++++++++++++++++++++--
+ 1 file changed, 90 insertions(+), 5 deletions(-)
+
+diff --git a/net/openvswitch/flow_netlink.c b/net/openvswitch/flow_netlink.c
+index dbdcaaa27f5b..7176156d3844 100644
+--- a/net/openvswitch/flow_netlink.c
++++ b/net/openvswitch/flow_netlink.c
+@@ -2317,6 +2317,62 @@ static struct sw_flow_actions *nla_alloc_flow_actions(int size)
+ 	return sfa;
+ }
+ 
++static void ovs_nla_free_nested_actions(const struct nlattr *actions, int len);
++
++static void ovs_nla_free_check_pkt_len_action(const struct nlattr *action)
++{
++	const struct nlattr *a;
++	int rem;
++
++	nla_for_each_nested(a, action, rem) {
++		switch (nla_type(a)) {
++		case OVS_CHECK_PKT_LEN_ATTR_ACTIONS_IF_LESS_EQUAL:
++		case OVS_CHECK_PKT_LEN_ATTR_ACTIONS_IF_GREATER:
++			ovs_nla_free_nested_actions(nla_data(a), nla_len(a));
++			break;
++		}
++	}
++}
++
++static void ovs_nla_free_clone_action(const struct nlattr *action)
++{
++	const struct nlattr *a = nla_data(action);
++	int rem = nla_len(action);
++
++	switch (nla_type(a)) {
++	case OVS_CLONE_ATTR_EXEC:
++		/* The real list of actions follows this attribute. */
++		a = nla_next(a, &rem);
++		ovs_nla_free_nested_actions(a, rem);
++		break;
++	}
++}
++
++static void ovs_nla_free_dec_ttl_action(const struct nlattr *action)
++{
++	const struct nlattr *a = nla_data(action);
++
++	switch (nla_type(a)) {
++	case OVS_DEC_TTL_ATTR_ACTION:
++		ovs_nla_free_nested_actions(nla_data(a), nla_len(a));
++		break;
++	}
++}
++
++static void ovs_nla_free_sample_action(const struct nlattr *action)
++{
++	const struct nlattr *a = nla_data(action);
++	int rem = nla_len(action);
++
++	switch (nla_type(a)) {
++	case OVS_SAMPLE_ATTR_ARG:
++		/* The real list of actions follows this attribute. */
++		a = nla_next(a, &rem);
++		ovs_nla_free_nested_actions(a, rem);
++		break;
++	}
++}
++
+ static void ovs_nla_free_set_action(const struct nlattr *a)
+ {
+ 	const struct nlattr *ovs_key = nla_data(a);
+@@ -2330,25 +2386,54 @@ static void ovs_nla_free_set_action(const struct nlattr *a)
+ 	}
+ }
+ 
+-void ovs_nla_free_flow_actions(struct sw_flow_actions *sf_acts)
++static void ovs_nla_free_nested_actions(const struct nlattr *actions, int len)
+ {
+ 	const struct nlattr *a;
+ 	int rem;
+ 
+-	if (!sf_acts)
++	/* Whenever new actions are added, the need to update this
++	 * function should be considered.
++	 */
++	BUILD_BUG_ON(OVS_ACTION_ATTR_MAX != 23);
++
++	if (!actions)
+ 		return;
+ 
+-	nla_for_each_attr(a, sf_acts->actions, sf_acts->actions_len, rem) {
++	nla_for_each_attr(a, actions, len, rem) {
+ 		switch (nla_type(a)) {
+-		case OVS_ACTION_ATTR_SET:
+-			ovs_nla_free_set_action(a);
++		case OVS_ACTION_ATTR_CHECK_PKT_LEN:
++			ovs_nla_free_check_pkt_len_action(a);
++			break;
++
++		case OVS_ACTION_ATTR_CLONE:
++			ovs_nla_free_clone_action(a);
+ 			break;
++
+ 		case OVS_ACTION_ATTR_CT:
+ 			ovs_ct_free_action(a);
+ 			break;
++
++		case OVS_ACTION_ATTR_DEC_TTL:
++			ovs_nla_free_dec_ttl_action(a);
++			break;
++
++		case OVS_ACTION_ATTR_SAMPLE:
++			ovs_nla_free_sample_action(a);
++			break;
++
++		case OVS_ACTION_ATTR_SET:
++			ovs_nla_free_set_action(a);
++			break;
+ 		}
+ 	}
++}
++
++void ovs_nla_free_flow_actions(struct sw_flow_actions *sf_acts)
++{
++	if (!sf_acts)
++		return;
+ 
++	ovs_nla_free_nested_actions(sf_acts->actions, sf_acts->actions_len);
+ 	kfree(sf_acts);
+ }
+ 
+-- 
+2.34.1
 
