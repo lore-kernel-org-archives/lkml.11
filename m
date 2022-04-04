@@ -2,147 +2,452 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56307C35295
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07CBDC35276
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:23:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382119AbiDDVYy (ORCPT
+        id S1382055AbiDDVYo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:24:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53846 "EHLO
+        Mon, 4 Apr 2022 17:24:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379668AbiDDRqi (ORCPT
+        with ESMTP id S1379268AbiDDQvv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 13:46:38 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CE6A13EBA;
-        Mon,  4 Apr 2022 10:44:42 -0700 (PDT)
-Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 234Ge0KG016546;
-        Mon, 4 Apr 2022 17:44:40 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=pLpK+tEpeWb6HbS5e3cPLiZx014T4uD87VJyuP9P5fo=;
- b=Gy8CprMQW4NW74Q5b0SgxcteDnmtZDwCFEGEEx/O4mkaJUnYk+ZnxNBg24ZZY/VZPndD
- ZQA3m9IAKGAGXm5XW0qbUPHBfGH9wsUgABAg1g9opKqvzxAtwrgqi0Bz/LKDMlioig5O
- o2rsWQvVeiIC7g+nm3gtep/x5Hjvr7fRjMDEFr2fO2jxfxh83HHzeO+SY9MUKJ/3R2k2
- d8WDIj8xQSXTizobte611NSbEy+Qi0m1Gp6gsHQHCZwm3Zv8jA+v7RgPmm3UgS0GJQeJ
- MH3w8P4d5eCGRCT/Y92JFer2ycrEHDLEn8sbFRY1b2E8A8nYu33ZhKISNIfHrhJQ6lkz 5A== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3f6ywj3c46-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 04 Apr 2022 17:44:40 +0000
-Received: from m0098416.ppops.net (m0098416.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 234Gh41D029434;
-        Mon, 4 Apr 2022 17:44:40 GMT
-Received: from ppma04wdc.us.ibm.com (1a.90.2fa9.ip4.static.sl-reverse.com [169.47.144.26])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3f6ywj3c35-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 04 Apr 2022 17:44:39 +0000
-Received: from pps.filterd (ppma04wdc.us.ibm.com [127.0.0.1])
-        by ppma04wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 234Hh7dm010703;
-        Mon, 4 Apr 2022 17:44:39 GMT
-Received: from b03cxnp08026.gho.boulder.ibm.com (b03cxnp08026.gho.boulder.ibm.com [9.17.130.18])
-        by ppma04wdc.us.ibm.com with ESMTP id 3f6e49h75j-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 04 Apr 2022 17:44:39 +0000
-Received: from b03ledav002.gho.boulder.ibm.com (b03ledav002.gho.boulder.ibm.com [9.17.130.233])
-        by b03cxnp08026.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 234HicZY32309608
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 4 Apr 2022 17:44:38 GMT
-Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 212AA136051;
-        Mon,  4 Apr 2022 17:44:38 +0000 (GMT)
-Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 05ABC13604F;
-        Mon,  4 Apr 2022 17:44:36 +0000 (GMT)
-Received: from li-c92d2ccc-254b-11b2-a85c-a700b5bfb098.ibm.com.com (unknown [9.211.32.125])
-        by b03ledav002.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Mon,  4 Apr 2022 17:44:35 +0000 (GMT)
-From:   Matthew Rosato <mjrosato@linux.ibm.com>
-To:     linux-s390@vger.kernel.org
-Cc:     alex.williamson@redhat.com, cohuck@redhat.com,
-        schnelle@linux.ibm.com, farman@linux.ibm.com, pmorel@linux.ibm.com,
-        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
-        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
-        svens@linux.ibm.com, frankja@linux.ibm.com, david@redhat.com,
-        imbrenda@linux.ibm.com, vneethv@linux.ibm.com,
-        oberpar@linux.ibm.com, freude@linux.ibm.com, thuth@redhat.com,
-        pasic@linux.ibm.com, pbonzini@redhat.com, corbet@lwn.net,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org
-Subject: [PATCH v5 18/21] vfio-pci/zdev: different maxstbl for interpreted devices
-Date:   Mon,  4 Apr 2022 13:43:46 -0400
-Message-Id: <20220404174349.58530-19-mjrosato@linux.ibm.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220404174349.58530-1-mjrosato@linux.ibm.com>
-References: <20220404174349.58530-1-mjrosato@linux.ibm.com>
+        Mon, 4 Apr 2022 12:51:51 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C92B3152B;
+        Mon,  4 Apr 2022 09:49:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649090995; x=1680626995;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=/+vjkQPwsEYzBlTlDWEU3NQedp7WLw6YdNjDIo/ACP8=;
+  b=BEvz78zOlsLSgsRbMrZrIOw3EpQur2DxMC1g+CLXaZTAnQSQes/qBBys
+   OdvM6qyF26+hFeQX//EtKIpIgv3eY66YiJXrk+fXncKBBxIJVKd6qou1e
+   T2rSXX9Qlk6SC3DDrgdK3BG5zev7UHh3eCmFDXhqOOc3Bmi24Q+/U7rf4
+   6vqrgh6dhjZhL4wjzAACP03zVx/kvLsLVOd/kSx0SZthz4P61rE83wgBc
+   If3KbwPTIpyBMFbxeLQytbafxlSewamMNVfCKbaS5RhQqJCeP0R/1CDjv
+   Ywxv90U05j9EMV4IKf6zGZ4KjuRohQ/MJrtxwhrl+sKaYfvBLpIxKtcVo
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="323734047"
+X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
+   d="scan'208";a="323734047"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:49:51 -0700
+X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
+   d="scan'208";a="523105189"
+Received: from rchatre-ws.ostc.intel.com ([10.54.69.144])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:49:50 -0700
+From:   Reinette Chatre <reinette.chatre@intel.com>
+To:     dave.hansen@linux.intel.com, jarkko@kernel.org, tglx@linutronix.de,
+        bp@alien8.de, luto@kernel.org, mingo@redhat.com,
+        linux-sgx@vger.kernel.org, x86@kernel.org
+Cc:     seanjc@google.com, kai.huang@intel.com, cathy.zhang@intel.com,
+        cedric.xing@intel.com, haitao.huang@intel.com,
+        mark.shanahan@intel.com, hpa@zytor.com,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH V3 14/30] x86/sgx: Support restricting of enclave page permissions
+Date:   Mon,  4 Apr 2022 09:49:22 -0700
+Message-Id: <8ed9ee98ca26c9eefde0fd49062bca6e7b9efe80.1648847675.git.reinette.chatre@intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cover.1648847675.git.reinette.chatre@intel.com>
+References: <cover.1648847675.git.reinette.chatre@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: mZyiUFYSlim30QOgceMym7_96AiPl-s3
-X-Proofpoint-ORIG-GUID: lB5fQBpHwPhQsNCHpPzGRSDEsxUZUvgx
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-04-04_06,2022-03-31_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 mlxscore=0
- mlxlogscore=999 suspectscore=0 spamscore=0 adultscore=0 impostorscore=0
- bulkscore=0 lowpriorityscore=0 phishscore=0 malwarescore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2204040099
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When doing load/store interpretation, the maximum store block length is
-determined by the underlying firmware, not the host kernel API.  Reflect
-that in the associated Query PCI Function Group clp capability and let
-userspace decide which is appropriate to present to the guest.
+In the initial (SGX1) version of SGX, pages in an enclave need to be
+created with permissions that support all usages of the pages, from the
+time the enclave is initialized until it is unloaded. For example,
+pages used by a JIT compiler or when code needs to otherwise be
+relocated need to always have RWX permissions.
 
-Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
+SGX2 includes a new function ENCLS[EMODPR] that is run from the kernel
+and can be used to restrict the EPCM permissions of regular enclave
+pages within an initialized enclave.
+
+Introduce ioctl() SGX_IOC_ENCLAVE_RESTRICT_PERMISSIONS to support
+restricting EPCM permissions. With this ioctl() the user specifies
+a page range and the EPCM permissions to be applied to all pages in
+the provided range. ENCLS[EMODPR] is run to restrict the EPCM
+permissions followed by the ENCLS[ETRACK] flow that will ensure
+no cached linear-to-physical address mappings to the changed
+pages remain.
+
+It is possible for the permission change request to fail on any
+page within the provided range, either with an error encountered
+by the kernel or by the SGX hardware while running
+ENCLS[EMODPR]. To support partial success the ioctl() returns an
+error code based on failures encountered by the kernel as well
+as two result output parameters: one for the number of pages
+that were successfully changed and one for the SGX return code.
+
+The page table entry permissions are not impacted by the EPCM
+permission changes. VMAs and PTEs will continue to allow the
+maximum vetted permissions determined at the time the pages
+are added to the enclave. The SGX error code in a page fault
+will indicate if it was an EPCM permission check that prevented
+an access attempt.
+
+No checking is done to ensure that the permissions are actually
+being restricted. This is because the enclave may have relaxed
+the EPCM permissions from within the enclave without letting the
+kernel know. An attempt to relax permissions using this call will
+be ignored by the hardware.
+
+Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
 ---
- drivers/vfio/pci/vfio_pci_zdev.c | 6 ++++--
- include/uapi/linux/vfio_zdev.h   | 4 ++++
- 2 files changed, 8 insertions(+), 2 deletions(-)
+Changes since V2:
+- Include the sgx_ioc_sgx2_ready() utility
+  that previously was in "x86/sgx: Support relaxing of enclave page
+  permissions" that is removed from the next version.
+- Few renames requested by Jarkko:
+  struct sgx_enclave_restrict_perm ->
+         struct sgx_enclave_restrict_permissions
+  sgx_enclave_restrict_perm()     ->
+         sgx_enclave_restrict_permissions()
+  sgx_ioc_enclave_restrict_perm() ->
+         sgx_ioc_enclave_restrict_permissions()
+- Make EPCM permissions independent from kernel view of
+  permissions.  (Jarkko)
+  - Remove attempt at runtime tracking of EPCM permissions
+    (sgx_encl_page->vm_run_prot_bits).
+  - Do not flush page table entries - they are no longer impacted by
+    EPCM permission changes.
+  - Modify changelog to reflect new architecture.
+- Ensure at least PROT_READ is requested - enclave requires read
+  access to the page for commands like EMODPE and EACCEPT. (Jarkko)
 
-diff --git a/drivers/vfio/pci/vfio_pci_zdev.c b/drivers/vfio/pci/vfio_pci_zdev.c
-index 4a653ce480c7..d3ca58d9d8ec 100644
---- a/drivers/vfio/pci/vfio_pci_zdev.c
-+++ b/drivers/vfio/pci/vfio_pci_zdev.c
-@@ -44,14 +44,16 @@ static int zpci_group_cap(struct zpci_dev *zdev, struct vfio_info_cap *caps)
- {
- 	struct vfio_device_info_cap_zpci_group cap = {
- 		.header.id = VFIO_DEVICE_INFO_CAP_ZPCI_GROUP,
--		.header.version = 1,
-+		.header.version = 2,
- 		.dasm = zdev->dma_mask,
- 		.msi_addr = zdev->msi_addr,
- 		.flags = VFIO_DEVICE_INFO_ZPCI_FLAG_REFRESH,
- 		.mui = zdev->fmb_update,
- 		.noi = zdev->max_msi,
- 		.maxstbl = ZPCI_MAX_WRITE_SIZE,
--		.version = zdev->version
-+		.version = zdev->version,
-+		.reserved = 0,
-+		.imaxstbl = zdev->maxstbl
- 	};
- 
- 	return vfio_info_add_capability(caps, &cap.header, sizeof(cap));
-diff --git a/include/uapi/linux/vfio_zdev.h b/include/uapi/linux/vfio_zdev.h
-index 78c022af3d29..77f2aff1f27e 100644
---- a/include/uapi/linux/vfio_zdev.h
-+++ b/include/uapi/linux/vfio_zdev.h
-@@ -50,6 +50,10 @@ struct vfio_device_info_cap_zpci_group {
- 	__u16 noi;		/* Maximum number of MSIs */
- 	__u16 maxstbl;		/* Maximum Store Block Length */
- 	__u8 version;		/* Supported PCI Version */
-+	/* End of version 1 */
-+	__u8 reserved;
-+	__u16 imaxstbl;		/* Maximum Interpreted Store Block Length */
-+	/* End of version 2 */
- };
+Changes since V1:
+- Change terminology to use "relax" instead of "extend" to refer to
+  the case when enclave page permissions are added (Dave).
+- Use ioctl() in commit message (Dave).
+- Add examples on what permissions would be allowed (Dave).
+- Split enclave page permission changes into two ioctl()s, one for
+  permission restricting (SGX_IOC_ENCLAVE_RESTRICT_PERMISSIONS)
+  and one for permission relaxing (SGX_IOC_ENCLAVE_RELAX_PERMISSIONS)
+  (Jarkko).
+- In support of the ioctl() name change the following names have been
+  changed:
+  struct sgx_page_modp -> struct sgx_enclave_restrict_perm
+  sgx_ioc_page_modp() -> sgx_ioc_enclave_restrict_perm()
+  sgx_page_modp() -> sgx_enclave_restrict_perm()
+- ioctl() takes entire secinfo as input instead of
+  page permissions only (Jarkko).
+- Fix kernel-doc to include () in function name.
+- Create and use utility for the ETRACK flow.
+- Fixups in comments
+- Move kernel-doc to function that provides documentation for
+  Documentation/x86/sgx.rst.
+- Remove redundant comment.
+- Make explicit which members of struct sgx_enclave_restrict_perm
+  are for output (Dave).
+
+ arch/x86/include/uapi/asm/sgx.h |  21 +++
+ arch/x86/kernel/cpu/sgx/ioctl.c | 242 ++++++++++++++++++++++++++++++++
+ 2 files changed, 263 insertions(+)
+
+diff --git a/arch/x86/include/uapi/asm/sgx.h b/arch/x86/include/uapi/asm/sgx.h
+index f4b81587e90b..a0a24e94fb27 100644
+--- a/arch/x86/include/uapi/asm/sgx.h
++++ b/arch/x86/include/uapi/asm/sgx.h
+@@ -29,6 +29,8 @@ enum sgx_page_flags {
+ 	_IOW(SGX_MAGIC, 0x03, struct sgx_enclave_provision)
+ #define SGX_IOC_VEPC_REMOVE_ALL \
+ 	_IO(SGX_MAGIC, 0x04)
++#define SGX_IOC_ENCLAVE_RESTRICT_PERMISSIONS \
++	_IOWR(SGX_MAGIC, 0x05, struct sgx_enclave_restrict_permissions)
  
  /**
+  * struct sgx_enclave_create - parameter structure for the
+@@ -76,6 +78,25 @@ struct sgx_enclave_provision {
+ 	__u64 fd;
+ };
+ 
++/**
++ * struct sgx_enclave_restrict_permissions - parameters for ioctl
++ *                                        %SGX_IOC_ENCLAVE_RESTRICT_PERMISSIONS
++ * @offset:	starting page offset (page aligned relative to enclave base
++ *		address defined in SECS)
++ * @length:	length of memory (multiple of the page size)
++ * @secinfo:	address for the SECINFO data containing the new permission bits
++ *		for pages in range described by @offset and @length
++ * @result:	(output) SGX result code of ENCLS[EMODPR] function
++ * @count:	(output) bytes successfully changed (multiple of page size)
++ */
++struct sgx_enclave_restrict_permissions {
++	__u64 offset;
++	__u64 length;
++	__u64 secinfo;
++	__u64 result;
++	__u64 count;
++};
++
+ struct sgx_enclave_run;
+ 
+ /**
+diff --git a/arch/x86/kernel/cpu/sgx/ioctl.c b/arch/x86/kernel/cpu/sgx/ioctl.c
+index 0460fd224a05..4d88bfd163e7 100644
+--- a/arch/x86/kernel/cpu/sgx/ioctl.c
++++ b/arch/x86/kernel/cpu/sgx/ioctl.c
+@@ -660,6 +660,244 @@ static long sgx_ioc_enclave_provision(struct sgx_encl *encl, void __user *arg)
+ 	return sgx_set_attribute(&encl->attributes_mask, params.fd);
+ }
+ 
++/*
++ * Ensure enclave is ready for SGX2 functions. Readiness is checked
++ * by ensuring the hardware supports SGX2 and the enclave is initialized
++ * and thus able to handle requests to modify pages within it.
++ */
++static int sgx_ioc_sgx2_ready(struct sgx_encl *encl)
++{
++	if (!(cpu_feature_enabled(X86_FEATURE_SGX2)))
++		return -ENODEV;
++
++	if (!test_bit(SGX_ENCL_INITIALIZED, &encl->flags))
++		return -EINVAL;
++
++	return 0;
++}
++
++/*
++ * Return valid permission fields from a secinfo structure provided by
++ * user space. The secinfo structure is required to only have bits in
++ * the permission fields set.
++ */
++static int sgx_perm_from_user_secinfo(void __user *_secinfo, u64 *secinfo_perm)
++{
++	struct sgx_secinfo secinfo;
++	u64 perm;
++
++	if (copy_from_user(&secinfo, (void __user *)_secinfo,
++			   sizeof(secinfo)))
++		return -EFAULT;
++
++	if (secinfo.flags & ~SGX_SECINFO_PERMISSION_MASK)
++		return -EINVAL;
++
++	if (memchr_inv(secinfo.reserved, 0, sizeof(secinfo.reserved)))
++		return -EINVAL;
++
++	perm = secinfo.flags & SGX_SECINFO_PERMISSION_MASK;
++
++	/*
++	 * Read access is required for the enclave to be able to use the page.
++	 * SGX instructions like ENCLU[EMODPE] and ENCLU[EACCEPT] require
++	 * read access.
++	 */
++	if (!(perm & SGX_SECINFO_R))
++		return -EINVAL;
++
++	*secinfo_perm = perm;
++
++	return 0;
++}
++
++/*
++ * Some SGX functions require that no cached linear-to-physical address
++ * mappings are present before they can succeed. Collaborate with
++ * hardware via ENCLS[ETRACK] to ensure that all cached
++ * linear-to-physical address mappings belonging to all threads of
++ * the enclave are cleared. See sgx_encl_cpumask() for details.
++ */
++static int sgx_enclave_etrack(struct sgx_encl *encl)
++{
++	void *epc_virt;
++	int ret;
++
++	epc_virt = sgx_get_epc_virt_addr(encl->secs.epc_page);
++	ret = __etrack(epc_virt);
++	if (ret) {
++		/*
++		 * ETRACK only fails when there is an OS issue. For
++		 * example, two consecutive ETRACK was sent without
++		 * completed IPI between.
++		 */
++		pr_err_once("ETRACK returned %d (0x%x)", ret, ret);
++		/*
++		 * Send IPIs to kick CPUs out of the enclave and
++		 * try ETRACK again.
++		 */
++		on_each_cpu_mask(sgx_encl_cpumask(encl), sgx_ipi_cb, NULL, 1);
++		ret = __etrack(epc_virt);
++		if (ret) {
++			pr_err_once("ETRACK repeat returned %d (0x%x)",
++				    ret, ret);
++			return -EFAULT;
++		}
++	}
++	on_each_cpu_mask(sgx_encl_cpumask(encl), sgx_ipi_cb, NULL, 1);
++
++	return 0;
++}
++
++/**
++ * sgx_enclave_restrict_permissions() - Restrict EPCM permissions
++ * @encl:	Enclave to which the pages belong.
++ * @modp:	Checked parameters from user on which pages need modifying.
++ * @secinfo_perm: New (validated) permission bits.
++ *
++ * Return:
++ * - 0:		Success.
++ * - -errno:	Otherwise.
++ */
++static long
++sgx_enclave_restrict_permissions(struct sgx_encl *encl,
++				 struct sgx_enclave_restrict_permissions *modp,
++				 u64 secinfo_perm)
++{
++	struct sgx_encl_page *entry;
++	struct sgx_secinfo secinfo;
++	unsigned long addr;
++	unsigned long c;
++	void *epc_virt;
++	int ret;
++
++	memset(&secinfo, 0, sizeof(secinfo));
++	secinfo.flags = secinfo_perm;
++
++	for (c = 0 ; c < modp->length; c += PAGE_SIZE) {
++		addr = encl->base + modp->offset + c;
++
++		mutex_lock(&encl->lock);
++
++		entry = sgx_encl_load_page(encl, addr);
++		if (IS_ERR(entry)) {
++			ret = PTR_ERR(entry) == -EBUSY ? -EAGAIN : -EFAULT;
++			goto out_unlock;
++		}
++
++		/*
++		 * Changing EPCM permissions is only supported on regular
++		 * SGX pages. Attempting this change on other pages will
++		 * result in #PF.
++		 */
++		if (entry->type != SGX_PAGE_TYPE_REG) {
++			ret = -EINVAL;
++			goto out_unlock;
++		}
++
++		/*
++		 * Do not verify the permission bits requested. Kernel
++		 * has no control over how EPCM permissions can be relaxed
++		 * from within the enclave. ENCLS[EMODPR] can only
++		 * remove existing EPCM permissions, attempting to set
++		 * new permissions will be ignored by the hardware.
++		 */
++
++		/* Change EPCM permissions. */
++		epc_virt = sgx_get_epc_virt_addr(entry->epc_page);
++		ret = __emodpr(&secinfo, epc_virt);
++		if (encls_faulted(ret)) {
++			/*
++			 * All possible faults should be avoidable:
++			 * parameters have been checked, will only change
++			 * permissions of a regular page, and no concurrent
++			 * SGX1/SGX2 ENCLS instructions since these
++			 * are protected with mutex.
++			 */
++			pr_err_once("EMODPR encountered exception %d\n",
++				    ENCLS_TRAPNR(ret));
++			ret = -EFAULT;
++			goto out_unlock;
++		}
++		if (encls_failed(ret)) {
++			modp->result = ret;
++			ret = -EFAULT;
++			goto out_unlock;
++		}
++
++		ret = sgx_enclave_etrack(encl);
++		if (ret) {
++			ret = -EFAULT;
++			goto out_unlock;
++		}
++
++		mutex_unlock(&encl->lock);
++	}
++
++	ret = 0;
++	goto out;
++
++out_unlock:
++	mutex_unlock(&encl->lock);
++out:
++	modp->count = c;
++
++	return ret;
++}
++
++/**
++ * sgx_ioc_enclave_restrict_permissions() - handler for
++ *                                        %SGX_IOC_ENCLAVE_RESTRICT_PERMISSIONS
++ * @encl:	an enclave pointer
++ * @arg:	userspace pointer to a &struct sgx_enclave_restrict_permissions
++ *		instance
++ *
++ * SGX2 distinguishes between relaxing and restricting the enclave page
++ * permissions maintained by the hardware (EPCM permissions) of pages
++ * belonging to an initialized enclave (after SGX_IOC_ENCLAVE_INIT).
++ *
++ * EPCM permissions cannot be restricted from within the enclave, the enclave
++ * requires the kernel to run the privileged level 0 instructions ENCLS[EMODPR]
++ * and ENCLS[ETRACK]. An attempt to relax EPCM permissions with this call
++ * will be ignored by the hardware.
++ *
++ * Return:
++ * - 0:		Success
++ * - -errno:	Otherwise
++ */
++static long sgx_ioc_enclave_restrict_permissions(struct sgx_encl *encl,
++						 void __user *arg)
++{
++	struct sgx_enclave_restrict_permissions params;
++	u64 secinfo_perm;
++	long ret;
++
++	ret = sgx_ioc_sgx2_ready(encl);
++	if (ret)
++		return ret;
++
++	if (copy_from_user(&params, arg, sizeof(params)))
++		return -EFAULT;
++
++	if (sgx_validate_offset_length(encl, params.offset, params.length))
++		return -EINVAL;
++
++	ret = sgx_perm_from_user_secinfo((void __user *)params.secinfo,
++					 &secinfo_perm);
++	if (ret)
++		return ret;
++
++	if (params.result || params.count)
++		return -EINVAL;
++
++	ret = sgx_enclave_restrict_permissions(encl, &params, secinfo_perm);
++
++	if (copy_to_user(arg, &params, sizeof(params)))
++		return -EFAULT;
++
++	return ret;
++}
++
+ long sgx_ioctl(struct file *filep, unsigned int cmd, unsigned long arg)
+ {
+ 	struct sgx_encl *encl = filep->private_data;
+@@ -681,6 +919,10 @@ long sgx_ioctl(struct file *filep, unsigned int cmd, unsigned long arg)
+ 	case SGX_IOC_ENCLAVE_PROVISION:
+ 		ret = sgx_ioc_enclave_provision(encl, (void __user *)arg);
+ 		break;
++	case SGX_IOC_ENCLAVE_RESTRICT_PERMISSIONS:
++		ret = sgx_ioc_enclave_restrict_permissions(encl,
++							   (void __user *)arg);
++		break;
+ 	default:
+ 		ret = -ENOIOCTLCMD;
+ 		break;
 -- 
-2.27.0
+2.25.1
 
