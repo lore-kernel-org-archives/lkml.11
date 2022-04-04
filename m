@@ -2,99 +2,293 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CDD6C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E115C4321E
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:49:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381374AbiDDVtw (ORCPT
+        id S1381336AbiDDVtu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:49:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33424 "EHLO
+        Mon, 4 Apr 2022 17:49:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379584AbiDDRgd (ORCPT
+        with ESMTP id S1379200AbiDDQnS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 13:36:33 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB7AE28E20
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 10:34:36 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id u14so5619822pjj.0
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 10:34:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=V1fiQ+TpCWz9aW9batEAHSpfr5r9dyK3Q/lTwaH3lR0=;
-        b=n5mRgSQ8y20acZ/nK6OhYxxGJzwZSGfgcaIV5gwWcarOIpZUaCExb23hDcba/FfujR
-         xFNvpv34nq2Hj6fGtwvQQenG/CsfvSWly7w85pOa2sG503FmKvshqI9P5cFMoVE3Aar/
-         UQu5P8WN1WRQr6qVnpL2fGXvjFr5cmxhUxxebpUNcv68zXidJPUkPwuQpB2cgSdry9M0
-         eLkTMCOhfou4kVQgZxaauYZqxvKoMSlmivMsJ7IiJDCkOcBgoxX2LkJHmM3A/XGrPuQZ
-         2pPiCkDFuX+TqlPuqM3RY9B1nPG/O5uu9L/f2k9jXWu9RJ6qGXKz05KdOk77e14RcYjY
-         VMzQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=V1fiQ+TpCWz9aW9batEAHSpfr5r9dyK3Q/lTwaH3lR0=;
-        b=V48zJMWFDViA9Vb+sOdAGjmI+DEfY5Og7trgyRRtkxOxz4jXxWDWh+Tu4ht5ffPxBI
-         HwnyWOlJoUlB3HQRBJ9dmTQu649SqCJgBGxb56xoRzPVNsZOjY4AHRvsm2lUn29/sXKn
-         /xp4jNF4oAvTx2S1fLL6ybDR2XuUT0sVYhHoVhCwPYvLGOrI7j1+gre20/LlyefG+6Py
-         KDqmpdMZvDzEI7gu9N5yLJxM9ZVqJPwtBGb+oKm5Mh8R8kT5pOaTMz2eMZGq4UQXy3dv
-         aANlRJmSPYxyrKy6mlD8xHB3M7E1FyRRHhj9sri9H4dwy172pYkyjqK7yLY5k1mgW/2e
-         R3kg==
-X-Gm-Message-State: AOAM530rgoGv5oTW6u+jaDSYHVPG5Sp/pGcdv+lVRJnUhgfuEMsVooU7
-        CZawFDQKtmO6s27W7Y9/L90yc7/9CVafejhM
-X-Google-Smtp-Source: ABdhPJwHq/HMWfqJNWl3Tmj7ZD7tbsm4BjEdWB/ICSYcy3kVA2KslfNYCV0z25OGCfSV48YcTJj1nA==
-X-Received: by 2002:a17:903:20c:b0:154:b58:d424 with SMTP id r12-20020a170903020c00b001540b58d424mr704902plh.45.1649093675449;
-        Mon, 04 Apr 2022 10:34:35 -0700 (PDT)
-Received: from google.com ([2620:15c:211:202:9d5:9b93:ffb4:574a])
-        by smtp.gmail.com with ESMTPSA id f66-20020a62db45000000b004fa8a7b8ad3sm12748136pfg.77.2022.04.04.10.34.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 10:34:34 -0700 (PDT)
-Date:   Mon, 4 Apr 2022 10:34:27 -0700
-From:   Nick Desaulniers <ndesaulniers@google.com>
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     Masahiro Yamada <masahiroy@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org,
-        linux-kbuild@vger.kernel.org, linux-arch@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 2/8] kbuild: prevent exported headers from including
- <stdlib.h>, <stdbool.h>
-Message-ID: <YkssI2uDHRq41zjw@google.com>
-References: <20220404061948.2111820-1-masahiroy@kernel.org>
- <20220404061948.2111820-3-masahiroy@kernel.org>
- <YkqhQhJIQEL2qh8C@infradead.org>
+        Mon, 4 Apr 2022 12:43:18 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9802635851
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 09:41:21 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 1FA1D210F4;
+        Mon,  4 Apr 2022 16:41:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1649090480; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Msvh6m+t5rYoB11gb9lJtAm2YmxtlamKtBfXfIOctHA=;
+        b=tlOMGI7kNSNyy2XuejrBGFf836Qy3z44eiz/mZrTq/6EQLL8eEbwOBjEmkdymnHKzzl7I+
+        xg/MpwhH6iO+cOh6iLRJzp4+I9UgBPv6jG1Fuyof3z/QdP2HRknjDjBeYO+NOfHTPgIplf
+        BZaZyWwz+Fzfk6IjO7o2gNtz4TwDExw=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1649090480;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Msvh6m+t5rYoB11gb9lJtAm2YmxtlamKtBfXfIOctHA=;
+        b=sMZ/KEKgA+a21s2WOtHvaiFSM98e28VjkRdAIhCVcH9KoppIuFRW+5wPIwkKTxNicqWQMO
+        fo1IelcSJgf646Dw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id E0FBC13A89;
+        Mon,  4 Apr 2022 16:41:19 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id GLNTNq8fS2LjfAAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Mon, 04 Apr 2022 16:41:19 +0000
+From:   Vlastimil Babka <vbabka@suse.cz>
+To:     David Rientjes <rientjes@google.com>,
+        Christoph Lameter <cl@linux.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>
+Cc:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        patches@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Oliver Glitta <glittao@gmail.com>,
+        Marco Elver <elver@google.com>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+        Imran Khan <imran.f.khan@oracle.com>,
+        Vlastimil Babka <vbabka@suse.cz>
+Subject: [PATCH v3 1/6] lib/stackdepot: allow requesting early initialization dynamically
+Date:   Mon,  4 Apr 2022 18:41:07 +0200
+Message-Id: <20220404164112.18372-2-vbabka@suse.cz>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220404164112.18372-1-vbabka@suse.cz>
+References: <20220404164112.18372-1-vbabka@suse.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YkqhQhJIQEL2qh8C@infradead.org>
+X-Developer-Signature: v=1; a=openpgp-sha256; l=7886; h=from:subject; bh=g13raqQ+rnG6rknZ2M+4fuKo89TMDIRw3HFuYCzSfK0=; b=owEBbQGS/pANAwAIAeAhynPxiakQAcsmYgBiSx+jaLlmGkFJ39Gr8G3pJl5+AE10txtNwpy9PXCs wtDx4X6JATMEAAEIAB0WIQSNS5MBqTXjGL5IXszgIcpz8YmpEAUCYksfowAKCRDgIcpz8YmpEGy9B/ 4ye/zmHC7nUHoPB5v5Z7YbJbuhVSD6qAUUS3grCPUqL+fy7gCmlAmYGuHShuU9+cZYEdJi54QV5bvs j0UsAgImm33hsWBUSlBtveKek6TtHefdzgefKxlDo8EGtA7CaHfffAFGHhEWJ/7OKv1wPlo3nwU9S1 FtULwgfLmU0GD/me12NCb22pFYJfr4/5QD34m9HBu/vxo+YHMNd6HbNHlWB1I1HFrzml7s8cOY5JkZ QpopD9eqRDO8Xhh9Bcmo0Wopbrd3gHQbQSMl8VbaG4C7yWz5cHcxFRqMnHZldbh1i2ouG3sGL2+P9k DkhMxTEEo9dBtz12zcBamASZce5ml9
+X-Developer-Key: i=vbabka@suse.cz; a=openpgp; fpr=A940D434992C2E8E99103D50224FA7E7CC82A664
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 04, 2022 at 12:41:54AM -0700, Christoph Hellwig wrote:
-> On Mon, Apr 04, 2022 at 03:19:42PM +0900, Masahiro Yamada wrote:
-> > If we can make kernel headers self-contained (that is, none of exported
-> > kernel headers includes system headers), we will be able to add the
-> > -nostdinc flag, but that is much far from where we stand now.
+In a later patch we want to add stackdepot support for object owner
+tracking in slub caches, which is enabled by slub_debug boot parameter.
+This creates a bootstrap problem as some caches are created early in
+boot when slab_is_available() is false and thus stack_depot_init()
+tries to use memblock. But, as reported by Hyeonggon Yoo [1] we are
+already beyond memblock_free_all(). Ideally memblock allocation should
+fail, yet it succeeds, but later the system crashes, which is a
+separately handled issue.
 
-This is something I'd like to see done. IMO, the kernel headers should
-be the independent variable of which the libc is the dependendent
-variable.
+To resolve this boostrap issue in a robust way, this patch adds another
+way to request stack_depot_early_init(), which happens at a well-defined
+point of time. In addition to build-time CONFIG_STACKDEPOT_ALWAYS_INIT,
+code that's e.g. processing boot parameters (which happens early enough)
+can call a new function stack_depot_want_early_init(), which sets a flag
+that stack_depot_early_init() will check.
 
-Android's libc, Bionic, is making use of the UAPI headers. They are
-doing some rewriting of UAPI headers, but I'd like to see what needs to
-be upstreamed from there. I just noticed
-include/uapi/linux/libc-compat.h, which seems like a good place for such
-compat related issues.
+In this patch we also convert page_owner to this approach. While it
+doesn't have the bootstrap issue as slub, it's also a functionality
+enabled by a boot param and can thus request stack_depot_early_init()
+with memblock allocation instead of later initialization with
+kvmalloc().
 
-In particular, having UAPI_HEADER_TESTS depend on CC_CAN_LINK is
-something I think we can works towards removing. The header tests
-themselves don't link; they force a dependency on a prebuilt libc
-sysroot, and they only need the headers from the sysroot because of this
-existing circular dependency between kernel headers and libc headers.
+As suggested by Mike, make stack_depot_early_init() only attempt
+memblock allocation and stack_depot_init() only attempt kvmalloc().
+Also change the latter to kvcalloc(). In both cases we can lose the
+explicit array zeroing, which the allocations do already.
 
-I'd be happy to be explicitly cc'ed on changes like this series, going
-forward. Masahiro, if there's parts you'd like me to help with besides
-just code review, please let me know how I can help.
+As suggested by Marco, provide empty implementations of the init
+functions for !CONFIG_STACKDEPOT builds to simplify the callers.
 
-> 
-> What is still missing for that?
+[1] https://lore.kernel.org/all/YhnUcqyeMgCrWZbd@ip-172-31-19-208.ap-northeast-1.compute.internal/
+
+Reported-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+Suggested-by: Mike Rapoport <rppt@linux.ibm.com>
+Suggested-by: Marco Elver <elver@google.com>
+Signed-off-by: Vlastimil Babka <vbabka@suse.cz>
+Reviewed-by: Marco Elver <elver@google.com>
+Reviewed-and-tested-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+Reviewed-by: Mike Rapoport <rppt@linux.ibm.com>
+---
+ include/linux/stackdepot.h | 26 ++++++++++++---
+ lib/stackdepot.c           | 66 +++++++++++++++++++++++++-------------
+ mm/page_owner.c            |  9 ++++--
+ 3 files changed, 72 insertions(+), 29 deletions(-)
+
+diff --git a/include/linux/stackdepot.h b/include/linux/stackdepot.h
+index 17f992fe6355..bc2797955de9 100644
+--- a/include/linux/stackdepot.h
++++ b/include/linux/stackdepot.h
+@@ -20,18 +20,36 @@ depot_stack_handle_t __stack_depot_save(unsigned long *entries,
+ 					gfp_t gfp_flags, bool can_alloc);
+ 
+ /*
+- * Every user of stack depot has to call this during its own init when it's
+- * decided that it will be calling stack_depot_save() later.
++ * Every user of stack depot has to call stack_depot_init() during its own init
++ * when it's decided that it will be calling stack_depot_save() later. This is
++ * recommended for e.g. modules initialized later in the boot process, when
++ * slab_is_available() is true.
+  *
+  * The alternative is to select STACKDEPOT_ALWAYS_INIT to have stack depot
+  * enabled as part of mm_init(), for subsystems where it's known at compile time
+  * that stack depot will be used.
++ *
++ * Another alternative is to call stack_depot_want_early_init(), when the
++ * decision to use stack depot is taken e.g. when evaluating kernel boot
++ * parameters, which precedes the enablement point in mm_init().
++ *
++ * stack_depot_init() and stack_depot_want_early_init() can be called regardless
++ * of CONFIG_STACKDEPOT and are no-op when disabled. The actual save/fetch/print
++ * functions should only be called from code that makes sure CONFIG_STACKDEPOT
++ * is enabled.
+  */
++#ifdef CONFIG_STACKDEPOT
+ int stack_depot_init(void);
+ 
+-#ifdef CONFIG_STACKDEPOT_ALWAYS_INIT
+-static inline int stack_depot_early_init(void)	{ return stack_depot_init(); }
++void __init stack_depot_want_early_init(void);
++
++/* This is supposed to be called only from mm_init() */
++int __init stack_depot_early_init(void);
+ #else
++static inline int stack_depot_init(void) { return 0; }
++
++static inline void stack_depot_want_early_init(void) { }
++
+ static inline int stack_depot_early_init(void)	{ return 0; }
+ #endif
+ 
+diff --git a/lib/stackdepot.c b/lib/stackdepot.c
+index bf5ba9af0500..6c4644c9ed44 100644
+--- a/lib/stackdepot.c
++++ b/lib/stackdepot.c
+@@ -66,6 +66,9 @@ struct stack_record {
+ 	unsigned long entries[];	/* Variable-sized array of entries. */
+ };
+ 
++static bool __stack_depot_want_early_init __initdata = IS_ENABLED(CONFIG_STACKDEPOT_ALWAYS_INIT);
++static bool __stack_depot_early_init_passed __initdata;
++
+ static void *stack_slabs[STACK_ALLOC_MAX_SLABS];
+ 
+ static int depot_index;
+@@ -162,38 +165,57 @@ static int __init is_stack_depot_disabled(char *str)
+ }
+ early_param("stack_depot_disable", is_stack_depot_disabled);
+ 
+-/*
+- * __ref because of memblock_alloc(), which will not be actually called after
+- * the __init code is gone, because at that point slab_is_available() is true
+- */
+-__ref int stack_depot_init(void)
++void __init stack_depot_want_early_init(void)
++{
++	/* Too late to request early init now */
++	WARN_ON(__stack_depot_early_init_passed);
++
++	__stack_depot_want_early_init = true;
++}
++
++int __init stack_depot_early_init(void)
++{
++	size_t size;
++
++	/* This is supposed to be called only once, from mm_init() */
++	if (WARN_ON(__stack_depot_early_init_passed))
++		return 0;
++
++	__stack_depot_early_init_passed = true;
++
++	if (!__stack_depot_want_early_init || stack_depot_disable)
++		return 0;
++
++	pr_info("Stack Depot early init allocating hash table with memblock_alloc\n");
++	size = (STACK_HASH_SIZE * sizeof(struct stack_record *));
++	stack_table = memblock_alloc(size, SMP_CACHE_BYTES);
++
++	if (!stack_table) {
++		pr_err("Stack Depot hash table allocation failed, disabling\n");
++		stack_depot_disable = true;
++		return -ENOMEM;
++	}
++
++	return 0;
++}
++
++int stack_depot_init(void)
+ {
+ 	static DEFINE_MUTEX(stack_depot_init_mutex);
++	int ret = 0;
+ 
+ 	mutex_lock(&stack_depot_init_mutex);
+ 	if (!stack_depot_disable && !stack_table) {
+-		size_t size = (STACK_HASH_SIZE * sizeof(struct stack_record *));
+-		int i;
+-
+-		if (slab_is_available()) {
+-			pr_info("Stack Depot allocating hash table with kvmalloc\n");
+-			stack_table = kvmalloc(size, GFP_KERNEL);
+-		} else {
+-			pr_info("Stack Depot allocating hash table with memblock_alloc\n");
+-			stack_table = memblock_alloc(size, SMP_CACHE_BYTES);
+-		}
+-		if (stack_table) {
+-			for (i = 0; i < STACK_HASH_SIZE;  i++)
+-				stack_table[i] = NULL;
+-		} else {
++		pr_info("Stack Depot allocating hash table with kvcalloc\n");
++		stack_table = kvcalloc(STACK_HASH_SIZE, sizeof(struct stack_record *), GFP_KERNEL);
++		if (!stack_table) {
+ 			pr_err("Stack Depot hash table allocation failed, disabling\n");
+ 			stack_depot_disable = true;
+-			mutex_unlock(&stack_depot_init_mutex);
+-			return -ENOMEM;
++			ret = -ENOMEM;
+ 		}
+ 	}
+ 	mutex_unlock(&stack_depot_init_mutex);
+-	return 0;
++	return ret;
+ }
+ EXPORT_SYMBOL_GPL(stack_depot_init);
+ 
+diff --git a/mm/page_owner.c b/mm/page_owner.c
+index fb3a05fdebdb..2743062e92c2 100644
+--- a/mm/page_owner.c
++++ b/mm/page_owner.c
+@@ -45,7 +45,12 @@ static void init_early_allocated_pages(void);
+ 
+ static int __init early_page_owner_param(char *buf)
+ {
+-	return kstrtobool(buf, &page_owner_enabled);
++	int ret = kstrtobool(buf, &page_owner_enabled);
++
++	if (page_owner_enabled)
++		stack_depot_want_early_init();
++
++	return ret;
+ }
+ early_param("page_owner", early_page_owner_param);
+ 
+@@ -83,8 +88,6 @@ static __init void init_page_owner(void)
+ 	if (!page_owner_enabled)
+ 		return;
+ 
+-	stack_depot_init();
+-
+ 	register_dummy_stack();
+ 	register_failure_stack();
+ 	register_early_stack();
+-- 
+2.35.1
+
