@@ -2,113 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93F23C47095
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DDB9C47091
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:23:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381593AbiDDVXX (ORCPT
+        id S1381424AbiDDVXA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:23:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49044 "EHLO
+        Mon, 4 Apr 2022 17:23:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378963AbiDDQK6 (ORCPT
+        with ESMTP id S1379255AbiDDQvt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 12:10:58 -0400
-Received: from mail-oi1-f178.google.com (mail-oi1-f178.google.com [209.85.167.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2DFBDF4E;
-        Mon,  4 Apr 2022 09:09:01 -0700 (PDT)
-Received: by mail-oi1-f178.google.com with SMTP id z8so10545169oix.3;
-        Mon, 04 Apr 2022 09:09:01 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=cezylBcNKJIb7u3t+c6rzI4fkWol+SJJy81HJ0NVukk=;
-        b=eQB7UTSAKpyr2i1uSIGLihmH4foHNvfHZo8GkAKqNeCNXjGBa1rQCXD+czhoOTdLrV
-         IIeFZemdqC4gAaoz9wzGBjwT416R1w0Sl6wmXUm/8AOuuuX7vUbd1wXZ5x9OMsIIzZga
-         v2qgevPwRC3lK5CSm2BYCC0mKmDwFt4w09nkGktckYummLpndLu8LYqZbkg/p9OjeOVf
-         Y1zmdkDm94SNuFic67W4yfQeATNrQdtxUtI4cfDIvXX1nuCb77Y6Hhrm7cZCTB+se7oI
-         Ujx/lRBUiEoT+pO8OL6AHLYLGNVlscrZPwRc2RpKXlKkwKZ1evIODXMC9WQxIjCd7FI7
-         E7eA==
-X-Gm-Message-State: AOAM533PPDC+D0FH29F1SsGWXvhv6XgocUoRN1dVyCwi3Myi/TLHY3k8
-        D6yVtz81/SLGU1aOshEdbg==
-X-Google-Smtp-Source: ABdhPJxu7q0HR0nZflSaNkabmyqrbGx7Kocd4s/sq7R0bRlhaws0t4qgX1Nk2HPeARa/X2rziRYFcw==
-X-Received: by 2002:a05:6808:ecb:b0:2f7:41cc:21b9 with SMTP id q11-20020a0568080ecb00b002f741cc21b9mr10234348oiv.156.1649088540993;
-        Mon, 04 Apr 2022 09:09:00 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id m65-20020acabc44000000b002ed13d0fe6fsm4309194oif.23.2022.04.04.09.08.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 09:09:00 -0700 (PDT)
-Received: (nullmailer pid 1436950 invoked by uid 1000);
-        Mon, 04 Apr 2022 16:08:58 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Chuanhong Guo <gch981213@gmail.com>
-Cc:     Rob Herring <robh+dt@kernel.org>, linux-spi@vger.kernel.org,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Richard Weinberger <richard@nod.at>,
-        Pratyush Yadav <p.yadav@ti.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Cai Huoqing <cai.huoqing@linux.dev>,
-        Roger Quadros <rogerq@kernel.org>,
-        Yu Kuai <yukuai3@huawei.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        linux-mediatek@lists.infradead.org,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        devicetree@vger.kernel.org, Mark Brown <broonie@kernel.org>,
-        linux-kernel@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Colin Ian King <colin.king@intel.com>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        linux-mtd@lists.infradead.org
-In-Reply-To: <20220404131818.1817794-5-gch981213@gmail.com>
-References: <20220404131818.1817794-1-gch981213@gmail.com> <20220404131818.1817794-5-gch981213@gmail.com>
-Subject: Re: [PATCH v3 4/5] dt-bindings: spi: add binding doc for spi-mtk-snfi
-Date:   Mon, 04 Apr 2022 11:08:58 -0500
-Message-Id: <1649088538.050456.1436949.nullmailer@robh.at.kernel.org>
+        Mon, 4 Apr 2022 12:51:49 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C12B42DA8C;
+        Mon,  4 Apr 2022 09:49:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649090992; x=1680626992;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=XLHCtZ5lHLI6jvD7PuO5VfpRsas5f0b5jUQBwpQFz2s=;
+  b=Z3JA9w9B+mH9/4XXyUPe+54QeuhNbT0DzlqDvF9pBaoLhpdyDevNh1ZW
+   q4mJPIqyD6FI1boHjsTKET01+ezUKGPLDSAIPNt8VHnkfezL2EV+PlpdZ
+   e2HVcNbqvPfOTm7BjE0dWFehYERc1+Y+7qZss4fmjq45AVLvxQrr1tlaG
+   R2jkj6BRlC2wuV6O5Cv97czLX+s5ANfgDrSNgHxnNZaXZoXYIZnDTLByv
+   ehtXGzFUvYFkUAX9VBbCs2oB3o+DACZkGL6cJNMieCsNIfRmmIUKqAvLF
+   lJxwy+QbzOKeS0AMpQlnUdGHUPgP7Ffo+vTBEgNPenxIDLlYFUofAc9TF
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="259390767"
+X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
+   d="scan'208";a="259390767"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:49:50 -0700
+X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
+   d="scan'208";a="523105153"
+Received: from rchatre-ws.ostc.intel.com ([10.54.69.144])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:49:50 -0700
+From:   Reinette Chatre <reinette.chatre@intel.com>
+To:     dave.hansen@linux.intel.com, jarkko@kernel.org, tglx@linutronix.de,
+        bp@alien8.de, luto@kernel.org, mingo@redhat.com,
+        linux-sgx@vger.kernel.org, x86@kernel.org
+Cc:     seanjc@google.com, kai.huang@intel.com, cathy.zhang@intel.com,
+        cedric.xing@intel.com, haitao.huang@intel.com,
+        mark.shanahan@intel.com, hpa@zytor.com,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH V3 02/30] x86/sgx: Add wrapper for SGX2 EMODPR function
+Date:   Mon,  4 Apr 2022 09:49:10 -0700
+Message-Id: <e3add7b7c104dab4580c82202193939d2e2b21c5.1648847675.git.reinette.chatre@intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cover.1648847675.git.reinette.chatre@intel.com>
+References: <cover.1648847675.git.reinette.chatre@intel.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 04 Apr 2022 21:18:17 +0800, Chuanhong Guo wrote:
-> Add device-tree binding documentation for Mediatek SPI-NAND Flash
-> Interface.
-> 
-> Signed-off-by: Chuanhong Guo <gch981213@gmail.com>
-> ---
-> Changes since v1:
->   1. add a blank line between properties in dt binding doc
->   2. rename ecc-engine to nand-ecc-engine for the generic properties
-> 
-> Change since v2: none
-> 
->  .../bindings/spi/mediatek,spi-mtk-snfi.yaml   | 88 +++++++++++++++++++
->  1 file changed, 88 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/spi/mediatek,spi-mtk-snfi.yaml
-> 
+Add a wrapper for the EMODPR ENCLS leaf function used to
+restrict enclave page permissions as maintained in the
+SGX hardware's Enclave Page Cache Map (EPCM).
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+EMODPR:
+1) Updates the EPCM permissions of an enclave page by treating
+   the new permissions as a mask. Supplying a value that attempts
+   to relax EPCM permissions has no effect on EPCM permissions
+   (PR bit, see below, is changed).
+2) Sets the PR bit in the EPCM entry of the enclave page to
+   indicate that permission restriction is in progress. The bit
+   is reset by the enclave by invoking ENCLU leaf function
+   EACCEPT or EACCEPTCOPY.
 
-yamllint warnings/errors:
+The enclave may access the page throughout the entire process
+if conforming to the EPCM permissions for the enclave page.
 
-dtschema/dtc warnings/errors:
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/spi/mediatek,spi-mtk-snfi.example.dt.yaml: spi@1100d000: 'ecc-engine' is a required property
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/spi/mediatek,spi-mtk-snfi.yaml
-Documentation/devicetree/bindings/spi/mediatek,spi-mtk-snfi.example.dt.yaml:0:0: /example-0/soc/spi@1100d000/flash@0: failed to match any schema with compatible: ['spi-nand']
+After performing the permission restriction by issuing EMODPR
+the kernel needs to collaborate with the hardware to ensure that
+all logical processors sees the new restricted permissions. This
+is required for the enclave's EACCEPT/EACCEPTCOPY to succeed and
+is accomplished with the ETRACK flow.
 
-doc reference errors (make refcheckdocs):
+Expand enum sgx_return_code with the possible EMODPR return
+values.
 
-See https://patchwork.ozlabs.org/patch/
+Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
+---
+Changes since V2:
+- Add detail to changelog that PR bit is set when EPCM permissions
+  not changed when relaxing of permissions using EMODPR attempted.
 
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
+Changes since V1:
+- Split original patch ("x86/sgx: Add wrappers for SGX2 functions")
+  in three to introduce the SGX2 functions separately (Jarkko).
+- Rewrite commit message to include how the EPCM within the hardware
+  is changed by the SGX2 function as well as the calling
+  conditions (Jarkko).
+- Make short description more specific to which permissions (EPCM
+  permissions) the function modifies.
 
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
+ arch/x86/include/asm/sgx.h      | 5 +++++
+ arch/x86/kernel/cpu/sgx/encls.h | 6 ++++++
+ 2 files changed, 11 insertions(+)
 
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
+diff --git a/arch/x86/include/asm/sgx.h b/arch/x86/include/asm/sgx.h
+index 3f9334ef67cd..d67810b50a81 100644
+--- a/arch/x86/include/asm/sgx.h
++++ b/arch/x86/include/asm/sgx.h
+@@ -65,17 +65,22 @@ enum sgx_encls_function {
+ 
+ /**
+  * enum sgx_return_code - The return code type for ENCLS, ENCLU and ENCLV
++ * %SGX_EPC_PAGE_CONFLICT:	Page is being written by other ENCLS function.
+  * %SGX_NOT_TRACKED:		Previous ETRACK's shootdown sequence has not
+  *				been completed yet.
+  * %SGX_CHILD_PRESENT		SECS has child pages present in the EPC.
+  * %SGX_INVALID_EINITTOKEN:	EINITTOKEN is invalid and enclave signer's
+  *				public key does not match IA32_SGXLEPUBKEYHASH.
++ * %SGX_PAGE_NOT_MODIFIABLE:	The EPC page cannot be modified because it
++ *				is in the PENDING or MODIFIED state.
+  * %SGX_UNMASKED_EVENT:		An unmasked event, e.g. INTR, was received
+  */
+ enum sgx_return_code {
++	SGX_EPC_PAGE_CONFLICT		= 7,
+ 	SGX_NOT_TRACKED			= 11,
+ 	SGX_CHILD_PRESENT		= 13,
+ 	SGX_INVALID_EINITTOKEN		= 16,
++	SGX_PAGE_NOT_MODIFIABLE		= 20,
+ 	SGX_UNMASKED_EVENT		= 128,
+ };
+ 
+diff --git a/arch/x86/kernel/cpu/sgx/encls.h b/arch/x86/kernel/cpu/sgx/encls.h
+index 0e22fa8f77c5..2b091912f038 100644
+--- a/arch/x86/kernel/cpu/sgx/encls.h
++++ b/arch/x86/kernel/cpu/sgx/encls.h
+@@ -215,4 +215,10 @@ static inline int __ewb(struct sgx_pageinfo *pginfo, void *addr,
+ 	return __encls_ret_3(EWB, pginfo, addr, va);
+ }
+ 
++/* Restrict the EPCM permissions of an EPC page. */
++static inline int __emodpr(struct sgx_secinfo *secinfo, void *addr)
++{
++	return __encls_ret_2(EMODPR, secinfo, addr);
++}
++
+ #endif /* _X86_ENCLS_H */
+-- 
+2.25.1
 
