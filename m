@@ -2,87 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0DFBC3527B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACDA3C46467
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:08:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381087AbiDDWH6 (ORCPT
+        id S1380942AbiDDWHh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 18:07:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42342 "EHLO
+        Mon, 4 Apr 2022 18:07:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380039AbiDDSpp (ORCPT
+        with ESMTP id S1379042AbiDDQXp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 14:45:45 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 706CBA1A2;
-        Mon,  4 Apr 2022 11:43:48 -0700 (PDT)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Mon, 4 Apr 2022 12:23:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 819A2BC0B
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 09:21:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id BE559221D4;
-        Mon,  4 Apr 2022 20:43:45 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1649097826;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=poOZKw8hZUUNnStW9clwSX8LRDw0XYQR4H0YmtmNls4=;
-        b=c1K1O2A45bQVK1v+SUa/w3i8v4mo4JH24bZs9KAztcIWIcBga5R7LRy8gA2cUDgCJrQhy6
-        RzYLV4aGJi7UP8G5xQZWuM2LqvMjSBwTG4QJ/1X1QkW/xN+CowOvYRjA+Mql+gz+9uSLmr
-        FxChOMLMZB+U7rf+znz48fJJWig/C0w=
-From:   Michael Walle <michael@walle.cc>
-To:     Xu Yilun <yilun.xu@intel.com>, Tom Rix <trix@redhat.com>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, David Laight <David.Laight@ACULAB.COM>,
-        Michael Walle <michael@walle.cc>
-Subject: [PATCH v3 0/2] hwmon: introduce hwmon_sanitize()
-Date:   Mon,  4 Apr 2022 20:43:38 +0200
-Message-Id: <20220404184340.3973329-1-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
+        by ams.source.kernel.org (Postfix) with ESMTPS id 46B8AB8182F
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 16:21:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E8ECC2BBE4;
+        Mon,  4 Apr 2022 16:21:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649089307;
+        bh=12OqAgUFqo0o0nuRsjoOTKREg/x8VwVcYoOLde88fz8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=LwWB/0q9+NvxDslstiuPLQ3SRqHNZAv1ybSR1/YtRUtS4E6SdC5geH9/JV3SkXo29
+         RE1fmiDc8vAP9AyVDSP+VWhhAzyRhkGHOnIlWCoy0AGFZCUrhjMkTWOjm6gdbPvrUY
+         tw8MdE3Jfprd/JMoRgO1sq6EE9vSewPWXlbQsm8Y=
+Date:   Mon, 4 Apr 2022 18:21:43 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Guenter Roeck <linux@roeck-us.net>,
+        Larry Finger <Larry.Finger@lwfinger.net>,
+        Oded Gabbay <ogabbay@kernel.org>, Jiri Slaby <jslaby@suse.cz>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: Linux 5.18-rc1
+Message-ID: <YksbF4BIy3ZoEZCB@kroah.com>
+References: <CAHk-=wg6FWL1xjVyHx7DdjD2dHZETA5_=FqqW17Z19X-WTfWSg@mail.gmail.com>
+ <20220404022239.GA1186352@roeck-us.net>
+ <CAHk-=wimc7V9mi=P+6p2nnctPYtSM55OSPVERUeJor7fkD_EVg@mail.gmail.com>
+ <aba387bd-9799-e0b5-40e3-1bcb552ac74c@roeck-us.net>
+ <CAHk-=witgMUS8To6wijxdbQ+QEH0gcHSYV6Y=yzOdb=Q4h9PJA@mail.gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAHk-=witgMUS8To6wijxdbQ+QEH0gcHSYV6Y=yzOdb=Q4h9PJA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-During development of the support for the temperature sensor on the GPY
-PHY, I've noticed that there is ususually a loop over the name to
-replace any invalid characters. Instead of open coding it in the drivers
-provide a convenience function.
+On Mon, Apr 04, 2022 at 08:32:16AM -0700, Linus Torvalds wrote:
+> On Sun, Apr 3, 2022 at 9:23 PM Guenter Roeck <linux@roeck-us.net> wrote:
+> >
+> > Oops. Sorry, I thought it was big endian. No idea why. I'll update
+> > subject and description and resend.
+> 
+> I see your updated patch, but for some reason 'b4' is unhappy about it, with
+> 
+>   $ b4 am 20220404134338.3276991-1-linux@roeck-us.net
+> 
+> causing
+> 
+>   ✗ [PATCH v3] staging: r8188eu: Fix PPPoE tag insertion on little
+> endian systems
+>   ---
+>   ✗ BADSIG: DKIM/roeck-us.net
+> 
+> your DKIM looks fine on the messages I see, but now that I look at it
+> on the mailing list, I notice that your DKIM really is very wrong, and
+> has a lot of headers that a DKIM signature should *not* have.
+> 
+> Your DKIM signature includes header names that are very much for list
+> management, so by definition DKIM will fail for any email you send
+> through a mailing list. Headers like
+> "Resent-From:Resent-Sender:Resent-To:Resent-Cc
+> :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe" etc.
+> 
+> The DKIM setup should protect the meaningful headers that matter to
+> the sender, not things that the mail system will validly add when it
+> passes through.
+> 
+> So the DKIM header list should be things like
+> ":To:From:Cc:Message-Id:Date:Subject:"
+> 
+> Not things like "Sender" or mailing list things.
+> 
+> Anyway, I was going to just commit it directly, but with the DKIM
+> verification failing, I was a bit less eager to. And then I noticed
+> that you used "be16_to_cpu()" - which is technically correct - which
+> doesn't match the other code in that file.
 
-The last patch is marked as RFC, it should probably be reposted/applied
-to the kernel release after next (?).
+I've taken this in my tree now and will get it to you for -rc2 if you
+don't want to take it.  And yes, I see the dkim issue as well, I haven't
+started complaining about to people yet as lots of people have problem
+email setups.  Should we start pushing back?
 
-changes since v2:
- - doc update
- - dropped last three patches, the net patches will be submitted
-   seperately
+thanks,
 
-changes since v1:
- - split patches
- - add hwmon-kernel-api.rst documentation
- - move the strdup into the hwmon core
- - also provide a resource managed variant
-
-Michael Walle (2):
-  hwmon: introduce hwmon_sanitize_name()
-  hwmon: intel-m10-bmc-hwmon: use devm_hwmon_sanitize_name()
-
- Documentation/hwmon/hwmon-kernel-api.rst | 16 ++++++++
- drivers/hwmon/hwmon.c                    | 50 ++++++++++++++++++++++++
- drivers/hwmon/intel-m10-bmc-hwmon.c      |  7 +---
- include/linux/hwmon.h                    |  3 ++
- 4 files changed, 70 insertions(+), 6 deletions(-)
-
--- 
-2.30.2
-
+greg k-h
