@@ -2,127 +2,214 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2074C3A59D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBC23C4708C
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:23:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381015AbiDDVWU (ORCPT
+        id S1381060AbiDDVWW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:22:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50442 "EHLO
+        Mon, 4 Apr 2022 17:22:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379296AbiDDQzh (ORCPT
+        with ESMTP id S1379257AbiDDQvt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 12:55:37 -0400
-Received: from wout5-smtp.messagingengine.com (wout5-smtp.messagingengine.com [64.147.123.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6748B2D
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 09:53:39 -0700 (PDT)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.west.internal (Postfix) with ESMTP id 0987E3201D2F;
-        Mon,  4 Apr 2022 12:53:38 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute2.internal (MEProxy); Mon, 04 Apr 2022 12:53:39 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sent.com; h=cc
-        :cc:content-transfer-encoding:date:date:from:from:in-reply-to
-        :message-id:mime-version:reply-to:reply-to:sender:subject
-        :subject:to:to; s=fm3; bh=iE5HYjsyDrhb8gHe12sa/zLc2S6ikdXgUfBcf8
-        +yKi0=; b=SyzsSDStAvh1o2yCDwOVwCws8cpu+I55eGXZfR7qnsRSPBR4M6Hl1F
-        9ZH2pHc7PsT1hs3PQhQvHtD0JQwSR0eNXKQShLQMZAPqmDLQtxYLmvpR//z0E++N
-        99/p5M/9QWsqFMzyxO2TLGozFUWKsSAFcNspT9Sp0GXc6bS8mKGcYy7/u59L1oAu
-        7Gi73zaUZNGHl2Z6gY2XtdYAKqDYs2z8CbPH1vCWZOMB979dJ2taMaTl2gFAIZp1
-        jt2wVTqqM0lQ1bG3hGQtgGtg1aF0+Fruhw9NbPkQDrUJ5CTfEMBwGbzS3NadQJCo
-        AU7EL1ViDgV6HazeuLFvMYIMI4cvKang==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :from:from:in-reply-to:message-id:mime-version:reply-to:reply-to
-        :sender:subject:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender
-        :x-me-sender:x-sasl-enc; s=fm3; bh=iE5HYjsyDrhb8gHe12sa/zLc2S6ik
-        dXgUfBcf8+yKi0=; b=oBW5VwmG+K3jmQoLcOiV8hb76nF90lzElkDaeTLAClAhD
-        ObVW9yy6g5U4zsvNcAbMOl8qZdTVJDctAcf4x7Xc1DkwhfP9qzJc5QO/JqtqCXJn
-        OgzQMRXAZA13EloVpNIlhlSPUoE8H0Dd/E+oLWlBHlmzHn+E+Wl4jDdIpForQr9a
-        e1HcO6g8gKtymM3ow+E7jxFGxWKqwf9q6oj3yrJJLxPgUtxI4hpGjduZLdFsocQo
-        lC9kXVl4OyXsPhLiF7yY90xO2RblQkHPLprgcDX9xlFy/nPGNHUd4WUpOzFHSNKe
-        Co5oeX4gDN1l7o1/Tgd6lAmhN6sUmd39efQw69AiA==
-X-ME-Sender: <xms:kSJLYr5M5CJQ2wGCe2yIY_fWVz9Lwr3dC3k9Tq4wuDZ2BHIvytVBCA>
-    <xme:kSJLYg59RcOi4dQyy27_Sij_t-AcCTY1IKtRXbOPUNtWz3Ac6SsNyc8qulNE_yfyl
-    Gqu9fiB5KtOg4lI4Q>
-X-ME-Received: <xmr:kSJLYicrOffp66tlXy2VqmD44_zKPeUlxbxsJifMWVmFDGVRggEXbfmIbxPUcjcyQmluH_W1kr_udbFd9A>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudejvddguddtvdcutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpefhvffufffkofhrggfgsedtqhertdertddtnecuhfhrohhmpegkihcujggr
-    nhcuoeiiihdrhigrnhesshgvnhhtrdgtohhmqeenucggtffrrghtthgvrhhnpeetieeitd
-    ejgffhfeeukeejvdeufedtvddulefhteduffeigfefteehgefhvdegudenucffohhmrghi
-    nhepkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpe
-    hmrghilhhfrhhomhepiihirdihrghnsehsvghnthdrtghomh
-X-ME-Proxy: <xmx:kiJLYsLV8372xBzv5w-Qn9Shoc09Y6QaOPUQO67L5JxTGakh7Xg1ww>
-    <xmx:kiJLYvIT-qa-g7iLP7U0POxQzAws2Uhqt7V7It15NsfBsZNWVIv3kw>
-    <xmx:kiJLYlyGZIZ4psGDLLhUkifd1opIOrIUX3sAgJkS25_ARLaH8gGHFQ>
-    <xmx:kiJLYn9dFlacP69nO-L6QFbdOCoze0BmZ-yxjpM9HSoga7DBMdiLTg>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 4 Apr 2022 12:53:37 -0400 (EDT)
-From:   Zi Yan <zi.yan@sent.com>
-To:     linux-mm@kvack.org
-Cc:     Matthew Wilcox <willy@infradead.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Naoya Horiguchi <naoya.horiguchi@nec.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, Zi Yan <ziy@nvidia.com>,
-        Naoya Horiguchi <naoya.horiguchi@linux.dev>
-Subject: [PATCH] mm: migrate: use thp_order instead of HPAGE_PMD_ORDER for new page allocation.
-Date:   Mon,  4 Apr 2022 12:53:25 -0400
-Message-Id: <20220404165325.1883267-1-zi.yan@sent.com>
-X-Mailer: git-send-email 2.35.1
-Reply-To: Zi Yan <ziy@nvidia.com>
+        Mon, 4 Apr 2022 12:51:49 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 242912E9D6;
+        Mon,  4 Apr 2022 09:49:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649090993; x=1680626993;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=KLeqkiiFihlMEI/XwbDkiA6gel561aXhUFgrx5JHtUE=;
+  b=PuWId8kmCJJfJtCd1MApPK1De+/1BowuJpGwQl1U+IrV8LLh53Ag4wqs
+   pvRPgw+Fom8DvY3dZmeS7rILNUMpD3icmTf/mK3G7JqTNOSzMImZq5B9O
+   Sj8hgHsKcUlDdSgIrAnvwI2h8sjNL84dcD7vibGKuvpKYqbtKenF+CVFy
+   +7jqJpauBOpfEiUaIh6UX1AZqOsG6H4LxtfRvdPIs2S7zKyug0OVKvVZS
+   DNCb46A3QjGM/RntED00a0N2DS7s3l6LNfJ3eomKS8HNePaFaV15dHHyG
+   zSFCIWvzZfa9n8e4fMzqWarQp6qdoKdQpnr1o7J20nLRgeUQHrZWVc8nF
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="323734042"
+X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
+   d="scan'208";a="323734042"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:49:51 -0700
+X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
+   d="scan'208";a="523105171"
+Received: from rchatre-ws.ostc.intel.com ([10.54.69.144])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:49:50 -0700
+From:   Reinette Chatre <reinette.chatre@intel.com>
+To:     dave.hansen@linux.intel.com, jarkko@kernel.org, tglx@linutronix.de,
+        bp@alien8.de, luto@kernel.org, mingo@redhat.com,
+        linux-sgx@vger.kernel.org, x86@kernel.org
+Cc:     seanjc@google.com, kai.huang@intel.com, cathy.zhang@intel.com,
+        cedric.xing@intel.com, haitao.huang@intel.com,
+        mark.shanahan@intel.com, hpa@zytor.com,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH V3 08/30] x86/sgx: Move PTE zap code to new sgx_zap_enclave_ptes()
+Date:   Mon,  4 Apr 2022 09:49:16 -0700
+Message-Id: <2454321f9d7ac6b0fd4925201f8d8d88471b41c0.1648847675.git.reinette.chatre@intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cover.1648847675.git.reinette.chatre@intel.com>
+References: <cover.1648847675.git.reinette.chatre@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zi Yan <ziy@nvidia.com>
+The SGX reclaimer removes page table entries pointing to pages that are
+moved to swap.
 
-With folios support, it is possible to have other than HPAGE_PMD_ORDER
-THPs, in the form of folios, in the system. Use thp_order() to correctly
-determine the source page order during migration.
+SGX2 enables changes to pages belonging to an initialized enclave, thus
+enclave pages may have their permission or type changed while the page
+is being accessed by an enclave. Supporting SGX2 requires page table
+entries to be removed so that any cached mappings to changed pages
+are removed. For example, with the ability to change enclave page types
+a regular enclave page may be changed to a Thread Control Structure
+(TCS) page that may not be accessed by an enclave.
 
-Fixes: d68eccad3706 ("mm/filemap: Allow large folios to be added to the pag=
-e cache")
-Reported-by: Naoya Horiguchi <naoya.horiguchi@linux.dev>
-Link: https://lore.kernel.org/linux-mm/20220404132908.GA785673@u2004/
-Signed-off-by: Zi Yan <ziy@nvidia.com>
+Factor out the code removing page table entries to a separate function
+sgx_zap_enclave_ptes(), fixing accuracy of comments in the process,
+and make it available to the upcoming SGX2 code.
+
+Place sgx_zap_enclave_ptes() with the rest of the enclave code in
+encl.c interacting with the page table since this code is no longer
+unique to the reclaimer.
+
+Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
 ---
- mm/mempolicy.c | 2 +-
- mm/migrate.c   | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+No changes since V2
 
-diff --git a/mm/mempolicy.c b/mm/mempolicy.c
-index 6b34c5d5e65a..88a74bc4cba5 100644
---- a/mm/mempolicy.c
-+++ b/mm/mempolicy.c
-@@ -1209,7 +1209,7 @@ static struct page *new_page(struct page *page, unsig=
-ned long start)
- 		struct page *thp;
-=20
- 		thp =3D alloc_hugepage_vma(GFP_TRANSHUGE, vma, address,
--					 HPAGE_PMD_ORDER);
-+					 thp_order(page));
- 		if (!thp)
- 			return NULL;
- 		prep_transhuge_page(thp);
-diff --git a/mm/migrate.c b/mm/migrate.c
-index 4639dfc2b7ee..b58b96fdb174 100644
---- a/mm/migrate.c
-+++ b/mm/migrate.c
-@@ -1553,7 +1553,7 @@ struct page *alloc_migration_target(struct page *page=
-, unsigned long private)
- 		 */
- 		gfp_mask &=3D ~__GFP_RECLAIM;
- 		gfp_mask |=3D GFP_TRANSHUGE;
--		order =3D HPAGE_PMD_ORDER;
-+		order =3D thp_order(page);
- 	}
- 	zidx =3D zone_idx(page_zone(page));
- 	if (is_highmem_idx(zidx) || zidx =3D=3D ZONE_MOVABLE)
---=20
-2.35.1
+Changes since V1:
+- Elaborate why SGX2 needs this ability (Jarkko).
+- More specific subject.
+- Fix kernel-doc to have brackets in function name.
+
+ arch/x86/kernel/cpu/sgx/encl.c | 45 +++++++++++++++++++++++++++++++++-
+ arch/x86/kernel/cpu/sgx/encl.h |  2 +-
+ arch/x86/kernel/cpu/sgx/main.c | 31 ++---------------------
+ 3 files changed, 47 insertions(+), 31 deletions(-)
+
+diff --git a/arch/x86/kernel/cpu/sgx/encl.c b/arch/x86/kernel/cpu/sgx/encl.c
+index 8de9bebc4d81..c77a62432862 100644
+--- a/arch/x86/kernel/cpu/sgx/encl.c
++++ b/arch/x86/kernel/cpu/sgx/encl.c
+@@ -605,7 +605,7 @@ int sgx_encl_mm_add(struct sgx_encl *encl, struct mm_struct *mm)
+ 
+ 	spin_lock(&encl->mm_lock);
+ 	list_add_rcu(&encl_mm->list, &encl->mm_list);
+-	/* Pairs with smp_rmb() in sgx_reclaimer_block(). */
++	/* Pairs with smp_rmb() in sgx_zap_enclave_ptes(). */
+ 	smp_wmb();
+ 	encl->mm_list_version++;
+ 	spin_unlock(&encl->mm_lock);
+@@ -792,6 +792,49 @@ int sgx_encl_test_and_clear_young(struct mm_struct *mm,
+ 	return ret;
+ }
+ 
++/**
++ * sgx_zap_enclave_ptes() - remove PTEs mapping the address from enclave
++ * @encl: the enclave
++ * @addr: page aligned pointer to single page for which PTEs will be removed
++ *
++ * Multiple VMAs may have an enclave page mapped. Remove the PTE mapping
++ * @addr from each VMA. Ensure that page fault handler is ready to handle
++ * new mappings of @addr before calling this function.
++ */
++void sgx_zap_enclave_ptes(struct sgx_encl *encl, unsigned long addr)
++{
++	unsigned long mm_list_version;
++	struct sgx_encl_mm *encl_mm;
++	struct vm_area_struct *vma;
++	int idx, ret;
++
++	do {
++		mm_list_version = encl->mm_list_version;
++
++		/* Pairs with smp_wmb() in sgx_encl_mm_add(). */
++		smp_rmb();
++
++		idx = srcu_read_lock(&encl->srcu);
++
++		list_for_each_entry_rcu(encl_mm, &encl->mm_list, list) {
++			if (!mmget_not_zero(encl_mm->mm))
++				continue;
++
++			mmap_read_lock(encl_mm->mm);
++
++			ret = sgx_encl_find(encl_mm->mm, addr, &vma);
++			if (!ret && encl == vma->vm_private_data)
++				zap_vma_ptes(vma, addr, PAGE_SIZE);
++
++			mmap_read_unlock(encl_mm->mm);
++
++			mmput_async(encl_mm->mm);
++		}
++
++		srcu_read_unlock(&encl->srcu, idx);
++	} while (unlikely(encl->mm_list_version != mm_list_version));
++}
++
+ /**
+  * sgx_alloc_va_page() - Allocate a Version Array (VA) page
+  *
+diff --git a/arch/x86/kernel/cpu/sgx/encl.h b/arch/x86/kernel/cpu/sgx/encl.h
+index e59c2cbf71e2..1b15d22f6757 100644
+--- a/arch/x86/kernel/cpu/sgx/encl.h
++++ b/arch/x86/kernel/cpu/sgx/encl.h
+@@ -111,7 +111,7 @@ int sgx_encl_get_backing(struct sgx_encl *encl, unsigned long page_index,
+ void sgx_encl_put_backing(struct sgx_backing *backing, bool do_write);
+ int sgx_encl_test_and_clear_young(struct mm_struct *mm,
+ 				  struct sgx_encl_page *page);
+-
++void sgx_zap_enclave_ptes(struct sgx_encl *encl, unsigned long addr);
+ struct sgx_epc_page *sgx_alloc_va_page(void);
+ unsigned int sgx_alloc_va_slot(struct sgx_va_page *va_page);
+ void sgx_free_va_slot(struct sgx_va_page *va_page, unsigned int offset);
+diff --git a/arch/x86/kernel/cpu/sgx/main.c b/arch/x86/kernel/cpu/sgx/main.c
+index fa33922879bf..ce9e87d5f8ec 100644
+--- a/arch/x86/kernel/cpu/sgx/main.c
++++ b/arch/x86/kernel/cpu/sgx/main.c
+@@ -137,36 +137,9 @@ static void sgx_reclaimer_block(struct sgx_epc_page *epc_page)
+ 	struct sgx_encl_page *page = epc_page->owner;
+ 	unsigned long addr = page->desc & PAGE_MASK;
+ 	struct sgx_encl *encl = page->encl;
+-	unsigned long mm_list_version;
+-	struct sgx_encl_mm *encl_mm;
+-	struct vm_area_struct *vma;
+-	int idx, ret;
+-
+-	do {
+-		mm_list_version = encl->mm_list_version;
+-
+-		/* Pairs with smp_rmb() in sgx_encl_mm_add(). */
+-		smp_rmb();
+-
+-		idx = srcu_read_lock(&encl->srcu);
+-
+-		list_for_each_entry_rcu(encl_mm, &encl->mm_list, list) {
+-			if (!mmget_not_zero(encl_mm->mm))
+-				continue;
+-
+-			mmap_read_lock(encl_mm->mm);
+-
+-			ret = sgx_encl_find(encl_mm->mm, addr, &vma);
+-			if (!ret && encl == vma->vm_private_data)
+-				zap_vma_ptes(vma, addr, PAGE_SIZE);
+-
+-			mmap_read_unlock(encl_mm->mm);
+-
+-			mmput_async(encl_mm->mm);
+-		}
++	int ret;
+ 
+-		srcu_read_unlock(&encl->srcu, idx);
+-	} while (unlikely(encl->mm_list_version != mm_list_version));
++	sgx_zap_enclave_ptes(encl, addr);
+ 
+ 	mutex_lock(&encl->lock);
+ 
+-- 
+2.25.1
 
