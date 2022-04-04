@@ -2,134 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A85AC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09156C43217
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 02:30:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376906AbiDDCa7 (ORCPT
+        id S1376893AbiDDCZz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 3 Apr 2022 22:30:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57428 "EHLO
+        Sun, 3 Apr 2022 22:25:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230517AbiDDCa5 (ORCPT
+        with ESMTP id S230517AbiDDCZx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 3 Apr 2022 22:30:57 -0400
-Received: from mailout2.samsung.com (mailout2.samsung.com [203.254.224.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30D563A5DE
-        for <linux-kernel@vger.kernel.org>; Sun,  3 Apr 2022 19:29:02 -0700 (PDT)
-Received: from epcas1p2.samsung.com (unknown [182.195.41.46])
-        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20220404022900epoutp02d3714f8e6e1ecb4b7036a497b12b818f~ikIrzdSmt3172531725epoutp02N
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 02:29:00 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20220404022900epoutp02d3714f8e6e1ecb4b7036a497b12b818f~ikIrzdSmt3172531725epoutp02N
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1649039340;
-        bh=DO7cgGgTHvQMHO2GGJ8drJXd4TGsXZIl9hBqmml2nKE=;
-        h=Subject:Reply-To:From:To:CC:Date:References:From;
-        b=MYqdWOhx8hbOZ73orzX9YurUI567HMmbgIGfv4GB5QtPdvcqe4s4uPTJ4n4N+PWfY
-         QBvvhmw8sRadPTupaUx6BzX3O6d4S1+RGnuYO0cd10A2bebW2GSDW56M5vT7XS7eeO
-         jrs3TT9GEXfh9c4GlWDALtK9I7VILPZHs32oF8bA=
-Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
-        epcas1p2.samsung.com (KnoxPortal) with ESMTP id
-        20220404022859epcas1p2534f9bb1d4f81265dd56e830c0bcaff5~ikIrRX2wq1815818158epcas1p23;
-        Mon,  4 Apr 2022 02:28:59 +0000 (GMT)
-Received: from epsmges1p4.samsung.com (unknown [182.195.36.70]) by
-        epsnrtp2.localdomain (Postfix) with ESMTP id 4KWvpy10X0z4x9Q7; Mon,  4 Apr
-        2022 02:28:58 +0000 (GMT)
-X-AuditID: b6c32a38-93fff700000255ac-c8-624a57e90621
-Received: from epcas1p4.samsung.com ( [182.195.41.48]) by
-        epsmges1p4.samsung.com (Symantec Messaging Gateway) with SMTP id
-        DB.BC.21932.9E75A426; Mon,  4 Apr 2022 11:28:58 +0900 (KST)
-Mime-Version: 1.0
-Subject: [PATCH] dt-bindings: net: snps: remove duplicate name
-Reply-To: dj76.yang@samsung.com
-Sender: Dongjin Yang <dj76.yang@samsung.com>
-From:   Dongjin Yang <dj76.yang@samsung.com>
-To:     "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzk+dt@kernel.org" <krzk+dt@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-CC:     Moon-Ki Jun <moonki.jun@samsung.com>,
-        Dongjin Yang <dj76.yang@samsung.com>
-X-Priority: 3
-X-Content-Kind-Code: NORMAL
-X-CPGS-Detection: blocking_info_exchange
-X-Drm-Type: N,general
-X-Msg-Generator: Mail
-X-Msg-Type: PERSONAL
-X-Reply-Demand: N
-Message-ID: <20220404022857epcms1p6e6af1a6a86569f339e50c318abde7d3c@epcms1p6>
-Date:   Mon, 04 Apr 2022 11:28:57 +0900
-X-CMS-MailID: 20220404022857epcms1p6e6af1a6a86569f339e50c318abde7d3c
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: AUTO_CONFIDENTIAL
-X-CPGSPASS: Y
-X-CPGSPASS: Y
-CMS-TYPE: 101P
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprHJsWRmVeSWpSXmKPExsWy7bCmge6rcK8kg3tLmC1eHtK0mHO+hcVi
-        /pFzrBa7Zyxnsng56x6bxd7XW9ktLmzrY7W4vGsOm8W5xZkWxxaIWXw7/YbRonXvEXYHHo8t
-        K28yeWxa1cnmcefaHjaP9/uusnn0bVnF6PF5k1wAW1S2TUZqYkpqkUJqXnJ+SmZeuq2Sd3C8
-        c7ypmYGhrqGlhbmSQl5ibqqtkotPgK5bZg7QhUoKZYk5pUChgMTiYiV9O5ui/NKSVIWM/OIS
-        W6XUgpScAvMCveLE3OLSvHS9vNQSK0MDAyNToMKE7Iz9Z/sZC+ZxVUybtoepgfEeexcjJ4eE
-        gInE92+L2UBsIYEdjBLLG1S7GDk4eAUEJf7uEAYJCwvYSTz4+ZsNJCwkIC/xeWIlRFhHouPt
-        UxaQMJuAlsTs/sQuRi4OEYFDzBKzp/xiAqlhFgiQWLrzJxPEJl6JGe0g9SC2tMT25VsZIWwN
-        iR/LepkhbFGJm6vfssPY74/Nh6oRkWi9dxaqRhDonN1QcSmJR80HoOxqiXPtvewgR0gINDBK
-        HPy8EexmCQF9iR3XjUFqeAV8JaY1/mcFsVkEVCVOPl/ECtHrIjH/3UIWiJvlJba/ncMM0sos
-        oCmxfpc+xBRliSO3WGA+adj4mx2dzSzAJ/Huaw8rTHzHvCdQnytLfG5+DdUrKbF48kzmCYxK
-        sxDBPAvJ3lkIexcwMq9iFEstKM5NTy02LDCBR2xyfu4mRnBC1bLYwTj37Qe9Q4xMHIyHGCU4
-        mJVEeHOCPJOEeFMSK6tSi/Lji0pzUosPMZoCfTyRWUo0OR+Y0vNK4g1NLA1MzIxMTQ0NLEyU
-        xHl7p55OFBJITyxJzU5NLUgtgulj4uCUamCqV/6jk/7vv9evVN6DcZ5FD5x+ir6ui6tcqB78
-        7NS/6FdJq7b9/n63P1LnEqsxi5VHdf4mkyBZqc1pqr8lw18y3DFyrzy9dK/vLS2hb2kV60sf
-        LhbJ+8XyvnS2RtlWu2o+kzX1Gy69De8rX/n/+XXtPzdmy/w9N2+mR8G6AOUFZ26ePXawXLs5
-        8M5jnZ8sMfV1z66LTlD9b6T/d4dkK8P2zNtsOydV3zC32nk4XTspfXda/q8dJcqhu1vO5uXK
-        Mf/bXMh8U/exfMXuw1LSU3bEaM/6dWZNtcrv90ufbYzZr6VvXZuf8Pzo7eglPgvvnXJRVlnA
-        t9fmXkCW5vx+7Vttjx7dT7n/6qv2ks3nNZzclViKMxINtZiLihMBFMumYjEEAAA=
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220404022857epcms1p6e6af1a6a86569f339e50c318abde7d3c
-References: <CGME20220404022857epcms1p6e6af1a6a86569f339e50c318abde7d3c@epcms1p6>
+        Sun, 3 Apr 2022 22:25:53 -0400
+Received: from mail-qv1-xf31.google.com (mail-qv1-xf31.google.com [IPv6:2607:f8b0:4864:20::f31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE03E13F66
+        for <linux-kernel@vger.kernel.org>; Sun,  3 Apr 2022 19:23:57 -0700 (PDT)
+Received: by mail-qv1-xf31.google.com with SMTP id kk12so6445927qvb.13
+        for <linux-kernel@vger.kernel.org>; Sun, 03 Apr 2022 19:23:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jAtjPlLfx0VmmOYMr4in9Xxivmt6Fjx5bb2eZBpD2ww=;
+        b=MWxXisTJx+T6LFXDGkwE7UgOUWeBbSxo/kfl3wBUyOrXCbV/Iaf/H3Lgl85+4rVD/7
+         2ZrkAE/4VQTHatdGAJGj9z/oWwwqKA72yf1jYbdpFhEjrrDSj740LP6PPRJ4qtEwJjIR
+         hPjjM1L0nJ44h+qgUoqzF7KeYnDz2x8g+PEIJ1pAxxY6Ue9EzfZjN9D7I0sf3rb3/efz
+         T1MRNegqU8Em8xtfbTw+Wpjaa6bETlV6CXfbZSwSsgW4vLC05FA+U3D+WLt25NYEsSG7
+         MVh7E/FX1117QSdS4wBNDeZoyxuWMxwZo6+nz04SksIHrrFX97QdOV8IUDg1HMAhwJVf
+         kInA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jAtjPlLfx0VmmOYMr4in9Xxivmt6Fjx5bb2eZBpD2ww=;
+        b=g2HBipq4dKoflBuNQWL3K4tznaOQZbnF1KfEAql523TZF1aAmCTV4fLHtHIUg3+GsL
+         q7P+M3KvlPrpYJcl+LKxpL9pnw3A+fFvp8TQ1k50fpNmncNBUoRG3pOII8rOYiBJATNg
+         Ra2O3OsDkIsj9FQQSP2JmbSN6ABFyzBvDCqzoT52JKaFV4oXzwMxjiX0kC4vhL+PLxU7
+         SKfhf1jR+tK6VD3gzG1EHY/dTImB5oziU0H8M4SDj8LrwGX5fB/v5xEsuYLsTmSjWu7M
+         bnbBqbznOITe2Lk2ZA1yXabn3jaKfEfdiOQ9IgtvZk3Lt9ww4bF/VSaeJWpHwyQDH7lA
+         D7Tg==
+X-Gm-Message-State: AOAM532DdpEY0noPdvBmaU1qBoYj7CpwqebyQMy86WGuDd4VokOwk9cP
+        LsSfKSuQWA8bs1TR9LFdMu2Vm568XXQ=
+X-Google-Smtp-Source: ABdhPJyE7F81Nxr9CSVNVi1tARUdLCpfDYZHYZaua3YoeeNrUtYtnwR01UJ5HmgQ8br4Ush4DOKHkw==
+X-Received: by 2002:ad4:5de4:0:b0:441:5fdf:ddae with SMTP id jn4-20020ad45de4000000b004415fdfddaemr48302739qvb.100.1649039036241;
+        Sun, 03 Apr 2022 19:23:56 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id n22-20020ac85b56000000b002eb871fbdf8sm7461166qtw.18.2022.04.03.19.23.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 03 Apr 2022 19:23:55 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: yang.yang29@zte.com.cn
+To:     paul@paul-moore.com, eparis@redhat.com, linux-audit@redhat.com,
+        rth@twiddle.net, sgrubb@redhat.com
+Cc:     linux-kernel@vger.kernel.org, ink@jurassic.park.msu.ru,
+        mattst88@gmail.com, Yang Yang <yang.yang29@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH v2] audit: do a quick exit when syscall number is less than 0
+Date:   Mon,  4 Apr 2022 02:23:18 +0000
+Message-Id: <20220404022317.2449865-1-yang.yang29@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-snps,dwmac has duplicated name for loongson,ls2k-dwmac and
-loongson,ls7a-dwmac.
+From: Yang Yang <yang.yang29@zte.com.cn>
 
-Signed-off-by: Dongjin Yang <dj76.yang@samsung.com>
+Userspace may use syscall with syscall number less than 0 by calling
+syscall(syscall_num,..). This kind of syscall could never be audited,
+because auditctl requires rule with syscall number >=0. Therefore we
+better do a quick handle no need to gohead with this situation.
+
+Note that auditctl may set rules auditing invalid syscall with syscall
+number bigger than NR_syscalls, to keep this mechanism working, we do
+no more check(context->major bigger than NR_syscalls or not).
+
+Signed-off-by: Yang Yang <yang.yang29@zte.com.cn>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
 ---
- Documentation/devicetree/bindings/net/snps,dwmac.yaml | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+v2:
+- cancel checking against NR_syscalls
+---
+ kernel/auditsc.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/net/snps,dwmac.yaml b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-index 2d5248f..36c85eb 100644
---- a/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-+++ b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-@@ -53,20 +53,18 @@ properties:
-         - allwinner,sun8i-r40-gmac
-         - allwinner,sun8i-v3s-emac
-         - allwinner,sun50i-a64-emac
--        - loongson,ls2k-dwmac
--        - loongson,ls7a-dwmac
-         - amlogic,meson6-dwmac
-         - amlogic,meson8b-dwmac
-         - amlogic,meson8m2-dwmac
-         - amlogic,meson-gxbb-dwmac
-         - amlogic,meson-axg-dwmac
--        - loongson,ls2k-dwmac
--        - loongson,ls7a-dwmac
-         - ingenic,jz4775-mac
-         - ingenic,x1000-mac
-         - ingenic,x1600-mac
-         - ingenic,x1830-mac
-         - ingenic,x2000-mac
-+        - loongson,ls2k-dwmac
-+        - loongson,ls7a-dwmac
-         - rockchip,px30-gmac
-         - rockchip,rk3128-gmac
-         - rockchip,rk3228-gmac
+diff --git a/kernel/auditsc.c b/kernel/auditsc.c
+index ea2ee1181921..79118c811853 100644
+--- a/kernel/auditsc.c
++++ b/kernel/auditsc.c
+@@ -2077,7 +2077,8 @@ void __audit_syscall_exit(int success, long return_code)
+ 	struct audit_context *context = audit_context();
+ 
+ 	if (!context || context->dummy ||
+-	    context->context != AUDIT_CTX_SYSCALL)
++	    context->context != AUDIT_CTX_SYSCALL ||
++	    unlikely(context->major < 0))
+ 		goto out;
+ 
+ 	/* this may generate CONFIG_CHANGE records */
 -- 
-2.9.5
+2.25.1
+
