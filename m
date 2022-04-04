@@ -2,122 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35216C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D194C433FE
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:12:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350375AbiDDWK5 (ORCPT
+        id S1358774AbiDDWLz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 18:10:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59140 "EHLO
+        Mon, 4 Apr 2022 18:11:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382403AbiDDV3e (ORCPT
+        with ESMTP id S1384643AbiDDVgQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 17:29:34 -0400
-Received: from mail-oa1-f44.google.com (mail-oa1-f44.google.com [209.85.160.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80C1B12AAB;
-        Mon,  4 Apr 2022 14:14:11 -0700 (PDT)
-Received: by mail-oa1-f44.google.com with SMTP id 586e51a60fabf-e1e5e8d9faso6978535fac.4;
-        Mon, 04 Apr 2022 14:14:11 -0700 (PDT)
+        Mon, 4 Apr 2022 17:36:16 -0400
+Received: from mail-oi1-f182.google.com (mail-oi1-f182.google.com [209.85.167.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6AC331220;
+        Mon,  4 Apr 2022 14:26:42 -0700 (PDT)
+Received: by mail-oi1-f182.google.com with SMTP id q129so11429860oif.4;
+        Mon, 04 Apr 2022 14:26:42 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=wVuOXu4skO0KO0zRxHy/3ZvkuPFL8d4lBRDXGGDlSqM=;
-        b=1N/9jHG4OVse3UwStL16iBqNh+PTDxtKx1ThGsbLSxpIF/zlCFIQK11ypLb30AvLbi
-         uIBFjivmdF/xgfGIf7mfbAiBxJi0ADpEpuWzDuLpPlodAPdXc6A6Z5vZr2RSbBkSp+ZZ
-         w037bwWptpQXH7cX0S5IIKyDvkn/gASPcp4u5Oj0HH7M43ASQXYcRjs3S4/ZSQB4XccH
-         zjvNrt0MpC57M6PCEeAukKVr1eYZ0XObG0y8GZM3+VpKPTDWzjmhgf3Wu/1sA4/SLfXJ
-         kx0qPXCPombbF97LegaGW/DnTY0GD3NA11sjFHULIHona/yjt4digYVYnEOc7hFYhbww
-         pG9Q==
-X-Gm-Message-State: AOAM532w/KOdXKWsboqlgtKhT4ZJL8DhdRb7KoLnQdLCK1TGfecixCyP
-        5ASPoJE8Ss3xjK/HC0Ecrg==
-X-Google-Smtp-Source: ABdhPJwW06Gh52XovnnLG6nWBopSe+nYPMxX+MAIwfaTGUWYf0ht+tTGTZwWR4mHIt5utIJLPkL5MA==
-X-Received: by 2002:a05:6870:785:b0:da:ac31:3e04 with SMTP id en5-20020a056870078500b000daac313e04mr66117oab.270.1649106850602;
-        Mon, 04 Apr 2022 14:14:10 -0700 (PDT)
+        bh=jAP1OWdT/qDUoPVv9G7nl7G1PXDxStBen+UYZx6kZGo=;
+        b=iSW2wiO9Qn9cCOceFIYj+ng9O7b+rTvJ7wTz2DN1xXNm23xTzmS87qpR1msg6cNU3N
+         lFRn9bLEKtjwD/GxhfEjPbkbxilXHftcUFmTdvNnUHFOjfs8FV7AJKId03DhSfntHMXO
+         3nWCR0IbM421ld/IenO3AnoEuHhyltwHlvjWo3IgJA+I804co+hxVoVbycCc6YCyvpbK
+         JdOtRYD4zh2UeoZLrAtYGoh92vv3k2uf6JeYS4YX/hgmygnxiqFULXKlddqpqwgE4ulE
+         hhNL0HmAQy1DLVEEm/tWXcPTER9icIkg/ysZuAwKd06Ce7T2czNtsW9AI3+uVmNohMTF
+         kbSw==
+X-Gm-Message-State: AOAM533r5O8HrrbovJEiMJS+WEEYtvHGpp5osJ+k/A/Z1YxSe/QhWHCv
+        QcAG52uYuuJcPiskwUqWXA==
+X-Google-Smtp-Source: ABdhPJxW2wscvKlm8gcJbXbRc0IWjFTIyDNUVIdjjAxIIjjxENxn2/s77BAwtbGe6+K90UrYW/lvlw==
+X-Received: by 2002:a05:6808:1a9b:b0:2ec:9c38:185 with SMTP id bm27-20020a0568081a9b00b002ec9c380185mr105502oib.165.1649107562121;
+        Mon, 04 Apr 2022 14:26:02 -0700 (PDT)
 Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id p12-20020a4a95cc000000b003246cd15eaasm4324908ooi.2.2022.04.04.14.14.09
+        by smtp.gmail.com with ESMTPSA id n66-20020acabd45000000b002ef6c6992e8sm4569111oif.42.2022.04.04.14.26.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 14:14:10 -0700 (PDT)
-Received: (nullmailer pid 1989352 invoked by uid 1000);
-        Mon, 04 Apr 2022 21:14:09 -0000
-Date:   Mon, 4 Apr 2022 16:14:09 -0500
+        Mon, 04 Apr 2022 14:26:01 -0700 (PDT)
+Received: (nullmailer pid 2010240 invoked by uid 1000);
+        Mon, 04 Apr 2022 21:26:00 -0000
+Date:   Mon, 4 Apr 2022 16:26:00 -0500
 From:   Rob Herring <robh@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, Corentin Labbe <clabbe@baylibre.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>
-Subject: Re: [PATCH] dt-bindings: white-space cleanups
-Message-ID: <Yktfof9/qSv4wGRw@robh.at.kernel.org>
-References: <20220402192819.154691-1-krzysztof.kozlowski@linaro.org>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     Paul Mackerras <paulus@samba.org>, Scott Wood <oss@buserror.net>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        linuxppc-dev@lists.ozlabs.org
+Subject: Re: [PATCH] powerpc/85xx: Remove FSL_85XX_CACHE_SRAM
+Message-ID: <YktiaO4n62O7BqXZ@robh.at.kernel.org>
+References: <9949813a6b758903b7bee910f798ba2ca82ff8ee.1648720908.git.christophe.leroy@csgroup.eu>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220402192819.154691-1-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <9949813a6b758903b7bee910f798ba2ca82ff8ee.1648720908.git.christophe.leroy@csgroup.eu>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 02 Apr 2022 21:28:19 +0200, Krzysztof Kozlowski wrote:
-> Remove trailing white-spaces and trailing blank lines (yamllint when run
-> manually does not like them).
+On Thu, 31 Mar 2022 12:03:06 +0200, Christophe Leroy wrote:
+> CONFIG_FSL_85XX_CACHE_SRAM is an option that is not
+> user selectable and which is not selected by any driver
+> nor any defconfig.
 > 
-> Suggested-by: Corentin Labbe <clabbe@baylibre.com>
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> Remove it and all associated code.
+> 
+> Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
 > ---
->  .../bindings/clock/samsung,exynos4412-isp-clock.yaml          | 1 -
->  .../devicetree/bindings/crypto/allwinner,sun8i-ce.yaml        | 1 -
->  .../devicetree/bindings/display/amlogic,meson-dw-hdmi.yaml    | 1 -
->  .../bindings/display/bridge/google,cros-ec-anx7688.yaml       | 1 -
->  Documentation/devicetree/bindings/display/bridge/ps8640.yaml  | 1 -
->  .../devicetree/bindings/display/imx/nxp,imx8mq-dcss.yaml      | 1 -
->  .../devicetree/bindings/display/mediatek/mediatek,merge.yaml  | 1 -
->  .../devicetree/bindings/display/panel/ilitek,ili9341.yaml     | 1 -
->  .../devicetree/bindings/display/panel/orisetech,otm8009a.yaml | 1 -
->  .../bindings/display/sprd/sprd,display-subsystem.yaml         | 1 -
->  Documentation/devicetree/bindings/display/st,stm32-ltdc.yaml  | 1 -
->  Documentation/devicetree/bindings/dma/st,stm32-dmamux.yaml    | 1 -
->  Documentation/devicetree/bindings/dma/st,stm32-mdma.yaml      | 1 -
->  Documentation/devicetree/bindings/gpu/samsung-rotator.yaml    | 1 -
->  Documentation/devicetree/bindings/hwmon/adt7475.yaml          | 1 -
->  Documentation/devicetree/bindings/i2c/i2c-gate.yaml           | 1 -
->  Documentation/devicetree/bindings/i2c/i2c-mux-gpmux.yaml      | 1 -
->  Documentation/devicetree/bindings/iio/adc/adi,ad7291.yaml     | 1 -
->  Documentation/devicetree/bindings/iio/dac/lltc,ltc1660.yaml   | 2 +-
->  Documentation/devicetree/bindings/iommu/samsung,sysmmu.yaml   | 1 -
->  .../devicetree/bindings/leds/backlight/qcom-wled.yaml         | 2 +-
->  .../devicetree/bindings/mailbox/amlogic,meson-gxbb-mhu.yaml   | 1 -
->  Documentation/devicetree/bindings/media/microchip,xisc.yaml   | 1 -
->  Documentation/devicetree/bindings/net/ti,k3-am654-cpts.yaml   | 1 -
->  .../devicetree/bindings/net/wireless/qcom,ath11k.yaml         | 2 +-
->  .../devicetree/bindings/power/amlogic,meson-sec-pwrc.yaml     | 1 -
->  .../devicetree/bindings/power/supply/cw2015_battery.yaml      | 1 -
->  .../devicetree/bindings/power/supply/power-supply.yaml        | 1 -
->  Documentation/devicetree/bindings/power/supply/ti,lp8727.yaml | 1 -
->  .../devicetree/bindings/power/supply/tps65217-charger.yaml    | 2 +-
->  .../bindings/regulator/socionext,uniphier-regulator.yaml      | 1 -
->  .../devicetree/bindings/regulator/st,stm32-vrefbuf.yaml       | 1 -
->  .../devicetree/bindings/reserved-memory/ramoops.yaml          | 1 -
->  Documentation/devicetree/bindings/reset/microchip,rst.yaml    | 1 -
->  Documentation/devicetree/bindings/rng/intel,ixp46x-rng.yaml   | 1 -
->  Documentation/devicetree/bindings/serial/sprd-uart.yaml       | 2 +-
->  .../devicetree/bindings/soc/amlogic/amlogic,canvas.yaml       | 1 -
->  Documentation/devicetree/bindings/sound/adi,adau1372.yaml     | 1 -
->  .../devicetree/bindings/sound/amlogic,gx-sound-card.yaml      | 1 -
->  Documentation/devicetree/bindings/sound/maxim,max98520.yaml   | 1 -
->  Documentation/devicetree/bindings/sound/mchp,spdifrx.yaml     | 2 +-
->  Documentation/devicetree/bindings/sound/mchp,spdiftx.yaml     | 2 +-
->  .../devicetree/bindings/sound/nvidia,tegra-audio-rt5640.yaml  | 1 -
->  .../devicetree/bindings/sound/samsung,aries-wm8994.yaml       | 1 -
->  Documentation/devicetree/bindings/sound/samsung,odroid.yaml   | 1 -
->  Documentation/devicetree/bindings/sound/tas2562.yaml          | 1 -
->  Documentation/devicetree/bindings/sound/tas2770.yaml          | 1 -
->  .../devicetree/bindings/spi/amlogic,meson-gx-spicc.yaml       | 1 -
->  .../devicetree/bindings/spi/amlogic,meson6-spifc.yaml         | 1 -
->  Documentation/devicetree/bindings/spi/renesas,hspi.yaml       | 1 -
->  Documentation/devicetree/bindings/usb/dwc2.yaml               | 4 ++--
->  Documentation/devicetree/bindings/usb/smsc,usb3503.yaml       | 2 +-
->  52 files changed, 10 insertions(+), 53 deletions(-)
+>  .../bindings/powerpc/fsl/cache_sram.txt       |  20 --
+>  .../powerpc/include/asm/fsl_85xx_cache_sram.h |  35 ---
+>  arch/powerpc/platforms/85xx/Kconfig           |   9 -
+>  arch/powerpc/sysdev/Makefile                  |   1 -
+>  arch/powerpc/sysdev/fsl_85xx_cache_ctlr.h     |  88 -------
+>  arch/powerpc/sysdev/fsl_85xx_cache_sram.c     | 147 ------------
+>  arch/powerpc/sysdev/fsl_85xx_l2ctlr.c         | 216 ------------------
+>  7 files changed, 516 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/powerpc/fsl/cache_sram.txt
+>  delete mode 100644 arch/powerpc/include/asm/fsl_85xx_cache_sram.h
+>  delete mode 100644 arch/powerpc/sysdev/fsl_85xx_cache_ctlr.h
+>  delete mode 100644 arch/powerpc/sysdev/fsl_85xx_cache_sram.c
+>  delete mode 100644 arch/powerpc/sysdev/fsl_85xx_l2ctlr.c
 > 
 
-Applied, thanks!
+Acked-by: Rob Herring <robh@kernel.org>
