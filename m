@@ -2,230 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEA1FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:51:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEB32C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:51:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350438AbiDDVwy (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:52:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59198 "EHLO
+        id S233975AbiDDVxR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 17:53:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379197AbiDDQnH (ORCPT
+        with ESMTP id S1380408AbiDDUFG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 12:43:07 -0400
-Received: from gateway23.websitewelcome.com (gateway23.websitewelcome.com [192.185.49.177])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1871D35851
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 09:41:10 -0700 (PDT)
-Received: from cm16.websitewelcome.com (cm16.websitewelcome.com [100.42.49.19])
-        by gateway23.websitewelcome.com (Postfix) with ESMTP id 8356817B0
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 11:41:10 -0500 (CDT)
-Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
-        by cmsmtp with SMTP
-        id bPlOniZjTXvvJbPlOnlmnL; Mon, 04 Apr 2022 11:41:10 -0500
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=roeck-us.net; s=default; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=7WgjofAA6KFtyuYFlmhFU6JlXq3dpm5LRTI1JLbUZtg=; b=FMYEuEthHu16SlxBpkJ9Y62rkl
-        ZAL8MaU5uy/Wxs3EZw1O32MFghfHwIujE26AM+k6K1Co2g9GpdujuFgRaJcPSLrhjUinomr+fdPwo
-        yeHUee7zaDnix6gGkNCSt4JTaooROeu+QBVjeGOUJgyP7d015RpCzh6cMl+0xXxT3IOZnTWpHE831
-        kqVoSgiwpS02FVQX4dJHY5lFaacAQdcfOPDJdGZj9GdAjOnogzqG62lBShqTkvCS2zUTRX+oZ+GSS
-        GZNilg36MeKDFofhJXMTnQi7inTusG7VUfqpGU2dsSQSsFafMipHssDQDMiUJ88S9mu1UOzTLrdPb
-        65MAOlMg==;
-Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:54720)
-        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@roeck-us.net>)
-        id 1nbPlO-002RIp-5r; Mon, 04 Apr 2022 16:41:10 +0000
-Message-ID: <817c20de-3ebc-e444-a14e-b18773da9f19@roeck-us.net>
-Date:   Mon, 4 Apr 2022 09:41:09 -0700
+        Mon, 4 Apr 2022 16:05:06 -0400
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3400730576;
+        Mon,  4 Apr 2022 13:03:09 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id b13so10057017pfv.0;
+        Mon, 04 Apr 2022 13:03:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=BXLHEFwxWdm5e2nqHirZ7xmXS6hF3uNKov0CWo+0WO8=;
+        b=YHcz6zZf1ucCYQxs+BMo39i9t7OYROE0FpXZIgsWDaCsFsP9IDsqC4+3466mFNuIoG
+         XKIxMX/EeLaGaDSkKXYDFXgr8HlDPlMuePpgvGfBZZzWdJZVhx0N+ih7KKqf5szrrHnG
+         U2wo/VL4ygXkXvcglMVPrPHRDkifd17EqbT23AB19ccgs8/Bx2WixuZmCXKcJXjImMCi
+         9pRUoe3dQlpums5on1sx94iJXwq3mFhiR9L5ujIOE0fwiTJFVJbx9Nq/TPSCPK9/I2yE
+         laPfy1lMXdXzUfgdglhd6cCi38CCqOWi0XfaDResSt6TIo2znuOjhuUfNN/4SJFyrfBA
+         f7AA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=BXLHEFwxWdm5e2nqHirZ7xmXS6hF3uNKov0CWo+0WO8=;
+        b=db5Pk4OZchByTCLXVe0f7bB4eG1qzZiVmT/WlcNLNF04KN/p7u/pFC783QihU9rNRK
+         vPGN2O3DyuikCU0On6LpViget67OHF10KiR2nFvFZx2TOTpiL+QxePq7zi6iuzSjL3kN
+         Fn0NoMEi8ly1Gnj2OqtR3vgNZuXJU2CsZynD535ijSMETYJcqXF85C8GD+YHlJxjfxM5
+         6zQiIvuwt5zKZXLq4b4LA6708f+TRVIKnqKH/3e70uoZZzWJAn+41z22lfzLPHPuAr2W
+         kEVoZ6mWREkuHgaqqrELYisrl8t1v2rfTDqPu5L2zYl5uVoO+d2aH7maWuljdewcGSPf
+         Ri0w==
+X-Gm-Message-State: AOAM530RcO35zbW6Evn3+qZ9ak+3nziEm4Hi7OEHqvH1oUaKXxh1PNSR
+        OOZPC0wDjHAsHiU6lRXj5kw=
+X-Google-Smtp-Source: ABdhPJyagGXZMLfLFwAcYGG46fuX5fs53R3Ia/YY5p1GvsQ1lu5ZQE6+/01O8gqaGg7avP+BtQr8dA==
+X-Received: by 2002:a63:2ad0:0:b0:398:31d7:9955 with SMTP id q199-20020a632ad0000000b0039831d79955mr1273444pgq.198.1649102588645;
+        Mon, 04 Apr 2022 13:03:08 -0700 (PDT)
+Received: from localhost.localdomain (c-67-174-241-145.hsd1.ca.comcast.net. [67.174.241.145])
+        by smtp.gmail.com with ESMTPSA id bw17-20020a056a00409100b004fadad3b93esm12779295pfb.142.2022.04.04.13.03.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Apr 2022 13:03:08 -0700 (PDT)
+From:   Yang Shi <shy828301@gmail.com>
+To:     vbabka@suse.cz, kirill.shutemov@linux.intel.com,
+        linmiaohe@huawei.com, songliubraving@fb.com, riel@surriel.com,
+        willy@infradead.org, ziy@nvidia.com, tytso@mit.edu,
+        akpm@linux-foundation.org
+Cc:     shy828301@gmail.com, linux-mm@kvack.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [v3 PATCH 4/8] mm: thp: only regular file could be THP eligible
+Date:   Mon,  4 Apr 2022 13:02:46 -0700
+Message-Id: <20220404200250.321455-5-shy828301@gmail.com>
+X-Mailer: git-send-email 2.26.3
+In-Reply-To: <20220404200250.321455-1-shy828301@gmail.com>
+References: <20220404200250.321455-1-shy828301@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v3 03/10] drivers: wdt: Introduce HPE GXP SoC Watchdog
-Content-Language: en-US
-To:     "Hawkins, Nick" <nick.hawkins@hpe.com>
-Cc:     "Verdun, Jean-Marie" <verdun@hpe.com>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-watchdog@vger.kernel.org" <linux-watchdog@vger.kernel.org>
-References: <20220310195229.109477-1-nick.hawkins@hpe.com>
- <20220310195229.109477-3-nick.hawkins@hpe.com>
- <20220404142830.GA3289074@roeck-us.net>
- <PH0PR84MB171847EBCFEF79A06434CE8488E59@PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM>
-From:   Guenter Roeck <linux@roeck-us.net>
-In-Reply-To: <PH0PR84MB171847EBCFEF79A06434CE8488E59@PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - roeck-us.net
-X-BWhitelist: no
-X-Source-IP: 108.223.40.66
-X-Source-L: No
-X-Exim-ID: 1nbPlO-002RIp-5r
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net [108.223.40.66]:54720
-X-Source-Auth: linux@roeck-us.net
-X-Email-Count: 2
-X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
-X-Local-Domain: yes
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/4/22 09:25, Hawkins, Nick wrote:
-> 
-> 
-> -----Original Message-----
-> From: Guenter Roeck [mailto:linux@roeck-us.net]
-> Sent: Monday, April 4, 2022 9:29 AM
-> To: Hawkins, Nick <nick.hawkins@hpe.com>
-> Cc: Verdun, Jean-Marie <verdun@hpe.com>; Wim Van Sebroeck <wim@linux-watchdog.org>; linux-kernel@vger.kernel.org; linux-watchdog@vger.kernel.org
-> Subject: Re: [PATCH v3 03/10] drivers: wdt: Introduce HPE GXP SoC Watchdog
-> 
-> On Thu, Mar 10, 2022 at 01:52:22PM -0600, nick.hawkins@hpe.com wrote:
->>> From: Nick Hawkins <nick.hawkins@hpe.com>
->>>
->>> Adding support for the HPE GXP Watchdog. It is new to the linux
->>> community and this along with several other patches is the first
->>> support for it. The GXP asic contains a full compliment of timers one
->>> of which is the watchdog timer. The watchdog timer is 16 bit and has
->>> 10ms resolution.
->>>
->>> Signed-off-by: Nick Hawkins <nick.hawkins@hpe.com>
->>> ---
->>>   drivers/watchdog/Kconfig   |   8 ++
->>>   drivers/watchdog/Makefile  |   1 +
->>>   drivers/watchdog/gxp-wdt.c | 191
->>> +++++++++++++++++++++++++++++++++++++
->>>   3 files changed, 200 insertions(+)
->>>   create mode 100644 drivers/watchdog/gxp-wdt.c
->>>
->>> diff --git a/drivers/watchdog/Kconfig b/drivers/watchdog/Kconfig index
->>> c8fa79da23b3..cb210d2978d2 100644
->>> --- a/drivers/watchdog/Kconfig
->>> +++ b/drivers/watchdog/Kconfig
->>> @@ -1820,6 +1820,14 @@ config RALINK_WDT
->>>   	help
->>>   	  Hardware driver for the Ralink SoC Watchdog Timer.
->>>   
->>> +config GXP_WATCHDOG
->>> +	tristate "HPE GXP watchdog support"
->>> +	depends on ARCH_HPE_GXP
->>> +	select WATCHDOG_CORE
->>> +	help
->>> +	  Say Y here to include support for the watchdog timer
->>> +	  in HPE GXP SoCs.
->>> +
->>>   config MT7621_WDT
->>>   	tristate "Mediatek SoC watchdog"
->>>   	select WATCHDOG_CORE
->>> diff --git a/drivers/watchdog/Makefile b/drivers/watchdog/Makefile
->>> index f7da867e8782..e2acf3a0d0fc 100644
->>> --- a/drivers/watchdog/Makefile
->>> +++ b/drivers/watchdog/Makefile
->>> @@ -92,6 +92,7 @@ obj-$(CONFIG_RTD119X_WATCHDOG) += rtd119x_wdt.o
->>>   obj-$(CONFIG_SPRD_WATCHDOG) += sprd_wdt.o
->>>   obj-$(CONFIG_PM8916_WATCHDOG) += pm8916_wdt.o
->>>   obj-$(CONFIG_ARM_SMC_WATCHDOG) += arm_smc_wdt.o
->>> +obj-$(CONFIG_GXP_WATCHDOG) += gxp-wdt.o
->>>   obj-$(CONFIG_VISCONTI_WATCHDOG) += visconti_wdt.o
->>>   obj-$(CONFIG_MSC313E_WATCHDOG) += msc313e_wdt.o
->>>   obj-$(CONFIG_APPLE_WATCHDOG) += apple_wdt.o diff --git
->>> a/drivers/watchdog/gxp-wdt.c b/drivers/watchdog/gxp-wdt.c new file
->>> mode 100644 index 000000000000..d2b489cb4774
->>> --- /dev/null
->>> +++ b/drivers/watchdog/gxp-wdt.c
->>> @@ -0,0 +1,191 @@
->>> +// SPDX-License-Identifier: GPL-2.0
->>> +/* Copyright (C) 2022 Hewlett-Packard Enterprise Development Company, L.P.
->>> + *
->>> + *
->>> + * This program is free software; you can redistribute it and/or
->>> +modify
->>> + * it under the terms of the GNU General Public License version 2 as
->>> + * published by the Free Software Foundation.
->>> + */
->>> +
->>> +#include <linux/delay.h>
->>> +#include <linux/io.h>
->>> +#include <linux/module.h>
->>> +#include <linux/platform_device.h>
->>> +#include <linux/of_address.h>
->>> +#include <linux/of_platform.h>
->>> +#include <linux/types.h>
->>> +#include <linux/watchdog.h>
->>> +
->>> +#define MASK_WDGCS_ENABLE	0x01
->>> +#define MASK_WDGCS_RELOAD	0x04
->>> +#define MASK_WDGCS_NMIEN	0x08
->>> +#define MASK_WDGCS_WARN		0x80
->>> +
->>> +#define WDT_MAX_TIMEOUT_MS	655000
->>> +#define WDT_DEFAULT_TIMEOUT	30
->>> +#define SECS_TO_WDOG_TICKS(x) ((x) * 100) #define
->>> +WDOG_TICKS_TO_SECS(x) ((x) / 100)
->>> +
->>> +struct gxp_wdt {
->>> +	void __iomem	*counter;
->>> +	void __iomem	*control;
->>> +	struct watchdog_device	wdd;
-> 
->> Odd variable alignment. Might as well just use spaces before the variable names.
-> 
-> Fixed
-> 
->>> +};
->>> +
->>> +static void gxp_wdt_enable_reload(struct gxp_wdt *drvdata) {
->>> +	uint8_t val;
->>> +
->>> +	val = readb(drvdata->control);
->>> +	val |= (MASK_WDGCS_ENABLE | MASK_WDGCS_RELOAD);
->>> +	writeb(val, drvdata->control);
->>> +}
->>> +
->>> +static int gxp_wdt_start(struct watchdog_device *wdd) {
->>> +	struct gxp_wdt *drvdata = watchdog_get_drvdata(wdd);
->>> +
->>> +	writew((SECS_TO_WDOG_TICKS(wdd->timeout)), drvdata->counter);
-> 
->> Unnecessary iand confusing () around SECS_TO_WDOG_TICKS().
-> 
-> Fixed
-> 
->>> +	gxp_wdt_enable_reload(drvdata);
->>> +	return 0;
->>> +}
->>> +
->>> +static int gxp_wdt_stop(struct watchdog_device *wdd) {
->>> +	struct gxp_wdt *drvdata = watchdog_get_drvdata(wdd);
->>> +	uint8_t val;
->>> +
->>> +	val = readb_relaxed(drvdata->control);
->>> +	val &= ~MASK_WDGCS_ENABLE;
->>> +	writeb(val, drvdata->control);
->>> +	return 0;
->>> +}
->>> +
->>> +static int gxp_wdt_set_timeout(struct watchdog_device *wdd,
->>> +			       unsigned int timeout)
->>> +{
->>> +	struct gxp_wdt *drvdata = watchdog_get_drvdata(wdd);
->>> +	uint32_t actual;
-> 
->> Please use u32 as suggested by checkpatch. Same everywhere.
-> 
-> Fixed, checkpatch did not flag this, is there an option I should be using with checkpatch.pl?
+Since commit a4aeaa06d45e ("mm: khugepaged: skip huge page collapse for
+special files"), khugepaged just collapses THP for regular file which is
+the intended usecase for readonly fs THP.  Only show regular file as THP
+eligible accordingly.
 
---strict
+And make file_thp_enabled() available for khugepaged too in order to remove
+duplicate code.
 
-Guenter
+Acked-by: Song Liu <song@kernel.org>
+Signed-off-by: Yang Shi <shy828301@gmail.com>
+---
+ include/linux/huge_mm.h | 14 ++++++++++++++
+ mm/huge_memory.c        | 11 ++---------
+ mm/khugepaged.c         |  9 ++-------
+ 3 files changed, 18 insertions(+), 16 deletions(-)
+
+diff --git a/include/linux/huge_mm.h b/include/linux/huge_mm.h
+index 2999190adc22..62a6f667850d 100644
+--- a/include/linux/huge_mm.h
++++ b/include/linux/huge_mm.h
+@@ -172,6 +172,20 @@ static inline bool __transparent_hugepage_enabled(struct vm_area_struct *vma)
+ 	return false;
+ }
+ 
++static inline bool file_thp_enabled(struct vm_area_struct *vma)
++{
++	struct inode *inode;
++
++	if (!vma->vm_file)
++		return false;
++
++	inode = vma->vm_file->f_inode;
++
++	return (IS_ENABLED(CONFIG_READ_ONLY_THP_FOR_FS)) &&
++	       (vma->vm_flags & VM_EXEC) &&
++	       !inode_is_open_for_write(inode) && S_ISREG(inode->i_mode);
++}
++
+ bool transparent_hugepage_active(struct vm_area_struct *vma);
+ 
+ #define transparent_hugepage_use_zero_page()				\
+diff --git a/mm/huge_memory.c b/mm/huge_memory.c
+index 2fe38212e07c..183b793fd28e 100644
+--- a/mm/huge_memory.c
++++ b/mm/huge_memory.c
+@@ -68,13 +68,6 @@ static atomic_t huge_zero_refcount;
+ struct page *huge_zero_page __read_mostly;
+ unsigned long huge_zero_pfn __read_mostly = ~0UL;
+ 
+-static inline bool file_thp_enabled(struct vm_area_struct *vma)
+-{
+-	return transhuge_vma_enabled(vma, vma->vm_flags) && vma->vm_file &&
+-	       !inode_is_open_for_write(vma->vm_file->f_inode) &&
+-	       (vma->vm_flags & VM_EXEC);
+-}
+-
+ bool transparent_hugepage_active(struct vm_area_struct *vma)
+ {
+ 	/* The addr is used to check if the vma size fits */
+@@ -86,8 +79,8 @@ bool transparent_hugepage_active(struct vm_area_struct *vma)
+ 		return __transparent_hugepage_enabled(vma);
+ 	if (vma_is_shmem(vma))
+ 		return shmem_huge_enabled(vma);
+-	if (IS_ENABLED(CONFIG_READ_ONLY_THP_FOR_FS))
+-		return file_thp_enabled(vma);
++	if (transhuge_vma_enabled(vma, vma->vm_flags) && file_thp_enabled(vma))
++		return true;
+ 
+ 	return false;
+ }
+diff --git a/mm/khugepaged.c b/mm/khugepaged.c
+index 964a4d2c942a..609c1bc0a027 100644
+--- a/mm/khugepaged.c
++++ b/mm/khugepaged.c
+@@ -464,13 +464,8 @@ static bool hugepage_vma_check(struct vm_area_struct *vma,
+ 		return false;
+ 
+ 	/* Only regular file is valid */
+-	if (IS_ENABLED(CONFIG_READ_ONLY_THP_FOR_FS) && vma->vm_file &&
+-	    (vm_flags & VM_EXEC)) {
+-		struct inode *inode = vma->vm_file->f_inode;
+-
+-		return !inode_is_open_for_write(inode) &&
+-			S_ISREG(inode->i_mode);
+-	}
++	if (file_thp_enabled(vma))
++		return true;
+ 
+ 	if (!vma->anon_vma || vma->vm_ops)
+ 		return false;
+-- 
+2.26.3
+
