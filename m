@@ -2,75 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 508A9C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 695CEC4167D
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:08:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380407AbiDDWHP (ORCPT
+        id S1380533AbiDDWHS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 18:07:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46120 "EHLO
+        Mon, 4 Apr 2022 18:07:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379540AbiDDR0c (ORCPT
+        with ESMTP id S1379596AbiDDRoK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 13:26:32 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3B8B31909
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 10:24:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=N24CpBDygfALbt/hrcJkTFYe4AX/XLB390dNSfysj5g=; b=NVYwAi0WWPljQrXbqyVfROhDET
-        Yia/c6sRhlxlfiABHHpesebhHQjtnVtRPI7ShBOv/6Eq1SP3n0t6faH96gj+xfWQ6ORQTfK4Plt4j
-        WgCLKfbqhOU/yRzepQHfQ8eEWl0qaGp6rTobEXAEg41NGF13ZC0++grPjTX0ENG/sTkyNp2jJpHV2
-        8qgXWugQhy8Qux2xZu6rlNSffJCdWpeuVdlLsex6Nbrnerg22khrz62qDjPyGKtHJid9ney+hx58n
-        EtN3vqK6Ss/pqCTABq4+L0b/rmyE/yi62/XVUy+EwV6CHHTsUntUszvh8dB36LsGCiGrSPb0+HmHH
-        +4VlDutw==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nbQRJ-00G0Q6-1x; Mon, 04 Apr 2022 17:24:29 +0000
-Date:   Mon, 4 Apr 2022 10:24:29 -0700
-From:   Christoph Hellwig <hch@infradead.org>
-To:     "Limonciello, Mario" <Mario.Limonciello@amd.com>
-Cc:     Christoph Hellwig <hch@infradead.org>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
-        "Suthikulpanit, Suravee" <Suravee.Suthikulpanit@amd.com>,
-        "Hegde, Vasant" <Vasant.Hegde@amd.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 0/2] Fix issues with untrusted devices and AMD IOMMU
-Message-ID: <YkspzQLcfvTQfJ9i@infradead.org>
-References: <20220404164707.1128-1-mario.limonciello@amd.com>
- <YksizUJzRgEEdHLJ@infradead.org>
- <BL1PR12MB51573B811E1F7321E25EF785E2E59@BL1PR12MB5157.namprd12.prod.outlook.com>
+        Mon, 4 Apr 2022 13:44:10 -0400
+Received: from mx0a-002e3701.pphosted.com (mx0a-002e3701.pphosted.com [148.163.147.86])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11E7131DE8;
+        Mon,  4 Apr 2022 10:42:14 -0700 (PDT)
+Received: from pps.filterd (m0150242.ppops.net [127.0.0.1])
+        by mx0a-002e3701.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 234Gitsk001178;
+        Mon, 4 Apr 2022 17:41:37 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pps0720;
+ bh=v6iZXwA2Am8swC6551Es3v1s4q+s9epkgRTwcKxjD5I=;
+ b=iE5NPwcDy/K9FbjSFhvk0i813cqcvehb4sAcAHz7wD64lG8v7HD6SmKbmXY3UprsyKWc
+ BXcJ5/4OOhO+4+tJclJSWM1jpYm8C/3Juqriv6suZSvA64UlyBWC0MK2oy4KPzq2F9vE
+ rvEJmp71L4/OcnJTaN9yGcQmu9X7toMDwuLTnSlKqclUM6+25Xfa3ZITGzciJfmM00Ed
+ jaG7h3W/ffnX81zIByIVSN7s42uWZJkqRBGUnU5gqaLWrEWJLOlVo1RyikkGfI1ciOfr
+ tAfmcB/7nqr2t0dFrI3HM1nwnEoPtiFHQFOvHSVK3sWKd5eIOUBUQm1/gj1+TmY+JDDs Lw== 
+Received: from g4t3425.houston.hpe.com (g4t3425.houston.hpe.com [15.241.140.78])
+        by mx0a-002e3701.pphosted.com (PPS) with ESMTPS id 3f84f6rmj6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 04 Apr 2022 17:41:37 +0000
+Received: from g9t2301.houston.hpecorp.net (g9t2301.houston.hpecorp.net [16.220.97.129])
+        by g4t3425.houston.hpe.com (Postfix) with ESMTP id 2366D8D;
+        Mon,  4 Apr 2022 17:41:36 +0000 (UTC)
+Received: from dog.eag.rdlabs.hpecorp.net (dog.eag.rdlabs.hpecorp.net [128.162.243.181])
+        by g9t2301.houston.hpecorp.net (Postfix) with ESMTP id 461B650;
+        Mon,  4 Apr 2022 17:41:35 +0000 (UTC)
+From:   Mike Travis <mike.travis@hpe.com>
+To:     Borislav Petkov <bp@alien8.de>, Ingo Molnar <mingo@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Steve Wahl <steve.wahl@hpe.com>, x86@kernel.org
+Cc:     Mike Travis <mike.travis@hpe.com>,
+        Dimitri Sivanich <dimitri.sivanich@hpe.com>,
+        Andy Shevchenko <andy@infradead.org>,
+        Darren Hart <dvhart@infradead.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Russ Anderson <russ.anderson@hpe.com>,
+        linux-kernel@vger.kernel.org, platform-driver-x86@vger.kernel.org
+Subject: [PATCH v3 1/3] x86/platform/uv: Update NMI Handler for UV5
+Date:   Mon,  4 Apr 2022 12:41:09 -0500
+Message-Id: <20220404174111.262414-2-mike.travis@hpe.com>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20220404174111.262414-1-mike.travis@hpe.com>
+References: <20220404174111.262414-1-mike.travis@hpe.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BL1PR12MB51573B811E1F7321E25EF785E2E59@BL1PR12MB5157.namprd12.prod.outlook.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-ORIG-GUID: mF3WG-gxurDNXS8dqyI5j0_zPu2UiUly
+X-Proofpoint-GUID: mF3WG-gxurDNXS8dqyI5j0_zPu2UiUly
+X-HPE-SCL: -1
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-04-04_06,2022-03-31_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
+ lowpriorityscore=0 suspectscore=0 priorityscore=1501 clxscore=1015
+ spamscore=0 mlxlogscore=999 phishscore=0 mlxscore=0 bulkscore=0
+ malwarescore=0 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2202240000 definitions=main-2204040100
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 04, 2022 at 05:05:00PM +0000, Limonciello, Mario wrote:
-> I do expect that solves it as well.  The reason I submitted the way I
-> did is that there seemed to be a strong affinity for having swiotlb
-> disabled when IOMMU is enabled on AMD IOMMU.  The original code that
-> disabled SWIOTLB in AMD IOMMU dates all the way back to 2.6.33 (commit
-> 75f1cdf1dda92cae037ec848ae63690d91913eac) and it has ping ponged around
-> since then to add more criteria that it would be or wouldn't be
-> disabled, but was never actually dropped until your suggestion.
+Update NMI handler to interface with UV5 hardware. This involves changing
+the EVENT_OCCURRED MMR used by the hardware and removes the check for
+which NMI function is supported by UV BIOS.  The newer NMI function is
+assumed supported on UV5 and above.
 
-Well, that was before we started bounce buffering for untrusted devices.
-We can't just have a less secure path for them because some conditions
-are not met.  Especially given that most AMD systems right now probably
-don't have that swiotlb buffer if the IOMMU is enabled.  So not freeing
-the buffer in this case is a bug fix that is needed to properly
-support the bounce buffering for unaligned I/O to untrusted devices.
+Signed-off-by: Mike Travis <mike.travis@hpe.com>
+Reviewed-by: Dimitri Sivanich <dimitri.sivanich@hpe.com>
+Reviewed-by: Steve Wahl <steve.wahl@hpe.com>
+---
+v3: Fix mistake in UVH_EXTIO_INT0_BROADCAST check.
+    Use true/false in setting bool flag.
+v2: Use bool flag to assume NMI support for UV5 and above.
+---
+ arch/x86/platform/uv/uv_nmi.c | 21 +++++++++++----------
+ 1 file changed, 11 insertions(+), 10 deletions(-)
 
-> I do think that my messaging patch (1/2) may still be useful for
-> debugging in the future if for another reason SWIOTLB is disabled.
+diff --git a/arch/x86/platform/uv/uv_nmi.c b/arch/x86/platform/uv/uv_nmi.c
+index 1e9ff28bc2e0..6d2e9ae8576b 100644
+--- a/arch/x86/platform/uv/uv_nmi.c
++++ b/arch/x86/platform/uv/uv_nmi.c
+@@ -244,8 +244,10 @@ static inline bool uv_nmi_action_is(const char *action)
+ /* Setup which NMI support is present in system */
+ static void uv_nmi_setup_mmrs(void)
+ {
++	bool nmi_supported = false;
++
+ 	/* First determine arch specific MMRs to handshake with BIOS */
+-	if (UVH_EVENT_OCCURRED0_EXTIO_INT0_MASK) {
++	if (UVH_EVENT_OCCURRED0_EXTIO_INT0_MASK) {	/* UV2,3,4 setup */
+ 		uvh_nmi_mmrx = UVH_EVENT_OCCURRED0;
+ 		uvh_nmi_mmrx_clear = UVH_EVENT_OCCURRED0_ALIAS;
+ 		uvh_nmi_mmrx_shift = UVH_EVENT_OCCURRED0_EXTIO_INT0_SHFT;
+@@ -255,26 +257,25 @@ static void uv_nmi_setup_mmrs(void)
+ 		uvh_nmi_mmrx_req = UVH_BIOS_KERNEL_MMR_ALIAS_2;
+ 		uvh_nmi_mmrx_req_shift = 62;
+ 
+-	} else if (UVH_EVENT_OCCURRED1_EXTIO_INT0_MASK) {
++	} else if (UVH_EVENT_OCCURRED1_EXTIO_INT0_MASK) { /* UV5+ setup */
+ 		uvh_nmi_mmrx = UVH_EVENT_OCCURRED1;
+ 		uvh_nmi_mmrx_clear = UVH_EVENT_OCCURRED1_ALIAS;
+ 		uvh_nmi_mmrx_shift = UVH_EVENT_OCCURRED1_EXTIO_INT0_SHFT;
+ 		uvh_nmi_mmrx_type = "OCRD1-EXTIO_INT0";
+ 
+-		uvh_nmi_mmrx_supported = UVH_EXTIO_INT0_BROADCAST;
+-		uvh_nmi_mmrx_req = UVH_BIOS_KERNEL_MMR_ALIAS_2;
+-		uvh_nmi_mmrx_req_shift = 62;
++		nmi_supported = true;		/* assume sync valid on UV5+ */
++		uvh_nmi_mmrx_req = 0;		/* no request bit to clear */
+ 
+ 	} else {
+-		pr_err("UV:%s:cannot find EVENT_OCCURRED*_EXTIO_INT0\n",
+-			__func__);
++		pr_err("UV:%s:NMI support not available on this system\n", __func__);
+ 		return;
+ 	}
+ 
+ 	/* Then find out if new NMI is supported */
+-	if (likely(uv_read_local_mmr(uvh_nmi_mmrx_supported))) {
+-		uv_write_local_mmr(uvh_nmi_mmrx_req,
+-					1UL << uvh_nmi_mmrx_req_shift);
++	if (likely(nmi_supported) || (uv_read_local_mmr(uvh_nmi_mmrx_supported))) {
++		if (uvh_nmi_mmrx_req)
++			uv_write_local_mmr(uvh_nmi_mmrx_req,
++						1UL << uvh_nmi_mmrx_req_shift);
+ 		nmi_mmr = uvh_nmi_mmrx;
+ 		nmi_mmr_clear = uvh_nmi_mmrx_clear;
+ 		nmi_mmr_pending = 1UL << uvh_nmi_mmrx_shift;
+-- 
+2.26.2
 
-I think the warning is useful.  For dma-direct we have it in the caller
-so I'd be tempted todo the same for dma-iommu.
