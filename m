@@ -2,82 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E650EC47082
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 196D7C47081
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 22:08:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382689AbiDDWJw (ORCPT
+        id S1382451AbiDDWJ1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 18:09:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56432 "EHLO
+        Mon, 4 Apr 2022 18:09:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379078AbiDDQ3U (ORCPT
+        with ESMTP id S1379463AbiDDRLU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 12:29:20 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 34A543464D
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 09:27:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649089641;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=P7hJ01+Z8CTQmsHFJdXv1elOc2Pqcj7fQA/ZIutEB5E=;
-        b=i0TTI0Sv3Gi0njaigApTcHR/tyQK4TjtuSbfUu4IrmjpvdBtEtt2WRmeBriThyMaLnVBLZ
-        EyYEIrp4SFmwmYmbAP40186KULcGFSrhUJp9vglfjc9Z02eVud7zH1Zm93rjVQ68ggQ8VF
-        5tqkja9eIYQLAUClUfoLEMwbe+7lyFk=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-619-2SdOY_9iM-WuCDXvykkonw-1; Mon, 04 Apr 2022 12:27:20 -0400
-X-MC-Unique: 2SdOY_9iM-WuCDXvykkonw-1
-Received: by mail-wr1-f71.google.com with SMTP id j67-20020adf9149000000b00203e6b7d151so1907942wrj.13
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 09:27:20 -0700 (PDT)
+        Mon, 4 Apr 2022 13:11:20 -0400
+Received: from mail-qv1-xf2d.google.com (mail-qv1-xf2d.google.com [IPv6:2607:f8b0:4864:20::f2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D41F3237F0
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 10:09:23 -0700 (PDT)
+Received: by mail-qv1-xf2d.google.com with SMTP id kd21so7967715qvb.6
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 10:09:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=toxicpanda-com.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :content-transfer-encoding;
+        bh=VcPjK2xIshaSha7P/73c4uJIeEh9LCIV9h696014eSY=;
+        b=0/1W3PtmahDM2zaiwQOfAOI7x0n7aJlY78Edx82FG8yn3sBRYT/xK8rwyUWlSIPkVk
+         FbhTcMOufB5eBtNbzu+A7OVMx2KouPMqLL4fqMN5fXrX9FdDb+g8E/WNbt7rmfNyOJqQ
+         3yTps2pezT8XzRvoiqVDfU0khY6BzaT9b9y+qgU1cNgUC5dLdbyJ926rZhqt1ZSdlvB7
+         wu1tox0qINOoXy+nUe+Na9v9dWOAA/GUbXFNkrYHSwHS3aWbXTRBR4ZEacGNaIi8qzUK
+         oh7jsSFehuBrZbWoTHGlWiHmYACJyn+L1iSBP/T8RxtxXRT0rUV4Sb16jlJtGgFKMGWg
+         lnkA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=P7hJ01+Z8CTQmsHFJdXv1elOc2Pqcj7fQA/ZIutEB5E=;
-        b=V7MZSJkP7GrpOEBbAD+ogvq/3U4PzUyGGr1Jlh9N1EnIAODIFqkiFuhq8m4+gAIH1A
-         lcvqJhAWBICubR0fmimuFRcZ2iODeBZj9qlhGIyvNLw8MamAZOk2CB/9zadz7FOEsPD7
-         nzekuqTfnnEI6c8uIbkqJ1tHzzHlDx+lkejgfVsQeYw6Asf9y8CEpOunbazEO6EPOhj3
-         oS4vhLujdPG/WTZXKAUltnsNeG138iGnjnD9cWnM7AJ+aFZFnkftdMs4U3R1EIYVOvsa
-         AaLRc87Fq6PRmLlv2zkaOyp4lHV/quFpjgMRxtB4e8MAaNCzR3PHH9Yy3dSn3LYER+zr
-         /piw==
-X-Gm-Message-State: AOAM531Cp65SbxmjPvEgI96zUsNaOBG1HqC/nCONLnKYlUpWJbUpvEwg
-        +8KZI98U+NcCQdx45G7I1ImvMbPT3rwj51KJz8ismmY0Hbq6ZxtGpaixwAP46kCOTM/wIZdrAXG
-        Brx2bEOzsRAwPCsofbfPogWdR
-X-Received: by 2002:adf:c10b:0:b0:1ed:c40f:7f91 with SMTP id r11-20020adfc10b000000b001edc40f7f91mr432724wre.276.1649089639382;
-        Mon, 04 Apr 2022 09:27:19 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwuDmOwegjvGJFl7L9LJ7bym2qL/D7kmZ5IhcobdoiPO6Grj58r50Xw6ksaa9Y+iOv1AFo58Q==
-X-Received: by 2002:adf:c10b:0:b0:1ed:c40f:7f91 with SMTP id r11-20020adfc10b000000b001edc40f7f91mr432713wre.276.1649089639209;
-        Mon, 04 Apr 2022 09:27:19 -0700 (PDT)
-Received: from redhat.com ([2.52.17.211])
-        by smtp.gmail.com with ESMTPSA id az19-20020a05600c601300b0038cadf3aa69sm26246102wmb.36.2022.04.04.09.27.17
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:content-transfer-encoding;
+        bh=VcPjK2xIshaSha7P/73c4uJIeEh9LCIV9h696014eSY=;
+        b=V7hjso7Lgv9pJVMYIWWK/7GcbMver8CBifLmnG2zSIiXVaDGlBS92Lp1H1QC+J3OSM
+         V3RV5cyoLYS+IdZiXT3C0PMXuQ0FlWwgRg+eWsSr4y2w+7xzGS42+UhMhzNagx4Sjhdf
+         /O74Q8zONpgqlghMhBg9nECJfhjY4IbPR1yAcf32ryTu9Jlhqcx6s5LX3vZt16X4FfAb
+         kWV//HY3rYYLw5jPBPWt3ks4QkIbjx+B0MFtkMHoAIccg3/ethujFwddj8zlht0bYZvP
+         G2aaFbRPpvUpxyaG2IclAuhA1PQZWA72/yFZc6wFQGFW6r8c7ailYMnPTNiuEuUm73H8
+         Y59g==
+X-Gm-Message-State: AOAM533HOjMAo2tLsJe5aT1cUu0fPkirD3gxSA0D1hu2+EACDESSoDzl
+        PeJivgnrBDQVG4G1DzNo1b1Hvg==
+X-Google-Smtp-Source: ABdhPJw975xdZtFy73BXNqDffuAX0xg4/F4udCpxsEE662P0gVWTk/Y3sjsyhUGgB9jNpu/nvzm/zA==
+X-Received: by 2002:ad4:5f0f:0:b0:441:1e3a:dbc with SMTP id fo15-20020ad45f0f000000b004411e3a0dbcmr485180qvb.99.1649092162831;
+        Mon, 04 Apr 2022 10:09:22 -0700 (PDT)
+Received: from localhost (cpe-174-109-172-136.nc.res.rr.com. [174.109.172.136])
+        by smtp.gmail.com with ESMTPSA id s13-20020a05620a0bcd00b0067afe7dd3ffsm7312292qki.49.2022.04.04.10.09.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 09:27:18 -0700 (PDT)
-Date:   Mon, 4 Apr 2022 12:27:15 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Xianting Tian <xianting.tian@linux.alibaba.com>
-Cc:     Stefano Garzarella <sgarzare@redhat.com>, jasowang@redhat.com,
-        virtualization@lists.linux-foundation.org,
+        Mon, 04 Apr 2022 10:09:22 -0700 (PDT)
+Date:   Mon, 4 Apr 2022 13:09:21 -0400
+From:   Josef Bacik <josef@toxicpanda.com>
+To:     lsf-pc@lists.linuxfoundation.org
+Cc:     linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
+        linux-block@vger.kernel.org, linux-scsi@vger.kernel.org,
+        linux-nvme@lists.infradead.org, bpf@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] virtio_ring: add unlikely annotation for free descs
- check
-Message-ID: <20220404122707-mutt-send-email-mst@kernel.org>
-References: <20220328105817.1028065-1-xianting.tian@linux.alibaba.com>
- <20220328105817.1028065-2-xianting.tian@linux.alibaba.com>
- <20220329075024.eoajm5ufrcfytug4@sgarzare-redhat>
- <073dc28b-1707-cd04-daba-13aa4fac5a85@linux.alibaba.com>
+Subject: LSF/MM/BPF: 2022: Call for Proposals VIRTUAL OPTION
+Message-ID: <YksmQSfuIx/OiNA8@localhost.localdomain>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <073dc28b-1707-cd04-daba-13aa4fac5a85@linux.alibaba.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 04, 2022 at 11:11:16PM +0800, Xianting Tian wrote:
-> I can't find it in next branch, will you apply this patch?
+This is a follow up to the original CFP, you can find here
 
-yes, thanks!
+https://lore.kernel.org/all/YfGnDRM%2FPe4jzbSr@localhost.localdomain/
 
+This is for those who have been waiting for a virtual option.  Those plans have
+solidified and now we have an actual process we would like you to follow.
+
+IF YOU WANT A VIRTUAL INVITE PLEASE FILL OUT THE GOOGLE FORM AND INDICATE YOU
+WOULD LIKE TO ATTEND VIRTUALLY
+
+https://forms.gle/uD5tbZYGpaRXPnE19
+
+The track leaders will send out individual invites for the virtual component of
+LSF/MM/BPF.  From there you will register like normal, making sure to select the
+virtual option during registration, and then the Linux Foundation will email you
+with the connection details closer to the conference.
+
+The virtual component will be hosted on Zoom.  We will attempt to make this as
+seamless as possible, but anticipate it being essentially a glorified
+live-stream.
+
+Those who already filled out the form indicating you want the virtual option
+don't need to re-submit, we've got you on our lists already.  We will be sending
+these invites out as quickly as possible as we need to make sure we have an
+accurate count for the Linux Foundation.
+
+Thank you on behalf of the program committee:
+
+        Josef Bacik (Filesystems)
+        Amir Goldstein (Filesystems)
+        Martin K. Petersen (Storage)
+        Omar Sandoval (Storage)
+        Michal Hocko (MM)
+        Dan Williams (MM)
+        Alexei Starovoitov (BPF)
+        Daniel Borkmann (BPF)
