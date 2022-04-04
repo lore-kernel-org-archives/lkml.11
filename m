@@ -2,136 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8FB8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 12:18:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA48BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 12:22:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343868AbiDDMUA (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 08:20:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58884 "EHLO
+        id S243329AbiDDMYm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 08:24:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244332AbiDDMTv (ORCPT
+        with ESMTP id S229891AbiDDMYk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 08:19:51 -0400
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2074.outbound.protection.outlook.com [40.107.92.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A9EC3E0E5;
-        Mon,  4 Apr 2022 05:17:48 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=R93KTNzBWlBlk898LRuNe3wnPULCMjk1G5vwjWj4O7AmjUnYr/ErWbOMM9t8YtbjNhqNBKto35eMmONlRr/+QauQSzfZ2X69IL+YiH0i4v04LiPtgVQzXQ98izic6XV+JNdIKhfO5mwGpsMncedIFzVWZSxjThCsyMVyoVg+HaJJ99ouecna7HXuB4n4VacEWTyMD1qLMxHVVM5jzFSlwfef2zfZ5lFKcJbCHOPmczVJvPm5nsggq0CgKOoCSySgCws1bLEYp8VUB/4IiGOWe1yTJ6xVx/PjSWXei3XGeqNGLeSpiJ49gLYL9t2P+8JOTUV65NBfiav8uArABVxG8w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=0jiZqiuA4bL/Xl4sXyXV/fFxhFrzn1JlNSbgW6WB1YI=;
- b=DxstaWaNUVzFOjom8ei1ocCoDvCTS6q9RIZyFKKECf7jm3Bx4LUcsKfGmE997Ygyjbg7wsp8op0lmShPB/hWnv/Q0OXh/oxHlJLcvuSqekKcOhPcSu8Dj4PdnJngu5dz97/x20iPdAvU7hoI9qtT5+Qq+pvnmji7Md/z5mmfNZ+oh/VR2lrNSKCyOgyE3KYlYnZCWSlWj758HLYEPSeoR6cCEkYP6540GON9+vvO8LXgFpyrKkZecUfWPgcxr08pbN7oaGMKl+iNE4Ce2ZtlpSPXuU2UeFanfRASFP3hIlEJL2+b3WJjaqfxxZ6rATGiiDzw4FtFhFBT9NilUzNujw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.236) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0jiZqiuA4bL/Xl4sXyXV/fFxhFrzn1JlNSbgW6WB1YI=;
- b=M0tWM6RcKIOklT150HIhyxmKxMFcxMcSnnJFGs7h6p3WAAa4CFj+K8/p7SE2BHpyWR7vhj8oerfHTRSBlBC55moHiY3PxlVUukE+U1aI6ledjRYAfKKTtzgGkhXLqvLjfdtHM5sN74bpZOdftPLFU0EDlxnXpm5GXxOkd2M8E9zWHqZz/DicsAKikUtcAWdRcRFdJmU7ema0lH223ZDljunmk7qyMT6yIfE+I9KJ9CkYxTIMUtHrZLbb4CZlvJl//zcU181XOqmv6YORmW9wqMDM/+WZ01cujbTC7H6lt4qc4w13dxmEYVX+dQvMu3t79pUXqJn6SMmQlkB4lQIG0w==
-Received: from DM6PR14CA0060.namprd14.prod.outlook.com (2603:10b6:5:18f::37)
- by DM5PR1201MB2507.namprd12.prod.outlook.com (2603:10b6:3:e9::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Mon, 4 Apr
- 2022 12:17:46 +0000
-Received: from DM6NAM11FT012.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:18f:cafe::dd) by DM6PR14CA0060.outlook.office365.com
- (2603:10b6:5:18f::37) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31 via Frontend
- Transport; Mon, 4 Apr 2022 12:17:46 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.236; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.236) by
- DM6NAM11FT012.mail.protection.outlook.com (10.13.173.109) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5123.19 via Frontend Transport; Mon, 4 Apr 2022 12:17:46 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by DRHQMAIL109.nvidia.com
- (10.27.9.19) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Mon, 4 Apr
- 2022 12:17:45 +0000
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail204.nvidia.com
- (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 4 Apr 2022
- 05:17:44 -0700
-Received: from sumitg-l4t.nvidia.com (10.127.8.10) by mail.nvidia.com
- (10.129.68.9) with Microsoft SMTP Server id 15.2.986.22 via Frontend
- Transport; Mon, 4 Apr 2022 05:17:40 -0700
-From:   Sumit Gupta <sumitg@nvidia.com>
-To:     <rafael@kernel.org>, <viresh.kumar@linaro.org>,
-        <robh+dt@kernel.org>, <krzk+dt@kernel.org>, <treding@nvidia.com>,
-        <jonathanh@nvidia.com>, <linux-pm@vger.kernel.org>,
-        <linux-tegra@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <ksitaraman@nvidia.com>, <sanjayc@nvidia.com>, <bbasu@nvidia.com>,
-        <sumitg@nvidia.com>
-Subject: [Patch v3 4/4] arm64: tegra: add node for tegra234 cpufreq
-Date:   Mon, 4 Apr 2022 17:47:13 +0530
-Message-ID: <20220404121713.22461-5-sumitg@nvidia.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220404121713.22461-1-sumitg@nvidia.com>
-References: <20220404121713.22461-1-sumitg@nvidia.com>
-X-NVConfidentiality: public
+        Mon, 4 Apr 2022 08:24:40 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2556C22B39;
+        Mon,  4 Apr 2022 05:22:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
+        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
+        In-Reply-To:References; bh=0V7pVZcqfS3nz3f+PXRFZmM5UFJ67EOIx9GPX4S4NwU=; b=MN
+        wxwn1P9p93bvJ8c2xN8QitjFJRcOd2vJTD68CqnU7FfDF4VjlDwh81DziVM5mbv7tq++MVQ8vmzA6
+        5a9dh7SrV/iYdPhYJ1XzZHcvnXh3so0LKXKs7iaLJ6qc7Rme0b/a6CgMjEm5WLlBnw5PmtvnvWQWa
+        cdGtHw3pk+Xgrug=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nbLio-00E5S1-Mj; Mon, 04 Apr 2022 14:22:14 +0200
+Date:   Mon, 4 Apr 2022 14:22:14 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+Cc:     Sergio Paracuellos <sergio.paracuellos@gmail.com>,
+        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        =?iso-8859-1?Q?Ren=E9?= van Dorst <opensource@vdorst.com>
+Subject: Re: [PATCH] net: ethernet: mtk_eth_soc: add label support for GMACs
+Message-ID: <Ykri9tOtUDmXzHkG@lunn.ch>
+References: <20220404114000.3549-1-arinc.unal@arinc9.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: b1dabde8-a068-48dd-6759-08da16352089
-X-MS-TrafficTypeDiagnostic: DM5PR1201MB2507:EE_
-X-Microsoft-Antispam-PRVS: <DM5PR1201MB2507FDF7C9685977CAD05D93B9E59@DM5PR1201MB2507.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: WIEiRZhSfXXUIVFYK2GX6rGVkc7FbWsYYWF5IZABkQvzCdNHxeNYkgFqPTW0a+tYeFtXH314++YojHSlwzmDeJT5B1tvdGgdDDw8vRSHcnc6pIEGvjuwp6DETE54o32ioG0UKLD8qdqQHyynuebatvIT/WQl/fk7hV7iESPWgAD3Hl0BowkbbvatqBk8CTELqBQI9DYs17WfEF/0Q9j8dMFSrO9hKRunHQ2qd3pJiu/IMh5MzsA+Z1IneTwR7NtRLOM6LdUPQ+qxsnXT6IdoLb6AphjHuIYWQIMkpDBERw2n3k+ndlr6IH5ueZ5v+c8vTISn74FFR7ve167cDgqKbSmAry8eCRfptWB4WoMeibwMwBCy8wwGuczBTKcwUsd30mWF4ealvuWAO1HMcXrToaxUycrUXd5MQDvRI5FcYXt86Kll+J78iU5JDGOJHN+gyC7Y9eA7N0F/JKEHrghJzXyjBJZIhjw+KXZc/LIZkCOooQhRCOkJIwratQh9B0bUL5FmSW4d0t7KEMe8OBRMnYRLSP70csW7E6SGvtM1WiS3UDvPUDW4R3yBYC2voE1GO0epOZmBcFNUxKtGZoQDStBB8HyCae8mAZg+8KDwEL24UbzsP573FjUkgErcpqtVCoWipa3RNSwfqBnsBbSiWQgm4YLBJr2yqAtS8jT2DBrAq4qT/l+kTiWdmYVG3dFedPQYMSyAZNaWW1E3ZJ14K9/TAHI3dRRvPJYbyhEMklA=
-X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(336012)(426003)(110136005)(8676002)(4326008)(2906002)(26005)(316002)(83380400001)(54906003)(36860700001)(107886003)(8936002)(81166007)(47076005)(5660300002)(2616005)(70206006)(6666004)(70586007)(36756003)(1076003)(4744005)(40460700003)(82310400004)(7696005)(86362001)(186003)(508600001)(921005)(356005)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Apr 2022 12:17:46.0050
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: b1dabde8-a068-48dd-6759-08da16352089
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT012.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR1201MB2507
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220404114000.3549-1-arinc.unal@arinc9.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Adding cclpex node to represent Tegra234 cpufreq.
-Tegra234 uses some of the CRAB (Control Register Access Bus)
-registers for cpu frequency requests. These registers are
-memory mapped to CCPLEX_MMCRAB_ARM region. In this node, mapping
-the range of MMCRAB registers required only for cpu frequency info.
+On Mon, Apr 04, 2022 at 02:40:00PM +0300, Arınç ÜNAL wrote:
+> From: René van Dorst <opensource@vdorst.com>
+> 
+> Add label support for GMACs. The network interface of the GMAC will have
+> the string of the label property defined on the devicetree as its name.
 
-Signed-off-by: Sumit Gupta <sumitg@nvidia.com>
----
- arch/arm64/boot/dts/nvidia/tegra234.dtsi | 7 +++++++
- 1 file changed, 7 insertions(+)
+Sorry, but no. This has been discussed a few times, you need something
+in user space, udev or systemd etc to set interface names.
 
-diff --git a/arch/arm64/boot/dts/nvidia/tegra234.dtsi b/arch/arm64/boot/dts/nvidia/tegra234.dtsi
-index aaace605bdaa..610207f3f967 100644
---- a/arch/arm64/boot/dts/nvidia/tegra234.dtsi
-+++ b/arch/arm64/boot/dts/nvidia/tegra234.dtsi
-@@ -1258,6 +1258,13 @@
- 		};
- 	};
- 
-+	ccplex@e000000 {
-+		compatible = "nvidia,tegra234-ccplex-cluster";
-+		reg = <0x0 0x0e000000 0x0 0x5ffff>;
-+		nvidia,bpmp = <&bpmp>;
-+		status = "okay";
-+	};
-+
- 	sram@40000000 {
- 		compatible = "nvidia,tegra234-sysram", "mmio-sram";
- 		reg = <0x0 0x40000000 0x0 0x80000>;
--- 
-2.17.1
+Please look back in the archive at previous discussions.
 
+   Andrew
