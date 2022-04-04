@@ -2,114 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D884EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 14:48:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD6E6C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 14:48:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378367AbiDDOuO (ORCPT
+        id S1378133AbiDDOuU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 10:50:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39374 "EHLO
+        Mon, 4 Apr 2022 10:50:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378332AbiDDOtz (ORCPT
+        with ESMTP id S1378117AbiDDOuB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 10:49:55 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63682433A0
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 07:46:10 -0700 (PDT)
+        Mon, 4 Apr 2022 10:50:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31BE910FC0
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 07:47:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id A17BBCE1919
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 14:46:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B94A3C340EE;
-        Mon,  4 Apr 2022 14:46:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649083567;
-        bh=6BjvLqLK5huibZiMoA91irs5s+j40MAVQWToi9BRA/g=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=HgXCvny8tJRaJ5WGxlkCkfAPfj502Er7VT25588NLB9RGD1E5W5i+p08W1inYpWBm
-         6lD6gb6gKx4yu+52uXSuauG7FPeCaFgBJlYxSjMCoBPjPK9VoLW5KDVcysQhi2x+bh
-         1ytgoX6n8dDcqoYcj4EINC1a5A5hLqOvLf12Ur3w=
-Date:   Mon, 4 Apr 2022 16:46:04 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Oded Gabbay <ogabbay@kernel.org>
-Cc:     Guenter Roeck <linux@roeck-us.net>, Arnd Bergmann <arnd@arndb.de>,
-        "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>,
-        Ohad Sharabi <osharabi@habana.ai>
-Subject: Re: [PATCH v2] habanalabs: Fix test build failures
-Message-ID: <YksErB5hwrQGIiIO@kroah.com>
-References: <20220404134859.3278599-1-linux@roeck-us.net>
- <CAFCwf10Nbpr1H1-qTx4kSyC6YFdeAb=xOfq6uKzejJKLuyKw5A@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAFCwf10Nbpr1H1-qTx4kSyC6YFdeAb=xOfq6uKzejJKLuyKw5A@mail.gmail.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id E82BFB8101C
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 14:47:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACF52C340EE;
+        Mon,  4 Apr 2022 14:47:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649083634;
+        bh=UBiyTVY3jPw/kwQGsGmG7CA9LhSqHRjUGhLmpR6GJSw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=GS/UArGSQ0mETeN+At6tSC8ePgdvJBSwHTE9iT/5gdMwzo987FY7nWSCqUY524rPP
+         +gwMBz5gj94MRY1pTgOhczQ5r47bOtpYUihQeZF1cFA3oNZaCVMHcgzt9YRnW7ZP3r
+         9NcTUeaWXvbSZZ8DYujxu7lzECSIupm08EeFr05/U8QHXdmPKpNIXZjq3cNZDf9muJ
+         kXuz4/gX7Cd3e8JJa4UHAwsjBNaXeZD00KYXDnmuaY9/CUlHtahHxt6tWQzHD7Q06k
+         AXEBfb7Kz+UXaU8OxmkoA31/nQwXZK8rS2QEfL5E/0l0itPNQHEyWX7F6Z4zUhVpJk
+         kGXLORkMShjCA==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nbNz5-001Wuy-Np; Mon, 04 Apr 2022 15:47:12 +0100
+Date:   Mon, 04 Apr 2022 15:47:11 +0100
+Message-ID: <87o81gc3dc.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Jason Gunthorpe <jgg@ziepe.ca>
+Cc:     xieming <xieming@kylinos.cn>, sashal@kernel.org,
+        catalin.marinas@arm.com, linux@armlinux.org.uk,
+        linux-kernel@vger.kernel.org, alex.williamson@redhat.com,
+        will@kernel.org, kvmarm@lists.cs.columbia.edu,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v2] kvm/arm64: fixed passthrough gpu into vm on arm64
+In-Reply-To: <20220404132405.GQ64706@ziepe.ca>
+References: <20220401090828.614167-1-xieming@kylinos.cn>
+        <87tubcbvgk.wl-maz@kernel.org>
+        <20220404132405.GQ64706@ziepe.ca>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: jgg@ziepe.ca, xieming@kylinos.cn, sashal@kernel.org, catalin.marinas@arm.com, linux@armlinux.org.uk, linux-kernel@vger.kernel.org, alex.williamson@redhat.com, will@kernel.org, kvmarm@lists.cs.columbia.edu, linux-arm-kernel@lists.infradead.org
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 04, 2022 at 05:38:29PM +0300, Oded Gabbay wrote:
-> On Mon, Apr 4, 2022 at 4:49 PM Guenter Roeck <linux@roeck-us.net> wrote:
-> >
-> > allmodconfig builds on 32-bit architectures fail with the following error.
-> >
-> > drivers/misc/habanalabs/common/memory.c: In function 'alloc_device_memory':
-> > drivers/misc/habanalabs/common/memory.c:153:49: error:
-> >         cast from pointer to integer of different size
-> >
-> > Fix the typecast. While at it, drop other unnecessary typecasts associated
-> > with the same commit.
-> >
-> > Fixes: e8458e20e0a3c ("habanalabs: make sure device mem alloc is page aligned")
-> > Cc: Ohad Sharabi <osharabi@habana.ai>
-> > Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-> > ---
-> > v2: Drop unnecessary (u64) typecasts
-> >
-> >  drivers/misc/habanalabs/common/memory.c | 16 ++++++++--------
-> >  1 file changed, 8 insertions(+), 8 deletions(-)
-> >
-> > diff --git a/drivers/misc/habanalabs/common/memory.c b/drivers/misc/habanalabs/common/memory.c
-> > index e008d82e4ba3..a13506dd8119 100644
-> > --- a/drivers/misc/habanalabs/common/memory.c
-> > +++ b/drivers/misc/habanalabs/common/memory.c
-> > @@ -111,10 +111,10 @@ static int alloc_device_memory(struct hl_ctx *ctx, struct hl_mem_in *args,
-> >
-> >         if (contiguous) {
-> >                 if (is_power_of_2(page_size))
-> > -                       paddr = (u64) (uintptr_t) gen_pool_dma_alloc_align(vm->dram_pg_pool,
-> > -                                                               total_size, NULL, page_size);
-> > +                       paddr = (uintptr_t) gen_pool_dma_alloc_align(vm->dram_pg_pool,
-> > +                                                                    total_size, NULL, page_size);
-> >                 else
-> > -                       paddr = (u64) (uintptr_t) gen_pool_alloc(vm->dram_pg_pool, total_size);
-> > +                       paddr = gen_pool_alloc(vm->dram_pg_pool, total_size);
-> >                 if (!paddr) {
-> >                         dev_err(hdev->dev,
-> >                                 "failed to allocate %llu contiguous pages with total size of %llu\n",
-> > @@ -150,12 +150,12 @@ static int alloc_device_memory(struct hl_ctx *ctx, struct hl_mem_in *args,
-> >                 for (i = 0 ; i < num_pgs ; i++) {
-> >                         if (is_power_of_2(page_size))
-> >                                 phys_pg_pack->pages[i] =
-> > -                                               (u64) gen_pool_dma_alloc_align(vm->dram_pg_pool,
-> > -                                                                               page_size, NULL,
-> > -                                                                               page_size);
-> > +                                       (uintptr_t)gen_pool_dma_alloc_align(vm->dram_pg_pool,
-> > +                                                                           page_size, NULL,
-> > +                                                                           page_size);
-> >                         else
-> > -                               phys_pg_pack->pages[i] = (u64) gen_pool_alloc(vm->dram_pg_pool,
-> > -                                                                               page_size);
-> > +                               phys_pg_pack->pages[i] = gen_pool_alloc(vm->dram_pg_pool,
-> > +                                                                       page_size);
-> >                         if (!phys_pg_pack->pages[i]) {
-> >                                 dev_err(hdev->dev,
-> >                                         "Failed to allocate device memory (out of memory)\n");
-> > --
-> > 2.35.1
-> >
+On Mon, 04 Apr 2022 14:24:05 +0100,
+Jason Gunthorpe <jgg@ziepe.ca> wrote:
 > 
-> Hi Guenter,
-> Thanks for the patch, but Greg already merged a patch that was sent to him.
+> On Fri, Apr 01, 2022 at 05:48:59PM +0100, Marc Zyngier wrote:
+> 
+> > NAK. For a start, there is no such thing as 'write-combine' in the ARM
+> > architecture, and I'm not convinced you can equate WC to Normal-NC.
+> > See the previous discussion at [1].
+> > 
+> > [1] https://lore.kernel.org/r/20210429162906.32742-1-sdonthineni@nvidia.com
+> 
+> We've had a lot of discussions with ARM related to how this works with
+> drivers like mlx5 that use WC.
+> 
+> ARM has now published some guidance on this:
+> 
+> https://community.arm.com/arm-research/m/resources/1012
 
-I did?  Where?
+Nicely buried where nobody would dare looking.
+
+> 
+> As an ecosystem we seem to be drifting toward Normal-NC for this
+> behavior (largely because it is what Linux does). At least that is
+> what we are testing and qualifing ARM CPUs against mlx5 with.
+> 
+> I'm guessing it will turn into a SBSA like thing where the ARM ARM is
+> kind of vauge but a SOC has to implement Normal-NC in a certain way to
+> be functional for the server market.
+
+The main issue is that this equivalence isn't architected, so people
+can build whatever they want. SBSA means nothing to KVM (or Linux at
+large), and there is currently no way to describe which devices are
+safe to map as Normal-NC vs Device.
+
+We either have to take userspace's word for it, or rely on some other
+heuristics (do this for PCIe, but not anything else). None of which
+are entirely safe. Not to mention that no currently available CPU
+implements FEAT_DGH.
+
+	M.
+
+-- 
+Without deviation from the norm, progress is not possible.
