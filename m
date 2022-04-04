@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FFEEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 13:42:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 057CBC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 13:42:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357830AbiDDNoA (ORCPT
+        id S1357611AbiDDNoD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 09:44:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33950 "EHLO
+        Mon, 4 Apr 2022 09:44:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356933AbiDDNnr (ORCPT
+        with ESMTP id S1357034AbiDDNns (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 09:43:47 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5663EBC3D
+        Mon, 4 Apr 2022 09:43:48 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 084C524BFB
         for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 06:41:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649079710;
+        s=mimecast20190719; t=1649079711;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding;
-        bh=kIsb4VmxlntFvw61evvjKmR8YALNCrJmx5ThrCAUjM8=;
-        b=a8wRQBPT0drrlcNKaimWibry6btys7u59ka+hycDKTQrsdOwbDFPUYlGjjTRByI6t/krL8
-        EA/MPlWYw69A2VXaIUO3NFrJJEVp16pkqF/FNrp7nj/ykdK8Ijm0P2mZmAjKRd9ZYA9CG2
-        3njCKVR6WBXDOt7iZpjLWPxOvWSHibw=
+        bh=4bOihAtxWA5gH7wl340CWf7ewvtlOQTkR3o4IBWLBdw=;
+        b=TbsUsYuqSoDlpCz9znt2mkTezavHflexv4XyMlW9X0mSDryijsxmV2uOAlCcn20g3iSzZ8
+        H4lxDRDCCc8+xdDRnaTs2+32HbpoQ3m4TXAMxLrV5ttYqRq3jdpz19QggwFG8BTlr+OeLL
+        DZ69Udt7wPs6Ao+e7dnxb1oYlKQDbSs=
 Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
  [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-346-1JKKkgzzOSGm0pClICzKiA-1; Mon, 04 Apr 2022 09:41:44 -0400
-X-MC-Unique: 1JKKkgzzOSGm0pClICzKiA-1
+ us-mta-373-h2YF4-WBN0S_U0P4BSJCxA-1; Mon, 04 Apr 2022 09:41:44 -0400
+X-MC-Unique: h2YF4-WBN0S_U0P4BSJCxA-1
 Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9B5EF1C12DE3;
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 17F443800524;
         Mon,  4 Apr 2022 13:41:43 +0000 (UTC)
 Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 6207C468A4B;
-        Mon,  4 Apr 2022 13:41:43 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4E803468A4B;
+        Mon,  4 Apr 2022 13:41:42 +0000 (UTC)
 From:   Paolo Bonzini <pbonzini@redhat.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     stable@vger.kernel.org, Qiuhao Li <qiuhao@sysec.org>,
@@ -45,9 +45,9 @@ Cc:     stable@vger.kernel.org, Qiuhao Li <qiuhao@sysec.org>,
         syzbot+6cde2282daa792c49ab8@syzkaller.appspotmail.com,
         Tadeusz Struk <tadeusz.struk@linaro.org>,
         Maxim Levitsky <mlevitsk@redhat.com>
-Subject: [PATCH 5.16] KVM: x86/mmu: do compare-and-exchange of gPTE via the user address
-Date:   Mon,  4 Apr 2022 09:41:40 -0400
-Message-Id: <20220404134141.427397-3-pbonzini@redhat.com>
+Subject: [PATCH 5.10] KVM: x86/mmu: do compare-and-exchange of gPTE via the user address
+Date:   Mon,  4 Apr 2022 09:41:38 -0400
+Message-Id: <20220404134141.427397-1-pbonzini@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
@@ -89,7 +89,7 @@ Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
  1 file changed, 37 insertions(+), 40 deletions(-)
 
 diff --git a/arch/x86/kvm/mmu/paging_tmpl.h b/arch/x86/kvm/mmu/paging_tmpl.h
-index 708a5d297fe1..c005905f2852 100644
+index 50e268eb8e1a..5b54247f4de4 100644
 --- a/arch/x86/kvm/mmu/paging_tmpl.h
 +++ b/arch/x86/kvm/mmu/paging_tmpl.h
 @@ -34,9 +34,8 @@
@@ -163,8 +163,7 @@ index 708a5d297fe1..c005905f2852 100644
 -		mmap_read_unlock(current->mm);
 -	}
 +	int r = -EFAULT;
- 
--	return (ret != orig_pte);
++
 +	if (!user_access_begin(ptep_user, sizeof(pt_element_t)))
 +		return -EFAULT;
 +
@@ -193,7 +192,8 @@ index 708a5d297fe1..c005905f2852 100644
 +		       [new_hi] "c" ((u32)(new_pte >> 32))
 +		     : "memory");
 +#endif
-+
+ 
+-	return (ret != orig_pte);
 +	user_access_end();
 +	return r;
  }
