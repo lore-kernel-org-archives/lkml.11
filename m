@@ -2,119 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BAAAC4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3035C3526F
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:23:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381979AbiDDVYe (ORCPT
+        id S1382025AbiDDVYk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:24:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54488 "EHLO
+        Mon, 4 Apr 2022 17:24:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380146AbiDDTDV (ORCPT
+        with ESMTP id S1379390AbiDDRED (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 15:03:21 -0400
-X-Greylist: delayed 21239 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 04 Apr 2022 12:01:23 PDT
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9140533E00;
-        Mon,  4 Apr 2022 12:01:23 -0700 (PDT)
-Received: from mail-wm1-f47.google.com ([209.85.128.47]) by
- mrelayeu.kundenserver.de (mreue009 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1N7iKo-1o5ov53WEc-014k9c; Mon, 04 Apr 2022 21:01:21 +0200
-Received: by mail-wm1-f47.google.com with SMTP id l7-20020a05600c1d0700b0038c99618859so132869wms.2;
-        Mon, 04 Apr 2022 12:01:21 -0700 (PDT)
-X-Gm-Message-State: AOAM530TCueyV+FE0/vD8O7Tks5eio/TulFAQL32gRmctjU+/8nvFrNF
-        KFSh5/xopwSQWgXFW9JjfVvb+9DK7+W/9PU1u64=
-X-Google-Smtp-Source: ABdhPJwz/M4LKrm3IRclV8UgrUcDHyP4nLiAeM9chnwMC8xte+ec0eWR310JC5CzRN6KPW7x0SBYcBjNd+/TV08TLsg=
-X-Received: by 2002:a1c:f219:0:b0:38c:782c:3bb with SMTP id
- s25-20020a1cf219000000b0038c782c03bbmr474508wmc.94.1649098881420; Mon, 04 Apr
- 2022 12:01:21 -0700 (PDT)
+        Mon, 4 Apr 2022 13:04:03 -0400
+Received: from mail-qv1-xf36.google.com (mail-qv1-xf36.google.com [IPv6:2607:f8b0:4864:20::f36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA45B40A23
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 10:02:05 -0700 (PDT)
+Received: by mail-qv1-xf36.google.com with SMTP id b17so7928343qvf.12
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 10:02:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ldaf9TCMiXf7fL1dfzaYzOZ+TQNop4UbheNTFjQvaPQ=;
+        b=DILSNJNq+rL63EuAH3jYTlZXN2YyTH/lzUbBGFQNH3SKIfZSE8jtgB2QmtM5bBleyw
+         MLBizaWPQO1/lE94wIbJUlSiC6cM3dXdJIisc8aUf2yoSUMfKMsPyKsi24GOdA6D85YE
+         /xYzfGZ2Uer3WxSQoCfrclLAfoTuH4Fcj5wl4ZL2lKeY9xTdW4y2r7vH0Qa9KWA+s+sh
+         eMW38qinbbSNeGkgM0ll86nvFu1HOIY6USJXxD3No14R1YOb1vnuKBB5+hiDcfo9OOI0
+         8YGcQbCbgiBWilV+E6cxwKlycInhIHJLriWoBz3LjEpseXjVVckMCkeVNRUynYgBz2hV
+         aQ/w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ldaf9TCMiXf7fL1dfzaYzOZ+TQNop4UbheNTFjQvaPQ=;
+        b=ns8Jibqydn6gwIbuOCNvTaB76xrqmEoStCNmhysGqherHQaCiWkbvKA+Yluwn3U5Fr
+         d3svJQtaqyDwKrIcfuLwLknXtNB1cYUcB0jwxuGBGD4MY7iRkDg+d+VtFMBAPjpNuS9a
+         FmOGjPEDmdahfiVEl9/Rreuciq/e4MSoA3A2xiWornDz5NvNd/UqzTBNpT5ygPpF24/m
+         IcFv+RTLZPEyWVI/9qCaENnmTZeanrVwYYN/3PdBFRV3hKSxolJQmIzMuhrAPXLxgxKl
+         RcEg9M46O/aQv5Kzb08AKoNE0MOlmFf5JJFwQ6zEvzu7xCUkNWej0cmSdTQuLFWXDI1u
+         X6Kg==
+X-Gm-Message-State: AOAM531wkznzV0ciRLEJVy3W5hxwDqFJ177ZwZ3KNPOGeO80OFjQO9JT
+        qqLEHptb15ZhLUzJ0Kh2QrsRCRYX5mCdXw==
+X-Google-Smtp-Source: ABdhPJy/HBdadnCNKiofw8Pq8aQUNK1kcH5nxeVllxEF7eiEPlBVFzDcAkFaS7EwH4xr9jAPm9bxpA==
+X-Received: by 2002:a05:6214:1c85:b0:443:8347:d7a5 with SMTP id ib5-20020a0562141c8500b004438347d7a5mr508563qvb.11.1649091724773;
+        Mon, 04 Apr 2022 10:02:04 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-162-113-129.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.129])
+        by smtp.gmail.com with ESMTPSA id n8-20020ac85a08000000b002e06aa02021sm9070384qta.49.2022.04.04.10.02.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Apr 2022 10:02:03 -0700 (PDT)
+Received: from jgg by mlx with local (Exim 4.94)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1nbQ5a-00CUal-Fs; Mon, 04 Apr 2022 14:02:02 -0300
+Date:   Mon, 4 Apr 2022 14:02:02 -0300
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Marc Zyngier <maz@kernel.org>
+Cc:     xieming <xieming@kylinos.cn>, sashal@kernel.org,
+        catalin.marinas@arm.com, linux@armlinux.org.uk,
+        linux-kernel@vger.kernel.org, alex.williamson@redhat.com,
+        will@kernel.org, kvmarm@lists.cs.columbia.edu,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v2] kvm/arm64: fixed passthrough gpu into vm on arm64
+Message-ID: <20220404170202.GR64706@ziepe.ca>
+References: <20220401090828.614167-1-xieming@kylinos.cn>
+ <87tubcbvgk.wl-maz@kernel.org>
+ <20220404132405.GQ64706@ziepe.ca>
+ <87o81gc3dc.wl-maz@kernel.org>
 MIME-Version: 1.0
-References: <Yib9F5SqKda/nH9c@infradead.org> <CAK8P3a1dUVsZzhAe81usLSkvH29zHgiV9fhEkWdq7_W+nQBWbg@mail.gmail.com>
- <YkmWh2tss8nXKqc5@infradead.org> <CAK8P3a0QdFOJbM72geYTWOKumeKPSCVD8Nje5pBpZWazX0GEnQ@mail.gmail.com>
- <CAMo8BfKgn0T5RtUTb89fPvygNJJYLy7r1=RZTmTTm=jiDfx1hQ@mail.gmail.com>
-In-Reply-To: <CAMo8BfKgn0T5RtUTb89fPvygNJJYLy7r1=RZTmTTm=jiDfx1hQ@mail.gmail.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Mon, 4 Apr 2022 21:01:05 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a0J1--WSyWY+TptFa0nn5d-mOxapadCE1csGRkfhSPbVw@mail.gmail.com>
-Message-ID: <CAK8P3a0J1--WSyWY+TptFa0nn5d-mOxapadCE1csGRkfhSPbVw@mail.gmail.com>
-Subject: Re: [RFC PULL] remove arch/h8300
-To:     Max Filippov <jcmvbkbc@gmail.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Christoph Hellwig <hch@infradead.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        "moderated list:H8/300 ARCHITECTURE" 
-        <uclinux-h8-devel@lists.sourceforge.jp>,
-        "open list:TENSILICA XTENSA PORT (xtensa)" 
-        <linux-xtensa@linux-xtensa.org>,
-        Linux-sh list <linux-sh@vger.kernel.org>,
-        linux-m68k <linux-m68k@lists.linux-m68k.org>,
-        Greg Ungerer <gerg@linux-m68k.org>,
-        Damien Le Moal <damien.lemoal@wdc.com>,
-        linux-riscv <linux-riscv@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:jGFNqhM4dIFnhH1crk1UVV07OPTBQhiimiupzrSkXwuZ9o/RtZS
- ce2dWxclh3NM1z+dTa6dUW5EB7GOpkfiFOrifVIv77uNICEOMvNHFgfWVNZ0zabYqXRE7xj
- W8C2lKOwuzjEyX2b7dI9CfnLS/EPgqD/wVS4o+rUFE5ecWCwjtz020QwqHijVQ6dpL4VUQq
- Zy09C+JPFQXysIgVsD8cA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:1YIjIfRsLSU=:o6rIvbCNXNxPzEMBqlC6My
- cGC6pjjrV8zzpIG0GVfRRpzUuIFG4cRUNwBD02Ia0ZXJPf3ivH3keNqJiDI2HOD6kPGGpRuhj
- tanw5nu6j67GnRnOql5sRPnkuDV1MXTSGhWnRaVuIcH9W97RTE4rtbNOp7xxqMv/D2IvP4V4c
- pZLOlQmWR+botrOZ0Ia2doWK9qNmkIHcLUXjPBGWhVU2anjz0w3Ra8ADa//msEI1pXxzB85ir
- K8XSBWOE1t6EV7L2V7TvaUZ5tu3zHidzRNCuBthiJNOw7Z/ZQi/wNlrc7EGDHMGbhygSVrdDI
- nm8NW10HFriS7YhLQy39UT1ks0OU9RWCQgjv04SdYXcZjwQLevxuwLKtXwPYQ2GMSiYodPTh/
- xTMj2Uvc5dIhdTtbko9lHOpMy/8vETJj0vvd0nSYey7GUxGZxN/t9YYaF+Mc4c/DyB4qijL0L
- zqqcBV5WbH9L0QwBpVeYW4BW73lVhNLD16g1Ac0A15TbpTw7VH01H97P0mkL21b3toUyXw7pq
- KHCYwEywOrVDV2aKAVTotDFDi034wNf0kcdVHO10rYdfoTUg5ZpRY+IAfQOhDdqQqKGAqhQzA
- rlQqq0NoKYDuRIRIR0ktUDDzC24EGb5+BiMk9x51otUWQfuAdXO7QMAskumMtM6rN4BNUvFqH
- cCE/zRPTtpRnmFPevpIpkVRHn5ExpMCflw//4O42zqh1RiuKJ9Bgz7wCxdKQ0gZ10Fe8=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87o81gc3dc.wl-maz@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 4, 2022 at 7:57 PM Max Filippov <jcmvbkbc@gmail.com> wrote:
->
-> Hi Arnd,
->
-> On Mon, Apr 4, 2022 at 6:07 AM Arnd Bergmann <arnd@arndb.de> wrote:
-> > 1. xtensa nommu has does not compile in mainline and as far as I can
-> > tell never did
->
-> I have a different picture here. If you look at the logs at
->   https://kerneltests.org/builders/qemu-xtensa-master/
->
-> there's a line for noMMU config in every one of them:
->   Building xtensa:de212:kc705-nommu:nommu_kc705_defconfig ... running
-> ............ passed
->
-> Please let me know if you observe any specific build/runtime issues.
+On Mon, Apr 04, 2022 at 03:47:11PM +0100, Marc Zyngier wrote:
+> > I'm guessing it will turn into a SBSA like thing where the ARM ARM is
+> > kind of vauge but a SOC has to implement Normal-NC in a certain way to
+> > be functional for the server market.
+> 
+> The main issue is that this equivalence isn't architected, so people
+> can build whatever they want. SBSA means nothing to KVM (or Linux at
+> large), and there is currently no way to describe which devices are
+> safe to map as Normal-NC vs Device.
 
-This is what I get:
+And people have, we know of some ARM SOC's that don't work fully with
+NORMAL_NC for this usage. That is already a problem for baremetal
+Linux, let alone KVM..
 
-$ make ARCH=xtensa O=build/xtensa nommu_kc705_defconfig vmlinux V=1
-....
-xtensa-linux-gcc-11.1.0 -DKCONFIG_SEED=
--Wp,-MMD,arch/xtensa/kernel/.head.o.d -nostdinc
--I/git/arm-soc/arch/xtensa/include -I./arch/xtensa/include/generated
--I/git/arm-soc/include -I./include
--I/git/arm-soc/arch/xtensa/include/uapi
--I./arch/xtensa/include/generated/uapi -I/git/arm-soc/include/uapi
--I./include/generated/uapi -include
-/git/arm-soc/include/linux/compiler-version.h -include
-/git/arm-soc/include/linux/kconfig.h -D__KERNEL__
--I/git/arm-soc/arch/xtensa/variants/de212/include
--I/git/arm-soc/arch/xtensa/platforms/xtfpga/include
--fmacro-prefix-map=/git/arm-soc/= -D__ASSEMBLY__ -fno-PIE -mlongcalls
--mtext-section-literals -Wa,--fatal-warnings -I
-/git/arm-soc/arch/xtensa/kernel -I ./arch/xtensa/kernel    -c -o
-arch/xtensa/kernel/head.o /git/arm-soc/arch/xtensa/kernel/head.S
-/git/arm-soc/arch/xtensa/kernel/head.S: Assembler messages:
-/git/arm-soc/arch/xtensa/kernel/head.S:87: Error: invalid register
-'atomctl' for 'wsr' instruction
+That is why I likened it to SBSA - if you want to build a server SOC
+that works with existing server software, you have to support
+NORMAL_NC in this way. Even if it isn't architected.
 
-I think there were other errors in the past, but every time I tried
-it, the build failed for me.
+The KVM challenge, at least, is to support a CPU with working
+NORMAL_NC to create VM that emulates the same CPU with working
+NORMAL_NC.
 
-        Arnd
+I didn't quite understand your other remarks though - is there a
+problem here? It seems like yes from the other thread you pointed at?
+
+I would think that KVM should mirror the process page table
+configuration into the KVM page table and make this into a userspace
+problem?
+
+That turns it into a VFIO problem to negotiate with userspace and set
+the proper pgprot. At least VFIO has a better chance than KVM to
+consult DT or something to learn about the specific device's
+properties.
+
+I don't know how VFIO/qemu/etc can make this all work automatically
+correctly 100% of the time. It seems to me it is the same problem as
+just basic baremetal "WC" is troubled on ARM in general today. Maybe
+some tables and a command line option in qemu is the best we can hope
+for.
+
+Long ago I asked that the ARM folks could come with some Linux
+definition of all the WC-like modes and some arch calls to indicate
+which one(s) should be used. Nobody seemed interested in doing that,
+so the above SOC was left non-working in mainline Linux..
+
+> We either have to take userspace's word for it, or rely on some other
+> heuristics (do this for PCIe, but not anything else). None of which
+> are entirely safe. Not to mention that no currently available CPU
+> implements FEAT_DGH.
+
+DHG is an optimization, not a functional requirement. Currently
+available CPUs use one of the more expensive barriers that are
+architected to include DHG behavior.
+
+In any event, this is an important optimization. It is why ARMv9 is
+introducing a new instruction specifically to optmize it.
+
+Jason
