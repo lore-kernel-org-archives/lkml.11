@@ -2,104 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 996B8C47088
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:23:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B304C43219
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Apr 2022 21:23:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381609AbiDDVX0 (ORCPT
+        id S1381845AbiDDVYK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:23:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46338 "EHLO
+        Mon, 4 Apr 2022 17:24:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379259AbiDDQvt (ORCPT
+        with ESMTP id S1380649AbiDDUu2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 12:51:49 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 304CF2ED52;
-        Mon,  4 Apr 2022 09:49:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649090993; x=1680626993;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=PUpr19v5lvN0gy5NGEhNyzwrdrgI+hKU2VLmutHw1IM=;
-  b=ldp6nHF5eKCFrb+joEr5V7d3e4d9k4vXr+LgWdStBMHjd1uMAj8rmw+o
-   Yjb7rcMrSGiWxDDvyYmztNJRzCI0VflUB2jqZjda6PML0gTgv6LGmZcLg
-   49LbMQWYgAPfeTB2KCUdWDBbQylFsoIjawNwjlvlsnXBTtq8M6RUoa5gb
-   8GCMF17YB5/TXcATiNarS8tXvFbtSDEgisUitAUB9BBei+5qLfP+rNkeO
-   VlUdNJ8ZQeOSwVErk0hv0umdGdHhXyycjjLj7RONPEdsotATttejMMUw2
-   4vVCB3zfi8jKjuiPqOjG+xhCZHEkOvnDcMmi0fL1/a3GiBjEgrHqmualA
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="259390773"
-X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
-   d="scan'208";a="259390773"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:49:51 -0700
-X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
-   d="scan'208";a="523105159"
-Received: from rchatre-ws.ostc.intel.com ([10.54.69.144])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 09:49:50 -0700
-From:   Reinette Chatre <reinette.chatre@intel.com>
-To:     dave.hansen@linux.intel.com, jarkko@kernel.org, tglx@linutronix.de,
-        bp@alien8.de, luto@kernel.org, mingo@redhat.com,
-        linux-sgx@vger.kernel.org, x86@kernel.org
-Cc:     seanjc@google.com, kai.huang@intel.com, cathy.zhang@intel.com,
-        cedric.xing@intel.com, haitao.huang@intel.com,
-        mark.shanahan@intel.com, hpa@zytor.com,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH V3 04/30] x86/sgx: Add wrapper for SGX2 EAUG function
-Date:   Mon,  4 Apr 2022 09:49:12 -0700
-Message-Id: <db6a2a6b394d9900ce8e3abb1b471b61b7e25c53.1648847675.git.reinette.chatre@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1648847675.git.reinette.chatre@intel.com>
-References: <cover.1648847675.git.reinette.chatre@intel.com>
+        Mon, 4 Apr 2022 16:50:28 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14723D6C;
+        Mon,  4 Apr 2022 13:48:29 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id g22so12596083edz.2;
+        Mon, 04 Apr 2022 13:48:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Hwk8wNBo32OmqYHy/lorDp6jxAIWbUvyfxVID6NQWMs=;
+        b=MgQmlEUX2awo9FGSPrgoUcYWe7XJZtfBcbV29fxnVVbjc3fXXrfVTWrbf2FEFcWonc
+         f0aKsGNt8xLswvAf+ZPhMd5j5QzbyREtH5EG01bJE669ZjjMFoCvsLGPKRLoJVuom9dZ
+         kYDVGColrzu6iRkzxv5ZReRUd9ML2sggd3BMjTtGMEkH1295xZhX2QGenYIfKlQxetMx
+         wEl7pjgvYdNikY+mO/2Nm0tMPt7LhohPkX3Rwa6Aslkud3EOtvKb96eSd5wNJblieh0R
+         40OeE78e2N7TGKbSRYTN0wXN/vb0WgldQS9luj+/MJkrgEZ2kqq3FNMc4ahhO48f2+pr
+         C7Tg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Hwk8wNBo32OmqYHy/lorDp6jxAIWbUvyfxVID6NQWMs=;
+        b=tgSn6xXMmJndzz8y2ABHME8eE9nPr4OoFw8S+8G6N9tud4cz4XWzadHTph1YUnzFJn
+         6BFWJOV64kp1WdZzDwH21tRKFMmBoaCYo4db0wjGAfrTxNib8Vco9s/JQYTxa7srlUXg
+         fljeO/QgQEpZlJprcQCoBHHXvEcClr37nXYAxOGW0ihCA5z9PIGUG/XKGk3MLS6xcprc
+         GDtBnWY2YHpr1M03w+i+11wVqa5sblTlVlTej4gl5UzARJoHaeIK66wXHPVlHNzVR2Ix
+         DbPUkh8DdYYUyX5WHF2HTXgtFXkL76BkE0gIRFhOt5JnVYgZOLcI7yJDFNxVC7XjeEYU
+         JKbQ==
+X-Gm-Message-State: AOAM533TKMyKCSPhAzUJgsAb098ZYK4RTJ5N/NEzTiBR5vDMv3KLqdzA
+        53jqPW57DANxFJMhOi7x+MkFz1mWrKO+fLexqNiseJO/
+X-Google-Smtp-Source: ABdhPJwcTZ56W4jcHhaPz18ivbz2Gd1BIwaysH0yZIitWtcgDhHrV8MgH68GVFQRRYpSZqIgJE5hbn6sHjvo6V1CGTw=
+X-Received: by 2002:a05:6402:27d0:b0:419:5184:58ae with SMTP id
+ c16-20020a05640227d000b00419518458aemr4939ede.314.1649105307534; Mon, 04 Apr
+ 2022 13:48:27 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <Yib9F5SqKda/nH9c@infradead.org> <CAK8P3a1dUVsZzhAe81usLSkvH29zHgiV9fhEkWdq7_W+nQBWbg@mail.gmail.com>
+ <YkmWh2tss8nXKqc5@infradead.org> <CAK8P3a0QdFOJbM72geYTWOKumeKPSCVD8Nje5pBpZWazX0GEnQ@mail.gmail.com>
+ <CAMo8BfKgn0T5RtUTb89fPvygNJJYLy7r1=RZTmTTm=jiDfx1hQ@mail.gmail.com>
+ <CAK8P3a0J1--WSyWY+TptFa0nn5d-mOxapadCE1csGRkfhSPbVw@mail.gmail.com>
+ <CAMo8BfLT8vMw3aGQPs1+9ry7W63SQphmDc4Tt4A3JvADHJhxiQ@mail.gmail.com> <CAK8P3a3iFb+ZacZ40d8PC_xcJpLVFXT0Qc-oYEZNkFqXdsfNZw@mail.gmail.com>
+In-Reply-To: <CAK8P3a3iFb+ZacZ40d8PC_xcJpLVFXT0Qc-oYEZNkFqXdsfNZw@mail.gmail.com>
+From:   Max Filippov <jcmvbkbc@gmail.com>
+Date:   Mon, 4 Apr 2022 13:48:15 -0700
+Message-ID: <CAMo8BfJJXTTbeiUSgU=FLoDMM89fjybjKO+sPz2wu4f=2obAxg@mail.gmail.com>
+Subject: Re: [RFC PULL] remove arch/h8300
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Christoph Hellwig <hch@infradead.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        "moderated list:H8/300 ARCHITECTURE" 
+        <uclinux-h8-devel@lists.sourceforge.jp>,
+        "open list:TENSILICA XTENSA PORT (xtensa)" 
+        <linux-xtensa@linux-xtensa.org>,
+        Linux-sh list <linux-sh@vger.kernel.org>,
+        linux-m68k <linux-m68k@lists.linux-m68k.org>,
+        Greg Ungerer <gerg@linux-m68k.org>,
+        Damien Le Moal <damien.lemoal@wdc.com>,
+        linux-riscv <linux-riscv@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a wrapper for the EAUG ENCLS leaf function used to
-add a page to an initialized enclave.
+On Mon, Apr 4, 2022 at 12:36 PM Arnd Bergmann <arnd@arndb.de> wrote:
+> On Mon, Apr 4, 2022 at 9:14 PM Max Filippov <jcmvbkbc@gmail.com> wrote:
+> > On Mon, Apr 4, 2022 at 12:01 PM Arnd Bergmann <arnd@arndb.de> wrote:
+> > > On Mon, Apr 4, 2022 at 7:57 PM Max Filippov <jcmvbkbc@gmail.com> wrote:
+> > > > Please let me know if you observe any specific build/runtime issues.
+> > > xtensa-linux-gcc-11.1.0 -DKCONFIG_SEED=
+> > ...
+> > > /git/arm-soc/arch/xtensa/kernel/head.S: Assembler messages:
+> > > /git/arm-soc/arch/xtensa/kernel/head.S:87: Error: invalid register
+> > > 'atomctl' for 'wsr' instruction
+> >
+> > Sure, one cannot use an arbitrary xtensa compiler for the kernel
+> > build, the compiler configuration must match the core variant selected
+> > in the linux configuration. Specifically, for the nommu_kc705_defconfig
+> > the following compiler can be used:
+> >
+> > https://github.com/foss-xtensa/toolchain/releases/download/2020.07/x86_64-2020.07-xtensa-de212-elf.tar.gz
+> >
+> > If you build the toolchain yourself using crosstool-ng or buildroot they
+> > accept the 'configuration overlay' parameter that does the compiler
+> > customization.
+> >
+> > Perhaps the documentation for this part is what needs to be improved.
+>
+> It sounds like a bug in the kernel Makefile. On all other architectures,
+> you can generally just pick any (recent) compiler and build any kernel,
+> as the compiler arguments set the exact target machine type based
+> on the kernel config. You can't normally rely on the compiler defaults
+> for kernel builds.
 
-EAUG:
-1) Stores all properties of the new enclave page in the SGX
-   hardware's Enclave Page Cache Map (EPCM).
-2) Sets the PENDING bit in the EPCM entry of the enclave page.
-   This bit is cleared by the enclave by invoking ENCLU leaf
-   function EACCEPT or EACCEPTCOPY.
+It's not just the defaults. The binary instruction encoding is configurable
+on the xtensa architecture, configuration overlay replaces parts of
+the toolchain that do that.
+The additional CPU state is configurable and the kernel gets customized
+with the code that loads and stores this state when someone builds it for
+a specific xtensa core.
+These customizations are done by the users of the xtensa architecture and
+there are hundreds of configurations in existence. The toolchain has never
+been supposed to support all of them at once.
 
-Access from within the enclave to the new enclave page is not
-possible until the PENDING bit is cleared.
-
-Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
----
-No changes since V2
-
-Changes since V1:
-- Split original patch ("x86/sgx: Add wrappers for SGX2 functions")
-  in three to introduce the SGX2 functions separately (Jarkko).
-- Rewrite commit message to include how the EPCM within the hardware
-  is changed by the SGX2 function as well as any calling
-  conditions (Jarkko).
-
- arch/x86/kernel/cpu/sgx/encls.h | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/arch/x86/kernel/cpu/sgx/encls.h b/arch/x86/kernel/cpu/sgx/encls.h
-index 7a1ecf704ec1..99004b02e2ed 100644
---- a/arch/x86/kernel/cpu/sgx/encls.h
-+++ b/arch/x86/kernel/cpu/sgx/encls.h
-@@ -227,4 +227,10 @@ static inline int __emodt(struct sgx_secinfo *secinfo, void *addr)
- 	return __encls_ret_2(EMODT, secinfo, addr);
- }
- 
-+/* Zero a page of EPC memory and add it to an initialized enclave. */
-+static inline int __eaug(struct sgx_pageinfo *pginfo, void *addr)
-+{
-+	return __encls_2(EAUG, pginfo, addr);
-+}
-+
- #endif /* _X86_ENCLS_H */
 -- 
-2.25.1
-
+Thanks.
+-- Max
