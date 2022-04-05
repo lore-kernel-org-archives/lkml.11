@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C16BC4321E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:20:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CED1BC47080
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:20:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386122AbiDEPPq (ORCPT
+        id S1383641AbiDEPOp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:15:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39130 "EHLO
+        Tue, 5 Apr 2022 11:14:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346708AbiDEJpV (ORCPT
+        with ESMTP id S1346579AbiDEJpM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:45:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7451ADAFFE;
-        Tue,  5 Apr 2022 02:31:27 -0700 (PDT)
+        Tue, 5 Apr 2022 05:45:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DE06DAFC3;
+        Tue,  5 Apr 2022 02:30:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 11EFC616AE;
-        Tue,  5 Apr 2022 09:31:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 212DDC385A4;
-        Tue,  5 Apr 2022 09:31:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D1CCAB81CB3;
+        Tue,  5 Apr 2022 09:30:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 287A1C385A2;
+        Tue,  5 Apr 2022 09:30:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151086;
-        bh=V1UOHCySsxvOsjmVNhtwQgiiy4jbORYVeLbhecPA394=;
+        s=korg; t=1649151056;
+        bh=gG8eDeiLHdbGmjfnhHzEjTSMOBgG5ThmJ0w75W4cvCA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=evB5eWLYNWDJSHelO4fyYmZ4bMb9PcSMWBNP5b3FlWt6hzYkF2vRti5qVt28CAd1N
-         cI+Jtm/wuoKNmaV+sXxwHferVHMCUiK405Hp4jTaOe/5jzDYbakl+yG6vtSrduYplw
-         Wf4fDd0pXYfPoB8KULnJGtKcB4jOwu5//hfmew88=
+        b=j7tNo2LUrWD0zijxmysuIQVMcowz6s0XfVxDBsb7F3VEyg8Cuz16cB27aNWXOZTPE
+         c6nJfkAUYYrnQzuygxMEUchyGisn+rNvjm0XGpH32Oa+wPLgvkM1nPzkFmnDtNFGvD
+         nFlNYzK9WKKa9m9IPLGhPNYbZ8RcXXiukuo/9nbc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        stable@vger.kernel.org, Pavel Machek <pavel@denx.de>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 251/913] perf/core: Fix address filter parser for multiple filters
-Date:   Tue,  5 Apr 2022 09:21:53 +0200
-Message-Id: <20220405070347.380488944@linuxfoundation.org>
+Subject: [PATCH 5.15 277/913] ASoC: sh: rz-ssi: Drop calling rz_ssi_pio_recv() recursively
+Date:   Tue,  5 Apr 2022 09:22:19 +0200
+Message-Id: <20220405070348.161042666@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -50,38 +52,121 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Adrian Hunter <adrian.hunter@intel.com>
+From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-[ Upstream commit d680ff24e9e14444c63945b43a37ede7cd6958f9 ]
+[ Upstream commit 6570f991582e32b7992601d0497c61962a2c5dcc ]
 
-Reset appropriate variables in the parser loop between parsing separate
-filters, so that they do not interfere with parsing the next filter.
+Instead of recursively calling rz_ssi_pio_recv() use a while loop
+to read the samples from RX fifo.
 
-Fixes: 375637bc524952 ("perf/core: Introduce address range filtering")
-Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lore.kernel.org/r/20220131072453.2839535-4-adrian.hunter@intel.com
+This also fixes an issue where the return value of rz_ssi_pio_recv()
+was ignored when called recursively.
+
+Fixes: 03e786bd4341 ("ASoC: sh: Add RZ/G2L SSIF-2 driver")
+Reported-by: Pavel Machek <pavel@denx.de>
+Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
+Link: https://lore.kernel.org/r/20220110094711.8574-2-prabhakar.mahadev-lad.rj@bp.renesas.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/events/core.c | 3 +++
- 1 file changed, 3 insertions(+)
+ sound/soc/sh/rz-ssi.c | 68 ++++++++++++++++++++++---------------------
+ 1 file changed, 35 insertions(+), 33 deletions(-)
 
-diff --git a/kernel/events/core.c b/kernel/events/core.c
-index b81652fc2cdd..62022380ad8d 100644
---- a/kernel/events/core.c
-+++ b/kernel/events/core.c
-@@ -10530,8 +10530,11 @@ perf_event_parse_addr_filter(struct perf_event *event, char *fstr,
- 			}
+diff --git a/sound/soc/sh/rz-ssi.c b/sound/soc/sh/rz-ssi.c
+index fa0cc08f70ec..37466f65c2b0 100644
+--- a/sound/soc/sh/rz-ssi.c
++++ b/sound/soc/sh/rz-ssi.c
+@@ -411,54 +411,56 @@ static int rz_ssi_pio_recv(struct rz_ssi_priv *ssi, struct rz_ssi_stream *strm)
+ {
+ 	struct snd_pcm_substream *substream = strm->substream;
+ 	struct snd_pcm_runtime *runtime;
++	bool done = false;
+ 	u16 *buf;
+ 	int fifo_samples;
+ 	int frames_left;
+-	int samples = 0;
++	int samples;
+ 	int i;
  
- 			/* ready to consume more filters */
-+			kfree(filename);
-+			filename = NULL;
- 			state = IF_STATE_ACTION;
- 			filter = NULL;
-+			kernel = 0;
- 		}
- 	}
+ 	if (!rz_ssi_stream_is_valid(ssi, strm))
+ 		return -EINVAL;
  
+ 	runtime = substream->runtime;
+-	/* frames left in this period */
+-	frames_left = runtime->period_size - (strm->buffer_pos %
+-					      runtime->period_size);
+-	if (frames_left == 0)
+-		frames_left = runtime->period_size;
+ 
+-	/* Samples in RX FIFO */
+-	fifo_samples = (rz_ssi_reg_readl(ssi, SSIFSR) >>
+-			SSIFSR_RDC_SHIFT) & SSIFSR_RDC_MASK;
+-
+-	/* Only read full frames at a time */
+-	while (frames_left && (fifo_samples >= runtime->channels)) {
+-		samples += runtime->channels;
+-		fifo_samples -= runtime->channels;
+-		frames_left--;
+-	}
++	while (!done) {
++		/* frames left in this period */
++		frames_left = runtime->period_size -
++			      (strm->buffer_pos % runtime->period_size);
++		if (!frames_left)
++			frames_left = runtime->period_size;
++
++		/* Samples in RX FIFO */
++		fifo_samples = (rz_ssi_reg_readl(ssi, SSIFSR) >>
++				SSIFSR_RDC_SHIFT) & SSIFSR_RDC_MASK;
++
++		/* Only read full frames at a time */
++		samples = 0;
++		while (frames_left && (fifo_samples >= runtime->channels)) {
++			samples += runtime->channels;
++			fifo_samples -= runtime->channels;
++			frames_left--;
++		}
+ 
+-	/* not enough samples yet */
+-	if (samples == 0)
+-		return 0;
++		/* not enough samples yet */
++		if (!samples)
++			break;
+ 
+-	/* calculate new buffer index */
+-	buf = (u16 *)(runtime->dma_area);
+-	buf += strm->buffer_pos * runtime->channels;
++		/* calculate new buffer index */
++		buf = (u16 *)(runtime->dma_area);
++		buf += strm->buffer_pos * runtime->channels;
+ 
+-	/* Note, only supports 16-bit samples */
+-	for (i = 0; i < samples; i++)
+-		*buf++ = (u16)(rz_ssi_reg_readl(ssi, SSIFRDR) >> 16);
++		/* Note, only supports 16-bit samples */
++		for (i = 0; i < samples; i++)
++			*buf++ = (u16)(rz_ssi_reg_readl(ssi, SSIFRDR) >> 16);
+ 
+-	rz_ssi_reg_mask_setl(ssi, SSIFSR, SSIFSR_RDF, 0);
+-	rz_ssi_pointer_update(strm, samples / runtime->channels);
++		rz_ssi_reg_mask_setl(ssi, SSIFSR, SSIFSR_RDF, 0);
++		rz_ssi_pointer_update(strm, samples / runtime->channels);
+ 
+-	/*
+-	 * If we finished this period, but there are more samples in
+-	 * the RX FIFO, call this function again
+-	 */
+-	if (frames_left == 0 && fifo_samples >= runtime->channels)
+-		rz_ssi_pio_recv(ssi, strm);
++		/* check if there are no more samples in the RX FIFO */
++		if (!(!frames_left && fifo_samples >= runtime->channels))
++			done = true;
++	}
+ 
+ 	return 0;
+ }
 -- 
 2.34.1
 
