@@ -2,90 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FB5DC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:20:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F19C8C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:20:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388008AbiDEPUI (ORCPT
+        id S1387884AbiDEPUC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:20:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60068 "EHLO
+        Tue, 5 Apr 2022 11:20:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346822AbiDEJpf (ORCPT
+        with ESMTP id S1346818AbiDEJpf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 05:45:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EB3BF4C;
-        Tue,  5 Apr 2022 02:32:01 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EA47F09
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 02:32:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0832B6165C;
-        Tue,  5 Apr 2022 09:32:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19431C385A0;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B1521616C1
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 09:32:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 433DAC385A3;
         Tue,  5 Apr 2022 09:31:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151120;
-        bh=DPE4lEaN7AW07NoT9T/QpdXfL1/FEnZ7YeZrORldwro=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=y+w+unzM28hgEDXyoMqw78eei5EhsnciwxX5YXJBS4c30wtvE90GYmWu7UPJhnPu7
-         Tyul9dYNRN4XLUU5HX8Zme4GErkSFWVZwppBQmfiSzDncrWA3o6h8YopA/LKqn2e3y
-         6AD9sp60kvLAPouNto72kNDyrlkjFGTKiJA0an7Y=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, devicetree@vger.kernel.org,
-        Maulik Shah <quic_mkshah@quicinc.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 302/913] arm64: dts: qcom: sm8150: Correct TCS configuration for apps rsc
-Date:   Tue,  5 Apr 2022 09:22:44 +0200
-Message-Id: <20220405070348.908681564@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649151120;
+        bh=32KftyjLHc+wRCInz68XbmVh1oirhRGgVlh1CMTN5Ew=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=psUKn07cuZDJfOnD3dalSfcruMZLkfwu+O9xmt90SeQHtNaMpsjcfI2aayf5zEZCb
+         ffaigjl2HJUNHoza4gORu5FvWKkNKM3/KkLE7QdorP+Akb92/TJN8K8QrUejT2nmAE
+         KFzfWdtNzMHU0Kjd6e7T9/euiB41GCKxRDRyDO8wWg4LJIOVUZa+c3FyGaTEelCP0G
+         PhRSfr/YL+CKYxc2TYAPH4UTi0VYYS1d3FTdglUZ7EO/J2GNzOCTKm1VrdmsCBRTS3
+         Z07Cip77HYRWlhkmsM2USTAmFvat6M6rJk7xOASRPLp4KkK3ZWrExhXuO+t+LhTmGn
+         QgpybYwy8eNtg==
+From:   Mark Brown <broonie@kernel.org>
+To:     rafael@kernel.org, gregkh@linuxfoundation.org,
+        rikard.falkeborn@gmail.com
+Cc:     linux-kernel@vger.kernel.org
+In-Reply-To: <20220330214110.36337-1-rikard.falkeborn@gmail.com>
+References: <20220330214110.36337-1-rikard.falkeborn@gmail.com>
+Subject: Re: [PATCH] regmap: Constify static regmap_bus structs
+Message-Id: <164915111899.276817.15619096499857459314.b4-ty@kernel.org>
+Date:   Tue, 05 Apr 2022 10:31:58 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maulik Shah <quic_mkshah@quicinc.com>
+On Wed, 30 Mar 2022 23:41:10 +0200, Rikard Falkeborn wrote:
+> The only usage of these is to pass their address to __regmap_init() or
+> __devm_regmap_init(), both which takes pointers to const struct
+> regmap_bus. Make them const to allow the compiler to put them in
+> read-only memory.
+> 
+> 
 
-[ Upstream commit 17ac8af678b6da6a8f1df7da8ebf2c5198741827 ]
+Applied to
 
-Correct the TCS config by updating the number of TCSes for each type.
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regmap.git for-next
 
-Cc: devicetree@vger.kernel.org
-Fixes: d8cf9372b654 ("arm64: dts: qcom: sm8150: Add apps shared nodes")
-Signed-off-by: Maulik Shah <quic_mkshah@quicinc.com>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/1641749107-31979-2-git-send-email-quic_mkshah@quicinc.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/arm64/boot/dts/qcom/sm8150.dtsi | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+Thanks!
 
-diff --git a/arch/arm64/boot/dts/qcom/sm8150.dtsi b/arch/arm64/boot/dts/qcom/sm8150.dtsi
-index ef0232c2cf45..f347f752d536 100644
---- a/arch/arm64/boot/dts/qcom/sm8150.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sm8150.dtsi
-@@ -3434,9 +3434,9 @@
- 			qcom,tcs-offset = <0xd00>;
- 			qcom,drv-id = <2>;
- 			qcom,tcs-config = <ACTIVE_TCS  2>,
--					  <SLEEP_TCS   1>,
--					  <WAKE_TCS    1>,
--					  <CONTROL_TCS 0>;
-+					  <SLEEP_TCS   3>,
-+					  <WAKE_TCS    3>,
-+					  <CONTROL_TCS 1>;
- 
- 			rpmhcc: clock-controller {
- 				compatible = "qcom,sm8150-rpmh-clk";
--- 
-2.34.1
+[1/1] regmap: Constify static regmap_bus structs
+      commit: bd941dfaae3503c6b707d8544696205f759e57a3
 
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
 
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
 
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
+
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+Thanks,
+Mark
