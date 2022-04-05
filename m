@@ -2,218 +2,280 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00B21C4167D
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:10:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 118DFC4167B
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:10:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1840503AbiDFBKi (ORCPT
+        id S1840519AbiDFBKr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:10:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33246 "EHLO
+        Tue, 5 Apr 2022 21:10:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1572971AbiDERiH (ORCPT
+        with ESMTP id S1349247AbiDEJt3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 13:38:07 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A128B8203
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 10:36:07 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id e16so24472762lfc.13
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 10:36:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=VdUHrOr8rp3LLgCgyl1hCTi6yFRnf6ES2BvzvWYzkNo=;
-        b=xmsdaZdzayKOem9wRw1CE3E7NyvNdzu7tsXXm8Kp3qulQg/KFkFfUxlGVDL5RCbyq4
-         fus9Ue0eApdYw+eZpQdd/xEPTIMcUG/8hUT0FKA3qnTc/W0ceIl2Gu5MQWxLNsX2UBZ3
-         hzrfmPPlonBK8hz/rjUnyVuZFPo/0fDJswQ2NqCdLlqmmlMUWJ/5Z6WYHWrGA14IqgdD
-         QdEH2Wk6sIe/m3K2MXjK83SS01H8lrrWZaTQA469MIafcunco1FCdjrAk7Cc2iXd8Wlq
-         HqnOub5Cvf+Ujs/rZWAl7F+bhaT9jqeSoqqj2H0mR6a21sri62KOIfSCiXEfW5Di/WT5
-         TBMQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=VdUHrOr8rp3LLgCgyl1hCTi6yFRnf6ES2BvzvWYzkNo=;
-        b=GCsf2KDvx6lBv2TNBlMl8iMlmPgQ4YNm3OfzCBmXJuUFPAySqPJvxi9aIxWjRLQyrF
-         bkLZr1Le6Ip50OngNS4VMKcmkS21f91F5Djqfm+0Ys7QqHo8QSdhHeaeeT142/dW/Wss
-         2QCoQ16VaEmJ5pPaYNqsEinSQwkNjBORE2ffvuEcSccZTEntbKxziEO2h7i8GZqmc2MY
-         Xla+8OgNp/kAT0ITuCtvnxrQxLh7Qpd29qPXGUiPt3fLyGDZyoXInSiPm+XCwF4DGdl8
-         sv6vdWfBByPJMvKcjRbJaqt1HUuxUFiN3VCcCIAQ15Lavun+YbO12gjGOI1K37fSy6Cg
-         MI7A==
-X-Gm-Message-State: AOAM533FWxGG3czHlo/X20FRyxCdKjQIKj1E6eraeG7T4ItBHdCOIhtm
-        jVMFBQTIAixmqcfyz4/+gr4c3A==
-X-Google-Smtp-Source: ABdhPJzMd3HmY/nj1P/l2+WE0GFqnmG0a2a62aA76/v5WzjABUpaiFVfU5B6qrHOWmqZFUEpQcb8KA==
-X-Received: by 2002:a05:6512:a85:b0:44a:3f77:d9b9 with SMTP id m5-20020a0565120a8500b0044a3f77d9b9mr3301098lfu.465.1649180164931;
-        Tue, 05 Apr 2022 10:36:04 -0700 (PDT)
-Received: from [192.168.1.211] ([37.153.55.125])
-        by smtp.gmail.com with ESMTPSA id k2-20020a056512330200b0044a096ea7absm1563732lfe.54.2022.04.05.10.36.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Apr 2022 10:36:04 -0700 (PDT)
-Message-ID: <3e5fa57f-d636-879a-b98f-77323d07c156@linaro.org>
-Date:   Tue, 5 Apr 2022 20:36:02 +0300
+        Tue, 5 Apr 2022 05:49:29 -0400
+Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACCF122BDB;
+        Tue,  5 Apr 2022 02:43:00 -0700 (PDT)
+Received: from ktm (85-222-111-42.dynamic.chello.pl [85.222.111.42])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: lukma@denx.de)
+        by phobos.denx.de (Postfix) with ESMTPSA id 112EF807DF;
+        Tue,  5 Apr 2022 11:42:48 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+        s=phobos-20191101; t=1649151770;
+        bh=D8nn68p20zH9IA29cWstg2/uav1hb5K8VVPH0v7EEls=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=vMKzt9zYlaHl+ixw2bHKn/r5zqi7riTeWyBzT9s5Rg2z8bhbvgAsatYicfadOP5lS
+         9hbejVZejRCPRoTNP1aTvSUQ0ydeB4tuoy1kVlfNgEossiKOI1S3vrOifrXlPo9Qka
+         sMPi7FYHJqtSNI0/E0b/kfkEpwijuNT2V9WUeCi2/TlMyBZ1GfGfi6dpQDNk6i8mid
+         hwaVxItt6Qwv9N73itgOMsuKUwSV00opFqDlbSxoBqqTjIiuJaoqNELlAoOD6gTeaw
+         4fHEVKWtqxOvgPHHVDnqKTBmJQJt7OlwN8Ygq0RtjFsRR4RDEqsx1q/gl97b/O7iix
+         aE5zaNS9CsVxg==
+Date:   Tue, 5 Apr 2022 11:42:39 +0200
+From:   Lukasz Majewski <lukma@denx.de>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Russell King <linux@armlinux.org.uk>,
+        Hartley Sweeten <hsweeten@visionengravers.com>,
+        Alexander Sverdlin <alexander.sverdlin@gmail.com>,
+        Hubert Feurstein <hubert.feurstein@contec.at>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Imre Kaloz <kaloz@openwrt.org>,
+        Krzysztof Halasa <khalasa@piap.pl>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Simtec Linux Team <linux@simtec.co.uk>,
+        Liviu Dudau <liviu.dudau@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, patches@opensource.cirrus.com
+Subject: Re: [PATCH 02/12] ARM: ep93xx: renumber interrupts
+Message-ID: <20220405114239.6c801983@ktm>
+In-Reply-To: <20220405091750.3076973-3-arnd@kernel.org>
+References: <20220405091750.3076973-1-arnd@kernel.org>
+        <20220405091750.3076973-3-arnd@kernel.org>
+Organization: denx.de
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v6 1/8] drm/msm/dp: Add eDP support via aux_bus
-Content-Language: en-GB
-To:     Doug Anderson <dianders@chromium.org>
-Cc:     Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        freedreno <freedreno@lists.freedesktop.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, Rob Clark <robdclark@gmail.com>,
-        Sean Paul <seanpaul@chromium.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        quic_kalyant <quic_kalyant@quicinc.com>,
-        "Abhinav Kumar (QUIC)" <quic_abhinavk@quicinc.com>,
-        "Kuogee Hsieh (QUIC)" <quic_khsieh@quicinc.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        quic_vproddut <quic_vproddut@quicinc.com>,
-        "Aravind Venkateswaran (QUIC)" <quic_aravindh@quicinc.com>
-References: <1648656179-10347-1-git-send-email-quic_sbillaka@quicinc.com>
- <1648656179-10347-2-git-send-email-quic_sbillaka@quicinc.com>
- <CAD=FV=X+QvjwoT2zGP82KW4kD0oMUY6ZgCizSikNX_Uj8dNDqA@mail.gmail.com>
- <392b933f-760c-3c81-1040-c514045df3da@linaro.org>
- <CAD=FV=W4PYK-t607yjRbfjDjjEZX0KdgHDRukw_vSH8E8EDH6w@mail.gmail.com>
- <CAA8EJppt9XONbgtKfmHmN+==QNqiVJeb8GKJFdZm=yyY-tgmHQ@mail.gmail.com>
- <CAD=FV=U5-sTDLYdkeJWLAOG-0wgxR49VxtwUyUO7z2PuibLGsg@mail.gmail.com>
- <CAA8EJppgfYgQjG8A4LsR-1wmBj3Ku3eO8cKfAYhxjWXL7e3eHg@mail.gmail.com>
- <CAD=FV=V=a1CnT8fqTJR40WoS3BaDQ3xZ=HnHVHqZh=MEmVUZBA@mail.gmail.com>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-In-Reply-To: <CAD=FV=V=a1CnT8fqTJR40WoS3BaDQ3xZ=HnHVHqZh=MEmVUZBA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ boundary="Sig_/H22OkBcUjFxW3WCVBJL/tlR"; protocol="application/pgp-signature"
+X-Virus-Scanned: clamav-milter 0.103.5 at phobos.denx.de
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 05/04/2022 20:02, Doug Anderson wrote:
-> Hi,
-> 
-> On Tue, Apr 5, 2022 at 5:54 AM Dmitry Baryshkov
-> <dmitry.baryshkov@linaro.org> wrote:
->>> 3. For DP and eDP HPD means something a little different. Essentially
->>> there are two concepts: a) is a display physically connected and b) is
->>> the display powered up and ready. For DP, the two are really tied
->>> together. From the kernel's point of view you never "power down" a DP
->>> display and you can't detect that it's physically connected until it's
->>> ready. Said another way, on you tie "is a display there" to the HPD
->>> line and the moment a display is there it's ready for you to do AUX
->>> transfers. For eDP, in the lowest power state of a display it _won't_
->>> assert its "HPD" signal. However, it's still physically present. For
->>> eDP you simply have to _assume_ it's present without any actual proof
->>> since you can't get proof until you power it up. Thus for eDP, you
->>> report that the display is there as soon as we're asked. We can't
->>> _talk_ to the display yet, though. So in get_modes() we need to be
->>> able to power the display on enough to talk over the AUX channel to
->>> it. As part of this, we wait for the signal named "HPD" which really
->>> means "panel finished powering on" in this context.
->>>
->>> NOTE: for aux transfer, we don't have the _display_ pipe and clocks
->>> running. We only have enough stuff running to do the AUX transfer.
->>> We're not clocking out pixels. We haven't fully powered on the
->>> display. The AUX transfer is designed to be something that can be done
->>> early _before_ you turn on the display.
->>>
->>>
->>> OK, so basically that was a longwinded way of saying: yes, we could
->>> avoid the AUX transfer in probe, but we can't wait all the way to
->>> enable. We have to be able to transfer in get_modes(). If you think
->>> that's helpful I think it'd be a pretty easy patch to write even if it
->>> would look a tad bit awkward IMO. Let me know if you want me to post
->>> it up.
->>
->> I think it would be a good idea. At least it will allow us to judge,
->> which is the more correct way.
-> 
-> I'm still happy to prototype this, but the more I think about it the
-> more it feels like a workaround for the Qualcomm driver. The eDP panel
-> driver is actually given a pointer to the AUX bus at probe time. It's
-> really weird to say that we can't do a transfer on it yet... As you
-> said, this is a little sideband bus. It should be able to be used
-> without all the full blown infra of the rest of the driver.
+--Sig_/H22OkBcUjFxW3WCVBJL/tlR
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Yes, I have that feeling too. However I also have a feeling that just 
-powering up the PHY before the bus probe is ... a hack. There are no 
-obvious stopgaps for the driver not to power it down later.
+On Tue,  5 Apr 2022 11:17:40 +0200
+Arnd Bergmann <arnd@kernel.org> wrote:
 
-A cleaner design might be to split all hotplug event handling from the 
-dp_display, provide a lightweight state machine for the eDP and select 
-which state machine to use depending on the hardware connector type. The 
-dp_display_bind/unbind would probably also be duplicated and receive 
-correct code flows for calling dp_parser_get_next_bridge, etc.
-Basically that means that depending on the device data we'd use either 
-dp_display_comp_ops or (new) edp_comp_ops.
+> From: Arnd Bergmann <arnd@arndb.de>
+>=20
+> With the move to irq domains, no irqchip must start at number 0,
+> so shift all the hardwired IRQ numbers by one.
+>=20
+> Tested-by: Alexander Sverdlin <alexander.sverdlin@gmail.com>
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> ---
+>  arch/arm/mach-ep93xx/core.c              |   4 +-
+>  arch/arm/mach-ep93xx/include/mach/irqs.h | 122
+> ++++++++++++----------- 2 files changed, 65 insertions(+), 61
+> deletions(-)
+>=20
+> diff --git a/arch/arm/mach-ep93xx/core.c b/arch/arm/mach-ep93xx/core.c
+> index a3b4e843456a..e4569a5acc3f 100644
+> --- a/arch/arm/mach-ep93xx/core.c
+> +++ b/arch/arm/mach-ep93xx/core.c
+> @@ -75,8 +75,8 @@ void __init ep93xx_map_io(void)
+>   ***********************************************************************=
+**/
+>  void __init ep93xx_init_irq(void)
+>  {
+> -	vic_init(EP93XX_VIC1_BASE, 0, EP93XX_VIC1_VALID_IRQ_MASK, 0);
+> -	vic_init(EP93XX_VIC2_BASE, 32, EP93XX_VIC2_VALID_IRQ_MASK,
+> 0);
+> +	vic_init(EP93XX_VIC1_BASE, IRQ_EP93XX_VIC0,
+> EP93XX_VIC1_VALID_IRQ_MASK, 0);
+> +	vic_init(EP93XX_VIC2_BASE, IRQ_EP93XX_VIC1,
+> EP93XX_VIC2_VALID_IRQ_MASK, 0); }
+> =20
+> =20
+> diff --git a/arch/arm/mach-ep93xx/include/mach/irqs.h
+> b/arch/arm/mach-ep93xx/include/mach/irqs.h index
+> 244daf83ce6d..60c69c4ed7e1 100644 ---
+> a/arch/arm/mach-ep93xx/include/mach/irqs.h +++
+> b/arch/arm/mach-ep93xx/include/mach/irqs.h @@ -6,69 +6,73 @@
+>  #ifndef __ASM_ARCH_IRQS_H
+>  #define __ASM_ARCH_IRQS_H
+> =20
+> -#define IRQ_EP93XX_COMMRX		2
+> -#define IRQ_EP93XX_COMMTX		3
+> -#define IRQ_EP93XX_TIMER1		4
+> -#define IRQ_EP93XX_TIMER2		5
+> -#define IRQ_EP93XX_AACINTR		6
+> -#define IRQ_EP93XX_DMAM2P0		7
+> -#define IRQ_EP93XX_DMAM2P1		8
+> -#define IRQ_EP93XX_DMAM2P2		9
+> -#define IRQ_EP93XX_DMAM2P3		10
+> -#define IRQ_EP93XX_DMAM2P4		11
+> -#define IRQ_EP93XX_DMAM2P5		12
+> -#define IRQ_EP93XX_DMAM2P6		13
+> -#define IRQ_EP93XX_DMAM2P7		14
+> -#define IRQ_EP93XX_DMAM2P8		15
+> -#define IRQ_EP93XX_DMAM2P9		16
+> -#define IRQ_EP93XX_DMAM2M0		17
+> -#define IRQ_EP93XX_DMAM2M1		18
+> -#define IRQ_EP93XX_GPIO0MUX		19
+> -#define IRQ_EP93XX_GPIO1MUX		20
+> -#define IRQ_EP93XX_GPIO2MUX		21
+> -#define IRQ_EP93XX_GPIO3MUX		22
+> -#define IRQ_EP93XX_UART1RX		23
+> -#define IRQ_EP93XX_UART1TX		24
+> -#define IRQ_EP93XX_UART2RX		25
+> -#define IRQ_EP93XX_UART2TX		26
+> -#define IRQ_EP93XX_UART3RX		27
+> -#define IRQ_EP93XX_UART3TX		28
+> -#define IRQ_EP93XX_KEY			29
+> -#define IRQ_EP93XX_TOUCH		30
+> +#define IRQ_EP93XX_VIC0			1
+> +
+> +#define IRQ_EP93XX_COMMRX		(IRQ_EP93XX_VIC0 + 2)
+> +#define IRQ_EP93XX_COMMTX		(IRQ_EP93XX_VIC0 + 3)
+> +#define IRQ_EP93XX_TIMER1		(IRQ_EP93XX_VIC0 + 4)
+> +#define IRQ_EP93XX_TIMER2		(IRQ_EP93XX_VIC0 + 5)
+> +#define IRQ_EP93XX_AACINTR		(IRQ_EP93XX_VIC0 + 6)
+> +#define IRQ_EP93XX_DMAM2P0		(IRQ_EP93XX_VIC0 + 7)
+> +#define IRQ_EP93XX_DMAM2P1		(IRQ_EP93XX_VIC0 + 8)
+> +#define IRQ_EP93XX_DMAM2P2		(IRQ_EP93XX_VIC0 + 9)
+> +#define IRQ_EP93XX_DMAM2P3		(IRQ_EP93XX_VIC0 + 10)
+> +#define IRQ_EP93XX_DMAM2P4		(IRQ_EP93XX_VIC0 + 11)
+> +#define IRQ_EP93XX_DMAM2P5		(IRQ_EP93XX_VIC0 + 12)
+> +#define IRQ_EP93XX_DMAM2P6		(IRQ_EP93XX_VIC0 + 13)
+> +#define IRQ_EP93XX_DMAM2P7		(IRQ_EP93XX_VIC0 + 14)
+> +#define IRQ_EP93XX_DMAM2P8		(IRQ_EP93XX_VIC0 + 15)
+> +#define IRQ_EP93XX_DMAM2P9		(IRQ_EP93XX_VIC0 + 16)
+> +#define IRQ_EP93XX_DMAM2M0		(IRQ_EP93XX_VIC0 + 17)
+> +#define IRQ_EP93XX_DMAM2M1		(IRQ_EP93XX_VIC0 + 18)
+> +#define IRQ_EP93XX_GPIO0MUX		(IRQ_EP93XX_VIC0 + 19)
+> +#define IRQ_EP93XX_GPIO1MUX		(IRQ_EP93XX_VIC0 + 20)
+> +#define IRQ_EP93XX_GPIO2MUX		(IRQ_EP93XX_VIC0 + 21)
+> +#define IRQ_EP93XX_GPIO3MUX		(IRQ_EP93XX_VIC0 + 22)
+> +#define IRQ_EP93XX_UART1RX		(IRQ_EP93XX_VIC0 + 23)
+> +#define IRQ_EP93XX_UART1TX		(IRQ_EP93XX_VIC0 + 24)
+> +#define IRQ_EP93XX_UART2RX		(IRQ_EP93XX_VIC0 + 25)
+> +#define IRQ_EP93XX_UART2TX		(IRQ_EP93XX_VIC0 + 26)
+> +#define IRQ_EP93XX_UART3RX		(IRQ_EP93XX_VIC0 + 27)
+> +#define IRQ_EP93XX_UART3TX		(IRQ_EP93XX_VIC0 + 28)
+> +#define IRQ_EP93XX_KEY			(IRQ_EP93XX_VIC0 + 29)
+> +#define IRQ_EP93XX_TOUCH		(IRQ_EP93XX_VIC0 + 30)
+>  #define EP93XX_VIC1_VALID_IRQ_MASK	0x7ffffffc
+> =20
+> -#define IRQ_EP93XX_EXT0			32
+> -#define IRQ_EP93XX_EXT1			33
+> -#define IRQ_EP93XX_EXT2			34
+> -#define IRQ_EP93XX_64HZ			35
+> -#define IRQ_EP93XX_WATCHDOG		36
+> -#define IRQ_EP93XX_RTC			37
+> -#define IRQ_EP93XX_IRDA			38
+> -#define IRQ_EP93XX_ETHERNET		39
+> -#define IRQ_EP93XX_EXT3			40
+> -#define IRQ_EP93XX_PROG			41
+> -#define IRQ_EP93XX_1HZ			42
+> -#define IRQ_EP93XX_VSYNC		43
+> -#define IRQ_EP93XX_VIDEO_FIFO		44
+> -#define IRQ_EP93XX_SSP1RX		45
+> -#define IRQ_EP93XX_SSP1TX		46
+> -#define IRQ_EP93XX_GPIO4MUX		47
+> -#define IRQ_EP93XX_GPIO5MUX		48
+> -#define IRQ_EP93XX_GPIO6MUX		49
+> -#define IRQ_EP93XX_GPIO7MUX		50
+> -#define IRQ_EP93XX_TIMER3		51
+> -#define IRQ_EP93XX_UART1		52
+> -#define IRQ_EP93XX_SSP			53
+> -#define IRQ_EP93XX_UART2		54
+> -#define IRQ_EP93XX_UART3		55
+> -#define IRQ_EP93XX_USB			56
+> -#define IRQ_EP93XX_ETHERNET_PME		57
+> -#define IRQ_EP93XX_DSP			58
+> -#define IRQ_EP93XX_GPIO_AB		59
+> -#define IRQ_EP93XX_SAI			60
+> +#define IRQ_EP93XX_VIC1			(IRQ_EP93XX_VIC0 + 32)
+> +
+> +#define IRQ_EP93XX_EXT0			(IRQ_EP93XX_VIC1 + 0)
+> +#define IRQ_EP93XX_EXT1			(IRQ_EP93XX_VIC1 + 1)
+> +#define IRQ_EP93XX_EXT2			(IRQ_EP93XX_VIC1 + 2)
+> +#define IRQ_EP93XX_64HZ			(IRQ_EP93XX_VIC1 + 3)
+> +#define IRQ_EP93XX_WATCHDOG		(IRQ_EP93XX_VIC1 + 4)
+> +#define IRQ_EP93XX_RTC			(IRQ_EP93XX_VIC1 + 5)
+> +#define IRQ_EP93XX_IRDA			(IRQ_EP93XX_VIC1 + 6)
+> +#define IRQ_EP93XX_ETHERNET		(IRQ_EP93XX_VIC1 + 7)
+> +#define IRQ_EP93XX_EXT3			(IRQ_EP93XX_VIC1 + 8)
+> +#define IRQ_EP93XX_PROG			(IRQ_EP93XX_VIC1 + 9)
+> +#define IRQ_EP93XX_1HZ			(IRQ_EP93XX_VIC1 + 10)
+> +#define IRQ_EP93XX_VSYNC		(IRQ_EP93XX_VIC1 + 11)
+> +#define IRQ_EP93XX_VIDEO_FIFO		(IRQ_EP93XX_VIC1 + 12)
+> +#define IRQ_EP93XX_SSP1RX		(IRQ_EP93XX_VIC1 + 13)
+> +#define IRQ_EP93XX_SSP1TX		(IRQ_EP93XX_VIC1 + 14)
+> +#define IRQ_EP93XX_GPIO4MUX		(IRQ_EP93XX_VIC1 + 15)
+> +#define IRQ_EP93XX_GPIO5MUX		(IRQ_EP93XX_VIC1 + 16)
+> +#define IRQ_EP93XX_GPIO6MUX		(IRQ_EP93XX_VIC1 + 17)
+> +#define IRQ_EP93XX_GPIO7MUX		(IRQ_EP93XX_VIC1 + 18)
+> +#define IRQ_EP93XX_TIMER3		(IRQ_EP93XX_VIC1 + 19)
+> +#define IRQ_EP93XX_UART1		(IRQ_EP93XX_VIC1 + 20)
+> +#define IRQ_EP93XX_SSP			(IRQ_EP93XX_VIC1 + 21)
+> +#define IRQ_EP93XX_UART2		(IRQ_EP93XX_VIC1 + 22)
+> +#define IRQ_EP93XX_UART3		(IRQ_EP93XX_VIC1 + 23)
+> +#define IRQ_EP93XX_USB			(IRQ_EP93XX_VIC1 + 24)
+> +#define IRQ_EP93XX_ETHERNET_PME		(IRQ_EP93XX_VIC1 + 25)
+> +#define IRQ_EP93XX_DSP			(IRQ_EP93XX_VIC1 + 26)
+> +#define IRQ_EP93XX_GPIO_AB		(IRQ_EP93XX_VIC1 + 27)
+> +#define IRQ_EP93XX_SAI			(IRQ_EP93XX_VIC1 + 28)
+>  #define EP93XX_VIC2_VALID_IRQ_MASK	0x1fffffff
+> =20
+> -#define NR_EP93XX_IRQS			(64 + 24)
+> +#define NR_EP93XX_IRQS			(IRQ_EP93XX_VIC1 + 32
+> + 24)=20
+>  #define EP93XX_BOARD_IRQ(x)		(NR_EP93XX_IRQS + (x))
+>  #define EP93XX_BOARD_IRQS		32
 
-WDYT?
+Reviewed-by: Lukasz Majewski <lukma@denx.de>
 
->> And I also think it might help the ti,sn65dsi86 driver, as it won't
->> have to ensure that gpio is available during the AUX bus probe.
-> 
-> The ti,sn65dsi86 GPIO issue has been solved for a while, though so not
-> sure why we need to do something there? I'm also unclear how it would
-> have helped. In this discussion, we've agreed that the panel driver
-> would still acquire resources during its probe time and the only thing
-> that would be delayed would be the first AUX transfer. The GPIO is a
-> resource here and it's ideal to acquire it at probe time so we could
-> EPROBE_DEFER if needed.
 
-Ack. I agree here. The world at 5 a.m. looks differently :D
+Best regards,
 
-> 
-> 
->> BTW, another random idea, before you start coding.
->>
->> We have the bridge's hpd_notify call. Currently it is called only by
->> the means of drm_bridge_connector's HPD mechanism, tied to the bridge
->> registering as DRM_BRIDGE_OP_HPD.
->> It looks to me like it might be a perfect fit for the first aux-bus
->> related reads.
->>
->> We'd need to trigger it manually once and tie it to the new
->> drm_panel_funcs callback, which in turn would probe the aux bus,
->> create backlight, etc.
->>
->> Regarding the Sankeerth's patch. I have been comparing it with the
->> hpd_event_thread()'s calls.
->> It looks to me like we should reuse dp_display_config_hpd()
->> /EV_HPD_INIT_SETUP and maybe others.
->>
->> What I'm trying to say is that if we split AUX probing and first AUX
->> transfers, it would be possible to reuse a significant part of MSM DP
->> HPD machine rather than hacking around it and replicating it manually.
-> 
-> I'm not sure I completely understand, but I'm pretty wary here. It's
-> my assertion that all of the current "HPD" infrastructure in DRM all
-> relates to the physical presence of the panel. If you start
-> implementing these functions for eDP I think you're going to confuse
-> the heck out of everything. The kernel will think that this is a
-> display that's sometimes not there. Whenever the display is powered
-> off then HPD will be low and it will look like there's no display.
-> Nothing will ever try to power it on because it looks like there's no
-> display.
-> 
-> I think your idea is to "trigger once" at bootup and then it all
-> magically works, right? ...but what about after bootup? If you turn
-> the display off for whatever reason (modeset or you simply close the
-> lid of your laptop because you're using an external display) and then
-> you want to use the eDP display again, how do you kickstart the
-> process another time? You can't reboot, and when the display is off
-> the HPD line is low.
-> 
-> I can't say it enough times, HPD on eDP _does not mean hot plug
-> detect_. The panel is always there. HPD is really a "panel ready /
-> panel notify" signal for eDP. That's fully what its function is.
+Lukasz Majewski
 
-Too many things being called HPD. I meant to trigger drm's hpd handling, 
-which is not tied to the HPD pin for panel-edp. HPD pin is checked 
-during panel runtime resume. However... let's probably go a simpler way.
+--
 
--- 
-With best wishes
-Dmitry
+DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+Phone: (+49)-8142-66989-59 Fax: (+49)-8142-66989-80 Email: lukma@denx.de
+
+--Sig_/H22OkBcUjFxW3WCVBJL/tlR
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEgAyFJ+N6uu6+XupJAR8vZIA0zr0FAmJMDw8ACgkQAR8vZIA0
+zr1SOAf8C3tls/6WR7Qy5iXu9WsEcgIEPTbRrhygLqd0tUh/tVFB4wcJ12aZH7Lg
+MNAjl+U2OakSR/uDzz3yp6XBuyefC6yXeOOzFcTC/LR9Ej6JiOesx0iFwDC/ZcLR
+IGdZfK9NTEoz+FrlVsx3GHYjKJqlC24EhSP+K0AUi8S4OPrqXFcrVDY6Lr+gY1RR
+4twWwhdtgfk3hxHfcQwxgU4ixjaTvcTE11noapfPl9NpGGOyBeI94l+do1+tDVNH
+RZK6mqc7xUBV7bzLvfF1FUpMabDf9t9slrhCHy35QXPMd/xHUfAPQjE+Da+dAcyp
+ahfdu0NW55neEu2FtbMC8kdfmIH/3Q==
+=VhiN
+-----END PGP SIGNATURE-----
+
+--Sig_/H22OkBcUjFxW3WCVBJL/tlR--
