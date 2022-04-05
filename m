@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D61FDC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAB3CC4167D
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:06:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351806AbiDEOBq (ORCPT
+        id S1351538AbiDEOBm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:01:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44562 "EHLO
+        Tue, 5 Apr 2022 10:01:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235785AbiDEJ3t (ORCPT
+        with ESMTP id S1348015AbiDEJ3E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:29:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4B55E338C;
-        Tue,  5 Apr 2022 02:17:03 -0700 (PDT)
+        Tue, 5 Apr 2022 05:29:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABB9CDFFBD;
+        Tue,  5 Apr 2022 02:16:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 69C3BB81B75;
-        Tue,  5 Apr 2022 09:17:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C65C1C385A2;
-        Tue,  5 Apr 2022 09:17:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DF6A161645;
+        Tue,  5 Apr 2022 09:16:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6F28C385A2;
+        Tue,  5 Apr 2022 09:16:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150221;
-        bh=X6T2snebmWEcnXJQljGOMzXWVyReWVIddhiBFGO9dm4=;
+        s=korg; t=1649150167;
+        bh=sVc2u10qNzQAooyfoz6GeB4XaZSXFApolBXBzf8kePY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i6ouc6xUOfeGS8G0UOELZxRwWQrY72tmI279Ys/3c3DLrgHNDrzpYVi4aKzS8U+NQ
-         UgrJLY3OSEItDdpiZvR00c9Zalml4Cya2cJm7aflfwfnyijIHRbd7ZE3dVKpz0c+tl
-         unQnxbWQRUr53Yuq/n7tjFfir1NZ6SpWF1XQMy60=
+        b=X7zh1sNw8GnfEY3iqI0LRmLfewWjkmcKobRikpzTgaa3NqZ5CMFQ+Ej6jRr6k1qgZ
+         kMrNOEwb5tAeYaeEuO2hHcXG3F0PQlpphMCD0YgqgEVliIyYewlqrtD3xrWhBBeIvc
+         bBVTdIk7Cd3+Llh+ANMPkHwRUZHeip9hCHBvxlac=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guodong Liu <guodong.liu@mediatek.com>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH 5.16 0996/1017] pinctrl: canonical rsel resistance selection property
-Date:   Tue,  5 Apr 2022 09:31:49 +0200
-Message-Id: <20220405070423.766937642@linuxfoundation.org>
+        stable@vger.kernel.org, Hengqi Chen <hengqi.chen@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Yonghong Song <yhs@fb.com>
+Subject: [PATCH 5.16 0978/1017] bpf: Fix comment for helper bpf_current_task_under_cgroup()
+Date:   Tue,  5 Apr 2022 09:31:31 +0200
+Message-Id: <20220405070423.234308395@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,31 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guodong Liu <guodong.liu@mediatek.com>
+From: Hengqi Chen <hengqi.chen@gmail.com>
 
-commit 7966c5051fc7d52425155ab30ad568d9d97f3b02 upstream.
+commit 58617014405ad5c9f94f464444f4972dabb71ca7 upstream.
 
-Change "mediatek,rsel_resistance_in_si_unit" to "mediatek,rsel-resistance-in-si-unit"
+Fix the descriptions of the return values of helper bpf_current_task_under_cgroup().
 
-Fixes: fb34a9ae383a ("pinctrl: mediatek: support rsel feature")
-Signed-off-by: Guodong Liu <guodong.liu@mediatek.com>
-Link: https://lore.kernel.org/r/20220216032124.28067-4-guodong.liu@mediatek.com
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Fixes: c6b5fb8690fa ("bpf: add documentation for eBPF helpers (42-50)")
+Signed-off-by: Hengqi Chen <hengqi.chen@gmail.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: Yonghong Song <yhs@fb.com>
+Link: https://lore.kernel.org/bpf/20220310155335.1278783-1-hengqi.chen@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pinctrl/mediatek/pinctrl-paris.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/uapi/linux/bpf.h       |    4 ++--
+ tools/include/uapi/linux/bpf.h |    4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
---- a/drivers/pinctrl/mediatek/pinctrl-paris.c
-+++ b/drivers/pinctrl/mediatek/pinctrl-paris.c
-@@ -985,7 +985,7 @@ int mtk_paris_pinctrl_probe(struct platf
- 	hw->nbase = hw->soc->nbase_names;
- 
- 	if (of_find_property(hw->dev->of_node,
--			     "mediatek,rsel_resistance_in_si_unit", NULL))
-+			     "mediatek,rsel-resistance-in-si-unit", NULL))
- 		hw->rsel_si_unit = true;
- 	else
- 		hw->rsel_si_unit = false;
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -2284,8 +2284,8 @@ union bpf_attr {
+  * 	Return
+  * 		The return value depends on the result of the test, and can be:
+  *
+- *		* 0, if current task belongs to the cgroup2.
+- *		* 1, if current task does not belong to the cgroup2.
++ *		* 1, if current task belongs to the cgroup2.
++ *		* 0, if current task does not belong to the cgroup2.
+  * 		* A negative error code, if an error occurred.
+  *
+  * long bpf_skb_change_tail(struct sk_buff *skb, u32 len, u64 flags)
+--- a/tools/include/uapi/linux/bpf.h
++++ b/tools/include/uapi/linux/bpf.h
+@@ -2284,8 +2284,8 @@ union bpf_attr {
+  * 	Return
+  * 		The return value depends on the result of the test, and can be:
+  *
+- *		* 0, if current task belongs to the cgroup2.
+- *		* 1, if current task does not belong to the cgroup2.
++ *		* 1, if current task belongs to the cgroup2.
++ *		* 0, if current task does not belong to the cgroup2.
+  * 		* A negative error code, if an error occurred.
+  *
+  * long bpf_skb_change_tail(struct sk_buff *skb, u32 len, u64 flags)
 
 
