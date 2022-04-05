@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D447EC4167D
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:21:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E7AAC41535
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:21:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345013AbiDFADe (ORCPT
+        id S1445885AbiDFAEf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:03:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45474 "EHLO
+        Tue, 5 Apr 2022 20:04:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354921AbiDEKQf (ORCPT
+        with ESMTP id S1358073AbiDEK16 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:16:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3997820F61;
-        Tue,  5 Apr 2022 03:04:00 -0700 (PDT)
+        Tue, 5 Apr 2022 06:27:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90C3D5B3F3;
+        Tue,  5 Apr 2022 03:14:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E3437B81BC0;
-        Tue,  5 Apr 2022 10:03:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37BFBC385A2;
-        Tue,  5 Apr 2022 10:03:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 50FC4B81B7A;
+        Tue,  5 Apr 2022 10:14:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF6B4C385A0;
+        Tue,  5 Apr 2022 10:14:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153037;
-        bh=L+a2SzSVzn4E/4douuC9asR0dAPEwbbhzHSIRnZEM04=;
+        s=korg; t=1649153676;
+        bh=gcxRcMIWuy/WcYJVeWiXBtdqDfARAfyZtJzAbaM2jHw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UhuwdVodRung1S3ABMSJecGy+oqmmHrZsIIiEycyyrz0nsyIkRt7dlkCyzLwlAQ/h
-         WidNYw+rm6m6ybyUiQqIEcSLFCcgXcz4p5PDh5VenXtWVIkNOKsXbYYQ4woCqHXghd
-         Vl4oUiCCp6lwOF0lOga/yY9y71TquW8xejJC3avg=
+        b=SSR1NxH3HN4vULtxSDYZCOceATWPbovbL2wwgtApiX7eGnjHsBvD0Uwf62krnriEb
+         kVPH+qTbLutVtY+WxRT7b7rpMaEooHav9+uGGQUnSenYMGfgS2o62TjmA93eyO5Dkj
+         qBtDg4ihLSRLJW9WFMJsqq+tguVaGjBx3YmpFAuA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sasha Levin <sashal@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Bagas Sanjaya <bagasdotme@gmail.com>
-Subject: [PATCH 5.10 041/599] Documentation: add link to stable release candidate tree
-Date:   Tue,  5 Apr 2022 09:25:35 +0200
-Message-Id: <20220405070300.050094235@linuxfoundation.org>
+        stable@vger.kernel.org, Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 307/599] drm/msm/dpu: fix dp audio condition
+Date:   Tue,  5 Apr 2022 09:30:01 +0200
+Message-Id: <20220405070307.970466395@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -50,42 +52,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bagas Sanjaya <bagasdotme@gmail.com>
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-commit 587d39b260c4d090166314d64be70b1f6a26b0b5 upstream.
+[ Upstream commit 1e0505a5a7a2fea243f8e6d7e13fcde65f9e41bc ]
 
-There is also stable release candidate tree. Mention it, however with a
-warning that the tree is for testing purposes.
+DP audio enablement code which is comparing intf_type,
+DRM_MODE_ENCODER_TMDS (= 2) with DRM_MODE_CONNECTOR_DisplayPort (= 10).
+Which would never succeed. Fix it to check for DRM_MODE_ENCODER_TMDS.
 
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Sasha Levin <sashal@kernel.org>
-Cc: Jonathan Corbet <corbet@lwn.net>
-Cc: stable@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
-Link: https://lore.kernel.org/r/20220314113329.485372-5-bagasdotme@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: d13e36d7d222 ("drm/msm/dp: add audio support for Display Port on MSM")
+Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Link: https://lore.kernel.org/r/20220217035358.465904-2-dmitry.baryshkov@linaro.org
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/process/stable-kernel-rules.rst |    9 +++++++++
- 1 file changed, 9 insertions(+)
+ drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/Documentation/process/stable-kernel-rules.rst
-+++ b/Documentation/process/stable-kernel-rules.rst
-@@ -170,6 +170,15 @@ Trees
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+index f7f5c258b553..a0274fcfe9c9 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+@@ -1113,7 +1113,7 @@ static void _dpu_encoder_virt_enable_helper(struct drm_encoder *drm_enc)
+ 	}
  
- 	https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git
  
-+ - The release candidate of all stable kernel versions can be found at:
-+
-+        https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/
-+
-+   .. warning::
-+      The -stable-rc tree is a snapshot in time of the stable-queue tree and
-+      will change frequently, hence will be rebased often. It should only be
-+      used for testing purposes (e.g. to be consumed by CI systems).
-+
- 
- Review committee
- ----------------
+-	if (dpu_enc->disp_info.intf_type == DRM_MODE_CONNECTOR_DisplayPort &&
++	if (dpu_enc->disp_info.intf_type == DRM_MODE_ENCODER_TMDS &&
+ 		dpu_enc->cur_master->hw_mdptop &&
+ 		dpu_enc->cur_master->hw_mdptop->ops.intf_audio_select)
+ 		dpu_enc->cur_master->hw_mdptop->ops.intf_audio_select(
+-- 
+2.34.1
+
 
 
