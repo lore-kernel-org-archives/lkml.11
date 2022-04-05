@@ -2,116 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E068CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 02:48:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7E33C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 02:49:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230280AbiDECuW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 22:50:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48052 "EHLO
+        id S230325AbiDECvA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 22:51:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230231AbiDECuL (ORCPT
+        with ESMTP id S230248AbiDECuq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 22:50:11 -0400
-Received: from out203-205-221-235.mail.qq.com (out203-205-221-235.mail.qq.com [203.205.221.235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4849F1BB19E
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 19:27:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
-        s=s201512; t=1649125663;
-        bh=Ms67zyBdNV6hrxEaPT360CJpu7jbKuKGKMPZ/d3UlO4=;
-        h=From:To:Cc:Subject:Date;
-        b=jI8TLh0MCXxFl+aH5xm+9Npb/oEWTH5wwfnHGaJSCLKPKngwXg2JWgjUT6HRi7R4T
-         JlGmxzZ5QQGL3Rgy++coO5DMZTvgNfIE5tX7n6P+Hk0vOpwVmQ/sdUFk11FnEwjxak
-         PN94yqlKtXCb56xNUv9QHTMxDV6WheYgDOCkUIuQ=
-Received: from localhost.localdomain ([218.197.153.188])
-        by newxmesmtplogicsvrszc6.qq.com (NewEsmtp) with SMTP
-        id 6E804CEE; Tue, 05 Apr 2022 10:27:40 +0800
-X-QQ-mid: xmsmtpt1649125660t9z6hhdk4
-Message-ID: <tencent_FCEE3D8703C56F78B552FEFF070817736606@qq.com>
-X-QQ-XMAILINFO: Mv3le6n+CjtdFPofKatnGY7vR5sSKoj1wt14/b6/rM15br6fjRBKA66dToNbUg
-         te6DlAnhPi7E2r3czmflgm8TK9fEe9cBdHknXytTp5C8ZNKDWL1jWBZBw8PByB9gVnI2fxyRJW4g
-         BqGX86UnpqC8sTGz1LOOFcKZmXUVgx4hyg49mrJor142N5Xiepky2cmwrKKMO4PlBOkFMQFbkgVL
-         XTS6FhhuiPXV0GF6799VuDeyxn4TaS4j4yEkpQOc9axe/rzjwNkb7edpCmUL7QMfAcbFClQgRsOt
-         5W6T7MTE9UMch6GX2l+ksJ1VsevmrT8l70vtrwCsY7EyvvE5bUQR8lZzu6vTfBHebWRUkwxXXhub
-         OM7PJdy42pK5ph1ZeCx/pBvbNGPdrZ+9nEnfEANenQODmS7/V43hO4Cz1pJDd/l5QuuVIqgZBNlo
-         YfAUmghyrfDEMjZldsrERhjmW9mpheFmz9dA7xETg6QbuIxasIlNFHsQbNzlzR6fkKLSiqNpvsVZ
-         lScdH0Y+tmlk37NM8O5a56vjAq5h5SLKU0iIhiwidaM2/9miJFHiJYQTAcFIif1UxQlmaFxfMKPF
-         tZbqgrwKf9/PyFEeFGgKIKlYIDLccxpaMxHyOZxtjedVIaohoDOO+dJav8bM0bp1l3KfKseC07Jn
-         gK4w4qm0xHRLX4nV1ZuB7SSXV737L3YfiQUgwCo1JG3K5gGc72FjrZ2B7QUWuITCeCLmrOvyU0ho
-         yxIHUbrfSygnLF3wnPbAJ7Eke19HU2CVooNC6PnabzLGgCCj4jLt2InvpqI5P+Io/Dn1JHtIhWaP
-         1bnJoqkeMvJMpa+pKQwQcL5K5T4TvnaEKVeCvxF1jYA76jtwx0Ir+uuXyWM7BHqaDuXg8g3talPV
-         ZKec/De+HdwFWF9jIZVFvh94p4GWoD6uRxh13zEd0zGWPtnQ68UcNFNyHXURQYF1aAxBR9P+Stgs
-         5s+sy/WP4=
-From:   xkernel.wang@foxmail.com
-To:     gregkh@linuxfoundation.org
-Cc:     Larry.Finger@lwfinger.net, florian.c.schilhabel@googlemail.com,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Xiaoke Wang <xkernel.wang@foxmail.com>
-Subject: [PATCH v2 1/3] staging: rtl8712: fix potential memory leak in r8712_init_drv_sw()
-Date:   Tue,  5 Apr 2022 10:27:14 +0800
-X-OQ-MSGID: <20220405022714.10949-1-xkernel.wang@foxmail.com>
+        Mon, 4 Apr 2022 22:50:46 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B09982DE868
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 18:57:34 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id dr20so23529538ejc.6
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 18:57:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8lHhYFW2wjM+XVs/ce0McLe3nK2usueM9y5Aj9STafs=;
+        b=FA3yAVlH7wWlUJcQ3bx0/NKcDywUaZwtbXLP0LgBSGRsj2d2snpgTAmXJYtAOj88Gp
+         CYtFbUBDTDcuvuZ6eF8j53jpAsLinkhtZ/Ef7Uhmox18cVGyrIEp9+qFcKK1GR7ahTX/
+         46ca7IWLXUxpUvV8Z7tJKIFbNnbydN6hr9cY+q8rAaP9tsLoMgJ8dqWI49WpKCiDRpTE
+         PsOSqjptGmbI4aFA5uNyW/woYfgGQRFmmcyMJSCyS7fEbURD8nDhaF9Hpqc7RVgDWTbv
+         FTwkLzXuSi1Xd9T4XDBVXpZaK/RmyVsS1OQLe+XLBuvnqnOFHJVS4qvUkD342N6xOgZB
+         9o0Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8lHhYFW2wjM+XVs/ce0McLe3nK2usueM9y5Aj9STafs=;
+        b=zmhSTXfZ0+X5V3rcvlV8GVzONwjTrEHF0i48QZaYNn7uFn4LYRLCYArytbQzOUNQZe
+         AQyYhRL86ojhJVqbGV2YEBtWWdJfATlc8NNHitZFRr1GR0awSHIhnocQaJQQC2oqznv6
+         eTn9CC4CE33Kp+DZQvpiXnXNI8WuZyql1fvojBsVMgioUjMbEDkwR+xaqfBqY1IP3B11
+         XKIQevcMkgQOz1zxEsyae+9Iz559ueQYCe4hPIJB5z7qs/0qKJKhL+uEFjZhmWJDv9cz
+         WyebmJcFkFWxdFSIaTgO1A9iR1hCKO7vq7/MIs5ClWYsSKBDwyU7ytkMoNjOp8vSJZyj
+         obvA==
+X-Gm-Message-State: AOAM531yOFi5NkStuPKDxgf91y24yy1PjLhonOVy+URlaMZMVeKFJTaf
+        1QftVkLi2HtYjMsyXMnGDuyRNYTN0VfyJrL7dvgxcA==
+X-Google-Smtp-Source: ABdhPJzWg56tGOZzoo6mjBM60wGyjWHjZEk8WIMAmh9wb7iaHGuDP2UkNGGEbl/PJn03N2TZh9MDxqyZayUe0V0A/Ic=
+X-Received: by 2002:a17:907:1624:b0:6db:8caa:d71 with SMTP id
+ hb36-20020a170907162400b006db8caa0d71mr1097692ejc.723.1649123853100; Mon, 04
+ Apr 2022 18:57:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220404041101.6276-1-akihiko.odaki@gmail.com>
+In-Reply-To: <20220404041101.6276-1-akihiko.odaki@gmail.com>
+From:   Guenter Roeck <groeck@google.com>
+Date:   Mon, 4 Apr 2022 18:57:22 -0700
+Message-ID: <CABXOdTe9u_DW=NZM1-J120Gu1gibDy8SsgHP3bJwwLsE_iuLAQ@mail.gmail.com>
+Subject: Re: [PATCH] platform/chrome: cros_ec_typec: Check for EC driver
+To:     Akihiko Odaki <akihiko.odaki@gmail.com>
+Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
+        chrome-platform@lists.linux.dev,
+        Prashant Malani <pmalani@chromium.org>,
+        Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaoke Wang <xkernel.wang@foxmail.com>
+On Sun, Apr 3, 2022 at 9:11 PM Akihiko Odaki <akihiko.odaki@gmail.com> wrote:
+>
+> The EC driver may not be initialized when cros_typec_probe is called,
+> particulary when CONFIG_CROS_EC_CHARDEV=m.
+>
 
-In r8712_init_drv_sw(), some error paths do not properly release the
-resources allocated by its callees.
-This patch is to free them and provide proper error handlers for other
-error validations.
+Does this cause a crash ? If so, do you have a crash log ?
 
-Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
----
-ChangeLog:
-v1->v2 adjust the sequence of the patches in this series. This patch is
-for providing proper error handlers.
- drivers/staging/rtl8712/os_intfs.c | 18 +++++++++++++++---
- 1 file changed, 15 insertions(+), 3 deletions(-)
+Reason for asking is that I saw the following crash, and it would be
+good to know if the problem is the same.
 
-diff --git a/drivers/staging/rtl8712/os_intfs.c b/drivers/staging/rtl8712/os_intfs.c
-index 9502f6a..1f7ccec 100644
---- a/drivers/staging/rtl8712/os_intfs.c
-+++ b/drivers/staging/rtl8712/os_intfs.c
-@@ -304,10 +304,10 @@ int r8712_init_drv_sw(struct _adapter *padapter)
- 	padapter->cmdpriv.padapter = padapter;
- 	ret = r8712_init_evt_priv(&padapter->evtpriv);
- 	if (ret)
--		return ret;
-+		goto free_cmd_priv;
- 	ret = r8712_init_mlme_priv(padapter);
- 	if (ret)
--		return ret;
-+		goto free_evt_priv;
- 	_r8712_init_xmit_priv(&padapter->xmitpriv, padapter);
- 	_r8712_init_recv_priv(&padapter->recvpriv, padapter);
- 	memset((unsigned char *)&padapter->securitypriv, 0,
-@@ -316,13 +316,25 @@ int r8712_init_drv_sw(struct _adapter *padapter)
- 		    r8712_use_tkipkey_handler, 0);
- 	ret = _r8712_init_sta_priv(&padapter->stapriv);
- 	if (ret)
--		return ret;
-+		goto free_recv_priv;
- 	padapter->stapriv.padapter = padapter;
- 	r8712_init_bcmc_stainfo(padapter);
- 	r8712_init_pwrctrl_priv(padapter);
- 	mp871xinit(padapter);
- 	init_default_value(padapter);
- 	r8712_InitSwLeds(padapter);
-+	return 0;
-+
-+free_recv_priv:
-+	_r8712_free_recv_priv(&padapter->recvpriv);
-+free_xmit_priv:
-+	_free_xmit_priv(&padapter->xmitpriv);
-+free_mlme_priv:
-+	r8712_free_mlme_priv(&padapter->mlmepriv);
-+free_evt_priv:
-+	r8712_free_evt_priv(&padapter->evtpriv);
-+free_cmd_priv:
-+	r8712_free_cmd_priv(&padapter->cmdpriv);
- 	return ret;
- }
- 
--- 
+<1>[    6.651137] #PF: error_code(0x0002) - not-present page
+<6>[    6.651139] PGD 0 P4D 0
+<4>[    6.651143] Oops: 0002 [#1] PREEMPT SMP NOPTI
+<4>[    6.651146] CPU: 0 PID: 1656 Comm: udevd Tainted: G     U
+    5.4.163-17384-g99ca1c60d20c #1
+<4>[    6.651147] Hardware name: HP Lantis/Lantis, BIOS
+Google_Lantis.13606.204.0 05/26/2021
+<4>[    6.651152] RIP: 0010:mutex_lock+0x2b/0x3c
+...
+<4>[    6.651174] Call Trace:
+<4>[    6.651180]  cros_ec_cmd_xfer+0x22/0xc1
+<4>[    6.651183]  cros_ec_cmd_xfer_status+0x19/0x59
+<4>[    6.651185]  cros_ec_command+0x82/0xc3
+<4>[    6.651189]  cros_typec_probe+0x8a/0x5a2 [cros_ec_typec]
+
+> Signed-off-by: Akihiko Odaki <akihiko.odaki@gmail.com>
+
+Not sure if this is the best solution, but I don't know a better one.
+
+Reviewed-by: Guenter Roeck <groeck@chromium.org>
+
+> ---
+>  drivers/platform/chrome/cros_ec_typec.c | 3 +++
+>  1 file changed, 3 insertions(+)
+>
+> diff --git a/drivers/platform/chrome/cros_ec_typec.c b/drivers/platform/chrome/cros_ec_typec.c
+> index 4bd2752c0823..7cb2e35c4ded 100644
+> --- a/drivers/platform/chrome/cros_ec_typec.c
+> +++ b/drivers/platform/chrome/cros_ec_typec.c
+> @@ -1084,6 +1084,9 @@ static int cros_typec_probe(struct platform_device *pdev)
+>         }
+>
+>         ec_dev = dev_get_drvdata(&typec->ec->ec->dev);
+> +       if (!ec_dev)
+> +               return -EPROBE_DEFER;
+> +
+>         typec->typec_cmd_supported = cros_ec_check_features(ec_dev, EC_FEATURE_TYPEC_CMD);
+>         typec->needs_mux_ack = cros_ec_check_features(ec_dev, EC_FEATURE_TYPEC_MUX_REQUIRE_AP_ACK);
+>
+> --
+> 2.35.1
+>
