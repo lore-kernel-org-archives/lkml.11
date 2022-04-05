@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0713C3527D
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:06:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09431C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:06:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355696AbiDEOCk (ORCPT
+        id S1356446AbiDEOCz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:02:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38508 "EHLO
+        Tue, 5 Apr 2022 10:02:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234394AbiDEJae (ORCPT
+        with ESMTP id S235204AbiDEJap (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:30:34 -0400
+        Tue, 5 Apr 2022 05:30:45 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28829E41C0;
-        Tue,  5 Apr 2022 02:17:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8149BE8857;
+        Tue,  5 Apr 2022 02:17:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 913D6615E3;
-        Tue,  5 Apr 2022 09:17:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6EC3C385A3;
-        Tue,  5 Apr 2022 09:17:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1D76D6164D;
+        Tue,  5 Apr 2022 09:17:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D6F3C385A2;
+        Tue,  5 Apr 2022 09:17:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150243;
-        bh=2QZcy4ugKnChUB5AG5XphNhvFP3xwzzyQEERB//4VRQ=;
+        s=korg; t=1649150273;
+        bh=krqjyEuqmTEK/eqSad+TJT4cA0wRy1iBMIdlhuyjUWQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=e3/TLXsWHd350aB0f+ccGgNavYcEUgENiXGIMmju3NYbjD1+ezjbYByL8IwZG04Zt
-         Hqv6qQBc7M33rnhc2hY3GpnuVRj+knaHwVnn9PIUz8M8cFfiPr8D2wb1ru6HEbssSv
-         csZUFtuYFfJSpKwyrqUo6FLdRLmkoZ3JzdSxBR1w=
+        b=chZ9I0m2WqHp6DNUN9h9iUV3ikgSMAmr/56eNw0lFCPwxyOoIbggLjIDFMBZnHVsU
+         3cxRY3VOadS4lqtUMg7vHmHWngWklbMOHsQIoxXWw3XnVZguTI2430tynsWimqko1a
+         JgbJviF9tQWyQNIHkVZFLnfwwjwIfIPlOmkhJ6yo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Halil Pasic <pasic@linux.ibm.com>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Christoph Hellwig <hch@lst.de>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.16 0967/1017] Reinstate some of "swiotlb: rework "fix info leak with DMA_FROM_DEVICE""
-Date:   Tue,  5 Apr 2022 09:31:20 +0200
-Message-Id: <20220405070422.909709892@linuxfoundation.org>
+        stable@vger.kernel.org, Matthew Wilcox <willy@infradead.org>,
+        Kees Cook <keescook@chromium.org>,
+        "Eric W. Biederman" <ebiederm@xmission.com>
+Subject: [PATCH 5.16 1017/1017] coredump: Use the vma snapshot in fill_files_note
+Date:   Tue,  5 Apr 2022 09:32:10 +0200
+Message-Id: <20220405070424.382702506@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,88 +50,176 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: Eric W. Biederman <ebiederm@xmission.com>
 
-commit 901c7280ca0d5e2b4a8929fbe0bfb007ac2a6544 upstream.
+commit 390031c942116d4733310f0684beb8db19885fe6 upstream.
 
-Halil Pasic points out [1] that the full revert of that commit (revert
-in bddac7c1e02b), and that a partial revert that only reverts the
-problematic case, but still keeps some of the cleanups is probably
-better.  ￼
+Matthew Wilcox reported that there is a missing mmap_lock in
+file_files_note that could possibly lead to a user after free.
 
-And that partial revert [2] had already been verified by Oleksandr
-Natalenko to also fix the issue, I had just missed that in the long
-discussion.
+Solve this by using the existing vma snapshot for consistency
+and to avoid the need to take the mmap_lock anywhere in the
+coredump code except for dump_vma_snapshot.
 
-So let's reinstate the cleanups from commit aa6f8dcbab47 ("swiotlb:
-rework "fix info leak with DMA_FROM_DEVICE""), and effectively only
-revert the part that caused problems.
+Update the dump_vma_snapshot to capture vm_pgoff and vm_file
+that are neeeded by fill_files_note.
 
-Link: https://lore.kernel.org/all/20220328013731.017ae3e3.pasic@linux.ibm.com/ [1]
-Link: https://lore.kernel.org/all/20220324055732.GB12078@lst.de/ [2]
-Link: https://lore.kernel.org/all/4386660.LvFx2qVVIh@natalenko.name/ [3]
-Suggested-by: Halil Pasic <pasic@linux.ibm.com>
-Tested-by: Oleksandr Natalenko <oleksandr@natalenko.name>
-Cc: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Add free_vma_snapshot to free the captured values of vm_file.
+
+Reported-by: Matthew Wilcox <willy@infradead.org>
+Link: https://lkml.kernel.org/r/20220131153740.2396974-1-willy@infradead.org
+Cc: stable@vger.kernel.org
+Fixes: a07279c9a8cd ("binfmt_elf, binfmt_elf_fdpic: use a VMA list snapshot")
+Fixes: 2aa362c49c31 ("coredump: extend core dump note section to contain file names of mapped files")
+Reviewed-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/core-api/dma-attributes.rst |    8 --------
- include/linux/dma-mapping.h               |    8 --------
- kernel/dma/swiotlb.c                      |   12 ++++++++----
- 3 files changed, 8 insertions(+), 20 deletions(-)
+ fs/binfmt_elf.c          |   24 ++++++++++++------------
+ fs/coredump.c            |   22 +++++++++++++++++++++-
+ include/linux/coredump.h |    2 ++
+ 3 files changed, 35 insertions(+), 13 deletions(-)
 
---- a/Documentation/core-api/dma-attributes.rst
-+++ b/Documentation/core-api/dma-attributes.rst
-@@ -130,11 +130,3 @@ accesses to DMA buffers in both privileg
- subsystem that the buffer is fully accessible at the elevated privilege
- level (and ideally inaccessible or at least read-only at the
- lesser-privileged levels).
--
--DMA_ATTR_OVERWRITE
--------------------
--
--This is a hint to the DMA-mapping subsystem that the device is expected to
--overwrite the entire mapped size, thus the caller does not require any of the
--previous buffer contents to be preserved. This allows bounce-buffering
--implementations to optimise DMA_FROM_DEVICE transfers.
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -62,14 +62,6 @@
- #define DMA_ATTR_PRIVILEGED		(1UL << 9)
+--- a/fs/binfmt_elf.c
++++ b/fs/binfmt_elf.c
+@@ -1642,17 +1642,16 @@ static void fill_siginfo_note(struct mem
+  *   long file_ofs
+  * followed by COUNT filenames in ASCII: "FILE1" NUL "FILE2" NUL...
+  */
+-static int fill_files_note(struct memelfnote *note)
++static int fill_files_note(struct memelfnote *note, struct coredump_params *cprm)
+ {
+-	struct mm_struct *mm = current->mm;
+-	struct vm_area_struct *vma;
+ 	unsigned count, size, names_ofs, remaining, n;
+ 	user_long_t *data;
+ 	user_long_t *start_end_ofs;
+ 	char *name_base, *name_curpos;
++	int i;
  
- /*
-- * This is a hint to the DMA-mapping subsystem that the device is expected
-- * to overwrite the entire mapped size, thus the caller does not require any
-- * of the previous buffer contents to be preserved. This allows
-- * bounce-buffering implementations to optimise DMA_FROM_DEVICE transfers.
-- */
--#define DMA_ATTR_OVERWRITE		(1UL << 10)
--
--/*
-  * A dma_addr_t can hold any valid DMA or bus address for the platform.  It can
-  * be given to a device to use as a DMA source or target.  It is specific to a
-  * given device and there may be a translation between the CPU physical address
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -581,10 +581,14 @@ phys_addr_t swiotlb_tbl_map_single(struc
- 	for (i = 0; i < nr_slots(alloc_size + offset); i++)
- 		mem->slots[index + i].orig_addr = slot_addr(orig_addr, i);
- 	tlb_addr = slot_addr(mem->start, index) + offset;
--	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
--	    (!(attrs & DMA_ATTR_OVERWRITE) || dir == DMA_TO_DEVICE ||
--	    dir == DMA_BIDIRECTIONAL))
--		swiotlb_bounce(dev, tlb_addr, mapping_size, DMA_TO_DEVICE);
-+	/*
-+	 * When dir == DMA_FROM_DEVICE we could omit the copy from the orig
-+	 * to the tlb buffer, if we knew for sure the device will
-+	 * overwirte the entire current content. But we don't. Thus
-+	 * unconditional bounce may prevent leaking swiotlb content (i.e.
-+	 * kernel memory) to user-space.
-+	 */
-+	swiotlb_bounce(dev, tlb_addr, mapping_size, DMA_TO_DEVICE);
- 	return tlb_addr;
+ 	/* *Estimated* file count and total data size needed */
+-	count = mm->map_count;
++	count = cprm->vma_count;
+ 	if (count > UINT_MAX / 64)
+ 		return -EINVAL;
+ 	size = count * 64;
+@@ -1674,11 +1673,12 @@ static int fill_files_note(struct memelf
+ 	name_base = name_curpos = ((char *)data) + names_ofs;
+ 	remaining = size - names_ofs;
+ 	count = 0;
+-	for (vma = mm->mmap; vma != NULL; vma = vma->vm_next) {
++	for (i = 0; i < cprm->vma_count; i++) {
++		struct core_vma_metadata *m = &cprm->vma_meta[i];
+ 		struct file *file;
+ 		const char *filename;
+ 
+-		file = vma->vm_file;
++		file = m->file;
+ 		if (!file)
+ 			continue;
+ 		filename = file_path(file, name_curpos, remaining);
+@@ -1698,9 +1698,9 @@ static int fill_files_note(struct memelf
+ 		memmove(name_curpos, filename, n);
+ 		name_curpos += n;
+ 
+-		*start_end_ofs++ = vma->vm_start;
+-		*start_end_ofs++ = vma->vm_end;
+-		*start_end_ofs++ = vma->vm_pgoff;
++		*start_end_ofs++ = m->start;
++		*start_end_ofs++ = m->end;
++		*start_end_ofs++ = m->pgoff;
+ 		count++;
+ 	}
+ 
+@@ -1711,7 +1711,7 @@ static int fill_files_note(struct memelf
+ 	 * Count usually is less than mm->map_count,
+ 	 * we need to move filenames down.
+ 	 */
+-	n = mm->map_count - count;
++	n = cprm->vma_count - count;
+ 	if (n != 0) {
+ 		unsigned shift_bytes = n * 3 * sizeof(data[0]);
+ 		memmove(name_base - shift_bytes, name_base,
+@@ -1910,7 +1910,7 @@ static int fill_note_info(struct elfhdr
+ 	fill_auxv_note(&info->auxv, current->mm);
+ 	info->size += notesize(&info->auxv);
+ 
+-	if (fill_files_note(&info->files) == 0)
++	if (fill_files_note(&info->files, cprm) == 0)
+ 		info->size += notesize(&info->files);
+ 
+ 	return 1;
+@@ -2099,7 +2099,7 @@ static int fill_note_info(struct elfhdr
+ 	fill_auxv_note(info->notes + 3, current->mm);
+ 	info->numnote = 4;
+ 
+-	if (fill_files_note(info->notes + info->numnote) == 0) {
++	if (fill_files_note(info->notes + info->numnote, cprm) == 0) {
+ 		info->notes_files = info->notes + info->numnote;
+ 		info->numnote++;
+ 	}
+--- a/fs/coredump.c
++++ b/fs/coredump.c
+@@ -54,6 +54,7 @@
+ #include <trace/events/sched.h>
+ 
+ static bool dump_vma_snapshot(struct coredump_params *cprm);
++static void free_vma_snapshot(struct coredump_params *cprm);
+ 
+ int core_uses_pid;
+ unsigned int core_pipe_limit;
+@@ -768,7 +769,7 @@ void do_coredump(const kernel_siginfo_t
+ 			dump_emit(&cprm, "", 1);
+ 		}
+ 		file_end_write(cprm.file);
+-		kvfree(cprm.vma_meta);
++		free_vma_snapshot(&cprm);
+ 	}
+ 	if (ispipe && core_pipe_limit)
+ 		wait_for_dump_helpers(cprm.file);
+@@ -1045,6 +1046,20 @@ static struct vm_area_struct *next_vma(s
+ 	return gate_vma;
  }
  
++static void free_vma_snapshot(struct coredump_params *cprm)
++{
++	if (cprm->vma_meta) {
++		int i;
++		for (i = 0; i < cprm->vma_count; i++) {
++			struct file *file = cprm->vma_meta[i].file;
++			if (file)
++				fput(file);
++		}
++		kvfree(cprm->vma_meta);
++		cprm->vma_meta = NULL;
++	}
++}
++
+ /*
+  * Under the mmap_lock, take a snapshot of relevant information about the task's
+  * VMAs.
+@@ -1081,6 +1096,11 @@ static bool dump_vma_snapshot(struct cor
+ 		m->end = vma->vm_end;
+ 		m->flags = vma->vm_flags;
+ 		m->dump_size = vma_dump_size(vma, cprm->mm_flags);
++		m->pgoff = vma->vm_pgoff;
++
++		m->file = vma->vm_file;
++		if (m->file)
++			get_file(m->file);
+ 	}
+ 
+ 	mmap_write_unlock(mm);
+--- a/include/linux/coredump.h
++++ b/include/linux/coredump.h
+@@ -12,6 +12,8 @@ struct core_vma_metadata {
+ 	unsigned long start, end;
+ 	unsigned long flags;
+ 	unsigned long dump_size;
++	unsigned long pgoff;
++	struct file   *file;
+ };
+ 
+ extern int core_uses_pid;
 
 
