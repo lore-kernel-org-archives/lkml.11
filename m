@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD442C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:14:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66077C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:14:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240917AbiDEPHg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:07:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50326 "EHLO
+        id S242145AbiDEPIV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 11:08:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345336AbiDEJnX (ORCPT
+        with ESMTP id S1345517AbiDEJnf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:43:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F116C12D1;
-        Tue,  5 Apr 2022 02:28:39 -0700 (PDT)
+        Tue, 5 Apr 2022 05:43:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E26622BD6;
+        Tue,  5 Apr 2022 02:29:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CB06BB81C9A;
-        Tue,  5 Apr 2022 09:28:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CF86C385A2;
-        Tue,  5 Apr 2022 09:28:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9F8AA61680;
+        Tue,  5 Apr 2022 09:29:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2050C385A0;
+        Tue,  5 Apr 2022 09:29:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150916;
-        bh=PCrH6URjmuB5guwZhaskUFJLccnRisVbZQOv3UYszQI=;
+        s=korg; t=1649150941;
+        bh=Q7MvClBhlEPOEEFQUuUUdJNsl8TmwWGs5KNh/TyUOXI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yFMvc/yd3RUcll2HDfZC66inwjfkdJ/HYnGKP0F6GrjwB6Psr1AoWTQN//wuJtcNv
-         JXs47WFpLTsBw3fsrcd1TXkwAa60F+SPVkjUYK1bKtyGD8AaHvDuCLFimL0EzOXY/K
-         8zJpsSHLzfUwvpPlGrQP6rUHGJDpICpStLJXpsIw=
+        b=xuF63gJJ4iZeyrqDUfW8uLgMCpwE/PLL1qTSHcZ1tpVswcziPrqHfdbCpHEGJeXbk
+         zPASrA80IWlGE8lQfF4AwDwRkhzl1ux56uB/Xp/mXoR6XM9UdJZUw0cBXMBBoKQZgO
+         BSfpxUCWlC4zAiL2+PRhXsa0LgFeLNxq6/is86CY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nicolai Stange <nstange@suse.de>,
-        Petr Vorel <pvorel@suse.cz>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        stable@vger.kernel.org, Richard Guy Briggs <rgb@redhat.com>,
+        Paul Moore <paul@paul-moore.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 227/913] crypto: vmx - add missing dependencies
-Date:   Tue,  5 Apr 2022 09:21:29 +0200
-Message-Id: <20220405070346.661609321@linuxfoundation.org>
+Subject: [PATCH 5.15 209/913] audit: log AUDIT_TIME_* records only from rules
+Date:   Tue,  5 Apr 2022 09:21:11 +0200
+Message-Id: <20220405070346.123387723@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -50,60 +49,165 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Petr Vorel <pvorel@suse.cz>
+From: Richard Guy Briggs <rgb@redhat.com>
 
-[ Upstream commit 647d41d3952d726d4ae49e853a9eff68ebad3b3f ]
+[ Upstream commit 272ceeaea355214b301530e262a0df8600bfca95 ]
 
-vmx-crypto module depends on CRYPTO_AES, CRYPTO_CBC, CRYPTO_CTR or
-CRYPTO_XTS, thus add them.
+AUDIT_TIME_* events are generated when there are syscall rules present
+that are not related to time keeping.  This will produce noisy log
+entries that could flood the logs and hide events we really care about.
 
-These dependencies are likely to be enabled, but if
-CRYPTO_DEV_VMX=y && !CRYPTO_MANAGER_DISABLE_TESTS
-and either of CRYPTO_AES, CRYPTO_CBC, CRYPTO_CTR or CRYPTO_XTS is built
-as module or disabled, alg_test() from crypto/testmgr.c complains during
-boot about failing to allocate the generic fallback implementations
-(2 == ENOENT):
+Rather than immediately produce the AUDIT_TIME_* records, store the data
+in the context and log it at syscall exit time respecting the filter
+rules.
 
-[    0.540953] Failed to allocate xts(aes) fallback: -2
-[    0.541014] alg: skcipher: failed to allocate transform for p8_aes_xts: -2
-[    0.541120] alg: self-tests for p8_aes_xts (xts(aes)) failed (rc=-2)
-[    0.544440] Failed to allocate ctr(aes) fallback: -2
-[    0.544497] alg: skcipher: failed to allocate transform for p8_aes_ctr: -2
-[    0.544603] alg: self-tests for p8_aes_ctr (ctr(aes)) failed (rc=-2)
-[    0.547992] Failed to allocate cbc(aes) fallback: -2
-[    0.548052] alg: skcipher: failed to allocate transform for p8_aes_cbc: -2
-[    0.548156] alg: self-tests for p8_aes_cbc (cbc(aes)) failed (rc=-2)
-[    0.550745] Failed to allocate transformation for 'aes': -2
-[    0.550801] alg: cipher: Failed to load transform for p8_aes: -2
-[    0.550892] alg: self-tests for p8_aes (aes) failed (rc=-2)
+Note: This eats the audit_buffer, unlike any others in show_special().
 
-Fixes: c07f5d3da643 ("crypto: vmx - Adding support for XTS")
-Fixes: d2e3ae6f3aba ("crypto: vmx - Enabling VMX module for PPC64")
+Please see https://bugzilla.redhat.com/show_bug.cgi?id=1991919
 
-Suggested-by: Nicolai Stange <nstange@suse.de>
-Signed-off-by: Petr Vorel <pvorel@suse.cz>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Fixes: 7e8eda734d30 ("ntp: Audit NTP parameters adjustment")
+Fixes: 2d87a0674bd6 ("timekeeping: Audit clock adjustments")
+Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
+[PM: fixed style/whitespace issues]
+Signed-off-by: Paul Moore <paul@paul-moore.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/crypto/vmx/Kconfig | 4 ++++
- 1 file changed, 4 insertions(+)
+ kernel/audit.h   |  4 +++
+ kernel/auditsc.c | 87 +++++++++++++++++++++++++++++++++++++-----------
+ 2 files changed, 71 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/crypto/vmx/Kconfig b/drivers/crypto/vmx/Kconfig
-index c85fab7ef0bd..b2c28b87f14b 100644
---- a/drivers/crypto/vmx/Kconfig
-+++ b/drivers/crypto/vmx/Kconfig
-@@ -2,7 +2,11 @@
- config CRYPTO_DEV_VMX_ENCRYPT
- 	tristate "Encryption acceleration support on P8 CPU"
- 	depends on CRYPTO_DEV_VMX
-+	select CRYPTO_AES
-+	select CRYPTO_CBC
-+	select CRYPTO_CTR
- 	select CRYPTO_GHASH
-+	select CRYPTO_XTS
- 	default m
- 	help
- 	  Support for VMX cryptographic acceleration instructions on Power8 CPU.
+diff --git a/kernel/audit.h b/kernel/audit.h
+index d6a2c899a8db..b2ef4c0d3ec0 100644
+--- a/kernel/audit.h
++++ b/kernel/audit.h
+@@ -194,6 +194,10 @@ struct audit_context {
+ 		struct {
+ 			char			*name;
+ 		} module;
++		struct {
++			struct audit_ntp_data	ntp_data;
++			struct timespec64	tk_injoffset;
++		} time;
+ 	};
+ 	int fds[2];
+ 	struct audit_proctitle proctitle;
+diff --git a/kernel/auditsc.c b/kernel/auditsc.c
+index b1cb1dbf7417..2f036bab3c28 100644
+--- a/kernel/auditsc.c
++++ b/kernel/auditsc.c
+@@ -1219,6 +1219,53 @@ static void audit_log_fcaps(struct audit_buffer *ab, struct audit_names *name)
+ 			 from_kuid(&init_user_ns, name->fcap.rootid));
+ }
+ 
++static void audit_log_time(struct audit_context *context, struct audit_buffer **ab)
++{
++	const struct audit_ntp_data *ntp = &context->time.ntp_data;
++	const struct timespec64 *tk = &context->time.tk_injoffset;
++	static const char * const ntp_name[] = {
++		"offset",
++		"freq",
++		"status",
++		"tai",
++		"tick",
++		"adjust",
++	};
++	int type;
++
++	if (context->type == AUDIT_TIME_ADJNTPVAL) {
++		for (type = 0; type < AUDIT_NTP_NVALS; type++) {
++			if (ntp->vals[type].newval != ntp->vals[type].oldval) {
++				if (!*ab) {
++					*ab = audit_log_start(context,
++							GFP_KERNEL,
++							AUDIT_TIME_ADJNTPVAL);
++					if (!*ab)
++						return;
++				}
++				audit_log_format(*ab, "op=%s old=%lli new=%lli",
++						 ntp_name[type],
++						 ntp->vals[type].oldval,
++						 ntp->vals[type].newval);
++				audit_log_end(*ab);
++				*ab = NULL;
++			}
++		}
++	}
++	if (tk->tv_sec != 0 || tk->tv_nsec != 0) {
++		if (!*ab) {
++			*ab = audit_log_start(context, GFP_KERNEL,
++					      AUDIT_TIME_INJOFFSET);
++			if (!*ab)
++				return;
++		}
++		audit_log_format(*ab, "sec=%lli nsec=%li",
++				 (long long)tk->tv_sec, tk->tv_nsec);
++		audit_log_end(*ab);
++		*ab = NULL;
++	}
++}
++
+ static void show_special(struct audit_context *context, int *call_panic)
+ {
+ 	struct audit_buffer *ab;
+@@ -1327,6 +1374,11 @@ static void show_special(struct audit_context *context, int *call_panic)
+ 			audit_log_format(ab, "(null)");
+ 
+ 		break;
++	case AUDIT_TIME_ADJNTPVAL:
++	case AUDIT_TIME_INJOFFSET:
++		/* this call deviates from the rest, eating the buffer */
++		audit_log_time(context, &ab);
++		break;
+ 	}
+ 	audit_log_end(ab);
+ }
+@@ -2564,31 +2616,26 @@ void __audit_fanotify(unsigned int response)
+ 
+ void __audit_tk_injoffset(struct timespec64 offset)
+ {
+-	audit_log(audit_context(), GFP_KERNEL, AUDIT_TIME_INJOFFSET,
+-		  "sec=%lli nsec=%li",
+-		  (long long)offset.tv_sec, offset.tv_nsec);
+-}
+-
+-static void audit_log_ntp_val(const struct audit_ntp_data *ad,
+-			      const char *op, enum audit_ntp_type type)
+-{
+-	const struct audit_ntp_val *val = &ad->vals[type];
+-
+-	if (val->newval == val->oldval)
+-		return;
++	struct audit_context *context = audit_context();
+ 
+-	audit_log(audit_context(), GFP_KERNEL, AUDIT_TIME_ADJNTPVAL,
+-		  "op=%s old=%lli new=%lli", op, val->oldval, val->newval);
++	/* only set type if not already set by NTP */
++	if (!context->type)
++		context->type = AUDIT_TIME_INJOFFSET;
++	memcpy(&context->time.tk_injoffset, &offset, sizeof(offset));
+ }
+ 
+ void __audit_ntp_log(const struct audit_ntp_data *ad)
+ {
+-	audit_log_ntp_val(ad, "offset",	AUDIT_NTP_OFFSET);
+-	audit_log_ntp_val(ad, "freq",	AUDIT_NTP_FREQ);
+-	audit_log_ntp_val(ad, "status",	AUDIT_NTP_STATUS);
+-	audit_log_ntp_val(ad, "tai",	AUDIT_NTP_TAI);
+-	audit_log_ntp_val(ad, "tick",	AUDIT_NTP_TICK);
+-	audit_log_ntp_val(ad, "adjust",	AUDIT_NTP_ADJUST);
++	struct audit_context *context = audit_context();
++	int type;
++
++	for (type = 0; type < AUDIT_NTP_NVALS; type++)
++		if (ad->vals[type].newval != ad->vals[type].oldval) {
++			/* unconditionally set type, overwriting TK */
++			context->type = AUDIT_TIME_ADJNTPVAL;
++			memcpy(&context->time.ntp_data, ad, sizeof(*ad));
++			break;
++		}
+ }
+ 
+ void __audit_log_nfcfg(const char *name, u8 af, unsigned int nentries,
 -- 
 2.34.1
 
