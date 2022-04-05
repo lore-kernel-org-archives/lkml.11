@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7458AC4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC656C35273
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:25:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1574902AbiDEXBt (ORCPT
+        id S1574942AbiDEXCA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:01:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39130 "EHLO
+        Tue, 5 Apr 2022 19:02:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349059AbiDEJtD (ORCPT
+        with ESMTP id S1348638AbiDEJsK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C3B3954B5;
-        Tue,  5 Apr 2022 02:39:32 -0700 (PDT)
+        Tue, 5 Apr 2022 05:48:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4B9633E82;
+        Tue,  5 Apr 2022 02:34:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4FF67B81C14;
-        Tue,  5 Apr 2022 09:39:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0219C385A1;
-        Tue,  5 Apr 2022 09:39:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6378E616D9;
+        Tue,  5 Apr 2022 09:34:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 714E6C385A6;
+        Tue,  5 Apr 2022 09:34:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151570;
-        bh=vFLGFY6Y2m6hnjaomhJJXAPRRbtKFLzx3D6TYfGQzDk=;
+        s=korg; t=1649151259;
+        bh=ybT7+5zSo63r+ZXukOXUPT5DtGFQtgkMrq0vaM9uPB4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=D96o7GnKjnwvDpZSGlVfgfcFJrkTtnIh1nsF0sSS9INwO4bnnTelg/SRdFiVFDGS7
-         I0IxHWkr/+qhFGa/bR6E3ReWwYiO9VWC2IHzPwsgzJ/LrfuCZ1wpCJgoqwHR4yOYev
-         olKmbx3uRyUgrrK4k6j8f1G/NnPoOLgnC0J5igS8=
+        b=D9JmSUeXplX152/DUmqLjeM/oA7SDUMhAlejZlFi4R4eLhoQbOuXSx5UNes9La8KM
+         biOccbbP/pne0S7cHA2KkyQqGSWbJkBXXGrI1w/uT+PBHp5bv5ds3M+W7afH+Ergst
+         HF7kcQJHAQKWyuoy13fnaSVzXz38LpYyId3B3WkE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 464/913] iwlwifi: mvm: align locking in D3 test debugfs
-Date:   Tue,  5 Apr 2022 09:25:26 +0200
-Message-Id: <20220405070353.756715944@linuxfoundation.org>
+Subject: [PATCH 5.15 351/913] ASoC: fsi: Add check for clk_enable
+Date:   Tue,  5 Apr 2022 09:23:33 +0200
+Message-Id: <20220405070350.367087936@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -50,51 +50,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 59e1221f470c2e5d2f2d4c95153edd577a7071c5 ]
+[ Upstream commit 405afed8a728f23cfaa02f75bbc8bdd6b7322123 ]
 
-Since commit a05829a7222e ("cfg80211: avoid holding the RTNL when
-calling the driver") we're not only holding the RTNL when going
-in and out of suspend, but also the wiphy->mtx. Add that to the
-D3 test debugfs in iwlwifi since it's required for various calls
-to mac80211.
+As the potential failure of the clk_enable(),
+it should be better to check it and return error
+if fails.
 
-Fixes: a05829a7222e ("cfg80211: avoid holding the RTNL when calling the driver")
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Fixes: a05829a7222e ("cfg80211: avoid holding the RTNL when calling the driver")
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20220129105618.fcec0204e162.Ib73bf787ab4d83581de20eb89b1f8dbfcaaad0e3@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Fixes: ab6f6d85210c ("ASoC: fsi: add master clock control functions")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Link: https://lore.kernel.org/r/20220302062844.46869-1-jiasheng@iscas.ac.cn
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/mvm/d3.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ sound/soc/sh/fsi.c | 19 ++++++++++++++++---
+ 1 file changed, 16 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/d3.c b/drivers/net/wireless/intel/iwlwifi/mvm/d3.c
-index d3013a51a509..00ca17f3b263 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/d3.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/d3.c
-@@ -2499,7 +2499,9 @@ static int iwl_mvm_d3_test_open(struct inode *inode, struct file *file)
+diff --git a/sound/soc/sh/fsi.c b/sound/soc/sh/fsi.c
+index cdf3b7f69ba7..e9a1eb6bdf66 100644
+--- a/sound/soc/sh/fsi.c
++++ b/sound/soc/sh/fsi.c
+@@ -816,14 +816,27 @@ static int fsi_clk_enable(struct device *dev,
+ 			return ret;
+ 		}
  
- 	/* start pseudo D3 */
- 	rtnl_lock();
-+	wiphy_lock(mvm->hw->wiphy);
- 	err = __iwl_mvm_suspend(mvm->hw, mvm->hw->wiphy->wowlan_config, true);
-+	wiphy_unlock(mvm->hw->wiphy);
- 	rtnl_unlock();
- 	if (err > 0)
- 		err = -EINVAL;
-@@ -2555,7 +2557,9 @@ static int iwl_mvm_d3_test_release(struct inode *inode, struct file *file)
- 	iwl_fw_dbg_read_d3_debug_data(&mvm->fwrt);
+-		clk_enable(clock->xck);
+-		clk_enable(clock->ick);
+-		clk_enable(clock->div);
++		ret = clk_enable(clock->xck);
++		if (ret)
++			goto err;
++		ret = clk_enable(clock->ick);
++		if (ret)
++			goto disable_xck;
++		ret = clk_enable(clock->div);
++		if (ret)
++			goto disable_ick;
  
- 	rtnl_lock();
-+	wiphy_lock(mvm->hw->wiphy);
- 	__iwl_mvm_resume(mvm, true);
-+	wiphy_unlock(mvm->hw->wiphy);
- 	rtnl_unlock();
+ 		clock->count++;
+ 	}
  
- 	iwl_mvm_resume_tcm(mvm);
+ 	return ret;
++
++disable_ick:
++	clk_disable(clock->ick);
++disable_xck:
++	clk_disable(clock->xck);
++err:
++	return ret;
+ }
+ 
+ static int fsi_clk_disable(struct device *dev,
 -- 
 2.34.1
 
