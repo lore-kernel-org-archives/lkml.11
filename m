@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63446C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79189C4167B
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:34:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244337AbiDEUd3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:33:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50018 "EHLO
+        id S244967AbiDEUdl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 16:33:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349377AbiDEKun (ORCPT
+        with ESMTP id S1348933AbiDEJst (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:50:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E552EA76E4;
-        Tue,  5 Apr 2022 03:27:48 -0700 (PDT)
+        Tue, 5 Apr 2022 05:48:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91AFAEE4F5;
+        Tue,  5 Apr 2022 02:37:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ABF40B81C8A;
-        Tue,  5 Apr 2022 10:27:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20EA3C385A0;
-        Tue,  5 Apr 2022 10:27:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 43659B818F3;
+        Tue,  5 Apr 2022 09:37:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9262CC385A3;
+        Tue,  5 Apr 2022 09:37:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154465;
-        bh=t5Kjxi8BKChE7cLLOSmUC5fA8BDDzn2f270Eb+wM/pU=;
+        s=korg; t=1649151471;
+        bh=XpmsAD4xhEgbOuUs8TZvtQ1ch/Pwvn1tByAyywoL0Bw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UGKH5SdhPLpMs1wykGrE9K2mXJEZ8QTmPcfb+atStJnbvXVoqsWtHXkxppbXqay2r
-         zyXjn5YpeORfLeTWAgqe9eUZ9+8YXxdiQLMquW5xeoD9RH/3HSIeghMVUcrXak/+4H
-         kMlhq5nF3HthuSethL0tRlGWTY8ocxFUvhyQVcU0=
+        b=llurUcY3JuG+d+6uOFa2E6eimRiJ1yXToABnRyXKlAlWRlz18so0OJB4CJdvma227
+         UL6DdpPsXesKPVM8QSRZCk0169fcyS6EeG+u+4gtCgfbmxCfdVcSfmfJQOJeJ7NQ5y
+         2W0UyCv+pSB7hdB/jlL7yMhdvb5MregrJvCVzCQg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuldeep Singh <singh.kuldeep87k@gmail.com>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH 5.10 588/599] ARM: dts: spear13xx: Update SPI dma properties
-Date:   Tue,  5 Apr 2022 09:34:42 +0200
-Message-Id: <20220405070316.339291523@linuxfoundation.org>
+        stable@vger.kernel.org, Miroslav Lichvar <mlichvar@redhat.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Yangbo Lu <yangbo.lu@nxp.com>,
+        Yang Yingliang <yangyingliang@huawei.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 428/913] ptp: unregister virtual clocks when unregistering physical clock.
+Date:   Tue,  5 Apr 2022 09:24:50 +0200
+Message-Id: <20220405070352.674284738@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,37 +52,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuldeep Singh <singh.kuldeep87k@gmail.com>
+From: Miroslav Lichvar <mlichvar@redhat.com>
 
-commit 31d3687d6017c7ce6061695361598d9cda70807a upstream.
+[ Upstream commit bfcbb76b0f595ea9ede9f7a218086fef85242f10 ]
 
-Reorder dmas and dma-names property for spi controller node to make it
-compliant with bindings.
+When unregistering a physical clock which has some virtual clocks,
+unregister the virtual clocks with it.
 
-Fixes: 6e8887f60f60 ("ARM: SPEAr13xx: Pass generic DW DMAC platform data from DT")
-Signed-off-by: Kuldeep Singh <singh.kuldeep87k@gmail.com>
-Acked-by: Viresh Kumar <viresh.kumar@linaro.org>
-Link: https://lore.kernel.org/r/20220326042313.97862-2-singh.kuldeep87k@gmail.com'
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+This fixes the following oops, which can be triggered by unloading
+a driver providing a PTP clock when it has enabled virtual clocks:
+
+BUG: unable to handle page fault for address: ffffffffc04fc4d8
+Oops: 0000 [#1] PREEMPT SMP NOPTI
+RIP: 0010:ptp_vclock_read+0x31/0xb0
+Call Trace:
+ timecounter_read+0xf/0x50
+ ptp_vclock_refresh+0x2c/0x50
+ ? ptp_clock_release+0x40/0x40
+ ptp_aux_kworker+0x17/0x30
+ kthread_worker_fn+0x9b/0x240
+ ? kthread_should_park+0x30/0x30
+ kthread+0xe2/0x110
+ ? kthread_complete_and_exit+0x20/0x20
+ ret_from_fork+0x22/0x30
+
+Fixes: 73f37068d540 ("ptp: support ptp physical/virtual clocks conversion")
+Signed-off-by: Miroslav Lichvar <mlichvar@redhat.com>
+Acked-by: Richard Cochran <richardcochran@gmail.com>
+Cc: Yangbo Lu <yangbo.lu@nxp.com>
+Cc: Yang Yingliang <yangyingliang@huawei.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/spear13xx.dtsi |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/ptp/ptp_clock.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
---- a/arch/arm/boot/dts/spear13xx.dtsi
-+++ b/arch/arm/boot/dts/spear13xx.dtsi
-@@ -284,9 +284,9 @@
- 				#size-cells = <0>;
- 				interrupts = <0 31 0x4>;
- 				status = "disabled";
--				dmas = <&dwdma0 4 0 0>,
--					<&dwdma0 5 0 0>;
--				dma-names = "tx", "rx";
-+				dmas = <&dwdma0 5 0 0>,
-+					<&dwdma0 4 0 0>;
-+				dma-names = "rx", "tx";
- 			};
+diff --git a/drivers/ptp/ptp_clock.c b/drivers/ptp/ptp_clock.c
+index f9b2d66b0443..8a652a367625 100644
+--- a/drivers/ptp/ptp_clock.c
++++ b/drivers/ptp/ptp_clock.c
+@@ -317,11 +317,18 @@ struct ptp_clock *ptp_clock_register(struct ptp_clock_info *info,
+ }
+ EXPORT_SYMBOL(ptp_clock_register);
  
- 			rtc@e0580000 {
++static int unregister_vclock(struct device *dev, void *data)
++{
++	struct ptp_clock *ptp = dev_get_drvdata(dev);
++
++	ptp_vclock_unregister(info_to_vclock(ptp->info));
++	return 0;
++}
++
+ int ptp_clock_unregister(struct ptp_clock *ptp)
+ {
+ 	if (ptp_vclock_in_use(ptp)) {
+-		pr_err("ptp: virtual clock in use\n");
+-		return -EBUSY;
++		device_for_each_child(&ptp->dev, NULL, unregister_vclock);
+ 	}
+ 
+ 	ptp->defunct = 1;
+-- 
+2.34.1
+
 
 
