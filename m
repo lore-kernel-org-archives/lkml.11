@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DCFEC352A8
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:10:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9357C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:10:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349601AbiDEUCH (ORCPT
+        id S1350748AbiDEUC3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:02:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43332 "EHLO
+        Tue, 5 Apr 2022 16:02:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345179AbiDEJst (ORCPT
+        with ESMTP id S1348907AbiDEJsp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:48:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B32EEE4F4;
-        Tue,  5 Apr 2022 02:37:50 -0700 (PDT)
+        Tue, 5 Apr 2022 05:48:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92255ECC6B;
+        Tue,  5 Apr 2022 02:37:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C946D6164D;
-        Tue,  5 Apr 2022 09:37:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4AFEC385A2;
-        Tue,  5 Apr 2022 09:37:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 36CF6B81B14;
+        Tue,  5 Apr 2022 09:37:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 975C7C385A0;
+        Tue,  5 Apr 2022 09:37:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151469;
-        bh=IbeurulMDdnYp8aYTOTd5w6wDxHc+on3dCF14Ycz08E=;
+        s=korg; t=1649151427;
+        bh=5ViWBbsLPxdn3zqyYlQXpfb56RiI3TzY2TRM9WAalvU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TTG8V6lt4aZ8Mo+g1XgfvZNsSfPxn5/tTO2QywfSnGIlm3Ka21TN9lFFdjiJdsPVq
-         p6aHPRNJmOMiHIwnp7MNUuIllhaZc5sgM25nVdzcOrSUQNE6zeeaZ2LgvEBzKmUan+
-         1tUI17In8/a8U9PnYaa3/pfbsetQ4D7Ez1fMYvus=
+        b=gcJab2+6MJauQH9NG3L9xvgEO5wS5VbhAd2hAEiRJaq+thy88okY6DKySYb1i4OrI
+         I2iRGYAldj9QnNN8X603jwSibs6TwXNKR4wk1bqA0Hls0Pk0RPN6NOaZMAxoMldmev
+         BTTcavTAbawP8pp3PC/0u4hykLul9+0sOtdTfBfQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lorenzo Bianconi <lorenzo@kernel.org>,
-        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 427/913] mt76: mt7615: check sta_rates pointer in mt7615_sta_rate_tbl_update
-Date:   Tue,  5 Apr 2022 09:24:49 +0200
-Message-Id: <20220405070352.644091878@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Gerhard Engleder <gerhard@engleder-embedded.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 409/913] selftests/net: timestamping: Fix bind_phc check
+Date:   Tue,  5 Apr 2022 09:24:31 +0200
+Message-Id: <20220405070352.105680077@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -49,35 +51,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lorenzo Bianconi <lorenzo@kernel.org>
+From: Gerhard Engleder <gerhard@engleder-embedded.com>
 
-[ Upstream commit 6a6f457ed5fdf6777536c20644a9e42128a50ec2 ]
+[ Upstream commit 678dfd5280341d877ca646499bfdc82a3d8b4356 ]
 
-Check sta_rates pointer value in mt7615_sta_rate_tbl_update routine
-since minstrel_ht_update_rates can fail allocating rates array.
+timestamping checks socket options during initialisation. For the field
+bind_phc of the socket option SO_TIMESTAMPING it expects the value -1 if
+PHC is not bound. Actually the value of bind_phc is 0 if PHC is not
+bound. This results in the following output:
 
-Fixes: 04b8e65922f63 ("mt76: add mac80211 driver for MT7615 PCIe-based chipsets")
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+SIOCSHWTSTAMP: tx_type 0 requested, got 0; rx_filter 0 requested, got 0
+SO_TIMESTAMP 0
+SO_TIMESTAMPNS 0
+SO_TIMESTAMPING flags 0, bind phc 0
+   not expected, flags 0, bind phc -1
+
+This is fixed by setting default value and expected value of bind_phc to
+0.
+
+Fixes: 2214d7032479 ("selftests/net: timestamping: support binding PHC")
+Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7615/main.c | 3 +++
- 1 file changed, 3 insertions(+)
+ tools/testing/selftests/net/timestamping.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/main.c b/drivers/net/wireless/mediatek/mt76/mt7615/main.c
-index fc266da54fe7..60a41d082961 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7615/main.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7615/main.c
-@@ -682,6 +682,9 @@ static void mt7615_sta_rate_tbl_update(struct ieee80211_hw *hw,
- 	struct ieee80211_sta_rates *sta_rates = rcu_dereference(sta->rates);
- 	int i;
- 
-+	if (!sta_rates)
-+		return;
-+
- 	spin_lock_bh(&dev->mt76.lock);
- 	for (i = 0; i < ARRAY_SIZE(msta->rates); i++) {
- 		msta->rates[i].idx = sta_rates->rate[i].idx;
+diff --git a/tools/testing/selftests/net/timestamping.c b/tools/testing/selftests/net/timestamping.c
+index aee631c5284e..044bc0e9ed81 100644
+--- a/tools/testing/selftests/net/timestamping.c
++++ b/tools/testing/selftests/net/timestamping.c
+@@ -325,8 +325,8 @@ int main(int argc, char **argv)
+ 	struct ifreq device;
+ 	struct ifreq hwtstamp;
+ 	struct hwtstamp_config hwconfig, hwconfig_requested;
+-	struct so_timestamping so_timestamping_get = { 0, -1 };
+-	struct so_timestamping so_timestamping = { 0, -1 };
++	struct so_timestamping so_timestamping_get = { 0, 0 };
++	struct so_timestamping so_timestamping = { 0, 0 };
+ 	struct sockaddr_in addr;
+ 	struct ip_mreq imr;
+ 	struct in_addr iaddr;
 -- 
 2.34.1
 
