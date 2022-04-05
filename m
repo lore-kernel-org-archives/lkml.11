@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 062A1C47080
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17E67C35296
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:50:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346669AbiDEKnp (ORCPT
+        id S1346971AbiDEKoB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:43:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60898 "EHLO
+        Tue, 5 Apr 2022 06:44:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241110AbiDEIct (ORCPT
+        with ESMTP id S241088AbiDEIcs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:32:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C17A1573E;
-        Tue,  5 Apr 2022 01:27:42 -0700 (PDT)
+        Tue, 5 Apr 2022 04:32:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9866140D5;
+        Tue,  5 Apr 2022 01:27:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BD4BB609D0;
-        Tue,  5 Apr 2022 08:27:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1645C385A2;
-        Tue,  5 Apr 2022 08:27:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 52FD1B81BCE;
+        Tue,  5 Apr 2022 08:27:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAB1DC385A2;
+        Tue,  5 Apr 2022 08:27:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147261;
-        bh=ju9FU22MfB+ePx543AKTfSg4v7Ler6NNa/m0AdVhx4Q=;
+        s=korg; t=1649147229;
+        bh=XPMpb65O3CeKvKBW3+kH3pERPeRlgpPUhWQrxjl1KbM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2sMW2+tBuPz7ujereR4yeCmG8LAzXf39iH5kBqRy5OcCU8ex3F9VBjIYleyq5hS0A
-         1bHadjhHZZ35BTzWrT/1Mw4jUaWT3XvOr1N0dqZjD/ID2ZWm4wFP+6ydCJ9E0kUEwX
-         WKJix49uwd3T7qXsIsUpPwAqE7Q2M6rkO/HcvIYk=
+        b=C3P+YO+O0BGDaiThRh+TN+JPbimnpvcujG2HQlWsI7a4uGmZhfUR60mKa3f2CTYbc
+         44ou99sYajiZbjpa+Tkg8R+2wOEl1tAXEyZN2OpUuil7mPFxMvNVLentgSN1OXkt8Y
+         gYmufqdz4+dTfqxBSx/CcgAZA0lxlQ3DKFGqNjBs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alyssa Ross <hi@alyssa.is>,
-        Tzung-Bi Shih <tzungbi@google.com>,
-        Prashant Malani <pmalani@chromium.org>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Benson Leung <bleung@chromium.org>
-Subject: [PATCH 5.17 1061/1126] platform/chrome: cros_ec_typec: Check for EC device
-Date:   Tue,  5 Apr 2022 09:30:08 +0200
-Message-Id: <20220405070438.604049387@linuxfoundation.org>
+        stable@vger.kernel.org, Zhihao Cheng <chengzhihao1@huawei.com>,
+        Richard Weinberger <richard@nod.at>
+Subject: [PATCH 5.17 1009/1126] ubifs: Rectify space amount budget for mkdir/tmpfile operations
+Date:   Tue,  5 Apr 2022 09:29:16 +0200
+Message-Id: <20220405070437.105514999@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -52,48 +49,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Prashant Malani <pmalani@chromium.org>
+From: Zhihao Cheng <chengzhihao1@huawei.com>
 
-commit ffebd90532728086007038986900426544e3df4e upstream.
+commit a6dab6607d4681d227905d5198710b575dbdb519 upstream.
 
-The Type C ACPI device on older Chromebooks is not generated correctly
-(since their EC firmware doesn't support the new commands required). In
-such cases, the crafted ACPI device doesn't have an EC parent, and it is
-therefore not useful (it shouldn't be generated in the first place since
-the EC firmware doesn't support any of the Type C commands).
+UBIFS should make sure the flash has enough space to store dirty (Data
+that is newer than disk) data (in memory), space budget is exactly
+designed to do that. If space budget calculates less data than we need,
+'make_reservation()' will do more work(return -ENOSPC if no free space
+lelf, sometimes we can see "cannot reserve xxx bytes in jhead xxx, error
+-28" in ubifs error messages) with ubifs inodes locked, which may effect
+other syscalls.
 
-To handle devices which use these older firmware revisions, check for
-the parent EC device handle, and fail the probe if it's not found.
+A simple way to decide how much space do we need when make a budget:
+See how much space is needed by 'make_reservation()' in ubifs_jnl_xxx()
+function according to corresponding operation.
 
-Fixes: fdc6b21e2444 ("platform/chrome: Add Type C connector class driver")
-Reported-by: Alyssa Ross <hi@alyssa.is>
-Reviewed-by: Tzung-Bi Shih <tzungbi@google.com>
-Signed-off-by: Prashant Malani <pmalani@chromium.org>
-Acked-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Reviewed-by: Alyssa Ross <hi@alyssa.is>
-Tested-by: Alyssa Ross <hi@alyssa.is>
-Link: https://lore.kernel.org/r/20220126190219.3095419-1-pmalani@chromium.org
-Signed-off-by: Benson Leung <bleung@chromium.org>
+It's better to report ENOSPC in ubifs_budget_space(), as early as we can.
+
+Fixes: 474b93704f32163 ("ubifs: Implement O_TMPFILE")
+Fixes: 1e51764a3c2ac05 ("UBIFS: add new flash file system")
+Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/platform/chrome/cros_ec_typec.c |    6 ++++++
- 1 file changed, 6 insertions(+)
+ fs/ubifs/dir.c |   12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
---- a/drivers/platform/chrome/cros_ec_typec.c
-+++ b/drivers/platform/chrome/cros_ec_typec.c
-@@ -1075,7 +1075,13 @@ static int cros_typec_probe(struct platf
- 		return -ENOMEM;
+--- a/fs/ubifs/dir.c
++++ b/fs/ubifs/dir.c
+@@ -428,15 +428,18 @@ static int ubifs_tmpfile(struct user_nam
+ {
+ 	struct inode *inode;
+ 	struct ubifs_info *c = dir->i_sb->s_fs_info;
+-	struct ubifs_budget_req req = { .new_ino = 1, .new_dent = 1};
++	struct ubifs_budget_req req = { .new_ino = 1, .new_dent = 1,
++					.dirtied_ino = 1};
+ 	struct ubifs_budget_req ino_req = { .dirtied_ino = 1 };
+ 	struct ubifs_inode *ui;
+ 	int err, instantiated = 0;
+ 	struct fscrypt_name nm;
  
- 	typec->dev = dev;
-+
- 	typec->ec = dev_get_drvdata(pdev->dev.parent);
-+	if (!typec->ec) {
-+		dev_err(dev, "couldn't find parent EC device\n");
-+		return -ENODEV;
-+	}
-+
- 	platform_set_drvdata(pdev, typec);
+ 	/*
+-	 * Budget request settings: new dirty inode, new direntry,
+-	 * budget for dirtied inode will be released via writeback.
++	 * Budget request settings: new inode, new direntry, changing the
++	 * parent directory inode.
++	 * Allocate budget separately for new dirtied inode, the budget will
++	 * be released via writeback.
+ 	 */
  
- 	ret = cros_typec_get_cmd_version(typec);
+ 	dbg_gen("dent '%pd', mode %#hx in dir ino %lu",
+@@ -979,7 +982,8 @@ static int ubifs_mkdir(struct user_names
+ 	struct ubifs_inode *dir_ui = ubifs_inode(dir);
+ 	struct ubifs_info *c = dir->i_sb->s_fs_info;
+ 	int err, sz_change;
+-	struct ubifs_budget_req req = { .new_ino = 1, .new_dent = 1 };
++	struct ubifs_budget_req req = { .new_ino = 1, .new_dent = 1,
++					.dirtied_ino = 1};
+ 	struct fscrypt_name nm;
+ 
+ 	/*
 
 
