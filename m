@@ -2,109 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F687C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FA8EC433EF
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:40:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1835992AbiDFAe3 (ORCPT
+        id S1836020AbiDFAeh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:34:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52112 "EHLO
+        Tue, 5 Apr 2022 20:34:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358074AbiDEK16 (ORCPT
+        with ESMTP id S1457386AbiDEQDK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:27:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F7665D5E1;
-        Tue,  5 Apr 2022 03:14:42 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3750461562;
-        Tue,  5 Apr 2022 10:14:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44E93C385A3;
-        Tue,  5 Apr 2022 10:14:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153681;
-        bh=RqXiEueM5KylFbJqKWh30dyk69vrDuZhdVzjjd3RllY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=U8h8lU7nuYlZZV9D90sfU3b1Sjz3jExdxkGPp/aosg9T8WDW36purIVFDbJz8bdDA
-         QvNj8krfZgnXv6jkDLK/eMRF7w2HG+ANJSgdyXLNfI+4l2GhJRPtngLVSIeUf+qWsZ
-         q8USr45sQDn244/jNPqc0nn+ldLYFMZ6YGB5XVIc=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+        Tue, 5 Apr 2022 12:03:10 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BC9B2704
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 08:40:01 -0700 (PDT)
+Date:   Tue, 05 Apr 2022 15:39:58 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649173199;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=FYLX3zMwYYS/2mN49h0AH7UMJtTws3J3pqHyjIi/IxM=;
+        b=ehbVtxmz1Q9X6qmneErmigDyIgiViqG41BF7LScvI3Rp2HAkIaHZfw5jSXCjWvJBK3lWH4
+        9VCVpjR1unlsk7W3PNHMmrP6dcqkPJ52rmvirVHUgyE2EmJPfu3/j60x5wRYgna25OwI6A
+        qotnuFZzP+BL/Zruc3+StU3W4dJ8i2/ZefJI8ia7EJO6T9n542mDLxMxl+JRVCH/CkQmSM
+        xnzLfkNR2FqOAYMmaBVHSPXRK5LuMKR39rceD7vjD0jRtsanRW0Oek3BkMxVDSclJ/i3Zz
+        ef8FZphKpAdJowv/9CaqN0wWMHsq2XSywwPbp8vSNnB5NVykEps+ZH91I3357Q==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649173199;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=FYLX3zMwYYS/2mN49h0AH7UMJtTws3J3pqHyjIi/IxM=;
+        b=M391MSaHICL7bCwBLE3YYQnbytAbiCNIZKhlpsTumXmArmzxWcTXvLpU2bNU4uG6CYh01c
+        GWCAPNgJfakdutBQ==
+From:   "irqchip-bot for Andre Przywara" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
 To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, John Garry <john.garry@huawei.com>,
-        Jack Wang <jinpu.wang@ionos.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 309/599] scsi: pm8001: Fix command initialization in pm80XX_send_read_log()
-Date:   Tue,  5 Apr 2022 09:30:03 +0200
-Message-Id: <20220405070308.029261486@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+Subject: [irqchip: irq/irqchip-fixes] irqchip/gic, gic-v3: Prevent GSI to SGI
+ translations
+Cc:     Andre Przywara <andre.przywara@arm.com>,
+        Marc Zyngier <maz@kernel.org>, tglx@linutronix.de
+In-Reply-To: <20220404110842.2882446-1-andre.przywara@arm.com>
+References: <20220404110842.2882446-1-andre.przywara@arm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Message-ID: <164917319858.389.17170980222692377777.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+The following commit has been merged into the irq/irqchip-fixes branch of irqchip:
 
-[ Upstream commit 1a37b6738b58d86f6b144b3fc754ace0f2e0166d ]
+Commit-ID:     544808f7e21cb9ccdb8f3aa7de594c05b1419061
+Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/544808f7e21cb9ccdb8f3aa7de594c05b1419061
+Author:        Andre Przywara <andre.przywara@arm.com>
+AuthorDate:    Mon, 04 Apr 2022 12:08:42 +01:00
+Committer:     Marc Zyngier <maz@kernel.org>
+CommitterDate: Tue, 05 Apr 2022 16:33:47 +01:00
 
-Since the sata_cmd struct is zeroed out before its fields are initialized,
-there is no need for using "|=" to initialize the ncqtag_atap_dir_m
-field. Using a standard assignment removes the sparse warning:
+irqchip/gic, gic-v3: Prevent GSI to SGI translations
 
-warning: invalid assignment: |=
+At the moment the GIC IRQ domain translation routine happily converts
+ACPI table GSI numbers below 16 to GIC SGIs (Software Generated
+Interrupts aka IPIs). On the Devicetree side we explicitly forbid this
+translation, actually the function will never return HWIRQs below 16 when
+using a DT based domain translation.
 
-Also, since the ncqtag_atap_dir_m field has type __le32, use cpu_to_le32()
-to generate the assigned value.
+We expect SGIs to be handled in the first part of the function, and any
+further occurrence should be treated as a firmware bug, so add a check
+and print to report this explicitly and avoid lengthy debug sessions.
 
-Link: https://lore.kernel.org/r/20220220031810.738362-5-damien.lemoal@opensource.wdc.com
-Fixes: c6b9ef5779c3 ("[SCSI] pm80xx: NCQ error handling changes")
-Reviewed-by: John Garry <john.garry@huawei.com>
-Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 64b499d8df40 ("irqchip/gic-v3: Configure SGIs as standard interrupts")
+Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220404110842.2882446-1-andre.przywara@arm.com
 ---
- drivers/scsi/pm8001/pm8001_hwi.c | 2 +-
- drivers/scsi/pm8001/pm80xx_hwi.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/irqchip/irq-gic-v3.c | 6 ++++++
+ drivers/irqchip/irq-gic.c    | 6 ++++++
+ 2 files changed, 12 insertions(+)
 
-diff --git a/drivers/scsi/pm8001/pm8001_hwi.c b/drivers/scsi/pm8001/pm8001_hwi.c
-index 9b318958d78c..eb63f8c5a6f9 100644
---- a/drivers/scsi/pm8001/pm8001_hwi.c
-+++ b/drivers/scsi/pm8001/pm8001_hwi.c
-@@ -1804,7 +1804,7 @@ static void pm8001_send_read_log(struct pm8001_hba_info *pm8001_ha,
+diff --git a/drivers/irqchip/irq-gic-v3.c b/drivers/irqchip/irq-gic-v3.c
+index 9b63165..b252d55 100644
+--- a/drivers/irqchip/irq-gic-v3.c
++++ b/drivers/irqchip/irq-gic-v3.c
+@@ -1466,6 +1466,12 @@ static int gic_irq_domain_translate(struct irq_domain *d,
+ 		if(fwspec->param_count != 2)
+ 			return -EINVAL;
  
- 	sata_cmd.tag = cpu_to_le32(ccb_tag);
- 	sata_cmd.device_id = cpu_to_le32(pm8001_ha_dev->device_id);
--	sata_cmd.ncqtag_atap_dir_m |= ((0x1 << 7) | (0x5 << 9));
-+	sata_cmd.ncqtag_atap_dir_m = cpu_to_le32((0x1 << 7) | (0x5 << 9));
- 	memcpy(&sata_cmd.sata_fis, &fis, sizeof(struct host_to_dev_fis));
++		if (fwspec->param[0] < 16) {
++			pr_err(FW_BUG "Illegal GSI%d translation request\n",
++			       fwspec->param[0]);
++			return -EINVAL;
++		}
++
+ 		*hwirq = fwspec->param[0];
+ 		*type = fwspec->param[1];
  
- 	res = pm8001_mpi_build_cmd(pm8001_ha, circularQ, opc, &sata_cmd,
-diff --git a/drivers/scsi/pm8001/pm80xx_hwi.c b/drivers/scsi/pm8001/pm80xx_hwi.c
-index 2a3ce4680734..9f0ce8668113 100644
---- a/drivers/scsi/pm8001/pm80xx_hwi.c
-+++ b/drivers/scsi/pm8001/pm80xx_hwi.c
-@@ -1830,7 +1830,7 @@ static void pm80xx_send_read_log(struct pm8001_hba_info *pm8001_ha,
+diff --git a/drivers/irqchip/irq-gic.c b/drivers/irqchip/irq-gic.c
+index 58ba835..09c710e 100644
+--- a/drivers/irqchip/irq-gic.c
++++ b/drivers/irqchip/irq-gic.c
+@@ -1123,6 +1123,12 @@ static int gic_irq_domain_translate(struct irq_domain *d,
+ 		if(fwspec->param_count != 2)
+ 			return -EINVAL;
  
- 	sata_cmd.tag = cpu_to_le32(ccb_tag);
- 	sata_cmd.device_id = cpu_to_le32(pm8001_ha_dev->device_id);
--	sata_cmd.ncqtag_atap_dir_m_dad |= ((0x1 << 7) | (0x5 << 9));
-+	sata_cmd.ncqtag_atap_dir_m_dad = cpu_to_le32(((0x1 << 7) | (0x5 << 9)));
- 	memcpy(&sata_cmd.sata_fis, &fis, sizeof(struct host_to_dev_fis));
++		if (fwspec->param[0] < 16) {
++			pr_err(FW_BUG "Illegal GSI%d translation request\n",
++			       fwspec->param[0]);
++			return -EINVAL;
++		}
++
+ 		*hwirq = fwspec->param[0];
+ 		*type = fwspec->param[1];
  
- 	res = pm8001_mpi_build_cmd(pm8001_ha, circularQ, opc, &sata_cmd,
--- 
-2.34.1
-
-
-
