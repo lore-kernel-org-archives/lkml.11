@@ -2,91 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC7C9C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB5A2C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:25:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1575237AbiDEXDZ (ORCPT
+        id S1575252AbiDEXD3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:03:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39548 "EHLO
+        Tue, 5 Apr 2022 19:03:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349415AbiDEJtt (ORCPT
+        with ESMTP id S1390729AbiDENnK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88D631C920;
-        Tue,  5 Apr 2022 02:45:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4790DB817D3;
-        Tue,  5 Apr 2022 09:45:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 942C4C385A4;
-        Tue,  5 Apr 2022 09:45:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151912;
-        bh=07VNWO8H9YlwU0pqnXEKrNMaQkGMU5st7eEL9fMQ2pM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=icC7z32n4BrQfpi11GhCW8qAl8W7maThS6N/XqW1X9JDJgt7QSkMAMXssg8MpHr+j
-         FdyhnALdUwW4sPzX0ovLXGy6I+/u/EhjtIOgv6VWZwQTKQjDLAOqA/9h/mUxv/vg/+
-         1F/XPXCyhLaxMOUTMORl5q+N8wuAWX5mUeseVuOo=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Libin Yang <libin.yang@intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Rander Wang <rander.wang@intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 587/913] soundwire: intel: fix wrong register name in intel_shim_wake
-Date:   Tue,  5 Apr 2022 09:27:29 +0200
-Message-Id: <20220405070357.439541450@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 09:43:10 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BA3B29833
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 05:43:39 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id n18so10799261plg.5
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 05:43:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=FkFtcq8jG36lKpEqQXtgVBWpO9PXs+dvDcrkyl4I1JE=;
+        b=K3A6+NSJs8BRIGtFtREYuYGdt+I2mfbSCX/qAgVN8Llkj+IqkdCnfKCE0OmVCR0oTL
+         ZuQ3c53uY19nlODYpvTvtL6e+pdMZJzomxMY2twipmZFpfCjtCvMDW6n91+hsCXCjO/9
+         SEJ4wUwiPIoumxXLjQKMitubVLWNKHTeOuDRaoprMeakAxZYyQMAULiHDXdNvPtbmOLs
+         UXC4VhPTrG5tTZ2mzWL9Pc7C5YqeDBJ6ZKI+Hl6AESA4BgIIrbFskHFl7AOOmGuIr4Oa
+         hbMKmf5C/jKh8/gf+IzMn5ywVlKLy0IPwvSBH8P2FO1gh+Y2a3Gxsjb63cktIDXT7UNV
+         oCGQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=FkFtcq8jG36lKpEqQXtgVBWpO9PXs+dvDcrkyl4I1JE=;
+        b=Ut3XkyU6HrSdkOnIoAF3NFbyZnIiGFnFgeltQ5h/vMidnjTzlDFBjjSsSh5l6YAjd4
+         XPJJFtzssqcnDAgf6WgBTmPpqYFN/7xDpu2DVIkE86XKYCIji/HYEEOhDLKqvxFne1zS
+         osFdvlci817NkN6sGYEnYUgULT+o24q2Efe90fA72yHG+tE307Rqk2MTYr6MUK7HY4OV
+         h9VaxoXbUaj+LF1BziYje1VCnnEylml53o2jmtnKtQ0y+WfMRhTDS13isLqovhbDue7C
+         TKh3v5qHytTyPHJTLvJWHdf53PYRUSwTSl5teSu91C+GKE/5qpxLP5UYZsxXqtK2ELYU
+         ynqw==
+X-Gm-Message-State: AOAM533kPO1La/s2dbpeW4DJxgd36m0JNStmYi9SWNvQNCGxmu0DNjEX
+        HE2xds8HQqHnJ5LHlfLM5wc=
+X-Google-Smtp-Source: ABdhPJxA7BYupDalxQpTgWbwDIy06f39XbgqEQMzEvGNOezRhIRWoxVZMoYFVgURNXmPQjcaobeYZA==
+X-Received: by 2002:a17:902:f243:b0:156:b615:dd38 with SMTP id j3-20020a170902f24300b00156b615dd38mr3322253plc.174.1649162618681;
+        Tue, 05 Apr 2022 05:43:38 -0700 (PDT)
+Received: from vihas.localhost.com ([103.85.9.59])
+        by smtp.gmail.com with ESMTPSA id nl17-20020a17090b385100b001c70883f6ccsm2760014pjb.36.2022.04.05.05.43.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 05:43:38 -0700 (PDT)
+From:   Vihas Makwana <makvihas@gmail.com>
+To:     Larry Finger <Larry.Finger@lwfinger.net>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Michael Straube <straube.linux@gmail.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Pavel Skripkin <paskripkin@gmail.com>
+Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Vihas Makwana <makvihas@gmail.com>
+Subject: [PATCH 1/3] staging: r8188eu: drop redundant if check in IS_MCAST
+Date:   Tue,  5 Apr 2022 18:12:38 +0530
+Message-Id: <20220405124239.3372-2-makvihas@gmail.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220405124239.3372-1-makvihas@gmail.com>
+References: <20220405124239.3372-1-makvihas@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Libin Yang <libin.yang@intel.com>
+The if check is redundant. Drop it and simplify the funciton.
 
-[ Upstream commit 3957db3ae3dae6f8b8168791f154567fe49e1fd7 ]
-
-When clearing the sdw wakests status, we should use SDW_SHIM_WAKESTS.
-
-Fixes: 4a17c441c7cb ("soundwire: intel: revisit SHIM programming sequences.")
-Signed-off-by: Libin Yang <libin.yang@intel.com>
-Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Rander Wang <rander.wang@intel.com>
-Signed-off-by: Bard Liao <yung-chuan.liao@linux.intel.com>
-Link: https://lore.kernel.org/r/20220126011451.27853-1-yung-chuan.liao@linux.intel.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Vihas Makwana <makvihas@gmail.com>
 ---
- drivers/soundwire/intel.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/staging/r8188eu/include/wifi.h | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/drivers/soundwire/intel.c b/drivers/soundwire/intel.c
-index 78037ffdb09b..f72d36654ac2 100644
---- a/drivers/soundwire/intel.c
-+++ b/drivers/soundwire/intel.c
-@@ -448,8 +448,8 @@ static void intel_shim_wake(struct sdw_intel *sdw, bool wake_enable)
+diff --git a/drivers/staging/r8188eu/include/wifi.h b/drivers/staging/r8188eu/include/wifi.h
+index e10cf17d6..88ed6b4a0 100644
+--- a/drivers/staging/r8188eu/include/wifi.h
++++ b/drivers/staging/r8188eu/include/wifi.h
+@@ -244,10 +244,7 @@ enum WIFI_REG_DOMAIN {
  
- 		/* Clear wake status */
- 		wake_sts = intel_readw(shim, SDW_SHIM_WAKESTS);
--		wake_sts |= (SDW_SHIM_WAKEEN_ENABLE << link_id);
--		intel_writew(shim, SDW_SHIM_WAKESTS_STATUS, wake_sts);
-+		wake_sts |= (SDW_SHIM_WAKESTS_STATUS << link_id);
-+		intel_writew(shim, SDW_SHIM_WAKESTS, wake_sts);
- 	}
- 	mutex_unlock(sdw->link_res->shim_lock);
+ static inline bool IS_MCAST(unsigned char *da)
+ {
+-	if ((*da) & 0x01)
+-		return true;
+-	else
+-		return false;
++	return (*da) & 0x01;
  }
+ 
+ static inline unsigned char *get_da(unsigned char *pframe)
 -- 
-2.34.1
-
-
+2.30.2
 
