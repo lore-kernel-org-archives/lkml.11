@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CEFE4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:23:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D986C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 19:53:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243831AbiDEPZr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:25:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50108 "EHLO
+        id S1389947AbiDEP2g (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 11:28:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344689AbiDEJmY (ORCPT
+        with ESMTP id S1347713AbiDEJqm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:42:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93843BF00F;
-        Tue,  5 Apr 2022 02:27:57 -0700 (PDT)
+        Tue, 5 Apr 2022 05:46:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39B5EDFD67;
+        Tue,  5 Apr 2022 02:33:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4F792B81C84;
-        Tue,  5 Apr 2022 09:27:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BB5BC385A2;
-        Tue,  5 Apr 2022 09:27:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A941D616AE;
+        Tue,  5 Apr 2022 09:32:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1884C385A3;
+        Tue,  5 Apr 2022 09:32:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150875;
-        bh=fA6jlSOTDUzNe8YCEepk5YnDTbZKLllnbhM2A2nSFIA=;
+        s=korg; t=1649151179;
+        bh=Kby6M02Ko1M617/lfRgRpIE2CJqOpMZxo0TaBVxMgLM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=185Zr/F9MRnqlvTftRAWhR0pYs9PFWXzZaadMMjgHL0quRH+YS60EXzT/e9xUbXHF
-         ImGzuwN0FrUBf8v/rKs3vh7s3CpCsZbwFrJj0taf5hzYhoSo3DtxIM4xm58wN0kbvX
-         sOPE8xz2OmY4WfGSbB7lqKWbrWzinOAIQyelKtQw=
+        b=Pnyqe848SNDlmxfkX+K4g4hI5xMM9rq/ET6I6vQnVX26E1Xw662KEmo5yyIo5m3Ea
+         1+Ga69Gkik1Uws5T7jjoLOv6uDuaeEDj9J0E3tjMUeq2HyXKQPtshqVtIy/l8xwGoU
+         qGNVVyLPteS92Hyzo/q/ju2+OmX76W9AX5Rrr+jQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
-        Arend van Spriel <arend.vanspriel@broadcom.com>,
-        Hector Martin <marcan@marcan.st>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Kalle Valo <kvalo@kernel.org>
-Subject: [PATCH 5.15 180/913] brcmfmac: pcie: Release firmwares in the brcmf_pcie_setup error path
-Date:   Tue,  5 Apr 2022 09:20:42 +0200
-Message-Id: <20220405070345.250153004@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 321/913] ASoC: codecs: wcd938x: fix kcontrol max values
+Date:   Tue,  5 Apr 2022 09:23:03 +0200
+Message-Id: <20220405070349.472386499@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -51,36 +51,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hector Martin <marcan@marcan.st>
+From: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 
-commit 5e90f0f3ead014867dade7a22f93958119f5efab upstream.
+[ Upstream commit b0217519236924f77a8382b4004e43ef8fd0dcbb ]
 
-This avoids leaking memory if brcmf_chip_get_raminfo fails. Note that
-the CLM blob is released in the device remove path.
+set "HPH Type" Kcontrol max value of WCD_MBHC_HPH_STEREO instead of UINT_MAX.
+set "HPHL/R Impedance" Kcontrols max value to INT_MAX instead of UINT_MAX as
+max field is integer type.
 
-Fixes: 82f93cf46d60 ("brcmfmac: get chip's default RAM info during PCIe setup")
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Hector Martin <marcan@marcan.st>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220131160713.245637-2-marcan@marcan.st
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Without this patch amixer for these controls will show -1 as max value to userspace.
+
+Fixes: bcee7ed09b8e ("ASoC: codecs: wcd938x: add Multi Button Headset Control support")
+Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Link: https://lore.kernel.org/r/20220222183212.11580-8-srinivas.kandagatla@linaro.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c |    2 ++
- 1 file changed, 2 insertions(+)
+ sound/soc/codecs/wcd938x.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-@@ -1777,6 +1777,8 @@ static void brcmf_pcie_setup(struct devi
- 	ret = brcmf_chip_get_raminfo(devinfo->ci);
- 	if (ret) {
- 		brcmf_err(bus, "Failed to get RAM info\n");
-+		release_firmware(fw);
-+		brcmf_fw_nvram_free(nvram);
- 		goto fail;
- 	}
+diff --git a/sound/soc/codecs/wcd938x.c b/sound/soc/codecs/wcd938x.c
+index 54671bbf7471..4480c118ed5d 100644
+--- a/sound/soc/codecs/wcd938x.c
++++ b/sound/soc/codecs/wcd938x.c
+@@ -3577,14 +3577,14 @@ static int wcd938x_hph_impedance_get(struct snd_kcontrol *kcontrol,
+ }
  
+ static const struct snd_kcontrol_new hph_type_detect_controls[] = {
+-	SOC_SINGLE_EXT("HPH Type", 0, 0, UINT_MAX, 0,
++	SOC_SINGLE_EXT("HPH Type", 0, 0, WCD_MBHC_HPH_STEREO, 0,
+ 		       wcd938x_get_hph_type, NULL),
+ };
+ 
+ static const struct snd_kcontrol_new impedance_detect_controls[] = {
+-	SOC_SINGLE_EXT("HPHL Impedance", 0, 0, UINT_MAX, 0,
++	SOC_SINGLE_EXT("HPHL Impedance", 0, 0, INT_MAX, 0,
+ 		       wcd938x_hph_impedance_get, NULL),
+-	SOC_SINGLE_EXT("HPHR Impedance", 0, 1, UINT_MAX, 0,
++	SOC_SINGLE_EXT("HPHR Impedance", 0, 1, INT_MAX, 0,
+ 		       wcd938x_hph_impedance_get, NULL),
+ };
+ 
+-- 
+2.34.1
+
 
 
