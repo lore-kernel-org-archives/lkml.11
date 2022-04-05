@@ -2,46 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 178E0C43217
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:22:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C504C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:22:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1587263AbiDFAIX (ORCPT
+        id S1587278AbiDFAI3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:08:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37152 "EHLO
+        Tue, 5 Apr 2022 20:08:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1455481AbiDEQAF (ORCPT
+        with ESMTP id S1345168AbiDEKkp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:00:05 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E94F1400B;
-        Tue,  5 Apr 2022 08:15:52 -0700 (PDT)
-Received: from zn.tnic (p2e55dff8.dip0.t-ipconnect.de [46.85.223.248])
+        Tue, 5 Apr 2022 06:40:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB74C22C;
+        Tue,  5 Apr 2022 03:26:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 4A8E11EC0535;
-        Tue,  5 Apr 2022 17:15:47 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1649171747;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=7LpwbTRZSZl3UcUUxK/gc+JLeRFgEvrqb5/MIf7cLWA=;
-        b=UliPEgQUaAlMXoOHtohjpWYugorgyctYyvye+BbeTMhPLfH3wh33PXgF0F95VjaFyiY4sT
-        dLx2BXmJC/1kxtwqOS5ZtrTBw0T22l+dKjSpkyO3hOoHkVPb1WlfcYQD3whjXnIr6DA9AH
-        MoJu5CL9vF/fVEoGvN5VLRXgThEIeD4=
-From:   Borislav Petkov <bp@alien8.de>
-To:     LKML <linux-kernel@vger.kernel.org>
-Cc:     Seth Heasley <seth.heasley@intel.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Wolfram Sang <wsa@kernel.org>, linux-i2c@vger.kernel.org
-Subject: [PATCH 05/11] i2c: ismt: Fix undefined behavior due to shift overflowing the constant
-Date:   Tue,  5 Apr 2022 17:15:11 +0200
-Message-Id: <20220405151517.29753-6-bp@alien8.de>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9B8D7B81B18;
+        Tue,  5 Apr 2022 10:26:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6EF5C385A0;
+        Tue,  5 Apr 2022 10:26:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649154377;
+        bh=0Vq7vJRdob4ZU/b7s+kXri72eyuTWPYUpF6OazvvaDc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=bipKaNWysUcLwH2wH4uGUGgmfag3VcK18FjkTJPwd4cRXBiTjv6jjoLKaGXbHAWRm
+         QsGFkrYnQqeVopAP6VpEu9/kc3WRvqLhR0HRzNYWTFpJ2shEgyRhRKnwkbv15mMb4Z
+         SpechxjMmya/epTqZfJMuVcG1sYP6Q3iQ+lHsxR8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Himanshu Madhani <himanshu.madhani@oracle.com>,
+        Quinn Tran <qutran@marvell.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.10 529/599] scsi: qla2xxx: Fix N2N inconsistent PLOGI
+Date:   Tue,  5 Apr 2022 09:33:43 +0200
+Message-Id: <20220405070314.582133434@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405151517.29753-1-bp@alien8.de>
-References: <20220405151517.29753-1-bp@alien8.de>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -49,45 +52,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Borislav Petkov <bp@suse.de>
+From: Quinn Tran <qutran@marvell.com>
 
-Fix:
+commit c13ce47c64ea8f14e77eecb40d1e7c2ac667f898 upstream.
 
-  drivers/i2c/busses/i2c-ismt.c: In function ‘ismt_hw_init’:
-  drivers/i2c/busses/i2c-ismt.c:770:2: error: case label does not reduce to an integer constant
-    case ISMT_SPGT_SPD_400K:
-    ^~~~
-  drivers/i2c/busses/i2c-ismt.c:773:2: error: case label does not reduce to an integer constant
-    case ISMT_SPGT_SPD_1M:
-    ^~~~
+For N2N topology, ELS Passthrough is used to send PLOGI. On failure of ELS
+pass through PLOGI, driver flipped over to using LLIOCB PLOGI for N2N. This
+is not consistent. Delete the session to restart the connection where ELS
+pass through PLOGI would be used consistently.
 
-See https://lore.kernel.org/r/YkwQ6%2BtIH8GQpuct@zn.tnic for the gory
-details as to why it triggers with older gccs only.
-
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Cc: Seth Heasley <seth.heasley@intel.com>
-Cc: Neil Horman <nhorman@tuxdriver.com>
-Cc: Wolfram Sang <wsa@kernel.org>
-Cc: linux-i2c@vger.kernel.org
+Link: https://lore.kernel.org/r/20220310092604.22950-7-njavali@marvell.com
+Fixes: c76ae845ea83 ("scsi: qla2xxx: Add error handling for PLOGI ELS passthrough")
+Cc: stable@vger.kernel.org
+Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
+Signed-off-by: Quinn Tran <qutran@marvell.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/i2c/busses/i2c-ismt.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/scsi/qla2xxx/qla_iocb.c |    8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/i2c/busses/i2c-ismt.c b/drivers/i2c/busses/i2c-ismt.c
-index f4820fd3dc13..c0364314877e 100644
---- a/drivers/i2c/busses/i2c-ismt.c
-+++ b/drivers/i2c/busses/i2c-ismt.c
-@@ -145,8 +145,8 @@
- #define ISMT_SPGT_SPD_MASK	0xc0000000	/* SMBus Speed mask */
- #define ISMT_SPGT_SPD_80K	0x00		/* 80 kHz */
- #define ISMT_SPGT_SPD_100K	(0x1 << 30)	/* 100 kHz */
--#define ISMT_SPGT_SPD_400K	(0x2 << 30)	/* 400 kHz */
--#define ISMT_SPGT_SPD_1M	(0x3 << 30)	/* 1 MHz */
-+#define ISMT_SPGT_SPD_400K	(0x2U << 30)	/* 400 kHz */
-+#define ISMT_SPGT_SPD_1M	(0x3U << 30)	/* 1 MHz */
+--- a/drivers/scsi/qla2xxx/qla_iocb.c
++++ b/drivers/scsi/qla2xxx/qla_iocb.c
+@@ -2910,6 +2910,7 @@ static void qla2x00_els_dcmd2_sp_done(sr
+ 					set_bit(ISP_ABORT_NEEDED,
+ 					    &vha->dpc_flags);
+ 					qla2xxx_wake_dpc(vha);
++					break;
+ 				}
+ 				fallthrough;
+ 			default:
+@@ -2919,9 +2920,7 @@ static void qla2x00_els_dcmd2_sp_done(sr
+ 				    fw_status[0], fw_status[1], fw_status[2]);
  
+ 				fcport->flags &= ~FCF_ASYNC_SENT;
+-				qla2x00_set_fcport_disc_state(fcport,
+-				    DSC_LOGIN_FAILED);
+-				set_bit(RELOGIN_NEEDED, &vha->dpc_flags);
++				qlt_schedule_sess_for_deletion(fcport);
+ 				break;
+ 			}
+ 			break;
+@@ -2933,8 +2932,7 @@ static void qla2x00_els_dcmd2_sp_done(sr
+ 			    fw_status[0], fw_status[1], fw_status[2]);
  
- /* MSI Control Register (MSICTL) bit definitions */
--- 
-2.35.1
+ 			sp->fcport->flags &= ~FCF_ASYNC_SENT;
+-			qla2x00_set_fcport_disc_state(fcport, DSC_LOGIN_FAILED);
+-			set_bit(RELOGIN_NEEDED, &vha->dpc_flags);
++			qlt_schedule_sess_for_deletion(fcport);
+ 			break;
+ 		}
+ 
+
 
