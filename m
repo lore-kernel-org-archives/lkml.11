@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DEC8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:35:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 841A4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:39:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343660AbiDEM3b (ORCPT
+        id S1355192AbiDEMaJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:29:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59258 "EHLO
+        Tue, 5 Apr 2022 08:30:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245340AbiDEIzH (ORCPT
+        with ESMTP id S235356AbiDEIQG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:55:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BFE1101F5;
-        Tue,  5 Apr 2022 01:52:15 -0700 (PDT)
+        Tue, 5 Apr 2022 04:16:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B1C5A5EB5;
+        Tue,  5 Apr 2022 01:03:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1840E61003;
-        Tue,  5 Apr 2022 08:52:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27D8AC385A1;
-        Tue,  5 Apr 2022 08:52:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0777BB81BA7;
+        Tue,  5 Apr 2022 08:03:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5960CC385A0;
+        Tue,  5 Apr 2022 08:03:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148734;
-        bh=WvuNd515yfCemETt0J5SFAOnaL3gooZmvJup2s+DEBo=;
+        s=korg; t=1649145797;
+        bh=1R95iKwLg6uykAlkrYJDXyi0yVHdPcfqRxwyL5W0GOQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o/8vg2PnHBTdcbSVHJRp4ZynE9NJDklS420L536EJf02jJ+b0F+wuJgfKPiOkJBd8
-         F66+0FfFNq2Dfp28HaPYxGb+bKr8LgP2bRduaz10VDiBcUwNxomW3cJxNvWL5LXMqf
-         bIz+JXZU7U+11C+n4uxsPE06j+IeIq7ozW6nqCgk=
+        b=2MKtSL4wFyaeHtZVO9giCqlTxCblcGMSIptOMoHz0IBpQ1OaqZS/ne4ICLaXtHI3j
+         ZT5a/vJcwUo4yLTCEt+T2BOXqJpMJmmI1ovSMaqhAnIUjeopYZksdBLTJOkb4Qmzht
+         7s/000BNQ/xPpTC7Y5YuK0+0xdoSc4YUuBgPaajU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Wang <sean.wang@mediatek.com>,
-        Leon Yen <leon.yen@mediatek.com>, Felix Fietkau <nbd@nbd.name>,
+        stable@vger.kernel.org, Tianyu Lan <Tianyu.Lan@microsoft.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0461/1017] mt76: mt7921s: fix mt7921s_mcu_[fw|drv]_pmctrl
-Date:   Tue,  5 Apr 2022 09:22:54 +0200
-Message-Id: <20220405070407.983142060@linuxfoundation.org>
+Subject: [PATCH 5.17 0533/1126] Netvsc: Call hv_unmap_memory() in the netvsc_device_remove()
+Date:   Tue,  5 Apr 2022 09:21:20 +0200
+Message-Id: <20220405070423.275859303@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
-References: <20220405070354.155796697@linuxfoundation.org>
+In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
+References: <20220405070407.513532867@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,119 +50,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Leon Yen <leon.yen@mediatek.com>
+From: Tianyu Lan <Tianyu.Lan@microsoft.com>
 
-[ Upstream commit b12deb5e86fa36dc6f3aa3321f5da27addec4f1f ]
+[ Upstream commit b539324f6fe798bdb186e4e91eafb37dd851db2a ]
 
-According to the firmware behavior (even the oldest one in linux-firmware)
-If the firmware is downloaded, MT7921S must rely on the additional mailbox
-mechanism that resides in firmware to check if the device is the right
-state for mt7921s_mcu_[fw|drv]_pmctrl. Otherwise, we still apply the old
-way for that.
+netvsc_device_remove() calls vunmap() inside which should not be
+called in the interrupt context. Current code calls hv_unmap_memory()
+in the free_netvsc_device() which is rcu callback and maybe called
+in the interrupt context. This will trigger BUG_ON(in_interrupt())
+in the vunmap(). Fix it via moving hv_unmap_memory() to netvsc_device_
+remove().
 
-That is a necessary patch before we enable runtime pm for mt7921s as
-default.
-
-Fixes: 48fab5bbef40 ("mt76: mt7921: introduce mt7921s support")
-Co-developed-by: Sean Wang <sean.wang@mediatek.com>
-Signed-off-by: Sean Wang <sean.wang@mediatek.com>
-Signed-off-by: Leon Yen <leon.yen@mediatek.com>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Fixes: 846da38de0e8 ("net: netvsc: Add Isolation VM support for netvsc driver")
+Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../wireless/mediatek/mt76/mt7921/sdio_mcu.c  | 38 +++++++++++++++++++
- drivers/net/wireless/mediatek/mt76/sdio.h     |  2 +
- 2 files changed, 40 insertions(+)
+ drivers/net/hyperv/netvsc.c | 24 ++++++++++++++++--------
+ 1 file changed, 16 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/sdio_mcu.c b/drivers/net/wireless/mediatek/mt76/mt7921/sdio_mcu.c
-index 437cddad9a90..353d99fef065 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7921/sdio_mcu.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7921/sdio_mcu.c
-@@ -49,6 +49,26 @@ mt7921s_mcu_send_message(struct mt76_dev *mdev, struct sk_buff *skb,
- 	return ret;
+diff --git a/drivers/net/hyperv/netvsc.c b/drivers/net/hyperv/netvsc.c
+index afa81a9480cc..e675d1016c3c 100644
+--- a/drivers/net/hyperv/netvsc.c
++++ b/drivers/net/hyperv/netvsc.c
+@@ -154,19 +154,15 @@ static void free_netvsc_device(struct rcu_head *head)
+ 
+ 	kfree(nvdev->extension);
+ 
+-	if (nvdev->recv_original_buf) {
+-		hv_unmap_memory(nvdev->recv_buf);
++	if (nvdev->recv_original_buf)
+ 		vfree(nvdev->recv_original_buf);
+-	} else {
++	else
+ 		vfree(nvdev->recv_buf);
+-	}
+ 
+-	if (nvdev->send_original_buf) {
+-		hv_unmap_memory(nvdev->send_buf);
++	if (nvdev->send_original_buf)
+ 		vfree(nvdev->send_original_buf);
+-	} else {
++	else
+ 		vfree(nvdev->send_buf);
+-	}
+ 
+ 	bitmap_free(nvdev->send_section_map);
+ 
+@@ -765,6 +761,12 @@ void netvsc_device_remove(struct hv_device *device)
+ 		netvsc_teardown_send_gpadl(device, net_device, ndev);
+ 	}
+ 
++	if (net_device->recv_original_buf)
++		hv_unmap_memory(net_device->recv_buf);
++
++	if (net_device->send_original_buf)
++		hv_unmap_memory(net_device->send_buf);
++
+ 	/* Release all resources */
+ 	free_netvsc_device_rcu(net_device);
  }
+@@ -1821,6 +1823,12 @@ struct netvsc_device *netvsc_device_add(struct hv_device *device,
+ 	netif_napi_del(&net_device->chan_table[0].napi);
  
-+static u32 mt7921s_read_rm3r(struct mt7921_dev *dev)
-+{
-+	struct mt76_sdio *sdio = &dev->mt76.sdio;
+ cleanup2:
++	if (net_device->recv_original_buf)
++		hv_unmap_memory(net_device->recv_buf);
 +
-+	return sdio_readl(sdio->func, MCR_D2HRM3R, NULL);
-+}
++	if (net_device->send_original_buf)
++		hv_unmap_memory(net_device->send_buf);
 +
-+static u32 mt7921s_clear_rm3r_drv_own(struct mt7921_dev *dev)
-+{
-+	struct mt76_sdio *sdio = &dev->mt76.sdio;
-+	u32 val;
-+
-+	val = sdio_readl(sdio->func, MCR_D2HRM3R, NULL);
-+	if (val)
-+		sdio_writel(sdio->func, H2D_SW_INT_CLEAR_MAILBOX_ACK,
-+			    MCR_WSICR, NULL);
-+
-+	return val;
-+}
-+
- int mt7921s_mcu_init(struct mt7921_dev *dev)
- {
- 	static const struct mt76_mcu_ops mt7921s_mcu_ops = {
-@@ -88,6 +108,12 @@ int mt7921s_mcu_drv_pmctrl(struct mt7921_dev *dev)
+ 	free_netvsc_device(&net_device->rcu);
  
- 	err = readx_poll_timeout(mt76s_read_pcr, &dev->mt76, status,
- 				 status & WHLPCR_IS_DRIVER_OWN, 2000, 1000000);
-+
-+	if (!err && test_bit(MT76_STATE_MCU_RUNNING, &dev->mphy.state))
-+		err = readx_poll_timeout(mt7921s_read_rm3r, dev, status,
-+					 status & D2HRM3R_IS_DRIVER_OWN,
-+					 2000, 1000000);
-+
- 	sdio_release_host(func);
- 
- 	if (err < 0) {
-@@ -115,12 +141,24 @@ int mt7921s_mcu_fw_pmctrl(struct mt7921_dev *dev)
- 
- 	sdio_claim_host(func);
- 
-+	if (test_bit(MT76_STATE_MCU_RUNNING, &dev->mphy.state)) {
-+		err = readx_poll_timeout(mt7921s_clear_rm3r_drv_own,
-+					 dev, status,
-+					 !(status & D2HRM3R_IS_DRIVER_OWN),
-+					 2000, 1000000);
-+		if (err < 0) {
-+			dev_err(dev->mt76.dev, "mailbox ACK not cleared\n");
-+			goto err;
-+		}
-+	}
-+
- 	sdio_writel(func, WHLPCR_FW_OWN_REQ_SET, MCR_WHLPCR, NULL);
- 
- 	err = readx_poll_timeout(mt76s_read_pcr, &dev->mt76, status,
- 				 !(status & WHLPCR_IS_DRIVER_OWN), 2000, 1000000);
- 	sdio_release_host(func);
- 
-+err:
- 	if (err < 0) {
- 		dev_err(dev->mt76.dev, "firmware own failed\n");
- 		clear_bit(MT76_STATE_PM, &mphy->state);
-diff --git a/drivers/net/wireless/mediatek/mt76/sdio.h b/drivers/net/wireless/mediatek/mt76/sdio.h
-index 99db4ad93b7c..27d5d2077eba 100644
---- a/drivers/net/wireless/mediatek/mt76/sdio.h
-+++ b/drivers/net/wireless/mediatek/mt76/sdio.h
-@@ -65,6 +65,7 @@
- #define MCR_H2DSM0R			0x0070
- #define H2D_SW_INT_READ			BIT(16)
- #define H2D_SW_INT_WRITE		BIT(17)
-+#define H2D_SW_INT_CLEAR_MAILBOX_ACK	BIT(22)
- 
- #define MCR_H2DSM1R			0x0074
- #define MCR_D2HRM0R			0x0078
-@@ -109,6 +110,7 @@
- #define MCR_H2DSM2R			0x0160 /* supported in CONNAC2 */
- #define MCR_H2DSM3R			0x0164 /* supported in CONNAC2 */
- #define MCR_D2HRM3R			0x0174 /* supported in CONNAC2 */
-+#define D2HRM3R_IS_DRIVER_OWN		BIT(0)
- #define MCR_WTQCR8			0x0190 /* supported in CONNAC2 */
- #define MCR_WTQCR9			0x0194 /* supported in CONNAC2 */
- #define MCR_WTQCR10			0x0198 /* supported in CONNAC2 */
+ 	return ERR_PTR(ret);
 -- 
 2.34.1
 
