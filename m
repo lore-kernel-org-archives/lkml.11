@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E2EEC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:28:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7B01C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:28:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355624AbiDEKVD (ORCPT
+        id S1355655AbiDEKVQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:21:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60898 "EHLO
+        Tue, 5 Apr 2022 06:21:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241226AbiDEIc4 (ORCPT
+        with ESMTP id S241233AbiDEIc5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:32:56 -0400
+        Tue, 5 Apr 2022 04:32:57 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D709BC7;
-        Tue,  5 Apr 2022 01:29:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31C71D7B;
+        Tue,  5 Apr 2022 01:30:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C22FE6062B;
-        Tue,  5 Apr 2022 08:29:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF5BBC385A1;
-        Tue,  5 Apr 2022 08:29:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C2FA760B0A;
+        Tue,  5 Apr 2022 08:30:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0AF2C385A1;
+        Tue,  5 Apr 2022 08:30:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147393;
-        bh=VyceP8V9963XvE21yMD5O+ylMNMf3kEiRPDdqj8YzSk=;
+        s=korg; t=1649147404;
+        bh=nlm8p+tTQwhGjPD/lcR+yMaGdpDQ15VBJt2fFe08qzk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hCr8R3iBS5WWWZIqLdXL3MSc0AX8WE2tVoUyJCt1+QSgT2E9k53SarOZDT8VG/Khp
-         IqWdsESkgz6tFisPpYRHg740sniXG+nAA393Tt0NPBuaAF6GMFQzdTHumKcQRIUq5z
-         pbNiw37JE+vK2s3pjy0DN+qEBV95Dwz+ybX/lw/I=
+        b=zZrIcaLvxx3YFG1eVUiS8ZXAGfYnB3XwneLsc9KmYHkj9JHgzwHaqxW9HfvkYKO2X
+         wr2F+enP2/OMIcfbRv+cEG6fsowzjDEyan66PZoOv9xeHDb3+yMu32V/onx8m4LlHZ
+         sBewpd1AHe6b1qheSGVeR0Fb5yfERGaje/5JpAsI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuldeep Singh <singh.kuldeep87k@gmail.com>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH 5.17 1108/1126] ARM: dts: spear1340: Update serial node properties
-Date:   Tue,  5 Apr 2022 09:30:55 +0200
-Message-Id: <20220405070439.960359233@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Richard Weinberger <richard@nod.at>
+Subject: [PATCH 5.17 1112/1126] um: Fix uml_mconsole stop/go
+Date:   Tue,  5 Apr 2022 09:30:59 +0200
+Message-Id: <20220405070440.073710983@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,37 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuldeep Singh <singh.kuldeep87k@gmail.com>
+From: Anton Ivanov <anton.ivanov@cambridgegreys.com>
 
-commit 583d6b0062640def86f3265aa1042ecb6672516e upstream.
+commit 1a3a6a2a035bb6c3a7ef4c788d8fd69a7b2d6284 upstream.
 
-Reorder dma and dma-names property for serial node to make it compliant
-with bindings.
+Moving to an EPOLL based IRQ controller broke uml_mconsole stop/go
+commands. This fixes it and restores stop/go functionality.
 
-Fixes: 6e8887f60f60 ("ARM: SPEAr13xx: Pass generic DW DMAC platform data from DT")
-Signed-off-by: Kuldeep Singh <singh.kuldeep87k@gmail.com>
-Acked-by: Viresh Kumar <viresh.kumar@linaro.org>
-Link: https://lore.kernel.org/r/20220326042313.97862-3-singh.kuldeep87k@gmail.com'
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Fixes: ff6a17989c08 ("Epoll based IRQ controller")
+Signed-off-by: Anton Ivanov <anton.ivanov@cambridgegreys.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/boot/dts/spear1340.dtsi |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ arch/um/drivers/mconsole_kern.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/arch/arm/boot/dts/spear1340.dtsi
-+++ b/arch/arm/boot/dts/spear1340.dtsi
-@@ -134,9 +134,9 @@
- 				reg = <0xb4100000 0x1000>;
- 				interrupts = <0 105 0x4>;
- 				status = "disabled";
--				dmas = <&dwdma0 12 0 1>,
--					<&dwdma0 13 1 0>;
--				dma-names = "tx", "rx";
-+				dmas = <&dwdma0 13 0 1>,
-+					<&dwdma0 12 1 0>;
-+				dma-names = "rx", "tx";
- 			};
+--- a/arch/um/drivers/mconsole_kern.c
++++ b/arch/um/drivers/mconsole_kern.c
+@@ -224,7 +224,7 @@ void mconsole_go(struct mc_request *req)
  
- 			thermal@e07008c4 {
+ void mconsole_stop(struct mc_request *req)
+ {
+-	deactivate_fd(req->originating_fd, MCONSOLE_IRQ);
++	block_signals();
+ 	os_set_fd_block(req->originating_fd, 1);
+ 	mconsole_reply(req, "stopped", 0, 0);
+ 	for (;;) {
+@@ -247,6 +247,7 @@ void mconsole_stop(struct mc_request *re
+ 	}
+ 	os_set_fd_block(req->originating_fd, 0);
+ 	mconsole_reply(req, "", 0, 0);
++	unblock_signals();
+ }
+ 
+ static DEFINE_SPINLOCK(mc_devices_lock);
 
 
