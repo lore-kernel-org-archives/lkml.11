@@ -2,97 +2,219 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D16D8C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:31:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5960FC4167B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:31:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443601AbiDEWUf (ORCPT
+        id S1443930AbiDEWUr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:20:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56050 "EHLO
+        Tue, 5 Apr 2022 18:20:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354648AbiDEKO5 (ORCPT
+        with ESMTP id S1455710AbiDEQA3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:14:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E4756C1ED;
-        Tue,  5 Apr 2022 03:02:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Tue, 5 Apr 2022 12:00:29 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EB771D310;
+        Tue,  5 Apr 2022 08:19:33 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id EDAF6210DE;
+        Tue,  5 Apr 2022 15:19:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1649171971; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=AUaCL0W4jHwKamsmD5VqBN+3A3UfQ6aVKoMK0LhECXY=;
+        b=a4sG92MVGf37CQeLB+XZVjYv2GHIwuzBOfLNOrkSLltR8rVJAMiL70GClf7Ilj5pI58Ug+
+        r5J4lVPcvWThTyiJH0rb9jdVD1/cT6W4UlE+3rv+qg8vTg7+udhg1Jf+hxs6Q0tU3+5bx+
+        kfxmTkkuL0P3NjRxrXZ57wrS9n8o60k=
+Received: from suse.cz (unknown [10.100.224.162])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3CD10B81C83;
-        Tue,  5 Apr 2022 10:02:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83D38C385A1;
-        Tue,  5 Apr 2022 10:02:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152935;
-        bh=gfV629Zgz/51l+/HtStoc6+xPlrAsyPHiNc5Qtfgl50=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=emS12iRw6EHfmVh+DpR9Po0LRA9HmErfdCNwW4Ch3J0ydU50zEnHv52C4fPDufOST
-         PTzAU2ZHlzp3MAIhjE0gX2gW6x4ZzO2UsTE0dfKoUZm2WFNqrla0wT098/cZN9F1J3
-         S27vZyMa/kovuMi6p69Tlxb8+K1ffxXLjTPyw148=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liam Beguin <liambeguin@gmail.com>,
-        Peter Rosin <peda@axentia.se>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5.10 035/599] iio: inkern: apply consumer scale when no channel scale is available
-Date:   Tue,  5 Apr 2022 09:25:29 +0200
-Message-Id: <20220405070259.867876473@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by relay2.suse.de (Postfix) with ESMTPS id DE2A6A3B82;
+        Tue,  5 Apr 2022 15:19:30 +0000 (UTC)
+Date:   Tue, 5 Apr 2022 17:19:28 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     Lecopzer Chen <lecopzer.chen@mediatek.com>
+Cc:     acme@kernel.org, akpm@linux-foundation.org,
+        alexander.shishkin@linux.intel.com, catalin.marinas@arm.com,
+        davem@davemloft.net, jolsa@redhat.com, jthierry@redhat.com,
+        keescook@chromium.org, kernelfans@gmail.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mediatek@lists.infradead.org,
+        linux-perf-users@vger.kernel.org, mark.rutland@arm.com,
+        masahiroy@kernel.org, matthias.bgg@gmail.com, maz@kernel.org,
+        mcgrof@kernel.org, mingo@redhat.com, namhyung@kernel.org,
+        nixiaoming@huawei.com, peterz@infradead.org,
+        sparclinux@vger.kernel.org, sumit.garg@linaro.org,
+        wangqing@vivo.com, will@kernel.org, yj.chiang@mediatek.com
+Subject: Re: [PATCH v3 4/5] kernel/watchdog: Adapt the watchdog_hld interface
+ for async model
+Message-ID: <YkxeAM+SwYHAnJE1@alley>
+References: <20220404144113.GB26840@pathway.suse.cz>
+ <20220405133503.4487-1-lecopzer.chen@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220405133503.4487-1-lecopzer.chen@mediatek.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liam Beguin <liambeguin@gmail.com>
+On Tue 2022-04-05 21:35:03, Lecopzer Chen wrote:
+> > On Thu 2022-03-24 22:14:04, Lecopzer Chen wrote:
+> > > When lockup_detector_init()->watchdog_nmi_probe(), PMU may be not ready
+> > > yet. E.g. on arm64, PMU is not ready until
+> > > device_initcall(armv8_pmu_driver_init).  And it is deeply integrated
+> > > with the driver model and cpuhp. Hence it is hard to push this
+> > > initialization before smp_init().
+> > > 
+> > > But it is easy to take an opposite approach and try to initialize
+> > > the watchdog once again later.
+> > > The delayed probe is called using workqueues. It need to allocate
+> > > memory and must be proceed in a normal context.
+> > > The delayed probe is queued only when the early one returns -EBUSY.
+> > > It is the return code returned when PMU is not ready yet.
+> > > 
+> > > Provide an API - retry_lockup_detector_init() for anyone who needs
+> > > to delayed init lockup detector.
+> > > 
+> > > The original assumption is: nobody should use delayed probe after
+> > > lockup_detector_check() which has __init attribute.
+> > > That is, anyone uses this API must call between lockup_detector_init()
+> > > and lockup_detector_check(), and the caller must have __init attribute
+> > > 
+> > > --- a/kernel/watchdog.c
+> > > +++ b/kernel/watchdog.c
+> > > +}
+> > > +
+> > > +/*
+> > > + * retry_lockup_detector_init - retry init lockup detector if possible.
+> > > + *
+> > > + * Only take effect when allow_lockup_detector_init_retry is true, which
+> > > + * means it must call between lockup_detector_init() and lockup_detector_check().
+> > > + * Be aware that caller must have __init attribute, relative functions
+> > > + * will be freed after kernel initialization.
+> > > + */
+> > > +void __init retry_lockup_detector_init(void)
+> > > +{
+> > > +	if (!allow_lockup_detector_init_retry)
+> > > +		return;
+> > > +
+> > > +	queue_work_on(__smp_processor_id(), system_wq, &detector_work);
+> > > +}
+> > > +
+> > > +/* Ensure the check is called after the initialization of driver */
+> > > +static int __init lockup_detector_check(void)
+> > > +{
+> > > +	/* Make sure no work is pending. */
+> > > +	flush_work(&detector_work);
+> > 
+> > This is racy. We should first disable
+> > "allow_lockup_detector_init_retry" to make sure
+> > that retry_lockup_detector_init() will not queue
+> > the work any longer.
+> 
+> But disable before flush_work will make the 
+>     lockup_detector_delay_init() ->
+>     watchdog_nmi_probe ->
+>     +	if (!allow_lockup_detector_init_retry)
+>     +		return -EBUSY;
 
-commit 14b457fdde38de594a4bc4bd9075019319d978da upstream.
+I see. It is exactly the reason why I suggest to remove the
+optimization and keep the code simple.
 
-When a consumer calls iio_read_channel_processed() and no channel scale
-is available, it's assumed that the scale is one and the raw value is
-returned as expected.
+> how about:
+> ...
+> static bool __init delayed_init_allowed = true;
+> ...
+> /*
+>  * retry_lockup_detector_init - retry init lockup detector if possible.
+>  *
+>  * Only take effect when allow_lockup_detector_init_retry is true, which
+>  * means it must call between lockup_detector_init() and lockup_detector_check().
+>  * Be aware that caller must have __init attribute, relative functions
+>  * will be freed after kernel initialization.
+>  */
+> void __init retry_lockup_detector_init(void)
+> {
+> 	if (!allow_lockup_detector_init_retry || !delayed_init_allowed)
+> 		return;
+> 
+> 	/* 
+> 	 * we shouldn't queue any delayed init work twice to avoid
+> 	 * any unwanted racy.
+> 	 */
+> 	delayed_init_allowed = false;
 
-On the other hand, if the consumer calls iio_convert_raw_to_processed()
-the scaling factor requested by the consumer is not applied.
+Grrr, this is so complicated and confusing. It might be because of
+badly selected variable names or comments. But I think that it is
+simply a bad approach.
 
-This for example causes the consumer to process mV when expecting uV.
-Make sure to always apply the scaling factor requested by the consumer.
+OK, you suggest two variables. If I get it correctly:
 
-Fixes: adc8ec5ff183 ("iio: inkern: pass through raw values if no scaling")
-Signed-off-by: Liam Beguin <liambeguin@gmail.com>
-Reviewed-by: Peter Rosin <peda@axentia.se>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Link: https://lore.kernel.org/r/20220108205319.2046348-3-liambeguin@gmail.com
-Cc: <Stable@vger.kernel.org>
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/iio/inkern.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+    + The variable "delayed_init_allowed"
+     tries to prevent the race in lockup_detector_check().
 
---- a/drivers/iio/inkern.c
-+++ b/drivers/iio/inkern.c
-@@ -573,10 +573,10 @@ static int iio_convert_raw_to_processed_
- 					IIO_CHAN_INFO_SCALE);
- 	if (scale_type < 0) {
- 		/*
--		 * Just pass raw values as processed if no scaling is
--		 * available.
-+		 * If no channel scaling is available apply consumer scale to
-+		 * raw value and return.
- 		 */
--		*processed = raw;
-+		*processed = raw * scale;
- 		return 0;
- 	}
- 
+     It will make sure that the work could not be queued after
+     flush_work() finishes.
+
+     Is this obvious from the comment?
+     Is this obvious from the variable name?
+
+     I am sorry. But it is not obvious to me. I understand it only
+     because I see it together in this mail. It will be pretty
+     hard to get it from the code when I see it one year later.
 
 
+   + The variable "allow_lockup_detector_init_retry" has an unclear
+     meaning. It might mean:
+
+	+ watchdog_nmi_probe() ended with -EBUSY in
+	  lockup_detector_init() and we can try the delayed init.
+
+	+ but it also means that watchdog_nmi_probe() succeeded in
+	  lockup_detector_delay_init() and there is no need to
+	  try the delayed init any longer.
+
+       Is this obvious from the variable name?
+       Is it explained anywhere?
+       Is it easy to understand?
+
+       No, from my POV. It is really bad idea to have a single
+       variable with so many meanings.
+
+
+And this is my problem with this approach. There was one variable with
+unclear meanting. And you are trying to fix it by two variables
+with unclear meaning.
+
+> 	queue_work_on(__smp_processor_id(), system_wq, &detector_work);
+> }
+> 
+> 
+> /*
+>  * Ensure the check is called after the initialization of driver
+>  * and before removing init code.
+>  */
+> static int __init lockup_detector_check(void)
+> {
+> 	delayed_init_allowed = false;
+> 	flush_work(&detector_work);
+> 	allow_lockup_detector_init_retry = false;
+> 
+> 	return 0;
+> }
+
+No, please keep it simple. Just have one variable that will say
+whether we are allowed to queue the work:
+
+  + It will be allowed when watchdog_nmi_probe() ended
+    with -EBUSY in lockup_detector_init()
+
+  + It will not longer be allowed when watchdog_nmi_probe()
+    succeeded or when lockup_detector_check() flushes
+    the pending works.
+
+
+Best Regards,
+Petr
