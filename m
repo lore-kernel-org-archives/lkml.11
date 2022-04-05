@@ -2,57 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80695C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E39DC4321E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:50:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346312AbiDEKnL (ORCPT
+        id S1346246AbiDEKnF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:43:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32902 "EHLO
+        Tue, 5 Apr 2022 06:43:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241184AbiDEIcx (ORCPT
+        with ESMTP id S241185AbiDEIcx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:32:53 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B504917061;
-        Tue,  5 Apr 2022 01:29:10 -0700 (PDT)
-Date:   Tue, 05 Apr 2022 08:29:08 -0000
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B52CE17068;
+        Tue,  5 Apr 2022 01:29:11 -0700 (PDT)
+Date:   Tue, 05 Apr 2022 08:29:09 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649147349;
+        s=2020; t=1649147350;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=yt0rYyrwZxg63pG0971ROdocgPh4CTPB8CHSHPagIyA=;
-        b=p6iXMl/rfQ/Y7vvlKS1VEXu5kSfghGKVsqKGvbZ7SWsX+xNbCMpYpgZwwjJo0RiruMxy9/
-        Ih+UWOQ7YSjStiobddeOCMz9ptG1O9q9n5JpO/TplYdlZwORj/TC9gQXSPlko0Tnua529j
-        DK40lhSnIz0MkVxcodS1eRJyBSWxlfy5YKqqRCqC/p2DMnPC6I5WRg9wF7MLY6Vl4zwnMm
-        xE5e6uBFHxlzaySZrCKe46Q+kQQq+2ZKvr4th0WvLHJvga2UrqAtl2W/RlFZ0F8Cls7e7F
-        jkAtO1jId0KsGYXAqOR/N3+ro8Miq2BFS1qhgT2PvZYtQ2bbyEADQ2gFg8Ya+A==
+        bh=GTiIkow2ryqTVklNzpiJzR+F10fayARIPEQS+s2elLw=;
+        b=YyMu2WHzxnskQr9xp56axAbi4y87USBJAc9l073Vk7YjO4zChlUyGXODMgYdKFowyUkecx
+        OY1KMKj8CVjmcTOXjPZWugxuGRQK1TP4vVKIU2tWjIUbDcJmib1k8M13wgOWbag0vLT3e6
+        +5rugYTh/9zLEgB/ohVekcdXikMECHKCX4lCmOz/asKxmx3pZEpmz9RvoCZNfp3cnnxOTl
+        OjSaYcSbVm49lN8F8n3tvedyxbXu5+xTFn0H3QBAgPFZ0VaeHWs32GhjpU9ELpazl704tJ
+        X7daiNS8hSw270i2elpsDrOn8m+LvWST3k8ZYlB7YzrSjU4yXZRClrzhPTRyIQ==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649147349;
+        s=2020e; t=1649147350;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=yt0rYyrwZxg63pG0971ROdocgPh4CTPB8CHSHPagIyA=;
-        b=6FeYv2OHDQblpguOMp8R9bMIFDZRgJYQRIHrzJM8UMLF2/SCDGcUcaSdbNobM2UoTz0JiU
-        +oha2wS0j1IXC8AQ==
-From:   "tip-bot2 for Namhyung Kim" <tip-bot2@linutronix.de>
+        bh=GTiIkow2ryqTVklNzpiJzR+F10fayARIPEQS+s2elLw=;
+        b=a0V7NhJaLUUJnvqIVmizf2nM8FgsLGndrx30zyJf8TgqJ/4WRcWa9fOBI0gv9gdDlcYRH4
+        523XIpjjwdl/unCw==
+From:   "tip-bot2 for Kan Liang" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: perf/urgent] perf/core: Inherit event_caps
-Cc:     Namhyung Kim <namhyung@kernel.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        <stable@vger.kernel.org>, x86@kernel.org,
+Subject: [tip: perf/urgent] perf/x86/uncore: Add Raptor Lake uncore support
+Cc:     Kan Liang <kan.liang@intel.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <20220328200112.457740-1-namhyung@kernel.org>
-References: <20220328200112.457740-1-namhyung@kernel.org>
+In-Reply-To: <1647366360-82824-4-git-send-email-kan.liang@linux.intel.com>
+References: <1647366360-82824-4-git-send-email-kan.liang@linux.intel.com>
 MIME-Version: 1.0
-Message-ID: <164914734824.389.11482584782909269521.tip-bot2@tip-bot2>
+Message-ID: <164914734933.389.1180080603366707375.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -63,52 +62,73 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the perf/urgent branch of tip:
 
-Commit-ID:     e3265a4386428d3d157d9565bb520aabff8b4bf0
-Gitweb:        https://git.kernel.org/tip/e3265a4386428d3d157d9565bb520aabff8b4bf0
-Author:        Namhyung Kim <namhyung@kernel.org>
-AuthorDate:    Mon, 28 Mar 2022 13:01:12 -07:00
+Commit-ID:     ad4878d4d71d9ada913be2ad5b6d7f526a695b6f
+Gitweb:        https://git.kernel.org/tip/ad4878d4d71d9ada913be2ad5b6d7f526a695b6f
+Author:        Kan Liang <kan.liang@intel.com>
+AuthorDate:    Tue, 15 Mar 2022 10:46:00 -07:00
 Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Tue, 05 Apr 2022 09:59:44 +02:00
+CommitterDate: Tue, 05 Apr 2022 09:59:43 +02:00
 
-perf/core: Inherit event_caps
+perf/x86/uncore: Add Raptor Lake uncore support
 
-It was reported that some perf event setup can make fork failed on
-ARM64.  It was the case of a group of mixed hw and sw events and it
-failed in perf_event_init_task() due to armpmu_event_init().
+The uncore PMU of the Raptor Lake is the same as Alder Lake.
+Add new PCIIDs of IMC for Raptor Lake.
 
-The ARM PMU code checks if all the events in a group belong to the
-same PMU except for software events.  But it didn't set the event_caps
-of inherited events and no longer identify them as software events.
-Therefore the test failed in a child process.
-
-A simple reproducer is:
-
-  $ perf stat -e '{cycles,cs,instructions}' perf bench sched messaging
-  # Running 'sched/messaging' benchmark:
-  perf: fork(): Invalid argument
-
-The perf stat was fine but the perf bench failed in fork().  Let's
-inherit the event caps from the parent.
-
-Signed-off-by: Namhyung Kim <namhyung@kernel.org>
+Signed-off-by: Kan Liang <kan.liang@intel.com>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Cc: <stable@vger.kernel.org>
-Link: https://lkml.kernel.org/r/20220328200112.457740-1-namhyung@kernel.org
+Link: https://lore.kernel.org/r/1647366360-82824-4-git-send-email-kan.liang@linux.intel.com
 ---
- kernel/events/core.c | 3 +++
- 1 file changed, 3 insertions(+)
+ arch/x86/events/intel/uncore.c     |  1 +
+ arch/x86/events/intel/uncore_snb.c | 20 ++++++++++++++++++++
+ 2 files changed, 21 insertions(+)
 
-diff --git a/kernel/events/core.c b/kernel/events/core.c
-index cfde994..3980efc 100644
---- a/kernel/events/core.c
-+++ b/kernel/events/core.c
-@@ -11635,6 +11635,9 @@ perf_event_alloc(struct perf_event_attr *attr, int cpu,
+diff --git a/arch/x86/events/intel/uncore.c b/arch/x86/events/intel/uncore.c
+index e497da9..7695dca 100644
+--- a/arch/x86/events/intel/uncore.c
++++ b/arch/x86/events/intel/uncore.c
+@@ -1828,6 +1828,7 @@ static const struct x86_cpu_id intel_uncore_match[] __initconst = {
+ 	X86_MATCH_INTEL_FAM6_MODEL(ROCKETLAKE,		&rkl_uncore_init),
+ 	X86_MATCH_INTEL_FAM6_MODEL(ALDERLAKE,		&adl_uncore_init),
+ 	X86_MATCH_INTEL_FAM6_MODEL(ALDERLAKE_L,		&adl_uncore_init),
++	X86_MATCH_INTEL_FAM6_MODEL(RAPTORLAKE,		&adl_uncore_init),
+ 	X86_MATCH_INTEL_FAM6_MODEL(SAPPHIRERAPIDS_X,	&spr_uncore_init),
+ 	X86_MATCH_INTEL_FAM6_MODEL(ATOM_TREMONT_D,	&snr_uncore_init),
+ 	{},
+diff --git a/arch/x86/events/intel/uncore_snb.c b/arch/x86/events/intel/uncore_snb.c
+index f698a55..4262351 100644
+--- a/arch/x86/events/intel/uncore_snb.c
++++ b/arch/x86/events/intel/uncore_snb.c
+@@ -79,6 +79,10 @@
+ #define PCI_DEVICE_ID_INTEL_ADL_14_IMC		0x4650
+ #define PCI_DEVICE_ID_INTEL_ADL_15_IMC		0x4668
+ #define PCI_DEVICE_ID_INTEL_ADL_16_IMC		0x4670
++#define PCI_DEVICE_ID_INTEL_RPL_1_IMC		0xA700
++#define PCI_DEVICE_ID_INTEL_RPL_2_IMC		0xA702
++#define PCI_DEVICE_ID_INTEL_RPL_3_IMC		0xA706
++#define PCI_DEVICE_ID_INTEL_RPL_4_IMC		0xA709
  
- 	event->state		= PERF_EVENT_STATE_INACTIVE;
- 
-+	if (parent_event)
-+		event->event_caps = parent_event->event_caps;
-+
- 	if (event->attr.sigtrap)
- 		atomic_set(&event->event_limit, 1);
+ /* SNB event control */
+ #define SNB_UNC_CTL_EV_SEL_MASK			0x000000ff
+@@ -1406,6 +1410,22 @@ static const struct pci_device_id tgl_uncore_pci_ids[] = {
+ 		PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ADL_16_IMC),
+ 		.driver_data = UNCORE_PCI_DEV_DATA(SNB_PCI_UNCORE_IMC, 0),
+ 	},
++	{ /* IMC */
++		PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_RPL_1_IMC),
++		.driver_data = UNCORE_PCI_DEV_DATA(SNB_PCI_UNCORE_IMC, 0),
++	},
++	{ /* IMC */
++		PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_RPL_2_IMC),
++		.driver_data = UNCORE_PCI_DEV_DATA(SNB_PCI_UNCORE_IMC, 0),
++	},
++	{ /* IMC */
++		PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_RPL_3_IMC),
++		.driver_data = UNCORE_PCI_DEV_DATA(SNB_PCI_UNCORE_IMC, 0),
++	},
++	{ /* IMC */
++		PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_RPL_4_IMC),
++		.driver_data = UNCORE_PCI_DEV_DATA(SNB_PCI_UNCORE_IMC, 0),
++	},
+ 	{ /* end: all zeroes */ }
+ };
  
