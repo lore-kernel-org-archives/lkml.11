@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3470CC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:30:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D3D8C47085
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:30:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356301AbiDEKXg (ORCPT
+        id S1358175AbiDEK2D (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:23:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47170 "EHLO
+        Tue, 5 Apr 2022 06:28:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241223AbiDEIc4 (ORCPT
+        with ESMTP id S241058AbiDEIcq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:32:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFF5F2AB;
-        Tue,  5 Apr 2022 01:29:52 -0700 (PDT)
+        Tue, 5 Apr 2022 04:32:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8424FB7C7C;
+        Tue,  5 Apr 2022 01:26:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 95BA6B81A32;
-        Tue,  5 Apr 2022 08:29:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BF63C385A2;
-        Tue,  5 Apr 2022 08:29:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3382CB81BB1;
+        Tue,  5 Apr 2022 08:26:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 980D4C385A2;
+        Tue,  5 Apr 2022 08:26:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147390;
-        bh=/yt+JKhK1iOBl6Kc9z8/VMaIFaoyhQMuQvEUN61MtuY=;
+        s=korg; t=1649147177;
+        bh=TXAqIdFMEEkScL85/37F5/yeRh/4iZdkkLq9HqytGa8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dAlnEfPTIM68bdQvbC1wtLOpc18vCL51HRTJYf8DyO4BvKZ4QBPo7rQ64GVqMS1Ux
-         iZ/nh1a99IDHG25ftd1I8LaOQ+Ez3ORahJQrPuke/fHVBxxyjqBU2KT5aoYfEzNIH1
-         xd0hKT5ASTe8trrtykhucl2kXbNH+pPOrTzfSo7E=
+        b=LQcilQWJXya6mjReHbV//yGvNvg7ejB6Y8fPl3IZxw7luRh4890T+H3JAQFOxkfq7
+         jX3eQVFepsoXFnvBb8kEDW5jOxWpD1HLYhV1x6yMfcQcGA2thmG2WQySMShS/eq5lO
+         droya/RAvbbY+oh2syOgo2p2tSTfgl6mnD3n0tQU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Leilk Liu <leilk.liu@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.17 1107/1126] spi: mediatek: support tick_delay without enhance_timing
-Date:   Tue,  5 Apr 2022 09:30:54 +0200
-Message-Id: <20220405070439.931731785@linuxfoundation.org>
+        stable@vger.kernel.org, Andreas Gruenbacher <agruenba@redhat.com>
+Subject: [PATCH 5.17 1029/1126] gfs2: gfs2_setattr_size error path fix
+Date:   Tue,  5 Apr 2022 09:29:36 +0200
+Message-Id: <20220405070437.682711332@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,54 +48,109 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Leilk Liu <leilk.liu@mediatek.com>
+From: Andreas Gruenbacher <agruenba@redhat.com>
 
-commit 03b1be379dcee2e9c866c2a455a1a4a9581b3efd upstream.
+commit 7336905a89f19173bf9301cd50a24421162f417c upstream.
 
-this patch support tick_delay bit[31:30] without enhance_timing feature.
+When gfs2_setattr_size() fails, it calls gfs2_rs_delete(ip, NULL) to get
+rid of any reservations the inode may have.  Instead, it should pass in
+the inode's write count as the second parameter to allow
+gfs2_rs_delete() to figure out if the inode has any writers left.
 
-Fixes: f84d866ab43f("spi: mediatek: add tick_delay support")
-Signed-off-by: Leilk Liu <leilk.liu@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Link: https://lore.kernel.org/r/20220315032411.2826-2-leilk.liu@mediatek.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+In a next step, there are two instances of gfs2_rs_delete(ip, NULL) left
+where we know that there can be no other users of the inode.  Replace
+those with gfs2_rs_deltree(&ip->i_res) to avoid the unnecessary write
+count check.
+
+With that, gfs2_rs_delete() is only called with the inode's actual write
+count, so get rid of the second parameter.
+
+Fixes: a097dc7e24cb ("GFS2: Make rgrp reservations part of the gfs2_inode structure")
+Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/spi/spi-mt65xx.c |   15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+ fs/gfs2/bmap.c  |    2 +-
+ fs/gfs2/file.c  |    2 +-
+ fs/gfs2/inode.c |    2 +-
+ fs/gfs2/rgrp.c  |    7 ++++---
+ fs/gfs2/rgrp.h  |    2 +-
+ fs/gfs2/super.c |    2 +-
+ 6 files changed, 9 insertions(+), 8 deletions(-)
 
---- a/drivers/spi/spi-mt65xx.c
-+++ b/drivers/spi/spi-mt65xx.c
-@@ -43,8 +43,11 @@
- #define SPI_CFG1_PACKET_LOOP_OFFSET       8
- #define SPI_CFG1_PACKET_LENGTH_OFFSET     16
- #define SPI_CFG1_GET_TICK_DLY_OFFSET      29
-+#define SPI_CFG1_GET_TICK_DLY_OFFSET_V1   30
+--- a/fs/gfs2/bmap.c
++++ b/fs/gfs2/bmap.c
+@@ -2146,7 +2146,7 @@ int gfs2_setattr_size(struct inode *inod
  
- #define SPI_CFG1_GET_TICK_DLY_MASK        0xe0000000
-+#define SPI_CFG1_GET_TICK_DLY_MASK_V1     0xc0000000
+ 	ret = do_shrink(inode, newsize);
+ out:
+-	gfs2_rs_delete(ip, NULL);
++	gfs2_rs_delete(ip);
+ 	gfs2_qa_put(ip);
+ 	return ret;
+ }
+--- a/fs/gfs2/file.c
++++ b/fs/gfs2/file.c
+@@ -706,7 +706,7 @@ static int gfs2_release(struct inode *in
+ 
+ 	if (file->f_mode & FMODE_WRITE) {
+ 		if (gfs2_rs_active(&ip->i_res))
+-			gfs2_rs_delete(ip, &inode->i_writecount);
++			gfs2_rs_delete(ip);
+ 		gfs2_qa_put(ip);
+ 	}
+ 	return 0;
+--- a/fs/gfs2/inode.c
++++ b/fs/gfs2/inode.c
+@@ -793,7 +793,7 @@ fail_free_inode:
+ 		if (free_vfs_inode) /* else evict will do the put for us */
+ 			gfs2_glock_put(ip->i_gl);
+ 	}
+-	gfs2_rs_delete(ip, NULL);
++	gfs2_rs_deltree(&ip->i_res);
+ 	gfs2_qa_put(ip);
+ fail_free_acls:
+ 	posix_acl_release(default_acl);
+--- a/fs/gfs2/rgrp.c
++++ b/fs/gfs2/rgrp.c
+@@ -680,13 +680,14 @@ void gfs2_rs_deltree(struct gfs2_blkrese
+ /**
+  * gfs2_rs_delete - delete a multi-block reservation
+  * @ip: The inode for this reservation
+- * @wcount: The inode's write count, or NULL
+  *
+  */
+-void gfs2_rs_delete(struct gfs2_inode *ip, atomic_t *wcount)
++void gfs2_rs_delete(struct gfs2_inode *ip)
+ {
++	struct inode *inode = &ip->i_inode;
 +
- #define SPI_CFG1_CS_IDLE_MASK             0xff
- #define SPI_CFG1_PACKET_LOOP_MASK         0xff00
- #define SPI_CFG1_PACKET_LENGTH_MASK       0x3ff0000
-@@ -346,9 +349,15 @@ static int mtk_spi_prepare_message(struc
+ 	down_write(&ip->i_rw_mutex);
+-	if ((wcount == NULL) || (atomic_read(wcount) <= 1))
++	if (atomic_read(&inode->i_writecount) <= 1)
+ 		gfs2_rs_deltree(&ip->i_res);
+ 	up_write(&ip->i_rw_mutex);
+ }
+--- a/fs/gfs2/rgrp.h
++++ b/fs/gfs2/rgrp.h
+@@ -45,7 +45,7 @@ extern int gfs2_alloc_blocks(struct gfs2
+ 			     bool dinode, u64 *generation);
  
- 	/* tick delay */
- 	reg_val = readl(mdata->base + SPI_CFG1_REG);
--	reg_val &= ~SPI_CFG1_GET_TICK_DLY_MASK;
--	reg_val |= ((chip_config->tick_delay & 0x7)
--		<< SPI_CFG1_GET_TICK_DLY_OFFSET);
-+	if (mdata->dev_comp->enhance_timing) {
-+		reg_val &= ~SPI_CFG1_GET_TICK_DLY_MASK;
-+		reg_val |= ((chip_config->tick_delay & 0x7)
-+			    << SPI_CFG1_GET_TICK_DLY_OFFSET);
-+	} else {
-+		reg_val &= ~SPI_CFG1_GET_TICK_DLY_MASK_V1;
-+		reg_val |= ((chip_config->tick_delay & 0x3)
-+			    << SPI_CFG1_GET_TICK_DLY_OFFSET_V1);
-+	}
- 	writel(reg_val, mdata->base + SPI_CFG1_REG);
- 
- 	/* set hw cs timing */
+ extern void gfs2_rs_deltree(struct gfs2_blkreserv *rs);
+-extern void gfs2_rs_delete(struct gfs2_inode *ip, atomic_t *wcount);
++extern void gfs2_rs_delete(struct gfs2_inode *ip);
+ extern void __gfs2_free_blocks(struct gfs2_inode *ip, struct gfs2_rgrpd *rgd,
+ 			       u64 bstart, u32 blen, int meta);
+ extern void gfs2_free_meta(struct gfs2_inode *ip, struct gfs2_rgrpd *rgd,
+--- a/fs/gfs2/super.c
++++ b/fs/gfs2/super.c
+@@ -1396,7 +1396,7 @@ out:
+ 	truncate_inode_pages_final(&inode->i_data);
+ 	if (ip->i_qadata)
+ 		gfs2_assert_warn(sdp, ip->i_qadata->qa_ref == 0);
+-	gfs2_rs_delete(ip, NULL);
++	gfs2_rs_deltree(&ip->i_res);
+ 	gfs2_ordered_del_inode(ip);
+ 	clear_inode(inode);
+ 	gfs2_dir_hash_inval(ip);
 
 
