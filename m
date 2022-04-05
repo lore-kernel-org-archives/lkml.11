@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E3C6C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:48:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E07B1C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:49:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240312AbiDEOti (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:49:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50096 "EHLO
+        id S237294AbiDEOuS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 10:50:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244522AbiDEJl1 (ORCPT
+        with ESMTP id S244571AbiDEJl2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:41:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1AEDBB937;
-        Tue,  5 Apr 2022 02:26:43 -0700 (PDT)
+        Tue, 5 Apr 2022 05:41:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9977BBBE10;
+        Tue,  5 Apr 2022 02:27:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3E5106144D;
-        Tue,  5 Apr 2022 09:26:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A686C385A0;
-        Tue,  5 Apr 2022 09:26:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 485A5B81C9A;
+        Tue,  5 Apr 2022 09:27:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89B53C385A3;
+        Tue,  5 Apr 2022 09:27:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150802;
-        bh=x/BbDqLS16fO//8ZLAlr4JSJFLAy2lcDbX54ZoBLp9w=;
+        s=korg; t=1649150824;
+        bh=DIBJSdJ7/F1mbe5TZyxhKa2m2oXkLeHOlDu9Swx2JDw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HiMzOj8APaba8HY4NENe3dHw838oOhzhGfUZYAA3ZObTFfjdZarOdhbo7+XeIf8Ri
-         uXByylLInGAXvOfMz8xXrRhA0iGeBc4hZ6r5NQW0/ssiFaN3hSq6CF1VQR++kjboSj
-         nwZydrpW5NqmFEsvw9lNNCs/fJqQ6RdcRBQCQfe8=
+        b=t79tZO/xwwMHu7M4hprZpY5pzs4t+/gG0SmA3PcpvfBuEijV6n/PSQjDbs9rrhDPE
+         V0QAwpmaucdYtDcbVAu+BMGeRC1n/7dno4or4Dhd2SQozl7ve8zVCYgaeovBfzLkCu
+         PbJj224P8fpYTuReCR3jSJcVNAQeiFOiM33/fxYY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Liguang Zhang <zhangliguang@linux.alibaba.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Lukas Wunner <lukas@wunner.de>
-Subject: [PATCH 5.15 187/913] PCI: pciehp: Clear cmd_busy bit in polling mode
-Date:   Tue,  5 Apr 2022 09:20:49 +0200
-Message-Id: <20220405070345.461700722@linuxfoundation.org>
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 194/913] hwrng: cavium - HW_RANDOM_CAVIUM should depend on ARCH_THUNDER
+Date:   Tue,  5 Apr 2022 09:20:56 +0200
+Message-Id: <20220405070345.674142051@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -50,53 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liguang Zhang <zhangliguang@linux.alibaba.com>
+From: Geert Uytterhoeven <geert+renesas@glider.be>
 
-commit 92912b175178c7e895f5e5e9f1e30ac30319162b upstream.
+[ Upstream commit ab7d88549e2f7ae116afd303f32e1950cb790a1d ]
 
-Writes to a Downstream Port's Slot Control register are PCIe hotplug
-"commands."  If the Port supports Command Completed events, software must
-wait for a command to complete before writing to Slot Control again.
+The Cavium ThunderX Random Number Generator is only present on Cavium
+ThunderX SoCs, and not available as an independent PCIe endpoint.  Hence
+add a dependency on ARCH_THUNDER, to prevent asking the user about this
+driver when configuring a kernel without Cavium Thunder SoC  support.
 
-pcie_do_write_cmd() sets ctrl->cmd_busy when it writes to Slot Control.  If
-software notification is enabled, i.e., PCI_EXP_SLTCTL_HPIE and
-PCI_EXP_SLTCTL_CCIE are set, ctrl->cmd_busy is cleared by pciehp_isr().
-
-But when software notification is disabled, as it is when pcie_init()
-powers off an empty slot, pcie_wait_cmd() uses pcie_poll_cmd() to poll for
-command completion, and it neglects to clear ctrl->cmd_busy, which leads to
-spurious timeouts:
-
-  pcieport 0000:00:03.0: pciehp: Timeout on hotplug command 0x01c0 (issued 2264 msec ago)
-  pcieport 0000:00:03.0: pciehp: Timeout on hotplug command 0x05c0 (issued 2288 msec ago)
-
-Clear ctrl->cmd_busy in pcie_poll_cmd() when it detects a Command Completed
-event (PCI_EXP_SLTSTA_CC).
-
-[bhelgaas: commit log]
-Fixes: a5dd4b4b0570 ("PCI: pciehp: Wait for hotplug command completion where necessary")
-Link: https://lore.kernel.org/r/20211111054258.7309-1-zhangliguang@linux.alibaba.com
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215143
-Link: https://lore.kernel.org/r/20211126173309.GA12255@wunner.de
-Signed-off-by: Liguang Zhang <zhangliguang@linux.alibaba.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Reviewed-by: Lukas Wunner <lukas@wunner.de>
-Cc: stable@vger.kernel.org	# v4.19+
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: cc2f1908c6b8f625 ("hwrng: cavium - Add Cavium HWRNG driver for ThunderX SoC.")
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/hotplug/pciehp_hpc.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/char/hw_random/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/pci/hotplug/pciehp_hpc.c
-+++ b/drivers/pci/hotplug/pciehp_hpc.c
-@@ -98,6 +98,8 @@ static int pcie_poll_cmd(struct controll
- 		if (slot_status & PCI_EXP_SLTSTA_CC) {
- 			pcie_capability_write_word(pdev, PCI_EXP_SLTSTA,
- 						   PCI_EXP_SLTSTA_CC);
-+			ctrl->cmd_busy = 0;
-+			smp_mb();
- 			return 1;
- 		}
- 		msleep(10);
+diff --git a/drivers/char/hw_random/Kconfig b/drivers/char/hw_random/Kconfig
+index d71c5f570932..650c7d918080 100644
+--- a/drivers/char/hw_random/Kconfig
++++ b/drivers/char/hw_random/Kconfig
+@@ -414,7 +414,7 @@ config HW_RANDOM_MESON
+ 
+ config HW_RANDOM_CAVIUM
+ 	tristate "Cavium ThunderX Random Number Generator support"
+-	depends on HW_RANDOM && PCI && ARM64
++	depends on HW_RANDOM && PCI && ARCH_THUNDER
+ 	default HW_RANDOM
+ 	help
+ 	  This driver provides kernel-side support for the Random Number
+-- 
+2.34.1
+
 
 
