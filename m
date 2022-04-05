@@ -2,113 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 212A0C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:54:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40DDBC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:54:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1845024AbiDFBxm (ORCPT
+        id S1845038AbiDFBxr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:53:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38036 "EHLO
+        Tue, 5 Apr 2022 21:53:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573046AbiDERsu (ORCPT
+        with ESMTP id S1348994AbiDEJsw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 13:48:50 -0400
-Received: from hosting.gsystem.sk (hosting.gsystem.sk [212.5.213.30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 034E4D1111
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 10:46:48 -0700 (PDT)
-Received: from [192.168.0.2] (chello089173232159.chello.sk [89.173.232.159])
+        Tue, 5 Apr 2022 05:48:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83784BE34;
+        Tue,  5 Apr 2022 02:38:47 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by hosting.gsystem.sk (Postfix) with ESMTPSA id 891F17A04A9;
-        Tue,  5 Apr 2022 19:46:46 +0200 (CEST)
-From:   Ondrej Zary <linux@zary.sk>
-To:     Helge Deller <deller@gmx.de>
-Subject: Re: [BUG] fbdev: i740fb: Divide error when =?utf-8?q?=E2=80=98var-?=>=?utf-8?q?pixclock=E2=80=99_is?= zero
-Date:   Tue, 5 Apr 2022 19:46:43 +0200
-User-Agent: KMail/1.9.10
-Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Zheyu Ma <zheyuma97@gmail.com>,
-        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <CAMhUBjmFhqTLBscHHVZ1VTSqrJBT1VEevA+KkjY+y9_ZtdRkMg@mail.gmail.com> <CAMuHMdUiEo8q9x0C0x5zOM=ax1=S06=s0JjcJvZYD4aMGLmEaQ@mail.gmail.com> <a564f6af-31fa-79a2-72c3-578f2c095b23@gmx.de>
-In-Reply-To: <a564f6af-31fa-79a2-72c3-578f2c095b23@gmx.de>
-X-KMail-QuotePrefix: > 
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1A3F3615E5;
+        Tue,  5 Apr 2022 09:38:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22029C385A2;
+        Tue,  5 Apr 2022 09:38:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151526;
+        bh=4GVNTj2YOOxt86du6z4LnhR8s7JceT8i+SaFiQdlXpA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=R3QNB2cvd8TPd4MLu1iY2GvbOOv3rsBykY41gKfsRNdJ8s9S2fnqAZaplMrTQNuGR
+         DdMrVRGsQwqUQqKzAnY2HAh+EbEpfUKAJV0gdzayxTkd9Hg20FMIEarhjwUpEfxoQO
+         FEA1aGYZNI1v+38qCDmK/+3hn1xIWwO0BrEgUpao=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        =?UTF-8?q?Alex=20Benn=C3=A9e?= <alex.bennee@linaro.org>,
+        Ben Widawsky <ben.widawsky@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 446/913] cxl/regs: Fix size of CXL Capability Header Register
+Date:   Tue,  5 Apr 2022 09:25:08 +0200
+Message-Id: <20220405070353.216070330@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <202204051946.43277.linux@zary.sk>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
+[ Upstream commit 74b0fe80409733055971bbfaf33c80a33fddeeb3 ]
 
-On Tuesday 05 April 2022 08:33:57 Helge Deller wrote:
-> Hello Geert,
-> 
-> On 4/4/22 13:46, Geert Uytterhoeven wrote:
-> > Hi Helge,
-> >
-> > On Sun, Apr 3, 2022 at 5:41 PM Helge Deller <deller@gmx.de> wrote:
-> >> On 4/3/22 13:26, Zheyu Ma wrote:
-> >>> I found a bug in the function i740fb_set_par().
-> >>
-> >> Nice catch!
-> >>
-> >>> When the user calls the ioctl system call without setting the value to
-> >>> 'var->pixclock', the driver will throw a divide error.
-> >>>
-> >>> This bug occurs because the driver uses the value of 'var->pixclock'
-> >>> without checking it, as the following code snippet show:
-> >>>
-> >>> if ((1000000 / var->pixclock) > DACSPEED8) {
-> >>>      dev_err(info->device, "requested pixclock %i MHz out of range
-> >>> (max. %i MHz at 8bpp)\n",
-> >>>          1000000 / var->pixclock, DACSPEED8);
-> >>>     return -EINVAL;x
-> >>> }
-> >>>
-> >>> We can fix this by checking the value of 'var->pixclock' in the
-> >>> function i740fb_check_var() similar to commit
-> >>> b36b242d4b8ea178f7fd038965e3cac7f30c3f09, or we should set the lowest
-> >>> supported value when this field is zero.
-> >>> I have no idea about which solution is better.
-> >>
-> >> Me neither.
-> >> I think a solution like commit b36b242d4b8ea178f7fd038965e3cac7f30c3f09
-> >> is sufficient.
-> >>
-> >> Note that i740fb_set_par() is called in i740fb_resume() as well.
-> >> Since this doesn't comes form userspace I think adding a check for
-> >> the return value there isn't necessary.
-> >>
-> >> Would you mind sending a patch like b36b242d4b8ea178f7fd038965e3cac7f30c3f09 ?
-> >
-> > When passed an invalid value, .check_var() is supposed to
-> > round up the invalid to a valid value, if possible.
-> 
-> I don't disagree.
-> The main problem probably is: what is the next valid value?
-> This needs to be analyzed on a per-driver base and ideally tested.
-> Right now a division-by-zero is tiggered which is probably more worse.
+In CXL 2.0, 8.2.5.1 CXL Capability Header Register: this register
+is given as 32 bits.
 
-I still have an i740 card so I can test it.
+8.2.3 which covers the CXL 2.0 Component registers, including the
+CXL Capability Header Register states that access restrictions
+specified in Section 8.2.2 apply.
 
-> That said, currently I'd prefer to apply the zero-checks patches over
-> any untested patches. It's easy to revert such checks if a better solution
-> becomes available.
-> 
-> Thoughts?
-> 
-> > Commit b36b242d4b8ea178 ("video: fbdev: asiliantfb: Error out if
-> > 'pixclock' equals zero") does not do that.
-> 
-> Helge
-> 
+8.2.2 includes:
+* A 32 bit register shall be accessed as a 4 Byte quantity.
+...
+If these rules are not followed, the behavior is undefined.
 
+Discovered during review of CXL QEMU emulation. Alex Bennée pointed
+out there was a comment saying that 4 byte registers must be read
+with a 4 byte read, but 8 byte reads were being emulated.
 
+https://lore.kernel.org/qemu-devel/87bkzyd3c7.fsf@linaro.org/
+
+Fixing that, led to this code failing. Whilst a given hardware
+implementation 'might' work with an 8 byte read, it should not be relied
+upon. The QEMU emulation v5 will return 0 and log the wrong access width.
+
+The code moved, so one fixes tag for where this will directly apply and
+also a reference to the earlier introduction of the code for backports.
+
+Fixes: 0f06157e0135 ("cxl/core: Move register mapping infrastructure")
+Fixes: 08422378c4ad ("cxl/pci: Add HDM decoder capabilities")
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc: Alex Bennée <alex.bennee@linaro.org>
+Reviewed-by: Ben Widawsky <ben.widawsky@intel.com>
+Link: https://lore.kernel.org/r/20220201153437.2873-1-Jonathan.Cameron@huawei.com
+Signed-off-by: Dan Williams <dan.j.williams@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/cxl/core/regs.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/cxl/core/regs.c b/drivers/cxl/core/regs.c
+index b8aa583a7642..2e7027a3fef3 100644
+--- a/drivers/cxl/core/regs.c
++++ b/drivers/cxl/core/regs.c
+@@ -35,7 +35,7 @@ void cxl_probe_component_regs(struct device *dev, void __iomem *base,
+ 			      struct cxl_component_reg_map *map)
+ {
+ 	int cap, cap_count;
+-	u64 cap_array;
++	u32 cap_array;
+ 
+ 	*map = (struct cxl_component_reg_map) { 0 };
+ 
+@@ -45,7 +45,7 @@ void cxl_probe_component_regs(struct device *dev, void __iomem *base,
+ 	 */
+ 	base += CXL_CM_OFFSET;
+ 
+-	cap_array = readq(base + CXL_CM_CAP_HDR_OFFSET);
++	cap_array = readl(base + CXL_CM_CAP_HDR_OFFSET);
+ 
+ 	if (FIELD_GET(CXL_CM_CAP_HDR_ID_MASK, cap_array) != CM_CAP_HDR_CAP_ID) {
+ 		dev_err(dev,
 -- 
-Ondrej Zary
+2.34.1
+
+
+
