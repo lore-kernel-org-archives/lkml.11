@@ -2,90 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85474C35280
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:34:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B033C4167D
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:34:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1575512AbiDEXIE (ORCPT
+        id S1575554AbiDEXIO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:08:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57682 "EHLO
+        Tue, 5 Apr 2022 19:08:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356125AbiDEKW7 (ORCPT
+        with ESMTP id S1457669AbiDEQcQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:22:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42314B7169;
-        Tue,  5 Apr 2022 03:06:28 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Tue, 5 Apr 2022 12:32:16 -0400
+Received: from ms.lwn.net (ms.lwn.net [45.79.88.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79B47BF00A;
+        Tue,  5 Apr 2022 09:30:17 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:281:8300:35:2589:2a93:190d:b787])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EEBAAB81C8B;
-        Tue,  5 Apr 2022 10:06:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39579C385A1;
-        Tue,  5 Apr 2022 10:06:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153185;
-        bh=EIqZGIC3MEY6zK++/3lavNvUv7djR+iZn/Z4aFTomR0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MlqGPqZrka7B7VyvIQ5jLmqWkaqX/E+H5xVYym/dRzmiAXcf4mD2m8QmZWowXXIVQ
-         XnV8UTdtzEgvf0TBmXSECnaGo031A9lhyEmlhaY1cmqiDdZTcvP+xqonWXWM/Qe2NY
-         UMCfaQFr8z/+2eCFGZm87R+gIq/qMtiz/Uv7pkVs=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Corentin Labbe <clabbe.montjoie@gmail.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 133/599] crypto: authenc - Fix sleep in atomic context in decrypt_tail
-Date:   Tue,  5 Apr 2022 09:27:07 +0200
-Message-Id: <20220405070302.799140357@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by ms.lwn.net (Postfix) with ESMTPSA id B8E77608;
+        Tue,  5 Apr 2022 16:30:16 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net B8E77608
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
+        t=1649176216; bh=yij2fHsXTf4G+j5va51uVCSzBxLR4AmBmwSualkA3To=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=Re3UZ78E/X9xogYjhRmUCeC4BE4weHRkssFjQKYLpcfQMFb08YPhHw7SiVat969tp
+         UIIIuQKlsW7Lrhae31WV/th451Jr1Lqxm3qrFHIYtujgvKBS1CFKjupfE5eLVgRKz4
+         t2zS2kqzcqqQIzL/zFeM/7UYBWQ7rH0edgWhAtgFRUdVEIj/3NQXEP+aMONZbzxcdF
+         EbDlooIGHHxn+vlhyTkxxNfDtOrp7dmAkzfrPQ6Qclz1RA3w+ibWAR3eqAb9orpp11
+         DDdm7FUr4OJcewWt1TyeSmV2blaPxifx/D2W6BkGs04A9OL6h+0BC/CXD0CLNNts94
+         dETfHvbBpCP9Q==
+From:   Jonathan Corbet <corbet@lwn.net>
+To:     Chin En Lin <shiyn.lin@gmail.com>
+Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
+        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
+        Chin En Lin <shiyn.lin@gmail.com>
+Subject: Re: [PATCH v2] Documentation: x86: Fix obsolete name of page fault
+ handler
+In-Reply-To: <20220318142536.116761-1-shiyn.lin@gmail.com>
+References: <20220318142536.116761-1-shiyn.lin@gmail.com>
+Date:   Tue, 05 Apr 2022 10:30:16 -0600
+Message-ID: <878rsjebmv.fsf@meer.lwn.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Herbert Xu <herbert@gondor.apana.org.au>
+Chin En Lin <shiyn.lin@gmail.com> writes:
 
-[ Upstream commit 66eae850333d639fc278d6f915c6fc01499ea893 ]
+> Since commit 91eeafea1e4b ("x86/entry: Switch page fault exception to
+> IDTENTRY_RAW"), the function name of the page fault handler is out of date.
+> And because of commit aa37c51b9421 ("x86/mm: Break out user address space
+> handling"), the description of search_exception_table is not correct
+> anymore. It may mislead the user who wants to use the documentation to
+> figure out the page fault handler.
+>
+> Also, fix typo and add the parentheses after function and macro name.
 
-The function crypto_authenc_decrypt_tail discards its flags
-argument and always relies on the flags from the original request
-when starting its sub-request.
+"Also" in a changelog like this is an indication that you've moved on to
+an independent change that should be done as its own patch.  That is
+certainly true of typo fixes and such, which should be separated out
+from more substantive changes.
 
-This is clearly wrong as it may cause the SLEEPABLE flag to be
-set when it shouldn't.
+> Signed-off-by: Chin En Lin <shiyn.lin@gmail.com>
+> ---
+>  Documentation/x86/exception-tables.rst | 23 +++++++++++++----------
+>  1 file changed, 13 insertions(+), 10 deletions(-)
 
-Fixes: 92d95ba91772 ("crypto: authenc - Convert to new AEAD interface")
-Reported-by: Corentin Labbe <clabbe.montjoie@gmail.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-Tested-by: Corentin Labbe <clabbe.montjoie@gmail.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- crypto/authenc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Nonetheless, the patch seems clear enough and nobody has objected, so
+I've applied it.
 
-diff --git a/crypto/authenc.c b/crypto/authenc.c
-index 670bf1a01d00..17f674a7cdff 100644
---- a/crypto/authenc.c
-+++ b/crypto/authenc.c
-@@ -253,7 +253,7 @@ static int crypto_authenc_decrypt_tail(struct aead_request *req,
- 		dst = scatterwalk_ffwd(areq_ctx->dst, req->dst, req->assoclen);
- 
- 	skcipher_request_set_tfm(skreq, ctx->enc);
--	skcipher_request_set_callback(skreq, aead_request_flags(req),
-+	skcipher_request_set_callback(skreq, flags,
- 				      req->base.complete, req->base.data);
- 	skcipher_request_set_crypt(skreq, src, dst,
- 				   req->cryptlen - authsize, req->iv);
--- 
-2.34.1
+Thanks,
 
-
-
+jon
