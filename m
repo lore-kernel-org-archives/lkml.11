@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BE1FC35274
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6DBAC3527E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:06:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354823AbiDEOCU (ORCPT
+        id S1355865AbiDEOCs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:02:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44548 "EHLO
+        Tue, 5 Apr 2022 10:02:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235407AbiDEJaT (ORCPT
+        with ESMTP id S235427AbiDEJah (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:30:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C73140A1C;
-        Tue,  5 Apr 2022 02:17:09 -0700 (PDT)
+        Tue, 5 Apr 2022 05:30:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0338E5414;
+        Tue,  5 Apr 2022 02:17:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C6527B818F3;
-        Tue,  5 Apr 2022 09:17:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E284C385A0;
-        Tue,  5 Apr 2022 09:17:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4E7A1615E4;
+        Tue,  5 Apr 2022 09:17:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A9BDC385A3;
+        Tue,  5 Apr 2022 09:17:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150226;
-        bh=n6zyPSIkFvCLdD5kBxfGwkFctlLJmjTygZHO/L9jPmc=;
+        s=korg; t=1649150259;
+        bh=6bkja0LTQHSZqPVobeIryLZm/EoL6/GJ5Tl85AYkTlQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XIt2SK294Pob+ktIQMU7QpASBAtcYIUic2T6S6Wphscwc0IiI8+ZG2WftKzkb3Ifn
-         UgTetWlHHgwch7YIBpVDHABDf6q9tc4uRqUv7IYC9r5U5pqcTOe8lB60mZj7jcufzT
-         iYQ3AcVNMjfcmEK7Ly2hTRI6NCZJvcxJxhFMYtcU=
+        b=1mj3XuvF2/w29lPKccFcuHDwIEovtmFb1znAKobbCw11kL/YlnahWPJcaUmII9gXJ
+         k6uKbnMBmdmcXEtj60yWv+f8wXUWZpVteU3MHgAGZjhHnTH5RBmBD5gJCjG4wwk6+a
+         tSmb32LSCRNIDARieQaSrwDddgtiq9mYLyqVXxIA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ewan Milne <emilne@redhat.com>,
-        Himanshu Madhani <himanshu.madhani@oracle.com>,
-        Saurav Kashyap <skashyap@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.16 0962/1017] scsi: qla2xxx: Add qla2x00_async_done() for async routines
-Date:   Tue,  5 Apr 2022 09:31:15 +0200
-Message-Id: <20220405070422.762944523@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        kernel test robot <lkp@intel.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>
+Subject: [PATCH 5.16 1012/1017] mmc: rtsx: Fix build errors/warnings for unused variable
+Date:   Tue,  5 Apr 2022 09:32:05 +0200
+Message-Id: <20220405070424.236537241@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -52,60 +51,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Saurav Kashyap <skashyap@marvell.com>
+From: Ulf Hansson <ulf.hansson@linaro.org>
 
-commit 49b729f58e7a98a006a8a0c1dcca8a1a4f58d2a8 upstream.
+commit 3dd9a926ec2308e49445f22abef149fc64e9332e upstream.
 
-This done routine will delete the timer and check for its return value and
-decrease the reference count accordingly. This prevents boot hangs reported
-after commit 31e6cdbe0eae ("scsi: qla2xxx: Implement ref count for SRB")
-was merged.
+The struct device *dev, is no longer needed at various functions, let's
+therefore drop it to fix the build errors/warnings.
 
-Link: https://lore.kernel.org/r/20220208093946.4471-1-njavali@marvell.com
-Fixes: 31e6cdbe0eae ("scsi: qla2xxx: Implement ref count for SRB")
-Reported-by: Ewan Milne <emilne@redhat.com>
-Tested-by: Ewan D. Milne <emilne@redhat.com>
-Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Signed-off-by: Saurav Kashyap <skashyap@marvell.com>
-Signed-off-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Fixes: 7570fb41e450 ("mmc: rtsx: Let MMC core handle runtime PM")
+Cc: Kai-Heng Feng <kai.heng.feng@canonical.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Link: https://lore.kernel.org/r/20220301115300.64332-1-ulf.hansson@linaro.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/qla2xxx/qla_iocb.c |   17 ++++++++++++++++-
- 1 file changed, 16 insertions(+), 1 deletion(-)
+ drivers/mmc/host/rtsx_pci_sdmmc.c |    6 ------
+ 1 file changed, 6 deletions(-)
 
---- a/drivers/scsi/qla2xxx/qla_iocb.c
-+++ b/drivers/scsi/qla2xxx/qla_iocb.c
-@@ -2560,6 +2560,20 @@ qla24xx_tm_iocb(srb_t *sp, struct tsk_mg
- 	}
- }
+--- a/drivers/mmc/host/rtsx_pci_sdmmc.c
++++ b/drivers/mmc/host/rtsx_pci_sdmmc.c
+@@ -806,7 +806,6 @@ static void sd_request(struct work_struc
+ 	struct mmc_request *mrq = host->mrq;
+ 	struct mmc_command *cmd = mrq->cmd;
+ 	struct mmc_data *data = mrq->data;
+-	struct device *dev = &host->pdev->dev;
  
-+static void
-+qla2x00_async_done(struct srb *sp, int res)
-+{
-+	if (del_timer(&sp->u.iocb_cmd.timer)) {
-+		/*
-+		 * Successfully cancelled the timeout handler
-+		 * ref: TMR
-+		 */
-+		if (kref_put(&sp->cmd_kref, qla2x00_sp_release))
-+			return;
-+	}
-+	sp->async_done(sp, res);
-+}
-+
- void
- qla2x00_sp_release(struct kref *kref)
+ 	unsigned int data_size = 0;
+ 	int err;
+@@ -1081,7 +1080,6 @@ static void sdmmc_set_ios(struct mmc_hos
  {
-@@ -2573,7 +2587,8 @@ qla2x00_init_async_sp(srb_t *sp, unsigne
- 		     void (*done)(struct srb *sp, int res))
+ 	struct realtek_pci_sdmmc *host = mmc_priv(mmc);
+ 	struct rtsx_pcr *pcr = host->pcr;
+-	struct device *dev = &host->pdev->dev;
+ 
+ 	if (host->eject)
+ 		return;
+@@ -1130,7 +1128,6 @@ static int sdmmc_get_ro(struct mmc_host
  {
- 	timer_setup(&sp->u.iocb_cmd.timer, qla2x00_sp_timeout, 0);
--	sp->done = done;
-+	sp->done = qla2x00_async_done;
-+	sp->async_done = done;
- 	sp->free = qla2x00_sp_free;
- 	sp->u.iocb_cmd.timeout = qla2x00_async_iocb_timeout;
- 	sp->u.iocb_cmd.timer.expires = jiffies + tmo * HZ;
+ 	struct realtek_pci_sdmmc *host = mmc_priv(mmc);
+ 	struct rtsx_pcr *pcr = host->pcr;
+-	struct device *dev = &host->pdev->dev;
+ 	int ro = 0;
+ 	u32 val;
+ 
+@@ -1156,7 +1153,6 @@ static int sdmmc_get_cd(struct mmc_host
+ {
+ 	struct realtek_pci_sdmmc *host = mmc_priv(mmc);
+ 	struct rtsx_pcr *pcr = host->pcr;
+-	struct device *dev = &host->pdev->dev;
+ 	int cd = 0;
+ 	u32 val;
+ 
+@@ -1255,7 +1251,6 @@ static int sdmmc_switch_voltage(struct m
+ {
+ 	struct realtek_pci_sdmmc *host = mmc_priv(mmc);
+ 	struct rtsx_pcr *pcr = host->pcr;
+-	struct device *dev = &host->pdev->dev;
+ 	int err = 0;
+ 	u8 voltage;
+ 
+@@ -1308,7 +1303,6 @@ static int sdmmc_execute_tuning(struct m
+ {
+ 	struct realtek_pci_sdmmc *host = mmc_priv(mmc);
+ 	struct rtsx_pcr *pcr = host->pcr;
+-	struct device *dev = &host->pdev->dev;
+ 	int err = 0;
+ 
+ 	if (host->eject)
 
 
