@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C845C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87A0BC35274
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:24:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355506AbiDENHp (ORCPT
+        id S1357208AbiDENIh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:07:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34878 "EHLO
+        Tue, 5 Apr 2022 09:08:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344015AbiDEJQr (ORCPT
+        with ESMTP id S1344088AbiDEJSI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:16:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 716F7E01A;
-        Tue,  5 Apr 2022 02:03:30 -0700 (PDT)
+        Tue, 5 Apr 2022 05:18:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84D532ED6C;
+        Tue,  5 Apr 2022 02:04:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0D0ED61003;
-        Tue,  5 Apr 2022 09:03:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D151C385A1;
-        Tue,  5 Apr 2022 09:03:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 450DAB80DA1;
+        Tue,  5 Apr 2022 09:04:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C3CFC385A0;
+        Tue,  5 Apr 2022 09:03:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149409;
-        bh=51sy4X4YTqI8Sb8nHAkRrY2YedwTbhlXXttqjSn2IrM=;
+        s=korg; t=1649149439;
+        bh=0UVw1YIHqiI61x9atIvc1XzjmQZco7kHz8d5msPmZN4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zgLK+PEm2lqCQJIZPtXjPu+m25/er706oiqalfm5UEeo0cmxNalxZospZ6laxYhHn
-         GiOP0B/+QiBrXHId0LEpQR3hye8wdxK8YUxkEjwkCKTFy2a+Jfmeu5bWXWe80fcH2c
-         t2Kn1rPmMTFsQHL3xQxNLQ4npgEyiyBMoNG0DGhI=
+        b=UlHCObQ+dfuZV6aUvqpkqeKgyPBjHftBSDiMNojIRHAFphSG/STvRTKxLR6lj/wCk
+         sbkaobsjmo1zqT2/bJEzXDxY9L3PK9N1VAbgTJwT7mrGmR+q/4NV9Cgq8lY/ZREFO3
+         IpwxDzXOgqwdvRj+9mS02RUUzh8B+VLPXu/5ek3Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
+        stable@vger.kernel.org, Taniya Das <tdas@codeaurora.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0703/1017] pinctrl/rockchip: Add missing of_node_put() in rockchip_pinctrl_probe
-Date:   Tue,  5 Apr 2022 09:26:56 +0200
-Message-Id: <20220405070415.138123076@linuxfoundation.org>
+Subject: [PATCH 5.16 0677/1017] clk: qcom: clk-rcg2: Update logic to calculate D value for RCG
+Date:   Tue,  5 Apr 2022 09:26:30 +0200
+Message-Id: <20220405070414.375317010@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,42 +50,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Taniya Das <tdas@codeaurora.org>
 
-[ Upstream commit 89388f8730699c259f8090ec435fb43569efe4ac ]
+[ Upstream commit 58922910add18583d5273c2edcdb9fd7bf4eca02 ]
 
-The device_node pointer is returned by of_parse_phandle()  with refcount
-incremented. We should use of_node_put() on it when done.
+The display pixel clock has a requirement on certain newer platforms to
+support M/N as (2/3) and the final D value calculated results in
+underflow errors.
+As the current implementation does not check for D value is within
+the accepted range for a given M & N value. Update the logic to
+calculate the final D value based on the range.
 
-Fixes: 1e747e59cc4d ("pinctrl: rockchip: base regmap supplied by a syscon")
-Fixes: 14dee8677e19 ("pinctrl: rockchip: let pmu registers be supplied by a syscon")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220307120234.28657-1-linmq006@gmail.com
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Fixes: 99cbd064b059f ("clk: qcom: Support display RCG clocks")
+Signed-off-by: Taniya Das <tdas@codeaurora.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220227175536.3131-1-tdas@codeaurora.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/pinctrl-rockchip.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/clk/qcom/clk-rcg2.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/pinctrl/pinctrl-rockchip.c b/drivers/pinctrl/pinctrl-rockchip.c
-index dc52da94af0b..923ff21a44c0 100644
---- a/drivers/pinctrl/pinctrl-rockchip.c
-+++ b/drivers/pinctrl/pinctrl-rockchip.c
-@@ -2702,6 +2702,7 @@ static int rockchip_pinctrl_probe(struct platform_device *pdev)
- 	node = of_parse_phandle(np, "rockchip,grf", 0);
- 	if (node) {
- 		info->regmap_base = syscon_node_to_regmap(node);
-+		of_node_put(node);
- 		if (IS_ERR(info->regmap_base))
- 			return PTR_ERR(info->regmap_base);
- 	} else {
-@@ -2738,6 +2739,7 @@ static int rockchip_pinctrl_probe(struct platform_device *pdev)
- 	node = of_parse_phandle(np, "rockchip,pmu", 0);
- 	if (node) {
- 		info->regmap_pmu = syscon_node_to_regmap(node);
-+		of_node_put(node);
- 		if (IS_ERR(info->regmap_pmu))
- 			return PTR_ERR(info->regmap_pmu);
+diff --git a/drivers/clk/qcom/clk-rcg2.c b/drivers/clk/qcom/clk-rcg2.c
+index e1b1b426fae4..b831975a9606 100644
+--- a/drivers/clk/qcom/clk-rcg2.c
++++ b/drivers/clk/qcom/clk-rcg2.c
+@@ -264,7 +264,7 @@ static int clk_rcg2_determine_floor_rate(struct clk_hw *hw,
+ 
+ static int __clk_rcg2_configure(struct clk_rcg2 *rcg, const struct freq_tbl *f)
+ {
+-	u32 cfg, mask;
++	u32 cfg, mask, d_val, not2d_val, n_minus_m;
+ 	struct clk_hw *hw = &rcg->clkr.hw;
+ 	int ret, index = qcom_find_src_index(hw, rcg->parent_map, f->src);
+ 
+@@ -283,8 +283,17 @@ static int __clk_rcg2_configure(struct clk_rcg2 *rcg, const struct freq_tbl *f)
+ 		if (ret)
+ 			return ret;
+ 
++		/* Calculate 2d value */
++		d_val = f->n;
++
++		n_minus_m = f->n - f->m;
++		n_minus_m *= 2;
++
++		d_val = clamp_t(u32, d_val, f->m, n_minus_m);
++		not2d_val = ~d_val & mask;
++
+ 		ret = regmap_update_bits(rcg->clkr.regmap,
+-				RCG_D_OFFSET(rcg), mask, ~f->n);
++				RCG_D_OFFSET(rcg), mask, not2d_val);
+ 		if (ret)
+ 			return ret;
  	}
 -- 
 2.34.1
