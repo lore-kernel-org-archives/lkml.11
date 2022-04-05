@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 472A5C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E256C43217
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:15:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344809AbiDEPLF (ORCPT
+        id S1344023AbiDEPKm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:11:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54750 "EHLO
+        Tue, 5 Apr 2022 11:10:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345832AbiDEJoH (ORCPT
+        with ESMTP id S1345640AbiDEJnm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:44:07 -0400
+        Tue, 5 Apr 2022 05:43:42 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C065C6242;
-        Tue,  5 Apr 2022 02:29:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E978C1CBE;
+        Tue,  5 Apr 2022 02:29:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1AAB5B81C9E;
-        Tue,  5 Apr 2022 09:29:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80D0DC385A0;
-        Tue,  5 Apr 2022 09:29:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 64201B81CAC;
+        Tue,  5 Apr 2022 09:29:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA834C385A0;
+        Tue,  5 Apr 2022 09:29:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150973;
-        bh=m9IdsWkhwEHDsIk1mPp3Sw2dqcl6n6tF8/nLt+2Yvdk=;
+        s=korg; t=1649150957;
+        bh=xMuBtpSMi0tR4uqVjAuMkRQrPn1kVymN+i1l75YiSig=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=c0AYjJ6DtN6k3tFX58MNkvHzE4Ewf/850iadsGpWOGeLVwwZg7wAJhbkTs6CpDyjA
-         0gnBUSDbb7iy9QAY7DjhxgCbX8BxaO433cadL/AEMQMWMbcmpUrHN2AGNd9TcYQV4I
-         PDtjxaSqkCVA/J5Qo13yhgBysSrVBlbWIAG3o27o=
+        b=nBWUqc2oeU7PLo/X8jlJefJvXVBRqfFRJfCcmQRvUiRwLTVXNa2P1ksF/B2BK9ksO
+         OROciOf4OIHXZc5AUvJPtwh19QUMW8xIIOlSVXQTGM1NnCIhNlb6bEgZ9YfjgXgjHI
+         Vl+mQMycoJSPGUgc/VerCYNSRGPGxtDWsom4IqSA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Gilad Ben-Yossef <gilad@benyossef.com>,
-        Corentin Labbe <clabbe.montjoie@gmail.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 211/913] crypto: ccree - dont attempt 0 len DMA mappings
-Date:   Tue,  5 Apr 2022 09:21:13 +0200
-Message-Id: <20220405070346.183125799@linuxfoundation.org>
+Subject: [PATCH 5.15 241/913] clocksource: acpi_pm: fix return value of __setup handler
+Date:   Tue,  5 Apr 2022 09:21:43 +0200
+Message-Id: <20220405070347.080719624@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -51,43 +51,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gilad Ben-Yossef <gilad@benyossef.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit 1fb37b5692c915edcc2448a6b37255738c7c77e0 ]
+[ Upstream commit 6a861abceecb68497dd82a324fee45a5332dcece ]
 
-Refuse to try mapping zero bytes as this may cause a fault
-on some configurations / platforms and it seems the prev.
-attempt is not enough and we need to be more explicit.
+__setup() handlers should return 1 to obsolete_checksetup() in
+init/main.c to indicate that the boot option has been handled.
+A return of 0 causes the boot option/value to be listed as an Unknown
+kernel parameter and added to init's (limited) environment strings.
 
-Signed-off-by: Gilad Ben-Yossef <gilad@benyossef.com>
-Reported-by: Corentin Labbe <clabbe.montjoie@gmail.com>
-Fixes: ce0fc6db38de ("crypto: ccree - protect against empty or NULL
-scatterlists")
-Tested-by: Corentin Labbe <clabbe.montjoie@gmail.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+The __setup() handler interface isn't meant to handle negative return
+values -- they are non-zero, so they mean "handled" (like a return
+value of 1 does), but that's just a quirk. So return 1 from
+parse_pmtmr(). Also print a warning message if kstrtouint() returns
+an error.
+
+Fixes: 6b148507d3d0 ("pmtmr: allow command line override of ioport")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/crypto/ccree/cc_buffer_mgr.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/clocksource/acpi_pm.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/crypto/ccree/cc_buffer_mgr.c b/drivers/crypto/ccree/cc_buffer_mgr.c
-index a5e041d9d2cf..11e0278c8631 100644
---- a/drivers/crypto/ccree/cc_buffer_mgr.c
-+++ b/drivers/crypto/ccree/cc_buffer_mgr.c
-@@ -258,6 +258,13 @@ static int cc_map_sg(struct device *dev, struct scatterlist *sg,
- {
- 	int ret = 0;
+diff --git a/drivers/clocksource/acpi_pm.c b/drivers/clocksource/acpi_pm.c
+index eb596ff9e7bb..279ddff81ab4 100644
+--- a/drivers/clocksource/acpi_pm.c
++++ b/drivers/clocksource/acpi_pm.c
+@@ -229,8 +229,10 @@ static int __init parse_pmtmr(char *arg)
+ 	int ret;
  
-+	if (!nbytes) {
-+		*mapped_nents = 0;
-+		*lbytes = 0;
-+		*nents = 0;
-+		return 0;
+ 	ret = kstrtouint(arg, 16, &base);
+-	if (ret)
+-		return ret;
++	if (ret) {
++		pr_warn("PMTMR: invalid 'pmtmr=' value: '%s'\n", arg);
++		return 1;
 +	}
-+
- 	*nents = cc_get_sgl_nents(dev, sg, nbytes, lbytes);
- 	if (*nents > max_sg_nents) {
- 		*nents = 0;
+ 
+ 	pr_info("PMTMR IOPort override: 0x%04x -> 0x%04x\n", pmtmr_ioport,
+ 		base);
 -- 
 2.34.1
 
