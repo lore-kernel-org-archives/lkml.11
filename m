@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09431C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FE44C35280
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:06:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356446AbiDEOCz (ORCPT
+        id S1356691AbiDEOC6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:02:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57276 "EHLO
+        Tue, 5 Apr 2022 10:02:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235204AbiDEJap (ORCPT
+        with ESMTP id S235400AbiDEJah (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:30:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8149BE8857;
-        Tue,  5 Apr 2022 02:17:54 -0700 (PDT)
+        Tue, 5 Apr 2022 05:30:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F32D8E5412;
+        Tue,  5 Apr 2022 02:17:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1D76D6164D;
-        Tue,  5 Apr 2022 09:17:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D6F3C385A2;
-        Tue,  5 Apr 2022 09:17:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F80B615E4;
+        Tue,  5 Apr 2022 09:17:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9626DC385A2;
+        Tue,  5 Apr 2022 09:17:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150273;
-        bh=krqjyEuqmTEK/eqSad+TJT4cA0wRy1iBMIdlhuyjUWQ=;
+        s=korg; t=1649150257;
+        bh=WzivcXSmnyAyLc6VtEfU3zcYJ5LcHw/WrmshFZPnr7s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=chZ9I0m2WqHp6DNUN9h9iUV3ikgSMAmr/56eNw0lFCPwxyOoIbggLjIDFMBZnHVsU
-         3cxRY3VOadS4lqtUMg7vHmHWngWklbMOHsQIoxXWw3XnVZguTI2430tynsWimqko1a
-         JgbJviF9tQWyQNIHkVZFLnfwwjwIfIPlOmkhJ6yo=
+        b=Xt9zdx9tYGyWBLvhR8QaAYiJxKvbG4OQ0IFOAJ3XhR7+Ln5VAPKj04/Ke25Cnb09w
+         6/ZHrBj8d2M6mpV3wSriuGF11Vf7Pl35fkR+MfNrLo7uJP71szkCCCnGYeJK6cJsUf
+         9a5KGvD9pVA0v0LBf5iy+wUNg3Ir1z69RwEr/ngg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Matthew Wilcox <willy@infradead.org>,
-        Kees Cook <keescook@chromium.org>,
-        "Eric W. Biederman" <ebiederm@xmission.com>
-Subject: [PATCH 5.16 1017/1017] coredump: Use the vma snapshot in fill_files_note
-Date:   Tue,  5 Apr 2022 09:32:10 +0200
-Message-Id: <20220405070424.382702506@linuxfoundation.org>
+        stable@vger.kernel.org, Ulf Hansson <ulf.hansson@linaro.org>,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>
+Subject: [PATCH 5.16 1011/1017] mmc: rtsx: Let MMC core handle runtime PM
+Date:   Tue,  5 Apr 2022 09:32:04 +0200
+Message-Id: <20220405070424.207454669@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,176 +49,128 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric W. Biederman <ebiederm@xmission.com>
+From: Kai-Heng Feng <kai.heng.feng@canonical.com>
 
-commit 390031c942116d4733310f0684beb8db19885fe6 upstream.
+commit 7570fb41e450ba37bf9335fe3751fa9f502c30fa upstream.
 
-Matthew Wilcox reported that there is a missing mmap_lock in
-file_files_note that could possibly lead to a user after free.
+Since MMC core handles runtime PM reference counting, we can avoid doing
+redundant runtime PM work in the driver. That means the only thing
+commit 5b4258f6721f ("misc: rtsx: rts5249 support runtime PM") misses is
+to always enable runtime PM, to let its parent driver enable ASPM in the
+runtime idle routine.
 
-Solve this by using the existing vma snapshot for consistency
-and to avoid the need to take the mmap_lock anywhere in the
-coredump code except for dump_vma_snapshot.
-
-Update the dump_vma_snapshot to capture vm_pgoff and vm_file
-that are neeeded by fill_files_note.
-
-Add free_vma_snapshot to free the captured values of vm_file.
-
-Reported-by: Matthew Wilcox <willy@infradead.org>
-Link: https://lkml.kernel.org/r/20220131153740.2396974-1-willy@infradead.org
-Cc: stable@vger.kernel.org
-Fixes: a07279c9a8cd ("binfmt_elf, binfmt_elf_fdpic: use a VMA list snapshot")
-Fixes: 2aa362c49c31 ("coredump: extend core dump note section to contain file names of mapped files")
-Reviewed-by: Kees Cook <keescook@chromium.org>
-Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
+Fixes: 7499b529d97f ("mmc: rtsx: Use pm_runtime_{get,put}() to handle runtime PM")
+Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
+Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+Link: https://lore.kernel.org/r/20220216055435.2335297-1-kai.heng.feng@canonical.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/binfmt_elf.c          |   24 ++++++++++++------------
- fs/coredump.c            |   22 +++++++++++++++++++++-
- include/linux/coredump.h |    2 ++
- 3 files changed, 35 insertions(+), 13 deletions(-)
+ drivers/mmc/host/rtsx_pci_sdmmc.c |   18 ------------------
+ 1 file changed, 18 deletions(-)
 
---- a/fs/binfmt_elf.c
-+++ b/fs/binfmt_elf.c
-@@ -1642,17 +1642,16 @@ static void fill_siginfo_note(struct mem
-  *   long file_ofs
-  * followed by COUNT filenames in ASCII: "FILE1" NUL "FILE2" NUL...
-  */
--static int fill_files_note(struct memelfnote *note)
-+static int fill_files_note(struct memelfnote *note, struct coredump_params *cprm)
- {
--	struct mm_struct *mm = current->mm;
--	struct vm_area_struct *vma;
- 	unsigned count, size, names_ofs, remaining, n;
- 	user_long_t *data;
- 	user_long_t *start_end_ofs;
- 	char *name_base, *name_curpos;
-+	int i;
- 
- 	/* *Estimated* file count and total data size needed */
--	count = mm->map_count;
-+	count = cprm->vma_count;
- 	if (count > UINT_MAX / 64)
- 		return -EINVAL;
- 	size = count * 64;
-@@ -1674,11 +1673,12 @@ static int fill_files_note(struct memelf
- 	name_base = name_curpos = ((char *)data) + names_ofs;
- 	remaining = size - names_ofs;
- 	count = 0;
--	for (vma = mm->mmap; vma != NULL; vma = vma->vm_next) {
-+	for (i = 0; i < cprm->vma_count; i++) {
-+		struct core_vma_metadata *m = &cprm->vma_meta[i];
- 		struct file *file;
- 		const char *filename;
- 
--		file = vma->vm_file;
-+		file = m->file;
- 		if (!file)
- 			continue;
- 		filename = file_path(file, name_curpos, remaining);
-@@ -1698,9 +1698,9 @@ static int fill_files_note(struct memelf
- 		memmove(name_curpos, filename, n);
- 		name_curpos += n;
- 
--		*start_end_ofs++ = vma->vm_start;
--		*start_end_ofs++ = vma->vm_end;
--		*start_end_ofs++ = vma->vm_pgoff;
-+		*start_end_ofs++ = m->start;
-+		*start_end_ofs++ = m->end;
-+		*start_end_ofs++ = m->pgoff;
- 		count++;
+--- a/drivers/mmc/host/rtsx_pci_sdmmc.c
++++ b/drivers/mmc/host/rtsx_pci_sdmmc.c
+@@ -823,7 +823,6 @@ static void sd_request(struct work_struc
  	}
  
-@@ -1711,7 +1711,7 @@ static int fill_files_note(struct memelf
- 	 * Count usually is less than mm->map_count,
- 	 * we need to move filenames down.
- 	 */
--	n = mm->map_count - count;
-+	n = cprm->vma_count - count;
- 	if (n != 0) {
- 		unsigned shift_bytes = n * 3 * sizeof(data[0]);
- 		memmove(name_base - shift_bytes, name_base,
-@@ -1910,7 +1910,7 @@ static int fill_note_info(struct elfhdr
- 	fill_auxv_note(&info->auxv, current->mm);
- 	info->size += notesize(&info->auxv);
+ 	mutex_lock(&pcr->pcr_mutex);
+-	pm_runtime_get_sync(dev);
  
--	if (fill_files_note(&info->files) == 0)
-+	if (fill_files_note(&info->files, cprm) == 0)
- 		info->size += notesize(&info->files);
+ 	rtsx_pci_start_run(pcr);
  
- 	return 1;
-@@ -2099,7 +2099,7 @@ static int fill_note_info(struct elfhdr
- 	fill_auxv_note(info->notes + 3, current->mm);
- 	info->numnote = 4;
- 
--	if (fill_files_note(info->notes + info->numnote) == 0) {
-+	if (fill_files_note(info->notes + info->numnote, cprm) == 0) {
- 		info->notes_files = info->notes + info->numnote;
- 		info->numnote++;
+@@ -860,8 +859,6 @@ static void sd_request(struct work_struc
+ 			data->bytes_xfered = data->blocks * data->blksz;
  	}
---- a/fs/coredump.c
-+++ b/fs/coredump.c
-@@ -54,6 +54,7 @@
- #include <trace/events/sched.h>
  
- static bool dump_vma_snapshot(struct coredump_params *cprm);
-+static void free_vma_snapshot(struct coredump_params *cprm);
+-	pm_runtime_mark_last_busy(dev);
+-	pm_runtime_put_autosuspend(dev);
+ 	mutex_unlock(&pcr->pcr_mutex);
  
- int core_uses_pid;
- unsigned int core_pipe_limit;
-@@ -768,7 +769,7 @@ void do_coredump(const kernel_siginfo_t
- 			dump_emit(&cprm, "", 1);
- 		}
- 		file_end_write(cprm.file);
--		kvfree(cprm.vma_meta);
-+		free_vma_snapshot(&cprm);
- 	}
- 	if (ispipe && core_pipe_limit)
- 		wait_for_dump_helpers(cprm.file);
-@@ -1045,6 +1046,20 @@ static struct vm_area_struct *next_vma(s
- 	return gate_vma;
+ finish:
+@@ -1093,7 +1090,6 @@ static void sdmmc_set_ios(struct mmc_hos
+ 		return;
+ 
+ 	mutex_lock(&pcr->pcr_mutex);
+-	pm_runtime_get_sync(dev);
+ 
+ 	rtsx_pci_start_run(pcr);
+ 
+@@ -1127,8 +1123,6 @@ static void sdmmc_set_ios(struct mmc_hos
+ 	rtsx_pci_switch_clock(pcr, ios->clock, host->ssc_depth,
+ 			host->initial_mode, host->double_clk, host->vpclk);
+ 
+-	pm_runtime_mark_last_busy(dev);
+-	pm_runtime_put_autosuspend(dev);
+ 	mutex_unlock(&pcr->pcr_mutex);
  }
  
-+static void free_vma_snapshot(struct coredump_params *cprm)
-+{
-+	if (cprm->vma_meta) {
-+		int i;
-+		for (i = 0; i < cprm->vma_count; i++) {
-+			struct file *file = cprm->vma_meta[i].file;
-+			if (file)
-+				fput(file);
-+		}
-+		kvfree(cprm->vma_meta);
-+		cprm->vma_meta = NULL;
-+	}
-+}
-+
- /*
-  * Under the mmap_lock, take a snapshot of relevant information about the task's
-  * VMAs.
-@@ -1081,6 +1096,11 @@ static bool dump_vma_snapshot(struct cor
- 		m->end = vma->vm_end;
- 		m->flags = vma->vm_flags;
- 		m->dump_size = vma_dump_size(vma, cprm->mm_flags);
-+		m->pgoff = vma->vm_pgoff;
-+
-+		m->file = vma->vm_file;
-+		if (m->file)
-+			get_file(m->file);
- 	}
+@@ -1144,7 +1138,6 @@ static int sdmmc_get_ro(struct mmc_host
+ 		return -ENOMEDIUM;
  
- 	mmap_write_unlock(mm);
---- a/include/linux/coredump.h
-+++ b/include/linux/coredump.h
-@@ -12,6 +12,8 @@ struct core_vma_metadata {
- 	unsigned long start, end;
- 	unsigned long flags;
- 	unsigned long dump_size;
-+	unsigned long pgoff;
-+	struct file   *file;
- };
+ 	mutex_lock(&pcr->pcr_mutex);
+-	pm_runtime_get_sync(dev);
  
- extern int core_uses_pid;
+ 	rtsx_pci_start_run(pcr);
+ 
+@@ -1154,8 +1147,6 @@ static int sdmmc_get_ro(struct mmc_host
+ 	if (val & SD_WRITE_PROTECT)
+ 		ro = 1;
+ 
+-	pm_runtime_mark_last_busy(dev);
+-	pm_runtime_put_autosuspend(dev);
+ 	mutex_unlock(&pcr->pcr_mutex);
+ 
+ 	return ro;
+@@ -1173,7 +1164,6 @@ static int sdmmc_get_cd(struct mmc_host
+ 		return cd;
+ 
+ 	mutex_lock(&pcr->pcr_mutex);
+-	pm_runtime_get_sync(dev);
+ 
+ 	rtsx_pci_start_run(pcr);
+ 
+@@ -1183,8 +1173,6 @@ static int sdmmc_get_cd(struct mmc_host
+ 	if (val & SD_EXIST)
+ 		cd = 1;
+ 
+-	pm_runtime_mark_last_busy(dev);
+-	pm_runtime_put_autosuspend(dev);
+ 	mutex_unlock(&pcr->pcr_mutex);
+ 
+ 	return cd;
+@@ -1282,7 +1270,6 @@ static int sdmmc_switch_voltage(struct m
+ 		return err;
+ 
+ 	mutex_lock(&pcr->pcr_mutex);
+-	pm_runtime_get_sync(dev);
+ 
+ 	rtsx_pci_start_run(pcr);
+ 
+@@ -1312,8 +1299,6 @@ out:
+ 	err = rtsx_pci_write_register(pcr, SD_BUS_STAT,
+ 			SD_CLK_TOGGLE_EN | SD_CLK_FORCE_STOP, 0);
+ 
+-	pm_runtime_mark_last_busy(dev);
+-	pm_runtime_put_autosuspend(dev);
+ 	mutex_unlock(&pcr->pcr_mutex);
+ 
+ 	return err;
+@@ -1334,7 +1319,6 @@ static int sdmmc_execute_tuning(struct m
+ 		return err;
+ 
+ 	mutex_lock(&pcr->pcr_mutex);
+-	pm_runtime_get_sync(dev);
+ 
+ 	rtsx_pci_start_run(pcr);
+ 
+@@ -1367,8 +1351,6 @@ static int sdmmc_execute_tuning(struct m
+ 		err = sd_change_phase(host, DDR50_RX_PHASE(pcr), true);
+ 
+ out:
+-	pm_runtime_mark_last_busy(dev);
+-	pm_runtime_put_autosuspend(dev);
+ 	mutex_unlock(&pcr->pcr_mutex);
+ 
+ 	return err;
 
 
