@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59842C43219
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:55:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C234C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:55:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1573201AbiDEWsV (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:48:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52440 "EHLO
+        id S234029AbiDEWsu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 18:48:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354216AbiDEKMT (ORCPT
+        with ESMTP id S1354635AbiDEKO5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:12:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D855C55494;
-        Tue,  5 Apr 2022 02:58:55 -0700 (PDT)
+        Tue, 5 Apr 2022 06:14:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7688D6BDF0;
+        Tue,  5 Apr 2022 03:01:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 87557B81B93;
-        Tue,  5 Apr 2022 09:58:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEE2CC385A1;
-        Tue,  5 Apr 2022 09:58:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D73C161676;
+        Tue,  5 Apr 2022 10:01:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF1ACC385A1;
+        Tue,  5 Apr 2022 10:01:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152733;
-        bh=3B0pgABbXwIRF4T8Sh2Y+yGlwPN3ln85ghV4rTcG2F4=;
+        s=korg; t=1649152905;
+        bh=JAcNIEr1LPWrk+L53Ncmi4AbV1sJxXCTFWiNjxRRQuQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PBKUhVeQdZkeJV/B9J8RucmBE9l5VMxYhdATkW0UcHt04fPYM3kfgm/cT7lBmbqcA
-         STI7rjogE8qaxqdo0x85ZEQdXX0obEs38fmZX1ej2QFTiZWRMYCBY0NEGaPYq1oFLd
-         8IRMToHv7TV27By/t/jEBgkSkbUFwf3YjDWDObB4=
+        b=n+ojJfXFdUCTdDxZvbdF7I19pyg5jjBXWcaP7k9NGb3CQyd7borAGd3Ad4Z1pderO
+         rwKZzhc/r3y5vUAtjkYEtsWms/yjBqA9aJmy/FnBSkZrl0r7uep0ZFKLsl5n8IKPo8
+         lv/AymuHaDZYWaTjjo9o28XWGV6CKGZz5Bcc6zyA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sander Vanheule <sander@svanheule.net>,
-        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
-Subject: [PATCH 5.15 866/913] staging: mt7621-dts: fix pinctrl-0 items to be size-1 items on ethernet
-Date:   Tue,  5 Apr 2022 09:32:08 +0200
-Message-Id: <20220405070405.782353095@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Alexander Usyskin <alexander.usyskin@intel.com>,
+        Tomas Winkler <tomas.winkler@intel.com>
+Subject: [PATCH 5.10 030/599] mei: me: add Alder Lake N device id.
+Date:   Tue,  5 Apr 2022 09:25:24 +0200
+Message-Id: <20220405070259.718547283@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,33 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arınç ÜNAL <arinc.unal@arinc9.com>
+From: Alexander Usyskin <alexander.usyskin@intel.com>
 
-commit 25e4f5220efead592c83200241e098e757d37e1f upstream.
+commit 7bbbd0845818cffa9fa8ccfe52fa1cad58e7e4f2 upstream.
 
-Fix pinctrl-0 items under the ethernet node to be size-1 items.
-Current notation would be used on specifications with non-zero cells.
+Add Alder Lake N device ID.
 
-Fixes: 0a93c0d75809 ("staging: mt7621-dts: fix pinctrl properties for ethernet")
-Reported-by: Sander Vanheule <sander@svanheule.net>
-Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
-Link: https://lore.kernel.org/r/20220215081725.3463-1-arinc.unal@arinc9.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Alexander Usyskin <alexander.usyskin@intel.com>
+Signed-off-by: Tomas Winkler <tomas.winkler@intel.com>
+Link: https://lore.kernel.org/r/20220301071115.96145-1-tomas.winkler@intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/staging/mt7621-dts/mt7621.dtsi |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/misc/mei/hw-me-regs.h |    1 +
+ drivers/misc/mei/pci-me.c     |    1 +
+ 2 files changed, 2 insertions(+)
 
---- a/drivers/staging/mt7621-dts/mt7621.dtsi
-+++ b/drivers/staging/mt7621-dts/mt7621.dtsi
-@@ -392,7 +392,7 @@
- 		mediatek,ethsys = <&sysc>;
+--- a/drivers/misc/mei/hw-me-regs.h
++++ b/drivers/misc/mei/hw-me-regs.h
+@@ -107,6 +107,7 @@
+ #define MEI_DEV_ID_ADP_S      0x7AE8  /* Alder Lake Point S */
+ #define MEI_DEV_ID_ADP_LP     0x7A60  /* Alder Lake Point LP */
+ #define MEI_DEV_ID_ADP_P      0x51E0  /* Alder Lake Point P */
++#define MEI_DEV_ID_ADP_N      0x54E0  /* Alder Lake Point N */
  
- 		pinctrl-names = "default";
--		pinctrl-0 = <&rgmii1_pins &rgmii2_pins &mdio_pins>;
-+		pinctrl-0 = <&mdio_pins>, <&rgmii1_pins>, <&rgmii2_pins>;
+ /*
+  * MEI HW Section
+--- a/drivers/misc/mei/pci-me.c
++++ b/drivers/misc/mei/pci-me.c
+@@ -113,6 +113,7 @@ static const struct pci_device_id mei_me
+ 	{MEI_PCI_DEVICE(MEI_DEV_ID_ADP_S, MEI_ME_PCH15_CFG)},
+ 	{MEI_PCI_DEVICE(MEI_DEV_ID_ADP_LP, MEI_ME_PCH15_CFG)},
+ 	{MEI_PCI_DEVICE(MEI_DEV_ID_ADP_P, MEI_ME_PCH15_CFG)},
++	{MEI_PCI_DEVICE(MEI_DEV_ID_ADP_N, MEI_ME_PCH15_CFG)},
  
- 		gmac0: mac@0 {
- 			compatible = "mediatek,eth-mac";
+ 	/* required last entry */
+ 	{0, }
 
 
