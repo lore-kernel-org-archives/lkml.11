@@ -2,168 +2,346 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 333ABC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:10:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96AF7C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:10:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444054AbiDFBIe (ORCPT
+        id S1447444AbiDFBIx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:08:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37936 "EHLO
+        Tue, 5 Apr 2022 21:08:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1458054AbiDERGb (ORCPT
+        with ESMTP id S1573556AbiDETWl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 13:06:31 -0400
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AC31AC071
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 10:04:32 -0700 (PDT)
-Received: by mail-pf1-x435.google.com with SMTP id x16so4508pfa.10
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 10:04:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=pROGuwStiro9rcSYW3YeAtKJaGC9ZWqC+E1qhRzShxk=;
-        b=tA6Lp2KTlzqbzCItB0ys8viPQghH3YJ6+SdbGwcrPNlITBfn8nt3mBaneYmi6Ifz19
-         CJiVBsCpL+c6HqbbfYgHzDZsuF/gkKXK2lc4bTgNxgAK0/S4mz/rsh1hqwAlMUKEjKul
-         w4GTz21a+EhIjdikEvLqtLFgIfLRaNS4O1VLUqQ4S1I5lgeSNNvm0TyL80b59lj1OXUa
-         hXj0ircE3zWV8P0ASeIP76xonjuC1AoHwd7xnKPxA8+7Ewp9e+chhvgblMU270xglxj+
-         rlavD5UNtimCx/YI+j+fTfO8nmEkwYIbCLnqEcie9L/jpvqMoWWcBJR7XFjpUQvB+ZAa
-         7E8g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=pROGuwStiro9rcSYW3YeAtKJaGC9ZWqC+E1qhRzShxk=;
-        b=to4cLf40hmZzsRBDmnaG6s2+glaIxAb3I1vAyq44yjPcUCVmQOwnYhzBmB31bp6EvN
-         THXoXYqE9qxL4mPeuptLCV2U0Pna7pbh+nPVvbykrQbdgfeZd5ekfzJ4I4In2woxKhcd
-         RD9Px/kfOopCKMAA4dYziSpONqEM5qdoVN7JZ4W/QRTrwbGqEcXrPnc3cnU9hQXtpGtJ
-         tILg62c9GAs3P/UWZvL3xXx5PAjTZeEpDFgjfxMa8+Xfk/EK9l8lIFbKitKQIBqJKcC7
-         2skgVnkN5WErrYEtRS/WV1pjIASDhd5h6149bmT2buYETgxC+p3vw7UAPUclwbyiCEbf
-         yX4g==
-X-Gm-Message-State: AOAM532mwbeisg/NS2GLDTlwWakU/CqjGeyn3j8JHaMwt/DXB6xEnxqM
-        2bK3w9QCIEIrjrQ3gWyM0JHwJQ==
-X-Google-Smtp-Source: ABdhPJwD7B9L7RiPiFfKaGMQkGtYLA2hahKEheRhiKEh42v4f/MZK/KIfpScH9FOO2wpWsopqWEb2w==
-X-Received: by 2002:a65:4647:0:b0:399:11b1:810b with SMTP id k7-20020a654647000000b0039911b1810bmr3638651pgr.449.1649178271389;
-        Tue, 05 Apr 2022 10:04:31 -0700 (PDT)
-Received: from localhost.localdomain ([50.39.160.154])
-        by smtp.gmail.com with ESMTPSA id m7-20020a625807000000b004fe0a89f24fsm7796142pfb.112.2022.04.05.10.04.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Apr 2022 10:04:30 -0700 (PDT)
-From:   Tadeusz Struk <tadeusz.struk@linaro.org>
-To:     bpf@vger.kernel.org
-Cc:     Tadeusz Struk <tadeusz.struk@linaro.org>,
-        "Alexei Starovoitov" <ast@kernel.org>,
-        "Daniel Borkmann" <daniel@iogearbox.net>,
-        "Andrii Nakryiko" <andrii@kernel.org>,
-        "Martin KaFai Lau" <kafai@fb.com>,
-        "Song Liu" <songliubraving@fb.com>, "Yonghong Song" <yhs@fb.com>,
-        "John Fastabend" <john.fastabend@gmail.com>,
-        "KP Singh" <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        stable@vger.kernel.org, linux-kernel@vger.kernel.org,
-        syzbot+f264bffdfbd5614f3bb2@syzkaller.appspotmail.com
-Subject: [PATCH] bpf: Fix KASAN use-after-free Read in compute_effective_progs
-Date:   Tue,  5 Apr 2022 10:03:56 -0700
-Message-Id: <20220405170356.43128-1-tadeusz.struk@linaro.org>
+        Tue, 5 Apr 2022 15:22:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 180DB3CFDB;
+        Tue,  5 Apr 2022 12:20:41 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CCC7BB81FA8;
+        Tue,  5 Apr 2022 19:20:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E21C4C385A5;
+        Tue,  5 Apr 2022 19:20:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649186438;
+        bh=IDUUHHm/lC7WrXghg2b9EU8N6n8Ce+tfjO41Cd6bRik=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=dhktCP+xu/cqLvctOE/rx1gdsCr5pDA7kMHOPUawFFzNQfiFv9eku0wq7nUhNfN4H
+         H6IE85bgpbP9jy75hpLr21nKoUiYGMrGmBsH+4tl414GeR/UEbCpJe9BgHZ7xqGh10
+         vAfE1pUQ8eYuFRy2AeCj7Y7GV1+iuBI0Leh7W8pMMMbGTCWi9pNi5xcpPoEjxAMnR6
+         4PApdZBTvZig6xzbiLkHQqBQR7wC9Wkcb0qAD18S82yLidU9dPRcTy4+WDlWQsi0DL
+         IHkkYnatKiF9238Rx8z2NA+4zIN6jVPWzxRHmpao2ZZQScYKkeEy6r0PrKNat8eBU4
+         bvEIRishb0cCQ==
+From:   Jeff Layton <jlayton@kernel.org>
+To:     idryomov@gmail.com, xiubli@redhat.com
+Cc:     ceph-devel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lhenriques@suse.de
+Subject: [PATCH v13 07/59] ceph: add new mount option to enable sparse reads
+Date:   Tue,  5 Apr 2022 15:19:38 -0400
+Message-Id: <20220405192030.178326-8-jlayton@kernel.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405192030.178326-1-jlayton@kernel.org>
+References: <20220405192030.178326-1-jlayton@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Syzbot found a Use After Free bug in compute_effective_progs().
-The reproducer creates a number of BPF links, and causes a fault
-injected alloc to fail, while calling bpf_link_detach on them.
-Link detach triggers the link to be freed by bpf_link_free(),
-which calls __cgroup_bpf_detach() and update_effective_progs().
-If the memory allocation in this function fails, the function restores
-the pointer to the bpf_cgroup_link on the cgroup list, but the memory
-gets freed just after it returns. After this, every subsequent call to
-update_effective_progs() causes this already deallocated pointer to be
-dereferenced in prog_list_length(), and triggers KASAN UAF error.
-To fix this don't preserve the pointer to the link on the cgroup list
-in __cgroup_bpf_detach(), but proceed with the cleanup and retry calling
-update_effective_progs() again afterwards.
+Add a new mount option that has the client issue sparse reads instead of
+normal ones. The callers now preallocate an sparse extent buffer that
+the libceph receive code can populate and hand back after the operation
+completes.
 
+After a successful sparse read, we can't use the req->r_result value to
+determine the amount of data "read", so instead we set the received
+length to be from the end of the last extent in the buffer. Any
+interstitial holes will have been filled by the receive code.
 
-Cc: "Alexei Starovoitov" <ast@kernel.org>
-Cc: "Daniel Borkmann" <daniel@iogearbox.net>
-Cc: "Andrii Nakryiko" <andrii@kernel.org>
-Cc: "Martin KaFai Lau" <kafai@fb.com>
-Cc: "Song Liu" <songliubraving@fb.com>
-Cc: "Yonghong Song" <yhs@fb.com>
-Cc: "John Fastabend" <john.fastabend@gmail.com>
-Cc: "KP Singh" <kpsingh@kernel.org>
-Cc: <netdev@vger.kernel.org>
-Cc: <bpf@vger.kernel.org>
-Cc: <stable@vger.kernel.org>
-Cc: <linux-kernel@vger.kernel.org>
-
-Link: https://syzkaller.appspot.com/bug?id=8ebf179a95c2a2670f7cf1ba62429ec044369db4
-Fixes: af6eea57437a ("bpf: Implement bpf_link-based cgroup BPF program attachment")
-Reported-by: <syzbot+f264bffdfbd5614f3bb2@syzkaller.appspotmail.com>
-Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
+Reviewed-by: Xiubo Li <xiubli@redhat.com>
+Signed-off-by: Jeff Layton <jlayton@kernel.org>
 ---
- kernel/bpf/cgroup.c | 25 ++++++++++++++-----------
- 1 file changed, 14 insertions(+), 11 deletions(-)
+ fs/ceph/addr.c  | 17 +++++++++++++++--
+ fs/ceph/file.c  | 51 +++++++++++++++++++++++++++++++++++++++++--------
+ fs/ceph/super.c | 16 +++++++++++++++-
+ fs/ceph/super.h |  1 +
+ 4 files changed, 74 insertions(+), 11 deletions(-)
 
-diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
-index 128028efda64..b6307337a3c7 100644
---- a/kernel/bpf/cgroup.c
-+++ b/kernel/bpf/cgroup.c
-@@ -723,10 +723,11 @@ static int __cgroup_bpf_detach(struct cgroup *cgrp, struct bpf_prog *prog,
- 	pl->link = NULL;
+diff --git a/fs/ceph/addr.c b/fs/ceph/addr.c
+index aa25bffd4823..99021431a391 100644
+--- a/fs/ceph/addr.c
++++ b/fs/ceph/addr.c
+@@ -219,8 +219,10 @@ static void finish_netfs_read(struct ceph_osd_request *req)
+ 	struct ceph_fs_client *fsc = ceph_inode_to_client(req->r_inode);
+ 	struct ceph_osd_data *osd_data = osd_req_op_extent_osd_data(req, 0);
+ 	struct netfs_io_subrequest *subreq = req->r_priv;
++	struct ceph_osd_req_op *op = &req->r_ops[0];
+ 	int num_pages;
+ 	int err = req->r_result;
++	bool sparse = (op->op == CEPH_OSD_OP_SPARSE_READ);
  
- 	err = update_effective_progs(cgrp, atype);
--	if (err)
--		goto cleanup;
--
--	/* now can actually delete it from this cgroup list */
-+	/*
-+	 * Proceed regardless of error. The link and/or prog will be freed
-+	 * just after this function returns so just delete it from this
-+	 * cgroup list and retry calling update_effective_progs again later.
-+	 */
- 	list_del(&pl->node);
- 	kfree(pl);
- 	if (list_empty(progs))
-@@ -735,12 +736,11 @@ static int __cgroup_bpf_detach(struct cgroup *cgrp, struct bpf_prog *prog,
- 	if (old_prog)
- 		bpf_prog_put(old_prog);
- 	static_branch_dec(&cgroup_bpf_enabled_key[atype]);
--	return 0;
+ 	ceph_update_read_metrics(&fsc->mdsc->metric, req->r_start_latency,
+ 				 req->r_end_latency, osd_data->length, err);
+@@ -229,7 +231,9 @@ static void finish_netfs_read(struct ceph_osd_request *req)
+ 	     subreq->len, i_size_read(req->r_inode));
  
--cleanup:
--	/* restore back prog or link */
--	pl->prog = old_prog;
--	pl->link = link;
-+	/* In case of error call update_effective_progs again */
-+	if (err)
-+		err = update_effective_progs(cgrp, atype);
-+
- 	return err;
- }
+ 	/* no object means success but no data */
+-	if (err == -ENOENT)
++	if (sparse && err >= 0)
++		err = ceph_sparse_ext_map_end(op);
++	else if (err == -ENOENT)
+ 		err = 0;
+ 	else if (err == -EBLOCKLISTED)
+ 		fsc->blocklisted = true;
+@@ -310,13 +314,14 @@ static void ceph_netfs_issue_read(struct netfs_io_subrequest *subreq)
+ 	size_t page_off;
+ 	int err = 0;
+ 	u64 len = subreq->len;
++	bool sparse = ceph_test_mount_opt(fsc, SPARSEREAD);
  
-@@ -881,6 +881,7 @@ static void bpf_cgroup_link_release(struct bpf_link *link)
- 	struct bpf_cgroup_link *cg_link =
- 		container_of(link, struct bpf_cgroup_link, link);
- 	struct cgroup *cg;
-+	int err;
- 
- 	/* link might have been auto-detached by dying cgroup already,
- 	 * in that case our work is done here
-@@ -896,8 +897,10 @@ static void bpf_cgroup_link_release(struct bpf_link *link)
+ 	if (ci->i_inline_version != CEPH_INLINE_NONE &&
+ 	    ceph_netfs_issue_op_inline(subreq))
  		return;
+ 
+ 	req = ceph_osdc_new_request(&fsc->client->osdc, &ci->i_layout, vino, subreq->start, &len,
+-			0, 1, CEPH_OSD_OP_READ,
++			0, 1, sparse ? CEPH_OSD_OP_SPARSE_READ : CEPH_OSD_OP_READ,
+ 			CEPH_OSD_FLAG_READ | fsc->client->osdc.client->options->read_from_replica,
+ 			NULL, ci->i_truncate_seq, ci->i_truncate_size, false);
+ 	if (IS_ERR(req)) {
+@@ -325,6 +330,14 @@ static void ceph_netfs_issue_read(struct netfs_io_subrequest *subreq)
+ 		goto out;
  	}
  
--	WARN_ON(__cgroup_bpf_detach(cg_link->cgroup, NULL, cg_link,
--				    cg_link->type));
-+	err = __cgroup_bpf_detach(cg_link->cgroup, NULL, cg_link,
-+				  cg_link->type);
-+	if (err)
-+		pr_warn("cgroup_bpf_detach() failed, err %d\n", err);
++	if (sparse) {
++		err = ceph_alloc_sparse_ext_map(&req->r_ops[0]);
++		if (err) {
++			ceph_osdc_put_request(req);
++			goto out;
++		}
++	}
++
+ 	dout("%s: pos=%llu orig_len=%zu len=%llu\n", __func__, subreq->start, subreq->len, len);
+ 	iov_iter_xarray(&iter, READ, &rreq->mapping->i_pages, subreq->start, len);
+ 	err = iov_iter_get_pages_alloc(&iter, &pages, len, &page_off);
+diff --git a/fs/ceph/file.c b/fs/ceph/file.c
+index 6c9e837aa1d3..9ee6e92bfed0 100644
+--- a/fs/ceph/file.c
++++ b/fs/ceph/file.c
+@@ -905,6 +905,7 @@ static ssize_t ceph_sync_read(struct kiocb *iocb, struct iov_iter *to,
+ 	u64 off = iocb->ki_pos;
+ 	u64 len = iov_iter_count(to);
+ 	u64 i_size = i_size_read(inode);
++	bool sparse = ceph_test_mount_opt(fsc, SPARSEREAD);
  
- 	cg = cg_link->cgroup;
- 	cg_link->cgroup = NULL;
+ 	dout("sync_read on file %p %llu~%u %s\n", file, off, (unsigned)len,
+ 	     (file->f_flags & O_DIRECT) ? "O_DIRECT" : "");
+@@ -931,10 +932,12 @@ static ssize_t ceph_sync_read(struct kiocb *iocb, struct iov_iter *to,
+ 		bool more;
+ 		int idx;
+ 		size_t left;
++		struct ceph_osd_req_op *op;
+ 
+ 		req = ceph_osdc_new_request(osdc, &ci->i_layout,
+ 					ci->i_vino, off, &len, 0, 1,
+-					CEPH_OSD_OP_READ, CEPH_OSD_FLAG_READ,
++					sparse ? CEPH_OSD_OP_SPARSE_READ : CEPH_OSD_OP_READ,
++					CEPH_OSD_FLAG_READ,
+ 					NULL, ci->i_truncate_seq,
+ 					ci->i_truncate_size, false);
+ 		if (IS_ERR(req)) {
+@@ -955,6 +958,16 @@ static ssize_t ceph_sync_read(struct kiocb *iocb, struct iov_iter *to,
+ 
+ 		osd_req_op_extent_osd_data_pages(req, 0, pages, len, page_off,
+ 						 false, false);
++
++		op = &req->r_ops[0];
++		if (sparse) {
++			ret = ceph_alloc_sparse_ext_map(op);
++			if (ret) {
++				ceph_osdc_put_request(req);
++				break;
++			}
++		}
++
+ 		ret = ceph_osdc_start_request(osdc, req, false);
+ 		if (!ret)
+ 			ret = ceph_osdc_wait_request(osdc, req);
+@@ -964,19 +977,24 @@ static ssize_t ceph_sync_read(struct kiocb *iocb, struct iov_iter *to,
+ 					 req->r_end_latency,
+ 					 len, ret);
+ 
+-		ceph_osdc_put_request(req);
+-
+ 		i_size = i_size_read(inode);
+ 		dout("sync_read %llu~%llu got %zd i_size %llu%s\n",
+ 		     off, len, ret, i_size, (more ? " MORE" : ""));
+ 
+-		if (ret == -ENOENT)
++		/* Fix it to go to end of extent map */
++		if (sparse && ret >= 0)
++			ret = ceph_sparse_ext_map_end(op);
++		else if (ret == -ENOENT)
+ 			ret = 0;
++
++		ceph_osdc_put_request(req);
++
+ 		if (ret >= 0 && ret < len && (off + ret < i_size)) {
+ 			int zlen = min(len - ret, i_size - off - ret);
+ 			int zoff = page_off + ret;
++
+ 			dout("sync_read zero gap %llu~%llu\n",
+-                             off + ret, off + ret + zlen);
++				off + ret, off + ret + zlen);
+ 			ceph_zero_page_vector_range(zoff, zlen, pages);
+ 			ret += zlen;
+ 		}
+@@ -1095,8 +1113,10 @@ static void ceph_aio_complete_req(struct ceph_osd_request *req)
+ 	struct inode *inode = req->r_inode;
+ 	struct ceph_aio_request *aio_req = req->r_priv;
+ 	struct ceph_osd_data *osd_data = osd_req_op_extent_osd_data(req, 0);
++	struct ceph_osd_req_op *op = &req->r_ops[0];
+ 	struct ceph_client_metric *metric = &ceph_sb_to_mdsc(inode->i_sb)->metric;
+ 	unsigned int len = osd_data->bvec_pos.iter.bi_size;
++	bool sparse = (op->op == CEPH_OSD_OP_SPARSE_READ);
+ 
+ 	BUG_ON(osd_data->type != CEPH_OSD_DATA_TYPE_BVECS);
+ 	BUG_ON(!osd_data->num_bvecs);
+@@ -1117,6 +1137,8 @@ static void ceph_aio_complete_req(struct ceph_osd_request *req)
+ 		}
+ 		rc = -ENOMEM;
+ 	} else if (!aio_req->write) {
++		if (sparse && rc >= 0)
++			rc = ceph_sparse_ext_map_end(op);
+ 		if (rc == -ENOENT)
+ 			rc = 0;
+ 		if (rc >= 0 && len > rc) {
+@@ -1253,6 +1275,7 @@ ceph_direct_read_write(struct kiocb *iocb, struct iov_iter *iter,
+ 	loff_t pos = iocb->ki_pos;
+ 	bool write = iov_iter_rw(iter) == WRITE;
+ 	bool should_dirty = !write && iter_is_iovec(iter);
++	bool sparse = ceph_test_mount_opt(fsc, SPARSEREAD);
+ 
+ 	if (write && ceph_snap(file_inode(file)) != CEPH_NOSNAP)
+ 		return -EROFS;
+@@ -1280,6 +1303,8 @@ ceph_direct_read_write(struct kiocb *iocb, struct iov_iter *iter,
+ 	while (iov_iter_count(iter) > 0) {
+ 		u64 size = iov_iter_count(iter);
+ 		ssize_t len;
++		struct ceph_osd_req_op *op;
++		int readop = sparse ?  CEPH_OSD_OP_SPARSE_READ : CEPH_OSD_OP_READ;
+ 
+ 		if (write)
+ 			size = min_t(u64, size, fsc->mount_options->wsize);
+@@ -1290,8 +1315,7 @@ ceph_direct_read_write(struct kiocb *iocb, struct iov_iter *iter,
+ 		req = ceph_osdc_new_request(&fsc->client->osdc, &ci->i_layout,
+ 					    vino, pos, &size, 0,
+ 					    1,
+-					    write ? CEPH_OSD_OP_WRITE :
+-						    CEPH_OSD_OP_READ,
++					    write ? CEPH_OSD_OP_WRITE : readop,
+ 					    flags, snapc,
+ 					    ci->i_truncate_seq,
+ 					    ci->i_truncate_size,
+@@ -1342,6 +1366,14 @@ ceph_direct_read_write(struct kiocb *iocb, struct iov_iter *iter,
+ 		}
+ 
+ 		osd_req_op_extent_osd_data_bvecs(req, 0, bvecs, num_pages, len);
++		op = &req->r_ops[0];
++		if (sparse) {
++			ret = ceph_alloc_sparse_ext_map(op);
++			if (ret) {
++				ceph_osdc_put_request(req);
++				break;
++			}
++		}
+ 
+ 		if (aio_req) {
+ 			aio_req->total_len += len;
+@@ -1370,8 +1402,11 @@ ceph_direct_read_write(struct kiocb *iocb, struct iov_iter *iter,
+ 
+ 		size = i_size_read(inode);
+ 		if (!write) {
+-			if (ret == -ENOENT)
++			if (sparse && ret >= 0)
++				ret = ceph_sparse_ext_map_end(op);
++			else if (ret == -ENOENT)
+ 				ret = 0;
++
+ 			if (ret >= 0 && ret < len && pos + ret < size) {
+ 				struct iov_iter i;
+ 				int zlen = min_t(size_t, len - ret,
+diff --git a/fs/ceph/super.c b/fs/ceph/super.c
+index e6987d295079..26d924dda721 100644
+--- a/fs/ceph/super.c
++++ b/fs/ceph/super.c
+@@ -163,6 +163,7 @@ enum {
+ 	Opt_copyfrom,
+ 	Opt_wsync,
+ 	Opt_pagecache,
++	Opt_sparseread,
+ };
+ 
+ enum ceph_recover_session_mode {
+@@ -205,6 +206,7 @@ static const struct fs_parameter_spec ceph_mount_parameters[] = {
+ 	fsparam_u32	("wsize",			Opt_wsize),
+ 	fsparam_flag_no	("wsync",			Opt_wsync),
+ 	fsparam_flag_no	("pagecache",			Opt_pagecache),
++	fsparam_flag_no	("sparseread",			Opt_sparseread),
+ 	{}
+ };
+ 
+@@ -574,6 +576,12 @@ static int ceph_parse_mount_param(struct fs_context *fc,
+ 		else
+ 			fsopt->flags &= ~CEPH_MOUNT_OPT_NOPAGECACHE;
+ 		break;
++	case Opt_sparseread:
++		if (result.negated)
++			fsopt->flags &= ~CEPH_MOUNT_OPT_SPARSEREAD;
++		else
++			fsopt->flags |= CEPH_MOUNT_OPT_SPARSEREAD;
++		break;
+ 	default:
+ 		BUG();
+ 	}
+@@ -708,9 +716,10 @@ static int ceph_show_options(struct seq_file *m, struct dentry *root)
+ 
+ 	if (!(fsopt->flags & CEPH_MOUNT_OPT_ASYNC_DIROPS))
+ 		seq_puts(m, ",wsync");
+-
+ 	if (fsopt->flags & CEPH_MOUNT_OPT_NOPAGECACHE)
+ 		seq_puts(m, ",nopagecache");
++	if (fsopt->flags & CEPH_MOUNT_OPT_SPARSEREAD)
++		seq_puts(m, ",sparseread");
+ 
+ 	if (fsopt->wsize != CEPH_MAX_WRITE_SIZE)
+ 		seq_printf(m, ",wsize=%u", fsopt->wsize);
+@@ -1290,6 +1299,11 @@ static int ceph_reconfigure_fc(struct fs_context *fc)
+ 	else
+ 		ceph_clear_mount_opt(fsc, ASYNC_DIROPS);
+ 
++	if (fsopt->flags & CEPH_MOUNT_OPT_SPARSEREAD)
++		ceph_set_mount_opt(fsc, SPARSEREAD);
++	else
++		ceph_clear_mount_opt(fsc, SPARSEREAD);
++
+ 	if (strcmp_null(fsc->mount_options->mon_addr, fsopt->mon_addr)) {
+ 		kfree(fsc->mount_options->mon_addr);
+ 		fsc->mount_options->mon_addr = fsopt->mon_addr;
+diff --git a/fs/ceph/super.h b/fs/ceph/super.h
+index 73db7f6021f3..80a2399f2878 100644
+--- a/fs/ceph/super.h
++++ b/fs/ceph/super.h
+@@ -41,6 +41,7 @@
+ #define CEPH_MOUNT_OPT_NOCOPYFROM      (1<<14) /* don't use RADOS 'copy-from' op */
+ #define CEPH_MOUNT_OPT_ASYNC_DIROPS    (1<<15) /* allow async directory ops */
+ #define CEPH_MOUNT_OPT_NOPAGECACHE     (1<<16) /* bypass pagecache altogether */
++#define CEPH_MOUNT_OPT_SPARSEREAD      (1<<17) /* always do sparse reads */
+ 
+ #define CEPH_MOUNT_OPT_DEFAULT			\
+ 	(CEPH_MOUNT_OPT_DCACHE |		\
 -- 
 2.35.1
+
