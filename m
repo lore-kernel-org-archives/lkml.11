@@ -2,124 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F2BFC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:42:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2437C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:42:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1392526AbiDFBgq (ORCPT
+        id S1444595AbiDFBhO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:36:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39810 "EHLO
+        Tue, 5 Apr 2022 21:37:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349502AbiDEJt6 (ORCPT
+        with ESMTP id S1572968AbiDERgG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E7C6AB;
-        Tue,  5 Apr 2022 02:47:51 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 17BA7615E3;
-        Tue,  5 Apr 2022 09:47:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AD2DC385A1;
-        Tue,  5 Apr 2022 09:47:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152070;
-        bh=fS92WcltWMV/oLDH5M9/c4EeFe8ws+q7Xh7/PGg/Mi4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AySvFiob2XZuG8VHQmHUMU8OM0lSnhuh7bO9rINq4IrmMZ7mQXydp+MyWOmDaeXmb
-         hXj/vumwpDhJeXDK5nthl2Y9QaJCoSNij9BlPcOD3fHvDqHTJWX8VVp5jLnKH+w6Z2
-         yJ0JV0q9CFMyAkTF7p1o5T6OKKnOAMCGuWO6dryM=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Xiaolong Huang <butterflyhuangxx@gmail.com>,
-        Fei Li <fei1.li@intel.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 644/913] virt: acrn: fix a memory leak in acrn_dev_ioctl()
-Date:   Tue,  5 Apr 2022 09:28:26 +0200
-Message-Id: <20220405070359.143863831@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 13:36:06 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 892BDA7760
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 10:34:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649180047; x=1680716047;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=xNIgDv3tAxt+JijYYxs5mDw4LO9oYMf6VWgmKn7pa7M=;
+  b=FP+myJFPpApTSNFWZe6zxtPXKXF9WE+WffJdeSc0+vpTwSazF/iWiiK4
+   Oy3Zfl9Sn73Wc/IgwuCr90+H/eks3czOk0RhrONtUsxUL1unNnUs0jfKP
+   72OkOicigfkNwPJ2DELBVNRWyDGG8q11YZWZJAiYZJg/KDzWiiKer+Mmi
+   7P+Vtvw+iHLW/zK1N+feTmZXPjd8HzUFl8Mv0N0P4cU9MMDKN/jyDtfbk
+   GwzPvYaw9zBxwm4lJiiQkTPzJKHr28YViaOD+MIe0Qhr7+HxIrqCA0SSp
+   j4CiyB/fyAbKalqWDIz0LFRrRJoknRcxBwKNNxz0YD7tlPU+1xxr1nRMD
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="241403960"
+X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
+   d="scan'208";a="241403960"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 10:33:43 -0700
+X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
+   d="scan'208";a="651984104"
+Received: from ctveazey-mobl2.amr.corp.intel.com (HELO [10.255.230.126]) ([10.255.230.126])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 10:33:41 -0700
+Message-ID: <6eaa459d-b2a9-fc1e-e16d-01b28028462b@linux.intel.com>
+Date:   Tue, 5 Apr 2022 12:33:40 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.5.0
+Subject: Re: [PATCH v3 2/3] ASoC: Intel: sof_es8336: support a separate gpio
+ to control headphone
+Content-Language: en-US
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        alsa-devel@alsa-project.org
+Cc:     Hans de Goede <hdegoede@redhat.com>,
+        =?UTF-8?Q?P=c3=a9ter_Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        Cezary Rojewski <cezary.rojewski@intel.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Jie Yang <yang.jie@linux.intel.com>,
+        Liam Girdwood <liam.r.girdwood@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>, Takashi Iwai <tiwai@suse.com>,
+        linux-kernel@vger.kernel.org
+References: <cover.1649177516.git.mchehab@kernel.org>
+ <535454c0c598a8454487fe29b164527370e2db81.1649177516.git.mchehab@kernel.org>
+From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+In-Reply-To: <535454c0c598a8454487fe29b164527370e2db81.1649177516.git.mchehab@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaolong Huang <butterflyhuangxx@gmail.com>
 
-[ Upstream commit ecd1735f14d6ac868ae5d8b7a2bf193fa11f388b ]
+> -static const struct acpi_gpio_params speakers_enable_gpio0 = { 0, 0, true };
+> +static const struct acpi_gpio_params enable_gpio0 = { 0, 0, true };
+> +static const struct acpi_gpio_params enable_gpio1 = { 1, 0, true };
+> +
+>   static const struct acpi_gpio_mapping acpi_speakers_enable_gpio0[] = {
+> -	{ "speakers-enable-gpios", &speakers_enable_gpio0, 1 },
+> +	{ "speakers-enable-gpios", &enable_gpio0, 1 },
+>   	{ }
+>   };
+>   
+> -static const struct acpi_gpio_params speakers_enable_gpio1 = { 1, 0, true };
+>   static const struct acpi_gpio_mapping acpi_speakers_enable_gpio1[] = {
+> -	{ "speakers-enable-gpios", &speakers_enable_gpio1, 1 },
+> +	{ "speakers-enable-gpios", &enable_gpio1, 1 },
+> +};
 
-The vm_param and cpu_regs need to be freed via kfree()
-before return -EINVAL error.
+nit-pick: these changes could be applied to the previous patch.
 
-Fixes: 9c5137aedd11 ("virt: acrn: Introduce VM management interfaces")
-Fixes: 2ad2aaee1bc9 ("virt: acrn: Introduce an ioctl to set vCPU registers state")
-Signed-off-by: Xiaolong Huang <butterflyhuangxx@gmail.com>
-Signed-off-by: Fei Li <fei1.li@intel.com>
-Link: https://lore.kernel.org/r/20220308092047.1008409-1-butterflyhuangxx@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/virt/acrn/hsm.c | 20 +++++++++++++++-----
- 1 file changed, 15 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/virt/acrn/hsm.c b/drivers/virt/acrn/hsm.c
-index 130e12b8652a..af889cee6680 100644
---- a/drivers/virt/acrn/hsm.c
-+++ b/drivers/virt/acrn/hsm.c
-@@ -134,8 +134,10 @@ static long acrn_dev_ioctl(struct file *filp, unsigned int cmd,
- 		if (IS_ERR(vm_param))
- 			return PTR_ERR(vm_param);
- 
--		if ((vm_param->reserved0 | vm_param->reserved1) != 0)
-+		if ((vm_param->reserved0 | vm_param->reserved1) != 0) {
-+			kfree(vm_param);
- 			return -EINVAL;
-+		}
- 
- 		vm = acrn_vm_create(vm, vm_param);
- 		if (!vm) {
-@@ -180,21 +182,29 @@ static long acrn_dev_ioctl(struct file *filp, unsigned int cmd,
- 			return PTR_ERR(cpu_regs);
- 
- 		for (i = 0; i < ARRAY_SIZE(cpu_regs->reserved); i++)
--			if (cpu_regs->reserved[i])
-+			if (cpu_regs->reserved[i]) {
-+				kfree(cpu_regs);
- 				return -EINVAL;
-+			}
- 
- 		for (i = 0; i < ARRAY_SIZE(cpu_regs->vcpu_regs.reserved_32); i++)
--			if (cpu_regs->vcpu_regs.reserved_32[i])
-+			if (cpu_regs->vcpu_regs.reserved_32[i]) {
-+				kfree(cpu_regs);
- 				return -EINVAL;
-+			}
- 
- 		for (i = 0; i < ARRAY_SIZE(cpu_regs->vcpu_regs.reserved_64); i++)
--			if (cpu_regs->vcpu_regs.reserved_64[i])
-+			if (cpu_regs->vcpu_regs.reserved_64[i]) {
-+				kfree(cpu_regs);
- 				return -EINVAL;
-+			}
- 
- 		for (i = 0; i < ARRAY_SIZE(cpu_regs->vcpu_regs.gdt.reserved); i++)
- 			if (cpu_regs->vcpu_regs.gdt.reserved[i] |
--			    cpu_regs->vcpu_regs.idt.reserved[i])
-+			    cpu_regs->vcpu_regs.idt.reserved[i]) {
-+				kfree(cpu_regs);
- 				return -EINVAL;
-+			}
- 
- 		ret = hcall_set_vcpu_regs(vm->vmid, virt_to_phys(cpu_regs));
- 		if (ret < 0)
--- 
-2.34.1
-
-
-
+the rest of the code looks fine, thanks Mauro!
