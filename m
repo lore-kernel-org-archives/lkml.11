@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AA10C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:19:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61DCEC4167E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:19:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382687AbiDEMQb (ORCPT
+        id S1382714AbiDEMQm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:16:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47610 "EHLO
+        Tue, 5 Apr 2022 08:16:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244937AbiDEIws (ORCPT
+        with ESMTP id S244935AbiDEIws (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:52:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28D6624979;
-        Tue,  5 Apr 2022 01:47:04 -0700 (PDT)
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 712AA2497B;
+        Tue,  5 Apr 2022 01:47:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D7AD6B81B18;
-        Tue,  5 Apr 2022 08:47:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 451F2C385A1;
-        Tue,  5 Apr 2022 08:47:01 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id E2F67CE1BF8;
+        Tue,  5 Apr 2022 08:47:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B55FC385A0;
+        Tue,  5 Apr 2022 08:47:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148421;
-        bh=Njj0UwwznX5geIrMDygxrCHcyaL15MibWi9CcWVRjfs=;
+        s=korg; t=1649148424;
+        bh=xn5XjbNCQIGn7W+2fCIddx6tTuzdQS5XIwMYVgOCU0w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uiIoFXnkPkspIZPIC+ivpi7UF7k6h7lqbF2pHeckrK2BfSvOGOvVnTDyPvW4r3a8a
-         ZZ2ZOT/iyeK7K9HJPR0bA0CN0d0LQt76My8w5pdnsvEeRawpLx3dSJR8xzF9TCkutN
-         t3fFv4Ed9JX2ND6SsKq4haOcOGxqchkwY84SR1QA=
+        b=lrCvAhXeYtYjZ91DWxHgAVaOctnG6sar4HSflSOmW8WTs2iYw8/kDA99ybcMSIDRd
+         yBjxriaZv21RH31rsaGfC3m7EmkpiO2mcj5/wHCKdTkJNwLKDT8f3/pkjOQ2mGCHAY
+         +JwFutddT6XESSWbRLDwsq0p4huK1PSepzijEYuw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Aswath Govindraju <a-govindraju@ti.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0344/1017] ASoC: codecs: wcd934x: fix return value of wcd934x_rx_hph_mode_put
-Date:   Tue,  5 Apr 2022 09:20:57 +0200
-Message-Id: <20220405070404.494268696@linuxfoundation.org>
+Subject: [PATCH 5.16 0353/1017] mmc: sdhci_am654: Fix the driver data of AM64 SoC
+Date:   Tue,  5 Apr 2022 09:21:06 +0200
+Message-Id: <20220405070404.762768265@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,44 +50,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+From: Aswath Govindraju <a-govindraju@ti.com>
 
-[ Upstream commit 4b0bec6088588a120d33db85b1f0d9f096d1df71 ]
+[ Upstream commit 3b7340f1c89cc488e4df0b033bf7ae502ebbf5b2 ]
 
-wcd934x_rx_hph_mode_put currently returns zero eventhough it changes the value.
-Fix this, so that change notifications are sent correctly.
+The MMCSD IPs used in AM64 are the same as the ones used in J721E.
+Therefore, fix this by using the driver data from J721E for AM64 too, for
+both 8 and 4 bit instances.
 
-Fixes: 1cde8b822332 ("ASoC: wcd934x: add basic controls")
-Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Link: https://lore.kernel.org/r/20220222183212.11580-10-srinivas.kandagatla@linaro.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 754b7f2f7d2a ("mmc: sdhci_am654: Add Support for TI's AM64 SoC")
+Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
+Link: https://lore.kernel.org/r/20220211075056.26179-1-a-govindraju@ti.com
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/wcd934x.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/mmc/host/sdhci_am654.c | 24 ++----------------------
+ 1 file changed, 2 insertions(+), 22 deletions(-)
 
-diff --git a/sound/soc/codecs/wcd934x.c b/sound/soc/codecs/wcd934x.c
-index 68c9d694d379..654d847a050e 100644
---- a/sound/soc/codecs/wcd934x.c
-+++ b/sound/soc/codecs/wcd934x.c
-@@ -3308,13 +3308,16 @@ static int wcd934x_rx_hph_mode_put(struct snd_kcontrol *kc,
+diff --git a/drivers/mmc/host/sdhci_am654.c b/drivers/mmc/host/sdhci_am654.c
+index f654afbe8e83..b4891bb26648 100644
+--- a/drivers/mmc/host/sdhci_am654.c
++++ b/drivers/mmc/host/sdhci_am654.c
+@@ -514,26 +514,6 @@ static const struct sdhci_am654_driver_data sdhci_j721e_4bit_drvdata = {
+ 	.flags = IOMUX_PRESENT,
+ };
  
- 	mode_val = ucontrol->value.enumerated.item[0];
- 
-+	if (mode_val == wcd->hph_mode)
-+		return 0;
-+
- 	if (mode_val == 0) {
- 		dev_err(wcd->dev, "Invalid HPH Mode, default to ClSH HiFi\n");
- 		mode_val = CLS_H_LOHIFI;
- 	}
- 	wcd->hph_mode = mode_val;
- 
--	return 0;
-+	return 1;
- }
- 
- static int slim_rx_mux_get(struct snd_kcontrol *kc,
+-static const struct sdhci_pltfm_data sdhci_am64_8bit_pdata = {
+-	.ops = &sdhci_j721e_8bit_ops,
+-	.quirks2 = SDHCI_QUIRK2_PRESET_VALUE_BROKEN,
+-};
+-
+-static const struct sdhci_am654_driver_data sdhci_am64_8bit_drvdata = {
+-	.pdata = &sdhci_am64_8bit_pdata,
+-	.flags = DLL_PRESENT | DLL_CALIB,
+-};
+-
+-static const struct sdhci_pltfm_data sdhci_am64_4bit_pdata = {
+-	.ops = &sdhci_j721e_4bit_ops,
+-	.quirks2 = SDHCI_QUIRK2_PRESET_VALUE_BROKEN,
+-};
+-
+-static const struct sdhci_am654_driver_data sdhci_am64_4bit_drvdata = {
+-	.pdata = &sdhci_am64_4bit_pdata,
+-	.flags = IOMUX_PRESENT,
+-};
+-
+ static const struct soc_device_attribute sdhci_am654_devices[] = {
+ 	{ .family = "AM65X",
+ 	  .revision = "SR1.0",
+@@ -759,11 +739,11 @@ static const struct of_device_id sdhci_am654_of_match[] = {
+ 	},
+ 	{
+ 		.compatible = "ti,am64-sdhci-8bit",
+-		.data = &sdhci_am64_8bit_drvdata,
++		.data = &sdhci_j721e_8bit_drvdata,
+ 	},
+ 	{
+ 		.compatible = "ti,am64-sdhci-4bit",
+-		.data = &sdhci_am64_4bit_drvdata,
++		.data = &sdhci_j721e_4bit_drvdata,
+ 	},
+ 	{ /* sentinel */ }
+ };
 -- 
 2.34.1
 
