@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0B67C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:44:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 055CAC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:44:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389342AbiDEOob (ORCPT
+        id S1389367AbiDEOog (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:44:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49358 "EHLO
+        Tue, 5 Apr 2022 10:44:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244220AbiDEJlK (ORCPT
+        with ESMTP id S244219AbiDEJlK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 05:41:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26D8EBB08A;
-        Tue,  5 Apr 2022 02:25:44 -0700 (PDT)
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D4E9BB088;
+        Tue,  5 Apr 2022 02:25:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D31E9B81C9C;
-        Tue,  5 Apr 2022 09:25:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19A86C385A2;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 5A3A9CE1C79;
         Tue,  5 Apr 2022 09:25:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73780C385A0;
+        Tue,  5 Apr 2022 09:25:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150741;
-        bh=3oCwlJRD8vj5QipKcGadNX91kWBh0Lg0s35g0LB+Nho=;
+        s=korg; t=1649150738;
+        bh=lyl/QYeOAOaVkyrba6LwCYjzbpaPtg3ddCAsSWp4+5E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AUqml6CB942Uz+TcM2tEP71YXgSwq+u+2n+8N53Aqk48GB2Z6pH52NQPqj3sspkzX
-         0PCA9UtwvU+5kcFInIEH4mzngmnOAl0A1EGJNULV/g+MroNAw5SijAI761/aFY1AnA
-         JRDTw6MONsFsjGEa2EnhdEN/QM2BCpVK9DQp2zvc=
+        b=PXztr1PJopqy26NYFmP7qzfp3hyPeQUO53t4E5feUEN/IQZvDvlx7TpPNnTKAQQg5
+         vSEzFDsNCHyFn6cZgW8pE2eKYK0PaRZGJ4Ex5nQBGM0+B1NiUpdjN/fzHk031tIr80
+         bJ/pm2bPiSfUldHJ/U40TtyawxS2QqMk+TkkALyA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
-        Nishanth Menon <nm@ti.com>
-Subject: [PATCH 5.15 127/913] arm64: dts: ti: k3-am64: Fix gic-v3 compatible regs
-Date:   Tue,  5 Apr 2022 09:19:49 +0200
-Message-Id: <20220405070343.636808466@linuxfoundation.org>
+        stable@vger.kernel.org, Shawn Guo <shawn.guo@linaro.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: [PATCH 5.15 162/913] PM: domains: Fix sleep-in-atomic bug caused by genpd_debug_remove()
+Date:   Tue,  5 Apr 2022 09:20:24 +0200
+Message-Id: <20220405070344.699889540@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -49,59 +50,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nishanth Menon <nm@ti.com>
+From: Shawn Guo <shawn.guo@linaro.org>
 
-commit de60edf1be3d42d4a1b303b41c7c53b2f865726e upstream.
+commit f6bfe8b5b2c2a5ac8bd2fc7bca3706e6c3fc26d8 upstream.
 
-Though GIC ARE option is disabled for no GIC-v2 compatibility,
-Cortex-A53 is free to implement the CPU interface as long as it
-communicates with the GIC using the stream protocol. This requires
-that the SoC integration mark out the PERIPHBASE[1] as reserved area
-within the SoC. See longer discussion in [2] for further information.
+When a genpd with GENPD_FLAG_IRQ_SAFE gets removed, the following
+sleep-in-atomic bug will be seen, as genpd_debug_remove() will be called
+with a spinlock being held.
 
-Update the GIC register map to indicate offsets from PERIPHBASE based
-on [3]. Without doing this, systems like kvm will not function with
-gic-v2 emulation.
+[    0.029183] BUG: sleeping function called from invalid context at kernel/locking/rwsem.c:1460
+[    0.029204] in_atomic(): 1, irqs_disabled(): 128, non_block: 0, pid: 1, name: swapper/0
+[    0.029219] preempt_count: 1, expected: 0
+[    0.029230] CPU: 1 PID: 1 Comm: swapper/0 Not tainted 5.17.0-rc4+ #489
+[    0.029245] Hardware name: Thundercomm TurboX CM2290 (DT)
+[    0.029256] Call trace:
+[    0.029265]  dump_backtrace.part.0+0xbc/0xd0
+[    0.029285]  show_stack+0x3c/0xa0
+[    0.029298]  dump_stack_lvl+0x7c/0xa0
+[    0.029311]  dump_stack+0x18/0x34
+[    0.029323]  __might_resched+0x10c/0x13c
+[    0.029338]  __might_sleep+0x4c/0x80
+[    0.029351]  down_read+0x24/0xd0
+[    0.029363]  lookup_one_len_unlocked+0x9c/0xcc
+[    0.029379]  lookup_positive_unlocked+0x10/0x50
+[    0.029392]  debugfs_lookup+0x68/0xac
+[    0.029406]  genpd_remove.part.0+0x12c/0x1b4
+[    0.029419]  of_genpd_remove_last+0xa8/0xd4
+[    0.029434]  psci_cpuidle_domain_probe+0x174/0x53c
+[    0.029449]  platform_probe+0x68/0xe0
+[    0.029462]  really_probe+0x190/0x430
+[    0.029473]  __driver_probe_device+0x90/0x18c
+[    0.029485]  driver_probe_device+0x40/0xe0
+[    0.029497]  __driver_attach+0xf4/0x1d0
+[    0.029508]  bus_for_each_dev+0x70/0xd0
+[    0.029523]  driver_attach+0x24/0x30
+[    0.029534]  bus_add_driver+0x164/0x22c
+[    0.029545]  driver_register+0x78/0x130
+[    0.029556]  __platform_driver_register+0x28/0x34
+[    0.029569]  psci_idle_init_domains+0x1c/0x28
+[    0.029583]  do_one_initcall+0x50/0x1b0
+[    0.029595]  kernel_init_freeable+0x214/0x280
+[    0.029609]  kernel_init+0x2c/0x13c
+[    0.029622]  ret_from_fork+0x10/0x20
 
-[1] https://developer.arm.com/documentation/ddi0500/e/system-control/aarch64-register-descriptions/configuration-base-address-register--el1
-[2] https://lore.kernel.org/all/87k0e0tirw.wl-maz@kernel.org/
-[3] https://developer.arm.com/documentation/ddi0500/e/generic-interrupt-controller-cpu-interface/gic-programmers-model/memory-map
+It doesn't seem necessary to call genpd_debug_remove() with the lock, so
+move it out from locking to fix the problem.
 
-Cc: stable@vger.kernel.org
-Fixes: 8abae9389bdb ("arm64: dts: ti: Add support for AM642 SoC")
-Reported-by: Marc Zyngier <maz@kernel.org>
-Signed-off-by: Nishanth Menon <nm@ti.com>
-Acked-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220215201008.15235-5-nm@ti.com
+Fixes: 718072ceb211 ("PM: domains: create debugfs nodes when adding power domains")
+Signed-off-by: Shawn Guo <shawn.guo@linaro.org>
+Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
+Cc: 5.11+ <stable@vger.kernel.org> # 5.11+
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/boot/dts/ti/k3-am64-main.dtsi |    5 ++++-
- arch/arm64/boot/dts/ti/k3-am64.dtsi      |    1 +
- 2 files changed, 5 insertions(+), 1 deletion(-)
+ drivers/base/power/domain.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/arm64/boot/dts/ti/k3-am64-main.dtsi
-+++ b/arch/arm64/boot/dts/ti/k3-am64-main.dtsi
-@@ -59,7 +59,10 @@
- 		#interrupt-cells = <3>;
- 		interrupt-controller;
- 		reg = <0x00 0x01800000 0x00 0x10000>,	/* GICD */
--		      <0x00 0x01840000 0x00 0xC0000>;	/* GICR */
-+		      <0x00 0x01840000 0x00 0xC0000>,	/* GICR */
-+		      <0x01 0x00000000 0x00 0x2000>,	/* GICC */
-+		      <0x01 0x00010000 0x00 0x1000>,	/* GICH */
-+		      <0x01 0x00020000 0x00 0x2000>;	/* GICV */
- 		/*
- 		 * vcpumntirq:
- 		 * virtual CPU interface maintenance interrupt
---- a/arch/arm64/boot/dts/ti/k3-am64.dtsi
-+++ b/arch/arm64/boot/dts/ti/k3-am64.dtsi
-@@ -85,6 +85,7 @@
- 			 <0x00 0x68000000 0x00 0x68000000 0x00 0x08000000>, /* PCIe DAT0 */
- 			 <0x00 0x70000000 0x00 0x70000000 0x00 0x00200000>, /* OC SRAM */
- 			 <0x00 0x78000000 0x00 0x78000000 0x00 0x00800000>, /* Main R5FSS */
-+			 <0x01 0x00000000 0x01 0x00000000 0x00 0x00310000>, /* A53 PERIPHBASE */
- 			 <0x06 0x00000000 0x06 0x00000000 0x01 0x00000000>, /* PCIe DAT1 */
- 			 <0x05 0x00000000 0x05 0x00000000 0x01 0x00000000>, /* FSS0 DAT3 */
+--- a/drivers/base/power/domain.c
++++ b/drivers/base/power/domain.c
+@@ -2058,9 +2058,9 @@ static int genpd_remove(struct generic_p
+ 		kfree(link);
+ 	}
  
+-	genpd_debug_remove(genpd);
+ 	list_del(&genpd->gpd_list_node);
+ 	genpd_unlock(genpd);
++	genpd_debug_remove(genpd);
+ 	cancel_work_sync(&genpd->power_off_work);
+ 	if (genpd_is_cpu_domain(genpd))
+ 		free_cpumask_var(genpd->cpus);
 
 
