@@ -2,165 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39F31C43219
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:10:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8396DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:10:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442536AbiDEWLK (ORCPT
+        id S1391929AbiDEWI6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:11:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43592 "EHLO
+        Tue, 5 Apr 2022 18:08:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1451550AbiDEPxd (ORCPT
+        with ESMTP id S1358010AbiDEK1n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:53:33 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 817A41C887B;
-        Tue,  5 Apr 2022 07:47:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649170033; x=1680706033;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=+EigZUipNnJWpGEwCtYr5Ojb2vx0Lhl3QjD+kLrto9c=;
-  b=lEBG1EioOZ1fNEBfWXG3HbRc9Cg+QzDRKbWqGnv8F3d1HHxyXBVtoG7y
-   cggXcuUjy1tN14QpeaSfdYpohoyWAPVebglbvTjzxVxthvWAofq4f5Kkq
-   UPLT5wBjc/QgJdT9HoDfPlUygN2PrBEiets53WmdC20H48XJcBzFlsOwZ
-   U/9ssNdtEcLJfTJZeLsRvrQjpfm22UdD8hKFbLNlNImpOG1w+JFWXE7QJ
-   /ourM7oXfHOgW0v4CIKuN3J3c5cfyBQLUyCzzQk6WYFwEuT8g7rLoFGCl
-   2TF33cWNh5BaxZAyl6rM4P9K08j5mIfFojgYBELpb0mLPkEfo0YLhtcxG
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="258349806"
-X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
-   d="scan'208";a="258349806"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 07:47:13 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
-   d="scan'208";a="587952170"
-Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
-  by orsmga001.jf.intel.com with ESMTP; 05 Apr 2022 07:47:10 -0700
-Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nbkSc-0003RQ-3s;
-        Tue, 05 Apr 2022 14:47:10 +0000
-Date:   Tue, 5 Apr 2022 22:46:22 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     guoren@kernel.org, arnd@arndb.de
-Cc:     kbuild-all@lists.01.org, linux-arch@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-csky@vger.kernel.org,
-        Guo Ren <guoren@linux.alibaba.com>
-Subject: Re: [PATCH] csky: optimize memcpy_{from,to}io() and memset_io()
-Message-ID: <202204052238.Fz736aX3-lkp@intel.com>
-References: <20220404144427.2793051-1-guoren@kernel.org>
+        Tue, 5 Apr 2022 06:27:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B2FBDA6E8;
+        Tue,  5 Apr 2022 03:12:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DF1E4B81BC5;
+        Tue,  5 Apr 2022 10:12:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30867C385A0;
+        Tue,  5 Apr 2022 10:12:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153570;
+        bh=K4HnywraBUnPEWGJzdB751IfLGz1lbcbvOEYdLz463c=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=czhyGyESKg1XxDiXQtq2ZaTV9PGuAj41tybkD3WVaOoM/Y2vm7uZb1gABVac/a8fU
+         O2loCAtslCkTk4PxPwzHSLImScHyFSJBjrwsa6cOk/FOkqr9T8Cry28lflgFtRwNnQ
+         0+wQ6gmQU2dWD1Y1+tJE4D5eC0ADILUcvxg/5QXw=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Yiru Xu <xyru1999@gmail.com>,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 269/599] Bluetooth: hci_serdev: call init_rwsem() before p->open()
+Date:   Tue,  5 Apr 2022 09:29:23 +0200
+Message-Id: <20220405070306.841348371@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220404144427.2793051-1-guoren@kernel.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+From: Pavel Skripkin <paskripkin@gmail.com>
 
-I love your patch! Yet something to improve:
+[ Upstream commit 9d7cbe2b9cf5f650067df4f402fdd799d4bbb4e1 ]
 
-[auto build test ERROR on soc/for-next]
-[also build test ERROR on linus/master linux/master v5.18-rc1 next-20220405]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+kvartet reported, that hci_uart_tx_wakeup() uses uninitialized rwsem.
+The problem was in wrong place for percpu_init_rwsem() call.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/guoren-kernel-org/csky-optimize-memcpy_-from-to-io-and-memset_io/20220404-224954
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/soc/soc.git for-next
-config: csky-randconfig-r022-20220405 (https://download.01.org/0day-ci/archive/20220405/202204052238.Fz736aX3-lkp@intel.com/config)
-compiler: csky-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/2e50048555b298851590ec8272100b595b8801f9
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review guoren-kernel-org/csky-optimize-memcpy_-from-to-io-and-memset_io/20220404-224954
-        git checkout 2e50048555b298851590ec8272100b595b8801f9
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=csky SHELL=/bin/bash
+hci_uart_proto::open() may register a timer whose callback may call
+hci_uart_tx_wakeup(). There is a chance, that hci_uart_register_device()
+thread won't be fast enough to call percpu_init_rwsem().
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Fix it my moving percpu_init_rwsem() call before p->open().
 
-All errors (new ones prefixed by >>):
+INFO: trying to register non-static key.
+The code is fine but needs lockdep annotation, or maybe
+you didn't initialize this object before use?
+turning off the locking correctness validator.
+CPU: 2 PID: 18524 Comm: syz-executor.5 Not tainted 5.16.0-rc6 #9
+...
+Call Trace:
+ <IRQ>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ assign_lock_key kernel/locking/lockdep.c:951 [inline]
+ register_lock_class+0x148d/0x1950 kernel/locking/lockdep.c:1263
+ __lock_acquire+0x106/0x57e0 kernel/locking/lockdep.c:4906
+ lock_acquire kernel/locking/lockdep.c:5637 [inline]
+ lock_acquire+0x1ab/0x520 kernel/locking/lockdep.c:5602
+ percpu_down_read_trylock include/linux/percpu-rwsem.h:92 [inline]
+ hci_uart_tx_wakeup+0x12e/0x490 drivers/bluetooth/hci_ldisc.c:124
+ h5_timed_event+0x32f/0x6a0 drivers/bluetooth/hci_h5.c:188
+ call_timer_fn+0x1a5/0x6b0 kernel/time/timer.c:1421
 
-   csky-linux-ld: drivers/bus/mhi/core/init.o: in function `mhi_prepare_for_power_up':
->> init.c:(.text+0xa50): undefined reference to `__memset_io'
->> csky-linux-ld: init.c:(.text+0xaa8): undefined reference to `__memset_io'
-   csky-linux-ld: drivers/pci/pci-sysfs.o: in function `pci_read_rom':
->> pci-sysfs.c:(.text+0x2b8): undefined reference to `__memcpy_fromio'
->> csky-linux-ld: pci-sysfs.c:(.text+0x2f4): undefined reference to `__memcpy_fromio'
-   csky-linux-ld: drivers/soc/fsl/dpaa2-console.o: in function `dpaa2_console_read':
-   dpaa2-console.c:(.text+0xbc): undefined reference to `__memcpy_fromio'
-   csky-linux-ld: dpaa2-console.c:(.text+0xee): undefined reference to `__memcpy_fromio'
-   csky-linux-ld: dpaa2-console.c:(.text+0x16c): undefined reference to `__memcpy_fromio'
-   csky-linux-ld: drivers/misc/hpilo.o: in function `ilo_ccb_close':
->> hpilo.c:(.text+0x204): undefined reference to `__memset_io'
-   csky-linux-ld: drivers/misc/hpilo.o: in function `ilo_poll':
-   hpilo.c:(.text+0x31c): undefined reference to `__memset_io'
-   csky-linux-ld: drivers/misc/hpilo.o: in function `ilo_open':
->> hpilo.c:(.text+0xc3c): undefined reference to `__memcpy_toio'
->> csky-linux-ld: hpilo.c:(.text+0xd1c): undefined reference to `__memcpy_toio'
-   csky-linux-ld: drivers/scsi/smartpqi/smartpqi_init.o: in function `pqi_process_firmware_features':
->> smartpqi_init.c:(.text+0x3a92): undefined reference to `__memcpy_toio'
->> csky-linux-ld: smartpqi_init.c:(.text+0x3b30): undefined reference to `__memcpy_toio'
-   csky-linux-ld: drivers/scsi/smartpqi/smartpqi_init.o: in function `pqi_process_config_table':
->> smartpqi_init.c:(.text+0x3bda): undefined reference to `__memcpy_fromio'
-   csky-linux-ld: drivers/scsi/smartpqi/smartpqi_init.o: in function `pqi_configure_events.constprop.0':
-   smartpqi_init.c:(.text+0x3d68): undefined reference to `__memcpy_fromio'
-   csky-linux-ld: drivers/scsi/hptiop.o: in function `mv_inbound_write':
->> hptiop.c:(.text+0x90e): undefined reference to `__memcpy_toio'
-   csky-linux-ld: drivers/scsi/hptiop.o: in function `hptiop_post_req_mv':
-   hptiop.c:(.text+0x9b4): undefined reference to `__memcpy_toio'
-   csky-linux-ld: drivers/scsi/hptiop.o: in function `hptiop_request_callback_itl':
->> hptiop.c:(.text+0xa58): undefined reference to `__memcpy_fromio'
->> csky-linux-ld: hptiop.c:(.text+0xa88): undefined reference to `__memcpy_fromio'
-   csky-linux-ld: drivers/scsi/hptiop.o: in function `iop_intr_mv':
-   hptiop.c:(.text+0xd48): undefined reference to `__memcpy_fromio'
-   csky-linux-ld: drivers/scsi/hptiop.o: in function `iop_intr_itl':
-   hptiop.c:(.text+0xe10): undefined reference to `__memcpy_fromio'
-   csky-linux-ld: drivers/scsi/hptiop.o: in function `iop_get_config_itl':
-   hptiop.c:(.text+0x123a): undefined reference to `__memcpy_fromio'
-   csky-linux-ld: drivers/scsi/hptiop.o: in function `iop_set_config_itl':
-   hptiop.c:(.text+0x1278): undefined reference to `__memcpy_toio'
-   csky-linux-ld: drivers/scsi/hptiop.o: in function `dma_alloc_coherent.constprop.0':
-   hptiop.c:(.text+0x12ec): undefined reference to `__memcpy_fromio'
->> csky-linux-ld: hptiop.c:(.text+0x12f0): undefined reference to `__memcpy_toio'
-   csky-linux-ld: drivers/net/wan/pc300too.o: in function `sca_rx_done':
->> pc300too.c:(.text+0xbfa): undefined reference to `__memcpy_fromio'
->> csky-linux-ld: pc300too.c:(.text+0xc64): undefined reference to `__memcpy_fromio'
-   csky-linux-ld: drivers/net/wan/pc300too.o: in function `sca_xmit':
->> pc300too.c:(.text+0xd40): undefined reference to `__memcpy_toio'
-   csky-linux-ld: drivers/net/wan/pc300too.o: in function `sca_poll':
-   pc300too.c:(.text+0xf30): undefined reference to `__memcpy_toio'
-   csky-linux-ld: fs/pstore/ram_core.o: in function `persistent_ram_update':
->> ram_core.c:(.text+0x164): undefined reference to `__memcpy_toio'
->> csky-linux-ld: ram_core.c:(.text+0x18c): undefined reference to `__memcpy_toio'
-   csky-linux-ld: fs/pstore/ram_core.o: in function `persistent_ram_save_old':
->> ram_core.c:(.text+0x4f2): undefined reference to `__memcpy_fromio'
-   csky-linux-ld: ram_core.c:(.text+0x500): undefined reference to `__memcpy_fromio'
-   csky-linux-ld: fs/pstore/ram_core.o: in function `persistent_ram_write_user':
-   ram_core.c:(.text+0x5e0): undefined reference to `__memcpy_fromio'
-   csky-linux-ld: drivers/scsi/sym53c8xx_2/sym_hipd.o: in function `sym_start_up':
-   sym_hipd.c:(.text+0x3e3e): undefined reference to `__memcpy_toio'
-   csky-linux-ld: sym_hipd.c:(.text+0x3e60): undefined reference to `__memcpy_toio'
-   csky-linux-ld: sym_hipd.c:(.text+0x3fc8): undefined reference to `__memcpy_toio'
-   csky-linux-ld: drivers/remoteproc/remoteproc_coredump.o: in function `rproc_copy_segment':
-   remoteproc_coredump.c:(.text+0xb8): undefined reference to `__memcpy_fromio'
-   csky-linux-ld: remoteproc_coredump.c:(.text+0xd4): undefined reference to `__memcpy_fromio'
-   csky-linux-ld: drivers/remoteproc/remoteproc_elf_loader.o: in function `rproc_elf_load_segments':
-   remoteproc_elf_loader.c:(.text+0x328): undefined reference to `__memcpy_toio'
-   csky-linux-ld: remoteproc_elf_loader.c:(.text+0x34c): undefined reference to `__memset_io'
-   csky-linux-ld: remoteproc_elf_loader.c:(.text+0x378): undefined reference to `__memcpy_toio'
-   csky-linux-ld: remoteproc_elf_loader.c:(.text+0x37c): undefined reference to `__memset_io'
+Fixes: d73e17281665 ("Bluetooth: hci_serdev: Init hci_uart proto_lock to avoid oops")
+Reported-by: Yiru Xu <xyru1999@gmail.com>
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/bluetooth/hci_serdev.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
+diff --git a/drivers/bluetooth/hci_serdev.c b/drivers/bluetooth/hci_serdev.c
+index 9e03402ef1b3..e9a44ab3812d 100644
+--- a/drivers/bluetooth/hci_serdev.c
++++ b/drivers/bluetooth/hci_serdev.c
+@@ -305,6 +305,8 @@ int hci_uart_register_device(struct hci_uart *hu,
+ 	if (err)
+ 		return err;
+ 
++	percpu_init_rwsem(&hu->proto_lock);
++
+ 	err = p->open(hu);
+ 	if (err)
+ 		goto err_open;
+@@ -327,7 +329,6 @@ int hci_uart_register_device(struct hci_uart *hu,
+ 
+ 	INIT_WORK(&hu->init_ready, hci_uart_init_work);
+ 	INIT_WORK(&hu->write_work, hci_uart_write_work);
+-	percpu_init_rwsem(&hu->proto_lock);
+ 
+ 	/* Only when vendor specific setup callback is provided, consider
+ 	 * the manufacturer information valid. This avoids filling in the
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.34.1
+
+
+
