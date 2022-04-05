@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63DB4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:42:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7927C4707A
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:42:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243378AbiDELcE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:32:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46132 "EHLO
+        id S1377947AbiDELbC (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 07:31:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244216AbiDEIvu (ORCPT
+        with ESMTP id S243979AbiDEIvX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:51:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6E7CD3AED;
-        Tue,  5 Apr 2022 01:40:32 -0700 (PDT)
+        Tue, 5 Apr 2022 04:51:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98EB5D0A83;
+        Tue,  5 Apr 2022 01:40:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 17415B81B92;
-        Tue,  5 Apr 2022 08:40:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73C2DC385A1;
-        Tue,  5 Apr 2022 08:40:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6137160FFB;
+        Tue,  5 Apr 2022 08:39:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76900C385A1;
+        Tue,  5 Apr 2022 08:39:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148030;
-        bh=wpvEg1OyiXjrTwVS4vykPInIRUlKYaxO8RGYbB+Hdkk=;
+        s=korg; t=1649147971;
+        bh=toUIKSG7Y9lYiTObnBI3exiCjRwsy9pdblqnPZcepWY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HR9PlwqtbuwkdChbLEkhcp3ZIG459z4+IfqxXtU0YRJabiC2w7DO5EFK4zETU5Sde
-         TfwaKbB592Tcqg1RgOWW5rv/Mzh/Fb2d5V8jTQOMhNpW7uR35Nr0jBfBwX9EMmRvEI
-         okKBQdW+kcAdQFIND8x2a7NY7gwwHB2i7RHLCOCk=
+        b=s9XDr8qUxH19qQTVwgakgpMdjI+iiBkQSP+RjCD3e+0+jovdo+fAYBU8E0R8uoHWj
+         u0gdkctyGnA3dBi8F5smSobbub4Ia+9yqqmbgSfX+tc7YBsEmKJpY7htdk4AtkX/VL
+         ELR/Di2HGcvDCW24bEcIFav0s7UbL+uuZpN9xOFc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Scott Mayhew <smayhew@redhat.com>,
-        Paul Moore <paul@paul-moore.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0209/1017] selinux: Fix selinux_sb_mnt_opts_compat()
-Date:   Tue,  5 Apr 2022 09:18:42 +0200
-Message-Id: <20220405070400.454980834@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Jann Horn <jannh@google.com>, Kees Cook <keescook@chromium.org>
+Subject: [PATCH 5.16 0161/1017] pstore: Dont use semaphores in always-atomic-context code
+Date:   Tue,  5 Apr 2022 09:17:54 +0200
+Message-Id: <20220405070358.998841592@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,226 +50,170 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Scott Mayhew <smayhew@redhat.com>
+From: Jann Horn <jannh@google.com>
 
-[ Upstream commit b8b87fd954b4b1bdd2d739c8f50bf685351a1a94 ]
+commit 8126b1c73108bc691f5643df19071a59a69d0bc6 upstream.
 
-selinux_sb_mnt_opts_compat() is called under the sb_lock spinlock and
-shouldn't be performing any memory allocations.  Fix this by parsing the
-sids at the same time we're chopping up the security mount options
-string and then using the pre-parsed sids when doing the comparison.
+pstore_dump() is *always* invoked in atomic context (nowadays in an RCU
+read-side critical section, before that under a spinlock).
+It doesn't make sense to try to use semaphores here.
 
-Fixes: cc274ae7763d ("selinux: fix sleeping function called from invalid context")
-Fixes: 69c4a42d72eb ("lsm,selinux: add new hook to compare new mount to an existing mount")
-Signed-off-by: Scott Mayhew <smayhew@redhat.com>
-Signed-off-by: Paul Moore <paul@paul-moore.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+This is mostly a revert of commit ea84b580b955 ("pstore: Convert buf_lock
+to semaphore"), except that two parts aren't restored back exactly as they
+were:
+
+ - keep the lock initialization in pstore_register
+ - in efi_pstore_write(), always set the "block" flag to false
+ - omit "is_locked", that was unnecessary since
+   commit 959217c84c27 ("pstore: Actually give up during locking failure")
+ - fix the bailout message
+
+The actual problem that the buggy commit was trying to address may have
+been that the use of preemptible() in efi_pstore_write() was wrong - it
+only looks at preempt_count() and the state of IRQs, but __rcu_read_lock()
+doesn't touch either of those under CONFIG_PREEMPT_RCU.
+(Sidenote: CONFIG_PREEMPT_RCU means that the scheduler can preempt tasks in
+RCU read-side critical sections, but you're not allowed to actively
+block/reschedule.)
+
+Lockdep probably never caught the problem because it's very rare that you
+actually hit the contended case, so lockdep always just sees the
+down_trylock(), not the down_interruptible(), and so it can't tell that
+there's a problem.
+
+Fixes: ea84b580b955 ("pstore: Convert buf_lock to semaphore")
+Cc: stable@vger.kernel.org
+Acked-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Jann Horn <jannh@google.com>
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Link: https://lore.kernel.org/r/20220314185953.2068993-1-jannh@google.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- security/selinux/hooks.c | 75 ++++++++++++++++++++++------------------
- 1 file changed, 41 insertions(+), 34 deletions(-)
+ drivers/firmware/efi/efi-pstore.c |    2 +-
+ fs/pstore/platform.c              |   38 ++++++++++++++++++--------------------
+ include/linux/pstore.h            |    6 +++---
+ 3 files changed, 22 insertions(+), 24 deletions(-)
 
-diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
-index 5b4b738a3be4..30f08fc1ac09 100644
---- a/security/selinux/hooks.c
-+++ b/security/selinux/hooks.c
-@@ -355,6 +355,10 @@ static void inode_free_security(struct inode *inode)
+--- a/drivers/firmware/efi/efi-pstore.c
++++ b/drivers/firmware/efi/efi-pstore.c
+@@ -266,7 +266,7 @@ static int efi_pstore_write(struct pstor
+ 		efi_name[i] = name[i];
  
- struct selinux_mnt_opts {
- 	const char *fscontext, *context, *rootcontext, *defcontext;
-+	u32 fscontext_sid;
-+	u32 context_sid;
-+	u32 rootcontext_sid;
-+	u32 defcontext_sid;
- };
+ 	ret = efivar_entry_set_safe(efi_name, vendor, PSTORE_EFI_ATTRIBUTES,
+-			      preemptible(), record->size, record->psi->buf);
++			      false, record->size, record->psi->buf);
  
- static void selinux_free_mnt_opts(void *mnt_opts)
-@@ -611,15 +615,14 @@ static int bad_option(struct superblock_security_struct *sbsec, char flag,
- 	return 0;
+ 	if (record->reason == KMSG_DUMP_OOPS && try_module_get(THIS_MODULE))
+ 		if (!schedule_work(&efivar_work))
+--- a/fs/pstore/platform.c
++++ b/fs/pstore/platform.c
+@@ -143,21 +143,22 @@ static void pstore_timer_kick(void)
+ 	mod_timer(&pstore_timer, jiffies + msecs_to_jiffies(pstore_update_ms));
  }
  
--static int parse_sid(struct super_block *sb, const char *s, u32 *sid,
--		     gfp_t gfp)
-+static int parse_sid(struct super_block *sb, const char *s, u32 *sid)
+-/*
+- * Should pstore_dump() wait for a concurrent pstore_dump()? If
+- * not, the current pstore_dump() will report a failure to dump
+- * and return.
+- */
+-static bool pstore_cannot_wait(enum kmsg_dump_reason reason)
++static bool pstore_cannot_block_path(enum kmsg_dump_reason reason)
  {
- 	int rc = security_context_str_to_sid(&selinux_state, s,
--					     sid, gfp);
-+					     sid, GFP_KERNEL);
- 	if (rc)
- 		pr_warn("SELinux: security_context_str_to_sid"
- 		       "(%s) failed for (dev %s, type %s) errno=%d\n",
--		       s, sb->s_id, sb->s_type->name, rc);
-+		       s, sb ? sb->s_id : "?", sb ? sb->s_type->name : "?", rc);
- 	return rc;
- }
+-	/* In NMI path, pstore shouldn't block regardless of reason. */
++	/*
++	 * In case of NMI path, pstore shouldn't be blocked
++	 * regardless of reason.
++	 */
+ 	if (in_nmi())
+ 		return true;
  
-@@ -686,8 +689,7 @@ static int selinux_set_mnt_opts(struct super_block *sb,
- 	 */
- 	if (opts) {
- 		if (opts->fscontext) {
--			rc = parse_sid(sb, opts->fscontext, &fscontext_sid,
--					GFP_KERNEL);
-+			rc = parse_sid(sb, opts->fscontext, &fscontext_sid);
- 			if (rc)
- 				goto out;
- 			if (bad_option(sbsec, FSCONTEXT_MNT, sbsec->sid,
-@@ -696,8 +698,7 @@ static int selinux_set_mnt_opts(struct super_block *sb,
- 			sbsec->flags |= FSCONTEXT_MNT;
- 		}
- 		if (opts->context) {
--			rc = parse_sid(sb, opts->context, &context_sid,
--					GFP_KERNEL);
-+			rc = parse_sid(sb, opts->context, &context_sid);
- 			if (rc)
- 				goto out;
- 			if (bad_option(sbsec, CONTEXT_MNT, sbsec->mntpoint_sid,
-@@ -706,8 +707,7 @@ static int selinux_set_mnt_opts(struct super_block *sb,
- 			sbsec->flags |= CONTEXT_MNT;
- 		}
- 		if (opts->rootcontext) {
--			rc = parse_sid(sb, opts->rootcontext, &rootcontext_sid,
--					GFP_KERNEL);
-+			rc = parse_sid(sb, opts->rootcontext, &rootcontext_sid);
- 			if (rc)
- 				goto out;
- 			if (bad_option(sbsec, ROOTCONTEXT_MNT, root_isec->sid,
-@@ -716,8 +716,7 @@ static int selinux_set_mnt_opts(struct super_block *sb,
- 			sbsec->flags |= ROOTCONTEXT_MNT;
- 		}
- 		if (opts->defcontext) {
--			rc = parse_sid(sb, opts->defcontext, &defcontext_sid,
--					GFP_KERNEL);
-+			rc = parse_sid(sb, opts->defcontext, &defcontext_sid);
- 			if (rc)
- 				goto out;
- 			if (bad_option(sbsec, DEFCONTEXT_MNT, sbsec->def_sid,
-@@ -1009,21 +1008,29 @@ static int selinux_add_opt(int token, const char *s, void **mnt_opts)
- 		if (opts->context || opts->defcontext)
- 			goto Einval;
- 		opts->context = s;
-+		if (selinux_initialized(&selinux_state))
-+			parse_sid(NULL, s, &opts->context_sid);
- 		break;
- 	case Opt_fscontext:
- 		if (opts->fscontext)
- 			goto Einval;
- 		opts->fscontext = s;
-+		if (selinux_initialized(&selinux_state))
-+			parse_sid(NULL, s, &opts->fscontext_sid);
- 		break;
- 	case Opt_rootcontext:
- 		if (opts->rootcontext)
- 			goto Einval;
- 		opts->rootcontext = s;
-+		if (selinux_initialized(&selinux_state))
-+			parse_sid(NULL, s, &opts->rootcontext_sid);
- 		break;
- 	case Opt_defcontext:
- 		if (opts->context || opts->defcontext)
- 			goto Einval;
- 		opts->defcontext = s;
-+		if (selinux_initialized(&selinux_state))
-+			parse_sid(NULL, s, &opts->defcontext_sid);
- 		break;
- 	}
- 	return 0;
-@@ -2697,8 +2704,6 @@ static int selinux_sb_mnt_opts_compat(struct super_block *sb, void *mnt_opts)
- {
- 	struct selinux_mnt_opts *opts = mnt_opts;
- 	struct superblock_security_struct *sbsec = selinux_superblock(sb);
--	u32 sid;
--	int rc;
+ 	switch (reason) {
+ 	/* In panic case, other cpus are stopped by smp_send_stop(). */
+ 	case KMSG_DUMP_PANIC:
+-	/* Emergency restart shouldn't be blocked. */
++	/*
++	 * Emergency restart shouldn't be blocked by spinning on
++	 * pstore_info::buf_lock.
++	 */
+ 	case KMSG_DUMP_EMERG:
+ 		return true;
+ 	default:
+@@ -389,21 +390,19 @@ static void pstore_dump(struct kmsg_dump
+ 	unsigned long	total = 0;
+ 	const char	*why;
+ 	unsigned int	part = 1;
++	unsigned long	flags = 0;
+ 	int		ret;
  
- 	/*
- 	 * Superblock not initialized (i.e. no options) - reject if any
-@@ -2715,34 +2720,36 @@ static int selinux_sb_mnt_opts_compat(struct super_block *sb, void *mnt_opts)
- 		return (sbsec->flags & SE_MNTMASK) ? 1 : 0;
+ 	why = kmsg_dump_reason_str(reason);
  
- 	if (opts->fscontext) {
--		rc = parse_sid(sb, opts->fscontext, &sid, GFP_NOWAIT);
--		if (rc)
-+		if (opts->fscontext_sid == SECSID_NULL)
- 			return 1;
--		if (bad_option(sbsec, FSCONTEXT_MNT, sbsec->sid, sid))
-+		else if (bad_option(sbsec, FSCONTEXT_MNT, sbsec->sid,
-+				       opts->fscontext_sid))
- 			return 1;
+-	if (down_trylock(&psinfo->buf_lock)) {
+-		/* Failed to acquire lock: give up if we cannot wait. */
+-		if (pstore_cannot_wait(reason)) {
+-			pr_err("dump skipped in %s path: may corrupt error record\n",
+-				in_nmi() ? "NMI" : why);
+-			return;
+-		}
+-		if (down_interruptible(&psinfo->buf_lock)) {
+-			pr_err("could not grab semaphore?!\n");
++	if (pstore_cannot_block_path(reason)) {
++		if (!spin_trylock_irqsave(&psinfo->buf_lock, flags)) {
++			pr_err("dump skipped in %s path because of concurrent dump\n",
++					in_nmi() ? "NMI" : why);
+ 			return;
+ 		}
++	} else {
++		spin_lock_irqsave(&psinfo->buf_lock, flags);
  	}
- 	if (opts->context) {
--		rc = parse_sid(sb, opts->context, &sid, GFP_NOWAIT);
--		if (rc)
-+		if (opts->context_sid == SECSID_NULL)
- 			return 1;
--		if (bad_option(sbsec, CONTEXT_MNT, sbsec->mntpoint_sid, sid))
-+		else if (bad_option(sbsec, CONTEXT_MNT, sbsec->mntpoint_sid,
-+				       opts->context_sid))
- 			return 1;
+ 
+ 	kmsg_dump_rewind(&iter);
+@@ -467,8 +466,7 @@ static void pstore_dump(struct kmsg_dump
+ 		total += record.size;
+ 		part++;
  	}
- 	if (opts->rootcontext) {
--		struct inode_security_struct *root_isec;
 -
--		root_isec = backing_inode_security(sb->s_root);
--		rc = parse_sid(sb, opts->rootcontext, &sid, GFP_NOWAIT);
--		if (rc)
--			return 1;
--		if (bad_option(sbsec, ROOTCONTEXT_MNT, root_isec->sid, sid))
-+		if (opts->rootcontext_sid == SECSID_NULL)
- 			return 1;
-+		else {
-+			struct inode_security_struct *root_isec;
-+
-+			root_isec = backing_inode_security(sb->s_root);
-+			if (bad_option(sbsec, ROOTCONTEXT_MNT, root_isec->sid,
-+				       opts->rootcontext_sid))
-+				return 1;
-+		}
- 	}
- 	if (opts->defcontext) {
--		rc = parse_sid(sb, opts->defcontext, &sid, GFP_NOWAIT);
--		if (rc)
-+		if (opts->defcontext_sid == SECSID_NULL)
- 			return 1;
--		if (bad_option(sbsec, DEFCONTEXT_MNT, sbsec->def_sid, sid))
-+		else if (bad_option(sbsec, DEFCONTEXT_MNT, sbsec->def_sid,
-+				       opts->defcontext_sid))
- 			return 1;
- 	}
- 	return 0;
-@@ -2762,14 +2769,14 @@ static int selinux_sb_remount(struct super_block *sb, void *mnt_opts)
- 		return 0;
+-	up(&psinfo->buf_lock);
++	spin_unlock_irqrestore(&psinfo->buf_lock, flags);
+ }
  
- 	if (opts->fscontext) {
--		rc = parse_sid(sb, opts->fscontext, &sid, GFP_KERNEL);
-+		rc = parse_sid(sb, opts->fscontext, &sid);
- 		if (rc)
- 			return rc;
- 		if (bad_option(sbsec, FSCONTEXT_MNT, sbsec->sid, sid))
- 			goto out_bad_option;
- 	}
- 	if (opts->context) {
--		rc = parse_sid(sb, opts->context, &sid, GFP_KERNEL);
-+		rc = parse_sid(sb, opts->context, &sid);
- 		if (rc)
- 			return rc;
- 		if (bad_option(sbsec, CONTEXT_MNT, sbsec->mntpoint_sid, sid))
-@@ -2778,14 +2785,14 @@ static int selinux_sb_remount(struct super_block *sb, void *mnt_opts)
- 	if (opts->rootcontext) {
- 		struct inode_security_struct *root_isec;
- 		root_isec = backing_inode_security(sb->s_root);
--		rc = parse_sid(sb, opts->rootcontext, &sid, GFP_KERNEL);
-+		rc = parse_sid(sb, opts->rootcontext, &sid);
- 		if (rc)
- 			return rc;
- 		if (bad_option(sbsec, ROOTCONTEXT_MNT, root_isec->sid, sid))
- 			goto out_bad_option;
- 	}
- 	if (opts->defcontext) {
--		rc = parse_sid(sb, opts->defcontext, &sid, GFP_KERNEL);
-+		rc = parse_sid(sb, opts->defcontext, &sid);
- 		if (rc)
- 			return rc;
- 		if (bad_option(sbsec, DEFCONTEXT_MNT, sbsec->def_sid, sid))
--- 
-2.34.1
-
+ static struct kmsg_dumper pstore_dumper = {
+@@ -594,7 +592,7 @@ int pstore_register(struct pstore_info *
+ 		psi->write_user = pstore_write_user_compat;
+ 	psinfo = psi;
+ 	mutex_init(&psinfo->read_mutex);
+-	sema_init(&psinfo->buf_lock, 1);
++	spin_lock_init(&psinfo->buf_lock);
+ 
+ 	if (psi->flags & PSTORE_FLAGS_DMESG)
+ 		allocate_buf_for_compression();
+--- a/include/linux/pstore.h
++++ b/include/linux/pstore.h
+@@ -14,7 +14,7 @@
+ #include <linux/errno.h>
+ #include <linux/kmsg_dump.h>
+ #include <linux/mutex.h>
+-#include <linux/semaphore.h>
++#include <linux/spinlock.h>
+ #include <linux/time.h>
+ #include <linux/types.h>
+ 
+@@ -87,7 +87,7 @@ struct pstore_record {
+  * @owner:	module which is responsible for this backend driver
+  * @name:	name of the backend driver
+  *
+- * @buf_lock:	semaphore to serialize access to @buf
++ * @buf_lock:	spinlock to serialize access to @buf
+  * @buf:	preallocated crash dump buffer
+  * @bufsize:	size of @buf available for crash dump bytes (must match
+  *		smallest number of bytes available for writing to a
+@@ -178,7 +178,7 @@ struct pstore_info {
+ 	struct module	*owner;
+ 	const char	*name;
+ 
+-	struct semaphore buf_lock;
++	spinlock_t	buf_lock;
+ 	char		*buf;
+ 	size_t		bufsize;
+ 
 
 
