@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA74BC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF468C4167D
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:42:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386231AbiDEMkm (ORCPT
+        id S1386285AbiDEMkz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:40:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51018 "EHLO
+        Tue, 5 Apr 2022 08:40:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236516AbiDEJDF (ORCPT
+        with ESMTP id S237947AbiDEJE2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:03:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7F352D1E6;
-        Tue,  5 Apr 2022 01:54:48 -0700 (PDT)
+        Tue, 5 Apr 2022 05:04:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEE0E13F3F;
+        Tue,  5 Apr 2022 01:55:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 75AE0614E4;
-        Tue,  5 Apr 2022 08:54:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EBCDC385A3;
-        Tue,  5 Apr 2022 08:54:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9EFF5B81C84;
+        Tue,  5 Apr 2022 08:55:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1209CC385A1;
+        Tue,  5 Apr 2022 08:55:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148887;
-        bh=jl+4nCqhoplCL8BSTrcvMb6idHEZMgoKG46ObsEUPOU=;
+        s=korg; t=1649148949;
+        bh=NSm4cXzaYVKISJmzrhEGmW7kbB0t373onYfKAu8jDTU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LxEWqkyC9WctGaGz2QeHyil2/aZB5VVFwfINnlRatPIQEErB/uGaUiW1X4o9MUOLx
-         Ol2N2aaumzYg6ELqMRQS7Q3qM9s3IcnOQXNTUjYft96XsvPfsaWjYld8DVffPGYoUH
-         nIL2GSFHf7jm4eX3UEqVVvJS2Z7ln0KgqbnC4qDk=
+        b=0Uzp4a7/k0vHr5O35x8laPFa5lGffvFR1/MJSubY1Nc++ksoeQLjcwEtBFW/9cg2X
+         8dkjlwXcOTTtThX11nYsbOuRTOxLXDwrnn9DfPvodkhAjMsJ5CAgrra//JqaYYzxX+
+         D3zXQGK7E/kkQ0QLClPlKZ8ui79tsdN5EufX0ORI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuogee Hsieh <quic_khsieh@quicinc.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        stable@vger.kernel.org, Jack Wang <jinpu.wang@ionos.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0518/1017] drm/msm/dp: always add fail-safe mode into connector mode list
-Date:   Tue,  5 Apr 2022 09:23:51 +0200
-Message-Id: <20220405070409.672459336@linuxfoundation.org>
+Subject: [PATCH 5.16 0538/1017] scsi: pm8001: Fix NCQ NON DATA command completion handling
+Date:   Tue,  5 Apr 2022 09:24:11 +0200
+Message-Id: <20220405070410.259833134@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,45 +51,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuogee Hsieh <quic_khsieh@quicinc.com>
+From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 
-[ Upstream commit d4aca422539c441a7f3fec749287b36de37d9b6b ]
+[ Upstream commit 1d6736c3e162061dc811c76e605f35ef3234bffa ]
 
-Some of DP link compliant test expects to return fail-safe mode
-if prefer detailed timing mode can not be supported by mainlink's
-lane and rate after link training. Therefore add fail-safe mode
-into connector mode list as backup mode. This patch fixes test
-case 4.2.2.1.
+NCQ NON DATA is an NCQ command with the DMA_NONE DMA direction and so a
+register-device-to-host-FIS response is expected for it.
 
-Changes in v2:
--- add Fixes text string
+However, for an IO_SUCCESS case, mpi_sata_completion() expects a
+set-device-bits-FIS for any ata task with an use_ncq field true, which
+includes NCQ NON DATA commands.
 
-Fixes: 4b85d405cfe9 ( "drm/msm/dp: reduce link rate if failed at link training 1")
-Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-Link: https://lore.kernel.org/r/1643066274-25814-1-git-send-email-quic_khsieh@quicinc.com
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Fix this to correctly treat NCQ NON DATA commands as non-data by also
+testing for the DMA_NONE DMA direction.
+
+Link: https://lore.kernel.org/r/20220220031810.738362-16-damien.lemoal@opensource.wdc.com
+Fixes: dbf9bfe61571 ("[SCSI] pm8001: add SAS/SATA HBA driver")
+Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/dp/dp_panel.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/scsi/pm8001/pm8001_hwi.c | 3 ++-
+ drivers/scsi/pm8001/pm80xx_hwi.c | 3 ++-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/dp/dp_panel.c b/drivers/gpu/drm/msm/dp/dp_panel.c
-index 71db10c0f262..f1418722c549 100644
---- a/drivers/gpu/drm/msm/dp/dp_panel.c
-+++ b/drivers/gpu/drm/msm/dp/dp_panel.c
-@@ -212,6 +212,11 @@ int dp_panel_read_sink_caps(struct dp_panel *dp_panel,
- 		if (drm_add_modes_noedid(connector, 640, 480))
- 			drm_set_preferred_mode(connector, 640, 480);
- 		mutex_unlock(&connector->dev->mode_config.mutex);
-+	} else {
-+		/* always add fail-safe mode as backup mode */
-+		mutex_lock(&connector->dev->mode_config.mutex);
-+		drm_add_modes_noedid(connector, 640, 480);
-+		mutex_unlock(&connector->dev->mode_config.mutex);
- 	}
- 
- 	if (panel->aux_cfg_update_done) {
+diff --git a/drivers/scsi/pm8001/pm8001_hwi.c b/drivers/scsi/pm8001/pm8001_hwi.c
+index 183c72547229..97c08afd2dcf 100644
+--- a/drivers/scsi/pm8001/pm8001_hwi.c
++++ b/drivers/scsi/pm8001/pm8001_hwi.c
+@@ -2421,7 +2421,8 @@ mpi_sata_completion(struct pm8001_hba_info *pm8001_ha, void *piomb)
+ 				len = sizeof(struct pio_setup_fis);
+ 				pm8001_dbg(pm8001_ha, IO,
+ 					   "PIO read len = %d\n", len);
+-			} else if (t->ata_task.use_ncq) {
++			} else if (t->ata_task.use_ncq &&
++				   t->data_dir != DMA_NONE) {
+ 				len = sizeof(struct set_dev_bits_fis);
+ 				pm8001_dbg(pm8001_ha, IO, "FPDMA len = %d\n",
+ 					   len);
+diff --git a/drivers/scsi/pm8001/pm80xx_hwi.c b/drivers/scsi/pm8001/pm80xx_hwi.c
+index 8eef2c51e432..414cd4b67c90 100644
+--- a/drivers/scsi/pm8001/pm80xx_hwi.c
++++ b/drivers/scsi/pm8001/pm80xx_hwi.c
+@@ -2518,7 +2518,8 @@ mpi_sata_completion(struct pm8001_hba_info *pm8001_ha,
+ 				len = sizeof(struct pio_setup_fis);
+ 				pm8001_dbg(pm8001_ha, IO,
+ 					   "PIO read len = %d\n", len);
+-			} else if (t->ata_task.use_ncq) {
++			} else if (t->ata_task.use_ncq &&
++				   t->data_dir != DMA_NONE) {
+ 				len = sizeof(struct set_dev_bits_fis);
+ 				pm8001_dbg(pm8001_ha, IO, "FPDMA len = %d\n",
+ 					   len);
 -- 
 2.34.1
 
