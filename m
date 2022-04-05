@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6CC3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:42:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C53DAC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:42:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235638AbiDEMgm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:36:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53108 "EHLO
+        id S239007AbiDEMhJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 08:37:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235645AbiDEJCY (ORCPT
+        with ESMTP id S236394AbiDEJCy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:02:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AA2613D1D;
-        Tue,  5 Apr 2022 01:54:17 -0700 (PDT)
+        Tue, 5 Apr 2022 05:02:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A46AF101E3;
+        Tue,  5 Apr 2022 01:54:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B971CB81B92;
-        Tue,  5 Apr 2022 08:54:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CED3C385A0;
-        Tue,  5 Apr 2022 08:54:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3EBFB614E4;
+        Tue,  5 Apr 2022 08:54:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48F6DC385A0;
+        Tue,  5 Apr 2022 08:54:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148854;
-        bh=ABlTf+N6DH9ccUXpUU8Fl2Nw2NUrzJf1hK0bocX+03s=;
+        s=korg; t=1649148873;
+        bh=I6VMpa5qO10NI83gO4a4CfkLjhd4lXYlFeykmMzwh50=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Assyde6JZhc49T7GdI8ZtDE7cAt0fJcfGf/VMhWbDx4MXtI06nbvOwcRsFaWDyMtg
-         VS9MthIIj2BuK3GonxEXadZvSYYgNgE3Yskf+SSwVTe7dLBZVcHOnfqfJcPvksvDLX
-         0f8CdxhignlFmtnRfjP/vobSdhnBrhhVoqMvdlwg=
+        b=GhgcQPlIXVsjh51kClNWNLgBQIA4VYrX3Fh22TGWND3cokYNUompw1CIPowPmU4+e
+         U/50cReSbFn1PUr/piJ1d+KM0ueUKi56XAn26GItbtEmtaPidJLP5W9tNm1thi0S5p
+         qQ2KjGPDV9Ozha+DwTqph1T5ArZG1ngdewysqMrU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?H=C3=A5kon=20Bugge?= <haakon.bugge@oracle.com>,
-        Avneesh Pant <avneesh.pant@oracle.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Petr Mladek <pmladek@suse.com>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0504/1017] IB/cma: Allow XRC INI QPs to set their local ACK timeout
-Date:   Tue,  5 Apr 2022 09:23:37 +0200
-Message-Id: <20220405070409.259809614@linuxfoundation.org>
+Subject: [PATCH 5.16 0474/1017] livepatch: Fix build failure on 32 bits processors
+Date:   Tue,  5 Apr 2022 09:23:07 +0200
+Message-Id: <20220405070408.368745221@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -52,36 +53,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Håkon Bugge <haakon.bugge@oracle.com>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-[ Upstream commit 748663c8ccf6b2e5a800de19127c2cc1c4423fd2 ]
+[ Upstream commit 2f293651eca3eacaeb56747dede31edace7329d2 ]
 
-XRC INI QPs should be able to adjust their local ACK timeout.
+Trying to build livepatch on powerpc/32 results in:
 
-Fixes: 2c1619edef61 ("IB/cma: Define option to set ack timeout and pack tos_set")
-Link: https://lore.kernel.org/r/1644421175-31943-1-git-send-email-haakon.bugge@oracle.com
-Signed-off-by: Håkon Bugge <haakon.bugge@oracle.com>
-Suggested-by: Avneesh Pant <avneesh.pant@oracle.com>
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+	kernel/livepatch/core.c: In function 'klp_resolve_symbols':
+	kernel/livepatch/core.c:221:23: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
+	  221 |                 sym = (Elf64_Sym *)sechdrs[symndx].sh_addr + ELF_R_SYM(relas[i].r_info);
+	      |                       ^
+	kernel/livepatch/core.c:221:21: error: assignment to 'Elf32_Sym *' {aka 'struct elf32_sym *'} from incompatible pointer type 'Elf64_Sym *' {aka 'struct elf64_sym *'} [-Werror=incompatible-pointer-types]
+	  221 |                 sym = (Elf64_Sym *)sechdrs[symndx].sh_addr + ELF_R_SYM(relas[i].r_info);
+	      |                     ^
+	kernel/livepatch/core.c: In function 'klp_apply_section_relocs':
+	kernel/livepatch/core.c:312:35: error: passing argument 1 of 'klp_resolve_symbols' from incompatible pointer type [-Werror=incompatible-pointer-types]
+	  312 |         ret = klp_resolve_symbols(sechdrs, strtab, symndx, sec, sec_objname);
+	      |                                   ^~~~~~~
+	      |                                   |
+	      |                                   Elf32_Shdr * {aka struct elf32_shdr *}
+	kernel/livepatch/core.c:193:44: note: expected 'Elf64_Shdr *' {aka 'struct elf64_shdr *'} but argument is of type 'Elf32_Shdr *' {aka 'struct elf32_shdr *'}
+	  193 | static int klp_resolve_symbols(Elf64_Shdr *sechdrs, const char *strtab,
+	      |                                ~~~~~~~~~~~~^~~~~~~
+
+Fix it by using the right types instead of forcing 64 bits types.
+
+Fixes: 7c8e2bdd5f0d ("livepatch: Apply vmlinux-specific KLP relocations early")
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Acked-by: Petr Mladek <pmladek@suse.com>
+Acked-by: Joe Lawrence <joe.lawrence@redhat.com>
+Acked-by: Miroslav Benes <mbenes@suse.cz>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/5288e11b018a762ea3351cc8fb2d4f15093a4457.1640017960.git.christophe.leroy@csgroup.eu
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/core/cma.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/livepatch/core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/infiniband/core/cma.c b/drivers/infiniband/core/cma.c
-index 41ec05c4b0d0..80a8e31e5b38 100644
---- a/drivers/infiniband/core/cma.c
-+++ b/drivers/infiniband/core/cma.c
-@@ -2642,7 +2642,7 @@ int rdma_set_ack_timeout(struct rdma_cm_id *id, u8 timeout)
+diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
+index 335d988bd811..c0789383807b 100644
+--- a/kernel/livepatch/core.c
++++ b/kernel/livepatch/core.c
+@@ -190,7 +190,7 @@ static int klp_find_object_symbol(const char *objname, const char *name,
+ 	return -EINVAL;
+ }
+ 
+-static int klp_resolve_symbols(Elf64_Shdr *sechdrs, const char *strtab,
++static int klp_resolve_symbols(Elf_Shdr *sechdrs, const char *strtab,
+ 			       unsigned int symndx, Elf_Shdr *relasec,
+ 			       const char *sec_objname)
  {
- 	struct rdma_id_private *id_priv;
- 
--	if (id->qp_type != IB_QPT_RC)
-+	if (id->qp_type != IB_QPT_RC && id->qp_type != IB_QPT_XRC_INI)
- 		return -EINVAL;
- 
- 	id_priv = container_of(id, struct rdma_id_private, id);
+@@ -218,7 +218,7 @@ static int klp_resolve_symbols(Elf64_Shdr *sechdrs, const char *strtab,
+ 	relas = (Elf_Rela *) relasec->sh_addr;
+ 	/* For each rela in this klp relocation section */
+ 	for (i = 0; i < relasec->sh_size / sizeof(Elf_Rela); i++) {
+-		sym = (Elf64_Sym *)sechdrs[symndx].sh_addr + ELF_R_SYM(relas[i].r_info);
++		sym = (Elf_Sym *)sechdrs[symndx].sh_addr + ELF_R_SYM(relas[i].r_info);
+ 		if (sym->st_shndx != SHN_LIVEPATCH) {
+ 			pr_err("symbol %s is not marked as a livepatch symbol\n",
+ 			       strtab + sym->st_name);
 -- 
 2.34.1
 
