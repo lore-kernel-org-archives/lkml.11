@@ -2,155 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2337DC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:26:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E6F7C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:26:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444482AbiDFBWO (ORCPT
+        id S1445796AbiDFBWT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:22:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60102 "EHLO
+        Tue, 5 Apr 2022 21:22:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443784AbiDEPkR (ORCPT
+        with ESMTP id S1349476AbiDEJtz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:40:17 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EAB27F229
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:59:37 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id gt4so6100758pjb.4
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 06:59:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=4shTZ7PU5hramHKN4NECwmFPWcXFMMpb2aPfmy33HgE=;
-        b=DBngnlgrKnnIqGtxBXRFwa2pOrKGDqz9XBeZwnXfWodXDNrPRvHiHSWuHtqsN/GBPL
-         rNnfcI9ueN7+p+IdLJQBho+rOUKDL6qDsSkuyO/OrtGqfiAAmpR/AoRTORibwOwTby+V
-         MxIbbh2TQon5UytrGUKWxaRlszy5VCndkvq+c2F4CRZeE0PVOPS5SUo5aTJaQL1KnLcr
-         xycx5Y6xGIDoqKSXWkCY2YF/O67J7VFHLV9EsLroc/0jMpFhMG/Tk2djb9xP2frOgPiu
-         QhIHoUk8NvQ9u31nq/QcZj6fpvateKRackzCZ9EAVzT7JQs8rtvrnUcsB8kP/QxUf7eM
-         Rmig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=4shTZ7PU5hramHKN4NECwmFPWcXFMMpb2aPfmy33HgE=;
-        b=EQaAyOLDvWINu4/s1GhuyhxcsDndCcDkp4RHE4Jbd1zzqMA5i8dOucDk2UJXfxkOuc
-         YSx94dvyJ0AQyFtvavHSRODM/31utToocfwOCnG1LhOczrMnDZgvWxosy+4po/F50yj9
-         7rHRb+SqkLX3G/wHMwQTyKh4v8Qb1CNrmiRmbfgmDdpIIUrZulicGScO5h5mU55/DjCu
-         gfbnY9FFL2ACEatrwYFs3ZurxG8C8N9fDlj+QqY8RLRh8no7dTBdFUhBjzClIufFMjf2
-         A498I/ZXfEfV6pEHA6ROLLvXynxafOtsdTOfdTMP/aElD4/ahQ07gUMhS4zGSmyfo4zv
-         2GrA==
-X-Gm-Message-State: AOAM531Yk2Vh84gK+iiJkN1k162LV2ADDMkhj3buAhgI+71tEh/s3gsj
-        K8bF8STLoxIokkaNLZv3jR36I2sCI4aW
-X-Google-Smtp-Source: ABdhPJzw7quCHFDDc4DPZq4sEUm4pWI0FejBk2vFIMRckx5DZbeqgonEYwGkd2Ezr2v8MX1AcwT2mA==
-X-Received: by 2002:a17:90b:1994:b0:1ca:9b45:405e with SMTP id mv20-20020a17090b199400b001ca9b45405emr4238607pjb.22.1649167176659;
-        Tue, 05 Apr 2022 06:59:36 -0700 (PDT)
-Received: from localhost.localdomain ([59.92.98.98])
-        by smtp.gmail.com with ESMTPSA id u14-20020a056a00124e00b004fab8f3245fsm16785402pfi.149.2022.04.05.06.59.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Apr 2022 06:59:36 -0700 (PDT)
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     gregkh@linuxfoundation.org
-Cc:     linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        elder@linaro.org, mhi@lists.linux.dev, quic_hemantk@quicinc.com,
-        quic_bbhatt@quicinc.com, quic_jhugo@quicinc.com,
-        bjorn.andersson@linaro.org, dmitry.baryshkov@linaro.org,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Subject: [PATCH 18/18] bus: mhi: ep: Add uevent support for module autoloading
-Date:   Tue,  5 Apr 2022 19:27:54 +0530
-Message-Id: <20220405135754.6622-19-manivannan.sadhasivam@linaro.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220405135754.6622-1-manivannan.sadhasivam@linaro.org>
-References: <20220405135754.6622-1-manivannan.sadhasivam@linaro.org>
+        Tue, 5 Apr 2022 05:49:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD74327CF2;
+        Tue,  5 Apr 2022 02:47:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 68F2BB81B14;
+        Tue,  5 Apr 2022 09:47:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BABF1C385A1;
+        Tue,  5 Apr 2022 09:46:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152019;
+        bh=Lq7uEknIvP4GPj5dBJRcnfmvSL9QX0ZCmPatFqEOiX0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=xTXvv0848gzPJaqWM3V0Upby3jzdbu6m2kkk6jC3O0vLOxA6pqv9Qs4DU4JT9hsOi
+         Ur453fUZmItSB+lNr/mKdMAKnM7sjGUraXKYcjEwm10TOQotj0a6H+TI3EYQd3axGA
+         fMbfjaTbhewLBM1zW0LbtZmL0gqAVU00Vu5rZM5M=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Alexey Khoroshilov <khoroshilov@ispras.ru>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 626/913] NFS: remove unneeded check in decode_devicenotify_args()
+Date:   Tue,  5 Apr 2022 09:28:08 +0200
+Message-Id: <20220405070358.603196433@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add uevent support to MHI endpoint bus so that the client drivers can be
-autoloaded by udev when the MHI endpoint devices gets created. The client
-drivers are expected to provide MODULE_DEVICE_TABLE with the MHI id_table
-struct so that the alias can be exported.
+From: Alexey Khoroshilov <khoroshilov@ispras.ru>
 
-The MHI endpoint reused the mhi_device_id structure of the MHI bus.
+[ Upstream commit cb8fac6d2727f79f211e745b16c9abbf4d8be652 ]
 
-Reviewed-by: Alex Elder <elder@linaro.org>
-Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+[You don't often get email from khoroshilov@ispras.ru. Learn why this is important at http://aka.ms/LearnAboutSenderIdentification.]
+
+Overflow check in not needed anymore after we switch to kmalloc_array().
+
+Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
+Fixes: a4f743a6bb20 ("NFSv4.1: Convert open-coded array allocation calls to kmalloc_array()")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/bus/mhi/ep/main.c       |  9 +++++++++
- include/linux/mod_devicetable.h |  2 ++
- scripts/mod/file2alias.c        | 10 ++++++++++
- 3 files changed, 21 insertions(+)
+ fs/nfs/callback_xdr.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
-diff --git a/drivers/bus/mhi/ep/main.c b/drivers/bus/mhi/ep/main.c
-index bae5f40ec15e..40109a79017a 100644
---- a/drivers/bus/mhi/ep/main.c
-+++ b/drivers/bus/mhi/ep/main.c
-@@ -1536,6 +1536,14 @@ void mhi_ep_driver_unregister(struct mhi_ep_driver *mhi_drv)
- }
- EXPORT_SYMBOL_GPL(mhi_ep_driver_unregister);
+diff --git a/fs/nfs/callback_xdr.c b/fs/nfs/callback_xdr.c
+index ce3d1d5b1291..ea17085ef884 100644
+--- a/fs/nfs/callback_xdr.c
++++ b/fs/nfs/callback_xdr.c
+@@ -271,10 +271,6 @@ __be32 decode_devicenotify_args(struct svc_rqst *rqstp,
+ 	n = ntohl(*p++);
+ 	if (n == 0)
+ 		goto out;
+-	if (n > ULONG_MAX / sizeof(*args->devs)) {
+-		status = htonl(NFS4ERR_BADXDR);
+-		goto out;
+-	}
  
-+static int mhi_ep_uevent(struct device *dev, struct kobj_uevent_env *env)
-+{
-+	struct mhi_ep_device *mhi_dev = to_mhi_ep_device(dev);
-+
-+	return add_uevent_var(env, "MODALIAS=" MHI_EP_DEVICE_MODALIAS_FMT,
-+					mhi_dev->name);
-+}
-+
- static int mhi_ep_match(struct device *dev, struct device_driver *drv)
- {
- 	struct mhi_ep_device *mhi_dev = to_mhi_ep_device(dev);
-@@ -1562,6 +1570,7 @@ struct bus_type mhi_ep_bus_type = {
- 	.name = "mhi_ep",
- 	.dev_name = "mhi_ep",
- 	.match = mhi_ep_match,
-+	.uevent = mhi_ep_uevent,
- };
- 
- static int __init mhi_ep_init(void)
-diff --git a/include/linux/mod_devicetable.h b/include/linux/mod_devicetable.h
-index 5da5d990ff58..549590e9c644 100644
---- a/include/linux/mod_devicetable.h
-+++ b/include/linux/mod_devicetable.h
-@@ -835,6 +835,8 @@ struct wmi_device_id {
- #define MHI_DEVICE_MODALIAS_FMT "mhi:%s"
- #define MHI_NAME_SIZE 32
- 
-+#define MHI_EP_DEVICE_MODALIAS_FMT "mhi_ep:%s"
-+
- /**
-  * struct mhi_device_id - MHI device identification
-  * @chan: MHI channel name
-diff --git a/scripts/mod/file2alias.c b/scripts/mod/file2alias.c
-index 5258247d78ac..d9d6a31446ea 100644
---- a/scripts/mod/file2alias.c
-+++ b/scripts/mod/file2alias.c
-@@ -1391,6 +1391,15 @@ static int do_mhi_entry(const char *filename, void *symval, char *alias)
- 	return 1;
- }
- 
-+/* Looks like: mhi_ep:S */
-+static int do_mhi_ep_entry(const char *filename, void *symval, char *alias)
-+{
-+	DEF_FIELD_ADDR(symval, mhi_device_id, chan);
-+	sprintf(alias, MHI_EP_DEVICE_MODALIAS_FMT, *chan);
-+
-+	return 1;
-+}
-+
- /* Looks like: ishtp:{guid} */
- static int do_ishtp_entry(const char *filename, void *symval, char *alias)
- {
-@@ -1519,6 +1528,7 @@ static const struct devtable devtable[] = {
- 	{"tee", SIZE_tee_client_device_id, do_tee_entry},
- 	{"wmi", SIZE_wmi_device_id, do_wmi_entry},
- 	{"mhi", SIZE_mhi_device_id, do_mhi_entry},
-+	{"mhi_ep", SIZE_mhi_device_id, do_mhi_ep_entry},
- 	{"auxiliary", SIZE_auxiliary_device_id, do_auxiliary_entry},
- 	{"ssam", SIZE_ssam_device_id, do_ssam_entry},
- 	{"dfl", SIZE_dfl_device_id, do_dfl_entry},
+ 	args->devs = kmalloc_array(n, sizeof(*args->devs), GFP_KERNEL);
+ 	if (!args->devs) {
 -- 
-2.25.1
+2.34.1
+
+
 
