@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1052C3A59D
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:17:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71C77C47089
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:17:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354012AbiDEKKo (ORCPT
+        id S1354043AbiDEKLJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:10:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45886 "EHLO
+        Tue, 5 Apr 2022 06:11:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241129AbiDEIcv (ORCPT
+        with ESMTP id S241127AbiDEIcv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:32:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 297A616589;
-        Tue,  5 Apr 2022 01:28:23 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E4B915FED;
+        Tue,  5 Apr 2022 01:28:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B8887609D0;
-        Tue,  5 Apr 2022 08:28:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C82FFC385A2;
-        Tue,  5 Apr 2022 08:28:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CA58C60AFB;
+        Tue,  5 Apr 2022 08:28:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C217EC385A1;
+        Tue,  5 Apr 2022 08:28:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147302;
-        bh=u9hkWC9+kygb2NZ6WtkwKVUDQP6L9XA1ELsut47Z5F8=;
+        s=korg; t=1649147291;
+        bh=+meF9PkKtpTanUbYRtKk8E3df2KpV2NIkMy3Tats4EA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qcu7g4t1WMtl+slEZuHbHraY6PG+YysuAIlrujt26cSHYRR/aCLo7v7ge0vphg6x+
-         SaXyW4sEi2UqCFLmLGzQhI+IE5JmjnCaJ2HcPwVtv0eaADSLnsl2vXnZAwnPbBuTte
-         qtj7KExgycfaVxZC7eCGMvBri0gjVx3FCdQFnjmU=
+        b=l8RIlkMyiO469LebPtnXtGKiIcPFrXNrRl+qe2vkZuxIWu9Vjhm+upkk2jiL9+QNg
+         NDCZ0eCa1vHMLTKqi0J4i/mMO5CsfvefEBzsbBPIhKb2FyJQkyZDX+RW+hKHoT1y2T
+         hOnrZ/tSgUmwQh6G+SjeWfEUlLVnyn5ytSyWeM74=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH 5.17 1074/1126] ax25: fix UAF bug in ax25_send_control()
-Date:   Tue,  5 Apr 2022 09:30:21 +0200
-Message-Id: <20220405070438.980584552@linuxfoundation.org>
+        stable@vger.kernel.org, Will Deacon <will@kernel.org>
+Subject: [PATCH 5.17 1071/1126] arm64: mm: Drop const from conditional arm64_dma_phys_limit definition
+Date:   Tue,  5 Apr 2022 09:30:18 +0200
+Message-Id: <20220405070438.891963315@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,85 +48,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Will Deacon <will@kernel.org>
 
-commit 5352a761308397a0e6250fdc629bb3f615b94747 upstream.
+commit 770093459b9b333380aa71f2c31c60b14895c1df upstream.
 
-There are UAF bugs in ax25_send_control(), when we call ax25_release()
-to deallocate ax25_dev. The possible race condition is shown below:
+Commit 031495635b46 ("arm64: Do not defer reserve_crashkernel() for
+platforms with no DMA memory zones") introduced different definitions
+for 'arm64_dma_phys_limit' depending on CONFIG_ZONE_DMA{,32} based on
+a late suggestion from Pasha. Sadly, this results in a build error when
+passing W=1:
 
-      (Thread 1)              |     (Thread 2)
-ax25_dev_device_up() //(1)    |
-                              | ax25_kill_by_device()
-ax25_bind()          //(2)    |
-ax25_connect()                | ...
- ax25->state = AX25_STATE_1   |
- ...                          | ax25_dev_device_down() //(3)
+  | arch/arm64/mm/init.c:90:19: error: conflicting type qualifiers for 'arm64_dma_phys_limit'
 
-      (Thread 3)
-ax25_release()                |
- ax25_dev_put()  //(4) FREE   |
- case AX25_STATE_1:           |
-  ax25_send_control()         |
-   alloc_skb()       //USE    |
+Drop the 'const' for now and use '__ro_after_init' consistently.
 
-The refcount of ax25_dev increases in position (1) and (2), and
-decreases in position (3) and (4). The ax25_dev will be freed
-before dereference sites in ax25_send_control().
-
-The following is part of the report:
-
-[  102.297448] BUG: KASAN: use-after-free in ax25_send_control+0x33/0x210
-[  102.297448] Read of size 8 at addr ffff888009e6e408 by task ax25_close/602
-[  102.297448] Call Trace:
-[  102.303751]  ax25_send_control+0x33/0x210
-[  102.303751]  ax25_release+0x356/0x450
-[  102.305431]  __sock_release+0x6d/0x120
-[  102.305431]  sock_close+0xf/0x20
-[  102.305431]  __fput+0x11f/0x420
-[  102.305431]  task_work_run+0x86/0xd0
-[  102.307130]  get_signal+0x1075/0x1220
-[  102.308253]  arch_do_signal_or_restart+0x1df/0xc00
-[  102.308253]  exit_to_user_mode_prepare+0x150/0x1e0
-[  102.308253]  syscall_exit_to_user_mode+0x19/0x50
-[  102.308253]  do_syscall_64+0x48/0x90
-[  102.308253]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[  102.308253] RIP: 0033:0x405ae7
-
-This patch defers the free operation of ax25_dev and net_device after
-all corresponding dereference sites in ax25_release() to avoid UAF.
-
-Fixes: 9fd75b66b8f6 ("ax25: Fix refcount leaks caused by ax25_cb_del()")
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Link: https://lore.kernel.org/r/202203090241.aj7paWeX-lkp@intel.com
+Link: https://lore.kernel.org/r/CA+CK2bDbbx=8R=UthkMesWOST8eJMtOGJdfMRTFSwVmo0Vn0EA@mail.gmail.com
+Fixes: 031495635b46 ("arm64: Do not defer reserve_crashkernel() for platforms with no DMA memory zones")
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ax25/af_ax25.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ arch/arm64/mm/init.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/net/ax25/af_ax25.c
-+++ b/net/ax25/af_ax25.c
-@@ -991,10 +991,6 @@ static int ax25_release(struct socket *s
- 	sock_orphan(sk);
- 	ax25 = sk_to_ax25(sk);
- 	ax25_dev = ax25->ax25_dev;
--	if (ax25_dev) {
--		dev_put_track(ax25_dev->dev, &ax25_dev->dev_tracker);
--		ax25_dev_put(ax25_dev);
--	}
+--- a/arch/arm64/mm/init.c
++++ b/arch/arm64/mm/init.c
+@@ -87,7 +87,7 @@ EXPORT_SYMBOL(memstart_addr);
+ #if IS_ENABLED(CONFIG_ZONE_DMA) || IS_ENABLED(CONFIG_ZONE_DMA32)
+ phys_addr_t __ro_after_init arm64_dma_phys_limit;
+ #else
+-const phys_addr_t arm64_dma_phys_limit = PHYS_MASK + 1;
++phys_addr_t __ro_after_init arm64_dma_phys_limit = PHYS_MASK + 1;
+ #endif
  
- 	if (sk->sk_type == SOCK_SEQPACKET) {
- 		switch (ax25->state) {
-@@ -1056,6 +1052,10 @@ static int ax25_release(struct socket *s
- 		sk->sk_state_change(sk);
- 		ax25_destroy_socket(ax25);
- 	}
-+	if (ax25_dev) {
-+		dev_put_track(ax25_dev->dev, &ax25_dev->dev_tracker);
-+		ax25_dev_put(ax25_dev);
-+	}
- 
- 	sock->sk   = NULL;
- 	release_sock(sk);
+ #ifdef CONFIG_KEXEC_CORE
 
 
