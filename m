@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 919DDC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:37:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3334EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:37:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388722AbiDENc5 (ORCPT
+        id S1388794AbiDENdC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:32:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60122 "EHLO
+        Tue, 5 Apr 2022 09:33:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346025AbiDEJXX (ORCPT
+        with ESMTP id S1346071AbiDEJX0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:23:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91D93A94EF;
-        Tue,  5 Apr 2022 02:12:50 -0700 (PDT)
+        Tue, 5 Apr 2022 05:23:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 537B1AFB02;
+        Tue,  5 Apr 2022 02:12:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 10FCBB80DA1;
-        Tue,  5 Apr 2022 09:12:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73BBDC385A0;
-        Tue,  5 Apr 2022 09:12:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D5CF5B81B14;
+        Tue,  5 Apr 2022 09:12:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40D4FC385AC;
+        Tue,  5 Apr 2022 09:12:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149967;
-        bh=uvlY6re4qRA42gcweeLvEonqNIH1YFuQWJrOL96quZg=;
+        s=korg; t=1649149970;
+        bh=fywS0SO7tp8sPRJmZFhQFeRorWt9giLj0GkaAOpgxdc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P3XX0+0HhRtkDXdWU/tgVqPYTVaNKnccsJKmUo3Ei6SAXWHw3RvsqS07zEyaN0X+k
-         scM195kCzRk1qNlepxQEYdq1ICr3kWGNJ0+THc0rnEPq/5UcIKT11AOznbPvBlHv6W
-         Zzge30qT2+XbLteaihYhSKQKJAt7QJcvyb1upvdU=
+        b=gVroX/AHlqntmnOuk0VTt2kzLGV5Y5sqgZnIFAihm1FpZ4zXu8soOAIJYB4XdSY/R
+         /76nPTwAqdXchE10G1eLu3F8v18Ukn1FD6tS90IRI0EA2yFxsSMyCFPVrxKEOvBd5W
+         V62J6hQWmuKi1rxaMBK7KFIKVXAXrfI2Pl6zJ+v0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Li RongQing <lirongqing@baidu.com>,
+        stable@vger.kernel.org, Yi Liu <liu.yi24@zte.com.cn>,
+        Yi Wang <wang.yi59@zte.com.cn>,
         Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.16 0905/1017] KVM: x86: fix sending PV IPI
-Date:   Tue,  5 Apr 2022 09:30:18 +0200
-Message-Id: <20220405070421.088309561@linuxfoundation.org>
+Subject: [PATCH 5.16 0906/1017] KVM: SVM: fix panic on out-of-bounds guest IRQ
+Date:   Tue,  5 Apr 2022 09:30:19 +0200
+Message-Id: <20220405070421.117379364@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,38 +50,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Li RongQing <lirongqing@baidu.com>
+From: Yi Wang <wang.yi59@zte.com.cn>
 
-commit c15e0ae42c8e5a61e9aca8aac920517cf7b3e94e upstream.
+commit a80ced6ea514000d34bf1239d47553de0d1ee89e upstream.
 
-If apic_id is less than min, and (max - apic_id) is greater than
-KVM_IPI_CLUSTER_SIZE, then the third check condition is satisfied but
-the new apic_id does not fit the bitmask.  In this case __send_ipi_mask
-should send the IPI.
+As guest_irq is coming from KVM_IRQFD API call, it may trigger
+crash in svm_update_pi_irte() due to out-of-bounds:
 
-This is mostly theoretical, but it can happen if the apic_ids on three
-iterations of the loop are for example 1, KVM_IPI_CLUSTER_SIZE, 0.
+crash> bt
+PID: 22218  TASK: ffff951a6ad74980  CPU: 73  COMMAND: "vcpu8"
+ #0 [ffffb1ba6707fa40] machine_kexec at ffffffff8565b397
+ #1 [ffffb1ba6707fa90] __crash_kexec at ffffffff85788a6d
+ #2 [ffffb1ba6707fb58] crash_kexec at ffffffff8578995d
+ #3 [ffffb1ba6707fb70] oops_end at ffffffff85623c0d
+ #4 [ffffb1ba6707fb90] no_context at ffffffff856692c9
+ #5 [ffffb1ba6707fbf8] exc_page_fault at ffffffff85f95b51
+ #6 [ffffb1ba6707fc50] asm_exc_page_fault at ffffffff86000ace
+    [exception RIP: svm_update_pi_irte+227]
+    RIP: ffffffffc0761b53  RSP: ffffb1ba6707fd08  RFLAGS: 00010086
+    RAX: ffffb1ba6707fd78  RBX: ffffb1ba66d91000  RCX: 0000000000000001
+    RDX: 00003c803f63f1c0  RSI: 000000000000019a  RDI: ffffb1ba66db2ab8
+    RBP: 000000000000019a   R8: 0000000000000040   R9: ffff94ca41b82200
+    R10: ffffffffffffffcf  R11: 0000000000000001  R12: 0000000000000001
+    R13: 0000000000000001  R14: ffffffffffffffcf  R15: 000000000000005f
+    ORIG_RAX: ffffffffffffffff  CS: 0010  SS: 0018
+ #7 [ffffb1ba6707fdb8] kvm_irq_routing_update at ffffffffc09f19a1 [kvm]
+ #8 [ffffb1ba6707fde0] kvm_set_irq_routing at ffffffffc09f2133 [kvm]
+ #9 [ffffb1ba6707fe18] kvm_vm_ioctl at ffffffffc09ef544 [kvm]
+    RIP: 00007f143c36488b  RSP: 00007f143a4e04b8  RFLAGS: 00000246
+    RAX: ffffffffffffffda  RBX: 00007f05780041d0  RCX: 00007f143c36488b
+    RDX: 00007f05780041d0  RSI: 000000004008ae6a  RDI: 0000000000000020
+    RBP: 00000000000004e8   R8: 0000000000000008   R9: 00007f05780041e0
+    R10: 00007f0578004560  R11: 0000000000000246  R12: 00000000000004e0
+    R13: 000000000000001a  R14: 00007f1424001c60  R15: 00007f0578003bc0
+    ORIG_RAX: 0000000000000010  CS: 0033  SS: 002b
 
-Fixes: aaffcfd1e82 ("KVM: X86: Implement PV IPIs in linux guest")
-Signed-off-by: Li RongQing <lirongqing@baidu.com>
-Message-Id: <1646814944-51801-1-git-send-email-lirongqing@baidu.com>
+Vmx have been fix this in commit 3a8b0677fc61 (KVM: VMX: Do not BUG() on
+out-of-bounds guest IRQ), so we can just copy source from that to fix
+this.
+
+Co-developed-by: Yi Liu <liu.yi24@zte.com.cn>
+Signed-off-by: Yi Liu <liu.yi24@zte.com.cn>
+Signed-off-by: Yi Wang <wang.yi59@zte.com.cn>
+Message-Id: <20220309113025.44469-1-wang.yi59@zte.com.cn>
 Cc: stable@vger.kernel.org
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/kvm.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/kvm/svm/avic.c |   10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
---- a/arch/x86/kernel/kvm.c
-+++ b/arch/x86/kernel/kvm.c
-@@ -515,7 +515,7 @@ static void __send_ipi_mask(const struct
- 		} else if (apic_id < min && max - apic_id < KVM_IPI_CLUSTER_SIZE) {
- 			ipi_bitmap <<= min - apic_id;
- 			min = apic_id;
--		} else if (apic_id < min + KVM_IPI_CLUSTER_SIZE) {
-+		} else if (apic_id > min && apic_id < min + KVM_IPI_CLUSTER_SIZE) {
- 			max = apic_id < max ? max : apic_id;
- 		} else {
- 			ret = kvm_hypercall4(KVM_HC_SEND_IPI, (unsigned long)ipi_bitmap,
+--- a/arch/x86/kvm/svm/avic.c
++++ b/arch/x86/kvm/svm/avic.c
+@@ -799,7 +799,7 @@ int svm_update_pi_irte(struct kvm *kvm,
+ {
+ 	struct kvm_kernel_irq_routing_entry *e;
+ 	struct kvm_irq_routing_table *irq_rt;
+-	int idx, ret = -EINVAL;
++	int idx, ret = 0;
+ 
+ 	if (!kvm_arch_has_assigned_device(kvm) ||
+ 	    !irq_remapping_cap(IRQ_POSTING_CAP))
+@@ -810,7 +810,13 @@ int svm_update_pi_irte(struct kvm *kvm,
+ 
+ 	idx = srcu_read_lock(&kvm->irq_srcu);
+ 	irq_rt = srcu_dereference(kvm->irq_routing, &kvm->irq_srcu);
+-	WARN_ON(guest_irq >= irq_rt->nr_rt_entries);
++
++	if (guest_irq >= irq_rt->nr_rt_entries ||
++		hlist_empty(&irq_rt->map[guest_irq])) {
++		pr_warn_once("no route for guest_irq %u/%u (broken user space?)\n",
++			     guest_irq, irq_rt->nr_rt_entries);
++		goto out;
++	}
+ 
+ 	hlist_for_each_entry(e, &irq_rt->map[guest_irq], link) {
+ 		struct vcpu_data vcpu_info;
 
 
