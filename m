@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD227C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:49:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C69BC43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:58:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238178AbiDELvE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:51:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50802 "EHLO
+        id S244711AbiDELvg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 07:51:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244898AbiDEIwp (ORCPT
+        with ESMTP id S244892AbiDEIwp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:52:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D76D12458E;
-        Tue,  5 Apr 2022 01:45:55 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DF2F240B1;
+        Tue,  5 Apr 2022 01:45:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8BF17B81A32;
-        Tue,  5 Apr 2022 08:45:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFC1DC385A1;
-        Tue,  5 Apr 2022 08:45:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B23EAB81B18;
+        Tue,  5 Apr 2022 08:45:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2257EC385A0;
+        Tue,  5 Apr 2022 08:45:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148353;
-        bh=3lJ3J/Hn5KmINnLVJmAiRUoqx4L93qq6dyLbb8I1oE8=;
+        s=korg; t=1649148339;
+        bh=YS6YXJtkkJlRPJMsD2DAR/8ig+TUFhHwPdrDujFulyU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RSAYgj9R6EbtiLuZ1guG9JtzeouET5bDY3pZURKPRJlAunh+uuVKmEgBWsYAAvFxx
-         RRsGpJh4A7FXPi3tWKhiEdAEF/OVVpnfWfxhSkdE1r7Qf5X/esQRI6c2zdI4Zu0Dpd
-         c867MjhlkulnYNqNa6AFuMqKO/eYwcDyr/YIORZ4=
+        b=CWldJv/hHQf2oXqtizTxC1OUmJfgka83KKbp48HAhLHmjlYWAIp1JapZnBlH/mrfT
+         P0v2SAd0+gb2JcZm3JcIbyUuHD+ZJdzM5OD8u2XcEJ5R57U4beuTWi0Jt3F44Cp+g2
+         jfgOkgZi9uabEdQoqk8ZFKg5WiIbe0e0RxsGA2UQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
-        Maxime Ripard <maxime@cerno.tech>,
+        stable@vger.kernel.org, Petr Vorel <petr.vorel@gmail.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0326/1017] ARM: dts: sun8i: v3s: Move the csi1 block to follow address order
-Date:   Tue,  5 Apr 2022 09:20:39 +0200
-Message-Id: <20220405070403.957887552@linuxfoundation.org>
+Subject: [PATCH 5.16 0321/1017] arm64: dts: qcom: msm8994: Provide missing "xo_board" and "sleep_clk" to GCC
+Date:   Tue,  5 Apr 2022 09:20:34 +0200
+Message-Id: <20220405070403.807280554@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,62 +49,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+From: Petr Vorel <petr.vorel@gmail.com>
 
-[ Upstream commit c4af51698c4fb4fc683f2ac67f482cdf9ba2cd13 ]
+[ Upstream commit 4dd1ad6192748523878463a285346db408b34a02 ]
 
-The csi1 block node was mistakenly added before the gic node, although
-its address comes after the gic's. Move the node to its correct
-position.
+This is needed due changes in commit 0519d1d0bf33 ("clk: qcom:
+gcc-msm8994: Modernize the driver"), which removed struct
+clk_fixed_factor. Preparation for next commit for enabling SD/eMMC.
+Inspired by 2c2f64ae36d9.
 
-Fixes: 90e048101fa1 ("ARM: dts: sun8i: V3/V3s/S3/S3L: add CSI1 device node")
-Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Link: https://lore.kernel.org/r/20220205185429.2278860-2-paul.kocialkowski@bootlin.com
+This is required for both msm8994-huawei-angler (sdhc1 will be enabled
+in next commit) and msm8992-lg-bullhead (where actually fixes sdhc1
+- tested on bullhead rev 1.01).
+
+Fixes: 0519d1d0bf33 ("clk: qcom: gcc-msm8994: Modernize the driver")
+
+Signed-off-by: Petr Vorel <petr.vorel@gmail.com>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220113233358.17972-4-petr.vorel@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/sun8i-v3s.dtsi | 22 +++++++++++-----------
- 1 file changed, 11 insertions(+), 11 deletions(-)
+ arch/arm64/boot/dts/qcom/msm8994.dtsi | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/arch/arm/boot/dts/sun8i-v3s.dtsi b/arch/arm/boot/dts/sun8i-v3s.dtsi
-index b30bc1a25ebb..084323d5c61c 100644
---- a/arch/arm/boot/dts/sun8i-v3s.dtsi
-+++ b/arch/arm/boot/dts/sun8i-v3s.dtsi
-@@ -593,6 +593,17 @@
- 			#size-cells = <0>;
+diff --git a/arch/arm64/boot/dts/qcom/msm8994.dtsi b/arch/arm64/boot/dts/qcom/msm8994.dtsi
+index 5a9a5ed0565f..215f56daa26c 100644
+--- a/arch/arm64/boot/dts/qcom/msm8994.dtsi
++++ b/arch/arm64/boot/dts/qcom/msm8994.dtsi
+@@ -713,6 +713,9 @@
+ 			#reset-cells = <1>;
+ 			#power-domain-cells = <1>;
+ 			reg = <0xfc400000 0x2000>;
++
++			clock-names = "xo", "sleep_clk";
++			clocks = <&xo_board>, <&sleep_clk>;
  		};
  
-+		gic: interrupt-controller@1c81000 {
-+			compatible = "arm,gic-400";
-+			reg = <0x01c81000 0x1000>,
-+			      <0x01c82000 0x2000>,
-+			      <0x01c84000 0x2000>,
-+			      <0x01c86000 0x2000>;
-+			interrupt-controller;
-+			#interrupt-cells = <3>;
-+			interrupts = <GIC_PPI 9 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_HIGH)>;
-+		};
-+
- 		csi1: camera@1cb4000 {
- 			compatible = "allwinner,sun8i-v3s-csi";
- 			reg = <0x01cb4000 0x3000>;
-@@ -604,16 +615,5 @@
- 			resets = <&ccu RST_BUS_CSI>;
- 			status = "disabled";
- 		};
--
--		gic: interrupt-controller@1c81000 {
--			compatible = "arm,gic-400";
--			reg = <0x01c81000 0x1000>,
--			      <0x01c82000 0x2000>,
--			      <0x01c84000 0x2000>,
--			      <0x01c86000 0x2000>;
--			interrupt-controller;
--			#interrupt-cells = <3>;
--			interrupts = <GIC_PPI 9 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_HIGH)>;
--		};
- 	};
- };
+ 		rpm_msg_ram: sram@fc428000 {
 -- 
 2.34.1
 
