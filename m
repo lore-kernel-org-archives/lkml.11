@@ -2,167 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80D28C4167B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:25:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E647C3527D
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:25:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376538AbiDELWW (ORCPT
+        id S1376759AbiDELXO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:22:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38062 "EHLO
+        Tue, 5 Apr 2022 07:23:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241700AbiDEIsc (ORCPT
+        with ESMTP id S242156AbiDEIsj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:48:32 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 325C22AE38;
-        Tue,  5 Apr 2022 01:36:50 -0700 (PDT)
-Date:   Tue, 05 Apr 2022 08:36:38 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649147799;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=QcaaisSy7yoGqMENp3XASjYCIhZ1dy0KEhiOvSml/rM=;
-        b=0+SAgssOSJBn+nuIEtoTZh2t3SMHH76grHmTrE+JG6cLr4j7fmaKvodTnlZwqlMxVZNG3/
-        dg/vl4flXx7hZ1Kxn2g5NZpABNluW9kMeexO5i1bWyIpcbXK5V9axoOWMliPxsgogaBLDT
-        +FBzQJzC4rmZiKgQPcmSNt9hj1mY1974KFODffLbhJ8qJf4mIzazLSDXmmXQ3mvQK1srOF
-        tAPiRWJjhIym2eA6KYRAieb3aYbZqjsVkeFPhMklFkkkc2KCMM6MCMaqECWMqP7ZRuAJu1
-        D++hvFbmcm3B8tsl885hJZKaCYSKkhCwSIzPJNqwn9YS6Ci+WG+OUyZ8Z0hgkg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649147799;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=QcaaisSy7yoGqMENp3XASjYCIhZ1dy0KEhiOvSml/rM=;
-        b=Lrw4YWtFGKUJUYLf7CQe8NhuxeFh7h8YldBEND6+NV1Jkm+l2BfsR7bMaQ1ArbH3dGU3Am
-        ffEEZ6uJgmJAg/CQ==
-From:   "tip-bot2 for Stephane Eranian" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: perf/core] ACPI: Add perf low power callback
-Cc:     Stephane Eranian <eranian@google.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220322221517.2510440-9-eranian@google.com>
-References: <20220322221517.2510440-9-eranian@google.com>
+        Tue, 5 Apr 2022 04:48:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2A3D3585B;
+        Tue,  5 Apr 2022 01:37:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 31300B81C6D;
+        Tue,  5 Apr 2022 08:37:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E598C385A0;
+        Tue,  5 Apr 2022 08:36:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649147819;
+        bh=XPHPGC5YYOy1vJKP5EqL9jMeFRnu6hZM2dMkdRnj090=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ap+pOpJBNd4CGykoI5eT2ooCIC3nY1XjXObgWr9TDno9yQnJ+WIauYZ45HurJ6yA5
+         1w1ysWjiJZxfhyCuM5yxTthofK1ThT9nKdpS6buKXJDgoHPn3RYmxMUCXqookouV7S
+         DGw6W6WDrwOnzAzo3aGV8dF6nxWLjM3BzEzqvVx8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
+        Nishanth Menon <nm@ti.com>
+Subject: [PATCH 5.16 0133/1017] arm64: dts: ti: k3-am64: Fix gic-v3 compatible regs
+Date:   Tue,  5 Apr 2022 09:17:26 +0200
+Message-Id: <20220405070358.150349312@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
+References: <20220405070354.155796697@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Message-ID: <164914779839.389.6423225128965385864.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the perf/core branch of tip:
+From: Nishanth Menon <nm@ti.com>
 
-Commit-ID:     2a606a18cd672a16343d146a126721b34cc6adbd
-Gitweb:        https://git.kernel.org/tip/2a606a18cd672a16343d146a126721b34cc6adbd
-Author:        Stephane Eranian <eranian@google.com>
-AuthorDate:    Tue, 22 Mar 2022 15:15:12 -07:00
-Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Tue, 05 Apr 2022 10:24:38 +02:00
+commit de60edf1be3d42d4a1b303b41c7c53b2f865726e upstream.
 
-ACPI: Add perf low power callback
+Though GIC ARE option is disabled for no GIC-v2 compatibility,
+Cortex-A53 is free to implement the CPU interface as long as it
+communicates with the GIC using the stream protocol. This requires
+that the SoC integration mark out the PERIPHBASE[1] as reserved area
+within the SoC. See longer discussion in [2] for further information.
 
-Add an optional callback needed by some PMU features, e.g., AMD
-BRS, to give a chance to the perf_events code to change its state before
-a CPU goes to low power and after it comes back.
+Update the GIC register map to indicate offsets from PERIPHBASE based
+on [3]. Without doing this, systems like kvm will not function with
+gic-v2 emulation.
 
-The callback is void when the PERF_NEEDS_LOPWR_CB flag is not set.
-This flag must be set in arch specific perf_event.h header whenever needed.
-When not set, there is no impact on the ACPI code.
+[1] https://developer.arm.com/documentation/ddi0500/e/system-control/aarch64-register-descriptions/configuration-base-address-register--el1
+[2] https://lore.kernel.org/all/87k0e0tirw.wl-maz@kernel.org/
+[3] https://developer.arm.com/documentation/ddi0500/e/generic-interrupt-controller-cpu-interface/gic-programmers-model/memory-map
 
-Signed-off-by: Stephane Eranian <eranian@google.com>
-[peterz: build fix]
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lore.kernel.org/r/20220322221517.2510440-9-eranian@google.com
+Cc: stable@vger.kernel.org
+Fixes: 8abae9389bdb ("arm64: dts: ti: Add support for AM642 SoC")
+Reported-by: Marc Zyngier <maz@kernel.org>
+Signed-off-by: Nishanth Menon <nm@ti.com>
+Acked-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220215201008.15235-5-nm@ti.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/acpi/acpi_pad.c       | 7 +++++++
- drivers/acpi/processor_idle.c | 5 +++++
- include/linux/perf_event.h    | 6 ++++++
- 3 files changed, 18 insertions(+)
+ arch/arm64/boot/dts/ti/k3-am64-main.dtsi |    5 ++++-
+ arch/arm64/boot/dts/ti/k3-am64.dtsi      |    1 +
+ 2 files changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/acpi/acpi_pad.c b/drivers/acpi/acpi_pad.c
-index f45979a..ec0e22a 100644
---- a/drivers/acpi/acpi_pad.c
-+++ b/drivers/acpi/acpi_pad.c
-@@ -17,6 +17,7 @@
- #include <linux/tick.h>
- #include <linux/slab.h>
- #include <linux/acpi.h>
-+#include <linux/perf_event.h>
- #include <asm/mwait.h>
- #include <xen/xen.h>
+--- a/arch/arm64/boot/dts/ti/k3-am64-main.dtsi
++++ b/arch/arm64/boot/dts/ti/k3-am64-main.dtsi
+@@ -59,7 +59,10 @@
+ 		#interrupt-cells = <3>;
+ 		interrupt-controller;
+ 		reg = <0x00 0x01800000 0x00 0x10000>,	/* GICD */
+-		      <0x00 0x01840000 0x00 0xC0000>;	/* GICR */
++		      <0x00 0x01840000 0x00 0xC0000>,	/* GICR */
++		      <0x01 0x00000000 0x00 0x2000>,	/* GICC */
++		      <0x01 0x00010000 0x00 0x1000>,	/* GICH */
++		      <0x01 0x00020000 0x00 0x2000>;	/* GICV */
+ 		/*
+ 		 * vcpumntirq:
+ 		 * virtual CPU interface maintenance interrupt
+--- a/arch/arm64/boot/dts/ti/k3-am64.dtsi
++++ b/arch/arm64/boot/dts/ti/k3-am64.dtsi
+@@ -87,6 +87,7 @@
+ 			 <0x00 0x68000000 0x00 0x68000000 0x00 0x08000000>, /* PCIe DAT0 */
+ 			 <0x00 0x70000000 0x00 0x70000000 0x00 0x00200000>, /* OC SRAM */
+ 			 <0x00 0x78000000 0x00 0x78000000 0x00 0x00800000>, /* Main R5FSS */
++			 <0x01 0x00000000 0x01 0x00000000 0x00 0x00310000>, /* A53 PERIPHBASE */
+ 			 <0x06 0x00000000 0x06 0x00000000 0x01 0x00000000>, /* PCIe DAT1 */
+ 			 <0x05 0x00000000 0x05 0x00000000 0x01 0x00000000>, /* FSS0 DAT3 */
  
-@@ -164,6 +165,9 @@ static int power_saving_thread(void *data)
- 				tsc_marked_unstable = 1;
- 			}
- 			local_irq_disable();
-+
-+			perf_lopwr_cb(true);
-+
- 			tick_broadcast_enable();
- 			tick_broadcast_enter();
- 			stop_critical_timings();
-@@ -172,6 +176,9 @@ static int power_saving_thread(void *data)
- 
- 			start_critical_timings();
- 			tick_broadcast_exit();
-+
-+			perf_lopwr_cb(false);
-+
- 			local_irq_enable();
- 
- 			if (time_before(expire_time, jiffies)) {
-diff --git a/drivers/acpi/processor_idle.c b/drivers/acpi/processor_idle.c
-index 32b20ef..05dc0e1 100644
---- a/drivers/acpi/processor_idle.c
-+++ b/drivers/acpi/processor_idle.c
-@@ -21,6 +21,7 @@
- #include <linux/cpuidle.h>
- #include <linux/cpu.h>
- #include <linux/minmax.h>
-+#include <linux/perf_event.h>
- #include <acpi/processor.h>
- 
- /*
-@@ -549,6 +550,8 @@ static void wait_for_freeze(void)
-  */
- static void __cpuidle acpi_idle_do_entry(struct acpi_processor_cx *cx)
- {
-+	perf_lopwr_cb(true);
-+
- 	if (cx->entry_method == ACPI_CSTATE_FFH) {
- 		/* Call into architectural FFH based C-state */
- 		acpi_processor_ffh_cstate_enter(cx);
-@@ -559,6 +562,8 @@ static void __cpuidle acpi_idle_do_entry(struct acpi_processor_cx *cx)
- 		inb(cx->address);
- 		wait_for_freeze();
- 	}
-+
-+	perf_lopwr_cb(false);
- }
- 
- /**
-diff --git a/include/linux/perf_event.h b/include/linux/perf_event.h
-index a411080..da75956 100644
---- a/include/linux/perf_event.h
-+++ b/include/linux/perf_event.h
-@@ -1676,4 +1676,10 @@ typedef int (perf_snapshot_branch_stack_t)(struct perf_branch_entry *entries,
- 					   unsigned int cnt);
- DECLARE_STATIC_CALL(perf_snapshot_branch_stack, perf_snapshot_branch_stack_t);
- 
-+#ifndef PERF_NEEDS_LOPWR_CB
-+static inline void perf_lopwr_cb(bool mode)
-+{
-+}
-+#endif
-+
- #endif /* _LINUX_PERF_EVENT_H */
+
+
