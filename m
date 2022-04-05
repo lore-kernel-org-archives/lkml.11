@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2879FC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 566C3C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:12:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240176AbiDEJFz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:05:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57716 "EHLO
+        id S240438AbiDEJGH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:06:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238354AbiDEISx (ORCPT
+        with ESMTP id S238435AbiDEITG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:18:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 697A8DAA;
-        Tue,  5 Apr 2022 01:08:42 -0700 (PDT)
+        Tue, 5 Apr 2022 04:19:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 230B4B84F;
+        Tue,  5 Apr 2022 01:08:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A069F60A1E;
-        Tue,  5 Apr 2022 08:08:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2AA5C385A1;
-        Tue,  5 Apr 2022 08:08:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A0522608C0;
+        Tue,  5 Apr 2022 08:08:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0AF5C385A0;
+        Tue,  5 Apr 2022 08:08:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146121;
-        bh=iOy1mNW6EnbHS4QhamoV2p28aXccAJlzHWxZ/5jreW0=;
+        s=korg; t=1649146132;
+        bh=lLUB6/PLO7CaoHTOodfcqfI4F641Ksv26ccVQ4WLnvA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oHc2StOFTy05foe8NJ0Wmiam+MDDBLNd5F2JY1JW1NEdVQxm9NexvG5JzDTkyCFA8
-         eoi7cXF6/FbbtNGsv36p9i10LuaowViVJdSs80ldDREx8rpSOxJ9Pz9zqrPcSRmK3T
-         pUfXKkO7+tpe6tlcQWZPQESbZEX+dHMiWepDNdZ8=
+        b=NCbEYHEVd7RYLFpnJc9KyEBJC2VMl+DchmjYl+4aR3SPLMPf4hK8wqkUcoSTFudit
+         z48TIa1wzl+07nHbFZOXMmXrxbThgV7MgVqI1Lzn6My98PjVlPtxwi5da7iHzC3RlG
+         /mKXiGH9DJjeiuHyVbCIhLaUNvL0MdXcCCmO3gD4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
+        stable@vger.kernel.org, Yaliang Wang <Yaliang.Wang@windriver.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0650/1126] vxcan: enable local echo for sent CAN frames
-Date:   Tue,  5 Apr 2022 09:23:17 +0200
-Message-Id: <20220405070426.710048885@linuxfoundation.org>
+Subject: [PATCH 5.17 0654/1126] MIPS: pgalloc: fix memory leak caused by pgd_free()
+Date:   Tue,  5 Apr 2022 09:23:21 +0200
+Message-Id: <20220405070426.826625832@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,44 +49,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oliver Hartkopp <socketcan@hartkopp.net>
+From: Yaliang Wang <Yaliang.Wang@windriver.com>
 
-[ Upstream commit 259bdba27e32368b4404f69d613b1c1014c07cbf ]
+[ Upstream commit 2bc5bab9a763d520937e4f3fe8df51c6a1eceb97 ]
 
-The vxcan driver provides a pair of virtual CAN interfaces to exchange
-CAN traffic between different namespaces - analogue to veth.
+pgd page is freed by generic implementation pgd_free() since commit
+f9cb654cb550 ("asm-generic: pgalloc: provide generic pgd_free()"),
+however, there are scenarios that the system uses more than one page as
+the pgd table, in such cases the generic implementation pgd_free() won't
+be applicable anymore. For example, when PAGE_SIZE_4KB is enabled and
+MIPS_VA_BITS_48 is not enabled in a 64bit system, the macro "PGD_ORDER"
+will be set as "1", which will cause allocating two pages as the pgd
+table. Well, at the same time, the generic implementation pgd_free()
+just free one pgd page, which will result in the memory leak.
 
-In opposite to the vcan driver the local sent CAN traffic on this interface
-is not echo'ed back but only sent to the remote peer. This is unusual and
-can be easily fixed by removing IFF_ECHO from the netdevice flags that
-are set for vxcan interfaces by default at startup.
+The memory leak can be easily detected by executing shell command:
+"while true; do ls > /dev/null; grep MemFree /proc/meminfo; done"
 
-Without IFF_ECHO set on driver level, the local sent CAN frames are echo'ed
-in af_can.c in can_send(). This patch makes vxcan interfaces adopt the
-same local echo behavior and procedures as known from the vcan interfaces.
-
-Fixes: a8f820a380a2 ("can: add Virtual CAN Tunnel driver (vxcan)")
-Link: https://lore.kernel.org/all/20220309120416.83514-5-socketcan@hartkopp.net
-Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Fixes: f9cb654cb550 ("asm-generic: pgalloc: provide generic pgd_free()")
+Signed-off-by: Yaliang Wang <Yaliang.Wang@windriver.com>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/can/vxcan.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/mips/include/asm/pgalloc.h | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/net/can/vxcan.c b/drivers/net/can/vxcan.c
-index 47ccc15a3486..191ffa7776e8 100644
---- a/drivers/net/can/vxcan.c
-+++ b/drivers/net/can/vxcan.c
-@@ -148,7 +148,7 @@ static void vxcan_setup(struct net_device *dev)
- 	dev->hard_header_len	= 0;
- 	dev->addr_len		= 0;
- 	dev->tx_queue_len	= 0;
--	dev->flags		= (IFF_NOARP|IFF_ECHO);
-+	dev->flags		= IFF_NOARP;
- 	dev->netdev_ops		= &vxcan_netdev_ops;
- 	dev->needs_free_netdev	= true;
+diff --git a/arch/mips/include/asm/pgalloc.h b/arch/mips/include/asm/pgalloc.h
+index c7925d0e9874..867e9c3db76e 100644
+--- a/arch/mips/include/asm/pgalloc.h
++++ b/arch/mips/include/asm/pgalloc.h
+@@ -15,6 +15,7 @@
  
+ #define __HAVE_ARCH_PMD_ALLOC_ONE
+ #define __HAVE_ARCH_PUD_ALLOC_ONE
++#define __HAVE_ARCH_PGD_FREE
+ #include <asm-generic/pgalloc.h>
+ 
+ static inline void pmd_populate_kernel(struct mm_struct *mm, pmd_t *pmd,
+@@ -48,6 +49,11 @@ static inline void pud_populate(struct mm_struct *mm, pud_t *pud, pmd_t *pmd)
+ extern void pgd_init(unsigned long page);
+ extern pgd_t *pgd_alloc(struct mm_struct *mm);
+ 
++static inline void pgd_free(struct mm_struct *mm, pgd_t *pgd)
++{
++	free_pages((unsigned long)pgd, PGD_ORDER);
++}
++
+ #define __pte_free_tlb(tlb,pte,address)			\
+ do {							\
+ 	pgtable_pte_page_dtor(pte);			\
 -- 
 2.34.1
 
