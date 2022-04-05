@@ -2,89 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55A24C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 403BEC433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:07:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351722AbiDELFE (ORCPT
+        id S1351668AbiDELE5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:05:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49668 "EHLO
+        Tue, 5 Apr 2022 07:04:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237435AbiDEImT (ORCPT
+        with ESMTP id S237456AbiDEImZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:42:19 -0400
+        Tue, 5 Apr 2022 04:42:25 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B296DFD8;
-        Tue,  5 Apr 2022 01:34:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C1E5DE7;
+        Tue,  5 Apr 2022 01:34:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 05FB7B81C69;
+        by ams.source.kernel.org (Postfix) with ESMTPS id ACD00B81B13;
+        Tue,  5 Apr 2022 08:34:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF296C385A1;
         Tue,  5 Apr 2022 08:34:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF981C385A2;
-        Tue,  5 Apr 2022 08:34:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649147688;
-        bh=4XsjaIc65o36nenn0M0g05jKOtk3s8zw5Dx3i80XzDo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=nIMkJh4F1Ru2uHOWTdk3Ub7ZnC8ciPaZrykmVJ1I2q2sP0X3j9CXFus3/DK0ps8os
-         XAZxRHDV+f6AJF64ebXoyE+zjeT2GRp4y1XwpohWsUCkwryWwUG4Okv+RKQOrzQhwT
-         V0rA/NVSwMhYlnZpb7u8/DxImyVTJuNwvWOleJFuySCn7OiZcxKpLIN24EQWoReB5A
-         INzwg/wDG7ZIP8de6D4V1oht/N4bofoYtIbc424bu83hDPOM9n4Mpdwoo/W13/Kt3l
-         SI+opvrXRPgTXGyEDyLybZBV9ZlF9Z9VfXikE4dDNBb2NM4C2gQ8izOWd6Esl5VgOR
-         g9J1xHFBWt3UA==
-Date:   Tue, 5 Apr 2022 09:34:42 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-arm-msm@vger.kernel.org, linux-i2c@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-spi@vger.kernel.org,
-        Kuldeep Singh <singh.kuldeep87k@gmail.com>,
-        Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v4 6/9] spi: dt-bindings: qcom,spi-qup: convert to
- dtschema
-Message-ID: <Ykv/Ij0vfa522U1F@sirena.org.uk>
-References: <20220405063451.12011-1-krzysztof.kozlowski@linaro.org>
- <20220405063451.12011-7-krzysztof.kozlowski@linaro.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649147691;
+        bh=lmZ+OnSjM4E5Vl+GHeAAk6puN4cSKNSeRi0omoqJ7K0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=XU8moSHHaVMcokmkKqyrG1x1NyFLA6G50LxxT3hWrPp4ciw2t3iUSrczdsvQkEeZq
+         QToLXXzjIZpNo5aSqH2DESlPTFHxhVblTZwfLhkoIV+cCXKY9aW/8YWt86PwiLu8SK
+         Iybe3w3YuLBf6lgVR1Rcnh6vQQKbe/MHrdROpOwc=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Alistair Popple <apopple@nvidia.com>,
+        David Hildenbrand <david@redhat.com>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        John Hubbard <jhubbard@nvidia.com>, Zi Yan <ziy@nvidia.com>,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        Oscar Salvador <osalvador@suse.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.16 0088/1017] mm/pages_alloc.c: dont create ZONE_MOVABLE beyond the end of a node
+Date:   Tue,  5 Apr 2022 09:16:41 +0200
+Message-Id: <20220405070356.806380229@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
+References: <20220405070354.155796697@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="31zrrUV1FaGH1h1x"
-Content-Disposition: inline
-In-Reply-To: <20220405063451.12011-7-krzysztof.kozlowski@linaro.org>
-X-Cookie: diplomacy, n:
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Alistair Popple <apopple@nvidia.com>
 
---31zrrUV1FaGH1h1x
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+commit ddbc84f3f595cf1fc8234a191193b5d20ad43938 upstream.
 
-On Tue, Apr 05, 2022 at 08:34:48AM +0200, Krzysztof Kozlowski wrote:
-> Convert the Qualcomm Universal Peripheral (QUP) Serial Peripheral
-> Interface (SPI) bindings to DT Schema.
+ZONE_MOVABLE uses the remaining memory in each node.  Its starting pfn
+is also aligned to MAX_ORDER_NR_PAGES.  It is possible for the remaining
+memory in a node to be less than MAX_ORDER_NR_PAGES, meaning there is
+not enough room for ZONE_MOVABLE on that node.
 
-Acked-by: Mark Brown <broonie@kernel.org>
+Unfortunately this condition is not checked for.  This leads to
+zone_movable_pfn[] getting set to a pfn greater than the last pfn in a
+node.
 
---31zrrUV1FaGH1h1x
-Content-Type: application/pgp-signature; name="signature.asc"
+calculate_node_totalpages() then sets zone->present_pages to be greater
+than zone->spanned_pages which is invalid, as spanned_pages represents
+the maximum number of pages in a zone assuming no holes.
 
------BEGIN PGP SIGNATURE-----
+Subsequently it is possible free_area_init_core() will observe a zone of
+size zero with present pages.  In this case it will skip setting up the
+zone, including the initialisation of free_lists[].
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJL/yEACgkQJNaLcl1U
-h9A/MQf/dR244fROGWKBmRdYoln9hA1KEb35uCYhV3HjDJrtwjBsM66RevDfdbvW
-6uTpWmRQCr0pbF4p6p2f+aMGqITTilSymfiEqaKEX5aqdM0ZBKdbEUYBW/mem7h5
-b/U0H2fHPKtn0nsUvT/BrRM6UFwryGxhncAbPROve+vMJSK61FcgqsnNXpFvvIAj
-BA+gDo0v8fhh3aehenqkcu0Utwnb0cgxejKtpzQI3sR8WfQVBMHiVVMBzkFt1wsl
-lipVXiYscO5DA3iVJ1J5rIJVqRR4Ht/9NwmP51OO61l7UODTzOlqt57jhrNZEdxk
-+DqWMnawtWvfQdhAUgw/RolGENMqfA==
-=T9IF
------END PGP SIGNATURE-----
+However populated_zone() checks zone->present_pages to see if a zone has
+memory available.  This is used by iterators such as
+walk_zones_in_node().  pagetypeinfo_showfree() uses this to walk the
+free_list of each zone in each node, which are assumed to be initialised
+due to the zone not being empty.
 
---31zrrUV1FaGH1h1x--
+As free_area_init_core() never initialised the free_lists[] this results
+in the following kernel crash when trying to read /proc/pagetypeinfo:
+
+  BUG: kernel NULL pointer dereference, address: 0000000000000000
+  #PF: supervisor read access in kernel mode
+  #PF: error_code(0x0000) - not-present page
+  PGD 0 P4D 0
+  Oops: 0000 [#1] PREEMPT SMP DEBUG_PAGEALLOC NOPTI
+  CPU: 0 PID: 456 Comm: cat Not tainted 5.16.0 #461
+  Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
+  RIP: 0010:pagetypeinfo_show+0x163/0x460
+  Code: 9e 82 e8 80 57 0e 00 49 8b 06 b9 01 00 00 00 4c 39 f0 75 16 e9 65 02 00 00 48 83 c1 01 48 81 f9 a0 86 01 00 0f 84 48 02 00 00 <48> 8b 00 4c 39 f0 75 e7 48 c7 c2 80 a2 e2 82 48 c7 c6 79 ef e3 82
+  RSP: 0018:ffffc90001c4bd10 EFLAGS: 00010003
+  RAX: 0000000000000000 RBX: ffff88801105f638 RCX: 0000000000000001
+  RDX: 0000000000000001 RSI: 000000000000068b RDI: ffff8880163dc68b
+  RBP: ffffc90001c4bd90 R08: 0000000000000001 R09: ffff8880163dc67e
+  R10: 656c6261766f6d6e R11: 6c6261766f6d6e55 R12: ffff88807ffb4a00
+  R13: ffff88807ffb49f8 R14: ffff88807ffb4580 R15: ffff88807ffb3000
+  FS:  00007f9c83eff5c0(0000) GS:ffff88807dc00000(0000) knlGS:0000000000000000
+  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+  CR2: 0000000000000000 CR3: 0000000013c8e000 CR4: 0000000000350ef0
+  Call Trace:
+   seq_read_iter+0x128/0x460
+   proc_reg_read_iter+0x51/0x80
+   new_sync_read+0x113/0x1a0
+   vfs_read+0x136/0x1d0
+   ksys_read+0x70/0xf0
+   __x64_sys_read+0x1a/0x20
+   do_syscall_64+0x3b/0xc0
+   entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Fix this by checking that the aligned zone_movable_pfn[] does not exceed
+the end of the node, and if it does skip creating a movable zone on this
+node.
+
+Link: https://lkml.kernel.org/r/20220215025831.2113067-1-apopple@nvidia.com
+Fixes: 2a1e274acf0b ("Create the ZONE_MOVABLE zone")
+Signed-off-by: Alistair Popple <apopple@nvidia.com>
+Acked-by: David Hildenbrand <david@redhat.com>
+Acked-by: Mel Gorman <mgorman@techsingularity.net>
+Cc: John Hubbard <jhubbard@nvidia.com>
+Cc: Zi Yan <ziy@nvidia.com>
+Cc: Anshuman Khandual <anshuman.khandual@arm.com>
+Cc: Oscar Salvador <osalvador@suse.de>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ mm/page_alloc.c |    9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -7910,10 +7910,17 @@ restart:
+ 
+ out2:
+ 	/* Align start of ZONE_MOVABLE on all nids to MAX_ORDER_NR_PAGES */
+-	for (nid = 0; nid < MAX_NUMNODES; nid++)
++	for (nid = 0; nid < MAX_NUMNODES; nid++) {
++		unsigned long start_pfn, end_pfn;
++
+ 		zone_movable_pfn[nid] =
+ 			roundup(zone_movable_pfn[nid], MAX_ORDER_NR_PAGES);
+ 
++		get_pfn_range_for_nid(nid, &start_pfn, &end_pfn);
++		if (zone_movable_pfn[nid] >= end_pfn)
++			zone_movable_pfn[nid] = 0;
++	}
++
+ out:
+ 	/* restore the node_state */
+ 	node_states[N_MEMORY] = saved_node_state;
+
+
