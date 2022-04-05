@@ -2,178 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45D5EC3527D
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:17:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE677C35296
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:17:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353004AbiDELNf (ORCPT
+        id S1353061AbiDELNs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:13:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52870 "EHLO
+        Tue, 5 Apr 2022 07:13:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238281AbiDEIa1 (ORCPT
+        with ESMTP id S238287AbiDEIa1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:30:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 035C424F21;
-        Tue,  5 Apr 2022 01:22:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7226C6115B;
-        Tue,  5 Apr 2022 08:22:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BA0DC385A0;
-        Tue,  5 Apr 2022 08:22:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146921;
-        bh=yPQlBLQGEvHpOmVboz3fBeiBvatZ09xFfJx8JBLUUOI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JBzeDUSjT48MYWS+SHj92cnSUXkjsozpPke5zLIz54Q3RMIJww1ObvIA9Pb0RjaOq
-         wIIwYDReiUURGL+754VV+WjRTLKa5S64abqRcOz8izMgsvlfTdJx/LtioKfp8q8Rw6
-         fjODDSOiuAR04y5yXE0tKD8EDwzeOqzagXMvIG2M=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        =?UTF-8?q?P=C3=A9ter=20Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
-        Takashi Iwai <tiwai@suse.de>, Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0938/1126] ALSA: intel-nhlt: add helper to detect SSP link mask
-Date:   Tue,  5 Apr 2022 09:28:05 +0200
-Message-Id: <20220405070435.044517759@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
-References: <20220405070407.513532867@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB36C245B7;
+        Tue,  5 Apr 2022 01:22:03 -0700 (PDT)
+Date:   Tue, 05 Apr 2022 08:22:01 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649146922;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=l+xUYv6gdZsjBlMimQWLTKtSrNhHai4I0pW5bOZsXo4=;
+        b=o7a0WX1+82rPz7+R5wyQMyN3+HOr4Wz8RKw9ysNFrG2V4/gXB5JnAYrkH/Zt1Pi9F0zmwc
+        GUlQ6ROOqYycGL2PUCJCoaBad7NzII8NZJsO+gErN3hVlneu8J67pwwp64tW0EqAre8WDD
+        7hTu647GjwUr1glcwuI8VKPU3pgO8WEVc5rPuk4Xb//uDWZIk7+rRqoCUw+2evSOKlKhKK
+        I2GcWs+mgTqGvXnWMD0XOl5+ZR0cVjegjTp4kN8NU0PBMsqztoqQ6ISB9PnKXUDd8oPs2X
+        itBr3axY2d64RGTudrqgHFTx07wnJLMoiYCX2u921By3yCPthIENtkdWKe3BgA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649146922;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=l+xUYv6gdZsjBlMimQWLTKtSrNhHai4I0pW5bOZsXo4=;
+        b=SuCYPPCkjJFGlSdOxpigCfqddH5Qmj0Tzj8uylBk29udUPKWXbi41L7A3cCHdFWfEdupsy
+        suz3BgVXaufUsxDw==
+From:   "tip-bot2 for Sebastian Andrzej Siewior" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: sched/urgent] sched: Teach the forced-newidle balancer about
+ CPU affinity limitation.
+Cc:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <YjNK9El+3fzGmswf@linutronix.de>
+References: <YjNK9El+3fzGmswf@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Message-ID: <164914692120.389.11878203217805894208.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+The following commit has been merged into the sched/urgent branch of tip:
 
-[ Upstream commit 0c470db0399e17310ed2ba54dd1c25cfa16ce0d3 ]
+Commit-ID:     386ef214c3c6ab111d05e1790e79475363abaa05
+Gitweb:        https://git.kernel.org/tip/386ef214c3c6ab111d05e1790e79475363abaa05
+Author:        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+AuthorDate:    Thu, 17 Mar 2022 15:51:32 +01:00
+Committer:     Peter Zijlstra <peterz@infradead.org>
+CommitterDate: Tue, 05 Apr 2022 09:59:36 +02:00
 
-The NHLT information can be used to figure out which SSPs are enabled
-in a platform.
+sched: Teach the forced-newidle balancer about CPU affinity limitation.
 
-The 'SSP' link type is too broad for machine drivers, since it can
-cover the Bluetooth sideband and the analog audio codec connections,
-so this helper exposes a parameter to filter with the device
-type (DEVICE_I2S refers to analog audio codec in NHLT parlance).
+try_steal_cookie() looks at task_struct::cpus_mask to decide if the
+task could be moved to `this' CPU. It ignores that the task might be in
+a migration disabled section while not on the CPU. In this case the task
+must not be moved otherwise per-CPU assumption are broken.
 
-The helper returns a mask, since more than one SSP may be used for
-analog audio, e.g. the NHLT spec describes the use of SSP0 for
-amplifiers and SSP1 for headset codec. Note that if more than one bit
-is set, it's impossible to determine which SSP is connected to what
-external component. Additional platform-specific information based on
-e.g. DMI quirks would still be required in the machine driver to
-configure the relevant dailinks.
+Use is_cpu_allowed(), as suggested by Peter Zijlstra, to decide if the a
+task can be moved.
 
-Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
-Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
-Acked-by: Takashi Iwai <tiwai@suse.de>
-Link: https://lore.kernel.org/r/20220308192610.392950-5-pierre-louis.bossart@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: d2dfa17bc7de6 ("sched: Trivial forced-newidle balancer")
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/YjNK9El+3fzGmswf@linutronix.de
 ---
- include/sound/intel-nhlt.h | 22 +++++++++++++++-------
- sound/hda/intel-nhlt.c     | 22 ++++++++++++++++++++++
- 2 files changed, 37 insertions(+), 7 deletions(-)
+ kernel/sched/core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/sound/intel-nhlt.h b/include/sound/intel-nhlt.h
-index 089a760d36eb..6fb2d5e378fd 100644
---- a/include/sound/intel-nhlt.h
-+++ b/include/sound/intel-nhlt.h
-@@ -18,6 +18,13 @@ enum nhlt_link_type {
- 	NHLT_LINK_INVALID
- };
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index 017ee78..51efaab 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -6006,7 +6006,7 @@ static bool try_steal_cookie(int this, int that)
+ 		if (p == src->core_pick || p == src->curr)
+ 			goto next;
  
-+enum nhlt_device_type {
-+	NHLT_DEVICE_BT = 0,
-+	NHLT_DEVICE_DMIC = 1,
-+	NHLT_DEVICE_I2S = 4,
-+	NHLT_DEVICE_INVALID
-+};
-+
- #if IS_ENABLED(CONFIG_ACPI) && IS_ENABLED(CONFIG_SND_INTEL_NHLT)
+-		if (!cpumask_test_cpu(this, &p->cpus_mask))
++		if (!is_cpu_allowed(p, this))
+ 			goto next;
  
- struct wav_fmt {
-@@ -41,13 +48,6 @@ struct wav_fmt_ext {
- 	u8 sub_fmt[16];
- } __packed;
- 
--enum nhlt_device_type {
--	NHLT_DEVICE_BT = 0,
--	NHLT_DEVICE_DMIC = 1,
--	NHLT_DEVICE_I2S = 4,
--	NHLT_DEVICE_INVALID
--};
--
- struct nhlt_specific_cfg {
- 	u32 size;
- 	u8 caps[];
-@@ -133,6 +133,9 @@ void intel_nhlt_free(struct nhlt_acpi_table *addr);
- int intel_nhlt_get_dmic_geo(struct device *dev, struct nhlt_acpi_table *nhlt);
- 
- bool intel_nhlt_has_endpoint_type(struct nhlt_acpi_table *nhlt, u8 link_type);
-+
-+int intel_nhlt_ssp_endpoint_mask(struct nhlt_acpi_table *nhlt, u8 device_type);
-+
- struct nhlt_specific_cfg *
- intel_nhlt_get_endpoint_blob(struct device *dev, struct nhlt_acpi_table *nhlt,
- 			     u32 bus_id, u8 link_type, u8 vbps, u8 bps,
-@@ -163,6 +166,11 @@ static inline bool intel_nhlt_has_endpoint_type(struct nhlt_acpi_table *nhlt,
- 	return false;
- }
- 
-+static inline int intel_nhlt_ssp_endpoint_mask(struct nhlt_acpi_table *nhlt, u8 device_type)
-+{
-+	return 0;
-+}
-+
- static inline struct nhlt_specific_cfg *
- intel_nhlt_get_endpoint_blob(struct device *dev, struct nhlt_acpi_table *nhlt,
- 			     u32 bus_id, u8 link_type, u8 vbps, u8 bps,
-diff --git a/sound/hda/intel-nhlt.c b/sound/hda/intel-nhlt.c
-index 128476aa7c61..4063da378283 100644
---- a/sound/hda/intel-nhlt.c
-+++ b/sound/hda/intel-nhlt.c
-@@ -130,6 +130,28 @@ bool intel_nhlt_has_endpoint_type(struct nhlt_acpi_table *nhlt, u8 link_type)
- }
- EXPORT_SYMBOL(intel_nhlt_has_endpoint_type);
- 
-+int intel_nhlt_ssp_endpoint_mask(struct nhlt_acpi_table *nhlt, u8 device_type)
-+{
-+	struct nhlt_endpoint *epnt;
-+	int ssp_mask = 0;
-+	int i;
-+
-+	if (!nhlt || (device_type != NHLT_DEVICE_BT && device_type != NHLT_DEVICE_I2S))
-+		return 0;
-+
-+	epnt = (struct nhlt_endpoint *)nhlt->desc;
-+	for (i = 0; i < nhlt->endpoint_count; i++) {
-+		if (epnt->linktype == NHLT_LINK_SSP && epnt->device_type == device_type) {
-+			/* for SSP the virtual bus id is the SSP port */
-+			ssp_mask |= BIT(epnt->virtual_bus_id);
-+		}
-+		epnt = (struct nhlt_endpoint *)((u8 *)epnt + epnt->length);
-+	}
-+
-+	return ssp_mask;
-+}
-+EXPORT_SYMBOL(intel_nhlt_ssp_endpoint_mask);
-+
- static struct nhlt_specific_cfg *
- nhlt_get_specific_cfg(struct device *dev, struct nhlt_fmt *fmt, u8 num_ch,
- 		      u32 rate, u8 vbps, u8 bps)
--- 
-2.34.1
-
-
-
+ 		if (p->core_occupation > dst->idle->core_occupation)
