@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6D93C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D70B3C4167D
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:19:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382879AbiDEMRH (ORCPT
+        id S1382898AbiDEMRO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:17:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51496 "EHLO
+        Tue, 5 Apr 2022 08:17:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244965AbiDEIwv (ORCPT
+        with ESMTP id S244958AbiDEIwu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:52:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 194831C91E;
-        Tue,  5 Apr 2022 01:48:03 -0700 (PDT)
+        Tue, 5 Apr 2022 04:52:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D3951C114;
+        Tue,  5 Apr 2022 01:47:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AD6C7614F9;
-        Tue,  5 Apr 2022 08:48:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE854C385A1;
-        Tue,  5 Apr 2022 08:48:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0094D60FFC;
+        Tue,  5 Apr 2022 08:47:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D665AC385A0;
+        Tue,  5 Apr 2022 08:47:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148482;
-        bh=9ayTQoypg7Ma7Hon0Ma1b8RWYUYomggH8SeZpQc0dmk=;
+        s=korg; t=1649148471;
+        bh=g/yUqTevTV8GciHyd7YeKtTHAieQUSEzbtaW7BPaBVs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BAWoLJwN2M02LCfqt5WW5EtqlGpHVZsDKzD1Slg3VglF9rNrYZX4NspVi7Zq0VoT6
-         NBknvL7XPn5DKPvoEbyNU69QkMSmbh7KUV26oDXABidPfYdBvP/flSH3tp/GHoPgPY
-         VpooC6MsAJzypM1u0bFiEd2u2k3mUadxhzUQnYtI=
+        b=l2zJ+2BviXbIYu/ULEe2uZs6gcbirQdV/lMvdMmDV+Z54AmsarlspHMTMVn2B6vqI
+         RLGTy0t3R++t+3S0t8wVq5LpDD37dYzO2BjepxCyA5JDjBRF45Uep87oJcib+xhsGf
+         X/V+K2yH+uzH1nqjxE5p9e9p6a/kajl5xVTXGCpA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Lucas Tanure <tanureal@opensource.cirrus.com>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        kernel test robot <lkp@intel.com>,
+        Angelo Dureghello <angelo@sysam.it>,
+        Greg Ungerer <gerg@kernel.org>,
+        Greg Ungerer <gerg@linux-m68k.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        linux-m68k@lists.linux-m68k.org, uclinux-dev@uclinux.org,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0371/1017] ASoC: cs35l41: Fix max number of TX channels
-Date:   Tue,  5 Apr 2022 09:21:24 +0200
-Message-Id: <20220405070405.298448305@linuxfoundation.org>
+Subject: [PATCH 5.16 0367/1017] m68k: coldfire/device.c: only build for MCF_EDMA when h/w macros are defined
+Date:   Tue,  5 Apr 2022 09:21:20 +0200
+Message-Id: <20220405070405.179166748@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -52,35 +55,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lucas Tanure <tanureal@opensource.cirrus.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit 16639d39bdf577168d3fe34315917a94365c8d19 ]
+[ Upstream commit e6e1e7b19fa132d23d09c465942aab4c110d3da9 ]
 
-This device only has 4 TX channels.
+When CONFIG_MCF_EDMA is set (due to COMPILE_TEST, not due to
+CONFIG_M5441x), coldfire/device.c has compile errors due to
+missing MCFEDMA_* symbols. In the .config file that was provided,
+CONFIG_M5206=y, not CONFIG_M5441x, so <asm/m5441xsim.h> is not
+included in coldfire/device.c.
 
-Fixes: fe1024d50477b ("ASoC: cs35l41: Combine adjacent register writes")
-Signed-off-by: Lucas Tanure <tanureal@opensource.cirrus.com>
-Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220303173059.269657-3-tanureal@opensource.cirrus.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Only build the MCF_EDMA code in coldfire/device.c if the MCFEDMA_*
+hardware macros are defined.
+
+Fixes these build errors:
+
+../arch/m68k/coldfire/device.c:512:35: error: 'MCFEDMA_BASE' undeclared here (not in a function); did you mean 'MCFDMA_BASE1'?
+  512 |                 .start          = MCFEDMA_BASE,
+../arch/m68k/coldfire/device.c:513:50: error: 'MCFEDMA_SIZE' undeclared here (not in a function)
+  513 |                 .end            = MCFEDMA_BASE + MCFEDMA_SIZE - 1,
+../arch/m68k/coldfire/device.c:517:35: error: 'MCFEDMA_IRQ_INTR0' undeclared here (not in a function)
+  517 |                 .start          = MCFEDMA_IRQ_INTR0,
+../arch/m68k/coldfire/device.c:523:35: error: 'MCFEDMA_IRQ_INTR16' undeclared here (not in a function)
+  523 |                 .start          = MCFEDMA_IRQ_INTR16,
+../arch/m68k/coldfire/device.c:529:35: error: 'MCFEDMA_IRQ_INTR56' undeclared here (not in a function)
+  529 |                 .start          = MCFEDMA_IRQ_INTR56,
+../arch/m68k/coldfire/device.c:535:35: error: 'MCFEDMA_IRQ_ERR' undeclared here (not in a function)
+  535 |                 .start          = MCFEDMA_IRQ_ERR,
+
+Fixes: d7e9d01ac292 ("m68k: add ColdFire mcf5441x eDMA platform support")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Link: lore.kernel.org/r/202203030252.P752DK46-lkp@intel.com
+Cc: Angelo Dureghello <angelo@sysam.it>
+Cc: Greg Ungerer <gerg@kernel.org>
+Cc: Greg Ungerer <gerg@linux-m68k.org>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: linux-m68k@lists.linux-m68k.org
+Cc: uclinux-dev@uclinux.org
+Signed-off-by: Greg Ungerer <gerg@linux-m68k.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/cs35l41.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/m68k/coldfire/device.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/sound/soc/codecs/cs35l41.c b/sound/soc/codecs/cs35l41.c
-index 3188a8ba3507..8a2d0f9dd9a6 100644
---- a/sound/soc/codecs/cs35l41.c
-+++ b/sound/soc/codecs/cs35l41.c
-@@ -1113,7 +1113,7 @@ static struct snd_soc_dai_driver cs35l41_dai[] = {
- 		.capture = {
- 			.stream_name = "AMP Capture",
- 			.channels_min = 1,
--			.channels_max = 8,
-+			.channels_max = 4,
- 			.rates = SNDRV_PCM_RATE_KNOT,
- 			.formats = CS35L41_TX_FORMATS,
- 		},
+diff --git a/arch/m68k/coldfire/device.c b/arch/m68k/coldfire/device.c
+index 0386252e9d04..4218750414bb 100644
+--- a/arch/m68k/coldfire/device.c
++++ b/arch/m68k/coldfire/device.c
+@@ -480,7 +480,7 @@ static struct platform_device mcf_i2c5 = {
+ #endif /* MCFI2C_BASE5 */
+ #endif /* IS_ENABLED(CONFIG_I2C_IMX) */
+ 
+-#if IS_ENABLED(CONFIG_MCF_EDMA)
++#ifdef MCFEDMA_BASE
+ 
+ static const struct dma_slave_map mcf_edma_map[] = {
+ 	{ "dreq0", "rx-tx", MCF_EDMA_FILTER_PARAM(0) },
+@@ -552,7 +552,7 @@ static struct platform_device mcf_edma = {
+ 		.platform_data = &mcf_edma_data,
+ 	}
+ };
+-#endif /* IS_ENABLED(CONFIG_MCF_EDMA) */
++#endif /* MCFEDMA_BASE */
+ 
+ #ifdef MCFSDHC_BASE
+ static struct mcf_esdhc_platform_data mcf_esdhc_data = {
+@@ -651,7 +651,7 @@ static struct platform_device *mcf_devices[] __initdata = {
+ 	&mcf_i2c5,
+ #endif
+ #endif
+-#if IS_ENABLED(CONFIG_MCF_EDMA)
++#ifdef MCFEDMA_BASE
+ 	&mcf_edma,
+ #endif
+ #ifdef MCFSDHC_BASE
 -- 
 2.34.1
 
