@@ -2,62 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74E21C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 543E7C4167D
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:26:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1588759AbiDFARP (ORCPT
+        id S1588719AbiDFARH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:17:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44088 "EHLO
+        Tue, 5 Apr 2022 20:17:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382821AbiDEMRA (ORCPT
+        with ESMTP id S1356732AbiDEKYw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 08:17:00 -0400
-Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1F4CA995D
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 04:29:35 -0700 (PDT)
-Received: by mail-lj1-x22c.google.com with SMTP id g24so16670185lja.7
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 04:29:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=b7Dz2SM4siYuIwun2XwY0DhLNucqTdTNXSHP2yr5LeM=;
-        b=LOZVvXl9gGJ+RVI+ER6bknQlWcr4u1GnvrXJnh2Co/+eTsN7luh1C3Ee0mUUk7al2r
-         t2m4jmv1poxLlbvcPQalpmOl6QF6PZToWLJzEGtxHUHUOow0QixXBBqXN+q6MnnViKK1
-         XsrjEDIsj6GfB6OliOuv4Rt2ysL2QpB9/AcGir/3uX5+WhOM24y3lF/ICwjrems7FBS9
-         NfbOV0Uhv2sP0RxDI3KP2NwHlJNaSJpB8NVxC8piuaUGbuue6AyRmiEXGFL8bVaufne+
-         amNRUjuaCjpTKyTg5WYFGebmAsAk7hpgWJ1iGlXqR6cS7m5MTvQ5/xyYtM497wTWJat3
-         RujQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:from:to:subject:date:message-id
-         :mime-version:content-transfer-encoding;
-        bh=b7Dz2SM4siYuIwun2XwY0DhLNucqTdTNXSHP2yr5LeM=;
-        b=7/K0bJmchZyJiL1sJukh+9qGqHNf1r7Kph3Nkj6t/z9IwoOQPwI83QbQnuJlV9HBrx
-         rpfmtGPoMofWYKyLW8nulin0Y7mikQyP7xW9FdxM15XVeAq75NgJqBv6Ngl+a9Rsqiwj
-         13I7ofM12ZK8rVUWRDqK4UaGTkLCKyAyMw4MqLVvBPZXyIhGmauPsFc1I15keGoxq5SU
-         ZCzJwnTs6YEEWmv6CLjmDBpqj9XxJAhVwewLXELeBF/3QCduUI0uZ7vnIOiSvToBJhW9
-         VGBgMuKvu08Bdt/XQ5yZ1MVN4aqK5yt4NHVEDD8hoJwOxsbV9/pFZw5Z5+jzWCiWkV6+
-         flaw==
-X-Gm-Message-State: AOAM532lb13YH7I7sxE8DAGqDvSidkT4c4vlbkdredv4ZW7CwHIrO5E5
-        9p6oMnh/pZyER4MThPM60GfWcI8PoUI=
-X-Google-Smtp-Source: ABdhPJwglmhlytZL6pt8DIvGFjc+vbkjL17UA6JUrkyOQV1Hp23dghj+SmtXzqlQgSqw6XJ9RjxJJw==
-X-Received: by 2002:a2e:150d:0:b0:24b:30d:dae with SMTP id s13-20020a2e150d000000b0024b030d0daemr1822212ljd.23.1649158174017;
-        Tue, 05 Apr 2022 04:29:34 -0700 (PDT)
-Received: from uncleman.upcloud.com (dyjc2gkmpr6qcv38v66ry-4.rev.dnainternet.fi. [2001:14bb:1c5:62a1:4c76:9a28:df91:d69c])
-        by smtp.gmail.com with ESMTPSA id v6-20020a2ea446000000b0024b0abb3984sm1093423ljn.134.2022.04.05.04.29.32
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Apr 2022 04:29:33 -0700 (PDT)
-Sender: =?UTF-8?Q?Ville_Skytt=C3=A4?= <vskytta@gmail.com>
-From:   "=?UTF-8?q?Ville=20Skytt=C3=A4?=" <ville.skytta@iki.fi>
-X-Google-Original-From: =?UTF-8?q?Ville=20Skytt=C3=A4?= <ville.skytta@upcloud.com>
+        Tue, 5 Apr 2022 06:24:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55592BF516;
+        Tue,  5 Apr 2022 03:08:55 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D51BCB81C89;
+        Tue,  5 Apr 2022 10:08:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CACDC385A6;
+        Tue,  5 Apr 2022 10:08:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153332;
+        bh=s9JZTHU4ISnxMDiWXbfQdfcWMtbuXYw/drMU+c7jGpQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Z+smV24ZXXGg6NQHDSCicgF2s41V5TA6S2CKe3ZNmlWRAavfXwgjwWPYJDS3kU35d
+         4Qd3W/BttlaxPjs9MNt61/7+tAPM1e+1W1tEix8AO4lxpHS+5gGgXvUHauT5/zCk8t
+         uOErlje415YkKqgnc+FTFHlUmRKTicaov0MvQdPM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
-Subject: [PATCH] docs/kernel-parameters: Note nopku AMD applicability
-Date:   Tue,  5 Apr 2022 14:29:32 +0300
-Message-Id: <20220405112932.416098-1-ville.skytta@upcloud.com>
-X-Mailer: git-send-email 2.25.1
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Guillaume Tucker <guillaume.tucker@collabora.com>,
+        "kernelci.org bot" <bot@kernelci.org>,
+        Guenter Roeck <groeck@google.com>,
+        Shuah Khan <shuah@kernel.org>, Borislav Petkov <bp@suse.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 185/599] selftests, x86: fix how check_cc.sh is being invoked
+Date:   Tue,  5 Apr 2022 09:27:59 +0200
+Message-Id: <20220405070304.347142989@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -65,26 +56,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-pku is no longer Intel specific.
+From: Guillaume Tucker <guillaume.tucker@collabora.com>
 
-Signed-off-by: Ville Skyttä <ville.skytta@upcloud.com>
+[ Upstream commit ef696f93ed9778d570bd5ac58414421cdd4f1aab ]
+
+The $(CC) variable used in Makefiles could contain several arguments
+such as "ccache gcc".  These need to be passed as a single string to
+check_cc.sh, otherwise only the first argument will be used as the
+compiler command.  Without quotes, the $(CC) variable is passed as
+distinct arguments which causes the script to fail to build trivial
+programs.
+
+Fix this by adding quotes around $(CC) when calling check_cc.sh to pass
+the whole string as a single argument to the script even if it has
+several words such as "ccache gcc".
+
+Link: https://lkml.kernel.org/r/d0d460d7be0107a69e3c52477761a6fe694c1840.1646991629.git.guillaume.tucker@collabora.com
+Fixes: e9886ace222e ("selftests, x86: Rework x86 target architecture detection")
+Signed-off-by: Guillaume Tucker <guillaume.tucker@collabora.com>
+Tested-by: "kernelci.org bot" <bot@kernelci.org>
+Reviewed-by: Guenter Roeck <groeck@google.com>
+Cc: Shuah Khan <shuah@kernel.org>
+Cc: Borislav Petkov <bp@suse.de>
+Cc: Dave Hansen <dave.hansen@linux.intel.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/admin-guide/kernel-parameters.txt | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/testing/selftests/vm/Makefile  | 6 +++---
+ tools/testing/selftests/x86/Makefile | 6 +++---
+ 2 files changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 3f1cc5e317ed..d227539c52fe 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -1120,7 +1120,7 @@
- 			for details.
+diff --git a/tools/testing/selftests/vm/Makefile b/tools/testing/selftests/vm/Makefile
+index 2cf32e6b376e..01ec6876e8f5 100644
+--- a/tools/testing/selftests/vm/Makefile
++++ b/tools/testing/selftests/vm/Makefile
+@@ -40,9 +40,9 @@ TEST_GEN_FILES += userfaultfd
+ TEST_GEN_FILES += khugepaged
  
- 	nopku		[X86] Disable Memory Protection Keys CPU feature found
--			in some Intel CPUs.
-+			in some Intel and AMD CPUs.
+ ifeq ($(MACHINE),x86_64)
+-CAN_BUILD_I386 := $(shell ./../x86/check_cc.sh $(CC) ../x86/trivial_32bit_program.c -m32)
+-CAN_BUILD_X86_64 := $(shell ./../x86/check_cc.sh $(CC) ../x86/trivial_64bit_program.c)
+-CAN_BUILD_WITH_NOPIE := $(shell ./../x86/check_cc.sh $(CC) ../x86/trivial_program.c -no-pie)
++CAN_BUILD_I386 := $(shell ./../x86/check_cc.sh "$(CC)" ../x86/trivial_32bit_program.c -m32)
++CAN_BUILD_X86_64 := $(shell ./../x86/check_cc.sh "$(CC)" ../x86/trivial_64bit_program.c)
++CAN_BUILD_WITH_NOPIE := $(shell ./../x86/check_cc.sh "$(CC)" ../x86/trivial_program.c -no-pie)
  
- 	<module>.async_probe [KNL]
- 			Enable asynchronous probe on this module.
+ TARGETS := protection_keys
+ BINARIES_32 := $(TARGETS:%=%_32)
+diff --git a/tools/testing/selftests/x86/Makefile b/tools/testing/selftests/x86/Makefile
+index 6703c7906b71..f1b675a4040b 100644
+--- a/tools/testing/selftests/x86/Makefile
++++ b/tools/testing/selftests/x86/Makefile
+@@ -6,9 +6,9 @@ include ../lib.mk
+ .PHONY: all all_32 all_64 warn_32bit_failure clean
+ 
+ UNAME_M := $(shell uname -m)
+-CAN_BUILD_I386 := $(shell ./check_cc.sh $(CC) trivial_32bit_program.c -m32)
+-CAN_BUILD_X86_64 := $(shell ./check_cc.sh $(CC) trivial_64bit_program.c)
+-CAN_BUILD_WITH_NOPIE := $(shell ./check_cc.sh $(CC) trivial_program.c -no-pie)
++CAN_BUILD_I386 := $(shell ./check_cc.sh "$(CC)" trivial_32bit_program.c -m32)
++CAN_BUILD_X86_64 := $(shell ./check_cc.sh "$(CC)" trivial_64bit_program.c)
++CAN_BUILD_WITH_NOPIE := $(shell ./check_cc.sh "$(CC)" trivial_program.c -no-pie)
+ 
+ TARGETS_C_BOTHBITS := single_step_syscall sysret_ss_attrs syscall_nt test_mremap_vdso \
+ 			check_initial_reg_state sigreturn iopl ioperm \
 -- 
-2.25.1
+2.34.1
+
+
 
