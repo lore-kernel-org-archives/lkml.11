@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08DB5C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:33:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A926C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:33:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377368AbiDEL2v (ORCPT
+        id S1377399AbiDEL3D (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:28:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42514 "EHLO
+        Tue, 5 Apr 2022 07:29:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243460AbiDEIua (ORCPT
+        with ESMTP id S243547AbiDEIuk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:50:30 -0400
+        Tue, 5 Apr 2022 04:50:40 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0772E9FFF;
-        Tue,  5 Apr 2022 01:38:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 261D0205E3;
+        Tue,  5 Apr 2022 01:39:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2FBC4614FC;
-        Tue,  5 Apr 2022 08:38:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37ADBC385A0;
-        Tue,  5 Apr 2022 08:38:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D7E7361535;
+        Tue,  5 Apr 2022 08:39:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E40DAC385A3;
+        Tue,  5 Apr 2022 08:39:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147886;
-        bh=5Qz0f3YeGaXbtw0LN0zzLeqrgaYizenBYgrfl3LPu8g=;
+        s=korg; t=1649147944;
+        bh=AE8siXgTZ1H7IScJ7cFvEU7Ff6JT4XzexfIs6peE5Z8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VVxRLFGu7gWG1ev8jt1pDZK7onRy2k1ZE0gtvjyvq6HyKxDIMFoRcTSulN+nopeHN
-         o4yFvGbxOV3+fTVT2XjynOHfkf3qKUY1MWxF2vWvrOWUzrdtgXEfr227jZXyiuV5hN
-         iEjV5PTWv/9XH9TcQasEwaVRA1E4NcOoYX+2fBxs=
+        b=SizHnFxf8y5VdRkO9tae6BtkxTekJvB+Id1H72VpLr2u9UVH2rkoZT8LynPgjjI1J
+         bZQH8M79Axh9AXoSvWu4SjYb16QXFYEcxehYicSSB0jh4imb7mqLcVS4QfKAts5PUk
+         MX7a29JzslSaKoLovycbddghTp8MVuZIxeWG0FYw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kirill Tkhai <ktkhai@virtuozzo.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Mike Snitzer <snitzer@redhat.com>
-Subject: [PATCH 5.16 0119/1017] dm: fix use-after-free in dm_cleanup_zoned_dev()
-Date:   Tue,  5 Apr 2022 09:17:12 +0200
-Message-Id: <20220405070357.730394408@linuxfoundation.org>
+        stable@vger.kernel.org, Kevin Hilman <khilman@baylibre.com>,
+        Johan Hovold <johan@kernel.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>
+Subject: [PATCH 5.16 0178/1017] media: davinci: vpif: fix unbalanced runtime PM enable
+Date:   Tue,  5 Apr 2022 09:18:11 +0200
+Message-Id: <20220405070359.518863423@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,76 +51,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kirill Tkhai <ktkhai@virtuozzo.com>
+From: Johan Hovold <johan@kernel.org>
 
-commit 588b7f5df0cb64f281290c7672470c006abe7160 upstream.
+commit d42b3ad105b5d3481f6a56bc789aa2b27aa09325 upstream.
 
-dm_cleanup_zoned_dev() uses queue, so it must be called
-before blk_cleanup_disk() starts its killing:
+Make sure to disable runtime PM before returning on probe errors.
 
-blk_cleanup_disk->blk_cleanup_queue()->kobject_put()->blk_release_queue()->
-->...RCU...->blk_free_queue_rcu()->kmem_cache_free()
-
-Otherwise, RCU callback may be executed first and
-dm_cleanup_zoned_dev() will touch free'd memory:
-
- BUG: KASAN: use-after-free in dm_cleanup_zoned_dev+0x33/0xd0
- Read of size 8 at addr ffff88805ac6e430 by task dmsetup/681
-
- CPU: 4 PID: 681 Comm: dmsetup Not tainted 5.17.0-rc2+ #6
- Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-2 04/01/2014
- Call Trace:
-  <TASK>
-  dump_stack_lvl+0x57/0x7d
-  print_address_description.constprop.0+0x1f/0x150
-  ? dm_cleanup_zoned_dev+0x33/0xd0
-  kasan_report.cold+0x7f/0x11b
-  ? dm_cleanup_zoned_dev+0x33/0xd0
-  dm_cleanup_zoned_dev+0x33/0xd0
-  __dm_destroy+0x26a/0x400
-  ? dm_blk_ioctl+0x230/0x230
-  ? up_write+0xd8/0x270
-  dev_remove+0x156/0x1d0
-  ctl_ioctl+0x269/0x530
-  ? table_clear+0x140/0x140
-  ? lock_release+0xb2/0x750
-  ? remove_all+0x40/0x40
-  ? rcu_read_lock_sched_held+0x12/0x70
-  ? lock_downgrade+0x3c0/0x3c0
-  ? rcu_read_lock_sched_held+0x12/0x70
-  dm_ctl_ioctl+0xa/0x10
-  __x64_sys_ioctl+0xb9/0xf0
-  do_syscall_64+0x3b/0x90
-  entry_SYSCALL_64_after_hwframe+0x44/0xae
- RIP: 0033:0x7fb6dfa95c27
-
-Fixes: bb37d77239af ("dm: introduce zone append emulation")
+Fixes: 479f7a118105 ("[media] davinci: vpif: adaptions for DT support")
 Cc: stable@vger.kernel.org
-Signed-off-by: Kirill Tkhai <ktkhai@virtuozzo.com>
-Reviewed-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Signed-off-by: Mike Snitzer <snitzer@redhat.com>
+Cc: Kevin Hilman <khilman@baylibre.com>
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/dm.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/media/platform/davinci/vpif.c |   11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
---- a/drivers/md/dm.c
-+++ b/drivers/md/dm.c
-@@ -1676,6 +1676,7 @@ static void cleanup_mapped_device(struct
- 		md->dax_dev = NULL;
+--- a/drivers/media/platform/davinci/vpif.c
++++ b/drivers/media/platform/davinci/vpif.c
+@@ -428,6 +428,7 @@ static int vpif_probe(struct platform_de
+ 	static struct resource *res_irq;
+ 	struct platform_device *pdev_capture, *pdev_display;
+ 	struct device_node *endpoint = NULL;
++	int ret;
+ 
+ 	vpif_base = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(vpif_base))
+@@ -456,8 +457,8 @@ static int vpif_probe(struct platform_de
+ 	res_irq = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
+ 	if (!res_irq) {
+ 		dev_warn(&pdev->dev, "Missing IRQ resource.\n");
+-		pm_runtime_put(&pdev->dev);
+-		return -EINVAL;
++		ret = -EINVAL;
++		goto err_put_rpm;
  	}
  
-+	dm_cleanup_zoned_dev(md);
- 	if (md->disk) {
- 		spin_lock(&_minor_lock);
- 		md->disk->private_data = NULL;
-@@ -1696,7 +1697,6 @@ static void cleanup_mapped_device(struct
- 	mutex_destroy(&md->swap_bios_lock);
+ 	pdev_capture = devm_kzalloc(&pdev->dev, sizeof(*pdev_capture),
+@@ -491,6 +492,12 @@ static int vpif_probe(struct platform_de
+ 	}
  
- 	dm_mq_cleanup_mapped_device(md);
--	dm_cleanup_zoned_dev(md);
+ 	return 0;
++
++err_put_rpm:
++	pm_runtime_put(&pdev->dev);
++	pm_runtime_disable(&pdev->dev);
++
++	return ret;
  }
  
- /*
+ static int vpif_remove(struct platform_device *pdev)
 
 
