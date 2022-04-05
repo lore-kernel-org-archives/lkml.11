@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00205C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:42:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC202C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:42:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385790AbiDEMiw (ORCPT
+        id S1385832AbiDEMjB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:38:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52354 "EHLO
+        Tue, 5 Apr 2022 08:39:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237078AbiDEJDz (ORCPT
+        with ESMTP id S237079AbiDEJDz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 05:03:55 -0400
 Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33EB522A;
-        Tue,  5 Apr 2022 01:55:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE550E0E0;
+        Tue,  5 Apr 2022 01:55:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 9CCD1CE1C6A;
-        Tue,  5 Apr 2022 08:55:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1ED3C385A0;
-        Tue,  5 Apr 2022 08:55:32 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 3D250CE1C74;
+        Tue,  5 Apr 2022 08:55:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 538F4C385A0;
+        Tue,  5 Apr 2022 08:55:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148933;
-        bh=OIRsUTsrsfPhRhYjXs2ZRfXKUs8pKswdjLexdG7L1Rc=;
+        s=korg; t=1649148935;
+        bh=tz2WsGwVMuVbO2wTqA8MBxDbhtAGVBwTx3bQdUxPpgU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ouks4ls3Q+uu2jz6J2Iz3hLDTjVSqWO6EjF75jUBcycMVhFSmLZ+hv+tbx90prX0X
-         jLICuwUfM5x4YDJ/NEmpaTlcgN7S2lXa940ITAffx0Q3xuwK7THyb3LrDlI7leI6CB
-         FIueNuQ7fwXBkrqChThpe3glmn4qel8bWZnCPDqA=
+        b=MWwjP94XdLfMUTagR+59BPo3EamQVGvWWQPVc89FAX9r/ADZKdOXDUdvLoEqlOG11
+         6BG9Ux0jfhHH66CS5Z4QZkzvFjo84lu8Hwy7arz3F5aQFqpZFEBM9wivNAuKC7F/he
+         XC4O0r4fARP8TL571AdHEke0Cz+3Y+b01EaFTepI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Damien Le Moal <damien.lemoal@opensource.wdc.com>,
         "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0533/1017] scsi: pm8001: Fix le32 values handling in pm80xx_set_sas_protocol_timer_config()
-Date:   Tue,  5 Apr 2022 09:24:06 +0200
-Message-Id: <20220405070410.114564534@linuxfoundation.org>
+Subject: [PATCH 5.16 0534/1017] scsi: pm8001: Fix payload initialization in pm80xx_encrypt_update()
+Date:   Tue,  5 Apr 2022 09:24:07 +0200
+Message-Id: <20220405070410.144015293@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -53,107 +53,47 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 
-[ Upstream commit ca374f5d92b8ae778f6a37dd3e7ed809bbf7a953 ]
+[ Upstream commit f8b12dfb476dad38ce755aaf5e2df46f06f1822e ]
 
-All fields of the SASProtocolTimerConfig structure have the __le32 type.
-As such, use cpu_to_le32() to initialize them. This change suppresses many
-sparse warnings:
+All fields of the kek_mgmt_req structure have the type __le32. So make sure
+to use cpu_to_le32() to initialize them. This suppresses the sparse
+warning:
 
 warning: incorrect type in assignment (different base types)
-   expected restricted __le32 [addressable] [usertype] pageCode
+   expected restricted __le32 [addressable] [assigned] [usertype] new_curidx_ksop
    got int
 
-Note that the check to limit the value of the STP_IDLE_TMO field is removed
-as this field is initialized using the fixed (and small) value defined by
-the STP_IDLE_TIME macro.
-
-The pm8001_dbg() calls printing the values of the SASProtocolTimerConfig
-structure fileds are changed to use le32_to_cpu() to present the values in
-human readable form.
-
-Link: https://lore.kernel.org/r/20220220031810.738362-9-damien.lemoal@opensource.wdc.com
-Fixes: a6cb3d012b98 ("[SCSI] pm80xx: thermal, sas controller config and error handling update")
+Link: https://lore.kernel.org/r/20220220031810.738362-10-damien.lemoal@opensource.wdc.com
+Fixes: f5860992db55 ("[SCSI] pm80xx: Added SPCv/ve specific hardware functionalities and relevant changes in common files")
 Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
 Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/pm8001/pm80xx_hwi.c | 52 +++++++++++++++-----------------
- 1 file changed, 25 insertions(+), 27 deletions(-)
+ drivers/scsi/pm8001/pm80xx_hwi.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/scsi/pm8001/pm80xx_hwi.c b/drivers/scsi/pm8001/pm80xx_hwi.c
-index 052bd97aa22b..cda82cc1e3de 100644
+index cda82cc1e3de..d4b11b005fe2 100644
 --- a/drivers/scsi/pm8001/pm80xx_hwi.c
 +++ b/drivers/scsi/pm8001/pm80xx_hwi.c
-@@ -1246,43 +1246,41 @@ pm80xx_set_sas_protocol_timer_config(struct pm8001_hba_info *pm8001_ha)
- 	circularQ = &pm8001_ha->inbnd_q_tbl[0];
- 	payload.tag = cpu_to_le32(tag);
+@@ -1406,12 +1406,13 @@ static int pm80xx_encrypt_update(struct pm8001_hba_info *pm8001_ha)
+ 	/* Currently only one key is used. New KEK index is 1.
+ 	 * Current KEK index is 1. Store KEK to NVRAM is 1.
+ 	 */
+-	payload.new_curidx_ksop = ((1 << 24) | (1 << 16) | (1 << 8) |
+-					KEK_MGMT_SUBOP_KEYCARDUPDATE);
++	payload.new_curidx_ksop =
++		cpu_to_le32(((1 << 24) | (1 << 16) | (1 << 8) |
++			     KEK_MGMT_SUBOP_KEYCARDUPDATE));
  
--	SASConfigPage.pageCode        =  SAS_PROTOCOL_TIMER_CONFIG_PAGE;
--	SASConfigPage.MST_MSI         =  3 << 15;
--	SASConfigPage.STP_SSP_MCT_TMO =  (STP_MCT_TMO << 16) | SSP_MCT_TMO;
--	SASConfigPage.STP_FRM_TMO     = (SAS_MAX_OPEN_TIME << 24) |
--				(SMP_MAX_CONN_TIMER << 16) | STP_FRM_TIMER;
--	SASConfigPage.STP_IDLE_TMO    =  STP_IDLE_TIME;
--
--	if (SASConfigPage.STP_IDLE_TMO > 0x3FFFFFF)
--		SASConfigPage.STP_IDLE_TMO = 0x3FFFFFF;
--
--
--	SASConfigPage.OPNRJT_RTRY_INTVL =         (SAS_MFD << 16) |
--						SAS_OPNRJT_RTRY_INTVL;
--	SASConfigPage.Data_Cmd_OPNRJT_RTRY_TMO =  (SAS_DOPNRJT_RTRY_TMO << 16)
--						| SAS_COPNRJT_RTRY_TMO;
--	SASConfigPage.Data_Cmd_OPNRJT_RTRY_THR =  (SAS_DOPNRJT_RTRY_THR << 16)
--						| SAS_COPNRJT_RTRY_THR;
--	SASConfigPage.MAX_AIP =  SAS_MAX_AIP;
-+	SASConfigPage.pageCode = cpu_to_le32(SAS_PROTOCOL_TIMER_CONFIG_PAGE);
-+	SASConfigPage.MST_MSI = cpu_to_le32(3 << 15);
-+	SASConfigPage.STP_SSP_MCT_TMO =
-+		cpu_to_le32((STP_MCT_TMO << 16) | SSP_MCT_TMO);
-+	SASConfigPage.STP_FRM_TMO =
-+		cpu_to_le32((SAS_MAX_OPEN_TIME << 24) |
-+			    (SMP_MAX_CONN_TIMER << 16) | STP_FRM_TIMER);
-+	SASConfigPage.STP_IDLE_TMO = cpu_to_le32(STP_IDLE_TIME);
-+
-+	SASConfigPage.OPNRJT_RTRY_INTVL =
-+		cpu_to_le32((SAS_MFD << 16) | SAS_OPNRJT_RTRY_INTVL);
-+	SASConfigPage.Data_Cmd_OPNRJT_RTRY_TMO =
-+		cpu_to_le32((SAS_DOPNRJT_RTRY_TMO << 16) | SAS_COPNRJT_RTRY_TMO);
-+	SASConfigPage.Data_Cmd_OPNRJT_RTRY_THR =
-+		cpu_to_le32((SAS_DOPNRJT_RTRY_THR << 16) | SAS_COPNRJT_RTRY_THR);
-+	SASConfigPage.MAX_AIP = cpu_to_le32(SAS_MAX_AIP);
+ 	pm8001_dbg(pm8001_ha, DEV,
+ 		   "Saving Encryption info to flash. payload 0x%x\n",
+-		   payload.new_curidx_ksop);
++		   le32_to_cpu(payload.new_curidx_ksop));
  
- 	pm8001_dbg(pm8001_ha, INIT, "SASConfigPage.pageCode 0x%08x\n",
--		   SASConfigPage.pageCode);
-+		   le32_to_cpu(SASConfigPage.pageCode));
- 	pm8001_dbg(pm8001_ha, INIT, "SASConfigPage.MST_MSI  0x%08x\n",
--		   SASConfigPage.MST_MSI);
-+		   le32_to_cpu(SASConfigPage.MST_MSI));
- 	pm8001_dbg(pm8001_ha, INIT, "SASConfigPage.STP_SSP_MCT_TMO  0x%08x\n",
--		   SASConfigPage.STP_SSP_MCT_TMO);
-+		   le32_to_cpu(SASConfigPage.STP_SSP_MCT_TMO));
- 	pm8001_dbg(pm8001_ha, INIT, "SASConfigPage.STP_FRM_TMO  0x%08x\n",
--		   SASConfigPage.STP_FRM_TMO);
-+		   le32_to_cpu(SASConfigPage.STP_FRM_TMO));
- 	pm8001_dbg(pm8001_ha, INIT, "SASConfigPage.STP_IDLE_TMO  0x%08x\n",
--		   SASConfigPage.STP_IDLE_TMO);
-+		   le32_to_cpu(SASConfigPage.STP_IDLE_TMO));
- 	pm8001_dbg(pm8001_ha, INIT, "SASConfigPage.OPNRJT_RTRY_INTVL  0x%08x\n",
--		   SASConfigPage.OPNRJT_RTRY_INTVL);
-+		   le32_to_cpu(SASConfigPage.OPNRJT_RTRY_INTVL));
- 	pm8001_dbg(pm8001_ha, INIT, "SASConfigPage.Data_Cmd_OPNRJT_RTRY_TMO  0x%08x\n",
--		   SASConfigPage.Data_Cmd_OPNRJT_RTRY_TMO);
-+		   le32_to_cpu(SASConfigPage.Data_Cmd_OPNRJT_RTRY_TMO));
- 	pm8001_dbg(pm8001_ha, INIT, "SASConfigPage.Data_Cmd_OPNRJT_RTRY_THR  0x%08x\n",
--		   SASConfigPage.Data_Cmd_OPNRJT_RTRY_THR);
-+		   le32_to_cpu(SASConfigPage.Data_Cmd_OPNRJT_RTRY_THR));
- 	pm8001_dbg(pm8001_ha, INIT, "SASConfigPage.MAX_AIP  0x%08x\n",
--		   SASConfigPage.MAX_AIP);
-+		   le32_to_cpu(SASConfigPage.MAX_AIP));
- 
- 	memcpy(&payload.cfg_pg, &SASConfigPage,
- 			 sizeof(SASProtocolTimerConfig_t));
+ 	rc = pm8001_mpi_build_cmd(pm8001_ha, circularQ, opc, &payload,
+ 			sizeof(payload), 0);
 -- 
 2.34.1
 
