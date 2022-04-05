@@ -2,131 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 998B9C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A90EBC35273
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:56:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384429AbiDEUzv (ORCPT
+        id S1384472AbiDEUz6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:55:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42458 "EHLO
+        Tue, 5 Apr 2022 16:55:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383966AbiDEPOv (ORCPT
+        with ESMTP id S1358767AbiDELR1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:14:51 -0400
-Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::222])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CCB157B08;
-        Tue,  5 Apr 2022 06:28:32 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 709324000D;
-        Tue,  5 Apr 2022 13:28:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1649165311;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=qnhE1fGjUafmBC+KaTBnXvOD8ef7wgKM3WFEC0Tf58Q=;
-        b=PNZNMPwtfLbDvJj2rr5VXgbxaCGxcXBVC+gZHBtIAYoLT4hU6bhMpirHr8gz34mNJXLwRO
-        6LDLtXVpQnIuL7joOzxx9Ymx88UJvXp25mqd5+1fwpkfq9LPc28eaU0N05kaOwcWtbuWmk
-        GiTNuRJji7YMiyuTKfkrzQ+z3IpmfDY/JtMPHS4AI82mAnxjTgra4Kc/vf8XNy2XPyhn4G
-        +R377fFgzWK/qsqrQV4FhwQeZHFkMf9ok4VSgKwai8hmm2ocIWz0Z7N3wOY3gDfIsP4wdc
-        1+jboRxEU1Fhwg8JYtN+22rUVhqpabxaS2J78OFowBUg/dKrZYmIvsQQdPdskw==
-Date:   Tue, 5 Apr 2022 15:27:02 +0200
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     "Rafael J. Wysocki" <rafael@kernel.org>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Len Brown <lenb@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Allan Nielsen <allan.nielsen@microchip.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        linux-i2c <linux-i2c@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>
-Subject: Re: [PATCH v3 3/9] device property: add index argument to
- property_read_string_array() callback
-Message-ID: <20220405152702.50ba516d@fixe.home>
-In-Reply-To: <CAJZ5v0hOjaOCUxbFzKG90Db0bgfdb3q988oAvLB4kmD3-HS8sQ@mail.gmail.com>
-References: <20220325113148.588163-1-clement.leger@bootlin.com>
-        <20220325113148.588163-4-clement.leger@bootlin.com>
-        <Yj3SFYdUQ4r7GXqs@smile.fi.intel.com>
-        <20220328162812.16deac92@fixe.home>
-        <CAJZ5v0hOjaOCUxbFzKG90Db0bgfdb3q988oAvLB4kmD3-HS8sQ@mail.gmail.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        Tue, 5 Apr 2022 07:17:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 470912FFC0;
+        Tue,  5 Apr 2022 03:20:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EF54BB81C6C;
+        Tue,  5 Apr 2022 10:20:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6154CC385A0;
+        Tue,  5 Apr 2022 10:20:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649154021;
+        bh=ryI4nmnWCITwgMxyxAhVGbPtmN7Hf4iB4cJjnuFKMfs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=R8EJIWeXCNVZw5tK3PoWprHeqCAeGj0IgbPTrJfaFzKw5uw0d50u0/SF30vVvWZP7
+         tb8B45aLnxx5ASbJl8dm4NwMg3CcpkVDGfoUU9YfPnsZZVD2M9dD6ao8wrPh/TyRlZ
+         xdQEjWNfZHy96pbxgQyvJ2CsgFzuTjse4Zjgehd4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        anton ivanov <anton.ivanov@cambridgegreys.com>,
+        Julius Werner <jwerner@chromium.org>,
+        David Gow <davidgow@google.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 429/599] firmware: google: Properly state IOMEM dependency
+Date:   Tue,  5 Apr 2022 09:32:03 +0200
+Message-Id: <20220405070311.599379148@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le Tue, 5 Apr 2022 15:22:51 +0200,
-"Rafael J. Wysocki" <rafael@kernel.org> a =C3=A9crit :
+From: David Gow <davidgow@google.com>
 
-> On Mon, Mar 28, 2022 at 4:29 PM Cl=C3=A9ment L=C3=A9ger <clement.leger@bo=
-otlin.com> wrote:
-> >
-> > Le Fri, 25 Mar 2022 16:30:45 +0200,
-> > Andy Shevchenko <andriy.shevchenko@linux.intel.com> a =C3=A9crit :
-> > =20
-> > > >     pointer =3D property_entry_find(props, propname, length);
-> > > >     if (IS_ERR(pointer))
-> > > >             return PTR_ERR(pointer); =20
-> > > =20
-> > > > +   if (index >=3D array_len)
-> > > > +           return -ENODATA; =20
-> > >
-> > > I was about to ask if we can check this before the
-> > > property_entry_find() call, but realized that in such case it will
-> > > shadow possible errors due to wrong or absent property. =20
-> >
-> > I think you are actually right, the check can be done after
-> > property_entry_count_elems_of_size() since it already checks for the
-> > property to be present. I'll move that check.
-> > =20
-> > >
-> > > ...
-> > > =20
-> > > > -           of_property_read_string_array(node, propname, val,
-> > > > nval) :
-> > > > +           of_property_read_string_array_index(node,
-> > > > propname, val, nval,
-> > > > +                                               index) : =20
-> > >
-> > > Dunno about the style there, but I think it can be one line. =20
-> >
-> > Seems like the complete file is strictly applying the 80 columns rules
-> > so I thought it was better to keep it like this. However, I think the
-> > ternary oeprator is not really readable with such split. =20
->=20
-> So FWIW I would entirely change it to
->=20
-> if (!val)
->         return of_property_count_strings(node, propname);
->=20
-> return of_property_read_string_array_index(node, propname, val,
->=20
-> nval, index);
->=20
-> which IMO would be way easier to read.
+[ Upstream commit 37fd83916da2e4cae03d350015c82a67b1b334c4 ]
 
-Hi Rafael,
+The Google Coreboot implementation requires IOMEM functions
+(memmremap, memunmap, devm_memremap), but does not specify this is its
+Kconfig. This results in build errors when HAS_IOMEM is not set, such as
+on some UML configurations:
 
-Agreed, this is way more readable. I'll modify that.
+/usr/bin/ld: drivers/firmware/google/coreboot_table.o: in function `coreboot_table_probe':
+coreboot_table.c:(.text+0x311): undefined reference to `memremap'
+/usr/bin/ld: coreboot_table.c:(.text+0x34e): undefined reference to `memunmap'
+/usr/bin/ld: drivers/firmware/google/memconsole-coreboot.o: in function `memconsole_probe':
+memconsole-coreboot.c:(.text+0x12d): undefined reference to `memremap'
+/usr/bin/ld: memconsole-coreboot.c:(.text+0x17e): undefined reference to `devm_memremap'
+/usr/bin/ld: memconsole-coreboot.c:(.text+0x191): undefined reference to `memunmap'
+/usr/bin/ld: drivers/firmware/google/vpd.o: in function `vpd_section_destroy.isra.0':
+vpd.c:(.text+0x300): undefined reference to `memunmap'
+/usr/bin/ld: drivers/firmware/google/vpd.o: in function `vpd_section_init':
+vpd.c:(.text+0x382): undefined reference to `memremap'
+/usr/bin/ld: vpd.c:(.text+0x459): undefined reference to `memunmap'
+/usr/bin/ld: drivers/firmware/google/vpd.o: in function `vpd_probe':
+vpd.c:(.text+0x59d): undefined reference to `memremap'
+/usr/bin/ld: vpd.c:(.text+0x5d3): undefined reference to `memunmap'
+collect2: error: ld returned 1 exit status
 
-Thanks,
+Fixes: a28aad66da8b ("firmware: coreboot: Collapse platform drivers into bus core")
+Acked-By: anton ivanov <anton.ivanov@cambridgegreys.com>
+Acked-By: Julius Werner <jwerner@chromium.org>
+Signed-off-by: David Gow <davidgow@google.com>
+Link: https://lore.kernel.org/r/20220225041502.1901806-1-davidgow@google.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/firmware/google/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---=20
-Cl=C3=A9ment L=C3=A9ger,
-Embedded Linux and Kernel engineer at Bootlin
-https://bootlin.com
+diff --git a/drivers/firmware/google/Kconfig b/drivers/firmware/google/Kconfig
+index 931544c9f63d..983e07dc022e 100644
+--- a/drivers/firmware/google/Kconfig
++++ b/drivers/firmware/google/Kconfig
+@@ -21,7 +21,7 @@ config GOOGLE_SMI
+ 
+ config GOOGLE_COREBOOT_TABLE
+ 	tristate "Coreboot Table Access"
+-	depends on ACPI || OF
++	depends on HAS_IOMEM && (ACPI || OF)
+ 	help
+ 	  This option enables the coreboot_table module, which provides other
+ 	  firmware modules access to the coreboot table. The coreboot table
+-- 
+2.34.1
+
+
+
