@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC850C4707F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B389C35295
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:19:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350008AbiDEMTn (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:19:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46798 "EHLO
+        id S244757AbiDEMS6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 08:18:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244990AbiDEIxA (ORCPT
+        with ESMTP id S244995AbiDEIxA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:53:00 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D15E132;
-        Tue,  5 Apr 2022 01:48:44 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BC566146;
+        Tue,  5 Apr 2022 01:48:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 7FC3DCE1B55;
-        Tue,  5 Apr 2022 08:48:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EDCDC385A0;
-        Tue,  5 Apr 2022 08:48:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 28D1961504;
+        Tue,  5 Apr 2022 08:48:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34481C385A1;
+        Tue,  5 Apr 2022 08:48:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148521;
-        bh=3WCk8sBpIkZCS0IofelWfKv101rypvwobF2dXzA2GKA=;
+        s=korg; t=1649148526;
+        bh=guVlBzD+z8QYs49QmnLxHxL7TQNESW7NlPWrZw/7gKc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=r1nPA8E5pvIZOVPYOn75JNMosINPYpxyyeSb32/MX1HD4qR+8mTZUfk/Fyqhgdyz2
-         EwGQ1SiG74vJ5IodUhaJKbwLsk81f96ZW7MdqTV11jCo1EH+aAOq9eNLDTX26LL7WQ
-         HZ7vmBxfU9TKv5TgmFWpG1WkZZ4EQc9k9lVTKHCE=
+        b=b9iYr5P8sal8J/3C/1AtJ3UU13sgHj3G7tVMM8SDddgKiUldgwkkkXxO/TV+Rk2cR
+         HDyMaXo5G43jrZGm+OmnuTXOSLlVgGA21fgAd6hjqQH1L5i0Ei9b8xJOa//V2Oz+Jl
+         Pq82boMR4PqTUbzv3QRV6uqKr81ELlNV4CsGgYdc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Chris Morgan <macromorgan@hotmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0383/1017] ASoC: rk817: Fix missing clk_disable_unprepare() in rk817_platform_probe
-Date:   Tue,  5 Apr 2022 09:21:36 +0200
-Message-Id: <20220405070405.655068781@linuxfoundation.org>
+        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0349/1017] uaccess: fix nios2 and microblaze get_user_8()
+Date:   Tue,  5 Apr 2022 09:21:02 +0200
+Message-Id: <20220405070404.642334717@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,43 +49,141 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Arnd Bergmann <arnd@arndb.de>
 
-[ Upstream commit a6b44a2518a08348bd0f0401e4d2b99233bbabc2 ]
+[ Upstream commit a97b693c3712f040c5802f32b2d685352e08cefa ]
 
-Fix the missing clk_disable_unprepare() before return
-from rk817_platform_probe() in the error handling case.
+These two architectures implement 8-byte get_user() through
+a memcpy() into a four-byte variable, which won't fit.
 
-Fixes: 0d6a04da9b25 ("ASoC: Add Rockchip rk817 audio CODEC support")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Tested-by: Chris Morgan <macromorgan@hotmail.com>
-Link: https://lore.kernel.org/r/20220307090146.4104-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Use a temporary 64-bit variable instead here, and use a double
+cast the way that risc-v and openrisc do to avoid compile-time
+warnings.
+
+Fixes: 6a090e97972d ("arch/microblaze: support get_user() of size 8 bytes")
+Fixes: 5ccc6af5e88e ("nios2: Memory management")
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Acked-by: Dinh Nguyen <dinguyen@kernel.org>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/rk817_codec.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ arch/microblaze/include/asm/uaccess.h | 18 +++++++++---------
+ arch/nios2/include/asm/uaccess.h      | 26 ++++++++++++++++----------
+ 2 files changed, 25 insertions(+), 19 deletions(-)
 
-diff --git a/sound/soc/codecs/rk817_codec.c b/sound/soc/codecs/rk817_codec.c
-index 03f24edfe4f6..8fffe378618d 100644
---- a/sound/soc/codecs/rk817_codec.c
-+++ b/sound/soc/codecs/rk817_codec.c
-@@ -508,12 +508,14 @@ static int rk817_platform_probe(struct platform_device *pdev)
- 	if (ret < 0) {
- 		dev_err(&pdev->dev, "%s() register codec error %d\n",
- 			__func__, ret);
--		goto err_;
-+		goto err_clk;
- 	}
+diff --git a/arch/microblaze/include/asm/uaccess.h b/arch/microblaze/include/asm/uaccess.h
+index 5b6e0e7788f4..3fe96979d2c6 100644
+--- a/arch/microblaze/include/asm/uaccess.h
++++ b/arch/microblaze/include/asm/uaccess.h
+@@ -130,27 +130,27 @@ extern long __user_bad(void);
  
- 	return 0;
--err_:
+ #define __get_user(x, ptr)						\
+ ({									\
+-	unsigned long __gu_val = 0;					\
+ 	long __gu_err;							\
+ 	switch (sizeof(*(ptr))) {					\
+ 	case 1:								\
+-		__get_user_asm("lbu", (ptr), __gu_val, __gu_err);	\
++		__get_user_asm("lbu", (ptr), x, __gu_err);		\
+ 		break;							\
+ 	case 2:								\
+-		__get_user_asm("lhu", (ptr), __gu_val, __gu_err);	\
++		__get_user_asm("lhu", (ptr), x, __gu_err);		\
+ 		break;							\
+ 	case 4:								\
+-		__get_user_asm("lw", (ptr), __gu_val, __gu_err);	\
++		__get_user_asm("lw", (ptr), x, __gu_err);		\
+ 		break;							\
+-	case 8:								\
+-		__gu_err = __copy_from_user(&__gu_val, ptr, 8);		\
+-		if (__gu_err)						\
+-			__gu_err = -EFAULT;				\
++	case 8: {							\
++		__u64 __x = 0;						\
++		__gu_err = raw_copy_from_user(&__x, ptr, 8) ?		\
++							-EFAULT : 0;	\
++		(x) = (typeof(x))(typeof((x) - (x)))__x;		\
+ 		break;							\
++	}								\
+ 	default:							\
+ 		/* __gu_val = 0; __gu_err = -EINVAL;*/ __gu_err = __user_bad();\
+ 	}								\
+-	x = (__force __typeof__(*(ptr))) __gu_val;			\
+ 	__gu_err;							\
+ })
  
-+err_clk:
-+	clk_disable_unprepare(rk817_codec_data->mclk);
-+err_:
- 	return ret;
+diff --git a/arch/nios2/include/asm/uaccess.h b/arch/nios2/include/asm/uaccess.h
+index ba9340e96fd4..ca9285a915ef 100644
+--- a/arch/nios2/include/asm/uaccess.h
++++ b/arch/nios2/include/asm/uaccess.h
+@@ -88,6 +88,7 @@ extern __must_check long strnlen_user(const char __user *s, long n);
+ /* Optimized macros */
+ #define __get_user_asm(val, insn, addr, err)				\
+ {									\
++	unsigned long __gu_val;						\
+ 	__asm__ __volatile__(						\
+ 	"       movi    %0, %3\n"					\
+ 	"1:   " insn " %1, 0(%2)\n"					\
+@@ -96,14 +97,20 @@ extern __must_check long strnlen_user(const char __user *s, long n);
+ 	"       .section __ex_table,\"a\"\n"				\
+ 	"       .word 1b, 2b\n"						\
+ 	"       .previous"						\
+-	: "=&r" (err), "=r" (val)					\
++	: "=&r" (err), "=r" (__gu_val)					\
+ 	: "r" (addr), "i" (-EFAULT));					\
++	val = (__force __typeof__(*(addr)))__gu_val;			\
  }
+ 
+-#define __get_user_unknown(val, size, ptr, err) do {			\
++extern void __get_user_unknown(void);
++
++#define __get_user_8(val, ptr, err) do {				\
++	u64 __val = 0;							\
+ 	err = 0;							\
+-	if (__copy_from_user(&(val), ptr, size)) {			\
++	if (raw_copy_from_user(&(__val), ptr, sizeof(val))) {		\
+ 		err = -EFAULT;						\
++	} else {							\
++		val = (typeof(val))(typeof((val) - (val)))__val;	\
+ 	}								\
+ 	} while (0)
+ 
+@@ -119,8 +126,11 @@ do {									\
+ 	case 4:								\
+ 		__get_user_asm(val, "ldw", ptr, err);			\
+ 		break;							\
++	case 8:								\
++		__get_user_8(val, ptr, err);				\
++		break;							\
+ 	default:							\
+-		__get_user_unknown(val, size, ptr, err);		\
++		__get_user_unknown();					\
+ 		break;							\
+ 	}								\
+ } while (0)
+@@ -129,9 +139,7 @@ do {									\
+ 	({								\
+ 	long __gu_err = -EFAULT;					\
+ 	const __typeof__(*(ptr)) __user *__gu_ptr = (ptr);		\
+-	unsigned long __gu_val = 0;					\
+-	__get_user_common(__gu_val, sizeof(*(ptr)), __gu_ptr, __gu_err);\
+-	(x) = (__force __typeof__(x))__gu_val;				\
++	__get_user_common(x, sizeof(*(ptr)), __gu_ptr, __gu_err);	\
+ 	__gu_err;							\
+ 	})
+ 
+@@ -139,11 +147,9 @@ do {									\
+ ({									\
+ 	long __gu_err = -EFAULT;					\
+ 	const __typeof__(*(ptr)) __user *__gu_ptr = (ptr);		\
+-	unsigned long __gu_val = 0;					\
+ 	if (access_ok( __gu_ptr, sizeof(*__gu_ptr)))	\
+-		__get_user_common(__gu_val, sizeof(*__gu_ptr),		\
++		__get_user_common(x, sizeof(*__gu_ptr),			\
+ 			__gu_ptr, __gu_err);				\
+-	(x) = (__force __typeof__(x))__gu_val;				\
+ 	__gu_err;							\
+ })
  
 -- 
 2.34.1
