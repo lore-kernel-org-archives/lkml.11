@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D424C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:51:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56CBEC4167D
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:51:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232372AbiDEHw4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:52:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47748 "EHLO
+        id S232419AbiDEHxD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:53:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233320AbiDEHrm (ORCPT
+        with ESMTP id S233321AbiDEHrm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 03:47:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86A6D18368;
-        Tue,  5 Apr 2022 00:44:01 -0700 (PDT)
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8B3C13F97;
+        Tue,  5 Apr 2022 00:43:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BA400616C6;
-        Tue,  5 Apr 2022 07:44:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C45B8C340EE;
-        Tue,  5 Apr 2022 07:43:59 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 54CEACE1BF0;
+        Tue,  5 Apr 2022 07:43:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69BC9C340EE;
+        Tue,  5 Apr 2022 07:43:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144640;
-        bh=VD6RhK8TDJ39OE2besGcNGyIkkLTOm36pAjK63/kddY=;
+        s=korg; t=1649144631;
+        bh=n+BFEzwOApYau1OiRTnqO3M1ncuHVMLsMx7/cfFVaHU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vVstU9rJLRgGAsp9POyOy8sIqeOKde0GGoMRFRmo23X6VphV3zlbGG7Bb+2Aebb1Y
-         fgH57AULH9xEAn/+U+IdzmueRjUZKygIC1YoIn85FZgc/NUYxftH8Fn6uj4pW94//t
-         UhNhJXrabzW+9IaxeEXLcNFjyZwZktDZGaXukHlo=
+        b=y5k68wUKq/np2ZH1R+XOOYT9FoESx6/ebvzBEwlxZqsDG+PvjHQVt/CnV9q4NzZor
+         THzTefW2kVJv4zgjDZw4Na1y3z72CabqIUOF5c7nWMN/d52wRKmFOhO5+2u7HcLZ6z
+         IIoF0AnTSzUjbKQg69Bs7CGSbafoMb79ULcuKYTc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lars Ellenberg <lars.ellenberg@linbit.com>,
-        =?UTF-8?q?Christoph=20B=C3=B6hmwalder?= 
-        <christoph.boehmwalder@linbit.com>, Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.17 0117/1126] drbd: fix potential silent data corruption
-Date:   Tue,  5 Apr 2022 09:14:24 +0200
-Message-Id: <20220405070411.006634482@linuxfoundation.org>
+        stable@vger.kernel.org, Mohan Kumar <mkumard@nvidia.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.17 0097/1126] ALSA: hda: Avoid unsol event during RPM suspending
+Date:   Tue,  5 Apr 2022 09:14:04 +0200
+Message-Id: <20220405070410.416023633@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,64 +48,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lars Ellenberg <lars.ellenberg@linbit.com>
+From: Mohan Kumar <mkumard@nvidia.com>
 
-commit f4329d1f848ac35757d9cc5487669d19dfc5979c upstream.
+commit 6ddc2f749621d5d45ca03edc9f0616bcda136d29 upstream.
 
-Scenario:
----------
+There is a corner case with unsol event handling during codec runtime
+suspending state. When the codec runtime suspend call initiated, the
+codec->in_pm atomic variable would be 0, currently the codec runtime
+suspend function calls snd_hdac_enter_pm() which will just increments
+the codec->in_pm atomic variable. Consider unsol event happened just
+after this step and before snd_hdac_leave_pm() in the codec runtime
+suspend function. The snd_hdac_power_up_pm() in the unsol event
+flow in hdmi_present_sense_via_verbs() function would just increment
+the codec->in_pm atomic variable without calling pm_runtime_get_sync
+function.
 
-bio chain generated by blk_queue_split().
-Some split bio fails and propagates its error status to the "parent" bio.
-But then the (last part of the) parent bio itself completes without error.
+As codec runtime suspend flow is already in progress and in parallel
+unsol event is also accessing the codec verbs, as soon as codec
+suspend flow completes and clocks are  switched off before completing
+the unsol event handling as both functions doesn't wait for each other.
+This will result in below errors
 
-We would clobber the already recorded error status with BLK_STS_OK,
-causing silent data corruption.
+[  589.428020] tegra-hda 3510000.hda: azx_get_response timeout, switching
+to polling mode: last cmd=0x505f2f57
+[  589.428344] tegra-hda 3510000.hda: spurious response 0x80000074:0x5,
+last cmd=0x505f2f57
+[  589.428547] tegra-hda 3510000.hda: spurious response 0x80000065:0x5,
+last cmd=0x505f2f57
 
-Reproducer:
------------
+To avoid this, the unsol event flow should not perform any codec verb
+related operations during RPM_SUSPENDING state.
 
-How to trigger this in the real world within seconds:
-
-DRBD on top of degraded parity raid,
-small stripe_cache_size, large read_ahead setting.
-Drop page cache (sysctl vm.drop_caches=1, fadvise "DONTNEED",
-umount and mount again, "reboot").
-
-Cause significant read ahead.
-
-Large read ahead request is split by blk_queue_split().
-Parts of the read ahead that are already in the stripe cache,
-or find an available stripe cache to use, can be serviced.
-Parts of the read ahead that would need "too much work",
-would need to wait for a "stripe_head" to become available,
-are rejected immediately.
-
-For larger read ahead requests that are split in many pieces, it is very
-likely that some "splits" will be serviced, but then the stripe cache is
-exhausted/busy, and the remaining ones will be rejected.
-
-Signed-off-by: Lars Ellenberg <lars.ellenberg@linbit.com>
-Signed-off-by: Christoph Böhmwalder <christoph.boehmwalder@linbit.com>
-Cc: <stable@vger.kernel.org> # 4.13.x
-Link: https://lore.kernel.org/r/20220330185551.3553196-1-christoph.boehmwalder@linbit.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Mohan Kumar <mkumard@nvidia.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220329155940.26331-1-mkumard@nvidia.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/block/drbd/drbd_req.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ sound/pci/hda/patch_hdmi.c |    8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
---- a/drivers/block/drbd/drbd_req.c
-+++ b/drivers/block/drbd/drbd_req.c
-@@ -180,7 +180,8 @@ void start_new_tl_epoch(struct drbd_conn
- void complete_master_bio(struct drbd_device *device,
- 		struct bio_and_error *m)
- {
--	m->bio->bi_status = errno_to_blk_status(m->error);
-+	if (unlikely(m->error))
-+		m->bio->bi_status = errno_to_blk_status(m->error);
- 	bio_endio(m->bio);
- 	dec_ap_bio(device);
- }
+--- a/sound/pci/hda/patch_hdmi.c
++++ b/sound/pci/hda/patch_hdmi.c
+@@ -1617,6 +1617,7 @@ static void hdmi_present_sense_via_verbs
+ 	struct hda_codec *codec = per_pin->codec;
+ 	struct hdmi_spec *spec = codec->spec;
+ 	struct hdmi_eld *eld = &spec->temp_eld;
++	struct device *dev = hda_codec_dev(codec);
+ 	hda_nid_t pin_nid = per_pin->pin_nid;
+ 	int dev_id = per_pin->dev_id;
+ 	/*
+@@ -1630,8 +1631,13 @@ static void hdmi_present_sense_via_verbs
+ 	int present;
+ 	int ret;
+ 
++#ifdef	CONFIG_PM
++	if (dev->power.runtime_status == RPM_SUSPENDING)
++		return;
++#endif
++
+ 	ret = snd_hda_power_up_pm(codec);
+-	if (ret < 0 && pm_runtime_suspended(hda_codec_dev(codec)))
++	if (ret < 0 && pm_runtime_suspended(dev))
+ 		goto out;
+ 
+ 	present = snd_hda_jack_pin_sense(codec, pin_nid, dev_id);
 
 
