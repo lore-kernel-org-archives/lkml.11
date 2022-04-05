@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0566C4707F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BC6AC35274
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:24:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346959AbiDENF3 (ORCPT
+        id S1358967AbiDENJ4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:05:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41942 "EHLO
+        Tue, 5 Apr 2022 09:09:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242450AbiDEJH7 (ORCPT
+        with ESMTP id S1344163AbiDEJS2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:07:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B93A6C1F7;
-        Tue,  5 Apr 2022 01:56:54 -0700 (PDT)
+        Tue, 5 Apr 2022 05:18:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20A315F8CB;
+        Tue,  5 Apr 2022 02:04:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4EF0661511;
-        Tue,  5 Apr 2022 08:56:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FE10C385A1;
-        Tue,  5 Apr 2022 08:56:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CF54AB81BAE;
+        Tue,  5 Apr 2022 09:04:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F9CBC385A0;
+        Tue,  5 Apr 2022 09:04:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149012;
-        bh=nhMtr4l/SlfMt6ay/8OmlBNicZH+cp2kjLaRKKfQ2H0=;
+        s=korg; t=1649149489;
+        bh=9EuO7UVHxSLp8WUNHOXpL3UyGhIzosuk62e3w+V64/g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eiBpRFp/cmkEZqK8ft3cqOp6XUPNNnhPpOqmVknFLUqKmTYkk18c0aVdwDFxMqe4m
-         jpu4lszkt77U+JMA8dbC/9mvmqDFYehhOXYnyjgsPXKJjPdq8DFiZTkNurCYZO9Vug
-         PcZkEiyF/7o1r62QW5sR1mKzypj013tQK/55m1hY=
+        b=xfHW1cDCG601ngfhGGekvP6DsNj2cVHQD7/6NtApfAKKPK8CMD0SlAvsQPOeARMok
+         ttuzmnn7ywzxxvPFZViJoj+c9gkORrRzezcdDYxurkbfLM0vS9SbZTrtbXF5g+sX6b
+         Mckg6bLj6qppbc1rwey4+aksu1Q5j1alyvQyD6zg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhenzhong Duan <zhenzhong.duan@intel.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
+        stable@vger.kernel.org, Jian Shen <shenjian15@huawei.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0563/1017] KVM: x86: Fix emulation in writing cr8
-Date:   Tue,  5 Apr 2022 09:24:36 +0200
-Message-Id: <20220405070410.991985077@linuxfoundation.org>
+Subject: [PATCH 5.16 0733/1017] net: hns3: refine the process when PF set VF VLAN
+Date:   Tue,  5 Apr 2022 09:27:26 +0200
+Message-Id: <20220405070416.024458185@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,63 +51,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhenzhong Duan <zhenzhong.duan@intel.com>
+From: Jian Shen <shenjian15@huawei.com>
 
-[ Upstream commit f66af9f222f08d5b11ea41c1bd6c07a0f12daa07 ]
+[ Upstream commit 190cd8a72b0181c543ecada6243be3a50636941b ]
 
-In emulation of writing to cr8, one of the lowest four bits in TPR[3:0]
-is kept.
+Currently, when PF set VF VLAN, it sends notify mailbox to VF
+if VF alive. VF stop its traffic, and send request mailbox
+to PF, then PF updates VF VLAN. It's a bit complex. If VF is
+killed before sending request, PF will not set VF VLAN without
+any log.
 
-According to Intel SDM 10.8.6.1(baremetal scenario):
-"APIC.TPR[bits 7:4] = CR8[bits 3:0], APIC.TPR[bits 3:0] = 0";
+This patch refines the process, PF can set VF VLAN direclty,
+and then notify the VF. If VF is resetting at that time, the
+notify may be dropped, so VF should query it after reset finished.
 
-and SDM 28.3(use TPR shadow):
-"MOV to CR8. The instruction stores bits 3:0 of its source operand into
-bits 7:4 of VTPR; the remainder of VTPR (bits 3:0 and bits 31:8) are
-cleared.";
-
-and AMD's APM 16.6.4:
-"Task Priority Sub-class (TPS)-Bits 3 : 0. The TPS field indicates the
-current sub-priority to be used when arbitrating lowest-priority messages.
-This field is written with zero when TPR is written using the architectural
-CR8 register.";
-
-so in KVM emulated scenario, clear TPR[3:0] to make a consistent behavior
-as in other scenarios.
-
-This doesn't impact evaluation and delivery of pending virtual interrupts
-because processor does not use the processor-priority sub-class to
-determine which interrupts to delivery and which to inhibit.
-
-Sub-class is used by hardware to arbitrate lowest priority interrupts,
-but KVM just does a round-robin style delivery.
-
-Fixes: b93463aa59d6 ("KVM: Accelerated apic support")
-Signed-off-by: Zhenzhong Duan <zhenzhong.duan@intel.com>
-Reviewed-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220210094506.20181-1-zhenzhong.duan@intel.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Fixes: 92f11ea177cd ("net: hns3: fix set port based VLAN issue for VF")
+Signed-off-by: Jian Shen <shenjian15@huawei.com>
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/lapic.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ .../hisilicon/hns3/hns3pf/hclge_main.c         | 18 +++++++++++++-----
+ .../hisilicon/hns3/hns3vf/hclgevf_main.c       |  5 +++++
+ 2 files changed, 18 insertions(+), 5 deletions(-)
 
-diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
-index e8e383fbe886..6c87032c928c 100644
---- a/arch/x86/kvm/lapic.c
-+++ b/arch/x86/kvm/lapic.c
-@@ -2242,10 +2242,7 @@ void kvm_set_lapic_tscdeadline_msr(struct kvm_vcpu *vcpu, u64 data)
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+index 9866e5c1a71b..cf3c798e5400 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+@@ -9449,11 +9449,16 @@ static int hclge_set_vf_mac(struct hnae3_handle *handle, int vf,
  
- void kvm_lapic_set_tpr(struct kvm_vcpu *vcpu, unsigned long cr8)
- {
--	struct kvm_lapic *apic = vcpu->arch.apic;
--
--	apic_set_tpr(apic, ((cr8 & 0x0f) << 4)
--		     | (kvm_lapic_get_reg(apic, APIC_TASKPRI) & 4));
-+	apic_set_tpr(vcpu->arch.apic, (cr8 & 0x0f) << 4);
+ 	ether_addr_copy(vport->vf_info.mac, mac_addr);
+ 
++	/* there is a timewindow for PF to know VF unalive, it may
++	 * cause send mailbox fail, but it doesn't matter, VF will
++	 * query it when reinit.
++	 */
+ 	if (test_bit(HCLGE_VPORT_STATE_ALIVE, &vport->state)) {
+ 		dev_info(&hdev->pdev->dev,
+ 			 "MAC of VF %d has been set to %s, and it will be reinitialized!\n",
+ 			 vf, format_mac_addr);
+-		return hclge_inform_reset_assert_to_vf(vport);
++		(void)hclge_inform_reset_assert_to_vf(vport);
++		return 0;
+ 	}
+ 
+ 	dev_info(&hdev->pdev->dev, "MAC of VF %d has been set to %s\n",
+@@ -10681,14 +10686,17 @@ static int hclge_set_vf_vlan_filter(struct hnae3_handle *handle, int vfid,
+ 		return ret;
+ 	}
+ 
+-	/* for DEVICE_VERSION_V3, vf doesn't need to know about the port based
++	/* there is a timewindow for PF to know VF unalive, it may
++	 * cause send mailbox fail, but it doesn't matter, VF will
++	 * query it when reinit.
++	 * for DEVICE_VERSION_V3, vf doesn't need to know about the port based
+ 	 * VLAN state.
+ 	 */
+ 	if (ae_dev->dev_version < HNAE3_DEVICE_VERSION_V3 &&
+ 	    test_bit(HCLGE_VPORT_STATE_ALIVE, &vport->state))
+-		hclge_push_vf_port_base_vlan_info(&hdev->vport[0],
+-						  vport->vport_id, state,
+-						  &vlan_info);
++		(void)hclge_push_vf_port_base_vlan_info(&hdev->vport[0],
++							vport->vport_id,
++							state, &vlan_info);
+ 
+ 	return 0;
  }
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
+index 4d3d14b637c0..7e30bad08356 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
+@@ -3344,6 +3344,11 @@ static int hclgevf_reset_hdev(struct hclgevf_dev *hdev)
+ 		return ret;
+ 	}
  
- u64 kvm_lapic_get_cr8(struct kvm_vcpu *vcpu)
++	/* get current port based vlan state from PF */
++	ret = hclgevf_get_port_base_vlan_filter_state(hdev);
++	if (ret)
++		return ret;
++
+ 	set_bit(HCLGEVF_STATE_PROMISC_CHANGED, &hdev->state);
+ 
+ 	hclgevf_init_rxd_adv_layout(hdev);
 -- 
 2.34.1
 
