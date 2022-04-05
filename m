@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FD40C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:16:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71E18C43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:16:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352680AbiDELMP (ORCPT
+        id S1352724AbiDELMd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:12:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33912 "EHLO
+        Tue, 5 Apr 2022 07:12:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238393AbiDEIad (ORCPT
+        with ESMTP id S238397AbiDEIad (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:30:33 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95AD826AD8;
-        Tue,  5 Apr 2022 01:22:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CE1524F01;
+        Tue,  5 Apr 2022 01:22:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C1196147A;
-        Tue,  5 Apr 2022 08:22:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99FF0C385A0;
-        Tue,  5 Apr 2022 08:22:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E277060FF5;
+        Tue,  5 Apr 2022 08:22:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED36DC385A0;
+        Tue,  5 Apr 2022 08:22:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146933;
-        bh=ESR58k0+i9Fcq2CL1NwXMkUZoliC3eLirvD6WS7Nz4E=;
+        s=korg; t=1649146927;
+        bh=n1yKYr6ib+uBTiB1zGsnOcKC0HJM7ZyAz+w+jiqCJxM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ft1Cw6gSUjcbwiwigUvbl+bWS85c/KZj2e1mXgR8AB60I+KdGPfXNOp0X8bhTvFzu
-         2tAMnz2QRmlTYrFTm8jgZEKGxOFyskk2WMjPwqOlPEj7FlT3IPsHoZyxBd91PxS1S/
-         Zm1qtTT1Ovt6m9uI3GWqw9sJRud66KGI86na/++4=
+        b=T5++4/LyjfiGDTUMcByMYQi5tLVZSI5Y+Td5vF2nZUHBB9rLZVeclnC6T/SxiDgjH
+         KJb9pVigGQdanFaoA1odEdL3KAijIO4uGcjnZtEf7a04Pn/f1IWAVsZRvpHxSduCp7
+         mdDO0r/ZSVr0hdEzUqAkK4b/sUet9vXl2TUK0Vto=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nikolai Kostrigin <nickel@altlinux.org>,
+        stable@vger.kernel.org, anthony tonitch <d.tonitch@gmail.com>,
         Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
         Bard Liao <yung-chuan.liao@linux.intel.com>,
         =?UTF-8?q?P=C3=A9ter=20Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
         Takashi Iwai <tiwai@suse.de>, Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0941/1126] ALSA: intel-dspconfig: add ES8336 support for CNL
-Date:   Tue,  5 Apr 2022 09:28:08 +0200
-Message-Id: <20220405070435.130867577@linuxfoundation.org>
+Subject: [PATCH 5.17 0939/1126] ALSA: intel-dsp-config: add more ACPI HIDs for ES83x6 devices
+Date:   Tue,  5 Apr 2022 09:28:06 +0200
+Message-Id: <20220405070435.073294196@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -55,38 +55,122 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 
-[ Upstream commit cded07a2dccd5493696a3adce175f01e413423c6 ]
+[ Upstream commit de24d97fb845ffd2229811ee256438e42b5a8d12 ]
 
-We're missing this check for the CNL PCI id
+We only saw ESSX8336 so far, but now with reports of 'ESSX8326' we
+need to expand to a full list. Let's reuse the 'snd_soc_acpi_codecs'
+structure to store the information.
 
-Reported-by: Nikolai Kostrigin <nickel@altlinux.org>
+Reported-by: anthony tonitch <d.tonitch@gmail.com>
 Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
 Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
 Acked-by: Takashi Iwai <tiwai@suse.de>
-Link: https://lore.kernel.org/r/20220308192610.392950-10-pierre-louis.bossart@linux.intel.com
+Link: https://lore.kernel.org/r/20220308192610.392950-8-pierre-louis.bossart@linux.intel.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/hda/intel-dsp-config.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ sound/hda/intel-dsp-config.c | 31 ++++++++++++++++++++++---------
+ 1 file changed, 22 insertions(+), 9 deletions(-)
 
 diff --git a/sound/hda/intel-dsp-config.c b/sound/hda/intel-dsp-config.c
-index b9b7bf5a5553..70fd8b13938e 100644
+index 4fb90ceb4053..b9b7bf5a5553 100644
 --- a/sound/hda/intel-dsp-config.c
 +++ b/sound/hda/intel-dsp-config.c
-@@ -199,6 +199,11 @@ static const struct config_entry config_table[] = {
- 			{}
- 		}
- 	},
-+	{
-+		.flags = FLAG_SOF,
-+		.device = 0x09dc8,
+@@ -11,6 +11,7 @@
+ #include <sound/core.h>
+ #include <sound/intel-dsp-config.h>
+ #include <sound/intel-nhlt.h>
++#include <sound/soc-acpi.h>
+ 
+ static int dsp_driver;
+ 
+@@ -31,7 +32,12 @@ struct config_entry {
+ 	u16 device;
+ 	u8 acpi_hid[ACPI_ID_LEN];
+ 	const struct dmi_system_id *dmi_table;
+-	u8 codec_hid[ACPI_ID_LEN];
++	const struct snd_soc_acpi_codecs *codec_hid;
++};
++
++static const struct snd_soc_acpi_codecs __maybe_unused essx_83x6 = {
++	.num_codecs = 3,
++	.codecs = { "ESSX8316", "ESSX8326", "ESSX8336"},
+ };
+ 
+ /*
+@@ -77,7 +83,7 @@ static const struct config_entry config_table[] = {
+ 	{
+ 		.flags = FLAG_SOF,
+ 		.device = 0x5a98,
+-		.codec_hid = "ESSX8336",
 +		.codec_hid =  &essx_83x6,
-+	},
+ 	},
+ #endif
+ #if IS_ENABLED(CONFIG_SND_SOC_INTEL_APL)
+@@ -163,7 +169,7 @@ static const struct config_entry config_table[] = {
+ 	{
+ 		.flags = FLAG_SOF,
+ 		.device = 0x3198,
+-		.codec_hid = "ESSX8336",
++		.codec_hid =  &essx_83x6,
+ 	},
+ #endif
+ 
+@@ -251,7 +257,7 @@ static const struct config_entry config_table[] = {
+ 	{
+ 		.flags = FLAG_SOF,
+ 		.device = 0x02c8,
+-		.codec_hid = "ESSX8336",
++		.codec_hid =  &essx_83x6,
+ 	},
  	{
  		.flags = FLAG_SOF | FLAG_SOF_ONLY_IF_DMIC_OR_SOUNDWIRE,
- 		.device = 0x9dc8,
+@@ -280,7 +286,7 @@ static const struct config_entry config_table[] = {
+ 	{
+ 		.flags = FLAG_SOF,
+ 		.device = 0x06c8,
+-		.codec_hid = "ESSX8336",
++		.codec_hid =  &essx_83x6,
+ 	},
+ 	{
+ 		.flags = FLAG_SOF | FLAG_SOF_ONLY_IF_DMIC_OR_SOUNDWIRE,
+@@ -327,7 +333,7 @@ static const struct config_entry config_table[] = {
+ 	{
+ 		.flags = FLAG_SOF,
+ 		.device = 0x4dc8,
+-		.codec_hid = "ESSX8336",
++		.codec_hid =  &essx_83x6,
+ 	},
+ 	{
+ 		.flags = FLAG_SOF | FLAG_SOF_ONLY_IF_DMIC,
+@@ -353,7 +359,7 @@ static const struct config_entry config_table[] = {
+ 	{
+ 		.flags = FLAG_SOF,
+ 		.device = 0xa0c8,
+-		.codec_hid = "ESSX8336",
++		.codec_hid =  &essx_83x6,
+ 	},
+ 	{
+ 		.flags = FLAG_SOF | FLAG_SOF_ONLY_IF_DMIC_OR_SOUNDWIRE,
+@@ -414,8 +420,15 @@ static const struct config_entry *snd_intel_dsp_find_config
+ 			continue;
+ 		if (table->dmi_table && !dmi_check_system(table->dmi_table))
+ 			continue;
+-		if (table->codec_hid[0] && !acpi_dev_present(table->codec_hid, NULL, -1))
+-			continue;
++		if (table->codec_hid) {
++			int i;
++
++			for (i = 0; i < table->codec_hid->num_codecs; i++)
++				if (acpi_dev_present(table->codec_hid->codecs[i], NULL, -1))
++					break;
++			if (i == table->codec_hid->num_codecs)
++				continue;
++		}
+ 		return table;
+ 	}
+ 	return NULL;
 -- 
 2.34.1
 
