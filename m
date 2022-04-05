@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D67BDC47082
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:19:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33F12C47085
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:19:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234357AbiDEIM6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:12:58 -0400
+        id S234519AbiDEINY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:13:24 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233967AbiDEH5y (ORCPT
+        with ESMTP id S234299AbiDEH6I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:57:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 387B593990;
-        Tue,  5 Apr 2022 00:51:43 -0700 (PDT)
+        Tue, 5 Apr 2022 03:58:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9CFB9BBAC;
+        Tue,  5 Apr 2022 00:52:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 260A6B81B14;
-        Tue,  5 Apr 2022 07:51:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80E7DC340EE;
-        Tue,  5 Apr 2022 07:51:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6F65F616DF;
+        Tue,  5 Apr 2022 07:52:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 807A8C340EE;
+        Tue,  5 Apr 2022 07:52:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145093;
-        bh=DAqiT5fbEGmGnuHSi20a1pRvj1HdznkOlj3MSEFwgEo=;
+        s=korg; t=1649145132;
+        bh=YJMAzVKAIvDjpbqE796gnbT2lDaRLxlz3gVlK0XQ2WI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=06Pdlx8vE7sj5ri+qw9GAEVReN22YZZBnxc3P1zC7diIPoGR17K2b2YiVWhpRvgjG
-         Qr8yTWfytHN6xi/eL/99FnbrMq2RHoUm39oipDCcilEHGluL9ITk0zlib4joYAjyZE
-         fRgdCyJORyOhb/9Ui7CWVZrrm1V4ejMw7xq16B6g=
+        b=yVlMw7UlTaHOr1mWEm0JixJhG/KbiI/sHfGgj/fq3Sgl06B+ohdlHnp88GC0R3zEP
+         SUC6TxnMgmbxhJtsJAitkVOSHBcS2aMrlaotw+eW7qPEP6CLKWxb0iGPo53+SAvGTY
+         WCEZxozZRhEVzSH/aAcpZ9AiNpGOMyTUwcWg9kKk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhiguo Niu <zhiguo.niu@unisoc.com>,
-        Jing Xia <jing.xia@unisoc.com>, Chao Yu <chao@kernel.org>,
-        Jaegeuk Kim <jaegeuk@kernel.org>,
+        stable@vger.kernel.org, Jonathan Marek <jonathan@marek.ca>,
+        Robert Foss <robert.foss@linaro.org>,
+        Julian Grahsl <jgrahsl@snap.com>,
+        Bryan ODonoghue <bryan.odonoghue@linaro.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0282/1126] f2fs: fix to avoid potential deadlock
-Date:   Tue,  5 Apr 2022 09:17:09 +0200
-Message-Id: <20220405070415.887878964@linuxfoundation.org>
+Subject: [PATCH 5.17 0295/1126] media: camss: csid-170: set the right HALT_CMD when disabled
+Date:   Tue,  5 Apr 2022 09:17:22 +0200
+Message-Id: <20220405070416.273935415@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,85 +53,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chao Yu <chao@kernel.org>
+From: Jonathan Marek <jonathan@marek.ca>
 
-[ Upstream commit 344150999b7fc88502a65bbb147a47503eca2033 ]
+[ Upstream commit ee780cd7be3b5608550bafe7d5f113db2140e99b ]
 
-Quoted from Jing Xia's report, there is a potential deadlock may happen
-between kworker and checkpoint as below:
+Use the "HALT_CMD_RESUME_AT_FRAME_BOUNDARY" define instead of a "1" which
+is otherwise confusing, and add a "HALT_CMD_HALT_AT_FRAME_BOUNDARY" which
+is set when disabling.
 
-[T:writeback]				[T:checkpoint]
-- wb_writeback
- - blk_start_plug
-bio contains NodeA was plugged in writeback threads
-					- do_writepages  -- sync write inodeB, inc wb_sync_req[DATA]
-					 - f2fs_write_data_pages
-					  - f2fs_write_single_data_page -- write last dirty page
-					   - f2fs_do_write_data_page
-					    - set_page_writeback  -- clear page dirty flag and
-					    PAGECACHE_TAG_DIRTY tag in radix tree
-					    - f2fs_outplace_write_data
-					     - f2fs_update_data_blkaddr
-					      - f2fs_wait_on_page_writeback -- wait NodeA to writeback here
-					   - inode_dec_dirty_pages
- - writeback_sb_inodes
-  - writeback_single_inode
-   - do_writepages
-    - f2fs_write_data_pages -- skip writepages due to wb_sync_req[DATA]
-     - wbc->pages_skipped += get_dirty_pages() -- PAGECACHE_TAG_DIRTY is not set but get_dirty_pages() returns one
-  - requeue_inode -- requeue inode to wb->b_dirty queue due to non-zero.pages_skipped
- - blk_finish_plug
-
-Let's try to avoid deadlock condition by forcing unplugging previous bio via
-blk_finish_plug(current->plug) once we'v skipped writeback in writepages()
-due to valid sbi->wb_sync_req[DATA/NODE].
-
-Fixes: 687de7f1010c ("f2fs: avoid IO split due to mixed WB_SYNC_ALL and WB_SYNC_NONE")
-Signed-off-by: Zhiguo Niu <zhiguo.niu@unisoc.com>
-Signed-off-by: Jing Xia <jing.xia@unisoc.com>
-Signed-off-by: Chao Yu <chao@kernel.org>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Fixes: eebe6d00e9bf ("media: camss: Add support for CSID hardware version Titan 170")
+Signed-off-by: Jonathan Marek <jonathan@marek.ca>
+Reviewed-by: Robert Foss <robert.foss@linaro.org>
+Tested-by: Julian Grahsl <jgrahsl@snap.com>
+Tested-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/f2fs/data.c | 6 +++++-
- fs/f2fs/node.c | 6 +++++-
- 2 files changed, 10 insertions(+), 2 deletions(-)
+ drivers/media/platform/qcom/camss/camss-csid-170.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/fs/f2fs/data.c b/fs/f2fs/data.c
-index 8c417864c66a..e1ef925be60c 100644
---- a/fs/f2fs/data.c
-+++ b/fs/f2fs/data.c
-@@ -3163,8 +3163,12 @@ static int __f2fs_write_data_pages(struct address_space *mapping,
- 	/* to avoid spliting IOs due to mixed WB_SYNC_ALL and WB_SYNC_NONE */
- 	if (wbc->sync_mode == WB_SYNC_ALL)
- 		atomic_inc(&sbi->wb_sync_req[DATA]);
--	else if (atomic_read(&sbi->wb_sync_req[DATA]))
-+	else if (atomic_read(&sbi->wb_sync_req[DATA])) {
-+		/* to avoid potential deadlock */
-+		if (current->plug)
-+			blk_finish_plug(current->plug);
- 		goto skip_write;
-+	}
+diff --git a/drivers/media/platform/qcom/camss/camss-csid-170.c b/drivers/media/platform/qcom/camss/camss-csid-170.c
+index a006c8dbceb1..82f59933ad7b 100644
+--- a/drivers/media/platform/qcom/camss/camss-csid-170.c
++++ b/drivers/media/platform/qcom/camss/camss-csid-170.c
+@@ -105,7 +105,8 @@
+ #define CSID_RDI_CTRL(rdi)			((IS_LITE ? 0x208 : 0x308)\
+ 						+ 0x100 * (rdi))
+ #define		RDI_CTRL_HALT_CMD		0
+-#define			ALT_CMD_RESUME_AT_FRAME_BOUNDARY	1
++#define			HALT_CMD_HALT_AT_FRAME_BOUNDARY		0
++#define			HALT_CMD_RESUME_AT_FRAME_BOUNDARY	1
+ #define		RDI_CTRL_HALT_MODE		2
  
- 	if (__should_serialize_io(inode, wbc)) {
- 		mutex_lock(&sbi->writepages);
-diff --git a/fs/f2fs/node.c b/fs/f2fs/node.c
-index 50b2874e758c..4ff7dfb54250 100644
---- a/fs/f2fs/node.c
-+++ b/fs/f2fs/node.c
-@@ -2111,8 +2111,12 @@ static int f2fs_write_node_pages(struct address_space *mapping,
+ #define CSID_RDI_FRM_DROP_PATTERN(rdi)			((IS_LITE ? 0x20C : 0x30C)\
+@@ -444,7 +445,10 @@ static void csid_configure_stream(struct csid_device *csid, u8 enable)
+ 	val |= 1 << CSI2_RX_CFG1_MISR_EN;
+ 	writel_relaxed(val, csid->base + CSID_CSI2_RX_CFG1); // csi2_vc_mode_shift_val ?
  
- 	if (wbc->sync_mode == WB_SYNC_ALL)
- 		atomic_inc(&sbi->wb_sync_req[NODE]);
--	else if (atomic_read(&sbi->wb_sync_req[NODE]))
-+	else if (atomic_read(&sbi->wb_sync_req[NODE])) {
-+		/* to avoid potential deadlock */
-+		if (current->plug)
-+			blk_finish_plug(current->plug);
- 		goto skip_write;
-+	}
- 
- 	trace_f2fs_writepages(mapping->host, wbc, NODE);
+-	val = 1 << RDI_CTRL_HALT_CMD;
++	if (enable)
++		val = HALT_CMD_RESUME_AT_FRAME_BOUNDARY << RDI_CTRL_HALT_CMD;
++	else
++		val = HALT_CMD_HALT_AT_FRAME_BOUNDARY << RDI_CTRL_HALT_CMD;
+ 	writel_relaxed(val, csid->base + CSID_RDI_CTRL(0));
+ }
  
 -- 
 2.34.1
