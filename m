@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42068C4321E
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:17:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0426CC43217
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:17:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1583230AbiDEXvs (ORCPT
+        id S1583202AbiDEXvd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:51:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43010 "EHLO
+        Tue, 5 Apr 2022 19:51:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243677AbiDEKh2 (ORCPT
+        with ESMTP id S1349429AbiDEJtv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:37:28 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E120554A2;
-        Tue,  5 Apr 2022 03:22:48 -0700 (PDT)
+        Tue, 5 Apr 2022 05:49:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E932C23BD5;
+        Tue,  5 Apr 2022 02:45:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id B111DCE1CA2;
-        Tue,  5 Apr 2022 10:22:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAD38C385A2;
-        Tue,  5 Apr 2022 10:22:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9A5DEB817D3;
+        Tue,  5 Apr 2022 09:45:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0512DC385A2;
+        Tue,  5 Apr 2022 09:45:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154165;
-        bh=yYJRqvEcw9EcoaSG48LiLiHcl2d33GJG0wOTuWcSzBc=;
+        s=korg; t=1649151937;
+        bh=B4ZcG0QXqpeghTBVKDIRTsP/36gZD9K13i5RowxWSZc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IlHgFTHmXWs63iGaNq3e3+QrJ90PtmtUlGEcVkayYZl+zovPhnCLR3F9a68U8q+RO
-         oyvR1mqhtZhmBBXSy8qnDad4pLXcAg/DsHyHHtDt6ApCJVRG4DmZIbELMCj+oAGI25
-         ng8FDLZLdAgTTduGXDX6mTi7cb77bB/5F+hy7bA4=
+        b=aVbFNlTjiLf/Fkx+biRQg6/E2SzROgZaB/hV0znZIB+WM+ufO6DJ4WgJWCQls7lCw
+         oCeLq/kkfZ8LILIooYlhrTNow2+vVeBNN5pPET5bxOJzD8zl9M27a7+LFJdn1MitAp
+         yNdri+LkHsD2Bx61l/3B8fZ4NaQfT3L+Rn/Ovsm8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Corentin Labbe <clabbe@baylibre.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 480/599] media: staging: media: zoran: fix various V4L2 compliance errors
-Date:   Tue,  5 Apr 2022 09:32:54 +0200
-Message-Id: <20220405070313.110351676@linuxfoundation.org>
+Subject: [PATCH 5.15 595/913] pinctrl: renesas: r8a77470: Reduce size for narrow VIN1 channel
+Date:   Tue,  5 Apr 2022 09:27:37 +0200
+Message-Id: <20220405070357.677623587@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,100 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+From: Geert Uytterhoeven <geert+renesas@glider.be>
 
-[ Upstream commit 914941827aad5ecddf9bf3a6dee67fbec1af1fff ]
+[ Upstream commit 9e04a0eda84fccab0ac22a33825ad53f47c968c7 ]
 
-This fixes several issues found with 'v4l2-compliance -s':
+The second video-in channel on RZ/G1C has only 12 data lanes, but the
+pin control driver uses the vin_data union, which is meant for 24 data
+lanes, thus wasting space.
 
-1) read()/write() is supported, but not reported in the capabilities
-2) S_STD(G_STD()) failed: setting the same standard should just return 0.
-3) G_PARM failed to set readbuffers.
-4) different field values in the format vs. what v4l2_buffer reported.
-5) zero the sequence number when starting streaming.
-6) drop VB_USERPTR: makes no sense with dma_contig streaming.
+Fix this by using the vin_data12 union instead.
 
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+This reduces kernel size by 96 bytes.
+
+Fixes: 50f3f2d73e3426ba ("pinctrl: sh-pfc: Reduce kernel size for narrow VIN channels")
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Link: https://lore.kernel.org/r/52716fa89139f6f92592633edb52804d4c5e18f0.1640269757.git.geert+renesas@glider.be
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/media/zoran/zoran_card.c   |  2 +-
- drivers/staging/media/zoran/zoran_driver.c | 13 ++++++++++---
- 2 files changed, 11 insertions(+), 4 deletions(-)
+ drivers/pinctrl/renesas/pfc-r8a77470.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/staging/media/zoran/zoran_card.c b/drivers/staging/media/zoran/zoran_card.c
-index 782bb4443fc1..fe0cca12119c 100644
---- a/drivers/staging/media/zoran/zoran_card.c
-+++ b/drivers/staging/media/zoran/zoran_card.c
-@@ -810,7 +810,7 @@ static int zoran_init_video_device(struct zoran *zr, struct video_device *video_
- 	*video_dev = zoran_template;
- 	video_dev->v4l2_dev = &zr->v4l2_dev;
- 	video_dev->lock = &zr->lock;
--	video_dev->device_caps = V4L2_CAP_STREAMING | dir;
-+	video_dev->device_caps = V4L2_CAP_STREAMING | V4L2_CAP_READWRITE | dir;
- 
- 	strscpy(video_dev->name, ZR_DEVNAME(zr), sizeof(video_dev->name));
- 	/*
-diff --git a/drivers/staging/media/zoran/zoran_driver.c b/drivers/staging/media/zoran/zoran_driver.c
-index 7f22596cc630..ea04f6c732b2 100644
---- a/drivers/staging/media/zoran/zoran_driver.c
-+++ b/drivers/staging/media/zoran/zoran_driver.c
-@@ -255,8 +255,6 @@ static int zoran_querycap(struct file *file, void *__fh, struct v4l2_capability
- 	strscpy(cap->card, ZR_DEVNAME(zr), sizeof(cap->card));
- 	strscpy(cap->driver, "zoran", sizeof(cap->driver));
- 	snprintf(cap->bus_info, sizeof(cap->bus_info), "PCI:%s", pci_name(zr->pci_dev));
--	cap->device_caps = zr->video_dev->device_caps;
--	cap->capabilities = cap->device_caps | V4L2_CAP_DEVICE_CAPS;
- 	return 0;
- }
- 
-@@ -582,6 +580,9 @@ static int zoran_s_std(struct file *file, void *__fh, v4l2_std_id std)
- 	struct zoran *zr = video_drvdata(file);
- 	int res = 0;
- 
-+	if (zr->norm == std)
-+		return 0;
-+
- 	if (zr->running != ZORAN_MAP_MODE_NONE)
- 		return -EBUSY;
- 
-@@ -737,6 +738,7 @@ static int zoran_g_parm(struct file *file, void *priv, struct v4l2_streamparm *p
- 	if (parm->type != V4L2_BUF_TYPE_VIDEO_CAPTURE)
- 		return -EINVAL;
- 
-+	parm->parm.capture.readbuffers = 9;
- 	return 0;
- }
- 
-@@ -867,6 +869,10 @@ int zr_set_buf(struct zoran *zr)
- 		vbuf = &buf->vbuf;
- 
- 		buf->vbuf.field = V4L2_FIELD_INTERLACED;
-+		if (BUZ_MAX_HEIGHT < (zr->v4l_settings.height * 2))
-+			buf->vbuf.field = V4L2_FIELD_INTERLACED;
-+		else
-+			buf->vbuf.field = V4L2_FIELD_TOP;
- 		vb2_set_plane_payload(&buf->vbuf.vb2_buf, 0, zr->buffer_size);
- 		vb2_buffer_done(&buf->vbuf.vb2_buf, VB2_BUF_STATE_DONE);
- 		zr->inuse[0] = NULL;
-@@ -926,6 +932,7 @@ static int zr_vb2_start_streaming(struct vb2_queue *vq, unsigned int count)
- 		zr->stat_com[j] = cpu_to_le32(1);
- 		zr->inuse[j] = NULL;
- 	}
-+	zr->vbseq = 0;
- 
- 	if (zr->map_mode != ZORAN_MAP_MODE_RAW) {
- 		pci_info(zr->pci_dev, "START JPG\n");
-@@ -1016,7 +1023,7 @@ int zoran_queue_init(struct zoran *zr, struct vb2_queue *vq, int dir)
- 	vq->dev = &zr->pci_dev->dev;
- 	vq->type = dir;
- 
--	vq->io_modes = VB2_USERPTR | VB2_DMABUF | VB2_MMAP | VB2_READ | VB2_WRITE;
-+	vq->io_modes = VB2_DMABUF | VB2_MMAP | VB2_READ | VB2_WRITE;
- 	vq->drv_priv = zr;
- 	vq->buf_struct_size = sizeof(struct zr_buffer);
- 	vq->ops = &zr_video_qops;
+diff --git a/drivers/pinctrl/renesas/pfc-r8a77470.c b/drivers/pinctrl/renesas/pfc-r8a77470.c
+index e6e5487691c1..cf7153d06a95 100644
+--- a/drivers/pinctrl/renesas/pfc-r8a77470.c
++++ b/drivers/pinctrl/renesas/pfc-r8a77470.c
+@@ -2140,7 +2140,7 @@ static const unsigned int vin0_clk_mux[] = {
+ 	VI0_CLK_MARK,
+ };
+ /* - VIN1 ------------------------------------------------------------------- */
+-static const union vin_data vin1_data_pins = {
++static const union vin_data12 vin1_data_pins = {
+ 	.data12 = {
+ 		RCAR_GP_PIN(3,  1), RCAR_GP_PIN(3, 2),
+ 		RCAR_GP_PIN(3,  3), RCAR_GP_PIN(3, 4),
+@@ -2150,7 +2150,7 @@ static const union vin_data vin1_data_pins = {
+ 		RCAR_GP_PIN(3, 15), RCAR_GP_PIN(3, 16),
+ 	},
+ };
+-static const union vin_data vin1_data_mux = {
++static const union vin_data12 vin1_data_mux = {
+ 	.data12 = {
+ 		VI1_DATA0_MARK, VI1_DATA1_MARK,
+ 		VI1_DATA2_MARK, VI1_DATA3_MARK,
 -- 
 2.34.1
 
