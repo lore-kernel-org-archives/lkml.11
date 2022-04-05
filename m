@@ -2,153 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECABDC35274
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:04:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D543C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:05:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345458AbiDELAh (ORCPT
+        id S1345981AbiDELBE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:00:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58430 "EHLO
+        Tue, 5 Apr 2022 07:01:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235352AbiDEIjr (ORCPT
+        with ESMTP id S235506AbiDEIjy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:39:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABA5C6427;
-        Tue,  5 Apr 2022 01:33:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 64DE3B81B92;
-        Tue,  5 Apr 2022 08:33:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7F2BC385A1;
-        Tue,  5 Apr 2022 08:33:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147600;
-        bh=Os+qxn1DhxDjshDTdAdlcK8Fy8Mz/bgvQq9b255khpM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FzJgSXjyX/D868649XSu8Xhi1tU6WAQwIKa+yzVTL5DTCp28FFhv40Ohco1JqXs9R
-         LYGokm4VSmf1ETIWlLREJHG/7SiwJ7IjO62EoY/rTOwhoOdpVT9FDJFUBI4JsyTqrG
-         F0+8wbJQtljUFfcRlTTvPVS7PI8YUZuMup8OSRZ4=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable@kernel.org,
-        Jann Horn <jannh@google.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>
-Subject: [PATCH 5.16 0054/1017] ptrace: Check PTRACE_O_SUSPEND_SECCOMP permission on PTRACE_SEIZE
-Date:   Tue,  5 Apr 2022 09:16:07 +0200
-Message-Id: <20220405070355.788117394@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
-References: <20220405070354.155796697@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 04:39:54 -0400
+Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBF25B87;
+        Tue,  5 Apr 2022 01:33:36 -0700 (PDT)
+Received: by mail-io1-xd2e.google.com with SMTP id r2so14271902iod.9;
+        Tue, 05 Apr 2022 01:33:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=mylkO58ZKq1iBj80uJdfaHLKrfd/MmPSeOlKdlAN2g0=;
+        b=iBAh71Mhiz3dylNCqZo+yDdLJKHX7Ups2H7UShUJq9aLEVD+v/UN+esg2OInSOp5eR
+         qvwe656xyvQiVAOv2OVxK5ZZSjQkfewL3pNXUdN70ByDSmVqmu0Zx3vT7wfK1MP0/MVt
+         HISlGvX/tlI0uOfIlc4Ma/qL76vQv2D0ceU5GVbmucnU65zfj/NtDmfkm4mFZtmcOw7O
+         W5Qheo8WSoFs5cJ75vHsokH98+9pTpwERAc2S5c0RQs50gBe2zf6ZHKwRRHPUgkeOr7C
+         NT4QV/TckpGkTeuxPaWu964ZgslgqYRXix0btKt7SxTt2WoZWgSqtC6jVDcZtqMwS99u
+         5iJA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=mylkO58ZKq1iBj80uJdfaHLKrfd/MmPSeOlKdlAN2g0=;
+        b=wFNy8fIYr79iTI/nb17r/AgAA3WR9idrtNSPWrGpqOy0gGxnQGmwxbuIe8pfRx8+DO
+         GwI5XElXHinVvzARs+u3drQ/V2AbMO10CzymwPI313mUwi+QW8ZjAP3NoV0auy38DilL
+         Fxowg1z+PWKaSDOUSB33wCOpsEPrZg5Gx891RXoPoAfzZmmY4lckz8kapx7B13Ciyo0x
+         uaM89+hgi/gaqq8pGawu1oXPt4RrJYKhNgl3mI4mD4IZ+EZYDVCK2KIGHjcULu+y7GUG
+         Wq5JWQ1KaGWcsAr52FF8YVfkT/jzduR0LBvjnNRl2XTs9bZCTeuzWT8tM8butIyglVr8
+         LbCA==
+X-Gm-Message-State: AOAM533QjB/5kQo/hqRvJr8KsTaZgEC4nUsawCpU+q4JbWULOGUKgjpN
+        PeG0YYkckQTZ2BAJN44LiBOxxQ3Vn5tuRA2DHeM=
+X-Google-Smtp-Source: ABdhPJz31mODfRf19/XwGfqFgcDFZs9wfyNoZm+PEmbmm8OtKipv6FNIiNgPJ1ZoLDVD0q2ZrQeH9IKSUdZPNp+Wevg=
+X-Received: by 2002:a05:6602:1341:b0:637:d4dc:6f85 with SMTP id
+ i1-20020a056602134100b00637d4dc6f85mr1069163iov.155.1649147616151; Tue, 05
+ Apr 2022 01:33:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220405131412.381b8a97@canb.auug.org.au>
+In-Reply-To: <20220405131412.381b8a97@canb.auug.org.au>
+From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Date:   Tue, 5 Apr 2022 10:33:25 +0200
+Message-ID: <CANiq72kvTE2u=9ahNhSbnchfxT9_xrD8JBTJYbw=oe8j8zCbig@mail.gmail.com>
+Subject: Re: linux-next: manual merge of the rust tree with the kbuild tree
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Masahiro Yamada <masahiroy@kernel.org>,
+        Adam Bratschi-Kaye <ark.email@gmail.com>,
+        Alex Gaynor <alex.gaynor@gmail.com>,
+        Antonio Terceiro <antonio.terceiro@linaro.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Boris-Chengbiao Zhou <bobo1239@web.de>,
+        Chun-Tse Shao <ctshao@google.com>, Daniel Xu <dxu@dxuuu.xyz>,
+        Dariusz Sosnowski <dsosnowski@dsosnowski.pl>,
+        Douglas Su <d0u9.su@outlook.com>, Finn Behrens <me@kloenk.de>,
+        Gary Guo <gary@garyguo.net>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Miguel Cano <macanroj@gmail.com>,
+        Miguel Ojeda <ojeda@kernel.org>,
+        Sven Van Asbroeck <thesven73@gmail.com>,
+        Wedson Almeida Filho <wedsonaf@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jann Horn <jannh@google.com>
+On Tue, Apr 5, 2022 at 5:14 AM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+>
+> I fixed it up (see below) and can carry the fix as necessary. This
 
-commit ee1fee900537b5d9560e9f937402de5ddc8412f3 upstream.
+Looks fine, thanks Stephen!
 
-Setting PTRACE_O_SUSPEND_SECCOMP is supposed to be a highly privileged
-operation because it allows the tracee to completely bypass all seccomp
-filters on kernels with CONFIG_CHECKPOINT_RESTORE=y. It is only supposed to
-be settable by a process with global CAP_SYS_ADMIN, and only if that
-process is not subject to any seccomp filters at all.
+I will likely rebase again for -rc2 like for -rc1 (done to avoid a
+build error on our side and a conflict on yours).
 
-However, while these permission checks were done on the PTRACE_SETOPTIONS
-path, they were missing on the PTRACE_SEIZE path, which also sets
-user-specified ptrace flags.
-
-Move the permissions checks out into a helper function and let both
-ptrace_attach() and ptrace_setoptions() call it.
-
-Cc: stable@kernel.org
-Fixes: 13c4a90119d2 ("seccomp: add ptrace options for suspend/resume")
-Signed-off-by: Jann Horn <jannh@google.com>
-Link: https://lkml.kernel.org/r/20220319010838.1386861-1-jannh@google.com
-Signed-off-by: Eric W. Biederman <ebiederm@xmission.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- kernel/ptrace.c |   47 ++++++++++++++++++++++++++++++++---------------
- 1 file changed, 32 insertions(+), 15 deletions(-)
-
---- a/kernel/ptrace.c
-+++ b/kernel/ptrace.c
-@@ -371,6 +371,26 @@ bool ptrace_may_access(struct task_struc
- 	return !err;
- }
- 
-+static int check_ptrace_options(unsigned long data)
-+{
-+	if (data & ~(unsigned long)PTRACE_O_MASK)
-+		return -EINVAL;
-+
-+	if (unlikely(data & PTRACE_O_SUSPEND_SECCOMP)) {
-+		if (!IS_ENABLED(CONFIG_CHECKPOINT_RESTORE) ||
-+		    !IS_ENABLED(CONFIG_SECCOMP))
-+			return -EINVAL;
-+
-+		if (!capable(CAP_SYS_ADMIN))
-+			return -EPERM;
-+
-+		if (seccomp_mode(&current->seccomp) != SECCOMP_MODE_DISABLED ||
-+		    current->ptrace & PT_SUSPEND_SECCOMP)
-+			return -EPERM;
-+	}
-+	return 0;
-+}
-+
- static int ptrace_attach(struct task_struct *task, long request,
- 			 unsigned long addr,
- 			 unsigned long flags)
-@@ -382,8 +402,16 @@ static int ptrace_attach(struct task_str
- 	if (seize) {
- 		if (addr != 0)
- 			goto out;
-+		/*
-+		 * This duplicates the check in check_ptrace_options() because
-+		 * ptrace_attach() and ptrace_setoptions() have historically
-+		 * used different error codes for unknown ptrace options.
-+		 */
- 		if (flags & ~(unsigned long)PTRACE_O_MASK)
- 			goto out;
-+		retval = check_ptrace_options(flags);
-+		if (retval)
-+			return retval;
- 		flags = PT_PTRACED | PT_SEIZED | (flags << PT_OPT_FLAG_SHIFT);
- 	} else {
- 		flags = PT_PTRACED;
-@@ -656,22 +684,11 @@ int ptrace_writedata(struct task_struct
- static int ptrace_setoptions(struct task_struct *child, unsigned long data)
- {
- 	unsigned flags;
-+	int ret;
- 
--	if (data & ~(unsigned long)PTRACE_O_MASK)
--		return -EINVAL;
--
--	if (unlikely(data & PTRACE_O_SUSPEND_SECCOMP)) {
--		if (!IS_ENABLED(CONFIG_CHECKPOINT_RESTORE) ||
--		    !IS_ENABLED(CONFIG_SECCOMP))
--			return -EINVAL;
--
--		if (!capable(CAP_SYS_ADMIN))
--			return -EPERM;
--
--		if (seccomp_mode(&current->seccomp) != SECCOMP_MODE_DISABLED ||
--		    current->ptrace & PT_SUSPEND_SECCOMP)
--			return -EPERM;
--	}
-+	ret = check_ptrace_options(data);
-+	if (ret)
-+		return ret;
- 
- 	/* Avoid intermediate state when all opts are cleared */
- 	flags = child->ptrace;
-
-
+Cheers,
+Miguel
