@@ -2,174 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDF89C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:57:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 640C5C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:57:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1450926AbiDFAyW (ORCPT
+        id S1453822AbiDFAyk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:54:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55764 "EHLO
+        Tue, 5 Apr 2022 20:54:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349668AbiDEJux (ORCPT
+        with ESMTP id S1573268AbiDESlD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:50:53 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 529BB2ACD;
-        Tue,  5 Apr 2022 02:48:54 -0700 (PDT)
+        Tue, 5 Apr 2022 14:41:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D7F620BE2
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 11:39:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id B60EDCE1C9C;
-        Tue,  5 Apr 2022 09:48:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC3B9C385A1;
-        Tue,  5 Apr 2022 09:48:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152131;
-        bh=LL/EEp53RF9eVwI7qf0wllMnj83ttsqbz4+mIqsT8cY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZaVUhLC1ewE9m1oOZYr/YFfbHDuiq7ZVcwSq+i7dfI2pezArRIn6SLWcQiSoUL8JU
-         X3wJsISt1hEfwUF7s4epRXbYSHeEKUiuQVOZapEe86euQUtE9khKxOfArPeQJawZkf
-         Xu0+py3AQ640DQWmOySxE9poEJEgRuSQzR08vTAI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ABDE8618C1
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 18:39:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1BF6BC385A0;
+        Tue,  5 Apr 2022 18:39:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649183944;
+        bh=GxkC3BM8itKuAYCG/H+2rgsrkkvvKBJ+L8trZN5gEs4=;
+        h=From:To:Cc:Subject:Date:From;
+        b=FiSlqTWJ3wivFbufxEnkH6e9T1Qi6WBzkvWLBME6e35Bzo3e5WYf14X/JGesI3tJS
+         LISJ+4cBmzKsRUWdo04LCry22HjfsK4T0B4sK7a96BAzEnRj5LNn2Rrwo5WJPVrbjK
+         TkqQCwlTxcjRxTj94Rx63tdYup5ntjRRI12JQiHJ4vVF+Lwczg6/o5krkuBg5E6uxQ
+         PxXMVuxlHL2JGfVMMXXjFlMzsxhfKDbIkjMKQyc7olusQKfOrsF2lqVtmrUlzQkgjK
+         U+Pp+YhT4W1XeQm7SQAUqCpHeF64Nv7dzPNYqjHEgekv9RvXi0YLBncWajAXgmUXg1
+         dVAMPQ/efJi+w==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.lan)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nbo50-001tkq-2E; Tue, 05 Apr 2022 19:39:02 +0100
+From:   Marc Zyngier <maz@kernel.org>
 To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?= 
-        <marmarek@invisiblethingslab.com>, Juergen Gross <jgross@suse.com>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 659/913] xen: fix is_xen_pmu()
-Date:   Tue,  5 Apr 2022 09:28:41 +0200
-Message-Id: <20220405070359.592000476@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+Cc:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Andre Przywara <andre.przywara@arm.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Eric Auger <eric.auger@redhat.com>
+Subject: [PATCH v2 0/3] irqchip/gic-v3: Assorted improvements
+Date:   Tue,  5 Apr 2022 19:38:54 +0100
+Message-Id: <20220405183857.205960-1-maz@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: linux-kernel@vger.kernel.org, lorenzo.pieralisi@arm.com, andre.przywara@arm.com, tglx@linutronix.de, eric.auger@redhat.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Juergen Gross <jgross@suse.com>
+This is a small series that happens on the back of [0] (implementing
+additional features in KVM's vgic) and allows for a couple of
+performance optimisations.
 
-[ Upstream commit de2ae403b4c0e79a3410e63bc448542fbb9f9bfc ]
+Thanks,
 
-is_xen_pmu() is taking the cpu number as parameter, but it is not using
-it. Instead it just tests whether the Xen PMU initialization on the
-current cpu did succeed. As this test is done by checking a percpu
-pointer, preemption needs to be disabled in order to avoid switching
-the cpu while doing the test. While resuming from suspend() this seems
-not to be the case:
+        M.
 
-[   88.082751] ACPI: PM: Low-level resume complete
-[   88.087933] ACPI: EC: EC started
-[   88.091464] ACPI: PM: Restoring platform NVS memory
-[   88.097166] xen_acpi_processor: Uploading Xen processor PM info
-[   88.103850] Enabling non-boot CPUs ...
-[   88.108128] installing Xen timer for CPU 1
-[   88.112763] BUG: using smp_processor_id() in preemptible [00000000] code: systemd-sleep/7138
-[   88.122256] caller is is_xen_pmu+0x12/0x30
-[   88.126937] CPU: 0 PID: 7138 Comm: systemd-sleep Tainted: G        W         5.16.13-2.fc32.qubes.x86_64 #1
-[   88.137939] Hardware name: Star Labs StarBook/StarBook, BIOS 7.97 03/21/2022
-[   88.145930] Call Trace:
-[   88.148757]  <TASK>
-[   88.151193]  dump_stack_lvl+0x48/0x5e
-[   88.155381]  check_preemption_disabled+0xde/0xe0
-[   88.160641]  is_xen_pmu+0x12/0x30
-[   88.164441]  xen_smp_intr_init_pv+0x75/0x100
+* From v1 [1]:
+  - Moved the RWP polling fix to -fixes, to be merged independently
+  - Fixed bit numbers for CES and IR
+  - Added some comments about the respective relations between
+    DirectLPIs, RVPEID and IR.
+  - Some cosmetic changes
+  - Rebased on 5.18-rc1
 
-Fix that by replacing is_xen_pmu() by a simple boolean variable which
-reflects the Xen PMU initialization state on cpu 0.
+[0] https://lore.kernel.org/r/20220405182327.205520-1-maz@kernel.org
+[1] https://lore.kernel.org/r/20220315165034.794482-1-maz@kernel.org
 
-Modify xen_pmu_init() to return early in case it is being called for a
-cpu other than cpu 0 and the boolean variable not being set.
+Marc Zyngier (3):
+  irqchip/gic-v3: Exposes bit values for GICR_CTLR.{IR,CES}
+  irqchip/gic-v3: Detect LPI invalidation MMIO registers
+  irqchip/gic-v3: Relax polling of GIC{R,D}_CTLR.RWP
 
-Fixes: bf6dfb154d93 ("xen/PMU: PMU emulation code")
-Reported-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Reviewed-by: Boris Ostrovsky <boris.ostrovsky@oracle.com>
-Link: https://lore.kernel.org/r/20220325142002.31789-1-jgross@suse.com
-Signed-off-by: Boris Ostrovsky <boris.ostrovsky@oracle.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/x86/xen/pmu.c    | 10 ++++------
- arch/x86/xen/pmu.h    |  3 ++-
- arch/x86/xen/smp_pv.c |  2 +-
- 3 files changed, 7 insertions(+), 8 deletions(-)
+ drivers/irqchip/irq-gic-v3.c       | 58 +++++++++++++++++-------------
+ include/linux/irqchip/arm-gic-v3.h |  2 ++
+ 2 files changed, 36 insertions(+), 24 deletions(-)
 
-diff --git a/arch/x86/xen/pmu.c b/arch/x86/xen/pmu.c
-index e13b0b49fcdf..d7249f4c90f1 100644
---- a/arch/x86/xen/pmu.c
-+++ b/arch/x86/xen/pmu.c
-@@ -512,10 +512,7 @@ irqreturn_t xen_pmu_irq_handler(int irq, void *dev_id)
- 	return ret;
- }
- 
--bool is_xen_pmu(int cpu)
--{
--	return (get_xenpmu_data() != NULL);
--}
-+bool is_xen_pmu;
- 
- void xen_pmu_init(int cpu)
- {
-@@ -526,7 +523,7 @@ void xen_pmu_init(int cpu)
- 
- 	BUILD_BUG_ON(sizeof(struct xen_pmu_data) > PAGE_SIZE);
- 
--	if (xen_hvm_domain())
-+	if (xen_hvm_domain() || (cpu != 0 && !is_xen_pmu))
- 		return;
- 
- 	xenpmu_data = (struct xen_pmu_data *)get_zeroed_page(GFP_KERNEL);
-@@ -547,7 +544,8 @@ void xen_pmu_init(int cpu)
- 	per_cpu(xenpmu_shared, cpu).xenpmu_data = xenpmu_data;
- 	per_cpu(xenpmu_shared, cpu).flags = 0;
- 
--	if (cpu == 0) {
-+	if (!is_xen_pmu) {
-+		is_xen_pmu = true;
- 		perf_register_guest_info_callbacks(&xen_guest_cbs);
- 		xen_pmu_arch_init();
- 	}
-diff --git a/arch/x86/xen/pmu.h b/arch/x86/xen/pmu.h
-index 0e83a160589b..65c58894fc79 100644
---- a/arch/x86/xen/pmu.h
-+++ b/arch/x86/xen/pmu.h
-@@ -4,6 +4,8 @@
- 
- #include <xen/interface/xenpmu.h>
- 
-+extern bool is_xen_pmu;
-+
- irqreturn_t xen_pmu_irq_handler(int irq, void *dev_id);
- #ifdef CONFIG_XEN_HAVE_VPMU
- void xen_pmu_init(int cpu);
-@@ -12,7 +14,6 @@ void xen_pmu_finish(int cpu);
- static inline void xen_pmu_init(int cpu) {}
- static inline void xen_pmu_finish(int cpu) {}
- #endif
--bool is_xen_pmu(int cpu);
- bool pmu_msr_read(unsigned int msr, uint64_t *val, int *err);
- bool pmu_msr_write(unsigned int msr, uint32_t low, uint32_t high, int *err);
- int pmu_apic_update(uint32_t reg);
-diff --git a/arch/x86/xen/smp_pv.c b/arch/x86/xen/smp_pv.c
-index 477c484eb202..cd5539fc5eb4 100644
---- a/arch/x86/xen/smp_pv.c
-+++ b/arch/x86/xen/smp_pv.c
-@@ -129,7 +129,7 @@ int xen_smp_intr_init_pv(unsigned int cpu)
- 	per_cpu(xen_irq_work, cpu).irq = rc;
- 	per_cpu(xen_irq_work, cpu).name = callfunc_name;
- 
--	if (is_xen_pmu(cpu)) {
-+	if (is_xen_pmu) {
- 		pmu_name = kasprintf(GFP_KERNEL, "pmu%d", cpu);
- 		rc = bind_virq_to_irqhandler(VIRQ_XENPMU, cpu,
- 					     xen_pmu_irq_handler,
 -- 
 2.34.1
-
-
 
