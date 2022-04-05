@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C4BCC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D000C4321E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:23:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358615AbiDENJ3 (ORCPT
+        id S1359225AbiDENKK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:09:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53072 "EHLO
+        Tue, 5 Apr 2022 09:10:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344150AbiDEJSZ (ORCPT
+        with ESMTP id S1344187AbiDEJSg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:18:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B6C4443D8;
-        Tue,  5 Apr 2022 02:04:38 -0700 (PDT)
+        Tue, 5 Apr 2022 05:18:36 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D23D76663E;
+        Tue,  5 Apr 2022 02:05:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3FBEBB81BBF;
-        Tue,  5 Apr 2022 09:04:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 906C3C385A1;
-        Tue,  5 Apr 2022 09:04:35 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 4355DCE1C6C;
+        Tue,  5 Apr 2022 09:05:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 629E8C385A0;
+        Tue,  5 Apr 2022 09:05:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149475;
-        bh=dVqkzsew4DEHWhEltK2MJT27ooP0p4RsSCP3QwS6HIo=;
+        s=korg; t=1649149505;
+        bh=eI/tG81nC1saJgPatTgG7icD/lGlD5gWAo+K+jBtukE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xECi6vXAO1LoGWOQ+5KjNzPlYi2CtftvMLnROBm8GpRJK6ZhbRrk/+jvezIN2B+A4
-         E31dx36I28BJDjj8PqRAqE4AWx1FXux1g5CqnTzGtaW5XVkkzA6fRWuvNUVccfZFj/
-         C7iJ3zWfrp3b6go1Gt2i/5J+hjsi08Td3md05994=
+        b=NYwbQ+n135CdF7gGZ8YINtciQmS7JB3mTvNmNDWUKDeqGJve+iXxmhRUUfc1wIbU7
+         sot8GE0QWAlogecUyJy4aSPHFxIMUuyvVduVloORvPgbCzq7nine2ewmEyBbdmHuNz
+         UbynodvtsQGYgkWTMSki57YyJq7qemc3dVrhNUcw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jian Shen <shenjian15@huawei.com>,
-        Guangbin Huang <huangguangbin2@huawei.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0729/1017] net: hns3: fix bug when PF set the duplicate MAC address for VFs
-Date:   Tue,  5 Apr 2022 09:27:22 +0200
-Message-Id: <20220405070415.905924838@linuxfoundation.org>
+Subject: [PATCH 5.16 0739/1017] qlcnic: dcb: default to returning -EOPNOTSUPP
+Date:   Tue,  5 Apr 2022 09:27:32 +0200
+Message-Id: <20220405070416.200180255@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,49 +50,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jian Shen <shenjian15@huawei.com>
+From: Tom Rix <trix@redhat.com>
 
-[ Upstream commit ccb18f05535c96d26e2d559d402acb87700fc5a7 ]
+[ Upstream commit 1521db37f0d42334a88e8ff28198a27d1ed5cd7b ]
 
-If the MAC address A is configured to vport A and then vport B. The MAC
-address of vport A in the hardware becomes invalid. If the address of
-vport A is changed to MAC address B, the driver needs to delete the MAC
-address A of vport A. Due to the MAC address A of vport A has become
-invalid in the hardware entry, so "-ENOENT" is returned. In this case, the
-"used_umv_size" value recorded in driver is not updated. As a result, the
-MAC entry status of the software is inconsistent with that of the hardware.
+Clang static analysis reports this issue
+qlcnic_dcb.c:382:10: warning: Assigned value is
+  garbage or undefined
+  mbx_out = *val;
+          ^ ~~~~
 
-Therefore, the driver updates the umv size even if the MAC entry cannot be
-found. Ensure that the software and hardware status is consistent.
+val is set in the qlcnic_dcb_query_hw_capability() wrapper.
+If there is no query_hw_capability op in dcp, success is
+returned without setting the val.
 
-Fixes: ee4bcd3b7ae4 ("net: hns3: refactor the MAC address configure")
-Signed-off-by: Jian Shen <shenjian15@huawei.com>
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+For this and similar wrappers, return -EOPNOTSUPP.
+
+Fixes: 14d385b99059 ("qlcnic: dcb: Query adapter DCB capabilities.")
+Signed-off-by: Tom Rix <trix@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/qlogic/qlcnic/qlcnic_dcb.h | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index c2a58101144e..0fc8810671dc 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -8888,12 +8888,11 @@ int hclge_rm_uc_addr_common(struct hclge_vport *vport,
- 	hnae3_set_bit(req.entry_type, HCLGE_MAC_VLAN_BIT0_EN_B, 0);
- 	hclge_prepare_mac_addr(&req, addr, false);
- 	ret = hclge_remove_mac_vlan_tbl(vport, &req);
--	if (!ret) {
-+	if (!ret || ret == -ENOENT) {
- 		mutex_lock(&hdev->vport_lock);
- 		hclge_update_umv_space(vport, true);
- 		mutex_unlock(&hdev->vport_lock);
--	} else if (ret == -ENOENT) {
--		ret = 0;
-+		return 0;
- 	}
+diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_dcb.h b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_dcb.h
+index 5d79ee4370bc..7519773eaca6 100644
+--- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_dcb.h
++++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_dcb.h
+@@ -51,7 +51,7 @@ static inline int qlcnic_dcb_get_hw_capability(struct qlcnic_dcb *dcb)
+ 	if (dcb && dcb->ops->get_hw_capability)
+ 		return dcb->ops->get_hw_capability(dcb);
  
- 	return ret;
+-	return 0;
++	return -EOPNOTSUPP;
+ }
+ 
+ static inline void qlcnic_dcb_free(struct qlcnic_dcb *dcb)
+@@ -65,7 +65,7 @@ static inline int qlcnic_dcb_attach(struct qlcnic_dcb *dcb)
+ 	if (dcb && dcb->ops->attach)
+ 		return dcb->ops->attach(dcb);
+ 
+-	return 0;
++	return -EOPNOTSUPP;
+ }
+ 
+ static inline int
+@@ -74,7 +74,7 @@ qlcnic_dcb_query_hw_capability(struct qlcnic_dcb *dcb, char *buf)
+ 	if (dcb && dcb->ops->query_hw_capability)
+ 		return dcb->ops->query_hw_capability(dcb, buf);
+ 
+-	return 0;
++	return -EOPNOTSUPP;
+ }
+ 
+ static inline void qlcnic_dcb_get_info(struct qlcnic_dcb *dcb)
+@@ -89,7 +89,7 @@ qlcnic_dcb_query_cee_param(struct qlcnic_dcb *dcb, char *buf, u8 type)
+ 	if (dcb && dcb->ops->query_cee_param)
+ 		return dcb->ops->query_cee_param(dcb, buf, type);
+ 
+-	return 0;
++	return -EOPNOTSUPP;
+ }
+ 
+ static inline int qlcnic_dcb_get_cee_cfg(struct qlcnic_dcb *dcb)
+@@ -97,7 +97,7 @@ static inline int qlcnic_dcb_get_cee_cfg(struct qlcnic_dcb *dcb)
+ 	if (dcb && dcb->ops->get_cee_cfg)
+ 		return dcb->ops->get_cee_cfg(dcb);
+ 
+-	return 0;
++	return -EOPNOTSUPP;
+ }
+ 
+ static inline void qlcnic_dcb_aen_handler(struct qlcnic_dcb *dcb, void *msg)
 -- 
 2.34.1
 
