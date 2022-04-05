@@ -2,151 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E598AC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BECD2C433EF
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:26:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1841758AbiDFBZm (ORCPT
+        id S1841722AbiDFBZ1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:25:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39194 "EHLO
+        Tue, 5 Apr 2022 21:25:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348324AbiDEJrb (ORCPT
+        with ESMTP id S1354756AbiDEKPd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:47:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A36B6C4A5;
-        Tue,  5 Apr 2022 02:33:42 -0700 (PDT)
+        Tue, 5 Apr 2022 06:15:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D3A36C4A5;
+        Tue,  5 Apr 2022 03:02:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 80F3D616AE;
-        Tue,  5 Apr 2022 09:33:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E929C385A3;
-        Tue,  5 Apr 2022 09:33:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649151222;
-        bh=w3c3dan6gpCZQWuTtnrIYnuAybUzjLeMz5IygurzhmA=;
-        h=From:To:Cc:Subject:Date:From;
-        b=kgLWiwy+Hds+vv7jtXz+wCEvuU7WwMF35CGW4fvseZE4OkaO0Yd3mlyo8JYC5iVGO
-         uFXJNuwwYiufvhErVF9rtRAmdMAf9QFUlIw7s4KblEqu3jiJThyfpg3Pdj8+c7iwdf
-         UxPLbiN7DMMyuPqEy3eAHogBox9WvZxN+3hMUE1ZTkeIKi7wPxwfHpYUhsa5/P74Ip
-         zvAM9pulY79SC6AVH6lREf4lMS+2cmOaJ9F38NH5jfAM9NjVU3vXQWjDxTkRizs/UN
-         55Sb9mjiEDKfpWKYqFrIicR2UZpZH1V8ZYuPdzHZ2hjvMM4KXrADZ6HtyUUoFAZsj/
-         H8FpvMavHtPzQ==
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Shubham Bansal <illusionist.neo@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>, bpf@vger.kernel.org,
-        kernel-team@fb.com, Jiri Olsa <jolsa@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH bpf 0/4] kprobes: rethook,ARM,arm64: Replace kretprobe trampoline with rethook
-Date:   Tue,  5 Apr 2022 18:33:35 +0900
-Message-Id: <164915121498.982637.12787715964983738566.stgit@devnote2>
-X-Mailer: git-send-email 2.25.1
-User-Agent: StGit/0.19
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BE4E161740;
+        Tue,  5 Apr 2022 10:02:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5E64C385A1;
+        Tue,  5 Apr 2022 10:02:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152955;
+        bh=locgQxsyc0MpvAdZeZH1B7amSJ1o7txFD/CTHTitM/g=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=JkaBythOPpsAqlnM1UmkT7GPGCubDuz0L2jj5NP97f1xYymLODM6pqSeHblqidvGh
+         AAoq35pmx1535L62sEVigAp0dVvWiTTcvv4mrmzX8dSD4sJahLBCz2Z8G1ukpGJHlV
+         iAXo2peRT/GWXjRsoznlcHDN23G9BuhJQmehFsNE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Chao Yu <chao.yu@oppo.com>,
+        Jaegeuk Kim <jaegeuk@kernel.org>
+Subject: [PATCH 5.10 050/599] f2fs: fix to do sanity check on .cp_pack_total_block_count
+Date:   Tue,  5 Apr 2022 09:25:44 +0200
+Message-Id: <20220405070300.317859746@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+From: Chao Yu <chao@kernel.org>
 
-Here is a series for replacing kretprobe trampoline with rethook on ARM/arm64.
-This series are applicable to bpf tree (not arm tree) because the basement
-patch is still only on that tree.
+commit 5b5b4f85b01604389f7a0f11ef180a725bf0e2d4 upstream.
 
-Actually, this series includes a trivial bugfix for the arm unwinder to
-initialize an internal data structure([1/4]). This is not critical for
-stack trace, but required for rethook to find LR register on the stack.
-This also have an update for the rethook interface, which allows us to
-check the rethook_hook() failure ([2/4]). This is also required for the
-rethook on arm because unwinder is able to fail.
-The rest of patches are replacing kretprobe trampoline with rethook on
-ARM ([3/4]) and arm64 ([4/4]).
+As bughunter reported in bugzilla:
 
-Background:
+https://bugzilla.kernel.org/show_bug.cgi?id=215709
 
-This rethook came from Jiri's request of multiple kprobe for bpf[1].
-He tried to solve an issue that starting bpf with multiple kprobe will
-take a long time because bpf-kprobe will wait for RCU grace period for
-sync rcu events.
+f2fs may hang when mounting a fuzzed image, the dmesg shows as below:
 
-Jiri wanted to attach a single bpf handler to multiple kprobes and
-he tried to introduce multiple-probe interface to kprobe. So I asked
-him to use ftrace and kretprobe-like hook if it is only for the
-function entry and exit, instead of adding ad-hoc interface
-to kprobes.
-For this purpose, I introduced the fprobe (kprobe like interface for
-ftrace) with the rethook (this is a generic return hook feature for
-fprobe exit handler)[2].
+__filemap_get_folio+0x3a9/0x590
+pagecache_get_page+0x18/0x60
+__get_meta_page+0x95/0x460 [f2fs]
+get_checkpoint_version+0x2a/0x1e0 [f2fs]
+validate_checkpoint+0x8e/0x2a0 [f2fs]
+f2fs_get_valid_checkpoint+0xd0/0x620 [f2fs]
+f2fs_fill_super+0xc01/0x1d40 [f2fs]
+mount_bdev+0x18a/0x1c0
+f2fs_mount+0x15/0x20 [f2fs]
+legacy_get_tree+0x28/0x50
+vfs_get_tree+0x27/0xc0
+path_mount+0x480/0xaa0
+do_mount+0x7c/0xa0
+__x64_sys_mount+0x8b/0xe0
+do_syscall_64+0x38/0xc0
+entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-[1] https://lore.kernel.org/all/20220104080943.113249-1-jolsa@kernel.org/T/#u
-[2] https://lore.kernel.org/all/164191321766.806991.7930388561276940676.stgit@devnote2/T/#u
+The root cause is cp_pack_total_block_count field in checkpoint was fuzzed
+to one, as calcuated, two cp pack block locates in the same block address,
+so then read latter cp pack block, it will block on the page lock due to
+the lock has already held when reading previous cp pack block, fix it by
+adding sanity check for cp_pack_total_block_count.
 
-The rethook is basically same as the kretprobe trampoline. I just made
-it decoupled from kprobes. Eventually, the all arch dependent kretprobe
-trampolines will be replaced with the rethook trampoline instead of
-cloning the code.
-
-When I port the rethook for all arch which supports kretprobe, the
-legacy kretprobe specific code (which is for CONFIG_KRETPROBE_ON_RETHOOK=n)
-will be removed eventually.
-
-BTW, the arm Clang support for rethook is for kretprobes only. fprobe
-and ftrace seems not working with Clang yet.
-
-Thank you,
-
+Cc: stable@vger.kernel.org
+Signed-off-by: Chao Yu <chao.yu@oppo.com>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
+ fs/f2fs/checkpoint.c |    8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-Masami Hiramatsu (4):
-      ARM: unwind: Initialize the lr_addr field of unwind_ctrl_block
-      rethook,fprobe,kprobes: Check a failure in the rethook_hook()
-      ARM: rethook: Replace kretprobe trampoline with rethook
-      arm64: rethook: Replace kretprobe trampoline with rethook
+--- a/fs/f2fs/checkpoint.c
++++ b/fs/f2fs/checkpoint.c
+@@ -851,6 +851,7 @@ static struct page *validate_checkpoint(
+ 	struct page *cp_page_1 = NULL, *cp_page_2 = NULL;
+ 	struct f2fs_checkpoint *cp_block = NULL;
+ 	unsigned long long cur_version = 0, pre_version = 0;
++	unsigned int cp_blocks;
+ 	int err;
+ 
+ 	err = get_checkpoint_version(sbi, cp_addr, &cp_block,
+@@ -858,15 +859,16 @@ static struct page *validate_checkpoint(
+ 	if (err)
+ 		return NULL;
+ 
+-	if (le32_to_cpu(cp_block->cp_pack_total_block_count) >
+-					sbi->blocks_per_seg) {
++	cp_blocks = le32_to_cpu(cp_block->cp_pack_total_block_count);
++
++	if (cp_blocks > sbi->blocks_per_seg || cp_blocks <= F2FS_CP_PACKS) {
+ 		f2fs_warn(sbi, "invalid cp_pack_total_block_count:%u",
+ 			  le32_to_cpu(cp_block->cp_pack_total_block_count));
+ 		goto invalid_cp;
+ 	}
+ 	pre_version = *version;
+ 
+-	cp_addr += le32_to_cpu(cp_block->cp_pack_total_block_count) - 1;
++	cp_addr += cp_blocks - 1;
+ 	err = get_checkpoint_version(sbi, cp_addr, &cp_block,
+ 					&cp_page_2, version);
+ 	if (err)
 
 
- arch/arm/Kconfig                              |    1 
- arch/arm/include/asm/stacktrace.h             |    5 +
- arch/arm/kernel/stacktrace.c                  |   13 +--
- arch/arm/kernel/unwind.c                      |    1 
- arch/arm/probes/Makefile                      |    1 
- arch/arm/probes/kprobes/core.c                |   62 ------------
- arch/arm/probes/rethook.c                     |  127 +++++++++++++++++++++++++
- arch/arm64/Kconfig                            |    1 
- arch/arm64/include/asm/kprobes.h              |    2 
- arch/arm64/include/asm/stacktrace.h           |    2 
- arch/arm64/kernel/Makefile                    |    1 
- arch/arm64/kernel/probes/Makefile             |    1 
- arch/arm64/kernel/probes/kprobes.c            |   15 ---
- arch/arm64/kernel/probes/kprobes_trampoline.S |   86 -----------------
- arch/arm64/kernel/rethook.c                   |   26 +++++
- arch/arm64/kernel/rethook_trampoline.S        |   87 +++++++++++++++++
- arch/arm64/kernel/stacktrace.c                |    9 +-
- arch/x86/kernel/rethook.c                     |    4 +
- include/linux/rethook.h                       |    4 -
- kernel/kprobes.c                              |    8 +-
- kernel/trace/fprobe.c                         |    5 +
- kernel/trace/rethook.c                        |   12 ++
- 22 files changed, 285 insertions(+), 188 deletions(-)
- create mode 100644 arch/arm/probes/rethook.c
- delete mode 100644 arch/arm64/kernel/probes/kprobes_trampoline.S
- create mode 100644 arch/arm64/kernel/rethook.c
- create mode 100644 arch/arm64/kernel/rethook_trampoline.S
-
---
-Masami Hiramatsu (Linaro) <mhiramat@kernel.org>
