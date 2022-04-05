@@ -2,49 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82918C43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:48:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7E80C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:48:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232199AbiDEHuH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:50:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34192 "EHLO
+        id S232251AbiDEHuO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:50:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232429AbiDEHqe (ORCPT
+        with ESMTP id S232374AbiDEHqb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:46:34 -0400
+        Tue, 5 Apr 2022 03:46:31 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83F3293186;
-        Tue,  5 Apr 2022 00:42:17 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 179EE9A98D;
+        Tue,  5 Apr 2022 00:42:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2A8E2B81B18;
-        Tue,  5 Apr 2022 07:42:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48E57C3410F;
-        Tue,  5 Apr 2022 07:42:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C5FFBB81B75;
+        Tue,  5 Apr 2022 07:42:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38424C340EE;
+        Tue,  5 Apr 2022 07:42:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144534;
-        bh=XamnRL9+WDS32nCTYYt9TqlmML6yO8Co3rb5YczgAAs=;
+        s=korg; t=1649144526;
+        bh=fKGsAcnGkdDH2Ic2fcQgnLFdX1e9rvKJlOCEFRK4Q3g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kupnPU5+wMNsHUiCa2ATzrXJLYxdoQthca9POXwnxfmHR3S/Ihl/fwDcwCjqk3Pl0
-         iYG1dzlRaAZfeKMFex937zFxLvIQuXwMegzCTO8B0vOJJlLWAucdjbkSUx9Mn0PMV1
-         99CqzfYfgRkjMDTQAQK7lUmQteB4ufEx/1N7UK90=
+        b=xErKDVC9C2SjCylfnm+u6niwbNDFcF4XJEgXULboPz4z+80G3F7IV5ZYygQxcpIqt
+         etuZTNOpBnyeCyLjtXw4gw2W809URsO80i0sOd/LEv+L/d29Be1rX2Gsj0wxDYQGxf
+         L0xB4Q4aUWrU7NxBp6PfGkrofhaDVuEO7RS7H45s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rik van Riel <riel@surriel.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Naoya Horiguchi <naoya.horiguchi@nec.com>,
-        Oscar Salvador <osalvador@suse.de>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Mel Gorman <mgorman@suse.de>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Matthew Wilcox <willy@infradead.org>,
+        stable@vger.kernel.org, Minchan Kim <minchan@kernel.org>,
+        Chris Goldsworthy <cgoldswo@codeaurora.org>,
+        Marcelo Tosatti <mtosatti@redhat.com>,
+        John Dias <joaodias@google.com>,
         Andrew Morton <akpm@linux-foundation.org>,
         Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.17 0079/1126] mm: invalidate hwpoison page cache page in fault path
-Date:   Tue,  5 Apr 2022 09:13:46 +0200
-Message-Id: <20220405070409.888284953@linuxfoundation.org>
+Subject: [PATCH 5.17 0076/1126] mm: fs: fix lru_cache_disabled race in bh_lru
+Date:   Tue,  5 Apr 2022 09:13:43 +0200
+Message-Id: <20220405070409.799931519@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -56,63 +52,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rik van Riel <riel@surriel.com>
+From: Minchan Kim <minchan@kernel.org>
 
-commit e53ac7374e64dede04d745ff0e70ff5048378d1f upstream.
+commit c0226eb8bde854e016a594a16f5c0d98aca426fa upstream.
 
-Sometimes the page offlining code can leave behind a hwpoisoned clean
-page cache page.  This can lead to programs being killed over and over
-and over again as they fault in the hwpoisoned page, get killed, and
-then get re-spawned by whatever wanted to run them.
+Check lru_cache_disabled under bh_lru_lock.  Otherwise, it could introduce
+race below and it fails to migrate pages containing buffer_head.
 
-This is particularly embarrassing when the page was offlined due to
-having too many corrected memory errors.  Now we are killing tasks due
-to them trying to access memory that probably isn't even corrupted.
+   CPU 0					CPU 1
 
-This problem can be avoided by invalidating the page from the page fault
-handler, which already has a branch for dealing with these kinds of
-pages.  With this patch we simply pretend the page fault was successful
-if the page was invalidated, return to userspace, incur another page
-fault, read in the file from disk (to a new memory page), and then
-everything works again.
+bh_lru_install
+                                       lru_cache_disable
+  lru_cache_disabled = false
+                                       atomic_inc(&lru_disable_count);
+				       invalidate_bh_lrus_cpu of CPU 0
+				       bh_lru_lock
+				       __invalidate_bh_lrus
+				       bh_lru_unlock
+  bh_lru_lock
+  install the bh
+  bh_lru_unlock
 
-Link: https://lkml.kernel.org/r/20220212213740.423efcea@imladris.surriel.com
-Signed-off-by: Rik van Riel <riel@surriel.com>
-Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
-Acked-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
-Reviewed-by: Oscar Salvador <osalvador@suse.de>
-Cc: John Hubbard <jhubbard@nvidia.com>
-Cc: Mel Gorman <mgorman@suse.de>
-Cc: Johannes Weiner <hannes@cmpxchg.org>
-Cc: Matthew Wilcox <willy@infradead.org>
+WHen this race happens a CMA allocation fails, which is critical for
+the workload which depends on CMA.
+
+Link: https://lkml.kernel.org/r/20220308180709.2017638-1-minchan@kernel.org
+Fixes: 8cc621d2f45d ("mm: fs: invalidate BH LRU during page migration")
+Signed-off-by: Minchan Kim <minchan@kernel.org>
+Cc: Chris Goldsworthy <cgoldswo@codeaurora.org>
+Cc: Marcelo Tosatti <mtosatti@redhat.com>
+Cc: John Dias <joaodias@google.com>
 Cc: <stable@vger.kernel.org>
 Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/memory.c |    9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ fs/buffer.c |    8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
---- a/mm/memory.c
-+++ b/mm/memory.c
-@@ -3893,11 +3893,16 @@ static vm_fault_t __do_fault(struct vm_f
- 		return ret;
+--- a/fs/buffer.c
++++ b/fs/buffer.c
+@@ -1235,16 +1235,18 @@ static void bh_lru_install(struct buffer
+ 	int i;
  
- 	if (unlikely(PageHWPoison(vmf->page))) {
--		if (ret & VM_FAULT_LOCKED)
-+		vm_fault_t poisonret = VM_FAULT_HWPOISON;
-+		if (ret & VM_FAULT_LOCKED) {
-+			/* Retry if a clean page was removed from the cache. */
-+			if (invalidate_inode_page(vmf->page))
-+				poisonret = 0;
- 			unlock_page(vmf->page);
-+		}
- 		put_page(vmf->page);
- 		vmf->page = NULL;
--		return VM_FAULT_HWPOISON;
-+		return poisonret;
- 	}
+ 	check_irqs_on();
++	bh_lru_lock();
++
+ 	/*
+ 	 * the refcount of buffer_head in bh_lru prevents dropping the
+ 	 * attached page(i.e., try_to_free_buffers) so it could cause
+ 	 * failing page migration.
+ 	 * Skip putting upcoming bh into bh_lru until migration is done.
+ 	 */
+-	if (lru_cache_disabled())
++	if (lru_cache_disabled()) {
++		bh_lru_unlock();
+ 		return;
+-
+-	bh_lru_lock();
++	}
  
- 	if (unlikely(!(ret & VM_FAULT_LOCKED)))
+ 	b = this_cpu_ptr(&bh_lrus);
+ 	for (i = 0; i < BH_LRU_SIZE; i++) {
 
 
