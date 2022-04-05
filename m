@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5592C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:47:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9F4EC35273
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:47:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237313AbiDELsG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:48:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47834 "EHLO
+        id S236842AbiDELsw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 07:48:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244886AbiDEIwp (ORCPT
+        with ESMTP id S244874AbiDEIwo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:52:45 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCADE240AC;
-        Tue,  5 Apr 2022 01:45:39 -0700 (PDT)
+        Tue, 5 Apr 2022 04:52:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 664E423BEC;
+        Tue,  5 Apr 2022 01:45:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 59EACCE1BF9;
-        Tue,  5 Apr 2022 08:45:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72583C385A1;
-        Tue,  5 Apr 2022 08:45:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2123AB81A32;
+        Tue,  5 Apr 2022 08:45:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7ED6CC385A1;
+        Tue,  5 Apr 2022 08:45:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148336;
-        bh=Znaktkp0TlhhTmv22siN8VXYQMsR80xwUmAM0j+apdc=;
+        s=korg; t=1649148317;
+        bh=vPVLp60ofXI704P8vIcvQjUYK/V4SPah6vO9kL+FYpo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GAkMWZCf/LaZbih3ShZA5p09U0e0DgklPLzBrDYouSdDWTNw+iOhJkb9Fmq0DZjvG
-         zKGFuL8wBFHXMdWebbNGrYwJE7/yqzxcgjG0bvOBql1dFp1V/+f+FQa5kSRl1ip+eK
-         FPndxI1yunBTpLCsD4OziDNcKkCoyErV/iFhUovE=
+        b=rVZTaGZFl2sZiwwRoVeCGRCLdVThSAsidIn98qQ6pLQ8dqSkepcINhLe2mK2CYExL
+         FX3Oe3dcjFTHdlsJ8gOu04UURuMwMVIadNRUrwJwfxoAey/dVLxUb4ZVggYhdo3IRr
+         WKitwDEsc9VIqTNdrpF5tEEKvpSNAuW46qa40SRI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, YueHaibing <yuehaibing@huawei.com>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0303/1017] video: fbdev: controlfb: Fix COMPILE_TEST build
-Date:   Tue,  5 Apr 2022 09:20:16 +0200
-Message-Id: <20220405070403.269627532@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0314/1017] soc: qcom: aoss: Fix missing put_device call in qmp_get
+Date:   Tue,  5 Apr 2022 09:20:27 +0200
+Message-Id: <20220405070403.597456413@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -48,44 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: YueHaibing <yuehaibing@huawei.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 567e44fb51b4f909ae58038a7301352eecea8426 ]
+[ Upstream commit 4b41a9d0fe3db5f91078a380f62f0572c3ecf2dd ]
 
-If PPC_BOOK3S, PPC_PMAC and PPC32 is n, COMPILE_TEST build fails:
+The reference taken by 'of_find_device_by_node()' must be released when
+not needed anymore.
+Add the corresponding 'put_device()' in the error handling paths.
 
-drivers/video/fbdev/controlfb.c:70:0: error: "pgprot_cached_wthru" redefined [-Werror]
- #define pgprot_cached_wthru(prot) (prot)
-
-In file included from ./arch/powerpc/include/asm/pgtable.h:20:0,
-                 from ./include/linux/pgtable.h:6,
-                 from ./include/linux/mm.h:33,
-                 from drivers/video/fbdev/controlfb.c:37:
-./arch/powerpc/include/asm/nohash/pgtable.h:243:0: note: this is the location of the previous definition
- #define pgprot_cached_wthru(prot) (__pgprot((pgprot_val(prot) & ~_PAGE_CACHE_CTL) | \
-
-Fixes: a07a63b0e24d ("video: fbdev: controlfb: add COMPILE_TEST support")
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Fixes: 8c75d585b931 ("soc: qcom: aoss: Expose send for generic usecase")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220108095931.21527-1-linmq006@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/controlfb.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/soc/qcom/qcom_aoss.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/video/fbdev/controlfb.c b/drivers/video/fbdev/controlfb.c
-index 509311471d51..bd59e7b11ed5 100644
---- a/drivers/video/fbdev/controlfb.c
-+++ b/drivers/video/fbdev/controlfb.c
-@@ -67,7 +67,9 @@
- #define out_8(addr, val)	(void)(val)
- #define in_le32(addr)		0
- #define out_le32(addr, val)	(void)(val)
-+#ifndef pgprot_cached_wthru
- #define pgprot_cached_wthru(prot) (prot)
-+#endif
- #else
- static void invalid_vram_cache(void __force *addr)
- {
+diff --git a/drivers/soc/qcom/qcom_aoss.c b/drivers/soc/qcom/qcom_aoss.c
+index 34acf58bbb0d..e234d78b33e7 100644
+--- a/drivers/soc/qcom/qcom_aoss.c
++++ b/drivers/soc/qcom/qcom_aoss.c
+@@ -451,7 +451,11 @@ struct qmp *qmp_get(struct device *dev)
+ 
+ 	qmp = platform_get_drvdata(pdev);
+ 
+-	return qmp ? qmp : ERR_PTR(-EPROBE_DEFER);
++	if (!qmp) {
++		put_device(&pdev->dev);
++		return ERR_PTR(-EPROBE_DEFER);
++	}
++	return qmp;
+ }
+ EXPORT_SYMBOL(qmp_get);
+ 
 -- 
 2.34.1
 
