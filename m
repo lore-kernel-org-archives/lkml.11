@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C819EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:13:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07787C43219
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:13:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1840965AbiDFBOZ (ORCPT
+        id S1841011AbiDFBOu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:14:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60264 "EHLO
+        Tue, 5 Apr 2022 21:14:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356145AbiDEKW7 (ORCPT
+        with ESMTP id S244246AbiDEKiY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:22:59 -0400
+        Tue, 5 Apr 2022 06:38:24 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 457FEB9192;
-        Tue,  5 Apr 2022 03:06:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6392DF32;
+        Tue,  5 Apr 2022 03:23:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D41DA6176C;
-        Tue,  5 Apr 2022 10:06:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7B6FC385A2;
-        Tue,  5 Apr 2022 10:06:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 65745616D7;
+        Tue,  5 Apr 2022 10:23:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78B15C385A1;
+        Tue,  5 Apr 2022 10:23:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153207;
-        bh=NtlPD9CTty6noCRJOfFwOvQ/dLso2c2lHtPEiGjUHoU=;
+        s=korg; t=1649154211;
+        bh=ZUyGEIPqcGSavK6gDVBH0SFeUocT4xTRicNG7dXTtlk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JBWB7Ce4XbnQTDpg3gQIkDmEugntHb2d5WQctQ9Qfl72HkJxO6RgWN3jxJ5Eje2TM
-         ACeGAqrFWs7Jv/nh4wSxxHK5NhMGC0LrQYnuUzsCsKnewMKK/vwWlpugz031tEfMuo
-         kErSGZXC2k8yaYqQcbLp/6mHUsG5AsQpIK2bVjrY=
+        b=Jkq9iZSZsm7FnC8bjlpY5Kyub0m36zk8KLo9u0YrcL/L+5pwYOSw6XexyL84+hS25
+         mwMmYMDs/gtVRGJhZiM4AXOBy7jLqicL0TxwwRkX3svYY3oCu+CGk08oq0s2Nmd+8m
+         TE90TAgfq38uoPM2osUMCVhMm48Kd4FENk9irnss=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Richard Guy Briggs <rgb@redhat.com>,
-        Paul Moore <paul@paul-moore.com>,
+        stable@vger.kernel.org, Shengjiu Wang <shengjiu.wang@nxp.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 140/599] audit: log AUDIT_TIME_* records only from rules
-Date:   Tue,  5 Apr 2022 09:27:14 +0200
-Message-Id: <20220405070303.007776602@linuxfoundation.org>
+Subject: [PATCH 5.10 499/599] ASoC: soc-core: skip zero num_dai component in searching dai name
+Date:   Tue,  5 Apr 2022 09:33:13 +0200
+Message-Id: <20220405070313.678432948@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -50,165 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Richard Guy Briggs <rgb@redhat.com>
+From: Shengjiu Wang <shengjiu.wang@nxp.com>
 
-[ Upstream commit 272ceeaea355214b301530e262a0df8600bfca95 ]
+[ Upstream commit f7d344a2bd5ec81fbd1ce76928fd059e57ec9bea ]
 
-AUDIT_TIME_* events are generated when there are syscall rules present
-that are not related to time keeping.  This will produce noisy log
-entries that could flood the logs and hide events we really care about.
+In the case like dmaengine which's not a dai but as a component, the
+num_dai is zero, dmaengine component has the same component_of_node
+as cpu dai, when cpu dai component is not ready, but dmaengine component
+is ready, try to get cpu dai name, the snd_soc_get_dai_name() return
+-EINVAL, not -EPROBE_DEFER, that cause below error:
 
-Rather than immediately produce the AUDIT_TIME_* records, store the data
-in the context and log it at syscall exit time respecting the filter
-rules.
+asoc-simple-card <card name>: parse error -22
+asoc-simple-card: probe of <card name> failed with error -22
 
-Note: This eats the audit_buffer, unlike any others in show_special().
+The sound card failed to probe.
 
-Please see https://bugzilla.redhat.com/show_bug.cgi?id=1991919
+So this patch fixes the issue above by skipping the zero num_dai
+component in searching dai name.
 
-Fixes: 7e8eda734d30 ("ntp: Audit NTP parameters adjustment")
-Fixes: 2d87a0674bd6 ("timekeeping: Audit clock adjustments")
-Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
-[PM: fixed style/whitespace issues]
-Signed-off-by: Paul Moore <paul@paul-moore.com>
+Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+Link: https://lore.kernel.org/r/1644491952-7457-1-git-send-email-shengjiu.wang@nxp.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/audit.h   |  4 +++
- kernel/auditsc.c | 87 +++++++++++++++++++++++++++++++++++++-----------
- 2 files changed, 71 insertions(+), 20 deletions(-)
+ sound/soc/soc-core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/kernel/audit.h b/kernel/audit.h
-index 3b9c0945225a..1918019e6aaf 100644
---- a/kernel/audit.h
-+++ b/kernel/audit.h
-@@ -191,6 +191,10 @@ struct audit_context {
- 		struct {
- 			char			*name;
- 		} module;
-+		struct {
-+			struct audit_ntp_data	ntp_data;
-+			struct timespec64	tk_injoffset;
-+		} time;
- 	};
- 	int fds[2];
- 	struct audit_proctitle proctitle;
-diff --git a/kernel/auditsc.c b/kernel/auditsc.c
-index 638f424859ed..07e2788bbbf1 100644
---- a/kernel/auditsc.c
-+++ b/kernel/auditsc.c
-@@ -1214,6 +1214,53 @@ static void audit_log_fcaps(struct audit_buffer *ab, struct audit_names *name)
- 			 from_kuid(&init_user_ns, name->fcap.rootid));
- }
+diff --git a/sound/soc/soc-core.c b/sound/soc/soc-core.c
+index 133296596864..a6d6d10cd471 100644
+--- a/sound/soc/soc-core.c
++++ b/sound/soc/soc-core.c
+@@ -3020,7 +3020,7 @@ int snd_soc_get_dai_name(struct of_phandle_args *args,
+ 	for_each_component(pos) {
+ 		component_of_node = soc_component_to_node(pos);
  
-+static void audit_log_time(struct audit_context *context, struct audit_buffer **ab)
-+{
-+	const struct audit_ntp_data *ntp = &context->time.ntp_data;
-+	const struct timespec64 *tk = &context->time.tk_injoffset;
-+	static const char * const ntp_name[] = {
-+		"offset",
-+		"freq",
-+		"status",
-+		"tai",
-+		"tick",
-+		"adjust",
-+	};
-+	int type;
-+
-+	if (context->type == AUDIT_TIME_ADJNTPVAL) {
-+		for (type = 0; type < AUDIT_NTP_NVALS; type++) {
-+			if (ntp->vals[type].newval != ntp->vals[type].oldval) {
-+				if (!*ab) {
-+					*ab = audit_log_start(context,
-+							GFP_KERNEL,
-+							AUDIT_TIME_ADJNTPVAL);
-+					if (!*ab)
-+						return;
-+				}
-+				audit_log_format(*ab, "op=%s old=%lli new=%lli",
-+						 ntp_name[type],
-+						 ntp->vals[type].oldval,
-+						 ntp->vals[type].newval);
-+				audit_log_end(*ab);
-+				*ab = NULL;
-+			}
-+		}
-+	}
-+	if (tk->tv_sec != 0 || tk->tv_nsec != 0) {
-+		if (!*ab) {
-+			*ab = audit_log_start(context, GFP_KERNEL,
-+					      AUDIT_TIME_INJOFFSET);
-+			if (!*ab)
-+				return;
-+		}
-+		audit_log_format(*ab, "sec=%lli nsec=%li",
-+				 (long long)tk->tv_sec, tk->tv_nsec);
-+		audit_log_end(*ab);
-+		*ab = NULL;
-+	}
-+}
-+
- static void show_special(struct audit_context *context, int *call_panic)
- {
- 	struct audit_buffer *ab;
-@@ -1319,6 +1366,11 @@ static void show_special(struct audit_context *context, int *call_panic)
- 			audit_log_format(ab, "(null)");
+-		if (component_of_node != args->np)
++		if (component_of_node != args->np || !pos->num_dai)
+ 			continue;
  
- 		break;
-+	case AUDIT_TIME_ADJNTPVAL:
-+	case AUDIT_TIME_INJOFFSET:
-+		/* this call deviates from the rest, eating the buffer */
-+		audit_log_time(context, &ab);
-+		break;
- 	}
- 	audit_log_end(ab);
- }
-@@ -2560,31 +2612,26 @@ void __audit_fanotify(unsigned int response)
- 
- void __audit_tk_injoffset(struct timespec64 offset)
- {
--	audit_log(audit_context(), GFP_KERNEL, AUDIT_TIME_INJOFFSET,
--		  "sec=%lli nsec=%li",
--		  (long long)offset.tv_sec, offset.tv_nsec);
--}
--
--static void audit_log_ntp_val(const struct audit_ntp_data *ad,
--			      const char *op, enum audit_ntp_type type)
--{
--	const struct audit_ntp_val *val = &ad->vals[type];
--
--	if (val->newval == val->oldval)
--		return;
-+	struct audit_context *context = audit_context();
- 
--	audit_log(audit_context(), GFP_KERNEL, AUDIT_TIME_ADJNTPVAL,
--		  "op=%s old=%lli new=%lli", op, val->oldval, val->newval);
-+	/* only set type if not already set by NTP */
-+	if (!context->type)
-+		context->type = AUDIT_TIME_INJOFFSET;
-+	memcpy(&context->time.tk_injoffset, &offset, sizeof(offset));
- }
- 
- void __audit_ntp_log(const struct audit_ntp_data *ad)
- {
--	audit_log_ntp_val(ad, "offset",	AUDIT_NTP_OFFSET);
--	audit_log_ntp_val(ad, "freq",	AUDIT_NTP_FREQ);
--	audit_log_ntp_val(ad, "status",	AUDIT_NTP_STATUS);
--	audit_log_ntp_val(ad, "tai",	AUDIT_NTP_TAI);
--	audit_log_ntp_val(ad, "tick",	AUDIT_NTP_TICK);
--	audit_log_ntp_val(ad, "adjust",	AUDIT_NTP_ADJUST);
-+	struct audit_context *context = audit_context();
-+	int type;
-+
-+	for (type = 0; type < AUDIT_NTP_NVALS; type++)
-+		if (ad->vals[type].newval != ad->vals[type].oldval) {
-+			/* unconditionally set type, overwriting TK */
-+			context->type = AUDIT_TIME_ADJNTPVAL;
-+			memcpy(&context->time.ntp_data, ad, sizeof(*ad));
-+			break;
-+		}
- }
- 
- void __audit_log_nfcfg(const char *name, u8 af, unsigned int nentries,
+ 		ret = snd_soc_component_of_xlate_dai_name(pos, args, dai_name);
 -- 
 2.34.1
 
