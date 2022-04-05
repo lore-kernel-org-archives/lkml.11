@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F12E3C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:03:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D08CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:03:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235433AbiDEPE7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:04:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56990 "EHLO
+        id S239070AbiDEPFm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 11:05:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230405AbiDEJnS (ORCPT
+        with ESMTP id S1345372AbiDEJnZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:43:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E86248E65;
-        Tue,  5 Apr 2022 02:28:36 -0700 (PDT)
+        Tue, 5 Apr 2022 05:43:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8933CC12D9;
+        Tue,  5 Apr 2022 02:28:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E0AE5B81C9D;
-        Tue,  5 Apr 2022 09:28:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BA92C385A0;
-        Tue,  5 Apr 2022 09:28:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 75AB46165C;
+        Tue,  5 Apr 2022 09:28:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80BCEC385A0;
+        Tue,  5 Apr 2022 09:28:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150913;
-        bh=2O2qi9G29+1tq670OXCv1SbgmBO+GBQAThVfE/FwPEU=;
+        s=korg; t=1649150924;
+        bh=VAF5i6aKP1e/tf2Wm8Jq42UU+785ciOTpaHVQGl6Dug=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fkcd2uI/3Ksdkfm6Y18GcXCa+2AF9IOSCZmua+mZM2nW/TTAJf3q8bWS7zpykuY3i
-         ZUS+jRiOqvQhOLe3s8mL1WbZ2rFpLGt8SobJthuyYXTXPITu56l619Hw1gbGxqAtV9
-         LelD8kGXoDKtSsU8mAbBnhL8W1kNtzr3qOju9NgQ=
+        b=hgxkg8i1e4zmytmPpN71HXLsNRZ6OG56/yU4FCW1je5cByuyqdRtA3loDuGxczylW
+         lNBVcXPj20ltFAIqfByHDLki7hgbJvGdL4D6YAE+KiKSq5xtBhZU0U6TGAK46818Yl
+         30hFhGRjA83a1DPbY+YZL6GFJtS9XILSsszvcLTA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Corentin Labbe <clabbe@baylibre.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        stable@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 226/913] crypto: gemini - call finalize with bh disabled
-Date:   Tue,  5 Apr 2022 09:21:28 +0200
-Message-Id: <20220405070346.631698308@linuxfoundation.org>
+Subject: [PATCH 5.15 230/913] clocksource/drivers/exynos_mct: Handle DTS with higher number of interrupts
+Date:   Tue,  5 Apr 2022 09:21:32 +0200
+Message-Id: <20220405070346.750586466@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -49,35 +51,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Corentin Labbe <clabbe@baylibre.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
-[ Upstream commit 7f22421103c5a7f9a1726f0ed125274c38174ddb ]
+[ Upstream commit ab8da93dc06d82f464c47ab30e6c75190702f369 ]
 
-Doing ipsec produces a spinlock recursion warning.
-This is due to not disabling BH during crypto completion function.
+The driver statically defines maximum number of interrupts it can
+handle, however it does not respect that limit when configuring them.
+When provided with a DTS with more interrupts than assumed, the driver
+will overwrite static array mct_irqs leading to silent memory
+corruption.
 
-Fixes: 46c5338db7bd45b2 ("crypto: sl3516 - Add sl3516 crypto engine")
-Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Validate the interrupts coming from DTS to avoid this.  This does not
+change the fact that such DTS might not boot at all, because it is
+simply incompatible, however at least some warning will be printed.
+
+Fixes: 36ba5d527e95 ("ARM: EXYNOS: add device tree support for MCT controller driver")
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Reviewed-by: Alim Akhtar <alim.akhtar@samsung.com>
+Link: https://lore.kernel.org/r/20220220103815.135380-1-krzysztof.kozlowski@canonical.com
+Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/crypto/gemini/sl3516-ce-cipher.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/clocksource/exynos_mct.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/crypto/gemini/sl3516-ce-cipher.c b/drivers/crypto/gemini/sl3516-ce-cipher.c
-index c1c2b1d86663..f2be0a7d7f7a 100644
---- a/drivers/crypto/gemini/sl3516-ce-cipher.c
-+++ b/drivers/crypto/gemini/sl3516-ce-cipher.c
-@@ -264,7 +264,9 @@ static int sl3516_ce_handle_cipher_request(struct crypto_engine *engine, void *a
- 	struct skcipher_request *breq = container_of(areq, struct skcipher_request, base);
+diff --git a/drivers/clocksource/exynos_mct.c b/drivers/clocksource/exynos_mct.c
+index 857cf12ebe57..cc2a961ddd3b 100644
+--- a/drivers/clocksource/exynos_mct.c
++++ b/drivers/clocksource/exynos_mct.c
+@@ -541,6 +541,11 @@ static int __init exynos4_timer_interrupts(struct device_node *np,
+ 	 * irqs are specified.
+ 	 */
+ 	nr_irqs = of_irq_count(np);
++	if (nr_irqs > ARRAY_SIZE(mct_irqs)) {
++		pr_err("exynos-mct: too many (%d) interrupts configured in DT\n",
++			nr_irqs);
++		nr_irqs = ARRAY_SIZE(mct_irqs);
++	}
+ 	for (i = MCT_L0_IRQ; i < nr_irqs; i++)
+ 		mct_irqs[i] = irq_of_parse_and_map(np, i);
  
- 	err = sl3516_ce_cipher(breq);
-+	local_bh_disable();
- 	crypto_finalize_skcipher_request(engine, breq, err);
-+	local_bh_enable();
+@@ -553,11 +558,14 @@ static int __init exynos4_timer_interrupts(struct device_node *np,
+ 		     mct_irqs[MCT_L0_IRQ], err);
+ 	} else {
+ 		for_each_possible_cpu(cpu) {
+-			int mct_irq = mct_irqs[MCT_L0_IRQ + cpu];
++			int mct_irq;
+ 			struct mct_clock_event_device *pcpu_mevt =
+ 				per_cpu_ptr(&percpu_mct_tick, cpu);
  
- 	return 0;
- }
+ 			pcpu_mevt->evt.irq = -1;
++			if (MCT_L0_IRQ + cpu >= ARRAY_SIZE(mct_irqs))
++				break;
++			mct_irq = mct_irqs[MCT_L0_IRQ + cpu];
+ 
+ 			irq_set_status_flags(mct_irq, IRQ_NOAUTOEN);
+ 			if (request_irq(mct_irq,
 -- 
 2.34.1
 
