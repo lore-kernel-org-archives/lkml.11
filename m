@@ -2,121 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 807B6C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:35:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57F1FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:35:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1453307AbiDFAWD (ORCPT
+        id S1456188AbiDFAWY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:22:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49136 "EHLO
+        Tue, 5 Apr 2022 20:22:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573627AbiDET0E (ORCPT
+        with ESMTP id S1350939AbiDEKA2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 15:26:04 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EF532A724
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 12:24:05 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649186643;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=PBpB8VyxqrML+VkIgBACu3iDqkhROgmwY7tjmIL4eEE=;
-        b=0YmWQ54GkWT2NyXGn63FPu1pDnwVGzslkscg3ZFExIQ8m2BaT52W5VRmmFm6Jo912toFTf
-        X1OEXx87VodFjGDyTmiHx1DvSOdlVcAl0GGIWPAms8941lMbULhzTHxmbCQWN3DGQdigxs
-        L3IxfFvVyj6LTuVtR5vn3kGGlEHVaygjtThf/A/4IfIOlggVPigp5uIhEZa2RFY+Dgss61
-        91M9Z4H4Kvx/vT1d52k3eagql13WZLcdzVzp9NYWbQhR6ow7ALfiUtrK2EKh2Ak6zkEJc+
-        /hWejh+vKveLC+yyzAFKE8HiAKM8qZ4FM/NAThEbUejeXneaQ2VJ52nKQzjT4A==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649186643;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=PBpB8VyxqrML+VkIgBACu3iDqkhROgmwY7tjmIL4eEE=;
-        b=WclwfULHFh8wlhXABkAJLoc04RlSlmfsy2db9G/uVbLQm27G9toMbYtAdwMQ+WHfCWRaX6
-        WWuYxxTGDwCY/yDQ==
-To:     Alexey Dobriyan <adobriyan@gmail.com>,
-        Peter Zijlstra <peterz@infradead.org>
-Cc:     x86@kernel.org, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, hpa@zytor.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/5] x86/alternative: record .altinstructions section
- entity size
-In-Reply-To: <Yi4ybwog/H4gk5Ts@localhost.localdomain>
-References: <20220311144312.88466-1-adobriyan@gmail.com>
- <20220311144312.88466-3-adobriyan@gmail.com>
- <20220312211740.GG28057@worktop.programming.kicks-ass.net>
- <Yi4ybwog/H4gk5Ts@localhost.localdomain>
-Date:   Tue, 05 Apr 2022 21:24:02 +0200
-Message-ID: <87o81f1gh9.ffs@tglx>
+        Tue, 5 Apr 2022 06:00:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92BB86B0B1;
+        Tue,  5 Apr 2022 02:51:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E562661673;
+        Tue,  5 Apr 2022 09:51:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED77DC385A1;
+        Tue,  5 Apr 2022 09:51:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152280;
+        bh=vmE0bnZ75a6VCIE9JhhC32nXIyUw3NHWkpsNVT7HH9g=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=jrHHyqXc9RkOhaWaviGyk4AjRkF3p4/ZqTo0wL+Jy04FCrfZAA2YnU+LPbBrRp9SO
+         VqeyTxgTws4tFXHz70sqVZ5S5bo15P2/Ec9SrLFTWlVHjBV1a+SQZDT3c2s1+z6YtV
+         q45ZrGVOvA2THiQVwci/fyltJSH2rGxmriPDjwvU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Boris Burkov <boris@bur.io>,
+        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
+        Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 720/913] btrfs: make search_csum_tree return 0 if we get -EFBIG
+Date:   Tue,  5 Apr 2022 09:29:42 +0200
+Message-Id: <20220405070401.415544732@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Mar 13 2022 at 21:05, Alexey Dobriyan wrote:
-> On Sat, Mar 12, 2022 at 10:17:40PM +0100, Peter Zijlstra wrote:
->> On Fri, Mar 11, 2022 at 05:43:10PM +0300, Alexey Dobriyan wrote:
->> > +	".pushsection .altinstructions,\"aM\",@progbits," __stringify(sizeof=
-_struct_alt_instr) "\n"\
->> > +	".pushsection .altinstructions,\"aM\",@progbits," __stringify(sizeof=
-_struct_alt_instr) "\n"\
->> > +	".pushsection .altinstructions,\"aM\",@progbits," __stringify(sizeof=
-_struct_alt_instr) "\n"\
->>=20
->> > +	.pushsection .altinstructions,"aM",@progbits,sizeof_struct_alt_instr
->> > +	.pushsection .altinstructions,"aM",@progbits,sizeof_struct_alt_instr
->>=20
->> Aside of adding entsize, you're also adding the M(ergable) bit. Also,
->> those lines are on the unwieldy side of things.
->
-> binutils doc says
->
-> 	https://sourceware.org/binutils/docs/as/Section.html
->
-> 	If flags contains the M symbol then the type argument must be specified =
-as well as an extra argument=E2=80=94entsize=E2=80=94like this:
->
-> 	.section name , "flags"M, @type, entsize
->
-> 	Sections with the M flag but not S flag must contain fixed size constant=
-s,
-> 	each entsize octets long. Sections with both M and S must contain zero
-> 	terminated strings where each character is entsize bytes long. The linker
-> 	may remove duplicates within sections with the same name, same entity si=
-ze
-> 	and same flags. entsize must be an absolute expression. For sections with
-> 	both M and S, a string which is a suffix of a larger string is considered
-> 	a duplicate. Thus "def" will be merged with "abcdef"; A reference to the
-> 	first "def" will be changed to a reference to "abcdef"+3.
->
-> "a"M doesn't work, but "aM" does.
->
-> I don't know if merging is the issue, it is not like alt replacements hav=
-e names.
+From: Josef Bacik <josef@toxicpanda.com>
 
-That does not matter. M merges any duplications in sections with the
-same [section] name, entity size and flags.
+[ Upstream commit 03ddb19d2ea745228879b9334f3b550c88acb10a ]
 
-     .pushsection .bar "aM" @progbits, 4
-     .byte 0x01, 0x02, 0x03, 0x04
-     .popsection
+We can either fail to find a csum entry at all and return -ENOENT, or we
+can find a range that is close, but return -EFBIG.  In essence these
+both mean the same thing when we are doing a lookup for a csum in an
+existing range, we didn't find a csum.  We want to treat both of these
+errors the same way, complain loudly that there wasn't a csum.  This
+currently happens anyway because we do
 
-     .pushsection .bar "aM" @progbits, 4
-     .byte 0x01, 0x02, 0x03, 0x04
-     .popsection
+	count = search_csum_tree();
+	if (count <= 0) {
+		// reloc and error handling
+	}
 
-Will create a section .bar with lenght 4 and the content:
-     0x1,0x2,0x3,0x4
+However it forces us to incorrectly treat EIO or ENOMEM errors as on
+disk corruption.  Fix this by returning 0 if we get either -ENOENT or
+-EFBIG from btrfs_lookup_csum() so we can do proper error handling.
 
-What saves you here is the fact that the altinstruction entries are
-guaranteed to be unique, but that wants a big fat comment.
+Reviewed-by: Boris Burkov <boris@bur.io>
+Reviewed-by: Johannes Thumshirn <johannes.thumshirn@wdc.com>
+Signed-off-by: Josef Bacik <josef@toxicpanda.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ fs/btrfs/file-item.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thanks,
+diff --git a/fs/btrfs/file-item.c b/fs/btrfs/file-item.c
+index 0b9401a5afd3..161a69d7e117 100644
+--- a/fs/btrfs/file-item.c
++++ b/fs/btrfs/file-item.c
+@@ -303,7 +303,7 @@ static int search_csum_tree(struct btrfs_fs_info *fs_info,
+ 	read_extent_buffer(path->nodes[0], dst, (unsigned long)item,
+ 			ret * csum_size);
+ out:
+-	if (ret == -ENOENT)
++	if (ret == -ENOENT || ret == -EFBIG)
+ 		ret = 0;
+ 	return ret;
+ }
+-- 
+2.34.1
 
-        tglx
+
+
