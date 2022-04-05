@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7FC3C35273
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:04:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5171AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:05:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345172AbiDELA0 (ORCPT
+        id S1345845AbiDELAx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:00:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58522 "EHLO
+        Tue, 5 Apr 2022 07:00:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234124AbiDEIjT (ORCPT
+        with ESMTP id S235448AbiDEIjx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:39:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DB2A1FA68;
-        Tue,  5 Apr 2022 01:32:56 -0700 (PDT)
+        Tue, 5 Apr 2022 04:39:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8FF66350;
+        Tue,  5 Apr 2022 01:33:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DE3C960FFC;
-        Tue,  5 Apr 2022 08:32:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFFD7C385A1;
-        Tue,  5 Apr 2022 08:32:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7768260FFC;
+        Tue,  5 Apr 2022 08:33:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86205C385A1;
+        Tue,  5 Apr 2022 08:33:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147575;
-        bh=y4HzoPUx0g/Wg4u5UKwImFP7XoKjSKux0f3xg0dQGf0=;
+        s=korg; t=1649147602;
+        bh=PhHmtdJRSs913RAx/hJdUrx6ytGr32/ms4SDsOiMmy0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aAgEL+VLvNLPk+0tFHVheKoyAYLh2Joc9mCIi7nm5w7nEC5PDlB5wReM2qZWTsoqL
-         Zp7Tgdf3HvdCDYrb+KLJq0pIHstOFUC7gdtWy7+P31etuSbxDpfuaMWDCcD77TkT8c
-         9Ebo7s+T/3Fe3cJRdeX/erM+slxn2ncuAw5FYQw8=
+        b=n8sDDVr9gj2B2/sHC8wrtFxusrTZnhnG96W4Kh9twA7NBmaKLqJYRTpT3SKBtDpc1
+         mYMI5Io9AD32EhaFDC6rOlsO/CMoVIDNpVnjxjBzuy1hgFOs8F+3LwIIWxjS4C/WDZ
+         WZwF2mM2JbAl8X4mN+5VlY6DjkZd4GZ7sa7OwclM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Konstantin Klubnichkin <kitsok@yandex-team.ru>,
-        Billy Tsai <billy_tsai@aspeedtech.com>,
-        Joel Stanley <joel@jms.id.au>, Stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5.16 0046/1017] iio: adc: aspeed: Add divider flag to fix incorrect voltage reading.
-Date:   Tue,  5 Apr 2022 09:15:59 +0200
-Message-Id: <20220405070355.549917210@linuxfoundation.org>
+        stable@vger.kernel.org, Ronnie Sahlberg <lsahlber@redhat.com>,
+        "Paulo Alcantara (SUSE)" <pc@cjr.nz>,
+        Steve French <stfrench@microsoft.com>
+Subject: [PATCH 5.16 0055/1017] cifs: fix handlecache and multiuser
+Date:   Tue,  5 Apr 2022 09:16:08 +0200
+Message-Id: <20220405070355.817742520@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -52,43 +50,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Billy Tsai <billy_tsai@aspeedtech.com>
+From: Ronnie Sahlberg <lsahlber@redhat.com>
 
-commit 571426631acf46e2999c7ecd1e9d048172969a43 upstream.
+commit 47178c7722ac528ea08aa82c3ef9ffa178962d7a upstream.
 
-The formula for the ADC sampling period in ast2400/ast2500 is:
-ADC clock period = PCLK * 2 * (ADC0C[31:17] + 1) * (ADC0C[9:0])
-When ADC0C[9:0] is set to 0 the sampling voltage will be lower than
-expected, because the hardware may not have enough time to
-charge/discharge to a stable voltage. This patch use the flag
-CLK_DIVIDER_ONE_BASED which will use the raw value read from the
-register, with the value of zero considered invalid to conform to the
-corrected formula.
+In multiuser each individual user has their own tcon structure for the
+share and thus their own handle for a cached directory.
+When we umount such a share we much make sure to release the pinned down dentry
+for each such tcon and not just the master tcon.
 
-Fixes: 573803234e72 ("iio: Aspeed ADC")
-Reported-by: Konstantin Klubnichkin <kitsok@yandex-team.ru>
-Signed-off-by: Billy Tsai <billy_tsai@aspeedtech.com>
-Reviewed-by: Joel Stanley <joel@jms.id.au>
-Link: https://lore.kernel.org/r/20220221012705.22008-1-billy_tsai@aspeedtech.com
-Cc: <Stable@vger.kernel.org>
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Otherwise we will get nasty warnings on umount that dentries are still in use:
+[ 3459.590047] BUG: Dentry 00000000115c6f41{i=12000000019d95,n=/}  still in use\
+ (2) [unmount of cifs cifs]
+...
+[ 3459.590492] Call Trace:
+[ 3459.590500]  d_walk+0x61/0x2a0
+[ 3459.590518]  ? shrink_lock_dentry.part.0+0xe0/0xe0
+[ 3459.590526]  shrink_dcache_for_umount+0x49/0x110
+[ 3459.590535]  generic_shutdown_super+0x1a/0x110
+[ 3459.590542]  kill_anon_super+0x14/0x30
+[ 3459.590549]  cifs_kill_sb+0xf5/0x104 [cifs]
+[ 3459.590773]  deactivate_locked_super+0x36/0xa0
+[ 3459.590782]  cleanup_mnt+0x131/0x190
+[ 3459.590789]  task_work_run+0x5c/0x90
+[ 3459.590798]  exit_to_user_mode_loop+0x151/0x160
+[ 3459.590809]  exit_to_user_mode_prepare+0x83/0xd0
+[ 3459.590818]  syscall_exit_to_user_mode+0x12/0x30
+[ 3459.590828]  do_syscall_64+0x48/0x90
+[ 3459.590833]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Signed-off-by: Ronnie Sahlberg <lsahlber@redhat.com>
+Acked-by: Paulo Alcantara (SUSE) <pc@cjr.nz>
+Cc: stable@vger.kernel.org
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/adc/aspeed_adc.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ fs/cifs/cifsfs.c |   13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
 
---- a/drivers/iio/adc/aspeed_adc.c
-+++ b/drivers/iio/adc/aspeed_adc.c
-@@ -539,7 +539,9 @@ static int aspeed_adc_probe(struct platf
- 	data->clk_scaler = devm_clk_hw_register_divider(
- 		&pdev->dev, clk_name, clk_parent_name, scaler_flags,
- 		data->base + ASPEED_REG_CLOCK_CONTROL, 0,
--		data->model_data->scaler_bit_width, 0, &data->clk_lock);
-+		data->model_data->scaler_bit_width,
-+		data->model_data->need_prescaler ? CLK_DIVIDER_ONE_BASED : 0,
-+		&data->clk_lock);
- 	if (IS_ERR(data->clk_scaler))
- 		return PTR_ERR(data->clk_scaler);
+--- a/fs/cifs/cifsfs.c
++++ b/fs/cifs/cifsfs.c
+@@ -253,6 +253,9 @@ static void cifs_kill_sb(struct super_bl
+ 	struct cifs_sb_info *cifs_sb = CIFS_SB(sb);
+ 	struct cifs_tcon *tcon;
+ 	struct cached_fid *cfid;
++	struct rb_root *root = &cifs_sb->tlink_tree;
++	struct rb_node *node;
++	struct tcon_link *tlink;
  
+ 	/*
+ 	 * We ned to release all dentries for the cached directories
+@@ -262,17 +265,21 @@ static void cifs_kill_sb(struct super_bl
+ 		dput(cifs_sb->root);
+ 		cifs_sb->root = NULL;
+ 	}
+-	tcon = cifs_sb_master_tcon(cifs_sb);
+-	if (tcon) {
++	spin_lock(&cifs_sb->tlink_tree_lock);
++	node = rb_first(root);
++	while (node != NULL) {
++		tlink = rb_entry(node, struct tcon_link, tl_rbnode);
++		tcon = tlink_tcon(tlink);
+ 		cfid = &tcon->crfid;
+ 		mutex_lock(&cfid->fid_mutex);
+ 		if (cfid->dentry) {
+-
+ 			dput(cfid->dentry);
+ 			cfid->dentry = NULL;
+ 		}
+ 		mutex_unlock(&cfid->fid_mutex);
++		node = rb_next(node);
+ 	}
++	spin_unlock(&cifs_sb->tlink_tree_lock);
+ 
+ 	kill_anon_super(sb);
+ 	cifs_umount(cifs_sb);
 
 
