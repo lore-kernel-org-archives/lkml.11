@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CD7EC38161
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8112C4708A
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236167AbiDEIBf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:01:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57094 "EHLO
+        id S236410AbiDEICM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:02:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233116AbiDEHwI (ORCPT
+        with ESMTP id S233088AbiDEHwH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:52:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99FE49AE44;
-        Tue,  5 Apr 2022 00:48:28 -0700 (PDT)
+        Tue, 5 Apr 2022 03:52:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C9D69A9A8;
+        Tue,  5 Apr 2022 00:48:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3668C616DE;
-        Tue,  5 Apr 2022 07:48:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40EE4C340EE;
-        Tue,  5 Apr 2022 07:48:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 91264B81B18;
+        Tue,  5 Apr 2022 07:48:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E85A9C340EE;
+        Tue,  5 Apr 2022 07:48:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144907;
-        bh=ChCoChCJ+bm2s/23Tdv+MYjgZvCiKzNdR0c3alOGOmQ=;
+        s=korg; t=1649144899;
+        bh=NCtORz99CQECjvkHop6fKoctS6oPu/LXqkX7lYb0PiI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=x1W97CUmjlIwqpxbevdhvrAFOC/5gFzoFdffyjwjEtNy+KXsBMKfY+7wDngdpqLat
-         TGWpHLFXi8FnfUor1vwUXZKsyUDbKucWG7bd0g2wqOXWNQcMBqFqtXMweZYDFdvFWQ
-         MgB7mA6u8WAIeCG5vR8aoQYcNEb0c3XHuaJmlk5k=
+        b=RP+ysa6EL9n2+aFpmc0XD9kOf+oT1Qq4DcZk0XzhGhtghsZqqHHh//C6W2cAXqqJq
+         gL5JAD1rmtzom3vidAUyhC917WUEDPnF3LOgpnKUE3KqrM2nMdJwufaLnichkr5Vwh
+         upPPjDLyVdsX3MaIXRNUEh5W76WlgO4CGk3yz1Bs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Scott Mayhew <smayhew@redhat.com>,
+        Paul Moore <paul@paul-moore.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0213/1126] spi: tegra114: Add missing IRQ check in tegra_spi_probe
-Date:   Tue,  5 Apr 2022 09:16:00 +0200
-Message-Id: <20220405070413.861469208@linuxfoundation.org>
+Subject: [PATCH 5.17 0210/1126] selinux: Fix selinux_sb_mnt_opts_compat()
+Date:   Tue,  5 Apr 2022 09:15:57 +0200
+Message-Id: <20220405070413.773434329@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,39 +49,224 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Scott Mayhew <smayhew@redhat.com>
 
-[ Upstream commit 4f92724d4b92c024e721063f520d66e11ca4b54b ]
+[ Upstream commit b8b87fd954b4b1bdd2d739c8f50bf685351a1a94 ]
 
-This func misses checking for platform_get_irq()'s call and may passes the
-negative error codes to request_threaded_irq(), which takes unsigned IRQ #,
-causing it to fail with -EINVAL, overriding an original error code.
-Stop calling request_threaded_irq() with invalid IRQ #s.
+selinux_sb_mnt_opts_compat() is called under the sb_lock spinlock and
+shouldn't be performing any memory allocations.  Fix this by parsing the
+sids at the same time we're chopping up the security mount options
+string and then using the pre-parsed sids when doing the comparison.
 
-Fixes: f333a331adfa ("spi/tegra114: add spi driver")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220128165238.25615-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: cc274ae7763d ("selinux: fix sleeping function called from invalid context")
+Fixes: 69c4a42d72eb ("lsm,selinux: add new hook to compare new mount to an existing mount")
+Signed-off-by: Scott Mayhew <smayhew@redhat.com>
+Signed-off-by: Paul Moore <paul@paul-moore.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi-tegra114.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ security/selinux/hooks.c | 75 ++++++++++++++++++++++------------------
+ 1 file changed, 41 insertions(+), 34 deletions(-)
 
-diff --git a/drivers/spi/spi-tegra114.c b/drivers/spi/spi-tegra114.c
-index e9de1d958bbd..8f345247a8c3 100644
---- a/drivers/spi/spi-tegra114.c
-+++ b/drivers/spi/spi-tegra114.c
-@@ -1352,6 +1352,10 @@ static int tegra_spi_probe(struct platform_device *pdev)
- 	tspi->phys = r->start;
+diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
+index a0243bae8423..a7306208649a 100644
+--- a/security/selinux/hooks.c
++++ b/security/selinux/hooks.c
+@@ -342,6 +342,10 @@ static void inode_free_security(struct inode *inode)
  
- 	spi_irq = platform_get_irq(pdev, 0);
-+	if (spi_irq < 0) {
-+		ret = spi_irq;
-+		goto exit_free_master;
-+	}
- 	tspi->irq = spi_irq;
+ struct selinux_mnt_opts {
+ 	const char *fscontext, *context, *rootcontext, *defcontext;
++	u32 fscontext_sid;
++	u32 context_sid;
++	u32 rootcontext_sid;
++	u32 defcontext_sid;
+ };
  
- 	tspi->clk = devm_clk_get(&pdev->dev, "spi");
+ static void selinux_free_mnt_opts(void *mnt_opts)
+@@ -598,15 +602,14 @@ static int bad_option(struct superblock_security_struct *sbsec, char flag,
+ 	return 0;
+ }
+ 
+-static int parse_sid(struct super_block *sb, const char *s, u32 *sid,
+-		     gfp_t gfp)
++static int parse_sid(struct super_block *sb, const char *s, u32 *sid)
+ {
+ 	int rc = security_context_str_to_sid(&selinux_state, s,
+-					     sid, gfp);
++					     sid, GFP_KERNEL);
+ 	if (rc)
+ 		pr_warn("SELinux: security_context_str_to_sid"
+ 		       "(%s) failed for (dev %s, type %s) errno=%d\n",
+-		       s, sb->s_id, sb->s_type->name, rc);
++		       s, sb ? sb->s_id : "?", sb ? sb->s_type->name : "?", rc);
+ 	return rc;
+ }
+ 
+@@ -673,8 +676,7 @@ static int selinux_set_mnt_opts(struct super_block *sb,
+ 	 */
+ 	if (opts) {
+ 		if (opts->fscontext) {
+-			rc = parse_sid(sb, opts->fscontext, &fscontext_sid,
+-					GFP_KERNEL);
++			rc = parse_sid(sb, opts->fscontext, &fscontext_sid);
+ 			if (rc)
+ 				goto out;
+ 			if (bad_option(sbsec, FSCONTEXT_MNT, sbsec->sid,
+@@ -683,8 +685,7 @@ static int selinux_set_mnt_opts(struct super_block *sb,
+ 			sbsec->flags |= FSCONTEXT_MNT;
+ 		}
+ 		if (opts->context) {
+-			rc = parse_sid(sb, opts->context, &context_sid,
+-					GFP_KERNEL);
++			rc = parse_sid(sb, opts->context, &context_sid);
+ 			if (rc)
+ 				goto out;
+ 			if (bad_option(sbsec, CONTEXT_MNT, sbsec->mntpoint_sid,
+@@ -693,8 +694,7 @@ static int selinux_set_mnt_opts(struct super_block *sb,
+ 			sbsec->flags |= CONTEXT_MNT;
+ 		}
+ 		if (opts->rootcontext) {
+-			rc = parse_sid(sb, opts->rootcontext, &rootcontext_sid,
+-					GFP_KERNEL);
++			rc = parse_sid(sb, opts->rootcontext, &rootcontext_sid);
+ 			if (rc)
+ 				goto out;
+ 			if (bad_option(sbsec, ROOTCONTEXT_MNT, root_isec->sid,
+@@ -703,8 +703,7 @@ static int selinux_set_mnt_opts(struct super_block *sb,
+ 			sbsec->flags |= ROOTCONTEXT_MNT;
+ 		}
+ 		if (opts->defcontext) {
+-			rc = parse_sid(sb, opts->defcontext, &defcontext_sid,
+-					GFP_KERNEL);
++			rc = parse_sid(sb, opts->defcontext, &defcontext_sid);
+ 			if (rc)
+ 				goto out;
+ 			if (bad_option(sbsec, DEFCONTEXT_MNT, sbsec->def_sid,
+@@ -996,21 +995,29 @@ static int selinux_add_opt(int token, const char *s, void **mnt_opts)
+ 		if (opts->context || opts->defcontext)
+ 			goto err;
+ 		opts->context = s;
++		if (selinux_initialized(&selinux_state))
++			parse_sid(NULL, s, &opts->context_sid);
+ 		break;
+ 	case Opt_fscontext:
+ 		if (opts->fscontext)
+ 			goto err;
+ 		opts->fscontext = s;
++		if (selinux_initialized(&selinux_state))
++			parse_sid(NULL, s, &opts->fscontext_sid);
+ 		break;
+ 	case Opt_rootcontext:
+ 		if (opts->rootcontext)
+ 			goto err;
+ 		opts->rootcontext = s;
++		if (selinux_initialized(&selinux_state))
++			parse_sid(NULL, s, &opts->rootcontext_sid);
+ 		break;
+ 	case Opt_defcontext:
+ 		if (opts->context || opts->defcontext)
+ 			goto err;
+ 		opts->defcontext = s;
++		if (selinux_initialized(&selinux_state))
++			parse_sid(NULL, s, &opts->defcontext_sid);
+ 		break;
+ 	}
+ 
+@@ -2648,8 +2655,6 @@ static int selinux_sb_mnt_opts_compat(struct super_block *sb, void *mnt_opts)
+ {
+ 	struct selinux_mnt_opts *opts = mnt_opts;
+ 	struct superblock_security_struct *sbsec = selinux_superblock(sb);
+-	u32 sid;
+-	int rc;
+ 
+ 	/*
+ 	 * Superblock not initialized (i.e. no options) - reject if any
+@@ -2666,34 +2671,36 @@ static int selinux_sb_mnt_opts_compat(struct super_block *sb, void *mnt_opts)
+ 		return (sbsec->flags & SE_MNTMASK) ? 1 : 0;
+ 
+ 	if (opts->fscontext) {
+-		rc = parse_sid(sb, opts->fscontext, &sid, GFP_NOWAIT);
+-		if (rc)
++		if (opts->fscontext_sid == SECSID_NULL)
+ 			return 1;
+-		if (bad_option(sbsec, FSCONTEXT_MNT, sbsec->sid, sid))
++		else if (bad_option(sbsec, FSCONTEXT_MNT, sbsec->sid,
++				       opts->fscontext_sid))
+ 			return 1;
+ 	}
+ 	if (opts->context) {
+-		rc = parse_sid(sb, opts->context, &sid, GFP_NOWAIT);
+-		if (rc)
++		if (opts->context_sid == SECSID_NULL)
+ 			return 1;
+-		if (bad_option(sbsec, CONTEXT_MNT, sbsec->mntpoint_sid, sid))
++		else if (bad_option(sbsec, CONTEXT_MNT, sbsec->mntpoint_sid,
++				       opts->context_sid))
+ 			return 1;
+ 	}
+ 	if (opts->rootcontext) {
+-		struct inode_security_struct *root_isec;
+-
+-		root_isec = backing_inode_security(sb->s_root);
+-		rc = parse_sid(sb, opts->rootcontext, &sid, GFP_NOWAIT);
+-		if (rc)
+-			return 1;
+-		if (bad_option(sbsec, ROOTCONTEXT_MNT, root_isec->sid, sid))
++		if (opts->rootcontext_sid == SECSID_NULL)
+ 			return 1;
++		else {
++			struct inode_security_struct *root_isec;
++
++			root_isec = backing_inode_security(sb->s_root);
++			if (bad_option(sbsec, ROOTCONTEXT_MNT, root_isec->sid,
++				       opts->rootcontext_sid))
++				return 1;
++		}
+ 	}
+ 	if (opts->defcontext) {
+-		rc = parse_sid(sb, opts->defcontext, &sid, GFP_NOWAIT);
+-		if (rc)
++		if (opts->defcontext_sid == SECSID_NULL)
+ 			return 1;
+-		if (bad_option(sbsec, DEFCONTEXT_MNT, sbsec->def_sid, sid))
++		else if (bad_option(sbsec, DEFCONTEXT_MNT, sbsec->def_sid,
++				       opts->defcontext_sid))
+ 			return 1;
+ 	}
+ 	return 0;
+@@ -2713,14 +2720,14 @@ static int selinux_sb_remount(struct super_block *sb, void *mnt_opts)
+ 		return 0;
+ 
+ 	if (opts->fscontext) {
+-		rc = parse_sid(sb, opts->fscontext, &sid, GFP_KERNEL);
++		rc = parse_sid(sb, opts->fscontext, &sid);
+ 		if (rc)
+ 			return rc;
+ 		if (bad_option(sbsec, FSCONTEXT_MNT, sbsec->sid, sid))
+ 			goto out_bad_option;
+ 	}
+ 	if (opts->context) {
+-		rc = parse_sid(sb, opts->context, &sid, GFP_KERNEL);
++		rc = parse_sid(sb, opts->context, &sid);
+ 		if (rc)
+ 			return rc;
+ 		if (bad_option(sbsec, CONTEXT_MNT, sbsec->mntpoint_sid, sid))
+@@ -2729,14 +2736,14 @@ static int selinux_sb_remount(struct super_block *sb, void *mnt_opts)
+ 	if (opts->rootcontext) {
+ 		struct inode_security_struct *root_isec;
+ 		root_isec = backing_inode_security(sb->s_root);
+-		rc = parse_sid(sb, opts->rootcontext, &sid, GFP_KERNEL);
++		rc = parse_sid(sb, opts->rootcontext, &sid);
+ 		if (rc)
+ 			return rc;
+ 		if (bad_option(sbsec, ROOTCONTEXT_MNT, root_isec->sid, sid))
+ 			goto out_bad_option;
+ 	}
+ 	if (opts->defcontext) {
+-		rc = parse_sid(sb, opts->defcontext, &sid, GFP_KERNEL);
++		rc = parse_sid(sb, opts->defcontext, &sid);
+ 		if (rc)
+ 			return rc;
+ 		if (bad_option(sbsec, DEFCONTEXT_MNT, sbsec->def_sid, sid))
 -- 
 2.34.1
 
