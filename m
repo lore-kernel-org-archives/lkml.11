@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFC95C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA74BC4321E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:42:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386252AbiDEMks (ORCPT
+        id S1386231AbiDEMkm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:40:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51016 "EHLO
+        Tue, 5 Apr 2022 08:40:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236496AbiDEJDD (ORCPT
+        with ESMTP id S236516AbiDEJDF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:03:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A34E2D1CC;
-        Tue,  5 Apr 2022 01:54:46 -0700 (PDT)
+        Tue, 5 Apr 2022 05:03:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7F352D1E6;
+        Tue,  5 Apr 2022 01:54:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AA5AA61476;
-        Tue,  5 Apr 2022 08:54:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8DC4C385A0;
-        Tue,  5 Apr 2022 08:54:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 75AE0614E4;
+        Tue,  5 Apr 2022 08:54:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EBCDC385A3;
+        Tue,  5 Apr 2022 08:54:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148885;
-        bh=U2ZJYOuEEz0m9/elS5Kj92JvO3TyzPU4Kk2kEKcCqqE=;
+        s=korg; t=1649148887;
+        bh=jl+4nCqhoplCL8BSTrcvMb6idHEZMgoKG46ObsEUPOU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wXTbrKAAfku7vvgMeHu1RTal5gY8bpw9Is9Vozaes80THRtZMhD1/KnbscJ6xToRl
-         mBw4NE+SRzhPd+8dkmezDqCUaEZm8s7ihpzLvCN67gCt0scPUPGaN9V3qTXeVYBMoL
-         Uw10qxlPY/HttRsPOFP4C2LeZTGfZdwHjG9+euB8=
+        b=LxEWqkyC9WctGaGz2QeHyil2/aZB5VVFwfINnlRatPIQEErB/uGaUiW1X4o9MUOLx
+         Ol2N2aaumzYg6ELqMRQS7Q3qM9s3IcnOQXNTUjYft96XsvPfsaWjYld8DVffPGYoUH
+         nIL2GSFHf7jm4eX3UEqVVvJS2Z7ln0KgqbnC4qDk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Luca Coelho <luciano.coelho@intel.com>,
+        stable@vger.kernel.org, Kuogee Hsieh <quic_khsieh@quicinc.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0509/1017] iwlwifi: mvm: dont iterate unadded vifs when handling FW SMPS req
-Date:   Tue,  5 Apr 2022 09:23:42 +0200
-Message-Id: <20220405070409.409242075@linuxfoundation.org>
+Subject: [PATCH 5.16 0518/1017] drm/msm/dp: always add fail-safe mode into connector mode list
+Date:   Tue,  5 Apr 2022 09:23:51 +0200
+Message-Id: <20220405070409.672459336@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,40 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luca Coelho <luciano.coelho@intel.com>
+From: Kuogee Hsieh <quic_khsieh@quicinc.com>
 
-[ Upstream commit 8a265d1a619c16400406c9d598411850ee104aed ]
+[ Upstream commit d4aca422539c441a7f3fec749287b36de37d9b6b ]
 
-We may not have all the interfaces added to the driver when we get the
-THERMAL_DUAL_CHAIN_REQUEST notification from the FW, so instead of
-iterating all vifs to update SMPS, iterate only the ones that are
-already assigned.  The interfaces that were not assigned yet, will be
-updated accordingly when we start using them.
+Some of DP link compliant test expects to return fail-safe mode
+if prefer detailed timing mode can not be supported by mainlink's
+lane and rate after link training. Therefore add fail-safe mode
+into connector mode list as backup mode. This patch fixes test
+case 4.2.2.1.
 
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Fixes: 2a7ce54ccc23 ("iwlwifi: mvm: honour firmware SMPS requests")
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20220129105618.9416aade2ba0.I0b71142f89e3f158aa058a1dfb2517c8c1fa3726@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Changes in v2:
+-- add Fixes text string
+
+Fixes: 4b85d405cfe9 ( "drm/msm/dp: reduce link rate if failed at link training 1")
+Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Link: https://lore.kernel.org/r/1643066274-25814-1-git-send-email-quic_khsieh@quicinc.com
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/mvm/ops.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/msm/dp/dp_panel.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/ops.c b/drivers/net/wireless/intel/iwlwifi/mvm/ops.c
-index 364f6aefae81..5b7d89e33431 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/ops.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/ops.c
-@@ -237,7 +237,8 @@ static void iwl_mvm_rx_thermal_dual_chain_req(struct iwl_mvm *mvm,
- 	 */
- 	mvm->fw_static_smps_request =
- 		req->event == cpu_to_le32(THERMAL_DUAL_CHAIN_REQ_DISABLE);
--	ieee80211_iterate_interfaces(mvm->hw, IEEE80211_IFACE_ITER_NORMAL,
-+	ieee80211_iterate_interfaces(mvm->hw,
-+				     IEEE80211_IFACE_SKIP_SDATA_NOT_IN_DRIVER,
- 				     iwl_mvm_intf_dual_chain_req, NULL);
- }
+diff --git a/drivers/gpu/drm/msm/dp/dp_panel.c b/drivers/gpu/drm/msm/dp/dp_panel.c
+index 71db10c0f262..f1418722c549 100644
+--- a/drivers/gpu/drm/msm/dp/dp_panel.c
++++ b/drivers/gpu/drm/msm/dp/dp_panel.c
+@@ -212,6 +212,11 @@ int dp_panel_read_sink_caps(struct dp_panel *dp_panel,
+ 		if (drm_add_modes_noedid(connector, 640, 480))
+ 			drm_set_preferred_mode(connector, 640, 480);
+ 		mutex_unlock(&connector->dev->mode_config.mutex);
++	} else {
++		/* always add fail-safe mode as backup mode */
++		mutex_lock(&connector->dev->mode_config.mutex);
++		drm_add_modes_noedid(connector, 640, 480);
++		mutex_unlock(&connector->dev->mode_config.mutex);
+ 	}
  
+ 	if (panel->aux_cfg_update_done) {
 -- 
 2.34.1
 
