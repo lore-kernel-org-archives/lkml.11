@@ -2,178 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 279F7C4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B742EC35280
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:41:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1576240AbiDEXK1 (ORCPT
+        id S1576635AbiDEXKx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:10:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44052 "EHLO
+        Tue, 5 Apr 2022 19:10:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1452376AbiDEPyu (ORCPT
+        with ESMTP id S1572913AbiDERTv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:54:50 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F3AF2DD63;
-        Tue,  5 Apr 2022 07:54:02 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id j12so12116963wrb.5;
-        Tue, 05 Apr 2022 07:54:02 -0700 (PDT)
+        Tue, 5 Apr 2022 13:19:51 -0400
+Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B162852E2A
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 10:17:52 -0700 (PDT)
+Received: by mail-pf1-x430.google.com with SMTP id b13so109401pfv.0
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 10:17:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=+pnKCsRfb2rzqCckVdTkSoUT8v6CdUCSShmPSLzCyP0=;
-        b=LX4HOgTQVkwMDbSE3DgKngp+uhFQ8ZfVZwEpwb8isiAUd8/XQmnnc769W4bGAiZCC7
-         RWY38LhoMvuzKnd3jlxHJay7yUi68ecJ+e2aemylOEILuQurMuPkzYR0cixwAzcmtmxv
-         GUSmMyLT4xt5C/V5FCYhJTpWYL8PosCycpY1hUagZQqT+ej+TD2klvXzeb4yf9KTg1wC
-         haw47fZzkfqi/Cwb60l2uaYcl7RydVP6yRh0WTFfgx5v+zLEX3CKVvBBuEM3bEpJvYKk
-         5wOwoPdIZ94XVjIEQaLE22UZreCuWjLAkhaFTrZ1IilpGD+o6Z9A3TpmwCN0K71FIP8y
-         85yg==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=oLYBS6qSnQJDgHjg4Cj/j2Qud2mtZddgHInB5HJPeJI=;
+        b=LjoNMKdoa2fQAXS+kSSP5+w5CB9a38NU+nsairp0fAYRVkSuE5pCKkLbh+w3mkv3kU
+         f/D/yVZPMsLyjmGoclxJf72/hNgGVWsb+AUghM2UbT1G6fLt9RZxs02Aq+RzxkpND3Ls
+         31KigSq940fcdUut6dq4VTF2P2un1IquDcydA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :subject:content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=+pnKCsRfb2rzqCckVdTkSoUT8v6CdUCSShmPSLzCyP0=;
-        b=lXpPkzeo3DPny55NikfnbAa6MpBqcVntXCk8BUP5BVTzVFofbo4ivp6qKp9ml7U2qI
-         D6LdFehhAVJCSFGFmJpPYuKGstfCgA+lFoYQAcP+hdeLxz/QbKtHQSk30J0AeLsPNjE0
-         fm9iDM84Fr8KxFiolN4juPGB22ERfJOvUerNy7EdPgay2Kb3KZL/Hk+vlGxtzSdghwqB
-         su4v6bIPs0jnAmYEHy0VHpi37WrQVWgQYH4KcP7svYqHIzGS/ucqhn58NBxSEFqL+jHt
-         0EilWjv7viKdpYd1Kjv3TOuVm9pObronaUy3Gf/wdgKcq+wU/7AHRDnVZ/jvvAA4s1RH
-         Rgdg==
-X-Gm-Message-State: AOAM533MSctd5Ido8gFWxQocw5r3w7skUVh1Nqt2GLaECau2NkNyp/hK
-        /SFIvzpkAsme0TBVUFMiww4=
-X-Google-Smtp-Source: ABdhPJx9J+H9RdYMUjeVJaoXCv7F9LT5FTx30HNzWlpNFGTPDHPZRSy8pztLyEdDBAXRD0EY+/Dy+w==
-X-Received: by 2002:a05:6000:15ce:b0:204:1113:b053 with SMTP id y14-20020a05600015ce00b002041113b053mr3006630wry.701.1649170440961;
-        Tue, 05 Apr 2022 07:54:00 -0700 (PDT)
-Received: from [10.32.181.87] (nat-pool-mxp-t.redhat.com. [149.6.153.186])
-        by smtp.googlemail.com with ESMTPSA id p14-20020a05600c1d8e00b0038dbb5ecc8asm2467434wms.2.2022.04.05.07.54.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Apr 2022 07:54:00 -0700 (PDT)
-Sender: Paolo Bonzini <paolo.bonzini@gmail.com>
-Message-ID: <4d2e9c6c-af14-18d1-0f07-f06196543640@redhat.com>
-Date:   Tue, 5 Apr 2022 16:53:59 +0200
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=oLYBS6qSnQJDgHjg4Cj/j2Qud2mtZddgHInB5HJPeJI=;
+        b=dnQYxpKYERPDIyRPoGRCskmT/b1XCLTce/jdwBr7S4Dieyxi7xMDz0PGyP7049pE4s
+         5C6Jt4n8NPCRUXLfBlDYK4e0JbzDndW+PP8xZZ/N4baldUH5OYjUA70r5uEm6dkzR7N8
+         Hz6jlbf7CMMc2GTA1JcRsTCLzFrdi2LRuWNSgsWNQAupYA0rxxvv7Db+dclfiZg9EJF6
+         liurCRERIPYk+Aq9Qr9Z5a4oQ3leJtH0byMwaQfO996sKKiiMlUoc3lh7pG1gbavkrG1
+         frstsKIy1t+ZwHsI1NiYFVD7WibRBlvGVq9t72OnpGw4PRGxVfc29F/iqzXZSxKZPzPG
+         ZkQw==
+X-Gm-Message-State: AOAM531ylQMsvQCIEphkVXdsuBib1xrVDul5fRaaBy8X+g3kwjCPuqGN
+        h0x2ZcvHxyz7eQ3EIljS9Mm2qA==
+X-Google-Smtp-Source: ABdhPJwlJsEZo/PkPNT8otsdduOSiGXLIcEUWsi8iE+msHB+Nh3AdQJ6kUVN7PByXt5yxtNPk/JT0Q==
+X-Received: by 2002:a62:e213:0:b0:4fa:6b13:3a9a with SMTP id a19-20020a62e213000000b004fa6b133a9amr4665590pfi.18.1649179071654;
+        Tue, 05 Apr 2022 10:17:51 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id p10-20020a637f4a000000b00373a2760775sm13654616pgn.2.2022.04.05.10.17.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 10:17:51 -0700 (PDT)
+Date:   Tue, 5 Apr 2022 10:17:50 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     linux-hardening@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org, PaX Team <pageexec@freemail.hu>
+Subject: Re: [PATCH v2] gcc-plugins: latent_entropy: use /dev/urandom
+Message-ID: <202204051016.4E9DD89@keescook>
+References: <CAHmME9otYi4pCzZwSGnK40dp1QMRVPxp+DBysVuLXUKkXinAxg@mail.gmail.com>
+ <20220403204036.1269562-1-Jason@zx2c4.com>
+ <202204041144.96FC64A8@keescook>
+ <Ykt1cj0wPKEsHL2q@zx2c4.com>
+ <202204041953.D7E0BA15@keescook>
+ <CAHmME9rC-pmi3K=w06-bOsHP5=tPv9CS51hr69P1C5tmvHf_mA@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [RFC PATCH v5 046/104] KVM: x86/tdp_mmu: refactor
- kvm_tdp_mmu_map()
-Content-Language: en-US
-To:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     isaku.yamahata@gmail.com, Jim Mattson <jmattson@google.com>,
-        erdemaktas@google.com, Connor Kuehl <ckuehl@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-References: <cover.1646422845.git.isaku.yamahata@intel.com>
- <8ac26dfbe645aa3e9a9f39c844dfec9c0ac841ec.1646422845.git.isaku.yamahata@intel.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <8ac26dfbe645aa3e9a9f39c844dfec9c0ac841ec.1646422845.git.isaku.yamahata@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHmME9rC-pmi3K=w06-bOsHP5=tPv9CS51hr69P1C5tmvHf_mA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/4/22 20:49, isaku.yamahata@intel.com wrote:
-> From: Isaku Yamahata <isaku.yamahata@intel.com>
+On Tue, Apr 05, 2022 at 02:38:58PM +0200, Jason A. Donenfeld wrote:
+> Hi Kees,
 > 
-> Factor out non-leaf SPTE population logic from kvm_tdp_mmu_map().  MapGPA
-> hypercall needs to populate non-leaf SPTE to record which GPA, private or
-> shared, is allowed in the leaf EPT entry.
+> On 4/5/22, Kees Cook <keescook@chromium.org> wrote:
+> > On Tue, Apr 05, 2022 at 12:47:14AM +0200, Jason A. Donenfeld wrote:
+> >> On Mon, Apr 4, 2022 at 8:49 PM Kees Cook <keescook@chromium.org> wrote:
+> >> > This mixes two changes: the pRNG change and the "use urandom if
+> >> > non-deterministic" change. I think these should be split, so the pRNG
+> >> > change can be explicitly justified.
+> >>
+> >> Alright, I'll split those. Or, more probably, just drop the xorshift
+> >> thing. There's not actually a strong reason for preferring xorshift. I
+> >> did it because it produces more uniformity and is faster to compute and
+> >> all that. But none of that stuff actually matters here. It was just a
+> >> sort of "well I'm at it..." thing.
+> >
+> > Well, it's nice to have and you already wrote it, so seems a waste to
+> > just drop it. :)
+> >
+> >> > >  static struct plugin_info latent_entropy_plugin_info = {
+> >> > > -     .version        = "201606141920vanilla",
+> >> > > +     .version        = "202203311920vanilla",
+> >> >
+> >> > This doesn't really need to be versioned. We can change this to just
+> >> > "vanilla", IMO.
+> >>
+> >> Okay. I suppose you want it to be in a different patch too, right? In
+> >> which case I'll leave it out and maybe get to it later. (I suppose one
+> >> probably needs to double check whether it's used for anything
+> >> interesting like dwarf debug info or whatever, where maybe it's
+> >> helpful?)
+> >
+> > Hm, I don't think it shows up anywhere, but you can just drop the hunk
+> > that touch it. I can remove them all with a separate patch later.
+> >
 > 
-> Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
+> Okay. That's what I did here
+> https://lore.kernel.org/lkml/20220404230709.124508-1-Jason@zx2c4.com/
+> so awaiting your merge. (I still find all aspects of v2 more
+> preferable for a variety of weak reasons in case you'd like to merge
+> that instead, but v3 is available now.)
 
-Reviewed-by: Paolo Bonzini <pbonzini@redhat.com>
+v3 uses a different check for the -f option, though? Isn't that
+preferred over the v2 method?
 
-and feel free to rebase/resubmit this one, with subject "KVM: 
-x86/tdp_mmu: extract tdp_mmu_populate_nonleaf()".
+Also, I did some quick benchmarking, and any difference in runtime is
+completely lost in the noise, so that's good.
 
-Paolo
-
-> ---
->   arch/x86/kvm/mmu/tdp_mmu.c | 48 ++++++++++++++++++++++++--------------
->   1 file changed, 30 insertions(+), 18 deletions(-)
-> 
-> diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
-> index b6ec2f112c26..8db262440d5c 100644
-> --- a/arch/x86/kvm/mmu/tdp_mmu.c
-> +++ b/arch/x86/kvm/mmu/tdp_mmu.c
-> @@ -955,6 +955,31 @@ static int tdp_mmu_map_handle_target_level(struct kvm_vcpu *vcpu,
->   	return ret;
->   }
->   
-> +static bool tdp_mmu_populate_nonleaf(
-> +	struct kvm_vcpu *vcpu, struct tdp_iter *iter, bool account_nx)
-> +{
-> +	struct kvm_mmu_page *sp;
-> +	u64 *child_pt;
-> +	u64 new_spte;
-> +
-> +	WARN_ON(is_shadow_present_pte(iter->old_spte));
-> +	WARN_ON(is_removed_spte(iter->old_spte));
-> +
-> +	sp = alloc_tdp_mmu_page(vcpu, iter->gfn, iter->level - 1);
-> +	child_pt = sp->spt;
-> +
-> +	new_spte = make_nonleaf_spte(child_pt, !shadow_accessed_mask);
-> +
-> +	if (!tdp_mmu_set_spte_atomic(vcpu->kvm, iter, new_spte)) {
-> +		tdp_mmu_free_sp(sp);
-> +		return false;
-> +	}
-> +
-> +	tdp_mmu_link_page(vcpu->kvm, sp, account_nx);
-> +	trace_kvm_mmu_get_page(sp, true);
-> +	return true;
-> +}
-> +
->   /*
->    * Handle a TDP page fault (NPT/EPT violation/misconfiguration) by installing
->    * page tables and SPTEs to translate the faulting guest physical address.
-> @@ -963,9 +988,6 @@ int kvm_tdp_mmu_map(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault)
->   {
->   	struct kvm_mmu *mmu = vcpu->arch.mmu;
->   	struct tdp_iter iter;
-> -	struct kvm_mmu_page *sp;
-> -	u64 *child_pt;
-> -	u64 new_spte;
->   	int ret;
->   
->   	kvm_mmu_hugepage_adjust(vcpu, fault);
-> @@ -1000,6 +1022,8 @@ int kvm_tdp_mmu_map(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault)
->   		}
->   
->   		if (!is_shadow_present_pte(iter.old_spte)) {
-> +			bool account_nx;
-> +
->   			/*
->   			 * If SPTE has been frozen by another thread, just
->   			 * give up and retry, avoiding unnecessary page table
-> @@ -1008,22 +1032,10 @@ int kvm_tdp_mmu_map(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault)
->   			if (is_removed_spte(iter.old_spte))
->   				break;
->   
-> -			sp = alloc_tdp_mmu_page(vcpu, iter.gfn, iter.level - 1);
-> -			child_pt = sp->spt;
-> -
-> -			new_spte = make_nonleaf_spte(child_pt,
-> -						     !shadow_accessed_mask);
-> -
-> -			if (tdp_mmu_set_spte_atomic(vcpu->kvm, &iter, new_spte)) {
-> -				tdp_mmu_link_page(vcpu->kvm, sp,
-> -						  fault->huge_page_disallowed &&
-> -						  fault->req_level >= iter.level);
-> -
-> -				trace_kvm_mmu_get_page(sp, true);
-> -			} else {
-> -				tdp_mmu_free_sp(sp);
-> +			account_nx = fault->huge_page_disallowed &&
-> +				fault->req_level >= iter.level;
-> +			if (!tdp_mmu_populate_nonleaf(vcpu, &iter, account_nx))
->   				break;
-> -			}
->   		}
->   	}
->   
-
+-- 
+Kees Cook
