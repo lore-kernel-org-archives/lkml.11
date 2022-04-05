@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDE5DC4707E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:39:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26B93C47080
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:39:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385231AbiDEMb6 (ORCPT
+        id S1385343AbiDEMcf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:31:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58136 "EHLO
+        Tue, 5 Apr 2022 08:32:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238543AbiDEI5n (ORCPT
+        with ESMTP id S236039AbiDEI7o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:57:43 -0400
+        Tue, 5 Apr 2022 04:59:44 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7EE724594;
-        Tue,  5 Apr 2022 01:53:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C9BD255AD;
+        Tue,  5 Apr 2022 01:53:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3FBF46117A;
-        Tue,  5 Apr 2022 08:53:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E84EC385A0;
-        Tue,  5 Apr 2022 08:53:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 686A961003;
+        Tue,  5 Apr 2022 08:53:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F464C385A1;
+        Tue,  5 Apr 2022 08:53:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148787;
-        bh=RU2UcSzhXOx0PlpkB8nfVRVn7CxbRPcmWHXxp5CSZok=;
+        s=korg; t=1649148804;
+        bh=H9YrjQMoX5Tf6SSBBMB7UlmEDAvSUYEDqi5RKX3WyUU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Iq88c6D4nZOz9R+vgLpru1YfPKwuuiq6c33XVtQnjaXLYO4eajstI3VpX39y4osPl
-         HuFZmAxGEOhW8x8f9T8xa7Kn7O4efEGMz4crKW+JvusleOcAonL6apnqjLSmahHWA4
-         0yJdYYzgP/2nFiDOK/3IcORwvdNIilXyaTbUxUVY=
+        b=drkf5XnCtuu/i0gsjDOculEyi+1o2DbOlrtuiYLSxRZ1BVo+R34bRnkMSLTJXG2Pz
+         lQAm91b3xnda71JxELX7yekbhxCQCQ7lS1q3twzGtpmA0ApL6PqTCwhEa0Mvr3ku7h
+         tDJxg6lJ+4Oxfn1HNrznByckURrggCQUlthQYNr0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lennert Buytenhek <buytenh@arista.com>,
-        Corinna Vinschen <vinschen@redhat.com>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0482/1017] igc: avoid kernel warning when changing RX ring parameters
-Date:   Tue,  5 Apr 2022 09:23:15 +0200
-Message-Id: <20220405070408.606199117@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Yonghong Song <yhs@fb.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0487/1017] libbpf: Fix signedness bug in btf_dump_array_data()
+Date:   Tue,  5 Apr 2022 09:23:20 +0200
+Message-Id: <20220405070408.754584448@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -53,75 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Corinna Vinschen <vinschen@redhat.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 453307b569a0d41bddd07f26bf41b784cd82a4c9 ]
+[ Upstream commit 4172843ed4a38f97084032f74f07b2037b5da3a6 ]
 
-Calling ethtool changing the RX ring parameters like this:
+The btf__resolve_size() function returns negative error codes so
+"elem_size" must be signed for the error handling to work.
 
-  $ ethtool -G eth0 rx 1024
-
-on igc triggers kernel warnings like this:
-
-[  225.198467] ------------[ cut here ]------------
-[  225.198473] Missing unregister, handled but fix driver
-[  225.198485] WARNING: CPU: 7 PID: 959 at net/core/xdp.c:168
-xdp_rxq_info_reg+0x79/0xd0
-[...]
-[  225.198601] Call Trace:
-[  225.198604]  <TASK>
-[  225.198609]  igc_setup_rx_resources+0x3f/0xe0 [igc]
-[  225.198617]  igc_ethtool_set_ringparam+0x30e/0x450 [igc]
-[  225.198626]  ethnl_set_rings+0x18a/0x250
-[  225.198631]  genl_family_rcv_msg_doit+0xca/0x110
-[  225.198637]  genl_rcv_msg+0xce/0x1c0
-[  225.198640]  ? rings_prepare_data+0x60/0x60
-[  225.198644]  ? genl_get_cmd+0xd0/0xd0
-[  225.198647]  netlink_rcv_skb+0x4e/0xf0
-[  225.198652]  genl_rcv+0x24/0x40
-[  225.198655]  netlink_unicast+0x20e/0x330
-[  225.198659]  netlink_sendmsg+0x23f/0x480
-[  225.198663]  sock_sendmsg+0x5b/0x60
-[  225.198667]  __sys_sendto+0xf0/0x160
-[  225.198671]  ? handle_mm_fault+0xb2/0x280
-[  225.198676]  ? do_user_addr_fault+0x1eb/0x690
-[  225.198680]  __x64_sys_sendto+0x20/0x30
-[  225.198683]  do_syscall_64+0x38/0x90
-[  225.198687]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[  225.198693] RIP: 0033:0x7f7ae38ac3aa
-
-igc_ethtool_set_ringparam() copies the igc_ring structure but neglects to
-reset the xdp_rxq_info member before calling igc_setup_rx_resources().
-This in turn calls xdp_rxq_info_reg() with an already registered xdp_rxq_info.
-
-Make sure to unregister the xdp_rxq_info structure first in
-igc_setup_rx_resources.
-
-Fixes: 73f1071c1d29 ("igc: Add support for XDP_TX action")
-Reported-by: Lennert Buytenhek <buytenh@arista.com>
-Signed-off-by: Corinna Vinschen <vinschen@redhat.com>
-Acked-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
-Tested-by: Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Fixes: 920d16af9b42 ("libbpf: BTF dumper support for typed data")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: Yonghong Song <yhs@fb.com>
+Link: https://lore.kernel.org/bpf/20220208071552.GB10495@kili
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/igc/igc_main.c | 3 +++
- 1 file changed, 3 insertions(+)
+ tools/lib/bpf/btf_dump.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
-index a156738dc9b6..0000eae0d729 100644
---- a/drivers/net/ethernet/intel/igc/igc_main.c
-+++ b/drivers/net/ethernet/intel/igc/igc_main.c
-@@ -505,6 +505,9 @@ int igc_setup_rx_resources(struct igc_ring *rx_ring)
- 	u8 index = rx_ring->queue_index;
- 	int size, desc_len, res;
+diff --git a/tools/lib/bpf/btf_dump.c b/tools/lib/bpf/btf_dump.c
+index 5cae71600631..700dfd362c4a 100644
+--- a/tools/lib/bpf/btf_dump.c
++++ b/tools/lib/bpf/btf_dump.c
+@@ -1839,14 +1839,15 @@ static int btf_dump_array_data(struct btf_dump *d,
+ {
+ 	const struct btf_array *array = btf_array(t);
+ 	const struct btf_type *elem_type;
+-	__u32 i, elem_size = 0, elem_type_id;
++	__u32 i, elem_type_id;
++	__s64 elem_size;
+ 	bool is_array_member;
  
-+	/* XDP RX-queue info */
-+	if (xdp_rxq_info_is_reg(&rx_ring->xdp_rxq))
-+		xdp_rxq_info_unreg(&rx_ring->xdp_rxq);
- 	res = xdp_rxq_info_reg(&rx_ring->xdp_rxq, ndev, index,
- 			       rx_ring->q_vector->napi.napi_id);
- 	if (res < 0) {
+ 	elem_type_id = array->type;
+ 	elem_type = skip_mods_and_typedefs(d->btf, elem_type_id, NULL);
+ 	elem_size = btf__resolve_size(d->btf, elem_type_id);
+ 	if (elem_size <= 0) {
+-		pr_warn("unexpected elem size %d for array type [%u]\n", elem_size, id);
++		pr_warn("unexpected elem size %lld for array type [%u]\n", elem_size, id);
+ 		return -EINVAL;
+ 	}
+ 
 -- 
 2.34.1
 
