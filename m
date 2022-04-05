@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE41AC41535
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:32:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DC20C46467
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:32:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238978AbiDEOde (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:33:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57274 "EHLO
+        id S245168AbiDEOeO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 10:34:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238743AbiDEJcp (ORCPT
+        with ESMTP id S238733AbiDEJcl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:32:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CC7C2709;
-        Tue,  5 Apr 2022 02:19:59 -0700 (PDT)
+        Tue, 5 Apr 2022 05:32:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B0D2FCF;
+        Tue,  5 Apr 2022 02:19:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2921161654;
-        Tue,  5 Apr 2022 09:19:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E083C385A3;
-        Tue,  5 Apr 2022 09:19:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AA3976144D;
+        Tue,  5 Apr 2022 09:19:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5345C385A0;
+        Tue,  5 Apr 2022 09:19:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150398;
-        bh=YUCc5UqSEUaFbLJxDPjS3UTbOuylShiOg0+98LUc49c=;
+        s=korg; t=1649150393;
+        bh=up/dd1x1ze4xIvI4L8PDVed9sHZe0DHRytKUsawlFDw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B99IpNuDbtcSg8RjORkuJmwcD1vKs3ECnJwn/mxUUMKovGZYuNnxk+loWGhcciYe4
-         wuhG+axQ7fcQNpQuPF5C/XQqKMZ++OVot4lrvGD5+ZKzXeKlfluD2Qt3mFXL5AoYYk
-         MkjeOL/gkdQvItuH5lGwOEw7NMDyhxjpluoXTlB8=
+        b=L+eNTXiXIcmNUFGagg8cDxcNiFfG2RO5AJzR5bOJ1tunBhdDhW+Pmvt0tWFPiz8ga
+         /sY+YGsjlOg1SJyqziiqKdWb8Eaowe28aK4FrBi/YzJRFEMdg1jogwD+EwVSUJ0n3i
+         1WoVGlccQwfKVAdfSMIJhOZODUjvcCWFh3yd6xgg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        syzbot+f8c45ccc7d5d45fc5965@syzkaller.appspotmail.com,
-        Muchun Song <songmuchun@bytedance.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Marco Elver <elver@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.15 006/913] mm: kfence: fix missing objcg housekeeping for SLAB
-Date:   Tue,  5 Apr 2022 09:17:48 +0200
-Message-Id: <20220405070340.002225263@linuxfoundation.org>
+        =?UTF-8?q?Maty=C3=A1=C5=A1=20Kroupa?= <kroupa.matyas@gmail.com>,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 5.15 004/913] USB: serial: pl2303: fix GS type detection
+Date:   Tue,  5 Apr 2022 09:17:46 +0200
+Message-Id: <20220405070339.942570267@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -53,43 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Muchun Song <songmuchun@bytedance.com>
+From: Johan Hovold <johan@kernel.org>
 
-commit ae085d7f9365de7da27ab5c0d16b12d51ea7fca9 upstream.
+commit 5b6ab28d06780c87320ceade61698bb6719c85db upstream.
 
-The objcg is not cleared and put for kfence object when it is freed,
-which could lead to memory leak for struct obj_cgroup and wrong
-statistics of NR_SLAB_RECLAIMABLE_B or NR_SLAB_UNRECLAIMABLE_B.
+At least some PL2303GS have a bcdDevice of 0x605 instead of 0x100 as the
+datasheet claims. Add it to the list of known release numbers for the
+HXN (G) type.
 
-Since the last freed object's objcg is not cleared,
-mem_cgroup_from_obj() could return the wrong memcg when this kfence
-object, which is not charged to any objcgs, is reallocated to other
-users.
-
-A real word issue [1] is caused by this bug.
-
-Link: https://lore.kernel.org/all/000000000000cabcb505dae9e577@google.com/ [1]
-Reported-by: syzbot+f8c45ccc7d5d45fc5965@syzkaller.appspotmail.com
-Fixes: d3fb45f370d9 ("mm, kfence: insert KFENCE hooks for SLAB")
-Signed-off-by: Muchun Song <songmuchun@bytedance.com>
-Cc: Dmitry Vyukov <dvyukov@google.com>
-Cc: Marco Elver <elver@google.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes: 894758d0571d ("USB: serial: pl2303: tighten type HXN (G) detection")
+Reported-by: Matyáš Kroupa <kroupa.matyas@gmail.com>
+Link: https://lore.kernel.org/r/165de6a0-43e9-092c-2916-66b115c7fbf4@gmail.com
+Cc: stable@vger.kernel.org	# 5.13
+Signed-off-by: Johan Hovold <johan@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/slab.c |    1 +
+ drivers/usb/serial/pl2303.c |    1 +
  1 file changed, 1 insertion(+)
 
---- a/mm/slab.c
-+++ b/mm/slab.c
-@@ -3429,6 +3429,7 @@ static __always_inline void __cache_free
- 
- 	if (is_kfence_address(objp)) {
- 		kmemleak_free_recursive(objp, cachep->flags);
-+		memcg_slab_free_hook(cachep, &objp, 1);
- 		__kfence_free(objp);
- 		return;
- 	}
+--- a/drivers/usb/serial/pl2303.c
++++ b/drivers/usb/serial/pl2303.c
+@@ -436,6 +436,7 @@ static int pl2303_detect_type(struct usb
+ 		case 0x105:
+ 		case 0x305:
+ 		case 0x405:
++		case 0x605:
+ 			/*
+ 			 * Assume it's an HXN-type if the device doesn't
+ 			 * support the old read request value.
 
 
