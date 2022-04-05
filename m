@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACCD8C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E674AC433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:41:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1575764AbiDEXJE (ORCPT
+        id S1575778AbiDEXJH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:09:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37026 "EHLO
+        Tue, 5 Apr 2022 19:09:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348918AbiDEJsq (ORCPT
+        with ESMTP id S1357509AbiDEK0b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:48:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C46B89D0DB;
-        Tue,  5 Apr 2022 02:37:26 -0700 (PDT)
+        Tue, 5 Apr 2022 06:26:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60DF72D1DE;
+        Tue,  5 Apr 2022 03:10:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7889AB81B14;
-        Tue,  5 Apr 2022 09:37:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4F75C385A2;
-        Tue,  5 Apr 2022 09:37:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D9425B81C8A;
+        Tue,  5 Apr 2022 10:10:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 457A4C385A1;
+        Tue,  5 Apr 2022 10:10:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151444;
-        bh=IvyBkfbeIWILmVXwush284Vcs9+1LeJ2nOw1//Ki3mQ=;
+        s=korg; t=1649153416;
+        bh=S69AVRrh+LifKnxVaci3SB4WnkiIBL1RUY7re8Q3YkU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Hkct2b7Xoe+xH0QFVYFDISsO9IzNJa+1dSLdDy112GFaRh2igLHhtAd938tZDYQED
-         +qznEuckX7xJYcOQZjT4khf+GcILWLlJ0w7aYmJqDRFiHVrWbW9FPuTsDnw3A7+VXk
-         BgwwwQAKhEbJADKyQvGHOm0+FE/sy1Ihch4+zS4I=
+        b=MZ1+zOfQqrRlF8bGaNS9QYDsLtRUvCxKJN1fR+odqySaxVhDZLQeepU27F3s4XkxI
+         qLSE8gPKRH4z3qatUvns0TDNsd/kcgFYhDJ1wfRTJTPpgjLaAhOoyNdj1dgcHKrUFF
+         f44aBDH8qfBkp6WqgS9XymzFj6PMcoDWvTfdDWHU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, syzkaller <syzkaller@googlegroups.com>,
+        Dongliang Mu <mudongliangabcd@gmail.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 368/913] ASoC: atmel: Fix error handling in sam9x5_wm8731_driver_probe
-Date:   Tue,  5 Apr 2022 09:23:50 +0200
-Message-Id: <20220405070350.877465536@linuxfoundation.org>
+Subject: [PATCH 5.10 216/599] media: em28xx: initialize refcount before kref_get
+Date:   Tue,  5 Apr 2022 09:28:30 +0200
+Message-Id: <20220405070305.270991769@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,69 +51,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Dongliang Mu <mudongliangabcd@gmail.com>
 
-[ Upstream commit 740dc3e846537c3743da98bf106f376023fd085c ]
+[ Upstream commit c08eadca1bdfa099e20a32f8fa4b52b2f672236d ]
 
-The device_node pointer is returned by of_parse_phandle()  with refcount
-incremented. We should use of_node_put() on it when done.
+The commit 47677e51e2a4("[media] em28xx: Only deallocate struct
+em28xx after finishing all extensions") adds kref_get to many init
+functions (e.g., em28xx_audio_init). However, kref_init is called too
+late in em28xx_usb_probe, since em28xx_init_dev before will invoke
+those init functions and call kref_get function. Then refcount bug
+occurs in my local syzkaller instance.
 
-This function only calls of_node_put() in the regular path.
-And it will cause refcount leak in error path.
+Fix it by moving kref_init before em28xx_init_dev. This issue occurs
+not only in dev but also dev->dev_next.
 
-Fixes: fdbcb3cba54b ("ASoC: atmel: machine driver for at91sam9x5-wm8731 boards")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
-Link: https://lore.kernel.org/r/20220316111530.4551-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 47677e51e2a4 ("[media] em28xx: Only deallocate struct em28xx after finishing all extensions")
+Reported-by: syzkaller <syzkaller@googlegroups.com>
+Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/atmel/sam9x5_wm8731.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+ drivers/media/usb/em28xx/em28xx-cards.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/sound/soc/atmel/sam9x5_wm8731.c b/sound/soc/atmel/sam9x5_wm8731.c
-index 7745250fd743..529604a06c53 100644
---- a/sound/soc/atmel/sam9x5_wm8731.c
-+++ b/sound/soc/atmel/sam9x5_wm8731.c
-@@ -142,7 +142,7 @@ static int sam9x5_wm8731_driver_probe(struct platform_device *pdev)
- 	if (!cpu_np) {
- 		dev_err(&pdev->dev, "atmel,ssc-controller node missing\n");
- 		ret = -EINVAL;
--		goto out;
-+		goto out_put_codec_np;
- 	}
- 	dai->cpus->of_node = cpu_np;
- 	dai->platforms->of_node = cpu_np;
-@@ -153,12 +153,9 @@ static int sam9x5_wm8731_driver_probe(struct platform_device *pdev)
- 	if (ret != 0) {
- 		dev_err(&pdev->dev, "Failed to set SSC %d for audio: %d\n",
- 			ret, priv->ssc_id);
--		goto out;
-+		goto out_put_cpu_np;
+diff --git a/drivers/media/usb/em28xx/em28xx-cards.c b/drivers/media/usb/em28xx/em28xx-cards.c
+index 87e375562dbb..b6490f611687 100644
+--- a/drivers/media/usb/em28xx/em28xx-cards.c
++++ b/drivers/media/usb/em28xx/em28xx-cards.c
+@@ -3881,6 +3881,8 @@ static int em28xx_usb_probe(struct usb_interface *intf,
+ 		goto err_free;
  	}
  
--	of_node_put(codec_np);
--	of_node_put(cpu_np);
++	kref_init(&dev->ref);
++
+ 	dev->devno = nr;
+ 	dev->model = id->driver_info;
+ 	dev->alt   = -1;
+@@ -3981,6 +3983,8 @@ static int em28xx_usb_probe(struct usb_interface *intf,
+ 	}
+ 
+ 	if (dev->board.has_dual_ts && em28xx_duplicate_dev(dev) == 0) {
++		kref_init(&dev->dev_next->ref);
++
+ 		dev->dev_next->ts = SECONDARY_TS;
+ 		dev->dev_next->alt   = -1;
+ 		dev->dev_next->is_audio_only = has_vendor_audio &&
+@@ -4035,12 +4039,8 @@ static int em28xx_usb_probe(struct usb_interface *intf,
+ 			em28xx_write_reg(dev, 0x0b, 0x82);
+ 			mdelay(100);
+ 		}
 -
- 	ret = devm_snd_soc_register_card(&pdev->dev, card);
- 	if (ret) {
- 		dev_err(&pdev->dev, "Platform device allocation failed\n");
-@@ -167,10 +164,14 @@ static int sam9x5_wm8731_driver_probe(struct platform_device *pdev)
+-		kref_init(&dev->dev_next->ref);
+ 	}
  
- 	dev_dbg(&pdev->dev, "%s ok\n", __func__);
+-	kref_init(&dev->ref);
+-
+ 	request_modules(dev);
  
--	return ret;
-+	goto out_put_cpu_np;
- 
- out_put_audio:
- 	atmel_ssc_put_audio(priv->ssc_id);
-+out_put_cpu_np:
-+	of_node_put(cpu_np);
-+out_put_codec_np:
-+	of_node_put(codec_np);
- out:
- 	return ret;
- }
+ 	/*
 -- 
 2.34.1
 
