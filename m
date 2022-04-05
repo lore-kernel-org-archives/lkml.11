@@ -2,142 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 563DAC43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:40:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D07C7C35294
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:40:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358063AbiDEVkk (ORCPT
+        id S1356648AbiDEVmP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:40:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34404 "EHLO
+        Tue, 5 Apr 2022 17:42:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350368AbiDEJ5p (ORCPT
+        with ESMTP id S1353411AbiDEKGJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:57:45 -0400
-Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA3D353709
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 02:51:05 -0700 (PDT)
-Received: by mail-il1-f200.google.com with SMTP id f18-20020a926a12000000b002be48b02bc6so7782531ilc.17
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 02:51:05 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to:cc;
-        bh=SInnLnS2EMQb5gkUQJdrUhJ2hqkPMTlZIqTnil/IjHw=;
-        b=HQ+XmcMjfwem7V4iYDDtgms7to2xvZb+U3zilcAIh7AkR0Bphu60HhYebFv0//ALFu
-         ro6QbCsViXzgpiW0c9EUgX2TcUEqpMpjKWOZxBJ8a8sy9oZ/Ss62HawBVRzeDwKxRLXj
-         Q4yFSZwwx6RG98sX7jbMtyETC1EUC5XLHbylra0QZGZOPriN/+esVHvnvab80sG75OpU
-         5mMNQazRXzApwDSgJ0Vn0qFNynfdXhQP0AuhdiWwYVYymu8iH3bKCG6PQpRC0ikVloQG
-         9+H+4sZRbufdc5W+wXNcYn4yIxziLLboU/lR2YW2MlJCzjJKYn5TzgLPoQB+X9X+2z6G
-         CvnA==
-X-Gm-Message-State: AOAM530J7VW+fKx4pGB6L9FAtOWJzA/37bB1SRMxA+8pbH3RFoPRNFDM
-        fjShDmdAOopmsbw+HInn4l1r8jNB6zYFPabSKrZCRTRA5jAo
-X-Google-Smtp-Source: ABdhPJy4tENxxQnXA5v1FbQset4Wpq6BonrhyCYGHqMiNj2v/Lgkftmupdqm02S8sVovglgX+jSFp33jfft54FUJt51kQT37TPhE
+        Tue, 5 Apr 2022 06:06:09 -0400
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E56B34A90D
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 02:54:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649152499; x=1680688499;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=YOugtdoOdlagxEKDXNaCJAubcGndk2KYqmkeY9Xukp4=;
+  b=ZSoWCx6svSDNaqAtlnFKucCZlguzCjndAFkOMbEICE1U0gWcOh+8ro5R
+   X5OI4JZQhSXPmZCgxySZL+yU9YhbKH0hRJAFVbqR5uJ8M8nYX08DfZbyF
+   A3DtrDBi+WTQEeJcZ1Z7oDOJeejsFWIZ3JzezKFBKHeBCKVEXs+KKK4FK
+   UArWZWGvw2CwxFrlvuHvGvTMAdYeaTFUkT1ndjdg8X7IHdx1ilIC3zFg+
+   bMYRaNBJzZyTrEyc0yhtEjEey/Ciqx1GXcKPWE8cGqQJ9wc2GHOJfI+qQ
+   GoGrcwfXAutxRtl4hsv1w4MRDvk6E3IDCPsMmZi95FZrz5ZqEhsTxY184
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="321404652"
+X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
+   d="scan'208";a="321404652"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 02:54:59 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
+   d="scan'208";a="523932389"
+Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
+  by orsmga006.jf.intel.com with ESMTP; 05 Apr 2022 02:54:57 -0700
+Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nbftp-00031H-23;
+        Tue, 05 Apr 2022 09:54:57 +0000
+Date:   Tue, 5 Apr 2022 17:54:44 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     David Howells <dhowells@redhat.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org
+Subject: [ammarfaizi2-block:dhowells/linux-fs/netfs-maple 2/40]
+ fs/netfs/objects.c:48:2: error: implicit declaration of function
+ 'netfs_proc_add_writeback' is invalid in C99
+Message-ID: <202204051743.54BHZ3ZH-lkp@intel.com>
 MIME-Version: 1.0
-X-Received: by 2002:a92:d8cb:0:b0:2ca:2f11:d352 with SMTP id
- l11-20020a92d8cb000000b002ca2f11d352mr1321846ilo.236.1649152264846; Tue, 05
- Apr 2022 02:51:04 -0700 (PDT)
-Date:   Tue, 05 Apr 2022 02:51:04 -0700
-In-Reply-To: <20220405070401.266956806@linuxfoundation.org>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000ed46cf05dbe52e65@google.com>
-Subject: Re: [PATCH 5.15 715/913] ext4: dont BUG if someone dirty pages
- without asking ext4 first
-From:   syzbot 
-        <syzbot+d59332e2db681cf18f0318a06e994ebbb529a8db@syzkaller.appspotmail.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     gregkh@linuxfoundation.org, lee.jones@linaro.org,
-        linux-kernel@vger.kernel.org, sashal@kernel.org,
-        stable@vger.kernel.org, tytso@mit.edu
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> From: Theodore Ts'o <tytso@mit.edu>
->
-> [ Upstream commit cc5095747edfb054ca2068d01af20be3fcc3634f ]
->
-> [un]pin_user_pages_remote is dirtying pages without properly warning
-> the file system in advance.  A related race was noted by Jan Kara in
-> 2018[1]; however, more recently instead of it being a very hard-to-hit
-> race, it could be reliably triggered by process_vm_writev(2) which was
-> discovered by Syzbot[2].
->
-> This is technically a bug in mm/gup.c, but arguably ext4 is fragile in
-> that if some other kernel subsystem dirty pages without properly
-> notifying the file system using page_mkwrite(), ext4 will BUG, while
-> other file systems will not BUG (although data will still be lost).
->
-> So instead of crashing with a BUG, issue a warning (since there may be
-> potential data loss) and just mark the page as clean to avoid
-> unprivileged denial of service attacks until the problem can be
-> properly fixed.  More discussion and background can be found in the
-> thread starting at [2].
->
-> [1] https://lore.kernel.org/linux-mm/20180103100430.GE4911@quack2.suse.cz
-> [2] https://lore.kernel.org/r/Yg0m6IjcNmfaSokM@google.com
->
-> Reported-by: syzbot+d59332e2db681cf18f0318a06e994ebbb529a8db@syzkaller.appspotmail.com
-> Reported-by: Lee Jones <lee.jones@linaro.org>
-> Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-> Link: https://lore.kernel.org/r/YiDS9wVfq4mM2jGK@mit.edu
-> Signed-off-by: Sasha Levin <sashal@kernel.org>
-> ---
->  fs/ext4/inode.c | 25 +++++++++++++++++++++++++
->  1 file changed, 25 insertions(+)
->
-> diff --git a/fs/ext4/inode.c b/fs/ext4/inode.c
-> index 22a5140546fb..fff52292c01e 100644
-> --- a/fs/ext4/inode.c
-> +++ b/fs/ext4/inode.c
-> @@ -1992,6 +1992,15 @@ static int ext4_writepage(struct page *page,
->  	else
->  		len = PAGE_SIZE;
->  
-> +	/* Should never happen but for bugs in other kernel subsystems */
-> +	if (!page_has_buffers(page)) {
-> +		ext4_warning_inode(inode,
-> +		   "page %lu does not have buffers attached", page->index);
-> +		ClearPageDirty(page);
-> +		unlock_page(page);
-> +		return 0;
-> +	}
-> +
->  	page_bufs = page_buffers(page);
->  	/*
->  	 * We cannot do block allocation or other extent handling in this
-> @@ -2595,6 +2604,22 @@ static int mpage_prepare_extent_to_map(struct mpage_da_data *mpd)
->  			wait_on_page_writeback(page);
->  			BUG_ON(PageWriteback(page));
->  
-> +			/*
-> +			 * Should never happen but for buggy code in
-> +			 * other subsystems that call
-> +			 * set_page_dirty() without properly warning
-> +			 * the file system first.  See [1] for more
-> +			 * information.
-> +			 *
-> +			 * [1] https://lore.kernel.org/linux-mm/20180103100430.GE4911@quack2.suse.cz
-> +			 */
-> +			if (!page_has_buffers(page)) {
-> +				ext4_warning_inode(mpd->inode, "page %lu does not have buffers attached", page->index);
-> +				ClearPageDirty(page);
-> +				unlock_page(page);
-> +				continue;
-> +			}
-> +
->  			if (mpd->map.m_len == 0)
->  				mpd->first_page = page->index;
->  			mpd->next_page = page->index + 1;
-> -- 
-> 2.34.1
->
->
->
+tree:   https://github.com/ammarfaizi2/linux-block dhowells/linux-fs/netfs-maple
+head:   674eea41fc70a740ff83ec590f9833f805852464
+commit: 9bff5b05142d47cc6a64f5e023fd01d9bf8bee9e [2/40] netfs: Add a procfile to list in-progress requests
+config: hexagon-randconfig-r021-20220405 (https://download.01.org/0day-ci/archive/20220405/202204051743.54BHZ3ZH-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project c4a1b07d0979e7ff20d7d541af666d822d66b566)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ammarfaizi2/linux-block/commit/9bff5b05142d47cc6a64f5e023fd01d9bf8bee9e
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block dhowells/linux-fs/netfs-maple
+        git checkout 9bff5b05142d47cc6a64f5e023fd01d9bf8bee9e
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash fs/netfs/
 
-I see the command but can't find the corresponding bug.
-The email is sent to  syzbot+HASH@syzkaller.appspotmail.com address
-but the HASH does not correspond to any known bug.
-Please double check the address.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
+All errors (new ones prefixed by >>):
+
+>> fs/netfs/objects.c:48:2: error: implicit declaration of function 'netfs_proc_add_writeback' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
+           netfs_proc_add_writeback(rreq);
+           ^
+   fs/netfs/objects.c:48:2: note: did you mean 'netfs_proc_add_rreq'?
+   fs/netfs/internal.h:51:20: note: 'netfs_proc_add_rreq' declared here
+   static inline void netfs_proc_add_rreq(struct netfs_io_request *rreq) {}
+                      ^
+>> fs/netfs/objects.c:80:2: error: implicit declaration of function 'netfs_proc_del_writeback' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
+           netfs_proc_del_writeback(rreq);
+           ^
+   fs/netfs/objects.c:80:2: note: did you mean 'netfs_proc_del_rreq'?
+   fs/netfs/internal.h:52:20: note: 'netfs_proc_del_rreq' declared here
+   static inline void netfs_proc_del_rreq(struct netfs_io_request *rreq) {}
+                      ^
+   2 errors generated.
+
+
+vim +/netfs_proc_add_writeback +48 fs/netfs/objects.c
+
+    10	
+    11	/*
+    12	 * Allocate an I/O request and initialise it.
+    13	 */
+    14	struct netfs_io_request *netfs_alloc_request(struct address_space *mapping,
+    15						     struct file *file,
+    16						     loff_t start, size_t len,
+    17						     enum netfs_io_origin origin)
+    18	{
+    19		static atomic_t debug_ids;
+    20		struct inode *inode = file ? file_inode(file) : mapping->host;
+    21		struct netfs_i_context *ctx = netfs_i_context(inode);
+    22		struct netfs_io_request *rreq;
+    23		int ret;
+    24	
+    25		rreq = kzalloc(sizeof(struct netfs_io_request), GFP_KERNEL);
+    26		if (!rreq)
+    27			return ERR_PTR(-ENOMEM);
+    28	
+    29		rreq->start	= start;
+    30		rreq->len	= len;
+    31		rreq->origin	= origin;
+    32		rreq->netfs_ops	= ctx->ops;
+    33		rreq->mapping	= mapping;
+    34		rreq->inode	= inode;
+    35		rreq->i_size	= i_size_read(inode);
+    36		rreq->debug_id	= atomic_inc_return(&debug_ids);
+    37		INIT_LIST_HEAD(&rreq->subrequests);
+    38		refcount_set(&rreq->ref, 1);
+    39		__set_bit(NETFS_RREQ_IN_PROGRESS, &rreq->flags);
+    40		if (rreq->netfs_ops->init_request) {
+    41			ret = rreq->netfs_ops->init_request(rreq, file);
+    42			if (ret < 0) {
+    43				kfree(rreq);
+    44				return ERR_PTR(ret);
+    45			}
+    46		}
+    47	
+  > 48		netfs_proc_add_writeback(rreq);
+    49		netfs_stat(&netfs_n_rh_rreq);
+    50		return rreq;
+    51	}
+    52	
+    53	void netfs_get_request(struct netfs_io_request *rreq, enum netfs_rreq_ref_trace what)
+    54	{
+    55		int r;
+    56	
+    57		__refcount_inc(&rreq->ref, &r);
+    58		trace_netfs_rreq_ref(rreq->debug_id, r + 1, what);
+    59	}
+    60	
+    61	void netfs_clear_subrequests(struct netfs_io_request *rreq, bool was_async)
+    62	{
+    63		struct netfs_io_subrequest *subreq;
+    64	
+    65		while (!list_empty(&rreq->subrequests)) {
+    66			subreq = list_first_entry(&rreq->subrequests,
+    67						  struct netfs_io_subrequest, rreq_link);
+    68			list_del(&subreq->rreq_link);
+    69			netfs_put_subrequest(subreq, was_async,
+    70					     netfs_sreq_trace_put_clear);
+    71		}
+    72	}
+    73	
+    74	static void netfs_free_request(struct work_struct *work)
+    75	{
+    76		struct netfs_io_request *rreq =
+    77			container_of(work, struct netfs_io_request, work);
+    78	
+    79		trace_netfs_rreq(rreq, netfs_rreq_trace_free);
+  > 80		netfs_proc_del_writeback(rreq);
+    81		netfs_clear_subrequests(rreq, false);
+    82		if (rreq->netfs_ops->free_request)
+    83			rreq->netfs_ops->free_request(rreq);
+    84		if (rreq->cache_resources.ops)
+    85			rreq->cache_resources.ops->end_operation(&rreq->cache_resources);
+    86		kfree_rcu(rreq, rcu);
+    87		netfs_stat_d(&netfs_n_rh_rreq);
+    88	}
+    89	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
