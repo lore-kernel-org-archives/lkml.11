@@ -2,121 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5AE5C3527B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:37:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A219C38161
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:37:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242247AbiDEIhR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:37:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55610 "EHLO
+        id S242312AbiDEIhV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:37:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235621AbiDEH7x (ORCPT
+        with ESMTP id S235619AbiDEH7x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 03:59:53 -0400
-Received: from mx.socionext.com (mx.socionext.com [202.248.49.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 315BC65A4;
-        Tue,  5 Apr 2022 00:56:25 -0700 (PDT)
-Received: from unknown (HELO kinkan2-ex.css.socionext.com) ([172.31.9.52])
-  by mx.socionext.com with ESMTP; 05 Apr 2022 16:56:24 +0900
-Received: from mail.mfilter.local (m-filter-2 [10.213.24.62])
-        by kinkan2-ex.css.socionext.com (Postfix) with ESMTP id A27D22058443;
-        Tue,  5 Apr 2022 16:56:24 +0900 (JST)
-Received: from 172.31.9.51 (172.31.9.51) by m-FILTER with ESMTP; Tue, 5 Apr 2022 16:56:24 +0900
-Received: from plum.e01.socionext.com (unknown [10.212.243.119])
-        by kinkan2.css.socionext.com (Postfix) with ESMTP id 13550B6389;
-        Tue,  5 Apr 2022 16:56:24 +0900 (JST)
-From:   Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-To:     Philipp Zabel <p.zabel@pengutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>
-Cc:     Masami Hiramatsu <mhiramat@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-Subject: [PATCH] dt-bindings: reset: uniphier-glue: Clean up clocks, resets, and their names using compatible string
-Date:   Tue,  5 Apr 2022 16:56:18 +0900
-Message-Id: <1649145378-30358-1-git-send-email-hayashi.kunihiko@socionext.com>
-X-Mailer: git-send-email 2.7.4
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1256462DA;
+        Tue,  5 Apr 2022 00:56:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B98DCB81B14;
+        Tue,  5 Apr 2022 07:56:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04477C340EE;
+        Tue,  5 Apr 2022 07:56:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649145374;
+        bh=/OTlw4vlMMjYBWwtu6qbfV515MzJzOYD+TMSCN15hJQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=NEmASP39m3SFQqe6O+rch6uBy+KB71pZGV+Yc+LLS/USDutp9HAHuuBKAI5dR7uk2
+         p02+qQLEyuegcK2XsX6iFO44pkFUU0I+DL7yKt4DmV9ZUx5GXN7vr88XzNnIoleTRc
+         WRHB6ip6O+fBvajLLdtT/CJZpa42n+W1UpEXgZHw=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        Borislav Petkov <bp@suse.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        John Ogness <john.ogness@linutronix.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0380/1126] printk: fix return value of printk.devkmsg __setup handler
+Date:   Tue,  5 Apr 2022 09:18:47 +0200
+Message-Id: <20220405070418.779673685@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
+References: <20220405070407.513532867@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Instead of "oneOf:" choices, use "allOf:" and "if:" to define clocks,
-resets, and their names that can be taken by the compatible string.
+From: Randy Dunlap <rdunlap@infradead.org>
 
-The order of clock-names and reset-names doesn't change here.
+[ Upstream commit b665eae7a788c5e2bc10f9ac3c0137aa0ad1fc97 ]
 
-Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+If an invalid option value is used with "printk.devkmsg=<value>",
+it is silently ignored.
+If a valid option value is used, it is honored but the wrong return
+value (0) is used, indicating that the command line option had an
+error and was not handled. This string is not added to init's
+environment strings due to init/main.c::unknown_bootoption()
+checking for a '.' in the boot option string and then considering
+that string to be an "Unused module parameter".
+
+Print a warning message if a bad option string is used.
+Always return 1 from the __setup handler to indicate that the command
+line option has been handled.
+
+Fixes: 750afe7babd1 ("printk: add kernel parameter to control writes to /dev/kmsg")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Cc: Borislav Petkov <bp@suse.de>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Petr Mladek <pmladek@suse.com>
+Cc: Sergey Senozhatsky <senozhatsky@chromium.org>
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Cc: John Ogness <john.ogness@linutronix.de>
+Reviewed-by: John Ogness <john.ogness@linutronix.de>
+Reviewed-by: Sergey Senozhatsky <senozhatsky@chromium.org>
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+Signed-off-by: Petr Mladek <pmladek@suse.com>
+Link: https://lore.kernel.org/r/20220228220556.23484-1-rdunlap@infradead.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../reset/socionext,uniphier-glue-reset.yaml  | 52 ++++++++++++++-----
- 1 file changed, 38 insertions(+), 14 deletions(-)
+ kernel/printk/printk.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/reset/socionext,uniphier-glue-reset.yaml b/Documentation/devicetree/bindings/reset/socionext,uniphier-glue-reset.yaml
-index bfbd3e9b4186..0a2c13e1e230 100644
---- a/Documentation/devicetree/bindings/reset/socionext,uniphier-glue-reset.yaml
-+++ b/Documentation/devicetree/bindings/reset/socionext,uniphier-glue-reset.yaml
-@@ -38,25 +38,49 @@ properties:
-     minItems: 1
-     maxItems: 2
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index 82abfaf3c2aa..833e407545b8 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -146,8 +146,10 @@ static int __control_devkmsg(char *str)
  
--  clock-names:
--    oneOf:
--      - items:           # for Pro4, Pro5
--          - const: gio
--          - const: link
--      - items:           # for others
--          - const: link
-+  clock-names: true
+ static int __init control_devkmsg(char *str)
+ {
+-	if (__control_devkmsg(str) < 0)
++	if (__control_devkmsg(str) < 0) {
++		pr_warn("printk.devkmsg: bad option string '%s'\n", str);
+ 		return 1;
++	}
  
-   resets:
-     minItems: 1
-     maxItems: 2
+ 	/*
+ 	 * Set sysctl string accordingly:
+@@ -166,7 +168,7 @@ static int __init control_devkmsg(char *str)
+ 	 */
+ 	devkmsg_log |= DEVKMSG_LOG_MASK_LOCK;
  
--  reset-names:
--    oneOf:
--      - items:           # for Pro4, Pro5
--          - const: gio
--          - const: link
--      - items:           # for others
--          - const: link
-+  reset-names: true
-+
-+allOf:
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - socionext,uniphier-pro4-usb3-reset
-+              - socionext,uniphier-pro5-usb3-reset
-+              - socionext,uniphier-pro4-ahci-reset
-+    then:
-+      properties:
-+        clocks:
-+          minItems: 2
-+          maxItems: 2
-+        clock-names:
-+          items:
-+            - const: gio
-+            - const: link
-+        resets:
-+          minItems: 2
-+          maxItems: 2
-+        reset-names:
-+          items:
-+            - const: gio
-+            - const: link
-+    else:
-+      properties:
-+        clocks:
-+          maxItems: 1
-+        clock-names:
-+          const: link
-+        resets:
-+          maxItems: 1
-+        reset-names:
-+          const: link
- 
- additionalProperties: false
+-	return 0;
++	return 1;
+ }
+ __setup("printk.devkmsg=", control_devkmsg);
  
 -- 
-2.25.1
+2.34.1
+
+
 
