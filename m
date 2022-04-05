@@ -2,101 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 058C7C35273
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:40:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB269C46467
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:40:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349727AbiDEUi6 (ORCPT
+        id S1349014AbiDEUin (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:38:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50654 "EHLO
+        Tue, 5 Apr 2022 16:38:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358257AbiDEK2K (ORCPT
+        with ESMTP id S1457201AbiDEQCz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:28:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85BA2DF53;
-        Tue,  5 Apr 2022 03:17:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B6792617AC;
-        Tue,  5 Apr 2022 10:17:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA655C385A1;
-        Tue,  5 Apr 2022 10:17:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153850;
-        bh=CciwU1bw+4WCz0Ui3+SMQBEO+ntSeXsekj6+OZdaYfM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fdS0KzhWyAr1ycsoN4X53GkGI5mEoIJugtCsroW7Q2NgdktML0PccXnwQubxl2spl
-         7jaHZjiVpMOimyoWKjUHTzr0kFWjtuXxSPbWseeINm2/jQtDmemqrjQNtnYDiGMMT0
-         djRFrk9tmKpVw4IAsF47drvuY8FjZ37oAOaOEcwQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ping Fang <pifang@redhat.com>,
-        Daniel Henrique Barboza <danielhb413@gmail.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 331/599] powerpc/mm/numa: skip NUMA_NO_NODE onlining in parse_numa_properties()
-Date:   Tue,  5 Apr 2022 09:30:25 +0200
-Message-Id: <20220405070308.683131039@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 12:02:55 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 353632A727
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 08:32:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649172764;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=RVunoBqxd/XMcSCf/aNcM3Bo2FCKUnhDjeaR63SyLgs=;
+        b=EjgC4JahvU1MDFciY2tmV2yHDJmiSxYWZtD1/Dr8ukcbqHZ61Qdyy6iaWBiVNuFXzqd9nl
+        WRjIMLbBGW8i5Ksyf2MOVMLC0EH1WA5bPts6Drqajk5CdVMyzLApw7yjGFqxeCUbpuD3jm
+        69kJag1BByaBnfjHXwSo1w7Jp6TzWv4=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-212-xm9I_fGBPwCe8hkKiUjZ9Q-1; Tue, 05 Apr 2022 11:32:43 -0400
+X-MC-Unique: xm9I_fGBPwCe8hkKiUjZ9Q-1
+Received: by mail-wm1-f72.google.com with SMTP id r19-20020a7bc093000000b0038e706da7c0so1401286wmh.1
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 08:32:43 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=RVunoBqxd/XMcSCf/aNcM3Bo2FCKUnhDjeaR63SyLgs=;
+        b=Tdl7Xiikdpo3YeICgS/uMYYmbVkcaZw2gurWQCm3oJ8AOUh/TBNSOsGYKke7elUVX2
+         8CstJsxN0u6E7FV0lR/J3wvud7/1klca93vXbSsIMZuoCZmC58yOFbqsY9Kxkqarq29d
+         8rOn1Zxdhdcxag4zDSOQyrhoF3dXdrFFs2vQ1t20kWHYozsKBmL/GXGKxUfEjlPPwnBS
+         hwYfHuntky3nzaJ/6onmbXVAo3wTjjEvf5I67/a7WDuRibWDWN/AWi7TbSuWV6S7/vYU
+         bu6o+Ahpuh7t1J0rhRRAfMrXAbSglVDM6jCkc/Y33LT4vkCgVOw7+NwRSXmDGeXNKxWN
+         Ht1g==
+X-Gm-Message-State: AOAM531Z3vcTgxyx8vP06bR9KHYpH/vR+Cl8lmgRFpMk/cXDVRZ+rPZs
+        NnzW2dmdXa6SVNU96dEfl9fO4inIpcRHixxom2ruU6uymTlevY8HwrIXU9a+KJJ/sHgIQHIjz9t
+        crmRBms81FkuXo19pCwrPlaCy
+X-Received: by 2002:adf:f481:0:b0:205:b814:887b with SMTP id l1-20020adff481000000b00205b814887bmr3197546wro.472.1649172761890;
+        Tue, 05 Apr 2022 08:32:41 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxk0EshXz5dy68LFNeLcoRvlMOAY0pRMlD9cxw8B09LYKsaas8YLt1BZFcNUhoqfeEeSL3uHw==
+X-Received: by 2002:adf:f481:0:b0:205:b814:887b with SMTP id l1-20020adff481000000b00205b814887bmr3197534wro.472.1649172761674;
+        Tue, 05 Apr 2022 08:32:41 -0700 (PDT)
+Received: from [10.32.181.87] (nat-pool-mxp-t.redhat.com. [149.6.153.186])
+        by smtp.googlemail.com with ESMTPSA id p30-20020a05600c1d9e00b0038cc9d6ff0bsm2637394wms.33.2022.04.05.08.32.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 Apr 2022 08:32:40 -0700 (PDT)
+Message-ID: <ea136ac6-53cf-cdc5-a741-acfb437819b1@redhat.com>
+Date:   Tue, 5 Apr 2022 17:32:39 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [RFC PATCH v5 074/104] KVM: x86: Add a switch_db_regs flag to
+ handle TDX's auto-switched behavior
+Content-Language: en-US
+To:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     isaku.yamahata@gmail.com, Jim Mattson <jmattson@google.com>,
+        erdemaktas@google.com, Connor Kuehl <ckuehl@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+References: <cover.1646422845.git.isaku.yamahata@intel.com>
+ <76c87a1d33bb3ec4a68fe3db2a840b6ddc951929.1646422845.git.isaku.yamahata@intel.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <76c87a1d33bb3ec4a68fe3db2a840b6ddc951929.1646422845.git.isaku.yamahata@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Henrique Barboza <danielhb413@gmail.com>
+On 3/4/22 20:49, isaku.yamahata@intel.com wrote:
+>   	vcpu->arch.efer = EFER_SCE | EFER_LME | EFER_LMA | EFER_NX;
+>   
+> +	vcpu->arch.switch_db_regs = KVM_DEBUGREG_AUTO_SWITCH;
+>   	vcpu->arch.cr0_guest_owned_bits = -1ul;
+>   	vcpu->arch.cr4_guest_owned_bits = -1ul;
+>   
+> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+> index 45e8a02e99bf..89d04cd64cd0 100644
+> --- a/arch/x86/kvm/x86.c
+> +++ b/arch/x86/kvm/x86.c
+> @@ -10084,7 +10084,7 @@ static int vcpu_enter_guest(struct kvm_vcpu *vcpu)
+>   	if (vcpu->arch.guest_fpu.xfd_err)
+>   		wrmsrl(MSR_IA32_XFD_ERR, vcpu->arch.guest_fpu.xfd_err);
+>   
+> -	if (unlikely(vcpu->arch.switch_db_regs)) {
+> +	if (unlikely(vcpu->arch.switch_db_regs & ~KVM_DEBUGREG_AUTO_SWITCH)) {
+>   		set_debugreg(0, 7);
+>   		set_debugreg(vcpu->arch.eff_db[0], 0);
+>   		set_debugreg(vcpu->arch.eff_db[1], 1);
 
-[ Upstream commit 749ed4a20657bcea66a6e082ca3dc0d228cbec80 ]
+I'm confused.  I'm probably missing something obvious, but where does
+KVM_DEBUGREG_AUTO_SWITCH affect the behavior of KVM?  vcpu_enter_guest
+would still write %db0-%db3 if KVM_DEBUGREG_BP_ENABLED is set, for
+example.
 
-Executing node_set_online() when nid = NUMA_NO_NODE results in an
-undefined behavior. node_set_online() will call node_set_state(), into
-__node_set(), into set_bit(), and since NUMA_NO_NODE is -1 we'll end up
-doing a negative shift operation inside
-arch/powerpc/include/asm/bitops.h. This potential UB was detected
-running a kernel with CONFIG_UBSAN.
+Do you mean:
 
-The behavior was introduced by commit 10f78fd0dabb ("powerpc/numa: Fix a
-regression on memoryless node 0"), where the check for nid > 0 was
-removed to fix a problem that was happening with nid = 0, but the result
-is that now we're trying to online NUMA_NO_NODE nids as well.
+	if (unlikely(vcpu->arch.switch_db_regs) &&
+	    !unlikely(vcpu->arch.switch_db_regs & KVM_DEBUGREG_AUTO_SWITCH)) {
 
-Checking for nid >= 0 will allow node 0 to be onlined while avoiding
-this UB with NUMA_NO_NODE.
+?
 
-Fixes: 10f78fd0dabb ("powerpc/numa: Fix a regression on memoryless node 0")
-Reported-by: Ping Fang <pifang@redhat.com>
-Signed-off-by: Daniel Henrique Barboza <danielhb413@gmail.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220224182312.1012527-1-danielhb413@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/powerpc/mm/numa.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/arch/powerpc/mm/numa.c b/arch/powerpc/mm/numa.c
-index 094a1076fd1f..275c60f92a7c 100644
---- a/arch/powerpc/mm/numa.c
-+++ b/arch/powerpc/mm/numa.c
-@@ -742,7 +742,9 @@ static int __init parse_numa_properties(void)
- 			of_node_put(cpu);
- 		}
- 
--		node_set_online(nid);
-+		/* node_set_online() is an UB if 'nid' is negative */
-+		if (likely(nid >= 0))
-+			node_set_online(nid);
- 	}
- 
- 	get_n_mem_cells(&n_mem_addr_cells, &n_mem_size_cells);
--- 
-2.34.1
-
-
+Paolo
+  
+> @@ -10126,6 +10126,7 @@ static int vcpu_enter_guest(struct kvm_vcpu *vcpu)
+>   	 */
+>   	if (unlikely(vcpu->arch.switch_db_regs & KVM_DEBUGREG_WONT_EXIT)) {
+>   		WARN_ON(vcpu->guest_debug & KVM_GUESTDBG_USE_HW_BP);
+> +		WARN_ON(vcpu->arch.switch_db_regs & KVM_DEBUGREG_AUTO_SWITCH);
+>   		static_call(kvm_x86_sync_dirty_debug_regs)(vcpu);
+>   		kvm_update_dr0123(vcpu);
+>   		kvm_update_dr7(vcpu);
 
