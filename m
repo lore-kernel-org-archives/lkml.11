@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A77FC3527E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65637C4707E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:31:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444641AbiDEWVR (ORCPT
+        id S1444541AbiDEWVN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:21:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49568 "EHLO
+        Tue, 5 Apr 2022 18:21:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354038AbiDEKLD (ORCPT
+        with ESMTP id S1344872AbiDEKkO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:11:03 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49DE14EA0E;
-        Tue,  5 Apr 2022 02:56:57 -0700 (PDT)
+        Tue, 5 Apr 2022 06:40:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C21AD2CE08;
+        Tue,  5 Apr 2022 03:25:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id BDC49CE1C6C;
-        Tue,  5 Apr 2022 09:56:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7306C385A1;
-        Tue,  5 Apr 2022 09:56:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D8176141D;
+        Tue,  5 Apr 2022 10:25:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 641B9C385A0;
+        Tue,  5 Apr 2022 10:25:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152614;
-        bh=MqcuQlCLSDPmfpd9nc6ZNmdw5gMlElT4C8r6bpkHERc=;
+        s=korg; t=1649154330;
+        bh=NzYuvdptzYEU15AeBZX/QMowvTHlIzsvLfoKsENOWLY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hDGnKxYf4Yl/f4aVFRlDg/g5VLs+K3Sk0r5qqISgbfB2rC2S1TR6oDATyOi1vs/iO
-         2TqZ8yBnVdMFqZzA6wq1V7CzaMiRFMWJQRkpUCXKhv/K6QLD0Wd/JIMCWYO5e5qu1N
-         n4kLHAl2SrHwy8oD1S1XRVRawk3SKLA5SUfHzWbU=
+        b=p9uwMj9Ptj2hkFj99ond32D9ylDC6ik9mPEX85k57qae1owwh5Sg4ysfGwotgeifs
+         Wgddr476mfYJhcBaiblvg6Q5VclTu8cj0A0mHJKJ/fFyYXdseA/ZFvIrYAF1FHt9za
+         oOZf3TyMjtnx1m9onON5R9v7EU/SMQB+Mqn7KLy0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guangbin Huang <huangguangbin2@huawei.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH 5.15 841/913] net: hns3: fix software vlan talbe of vlan 0 inconsistent with hardware
-Date:   Tue,  5 Apr 2022 09:31:43 +0200
-Message-Id: <20220405070405.038514426@linuxfoundation.org>
+        stable@vger.kernel.org, Chengsong Ke <kechengsong@huawei.com>,
+        Zhihao Cheng <chengzhihao1@huawei.com>,
+        Richard Weinberger <richard@nod.at>
+Subject: [PATCH 5.10 542/599] ubifs: Fix read out-of-bounds in ubifs_wbuf_write_nolock()
+Date:   Tue,  5 Apr 2022 09:33:56 +0200
+Message-Id: <20220405070314.972283060@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,38 +50,109 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guangbin Huang <huangguangbin2@huawei.com>
+From: Zhihao Cheng <chengzhihao1@huawei.com>
 
-commit 7ed258f12ec5ce855f15cdfb5710361dc82fe899 upstream.
+commit 4f2262a334641e05f645364d5ade1f565c85f20b upstream.
 
-When user delete vlan 0, as driver will not delete vlan 0 for hardware in
-function hclge_set_vlan_filter_hw(), so vlan 0 in software vlan talbe should
-not be deleted.
+Function ubifs_wbuf_write_nolock() may access buf out of bounds in
+following process:
 
-Fixes: fe4144d47eef ("net: hns3: sync VLAN filter entries when kill VLAN ID failed")
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+ubifs_wbuf_write_nolock():
+  aligned_len = ALIGN(len, 8);   // Assume len = 4089, aligned_len = 4096
+  if (aligned_len <= wbuf->avail) ... // Not satisfy
+  if (wbuf->used) {
+    ubifs_leb_write()  // Fill some data in avail wbuf
+    len -= wbuf->avail;   // len is still not 8-bytes aligned
+    aligned_len -= wbuf->avail;
+  }
+  n = aligned_len >> c->max_write_shift;
+  if (n) {
+    n <<= c->max_write_shift;
+    err = ubifs_leb_write(c, wbuf->lnum, buf + written,
+                          wbuf->offs, n);
+    // n > len, read out of bounds less than 8(n-len) bytes
+  }
+
+, which can be catched by KASAN:
+  =========================================================
+  BUG: KASAN: slab-out-of-bounds in ecc_sw_hamming_calculate+0x1dc/0x7d0
+  Read of size 4 at addr ffff888105594ff8 by task kworker/u8:4/128
+  Workqueue: writeback wb_workfn (flush-ubifs_0_0)
+  Call Trace:
+    kasan_report.cold+0x81/0x165
+    nand_write_page_swecc+0xa9/0x160
+    ubifs_leb_write+0xf2/0x1b0 [ubifs]
+    ubifs_wbuf_write_nolock+0x421/0x12c0 [ubifs]
+    write_head+0xdc/0x1c0 [ubifs]
+    ubifs_jnl_write_inode+0x627/0x960 [ubifs]
+    wb_workfn+0x8af/0xb80
+
+Function ubifs_wbuf_write_nolock() accepts that parameter 'len' is not 8
+bytes aligned, the 'len' represents the true length of buf (which is
+allocated in 'ubifs_jnl_xxx', eg. ubifs_jnl_write_inode), so
+ubifs_wbuf_write_nolock() must handle the length read from 'buf' carefully
+to write leb safely.
+
+Fetch a reproducer in [Link].
+
+Fixes: 1e51764a3c2ac0 ("UBIFS: add new flash file system")
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=214785
+Reported-by: Chengsong Ke <kechengsong@huawei.com>
+Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ fs/ubifs/io.c |   34 ++++++++++++++++++++++++++++++----
+ 1 file changed, 30 insertions(+), 4 deletions(-)
 
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -10595,11 +10595,11 @@ int hclge_set_vlan_filter(struct hnae3_h
+--- a/fs/ubifs/io.c
++++ b/fs/ubifs/io.c
+@@ -846,16 +846,42 @@ int ubifs_wbuf_write_nolock(struct ubifs
+ 	 */
+ 	n = aligned_len >> c->max_write_shift;
+ 	if (n) {
+-		n <<= c->max_write_shift;
++		int m = n - 1;
++
+ 		dbg_io("write %d bytes to LEB %d:%d", n, wbuf->lnum,
+ 		       wbuf->offs);
+-		err = ubifs_leb_write(c, wbuf->lnum, buf + written,
+-				      wbuf->offs, n);
++
++		if (m) {
++			/* '(n-1)<<c->max_write_shift < len' is always true. */
++			m <<= c->max_write_shift;
++			err = ubifs_leb_write(c, wbuf->lnum, buf + written,
++					      wbuf->offs, m);
++			if (err)
++				goto out;
++			wbuf->offs += m;
++			aligned_len -= m;
++			len -= m;
++			written += m;
++		}
++
++		/*
++		 * The non-written len of buf may be less than 'n' because
++		 * parameter 'len' is not 8 bytes aligned, so here we read
++		 * min(len, n) bytes from buf.
++		 */
++		n = 1 << c->max_write_shift;
++		memcpy(wbuf->buf, buf + written, min(len, n));
++		if (n > len) {
++			ubifs_assert(c, n - len < 8);
++			ubifs_pad(c, wbuf->buf + len, n - len);
++		}
++
++		err = ubifs_leb_write(c, wbuf->lnum, wbuf->buf, wbuf->offs, n);
+ 		if (err)
+ 			goto out;
+ 		wbuf->offs += n;
+ 		aligned_len -= n;
+-		len -= n;
++		len -= min(len, n);
+ 		written += n;
  	}
  
- 	if (!ret) {
--		if (is_kill)
--			hclge_rm_vport_vlan_table(vport, vlan_id, false);
--		else
-+		if (!is_kill)
- 			hclge_add_vport_vlan_table(vport, vlan_id,
- 						   writen_to_tbl);
-+		else if (is_kill && vlan_id != 0)
-+			hclge_rm_vport_vlan_table(vport, vlan_id, false);
- 	} else if (is_kill) {
- 		/* when remove hw vlan filter failed, record the vlan id,
- 		 * and try to remove it from hw later, to be consistence
 
 
