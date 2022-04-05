@@ -2,99 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97B08C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5A07C35276
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:28:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377962AbiDEU1s (ORCPT
+        id S1378565AbiDEU2P (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:27:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56116 "EHLO
+        Tue, 5 Apr 2022 16:28:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1454613AbiDEP6o (ORCPT
+        with ESMTP id S1572907AbiDERS1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:58:44 -0400
-Received: from mail-4317.proton.ch (mail-4317.proton.ch [185.70.43.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B8EE3FBE3
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 08:05:27 -0700 (PDT)
-Date:   Tue, 05 Apr 2022 15:05:17 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=emersion.fr;
-        s=protonmail2; t=1649171125;
-        bh=t+hIRZtv/5J72gOq5YhoXVrS/FiYqIfmQiB83JSrhzM=;
-        h=Date:To:From:Cc:Reply-To:Subject:Message-ID:In-Reply-To:
-         References:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
-         Message-ID;
-        b=ru1fLrLFoyieVqTtaX1uC01gDuQjSCnK7Ljdh8R2cG0as4M3vxMFjpQAwOaqHjrW7
-         kFnCqk1G2nuLsNvZVQqJWP2RyBmiolkuND1Q4BSdDlmtCO3xFSwT60C0Xe8QeBOzwL
-         6B78G9ucKB8GMYB9ezsonO3HFyGQF2YUzl7skwJceOlQcYOGX5zuhoQmrgnKL1XFU+
-         DeVBOmCBbpFFauC34ukoOlILVXl8mt3fZ4n2PJur0FFm67z1Igl4YFGbHFzm9D4MK8
-         iIEJLG5sYsqQttjfEwpRcqquHdxyEXwnsdY34nDXP3WeLho1BxlAQP7NfIyKEXoBOh
-         kft73uhSV1RIg==
-To:     Randy Dunlap <rdunlap@infradead.org>
-From:   Simon Ser <contact@emersion.fr>
-Cc:     Javier Martinez Canillas <javierm@redhat.com>,
-        linux-kernel@vger.kernel.org,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        dri-devel@lists.freedesktop.org
-Reply-To: Simon Ser <contact@emersion.fr>
-Subject: Re: [PATCH] drm/format_helper: fix a kernel-doc typo
-Message-ID: <qjTlHAInyuxpFWsTWPGXoVeByVdVe-NF-kg-FUeLWQbKy9SovMzCcK-eDsijpDt1roaSubDr-8kBGKQSt_7CXFa4-BxQ6SrGSNeoZrdiq-s=@emersion.fr>
-In-Reply-To: <c544d79e-90ec-7bbe-77ad-de96a700d711@infradead.org>
-References: <20220403232902.1753-1-rdunlap@infradead.org> <ttcrpLw9HkdhAH5SkXylXDBi9SBf7LWgOeW09ZvTF4U4_zKJAOXBQZlFxfw6NKY0Hip6dXBFape6zkX09cstuOno72c-c00wmZ_VbNDg6xs=@emersion.fr> <b20bbd22-895c-9e74-e579-d2f3561a2fe1@infradead.org> <BzpH4s8ZYn84kTlJQ3BHVMQzZlESb2Fk6v-uO5KBaaeBNMvRvC98lpuBLUNLE3a5bdoYTb5JRvo6EU__5AGJ79LUirSppO39I1t1xlwx-fI=@emersion.fr> <fda186f7-2cf4-a69a-d68e-58073d35cbea@redhat.com> <c544d79e-90ec-7bbe-77ad-de96a700d711@infradead.org>
+        Tue, 5 Apr 2022 13:18:27 -0400
+Received: from sender4-op-o18.zoho.com (sender4-op-o18.zoho.com [136.143.188.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1C3925DA;
+        Tue,  5 Apr 2022 10:16:28 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1649178945; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=VY+0yKVKo/OVl+of7lhiC+NmERw/mO0QIL7d/4Zt2BK2DvDHJe7p+FYSZU3ej7pPRyCuFkYQodsZwHnCI9+bDNxwX6ymxq8d2/QH2AiqgeWo721jljL1AS/mnCSF93Ovl7njzvvGJE/8nPx2+CC5dv5YPbayD+LBEOc4kDhEH7U=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1649178945; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=IGWowlI8r+WgRZZc7My5D0pUljhMLj42f7CltFmHSBg=; 
+        b=IdFBMiNpx3O18xSKZrid62+fV4c3LjwQ0U5dbZNvNfinfrS7/JVi5247bRbVOWBFRMEJiwUeCx6wk3pzHbgYwYkhdYAco8Bl+gggK3j9lZ90igApJOd55kFN68d/l64iucbBTvPDLVxNw/1oB/WW11qtZRNczpsySkwuvQczSNQ=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1649178945;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=IGWowlI8r+WgRZZc7My5D0pUljhMLj42f7CltFmHSBg=;
+        b=MMUud1Fbn3lFWPmI1IjLMb9yr4uoLp/IjkTbnW4xngwQb5ukVWKyYDRd7ForX3lU
+        eqqJTnUHQSunNNAPWg/AhRaRNXIuO13j9Kn+KjJHPo0ShvP3vajIfrUphFmiIEMh6Hz
+        hGrk6GwnArH72BXcmPELd+uzA/l0c3659orphwOI=
+Received: from [10.10.10.3] (85.117.236.245 [85.117.236.245]) by mx.zohomail.com
+        with SMTPS id 1649178943002319.0872332652002; Tue, 5 Apr 2022 10:15:43 -0700 (PDT)
+Message-ID: <991f49fd-354b-6d07-6925-f79ca7f09838@arinc9.com>
+Date:   Tue, 5 Apr 2022 20:15:36 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] net: ethernet: mtk_eth_soc: add label support for GMACs
+Content-Language: en-US
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Sergio Paracuellos <sergio.paracuellos@gmail.com>,
+        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?Q?Ren=c3=a9_van_Dorst?= <opensource@vdorst.com>
+References: <20220404114000.3549-1-arinc.unal@arinc9.com>
+ <Ykri9tOtUDmXzHkG@lunn.ch>
+From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+In-Reply-To: <Ykri9tOtUDmXzHkG@lunn.ch>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tuesday, April 5th, 2022 at 16:39, Randy Dunlap <rdunlap@infradead.org> =
-wrote:
+On 04/04/2022 15:22, Andrew Lunn wrote:
+> On Mon, Apr 04, 2022 at 02:40:00PM +0300, Arınç ÜNAL wrote:
+>> From: René van Dorst <opensource@vdorst.com>
+>>
+>> Add label support for GMACs. The network interface of the GMAC will have
+>> the string of the label property defined on the devicetree as its name.
+> 
+> Sorry, but no. This has been discussed a few times, you need something
+> in user space, udev or systemd etc to set interface names.
+> 
+> Please look back in the archive at previous discussions.
 
-> On 4/4/22 23:26, Javier Martinez Canillas wrote:
->
-> > On 4/5/22 08:12, Simon Ser wrote:
-> >
-> > > On Monday, April 4th, 2022 at 23:35, Randy Dunlap rdunlap@infradead.o=
-rg wrote:
-> > >
-> > > > On 4/4/22 09:04, Simon Ser wrote:
-> > > >
-> > > > > Both doc patches pushed, thanks. I had to manually edit them beca=
-use they
-> > > > > wouldn't apply cleanly. Next time, please use git-send-email (see
-> > > > > https://git-send-email.io/ for setup instructions).
-> > > >
-> > > > That's odd. I did use 'git send-email' and I don't usually have any
-> > > > problems (AFAIK). I'll check those setup instructions.
-> > >
-> > > Hm, maybe the issue isn't git-send-email, but the way the patch was
-> > > generated? I had to manually edit these lines for the first patch to =
-work:
-> > >
-> > > --- linux-next-20211217.orig/include/drm/drm_file.h
-> > > +++ linux-next-20211217/include/drm/drm_file.h
-> > >
-> > > I changed these to:
-> > >
-> > > --- a/include/drm/drm_file.h
-> > > +++ b/include/drm/drm_file.h
-> > >
-> > > This wasn't enough for the second patch, I had to re-do the changes b=
-y hand
-> > > from scratch.
-> >
-> > Yes, I believe the suggestion should be to use git-format-patch instead=
-.
-> >
-> > To make sure that was is posted can be consumed by the git-am command.
->
->
-> Considering that I am not using git, I think it will be difficult
-> to use git-format-patch.
+Thanks for the heads up Andrew, I found your quote from 
+https://lore.kernel.org/all/Ydhwfa%2FECqTE3rLx@lunn.ch/:
 
-Ah, okay. Would you consider using Git for you next patches?
+> I agree with Russell here. I doubt this is going to be accepted.
+> 
+> DSA is special because DSA is very old, much older than DT, and maybe
+> older than udev. The old DSA platform drivers had a mechanism to
+> supply the interface name to the DSA core. When we added a DT binding
+> to DSA we kept that mechanism, since that mechanism had been used for
+> a long time.
+> 
+> Even if you could show there was a generic old mechanism, from before
+> the days of DT, that allowed interface names to be set from platform
+> drivers, i doubt it would be accepted because there is no continuity,
+> which DSA has.
 
-(FYI, I'll pass next time I hit a patch which doesn't apply cleanly.
-Nothing personal, it's just that I don't have time to deal with broken
-patches.)
+On MT7621 SoC, we can mux a switch phy of MT7530 (must be phy0 or 4) to 
+the SoC's gmac1. So a UTP port connected to that phy becomes directly 
+connected to the SoC's gmac1. Because of that, I wanted to be able to 
+give the gmac's netdev interface a name from DT like DSA. However, the 
+quote above makes sense why not to do so.
+
+Thanks.
+Arınç
