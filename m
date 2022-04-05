@@ -2,115 +2,207 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7751C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81D56C433F5
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:22:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1587400AbiDFAJA (ORCPT
+        id S1587328AbiDFAIn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:09:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47350 "EHLO
+        Tue, 5 Apr 2022 20:08:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345652AbiDEMmM (ORCPT
+        with ESMTP id S1349435AbiDEJtw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 08:42:12 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26ACF107809;
-        Tue,  5 Apr 2022 04:48:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649159293; x=1680695293;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Lx91HnTsU6TyC6GmdWAsmAGHgR+SGdQHhtVYtI/tJfs=;
-  b=Lf/Ofu+6yAYOIf+HGxGVAeLKKs2JM3q+FvBIZ3W3k6WVPya7ouSzEnqh
-   Cfq39SnLYWJxhQpJULsYuAFSpMQdeW9PmmnzBqqKmjc7AAUxOzGqlfVL5
-   rovCDuLTXaUI/VZcmmGZ/W9FOxG35bq77zpwViaaiVbBzJ5xEXuCEEP82
-   rFGNUtUTHfsyrXiEACSH5JxUMTGCfXfK8MCE+Ii6aalYItU/YQQVjjkpw
-   THtomc7jp3Zrk5/FRwSjFokRVXZwxb1d9E0iaFsIzn7KBopQ+kcx4/367
-   5OyPkQmLh+6eSVO4Oahlmmr2PFhfR1PKgWxYrvYGE2w0Swd+vGDygaM1+
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="258313471"
-X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
-   d="scan'208";a="258313471"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 04:48:12 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
-   d="scan'208";a="569848681"
-Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
-  by orsmga008.jf.intel.com with ESMTP; 05 Apr 2022 04:48:08 -0700
-Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nbhfL-0003B9-Dt;
-        Tue, 05 Apr 2022 11:48:07 +0000
-Date:   Tue, 5 Apr 2022 19:48:01 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Liang Yang <liang.yang@amlogic.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        linux-mtd@lists.infradead.org
-Cc:     kbuild-all@lists.01.org, Liang Yang <liang.yang@amlogic.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jianxin Pan <jianxin.pan@amlogic.com>,
-        Victor Wan <victor.wan@amlogic.com>,
-        XianWei Zhao <xianwei.zhao@amlogic.com>,
-        Kelvin Zhang <kelvin.zhang@amlogic.com>,
-        BiChao Zheng <bichao.zheng@amlogic.com>,
-        YongHui Yu <yonghui.yu@amlogic.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH v4 1/2] mtd: rawnand: meson: discard the common MMC sub
- clock framework
-Message-ID: <202204051917.AuOOMCQd-lkp@intel.com>
-References: <20220402074921.13316-2-liang.yang@amlogic.com>
+        Tue, 5 Apr 2022 05:49:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51A0C2529B;
+        Tue,  5 Apr 2022 02:45:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D916361368;
+        Tue,  5 Apr 2022 09:45:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC76DC385A2;
+        Tue,  5 Apr 2022 09:45:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151948;
+        bh=9gVJ8hVCaDqgoBzxse+4FYk1575fvUVWdDSL9iRYPdw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=JdoxcJjEZqZ5d03Q3J/9AVcRzv4A1dmhCI3TZrNubSB6EFAtAuPzS+7h7GMIcm9gN
+         OARFZqgldo82AX0voV/mrquSpWkS1KiPVx8SlyBsyEbaFEsIzs9PZFiWtBqaOiuk+a
+         hEV89lZ3eE80zYw3ePYKkaXTBWjKDpfxXLadE8bk=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 599/913] phy: phy-brcm-usb: fixup BCM4908 support
+Date:   Tue,  5 Apr 2022 09:27:41 +0200
+Message-Id: <20220405070357.797366659@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220402074921.13316-2-liang.yang@amlogic.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Liang,
+From: Rafał Miłecki <rafal@milecki.pl>
 
-I love your patch! Yet something to improve:
+[ Upstream commit 32942d33d63d27714ed16a4176e5a99547adb6e0 ]
 
-[auto build test ERROR on mtd/nand/next]
-[also build test ERROR on mtd/mtd/next mtd/mtd/fixes robh/for-next v5.18-rc1 next-20220405]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+Just like every other family BCM4908 should get its own enum value. That
+is required to properly handle it in chipset conditional code.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Liang-Yang/refine-the-NFC-clock-framework/20220402-155036
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/mtd/linux.git nand/next
-config: parisc-randconfig-r001-20220405 (https://download.01.org/0day-ci/archive/20220405/202204051917.AuOOMCQd-lkp@intel.com/config)
-compiler: hppa-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/c34b64ab8005a978739f157a07ed342d247fecac
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Liang-Yang/refine-the-NFC-clock-framework/20220402-155036
-        git checkout c34b64ab8005a978739f157a07ed342d247fecac
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=parisc SHELL=/bin/bash
+The real change is excluding BCM4908 from the PLL reprogramming code
+(see brcmusb_usb3_pll_54mhz()). I'm not sure what's the BCM4908
+reference clock frequency but:
+1. BCM4908 custom driver from Broadcom's SDK doesn't reprogram PLL
+2. Doing that in Linux driver stopped PHY handling some USB 3.0 devices
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+This change makes USB 3.0 PHY recognize e.g.:
+1. 04e8:6860 - Samsung Electronics Co., Ltd Galaxy series, misc. (MTP mode)
+2. 1058:259f - Western Digital My Passport 259F
 
-All errors (new ones prefixed by >>, old ones prefixed by <<):
+Broadcom's STB SoCs come with a set of SUN_TOP_CTRL_* registers that
+allow reading chip family and product ids. Such a block & register is
+missing on BCM4908 so this commit introduces "compatible" string
+specific binding.
 
->> ERROR: modpost: "devm_clk_register" [drivers/mtd/nand/raw/meson_nand.ko] undefined!
->> ERROR: modpost: "clk_divider_ops" [drivers/mtd/nand/raw/meson_nand.ko] undefined!
+Fixes: 4b402fa8e0b7 ("phy: phy-brcm-usb: support PHY on the BCM4908")
+Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Link: https://lore.kernel.org/r/20220218172459.10431-1-zajec5@gmail.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/phy/broadcom/phy-brcm-usb-init.c | 36 ++++++++++++++++++++++++
+ drivers/phy/broadcom/phy-brcm-usb-init.h |  1 +
+ drivers/phy/broadcom/phy-brcm-usb.c      | 11 +++++++-
+ 3 files changed, 47 insertions(+), 1 deletion(-)
 
+diff --git a/drivers/phy/broadcom/phy-brcm-usb-init.c b/drivers/phy/broadcom/phy-brcm-usb-init.c
+index 9391ab42a12b..dd0f66288fbd 100644
+--- a/drivers/phy/broadcom/phy-brcm-usb-init.c
++++ b/drivers/phy/broadcom/phy-brcm-usb-init.c
+@@ -79,6 +79,7 @@
+ 
+ enum brcm_family_type {
+ 	BRCM_FAMILY_3390A0,
++	BRCM_FAMILY_4908,
+ 	BRCM_FAMILY_7250B0,
+ 	BRCM_FAMILY_7271A0,
+ 	BRCM_FAMILY_7364A0,
+@@ -96,6 +97,7 @@ enum brcm_family_type {
+ 
+ static const char *family_names[BRCM_FAMILY_COUNT] = {
+ 	USB_BRCM_FAMILY(3390A0),
++	USB_BRCM_FAMILY(4908),
+ 	USB_BRCM_FAMILY(7250B0),
+ 	USB_BRCM_FAMILY(7271A0),
+ 	USB_BRCM_FAMILY(7364A0),
+@@ -203,6 +205,27 @@ usb_reg_bits_map_table[BRCM_FAMILY_COUNT][USB_CTRL_SELECTOR_COUNT] = {
+ 		USB_CTRL_USB_PM_USB20_HC_RESETB_VAR_MASK,
+ 		ENDIAN_SETTINGS, /* USB_CTRL_SETUP ENDIAN bits */
+ 	},
++	/* 4908 */
++	[BRCM_FAMILY_4908] = {
++		0, /* USB_CTRL_SETUP_SCB1_EN_MASK */
++		0, /* USB_CTRL_SETUP_SCB2_EN_MASK */
++		0, /* USB_CTRL_SETUP_SS_EHCI64BIT_EN_MASK */
++		0, /* USB_CTRL_SETUP_STRAP_IPP_SEL_MASK */
++		0, /* USB_CTRL_SETUP_OC3_DISABLE_MASK */
++		0, /* USB_CTRL_PLL_CTL_PLL_IDDQ_PWRDN_MASK */
++		0, /* USB_CTRL_USB_PM_BDC_SOFT_RESETB_MASK */
++		USB_CTRL_USB_PM_XHC_SOFT_RESETB_MASK,
++		USB_CTRL_USB_PM_USB_PWRDN_MASK,
++		0, /* USB_CTRL_USB30_CTL1_XHC_SOFT_RESETB_MASK */
++		0, /* USB_CTRL_USB30_CTL1_USB3_IOC_MASK */
++		0, /* USB_CTRL_USB30_CTL1_USB3_IPP_MASK */
++		0, /* USB_CTRL_USB_DEVICE_CTL1_PORT_MODE_MASK */
++		0, /* USB_CTRL_USB_PM_SOFT_RESET_MASK */
++		0, /* USB_CTRL_SETUP_CC_DRD_MODE_ENABLE_MASK */
++		0, /* USB_CTRL_SETUP_STRAP_CC_DRD_MODE_ENABLE_SEL_MASK */
++		0, /* USB_CTRL_USB_PM_USB20_HC_RESETB_VAR_MASK */
++		0, /* USB_CTRL_SETUP ENDIAN bits */
++	},
+ 	/* 7250b0 */
+ 	[BRCM_FAMILY_7250B0] = {
+ 		USB_CTRL_SETUP_SCB1_EN_MASK,
+@@ -559,6 +582,7 @@ static void brcmusb_usb3_pll_54mhz(struct brcm_usb_init_params *params)
+ 	 */
+ 	switch (params->selected_family) {
+ 	case BRCM_FAMILY_3390A0:
++	case BRCM_FAMILY_4908:
+ 	case BRCM_FAMILY_7250B0:
+ 	case BRCM_FAMILY_7366C0:
+ 	case BRCM_FAMILY_74371A0:
+@@ -1004,6 +1028,18 @@ static const struct brcm_usb_init_ops bcm7445_ops = {
+ 	.set_dual_select = usb_set_dual_select,
+ };
+ 
++void brcm_usb_dvr_init_4908(struct brcm_usb_init_params *params)
++{
++	int fam;
++
++	fam = BRCM_FAMILY_4908;
++	params->selected_family = fam;
++	params->usb_reg_bits_map =
++		&usb_reg_bits_map_table[fam][0];
++	params->family_name = family_names[fam];
++	params->ops = &bcm7445_ops;
++}
++
+ void brcm_usb_dvr_init_7445(struct brcm_usb_init_params *params)
+ {
+ 	int fam;
+diff --git a/drivers/phy/broadcom/phy-brcm-usb-init.h b/drivers/phy/broadcom/phy-brcm-usb-init.h
+index a39f30fa2e99..1ccb5ddab865 100644
+--- a/drivers/phy/broadcom/phy-brcm-usb-init.h
++++ b/drivers/phy/broadcom/phy-brcm-usb-init.h
+@@ -64,6 +64,7 @@ struct  brcm_usb_init_params {
+ 	bool suspend_with_clocks;
+ };
+ 
++void brcm_usb_dvr_init_4908(struct brcm_usb_init_params *params);
+ void brcm_usb_dvr_init_7445(struct brcm_usb_init_params *params);
+ void brcm_usb_dvr_init_7216(struct brcm_usb_init_params *params);
+ void brcm_usb_dvr_init_7211b0(struct brcm_usb_init_params *params);
+diff --git a/drivers/phy/broadcom/phy-brcm-usb.c b/drivers/phy/broadcom/phy-brcm-usb.c
+index 0f1deb6e0eab..2cb3779fcdf8 100644
+--- a/drivers/phy/broadcom/phy-brcm-usb.c
++++ b/drivers/phy/broadcom/phy-brcm-usb.c
+@@ -283,6 +283,15 @@ static const struct attribute_group brcm_usb_phy_group = {
+ 	.attrs = brcm_usb_phy_attrs,
+ };
+ 
++static const struct match_chip_info chip_info_4908 = {
++	.init_func = &brcm_usb_dvr_init_4908,
++	.required_regs = {
++		BRCM_REGS_CTRL,
++		BRCM_REGS_XHCI_EC,
++		-1,
++	},
++};
++
+ static const struct match_chip_info chip_info_7216 = {
+ 	.init_func = &brcm_usb_dvr_init_7216,
+ 	.required_regs = {
+@@ -318,7 +327,7 @@ static const struct match_chip_info chip_info_7445 = {
+ static const struct of_device_id brcm_usb_dt_ids[] = {
+ 	{
+ 		.compatible = "brcm,bcm4908-usb-phy",
+-		.data = &chip_info_7445,
++		.data = &chip_info_4908,
+ 	},
+ 	{
+ 		.compatible = "brcm,bcm7216-usb-phy",
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.34.1
+
+
+
