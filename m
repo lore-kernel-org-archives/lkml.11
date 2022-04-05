@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2314C47084
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:20:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C97FC35294
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:20:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385781AbiDEPPT (ORCPT
+        id S1382111AbiDEPO2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:15:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53872 "EHLO
+        Tue, 5 Apr 2022 11:14:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346680AbiDEJpV (ORCPT
+        with ESMTP id S1346617AbiDEJpO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:45:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FC4C6472;
-        Tue,  5 Apr 2022 02:31:21 -0700 (PDT)
+        Tue, 5 Apr 2022 05:45:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3859DAFD9;
+        Tue,  5 Apr 2022 02:31:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A396DB81B14;
-        Tue,  5 Apr 2022 09:31:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1353FC385A3;
-        Tue,  5 Apr 2022 09:31:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 80C1C616C1;
+        Tue,  5 Apr 2022 09:31:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9463FC385A4;
+        Tue,  5 Apr 2022 09:31:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151078;
-        bh=h2e4qYecj9Bm+D+7lf7mH8L5duW4UVKYn8UQDRd28xU=;
+        s=korg; t=1649151070;
+        bh=O+Ces/8fonpQXtTu0gzxDgjvrDIyaPwB/CTLkKcEuAI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ElZ3l/c6my+ceK3uU3skBryGZ+a9x0V4+yoMxUIy72os/Xxhu2om5twg3TfEZwtMs
-         pmBK0Uw1xZuQnKccP/wFUibeLFZ8nmdKvsjX8JwkM73WmxHKpfT4Xizs47uduj5tlK
-         UbV20dpwwwVbtkvaSzRycA2pWJii7eBXqwLwu2pw=
+        b=Rlao9psSyxHf5a0aGfOpLnLrVslkfDzP9ss3DcMyB1NXXQ1gz6o0+7EHRzCU/Ymfd
+         SoeU6Ob1cKU+tAxUoAR/MNRTV7GjvO9c8zGy1nQfuH7YaR0Xir3QoRa/V1vX7cIIqH
+         bixJmqf6dBhHkKNlMzC5N9kqAzEk0hG/3Px/4ONM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
         Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 285/913] media: v4l: Avoid unaligned access warnings when printing 4cc modifiers
-Date:   Tue,  5 Apr 2022 09:22:27 +0200
-Message-Id: <20220405070348.400902612@linuxfoundation.org>
+Subject: [PATCH 5.15 282/913] media: meson: vdec: potential dereference of null pointer
+Date:   Tue,  5 Apr 2022 09:22:24 +0200
+Message-Id: <20220405070348.311101535@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -51,71 +52,94 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sakari Ailus <sakari.ailus@linux.intel.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 24bb30c8c894ec7213ad810b46e2a6a4c12136c1 ]
+[ Upstream commit c8c80c996182239ff9b05eda4db50184cf3b2e99 ]
 
-Pointers V4L2 pixelformat and dataformat fields in a few packed structs
-are directly passed to printk family of functions. This could result in an
-unaligned access albeit no such possibility appears to exist at the
-moment i.e. this clang warning appears to be a false positive.
+As the possible failure of the kzalloc(), the 'new_ts' could be NULL
+pointer.
+Therefore, it should be better to check it in order to avoid the
+dereference of the NULL pointer.
+Also, the caller esparser_queue() needs to deal with the return value of
+the amvdec_add_ts().
 
-Address the warning by copying the pixelformat or dataformat value to a
-local variable first.
-
-Reported-by: kernel test robot <lkp@intel.com>
-Fixes: e927e1e0f0dd ("v4l: ioctl: Use %p4cc printk modifier to print FourCC codes")
-Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+Fixes: 876f123b8956 ("media: meson: vdec: bring up to compliance")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Suggested-by: Neil Armstrong <narmstrong@baylibre.com>
+Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/v4l2-core/v4l2-ioctl.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+ drivers/staging/media/meson/vdec/esparser.c     | 7 ++++++-
+ drivers/staging/media/meson/vdec/vdec_helpers.c | 8 ++++++--
+ drivers/staging/media/meson/vdec/vdec_helpers.h | 4 ++--
+ 3 files changed, 14 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/media/v4l2-core/v4l2-ioctl.c b/drivers/media/v4l2-core/v4l2-ioctl.c
-index c7308a2a80a0..7c596a85f34f 100644
---- a/drivers/media/v4l2-core/v4l2-ioctl.c
-+++ b/drivers/media/v4l2-core/v4l2-ioctl.c
-@@ -279,8 +279,8 @@ static void v4l_print_format(const void *arg, bool write_only)
- 	const struct v4l2_vbi_format *vbi;
- 	const struct v4l2_sliced_vbi_format *sliced;
- 	const struct v4l2_window *win;
--	const struct v4l2_sdr_format *sdr;
- 	const struct v4l2_meta_format *meta;
-+	u32 pixelformat;
- 	u32 planes;
- 	unsigned i;
+diff --git a/drivers/staging/media/meson/vdec/esparser.c b/drivers/staging/media/meson/vdec/esparser.c
+index db7022707ff8..86ccc8937afc 100644
+--- a/drivers/staging/media/meson/vdec/esparser.c
++++ b/drivers/staging/media/meson/vdec/esparser.c
+@@ -328,7 +328,12 @@ esparser_queue(struct amvdec_session *sess, struct vb2_v4l2_buffer *vbuf)
  
-@@ -299,8 +299,9 @@ static void v4l_print_format(const void *arg, bool write_only)
- 	case V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE:
- 	case V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE:
- 		mp = &p->fmt.pix_mp;
-+		pixelformat = mp->pixelformat;
- 		pr_cont(", width=%u, height=%u, format=%p4cc, field=%s, colorspace=%d, num_planes=%u, flags=0x%x, ycbcr_enc=%u, quantization=%u, xfer_func=%u\n",
--			mp->width, mp->height, &mp->pixelformat,
-+			mp->width, mp->height, &pixelformat,
- 			prt_names(mp->field, v4l2_field_names),
- 			mp->colorspace, mp->num_planes, mp->flags,
- 			mp->ycbcr_enc, mp->quantization, mp->xfer_func);
-@@ -343,14 +344,15 @@ static void v4l_print_format(const void *arg, bool write_only)
- 		break;
- 	case V4L2_BUF_TYPE_SDR_CAPTURE:
- 	case V4L2_BUF_TYPE_SDR_OUTPUT:
--		sdr = &p->fmt.sdr;
--		pr_cont(", pixelformat=%p4cc\n", &sdr->pixelformat);
-+		pixelformat = p->fmt.sdr.pixelformat;
-+		pr_cont(", pixelformat=%p4cc\n", &pixelformat);
- 		break;
- 	case V4L2_BUF_TYPE_META_CAPTURE:
- 	case V4L2_BUF_TYPE_META_OUTPUT:
- 		meta = &p->fmt.meta;
-+		pixelformat = meta->dataformat;
- 		pr_cont(", dataformat=%p4cc, buffersize=%u\n",
--			&meta->dataformat, meta->buffersize);
-+			&pixelformat, meta->buffersize);
- 		break;
- 	}
+ 	offset = esparser_get_offset(sess);
+ 
+-	amvdec_add_ts(sess, vb->timestamp, vbuf->timecode, offset, vbuf->flags);
++	ret = amvdec_add_ts(sess, vb->timestamp, vbuf->timecode, offset, vbuf->flags);
++	if (ret) {
++		v4l2_m2m_buf_done(vbuf, VB2_BUF_STATE_ERROR);
++		return ret;
++	}
++
+ 	dev_dbg(core->dev, "esparser: ts = %llu pld_size = %u offset = %08X flags = %08X\n",
+ 		vb->timestamp, payload_size, offset, vbuf->flags);
+ 
+diff --git a/drivers/staging/media/meson/vdec/vdec_helpers.c b/drivers/staging/media/meson/vdec/vdec_helpers.c
+index b9125c295d1d..06fd66539797 100644
+--- a/drivers/staging/media/meson/vdec/vdec_helpers.c
++++ b/drivers/staging/media/meson/vdec/vdec_helpers.c
+@@ -227,13 +227,16 @@ int amvdec_set_canvases(struct amvdec_session *sess,
  }
+ EXPORT_SYMBOL_GPL(amvdec_set_canvases);
+ 
+-void amvdec_add_ts(struct amvdec_session *sess, u64 ts,
+-		   struct v4l2_timecode tc, u32 offset, u32 vbuf_flags)
++int amvdec_add_ts(struct amvdec_session *sess, u64 ts,
++		  struct v4l2_timecode tc, u32 offset, u32 vbuf_flags)
+ {
+ 	struct amvdec_timestamp *new_ts;
+ 	unsigned long flags;
+ 
+ 	new_ts = kzalloc(sizeof(*new_ts), GFP_KERNEL);
++	if (!new_ts)
++		return -ENOMEM;
++
+ 	new_ts->ts = ts;
+ 	new_ts->tc = tc;
+ 	new_ts->offset = offset;
+@@ -242,6 +245,7 @@ void amvdec_add_ts(struct amvdec_session *sess, u64 ts,
+ 	spin_lock_irqsave(&sess->ts_spinlock, flags);
+ 	list_add_tail(&new_ts->list, &sess->timestamps);
+ 	spin_unlock_irqrestore(&sess->ts_spinlock, flags);
++	return 0;
+ }
+ EXPORT_SYMBOL_GPL(amvdec_add_ts);
+ 
+diff --git a/drivers/staging/media/meson/vdec/vdec_helpers.h b/drivers/staging/media/meson/vdec/vdec_helpers.h
+index cfaed52ab526..798e5a8a9b3f 100644
+--- a/drivers/staging/media/meson/vdec/vdec_helpers.h
++++ b/drivers/staging/media/meson/vdec/vdec_helpers.h
+@@ -55,8 +55,8 @@ void amvdec_dst_buf_done_offset(struct amvdec_session *sess,
+  * @offset: offset in the VIFIFO where the associated packet was written
+  * @flags the vb2_v4l2_buffer flags
+  */
+-void amvdec_add_ts(struct amvdec_session *sess, u64 ts,
+-		   struct v4l2_timecode tc, u32 offset, u32 flags);
++int amvdec_add_ts(struct amvdec_session *sess, u64 ts,
++		  struct v4l2_timecode tc, u32 offset, u32 flags);
+ void amvdec_remove_ts(struct amvdec_session *sess, u64 ts);
+ 
+ /**
 -- 
 2.34.1
 
