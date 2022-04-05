@@ -2,157 +2,308 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65637C4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2B72C35280
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:31:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444541AbiDEWVN (ORCPT
+        id S1444932AbiDEWVX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:21:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54432 "EHLO
+        Tue, 5 Apr 2022 18:21:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344872AbiDEKkO (ORCPT
+        with ESMTP id S1573717AbiDETu6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:40:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C21AD2CE08;
-        Tue,  5 Apr 2022 03:25:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D8176141D;
-        Tue,  5 Apr 2022 10:25:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 641B9C385A0;
-        Tue,  5 Apr 2022 10:25:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154330;
-        bh=NzYuvdptzYEU15AeBZX/QMowvTHlIzsvLfoKsENOWLY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p9uwMj9Ptj2hkFj99ond32D9ylDC6ik9mPEX85k57qae1owwh5Sg4ysfGwotgeifs
-         Wgddr476mfYJhcBaiblvg6Q5VclTu8cj0A0mHJKJ/fFyYXdseA/ZFvIrYAF1FHt9za
-         oOZf3TyMjtnx1m9onON5R9v7EU/SMQB+Mqn7KLy0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chengsong Ke <kechengsong@huawei.com>,
-        Zhihao Cheng <chengzhihao1@huawei.com>,
-        Richard Weinberger <richard@nod.at>
-Subject: [PATCH 5.10 542/599] ubifs: Fix read out-of-bounds in ubifs_wbuf_write_nolock()
-Date:   Tue,  5 Apr 2022 09:33:56 +0200
-Message-Id: <20220405070314.972283060@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 15:50:58 -0400
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B9CB1AF29;
+        Tue,  5 Apr 2022 12:48:59 -0700 (PDT)
+Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 235HDi4W012570;
+        Tue, 5 Apr 2022 19:48:24 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : subject :
+ date : message-id : in-reply-to : references : content-type :
+ mime-version; s=corp-2021-07-09;
+ bh=LdtNNSBd6Z5ehncDcMFN1tnfBIqKGMQ4MFvmIanoARs=;
+ b=lmTAymFNn9EI2rgbfaU4u/r1EX2QsfKsISE3KwtrBKsUAdKaeveOrLxRv7kG/SbjnQvn
+ kLTixACn8hyN6phT+MvrFKW7rno6aSa8+CraU2FJkKz07fkKFkONt5rnx27WlLJ+VFnQ
+ Y1LGPSrtUM6CHcPPtFfmiKdzlAZZGHwD25XwXMEUcfiwYnGJIf5X54U5hvhkNy9CScng
+ xHQrGzhdYwLrWHNiE1TUsc2xrqd1UdcOtmDAyCPl+kuo5D52pwYofagJkwhdBuE61isZ
+ cFLqEW9ajtOLug4v9ZwuFa8uAeSPPN9Pc1NIvlO/GiCtoHqs3uCyIITfm+r/nVDgCl+o Cw== 
+Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.appoci.oracle.com [138.1.114.2])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3f6cwcevwk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 05 Apr 2022 19:48:23 +0000
+Received: from pps.filterd (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 235JaNKv002676;
+        Tue, 5 Apr 2022 19:48:22 GMT
+Received: from nam11-co1-obe.outbound.protection.outlook.com (mail-co1nam11lp2169.outbound.protection.outlook.com [104.47.56.169])
+        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3f6cx3tu73-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 05 Apr 2022 19:48:22 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=iGnDukXOj6gbDKhfGJ4DvPEn5q5tdqh5I4drjms5w1skST8zE+EJsggowRA8QsH+9lKxjuGmXZ+iogRDH1SPWYsOdC/9mfDrKH9qLcHAjoi1y/QowoeMtg6xMtMQGC4P7CWO7BIAZ0jUz+m00qpodYNfCUFXYzTfyOD+JHarNCHiZz1+HPfQ0xfXn1NvuKq2UARoRkNmQiSL0w/ph7tB8qS6dWi/WN2m8UPW/up9Rj2IMFqJMaRUg68X0iGCoXLB+aCl+G7iIWBuS5V9Dfflkqd8VFOKIDe8g82hcu65yUQJhxqKvmcGFBK1iywR/7OPuGEAqDdI01ZBKJSVnyoRzg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=LdtNNSBd6Z5ehncDcMFN1tnfBIqKGMQ4MFvmIanoARs=;
+ b=MpD6yftbJC9rKOz1OfFNHgJRkADEhXW7HYadDBpiRFfsSu3K1Rd3+JNhoXwTDm8RaBU9qMi20UdTyK3bW35EBoRfX+gXt6RMboO0ckcir0Uoth0yrkPJeUjfDceBvmUxDzfOUFC282YpdCtt7UUBiTsjjXR9ItVwxcwrve1Etf/T/TmGxhB0PkeUufYtesdksj8byg6QGYcId5/ieIG4uT19eYGgQMGXa251IudnWCI6iTGP6XhttrHORy1A0p0QfVLaKFI1LeUXci//yYkJuiEep9f6zp/BlZf2NkzUzYajnyCHS0ycxOiJzOtWtrsIIjTH6s4vrRCYkEso2Qlh8w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=LdtNNSBd6Z5ehncDcMFN1tnfBIqKGMQ4MFvmIanoARs=;
+ b=K0peJ1HooeIbPqdV5zTlMgx+a3XreslW32v6XT9Bs5qZujx0wsl9AFwzOQEyZEq00ogvPrSGjcm45Wxg57DhG1o85YV1rp9FmxPfEl+ZyJphG/Anv4IhuA5w76z6ECLpw8bENF0s4fZ08CNUGRqMG5qws9W4ykd+iXwQZu7vbcE=
+Received: from SJ0PR10MB4429.namprd10.prod.outlook.com (2603:10b6:a03:2d1::14)
+ by CO6PR10MB5475.namprd10.prod.outlook.com (2603:10b6:303:13e::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Tue, 5 Apr
+ 2022 19:48:21 +0000
+Received: from SJ0PR10MB4429.namprd10.prod.outlook.com
+ ([fe80::1c44:15ca:b5c2:603e]) by SJ0PR10MB4429.namprd10.prod.outlook.com
+ ([fe80::1c44:15ca:b5c2:603e%7]) with mapi id 15.20.5123.030; Tue, 5 Apr 2022
+ 19:48:21 +0000
+From:   Jane Chu <jane.chu@oracle.com>
+To:     david@fromorbit.com, djwong@kernel.org, dan.j.williams@intel.com,
+        hch@infradead.org, vishal.l.verma@intel.com, dave.jiang@intel.com,
+        agk@redhat.com, snitzer@redhat.com, dm-devel@redhat.com,
+        ira.weiny@intel.com, willy@infradead.org, vgoyal@redhat.com,
+        linux-fsdevel@vger.kernel.org, nvdimm@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-xfs@vger.kernel.org,
+        x86@kernel.org
+Subject: [PATCH v7 2/6] x86/mce: relocate set{clear}_mce_nospec() functions
+Date:   Tue,  5 Apr 2022 13:47:43 -0600
+Message-Id: <20220405194747.2386619-3-jane.chu@oracle.com>
+X-Mailer: git-send-email 2.18.4
+In-Reply-To: <20220405194747.2386619-1-jane.chu@oracle.com>
+References: <20220405194747.2386619-1-jane.chu@oracle.com>
+Content-Type: text/plain
+X-ClientProxiedBy: SA9PR13CA0054.namprd13.prod.outlook.com
+ (2603:10b6:806:22::29) To SJ0PR10MB4429.namprd10.prod.outlook.com
+ (2603:10b6:a03:2d1::14)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 8958e909-0d82-477c-235c-08da173d3cdd
+X-MS-TrafficTypeDiagnostic: CO6PR10MB5475:EE_
+X-Microsoft-Antispam-PRVS: <CO6PR10MB5475A8E89A57DBA6B3C042C8F3E49@CO6PR10MB5475.namprd10.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: zVrhY4Huk68bPeVCYr6GWRPLba3t6qYpWcGJ3TBt2105VGXbHwA4z2Qrmum9n8E3C1HxEz8hiD+7P96Oqs5t/lkD3/lMy1IytWq3Uaq+F8FbjD8hGyPwWBb449YDpVicb/b0VedjEd58pmGdcidWTRsctScPW/gKTD4vVni4OitSYjPAgtX9P9E7cPAjCjgJNDYjSoEek6jONeoV69WjFrw/y0EbsryWfHcL0zR8P6f/reHrEMh4aPQT+J/2GGkTDRK5uyYWChUd8D0xoOyRODUaJzPN1KTLgtmwIK5FZyG/nrcWsnOHaQ6rdovx1MHM/3ZlKbHO6sO6KwaFYIatQsRL+f47Oc+272n/uYPtFRLl1ddGponkrTX31MJ0oiv4Sq+V+6A7I912dfD9K7uevop/WFEHSqxSWR1hLAEwxJXHQCC//a4P3jPTVjB9rBBRT2l6VyRl8/4tEbbeZp8ccj51xfbMRbcvkrO8dqE34tEIu+Y8n4GcUB7HVkaNfkPZirwj85owNQGwzZLgQjDMGN9BAzWJyjCJRXLxWYwqESna0lJ1/nE78AGLnCDoO/vSoneVazPZRep4S7de4sFmSpz2TUDxx0hAduUXb78A+yHRBAEjPS6m7IPoZcrdzc5WflT50BCJmQCcYF6O9Pr7vclshh2FQJB7x08FLfHs6/vViKmE3z3A7sImD/AvtFEVyRKXBYMQwUaTlpjhzSc4tw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR10MB4429.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(38100700002)(1076003)(186003)(2616005)(5660300002)(2906002)(316002)(6512007)(921005)(6486002)(8676002)(36756003)(6666004)(52116002)(6506007)(7416002)(508600001)(66946007)(8936002)(44832011)(83380400001)(66476007)(86362001)(66556008);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?WoO3ybF/VyihrYBLovdEMunNnGRDzu2vREep3mS1pcNMoSBMzfY6Ot8dE60V?=
+ =?us-ascii?Q?RIiyZpNVC+KoTfRGl3IIwudUzcYn0UGi610is48GQyk88YM0q0DcaDVGeOoH?=
+ =?us-ascii?Q?PaDcyJyD+9mVCmRQXqh19hxeSQClcQ4eC+i85LmjaM/7+9BBFXdxzix+abw4?=
+ =?us-ascii?Q?9rcsHSKPJENkPO1O5ujTTobnewgMT5xcYrJFo6cma60T/bXlYF8plIFr6AMr?=
+ =?us-ascii?Q?g1dlJ2N+44JtT8AHeoaQg4+PHgnK2Jg0Qu5BIx45NwBDMoGlbzBNojI00JFa?=
+ =?us-ascii?Q?v8eqfZYByK7R05300XKfRj7aDpajmfMk+n+WEZwA5kfQDUwPfelYEPDeyi00?=
+ =?us-ascii?Q?ppA9th3KBARUMOfD1DgQNJbTzsH1EbIVIYqr8vTIwpkuPN9sTIrju768z2qp?=
+ =?us-ascii?Q?ZMYhyhTbyQiNGHlxI5pIfobOhyQ1O+BE/19AEvHgio7L4s2oJ6uS8iG5iJsV?=
+ =?us-ascii?Q?eg7Je1E4CsDOmcJV4f93cyQvNVkOh9h6err7qiEJTcvCm1+7qbWNm7LJeoGV?=
+ =?us-ascii?Q?vdtJ2Ehg+zlsqpj66iDgd805sO415HRyayJTPc849IzVInHaWNFSQPkr4EN4?=
+ =?us-ascii?Q?9fvnU+RmqPnqEyzRnIJWGwZeMTPRcFUZ7Bm5YTFJs2PPBbInARLPfE3v5TCp?=
+ =?us-ascii?Q?H3JneRatSejqlPVwvOe/xlHYfMV1q1d3HkNjnRm4EwdrEneKupgJwYrShmsM?=
+ =?us-ascii?Q?8iTd7PsTUOXSQFAZTTeUppmMCH+QExMsd9N0Bj5Gsbmz50pac4DboDVMNrwf?=
+ =?us-ascii?Q?ipn70sV+iQ5TlEnZ98M4NnVjeEheMrnLftSjjfyg2CQYBDwwVnOri2eGoID6?=
+ =?us-ascii?Q?1RxGPwwGmMOd2UNzSCg6E0e7wXei3PPaiaxr1xfA2wSqtHn50isT6IHdTCus?=
+ =?us-ascii?Q?gOx0BQ75KtYLqvWPxgtEpChD9ZrdgOZcBbYfgzl0x5kX8Iyapg4flKO8FFes?=
+ =?us-ascii?Q?nWGrqv+oyU3YKXeWbUFv3BMwEL+lhCXas4rabrwjcMNlXEhAewmEtujM4bGh?=
+ =?us-ascii?Q?OxkGy5JJ1itMfFA8qVUAVlzr3NrxAANZgRAuUCWcEIcVfxhn0HGD5WGMFzF0?=
+ =?us-ascii?Q?vF/hp84ZieiHeMrAXVFAAIpiCpm4Dm1I9ylmUo4MB18Ah6OL5oFzUa1decNy?=
+ =?us-ascii?Q?5iTMTVq208laZTDuGy5sPYmiuU654Is98IrZJEE7qZKShuGROL//K5LpTo5y?=
+ =?us-ascii?Q?CO1E8Oa+2JMh+1E7UjLsX4h9ocxuY+EQRlMakSe7i6n68KjcCHJW+nDjUTND?=
+ =?us-ascii?Q?kNZZZfzbFrmzUsv39gu3rYgpoqV7Fm6VJw/D5R0fyFXRjK+/alpg0rSFBd69?=
+ =?us-ascii?Q?qiKvFMqEIWRpEcHBIT+nzIyMiIzAjiVtisk17dzngy1dHTba8t3V8FAB42rS?=
+ =?us-ascii?Q?e0jQ+ACqy6g7TUF3sTwUZlkxkyQeG+orHMGMmrJDdAkHRatYpjbrzuuSi6h+?=
+ =?us-ascii?Q?GI/VrFv9C5VkE+q0ggEe7LASagM+hnGKSUwrxIL+4w1rUvyvyJZ/xMCxgTRk?=
+ =?us-ascii?Q?QvK0qGJFq8GfKPAHydqgHkc3Fdw9jEyrU1p3WbcxLCQ5sH2xrSSvuirfD16Q?=
+ =?us-ascii?Q?/hOfA1UBeF3DBaLClmH1u25qvpxfz5gbsc8CTukqTV/kleVHWHzwliNiYEAb?=
+ =?us-ascii?Q?XkIPsN2NpP8VXgZIssi20EhqR7wFHfpyeqKkFuWP8QP+PTfDvvbmMRe1SKqW?=
+ =?us-ascii?Q?JNZ9I5yf0a1sob2ZOWm+AsAkbdIUf7mCAqdOk0pvV4GKf8OSeOobAXcC+uOv?=
+ =?us-ascii?Q?DZm900DeHwQON2FaknFUYuqa7w5ZEPY=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8958e909-0d82-477c-235c-08da173d3cdd
+X-MS-Exchange-CrossTenant-AuthSource: SJ0PR10MB4429.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Apr 2022 19:48:20.9946
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: BaCXkR24KiRHGSp4/4r/417osLj1ARCpXBbByJdiPWG8YdHyPZkBUtApx8da5YNPeah2Aaqg1bNphXbkHbsauA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO6PR10MB5475
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.425,18.0.850
+ definitions=2022-04-05_06:2022-04-04,2022-04-05 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 spamscore=0 bulkscore=0
+ adultscore=0 mlxscore=0 phishscore=0 suspectscore=0 mlxlogscore=999
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
+ definitions=main-2204050110
+X-Proofpoint-ORIG-GUID: _iOh065JPjAycjhgrELglKAqqHfZIujT
+X-Proofpoint-GUID: _iOh065JPjAycjhgrELglKAqqHfZIujT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhihao Cheng <chengzhihao1@huawei.com>
+Relocate the twin mce functions to arch/x86/mm/pat/set_memory.c
+file where they belong.
 
-commit 4f2262a334641e05f645364d5ade1f565c85f20b upstream.
-
-Function ubifs_wbuf_write_nolock() may access buf out of bounds in
-following process:
-
-ubifs_wbuf_write_nolock():
-  aligned_len = ALIGN(len, 8);   // Assume len = 4089, aligned_len = 4096
-  if (aligned_len <= wbuf->avail) ... // Not satisfy
-  if (wbuf->used) {
-    ubifs_leb_write()  // Fill some data in avail wbuf
-    len -= wbuf->avail;   // len is still not 8-bytes aligned
-    aligned_len -= wbuf->avail;
-  }
-  n = aligned_len >> c->max_write_shift;
-  if (n) {
-    n <<= c->max_write_shift;
-    err = ubifs_leb_write(c, wbuf->lnum, buf + written,
-                          wbuf->offs, n);
-    // n > len, read out of bounds less than 8(n-len) bytes
-  }
-
-, which can be catched by KASAN:
-  =========================================================
-  BUG: KASAN: slab-out-of-bounds in ecc_sw_hamming_calculate+0x1dc/0x7d0
-  Read of size 4 at addr ffff888105594ff8 by task kworker/u8:4/128
-  Workqueue: writeback wb_workfn (flush-ubifs_0_0)
-  Call Trace:
-    kasan_report.cold+0x81/0x165
-    nand_write_page_swecc+0xa9/0x160
-    ubifs_leb_write+0xf2/0x1b0 [ubifs]
-    ubifs_wbuf_write_nolock+0x421/0x12c0 [ubifs]
-    write_head+0xdc/0x1c0 [ubifs]
-    ubifs_jnl_write_inode+0x627/0x960 [ubifs]
-    wb_workfn+0x8af/0xb80
-
-Function ubifs_wbuf_write_nolock() accepts that parameter 'len' is not 8
-bytes aligned, the 'len' represents the true length of buf (which is
-allocated in 'ubifs_jnl_xxx', eg. ubifs_jnl_write_inode), so
-ubifs_wbuf_write_nolock() must handle the length read from 'buf' carefully
-to write leb safely.
-
-Fetch a reproducer in [Link].
-
-Fixes: 1e51764a3c2ac0 ("UBIFS: add new flash file system")
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=214785
-Reported-by: Chengsong Ke <kechengsong@huawei.com>
-Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Jane Chu <jane.chu@oracle.com>
 ---
- fs/ubifs/io.c |   34 ++++++++++++++++++++++++++++++----
- 1 file changed, 30 insertions(+), 4 deletions(-)
+ arch/x86/include/asm/set_memory.h | 52 -------------------------------
+ arch/x86/mm/pat/set_memory.c      | 47 ++++++++++++++++++++++++++++
+ include/linux/set_memory.h        |  9 +++---
+ 3 files changed, 52 insertions(+), 56 deletions(-)
 
---- a/fs/ubifs/io.c
-+++ b/fs/ubifs/io.c
-@@ -846,16 +846,42 @@ int ubifs_wbuf_write_nolock(struct ubifs
- 	 */
- 	n = aligned_len >> c->max_write_shift;
- 	if (n) {
--		n <<= c->max_write_shift;
-+		int m = n - 1;
-+
- 		dbg_io("write %d bytes to LEB %d:%d", n, wbuf->lnum,
- 		       wbuf->offs);
--		err = ubifs_leb_write(c, wbuf->lnum, buf + written,
--				      wbuf->offs, n);
-+
-+		if (m) {
-+			/* '(n-1)<<c->max_write_shift < len' is always true. */
-+			m <<= c->max_write_shift;
-+			err = ubifs_leb_write(c, wbuf->lnum, buf + written,
-+					      wbuf->offs, m);
-+			if (err)
-+				goto out;
-+			wbuf->offs += m;
-+			aligned_len -= m;
-+			len -= m;
-+			written += m;
-+		}
-+
-+		/*
-+		 * The non-written len of buf may be less than 'n' because
-+		 * parameter 'len' is not 8 bytes aligned, so here we read
-+		 * min(len, n) bytes from buf.
-+		 */
-+		n = 1 << c->max_write_shift;
-+		memcpy(wbuf->buf, buf + written, min(len, n));
-+		if (n > len) {
-+			ubifs_assert(c, n - len < 8);
-+			ubifs_pad(c, wbuf->buf + len, n - len);
-+		}
-+
-+		err = ubifs_leb_write(c, wbuf->lnum, wbuf->buf, wbuf->offs, n);
- 		if (err)
- 			goto out;
- 		wbuf->offs += n;
- 		aligned_len -= n;
--		len -= n;
-+		len -= min(len, n);
- 		written += n;
- 	}
+diff --git a/arch/x86/include/asm/set_memory.h b/arch/x86/include/asm/set_memory.h
+index 78ca53512486..b45c4d27fd46 100644
+--- a/arch/x86/include/asm/set_memory.h
++++ b/arch/x86/include/asm/set_memory.h
+@@ -86,56 +86,4 @@ bool kernel_page_present(struct page *page);
  
-
+ extern int kernel_set_to_readonly;
+ 
+-#ifdef CONFIG_X86_64
+-/*
+- * Prevent speculative access to the page by either unmapping
+- * it (if we do not require access to any part of the page) or
+- * marking it uncacheable (if we want to try to retrieve data
+- * from non-poisoned lines in the page).
+- */
+-static inline int set_mce_nospec(unsigned long pfn, bool unmap)
+-{
+-	unsigned long decoy_addr;
+-	int rc;
+-
+-	/* SGX pages are not in the 1:1 map */
+-	if (arch_is_platform_page(pfn << PAGE_SHIFT))
+-		return 0;
+-	/*
+-	 * We would like to just call:
+-	 *      set_memory_XX((unsigned long)pfn_to_kaddr(pfn), 1);
+-	 * but doing that would radically increase the odds of a
+-	 * speculative access to the poison page because we'd have
+-	 * the virtual address of the kernel 1:1 mapping sitting
+-	 * around in registers.
+-	 * Instead we get tricky.  We create a non-canonical address
+-	 * that looks just like the one we want, but has bit 63 flipped.
+-	 * This relies on set_memory_XX() properly sanitizing any __pa()
+-	 * results with __PHYSICAL_MASK or PTE_PFN_MASK.
+-	 */
+-	decoy_addr = (pfn << PAGE_SHIFT) + (PAGE_OFFSET ^ BIT(63));
+-
+-	if (unmap)
+-		rc = set_memory_np(decoy_addr, 1);
+-	else
+-		rc = set_memory_uc(decoy_addr, 1);
+-	if (rc)
+-		pr_warn("Could not invalidate pfn=0x%lx from 1:1 map\n", pfn);
+-	return rc;
+-}
+-#define set_mce_nospec set_mce_nospec
+-
+-/* Restore full speculative operation to the pfn. */
+-static inline int clear_mce_nospec(unsigned long pfn)
+-{
+-	return set_memory_wb((unsigned long) pfn_to_kaddr(pfn), 1);
+-}
+-#define clear_mce_nospec clear_mce_nospec
+-#else
+-/*
+- * Few people would run a 32-bit kernel on a machine that supports
+- * recoverable errors because they have too much memory to boot 32-bit.
+- */
+-#endif
+-
+ #endif /* _ASM_X86_SET_MEMORY_H */
+diff --git a/arch/x86/mm/pat/set_memory.c b/arch/x86/mm/pat/set_memory.c
+index 38af155aaba9..93dde949f224 100644
+--- a/arch/x86/mm/pat/set_memory.c
++++ b/arch/x86/mm/pat/set_memory.c
+@@ -1925,6 +1925,53 @@ int set_memory_wb(unsigned long addr, int numpages)
+ }
+ EXPORT_SYMBOL(set_memory_wb);
+ 
++#ifdef CONFIG_X86_64
++/*
++ * Prevent speculative access to the page by either unmapping
++ * it (if we do not require access to any part of the page) or
++ * marking it uncacheable (if we want to try to retrieve data
++ * from non-poisoned lines in the page).
++ */
++int set_mce_nospec(unsigned long pfn, bool unmap)
++{
++	unsigned long decoy_addr;
++	int rc;
++
++	/* SGX pages are not in the 1:1 map */
++	if (arch_is_platform_page(pfn << PAGE_SHIFT))
++		return 0;
++	/*
++	 * We would like to just call:
++	 *      set_memory_XX((unsigned long)pfn_to_kaddr(pfn), 1);
++	 * but doing that would radically increase the odds of a
++	 * speculative access to the poison page because we'd have
++	 * the virtual address of the kernel 1:1 mapping sitting
++	 * around in registers.
++	 * Instead we get tricky.  We create a non-canonical address
++	 * that looks just like the one we want, but has bit 63 flipped.
++	 * This relies on set_memory_XX() properly sanitizing any __pa()
++	 * results with __PHYSICAL_MASK or PTE_PFN_MASK.
++	 */
++	decoy_addr = (pfn << PAGE_SHIFT) + (PAGE_OFFSET ^ BIT(63));
++
++	if (unmap)
++		rc = set_memory_np(decoy_addr, 1);
++	else
++		rc = set_memory_uc(decoy_addr, 1);
++	if (rc)
++		pr_warn("Could not invalidate pfn=0x%lx from 1:1 map\n", pfn);
++	return rc;
++}
++
++/* Restore full speculative operation to the pfn. */
++int clear_mce_nospec(unsigned long pfn)
++{
++	return set_memory_wb((unsigned long) pfn_to_kaddr(pfn), 1);
++}
++EXPORT_SYMBOL_GPL(clear_mce_nospec);
++
++#endif
++
+ int set_memory_x(unsigned long addr, int numpages)
+ {
+ 	if (!(__supported_pte_mask & _PAGE_NX))
+diff --git a/include/linux/set_memory.h b/include/linux/set_memory.h
+index f36be5166c19..d6263d7afb55 100644
+--- a/include/linux/set_memory.h
++++ b/include/linux/set_memory.h
+@@ -42,20 +42,21 @@ static inline bool can_set_direct_map(void)
+ #endif
+ #endif /* CONFIG_ARCH_HAS_SET_DIRECT_MAP */
+ 
+-#ifndef set_mce_nospec
++#ifdef CONFIG_X86_64
++int set_mce_nospec(unsigned long pfn, bool unmap);
++int clear_mce_nospec(unsigned long pfn);
++#else
+ static inline int set_mce_nospec(unsigned long pfn, bool unmap)
+ {
+ 	return 0;
+ }
+-#endif
+-
+-#ifndef clear_mce_nospec
+ static inline int clear_mce_nospec(unsigned long pfn)
+ {
+ 	return 0;
+ }
+ #endif
+ 
++
+ #ifndef CONFIG_ARCH_HAS_MEM_ENCRYPT
+ static inline int set_memory_encrypted(unsigned long addr, int numpages)
+ {
+-- 
+2.18.4
 
