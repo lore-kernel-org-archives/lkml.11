@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76FC6C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B54D0C4167D
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:40:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378499AbiDEOiW (ORCPT
+        id S1385480AbiDEOjS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:38:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36678 "EHLO
+        Tue, 5 Apr 2022 10:39:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242232AbiDEJg1 (ORCPT
+        with ESMTP id S243065AbiDEJiw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:36:27 -0400
+        Tue, 5 Apr 2022 05:38:52 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B807972F7;
-        Tue,  5 Apr 2022 02:24:22 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16C6DA8EEC;
+        Tue,  5 Apr 2022 02:24:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 12792B81C99;
-        Tue,  5 Apr 2022 09:24:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F142C385A0;
-        Tue,  5 Apr 2022 09:24:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A96A7B81C9D;
+        Tue,  5 Apr 2022 09:24:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0432AC385A3;
+        Tue,  5 Apr 2022 09:24:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150659;
-        bh=fo8p2+ttd+ffwyrKTGB2OgmH97OwcdKTt3Yz9iCK+aU=;
+        s=korg; t=1649150673;
+        bh=Ok4o6pfqdJRnWy+3ovBLWBNkxP9BwuXReBNWtb04gb4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rzx2Em2c0cig403k2LFOSYazTP2da+EFyPGXpZ2V1lHowK2oqsJXa0A0ENVpCCUPK
-         3UHWvX+y5WC6I+OwQTH9lUaSWfNxEmkiy7MLPygw29Ige93zQu/EtEmceOFZdDvYr9
-         WOi60e+GBa816SEMgQNsNahuqizVgL4nQigUzy7w=
+        b=D9Xh7COX55SQTv/6w7fLemBwj62TfXld+kDbH59vz9qPmDe0p7FcxruVAXqRFk6wt
+         qCTLlVFp7EZE8pMypDgO6rZt99fMaYZQlNMW6c6d91AD6yz2aPhPAGKJL5t9yA9a9V
+         8aj/Un0nxtNsm5p61E7K7QI31tbvnMmSoPE7QOtg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
-        Lin Ma <linma@zju.edu.cn>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.15 135/913] drivers: hamradio: 6pack: fix UAF bug caused by mod_timer()
-Date:   Tue,  5 Apr 2022 09:19:57 +0200
-Message-Id: <20220405070343.877315234@linuxfoundation.org>
+        stable@vger.kernel.org, Tejun Heo <tj@kernel.org>,
+        Josef Bacik <jbacik@fb.com>, Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.15 140/913] block: dont merge across cgroup boundaries if blkcg is enabled
+Date:   Tue,  5 Apr 2022 09:20:02 +0200
+Message-Id: <20220405070344.029318292@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -50,87 +49,112 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Tejun Heo <tj@kernel.org>
 
-commit efe4186e6a1b54bf38b9e05450d43b0da1fd7739 upstream.
+commit 6b2b04590b51aa4cf395fcd185ce439cab5961dc upstream.
 
-When a 6pack device is detaching, the sixpack_close() will act to cleanup
-necessary resources. Although del_timer_sync() in sixpack_close()
-won't return if there is an active timer, one could use mod_timer() in
-sp_xmit_on_air() to wake up timer again by calling userspace syscall such
-as ax25_sendmsg(), ax25_connect() and ax25_ioctl().
+blk-iocost and iolatency are cgroup aware rq-qos policies but they didn't
+disable merges across different cgroups. This obviously can lead to
+accounting and control errors but more importantly to priority inversions -
+e.g. an IO which belongs to a higher priority cgroup or IO class may end up
+getting throttled incorrectly because it gets merged to an IO issued from a
+low priority cgroup.
 
-This unexpected waked handler, sp_xmit_on_air(), realizes nothing about
-the undergoing cleanup and may still call pty_write() to use driver layer
-resources that have already been released.
+Fix it by adding blk_cgroup_mergeable() which is called from merge paths and
+rejects cross-cgroup and cross-issue_as_root merges.
 
-One of the possible race conditions is shown below:
-
-      (USE)                      |      (FREE)
-ax25_sendmsg()                   |
- ax25_queue_xmit()               |
-  ...                            |
-  sp_xmit()                      |
-   sp_encaps()                   | sixpack_close()
-    sp_xmit_on_air()             |  del_timer_sync(&sp->tx_t)
-     mod_timer(&sp->tx_t,...)    |  ...
-                                 |  unregister_netdev()
-                                 |  ...
-     (wait a while)              | tty_release()
-                                 |  tty_release_struct()
-                                 |   release_tty()
-    sp_xmit_on_air()             |    tty_kref_put(tty_struct) //FREE
-     pty_write(tty_struct) //USE |    ...
-
-The corresponding fail log is shown below:
-===============================================================
-BUG: KASAN: use-after-free in __run_timers.part.0+0x170/0x470
-Write of size 8 at addr ffff88800a652ab8 by task swapper/2/0
-...
-Call Trace:
-  ...
-  queue_work_on+0x3f/0x50
-  pty_write+0xcd/0xe0pty_write+0xcd/0xe0
-  sp_xmit_on_air+0xb2/0x1f0
-  call_timer_fn+0x28/0x150
-  __run_timers.part.0+0x3c2/0x470
-  run_timer_softirq+0x3b/0x80
-  __do_softirq+0xf1/0x380
-  ...
-
-This patch reorders the del_timer_sync() after the unregister_netdev()
-to avoid UAF bugs. Because the unregister_netdev() is well synchronized,
-it flushs out any pending queues, waits the refcount of net_device
-decreases to zero and removes net_device from kernel. There is not any
-running routines after executing unregister_netdev(). Therefore, we could
-not arouse timer from userspace again.
-
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Reviewed-by: Lin Ma <linma@zju.edu.cn>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Tejun Heo <tj@kernel.org>
+Fixes: d70675121546 ("block: introduce blk-iolatency io controller")
+Cc: stable@vger.kernel.org # v4.19+
+Cc: Josef Bacik <jbacik@fb.com>
+Link: https://lore.kernel.org/r/Yi/eE/6zFNyWJ+qd@slm.duckdns.org
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/hamradio/6pack.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ block/blk-merge.c          |   11 +++++++++++
+ include/linux/blk-cgroup.h |   17 +++++++++++++++++
+ 2 files changed, 28 insertions(+)
 
---- a/drivers/net/hamradio/6pack.c
-+++ b/drivers/net/hamradio/6pack.c
-@@ -669,14 +669,14 @@ static void sixpack_close(struct tty_str
- 	 */
- 	netif_stop_queue(sp->dev);
+--- a/block/blk-merge.c
++++ b/block/blk-merge.c
+@@ -7,6 +7,7 @@
+ #include <linux/bio.h>
+ #include <linux/blkdev.h>
+ #include <linux/scatterlist.h>
++#include <linux/blk-cgroup.h>
  
-+	unregister_netdev(sp->dev);
+ #include <trace/events/block.h>
+ 
+@@ -561,6 +562,9 @@ static inline unsigned int blk_rq_get_ma
+ static inline int ll_new_hw_segment(struct request *req, struct bio *bio,
+ 		unsigned int nr_phys_segs)
+ {
++	if (!blk_cgroup_mergeable(req, bio))
++		goto no_merge;
 +
- 	del_timer_sync(&sp->tx_t);
- 	del_timer_sync(&sp->resync_t);
+ 	if (blk_integrity_merge_bio(req->q, req, bio) == false)
+ 		goto no_merge;
  
- 	/* Free all 6pack frame buffers. */
- 	kfree(sp->rbuff);
- 	kfree(sp->xbuff);
--
--	unregister_netdev(sp->dev);
+@@ -657,6 +661,9 @@ static int ll_merge_requests_fn(struct r
+ 	if (total_phys_segments > blk_rq_get_max_segments(req))
+ 		return 0;
+ 
++	if (!blk_cgroup_mergeable(req, next->bio))
++		return 0;
++
+ 	if (blk_integrity_merge_rq(q, req, next) == false)
+ 		return 0;
+ 
+@@ -863,6 +870,10 @@ bool blk_rq_merge_ok(struct request *rq,
+ 	if (rq->rq_disk != bio->bi_bdev->bd_disk)
+ 		return false;
+ 
++	/* don't merge across cgroup boundaries */
++	if (!blk_cgroup_mergeable(rq, bio))
++		return false;
++
+ 	/* only merge integrity protected bio into ditto rq */
+ 	if (blk_integrity_merge_bio(rq->q, rq, bio) == false)
+ 		return false;
+--- a/include/linux/blk-cgroup.h
++++ b/include/linux/blk-cgroup.h
+@@ -24,6 +24,7 @@
+ #include <linux/atomic.h>
+ #include <linux/kthread.h>
+ #include <linux/fs.h>
++#include <linux/blk-mq.h>
+ 
+ /* percpu_counter batch for blkg_[rw]stats, per-cpu drift doesn't matter */
+ #define BLKG_STAT_CPU_BATCH	(INT_MAX / 2)
+@@ -604,6 +605,21 @@ static inline void blkcg_clear_delay(str
+ 		atomic_dec(&blkg->blkcg->css.cgroup->congestion_count);
  }
  
- /* Perform I/O control on an active 6pack channel. */
++/**
++ * blk_cgroup_mergeable - Determine whether to allow or disallow merges
++ * @rq: request to merge into
++ * @bio: bio to merge
++ *
++ * @bio and @rq should belong to the same cgroup and their issue_as_root should
++ * match. The latter is necessary as we don't want to throttle e.g. a metadata
++ * update because it happens to be next to a regular IO.
++ */
++static inline bool blk_cgroup_mergeable(struct request *rq, struct bio *bio)
++{
++	return rq->bio->bi_blkg == bio->bi_blkg &&
++		bio_issue_as_root_blkg(rq->bio) == bio_issue_as_root_blkg(bio);
++}
++
+ void blk_cgroup_bio_start(struct bio *bio);
+ void blkcg_add_delay(struct blkcg_gq *blkg, u64 now, u64 delta);
+ void blkcg_schedule_throttle(struct request_queue *q, bool use_memdelay);
+@@ -659,6 +675,7 @@ static inline void blkg_put(struct blkcg
+ static inline bool blkcg_punt_bio_submit(struct bio *bio) { return false; }
+ static inline void blkcg_bio_issue_init(struct bio *bio) { }
+ static inline void blk_cgroup_bio_start(struct bio *bio) { }
++static inline bool blk_cgroup_mergeable(struct request *rq, struct bio *bio) { return true; }
+ 
+ #define blk_queue_for_each_rl(rl, q)	\
+ 	for ((rl) = &(q)->root_rl; (rl); (rl) = NULL)
 
 
