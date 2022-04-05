@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DA93C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A8E7C3527A
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:02:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381838AbiDEL7t (ORCPT
+        id S1381888AbiDEL75 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:59:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42692 "EHLO
+        Tue, 5 Apr 2022 07:59:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244180AbiDEIvs (ORCPT
+        with ESMTP id S243323AbiDEIuV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:51:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8994C7B;
-        Tue,  5 Apr 2022 01:40:28 -0700 (PDT)
+        Tue, 5 Apr 2022 04:50:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BFB913D35;
+        Tue,  5 Apr 2022 01:38:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 92CB9614E4;
-        Tue,  5 Apr 2022 08:39:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A166AC385A1;
-        Tue,  5 Apr 2022 08:39:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4FD54B81BBF;
+        Tue,  5 Apr 2022 08:38:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1E43C385A2;
+        Tue,  5 Apr 2022 08:38:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147966;
-        bh=0IXNH02d04Pp3qo3nL8AHAf9mxn0yRHztLc0LEJHT3U=;
+        s=korg; t=1649147917;
+        bh=FUcnqxzjXH5u3vbw4nDqrygn9TouK/7YERh2EEo0v3w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NIBhJIQfgTGbAeRU3cftT5WjVUU7GOoBvN5nHrt5/Hgp3VccNq6SJGnVC/gwgk8Pw
-         wQtX6UfLdrCdZfEsGQF1ehPWWe5Ktrn3TOaxMtKKilIcNgE/zs/y346aDklIBxc0tI
-         aorXxIVEyQy9pilL9c8iVbnUXS0O7iotywjzJF4Y=
+        b=hZ9KVrrS8pTFxDNNc5Q65OIpjrwYAB8d18F3eEpK+sHKicqm5LY0EihkZzJ1UDiar
+         7XViUCsZKb7TCbysWjdAaEaglZftF4nJHldTCDT1mIU1RG8qorxKvX6BVlPj2+kYt4
+         8wKwc/STja53WA7WF3ZpkZgH9SV9ywjmigvYV0H8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jocelyn Falempe <jfalempe@redhat.com>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Lyude Paul <lyude@redhat.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>
-Subject: [PATCH 5.16 0159/1017] mgag200 fix memmapsl configuration in GCTL6 register
-Date:   Tue,  5 Apr 2022 09:17:52 +0200
-Message-Id: <20220405070358.938357262@linuxfoundation.org>
+        stable@vger.kernel.org, Mingzhe Zou <mingzhe.zou@easystack.cn>,
+        Coly Li <colyli@suse.de>
+Subject: [PATCH 5.16 0169/1017] bcache: fixup multiple threads crash
+Date:   Tue,  5 Apr 2022 09:18:02 +0200
+Message-Id: <20220405070359.242350780@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,80 +49,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jocelyn Falempe <jfalempe@redhat.com>
+From: Mingzhe Zou <mingzhe.zou@easystack.cn>
 
-commit 028a73e10705af1ffd51f2537460f616dc58680e upstream.
+commit 887554ab96588de2917b6c8c73e552da082e5368 upstream.
 
-On some servers with MGA G200_SE_A (rev 42), booting with Legacy BIOS,
-the hardware hangs when using kdump and kexec into the kdump kernel.
-This happens when the uncompress code tries to write "Decompressing Linux"
-to the VGA Console.
+When multiple threads to check btree nodes in parallel, the main
+thread wait for all threads to stop or CACHE_SET_IO_DISABLE flag:
 
-It can be reproduced by writing to the VGA console (0xB8000) after
-booting to graphic mode, it generates the following error:
+wait_event_interruptible(check_state->wait,
+                         atomic_read(&check_state->started) == 0 ||
+                         test_bit(CACHE_SET_IO_DISABLE, &c->flags));
 
-kernel:NMI: PCI system error (SERR) for reason a0 on CPU 0.
-kernel:Dazed and confused, but trying to continue
+However, the bch_btree_node_read and bch_btree_node_read_done
+maybe call bch_cache_set_error, then the CACHE_SET_IO_DISABLE
+will be set. If the flag already set, the main thread return
+error. At the same time, maybe some threads still running and
+read NULL pointer, the kernel will crash.
 
-The root cause is the configuration of the MGA GCTL6 register
+This patch change the event wait condition, the main thread must
+wait for all threads to stop.
 
-According to the GCTL6 register documentation:
-
-bit 0 is gcgrmode:
-    0: Enables alpha mode, and the character generator addressing system is
-     activated.
-    1: Enables graphics mode, and the character addressing system is not
-     used.
-
-bit 1 is chainodd even:
-    0: The A0 signal of the memory address bus is used during system memory
-     addressing.
-    1: Allows A0 to be replaced by either the A16 signal of the system
-     address (ifmemmapsl is ‘00’), or by the hpgoddev (MISC<5>, odd/even
-     page select) field, described on page 3-294).
-
-bit 3-2 are memmapsl:
-    Memory map select bits 1 and 0. VGA.
-    These bits select where the video memory is mapped, as shown below:
-        00 => A0000h - BFFFFh
-        01 => A0000h - AFFFFh
-        10 => B0000h - B7FFFh
-        11 => B8000h - BFFFFh
-
-bit 7-4 are reserved.
-
-Current code set it to 0x05 => memmapsl to b01 => 0xa0000 (graphic mode)
-But on x86, the VGA console is at 0xb8000 (text mode)
-In arch/x86/boot/compressed/misc.c debug strings are written to 0xb8000
-As the driver doesn't use this mapping at 0xa0000, it is safe to set it to
-0xb8000 instead, to avoid kernel hang on G200_SE_A rev42, with kexec/kdump.
-
-Thus changing the value 0x05 to 0x0d
-
-Signed-off-by: Jocelyn Falempe <jfalempe@redhat.com>
-Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
-Acked-by: Lyude Paul <lyude@redhat.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Thomas Zimmermann <tzimmermann@suse.de>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220119102905.1194787-1-jfalempe@redhat.com
+Fixes: 8e7102273f597 ("bcache: make bch_btree_check() to be multithreaded")
+Signed-off-by: Mingzhe Zou <mingzhe.zou@easystack.cn>
+Cc: stable@vger.kernel.org # v5.7+
+Signed-off-by: Coly Li <colyli@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/mgag200/mgag200_mode.c |    5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/md/bcache/btree.c     |    6 ++++--
+ drivers/md/bcache/writeback.c |    6 ++++--
+ 2 files changed, 8 insertions(+), 4 deletions(-)
 
---- a/drivers/gpu/drm/mgag200/mgag200_mode.c
-+++ b/drivers/gpu/drm/mgag200/mgag200_mode.c
-@@ -529,7 +529,10 @@ static void mgag200_set_format_regs(stru
- 	WREG_GFX(3, 0x00);
- 	WREG_GFX(4, 0x00);
- 	WREG_GFX(5, 0x40);
--	WREG_GFX(6, 0x05);
-+	/* GCTL6 should be 0x05, but we configure memmapsl to 0xb8000 (text mode),
-+	 * so that it doesn't hang when running kexec/kdump on G200_SE rev42.
-+	 */
-+	WREG_GFX(6, 0x0d);
- 	WREG_GFX(7, 0x0f);
- 	WREG_GFX(8, 0x0f);
+--- a/drivers/md/bcache/btree.c
++++ b/drivers/md/bcache/btree.c
+@@ -2060,9 +2060,11 @@ int bch_btree_check(struct cache_set *c)
+ 		}
+ 	}
  
++	/*
++	 * Must wait for all threads to stop.
++	 */
+ 	wait_event_interruptible(check_state->wait,
+-				 atomic_read(&check_state->started) == 0 ||
+-				  test_bit(CACHE_SET_IO_DISABLE, &c->flags));
++				 atomic_read(&check_state->started) == 0);
+ 
+ 	for (i = 0; i < check_state->total_threads; i++) {
+ 		if (check_state->infos[i].result) {
+--- a/drivers/md/bcache/writeback.c
++++ b/drivers/md/bcache/writeback.c
+@@ -998,9 +998,11 @@ void bch_sectors_dirty_init(struct bcach
+ 		}
+ 	}
+ 
++	/*
++	 * Must wait for all threads to stop.
++	 */
+ 	wait_event_interruptible(state->wait,
+-		 atomic_read(&state->started) == 0 ||
+-		 test_bit(CACHE_SET_IO_DISABLE, &c->flags));
++		 atomic_read(&state->started) == 0);
+ 
+ out:
+ 	kfree(state);
 
 
