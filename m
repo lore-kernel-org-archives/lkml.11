@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B6AAC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FD32C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:10:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231604AbiDEWLR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:11:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34788 "EHLO
+        id S239905AbiDEWLe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 18:11:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343966AbiDEKjp (ORCPT
+        with ESMTP id S1356350AbiDEKXi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:39:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40A43222B7;
-        Tue,  5 Apr 2022 03:24:53 -0700 (PDT)
+        Tue, 5 Apr 2022 06:23:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58E97BB92B;
+        Tue,  5 Apr 2022 03:08:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D011D6141D;
-        Tue,  5 Apr 2022 10:24:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC6DDC385A0;
-        Tue,  5 Apr 2022 10:24:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D3F01B81C89;
+        Tue,  5 Apr 2022 10:08:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46632C385A1;
+        Tue,  5 Apr 2022 10:08:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154292;
-        bh=dJPumnA6KTq5umrU0fNyR0/UzVzoQ2sShZxOvbIk0d0=;
+        s=korg; t=1649153290;
+        bh=MrLe2UYgNO94N6ATEUfHk2MCCetEx4kGlyIszj4eOj4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iUv8wg/VOKJwGsiVjLa/7EXfCqC8NrXvlTbb3usaNPyyXJLKptw9JzkJc/MazWw7R
-         G0nskrvalVspmV2vr4Q4CxEsEHzaoS6i7y2DZWboum6KW2nhHRpwrQ7GZXKoGFXoSW
-         DvqSe+tWrlYrkE4N8teCcDneqWcnLjFko6ytV+CA=
+        b=Koq6UJ5kI9Y81XHFydiX3AZMUD9OhaWpybvah3B55SgQgsHUe/AVzjl5Zo6OgcOXu
+         hU1r3mmeoPrTf82ZEcnIWVG99R7KVsirIMbctmYpKggPW9kuhAks5r7OpGBAR16rZo
+         /LTLtworcOZH+CZQcuPPgxX1UwAKZvIWD+tWnFVU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 490/599] media: atomisp_gmin_platform: Add DMI quirk to not turn AXP ELDO2 regulator off on some boards
-Date:   Tue,  5 Apr 2022 09:33:04 +0200
-Message-Id: <20220405070313.410127845@linuxfoundation.org>
+        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
+        Sasha Levin <sashal@kernel.org>,
+        syzbot+6e2de48f06cdb2884bfc@syzkaller.appspotmail.com
+Subject: [PATCH 5.10 171/599] watch_queue: Actually free the watch
+Date:   Tue,  5 Apr 2022 09:27:45 +0200
+Message-Id: <20220405070303.930876837@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -49,65 +49,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: David Howells <dhowells@redhat.com>
 
-[ Upstream commit 2c39a01154ea57d596470afa1d278e3be3b37f6a ]
+[ Upstream commit 3d8dcf278b1ee1eff1e90be848fa2237db4c07a7 ]
 
-The TrekStor SurfTab duo W1 10.1 has a hw bug where turning eldo2 back on
-after having turned it off causes the CPLM3218 ambient-light-sensor on
-the front camera sensor's I2C bus to crash, hanging the bus.
+free_watch() does everything barring actually freeing the watch object.  Fix
+this by adding the missing kfree.
 
-Add a DMI quirk table for systems on which to leave eldo2 on.
+kmemleak produces a report something like the following.  Note that as an
+address can be seen in the first word, the watch would appear to have gone
+through call_rcu().
 
-Note an alternative fix is to turn off the CPLM3218 ambient-light-sensor
-as long as the camera sensor is being used, this is what Windows seems
-to do as a workaround (based on analyzing the DSDT). But that is not
-easy to do cleanly under Linux.
+BUG: memory leak
+unreferenced object 0xffff88810ce4a200 (size 96):
+  comm "syz-executor352", pid 3605, jiffies 4294947473 (age 13.720s)
+  hex dump (first 32 bytes):
+    e0 82 48 0d 81 88 ff ff 00 00 00 00 00 00 00 00  ..H.............
+    80 a2 e4 0c 81 88 ff ff 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff8214e6cc>] kmalloc include/linux/slab.h:581 [inline]
+    [<ffffffff8214e6cc>] kzalloc include/linux/slab.h:714 [inline]
+    [<ffffffff8214e6cc>] keyctl_watch_key+0xec/0x2e0 security/keys/keyctl.c:1800
+    [<ffffffff8214ec84>] __do_sys_keyctl+0x3c4/0x490 security/keys/keyctl.c:2016
+    [<ffffffff84493a25>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+    [<ffffffff84493a25>] do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+    [<ffffffff84600068>] entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-Link: https://lore.kernel.org/linux-media/20220116215204.307649-10-hdegoede@redhat.com
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Fixes: c73be61cede5 ("pipe: Add general notification queue support")
+Reported-and-tested-by: syzbot+6e2de48f06cdb2884bfc@syzkaller.appspotmail.com
+Signed-off-by: David Howells <dhowells@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../media/atomisp/pci/atomisp_gmin_platform.c  | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+ kernel/watch_queue.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/staging/media/atomisp/pci/atomisp_gmin_platform.c b/drivers/staging/media/atomisp/pci/atomisp_gmin_platform.c
-index 34480ca16474..c9ee85037644 100644
---- a/drivers/staging/media/atomisp/pci/atomisp_gmin_platform.c
-+++ b/drivers/staging/media/atomisp/pci/atomisp_gmin_platform.c
-@@ -729,6 +729,21 @@ static int axp_regulator_set(struct device *dev, struct gmin_subdev *gs,
- 	return 0;
+diff --git a/kernel/watch_queue.c b/kernel/watch_queue.c
+index 45a8eb90e5fc..a662abccf52c 100644
+--- a/kernel/watch_queue.c
++++ b/kernel/watch_queue.c
+@@ -398,6 +398,7 @@ static void free_watch(struct rcu_head *rcu)
+ 	put_watch_queue(rcu_access_pointer(watch->queue));
+ 	atomic_dec(&watch->cred->user->nr_watches);
+ 	put_cred(watch->cred);
++	kfree(watch);
  }
  
-+/*
-+ * Some boards contain a hw-bug where turning eldo2 back on after having turned
-+ * it off causes the CPLM3218 ambient-light-sensor on the image-sensor's I2C bus
-+ * to crash, hanging the bus. Do not turn eldo2 off on these systems.
-+ */
-+static const struct dmi_system_id axp_leave_eldo2_on_ids[] = {
-+	{
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "TrekStor"),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "SurfTab duo W1 10.1 (VT4)"),
-+		},
-+	},
-+	{ }
-+};
-+
- static int axp_v1p8_on(struct device *dev, struct gmin_subdev *gs)
- {
- 	int ret;
-@@ -763,6 +778,9 @@ static int axp_v1p8_off(struct device *dev, struct gmin_subdev *gs)
- 	if (ret)
- 		return ret;
- 
-+	if (dmi_check_system(axp_leave_eldo2_on_ids))
-+		return 0;
-+
- 	ret = axp_regulator_set(dev, gs, gs->eldo2_sel_reg, gs->eldo2_1p8v,
- 				ELDO_CTRL_REG, gs->eldo2_ctrl_shift, false);
- 	return ret;
+ static void __put_watch(struct kref *kref)
 -- 
 2.34.1
 
