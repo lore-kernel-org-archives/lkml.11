@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49818C4707F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A77AC3527D
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:56:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359201AbiDEMwK (ORCPT
+        id S1359109AbiDEMwC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:52:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41956 "EHLO
+        Tue, 5 Apr 2022 08:52:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244617AbiDEJKG (ORCPT
+        with ESMTP id S244623AbiDEJKG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 05:10:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F49528E15;
-        Tue,  5 Apr 2022 01:59:41 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE54C2A733;
+        Tue,  5 Apr 2022 01:59:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4DAF561511;
-        Tue,  5 Apr 2022 08:59:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61F49C385A1;
-        Tue,  5 Apr 2022 08:59:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 78D6AB81C6D;
+        Tue,  5 Apr 2022 08:59:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9918C385A3;
+        Tue,  5 Apr 2022 08:59:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149179;
-        bh=esgjwmrZ5kBd4/B0Bw3DPlQwcEwy3TAWV6aAgv1vpXo=;
+        s=korg; t=1649149185;
+        bh=33NZsSJJ8AnEe2K5FZo3oYEbB5J35KI4bIowTRDBqLk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Rs3syQeFw/LdlbzRblKuchNQejfkJfLnEiCvYExE0QYkYMsvFje0aqWN02JdF4Qjk
-         Kw9B+fLe3UrMYSoWoKYz2ZFILMpidkjgtWKTVmtsdpQ/0D2V6XJbMyOdA7LAFiSQy0
-         eG12YOYa6eUaLGM/esZu2WLkTVL7+a4W7dx+WmyY=
+        b=JreEPhACiWsa5wZJddk5PeFejCGxrkWK9Mkyj8BSaRVgFHhaFOkzX+3a9IGzGRZSJ
+         U2ix47cZwdATVbN6SsUZoeJdt7aJZgxawO1N+ybyHgyBwY7tOYAvUHyJhw2N3tk07j
+         8ZRPwM0tRnZfqMigIBnem8aRcskTckEHAZN270H4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Yonglong Li <liyonglong@chinatelecom.cn>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0622/1017] mptcp: Fix crash due to tcp_tsorted_anchor was initialized before release skb
-Date:   Tue,  5 Apr 2022 09:25:35 +0200
-Message-Id: <20220405070412.745832297@linuxfoundation.org>
+        stable@vger.kernel.org, Lucas Tanure <tanure@linux.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0624/1017] i2c: meson: Fix wrong speed use from probe
+Date:   Tue,  5 Apr 2022 09:25:37 +0200
+Message-Id: <20220405070412.804665775@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -52,65 +50,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yonglong Li <liyonglong@chinatelecom.cn>
+From: Lucas Tanure <tanure@linux.com>
 
-[ Upstream commit 3ef3905aa3b5b3e222ee6eb0210bfd999417a8cc ]
+[ Upstream commit cb13aa16f34f794a9cee2626862af8a95f0f0ee9 ]
 
-Got crash when doing pressure test of mptcp:
+Having meson_i2c_set_clk_div after i2c_add_adapter
+causes issues for client drivers that try to use
+the bus before the requested speed is applied.
 
-===========================================================================
-dst_release: dst:ffffa06ce6e5c058 refcnt:-1
-kernel tried to execute NX-protected page - exploit attempt? (uid: 0)
-BUG: unable to handle kernel paging request at ffffa06ce6e5c058
-PGD 190a01067 P4D 190a01067 PUD 43fffb067 PMD 22e403063 PTE 8000000226e5c063
-Oops: 0011 [#1] SMP PTI
-CPU: 7 PID: 7823 Comm: kworker/7:0 Kdump: loaded Tainted: G            E
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.2.1 04/01/2014
-Call Trace:
- ? skb_release_head_state+0x68/0x100
- ? skb_release_all+0xe/0x30
- ? kfree_skb+0x32/0xa0
- ? mptcp_sendmsg_frag+0x57e/0x750
- ? __mptcp_retrans+0x21b/0x3c0
- ? __switch_to_asm+0x35/0x70
- ? mptcp_worker+0x25e/0x320
- ? process_one_work+0x1a7/0x360
- ? worker_thread+0x30/0x390
- ? create_worker+0x1a0/0x1a0
- ? kthread+0x112/0x130
- ? kthread_flush_work_fn+0x10/0x10
- ? ret_from_fork+0x35/0x40
-===========================================================================
+The bus can be used just after i2c_add_adapter, so
+move i2c_add_adapter to the final step as
+meson_i2c_set_clk_div needs to be called before
+the bus is used.
 
-In __mptcp_alloc_tx_skb skb was allocated and skb->tcp_tsorted_anchor will
-be initialized, in under memory pressure situation sk_wmem_schedule will
-return false and then kfree_skb. In this case skb->_skb_refdst is not null
-because_skb_refdst and tcp_tsorted_anchor are stored in the same mem, and
-kfree_skb will try to release dst and cause crash.
-
-Fixes: f70cad1085d1 ("mptcp: stop relying on tcp_tx_skb_cache")
-Reviewed-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Yonglong Li <liyonglong@chinatelecom.cn>
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-Link: https://lore.kernel.org/r/20220317220953.426024-1-mathew.j.martineau@linux.intel.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 09af1c2fa490 ("i2c: meson: set clock divider in probe instead of setting it for each transfer")
+Signed-off-by: Lucas Tanure <tanure@linux.com>
+Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mptcp/protocol.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/i2c/busses/i2c-meson.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index 7566c9dc6681..1784e528704a 100644
---- a/net/mptcp/protocol.c
-+++ b/net/mptcp/protocol.c
-@@ -1202,6 +1202,7 @@ static struct sk_buff *__mptcp_alloc_tx_skb(struct sock *sk, struct sock *ssk, g
- 		tcp_skb_entail(ssk, skb);
- 		return skb;
- 	}
-+	tcp_skb_tsorted_anchor_cleanup(skb);
- 	kfree_skb(skb);
- 	return NULL;
+diff --git a/drivers/i2c/busses/i2c-meson.c b/drivers/i2c/busses/i2c-meson.c
+index ef73a42577cc..07eb819072c4 100644
+--- a/drivers/i2c/busses/i2c-meson.c
++++ b/drivers/i2c/busses/i2c-meson.c
+@@ -465,18 +465,18 @@ static int meson_i2c_probe(struct platform_device *pdev)
+ 	 */
+ 	meson_i2c_set_mask(i2c, REG_CTRL, REG_CTRL_START, 0);
+ 
+-	ret = i2c_add_adapter(&i2c->adap);
+-	if (ret < 0) {
+-		clk_disable_unprepare(i2c->clk);
+-		return ret;
+-	}
+-
+ 	/* Disable filtering */
+ 	meson_i2c_set_mask(i2c, REG_SLAVE_ADDR,
+ 			   REG_SLV_SDA_FILTER | REG_SLV_SCL_FILTER, 0);
+ 
+ 	meson_i2c_set_clk_div(i2c, timings.bus_freq_hz);
+ 
++	ret = i2c_add_adapter(&i2c->adap);
++	if (ret < 0) {
++		clk_disable_unprepare(i2c->clk);
++		return ret;
++	}
++
+ 	return 0;
  }
+ 
 -- 
 2.34.1
 
