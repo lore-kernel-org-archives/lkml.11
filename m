@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 791A7C43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:24:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25286C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:25:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386692AbiDEOZA (ORCPT
+        id S1386730AbiDEOZQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:25:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38666 "EHLO
+        Tue, 5 Apr 2022 10:25:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239475AbiDEJd6 (ORCPT
+        with ESMTP id S240168AbiDEJeB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:33:58 -0400
+        Tue, 5 Apr 2022 05:34:01 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B0C24FC62;
-        Tue,  5 Apr 2022 02:22:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D1B2C03;
+        Tue,  5 Apr 2022 02:23:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0778261645;
-        Tue,  5 Apr 2022 09:22:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13D1EC385A0;
-        Tue,  5 Apr 2022 09:22:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B9764615E4;
+        Tue,  5 Apr 2022 09:23:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C90A8C385A0;
+        Tue,  5 Apr 2022 09:23:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150542;
-        bh=XB2ZAnqs10KWvSqh5mAX4FfDP5UtSANZ3tDNnXYKoYA=;
+        s=korg; t=1649150613;
+        bh=9+K64Cgf/Q3wmBAyZQRzYOVhqzWD/hb4fPWoPofp1Hg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KDkSF+oAl5Xc7MWGNZyS/Adgz/ieoiP5Xo00a9yFbeB8v/b6ls9EfsitYVNKstwYK
-         fgvFSsqUHSkraLjHo+9SHkKTQ4CqEQZNifGul8/T/9Og8aSAQ1BvSkMejYzXFWWe61
-         7i39e60NMq0lv1AqJLDjt1vWQUrhVacc+2VOL0BQ=
+        b=Z7W4gteIG1VzHi1fjPLp6AEqe3m7vFHoa576jdJX9znpZAh3OXnyXGDYROgQDhRJ1
+         XqIV/N+SqQ2MjBNGb3HLJJ9Cam0u5k+jpW49Abw3ZobyU8/rk6QciB3vs+rueSTXMM
+         dwxd50E0fBr+TG7V1mbxUSsa6JQFW7I7wH8g7uRs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nikita Shubin <n.shubin@yadro.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH 5.15 094/913] riscv: Fix fill_callchain return value
-Date:   Tue,  5 Apr 2022 09:19:16 +0200
-Message-Id: <20220405070342.646868015@linuxfoundation.org>
+        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
+        Milan Broz <gmazyland@gmail.com>,
+        Mike Snitzer <snitzer@kernel.org>
+Subject: [PATCH 5.15 116/913] dm integrity: set journal entry unused when shrinking device
+Date:   Tue,  5 Apr 2022 09:19:38 +0200
+Message-Id: <20220405070343.303765017@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -49,32 +50,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nikita Shubin <n.shubin@yadro.com>
+From: Mikulas Patocka <mpatocka@redhat.com>
 
-commit 2b2b574ac587ec5bd7716a356492a85ab8b0ce9f upstream.
+commit cc09e8a9dec4f0e8299e80a7a2a8e6f54164a10b upstream.
 
-perf_callchain_store return 0 on success, -1 otherwise,
-fix fill_callchain to return correct bool value.
+Commit f6f72f32c22c ("dm integrity: don't replay journal data past the
+end of the device") skips journal replay if the target sector points
+beyond the end of the device. Unfortunatelly, it doesn't set the
+journal entry unused, which resulted in this BUG being triggered:
+BUG_ON(!journal_entry_is_unused(je))
 
-Fixes: dbeb90b0c1eb ("riscv: Add perf callchain support")
-Signed-off-by: Nikita Shubin <n.shubin@yadro.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+Fix this by calling journal_entry_set_unused() for this case.
+
+Fixes: f6f72f32c22c ("dm integrity: don't replay journal data past the end of the device")
+Cc: stable@vger.kernel.org # v5.7+
+Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+Tested-by: Milan Broz <gmazyland@gmail.com>
+[snitzer: revised header]
+Signed-off-by: Mike Snitzer <snitzer@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/riscv/kernel/perf_callchain.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/md/dm-integrity.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
---- a/arch/riscv/kernel/perf_callchain.c
-+++ b/arch/riscv/kernel/perf_callchain.c
-@@ -73,7 +73,7 @@ void perf_callchain_user(struct perf_cal
- 
- static bool fill_callchain(void *entry, unsigned long pc)
- {
--	return perf_callchain_store(entry, pc);
-+	return perf_callchain_store(entry, pc) == 0;
- }
- 
- void perf_callchain_kernel(struct perf_callchain_entry_ctx *entry,
+--- a/drivers/md/dm-integrity.c
++++ b/drivers/md/dm-integrity.c
+@@ -2459,9 +2459,11 @@ static void do_journal_write(struct dm_i
+ 					dm_integrity_io_error(ic, "invalid sector in journal", -EIO);
+ 					sec &= ~(sector_t)(ic->sectors_per_block - 1);
+ 				}
++				if (unlikely(sec >= ic->provided_data_sectors)) {
++					journal_entry_set_unused(je);
++					continue;
++				}
+ 			}
+-			if (unlikely(sec >= ic->provided_data_sectors))
+-				continue;
+ 			get_area_and_offset(ic, sec, &area, &offset);
+ 			restore_last_bytes(ic, access_journal_data(ic, i, j), je);
+ 			for (k = j + 1; k < ic->journal_section_entries; k++) {
 
 
