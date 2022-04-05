@@ -2,358 +2,207 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43DE2C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:50:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D5F5C3527D
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:50:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1838071AbiDFAt4 (ORCPT
+        id S1838057AbiDFAtv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:49:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39466 "EHLO
+        Tue, 5 Apr 2022 20:49:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349422AbiDEJtu (ORCPT
+        with ESMTP id S1457472AbiDEQDR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:50 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC2CD205CC;
-        Tue,  5 Apr 2022 02:45:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 2CA7ACE1C90;
-        Tue,  5 Apr 2022 09:45:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37842C385A2;
-        Tue,  5 Apr 2022 09:45:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151920;
-        bh=hjS1Ze3hfSIHjy26RolRrndkXeVbmh/Izd1p8lwYceE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q9qlaXyMK1NrCiLE3qX2+BBq8IhM+2uaUVmajn02ClhNz9reTSzfGSACBE9++P6mi
-         XSgVsY58lkbfR9mDuSac/go8aFbHzrrs51iltT4kbhdn/y+rbwIB0bFjzqU8jUhODX
-         GrSy+bahbTBz1w9bADZwjrT1Yi+8K3i2AVLIRJfk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dave Jiang <dave.jiang@intel.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 590/913] dmaengine: idxd: change bandwidth token to read buffers
-Date:   Tue,  5 Apr 2022 09:27:32 +0200
-Message-Id: <20220405070357.528357758@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 12:03:17 -0400
+Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [217.70.183.195])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34DF4393;
+        Tue,  5 Apr 2022 08:52:50 -0700 (PDT)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 61FAD6000A;
+        Tue,  5 Apr 2022 15:52:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1649173968;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=cOBb0NZbmOhvhTUbG/GppbVQfOoOT/4Xzf0IMBMQe18=;
+        b=kvIPNi7TjxggAg1ZueoAidcyN/Y1X6yQiVx4hfclMyYCC/rzlCWcXlaxEMWiE+XDNa/zI+
+        MbZuCZX4gjg4hhZS1VMTlA27YK2JHwuE/cTqN3XHdLWhh3fDPnapYfwPrGrLhVt2cTPc3U
+        9gq36ccDcRThSJ4nqmzDAqpyw2y93xO4sfn1984nrLIGGKExgq0iQTbo4Txcu3HjQy11qU
+        yI6J4BiKhysiHQ913J9HBLqvRWujAgqusSAq0lehFr0orUyWyhna2XSjoMKZzMGQEk5DNa
+        EQDLLe8Wf7xGaiaNhk6IKx1ZK3vhXlWq3sUci4Ec534VwMy0MprPT2euAqsqOQ==
+Date:   Tue, 5 Apr 2022 17:51:20 +0200
+From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Lizhi Hou <lizhi.hou@xilinx.com>,
+        Sonal Santan <sonal.santan@xilinx.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        UNGLinuxDriver@microchip.com,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Allan Nielsen <allan.nielsen@microchip.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>
+Subject: Re: [PATCH v2 0/3] add fwnode support to reset subsystem
+Message-ID: <20220405175120.23fc6b2a@fixe.home>
+In-Reply-To: <YkxWeMNw9Ba0KjHM@robh.at.kernel.org>
+References: <20220324141237.297207-1-clement.leger@bootlin.com>
+        <Ykst0Vb4fk+iALzc@robh.at.kernel.org>
+        <20220405092434.6e424ed4@fixe.home>
+        <YkxWeMNw9Ba0KjHM@robh.at.kernel.org>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dave Jiang <dave.jiang@intel.com>
+Le Tue, 5 Apr 2022 09:47:20 -0500,
+Rob Herring <robh@kernel.org> a =C3=A9crit :
 
-[ Upstream commit 7ed6f1b85fb613e5e44ef3e14d73f2dc96860935 ]
+> + some Xilinx folks
+>=20
+> On Tue, Apr 05, 2022 at 09:24:34AM +0200, Cl=C3=A9ment L=C3=A9ger wrote:
+> > Le Mon, 4 Apr 2022 12:41:37 -0500,
+> > Rob Herring <robh@kernel.org> a =C3=A9crit :
+> >  =20
+> > > On Thu, Mar 24, 2022 at 03:12:34PM +0100, Cl=C3=A9ment L=C3=A9ger wro=
+te: =20
+> > > > This series is part of a larger series which aims at adding fwnode
+> > > > support in multiple subsystems [1]. The goal of this series was to
+> > > > add support for software node in various subsystem but in a first
+> > > > time only the fwnode support had gained consensus and will be added
+> > > > to multiple subsystems.   =20
+> > >=20
+> > > The goal is describing a solution. What is the problem?
+> > >=20
+> > > What's the scenario where you have a reset provider not described by=
+=20
+> > > firmware providing resets to devices (consumers) also not described b=
+y=20
+> > > firmware. =20
+> >=20
+> > Hi Rob, there was a link attached to this series since there was a
+> > previous one that was sent which described the problem. Here is a link
+> > to the same thread but to a specific message which clarifies the
+> > problem and the solutions that were mentionned by other maintainers
+> > (ACPI overlays, DT overlays, software nodes and so on):
+> >=20
+> > https://lore.kernel.org/netdev/20220224154040.2633a4e4@fixe.home/ =20
+>=20
+> Thanks, but your commit message should explain the problem. The problem=20
+> is not subsystems don't support fwnode.
+>=20
+> This is the exact same problem the Xilinx folks are trying to solve with=
+=20
+> their PCIe FPGA cards[1] (and that is not really a v1). They need to=20
+> describe h/w downstream from a 'discoverable' device. Their case is=20
+> further complicated with the dynamic nature of FPGAs. It's also not just=
+=20
+> PCIe. Another usecase is describing downstream devices on USB FTDI=20
+> serial chips which can have GPIO, I2C, SPI downstream. And then you want=
+=20
+> to plug in 10 of those.
 
-DSA spec v1.2 has changed the term of "bandwidth tokens" to "read buffers"
-in order to make the concept clearer. Deprecate bandwidth token
-naming in the driver and convert to read buffers in order to match with
-the spec and reduce confusion when reading the spec.
+I also tried loading an overlay from a driver on an ACPI based system.
+Their patch is (I guess) targeting the specific problem that there is
+no base DT when using ACPI. However, Mark Brown feedback was not to
+mix OF and ACPI:
 
-Signed-off-by: Dave Jiang <dave.jiang@intel.com>
-Link: https://lore.kernel.org/r/163951338932.2988321.6162640806935567317.stgit@djiang5-desk3.ch.intel.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/dma/idxd/device.c    | 25 +++++++++++----------
- drivers/dma/idxd/idxd.h      | 12 +++++------
- drivers/dma/idxd/init.c      |  6 +++---
- drivers/dma/idxd/registers.h | 14 ++++++------
- drivers/dma/idxd/sysfs.c     | 42 ++++++++++++++++++------------------
- 5 files changed, 49 insertions(+), 50 deletions(-)
+"That seems like it's opening a can of worms that might be best left
+closed."
 
-diff --git a/drivers/dma/idxd/device.c b/drivers/dma/idxd/device.c
-index 3cda1c5faf3c..ac671b6c0c36 100644
---- a/drivers/dma/idxd/device.c
-+++ b/drivers/dma/idxd/device.c
-@@ -700,9 +700,9 @@ static void idxd_groups_clear_state(struct idxd_device *idxd)
- 		memset(&group->grpcfg, 0, sizeof(group->grpcfg));
- 		group->num_engines = 0;
- 		group->num_wqs = 0;
--		group->use_token_limit = false;
--		group->tokens_allowed = 0;
--		group->tokens_reserved = 0;
-+		group->use_rdbuf_limit = false;
-+		group->rdbufs_allowed = 0;
-+		group->rdbufs_reserved = 0;
- 		group->tc_a = -1;
- 		group->tc_b = -1;
- 	}
-@@ -800,10 +800,10 @@ static int idxd_groups_config_write(struct idxd_device *idxd)
- 	int i;
- 	struct device *dev = &idxd->pdev->dev;
- 
--	/* Setup bandwidth token limit */
--	if (idxd->hw.gen_cap.config_en && idxd->token_limit) {
-+	/* Setup bandwidth rdbuf limit */
-+	if (idxd->hw.gen_cap.config_en && idxd->rdbuf_limit) {
- 		reg.bits = ioread32(idxd->reg_base + IDXD_GENCFG_OFFSET);
--		reg.token_limit = idxd->token_limit;
-+		reg.rdbuf_limit = idxd->rdbuf_limit;
- 		iowrite32(reg.bits, idxd->reg_base + IDXD_GENCFG_OFFSET);
- 	}
- 
-@@ -944,13 +944,12 @@ static void idxd_group_flags_setup(struct idxd_device *idxd)
- 			group->tc_b = group->grpcfg.flags.tc_b = 1;
- 		else
- 			group->grpcfg.flags.tc_b = group->tc_b;
--		group->grpcfg.flags.use_token_limit = group->use_token_limit;
--		group->grpcfg.flags.tokens_reserved = group->tokens_reserved;
--		if (group->tokens_allowed)
--			group->grpcfg.flags.tokens_allowed =
--				group->tokens_allowed;
-+		group->grpcfg.flags.use_rdbuf_limit = group->use_rdbuf_limit;
-+		group->grpcfg.flags.rdbufs_reserved = group->rdbufs_reserved;
-+		if (group->rdbufs_allowed)
-+			group->grpcfg.flags.rdbufs_allowed = group->rdbufs_allowed;
- 		else
--			group->grpcfg.flags.tokens_allowed = idxd->max_tokens;
-+			group->grpcfg.flags.rdbufs_allowed = idxd->max_rdbufs;
- 	}
- }
- 
-@@ -1145,7 +1144,7 @@ int idxd_device_load_config(struct idxd_device *idxd)
- 	int i, rc;
- 
- 	reg.bits = ioread32(idxd->reg_base + IDXD_GENCFG_OFFSET);
--	idxd->token_limit = reg.token_limit;
-+	idxd->rdbuf_limit = reg.rdbuf_limit;
- 
- 	for (i = 0; i < idxd->max_groups; i++) {
- 		struct idxd_group *group = idxd->groups[i];
-diff --git a/drivers/dma/idxd/idxd.h b/drivers/dma/idxd/idxd.h
-index bfcb03329f77..833af18a99ee 100644
---- a/drivers/dma/idxd/idxd.h
-+++ b/drivers/dma/idxd/idxd.h
-@@ -84,9 +84,9 @@ struct idxd_group {
- 	int id;
- 	int num_engines;
- 	int num_wqs;
--	bool use_token_limit;
--	u8 tokens_allowed;
--	u8 tokens_reserved;
-+	bool use_rdbuf_limit;
-+	u8 rdbufs_allowed;
-+	u8 rdbufs_reserved;
- 	int tc_a;
- 	int tc_b;
- };
-@@ -278,11 +278,11 @@ struct idxd_device {
- 	u32 max_batch_size;
- 	int max_groups;
- 	int max_engines;
--	int max_tokens;
-+	int max_rdbufs;
- 	int max_wqs;
- 	int max_wq_size;
--	int token_limit;
--	int nr_tokens;		/* non-reserved tokens */
-+	int rdbuf_limit;
-+	int nr_rdbufs;		/* non-reserved read buffers */
- 	unsigned int wqcfg_size;
- 
- 	union sw_err_reg sw_err;
-diff --git a/drivers/dma/idxd/init.c b/drivers/dma/idxd/init.c
-index 7bf03f371ce1..6263d9825250 100644
---- a/drivers/dma/idxd/init.c
-+++ b/drivers/dma/idxd/init.c
-@@ -464,9 +464,9 @@ static void idxd_read_caps(struct idxd_device *idxd)
- 	dev_dbg(dev, "group_cap: %#llx\n", idxd->hw.group_cap.bits);
- 	idxd->max_groups = idxd->hw.group_cap.num_groups;
- 	dev_dbg(dev, "max groups: %u\n", idxd->max_groups);
--	idxd->max_tokens = idxd->hw.group_cap.total_tokens;
--	dev_dbg(dev, "max tokens: %u\n", idxd->max_tokens);
--	idxd->nr_tokens = idxd->max_tokens;
-+	idxd->max_rdbufs = idxd->hw.group_cap.total_rdbufs;
-+	dev_dbg(dev, "max read buffers: %u\n", idxd->max_rdbufs);
-+	idxd->nr_rdbufs = idxd->max_rdbufs;
- 
- 	/* read engine capabilities */
- 	idxd->hw.engine_cap.bits =
-diff --git a/drivers/dma/idxd/registers.h b/drivers/dma/idxd/registers.h
-index 97ffb06de9b0..c0961c1ac161 100644
---- a/drivers/dma/idxd/registers.h
-+++ b/drivers/dma/idxd/registers.h
-@@ -65,9 +65,9 @@ union wq_cap_reg {
- union group_cap_reg {
- 	struct {
- 		u64 num_groups:8;
--		u64 total_tokens:8;
--		u64 token_en:1;
--		u64 token_limit:1;
-+		u64 total_rdbufs:8;	/* formerly total_tokens */
-+		u64 rdbuf_ctrl:1;	/* formerly token_en */
-+		u64 rdbuf_limit:1;	/* formerly token_limit */
- 		u64 rsvd:46;
- 	};
- 	u64 bits;
-@@ -111,7 +111,7 @@ union offsets_reg {
- #define IDXD_GENCFG_OFFSET		0x80
- union gencfg_reg {
- 	struct {
--		u32 token_limit:8;
-+		u32 rdbuf_limit:8;
- 		u32 rsvd:4;
- 		u32 user_int_en:1;
- 		u32 rsvd2:19;
-@@ -288,10 +288,10 @@ union group_flags {
- 		u32 tc_a:3;
- 		u32 tc_b:3;
- 		u32 rsvd:1;
--		u32 use_token_limit:1;
--		u32 tokens_reserved:8;
-+		u32 use_rdbuf_limit:1;
-+		u32 rdbufs_reserved:8;
- 		u32 rsvd2:4;
--		u32 tokens_allowed:8;
-+		u32 rdbufs_allowed:8;
- 		u32 rsvd3:4;
- 	};
- 	u32 bits;
-diff --git a/drivers/dma/idxd/sysfs.c b/drivers/dma/idxd/sysfs.c
-index a9025be940db..999ce13a93ad 100644
---- a/drivers/dma/idxd/sysfs.c
-+++ b/drivers/dma/idxd/sysfs.c
-@@ -99,17 +99,17 @@ struct device_type idxd_engine_device_type = {
- 
- /* Group attributes */
- 
--static void idxd_set_free_tokens(struct idxd_device *idxd)
-+static void idxd_set_free_rdbufs(struct idxd_device *idxd)
- {
--	int i, tokens;
-+	int i, rdbufs;
- 
--	for (i = 0, tokens = 0; i < idxd->max_groups; i++) {
-+	for (i = 0, rdbufs = 0; i < idxd->max_groups; i++) {
- 		struct idxd_group *g = idxd->groups[i];
- 
--		tokens += g->tokens_reserved;
-+		rdbufs += g->rdbufs_reserved;
- 	}
- 
--	idxd->nr_tokens = idxd->max_tokens - tokens;
-+	idxd->nr_rdbufs = idxd->max_rdbufs - rdbufs;
- }
- 
- static ssize_t group_tokens_reserved_show(struct device *dev,
-@@ -118,7 +118,7 @@ static ssize_t group_tokens_reserved_show(struct device *dev,
- {
- 	struct idxd_group *group = confdev_to_group(dev);
- 
--	return sysfs_emit(buf, "%u\n", group->tokens_reserved);
-+	return sysfs_emit(buf, "%u\n", group->rdbufs_reserved);
- }
- 
- static ssize_t group_tokens_reserved_store(struct device *dev,
-@@ -143,14 +143,14 @@ static ssize_t group_tokens_reserved_store(struct device *dev,
- 	if (idxd->state == IDXD_DEV_ENABLED)
- 		return -EPERM;
- 
--	if (val > idxd->max_tokens)
-+	if (val > idxd->max_rdbufs)
- 		return -EINVAL;
- 
--	if (val > idxd->nr_tokens + group->tokens_reserved)
-+	if (val > idxd->nr_rdbufs + group->rdbufs_reserved)
- 		return -EINVAL;
- 
--	group->tokens_reserved = val;
--	idxd_set_free_tokens(idxd);
-+	group->rdbufs_reserved = val;
-+	idxd_set_free_rdbufs(idxd);
- 	return count;
- }
- 
-@@ -164,7 +164,7 @@ static ssize_t group_tokens_allowed_show(struct device *dev,
- {
- 	struct idxd_group *group = confdev_to_group(dev);
- 
--	return sysfs_emit(buf, "%u\n", group->tokens_allowed);
-+	return sysfs_emit(buf, "%u\n", group->rdbufs_allowed);
- }
- 
- static ssize_t group_tokens_allowed_store(struct device *dev,
-@@ -190,10 +190,10 @@ static ssize_t group_tokens_allowed_store(struct device *dev,
- 		return -EPERM;
- 
- 	if (val < 4 * group->num_engines ||
--	    val > group->tokens_reserved + idxd->nr_tokens)
-+	    val > group->rdbufs_reserved + idxd->nr_rdbufs)
- 		return -EINVAL;
- 
--	group->tokens_allowed = val;
-+	group->rdbufs_allowed = val;
- 	return count;
- }
- 
-@@ -207,7 +207,7 @@ static ssize_t group_use_token_limit_show(struct device *dev,
- {
- 	struct idxd_group *group = confdev_to_group(dev);
- 
--	return sysfs_emit(buf, "%u\n", group->use_token_limit);
-+	return sysfs_emit(buf, "%u\n", group->use_rdbuf_limit);
- }
- 
- static ssize_t group_use_token_limit_store(struct device *dev,
-@@ -232,10 +232,10 @@ static ssize_t group_use_token_limit_store(struct device *dev,
- 	if (idxd->state == IDXD_DEV_ENABLED)
- 		return -EPERM;
- 
--	if (idxd->token_limit == 0)
-+	if (idxd->rdbuf_limit == 0)
- 		return -EPERM;
- 
--	group->use_token_limit = !!val;
-+	group->use_rdbuf_limit = !!val;
- 	return count;
- }
- 
-@@ -1161,7 +1161,7 @@ static ssize_t max_tokens_show(struct device *dev,
- {
- 	struct idxd_device *idxd = confdev_to_idxd(dev);
- 
--	return sysfs_emit(buf, "%u\n", idxd->max_tokens);
-+	return sysfs_emit(buf, "%u\n", idxd->max_rdbufs);
- }
- static DEVICE_ATTR_RO(max_tokens);
- 
-@@ -1170,7 +1170,7 @@ static ssize_t token_limit_show(struct device *dev,
- {
- 	struct idxd_device *idxd = confdev_to_idxd(dev);
- 
--	return sysfs_emit(buf, "%u\n", idxd->token_limit);
-+	return sysfs_emit(buf, "%u\n", idxd->rdbuf_limit);
- }
- 
- static ssize_t token_limit_store(struct device *dev,
-@@ -1191,13 +1191,13 @@ static ssize_t token_limit_store(struct device *dev,
- 	if (!test_bit(IDXD_FLAG_CONFIGURABLE, &idxd->flags))
- 		return -EPERM;
- 
--	if (!idxd->hw.group_cap.token_limit)
-+	if (!idxd->hw.group_cap.rdbuf_limit)
- 		return -EPERM;
- 
--	if (val > idxd->hw.group_cap.total_tokens)
-+	if (val > idxd->hw.group_cap.total_rdbufs)
- 		return -EINVAL;
- 
--	idxd->token_limit = val;
-+	idxd->rdbuf_limit = val;
- 	return count;
- }
- static DEVICE_ATTR_RW(token_limit);
--- 
-2.34.1
+But I would be interested to know how the Xilinx guys are doing that
+on x86/ACPI based system.
 
+>=20
+> I don't think swnodes are going to scale for these usecases. We moved=20
+> h/w description out of the kernel for a reason. Why are we adding that=20
+> back in a new form? The complexity for what folks want to describe is=20
+> only going to increase.
+>=20
+> I think DT overlays is the right (or only) solution here. Of course the=20
+> DT maintainer would say that. Actually, I would be happier to not have=20
+> to support overlays in the kernel.
 
+DT overlay might work on DT based system. If I'm going to plug the card
+on an ACPI based platform (x86), I also want that card to work
+seamlessly without requiring the user to create an ACPI overlay.
 
+If you proposal was to use DT overlays on an ACPI based system, doing
+so would also require to "plug" the PCI subystem when described with
+ACPI to "probe" DT overlays describing PCI devices, not sure this is
+something trivial and it would be PCI centric.
+
+>=20
+> I've told the Xilinx folks the same thing, but I would separate this=20
+> into 2 parts. First is just h/w work in a DT based system. Second is=20
+> creating a base tree an overlay can be applied to. The first part should=
+=20
+> be pretty straightforward. We already have PCI bus bindings. The only=20
+> tricky part is getting address translation working from leaf device thru=
+=20
+> the PCI bus to host bus, but support for that should all be in place=20
+> (given we support ISA buses off of PCI bus). The second part will=20
+> require generating PCI DT nodes at runtime. That may be needed for both=20
+> DT and ACPI systems as we don't always describe all the PCI hierarchy
+> in DT.=20
+
+But then, if the driver generate the nodes, it will most probably
+have to describe the nodes by hardcoding them right ? Or probably load
+some dtbo from the FS. If so, I would then have to describe the card
+for both ACPI and DT. How is that better than using a single software
+node description for both ACPI/OF based systems ? Or maybe I missed
+something, but the device description won't come out of thin air I
+guess.
+
+Also, when saying "That may be needed for both DT and ACPI systems", do
+you actually meant that ACPI overlay should be described for ACPI based
+systems and DT overlays for DT based ones ? If so, some subsystems do
+not even support ACPI (reset for instance which is need for my
+PCI card but that is not the only one). So how to accomodate both ? This
+would result in having 2 separate descriptions for ACPI and OF and
+potentially non working with ACPI description.
+
+Software nodes have the advantage of being independent from the
+description systems used (ACPI/OF). If switching susbsystems to use
+fwnode, this would also allows to accomodate easily for all nodes types
+and potentially factorize some code.
+
+> That could work either by the PCI subsystem creating nodes as it
+> populates devices or your driver could make a request to populate nodes=20
+> for its hierarchy. That's not a hard problem to solve. That's what=20
+> OpenFirmware implementations do already.
+
+This would also require to get address translation working with ACPI
+based systems since the PCI bus isn't described with DT on such
+systems. I'm not sure how trivial it is. Or it would require to add PCI
+root complex entries into the device-tree to allow adress translation
+to work using the existing system probably.
+
+>
+>=20
+> Rob
+>=20
+>=20
+> https://lore.kernel.org/lkml/20220216050056.311496-1-lizhi.hou@xilinx.com/
+
+Looking at the feedback of the previous series that I mentionned,
+absolutely nobody agreed on the solution to be adopted. I asked for a
+consensus but I only got an answer from Hans de Goede which was ok
+with the fwnode way. I would be really glad to have some consensus on
+that in order to implement a final solution (and if the OF overlays is
+the one to be used, I'll use it).
+
+Thanks,
+
+--=20
+Cl=C3=A9ment L=C3=A9ger,
+Embedded Linux and Kernel engineer at Bootlin
+https://bootlin.com
