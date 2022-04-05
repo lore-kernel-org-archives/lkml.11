@@ -2,105 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAEF3C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BEC0C4332F
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:48:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1843562AbiDFBlQ (ORCPT
+        id S1843499AbiDFBlD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:41:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50656 "EHLO
+        Tue, 5 Apr 2022 21:41:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357502AbiDEK0a (ORCPT
+        with ESMTP id S1387286AbiDENO5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:26:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2C452DD4D;
-        Tue,  5 Apr 2022 03:10:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DAC61617AE;
-        Tue,  5 Apr 2022 10:10:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBA95C385A1;
-        Tue,  5 Apr 2022 10:10:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153419;
-        bh=gqjWp8ZRyqz+aMmbrLmE97qAwqZMiw801VH806/InDE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Bmh4rpN9ThXkqpiLooZe4PQgmlYGOUbKmxHfjMvIX0j8JduQDFsvUh/QRytjVONOP
-         QLnkWHCmHhdIBlZoVYAqqPDPfMZUo7s3d46Mx03Fhmo0zihkqBpJQl7BTlS+fNlDIn
-         VLblGVzf1anQW18vEpZJYj1cL7E6FmvzL8xHmjTY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 217/599] media: usb: go7007: s2250-board: fix leak in probe()
-Date:   Tue,  5 Apr 2022 09:28:31 +0200
-Message-Id: <20220405070305.299963997@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 09:14:57 -0400
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6436129E8D
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 05:19:27 -0700 (PDT)
+Received: by mail-wm1-x332.google.com with SMTP id r11-20020a1c440b000000b0038ccb70e239so1449416wma.3
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 05:19:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Iv3G8VxZx5uUW10Aa/SoQjHLkjzS6X/JRRMUNB++nm4=;
+        b=H/L3OQMeen52BUNQ5Bl/Ov35nUFCexbkvHy+qSZ9R+NTndD9/fWvLhkd7qRqPaaxxo
+         YaUFjkbO/yWk913YRU6CE268yzl888wroVIJYTVHDuJW3MRlJsDPRaXf3ckb3tG0Xw/w
+         l9o2OfuO9QW2XJm3jETBp/lZ23EIxiKAUNFqYXpNQICdquiPLetD0yXQLs5OacEaurCZ
+         AWE+zRabGaf3y03Mt293ym6Pto/PdZdo5LEsmFqok9j2iVeLDYKG9eBdhsFGfNNiA7H1
+         YoPrDs5/sThnghLsFb4sXsfS7WMhfkb5ns2H0LJhb0UBQsgm+sCJA/2T9fsOMPpAwuwD
+         pqGg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Iv3G8VxZx5uUW10Aa/SoQjHLkjzS6X/JRRMUNB++nm4=;
+        b=8PsjD+mKtRG8JE03B3uMKpNi5kxCYcwf6qGCiReeQlXtgy8K0+5vF1vML2mGsQtdDz
+         thxcHvIzkXfUboOpjzsuGXJ23TOQM/n8zJG0V+O/sBaKfAWZjK+t8Wtd45w59wrE94kd
+         qAYbzaQDPtashlzyTB8g4k2o9pkWDneUbaB97q8foy7fGv+NgLzcPTYyStCoYGdXRFdS
+         esFKq8hdiDG1MuWTGkk5UCpVeflyv9dRUmlKWxQLRYjWkq0h9cYnyeD8z2RY91pCrE1I
+         19IOZ9dAyMURq8VYQNOBjnJELEWYIcZkxTDIrZWiYcZgo0vdyM6uZTpqI7aELekOul+1
+         RCTg==
+X-Gm-Message-State: AOAM531GlqEG0BZhHvaM77hAZ+juob7PjaqBACzE1kjVjRl/p7/DVyps
+        ek4PF6z8n2M4+ebIh78T7Eo=
+X-Google-Smtp-Source: ABdhPJwfSPW4XgO5Vv8pHu5Chw0EfBEkhq5xUjUUz91WYo0RT4Yh0OeIQJznb4HBMqJlv87nYWn8UQ==
+X-Received: by 2002:a7b:c922:0:b0:383:e7e2:4a1a with SMTP id h2-20020a7bc922000000b00383e7e24a1amr2930238wml.51.1649161166363;
+        Tue, 05 Apr 2022 05:19:26 -0700 (PDT)
+Received: from debian (host-78-145-97-89.as13285.net. [78.145.97.89])
+        by smtp.gmail.com with ESMTPSA id o7-20020a5d6707000000b002061cf9eeafsm2291340wru.49.2022.04.05.05.19.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 05:19:25 -0700 (PDT)
+Date:   Tue, 5 Apr 2022 13:19:24 +0100
+From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: Re: Linux 5.18-rc1
+Message-ID: <YkwzzANkBRzrYAuq@debian>
+References: <CAHk-=wg6FWL1xjVyHx7DdjD2dHZETA5_=FqqW17Z19X-WTfWSg@mail.gmail.com>
+ <20220404022239.GA1186352@roeck-us.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220404022239.GA1186352@roeck-us.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+On Sun, Apr 03, 2022 at 07:22:39PM -0700, Guenter Roeck wrote:
+> On Sun, Apr 03, 2022 at 03:14:19PM -0700, Linus Torvalds wrote:
+> > So here we are, two weeks later, and the merge window is closed.
+> > 
 
-[ Upstream commit 67e4550ecd6164bfbdff54c169e5bbf9ccfaf14d ]
+<snip>
 
-Call i2c_unregister_device(audio) on this error path.
+> > 
+> > Go test, please,
+> 
+> Build results:
+> 	total: 151 pass: 142 fail: 9
+> Failed builds:
+> 	alpha:allmodconfig
+> 	arm:allmodconfig
 
-Fixes: d3b2ccd9e307 ("[media] s2250: convert to the control framework")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/media/usb/go7007/s2250-board.c | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/media/usb/go7007/s2250-board.c b/drivers/media/usb/go7007/s2250-board.c
-index b9e45124673b..2e5913bccb38 100644
---- a/drivers/media/usb/go7007/s2250-board.c
-+++ b/drivers/media/usb/go7007/s2250-board.c
-@@ -504,6 +504,7 @@ static int s2250_probe(struct i2c_client *client,
- 	u8 *data;
- 	struct go7007 *go = i2c_get_adapdata(adapter);
- 	struct go7007_usb *usb = go->hpi_context;
-+	int err = -EIO;
- 
- 	audio = i2c_new_dummy_device(adapter, TLV320_ADDRESS >> 1);
- 	if (IS_ERR(audio))
-@@ -532,11 +533,8 @@ static int s2250_probe(struct i2c_client *client,
- 		V4L2_CID_HUE, -512, 511, 1, 0);
- 	sd->ctrl_handler = &state->hdl;
- 	if (state->hdl.error) {
--		int err = state->hdl.error;
--
--		v4l2_ctrl_handler_free(&state->hdl);
--		kfree(state);
--		return err;
-+		err = state->hdl.error;
-+		goto fail;
- 	}
- 
- 	state->std = V4L2_STD_NTSC;
-@@ -600,7 +598,7 @@ static int s2250_probe(struct i2c_client *client,
- 	i2c_unregister_device(audio);
- 	v4l2_ctrl_handler_free(&state->hdl);
- 	kfree(state);
--	return -EIO;
-+	return err;
- }
- 
- static int s2250_remove(struct i2c_client *client)
--- 
-2.34.1
+Apart from the ones Guenter reported, arm imote2_defconfig fails due to:
+28f74201e37c ("ARM: pxa: remove Intel Imote2 and Stargate 2 boards")
 
 
-
+--
+Regards
+Sudip
