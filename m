@@ -2,107 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2338C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:15:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8945C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:15:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243811AbiDEVMu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:12:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36580 "EHLO
+        id S1343837AbiDEVNS (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 17:13:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457623AbiDEQSq (ORCPT
+        with ESMTP id S1349094AbiDEJtH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:18:46 -0400
-Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F391193D3
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 09:16:48 -0700 (PDT)
-Received: by mail-qt1-x832.google.com with SMTP id t2so11861975qtw.9
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 09:16:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:subject:message-id:mime-version:content-disposition;
-        bh=FLSzkzyFKsMmWfcxhBs2Il7HtUd5I2QlvTXEeLFEpwI=;
-        b=j9daqXZVYch5PcpAusIBWMCwCZEA3KuTMvcnCJaxNxRmfjMoMsoNrNQZfOxu51vnLp
-         LmXUEEnUs+fN2pcJOcHqj0RSl/YrbpWNq3Px1arRKi/1PJQbDH2s3Zd43OqHi9aeMIfk
-         49FXG0jcUhMbkUAIagFnqSO4ZO3YIxij/23L6s/bAwH51pqO+L6He0sK6ZO4U+2CClJ+
-         7E6rGSmG1Yoe2MrDplF1/IPg+TYoCjqIojEo91MdsP5NE4CrS5qXvWW4+N6kJfjFJn74
-         wC3XiQTmBoDQlzC36uwwR0TRsFAJqVgRZM0PV/SOvxlvVsGmwtZcWZgyLSmPnAxmBv72
-         mgzg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
-         :content-disposition;
-        bh=FLSzkzyFKsMmWfcxhBs2Il7HtUd5I2QlvTXEeLFEpwI=;
-        b=fbymIrYMWN+eyp41Ffw2nunwjaAfcSNkUh6O2TJjKnGADFoBsNM0iMHOOS1nkq/ARx
-         S1Fs96fmFRWUPsvJRYNTuCp6NWGPt+QlSio0vvaR0mTl3s9gvDJa2lTnfz4LkPYU69/f
-         VT6TbWidZ3oL3h6ytl3j6+BU08HmNUYvZ/erW6StksTGENv+e7SZ2LEl9YqBAXR1SbuS
-         njNOUyFqS4FG1hTVVtfJ8dcBXrg6dXAUgrFOmSM/5zzmXbZv+0gdb+vMQeswIucaWv17
-         0psqdSJNB56NZtt8U7sXKLOcEvEg2qlNtNGKrXaerKFYj15wL73zS90AW63W11Q0jxV4
-         d9uA==
-X-Gm-Message-State: AOAM531sS38aYLkcCbB0I1omzVi6wT2GwwKn5kFTxAMc9wfDIst8873S
-        0ZzLPD/bTOjqnRJqhuPWUeMuuNaC5dtaww==
-X-Google-Smtp-Source: ABdhPJyfBydtZeKLeim9Up5yEFW9t0urIMuUeqTm5Q4+BL7NMsNpsqz5Yyt2XPRxiO0/MgGVyqlYIw==
-X-Received: by 2002:ac8:7dca:0:b0:2e1:db1b:7ba1 with SMTP id c10-20020ac87dca000000b002e1db1b7ba1mr3631493qte.614.1649175407387;
-        Tue, 05 Apr 2022 09:16:47 -0700 (PDT)
-Received: from euclid ([71.58.109.160])
-        by smtp.gmail.com with ESMTPSA id h8-20020ac87d48000000b002e1c6faae9csm11228777qtb.28.2022.04.05.09.16.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Apr 2022 09:16:46 -0700 (PDT)
-Date:   Tue, 5 Apr 2022 12:16:43 -0400
-From:   Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        outreachy@lists.linux.dev
-Subject: [PATCH v3] staging: rtl8723bs: fix indentation
-Message-ID: <20220405161643.GA630826@euclid>
+        Tue, 5 Apr 2022 05:49:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93949A997D;
+        Tue,  5 Apr 2022 02:40:46 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2FC7261576;
+        Tue,  5 Apr 2022 09:40:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D4FDC385A1;
+        Tue,  5 Apr 2022 09:40:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151645;
+        bh=vDDIUdmf4298hAle0TTWAdKOBeKnGsofn4TXAo2kHWw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=K9GVtchGu39gmq5oVJVmTR4PJpQjM2NkMWryJzdWIMMdBlDJ0PrHCZewMADITsnjg
+         oA0EbNKA9nGFu4RAAQdDSdt9PHwzfg1UHpQXEpETxiIdHSIOw+lLw742sgt+8PiC1b
+         +XZZ+LXt7ZeVsKYfj7fEojWHJ5mrN4Rte6mUwUus=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jack Wang <jinpu.wang@ionos.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 489/913] scsi: pm8001: Fix abort all task initialization
+Date:   Tue,  5 Apr 2022 09:25:51 +0200
+Message-Id: <20220405070354.513075300@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Adhere to Linux kernel coding indentation style. Also remove the comments that
-became irrelevant after fixing indentation.
+From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 
-Reported by checkpatch:
+[ Upstream commit 7f12845c8389855dbcc67baa068b6832dc4a396e ]
 
-WARNING: suspect code indent for conditional statements
+In pm80xx_send_abort_all(), the n_elem field of the ccb used is not
+initialized to 0. This missing initialization sometimes lead to the task
+completion path seeing the ccb with a non-zero n_elem resulting in the
+execution of invalid dma_unmap_sg() calls in pm8001_ccb_task_free(),
+causing a crash such as:
 
-Signed-off-by: Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
+[  197.676341] RIP: 0010:iommu_dma_unmap_sg+0x6d/0x280
+[  197.700204] RSP: 0018:ffff889bbcf89c88 EFLAGS: 00010012
+[  197.705485] RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffffffff83d0bda0
+[  197.712687] RDX: 0000000000000002 RSI: 0000000000000000 RDI: ffff88810dffc0d0
+[  197.719887] RBP: 0000000000000000 R08: 0000000000000000 R09: ffff8881c790098b
+[  197.727089] R10: ffffed1038f20131 R11: 0000000000000001 R12: 0000000000000000
+[  197.734296] R13: ffff88810dffc0d0 R14: 0000000000000010 R15: 0000000000000000
+[  197.741493] FS:  0000000000000000(0000) GS:ffff889bbcf80000(0000) knlGS:0000000000000000
+[  197.749659] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  197.755459] CR2: 00007f16c1b42734 CR3: 0000000004814000 CR4: 0000000000350ee0
+[  197.762656] Call Trace:
+[  197.765127]  <IRQ>
+[  197.767162]  pm8001_ccb_task_free+0x5f1/0x820 [pm80xx]
+[  197.772364]  ? do_raw_spin_unlock+0x54/0x220
+[  197.776680]  pm8001_mpi_task_abort_resp+0x2ce/0x4f0 [pm80xx]
+[  197.782406]  process_oq+0xe85/0x7890 [pm80xx]
+[  197.786817]  ? lock_acquire+0x194/0x490
+[  197.790697]  ? handle_irq_event+0x10e/0x1b0
+[  197.794920]  ? mpi_sata_completion+0x2d70/0x2d70 [pm80xx]
+[  197.800378]  ? __wake_up_bit+0x100/0x100
+[  197.804340]  ? lock_is_held_type+0x98/0x110
+[  197.808565]  pm80xx_chip_isr+0x94/0x130 [pm80xx]
+[  197.813243]  tasklet_action_common.constprop.0+0x24b/0x2f0
+[  197.818785]  __do_softirq+0x1b5/0x82d
+[  197.822485]  ? do_raw_spin_unlock+0x54/0x220
+[  197.826799]  __irq_exit_rcu+0x17e/0x1e0
+[  197.830678]  irq_exit_rcu+0xa/0x20
+[  197.834114]  common_interrupt+0x78/0x90
+[  197.840051]  </IRQ>
+[  197.844236]  <TASK>
+[  197.848397]  asm_common_interrupt+0x1e/0x40
+
+Avoid this issue by always initializing the ccb n_elem field to 0 in
+pm8001_send_abort_all(), pm8001_send_read_log() and
+pm80xx_send_abort_all().
+
+Link: https://lore.kernel.org/r/20220220031810.738362-17-damien.lemoal@opensource.wdc.com
+Fixes: c6b9ef5779c3 ("[SCSI] pm80xx: NCQ error handling changes")
+Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
+ drivers/scsi/pm8001/pm8001_hwi.c | 2 ++
+ drivers/scsi/pm8001/pm80xx_hwi.c | 1 +
+ 2 files changed, 3 insertions(+)
 
-v1 -> v2: Remove the comments that became irrelevant with proper indentation.
-
-v2 -> v3: Update the changelog text to say everything the commit is doing.
-
- drivers/staging/rtl8723bs/core/rtw_mlme_ext.c | 14 +++-----------
- 1 file changed, 3 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/staging/rtl8723bs/core/rtw_mlme_ext.c b/drivers/staging/rtl8723bs/core/rtw_mlme_ext.c
-index 04e29e228c1e..1bdbd0971f73 100644
---- a/drivers/staging/rtl8723bs/core/rtw_mlme_ext.c
-+++ b/drivers/staging/rtl8723bs/core/rtw_mlme_ext.c
-@@ -5143,17 +5143,9 @@ void link_timer_hdl(struct timer_list *t)
- 	} else if (pmlmeinfo->state & WIFI_FW_AUTH_STATE) {
- 		/* re-auth timer */
- 		if (++pmlmeinfo->reauth_count > REAUTH_LIMIT) {
--			/* if (pmlmeinfo->auth_algo != dot11AuthAlgrthm_Auto) */
--			/*  */
--				pmlmeinfo->state = 0;
--				report_join_res(padapter, -1);
--				return;
--			/*  */
--			/* else */
--			/*  */
--			/* 	pmlmeinfo->auth_algo = dot11AuthAlgrthm_Shared; */
--			/* 	pmlmeinfo->reauth_count = 0; */
--			/*  */
-+			pmlmeinfo->state = 0;
-+			report_join_res(padapter, -1);
-+			return;
- 		}
+diff --git a/drivers/scsi/pm8001/pm8001_hwi.c b/drivers/scsi/pm8001/pm8001_hwi.c
+index d50eb22b2506..bed06ed0f1cb 100644
+--- a/drivers/scsi/pm8001/pm8001_hwi.c
++++ b/drivers/scsi/pm8001/pm8001_hwi.c
+@@ -1783,6 +1783,7 @@ static void pm8001_send_abort_all(struct pm8001_hba_info *pm8001_ha,
+ 	ccb->device = pm8001_ha_dev;
+ 	ccb->ccb_tag = ccb_tag;
+ 	ccb->task = task;
++	ccb->n_elem = 0;
  
- 		pmlmeinfo->auth_seq = 1;
+ 	circularQ = &pm8001_ha->inbnd_q_tbl[0];
+ 
+@@ -1844,6 +1845,7 @@ static void pm8001_send_read_log(struct pm8001_hba_info *pm8001_ha,
+ 	ccb->device = pm8001_ha_dev;
+ 	ccb->ccb_tag = ccb_tag;
+ 	ccb->task = task;
++	ccb->n_elem = 0;
+ 	pm8001_ha_dev->id |= NCQ_READ_LOG_FLAG;
+ 	pm8001_ha_dev->id |= NCQ_2ND_RLE_FLAG;
+ 
+diff --git a/drivers/scsi/pm8001/pm80xx_hwi.c b/drivers/scsi/pm8001/pm80xx_hwi.c
+index 3c2f2fbdb432..b0a108e1a3d9 100644
+--- a/drivers/scsi/pm8001/pm80xx_hwi.c
++++ b/drivers/scsi/pm8001/pm80xx_hwi.c
+@@ -1801,6 +1801,7 @@ static void pm80xx_send_abort_all(struct pm8001_hba_info *pm8001_ha,
+ 	ccb->device = pm8001_ha_dev;
+ 	ccb->ccb_tag = ccb_tag;
+ 	ccb->task = task;
++	ccb->n_elem = 0;
+ 
+ 	circularQ = &pm8001_ha->inbnd_q_tbl[0];
+ 
 -- 
-2.25.1
+2.34.1
+
+
 
