@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 064AEC4321E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:21:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99554C352A7
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:21:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239810AbiDEIVA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:21:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43942 "EHLO
+        id S239441AbiDEIUF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:20:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235610AbiDEH7x (ORCPT
+        with ESMTP id S235642AbiDEH76 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:59:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A1671AF11;
-        Tue,  5 Apr 2022 00:56:03 -0700 (PDT)
+        Tue, 5 Apr 2022 03:59:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6750DAE76;
+        Tue,  5 Apr 2022 00:56:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 47CF0B81B14;
-        Tue,  5 Apr 2022 07:56:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DECCC340EE;
-        Tue,  5 Apr 2022 07:56:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 048706167D;
+        Tue,  5 Apr 2022 07:56:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1191CC340EE;
+        Tue,  5 Apr 2022 07:56:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145361;
-        bh=kCf7i8CQ070ihBCpclSD5ljJByxCnKbymjN2NjY2v3o=;
+        s=korg; t=1649145402;
+        bh=ZAPcMDiTjmKI6SgKNlTMxy9T9vOo7cofZpuRfDPZIkc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uDQk3rNdVaSGrNHdj2qUzkpanmRNIeujnbSaIdoS3dca9QQjOuaWhwVvYN87ob6Z1
-         9F1RDqsCQu+sTUxRfHveELkCyStj42Mta6QeJQuRQQTIKYG/BvWDwNUV7JVNPgS7Gg
-         jEcFa9WeYQj+H9sMM/GGX9meOtUIBHS7EcsYQA70=
+        b=kJL79sPqjrA/aGo9hXzqqZwD6yLRVNf2JpX+CsOv7AUo/CTAAQ6AD6p4rdixfV6KU
+         zZx6fBQZzGnAtI9VZZfg9WLbNt5JPp6IJrwRBlHARga6gdOyJG63hH6L+S7jcL5TLT
+         dgU52oJb90f6JIAvU++egQhLJPf1rXZlRiGy0O2Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Peter Ujfalusi <peter.ujfalusi@gmail.com>,
+        stable@vger.kernel.org,
+        David Rhodes <drhodes@opensource.cirrus.com>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
         Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0376/1126] ASoC: ti: davinci-i2s: Add check for clk_enable()
-Date:   Tue,  5 Apr 2022 09:18:43 +0200
-Message-Id: <20220405070418.662475145@linuxfoundation.org>
+Subject: [PATCH 5.17 0393/1126] ASoC: cs35l41: Fix GPIO2 configuration
+Date:   Tue,  5 Apr 2022 09:19:00 +0200
+Message-Id: <20220405070419.163411570@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,47 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: David Rhodes <drhodes@opensource.cirrus.com>
 
-[ Upstream commit ed7c9fef11931fc5d32a83d68017ff390bf5c280 ]
+[ Upstream commit 03a7895ee701e873c88c06bdb830ff40adb2be73 ]
 
-As the potential failure of the clk_enable(),
-it should be better to check it and return error
-if fails.
+Fix GPIO2 polarity and direction configuration
 
-Fixes: 5f9a50c3e55e ("ASoC: Davinci: McBSP: add device tree support for McBSP")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Acked-by: Peter Ujfalusi <peter.ujfalusi@gmail.com>
-Link: https://lore.kernel.org/r/20220228031540.3571959-1-jiasheng@iscas.ac.cn
+Fixes: fe1024d50477b ("ASoC: cs35l41: Combine adjacent register writes")
+Signed-off-by: David Rhodes <drhodes@opensource.cirrus.com>
+Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220303173059.269657-2-tanureal@opensource.cirrus.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/ti/davinci-i2s.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ sound/soc/codecs/cs35l41.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/ti/davinci-i2s.c b/sound/soc/ti/davinci-i2s.c
-index 6dca51862dd7..0363a088d2e0 100644
---- a/sound/soc/ti/davinci-i2s.c
-+++ b/sound/soc/ti/davinci-i2s.c
-@@ -708,7 +708,9 @@ static int davinci_i2s_probe(struct platform_device *pdev)
- 	dev->clk = clk_get(&pdev->dev, NULL);
- 	if (IS_ERR(dev->clk))
- 		return -ENODEV;
--	clk_enable(dev->clk);
-+	ret = clk_enable(dev->clk);
-+	if (ret)
-+		goto err_put_clk;
+diff --git a/sound/soc/codecs/cs35l41.c b/sound/soc/codecs/cs35l41.c
+index 77a017694645..90c91b00288b 100644
+--- a/sound/soc/codecs/cs35l41.c
++++ b/sound/soc/codecs/cs35l41.c
+@@ -1035,8 +1035,8 @@ static int cs35l41_irq_gpio_config(struct cs35l41_private *cs35l41)
  
- 	dev->dev = &pdev->dev;
- 	dev_set_drvdata(&pdev->dev, dev);
-@@ -730,6 +732,7 @@ static int davinci_i2s_probe(struct platform_device *pdev)
- 	snd_soc_unregister_component(&pdev->dev);
- err_release_clk:
- 	clk_disable(dev->clk);
-+err_put_clk:
- 	clk_put(dev->clk);
- 	return ret;
- }
+ 	regmap_update_bits(cs35l41->regmap, CS35L41_GPIO2_CTRL1,
+ 			   CS35L41_GPIO_POL_MASK | CS35L41_GPIO_DIR_MASK,
+-			   irq_gpio_cfg1->irq_pol_inv << CS35L41_GPIO_POL_SHIFT |
+-			   !irq_gpio_cfg1->irq_out_en << CS35L41_GPIO_DIR_SHIFT);
++			   irq_gpio_cfg2->irq_pol_inv << CS35L41_GPIO_POL_SHIFT |
++			   !irq_gpio_cfg2->irq_out_en << CS35L41_GPIO_DIR_SHIFT);
+ 
+ 	regmap_update_bits(cs35l41->regmap, CS35L41_GPIO_PAD_CONTROL,
+ 			   CS35L41_GPIO1_CTRL_MASK | CS35L41_GPIO2_CTRL_MASK,
 -- 
 2.34.1
 
