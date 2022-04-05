@@ -2,90 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80810C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E1E7C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:35:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351656AbiDEUfE (ORCPT
+        id S1351835AbiDEUfK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:35:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43270 "EHLO
+        Tue, 5 Apr 2022 16:35:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348814AbiDEJsj (ORCPT
+        with ESMTP id S1442795AbiDEPiR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:48:39 -0400
+        Tue, 5 Apr 2022 11:38:17 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E5C3A9976;
-        Tue,  5 Apr 2022 02:36:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BF0017A2FF
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:53:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D188F616AE;
-        Tue,  5 Apr 2022 09:36:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA264C385A0;
-        Tue,  5 Apr 2022 09:36:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151366;
-        bh=mMs8cEwxxXca6Fv/Ju+e15x+v/0X/GOCyC5VUwCK5YA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WYGylumEDuUPDPO4QnHCQOAtSt+tUr5qFcLBVJvzPEyJrkbNlC1QaUEX4+8rrjn1g
-         x4Z8nVFFv+vGx1oDf3IOpouK0NLSBwv0XLaJsSEhhsnaeSwr3dE0ABFiBhl4z9P+oZ
-         dFMvJFbSMTsDN6zNsVRsDO5NcmobCxSI7QjfbVBc=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 389/913] drm/selftests/test-drm_dp_mst_helper: Fix memory leak in sideband_msg_req_encode_decode
-Date:   Tue,  5 Apr 2022 09:24:11 +0200
-Message-Id: <20220405070351.508314271@linuxfoundation.org>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3903761917
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 13:53:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 839D0C385A4;
+        Tue,  5 Apr 2022 13:53:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649166801;
+        bh=xMWIMU6YpsG88G1LO4JJfGNWJqQMJm4kZ4LwZ/ipgw0=;
+        h=From:To:Cc:Subject:Date:From;
+        b=PtaE5dRTtJ1vqeyYdHFcjhXTUaKrpbuLjzwIiYPuC/e0gTXo7jwB19jTT9dcAseQd
+         pAwk2bF309VFcN8JyappoqcBz0zZvt+YVMcQPedn7zQnJPeEh7ffoxaT9Uo5ZfeBvW
+         pX1GH4ddKvPG6E418FpKzULf/PoLN/jy33E/lW6oFRgA97sBzdjH5ro0UWw3mFBXis
+         qepodz/QRlSjGdXvCeWViRVOjJa37hCJe7HtM4hTGdewx656k5GnFKnnXx2syxRRSV
+         hMdzYeFxqg8WBoPUt4vVIooMzmRjJI3Uy5AfNpf5jNT6dfPPkGUDTt+0rTobvALE5P
+         cD7tQw1ojHgiQ==
+Received: from mchehab by mail.kernel.org with local (Exim 4.94.2)
+        (envelope-from <mchehab@kernel.org>)
+        id 1nbjcV-001lTU-3f; Tue, 05 Apr 2022 15:53:19 +0200
+From:   Mauro Carvalho Chehab <mchehab@kernel.org>
+To:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        =?UTF-8?q?P=C3=A9ter=20Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        Cezary Rojewski <cezary.rojewski@intel.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Jie Yang <yang.jie@linux.intel.com>,
+        Liam Girdwood <liam.r.girdwood@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>, Takashi Iwai <tiwai@suse.com>,
+        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 RESEND 0/2] Make headphone work on Huawei Matebook D15
+Date:   Tue,  5 Apr 2022 15:53:15 +0200
+Message-Id: <cover.1649166634.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: José Expósito <jose.exposito89@gmail.com>
+(resent, as the From/SoB at the patches were using my past e-mail. No changes here,
+except by having Hans ack and have the From/SoB fixed)
 
-[ Upstream commit ba3a5ddcf1e5df31f2291006d5297ca62035584f ]
+At Huawei Matebook D15 two different GPIOs are used to control the output:
+	- gpio0 controls the speaker output;
+	- gpio1 controls the headphone output.
 
-Avoid leaking the "out" variable if it is not possible to allocate
-the "txmsg" variable.
+Changing both at the same time cause spurious events that are mis-interpreted
+as input events, causing troubles on apps. So, a delay is needed before turning
+on such gpios.
 
-Fixes: 09234b88ef55 ("drm/selftests/test-drm_dp_mst_helper: Move 'sideband_msg_req_encode_decode' onto the heap")
-Addresses-Coverity-ID: 1475685 ("Resource leak")
-Signed-off-by: José Expósito <jose.exposito89@gmail.com>
-Signed-off-by: Daniel Vetter <daniel.vetter@ffwll.ch>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220108165812.46797-1-jose.exposito89@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/gpu/drm/selftests/test-drm_dp_mst_helper.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+With this patch, plugging a headphone causes a jack event to trigger the speaker
+supply, powering down the speaker and powering up the headphone output.
+Removing the headphone also triggers the power supply, powering up the speaker
+and powering down the headphone.
 
-diff --git a/drivers/gpu/drm/selftests/test-drm_dp_mst_helper.c b/drivers/gpu/drm/selftests/test-drm_dp_mst_helper.c
-index 6b4759ed6bfd..c491429f1a02 100644
---- a/drivers/gpu/drm/selftests/test-drm_dp_mst_helper.c
-+++ b/drivers/gpu/drm/selftests/test-drm_dp_mst_helper.c
-@@ -131,8 +131,10 @@ sideband_msg_req_encode_decode(struct drm_dp_sideband_msg_req_body *in)
- 		return false;
- 
- 	txmsg = kzalloc(sizeof(*txmsg), GFP_KERNEL);
--	if (!txmsg)
-+	if (!txmsg) {
-+		kfree(out);
- 		return false;
-+	}
- 
- 	drm_dp_encode_sideband_req(in, txmsg);
- 	ret = drm_dp_decode_sideband_req(txmsg, out);
+
+Mauro Carvalho Chehab (2):
+  ASoC: Intel: sof_es8336: support a separate gpio to control headphone
+  ASoC: Intel: sof_es8336: Huawei Matebook D15 uses a headphone gpio
+
+ sound/soc/intel/boards/sof_es8336.c | 68 ++++++++++++++++++++++++-----
+ 1 file changed, 58 insertions(+), 10 deletions(-)
+
 -- 
-2.34.1
-
+2.35.1
 
 
