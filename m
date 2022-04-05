@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D9F3C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33A00C4167B
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:39:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385068AbiDEMbG (ORCPT
+        id S1385092AbiDEMbP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:31:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59240 "EHLO
+        Tue, 5 Apr 2022 08:31:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343495AbiDEI44 (ORCPT
+        with ESMTP id S1343517AbiDEI45 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:56:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FDCE1CB06;
-        Tue,  5 Apr 2022 01:52:49 -0700 (PDT)
+        Tue, 5 Apr 2022 04:56:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B7DB1D302;
+        Tue,  5 Apr 2022 01:52:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B3122609D0;
-        Tue,  5 Apr 2022 08:52:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE77BC385A0;
-        Tue,  5 Apr 2022 08:52:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3DB0E61511;
+        Tue,  5 Apr 2022 08:52:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4714EC385A3;
+        Tue,  5 Apr 2022 08:52:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148768;
-        bh=RMDCIpgqoRMmnnuBwu/bpCkTKuBa8Q1wElxe8DXBVS0=;
+        s=korg; t=1649148773;
+        bh=QwLQUT2Jw7vwffeh6OOnj7GZe0N18ZdeXGnosRVYSSY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VDnhiI6fJBAdyITiKu6d/ovopCceed+TY3v+MO2Q9G8Fx0Rhzukcu3QbcYsAuwkjt
-         qzkF+Ow/YYUNhd9X2R1+StHWPvYtt5zLbEVIOS8mElfFHMWNy3/ssb/5rnUzBfK0GE
-         gtXMZo3IRtDTFCQbOznFXRpbfnrQ04xy0joQ5XCM=
+        b=ts2VnatClelLnyRPyS4W97wz8nrU98SbmwRRBg1HWLMBnFWwiWwEPyNxtjOdAklL2
+         foPZpQ1spRAeXRpM2j+QMSnNbg0V/ttnkwl1+MioJovdcVvZlu+sskG4dtRldCdC9M
+         31v/Vu1FxFQsmKgesprUeb32I1TFvV4MrKhDP1Jo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shannon Nelson <snelson@pensando.io>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0426/1017] ionic: fix up printing of timeout error
-Date:   Tue,  5 Apr 2022 09:22:19 +0200
-Message-Id: <20220405070406.937720244@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0477/1017] i2c: bcm2835: Fix the error handling in bcm2835_i2c_probe()
+Date:   Tue,  5 Apr 2022 09:23:10 +0200
+Message-Id: <20220405070408.457752129@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,41 +50,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shannon Nelson <snelson@pensando.io>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit 4cc787bd88be6974f3362fa49fd8c5609bd039b8 ]
+[ Upstream commit b205f5850263632b6897d8f0bfaeeea4955f8663 ]
 
-Make sure we print the TIMEOUT string if we had a timeout
-error, rather than printing the wrong status.
+Some resource should be released if an error occurs in
+'bcm2835_i2c_probe()'.
+Add an error handling path and the needed 'clk_disable_unprepare()' and
+'clk_rate_exclusive_put()' calls.
 
-Fixes: 8c9d956ab6fb ("ionic: allow adminq requests to override default error message")
-Signed-off-by: Shannon Nelson <snelson@pensando.io>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+While at it, rework the bottom of the function to use this newly added
+error handling path and have an explicit and more standard "return 0;" at
+the end of the normal path.
+
+Fixes: bebff81fb8b9 ("i2c: bcm2835: Model Divider in CCF")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+[wsa: rebased]
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/pensando/ionic/ionic_main.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/i2c/busses/i2c-bcm2835.c | 21 ++++++++++++++++-----
+ 1 file changed, 16 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_main.c b/drivers/net/ethernet/pensando/ionic/ionic_main.c
-index a548f2a01806..2e4294a4fa83 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_main.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_main.c
-@@ -215,9 +215,13 @@ static void ionic_adminq_flush(struct ionic_lif *lif)
- void ionic_adminq_netdev_err_print(struct ionic_lif *lif, u8 opcode,
- 				   u8 status, int err)
- {
-+	const char *stat_str;
-+
-+	stat_str = (err == -ETIMEDOUT) ? "TIMEOUT" :
-+					 ionic_error_to_str(status);
-+
- 	netdev_err(lif->netdev, "%s (%d) failed: %s (%d)\n",
--		   ionic_opcode_to_str(opcode), opcode,
--		   ionic_error_to_str(status), err);
-+		   ionic_opcode_to_str(opcode), opcode, stat_str, err);
- }
+diff --git a/drivers/i2c/busses/i2c-bcm2835.c b/drivers/i2c/busses/i2c-bcm2835.c
+index 5149454eef4a..f72c6576d8a3 100644
+--- a/drivers/i2c/busses/i2c-bcm2835.c
++++ b/drivers/i2c/busses/i2c-bcm2835.c
+@@ -454,18 +454,20 @@ static int bcm2835_i2c_probe(struct platform_device *pdev)
+ 	ret = clk_prepare_enable(i2c_dev->bus_clk);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "Couldn't prepare clock");
+-		return ret;
++		goto err_put_exclusive_rate;
+ 	}
  
- static int ionic_adminq_check_err(struct ionic_lif *lif,
+ 	i2c_dev->irq = platform_get_irq(pdev, 0);
+-	if (i2c_dev->irq < 0)
+-		return i2c_dev->irq;
++	if (i2c_dev->irq < 0) {
++		ret = i2c_dev->irq;
++		goto err_disable_unprepare_clk;
++	}
+ 
+ 	ret = request_irq(i2c_dev->irq, bcm2835_i2c_isr, IRQF_SHARED,
+ 			  dev_name(&pdev->dev), i2c_dev);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "Could not request IRQ\n");
+-		return -ENODEV;
++		goto err_disable_unprepare_clk;
+ 	}
+ 
+ 	adap = &i2c_dev->adapter;
+@@ -489,7 +491,16 @@ static int bcm2835_i2c_probe(struct platform_device *pdev)
+ 
+ 	ret = i2c_add_adapter(adap);
+ 	if (ret)
+-		free_irq(i2c_dev->irq, i2c_dev);
++		goto err_free_irq;
++
++	return 0;
++
++err_free_irq:
++	free_irq(i2c_dev->irq, i2c_dev);
++err_disable_unprepare_clk:
++	clk_disable_unprepare(i2c_dev->bus_clk);
++err_put_exclusive_rate:
++	clk_rate_exclusive_put(i2c_dev->bus_clk);
+ 
+ 	return ret;
+ }
 -- 
 2.34.1
 
