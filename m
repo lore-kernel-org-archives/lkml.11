@@ -2,46 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA714C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:16:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FD40C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:16:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352605AbiDELL5 (ORCPT
+        id S1352680AbiDELMP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:11:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48158 "EHLO
+        Tue, 5 Apr 2022 07:12:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239020AbiDEIoa (ORCPT
+        with ESMTP id S238393AbiDEIad (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:44:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FDC6201A7;
-        Tue,  5 Apr 2022 01:36:01 -0700 (PDT)
+        Tue, 5 Apr 2022 04:30:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95AD826AD8;
+        Tue,  5 Apr 2022 01:22:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9DE22B81A32;
-        Tue,  5 Apr 2022 08:35:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00FB6C385A2;
-        Tue,  5 Apr 2022 08:35:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C1196147A;
+        Tue,  5 Apr 2022 08:22:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99FF0C385A0;
+        Tue,  5 Apr 2022 08:22:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147758;
-        bh=fHq6yezaEyDiwaMdcaDnIeQNeAFcl0kVKFCgE+Qc/VU=;
+        s=korg; t=1649146933;
+        bh=ESR58k0+i9Fcq2CL1NwXMkUZoliC3eLirvD6WS7Nz4E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fy3bGpCSwjxHbX9FwFlqyqXgdEGAaARkzXAzDKPCNG+vIV7dMQk8RjhgFrmZWuPlz
-         Oyh/c1+i1+IOxojFm6uHtc8WF2HwrDmH6VVFumsr8KtJxEQ/jOTW5jIwVKE91+3U4n
-         H0tLMQeFa9GhT8i9DOmpKcb2Cc6909lzMpZ1FpQ0=
+        b=Ft1Cw6gSUjcbwiwigUvbl+bWS85c/KZj2e1mXgR8AB60I+KdGPfXNOp0X8bhTvFzu
+         2tAMnz2QRmlTYrFTm8jgZEKGxOFyskk2WMjPwqOlPEj7FlT3IPsHoZyxBd91PxS1S/
+         Zm1qtTT1Ovt6m9uI3GWqw9sJRud66KGI86na/++4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ali Pouladi <quic_apouladi@quicinc.com>,
-        Elliot Berman <quic_eberman@quicinc.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Subject: [PATCH 5.16 0109/1017] rtc: pl031: fix rtc features null pointer dereference
-Date:   Tue,  5 Apr 2022 09:17:02 +0200
-Message-Id: <20220405070357.432300746@linuxfoundation.org>
+        stable@vger.kernel.org, Nikolai Kostrigin <nickel@altlinux.org>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        =?UTF-8?q?P=C3=A9ter=20Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
+        Takashi Iwai <tiwai@suse.de>, Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0941/1126] ALSA: intel-dspconfig: add ES8336 support for CNL
+Date:   Tue,  5 Apr 2022 09:28:08 +0200
+Message-Id: <20220405070435.130867577@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
-References: <20220405070354.155796697@linuxfoundation.org>
+In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
+References: <20220405070407.513532867@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,49 +53,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ali Pouladi <quic_apouladi@quicinc.com>
+From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 
-commit ea6af39f3da50c86367a71eb3cc674ade3ed244c upstream.
+[ Upstream commit cded07a2dccd5493696a3adce175f01e413423c6 ]
 
-When there is no interrupt line, rtc alarm feature is disabled.
+We're missing this check for the CNL PCI id
 
-The clearing of the alarm feature bit was being done prior to allocations
-of ldata->rtc device, resulting in a null pointer dereference.
-
-Clear RTC_FEATURE_ALARM after the rtc device is allocated.
-
-Fixes: d9b0dd54a194 ("rtc: pl031: use RTC_FEATURE_ALARM")
-Cc: stable@vger.kernel.org
-Signed-off-by: Ali Pouladi <quic_apouladi@quicinc.com>
-Signed-off-by: Elliot Berman <quic_eberman@quicinc.com>
-Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Link: https://lore.kernel.org/r/20220225161924.274141-1-quic_eberman@quicinc.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Nikolai Kostrigin <nickel@altlinux.org>
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Acked-by: Takashi Iwai <tiwai@suse.de>
+Link: https://lore.kernel.org/r/20220308192610.392950-10-pierre-louis.bossart@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/rtc/rtc-pl031.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ sound/hda/intel-dsp-config.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
---- a/drivers/rtc/rtc-pl031.c
-+++ b/drivers/rtc/rtc-pl031.c
-@@ -350,9 +350,6 @@ static int pl031_probe(struct amba_devic
+diff --git a/sound/hda/intel-dsp-config.c b/sound/hda/intel-dsp-config.c
+index b9b7bf5a5553..70fd8b13938e 100644
+--- a/sound/hda/intel-dsp-config.c
++++ b/sound/hda/intel-dsp-config.c
+@@ -199,6 +199,11 @@ static const struct config_entry config_table[] = {
+ 			{}
  		}
- 	}
- 
--	if (!adev->irq[0])
--		clear_bit(RTC_FEATURE_ALARM, ldata->rtc->features);
--
- 	device_init_wakeup(&adev->dev, true);
- 	ldata->rtc = devm_rtc_allocate_device(&adev->dev);
- 	if (IS_ERR(ldata->rtc)) {
-@@ -360,6 +357,9 @@ static int pl031_probe(struct amba_devic
- 		goto out;
- 	}
- 
-+	if (!adev->irq[0])
-+		clear_bit(RTC_FEATURE_ALARM, ldata->rtc->features);
-+
- 	ldata->rtc->ops = ops;
- 	ldata->rtc->range_min = vendor->range_min;
- 	ldata->rtc->range_max = vendor->range_max;
+ 	},
++	{
++		.flags = FLAG_SOF,
++		.device = 0x09dc8,
++		.codec_hid =  &essx_83x6,
++	},
+ 	{
+ 		.flags = FLAG_SOF | FLAG_SOF_ONLY_IF_DMIC_OR_SOUNDWIRE,
+ 		.device = 0x9dc8,
+-- 
+2.34.1
+
 
 
