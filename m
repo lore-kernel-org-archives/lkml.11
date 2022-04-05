@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0422C35296
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFFA1C35295
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:20:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382566AbiDEPOe (ORCPT
+        id S1383039AbiDEPOi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:14:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39330 "EHLO
+        Tue, 5 Apr 2022 11:14:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346599AbiDEJpM (ORCPT
+        with ESMTP id S1346585AbiDEJpM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 05:45:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F768DC9;
-        Tue,  5 Apr 2022 02:31:07 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1077CDAFD8;
+        Tue,  5 Apr 2022 02:31:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A733AB81C9A;
-        Tue,  5 Apr 2022 09:31:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AE22C385A3;
-        Tue,  5 Apr 2022 09:31:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 640DA6165C;
+        Tue,  5 Apr 2022 09:31:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CB4CC385A2;
+        Tue,  5 Apr 2022 09:31:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151064;
-        bh=4SVC2Nxylfe4tkCpqrTVQRdzAUldIPjWomgZW9cYs7s=;
+        s=korg; t=1649151061;
+        bh=IsYGMWcOLC2kDDO8OFJfhbKJ+skf8w8cVCluqFXU9Jw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vjwBODDDc3pVmJdbekJLWMGfkn8L3BgM8hyHiv4zRF0yWIb3Gm4slv0QibBKegcoP
-         l3ReFVSopxxkAaW1Ffy50CaHbm8xlmxS1g1lmgZ5jAvSzK0DV1ygq8XN3eZW95zr7J
-         kYv5rvXK3iuLea8Im4PqT3fKtVHjLey3tSbVwpqw=
+        b=BCa4LjXIhrR7Vc5D616cBa/5a1nuTo9LXGIdE/u7hiPIuR/0G5XTi2tb3ZB3nUNgm
+         Kszeg7VUoUnw4upXQQXafrN7068FUz/Wqoz4lLZ5eENxbNXbEnoLC93vQqf684fqsp
+         7wdCU/HnDQ+rN8Qt+Jn7xQ4F82W4qCMI3mkYT+KQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
-        Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>,
         Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 280/913] ASoC: simple-card-utils: Set sysclk on all components
-Date:   Tue,  5 Apr 2022 09:22:22 +0200
-Message-Id: <20220405070348.250345298@linuxfoundation.org>
+Subject: [PATCH 5.15 279/913] ASoC: xilinx: xlnx_formatter_pcm: Handle sysclk setting
+Date:   Tue,  5 Apr 2022 09:22:21 +0200
+Message-Id: <20220405070348.220728833@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -53,74 +52,88 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Robert Hancock <robert.hancock@calian.com>
 
-[ Upstream commit ce2f7b8d4290c22e462e465d1da38a1c113ae66a ]
+[ Upstream commit 1c5091fbe7e0d0804158200b7feac5123f7b4fbd ]
 
-If an mclk-fs value was provided in the device tree configuration, the
-calculated MCLK was fed into the downstream codec DAI and CPU DAI,
-however set_sysclk was not being called on the platform device. Some
-platform devices such as the Xilinx Audio Formatter need to know the MCLK
-as well.
+This driver did not set the MM2S Fs Multiplier Register to the proper
+value for playback streams. This needs to be set to the sample rate to
+MCLK multiplier, or random stream underflows can occur on the downstream
+I2S transmitter.
 
-Call snd_soc_component_set_sysclk on each component in the stream to set
-the proper sysclk value in addition to the existing call of
-snd_soc_dai_set_sysclk on the codec DAI and CPU DAI. This may end up
-resulting in redundant calls if one of the snd_soc_dai_set_sysclk calls
-ends up calling snd_soc_component_set_sysclk itself, but that isn't
-expected to cause any significant harm.
+Store the sysclk value provided via the set_sysclk callback and use that
+in conjunction with the sample rate in the hw_params callback to calculate
+the proper value to set for this register.
 
-Fixes: f48dcbb6d47d ("ASoC: simple-card-utils: share asoc_simple_hw_param()")
+Fixes: 6f6c3c36f091 ("ASoC: xlnx: add pcm formatter platform driver")
 Signed-off-by: Robert Hancock <robert.hancock@calian.com>
-Reviewed-by: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
-Link: https://lore.kernel.org/r/20220120195832.1742271-5-robert.hancock@calian.com
+Link: https://lore.kernel.org/r/20220120195832.1742271-2-robert.hancock@calian.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/generic/simple-card-utils.c | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+ sound/soc/xilinx/xlnx_formatter_pcm.c | 25 +++++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
 
-diff --git a/sound/soc/generic/simple-card-utils.c b/sound/soc/generic/simple-card-utils.c
-index 10c63b73900c..ffda8a38de3e 100644
---- a/sound/soc/generic/simple-card-utils.c
-+++ b/sound/soc/generic/simple-card-utils.c
-@@ -275,6 +275,7 @@ int asoc_simple_hw_params(struct snd_pcm_substream *substream,
- 		mclk_fs = props->mclk_fs;
+diff --git a/sound/soc/xilinx/xlnx_formatter_pcm.c b/sound/soc/xilinx/xlnx_formatter_pcm.c
+index ce19a6058b27..5c4158069a5a 100644
+--- a/sound/soc/xilinx/xlnx_formatter_pcm.c
++++ b/sound/soc/xilinx/xlnx_formatter_pcm.c
+@@ -84,6 +84,7 @@ struct xlnx_pcm_drv_data {
+ 	struct snd_pcm_substream *play_stream;
+ 	struct snd_pcm_substream *capture_stream;
+ 	struct clk *axi_clk;
++	unsigned int sysclk;
+ };
  
- 	if (mclk_fs) {
-+		struct snd_soc_component *component;
- 		mclk = params_rate(params) * mclk_fs;
+ /*
+@@ -314,6 +315,15 @@ static irqreturn_t xlnx_s2mm_irq_handler(int irq, void *arg)
+ 	return IRQ_NONE;
+ }
  
- 		for_each_prop_dai_codec(props, i, pdai) {
-@@ -282,16 +283,30 @@ int asoc_simple_hw_params(struct snd_pcm_substream *substream,
- 			if (ret < 0)
- 				return ret;
- 		}
++static int xlnx_formatter_set_sysclk(struct snd_soc_component *component,
++				     int clk_id, int source, unsigned int freq, int dir)
++{
++	struct xlnx_pcm_drv_data *adata = dev_get_drvdata(component->dev);
 +
- 		for_each_prop_dai_cpu(props, i, pdai) {
- 			ret = asoc_simple_set_clk_rate(pdai, mclk);
- 			if (ret < 0)
- 				return ret;
- 		}
++	adata->sysclk = freq;
++	return 0;
++}
 +
-+		/* Ensure sysclk is set on all components in case any
-+		 * (such as platform components) are missed by calls to
-+		 * snd_soc_dai_set_sysclk.
-+		 */
-+		for_each_rtd_components(rtd, i, component) {
-+			ret = snd_soc_component_set_sysclk(component, 0, 0,
-+							   mclk, SND_SOC_CLOCK_IN);
-+			if (ret && ret != -ENOTSUPP)
-+				return ret;
+ static int xlnx_formatter_pcm_open(struct snd_soc_component *component,
+ 				   struct snd_pcm_substream *substream)
+ {
+@@ -450,11 +460,25 @@ static int xlnx_formatter_pcm_hw_params(struct snd_soc_component *component,
+ 	u64 size;
+ 	struct snd_pcm_runtime *runtime = substream->runtime;
+ 	struct xlnx_pcm_stream_param *stream_data = runtime->private_data;
++	struct xlnx_pcm_drv_data *adata = dev_get_drvdata(component->dev);
+ 
+ 	active_ch = params_channels(params);
+ 	if (active_ch > stream_data->ch_limit)
+ 		return -EINVAL;
+ 
++	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK &&
++	    adata->sysclk) {
++		unsigned int mclk_fs = adata->sysclk / params_rate(params);
++
++		if (adata->sysclk % params_rate(params) != 0) {
++			dev_warn(component->dev, "sysclk %u not divisible by rate %u\n",
++				 adata->sysclk, params_rate(params));
++			return -EINVAL;
 +		}
 +
- 		for_each_rtd_codec_dais(rtd, i, sdai) {
- 			ret = snd_soc_dai_set_sysclk(sdai, 0, mclk, SND_SOC_CLOCK_IN);
- 			if (ret && ret != -ENOTSUPP)
- 				return ret;
- 		}
++		writel(mclk_fs, stream_data->mmio + XLNX_AUD_FS_MULTIPLIER);
++	}
 +
- 		for_each_rtd_cpu_dais(rtd, i, sdai) {
- 			ret = snd_soc_dai_set_sysclk(sdai, 0, mclk, SND_SOC_CLOCK_OUT);
- 			if (ret && ret != -ENOTSUPP)
+ 	if (substream->stream == SNDRV_PCM_STREAM_CAPTURE &&
+ 	    stream_data->xfer_mode == AES_TO_PCM) {
+ 		val = readl(stream_data->mmio + XLNX_AUD_STS);
+@@ -552,6 +576,7 @@ static int xlnx_formatter_pcm_new(struct snd_soc_component *component,
+ 
+ static const struct snd_soc_component_driver xlnx_asoc_component = {
+ 	.name		= DRV_NAME,
++	.set_sysclk	= xlnx_formatter_set_sysclk,
+ 	.open		= xlnx_formatter_pcm_open,
+ 	.close		= xlnx_formatter_pcm_close,
+ 	.hw_params	= xlnx_formatter_pcm_hw_params,
 -- 
 2.34.1
 
