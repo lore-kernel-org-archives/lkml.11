@@ -2,119 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F7E8C3527A
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:22:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1573DC35280
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:22:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1587717AbiDFAKM (ORCPT
+        id S1587846AbiDFAKf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:10:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43080 "EHLO
+        Tue, 5 Apr 2022 20:10:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349465AbiDEJtz (ORCPT
+        with ESMTP id S1573695AbiDETla (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85F96659A;
-        Tue,  5 Apr 2022 02:46:42 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3074FB81B14;
-        Tue,  5 Apr 2022 09:46:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8398BC385A2;
-        Tue,  5 Apr 2022 09:46:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151999;
-        bh=5dFCK/bwE+X+xrItH9sMlwXXPJaUtIAhj7mXcM9iEas=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YQROW5FSMhGfRWopfHZGXP1eSW6M+IUo18qRZt8LJrUpH+kJJbudsiP+JDHNskGwJ
-         0qiEZruM5kYU7v9JsKhoBf7qmp77hQ4+qLYcVBsmXdMxbQ8qYnCMfIQA6dFLO2l63o
-         wrzS91DqcQT6ZOXoZMKRUGiGIFRaLgFty0TJKMLU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Joel Stanley <joel@jms.id.au>,
-        Eddie James <eajames@linux.ibm.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 580/913] fsi: scom: Fix error handling
-Date:   Tue,  5 Apr 2022 09:27:22 +0200
-Message-Id: <20220405070357.230944920@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 15:41:30 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C046208;
+        Tue,  5 Apr 2022 12:39:30 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: adalessandro)
+        with ESMTPSA id 1EB511F4370D
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1649187569;
+        bh=/s6fZDVbpiIQW0S5UO2G1RWfpbsAjuqB16uALNiR7fA=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=du7y76Mrgs9fzjL6kCL5pOm6CipJjs1QamPYv1VvPMSWG91LVSDu1RxdfWBh6lZPg
+         +JGG/hCKtjAEKHkndXb3mOeTS33Xm53CSSlkRW355R9tGA7mUS7EQqKjc7cAaj5Kea
+         HSxDfF4SMeP3vJ6Bt/9Ap2xsNhDHtmayvmHu7wnzVfu9vcLM6gPvdnVbY3JTkkcZzZ
+         yS2ib2WEBNIRVpbXFfho7OvHdDDTTacxJLJ3byL5utZtnzqhYboqXajagIfyD/MWTu
+         08J2P3HZ36pAqXCQvIeD/UYFPHTEOdagRPIY/mnP5S1pU+e4h13Fsnu0n2z5b1sCCH
+         OdOslyJaw4/6g==
+Message-ID: <9887dc0c-c2e0-868c-55e3-32083f820e09@collabora.com>
+Date:   Tue, 5 Apr 2022 16:39:16 -0300
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH v4] arm64: dts: imx8mn-bsh-smm-s2pro: Add tlv320aic31xx
+ audio card node
+Content-Language: en-US
+To:     Fabio Estevam <festevam@gmail.com>, Shawn Guo <shawnguo@kernel.org>
+Cc:     Linux-ALSA <alsa-devel@alsa-project.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, Sascha Hauer <kernel@pengutronix.de>,
+        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Mark Brown <broonie@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Michael Trimarchi <michael@amarulasolutions.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>
+References: <20220323135601.42435-1-ariel.dalessandro@collabora.com>
+ <CAOMZO5D4_WboF4S0dgSLD1m15a13c2irK2yjDV4C77_Wb15=2w@mail.gmail.com>
+ <d9f14221-b0ad-9853-e9c8-a35d9111549b@collabora.com>
+ <3e3b223f-7d05-f439-625a-a15afb44b95f@collabora.com>
+ <CAOMZO5D8UHkkyJE9uJ4yBmf+ajjbzJOrLM57OHpyAiATvMNXcw@mail.gmail.com>
+From:   Ariel D'Alessandro <ariel.dalessandro@collabora.com>
+In-Reply-To: <CAOMZO5D8UHkkyJE9uJ4yBmf+ajjbzJOrLM57OHpyAiATvMNXcw@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joel Stanley <joel@jms.id.au>
+Hi Shawn,
 
-[ Upstream commit d46fddd52d11eb6a3a7ed836f9f273e9cf8cd01c ]
+Gentle ping :-)
 
-SCOM error handling is made complex by trying to pass around two bits of
-information: the function return code, and a status parameter that
-represents the CFAM error status register.
-
-The commit f72ddbe1d7b7 ("fsi: scom: Remove retries") removed the
-"hidden" retries in the SCOM driver, in preference of allowing the
-calling code (userspace or driver) to decide how to handle a failed
-SCOM. However it introduced a bug by attempting to be smart about the
-return codes that were "errors" and which were ok to fall through to the
-status register parsing.
-
-We get the following errors:
-
- - EINVAL or ENXIO, for indirect scoms where the value is invalid
- - EINVAL, where the size or address is incorrect
- - EIO or ETIMEOUT, where FSI write failed (aspeed master)
- - EAGAIN, where the master detected a crc error (GPIO master only)
- - EBUSY, where the bus is disabled (GPIO master in external mode)
-
-In all of these cases we should fail the SCOM read/write and return the
-error.
-
-Thanks to Dan Carpenter for the detailed bug report.
-
-Fixes: f72ddbe1d7b7 ("fsi: scom: Remove retries")
-Link: https://lists.ozlabs.org/pipermail/linux-fsi/2021-November/000235.html
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Joel Stanley <joel@jms.id.au>
-Reviewed-by: Eddie James <eajames@linux.ibm.com>
-Link: https://lore.kernel.org/r/20211207033811.518981-2-joel@jms.id.au
-Signed-off-by: Joel Stanley <joel@jms.id.au>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/fsi/fsi-scom.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/fsi/fsi-scom.c b/drivers/fsi/fsi-scom.c
-index da1486bb6a14..3b427f7e9027 100644
---- a/drivers/fsi/fsi-scom.c
-+++ b/drivers/fsi/fsi-scom.c
-@@ -289,7 +289,7 @@ static int put_scom(struct scom_device *scom, uint64_t value,
- 	int rc;
- 
- 	rc = raw_put_scom(scom, value, addr, &status);
--	if (rc == -ENODEV)
-+	if (rc)
- 		return rc;
- 
- 	rc = handle_fsi2pib_status(scom, status);
-@@ -308,7 +308,7 @@ static int get_scom(struct scom_device *scom, uint64_t *value,
- 	int rc;
- 
- 	rc = raw_get_scom(scom, value, addr, &status);
--	if (rc == -ENODEV)
-+	if (rc)
- 		return rc;
- 
- 	rc = handle_fsi2pib_status(scom, status);
--- 
-2.34.1
-
-
-
+On 3/31/22 10:48, Fabio Estevam wrote:
+> Hi Ariel,
+> 
+> On Thu, Mar 31, 2022 at 10:35 AM Ariel D'Alessandro
+> <ariel.dalessandro@collabora.com> wrote:
+>>
+>> Hi Fabio, Shawn,
+>>
+>> Can we merge this please?
+> 
+> Shawn will probably start picking the patches for the next cycle after
+> 5.18-rc1 is released.
