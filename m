@@ -2,128 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8C08C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:42:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21485C43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:42:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1578801AbiDEXZB (ORCPT
+        id S1578884AbiDEXZO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:25:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45084 "EHLO
+        Tue, 5 Apr 2022 19:25:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457506AbiDEQDT (ORCPT
+        with ESMTP id S1350035AbiDEJwX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:03:19 -0400
-Received: from smtp-bc08.mail.infomaniak.ch (smtp-bc08.mail.infomaniak.ch [45.157.188.8])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C9B825292
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 08:55:36 -0700 (PDT)
-Received: from smtp-2-0000.mail.infomaniak.ch (unknown [10.5.36.107])
-        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4KXsgB4M82zMq0sP;
-        Tue,  5 Apr 2022 17:55:34 +0200 (CEST)
-Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
-        by smtp-2-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4KXsg91X3NzlhSMT;
-        Tue,  5 Apr 2022 17:55:33 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
-        s=20191114; t=1649174134;
-        bh=n8eScuGwrUyyZSJgvZ6lVdoUOYD/v6TfS3yMx/Udtks=;
-        h=Date:To:Cc:References:From:Subject:In-Reply-To:From;
-        b=JnDSENf16eneR0rB24qn+a2KSFPCjzI4EXohLg+3kAT8m4AC3+MfQVCKykfm6TKH2
-         MCz+01LQ4oBu62PsNO8nwK1T+DFOsDvhCKaFTkZKM9hj4PFy4VmKOnL/ryJ8yuTY6R
-         irEn/3AiFzY58nJOspTOKxoSr9FMCyracTvvgYF8=
-Message-ID: <673bfc0f-7263-9404-3d88-6cc0ae1a1ae1@digikod.net>
-Date:   Tue, 5 Apr 2022 17:55:58 +0200
+        Tue, 5 Apr 2022 05:52:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CBBD393F8;
+        Tue,  5 Apr 2022 02:50:25 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DD3DD615E3;
+        Tue,  5 Apr 2022 09:50:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF834C385A2;
+        Tue,  5 Apr 2022 09:50:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152224;
+        bh=K5Crn6yXtLbwhyzjB+6a+anwNgGjHY/VMwKVfElBrEs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=u1OER+6z32eY28u/lzALq7HMlyBqSsOHL56EZJPqOZMnbW7VJ0PmGil3GsTjTbQ1Z
+         Cs+Ncs+mKi9NLp0AOp75pkFpThgDzlDJLJmIuvamfUHFonzgHrmSrxL5hHvCbt76Ik
+         uAJ4unIPKH2x6LbTZjTKd9bLyCkHF6PbTjKB5od4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        "Souptick Joarder (HPE)" <jrdr.linux@gmail.com>,
+        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 698/913] irqchip/nvic: Release nvic_base upon failure
+Date:   Tue,  5 Apr 2022 09:29:20 +0200
+Message-Id: <20220405070400.756875352@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: 
-Content-Language: en-US
-To:     Kees Cook <keescook@chromium.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Al Viro <viro@zeniv.linux.org.uk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Christian Heimes <christian@python.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        James Morris <jmorris@namei.org>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        Muhammad Usama Anjum <usama.anjum@collabora.com>,
-        Paul Moore <paul@paul-moore.com>,
-        =?UTF-8?Q?Philippe_Tr=c3=a9buchet?= 
-        <philippe.trebuchet@ssi.gouv.fr>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Steve Dower <steve.dower@python.org>,
-        Thibaut Sautereau <thibaut.sautereau@ssi.gouv.fr>,
-        Vincent Strubel <vincent.strubel@ssi.gouv.fr>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        linux-integrity <linux-integrity@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        LSM List <linux-security-module@vger.kernel.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Theodore Ts'o <tytso@mit.edu>
-References: <20220321161557.495388-1-mic@digikod.net>
- <202204041130.F649632@keescook>
- <CAHk-=wgoC76v-4s0xVr1Xvnx-8xZ8M+LWgyq5qGLA5UBimEXtQ@mail.gmail.com>
- <816667d8-2a6c-6334-94a4-6127699d4144@digikod.net>
- <CAHk-=wjPuRi5uYs9SuQ2Xn+8+RnhoKgjPEwNm42+AGKDrjTU5g@mail.gmail.com>
- <202204041451.CC4F6BF@keescook>
-From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-Subject: Re: [GIT PULL] Add trusted_for(2) (was O_MAYEXEC)
-In-Reply-To: <202204041451.CC4F6BF@keescook>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Souptick Joarder (HPE) <jrdr.linux@gmail.com>
 
-On 05/04/2022 00:25, Kees Cook wrote:
-> On Mon, Apr 04, 2022 at 02:28:19PM -0700, Linus Torvalds wrote:
->> Now, what I *think* you mean is
->>
->>   (1) user-space executable loaders want to be able to test the *same*
->> policy as the kernel does for execve()
-> 
-> Right. The script interpreter wants to ask "if this file were actually
-> an ELF going through execve(), would the kernel allow it?"
+[ Upstream commit e414c25e3399b2b3d7337dc47abccab5c71b7c8f ]
 
-The current behavior was a bit more flexible thanks to the sysctl. It 
-was either the mount exec option check, the file perm check or both. The 
-rationale is to let sysadmins adapt their system to existing 
-applications/interpreters without breaking. Only basing the check on 
-mount exec and file perm could be an issue in the short term, but I 
-guess it would deter inconsistencies in existing systems… I'm not sure 
-it is a wise move because if no interpreter want to use this check it 
-would then be useless. See commit message in 
-https://lore.kernel.org/all/20220104155024.48023-3-mic@digikod.net/ and 
-the trusted_for_policy sysctl documentation:
+smatch warning was reported as below ->
 
-"Even without enforced security policy, user space interpreters can use
-this syscall to try as much as possible to enforce the system policy at
-their level, knowing that it will not break anything on running systems
-which do not care about this feature.  However, on systems which want
-this feature enforced, there will be knowledgeable people (i.e. system
-administrator who configured fs.trusted_for_policy deliberately) to
-manage it. [...]"
+smatch warnings:
+drivers/irqchip/irq-nvic.c:131 nvic_of_init()
+warn: 'nvic_base' not released on lines: 97.
+
+Release nvic_base upon failure.
+
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Souptick Joarder (HPE) <jrdr.linux@gmail.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220218163303.33344-1-jrdr.linux@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/irqchip/irq-nvic.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/irqchip/irq-nvic.c b/drivers/irqchip/irq-nvic.c
+index 599bb6fc5f0a..47b3b165479e 100644
+--- a/drivers/irqchip/irq-nvic.c
++++ b/drivers/irqchip/irq-nvic.c
+@@ -92,6 +92,7 @@ static int __init nvic_of_init(struct device_node *node,
+ 
+ 	if (!nvic_irq_domain) {
+ 		pr_warn("Failed to allocate irq domain\n");
++		iounmap(nvic_base);
+ 		return -ENOMEM;
+ 	}
+ 
+@@ -101,6 +102,7 @@ static int __init nvic_of_init(struct device_node *node,
+ 	if (ret) {
+ 		pr_warn("Failed to allocate irq chips\n");
+ 		irq_domain_remove(nvic_irq_domain);
++		iounmap(nvic_base);
+ 		return ret;
+ 	}
+ 
+-- 
+2.34.1
 
 
-> 
->>   (2) access(path, EXECVE_OK) will do the same permission checks as
->> "execve()" would do for that path
-> 
-> Maybe. I defer to Mickaël here, but my instinct is to avoid creating an
-> API that can be accidentally misused. I'd like this to be fd-only based,
-> since that removes path name races. (e.g. trusted_for() required an fd.)
 
-The fd-based approach is definitely better from a security point of view 
-but there is indeed a use case for pathnames. I guess we could highlight 
-this point in the documentation.
-
-> 
->>   (3) if you already have the fd open, use "faccess(fd, NULL,
->> F_OK_TO_EXECUTE, AT_EMPTY_PATH)"
-> 
-> Yes, specifically faccessat2(). (And continuing the race thought above,
-> yes, there could still be races if the content of the file could be
-> changed, but that case is less problematic under real-world conditions.)
-
-I'm not worried about changes in the file once it is opened. This could 
-be an issue but not in the kernel (e.g. flaky update system).
-
-[...]
