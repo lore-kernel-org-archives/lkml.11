@@ -2,227 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB2D1C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BA9FC4332F
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:21:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1584139AbiDEX54 (ORCPT
+        id S1584008AbiDEX5t (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:57:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41420 "EHLO
+        Tue, 5 Apr 2022 19:57:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442202AbiDEPhI (ORCPT
+        with ESMTP id S1457650AbiDEQZS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:37:08 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0D5BF1EA7;
-        Tue,  5 Apr 2022 06:51:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649166684; x=1680702684;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=hMIn10jdMOZ3d+zm3mh/P4foFQUZ8FiHKOHW1rBiQyk=;
-  b=KjFLfrB70J1Uc7rMVAQpTc0ojUYjsennUg7P6N9rjiPtJleyoig263ug
-   w8w4Y8x5uuz1NoosSqb2az12PsGe23OYYmP20MVv3fdgdXp2lXgmL2isu
-   YkBN69zLICYLEW4qkx1JT1gErd6PSpq37O0ATFLUEgJwUDA2AzE43I0m1
-   Y=;
-Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 05 Apr 2022 06:51:24 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 06:51:23 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 5 Apr 2022 06:51:23 -0700
-Received: from c-skakit-linux.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 5 Apr 2022 06:51:19 -0700
-From:   Satya Priya <quic_c_skakit@quicinc.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>
-CC:     Lee Jones <lee.jones@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
-        <quic_collinsd@quicinc.com>, <quic_subbaram@quicinc.com>,
-        <quic_jprakash@quicinc.com>,
-        Satya Priya <quic_c_skakit@quicinc.com>
-Subject: [PATCH V9 3/6] mfd: pm8008: Add mfd cell struct to register LDOs
-Date:   Tue, 5 Apr 2022 19:20:30 +0530
-Message-ID: <1649166633-25872-4-git-send-email-quic_c_skakit@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1649166633-25872-1-git-send-email-quic_c_skakit@quicinc.com>
-References: <1649166633-25872-1-git-send-email-quic_c_skakit@quicinc.com>
+        Tue, 5 Apr 2022 12:25:18 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E6FFFBBE2E
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 09:23:18 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id AB32C23A;
+        Tue,  5 Apr 2022 09:23:18 -0700 (PDT)
+Received: from FVFF77S0Q05N (unknown [10.57.8.234])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0B3C23F718;
+        Tue,  5 Apr 2022 09:23:16 -0700 (PDT)
+Date:   Tue, 5 Apr 2022 17:23:13 +0100
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     Sami Tolvanen <samitolvanen@google.com>
+Cc:     Kees Cook <keescook@chromium.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Will Deacon <will@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev
+Subject: Re: [PATCH 3/3] arm64: Drop the inline assembly implementation of
+ function_nocfi
+Message-ID: <Ykxs8YmNBtst8DM5@FVFF77S0Q05N>
+References: <20220401201916.1487500-1-samitolvanen@google.com>
+ <20220401201916.1487500-4-samitolvanen@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220401201916.1487500-4-samitolvanen@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add mfd cell struct to match with the "qcom,pm8008-regulator"
-driver and a separate probe to add pm8008_regulator_devs.
-This separate probe is required to ensure the regulators are
-registered only with the mfd device which contains regulators.
+On Fri, Apr 01, 2022 at 01:19:16PM -0700, Sami Tolvanen wrote:
+> Drop the inline assembly version of function_nocfi() now that
+> CONFIG_CFI_CLANG depends on __builtin_function_start(), which allows
+> this macro to be implemented more cleanly and in a way that works also
+> with static initializers.
+> 
+> Signed-off-by: Sami Tolvanen <samitolvanen@google.com>
+> ---
+>  arch/arm64/include/asm/compiler.h | 16 ----------------
+>  1 file changed, 16 deletions(-)
 
-Add the reset-gpio toggling in the pm8008_probe() to bring
-pm8008 chip out of reset instead of doing it in DT node using
-"output-high" property.
+It's very nice to see the asm go here!
 
-Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
----
-Changes in V6:
- - Changed the mfd_cell struct to have only name of the regulator driver.
- - Using device_get_match_data() instead of of_match_node() to match data.
- - Fixed few nits.
+I grabbed the LLVM 14.0.0 binary release from llvm.org and gave this a spin. I
+tested with ThinLTO and CFI_CLANG, and verified that CPU hotplug and ftrace
+worked as expected (given those rely on function_nocfi()), and that the LKDTM
+CFI_FORWARD_PROTO caught the mismatched prototype as expected.
 
-Changes in V7:
- - Fixed minor errors.
+FWIW:
 
-Changes in V8:
- - Split the probe for infra and regulator devices
- - Add the reset-gpio toggling in the infra driver probe
+Reviewed-by: Mark Rutland <mark.rutland@arm.com>
+Tested-by: Mark Rutland <mark.rutland@arm.com>
 
-Changes in V9:
- - Fixed nits.
+As noted on patch 2 I think we should squash the series together, but those
+tags apply either way.
 
- drivers/mfd/qcom-pm8008.c | 80 +++++++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 78 insertions(+), 2 deletions(-)
+Thanks,
+Mark.
 
-diff --git a/drivers/mfd/qcom-pm8008.c b/drivers/mfd/qcom-pm8008.c
-index c472d7f..c7781ab 100644
---- a/drivers/mfd/qcom-pm8008.c
-+++ b/drivers/mfd/qcom-pm8008.c
-@@ -4,10 +4,12 @@
-  */
- 
- #include <linux/bitops.h>
-+#include <linux/gpio/consumer.h>
- #include <linux/i2c.h>
- #include <linux/interrupt.h>
- #include <linux/irq.h>
- #include <linux/irqdomain.h>
-+#include <linux/mfd/core.h>
- #include <linux/module.h>
- #include <linux/of_device.h>
- #include <linux/of_platform.h>
-@@ -27,6 +29,10 @@
- #define INT_EN_CLR_OFFSET		0x16
- #define INT_LATCHED_STS_OFFSET		0x18
- 
-+static const struct mfd_cell pm8008_regulator_devs[] = {
-+	MFD_CELL_NAME("qcom,pm8008-regulators"),
-+};
-+
- enum {
- 	PM8008_MISC,
- 	PM8008_TEMP_ALARM,
-@@ -57,6 +63,7 @@ enum {
- struct pm8008_data {
- 	struct device *dev;
- 	struct regmap *regmap;
-+	struct gpio_desc *reset_gpio;
- 	int irq;
- 	struct regmap_irq_chip_data *irq_data;
- };
-@@ -239,13 +246,44 @@ static int pm8008_probe(struct i2c_client *client)
- 			dev_err(chip->dev, "Failed to probe irq periphs: %d\n", rc);
- 	}
- 
-+	chip->reset_gpio = devm_gpiod_get(chip->dev, "reset", GPIOD_OUT_HIGH);
-+	if (IS_ERR(chip->reset_gpio)) {
-+		dev_err(chip->dev, "failed to acquire reset gpio\n");
-+		return PTR_ERR(chip->reset_gpio);
-+	}
-+	gpiod_set_value(chip->reset_gpio, 1);
-+
- 	return devm_of_platform_populate(chip->dev);
- }
- 
-+static int pm8008_probe_regulators(struct i2c_client *client)
-+{
-+
-+	int rc;
-+	struct pm8008_data *chip;
-+
-+	chip = devm_kzalloc(&client->dev, sizeof(*chip), GFP_KERNEL);
-+	if (!chip)
-+		return -ENOMEM;
-+
-+	chip->dev = &client->dev;
-+	chip->regmap = devm_regmap_init_i2c(client, &qcom_mfd_regmap_cfg);
-+	if (!chip->regmap)
-+		return -ENODEV;
-+
-+	rc = devm_mfd_add_devices(chip->dev, 0, pm8008_regulator_devs,
-+			ARRAY_SIZE(pm8008_regulator_devs), NULL, 0, NULL);
-+	if (rc)
-+		dev_err(chip->dev, "Failed to add children: %d\n", rc);
-+
-+	return rc;
-+}
-+
- static const struct of_device_id pm8008_match[] = {
- 	{ .compatible = "qcom,pm8008", },
--	{ },
-+	{ }
- };
-+MODULE_DEVICE_TABLE(of, pm8008_match);
- 
- static struct i2c_driver pm8008_mfd_driver = {
- 	.driver = {
-@@ -254,7 +292,45 @@ static struct i2c_driver pm8008_mfd_driver = {
- 	},
- 	.probe_new = pm8008_probe,
- };
--module_i2c_driver(pm8008_mfd_driver);
-+
-+static const struct of_device_id pm8008_regulators_match[] = {
-+	{ .compatible = "qcom,pm8008-regulators", },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, pm8008_regulators_match);
-+
-+static struct i2c_driver pm8008_regulators_driver = {
-+	.driver = {
-+		.name = "pm8008-regulators",
-+		.of_match_table = pm8008_regulators_match,
-+	},
-+	.probe_new = pm8008_probe_regulators,
-+};
-+
-+static int __init pm8008_i2c_init(void)
-+{
-+	int ret;
-+
-+	ret = i2c_add_driver(&pm8008_mfd_driver);
-+	if (ret) {
-+		pr_err("Failed to register driver for pm8008_infra: %d\n", ret);
-+		return ret;
-+	}
-+
-+	ret = i2c_add_driver(&pm8008_regulators_driver);
-+	if (ret)
-+		pr_err("Failed to register driver for pm8008_regulators: %d\n", ret);
-+
-+	return ret;
-+}
-+module_init(pm8008_i2c_init);
-+
-+static void __exit pm8008_i2c_exit(void)
-+{
-+	i2c_del_driver(&pm8008_mfd_driver);
-+	i2c_del_driver(&pm8008_regulators_driver);
-+}
-+module_exit(pm8008_i2c_exit);
- 
- MODULE_LICENSE("GPL v2");
- MODULE_ALIAS("i2c:qcom-pm8008");
--- 
-2.7.4
-
+> 
+> diff --git a/arch/arm64/include/asm/compiler.h b/arch/arm64/include/asm/compiler.h
+> index dc3ea4080e2e..6fb2e6bcc392 100644
+> --- a/arch/arm64/include/asm/compiler.h
+> +++ b/arch/arm64/include/asm/compiler.h
+> @@ -23,20 +23,4 @@
+>  #define __builtin_return_address(val)					\
+>  	(void *)(ptrauth_clear_pac((unsigned long)__builtin_return_address(val)))
+>  
+> -#ifdef CONFIG_CFI_CLANG
+> -/*
+> - * With CONFIG_CFI_CLANG, the compiler replaces function address
+> - * references with the address of the function's CFI jump table
+> - * entry. The function_nocfi macro always returns the address of the
+> - * actual function instead.
+> - */
+> -#define function_nocfi(x) ({						\
+> -	void *addr;							\
+> -	asm("adrp %0, " __stringify(x) "\n\t"				\
+> -	    "add  %0, %0, :lo12:" __stringify(x)			\
+> -	    : "=r" (addr));						\
+> -	addr;								\
+> -})
+> -#endif
+> -
+>  #endif /* __ASM_COMPILER_H */
+> -- 
+> 2.35.0
+> 
