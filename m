@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A62CAC43219
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:02:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E16E7C47081
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:02:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1846157AbiDFCDE (ORCPT
+        id S1845893AbiDFCB5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:03:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50540 "EHLO
+        Tue, 5 Apr 2022 22:01:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357993AbiDEK1j (ORCPT
+        with ESMTP id S1352546AbiDEKEm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:27:39 -0400
+        Tue, 5 Apr 2022 06:04:42 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 977365D5D9;
-        Tue,  5 Apr 2022 03:12:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EB9ABB092;
+        Tue,  5 Apr 2022 02:53:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 36BB16179E;
-        Tue,  5 Apr 2022 10:12:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 429BFC385A1;
-        Tue,  5 Apr 2022 10:12:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DBAED61776;
+        Tue,  5 Apr 2022 09:53:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1F2FC385A1;
+        Tue,  5 Apr 2022 09:53:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153542;
-        bh=lYJIZpG9+uCGqrzFy8FRL9lrEPzdl6jxqDZR4PCvxOQ=;
+        s=korg; t=1649152403;
+        bh=GsAv312AdYmmt1e+wMqZIwMIBSqRjZ1+lgs4z1QfSXo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LDJXt0yCkPvHtNtLUd2MXlnGhdbwQ94xAaizUJjo3y0iMmCMFj+5veNzkVqXpz1lo
-         mpyM6ro4g/YhjX0Btfj9SLizs2lXCZqdCJSuQzzp8qc4WM3EsqcHbxoj5sVp3hHFw7
-         50MR8N0RjQQVTvZ1RGwV1oNHxOGXrid6kYY5OfiE=
+        b=USSNu4Bod1eaqCo08HDcfGP5gfnunAqIMRtsKJYp2KMD4r4m8shGb2Gz4OupzRZmD
+         hZKcjtDSs1NeoSMbyNYKqydngxzr/NQlxmryj1TDbdn6ZQVy1c4c4Ml6KMqKiRAFvS
+         AAymp4Lj7bG4Uo0TP7WkRazbKJgR0sMCyYvuO65I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
+        stable@vger.kernel.org, syzkaller <syzkaller@googlegroups.com>,
+        Dongliang Mu <mudongliangabcd@gmail.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 260/599] drm/meson: osd_afbcd: Add an exit callback to struct meson_afbcd_ops
-Date:   Tue,  5 Apr 2022 09:29:14 +0200
-Message-Id: <20220405070306.575987204@linuxfoundation.org>
+Subject: [PATCH 5.15 764/913] media: hdpvr: initialize dev->worker at hdpvr_register_videodev
+Date:   Tue,  5 Apr 2022 09:30:26 +0200
+Message-Id: <20220405070402.732951313@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,142 +52,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+From: Dongliang Mu <mudongliangabcd@gmail.com>
 
-[ Upstream commit 04b8a5d9cfd171f65df75f444b5617a372649edd ]
+[ Upstream commit 07922937e9a580825f9965c46fd15e23ba5754b6 ]
 
-Use this to simplify the driver shutdown. It will also come handy when
-fixing the error handling in meson_drv_bind_master().
+hdpvr_register_videodev is responsible to initialize a worker in
+hdpvr_device. However, the worker is only initialized at
+hdpvr_start_streaming other than hdpvr_register_videodev.
+When hdpvr_probe does not initialize its worker, the hdpvr_disconnect
+will encounter one WARN in flush_work.The stack trace is as follows:
 
-Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Fixes: d1b5e41e13a7e9 ("drm/meson: Add AFBCD module driver")
-Acked-by: Neil Armstrong <narmstrong@baylibre.com>
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20211230235515.1627522-2-martin.blumenstingl@googlemail.com
+ hdpvr_disconnect+0xb8/0xf2 drivers/media/usb/hdpvr/hdpvr-core.c:425
+ usb_unbind_interface+0xbf/0x3a0 drivers/usb/core/driver.c:458
+ __device_release_driver drivers/base/dd.c:1206 [inline]
+ device_release_driver_internal+0x22a/0x230 drivers/base/dd.c:1237
+ bus_remove_device+0x108/0x160 drivers/base/bus.c:529
+ device_del+0x1fe/0x510 drivers/base/core.c:3592
+ usb_disable_device+0xd1/0x1d0 drivers/usb/core/message.c:1419
+ usb_disconnect+0x109/0x330 drivers/usb/core/hub.c:2228
+
+Fix this by moving the initialization of dev->worker to the starting of
+hdpvr_register_videodev
+
+Reported-by: syzkaller <syzkaller@googlegroups.com>
+Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/meson/meson_drv.c       |  6 ++--
- drivers/gpu/drm/meson/meson_osd_afbcd.c | 41 ++++++++++++++++---------
- drivers/gpu/drm/meson/meson_osd_afbcd.h |  1 +
- 3 files changed, 30 insertions(+), 18 deletions(-)
+ drivers/media/usb/hdpvr/hdpvr-video.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/meson/meson_drv.c b/drivers/gpu/drm/meson/meson_drv.c
-index 2753067c08e6..728fea509412 100644
---- a/drivers/gpu/drm/meson/meson_drv.c
-+++ b/drivers/gpu/drm/meson/meson_drv.c
-@@ -396,10 +396,8 @@ static void meson_drv_unbind(struct device *dev)
- 	drm_irq_uninstall(drm);
- 	drm_dev_put(drm);
+diff --git a/drivers/media/usb/hdpvr/hdpvr-video.c b/drivers/media/usb/hdpvr/hdpvr-video.c
+index 563128d11731..60e57e0f1927 100644
+--- a/drivers/media/usb/hdpvr/hdpvr-video.c
++++ b/drivers/media/usb/hdpvr/hdpvr-video.c
+@@ -308,7 +308,6 @@ static int hdpvr_start_streaming(struct hdpvr_device *dev)
  
--	if (priv->afbcd.ops) {
--		priv->afbcd.ops->reset(priv);
--		meson_rdma_free(priv);
--	}
-+	if (priv->afbcd.ops)
-+		priv->afbcd.ops->exit(priv);
- }
+ 	dev->status = STATUS_STREAMING;
  
- static const struct component_master_ops meson_drv_master_ops = {
-diff --git a/drivers/gpu/drm/meson/meson_osd_afbcd.c b/drivers/gpu/drm/meson/meson_osd_afbcd.c
-index ffc6b584dbf8..0cdbe899402f 100644
---- a/drivers/gpu/drm/meson/meson_osd_afbcd.c
-+++ b/drivers/gpu/drm/meson/meson_osd_afbcd.c
-@@ -79,11 +79,6 @@ static bool meson_gxm_afbcd_supported_fmt(u64 modifier, uint32_t format)
- 	return meson_gxm_afbcd_pixel_fmt(modifier, format) >= 0;
- }
+-	INIT_WORK(&dev->worker, hdpvr_transmit_buffers);
+ 	schedule_work(&dev->worker);
  
--static int meson_gxm_afbcd_init(struct meson_drm *priv)
--{
--	return 0;
--}
--
- static int meson_gxm_afbcd_reset(struct meson_drm *priv)
- {
- 	writel_relaxed(VIU_SW_RESET_OSD1_AFBCD,
-@@ -93,6 +88,16 @@ static int meson_gxm_afbcd_reset(struct meson_drm *priv)
- 	return 0;
- }
+ 	v4l2_dbg(MSG_BUFFER, hdpvr_debug, &dev->v4l2_dev,
+@@ -1165,6 +1164,9 @@ int hdpvr_register_videodev(struct hdpvr_device *dev, struct device *parent,
+ 	bool ac3 = dev->flags & HDPVR_FLAG_AC3_CAP;
+ 	int res;
  
-+static int meson_gxm_afbcd_init(struct meson_drm *priv)
-+{
-+	return 0;
-+}
++	// initialize dev->worker
++	INIT_WORK(&dev->worker, hdpvr_transmit_buffers);
 +
-+static void meson_gxm_afbcd_exit(struct meson_drm *priv)
-+{
-+	meson_gxm_afbcd_reset(priv);
-+}
-+
- static int meson_gxm_afbcd_enable(struct meson_drm *priv)
- {
- 	writel_relaxed(FIELD_PREP(OSD1_AFBCD_ID_FIFO_THRD, 0x40) |
-@@ -172,6 +177,7 @@ static int meson_gxm_afbcd_setup(struct meson_drm *priv)
- 
- struct meson_afbcd_ops meson_afbcd_gxm_ops = {
- 	.init = meson_gxm_afbcd_init,
-+	.exit = meson_gxm_afbcd_exit,
- 	.reset = meson_gxm_afbcd_reset,
- 	.enable = meson_gxm_afbcd_enable,
- 	.disable = meson_gxm_afbcd_disable,
-@@ -269,6 +275,18 @@ static bool meson_g12a_afbcd_supported_fmt(u64 modifier, uint32_t format)
- 	return meson_g12a_afbcd_pixel_fmt(modifier, format) >= 0;
- }
- 
-+static int meson_g12a_afbcd_reset(struct meson_drm *priv)
-+{
-+	meson_rdma_reset(priv);
-+
-+	meson_rdma_writel_sync(priv, VIU_SW_RESET_G12A_AFBC_ARB |
-+			       VIU_SW_RESET_G12A_OSD1_AFBCD,
-+			       VIU_SW_RESET);
-+	meson_rdma_writel_sync(priv, 0, VIU_SW_RESET);
-+
-+	return 0;
-+}
-+
- static int meson_g12a_afbcd_init(struct meson_drm *priv)
- {
- 	int ret;
-@@ -286,16 +304,10 @@ static int meson_g12a_afbcd_init(struct meson_drm *priv)
- 	return 0;
- }
- 
--static int meson_g12a_afbcd_reset(struct meson_drm *priv)
-+static void meson_g12a_afbcd_exit(struct meson_drm *priv)
- {
--	meson_rdma_reset(priv);
--
--	meson_rdma_writel_sync(priv, VIU_SW_RESET_G12A_AFBC_ARB |
--			       VIU_SW_RESET_G12A_OSD1_AFBCD,
--			       VIU_SW_RESET);
--	meson_rdma_writel_sync(priv, 0, VIU_SW_RESET);
--
--	return 0;
-+	meson_g12a_afbcd_reset(priv);
-+	meson_rdma_free(priv);
- }
- 
- static int meson_g12a_afbcd_enable(struct meson_drm *priv)
-@@ -380,6 +392,7 @@ static int meson_g12a_afbcd_setup(struct meson_drm *priv)
- 
- struct meson_afbcd_ops meson_afbcd_g12a_ops = {
- 	.init = meson_g12a_afbcd_init,
-+	.exit = meson_g12a_afbcd_exit,
- 	.reset = meson_g12a_afbcd_reset,
- 	.enable = meson_g12a_afbcd_enable,
- 	.disable = meson_g12a_afbcd_disable,
-diff --git a/drivers/gpu/drm/meson/meson_osd_afbcd.h b/drivers/gpu/drm/meson/meson_osd_afbcd.h
-index 5e5523304f42..e77ddeb6416f 100644
---- a/drivers/gpu/drm/meson/meson_osd_afbcd.h
-+++ b/drivers/gpu/drm/meson/meson_osd_afbcd.h
-@@ -14,6 +14,7 @@
- 
- struct meson_afbcd_ops {
- 	int (*init)(struct meson_drm *priv);
-+	void (*exit)(struct meson_drm *priv);
- 	int (*reset)(struct meson_drm *priv);
- 	int (*enable)(struct meson_drm *priv);
- 	int (*disable)(struct meson_drm *priv);
+ 	dev->cur_std = V4L2_STD_525_60;
+ 	dev->width = 720;
+ 	dev->height = 480;
 -- 
 2.34.1
 
