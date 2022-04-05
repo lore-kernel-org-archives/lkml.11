@@ -2,226 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12019C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 03:31:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A365C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 03:38:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2360408AbiDFDa4 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 23:30:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49434 "EHLO
+        id S232801AbiDFDdF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 23:33:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1850365AbiDFCwO (ORCPT
+        with ESMTP id S1851020AbiDFDCA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 22:52:14 -0400
-Received: from mail-wr1-x463.google.com (mail-wr1-x463.google.com [IPv6:2a00:1450:4864:20::463])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B95619022
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 16:52:11 -0700 (PDT)
-Received: by mail-wr1-x463.google.com with SMTP id w4so715435wrg.12
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 16:52:11 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:dkim-signature:from:to:cc:subject:date
-         :message-id:in-reply-to:references:content-transfer-encoding;
-        bh=9kdpNgsn3CncHbqtialrLPvzG1lWo7Pqp9XRY5xEnjw=;
-        b=znSTGQvYB9CVI3LvbWHQQCjGEr9UXy5fi3xLLqQ1hrmflNGcmxQTa4QklxOXGiOwYm
-         gwK7GwDvht048jgQc3SU7qKwj5PTlzgmBTTKk/eqpTanM+xMxJFlRVO0RdF2bcmZs2/X
-         B6OMsPp3U1cyDkGIuIzvffGMcSjF7qBqAtNWG5d6AlXG6lab0u2kjizVt6YNrZz+BIFx
-         3NYG09R1IfJPyLS/cFLoebMA3Kbz36I8nEx2kPlPYM+weAgOculYv2oh2QyaGS16RT5s
-         M8VApRBH5lkE+rR6R6YUVcPBh3K+FeWIGqXp8i3XKMDfOF3eyjqE3WO46e5AQaZop8VZ
-         NPaQ==
-X-Gm-Message-State: AOAM530NbYh080nr5Yor819d7K61f9sTaSxyjo/xsgra12eemrRxGWeI
-        jI8E/Cv602IW4965pDoACHdw5bDp1f7ggBCV4H2nGxvm/P8+
-X-Google-Smtp-Source: ABdhPJw7fbh6YcFpW3uxxsOtpsPSL4QhlUtPvjdsJvnXFz1fdpaCsiL2R3Bjvftj4aypegVxSCjiXJpF/sNl
-X-Received: by 2002:a5d:6e84:0:b0:206:147b:1f59 with SMTP id k4-20020a5d6e84000000b00206147b1f59mr4339389wrz.86.1649202724104;
-        Tue, 05 Apr 2022 16:52:04 -0700 (PDT)
-Received: from smtp.aristanetworks.com (smtp.aristanetworks.com. [52.0.43.43])
-        by smtp-relay.gmail.com with ESMTPS id l9-20020a7bc349000000b00389efb7a601sm368543wmj.6.2022.04.05.16.52.03
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 05 Apr 2022 16:52:04 -0700 (PDT)
-X-Relaying-Domain: arista.com
-Received: from chmeee (unknown [10.95.70.41])
-        by smtp.aristanetworks.com (Postfix) with ESMTPS id D6EEC3002D04;
-        Tue,  5 Apr 2022 16:52:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arista.com;
-        s=Arista-A; t=1649202723;
-        bh=9kdpNgsn3CncHbqtialrLPvzG1lWo7Pqp9XRY5xEnjw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fzQ19VBdiqY3CF/xb83ZjfywlR4HnCBIVvkwfXSMkR6Q1PUp9Uhyu0Qke0Zxy0d2Q
-         pUC9JsUtR2pkI9ztPqSCCud9wbX+RIBeWPe3A7a/EzZhKP6v3rwlaGMqK0Mh6HH3Vv
-         +K00t8zszUrg30lIoZBkN7Q12wBc8ynIu0vp5RwkROVgUVRuMcsyDzQTjJCU+N5oYb
-         3aTtpyDry2c9WdRzW357mRn1Rn7TDJYF9vMuurIxYOgHXq9RQmr67WkHb3KFgqFY87
-         /2+i1dNiUcMKbiqonv8tBt9D3CQDrHMFoSWA6F9nCZWplhfMMTG8eGaNyZZ+HZ1lI9
-         utxxzKBvaoE2g==
-Received: from kevmitch by chmeee with local (Exim 4.95)
-        (envelope-from <kevmitch@chmeee>)
-        id 1nbsxs-00188e-QU;
-        Tue, 05 Apr 2022 16:52:00 -0700
-From:   Kevin Mitchell <kevmitch@arista.com>
-Cc:     kevmitch@arista.com, gal@nvidia.com,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org
-Subject: [PATCH 1/1] netfilter: conntrack: skip verification of zero UDP checksum
-Date:   Tue,  5 Apr 2022 16:51:16 -0700
-Message-Id: <20220405235117.269511-2-kevmitch@arista.com>
-In-Reply-To: <20220405235117.269511-1-kevmitch@arista.com>
-References: <20220405235117.269511-1-kevmitch@arista.com>
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+        Tue, 5 Apr 2022 23:02:00 -0400
+Received: from mail105.syd.optusnet.com.au (mail105.syd.optusnet.com.au [211.29.132.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 59F41EEA73
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 16:54:31 -0700 (PDT)
+Received: from dread.disaster.area (pa49-180-43-123.pa.nsw.optusnet.com.au [49.180.43.123])
+        by mail105.syd.optusnet.com.au (Postfix) with ESMTPS id 87B4F10E56AB;
+        Wed,  6 Apr 2022 09:54:28 +1000 (AEST)
+Received: from dave by dread.disaster.area with local (Exim 4.92.3)
+        (envelope-from <david@fromorbit.com>)
+        id 1nbt0E-00EF9b-H4; Wed, 06 Apr 2022 09:54:26 +1000
+Date:   Wed, 6 Apr 2022 09:54:26 +1000
+From:   Dave Chinner <david@fromorbit.com>
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     Stephen Brennan <stephen.s.brennan@oracle.com>,
+        Hillf Danton <hdanton@sina.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        MM <linux-mm@kvack.org>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        Yu Zhao <yuzhao@google.com>,
+        David Hildenbrand <david@redhat.com>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC] mm/vmscan: add periodic slab shrinker
+Message-ID: <20220405235426.GY1609613@dread.disaster.area>
+References: <20220402072103.5140-1-hdanton@sina.com>
+ <20220403005618.5263-1-hdanton@sina.com>
+ <20220404010948.GV1609613@dread.disaster.area>
+ <87ilrn5ttl.fsf@stepbren-lnx.us.oracle.com>
+ <YkyyCcdJq69tO6ba@casper.infradead.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YkyyCcdJq69tO6ba@casper.infradead.org>
+X-Optus-CM-Score: 0
+X-Optus-CM-Analysis: v=2.4 cv=deDjYVbe c=1 sm=1 tr=0 ts=624cd6b6
+        a=MV6E7+DvwtTitA3W+3A2Lw==:117 a=MV6E7+DvwtTitA3W+3A2Lw==:17
+        a=kj9zAlcOel0A:10 a=z0gMJWrwH1QA:10 a=7-415B0cAAAA:8
+        a=cW6uoDq8pwY6bZwKszYA:9 a=CjuIK1q_8ugA:10 a=biEYGPWJfzWAr4FL6Ov7:22
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The checksum is optional for UDP packets in IPv4. However nf_reject
-would previously require a valid checksum to illicit a response such as
-ICMP_DEST_UNREACH.
+On Tue, Apr 05, 2022 at 10:18:01PM +0100, Matthew Wilcox wrote:
+> On Tue, Apr 05, 2022 at 10:22:14AM -0700, Stephen Brennan wrote:
+> > I can't speak for every slab cache, but I've been coming to the same
+> > conclusion myself regarding the dentry cache. I think that the rate of
+> > stepping through the LRU should be tied to the rate of allocations.
+> > Truly in-use objects shouldn't be harmed by this, as they should get
+> > referenced and rotated to the beginning of the LRU. But the one-offs
+> > which are bloating the cache will be found and removed.
+> 
+> I agree with all this.
 
-Add some logic to nf_reject_verify_csum to determine if a UDP packet has
-a zero checksum and should therefore not be verified. Explicitly require
-a valid checksum for IPv6 consistent RFC 2460 and with the non-netfilter
-stack (see udp6_csum_zero_error).
+Same here.
 
-Signed-off-by: Kevin Mitchell <kevmitch@arista.com>
----
- include/net/netfilter/nf_reject.h        | 27 ++++++++++++++++++++----
- net/bridge/netfilter/nft_reject_bridge.c |  6 ++++--
- net/ipv4/netfilter/nf_reject_ipv4.c      |  6 ++++--
- net/ipv6/netfilter/nf_reject_ipv6.c      |  2 +-
- 4 files changed, 32 insertions(+), 9 deletions(-)
+> > I've implemented a version of this patch which just takes one step
+> > through the LRU on each d_alloc. It's quite interesting to watch it
+> > work. You can create 5 million negative dentries in directory /A via
+> > stat(), and then create 5 million negative dentries in directory /B. The
+> > total dentry slab size reaches 5 million but never goes past it, since
+> > the old negative dentries from /A aren't really in use, and they get
+> > pruned at the same rate as negative dentries from /B get created. On the
+> > other hand, if you *continue* to stat() on the dentries of /A while you
+> > create negative dentries in /B, then the cache grows to 10 million,
+> > since the /A dentries are actually in use.
+> > 
+> > Maybe a solution could involve some generic list_lru machinery that can
+> > let you do these sorts of incremental scans? Maybe batching them up so
+> > instead of doing one every allocation, you do them every 100 or 1000?
+> > It would still be up to the individual user to put this to good use in
+> > the object allocation path.
+> 
+> I feel like we need to allow the list to both shrink and grow, depending
+> on how useful the entries in it are.  So one counter per LRU, incremented
+> on every add.  When that counter gets to 100, reset it to 0 and scan
+> 110 entries.  Maybe 0 of them can be reclaimed; maybe 110 of them can be.
+> But the list can shrink over time instead of being a "one in, one out"
+> scenario.
 
-diff --git a/include/net/netfilter/nf_reject.h b/include/net/netfilter/nf_reject.h
-index 9051c3a0c8e7..f248c1ff8b22 100644
---- a/include/net/netfilter/nf_reject.h
-+++ b/include/net/netfilter/nf_reject.h
-@@ -5,12 +5,34 @@
- #include <linux/types.h>
- #include <uapi/linux/in.h>
- 
--static inline bool nf_reject_verify_csum(__u8 proto)
-+static inline bool nf_reject_verify_csum(struct sk_buff *skb, int dataoff,
-+					  __u8 proto)
- {
- 	/* Skip protocols that don't use 16-bit one's complement checksum
- 	 * of the entire payload.
- 	 */
- 	switch (proto) {
-+		/* Protocols with optional checksums. */
-+		case IPPROTO_UDP: {
-+			const struct udphdr *udp_hdr;
-+			struct udphdr _udp_hdr;
-+
-+			/* Checksum is required in IPv6
-+			 * see RFC 2460 section 8.1
-+			 */
-+			if (skb->protocol == htons(ETH_P_IPV6))
-+				return true;
-+
-+			udp_hdr = skb_header_pointer(skb, dataoff,
-+						     sizeof(_udp_hdr),
-+						     &_udp_hdr);
-+			if (!udp_hdr || udp_hdr->check)
-+				return true;
-+
-+			return false;
-+		}
-+		case IPPROTO_GRE:
-+
- 		/* Protocols with other integrity checks. */
- 		case IPPROTO_AH:
- 		case IPPROTO_ESP:
-@@ -19,9 +41,6 @@ static inline bool nf_reject_verify_csum(__u8 proto)
- 		/* Protocols with partial checksums. */
- 		case IPPROTO_UDPLITE:
- 		case IPPROTO_DCCP:
--
--		/* Protocols with optional checksums. */
--		case IPPROTO_GRE:
- 			return false;
- 	}
- 	return true;
-diff --git a/net/bridge/netfilter/nft_reject_bridge.c b/net/bridge/netfilter/nft_reject_bridge.c
-index deae2c9a0f69..e6d62de95378 100644
---- a/net/bridge/netfilter/nft_reject_bridge.c
-+++ b/net/bridge/netfilter/nft_reject_bridge.c
-@@ -111,6 +111,7 @@ static void nft_reject_br_send_v4_unreach(struct net *net,
- 	unsigned int len;
- 	__wsum csum;
- 	u8 proto;
-+	int dataoff;
- 
- 	if (!nft_bridge_iphdr_validate(oldskb))
- 		return;
-@@ -129,9 +130,10 @@ static void nft_reject_br_send_v4_unreach(struct net *net,
- 		return;
- 
- 	proto = ip_hdr(oldskb)->protocol;
-+	dataoff = ip_hdrlen(oldskb);
- 
- 	if (!skb_csum_unnecessary(oldskb) &&
--	    nf_reject_verify_csum(proto) &&
-+	    nf_reject_verify_csum(oldskb, dataoff, proto) &&
- 	    nf_ip_checksum(oldskb, hook, ip_hdrlen(oldskb), proto))
- 		return;
- 
-@@ -234,7 +236,7 @@ static bool reject6_br_csum_ok(struct sk_buff *skb, int hook)
- 	if (thoff < 0 || thoff >= skb->len || (fo & htons(~0x7)) != 0)
- 		return false;
- 
--	if (!nf_reject_verify_csum(proto))
-+	if (!nf_reject_verify_csum(skb, thoff, proto))
- 		return true;
- 
- 	return nf_ip6_checksum(skb, hook, thoff, proto) == 0;
-diff --git a/net/ipv4/netfilter/nf_reject_ipv4.c b/net/ipv4/netfilter/nf_reject_ipv4.c
-index 93b07739807b..7a83fe1c2675 100644
---- a/net/ipv4/netfilter/nf_reject_ipv4.c
-+++ b/net/ipv4/netfilter/nf_reject_ipv4.c
-@@ -189,6 +189,7 @@ void nf_send_unreach(struct sk_buff *skb_in, int code, int hook)
- {
- 	struct iphdr *iph = ip_hdr(skb_in);
- 	u8 proto = iph->protocol;
-+	int dataoff = ip_hdrlen(skb_in);
- 
- 	if (iph->frag_off & htons(IP_OFFSET))
- 		return;
-@@ -196,12 +197,13 @@ void nf_send_unreach(struct sk_buff *skb_in, int code, int hook)
- 	if (hook == NF_INET_PRE_ROUTING && nf_reject_fill_skb_dst(skb_in))
- 		return;
- 
--	if (skb_csum_unnecessary(skb_in) || !nf_reject_verify_csum(proto)) {
-+	if (skb_csum_unnecessary(skb_in) ||
-+	    !nf_reject_verify_csum(skb_in, dataoff, proto)) {
- 		icmp_send(skb_in, ICMP_DEST_UNREACH, code, 0);
- 		return;
- 	}
- 
--	if (nf_ip_checksum(skb_in, hook, ip_hdrlen(skb_in), proto) == 0)
-+	if (nf_ip_checksum(skb_in, hook, dataoff, proto) == 0)
- 		icmp_send(skb_in, ICMP_DEST_UNREACH, code, 0);
- }
- EXPORT_SYMBOL_GPL(nf_send_unreach);
-diff --git a/net/ipv6/netfilter/nf_reject_ipv6.c b/net/ipv6/netfilter/nf_reject_ipv6.c
-index 4aef6baaa55e..ac9574c6068f 100644
---- a/net/ipv6/netfilter/nf_reject_ipv6.c
-+++ b/net/ipv6/netfilter/nf_reject_ipv6.c
-@@ -253,7 +253,7 @@ static bool reject6_csum_ok(struct sk_buff *skb, int hook)
- 	if (thoff < 0 || thoff >= skb->len || (fo & htons(~0x7)) != 0)
- 		return false;
- 
--	if (!nf_reject_verify_csum(proto))
-+	if (!nf_reject_verify_csum(skb, thoff, proto))
- 		return true;
- 
- 	return nf_ip6_checksum(skb, hook, thoff, proto) == 0;
+Yes, this is pretty much what I've been saying we should be using
+the list-lru for since .... Well, let's just say it was one of the
+things I wanted to be able to do when I first created the list-lru
+infrastructure.
+
+But it is much more complex than this. One of the issues with purely
+list-lru add-time accounting is that we cannot make reclaim
+decisions from list-add context because the list-add can occur in
+reclaim context.  e.g.  dentry reclaim will drop the last reference
+to an inode, which then gets inserted into the the inode list-lru in
+reclaim context.  The very next thing the superblock shrinker does
+is scan the inode cache list-lru and remove a pre-calculated number
+of objects from the list. Hence in reclaim context we can be both
+increasing and decreasing the size of the list-lru by significant
+percentages in a very short time window. This means it will be quite
+challenging to make clear decisions based purely on lru list add
+operations.
+
+Hence I think we want to connect more than just the unused entries
+to periodic reclaim - we really need to know both the number of free
+objects on the list-lru as well as the total number of objects
+allocated that could be on the list_lru. This would give us some
+comparitive measure of free objects vs active referenced objects
+and that would allow better decisions to be made.
+
+As it is, we've recently made a necessary connection between
+allocation and the list-lru via kmem_cache_alloc_lru(). This was
+done as part of the list-lru/memcg rework patchset I referenced
+earlier in the thread.
+
+This means that operations that slab objects that are kept
+on list_lrus for caching are now supplied with the list_lru at
+allocation time. We already use this API for inode caches (via
+inode_alloc_sb()) and the dentry cache (via __d_alloc()), so we
+already have the infrastructure in place to do per-allocation
+list-lru accounting for inodes and dentries, not just "per list-lru
+add/remove" accounting.
+
+Extending that to other slab-based list-lru users should be pretty
+easy, and in doing so would remove another difference between memcg
+and non-memcg aware list-lrus....
+
+> Clearly 110 is a magic number, but intuitively, attempting to shrink
+> by 10% feels reasonable.  Need to strike a balance between shrinking
+> quickly enough and giving the cache time to figure out which entries
+> are actually useful.
+
+Testing will teach us where the thresholds need to be pretty
+quickly. :)
+
+Cheers,
+
+Dave.
 -- 
-2.35.1
-
+Dave Chinner
+david@fromorbit.com
