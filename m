@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E5D4C4321E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:04:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34920C43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:04:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346978AbiDEVDp (ORCPT
+        id S1348260AbiDEVEH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:03:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39280 "EHLO
+        Tue, 5 Apr 2022 17:04:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241325AbiDEK4a (ORCPT
+        with ESMTP id S244381AbiDEKil (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:56:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47A6BAC905;
-        Tue,  5 Apr 2022 03:28:41 -0700 (PDT)
+        Tue, 5 Apr 2022 06:38:41 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B61426D4;
+        Tue,  5 Apr 2022 03:23:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E06C1B81C8A;
-        Tue,  5 Apr 2022 10:28:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 340E8C385A0;
-        Tue,  5 Apr 2022 10:28:38 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 1A915CE0B18;
+        Tue,  5 Apr 2022 10:23:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37478C385A3;
+        Tue,  5 Apr 2022 10:23:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154518;
-        bh=jvR56L6/fJAphKqjnHqF7RG12HbFeNFPnqr3S53vyzQ=;
+        s=korg; t=1649154214;
+        bh=M1gU7GJAdKfEoxBo0mmxgvDmkAOM71wt/lDiYoCEucE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fqEL205MOy54ce9GKn9bx+/2AAm5f0uFC6V/hE6UgjeA2wvZ2PS4yB+cC8FQN7Z3e
-         HM+MSsQiKwFQdqjc8ZovaXsDAsGWMeQbXb0PlGIz7nWk/Qyq65uVqi3qgtlt6RDUiu
-         2M1gCXwuZeP/ocIxlEkeTIfmT5Qah5Oh0nbDBG60=
+        b=ddVbKsMED+7c4CNoVNL13U7tp1WTIEI1fCE/x2k/I29fH1wz8BUvetyAd5rclusIH
+         nO31xiTd1vSKI/pTfDdYwF/wXkEFe1JrDji9BMdOCFQ1JLsvPfoMqAWj519dCKZRxs
+         Fx4VbpEE2dMEnoWMFbytvBEP1vzK8mV0uRRc6Rhs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Begunkov <asml.silence@gmail.com>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.10 567/599] io_uring: fix memory leak of uid in files registration
-Date:   Tue,  5 Apr 2022 09:34:21 +0200
-Message-Id: <20220405070315.714802826@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Daniel=20Gonz=C3=A1lez=20Cabanelas?= <dgcbueu@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 500/599] media: cx88-mpeg: clear interrupt status register before streaming video
+Date:   Tue,  5 Apr 2022 09:33:14 +0200
+Message-Id: <20220405070313.707864533@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -49,31 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Begunkov <asml.silence@gmail.com>
+From: Daniel González Cabanelas <dgcbueu@gmail.com>
 
-commit c86d18f4aa93e0e66cda0e55827cd03eea6bc5f8 upstream.
+[ Upstream commit 56cb61f70e547e1b0cdfe6ff5a1f1ce6242e6d96 ]
 
-When there are no files for __io_sqe_files_scm() to process in the
-range, it'll free everything and return. However, it forgets to put uid.
+Some cx88 video cards may have transport stream status interrupts set
+to 1 from cold start, causing errors like this:
 
-Fixes: 08a451739a9b5 ("io_uring: allow sparse fixed file sets")
-Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
-Link: https://lore.kernel.org/r/accee442376f33ce8aaebb099d04967533efde92.1648226048.git.asml.silence@gmail.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+  cx88xx: cx88_print_irqbits: core:irq mpeg  [0x100000] ts_err?*
+  cx8802: cx8802_mpeg_irq: mpeg:general errors: 0x00100000
+
+According to CX2388x datasheet, the interrupt status register should be
+cleared before enabling IRQs to stream video.
+
+Fix it by clearing the Transport Stream Interrupt Status register.
+
+Signed-off-by: Daniel González Cabanelas <dgcbueu@gmail.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/io_uring.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/media/pci/cx88/cx88-mpeg.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -7350,6 +7350,7 @@ static int __io_sqe_files_scm(struct io_
- 			fput(fpl->fp[i]);
- 	} else {
- 		kfree_skb(skb);
-+		free_uid(fpl->user);
- 		kfree(fpl);
- 	}
+diff --git a/drivers/media/pci/cx88/cx88-mpeg.c b/drivers/media/pci/cx88/cx88-mpeg.c
+index a57c991b165b..10d2971ef062 100644
+--- a/drivers/media/pci/cx88/cx88-mpeg.c
++++ b/drivers/media/pci/cx88/cx88-mpeg.c
+@@ -162,6 +162,9 @@ int cx8802_start_dma(struct cx8802_dev    *dev,
+ 	cx_write(MO_TS_GPCNTRL, GP_COUNT_CONTROL_RESET);
+ 	q->count = 0;
  
++	/* clear interrupt status register */
++	cx_write(MO_TS_INTSTAT,  0x1f1111);
++
+ 	/* enable irqs */
+ 	dprintk(1, "setting the interrupt mask\n");
+ 	cx_set(MO_PCI_INTMSK, core->pci_irqmask | PCI_INT_TSINT);
+-- 
+2.34.1
+
 
 
