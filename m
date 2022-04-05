@@ -2,122 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D25D2C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:33:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FD60C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:34:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377460AbiDEL3U (ORCPT
+        id S1377488AbiDEL31 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:29:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42692 "EHLO
+        Tue, 5 Apr 2022 07:29:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243670AbiDEIuz (ORCPT
+        with ESMTP id S243780AbiDEIvD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:50:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 858F9DCB;
-        Tue,  5 Apr 2022 01:39:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 43EA861532;
-        Tue,  5 Apr 2022 08:38:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 542F6C385A0;
-        Tue,  5 Apr 2022 08:38:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147919;
-        bh=lyl/QYeOAOaVkyrba6LwCYjzbpaPtg3ddCAsSWp4+5E=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QFOV3GbLMAzdtni8Tyorq6DnHs4iUWoZdZuQ3P2VFAcHUzBocVV1VjljRbqHCoIRC
-         Qmmc9ZkbQ/QyO3i2kZrua8UkaDm0CvxfyAhkl8BqSiG8Y6HVRVrF3Jz6tAYNBfL2Yk
-         x+U2vVKdVjlxEya3c254hrRwkRJTMhlwUpWgiC0k=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shawn Guo <shawn.guo@linaro.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH 5.16 0170/1017] PM: domains: Fix sleep-in-atomic bug caused by genpd_debug_remove()
-Date:   Tue,  5 Apr 2022 09:18:03 +0200
-Message-Id: <20220405070359.272949027@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
-References: <20220405070354.155796697@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 04:51:03 -0400
+Received: from mail-yw1-x112d.google.com (mail-yw1-x112d.google.com [IPv6:2607:f8b0:4864:20::112d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5BACCA0D7
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 01:39:27 -0700 (PDT)
+Received: by mail-yw1-x112d.google.com with SMTP id 00721157ae682-2eb888cf7e7so39614977b3.13
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 01:39:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=b7F9tc9U7ODWDy1kAzf4zi/DKP2a+QyrxECa1zuE41o=;
+        b=QUTlJqWGEJ/UKdADlSQrRRdY30NpO4KChs1YK7qmndWac2mhd+Ig5mC6Q7ZrOcW/gd
+         zW6RLpfaLEUA3MTkZyZLM10EDrIuMjKQUEDj58qSpjWeLRbWjDmEppRcEmc5cVDrPYGS
+         +e1g7k5kXmHeqCIs5Xn2lzD7g2xL9NVWgTRVvFuVGpqV1s4BgyjTbyh1uMYa3pP+ytvY
+         Eq6KEH1UGAPxE9MaVTsizISqlWJBHHhGpTnkUKfgiOrfJNqzd3+Fo5VnorC+FSJNoIlI
+         cN3cb3bgV1KXgxIPBoIuyiK/RMr0D7zXc2depVFxO2Qt60epS92OZCbcg78emxn6I3X4
+         Ps8g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=b7F9tc9U7ODWDy1kAzf4zi/DKP2a+QyrxECa1zuE41o=;
+        b=TFZTASGb4ithFtSdfT/iLfivuwW9Jis2E2lLnhU+f51SwY9FLx1ot1BzoxWvHfZXH1
+         D/nkN1pMF57X2RhrwnbUJGWYfhE+PsAH0073Fh3CiA8NoRIgvNMqPelp7MeZD8tBZ6ll
+         qJwbEImWLdqS8li9E7PFbn1j3bdTqYlLRtMuVmkZVM9tcbpXcX+roGUqmGoooD8IWoMZ
+         CeoWbghbLXIWsEdfZm+Ucigc3p/JTtAhHRTK9zUKEWb1FfSqUBg4M0mEU+WaUuPogYGI
+         uAmXesmewGjnUkhgYVsqw1PEsaoVWM19OzIyAo13Hm1Djys7xQFPejEYvQtpYDG60rsZ
+         7hfw==
+X-Gm-Message-State: AOAM53133Uw5QGwxawZUdEK9KZLT6mUW6cSMB6yi9rv8xYqguCjEI505
+        2AQNT7N/hKoYGWgNKGMSWAN5TldHNwHTGc4lcGLfrN85VyAesg==
+X-Google-Smtp-Source: ABdhPJwd1xIsih8zdvSLhAEN6Bd/INuwdLnntyWYrppF0Q0nOKUpEivHs1rAG8A5FTR9XOqtPR8PkNd6zg/CMdDtISU=
+X-Received: by 2002:a81:1196:0:b0:2eb:897a:7b5 with SMTP id
+ 144-20020a811196000000b002eb897a07b5mr1636637ywr.31.1649147936453; Tue, 05
+ Apr 2022 01:38:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220331065640.5777-1-songmuchun@bytedance.com>
+ <20220331065640.5777-2-songmuchun@bytedance.com> <d6e2581e-a8ac-4848-2c64-4a221bd03bca@arm.com>
+In-Reply-To: <d6e2581e-a8ac-4848-2c64-4a221bd03bca@arm.com>
+From:   Muchun Song <songmuchun@bytedance.com>
+Date:   Tue, 5 Apr 2022 16:38:20 +0800
+Message-ID: <CAMZfGtWyXmPwZWsH_pP_M7p30uBww8BdP0DRXQRjBkT_VP=uUA@mail.gmail.com>
+Subject: Re: [PATCH v4 2/2] arm64: mm: hugetlb: Enable HUGETLB_PAGE_FREE_VMEMMAP
+ for arm64
+To:     Anshuman Khandual <anshuman.khandual@arm.com>
+Cc:     Will Deacon <will@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Hildenbrand <david@redhat.com>,
+        Oscar Salvador <osalvador@suse.de>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        David Rientjes <rientjes@google.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>, james.morse@arm.com,
+        Barry Song <21cnbao@gmail.com>,
+        LAK <linux-arm-kernel@lists.infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Xiongchun duan <duanxiongchun@bytedance.com>,
+        Fam Zheng <fam.zheng@bytedance.com>,
+        Muchun Song <smuchun@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shawn Guo <shawn.guo@linaro.org>
+On Tue, Apr 5, 2022 at 12:44 PM Anshuman Khandual
+<anshuman.khandual@arm.com> wrote:
+>
+>
+>
+> On 3/31/22 12:26, Muchun Song wrote:
+> > 1st concern:
+> > '''
+> > But what happens when a hot remove section's vmemmap area (which is
+> > being teared down) is nearby another vmemmap area which is either created
+> > or being destroyed for HugeTLB alloc/free purpose. As you mentioned
+> > HugeTLB pages inside the hot remove section might be safe. But what about
+> > other HugeTLB areas whose vmemmap area shares page table entries with
+> > vmemmap entries for a section being hot removed ? Massive HugeTLB alloc
+> > /use/free test cycle using memory just adjacent to a memory hotplug area,
+> > which is always added and removed periodically, should be able to expose
+> > this problem.
+> > '''
+> >
+> > Answer: At the time memory is removed, all HugeTLB pages either have been
+> > migrated away or dissolved.  So there is no race between memory hot remove
+> > and free_huge_page_vmemmap().  Therefore, HugeTLB pages inside the hot
+> > remove section is safe.  Let's talk your question "what about other
+>
+> HugeTLB pages inside the memory range is safe but concern is about the
+> vmemmap mapping for the HugeTLB which might share intermediate entries
+> with vmemmap mapping for the memory range/section being removed.
 
-commit f6bfe8b5b2c2a5ac8bd2fc7bca3706e6c3fc26d8 upstream.
+The shared page table level only could be PMD, PUD and PGD, the PTE
+page table cannot be shared with other sections, and we only exchange
+PTEs for vmemmap mapping.
 
-When a genpd with GENPD_FLAG_IRQ_SAFE gets removed, the following
-sleep-in-atomic bug will be seen, as genpd_debug_remove() will be called
-with a spinlock being held.
+>
+> > HugeTLB areas whose vmemmap area shares page table entries with vmemmap
+> > entries for a section being hot removed ?", the question is not
+>
+> Right.
+>
+> > established.  The minimal granularity size of hotplug memory 128MB (on
+> > arm64, 4k base page), any HugeTLB smaller than 128MB is within a section,
+> > then, there is no share PTE page tables between HugeTLB in this section
+>
+> 128MB is the hot removable granularity but, its corresponding vmemmap
+> range is smaller i.e (128MB/4K) * sizeof(struct page). Memory section
+> getting hot removed (its vmemmap mapping being teared down) along with
+> HugeTLB (on another section) vmemmap remap operation, could not collide
+> while inside vmemmap mapping areas on init_mm ?
 
-[    0.029183] BUG: sleeping function called from invalid context at kernel/locking/rwsem.c:1460
-[    0.029204] in_atomic(): 1, irqs_disabled(): 128, non_block: 0, pid: 1, name: swapper/0
-[    0.029219] preempt_count: 1, expected: 0
-[    0.029230] CPU: 1 PID: 1 Comm: swapper/0 Not tainted 5.17.0-rc4+ #489
-[    0.029245] Hardware name: Thundercomm TurboX CM2290 (DT)
-[    0.029256] Call trace:
-[    0.029265]  dump_backtrace.part.0+0xbc/0xd0
-[    0.029285]  show_stack+0x3c/0xa0
-[    0.029298]  dump_stack_lvl+0x7c/0xa0
-[    0.029311]  dump_stack+0x18/0x34
-[    0.029323]  __might_resched+0x10c/0x13c
-[    0.029338]  __might_sleep+0x4c/0x80
-[    0.029351]  down_read+0x24/0xd0
-[    0.029363]  lookup_one_len_unlocked+0x9c/0xcc
-[    0.029379]  lookup_positive_unlocked+0x10/0x50
-[    0.029392]  debugfs_lookup+0x68/0xac
-[    0.029406]  genpd_remove.part.0+0x12c/0x1b4
-[    0.029419]  of_genpd_remove_last+0xa8/0xd4
-[    0.029434]  psci_cpuidle_domain_probe+0x174/0x53c
-[    0.029449]  platform_probe+0x68/0xe0
-[    0.029462]  really_probe+0x190/0x430
-[    0.029473]  __driver_probe_device+0x90/0x18c
-[    0.029485]  driver_probe_device+0x40/0xe0
-[    0.029497]  __driver_attach+0xf4/0x1d0
-[    0.029508]  bus_for_each_dev+0x70/0xd0
-[    0.029523]  driver_attach+0x24/0x30
-[    0.029534]  bus_add_driver+0x164/0x22c
-[    0.029545]  driver_register+0x78/0x130
-[    0.029556]  __platform_driver_register+0x28/0x34
-[    0.029569]  psci_idle_init_domains+0x1c/0x28
-[    0.029583]  do_one_initcall+0x50/0x1b0
-[    0.029595]  kernel_init_freeable+0x214/0x280
-[    0.029609]  kernel_init+0x2c/0x13c
-[    0.029622]  ret_from_fork+0x10/0x20
+The boundary address of a section is aligned with 128MB and its
+corresponding vmemmap boundary address is aligned with 2MB
+which is mapped with a separated PTE page table (or a PMD entry).
+Different sections do not share the same PTE, there are no conflicts
+between a hot removed section and a remapping vmemmap section
+since we are operating on different PTE. Right?
 
-It doesn't seem necessary to call genpd_debug_remove() with the lock, so
-move it out from locking to fix the problem.
+>
+> > and ones in other sections and a HugeTLB page could not cross two
+> > sections.  In this case, the section cannot be freed.  Any HugeTLB bigger
+>
+> Right, they dont cross into two different sections.
+>
+> > than 128MB (section size) whose vmemmap pages is an integer multiple of
+> > 2MB (PMD-mapped).  As long as:
+> >
+> >   1) HugeTLBs are naturally aligned, power-of-two sizes
+> >   2) The HugeTLB size >= the section size
+> >   3) The HugeTLB size >= the vmemmap leaf mapping size
+> >
+> > Then a HugeTLB will not share any leaf page table entries with *anything
+> > else*, but will share intermediate entries.  In this case, at the time memory
+> > is removed, all HugeTLB pages either have been migrated away or dissolved.
+> > So there is also no race between memory hot remove and
+> > free_huge_page_vmemmap().
+>
+> If they just share intermediate entries, free_empty_tables() will not free
+> up page table pages, as there will be valid non-zero entries in them. But
 
-Fixes: 718072ceb211 ("PM: domains: create debugfs nodes when adding power domains")
-Signed-off-by: Shawn Guo <shawn.guo@linaro.org>
-Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
-Cc: 5.11+ <stable@vger.kernel.org> # 5.11+
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/base/power/domain.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Right.
 
---- a/drivers/base/power/domain.c
-+++ b/drivers/base/power/domain.c
-@@ -2058,9 +2058,9 @@ static int genpd_remove(struct generic_p
- 		kfree(link);
- 	}
- 
--	genpd_debug_remove(genpd);
- 	list_del(&genpd->gpd_list_node);
- 	genpd_unlock(genpd);
-+	genpd_debug_remove(genpd);
- 	cancel_work_sync(&genpd->power_off_work);
- 	if (genpd_is_cpu_domain(genpd))
- 		free_cpumask_var(genpd->cpus);
+> the problem here is not UAF, its accessing wrong entries and crashing while
+> de-referncing the pointer. Hence I am wondering if no such scenario can be
+> possible.
+>
 
+What's the wrong entries? You mean the reused vmemmap page entries?
+If so, I think free_empty_tables() will not cause any crash.  The hot removed
+operation couldn't reach those entries since those addresses mapped with
+those reused entries are not included in the range of the hot removed section.
 
+Thanks.
