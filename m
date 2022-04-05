@@ -2,173 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7874CC35294
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A74DC35295
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:04:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244301AbiDEVBU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:01:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53630 "EHLO
+        id S244947AbiDEVBk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 17:01:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345448AbiDENFV (ORCPT
+        with ESMTP id S1352485AbiDEKEi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 09:05:21 -0400
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E9C970CE6
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 05:06:31 -0700 (PDT)
-Received: by mail-wr1-x42d.google.com with SMTP id u3so19014198wrg.3
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 05:06:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=9elements.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Uuy/oSrqPfKVMfFVdZlb83GjMVmrKFP4k9YDPQWDMGE=;
-        b=KlmKzPs++IYx5FTaDoGXSl1qs3hrr/00SCAaOP/FJu6mlkJaYvksrnCElB52Rloy6n
-         zREeVaGKzvRBPgtlUd6+6t9vJiwIVUBwSHaijo2i/0mm9Kn6LVOzPLEp64RbyKaa6dHv
-         dJWrvIzHcTjjEhwKj4PZVMGErl5caRKftsBQSj70/3Ifv+4PnjAahlkS/qhZU/yrbZam
-         ItR7BKa65xH+yrgWSkbAeLHFYa8vuXGmESX66vo+7pp8uJc5Cte8U/KR+i7AFa9GvbxZ
-         PXtl0McwO9Yy7MzaaDa7yinO2NxTk8JMRK4IrwcBV/U1Dtatzjly1HqyhddOV/XoGCt5
-         YnaQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Uuy/oSrqPfKVMfFVdZlb83GjMVmrKFP4k9YDPQWDMGE=;
-        b=1IPUwDXo2ZkmnikNVf64lXmGeEwk4kOc/8rdqotubElxx5DUKWbxEJ4EDGwY0DiNL3
-         aZ6HBiAWMYvgsKkLNxvEhpHJgCbyoO1IbG0JSCWuJNZscg41GzkAnlnLJG+SLIKCW68G
-         Hv7uudSPUnUWXzvDIILkp9OyhzNgqm4tEvB8Z+YGRz83Hwp5fqAzj8UVmydaiKQR7Lb9
-         LFMXPA5rjC5i+2aPtpEQIxMGA8kYuA7N7fuEx91HvWx/2KHf6Y54TWCoXsvETWBsvgAF
-         lmaduMoT+ReaSqnplXF30tw/dwSVCR4/YOd5Kp6FxSxptzmoeUBSNWtlM2e6V0J4/9Fj
-         rzNw==
-X-Gm-Message-State: AOAM5308GCslW+QBMN/wBKFMdQWI/DmG5VEh+GIyKEulgKERI0E0qhDX
-        rkC4gyIYZTuUHng2F3FmZjgLKA==
-X-Google-Smtp-Source: ABdhPJz97+aMaGG8He5+J24ubzUoWrE9dXq/VRTjoheWERDGZngEHr4Gy/Taci3KYvzSADEOUfE0YQ==
-X-Received: by 2002:adf:dc41:0:b0:205:8df5:464c with SMTP id m1-20020adfdc41000000b002058df5464cmr2401463wrj.445.1649160390155;
-        Tue, 05 Apr 2022 05:06:30 -0700 (PDT)
-Received: from fedora.lab.9e.network (ip-078-094-000-051.um19.pools.vodafone-ip.de. [78.94.0.51])
-        by smtp.gmail.com with ESMTPSA id r16-20020a7bc090000000b0038e73023334sm1994323wmh.2.2022.04.05.05.06.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Apr 2022 05:06:28 -0700 (PDT)
-From:   Patrick Rudolph <patrick.rudolph@9elements.com>
-To:     Peter Rosin <peda@axentia.se>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc:     Patrick Rudolph <patrick.rudolph@9elements.com>,
-        Rob Herring <robh+dt@kernel.org>, linux-i2c@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [v7 1/3] dt-bindings: i2c: Add Maxim MAX735x/MAX736x variants
-Date:   Tue,  5 Apr 2022 14:05:49 +0200
-Message-Id: <20220405120552.433415-2-patrick.rudolph@9elements.com>
+        Tue, 5 Apr 2022 06:04:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4047EBABAF;
+        Tue,  5 Apr 2022 02:53:20 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DAEFEB81B13;
+        Tue,  5 Apr 2022 09:53:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A61DC385A3;
+        Tue,  5 Apr 2022 09:53:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152397;
+        bh=zUUeeZnaMW+gV0tRTgNtHUinIBWwkI9x7zikir/8Uio=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ywnkCbhpP2iTKCgpduU2MsIOb1HuXH2JZ49rdnswWT4KZkSjY4y93QTRN2em6NrH2
+         XqRYMYI7A5uuBziuAnOeQBPLW7Y4bL5rSoF4mYdBNqq295jUG9IpoFk7giDspcChZS
+         9XoYO39Xqm88sQGOyYGzDc+ZWz50OpHZ1Y+NmIRM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 762/913] media: i2c: ov5648: Fix lockdep error
+Date:   Tue,  5 Apr 2022 09:30:24 +0200
+Message-Id: <20220405070402.673138606@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405120552.433415-1-patrick.rudolph@9elements.com>
-References: <20220405120552.433415-1-patrick.rudolph@9elements.com>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Update the pca954x bindings to add support for the Maxim MAX735x/MAX736x
-chips. The functionality will be provided by the exisintg pca954x driver.
+From: Hans de Goede <hdegoede@redhat.com>
 
-While on it make the interrupts support conditionally as not all of the
-existing chips have interrupts.
+[ Upstream commit d4cb5d3c4cee28aa89b02bc33d930a6cf75e7f79 ]
 
-For chips that are powered off by default add an optional regulator
-called vdd-supply.
+ov5648_state_init() calls ov5648_state_mipi_configure() which uses
+__v4l2_ctrl_s_ctrl[_int64](). This means that sensor->mutex (which
+is also sensor->ctrls.handler.lock) must be locked before calling
+ov5648_state_init().
 
-Signed-off-by: Patrick Rudolph <patrick.rudolph@9elements.com>
+ov5648_state_mipi_configure() is also used in other places where
+the lock is already held so it cannot be changed itself.
+
+Note this is based on an identical (tested) fix for the ov8865 driver,
+this has only been compile-tested.
+
+Cc: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+Reviewed-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../bindings/i2c/i2c-mux-pca954x.yaml         | 44 ++++++++++++++-----
- 1 file changed, 34 insertions(+), 10 deletions(-)
+ drivers/media/i2c/ov5648.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/i2c/i2c-mux-pca954x.yaml b/Documentation/devicetree/bindings/i2c/i2c-mux-pca954x.yaml
-index 9f1726d0356b..132c3e54e7ab 100644
---- a/Documentation/devicetree/bindings/i2c/i2c-mux-pca954x.yaml
-+++ b/Documentation/devicetree/bindings/i2c/i2c-mux-pca954x.yaml
-@@ -4,21 +4,48 @@
- $id: http://devicetree.org/schemas/i2c/i2c-mux-pca954x.yaml#
- $schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/drivers/media/i2c/ov5648.c b/drivers/media/i2c/ov5648.c
+index 78040f0ac02f..ef8b52dc9401 100644
+--- a/drivers/media/i2c/ov5648.c
++++ b/drivers/media/i2c/ov5648.c
+@@ -1778,8 +1778,14 @@ static int ov5648_state_configure(struct ov5648_sensor *sensor,
  
--title: NXP PCA954x I2C bus switch
-+title: NXP PCA954x I2C and compatible bus switches
- 
- maintainers:
-   - Laurent Pinchart <laurent.pinchart@ideasonboard.com>
- 
- description:
--  The binding supports NXP PCA954x and PCA984x I2C mux/switch devices.
-+  The binding supports NXP PCA954x and PCA984x I2C mux/switch devices,
-+  and the Maxim MAX735x and MAX736x I2C mux/switch devices.
- 
- allOf:
-   - $ref: /schemas/i2c/i2c-mux.yaml#
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - maxim,max7367
-+              - maxim,max7369
-+              - nxp,pca9542
-+              - nxp,pca9543
-+              - nxp,pca9544
-+              - nxp,pca9545
-+    then:
-+      properties:
-+        interrupts:
-+          maxItems: 1
+ static int ov5648_state_init(struct ov5648_sensor *sensor)
+ {
+-	return ov5648_state_configure(sensor, &ov5648_modes[0],
+-				      ov5648_mbus_codes[0]);
++	int ret;
 +
-+        "#interrupt-cells":
-+          const: 2
++	mutex_lock(&sensor->mutex);
++	ret = ov5648_state_configure(sensor, &ov5648_modes[0],
++				     ov5648_mbus_codes[0]);
++	mutex_unlock(&sensor->mutex);
 +
-+        interrupt-controller: true
++	return ret;
+ }
  
- properties:
-   compatible:
-     oneOf:
-       - enum:
-+          - maxim,max7356
-+          - maxim,max7357
-+          - maxim,max7358
-+          - maxim,max7367
-+          - maxim,max7368
-+          - maxim,max7369
-           - nxp,pca9540
-           - nxp,pca9542
-           - nxp,pca9543
-@@ -38,14 +65,6 @@ properties:
-   reg:
-     maxItems: 1
- 
--  interrupts:
--    maxItems: 1
--
--  "#interrupt-cells":
--    const: 2
--
--  interrupt-controller: true
--
-   reset-gpios:
-     maxItems: 1
- 
-@@ -59,6 +78,9 @@ properties:
-     description: if present, overrides i2c-mux-idle-disconnect
-     $ref: /schemas/mux/mux-controller.yaml#/properties/idle-state
- 
-+  vdd-supply:
-+    description: A voltage regulator supplying power to the chip.
-+
- required:
-   - compatible
-   - reg
-@@ -79,6 +101,8 @@ examples:
-             #size-cells = <0>;
-             reg = <0x74>;
- 
-+            vdd-supply = <&p3v3>;
-+
-             interrupt-parent = <&ipic>;
-             interrupts = <17 IRQ_TYPE_LEVEL_LOW>;
-             interrupt-controller;
+ /* Sensor Base */
 -- 
-2.35.1
+2.34.1
+
+
 
