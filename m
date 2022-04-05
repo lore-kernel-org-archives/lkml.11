@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4753C43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:21:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24499C4167B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:21:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389743AbiDEPV6 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:21:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37026 "EHLO
+        id S233896AbiDEPWG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 11:22:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346880AbiDEJpk (ORCPT
+        with ESMTP id S1346780AbiDEJp2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:45:40 -0400
+        Tue, 5 Apr 2022 05:45:28 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2040C63CA;
-        Tue,  5 Apr 2022 02:32:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A258BCF2;
+        Tue,  5 Apr 2022 02:31:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B0FC5B81CB5;
-        Tue,  5 Apr 2022 09:32:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E33D3C385A3;
-        Tue,  5 Apr 2022 09:32:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D8161B81CC1;
+        Tue,  5 Apr 2022 09:31:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DECBC385A3;
+        Tue,  5 Apr 2022 09:31:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151123;
-        bh=Ea5ndGWXz9K8ljtr3OiwEJECD2uDT/KjukYvFs0JZnY=;
+        s=korg; t=1649151106;
+        bh=+tmigAPgxOUXyG8vpQNW9jGjOLFsVPcicykoJQBLNEE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pMWI75GI8mL2GxchqzVIbZjRql9L4aZ44iueRPKZOFVKGk4spg97Rwt1B6g5zLkVa
-         rOpiacMm9ii+kl7Pl/ihCM3pPMX3No6HYeYkK52DAnV7sa9JGBk/6iYeuOUSEaLeLx
-         St3i4bXonLjvs2lew4kcywMrg6tZzjhpbEs+CeAo=
+        b=mZfS9IMco6+3jEsTvD6y9XJbWfRE728c7gRJulZ7NN4nzTf5UukqR2roVBzQRaF01
+         hbJ9w5+X7OmK+zT1lDnKoTpL9JMhL/uuMWMkG1AyE3muTVRjdkOoIRsLnuNUrRCEjo
+         76DPmsRY6XWNKnP+A7uG5rULN2Xyv6z9pVT92oiQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, devicetree@vger.kernel.org,
-        Maulik Shah <quic_mkshah@quicinc.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 303/913] arm64: dts: qcom: sm8350: Correct TCS configuration for apps rsc
-Date:   Tue,  5 Apr 2022 09:22:45 +0200
-Message-Id: <20220405070348.939161671@linuxfoundation.org>
+Subject: [PATCH 5.15 297/913] soc: qcom: ocmem: Fix missing put_device() call in of_get_ocmem
+Date:   Tue,  5 Apr 2022 09:22:39 +0200
+Message-Id: <20220405070348.759773335@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -51,35 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maulik Shah <quic_mkshah@quicinc.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit a131255e4ad1ef8d4873ecba21561ba272b2547a ]
+[ Upstream commit 0ff027027e05a866491bbb53494f0e2a61354c85 ]
 
-Correct the TCS config by updating the number of TCSes for each type.
+The reference taken by 'of_find_device_by_node()' must be released when
+not needed anymore.
+Add the corresponding 'put_device()' in the error handling path.
 
-Cc: devicetree@vger.kernel.org
-Fixes: b7e8f433a673 ("arm64: dts: qcom: Add basic devicetree support for SM8350 SoC")
-Signed-off-by: Maulik Shah <quic_mkshah@quicinc.com>
+Fixes: 01f937ffc468 ("soc: qcom: ocmem: don't return NULL in of_get_ocmem")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
 Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/1641749107-31979-4-git-send-email-quic_mkshah@quicinc.com
+Link: https://lore.kernel.org/r/20220107073126.2335-1-linmq006@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/qcom/sm8350.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/soc/qcom/ocmem.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm64/boot/dts/qcom/sm8350.dtsi b/arch/arm64/boot/dts/qcom/sm8350.dtsi
-index a8886adaaf37..3d32d5581816 100644
---- a/arch/arm64/boot/dts/qcom/sm8350.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sm8350.dtsi
-@@ -979,7 +979,7 @@
- 			qcom,tcs-offset = <0xd00>;
- 			qcom,drv-id = <2>;
- 			qcom,tcs-config = <ACTIVE_TCS  2>, <SLEEP_TCS   3>,
--					  <WAKE_TCS    3>, <CONTROL_TCS 1>;
-+					  <WAKE_TCS    3>, <CONTROL_TCS 0>;
- 
- 			rpmhcc: clock-controller {
- 				compatible = "qcom,sm8350-rpmh-clk";
+diff --git a/drivers/soc/qcom/ocmem.c b/drivers/soc/qcom/ocmem.c
+index f1875dc31ae2..85f82e195ef8 100644
+--- a/drivers/soc/qcom/ocmem.c
++++ b/drivers/soc/qcom/ocmem.c
+@@ -206,6 +206,7 @@ struct ocmem *of_get_ocmem(struct device *dev)
+ 	ocmem = platform_get_drvdata(pdev);
+ 	if (!ocmem) {
+ 		dev_err(dev, "Cannot get ocmem\n");
++		put_device(&pdev->dev);
+ 		return ERR_PTR(-ENODEV);
+ 	}
+ 	return ocmem;
 -- 
 2.34.1
 
