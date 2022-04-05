@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29EE2C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1248BC4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:51:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1579808AbiDEXdD (ORCPT
+        id S1579788AbiDEXc5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:33:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50652 "EHLO
+        Tue, 5 Apr 2022 19:32:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358034AbiDEK14 (ORCPT
+        with ESMTP id S1349391AbiDEJtr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:27:56 -0400
+        Tue, 5 Apr 2022 05:49:47 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7C0D6949F;
-        Tue,  5 Apr 2022 03:13:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09D9A15727;
+        Tue,  5 Apr 2022 02:44:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4373461562;
-        Tue,  5 Apr 2022 10:13:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5713FC385A1;
-        Tue,  5 Apr 2022 10:13:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9A1DD6164D;
+        Tue,  5 Apr 2022 09:44:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A89DAC385A2;
+        Tue,  5 Apr 2022 09:44:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153592;
-        bh=B8v8pNfUZ+uRQm2T0PwBEj/KLWQ6Ebx8iIUP4hU0hd4=;
+        s=korg; t=1649151887;
+        bh=Xo893Q7YwUEI8ouUMcgSCmtm2ovJwxf/S3NIzt95yFY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HsVN7j8VRsyw5oAjX0zr2oKXUyo0FZq3c+Yrfcgd5NpMfbP3befwrA1yXpRdKu5fA
-         gLa6/xL3gxNGyFVDrI3YfWVi09ox0twth8Ueb501url/0DmGhCg1PP5ZBz0+iG7I7M
-         4iwip9Bkx78lrL9QrG5skho4hr/05kvH0N7u9gug=
+        b=aleJTEKnNX8rbn90h6Vf4aP8TM4+Sj4G2mO7sjCuOmuP1/5sdWmjzcncu6hFVTa3j
+         vPtGka1saamgBUri+pVLU+/15GZwOTRdez2a/KXxvWS8P1nbyylWoY01bC13Tei/9W
+         DbLNZ0g81bjEWzjn14yRNiEGyYd1X0iu4aLuQeYQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org, Yongzhi Liu <lyz_cs@pku.edu.cn>,
+        Jason Gunthorpe <jgg@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 276/599] drm/amd/pm: return -ENOTSUPP if there is no get_dpm_ultimate_freq function
-Date:   Tue,  5 Apr 2022 09:29:30 +0200
-Message-Id: <20220405070307.050919719@linuxfoundation.org>
+Subject: [PATCH 5.15 539/913] RDMA/mlx5: Fix memory leak in error flow for subscribe event routine
+Date:   Tue,  5 Apr 2022 09:26:41 +0200
+Message-Id: <20220405070356.005528742@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,40 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+From: Yongzhi Liu <lyz_cs@pku.edu.cn>
 
-[ Upstream commit 430e6a0212b2a0eb1de5e9d47a016fa79edf3978 ]
+[ Upstream commit 087f9c3f2309ed183f7e4b85ae57121d8663224d ]
 
-clang static analysis reports this represenative problem
-amdgpu_smu.c:144:18: warning: The left operand of '*' is a garbage value
-        return clk_freq * 100;
-               ~~~~~~~~ ^
+In case the second xa_insert() fails, the obj_event is not released.  Fix
+the error unwind flow to free that memory to avoid a memory leak.
 
-If there is no get_dpm_ultimate_freq function,
-smu_get_dpm_freq_range returns success without setting the
-output min,max parameters.  So return an -ENOTSUPP error.
-
-Fixes: e5ef784b1e17 ("drm/amd/powerplay: revise calling chain on retrieving frequency range")
-Signed-off-by: Tom Rix <trix@redhat.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Fixes: 759738537142 ("IB/mlx5: Enable subscription for device events over DEVX")
+Link: https://lore.kernel.org/r/1647018361-18266-1-git-send-email-lyz_cs@pku.edu.cn
+Signed-off-by: Yongzhi Liu <lyz_cs@pku.edu.cn>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/infiniband/hw/mlx5/devx.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c b/drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c
-index e5893218fa4b..ee27970cfff9 100644
---- a/drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c
-+++ b/drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c
-@@ -115,7 +115,7 @@ int smu_get_dpm_freq_range(struct smu_context *smu,
- 			   uint32_t *min,
- 			   uint32_t *max)
- {
--	int ret = 0;
-+	int ret = -ENOTSUPP;
+diff --git a/drivers/infiniband/hw/mlx5/devx.c b/drivers/infiniband/hw/mlx5/devx.c
+index e95967aefe78..21beded40066 100644
+--- a/drivers/infiniband/hw/mlx5/devx.c
++++ b/drivers/infiniband/hw/mlx5/devx.c
+@@ -1891,8 +1891,10 @@ subscribe_event_xa_alloc(struct mlx5_devx_event_table *devx_event_table,
+ 				key_level2,
+ 				obj_event,
+ 				GFP_KERNEL);
+-		if (err)
++		if (err) {
++			kfree(obj_event);
+ 			return err;
++		}
+ 		INIT_LIST_HEAD(&obj_event->obj_sub_list);
+ 	}
  
- 	if (!min && !max)
- 		return -EINVAL;
 -- 
 2.34.1
 
