@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2D79C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E31A3C43219
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:48:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391060AbiDENrC (ORCPT
+        id S1391076AbiDENrF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:47:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60026 "EHLO
+        Tue, 5 Apr 2022 09:47:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240032AbiDEJZw (ORCPT
+        with ESMTP id S244019AbiDEJ0K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:25:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C772DE0BF;
-        Tue,  5 Apr 2022 02:15:17 -0700 (PDT)
+        Tue, 5 Apr 2022 05:26:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46F47DE906;
+        Tue,  5 Apr 2022 02:15:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 953FF61673;
-        Tue,  5 Apr 2022 09:14:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1DF2C385A2;
-        Tue,  5 Apr 2022 09:14:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C2E82B81B62;
+        Tue,  5 Apr 2022 09:15:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20C98C385A2;
+        Tue,  5 Apr 2022 09:15:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150086;
-        bh=LuZ72yR3zA8xYuhPdNlrC+HdmP3HwSUgVvw+BOohrac=;
+        s=korg; t=1649150116;
+        bh=g0TljGLO1IzFHta7Q9gIR9X96djpoWB7T6QSJAJD6jc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HN8UlHMAYLkut6isRhXYCQT8dT6EP9WtNsOb98qFcEOgTeDmLFW03EkQAajrmiwMC
-         Fawnl0LTJyTxsS9zsUNoVVeq5I8X6xxVV0U4zHZ6wkKuEmOHHXBbH/fK/9AbAAG2aw
-         zgloVXS11GwGSjuMzl6sQWezj5kWaI6172lbwg48=
+        b=isIcuypI4bToG7GfP5O1j3ZzFpsemGE5QInCdKKFSBMNKNGSRD+O7diQRzP28cThf
+         QCnp+It/fdZXOO3LT7mA2T/2oDmGOpajbEoTPyGdWtYO7Fj2rUFynf2f/QwcJRzklE
+         Ml8G2tXL6HaOMUa+MVbQT/N0pgNFM2RtKZtdEGY4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Marc Zyngier <maz@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Vladimir Murzin <vladimir.murzin@arm.com>
-Subject: [PATCH 5.16 0948/1017] ARM: iop32x: offset IRQ numbers by 1
-Date:   Tue,  5 Apr 2022 09:31:01 +0200
-Message-Id: <20220405070422.352220484@linuxfoundation.org>
+        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.16 0921/1017] wireguard: socket: ignore v6 endpoints when ipv6 is disabled
+Date:   Tue,  5 Apr 2022 09:30:34 +0200
+Message-Id: <20220405070421.557203254@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -52,152 +49,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+From: Jason A. Donenfeld <Jason@zx2c4.com>
 
-commit 9d67412f24cc3a2c05f35f7c856addb07a2960ce upstream.
+commit 77fc73ac89be96ec8f39e8efa53885caa7cb3645 upstream.
 
-iop32x is one of the last platforms to use IRQ 0, and this has apparently
-stopped working in a 2014 cleanup without anyone noticing. This interrupt
-is used for the DMA engine, so most likely this has not actually worked
-in the past 7 years, but it's also not essential for using this board.
+The previous commit fixed a memory leak on the send path in the event
+that IPv6 is disabled at compile time, but how did a packet even arrive
+there to begin with? It turns out we have previously allowed IPv6
+endpoints even when IPv6 support is disabled at compile time. This is
+awkward and inconsistent. Instead, let's just ignore all things IPv6,
+the same way we do other malformed endpoints, in the case where IPv6 is
+disabled.
 
-I'm splitting out this change from my GENERIC_IRQ_MULTI_HANDLER
-conversion so it can be backported if anyone cares.
-
-Fixes: a71b092a9c68 ("ARM: Convert handle_IRQ to use __handle_domain_irq")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-[ardb: take +1 offset into account in mask/unmask and init as well]
-Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
-Tested-by: Marc Zyngier <maz@kernel.org>
-Tested-by: Vladimir Murzin <vladimir.murzin@arm.com> # ARMv7M
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Fixes: e7096c131e51 ("net: WireGuard secure network tunnel")
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/mach-iop32x/include/mach/entry-macro.S |    2 
- arch/arm/mach-iop32x/include/mach/irqs.h        |    2 
- arch/arm/mach-iop32x/irq.c                      |    6 +-
- arch/arm/mach-iop32x/irqs.h                     |   60 ++++++++++++------------
- 4 files changed, 37 insertions(+), 33 deletions(-)
+ drivers/net/wireguard/socket.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/arch/arm/mach-iop32x/include/mach/entry-macro.S
-+++ b/arch/arm/mach-iop32x/include/mach/entry-macro.S
-@@ -20,7 +20,7 @@
- 	mrc     p6, 0, \irqstat, c8, c0, 0	@ Read IINTSRC
- 	cmp     \irqstat, #0
- 	clzne   \irqnr, \irqstat
--	rsbne   \irqnr, \irqnr, #31
-+	rsbne   \irqnr, \irqnr, #32
- 	.endm
- 
- 	.macro arch_ret_to_user, tmp1, tmp2
---- a/arch/arm/mach-iop32x/include/mach/irqs.h
-+++ b/arch/arm/mach-iop32x/include/mach/irqs.h
-@@ -9,6 +9,6 @@
- #ifndef __IRQS_H
- #define __IRQS_H
- 
--#define NR_IRQS			32
-+#define NR_IRQS			33
- 
- #endif
---- a/arch/arm/mach-iop32x/irq.c
-+++ b/arch/arm/mach-iop32x/irq.c
-@@ -32,14 +32,14 @@ static void intstr_write(u32 val)
- static void
- iop32x_irq_mask(struct irq_data *d)
- {
--	iop32x_mask &= ~(1 << d->irq);
-+	iop32x_mask &= ~(1 << (d->irq - 1));
- 	intctl_write(iop32x_mask);
- }
- 
- static void
- iop32x_irq_unmask(struct irq_data *d)
- {
--	iop32x_mask |= 1 << d->irq;
-+	iop32x_mask |= 1 << (d->irq - 1);
- 	intctl_write(iop32x_mask);
- }
- 
-@@ -65,7 +65,7 @@ void __init iop32x_init_irq(void)
- 	    machine_is_em7210())
- 		*IOP3XX_PCIIRSR = 0x0f;
- 
--	for (i = 0; i < NR_IRQS; i++) {
-+	for (i = 1; i < NR_IRQS; i++) {
- 		irq_set_chip_and_handler(i, &ext_chip, handle_level_irq);
- 		irq_clear_status_flags(i, IRQ_NOREQUEST | IRQ_NOPROBE);
- 	}
---- a/arch/arm/mach-iop32x/irqs.h
-+++ b/arch/arm/mach-iop32x/irqs.h
-@@ -7,36 +7,40 @@
- #ifndef __IOP32X_IRQS_H
- #define __IOP32X_IRQS_H
- 
-+/* Interrupts in Linux start at 1, hardware starts at 0 */
-+
-+#define IOP_IRQ(x) ((x) + 1)
-+
- /*
-  * IOP80321 chipset interrupts
-  */
--#define IRQ_IOP32X_DMA0_EOT	0
--#define IRQ_IOP32X_DMA0_EOC	1
--#define IRQ_IOP32X_DMA1_EOT	2
--#define IRQ_IOP32X_DMA1_EOC	3
--#define IRQ_IOP32X_AA_EOT	6
--#define IRQ_IOP32X_AA_EOC	7
--#define IRQ_IOP32X_CORE_PMON	8
--#define IRQ_IOP32X_TIMER0	9
--#define IRQ_IOP32X_TIMER1	10
--#define IRQ_IOP32X_I2C_0	11
--#define IRQ_IOP32X_I2C_1	12
--#define IRQ_IOP32X_MESSAGING	13
--#define IRQ_IOP32X_ATU_BIST	14
--#define IRQ_IOP32X_PERFMON	15
--#define IRQ_IOP32X_CORE_PMU	16
--#define IRQ_IOP32X_BIU_ERR	17
--#define IRQ_IOP32X_ATU_ERR	18
--#define IRQ_IOP32X_MCU_ERR	19
--#define IRQ_IOP32X_DMA0_ERR	20
--#define IRQ_IOP32X_DMA1_ERR	21
--#define IRQ_IOP32X_AA_ERR	23
--#define IRQ_IOP32X_MSG_ERR	24
--#define IRQ_IOP32X_SSP		25
--#define IRQ_IOP32X_XINT0	27
--#define IRQ_IOP32X_XINT1	28
--#define IRQ_IOP32X_XINT2	29
--#define IRQ_IOP32X_XINT3	30
--#define IRQ_IOP32X_HPI		31
-+#define IRQ_IOP32X_DMA0_EOT	IOP_IRQ(0)
-+#define IRQ_IOP32X_DMA0_EOC	IOP_IRQ(1)
-+#define IRQ_IOP32X_DMA1_EOT	IOP_IRQ(2)
-+#define IRQ_IOP32X_DMA1_EOC	IOP_IRQ(3)
-+#define IRQ_IOP32X_AA_EOT	IOP_IRQ(6)
-+#define IRQ_IOP32X_AA_EOC	IOP_IRQ(7)
-+#define IRQ_IOP32X_CORE_PMON	IOP_IRQ(8)
-+#define IRQ_IOP32X_TIMER0	IOP_IRQ(9)
-+#define IRQ_IOP32X_TIMER1	IOP_IRQ(10)
-+#define IRQ_IOP32X_I2C_0	IOP_IRQ(11)
-+#define IRQ_IOP32X_I2C_1	IOP_IRQ(12)
-+#define IRQ_IOP32X_MESSAGING	IOP_IRQ(13)
-+#define IRQ_IOP32X_ATU_BIST	IOP_IRQ(14)
-+#define IRQ_IOP32X_PERFMON	IOP_IRQ(15)
-+#define IRQ_IOP32X_CORE_PMU	IOP_IRQ(16)
-+#define IRQ_IOP32X_BIU_ERR	IOP_IRQ(17)
-+#define IRQ_IOP32X_ATU_ERR	IOP_IRQ(18)
-+#define IRQ_IOP32X_MCU_ERR	IOP_IRQ(19)
-+#define IRQ_IOP32X_DMA0_ERR	IOP_IRQ(20)
-+#define IRQ_IOP32X_DMA1_ERR	IOP_IRQ(21)
-+#define IRQ_IOP32X_AA_ERR	IOP_IRQ(23)
-+#define IRQ_IOP32X_MSG_ERR	IOP_IRQ(24)
-+#define IRQ_IOP32X_SSP		IOP_IRQ(25)
-+#define IRQ_IOP32X_XINT0	IOP_IRQ(27)
-+#define IRQ_IOP32X_XINT1	IOP_IRQ(28)
-+#define IRQ_IOP32X_XINT2	IOP_IRQ(29)
-+#define IRQ_IOP32X_XINT3	IOP_IRQ(30)
-+#define IRQ_IOP32X_HPI		IOP_IRQ(31)
- 
- #endif
+--- a/drivers/net/wireguard/socket.c
++++ b/drivers/net/wireguard/socket.c
+@@ -242,7 +242,7 @@ int wg_socket_endpoint_from_skb(struct e
+ 		endpoint->addr4.sin_addr.s_addr = ip_hdr(skb)->saddr;
+ 		endpoint->src4.s_addr = ip_hdr(skb)->daddr;
+ 		endpoint->src_if4 = skb->skb_iif;
+-	} else if (skb->protocol == htons(ETH_P_IPV6)) {
++	} else if (IS_ENABLED(CONFIG_IPV6) && skb->protocol == htons(ETH_P_IPV6)) {
+ 		endpoint->addr6.sin6_family = AF_INET6;
+ 		endpoint->addr6.sin6_port = udp_hdr(skb)->source;
+ 		endpoint->addr6.sin6_addr = ipv6_hdr(skb)->saddr;
+@@ -285,7 +285,7 @@ void wg_socket_set_peer_endpoint(struct
+ 		peer->endpoint.addr4 = endpoint->addr4;
+ 		peer->endpoint.src4 = endpoint->src4;
+ 		peer->endpoint.src_if4 = endpoint->src_if4;
+-	} else if (endpoint->addr.sa_family == AF_INET6) {
++	} else if (IS_ENABLED(CONFIG_IPV6) && endpoint->addr.sa_family == AF_INET6) {
+ 		peer->endpoint.addr6 = endpoint->addr6;
+ 		peer->endpoint.src6 = endpoint->src6;
+ 	} else {
 
 
