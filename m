@@ -2,78 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9FCFC41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E82DAC46467
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:44:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1837192AbiDFApN (ORCPT
+        id S1837289AbiDFAp0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:45:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38258 "EHLO
+        Tue, 5 Apr 2022 20:45:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573599AbiDETXS (ORCPT
+        with ESMTP id S1347690AbiDEJqj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 15:23:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBD254FC42;
-        Tue,  5 Apr 2022 12:21:19 -0700 (PDT)
+        Tue, 5 Apr 2022 05:46:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 294DEDFD49;
+        Tue,  5 Apr 2022 02:32:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7787A617EE;
-        Tue,  5 Apr 2022 19:21:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3969DC385A0;
-        Tue,  5 Apr 2022 19:21:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649186478;
-        bh=wNbrR0kMy5CjuXO377tAi8kaHSrkxQZLX+CwiBwZIn8=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7CEFFB81C8B;
+        Tue,  5 Apr 2022 09:32:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5B44C385A2;
+        Tue,  5 Apr 2022 09:32:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151176;
+        bh=UtAF4TJdgd6LI56pIhGRnVTmygJzn7Y55xHYTWv0Fco=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=buHJBAvpQVbNR5sdtUe3WDquSf5XOnCge4HUUepr6yH3XluOPD6iLItil3DElv6XV
-         0pa7PyLtdjgwftcXxbomXqUm+1B7aNAm6YzUnJA04BiO256/TvYB2Jo6diCYxSgK+9
-         wyTMxEuOgVx4BZ7zaxMUCV4hVS4KqdUg2aq1qNSa7ahzOEBdqVnBageJUDdCGvmryc
-         SXMjAV+Ftk4H+ORGeEvZxYv7rPCnlxuOENyArB8cYd8VScSzlsaYNxj+J2362jGuBO
-         VYfRc/+PTLMulviro8dTuJwzm7P2oTCSm8fGbWJOwEdD68jpEMGcAqWC5nhWqHnVgq
-         VDqSrlTRgNDUA==
-From:   Jeff Layton <jlayton@kernel.org>
-To:     idryomov@gmail.com, xiubli@redhat.com
-Cc:     ceph-devel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org,
-        lhenriques@suse.de
-Subject: [PATCH v13 51/59] ceph: disable copy offload on encrypted inodes
-Date:   Tue,  5 Apr 2022 15:20:22 -0400
-Message-Id: <20220405192030.178326-52-jlayton@kernel.org>
+        b=hzau5B5b0J8vv6tG5YKIQlzlekWPylQ2Mfz7MaECCnF0qES2D5CrI0HEBt60RWof0
+         eFEoU3am/Y5uQOnjrhuW0IBVWIA/fibtlDkx5VMH3L4OSP7kxKtGjCa952EiE8cjOZ
+         jgMsARjsoZ/1SSSh7cYukoRdIIf3MhxMPV1KROR8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 320/913] ASoC: codecs: wc938x: fix accessing array out of bounds for enum type
+Date:   Tue,  5 Apr 2022 09:23:02 +0200
+Message-Id: <20220405070349.442730334@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405192030.178326-1-jlayton@kernel.org>
-References: <20220405192030.178326-1-jlayton@kernel.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If we have an encrypted inode, then the client will need to re-encrypt
-the contents of the new object. Disable copy offload to or from
-encrypted inodes.
+From: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 
-Signed-off-by: Jeff Layton <jlayton@kernel.org>
+[ Upstream commit cc587b7c8fbbe128f6bd0dad025a0caea5e6d164 ]
+
+Accessing enums using integer would result in array out of bounds access
+on platforms like aarch64 where sizeof(long) is 8 compared to enum size
+which is 4 bytes.
+
+Fix this by using enumerated items instead of integers.
+
+Fixes: e8ba1e05bdc0 ("ASoC: codecs: wcd938x: add basic controls")
+Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Link: https://lore.kernel.org/r/20220222183212.11580-7-srinivas.kandagatla@linaro.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ceph/file.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ sound/soc/codecs/wcd938x.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/fs/ceph/file.c b/fs/ceph/file.c
-index f74563e11058..f9e775d6cdf0 100644
---- a/fs/ceph/file.c
-+++ b/fs/ceph/file.c
-@@ -2526,6 +2526,10 @@ static ssize_t __ceph_copy_file_range(struct file *src_file, loff_t src_off,
- 		return -EOPNOTSUPP;
- 	}
+diff --git a/sound/soc/codecs/wcd938x.c b/sound/soc/codecs/wcd938x.c
+index bbc261ab2025..54671bbf7471 100644
+--- a/sound/soc/codecs/wcd938x.c
++++ b/sound/soc/codecs/wcd938x.c
+@@ -2504,7 +2504,7 @@ static int wcd938x_tx_mode_get(struct snd_kcontrol *kcontrol,
+ 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
+ 	int path = e->shift_l;
  
-+	/* Every encrypted inode gets its own key, so we can't offload them */
-+	if (IS_ENCRYPTED(src_inode) || IS_ENCRYPTED(dst_inode))
-+		return -EOPNOTSUPP;
-+
- 	if (len < src_ci->i_layout.object_size)
- 		return -EOPNOTSUPP; /* no remote copy will be done */
+-	ucontrol->value.integer.value[0] = wcd938x->tx_mode[path];
++	ucontrol->value.enumerated.item[0] = wcd938x->tx_mode[path];
  
+ 	return 0;
+ }
+@@ -2528,7 +2528,7 @@ static int wcd938x_rx_hph_mode_get(struct snd_kcontrol *kcontrol,
+ 	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
+ 	struct wcd938x_priv *wcd938x = snd_soc_component_get_drvdata(component);
+ 
+-	ucontrol->value.integer.value[0] = wcd938x->hph_mode;
++	ucontrol->value.enumerated.item[0] = wcd938x->hph_mode;
+ 
+ 	return 0;
+ }
 -- 
-2.35.1
+2.34.1
+
+
 
