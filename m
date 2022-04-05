@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44FF3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:41:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9811FC46467
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:41:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383222AbiDENlD (ORCPT
+        id S1390378AbiDENiW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:41:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44180 "EHLO
+        Tue, 5 Apr 2022 09:38:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345297AbiDEJWY (ORCPT
+        with ESMTP id S1344353AbiDEJTe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:22:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A91372BB18;
-        Tue,  5 Apr 2022 02:10:18 -0700 (PDT)
+        Tue, 5 Apr 2022 05:19:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12E0419C;
+        Tue,  5 Apr 2022 02:07:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CCAA3B81A12;
-        Tue,  5 Apr 2022 09:10:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42C26C385A2;
-        Tue,  5 Apr 2022 09:10:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A467161571;
+        Tue,  5 Apr 2022 09:07:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B27F1C385A1;
+        Tue,  5 Apr 2022 09:07:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149815;
-        bh=hpbWX8YBC6s4oo45QHF2m7r8EsVxECiMVkMLp+Qwi3A=;
+        s=korg; t=1649149666;
+        bh=6gpvLMzBnjn0DjTfgIKa+rsrDplZXOu7OHD95azo03s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aC6G91vk1Uhlq/gGclet39VO0a6a2olxo5y4P01VDLLN/HOgh4NcHvHiMv3pZbkyF
-         IeVOJAa4gmcAa5N+qaghBmP1lfrhbCuUpwxD1pIAIgSo9uzvVSuuCiY00RVFmnHFGW
-         4bDA9XFkimBt96XjUXuIyi4ASIudsxDs3jhyFsQs=
+        b=faEPtxQiN5i2y8M5KOB19e5wOHiEEPCcgsZOsAKFYTAkj0bS42BjZZt7fgsWD/LX7
+         wzlad35UShsyyEnrnVwOq+d+MwZwR5cQORfq7u0TfdjIirl+tIpKNReZ5mXN9nZ8xh
+         FLZp+QSWg+DWSw4dC44YvMG61w6TlPq3mC+89oCk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        =?UTF-8?q?P=C3=A9ter=20Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Ning Li <lining2020x@163.com>,
+        Tejun Heo <tj@kernel.org>, Chunguang Xu <brookxu@tencent.com>,
+        Ming Lei <ming.lei@redhat.com>, Jens Axboe <axboe@kernel.dk>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0852/1017] ASoC: Intel: sof_es8336: log all quirks
-Date:   Tue,  5 Apr 2022 09:29:25 +0200
-Message-Id: <20220405070419.527635255@linuxfoundation.org>
+Subject: [PATCH 5.16 0758/1017] block: throttle split bio in case of iops limit
+Date:   Tue,  5 Apr 2022 09:27:51 +0200
+Message-Id: <20220405070416.758774397@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -53,41 +51,104 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+From: Ming Lei <ming.lei@redhat.com>
 
-[ Upstream commit 9c818d849192491a8799b1cb14ca0f7aead4fb09 ]
+[ Upstream commit 9f5ede3c01f9951b0ae7d68b28762ad51d9bacc8 ]
 
-We only logged the SSP quirk, make sure the GPIO and DMIC quirks are
-exposed.
+Commit 111be8839817 ("block-throttle: avoid double charge") marks bio as
+BIO_THROTTLED unconditionally if __blk_throtl_bio() is called on this bio,
+then this bio won't be called into __blk_throtl_bio() any more. This way
+is to avoid double charge in case of bio splitting. It is reasonable for
+read/write throughput limit, but not reasonable for IOPS limit because
+block layer provides io accounting against split bio.
 
-Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
-Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
-Link: https://lore.kernel.org/r/20220308192610.392950-16-pierre-louis.bossart@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Chunguang Xu has already observed this issue and fixed it in commit
+4f1e9630afe6 ("blk-throtl: optimize IOPS throttle for large IO scenarios").
+However, that patch only covers bio splitting in __blk_queue_split(), and
+we have other kind of bio splitting, such as bio_split() &
+submit_bio_noacct() and other ways.
+
+This patch tries to fix the issue in one generic way by always charging
+the bio for iops limit in blk_throtl_bio(). This way is reasonable:
+re-submission & fast-cloned bio is charged if it is submitted to same
+disk/queue, and BIO_THROTTLED will be cleared if bio->bi_bdev is changed.
+
+This new approach can get much more smooth/stable iops limit compared with
+commit 4f1e9630afe6 ("blk-throtl: optimize IOPS throttle for large IO
+scenarios") since that commit can't throttle current split bios actually.
+
+Also this way won't cause new double bio iops charge in
+blk_throtl_dispatch_work_fn() in which blk_throtl_bio() won't be called
+any more.
+
+Reported-by: Ning Li <lining2020x@163.com>
+Acked-by: Tejun Heo <tj@kernel.org>
+Cc: Chunguang Xu <brookxu@tencent.com>
+Signed-off-by: Ming Lei <ming.lei@redhat.com>
+Link: https://lore.kernel.org/r/20220216044514.2903784-7-ming.lei@redhat.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/intel/boards/sof_es8336.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ block/blk-merge.c    |  2 --
+ block/blk-throttle.c | 10 +++++++---
+ block/blk-throttle.h |  2 --
+ 3 files changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/sound/soc/intel/boards/sof_es8336.c b/sound/soc/intel/boards/sof_es8336.c
-index 46e453915f82..764560439d46 100644
---- a/sound/soc/intel/boards/sof_es8336.c
-+++ b/sound/soc/intel/boards/sof_es8336.c
-@@ -63,7 +63,12 @@ static const struct acpi_gpio_mapping *gpio_mapping = acpi_es8336_gpios;
- 
- static void log_quirks(struct device *dev)
- {
--	dev_info(dev, "quirk SSP%ld",  SOF_ES8336_SSP_CODEC(quirk));
-+	dev_info(dev, "quirk mask %#lx\n", quirk);
-+	dev_info(dev, "quirk SSP%ld\n",  SOF_ES8336_SSP_CODEC(quirk));
-+	if (quirk & SOF_ES8336_ENABLE_DMIC)
-+		dev_info(dev, "quirk DMIC enabled\n");
-+	if (quirk & SOF_ES8336_TGL_GPIO_QUIRK)
-+		dev_info(dev, "quirk TGL GPIO enabled\n");
+diff --git a/block/blk-merge.c b/block/blk-merge.c
+index a5b73bad9462..09bf679dc132 100644
+--- a/block/blk-merge.c
++++ b/block/blk-merge.c
+@@ -367,8 +367,6 @@ void __blk_queue_split(struct request_queue *q, struct bio **bio,
+ 		trace_block_split(split, (*bio)->bi_iter.bi_sector);
+ 		submit_bio_noacct(*bio);
+ 		*bio = split;
+-
+-		blk_throtl_charge_bio_split(*bio);
+ 	}
  }
  
- static int sof_es8316_speaker_power_event(struct snd_soc_dapm_widget *w,
+diff --git a/block/blk-throttle.c b/block/blk-throttle.c
+index 39bb6e68a9a2..96573fa4edf2 100644
+--- a/block/blk-throttle.c
++++ b/block/blk-throttle.c
+@@ -807,7 +807,8 @@ static bool tg_with_in_bps_limit(struct throtl_grp *tg, struct bio *bio,
+ 	unsigned long jiffy_elapsed, jiffy_wait, jiffy_elapsed_rnd;
+ 	unsigned int bio_size = throtl_bio_data_size(bio);
+ 
+-	if (bps_limit == U64_MAX) {
++	/* no need to throttle if this bio's bytes have been accounted */
++	if (bps_limit == U64_MAX || bio_flagged(bio, BIO_THROTTLED)) {
+ 		if (wait)
+ 			*wait = 0;
+ 		return true;
+@@ -919,9 +920,12 @@ static void throtl_charge_bio(struct throtl_grp *tg, struct bio *bio)
+ 	unsigned int bio_size = throtl_bio_data_size(bio);
+ 
+ 	/* Charge the bio to the group */
+-	tg->bytes_disp[rw] += bio_size;
++	if (!bio_flagged(bio, BIO_THROTTLED)) {
++		tg->bytes_disp[rw] += bio_size;
++		tg->last_bytes_disp[rw] += bio_size;
++	}
++
+ 	tg->io_disp[rw]++;
+-	tg->last_bytes_disp[rw] += bio_size;
+ 	tg->last_io_disp[rw]++;
+ 
+ 	/*
+diff --git a/block/blk-throttle.h b/block/blk-throttle.h
+index 175f03abd9e4..cb43f4417d6e 100644
+--- a/block/blk-throttle.h
++++ b/block/blk-throttle.h
+@@ -170,8 +170,6 @@ static inline bool blk_throtl_bio(struct bio *bio)
+ {
+ 	struct throtl_grp *tg = blkg_to_tg(bio->bi_blkg);
+ 
+-	if (bio_flagged(bio, BIO_THROTTLED))
+-		return false;
+ 	if (!tg->has_rules[bio_data_dir(bio)])
+ 		return false;
+ 
 -- 
 2.34.1
 
