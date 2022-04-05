@@ -2,199 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A316C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42236C41535
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:39:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385120AbiDEMba (ORCPT
+        id S1385105AbiDEMbV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:31:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33136 "EHLO
+        Tue, 5 Apr 2022 08:31:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343518AbiDEI45 (ORCPT
+        with ESMTP id S1343504AbiDEI44 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:56:57 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 270FE1D0C6;
-        Tue,  5 Apr 2022 01:52:52 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id CD4451F43EC0
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1649148771;
-        bh=1UpCqpUspbqlgbRDbR+4mzX6bpiNZo3DFRPJTeZci+I=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=e8aB5ikq5MFAeiCBqkzf4eLCaoJauFl/SJc7VU2D183ozdDr7iJfz3ZdF74FVDtk7
-         LPg6xDj5u5bLuIDCgehDTPyh4gv3WIBjVw/97RML15Cf72p28CDTYXOSr4pSxtJbfa
-         5SVCHTc1RZ2HYYJKYsEje/PEu2pdSH9y8W9gO+2sHm8kH69JGA/jIe1qEC1a95FLVf
-         XF03mFqe9TRCDXU5ID/CGC7riJ3xia2nbF42AepyAUpNobxaBF5zxdF9KoD8bXW7Cg
-         SjuVreMyZ1ou4P+SmosM6a3OY+CqvbIi6/ZjErIt0MyYxnVkPdL2/9GoWTJoEaRnyR
-         EA/JNOR2a7Tzg==
-Message-ID: <3cf65c5f-cfb2-4c30-1a69-6c0098b0a0be@collabora.com>
-Date:   Tue, 5 Apr 2022 10:52:48 +0200
+        Tue, 5 Apr 2022 04:56:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE70C1CFF2;
+        Tue,  5 Apr 2022 01:52:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 735ED6117A;
+        Tue,  5 Apr 2022 08:52:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 854B8C385A0;
+        Tue,  5 Apr 2022 08:52:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649148770;
+        bh=N+zWu7AI5IWaUS3GUluxulWeUVNUFJ71l/5vn5pCO2g=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=kV/hm8tJiGkaHbKELaJfUwwlbmW+h/ffuyu2ib1gXXwRImoo6CV0gSpBjZjxukfVQ
+         IjFEu7C5HCyGjOu0Qh1OOftCh9q4ZPhu2iAYNEdkaszt4YfA7Cm9Pnq5XKE9Usnlpk
+         YsmbvEe7lVrJZ1YvIjrhskO8bD7MQ0pUX/3tIR+A=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Miroslav Lichvar <mlichvar@redhat.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Yangbo Lu <yangbo.lu@nxp.com>,
+        Yang Yingliang <yangyingliang@huawei.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0468/1017] ptp: unregister virtual clocks when unregistering physical clock.
+Date:   Tue,  5 Apr 2022 09:23:01 +0200
+Message-Id: <20220405070408.190498306@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
+References: <20220405070354.155796697@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 2/2] dt-bindings: mfd: syscon: Add support for regmap
- fast-io
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        =?UTF-8?B?TsOtY29sYXMgRi4gUi4gQS4gUHJhZG8=?= 
-        <nfraprado@collabora.com>
-Cc:     lee.jones@linaro.org, robh+dt@kernel.org, krzk+dt@kernel.org,
-        arnd@arndb.de, matthias.bgg@gmail.com, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel@collabora.com
-References: <20220401135048.23245-1-angelogioacchino.delregno@collabora.com>
- <20220401135048.23245-3-angelogioacchino.delregno@collabora.com>
- <8588a941-6d3e-9e14-cb21-d7af29b4b2bd@linaro.org>
- <7775eb70-692f-3f1b-f226-f7e0fad47e37@collabora.com>
- <26af9701-267d-5a23-8688-24608617d3f6@linaro.org>
- <af2b304a-a407-3fc6-dfc6-edc85ce1caea@collabora.com>
- <20220404222659.yn2wrda5xtbmvul7@notapiano>
- <df2fc253-b16a-3d93-7682-513abdf967d5@linaro.org>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <df2fc253-b16a-3d93-7682-513abdf967d5@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 05/04/22 08:48, Krzysztof Kozlowski ha scritto:
-> On 05/04/2022 00:26, Nícolas F. R. A. Prado wrote:
->> On Mon, Apr 04, 2022 at 11:39:49AM +0200, AngeloGioacchino Del Regno wrote:
->>> Il 04/04/22 10:55, Krzysztof Kozlowski ha scritto:
->>>> On 04/04/2022 10:40, AngeloGioacchino Del Regno wrote:
->>>>> Il 02/04/22 13:38, Krzysztof Kozlowski ha scritto:
->>>>>> On 01/04/2022 15:50, AngeloGioacchino Del Regno wrote:
->>>>>>> The syscon driver now enables the .fast_io regmap configuration when
->>>>>>> the 'fast-io' property is found in a syscon node.
->>>>>>>
->>>>>>> Keeping in mind that, in regmap, fast_io is checked only if we are
->>>>>>> not using hardware spinlocks, allow the fast-io property only if
->>>>>>> there is no hwlocks reference (and vice-versa).
->>>>>>
->>>>>> I have doubts you need a property for this. "fast" is subjective in
->>>>>> terms of hardware, so this looks more like a software property, not
->>>>>> hardware.
->>>>>>
->>>>>> I think most of MMIOs inside a SoC are considered fast. Usually also the
->>>>>> syscon/regmap consumer knows which regmap it gets, so knows that it is
->>>>>> fast or not.
->>>>>>
->>>>>
->>>>> Hello Krzysztof,
->>>>>
->>>>> well yes, this property is changing how software behaves - specifically,
->>>>> as you've correctly understood, what regmap does.
->>>>>
->>>>> It's true that most of MMIOs inside a SoC are considered fast.. the word "most" is
->>>>> the exact reason why I haven't proposed simply hardcoding '.fast_io = true' in
->>>>> syscon, or in regmap-mmio...
->>>>> There are too many different SoCs around, and I didn't want to end up breaking
->>>>> anything (even if it should be unlikely, since MMIO is fast by principle).
->>
->> Hi Angelo,
->>
->> I think I can see what Krzysztof means by saying this looks more like a software
->> property.
->>
->> This property isn't simply saying whether the hardware is fast or not by itself,
->> since that's relative. Rather, it means that this hardware is fast relative to
->> the time overhead of using a mutex for locking in regmap. Since this is a
->> software construct, the property as a whole is software-dependent. If for some
->> reason the locking in regmap were to be changed and was now a lot faster or
->> slower, the same hardware could now be considered "fast" or "slow". This seems
->> to me a good reason to avoid making "fastness" part of the ABI for each
->> hardware.
-> 
-> Thanks, that very good explanation!
-> 
->>
->>>>
->>>> What I am proposing, is the regmap consumer knows whether access is fast
->>>> or not, so it could call get_regmap() or
->>>> syscon_regmap_lookup_by_phandle() with appropriate argument.
->>>>
->>>> Even if we stay with a DT property, I am not sure if this is an
->>>> attribute of syscon but rather of a bus.
->>>>
->>>> Best regards,
->>>> Krzysztof
->>>
->>> I'm sorry for sending a v2 so fast - apparently, I initially didn't fully
->>> understand your comment, but now it's clear.
->>>
->>> Actually, since locking in regmap's configuration does not use DT at all
->>> in any generic case, maybe bringing this change purely in code may be a
->>> good one... and I have evaluated that before proposing this kind of change.
->>>
->>> My concerns about that kind of approach are:
->>> - First of all, there are * a lot * of drivers, in various subsystems, that
->>>    are using syscon, so changing some function parameter in syscon.c would
->>>    result in a commit that would be touching hundreds of them... and some of
->>>    them would be incorrect, as the default would be no fast-io, while they
->>>    should indeed enable that. Of course this would have to be changed later
->>>    by the respective driver maintainer(s), potentially creating a lot of
->>>    commit noise with lots of Fixes tags, which I am trying to avoid;
->>> - Not all drivers are using the same syscon exported function to get a
->>>    handle to regmap and we're looking at 6 of them; changing only one of
->>>    the six would be rather confusing, and most probably logically incorrect
->>>    as well...
->>>
->>> Of course you know, but for the sake of making this easily understandable
->>> for any casual developers reading this, functions are:
->>> - device_node_to_regmap()
->>> - syscon_node_to_regmap()
->>> - syscon_regmap_lookup_by_compatible()
->>> - syscon_regmap_lookup_by_phandle()
->>> - syscon_regmap_lookup_by_phandle_args()
->>> - syscon_regmap_lookup_by_phandle_optional().
->>
->> What if a separate function was added with the additional regmap configuration
->> argument? That way setting the "fast_io" would be opt-in much like a DT property
->> would. The other drivers wouldn't need to be changed.
-> 
-> Exactly, there is no need to change all callers now.
-> 1. You just add rename existing code and add argument:
-> 
->    syscon_regmap_lookup_by_compatible_mmio(...., unsigned long flags);
-> 
-> 2. Add a wrappers (with old names):
-> syscon_regmap_lookup_by_compatible() {
->    syscon_regmap_lookup_by_compatible_mmio(..., SYSCON_IO_DEFAULT);
-> }
-> 
-> 3. and finally slowly convert the users where it is relevant.
-> 
-> Just one more thing. I was rather thinking out loud, instead of
-> proposing a proper solution about clients defining speed. I am still not
-> sure if this is correct approach, because actually the regmap provider
-> knows the best whether it is slow or fast. Clients within SoC should
-> know it, but what if one client asks for fast regmap, other for slow? Or
-> not every client is updated to new API?
-> 
-> Another solution would be to add such property to the bus on which the
-> syscon device is sitting. Although this is also not complete. Imagine:
-> 
-> syscon <--ahb-fast-bus--> some bus bridge <--apb-slow-bus--> syscon consumer
-> 
-> Although your original case also would not be accurate here.
-> 
-> Best regards,
-> Krzysztof
+From: Miroslav Lichvar <mlichvar@redhat.com>
+
+[ Upstream commit bfcbb76b0f595ea9ede9f7a218086fef85242f10 ]
+
+When unregistering a physical clock which has some virtual clocks,
+unregister the virtual clocks with it.
+
+This fixes the following oops, which can be triggered by unloading
+a driver providing a PTP clock when it has enabled virtual clocks:
+
+BUG: unable to handle page fault for address: ffffffffc04fc4d8
+Oops: 0000 [#1] PREEMPT SMP NOPTI
+RIP: 0010:ptp_vclock_read+0x31/0xb0
+Call Trace:
+ timecounter_read+0xf/0x50
+ ptp_vclock_refresh+0x2c/0x50
+ ? ptp_clock_release+0x40/0x40
+ ptp_aux_kworker+0x17/0x30
+ kthread_worker_fn+0x9b/0x240
+ ? kthread_should_park+0x30/0x30
+ kthread+0xe2/0x110
+ ? kthread_complete_and_exit+0x20/0x20
+ ret_from_fork+0x22/0x30
+
+Fixes: 73f37068d540 ("ptp: support ptp physical/virtual clocks conversion")
+Signed-off-by: Miroslav Lichvar <mlichvar@redhat.com>
+Acked-by: Richard Cochran <richardcochran@gmail.com>
+Cc: Yangbo Lu <yangbo.lu@nxp.com>
+Cc: Yang Yingliang <yangyingliang@huawei.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/ptp/ptp_clock.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/ptp/ptp_clock.c b/drivers/ptp/ptp_clock.c
+index 0e4bc8b9329d..b6f2cfd15dd2 100644
+--- a/drivers/ptp/ptp_clock.c
++++ b/drivers/ptp/ptp_clock.c
+@@ -317,11 +317,18 @@ struct ptp_clock *ptp_clock_register(struct ptp_clock_info *info,
+ }
+ EXPORT_SYMBOL(ptp_clock_register);
+ 
++static int unregister_vclock(struct device *dev, void *data)
++{
++	struct ptp_clock *ptp = dev_get_drvdata(dev);
++
++	ptp_vclock_unregister(info_to_vclock(ptp->info));
++	return 0;
++}
++
+ int ptp_clock_unregister(struct ptp_clock *ptp)
+ {
+ 	if (ptp_vclock_in_use(ptp)) {
+-		pr_err("ptp: virtual clock in use\n");
+-		return -EBUSY;
++		device_for_each_child(&ptp->dev, NULL, unregister_vclock);
+ 	}
+ 
+ 	ptp->defunct = 1;
+-- 
+2.34.1
 
 
-Sorry for the double email.... but I've just realized that this was a bug on
-my side!!!!! I am so sorry for raising all this dust.
 
-regmap-mmio has .fast_io = true in its regmap_bus structure, hence, every
-syscon user is already using spinlocks. I was doing some tests around and
-during that operation I've created a condition in which that got ignored.
-
-We can let this series die.
-
-Apologies.
-
-Regards,
-Angelo
