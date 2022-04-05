@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64536C352A8
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECE15C352A1
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:55:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240313AbiDEIp7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:45:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34434 "EHLO
+        id S240520AbiDEIqi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:46:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233302AbiDEIFo (ORCPT
+        with ESMTP id S233593AbiDEIIn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:05:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 869A369721;
-        Tue,  5 Apr 2022 01:01:40 -0700 (PDT)
+        Tue, 5 Apr 2022 04:08:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 175E06C1ED;
+        Tue,  5 Apr 2022 01:02:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3C366B81BD2;
-        Tue,  5 Apr 2022 08:01:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 848C7C385A1;
-        Tue,  5 Apr 2022 08:01:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C8515617BB;
+        Tue,  5 Apr 2022 08:02:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB14DC385A0;
+        Tue,  5 Apr 2022 08:02:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145697;
-        bh=+uT5Ye7XddJYP9EeU9g+A2Lu0fSDfDTC6tTo3V9nwb0=;
+        s=korg; t=1649145737;
+        bh=7sDJ2RHrC/huW9RezcPNtggKrMYJEdFEyQl7gB+nlfs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iTo95TRAduqF4+is/UOWFi1+27twp8qJv+DW4RGoQEdf4CRKxgApx7ZkOONl3mb3M
-         e5lvAULahnb0NfAYRDV2OOTATkJEmZhr6/uI63jqye5pQcV47BAjUXZ/gcEypOjEDw
-         RuxDJOvMMvK/jZ/l0MP0UYMymnfTdUPf/2+HpBRg=
+        b=ZOUQGhclR34zJlvCwovv6xmLOvkXg4b18ZBGijcs9d890PW58tkLBgfpk5lpWCz6y
+         C6lC6DHDD4t3N//9ywJxAwhfxOBRoMPDByMLT3gMjvA0IoBQ/P4L6OmyUcZAHwROGk
+         ZddkAq0pEecsav44hLhi3B7TuIdNFHwG8FPRzqaI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Wang <sean.wang@mediatek.com>,
-        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0496/1126] mt76: mt7921: set EDCA parameters with the MCU CE command
-Date:   Tue,  5 Apr 2022 09:20:43 +0200
-Message-Id: <20220405070422.185983805@linuxfoundation.org>
+        stable@vger.kernel.org, Fabiano Rosas <farosas@linux.ibm.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0473/1126] KVM: PPC: Fix vmx/vsx mixup in mmio emulation
+Date:   Tue,  5 Apr 2022 09:20:20 +0200
+Message-Id: <20220405070421.510701872@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -48,134 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Wang <sean.wang@mediatek.com>
+From: Fabiano Rosas <farosas@linux.ibm.com>
 
-[ Upstream commit 66ca1a7b2d5503f561b751abdd6ec6fa96343eb6 ]
+[ Upstream commit b99234b918c6e36b9aa0a5b2981e86b6bd11f8e2 ]
 
-The command MCU_EXT_CMD_EDCA_UPDATE is not fully supported by the MT7921
-firmware, so we apply CE command MCU_CE_CMD_SET_EDCA_PARAMS instead which
-is supported even in the oldest firmware to properly set up EDCA parameters
-for each AC.
+The MMIO emulation code for vector instructions is duplicated between
+VSX and VMX. When emulating VMX we should check the VMX copy size
+instead of the VSX one.
 
-Fixes: 1c099ab44727 ("mt76: mt7921: add MCU support")
-Signed-off-by: Sean Wang <sean.wang@mediatek.com>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Fixes: acc9eb9305fe ("KVM: PPC: Reimplement LOAD_VMX/STORE_VMX instruction ...")
+Signed-off-by: Fabiano Rosas <farosas@linux.ibm.com>
+Reviewed-by: Nicholas Piggin <npiggin@gmail.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220125215655.1026224-3-farosas@linux.ibm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../wireless/mediatek/mt76/mt76_connac_mcu.h  |  1 +
- .../net/wireless/mediatek/mt76/mt7921/mcu.c   | 49 ++++++++-----------
- 2 files changed, 22 insertions(+), 28 deletions(-)
+ arch/powerpc/kvm/powerpc.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.h b/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.h
-index 265d64e3ca8c..93c783a3af7c 100644
---- a/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.h
-+++ b/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.h
-@@ -997,6 +997,7 @@ enum {
- 	MCU_CE_CMD_SET_BSS_ABORT = 0x17,
- 	MCU_CE_CMD_CANCEL_HW_SCAN = 0x1b,
- 	MCU_CE_CMD_SET_ROC = 0x1c,
-+	MCU_CE_CMD_SET_EDCA_PARMS = 0x1d,
- 	MCU_CE_CMD_SET_P2P_OPPPS = 0x33,
- 	MCU_CE_CMD_SET_RATE_TX_POWER = 0x5d,
- 	MCU_CE_CMD_SCHED_SCAN_ENABLE = 0x61,
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/mcu.c b/drivers/net/wireless/mediatek/mt76/mt7921/mcu.c
-index ef1e1ef91611..152e7579f77d 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7921/mcu.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7921/mcu.c
-@@ -920,33 +920,28 @@ EXPORT_SYMBOL_GPL(mt7921_mcu_exit);
- 
- int mt7921_mcu_set_tx(struct mt7921_dev *dev, struct ieee80211_vif *vif)
+diff --git a/arch/powerpc/kvm/powerpc.c b/arch/powerpc/kvm/powerpc.c
+index 2ad0ccd202d5..f0c4545dc3ab 100644
+--- a/arch/powerpc/kvm/powerpc.c
++++ b/arch/powerpc/kvm/powerpc.c
+@@ -1499,7 +1499,7 @@ int kvmppc_handle_vmx_load(struct kvm_vcpu *vcpu,
  {
--#define WMM_AIFS_SET		BIT(0)
--#define WMM_CW_MIN_SET		BIT(1)
--#define WMM_CW_MAX_SET		BIT(2)
--#define WMM_TXOP_SET		BIT(3)
--#define WMM_PARAM_SET		GENMASK(3, 0)
--#define TX_CMD_MODE		1
-+	struct mt7921_vif *mvif = (struct mt7921_vif *)vif->drv_priv;
-+
- 	struct edca {
--		u8 queue;
--		u8 set;
--		u8 aifs;
--		u8 cw_min;
-+		__le16 cw_min;
- 		__le16 cw_max;
- 		__le16 txop;
--	};
-+		__le16 aifs;
-+		u8 guardtime;
-+		u8 acm;
-+	} __packed;
- 	struct mt7921_mcu_tx {
--		u8 total;
--		u8 action;
--		u8 valid;
--		u8 mode;
--
- 		struct edca edca[IEEE80211_NUM_ACS];
-+		u8 bss_idx;
-+		u8 qos;
-+		u8 wmm_idx;
-+		u8 pad;
- 	} __packed req = {
--		.valid = true,
--		.mode = TX_CMD_MODE,
--		.total = IEEE80211_NUM_ACS,
-+		.bss_idx = mvif->mt76.idx,
-+		.qos = vif->bss_conf.qos,
-+		.wmm_idx = mvif->mt76.wmm_idx,
- 	};
--	struct mt7921_vif *mvif = (struct mt7921_vif *)vif->drv_priv;
-+
- 	struct mu_edca {
- 		u8 cw_min;
- 		u8 cw_max;
-@@ -970,30 +965,29 @@ int mt7921_mcu_set_tx(struct mt7921_dev *dev, struct ieee80211_vif *vif)
- 		.qos = vif->bss_conf.qos,
- 		.wmm_idx = mvif->mt76.wmm_idx,
- 	};
-+	int to_aci[] = {1, 0, 2, 3};
- 	int ac, ret;
+ 	enum emulation_result emulated = EMULATE_DONE;
  
- 	for (ac = 0; ac < IEEE80211_NUM_ACS; ac++) {
- 		struct ieee80211_tx_queue_params *q = &mvif->queue_params[ac];
--		struct edca *e = &req.edca[ac];
-+		struct edca *e = &req.edca[to_aci[ac]];
+-	if (vcpu->arch.mmio_vsx_copy_nums > 2)
++	if (vcpu->arch.mmio_vmx_copy_nums > 2)
+ 		return EMULATE_FAIL;
  
--		e->set = WMM_PARAM_SET;
--		e->queue = ac + mvif->mt76.wmm_idx * MT7921_MAX_WMM_SETS;
- 		e->aifs = q->aifs;
- 		e->txop = cpu_to_le16(q->txop);
+ 	while (vcpu->arch.mmio_vmx_copy_nums) {
+@@ -1596,7 +1596,7 @@ int kvmppc_handle_vmx_store(struct kvm_vcpu *vcpu,
+ 	unsigned int index = rs & KVM_MMIO_REG_MASK;
+ 	enum emulation_result emulated = EMULATE_DONE;
  
- 		if (q->cw_min)
--			e->cw_min = fls(q->cw_min);
-+			e->cw_min = cpu_to_le16(q->cw_min);
- 		else
- 			e->cw_min = 5;
+-	if (vcpu->arch.mmio_vsx_copy_nums > 2)
++	if (vcpu->arch.mmio_vmx_copy_nums > 2)
+ 		return EMULATE_FAIL;
  
- 		if (q->cw_max)
--			e->cw_max = cpu_to_le16(fls(q->cw_max));
-+			e->cw_max = cpu_to_le16(q->cw_max);
- 		else
- 			e->cw_max = cpu_to_le16(10);
- 	}
- 
--	ret = mt76_mcu_send_msg(&dev->mt76, MCU_EXT_CMD(EDCA_UPDATE),
--				&req, sizeof(req), true);
-+	ret = mt76_mcu_send_msg(&dev->mt76, MCU_CE_CMD(SET_EDCA_PARMS), &req,
-+				sizeof(req), false);
- 	if (ret)
- 		return ret;
- 
-@@ -1003,7 +997,6 @@ int mt7921_mcu_set_tx(struct mt7921_dev *dev, struct ieee80211_vif *vif)
- 	for (ac = 0; ac < IEEE80211_NUM_ACS; ac++) {
- 		struct ieee80211_he_mu_edca_param_ac_rec *q;
- 		struct mu_edca *e;
--		int to_aci[] = {1, 0, 2, 3};
- 
- 		if (!mvif->queue_params[ac].mu_edca)
- 			break;
+ 	vcpu->arch.io_gpr = rs;
 -- 
 2.34.1
 
