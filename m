@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD4DAC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7FCDC4332F
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:10:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1840438AbiDFBKP (ORCPT
+        id S1840416AbiDFBKD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:10:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53664 "EHLO
+        Tue, 5 Apr 2022 21:10:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358069AbiDEK15 (ORCPT
+        with ESMTP id S1356019AbiDEKWq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:27:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C0E93DDE8;
-        Tue,  5 Apr 2022 03:14:23 -0700 (PDT)
+        Tue, 5 Apr 2022 06:22:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64C13AC049;
+        Tue,  5 Apr 2022 03:05:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0BA5F617A4;
-        Tue,  5 Apr 2022 10:14:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CBCDC385A0;
-        Tue,  5 Apr 2022 10:14:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1B7BDB81C83;
+        Tue,  5 Apr 2022 10:05:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EFC2C385A2;
+        Tue,  5 Apr 2022 10:05:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153662;
-        bh=HdkMtmrEqzTR3W+FQELvxyIHklp9P8FC/+1eaSOJKRw=;
+        s=korg; t=1649153134;
+        bh=ZAmbnSi66YJBiK3yZR8/bo7oAsS7FS1Ko/w5oHmOhSE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bk1f9s0aBxfuJN1r1PZHALgdTtmGnv8QnXTt23H/fOBG/dANTym75sBv7FgsgXubj
-         gBoZgDnHp69XUCuYG1H5W0bY58y5rL8aJagn3DkUwRwRPpOIZAB6RI6L+OJZfsrPaf
-         nWci4WH6AAlvsTim+XPW/Pa0sS+DM9p+gXJ4EPH8=
+        b=NzYbWlbVKWvukKj07INWpbLNuyZcuw4W18FRXQmoBoUX4rux3cJAhhqfbgqPXV/ts
+         Bu5yLlP0s4MpDMxAIZOQcqGE5NgsJHZTUJBvZF+wFB/7S7B0yjPMgCZ5YIB4FX+XAG
+         b01m4GX5eYU7IT5l5DddDpeL2TxE/BnTHovo3oQk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tong Zhang <ztong0001@gmail.com>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 302/599] dax: make sure inodes are flushed before destroy cache
-Date:   Tue,  5 Apr 2022 09:29:56 +0200
-Message-Id: <20220405070307.820959484@linuxfoundation.org>
+        stable@vger.kernel.org, Mingzhe Zou <mingzhe.zou@easystack.cn>,
+        Coly Li <colyli@suse.de>
+Subject: [PATCH 5.10 113/599] bcache: fixup multiple threads crash
+Date:   Tue,  5 Apr 2022 09:26:47 +0200
+Message-Id: <20220405070302.200363585@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -52,51 +49,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tong Zhang <ztong0001@gmail.com>
+From: Mingzhe Zou <mingzhe.zou@easystack.cn>
 
-[ Upstream commit a7e8de822e0b1979f08767c751f6c8a9c1d4ad86 ]
+commit 887554ab96588de2917b6c8c73e552da082e5368 upstream.
 
-A bug can be triggered by following command
+When multiple threads to check btree nodes in parallel, the main
+thread wait for all threads to stop or CACHE_SET_IO_DISABLE flag:
 
-$ modprobe nd_pmem && modprobe -r nd_pmem
+wait_event_interruptible(check_state->wait,
+                         atomic_read(&check_state->started) == 0 ||
+                         test_bit(CACHE_SET_IO_DISABLE, &c->flags));
 
-[   10.060014] BUG dax_cache (Not tainted): Objects remaining in dax_cache on __kmem_cache_shutdown()
-[   10.060938] Slab 0x0000000085b729ac objects=9 used=1 fp=0x000000004f5ae469 flags=0x200000000010200(slab|head|node)
-[   10.062433] Call Trace:
-[   10.062673]  dump_stack_lvl+0x34/0x44
-[   10.062865]  slab_err+0x90/0xd0
-[   10.063619]  __kmem_cache_shutdown+0x13b/0x2f0
-[   10.063848]  kmem_cache_destroy+0x4a/0x110
-[   10.064058]  __x64_sys_delete_module+0x265/0x300
+However, the bch_btree_node_read and bch_btree_node_read_done
+maybe call bch_cache_set_error, then the CACHE_SET_IO_DISABLE
+will be set. If the flag already set, the main thread return
+error. At the same time, maybe some threads still running and
+read NULL pointer, the kernel will crash.
 
-This is caused by dax_fs_exit() not flushing inodes before destroy cache.
-To fix this issue, call rcu_barrier() before destroy cache.
+This patch change the event wait condition, the main thread must
+wait for all threads to stop.
 
-Signed-off-by: Tong Zhang <ztong0001@gmail.com>
-Reviewed-by: Ira Weiny <ira.weiny@intel.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/20220212071111.148575-1-ztong0001@gmail.com
-Fixes: 7b6be8444e0f ("dax: refactor dax-fs into a generic provider of 'struct dax_device' instances")
-Signed-off-by: Dan Williams <dan.j.williams@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 8e7102273f597 ("bcache: make bch_btree_check() to be multithreaded")
+Signed-off-by: Mingzhe Zou <mingzhe.zou@easystack.cn>
+Cc: stable@vger.kernel.org # v5.7+
+Signed-off-by: Coly Li <colyli@suse.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/dax/super.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/md/bcache/btree.c     |    6 ++++--
+ drivers/md/bcache/writeback.c |    6 ++++--
+ 2 files changed, 8 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/dax/super.c b/drivers/dax/super.c
-index cadbd0a1a1ef..260a247c60d2 100644
---- a/drivers/dax/super.c
-+++ b/drivers/dax/super.c
-@@ -723,6 +723,7 @@ static int dax_fs_init(void)
- static void dax_fs_exit(void)
- {
- 	kern_unmount(dax_mnt);
-+	rcu_barrier();
- 	kmem_cache_destroy(dax_cache);
- }
+--- a/drivers/md/bcache/btree.c
++++ b/drivers/md/bcache/btree.c
+@@ -2060,9 +2060,11 @@ int bch_btree_check(struct cache_set *c)
+ 		}
+ 	}
  
--- 
-2.34.1
-
++	/*
++	 * Must wait for all threads to stop.
++	 */
+ 	wait_event_interruptible(check_state->wait,
+-				 atomic_read(&check_state->started) == 0 ||
+-				  test_bit(CACHE_SET_IO_DISABLE, &c->flags));
++				 atomic_read(&check_state->started) == 0);
+ 
+ 	for (i = 0; i < check_state->total_threads; i++) {
+ 		if (check_state->infos[i].result) {
+--- a/drivers/md/bcache/writeback.c
++++ b/drivers/md/bcache/writeback.c
+@@ -952,9 +952,11 @@ void bch_sectors_dirty_init(struct bcach
+ 		}
+ 	}
+ 
++	/*
++	 * Must wait for all threads to stop.
++	 */
+ 	wait_event_interruptible(state->wait,
+-		 atomic_read(&state->started) == 0 ||
+-		 test_bit(CACHE_SET_IO_DISABLE, &c->flags));
++		 atomic_read(&state->started) == 0);
+ 
+ out:
+ 	kfree(state);
 
 
