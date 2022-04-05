@@ -2,85 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4315EC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67406C4332F
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:51:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1838437AbiDFAve (ORCPT
+        id S1838470AbiDFAvp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:51:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55990 "EHLO
+        Tue, 5 Apr 2022 20:51:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345154AbiDEKkp (ORCPT
+        with ESMTP id S1457272AbiDEQDC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:40:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 637CBD57;
-        Tue,  5 Apr 2022 03:26:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 011E66141D;
-        Tue,  5 Apr 2022 10:26:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 097A2C385A1;
-        Tue,  5 Apr 2022 10:26:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154374;
-        bh=cFnyWfm/m81Gz9VNERIZUDDiocWZQybTsQ0v67lOfbc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PD9rktGdsQ8AIiJS+zqlc6akvwFVBzQHGQxBZ5ehjlPNUBFu3jq1n9+1nX8YG8GIR
-         0aoLWpSUx2MbzQNk8VC4EgH7wRPspeq9+CYjp/0KX2b1zQHyyhoi/FAEFfvSheiw+A
-         ZLCNh1FdbEvKcJyNFAoFh2tV8Y9PzrHlMh8KCWBk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guangbin Huang <huangguangbin2@huawei.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH 5.10 555/599] net: hns3: fix software vlan talbe of vlan 0 inconsistent with hardware
-Date:   Tue,  5 Apr 2022 09:34:09 +0200
-Message-Id: <20220405070315.357038357@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 12:03:02 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 38FCF20BEF
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 08:36:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649173017;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=w5pFr+rSLwvAAi2cZv8XUzE7S/JhtL0csx8uaJExo6E=;
+        b=K5R6xQezlx1pJGBySI3Xs1whNba30+/p9ZOO9lx0XEkC2WRCeN0rytrr3sfxhesm/qCbeX
+        qSM3uaR+A/VrJdoFYjRkWU8k3cZ8f4zK0i6PDcy2QLB1qULnxcCNQR1vha7I6yZJgNP0B3
+        2BW6q1YqSaQa4gZ244Lf5LEXxBDSGec=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-263-H6cTnmRzPWy8M7cRT4dMsg-1; Tue, 05 Apr 2022 11:36:56 -0400
+X-MC-Unique: H6cTnmRzPWy8M7cRT4dMsg-1
+Received: by mail-wm1-f69.google.com with SMTP id r19-20020a7bc093000000b0038e706da7c0so1405988wmh.1
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 08:36:56 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=w5pFr+rSLwvAAi2cZv8XUzE7S/JhtL0csx8uaJExo6E=;
+        b=1dMeagrGthyZMD9CPjhDLEzibvY73BmqedNMadxs9ont3nOEDzthyiI0pHlCrVSRyP
+         uZFM/kgLhCMnZ/pcIJpEN9yG10BsW3c2h+cVB3pfoOIj26Scp57FFmmezgI93X3Lk6kC
+         ZGrsoOT0RdcKYL5CovLqFHWlokshW8r6HW8DZ5iL1BX3kArE42n/U7qcxRipJgEshXOZ
+         E1UzBMjRJpqn2CnVYnrfxjKPcGAU2Y+d3/1BbPOaQfwAHJeYbeHUBHliSw1Ipt76mKjP
+         /7KGjqvB9aIeY1o15aEWoyJCPsaKnWMDiiShBfGpdsg9YvJmUiC5HEcsa8ONvFh8UaGz
+         c4ig==
+X-Gm-Message-State: AOAM533czhg4TEDPKCWBf27oKl/uwbxyotydEeRaFJrc4k9AY5BZw3wi
+        tOqut/6DB/l/9AW+WrJqNdqB/MZxg+/7GTkig7GOE05swPQ7TDpPJ9qsafz3ZgQAiFpS6iJ7ZZa
+        1vbLgomvxzAfEKj+SXE0lxeVC
+X-Received: by 2002:a05:600c:2213:b0:38e:7138:de13 with SMTP id z19-20020a05600c221300b0038e7138de13mr3610880wml.26.1649173014506;
+        Tue, 05 Apr 2022 08:36:54 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyD2fMFuh8JuuHOsHRwnbywieUmyYbfuQQjPfttsinL3vtfw+ztig4KQrX2KML8XIXv9oeJ5Q==
+X-Received: by 2002:a05:600c:2213:b0:38e:7138:de13 with SMTP id z19-20020a05600c221300b0038e7138de13mr3610856wml.26.1649173014255;
+        Tue, 05 Apr 2022 08:36:54 -0700 (PDT)
+Received: from [10.32.181.87] (nat-pool-mxp-t.redhat.com. [149.6.153.186])
+        by smtp.googlemail.com with ESMTPSA id c7-20020a5d4f07000000b00203db8f13c6sm12570791wru.75.2022.04.05.08.36.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 Apr 2022 08:36:53 -0700 (PDT)
+Message-ID: <b3d7a72d-39f8-d9dc-8811-25df504d481d@redhat.com>
+Date:   Tue, 5 Apr 2022 17:36:52 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [RFC PATCH v5 077/104] KVM: TDX: Use vcpu_to_pi_desc() uniformly
+ in posted_intr.c
+Content-Language: en-US
+To:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     isaku.yamahata@gmail.com, Jim Mattson <jmattson@google.com>,
+        erdemaktas@google.com, Connor Kuehl <ckuehl@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+References: <cover.1646422845.git.isaku.yamahata@intel.com>
+ <ee7be7832bc424546fd4f05015a844a0205b5ba2.1646422845.git.isaku.yamahata@intel.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <ee7be7832bc424546fd4f05015a844a0205b5ba2.1646422845.git.isaku.yamahata@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guangbin Huang <huangguangbin2@huawei.com>
+On 3/4/22 20:49, isaku.yamahata@intel.com wrote:
+> From: Yuan Yao <yuan.yao@intel.com>
+> 
+> The helper function, vcpu_to_pi_desc(), is defined to get the posted
+> interrupt descriptor from vcpu.  There is one place that doesn't use it,
+> but direct reference to vmx_vcpu->pi_desc.  It's inconsistent.
+> 
+> For TDX, TDX vcpu structure will be defined and the helper function,
+> vcpu_to_pi_desc(), will return tdx_vcpu->pi_desc for TDX case instead of
+> vmx_vcpu->pi_desc.  The direct reference to vmx_vcpu->pi_desc doesn't work
+> for TDX.
+> 
+> Replace vmx_vcpu->pi_desc with the helper function, vcpu_pi_desc() for
+> consistency and TDX.
+> 
+> Signed-off-by: Yuan Yao <yuan.yao@intel.com>
+> Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
+> ---
+>   arch/x86/kvm/vmx/posted_intr.c | 2 +-
+>   arch/x86/kvm/vmx/x86_ops.h     | 3 +++
+>   2 files changed, 4 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/x86/kvm/vmx/posted_intr.c b/arch/x86/kvm/vmx/posted_intr.c
+> index aa1fe9085d77..c8a81c916eed 100644
+> --- a/arch/x86/kvm/vmx/posted_intr.c
+> +++ b/arch/x86/kvm/vmx/posted_intr.c
+> @@ -311,7 +311,7 @@ int pi_update_irte(struct kvm *kvm, unsigned int host_irq, uint32_t guest_irq,
+>   			continue;
+>   		}
+>   
+> -		vcpu_info.pi_desc_addr = __pa(&to_vmx(vcpu)->pi_desc);
+> +		vcpu_info.pi_desc_addr = __pa(vcpu_to_pi_desc(vcpu));
+>   		vcpu_info.vector = irq.vector;
+>   
+>   		trace_kvm_pi_irte_update(host_irq, vcpu->vcpu_id, e->gsi,
+> diff --git a/arch/x86/kvm/vmx/x86_ops.h b/arch/x86/kvm/vmx/x86_ops.h
+> index aae0f4449ec5..0f1a28f67e60 100644
+> --- a/arch/x86/kvm/vmx/x86_ops.h
+> +++ b/arch/x86/kvm/vmx/x86_ops.h
+> @@ -147,6 +147,9 @@ void tdx_prepare_switch_to_guest(struct kvm_vcpu *vcpu);
+>   void tdx_vcpu_put(struct kvm_vcpu *vcpu);
+>   void tdx_vcpu_load(struct kvm_vcpu *vcpu, int cpu);
+>   
+> +void tdx_apicv_post_state_restore(struct kvm_vcpu *vcpu);
+> +int tdx_deliver_posted_interrupt(struct kvm_vcpu *vcpu, int vector);
+> +
+>   int tdx_vm_ioctl(struct kvm *kvm, void __user *argp);
+>   int tdx_vcpu_ioctl(struct kvm_vcpu *vcpu, void __user *argp);
+>   
 
-commit 7ed258f12ec5ce855f15cdfb5710361dc82fe899 upstream.
+Applied the first hunk, the second should be squashed somewhere else.
 
-When user delete vlan 0, as driver will not delete vlan 0 for hardware in
-function hclge_set_vlan_filter_hw(), so vlan 0 in software vlan talbe should
-not be deleted.
-
-Fixes: fe4144d47eef ("net: hns3: sync VLAN filter entries when kill VLAN ID failed")
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -9197,11 +9197,11 @@ int hclge_set_vlan_filter(struct hnae3_h
- 	}
- 
- 	if (!ret) {
--		if (is_kill)
--			hclge_rm_vport_vlan_table(vport, vlan_id, false);
--		else
-+		if (!is_kill)
- 			hclge_add_vport_vlan_table(vport, vlan_id,
- 						   writen_to_tbl);
-+		else if (is_kill && vlan_id != 0)
-+			hclge_rm_vport_vlan_table(vport, vlan_id, false);
- 	} else if (is_kill) {
- 		/* when remove hw vlan filter failed, record the vlan id,
- 		 * and try to remove it from hw later, to be consistence
-
+Paolo
 
