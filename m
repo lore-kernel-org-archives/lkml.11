@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76423C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4D3AC433EF
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:57:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1838616AbiDFA4A (ORCPT
+        id S1838674AbiDFA4W (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:56:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39194 "EHLO
+        Tue, 5 Apr 2022 20:56:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244650AbiDEKjF (ORCPT
+        with ESMTP id S1348433AbiDEJrm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:39:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6024CA205E;
-        Tue,  5 Apr 2022 03:24:14 -0700 (PDT)
+        Tue, 5 Apr 2022 05:47:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D87A9B7FE;
+        Tue,  5 Apr 2022 02:33:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B09DE617CF;
-        Tue,  5 Apr 2022 10:24:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE60AC385A0;
-        Tue,  5 Apr 2022 10:24:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A13F5B81C85;
+        Tue,  5 Apr 2022 09:33:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7E37C385A2;
+        Tue,  5 Apr 2022 09:33:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154253;
-        bh=Ytr58gnACPtIgX8wj6A+Rgu50Y/LfhHdm8jAbP6A5yc=;
+        s=korg; t=1649151232;
+        bh=1IjPHnjIVZjOabLDm+ybTZPEAtPkmXIKYSb7izvV96I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=U/LJATG/xKwGVkj2uZroUhu9977m7Y+ijMbfjaz5X0BsXmIFNEQ97nmkUjgP4p5MF
-         Tn4GDopBdmPx6iJMpVRw4QbbW6AQzQx+/S7mVITmXAC0Q1i8/xo9VP82O8RfZv7pka
-         iOcW+XpY/6B7HU4o1dTyEJ0KeIe4+kKd6Hy1ZQi0=
+        b=s2MpECMm4DQqAtAEk3qAJE01nTRILpLYJ4F2fBdKlzEnF2CgY0Ctu7CaWVCyHnadd
+         LVbXU9tMNiEQgWHDJMff4O1yRaxx9XMx2Ecrg4RN6xYn0eBTgXQ807WET3T2xSS7S1
+         LQRQtmDqhvnkq8vOCM5OksSz18TffKFc9UDu/K5Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chen Jingwen <chenjingwen6@huawei.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 5.10 513/599] powerpc/kasan: Fix early region not updated correctly
-Date:   Tue,  5 Apr 2022 09:33:27 +0200
-Message-Id: <20220405070314.102871212@linuxfoundation.org>
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 342/913] memory: emif: Add check for setup_interrupts
+Date:   Tue,  5 Apr 2022 09:23:24 +0200
+Message-Id: <20220405070350.099195909@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,86 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chen Jingwen <chenjingwen6@huawei.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-commit dd75080aa8409ce10d50fb58981c6b59bf8707d3 upstream.
+[ Upstream commit fd7bd80b46373887b390852f490f21b07e209498 ]
 
-The shadow's page table is not updated when PTE_RPN_SHIFT is 24
-and PAGE_SHIFT is 12. It not only causes false positives but
-also false negative as shown the following text.
+As the potential failure of the devm_request_threaded_irq(),
+it should be better to check the return value of the
+setup_interrupts() and return error if fails.
 
-Fix it by bringing the logic of kasan_early_shadow_page_entry here.
-
-1. False Positive:
-==================================================================
-BUG: KASAN: vmalloc-out-of-bounds in pcpu_alloc+0x508/0xa50
-Write of size 16 at addr f57f3be0 by task swapper/0/1
-
-CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.15.0-12267-gdebe436e77c7 #1
-Call Trace:
-[c80d1c20] [c07fe7b8] dump_stack_lvl+0x4c/0x6c (unreliable)
-[c80d1c40] [c02ff668] print_address_description.constprop.0+0x88/0x300
-[c80d1c70] [c02ff45c] kasan_report+0x1ec/0x200
-[c80d1cb0] [c0300b20] kasan_check_range+0x160/0x2f0
-[c80d1cc0] [c03018a4] memset+0x34/0x90
-[c80d1ce0] [c0280108] pcpu_alloc+0x508/0xa50
-[c80d1d40] [c02fd7bc] __kmem_cache_create+0xfc/0x570
-[c80d1d70] [c0283d64] kmem_cache_create_usercopy+0x274/0x3e0
-[c80d1db0] [c2036580] init_sd+0xc4/0x1d0
-[c80d1de0] [c00044a0] do_one_initcall+0xc0/0x33c
-[c80d1eb0] [c2001624] kernel_init_freeable+0x2c8/0x384
-[c80d1ef0] [c0004b14] kernel_init+0x24/0x170
-[c80d1f10] [c001b26c] ret_from_kernel_thread+0x5c/0x64
-
-Memory state around the buggy address:
- f57f3a80: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
- f57f3b00: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
->f57f3b80: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
-                                               ^
- f57f3c00: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
- f57f3c80: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
-==================================================================
-
-2. False Negative (with KASAN tests):
-==================================================================
-Before fix:
-    ok 45 - kmalloc_double_kzfree
-    # vmalloc_oob: EXPECTATION FAILED at lib/test_kasan.c:1039
-    KASAN failure expected in "((volatile char *)area)[3100]", but none occurred
-    not ok 46 - vmalloc_oob
-    not ok 1 - kasan
-
-==================================================================
-After fix:
-    ok 1 - kasan
-
-Fixes: cbd18991e24fe ("powerpc/mm: Fix an Oops in kasan_mmu_init()")
-Cc: stable@vger.kernel.org # 5.4.x
-Signed-off-by: Chen Jingwen <chenjingwen6@huawei.com>
-Reviewed-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20211229035226.59159-1-chenjingwen6@huawei.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 68b4aee35d1f ("memory: emif: add interrupt and temperature handling")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Link: https://lore.kernel.org/r/20220224025444.3256530-1-jiasheng@iscas.ac.cn
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/mm/kasan/kasan_init_32.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/memory/emif.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
---- a/arch/powerpc/mm/kasan/kasan_init_32.c
-+++ b/arch/powerpc/mm/kasan/kasan_init_32.c
-@@ -83,13 +83,12 @@ void __init
- kasan_update_early_region(unsigned long k_start, unsigned long k_end, pte_t pte)
+diff --git a/drivers/memory/emif.c b/drivers/memory/emif.c
+index 762d0c0f0716..d4d4044e05b3 100644
+--- a/drivers/memory/emif.c
++++ b/drivers/memory/emif.c
+@@ -1117,7 +1117,7 @@ static int __init_or_module emif_probe(struct platform_device *pdev)
  {
- 	unsigned long k_cur;
--	phys_addr_t pa = __pa(kasan_early_shadow_page);
+ 	struct emif_data	*emif;
+ 	struct resource		*res;
+-	int			irq;
++	int			irq, ret;
  
- 	for (k_cur = k_start; k_cur != k_end; k_cur += PAGE_SIZE) {
- 		pmd_t *pmd = pmd_off_k(k_cur);
- 		pte_t *ptep = pte_offset_kernel(pmd, k_cur);
+ 	if (pdev->dev.of_node)
+ 		emif = of_get_memory_device_details(pdev->dev.of_node, &pdev->dev);
+@@ -1147,7 +1147,9 @@ static int __init_or_module emif_probe(struct platform_device *pdev)
+ 	emif_onetime_settings(emif);
+ 	emif_debugfs_init(emif);
+ 	disable_and_clear_all_interrupts(emif);
+-	setup_interrupts(emif, irq);
++	ret = setup_interrupts(emif, irq);
++	if (ret)
++		goto error;
  
--		if ((pte_val(*ptep) & PTE_RPN_MASK) != pa)
-+		if (pte_page(*ptep) != virt_to_page(lm_alias(kasan_early_shadow_page)))
- 			continue;
- 
- 		__set_pte_at(&init_mm, k_cur, ptep, pte, 0);
+ 	/* One-time actions taken on probing the first device */
+ 	if (!emif1) {
+-- 
+2.34.1
+
 
 
