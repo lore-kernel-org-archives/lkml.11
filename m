@@ -2,100 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66563C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF182C4707A
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:55:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1455794AbiDEWoM (ORCPT
+        id S1455880AbiDEWok (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:44:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47428 "EHLO
+        Tue, 5 Apr 2022 18:44:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349467AbiDEJtz (ORCPT
+        with ESMTP id S1573194AbiDESPu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:55 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55F5FFD1D;
-        Tue,  5 Apr 2022 02:46:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649152006; x=1680688006;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=HZf/S7rVd3q8yY5bhWH8nEyTLZa+T5GesGL7jfopFXY=;
-  b=BxM8NniRHwZrdAKEyoRLdXzc21jdTLEM9ka8fp3n/zXnd+M+0StfBm+k
-   eMR8T0cGhJ6qJ8HA3WOqarsQO+Hy9tneZ49D7KOIgc9Rm2Jy7uvHv8h0L
-   BF02vZexaKVbpoWUnU6ip8r1JbXE29qYrUL9Ea/5rZA82O3NiUfdlr85o
-   cqzzMdhU6wa6XufFvZRehT5+j3GQluyuMm4ryCsxoyJST4FZpe3NIfxzY
-   VdNCAirZJJgpJlKc55AIb9I7T3fTn6peH5Dbutw/ygh7IlJvdbV1M2Y6Z
-   Z/jB2NDvZkkn+ROUt+R+wCIYbD6eNe8Hp1J7GRPDvjQriQzhxoFg/3ZVa
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="242851251"
-X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
-   d="scan'208";a="242851251"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 02:46:45 -0700
-X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
-   d="scan'208";a="651826968"
-Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 02:46:43 -0700
-Received: by lahna (sSMTP sendmail emulation); Tue, 05 Apr 2022 12:46:40 +0300
-Date:   Tue, 5 Apr 2022 12:46:40 +0300
-From:   Mika Westerberg <mika.westerberg@linux.intel.com>
-To:     "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Cc:     Linux ACPI <linux-acpi@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Linux PCI <linux-pci@vger.kernel.org>,
-        Bjorn Helgaas <helgaas@kernel.org>
-Subject: Re: [PATCH v1 0/3] ACPI: PCI: PM: Power up PCI devices with ACPI
- companions upfront
-Message-ID: <YkwQAKcFU4CzYX5E@lahna>
-References: <21439956.EfDdHjke4D@kreacher>
+        Tue, 5 Apr 2022 14:15:50 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 690B9140C6;
+        Tue,  5 Apr 2022 11:13:49 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 35811210DD;
+        Tue,  5 Apr 2022 18:13:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1649182428;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=EfLZS1Fjnkm0H+g213hibaWDOALEX+x0bMu4UJYXHy8=;
+        b=gtFsupNU2XJjbDI26P/V+DBfJqIla6WaLeyX1MdUUJBoKpY8XCW6Ox/hJ6k5vrrETkfsaf
+        /BRlKNgcc6S+z8xFNLb9NFxp0w6L8J6cU0K3k0d64L+c1tZ1ZXqd/6ZyoH8FOf80KPE0Az
+        ONFj2wafYWrDy5N8a86cyb+fobKy2qw=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1649182428;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=EfLZS1Fjnkm0H+g213hibaWDOALEX+x0bMu4UJYXHy8=;
+        b=/T8jyprkGKvGaS53PoKSliU9C96JGKuZTkM2HxRfQ6VhtEthDMD9257BP9SJhEKhdRx61i
+        VvWkTphPVQhHNpBg==
+Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
+        by relay2.suse.de (Postfix) with ESMTP id 2859EA3B83;
+        Tue,  5 Apr 2022 18:13:48 +0000 (UTC)
+Received: by ds.suse.cz (Postfix, from userid 10065)
+        id B2213DA80E; Tue,  5 Apr 2022 20:09:46 +0200 (CEST)
+Date:   Tue, 5 Apr 2022 20:09:46 +0200
+From:   David Sterba <dsterba@suse.cz>
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-fsdevel@vger.kernel.org
+Subject: Re: [GIT PULL] Folio fixes for 5.18
+Message-ID: <20220405180946.GA15609@suse.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz, Matthew Wilcox <willy@infradead.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-fsdevel@vger.kernel.org
+References: <YkdKgzil38iyc7rX@casper.infradead.org>
+ <20220405120848.GV15609@twin.jikos.cz>
+ <YkxQkZ24Zz9KCxK1@casper.infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <21439956.EfDdHjke4D@kreacher>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <YkxQkZ24Zz9KCxK1@casper.infradead.org>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Rafael,
-
-On Mon, Apr 04, 2022 at 05:20:30PM +0200, Rafael J. Wysocki wrote:
-> Hi All,
+On Tue, Apr 05, 2022 at 03:22:09PM +0100, Matthew Wilcox wrote:
+> On Tue, Apr 05, 2022 at 02:08:48PM +0200, David Sterba wrote:
+> > Matthew, can you please always CC linux-btrfs@vger.kernel.org for any
+> > patches that touch code under fs/btrfs? I've only noticed your folio
+> > updates in this pull request. Some of the changes are plain API switch,
+> > that's fine but I want to know about that, some changes seem to slightly
+> > modify logic that I'd really like to review and there are several missed
+> > opportunities to fix coding style. Thanks.
 > 
-> There are cases in which the power state of a PCI device depends on an ACPI
-> power resource (or more of them) in such a way that when the given power
-> resource is in the "off" state, the PCI device depending on it is in D3cold.
-> 
-> On some systems, the initial state of these power resources is "off", so the
-> kernel should not access the config space of PCI devices depending on them,
-> until the power resources in question are turned "on", but currently that is
-> not respected during PCI device enumeration.  Namely, the PCI device
-> enumeration code walks the entire bus and enumerates all of the devices it
-> can find, including the ones whose initial power state in principle depends on
-> the ACPI power resources in the "off" state.
+> I'm sorry, that's an unreasonable request.  There's ~50 filesystems
+> that use address_space_operations and cc'ing individual filesystems
+> on VFS-wide changes isn't feaasible.
 
-I guess these devices do not have _PRE() method either.
+How many filesystems have you touched in the recent changes? I've
+counted about 7 subsystems in commit 704528d895dd ("fs: Remove
+->readpages address space operation"), the rest are VFS/MM changes or
+individual filesystems in separate patches.
 
-> Apparently, most of the time, the config space of such devices is accessible
-> regardless of the state of the ACPI power resource associated with the PCI
-> device, so the device enumeration is successful, but there are two potential
-> issues related to this behavior.  First off, even if the given PCI device
-> is accessible when the ACPI power resource depended on by it is "off",
-> changing its configuration may confuse the platform firmware and lead to
-> problems when the ACPI power resource in question is turned "on".  Second,
-> the PCI device may not be actually accessible at all when the ACPI power
-> resource depended on by it is "off", in which case it won't be found during
-> the PCI enumeration of devices.
-> 
-> This patch series addresses that problem by turning "on" all ACPI power
-> resources depended on by PCI devices before attempting to access the config
-> space of those devices for the first time.
+Examples of btrfs-only changes, there are more like that in the pull as
+you probably know:
 
-Makes sense.
+8e1dec8eb8b0 ("btrfs: Use folio_invalidate()").
+895586eb6898 ("btrfs: Convert from invalidatepage to invalidate_folio")
+...
 
-For the series,
-
-Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+You know you can slap a CC: linux-btrfs@vger.kernel.org to the patch
+tag and forget about it, is that unreasonable? No. If you're updating
+the same filesystems repeatedly you can copy the CC list for all of
+them.
