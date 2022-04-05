@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E94EAC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:20:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 064AEC4321E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:21:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239671AbiDEIU1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:20:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46838 "EHLO
+        id S239810AbiDEIVA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:21:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235721AbiDEIAJ (ORCPT
+        with ESMTP id S235610AbiDEH7x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:00:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 555521AF39;
-        Tue,  5 Apr 2022 00:58:11 -0700 (PDT)
+        Tue, 5 Apr 2022 03:59:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A1671AF11;
+        Tue,  5 Apr 2022 00:56:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E49C861725;
-        Tue,  5 Apr 2022 07:58:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 013E1C340EE;
-        Tue,  5 Apr 2022 07:58:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 47CF0B81B14;
+        Tue,  5 Apr 2022 07:56:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DECCC340EE;
+        Tue,  5 Apr 2022 07:56:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145490;
-        bh=1IjPHnjIVZjOabLDm+ybTZPEAtPkmXIKYSb7izvV96I=;
+        s=korg; t=1649145361;
+        bh=kCf7i8CQ070ihBCpclSD5ljJByxCnKbymjN2NjY2v3o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TzpoHyG6FDuHbaNYNRXaGSvZ9mBa7hl4dsSCvwPHFyjy9bKteDThUiXt2Y4LeosXg
-         NkxadVQykwEESvgS88YAyt5/93o1W1q/phCsgNnbr4S5gxPOys4FWiDQUtZRah2g4j
-         iTmD9OGXZsOKO0AtZX0gX7A1SRDVxUqumey+y9uc=
+        b=uDQk3rNdVaSGrNHdj2qUzkpanmRNIeujnbSaIdoS3dca9QQjOuaWhwVvYN87ob6Z1
+         9F1RDqsCQu+sTUxRfHveELkCyStj42Mta6QeJQuRQQTIKYG/BvWDwNUV7JVNPgS7Gg
+         jEcFa9WeYQj+H9sMM/GGX9meOtUIBHS7EcsYQA70=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Peter Ujfalusi <peter.ujfalusi@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0386/1126] memory: emif: Add check for setup_interrupts
-Date:   Tue,  5 Apr 2022 09:18:53 +0200
-Message-Id: <20220405070418.957508266@linuxfoundation.org>
+Subject: [PATCH 5.17 0376/1126] ASoC: ti: davinci-i2s: Add check for clk_enable()
+Date:   Tue,  5 Apr 2022 09:18:43 +0200
+Message-Id: <20220405070418.662475145@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,45 +52,45 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit fd7bd80b46373887b390852f490f21b07e209498 ]
+[ Upstream commit ed7c9fef11931fc5d32a83d68017ff390bf5c280 ]
 
-As the potential failure of the devm_request_threaded_irq(),
-it should be better to check the return value of the
-setup_interrupts() and return error if fails.
+As the potential failure of the clk_enable(),
+it should be better to check it and return error
+if fails.
 
-Fixes: 68b4aee35d1f ("memory: emif: add interrupt and temperature handling")
+Fixes: 5f9a50c3e55e ("ASoC: Davinci: McBSP: add device tree support for McBSP")
 Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Link: https://lore.kernel.org/r/20220224025444.3256530-1-jiasheng@iscas.ac.cn
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Acked-by: Peter Ujfalusi <peter.ujfalusi@gmail.com>
+Link: https://lore.kernel.org/r/20220228031540.3571959-1-jiasheng@iscas.ac.cn
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/memory/emif.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ sound/soc/ti/davinci-i2s.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/memory/emif.c b/drivers/memory/emif.c
-index 762d0c0f0716..d4d4044e05b3 100644
---- a/drivers/memory/emif.c
-+++ b/drivers/memory/emif.c
-@@ -1117,7 +1117,7 @@ static int __init_or_module emif_probe(struct platform_device *pdev)
- {
- 	struct emif_data	*emif;
- 	struct resource		*res;
--	int			irq;
-+	int			irq, ret;
- 
- 	if (pdev->dev.of_node)
- 		emif = of_get_memory_device_details(pdev->dev.of_node, &pdev->dev);
-@@ -1147,7 +1147,9 @@ static int __init_or_module emif_probe(struct platform_device *pdev)
- 	emif_onetime_settings(emif);
- 	emif_debugfs_init(emif);
- 	disable_and_clear_all_interrupts(emif);
--	setup_interrupts(emif, irq);
-+	ret = setup_interrupts(emif, irq);
+diff --git a/sound/soc/ti/davinci-i2s.c b/sound/soc/ti/davinci-i2s.c
+index 6dca51862dd7..0363a088d2e0 100644
+--- a/sound/soc/ti/davinci-i2s.c
++++ b/sound/soc/ti/davinci-i2s.c
+@@ -708,7 +708,9 @@ static int davinci_i2s_probe(struct platform_device *pdev)
+ 	dev->clk = clk_get(&pdev->dev, NULL);
+ 	if (IS_ERR(dev->clk))
+ 		return -ENODEV;
+-	clk_enable(dev->clk);
++	ret = clk_enable(dev->clk);
 +	if (ret)
-+		goto error;
++		goto err_put_clk;
  
- 	/* One-time actions taken on probing the first device */
- 	if (!emif1) {
+ 	dev->dev = &pdev->dev;
+ 	dev_set_drvdata(&pdev->dev, dev);
+@@ -730,6 +732,7 @@ static int davinci_i2s_probe(struct platform_device *pdev)
+ 	snd_soc_unregister_component(&pdev->dev);
+ err_release_clk:
+ 	clk_disable(dev->clk);
++err_put_clk:
+ 	clk_put(dev->clk);
+ 	return ret;
+ }
 -- 
 2.34.1
 
