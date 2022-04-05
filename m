@@ -2,204 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E016CC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5F5AC433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:25:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376355AbiDELVm (ORCPT
+        id S1376304AbiDELV0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:21:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41304 "EHLO
+        Tue, 5 Apr 2022 07:21:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240964AbiDEIsU (ORCPT
+        with ESMTP id S240908AbiDEIsL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:48:20 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC33527FE2;
-        Tue,  5 Apr 2022 01:36:38 -0700 (PDT)
-Date:   Tue, 05 Apr 2022 08:36:18 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649147779;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=nLr5NZ+XTqOLEeqR/li+1bApXh7Q5ne1YAbYSsiNIXA=;
-        b=ECouRvcdEhIa7PI5amX+ogvgsVt6zYwuxtiPrAuff40Q1QEVOFFuoM2XTudkANc298j+tt
-        G7hvkhVXV+zrAbUjWIsJYqXvTDbhpPrBTw1Q4UqgN9ltDedxYX9cFvmpZpHTmo1/Nd1ATk
-        MfYO43GHTJgtesLMjHTwrEcYdPHu5LqiVnmBEXPBge9RI1hf8xPqetJ9F+woR3vtwqvOUj
-        yOivw2BB4xH3uvwtMC4S7TWLSD5QSLLtvIazcj86ctLREwF6suhS3ObGzfvV862vzFF/8d
-        M2SxtsLCtg7UISLkoow1tErMZ472Iw2bbBTM/HxKTkPspIvDR8e72ZIwCLLEjQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649147779;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=nLr5NZ+XTqOLEeqR/li+1bApXh7Q5ne1YAbYSsiNIXA=;
-        b=rHOEZQQb+QHCRDkGnUcBYzZc8eFtugtY4K0QMYayCeKhHMtbbM/ShWrZQTk6k3PdrmM9cg
-        FhAZnEpbnEnWOiBQ==
-From:   "tip-bot2 for Namhyung Kim" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: locking/core] locking: Add lock contention tracepoints
-Cc:     Namhyung Kim <namhyung@kernel.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Hyeonggon Yoo <42.hyeyoo@gmail.com>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220322185709.141236-2-namhyung@kernel.org>
-References: <20220322185709.141236-2-namhyung@kernel.org>
+        Tue, 5 Apr 2022 04:48:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ADB9275EF;
+        Tue,  5 Apr 2022 01:36:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 14CA8614E5;
+        Tue,  5 Apr 2022 08:36:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D059C385A2;
+        Tue,  5 Apr 2022 08:36:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649147786;
+        bh=tc1+Yv2GOq+ZKImm9w8ZFfKeGbt6glujw2APy6YB0UQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=GjIy16lgOutbgOd5eLbyArYRJ0voxAx+RkDO0aXUq6DuuDeqgakyxI04YG2nXIBOV
+         rfG/BXOY3r0STdBPOup9i1CN9ENsE97Hk+GxJoC+/lCwolkRUD+ALzRPN8B08AWH57
+         2ATHJgDyvKzFjTCjPTg6fty/cRYDLVnmHP3UePHU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
+        Milan Broz <gmazyland@gmail.com>,
+        Mike Snitzer <snitzer@kernel.org>
+Subject: [PATCH 5.16 0122/1017] dm integrity: set journal entry unused when shrinking device
+Date:   Tue,  5 Apr 2022 09:17:15 +0200
+Message-Id: <20220405070357.819427084@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
+References: <20220405070354.155796697@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Message-ID: <164914777883.389.9880881024402369750.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the locking/core branch of tip:
+From: Mikulas Patocka <mpatocka@redhat.com>
 
-Commit-ID:     16edd9b511a13e7760ed4b92ba4e39bacda5c86f
-Gitweb:        https://git.kernel.org/tip/16edd9b511a13e7760ed4b92ba4e39bacda5c86f
-Author:        Namhyung Kim <namhyung@kernel.org>
-AuthorDate:    Tue, 22 Mar 2022 11:57:08 -07:00
-Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Tue, 05 Apr 2022 10:24:35 +02:00
+commit cc09e8a9dec4f0e8299e80a7a2a8e6f54164a10b upstream.
 
-locking: Add lock contention tracepoints
+Commit f6f72f32c22c ("dm integrity: don't replay journal data past the
+end of the device") skips journal replay if the target sector points
+beyond the end of the device. Unfortunatelly, it doesn't set the
+journal entry unused, which resulted in this BUG being triggered:
+BUG_ON(!journal_entry_is_unused(je))
 
-This adds two new lock contention tracepoints like below:
+Fix this by calling journal_entry_set_unused() for this case.
 
- * lock:contention_begin
- * lock:contention_end
-
-The lock:contention_begin takes a flags argument to classify locks.  I
-found it useful to identify what kind of locks it's tracing like if
-it's spinning or sleeping, reader-writer lock, real-time, and per-cpu.
-
-Move tracepoint definitions into mutex.c so that we can use them
-without lockdep.
-
-Signed-off-by: Namhyung Kim <namhyung@kernel.org>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Tested-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
-Link: https://lkml.kernel.org/r/20220322185709.141236-2-namhyung@kernel.org
+Fixes: f6f72f32c22c ("dm integrity: don't replay journal data past the end of the device")
+Cc: stable@vger.kernel.org # v5.7+
+Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+Tested-by: Milan Broz <gmazyland@gmail.com>
+[snitzer: revised header]
+Signed-off-by: Mike Snitzer <snitzer@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/trace/events/lock.h | 61 ++++++++++++++++++++++++++++++++++--
- kernel/locking/lockdep.c    |  1 +-
- kernel/locking/mutex.c      |  3 ++-
- 3 files changed, 61 insertions(+), 4 deletions(-)
+ drivers/md/dm-integrity.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/include/trace/events/lock.h b/include/trace/events/lock.h
-index d751212..b9b6e3e 100644
---- a/include/trace/events/lock.h
-+++ b/include/trace/events/lock.h
-@@ -5,11 +5,21 @@
- #if !defined(_TRACE_LOCK_H) || defined(TRACE_HEADER_MULTI_READ)
- #define _TRACE_LOCK_H
- 
--#include <linux/lockdep.h>
-+#include <linux/sched.h>
- #include <linux/tracepoint.h>
- 
-+/* flags for lock:contention_begin */
-+#define LCB_F_SPIN	(1U << 0)
-+#define LCB_F_READ	(1U << 1)
-+#define LCB_F_WRITE	(1U << 2)
-+#define LCB_F_RT	(1U << 3)
-+#define LCB_F_PERCPU	(1U << 4)
-+
-+
- #ifdef CONFIG_LOCKDEP
- 
-+#include <linux/lockdep.h>
-+
- TRACE_EVENT(lock_acquire,
- 
- 	TP_PROTO(struct lockdep_map *lock, unsigned int subclass,
-@@ -78,8 +88,53 @@ DEFINE_EVENT(lock, lock_acquired,
- 	TP_ARGS(lock, ip)
- );
- 
--#endif
--#endif
-+#endif /* CONFIG_LOCK_STAT */
-+#endif /* CONFIG_LOCKDEP */
-+
-+TRACE_EVENT(contention_begin,
-+
-+	TP_PROTO(void *lock, unsigned int flags),
-+
-+	TP_ARGS(lock, flags),
-+
-+	TP_STRUCT__entry(
-+		__field(void *, lock_addr)
-+		__field(unsigned int, flags)
-+	),
-+
-+	TP_fast_assign(
-+		__entry->lock_addr = lock;
-+		__entry->flags = flags;
-+	),
-+
-+	TP_printk("%p (flags=%s)", __entry->lock_addr,
-+		  __print_flags(__entry->flags, "|",
-+				{ LCB_F_SPIN,		"SPIN" },
-+				{ LCB_F_READ,		"READ" },
-+				{ LCB_F_WRITE,		"WRITE" },
-+				{ LCB_F_RT,		"RT" },
-+				{ LCB_F_PERCPU,		"PERCPU" }
-+			  ))
-+);
-+
-+TRACE_EVENT(contention_end,
-+
-+	TP_PROTO(void *lock, int ret),
-+
-+	TP_ARGS(lock, ret),
-+
-+	TP_STRUCT__entry(
-+		__field(void *, lock_addr)
-+		__field(int, ret)
-+	),
-+
-+	TP_fast_assign(
-+		__entry->lock_addr = lock;
-+		__entry->ret = ret;
-+	),
-+
-+	TP_printk("%p (ret=%d)", __entry->lock_addr, __entry->ret)
-+);
- 
- #endif /* _TRACE_LOCK_H */
- 
-diff --git a/kernel/locking/lockdep.c b/kernel/locking/lockdep.c
-index 3cbd492..a6e671b 100644
---- a/kernel/locking/lockdep.c
-+++ b/kernel/locking/lockdep.c
-@@ -60,7 +60,6 @@
- 
- #include "lockdep_internals.h"
- 
--#define CREATE_TRACE_POINTS
- #include <trace/events/lock.h>
- 
- #ifdef CONFIG_PROVE_LOCKING
-diff --git a/kernel/locking/mutex.c b/kernel/locking/mutex.c
-index 5e35859..ee2fd76 100644
---- a/kernel/locking/mutex.c
-+++ b/kernel/locking/mutex.c
-@@ -30,6 +30,9 @@
- #include <linux/debug_locks.h>
- #include <linux/osq_lock.h>
- 
-+#define CREATE_TRACE_POINTS
-+#include <trace/events/lock.h>
-+
- #ifndef CONFIG_PREEMPT_RT
- #include "mutex.h"
- 
+--- a/drivers/md/dm-integrity.c
++++ b/drivers/md/dm-integrity.c
+@@ -2471,9 +2471,11 @@ static void do_journal_write(struct dm_i
+ 					dm_integrity_io_error(ic, "invalid sector in journal", -EIO);
+ 					sec &= ~(sector_t)(ic->sectors_per_block - 1);
+ 				}
++				if (unlikely(sec >= ic->provided_data_sectors)) {
++					journal_entry_set_unused(je);
++					continue;
++				}
+ 			}
+-			if (unlikely(sec >= ic->provided_data_sectors))
+-				continue;
+ 			get_area_and_offset(ic, sec, &area, &offset);
+ 			restore_last_bytes(ic, access_journal_data(ic, i, j), je);
+ 			for (k = j + 1; k < ic->journal_section_entries; k++) {
+
+
