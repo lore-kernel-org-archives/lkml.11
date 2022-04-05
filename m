@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A176C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE8A9C43217
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:39:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384927AbiDEMaW (ORCPT
+        id S1385014AbiDEMay (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:30:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59240 "EHLO
+        Tue, 5 Apr 2022 08:30:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245555AbiDEI4O (ORCPT
+        with ESMTP id S245756AbiDEI4z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:56:14 -0400
+        Tue, 5 Apr 2022 04:56:55 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 004B013D37;
-        Tue,  5 Apr 2022 01:52:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80E6619C2B;
+        Tue,  5 Apr 2022 01:52:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5B6D9614E4;
-        Tue,  5 Apr 2022 08:52:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BA57C385A1;
-        Tue,  5 Apr 2022 08:52:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D4409609D0;
+        Tue,  5 Apr 2022 08:52:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5472C385A0;
+        Tue,  5 Apr 2022 08:52:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148745;
-        bh=PPQHcw8zJqTr3jpRENRDER2k9QokLWlw2f/fw3Behus=;
+        s=korg; t=1649148765;
+        bh=G+tlzkSO4tf9ZQVjfwUjPYMxK5+NilPHHkn+It7OI2I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F4lPgFFFe67ofhUIHn2ijjQwyf4r/fUxR6S2nWWC8ctRTbAfYAoLVTXz7V/3n0oEi
-         Sl3Kn2nXkrmP0JwT7c5zReXijVWsd55U2QOYkMZLaQh9oxBHJaI5EFjGqARySLMGJM
-         Or501agY7ROQOsUJbxfJdRNM0kBUvRR4t60wewpM=
+        b=ZQWL6/s5R3TdT1Oya95zqBKDaCaASNTkv/C4v2TpcAO5XuIlPXlceiYg2PTkR0S/E
+         ru2Yjqf6Gki8jEDk05fNL2ClcUqsC+CKETfr+84rZor9HTCWdKsIAB1nvTZVbMaxJl
+         RAFQAouh3mFmIll/9eCRlVg3NEg+p3lxAurhG/aQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lorenzo Bianconi <lorenzo@kernel.org>,
-        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0465/1017] mt76: mt7915: fix possible memory leak in mt7915_mcu_add_sta
-Date:   Tue,  5 Apr 2022 09:22:58 +0200
-Message-Id: <20220405070408.102735996@linuxfoundation.org>
+        stable@vger.kernel.org, Maor Gottlieb <maorg@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0435/1017] RDMA/core: Set MR type in ib_reg_user_mr
+Date:   Tue,  5 Apr 2022 09:22:28 +0200
+Message-Id: <20220405070407.206922578@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,48 +51,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lorenzo Bianconi <lorenzo@kernel.org>
+From: Maor Gottlieb <maorg@nvidia.com>
 
-[ Upstream commit a43736cd12d82913102eb49cb56787a5553e028f ]
+[ Upstream commit 32a88d16615c2be295571c29273c4ac94cb75309 ]
 
-Free allocated skb in mt7915_mcu_add_sta routine in case of failures.
+Add missing assignment of MR type to IB_MR_TYPE_USER.
 
-Fixes: 89bbd3730f382 ("mt76: mt7915: rework starec TLV tags")
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Fixes: 33006bd4f37f ("IB/core: Introduce ib_reg_user_mr")
+Link: https://lore.kernel.org/r/be2e91bcd6e52dc36be289ae92f30d3a5cc6dcb1.1642491047.git.leonro@nvidia.com
+Signed-off-by: Maor Gottlieb <maorg@nvidia.com>
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7915/mcu.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/infiniband/core/verbs.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
-index abc798536a81..0b6fecc8b3b6 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
-@@ -2397,8 +2397,10 @@ int mt7915_mcu_add_sta(struct mt7915_dev *dev, struct ieee80211_vif *vif,
- 	}
+diff --git a/drivers/infiniband/core/verbs.c b/drivers/infiniband/core/verbs.c
+index c18634bec212..e821dc94a43e 100644
+--- a/drivers/infiniband/core/verbs.c
++++ b/drivers/infiniband/core/verbs.c
+@@ -2153,6 +2153,7 @@ struct ib_mr *ib_reg_user_mr(struct ib_pd *pd, u64 start, u64 length,
+ 		return mr;
  
- 	ret = mt7915_mcu_sta_wtbl_tlv(dev, skb, vif, sta);
--	if (ret)
-+	if (ret) {
-+		dev_kfree_skb(skb);
- 		return ret;
-+	}
- 
- 	if (sta && sta->ht_cap.ht_supported) {
- 		/* starec amsdu */
-@@ -2412,8 +2414,10 @@ int mt7915_mcu_add_sta(struct mt7915_dev *dev, struct ieee80211_vif *vif,
- 	}
- 
- 	ret = mt7915_mcu_add_group(dev, vif, sta);
--	if (ret)
-+	if (ret) {
-+		dev_kfree_skb(skb);
- 		return ret;
-+	}
- out:
- 	return mt76_mcu_skb_send_msg(&dev->mt76, skb,
- 				     MCU_EXT_CMD(STA_REC_UPDATE), true);
+ 	mr->device = pd->device;
++	mr->type = IB_MR_TYPE_USER;
+ 	mr->pd = pd;
+ 	mr->dm = NULL;
+ 	atomic_inc(&pd->usecnt);
 -- 
 2.34.1
 
