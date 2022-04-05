@@ -2,85 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F564C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6EEBC4321E
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:26:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1588376AbiDFAPn (ORCPT
+        id S1588436AbiDFAP7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:15:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58412 "EHLO
+        Tue, 5 Apr 2022 20:15:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358042AbiDEK15 (ORCPT
+        with ESMTP id S1573544AbiDETUH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:27:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82C5DE007;
-        Tue,  5 Apr 2022 03:13:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1EAB661562;
-        Tue,  5 Apr 2022 10:13:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20A3AC385A1;
-        Tue,  5 Apr 2022 10:13:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153612;
-        bh=IOwZUCG26Vrfyw/jN2POlfRyr/RiH+j6OxFZxe43ysQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Rlsy3rwOufZVIHksHZ61CPudtKyXqJituffCVManHFH/btiwJ8YS3Axe9CrXGxLP8
-         9binBcxpG3+mmyNNhAZc5ZZGtotGjJWaFD1MXMfgwz+4SpcrID/His35AqPH5lm0oT
-         9rB6EScYky6o83c1mYcavYkSlCHNVKNXqNhrgTYU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+        Tue, 5 Apr 2022 15:20:07 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B73DEBB90
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 12:18:07 -0700 (PDT)
+From:   Anna-Maria Behnsen <anna-maria@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649186285;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=69oCF78NKr1jl3sMedzA5+keaKCiGKe+Lwryd6u9+Y4=;
+        b=iooJrb7NzGc5sceMz1JIDxoTm5+DArmCDQ1EzZzHPd14qYEvpZ3hzotJ6lvR6kaLUZHd0x
+        vDTF283VzULVRwCDEM8azIbwiC/jHa1zkgEtP3OMvBkpHa3XSC1rWFSE/XWuyHCj9Hquyv
+        7OwZvi3c+959JDcLo9LUyMjtAv2ulb+KY+AFtLI/pVd5V1B9XNpbuO277F6xaxg2Xyb0bK
+        zZ7vrxdVAXRnxtrBRkfLRpyrYKSyG2pRWL+pqibppfweTp3X/KDc6HBt8JAsc3QDZ32mOA
+        f9bQeOayvqbz9DTDW0/q/AI6BEeSGtdHyL885qRorhroWvqbZIJAUHAE5wyYoA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649186285;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=69oCF78NKr1jl3sMedzA5+keaKCiGKe+Lwryd6u9+Y4=;
+        b=LZzmf/FdVllf6Du1IsHVYJpfEemSP6ZKguYyqaxXSolfyK+cDtqCKw2kUX8I8hNVj1ej+r
+        etWs0YDH0bGSnhAQ==
 To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 246/599] ASoC: rockchip: i2s: Use devm_platform_get_and_ioremap_resource()
-Date:   Tue,  5 Apr 2022 09:29:00 +0200
-Message-Id: <20220405070306.161288966@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Frederic Weisbecker <frederic@kernel.org>
+Subject: [PATCH 1/2] timers: Initialize base::next_expiry_recalc during prepare cpu
+Date:   Tue,  5 Apr 2022 21:17:31 +0200
+Message-Id: <20220405191732.7438-2-anna-maria@linutronix.de>
+In-Reply-To: <20220405191732.7438-1-anna-maria@linutronix.de>
+References: <20220405191732.7438-1-anna-maria@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+When base::next_expiry_recalc is not initialized to false during cpu
+bringup in HOTPLUG_CPU and is accidently true and no timer is queued in the
+meantime, the loop through the wheel to find __next_timer_interrupt() might
+be done for nothing.
 
-[ Upstream commit 4ffbcd4ab0b6f77d29acde69dc25bd95318fae5e ]
+Therefore initialize base::next_expiry_recalc to false in
+timers_prepare_cpu().
 
-Use devm_platform_get_and_ioremap_resource() to simplify
-code.
-
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Link: https://lore.kernel.org/r/20210615141502.1683686-1-yangyingliang@huawei.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Anna-Maria Behnsen <anna-maria@linutronix.de>
 ---
- sound/soc/rockchip/rockchip_i2s.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ kernel/time/timer.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/sound/soc/rockchip/rockchip_i2s.c b/sound/soc/rockchip/rockchip_i2s.c
-index fa84ec695b52..18f13bf1021c 100644
---- a/sound/soc/rockchip/rockchip_i2s.c
-+++ b/sound/soc/rockchip/rockchip_i2s.c
-@@ -627,8 +627,7 @@ static int rockchip_i2s_probe(struct platform_device *pdev)
- 		return PTR_ERR(i2s->mclk);
+diff --git a/kernel/time/timer.c b/kernel/time/timer.c
+index 85f1021ad459..4af98e77cd78 100644
+--- a/kernel/time/timer.c
++++ b/kernel/time/timer.c
+@@ -1950,6 +1950,7 @@ int timers_prepare_cpu(unsigned int cpu)
+ 		base = per_cpu_ptr(&timer_bases[b], cpu);
+ 		base->clk = jiffies;
+ 		base->next_expiry = base->clk + NEXT_TIMER_MAX_DELTA;
++		base->next_expiry_recalc = false;
+ 		base->timers_pending = false;
+ 		base->is_idle = false;
  	}
- 
--	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	regs = devm_ioremap_resource(&pdev->dev, res);
-+	regs = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
- 	if (IS_ERR(regs))
- 		return PTR_ERR(regs);
- 
 -- 
-2.34.1
-
-
+2.20.1
 
