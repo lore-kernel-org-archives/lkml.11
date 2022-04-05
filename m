@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5679C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C362DC433F5
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:47:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1454309AbiDEWiY (ORCPT
+        id S1454385AbiDEWia (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:38:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52346 "EHLO
+        Tue, 5 Apr 2022 18:38:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353971AbiDEKKO (ORCPT
+        with ESMTP id S1358033AbiDEK14 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:10:14 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9BE9C55A9;
-        Tue,  5 Apr 2022 02:56:12 -0700 (PDT)
+        Tue, 5 Apr 2022 06:27:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D15C1AC;
+        Tue,  5 Apr 2022 03:13:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 46008CE1BE5;
-        Tue,  5 Apr 2022 09:56:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57333C385A1;
-        Tue,  5 Apr 2022 09:56:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2A4B4B81B7A;
+        Tue,  5 Apr 2022 10:13:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AB4CC385A1;
+        Tue,  5 Apr 2022 10:13:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152569;
-        bh=dXFWPeFlgT6CyzZ310/ga2U0bPPCNAqe3eAdLbGPkzc=;
+        s=korg; t=1649153606;
+        bh=zK/Ig1cbkBtcdmFR2exZL/ObZnDE2ov9UTsRnRGY5rA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CFpGryrPA620biTZOsTOvrlcYLWCgGnZfTZ/ABmpxpKbOMaJ/WbXLQLoKaNLq0CIR
-         7vr9YgfwYw6SbDlt8kez+PRfupyIAhmL9XCdOSLNdHRHckf6P+7AR9FSVCo+0+mrSu
-         ZwYlnsTBcEdIUbRFquMhfvl+zKjX8iYEoBAofmTY=
+        b=zncuW/8WMYOSbYgEUc+iNO2V9XXU+n2dN25pOB6LtET1g0pxi9tZVURFzUSw9jsoy
+         XaWwVAV+2N9fa6aMdZfAugqgIzqG+Ens4tk6k97Kq5E+jOzru8HWPPleLw84X594v+
+         XuLmpqGVeoto8FSs8o5b3NZ/d6iYsgXPQbDkqp/Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhihao Cheng <chengzhihao1@huawei.com>,
-        Richard Weinberger <richard@nod.at>
-Subject: [PATCH 5.15 822/913] ubifs: setflags: Make dirtied_ino_d 8 bytes aligned
-Date:   Tue,  5 Apr 2022 09:31:24 +0200
-Message-Id: <20220405070404.470296107@linuxfoundation.org>
+        stable@vger.kernel.org, Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Martin Dauskardt <martin.dauskardt@gmx.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 245/599] ivtv: fix incorrect device_caps for ivtvfb
+Date:   Tue,  5 Apr 2022 09:28:59 +0200
+Message-Id: <20220405070306.132119948@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,38 +50,123 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhihao Cheng <chengzhihao1@huawei.com>
+From: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 
-commit 1b83ec057db16b4d0697dc21ef7a9743b6041f72 upstream.
+[ Upstream commit 25e94139218c0293b4375233c14f2256d7dcfaa8 ]
 
-Make 'ui->data_len' aligned with 8 bytes before it is assigned to
-dirtied_ino_d. Since 8871d84c8f8b0c6b("ubifs: convert to fileattr")
-applied, 'setflags()' only affects regular files and directories, only
-xattr inode, symlink inode and special inode(pipe/char_dev/block_dev)
-have none- zero 'ui->data_len' field, so assertion
-'!(req->dirtied_ino_d & 7)' cannot fail in ubifs_budget_space().
-To avoid assertion fails in future evolution(eg. setflags can operate
-special inodes), it's better to make dirtied_ino_d 8 bytes aligned,
-after all aligned size is still zero for regular files.
+The VIDIOC_G_FBUF and related overlay ioctls no longer worked (-ENOTTY was
+returned).
 
-Fixes: 1e51764a3c2ac05a ("UBIFS: add new flash file system")
-Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+The root cause was the introduction of the caps field in ivtv-driver.h.
+While loading the ivtvfb module would update the video_device device_caps
+field with V4L2_CAP_VIDEO_OUTPUT_OVERLAY it would not update that caps
+field, and that's what the overlay ioctls would look at.
+
+It's a bad idea to keep information in two places, so drop the caps field
+and only use vdev.device_caps.
+
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Reported-by: Martin Dauskardt <martin.dauskardt@gmx.de>
+Fixes: 2161536516ed (media: media/pci: set device_caps in struct video_device)
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ubifs/ioctl.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/media/pci/ivtv/ivtv-driver.h  |  1 -
+ drivers/media/pci/ivtv/ivtv-ioctl.c   | 10 +++++-----
+ drivers/media/pci/ivtv/ivtv-streams.c | 11 ++++-------
+ 3 files changed, 9 insertions(+), 13 deletions(-)
 
---- a/fs/ubifs/ioctl.c
-+++ b/fs/ubifs/ioctl.c
-@@ -108,7 +108,7 @@ static int setflags(struct inode *inode,
- 	struct ubifs_inode *ui = ubifs_inode(inode);
- 	struct ubifs_info *c = inode->i_sb->s_fs_info;
- 	struct ubifs_budget_req req = { .dirtied_ino = 1,
--					.dirtied_ino_d = ui->data_len };
-+			.dirtied_ino_d = ALIGN(ui->data_len, 8) };
+diff --git a/drivers/media/pci/ivtv/ivtv-driver.h b/drivers/media/pci/ivtv/ivtv-driver.h
+index e5efe525ad7b..00caf60ff989 100644
+--- a/drivers/media/pci/ivtv/ivtv-driver.h
++++ b/drivers/media/pci/ivtv/ivtv-driver.h
+@@ -332,7 +332,6 @@ struct ivtv_stream {
+ 	struct ivtv *itv;		/* for ease of use */
+ 	const char *name;		/* name of the stream */
+ 	int type;			/* stream type */
+-	u32 caps;			/* V4L2 capabilities */
  
- 	err = ubifs_budget_space(c, &req);
- 	if (err)
+ 	struct v4l2_fh *fh;		/* pointer to the streaming filehandle */
+ 	spinlock_t qlock;		/* locks access to the queues */
+diff --git a/drivers/media/pci/ivtv/ivtv-ioctl.c b/drivers/media/pci/ivtv/ivtv-ioctl.c
+index 35dccb31174c..a9d69b253516 100644
+--- a/drivers/media/pci/ivtv/ivtv-ioctl.c
++++ b/drivers/media/pci/ivtv/ivtv-ioctl.c
+@@ -443,7 +443,7 @@ static int ivtv_g_fmt_vid_out_overlay(struct file *file, void *fh, struct v4l2_f
+ 	struct ivtv_stream *s = &itv->streams[fh2id(fh)->type];
+ 	struct v4l2_window *winfmt = &fmt->fmt.win;
+ 
+-	if (!(s->caps & V4L2_CAP_VIDEO_OUTPUT_OVERLAY))
++	if (!(s->vdev.device_caps & V4L2_CAP_VIDEO_OUTPUT_OVERLAY))
+ 		return -EINVAL;
+ 	if (!itv->osd_video_pbase)
+ 		return -EINVAL;
+@@ -554,7 +554,7 @@ static int ivtv_try_fmt_vid_out_overlay(struct file *file, void *fh, struct v4l2
+ 	u32 chromakey = fmt->fmt.win.chromakey;
+ 	u8 global_alpha = fmt->fmt.win.global_alpha;
+ 
+-	if (!(s->caps & V4L2_CAP_VIDEO_OUTPUT_OVERLAY))
++	if (!(s->vdev.device_caps & V4L2_CAP_VIDEO_OUTPUT_OVERLAY))
+ 		return -EINVAL;
+ 	if (!itv->osd_video_pbase)
+ 		return -EINVAL;
+@@ -1388,7 +1388,7 @@ static int ivtv_g_fbuf(struct file *file, void *fh, struct v4l2_framebuffer *fb)
+ 		0,
+ 	};
+ 
+-	if (!(s->caps & V4L2_CAP_VIDEO_OUTPUT_OVERLAY))
++	if (!(s->vdev.device_caps & V4L2_CAP_VIDEO_OUTPUT_OVERLAY))
+ 		return -ENOTTY;
+ 	if (!itv->osd_video_pbase)
+ 		return -ENOTTY;
+@@ -1455,7 +1455,7 @@ static int ivtv_s_fbuf(struct file *file, void *fh, const struct v4l2_framebuffe
+ 	struct ivtv_stream *s = &itv->streams[fh2id(fh)->type];
+ 	struct yuv_playback_info *yi = &itv->yuv_info;
+ 
+-	if (!(s->caps & V4L2_CAP_VIDEO_OUTPUT_OVERLAY))
++	if (!(s->vdev.device_caps & V4L2_CAP_VIDEO_OUTPUT_OVERLAY))
+ 		return -ENOTTY;
+ 	if (!itv->osd_video_pbase)
+ 		return -ENOTTY;
+@@ -1475,7 +1475,7 @@ static int ivtv_overlay(struct file *file, void *fh, unsigned int on)
+ 	struct ivtv *itv = id->itv;
+ 	struct ivtv_stream *s = &itv->streams[fh2id(fh)->type];
+ 
+-	if (!(s->caps & V4L2_CAP_VIDEO_OUTPUT_OVERLAY))
++	if (!(s->vdev.device_caps & V4L2_CAP_VIDEO_OUTPUT_OVERLAY))
+ 		return -ENOTTY;
+ 	if (!itv->osd_video_pbase)
+ 		return -ENOTTY;
+diff --git a/drivers/media/pci/ivtv/ivtv-streams.c b/drivers/media/pci/ivtv/ivtv-streams.c
+index f04ee84bab5f..f9de5d1605fe 100644
+--- a/drivers/media/pci/ivtv/ivtv-streams.c
++++ b/drivers/media/pci/ivtv/ivtv-streams.c
+@@ -176,7 +176,7 @@ static void ivtv_stream_init(struct ivtv *itv, int type)
+ 	s->itv = itv;
+ 	s->type = type;
+ 	s->name = ivtv_stream_info[type].name;
+-	s->caps = ivtv_stream_info[type].v4l2_caps;
++	s->vdev.device_caps = ivtv_stream_info[type].v4l2_caps;
+ 
+ 	if (ivtv_stream_info[type].pio)
+ 		s->dma = PCI_DMA_NONE;
+@@ -299,12 +299,9 @@ static int ivtv_reg_dev(struct ivtv *itv, int type)
+ 		if (s_mpg->vdev.v4l2_dev)
+ 			num = s_mpg->vdev.num + ivtv_stream_info[type].num_offset;
+ 	}
+-	s->vdev.device_caps = s->caps;
+-	if (itv->osd_video_pbase) {
+-		itv->streams[IVTV_DEC_STREAM_TYPE_YUV].vdev.device_caps |=
+-			V4L2_CAP_VIDEO_OUTPUT_OVERLAY;
+-		itv->streams[IVTV_DEC_STREAM_TYPE_MPG].vdev.device_caps |=
+-			V4L2_CAP_VIDEO_OUTPUT_OVERLAY;
++	if (itv->osd_video_pbase && (type == IVTV_DEC_STREAM_TYPE_YUV ||
++				     type == IVTV_DEC_STREAM_TYPE_MPG)) {
++		s->vdev.device_caps |= V4L2_CAP_VIDEO_OUTPUT_OVERLAY;
+ 		itv->v4l2_cap |= V4L2_CAP_VIDEO_OUTPUT_OVERLAY;
+ 	}
+ 	video_set_drvdata(&s->vdev, s);
+-- 
+2.34.1
+
 
 
