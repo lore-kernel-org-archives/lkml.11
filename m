@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B929FC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF4CBC433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:30:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358149AbiDEK2C (ORCPT
+        id S1358300AbiDEK2O (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:28:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33756 "EHLO
+        Tue, 5 Apr 2022 06:28:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241053AbiDEIcq (ORCPT
+        with ESMTP id S241062AbiDEIcq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:32:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C479BB7C46;
-        Tue,  5 Apr 2022 01:26:16 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6090BB91A6;
+        Tue,  5 Apr 2022 01:26:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 73963B81BC0;
-        Tue,  5 Apr 2022 08:26:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D122DC385A2;
-        Tue,  5 Apr 2022 08:26:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E8AB86117D;
+        Tue,  5 Apr 2022 08:26:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0567AC385A1;
+        Tue,  5 Apr 2022 08:26:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147174;
-        bh=6o/TkJM30UgnjB0qSBpxgAHQb1Ios5+9zW0+eXZ9Xo0=;
+        s=korg; t=1649147190;
+        bh=YbwfK3n1g59Ka5Cp7SEaBOTGe7h8cOzjzd41fU7Ajow=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=agm8c1D6B9MJ+VQ9+qfhjgWJoBGcwDQDG+0qqYL49pbDShrcq0sWRNseUJwzS0ZR2
-         Wd4bNMtKUESiiNbXhQ5+S6pSJhHsVXdMU2925DJUULLNoJEwVZXwBUA3+xWF0LO3G+
-         AQRMy4jzqVHgAq6ppF9Qc74qhBJOp4K3XXY4DSnM=
+        b=dwM6B0Q3ctQkrGuNWZphQ1mp4Nu/wBuibuGjpLJK3oA9rGrL4NS8kG3jiiWvTzUZw
+         B0EHwzb5508oXp4xVQ07AR6UOVI9cDOI1j3UObb3uaJf3ZNJSqLhZM+f46asrwexW4
+         qPB9vb2LQa/f9zyL0+tv0bnHhUZ4BQeTCAuy9OaE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Carlos Llamas <cmllamas@google.com>,
-        Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.17 1028/1126] loop: fix ioctl calls using compat_loop_info
-Date:   Tue,  5 Apr 2022 09:29:35 +0200
-Message-Id: <20220405070437.653961215@linuxfoundation.org>
+        stable@vger.kernel.org, Guangbin Huang <huangguangbin2@huawei.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: [PATCH 5.17 1033/1126] net: hns3: fix software vlan talbe of vlan 0 inconsistent with hardware
+Date:   Tue,  5 Apr 2022 09:29:40 +0200
+Message-Id: <20220405070437.798067423@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,59 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Carlos Llamas <cmllamas@google.com>
+From: Guangbin Huang <huangguangbin2@huawei.com>
 
-commit f941c51eeac7ebe0f8ec30943bf78e7f60aad039 upstream.
+commit 7ed258f12ec5ce855f15cdfb5710361dc82fe899 upstream.
 
-Support for cryptoloop was deleted in commit 47e9624616c8 ("block:
-remove support for cryptoloop and the xor transfer"), making the usage
-of loop_info->lo_encrypt_type obsolete. However, this member was also
-removed from the compat_loop_info definition and this breaks userspace
-ioctl calls for 32-bit binaries and CONFIG_COMPAT=y.
+When user delete vlan 0, as driver will not delete vlan 0 for hardware in
+function hclge_set_vlan_filter_hw(), so vlan 0 in software vlan talbe should
+not be deleted.
 
-This patch restores the compat_loop_info->lo_encrypt_type member and
-marks it obsolete as well as in the uapi header definitions.
-
-Fixes: 47e9624616c8 ("block: remove support for cryptoloop and the xor transfer")
-Signed-off-by: Carlos Llamas <cmllamas@google.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/20220329201815.1347500-1-cmllamas@google.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fixes: fe4144d47eef ("net: hns3: sync VLAN filter entries when kill VLAN ID failed")
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/block/loop.c      |    1 +
- include/uapi/linux/loop.h |    4 ++--
- 2 files changed, 3 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/drivers/block/loop.c
-+++ b/drivers/block/loop.c
-@@ -1592,6 +1592,7 @@ struct compat_loop_info {
- 	compat_ulong_t	lo_inode;       /* ioctl r/o */
- 	compat_dev_t	lo_rdevice;     /* ioctl r/o */
- 	compat_int_t	lo_offset;
-+	compat_int_t	lo_encrypt_type;        /* obsolete, ignored */
- 	compat_int_t	lo_encrypt_key_size;    /* ioctl w/o */
- 	compat_int_t	lo_flags;       /* ioctl r/o */
- 	char		lo_name[LO_NAME_SIZE];
---- a/include/uapi/linux/loop.h
-+++ b/include/uapi/linux/loop.h
-@@ -45,7 +45,7 @@ struct loop_info {
- 	unsigned long	   lo_inode; 		/* ioctl r/o */
- 	__kernel_old_dev_t lo_rdevice; 		/* ioctl r/o */
- 	int		   lo_offset;
--	int		   lo_encrypt_type;
-+	int		   lo_encrypt_type;		/* obsolete, ignored */
- 	int		   lo_encrypt_key_size; 	/* ioctl w/o */
- 	int		   lo_flags;
- 	char		   lo_name[LO_NAME_SIZE];
-@@ -61,7 +61,7 @@ struct loop_info64 {
- 	__u64		   lo_offset;
- 	__u64		   lo_sizelimit;/* bytes, 0 == max available */
- 	__u32		   lo_number;			/* ioctl r/o */
--	__u32		   lo_encrypt_type;
-+	__u32		   lo_encrypt_type;		/* obsolete, ignored */
- 	__u32		   lo_encrypt_key_size;		/* ioctl w/o */
- 	__u32		   lo_flags;
- 	__u8		   lo_file_name[LO_NAME_SIZE];
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+@@ -10314,11 +10314,11 @@ int hclge_set_vlan_filter(struct hnae3_h
+ 	}
+ 
+ 	if (!ret) {
+-		if (is_kill)
+-			hclge_rm_vport_vlan_table(vport, vlan_id, false);
+-		else
++		if (!is_kill)
+ 			hclge_add_vport_vlan_table(vport, vlan_id,
+ 						   writen_to_tbl);
++		else if (is_kill && vlan_id != 0)
++			hclge_rm_vport_vlan_table(vport, vlan_id, false);
+ 	} else if (is_kill) {
+ 		/* when remove hw vlan filter failed, record the vlan id,
+ 		 * and try to remove it from hw later, to be consistence
 
 
