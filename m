@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BDFCC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43608C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:52:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345202AbiDEJnK (ORCPT
+        id S1345442AbiDEJnb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:43:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34846 "EHLO
+        Tue, 5 Apr 2022 05:43:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239575AbiDEIUO (ORCPT
+        with ESMTP id S239622AbiDEIUQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:20:14 -0400
+        Tue, 5 Apr 2022 04:20:16 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CEAA640E;
-        Tue,  5 Apr 2022 01:16:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E388B129;
+        Tue,  5 Apr 2022 01:17:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E45E5B81B90;
-        Tue,  5 Apr 2022 08:16:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54F35C385A0;
-        Tue,  5 Apr 2022 08:16:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 99065B81B92;
+        Tue,  5 Apr 2022 08:17:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0C08C385A0;
+        Tue,  5 Apr 2022 08:17:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146610;
-        bh=H+wrthQDzaXAAOeIRN9O2lru9UGFfZdwB03CMg1HSOs=;
+        s=korg; t=1649146651;
+        bh=ICPnzx6vA/X57pONJWjP2kR6lefOSYh2BJuEirZaUv4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uMsmOn/Y6cUhor2XlTIGTzudmhmWJaWoB4Tyl7a0cwXysEnsmtWIA42+t/G/y3FrR
-         cIH9bdjSohRCyMFumnN7YXCGDi/VEx18QQZHeJF3gP6+CIQMpvf8upN1hkVdZYD4nx
-         8uRnde/PbhXLHXUGhxA0l4Ll/5QNln4D9gMCzgac=
+        b=nNGhXMWgKX8Ps2IyoVs7x3FB7tY7BY16oZRE+VTdFMTwuJ6G/dO4uLlwC4oJ3P0bX
+         pHWtuJwPi92e0YczmzljraSRC8NVqdQ0Q1yrBG+5RfeWPmXpH8OxVF601S4dOgWyR4
+         KbpUjOAcNO7KCkPZRg7VSzfy1ymTRXPvjrxbYtLQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Petr Vorel <petr.vorel@gmail.com>,
+        Stephen Boyd <sboyd@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0825/1126] octeontx2-af: initialize action variable
-Date:   Tue,  5 Apr 2022 09:26:12 +0200
-Message-Id: <20220405070431.779661459@linuxfoundation.org>
+Subject: [PATCH 5.17 0800/1126] clk: qcom: gcc-msm8994: Fix gpll4 width
+Date:   Tue,  5 Apr 2022 09:25:47 +0200
+Message-Id: <20220405070431.052818778@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,107 +52,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+From: Konrad Dybcio <konrad.dybcio@somainline.org>
 
-[ Upstream commit 33b5bc9e703383e396f275d51fc4bafa48dbae5a ]
+[ Upstream commit 71021db1c532c2545ae53b9ee85b37b7154f51d4 ]
 
-Clang static analysis reports this representative issue
-rvu_npc.c:898:15: warning: Assigned value is garbage
-  or undefined
-  req.match_id = action.match_id;
-               ^ ~~~~~~~~~~~~~~~
+The gpll4 postdiv is actually a div4, so make sure that Linux is aware of
+this.
 
-The initial setting of action is conditional on
- if (is_mcam_entry_enabled(...))
-The later check of action.op will sometimes be garbage.
-So initialize action.
+This fixes the following error messages:
 
-Reduce setting of
-  *(u64 *)&action = 0x00;
-to
-  *(u64 *)&action = 0;
+ mmc1: Card appears overclocked; req 200000000 Hz, actual 343999999 Hz
+ mmc1: Card appears overclocked; req 400000000 Hz, actual 687999999 Hz
 
-Fixes: 967db3529eca ("octeontx2-af: add support for multicast/promisc packet replication feature")
-Signed-off-by: Tom Rix <trix@redhat.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: aec89f78cf01 ("clk: qcom: Add support for msm8994 global clock controller")
+Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+Link: https://lore.kernel.org/r/20220319174940.341137-1-konrad.dybcio@somainline.org
+Tested-by: Petr Vorel <petr.vorel@gmail.com>
+Reviewed-by: Petr Vorel <petr.vorel@gmail.com>
+Signed-off-by: Stephen Boyd <sboyd@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/ethernet/marvell/octeontx2/af/rvu_npc.c   | 15 +++++++--------
- 1 file changed, 7 insertions(+), 8 deletions(-)
+ drivers/clk/qcom/gcc-msm8994.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
-index 91f86d77cd41..3a31fb8cc155 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
-@@ -605,7 +605,7 @@ void rvu_npc_install_ucast_entry(struct rvu *rvu, u16 pcifunc,
- 	struct npc_install_flow_req req = { 0 };
- 	struct npc_install_flow_rsp rsp = { 0 };
- 	struct npc_mcam *mcam = &rvu->hw->mcam;
--	struct nix_rx_action action;
-+	struct nix_rx_action action = { 0 };
- 	int blkaddr, index;
+diff --git a/drivers/clk/qcom/gcc-msm8994.c b/drivers/clk/qcom/gcc-msm8994.c
+index f09499999eb3..6b702cdacbf2 100644
+--- a/drivers/clk/qcom/gcc-msm8994.c
++++ b/drivers/clk/qcom/gcc-msm8994.c
+@@ -77,6 +77,7 @@ static struct clk_alpha_pll gpll4_early = {
  
- 	/* AF's and SDP VFs work in promiscuous mode */
-@@ -626,7 +626,6 @@ void rvu_npc_install_ucast_entry(struct rvu *rvu, u16 pcifunc,
- 		*(u64 *)&action = npc_get_mcam_action(rvu, mcam,
- 						      blkaddr, index);
- 	} else {
--		*(u64 *)&action = 0x00;
- 		action.op = NIX_RX_ACTIONOP_UCAST;
- 		action.pf_func = pcifunc;
- 	}
-@@ -657,7 +656,7 @@ void rvu_npc_install_promisc_entry(struct rvu *rvu, u16 pcifunc,
- 	struct npc_mcam *mcam = &rvu->hw->mcam;
- 	struct rvu_hwinfo *hw = rvu->hw;
- 	int blkaddr, ucast_idx, index;
--	struct nix_rx_action action;
-+	struct nix_rx_action action = { 0 };
- 	u64 relaxed_mask;
- 
- 	if (!hw->cap.nix_rx_multicast && is_cgx_vf(rvu, pcifunc))
-@@ -685,14 +684,14 @@ void rvu_npc_install_promisc_entry(struct rvu *rvu, u16 pcifunc,
- 						      blkaddr, ucast_idx);
- 
- 	if (action.op != NIX_RX_ACTIONOP_RSS) {
--		*(u64 *)&action = 0x00;
-+		*(u64 *)&action = 0;
- 		action.op = NIX_RX_ACTIONOP_UCAST;
- 	}
- 
- 	/* RX_ACTION set to MCAST for CGX PF's */
- 	if (hw->cap.nix_rx_multicast && pfvf->use_mce_list &&
- 	    is_pf_cgxmapped(rvu, rvu_get_pf(pcifunc))) {
--		*(u64 *)&action = 0x00;
-+		*(u64 *)&action = 0;
- 		action.op = NIX_RX_ACTIONOP_MCAST;
- 		pfvf = rvu_get_pfvf(rvu, pcifunc & ~RVU_PFVF_FUNC_MASK);
- 		action.index = pfvf->promisc_mce_idx;
-@@ -832,7 +831,7 @@ void rvu_npc_install_allmulti_entry(struct rvu *rvu, u16 pcifunc, int nixlf,
- 	struct rvu_hwinfo *hw = rvu->hw;
- 	int blkaddr, ucast_idx, index;
- 	u8 mac_addr[ETH_ALEN] = { 0 };
--	struct nix_rx_action action;
-+	struct nix_rx_action action = { 0 };
- 	struct rvu_pfvf *pfvf;
- 	u16 vf_func;
- 
-@@ -861,14 +860,14 @@ void rvu_npc_install_allmulti_entry(struct rvu *rvu, u16 pcifunc, int nixlf,
- 							blkaddr, ucast_idx);
- 
- 	if (action.op != NIX_RX_ACTIONOP_RSS) {
--		*(u64 *)&action = 0x00;
-+		*(u64 *)&action = 0;
- 		action.op = NIX_RX_ACTIONOP_UCAST;
- 		action.pf_func = pcifunc;
- 	}
- 
- 	/* RX_ACTION set to MCAST for CGX PF's */
- 	if (hw->cap.nix_rx_multicast && pfvf->use_mce_list) {
--		*(u64 *)&action = 0x00;
-+		*(u64 *)&action = 0;
- 		action.op = NIX_RX_ACTIONOP_MCAST;
- 		action.index = pfvf->mcast_mce_idx;
- 	}
+ static struct clk_alpha_pll_postdiv gpll4 = {
+ 	.offset = 0x1dc0,
++	.width = 4,
+ 	.regs = clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_DEFAULT],
+ 	.clkr.hw.init = &(struct clk_init_data){
+ 		.name = "gpll4",
 -- 
 2.34.1
 
