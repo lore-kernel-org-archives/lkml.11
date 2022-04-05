@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2C1DC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED4F9C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:57:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241401AbiDEMzc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:55:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53068 "EHLO
+        id S243398AbiDEMz7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 08:55:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343842AbiDEJOl (ORCPT
+        with ESMTP id S244537AbiDEJOP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:14:41 -0400
+        Tue, 5 Apr 2022 05:14:15 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8952749F94;
-        Tue,  5 Apr 2022 02:00:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9FC6381A9;
+        Tue,  5 Apr 2022 02:00:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2F721B818F3;
-        Tue,  5 Apr 2022 09:00:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1442C385A3;
-        Tue,  5 Apr 2022 09:00:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 61BC5B80DA1;
+        Tue,  5 Apr 2022 09:00:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5909C385A1;
+        Tue,  5 Apr 2022 09:00:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149250;
-        bh=zYiHsEhlIcmeHaD0lpcJfRsV30tPxcj1wTYs8dxpyFM=;
+        s=korg; t=1649149233;
+        bh=RgygLs90P80dA/tn0louJwqPh2WnY93FIS08MYA5D50=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W6e40W+MV4lTJHDxE9SRZ+bUeaXbMmYs1eMUE/ZNu2vg6PdmzE3XENbvZAD2T6WP+
-         7L0E4CB7MkynZYNINS8PN+apotr8b5aB8/ec7VS6D4A3yclO9OpoFNkapzTgk62CA0
-         vlqqHw8hzz7QC8pm/u/7NFJZtkJG9djDbaZtEMfk=
+        b=XHyy46fcIzbpju43RY6Dit4p+7SXef0BMuO+rFBjiYPS/JO1AR0xR6n02yx0+Xfx0
+         zWKvfYuGIa1fC+vhNI0a9+dGYKtCKUPZEn4ZWl6liuDZpjO7Ocoi4rI+Ec7+TZaBNd
+         CRW731skZUaamDSTl5VOBb+8ayIEjLnMiL7sCzPM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peter Robinson <pbrobinson@gmail.com>,
-        Jeremy Linton <jeremy.linton@arm.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Michael Straube <straube.linux@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0631/1017] net: bcmgenet: Use stronger register read/writes to assure ordering
-Date:   Tue,  5 Apr 2022 09:25:44 +0200
-Message-Id: <20220405070413.014415510@linuxfoundation.org>
+Subject: [PATCH 5.16 0643/1017] staging: r8188eu: release_firmware is not called if allocation fails
+Date:   Tue,  5 Apr 2022 09:25:56 +0200
+Message-Id: <20220405070413.369654764@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,113 +48,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jeremy Linton <jeremy.linton@arm.com>
+From: Michael Straube <straube.linux@gmail.com>
 
-[ Upstream commit 8d3ea3d402db94b61075617e71b67459a714a502 ]
+[ Upstream commit 39850edf2befe27bcb3d6c37b6ee76d2ee4df903 ]
 
-GCC12 appears to be much smarter about its dependency tracking and is
-aware that the relaxed variants are just normal loads and stores and
-this is causing problems like:
+In function load_firmware() release_firmware() is not called if the
+allocation of pFirmware->szFwBuffer fails or if fw->size is greater
+than FW_8188E_SIZE.
 
-[  210.074549] ------------[ cut here ]------------
-[  210.079223] NETDEV WATCHDOG: enabcm6e4ei0 (bcmgenet): transmit queue 1 timed out
-[  210.086717] WARNING: CPU: 1 PID: 0 at net/sched/sch_generic.c:529 dev_watchdog+0x234/0x240
-[  210.095044] Modules linked in: genet(E) nft_fib_inet nft_fib_ipv4 nft_fib_ipv6 nft_fib nft_reject_inet nf_reject_ipv4 nf_reject_ipv6 nft_reject nft_ct nft_chain_nat]
-[  210.146561] ACPI CPPC: PCC check channel failed for ss: 0. ret=-110
-[  210.146927] CPU: 1 PID: 0 Comm: swapper/1 Tainted: G            E     5.17.0-rc7G12+ #58
-[  210.153226] CPPC Cpufreq:cppc_scale_freq_workfn: failed to read perf counters
-[  210.161349] Hardware name: Raspberry Pi Foundation Raspberry Pi 4 Model B/Raspberry Pi 4 Model B, BIOS EDK2-DEV 02/08/2022
-[  210.161353] pstate: 80400005 (Nzcv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-[  210.161358] pc : dev_watchdog+0x234/0x240
-[  210.161364] lr : dev_watchdog+0x234/0x240
-[  210.161368] sp : ffff8000080a3a40
-[  210.161370] x29: ffff8000080a3a40 x28: ffffcd425af87000 x27: ffff8000080a3b20
-[  210.205150] x26: ffffcd425aa00000 x25: 0000000000000001 x24: ffffcd425af8ec08
-[  210.212321] x23: 0000000000000100 x22: ffffcd425af87000 x21: ffff55b142688000
-[  210.219491] x20: 0000000000000001 x19: ffff55b1426884c8 x18: ffffffffffffffff
-[  210.226661] x17: 64656d6974203120 x16: 0000000000000001 x15: 6d736e617274203a
-[  210.233831] x14: 2974656e65676d63 x13: ffffcd4259c300d8 x12: ffffcd425b07d5f0
-[  210.241001] x11: 00000000ffffffff x10: ffffcd425b07d5f0 x9 : ffffcd4258bdad9c
-[  210.248171] x8 : 00000000ffffdfff x7 : 000000000000003f x6 : 0000000000000000
-[  210.255341] x5 : 0000000000000000 x4 : 0000000000000000 x3 : 0000000000001000
-[  210.262511] x2 : 0000000000001000 x1 : 0000000000000005 x0 : 0000000000000044
-[  210.269682] Call trace:
-[  210.272133]  dev_watchdog+0x234/0x240
-[  210.275811]  call_timer_fn+0x3c/0x15c
-[  210.279489]  __run_timers.part.0+0x288/0x310
-[  210.283777]  run_timer_softirq+0x48/0x80
-[  210.287716]  __do_softirq+0x128/0x360
-[  210.291392]  __irq_exit_rcu+0x138/0x140
-[  210.295243]  irq_exit_rcu+0x1c/0x30
-[  210.298745]  el1_interrupt+0x38/0x54
-[  210.302334]  el1h_64_irq_handler+0x18/0x24
-[  210.306445]  el1h_64_irq+0x7c/0x80
-[  210.309857]  arch_cpu_idle+0x18/0x2c
-[  210.313445]  default_idle_call+0x4c/0x140
-[  210.317470]  cpuidle_idle_call+0x14c/0x1a0
-[  210.321584]  do_idle+0xb0/0x100
-[  210.324737]  cpu_startup_entry+0x30/0x8c
-[  210.328675]  secondary_start_kernel+0xe4/0x110
-[  210.333138]  __secondary_switched+0x94/0x98
+Move the call to release_firmware() to the exit label at the end of
+the function to fix this.
 
-The assumption when these were relaxed seems to be that device memory
-would be mapped non reordering, and that other constructs
-(spinlocks/etc) would provide the barriers to assure that packet data
-and in memory rings/queues were ordered with respect to device
-register reads/writes. This itself seems a bit sketchy, but the real
-problem with GCC12 is that it is moving the actual reads/writes around
-at will as though they were independent operations when in truth they
-are not, but the compiler can't know that. When looking at the
-assembly dumps for many of these routines its possible to see very
-clean, but not strictly in program order operations occurring as the
-compiler would be free to do if these weren't actually register
-reads/write operations.
-
-Its possible to suppress the timeout with a liberal bit of dma_mb()'s
-sprinkled around but the device still seems unable to reliably
-send/receive data. A better plan is to use the safer readl/writel
-everywhere.
-
-Since this partially reverts an older commit, which notes the use of
-the relaxed variants for performance reasons. I would suggest that
-any performance problems with this commit are targeted at relaxing only
-the performance critical code paths after assuring proper barriers.
-
-Fixes: 69d2ea9c79898 ("net: bcmgenet: Use correct I/O accessors")
-Reported-by: Peter Robinson <pbrobinson@gmail.com>
-Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
-Acked-by: Peter Robinson <pbrobinson@gmail.com>
-Tested-by: Peter Robinson <pbrobinson@gmail.com>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
-Link: https://lore.kernel.org/r/20220310045358.224350-1-jeremy.linton@arm.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 8cd574e6af54 ("staging: r8188eu: introduce new hal dir for RTL8188eu driver")
+Signed-off-by: Michael Straube <straube.linux@gmail.com>
+Link: https://lore.kernel.org/r/20220107103620.15648-4-straube.linux@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/broadcom/genet/bcmgenet.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/staging/r8188eu/hal/rtl8188e_hal_init.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-index 2da804f84b48..bd5998012a87 100644
---- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-+++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-@@ -76,7 +76,7 @@ static inline void bcmgenet_writel(u32 value, void __iomem *offset)
- 	if (IS_ENABLED(CONFIG_MIPS) && IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
- 		__raw_writel(value, offset);
- 	else
--		writel_relaxed(value, offset);
-+		writel(value, offset);
+diff --git a/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c b/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c
+index 92c3c39e098f..8656d4061059 100644
+--- a/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c
++++ b/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c
+@@ -540,10 +540,10 @@ static int load_firmware(struct rt_firmware *pFirmware, struct device *device)
+ 	}
+ 	memcpy(pFirmware->szFwBuffer, fw->data, fw->size);
+ 	pFirmware->ulFwLength = fw->size;
+-	release_firmware(fw);
+ 	dev_dbg(device, "!bUsedWoWLANFw, FmrmwareLen:%d+\n", pFirmware->ulFwLength);
+ 
+ Exit:
++	release_firmware(fw);
+ 	return rtStatus;
  }
  
- static inline u32 bcmgenet_readl(void __iomem *offset)
-@@ -84,7 +84,7 @@ static inline u32 bcmgenet_readl(void __iomem *offset)
- 	if (IS_ENABLED(CONFIG_MIPS) && IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
- 		return __raw_readl(offset);
- 	else
--		return readl_relaxed(offset);
-+		return readl(offset);
- }
- 
- static inline void dmadesc_set_length_status(struct bcmgenet_priv *priv,
 -- 
 2.34.1
 
