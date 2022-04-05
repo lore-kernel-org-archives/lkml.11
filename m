@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF6AAC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF5C9C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:23:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357871AbiDENJC (ORCPT
+        id S1345928AbiDENF0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:09:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34074 "EHLO
+        Tue, 5 Apr 2022 09:05:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344133AbiDEJSV (ORCPT
+        with ESMTP id S242459AbiDEJIA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:18:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C531D3BA79;
-        Tue,  5 Apr 2022 02:04:25 -0700 (PDT)
+        Tue, 5 Apr 2022 05:08:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18BBF6C95C;
+        Tue,  5 Apr 2022 01:56:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 642E761564;
-        Tue,  5 Apr 2022 09:04:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E011C385A0;
-        Tue,  5 Apr 2022 09:04:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3F9EEB81C19;
+        Tue,  5 Apr 2022 08:56:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96A41C385A1;
+        Tue,  5 Apr 2022 08:56:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149464;
-        bh=Vsd42PPUK3t7g0u09QB28bdvrrlD0K9u5QGtoOtoB+I=;
+        s=korg; t=1649149010;
+        bh=Fuaowa36LZmZrZwM9VAhTPo1a9kG2y7HWx+kfZ1HWT4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0A2QG6zcRdcl0DGnrL7JXy8S+vu30kJe1qZ+fGG6hjaaj7G5C4c2vVrTpd3ATw3l4
-         QT7xAo3slekP3QYGUKZXb8Ql+62JbJKisGPwyUm2+oHZ0P8fiDOVF/0Mv6xSk22zlZ
-         sbZi8gBQ3R9wDrUHUt9xxq1tyEcGp3A+wyr7ILcw=
+        b=ffeACz8ziiDBheGrw1WTvTP8rTCFNmlnMSuUet4m9JhuxzMlevEFXo5QyBtBrRcFe
+         9idsxDTdmOIAP0ukA8Crpui/yub9Mvt6Z21Wsm5VR3YcTKPchOOz4D3YyiBaYPrs0R
+         Xdq0+FZhS9Lw9N7xdIKeU0jmSEIR2Zd3w7g2puho=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stefano Garzarella <sgarzare@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0725/1017] vsock/virtio: enable VQs early on probe
-Date:   Tue,  5 Apr 2022 09:27:18 +0200
-Message-Id: <20220405070415.786966844@linuxfoundation.org>
+Subject: [PATCH 5.16 0562/1017] powerpc/Makefile: Dont pass -mcpu=powerpc64 when building 32-bit
+Date:   Tue,  5 Apr 2022 09:24:35 +0200
+Message-Id: <20220405070410.962528069@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -52,41 +49,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stefano Garzarella <sgarzare@redhat.com>
+From: Michael Ellerman <mpe@ellerman.id.au>
 
-[ Upstream commit 88704454ef8b00ea91537ae0d47d9348077e0e72 ]
+[ Upstream commit 2863dd2db23e0407f6c50b8ba5c0e55abef894f1 ]
 
-virtio spec requires drivers to set DRIVER_OK before using VQs.
-This is set automatically after probe returns, but virtio-vsock
-driver uses VQs in the probe function to fill rx and event VQs
-with new buffers.
+When CONFIG_GENERIC_CPU=y (true for all our defconfigs) we pass
+-mcpu=powerpc64 to the compiler, even when we're building a 32-bit
+kernel.
 
-Let's fix this, calling virtio_device_ready() before using VQs
-in the probe function.
+This happens because we have an ifdef CONFIG_PPC_BOOK3S_64/else block in
+the Makefile that was written before 32-bit supported GENERIC_CPU. Prior
+to that the else block only applied to 64-bit Book3E.
 
-Fixes: 0ea9e1d3a9e3 ("VSOCK: Introduce virtio_transport.ko")
-Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
-Acked-by: Michael S. Tsirkin <mst@redhat.com>
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+The GCC man page says -mcpu=powerpc64 "[specifies] a pure ... 64-bit big
+endian PowerPC ... architecture machine [type], with an appropriate,
+generic processor model assumed for scheduling purposes."
+
+It's unclear how that interacts with -m32, which we are also passing,
+although obviously -m32 is taking precedence in some sense, as the
+32-bit kernel only contains 32-bit instructions.
+
+This was noticed by inspection, not via any bug reports, but it does
+affect code generation. Comparing before/after code generation, there
+are some changes to instruction scheduling, and the after case (with
+-mcpu=powerpc64 removed) the compiler seems more keen to use r8.
+
+Fix it by making the else case only apply to Book3E 64, which excludes
+32-bit.
+
+Fixes: 0e00a8c9fd92 ("powerpc: Allow CPU selection also on PPC32")
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220215112858.304779-1-mpe@ellerman.id.au
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/vmw_vsock/virtio_transport.c | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/powerpc/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
-index 4a8548bdf86c..c5f936fbf876 100644
---- a/net/vmw_vsock/virtio_transport.c
-+++ b/net/vmw_vsock/virtio_transport.c
-@@ -627,6 +627,8 @@ static int virtio_vsock_probe(struct virtio_device *vdev)
+diff --git a/arch/powerpc/Makefile b/arch/powerpc/Makefile
+index e02568f17334..3d2e74ebc014 100644
+--- a/arch/powerpc/Makefile
++++ b/arch/powerpc/Makefile
+@@ -171,7 +171,7 @@ else
+ CFLAGS-$(CONFIG_GENERIC_CPU) += $(call cc-option,-mtune=power7,$(call cc-option,-mtune=power5))
+ CFLAGS-$(CONFIG_GENERIC_CPU) += $(call cc-option,-mcpu=power5,-mcpu=power4)
+ endif
+-else
++else ifdef CONFIG_PPC_BOOK3E_64
+ CFLAGS-$(CONFIG_GENERIC_CPU) += -mcpu=powerpc64
+ endif
  
- 	vdev->priv = vsock;
- 
-+	virtio_device_ready(vdev);
-+
- 	mutex_lock(&vsock->tx_lock);
- 	vsock->tx_run = true;
- 	mutex_unlock(&vsock->tx_lock);
 -- 
 2.34.1
 
