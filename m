@@ -2,56 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F3C6C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:55:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1776EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:55:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1456983AbiDEWqy (ORCPT
+        id S1457034AbiDEWq7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:46:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53462 "EHLO
+        Tue, 5 Apr 2022 18:46:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356773AbiDELPn (ORCPT
+        with ESMTP id S1457598AbiDEQOF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 07:15:43 -0400
-Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4E5AC98F54;
-        Tue,  5 Apr 2022 03:36:24 -0700 (PDT)
-Received: from netfilter.org (unknown [78.30.32.163])
-        by mail.netfilter.org (Postfix) with ESMTPSA id 5706460196;
-        Tue,  5 Apr 2022 12:32:45 +0200 (CEST)
-Date:   Tue, 5 Apr 2022 12:36:20 +0200
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Jakob Koschel <jakobkoschel@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org, netdev@vger.kernel.org,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>
-Subject: Re: [PATCH v2] netfilter: nf_tables: replace unnecessary use of
- list_for_each_entry_continue()
-Message-ID: <YkwbpEU25LR/42xx@salvia>
-References: <20220322105645.3667322-1-jakobkoschel@gmail.com>
+        Tue, 5 Apr 2022 12:14:05 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59D43140FF
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 09:12:06 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649175125;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=qNm+9V5x8K8pd4DpHAVUkys7MPqoZfGpc+Mw3U+A+aU=;
+        b=jioPHs0UCLFhqN7mVdCqSP7fCBRnzbhqBo0Kq/KZVudoOiR1evP5vnBBLeUwNNcIRhPlhN
+        z7FCe3CHlCupgjZ2pXxToigM+GBxAWwtokajRe1/mQtCVGOo9MTeT7LoU8eQlnFWkV6xvS
+        oephkeMIX5xpu4VyBs3UVK5Pif3NfSvQpWu50/j9qA3410d+HmRyHaCTl5u7lmgevvuJbm
+        h3cWlybGUPs+205qwNL6cqMVUPOzAKt/LDMGjU9El0U75PSOl8mTjonlP23hj/9hk0gwvZ
+        RS6rnLnuUMRipnrndM/sxhAuct0FznT2rzzI1AwASrVIm29woJk6sXuGZiwLEg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649175125;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=qNm+9V5x8K8pd4DpHAVUkys7MPqoZfGpc+Mw3U+A+aU=;
+        b=P8R+/+Q0099wdlG5pYMKgeC0QKYV+ZuRgZ5f5AkfC4kexLzSWLKcaJ4UacxzxOgZSIeTRY
+        aQmRLSW2iLH4rSAA==
+To:     Brian Gerst <brgerst@gmail.com>, linux-kernel@vger.kernel.org,
+        x86@kernel.org
+Cc:     Andy Lutomirski <luto@kernel.org>, Borislav Petkov <bp@alien8.de>,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Brian Gerst <brgerst@gmail.com>
+Subject: Re: [PATCH 0/4] x86-32: Clean up GS segment handling
+In-Reply-To: <20220325153953.162643-1-brgerst@gmail.com>
+References: <20220325153953.162643-1-brgerst@gmail.com>
+Date:   Tue, 05 Apr 2022 18:12:04 +0200
+Message-ID: <87y20j1pd7.ffs@tglx>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220322105645.3667322-1-jakobkoschel@gmail.com>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 22, 2022 at 11:56:44AM +0100, Jakob Koschel wrote:
-> Since there is no way for list_for_each_entry_continue() to start
-> interating in the middle of the list they can be replaced with a call
-> to list_for_each_entry().
-> 
-> In preparation to limit the scope of the list iterator to the list
-> traversal loop, the list iterator variable 'rule' should not be used
-> past the loop.
+On Fri, Mar 25 2022 at 11:39, Brian Gerst wrote:
+> Since commit 3fb0fdb3bbe ("Make the canary into a regular percpu
+> variable"), the GS segment is no longer switched on kernel entry for
+> 32-bit kernels.  Clean up the remaining code that handled lazy GS
+> switching.
 
-Applied to nf-next, thanks
+Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
