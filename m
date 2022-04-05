@@ -2,93 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD0A8C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1BCFC4332F
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:35:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1456517AbiDFAZd (ORCPT
+        id S1354648AbiDFAY0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:25:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33950 "EHLO
+        Tue, 5 Apr 2022 20:24:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352745AbiDEKFC (ORCPT
+        with ESMTP id S1573335AbiDES4R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:05:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45974BBE31;
-        Tue,  5 Apr 2022 02:53:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2854AB81B13;
-        Tue,  5 Apr 2022 09:53:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BEBAC385A2;
-        Tue,  5 Apr 2022 09:53:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152422;
-        bh=tTRgRGkVhs4MQfo1x1AjnjCGjBN5nYhl1z3dsRALaTk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O2e9IrvfhCdQqaowO+qnU2S1/3Y5vu4AHaE3CGYMjwTS8Y08wVs/cscrkJikURyvQ
-         Vq18RikC6kKRFwOZqfCEy7pmr9yumz/CH1yfoixR/t2gbETbiQ8K2pK/XFpyt7doB9
-         /awonEX42JmwSLLNv97p2rCKle9W6Xk85id4AoUQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.15 770/913] KVM: x86: Reinitialize context if host userspace toggles EFER.LME
-Date:   Tue,  5 Apr 2022 09:30:32 +0200
-Message-Id: <20220405070402.913373835@linuxfoundation.org>
+        Tue, 5 Apr 2022 14:56:17 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 666565640B
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 11:54:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649184854;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=ePJI6vLaNk30K4WDlJXEh2MYG+aNmDa1MxEoKA++MGw=;
+        b=NUG0Z6NWnN2xsGP+FMRy1McfhyFVWvyF8tnVEMjSHM1/UqD4cBoQIt66Qe+yOs5IZoEM3z
+        VegGNVlogGW1ZrmrxpSke7RHPHBIJsXawHVM1z0Di2KgsWgVDLUu5yXXTQ7ELEp311VlTA
+        T16aeR+D/CW6LGSoeIeXWuyQKzVFj48=
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
+ [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-634-gmw8IiVlO06ow06-AgjeEQ-1; Tue, 05 Apr 2022 14:54:12 -0400
+X-MC-Unique: gmw8IiVlO06ow06-AgjeEQ-1
+Received: by mail-ej1-f71.google.com with SMTP id sg13-20020a170907a40d00b006e7e8234ae2so3753753ejc.2
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 11:54:12 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ePJI6vLaNk30K4WDlJXEh2MYG+aNmDa1MxEoKA++MGw=;
+        b=G6YHX+UTzLh5ZxG5mILtpvohffId57q7cRqaVrrIYD/yXJKDmbNW2nxnQCW3wC3Lr0
+         YW5Q7VlfTT8m46q+Sm312RCXlNFzn1W15Hmf0RAr/JkkQh9g+WRoQn0LaYrkPe9KnlVU
+         IjYeIOJHSryx3cRnX0hzpHQN9Je29cjXTrDIEUjhjp8ziAqtD/31gPl1CtDrYYYRPsP0
+         dTOleRw4BoNVEdaZjfi2O20nQ5KKjxWz768Z4DTfggIA4TJkHKtF2jrtE+88CaKHAWlB
+         WWXP155rVB82FzufLwnG2s6q308n3XffwJh8QccjLcs/nZFuL3KOZdZqLyiOL0BWO5sZ
+         nsSQ==
+X-Gm-Message-State: AOAM533t4RcqqhcSw/QMEulHS6ZfrFd5tN82J909YZ5+5B3za+lW3M6+
+        U5INTlt+WzIEg6bAZY8luSmiVFHuOABgi+4gfYyZ6t1S7/ZjbttruIG1uK847iWP8tq5M5rjMov
+        xB0+1SwnYbosyxAnWvwZoze8=
+X-Received: by 2002:a17:907:9705:b0:6e4:b769:286f with SMTP id jg5-20020a170907970500b006e4b769286fmr4790982ejc.728.1649184851336;
+        Tue, 05 Apr 2022 11:54:11 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyH06ru9gb7oT8rBwDeYyDkG6AW/6djpQzjZJ7rxCFFf6I/5LGo02htK6mf8a0wRGlyfoigqw==
+X-Received: by 2002:a17:907:9705:b0:6e4:b769:286f with SMTP id jg5-20020a170907970500b006e4b769286fmr4790969ejc.728.1649184851120;
+        Tue, 05 Apr 2022 11:54:11 -0700 (PDT)
+Received: from auir.station (net-188-216-47-188.cust.vodafonedsl.it. [188.216.47.188])
+        by smtp.gmail.com with ESMTPSA id k16-20020a17090646d000b006e093439cdfsm5821273ejs.89.2022.04.05.11.54.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 11:54:10 -0700 (PDT)
+From:   Marco Pagani <marpagan@redhat.com>
+To:     Moritz Fischer <mdf@kernel.org>, Wu Hao <hao.wu@intel.com>,
+        Xu Yilun <yilun.xu@intel.com>, Tom Rix <trix@redhat.com>
+Cc:     Marco Pagani <marpagan@redhat.com>, linux-fpga@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] fpga: altera-pr-ip: fix unsigned comparison with less than zero
+Date:   Tue,  5 Apr 2022 20:53:49 +0200
+Message-Id: <20220405185349.220607-1-marpagan@redhat.com>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paolo Bonzini <pbonzini@redhat.com>
+Fix the "comparison with less than zero" warning reported by
+cppcheck for the unsigned (size_t) parameter "count" of the
+"alt_pr_fpga_write()" function.
 
-commit d6174299365ddbbf491620c0b8c5ca1a6ef2eea5 upstream.
-
-While the guest runs, EFER.LME cannot change unless CR0.PG is clear, and
-therefore EFER.NX is the only bit that can affect the MMU role.  However,
-set_efer accepts a host-initiated change to EFER.LME even with CR0.PG=1.
-In that case, the MMU has to be reset.
-
-Fixes: 11988499e62b ("KVM: x86: Skip EFER vs. guest CPUID checks for host-initiated writes")
-Cc: stable@vger.kernel.org
-Reviewed-by: Sean Christopherson <seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Marco Pagani <marpagan@redhat.com>
 ---
- arch/x86/kvm/mmu.h |    1 +
- arch/x86/kvm/x86.c |    3 +--
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/fpga/altera-pr-ip-core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/x86/kvm/mmu.h
-+++ b/arch/x86/kvm/mmu.h
-@@ -49,6 +49,7 @@
- 			       X86_CR4_LA57)
+diff --git a/drivers/fpga/altera-pr-ip-core.c b/drivers/fpga/altera-pr-ip-core.c
+index be0667968d33..2ff3d8e46a0c 100644
+--- a/drivers/fpga/altera-pr-ip-core.c
++++ b/drivers/fpga/altera-pr-ip-core.c
+@@ -108,7 +108,7 @@ static int alt_pr_fpga_write(struct fpga_manager *mgr, const char *buf,
+ 	u32 *buffer_32 = (u32 *)buf;
+ 	size_t i = 0;
  
- #define KVM_MMU_CR0_ROLE_BITS (X86_CR0_PG | X86_CR0_WP)
-+#define KVM_MMU_EFER_ROLE_BITS (EFER_LME | EFER_NX)
+-	if (count <= 0)
++	if (count == 0)
+ 		return -EINVAL;
  
- static __always_inline u64 rsvd_bits(int s, int e)
- {
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -1605,8 +1605,7 @@ static int set_efer(struct kvm_vcpu *vcp
- 		return r;
- 	}
- 
--	/* Update reserved bits */
--	if ((efer ^ old_efer) & EFER_NX)
-+	if ((efer ^ old_efer) & KVM_MMU_EFER_ROLE_BITS)
- 		kvm_mmu_reset_context(vcpu);
- 
- 	return 0;
-
+ 	/* Write out the complete 32-bit chunks */
+-- 
+2.35.1
 
