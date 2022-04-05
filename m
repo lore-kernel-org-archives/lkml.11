@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBF77C4167E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:26:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64C26C4707A
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:26:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358395AbiDEMXW (ORCPT
+        id S1359271AbiDEMXi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:23:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52234 "EHLO
+        Tue, 5 Apr 2022 08:23:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245052AbiDEIxE (ORCPT
+        with ESMTP id S245048AbiDEIxE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:53:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74AD5F0E;
-        Tue,  5 Apr 2022 01:50:41 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AAB0EB7;
+        Tue,  5 Apr 2022 01:50:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0F3DB60FFC;
-        Tue,  5 Apr 2022 08:50:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20845C385A1;
-        Tue,  5 Apr 2022 08:50:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AD7A8614FD;
+        Tue,  5 Apr 2022 08:50:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2CDBC385A0;
+        Tue,  5 Apr 2022 08:50:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148640;
-        bh=f0i/LJ/rej/qlGXRfE9/Nw2sVL0swZ4PvX3YV1//QE0=;
+        s=korg; t=1649148635;
+        bh=MWm4SF4vTdAg8YYiuLtbAmzMG7TK3H/DsZTmry+1Ino=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hUi3GzexxHoKWF0mwAYBk3rUpnStU+2o56xsl/bwgVSBKFSDlCmxddH2aciHwTrCO
-         rxNJVzNs8oh8l84M5fVrNKxdVHd00Nd58SbRPsqwwjR+ZNApzMQxM4o92ExxXuPquN
-         /lY3znX73PhM5rxIRXCi8pe1hYrcru6CNlDmhHp8=
+        b=tdGfUkZbAoFD19tb4uG5rskvkib+um/5np6zsoF1x3j940uvWTFxr2v4eMYukUYV+
+         QdD3X6ZBL13x/fm9PwIubMYgP44395RFcXmHU7ZNhwQv+YQKe3MvJrcbRe4Nv19OIm
+         xzHXb5NLWl5IsJJdF/LX/Pr5u7uVLg5xb88GUlEU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Shannon Nelson <snelson@pensando.io>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0389/1017] ASoC: msm8916-wcd-digital: Fix missing clk_disable_unprepare() in msm8916_wcd_digital_probe
-Date:   Tue,  5 Apr 2022 09:21:42 +0200
-Message-Id: <20220405070405.832556221@linuxfoundation.org>
+Subject: [PATCH 5.16 0424/1017] ionic: start watchdog after all is setup
+Date:   Tue,  5 Apr 2022 09:22:17 +0200
+Message-Id: <20220405070406.876141352@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,45 +50,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Shannon Nelson <snelson@pensando.io>
 
-[ Upstream commit 375a347da4889f64d86e1ab7f4e6702b6e9bf299 ]
+[ Upstream commit 9ad2939a1525962a79a2fd974ec7e3a71455b964 ]
 
-Fix the missing clk_disable_unprepare() before return
-from msm8916_wcd_digital_probe in the error handling case.
+The watchdog expects the lif to fully exist when it goes off,
+so lets not start the watchdog until all is ready in case there
+is some quirky time dialation that makes probe take multiple
+seconds.
 
-Fixes: 150db8c5afa1 ("ASoC: codecs: Add msm8916-wcd digital codec")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220307084523.28687-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 089406bc5ad6 ("ionic: add a watchdog timer to monitor heartbeat")
+Signed-off-by: Shannon Nelson <snelson@pensando.io>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/msm8916-wcd-digital.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c | 4 +++-
+ drivers/net/ethernet/pensando/ionic/ionic_dev.c     | 3 ---
+ 2 files changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/sound/soc/codecs/msm8916-wcd-digital.c b/sound/soc/codecs/msm8916-wcd-digital.c
-index fcc10c8bc625..9ad7fc0baf07 100644
---- a/sound/soc/codecs/msm8916-wcd-digital.c
-+++ b/sound/soc/codecs/msm8916-wcd-digital.c
-@@ -1201,7 +1201,7 @@ static int msm8916_wcd_digital_probe(struct platform_device *pdev)
- 	ret = clk_prepare_enable(priv->mclk);
- 	if (ret < 0) {
- 		dev_err(dev, "failed to enable mclk %d\n", ret);
--		return ret;
-+		goto err_clk;
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c b/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
+index 7e296fa71b36..40fa5bce2ac2 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
+@@ -331,6 +331,9 @@ static int ionic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 		goto err_out_deregister_lifs;
  	}
  
- 	dev_set_drvdata(dev, priv);
-@@ -1209,6 +1209,9 @@ static int msm8916_wcd_digital_probe(struct platform_device *pdev)
- 	return devm_snd_soc_register_component(dev, &msm8916_wcd_digital,
- 				      msm8916_wcd_digital_dai,
- 				      ARRAY_SIZE(msm8916_wcd_digital_dai));
-+err_clk:
-+	clk_disable_unprepare(priv->ahbclk);
-+	return ret;
- }
++	mod_timer(&ionic->watchdog_timer,
++		  round_jiffies(jiffies + ionic->watchdog_period));
++
+ 	return 0;
  
- static int msm8916_wcd_digital_remove(struct platform_device *pdev)
+ err_out_deregister_lifs:
+@@ -348,7 +351,6 @@ static int ionic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ err_out_reset:
+ 	ionic_reset(ionic);
+ err_out_teardown:
+-	del_timer_sync(&ionic->watchdog_timer);
+ 	pci_clear_master(pdev);
+ 	/* Don't fail the probe for these errors, keep
+ 	 * the hw interface around for inspection
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_dev.c b/drivers/net/ethernet/pensando/ionic/ionic_dev.c
+index d57e80d44c9d..4044c630f8b4 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_dev.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_dev.c
+@@ -122,9 +122,6 @@ int ionic_dev_setup(struct ionic *ionic)
+ 	idev->fw_generation = IONIC_FW_STS_F_GENERATION &
+ 			      ioread8(&idev->dev_info_regs->fw_status);
+ 
+-	mod_timer(&ionic->watchdog_timer,
+-		  round_jiffies(jiffies + ionic->watchdog_period));
+-
+ 	idev->db_pages = bar->vaddr;
+ 	idev->phy_db_pages = bar->bus_addr;
+ 
 -- 
 2.34.1
 
