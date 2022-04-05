@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C338C3527B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:08:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10901C47088
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:08:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351321AbiDEKCI (ORCPT
+        id S1352302AbiDEKEO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:02:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59104 "EHLO
+        Tue, 5 Apr 2022 06:04:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234193AbiDEIYn (ORCPT
+        with ESMTP id S236929AbiDEI2u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:24:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D95712AC8;
-        Tue,  5 Apr 2022 01:20:20 -0700 (PDT)
+        Tue, 5 Apr 2022 04:28:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2550318B3E;
+        Tue,  5 Apr 2022 01:21:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3428760FFB;
-        Tue,  5 Apr 2022 08:20:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41DABC385A2;
-        Tue,  5 Apr 2022 08:20:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7ADE960FF5;
+        Tue,  5 Apr 2022 08:21:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88596C385A0;
+        Tue,  5 Apr 2022 08:21:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146819;
-        bh=Yw9KpInkgsNYhh+OCNup/aC8fKxzxvvo6UbYxOjbCnQ=;
+        s=korg; t=1649146868;
+        bh=7Dm5bOLgWId8swbNF0C0V+oIH79PQ9He9CWfTKvD31U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nbEHyq/KmI0HilHKuvRBzjE7cGj7JK8JPtPIGPiyjnjZzYL7ohfSZ5rqy7ji7oKMu
-         1g2uy8cryi+wDS5WgXw7f3C/b99iiHAQF55yrMv1C0rQkeLpsQeAcc50NTNV38Xpp5
-         6XPbJa1pzLg20rTIagQimbrdb4mTacDVrjmp896Y=
+        b=ieSwOwjRA5Ga7h1s1i9oLqT5KE3dOURhUfwe+tUVJvfL+OtB3bLnivryNunHw7ZVl
+         U4lEg+DPmSsEZdlbi2K8uCkV0DHDd0h1wKsMQDEgVfqfHbHN3PAtZabQPfSa835JEu
+         kPjmk2PERTA+rr5y6WDXvW8aeKBZXOWzGaITRNV0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yong Wu <yong.wu@mediatek.com>,
-        Joerg Roedel <jroedel@suse.de>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org, Boris Burkov <boris@bur.io>,
+        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
+        Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0900/1126] media: iommu/mediatek: Return ENODEV if the device is NULL
-Date:   Tue,  5 Apr 2022 09:27:27 +0200
-Message-Id: <20220405070433.942304612@linuxfoundation.org>
+Subject: [PATCH 5.17 0881/1126] btrfs: make search_csum_tree return 0 if we get -EFBIG
+Date:   Tue,  5 Apr 2022 09:27:08 +0200
+Message-Id: <20220405070433.389330361@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -54,56 +52,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yong Wu <yong.wu@mediatek.com>
+From: Josef Bacik <josef@toxicpanda.com>
 
-[ Upstream commit 2fb0feed51085db77606de9b9477c96894328809 ]
+[ Upstream commit 03ddb19d2ea745228879b9334f3b550c88acb10a ]
 
-The platform device is created at:
-of_platform_default_populate_init:  arch_initcall_sync
-  ->of_platform_populate
-        ->of_platform_device_create_pdata
+We can either fail to find a csum entry at all and return -ENOENT, or we
+can find a range that is close, but return -EFBIG.  In essence these
+both mean the same thing when we are doing a lookup for a csum in an
+existing range, we didn't find a csum.  We want to treat both of these
+errors the same way, complain loudly that there wasn't a csum.  This
+currently happens anyway because we do
 
-When entering our probe, all the devices should be already created.
-if it is null, means NODEV. Currently we don't get the fail case.
-It's a minor fix, no need add fixes tags.
+	count = search_csum_tree();
+	if (count <= 0) {
+		// reloc and error handling
+	}
 
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-Acked-by: Joerg Roedel <jroedel@suse.de>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+However it forces us to incorrectly treat EIO or ENOMEM errors as on
+disk corruption.  Fix this by returning 0 if we get either -ENOENT or
+-EFBIG from btrfs_lookup_csum() so we can do proper error handling.
+
+Reviewed-by: Boris Burkov <boris@bur.io>
+Reviewed-by: Johannes Thumshirn <johannes.thumshirn@wdc.com>
+Signed-off-by: Josef Bacik <josef@toxicpanda.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/mtk_iommu.c    | 2 +-
- drivers/iommu/mtk_iommu_v1.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ fs/btrfs/file-item.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 25b834104790..77ae20ff9b35 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -848,7 +848,7 @@ static int mtk_iommu_probe(struct platform_device *pdev)
- 		plarbdev = of_find_device_by_node(larbnode);
- 		if (!plarbdev) {
- 			of_node_put(larbnode);
--			return -EPROBE_DEFER;
-+			return -ENODEV;
- 		}
- 		data->larb_imu[id].dev = &plarbdev->dev;
- 
-diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
-index 1467ba1e4417..68bf02f87cfd 100644
---- a/drivers/iommu/mtk_iommu_v1.c
-+++ b/drivers/iommu/mtk_iommu_v1.c
-@@ -604,7 +604,7 @@ static int mtk_iommu_probe(struct platform_device *pdev)
- 		plarbdev = of_find_device_by_node(larbnode);
- 		if (!plarbdev) {
- 			of_node_put(larbnode);
--			return -EPROBE_DEFER;
-+			return -ENODEV;
- 		}
- 		data->larb_imu[i].dev = &plarbdev->dev;
- 
+diff --git a/fs/btrfs/file-item.c b/fs/btrfs/file-item.c
+index 90c5c38836ab..435c895015a2 100644
+--- a/fs/btrfs/file-item.c
++++ b/fs/btrfs/file-item.c
+@@ -305,7 +305,7 @@ static int search_csum_tree(struct btrfs_fs_info *fs_info,
+ 	read_extent_buffer(path->nodes[0], dst, (unsigned long)item,
+ 			ret * csum_size);
+ out:
+-	if (ret == -ENOENT)
++	if (ret == -ENOENT || ret == -EFBIG)
+ 		ret = 0;
+ 	return ret;
+ }
 -- 
 2.34.1
 
