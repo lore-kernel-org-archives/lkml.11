@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D05BC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:53:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ACFEC4321E
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:53:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1455431AbiDFBtG (ORCPT
+        id S1844604AbiDFBuj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:49:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34662 "EHLO
+        Tue, 5 Apr 2022 21:50:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242895AbiDEKfX (ORCPT
+        with ESMTP id S1349300AbiDEJtf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:35:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C4BD51314;
-        Tue,  5 Apr 2022 03:21:05 -0700 (PDT)
+        Tue, 5 Apr 2022 05:49:35 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16A2A13D4F;
+        Tue,  5 Apr 2022 02:43:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 076BAB81C6C;
-        Tue,  5 Apr 2022 10:21:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42530C385A0;
-        Tue,  5 Apr 2022 10:21:02 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 8A2D7CE1C6F;
+        Tue,  5 Apr 2022 09:43:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F867C385A1;
+        Tue,  5 Apr 2022 09:43:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154062;
-        bh=fa4i5XgvX8rmlhEnQNKyPUqlBni4aLsihvQesM+ie5k=;
+        s=korg; t=1649151826;
+        bh=KkqvdNudypKbbtIijKOGeT0cNlIeNDr+yKjHsjcNilc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uJdnp1jT51r00wZK4w6NS7/nA40phvEvI6LpkY5GZMbnzyaYt6dcc2tjcEzVutXNp
-         JTLqZ0pUrN627e1CeD7EizNHsHTrEaqKi7m6iXEhEH37OjYE9QfnecGbNfXEgKmn52
-         a1MnFV11+axU0S9w0T8qOK+Blx9N2ljKhQhTvwlE=
+        b=RhYI/sa/H5n1aIiQ9ZHCuZWK2nNuMEbYr/dkOsXnpPQwLAbaPV94mtRSONhQhQcUR
+         P/wqciFanWps6YzUjbO9MELBmvg37NIP7oBDknbE8Wyb4yxaV4sAepUNQaXUCayXBO
+         U3KF+TIL5TVb8fBq7mQwfrkMREGjjPAje8UNqQnI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
-        Lin Ma <linma@zju.edu.cn>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Jakub Sitnicki <jakub@cloudflare.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 443/599] net/x25: Fix null-ptr-deref caused by x25_disconnect
-Date:   Tue,  5 Apr 2022 09:32:17 +0200
-Message-Id: <20220405070312.014226420@linuxfoundation.org>
+Subject: [PATCH 5.15 555/913] selftests/bpf: Fix error reporting from sock_fields programs
+Date:   Tue,  5 Apr 2022 09:26:57 +0200
+Message-Id: <20220405070356.482811764@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,63 +51,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Jakub Sitnicki <jakub@cloudflare.com>
 
-[ Upstream commit 7781607938c8371d4c2b243527430241c62e39c2 ]
+[ Upstream commit a4c9fe0ed4a13e25e43fcd44d9f89bc19ba8fbb7 ]
 
-When the link layer is terminating, x25->neighbour will be set to NULL
-in x25_disconnect(). As a result, it could cause null-ptr-deref bugs in
-x25_sendmsg(),x25_recvmsg() and x25_connect(). One of the bugs is
-shown below.
+The helper macro that records an error in BPF programs that exercise sock
+fields access has been inadvertently broken by adaptation work that
+happened in commit b18c1f0aa477 ("bpf: selftest: Adapt sock_fields test to
+use skel and global variables").
 
-    (Thread 1)                 |  (Thread 2)
-x25_link_terminated()          | x25_recvmsg()
- x25_kill_by_neigh()           |  ...
-  x25_disconnect()             |  lock_sock(sk)
-   ...                         |  ...
-   x25->neighbour = NULL //(1) |
-   ...                         |  x25->neighbour->extended //(2)
+BPF_NOEXIST flag cannot be used to update BPF_MAP_TYPE_ARRAY. The operation
+always fails with -EEXIST, which in turn means the error never gets
+recorded, and the checks for errors always pass.
 
-The code sets NULL to x25->neighbour in position (1) and dereferences
-x25->neighbour in position (2), which could cause null-ptr-deref bug.
+Revert the change in update flags.
 
-This patch adds lock_sock() in x25_kill_by_neigh() in order to synchronize
-with x25_sendmsg(), x25_recvmsg() and x25_connect(). What`s more, the
-sock held by lock_sock() is not NULL, because it is extracted from x25_list
-and uses x25_list_lock to synchronize.
-
-Fixes: 4becb7ee5b3d ("net/x25: Fix x25_neigh refcnt leak when x25 disconnect")
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Reviewed-by: Lin Ma <linma@zju.edu.cn>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: b18c1f0aa477 ("bpf: selftest: Adapt sock_fields test to use skel and global variables")
+Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: Martin KaFai Lau <kafai@fb.com>
+Link: https://lore.kernel.org/bpf/20220317113920.1068535-2-jakub@cloudflare.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/x25/af_x25.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+ tools/testing/selftests/bpf/progs/test_sock_fields.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/x25/af_x25.c b/net/x25/af_x25.c
-index 03ed170b8125..d231d4620c38 100644
---- a/net/x25/af_x25.c
-+++ b/net/x25/af_x25.c
-@@ -1775,10 +1775,15 @@ void x25_kill_by_neigh(struct x25_neigh *nb)
+diff --git a/tools/testing/selftests/bpf/progs/test_sock_fields.c b/tools/testing/selftests/bpf/progs/test_sock_fields.c
+index 81b57b9aaaea..7967348b11af 100644
+--- a/tools/testing/selftests/bpf/progs/test_sock_fields.c
++++ b/tools/testing/selftests/bpf/progs/test_sock_fields.c
+@@ -113,7 +113,7 @@ static void tpcpy(struct bpf_tcp_sock *dst,
  
- 	write_lock_bh(&x25_list_lock);
+ #define RET_LOG() ({						\
+ 	linum = __LINE__;					\
+-	bpf_map_update_elem(&linum_map, &linum_idx, &linum, BPF_NOEXIST);	\
++	bpf_map_update_elem(&linum_map, &linum_idx, &linum, BPF_ANY);	\
+ 	return CG_OK;						\
+ })
  
--	sk_for_each(s, &x25_list)
--		if (x25_sk(s)->neighbour == nb)
-+	sk_for_each(s, &x25_list) {
-+		if (x25_sk(s)->neighbour == nb) {
-+			write_unlock_bh(&x25_list_lock);
-+			lock_sock(s);
- 			x25_disconnect(s, ENETUNREACH, 0, 0);
--
-+			release_sock(s);
-+			write_lock_bh(&x25_list_lock);
-+		}
-+	}
- 	write_unlock_bh(&x25_list_lock);
- 
- 	/* Remove any related forwards */
 -- 
 2.34.1
 
