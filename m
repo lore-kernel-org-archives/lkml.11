@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E724FC4707A
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:56:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49818C4707F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:56:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358837AbiDEMvt (ORCPT
+        id S1359201AbiDEMwK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:51:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41928 "EHLO
+        Tue, 5 Apr 2022 08:52:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243931AbiDEJJj (ORCPT
+        with ESMTP id S244617AbiDEJKG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:09:39 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DDDA1BE98;
-        Tue,  5 Apr 2022 01:58:51 -0700 (PDT)
+        Tue, 5 Apr 2022 05:10:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F49528E15;
+        Tue,  5 Apr 2022 01:59:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 970CCCE1C0D;
-        Tue,  5 Apr 2022 08:58:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB20FC385A0;
-        Tue,  5 Apr 2022 08:58:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4DAF561511;
+        Tue,  5 Apr 2022 08:59:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61F49C385A1;
+        Tue,  5 Apr 2022 08:59:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149128;
-        bh=rbe+zv7Nmz16ANnvEAT8XDOSId2te/xaaarNcwHqQZA=;
+        s=korg; t=1649149179;
+        bh=esgjwmrZ5kBd4/B0Bw3DPlQwcEwy3TAWV6aAgv1vpXo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tQPBa8xAI37p+1HIkWQuu2GCF/+tO136Kbcjs2IcuotyM/pfJ4LYTDKrIha6daUQJ
-         n1yafiXRCR8li+ikX0QsZrKkHTykYMMCem20k5c578n23QnGj2mOudFoZw6L9VCW2O
-         DiAJxc9We8T8EUIngzyR9EatXAeU9t3KfyAHzkcc=
+        b=Rs3syQeFw/LdlbzRblKuchNQejfkJfLnEiCvYExE0QYkYMsvFje0aqWN02JdF4Qjk
+         Kw9B+fLe3UrMYSoWoKYz2ZFILMpidkjgtWKTVmtsdpQ/0D2V6XJbMyOdA7LAFiSQy0
+         eG12YOYa6eUaLGM/esZu2WLkTVL7+a4W7dx+WmyY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chengguang Xu <cgxu519@mykernel.net>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
+        stable@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Yonglong Li <liyonglong@chinatelecom.cn>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0605/1017] RDMA/rxe: Change variable and function argument to proper type
-Date:   Tue,  5 Apr 2022 09:25:18 +0200
-Message-Id: <20220405070412.236112619@linuxfoundation.org>
+Subject: [PATCH 5.16 0622/1017] mptcp: Fix crash due to tcp_tsorted_anchor was initialized before release skb
+Date:   Tue,  5 Apr 2022 09:25:35 +0200
+Message-Id: <20220405070412.745832297@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,71 +52,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chengguang Xu <cgxu519@mykernel.net>
+From: Yonglong Li <liyonglong@chinatelecom.cn>
 
-[ Upstream commit 7e8e611d6a0ff228577b1167335ffefb0f44d5d8 ]
+[ Upstream commit 3ef3905aa3b5b3e222ee6eb0210bfd999417a8cc ]
 
-The type of wqe length is u32 so in order to avoid overflow and shadow
-casting change variable and relevant function argument to proper type.
+Got crash when doing pressure test of mptcp:
 
-Link: https://lore.kernel.org/r/20220307145047.3235675-1-cgxu519@mykernel.net
-Signed-off-by: Chengguang Xu <cgxu519@mykernel.net>
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+===========================================================================
+dst_release: dst:ffffa06ce6e5c058 refcnt:-1
+kernel tried to execute NX-protected page - exploit attempt? (uid: 0)
+BUG: unable to handle kernel paging request at ffffa06ce6e5c058
+PGD 190a01067 P4D 190a01067 PUD 43fffb067 PMD 22e403063 PTE 8000000226e5c063
+Oops: 0011 [#1] SMP PTI
+CPU: 7 PID: 7823 Comm: kworker/7:0 Kdump: loaded Tainted: G            E
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.2.1 04/01/2014
+Call Trace:
+ ? skb_release_head_state+0x68/0x100
+ ? skb_release_all+0xe/0x30
+ ? kfree_skb+0x32/0xa0
+ ? mptcp_sendmsg_frag+0x57e/0x750
+ ? __mptcp_retrans+0x21b/0x3c0
+ ? __switch_to_asm+0x35/0x70
+ ? mptcp_worker+0x25e/0x320
+ ? process_one_work+0x1a7/0x360
+ ? worker_thread+0x30/0x390
+ ? create_worker+0x1a0/0x1a0
+ ? kthread+0x112/0x130
+ ? kthread_flush_work_fn+0x10/0x10
+ ? ret_from_fork+0x35/0x40
+===========================================================================
+
+In __mptcp_alloc_tx_skb skb was allocated and skb->tcp_tsorted_anchor will
+be initialized, in under memory pressure situation sk_wmem_schedule will
+return false and then kfree_skb. In this case skb->_skb_refdst is not null
+because_skb_refdst and tcp_tsorted_anchor are stored in the same mem, and
+kfree_skb will try to release dst and cause crash.
+
+Fixes: f70cad1085d1 ("mptcp: stop relying on tcp_tx_skb_cache")
+Reviewed-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Yonglong Li <liyonglong@chinatelecom.cn>
+Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Link: https://lore.kernel.org/r/20220317220953.426024-1-mathew.j.martineau@linux.intel.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/sw/rxe/rxe_req.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ net/mptcp/protocol.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/infiniband/sw/rxe/rxe_req.c b/drivers/infiniband/sw/rxe/rxe_req.c
-index 0c9d2af15f3d..79ed4ca2fe2c 100644
---- a/drivers/infiniband/sw/rxe/rxe_req.c
-+++ b/drivers/infiniband/sw/rxe/rxe_req.c
-@@ -362,7 +362,7 @@ static inline int get_mtu(struct rxe_qp *qp)
- 
- static struct sk_buff *init_req_packet(struct rxe_qp *qp,
- 				       struct rxe_send_wqe *wqe,
--				       int opcode, int payload,
-+				       int opcode, u32 payload,
- 				       struct rxe_pkt_info *pkt)
- {
- 	struct rxe_dev		*rxe = to_rdev(qp->ibqp.device);
-@@ -455,7 +455,7 @@ static struct sk_buff *init_req_packet(struct rxe_qp *qp,
- 
- static int finish_packet(struct rxe_qp *qp, struct rxe_send_wqe *wqe,
- 		       struct rxe_pkt_info *pkt, struct sk_buff *skb,
--		       int paylen)
-+		       u32 paylen)
- {
- 	int err;
- 
-@@ -503,7 +503,7 @@ static void update_wqe_state(struct rxe_qp *qp,
- static void update_wqe_psn(struct rxe_qp *qp,
- 			   struct rxe_send_wqe *wqe,
- 			   struct rxe_pkt_info *pkt,
--			   int payload)
-+			   u32 payload)
- {
- 	/* number of packets left to send including current one */
- 	int num_pkt = (wqe->dma.resid + payload + qp->mtu - 1) / qp->mtu;
-@@ -546,7 +546,7 @@ static void rollback_state(struct rxe_send_wqe *wqe,
+diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
+index 7566c9dc6681..1784e528704a 100644
+--- a/net/mptcp/protocol.c
++++ b/net/mptcp/protocol.c
+@@ -1202,6 +1202,7 @@ static struct sk_buff *__mptcp_alloc_tx_skb(struct sock *sk, struct sock *ssk, g
+ 		tcp_skb_entail(ssk, skb);
+ 		return skb;
+ 	}
++	tcp_skb_tsorted_anchor_cleanup(skb);
+ 	kfree_skb(skb);
+ 	return NULL;
  }
- 
- static void update_state(struct rxe_qp *qp, struct rxe_send_wqe *wqe,
--			 struct rxe_pkt_info *pkt, int payload)
-+			 struct rxe_pkt_info *pkt, u32 payload)
- {
- 	qp->req.opcode = pkt->opcode;
- 
-@@ -618,7 +618,7 @@ int rxe_requester(void *arg)
- 	struct sk_buff *skb;
- 	struct rxe_send_wqe *wqe;
- 	enum rxe_hdr_mask mask;
--	int payload;
-+	u32 payload;
- 	int mtu;
- 	int opcode;
- 	int ret;
 -- 
 2.34.1
 
