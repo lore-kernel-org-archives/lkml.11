@@ -2,105 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99B91C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88540C4321E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:27:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351764AbiDEVYS (ORCPT
+        id S1376590AbiDEVZr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:24:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35836 "EHLO
+        Tue, 5 Apr 2022 17:25:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1455062AbiDEP7e (ORCPT
+        with ESMTP id S1391535AbiDEPeu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:59:34 -0400
-Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA8B4D3723
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 08:09:19 -0700 (PDT)
-Received: by mail-qt1-x830.google.com with SMTP id v2so11506261qtc.5
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 08:09:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:subject:message-id:mime-version:content-disposition;
-        bh=YZkbL+GyCYshGd2SxK7PvgiiaFokGhdvBjFhAiL3mJE=;
-        b=ZJO9yRZp6P90RZT3XEvaUufFTHnVskvsXvvmkYd9SwzpPfgQ/EG7qq7XxWlnwiAWZo
-         P87Oj4KT6pQfjRrCT+DpXN5an1xn0JKcq13+wFXorFDrN7JcfMlNb5TWDfnUUdJj1+am
-         u/COgwXV/FL5IXcjkoE6ZJu8OXTt34vQyZjsGz7DWRMSrtnX1PJo/os3xrYpXg42KcBN
-         rnZO8Lts3yrMffecZZBrIk1/RZKUlrubFkJjuldbUXB5gB1TdX70eAdcZucVRfiMem6K
-         NbNXuSftzcBcc6NzXtkTRUFZo31VAtvKDKOAFFPu01z1GS0yn8EcAeqkhmn3robIPMwE
-         rSuw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
-         :content-disposition;
-        bh=YZkbL+GyCYshGd2SxK7PvgiiaFokGhdvBjFhAiL3mJE=;
-        b=PDqR27+pVAZ6t3vtA1B6iZCoVOyeeESivPVKFtWiVJfxv/1KdlQolDiKRf0hvUVTOr
-         9siuhdr1PRAa0bWSFDXu2YyUptYuuZ7UGTKWFSwK5GvTaoZTOHoJTmEU5DBhBa+/F/B0
-         UIasBEs35RZTJz62H6w5w9o+MKcvxmiFL4gkVteioOCY0n8sxQBq/QTKMvBFxGAthyzG
-         Mc9dxHafP1iXiQoRcxMEdczLIO0aNeSYheGBvRh+2i306tZdnckC7XVzgkGewZtMGomu
-         aM9p8Jns9PWTiC3a4fEGcmcIzE3owd1NyxEz4WNuWra71f7ubo0H6iQn1UuunFfuonS+
-         tw/g==
-X-Gm-Message-State: AOAM531ywncEFsoq63FUf+41SH/WZ0FvYUU4kIeuGb9OY1UtEo+dqUuG
-        l1qMf4kifs6d37RxtjdJnQzXh5FImv5ITw==
-X-Google-Smtp-Source: ABdhPJzBcKEnmfMxzO4pTwXmDLNbb647BPIfA5UOISMSbZI4aCTntBXAPD1cj/qU/bDGmO4X+wqKOQ==
-X-Received: by 2002:a05:620a:4612:b0:67e:be08:b079 with SMTP id br18-20020a05620a461200b0067ebe08b079mr2633660qkb.422.1649171358837;
-        Tue, 05 Apr 2022 08:09:18 -0700 (PDT)
-Received: from euclid ([71.58.109.160])
-        by smtp.gmail.com with ESMTPSA id n8-20020ac85a08000000b002e06aa02021sm11266239qta.49.2022.04.05.08.09.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Apr 2022 08:09:18 -0700 (PDT)
-Date:   Tue, 5 Apr 2022 11:09:12 -0400
-From:   Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        outreachy@lists.linux.dev
-Subject: [PATCH v2] staging: rtl8723bs: fix indentation
-Message-ID: <20220405150912.GA625670@euclid>
+        Tue, 5 Apr 2022 11:34:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E4525EDD5
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:42:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 07321B81C87
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 13:42:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62999C385A0;
+        Tue,  5 Apr 2022 13:42:04 +0000 (UTC)
+Date:   Tue, 5 Apr 2022 09:42:02 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     bigeasy@linutronix.de, linux-kernel@vger.kernel.org
+Subject: Re: Typical PREEMPT_RT .config?
+Message-ID: <20220405094202.0823ce48@gandalf.local.home>
+In-Reply-To: <20220405094048.30a75670@gandalf.local.home>
+References: <20220404231654.GA3445712@paulmck-ThinkPad-P17-Gen-1>
+        <20220405094048.30a75670@gandalf.local.home>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Adhere to Linux kernel coding style.
+On Tue, 5 Apr 2022 09:40:48 -0400
+Steven Rostedt <rostedt@goodmis.org> wrote:
 
-Reported by checkpatch:
+> On Mon, 4 Apr 2022 16:16:54 -0700
+> "Paul E. McKenney" <paulmck@kernel.org> wrote:
+> 
+> > OK, now that PREEMPT_RT is mostly into mainline, I should probably create
+> > an rcutorture scenario more closely reflecting it.  The closest at the
+> > moment is probably tools/testing/selftests/rcutorture/configs/rcu/TREE03,
+> > but I figured that before beating on it I should check to see if you
+> > already have a PREEMPT_RT rcutorture scenario file.  
+> 
+> I don't have one.
 
-WARNING: suspect code indent for conditional statements
+And now reading the subject line and not just the body, are you asking
+about what configs are normally added? I had several I used for testing,
+but will have to go back and look at them.
 
-Signed-off-by: Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
----
-
-v1 -> v2: Remove the comments that became irrelevant with proper indentation.
-
- drivers/staging/rtl8723bs/core/rtw_mlme_ext.c | 14 +++-----------
- 1 file changed, 3 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/staging/rtl8723bs/core/rtw_mlme_ext.c b/drivers/staging/rtl8723bs/core/rtw_mlme_ext.c
-index 04e29e228c1e..1bdbd0971f73 100644
---- a/drivers/staging/rtl8723bs/core/rtw_mlme_ext.c
-+++ b/drivers/staging/rtl8723bs/core/rtw_mlme_ext.c
-@@ -5143,17 +5143,9 @@ void link_timer_hdl(struct timer_list *t)
- 	} else if (pmlmeinfo->state & WIFI_FW_AUTH_STATE) {
- 		/* re-auth timer */
- 		if (++pmlmeinfo->reauth_count > REAUTH_LIMIT) {
--			/* if (pmlmeinfo->auth_algo != dot11AuthAlgrthm_Auto) */
--			/*  */
--				pmlmeinfo->state = 0;
--				report_join_res(padapter, -1);
--				return;
--			/*  */
--			/* else */
--			/*  */
--			/* 	pmlmeinfo->auth_algo = dot11AuthAlgrthm_Shared; */
--			/* 	pmlmeinfo->reauth_count = 0; */
--			/*  */
-+			pmlmeinfo->state = 0;
-+			report_join_res(padapter, -1);
-+			return;
- 		}
- 
- 		pmlmeinfo->auth_seq = 1;
--- 
-2.25.1
-
+-- Steve
