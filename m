@@ -2,105 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79AD6C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45456C4332F
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:40:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1836385AbiDFAgC (ORCPT
+        id S1836356AbiDFAfz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:36:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56328 "EHLO
+        Tue, 5 Apr 2022 20:35:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350505AbiDEJ6o (ORCPT
+        with ESMTP id S1457742AbiDEQi2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:58:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEF4D5D199;
-        Tue,  5 Apr 2022 02:51:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7AB8FB818F3;
-        Tue,  5 Apr 2022 09:51:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8416C385A2;
-        Tue,  5 Apr 2022 09:51:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152269;
-        bh=WUIYG6thePESUcULHT5I4qjXkkRS99F3jg0XOg3HOro=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NFnIRTM3WFK0obBwzVDADeF2ErGZLoZErxzBqI9KLZI5pZ/bfqUfgZPFEs2RnaVSq
-         MzUlsmMtABMGwAuLcsSsclurtRIyXrOO0MK7Zq9fp4tXmd6/Fz9vzobFxEx5HVC1Rs
-         gf3uyjusgoDzu7R6l7HRBFkGK/GQnj73GMqlgfO0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dai Ngo <dai.ngo@oracle.com>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 717/913] NFSD: Fix nfsd_breaker_owns_lease() return values
-Date:   Tue,  5 Apr 2022 09:29:39 +0200
-Message-Id: <20220405070401.326185098@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 12:38:28 -0400
+Received: from 20.mo582.mail-out.ovh.net (20.mo582.mail-out.ovh.net [178.32.124.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9E67D3737
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 09:36:29 -0700 (PDT)
+Received: from player696.ha.ovh.net (unknown [10.108.1.191])
+        by mo582.mail-out.ovh.net (Postfix) with ESMTP id 413FE23E49
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 16:36:28 +0000 (UTC)
+Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
+        (Authenticated sender: steve@sk2.org)
+        by player696.ha.ovh.net (Postfix) with ESMTPSA id DB1AA1EFDEA11;
+        Tue,  5 Apr 2022 16:36:22 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-103G005435116ba-5cdd-4ff3-a179-c77177e0e200,
+                    8AF55017BACD44284FC599BC4826E0280D36FCC4) smtp.auth=steve@sk2.org
+X-OVh-ClientIp: 82.65.25.201
+From:   Stephen Kitt <steve@sk2.org>
+To:     Kirill Marinushkin <kmarinushkin@birdec.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+Cc:     Wolfram Sang <wsa@kernel.org>, linux-kernel@vger.kernel.org,
+        Stephen Kitt <steve@sk2.org>
+Subject: [PATCH] ASoC: pcm3060: use simple i2c probe function
+Date:   Tue,  5 Apr 2022 18:36:18 +0200
+Message-Id: <20220405163618.2158090-1-steve@sk2.org>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Ovh-Tracer-Id: 8073828232917059206
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudejgedgleelucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeetgedugfelkeeikeetgeegteevfeeufeetuefgudeiiedthfehtdeffeekvdeffeenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrheileeirdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrgh
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chuck Lever <chuck.lever@oracle.com>
+The i2c probe functions here don't use the id information provided in
+their second argument, so the single-parameter i2c probe function
+("probe_new") can be used instead.
 
-[ Upstream commit 50719bf3442dd6cd05159e9c98d020b3919ce978 ]
+This avoids scanning the identifier tables during probes.
 
-These have been incorrect since the function was introduced.
-
-A proper kerneldoc comment is added since this function, though
-static, is part of an external interface.
-
-Reported-by: Dai Ngo <dai.ngo@oracle.com>
-Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Stephen Kitt <steve@sk2.org>
 ---
- fs/nfsd/nfs4state.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ sound/soc/codecs/pcm3060-i2c.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/fs/nfsd/nfs4state.c b/fs/nfsd/nfs4state.c
-index db4a47a280dc..181bc3d9f566 100644
---- a/fs/nfsd/nfs4state.c
-+++ b/fs/nfsd/nfs4state.c
-@@ -4693,6 +4693,14 @@ nfsd_break_deleg_cb(struct file_lock *fl)
- 	return ret;
- }
+diff --git a/sound/soc/codecs/pcm3060-i2c.c b/sound/soc/codecs/pcm3060-i2c.c
+index abcdeb922201..2388098eeca3 100644
+--- a/sound/soc/codecs/pcm3060-i2c.c
++++ b/sound/soc/codecs/pcm3060-i2c.c
+@@ -10,8 +10,7 @@
  
-+/**
-+ * nfsd_breaker_owns_lease - Check if lease conflict was resolved
-+ * @fl: Lock state to check
-+ *
-+ * Return values:
-+ *   %true: Lease conflict was resolved
-+ *   %false: Lease conflict was not resolved.
-+ */
- static bool nfsd_breaker_owns_lease(struct file_lock *fl)
+ #include "pcm3060.h"
+ 
+-static int pcm3060_i2c_probe(struct i2c_client *i2c,
+-			     const struct i2c_device_id *id)
++static int pcm3060_i2c_probe(struct i2c_client *i2c)
  {
- 	struct nfs4_delegation *dl = fl->fl_owner;
-@@ -4700,11 +4708,11 @@ static bool nfsd_breaker_owns_lease(struct file_lock *fl)
- 	struct nfs4_client *clp;
+ 	struct pcm3060_priv *priv;
  
- 	if (!i_am_nfsd())
--		return NULL;
-+		return false;
- 	rqst = kthread_data(current);
- 	/* Note rq_prog == NFS_ACL_PROGRAM is also possible: */
- 	if (rqst->rq_prog != NFS_PROGRAM || rqst->rq_vers < 4)
--		return NULL;
-+		return false;
- 	clp = *(rqst->rq_lease_breaker);
- 	return dl->dl_stid.sc_client == clp;
- }
+@@ -50,7 +49,7 @@ static struct i2c_driver pcm3060_i2c_driver = {
+ #endif /* CONFIG_OF */
+ 	},
+ 	.id_table = pcm3060_i2c_id,
+-	.probe = pcm3060_i2c_probe,
++	.probe_new = pcm3060_i2c_probe,
+ };
+ 
+ module_i2c_driver(pcm3060_i2c_driver);
 -- 
-2.34.1
-
-
+2.27.0
 
