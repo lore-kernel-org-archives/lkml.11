@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B17BBC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA972C43217
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:13:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1840821AbiDFBM6 (ORCPT
+        id S1840856AbiDFBNe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:12:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39808 "EHLO
+        Tue, 5 Apr 2022 21:13:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349132AbiDEJtM (ORCPT
+        with ESMTP id S1353238AbiDEKFy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 714C4AC044;
-        Tue,  5 Apr 2022 02:41:11 -0700 (PDT)
+        Tue, 5 Apr 2022 06:05:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EBA5BF013;
+        Tue,  5 Apr 2022 02:54:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0F31161675;
-        Tue,  5 Apr 2022 09:41:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AD2BC385A3;
-        Tue,  5 Apr 2022 09:41:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 04F6DB81B75;
+        Tue,  5 Apr 2022 09:54:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 522AEC385A2;
+        Tue,  5 Apr 2022 09:54:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151670;
-        bh=s0Xl/tDZ/nn9ljOEmMoDjIHW5BTj9WeUhGDK0Dd9ojI=;
+        s=korg; t=1649152470;
+        bh=+wq173W039LLwt49okhsC1cU/Yg0EMixvemiQqA7vmw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fpROFFrMfgDvr6ZNya6F5LqqYvdPTDSH1nOQHwjvl9D0pBw6TmgwUEVFcVRNXL51c
-         naPp+XOtTq/VdYhBwkPpVTOrGHc7xhS4IEQ5/v+PDDpfOB+HQazKK5mpFbtmNVfVqv
-         4AAO5TGg4XfrFSHicsaGYJemn+WJy0DwTWI8UhyE=
+        b=WpA6pHgW9WB1IDeoN6xs9kbF5K/z/cSTVhI1/DgZjKxOkqbtd/0pmlEH61v2zrGix
+         hmMEHHPkwA3HDOx1ILVJAqHrcqFBtZx9FBrqJIOPe0WLdEB1cwNHBRSNsDX3oU5LPM
+         72TtKws/5+/36Z/ReNmy9jFsuex9CjhBkztD1jos=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Jing Yao <yao.jing2@zte.com.cn>, Helge Deller <deller@gmx.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 451/913] power: supply: ab8500: Fix memory leak in ab8500_fg_sysfs_init
-Date:   Tue,  5 Apr 2022 09:25:13 +0200
-Message-Id: <20220405070353.367451209@linuxfoundation.org>
+Subject: [PATCH 5.15 749/913] video: fbdev: omapfb: panel-dsi-cm: Use sysfs_emit() instead of snprintf()
+Date:   Tue,  5 Apr 2022 09:30:11 +0200
+Message-Id: <20220405070402.284851176@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -50,42 +50,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Jing Yao <yao.jing2@zte.com.cn>
 
-[ Upstream commit 6a4760463dbc6b603690938c468839985189ce0a ]
+[ Upstream commit f63658a59c3d439c8ad7b290f8ec270980e0f384 ]
 
-kobject_init_and_add() takes reference even when it fails.
-According to the doc of kobject_init_and_add()：
+Use sysfs_emit instead of scnprintf, snprintf or sprintf.
 
-   If this function returns an error, kobject_put() must be called to
-   properly clean up the memory associated with the object.
-
-Fix memory leak by calling kobject_put().
-
-Fixes: 8c0984e5a753 ("power: move power supply drivers to power/supply")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Jing Yao <yao.jing2@zte.com.cn>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/power/supply/ab8500_fg.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/power/supply/ab8500_fg.c b/drivers/power/supply/ab8500_fg.c
-index 05fe9724ba50..57799a8079d4 100644
---- a/drivers/power/supply/ab8500_fg.c
-+++ b/drivers/power/supply/ab8500_fg.c
-@@ -2545,8 +2545,10 @@ static int ab8500_fg_sysfs_init(struct ab8500_fg *di)
- 	ret = kobject_init_and_add(&di->fg_kobject,
- 		&ab8500_fg_ktype,
- 		NULL, "battery");
--	if (ret < 0)
-+	if (ret < 0) {
-+		kobject_put(&di->fg_kobject);
- 		dev_err(di->dev, "failed to create sysfs entry\n");
-+	}
+diff --git a/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c b/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c
+index 4b0793abdd84..a2c7c5cb1523 100644
+--- a/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c
++++ b/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c
+@@ -409,7 +409,7 @@ static ssize_t dsicm_num_errors_show(struct device *dev,
+ 	if (r)
+ 		return r;
  
- 	return ret;
+-	return snprintf(buf, PAGE_SIZE, "%d\n", errors);
++	return sysfs_emit(buf, "%d\n", errors);
  }
+ 
+ static ssize_t dsicm_hw_revision_show(struct device *dev,
+@@ -439,7 +439,7 @@ static ssize_t dsicm_hw_revision_show(struct device *dev,
+ 	if (r)
+ 		return r;
+ 
+-	return snprintf(buf, PAGE_SIZE, "%02x.%02x.%02x\n", id1, id2, id3);
++	return sysfs_emit(buf, "%02x.%02x.%02x\n", id1, id2, id3);
+ }
+ 
+ static ssize_t dsicm_store_ulps(struct device *dev,
+@@ -487,7 +487,7 @@ static ssize_t dsicm_show_ulps(struct device *dev,
+ 	t = ddata->ulps_enabled;
+ 	mutex_unlock(&ddata->lock);
+ 
+-	return snprintf(buf, PAGE_SIZE, "%u\n", t);
++	return sysfs_emit(buf, "%u\n", t);
+ }
+ 
+ static ssize_t dsicm_store_ulps_timeout(struct device *dev,
+@@ -532,7 +532,7 @@ static ssize_t dsicm_show_ulps_timeout(struct device *dev,
+ 	t = ddata->ulps_timeout;
+ 	mutex_unlock(&ddata->lock);
+ 
+-	return snprintf(buf, PAGE_SIZE, "%u\n", t);
++	return sysfs_emit(buf, "%u\n", t);
+ }
+ 
+ static DEVICE_ATTR(num_dsi_errors, S_IRUGO, dsicm_num_errors_show, NULL);
 -- 
 2.34.1
 
