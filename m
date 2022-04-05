@@ -2,72 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0043DC43217
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:40:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F1AAC4167B
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:40:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1836648AbiDFAg7 (ORCPT
+        id S1836662AbiDFAhC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:36:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60338 "EHLO
+        Tue, 5 Apr 2022 20:37:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391218AbiDEPeJ (ORCPT
+        with ESMTP id S1358191AbiDEK2F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:34:09 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2BEE44C42B;
-        Tue,  5 Apr 2022 06:41:01 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E79A2D6E;
-        Tue,  5 Apr 2022 06:41:00 -0700 (PDT)
-Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id CF2833F5A1;
-        Tue,  5 Apr 2022 06:40:59 -0700 (PDT)
-From:   Robin Murphy <robin.murphy@arm.com>
-To:     ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com
-Cc:     netdev@vger.kernel.org, iommu@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net-next] sfc: Stop using iommu_present()
-Date:   Tue,  5 Apr 2022 14:40:55 +0100
-Message-Id: <7350f957944ecfce6cce90f422e3992a1f428775.1649166055.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.28.0.dirty
+        Tue, 5 Apr 2022 06:28:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9653322C;
+        Tue,  5 Apr 2022 03:16:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 33EA461777;
+        Tue,  5 Apr 2022 10:16:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F0FFC385A1;
+        Tue,  5 Apr 2022 10:16:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153801;
+        bh=wWIyEUX8NHfXxKv2+lJj2WPl28YMSxmfK9FbYqJYans=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Xyok1SV3qOfF0Ld0upZZa61D7buYdtXPWuV7xRbJxy6ExE4lHcXISythc68G7MK2F
+         VFVco/7jElARgSJ2ysRjOmhYDFA+4NxFzj+tKgYC+3YNb2nOBoMV/UMDX3J3CAV2WL
+         pjPajVsi0Y/EqH8YoxzEcB1sXAxO9Ge2165yNwrw=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        linux-mips@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Phil Sutter <n0-1@freewrt.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ralf Baechle <ralf@linux-mips.org>,
+        Daniel Walter <dwalter@google.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 352/599] MIPS: RB532: fix return value of __setup handler
+Date:   Tue,  5 Apr 2022 09:30:46 +0200
+Message-Id: <20220405070309.299846620@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Even if an IOMMU might be present for some PCI segment in the system,
-that doesn't necessarily mean it provides translation for the device
-we care about. It appears that what we care about here is specifically
-whether DMA mapping ops involve any IOMMU overhead or not, so check for
-translation actually being active for our device.
+From: Randy Dunlap <rdunlap@infradead.org>
 
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+[ Upstream commit 8755d57ba1ff910666572fab9e32890e8cc6ed3b ]
+
+__setup() handlers should return 1 to obsolete_checksetup() in
+init/main.c to indicate that the boot option has been handled.
+A return of 0 causes the boot option/value to be listed as an Unknown
+kernel parameter and added to init's (limited) argument or environment
+strings. Also, error return codes don't mean anything to
+obsolete_checksetup() -- only non-zero (usually 1) or zero.
+So return 1 from setup_kmac().
+
+Fixes: 9e21c7e40b7e ("MIPS: RB532: Replace parse_mac_addr() with mac_pton().")
+Fixes: 73b4390fb234 ("[MIPS] Routerboard 532: Support for base system")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+From: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Cc: linux-mips@vger.kernel.org
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Phil Sutter <n0-1@freewrt.org>
+Cc: Florian Fainelli <f.fainelli@gmail.com>
+Cc: Ralf Baechle <ralf@linux-mips.org>
+Cc: Daniel Walter <dwalter@google.com>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/sfc/falcon/rx.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ arch/mips/rb532/devices.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/sfc/falcon/rx.c b/drivers/net/ethernet/sfc/falcon/rx.c
-index 0c6cc2191369..6bbdb5d2eebf 100644
---- a/drivers/net/ethernet/sfc/falcon/rx.c
-+++ b/drivers/net/ethernet/sfc/falcon/rx.c
-@@ -718,12 +718,14 @@ static void ef4_init_rx_recycle_ring(struct ef4_nic *efx,
- 				     struct ef4_rx_queue *rx_queue)
+diff --git a/arch/mips/rb532/devices.c b/arch/mips/rb532/devices.c
+index dd34f1b32b79..0e3c8d761a45 100644
+--- a/arch/mips/rb532/devices.c
++++ b/arch/mips/rb532/devices.c
+@@ -310,11 +310,9 @@ static int __init plat_setup_devices(void)
+ static int __init setup_kmac(char *s)
  {
- 	unsigned int bufs_in_recycle_ring, page_ring_size;
-+	struct iommu_domain __maybe_unused *domain;
+ 	printk(KERN_INFO "korina mac = %s\n", s);
+-	if (!mac_pton(s, korina_dev0_data.mac)) {
++	if (!mac_pton(s, korina_dev0_data.mac))
+ 		printk(KERN_ERR "Invalid mac\n");
+-		return -EINVAL;
+-	}
+-	return 0;
++	return 1;
+ }
  
- 	/* Set the RX recycle ring size */
- #ifdef CONFIG_PPC64
- 	bufs_in_recycle_ring = EF4_RECYCLE_RING_SIZE_IOMMU;
- #else
--	if (iommu_present(&pci_bus_type))
-+	domain = iommu_get_domain_for_dev(&efx->pci_dev->dev);
-+	if (domain && domain->type != IOMMU_DOMAIN_IDENTITY)
- 		bufs_in_recycle_ring = EF4_RECYCLE_RING_SIZE_IOMMU;
- 	else
- 		bufs_in_recycle_ring = EF4_RECYCLE_RING_SIZE_NOIOMMU;
+ __setup("kmac=", setup_kmac);
 -- 
-2.28.0.dirty
+2.34.1
+
+
 
