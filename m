@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7665CC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9615BC4167D
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:02:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379412AbiDEL57 (ORCPT
+        id S1379652AbiDEL6E (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:57:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46822 "EHLO
+        Tue, 5 Apr 2022 07:58:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245021AbiDEIxC (ORCPT
+        with ESMTP id S245020AbiDEIxC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:53:02 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77A63DB8;
-        Tue,  5 Apr 2022 01:49:44 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15B7DD98;
+        Tue,  5 Apr 2022 01:49:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id EBB77CE1C16;
-        Tue,  5 Apr 2022 08:49:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C271C385A1;
-        Tue,  5 Apr 2022 08:49:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B980EB818F7;
+        Tue,  5 Apr 2022 08:49:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02382C385A1;
+        Tue,  5 Apr 2022 08:49:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148581;
-        bh=+vB/c5TYSJXJNmD9pjNpxLmLtUsmHAcZ/hjWBUHuL58=;
+        s=korg; t=1649148573;
+        bh=FM40Sum4E3GKALIV4MiLpgEC9bKb3cKTTuUrE3SrG1U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BPOgxaO91HjIjqdUkjaaWnvctIQxlhz668FDP78dQXTg2BO61x/DdsO+zN7ndpmPC
-         1EUFRQIiYJaS0vvZBQF3AdDLVDVh9s21n7cpFU3K0wJwjFt1VfWgEWJzplcQqEJwke
-         dE74BuW52X0At4NTNDupt2kTo/nphaBCWVTa7o7k=
+        b=LuetxT8vT2rHoUCNccfkxdZOxP8Vn3/NHexme4MWTtgsf8V7DGuhg8H0NTamSc8kl
+         +Q9jemLgat5qDhqrsoDtPghfsDh54+z5EMI39P13cy3QOy6lpGznSiiMLLxpDJNcEq
+         bWT5HN3TkkSheyMo/JQwbWPYlyQ7Q4XFMFcfVLBw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Steven Price <steven.price@arm.com>,
+        stable@vger.kernel.org, Jagan Teki <jagan@amarulasolutions.com>,
+        Robert Foss <robert.foss@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0407/1017] drm/panfrost: Check for error num after setting mask
-Date:   Tue,  5 Apr 2022 09:22:00 +0200
-Message-Id: <20220405070406.369395892@linuxfoundation.org>
+Subject: [PATCH 5.16 0404/1017] drm: bridge: adv7511: Fix ADV7535 HPD enablement
+Date:   Tue,  5 Apr 2022 09:21:57 +0200
+Message-Id: <20220405070406.279693911@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,43 +50,98 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Jagan Teki <jagan@amarulasolutions.com>
 
-[ Upstream commit 44ab30b056149bd59dd7989a593dd25ead6007fd ]
+[ Upstream commit 3dbc84a595d17f64f14fcea00120d31e33e98880 ]
 
-Because of the possible failure of the dma_supported(), the
-dma_set_mask_and_coherent() may return error num.
-Therefore, it should be better to check it and return the error if
-fails.
+Existing HPD enablement logic is not compatible with ADV7535
+bridge, thus any runtime plug-in of HDMI cable is not working
+on these bridge designs.
 
-Fixes: f3ba91228e8e ("drm/panfrost: Add initial panfrost driver")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-[Steve: fix Fixes: line]
-Reviewed-by: Steven Price <steven.price@arm.com>
-Signed-off-by: Steven Price <steven.price@arm.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220106030326.2620942-1-jiasheng@iscas.ac.cn
+Unlike other ADV7511 family of bridges, the ADV7535 require
+HPD_OVERRIDE bit to set and reset for proper handling of HPD
+functionality.
+
+Fix it.
+
+Fixes: 8501fe4b14a3 ("drm: bridge: adv7511: Add support for ADV7535")
+Signed-off-by: Jagan Teki <jagan@amarulasolutions.com>
+Signed-off-by: Robert Foss <robert.foss@linaro.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220109172949.168167-1-jagan@amarulasolutions.com
+Reviewed-by: Robert Foss <robert.foss@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/panfrost/panfrost_gpu.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/bridge/adv7511/adv7511.h     |  1 +
+ drivers/gpu/drm/bridge/adv7511/adv7511_drv.c | 29 +++++++++++++++-----
+ 2 files changed, 23 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/gpu/drm/panfrost/panfrost_gpu.c b/drivers/gpu/drm/panfrost/panfrost_gpu.c
-index bbe628b306ee..f8355de6e335 100644
---- a/drivers/gpu/drm/panfrost/panfrost_gpu.c
-+++ b/drivers/gpu/drm/panfrost/panfrost_gpu.c
-@@ -360,8 +360,11 @@ int panfrost_gpu_init(struct panfrost_device *pfdev)
+diff --git a/drivers/gpu/drm/bridge/adv7511/adv7511.h b/drivers/gpu/drm/bridge/adv7511/adv7511.h
+index 05e3abb5a0c9..1b00dfda6e0d 100644
+--- a/drivers/gpu/drm/bridge/adv7511/adv7511.h
++++ b/drivers/gpu/drm/bridge/adv7511/adv7511.h
+@@ -169,6 +169,7 @@
+ #define ADV7511_PACKET_ENABLE_SPARE2		BIT(1)
+ #define ADV7511_PACKET_ENABLE_SPARE1		BIT(0)
  
- 	panfrost_gpu_init_features(pfdev);
++#define ADV7535_REG_POWER2_HPD_OVERRIDE		BIT(6)
+ #define ADV7511_REG_POWER2_HPD_SRC_MASK		0xc0
+ #define ADV7511_REG_POWER2_HPD_SRC_BOTH		0x00
+ #define ADV7511_REG_POWER2_HPD_SRC_HPD		0x40
+diff --git a/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c b/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
+index 76555ae64e9c..c02f3ec60b04 100644
+--- a/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
++++ b/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
+@@ -351,11 +351,17 @@ static void __adv7511_power_on(struct adv7511 *adv7511)
+ 	 * from standby or are enabled. When the HPD goes low the adv7511 is
+ 	 * reset and the outputs are disabled which might cause the monitor to
+ 	 * go to standby again. To avoid this we ignore the HPD pin for the
+-	 * first few seconds after enabling the output.
++	 * first few seconds after enabling the output. On the other hand
++	 * adv7535 require to enable HPD Override bit for proper HPD.
+ 	 */
+-	regmap_update_bits(adv7511->regmap, ADV7511_REG_POWER2,
+-			   ADV7511_REG_POWER2_HPD_SRC_MASK,
+-			   ADV7511_REG_POWER2_HPD_SRC_NONE);
++	if (adv7511->type == ADV7535)
++		regmap_update_bits(adv7511->regmap, ADV7511_REG_POWER2,
++				   ADV7535_REG_POWER2_HPD_OVERRIDE,
++				   ADV7535_REG_POWER2_HPD_OVERRIDE);
++	else
++		regmap_update_bits(adv7511->regmap, ADV7511_REG_POWER2,
++				   ADV7511_REG_POWER2_HPD_SRC_MASK,
++				   ADV7511_REG_POWER2_HPD_SRC_NONE);
+ }
  
--	dma_set_mask_and_coherent(pfdev->dev,
-+	err = dma_set_mask_and_coherent(pfdev->dev,
- 		DMA_BIT_MASK(FIELD_GET(0xff00, pfdev->features.mmu_features)));
-+	if (err)
-+		return err;
+ static void adv7511_power_on(struct adv7511 *adv7511)
+@@ -375,6 +381,10 @@ static void adv7511_power_on(struct adv7511 *adv7511)
+ static void __adv7511_power_off(struct adv7511 *adv7511)
+ {
+ 	/* TODO: setup additional power down modes */
++	if (adv7511->type == ADV7535)
++		regmap_update_bits(adv7511->regmap, ADV7511_REG_POWER2,
++				   ADV7535_REG_POWER2_HPD_OVERRIDE, 0);
 +
- 	dma_set_max_seg_size(pfdev->dev, UINT_MAX);
+ 	regmap_update_bits(adv7511->regmap, ADV7511_REG_POWER,
+ 			   ADV7511_POWER_POWER_DOWN,
+ 			   ADV7511_POWER_POWER_DOWN);
+@@ -672,9 +682,14 @@ adv7511_detect(struct adv7511 *adv7511, struct drm_connector *connector)
+ 			status = connector_status_disconnected;
+ 	} else {
+ 		/* Renable HPD sensing */
+-		regmap_update_bits(adv7511->regmap, ADV7511_REG_POWER2,
+-				   ADV7511_REG_POWER2_HPD_SRC_MASK,
+-				   ADV7511_REG_POWER2_HPD_SRC_BOTH);
++		if (adv7511->type == ADV7535)
++			regmap_update_bits(adv7511->regmap, ADV7511_REG_POWER2,
++					   ADV7535_REG_POWER2_HPD_OVERRIDE,
++					   ADV7535_REG_POWER2_HPD_OVERRIDE);
++		else
++			regmap_update_bits(adv7511->regmap, ADV7511_REG_POWER2,
++					   ADV7511_REG_POWER2_HPD_SRC_MASK,
++					   ADV7511_REG_POWER2_HPD_SRC_BOTH);
+ 	}
  
- 	irq = platform_get_irq_byname(to_platform_device(pfdev->dev), "gpu");
+ 	adv7511->status = status;
 -- 
 2.34.1
 
