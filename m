@@ -2,149 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAD2FC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D88F6C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:38:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382906AbiDEVjJ (ORCPT
+        id S1382987AbiDEVjO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:39:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34866 "EHLO
+        Tue, 5 Apr 2022 17:39:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1458172AbiDERNJ (ORCPT
+        with ESMTP id S1573512AbiDETP3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 13:13:09 -0400
-Received: from mail-ot1-x334.google.com (mail-ot1-x334.google.com [IPv6:2607:f8b0:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07B3453E0D
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 10:11:10 -0700 (PDT)
-Received: by mail-ot1-x334.google.com with SMTP id i23-20020a9d6117000000b005cb58c354e6so9791989otj.10
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 10:11:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=2aY58p3Eu08i1zvroIKdthxIFG+lHzOcPDP1Vod5UdQ=;
-        b=BJlLixmapZXG3Z12MRft8f1o+ERnrNsMEOuO+htxHtOkkXNoC4g+Fj1hvUrrz2eiR4
-         bbLh9uCYeNiIVW87oZB/Hf2zirGPhRhZs4MZFYQKP0lT5uFogrweIdBUU638/F+vk8MM
-         1XdUXhdAsAizdg4UAkuu6oeBzHDIdwhMxz+vGg+2NqOPoCUyUnwMUPKELdYC0y2EEVnx
-         l302qabGpKEelNd6fdET2izAcrhjx6ZXdty+FKfxGQhRT1RWJZTm6vZ6qscVeEq76dyX
-         QL55dLz7mFEFaoJpPbnuJnPj9hVDedGHH2VDGUnoO0snxp7Lh/xCE0QEunJnYaWLh0gi
-         0wsw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=2aY58p3Eu08i1zvroIKdthxIFG+lHzOcPDP1Vod5UdQ=;
-        b=Dn/eplyp4UcBQWmbHKgfjT9hs9arMkvvnV3nBEngz9yIfKM+46FZjFU80+Y2fuRpF6
-         FxF10FZKG8qlGQyqHml7rLdXg+7tjspvtIHif8q32RGfVbrf3JX/JB2cC5NcpLqTzKiL
-         5Y1uK/SYvtX+BOSuYxju2MmEx84UqjCWxncNT9xBxLQNQwSmHw1nAlQW9nSEMlXnSvi0
-         oKPod0XnFykfm0CsAFOJuUHq1euFrCfwPCl4T5cAOU6BunIH9T1aarf7Ftlm2eJjvOKN
-         hH//87Y1TP1+EeFcZu2vmAliWz27sdAiChrW0udcYdjJSDpUlbRxMgyfLoMmfz0K7Sb1
-         Y0cw==
-X-Gm-Message-State: AOAM531nHG143k1/i3WzAFUMmR8YOg3DdzCfrTDu4MQBHKxVSR26h3tq
-        vlL43u4tX90hsr6eTAX6Hg4OqA==
-X-Google-Smtp-Source: ABdhPJw3Dog+Ye6joupCF1nJ1gu6mLF/8uu2LULDI3pj1f67IYGzNXfMwLJXsBStJIdXMshXWyQ+wg==
-X-Received: by 2002:a9d:6442:0:b0:5b2:3851:597 with SMTP id m2-20020a9d6442000000b005b238510597mr1566869otl.247.1649178669314;
-        Tue, 05 Apr 2022 10:11:09 -0700 (PDT)
-Received: from ripper ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
-        by smtp.gmail.com with ESMTPSA id e4-20020a056808148400b002d9be41b179sm5680214oiw.50.2022.04.05.10.11.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Apr 2022 10:11:08 -0700 (PDT)
-Date:   Tue, 5 Apr 2022 10:13:31 -0700
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Avri Altman <avri.altman@wdc.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Bean Huo <beanhuo@micron.com>,
-        Bart Van Assche <bvanassche@acm.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Taniya Das <tdas@codeaurora.org>,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-scsi@vger.kernel.org
-Subject: Re: [RFC PATCH 3/4] arm64: dts: qcom: sdm845: control RPMHPD
- performance states with UFS
-Message-ID: <Ykx4u+E/vDNrQRUg@ripper>
-References: <20220401145820.1003826-1-krzysztof.kozlowski@linaro.org>
- <20220401145820.1003826-4-krzysztof.kozlowski@linaro.org>
- <0da0b229-3493-967d-c14d-60d3246b07b2@linaro.org>
+        Tue, 5 Apr 2022 15:15:29 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DA08E8863;
+        Tue,  5 Apr 2022 12:13:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649186010; x=1680722010;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=BNf83Q5/1PWslvUKwhpqfDSkCkwhO7rU7ZNMZq/zkYQ=;
+  b=Nt2ugVq6ZqMblcRfnRhyCnAxy015M6MbzzTPNbCb/H01NrCxC4uk/jyq
+   fTEuDmhHr+quQtYAmqZ4BxshifjuQsS+SuTJxihfGuuJAVixuGGAF+0o4
+   HH/8Lybx4V9Thi3oZUOfc2RoWJ+Cz9j1CydcV4ercgQmxthp8izNPxrlr
+   iZSsxGLiFqo2E7DnEUIQkaxrPlpDDoqn1MrKHkTcEYQQF+GwvbbeVY0CX
+   hX6AJrEHJIF2OwyluXlj+f6+N9yhwBkI6gzIRDoIxZncBLmCb7KZ6Bevy
+   7OES3n4SCWpv73ibtRG9yMv0yFVscSQlTSzm/GuDL9SYqv91ZfrEWD8PP
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="240777555"
+X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
+   d="scan'208";a="240777555"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 12:13:30 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
+   d="scan'208";a="789979762"
+Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
+  by fmsmga006.fm.intel.com with ESMTP; 05 Apr 2022 12:13:27 -0700
+Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nbocI-0003gn-FR;
+        Tue, 05 Apr 2022 19:13:26 +0000
+Date:   Wed, 6 Apr 2022 03:12:36 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Vinod Koul <vkoul@kernel.org>, Rob Clark <robdclark@gmail.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Jonathan Marek <jonathan@marek.ca>,
+        David Airlie <airlied@linux.ie>, linux-arm-msm@vger.kernel.org,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        dri-devel@lists.freedesktop.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        freedreno@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v6 14/14] drm/msm/dsi: Add support for DSC configuration
+Message-ID: <202204060308.OkAS3XG3-lkp@intel.com>
+References: <20220404163436.956875-15-vkoul@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <0da0b229-3493-967d-c14d-60d3246b07b2@linaro.org>
+In-Reply-To: <20220404163436.956875-15-vkoul@kernel.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun 03 Apr 17:02 PDT 2022, Dmitry Baryshkov wrote:
+Hi Vinod,
 
-> On 01/04/2022 17:58, Krzysztof Kozlowski wrote:
-> > UFS, when scaling gears, should choose appropriate performance state of
-> > RPMHPD power domain controller.  Since UFS belongs to UFS_PHY_GDSC power
-> > domain, add necessary parent power domain to GCC.
-> 
-> This will cause all gcc GDSCs to be rooted in the CX. Are we sure that this
-> is an expected (and correct) change?
-> 
+I love your patch! Perhaps something to improve:
 
-Per the last part of Rajendra's reply in [1], this should be fine.
-Naturally we might have to come up with some way to bind gdscs to one of
-multiple power-domains if that changes.
+[auto build test WARNING on 05241de1f69eb7f56b0a5e0bec96a7752fad1b2f]
 
-[1] https://lore.kernel.org/all/5e572c50-d6fe-5a21-d09f-f11a072538c5@codeaurora.org/
+url:    https://github.com/intel-lab-lkp/linux/commits/Vinod-Koul/drm-msm-Add-Display-Stream-Compression-Support/20220405-003745
+base:   05241de1f69eb7f56b0a5e0bec96a7752fad1b2f
+config: hexagon-randconfig-r004-20220405 (https://download.01.org/0day-ci/archive/20220406/202204060308.OkAS3XG3-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project c4a1b07d0979e7ff20d7d541af666d822d66b566)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/6c54db3ee1e02d639e568c37121f797ac586af3d
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Vinod-Koul/drm-msm-Add-Display-Stream-Compression-Support/20220405-003745
+        git checkout 6c54db3ee1e02d639e568c37121f797ac586af3d
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/gpu/drm/msm/
 
-Regards,
-Bjorn
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-> > 
-> > Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> > ---
-> >   arch/arm64/boot/dts/qcom/sdm845.dtsi | 17 ++++++++++++++++-
-> >   1 file changed, 16 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/arch/arm64/boot/dts/qcom/sdm845.dtsi b/arch/arm64/boot/dts/qcom/sdm845.dtsi
-> > index b31bf62e8680..c999b41c2605 100644
-> > --- a/arch/arm64/boot/dts/qcom/sdm845.dtsi
-> > +++ b/arch/arm64/boot/dts/qcom/sdm845.dtsi
-> > @@ -1078,6 +1078,7 @@ gcc: clock-controller@100000 {
-> >   			#clock-cells = <1>;
-> >   			#reset-cells = <1>;
-> >   			#power-domain-cells = <1>;
-> > +			power-domains = <&rpmhpd SDM845_CX>;
-> >   		};
-> >   		qfprom@784000 {
-> > @@ -2336,8 +2337,22 @@ ufs_mem_hc: ufshc@1d84000 {
-> >   				<0 0>,
-> >   				<0 0>,
-> >   				<0 300000000>;
-> > -
-> > +			operating-points-v2 = <&ufs_opp_table>;
-> >   			status = "disabled";
-> > +
-> > +			ufs_opp_table: opp-table {
-> > +				compatible = "operating-points-v2";
-> > +
-> > +				opp-50000000 {
-> > +					opp-hz = /bits/ 64 <50000000>;
-> > +					required-opps = <&rpmhpd_opp_svs>;
-> > +				};
-> > +
-> > +				opp-200000000 {
-> > +					opp-hz = /bits/ 64 <200000000>;
-> > +					required-opps = <&rpmhpd_opp_nom>;
-> > +				};
-> > +			};
-> >   		};
-> >   		ufs_mem_phy: phy@1d87000 {
-> 
-> 
-> -- 
-> With best wishes
-> Dmitry
+All warnings (new ones prefixed by >>):
+
+>> drivers/gpu/drm/msm/dsi/dsi_host.c:918:23: warning: variable 'reg_ctrl' set but not used [-Wunused-but-set-variable]
+           u32 reg, intf_width, reg_ctrl, reg_ctrl2;
+                                ^
+   1 warning generated.
+
+
+vim +/reg_ctrl +918 drivers/gpu/drm/msm/dsi/dsi_host.c
+
+   914	
+   915	static void dsi_update_dsc_timing(struct msm_dsi_host *msm_host, bool is_cmd_mode, u32 hdisplay)
+   916	{
+   917		struct msm_display_dsc_config *dsc = msm_host->dsc;
+ > 918		u32 reg, intf_width, reg_ctrl, reg_ctrl2;
+   919		u32 slice_per_intf, total_bytes_per_intf;
+   920		u32 pkt_per_line;
+   921		u32 bytes_in_slice;
+   922		u32 eol_byte_num;
+   923	
+   924		/* first calculate dsc parameters and then program
+   925		 * compress mode registers
+   926		 */
+   927		intf_width = hdisplay;
+   928		slice_per_intf = DIV_ROUND_UP(intf_width, dsc->drm->slice_width);
+   929	
+   930		/* If slice_per_pkt is greater than slice_per_intf
+   931		 * then default to 1. This can happen during partial
+   932		 * update.
+   933		 */
+   934		if (slice_per_intf > dsc->drm->slice_count)
+   935			dsc->drm->slice_count = 1;
+   936	
+   937		slice_per_intf = DIV_ROUND_UP(hdisplay, dsc->drm->slice_width);
+   938		bytes_in_slice = DIV_ROUND_UP(dsc->drm->slice_width * dsc->drm->bits_per_pixel, 8);
+   939	
+   940		dsc->drm->slice_chunk_size = bytes_in_slice;
+   941	
+   942		total_bytes_per_intf = bytes_in_slice * slice_per_intf;
+   943	
+   944		eol_byte_num = total_bytes_per_intf % 3;
+   945		pkt_per_line = slice_per_intf / dsc->drm->slice_count;
+   946	
+   947		if (is_cmd_mode) /* packet data type */
+   948			reg = DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM0_DATATYPE(MIPI_DSI_DCS_LONG_WRITE);
+   949		else
+   950			reg = DSI_VIDEO_COMPRESSION_MODE_CTRL_DATATYPE(MIPI_DSI_COMPRESSED_PIXEL_STREAM);
+   951	
+   952		/* DSI_VIDEO_COMPRESSION_MODE & DSI_COMMAND_COMPRESSION_MODE
+   953		 * registers have similar offsets, so for below common code use
+   954		 * DSI_VIDEO_COMPRESSION_MODE_XXXX for setting bits
+   955		 */
+   956		reg |= DSI_VIDEO_COMPRESSION_MODE_CTRL_PKT_PER_LINE(pkt_per_line >> 1);
+   957		reg |= DSI_VIDEO_COMPRESSION_MODE_CTRL_EOL_BYTE_NUM(eol_byte_num);
+   958		reg |= DSI_VIDEO_COMPRESSION_MODE_CTRL_EN;
+   959	
+   960		if (is_cmd_mode) {
+   961			reg_ctrl = dsi_read(msm_host, REG_DSI_COMMAND_COMPRESSION_MODE_CTRL);
+   962			reg_ctrl2 = dsi_read(msm_host, REG_DSI_COMMAND_COMPRESSION_MODE_CTRL2);
+   963	
+   964			reg_ctrl |= reg;
+   965			reg_ctrl2 |= DSI_COMMAND_COMPRESSION_MODE_CTRL2_STREAM0_SLICE_WIDTH(bytes_in_slice);
+   966	
+   967			dsi_write(msm_host, REG_DSI_COMMAND_COMPRESSION_MODE_CTRL, reg);
+   968			dsi_write(msm_host, REG_DSI_COMMAND_COMPRESSION_MODE_CTRL2, reg_ctrl2);
+   969		} else {
+   970			dsi_write(msm_host, REG_DSI_VIDEO_COMPRESSION_MODE_CTRL, reg);
+   971		}
+   972	}
+   973	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
