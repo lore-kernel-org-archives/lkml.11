@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E375BC35276
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:29:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F094AC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:29:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347809AbiDEJ21 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:28:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51224 "EHLO
+        id S237061AbiDEJ3P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:29:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239706AbiDEIUb (ORCPT
+        with ESMTP id S239539AbiDEIUN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:20:31 -0400
+        Tue, 5 Apr 2022 04:20:13 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27D5D8D;
-        Tue,  5 Apr 2022 01:18:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23713108D;
+        Tue,  5 Apr 2022 01:15:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B562860B10;
-        Tue,  5 Apr 2022 08:18:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C686EC385A2;
-        Tue,  5 Apr 2022 08:18:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B4F1C609AD;
+        Tue,  5 Apr 2022 08:15:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C11D3C385A0;
+        Tue,  5 Apr 2022 08:15:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146712;
-        bh=A/hAMMRh3XJNdD9x1AAtbacK618VtXEYBp3Ix1ZXMfo=;
+        s=korg; t=1649146542;
+        bh=vW3aZppNUsxHLSbPNy/WFu/pdlhv+bbciT+wAcuOJ0I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p9OVJmAhtWehGGi6rN1Prm39qaJKoaymnj1SC+tBfetUneEBSBmycee9KnT3Xqrh0
-         TcTkzamU47ClaacKC3PUFz0tMz0lJJ745IROOn4/8MbDfPa8ZrRnYnNqpFCBVlqOHE
-         15fJN34KAuSvsHTSEGqNObKOsbnSzgyF75Bnc8r0=
+        b=iZOVnNI27NEqB0rv+ZgIGje6qhDNm2dGcOxj3M6ABx7cnPA50Ta5DZ/NicoJU3Syn
+         0PN8mFLSD+YPfzuZ8c7gDcNeUQ1CVmeZoQ3CHzj+ajR/f4KL0/Rfg1MDtfrPoJedsd
+         x/vbGVtoQiPB/yYQNMFOdF5g5Hgng5ZF8bEn1ndE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Matt Brown <matthew.brown.dev@gmail.com>,
-        Paul Menzel <pmenzel@molgen.mpg.de>,
-        Song Liu <song@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0861/1126] lib/raid6/test/Makefile: Use $(pound) instead of \# for Make 4.3
-Date:   Tue,  5 Apr 2022 09:26:48 +0200
-Message-Id: <20220405070432.813199053@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0753/1126] remoteproc: qcom_q6v5_mss: Fix some leaks in q6v5_alloc_memory_region
+Date:   Tue,  5 Apr 2022 09:25:00 +0200
+Message-Id: <20220405070429.687880174@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,80 +49,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paul Menzel <pmenzel@molgen.mpg.de>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 633174a7046ec3b4572bec24ef98e6ee89bce14b ]
+[ Upstream commit 07a5dcc4bed9d7cae54adf5aa10ff9f037a3204b ]
 
-Buidling raid6test on Ubuntu 21.10 (ppc64le) with GNU Make 4.3 shows the
-errors below:
+The device_node pointer is returned by of_parse_phandle() or
+of_get_child_by_name() with refcount incremented.
+We should use of_node_put() on it when done.
 
-    $ cd lib/raid6/test/
-    $ make
-    <stdin>:1:1: error: stray ‘\’ in program
-    <stdin>:1:2: error: stray ‘#’ in program
-    <stdin>:1:11: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ \
-        before ‘<’ token
+This function only call of_node_put(node) when of_address_to_resource
+succeeds, missing error cases.
 
-    [...]
-
-The errors come from the HAS_ALTIVEC test, which fails, and the POWER
-optimized versions are not built. That’s also reason nobody noticed on the
-other architectures.
-
-GNU Make 4.3 does not remove the backslash anymore. From the 4.3 release
-announcment:
-
-> * WARNING: Backward-incompatibility!
->   Number signs (#) appearing inside a macro reference or function invocation
->   no longer introduce comments and should not be escaped with backslashes:
->   thus a call such as:
->     foo := $(shell echo '#')
->   is legal.  Previously the number sign needed to be escaped, for example:
->     foo := $(shell echo '\#')
->   Now this latter will resolve to "\#".  If you want to write makefiles
->   portable to both versions, assign the number sign to a variable:
->     H := \#
->     foo := $(shell echo '$H')
->   This was claimed to be fixed in 3.81, but wasn't, for some reason.
->   To detect this change search for 'nocomment' in the .FEATURES variable.
-
-So, do the same as commit 9564a8cf422d ("Kbuild: fix # escaping in .cmd
-files for future Make") and commit 929bef467771 ("bpf: Use $(pound) instead
-of \# in Makefiles") and define and use a $(pound) variable.
-
-Reference for the change in make:
-https://git.savannah.gnu.org/cgit/make.git/commit/?id=c6966b323811c37acedff05b57
-
-Cc: Matt Brown <matthew.brown.dev@gmail.com>
-Signed-off-by: Paul Menzel <pmenzel@molgen.mpg.de>
-Signed-off-by: Song Liu <song@kernel.org>
+Fixes: 278d744c46fd ("remoteproc: qcom: Fix potential device node leaks")
+Fixes: 051fb70fd4ea ("remoteproc: qcom: Driver for the self-authenticating Hexagon v5")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220308064522.13804-1-linmq006@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- lib/raid6/test/Makefile | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/remoteproc/qcom_q6v5_mss.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
-diff --git a/lib/raid6/test/Makefile b/lib/raid6/test/Makefile
-index a4c7cd74cff5..4fb7700a741b 100644
---- a/lib/raid6/test/Makefile
-+++ b/lib/raid6/test/Makefile
-@@ -4,6 +4,8 @@
- # from userspace.
- #
+diff --git a/drivers/remoteproc/qcom_q6v5_mss.c b/drivers/remoteproc/qcom_q6v5_mss.c
+index 43ea8455546c..b9ab91540b00 100644
+--- a/drivers/remoteproc/qcom_q6v5_mss.c
++++ b/drivers/remoteproc/qcom_q6v5_mss.c
+@@ -1806,18 +1806,20 @@ static int q6v5_alloc_memory_region(struct q6v5 *qproc)
+ 	 * reserved memory regions from device's memory-region property.
+ 	 */
+ 	child = of_get_child_by_name(qproc->dev->of_node, "mba");
+-	if (!child)
++	if (!child) {
+ 		node = of_parse_phandle(qproc->dev->of_node,
+ 					"memory-region", 0);
+-	else
++	} else {
+ 		node = of_parse_phandle(child, "memory-region", 0);
++		of_node_put(child);
++	}
  
-+pound := \#
-+
- CC	 = gcc
- OPTFLAGS = -O2			# Adjust as desired
- CFLAGS	 = -I.. -I ../../../include -g $(OPTFLAGS)
-@@ -42,7 +44,7 @@ else ifeq ($(HAS_NEON),yes)
-         OBJS   += neon.o neon1.o neon2.o neon4.o neon8.o recov_neon.o recov_neon_inner.o
-         CFLAGS += -DCONFIG_KERNEL_MODE_NEON=1
- else
--        HAS_ALTIVEC := $(shell printf '\#include <altivec.h>\nvector int a;\n' |\
-+        HAS_ALTIVEC := $(shell printf '$(pound)include <altivec.h>\nvector int a;\n' |\
-                          gcc -c -x c - >/dev/null && rm ./-.o && echo yes)
-         ifeq ($(HAS_ALTIVEC),yes)
-                 CFLAGS += -I../../../arch/powerpc/include
+ 	ret = of_address_to_resource(node, 0, &r);
++	of_node_put(node);
+ 	if (ret) {
+ 		dev_err(qproc->dev, "unable to resolve mba region\n");
+ 		return ret;
+ 	}
+-	of_node_put(node);
+ 
+ 	qproc->mba_phys = r.start;
+ 	qproc->mba_size = resource_size(&r);
+@@ -1828,14 +1830,15 @@ static int q6v5_alloc_memory_region(struct q6v5 *qproc)
+ 	} else {
+ 		child = of_get_child_by_name(qproc->dev->of_node, "mpss");
+ 		node = of_parse_phandle(child, "memory-region", 0);
++		of_node_put(child);
+ 	}
+ 
+ 	ret = of_address_to_resource(node, 0, &r);
++	of_node_put(node);
+ 	if (ret) {
+ 		dev_err(qproc->dev, "unable to resolve mpss region\n");
+ 		return ret;
+ 	}
+-	of_node_put(node);
+ 
+ 	qproc->mpss_phys = qproc->mpss_reloc = r.start;
+ 	qproc->mpss_size = resource_size(&r);
 -- 
 2.34.1
 
