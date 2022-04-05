@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4460C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:52:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB753C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:52:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344989AbiDEJmx (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:42:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33820 "EHLO
+        id S231478AbiDEJm5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:42:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239492AbiDEIUI (ORCPT
+        with ESMTP id S239491AbiDEIUI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:20:08 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1F93B11;
-        Tue,  5 Apr 2022 01:14:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 230AEB0F;
+        Tue,  5 Apr 2022 01:14:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5F795609AD;
-        Tue,  5 Apr 2022 08:14:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74AE0C385A0;
-        Tue,  5 Apr 2022 08:14:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B444560AFB;
+        Tue,  5 Apr 2022 08:14:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B71F1C385A0;
+        Tue,  5 Apr 2022 08:14:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146466;
-        bh=TaiY8tH3629YPscA/b6pkTwtVd1V5SPfH9pAw+XpuJM=;
+        s=korg; t=1649146464;
+        bh=0pLrrcavlwd3qxQF80d5IMDqCTbwJ3B3LJCH2xkpo4w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i3YLFPGZ2F7IKNTpuYNr2nGAKKrcgL7TUJqe4qTBhBC6xtlXDT3MfvIhFLjmDzvf5
-         q2neQp4B4Yuh8qNDlU9PAJRnK44ZFpxTfGVOfBFzg8fcZPXO2IgjBRBN8zSwJcoIGn
-         DBYUJYUwLv4j1r7vhIsn2FsgKYEWTRol8GKO30D8=
+        b=QsjczJtEoHYb4bZplUsPgqw5p+AfO2bHu80VZkVEJ8WH7gK/XBNwdtCZjc4xtS5re
+         o1NKMQ2vtApBE/O5ez0tYchqvRC/wnrw4/yl5jPUG4pqP7J3AWYULUxCKiYdzzNdDl
+         87pJvvrATWY2sHKa+EpglYsJW7dJztDQa2xdp1Qo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        stable@vger.kernel.org, Chen-Yu Tsai <wenst@chromium.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
         Linus Walleij <linus.walleij@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0774/1126] pinctrl: ocelot: Fix interrupt parsing
-Date:   Tue,  5 Apr 2022 09:25:21 +0200
-Message-Id: <20220405070430.299266803@linuxfoundation.org>
+Subject: [PATCH 5.17 0773/1126] pinctrl: mediatek: paris: Skip custom extra pin config dump for virtual GPIOs
+Date:   Tue,  5 Apr 2022 09:25:20 +0200
+Message-Id: <20220405070430.269850584@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,39 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Horatiu Vultur <horatiu.vultur@microchip.com>
+From: Chen-Yu Tsai <wenst@chromium.org>
 
-[ Upstream commit d1f2c82f3b1f428bdc0933dde52fb93ae796d4ee ]
+[ Upstream commit 1763933d377ecb05454f8d20e3c8922480db2ac0 ]
 
-In the blamed commit, it removes the duplicate of_node assignment in the
-driver. But the driver uses this before calling into of_gpio_dev_init to
-determine if it needs to assign an IRQ chip to the GPIO. The fixes
-consists in using the platform_get_irq_optional
+Virtual GPIOs do not have any hardware state associated with them. Any
+attempt to read back hardware state for these pins result in error
+codes.
 
-Fixes: 8a8d6bbe1d3bc7 ("pinctrl: Get rid of duplicate of_node assignment in the drivers")
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-Link: https://lore.kernel.org/r/20220304144432.3397621-3-horatiu.vultur@microchip.com
+Skip dumping extra pin config information for these virtual GPIOs.
+
+Fixes: 184d8e13f9b1 ("pinctrl: mediatek: Add support for pin configuration dump via debugfs.")
+Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Link: https://lore.kernel.org/r/20220308100956.2750295-7-wenst@chromium.org
 Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/pinctrl-ocelot.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/pinctrl/mediatek/pinctrl-paris.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/pinctrl/pinctrl-ocelot.c b/drivers/pinctrl/pinctrl-ocelot.c
-index 9c13a7c90fc3..370459243007 100644
---- a/drivers/pinctrl/pinctrl-ocelot.c
-+++ b/drivers/pinctrl/pinctrl-ocelot.c
-@@ -1750,8 +1750,8 @@ static int ocelot_gpiochip_register(struct platform_device *pdev,
- 	gc->base = -1;
- 	gc->label = "ocelot-gpio";
+diff --git a/drivers/pinctrl/mediatek/pinctrl-paris.c b/drivers/pinctrl/mediatek/pinctrl-paris.c
+index 3bda1aac650b..02dac17db51d 100644
+--- a/drivers/pinctrl/mediatek/pinctrl-paris.c
++++ b/drivers/pinctrl/mediatek/pinctrl-paris.c
+@@ -581,6 +581,9 @@ ssize_t mtk_pctrl_show_one_pin(struct mtk_pinctrl *hw,
+ 	if (gpio >= hw->soc->npins)
+ 		return -EINVAL;
  
--	irq = irq_of_parse_and_map(gc->of_node, 0);
--	if (irq) {
-+	irq = platform_get_irq_optional(pdev, 0);
-+	if (irq > 0) {
- 		girq = &gc->irq;
- 		girq->chip = &ocelot_irqchip;
- 		girq->parent_handler = ocelot_irq_handler;
++	if (mtk_is_virt_gpio(hw, gpio))
++		return -EINVAL;
++
+ 	desc = (const struct mtk_pin_desc *)&hw->soc->pins[gpio];
+ 	pinmux = mtk_pctrl_get_pinmux(hw, gpio);
+ 	if (pinmux >= hw->soc->nfuncs)
 -- 
 2.34.1
 
