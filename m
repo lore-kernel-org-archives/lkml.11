@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15746C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 063E2C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:08:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352878AbiDEKFQ (ORCPT
+        id S1352810AbiDEKFK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:05:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52748 "EHLO
+        Tue, 5 Apr 2022 06:05:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238723AbiDEIaz (ORCPT
+        with ESMTP id S238545AbiDEIak (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:30:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C86435860;
-        Tue,  5 Apr 2022 01:22:43 -0700 (PDT)
+        Tue, 5 Apr 2022 04:30:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90CF8DE91;
+        Tue,  5 Apr 2022 01:22:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B054DB81B92;
-        Tue,  5 Apr 2022 08:22:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 235A2C385A0;
-        Tue,  5 Apr 2022 08:22:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3170BB81BBF;
+        Tue,  5 Apr 2022 08:22:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9774DC385A2;
+        Tue,  5 Apr 2022 08:22:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146960;
-        bh=uV0+HtcXJ22mDTGuuOc5n2oLv0BJ/rULAiWaCYiFIRg=;
+        s=korg; t=1649146944;
+        bh=wsdO9d1F6uTe7dSW3RYVQHBqDtUksx2aJMjLKfL3E1Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zZprUE0CsnCpBsEVhuqj4+Ovr0nheZwPE6yAOxx1nrSTq2McRco4XGjfhrEghxLT5
-         IKXNPTqdODX6tN7PoMBjLaRLLnnOQzde9rCPkVS/sonNH2dMJ1WvrstDI3TeJNbe6j
-         Zr7uoNNf3WcEngbOXn5dIGUzH9qkOSahjJ57OiD4=
+        b=EwbPD11V9VfUbOdV3qRpdmu/E5+0/LKlo7kitKnka6m1LWVhzesj4W0SSwnMiQwwI
+         fZnJOJvgKR+pEQT6KKOra7EIhEVFk8wtGG7FZWu1PcGws32NaKVX/z16bzJuCOKGRR
+         zB6DbYfmhmtVV7NjrTA2SC35dLIWw/Ma0s42kJF8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxim Levitsky <mlevitsk@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.17 0950/1126] KVM: SVM: Allow AVIC support on system w/ physical APIC ID > 255
-Date:   Tue,  5 Apr 2022 09:28:17 +0200
-Message-Id: <20220405070435.389761780@linuxfoundation.org>
+        stable@vger.kernel.org, Ritesh Harjani <riteshh@linux.ibm.com>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0945/1126] tracing: Have TRACE_DEFINE_ENUM affect trace event types as well
+Date:   Tue,  5 Apr 2022 09:28:12 +0200
+Message-Id: <20220405070435.246395977@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,89 +50,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+From: Steven Rostedt (Google) <rostedt@goodmis.org>
 
-commit 4a204f7895878363ca8211f50ec610408c8c70aa upstream.
+[ Upstream commit b3bc8547d3be60898818885f5bf22d0a62e2eb48 ]
 
-Expand KVM's mask for the AVIC host physical ID to the full 12 bits defined
-by the architecture.  The number of bits consumed by hardware is model
-specific, e.g. early CPUs ignored bits 11:8, but there is no way for KVM
-to enumerate the "true" size.  So, KVM must allow using all bits, else it
-risks rejecting completely legal x2APIC IDs on newer CPUs.
+The macro TRACE_DEFINE_ENUM is used to convert enums in the kernel to
+their actual value when they are exported to user space via the trace
+event format file.
 
-This means KVM relies on hardware to not assign x2APIC IDs that exceed the
-"true" width of the field, but presumably hardware is smart enough to tie
-the width to the max x2APIC ID.  KVM also relies on hardware to support at
-least 8 bits, as the legacy xAPIC ID is writable by software.  But, those
-assumptions are unavoidable due to the lack of any way to enumerate the
-"true" width.
+Currently only the enums in the "print fmt" (TP_printk in the TRACE_EVENT
+macro) have the enums converted. But the enums can be used to denote array
+size:
 
-Cc: stable@vger.kernel.org
-Cc: Maxim Levitsky <mlevitsk@redhat.com>
-Suggested-by: Sean Christopherson <seanjc@google.com>
-Reviewed-by: Sean Christopherson <seanjc@google.com>
-Fixes: 44a95dae1d22 ("KVM: x86: Detect and Initialize AVIC support")
-Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Message-Id: <20220211000851.185799-1-suravee.suthikulpanit@amd.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+        field:unsigned int fc_ineligible_rc[EXT4_FC_REASON_MAX]; offset:12;      size:36;        signed:0;
+
+The EXT4_FC_REASON_MAX has no meaning to userspace but it needs to know
+that information to know how to parse the array.
+
+Have the array indexes also be parsed as well.
+
+Link: https://lore.kernel.org/all/cover.1646922487.git.riteshh@linux.ibm.com/
+
+Reported-by: Ritesh Harjani <riteshh@linux.ibm.com>
+Tested-by: Ritesh Harjani <riteshh@linux.ibm.com>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/include/asm/svm.h |    2 +-
- arch/x86/kvm/svm/avic.c    |    7 +------
- arch/x86/kvm/svm/svm.h     |   11 +++++++++++
- 3 files changed, 13 insertions(+), 7 deletions(-)
+ kernel/trace/trace_events.c | 28 ++++++++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
 
---- a/arch/x86/include/asm/svm.h
-+++ b/arch/x86/include/asm/svm.h
-@@ -226,7 +226,7 @@ struct __attribute__ ((__packed__)) vmcb
- #define AVIC_LOGICAL_ID_ENTRY_VALID_BIT			31
- #define AVIC_LOGICAL_ID_ENTRY_VALID_MASK		(1 << 31)
+diff --git a/kernel/trace/trace_events.c b/kernel/trace/trace_events.c
+index 2a19ea747ff4..f382ac9597f2 100644
+--- a/kernel/trace/trace_events.c
++++ b/kernel/trace/trace_events.c
+@@ -2637,6 +2637,33 @@ static void update_event_printk(struct trace_event_call *call,
+ 	}
+ }
  
--#define AVIC_PHYSICAL_ID_ENTRY_HOST_PHYSICAL_ID_MASK	(0xFFULL)
-+#define AVIC_PHYSICAL_ID_ENTRY_HOST_PHYSICAL_ID_MASK	GENMASK_ULL(11, 0)
- #define AVIC_PHYSICAL_ID_ENTRY_BACKING_PAGE_MASK	(0xFFFFFFFFFFULL << 12)
- #define AVIC_PHYSICAL_ID_ENTRY_IS_RUNNING_MASK		(1ULL << 62)
- #define AVIC_PHYSICAL_ID_ENTRY_VALID_MASK		(1ULL << 63)
---- a/arch/x86/kvm/svm/avic.c
-+++ b/arch/x86/kvm/svm/avic.c
-@@ -927,17 +927,12 @@ out:
- void avic_vcpu_load(struct kvm_vcpu *vcpu, int cpu)
++static void update_event_fields(struct trace_event_call *call,
++				struct trace_eval_map *map)
++{
++	struct ftrace_event_field *field;
++	struct list_head *head;
++	char *ptr;
++	int len = strlen(map->eval_string);
++
++	head = trace_get_fields(call);
++	list_for_each_entry(field, head, link) {
++		ptr = strchr(field->type, '[');
++		if (!ptr)
++			continue;
++		ptr++;
++
++		if (!isalpha(*ptr) && *ptr != '_')
++			continue;
++
++		if (strncmp(map->eval_string, ptr, len) != 0)
++			continue;
++
++		ptr = eval_replace(ptr, map, len);
++		/* enum/sizeof string smaller than value */
++		WARN_ON_ONCE(!ptr);
++	}
++}
++
+ void trace_event_eval_update(struct trace_eval_map **map, int len)
  {
- 	u64 entry;
--	/* ID = 0xff (broadcast), ID > 0xff (reserved) */
- 	int h_physical_id = kvm_cpu_get_apicid(cpu);
- 	struct vcpu_svm *svm = to_svm(vcpu);
- 
- 	lockdep_assert_preemption_disabled();
- 
--	/*
--	 * Since the host physical APIC id is 8 bits,
--	 * we can support host APIC ID upto 255.
--	 */
--	if (WARN_ON(h_physical_id > AVIC_PHYSICAL_ID_ENTRY_HOST_PHYSICAL_ID_MASK))
-+	if (WARN_ON(h_physical_id & ~AVIC_PHYSICAL_ID_ENTRY_HOST_PHYSICAL_ID_MASK))
- 		return;
- 
- 	/*
---- a/arch/x86/kvm/svm/svm.h
-+++ b/arch/x86/kvm/svm/svm.h
-@@ -558,6 +558,17 @@ extern struct kvm_x86_nested_ops svm_nes
- 
- /* avic.c */
- 
-+#define AVIC_LOGICAL_ID_ENTRY_GUEST_PHYSICAL_ID_MASK	(0xFF)
-+#define AVIC_LOGICAL_ID_ENTRY_VALID_BIT			31
-+#define AVIC_LOGICAL_ID_ENTRY_VALID_MASK		(1 << 31)
-+
-+#define AVIC_PHYSICAL_ID_ENTRY_HOST_PHYSICAL_ID_MASK	GENMASK_ULL(11, 0)
-+#define AVIC_PHYSICAL_ID_ENTRY_BACKING_PAGE_MASK	(0xFFFFFFFFFFULL << 12)
-+#define AVIC_PHYSICAL_ID_ENTRY_IS_RUNNING_MASK		(1ULL << 62)
-+#define AVIC_PHYSICAL_ID_ENTRY_VALID_MASK		(1ULL << 63)
-+
-+#define VMCB_AVIC_APIC_BAR_MASK		0xFFFFFFFFFF000ULL
-+
- int avic_ga_log_notifier(u32 ga_tag);
- void avic_vm_destroy(struct kvm *kvm);
- int avic_vm_init(struct kvm *kvm);
+ 	struct trace_event_call *call, *p;
+@@ -2672,6 +2699,7 @@ void trace_event_eval_update(struct trace_eval_map **map, int len)
+ 					first = false;
+ 				}
+ 				update_event_printk(call, map[i]);
++				update_event_fields(call, map[i]);
+ 			}
+ 		}
+ 	}
+-- 
+2.34.1
+
 
 
