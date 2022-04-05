@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74D13C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDDDEC4707E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:03:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243517AbiDEN71 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:59:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46088 "EHLO
+        id S245213AbiDEOAU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 10:00:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347892AbiDEJ2j (ORCPT
+        with ESMTP id S237320AbiDEJ3O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:28:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE44ADFF98;
-        Tue,  5 Apr 2022 02:15:56 -0700 (PDT)
+        Tue, 5 Apr 2022 05:29:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F5DAB87F;
+        Tue,  5 Apr 2022 02:16:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 87B8E61645;
-        Tue,  5 Apr 2022 09:15:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99FD4C385A0;
-        Tue,  5 Apr 2022 09:15:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BDC99615E4;
+        Tue,  5 Apr 2022 09:16:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE1DEC385A3;
+        Tue,  5 Apr 2022 09:16:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150156;
-        bh=+I1kIkWfWuQyDHUH07N7TM2+SinRMRMesn+il5ED1Oo=;
+        s=korg; t=1649150190;
+        bh=b9u20PZhQs/jTWosZgSYdjk7kUpAxmrC0Cj9hgZHClU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xbGWWZlSh7iC5kHKxzH7RqRjxdmCNjZdBYmjSIz8xNgZLMiQSeGqXYi/ap4q5XcCu
-         lrEVLVorQlggEaxw6kb1ijutM4KklDccvhlOHoigg8oLzt0mujN80+7I/Rg8oQs63j
-         +02x0m1FWsoyjHbCW9nw4lu7LwRm7WqSBtzaYCwc=
+        b=TOeItpWv0dAzOZrGuOLJqlyCmpnv4x0wzmYK9EuGqgKQs8btMU3zykEp0AAoLdWko
+         QW0Q+yqRstJD2panrzmCc2mfm6Z7FYZ7H4oE+bTBzXaaOtu/joL0lD2WiQn1Keaiu5
+         YAB6IjNULRSvQt61dubw17T6NTzaldPcZkSNeVOQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.16 0975/1017] af_unix: Support POLLPRI for OOB.
-Date:   Tue,  5 Apr 2022 09:31:28 +0200
-Message-Id: <20220405070423.146405004@linuxfoundation.org>
+        stable@vger.kernel.org, Yong Wu <yong.wu@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Subject: [PATCH 5.16 0986/1017] dt-bindings: memory: mtk-smi: Rename clock to clocks
+Date:   Tue,  5 Apr 2022 09:31:39 +0200
+Message-Id: <20220405070423.470722809@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -48,55 +50,111 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+From: Yong Wu <yong.wu@mediatek.com>
 
-commit d9a232d435dcc966738b0f414a86f7edf4f4c8c4 upstream.
+commit 5bf7fa48374eafe29dbb30448a0b0c083853583f upstream.
 
-The commit 314001f0bf92 ("af_unix: Add OOB support") introduced OOB for
-AF_UNIX, but it lacks some changes for POLLPRI.  Let's add the missing
-piece.
+The property "clock" should be rename to "clocks", and delete the "items",
+the minItems/maxItems should not be put under "items".
 
-In the selftest, normal datagrams are sent followed by OOB data, so this
-commit replaces `POLLIN | POLLPRI` with just `POLLPRI` in the first test
-case.
-
-Fixes: 314001f0bf92 ("af_unix: Add OOB support")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 27bb0e42855a ("dt-bindings: memory: mediatek: Convert SMI to DT schema")
+Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+Acked-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Link: https://lore.kernel.org/r/20220113111057.29918-2-yong.wu@mediatek.com
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/unix/af_unix.c                                  |    4 ++++
- tools/testing/selftests/net/af_unix/test_unix_oob.c |    6 +++---
- 2 files changed, 7 insertions(+), 3 deletions(-)
+ Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.yaml |   28 ++++------
+ Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.yaml   |   14 ++---
+ 2 files changed, 18 insertions(+), 24 deletions(-)
 
---- a/net/unix/af_unix.c
-+++ b/net/unix/af_unix.c
-@@ -3049,6 +3049,10 @@ static __poll_t unix_poll(struct file *f
- 		mask |= EPOLLIN | EPOLLRDNORM;
- 	if (sk_is_readable(sk))
- 		mask |= EPOLLIN | EPOLLRDNORM;
-+#if IS_ENABLED(CONFIG_AF_UNIX_OOB)
-+	if (READ_ONCE(unix_sk(sk)->oob_skb))
-+		mask |= EPOLLPRI;
-+#endif
+--- a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.yaml
++++ b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.yaml
+@@ -88,10 +88,9 @@ allOf:
+               - mediatek,mt2701-smi-common
+     then:
+       properties:
+-        clock:
+-          items:
+-            minItems: 3
+-            maxItems: 3
++        clocks:
++          minItems: 3
++          maxItems: 3
+         clock-names:
+           items:
+             - const: apb
+@@ -108,10 +107,9 @@ allOf:
+       required:
+         - mediatek,smi
+       properties:
+-        clock:
+-          items:
+-            minItems: 3
+-            maxItems: 3
++        clocks:
++          minItems: 3
++          maxItems: 3
+         clock-names:
+           items:
+             - const: apb
+@@ -133,10 +131,9 @@ allOf:
  
- 	/* Connection-based need to check for termination and startup */
- 	if ((sk->sk_type == SOCK_STREAM || sk->sk_type == SOCK_SEQPACKET) &&
---- a/tools/testing/selftests/net/af_unix/test_unix_oob.c
-+++ b/tools/testing/selftests/net/af_unix/test_unix_oob.c
-@@ -218,10 +218,10 @@ main(int argc, char **argv)
+     then:
+       properties:
+-        clock:
+-          items:
+-            minItems: 4
+-            maxItems: 4
++        clocks:
++          minItems: 4
++          maxItems: 4
+         clock-names:
+           items:
+             - const: apb
+@@ -146,10 +143,9 @@ allOf:
  
- 	/* Test 1:
- 	 * veriyf that SIGURG is
--	 * delivered and 63 bytes are
--	 * read and oob is '@'
-+	 * delivered, 63 bytes are
-+	 * read, oob is '@', and POLLPRI works.
- 	 */
--	wait_for_data(pfd, POLLIN | POLLPRI);
-+	wait_for_data(pfd, POLLPRI);
- 	read_oob(pfd, &oob);
- 	len = read_data(pfd, buf, 1024);
- 	if (!signal_recvd || len != 63 || oob != '@') {
+     else:  # for gen2 HW that don't have gals
+       properties:
+-        clock:
+-          items:
+-            minItems: 2
+-            maxItems: 2
++        clocks:
++          minItems: 2
++          maxItems: 2
+         clock-names:
+           items:
+             - const: apb
+--- a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.yaml
++++ b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.yaml
+@@ -79,10 +79,9 @@ allOf:
+ 
+     then:
+       properties:
+-        clock:
+-          items:
+-            minItems: 3
+-            maxItems: 3
++        clocks:
++          minItems: 3
++          maxItems: 3
+         clock-names:
+           items:
+             - const: apb
+@@ -91,10 +90,9 @@ allOf:
+ 
+     else:
+       properties:
+-        clock:
+-          items:
+-            minItems: 2
+-            maxItems: 2
++        clocks:
++          minItems: 2
++          maxItems: 2
+         clock-names:
+           items:
+             - const: apb
 
 
