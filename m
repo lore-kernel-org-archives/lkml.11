@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AC9FC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62DD1C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:42:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1578732AbiDEXYp (ORCPT
+        id S1578682AbiDEXYa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:24:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36674 "EHLO
+        Tue, 5 Apr 2022 19:24:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243867AbiDEKhs (ORCPT
+        with ESMTP id S1348815AbiDEJsj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:37:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1A837091F;
-        Tue,  5 Apr 2022 03:23:21 -0700 (PDT)
+        Tue, 5 Apr 2022 05:48:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A9A0A94D2;
+        Tue,  5 Apr 2022 02:36:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5F878617CC;
-        Tue,  5 Apr 2022 10:23:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72853C385A0;
-        Tue,  5 Apr 2022 10:23:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D48A1B81C86;
+        Tue,  5 Apr 2022 09:36:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F402AC385A2;
+        Tue,  5 Apr 2022 09:36:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154200;
-        bh=4YhYlmlgU5yF/qSl658v/68xrg7u+cOGYTE7Fjs+AWc=;
+        s=korg; t=1649151363;
+        bh=qR0Ou7+Ovq8LDb2XOemQiHfNlaEvppSvBOpIKEJ/4yk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qZ7j1dnmtdcirO+oN5uyaCuHY1LnoxsVnmWTPdvq2Fx9PuKfp72LQ26lJfvFclWp4
-         70wJDX3nNqL6vp4Eec47AQ3MVYD/u9KxsYfdXHu8w6T3BWyQlVRA+2ksKRFzytHbqj
-         V8BkTn+J67WNkoC9vaueEYyOaOBm9CebxoThPCXg=
+        b=nQy65aaTdAB3iTUQospl0ty4krlz8GxuAlKjFmsgii+E0KGWCWEue7isAyX6nI6CS
+         D7VXjYC6z/AnbwW0Wy/wdcolZgtRTt8IP0Hekrca1IsyoqoKDDw/dPO216ZFWBGwbl
+         z2IHKHb/LM+EHpiA7fIGO8un8v2c2obKHET1NiS8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Heidelberg <david@ixit.cz>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>,
-        LogicalErzor <logicalerzor@gmail.com>
-Subject: [PATCH 5.10 487/599] ARM: dts: qcom: fix gic_irq_domain_translate warnings for msm8960
-Date:   Tue,  5 Apr 2022 09:33:01 +0200
-Message-Id: <20220405070313.319915107@linuxfoundation.org>
+        stable@vger.kernel.org, Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 388/913] bpf: Fix UAF due to race between btf_try_get_module and load_module
+Date:   Tue,  5 Apr 2022 09:24:10 +0200
+Message-Id: <20220405070351.478190770@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,58 +50,163 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Heidelberg <david@ixit.cz>
+From: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 
-[ Upstream commit 6f7e221e7a5cfc3299616543fce42b36e631497b ]
+[ Upstream commit 18688de203b47e5d8d9d0953385bf30b5949324f ]
 
-IRQ types blindly copied from very similar APQ8064.
+While working on code to populate kfunc BTF ID sets for module BTF from
+its initcall, I noticed that by the time the initcall is invoked, the
+module BTF can already be seen by userspace (and the BPF verifier). The
+existing btf_try_get_module calls try_module_get which only fails if
+mod->state == MODULE_STATE_GOING, i.e. it can increment module reference
+when module initcall is happening in parallel.
 
-Fixes warnings as:
-WARNING: CPU: 0 PID: 1 at drivers/irqchip/irq-gic.c:1080 gic_irq_domain_translate+0x118/0x120
-...
+Currently, BTF parsing happens from MODULE_STATE_COMING notifier
+callback. At this point, the module initcalls have not been invoked.
+The notifier callback parses and prepares the module BTF, allocates an
+ID, which publishes it to userspace, and then adds it to the btf_modules
+list allowing the kernel to invoke btf_try_get_module for the BTF.
 
-Tested-by: LogicalErzor <logicalerzor@gmail.com> # boot-tested on Samsung S3
-Signed-off-by: David Heidelberg <david@ixit.cz>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220108174229.60384-1-david@ixit.cz
+However, at this point, the module has not been fully initialized (i.e.
+its initcalls have not finished). The code in module.c can still fail
+and free the module, without caring for other users. However, nothing
+stops btf_try_get_module from succeeding between the state transition
+from MODULE_STATE_COMING to MODULE_STATE_LIVE.
+
+This leads to a use-after-free issue when BPF program loads
+successfully in the state transition, load_module's do_init_module call
+fails and frees the module, and BPF program fd on close calls module_put
+for the freed module. Future patch has test case to verify we don't
+regress in this area in future.
+
+There are multiple points after prepare_coming_module (in load_module)
+where failure can occur and module loading can return error. We
+illustrate and test for the race using the last point where it can
+practically occur (in module __init function).
+
+An illustration of the race:
+
+CPU 0                           CPU 1
+			  load_module
+			    notifier_call(MODULE_STATE_COMING)
+			      btf_parse_module
+			      btf_alloc_id	// Published to userspace
+			      list_add(&btf_mod->list, btf_modules)
+			    mod->init(...)
+...				^
+bpf_check		        |
+check_pseudo_btf_id             |
+  btf_try_get_module            |
+    returns true                |  ...
+...                             |  module __init in progress
+return prog_fd                  |  ...
+...                             V
+			    if (ret < 0)
+			      free_module(mod)
+			    ...
+close(prog_fd)
+ ...
+ bpf_prog_free_deferred
+  module_put(used_btf.mod) // use-after-free
+
+We fix this issue by setting a flag BTF_MODULE_F_LIVE, from the notifier
+callback when MODULE_STATE_LIVE state is reached for the module, so that
+we return NULL from btf_try_get_module for modules that are not fully
+formed. Since try_module_get already checks that module is not in
+MODULE_STATE_GOING state, and that is the only transition a live module
+can make before being removed from btf_modules list, this is enough to
+close the race and prevent the bug.
+
+A later selftest patch crafts the race condition artifically to verify
+that it has been fixed, and that verifier fails to load program (with
+ENXIO).
+
+Lastly, a couple of comments:
+
+ 1. Even if this race didn't exist, it seems more appropriate to only
+    access resources (ksyms and kfuncs) of a fully formed module which
+    has been initialized completely.
+
+ 2. This patch was born out of need for synchronization against module
+    initcall for the next patch, so it is needed for correctness even
+    without the aforementioned race condition. The BTF resources
+    initialized by module initcall are set up once and then only looked
+    up, so just waiting until the initcall has finished ensures correct
+    behavior.
+
+Fixes: 541c3bad8dc5 ("bpf: Support BPF ksym variables in kernel modules")
+Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Link: https://lore.kernel.org/r/20220114163953.1455836-2-memxor@gmail.com
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/qcom-msm8960.dtsi | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ kernel/bpf/btf.c | 26 ++++++++++++++++++++++++--
+ 1 file changed, 24 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/boot/dts/qcom-msm8960.dtsi b/arch/arm/boot/dts/qcom-msm8960.dtsi
-index 172ea3c70eac..c197927e7435 100644
---- a/arch/arm/boot/dts/qcom-msm8960.dtsi
-+++ b/arch/arm/boot/dts/qcom-msm8960.dtsi
-@@ -146,7 +146,9 @@
- 			reg		= <0x108000 0x1000>;
- 			qcom,ipc	= <&l2cc 0x8 2>;
+diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+index b8ed4da63bc8..09406b0e215e 100644
+--- a/kernel/bpf/btf.c
++++ b/kernel/bpf/btf.c
+@@ -6006,12 +6006,17 @@ bool btf_id_set_contains(const struct btf_id_set *set, u32 id)
+ 	return bsearch(&id, set->ids, set->cnt, sizeof(u32), btf_id_cmp_func) != NULL;
+ }
  
--			interrupts	= <0 19 0>, <0 21 0>, <0 22 0>;
-+			interrupts	= <GIC_SPI 19 IRQ_TYPE_EDGE_RISING>,
-+					  <GIC_SPI 21 IRQ_TYPE_EDGE_RISING>,
-+					  <GIC_SPI 22 IRQ_TYPE_EDGE_RISING>;
- 			interrupt-names	= "ack", "err", "wakeup";
++enum {
++	BTF_MODULE_F_LIVE = (1 << 0),
++};
++
+ #ifdef CONFIG_DEBUG_INFO_BTF_MODULES
+ struct btf_module {
+ 	struct list_head list;
+ 	struct module *module;
+ 	struct btf *btf;
+ 	struct bin_attribute *sysfs_attr;
++	int flags;
+ };
  
- 			regulators {
-@@ -192,7 +194,7 @@
- 				compatible = "qcom,msm-uartdm-v1.3", "qcom,msm-uartdm";
- 				reg = <0x16440000 0x1000>,
- 				      <0x16400000 0x1000>;
--				interrupts = <0 154 0x0>;
-+				interrupts = <GIC_SPI 154 IRQ_TYPE_LEVEL_HIGH>;
- 				clocks = <&gcc GSBI5_UART_CLK>, <&gcc GSBI5_H_CLK>;
- 				clock-names = "core", "iface";
- 				status = "disabled";
-@@ -318,7 +320,7 @@
- 				#address-cells = <1>;
- 				#size-cells = <0>;
- 				reg = <0x16080000 0x1000>;
--				interrupts = <0 147 0>;
-+				interrupts = <GIC_SPI 147 IRQ_TYPE_LEVEL_HIGH>;
- 				spi-max-frequency = <24000000>;
- 				cs-gpios = <&msmgpio 8 0>;
+ static LIST_HEAD(btf_modules);
+@@ -6037,7 +6042,8 @@ static int btf_module_notify(struct notifier_block *nb, unsigned long op,
+ 	int err = 0;
  
+ 	if (mod->btf_data_size == 0 ||
+-	    (op != MODULE_STATE_COMING && op != MODULE_STATE_GOING))
++	    (op != MODULE_STATE_COMING && op != MODULE_STATE_LIVE &&
++	     op != MODULE_STATE_GOING))
+ 		goto out;
+ 
+ 	switch (op) {
+@@ -6094,6 +6100,17 @@ static int btf_module_notify(struct notifier_block *nb, unsigned long op,
+ 			btf_mod->sysfs_attr = attr;
+ 		}
+ 
++		break;
++	case MODULE_STATE_LIVE:
++		mutex_lock(&btf_module_mutex);
++		list_for_each_entry_safe(btf_mod, tmp, &btf_modules, list) {
++			if (btf_mod->module != module)
++				continue;
++
++			btf_mod->flags |= BTF_MODULE_F_LIVE;
++			break;
++		}
++		mutex_unlock(&btf_module_mutex);
+ 		break;
+ 	case MODULE_STATE_GOING:
+ 		mutex_lock(&btf_module_mutex);
+@@ -6140,7 +6157,12 @@ struct module *btf_try_get_module(const struct btf *btf)
+ 		if (btf_mod->btf != btf)
+ 			continue;
+ 
+-		if (try_module_get(btf_mod->module))
++		/* We must only consider module whose __init routine has
++		 * finished, hence we must check for BTF_MODULE_F_LIVE flag,
++		 * which is set from the notifier callback for
++		 * MODULE_STATE_LIVE.
++		 */
++		if ((btf_mod->flags & BTF_MODULE_F_LIVE) && try_module_get(btf_mod->module))
+ 			res = btf_mod->module;
+ 
+ 		break;
 -- 
 2.34.1
 
