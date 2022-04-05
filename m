@@ -2,208 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3F39C35273
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:28:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56FF4C3527B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:28:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378277AbiDEU2E (ORCPT
+        id S1379732AbiDEU2d (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:28:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37708 "EHLO
+        Tue, 5 Apr 2022 16:28:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573590AbiDETXK (ORCPT
+        with ESMTP id S1572969AbiDERiC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 15:23:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A608E4B842;
-        Tue,  5 Apr 2022 12:21:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 41453616C5;
-        Tue,  5 Apr 2022 19:21:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08F6FC385A1;
-        Tue,  5 Apr 2022 19:21:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649186470;
-        bh=Zg3zMWSG6TvHZGGBtCLfiftQlhpR76ntlCWktCjM/rI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=r75syTBou8Z4Hpkp1mjTt3Zb/e6dtZS5ttMdnxnJhie0jKOGCDuge3ZxVSfoBOsMc
-         +gKS+1NFp+FiiSYHDBQ1i6MWknoPjnydDRMD6g/zSnBrD/8232h2sqkZ9NGYdGaw+R
-         IL7f9tgOku4IbdByviN8/DQHHycj3UIXqrfeiGG9+pL8Q6fhnOx/2u/vPSeg+hrDKx
-         lTHljOLnjx8L4AZ2B8hH22tp84lnuDK8n9G6XRXhWg6WLYXyL8Sndrhe5zWq9E6BWz
-         6D6H6/5+N6Yb2brGnTvWtleWj2DejPFMZHihMz65HD78XkOpUZOr+aess+q9AojYln
-         czMgCmam9EC4g==
-From:   Jeff Layton <jlayton@kernel.org>
-To:     idryomov@gmail.com, xiubli@redhat.com
-Cc:     ceph-devel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org,
-        lhenriques@suse.de
-Subject: [PATCH v13 42/59] ceph: handle fscrypt fields in cap messages from MDS
-Date:   Tue,  5 Apr 2022 15:20:13 -0400
-Message-Id: <20220405192030.178326-43-jlayton@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405192030.178326-1-jlayton@kernel.org>
-References: <20220405192030.178326-1-jlayton@kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Tue, 5 Apr 2022 13:38:02 -0400
+Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8A9FB8202;
+        Tue,  5 Apr 2022 10:35:59 -0700 (PDT)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id AB2325C009C;
+        Tue,  5 Apr 2022 13:35:56 -0400 (EDT)
+Received: from imap49 ([10.202.2.99])
+  by compute4.internal (MEProxy); Tue, 05 Apr 2022 13:35:56 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        sladewatkins.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm2; bh=RlDOrEhKX2leTS
+        41joIzAvTOrasAxRRyMaip8pIxHRI=; b=oAWeZFLWD3FV4XnHxZuC/y64dROJeU
+        Zo++E5uK9BMY8Sx3YA9k7M34um/oybeh8hBtFFXxXThMhLWiqZEOP9F+OKfJteKa
+        apUvP/eZNKpXZYpkWfwFrWGoJdNg6fATjM+EO+XxY56VShXDo2b+9qniX1zBD8rA
+        TdkECNlGksjXSO9OoKILOK/crfMTH8IOwGxVz9QXOcXT8fWy1fQiv6zdSOsYssZH
+        w+Ckyt3i4qfVNDkHbRAVJ0SM76pl0HtOMsuukwD/WpICLZx+oJ1xpVL9owAXb7Xp
+        wTtqZoJLVGJ3qn1J2XvD0DQl1s0yDStyfdq3ZA+dSgzMgaSR8bn5F8oA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=RlDOrEhKX2leTS41j
+        oIzAvTOrasAxRRyMaip8pIxHRI=; b=f49rGYqUOlVXAiAQb7Tthpd5C3rMTOtSa
+        BcvlZjMRhBD8hAgGXUunB9kFTVohXPfZOy2DI+msMXhrIaI7U42nRzGCpQ6m6UhQ
+        ogC6T8dXvTMNd7pbPGSatMPuapsOayWc9vIpCOkT1nzsMcx75bOV57FRJktHnl3E
+        2jzl6sBBIcZj2/H8sebtY0B6k4mKXQ+41jDbG+1N2n78HPYZFlbazHysbeBqWn6u
+        kkygfbF9GHQA3qrAP7EXv6P46YXFEQtE2p3KArzLRTdPRxbapUFv5LB/bJtDpyOe
+        hz/rhSEkV7FLkke06bTaU6+oe4sIzE2+BKZfMqfiYmqNeT2vMwoJw==
+X-ME-Sender: <xms:_H1MYmgIsfOt_Yarwtc_kfg_bIeNvaBvUR6DQCyiHdJfyNkOexlqmg>
+    <xme:_H1MYnAgxAdJBTo3YwRTYS1LIY6bajkCVFjUl5TKXJXXtNhFDTEe7qONuU4SZJ1tK
+    ra_X5FHza0Rr78BP-I>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudejgedgudduudcutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpefofgggkfgjfhffhffvufgtsehttdertderredtnecuhfhrohhmpedfufhl
+    rgguvgcuhggrthhkihhnshdfuceoshhlrgguvgesshhlrgguvgifrghtkhhinhhsrdgtoh
+    hmqeenucggtffrrghtthgvrhhnpeeuieffteejieetgfevteelheevudehteeihffhteeh
+    tdetleegtedtvdevvddugeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmh
+    grihhlfhhrohhmpehslhgruggvsehslhgruggvfigrthhkihhnshdrtghomh
+X-ME-Proxy: <xmx:_H1MYuHHRoIMCZ9fnD-fZBHH2GhzqOOiwIYU4uA0X_eVRt9WrfCK2w>
+    <xmx:_H1MYvSsBrbiQIoqiGXXkGyCRe_tUK_NUiPhXBg_1wJr_qbTrQ6uMA>
+    <xmx:_H1MYjygbsVpnnW8E-pErHpTfNoUuom6nB-jIDySbYcZAigw8gBGJw>
+    <xmx:_H1MYoq57anBoAtO9HR40_QcWKhbdVYwSDXIE4u2YYV4zBAlnWvmAQ>
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id 0C4E715A005D; Tue,  5 Apr 2022 13:35:55 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.7.0-alpha0-385-g3a17909f9e-fm-20220404.001-g3a17909f
+Mime-Version: 1.0
+Message-Id: <91d0682a-7be4-464e-812e-5e94dbfdbcd9@www.fastmail.com>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+Date:   Tue, 05 Apr 2022 13:35:53 -0400
+From:   "Slade Watkins" <slade@sladewatkins.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org,
+        "Linus Torvalds" <torvalds@linux-foundation.org>,
+        "Andrew Morton" <akpm@linux-foundation.org>,
+        "Guenter Roeck" <linux@roeck-us.net>, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org,
+        "Pavel Machek" <pavel@denx.de>,
+        "Jon Hunter" <jonathanh@nvidia.com>,
+        "Florian Fainelli" <f.fainelli@gmail.com>,
+        "Sudip Mukherjee" <sudipm.mukherjee@gmail.com>
+Subject: Re: [PATCH 5.10 000/599] 5.10.110-rc1 review
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Handle the new fscrypt_file and fscrypt_auth fields in cap messages. Use
-them to populate new fields in cap_extra_info and update the inode with
-those values.
+On Tue, Apr 5, 2022, at 3:24 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.10.110 release.
+> There are 599 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Thu, 07 Apr 2022 07:01:33 +0000.
+> Anything received after that time might be too late.
 
-Signed-off-by: Jeff Layton <jlayton@kernel.org>
----
- fs/ceph/caps.c | 78 ++++++++++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 76 insertions(+), 2 deletions(-)
+5.10.110-rc1 compiled and booted with no errors or regressions on my x86_64 test system.
 
-diff --git a/fs/ceph/caps.c b/fs/ceph/caps.c
-index cb5cdf2260ad..1f3a2135214c 100644
---- a/fs/ceph/caps.c
-+++ b/fs/ceph/caps.c
-@@ -3364,6 +3364,9 @@ struct cap_extra_info {
- 	/* currently issued */
- 	int issued;
- 	struct timespec64 btime;
-+	u8 *fscrypt_auth;
-+	u32 fscrypt_auth_len;
-+	u64 fscrypt_file_size;
- };
- 
- /*
-@@ -3396,6 +3399,14 @@ static void handle_cap_grant(struct inode *inode,
- 	bool deleted_inode = false;
- 	bool fill_inline = false;
- 
-+	/*
-+	 * If there is at least one crypto block then we'll trust fscrypt_file_size.
-+	 * If the real length of the file is 0, then ignore it (it has probably been
-+	 * truncated down to 0 by the MDS).
-+	 */
-+	if (IS_ENCRYPTED(inode) && size)
-+		size = extra_info->fscrypt_file_size;
-+
- 	dout("handle_cap_grant inode %p cap %p mds%d seq %d %s\n",
- 	     inode, cap, session->s_mds, seq, ceph_cap_string(newcaps));
- 	dout(" size %llu max_size %llu, i_size %llu\n", size, max_size,
-@@ -3462,6 +3473,10 @@ static void handle_cap_grant(struct inode *inode,
- 		dout("%p mode 0%o uid.gid %d.%d\n", inode, inode->i_mode,
- 		     from_kuid(&init_user_ns, inode->i_uid),
- 		     from_kgid(&init_user_ns, inode->i_gid));
-+
-+		WARN_ON_ONCE(ci->fscrypt_auth_len != extra_info->fscrypt_auth_len ||
-+			     memcmp(ci->fscrypt_auth, extra_info->fscrypt_auth,
-+				     ci->fscrypt_auth_len));
- 	}
- 
- 	if ((newcaps & CEPH_CAP_LINK_SHARED) &&
-@@ -3872,7 +3887,8 @@ static void handle_cap_flushsnap_ack(struct inode *inode, u64 flush_tid,
-  */
- static bool handle_cap_trunc(struct inode *inode,
- 			     struct ceph_mds_caps *trunc,
--			     struct ceph_mds_session *session)
-+			     struct ceph_mds_session *session,
-+			     struct cap_extra_info *extra_info)
- {
- 	struct ceph_inode_info *ci = ceph_inode(inode);
- 	int mds = session->s_mds;
-@@ -3889,6 +3905,14 @@ static bool handle_cap_trunc(struct inode *inode,
- 
- 	issued |= implemented | dirty;
- 
-+	/*
-+	 * If there is at least one crypto block then we'll trust fscrypt_file_size.
-+	 * If the real length of the file is 0, then ignore it (it has probably been
-+	 * truncated down to 0 by the MDS).
-+	 */
-+	if (IS_ENCRYPTED(inode) && size)
-+		size = extra_info->fscrypt_file_size;
-+
- 	dout("handle_cap_trunc inode %p mds%d seq %d to %lld seq %d\n",
- 	     inode, mds, seq, truncate_size, truncate_seq);
- 	queue_trunc = ceph_fill_file_size(inode, issued,
-@@ -4110,6 +4134,49 @@ static void handle_cap_import(struct ceph_mds_client *mdsc,
- 	*target_cap = cap;
- }
- 
-+#ifdef CONFIG_FS_ENCRYPTION
-+static int parse_fscrypt_fields(void **p, void *end, struct cap_extra_info *extra)
-+{
-+	u32 len;
-+
-+	ceph_decode_32_safe(p, end, extra->fscrypt_auth_len, bad);
-+	if (extra->fscrypt_auth_len) {
-+		ceph_decode_need(p, end, extra->fscrypt_auth_len, bad);
-+		extra->fscrypt_auth = kmalloc(extra->fscrypt_auth_len, GFP_KERNEL);
-+		if (!extra->fscrypt_auth)
-+			return -ENOMEM;
-+		ceph_decode_copy_safe(p, end, extra->fscrypt_auth,
-+					extra->fscrypt_auth_len, bad);
-+	}
-+
-+	ceph_decode_32_safe(p, end, len, bad);
-+	if (len >= sizeof(u64)) {
-+		ceph_decode_64_safe(p, end, extra->fscrypt_file_size, bad);
-+		len -= sizeof(u64);
-+	}
-+	ceph_decode_skip_n(p, end, len, bad);
-+	return 0;
-+bad:
-+	return -EIO;
-+}
-+#else
-+static int parse_fscrypt_fields(void **p, void *end, struct cap_extra_info *extra)
-+{
-+	u32 len;
-+
-+	/* Don't care about these fields unless we're encryption-capable */
-+	ceph_decode_32_safe(p, end, len, bad);
-+	if (len)
-+		ceph_decode_skip_n(p, end, len, bad);
-+	ceph_decode_32_safe(p, end, len, bad);
-+	if (len)
-+		ceph_decode_skip_n(p, end, len, bad);
-+	return 0;
-+bad:
-+	return -EIO;
-+}
-+#endif
-+
- /*
-  * Handle a caps message from the MDS.
-  *
-@@ -4228,6 +4295,11 @@ void ceph_handle_caps(struct ceph_mds_session *session,
- 		ceph_decode_64_safe(&p, end, extra_info.nsubdirs, bad);
- 	}
- 
-+	if (msg_version >= 12) {
-+		if (parse_fscrypt_fields(&p, end, &extra_info))
-+			goto bad;
-+	}
-+
- 	/* lookup ino */
- 	inode = ceph_find_inode(mdsc->fsc->sb, vino);
- 	dout(" op %s ino %llx.%llx inode %p\n", ceph_cap_op_name(op), vino.ino,
-@@ -4324,7 +4396,8 @@ void ceph_handle_caps(struct ceph_mds_session *session,
- 		break;
- 
- 	case CEPH_CAP_OP_TRUNC:
--		queue_trunc = handle_cap_trunc(inode, h, session);
-+		queue_trunc = handle_cap_trunc(inode, h, session,
-+						&extra_info);
- 		spin_unlock(&ci->i_ceph_lock);
- 		if (queue_trunc)
- 			ceph_queue_vmtruncate(inode);
-@@ -4342,6 +4415,7 @@ void ceph_handle_caps(struct ceph_mds_session *session,
- 	iput(inode);
- out:
- 	ceph_put_string(extra_info.pool_ns);
-+	kfree(extra_info.fscrypt_auth);
- 	return;
- 
- flush_cap_releases:
--- 
-2.35.1
+Tested-by: Slade Watkins <slade@sladewatkins.com>
 
+Cheers, 
+Slade
