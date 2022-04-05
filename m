@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34920C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5377BC433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:04:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348260AbiDEVEH (ORCPT
+        id S1348426AbiDEVEM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:04:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47870 "EHLO
+        Tue, 5 Apr 2022 17:04:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244381AbiDEKil (ORCPT
+        with ESMTP id S1352943AbiDEKFX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:38:41 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B61426D4;
-        Tue,  5 Apr 2022 03:23:37 -0700 (PDT)
+        Tue, 5 Apr 2022 06:05:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91E0E3BF;
+        Tue,  5 Apr 2022 02:54:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 1A915CE0B18;
-        Tue,  5 Apr 2022 10:23:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37478C385A3;
-        Tue,  5 Apr 2022 10:23:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A2F04B818F3;
+        Tue,  5 Apr 2022 09:54:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0194C385A2;
+        Tue,  5 Apr 2022 09:54:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154214;
-        bh=M1gU7GJAdKfEoxBo0mmxgvDmkAOM71wt/lDiYoCEucE=;
+        s=korg; t=1649152442;
+        bh=i6ekhz8yvn0w0xbt01pqAW4L3Qfv2grJOD45n0DZ3D8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ddVbKsMED+7c4CNoVNL13U7tp1WTIEI1fCE/x2k/I29fH1wz8BUvetyAd5rclusIH
-         nO31xiTd1vSKI/pTfDdYwF/wXkEFe1JrDji9BMdOCFQ1JLsvPfoMqAWj519dCKZRxs
-         Fx4VbpEE2dMEnoWMFbytvBEP1vzK8mV0uRRc6Rhs=
+        b=WcktfAjMTx31mNKEt8nzJBpvtLHrkBZdN4m1dlTqAtvXZkp9Vl50uMQWMfA2FjO+T
+         8wkFvid6uVrXCZSY98E9NJFpRf8Ml49COYIvwL6j48yET85P17v5PAceJ1+zRFGpPm
+         1bf2jr9x8PvDj3Pn9jvALKQ2sEkt3mK/6zw73Gzg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Daniel=20Gonz=C3=A1lez=20Cabanelas?= <dgcbueu@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 500/599] media: cx88-mpeg: clear interrupt status register before streaming video
-Date:   Tue,  5 Apr 2022 09:33:14 +0200
-Message-Id: <20220405070313.707864533@linuxfoundation.org>
+        stable@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.15 777/913] KVM: x86: hyper-v: HVCALL_SEND_IPI_EX is an XMM fast hypercall
+Date:   Tue,  5 Apr 2022 09:30:39 +0200
+Message-Id: <20220405070403.124326505@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,43 +49,127 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel González Cabanelas <dgcbueu@gmail.com>
+From: Vitaly Kuznetsov <vkuznets@redhat.com>
 
-[ Upstream commit 56cb61f70e547e1b0cdfe6ff5a1f1ce6242e6d96 ]
+commit 47d3e5cdfe607ec6883eb0faa7acf05b8cb3f92a upstream.
 
-Some cx88 video cards may have transport stream status interrupts set
-to 1 from cold start, causing errors like this:
+It has been proven on practice that at least Windows Server 2019 tries
+using HVCALL_SEND_IPI_EX in 'XMM fast' mode when it has more than 64 vCPUs
+and it needs to send an IPI to a vCPU > 63. Similarly to other XMM Fast
+hypercalls (HVCALL_FLUSH_VIRTUAL_ADDRESS_{LIST,SPACE}{,_EX}), this
+information is missing in TLFS as of 6.0b. Currently, KVM returns an error
+(HV_STATUS_INVALID_HYPERCALL_INPUT) and Windows crashes.
 
-  cx88xx: cx88_print_irqbits: core:irq mpeg  [0x100000] ts_err?*
-  cx8802: cx8802_mpeg_irq: mpeg:general errors: 0x00100000
+Note, HVCALL_SEND_IPI is a 'standard' fast hypercall (not 'XMM fast') as
+all its parameters fit into RDX:R8 and this is handled by KVM correctly.
 
-According to CX2388x datasheet, the interrupt status register should be
-cleared before enabling IRQs to stream video.
-
-Fix it by clearing the Transport Stream Interrupt Status register.
-
-Signed-off-by: Daniel González Cabanelas <dgcbueu@gmail.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@vger.kernel.org # 5.14.x: 3244867af8c0: KVM: x86: Ignore sparse banks size for an "all CPUs", non-sparse IPI req
+Cc: stable@vger.kernel.org # 5.14.x
+Fixes: d8f5537a8816 ("KVM: hyper-v: Advertise support for fast XMM hypercalls")
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+Message-Id: <20220222154642.684285-5-vkuznets@redhat.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/pci/cx88/cx88-mpeg.c | 3 +++
- 1 file changed, 3 insertions(+)
+ arch/x86/kvm/hyperv.c |   52 ++++++++++++++++++++++++++++++++------------------
+ 1 file changed, 34 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/media/pci/cx88/cx88-mpeg.c b/drivers/media/pci/cx88/cx88-mpeg.c
-index a57c991b165b..10d2971ef062 100644
---- a/drivers/media/pci/cx88/cx88-mpeg.c
-+++ b/drivers/media/pci/cx88/cx88-mpeg.c
-@@ -162,6 +162,9 @@ int cx8802_start_dma(struct cx8802_dev    *dev,
- 	cx_write(MO_TS_GPCNTRL, GP_COUNT_CONTROL_RESET);
- 	q->count = 0;
+--- a/arch/x86/kvm/hyperv.c
++++ b/arch/x86/kvm/hyperv.c
+@@ -1889,6 +1889,7 @@ static u64 kvm_hv_send_ipi(struct kvm_vc
+ 	int sparse_banks_len;
+ 	u32 vector;
+ 	bool all_cpus;
++	int i;
  
-+	/* clear interrupt status register */
-+	cx_write(MO_TS_INTSTAT,  0x1f1111);
-+
- 	/* enable irqs */
- 	dprintk(1, "setting the interrupt mask\n");
- 	cx_set(MO_PCI_INTMSK, core->pci_irqmask | PCI_INT_TSINT);
--- 
-2.34.1
-
+ 	if (hc->code == HVCALL_SEND_IPI) {
+ 		if (!hc->fast) {
+@@ -1909,9 +1910,15 @@ static u64 kvm_hv_send_ipi(struct kvm_vc
+ 
+ 		trace_kvm_hv_send_ipi(vector, sparse_banks[0]);
+ 	} else {
+-		if (unlikely(kvm_read_guest(kvm, hc->ingpa, &send_ipi_ex,
+-					    sizeof(send_ipi_ex))))
+-			return HV_STATUS_INVALID_HYPERCALL_INPUT;
++		if (!hc->fast) {
++			if (unlikely(kvm_read_guest(kvm, hc->ingpa, &send_ipi_ex,
++						    sizeof(send_ipi_ex))))
++				return HV_STATUS_INVALID_HYPERCALL_INPUT;
++		} else {
++			send_ipi_ex.vector = (u32)hc->ingpa;
++			send_ipi_ex.vp_set.format = hc->outgpa;
++			send_ipi_ex.vp_set.valid_bank_mask = sse128_lo(hc->xmm[0]);
++		}
+ 
+ 		trace_kvm_hv_send_ipi_ex(send_ipi_ex.vector,
+ 					 send_ipi_ex.vp_set.format,
+@@ -1919,8 +1926,7 @@ static u64 kvm_hv_send_ipi(struct kvm_vc
+ 
+ 		vector = send_ipi_ex.vector;
+ 		valid_bank_mask = send_ipi_ex.vp_set.valid_bank_mask;
+-		sparse_banks_len = bitmap_weight(&valid_bank_mask, 64) *
+-			sizeof(sparse_banks[0]);
++		sparse_banks_len = bitmap_weight(&valid_bank_mask, 64);
+ 
+ 		all_cpus = send_ipi_ex.vp_set.format == HV_GENERIC_SET_ALL;
+ 
+@@ -1930,12 +1936,27 @@ static u64 kvm_hv_send_ipi(struct kvm_vc
+ 		if (!sparse_banks_len)
+ 			goto ret_success;
+ 
+-		if (kvm_read_guest(kvm,
+-				   hc->ingpa + offsetof(struct hv_send_ipi_ex,
+-							vp_set.bank_contents),
+-				   sparse_banks,
+-				   sparse_banks_len))
+-			return HV_STATUS_INVALID_HYPERCALL_INPUT;
++		if (!hc->fast) {
++			if (kvm_read_guest(kvm,
++					   hc->ingpa + offsetof(struct hv_send_ipi_ex,
++								vp_set.bank_contents),
++					   sparse_banks,
++					   sparse_banks_len * sizeof(sparse_banks[0])))
++				return HV_STATUS_INVALID_HYPERCALL_INPUT;
++		} else {
++			/*
++			 * The lower half of XMM0 is already consumed, each XMM holds
++			 * two sparse banks.
++			 */
++			if (sparse_banks_len > (2 * HV_HYPERCALL_MAX_XMM_REGISTERS - 1))
++				return HV_STATUS_INVALID_HYPERCALL_INPUT;
++			for (i = 0; i < sparse_banks_len; i++) {
++				if (i % 2)
++					sparse_banks[i] = sse128_lo(hc->xmm[(i + 1) / 2]);
++				else
++					sparse_banks[i] = sse128_hi(hc->xmm[i / 2]);
++			}
++		}
+ 	}
+ 
+ check_and_send_ipi:
+@@ -2097,6 +2118,7 @@ static bool is_xmm_fast_hypercall(struct
+ 	case HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE:
+ 	case HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST_EX:
+ 	case HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE_EX:
++	case HVCALL_SEND_IPI_EX:
+ 		return true;
+ 	}
+ 
+@@ -2264,14 +2286,8 @@ int kvm_hv_hypercall(struct kvm_vcpu *vc
+ 		ret = kvm_hv_flush_tlb(vcpu, &hc);
+ 		break;
+ 	case HVCALL_SEND_IPI:
+-		if (unlikely(hc.rep)) {
+-			ret = HV_STATUS_INVALID_HYPERCALL_INPUT;
+-			break;
+-		}
+-		ret = kvm_hv_send_ipi(vcpu, &hc);
+-		break;
+ 	case HVCALL_SEND_IPI_EX:
+-		if (unlikely(hc.fast || hc.rep)) {
++		if (unlikely(hc.rep)) {
+ 			ret = HV_STATUS_INVALID_HYPERCALL_INPUT;
+ 			break;
+ 		}
 
 
