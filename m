@@ -2,167 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE507C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:48:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B58DC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:48:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239875AbiDEUp1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:45:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40648 "EHLO
+        id S241382AbiDEUp4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 16:45:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352392AbiDEKEc (ORCPT
+        with ESMTP id S1457619AbiDEQSM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:04:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D810BBA327;
-        Tue,  5 Apr 2022 02:53:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 765486172B;
-        Tue,  5 Apr 2022 09:53:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80F44C385A1;
-        Tue,  5 Apr 2022 09:53:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152391;
-        bh=fwLcSYhjpEckNUeRMKC+GvUQzd+OndIHzBsm1iYLhc0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=acYRTLt9iqKhKOT4sc/1//lxNB6R8qGxgorgEO8rUfqwuHqMU37zy9QR7jPtAHk/Q
-         pIedEn5InHQ3qYUYroIqfpERsdtg3N0zLHwAPChoIDQKIZg8NvMN6qnOjUZHB1YAG7
-         hNlwXTzBV+foe1au5JBn/u7mHaRxqFaVaLA2SzhY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Vijendar Mukunda <Vijendar.Mukunda@amd.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 760/913] ASoC: amd: vg: fix for pm resume callback sequence
-Date:   Tue,  5 Apr 2022 09:30:22 +0200
-Message-Id: <20220405070402.613986123@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 12:18:12 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B3C5B193D3
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 09:16:13 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2B5B41424;
+        Tue,  5 Apr 2022 09:16:13 -0700 (PDT)
+Received: from FVFF77S0Q05N (unknown [10.57.8.234])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 85FD93F73B;
+        Tue,  5 Apr 2022 09:16:11 -0700 (PDT)
+Date:   Tue, 5 Apr 2022 17:16:02 +0100
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     Sami Tolvanen <samitolvanen@google.com>
+Cc:     Kees Cook <keescook@chromium.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Will Deacon <will@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev
+Subject: Re: [PATCH 2/3] linux/compiler-clang.h: define function_nocfi
+Message-ID: <YkxrQl4zDe6YSoNO@FVFF77S0Q05N>
+References: <20220401201916.1487500-1-samitolvanen@google.com>
+ <20220401201916.1487500-3-samitolvanen@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220401201916.1487500-3-samitolvanen@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vijendar Mukunda <Vijendar.Mukunda@amd.com>
+On Fri, Apr 01, 2022 at 01:19:15PM -0700, Sami Tolvanen wrote:
+> Use __builtin_function_start() to implement the function_nocfi() macro
+> when CONFIG_CFI_CLANG is selected.
+> 
+> Signed-off-by: Sami Tolvanen <samitolvanen@google.com>
+> ---
+>  include/linux/compiler-clang.h | 10 ++++++++++
+>  1 file changed, 10 insertions(+)
+> 
+> diff --git a/include/linux/compiler-clang.h b/include/linux/compiler-clang.h
+> index babb1347148c..c84fec767445 100644
+> --- a/include/linux/compiler-clang.h
+> +++ b/include/linux/compiler-clang.h
+> @@ -69,6 +69,16 @@
+>  #define __nocfi		__attribute__((__no_sanitize__("cfi")))
+>  #define __cficanonical	__attribute__((__cfi_canonical_jump_table__))
+>  
+> +#if defined(CONFIG_CFI_CLANG)
+> +/*
+> + * With CONFIG_CFI_CLANG, the compiler replaces function address
+> + * references with the address of the function's CFI jump table
+> + * entry. The function_nocfi macro always returns the address of the
+> + * actual function instead.
+> + */
+> +#define function_nocfi(x)	__builtin_function_start(x)
+> +#endif
 
-[ Upstream commit 83b713619ee1b15e09eae11a92a7f3305534223d ]
+As a heads-up, with patches 1 and 2 applied (but not patch 3), we have two
+definitions of function_nocfi(), which casues the compiler to scream for every
+object:
 
-The previous condition is used to cross check only the active
-stream status for I2S HS instance playback and capture use cases.
+| In file included from <built-in>:3:
+| In file included from ././include/linux/compiler_types.h:107:
+| ./arch/arm64/include/asm/compiler.h:33:9: warning: 'function_nocfi' macro redefined [-Wmacro-redefined]
+| #define function_nocfi(x) ({                                            \
+|         ^
+| ./include/linux/compiler-clang.h:79:9: note: previous definition is here
+| #define function_nocfi(x)       __builtin_function_start(x)
+|         ^
+| 1 warning generated.
 
-Modified logic to invoke sequence for two i2s controller instances.
+... which would be painful for bisection.
 
-This also fixes warnings reported by kernel robot:
-"warning: variable 'frmt_val' set but not used"
-"warning: variable 'reg_val' set but not used"
+I suspect It's probably worth folding patches 2 and 3 together to avoid that?
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Vijendar Mukunda <Vijendar.Mukunda@amd.com>
-Link: https://lore.kernel.org/r/20220225193054.24916-1-Vijendar.Mukunda@amd.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- sound/soc/amd/vangogh/acp5x-pcm-dma.c | 66 +++++++++++++--------------
- 1 file changed, 33 insertions(+), 33 deletions(-)
+Arguably we could fold the entire series together into one commit at that
+point.
 
-diff --git a/sound/soc/amd/vangogh/acp5x-pcm-dma.c b/sound/soc/amd/vangogh/acp5x-pcm-dma.c
-index 6abcc2133a2c..bfca4cf423cf 100644
---- a/sound/soc/amd/vangogh/acp5x-pcm-dma.c
-+++ b/sound/soc/amd/vangogh/acp5x-pcm-dma.c
-@@ -426,51 +426,51 @@ static int acp5x_audio_remove(struct platform_device *pdev)
- static int __maybe_unused acp5x_pcm_resume(struct device *dev)
- {
- 	struct i2s_dev_data *adata;
--	u32 val, reg_val, frmt_val;
-+	struct i2s_stream_instance *rtd;
-+	u32 val;
- 
--	reg_val = 0;
--	frmt_val = 0;
- 	adata = dev_get_drvdata(dev);
- 
- 	if (adata->play_stream && adata->play_stream->runtime) {
--		struct i2s_stream_instance *rtd =
--			adata->play_stream->runtime->private_data;
-+		rtd = adata->play_stream->runtime->private_data;
- 		config_acp5x_dma(rtd, SNDRV_PCM_STREAM_PLAYBACK);
--		switch (rtd->i2s_instance) {
--		case I2S_HS_INSTANCE:
--			reg_val = ACP_HSTDM_ITER;
--			frmt_val = ACP_HSTDM_TXFRMT;
--			break;
--		case I2S_SP_INSTANCE:
--		default:
--			reg_val = ACP_I2STDM_ITER;
--			frmt_val = ACP_I2STDM_TXFRMT;
-+		acp_writel((rtd->xfer_resolution  << 3), rtd->acp5x_base + ACP_HSTDM_ITER);
-+		if (adata->tdm_mode == TDM_ENABLE) {
-+			acp_writel(adata->tdm_fmt, adata->acp5x_base + ACP_HSTDM_TXFRMT);
-+			val = acp_readl(adata->acp5x_base + ACP_HSTDM_ITER);
-+			acp_writel(val | 0x2, adata->acp5x_base + ACP_HSTDM_ITER);
-+		}
-+	}
-+	if (adata->i2ssp_play_stream && adata->i2ssp_play_stream->runtime) {
-+		rtd = adata->i2ssp_play_stream->runtime->private_data;
-+		config_acp5x_dma(rtd, SNDRV_PCM_STREAM_PLAYBACK);
-+		acp_writel((rtd->xfer_resolution  << 3), rtd->acp5x_base + ACP_I2STDM_ITER);
-+		if (adata->tdm_mode == TDM_ENABLE) {
-+			acp_writel(adata->tdm_fmt, adata->acp5x_base + ACP_I2STDM_TXFRMT);
-+			val = acp_readl(adata->acp5x_base + ACP_I2STDM_ITER);
-+			acp_writel(val | 0x2, adata->acp5x_base + ACP_I2STDM_ITER);
- 		}
--		acp_writel((rtd->xfer_resolution  << 3),
--			   rtd->acp5x_base + reg_val);
- 	}
- 
- 	if (adata->capture_stream && adata->capture_stream->runtime) {
--		struct i2s_stream_instance *rtd =
--			adata->capture_stream->runtime->private_data;
-+		rtd = adata->capture_stream->runtime->private_data;
- 		config_acp5x_dma(rtd, SNDRV_PCM_STREAM_CAPTURE);
--		switch (rtd->i2s_instance) {
--		case I2S_HS_INSTANCE:
--			reg_val = ACP_HSTDM_IRER;
--			frmt_val = ACP_HSTDM_RXFRMT;
--			break;
--		case I2S_SP_INSTANCE:
--		default:
--			reg_val = ACP_I2STDM_IRER;
--			frmt_val = ACP_I2STDM_RXFRMT;
-+		acp_writel((rtd->xfer_resolution  << 3), rtd->acp5x_base + ACP_HSTDM_IRER);
-+		if (adata->tdm_mode == TDM_ENABLE) {
-+			acp_writel(adata->tdm_fmt, adata->acp5x_base + ACP_HSTDM_RXFRMT);
-+			val = acp_readl(adata->acp5x_base + ACP_HSTDM_IRER);
-+			acp_writel(val | 0x2, adata->acp5x_base + ACP_HSTDM_IRER);
- 		}
--		acp_writel((rtd->xfer_resolution  << 3),
--			   rtd->acp5x_base + reg_val);
- 	}
--	if (adata->tdm_mode == TDM_ENABLE) {
--		acp_writel(adata->tdm_fmt, adata->acp5x_base + frmt_val);
--		val = acp_readl(adata->acp5x_base + reg_val);
--		acp_writel(val | 0x2, adata->acp5x_base + reg_val);
-+	if (adata->i2ssp_capture_stream && adata->i2ssp_capture_stream->runtime) {
-+		rtd = adata->i2ssp_capture_stream->runtime->private_data;
-+		config_acp5x_dma(rtd, SNDRV_PCM_STREAM_CAPTURE);
-+		acp_writel((rtd->xfer_resolution  << 3), rtd->acp5x_base + ACP_I2STDM_IRER);
-+		if (adata->tdm_mode == TDM_ENABLE) {
-+			acp_writel(adata->tdm_fmt, adata->acp5x_base + ACP_I2STDM_RXFRMT);
-+			val = acp_readl(adata->acp5x_base + ACP_I2STDM_IRER);
-+			acp_writel(val | 0x2, adata->acp5x_base + ACP_I2STDM_IRER);
-+		}
- 	}
- 	acp_writel(1, adata->acp5x_base + ACP_EXTERNAL_INTR_ENB);
- 	return 0;
--- 
-2.34.1
-
-
-
+Thanks,
+Mark.
