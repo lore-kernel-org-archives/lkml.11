@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A944C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 589EFC38A2D
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235384AbiDEH7l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:59:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46910 "EHLO
+        id S235525AbiDEH7u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:59:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233444AbiDEHru (ORCPT
+        with ESMTP id S232881AbiDEHrN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:47:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A8BDA0BD2;
-        Tue,  5 Apr 2022 00:44:06 -0700 (PDT)
+        Tue, 5 Apr 2022 03:47:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC45C9BBAB;
+        Tue,  5 Apr 2022 00:43:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 572CA616C3;
-        Tue,  5 Apr 2022 07:44:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DBD5C340EE;
-        Tue,  5 Apr 2022 07:44:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7ED70B81B18;
+        Tue,  5 Apr 2022 07:43:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5ADBC340EE;
+        Tue,  5 Apr 2022 07:43:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144645;
-        bh=oQCCMyAG9uXwmvosH2y0DN3mABh0AUvwuzkV1JR0Ik0=;
+        s=korg; t=1649144590;
+        bh=KrpoqmBm+9RVRU5wmQ0UoegreTFKV0nEgPTZhJMf3uw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=q/AIrLSJ8TzFWYci46Xe5yJPmpQ1s7PJXazM3dXt7Bt3p0eAFmP0QO0mLxopxOEi2
-         vPwGZyy2NG3rd07pMWbv1viShD7w/nV5pCB80IJYQJv0mAuGtHnz8wZhn6woxZR7ip
-         2OD87M6Ef1caqlsH/AM7jnxWdCr3rkwtFbR/WP9o=
+        b=z696SO4J8y5zA4q8hpxm/m1C5D5lHSdG5v2q+wEH7jTFcAWbanlHCPAaIWmfubIc/
+         6mPNouekrLvEjLG93CvgERn1uvJCuErE+6JP5GXbbGWOBl5zyYpZ2fCylhtng8iIHI
+         /dWFrdnVKsXnkDYnWZ0Dt8gBeVx/Y5HdUCsmaHuc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ben Dooks <ben.dooks@codethink.co.uk>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>,
-        Dimitri John Ledkov <dimitri.ledkov@canonical.com>
-Subject: [PATCH 5.17 0119/1126] PCI: fu740: Force 2.5GT/s for initial device probe
-Date:   Tue,  5 Apr 2022 09:14:26 +0200
-Message-Id: <20220405070411.066405351@linuxfoundation.org>
+        stable@vger.kernel.org, Chao Yu <chao.yu@oppo.com>,
+        Jaegeuk Kim <jaegeuk@kernel.org>
+Subject: [PATCH 5.17 0061/1126] f2fs: fix to do sanity check on .cp_pack_total_block_count
+Date:   Tue,  5 Apr 2022 09:13:28 +0200
+Message-Id: <20220405070409.361282307@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,92 +48,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ben Dooks <ben.dooks@codethink.co.uk>
+From: Chao Yu <chao@kernel.org>
 
-commit a382c757ec5ef83137a86125f43a4c43dc2ab50b upstream.
+commit 5b5b4f85b01604389f7a0f11ef180a725bf0e2d4 upstream.
 
-The fu740 PCIe core does not probe any devices on the SiFive Unmatched
-board without this fix (or having U-Boot explicitly start the PCIe via
-either boot-script or user command). The fix is to start the link at
-2.5GT/s speeds and once the link is up then change the maximum speed back
-to the default.
+As bughunter reported in bugzilla:
 
-The U-Boot driver claims to set the link-speed to 2.5GT/s to get the probe
-to work (and U-Boot does print link up at 2.5GT/s) in the following code:
-https://source.denx.de/u-boot/u-boot/-/blob/master/drivers/pci/pcie_dw_sifive.c?id=v2022.01#L271
+https://bugzilla.kernel.org/show_bug.cgi?id=215709
 
-Link: https://lore.kernel.org/r/20220318152430.526320-1-ben.dooks@codethink.co.uk
-Signed-off-by: Ben Dooks <ben.dooks@codethink.co.uk>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
-Signed-off-by: Dimitri John Ledkov <dimitri.ledkov@canonical.com>
+f2fs may hang when mounting a fuzzed image, the dmesg shows as below:
+
+__filemap_get_folio+0x3a9/0x590
+pagecache_get_page+0x18/0x60
+__get_meta_page+0x95/0x460 [f2fs]
+get_checkpoint_version+0x2a/0x1e0 [f2fs]
+validate_checkpoint+0x8e/0x2a0 [f2fs]
+f2fs_get_valid_checkpoint+0xd0/0x620 [f2fs]
+f2fs_fill_super+0xc01/0x1d40 [f2fs]
+mount_bdev+0x18a/0x1c0
+f2fs_mount+0x15/0x20 [f2fs]
+legacy_get_tree+0x28/0x50
+vfs_get_tree+0x27/0xc0
+path_mount+0x480/0xaa0
+do_mount+0x7c/0xa0
+__x64_sys_mount+0x8b/0xe0
+do_syscall_64+0x38/0xc0
+entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+The root cause is cp_pack_total_block_count field in checkpoint was fuzzed
+to one, as calcuated, two cp pack block locates in the same block address,
+so then read latter cp pack block, it will block on the page lock due to
+the lock has already held when reading previous cp pack block, fix it by
+adding sanity check for cp_pack_total_block_count.
+
+Cc: stable@vger.kernel.org
+Signed-off-by: Chao Yu <chao.yu@oppo.com>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/controller/dwc/pcie-fu740.c |   51 +++++++++++++++++++++++++++++++-
- 1 file changed, 50 insertions(+), 1 deletion(-)
+ fs/f2fs/checkpoint.c |    8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
---- a/drivers/pci/controller/dwc/pcie-fu740.c
-+++ b/drivers/pci/controller/dwc/pcie-fu740.c
-@@ -181,10 +181,59 @@ static int fu740_pcie_start_link(struct
- {
- 	struct device *dev = pci->dev;
- 	struct fu740_pcie *afp = dev_get_drvdata(dev);
-+	u8 cap_exp = dw_pcie_find_capability(pci, PCI_CAP_ID_EXP);
-+	int ret;
-+	u32 orig, tmp;
-+
-+	/*
-+	 * Force 2.5GT/s when starting the link, due to some devices not
-+	 * probing at higher speeds. This happens with the PCIe switch
-+	 * on the Unmatched board when U-Boot has not initialised the PCIe.
-+	 * The fix in U-Boot is to force 2.5GT/s, which then gets cleared
-+	 * by the soft reset done by this driver.
-+	 */
-+	dev_dbg(dev, "cap_exp at %x\n", cap_exp);
-+	dw_pcie_dbi_ro_wr_en(pci);
-+
-+	tmp = dw_pcie_readl_dbi(pci, cap_exp + PCI_EXP_LNKCAP);
-+	orig = tmp & PCI_EXP_LNKCAP_SLS;
-+	tmp &= ~PCI_EXP_LNKCAP_SLS;
-+	tmp |= PCI_EXP_LNKCAP_SLS_2_5GB;
-+	dw_pcie_writel_dbi(pci, cap_exp + PCI_EXP_LNKCAP, tmp);
+--- a/fs/f2fs/checkpoint.c
++++ b/fs/f2fs/checkpoint.c
+@@ -864,6 +864,7 @@ static struct page *validate_checkpoint(
+ 	struct page *cp_page_1 = NULL, *cp_page_2 = NULL;
+ 	struct f2fs_checkpoint *cp_block = NULL;
+ 	unsigned long long cur_version = 0, pre_version = 0;
++	unsigned int cp_blocks;
+ 	int err;
  
- 	/* Enable LTSSM */
- 	writel_relaxed(0x1, afp->mgmt_base + PCIEX8MGMT_APP_LTSSM_ENABLE);
--	return 0;
-+
-+	ret = dw_pcie_wait_for_link(pci);
-+	if (ret) {
-+		dev_err(dev, "error: link did not start\n");
-+		goto err;
-+	}
-+
-+	tmp = dw_pcie_readl_dbi(pci, cap_exp + PCI_EXP_LNKCAP);
-+	if ((tmp & PCI_EXP_LNKCAP_SLS) != orig) {
-+		dev_dbg(dev, "changing speed back to original\n");
-+
-+		tmp &= ~PCI_EXP_LNKCAP_SLS;
-+		tmp |= orig;
-+		dw_pcie_writel_dbi(pci, cap_exp + PCI_EXP_LNKCAP, tmp);
-+
-+		tmp = dw_pcie_readl_dbi(pci, PCIE_LINK_WIDTH_SPEED_CONTROL);
-+		tmp |= PORT_LOGIC_SPEED_CHANGE;
-+		dw_pcie_writel_dbi(pci, PCIE_LINK_WIDTH_SPEED_CONTROL, tmp);
-+
-+		ret = dw_pcie_wait_for_link(pci);
-+		if (ret) {
-+			dev_err(dev, "error: link did not start at new speed\n");
-+			goto err;
-+		}
-+	}
-+
-+	ret = 0;
-+err:
-+	WARN_ON(ret);	/* we assume that errors will be very rare */
-+	dw_pcie_dbi_ro_wr_dis(pci);
-+	return ret;
- }
+ 	err = get_checkpoint_version(sbi, cp_addr, &cp_block,
+@@ -871,15 +872,16 @@ static struct page *validate_checkpoint(
+ 	if (err)
+ 		return NULL;
  
- static int fu740_pcie_host_init(struct pcie_port *pp)
+-	if (le32_to_cpu(cp_block->cp_pack_total_block_count) >
+-					sbi->blocks_per_seg) {
++	cp_blocks = le32_to_cpu(cp_block->cp_pack_total_block_count);
++
++	if (cp_blocks > sbi->blocks_per_seg || cp_blocks <= F2FS_CP_PACKS) {
+ 		f2fs_warn(sbi, "invalid cp_pack_total_block_count:%u",
+ 			  le32_to_cpu(cp_block->cp_pack_total_block_count));
+ 		goto invalid_cp;
+ 	}
+ 	pre_version = *version;
+ 
+-	cp_addr += le32_to_cpu(cp_block->cp_pack_total_block_count) - 1;
++	cp_addr += cp_blocks - 1;
+ 	err = get_checkpoint_version(sbi, cp_addr, &cp_block,
+ 					&cp_page_2, version);
+ 	if (err)
 
 
