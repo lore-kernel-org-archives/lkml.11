@@ -2,92 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFC02C3527D
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:57:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BC8CC35294
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:57:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389242AbiDEV7F (ORCPT
+        id S1389421AbiDEV7i (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:59:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43772 "EHLO
+        Tue, 5 Apr 2022 17:59:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354933AbiDEKQg (ORCPT
+        with ESMTP id S1356147AbiDEKW7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:16:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CEF321818;
-        Tue,  5 Apr 2022 03:04:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Tue, 5 Apr 2022 06:22:59 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2858B9183;
+        Tue,  5 Apr 2022 03:06:46 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 9BD8E1F745;
+        Tue,  5 Apr 2022 10:06:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1649153205; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=vpObifm5DSctizJM8OeL9kpLlfhSCbsrcseeF2Q5+yo=;
+        b=kxKF7Gr3VkFfMDVJB2BQGNr0DUHm5fXW4A1EERNzAiyy+teXuTBVeHqLES70Y5Nbpba7fv
+        Zv4hOY34D8sue7bBeBvFC6E3L7AG/u0w6WBIFFRucwLrNkmLCf5xamQqEMtOFvgm3jVOar
+        Obxey7rfGRMs4QQODn7t/6GQ0Ad7Pso=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1649153205;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=vpObifm5DSctizJM8OeL9kpLlfhSCbsrcseeF2Q5+yo=;
+        b=3Yvr8I4To6r6XUAepRGNceJ8d+HrlMBC3+wjMoiWayPb53Y1pfYVu1kxilyFSSI69FxHnN
+        zsS2mVlHkCwtiPAQ==
+Received: from murzim.suse.de (murzim.suse.de [10.160.4.192])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 46684B81C8B;
-        Tue,  5 Apr 2022 10:04:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B70F0C385A2;
-        Tue,  5 Apr 2022 10:04:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153046;
-        bh=kSdGlvD8ZiXBvi/chcD7vZ/P+j4sw/QMAyDaUs8nof0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aGY7p+eBgZ7lMZjQjMgxyG1HC7bj/y7amrRs8X6VsChmazMBegYiyShzWqaFOmu2g
-         43azgj8Vs8qdHhEz+k74CXEOypfldziT7puyzVexVJ83LKYnaUT604/qai+GqOTw7T
-         qTEiqlXmG86dvcrb4pHJEomAYuW22lq/q8vDCtC4=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liam Beguin <liambeguin@gmail.com>,
-        Peter Rosin <peda@axentia.se>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5.10 034/599] iio: inkern: apply consumer scale on IIO_VAL_INT cases
-Date:   Tue,  5 Apr 2022 09:25:28 +0200
-Message-Id: <20220405070259.838133693@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by relay2.suse.de (Postfix) with ESMTPS id 93470A3B88;
+        Tue,  5 Apr 2022 10:06:45 +0000 (UTC)
+Date:   Tue, 5 Apr 2022 12:06:45 +0200 (CEST)
+From:   Richard Biener <rguenther@suse.de>
+To:     Borislav Petkov <bp@alien8.de>
+cc:     linux-toolchains@vger.kernel.org, Michael Matz <matz@suse.de>,
+        lkml <linux-kernel@vger.kernel.org>
+Subject: Re: older gccs and case labels producing integer constants
+In-Reply-To: <7o5nn52-nqn1-oo13-s6o9-59r85r91o768@fhfr.qr>
+Message-ID: <onrq8p1-582o-6rs9-r682-rs9sqoq7sq6p@fhfr.qr>
+References: <YkwQ6+tIH8GQpuct@zn.tnic> <7o5nn52-nqn1-oo13-s6o9-59r85r91o768@fhfr.qr>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/mixed; boundary="-1609908220-486574334-1649153205=:27745"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liam Beguin <liambeguin@gmail.com>
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-commit 1bca97ff95c732a516ebb68da72814194980e0a5 upstream.
+---1609908220-486574334-1649153205=:27745
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
 
-When a consumer calls iio_read_channel_processed() and the channel has
-an integer scale, the scale channel scale is applied and the processed
-value is returned as expected.
+On Tue, 5 Apr 2022, Richard Biener wrote:
 
-On the other hand, if the consumer calls iio_convert_raw_to_processed()
-the scaling factor requested by the consumer is not applied.
+> On Tue, 5 Apr 2022, Borislav Petkov wrote:
+> 
+> > Hi folks,
+> > 
+> > I'm starting to see failures like this on allmodconfig builds:
+> > 
+> > sound/usb/midi.c: In function ‘snd_usbmidi_out_endpoint_create’:
+> > sound/usb/midi.c:1389:2: error: case label does not reduce to an integer constant
+> >   case (((0xfc08) << 16) | (0x0101)):
+> >   ^~~~
+> > 
+> > (The case statement is a macro but it evaluates to what I have there)
+> > 
+> > and that thing fails with
+> > 
+> > $ gcc --version
+> > gcc (SUSE Linux) 7.5.0
+> > 
+> > although it doesn't have any problems building with newer compilers.
+> > 
+> > I'm presuming older gccs consider those case statements signed ints and
+> > the following fixes it:
+> > 
+> >   case ((((unsigned int)0xfc08) << 16) | (0x0101)):
+> > 
+> > and I guess we can whack the couple of occurrences but what I'm
+> > wondering is why does this work with newer gccs?
+> 
+> I tried
+> 
+> void foo (int i)
+> {
+>   switch (i)
+>     {
+>       case (((0xfc08) << 16) | (0x0101)):;
+>     }
+> }
+> 
+> also with 'unsigned int i' but that's accepted with GCC 7.  So
+> what do you switch on?
 
-This for example causes the consumer to process mV when expecting uV.
-Make sure to always apply the scaling factor requested by the consumer.
+Aha, also
 
-Fixes: 48e44ce0f881 ("iio:inkern: Add function to read the processed value")
-Signed-off-by: Liam Beguin <liambeguin@gmail.com>
-Reviewed-by: Peter Rosin <peda@axentia.se>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Link: https://lore.kernel.org/r/20220108205319.2046348-2-liambeguin@gmail.com
-Cc: <Stable@vger.kernel.org>
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/iio/inkern.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> gcc-7 -S t.c -std=c11 -pedantic -pedantic-errors
+t.c: In function 'foo':
+t.c:6:7: error: case label is not an integer constant expression 
+[-Wpedantic]
+       case USB_ID(0xfc08, 0x0101):;
+       ^~~~
 
---- a/drivers/iio/inkern.c
-+++ b/drivers/iio/inkern.c
-@@ -582,7 +582,7 @@ static int iio_convert_raw_to_processed_
- 
- 	switch (scale_type) {
- 	case IIO_VAL_INT:
--		*processed = raw64 * scale_val;
-+		*processed = raw64 * scale_val * scale;
- 		break;
- 	case IIO_VAL_INT_PLUS_MICRO:
- 		if (scale_val2 < 0)
+aber _nur_ mit -std=c11 (oder c99, aber nicht c89) und -pedantic 
+-pedantic-errors.
 
+#define USB_ID(v,p) (((v)<<16)|(p))
+void foo (unsigned int *i)
+{
+  switch (*i)
+    {
+      case USB_ID(0xfc08, 0x0101):;
+    }
+}
 
+Wird auch mit gcc 11 rejected.  Kanns sein dass mit gcc 7 andere
+compiler flags genommen werden?
+
+-- 
+Richard Biener <rguenther@suse.de>
+SUSE Software Solutions Germany GmbH, Maxfeldstrasse 5, 90409 Nuernberg,
+Germany; GF: Ivo Totev; HRB 36809 (AG Nuernberg)
+---1609908220-486574334-1649153205=:27745--
