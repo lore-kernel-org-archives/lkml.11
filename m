@@ -2,226 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65B4EC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:17:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AD54C43219
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:18:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242015AbiDEOLv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:11:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40174 "EHLO
+        id S1344437AbiDEOMy (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 10:12:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236210AbiDEJbN (ORCPT
+        with ESMTP id S236227AbiDEJbN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 05:31:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBAD76437;
-        Tue,  5 Apr 2022 02:18:39 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A143236686;
+        Tue,  5 Apr 2022 02:18:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 56C2861645;
-        Tue,  5 Apr 2022 09:18:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C77AC385A7;
-        Tue,  5 Apr 2022 09:18:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649150318;
-        bh=w8WO3r1/6EvuoSLPQGBL9Us7xTBObOlHCa40AeXtIeY=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5D210B81BBF;
+        Tue,  5 Apr 2022 09:18:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE8F8C385A2;
+        Tue,  5 Apr 2022 09:18:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649150323;
+        bh=QLUbeQL0nE8++80CEN0No5WFiksOD40PoaaxYQ/2MMM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rqBg3o8zToypF97gy4CjO10o8frcXxeLLjvkd3R7JshwyzFjX3z891APWKWfN4sly
-         T9hfedvmirq5B04qZHDp2J6U01Wd7QGv5SdLcZ2C1+PdaTYZpNIyhK87PGsM3GhFQK
-         xOej3YV44ze7bB3PWJ5UvycQuMWCKhMsOcwPjQVqvPUDr+MqEDhApCb6jhGfK00hAE
-         1YXcpmD18TaPIIcR4F/0i0vc4gMWDj7RYzDU67//ZmDjpceunfuQE3vakSp52t4eHQ
-         nuwvVtRL4in/h4DI+1s+MH6V4eGNDY6oXnAzPWMr37N9aL2KEPI13U8CQgsNfyP0ZA
-         jKC/r0v9HgwpA==
-From:   Arnd Bergmann <arnd@kernel.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Russell King <linux@armlinux.org.uk>,
-        Hartley Sweeten <hsweeten@visionengravers.com>,
-        Alexander Sverdlin <alexander.sverdlin@gmail.com>,
-        Hubert Feurstein <hubert.feurstein@contec.at>,
-        Lukasz Majewski <lukma@denx.de>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Imre Kaloz <kaloz@openwrt.org>,
-        Krzysztof Halasa <khalasa@piap.pl>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Simtec Linux Team <linux@simtec.co.uk>,
-        Liviu Dudau <liviu.dudau@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Stephen Boyd <sboyd@kernel.org>,
+        b=YVR0bw903CtRPbrDPXePZSEOCxig0VaXXkxgEPM+1GV8Y/bdjJVqHzh7BK7q+C7C4
+         6qQb2B4oSOFtnLeVc1r6dUNGZK1xsp0E77xGviw78xqO5EAOvYL+5dJM7oJCej1r5E
+         9mE8UBct853oTeJ6em8znMbv3HZU8oF1oy1p0HqE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Biju Das <biju.das.jz@bp.renesas.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
         Geert Uytterhoeven <geert+renesas@glider.be>,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, patches@opensource.cirrus.com,
-        Jason Cooper <jason@lakedaemon.net>
-Subject: [PATCH 06/12] ARM: dove: multiplatform support
-Date:   Tue,  5 Apr 2022 11:17:44 +0200
-Message-Id: <20220405091750.3076973-7-arnd@kernel.org>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20220405091750.3076973-1-arnd@kernel.org>
-References: <20220405091750.3076973-1-arnd@kernel.org>
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 017/913] spi: Fix invalid sgs value
+Date:   Tue,  5 Apr 2022 09:17:59 +0200
+Message-Id: <20220405070340.330823801@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+From: Biju Das <biju.das.jz@bp.renesas.com>
 
-The dove platform is now ready to be enabled for multiplatform
-support, this patch does the switch over by modifying the Kconfig file,
-the defconfig and removing the last mach/*.h header that becomes obsolete
-with this.
+[ Upstream commit 1a4e53d2fc4f68aa654ad96d13ad042e1a8e8a7d ]
 
-This work was originally done in 2015 as all the ARMv7 machiens
-gove moved over to multiplatform builds, but at the time it conflicted
-with some patches that Russell was trying to upstream, so we
-left it at that.
+max_seg_size is unsigned int and it can have a value up to 2^32
+(for eg:-RZ_DMAC driver sets dma_set_max_seg_size as U32_MAX)
+When this value is used in min_t() as an integer type, it becomes
+-1 and the value of sgs becomes 0.
 
-I hope that there is no longer a need to keep dove separate from the
-rest, so we can either add it to the other ARMv7 platforms, or just
-replace it with the DT based platform code for the same hardware
-in mach-mvebu and remove mach-dove entirely.
+Fix this issue by replacing the 'int' data type with 'unsigned int'
+in min_t().
 
-Acked-by: Andrew Lunn <andrew@lunn.ch>
-Cc: Russell King <linux@armlinux.org.uk>
-Cc: Jason Cooper <jason@lakedaemon.net>
-Cc: Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
-Cc: Gregory Clement <gregory.clement@bootlin.com>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+Reviewed-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Link: https://lore.kernel.org/r/20220307184843.9994-1-biju.das.jz@bp.renesas.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/Kconfig                             | 14 --------
- arch/arm/configs/dove_defconfig              |  2 ++
- arch/arm/mach-dove/Kconfig                   | 16 ++++++---
- arch/arm/mach-dove/Makefile                  |  2 ++
- arch/arm/mach-dove/include/mach/uncompress.h | 34 --------------------
- 5 files changed, 16 insertions(+), 52 deletions(-)
- delete mode 100644 arch/arm/mach-dove/include/mach/uncompress.h
+ drivers/spi/spi.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 2bd611beefe1..faf696173af7 100644
---- a/arch/arm/Kconfig
-+++ b/arch/arm/Kconfig
-@@ -383,20 +383,6 @@ config ARCH_IXP4XX
- 	help
- 	  Support for Intel's IXP4XX (XScale) family of processors.
+diff --git a/drivers/spi/spi.c b/drivers/spi/spi.c
+index a42b9e8521ce..c7c8d13b2f83 100644
+--- a/drivers/spi/spi.c
++++ b/drivers/spi/spi.c
+@@ -942,10 +942,10 @@ int spi_map_buf(struct spi_controller *ctlr, struct device *dev,
+ 	int i, ret;
  
--config ARCH_DOVE
--	bool "Marvell Dove"
--	select CPU_PJ4
--	select GPIOLIB
--	select HAVE_PCI
--	select MVEBU_MBUS
--	select PINCTRL
--	select PINCTRL_DOVE
--	select PLAT_ORION_LEGACY
--	select SPARSE_IRQ
--	select PM_GENERIC_DOMAINS if PM
--	help
--	  Support for the Marvell Dove SoC 88AP510
--
- config ARCH_PXA
- 	bool "PXA2xx/PXA3xx-based"
- 	select ARCH_MTD_XIP
-diff --git a/arch/arm/configs/dove_defconfig b/arch/arm/configs/dove_defconfig
-index 33074fdab2ea..f8fb4758f80d 100644
---- a/arch/arm/configs/dove_defconfig
-+++ b/arch/arm/configs/dove_defconfig
-@@ -8,6 +8,8 @@ CONFIG_MODULES=y
- CONFIG_MODULE_UNLOAD=y
- # CONFIG_BLK_DEV_BSG is not set
- CONFIG_PARTITION_ADVANCED=y
-+# CONFIG_ARCH_MULTI_V6 is not set
-+CONFIG_ARCH_MULTI_V7=y
- CONFIG_ARCH_DOVE=y
- CONFIG_MACH_DOVE_DB=y
- CONFIG_MACH_CM_A510=y
-diff --git a/arch/arm/mach-dove/Kconfig b/arch/arm/mach-dove/Kconfig
-index 7747fe64420a..c30c69c664ea 100644
---- a/arch/arm/mach-dove/Kconfig
-+++ b/arch/arm/mach-dove/Kconfig
-@@ -1,7 +1,17 @@
- # SPDX-License-Identifier: GPL-2.0
--if ARCH_DOVE
-+menuconfig ARCH_DOVE
-+	bool "Marvell Dove" if ARCH_MULTI_V7
-+	select CPU_PJ4
-+	select GPIOLIB
-+	select MVEBU_MBUS
-+	select PINCTRL
-+	select PINCTRL_DOVE
-+	select PLAT_ORION_LEGACY
-+	select PM_GENERIC_DOMAINS if PM
-+	help
-+	  Support for the Marvell Dove SoC 88AP510
- 
--menu "Marvell Dove Implementations"
-+if ARCH_DOVE
- 
- config DOVE_LEGACY
- 	bool
-@@ -21,6 +31,4 @@ config MACH_CM_A510
- 	  Say 'Y' here if you want your kernel to support the
- 	  CompuLab CM-A510 Board.
- 
--endmenu
--
- endif
-diff --git a/arch/arm/mach-dove/Makefile b/arch/arm/mach-dove/Makefile
-index cdf163cab738..e83f6492834d 100644
---- a/arch/arm/mach-dove/Makefile
-+++ b/arch/arm/mach-dove/Makefile
-@@ -1,4 +1,6 @@
- # SPDX-License-Identifier: GPL-2.0
-+ccflags-$(CONFIG_ARCH_MULTIPLATFORM) := -I$(srctree)/arch/arm/plat-orion/include
-+
- obj-y				+= common.o
- obj-$(CONFIG_DOVE_LEGACY)	+= irq.o mpp.o
- obj-$(CONFIG_PCI)		+= pcie.o
-diff --git a/arch/arm/mach-dove/include/mach/uncompress.h b/arch/arm/mach-dove/include/mach/uncompress.h
-deleted file mode 100644
-index ddf873f35e2b..000000000000
---- a/arch/arm/mach-dove/include/mach/uncompress.h
-+++ /dev/null
-@@ -1,34 +0,0 @@
--/*
-- * This file is licensed under the terms of the GNU General Public
-- * License version 2.  This program is licensed "as is" without any
-- * warranty of any kind, whether express or implied.
-- */
--
--#define UART0_PHYS_BASE (0xf1000000 + 0x12000)
--
--#define UART_THR ((volatile unsigned char *)(UART0_PHYS_BASE + 0x0))
--#define UART_LSR ((volatile unsigned char *)(UART0_PHYS_BASE + 0x14))
--
--#define LSR_THRE	0x20
--
--static inline void putc(const char c)
--{
--	int i;
--
--	for (i = 0; i < 0x1000; i++) {
--		/* Transmit fifo not full? */
--		if (*UART_LSR & LSR_THRE)
--			break;
--	}
--
--	*UART_THR = c;
--}
--
--static inline void flush(void)
--{
--}
--
--/*
-- * nothing to do
-- */
--#define arch_decomp_setup()
+ 	if (vmalloced_buf || kmap_buf) {
+-		desc_len = min_t(int, max_seg_size, PAGE_SIZE);
++		desc_len = min_t(unsigned int, max_seg_size, PAGE_SIZE);
+ 		sgs = DIV_ROUND_UP(len + offset_in_page(buf), desc_len);
+ 	} else if (virt_addr_valid(buf)) {
+-		desc_len = min_t(int, max_seg_size, ctlr->max_dma_len);
++		desc_len = min_t(unsigned int, max_seg_size, ctlr->max_dma_len);
+ 		sgs = DIV_ROUND_UP(len, desc_len);
+ 	} else {
+ 		return -EINVAL;
 -- 
-2.29.2
+2.34.1
+
+
 
