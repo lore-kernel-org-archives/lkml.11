@@ -2,126 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AA3AC41535
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:02:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B823C3527A
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:02:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1844567AbiDFBtn (ORCPT
+        id S1447557AbiDFBzJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:49:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43202 "EHLO
+        Tue, 5 Apr 2022 21:55:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354633AbiDEKO5 (ORCPT
+        with ESMTP id S1573578AbiDETW7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:14:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B774949915;
-        Tue,  5 Apr 2022 03:01:50 -0700 (PDT)
+        Tue, 5 Apr 2022 15:22:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0F4748E4C;
+        Tue,  5 Apr 2022 12:21:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 77D84B81C8B;
-        Tue,  5 Apr 2022 10:01:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8CF0C385A2;
-        Tue,  5 Apr 2022 10:01:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152908;
-        bh=E/V8qGzLRoFzJuYpZWUx/E60yGc/iIh6mMdRxNsZPbs=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 608E861899;
+        Tue,  5 Apr 2022 19:21:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2943AC385A3;
+        Tue,  5 Apr 2022 19:20:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649186459;
+        bh=VuAetinbMIJ3jeBAT3F1PDyYDvpSu4GO847Nw/6AauI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GgceHJx7grJ3SiQdT7TDRqFwWz7edKuM8bTH3rj224P/jE4mv1G8f9EevkXGt3XNA
-         0MiycCOJT3yUPDPrtu9rO77ipgtKBGL+01+DCJtfs7eLdqYhjUNZkTmgSWt1FJDigp
-         HMfuEaJ1MhYBo0fqIrOiBIPQ6g5+4ihvy9x7Rx4Y=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Alexander Usyskin <alexander.usyskin@intel.com>,
-        Tomas Winkler <tomas.winkler@intel.com>
-Subject: [PATCH 5.10 031/599] mei: avoid iterator usage outside of list_for_each_entry
-Date:   Tue,  5 Apr 2022 09:25:25 +0200
-Message-Id: <20220405070259.747908078@linuxfoundation.org>
+        b=EV9WI8Ws5j3ZBLTudp20Epsy/TrTwGPL8CNzVCuRB/h6ET739GafztHdfWyE63F+G
+         QMkCTG8y8xslilsSfeVFmZb+NeKEvILYI9xZoVtZ0o0bPBAYbV/usa+jfOd1bTRCII
+         RqTCFexLXjQs50YQzwG3fKRxVqF/RZTTJn2jWrHt1p86OuBQKfe/JZtBH3s7TxvCyR
+         q8mZSr8ZYBi+zbHhWNDEMk4/fL8NWA0e3fVbEhDI5u3uh8Fe5W0TyCrlvZtq7UFRTE
+         4+6I1l+DEaBdgpeeGEgatDnXiWLsESQe8ozUJAUNJjhRxp9EaKCgeebofDmB9w7tEQ
+         WzTUdijRPHRyw==
+From:   Jeff Layton <jlayton@kernel.org>
+To:     idryomov@gmail.com, xiubli@redhat.com
+Cc:     ceph-devel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lhenriques@suse.de
+Subject: [PATCH v13 30/59] ceph: pass the request to parse_reply_info_readdir()
+Date:   Tue,  5 Apr 2022 15:20:01 -0400
+Message-Id: <20220405192030.178326-31-jlayton@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+In-Reply-To: <20220405192030.178326-1-jlayton@kernel.org>
+References: <20220405192030.178326-1-jlayton@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Usyskin <alexander.usyskin@intel.com>
+From: Xiubo Li <xiubli@redhat.com>
 
-commit c10187b1c5ebb8681ca467ab7b0ded5ea415d258 upstream.
+Instead of passing just the r_reply_info to the readdir reply parser,
+pass the request pointer directly instead. This will facilitate
+implementing readdir on fscrypted directories.
 
-Usage of the iterator outside of the list_for_each_entry
-is considered harmful. https://lkml.org/lkml/2022/2/17/1032
-
-Do not reference the loop variable outside of the loop,
-by rearranging the orders of execution.
-Instead of performing search loop and checking outside the loop
-if the end of the list was hit and no matching element was found,
-the execution is performed inside the loop upon a successful match
-followed by a goto statement to the next step,
-therefore no condition has to be performed after the loop has ended.
-
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Alexander Usyskin <alexander.usyskin@intel.com>
-Signed-off-by: Tomas Winkler <tomas.winkler@intel.com>
-Link: https://lore.kernel.org/r/20220308095926.300412-1-tomas.winkler@intel.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Xiubo Li <xiubli@redhat.com>
+Signed-off-by: Jeff Layton <jlayton@kernel.org>
 ---
- drivers/misc/mei/interrupt.c |   35 +++++++++++++++--------------------
- 1 file changed, 15 insertions(+), 20 deletions(-)
+ fs/ceph/mds_client.c | 22 ++++++++++++----------
+ 1 file changed, 12 insertions(+), 10 deletions(-)
 
---- a/drivers/misc/mei/interrupt.c
-+++ b/drivers/misc/mei/interrupt.c
-@@ -427,31 +427,26 @@ int mei_irq_read_handler(struct mei_devi
- 	list_for_each_entry(cl, &dev->file_list, link) {
- 		if (mei_cl_hbm_equal(cl, mei_hdr)) {
- 			cl_dbg(dev, cl, "got a message\n");
--			break;
-+			ret = mei_cl_irq_read_msg(cl, mei_hdr, meta_hdr, cmpl_list);
-+			goto reset_slots;
- 		}
+diff --git a/fs/ceph/mds_client.c b/fs/ceph/mds_client.c
+index 750a67643850..0a7f18d4df73 100644
+--- a/fs/ceph/mds_client.c
++++ b/fs/ceph/mds_client.c
+@@ -406,9 +406,10 @@ static int parse_reply_info_trace(void **p, void *end,
+  * parse readdir results
+  */
+ static int parse_reply_info_readdir(void **p, void *end,
+-				struct ceph_mds_reply_info_parsed *info,
+-				u64 features)
++				    struct ceph_mds_request *req,
++				    u64 features)
+ {
++	struct ceph_mds_reply_info_parsed *info = &req->r_reply_info;
+ 	u32 num, i = 0;
+ 	int err;
+ 
+@@ -650,15 +651,16 @@ static int parse_reply_info_getvxattr(void **p, void *end,
+  * parse extra results
+  */
+ static int parse_reply_info_extra(void **p, void *end,
+-				  struct ceph_mds_reply_info_parsed *info,
++				  struct ceph_mds_request *req,
+ 				  u64 features, struct ceph_mds_session *s)
+ {
++	struct ceph_mds_reply_info_parsed *info = &req->r_reply_info;
+ 	u32 op = le32_to_cpu(info->head->op);
+ 
+ 	if (op == CEPH_MDS_OP_GETFILELOCK)
+ 		return parse_reply_info_filelock(p, end, info, features);
+ 	else if (op == CEPH_MDS_OP_READDIR || op == CEPH_MDS_OP_LSSNAP)
+-		return parse_reply_info_readdir(p, end, info, features);
++		return parse_reply_info_readdir(p, end, req, features);
+ 	else if (op == CEPH_MDS_OP_CREATE)
+ 		return parse_reply_info_create(p, end, info, features, s);
+ 	else if (op == CEPH_MDS_OP_GETVXATTR)
+@@ -671,9 +673,9 @@ static int parse_reply_info_extra(void **p, void *end,
+  * parse entire mds reply
+  */
+ static int parse_reply_info(struct ceph_mds_session *s, struct ceph_msg *msg,
+-			    struct ceph_mds_reply_info_parsed *info,
+-			    u64 features)
++			    struct ceph_mds_request *req, u64 features)
+ {
++	struct ceph_mds_reply_info_parsed *info = &req->r_reply_info;
+ 	void *p, *end;
+ 	u32 len;
+ 	int err;
+@@ -695,7 +697,7 @@ static int parse_reply_info(struct ceph_mds_session *s, struct ceph_msg *msg,
+ 	ceph_decode_32_safe(&p, end, len, bad);
+ 	if (len > 0) {
+ 		ceph_decode_need(&p, end, len, bad);
+-		err = parse_reply_info_extra(&p, p+len, info, features, s);
++		err = parse_reply_info_extra(&p, p+len, req, features, s);
+ 		if (err < 0)
+ 			goto out_bad;
+ 	}
+@@ -3440,14 +3442,14 @@ static void handle_reply(struct ceph_mds_session *session, struct ceph_msg *msg)
  	}
  
- 	/* if no recipient cl was found we assume corrupted header */
--	if (&cl->link == &dev->file_list) {
--		/* A message for not connected fixed address clients
--		 * should be silently discarded
--		 * On power down client may be force cleaned,
--		 * silently discard such messages
--		 */
--		if (hdr_is_fixed(mei_hdr) ||
--		    dev->dev_state == MEI_DEV_POWER_DOWN) {
--			mei_irq_discard_msg(dev, mei_hdr, mei_hdr->length);
--			ret = 0;
--			goto reset_slots;
--		}
--		dev_err(dev->dev, "no destination client found 0x%08X\n",
--				dev->rd_msg_hdr[0]);
--		ret = -EBADMSG;
--		goto end;
-+	/* A message for not connected fixed address clients
-+	 * should be silently discarded
-+	 * On power down client may be force cleaned,
-+	 * silently discard such messages
-+	 */
-+	if (hdr_is_fixed(mei_hdr) ||
-+	    dev->dev_state == MEI_DEV_POWER_DOWN) {
-+		mei_irq_discard_msg(dev, mei_hdr, mei_hdr->length);
-+		ret = 0;
-+		goto reset_slots;
- 	}
--
--	ret = mei_cl_irq_read_msg(cl, mei_hdr, meta_hdr, cmpl_list);
--
-+	dev_err(dev->dev, "no destination client found 0x%08X\n", dev->rd_msg_hdr[0]);
-+	ret = -EBADMSG;
-+	goto end;
+ 	dout("handle_reply tid %lld result %d\n", tid, result);
+-	rinfo = &req->r_reply_info;
+ 	if (test_bit(CEPHFS_FEATURE_REPLY_ENCODING, &session->s_features))
+-		err = parse_reply_info(session, msg, rinfo, (u64)-1);
++		err = parse_reply_info(session, msg, req, (u64)-1);
+ 	else
+-		err = parse_reply_info(session, msg, rinfo, session->s_con.peer_features);
++		err = parse_reply_info(session, msg, req, session->s_con.peer_features);
+ 	mutex_unlock(&mdsc->mutex);
  
- reset_slots:
- 	/* reset the number of slots and header */
-
+ 	/* Must find target inode outside of mutexes to avoid deadlocks */
++	rinfo = &req->r_reply_info;
+ 	if ((err >= 0) && rinfo->head->is_target) {
+ 		struct inode *in = xchg(&req->r_new_inode, NULL);
+ 		struct ceph_vino tvino = {
+-- 
+2.35.1
 
