@@ -2,186 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE9E3C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D27C5C433EF
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:53:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1452384AbiDFCud (ORCPT
+        id S1454592AbiDFCvA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:50:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46854 "EHLO
+        Tue, 5 Apr 2022 22:51:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1586505AbiDFABh (ORCPT
+        with ESMTP id S1586235AbiDFABM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 20:01:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E1EFC8BCA;
-        Tue,  5 Apr 2022 15:28:28 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2F0BBB81FF1;
-        Tue,  5 Apr 2022 22:28:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1284BC385A1;
-        Tue,  5 Apr 2022 22:28:24 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="pC3iclwo"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1649197703;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=hkyGk1AvLVX7ZRVfVHkCHtVHh0s6OJd2PrQtUh6w60g=;
-        b=pC3iclworp7SpzvFLpYNTwoovHeWrbXA+SG4WIF6BDNLXqIuRT2mIue0JzNr8y512V3VbY
-        tMIs2AlNGPbiXziBJg4lVMilyeAmw5lfddYwnIRmwOInfXvez9/57r7Qd+mtNbHOa0e+4W
-        R9dt7UXedOFjfHejuvBboGOuwFdAVro=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 3e43e3d3 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Tue, 5 Apr 2022 22:28:23 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     Kees Cook <keescook@chromium.org>, linux-hardening@vger.kernel.org,
-        linux-kernel@vger.kernel.org, PaX Team <pageexec@freemail.hu>
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>, stable@vger.kernel.org
-Subject: [PATCH v4] gcc-plugins: latent_entropy: use /dev/urandom
-Date:   Wed,  6 Apr 2022 00:28:15 +0200
-Message-Id: <20220405222815.21155-1-Jason@zx2c4.com>
-In-Reply-To: <CAHmME9pV4SdoSyMq4kax3w3Vu1nPxjO3faCZKq8d0RDo8t731g@mail.gmail.com>
-References: <CAHmME9pV4SdoSyMq4kax3w3Vu1nPxjO3faCZKq8d0RDo8t731g@mail.gmail.com>
+        Tue, 5 Apr 2022 20:01:12 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A9FE9BAF0
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 15:26:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649197599; x=1680733599;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=pW27kf6wGZKRVMIeWfA0Y9QPC3INAacHxabCny2Kt0o=;
+  b=eJwqEy6qWfmLCdkMS6go7DH6+xDH59/YEYAh9mTd03oeLxF12VG6jS3T
+   PWYZnglzbGedJ7XpXrZQd4/OcRlTci7405mwzE/7pHhm9x4BLGIVY0QW4
+   TbgDA3x2bAGB1ALX1u0jA8d6RFLWRNLl78uL+xUPClD7mZLQZWU1v13NP
+   YY8d9cShg9H78gRAss7sqP4sCXhmYePiv5jVb9XHndiFMv+xviAD8qnJN
+   tICpM3nAlrFaecY+KblfKOArtuH0mZPRkIo9lf71JSaJerGUBvgXWD7tO
+   X4vPgCoO+pDhtbp/FwB2eGyLHlumkzLVOvVvm3h7MK0IDxVcTjGKthEz3
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="240812303"
+X-IronPort-AV: E=Sophos;i="5.90,238,1643702400"; 
+   d="scan'208";a="240812303"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 15:26:38 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,238,1643702400"; 
+   d="scan'208";a="570123375"
+Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
+  by orsmga008.jf.intel.com with ESMTP; 05 Apr 2022 15:26:37 -0700
+Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nbrdE-0003p3-QW;
+        Tue, 05 Apr 2022 22:26:36 +0000
+Date:   Wed, 06 Apr 2022 06:25:40 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "x86-ml" <x86@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [tip:sched/core] BUILD SUCCESS
+ 089c02ae2771a14af2928c59c56abfb9b885a8d7
+Message-ID: <624cc1e4.e2KxaWTIymi80O2A%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-While the latent entropy plugin mostly doesn't derive entropy from
-get_random_const() for measuring the call graph, when __latent_entropy is
-applied to a constant, then it's initialized statically to output from
-get_random_const(). In that case, this data is derived from a 64-bit
-seed, which means a buffer of 512 bits doesn't really have that amount
-of compile-time entropy.
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git sched/core
+branch HEAD: 089c02ae2771a14af2928c59c56abfb9b885a8d7  ftrace: Use preemption model accessors for trace header printout
 
-This patch fixes that shortcoming by just buffering chunks of
-/dev/urandom output and doling it out as requested.
+elapsed time: 760m
 
-At the same time, it's important that we don't break the use of
--frandom-seed, for people who want the runtime benefits of the latent
-entropy plugin, while still having compile-time determinism. In that
-case, we detect whether gcc's set_random_seed() has been called by
-making a call to get_random_seed(noinit=true) in the plugin init
-function, which is called after set_random_seed() is called but before
-anything that calls get_random_seed(noinit=false), and seeing if it's
-zero or not. If it's not zero, we're in deterministic mode, and so we
-just generate numbers with a basic xorshift prng.
+configs tested: 90
+configs skipped: 3
 
-[Note that we don't detect if -frandom-seed is being used using the
- documented local_tick variable, because it's assigned via:
-   local_tick = (unsigned) tv.tv_sec * 1000 + tv.tv_usec / 1000;
- which may well overflow and become -1 on its own, and so isn't
- reliable.]
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-Fixes: 38addce8b600 ("gcc-plugins: Add latent_entropy plugin")
-Cc: stable@vger.kernel.org
-Cc: PaX Team <pageexec@freemail.hu>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
----
-Changes v2->v4:
-- v4 is based on v2, not on v3, so:
-  * We're keeping the version string change, since Kees is going to
-    remove that anyway from everything all in one swoop, so better to
-    increment it as is the custom now, and let that patch later change
-    the way things are done.
-  * The xorshift prng is retained, because why not. It's faster and
-    produces less code.
-  * The get_random_seed(noinit=true) technique is used to detect whether
-    -frandom-seed is being used, rather than local_tick, because of the
-    overflow bug in local_tick.
-- The size of the buffer is reduced to 256 bytes, which not only is the
-  size which the kernel guarantees will never fail due to signals, but
-  also more closely fits the histogram of usage, according to an
-  allmodconfig.
-- Pipacs pointed out that gcc uses gcc_assert()/gcc_unreachable(), rather
-  than abort(), so switch to using that.
+gcc tested configs:
+arm64                               defconfig
+arm64                            allyesconfig
+arm                              allmodconfig
+arm                                 defconfig
+arm                              allyesconfig
+i386                          randconfig-c001
+arm                         lpc18xx_defconfig
+mips                         db1xxx_defconfig
+sh                           se7343_defconfig
+sh                         ap325rxa_defconfig
+arm                        shmobile_defconfig
+m68k                        mvme16x_defconfig
+riscv                            allmodconfig
+mips                  maltasmvp_eva_defconfig
+sh                             sh03_defconfig
+powerpc                         wii_defconfig
+arm                             ezx_defconfig
+sh                        edosk7760_defconfig
+powerpc                     stx_gp3_defconfig
+m68k                        mvme147_defconfig
+ia64                             allyesconfig
+mips                         cobalt_defconfig
+x86_64                        randconfig-c001
+arm                  randconfig-c002-20220405
+ia64                             allmodconfig
+ia64                                defconfig
+m68k                             allyesconfig
+m68k                             allmodconfig
+m68k                                defconfig
+nios2                               defconfig
+arc                              allyesconfig
+csky                                defconfig
+nios2                            allyesconfig
+alpha                               defconfig
+alpha                            allyesconfig
+h8300                            allyesconfig
+xtensa                           allyesconfig
+arc                                 defconfig
+sh                               allmodconfig
+s390                                defconfig
+s390                             allmodconfig
+parisc                              defconfig
+parisc64                            defconfig
+parisc                           allyesconfig
+s390                             allyesconfig
+sparc                               defconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+i386                                defconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                          allyesconfig
+powerpc                           allnoconfig
+powerpc                          allmodconfig
+i386                          randconfig-a012
+i386                          randconfig-a014
+i386                          randconfig-a016
+riscv                               defconfig
+riscv                    nommu_virt_defconfig
+riscv                          rv32_defconfig
+riscv                    nommu_k210_defconfig
+riscv                             allnoconfig
+riscv                            allyesconfig
+x86_64                    rhel-8.3-kselftests
+um                           x86_64_defconfig
+um                             i386_defconfig
+x86_64                          rhel-8.3-func
+x86_64                                  kexec
+x86_64                              defconfig
+x86_64                           allyesconfig
+x86_64                         rhel-8.3-kunit
+x86_64                               rhel-8.3
 
- scripts/gcc-plugins/latent_entropy_plugin.c | 46 +++++++++++++--------
- 1 file changed, 28 insertions(+), 18 deletions(-)
+clang tested configs:
+x86_64                        randconfig-c007
+i386                          randconfig-c001
+powerpc              randconfig-c003-20220405
+riscv                randconfig-c006-20220405
+mips                 randconfig-c004-20220405
+arm                  randconfig-c002-20220405
+x86_64                        randconfig-a005
+x86_64                        randconfig-a003
+x86_64                        randconfig-a001
+i386                          randconfig-a002
+i386                          randconfig-a006
+i386                          randconfig-a004
+x86_64                        randconfig-a012
+x86_64                        randconfig-a014
+x86_64                        randconfig-a016
+hexagon              randconfig-r045-20220405
+riscv                randconfig-r042-20220405
+hexagon              randconfig-r041-20220405
 
-diff --git a/scripts/gcc-plugins/latent_entropy_plugin.c b/scripts/gcc-plugins/latent_entropy_plugin.c
-index 589454bce930..0639fa4d48bd 100644
---- a/scripts/gcc-plugins/latent_entropy_plugin.c
-+++ b/scripts/gcc-plugins/latent_entropy_plugin.c
-@@ -82,29 +82,35 @@ __visible int plugin_is_GPL_compatible;
- static GTY(()) tree latent_entropy_decl;
- 
- static struct plugin_info latent_entropy_plugin_info = {
--	.version	= "201606141920vanilla",
-+	.version	= "202203311920vanilla",
- 	.help		= "disable\tturn off latent entropy instrumentation\n",
- };
- 
--static unsigned HOST_WIDE_INT seed;
--/*
-- * get_random_seed() (this is a GCC function) generates the seed.
-- * This is a simple random generator without any cryptographic security because
-- * the entropy doesn't come from here.
-- */
-+static unsigned HOST_WIDE_INT deterministic_seed;
-+static unsigned HOST_WIDE_INT rnd_buf[32];
-+static size_t rnd_idx = ARRAY_SIZE(rnd_buf);
-+static int urandom_fd = -1;
-+
- static unsigned HOST_WIDE_INT get_random_const(void)
- {
--	unsigned int i;
--	unsigned HOST_WIDE_INT ret = 0;
--
--	for (i = 0; i < 8 * sizeof(ret); i++) {
--		ret = (ret << 1) | (seed & 1);
--		seed >>= 1;
--		if (ret & 1)
--			seed ^= 0xD800000000000000ULL;
-+	if (deterministic_seed) {
-+		unsigned HOST_WIDE_INT w = deterministic_seed;
-+		w ^= w << 13;
-+		w ^= w >> 7;
-+		w ^= w << 17;
-+		deterministic_seed = w;
-+		return deterministic_seed;
- 	}
- 
--	return ret;
-+	if (urandom_fd < 0) {
-+		urandom_fd = open("/dev/urandom", O_RDONLY);
-+		gcc_assert(urandom_fd >= 0);
-+	}
-+	if (rnd_idx >= ARRAY_SIZE(rnd_buf)) {
-+		gcc_assert(read(urandom_fd, rnd_buf, sizeof(rnd_buf)) == sizeof(rnd_buf));
-+		rnd_idx = 0;
-+	}
-+	return rnd_buf[rnd_idx++];
- }
- 
- static tree tree_get_random_const(tree type)
-@@ -537,8 +543,6 @@ static void latent_entropy_start_unit(void *gcc_data __unused,
- 	tree type, id;
- 	int quals;
- 
--	seed = get_random_seed(false);
--
- 	if (in_lto_p)
- 		return;
- 
-@@ -573,6 +577,12 @@ __visible int plugin_init(struct plugin_name_args *plugin_info,
- 	const struct plugin_argument * const argv = plugin_info->argv;
- 	int i;
- 
-+	/*
-+	 * Call get_random_seed() with noinit=true, so that this returns
-+	 * 0 in the case where no seed has been passed via -frandom-seed.
-+	 */
-+	deterministic_seed = get_random_seed(true);
-+
- 	static const struct ggc_root_tab gt_ggc_r_gt_latent_entropy[] = {
- 		{
- 			.base = &latent_entropy_decl,
 -- 
-2.35.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
