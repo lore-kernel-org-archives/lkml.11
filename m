@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2B8AC41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85FDEC433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:25:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359458AbiDELTO (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:19:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34714 "EHLO
+        id S241638AbiDELXC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 07:23:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236772AbiDEIRC (ORCPT
+        with ESMTP id S242454AbiDEIsp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:17:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27531ADD4C;
-        Tue,  5 Apr 2022 01:04:35 -0700 (PDT)
+        Tue, 5 Apr 2022 04:48:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CBA44090C;
+        Tue,  5 Apr 2022 01:37:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4DB47B81BBF;
-        Tue,  5 Apr 2022 08:04:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A39E9C385A1;
-        Tue,  5 Apr 2022 08:04:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A2E9C61517;
+        Tue,  5 Apr 2022 08:37:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9DD2C385A0;
+        Tue,  5 Apr 2022 08:37:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145853;
-        bh=61JOj3rc2LxFRa0F8Npl5jgFEtUFrS1lDJOqF8od3/c=;
+        s=korg; t=1649147828;
+        bh=V+55jqt3IyHFsKthzO2N2W+UTW06gaSYVGI+xjHVEU4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GoAhyYlLbTBrls4SfVS67pW2sHCEgdzAKrADwJbXP6FmOpBgZFiQJZ9ZxGqSJmZRx
-         gYczMZq+Areh4Zc/INMndtkUC+JW61wddzbBEV8ZlpHwU/Frmdb7MVoqt+QekxWQLf
-         vPGygBPQt8OWQ6jrlT32J1BFDK9OKy8nUdmGoE0w=
+        b=Qg8ciYpzG5ela0lx6/SmrSifhiNdoZ19mW/7UDPS1kqdCnWpwtChphWnNxUA7533r
+         6kUR8ySKzWqXT5xTeXVvd7VcQxmnHUJReswfdwmnbvKsLYpVVyTxEhXUXvWHxKIjNx
+         7LRRO82FWTBtAYwNrfS8uBdjYn4JDER3QBtxk4wM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Thomas Bracht Laumann Jespersen <t@laumann.xyz>,
-        Rob Herring <robh@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0514/1126] scripts/dtc: Call pkg-config POSIXly correct
-Date:   Tue,  5 Apr 2022 09:21:01 +0200
-Message-Id: <20220405070422.715732029@linuxfoundation.org>
+        Mario Limonciello <Mario.Limonciello@amd.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        Huang Rui <ray.huang@amd.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>
+Subject: [PATCH 5.16 0136/1017] Revert "ACPI: Pass the same capabilities to the _OSC regardless of the query flag"
+Date:   Tue,  5 Apr 2022 09:17:29 +0200
+Message-Id: <20220405070358.239892744@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
-References: <20220405070407.513532867@linuxfoundation.org>
+In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
+References: <20220405070354.155796697@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,38 +52,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thomas Bracht Laumann Jespersen <t@laumann.xyz>
+From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-[ Upstream commit a8b309ce9760943486e0585285e0125588a31650 ]
+commit 2ca8e6285250c07a2e5a22ecbfd59b5a4ef73484 upstream.
 
-Running with POSIXLY_CORRECT=1 in the environment the scripts/dtc build
-fails, because pkg-config doesn't output anything when the flags come
-after the arguments.
+Revert commit 159d8c274fd9 ("ACPI: Pass the same capabilities to the
+_OSC regardless of the query flag") which caused legitimate usage
+scenarios (when the platform firmware does not want the OS to control
+certain platform features controlled by the system bus scope _OSC) to
+break and was misguided by some misleading language in the _OSC
+definition in the ACPI specification (in particular, Section 6.2.11.1.3
+"Sequence of _OSC Calls" that contradicts other perts of the _OSC
+definition).
 
-Fixes: 067c650c456e ("dtc: Use pkg-config to locate libyaml")
-Signed-off-by: Thomas Bracht Laumann Jespersen <t@laumann.xyz>
-Signed-off-by: Rob Herring <robh@kernel.org>
-Link: https://lore.kernel.org/r/20220131112028.7907-1-t@laumann.xyz
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/linux-acpi/CAJZ5v0iStA0JmO0H3z+VgQsVuQONVjKPpw0F5HKfiq=Gb6B5yw@mail.gmail.com
+Reported-by: Mario Limonciello <Mario.Limonciello@amd.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Tested-by: Mario Limonciello <mario.limonciello@amd.com>
+Acked-by: Huang Rui <ray.huang@amd.com>
+Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- scripts/dtc/Makefile | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/acpi/bus.c |   27 +++++++++++++++++++--------
+ 1 file changed, 19 insertions(+), 8 deletions(-)
 
-diff --git a/scripts/dtc/Makefile b/scripts/dtc/Makefile
-index 95aaf7431bff..1cba78e1dce6 100644
---- a/scripts/dtc/Makefile
-+++ b/scripts/dtc/Makefile
-@@ -29,7 +29,7 @@ dtc-objs	+= yamltree.o
- # To include <yaml.h> installed in a non-default path
- HOSTCFLAGS_yamltree.o := $(shell pkg-config --cflags yaml-0.1)
- # To link libyaml installed in a non-default path
--HOSTLDLIBS_dtc	:= $(shell pkg-config yaml-0.1 --libs)
-+HOSTLDLIBS_dtc	:= $(shell pkg-config --libs yaml-0.1)
- endif
+--- a/drivers/acpi/bus.c
++++ b/drivers/acpi/bus.c
+@@ -332,21 +332,32 @@ static void acpi_bus_osc_negotiate_platf
+ 	if (ACPI_FAILURE(acpi_run_osc(handle, &context)))
+ 		return;
  
- # Generated files need one more search path to include headers in source tree
--- 
-2.34.1
-
+-	kfree(context.ret.pointer);
++	capbuf_ret = context.ret.pointer;
++	if (context.ret.length <= OSC_SUPPORT_DWORD) {
++		kfree(context.ret.pointer);
++		return;
++	}
+ 
+-	/* Now run _OSC again with query flag clear */
++	/*
++	 * Now run _OSC again with query flag clear and with the caps
++	 * supported by both the OS and the platform.
++	 */
+ 	capbuf[OSC_QUERY_DWORD] = 0;
++	capbuf[OSC_SUPPORT_DWORD] = capbuf_ret[OSC_SUPPORT_DWORD];
++	kfree(context.ret.pointer);
+ 
+ 	if (ACPI_FAILURE(acpi_run_osc(handle, &context)))
+ 		return;
+ 
+ 	capbuf_ret = context.ret.pointer;
+-	osc_sb_apei_support_acked =
+-		capbuf_ret[OSC_SUPPORT_DWORD] & OSC_SB_APEI_SUPPORT;
+-	osc_pc_lpi_support_confirmed =
+-		capbuf_ret[OSC_SUPPORT_DWORD] & OSC_SB_PCLPI_SUPPORT;
+-	osc_sb_native_usb4_support_confirmed =
+-		capbuf_ret[OSC_SUPPORT_DWORD] & OSC_SB_NATIVE_USB4_SUPPORT;
++	if (context.ret.length > OSC_SUPPORT_DWORD) {
++		osc_sb_apei_support_acked =
++			capbuf_ret[OSC_SUPPORT_DWORD] & OSC_SB_APEI_SUPPORT;
++		osc_pc_lpi_support_confirmed =
++			capbuf_ret[OSC_SUPPORT_DWORD] & OSC_SB_PCLPI_SUPPORT;
++		osc_sb_native_usb4_support_confirmed =
++			capbuf_ret[OSC_SUPPORT_DWORD] & OSC_SB_NATIVE_USB4_SUPPORT;
++	}
+ 
+ 	kfree(context.ret.pointer);
+ }
 
 
