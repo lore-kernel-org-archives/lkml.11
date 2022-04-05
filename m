@@ -2,132 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30D6DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 02:47:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E068CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 02:48:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230010AbiDECtw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 22:49:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44630 "EHLO
+        id S230280AbiDECuW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 22:50:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230201AbiDECto (ORCPT
+        with ESMTP id S230231AbiDECuL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 22:49:44 -0400
-Received: from conssluserg-01.nifty.com (conssluserg-01.nifty.com [210.131.2.80])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D054E3409A5;
-        Mon,  4 Apr 2022 18:56:12 -0700 (PDT)
-Received: from mail-pf1-f177.google.com (mail-pf1-f177.google.com [209.85.210.177]) (authenticated)
-        by conssluserg-01.nifty.com with ESMTP id 2351tvOj030196;
-        Tue, 5 Apr 2022 10:55:58 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-01.nifty.com 2351tvOj030196
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1649123758;
-        bh=PdP6YCUvmaSUiCxbB3ILanT4Hgdihlr9OSG1Kl9PsW4=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=gW+l5oDUfiuOIwuFg2HGWp1UIZcR14E7rKQKOpraAnYpVZhf/y7HwV/P0r8mQMIF3
-         EUouHELoF6t0f4acQGN+Mqck7GqDvjTPLyqMFgpKzUVFlrlmlNsZ424U+PDxIvFHcv
-         WVcsW/IzDsQdTwf3CUIRxzEZnDazZNcLmi8kpCJJn9PUMxWxZoy1ucSq2QRk8Rc2MH
-         QcRgDEmHBKkolrH27J6kWxLOgLML0XEPbbq5tZYI9InDr8QsxTotRrppjw5/lBOExL
-         cOegUba4J+TtyYcPtZaLWq9VSH7hEubDDpbhIye0wOmdfr4ZSsgKxqt9jdD9/UeI1F
-         Pm1aCP1brpPnQ==
-X-Nifty-SrcIP: [209.85.210.177]
-Received: by mail-pf1-f177.google.com with SMTP id 7so3697386pfu.13;
-        Mon, 04 Apr 2022 18:55:57 -0700 (PDT)
-X-Gm-Message-State: AOAM530Wrl2FODZGw5gurPfGx1uk8kzrLHzYH0CYsYBRdAmo+Hr+hvMj
-        KpeY+IwOJxSEzm2DhIcRZH7IAZo6hWsUrLW+tv8=
-X-Google-Smtp-Source: ABdhPJxyowF3gUy7iO6+drJUCMa56w9yL809C9UvY6zKbVygHAEE/enomAV6RR4k3ReR7tqnWg4fmw1pB+HCgQvEizE=
-X-Received: by 2002:a05:6a00:234f:b0:4fa:f52b:46a1 with SMTP id
- j15-20020a056a00234f00b004faf52b46a1mr1286578pfj.32.1649123756928; Mon, 04
- Apr 2022 18:55:56 -0700 (PDT)
+        Mon, 4 Apr 2022 22:50:11 -0400
+Received: from out203-205-221-235.mail.qq.com (out203-205-221-235.mail.qq.com [203.205.221.235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4849F1BB19E
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 19:27:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+        s=s201512; t=1649125663;
+        bh=Ms67zyBdNV6hrxEaPT360CJpu7jbKuKGKMPZ/d3UlO4=;
+        h=From:To:Cc:Subject:Date;
+        b=jI8TLh0MCXxFl+aH5xm+9Npb/oEWTH5wwfnHGaJSCLKPKngwXg2JWgjUT6HRi7R4T
+         JlGmxzZ5QQGL3Rgy++coO5DMZTvgNfIE5tX7n6P+Hk0vOpwVmQ/sdUFk11FnEwjxak
+         PN94yqlKtXCb56xNUv9QHTMxDV6WheYgDOCkUIuQ=
+Received: from localhost.localdomain ([218.197.153.188])
+        by newxmesmtplogicsvrszc6.qq.com (NewEsmtp) with SMTP
+        id 6E804CEE; Tue, 05 Apr 2022 10:27:40 +0800
+X-QQ-mid: xmsmtpt1649125660t9z6hhdk4
+Message-ID: <tencent_FCEE3D8703C56F78B552FEFF070817736606@qq.com>
+X-QQ-XMAILINFO: Mv3le6n+CjtdFPofKatnGY7vR5sSKoj1wt14/b6/rM15br6fjRBKA66dToNbUg
+         te6DlAnhPi7E2r3czmflgm8TK9fEe9cBdHknXytTp5C8ZNKDWL1jWBZBw8PByB9gVnI2fxyRJW4g
+         BqGX86UnpqC8sTGz1LOOFcKZmXUVgx4hyg49mrJor142N5Xiepky2cmwrKKMO4PlBOkFMQFbkgVL
+         XTS6FhhuiPXV0GF6799VuDeyxn4TaS4j4yEkpQOc9axe/rzjwNkb7edpCmUL7QMfAcbFClQgRsOt
+         5W6T7MTE9UMch6GX2l+ksJ1VsevmrT8l70vtrwCsY7EyvvE5bUQR8lZzu6vTfBHebWRUkwxXXhub
+         OM7PJdy42pK5ph1ZeCx/pBvbNGPdrZ+9nEnfEANenQODmS7/V43hO4Cz1pJDd/l5QuuVIqgZBNlo
+         YfAUmghyrfDEMjZldsrERhjmW9mpheFmz9dA7xETg6QbuIxasIlNFHsQbNzlzR6fkKLSiqNpvsVZ
+         lScdH0Y+tmlk37NM8O5a56vjAq5h5SLKU0iIhiwidaM2/9miJFHiJYQTAcFIif1UxQlmaFxfMKPF
+         tZbqgrwKf9/PyFEeFGgKIKlYIDLccxpaMxHyOZxtjedVIaohoDOO+dJav8bM0bp1l3KfKseC07Jn
+         gK4w4qm0xHRLX4nV1ZuB7SSXV737L3YfiQUgwCo1JG3K5gGc72FjrZ2B7QUWuITCeCLmrOvyU0ho
+         yxIHUbrfSygnLF3wnPbAJ7Eke19HU2CVooNC6PnabzLGgCCj4jLt2InvpqI5P+Io/Dn1JHtIhWaP
+         1bnJoqkeMvJMpa+pKQwQcL5K5T4TvnaEKVeCvxF1jYA76jtwx0Ir+uuXyWM7BHqaDuXg8g3talPV
+         ZKec/De+HdwFWF9jIZVFvh94p4GWoD6uRxh13zEd0zGWPtnQ68UcNFNyHXURQYF1aAxBR9P+Stgs
+         5s+sy/WP4=
+From:   xkernel.wang@foxmail.com
+To:     gregkh@linuxfoundation.org
+Cc:     Larry.Finger@lwfinger.net, florian.c.schilhabel@googlemail.com,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Xiaoke Wang <xkernel.wang@foxmail.com>
+Subject: [PATCH v2 1/3] staging: rtl8712: fix potential memory leak in r8712_init_drv_sw()
+Date:   Tue,  5 Apr 2022 10:27:14 +0800
+X-OQ-MSGID: <20220405022714.10949-1-xkernel.wang@foxmail.com>
 MIME-Version: 1.0
-References: <20220329021520.308997-1-masahiroy@kernel.org> <CAKwvOdkP12zrGu4iJStSJ5-pAKFBar=Cxf=CYO5gE9L636q8-w@mail.gmail.com>
-In-Reply-To: <CAKwvOdkP12zrGu4iJStSJ5-pAKFBar=Cxf=CYO5gE9L636q8-w@mail.gmail.com>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Tue, 5 Apr 2022 10:55:09 +0900
-X-Gmail-Original-Message-ID: <CAK7LNASisGfD4vrk2Duswg_tj+LQutd+zdyq9qyFiTptCM7NWA@mail.gmail.com>
-Message-ID: <CAK7LNASisGfD4vrk2Duswg_tj+LQutd+zdyq9qyFiTptCM7NWA@mail.gmail.com>
-Subject: Re: [PATCH 1/2] kbuild: factor out genksyms command from cmd_gensymtypes_{c,S}
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 30, 2022 at 3:18 AM Nick Desaulniers
-<ndesaulniers@google.com> wrote:
->
-> On Mon, Mar 28, 2022 at 7:15 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
-> >
-> > The genksyms command part in cmd_gensymtypes_{c,S} is duplicated.
-> > Factor it out into the 'genksyms' macro.
-> >
-> > For the readability, I slightly refactor the arguments to genksyms.
->
-> Looks nicer, thanks for the patch!
-> Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
->
-> >
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-Applied to linux-kbuild.
+In r8712_init_drv_sw(), some error paths do not properly release the
+resources allocated by its callees.
+This patch is to free them and provide proper error handlers for other
+error validations.
 
+Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+---
+ChangeLog:
+v1->v2 adjust the sequence of the patches in this series. This patch is
+for providing proper error handlers.
+ drivers/staging/rtl8712/os_intfs.c | 18 +++++++++++++++---
+ 1 file changed, 15 insertions(+), 3 deletions(-)
 
-> > Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> > ---
-> >
-> >  scripts/Makefile.build | 19 ++++++++-----------
-> >  1 file changed, 8 insertions(+), 11 deletions(-)
-> >
-> > diff --git a/scripts/Makefile.build b/scripts/Makefile.build
-> > index 9717e6f6fb31..3f2985df4d60 100644
-> > --- a/scripts/Makefile.build
-> > +++ b/scripts/Makefile.build
-> > @@ -125,13 +125,14 @@ cmd_cpp_i_c       = $(CPP) $(c_flags) -o $@ $<
-> >  $(obj)/%.i: $(src)/%.c FORCE
-> >         $(call if_changed_dep,cpp_i_c)
-> >
-> > +genksyms = scripts/genksyms/genksyms           \
-> > +       $(if $(1), -T $(2))                     \
-> > +       $(if $(CONFIG_MODULE_REL_CRCS), -R)     \
-> > +       $(if $(KBUILD_PRESERVE), -p)            \
-> > +       -r $(or $(wildcard $(2:.symtypes=.symref), /dev/null))
-> > +
-> >  # These mirror gensymtypes_S and co below, keep them in synch.
-> > -cmd_gensymtypes_c =                                                         \
-> > -    $(CPP) -D__GENKSYMS__ $(c_flags) $< |                                   \
-> > -    scripts/genksyms/genksyms $(if $(1), -T $(2))                           \
-> > -     $(patsubst y,-R,$(CONFIG_MODULE_REL_CRCS))                             \
-> > -     $(if $(KBUILD_PRESERVE),-p)                                            \
-> > -     -r $(firstword $(wildcard $(2:.symtypes=.symref) /dev/null))
-> > +cmd_gensymtypes_c = $(CPP) -D__GENKSYMS__ $(c_flags) $< | $(genksyms)
-> >
-> >  quiet_cmd_cc_symtypes_c = SYM $(quiet_modtag) $@
-> >  cmd_cc_symtypes_c =                                                         \
-> > @@ -344,11 +345,7 @@ cmd_gensymtypes_S =                                                         \
-> >      $(CPP) $(a_flags) $< |                                                  \
-> >       grep "\<___EXPORT_SYMBOL\>" |                                          \
-> >       sed 's/.*___EXPORT_SYMBOL[[:space:]]*\([a-zA-Z0-9_]*\)[[:space:]]*,.*/EXPORT_SYMBOL(\1);/' ; } | \
-> > -    $(CPP) -D__GENKSYMS__ $(c_flags) -xc - |                                \
-> > -    scripts/genksyms/genksyms $(if $(1), -T $(2))                           \
-> > -     $(patsubst y,-R,$(CONFIG_MODULE_REL_CRCS))                             \
-> > -     $(if $(KBUILD_PRESERVE),-p)                                            \
-> > -     -r $(firstword $(wildcard $(2:.symtypes=.symref) /dev/null))
-> > +    $(CPP) -D__GENKSYMS__ $(c_flags) -xc - | $(genksyms)
-> >
-> >  quiet_cmd_cc_symtypes_S = SYM $(quiet_modtag) $@
-> >  cmd_cc_symtypes_S =                                                         \
-> > --
-> > 2.32.0
-> >
->
->
-> --
-> Thanks,
-> ~Nick Desaulniers
-
-
-
+diff --git a/drivers/staging/rtl8712/os_intfs.c b/drivers/staging/rtl8712/os_intfs.c
+index 9502f6a..1f7ccec 100644
+--- a/drivers/staging/rtl8712/os_intfs.c
++++ b/drivers/staging/rtl8712/os_intfs.c
+@@ -304,10 +304,10 @@ int r8712_init_drv_sw(struct _adapter *padapter)
+ 	padapter->cmdpriv.padapter = padapter;
+ 	ret = r8712_init_evt_priv(&padapter->evtpriv);
+ 	if (ret)
+-		return ret;
++		goto free_cmd_priv;
+ 	ret = r8712_init_mlme_priv(padapter);
+ 	if (ret)
+-		return ret;
++		goto free_evt_priv;
+ 	_r8712_init_xmit_priv(&padapter->xmitpriv, padapter);
+ 	_r8712_init_recv_priv(&padapter->recvpriv, padapter);
+ 	memset((unsigned char *)&padapter->securitypriv, 0,
+@@ -316,13 +316,25 @@ int r8712_init_drv_sw(struct _adapter *padapter)
+ 		    r8712_use_tkipkey_handler, 0);
+ 	ret = _r8712_init_sta_priv(&padapter->stapriv);
+ 	if (ret)
+-		return ret;
++		goto free_recv_priv;
+ 	padapter->stapriv.padapter = padapter;
+ 	r8712_init_bcmc_stainfo(padapter);
+ 	r8712_init_pwrctrl_priv(padapter);
+ 	mp871xinit(padapter);
+ 	init_default_value(padapter);
+ 	r8712_InitSwLeds(padapter);
++	return 0;
++
++free_recv_priv:
++	_r8712_free_recv_priv(&padapter->recvpriv);
++free_xmit_priv:
++	_free_xmit_priv(&padapter->xmitpriv);
++free_mlme_priv:
++	r8712_free_mlme_priv(&padapter->mlmepriv);
++free_evt_priv:
++	r8712_free_evt_priv(&padapter->evtpriv);
++free_cmd_priv:
++	r8712_free_cmd_priv(&padapter->cmdpriv);
+ 	return ret;
+ }
+ 
 -- 
-Best Regards
-Masahiro Yamada
